@@ -27,7 +27,7 @@ puts $fh "#RACOUNT=$c"
 
 dict for {fn data} $musicdbList {
   seek $fh [expr {([dict get $data rrn] - 1) * $rsize + $hsize}]
-  puts $fh "FILE=$fn"
+  puts $fh "FILE\n$fn"
 
   # sort it now, make it easier
   foreach {tag} [lsort [dict keys $data]] {
@@ -35,7 +35,7 @@ dict for {fn data} $musicdbList {
       continue
     }
     set value [dict get $data $tag]
-    puts $fh "$tag=$value"
+    puts $fh "$tag\n$value"
   }
 }
 
