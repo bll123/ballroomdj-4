@@ -1,0 +1,28 @@
+# configuration to set up the build environment
+
+loadunit env-main
+loadunit env-systype
+loadunit env-cc
+loadunit env-extension
+
+output  hello.env
+
+# starting with version 2.4 only standard_system is needed
+standard_system
+# standard_system does:
+#   system type
+#   system rev
+#   system arch
+# starting with version 2.4 only standard_cc is needed
+standard_cc
+# standard_cc does:
+#   cc
+#   using_gcc
+#   using_gnu_ld
+#   using_clang
+#   using_cplusplus
+#   cflags
+#   ldflags
+libs
+extension obj
+extension exe

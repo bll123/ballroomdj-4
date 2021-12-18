@@ -1,0 +1,334 @@
+.\"
+.\" mkconfig_c.7
+.\"
+.\" Copyright 2011-2018 Brad Lanam  Walnut Creek CA USA
+.\" Copyright 2020 Brad Lanam Pleasant Hill CA
+.\"
+.\" brad.lanam.di_at_gmail.com
+.\"
+.\"
+.\"  Notes on terminology:
+.\"    check variable - the variable name for the check.
+.\"    directive - a command from the mkconfig config file.
+.\"    mkconfig config file - file where mkconfig directive are read from
+.\"       not to be confused with "config.h".
+.\"    output file - file to which language units output is written
+.\"    options file -
+.\"    cache file -
+.\"    lib file - output libraries file created by mkreqlib.sh
+.\"
+.\" from perl manual pages...
+.de Vb \" Begin verbatim text
+.ft CW
+.nf
+.ne \\$1
+..
+.de Ve \" End verbatim text
+.ft R
+.fi
+..
+.\"
+.TH mkconfig_c 7 "8 Nov 2011"
+.SH Name
+mkconfig_c \- mkconfig C language units
+.\" .SH Synopsis
+.SH Description
+The C language units create an include file for use by C programs.
+.SH C Language Units
+.TP
+.B c\-main
+.br
+The c\-main unit creates an include file for C programs.
+The \fIhdr\fP and \fIsys\fP directives should be listed first
+in the mkconfig configuration file so that the headers are
+available for use in the other tests.
+.RS
+.TP
+\fBstandard\fP
+.RS
+The \fIstandard\fP checks are: the headers stdio.h, stdlib.h, sys/types.h
+and sys/param.h, the keywords \fIvoid\fP and \fIconst\fP, the
+\fIvoid *\fP type as a parameter,
+and C function prototypes.
+.PP
+.Vb
+.B Output:
+#define _hdr_stdio 1
+#define _hdr_stdlib 1
+#define _sys_types 1
+#define _sys_param 1
+#define _key_void 1
+#define _key_const 1
+#define _param_void_star 1
+#define _proto_stdc 1
+.Ve
+.RE
+.TP
+\fBargs\fP [noconst] name\-of\-function
+.RS
+Checks the number of arguments, the types of the arguments and
+the return type for a function.  If 'noconst' is specified, any
+'const' keywords will be stripped from the output so only the base
+data type is returned.  Outputs the following check variables:
+_args_function, _c_arg_N_function, and _c_type_function.
+_args_function indicates the number of
+arguments. _c_arg_N_function indicates the argument data type.
+_c_type_function indicates the return type of the function.
+The 'awk' program is a requirement for this directive.
+.PP
+.Vb
+.B e.g.
+args noconst setmntent
+.B Output:
+#define _c_arg_1_setmntent char *
+#define _c_arg_2_setmntent char *
+#define _c_type_setmntent FILE *
+#define _args_setmntent 2
+.Ve
+.RE
+.TP
+\fBhdr\fP name\-of\-header [required\-headers]
+.RS
+Check for a header.
+The standard include path as set in CFLAGS is used.
+If \fIrequired\-headers\fP is specified, those headers
+are included in the compilation test before attempting
+the compilation test.
+.PP
+.Vb
+.B e.g.
+hdr getopt
+hdr storage/volumes.h gui/window.h
+.B Output:
+#define _hdr_getopt 1
+#define _hdr_storage_volumes 0
+.Ve
+.RE
+.TP
+\fBsys\fP name\-of\-sys\-header [required\-headers]
+.RS
+Like \fIhdr\fP, but looks in the sys/ directory.
+.PP
+.Vb
+.B e.g.
+sys types.h
+.B Output:
+#define _sys_types 1
+.Ve
+.RE
+.TP
+\fBclass\fP class [libs, ...]
+.RS
+Check to see if class \fIclass\fP exists.
+If the optional \fIlibs\fP are specified,
+the test will try first without the libraries, then with
+the first set of libraries specified, then the next set, etc.
+Sets of libraries to be tested are separated by commas.
+.PP
+.Vb
+.B e.g.
+class os::Volumes
+.B Output:
+#define _class_os__Volumes 0
+.Ve
+.PP
+Execute \fImkc.sh \-reqlib\fP after creating the output file
+to output the libraries required for linking.  See the usage for
+\fImkc.sh \-reqlib\fP in the lib check below.
+.RE
+.TP
+\fBconst\fP constant\-name [required\-headers]
+.RS
+Check to see that a constant exists.
+If \fIrequired\-headers\fP is specified, those headers
+are included in the compilation test before attempting
+the compilation test.
+.PP
+.Vb
+.B e.g.
+const O_NOCTTY
+.B Output:
+#define _const_O_NOCTTY 1
+.Ve
+.RE
+.TP
+\fBdcl\fP {int|ptr} variable\-name
+.RS
+Check to see if \fIvariable\-name\fP is declared.
+If \fIint\fP is specified, the variable is a numeric type.
+If \fIptr\fP is specified, the variable is a pointer type.
+.PP
+.Vb
+.B e.g.
+dcl int errno
+dcl ptr optarg
+.B Output:
+#define _dcl_errno 1
+#define _dcl_optarg 1
+.Ve
+.RE
+.TP
+\fBdefine\fP definition\-name
+.RS
+Check to see if definition\-name is defined.
+.PP
+.Vb
+.B e.g.
+define MCTL_QUERY
+.B Output:
+#define _define_MCTL_QUERY 0
+.Ve
+.RE
+.TP
+\fBkey\fP keyword
+.RS
+Check to see if a C\-language keyword is reserved.
+.PP
+.Vb
+.B e.g.
+key volatile
+.B Output:
+#define _key_volatile 1
+.Ve
+.RE
+.TP
+\fBlib\fP function [libs, ...]
+.RS
+Check to see if the library function \fIfunction\fP exists.
+If the optional \fIlibs\fP are specified,
+the test will try first without the libraries, then with
+the first set of libraries specified linked in, then the next set, etc.
+Sets of libraries to be tested are separated by commas.
+If link libraries are specified, any value in the cache is ignored,
+and the function is retested.
+.PP
+.Vb
+.B e.g.
+lib gettext -lintl, -lintl -liconv
+[Will first test gettext, then gettext -lintl,
+ then gettext -lintl -liconv]
+.B Output:
+#define _lib_gettext 1
+.Ve
+.PP
+Execute \fImkc.sh \-reqlib\fP after creating the output file
+to output the libraries required for linking.
+.PP
+\fImkc.sh \-reqlib\fP creates the list of libraries required for linking
+based on the output file.  This allows the user to modify
+the output file and only the necessary libraries will be
+linked in.
+.PP
+\fImkc.sh -reqlib\fP is executed with a command line argument of the
+output file name created by \fImkconfig.sh\fP.
+The output library file defaults to 'mkconfig.reqlibs',
+but may be changed with the \-o command line option.
+.PP
+The string '_dollar_', if included in the library function name
+will be replaced with the '$' symbol.
+.RE
+.TP
+\fBmember\fP struct struct\-name member
+.TP
+\fBmember\fP union union\-name member
+.TP
+\fBmember\fP typedef\-name member
+.RS
+Check to see if \fImember\fP is a member of \fIstruct struct\-name\fP
+or \fItypedef-name\fP.
+.PP
+.Vb
+.B e.g.
+member struct statfs f_bsize
+.B Output:
+#define _mem_struct_statfs_f_bsize 1
+.Ve
+.RE
+.TP
+\fBmemberxdr\fP struct\-name member
+.RS
+Define the appropriate xdr function for \fIstruct\-name.member\fP.
+The 'awk' program is a requirement for this directive.
+.PP
+.Vb
+.B e.g.
+memberxdr getquota_args gqa_uid
+.B Output:
+#define xdr_gqa_uid xdr_int
+#define _memberxdr_getquota_args_gqa_uid 1
+.Ve
+.RE
+.TP
+\fBnpt\fP function [library\-requirement]
+.RS
+Check to see if if \fIfunction\fP needs to have a prototype declared.
+The optional \fIlibrary\-requirement\fP should be written
+as: _lib_<funcname>.
+If \fIlibrary\-requirement\fP does not exist, _npt_<function>
+will be set to false in the output file.
+.PP
+.Vb
+.B e.g.
+npt getopt
+npt statfs _lib_statfs
+.B Output:
+#define _npt_getopt 0
+#define _npt_statfs 0
+.Ve
+.RE
+.TP
+\fBsiz\fP type\-name
+.RS
+Check the size of type\-name.  If using with a cross-compiler, the
+MKC_CROSS environment variable must be set to 'Y'.
+.PP
+.Vb
+.B e.g.
+siz long long
+.B Output:
+#define _siz_long_long 8
+.Ve
+.RE
+.TP
+\fBtyp\fP type\-name
+.RS
+Check to see if a type\-name exists.  type\-name may be a type or a
+structure.
+.PP
+.Vb
+.B e.g.
+typ size_t
+typ struct dqblk
+.B Output:
+#define _typ_size_t 1
+#define _typ_struct_dqblk 1
+.Ve
+.RE
+.RE
+.TP
+.B c\-include\-conflict
+.RS
+.TP
+\fBinclude_conflict <header\-1> <header\-2>\fP
+.RS
+Check to see if there is a compile conflict when including two headers.
+If there is a conflict, the check variable is set to 0.
+.PP
+.Vb
+.B e.g.
+include_conflict time.h sys/time.h
+.B Output:
+#define _inc_conflict__hdr_time__sys_time 1
+.Ve
+.RE
+.RE
+.SH See Also
+iffe(1) autoconf(1) dist(7) mkconfig(7) mkconfig_env(7) mkconfig_d(7)
+.SH Bugs
+Send bug reports to: brad.lanam.di_at_gmail.com
+.SH Website
+http://www.gentoo.com/di/mkconfig.html
+.SH Author
+This program is Copyright 2011 by Brad Lanam, Walnut Creek CA
+.PP
+Brad Lanam, Walnut Creek, CA (brad.lanam.di_at_gmail.com)

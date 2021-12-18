@@ -1,0 +1,8 @@
+# configuration for hello.c
+
+loadunit c-main
+output config.h
+
+standard
+
+hdr string.h

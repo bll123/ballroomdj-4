@@ -1,0 +1,563 @@
+.\"
+.\" mkconfig.7
+.\"
+.\" Copyright 2011-2018 Brad Lanam  Walnut Creek CA USA
+.\" Copyright 2020 Brad Lanam Pleasant Hill CA
+.\"
+.\" brad.lanam.di_at_gmail.com
+.\"
+.\"
+.\"  Notes on terminology:
+.\"    check variable - the variable name for the check.
+.\"    directive - a command from the mkconfig config file.
+.\"    mkconfig config file - file where mkconfig check commands are read from
+.\"       not to be confused with "config.h".
+.\"    output file - file to which language units output is written
+.\"    options file -
+.\"    cache file -
+.\"    lib file - output libraries file created by mkreqlib.sh
+.\"
+.\" from perl manual pages...
+.de Vb \" Begin verbatim text
+.ft CW
+.nf
+.ne \\$1
+..
+.de Ve \" End verbatim text
+.ft R
+.fi
+..
+.\"
+.TH mkconfig 7 "10 Nov 2012"
+.SH Name
+mkconfig \- build configuration utilities
+.SH Synopsis
+.\" mkconfig.sh [-C] [-c <cache-file>]
+.\"       [-o <option-file>] [-L <log-file>] config-file
+.\" runtests.sh <tests-dir> [test1, ...]
+.\" mkc.sh {-compile|-link} [-shared] [-exec]
+.\"   [-c <compiler>] [-e] [-o execname|-o objname]
+.\"   [-r required-lib-file] --
+.\"   [sourcefile ...] [objectfile ...] [compile-or-link-flags ...]
+.\"   [-L <lib-path>] [-l <lib>]
+.\" mkc.sh -reqlib [-c <cache-file>] [-o <lib-file>] input-file
+.\" mkc.sh -setopt [-o <option-file>] option value
+.\" mkc.sh -staticlib [-e] -o libname.a objectfile ...
+.B mkconfig.sh
+[\fB\-C\fP]
+[\fB\-c\fP <cache\-file>]
+[\fB\-L\fP <log\-file>]
+[\fB\-o\fP <option\-file>]
+config\-file
+.PP
+The \-C option clears any cache file before processing the units.
+.PP
+cache\-file defaults to 'mkconfig.cache'.
+.PP
+log\-file defaults to 'mkconfig.log'.
+.PP
+option\-file defaults to 'options.dat'.
+.PP
+config\-file is a file containing a list of mkconfig directives.
+.PP
+.B runtests.sh
+tests\-dir
+[test1, ...]
+.PP
+tests\-dir is a directory containing test scripts.
+.PP
+The tests to be run may be specified on the command line.
+.PP
+.B mkc.sh \-reqlib
+[\fB\-c\fP <cache\-file>]
+[\fB\-o\fP <lib\-file>]
+input\-file
+.PP
+Is used in conjunction with the c\-main language unit or
+d\-main language unit to output the
+libraries required for linking.  See the description for the 'lib'
+check routine for the c\-main language unit.
+.PP
+cache\-file defaults to 'mkconfig.cache'.
+.PP
+output\-file defaults to 'mkconfig.reqlibs'.
+.PP
+input\-file is the C/C++ output\-file created by mkconfig.sh.
+.PP
+.B mkc.sh \-setopt
+[\fB\-o\fP <option\-file>]
+option value
+.PP
+Is used to change the value of the options in the option file.
+.PP
+option\-file defaults to 'options.dat'.
+.PP
+.B mkc.sh \-staticlib
+[-e] -o libname.a object\-file [...]
+.PP
+The -e option echos the command line.
+.PP
+.B mkc.sh
+\-compile|\-link [\-c <compiler>] [\-shared] [\-exec] [\-e]
+[\-o <execname>|\-o <objname>]
+[\-r required\-lib\-file] \-\-
+[<sourcefile> ...] [<objectfile> ...] [<compile\-or\-link\-flags> ...]
+[\-L <lib\-path>] [\-l <lib>]
+.PP
+Compiles to an executable or object file given source or object files,
+compiler options, link options and a list of library paths and libraries.
+.PP
+The \-e option echos the command line.
+.PP
+Use the \-shared option to build shared object or library files.
+.PP
+Use the \-exec option when building an executable against shared objects.
+.PP
+The \-staticlib option
+creates a static library given a library name and a list of object files.
+.SH Description
+\fImkconfig.sh\fP
+is a build configuration utility.
+It is written in portable shell script and
+designed to be extensible for any configuration use.  Most Bourne
+Shell compatible shells will work.
+.PP
+\fImkconfig.sh\fP
+is intended to generate a file that can be used as an included file,
+a shell script, a configuration file, or any other use.  If the
+_MKCONFIG_SHELL environment variable is set to a particular shell,
+\fImkconfig.sh\fP will restart itself using that shell.
+.PP
+\fIruntests.sh\fP
+is a simple test harness for mkconfig.  It is intended as a simple,
+portable test harness.  There are better test harnesses available.
+.SH Basic Directives (mkconfig.sh)
+.TP
+\fB#\fP comment
+.RS
+Comments begin with a '#' in column 1.  Blank lines are ignored.
+.RE
+.TP
+\fBoutput\fP file\-name (required)
+.RS
+Specify the name of the output file.
+This command may be included multiple times in the mkconfig
+configuration file to output multiple files.
+.RE
+.TP
+\fBoption\-file\fP file\-name
+.RS
+Specify the name of the options file.  The options file can also be
+specified on the command line with the \-o option.
+.RE
+.TP
+\fBloadunit\fP unit\-name
+.RS
+Include a mkconfig unit for testing.
+Units include specific check routines that may be performed.
+.RE
+.TP
+\fBcommand\fP name\-of\-command [alternate\-cmd...]
+.RS
+Check if command exists in the path.  When listing alternate commands,
+specify the list from least wanted to best.
+.PP
+.Vb
+.B e.g.
+command awk nawk gawk
+.br
+command sed
+.B Output:
+#define _command_sed 1 /* C */
+#define _cmd_loc_sed "/bin/sed" /* C */
+enum bool _command_sed = true; /* D */
+enum string _cmd_loc_sed = "/bin/sed"; /* D */
+.Ve
+.RE
+.TP
+\fBgrep\fP tag pattern filename
+.RS
+Searches filename for pattern.  tag is used for naming and display purposes.
+.PP
+.Vb
+.B e.g.
+grep mysearch root /etc/passwd
+.B Output:
+#define _grep_mysearch 1  /* C */
+enum bool _grep_mysearch = true; /* D */
+.Ve
+.RE
+.TP
+\fBifoption\fP option\-name ... [else ...] endif
+.TP
+\fBifnotoption\fP option\-name ... [else ...] endif
+.RS
+The \fIifoption\fP and \fIifnotoption\fP statements check the options
+set in the options file and process the appropriate block of statements.
+.PP
+If there is no options file, or the option does not exist, both
+\fIifoption\fP and \fIifnotoption\fP will return a false return.
+.PP
+The \fIifoption\fP, \fIifnotoption\fP and \fIif\fP statements may be
+nested.
+.RE
+.TP
+\fBif\fP label if\-statement ... [\fBelse\fP ...] \fBendif\fP
+.RS
+The \fIif\fP statement is a combination of check variables, &&, ||,
+! (not) and parentheses.  It is recommended that parentheses be used
+copiously to avoid any possible precedence differences between different
+shells.  The \fIlabel\fP is used for display output.
+.PP
+The equality operator is supported in prefix notation as:
+.IP
+\fIif\fP label == check\-variable value
+.PP
+The \fIvalue\fP may be enclosed in quotes, but preservation of extra spaces
+will not work.
+.PP
+.Vb
+.B e.g.
+if mylabel _hdr_header1 && ( ! (_lib_func3 || _lib_func4)) && _setint_my_var
+ ...
+endif
+if quotactl_pos_1 == _c_arg_1_quotactl 'char *'
+ ...
+endif
+.Ve
+.RE
+.PP
+The \fIifoption\fP, \fIifnotoption\fP and \fIif\fP statements may be
+nested.
+.RE
+.TP
+.B include endinclude
+.RS
+Include all of the code between these two tags
+in the output file.  Backslashes must
+be escaped with a backslash.  Note that the included text
+is only output at the end of the output\-file, not inline
+with the directive output.
+.RE
+.TP
+\fBoption\fP option\-name default\-value
+.RS
+Set \fIoption\-name\fP specified to default\-value.  The option\-file is
+checked for \fIoption\-name\fP, and if present, the value in the
+option\-file is used.
+.PP
+For use in if statements, the check variable is named _opt_option\-name.
+.RE
+.TP
+\fBset\fP check\-variable value
+.RS
+Set a check\-variable to value.
+.PP
+.Vb
+.B e.g.
+lib quotactl
+set _lib_quotactl 0
+.Ve
+.RE
+.TP
+\fBsetint\fP check\-variable\-name value
+.RS
+Set an integer variable to a value.
+The check variable name will be output as
+specified, but when used in if statements, the check variable is named
+_setint_<name>.
+.PP
+.Vb
+.B e.g.
+setint _enable_nls 1
+.Ve
+.RE
+.TP
+\fBsetstr\fP check\-variable\-name value
+.RS
+Set a string variable to a value.  The check variable name will be output as
+specified, but when used in if statements, the check variable is named
+_setstr_<name>.
+.PP
+.Vb
+.B e.g.
+setstr _my_lib_path /lib
+.Ve
+.RE
+.TP
+\fBstandard\fP
+.RS
+Perform any standard checks for the unit that was loaded.  See the
+description of the other units to see what the standard check does.
+.RE
+.TP
+\fBsubstitute\fP pattern1 pattern2
+.RS
+Substitute pattern2 for pattern1.  pattern1 and pattern2 are passed
+to 'sed' and may be regular expressions.  Using backslashes in the
+patterns may be problematical due to quoting by the executing shell.
+.PP
+The substitute directive is not available with the perl version of mkconfig.
+.RE
+.SH Environment Units
+The environment units create an output file that can be used
+as shell script input to set your environment.
+.PP
+See mkconfig_env(7).
+.SH C Language Units
+The C language units create an include file for C programs.
+.PP
+See mkconfig_c(7).
+.SH D Language Units
+The D language units create an import file for D programs.
+.PP
+See mkconfig_d(7).
+.SH Tests (runtests.sh)
+The test directory contains shell scripts that are executed
+by \fIruntests.sh\fP.  If a 'test_order' file exists in the test
+directory, it indicates the order the tests are run in.  The 'test_order'
+file consists of a pass number followed by the test name (no trailing .sh).
+If the 'test_order' file exists, only those tests in the file will be run.
+.PP
+If there is a test failure, testing will continue until a change in
+pass number occurs.
+.SH Writing a mkconfig Unit (mkconfig.sh)
+\fImkconfig.sh\fP reads the mkconfig configuration file and processes
+each line sequentially.  The \fIoutput\-file\fP command specifies the output
+file (e.g. config.h for the c-main language unit).  A language unit is
+loaded with the \fIloadunit\fP command.
+.PP
+Each language unit script is executed with the unix shell source
+(\fB.\fP) command, so it has all of the general
+shell functions from mkconfig.sh available for use.
+.PP
+The following functions from mkconfig.sh are used by the language units:
+printlabel, checkcache, checkcache_val, checkcache_actual,
+printyesno, printyesno_val,
+printyesno_actual, getdata, setdata, require_unit,
+dosubst, doappend, domath, toupper, tolower, and locatecmd.
+.PP
+A language unit must provide the following functions: preconfigfile,
+output_item, stdconfigfile, postconfigfile, output_other.
+.PP
+\fImkconfig.sh\fP
+provides the following generic checks: command, include/endinclude,
+ifoption, ifnotoption, if, set, setint, setstr, and option.  The set,
+setint, setstr and option commands will execute the \fIoutput_item\fP
+function from the current unit.  Any other unrecognized
+commands will be passed on
+to the language unit that has been loaded.
+.PP
+The flow of control by \fImkconfig.sh\fP is:
+.RS 3
+process the commands from the mkconfig configuration file
+.RS 3
+set the output\-file name.
+.br
+load any units as specified by the loadunit commands from the
+mkconfig.units directory.
+.br
+execute the directives as specified by the mkconfig configuration file.
+.br
+.RE
+save the cache file.
+.br
+execute \fIpreconfigfile\fP from the language unit.
+.br
+execute \fIoutput_item\fP for each configuration item.
+.br
+execute \fIstdconfigfile\fP from the language unit.
+.br
+output any \fIinclude\fP text from the mkconfig configuration file.
+.br
+execute \fIpostconfigfile\fP from the language unit.
+.br
+execute \fIoutput_other\fP from the language unit.
+.RE
+.PP
+A language unit must define the functions listed above.  It may also
+define other functions for use by other units for that language.
+.PP
+The main language unit must set the following shell variables:
+.RS 3
+_MKCONFIG_PREFIX is set to a language unit specific prefix.  This prefix
+is used internally and in the cache files to create a unique name.
+.PP
+_MKCONFIG_HASEMPTY is set to T or F.  If true, the language unit may
+set check variables to empty values.  This modifies certain processing
+in \fImkconfig.sh\fP.  It is faster to have non-empty check variables.
+.PP
+_MKCONFIG_EXPORT is set to T or F.  If true, the check variable is set and
+exported so that it can be accessed in the shell environment.
+.RE
+.PP
+Language units may need other functions as defined in other units.
+The \fIrequire_unit\fP function makes sure that the a particular
+language unit is loaded for use by the calling unit.
+.PP
+A typical directive in a language unit will be structured as
+follows:
+.RS 3
+.Vb
+check_somecheck () {
+  chktype=$1
+  checkarg=$2
+
+  name="_somecheck_${checkarg}"
+  printlabel $name "somecheck: ${checkarg}"
+  checkcache ${_MKCONFIG_PREFIX} $name
+  if [ $rc -eq 0 ]; then return; fi   # found it in cache
+  # do processing for check here
+  retval=1
+  printyesno $name $retval
+  setdata ${_MKCONFIG_PREFIX} $name $retval
+}
+.Ve
+.RE
+The check function's arguments will be the same values read
+from the mkconfig configuration file.  The name should be set
+to _<checkname>_<argument> as appropriate to be a unique name
+that is a valid unix shell variable name.
+.SH Internal Function Definitions (mkconfig.sh)
+.TP
+\fBcheckcache\fP prefix name
+.TP
+\fBcheckcache_val\fP prefix name
+.TP
+\fBcheckcache_actual\fP prefix name
+.br
+\fIcheckcache\fP checks the cache to see if the check variable
+already has a value.  If so, the check variable is set to the value and a
+return code of 0 is returned.  \fIprefix\fP is normally $_MKCONFIG_PREFIX and
+\fIname\fP is the name of the check variable.  The different variants
+of \fIcheckcache\fP correspond to the variants of \fIprintyesno\fP
+for displaying the check variable to the user.
+.TP
+\fBdosubst\fP shellvar pattern repl [pattern repl ...]
+.br
+Substitutes \fIrepl\fP for \fIpattern\fP globally throughout
+\fIshellvar\fP.  Multiple patterns and replacement strings may be
+specified.  \fIpattern\fP may be any regular expression recognized
+by 'sed'.  Note that modern 'sed' regular expressions will not be
+supported on all systems.
+.TP
+\fBdoappend\fP shellvar value
+.br
+Appends value to \fIshellvar\fP.
+.TP
+\fBdomath\fP shellvar "math\-expr"
+.br
+Executes the \fImath\-expr\fP and assigns the returned value to
+\fIshellvar\fP.  \fImath\-expr\fP must be quoted and should have
+spaces around all arguments.
+.br
+e.g.  count=1; domath count "$count + 1"; echo $count # 2
+.TP
+\fBgetdata\fP shellvar prefix name
+.br
+In some cases, the check function may need to retrieve the value of
+a check variable.  The \fIgetdata\fP function returns the value of
+the check variable \fIname\fP in the shell variable \fIshellvar\fP.
+\fIprefix\fP is normally ${_MKCONFIG_PREFIX}.
+.TP
+\fBlocatecmd\fP shellvar command
+.br
+Locates a command in the path.  Sets \fIshellvar\fP to the full path
+of the command.
+.TP
+\fBprintlabel\fP name display\-data
+.br
+\fIprintlabel\fP displays \fIdisplay\-data\fP to the screen followed by an
+ellipsis.  The name and display\-data is also logged to the log file.
+.TP
+\fBprintyesno\fP name value
+.TP
+\fBprintyesno_val\fP name value
+.TP
+\fBprintyesno_actual\fP name value
+.br
+\fIprintyesno\fP is used in conjunction with \fIprintlabel\fP.
+\fIprintlabel\fP displays the first part of the output for the user and
+\fIprintyesno\fP displays the result.  \fIprintyesno\fP is used for
+boolean (0 or 1) values.  It will display 'yes' or 'no'.
+\fIprintyesno_val\fP is used for values that are non-zero or a string.
+It will display the value, or 'no' if set to 0.  \fIprintyesno_actual\fP
+is used for values that should be displayed intact.  It will display
+the actual value (0 or otherwise).
+.TP
+\fBrequire_unit\fP unit\-name
+.br
+\fIrequire_unit\fP loads another unit file that is needed by the calling
+unit.
+.TP
+\fBsetdata\fP prefix name value
+.br
+\fIsetdata\fP is used in a check function to set the value of a check
+variable.  \fIprefix\fP is normally ${_MKCONFIG_PREFIX}.  \fIname\fP
+is the
+name of the check variable.  \fIvalue\fP is the value the check variable
+is set to.  \fIvalue\fP should be enclosed in quotation marks if it has
+spaces or other special shell characters.
+.TP
+\fBtoupper\fP shellvar
+.br
+Converts a shell variable to upper case.
+.TP
+\fBtolower\fP shellvar
+.br
+Coverts a shell variable to lower case.
+.SH Environment Variables (mkconfig.sh)
+.TP
+_MKCONFIG_DIR
+The directory where mkconfig.sh is installed.
+.SH File Descriptors (mkconfig.sh)
+The file descriptors are allocated as follows:
+.br
+9 - The mkconfig log file
+.br
+8 - Used by mkconfig.sh; not available for mkconfig unit scripts.
+.br
+7 - Used by mkconfig.sh; not available for mkconfig unit scripts.
+.br
+6 - Used by c\-main.sh and mkconfig.sh; not available for c language unit scripts.
+.br
+4 - Used by c\-main.sh; not available for c language unit scripts.
+.SH Writing a test script (runtests.sh)
+To be completed.
+.SH Environment Variables (runtests.sh)
+.TP
+_MKCONFIG_DIR
+.br
+The directory where mkconfig.sh is installed.
+.TP
+_MKCONFIG_RUNTOPDIR
+.br
+The original directory where the tests were started.
+.TP
+_MKCONFIG_RUNTSTDIR
+.br
+The directory containing the test scripts and associated
+files.
+.TP
+_MKCONFIG_RUNTMPDIR
+.br
+The top level temporary directory.  Sub\-directories
+are created for each test that is run.
+.TP
+_MKCONFIG_TSTRUNTMPDIR
+.br
+The temporary directory in which the test is run.
+.TP
+shelllist
+.br
+A list of valid shells installed on the system.
+.SH See Also
+iffe(1) autoconf(1) dist(7) mkconfig_env(7) mkconfig_c(7) mkconfig_d(7)
+.SH Bugs
+Send bug reports to: brad.lanam.di_at_gmail.com
+.SH Website
+http://www.gentoo.com/di/mkconfig.html
+.SH Author
+This program is Copyright 2011-2012 by Brad Lanam, Walnut Creek CA
+.PP
+Brad Lanam, Walnut Creek, CA (brad.lanam.di_at_gmail.com)
