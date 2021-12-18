@@ -1,0 +1,80 @@
+
+loadunit env-main
+loadunit env-systype
+loadunit env-cc
+loadunit env-msgfmt
+loadunit env-extension
+
+output  bdj.env
+
+standard_system
+standard_cc
+addcflag -fno-common
+addcflag -Wextra
+addcflag -Wno-unused-but-set-variable
+addcflag -Wno-unused-parameter
+addcflag -Wno-unknown-pragmas
+addcflag -Wno-float-equal
+addcflag -Wno-shift-sign-overflow
+addcflag -Wno-stringop-overflow
+addcflag -Wno-stringop-truncation
+
+# turn off mac os warning
+addcflag -Wno-poison-system-directories
+
+# gcc hardening
+# reference: wiki.debian.org/Hardening
+addcflag -Wformat
+addcflag -Wformat-security
+addcflag -Werror=format-security
+
+# these confuse other compilers...make them GCC only
+# solaris will not link w/-fstack-protector, so it
+# can only be set when the gnu linker is in use.
+if UsingGNU_LD == _MKCONFIG_USING_GNU_LD Y && == _MKCONFIG_USING_GCC Y
+ ifnotoption NO_PIE
+  # gcc hardening
+  # reference: wiki.debian.org/Hardening
+  addcflag -D_FORTIFY_SOURCE=2
+  addcflag -fstack-protector-strong
+  addcflag -fstack-protector-all
+  addcflag -fPIE
+  addldflag -fstack-protector-strong
+  addldflag -fstack-protector-all
+  addldflag -pie
+  addldflag -Wl,-pie
+  addldflag -Wl,-z,relro
+  addldflag -Wl,-z,now
+ else
+  addcflag -D_FORTIFY_SOURCE=0
+ endif
+endif
+# these confuse other compilers...make them CLANG only
+if UsingCLANG == _MKCONFIG_USING_CLANG Y
+ addcflag -Werror,-Wunused-command-line-argument
+ ifnotoption NO_PIE
+  # gcc hardening
+  # reference: wiki.debian.org/Hardening
+  addcflag -D_FORTIFY_SOURCE=2
+  addcflag -fstack-protector-strong
+  addcflag -fstack-protector-all
+  addldflag -fstack-protector-strong
+  addldflag -fstack-protector-all
+  addcflag -DPIE
+  addcflag -fPIE
+  addldflag -pie
+  addldflag -Wl,-pie
+ else
+  addcflag -D_FORTIFY_SOURCE=0
+ endif
+endif
+
+libs
+
+extension obj
+extension exe
+extension shlib
+shareexeclinkflag
+sharerunpathflag
+
+cmd_msgfmt

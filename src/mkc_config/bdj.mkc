@@ -1,0 +1,15 @@
+#
+#
+
+loadunit c-main
+
+output  bdjconfig.h
+
+standard
+
+hdr     malloc.h
+hdr     mcheck.h
+hdr     memory.h
+hdr	wchar.h
+hdr	windows.h
+
