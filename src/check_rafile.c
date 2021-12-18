@@ -241,6 +241,14 @@ START_TEST(rafile_bad_clear)
 }
 END_TEST
 
+START_TEST(rafile_cleanup)
+{
+  char          *fn;
+
+  fn = "test_rafile.dat";
+  unlink (fn);
+}
+
 Suite *
 rafile_suite (void)
 {
@@ -259,6 +267,7 @@ rafile_suite (void)
   tcase_add_test (tc_rafile, rafile_clear);
   tcase_add_test (tc_rafile, rafile_bad_read);
   tcase_add_test (tc_rafile, rafile_bad_clear);
+  tcase_add_test (tc_rafile, rafile_cleanup);
   suite_add_tcase (s, tc_rafile);
   return s;
 }

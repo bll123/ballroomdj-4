@@ -24,6 +24,7 @@ void          raClose (rafile_t *);
 int           raWrite (rafile_t *, size_t, char *);
 int           raClear (rafile_t *, size_t);
 size_t        raRead (rafile_t *, size_t, char *);
+size_t        raGetCount (rafile_t *);
 size_t        raGetNextRRN (rafile_t *);
 void          raStartBatch (rafile_t *);
 void          raEndBatch (rafile_t *);

@@ -79,6 +79,12 @@ raClose (rafile_t *rafile)
 }
 
 size_t
+raGetCount (rafile_t *rafile)
+{
+  return rafile->count;
+}
+
+size_t
 raGetNextRRN (rafile_t *rafile)
 {
   raLock (rafile);
@@ -208,6 +214,7 @@ raWriteHeader (rafile_t *rafile, int version)
 
 /* there should only ever be one process accessing  */
 /* the file, so this is not using a robust method   */
+/* this can be replaced later                       */
 static void
 raLock (rafile_t *rafile)
 {

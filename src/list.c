@@ -7,17 +7,17 @@
 
 #include "list.h"
 
-static long listBinarySearch (const list_t *, void *, listCompare_t);
-static int  nameValueCompare (void *, void *, listCompare_t);
-static int  listCompare (const list_t *, void *, void *, listCompare_t);
-static void merge (list_t *, size_t, size_t, size_t, listCompare_t);
-static void mergeSort (list_t *, size_t, size_t, listCompare_t);
+static long listBinarySearch (const list_t *, void *);
+static int  nameValueCompare (const list_t *, void *, void *);
+static int  listCompare (const list_t *, void *, void *);
+static void merge (list_t *, size_t, size_t, size_t);
+static void mergeSort (list_t *, size_t, size_t);
 
 /* best for short lists of data   */
 /* data size must be consistent   */
 
 list_t *
-listAlloc (size_t dsiz, listorder_t ordered)
+listAlloc (size_t dsiz, listorder_t ordered, listCompare_t compare)
 {
   list_t    *list;
 
@@ -31,6 +31,7 @@ listAlloc (size_t dsiz, listorder_t ordered)
   list->valuetype = VALUE_NONE;
   list->bumper1 = 0x11223344;
   list->bumper2 = 0x44332211;
+  list->compare = compare;
   return list;
 }
 
@@ -85,14 +86,14 @@ listFreeAll (list_t *list)
 }
 
 list_t *
-listAdd (list_t *list, void *data, listCompare_t compare)
+listAdd (list_t *list, void *data)
 {
   long        loc;
 
   loc = 0;
   if (list->count > 0) {
     if (list->ordered == LIST_ORDERED) {
-      loc = listBinarySearch (list, data, compare);
+      loc = listBinarySearch (list, data);
     } else {
       loc = (long) list->count;
     }
@@ -126,14 +127,14 @@ listInsert (list_t *list, size_t loc, void *data)
 }
 
 long
-listFind (list_t *list, void *data, listCompare_t compare)
+listFind (list_t *list, void *data)
 {
   long        loc;
 
   loc = -1;
   if (list->count > 0) {
     if (list->ordered == LIST_ORDERED) {
-      loc = listBinarySearch (list, data, compare);
+      loc = listBinarySearch (list, data);
     } else {
       loc = 0; /* ### FIX */
     }
@@ -142,20 +143,20 @@ listFind (list_t *list, void *data, listCompare_t compare)
 }
 
 void
-listSort (list_t *list, listCompare_t compare)
+listSort (list_t *list)
 {
-  mergeSort (list, 0, list->count - 1, compare);
+  mergeSort (list, 0, list->count - 1);
   list->ordered = LIST_ORDERED;
 }
 
 /* value list */
 
 list_t *
-vlistAlloc (listorder_t ordered, valuetype_t valuetype)
+vlistAlloc (listorder_t ordered, valuetype_t valuetype, listCompare_t compare)
 {
   list_t    *list;
 
-  list = listAlloc (sizeof (namevalue_t *), ordered);
+  list = listAlloc (sizeof (namevalue_t *), ordered, compare);
   list->type = LIST_NAMEVALUE;
   list->valuetype = valuetype;
   return list;
@@ -175,7 +176,7 @@ vlistFreeAll (list_t *list)
 }
 
 list_t *
-vlistAddStr (list_t *list, char *name, char *value, listCompare_t compare)
+vlistAddStr (list_t *list, char *name, char *value)
 {
   namevalue_t *nv;
 
@@ -183,12 +184,12 @@ vlistAddStr (list_t *list, char *name, char *value, listCompare_t compare)
   assert (nv != NULL);
   nv->name = name;
   nv->u.str = value;
-  listAdd (list, nv, compare);
+  listAdd (list, nv);
   return list;
 }
 
 list_t *
-vlistAddLong (list_t *list, char *name, long value, listCompare_t compare)
+vlistAddLong (list_t *list, char *name, long value)
 {
   namevalue_t *nv;
 
@@ -196,54 +197,54 @@ vlistAddLong (list_t *list, char *name, long value, listCompare_t compare)
   assert (nv != NULL);
   nv->name = name;
   nv->u.l = value;
-  listAdd (list, nv, compare);
+  listAdd (list, nv);
   return list;
 }
 
 long
-vlistFind (list_t *list, char *name, listCompare_t compare)
+vlistFind (list_t *list, char *name)
 {
   long      rc;
-  rc = listFind (list, name, compare);
+  rc = listFind (list, name);
   return rc;
 }
 
 void
-vlistSort (list_t *list, listCompare_t compare)
+vlistSort (list_t *list)
 {
-  listSort (list, compare);
+  listSort (list);
 }
 
 /* internal routines */
 
 static int
-nameValueCompare (void *d1, void *d2, listCompare_t compare)
+nameValueCompare (const list_t *list, void *d1, void *d2)
 {
   int           rc;
   namevalue_t     *nv1, *nv2;
 
   nv1 = (namevalue_t *) d1;
   nv2 = (namevalue_t *) d2;
-  rc = compare (nv1->name, nv2->name);
+  rc = list->compare (nv1->name, nv2->name);
   return rc;
 }
 
 static int
-listCompare (const list_t *list, void *a, void *b, listCompare_t compare)
+listCompare (const list_t *list, void *a, void *b)
 {
   int     rc;
 
   if (list->type == LIST_NAMEVALUE) {
-    rc = nameValueCompare (a, b, compare);
+    rc = nameValueCompare (list, a, b);
   } else {
-    rc = compare (a, b);
+    rc = list->compare (a, b);
   }
   return rc;
 }
 
 /* returns the location after as a negative number if not found */
 static long
-listBinarySearch (const list_t *list, void *data, listCompare_t compare)
+listBinarySearch (const list_t *list, void *data)
 {
   long      l = 0;
   long      r = (long) list->count - 1;
@@ -255,7 +256,7 @@ listBinarySearch (const list_t *list, void *data, listCompare_t compare)
   while (l <= r) {
     m = l + (r - l) / 2;
 
-    rc = listCompare (list, list->data[m], data, compare);
+    rc = listCompare (list, list->data[m], data);
     if (rc == 0) {
       return m;
     }
@@ -278,17 +279,17 @@ listBinarySearch (const list_t *list, void *data, listCompare_t compare)
  */
 
 static void
-merge (list_t *list, size_t start, size_t mid, size_t end, listCompare_t compare)
+merge (list_t *list, size_t start, size_t mid, size_t end)
 {
   size_t start2 = mid + 1;
 
-  int rc = listCompare (list, list->data [mid], list->data [start2], compare);
+  int rc = listCompare (list, list->data [mid], list->data [start2]);
   if (rc <= 0) {
     return;
   }
 
   while (start <= mid && start2 <= end) {
-    rc = listCompare (list, list->data [start], list->data [start2], compare);
+    rc = listCompare (list, list->data [start], list->data [start2]);
     if (rc <= 0) {
       start++;
     } else {
@@ -309,12 +310,12 @@ merge (list_t *list, size_t start, size_t mid, size_t end, listCompare_t compare
 }
 
 static void
-mergeSort (list_t *list, size_t l, size_t r, listCompare_t compare)
+mergeSort (list_t *list, size_t l, size_t r)
 {
   if (l < r) {
     size_t m = l + (r - l) / 2;
-    mergeSort (list, l, m, compare);
-    mergeSort (list, m + 1, r, compare);
-    merge (list, l, m, r, compare);
+    mergeSort (list, l, m);
+    mergeSort (list, m + 1, r);
+    merge (list, l, m, r);
   }
 }

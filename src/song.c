@@ -8,6 +8,7 @@
 
 #include "song.h"
 #include "list.h"
+#include "bdjstring.h"
 
 song_t *
 songAlloc ()
@@ -16,7 +17,7 @@ songAlloc ()
 
   song = malloc (sizeof (song_t));
   assert (song != NULL);
-  song->songInfo = listAlloc (sizeof (songtag_t), LIST_ORDERED);
+  song->songInfo = vlistAlloc (LIST_UNORDERED, VALUE_STR, istringCompare);
   return song;
 }
 
@@ -25,9 +26,17 @@ songFree (song_t *song)
 {
   if (song != NULL) {
     if (song->songInfo != NULL) {
-      listFree (song->songInfo);
+      vlistFree (song->songInfo);
     }
     free (song);
   }
 }
 
+void
+songSet (song_t *song, char *data[], int count)
+{
+  for (int i = 0; i < count; i += 2) {
+    vlistAddStr (song->songInfo, data[i], data[i+1]);
+  }
+  vlistSort (song->songInfo);
+}

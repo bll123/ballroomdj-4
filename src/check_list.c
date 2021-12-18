@@ -9,7 +9,7 @@ START_TEST(list_create_free)
 {
   list_t    *list;
 
-  list = listAlloc (sizeof (char *), LIST_ORDERED);
+  list = listAlloc (sizeof (char *), LIST_ORDERED, istringCompare);
   ck_assert (list != NULL);
   ck_assert (list->count == 0);
   ck_assert (list->dsiz == sizeof (char *));
@@ -23,35 +23,35 @@ START_TEST(list_add_ordered)
 {
   list_t    *list;
 
-  list = listAlloc (sizeof (char *), LIST_ORDERED);
+  list = listAlloc (sizeof (char *), LIST_ORDERED, istringCompare);
   ck_assert (list != NULL);
   ck_assert (list->dsiz == sizeof (char *));
-  listAdd (list, "ffff", istringCompare);
+  listAdd (list, "ffff");
   ck_assert (list->count == 1);
   ck_assert (strcmp ((char *) list->data[0], "ffff") == 0);
-  listAdd (list, "zzzz", istringCompare);
+  listAdd (list, "zzzz");
   ck_assert (list->count == 2);
   ck_assert (strcmp ((char *) list->data[0], "ffff") == 0);
   ck_assert (strcmp ((char *) list->data[1], "zzzz") == 0);
-  listAdd (list, "rrrr", istringCompare);
+  listAdd (list, "rrrr");
   ck_assert (list->count == 3);
   ck_assert (strcmp ((char *) list->data[0], "ffff") == 0);
   ck_assert (strcmp ((char *) list->data[1], "rrrr") == 0);
   ck_assert (strcmp ((char *) list->data[2], "zzzz") == 0);
-  listAdd (list, "kkkk", istringCompare);
+  listAdd (list, "kkkk");
   ck_assert (list->count == 4);
   ck_assert (strcmp ((char *) list->data[0], "ffff") == 0);
   ck_assert (strcmp ((char *) list->data[1], "kkkk") == 0);
   ck_assert (strcmp ((char *) list->data[2], "rrrr") == 0);
   ck_assert (strcmp ((char *) list->data[3], "zzzz") == 0);
-  listAdd (list, "cccc", istringCompare);
+  listAdd (list, "cccc");
   ck_assert (list->count == 5);
   ck_assert (strcmp ((char *) list->data[0], "cccc") == 0);
   ck_assert (strcmp ((char *) list->data[1], "ffff") == 0);
   ck_assert (strcmp ((char *) list->data[2], "kkkk") == 0);
   ck_assert (strcmp ((char *) list->data[3], "rrrr") == 0);
   ck_assert (strcmp ((char *) list->data[4], "zzzz") == 0);
-  listAdd (list, "aaaa", istringCompare);
+  listAdd (list, "aaaa");
   ck_assert (list->count == 6);
   ck_assert (strcmp ((char *) list->data[0], "aaaa") == 0);
   ck_assert (strcmp ((char *) list->data[1], "cccc") == 0);
@@ -59,7 +59,7 @@ START_TEST(list_add_ordered)
   ck_assert (strcmp ((char *) list->data[3], "kkkk") == 0);
   ck_assert (strcmp ((char *) list->data[4], "rrrr") == 0);
   ck_assert (strcmp ((char *) list->data[5], "zzzz") == 0);
-  listAdd (list, "bbbb", istringCompare);
+  listAdd (list, "bbbb");
   ck_assert (list->count == 7);
   ck_assert (strcmp ((char *) list->data[0], "aaaa") == 0);
   ck_assert (strcmp ((char *) list->data[1], "bbbb") == 0);
@@ -76,16 +76,16 @@ START_TEST(list_add_ordered_beg)
 {
   list_t    *list;
 
-  list = listAlloc (sizeof (char *), LIST_ORDERED);
+  list = listAlloc (sizeof (char *), LIST_ORDERED, istringCompare);
   ck_assert (list != NULL);
-  listAdd (list, "cccc", istringCompare);
+  listAdd (list, "cccc");
   ck_assert (list->count == 1);
   ck_assert (strcmp ((char *) list->data[0], "cccc") == 0);
-  listAdd (list, "bbbb", istringCompare);
+  listAdd (list, "bbbb");
   ck_assert (list->count == 2);
   ck_assert (strcmp ((char *) list->data[0], "bbbb") == 0);
   ck_assert (strcmp ((char *) list->data[1], "cccc") == 0);
-  listAdd (list, "aaaa", istringCompare);
+  listAdd (list, "aaaa");
   ck_assert (list->count == 3);
   ck_assert (strcmp ((char *) list->data[0], "aaaa") == 0);
   ck_assert (strcmp ((char *) list->data[1], "bbbb") == 0);
@@ -98,16 +98,16 @@ START_TEST(list_add_ordered_end)
 {
   list_t    *list;
 
-  list = listAlloc (sizeof (char *), LIST_ORDERED);
+  list = listAlloc (sizeof (char *), LIST_ORDERED, istringCompare);
   ck_assert (list != NULL);
-  listAdd (list, "aaaa", istringCompare);
+  listAdd (list, "aaaa");
   ck_assert (list->count == 1);
   ck_assert (strcmp ((char *) list->data[0], "aaaa") == 0);
-  listAdd (list, "bbbb", istringCompare);
+  listAdd (list, "bbbb");
   ck_assert (list->count == 2);
   ck_assert (strcmp ((char *) list->data[0], "aaaa") == 0);
   ck_assert (strcmp ((char *) list->data[1], "bbbb") == 0);
-  listAdd (list, "cccc", istringCompare);
+  listAdd (list, "cccc");
   ck_assert (list->count == 3);
   ck_assert (strcmp ((char *) list->data[0], "aaaa") == 0);
   ck_assert (strcmp ((char *) list->data[1], "bbbb") == 0);
@@ -120,17 +120,17 @@ START_TEST(list_add_unordered)
 {
   list_t    *list;
 
-  list = listAlloc (sizeof (char *), LIST_UNORDERED);
+  list = listAlloc (sizeof (char *), LIST_UNORDERED, istringCompare);
   ck_assert (list != NULL);
   ck_assert (list->ordered == LIST_UNORDERED);
-  listAdd (list, "cccc", istringCompare);
+  listAdd (list, "cccc");
   ck_assert (list->count == 1);
   ck_assert (strcmp ((char *) list->data[0], "cccc") == 0);
-  listAdd (list, "aaaa", istringCompare);
+  listAdd (list, "aaaa");
   ck_assert (list->count == 2);
   ck_assert (strcmp ((char *) list->data[0], "cccc") == 0);
   ck_assert (strcmp ((char *) list->data[1], "aaaa") == 0);
-  listAdd (list, "bbbb", istringCompare);
+  listAdd (list, "bbbb");
   ck_assert (list->count == 3);
   ck_assert (strcmp ((char *) list->data[0], "cccc") == 0);
   ck_assert (strcmp ((char *) list->data[1], "aaaa") == 0);
@@ -143,16 +143,16 @@ START_TEST(list_add_sort)
 {
   list_t    *list;
 
-  list = listAlloc (sizeof (char *), LIST_UNORDERED);
+  list = listAlloc (sizeof (char *), LIST_UNORDERED, istringCompare);
   ck_assert (list != NULL);
   ck_assert (list->dsiz == sizeof (char *));
-  listAdd (list, "ffff", istringCompare);
-  listAdd (list, "zzzz", istringCompare);
-  listAdd (list, "rrrr", istringCompare);
-  listAdd (list, "kkkk", istringCompare);
-  listAdd (list, "cccc", istringCompare);
-  listAdd (list, "aaaa", istringCompare);
-  listAdd (list, "bbbb", istringCompare);
+  listAdd (list, "ffff");
+  listAdd (list, "zzzz");
+  listAdd (list, "rrrr");
+  listAdd (list, "kkkk");
+  listAdd (list, "cccc");
+  listAdd (list, "aaaa");
+  listAdd (list, "bbbb");
   ck_assert (list->count == 7);
   ck_assert (strcmp ((char *) list->data[0], "ffff") == 0);
   ck_assert (strcmp ((char *) list->data[1], "zzzz") == 0);
@@ -161,7 +161,7 @@ START_TEST(list_add_sort)
   ck_assert (strcmp ((char *) list->data[4], "cccc") == 0);
   ck_assert (strcmp ((char *) list->data[5], "aaaa") == 0);
   ck_assert (strcmp ((char *) list->data[6], "bbbb") == 0);
-  listSort (list, istringCompare);
+  listSort (list);
   ck_assert (list->ordered == LIST_ORDERED);
   ck_assert (list->count == 7);
   ck_assert (strcmp ((char *) list->data[0], "aaaa") == 0);
@@ -180,29 +180,29 @@ START_TEST(list_find)
   list_t    *list;
   long      loc;
 
-  list = listAlloc (sizeof (char *), LIST_ORDERED);
+  list = listAlloc (sizeof (char *), LIST_ORDERED, istringCompare);
   ck_assert (list != NULL);
-  listAdd (list, "ffff", istringCompare);
-  listAdd (list, "zzzz", istringCompare);
-  listAdd (list, "rrrr", istringCompare);
-  listAdd (list, "kkkk", istringCompare);
-  listAdd (list, "cccc", istringCompare);
-  listAdd (list, "aaaa", istringCompare);
-  listAdd (list, "bbbb", istringCompare);
-  listAdd (list, "dddd", istringCompare);
-  listAdd (list, "eeee", istringCompare);
-  listAdd (list, "gggg", istringCompare);
-  listAdd (list, "ffff", istringCompare);
+  listAdd (list, "ffff");
+  listAdd (list, "zzzz");
+  listAdd (list, "rrrr");
+  listAdd (list, "kkkk");
+  listAdd (list, "cccc");
+  listAdd (list, "aaaa");
+  listAdd (list, "bbbb");
+  listAdd (list, "dddd");
+  listAdd (list, "eeee");
+  listAdd (list, "gggg");
+  listAdd (list, "ffff");
   ck_assert (list->count == 11);
-  loc = listFind (list, "aaaa", istringCompare);
+  loc = listFind (list, "aaaa");
   ck_assert (loc == 0);
-  loc = listFind (list, "zzzz", istringCompare);
+  loc = listFind (list, "zzzz");
   ck_assert (loc == 10);
-  loc = listFind (list, "ffff", istringCompare);
+  loc = listFind (list, "ffff");
   ck_assert (loc == 5);
-  loc = listFind (list, "bbbb", istringCompare);
+  loc = listFind (list, "bbbb");
   ck_assert (loc == 1);
-  loc = listFind (list, "rrrr", istringCompare);
+  loc = listFind (list, "rrrr");
   ck_assert (loc == 9);
   listFree (list);
 }
@@ -212,7 +212,7 @@ START_TEST(vlist_create_free)
 {
   list_t    *list;
 
-  list = vlistAlloc (LIST_ORDERED, VALUE_STR);
+  list = vlistAlloc (LIST_ORDERED, VALUE_STR, istringCompare);
   ck_assert (list != NULL);
   ck_assert (list->count == 0);
   ck_assert (list->dsiz == sizeof (namevalue_t *));
@@ -227,10 +227,10 @@ START_TEST(vlist_add)
   list_t        *list;
   namevalue_t   *nv;
 
-  list = vlistAlloc (LIST_ORDERED, VALUE_STR);
+  list = vlistAlloc (LIST_ORDERED, VALUE_STR, istringCompare);
   ck_assert (list != NULL);
   ck_assert (list->dsiz == sizeof (namevalue_t *));
-  vlistAddStr (list, "aaaa", "000", istringCompare);
+  vlistAddStr (list, "aaaa", "000");
   nv = (namevalue_t *) list->data[0];
   ck_assert (strcmp (nv->name, "aaaa") == 0);
   ck_assert (strcmp (nv->u.str, "000") == 0);
@@ -243,22 +243,22 @@ START_TEST(vlist_add_sort)
   list_t        *list;
   namevalue_t   *nv;
 
-  list = vlistAlloc (LIST_UNORDERED, VALUE_LONG);
+  list = vlistAlloc (LIST_UNORDERED, VALUE_LONG, istringCompare);
   ck_assert (list != NULL);
   ck_assert (list->dsiz == sizeof (namevalue_t *));
   ck_assert (list->valuetype == VALUE_LONG);
-  vlistAddLong (list, "ffff", 0L, istringCompare);
-  vlistAddLong (list, "zzzz", 1L, istringCompare);
-  vlistAddLong (list, "rrrr", 2L, istringCompare);
-  vlistAddLong (list, "kkkk", 3L, istringCompare);
-  vlistAddLong (list, "cccc", 4L, istringCompare);
-  vlistAddLong (list, "aaaa", 5L, istringCompare);
-  vlistAddLong (list, "bbbb", 6L, istringCompare);
+  vlistAddLong (list, "ffff", 0L);
+  vlistAddLong (list, "zzzz", 1L);
+  vlistAddLong (list, "rrrr", 2L);
+  vlistAddLong (list, "kkkk", 3L);
+  vlistAddLong (list, "cccc", 4L);
+  vlistAddLong (list, "aaaa", 5L);
+  vlistAddLong (list, "bbbb", 6L);
   ck_assert (list->count == 7);
   nv = (namevalue_t *) list->data[0];
   ck_assert (strcmp (nv->name, "ffff") == 0);
   ck_assert (nv->u.l == 0L);
-  vlistSort (list, istringCompare);
+  vlistSort (list);
   ck_assert (list->ordered == LIST_ORDERED);
   ck_assert (list->count == 7);
   nv = (namevalue_t *) list->data[0];
