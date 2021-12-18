@@ -12,6 +12,8 @@
 
 static int  raReadHeader (rafile_t *);
 static void raWriteHeader (rafile_t *, int);
+static void raLock (rafile_t *);
+static void raUnlock (rafile_t *);
 
 static char ranulls [RAFILE_REC_SIZE];
 
@@ -36,6 +38,8 @@ raOpen (char *fname, int version)
   }
 
   rafile->fh = fopen (fname, mode);
+  rafile->inbatch = 0;
+  rafile->locked = 0;
   rafile->version = version;
   rafile->size = RAFILE_REC_SIZE;
 
@@ -54,9 +58,9 @@ raOpen (char *fname, int version)
   }
   if (frc != 0) {
     rafile->count = 0L;
-    /* lock */
+    raLock (rafile);
     raWriteHeader (rafile, version);
-    /* unlock */
+    raUnlock (rafile);
   }
   rafile->fname = strdup (fname);
   assert (rafile->fname != NULL);
@@ -68,7 +72,7 @@ void
 raClose (rafile_t *rafile)
 {
   fclose (rafile->fh);
-  /* unlock */
+  raUnlock (rafile);
   rafile->fh = NULL;
   free (rafile->fname);
   free (rafile);
@@ -77,8 +81,22 @@ raClose (rafile_t *rafile)
 size_t
 raGetNextRRN (rafile_t *rafile)
 {
-  /* lock */
-  return list->count + 1L;
+  raLock (rafile);
+  return (rafile->count + 1L);
+}
+
+void
+raStartBatch (rafile_t *rafile)
+{
+  raLock (rafile);
+  rafile->inbatch = 1;
+}
+
+void
+raEndBatch (rafile_t *rafile)
+{
+  rafile->inbatch = 0;
+  raUnlock (rafile);
 }
 
 int
@@ -91,7 +109,7 @@ raWrite (rafile_t *rafile, size_t rrn, char *data)
     return 1;
   }
 
-  /* lock */
+  raLock (rafile);
   if (rrn == RAFILE_NEW) {
     ++rafile->count;
     rrn = rafile->count;
@@ -107,7 +125,7 @@ raWrite (rafile_t *rafile, size_t rrn, char *data)
   fseek (rafile->fh, RRN_TO_OFFSET (rrn), SEEK_SET);
   rc = fwrite (data, len, 1, rafile->fh);
   fflush (rafile->fh);
-  /* unlock */
+  raUnlock (rafile);
   return 0;
 }
 
@@ -117,10 +135,10 @@ raClear (rafile_t *rafile, size_t rrn)
   if (rrn < 1L || rrn > rafile->count) {
     return 1;
   }
-  /* lock */
+  raLock (rafile);
   fseek (rafile->fh, RRN_TO_OFFSET (rrn), SEEK_SET);
   fwrite (ranulls, RAFILE_REC_SIZE, 1, rafile->fh);
-  /* unlock */
+  raUnlock (rafile);
   return 0;
 }
 
@@ -133,10 +151,10 @@ raRead (rafile_t *rafile, size_t rrn, char *data)
     return 0;
   }
 
-  /* lock */
+  raLock (rafile);
   fseek (rafile->fh, RRN_TO_OFFSET (rrn), SEEK_SET);
   rc = fread (data, RAFILE_REC_SIZE, 1, rafile->fh);
-  /* unlock */
+  raUnlock (rafile);
   return rc;
 }
 
@@ -152,7 +170,7 @@ raReadHeader (rafile_t *rafile)
   int       rasize;
   size_t    count;
 
-  /* lock */
+  raLock (rafile);
   rrc = 1;
   fseek (rafile->fh, 0L, SEEK_SET);
   rv = fgets (buff, sizeof (buff) - 1, rafile->fh);
@@ -171,13 +189,14 @@ raReadHeader (rafile_t *rafile)
       }
     }
   }
-  /* unlock */
+  raUnlock (rafile);
   return rrc;
 }
 
 static void
 raWriteHeader (rafile_t *rafile, int version)
 {
+  /* locks are handled by the caller */
   /* the header never gets smaller, so it's not necessary to flush its data */
   fseek (rafile->fh, 0L, SEEK_SET);
   fprintf (rafile->fh, "#VERSION=%d\n", version);
@@ -187,3 +206,29 @@ raWriteHeader (rafile_t *rafile, int version)
   fflush (rafile->fh);
 }
 
+/* there should only ever be one process accessing  */
+/* the file, so this is not using a robust method   */
+static void
+raLock (rafile_t *rafile)
+{
+  if (rafile->inbatch) {
+    return;
+  }
+
+  size_t count = 0;
+  while (rafile->locked && count < 20) {
+    usleep (50000L);
+    ++count;
+  }
+  rafile->locked = 1;
+}
+
+static void
+raUnlock (rafile_t *rafile)
+{
+  if (rafile->inbatch) {
+    return;
+  }
+
+  rafile->locked = 0;
+}

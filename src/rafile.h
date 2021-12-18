@@ -4,11 +4,13 @@
 #include <stdio.h>
 
 typedef struct {
-  FILE        *fh;
-  char        *fname;
-  int         version;
-  int         size;
-  size_t      count;
+  FILE          *fh;
+  char          *fname;
+  int           version;
+  int           size;
+  size_t        count;
+  unsigned int  inbatch : 1;
+  unsigned int  locked : 1;
 } rafile_t;
 
 #define RAFILE_NEW          0L
@@ -23,5 +25,7 @@ int           raWrite (rafile_t *, size_t, char *);
 int           raClear (rafile_t *, size_t);
 size_t        raRead (rafile_t *, size_t, char *);
 size_t        raGetNextRRN (rafile_t *);
+void          raStartBatch (rafile_t *);
+void          raEndBatch (rafile_t *);
 
 #endif /* _INC_RAFILE_H */

@@ -1,0 +1,8 @@
+syntax: regexp
+~$
+^src/mkc_files/
+^data/
+^bin/
+^src/.*\.o$
+^src/.*\.env$
+^src/.*\.reqlibs$
