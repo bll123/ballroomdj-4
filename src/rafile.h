@@ -22,6 +22,6 @@ void          raClose (rafile_t *);
 int           raWrite (rafile_t *, size_t, char *);
 int           raClear (rafile_t *, size_t);
 size_t        raRead (rafile_t *, size_t, char *);
-size_t        raReadNext (rafile_t *, size_t, char *);
+size_t        raGetNextRRN (rafile_t *);
 
 #endif /* _INC_RAFILE_H */

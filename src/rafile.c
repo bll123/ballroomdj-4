@@ -54,7 +54,9 @@ raOpen (char *fname, int version)
   }
   if (frc != 0) {
     rafile->count = 0L;
+    /* lock */
     raWriteHeader (rafile, version);
+    /* unlock */
   }
   rafile->fname = strdup (fname);
   assert (rafile->fname != NULL);
@@ -65,11 +67,18 @@ raOpen (char *fname, int version)
 void
 raClose (rafile_t *rafile)
 {
-  /* unlock */
   fclose (rafile->fh);
+  /* unlock */
   rafile->fh = NULL;
   free (rafile->fname);
   free (rafile);
+}
+
+size_t
+raGetNextRRN (rafile_t *rafile)
+{
+  /* lock */
+  return list->count + 1L;
 }
 
 int
@@ -169,7 +178,6 @@ raReadHeader (rafile_t *rafile)
 static void
 raWriteHeader (rafile_t *rafile, int version)
 {
-  /* lock */
   /* the header never gets smaller, so it's not necessary to flush its data */
   fseek (rafile->fh, 0L, SEEK_SET);
   fprintf (rafile->fh, "#VERSION=%d\n", version);
@@ -177,6 +185,5 @@ raWriteHeader (rafile_t *rafile, int version)
   fprintf (rafile->fh, "#RASIZE=%d\n", rafile->size);
   fprintf (rafile->fh, "#RACOUNT=%ld\n", rafile->count);
   fflush (rafile->fh);
-  /* unlock */
 }
 
