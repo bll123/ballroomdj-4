@@ -20,11 +20,9 @@ MKC_CONFDIR = mkc_config
 MKC_FILES = mkc_files
 MKC_OUTPUT = bdjconfig.h
 MKC_ENV_SHR = $(MKC_PREFIX)-shared.env
-MKC_ENV_TEST = $(MKC_PREFIX)-test.env
 
 MKC_CONF = $(MKC_CONFDIR)/$(MKC_PREFIX).mkc
 MKC_ENV_SHR_CONF = $(MKC_CONFDIR)/$(MKC_PREFIX)-env-shared.mkc
-MKC_ENV_TEST_CONF = $(MKC_CONFDIR)/$(MKC_PREFIX)-env-test.mkc
 
 OBJ_EXT = .o
 EXE_EXT =
@@ -45,9 +43,9 @@ CFLAGS_DEBUG = -O0 -g
 all: $(MKC_ENV_SHR) 
 	. ./$(MKC_ENV_SHR); $(MAKE) -e rall
 
-rall: $(MKC_ENV_TEST) $(LIBRARIES) $(TESTPROGRAMS) $(PROGRAMS) 
+rall: $(LIBRARIES) $(TESTPROGRAMS) $(PROGRAMS) 
 	$(MAKE) -e libraries
-	. ./$(MKC_ENV_TEST); $(MAKE) -e testprograms
+	$(MAKE) -e testprograms
 	$(MAKE) -e programs
 
 .PHONY: install rinstall
@@ -79,11 +77,6 @@ $(MKC_ENV_SHR): $(MKC_ENV_SHR_CONF)
 	CC=$(CC) $(_MKCONFIG_SHELL) $(MKC_DIR)/mkconfig.sh \
 		$(MKC_ENV_SHR_CONF)
 
-$(MKC_ENV_TEST): $(MKC_ENV_TEST_CONF)
-	@-$(RM) -f $(MKC_ENV_TEST)
-	CC=$(CC) $(_MKCONFIG_SHELL) $(MKC_DIR)/mkconfig.sh \
-		$(MKC_ENV_TEST_CONF)
-
 $(MKC_REQLIB):  $(MKC_OUTPUT)
 	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh -reqlib \
 		-o $(MKC_REQLIB) $(MKC_OUTPUT)
@@ -103,15 +96,16 @@ $(MKC_OUTPUT):       $(MKC_ENV_SHR) $(MKC_CONF)
 .PHONY: distclean
 distclean:
 	@-$(MAKE) clean
-	@-$(RM) -f $(MKC_ENV_SHR) $(MKC_ENV_TEST) $(MKC_REQLIB)
+	@-$(RM) -f $(MKC_ENV_SHR) $(MKC_REQLIB)
 	@-$(RM) -f $(MKC_OUTPUT)
 	@-$(RM) -rf $(MKC_FILES)
 
 .PHONY: clean
 clean:
 	@-$(MAKE) tclean
-	@-$(RM) -f *.o *.so *.dll *.exe
-	@-$(RM) -f ../bin/*.o ../bin/*.so ../bih/*.dll ../bin/*.exe
+	@-$(RM) -f *.o *.so *.dll *.dylib *.exe
+	@-$(RM) -f ../bin/*.o ../bin/*.so ../bin/*.dll ../bin/*.dylib \
+		../bin/*.exe
 
 .PHONY: tclean
 tclean:

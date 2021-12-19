@@ -1,5 +1,5 @@
-#ifndef _INC_TAGDEF_H
-#define _INC_TAGDEF_H
+#ifndef INC_TAGDEF_H
+#define INC_TAGDEF_H
 
 #include "bdjstring.h"
 
@@ -126,4 +126,4 @@ extern tagdef_t tagdefs[];
 
 void tagdefInit (void);
 
-#endif /* _INC_TAGDEF_H */
+#endif /* INC_TAGDEF_H */

@@ -9,14 +9,21 @@ standard
 
 hdr	bsd/string.h
 hdr     fcntl.h
+hdr     libintl.h
 hdr     mcheck.h
 hdr     signal.h
+hdr     string.h
 hdr     unistd.h
 hdr	windows.h
 
 sys	param.h
 sys	utsname.h
 
-lib	gettext -lintl -liconv
-lib	bindtextdomain -lintl -liconv
+if not_have_pkg_check ! _pkg_libs_check
+  hdr    check.h
+  lib    tcase_create -lcheck -pthread -lm
+endif
+
+lib	gettext -lintl, -lintl -liconv
+lib	bindtextdomain -lintl, -lintl -liconv
 lib	strlcpy -lbsd

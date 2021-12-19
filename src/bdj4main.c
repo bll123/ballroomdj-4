@@ -3,7 +3,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <locale.h>
-#include <libintl.h>
+#if _hdr_libintl
+# include <libintl.h>
+#endif
 
 #include "musicdb.h"
 #include "tagdef.h"

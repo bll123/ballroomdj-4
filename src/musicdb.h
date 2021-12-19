@@ -1,5 +1,5 @@
-#ifndef _INC_MUSICDB_H
-#define _INC_MUSICDB_H
+#ifndef INC_MUSICDB_H
+#define INC_MUSICDB_H
 
 #include "song.h"
 
@@ -12,4 +12,4 @@ void    dbOpen (char *);
 void    dbClose (void);
 int     dbLoad (db_t *, char *);
 
-#endif /* _INC_MUSICDB_H */
+#endif /* INC_MUSICDB_H */

@@ -1,3 +1,5 @@
+#include "bdjconfig.h"
+
 #include <stdio.h>
 #include <check.h>
 #include <sys/types.h>
@@ -58,10 +60,7 @@ END_TEST
 START_TEST(lock_other_dead)
 {
   int           rc;
-  struct stat   statbuf;
-  FILE          *fh;
   pid_t         pid;
-  pid_t         fpid;
 
   pid = getpid ();
   unlink (LOCK_FN);
@@ -77,10 +76,7 @@ END_TEST
 START_TEST(lock_unlock_fail)
 {
   int           rc;
-  struct stat   statbuf;
-  FILE          *fh;
   pid_t         pid;
-  pid_t         fpid;
 
   pid = getpid ();
   unlink (LOCK_FN);

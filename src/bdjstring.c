@@ -1,9 +1,8 @@
 #include "bdjconfig.h"
 
 #include <stdlib.h>
-#include <memory.h>
-#include <malloc.h>
 #include <wchar.h>
+#include <string.h>
 
 #include "bdjstring.h"
 

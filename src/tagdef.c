@@ -1,5 +1,9 @@
+#include "bdjconfig.h"
+
 #include <stdlib.h>
-#include <libintl.h>
+#if _hdr_libintl
+# include <libintl.h>
+#endif
 
 #include "tagdef.h"
 #include "bdjstring.h"

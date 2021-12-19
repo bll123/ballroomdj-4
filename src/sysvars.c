@@ -5,6 +5,7 @@
 #include <sys/utsname.h>
 #include <assert.h>
 #include <unistd.h>
+#include <string.h>
 
 #include "sysvars.h"
 
@@ -19,8 +20,8 @@ sysvarsInit (void)
 
   rc = uname (&ubuf);
   assert (rc == 0);
-  strlcpy (sysvars [SV_OSNAME], ubuf.sysname, MAXPATHLEN);
-  strlcpy (sysvars [SV_OSVERS], ubuf.version, MAXPATHLEN);
+  strlcpy (sysvars [SV_OSNAME].value, ubuf.sysname, MAXPATHLEN);
+  strlcpy (sysvars [SV_OSVERS].value, ubuf.version, MAXPATHLEN);
   gethostname (tbuf, MAXPATHLEN);
-  strlcpy (sysvars [SV_HOSTNAME], tbuf, MAXPATHLEN);
+  strlcpy (sysvars [SV_HOSTNAME].value, tbuf, MAXPATHLEN);
 }

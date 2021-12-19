@@ -1,5 +1,5 @@
-#ifndef _INC_LIST
-#define _INC_LIST
+#ifndef INC_LIST
+#define INC_LIST
 
 typedef enum {
   LIST_ORDERED,
@@ -63,4 +63,4 @@ void *    vlistGetData (list_t *, char *);
 long      vlistFind (list_t *, char *);
 void      vlistSort (list_t *);
 
-#endif /* _INC_LIST */
+#endif /* INC_LIST */

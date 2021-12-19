@@ -1,5 +1,5 @@
-#ifndef _INC_SONG
-#define _INC_SONG
+#ifndef INC_SONG
+#define INC_SONG
 
 #include "list.h"
 
@@ -13,4 +13,4 @@ char *    songGet (song_t *, char *);
 void      songSetAll (song_t *, char *[], int);
 void      songSetNumeric (song_t *, char *, long);
 
-#endif /* _INC_SONG */
+#endif /* INC_SONG */

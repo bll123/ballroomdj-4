@@ -1,5 +1,5 @@
-#ifndef _INC_RAFILE_H
-#define _INC_RAFILE_H
+#ifndef INC_RAFILE_H
+#define INC_RAFILE_H
 
 #include <stdio.h>
 
@@ -29,4 +29,4 @@ size_t        raGetNextRRN (rafile_t *);
 void          raStartBatch (rafile_t *);
 void          raEndBatch (rafile_t *);
 
-#endif /* _INC_RAFILE_H */
+#endif /* INC_RAFILE_H */

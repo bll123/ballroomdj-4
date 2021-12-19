@@ -14,8 +14,8 @@
 #include "tagdef.h"
 
 /* globals */
-int         initialized = 0;
-db_t        *bdjdb = NULL;
+static int         initialized = 0;
+static db_t        *bdjdb = NULL;
 
 void
 dbOpen (char *fn)

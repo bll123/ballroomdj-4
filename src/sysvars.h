@@ -1,5 +1,5 @@
-#ifndef _INC_SYSVARS_H
-#define _INC_SYSVARS_H
+#ifndef INC_SYSVARS_H
+#define INC_SYSVARS_H
 
 #include <limits.h>
 #include <sys/param.h>
@@ -29,7 +29,6 @@ typedef enum {
 } sysvarkey_t;
 
 typedef struct {
-    char      *name;
     char      value [MAXPATHLEN+1];
 } sysvar_t;
 
@@ -37,4 +36,4 @@ extern sysvar_t sysvars [SV_MAX];
 
 void sysvarsInit (void);
 
-#endif /* _INC_SYSVARS_H */
+#endif /* INC_SYSVARS_H */

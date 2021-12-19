@@ -1,3 +1,5 @@
+#include "bdjconfig.h"
+
 #include <stdio.h>
 #include <check.h>
 #include <unistd.h>

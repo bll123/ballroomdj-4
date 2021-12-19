@@ -1,9 +1,0 @@
-
-loadunit env-main
-loadunit env-cc
-loadunit env-include
-
-output  bdj-test.env
-
-pkg	include check
-pkg	libs check

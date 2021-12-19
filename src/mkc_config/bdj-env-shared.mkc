@@ -20,6 +20,10 @@ addcflag -Wno-shift-sign-overflow
 addcflag -Wno-stringop-overflow
 addcflag -Wno-stringop-truncation
 
+# darwin/macports
+addcflag -I/opt/local/include
+addldflag -L/opt/local/lib
+
 # turn off mac os warning
 addcflag -Wno-poison-system-directories
 
@@ -70,5 +74,8 @@ addldflag -Wl,--as-needed
 extension obj
 extension exe
 extension shlib
+
+pkg	include check
+pkg	libs check
 
 cmd_msgfmt

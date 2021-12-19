@@ -1,7 +1,9 @@
-#ifndef _INC_BDJSTRING
-#define _INC_BDJSTRING
+#ifndef INC_BDJSTRING
+#define INC_BDJSTRING
 
-#include <libintl.h>
+#if _hdr_libintl
+# include <libintl.h>
+#endif
 
 #define _(str) gettext(str)
 
@@ -28,4 +30,4 @@ size_t stringLen (bdjstring_t *str);
 
 #endif
 
-#endif /* _INC_BDJSTRING */
+#endif /* INC_BDJSTRING */

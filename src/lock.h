@@ -1,5 +1,5 @@
-#ifndef _INC_LOCK_H
-#define _INC_LOCK_H
+#ifndef INC_LOCK_H
+#define INC_LOCK_H
 
 #include <sys/types.h>
 
@@ -8,4 +8,4 @@ int   lockAcquirePid (char *, pid_t);
 int   lockRelease (char *);
 int   lockReleasePid (char *, pid_t);
 
-#endif /* _INC_LOCK_H */
+#endif /* INC_LOCK_H */
