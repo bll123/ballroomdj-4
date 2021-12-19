@@ -13,7 +13,7 @@ typedef enum {
 
 typedef enum {
   VALUE_NONE,
-  VALUE_STR,
+  VALUE_DATA,
   VALUE_LONG
 } valuetype_t;
 
@@ -46,7 +46,7 @@ void      listSort (list_t *);
 typedef struct {
   char        *name;
   union {
-    char        *str;
+    void        *data;
     long        l;
   } u;
 } namevalue_t;
@@ -54,7 +54,7 @@ typedef struct {
 list_t *  vlistAlloc (listorder_t, valuetype_t, listCompare_t);
 void      vlistFree (list_t *);
 void      vlistFreeAll (list_t *);
-list_t *  vlistAddStr (list_t *, char *, char *);
+list_t *  vlistAddData (list_t *, char *, void *);
 list_t *  vlistAddLong (list_t *, char *, long);
 long      vlistFind (list_t *, char *);
 void      vlistSort (list_t *);

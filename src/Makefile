@@ -41,9 +41,9 @@ all: $(MKC_ENV) $(MKC_ENV_SHR) $(MKC_ENV_TEST)
 
 # main targets
 
-PROGRAMS =
+PROGRAMS = $(BINDIR)bdj4$(EXE_EXT)
 .PHONY: programs
-programs: $(MKC_REQLIB)
+programs: $(MKC_REQLIB) $(PROGRAMS)
 
 TESTPROGRAMS = $(BINDIR)check_all$(EXE_EXT)
 .PHONY: testprograms
@@ -104,9 +104,24 @@ tclean:
 	@-$(RM) -f *~ w $(MKC_FILES)/mkc_compile.log $(MKC_CONFDIR)/*~
 	@-$(RM) -f test_*.dat
 
+# bdj executables
+
+BDJMAINOBJS = bdj4$(OBJ_EXT) \
+	$(BINDIR)libbdj$(SHLIB_EXT)
+$(BINDIR)bdj4$(EXE_EXT): $(BDJMAINOBJS)
+	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh -link -exec $(MKC_ECHO) \
+		-o $(BINDIR)bdj4$(EXE_EXT) \
+		-r $(MKC_REQLIB) \
+		$(BDJMAINOBJS) \
+		-L $(BINDIR) -rpath $(BINDIR) \
+		-l bdj \
+		$(LIBS)
+
+
 # bdj libraries
 
-BDJOBJS = bdjstring$(OBJ_EXT) list$(OBJ_EXT) rafile$(OBJ_EXT) song$(OBJ_EXT)
+BDJOBJS = bdjstring$(OBJ_EXT) list$(OBJ_EXT) musicdb$(OBJ_EXT) \
+	rafile$(OBJ_EXT) song$(OBJ_EXT)
 $(BINDIR)libbdj$(SHLIB_EXT): $(MKC_REQLIB) $(BDJOBJS)
 	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh -link -shared $(MKC_ECHO) -lib \
 		-o $(BINDIR)libbdj$(SHLIB_EXT) \
@@ -116,9 +131,13 @@ $(BINDIR)libbdj$(SHLIB_EXT): $(MKC_REQLIB) $(BDJOBJS)
 
 # bdj source
 
+bdj4$(OBJ_EXT): bdj4.c musicdb.h $(MKC_OUTPUT)
+
 bdjstring$(OBJ_EXT): bdjstring.c bdjstring.h $(MKC_OUTPUT)
 
 list$(OBJ_EXT): list.c list.h $(MKC_OUTPUT)
+
+musicdb$(OBJ_EXT): musicdb.c musicdb.h rafile.h song.h $(MKC_OUTPUT)
 
 rafile$(OBJ_EXT): rafile.c rafile.h $(MKC_OUTPUT)
 

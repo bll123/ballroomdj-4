@@ -111,7 +111,8 @@ raWrite (rafile_t *rafile, size_t rrn, char *data)
   size_t    rc;
 
   size_t len = strlen (data);
-  if (len > RAFILE_REC_SIZE) {
+  /* leave one byte for the terminating null */
+  if (len > (RAFILE_REC_SIZE - 1)) {
     return 1;
   }
 

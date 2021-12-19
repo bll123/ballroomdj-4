@@ -212,7 +212,7 @@ START_TEST(vlist_create_free)
 {
   list_t    *list;
 
-  list = vlistAlloc (LIST_ORDERED, VALUE_STR, istringCompare);
+  list = vlistAlloc (LIST_ORDERED, VALUE_DATA, istringCompare);
   ck_assert (list != NULL);
   ck_assert (list->count == 0);
   ck_assert (list->dsiz == sizeof (namevalue_t *));
@@ -227,13 +227,13 @@ START_TEST(vlist_add)
   list_t        *list;
   namevalue_t   *nv;
 
-  list = vlistAlloc (LIST_ORDERED, VALUE_STR, istringCompare);
+  list = vlistAlloc (LIST_ORDERED, VALUE_DATA, istringCompare);
   ck_assert (list != NULL);
   ck_assert (list->dsiz == sizeof (namevalue_t *));
-  vlistAddStr (list, "aaaa", "000");
+  vlistAddData (list, "aaaa", "000");
   nv = (namevalue_t *) list->data[0];
   ck_assert (strcmp (nv->name, "aaaa") == 0);
-  ck_assert (strcmp (nv->u.str, "000") == 0);
+  ck_assert (strcmp ((char *) nv->u.data, "000") == 0);
   vlistFree (list);
 }
 END_TEST

@@ -71,8 +71,8 @@ listFreeAll (list_t *list)
             if (nv->name != NULL) {
               free (nv->name);
             }
-            if (list->valuetype == VALUE_STR && nv->u.str != NULL) {
-              free (nv->u.str);
+            if (list->valuetype == VALUE_DATA && nv->u.data != NULL) {
+              free (nv->u.data);
             }
             free (nv);
           }
@@ -145,8 +145,8 @@ listFind (list_t *list, void *data)
 void
 listSort (list_t *list)
 {
-  mergeSort (list, 0, list->count - 1);
   list->ordered = LIST_ORDERED;
+  mergeSort (list, 0, list->count - 1);
 }
 
 /* value list */
@@ -176,14 +176,14 @@ vlistFreeAll (list_t *list)
 }
 
 list_t *
-vlistAddStr (list_t *list, char *name, char *value)
+vlistAddData (list_t *list, char *name, void *value)
 {
   namevalue_t *nv;
 
   nv = malloc (sizeof (namevalue_t));
   assert (nv != NULL);
   nv->name = name;
-  nv->u.str = value;
+  nv->u.data = value;
   listAdd (list, nv);
   return list;
 }
@@ -234,10 +234,15 @@ listCompare (const list_t *list, void *a, void *b)
 {
   int     rc;
 
-  if (list->type == LIST_NAMEVALUE) {
-    rc = nameValueCompare (list, a, b);
+  rc = 0;
+  if (list->ordered == LIST_UNORDERED) {
+    rc = 0;
   } else {
-    rc = list->compare (a, b);
+    if (list->type == LIST_NAMEVALUE) {
+      rc = nameValueCompare (list, a, b);
+    } else {
+      rc = list->compare (a, b);
+    }
   }
   return rc;
 }
