@@ -10,6 +10,7 @@
 #include "list.h"
 #include "bdjstring.h"
 #include "lock.h"
+#include "parse.h"
 
 /* globals */
 int         initialized = 0;
@@ -42,20 +43,13 @@ int
 dbLoad (db_t *db, char *fn)
 {
   char        data [RAFILE_REC_SIZE];
-  char        *tokptr;
-  char        *str;
-  int         songDataCount;
-  int         allocCount;
-  char        **strdata;
   char        *fstr;
   song_t      *song;
   rafile_t    *radb;
+  parseinfo_t *pi;
+  int         songDataCount;
 
-  tokptr = NULL;
-  allocCount = 60;
-  strdata = malloc (sizeof (char *) * (size_t) allocCount);
-  assert (strdata != NULL);
-
+  pi = parseInit ();
   fstr = "";
   radb = raOpen (fn, 10);
   vlistSetSize (db->songs, raGetCount (radb));
@@ -66,30 +60,15 @@ dbLoad (db_t *db, char *fn)
       continue;
     }
 
-    str = strtok_r (data, "\n", &tokptr);
-    songDataCount = 0;
-    while (str != NULL) {
-      if (songDataCount > allocCount) {
-        allocCount += 10;
-        strdata = realloc (strdata, sizeof (char *) * (size_t) allocCount);
-      }
-      if (songDataCount % 2 == 1) {
-        /* value data is indented */
-        str += 2;
-      }
-      strdata [songDataCount++] = str;
-      if (songDataCount == 2) {
-        /* save the filename */
-        fstr = str;
-      }
-      str = strtok_r (NULL, "\n", &tokptr);
-    }
+    songDataCount = parse (pi, data);
     song = songAlloc ();
-    songSetAll (song, strdata, songDataCount);
+    songSetAll (song, parseGetData (pi), songDataCount);
+//    fstr = songGet (song, TAG_FILE);
     songSetNumeric (song, "rrn", (long) i);
     vlistSetData (db->songs, strdup (fstr), song);
     ++db->count;
   }
 
+  parseFree (pi);
   return 0;
 }
