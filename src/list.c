@@ -97,17 +97,26 @@ long
 listFind (list_t *list, void *data)
 {
   long        loc;
+  namevalue_t nv;
+  int         rc;
 
   assert (list->ordered == LIST_ORDERED);
   loc = -1;
+  rc = -1;
   if (list->count > 0) {
     if (list->ordered == LIST_ORDERED) {
-      int rc = listBinarySearch (list, data, (size_t *) &loc);
+      if (list->type == LIST_NAMEVALUE) {
+        nv.name = data;
+        rc = listBinarySearch (list, &nv, (size_t *) &loc);
+      } else {
+        rc = listBinarySearch (list, data, (size_t *) &loc);
+      }
       if (rc < 0) {
         loc = -1;
       }
     }
   }
+
   return loc;
 }
 
@@ -177,8 +186,11 @@ vlistGetData (list_t *list, char *key)
 {
   void  *value = "";
 
-  if (list->type == LIST_NAMEVALUE && list->valuetype == VALUE_DATA) {
+  if (list != NULL &&
+      list->type == LIST_NAMEVALUE &&
+      list->valuetype == VALUE_DATA) {
     long loc = listFind (list, key);
+
     if (loc >= 0) {
       namevalue_t *nv = list->data [loc];
       value = (char *) nv->u.data;

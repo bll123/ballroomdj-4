@@ -7,11 +7,16 @@ output  bdjconfig.h
 
 standard
 
+hdr	bsd/string.h
 hdr     fcntl.h
 hdr     mcheck.h
 hdr     signal.h
 hdr     unistd.h
 hdr	windows.h
 
+sys	param.h
+sys	utsname.h
+
 lib	gettext -lintl -liconv
 lib	bindtextdomain -lintl -liconv
+lib	strlcpy -lbsd

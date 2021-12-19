@@ -1,6 +1,8 @@
 #ifndef _INC_BDJSTRING
 #define _INC_BDJSTRING
 
+#include <libintl.h>
+
 #define _(str) gettext(str)
 
 int       stringCompare (void *, void *);

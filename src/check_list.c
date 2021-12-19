@@ -129,6 +129,7 @@ START_TEST(list_add_ordered_prealloc)
   listSetSize (list, 7);
   ck_assert (list != NULL);
   ck_assert (list->dsiz == sizeof (char *));
+  ck_assert (list->count == 0);
   ck_assert (list->allocCount == 7);
   listSet (list, "ffff");
   listSet (list, "zzzz");
@@ -289,10 +290,18 @@ START_TEST(vlist_add)
   list = vlistAlloc (LIST_ORDERED, VALUE_DATA, istringCompare, NULL, NULL);
   ck_assert (list != NULL);
   ck_assert (list->dsiz == sizeof (namevalue_t *));
+  vlistSetData (list, "ffff", "555");
+  vlistSetData (list, "cccc", "222");
+  vlistSetData (list, "eeee", "444");
+  vlistSetData (list, "dddd", "333");
   vlistSetData (list, "aaaa", "000");
+  vlistSetData (list, "bbbb", "111");
   nv = (namevalue_t *) list->data[0];
   ck_assert (strcmp (nv->name, "aaaa") == 0);
   ck_assert (strcmp ((char *) nv->u.data, "000") == 0);
+  nv = (namevalue_t *) list->data[5];
+  ck_assert (strcmp (nv->name, "ffff") == 0);
+  ck_assert (strcmp ((char *) nv->u.data, "555") == 0);
   vlistFree (list);
 }
 END_TEST
@@ -324,6 +333,9 @@ START_TEST(vlist_add_sort)
   nv = (namevalue_t *) list->data[0];
   ck_assert (strcmp (nv->name, "aaaa") == 0);
   ck_assert (nv->u.l == 5L);
+  nv = (namevalue_t *) list->data[4];
+  ck_assert (strcmp (nv->name, "kkkk") == 0);
+  ck_assert (nv->u.l == 3L);
   vlistFree (list);
 }
 END_TEST
@@ -335,14 +347,24 @@ START_TEST(vlist_replace)
 
   list = vlistAlloc (LIST_ORDERED, VALUE_DATA, istringCompare, NULL, NULL);
   ck_assert (list != NULL);
+  ck_assert (list->type == LIST_NAMEVALUE);
   ck_assert (list->dsiz == sizeof (namevalue_t *));
   vlistSetData (list, "aaaa", "000");
+  nv = (namevalue_t *) list->data[0];
+  ck_assert (strcmp (nv->name, "aaaa") == 0);
+  ck_assert (strcmp ((char *) nv->u.data, "000") == 0);
   vlistSetData (list, "bbbb", "111");
   vlistSetData (list, "cccc", "222");
   vlistSetData (list, "dddd", "333");
+  nv = (namevalue_t *) list->data[0];
+  ck_assert (strcmp (nv->name, "aaaa") == 0);
+  ck_assert (strcmp ((char *) nv->u.data, "000") == 0);
   vlistSetData (list, "eeee", "444");
   vlistSetData (list, "ffff", "555");
   ck_assert (list->count == 6);
+  nv = (namevalue_t *) list->data[0];
+  ck_assert (strcmp (nv->name, "aaaa") == 0);
+  ck_assert (strcmp ((char *) nv->u.data, "000") == 0);
   nv = (namevalue_t *) list->data[2];
   ck_assert (strcmp (nv->name, "cccc") == 0);
   ck_assert (strcmp ((char *) nv->u.data, "222") == 0);
@@ -350,6 +372,32 @@ START_TEST(vlist_replace)
   nv = (namevalue_t *) list->data[2];
   ck_assert (strcmp (nv->name, "cccc") == 0);
   ck_assert (strcmp ((char *) nv->u.data, "666") == 0);
+  vlistFree (list);
+}
+END_TEST
+
+START_TEST(vlist_get_data)
+{
+  list_t        *list;
+  char          *value;
+
+  list = vlistAlloc (LIST_UNORDERED, VALUE_DATA, istringCompare, NULL, NULL);
+  vlistSetSize (list, 7);
+  ck_assert (list->count == 0);
+  ck_assert (list->allocCount == 7);
+  vlistSetData (list, "ffff", "0L");
+  vlistSetData (list, "zzzz", "1L");
+  vlistSetData (list, "rrrr", "2L");
+  vlistSetData (list, "kkkk", "3L");
+  vlistSetData (list, "cccc", "4L");
+  vlistSetData (list, "aaaa", "5L");
+  vlistSetData (list, "bbbb", "6L");
+  ck_assert (list->count == 7);
+  vlistSort (list);
+  ck_assert (list->count == 7);
+  value = (char *) vlistGetData (list, "cccc");
+  ck_assert (value != NULL);
+  ck_assert (strcmp (value, "4L") == 0);
   vlistFree (list);
 }
 END_TEST
@@ -395,8 +443,8 @@ list_suite (void)
   tcase_add_test (tc_list, vlist_add);
   tcase_add_test (tc_list, vlist_add_sort);
   tcase_add_test (tc_list, vlist_replace);
+  tcase_add_test (tc_list, vlist_get_data);
   tcase_add_test (tc_list, vlist_free);
   suite_add_tcase (s, tc_list);
   return s;
 }
-
