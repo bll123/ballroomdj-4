@@ -13,3 +13,5 @@ hdr     signal.h
 hdr     unistd.h
 hdr	windows.h
 
+lib	gettext -lintl -liconv
+lib	bindtextdomain -lintl -liconv

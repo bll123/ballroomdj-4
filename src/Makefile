@@ -137,7 +137,7 @@ bdj4main$(EXE_EXT): $(BDJMAINOBJS)
 
 BDJOBJS = bdjstring$(OBJ_EXT) list$(OBJ_EXT) lock$(OBJ_EXT) \
 	musicdb$(OBJ_EXT) parse$(OBJ_EXT) \
-	rafile$(OBJ_EXT) song$(OBJ_EXT)
+	rafile$(OBJ_EXT) song$(OBJ_EXT) tagdef$(OBJ_EXT)
 libbdj$(SHLIB_EXT): $(MKC_REQLIB) $(BDJOBJS)
 	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh -link -shared $(MKC_ECHO) -lib \
 		-o libbdj$(SHLIB_EXT) \
@@ -147,7 +147,7 @@ libbdj$(SHLIB_EXT): $(MKC_REQLIB) $(BDJOBJS)
 
 # bdj source
 
-bdj4main$(OBJ_EXT): bdj4main.c musicdb.h $(MKC_OUTPUT)
+bdj4main$(OBJ_EXT): bdj4main.c musicdb.h tagdef.h $(MKC_OUTPUT)
 
 bdjstring$(OBJ_EXT): bdjstring.c bdjstring.h $(MKC_OUTPUT)
 
@@ -162,6 +162,8 @@ parse$(OBJ_EXT): parse.c parse.h $(MKC_OUTPUT)
 rafile$(OBJ_EXT): rafile.c rafile.h lock.h $(MKC_OUTPUT)
 
 song$(OBJ_EXT): song.c song.h $(MKC_OUTPUT)
+
+tagdef$(OBJ_EXT): tagdef.c tagdef.h $(MKC_OUTPUT)
 
 # test routines
 

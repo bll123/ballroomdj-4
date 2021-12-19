@@ -57,7 +57,7 @@ parse (parseinfo_t *pi, char *data)
       continue;
     }
 
-    if (dataCounter >= pi->allocCount) {
+    if ((size_t) dataCounter >= pi->allocCount) {
       pi->allocCount += 10;
       pi->strdata = realloc (pi->strdata, sizeof (char *) * pi->allocCount);
       assert (pi->strdata != NULL);
