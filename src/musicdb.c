@@ -9,6 +9,7 @@
 #include "song.h"
 #include "list.h"
 #include "bdjstring.h"
+#include "lock.h"
 
 /* globals */
 int         initialized = 0;
@@ -20,7 +21,8 @@ dbOpen (char *fn)
   if (! initialized) {
     bdjdb = malloc (sizeof (db_t));
     assert (bdjdb != NULL);
-    bdjdb->songs = vlistAlloc (LIST_UNORDERED, VALUE_DATA, istringCompare);
+    bdjdb->songs = vlistAlloc (LIST_UNORDERED, VALUE_DATA, istringCompare,
+        free, songFree);
     dbLoad (bdjdb, fn);
     vlistSort (bdjdb->songs);
     initialized = 1;
@@ -54,10 +56,16 @@ dbLoad (db_t *db, char *fn)
   strdata = malloc (sizeof (char *) * (size_t) allocCount);
   assert (strdata != NULL);
 
+  fstr = "";
   radb = raOpen (fn, 10);
+  vlistSetSize (db->songs, raGetCount (radb));
+
   for (size_t i = 1L; i <= radb->count; ++i) {
     raRead (radb, i, data);
-printf ("raread: %ld\n", i); fflush (stdout);
+    if (! *data) {
+      continue;
+    }
+
     str = strtok_r (data, "\n", &tokptr);
     songDataCount = 0;
     while (str != NULL) {
@@ -76,10 +84,10 @@ printf ("raread: %ld\n", i); fflush (stdout);
       }
       str = strtok_r (NULL, "\n", &tokptr);
     }
-printf ("%d %s\n", songDataCount, fstr);
     song = songAlloc ();
-    songSet (song, strdata, songDataCount);
-    vlistAddData (db->songs, strdup (fstr), song);
+    songSetAll (song, strdata, songDataCount);
+    songSetNumeric (song, "rrn", (long) i);
+    vlistSetData (db->songs, strdup (fstr), song);
     ++db->count;
   }
 

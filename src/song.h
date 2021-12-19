@@ -8,7 +8,8 @@ typedef struct {
 } song_t;
 
 song_t *  songAlloc (void);
-void      songFree (song_t *);
-void      songSet (song_t *, char *[], int);
+void      songFree (void *);
+void      songSetAll (song_t *, char *[], int);
+void      songSetNumeric (song_t *, char *, long);
 
 #endif /* _INC_SONG */

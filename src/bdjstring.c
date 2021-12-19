@@ -27,6 +27,33 @@ istringCompare (void *str1, void *str2)
   return rc;
 }
 
+size_t
+istrlen (const char *str)
+{
+  size_t            len;
+  size_t            mlen;
+  size_t            slen;
+  size_t            bytelen;
+  mbstate_t         ps;
+  const char        *tstr;
+
+  len = 0;
+  memset (&ps, 0, sizeof (mbstate_t));
+  bytelen = strlen (str);
+  slen = bytelen;
+  tstr = str;
+  while (slen > 0) {
+    mlen = mbrlen (tstr, slen, &ps);
+    if ((int) mlen <= 0) {
+      return bytelen;
+    }
+    ++len;
+    tstr += mlen;
+    slen -= mlen;
+  }
+  return len;
+}
+
 #if 0
 
 static size_t istrlen (const bdjstring_t *);

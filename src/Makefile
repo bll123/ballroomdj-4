@@ -3,7 +3,15 @@
 
 # paths
 
-BINDIR = ../bin/
+prefix ?= `pwd`/..
+PREFIX ?= $(prefix)
+BINDIR ?= $(PREFIX)/bin
+DATADIR ?= $(PREFIX)/data
+LOCALEDIR ?= $(PREFIX)/locale
+INST_DIR = $(DESTDIR)$(PREFIX)
+INST_BINDIR = $(DESTDIR)$(BINDIR)
+INST_DATADIR = $(DESTDIR)$(DATADIR)
+INST_LOCALEDIR = $(DESTDIR)$(LOCALEDIR)
 
 # mkconfig settings
 
@@ -11,12 +19,10 @@ MKC_PREFIX = bdj
 MKC_CONFDIR = mkc_config
 MKC_FILES = mkc_files
 MKC_OUTPUT = bdjconfig.h
-MKC_ENV = $(MKC_PREFIX).env
 MKC_ENV_SHR = $(MKC_PREFIX)-shared.env
 MKC_ENV_TEST = $(MKC_PREFIX)-test.env
 
 MKC_CONF = $(MKC_CONFDIR)/$(MKC_PREFIX).mkc
-MKC_ENV_CONF = $(MKC_CONFDIR)/$(MKC_PREFIX)-env.mkc
 MKC_ENV_SHR_CONF = $(MKC_CONFDIR)/$(MKC_PREFIX)-env-shared.mkc
 MKC_ENV_TEST_CONF = $(MKC_CONFDIR)/$(MKC_PREFIX)-env-test.mkc
 
@@ -33,31 +39,40 @@ MKC_ECHO = -e
 
 CFLAGS_DEBUG = -O0 -g
 
-.PHONY: all
-all: $(MKC_ENV) $(MKC_ENV_SHR) $(MKC_ENV_TEST)
-	. ./$(MKC_ENV_SHR); $(MAKE) -e libraries
-	. ./$(MKC_ENV_SHR);. ./$(MKC_ENV_TEST); $(MAKE) -e testprograms
-	. ./$(MKC_ENV_SHR); $(MAKE) -e programs
+# 
+
+.PHONY: all rall
+all: $(MKC_ENV_SHR) 
+	. ./$(MKC_ENV_SHR); $(MAKE) -e rall
+
+rall: $(MKC_ENV_TEST) $(LIBRARIES) $(TESTPROGRAMS) $(PROGRAMS) 
+	$(MAKE) -e libraries
+	. ./$(MKC_ENV_TEST); $(MAKE) -e testprograms
+	$(MAKE) -e programs
+
+.PHONY: install rinstall
+install:  $(MKC_ENV_SHR)
+	. ./$(MKC_ENV_SHR); $(MAKE) -e rinstall
+
+rinstall: 
+	@$(MAKE) -e rall
+	cp -f $(LIBRARIES) $(TESTPROGRAMS) $(PROGRAMS) $(INST_BINDIR)
 
 # main targets
 
-PROGRAMS = $(BINDIR)bdj4$(EXE_EXT)
+PROGRAMS = bdj4main$(EXE_EXT)
 .PHONY: programs
-programs: $(MKC_REQLIB) $(PROGRAMS)
+programs: $(MKC_ENV_SHR) $(MKC_REQLIB) $(PROGRAMS)
 
-TESTPROGRAMS = $(BINDIR)check_all$(EXE_EXT)
+TESTPROGRAMS = check_all$(EXE_EXT)
 .PHONY: testprograms
-testprograms: $(MKC_REQLIB) $(TESTPROGRAMS)
+testprograms: $(MKC_ENV_SHR) $(MKC_REQLIB) $(TESTPROGRAMS)
 
-LIBRARIES = $(BINDIR)libbdj$(SHLIB_EXT)
+LIBRARIES = libbdj$(SHLIB_EXT)
 .PHONY: libraries
-libraries: $(MKC__REQLIB) $(LIBRARIES)
+libraries: $(MKC_ENV_SHR) $(MKC__REQLIB) $(LIBRARIES)
 
 # mkconfig targets
-
-$(MKC_ENV):     $(MKC_ENV_CONF)
-	@-$(RM) -f $(MKC_ENV)
-	CC=$(CC) $(_MKCONFIG_SHELL) $(MKC_DIR)/mkconfig.sh $(MKC_ENV_CONF)
 
 $(MKC_ENV_SHR): $(MKC_ENV_SHR_CONF)
 	@-$(RM) -f $(MKC_ENV_SHR)
@@ -73,9 +88,9 @@ $(MKC_REQLIB):  $(MKC_OUTPUT)
 	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh -reqlib \
 		-o $(MKC_REQLIB) $(MKC_OUTPUT)
 
-$(MKC_OUTPUT):       $(MKC_ENV) $(MKC_CONF)
+$(MKC_OUTPUT):       $(MKC_ENV_SHR) $(MKC_CONF)
 	@-$(RM) -f $(MKC_OUTPUT)
-	. ./$(MKC_ENV);$(_MKCONFIG_SHELL) $(MKC_DIR)/mkconfig.sh $(MKC_CONF)
+	. ./$(MKC_ENV_SHR);$(_MKCONFIG_SHELL) $(MKC_DIR)/mkconfig.sh $(MKC_CONF)
 
 # compilation
 
@@ -88,79 +103,84 @@ $(MKC_OUTPUT):       $(MKC_ENV) $(MKC_CONF)
 .PHONY: distclean
 distclean:
 	@-$(MAKE) clean
-	@-$(RM) -f $(MKC_ENV) $(MKC_ENV_SHR) $(MKC_ENV_TEST) $(MKC_REQLIB)
+	@-$(RM) -f $(MKC_ENV_SHR) $(MKC_ENV_TEST) $(MKC_REQLIB)
 	@-$(RM) -f $(MKC_OUTPUT)
 	@-$(RM) -rf $(MKC_FILES)
 
 .PHONY: clean
 clean:
-	-$(MAKE) tclean
-	-$(RM) -f *.o *.so
-	-. ./$(MKC_ENV_SHR); \
-		$(RM) -f $(PROGRAMS) $(TESTPROGRAMS) $(LIBRARIES)
+	@-$(MAKE) tclean
+	@-$(RM) -f *.o *.so *.dll *.exe
+	@-$(RM) -f ../bin/*.o ../bin/*.so ../bih/*.dll ../bin/*.exe
 
 .PHONY: tclean
 tclean:
-	@-$(RM) -f *~ w $(MKC_FILES)/mkc_compile.log $(MKC_CONFDIR)/*~
-	@-$(RM) -f test_*.dat
+	@-$(RM) -f *~ w *.orig 
+	@-$(RM) -f $(MKC_FILES)/mkc_compile.log $(MKC_CONFDIR)/*~
+	@-$(RM) -f ../tmp/* ../conv/*~ ../locale/*~
 
 # bdj executables
 
-BDJMAINOBJS = bdj4$(OBJ_EXT) \
-	$(BINDIR)libbdj$(SHLIB_EXT)
-$(BINDIR)bdj4$(EXE_EXT): $(BDJMAINOBJS)
+BDJMAINOBJS = bdj4main$(OBJ_EXT) \
+	libbdj$(SHLIB_EXT)
+bdj4main$(EXE_EXT): $(BDJMAINOBJS)
 	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh -link -exec $(MKC_ECHO) \
-		-o $(BINDIR)bdj4$(EXE_EXT) \
+		-o bdj4main$(EXE_EXT) \
 		-r $(MKC_REQLIB) \
 		$(BDJMAINOBJS) \
-		-L $(BINDIR) -rpath $(BINDIR) \
+		-L . -rpath $(BINDIR) \
 		-l bdj \
 		$(LIBS)
 
 
 # bdj libraries
 
-BDJOBJS = bdjstring$(OBJ_EXT) list$(OBJ_EXT) musicdb$(OBJ_EXT) \
+BDJOBJS = bdjstring$(OBJ_EXT) list$(OBJ_EXT) lock$(OBJ_EXT) \
+	musicdb$(OBJ_EXT) \
 	rafile$(OBJ_EXT) song$(OBJ_EXT)
-$(BINDIR)libbdj$(SHLIB_EXT): $(MKC_REQLIB) $(BDJOBJS)
+libbdj$(SHLIB_EXT): $(MKC_REQLIB) $(BDJOBJS)
 	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh -link -shared $(MKC_ECHO) -lib \
-		-o $(BINDIR)libbdj$(SHLIB_EXT) \
+		-o libbdj$(SHLIB_EXT) \
 		-r $(MKC_REQLIB) \
 		$(BDJOBJS) \
 		$(LIBS)
 
 # bdj source
 
-bdj4$(OBJ_EXT): bdj4.c musicdb.h $(MKC_OUTPUT)
+bdj4main$(OBJ_EXT): bdj4main.c musicdb.h $(MKC_OUTPUT)
 
 bdjstring$(OBJ_EXT): bdjstring.c bdjstring.h $(MKC_OUTPUT)
 
 list$(OBJ_EXT): list.c list.h $(MKC_OUTPUT)
 
+lock$(OBJ_EXT): lock.c lock.h $(MKC_OUTPUT)
+
 musicdb$(OBJ_EXT): musicdb.c musicdb.h rafile.h song.h $(MKC_OUTPUT)
 
-rafile$(OBJ_EXT): rafile.c rafile.h $(MKC_OUTPUT)
+rafile$(OBJ_EXT): rafile.c rafile.h lock.h $(MKC_OUTPUT)
 
 song$(OBJ_EXT): song.c song.h $(MKC_OUTPUT)
 
 # test routines
 
 CHECKOBJS = check_all$(OBJ_EXT) check_list$(OBJ_EXT) \
-	check_rafile$(OBJ_EXT) \
-	$(BINDIR)libbdj$(SHLIB_EXT)
+	check_lock$(OBJ_EXT) check_rafile$(OBJ_EXT) \
+	libbdj$(SHLIB_EXT)
 CHECKLIBS =
-$(BINDIR)check_all$(EXE_EXT): $(CHECKOBJS)
+check_all$(EXE_EXT): $(CHECKOBJS)
 	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh -link -exec $(MKC_ECHO) \
-		-o $(BINDIR)check_all$(EXE_EXT) \
+		-o check_all$(EXE_EXT) \
 		-r $(MKC_REQLIB) \
 		$(CHECKOBJS) \
-		-L $(BINDIR) -rpath $(BINDIR) \
+		-L . -rpath $(BINDIR) \
 		-l bdj \
 		$(CHECKLIBS) \
 		$(LIBS)
 
 
 check_list$(OBJ_EXT): check_list.c list.h
+
+check_lock$(OBJ_EXT): check_lock.c lock.h
 
 check_rafile$(OBJ_EXT): check_rafile.c rafile.h
 

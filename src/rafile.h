@@ -16,7 +16,7 @@ typedef struct {
 #define RAFILE_NEW          0L
 #define RAFILE_REC_SIZE     2048
 #define RAFILE_HDR_SIZE     128
-
+#define RAFILE_LOCK_FN      "tmp/rafile.lck"
 #define RRN_TO_OFFSET(rrn)  (((long) (rrn) - 1L) * RAFILE_REC_SIZE + RAFILE_HDR_SIZE)
 
 rafile_t *    raOpen (char *, int);

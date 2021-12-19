@@ -9,6 +9,7 @@
 #include <string.h>
 
 #include "rafile.h"
+#include "lock.h"
 
 static int  raReadHeader (rafile_t *);
 static void raWriteHeader (rafile_t *, int);
@@ -213,20 +214,27 @@ raWriteHeader (rafile_t *rafile, int version)
   fflush (rafile->fh);
 }
 
-/* there should only ever be one process accessing  */
-/* the file, so this is not using a robust method   */
-/* this can be replaced later                       */
 static void
 raLock (rafile_t *rafile)
 {
+  int     rc;
+  int     count;
+
   if (rafile->inbatch) {
     return;
   }
 
-  size_t count = 0;
-  while (rafile->locked && count < 20) {
-    usleep (50000L);
+  /* the music database may be shared across multiple processes */
+  rc = lockAcquire (RAFILE_LOCK_FN);
+  count = 0;
+  while (rc < 0 && count < 10) {
+    usleep (50000);
+    rc = lockAcquire (RAFILE_LOCK_FN);
     ++count;
+  }
+  if (rc < 0 && count >= 10) {
+    /* ### FIX */
+    /* global failure; stop everything */
   }
   rafile->locked = 1;
 }
@@ -238,5 +246,6 @@ raUnlock (rafile_t *rafile)
     return;
   }
 
+  lockRelease (RAFILE_LOCK_FN);
   rafile->locked = 0;
 }

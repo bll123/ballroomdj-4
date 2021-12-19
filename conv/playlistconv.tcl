@@ -20,7 +20,7 @@ foreach {fn} $flist {
       set value 10
     }
     puts $ofh $key
-    puts $ofh "  $value"
+    puts $ofh "..$value"
   }
   close $ifh
   close $ofh

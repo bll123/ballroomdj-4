@@ -7,9 +7,9 @@ output  bdjconfig.h
 
 standard
 
-hdr     malloc.h
+hdr     fcntl.h
 hdr     mcheck.h
-hdr     memory.h
-hdr	wchar.h
+hdr     signal.h
+hdr     unistd.h
 hdr	windows.h
 

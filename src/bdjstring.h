@@ -5,6 +5,7 @@
 
 int       stringCompare (void *, void *);
 int       istringCompare (void *, void *);
+size_t    istrlen (const char *);
 
 #if 0
 

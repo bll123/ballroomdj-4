@@ -3,6 +3,14 @@ syntax: regexp
 ^src/mkc_files/
 ^data/
 ^bin/
+^dev/
+^src/bdjconfig.h$
 ^src/.*\.o$
 ^src/.*\.env$
 ^src/.*\.reqlibs$
+^src/w$
+^src/check_all$
+^src/bdj4main$
+^src/.*\.so$
+^src/.*\.dll$
+^tmp/

@@ -7,7 +7,10 @@
 
 #include "list.h"
 
-static long listBinarySearch (const list_t *, void *);
+static void listFreeItem (list_t *, size_t);
+static void listInsert (list_t *, size_t, void *);
+static void listReplace (list_t *, size_t, void *);
+static int  listBinarySearch (const list_t *, void *, size_t *);
 static int  nameValueCompare (const list_t *, void *, void *);
 static int  listCompare (const list_t *, void *, void *);
 static void merge (list_t *, size_t, size_t, size_t);
@@ -17,7 +20,8 @@ static void mergeSort (list_t *, size_t, size_t);
 /* data size must be consistent   */
 
 list_t *
-listAlloc (size_t dsiz, listorder_t ordered, listCompare_t compare)
+listAlloc (size_t dsiz, listorder_t ordered, listCompare_t compare,
+    listFree_t freeHook)
 {
   list_t    *list;
 
@@ -25,6 +29,7 @@ listAlloc (size_t dsiz, listorder_t ordered, listCompare_t compare)
   assert (list != NULL);
   list->data = NULL;
   list->count = 0;
+  list->allocCount = 0;
   list->dsiz = dsiz;
   list->ordered = ordered;
   list->type = LIST_BASIC;
@@ -32,98 +37,60 @@ listAlloc (size_t dsiz, listorder_t ordered, listCompare_t compare)
   list->bumper1 = 0x11223344;
   list->bumper2 = 0x44332211;
   list->compare = compare;
+  list->freeHook = freeHook;
+  list->freeHookB = NULL;
   return list;
 }
 
 void
 listFree (list_t *list)
 {
-  namevalue_t     *nv;
-
-  if (list != NULL) {
-    if (list->data != NULL) {
-      if (list->type == LIST_NAMEVALUE) {
-        for (size_t i = 0; i < list->count; ++i) {
-          nv = (namevalue_t *) list->data[i];
-          free (nv);
-        }
-      }
-      free (list->data);
-    }
-    free (list);
-  }
-}
-
-/* all items added to the list must have been allocated */
-void
-listFreeAll (list_t *list)
-{
-  void          *dp;
-  namevalue_t   *nv;
-
   if (list != NULL) {
     if (list->data != NULL) {
       for (size_t i = 0; i < list->count; ++i) {
-        dp = list->data + i;
-        if (dp != NULL) {
-          if (list->type == LIST_NAMEVALUE) {
-            nv = (namevalue_t *) dp;
-            if (nv->name != NULL) {
-              free (nv->name);
-            }
-            if (list->valuetype == VALUE_DATA && nv->u.data != NULL) {
-              free (nv->u.data);
-            }
-            free (nv);
-          }
-          free (list->data + i);
-        }
-      }
+        listFreeItem (list, i);
+      } /* for each list item */
       free (list->data);
-    }
+    } /* data is not null */
+    list->count = 0;
+    list->allocCount = 0;
+    list->data = NULL;
     free (list);
   }
 }
 
-list_t *
-listAdd (list_t *list, void *data)
+void
+listSetSize (list_t *list, size_t siz)
 {
-  long        loc;
-
-  loc = 0;
-  if (list->count > 0) {
-    if (list->ordered == LIST_ORDERED) {
-      loc = listBinarySearch (list, data);
-    } else {
-      loc = (long) list->count;
-    }
-  }
-  if (loc < 0) {
-    loc = - loc;
-  }
-  listInsert (list, (size_t) loc, data);
-  return list;
+  list->allocCount = siz;
+  list->data = realloc (list->data, list->allocCount * list->dsiz);
 }
 
-void
-listInsert (list_t *list, size_t loc, void *data)
+list_t *
+listSet (list_t *list, void *data)
 {
-  size_t      copycount;
+  size_t        loc;
+  int           rc;
 
-  ++list->count;
-  list->data = realloc (list->data, list->count * list->dsiz);
-
-  assert (list->data != NULL);
-  assert ((list->count > 0 && loc < list->count) ||
-          (list->count == 0 && loc == 0));
-
-  copycount = list->count - (loc + 1);
-  if (copycount > 0) {
-    memcpy (list->data + loc + 1, list->data + loc, copycount * list->dsiz);
+  loc = 0L;
+  rc = -1;
+  if (list->count > 0) {
+    if (list->ordered == LIST_ORDERED) {
+      rc = listBinarySearch (list, data, &loc);
+    } else {
+      loc = list->count;
+    }
   }
-  list->data[loc] = data;
-  assert (list->bumper1 == 0x11223344);
-  assert (list->bumper2 == 0x44332211);
+  if (list->ordered == LIST_ORDERED) {
+    if (rc < 0) {
+      listInsert (list, loc, data);
+    } else {
+      listReplace (list, loc, data);
+    }
+  } else {
+    listInsert (list, loc, data);
+  }
+  return list;
 }
 
 long
@@ -131,12 +98,14 @@ listFind (list_t *list, void *data)
 {
   long        loc;
 
+  assert (list->ordered == LIST_ORDERED);
   loc = -1;
   if (list->count > 0) {
     if (list->ordered == LIST_ORDERED) {
-      loc = listBinarySearch (list, data);
-    } else {
-      loc = 0; /* ### FIX */
+      int rc = listBinarySearch (list, data, (size_t *) &loc);
+      if (rc < 0) {
+        loc = -1;
+      }
     }
   }
   return loc;
@@ -152,13 +121,16 @@ listSort (list_t *list)
 /* value list */
 
 list_t *
-vlistAlloc (listorder_t ordered, valuetype_t valuetype, listCompare_t compare)
+vlistAlloc (listorder_t ordered, valuetype_t valuetype, listCompare_t compare,
+    listFree_t freeHook, listFree_t freeHookB)
 {
   list_t    *list;
 
-  list = listAlloc (sizeof (namevalue_t *), ordered, compare);
+  list = listAlloc (sizeof (namevalue_t *), ordered, compare, NULL);
   list->type = LIST_NAMEVALUE;
   list->valuetype = valuetype;
+  list->freeHook = freeHook;
+  list->freeHookB = freeHookB;
   return list;
 }
 
@@ -168,15 +140,14 @@ vlistFree (list_t *list)
   listFree (list);
 }
 
-/* all items added to the list must have been allocated */
 void
-vlistFreeAll (list_t *list)
+vlistSetSize (list_t *list, size_t siz)
 {
-  listFreeAll (list);
+  listSetSize (list, siz);
 }
 
 list_t *
-vlistAddData (list_t *list, char *name, void *value)
+vlistSetData (list_t *list, char *name, void *value)
 {
   namevalue_t *nv;
 
@@ -184,12 +155,12 @@ vlistAddData (list_t *list, char *name, void *value)
   assert (nv != NULL);
   nv->name = name;
   nv->u.data = value;
-  listAdd (list, nv);
+  listSet (list, nv);
   return list;
 }
 
 list_t *
-vlistAddLong (list_t *list, char *name, long value)
+vlistSetLong (list_t *list, char *name, long value)
 {
   namevalue_t *nv;
 
@@ -197,7 +168,7 @@ vlistAddLong (list_t *list, char *name, long value)
   assert (nv != NULL);
   nv->name = name;
   nv->u.l = value;
-  listAdd (list, nv);
+  listSet (list, nv);
   return list;
 }
 
@@ -216,6 +187,66 @@ vlistSort (list_t *list)
 }
 
 /* internal routines */
+
+static void
+listFreeItem (list_t *list, size_t idx)
+{
+  void *dp = list->data [idx];
+  if (dp != NULL) {
+    if (list->type == LIST_NAMEVALUE) {
+      namevalue_t *nv = (namevalue_t *) dp;
+      if (nv->name != NULL && list->freeHook != NULL) {
+        list->freeHook (nv->name);
+      }
+      if (list->valuetype == VALUE_DATA && nv->u.data != NULL &&
+          list->freeHookB != NULL) {
+        list->freeHookB (nv->u.data);
+      }
+      free (nv);
+    } else {
+      if (list->freeHook != NULL) {
+        list->freeHook (dp);
+      }
+    } /* else not a name/value pair */
+  } /* if the data pointer is not null */
+}
+
+static void
+listInsert (list_t *list, size_t loc, void *data)
+{
+  size_t      copycount;
+
+  ++list->count;
+  if (list->count > list->allocCount) {
+    ++list->allocCount;
+    list->data = realloc (list->data, list->allocCount * list->dsiz);
+  }
+
+  assert (list->data != NULL);
+  assert ((list->count > 0 && loc < list->count) ||
+          (list->count == 0 && loc == 0));
+
+  copycount = list->count - (loc + 1);
+  if (copycount > 0) {
+    memcpy (list->data + loc + 1, list->data + loc, copycount * list->dsiz);
+  }
+  list->data [loc] = data;
+  assert (list->bumper1 == 0x11223344);
+  assert (list->bumper2 == 0x44332211);
+}
+
+static void
+listReplace (list_t *list, size_t loc, void *data)
+{
+  assert (list->data != NULL);
+  assert ((list->count > 0 && loc < list->count) ||
+          (list->count == 0 && loc == 0));
+
+  listFreeItem (list, loc);
+  list->data [loc] = data;
+  assert (list->bumper1 == 0x11223344);
+  assert (list->bumper2 == 0x44332211);
+}
 
 static int
 nameValueCompare (const list_t *list, void *d1, void *d2)
@@ -248,8 +279,8 @@ listCompare (const list_t *list, void *a, void *b)
 }
 
 /* returns the location after as a negative number if not found */
-static long
-listBinarySearch (const list_t *list, void *data)
+static int
+listBinarySearch (const list_t *list, void *data, size_t *loc)
 {
   long      l = 0;
   long      r = (long) list->count - 1;
@@ -261,9 +292,10 @@ listBinarySearch (const list_t *list, void *data)
   while (l <= r) {
     m = l + (r - l) / 2;
 
-    rc = listCompare (list, list->data[m], data);
+    rc = listCompare (list, list->data [m], data);
     if (rc == 0) {
-      return m;
+      *loc = (size_t) m;
+      return 0;
     }
 
     if (rc < 0) {
@@ -275,7 +307,8 @@ listBinarySearch (const list_t *list, void *data)
     }
   }
 
-  return rm;
+  *loc = (size_t) rm;
+  return -1;
 }
 
 /*

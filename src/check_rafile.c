@@ -7,33 +7,31 @@
 #include "rafile.h"
 #include "check_bdj.h"
 
+#define RAFN "tmp/test_rafile.dat"
+
 START_TEST(rafile_create_new)
 {
-  char          *fn;
   rafile_t      *rafile;
   struct stat   statbuf;
   int           rc;
 
-  fn = "test_rafile.dat";
-  unlink (fn);
-  rafile = raOpen (fn, 10);
+  unlink (RAFN);
+  rafile = raOpen (RAFN, 10);
   ck_assert (rafile != NULL);
   ck_assert (rafile->version == 10);
   ck_assert (rafile->size == RAFILE_REC_SIZE);
   ck_assert (rafile->count == 0L);
   raClose (rafile);
-  rc = stat (fn, &statbuf);
+  rc = stat (RAFN, &statbuf);
   ck_assert (rc == 0 && statbuf.st_size >= 59L);
 }
 END_TEST
 
 START_TEST(rafile_reopen)
 {
-  char          *fn;
   rafile_t      *rafile;
 
-  fn = "test_rafile.dat";
-  rafile = raOpen (fn, 10);
+  rafile = raOpen (RAFN, 10);
   ck_assert (rafile != NULL);
   ck_assert (rafile->version == 10);
   ck_assert (rafile->size == RAFILE_REC_SIZE);
@@ -44,32 +42,30 @@ END_TEST
 
 START_TEST(rafile_write)
 {
-  char          *fn;
   rafile_t      *rafile;
   struct stat   statbuf;
   int           rc;
   off_t         lastsize;
 
-  fn = "test_rafile.dat";
-  rafile = raOpen (fn, 10);
+  rafile = raOpen (RAFN, 10);
   ck_assert (rafile != NULL);
   ck_assert (rafile->version == 10);
   ck_assert (rafile->size == RAFILE_REC_SIZE);
   ck_assert (rafile->count == 0L);
-  rc = stat (fn, &statbuf);
+  rc = stat (RAFN, &statbuf);
   ck_assert (rc == 0);
   lastsize = statbuf.st_size;
 
   raWrite (rafile, RAFILE_NEW, "aaaa");
-  rc = stat (fn, &statbuf);
+  rc = stat (RAFN, &statbuf);
   ck_assert (rc == 0 && statbuf.st_size > lastsize);
   lastsize = statbuf.st_size;
   raWrite (rafile, RAFILE_NEW, "bbbb");
-  rc = stat (fn, &statbuf);
+  rc = stat (RAFN, &statbuf);
   ck_assert (rc == 0 && statbuf.st_size > lastsize);
   lastsize = statbuf.st_size;
   raWrite (rafile, RAFILE_NEW, "cccc");
-  rc = stat (fn, &statbuf);
+  rc = stat (RAFN, &statbuf);
   ck_assert (rc == 0 && statbuf.st_size > lastsize);
 
   ck_assert (rafile->count == 3L);
@@ -79,13 +75,11 @@ END_TEST
 
 START_TEST(rafile_read)
 {
-  char          *fn;
   rafile_t      *rafile;
   char          data [RAFILE_REC_SIZE];
   size_t        rc;
 
-  fn = "test_rafile.dat";
-  rafile = raOpen (fn, 10);
+  rafile = raOpen (RAFN, 10);
   ck_assert (rafile != NULL);
   ck_assert (rafile->count == 3L);
   rc = raRead (rafile, 1L, data);
@@ -104,31 +98,29 @@ END_TEST
 
 START_TEST(rafile_rewrite)
 {
-  char          *fn;
   rafile_t      *rafile;
   struct stat   statbuf;
   int           rc;
   off_t         lastsize;
 
-  fn = "test_rafile.dat";
-  rafile = raOpen (fn, 10);
+  rafile = raOpen (RAFN, 10);
   ck_assert (rafile != NULL);
   ck_assert (rafile->version == 10);
   ck_assert (rafile->count == 3L);
-  rc = stat (fn, &statbuf);
+  rc = stat (RAFN, &statbuf);
   ck_assert (rc == 0);
   lastsize = statbuf.st_size;
 
   raWrite (rafile, 3L, "dddd");
-  rc = stat (fn, &statbuf);
+  rc = stat (RAFN, &statbuf);
   ck_assert (rc == 0 && statbuf.st_size == lastsize);
   lastsize = statbuf.st_size;
   raWrite (rafile, 2L, "eeee");
-  rc = stat (fn, &statbuf);
+  rc = stat (RAFN, &statbuf);
   ck_assert (rc == 0 && statbuf.st_size == lastsize);
   lastsize = statbuf.st_size;
   raWrite (rafile, 1L, "ffff");
-  rc = stat (fn, &statbuf);
+  rc = stat (RAFN, &statbuf);
   ck_assert (rc == 0 && statbuf.st_size == lastsize);
 
   ck_assert (rafile->count == 3L);
@@ -138,12 +130,10 @@ END_TEST
 
 START_TEST(rafile_reread)
 {
-  char          *fn;
   rafile_t      *rafile;
   char          data [RAFILE_REC_SIZE];
 
-  fn = "test_rafile.dat";
-  rafile = raOpen (fn, 10);
+  rafile = raOpen (RAFN, 10);
   ck_assert (rafile != NULL);
   ck_assert (rafile->count == 3L);
   raRead (rafile, 1L, data);
@@ -160,13 +150,11 @@ END_TEST
 
 START_TEST(rafile_bad_write_len)
 {
-  char          *fn;
   rafile_t      *rafile;
   int           rc;
   char          data [2 * RAFILE_REC_SIZE];
 
-  fn = "test_rafile.dat";
-  rafile = raOpen (fn, 10);
+  rafile = raOpen (RAFN, 10);
   ck_assert (rafile != NULL);
 
   memset (data, 0, sizeof (data));
@@ -179,13 +167,11 @@ END_TEST
 
 START_TEST(rafile_clear)
 {
-  char          *fn;
   rafile_t      *rafile;
   int           rc;
   char          data [2 * RAFILE_REC_SIZE];
 
-  fn = "test_rafile.dat";
-  rafile = raOpen (fn, 10);
+  rafile = raOpen (RAFN, 10);
   ck_assert (rafile != NULL);
 
   rc = raClear (rafile, 2L);
@@ -204,13 +190,11 @@ END_TEST
 
 START_TEST(rafile_bad_read)
 {
-  char          *fn;
   rafile_t      *rafile;
   size_t        rc;
   char          data [RAFILE_REC_SIZE];
 
-  fn = "test_rafile.dat";
-  rafile = raOpen (fn, 10);
+  rafile = raOpen (RAFN, 10);
   ck_assert (rafile != NULL);
 
   rc = raRead (rafile, 0L, data);
@@ -224,12 +208,10 @@ END_TEST
 
 START_TEST(rafile_bad_clear)
 {
-  char          *fn;
   rafile_t      *rafile;
   int           rc;
 
-  fn = "test_rafile.dat";
-  rafile = raOpen (fn, 10);
+  rafile = raOpen (RAFN, 10);
   ck_assert (rafile != NULL);
 
   rc = raClear (rafile, 0L);
@@ -243,10 +225,7 @@ END_TEST
 
 START_TEST(rafile_cleanup)
 {
-  char          *fn;
-
-  fn = "test_rafile.dat";
-  unlink (fn);
+  unlink (RAFN);
 }
 
 Suite *
