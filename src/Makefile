@@ -37,13 +37,13 @@ MKC_ECHO = -e
 
 CFLAGS_DEBUG = -O0 -g
 
-# 
+#
 
 .PHONY: all rall
-all: $(MKC_ENV_SHR) 
+all: $(MKC_ENV_SHR)
 	. ./$(MKC_ENV_SHR); $(MAKE) -e rall
 
-rall: $(LIBRARIES) $(TESTPROGRAMS) $(PROGRAMS) 
+rall: $(LIBRARIES) $(TESTPROGRAMS) $(PROGRAMS)
 	$(MAKE) -e libraries
 	$(MAKE) -e testprograms
 	$(MAKE) -e programs
@@ -52,9 +52,10 @@ rall: $(LIBRARIES) $(TESTPROGRAMS) $(PROGRAMS)
 install:  $(MKC_ENV_SHR)
 	. ./$(MKC_ENV_SHR); $(MAKE) -e rinstall
 
-rinstall: 
+rinstall:
 	@$(MAKE) -e rall
 	cp -f $(LIBRARIES) $(TESTPROGRAMS) $(PROGRAMS) $(INST_BINDIR)
+	(cd locale;./install.sh)
 
 # main targets
 
@@ -109,7 +110,7 @@ clean:
 
 .PHONY: tclean
 tclean:
-	@-$(RM) -f *~ w *.orig 
+	@-$(RM) -f *~ w *.orig
 	@-$(RM) -f $(MKC_FILES)/mkc_compile.log $(MKC_CONFDIR)/*~
 	@-$(RM) -f ../tmp/* ../conv/*~ ../locale/*~
 
@@ -141,7 +142,8 @@ libbdj$(SHLIB_EXT): $(MKC_REQLIB) $(BDJOBJS)
 
 # bdj source
 
-bdj4main$(OBJ_EXT): bdj4main.c musicdb.h tagdef.h $(MKC_OUTPUT)
+bdj4main$(OBJ_EXT): bdj4main.c bdjstring.h musicdb.h \
+	sysvars.h tagdef.h $(MKC_OUTPUT)
 
 bdjstring$(OBJ_EXT): bdjstring.c bdjstring.h $(MKC_OUTPUT)
 

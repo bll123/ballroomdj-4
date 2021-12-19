@@ -11,6 +11,7 @@ hdr	bsd/string.h
 hdr     fcntl.h
 hdr     libintl.h
 hdr     mcheck.h
+hdr     pthread.h
 hdr     signal.h
 hdr     string.h
 hdr     unistd.h
@@ -24,6 +25,8 @@ if not_have_pkg_check ! _pkg_libs_check
   lib    tcase_create -lcheck -pthread -lm
 endif
 
-lib	gettext -lintl, -lintl -liconv
 lib	bindtextdomain -lintl, -lintl -liconv
+lib	gettext -lintl, -lintl -liconv
+lib     pthread_create -lpthread
+lib     pthread_join -lpthread
 lib	strlcpy -lbsd
