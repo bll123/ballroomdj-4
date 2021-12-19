@@ -11,6 +11,7 @@
 #include "bdjstring.h"
 #include "lock.h"
 #include "parse.h"
+#include "tagdef.h"
 
 /* globals */
 int         initialized = 0;
@@ -63,7 +64,7 @@ dbLoad (db_t *db, char *fn)
     songDataCount = parse (pi, data);
     song = songAlloc ();
     songSetAll (song, parseGetData (pi), songDataCount);
-//    fstr = songGet (song, TAG_FILE);
+    fstr = songGet (song, TAG_FILE);
     songSetNumeric (song, "rrn", (long) i);
     vlistSetData (db->songs, strdup (fstr), song);
     ++db->count;

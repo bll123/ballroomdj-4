@@ -34,6 +34,12 @@ songFree (void *tsong)
   }
 }
 
+char *
+songGet (song_t *song, char *key) {
+  char *value = vlistGetData (song->songInfo, key);
+  return value;
+}
+
 void
 songSetAll (song_t *song, char *data[], int count)
 {

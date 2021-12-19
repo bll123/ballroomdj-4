@@ -59,6 +59,7 @@ void      vlistFree (list_t *);
 void      vlistSetSize (list_t *, size_t);
 list_t *  vlistSetData (list_t *, char *, void *);
 list_t *  vlistSetLong (list_t *, char *, long);
+void *    vlistGetData (list_t *, char *);
 long      vlistFind (list_t *, char *);
 void      vlistSort (list_t *);
 

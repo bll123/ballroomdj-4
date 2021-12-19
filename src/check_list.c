@@ -394,6 +394,7 @@ list_suite (void)
   tcase_add_test (tc_list, vlist_create_free);
   tcase_add_test (tc_list, vlist_add);
   tcase_add_test (tc_list, vlist_add_sort);
+  tcase_add_test (tc_list, vlist_replace);
   tcase_add_test (tc_list, vlist_free);
   suite_add_tcase (s, tc_list);
   return s;

@@ -9,6 +9,7 @@ typedef struct {
 
 song_t *  songAlloc (void);
 void      songFree (void *);
+char *    songGet (song_t *, char *);
 void      songSetAll (song_t *, char *[], int);
 void      songSetNumeric (song_t *, char *, long);
 

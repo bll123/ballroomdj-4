@@ -172,6 +172,21 @@ vlistSetLong (list_t *list, char *name, long value)
   return list;
 }
 
+void *
+vlistGetData (list_t *list, char *key)
+{
+  void  *value = "";
+
+  if (list->type == LIST_NAMEVALUE && list->valuetype == VALUE_DATA) {
+    long loc = listFind (list, key);
+    if (loc >= 0) {
+      namevalue_t *nv = list->data [loc];
+      value = (char *) nv->u.data;
+    }
+  }
+  return value;
+}
+
 long
 vlistFind (list_t *list, char *name)
 {

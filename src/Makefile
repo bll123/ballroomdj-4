@@ -155,7 +155,8 @@ list$(OBJ_EXT): list.c list.h $(MKC_OUTPUT)
 
 lock$(OBJ_EXT): lock.c lock.h $(MKC_OUTPUT)
 
-musicdb$(OBJ_EXT): musicdb.c musicdb.h rafile.h song.h parse.h $(MKC_OUTPUT)
+musicdb$(OBJ_EXT): musicdb.c musicdb.h rafile.h song.h \
+	parse.h tagdef.h $(MKC_OUTPUT)
 
 parse$(OBJ_EXT): parse.c parse.h $(MKC_OUTPUT)
 
