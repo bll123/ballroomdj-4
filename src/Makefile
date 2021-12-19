@@ -166,7 +166,7 @@ song$(OBJ_EXT): song.c song.h $(MKC_OUTPUT)
 # test routines
 
 CHECKOBJS = check_all$(OBJ_EXT) check_list$(OBJ_EXT) \
-	check_lock$(OBJ_EXT) check_rafile$(OBJ_EXT) \
+	check_lock$(OBJ_EXT) check_parse$(OBJ_EXT) check_rafile$(OBJ_EXT) \
 	libbdj$(SHLIB_EXT)
 CHECKLIBS =
 check_all$(EXE_EXT): $(CHECKOBJS)
@@ -180,10 +180,12 @@ check_all$(EXE_EXT): $(CHECKOBJS)
 		$(LIBS)
 
 
-check_list$(OBJ_EXT): check_list.c list.h
+check_list$(OBJ_EXT): check_list.c list.h check_bdj.h
 
-check_lock$(OBJ_EXT): check_lock.c lock.h
+check_lock$(OBJ_EXT): check_lock.c lock.h check_bdj.h
 
-check_rafile$(OBJ_EXT): check_rafile.c rafile.h
+check_parse$(OBJ_EXT): check_parse.c parse.h check_bdj.h
 
-check_all$(OBJ_EXT): check_all.c
+check_rafile$(OBJ_EXT): check_rafile.c rafile.h check_bdj.h
+
+check_all$(OBJ_EXT): check_all.c check_bdj.h

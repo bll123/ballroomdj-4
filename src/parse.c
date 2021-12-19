@@ -1,5 +1,6 @@
 #include "bdjconfig.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
@@ -20,10 +21,12 @@ parseInit (void)
 void
 parseFree (parseinfo_t *pi)
 {
-  if (pi->strdata != NULL) {
-    free (pi->strdata);
+  if (pi != NULL) {
+    if (pi->strdata != NULL) {
+      free (pi->strdata);
+    }
+    free (pi);
   }
-  free (pi);
 }
 
 char **
@@ -35,27 +38,28 @@ parseGetData (parseinfo_t *pi)
 int
 parse (parseinfo_t *pi, char *data)
 {
-  int         allocCount;
   char        *tokptr;
+  char        *str;
+  int         dataCounter;
 
   tokptr = NULL;
   if (pi->allocCount < 60) {
-    allocCount = 60;
-    pi->strdata = realloc (pi->strdata, sizeof (char *) * (size_t) allocCount);
+    pi->allocCount = 60;
+    pi->strdata = realloc (pi->strdata, sizeof (char *) * pi->allocCount);
     assert (pi->strdata != NULL);
   }
 
-  char *str = strtok_r (data, "\n", &tokptr);
-  int dataCounter = 0;
+  str = strtok_r (data, "\n", &tokptr);
+  dataCounter = 0;
   while (str != NULL) {
     if (*str == '#') {
       str = strtok_r (NULL, "\n", &tokptr);
       continue;
     }
 
-    if (dataCounter > allocCount) {
-      allocCount += 10;
-      pi->strdata = realloc (pi->strdata, sizeof (char *) * (size_t) allocCount);
+    if (dataCounter >= pi->allocCount) {
+      pi->allocCount += 10;
+      pi->strdata = realloc (pi->strdata, sizeof (char *) * pi->allocCount);
       assert (pi->strdata != NULL);
     }
     if (dataCounter % 2 == 1) {
@@ -63,8 +67,8 @@ parse (parseinfo_t *pi, char *data)
       str += 2;
     }
     pi->strdata [dataCounter] = str;
-    str = strtok_r (NULL, "\n", &tokptr);
     ++dataCounter;
+    str = strtok_r (NULL, "\n", &tokptr);
   }
   return dataCounter;
 }

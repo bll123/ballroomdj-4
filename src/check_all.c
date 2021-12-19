@@ -14,6 +14,8 @@ main (void)
   sr = srunner_create (s);
   s = lock_suite();
   srunner_add_suite (sr, s);
+  s = parse_suite();
+  srunner_add_suite (sr, s);
   s = rafile_suite();
   srunner_add_suite (sr, s);
   srunner_run_all (sr, CK_ENV);
