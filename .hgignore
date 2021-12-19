@@ -4,6 +4,7 @@ syntax: regexp
 ^data/
 ^bin/
 ^dev/
+^locale/
 ^src/bdjconfig.h$
 ^src/.*\.o$
 ^src/.*\.env$

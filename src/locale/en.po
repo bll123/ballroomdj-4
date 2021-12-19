@@ -1,0 +1,3078 @@
+
+msgid "   #"
+msgstr "   #"
+
+# editor: audio file has been modified and an original exists
+msgid " (modified)"
+msgstr " (modified)"
+
+msgid "%1$s is missing %2$s files."
+msgstr "%1$s is missing %2$s files."
+
+msgid "%d associated files"
+msgstr "%d associated files"
+
+# Error message: How many server-is-busy errors
+msgid "%d busy errors."
+msgstr "%d busy errors."
+
+msgid "%d errors."
+msgstr "%d errors."
+
+msgid "%d files imported."
+msgstr "%d files imported."
+
+msgid "%d Hour"
+msgstr "%d Hour"
+
+msgid "%d Hours"
+msgstr "%d Hours"
+
+msgid "%d match found."
+msgstr "%d match found."
+
+msgid "%d matches found."
+msgstr "%d matches found."
+
+msgid "%d Songs Selected"
+msgstr "%d Songs Selected"
+
+# Warning message when an adjustment action has already been applied
+msgid "%s\n"
+"This audio file has already had the chosen adjustment applied.\n"
+"The original audio file must be restored first.\n"
+"(Song Editor/Actions/Restore Original).\n"""
+msgstr "%s\n"
+"This audio file has already had the chosen adjustment applied.\n"
+"The original audio file must be restored first.\n"
+"(Song Editor/Actions/Restore Original).\n"""
+
+msgid "%s Client ID:"
+msgstr "%s Client ID:"
+
+msgid "%s does not exist."
+msgstr "%s does not exist."
+
+msgid "%s File:"
+msgstr "%s File:"
+
+msgid "%s is not installed."
+msgstr "%s is not installed."
+
+msgid "%s is used to process audio file tags."
+msgstr "%s is used to process audio file tags."
+
+msgid "%s not saved."
+msgstr "%s not saved."
+
+msgid "%s package is missing."
+msgstr "%s package is missing."
+
+msgid "%s restored"
+msgstr "%s restored"
+
+msgid "%s version %s is too old."
+msgstr "%s version %s is too old."
+
+msgid "(%d errors)"
+msgstr "(%d errors)"
+
+msgid "(default)"
+msgstr "(default)"
+
+msgid "(Latest version is %s)"
+msgstr "(Latest version is %s)"
+
+msgid "(Only maximum play time is used)."
+msgstr "(Only maximum play time is used)."
+
+msgid "(Selection and count are not used)."
+msgstr "(Selection and count are not used)."
+
+msgid "1. The origin of this software must not be misrepresented; you must not\n"
+"claim that you wrote the original software. If you use this software\n"
+"in a product, an acknowledgment in the product documentation would be\n"
+"appreciated but is not required."
+msgstr "1. The origin of this software must not be misrepresented; you must not\n"
+"claim that you wrote the original software. If you use this software\n"
+"in a product, an acknowledgment in the product documentation would be\n"
+"appreciated but is not required."
+
+msgid "2. Altered source versions must be plainly marked as such, and must not be\n"
+"misrepresented as being the original software."
+msgstr "2. Altered source versions must be plainly marked as such, and must not be\n"
+"misrepresented as being the original software."
+
+msgid "3. This notice may not be removed or altered from any source distribution."
+msgstr "3. This notice may not be removed or altered from any source distribution."
+
+msgid "12 Hour"
+msgstr "12 Hour"
+
+msgid "24 Hour"
+msgstr "24 Hour"
+
+msgid "74 minute CD"
+msgstr "74 minute CD"
+
+msgid "80 minute CD"
+msgstr "80 minute CD"
+
+msgid ":"
+msgstr ":"
+
+msgid "A Sequence or Song List is set."
+msgstr "A Sequence or Song List is set."
+
+msgid "About"
+msgstr "About"
+
+msgid "About %s"
+msgstr "About %s"
+
+msgid "Action"
+msgstr "Action"
+
+msgid "Actions"
+msgstr "Actions"
+
+# Marquee Color
+msgid "Active Button Text:"
+msgstr "Active Button Text:"
+
+# Marquee Color
+msgid "Active Button:"
+msgstr "Active Button:"
+
+msgid "Add -->"
+msgstr "Add -->"
+
+msgid "Add New"
+msgstr "Add New"
+
+msgid "Advance on Save"
+msgstr "Advance on Save"
+
+# default dance level
+msgid "Advanced"
+msgstr "Advanced"
+
+# mobile marquee: restart bdj after configuration
+msgid "After configuring, "
+msgstr "After configuring, "
+
+# Sort key: album
+# Organization: display text for 'album'
+msgid "Album"
+msgstr "Album"
+
+# Sort key: album artist
+# Organization: display text for 'album artist'
+msgid "Album Artist"
+msgstr "Album Artist"
+
+msgid "All"
+msgstr "All"
+
+msgid "All changes to the database will be lost."
+msgstr "All changes to the database will be lost."
+
+msgid "All files in target %s will be removed."
+msgstr "All files in target %s will be removed."
+
+msgid "All Tags"
+msgstr "All Tags"
+
+msgid "All Terms Match."
+msgstr "All Terms Match."
+
+msgid "Allow Editing of Songs:"
+msgstr "Allow Editing of Songs:"
+
+msgid "Allowed Keywords:"
+msgstr "Allowed Keywords:"
+
+msgid "Announcement:"
+msgstr "Announcement:"
+
+msgid "Any"
+msgstr "Any"
+
+msgid "Apply Adjustments"
+msgstr "Apply Adjustments"
+
+msgid "Archived Files:"
+msgstr "Archived Files:"
+
+# default dance list
+msgid "Argentine Tango"
+msgstr "Argentine Tango"
+
+# Sort key: artist
+# Organization: display text for 'artist'
+msgid "Artist"
+msgstr "Artist"
+
+# Marquee Color
+msgid "Artist/Title:"
+msgstr "Artist/Title:"
+
+msgid "As Playlist"
+msgstr "As Playlist"
+
+msgid "Assign"
+msgstr "Assign"
+
+msgid "Assign ratings and fields to import"
+msgstr "Assign ratings and fields to import"
+
+# Playlist: selection for stop "At" or stop "In"
+msgid "At"
+msgstr "At"
+
+msgid "Audio File Date"
+msgstr "Audio File Date"
+
+msgid "Audio Files"
+msgstr "Audio Files"
+
+msgid "Audio Fingerprint Match."
+msgstr "Audio Fingerprint Match."
+
+msgid "Audio Identification"
+msgstr "Audio Identification"
+
+msgid "Audio Output:"
+msgstr "Audio Output:"
+
+msgid "Audio player is missing"
+msgstr "Audio player is missing"
+
+msgid "Auto Organize:"
+msgstr "Auto Organize:"
+
+msgid "Automatic"
+msgstr "Automatic"
+
+msgid "Autoorganize settings are mismatched."
+msgstr "Autoorganize settings are mismatched."
+
+# default dance list
+msgid "Bachata"
+msgstr "Bachata"
+
+msgid "Back up Files To"
+msgstr "Back up Files To"
+
+# User Interface Color
+msgid "Background (default is %s):"
+msgstr "Background (default is %s):"
+
+msgid "Backup"
+msgstr "Backup"
+
+msgid "Backup Complete"
+msgstr "Backup Complete"
+
+msgid "Backup Failed"
+msgstr "Backup Failed"
+
+# default dance genre
+msgid "Ballroom Dance"
+msgstr "Ballroom Dance"
+
+msgid "Ballroom Music Player"
+msgstr "Ballroom Music Player"
+
+msgid "BallroomDJ"
+msgstr "BallroomDJ"
+
+msgid "BDJ Tags Only"
+msgstr "BDJ Tags Only"
+
+msgid "Beats:"
+msgstr "Beats:"
+
+msgid "Blue"
+msgstr "Blue"
+
+# Font style
+msgid "Bold"
+msgstr "Bold"
+
+# Font style
+msgid "Bold Italic"
+msgstr "Bold Italic"
+
+# default dance list
+msgid "Bolero"
+msgstr "Bolero"
+
+msgid "Bottom"
+msgstr "Bottom"
+
+msgid "BPM"
+msgstr "BPM"
+
+# Title for BPM Counter program
+# Title for BPM Counter program
+msgid "BPM Counter"
+msgstr "BPM Counter"
+
+msgid "BPM Saved"
+msgstr "BPM Saved"
+
+msgid "BPM:"
+msgstr "BPM:"
+
+# Marquee Color
+msgid "Button Text:"
+msgstr "Button Text:"
+
+# Marquee Color
+msgid "Button:"
+msgstr "Button:"
+
+msgid "Cancel"
+msgstr "Cancel"
+
+msgid "Cancel Edit Album"
+msgstr "Cancel Edit Album"
+
+msgid "Cancel Edit All"
+msgstr "Cancel Edit All"
+
+msgid "Cannot copy from main to main."
+msgstr "Cannot copy from main to main."
+
+msgid "Cannot have both a Sequence and a Song List."
+msgstr "Cannot have both a Sequence and a Song List."
+
+# default dance list
+msgid "Cha Cha"
+msgstr "Cha Cha"
+
+msgid "Change Spaces to Underscores:"
+msgstr "Change Spaces to Underscores:"
+
+# User Interface Color
+msgid "Changed Field:"
+msgstr "Changed Field:"
+
+msgid "Check"
+msgstr "Check"
+
+msgid "Check Connection:"
+msgstr "Check Connection:"
+
+msgid "Check Files From"
+msgstr "Check Files From"
+
+# check for new audio files
+msgid "Check For New"
+msgstr "Check For New"
+
+msgid "Check For New: will only check for new files."
+msgstr "Check For New: will only check for new files."
+
+msgid "Check Import"
+msgstr "Check Import"
+
+msgid "Check the temporary and archive %s settings"
+msgstr "Check the temporary and archive %s settings"
+
+msgid "Checkbox Font Size:"
+msgstr "Checkbox Font Size:"
+
+msgid "Choose %s"
+msgstr "Choose %s"
+
+msgid "Choose Color"
+msgstr "Choose Color"
+
+# default dance genre: classical music
+# default dance genre: classical music
+msgid "Classical"
+msgstr "Classical"
+
+# Organization: Path for classical music
+msgid "Classical Path:"
+msgstr "Classical Path:"
+
+# Organiztion: Path for classical music albums with various artists
+msgid "Classical Various Artist Path:"
+msgstr "Classical Various Artist Path:"
+
+# Genre: Is this genre classical music?
+msgid "Classical?"
+msgstr "Classical?"
+
+msgid "Clear"
+msgstr "Clear"
+
+msgid "Clear & Play"
+msgstr "Clear & Play"
+
+msgid "Clear & Remove"
+msgstr "Clear & Remove"
+
+# quickplay: stop the player and clear all songs from the queue
+# remote: clear the queues and playing song
+msgid "Clear Player"
+msgstr "Clear Player"
+
+# quickplay: clear all songs from the queue
+# remote: clear the queue
+msgid "Clear Queue"
+msgstr "Clear Queue"
+
+msgid "Clear Same Song Mark"
+msgstr "Clear Same Song Mark"
+
+msgid "Click the mouse in the blue box in time with the beat.\n"
+"  When the BPM value is stable, select the Save button."
+msgstr "Click the mouse in the blue box in time with the beat.\n"
+"  When the BPM value is stable, select the Save button."
+
+msgid "Client"
+msgstr "Client"
+
+# window title: analog clock
+msgid "Clock"
+msgstr "Clock"
+
+msgid "Clock Font Size:"
+msgstr "Clock Font Size:"
+
+# Marquee Color
+# User Interface Color
+msgid "Clock:"
+msgstr "Clock:"
+
+msgid "Close"
+msgstr "Close"
+
+# dance type: Club dances are non-competition dances
+msgid "club"
+msgstr "club"
+
+msgid "Combined Title/Artist"
+msgstr "Combined Title/Artist"
+
+msgid "Common Paths:"
+msgstr "Common Paths:"
+
+msgid "Complete"
+msgstr "Complete"
+
+msgid "Complete (%d songs)"
+msgstr "Complete (%d songs)"
+
+msgid "Complete. Renamed"
+msgstr "Complete. Renamed"
+
+msgid "Complete. Unable to Rename"
+msgstr "Complete. Unable to Rename"
+
+msgid "Completion Message:"
+msgstr "Completion Message:"
+
+# Sort key: composer
+# Organization: display text for 'composer'
+msgid "Composer"
+msgstr "Composer"
+
+# Sort key: conductor
+# Organization: display text for 'conductor'
+msgid "Conductor"
+msgstr "Conductor"
+
+msgid "Configuration"
+msgstr "Configuration"
+
+msgid "Connect to Server:"
+msgstr "Connect to Server:"
+
+msgid "Connecting..."
+msgstr "Connecting..."
+
+msgid "Connection Information:"
+msgstr "Connection Information:"
+
+msgid "Connection OK."
+msgstr "Connection OK."
+
+# Playlist: after stopping this playlist, continue with the next
+# Playlist: after stopping this playlist, continue with the next
+# Raffle Game: continue playing game
+msgid "Continue"
+msgstr "Continue"
+
+msgid "Continuous Playback"
+msgstr "Continuous Playback"
+
+msgid "Copy"
+msgstr "Copy"
+
+msgid "Copy Complete"
+msgstr "Copy Complete"
+
+msgid "Copy Files From"
+msgstr "Copy Files From"
+
+msgid "Copy Files To"
+msgstr "Copy Files To"
+
+msgid "Copy Missing Files To"
+msgstr "Copy Missing Files To"
+
+msgid "Copy Music Files"
+msgstr "Copy Music Files"
+
+msgid "Copy of external file finished."
+msgstr "Copy of external file finished."
+
+msgid "Copy of external file in progress"
+msgstr "Copy of external file in progress"
+
+msgid "Copy Updated Files From"
+msgstr "Copy Updated Files From"
+
+msgid "Copy Updated Files To"
+msgstr "Copy Updated Files To"
+
+msgid "Copying Files"
+msgstr "Copying Files"
+
+msgid "Copyright 2012-%d Brad Lanam Walnut Creek CA USA"
+msgstr "Copyright 2012-%d Brad Lanam Walnut Creek CA USA"
+
+msgid "Count"
+msgstr "Count"
+
+msgid "Count:"
+msgstr "Count:"
+
+# Marquee Color
+# User Interface Color
+msgid "Countdown Timer:"
+msgstr "Countdown Timer:"
+
+msgid "Cover Page:"
+msgstr "Cover Page:"
+
+msgid "Create"
+msgstr "Create"
+
+msgid "Create an empty %s"
+msgstr "Create an empty %s"
+
+msgid "Create Backup"
+msgstr "Create Backup"
+
+msgid "Create Copy"
+msgstr "Create Copy"
+
+msgid "Create New Profile"
+msgstr "Create New Profile"
+
+msgid "Create Song List"
+msgstr "Create Song List"
+
+msgid "Create Startup File"
+msgstr "Create Startup File"
+
+msgid "Current"
+msgstr "Current"
+
+# Marquee Color
+msgid "Current Dance:"
+msgstr "Current Dance:"
+
+msgid "Cut"
+msgstr "Cut"
+
+# Sort key: dance
+# Organization: display text for 'dance'
+msgid "Dance"
+msgstr "Dance"
+
+msgid "Dance Display:"
+msgstr "Dance Display:"
+
+# Options: How much larger or smaller than the marquee font size the dance font will be
+msgid "Dance Font Size Multiplier:"
+msgstr "Dance Font Size Multiplier:"
+
+msgid "Dance Font:"
+msgstr "Dance Font:"
+
+# Marquee Color
+msgid "Dance List Fade:"
+msgstr "Dance List Fade:"
+
+# Marquee Color
+msgid "Dance List:"
+msgstr "Dance List:"
+
+# Sort key: dance rating
+# Organization: display text for 'dance rating'
+msgid "Dance Rating"
+msgstr "Dance Rating"
+
+msgid "Dance Rating:"
+msgstr "Dance Rating:"
+
+msgid "Dance:"
+msgstr "Dance:"
+
+msgid "Database Loads Dance From Genre:"
+msgstr "Database Loads Dance From Genre:"
+
+msgid "Date"
+msgstr "Date"
+
+# Sort key: date added
+msgid "Date Added"
+msgstr "Date Added"
+
+msgid "Debug Level:"
+msgstr "Debug Level:"
+
+msgid "Default"
+msgstr "Default"
+
+msgid "Default Volume:"
+msgstr "Default Volume:"
+
+msgid "Delete"
+msgstr "Delete"
+
+msgid "Deleted %s"
+msgstr "Deleted %s"
+
+msgid "Deleted %s."
+msgstr "Deleted %s."
+
+msgid "Deleted Files:"
+msgstr "Deleted Files:"
+
+msgid "Directories"
+msgstr "Directories"
+
+msgid "directories"
+msgstr "directories"
+
+msgid "Directory"
+msgstr "Directory"
+
+msgid "directory"
+msgstr "directory"
+
+# Marquee Color
+msgid "Disabled Button Text:"
+msgstr "Disabled Button Text:"
+
+# Sort key: disc
+# Organization: display text for 'disc'
+msgid "Disc"
+msgstr "Disc"
+
+msgid "Disc %d."
+msgstr "Disc %d."
+
+msgid "Discard Changes"
+msgstr "Discard Changes"
+
+msgid "Display Columns"
+msgstr "Display Columns"
+
+msgid "Display Images"
+msgstr "Display Images"
+
+msgid "Display Message"
+msgstr "Display Message"
+
+msgid "Displaying all songs may take some time to display."
+msgstr "Displaying all songs may take some time to display."
+
+msgid "do not display"
+msgstr "do not display"
+
+msgid "Does Not Exist"
+msgstr "Does Not Exist"
+
+msgid "Does not exist."
+msgstr "Does not exist."
+
+msgid "Don't Write"
+msgstr "Don't Write"
+
+msgid "Done"
+msgstr "Done"
+
+msgid "dpcm:"
+msgstr "dpcm:"
+
+msgid "DPI:"
+msgstr "DPI:"
+
+msgid "Dual Queue Marks"
+msgstr "Dual Queue Marks"
+
+msgid "Dual Queues"
+msgstr "Dual Queues"
+
+msgid "Duration"
+msgstr "Duration"
+
+# Audio Ident: The duration range for the song matches
+msgid "Duration Range Match."
+msgstr "Duration Range Match."
+
+msgid "DVD dual layer"
+msgstr "DVD dual layer"
+
+msgid "DVD single layer"
+msgstr "DVD single layer"
+
+msgid "E-Mail Address:"
+msgstr "E-Mail Address:"
+
+# default dance list
+msgid "East Coast Swing"
+msgstr "East Coast Swing"
+
+# default dance level
+msgid "Easy"
+msgstr "Easy"
+
+msgid "Edit"
+msgstr "Edit"
+
+msgid "Edit Album"
+msgstr "Edit Album"
+
+msgid "Edit All"
+msgstr "Edit All"
+
+msgid "Edit Current"
+msgstr "Edit Current"
+
+msgid "Edit Dances"
+msgstr "Edit Dances"
+
+# User Interface Color
+msgid "Edit Filename Background:"
+msgstr "Edit Filename Background:"
+
+msgid "Edit Genre"
+msgstr "Edit Genre"
+
+msgid "Edit Genres"
+msgstr "Edit Genres"
+
+msgid "Edit Levels"
+msgstr "Edit Levels"
+
+msgid "Edit Previous"
+msgstr "Edit Previous"
+
+msgid "Edit Ratings"
+msgstr "Edit Ratings"
+
+msgid "Edit Selected"
+msgstr "Edit Selected"
+
+msgid "Edit Sequence"
+msgstr "Edit Sequence"
+
+msgid "Edit Sequences"
+msgstr "Edit Sequences"
+
+msgid "Edit Song Lists"
+msgstr "Edit Song Lists"
+
+msgid "Edit Status"
+msgstr "Edit Status"
+
+msgid "Editing %s"
+msgstr "Editing %s"
+
+msgid "Embed History View"
+msgstr "Embed History View"
+
+msgid "Embed Player"
+msgstr "Embed Player"
+
+msgid "Enable Album Display:"
+msgstr "Enable Album Display:"
+
+msgid "Enable BPM Display:"
+msgstr "Enable BPM Display:"
+
+msgid "Enable Classical Music:"
+msgstr "Enable Classical Music:"
+
+msgid "Enable Debugging:"
+msgstr "Enable Debugging:"
+
+msgid "Enable Image Display:"
+msgstr "Enable Image Display:"
+
+msgid "Enable iTunes Support:"
+msgstr "Enable iTunes Support:"
+
+msgid "Enable Quick Play:"
+msgstr "Enable Quick Play:"
+
+msgid "Enable Remote Control:"
+msgstr "Enable Remote Control:"
+
+msgid "Enable Status Tracking:"
+msgstr "Enable Status Tracking:"
+
+msgid "End of undo list"
+msgstr "End of undo list"
+
+msgid "End of undo/redo list"
+msgstr "End of undo/redo list"
+
+msgid "End:"
+msgstr "End:"
+
+msgid "Enter a name for the playlist and press 'Enter'."
+msgstr "Enter a name for the playlist and press 'Enter'."
+
+msgid "Enter a name for the sequence and press 'Enter'."
+msgstr "Enter a name for the sequence and press 'Enter'."
+
+msgid "Enter a name for the song list and press 'Enter'."
+msgstr "Enter a name for the song list and press 'Enter'."
+
+msgid "Error"
+msgstr "Error"
+
+# User Interface Color
+msgid "Errors:"
+msgstr "Errors:"
+
+msgid "Examples:"
+msgstr "Examples:"
+
+# Exit Program
+# Exit Program
+# Exit Program
+# Exit Program
+msgid "Exit"
+msgstr "Exit"
+
+msgid "Exit %s and restart"
+msgstr "Exit %s and restart"
+
+# mobile marquee: restart bdj after configuration
+msgid "Exit %s and restart."
+msgstr "Exit %s and restart."
+
+msgid "Exit All"
+msgstr "Exit All"
+
+msgid "Export"
+msgstr "Export"
+
+msgid "Export as %s"
+msgstr "Export as %s"
+
+msgid "Export as %s Playlist"
+msgstr "Export as %s Playlist"
+
+msgid "Export Complete"
+msgstr "Export Complete"
+
+msgid "Export for %s"
+msgstr "Export for %s"
+
+msgid "Export for CD"
+msgstr "Export for CD"
+
+msgid "Export Song List to %s"
+msgstr "Export Song List to %s"
+
+msgid "Export to %s:"
+msgstr "Export to %s:"
+
+# Fade and stop music, continue to next song
+# Fade and stop music, continue to next song
+msgid "Fade"
+msgstr "Fade"
+
+msgid "Fade In Time:"
+msgstr "Fade In Time:"
+
+msgid "Fade Out Time:"
+msgstr "Fade Out Time:"
+
+msgid "Fade Type:"
+msgstr "Fade Type:"
+
+# default dance rating
+msgid "Fair"
+msgstr "Fair"
+
+# dance speed
+msgid "fast"
+msgstr "fast"
+
+msgid "Fatal Error"
+msgstr "Fatal Error"
+
+msgid "Fetching %1$s and %2$s data."
+msgstr "Fetching %1$s and %2$s data."
+
+msgid "Fetching %s data."
+msgstr "Fetching %s data."
+
+msgid "Field Selection"
+msgstr "Field Selection"
+
+msgid "File already exists"
+msgstr "File already exists"
+
+msgid "File does not exist."
+msgstr "File does not exist."
+
+msgid "File Manager"
+msgstr "File Manager"
+
+# User Interface Color
+msgid "File Manager: Associated:"
+msgstr "File Manager: Associated:"
+
+# User Interface Color
+msgid "File Manager: Current:"
+msgstr "File Manager: Current:"
+
+# User Interface Color
+msgid "File Manager: Missing:"
+msgstr "File Manager: Missing:"
+
+msgid "File Modification Date"
+msgstr "File Modification Date"
+
+msgid "Files Processed:"
+msgstr "Files Processed:"
+
+msgid "Files Skipped:"
+msgstr "Files Skipped:"
+
+msgid "Filter"
+msgstr "Filter"
+
+msgid "Find"
+msgstr "Find"
+
+msgid "Find Duplicates"
+msgstr "Find Duplicates"
+
+msgid "First"
+msgstr "First"
+
+msgid "First Song"
+msgstr "First Song"
+
+msgid "Fixed Width Font:"
+msgstr "Fixed Width Font:"
+
+msgid "Folder"
+msgstr "Folder"
+
+msgid "folder"
+msgstr "folder"
+
+msgid "Folders"
+msgstr "Folders"
+
+msgid "folders"
+msgstr "folders"
+
+msgid "Font Chooser"
+msgstr "Font Chooser"
+
+msgid "Font Scale"
+msgstr "Font Scale"
+
+msgid "Font size:"
+msgstr "Font size:"
+
+msgid "Font style:"
+msgstr "Font style:"
+
+msgid "Font:"
+msgstr "Font:"
+
+# Export for CD: The export format (CD, MP3, etc.)
+msgid "Format:"
+msgstr "Format:"
+
+msgid "Forum:"
+msgstr "Forum:"
+
+msgid "Found %d Songs"
+msgstr "Found %d Songs"
+
+# default dance list
+msgid "Foxtrot"
+msgstr "Foxtrot"
+
+msgid "From Start"
+msgstr "From Start"
+
+msgid "Fullscreen:"
+msgstr "Fullscreen:"
+
+msgid "Fuzzy Match"
+msgstr "Fuzzy Match"
+
+msgid "Game:"
+msgstr "Game:"
+
+# Export for CD: Gap at end of song
+msgid "Gap at End:"
+msgstr "Gap at End:"
+
+msgid "Gap Between Songs"
+msgstr "Gap Between Songs"
+
+msgid "Gap Between Songs:"
+msgstr "Gap Between Songs:"
+
+msgid "general"
+msgstr "general"
+
+# Sort key: genre
+# Organization: display text for 'genre'
+msgid "Genre"
+msgstr "Genre"
+
+msgid "Global"
+msgstr "Global"
+
+msgid "Go"
+msgstr "Go"
+
+# default dance rating
+msgid "Good"
+msgstr "Good"
+
+# default dance rating
+msgid "Great"
+msgstr "Great"
+
+msgid "Green"
+msgstr "Green"
+
+msgid "Group"
+msgstr "Group"
+
+# Audio fade type
+msgid "Half Sine Wave"
+msgstr "Half Sine Wave"
+
+msgid "Happy New Year!"
+msgstr "Happy New Year!"
+
+# User Interface Color
+msgid "Headings:"
+msgstr "Headings:"
+
+msgid "Help"
+msgstr "Help"
+
+msgid "Hex Color"
+msgstr "Hex Color"
+
+msgid "Hide main menu on start"
+msgstr "Hide main menu on start"
+
+msgid "Hide Marquee on Start"
+msgstr "Hide Marquee on Start"
+
+msgid "Hide Unselected"
+msgstr "Hide Unselected"
+
+# BPM/MPM: High BPM or High MPM setting
+msgid "High %s"
+msgstr "High %s"
+
+# BPM/MPM: High BPM or High MPM setting
+msgid "High %s:"
+msgstr "High %s:"
+
+msgid "Highlight:"
+msgstr "Highlight:"
+
+msgid "History"
+msgstr "History"
+
+msgid "HTML Template:"
+msgstr "HTML Template:"
+
+# default dance list
+msgid "Hustle"
+msgstr "Hustle"
+
+msgid "If you have a problem:\n"
+"Turn on debugging in Configuration / Options / Global.\n"
+"Restart %s.\n"
+"Execute the steps required to reproduce the problem.\n"
+"Then send the support message.\n"
+"Turn off debugging afterwards."
+msgstr "If you have a problem:\n"
+"Turn on debugging in Configuration / Options / Global.\n"
+"Restart %s.\n"
+"Execute the steps required to reproduce the problem.\n"
+"Then send the support message.\n"
+"Turn off debugging afterwards."
+
+msgid "Ignore"
+msgstr "Ignore"
+
+msgid "Image"
+msgstr "Image"
+
+msgid "Image %s:"
+msgstr "Image %s:"
+
+msgid "Image Assignment"
+msgstr "Image Assignment"
+
+# User Interface Color
+msgid "Image Display Background:"
+msgstr "Image Display Background:"
+
+msgid "Image Player is already running."
+msgstr "Image Player is already running."
+
+msgid "Import"
+msgstr "Import"
+
+msgid "Import %s"
+msgstr "Import %s"
+
+msgid "Import %s:"
+msgstr "Import %s:"
+
+msgid "Import from %s"
+msgstr "Import from %s"
+
+msgid "Import from iTunes"
+msgstr "Import from iTunes"
+
+msgid "Import iTunes Playlist"
+msgstr "Import iTunes Playlist"
+
+msgid "Import Prefix:"
+msgstr "Import Prefix:"
+
+# Playlist: selection for stop "At" or stop "In"
+msgid "In"
+msgstr "In"
+
+# Song Filter: Include unrated songs?
+# Playlist: Is it ok to include unrated songs?
+msgid "Include Unrated?"
+msgstr "Include Unrated?"
+
+msgid "Initialize Synchronization"
+msgstr "Initialize Synchronization"
+
+msgid "Initializing"
+msgstr "Initializing"
+
+msgid "Insert Request"
+msgstr "Insert Request"
+
+msgid "Insert:"
+msgstr "Insert:"
+
+msgid "Install"
+msgstr "Install"
+
+msgid "Instructions: Using a ruler,\n"
+"        and taking great care not to damage your screen,\n"
+"        adjust the size of the box until it is exactly\n"
+"        2 inches or 5.1 cm in height on the screen.\n"
+"        Select 'Save' to save the font scale factor.\n"
+"        After finishing, exit %s and restart it in\n"
+"        order to apply the changes."
+msgstr "Instructions: Using a ruler,\n"
+"        and taking great care not to damage your screen,\n"
+"        adjust the size of the box until it is exactly\n"
+"        2 inches or 5.1 cm in height on the screen.\n"
+"        Select 'Save' to save the font scale factor.\n"
+"        After finishing, exit %s and restart it in\n"
+"        order to apply the changes."
+
+msgid "Integrated %s"
+msgstr "Integrated %s"
+
+# mobile marquee uses internet connection
+msgid "Internet"
+msgstr "Internet"
+
+msgid "Invalid"
+msgstr "Invalid"
+
+msgid "Invalid %s"
+msgstr "Invalid %s"
+
+msgid "Invalid %s."
+msgstr "Invalid %s."
+
+msgid "Invalid Backup %s"
+msgstr "Invalid Backup %s"
+
+msgid "Invalid characters %s"
+msgstr "Invalid characters %s"
+
+msgid "Invalid characters."
+msgstr "Invalid characters."
+
+msgid "Invalid Level Settings"
+msgstr "Invalid Level Settings"
+
+msgid "Invalid maximum time."
+msgstr "Invalid maximum time."
+
+# Error: Invalid original folder/directory
+msgid "Invalid Original %s"
+msgstr "Invalid Original %s"
+
+msgid "Invalid song list name (/)."
+msgstr "Invalid song list name (/)."
+
+msgid "Invalid Time Limit"
+msgstr "Invalid Time Limit"
+
+msgid "Invalid time limit."
+msgstr "Invalid time limit."
+
+msgid "Invalid."
+msgstr "Invalid."
+
+msgid "Invalid. Not Saved"
+msgstr "Invalid. Not Saved"
+
+# Audio fade type
+msgid "Inverted Parabola"
+msgstr "Inverted Parabola"
+
+# Font style
+msgid "Italic"
+msgstr "Italic"
+
+msgid "iTunes default"
+msgstr "iTunes default"
+
+msgid "iTunes Import Setup"
+msgstr "iTunes Import Setup"
+
+# default dance genre
+msgid "Jazz"
+msgstr "Jazz"
+
+# default dance list
+msgid "Jive"
+msgstr "Jive"
+
+# The keyboard key assigned to the action
+msgid "Key"
+msgstr "Key"
+
+# Sort key: keyword
+# Organization: display text for 'keyword'
+msgid "Keyword"
+msgstr "Keyword"
+
+msgid "Last Song"
+msgstr "Last Song"
+
+# Sort key: last update date
+msgid "Last Updated"
+msgstr "Last Updated"
+
+# Sort key: The Level of the dance
+# The level of the dance
+# The level of the dance
+msgid "Level"
+msgstr "Level"
+
+# Song filter: The level of the dance
+msgid "Level:"
+msgstr "Level:"
+
+msgid "LICENSE"
+msgstr "LICENSE"
+
+# Export for a CD: The size and duration limits
+msgid "Limits:"
+msgstr "Limits:"
+
+# Options: The font size for displays of lists of songs
+msgid "Listing Font Size:"
+msgstr "Listing Font Size:"
+
+msgid "Load"
+msgstr "Load"
+
+msgid "Loaded existing playlist"
+msgstr "Loaded existing playlist"
+
+msgid "Loaded existing sequence"
+msgstr "Loaded existing sequence"
+
+msgid "Loaded existing song list"
+msgstr "Loaded existing song list"
+
+msgid "Loaded from Database:"
+msgstr "Loaded from Database:"
+
+msgid "Loading"
+msgstr "Loading"
+
+msgid "Loading file list"
+msgstr "Loading file list"
+
+msgid "Loading Song Data."
+msgstr "Loading Song Data."
+
+# mobile marquee uses local ip address
+msgid "Local"
+msgstr "Local"
+
+msgid "Locale:"
+msgstr "Locale:"
+
+msgid "Locating %d"
+msgstr "Locating %d"
+
+# Audio fade type
+msgid "Logarithmic"
+msgstr "Logarithmic"
+
+msgid "Low %s"
+msgstr "Low %s"
+
+msgid "Low %s:"
+msgstr "Low %s:"
+
+msgid "Main"
+msgstr "Main"
+
+msgid "Main website:"
+msgstr "Main website:"
+
+# default dance list
+msgid "Mambo"
+msgstr "Mambo"
+
+msgid "Manual"
+msgstr "Manual"
+
+msgid "Mark"
+msgstr "Mark"
+
+msgid "Mark as Same Song"
+msgstr "Mark as Same Song"
+
+msgid "Mark Selected"
+msgstr "Mark Selected"
+
+# User Interface Color
+msgid "Mark:"
+msgstr "Mark:"
+
+msgid "Marquee"
+msgstr "Marquee"
+
+# Marquee Color
+msgid "Marquee Background:"
+msgstr "Marquee Background:"
+
+msgid "Marquee Colors"
+msgstr "Marquee Colors"
+
+msgid "Marquee Controls"
+msgstr "Marquee Controls"
+
+msgid "Marquee Display"
+msgstr "Marquee Display"
+
+msgid "Marquee Font:"
+msgstr "Marquee Font:"
+
+msgid "Marquee Message:"
+msgstr "Marquee Message:"
+
+msgid "Marquee Options"
+msgstr "Marquee Options"
+
+msgid "Marquee Size:"
+msgstr "Marquee Size:"
+
+msgid "Maximum\n"
+"Play Time"
+msgstr "Maximum\n"
+"Play Time"
+
+# Export for CD: The maximum number of discs to create
+msgid "Maximum number of Discs:"
+msgstr "Maximum number of Discs:"
+
+msgid "Maximum Play Time:"
+msgstr "Maximum Play Time:"
+
+# default dance list
+# default dance list
+msgid "Merengue"
+msgstr "Merengue"
+
+# Marquee Color
+msgid "Message:"
+msgstr "Message:"
+
+# User Interface Color
+msgid "Messages:"
+msgstr "Messages:"
+
+msgid "Mismatched filemanager version."
+msgstr "Mismatched filemanager version."
+
+msgid "Mismatched sychronization timestamp."
+msgstr "Mismatched sychronization timestamp."
+
+msgid "MISSING"
+msgstr "MISSING"
+
+msgid "Missing import database."
+msgstr "Missing import database."
+
+msgid "Missing sequence."
+msgstr "Missing sequence."
+
+msgid "Missing song list."
+msgstr "Missing song list."
+
+# Song list editor: mix the songs in the song list based on the dance
+msgid "Mix"
+msgstr "Mix"
+
+msgid "Mobile Marquee"
+msgstr "Mobile Marquee"
+
+msgid "Mobile Marquee Name:"
+msgstr "Mobile Marquee Name:"
+
+msgid "Mobile Marquee Port:"
+msgstr "Mobile Marquee Port:"
+
+# title displayed on mobile marquee
+msgid "Mobile Marquee Title:"
+msgstr "Mobile Marquee Title:"
+
+msgid "Mobile Marquee:"
+msgstr "Mobile Marquee:"
+
+msgid "Mobile Remote Control"
+msgstr "Mobile Remote Control"
+
+msgid "Most Terms Match."
+msgstr "Most Terms Match."
+
+msgid "Move Down"
+msgstr "Move Down"
+
+msgid "Move to Other Queue"
+msgstr "Move to Other Queue"
+
+msgid "Move To Top"
+msgstr "Move To Top"
+
+msgid "Move Up"
+msgstr "Move Up"
+
+msgid "MPM"
+msgstr "MPM"
+
+msgid "MPM (2/4 time):"
+msgstr "MPM (2/4 time):"
+
+msgid "MPM (3/4 time):"
+msgstr "MPM (3/4 time):"
+
+msgid "MPM (4/4 or 4/8 time):"
+msgstr "MPM (4/4 or 4/8 time):"
+
+msgid "Music"
+msgstr "Music"
+
+msgid "Music %s"
+msgstr "Music %s"
+
+msgid "Music %s:"
+msgstr "Music %s:"
+
+msgid "Music Manager"
+msgstr "Music Manager"
+
+msgid "MusicBrainz Exact Match."
+msgstr "MusicBrainz Exact Match."
+
+msgid "Must be set."
+msgstr "Must be set."
+
+msgid "Native File Dialogs:"
+msgstr "Native File Dialogs:"
+
+# default dance list: Night Club Two Step
+msgid "NC2S"
+msgstr "NC2S"
+
+msgid "New"
+msgstr "New"
+
+msgid "New %s"
+msgstr "New %s"
+
+msgid "New %s in:"
+msgstr "New %s in:"
+
+# Database update: How many entries are new
+msgid "New Files:"
+msgstr "New Files:"
+
+# default name of a new profile
+msgid "New Profile %d"
+msgstr "New Profile %d"
+
+msgid "New Song List Name:"
+msgstr "New Song List Name:"
+
+# window title: new year's countdown clock
+msgid "New Year's Countdown"
+msgstr "New Year's Countdown"
+
+msgid "Next"
+msgstr "Next"
+
+# Balloon help: Player: Next Song
+msgid "Next Song"
+msgstr "Next Song"
+
+msgid "No Action"
+msgstr "No Action"
+
+msgid "No Album Match."
+msgstr "No Album Match."
+
+msgid "No Artist Match."
+msgstr "No Artist Match."
+
+msgid "No audio found."
+msgstr "No audio found."
+
+msgid "No History"
+msgstr "No History"
+
+msgid "No internet connection."
+msgstr "No internet connection."
+
+msgid "No matches found."
+msgstr "No matches found."
+
+# Short version of: no maximum play time
+msgid "No Max"
+msgstr "No Max"
+
+msgid "No Maximum Play Time"
+msgstr "No Maximum Play Time"
+
+msgid "No More Playlists"
+msgstr "No More Playlists"
+
+msgid "No Playlists in Queue"
+msgstr "No Playlists in Queue"
+
+msgid "No Processing Needed"
+msgstr "No Processing Needed"
+
+msgid "No results found"
+msgstr "No results found"
+
+msgid "No Sequence is selected."
+msgstr "No Sequence is selected."
+
+msgid "No Song List is selected."
+msgstr "No Song List is selected."
+
+msgid "None"
+msgstr "None"
+
+# Options: Marquee: normal progress bar
+# Font style
+# default dance level
+# default dance level
+msgid "Normal"
+msgstr "Normal"
+
+# dance speed
+msgid "normal"
+msgstr "normal"
+
+msgid "Normal Operation"
+msgstr "Normal Operation"
+
+msgid "Normalize Volume"
+msgstr "Normalize Volume"
+
+# Export for CD: Normalize volume?
+msgid "Normalize Volume:"
+msgstr "Normalize Volume:"
+
+msgid "Not a %s."
+msgstr "Not a %s."
+
+msgid "Not a file."
+msgstr "Not a file."
+
+msgid "Not Found"
+msgstr "Not Found"
+
+msgid "Not found."
+msgstr "Not found."
+
+# mobile marquee: no music is playing
+msgid "Not Playing"
+msgstr "Not Playing"
+
+# Sort key: notes
+msgid "Notes"
+msgstr "Notes"
+
+msgid "Number"
+msgstr "Number"
+
+# mobile marquee is off
+msgid "Off"
+msgstr "Off"
+
+# status message indicating that the path is ok
+# status message displayed when the organization path is ok.
+msgid "OK"
+msgstr "OK"
+
+msgid "Optional Components"
+msgstr "Optional Components"
+
+msgid "Options"
+msgstr "Options"
+
+msgid "Order from easiest to most advanced."
+msgstr "Order from easiest to most advanced."
+
+msgid "Ordinary Text"
+msgstr "Ordinary Text"
+
+msgid "Organization"
+msgstr "Organization"
+
+msgid "Original"
+msgstr "Original"
+
+msgid "Original Files:"
+msgstr "Original Files:"
+
+# Original audio file has been restored
+msgid "Original restored."
+msgstr "Original restored."
+
+msgid "Out of range: %1$s - %2$s."
+msgstr "Out of range: %1$s - %2$s."
+
+msgid "Output %s"
+msgstr "Output %s"
+
+# Organization: Path keyword: Album Artist
+msgid "PALBART"
+msgstr "PALBART"
+
+# Organization: Path keyword: Album
+msgid "PALBUM"
+msgstr "PALBUM"
+
+# Organization: Path keyword: Artist
+msgid "PARTIST"
+msgstr "PARTIST"
+
+# default dance list
+msgid "Paso Doble"
+msgstr "Paso Doble"
+
+msgid "Password:"
+msgstr "Password:"
+
+msgid "Paste"
+msgstr "Paste"
+
+msgid "Path Keyword"
+msgstr "Path Keyword"
+
+msgid "Pause"
+msgstr "Pause"
+
+msgid "Pause After Each Song:"
+msgstr "Pause After Each Song:"
+
+# Pause at end of song
+# Pause at end of song
+msgid "Pause at End"
+msgstr "Pause at End"
+
+msgid "Pause Each Song"
+msgstr "Pause Each Song"
+
+# Marquee Color
+msgid "Pause/Completion Message:"
+msgstr "Pause/Completion Message:"
+
+msgid "Paused"
+msgstr "Paused"
+
+msgid "Paused Message:"
+msgstr "Paused Message:"
+
+# Organization: Path keyword: Composer
+msgid "PCOMPOSER"
+msgstr "PCOMPOSER"
+
+# Organization: Path keyword: Conductor
+msgid "PCONDUCTOR"
+msgstr "PCONDUCTOR"
+
+# Organization: Path keyword: Dance
+msgid "PDANCE"
+msgstr "PDANCE"
+
+# Organization: Path keyword: Dance Rating
+msgid "PDANCERATING"
+msgstr "PDANCERATING"
+
+# Organization: Path keyword: Disc
+msgid "PDISC"
+msgstr "PDISC"
+
+msgid "Permission is granted to anyone to use this software for any purpose,\n"
+"including commercial applications, and to alter it and redistribute it\n"
+"freely, subject to the following restrictions:"
+msgstr "Permission is granted to anyone to use this software for any purpose,\n"
+"including commercial applications, and to alter it and redistribute it\n"
+"freely, subject to the following restrictions:"
+
+# Organization: Path keyword: Genre
+msgid "PGENRE"
+msgstr "PGENRE"
+
+# Organization: Path keyword: Keyword
+msgid "PKEYWORD"
+msgstr "PKEYWORD"
+
+# remote: play a playlist
+msgid "Play"
+msgstr "Play"
+
+# quickplay: play 5 songs
+# remote: play 5 songs
+msgid "Play 5"
+msgstr "Play 5"
+
+msgid "Play Announcement"
+msgstr "Play Announcement"
+
+msgid "Play Announcement:"
+msgstr "Play Announcement:"
+
+# quickplay: play continuously
+# remote: play continuously
+msgid "Play Continuously"
+msgstr "Play Continuously"
+
+msgid "Play Music:"
+msgstr "Play Music:"
+
+# Selecting the play button will switch the user interface view to the player tab
+# Selecting the play button will switch the user interface view to the player tab
+# Selecting the play button will switch the user interface view to the player tab
+msgid "Play switches to player"
+msgstr "Play switches to player"
+
+# Balloon help: Player: Play/Pause
+msgid "Play/Pause"
+msgstr "Play/Pause"
+
+msgid "Play?"
+msgstr "Play?"
+
+msgid "Playback Mode"
+msgstr "Playback Mode"
+
+# Sort key: playback order
+msgid "Playback Order"
+msgstr "Playback Order"
+
+msgid "Player"
+msgstr "Player"
+
+# No player is running in the song editor
+msgid "Player is not started."
+msgstr "Player is not started."
+
+msgid "Player is running."
+msgstr "Player is running."
+
+msgid "Player Options"
+msgstr "Player Options"
+
+msgid "Player Options:"
+msgstr "Player Options:"
+
+msgid "Player:"
+msgstr "Player:"
+
+msgid "Player: Fade"
+msgstr "Player: Fade"
+
+msgid "Player: Next Song"
+msgstr "Player: Next Song"
+
+msgid "Player: Pause"
+msgstr "Player: Pause"
+
+msgid "Player: Pause at End"
+msgstr "Player: Pause at End"
+
+msgid "Player: Pause Each Song"
+msgstr "Player: Pause Each Song"
+
+msgid "Player: Pause Only"
+msgstr "Player: Pause Only"
+
+msgid "Player: Play"
+msgstr "Player: Play"
+
+msgid "Player: Repeat"
+msgstr "Player: Repeat"
+
+msgid "Playing song %d"
+msgstr "Playing song %d"
+
+msgid "Playlist"
+msgstr "Playlist"
+
+msgid "Playlist Management"
+msgstr "Playlist Management"
+
+msgid "Playlist Queue"
+msgstr "Playlist Queue"
+
+msgid "Please configure %s."
+msgstr "Please configure %s."
+
+msgid "Please configure directories."
+msgstr "Please configure directories."
+
+msgid "Please wait..."
+msgstr "Please wait..."
+
+# default dance rating
+msgid "Poor"
+msgstr "Poor"
+
+msgid "Port Number:"
+msgstr "Port Number:"
+
+msgid "Preparing"
+msgstr "Preparing"
+
+msgid "Press the key for %s"
+msgstr "Press the key for %s"
+
+msgid "Previous"
+msgstr "Previous"
+
+msgid "Processing"
+msgstr "Processing"
+
+msgid "Processing %d"
+msgstr "Processing %d"
+
+msgid "Processing %d."
+msgstr "Processing %d."
+
+msgid "Processing %d/%d"
+msgstr "Processing %d/%d"
+
+# Database processing was aborted.
+msgid "Processing Aborted."
+msgstr "Processing Aborted."
+
+# Database processing is complete.
+msgid "Processing Complete."
+msgstr "Processing Complete."
+
+msgid "Processing iTunes Data"
+msgstr "Processing iTunes Data"
+
+msgid "Processing iTunes data"
+msgstr "Processing iTunes data"
+
+msgid "Profile"
+msgstr "Profile"
+
+msgid "Profile is in use"
+msgstr "Profile is in use"
+
+msgid "Profile Name:"
+msgstr "Profile Name:"
+
+msgid "Progress Bar Color:"
+msgstr "Progress Bar Color:"
+
+msgid "Progress Bar:"
+msgstr "Progress Bar:"
+
+# Organization: Path keyword: Status
+msgid "PSTATUS"
+msgstr "PSTATUS"
+
+# Organization: Path keyword: Title
+msgid "PTITLE"
+msgstr "PTITLE"
+
+# Organization: Path keyword: Track Number
+msgid "PTRACKNUM"
+msgstr "PTRACKNUM"
+
+# Organization: Path keyword: Track Number with leading zeros
+msgid "PTRACKNUM0"
+msgstr "PTRACKNUM0"
+
+# Organization: Path keyword: Various Artists
+msgid "PVARIOUS"
+msgstr "PVARIOUS"
+
+# Mobile marquee QR code
+# Mobile Remove Control QR code
+msgid "QR Code:"
+msgstr "QR Code:"
+
+# Audio fade type
+msgid "Quarter Sine Wave"
+msgstr "Quarter Sine Wave"
+
+# quickplay: queue a dance to be played
+# remote: queue music to play
+msgid "Queue"
+msgstr "Queue"
+
+msgid "Queue %d"
+msgstr "Queue %d"
+
+msgid "Queue %d Length:"
+msgstr "Queue %d Length:"
+
+msgid "Queue %d Name:"
+msgstr "Queue %d Name:"
+
+msgid "Queue Length:"
+msgstr "Queue Length:"
+
+msgid "Queue: Clear & Remove"
+msgstr "Queue: Clear & Remove"
+
+msgid "Queue: Move Down"
+msgstr "Queue: Move Down"
+
+msgid "Queue: Move Up"
+msgstr "Queue: Move Up"
+
+msgid "Queue: Remove"
+msgstr "Queue: Remove"
+
+msgid "Queue: Swap"
+msgstr "Queue: Swap"
+
+msgid "Queue: Toggle Pause"
+msgstr "Queue: Toggle Pause"
+
+msgid "Queued"
+msgstr "Queued"
+
+# Edit menu to make quick changes to the current song
+msgid "Quick Edit"
+msgstr "Quick Edit"
+
+msgid "Quick Edit: Decrease Rating"
+msgstr "Quick Edit: Decrease Rating"
+
+msgid "Quick Edit: Increase Rating"
+msgstr "Quick Edit: Increase Rating"
+
+msgid "Quick Edit: Save Speed"
+msgstr "Quick Edit: Save Speed"
+
+msgid "Quick Edit: Save Volume"
+msgstr "Quick Edit: Save Volume"
+
+msgid "Quick Edit: Set Base Volume"
+msgstr "Quick Edit: Set Base Volume"
+
+msgid "Quick Play"
+msgstr "Quick Play"
+
+# default dance list
+msgid "Quickstep"
+msgstr "Quickstep"
+
+msgid "Raffle"
+msgstr "Raffle"
+
+msgid "Raffle Games"
+msgstr "Raffle Games"
+
+msgid "Raffle Songs"
+msgstr "Raffle Songs"
+
+msgid "Rating"
+msgstr "Rating"
+
+msgid "Ratings must be ordered from worst at the top to best at the bottom."
+msgstr "Ratings must be ordered from worst at the top to best at the bottom."
+
+msgid "Re-install %s."
+msgstr "Re-install %s."
+
+msgid "Re-Select"
+msgstr "Re-Select"
+
+msgid "Rebuild"
+msgstr "Rebuild"
+
+# rebuild the database
+msgid "Rebuild Database"
+msgstr "Rebuild Database"
+
+msgid "Rebuild Database: will replace the %s database in its entirety."
+msgstr "Rebuild Database: will replace the %s database in its entirety."
+
+# rebuild the database and create a log file for debugging purposes
+msgid "Rebuild with logging"
+msgstr "Rebuild with logging"
+
+msgid "Red"
+msgstr "Red"
+
+# Song list editor: redo change/revert undo
+# Sequence editor: redo change/revert undo
+msgid "Redo"
+msgstr "Redo"
+
+# Refresh the list of volume sinks
+msgid "Refresh"
+msgstr "Refresh"
+
+# Database is reloading.
+msgid "Reloading Database"
+msgstr "Reloading Database"
+
+msgid "Remove"
+msgstr "Remove"
+
+# Database update: How many entries were removed
+msgid "Removed from Database:"
+msgstr "Removed from Database:"
+
+msgid "Rename"
+msgstr "Rename"
+
+msgid "Rename File:"
+msgstr "Rename File:"
+
+# Database update: How many audio files have been renamed
+msgid "Renamed:"
+msgstr "Renamed:"
+
+# reorganize and rename audio files
+msgid "Reorganize"
+msgstr "Reorganize"
+
+msgid "Reorganize: will rename the files based on the organization settings."
+msgstr "Reorganize: will rename the files based on the organization settings."
+
+# Balloon help: Player: Repeat
+msgid "Repeat"
+msgstr "Repeat"
+
+msgid "Replace Database With"
+msgstr "Replace Database With"
+
+msgid "Report Detail: %s"
+msgstr "Report Detail: %s"
+
+msgid "Request"
+msgstr "Request"
+
+msgid "Request External"
+msgstr "Request External"
+
+msgid "Requeue"
+msgstr "Requeue"
+
+msgid "Required Keywords:"
+msgstr "Required Keywords:"
+
+msgid "Reset"
+msgstr "Reset"
+
+msgid "Reset All"
+msgstr "Reset All"
+
+msgid "Reset Colors"
+msgstr "Reset Colors"
+
+# Organization: Reset the path to the default
+msgid "Reset to Default"
+msgstr "Reset to Default"
+
+# Balloon help: Player: Restart from beginning of song
+msgid "Restart"
+msgstr "Restart"
+
+msgid "Restart from last checkpoint?"
+msgstr "Restart from last checkpoint?"
+
+msgid "Restore"
+msgstr "Restore"
+
+msgid "Restore Backup"
+msgstr "Restore Backup"
+
+msgid "Restore Complete"
+msgstr "Restore Complete"
+
+msgid "Restore File"
+msgstr "Restore File"
+
+msgid "Restore Files From"
+msgstr "Restore Files From"
+
+msgid "Restore Files To"
+msgstr "Restore Files To"
+
+# editor: restore the original audio file
+msgid "Restore Original"
+msgstr "Restore Original"
+
+msgid "Resume From Last"
+msgstr "Resume From Last"
+
+msgid "Retrieving files from server."
+msgstr "Retrieving files from server."
+
+# dance type: May be replaced with 'latin'
+msgid "rhythm"
+msgstr "rhythm"
+
+# default dance genre
+msgid "Rock"
+msgstr "Rock"
+
+# Raffle game: roll over at what number? e.g. 950-999 rolls over to 1-50
+msgid "Rollover:"
+msgstr "Rollover:"
+
+# User Interface Color: What color for the background for highlighting a row in a list of songs
+msgid "Row Highlight Background:"
+msgstr "Row Highlight Background:"
+
+# default dance list
+msgid "Rumba"
+msgstr "Rumba"
+
+msgid "Running from a Memory Stick:"
+msgstr "Running from a Memory Stick:"
+
+# default dance list
+msgid "Salsa"
+msgstr "Salsa"
+
+# default dance list
+msgid "Samba"
+msgstr "Samba"
+
+# Tooltip: display the key for "same song" matches (in case the colors are similar, this can be used to check if two songs are the same)
+msgid "Same Song Key: %s"
+msgstr "Same Song Key: %s"
+
+msgid "Sample"
+msgstr "Sample"
+
+# User Interface Color: The color of the text on the "sash" (bar between two windows)
+msgid "Sash Text:"
+msgstr "Sash Text:"
+
+# User Interface Color: The color of the "sash" (bar between two windows)
+msgid "Sash:"
+msgstr "Sash:"
+
+msgid "Satellite %d"
+msgstr "Satellite %d"
+
+msgid "Satellite has never been synchronized."
+msgstr "Satellite has never been synchronized."
+
+msgid "Save"
+msgstr "Save"
+
+msgid "Save & Select"
+msgstr "Save & Select"
+
+msgid "Save Album"
+msgstr "Save Album"
+
+msgid "Save All"
+msgstr "Save All"
+
+msgid "Save Complete"
+msgstr "Save Complete"
+
+msgid "Save Dance"
+msgstr "Save Dance"
+
+msgid "Save Playlist"
+msgstr "Save Playlist"
+
+msgid "Save Rating"
+msgstr "Save Rating"
+
+msgid "Save Sequence"
+msgstr "Save Sequence"
+
+msgid "Save Song List"
+msgstr "Save Song List"
+
+msgid "Save Speed"
+msgstr "Save Speed"
+
+msgid "Save Volume"
+msgstr "Save Volume"
+
+msgid "Saved %s."
+msgstr "Saved %s."
+
+msgid "Saved and renamed."
+msgstr "Saved and renamed."
+
+msgid "Saved."
+msgstr "Saved."
+
+# Database update: How many entries were saved
+msgid "Saved:"
+msgstr "Saved:"
+
+msgid "Scaled Widgets:"
+msgstr "Scaled Widgets:"
+
+msgid "Score"
+msgstr "Score"
+
+msgid "Search"
+msgstr "Search"
+
+msgid "Search Fields"
+msgstr "Search Fields"
+
+msgid "Search:"
+msgstr "Search:"
+
+msgid "Searching %s data."
+msgstr "Searching %s data."
+
+msgid "Seconds until %d :"
+msgstr "Seconds until %d :"
+
+msgid "Seconds:"
+msgstr "Seconds:"
+
+msgid "Select"
+msgstr "Select"
+
+# quickplay: allow selection of a song and play it
+msgid "Select & Play"
+msgstr "Select & Play"
+
+msgid "Select Announcement"
+msgstr "Select Announcement"
+
+msgid "Select Audio File"
+msgstr "Select Audio File"
+
+msgid "Select Columns"
+msgstr "Select Columns"
+
+# In order to edit a dance, click on a dance
+msgid "Select Dance to Edit"
+msgstr "Select Dance to Edit"
+
+msgid "Select File"
+msgstr "Select File"
+
+msgid "Select Font"
+msgstr "Select Font"
+
+msgid "Select Image"
+msgstr "Select Image"
+
+# Choose which iTunes playlist to import in the drop-down
+msgid "Select iTunes playlist to import"
+msgstr "Select iTunes playlist to import"
+
+# Select which playlist to load
+msgid "Select Playlist"
+msgstr "Select Playlist"
+
+# Select which BallroomDJ profile (saved settings) to use
+msgid "Select Profile"
+msgstr "Select Profile"
+
+# Select which sequence file to load
+msgid "Select Sequence"
+msgstr "Select Sequence"
+
+# Select which song list to load
+msgid "Select Song List"
+msgstr "Select Song List"
+
+# Audio ID: Select either the original value or new value for each field before saving
+msgid "Select the original or the new value for each item."
+msgstr "Select the original or the new value for each item."
+
+# Keyboard action: move the current queue selection to the bottom
+msgid "Select: Bottom"
+msgstr "Select: Bottom"
+
+# Keyboard action: move the current queue selection down
+msgid "Select: Down"
+msgstr "Select: Down"
+
+# Keyboard action: move the current queue selection to the top
+msgid "Select: Top"
+msgstr "Select: Top"
+
+# Keyboard action: move the current queue selection up
+msgid "Select: Up"
+msgstr "Select: Up"
+
+# User Interface Color: The color of the selected notebook tab in the user interface
+msgid "Selected Tab Text:"
+msgstr "Selected Tab Text:"
+
+# User Interface Color: The highlight color for the current selection
+msgid "Selection Highlight:"
+msgstr "Selection Highlight:"
+
+# Checkbox: Only send the message, do not send any files along with the message
+msgid "Send message only, do not send any files."
+msgstr "Send message only, do not send any files."
+
+msgid "Send Report"
+msgstr "Send Report"
+
+msgid "Send Support Message"
+msgstr "Send Support Message"
+
+msgid "Sequence"
+msgstr "Sequence"
+
+msgid "Sequence:"
+msgstr "Sequence:"
+
+msgid "Server"
+msgstr "Server"
+
+# missing server name
+msgid "Server name must be set."
+msgstr "Server name must be set."
+
+msgid "Server Type:"
+msgstr "Server Type:"
+
+msgid "Set"
+msgstr "Set"
+
+msgid "Set as Default:"
+msgstr "Set as Default:"
+
+msgid "Set Base Volume"
+msgstr "Set Base Volume"
+
+# Window title: Set the keyboard key for the selected action
+# Window title: Set the keyboard key for the selected action
+msgid "Set Key"
+msgstr "Set Key"
+
+msgid "Setup"
+msgstr "Setup"
+
+msgid "Show All Dances"
+msgstr "Show All Dances"
+
+msgid "Show Analog Clock"
+msgstr "Show Analog Clock"
+
+msgid "Show Artist:"
+msgstr "Show Artist:"
+
+msgid "Show Buttons:"
+msgstr "Show Buttons:"
+
+msgid "Show Countdown Timer:"
+msgstr "Show Countdown Timer:"
+
+# show dance on mobile remote control screen
+msgid "Show Dance:"
+msgstr "Show Dance:"
+
+msgid "Show New Year's Countdown"
+msgstr "Show New Year's Countdown"
+
+# Option: Show the quick play notebook tab when the ballroomdj program is started
+msgid "Show Quick Play At Start:"
+msgstr "Show Quick Play At Start:"
+
+# show song artist/title on mobile remove control screen
+msgid "Show Song Information:"
+msgstr "Show Song Information:"
+
+msgid "Show Title:"
+msgstr "Show Title:"
+
+# Song list editor: shuffle selected songs
+msgid "Shuffle"
+msgstr "Shuffle"
+
+msgid "Shutdown Script:"
+msgstr "Shutdown Script:"
+
+msgid "Size:"
+msgstr "Size:"
+
+# Skip processing the audio file
+msgid "Skip"
+msgstr "Skip"
+
+msgid "Skip: Back"
+msgstr "Skip: Back"
+
+msgid "Skip: Forward"
+msgstr "Skip: Forward"
+
+msgid "Skip: to Beginning"
+msgstr "Skip: to Beginning"
+
+# apply adjustments: skip processing
+msgid "Skipped"
+msgstr "Skipped"
+
+msgid "Skipped %d."
+msgstr "Skipped %d."
+
+# dance speed
+msgid "slow"
+msgstr "slow"
+
+# dance type: May be replaced with 'standard'
+msgid "smooth"
+msgstr "smooth"
+
+msgid "Song Editor"
+msgstr "Song Editor"
+
+msgid "Song End"
+msgstr "Song End"
+
+msgid "Song List"
+msgstr "Song List"
+
+msgid "Song list already exists."
+msgstr "Song list already exists."
+
+msgid "Song List Created"
+msgstr "Song List Created"
+
+# User Interface Color: The color of the current selection in the song list editor
+msgid "Song List Current Highlight:"
+msgstr "Song List Current Highlight:"
+
+msgid "Song List is locked."
+msgstr "Song List is locked."
+
+msgid "Song List Name:"
+msgstr "Song List Name:"
+
+# User Interface Color: The color of the previous/prior selection in the song list editor
+msgid "Song List Previous Highlight:"
+msgstr "Song List Previous Highlight:"
+
+msgid "Song List:"
+msgstr "Song List:"
+
+msgid "Song list: %s already exists."
+msgstr "Song list: %s already exists."
+
+msgid "Song Position:"
+msgstr "Song Position:"
+
+msgid "Song Selection"
+msgstr "Song Selection"
+
+msgid "Song Server"
+msgstr "Song Server"
+
+msgid "Song Server Password:"
+msgstr "Song Server Password:"
+
+msgid "Song Server Port:"
+msgstr "Song Server Port:"
+
+msgid "Song Server User ID:"
+msgstr "Song Server User ID:"
+
+msgid "Song Start"
+msgstr "Song Start"
+
+# Error: could not update the database as the song was already updated
+# Error: could not update the database as the song was already updated
+# Error: could not update the database as the song was already updated
+# Error: could not update the database as the song was already updated
+# Error: could not update the database as the song was already updated
+# Error message: could not update the database as the song was already updated
+msgid "Song was updated by another user"
+msgstr "Song was updated by another user"
+
+msgid "Songs"
+msgstr "Songs"
+
+msgid "Songs:"
+msgstr "Songs:"
+
+msgid "Sort By:"
+msgstr "Sort By:"
+
+msgid "Spaces are not allowed."
+msgstr "Spaces are not allowed."
+
+msgid "Spd. Adj."
+msgstr "Spd. Adj."
+
+msgid "Special Keys"
+msgstr "Special Keys"
+
+msgid "Speed Adjustment"
+msgstr "Speed Adjustment"
+
+msgid "Speed:"
+msgstr "Speed:"
+
+msgid "Speed: Decrease"
+msgstr "Speed: Decrease"
+
+msgid "Speed: Increase"
+msgstr "Speed: Increase"
+
+msgid "Speed: Normal"
+msgstr "Speed: Normal"
+
+# Song list editor: spread selected songs throughout list
+msgid "Spread"
+msgstr "Spread"
+
+msgid "Standard Path:"
+msgstr "Standard Path:"
+
+msgid "Star"
+msgstr "Star"
+
+msgid "Start"
+msgstr "Start"
+
+msgid "Start Maximized:"
+msgstr "Start Maximized:"
+
+msgid "Start New %s"
+msgstr "Start New %s"
+
+msgid "Start:"
+msgstr "Start:"
+
+msgid "Starting Player."
+msgstr "Starting Player."
+
+msgid "Startup"
+msgstr "Startup"
+
+msgid "Startup File"
+msgstr "Startup File"
+
+msgid "Startup Files Play Automatically:"
+msgstr "Startup Files Play Automatically:"
+
+msgid "Startup Script:"
+msgstr "Startup Script:"
+
+msgid "Startup:"
+msgstr "Startup:"
+
+# Sort key: status
+# Organization: display text for 'status'
+msgid "Status"
+msgstr "Status"
+
+msgid "Stop"
+msgstr "Stop"
+
+msgid "Stop After Playing:"
+msgstr "Stop After Playing:"
+
+msgid "Stopped by User"
+msgstr "Stopped by User"
+
+msgid "Subject:"
+msgstr "Subject:"
+
+msgid "Support"
+msgstr "Support"
+
+msgid "Support message sent."
+msgstr "Support message sent."
+
+msgid "Swap"
+msgstr "Swap"
+
+msgid "Switch Music Queue"
+msgstr "Switch Music Queue"
+
+msgid "Switch Playlist Queue"
+msgstr "Switch Playlist Queue"
+
+msgid "Synchronization"
+msgstr "Synchronization"
+
+# Synchronization status message: Synchronization was initialized
+msgid "Synchronization is reset."
+msgstr "Synchronization is reset."
+
+msgid "Synchronization:"
+msgstr "Synchronization:"
+
+# Sort key: tags
+msgid "Tags"
+msgstr "Tags"
+
+msgid "Tags:"
+msgstr "Tags:"
+
+# default dance list
+msgid "Tango"
+msgstr "Tango"
+
+msgid "Temporary Files:"
+msgstr "Temporary Files:"
+
+msgid "Thank You"
+msgstr "Thank You"
+
+msgid "Theme:"
+msgstr "Theme:"
+
+msgid "This software is provided 'as-is', without any express or implied\n"
+"warranty.  In no event will the authors be held liable for any damages\n"
+"arising from the use of this software."
+msgstr "This software is provided 'as-is', without any express or implied\n"
+"warranty.  In no event will the authors be held liable for any damages\n"
+"arising from the use of this software."
+
+msgid "Time"
+msgstr "Time"
+
+msgid "Time Limit:"
+msgstr "Time Limit:"
+
+# The time signature of the music (e.g. 3/4, 4/4, etc.)
+msgid "Time Signature:"
+msgstr "Time Signature:"
+
+msgid "Time:"
+msgstr "Time:"
+
+# Sort key: title
+# Organization: display text for 'title'
+msgid "Title"
+msgstr "Title"
+
+# Music queue: Toggle the pause flag on the selected song
+msgid "Toggle Pause"
+msgstr "Toggle Pause"
+
+# User Interface Color
+msgid "Tooltip Background:"
+msgstr "Tooltip Background:"
+
+msgid "Tooltip Columns"
+msgstr "Tooltip Columns"
+
+# User Interface Color
+msgid "Tooltip Text:"
+msgstr "Tooltip Text:"
+
+msgid "Top"
+msgstr "Top"
+
+msgid "Total Discs"
+msgstr "Total Discs"
+
+msgid "Total Files:"
+msgstr "Total Files:"
+
+msgid "Total Time:"
+msgstr "Total Time:"
+
+# The total number of audio tracks for the album
+msgid "Total Tracks"
+msgstr "Total Tracks"
+
+# Sort key: track number
+# The audio track number in the album
+msgid "Track"
+msgstr "Track"
+
+# Organization: display text for 'track number'
+# The audio track number in the album
+msgid "Track Number"
+msgstr "Track Number"
+
+# Organization: display text for 'track number with leading zeros'
+msgid "Track Number Leading 0"
+msgstr "Track Number Leading 0"
+
+# Audio fade type
+msgid "Triangle"
+msgstr "Triangle"
+
+# Audio file adjustment: trim the silence from beginning and end
+msgid "Trim Silence"
+msgstr "Trim Silence"
+
+# Song list editor: truncate song list at selected song
+msgid "Truncate"
+msgstr "Truncate"
+
+# Balloon help: Marquee color: Dance list fade
+msgid "TT_DANCELISTFADECOLOR"
+msgstr ""
+
+# Balloon help: Player: Fade
+msgid "TT_FADE"
+msgstr ""
+
+# Balloon help: Options: Player: fade in time
+msgid "TT_FADEINTIME"
+msgstr ""
+
+# Balloon help: Options: Player: fade out time
+msgid "TT_FADEOUTTIME"
+msgstr ""
+
+# Balloon help: Options: Player: fade type
+msgid "TT_FADETYPE"
+msgstr ""
+
+# Balloon help: Player: Pause At End
+msgid "TT_PAUSEATEND"
+msgstr ""
+
+# Dance editor: The type (standard/latin/club) of the dance
+msgid "Type:"
+msgstr "Type:"
+
+# Check song server: unable to connect to server
+msgid "Unable to connect."
+msgstr "Unable to connect."
+
+# Error when original file could not be copied
+msgid "Unable to copy original file."
+msgstr "Unable to copy original file."
+
+# Error message: Unable to locate require folder/directory
+# Error message: Unable to locate a required folder/directory
+msgid "Unable to locate %s."
+msgstr "Unable to locate %s."
+
+# iTunes: unable to locate the iTunes XML file
+# iTunes: unable to locate the iTunes XML file
+msgid "Unable to locate iTunes XML file."
+msgstr "Unable to locate iTunes XML file."
+
+# Error message: could not parse the data received from the audio identification service
+msgid "Unable to parse data."
+msgstr "Unable to parse data."
+
+# Status message: Could not edit a song as the music editor is already running
+msgid "Unable to process. Music editor is already running."
+msgstr "Unable to process. Music editor is already running."
+
+msgid "Unable to rename audio file.  An audio file with the same name exists. Changes were saved."
+msgstr "Unable to rename audio file.  An audio file with the same name exists. Changes were saved."
+
+# Database update: How many audio files could not be renamed
+msgid "Unable to Rename:"
+msgstr "Unable to Rename:"
+
+# Status message: Unable to start the music player process
+msgid "Unable to start player."
+msgstr "Unable to start player."
+
+# Database update: A serious error occurred and the database update could not be started
+# Database update: A serious error occurred and the database update could not be started
+msgid "Unable to start. Contact Support."
+msgstr "Unable to start. Contact Support."
+
+# Song list editor: undo change
+# File manager: Undo/revert the last action
+# Sequence editor: undo change
+msgid "Undo"
+msgstr "Undo"
+
+# Music manager: Undo/revert the deletion of a file
+msgid "Undo Delete"
+msgstr "Undo Delete"
+
+# File manager: status message: undo/revert the deletion of the file
+msgid "Undo delete %s"
+msgstr "Undo delete %s"
+
+# File manager: status message: undo/revert the rename of a file
+msgid "Undo rename %s"
+msgstr "Undo rename %s"
+
+# File manager: undo/revert the restore of a file
+msgid "Undo restore %s"
+msgstr "Undo restore %s"
+
+# Error message: unknown problem occurred
+msgid "Unknown"
+msgstr "Unknown"
+
+# Song: if the title of the song is not known
+# Song: if the title of the song is not known
+# Song: if the title of the song is not known
+msgid "Unknown Title"
+msgstr "Unknown Title"
+
+# Song: the song is not yet rated
+# Song: the song is not yet rated
+# Song: the song is not yet rated
+# default dance rating: rating is not set
+msgid "Unrated"
+msgstr "Unrated"
+
+# Dialog: Directory selection: go up a directory level
+msgid "Up"
+msgstr "Up"
+
+msgid "Update Database"
+msgstr "Update Database"
+
+# Song Editor: Update the data from the audio file tags
+# update the database information from the audio file tags
+msgid "Update From Audio File Tags"
+msgstr "Update From Audio File Tags"
+
+# Database update: Update the database information using the audio file tags
+msgid "Update From Audio File Tags: will replace the information in the %s database with the audio file tag information."
+msgstr "Update From Audio File Tags: will replace the information in the %s database with the audio file tag information."
+
+# update the database information using the data from \ the iTunes database
+msgid "Update From iTunes"
+msgstr "Update From iTunes"
+
+msgid "Update From iTunes: will update the %s database with the information stored in iTunes."
+msgstr "Update From iTunes: will update the %s database with the information stored in iTunes."
+
+# update the database information for any modified files, from the audio file tags
+msgid "Update Modified Files From Audio File Tags"
+msgstr "Update Modified Files From Audio File Tags"
+
+# Database update: Update the database information using the audio file tags for audio files that are more recent than the database entry
+msgid "Update Modified Files From Audio File Tags: will replace the information in the %s database with the audio file tag information for audio files that have a modification date later than what is stored in the database."
+msgstr "Update Modified Files From Audio File Tags: will replace the information in the %s database with the audio file tag information for audio files that have a modification date later than what is stored in the database."
+
+# Status message: currently updating the database
+msgid "Updating Database"
+msgstr "Updating Database"
+
+# Song filter: use status as a selection criteria?
+# Playlist: Use status as a selection criteria?
+msgid "Use Status?"
+msgstr "Use Status?"
+
+msgid "Use the 'copy updated files to' function on the other system first."
+msgstr "Use the 'copy updated files to' function on the other system first."
+
+msgid "Use the filter selections to display the list of songs."
+msgstr "Use the filter selections to display the list of songs."
+
+msgid "Use Up/Down Arrows to Change Order"
+msgstr "Use Up/Down Arrows to Change Order"
+
+msgid "User ID:"
+msgstr "User ID:"
+
+msgid "User Interface"
+msgstr "User Interface"
+
+msgid "User Interface Colors"
+msgstr "User Interface Colors"
+
+msgid "User Interface Font:"
+msgstr "User Interface Font:"
+
+# Organization: display text for 'various'
+msgid "Various"
+msgstr "Various"
+
+msgid "Various Artist %s:"
+msgstr "Various Artist %s:"
+
+msgid "Various Artist Path:"
+msgstr "Various Artist Path:"
+
+msgid "Various Artists"
+msgstr "Various Artists"
+
+msgid "Verify import prefix."
+msgstr "Verify import prefix."
+
+msgid "version"
+msgstr "version"
+
+# default dance list
+msgid "Viennese Waltz"
+msgstr "Viennese Waltz"
+
+# Player: view playback history
+# Image assignment: view the image
+msgid "View"
+msgstr "View"
+
+# Song list editor: checkbutton: view the table with the count of each dance
+msgid "View Dance Counts"
+msgstr "View Dance Counts"
+
+msgid "View Filename"
+msgstr "View Filename"
+
+msgid "VLC version is too old or missing files.\n"
+"Please upgrade VLC."
+msgstr "VLC version is too old or missing files.\n"
+"Please upgrade VLC."
+
+msgid "Vol. Adj."
+msgstr "Vol. Adj."
+
+msgid "Volume Adjustment"
+msgstr "Volume Adjustment"
+
+msgid "Volume:"
+msgstr "Volume:"
+
+msgid "Volume: Lower"
+msgstr "Volume: Lower"
+
+msgid "Volume: Mute"
+msgstr "Volume: Mute"
+
+msgid "Volume: Raise"
+msgstr "Volume: Raise"
+
+# default dance list
+msgid "Waltz"
+msgstr "Waltz"
+
+msgid "Warning"
+msgstr "Warning"
+
+msgid "Weight"
+msgstr "Weight"
+
+# default dance list
+msgid "West Coast Swing"
+msgstr "West Coast Swing"
+
+# Options: Marquee: wide progress bar
+msgid "Wide"
+msgstr "Wide"
+
+msgid "Wiki:"
+msgstr "Wiki:"
+
+# Options: select whether to write the audio file tags to the audio file
+msgid "Write Audio File Tags:"
+msgstr "Write Audio File Tags:"
+
+# write the tags stored in the database to audio files
+msgid "Write Tags to Audio Files"
+msgstr "Write Tags to Audio Files"
+
+msgid "Write Tags to Audio Files: will update the audio file tags with the information from the %s database."
+msgstr "Write Tags to Audio Files: will update the audio file tags with the information from the %s database."
+
+msgid "Yellow"
+msgstr "Yellow"
+
+# Raffle game: title of a game
+msgid "Bounce"
+msgstr "Bounce"
+
+# Raffle game: title of a game
+msgid "Bump"
+msgstr "Bump"
+
+# Raffle game: title of a game
+msgid "Capture"
+msgstr "Capture"
+
+# Raffle game: title of a game
+msgid "Growth"
+msgstr "Growth"
+
+# Raffle game: title of a game
+msgid "Laser"
+msgstr "Laser"
+
+# Raffle game: title of a game
+msgid "Simple"
+msgstr "Simple"
+
+# Raffle game: title of a game
+msgid "Virus"
+msgstr "Virus"

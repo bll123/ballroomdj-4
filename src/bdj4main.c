@@ -9,6 +9,7 @@
 
 #include "musicdb.h"
 #include "tagdef.h"
+#include "bdjstring.h"
 
 int
 main (int argc, char *argv[])
@@ -17,8 +18,11 @@ main (int argc, char *argv[])
   // windows: make sure the ./bin directory is in the path (for .dlls)
   // darwin: set DYLD_FALLBACK_LIBRARY_PATH to:
   //      /Applications/VLC.app/Contents/MacOS/lib/
-  setlocale (LC_ALL, NULL);
+
+  setlocale (LC_ALL, "");
   bindtextdomain ("bdj", "locale");
+  textdomain ("bdj");
+
   tagdefInit ();
   dbOpen ("data/musicdb.dat");
   return 0;

@@ -49,11 +49,14 @@ dbLoad (db_t *db, char *fn)
   rafile_t    *radb;
   parseinfo_t *pi;
   int         songDataCount;
+  long        srrn;
 
   pi = parseInit ();
   fstr = "";
   radb = raOpen (fn, 10);
   vlistSetSize (db->songs, raGetCount (radb));
+
+  raStartBatch (radb);
 
   for (size_t i = 1L; i <= radb->count; ++i) {
     raRead (radb, i, data);
@@ -64,12 +67,16 @@ dbLoad (db_t *db, char *fn)
     songDataCount = parse (pi, data);
     song = songAlloc ();
     songSetAll (song, parseGetData (pi), songDataCount);
-//    fstr = songGet (song, TAG_FILE);
-    songSetNumeric (song, "rrn", (long) i);
+    fstr = songGet (song, TAG_FILE);
+    sscanf (songGet (song, "rrn"), "%d", &srrn);
+    if (i != srrn) {
+      songSetNumeric (song, "rrn", (long) i);
+    }
     vlistSetData (db->songs, strdup (fstr), song);
     ++db->count;
   }
 
+  raEndBatch (radb);
   parseFree (pi);
   return 0;
 }
