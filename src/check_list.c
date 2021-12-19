@@ -328,6 +328,32 @@ START_TEST(vlist_add_sort)
 }
 END_TEST
 
+START_TEST(vlist_replace)
+{
+  list_t        *list;
+  namevalue_t   *nv;
+
+  list = vlistAlloc (LIST_ORDERED, VALUE_DATA, istringCompare, NULL, NULL);
+  ck_assert (list != NULL);
+  ck_assert (list->dsiz == sizeof (namevalue_t *));
+  vlistSetData (list, "aaaa", "000");
+  vlistSetData (list, "bbbb", "111");
+  vlistSetData (list, "cccc", "222");
+  vlistSetData (list, "dddd", "333");
+  vlistSetData (list, "eeee", "444");
+  vlistSetData (list, "ffff", "555");
+  ck_assert (list->count == 6);
+  nv = (namevalue_t *) list->data[2];
+  ck_assert (strcmp (nv->name, "cccc") == 0);
+  ck_assert (strcmp ((char *) nv->u.data, "222") == 0);
+  vlistSetData (list, "cccc", "666");
+  nv = (namevalue_t *) list->data[2];
+  ck_assert (strcmp (nv->name, "cccc") == 0);
+  ck_assert (strcmp ((char *) nv->u.data, "666") == 0);
+  vlistFree (list);
+}
+END_TEST
+
 START_TEST(vlist_free)
 {
   list_t        *list;
