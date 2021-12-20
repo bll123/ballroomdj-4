@@ -12,7 +12,7 @@
 
 #include "sysvars.h"
 
-sysvar_t    sysvars [SV_MAX];
+char sysvars [SV_MAX][MAXPATHLEN];
 
 void
 sysvarsInit (void)
@@ -23,8 +23,26 @@ sysvarsInit (void)
 
   rc = uname (&ubuf);
   assert (rc == 0);
-  strlcpy (sysvars [SV_OSNAME].value, ubuf.sysname, MAXPATHLEN);
-  strlcpy (sysvars [SV_OSVERS].value, ubuf.version, MAXPATHLEN);
+  strlcpy (sysvars [SV_OSNAME], ubuf.sysname, MAXPATHLEN);
+  strlcpy (sysvars [SV_OSVERS], ubuf.version, MAXPATHLEN);
   gethostname (tbuf, MAXPATHLEN);
-  strlcpy (sysvars [SV_HOSTNAME].value, tbuf, MAXPATHLEN);
+  strlcpy (sysvars [SV_HOSTNAME], tbuf, MAXPATHLEN);
+}
+
+int
+isMacOS (void)
+{
+  return (strcmp (sysvars[SV_OSNAME], "Darwin"));
+}
+
+int
+isWindows (void)
+{
+  return (strcmp (sysvars[SV_OSNAME], "Windows"));
+}
+
+int
+isLinux (void)
+{
+  return (strcmp (sysvars[SV_OSNAME], "Linux"));
 }

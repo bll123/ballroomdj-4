@@ -25,6 +25,7 @@ dbOpen (char *fn)
     assert (bdjdb != NULL);
     bdjdb->songs = vlistAlloc (LIST_UNORDERED, VALUE_DATA, istringCompare,
         free, songFree);
+    bdjdb->count = 0L;
     dbLoad (bdjdb, fn);
     vlistSort (bdjdb->songs);
     initialized = 1;

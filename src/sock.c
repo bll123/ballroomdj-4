@@ -232,6 +232,8 @@ sockConnect (short connPort, int *err)
   if (rc != 0) {
     *err = errno;
   }
+  /* darwin needs a boost to get the socket fully connected */
+  msleep (1);
 
   *err = 0;
   return clsock;
@@ -312,6 +314,7 @@ sockRead (int sock, size_t *rlen)
   return data;
 }
 
+/* sockWriteStr() writes the null byte also */
 int
 sockWriteStr (int sock, char *data, size_t len)
 {

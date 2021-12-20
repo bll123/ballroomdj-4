@@ -3,17 +3,22 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <locale.h>
+#include <string.h>
 #if _hdr_libintl
 # include <libintl.h>
 #endif
 #if _hdr_pthread
 # include <pthread.h>
 #endif
+#if _hdr_bsd_string
+# include <bsd/string.h>
+#endif
 
 #include "musicdb.h"
 #include "tagdef.h"
 #include "bdjstring.h"
 #include "sysvars.h"
+#include "utility.h"
 
 void *openDatabase (void *);
 
@@ -26,6 +31,14 @@ openDatabase (void *id)
 #endif
 }
 
+static void
+initLocale (void)
+{
+  setlocale (LC_ALL, "");
+  bindtextdomain ("bdj", "locale");
+  textdomain ("bdj");
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -33,14 +46,21 @@ main (int argc, char *argv[])
   pthread_t   thread;
 #endif
 
-  // darwin: add /opt/local/bin to the path
-  // windows: make sure the ./bin directory is in the path (for .dlls)
-  // darwin: set DYLD_FALLBACK_LIBRARY_PATH to:
-  //      /Applications/VLC.app/Contents/MacOS/lib/
+  initLocale ();
 
-  setlocale (LC_ALL, "");
-  bindtextdomain ("bdj", "locale");
-  textdomain ("bdj");
+  sysvarsInit ();
+
+  if (isMacOS()) {
+    char  npath [MAXPATHLEN];
+    char  *path = getenv ("PATH");
+    strlcpy (npath, path, MAXPATHLEN);
+    strlcat (npath, ":/opt/local/bin", MAXPATHLEN);
+    setenv ("PATH", npath, 1);
+    setenv ("DYLD_FALLBACK_LIBRARY_PATH",
+        "/Applications/VLC.app/Contents/MacOS/lib/", 1);
+  }
+
+  // windows: make sure the ./bin directory is in the path (for .dlls)
 
   tagdefInit ();
 #if _lib_pthread_create
@@ -50,8 +70,6 @@ main (int argc, char *argv[])
   int junk;
   openDatabase (&junk);
 #endif
-
-  sysvarsInit ();
 
 #if _lib_pthread_join
   pthread_join (thread, NULL);

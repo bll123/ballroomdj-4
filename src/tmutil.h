@@ -1,5 +1,5 @@
-#ifndef INC_UTILITY_H
-#define INC_UTILITY_H
+#ifndef INC_TMUTIL_H
+#define INC_TMUTIL_H
 
 #include <sys/time.h>
 
@@ -11,4 +11,4 @@ void      msleep (size_t);
 void      mtimestart (mtime_t *);
 size_t    mtimeend (mtime_t *);
 
-#endif /* INC_UTILITY_H */
+#endif /* INC_TMUTIL_H */

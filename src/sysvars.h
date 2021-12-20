@@ -28,12 +28,11 @@ typedef enum {
   SV_MAX
 } sysvarkey_t;
 
-typedef struct {
-    char      value [MAXPATHLEN+1];
-} sysvar_t;
-
-extern sysvar_t sysvars [SV_MAX];
+extern char sysvars [SV_MAX][MAXPATHLEN];
 
 void sysvarsInit (void);
+int isMacOS (void);
+int isWindows (void);
+int isLinux (void);
 
 #endif /* INC_SYSVARS_H */

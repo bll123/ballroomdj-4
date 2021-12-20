@@ -109,7 +109,6 @@ START_TEST(sock_poll_connect_accept)
   if (pid == 0) {
     c = sockConnectWait (32704, 1000);
     ck_assert (c >= 0);
-    ck_assert (l != c);
   } else {
     l = sockServer (32704, &err);
     ck_assert (l >= 0);
@@ -155,7 +154,6 @@ START_TEST(sock_write)
   if (pid == 0) {
     c = sockConnectWait (32705, 1000);
     ck_assert (c >= 0);
-    ck_assert (l != c);
     rc = sockWriteStr (c, data, strlen (data));
     ck_assert (rc == 0);
     rc = sockWriteBinary (c, datab, 4096);
@@ -207,7 +205,6 @@ START_TEST(sock_write_read)
   if (pid == 0) {
     c = sockConnectWait (32706, 1000);
     ck_assert (c >= 0);
-    ck_assert (l != c);
     rc = sockWriteStr (c, data, strlen (data));
     ck_assert (rc == 0);
     rc = sockWriteBinary (c, datab, 4096);
@@ -269,7 +266,6 @@ START_TEST(sock_write_read_buff)
   if (pid == 0) {
     c = sockConnectWait (32707, 1000);
     ck_assert (c >= 0);
-    ck_assert (l != c);
     rc = sockWriteStr (c, data, strlen (data));
     ck_assert (rc == 0);
   } else {
@@ -324,7 +320,6 @@ START_TEST(sock_write_read_buff_fail)
   if (pid == 0) {
     c = sockConnectWait (32708, 1000);
     ck_assert (c >= 0);
-    ck_assert (l != c);
     rc = sockWriteStr (c, data, strlen (data));
     ck_assert (rc == 0);
   } else {
@@ -382,7 +377,6 @@ START_TEST(sock_write_poll_read)
   if (pid == 0) {
     c = sockConnectWait (32709, 1000);
     ck_assert (c >= 0);
-    ck_assert (l != c);
     rc = sockWriteStr (c, data, strlen (data));
     ck_assert (rc == 0);
     rc = sockWriteBinary (c, datab, 4096);
