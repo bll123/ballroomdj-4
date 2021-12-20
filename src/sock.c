@@ -31,7 +31,7 @@
 #endif
 
 #include "sock.h"
-#include "utility.h"
+#include "tmutil.h"
 
 static ssize_t  sockReadData (int, char *, size_t);
 static int      sockWriteData (int, char *, size_t);

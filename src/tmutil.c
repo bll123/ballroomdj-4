@@ -7,7 +7,7 @@
 # include <unistd.h>
 #endif
 
-#include "utility.h"
+#include "tmutil.h"
 
 void
 msleep (size_t mt)

@@ -14,7 +14,7 @@
 
 #include "sock.h"
 #include "check_bdj.h"
-#include "utility.h"
+#include "tmutil.h"
 
 START_TEST(sock_server_create)
 {

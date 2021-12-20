@@ -10,7 +10,7 @@
 
 #include "rafile.h"
 #include "lock.h"
-#include "utility.h"
+#include "tmutil.h"
 
 static int  raReadHeader (rafile_t *);
 static void raWriteHeader (rafile_t *, int);

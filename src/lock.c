@@ -11,7 +11,7 @@
 #include <assert.h>
 
 #include "lock.h"
-#include "utility.h"
+#include "tmutil.h"
 
 static int    getPidFromFile (char *);
 

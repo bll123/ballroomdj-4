@@ -134,7 +134,7 @@ BDJOBJS = bdjstring$(OBJ_EXT) list$(OBJ_EXT) lock$(OBJ_EXT) \
 	musicdb$(OBJ_EXT) parse$(OBJ_EXT) \
 	rafile$(OBJ_EXT) sock$(OBJ_EXT) \
 	song$(OBJ_EXT) sysvars$(OBJ_EXT) tagdef$(OBJ_EXT) \
-	utility$(OBJ_EXT)
+	tmutil$(OBJ_EXT)
 libbdj$(SHLIB_EXT): $(MKC_REQLIB) $(BDJOBJS)
 	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh -link -shared $(MKC_ECHO) -lib \
 		-o libbdj$(SHLIB_EXT) \
@@ -151,16 +151,16 @@ bdjstring$(OBJ_EXT): bdjstring.c bdjstring.h $(MKC_OUTPUT)
 
 list$(OBJ_EXT): list.c list.h $(MKC_OUTPUT)
 
-lock$(OBJ_EXT): lock.c lock.h utility.h $(MKC_OUTPUT)
+lock$(OBJ_EXT): lock.c lock.h tmutil.h $(MKC_OUTPUT)
 
 musicdb$(OBJ_EXT): musicdb.c musicdb.h rafile.h song.h \
 	parse.h tagdef.h $(MKC_OUTPUT)
 
 parse$(OBJ_EXT): parse.c parse.h $(MKC_OUTPUT)
 
-rafile$(OBJ_EXT): rafile.c rafile.h lock.h utility.h $(MKC_OUTPUT)
+rafile$(OBJ_EXT): rafile.c rafile.h lock.h tmutil.h $(MKC_OUTPUT)
 
-sock$(OBJ_EXT): sock.c sock.h utility.h $(MKC_OUTPUT)
+sock$(OBJ_EXT): sock.c sock.h tmutil.h $(MKC_OUTPUT)
 
 song$(OBJ_EXT): song.c song.h $(MKC_OUTPUT)
 
@@ -168,7 +168,7 @@ sysvars$(OBJ_EXT): sysvars.c sysvars.h $(MKC_OUTPUT)
 
 tagdef$(OBJ_EXT): tagdef.c tagdef.h $(MKC_OUTPUT)
 
-utility$(OBJ_EXT): utility.c utility.h $(MKC_OUTPUT)
+tmutil$(OBJ_EXT): tmutil.c tmutil.h $(MKC_OUTPUT)
 
 # test routines
 
@@ -198,4 +198,4 @@ check_parse$(OBJ_EXT): check_parse.c parse.h check_bdj.h
 
 check_rafile$(OBJ_EXT): check_rafile.c rafile.h check_bdj.h
 
-check_sock$(OBJ_EXT): check_sock.c sock.h utility.h check_bdj.h
+check_sock$(OBJ_EXT): check_sock.c sock.h tmutil.h check_bdj.h
