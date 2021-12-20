@@ -10,6 +10,7 @@
 
 #include "rafile.h"
 #include "lock.h"
+#include "utility.h"
 
 static int  raReadHeader (rafile_t *);
 static void raWriteHeader (rafile_t *, int);
@@ -228,7 +229,7 @@ raLock (rafile_t *rafile)
   rc = lockAcquire (RAFILE_LOCK_FN);
   count = 0;
   while (rc < 0 && count < 10) {
-    usleep (50000);
+    msleep (50);
     rc = lockAcquire (RAFILE_LOCK_FN);
     ++count;
   }

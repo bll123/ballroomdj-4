@@ -7,10 +7,14 @@ output  bdjconfig.h
 
 standard
 
+hdr	arpa/inet.h
 hdr	bsd/string.h
 hdr     fcntl.h
 hdr     libintl.h
 hdr     mcheck.h
+hdr     netdb.h
+hdr     netinet/in.h
+hdr     poll.h
 hdr     pthread.h
 hdr     signal.h
 hdr     string.h
@@ -18,6 +22,7 @@ hdr     unistd.h
 hdr	windows.h
 
 sys	param.h
+sys     socket.h
 sys	utsname.h
 
 if not_have_pkg_check ! _pkg_libs_check

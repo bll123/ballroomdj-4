@@ -21,7 +21,9 @@ void *
 openDatabase (void *id)
 {
   dbOpen ("data/musicdb.dat");
+#if _lib_pthread_create
   pthread_exit (NULL);
+#endif
 }
 
 int
@@ -54,6 +56,6 @@ main (int argc, char *argv[])
 #if _lib_pthread_join
   pthread_join (thread, NULL);
 #endif
-printf ("count: %d\n", dbCount ());
+  printf ("count: %ld\n", dbCount());
   return 0;
 }

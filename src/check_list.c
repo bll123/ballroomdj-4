@@ -428,25 +428,25 @@ Suite *
 list_suite (void)
 {
   Suite     *s;
-  TCase     *tc_list;
+  TCase     *tc;
 
   s = suite_create ("List Suite");
-  tc_list = tcase_create ("List");
-  tcase_add_test (tc_list, list_create_free);
-  tcase_add_test (tc_list, list_add_ordered);
-  tcase_add_test (tc_list, list_add_ordered_beg);
-  tcase_add_test (tc_list, list_add_ordered_end);
-  tcase_add_test (tc_list, list_add_ordered_prealloc);
-  tcase_add_test (tc_list, list_add_unordered);
-  tcase_add_test (tc_list, list_add_sort);
-  tcase_add_test (tc_list, list_find);
-  tcase_add_test (tc_list, list_free);
-  tcase_add_test (tc_list, vlist_create_free);
-  tcase_add_test (tc_list, vlist_add);
-  tcase_add_test (tc_list, vlist_add_sort);
-  tcase_add_test (tc_list, vlist_replace);
-  tcase_add_test (tc_list, vlist_get_data);
-  tcase_add_test (tc_list, vlist_free);
-  suite_add_tcase (s, tc_list);
+  tc = tcase_create ("List");
+  tcase_add_test (tc, list_create_free);
+  tcase_add_test (tc, list_add_ordered);
+  tcase_add_test (tc, list_add_ordered_beg);
+  tcase_add_test (tc, list_add_ordered_end);
+  tcase_add_test (tc, list_add_ordered_prealloc);
+  tcase_add_test (tc, list_add_unordered);
+  tcase_add_test (tc, list_add_sort);
+  tcase_add_test (tc, list_find);
+  tcase_add_test (tc, list_free);
+  tcase_add_test (tc, vlist_create_free);
+  tcase_add_test (tc, vlist_add);
+  tcase_add_test (tc, vlist_add_sort);
+  tcase_add_test (tc, vlist_replace);
+  tcase_add_test (tc, vlist_get_data);
+  tcase_add_test (tc, vlist_free);
+  suite_add_tcase (s, tc);
   return s;
 }

@@ -40,6 +40,16 @@ dbClose (void)
   bdjdb = NULL;
 }
 
+size_t
+dbCount (void)
+{
+  size_t tcount = 0L;
+  if (bdjdb != NULL) {
+    tcount = bdjdb->count;
+  }
+  return tcount;
+}
+
 int
 dbLoad (db_t *db, char *fn)
 {
@@ -68,8 +78,8 @@ dbLoad (db_t *db, char *fn)
     song = songAlloc ();
     songSetAll (song, parseGetData (pi), songDataCount);
     fstr = songGet (song, TAG_FILE);
-    sscanf (songGet (song, "rrn"), "%d", &srrn);
-    if (i != srrn) {
+    sscanf (songGet (song, "rrn"), "%ld", &srrn);
+    if ((long) i != srrn) {
       songSetNumeric (song, "rrn", (long) i);
     }
     vlistSetData (db->songs, strdup (fstr), song);

@@ -11,6 +11,7 @@
 #include <assert.h>
 
 #include "lock.h"
+#include "utility.h"
 
 static int    getPidFromFile (char *);
 
@@ -43,7 +44,7 @@ lockAcquirePid (char *fn, pid_t pid)
         unlink (fn);
       }
     }
-    usleep (10000);
+    msleep (20);
     ++count;
     fd = open (fn, O_CREAT | O_EXCL | O_RDWR, 0600);
   }

@@ -234,21 +234,21 @@ Suite *
 rafile_suite (void)
 {
   Suite     *s;
-  TCase     *tc_rafile;
+  TCase     *tc;
 
   s = suite_create ("RAFile Suite");
-  tc_rafile = tcase_create ("RA-File");
-  tcase_add_test (tc_rafile, rafile_create_new);
-  tcase_add_test (tc_rafile, rafile_reopen);
-  tcase_add_test (tc_rafile, rafile_write);
-  tcase_add_test (tc_rafile, rafile_read);
-  tcase_add_test (tc_rafile, rafile_rewrite);
-  tcase_add_test (tc_rafile, rafile_reread);
-  tcase_add_test (tc_rafile, rafile_bad_write_len);
-  tcase_add_test (tc_rafile, rafile_clear);
-  tcase_add_test (tc_rafile, rafile_bad_read);
-  tcase_add_test (tc_rafile, rafile_bad_clear);
-  tcase_add_test (tc_rafile, rafile_cleanup);
-  suite_add_tcase (s, tc_rafile);
+  tc = tcase_create ("RA-File");
+  tcase_add_test (tc, rafile_create_new);
+  tcase_add_test (tc, rafile_reopen);
+  tcase_add_test (tc, rafile_write);
+  tcase_add_test (tc, rafile_read);
+  tcase_add_test (tc, rafile_rewrite);
+  tcase_add_test (tc, rafile_reread);
+  tcase_add_test (tc, rafile_bad_write_len);
+  tcase_add_test (tc, rafile_clear);
+  tcase_add_test (tc, rafile_bad_read);
+  tcase_add_test (tc, rafile_bad_clear);
+  tcase_add_test (tc, rafile_cleanup);
+  suite_add_tcase (s, tc);
   return s;
 }

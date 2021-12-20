@@ -6,6 +6,9 @@
 #include <assert.h>
 #include <unistd.h>
 #include <string.h>
+#if _hdr_bsd_string
+# include <bsd/string.h>
+#endif
 
 #include "sysvars.h"
 

@@ -28,7 +28,7 @@ START_TEST(lock_acquire_release)
   ck_assert (rc == 0);
   ck_assert (statbuf.st_size > 0);
   fh = fopen (LOCK_FN, "r");
-  fscanf (fh, "%d", &fpid);
+  rc = fscanf (fh, "%d", &fpid);
   fclose (fh);
   ck_assert (fpid == pid);
   rc = lockReleasePid (LOCK_FN, pid);
@@ -41,10 +41,7 @@ END_TEST
 START_TEST(lock_already)
 {
   int           rc;
-  struct stat   statbuf;
-  FILE          *fh;
   pid_t         pid;
-  pid_t         fpid;
 
   pid = getpid ();
   unlink (LOCK_FN);
@@ -93,15 +90,15 @@ Suite *
 lock_suite (void)
 {
   Suite     *s;
-  TCase     *tc_lock;
+  TCase     *tc;
 
   s = suite_create ("Lock Suite");
-  tc_lock = tcase_create ("Lock");
-  tcase_add_test (tc_lock, lock_acquire_release);
-  tcase_add_test (tc_lock, lock_already);
-  tcase_add_test (tc_lock, lock_other_dead);
-  tcase_add_test (tc_lock, lock_unlock_fail);
-  suite_add_tcase (s, tc_lock);
+  tc = tcase_create ("Lock");
+  tcase_add_test (tc, lock_acquire_release);
+  tcase_add_test (tc, lock_already);
+  tcase_add_test (tc, lock_other_dead);
+  tcase_add_test (tc, lock_unlock_fail);
+  suite_add_tcase (s, tc);
   return s;
 }
 

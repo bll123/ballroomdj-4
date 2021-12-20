@@ -86,14 +86,14 @@ Suite *
 parse_suite (void)
 {
   Suite     *s;
-  TCase     *tc_parse;
+  TCase     *tc;
 
   s = suite_create ("Parse Suite");
-  tc_parse = tcase_create ("Parse");
-  tcase_add_test (tc_parse, parse_init_free);
-  tcase_add_test (tc_parse, parse_basic);
-  tcase_add_test (tc_parse, parse_with_comments);
-  suite_add_tcase (s, tc_parse);
+  tc = tcase_create ("Parse");
+  tcase_add_test (tc, parse_init_free);
+  tcase_add_test (tc, parse_basic);
+  tcase_add_test (tc, parse_with_comments);
+  suite_add_tcase (s, tc);
   return s;
 }
 
