@@ -35,6 +35,7 @@
 
 static ssize_t  sockReadData (int, char *, size_t);
 static int      sockWriteData (int, char *, size_t);
+static void     sockFlush (int sock);
 static int      sockSetNonblocking (int sock);
 // static int       sockSetBlocking (int sock);
 
@@ -56,6 +57,10 @@ sockServer (short listenPort, int *err)
   saddr.sin_port = htons ((uint16_t) listenPort);
   saddr.sin_addr.s_addr = inet_addr ("127.0.0.1");
   rc = bind (lsock, (struct sockaddr *) &saddr, sizeof (struct sockaddr_in));
+  while (rc != 0 && (errno == EADDRINUSE)) {
+    msleep (100);
+    rc = bind (lsock, (struct sockaddr *) &saddr, sizeof (struct sockaddr_in));
+  }
   if (rc != 0) {
     *err = errno;
     close (lsock);
@@ -231,6 +236,30 @@ sockConnectWait (short connPort, size_t timeout)
   return clsock;
 }
 
+char *
+sockReadBuff (int sock, size_t *rlen, char *data, size_t maxlen)
+{
+  size_t      len;
+  ssize_t     rc;
+
+  len = 0;
+  *rlen = 0;
+  rc = sockReadData (sock, (char *) &len, sizeof (size_t));
+  if (rc < 0) {
+    return NULL;
+  }
+  if (len > maxlen) {
+    sockFlush (sock);
+    return NULL;
+  }
+  rc = sockReadData (sock, data, len);
+  if (rc < 0) {
+    return NULL;
+  }
+  *rlen = len;
+  return data;
+}
+
 /* allocates the data buffer.               */
 /* the buffer must be freed by the caller.  */
 char *
@@ -285,7 +314,11 @@ sockReadData (int sock, char *data, size_t len)
 {
   size_t        tot = 0;
   ssize_t       rc;
+  mtime_t       mi;
+  size_t        timeout;
 
+  timeout = len * SOCK_READ_TIMEOUT;
+  mtimestart (&mi);
   rc = read (sock, data, len);
   if (rc < 0 &&
       errno != EINTR && errno != EAGAIN && errno != EWOULDBLOCK) {
@@ -302,6 +335,13 @@ sockReadData (int sock, char *data, size_t len)
     }
     if (rc > 0) {
       tot += (size_t) rc;
+    }
+    if (tot == 0) {
+      msleep (5);
+    }
+    size_t m = mtimeend (&mi);
+    if (m > timeout) {
+      break;
     }
   }
   return 0;
@@ -333,6 +373,38 @@ sockWriteData (int sock, char *data, size_t len)
   }
   return 0;
 }
+
+static void
+sockFlush (int sock)
+{
+  char      data [1024];
+  size_t    len = 1024;
+  int       count;
+  ssize_t   rc;
+
+  count = 0;
+  rc = read (sock, data, len);
+  if (rc < 0 &&
+      errno != EINTR && errno != EAGAIN && errno != EWOULDBLOCK) {
+    return;
+  }
+  while (rc >= 0) {
+    rc = read (sock, data, len);
+    if (rc < 0 &&
+        errno != EINTR && errno != EAGAIN && errno != EWOULDBLOCK) {
+      return;
+    }
+    if (rc == 0) {
+      ++count;
+    } else {
+      count = 0;
+    }
+    if (count > 3) {
+      return;
+    }
+  }
+}
+
 
 static int
 sockSetNonblocking (int sock)
