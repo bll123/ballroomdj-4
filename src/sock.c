@@ -45,11 +45,25 @@ sockServer (short listenPort, int *err)
 {
   struct sockaddr_in  saddr;
   int                 rc;
+  int                 opt = 1;
 
   int lsock = socket (AF_INET, SOCK_STREAM, 0);
   if (lsock < 0) {
     *err = errno;
     return lsock;
+  }
+
+  rc = setsockopt (lsock, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof (opt));
+  if (rc != 0) {
+    *err = errno;
+    close (lsock);
+    return -1;
+  }
+  rc = setsockopt (lsock, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof (opt));
+  if (rc != 0) {
+    *err = errno;
+    close (lsock);
+    return -1;
   }
 
   memset (&saddr, 0, sizeof (struct sockaddr_in));
@@ -185,6 +199,7 @@ sockConnect (short connPort, int *err)
 {
   struct sockaddr_in  raddr;
   int                 rc;
+  int                 opt = 1;
 
   int clsock = socket (AF_INET, SOCK_STREAM, 0);
   if (clsock < 0) {
@@ -196,6 +211,19 @@ sockConnect (short connPort, int *err)
     close (clsock);
     return -1;
   }
+  rc = setsockopt (clsock, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof (opt));
+  if (rc != 0) {
+    *err = errno;
+    close (clsock);
+    return -1;
+  }
+  rc = setsockopt (clsock, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof (opt));
+  if (rc != 0) {
+    *err = errno;
+    close (clsock);
+    return -1;
+  }
+
   memset (&raddr, 0, sizeof (struct sockaddr_in));
   raddr.sin_family = AF_INET;
   raddr.sin_addr.s_addr = inet_addr ("127.0.0.1");
