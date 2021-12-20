@@ -174,7 +174,7 @@ tmutil$(OBJ_EXT): tmutil.c tmutil.h $(MKC_OUTPUT)
 
 CHECKOBJS = check_all$(OBJ_EXT) check_list$(OBJ_EXT) \
 	check_lock$(OBJ_EXT) check_parse$(OBJ_EXT) check_rafile$(OBJ_EXT) \
-	check_sock$(OBJ_EXT) \
+	check_sock$(OBJ_EXT) check_tmutil$(OBJ_EXT) \
 	libbdj$(SHLIB_EXT)
 CHECKLIBS =
 check_all$(EXE_EXT): $(CHECKOBJS)
@@ -199,3 +199,5 @@ check_parse$(OBJ_EXT): check_parse.c parse.h check_bdj.h
 check_rafile$(OBJ_EXT): check_rafile.c rafile.h check_bdj.h
 
 check_sock$(OBJ_EXT): check_sock.c sock.h tmutil.h check_bdj.h
+
+check_tmutil$(OBJ_EXT): check_tmutil.c tmutil.h check_bdj.h
