@@ -52,12 +52,15 @@ main (int argc, char *argv[])
 
   if (isMacOS()) {
     char  npath [MAXPATHLEN];
+    char  buff [MAXPATHLEN];
+
     char  *path = getenv ("PATH");
-    strlcpy (npath, path, MAXPATHLEN);
+    strlcpy (npath, "PATH=", MAXPATHLEN);
+    strlcat (npath, path, MAXPATHLEN);
     strlcat (npath, ":/opt/local/bin", MAXPATHLEN);
-    setenv ("PATH", npath, 1);
-    setenv ("DYLD_FALLBACK_LIBRARY_PATH",
-        "/Applications/VLC.app/Contents/MacOS/lib/", 1);
+    putenv (npath);
+    putenv("DYLD_FALLBACK_LIBRARY_PATH="
+        "/Applications/VLC.app/Contents/MacOS/lib/");
   }
 
   // windows: make sure the ./bin directory is in the path (for .dlls)

@@ -3,15 +3,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
-#include <sys/types.h>
-#include <string.h>
 #include <errno.h>
+#include <signal.h>
+#include <string.h>
 #include <sys/time.h>
-#if _sys_socket
-# include <sys/socket.h>
-#endif
+#include <sys/types.h>
+
 #if _hdr_arpa_inet
 # include <arpa/inet.h>
+#endif
+#if _hdr_fcntl
+# include <fcntl.h>
 #endif
 #if _hdr_netdb
 # include <netdb.h>
@@ -19,15 +21,20 @@
 #if _hdr_netinet_in
 # include <netinet/in.h>
 #endif
-#include <signal.h>
 #if _hdr_poll
 # include <poll.h>
 #endif
-#if _hdr_fcntl
-# include <fcntl.h>
+#if _sys_socket
+# include <sys/socket.h>
 #endif
 #if _hdr_unistd
 # include <unistd.h>
+#endif
+#if _hdr_windows
+# include <windows.h>
+#endif
+#if _hdr_winsock2
+# include <winsock2.h>
 #endif
 
 #include "sock.h"
@@ -39,7 +46,6 @@ static void     sockFlush (int sock);
 static int      sockSetNonblocking (int sock);
 // static int       sockSetBlocking (int sock);
 
-
 int
 sockServer (short listenPort, int *err)
 {
@@ -47,7 +53,7 @@ sockServer (short listenPort, int *err)
   int                 rc;
   int                 opt = 1;
 
-  int lsock = socket (AF_INET, SOCK_STREAM, 0);
+  Sock_t lsock = socket (AF_INET, SOCK_STREAM, 0);
   if (lsock < 0) {
     *err = errno;
     return lsock;
@@ -59,17 +65,20 @@ sockServer (short listenPort, int *err)
     close (lsock);
     return -1;
   }
+#if _define_SO_REUSEPORT
   rc = setsockopt (lsock, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof (opt));
   if (rc != 0) {
     *err = errno;
     close (lsock);
     return -1;
   }
+#endif
 
   memset (&saddr, 0, sizeof (struct sockaddr_in));
   saddr.sin_family = AF_INET;
-  saddr.sin_port = htons ((uint16_t) listenPort);
+  saddr.sin_port = htons ((Uint16_t) listenPort);
   saddr.sin_addr.s_addr = inet_addr ("127.0.0.1");
+
   rc = bind (lsock, (struct sockaddr *) &saddr, sizeof (struct sockaddr_in));
   while (rc != 0 && (errno == EADDRINUSE)) {
     msleep (100);
@@ -100,6 +109,7 @@ sockClose (int sock)
 sockinfo_t *
 sockAddPoll (sockinfo_t *sockinfo, int sock)
 {
+#if _lib_poll
   struct pollfd   *p;
   int             idx;
 
@@ -119,11 +129,14 @@ sockAddPoll (sockinfo_t *sockinfo, int sock)
   p->events |= POLLIN;
 
   return sockinfo;
+#endif
+  return NULL;
 }
 
 void
 sockRemovePoll (sockinfo_t *sockinfo, int sock)
 {
+#if _lib_poll
   if (sockinfo == NULL) {
     return;
   }
@@ -133,11 +146,13 @@ sockRemovePoll (sockinfo_t *sockinfo, int sock)
       sockinfo->pollfds [i].fd = -1;
     }
   }
+#endif
 }
 
 void
 sockFreePoll (sockinfo_t *sockinfo)
 {
+#if _lib_poll
   if (sockinfo != NULL) {
     if (sockinfo->pollfds != NULL) {
       free (sockinfo->pollfds);
@@ -145,11 +160,13 @@ sockFreePoll (sockinfo_t *sockinfo)
     }
     free (sockinfo);
   }
+#endif
 }
 
 int
 sockPoll (sockinfo_t *sockinfo)
 {
+#if _lib_poll
   int     rc;
 
   if (sockinfo == NULL) {
@@ -170,6 +187,7 @@ sockPoll (sockinfo_t *sockinfo)
     }
     --rc;
   }
+#endif
   return 0;
 }
 
@@ -177,9 +195,9 @@ int
 sockAccept (int lsock, int *err)
 {
   struct sockaddr_in  saddr;
-  socklen_t           alen;
+  Socklen_t           alen;
 
-  int nsock = accept (lsock, (struct sockaddr *) &saddr, &alen);
+  Sock_t nsock = accept (lsock, (struct sockaddr *) &saddr, &alen);
   if (nsock < 0) {
     *err = errno;
     return -1;
@@ -201,7 +219,7 @@ sockConnect (short connPort, int *err)
   int                 rc;
   int                 opt = 1;
 
-  int clsock = socket (AF_INET, SOCK_STREAM, 0);
+  Sock_t clsock = socket (AF_INET, SOCK_STREAM, 0);
   if (clsock < 0) {
     *err = errno;
     return clsock;
@@ -217,17 +235,19 @@ sockConnect (short connPort, int *err)
     close (clsock);
     return -1;
   }
+#if _define_SO_REUSEPORT
   rc = setsockopt (clsock, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof (opt));
   if (rc != 0) {
     *err = errno;
     close (clsock);
     return -1;
   }
+#endif
 
   memset (&raddr, 0, sizeof (struct sockaddr_in));
   raddr.sin_family = AF_INET;
   raddr.sin_addr.s_addr = inet_addr ("127.0.0.1");
-  raddr.sin_port = htons ((uint16_t) connPort);
+  raddr.sin_port = htons ((Uint16_t) connPort);
   rc = connect (clsock, (struct sockaddr *) &raddr, sizeof (struct sockaddr_in));
   if (rc != 0) {
     *err = errno;
@@ -440,6 +460,7 @@ sockFlush (int sock)
 static int
 sockSetNonblocking (int sock)
 {
+#if _lib_fcntl
   int         flags;
   int         rc;
 
@@ -453,6 +474,7 @@ sockSetNonblocking (int sock)
     return -1;
   }
 
+#endif
   return 0;
 }
 
@@ -461,6 +483,7 @@ sockSetNonblocking (int sock)
 static int
 sockSetBlocking (int sock)
 {
+#if _lib_fcntl
   int         flags;
   int         rc;
 
@@ -474,6 +497,7 @@ sockSetBlocking (int sock)
     return -1;
   }
 
+#endif
   return 0;
 }
 

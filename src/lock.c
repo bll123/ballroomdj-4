@@ -10,10 +10,12 @@
 #include <signal.h>
 #include <assert.h>
 
-#include "lock.h"
+#include "portability.h"
+#include "process.h"
 #include "tmutil.h"
+#include "lock.h"
 
-static int    getPidFromFile (char *);
+static pid_t   getPidFromFile (char *);
 
 int
 lockAcquire (char *fn)
@@ -36,9 +38,9 @@ lockAcquirePid (char *fn, pid_t pid)
   count = 0;
   while (fd < 0 && count < 30) {
     /* check for detached lock file */
-    int fpid = getPidFromFile (fn);
+    pid_t fpid = getPidFromFile (fn);
     if (fpid > 0) {
-      rc = kill (fpid, 0);
+      rc = processExists (fpid);
       if (rc < 0) {
         /* process does not exist */
         unlink (fn);
@@ -50,7 +52,7 @@ lockAcquirePid (char *fn, pid_t pid)
   }
 
   if (fd >= 0) {
-    sprintf (pidstr, "%d", pid);
+    sprintf (pidstr, PID_FMT, pid);
     len = strlen (pidstr);
     rwlen = write (fd, pidstr, len);
     assert (rwlen == (ssize_t) len);
@@ -70,7 +72,7 @@ int
 lockReleasePid (char *fn, pid_t pid)
 {
   int rc = -1;
-  int fpid = getPidFromFile (fn);
+  pid_t fpid = getPidFromFile (fn);
   if (fpid == pid) {
     unlink (fn);
     rc = 0;
@@ -80,15 +82,15 @@ lockReleasePid (char *fn, pid_t pid)
 
 /* internal routines */
 
-static int
+static pid_t
 getPidFromFile (char *fn)
 {
   FILE      *fh;
 
-  int pid = -1;
+  pid_t pid = -1;
   fh = fopen (fn, "r");
   if (fh != NULL) {
-    int rc = fscanf (fh, "%d", &pid);
+    int rc = fscanf (fh, PID_FMT, &pid);
     if (rc != 1) {
       pid = -1;
     }

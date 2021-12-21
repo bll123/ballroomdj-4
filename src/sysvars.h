@@ -20,7 +20,6 @@
 #if ! defined (MAXPATHLEN)
 # define MAXPATHLEN         255
 #endif
-
 typedef enum {
   SV_OSNAME,
   SV_OSVERS,

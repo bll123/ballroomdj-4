@@ -20,7 +20,7 @@ START_TEST(sock_server_create)
 {
   int         err;
 
-  int s = sockServer (32700, &err);
+  Sock_t s = sockServer (32700, &err);
   ck_assert (s >= 0);
   sockClose (s);
 }
@@ -32,7 +32,7 @@ START_TEST(sock_server_create_poll)
   int         err;
 
   si = NULL;
-  int s = sockServer (32701, &err);
+  Sock_t s = sockServer (32701, &err);
   ck_assert (s >= 0);
   si = sockAddPoll (si, s);
   ck_assert (si->pollcount == 1);
@@ -50,7 +50,7 @@ START_TEST(sock_server_poll)
   int         err;
 
   si = NULL;
-  int s = sockServer (32702, &err);
+  Sock_t s = sockServer (32702, &err);
   ck_assert (s >= 0);
   si = sockAddPoll (si, s);
   rc = sockPoll (si);
@@ -65,9 +65,9 @@ START_TEST(sock_connect_accept)
 {
   int           err;
   pid_t         pid;
-  int           c;
-  int           r;
-  int           l;
+  Sock_t        c;
+  Sock_t        r;
+  Sock_t        l;
 
   pid = check_fork ();
 
@@ -99,9 +99,9 @@ START_TEST(sock_poll_connect_accept)
   int           rc;
   int           err;
   pid_t         pid;
-  int           c;
-  int           l;
-  int           r;
+  Sock_t        c;
+  Sock_t        l;
+  Sock_t        r;
 
   si = NULL;
   pid = check_fork ();
@@ -141,9 +141,9 @@ START_TEST(sock_write)
   int           rc;
   int           err;
   pid_t         pid;
-  int           c;
-  int           l;
-  int           r;
+  Sock_t        c;
+  Sock_t        l;
+  Sock_t        r;
   char          *data = { "aaaabbbbccccddddeeeeffff" };
   char          datab [4096];
 
@@ -190,9 +190,9 @@ START_TEST(sock_write_read)
   int           rc;
   int           err;
   pid_t         pid;
-  int           c;
-  int           l;
-  int           r;
+  Sock_t        c;
+  Sock_t        l;
+  Sock_t        r;
   char          *data = { "aaaabbbbccccddddeeeeffff" };
   char          datab [4096];
   char          *ndata;
@@ -252,9 +252,9 @@ START_TEST(sock_write_read_buff)
   int           rc;
   int           err;
   pid_t         pid;
-  int           c;
-  int           l;
-  int           r;
+  Sock_t        c;
+  Sock_t        l;
+  Sock_t        r;
   char          *data = { "aaaabbbbccccddddeeeeffff" };
   char          buff [80];
   char          *ndata;
@@ -305,9 +305,9 @@ START_TEST(sock_write_read_buff_fail)
   int           rc;
   int           err;
   pid_t         pid;
-  int           c;
-  int           l;
-  int           r;
+  Sock_t        c;
+  Sock_t        l;
+  Sock_t        r;
   char          *data = { "aaaabbbbccccddddeeeeffff" };
   char          buff [10];
   char          *ndata;
@@ -362,9 +362,9 @@ START_TEST(sock_write_poll_read)
   int           rc;
   int           err;
   pid_t         pid;
-  int           c;
-  int           l;
-  int           r;
+  Sock_t        c;
+  Sock_t        l;
+  Sock_t        r;
   char          *data = { "aaaabbbbccccddddeeeeffff" };
   char          datab [4096];
   char          *ndata;

@@ -131,7 +131,7 @@ bdj4main$(EXE_EXT): $(BDJMAINOBJS)
 # bdj libraries
 
 BDJOBJS = bdjstring$(OBJ_EXT) list$(OBJ_EXT) lock$(OBJ_EXT) \
-	musicdb$(OBJ_EXT) parse$(OBJ_EXT) \
+	musicdb$(OBJ_EXT) parse$(OBJ_EXT) process$(OBJ_EXT) \
 	rafile$(OBJ_EXT) sock$(OBJ_EXT) \
 	song$(OBJ_EXT) sysvars$(OBJ_EXT) tagdef$(OBJ_EXT) \
 	tmutil$(OBJ_EXT)
@@ -151,12 +151,14 @@ bdjstring$(OBJ_EXT): bdjstring.c bdjstring.h $(MKC_OUTPUT)
 
 list$(OBJ_EXT): list.c list.h $(MKC_OUTPUT)
 
-lock$(OBJ_EXT): lock.c lock.h tmutil.h $(MKC_OUTPUT)
+lock$(OBJ_EXT): lock.c lock.h portability.h process.h tmutil.h $(MKC_OUTPUT)
 
 musicdb$(OBJ_EXT): musicdb.c musicdb.h rafile.h song.h \
 	parse.h tagdef.h $(MKC_OUTPUT)
 
 parse$(OBJ_EXT): parse.c parse.h $(MKC_OUTPUT)
+
+process$(OBJ_EXT): process.c process.h $(MKC_OUTPUT)
 
 rafile$(OBJ_EXT): rafile.c rafile.h lock.h tmutil.h $(MKC_OUTPUT)
 

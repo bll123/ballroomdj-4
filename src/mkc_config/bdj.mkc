@@ -20,8 +20,8 @@ hdr     signal.h
 hdr     string.h
 hdr     unistd.h
 hdr	windows.h
+hdr	winsock2.h
 
-sys	param.h
 sys     socket.h
 sys	utsname.h
 
@@ -30,8 +30,60 @@ if not_have_pkg_check ! _pkg_libs_check
   lib    tcase_create -lcheck -pthread -lm
 endif
 
+typ     __int16
+typ     uint16_t
+typ     SOCKET
+typ     socklen_t
+typ	struct sockaddr_in
+
 lib	bindtextdomain -lintl, -lintl -liconv
+lib     fcntl
 lib	gettext -lintl, -lintl -liconv
+lib     kill
+lib     OpenProcess
+lib     poll
 lib     pthread_create -lpthread
 lib     pthread_join -lpthread
+lib     setsockopt -lws2_32
+lib     socket -lws2_32
 lib	strlcpy -lbsd
+lib	strlcat -lbsd
+lib     uname
+
+define  SO_REUSEPORT
+
+size	long
+size	pid_t
+
+include
+
+#if _typ_uint16_t
+# define Uint16_t uint16_t
+#else
+# if _typ___int16
+#  define Uint16_t unsigned __int16
+# else
+#  define Uint16_t unsigned short
+# endif
+#endif
+
+# define Sock_t int
+#if _typ_SOCKET
+# undef Sock_t
+# define Sock_t SOCKET
+#endif
+
+#if _typ_socklen_t
+# define Socklen_t socklen_t
+#else
+# define Socklen_t int
+#endif
+
+#if ! _lib_strlcpy
+# define strlcpy strncpy
+#endif
+#if ! _lib_strlcat
+# define strlcat strncat
+#endif
+
+endinclude
