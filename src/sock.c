@@ -21,8 +21,8 @@
 #if _hdr_netinet_in
 # include <netinet/in.h>
 #endif
-#if _hdr_poll
-# include <poll.h>
+#if _sys_select
+# include <sys/select.h>
 #endif
 #if _sys_socket
 # include <sys/socket.h>
@@ -107,87 +107,107 @@ sockClose (int sock)
 }
 
 sockinfo_t *
-sockAddPoll (sockinfo_t *sockinfo, int sock)
+sockAddCheck (sockinfo_t *sockinfo, Sock_t sock)
 {
-#if _lib_poll
-  struct pollfd   *p;
   int             idx;
 
   if (sockinfo == NULL) {
     sockinfo = malloc (sizeof (sockinfo_t));
     assert (sockinfo != NULL);
-    sockinfo->pollcount = 0;
-    sockinfo->pollfds = NULL;
+    sockinfo->count = 0;
+    sockinfo->max = 0;
+    sockinfo->socklist = NULL;
   }
 
-  idx = sockinfo->pollcount;
-  ++sockinfo->pollcount;
-  sockinfo->pollfds = realloc (sockinfo->pollfds,
-      sizeof (struct pollfd) * (size_t) sockinfo->pollcount);
-  p = &(sockinfo->pollfds [idx]);
-  p->fd = sock;
-  p->events |= POLLIN;
+  if (sock < 0 || sock >= FD_SETSIZE) {
+    return sockinfo;
+  }
+
+  idx = sockinfo->count;
+  ++sockinfo->count;
+  sockinfo->socklist = realloc (sockinfo->socklist,
+      (size_t) sockinfo->count * sizeof (Sock_t));
+  assert (sockinfo->socklist != NULL);
+  sockinfo->socklist[idx] = sock;
+  if (sock > sockinfo->max) {
+    sockinfo->max = sock;
+  }
 
   return sockinfo;
-#endif
-  return NULL;
 }
 
 void
-sockRemovePoll (sockinfo_t *sockinfo, int sock)
+sockRemoveCheck (sockinfo_t *sockinfo, Sock_t sock)
 {
-#if _lib_poll
   if (sockinfo == NULL) {
     return;
   }
 
-  for (size_t i = 0; i < (size_t) sockinfo->pollcount; ++i) {
-    if (sockinfo->pollfds [i].fd == sock) {
-      sockinfo->pollfds [i].fd = -1;
+  if (sock < 0 || sock >= FD_SETSIZE) {
+    return;
+  }
+
+  for (size_t i = 0; i < (size_t) sockinfo->count; ++i) {
+    if (sockinfo->socklist[i] == sock) {
+      sockinfo->socklist[i] = -1;
+      break;
     }
   }
-#endif
 }
 
 void
-sockFreePoll (sockinfo_t *sockinfo)
+sockFreeCheck (sockinfo_t *sockinfo)
 {
-#if _lib_poll
   if (sockinfo != NULL) {
-    if (sockinfo->pollfds != NULL) {
-      free (sockinfo->pollfds);
-      sockinfo->pollcount = 0;
+    sockinfo->count = 0;
+    if (sockinfo->socklist != NULL) {
+      free (sockinfo->socklist);
     }
     free (sockinfo);
   }
-#endif
 }
 
 int
-sockPoll (sockinfo_t *sockinfo)
+sockCheck (sockinfo_t *sockinfo)
 {
-#if _lib_poll
-  int     rc;
+  int               rc;
+  struct timeval    tv;
 
   if (sockinfo == NULL) {
     return 0;
   }
 
-  rc = poll (sockinfo->pollfds, (nfds_t) sockinfo->pollcount, 10);
+  FD_ZERO (&(sockinfo->readfds));
+  for (size_t i = 0; i < (size_t) sockinfo->count; ++i) {
+    Sock_t tsock = sockinfo->socklist[i];
+    if (tsock < 0 || tsock >= FD_SETSIZE) {
+      continue;
+    }
+    FD_SET (tsock, &(sockinfo->readfds));
+  }
+
+  tv.tv_sec = 0;
+  tv.tv_usec = (suseconds_t)
+      (SOCK_READ_TIMEOUT * sockinfo->count * 1000);
+
+  rc = select (sockinfo->max + 1, &(sockinfo->readfds), NULL, NULL, &tv);
   if (rc < 0) {
-    /* ### FIX */
-    /* process error */
+    if (errno == EINTR) {
+      return 0;
+    }
     return -1;
   }
   if (rc > 0) {
-    for (size_t i = 0; i < (size_t) sockinfo->pollcount; ++i) {
-      if (sockinfo->pollfds [i].revents & (POLLIN | POLLHUP)) {
-        return sockinfo->pollfds [i].fd;
+    for (size_t i = 0; i < (size_t) sockinfo->count; ++i) {
+      Sock_t tsock = sockinfo->socklist[i];
+      if (tsock < 0) {
+        continue;
+      }
+      if (FD_ISSET (tsock, &(sockinfo->readfds))) {
+        return tsock;
       }
     }
-    --rc;
   }
-#endif
   return 0;
 }
 
@@ -473,7 +493,10 @@ sockSetNonblocking (int sock)
   if (rc != 0) {
     return -1;
   }
-
+#endif
+#if _lib_ioctlsocket
+  unsigned long flag = 1;
+  ioctlsocket (sock, FIONBIO, &flag);
 #endif
   return 0;
 }
@@ -496,7 +519,10 @@ sockSetBlocking (int sock)
   if (rc != 0) {
     return -1;
   }
-
+#endif
+#if _lib_ioctlsocket
+  unsigned long flag = 1;
+  ioctlsocket (sock, FIOBIO, &flag);
 #endif
   return 0;
 }

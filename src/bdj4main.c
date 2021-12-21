@@ -52,7 +52,6 @@ main (int argc, char *argv[])
 
   if (isMacOS()) {
     char  npath [MAXPATHLEN];
-    char  buff [MAXPATHLEN];
 
     char  *path = getenv ("PATH");
     strlcpy (npath, "PATH=", MAXPATHLEN);

@@ -1,21 +1,25 @@
 #ifndef INC_SOCK_H
 #define INC_SOCK_H
 
+#include "bdjconfig.h"
+
 #include <sys/types.h>
 
 typedef struct {
-  struct pollfd   *pollfds;
-  int             pollcount;
+  int             count;
+  int             max;
+  fd_set          readfds;
+  Sock_t          *socklist;
 } sockinfo_t;
 
-#define SOCK_READ_TIMEOUT   2
+#define SOCK_READ_TIMEOUT   5
 
 int           sockServer (short, int *);
 void          sockClose (int);
-sockinfo_t *  sockAddPoll (sockinfo_t *, int);
-void          sockRemovePoll (sockinfo_t *, int);
-void          sockFreePoll (sockinfo_t *);
-int           sockPoll (sockinfo_t *);
+sockinfo_t *  sockAddCheck (sockinfo_t *, int);
+void          sockRemoveCheck (sockinfo_t *, int);
+void          sockFreeCheck (sockinfo_t *);
+int           sockCheck (sockinfo_t *);
 int           sockAccept (int, int *);
 int           sockConnect (short, int *);
 int           sockConnectWait (short, size_t);

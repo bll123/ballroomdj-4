@@ -22,6 +22,7 @@ hdr     unistd.h
 hdr	windows.h
 hdr	winsock2.h
 
+sys     select.h
 sys     socket.h
 sys	utsname.h
 
@@ -39,12 +40,11 @@ typ	struct sockaddr_in
 lib	bindtextdomain -lintl, -lintl -liconv
 lib     fcntl
 lib	gettext -lintl, -lintl -liconv
+lib     ioctlsocket -lws2_32
 lib     kill
-lib     OpenProcess
-lib     poll
 lib     pthread_create -lpthread
 lib     pthread_join -lpthread
-lib     setsockopt -lws2_32
+lib     select -lws2_32
 lib     socket -lws2_32
 lib	strlcpy -lbsd
 lib	strlcat -lbsd

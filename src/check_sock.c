@@ -8,8 +8,8 @@
 #if _hdr_unistd
 # include <unistd.h>
 #endif
-#if _hdr_poll
-# include <poll.h>
+#if _sys_select
+# include <sys/select.h>
 #endif
 
 #include "sock.h"
@@ -26,7 +26,7 @@ START_TEST(sock_server_create)
 }
 END_TEST
 
-START_TEST(sock_server_create_poll)
+START_TEST(sock_server_create_check)
 {
   sockinfo_t    *si;
   int         err;
@@ -34,16 +34,16 @@ START_TEST(sock_server_create_poll)
   si = NULL;
   Sock_t s = sockServer (32701, &err);
   ck_assert (s >= 0);
-  si = sockAddPoll (si, s);
-  ck_assert (si->pollcount == 1);
-  ck_assert (si->pollfds[0].fd == s);
-  ck_assert (si->pollfds[0].events != 0);
-  sockFreePoll (si);
+  si = sockAddCheck (si, s);
+  ck_assert (si->count == 1);
+  ck_assert (si->socklist[0] == s);
+  sockRemoveCheck (si, s);
+  sockFreeCheck (si);
   sockClose (s);
 }
 END_TEST
 
-START_TEST(sock_server_poll)
+START_TEST(sock_server_check)
 {
   sockinfo_t    *si;
   int           rc;
@@ -52,10 +52,11 @@ START_TEST(sock_server_poll)
   si = NULL;
   Sock_t s = sockServer (32702, &err);
   ck_assert (s >= 0);
-  si = sockAddPoll (si, s);
-  rc = sockPoll (si);
+  si = sockAddCheck (si, s);
+  rc = sockCheck (si);
   ck_assert (rc == 0);
-  sockFreePoll (si);
+  sockRemoveCheck (si, s);
+  sockFreeCheck (si);
   sockClose (s);
 }
 END_TEST
@@ -93,7 +94,7 @@ START_TEST(sock_connect_accept)
 }
 END_TEST
 
-START_TEST(sock_poll_connect_accept)
+START_TEST(sock_check_connect_accept)
 {
   sockinfo_t    *si;
   int           rc;
@@ -112,11 +113,11 @@ START_TEST(sock_poll_connect_accept)
   } else {
     l = sockServer (32704, &err);
     ck_assert (l >= 0);
-    si = sockAddPoll (si, l);
-    rc = sockPoll (si);
+    si = sockAddCheck (si, l);
+    rc = sockCheck (si);
     while (rc == 0) {
       msleep (20);
-      rc = sockPoll (si);
+      rc = sockCheck (si);
     }
     ck_assert (rc == l);
     r = sockAccept (l, &err);
@@ -131,6 +132,8 @@ START_TEST(sock_poll_connect_accept)
     sockClose (r);
   }
   check_waitpid_and_exit (pid);
+  sockRemoveCheck (si, l);
+  sockFreeCheck (si);
   sockClose (l);
 }
 END_TEST
@@ -161,11 +164,11 @@ START_TEST(sock_write)
   } else {
     l = sockServer (32705, &err);
     ck_assert (l >= 0);
-    si = sockAddPoll (si, l);
-    rc = sockPoll (si);
+    si = sockAddCheck (si, l);
+    rc = sockCheck (si);
     while (rc == 0) {
       msleep (20);
-      rc = sockPoll (si);
+      rc = sockCheck (si);
     }
     ck_assert (rc == l);
     r = sockAccept (l, &err);
@@ -180,6 +183,8 @@ START_TEST(sock_write)
     sockClose (r);
   }
   check_waitpid_and_exit (pid);
+  sockRemoveCheck (si, l);
+  sockFreeCheck (si);
   sockClose (l);
 }
 END_TEST
@@ -212,11 +217,11 @@ START_TEST(sock_write_read)
   } else {
     l = sockServer (32706, &err);
     ck_assert (l >= 0);
-    si = sockAddPoll (si, l);
-    rc = sockPoll (si);
+    si = sockAddCheck (si, l);
+    rc = sockCheck (si);
     while (rc == 0) {
       msleep (20);
-      rc = sockPoll (si);
+      rc = sockCheck (si);
     }
     ck_assert (rc == l);
     r = sockAccept (l, &err);
@@ -242,6 +247,8 @@ START_TEST(sock_write_read)
     sockClose (r);
   }
   check_waitpid_and_exit (pid);
+  sockRemoveCheck (si, l);
+  sockFreeCheck (si);
   sockClose (l);
 }
 END_TEST
@@ -271,11 +278,11 @@ START_TEST(sock_write_read_buff)
   } else {
     l = sockServer (32707, &err);
     ck_assert (l >= 0);
-    si = sockAddPoll (si, l);
-    rc = sockPoll (si);
+    si = sockAddCheck (si, l);
+    rc = sockCheck (si);
     while (rc == 0) {
       msleep (20);
-      rc = sockPoll (si);
+      rc = sockCheck (si);
     }
     ck_assert (rc == l);
     r = sockAccept (l, &err);
@@ -295,6 +302,8 @@ START_TEST(sock_write_read_buff)
     sockClose (r);
   }
   check_waitpid_and_exit (pid);
+  sockRemoveCheck (si, l);
+  sockFreeCheck (si);
   sockClose (l);
 }
 END_TEST
@@ -325,11 +334,11 @@ START_TEST(sock_write_read_buff_fail)
   } else {
     l = sockServer (32708, &err);
     ck_assert (l >= 0);
-    si = sockAddPoll (si, l);
-    rc = sockPoll (si);
+    si = sockAddCheck (si, l);
+    rc = sockCheck (si);
     while (rc == 0) {
       msleep (20);
-      rc = sockPoll (si);
+      rc = sockCheck (si);
     }
     ck_assert (rc == l);
     r = sockAccept (l, &err);
@@ -352,11 +361,13 @@ START_TEST(sock_write_read_buff_fail)
     sockClose (r);
   }
   check_waitpid_and_exit (pid);
+  sockRemoveCheck (si, l);
+  sockFreeCheck (si);
   sockClose (l);
 }
 END_TEST
 
-START_TEST(sock_write_poll_read)
+START_TEST(sock_write_check_read)
 {
   sockinfo_t    *si;
   int           rc;
@@ -384,22 +395,22 @@ START_TEST(sock_write_poll_read)
   } else {
     l = sockServer (32709, &err);
     ck_assert (l >= 0);
-    si = sockAddPoll (si, l);
-    rc = sockPoll (si);
+    si = sockAddCheck (si, l);
+    rc = sockCheck (si);
     while (rc == 0) {
       msleep (20);
-      rc = sockPoll (si);
+      rc = sockCheck (si);
     }
     ck_assert (rc == l);
     r = sockAccept (l, &err);
     ck_assert (r >= 0);
     ck_assert (l != r);
-    si = sockAddPoll (si, r);
+    si = sockAddCheck (si, r);
 
-    rc = sockPoll (si);
+    rc = sockCheck (si);
     while (rc == 0) {
       msleep (20);
-      rc = sockPoll (si);
+      rc = sockCheck (si);
     }
     ck_assert (rc == r);
     ndata = sockRead (r, &len);
@@ -421,6 +432,9 @@ START_TEST(sock_write_poll_read)
     sockClose (r);
   }
   check_waitpid_and_exit (pid);
+  sockRemoveCheck (si, l);
+  sockRemoveCheck (si, r);
+  sockFreeCheck (si);
   sockClose (l);
 }
 END_TEST
@@ -435,20 +449,16 @@ sock_suite (void)
   s = suite_create ("Sock Suite");
   tc = tcase_create ("Sock");
   tcase_add_test (tc, sock_server_create);
-  tcase_add_test (tc, sock_server_create_poll);
-  tcase_add_test (tc, sock_server_poll);
+  tcase_add_test (tc, sock_server_create_check);
+  tcase_add_test (tc, sock_server_check);
   tcase_add_test (tc, sock_connect_accept);
-  tcase_add_test (tc, sock_poll_connect_accept);
+  tcase_add_test (tc, sock_check_connect_accept);
   tcase_add_test (tc, sock_write);
   tcase_add_test (tc, sock_write_read);
   tcase_add_test (tc, sock_write_read_buff);
   tcase_add_test (tc, sock_write_read_buff_fail);
-  tcase_add_test (tc, sock_write_poll_read);
-  /* if the server sockets already exist,
-   * the server socket creation may take a long time
-   */
-  tcase_set_timeout (tc, 30.0);
+  tcase_add_test (tc, sock_write_check_read);
+  tcase_set_timeout (tc, 5.0);
   suite_add_tcase (s, tc);
   return s;
 }
-
