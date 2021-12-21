@@ -1,15 +1,21 @@
 #!/usr/bin/tclsh
 
 if { $argc <= 0 } {
-  puts "usage: mlistconv <directory>"
+  puts "usage: $argv0 <directory>"
   exit 1
 }
 
-set flist [glob -directory [lindex $argv 0] *.mlist]
+set dir [lindex $argv 0]
+if { ! [file exists $dir] || ! [file isdirectory $dir] } {
+  puts "Invalid directory $dir"
+  exit 1
+}
+
+set flist [glob -directory $dir *.mlist]
 
 foreach {fn} $flist {
   source $fn
-  set nfn [file rootname $fn].songlist
+  set nfn [file join data [file rootname [file tail $fn]].songlist]
   set fh [open $nfn w]
   puts $fh "# BDJ4 songlist"
   puts $fh "# Converted from $fn"

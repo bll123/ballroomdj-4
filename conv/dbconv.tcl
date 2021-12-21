@@ -1,9 +1,20 @@
 #!/usr/bin/tclsh
 
+if { $argc <= 0 } {
+  puts "usage: $argv0 <directory>"
+  exit 1
+}
+
+set dir [lindex $argv 0]
+if { ! [file exists $dir] || ! [file isdirectory $dir] } {
+  puts "Invalid directory $dir"
+  exit 1
+}
+
 set hsize 128
 set rsize 2048
 
-set fh [open musicdb.txt r]
+set fh [open [file join $dir musicdb.txt] r]
 gets $fh line
 gets $fh line
 gets $fh line
@@ -11,7 +22,7 @@ gets $fh line
 regexp {^#RAMAX=(\d+)$} $line all racount
 close $fh
 
-set fh [open musicdb.dat w]
+set fh [open [file join data musicdb.dat] w]
 
 source musicdb.txt
 
