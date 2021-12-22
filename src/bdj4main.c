@@ -13,6 +13,9 @@
 #if _hdr_bsd_string
 # include <bsd/string.h>
 #endif
+#if _hdr_unistd
+# include <unistd.h>
+#endif
 
 #include "musicdb.h"
 #include "tagdef.h"
@@ -62,7 +65,24 @@ main (int argc, char *argv[])
         "/Applications/VLC.app/Contents/MacOS/lib/");
   }
 
-  // windows: make sure the ./bin directory is in the path (for .dlls)
+  if (isWindows()) {
+    char  npath [MAXPATHLEN];
+    char  buff [MAXPATHLEN];
+    char  cwd [MAXPATHLEN];
+
+    char  *path = getenv ("PATH");
+    strlcpy (npath, "PATH=", MAXPATHLEN);
+    strlcat (npath, path, MAXPATHLEN);
+    getcwd (cwd, MAXPATHLEN);
+    snprintf (buff, MAXPATHLEN, ";%s", cwd);
+    strlcat (npath, buff, MAXPATHLEN);
+    /* ### FIX need some file path handling routines */
+    /* ### FIX the windows path probably needs to be updated
+       within the launcher */
+    snprintf (buff, MAXPATHLEN, ";%s\\..\\plocal\\lib", cwd);
+    strlcat (npath, buff, MAXPATHLEN);
+    putenv (npath);
+  }
 
   tagdefInit ();
 #if _lib_pthread_create

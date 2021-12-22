@@ -40,6 +40,7 @@ typ	struct sockaddr_in
 lib	bindtextdomain -lintl, -lintl -liconv
 lib     fcntl
 lib	gettext -lintl, -lintl -liconv
+lib     GetVersionEx
 lib     ioctlsocket -lws2_32
 lib     kill
 lib     pthread_create -lpthread

@@ -45,7 +45,7 @@ all: $(MKC_ENV_SHR)
 
 rall: $(LIBRARIES) $(TESTPROGRAMS) $(PROGRAMS)
 	$(MAKE) -e libraries
-	$(MAKE) -e testprograms
+	PKG_CONFIG_PATH=../plocal/lib/pkgconfig $(MAKE) -e testprograms
 	$(MAKE) -e programs
 
 .PHONY: install rinstall

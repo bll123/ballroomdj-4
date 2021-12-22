@@ -229,15 +229,21 @@ START_TEST(sock_write_read)
     ck_assert (l != r);
 
     ndata = sockRead (r, &len);
-    ck_assert (strlen (ndata) + 1 == len);
-    ck_assert (strlen (ndata) == strlen (data));
-    ck_assert (strcmp (ndata, data) == 0);
-    free (ndata);
+    ck_assert (ndata != NULL);
+    if (ndata != NULL) {
+      ck_assert (strlen (ndata) + 1 == len);
+      ck_assert (strlen (ndata) == strlen (data));
+      ck_assert (strcmp (ndata, data) == 0);
+      free (ndata);
+    }
 
     ndata = sockRead (r, &len);
+    ck_assert (ndata != NULL);
     ck_assert (len == 4096);
-    ck_assert (memcmp (ndata, datab, 4096) == 0);
-    free (ndata);
+    if (ndata != NULL) {
+      ck_assert (memcmp (ndata, datab, 4096) == 0);
+      free (ndata);
+    }
   }
   msleep (200);
   if (pid == 0) {
@@ -290,9 +296,12 @@ START_TEST(sock_write_read_buff)
     ck_assert (l != r);
 
     ndata = sockReadBuff (r, &len, buff, sizeof(buff));
-    ck_assert (strlen (ndata) + 1 == len);
-    ck_assert (strlen (ndata) == strlen (data));
-    ck_assert (strcmp (ndata, data) == 0);
+    ck_assert (ndata != NULL);
+    if (ndata != NULL) {
+      ck_assert (strlen (ndata) + 1 == len);
+      ck_assert (strlen (ndata) == strlen (data));
+      ck_assert (strcmp (ndata, data) == 0);
+    }
   }
   msleep (200);
   if (pid == 0) {
@@ -321,7 +330,6 @@ START_TEST(sock_write_read_buff_fail)
   char          buff [10];
   char          *ndata;
   size_t        len;
-  char          buff2 [80];
 
   si = NULL;
   pid = check_fork ();
@@ -347,10 +355,6 @@ START_TEST(sock_write_read_buff_fail)
 
     ndata = sockReadBuff (r, &len, buff, sizeof(buff));
     ck_assert (ndata == NULL);
-    ck_assert (len == 0);
-
-    ndata = sockReadBuff (r, &len, buff2, sizeof(buff2));
-    ck_assert (ndata == buff2);
     ck_assert (len == 0);
   }
   msleep (200);
@@ -414,15 +418,21 @@ START_TEST(sock_write_check_read)
     }
     ck_assert (rc == r);
     ndata = sockRead (r, &len);
-    ck_assert (strlen (ndata) + 1 == len);
-    ck_assert (strlen (ndata) == strlen (data));
-    ck_assert (strcmp (ndata, data) == 0);
-    free (ndata);
+    ck_assert (ndata != NULL);
+    if (ndata != NULL) {
+      ck_assert (strlen (ndata) + 1 == len);
+      ck_assert (strlen (ndata) == strlen (data));
+      ck_assert (strcmp (ndata, data) == 0);
+      free (ndata);
+    }
 
     ndata = sockRead (r, &len);
-    ck_assert (len == 4096);
-    ck_assert (memcmp (ndata, datab, 4096) == 0);
-    free (ndata);
+    ck_assert (ndata != NULL);
+    if (ndata != NULL) {
+      ck_assert (len == 4096);
+      ck_assert (memcmp (ndata, datab, 4096) == 0);
+      free (ndata);
+    }
   }
   msleep (200);
   if (pid == 0) {
@@ -434,6 +444,210 @@ START_TEST(sock_write_check_read)
   check_waitpid_and_exit (pid);
   sockRemoveCheck (si, l);
   sockRemoveCheck (si, r);
+  sockFreeCheck (si);
+  sockClose (l);
+}
+END_TEST
+
+START_TEST(sock_close)
+{
+  sockinfo_t    *si;
+  int           rc;
+  int           err;
+  pid_t         pid;
+  Sock_t        c;
+  Sock_t        l;
+  Sock_t        r;
+  char          *ndata;
+  size_t        len;
+
+  si = NULL;
+  pid = check_fork ();
+
+  if (pid == 0) {
+    c = sockConnectWait (32710, 1000);
+    ck_assert (c >= 0);
+    /* close the socket early */
+    sockClose (c);
+  } else {
+    l = sockServer (32710, &err);
+    ck_assert (l >= 0);
+
+    si = sockAddCheck (si, l);
+    rc = sockCheck (si);
+    while (rc == 0) {
+      msleep (20);
+      rc = sockCheck (si);
+    }
+    ck_assert (rc == l);
+    r = sockAccept (l, &err);
+    ck_assert (r >= 0);
+    ck_assert (l != r);
+    si = sockAddCheck (si, r);
+
+    msleep (20); /* a delay to allow client to close */
+
+    rc = sockCheck (si);
+    while (rc == 0) {
+      msleep (20);
+      rc = sockCheck (si);
+    }
+    ck_assert (rc == r);
+    ndata = sockRead (r, &len);
+    ck_assert (ndata == NULL);
+    if (ndata != NULL) {
+      free (ndata);
+    }
+  }
+  msleep (200);
+  if (pid == 0) {
+    sockClose (c);
+    exit (0);
+  } else {
+    sockClose (r);
+  }
+  check_waitpid_and_exit (pid);
+  sockRemoveCheck (si, l);
+  sockRemoveCheck (si, r);
+  sockFreeCheck (si);
+  sockClose (l);
+}
+END_TEST
+
+START_TEST(sock_write_close)
+{
+  sockinfo_t    *si;
+  int           rc;
+  int           err;
+  pid_t         pid;
+  Sock_t        c;
+  Sock_t        l;
+  Sock_t        r;
+  char          *data = { "aaaabbbbccccddddeeeeffff" };
+  char          datab [4096];
+  char          *ndata;
+  size_t        len;
+
+  si = NULL;
+  pid = check_fork ();
+  memset (datab, 'a', 4096);
+
+  if (pid == 0) {
+    c = sockConnectWait (32710, 1000);
+    ck_assert (c >= 0);
+    rc = sockWriteStr (c, data, strlen (data));
+    ck_assert (rc == 0);
+    rc = sockWriteBinary (c, datab, 4096);
+    ck_assert (rc == 0);
+    /* close the socket early */
+    sockClose (c);
+  } else {
+    l = sockServer (32710, &err);
+    ck_assert (l >= 0);
+
+    si = sockAddCheck (si, l);
+    rc = sockCheck (si);
+    while (rc == 0) {
+      msleep (20);
+      rc = sockCheck (si);
+    }
+    ck_assert (rc == l);
+    r = sockAccept (l, &err);
+    ck_assert (r >= 0);
+    ck_assert (l != r);
+    si = sockAddCheck (si, r);
+
+    msleep (20); /* a delay to allow client to close */
+
+    rc = sockCheck (si);
+    while (rc == 0) {
+      msleep (20);
+      rc = sockCheck (si);
+    }
+    ck_assert (rc == r);
+    ndata = sockRead (r, &len);
+    ck_assert (ndata != NULL);
+    if (ndata != NULL) {
+      free (ndata);
+    }
+
+    rc = sockCheck (si);
+    while (rc == 0) {
+      msleep (20);
+      rc = sockCheck (si);
+    }
+    ck_assert (rc == r);
+    ndata = sockRead (r, &len);
+    ck_assert (ndata != NULL);
+    if (ndata != NULL) {
+      free (ndata);
+    }
+  }
+  msleep (200);
+  if (pid == 0) {
+    sockClose (c);
+    exit (0);
+  } else {
+    sockClose (r);
+  }
+  check_waitpid_and_exit (pid);
+  sockRemoveCheck (si, l);
+  sockRemoveCheck (si, r);
+  sockFreeCheck (si);
+  sockClose (l);
+}
+END_TEST
+
+START_TEST(sock_server_close)
+{
+  sockinfo_t    *si;
+  int           rc;
+  int           err;
+  pid_t         pid;
+  Sock_t        c;
+  Sock_t        l;
+  Sock_t        r;
+  char          *data = { "aaaabbbbccccddddeeeeffff" };
+  char          datab [4096];
+
+  si = NULL;
+  pid = check_fork ();
+  memset (datab, 'a', 4096);
+
+  if (pid == 0) {
+    c = sockConnectWait (32710, 1000);
+    ck_assert (c >= 0);
+    rc = sockWriteStr (c, data, strlen (data));
+    ck_assert (rc < 0);
+    rc = sockWriteBinary (c, datab, 4096);
+    ck_assert (rc < 0);
+  } else {
+    l = sockServer (32710, &err);
+    ck_assert (l >= 0);
+
+    si = sockAddCheck (si, l);
+    rc = sockCheck (si);
+    while (rc == 0) {
+      msleep (20);
+      rc = sockCheck (si);
+    }
+    ck_assert (rc == l);
+    r = sockAccept (l, &err);
+    ck_assert (r >= 0);
+    ck_assert (l != r);
+    sockClose (r);
+  }
+  if (pid == 0) {
+    sockClose (c);
+    exit (0);
+  } else {
+    for (int i = 0; i < 60; ++i) {
+      msleep (100);
+    }
+    sockClose (r);
+  }
+  check_waitpid_and_exit (pid);
+  sockRemoveCheck (si, l);
   sockFreeCheck (si);
   sockClose (l);
 }
@@ -458,7 +672,10 @@ sock_suite (void)
   tcase_add_test (tc, sock_write_read_buff);
   tcase_add_test (tc, sock_write_read_buff_fail);
   tcase_add_test (tc, sock_write_check_read);
-  tcase_set_timeout (tc, 5.0);
+  tcase_add_test (tc, sock_close);
+  tcase_add_test (tc, sock_write_close);
+  tcase_add_test (tc, sock_server_close);
+  tcase_set_timeout (tc, 7.0);
   suite_add_tcase (s, tc);
   return s;
 }

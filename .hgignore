@@ -5,6 +5,7 @@ syntax: regexp
 ^bin/
 ^dev/
 ^locale/
+^packages/
 ^src/bdjconfig.h$
 ^src/.*\.o$
 ^src/.*\.env$

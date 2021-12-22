@@ -23,6 +23,7 @@
 typedef enum {
   SV_OSNAME,
   SV_OSVERS,
+  SV_OSDISP,
   SV_HOSTNAME,
   SV_MAX
 } sysvarkey_t;

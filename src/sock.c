@@ -40,13 +40,14 @@
 #include "sock.h"
 #include "tmutil.h"
 
-static ssize_t  sockReadData (int, char *, size_t);
-static int      sockWriteData (int, char *, size_t);
-static void     sockFlush (int sock);
-static int      sockSetNonblocking (int sock);
-// static int       sockSetBlocking (int sock);
+static ssize_t  sockReadData (Sock_t, char *, size_t);
+static int      sockWriteData (Sock_t, char *, size_t);
+static void     sockFlush (Sock_t);
+static int      sockCanWrite (Sock_t);
+static int      sockSetNonblocking (Sock_t sock);
+// static int       sockSetBlocking (Sock_t sock);
 
-int
+Sock_t
 sockServer (short listenPort, int *err)
 {
   struct sockaddr_in  saddr;
@@ -101,7 +102,7 @@ sockServer (short listenPort, int *err)
 }
 
 void
-sockClose (int sock)
+sockClose (Sock_t sock)
 {
   close (sock);
 }
@@ -167,7 +168,7 @@ sockFreeCheck (sockinfo_t *sockinfo)
   }
 }
 
-int
+Sock_t
 sockCheck (sockinfo_t *sockinfo)
 {
   int               rc;
@@ -211,8 +212,8 @@ sockCheck (sockinfo_t *sockinfo)
   return 0;
 }
 
-int
-sockAccept (int lsock, int *err)
+Sock_t
+sockAccept (Sock_t lsock, int *err)
 {
   struct sockaddr_in  saddr;
   Socklen_t           alen;
@@ -232,7 +233,7 @@ sockAccept (int lsock, int *err)
   return nsock;
 }
 
-int
+Sock_t
 sockConnect (short connPort, int *err)
 {
   struct sockaddr_in  raddr;
@@ -249,6 +250,7 @@ sockConnect (short connPort, int *err)
     close (clsock);
     return -1;
   }
+
   rc = setsockopt (clsock, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof (opt));
   if (rc != 0) {
     *err = errno;
@@ -279,7 +281,7 @@ sockConnect (short connPort, int *err)
   return clsock;
 }
 
-int
+Sock_t
 sockConnectWait (short connPort, size_t timeout)
 {
   int               clsock;
@@ -307,7 +309,7 @@ sockConnectWait (short connPort, size_t timeout)
 }
 
 char *
-sockReadBuff (int sock, size_t *rlen, char *data, size_t maxlen)
+sockReadBuff (Sock_t sock, size_t *rlen, char *data, size_t maxlen)
 {
   size_t      len;
   ssize_t     rc;
@@ -333,7 +335,7 @@ sockReadBuff (int sock, size_t *rlen, char *data, size_t maxlen)
 /* allocates the data buffer.               */
 /* the buffer must be freed by the caller.  */
 char *
-sockRead (int sock, size_t *rlen)
+sockRead (Sock_t sock, size_t *rlen)
 {
   size_t      len;
   ssize_t     rc;
@@ -356,14 +358,14 @@ sockRead (int sock, size_t *rlen)
 
 /* sockWriteStr() writes the null byte also */
 int
-sockWriteStr (int sock, char *data, size_t len)
+sockWriteStr (Sock_t sock, char *data, size_t len)
 {
   int rc = sockWriteBinary (sock, data, len + 1);
   return rc;
 }
 
 int
-sockWriteBinary (int sock, char *data, size_t len)
+sockWriteBinary (Sock_t sock, char *data, size_t len)
 {
   ssize_t     rc;
 
@@ -381,7 +383,7 @@ sockWriteBinary (int sock, char *data, size_t len)
 /* internal routines */
 
 static ssize_t
-sockReadData (int sock, char *data, size_t len)
+sockReadData (Sock_t sock, char *data, size_t len)
 {
   size_t        tot = 0;
   ssize_t       rc;
@@ -415,15 +417,26 @@ sockReadData (int sock, char *data, size_t len)
       break;
     }
   }
+  if (tot < len) {
+    sockFlush (sock);
+    return -1;
+  }
   return 0;
 }
 
 static int
-sockWriteData (int sock, char *data, size_t len)
+sockWriteData (Sock_t sock, char *data, size_t len)
 {
   size_t        tot = 0;
   ssize_t       rc;
 
+  /* ugh.  the write() call blocks on a non-blocking socket.  sigh. */
+  /* call select() and check the condition the socket is in to see  */
+  /* if it is writable.                                             */
+  rc = sockCanWrite (sock);
+  if (rc != sock) {
+    return -1;
+  }
   rc = write (sock, data, len);
   if (rc < 0 &&
       errno != EINTR && errno != EAGAIN && errno != EWOULDBLOCK) {
@@ -446,7 +459,7 @@ sockWriteData (int sock, char *data, size_t len)
 }
 
 static void
-sockFlush (int sock)
+sockFlush (Sock_t sock)
 {
   char      data [1024];
   size_t    len = 1024;
@@ -476,9 +489,37 @@ sockFlush (int sock)
   }
 }
 
+static int
+sockCanWrite (Sock_t sock)
+{
+  fd_set            readfds;
+  fd_set            writefds;
+  struct timeval    tv;
+
+  FD_ZERO (&readfds);
+  FD_ZERO (&writefds);
+  FD_SET (sock, &readfds);
+  FD_SET (sock, &writefds);
+
+  tv.tv_sec = 0;
+  tv.tv_usec = (suseconds_t) (SOCK_WRITE_TIMEOUT * 1 * 1000);
+
+  int rc = select (sock + 1, &readfds, &writefds, NULL, &tv);
+  if (rc < 0) {
+    if (errno == EINTR) {
+      return sockCanWrite (sock);
+    }
+    return -1;
+  }
+  if (FD_ISSET (sock, &writefds) && ! FD_ISSET(sock, &readfds)) {
+    return sock;
+  }
+  return 0;
+}
+
 
 static int
-sockSetNonblocking (int sock)
+sockSetNonblocking (Sock_t sock)
 {
 #if _lib_fcntl
   int         flags;
@@ -504,7 +545,7 @@ sockSetNonblocking (int sock)
 #if 0
 
 static int
-sockSetBlocking (int sock)
+sockSetBlocking (Sock_t sock)
 {
 #if _lib_fcntl
   int         flags;

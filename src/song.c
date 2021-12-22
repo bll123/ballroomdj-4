@@ -53,6 +53,6 @@ songSetNumeric (song_t *song, char *tag, long value)
 {
   char    temp [30];
 
-  sprintf (temp, "%ld", value);
+  snprintf (temp, sizeof(temp), "%ld", value);
   vlistSetData (song->songInfo, strdup (tag), strdup (temp));
 }

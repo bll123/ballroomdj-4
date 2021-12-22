@@ -27,6 +27,9 @@ addldflag -L/opt/local/lib
 # turn off mac os warning
 addcflag -Wno-poison-system-directories
 
+# turn off gcc warning
+addcflag -Wno-format-truncation
+
 # gcc hardening
 # reference: wiki.debian.org/Hardening
 addcflag -Wformat
