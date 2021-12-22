@@ -12,6 +12,7 @@
 #include "lock.h"
 #include "parse.h"
 #include "tagdef.h"
+#include "bdjlog.h"
 
 /* globals */
 static int         initialized = 0;
@@ -87,6 +88,7 @@ dbLoad (db_t *db, char *fn)
     ++db->count;
   }
 
+  bdjlogMsg ("dbLoad: database loaded: ", "%d", 1, db->count);
   raEndBatch (radb);
   parseFree (pi);
   return 0;

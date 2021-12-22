@@ -2,7 +2,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/time.h>
+#include <time.h>
+#include <bsd/string.h>
 #if _hdr_unistd
 # include <unistd.h>
 #endif
@@ -34,3 +37,20 @@ mtimeend (mtime_t *t)
   return (size_t) m;
 }
 
+char *
+dstamp (char *buff, size_t max)
+{
+  struct timeval    curr;
+  struct tm         t;
+  char              tbuff [20];
+
+  gettimeofday (&curr, NULL);
+  time_t s = curr.tv_sec;
+  long u = curr.tv_usec;
+  long m = u / 1000;
+  localtime_r (&s, &t);
+  strftime (buff, max, "%Y-%m-%d.%H:%M:%S", &t);
+  snprintf (tbuff, sizeof (tbuff), ".%03ld", m);
+  strlcat (buff, tbuff, max);
+  return buff;
+}

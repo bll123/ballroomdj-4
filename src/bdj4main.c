@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <locale.h>
 #include <string.h>
+#include <errno.h>
 #if _hdr_libintl
 # include <libintl.h>
 #endif
@@ -22,6 +23,7 @@
 #include "bdjstring.h"
 #include "sysvars.h"
 #include "utility.h"
+#include "bdjlog.h"
 
 void *openDatabase (void *);
 
@@ -51,6 +53,7 @@ main (int argc, char *argv[])
 
   initLocale ();
 
+  startBDJLog ("data/log.txt");
   sysvarsInit ();
 
   if (isMacOS()) {
@@ -73,7 +76,9 @@ main (int argc, char *argv[])
     char  *path = getenv ("PATH");
     strlcpy (npath, "PATH=", MAXPATHLEN);
     strlcat (npath, path, MAXPATHLEN);
-    getcwd (cwd, MAXPATHLEN);
+    if (getcwd (cwd, MAXPATHLEN) == NULL) {
+      bdjlogError ("main: getcwd", errno);
+    }
     snprintf (buff, MAXPATHLEN, ";%s", cwd);
     strlcat (npath, buff, MAXPATHLEN);
     /* ### FIX need some file path handling routines */
@@ -96,6 +101,5 @@ main (int argc, char *argv[])
 #if _lib_pthread_join
   pthread_join (thread, NULL);
 #endif
-  printf ("count: %ld\n", dbCount());
   return 0;
 }

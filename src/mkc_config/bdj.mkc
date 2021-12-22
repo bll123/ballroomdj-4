@@ -43,12 +43,14 @@ lib	gettext -lintl, -lintl -liconv
 lib     GetVersionEx
 lib     ioctlsocket -lws2_32
 lib     kill
+lib     localtime_r
 lib     pthread_create -lpthread
 lib     pthread_join -lpthread
 lib     select -lws2_32
 lib     socket -lws2_32
 lib	strlcpy -lbsd
 lib	strlcat -lbsd
+lib     strtok_r
 lib     uname
 
 define  SO_REUSEPORT

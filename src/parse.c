@@ -13,6 +13,7 @@ parseInit (void)
   parseinfo_t   *pi;
 
   pi = malloc (sizeof (parseinfo_t));
+  assert (pi != NULL);
   pi->strdata = NULL;
   pi->allocCount = 0;
   return pi;

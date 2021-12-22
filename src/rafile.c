@@ -7,10 +7,12 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <string.h>
+#include <errno.h>
 
 #include "rafile.h"
 #include "lock.h"
 #include "tmutil.h"
+#include "bdjlog.h"
 
 static int  raReadHeader (rafile_t *);
 static void raWriteHeader (rafile_t *, int);
@@ -110,11 +112,11 @@ raEndBatch (rafile_t *rafile)
 int
 raWrite (rafile_t *rafile, size_t rrn, char *data)
 {
-  size_t    rc;
-
   size_t len = strlen (data);
+
   /* leave one byte for the terminating null */
   if (len > (RAFILE_REC_SIZE - 1)) {
+    bdjlogMsg ("raWrite: bad data len", "%ld", 1, len);
     return 1;
   }
 
@@ -130,9 +132,9 @@ raWrite (rafile_t *rafile, size_t rrn, char *data)
     }
   }
   fseek (rafile->fh, RRN_TO_OFFSET (rrn), SEEK_SET);
-  rc = fwrite (ranulls, RAFILE_REC_SIZE, 1, rafile->fh);
+  fwrite (ranulls, RAFILE_REC_SIZE, 1, rafile->fh);
   fseek (rafile->fh, RRN_TO_OFFSET (rrn), SEEK_SET);
-  rc = fwrite (data, len, 1, rafile->fh);
+  fwrite (data, len, 1, rafile->fh);
   fflush (rafile->fh);
   raUnlock (rafile);
   return 0;
@@ -142,6 +144,7 @@ int
 raClear (rafile_t *rafile, size_t rrn)
 {
   if (rrn < 1L || rrn > rafile->count) {
+    bdjlogMsg ("raClear: bad rrn", "%ld", 1, rrn);
     return 1;
   }
   raLock (rafile);
@@ -157,6 +160,7 @@ raRead (rafile_t *rafile, size_t rrn, char *data)
   size_t        rc;
 
   if (rrn < 1L || rrn > rafile->count) {
+    bdjlogMsg ("raRead: bad rrn", "%ld", 1, rrn);
     return 0;
   }
 
