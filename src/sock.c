@@ -39,7 +39,7 @@
 
 #include "sock.h"
 #include "tmutil.h"
-#include "bdjlog.h"
+#include "log.h"
 
 static ssize_t  sockReadData (Sock_t, char *, size_t);
 static int      sockWriteData (Sock_t, char *, size_t);
@@ -58,21 +58,21 @@ sockServer (short listenPort, int *err)
   Sock_t lsock = socket (AF_INET, SOCK_STREAM, 0);
   if (lsock < 0) {
     *err = errno;
-    bdjlogError ("sockServer: socket:", errno);
+    logError (LOG_ERR, "sockServer: socket:", errno);
     return lsock;
   }
 
   rc = setsockopt (lsock, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof (opt));
   if (rc != 0) {
     *err = errno;
-    bdjlogError ("sockServer: setsockopt:", errno);
+    logError (LOG_ERR, "sockServer: setsockopt:", errno);
     close (lsock);
     return -1;
   }
 #if _define_SO_REUSEPORT
   rc = setsockopt (lsock, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof (opt));
   if (rc != 0) {
-    bdjlogError ("sockServer: setsockopt-b:", errno);
+    logError (LOG_ERR, "sockServer: setsockopt-b:", errno);
     *err = errno;
     close (lsock);
     return -1;
@@ -91,14 +91,14 @@ sockServer (short listenPort, int *err)
   }
   if (rc != 0) {
     *err = errno;
-    bdjlogError ("sockServer: bind:", errno);
+    logError (LOG_ERR, "sockServer: bind:", errno);
     close (lsock);
     return -1;
   }
   rc = listen (lsock, 10);
   if (rc != 0) {
     *err = errno;
-    bdjlogError ("sockServer: listen:", errno);
+    logError (LOG_ERR, "sockServer: listen:", errno);
     close (lsock);
     return -1;
   }
@@ -127,7 +127,7 @@ sockAddCheck (sockinfo_t *sockinfo, Sock_t sock)
   }
 
   if (sock < 0 || sock >= FD_SETSIZE) {
-    bdjlogMsg ("sockAddCheck: invalid socket", "%d", 1, sock);
+    logVarMsg (LOG_ERR, "sockAddCheck: invalid socket", "%d", sock);
     return sockinfo;
   }
 
@@ -152,7 +152,7 @@ sockRemoveCheck (sockinfo_t *sockinfo, Sock_t sock)
   }
 
   if (sock < 0 || sock >= FD_SETSIZE) {
-    bdjlogMsg ("sockRemoveCheck: invalid socket", "%d", 1, sock);
+    logVarMsg (LOG_ERR, "sockRemoveCheck: invalid socket", "%d", sock);
     return;
   }
 
@@ -204,7 +204,7 @@ sockCheck (sockinfo_t *sockinfo)
     if (errno == EINTR) {
       return 0;
     }
-    bdjlogError ("sockCheck: select", errno);
+    logError (LOG_ERR, "sockCheck: select", errno);
     return -1;
   }
   if (rc > 0) {
@@ -230,7 +230,7 @@ sockAccept (Sock_t lsock, int *err)
   Sock_t nsock = accept (lsock, (struct sockaddr *) &saddr, &alen);
   if (nsock < 0) {
     *err = errno;
-    bdjlogError ("sockAccept: accept", errno);
+    logError (LOG_ERR, "sockAccept: accept", errno);
     return -1;
   }
 
@@ -253,7 +253,7 @@ sockConnect (short connPort, int *err)
   Sock_t clsock = socket (AF_INET, SOCK_STREAM, 0);
   if (clsock < 0) {
     *err = errno;
-    bdjlogError ("sockConnect: socket", errno);
+    logError (LOG_ERR, "sockConnect: socket", errno);
     return clsock;
   }
   if (sockSetNonblocking (clsock) < 0) {
@@ -265,7 +265,7 @@ sockConnect (short connPort, int *err)
   rc = setsockopt (clsock, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof (opt));
   if (rc != 0) {
     *err = errno;
-    bdjlogError ("sockConnect: setsockopt", errno);
+    logError (LOG_ERR, "sockConnect: setsockopt", errno);
     close (clsock);
     return -1;
   }
@@ -273,7 +273,7 @@ sockConnect (short connPort, int *err)
   rc = setsockopt (clsock, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof (opt));
   if (rc != 0) {
     *err = errno;
-    bdjlogError ("sockConnect: setsockopt-b", errno);
+    logError (LOG_ERR, "sockConnect: setsockopt-b", errno);
     close (clsock);
     return -1;
   }
@@ -287,7 +287,7 @@ sockConnect (short connPort, int *err)
   if (rc != 0) {
     *err = errno;
     if (errno != EINPROGRESS && errno != EAGAIN && errno != EINTR) {
-      bdjlogError ("sockConnect: connect", errno);
+      logError (LOG_ERR, "sockConnect: connect", errno);
     }
   }
   /* darwin needs a boost to get the socket fully connected */
@@ -411,7 +411,7 @@ sockReadData (Sock_t sock, char *data, size_t len)
   rc = read (sock, data, len);
   if (rc < 0 &&
       errno != EINTR && errno != EAGAIN && errno != EWOULDBLOCK) {
-    bdjlogError ("sockReadData: read", errno);
+    logError (LOG_ERR, "sockReadData: read", errno);
     return -1;
   }
   if (rc > 0) {
@@ -421,7 +421,7 @@ sockReadData (Sock_t sock, char *data, size_t len)
     rc = read (sock, data + tot, len - tot);
     if (rc < 0 &&
         errno != EINTR && errno != EAGAIN && errno != EWOULDBLOCK) {
-      bdjlogError ("sockReadData: read-b", errno);
+      logError (LOG_ERR, "sockReadData: read-b", errno);
       return -1;
     }
     if (rc > 0) {
@@ -458,7 +458,7 @@ sockWriteData (Sock_t sock, char *data, size_t len)
   rc = write (sock, data, len);
   if (rc < 0 &&
       errno != EINTR && errno != EAGAIN && errno != EWOULDBLOCK) {
-    bdjlogError ("sockWriteData: write", errno);
+    logError (LOG_ERR, "sockWriteData: write", errno);
     return -1;
   }
   if (rc > 0) {
@@ -468,7 +468,7 @@ sockWriteData (Sock_t sock, char *data, size_t len)
     rc = write (sock, data + tot, len - tot);
     if (rc < 0 &&
         errno != EINTR && errno != EAGAIN && errno != EWOULDBLOCK) {
-      bdjlogError ("sockWriteData: write-b", errno);
+      logError (LOG_ERR, "sockWriteData: write-b", errno);
       return -1;
     }
     if (rc > 0) {
@@ -490,14 +490,14 @@ sockFlush (Sock_t sock)
   rc = read (sock, data, len);
   if (rc < 0 &&
       errno != EINTR && errno != EAGAIN && errno != EWOULDBLOCK) {
-    bdjlogError ("sockFlush: read", errno);
+    logError (LOG_ERR, "sockFlush: read", errno);
     return;
   }
   while (rc >= 0) {
     rc = read (sock, data, len);
     if (rc < 0 &&
         errno != EINTR && errno != EAGAIN && errno != EWOULDBLOCK) {
-      bdjlogError ("sockFlush: read-b", errno);
+      logError (LOG_ERR, "sockFlush: read-b", errno);
       return;
     }
     if (rc == 0) {
@@ -531,7 +531,7 @@ sockCanWrite (Sock_t sock)
     if (errno == EINTR) {
       return sockCanWrite (sock);
     }
-    bdjlogError ("sockCanWrite: select", errno);
+    logError (LOG_ERR, "sockCanWrite: select", errno);
     return -1;
   }
   if (FD_ISSET (sock, &writefds) && ! FD_ISSET(sock, &readfds)) {
@@ -550,20 +550,20 @@ sockSetNonblocking (Sock_t sock)
 
   flags = fcntl (sock, F_GETFL, 0);
   if (flags < 0) {
-    bdjlogError ("sockSetNonblocking: fcntl-get", errno);
+    logError (LOG_ERR, "sockSetNonblocking: fcntl-get", errno);
     return -1;
   }
   flags |= O_NONBLOCK;
   rc = fcntl (sock, F_SETFL, flags);
   if (rc != 0) {
-    bdjlogError ("sockSetNonblocking: fcntl-set", errno);
+    logError (LOG_ERR, "sockSetNonblocking: fcntl-set", errno);
     return -1;
   }
 #endif
 #if _lib_ioctlsocket
   unsigned long flag = 1;
   if (ioctlsocket (sock, FIONBIO, &flag) < 0) {
-    bdjlogError ("sockSetNonblocking: ioctlsocket", errno);
+    logError (LOG_ERR, "sockSetNonblocking: ioctlsocket", errno);
   }
 #endif
   return 0;
@@ -580,20 +580,20 @@ sockSetBlocking (Sock_t sock)
 
   flags = fcntl (sock, F_GETFL, 0);
   if (flags < 0) {
-    bdjlogError ("sockSetBlocking: fcntl-get", errno);
+    logError (LOG_ERR, "sockSetBlocking: fcntl-get", errno);
     return -1;
   }
   flags &= ~O_NONBLOCK;
   rc = fcntl (sock, F_SETFL, flags);
   if (rc != 0) {
-    bdjlogError ("sockSetBlocking: fcntl-set", errno);
+    logError (LOG_ERR, "sockSetBlocking: fcntl-set", errno);
     return -1;
   }
 #endif
 #if _lib_ioctlsocket
   unsigned long flag = 1;
   if (ioctlsocket (sock, FIOBIO, &flag) < 0) {
-    bdjlogError ("sockSetNonblocking: ioctlsocket", errno);
+    logError (LOG_ERR, "sockSetNonblocking: ioctlsocket", errno);
   }
 #endif
   return 0;

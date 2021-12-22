@@ -12,7 +12,7 @@
 #include "rafile.h"
 #include "lock.h"
 #include "tmutil.h"
-#include "bdjlog.h"
+#include "log.h"
 
 static int  raReadHeader (rafile_t *);
 static void raWriteHeader (rafile_t *, int);
@@ -116,7 +116,7 @@ raWrite (rafile_t *rafile, size_t rrn, char *data)
 
   /* leave one byte for the terminating null */
   if (len > (RAFILE_REC_SIZE - 1)) {
-    bdjlogMsg ("raWrite: bad data len", "%ld", 1, len);
+    logVarMsg (LOG_ERR, "raWrite: bad data len", "%ld", len);
     return 1;
   }
 
@@ -144,7 +144,7 @@ int
 raClear (rafile_t *rafile, size_t rrn)
 {
   if (rrn < 1L || rrn > rafile->count) {
-    bdjlogMsg ("raClear: bad rrn", "%ld", 1, rrn);
+    logVarMsg (LOG_ERR, "raClear: bad rrn", "%ld", rrn);
     return 1;
   }
   raLock (rafile);
@@ -160,7 +160,7 @@ raRead (rafile_t *rafile, size_t rrn, char *data)
   size_t        rc;
 
   if (rrn < 1L || rrn > rafile->count) {
-    bdjlogMsg ("raRead: bad rrn", "%ld", 1, rrn);
+    logVarMsg (LOG_ERR, "raRead: bad rrn", "%ld", rrn);
     return 0;
   }
 

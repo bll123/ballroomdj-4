@@ -20,6 +20,7 @@
 #if ! defined (MAXPATHLEN)
 # define MAXPATHLEN         255
 #endif
+
 typedef enum {
   SV_OSNAME,
   SV_OSVERS,
@@ -28,7 +29,7 @@ typedef enum {
   SV_MAX
 } sysvarkey_t;
 
-extern char sysvars [SV_MAX][MAXPATHLEN];
+extern char       sysvars [SV_MAX][MAXPATHLEN];
 
 void sysvarsInit (void);
 int isMacOS (void);

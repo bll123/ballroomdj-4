@@ -24,6 +24,7 @@ hdr	winsock2.h
 
 sys     select.h
 sys     socket.h
+sys	time.h
 sys	utsname.h
 
 if not_have_pkg_check ! _pkg_libs_check
@@ -38,6 +39,7 @@ typ     socklen_t
 typ	struct sockaddr_in
 
 lib	bindtextdomain -lintl, -lintl -liconv
+lib     ExInitializeFastMutex
 lib     fcntl
 lib	gettext -lintl, -lintl -liconv
 lib     GetVersionEx
@@ -46,6 +48,8 @@ lib     kill
 lib     localtime_r
 lib     pthread_create -lpthread
 lib     pthread_join -lpthread
+lib     pthread_mutex_lock -lpthread
+lib     pthread_mutex_unlock -lpthread
 lib     select -lws2_32
 lib     socket -lws2_32
 lib	strlcpy -lbsd

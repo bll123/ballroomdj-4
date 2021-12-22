@@ -19,7 +19,7 @@
 
 #include "sysvars.h"
 
-char sysvars [SV_MAX][MAXPATHLEN];
+char        sysvars [SV_MAX][MAXPATHLEN];
 
 void
 sysvarsInit (void)
@@ -97,3 +97,4 @@ isLinux (void)
 {
   return (strcmp (sysvars[SV_OSNAME], "Linux"));
 }
+

@@ -23,11 +23,12 @@
 #include "bdjstring.h"
 #include "sysvars.h"
 #include "utility.h"
-#include "bdjlog.h"
+#include "log.h"
 
-void *openDatabase (void *);
+static void *openDatabase (void *);
+static void initLocale (void);
 
-void *
+static void *
 openDatabase (void *id)
 {
   dbOpen ("data/musicdb.dat");
@@ -52,8 +53,7 @@ main (int argc, char *argv[])
 #endif
 
   initLocale ();
-
-  startBDJLog ("data/log.txt");
+  logStart ();
   sysvarsInit ();
 
   if (isMacOS()) {
@@ -77,7 +77,7 @@ main (int argc, char *argv[])
     strlcpy (npath, "PATH=", MAXPATHLEN);
     strlcat (npath, path, MAXPATHLEN);
     if (getcwd (cwd, MAXPATHLEN) == NULL) {
-      bdjlogError ("main: getcwd", errno);
+      logError (LOG_ERR, "main: getcwd", errno);
     }
     snprintf (buff, MAXPATHLEN, ";%s", cwd);
     strlcat (npath, buff, MAXPATHLEN);
@@ -101,5 +101,6 @@ main (int argc, char *argv[])
 #if _lib_pthread_join
   pthread_join (thread, NULL);
 #endif
+  logEnd ();
   return 0;
 }
