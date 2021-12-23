@@ -14,6 +14,9 @@ typedef enum {
   LOG_MAX
 } logidx_t;
 
+#define LOG_ERROR_NAME    "data/logerror.txt"
+#define LOG_SESSION_NAME  "data/logsession.txt"
+
 bdjlog_t *  logOpen (char *fn);
 void        logClose (logidx_t);
 void        logError (logidx_t, char *, int);

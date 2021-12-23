@@ -20,7 +20,7 @@ main (void)
   srunner_add_suite (sr, s);
   s = list_suite();
   srunner_add_suite (sr, s);
-  s = parse_suite();
+  s = datafile_suite();
   srunner_add_suite (sr, s);
   s = rafile_suite();
   srunner_add_suite (sr, s);

@@ -15,4 +15,9 @@ typedef struct {
 fileinfo_t *    fileInfo (char *path);
 void            fileInfoFree (fileinfo_t *);
 
+void          makeBackups (char *, int);
+int           fileExists (char *);
+int           fileCopy (char *, char *);
+int           fileMove (char *, char *);
+
 #endif /* INC_FILEUTIL_H */

@@ -4,16 +4,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-#include <sys/stat.h>
-#include <string.h>
-#if _hdr_bsd_string
-# include <bsd/string.h>
-#endif
 
 #include "datafile.h"
 #include "tmutil.h"
 #include "list.h"
-#include "sysvars.h"
+#include "fileutil.h"
 
 typedef enum {
   PARSE_SIMPLE,
@@ -70,67 +65,6 @@ saveDataFile (list_t *list, char *fname)
 /* TODO */
   makeBackups (fname, 2);
   return 0;
-}
-
-void
-makeBackups (char *fname, int count)
-{
-  char      ofn [MAXPATHLEN];
-  char      nfn [MAXPATHLEN];
-
-  for (int i = count; i >= 1; --i) {
-    snprintf (nfn, MAXPATHLEN, "%s.bak.%d", fname, i);
-    snprintf (ofn, MAXPATHLEN, "%s.bak.%d", fname, i - 1);
-    if (i - 1 == 0) {
-      strlcpy (ofn, fname, MAXPATHLEN);
-    }
-    if (fileExists (ofn)) {
-      if ((i - 1) != 0) {
-        fileMove (ofn, nfn);
-      } else {
-        fileCopy (ofn, nfn);
-      }
-    } else {
-    }
-  }
-  return;
-}
-
-int
-fileExists (char *fname)
-{
-  struct stat   statbuf;
-
-  int rc = stat (fname, &statbuf);
-  return (rc == 0);
-}
-
-int
-fileCopy (char *fname, char *nfn)
-{
-  char      cmd [MAXPATHLEN];
-
-  if (isWindows ()) {
-    snprintf (cmd, MAXPATHLEN, "copy /f \"%s\" \"%s\"\n", fname, nfn);
-  } else {
-    snprintf (cmd, MAXPATHLEN, "cp -f '%s' '%s'\n", fname, nfn);
-  }
-  int rc = system (cmd);
-  return rc;
-}
-
-int
-fileMove (char *fname, char *nfn)
-{
-  char      cmd [MAXPATHLEN];
-
-  if (isWindows ()) {
-    snprintf (cmd, MAXPATHLEN, "move /f \"%s\" \"%s\"\n", fname, nfn);
-  } else {
-    snprintf (cmd, MAXPATHLEN, "mv -f '%s' '%s'\n", fname, nfn);
-  }
-  int rc = system (cmd);
-  return rc;
 }
 
 /* internal routines */

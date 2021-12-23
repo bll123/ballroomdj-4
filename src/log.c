@@ -9,6 +9,9 @@
 
 #include "log.h"
 #include "tmutil.h"
+#include "fileutil.h"
+
+static void logBackups (void);
 
 static bdjlog_t *syslogs [LOG_MAX];
 
@@ -23,7 +26,7 @@ logOpen (char *fn)
   l->fh = NULL;
   l->loggingOn = 0;
 
-  l->fh = fopen (fn, "a");
+  l->fh = fopen (fn, "w");
   if (l->fh != NULL) {
     l->loggingOn = 1;
   } else {
@@ -101,10 +104,11 @@ logVarMsg (logidx_t idx, char *msg, char *fmt, ...)
 void
 logStart (void)
 {
+  logBackups ();
   syslogs [LOG_ERR] = NULL;
   syslogs [LOG_SESS] = NULL;
-  syslogs [LOG_ERR] = logOpen ("data/logerror.txt");
-  syslogs [LOG_SESS] = logOpen ("data/logsession.txt");
+  syslogs [LOG_ERR] = logOpen (LOG_ERROR_NAME);
+  syslogs [LOG_SESS] = logOpen (LOG_SESSION_NAME);
   logMsg (LOG_ERR, "=== started");
   logMsg (LOG_SESS, "=== started");
 }
@@ -116,5 +120,14 @@ logEnd (void)
   logClose (LOG_SESS);
   syslogs [LOG_ERR] = NULL;
   syslogs [LOG_SESS] = NULL;
+}
+
+/* internal routines */
+
+static void
+logBackups (void)
+{
+  makeBackups (LOG_ERROR_NAME, 1);
+  makeBackups (LOG_SESSION_NAME, 1);
 }
 

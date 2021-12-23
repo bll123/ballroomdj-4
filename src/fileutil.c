@@ -4,8 +4,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <sys/stat.h>
+#include <string.h>
+#if _hdr_bsd_string
+# include <bsd/string.h>
+#endif
 
 #include "fileutil.h"
+#include "sysvars.h"
 
 fileinfo_t *
 fileInfo (char *path)
@@ -28,6 +34,8 @@ fileInfo (char *path)
   ssize_t last = (ssize_t) strlen (path) - 1;
   int chkforext = 1;
   int trailingslash = 0;
+  pos = 0;
+
   for (ssize_t i = last; i >= 0; --i) {
     if (path [i] == '/' || path [i] == '\\') {
       pos = i + 1;
@@ -60,7 +68,7 @@ fileInfo (char *path)
     --fi->blen;
     --fi->flen;
   }
-  fi->dlen = (size_t) (last - fi->flen);
+  fi->dlen = (size_t) (last - (ssize_t) fi->flen);
   if (trailingslash && last > 0) {
     --fi->dlen;
   }
@@ -85,3 +93,66 @@ fileInfoFree (fileinfo_t *fi)
     free (fi);
   }
 }
+
+
+void
+makeBackups (char *fname, int count)
+{
+  char      ofn [MAXPATHLEN];
+  char      nfn [MAXPATHLEN];
+
+  for (int i = count; i >= 1; --i) {
+    snprintf (nfn, MAXPATHLEN, "%s.bak.%d", fname, i);
+    snprintf (ofn, MAXPATHLEN, "%s.bak.%d", fname, i - 1);
+    if (i - 1 == 0) {
+      strlcpy (ofn, fname, MAXPATHLEN);
+    }
+    if (fileExists (ofn)) {
+      if ((i - 1) != 0) {
+        fileMove (ofn, nfn);
+      } else {
+        fileCopy (ofn, nfn);
+      }
+    } else {
+    }
+  }
+  return;
+}
+
+int
+fileExists (char *fname)
+{
+  struct stat   statbuf;
+
+  int rc = stat (fname, &statbuf);
+  return (rc == 0);
+}
+
+int
+fileCopy (char *fname, char *nfn)
+{
+  char      cmd [MAXPATHLEN];
+
+  if (isWindows ()) {
+    snprintf (cmd, MAXPATHLEN, "copy /f \"%s\" \"%s\"\n", fname, nfn);
+  } else {
+    snprintf (cmd, MAXPATHLEN, "cp -f '%s' '%s'\n", fname, nfn);
+  }
+  int rc = system (cmd);
+  return rc;
+}
+
+int
+fileMove (char *fname, char *nfn)
+{
+  char      cmd [MAXPATHLEN];
+
+  if (isWindows ()) {
+    snprintf (cmd, MAXPATHLEN, "move /f \"%s\" \"%s\"\n", fname, nfn);
+  } else {
+    snprintf (cmd, MAXPATHLEN, "mv -f '%s' '%s'\n", fname, nfn);
+  }
+  int rc = system (cmd);
+  return rc;
+}
+

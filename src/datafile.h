@@ -15,9 +15,5 @@ char **       parseGetData (parseinfo_t *);
 size_t        parseSimple (parseinfo_t *, char *);
 size_t        parseKeyValue (parseinfo_t *, char *);
 int           saveDataFile (list_t *, char *);
-void          makeBackups (char *, int);
-int           fileExists (char *);
-int           fileCopy (char *, char *);
-int           fileMove (char *, char *);
 
 #endif /* INC_DATAFILE_H */
