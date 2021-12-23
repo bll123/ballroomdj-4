@@ -181,6 +181,20 @@ vlistSetLong (list_t *list, char *name, long value)
   return list;
 }
 
+list_t *
+vlistSetDouble (list_t *list, char *name, double value)
+{
+  namevalue_t *nv;
+
+  nv = malloc (sizeof (namevalue_t));
+  assert (nv != NULL);
+  nv->name = name;
+  nv->valuetype = VALUE_DOUBLE;
+  nv->u.d = value;
+  listSet (list, nv);
+  return list;
+}
+
 void *
 vlistGetData (list_t *list, char *key)
 {
@@ -213,6 +227,25 @@ vlistGetLong (list_t *list, char *key)
       namevalue_t *nv = list->data [loc];
       if (nv->valuetype == VALUE_LONG) {
         value = nv->u.l;
+      }
+    }
+  }
+  return value;
+}
+
+double
+vlistGetDouble (list_t *list, char *key)
+{
+  double  value = 0.0;
+
+  if (list != NULL &&
+      list->type == LIST_NAMEVALUE) {
+    long loc = listFind (list, key);
+
+    if (loc >= 0) {
+      namevalue_t *nv = list->data [loc];
+      if (nv->valuetype == VALUE_DOUBLE) {
+        value = nv->u.d;
       }
     }
   }

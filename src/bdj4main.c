@@ -23,7 +23,6 @@
 #include "tagdef.h"
 #include "bdjstring.h"
 #include "sysvars.h"
-#include "utility.h"
 #include "log.h"
 
 static void *openDatabase (void *);
@@ -116,4 +115,5 @@ void
 bdj4shutdown (void)
 {
   logEnd ();
+  tagdefCleanup ();
 }

@@ -8,6 +8,7 @@
 #include "song.h"
 #include "list.h"
 #include "bdjstring.h"
+#include "tagdef.h"
 
 song_t *
 songAlloc (void)
@@ -42,8 +43,27 @@ songGet (song_t *song, char *key) {
 void
 songSetAll (song_t *song, char *data[], size_t count)
 {
+  long          key;
+
   for (size_t i = 0; i < count; i += 2) {
-    vlistSetData (song->songInfo, strdup (data[i]), strdup (data[i+1]));
+    key = tagdefGetKey (data[i]);
+    switch (tagdefs[key].valuetype) {
+      case VALUE_DOUBLE:
+      {
+        vlistSetDouble (song->songInfo, strdup (data[i]), atof (data[i+1]));
+        break;
+      }
+      case VALUE_LONG:
+      {
+        vlistSetLong (song->songInfo, strdup (data[i]), atol (data[i+1]));
+        break;
+      }
+      case VALUE_DATA:
+      {
+        vlistSetData (song->songInfo, strdup (data[i]), strdup (data[i+1]));
+        break;
+      }
+    }
   }
   vlistSort (song->songInfo);
 }

@@ -7,6 +7,7 @@
 
 #include "tagdef.h"
 #include "bdjstring.h"
+#include "list.h"
 
 tagdef_t tagdefs[] = {
     { TAG_ADJUSTFLAGS,              /* name                 */
@@ -21,6 +22,7 @@ tagdef_t tagdefs[] = {
       0,                            /* song list weight     */
       AIDD_NO,                      /* audio id disp        */
       ET_NA,                        /* edit type            */
+      VALUE_DATA,                   /* value type           */
       1,                            /* is bdj tag           */
       0,                            /* is norm tag          */
       0,                            /* album edit           */
@@ -42,6 +44,7 @@ tagdef_t tagdefs[] = {
       0,                            /* song list weight     */
       AIDD_NO,                      /* audio id disp        */
       ET_NA,                        /* edit type            */
+      VALUE_LONG,                   /* value type           */
       0,                            /* is bdj tag           */
       0,                            /* is norm tag          */
       0,                            /* album edit           */
@@ -63,6 +66,7 @@ tagdef_t tagdefs[] = {
       5,                            /* song list weight     */
       AIDD_YES,                     /* audio id disp        */
       ET_ENTRY,                     /* edit type            */
+      VALUE_DATA,                   /* value type           */
       0,                            /* is bdj tag           */
       1,                            /* is norm tag          */
       1,                            /* album edit           */
@@ -84,6 +88,7 @@ tagdef_t tagdefs[] = {
       5,                            /* song list weight     */
       AIDD_YES,                     /* audio id disp        */
       ET_ENTRY,                     /* edit type            */
+      VALUE_DATA,                   /* value type           */
       0,                            /* is bdj tag           */
       1,                            /* is norm tag          */
       1,                            /* album edit           */
@@ -105,6 +110,7 @@ tagdef_t tagdefs[] = {
       5,                            /* song list weight     */
       AIDD_YES,                     /* audio id disp        */
       ET_ENTRY,                     /* edit type            */
+      VALUE_DATA,                   /* value type           */
       0,                            /* is bdj tag           */
       1,                            /* is norm tag          */
       1,                            /* album edit           */
@@ -126,6 +132,7 @@ tagdef_t tagdefs[] = {
       0,                            /* song list weight     */
       AIDD_NO,                      /* audio id disp        */
       ET_NA,                        /* edit type            */
+      VALUE_LONG,                   /* value type           */
       0,                            /* is bdj tag           */
       0,                            /* is norm tag          */
       0,                            /* album edit           */
@@ -147,6 +154,7 @@ tagdef_t tagdefs[] = {
       0,                            /* song list weight     */
       AIDD_NO,                      /* audio id disp        */
       ET_ENTRY,                     /* edit type            */
+      VALUE_LONG,                   /* value type           */
       1,                            /* is bdj tag           */
       1,                            /* is norm tag          */
       0,                            /* album edit           */
@@ -168,6 +176,7 @@ tagdef_t tagdefs[] = {
       5,                            /* song list weight     */
       AIDD_OPT,                     /* audio id disp        */
       ET_ENTRY,                     /* edit type            */
+      VALUE_DATA,                   /* value type           */
       0,                            /* is bdj tag           */
       1,                            /* is norm tag          */
       1,                            /* album edit           */
@@ -189,6 +198,7 @@ tagdef_t tagdefs[] = {
       5,                            /* song list weight     */
       AIDD_OPT,                     /* audio id disp        */
       ET_ENTRY,                     /* edit type            */
+      VALUE_DATA,                   /* value type           */
       0,                            /* is bdj tag           */
       1,                            /* is norm tag          */
       1,                            /* album edit           */
@@ -210,6 +220,7 @@ tagdef_t tagdefs[] = {
       1,                            /* song list weight     */
       AIDD_NO,                      /* audio id disp        */
       ET_COMBOBOX,                  /* edit type            */
+      VALUE_DATA,                   /* value type           */
       1,                            /* is bdj tag           */
       0,                            /* is norm tag          */
       0,                            /* album edit           */
@@ -231,6 +242,7 @@ tagdef_t tagdefs[] = {
       0,                            /* song list weight     */
       AIDD_NO,                      /* audio id disp        */
       ET_COMBOBOX,                  /* edit type            */
+      VALUE_DATA,                   /* value type           */
       1,                            /* is bdj tag           */
       0,                            /* is norm tag          */
       0,                            /* album edit           */
@@ -252,6 +264,7 @@ tagdef_t tagdefs[] = {
       0,                            /* song list weight     */
       AIDD_NO,                      /* audio id disp        */
       ET_COMBOBOX,                  /* edit type            */
+      VALUE_DATA,                   /* value type           */
       1,                            /* is bdj tag           */
       0,                            /* is norm tag          */
       0,                            /* album edit           */
@@ -273,6 +286,7 @@ tagdef_t tagdefs[] = {
       0,                            /* song list weight     */
       AIDD_OPT,                     /* audio id disp        */
       ET_NA,                        /* edit type            */
+      VALUE_DATA,                   /* value type           */
       0,                            /* is bdj tag           */
       1,                            /* is norm tag          */
       0,                            /* album edit           */
@@ -294,6 +308,7 @@ tagdef_t tagdefs[] = {
       0,                            /* song list weight     */
       AIDD_NO,                      /* audio id disp        */
       ET_NA,                        /* edit type            */
+      VALUE_DATA,                   /* value type           */
       0,                            /* is bdj tag           */
       0,                            /* is norm tag          */
       0,                            /* album edit           */
@@ -315,6 +330,7 @@ tagdef_t tagdefs[] = {
       0,                            /* song list weight     */
       AIDD_YES,                     /* audio id disp        */
       ET_ENTRY,                     /* edit type            */
+      VALUE_LONG,                   /* value type           */
       0,                            /* is bdj tag           */
       1,                            /* is norm tag          */
       1,                            /* album edit           */
@@ -336,6 +352,7 @@ tagdef_t tagdefs[] = {
       0,                            /* song list weight     */
       AIDD_YES,                     /* audio id disp        */
       ET_NA,                        /* edit type            */
+      VALUE_LONG,                   /* value type           */
       0,                            /* is bdj tag           */
       1,                            /* is norm tag          */
       0,                            /* album edit           */
@@ -357,6 +374,7 @@ tagdef_t tagdefs[] = {
       0,                            /* song list weight     */
       AIDD_NO,                      /* audio id disp        */
       ET_ENTRY,                     /* edit type            */
+      VALUE_DATA,                   /* value type           */
       1,                            /* is bdj tag           */
       0,                            /* is norm tag          */
       1,                            /* album edit           */
@@ -378,6 +396,7 @@ tagdef_t tagdefs[] = {
       0,                            /* song list weight     */
       AIDD_YES,                     /* audio id disp        */
       ET_NA,                        /* edit type            */
+      VALUE_DOUBLE,                 /* value type           */
       1,                            /* is bdj tag           */
       0,                            /* is norm tag          */
       0,                            /* album edit           */
@@ -399,6 +418,7 @@ tagdef_t tagdefs[] = {
       0,                            /* song list weight     */
       AIDD_NO,                      /* audio id disp        */
       ET_DISABLED_ENTRY,            /* edit type            */
+      VALUE_DATA,                   /* value type           */
       0,                            /* is bdj tag           */
       0,                            /* is norm tag          */
       0,                            /* album edit           */
@@ -420,6 +440,7 @@ tagdef_t tagdefs[] = {
       0,                            /* song list weight     */
       AIDD_NO,                      /* audio id disp        */
       ET_NA,                        /* edit type            */
+      VALUE_DATA,                   /* value type           */
       0,                            /* is bdj tag           */
       0,                            /* is norm tag          */
       0,                            /* album edit           */
@@ -441,6 +462,7 @@ tagdef_t tagdefs[] = {
       0,                            /* song list weight     */
       AIDD_YES,                     /* audio id disp        */
       ET_COMBOBOX,                  /* edit type            */
+      VALUE_DATA,                   /* value type           */
       0,                            /* is bdj tag           */
       1,                            /* is norm tag          */
       1,                            /* album edit           */
@@ -462,6 +484,7 @@ tagdef_t tagdefs[] = {
       0,                            /* song list weight     */
       AIDD_NO,                      /* audio id disp        */
       ET_ENTRY,                     /* edit type            */
+      VALUE_DATA,                   /* value type           */
       1,                            /* is bdj tag           */
       0,                            /* is norm tag          */
       0,                            /* album edit           */
@@ -483,6 +506,7 @@ tagdef_t tagdefs[] = {
       0,                            /* song list weight     */
       AIDD_NO,                      /* audio id disp        */
       ET_ENTRY,                     /* edit type            */
+      VALUE_DATA,                   /* value type           */
       1,                            /* is bdj tag           */
       0,                            /* is norm tag          */
       0,                            /* album edit           */
@@ -504,6 +528,7 @@ tagdef_t tagdefs[] = {
       0,                            /* song list weight     */
       AIDD_NO,                      /* audio id disp        */
       ET_NA,                        /* edit type            */
+      VALUE_DATA,                   /* value type           */
       0,                            /* is bdj tag           */
       1,                            /* is norm tag          */
       0,                            /* album edit           */
@@ -525,6 +550,7 @@ tagdef_t tagdefs[] = {
       0,                            /* song list weight     */
       AIDD_NO,                      /* audio id disp        */
       ET_CHECKBUTTON,               /* edit type            */
+      VALUE_DATA,                   /* value type           */ /*###*/
       1,                            /* is bdj tag           */
       0,                            /* is norm tag          */
       0,                            /* album edit           */
@@ -546,6 +572,7 @@ tagdef_t tagdefs[] = {
       0,                            /* song list weight     */
       AIDD_NO,                      /* audio id disp        */
       ET_ENTRY,                     /* edit type            */
+      VALUE_DATA,                   /* value type           */
       1,                            /* is bdj tag           */
       0,                            /* is norm tag          */
       0,                            /* album edit           */
@@ -567,6 +594,7 @@ tagdef_t tagdefs[] = {
       0,                            /* song list weight     */
       AIDD_NO,                      /* audio id disp        */
       ET_NA,                        /* edit type            */
+      VALUE_DATA,                   /* value type           */
       1,                            /* is bdj tag           */
       0,                            /* is norm tag          */
       0,                            /* album edit           */
@@ -588,6 +616,7 @@ tagdef_t tagdefs[] = {
       0,                            /* song list weight     */
       AIDD_NO,                      /* audio id disp        */
       ET_ENTRY,                     /* edit type            */
+      VALUE_DATA,                   /* value type           */
       1,                            /* is bdj tag           */
       0,                            /* is norm tag          */
       0,                            /* album edit           */
@@ -609,6 +638,7 @@ tagdef_t tagdefs[] = {
       0,                            /* song list weight     */
       AIDD_NO,                      /* audio id disp        */
       ET_ENTRY,                     /* edit type            */
+      VALUE_DATA,                   /* value type           */
       1,                            /* is bdj tag           */
       0,                            /* is norm tag          */
       0,                            /* album edit           */
@@ -630,6 +660,7 @@ tagdef_t tagdefs[] = {
       0,                            /* song list weight     */
       AIDD_NO,                      /* audio id disp        */
       ET_SCALE,                     /* edit type            */
+      VALUE_LONG,                   /* value type           */
       1,                            /* is bdj tag           */
       0,                            /* is norm tag          */
       0,                            /* album edit           */
@@ -651,6 +682,7 @@ tagdef_t tagdefs[] = {
       0,                            /* song list weight     */
       AIDD_NO,                      /* audio id disp        */
       ET_COMBOBOX,                  /* edit type            */
+      VALUE_DATA,                   /* value type           */
       1,                            /* is bdj tag           */
       0,                            /* is norm tag          */
       1,                            /* album edit           */
@@ -672,6 +704,7 @@ tagdef_t tagdefs[] = {
       0,                            /* song list weight     */
       AIDD_NO,                      /* audio id disp        */
       ET_ENTRY,                     /* edit type            */
+      VALUE_DATA,                   /* value type           */
       1,                            /* is bdj tag           */
       0,                            /* is norm tag          */
       0,                            /* album edit           */
@@ -693,6 +726,7 @@ tagdef_t tagdefs[] = {
       10,                           /* song list weight     */
       AIDD_YES,                     /* audio id disp        */
       ET_ENTRY,                     /* edit type            */
+      VALUE_DATA,                   /* value type           */
       0,                            /* is bdj tag           */
       1,                            /* is norm tag          */
       0,                            /* album edit           */
@@ -714,6 +748,7 @@ tagdef_t tagdefs[] = {
       0,                            /* song list weight     */
       AIDD_YES,                     /* audio id disp        */
       ET_ENTRY,                     /* edit type            */
+      VALUE_LONG,                   /* value type           */
       0,                            /* is bdj tag           */
       1,                            /* is norm tag          */
       1,                            /* album edit           */
@@ -735,6 +770,7 @@ tagdef_t tagdefs[] = {
       0,                            /* song list weight     */
       AIDD_YES,                     /* audio id disp        */
       ET_NA,                        /* edit type            */
+      VALUE_LONG,                   /* value type           */
       0,                            /* is bdj tag           */
       1,                            /* is norm tag          */
       0,                            /* album edit           */
@@ -756,6 +792,7 @@ tagdef_t tagdefs[] = {
       0,                            /* song list weight     */
       AIDD_NO,                      /* audio id disp        */
       ET_CHECKBUTTON,               /* edit type            */
+      VALUE_LONG,                   /* value type           */
       1,                            /* is bdj tag           */
       0,                            /* is norm tag          */
       1,                            /* album edit           */
@@ -777,6 +814,7 @@ tagdef_t tagdefs[] = {
       0,                            /* song list weight     */
       AIDD_NO,                      /* audio id disp        */
       ET_SCALE,                     /* edit type            */
+      VALUE_LONG,                   /* value type           */
       1,                            /* is bdj tag           */
       0,                            /* is norm tag          */
       0,                            /* album edit           */
@@ -785,8 +823,54 @@ tagdef_t tagdefs[] = {
       1,                            /* listing display      */
       0,                            /* song list display    */
       0                             /* text search          */
+    },
+    { TAG_rrn,                      /* name                 */
+      "",                           /* label                */
+      "",                           /* short-label          */
+      0,                            /* default edit order   */
+      0,                            /* edit index           */
+      0,                            /* edit width           */
+      ANCHOR_EAST,                  /* listing anchor       */
+      0,                            /* listing weight       */
+      ANCHOR_WEST,                  /* song list anchor     */
+      0,                            /* song list weight     */
+      AIDD_NO,                      /* audio id disp        */
+      ET_NA,                        /* edit type            */
+      VALUE_LONG,                   /* value type           */
+      0,                            /* is bdj tag           */
+      0,                            /* is norm tag          */
+      0,                            /* album edit           */
+      0,                            /* all edit             */
+      0,                            /* editable             */
+      0,                            /* listing display      */
+      0,                            /* song list display    */
+      0                             /* text search          */
+    },
+    { TAG_dur,                      /* name                 */
+      "",                           /* label                */
+      "",                           /* short-label          */
+      0,                            /* default edit order   */
+      0,                            /* edit index           */
+      0,                            /* edit width           */
+      ANCHOR_EAST,                  /* listing anchor       */
+      0,                            /* listing weight       */
+      ANCHOR_WEST,                  /* song list anchor     */
+      0,                            /* song list weight     */
+      AIDD_NO,                      /* audio id disp        */
+      ET_NA,                        /* edit type            */
+      VALUE_LONG,                   /* value type           */
+      0,                            /* is bdj tag           */
+      0,                            /* is norm tag          */
+      0,                            /* album edit           */
+      0,                            /* all edit             */
+      0,                            /* editable             */
+      0,                            /* listing display      */
+      0,                            /* song list display    */
+      0                             /* text search          */
     }
   };
+
+static list_t *tagdeflookup = NULL;
 
 void
 tagdefInit (void)
@@ -827,4 +911,27 @@ tagdefInit (void)
   tagdefs [TAG_KEY_VARIOUSARTISTS].label = _("Various Artists");
   tagdefs [TAG_KEY_VOLUMEADJUSTPERC].label = _("Adjustment");
   tagdefs [TAG_KEY_VOLUMEADJUSTPERC].shortLabel = _("Vol. Adj.");
+
+  tagdeflookup = vlistAlloc (LIST_UNORDERED, stringCompare, NULL, NULL);
+  vlistSetSize (tagdeflookup, MAX_TAG_KEY);
+  for (size_t i = 0; i < MAX_TAG_KEY; ++i) {
+    vlistSetLong (tagdeflookup, tagdefs [i].name, (long) i);
+  }
+  vlistSort (tagdeflookup);
+}
+
+long
+tagdefGetKey (char *name)
+{
+  long          key;
+
+  key = vlistGetLong (tagdeflookup, name);
+  return key;
+}
+
+void
+tagdefCleanup (void)
+{
+  vlistFree (tagdeflookup);
+  tagdeflookup = NULL;
 }

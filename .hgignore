@@ -7,7 +7,7 @@ syntax: regexp
 ^locale/
 ^packages/
 ^src/bdjconfig.h$
-^src/.*\.o$
+^src/objects/
 ^src/.*\.env$
 ^src/.*\.reqlibs$
 ^src/w$

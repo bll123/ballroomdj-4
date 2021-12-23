@@ -2,6 +2,7 @@
 #define INC_TAGDEF_H
 
 #include "bdjstring.h"
+#include "list.h"
 
 typedef enum {
   AIDD_YES,
@@ -37,6 +38,7 @@ typedef struct {
   unsigned int        songlistWeight;
   audioiddispflag_t   audioiddispflag;
   edittype_t          editType;
+  valuetype_t         valuetype;
   unsigned int        isBdjTag : 1;
   unsigned int        isNormTag : 1;
   unsigned int        albumEdit : 1;
@@ -121,9 +123,16 @@ typedef struct {
 #define TAG_VARIOUSARTISTS    "VARIOUSARTISTS"
 #define TAG_KEY_VOLUMEADJUSTPERC 36
 #define TAG_VOLUMEADJUSTPERC  "VOLUMEADJUSTPERC"
+#define TAG_KEY_rrn           37
+#define TAG_rrn               "rrn"
+#define TAG_KEY_dur           38
+#define TAG_dur               "dur"
+#define MAX_TAG_KEY           39
 
 extern tagdef_t tagdefs[];
 
-void tagdefInit (void);
+void      tagdefInit (void);
+long      tagdefGetKey (char *);
+void      tagdefCleanup (void);
 
 #endif /* INC_TAGDEF_H */

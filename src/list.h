@@ -12,7 +12,7 @@ typedef enum {
 } listtype_t;
 
 typedef enum {
-  VALUE_NONE,
+  VALUE_DOUBLE,
   VALUE_DATA,
   VALUE_LONG
 } valuetype_t;
@@ -51,6 +51,7 @@ typedef struct {
   union {
     void        *data;
     long        l;
+    double      d;
   } u;
 } namevalue_t;
 
@@ -59,8 +60,10 @@ void      vlistFree (list_t *);
 void      vlistSetSize (list_t *, size_t);
 list_t *  vlistSetData (list_t *, char *, void *);
 list_t *  vlistSetLong (list_t *, char *, long);
+list_t *  vlistSetDouble (list_t *, char *, double);
 void *    vlistGetData (list_t *, char *);
 long      vlistGetLong (list_t *, char *);
+double    vlistGetDouble (list_t *, char *);
 long      vlistFind (list_t *, char *);
 void      vlistSort (list_t *);
 
