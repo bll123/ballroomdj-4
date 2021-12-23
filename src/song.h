@@ -10,7 +10,7 @@ typedef struct {
 song_t *  songAlloc (void);
 void      songFree (void *);
 char *    songGet (song_t *, char *);
-void      songSetAll (song_t *, char *[], int);
+void      songSetAll (song_t *, char *[], size_t);
 void      songSetNumeric (song_t *, char *, long);
 
 #endif /* INC_SONG */

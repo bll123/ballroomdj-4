@@ -18,6 +18,7 @@
 # include <unistd.h>
 #endif
 
+#include "bdj4main.h"
 #include "musicdb.h"
 #include "tagdef.h"
 #include "bdjstring.h"
@@ -27,6 +28,10 @@
 
 static void *openDatabase (void *);
 static void initLocale (void);
+
+#if _lib_pthread_create
+static pthread_t   thread;
+#endif
 
 static void *
 openDatabase (void *id)
@@ -46,16 +51,13 @@ initLocale (void)
 }
 
 int
-main (int argc, char *argv[])
+bdj4startup (int argc, char *argv[])
 {
-#if _lib_pthread_create
-  pthread_t   thread;
-#endif
-
   initLocale ();
   logStart ();
   sysvarsInit ();
 
+  /* may need to be moved to launcher */
   if (isMacOS()) {
     char  npath [MAXPATHLEN];
 
@@ -68,6 +70,7 @@ main (int argc, char *argv[])
         "/Applications/VLC.app/Contents/MacOS/lib/");
   }
 
+  /* may need to be moved to launcher */
   if (isWindows()) {
     char  npath [MAXPATHLEN];
     char  buff [MAXPATHLEN];
@@ -98,9 +101,19 @@ main (int argc, char *argv[])
   openDatabase (&junk);
 #endif
 
+  return 0;
+}
+
+void
+bdj4finalizeStartup (void)
+{
 #if _lib_pthread_join
   pthread_join (thread, NULL);
 #endif
+}
+
+void
+bdj4shutdown (void)
+{
   logEnd ();
-  return 0;
 }

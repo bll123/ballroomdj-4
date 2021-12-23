@@ -40,9 +40,9 @@ songGet (song_t *song, char *key) {
 }
 
 void
-songSetAll (song_t *song, char *data[], int count)
+songSetAll (song_t *song, char *data[], size_t count)
 {
-  for (int i = 0; i < count; i += 2) {
+  for (size_t i = 0; i < count; i += 2) {
     vlistSetData (song->songInfo, strdup (data[i]), strdup (data[i+1]));
   }
   vlistSort (song->songInfo);

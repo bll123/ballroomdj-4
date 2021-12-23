@@ -12,17 +12,19 @@ main (void)
   Suite   *s;
   SRunner *sr;
 
-  s = list_suite();
+  s = tmutil_suite();
   sr = srunner_create (s);
+  s = fileutil_suite();
+  srunner_add_suite (sr, s);
   s = lock_suite();
+  srunner_add_suite (sr, s);
+  s = list_suite();
   srunner_add_suite (sr, s);
   s = parse_suite();
   srunner_add_suite (sr, s);
   s = rafile_suite();
   srunner_add_suite (sr, s);
   s = sock_suite();
-  srunner_add_suite (sr, s);
-  s = tmutil_suite();
   srunner_add_suite (sr, s);
   srunner_run_all (sr, CK_ENV);
   number_failed = srunner_ntests_failed (sr);

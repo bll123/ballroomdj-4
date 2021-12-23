@@ -59,7 +59,7 @@ rinstall:
 
 # main targets
 
-PROGRAMS = bdj4main$(EXE_EXT)
+PROGRAMS = bdj4$(EXE_EXT)
 .PHONY: programs
 programs: $(MKC_ENV_SHR) $(MKC_REQLIB) $(PROGRAMS)
 
@@ -116,11 +116,11 @@ tclean:
 
 # bdj executables
 
-BDJMAINOBJS = bdj4main$(OBJ_EXT) \
+BDJMAINOBJS = bdj4$(OBJ_EXT) \
 	libbdj$(SHLIB_EXT)
-bdj4main$(EXE_EXT): $(BDJMAINOBJS)
+bdj4$(EXE_EXT): $(BDJMAINOBJS)
 	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh -link -exec $(MKC_ECHO) \
-		-o bdj4main$(EXE_EXT) \
+		-o bdj4$(EXE_EXT) \
 		-r $(MKC_REQLIB) \
 		$(BDJMAINOBJS) \
 		-L . -rpath $(BINDIR) \
@@ -130,8 +130,10 @@ bdj4main$(EXE_EXT): $(BDJMAINOBJS)
 
 # bdj libraries
 
-BDJOBJS = log$(OBJ_EXT) bdjstring$(OBJ_EXT) list$(OBJ_EXT) lock$(OBJ_EXT) \
-	musicdb$(OBJ_EXT) parse$(OBJ_EXT) process$(OBJ_EXT) \
+BDJOBJS = bdj4main$(OBJ_EXT) log$(OBJ_EXT) bdjstring$(OBJ_EXT) \
+	datafile$(OBJ_EXT) \
+	fileutil$(OBJ_EXT) list$(OBJ_EXT) lock$(OBJ_EXT) \
+	musicdb$(OBJ_EXT) process$(OBJ_EXT) \
 	rafile$(OBJ_EXT) sock$(OBJ_EXT) \
 	song$(OBJ_EXT) sysvars$(OBJ_EXT) tagdef$(OBJ_EXT) \
 	tmutil$(OBJ_EXT)
@@ -144,41 +146,45 @@ libbdj$(SHLIB_EXT): $(MKC_REQLIB) $(BDJOBJS)
 
 # bdj source
 
-bdj4main$(OBJ_EXT): bdj4main.c log.h bdjstring.h musicdb.h \
-	sysvars.h tagdef.h sysvars.h $(MKC_OUTPUT)
+bdj4$(OBJ_EXT): bdj4.c bdj4main.h $(MKC_OUTPUT)
 
-log$(OBJ_EXT): log.c log.h tmutil.h $(MKC_OUTPUT)
+bdj4main$(OBJ_EXT): bdj4main.c bdj4main.h musicdb.h tagdef.h bdjstring.h \
+	sysvars.h log.h $(MKC_OUTPUT)
 
 bdjstring$(OBJ_EXT): bdjstring.c bdjstring.h $(MKC_OUTPUT)
+
+datafile$(OBJ_EXT): datafile.c datafile.h tmutil.h \
+	list.h sysvars.h $(MKC_OUTPUT)
+
+fileutil$(OBJ_EXT): fileutil.c fileutil.h $(MKC_OUTPUT)
 
 list$(OBJ_EXT): list.c list.h $(MKC_OUTPUT)
 
 lock$(OBJ_EXT): lock.c lock.h portability.h process.h tmutil.h $(MKC_OUTPUT)
 
-musicdb$(OBJ_EXT): musicdb.c musicdb.h rafile.h song.h \
-	parse.h tagdef.h log.h sysvars.h $(MKC_OUTPUT)
+log$(OBJ_EXT): log.c log.h tmutil.h $(MKC_OUTPUT)
 
-parse$(OBJ_EXT): parse.c parse.h $(MKC_OUTPUT)
+musicdb$(OBJ_EXT): musicdb.c musicdb.h rafile.h song.h \
+	list.h bdjstring.h lock.h datafile.h tagdef.h log.h $(MKC_OUTPUT)
 
 process$(OBJ_EXT): process.c process.h $(MKC_OUTPUT)
 
-rafile$(OBJ_EXT): rafile.c rafile.h lock.h tmutil.h \
-	log.h sysvars.h $(MKC_OUTPUT)
+rafile$(OBJ_EXT): rafile.c rafile.h lock.h tmutil.h log.h $(MKC_OUTPUT)
 
-sock$(OBJ_EXT): sock.c sock.h tmutil.h log.h sysvars.h $(MKC_OUTPUT)
+sock$(OBJ_EXT): sock.c sock.h tmutil.h log.h $(MKC_OUTPUT)
 
-song$(OBJ_EXT): song.c song.h $(MKC_OUTPUT)
+song$(OBJ_EXT): song.c song.h list.h bdjstring.h $(MKC_OUTPUT)
 
 sysvars$(OBJ_EXT): sysvars.c sysvars.h $(MKC_OUTPUT)
 
-tagdef$(OBJ_EXT): tagdef.c tagdef.h $(MKC_OUTPUT)
+tagdef$(OBJ_EXT): tagdef.c tagdef.h bdjstring.h $(MKC_OUTPUT)
 
 tmutil$(OBJ_EXT): tmutil.c tmutil.h $(MKC_OUTPUT)
 
 # test routines
 
-CHECKOBJS = check_all$(OBJ_EXT) check_list$(OBJ_EXT) \
-	check_lock$(OBJ_EXT) check_parse$(OBJ_EXT) check_rafile$(OBJ_EXT) \
+CHECKOBJS = check_all$(OBJ_EXT) check_fileutil$(OBJ_EXT) check_list$(OBJ_EXT) \
+	check_lock$(OBJ_EXT) check_datafile$(OBJ_EXT) check_rafile$(OBJ_EXT) \
 	check_sock$(OBJ_EXT) check_tmutil$(OBJ_EXT) \
 	libbdj$(SHLIB_EXT)
 CHECKLIBS =
@@ -195,11 +201,13 @@ check_all$(EXE_EXT): $(CHECKOBJS)
 
 check_all$(OBJ_EXT): check_all.c check_bdj.h
 
+check_fileutil$(OBJ_EXT): check_fileutil.c fileutil.h check_bdj.h
+
 check_list$(OBJ_EXT): check_list.c list.h check_bdj.h
 
 check_lock$(OBJ_EXT): check_lock.c lock.h check_bdj.h
 
-check_parse$(OBJ_EXT): check_parse.c parse.h check_bdj.h
+check_datafile$(OBJ_EXT): check_datafile.c datafile.h check_bdj.h
 
 check_rafile$(OBJ_EXT): check_rafile.c rafile.h check_bdj.h
 

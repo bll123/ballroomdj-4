@@ -3,6 +3,7 @@
 
 #include <check.h>
 
+Suite *     fileutil_suite (void);
 Suite *     list_suite (void);
 Suite *     lock_suite (void);
 Suite *     parse_suite (void);

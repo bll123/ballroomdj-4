@@ -78,7 +78,8 @@ void
 logVarMsg (logidx_t idx, char *msg, char *fmt, ...)
 {
   bdjlog_t      *l;
-  char          tbuff [40];
+  char          ttm [40];
+  char          tbuff [2048];
   va_list       args;
 
   l = syslogs [idx];
@@ -86,14 +87,14 @@ logVarMsg (logidx_t idx, char *msg, char *fmt, ...)
     return;
   }
 
-  dstamp (tbuff, sizeof (tbuff));
-  fprintf (l->fh, "%s %s", tbuff, msg);
+  dstamp (ttm, sizeof (ttm));
+  *tbuff = '\0';
   if (fmt != NULL) {
     va_start (args, fmt);
-    vfprintf (l->fh, fmt, args);
+    vsnprintf (tbuff, sizeof (tbuff), fmt, args);
     va_end (args);
   }
-  fprintf (l->fh, "\n");
+  fprintf (l->fh, "%s %s %s\n", ttm, msg, tbuff);
   fflush (l->fh);
 }
 

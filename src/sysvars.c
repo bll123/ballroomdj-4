@@ -83,18 +83,18 @@ sysvarsInit (void)
 int
 isMacOS (void)
 {
-  return (strcmp (sysvars[SV_OSNAME], "Darwin"));
+  return (strcmp (sysvars[SV_OSNAME], "Darwin") == 0);
 }
 
 int
 isWindows (void)
 {
-  return (strcmp (sysvars[SV_OSNAME], "Windows"));
+  return (strcmp (sysvars[SV_OSNAME], "Windows") == 0);
 }
 
 int
 isLinux (void)
 {
-  return (strcmp (sysvars[SV_OSNAME], "Linux"));
+  return (strcmp (sysvars[SV_OSNAME], "Linux") == 0);
 }
 

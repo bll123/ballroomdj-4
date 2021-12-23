@@ -10,7 +10,7 @@
 #include "list.h"
 #include "bdjstring.h"
 #include "lock.h"
-#include "parse.h"
+#include "datafile.h"
 #include "tagdef.h"
 #include "log.h"
 
@@ -60,7 +60,7 @@ dbLoad (db_t *db, char *fn)
   song_t      *song;
   rafile_t    *radb;
   parseinfo_t *pi;
-  int         songDataCount;
+  size_t      songDataCount;
   long        srrn;
 
   pi = parseInit ();
@@ -76,7 +76,7 @@ dbLoad (db_t *db, char *fn)
       continue;
     }
 
-    songDataCount = parse (pi, data);
+    songDataCount = parseKeyValue (pi, data);
     song = songAlloc ();
     songSetAll (song, parseGetData (pi), songDataCount);
     fstr = songGet (song, TAG_FILE);
