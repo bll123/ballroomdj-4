@@ -24,7 +24,7 @@ close $fh
 
 set fh [open [file join data musicdb.dat] w]
 
-source musicdb.txt
+source [file joi $dir musicdb.txt]
 
 set c 0
 dict for {fn data} $musicdbList {
@@ -43,7 +43,12 @@ dict for {fn data} $musicdbList {
 
   # sort it now, make it easier
   foreach {tag} [lsort [dict keys $data]] {
+    if { $tag eq "BDJSYNCID" } {
+      # not wanted
+      continue
+    }
     if { $tag eq "FILE" } {
+      # already
       continue
     }
     if { $tag eq "rrn" } {

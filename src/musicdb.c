@@ -82,7 +82,7 @@ dbLoad (db_t *db, char *fn)
     fstr = songGet (song, TAG_FILE);
     sscanf (songGet (song, "rrn"), "%ld", &srrn);
     if ((long) i != srrn) {
-      songSetNumeric (song, "rrn", (long) i);
+      songSetLong (song, "rrn", (long) i);
     }
     vlistSetData (db->songs, strdup (fstr), song);
     ++db->count;

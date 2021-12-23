@@ -1,6 +1,8 @@
 #include "bdjconfig.h"
 
+#include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 #if _hdr_libintl
 # include <libintl.h>
 #endif
@@ -120,13 +122,13 @@ tagdef_t tagdefs[] = {
       1,                            /* song list display    */
       1                             /* text search          */
     },
-    { TAG_BDJSYNCID,                /* name                 */
+    { TAG_AUTOORGFLAG,              /* name                 */
       "",                           /* label                */
       "",                           /* short-label          */
       0,                            /* default edit order   */
       0,                            /* edit index           */
       0,                            /* edit width           */
-      ANCHOR_WEST,                  /* listing anchor       */
+      ANCHOR_EAST,                  /* listing anchor       */
       0,                            /* listing weight       */
       ANCHOR_WEST,                  /* song list anchor     */
       0,                            /* song list weight     */
@@ -404,6 +406,28 @@ tagdef_t tagdefs[] = {
       0,                            /* editable             */
       1,                            /* listing display      */
       1,                            /* song list display    */
+      0                             /* text search          */
+    },
+    { TAG_DURATION_HMS,             /* name                 */
+      "",                           /* label                */
+      "",                           /* short-label          */
+      0,                            /* default edit order   */
+      0,                            /* edit index           */
+      0,                            /* edit width           */
+      ANCHOR_WEST,                  /* listing anchor       */
+      0,                            /* listing weight       */
+      ANCHOR_WEST,                  /* song list anchor     */
+      0,                            /* song list weight     */
+      AIDD_NO,                      /* audio id disp        */
+      ET_NA,                        /* edit type            */
+      VALUE_DATA,                   /* value type           */
+      0,                            /* is bdj tag           */
+      0,                            /* is norm tag          */
+      0,                            /* album edit           */
+      0,                            /* all edit             */
+      0,                            /* editable             */
+      0,                            /* listing display      */
+      0,                            /* song list display    */
       0                             /* text search          */
     },
     { TAG_DURATION_STR,             /* name                 */
@@ -802,6 +826,50 @@ tagdef_t tagdefs[] = {
       0,                            /* song list display    */
       0                             /* text search          */
     },
+    { TAG_UPDATEFLAG,               /* name                 */
+      "",                           /* label                */
+      "",                           /* short-label          */
+      0,                            /* default edit order   */
+      0,                            /* edit index           */
+      0,                            /* edit width           */
+      ANCHOR_EAST,                  /* listing anchor       */
+      0,                            /* listing weight       */
+      ANCHOR_WEST,                  /* song list anchor     */
+      0,                            /* song list weight     */
+      AIDD_NO,                      /* audio id disp        */
+      ET_NA,                        /* edit type            */
+      VALUE_LONG,                   /* value type           */
+      0,                            /* is bdj tag           */
+      0,                            /* is norm tag          */
+      0,                            /* album edit           */
+      0,                            /* all edit             */
+      0,                            /* editable             */
+      0,                            /* listing display      */
+      0,                            /* song list display    */
+      0                             /* text search          */
+    },
+    { TAG_UPDATETIME,               /* name                 */
+      "",                           /* label                */
+      "",                           /* short-label          */
+      0,                            /* default edit order   */
+      0,                            /* edit index           */
+      0,                            /* edit width           */
+      ANCHOR_EAST,                  /* listing anchor       */
+      0,                            /* listing weight       */
+      ANCHOR_WEST,                  /* song list anchor     */
+      0,                            /* song list weight     */
+      AIDD_NO,                      /* audio id disp        */
+      ET_NA,                        /* edit type            */
+      VALUE_LONG,                   /* value type           */
+      0,                            /* is bdj tag           */
+      0,                            /* is norm tag          */
+      0,                            /* album edit           */
+      0,                            /* all edit             */
+      0,                            /* editable             */
+      0,                            /* listing display      */
+      0,                            /* song list display    */
+      0                             /* text search          */
+    },
     { TAG_VOLUMEADJUSTPERC,         /* name                 */
       "",                           /* label                */
       "",                           /* short-label          */
@@ -821,6 +889,28 @@ tagdef_t tagdefs[] = {
       0,                            /* all edit             */
       1,                            /* editable             */
       1,                            /* listing display      */
+      0,                            /* song list display    */
+      0                             /* text search          */
+    },
+    { TAG_WRITETIME,                /* name                 */
+      "",                           /* label                */
+      "",                           /* short-label          */
+      0,                            /* default edit order   */
+      0,                            /* edit index           */
+      0,                            /* edit width           */
+      ANCHOR_EAST,                  /* listing anchor       */
+      0,                            /* listing weight       */
+      ANCHOR_WEST,                  /* song list anchor     */
+      0,                            /* song list weight     */
+      AIDD_NO,                      /* audio id disp        */
+      ET_NA,                        /* edit type            */
+      VALUE_LONG,                   /* value type           */
+      0,                            /* is bdj tag           */
+      0,                            /* is norm tag          */
+      0,                            /* album edit           */
+      0,                            /* all edit             */
+      0,                            /* editable             */
+      0,                            /* listing display      */
       0,                            /* song list display    */
       0                             /* text search          */
     },
@@ -875,6 +965,8 @@ static list_t *tagdeflookup = NULL;
 void
 tagdefInit (void)
 {
+  assert (MAX_TAG_KEY == (sizeof (tagdefs) / sizeof (tagdef_t)));
+
   tagdefs [TAG_KEY_AFMODTIME].label = _("Audio File Date");
   tagdefs [TAG_KEY_ALBUM].label = _("Album");
   tagdefs [TAG_KEY_ALBUMARTIST].label = _("Album Artist");

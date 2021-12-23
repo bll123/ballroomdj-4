@@ -69,10 +69,7 @@ songSetAll (song_t *song, char *data[], size_t count)
 }
 
 void
-songSetNumeric (song_t *song, char *tag, long value)
+songSetLong (song_t *song, char *tag, long value)
 {
-  char    temp [30];
-
-  snprintf (temp, sizeof(temp), "%ld", value);
-  vlistSetData (song->songInfo, strdup (tag), strdup (temp));
+  vlistSetLong (song->songInfo, strdup (tag), value);
 }
