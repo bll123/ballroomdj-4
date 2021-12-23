@@ -12,7 +12,7 @@ syntax: regexp
 ^src/.*\.reqlibs$
 ^src/w$
 ^src/check_all$
-^src/bdj4main$
+^src/bdj4$
 ^src/.*\.so$
 ^src/.*\.dll$
 ^tmp/

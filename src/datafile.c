@@ -69,6 +69,7 @@ saveDataFile (list_t *list, char *fname)
 {
 /* TODO */
   makeBackups (fname, 2);
+  return 0;
 }
 
 void
@@ -83,10 +84,13 @@ makeBackups (char *fname, int count)
     if (i - 1 == 0) {
       strlcpy (ofn, fname, MAXPATHLEN);
     }
-    if (fileExists (ofn) && (i - 1) != 0) {
-      fileMove (ofn, nfn);
+    if (fileExists (ofn)) {
+      if ((i - 1) != 0) {
+        fileMove (ofn, nfn);
+      } else {
+        fileCopy (ofn, nfn);
+      }
     } else {
-      fileCopy (ofn, nfn);
     }
   }
   return;
@@ -98,7 +102,7 @@ fileExists (char *fname)
   struct stat   statbuf;
 
   int rc = stat (fname, &statbuf);
-  return rc;
+  return (rc == 0);
 }
 
 int

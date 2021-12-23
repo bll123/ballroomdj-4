@@ -122,9 +122,9 @@ START_TEST(file_exists)
   ck_assert (fh != NULL);
   fclose (fh);
   rc = fileExists (fn);
-  ck_assert (rc == 0);
+  ck_assert (rc != 0);
   rc = fileExists ("tmp/def.txt");
-  ck_assert (rc < 0);
+  ck_assert (rc == 0);
   unlink (fn);
 }
 END_TEST
@@ -144,9 +144,9 @@ START_TEST(file_copy)
   rc = fileCopy (ofn, nfn);
   ck_assert (rc == 0);
   rc = fileExists (ofn);
-  ck_assert (rc == 0);
+  ck_assert (rc != 0);
   rc = fileExists (nfn);
-  ck_assert (rc == 0);
+  ck_assert (rc != 0);
   unlink (ofn);
   unlink (nfn);
 }
@@ -167,11 +167,149 @@ START_TEST(file_move)
   rc = fileMove (ofn, nfn);
   ck_assert (rc == 0);
   rc = fileExists (ofn);
-  ck_assert (rc < 0);
-  rc = fileExists (nfn);
   ck_assert (rc == 0);
+  rc = fileExists (nfn);
+  ck_assert (rc != 0);
   unlink (ofn);
   unlink (nfn);
+}
+END_TEST
+
+START_TEST(file_make_backups)
+{
+  FILE      *fh;
+  int       rc;
+  char      buff [10];
+  char      *r;
+
+  char *ofn = "tmp/abc.txt";
+  char *ofn0 = "tmp/abc.txt.bak.0";
+  char *ofn1 = "tmp/abc.txt.bak.1";
+  char *ofn2 = "tmp/abc.txt.bak.2";
+  char *ofn3 = "tmp/abc.txt.bak.3";
+  unlink (ofn);
+  unlink (ofn0);
+  unlink (ofn1);
+  unlink (ofn2);
+  unlink (ofn3);
+
+  fh = fopen (ofn, "w");
+  ck_assert (fh != NULL);
+  fprintf (fh, "1\n");
+  fclose (fh);
+
+  rc = fileExists (ofn);
+  ck_assert (rc != 0);
+  rc = fileExists (ofn0);
+  ck_assert (rc == 0);
+  rc = fileExists (ofn1);
+  ck_assert (rc == 0);
+  rc = fileExists (ofn2);
+  ck_assert (rc == 0);
+  rc = fileExists (ofn3);
+  ck_assert (rc == 0);
+
+  makeBackups (ofn, 2);
+
+  rc = fileExists (ofn);
+  ck_assert (rc != 0);
+  rc = fileExists (ofn0);
+  ck_assert (rc == 0);
+  rc = fileExists (ofn1);
+  ck_assert (rc != 0);
+  rc = fileExists (ofn2);
+  ck_assert (rc == 0);
+  rc = fileExists (ofn3);
+  ck_assert (rc == 0);
+
+  fh = fopen (ofn, "r");
+  ck_assert (fh != NULL);
+  r = fgets (buff, 2, fh);
+  fclose (fh);
+  ck_assert (strcmp (buff, "1") == 0);
+
+  fh = fopen (ofn1, "r");
+  ck_assert (fh != NULL);
+  r = fgets (buff, 2, fh);
+  fclose (fh);
+  ck_assert (strcmp (buff, "1") == 0);
+
+  fh = fopen (ofn, "w");
+  ck_assert (fh != NULL);
+  fprintf (fh, "2\n");
+  fclose (fh);
+
+  makeBackups (ofn, 2);
+
+  rc = fileExists (ofn);
+  ck_assert (rc != 0);
+  rc = fileExists (ofn0);
+  ck_assert (rc == 0);
+  rc = fileExists (ofn1);
+  ck_assert (rc != 0);
+  rc = fileExists (ofn2);
+  ck_assert (rc != 0);
+  rc = fileExists (ofn3);
+  ck_assert (rc == 0);
+
+  fh = fopen (ofn, "r");
+  ck_assert (fh != NULL);
+  r = fgets (buff, 2, fh);
+  fclose (fh);
+  ck_assert (strcmp (buff, "2") == 0);
+
+  fh = fopen (ofn1, "r");
+  ck_assert (fh != NULL);
+  r = fgets (buff, 2, fh);
+  fclose (fh);
+  ck_assert (strcmp (buff, "2") == 0);
+
+  fh = fopen (ofn2, "r");
+  ck_assert (fh != NULL);
+  r = fgets (buff, 2, fh);
+  fclose (fh);
+  ck_assert (strcmp (buff, "1") == 0);
+
+  fh = fopen (ofn, "w");
+  ck_assert (fh != NULL);
+  fprintf (fh, "3\n");
+  fclose (fh);
+
+  makeBackups (ofn, 2);
+
+  rc = fileExists (ofn);
+  ck_assert (rc != 0);
+  rc = fileExists (ofn0);
+  ck_assert (rc == 0);
+  rc = fileExists (ofn1);
+  ck_assert (rc != 0);
+  rc = fileExists (ofn2);
+  ck_assert (rc != 0);
+  rc = fileExists (ofn3);
+  ck_assert (rc == 0);
+
+  fh = fopen (ofn, "r");
+  ck_assert (fh != NULL);
+  r = fgets (buff, 2, fh);
+  fclose (fh);
+  ck_assert (strcmp (buff, "3") == 0);
+
+  fh = fopen (ofn1, "r");
+  ck_assert (fh != NULL);
+  r = fgets (buff, 2, fh);
+  fclose (fh);
+  ck_assert (strcmp (buff, "3") == 0);
+
+  fh = fopen (ofn2, "r");
+  ck_assert (fh != NULL);
+  r = fgets (buff, 2, fh);
+  fclose (fh);
+  ck_assert (strcmp (buff, "2") == 0);
+
+  unlink (ofn);
+  unlink (ofn0);
+  unlink (ofn1);
+  unlink (ofn2);
 }
 END_TEST
 
@@ -190,6 +328,7 @@ parse_suite (void)
   tcase_add_test (tc, file_exists);
   tcase_add_test (tc, file_copy);
   tcase_add_test (tc, file_move);
+  tcase_add_test (tc, file_make_backups);
   suite_add_tcase (s, tc);
   return s;
 }
