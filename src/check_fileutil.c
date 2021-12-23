@@ -4,6 +4,9 @@
 #include <check.h>
 #include <sys/types.h>
 #include <time.h>
+#if _hdr_unistd
+# include <unistd.h>
+#endif
 
 #include "fileutil.h"
 #include "check_bdj.h"
@@ -36,13 +39,13 @@ START_TEST(fileinfo_chk)
   for (size_t i = 0; i < TCOUNT; ++i) {
     fi = fileInfo (tests[i].path);
     ck_assert_msg (fi->dlen == tests[i].dlen,
-        "dlen: i:%ld %d/%d", i, fi->dlen, tests[i].dlen);
+        "dlen: i:%ld %ld/%ld", i, fi->dlen, tests[i].dlen);
     ck_assert_msg (fi->blen == tests[i].blen,
-        "blen: i:%ld %d/%d", i, fi->blen, tests[i].blen);
+        "blen: i:%ld %ld/%ld", i, fi->blen, tests[i].blen);
     ck_assert_msg (fi->flen == tests[i].flen,
-        "flen: i:%ld %d/%d", i, fi->flen, tests[i].flen);
+        "flen: i:%ld %ld/%ld", i, fi->flen, tests[i].flen);
     ck_assert_msg (fi->elen == tests[i].elen,
-        "elen: i:%ld %d/%d", i, fi->elen, tests[i].elen);
+        "elen: i:%ld %ld/%ld", i, fi->elen, tests[i].elen);
     fileInfoFree (fi);
   }
 }
@@ -251,6 +254,25 @@ START_TEST(file_make_backups)
 }
 END_TEST
 
+START_TEST(file_delete)
+{
+  FILE      *fh;
+  int       rc;
+
+  char *fn = "tmp/def.txt";
+  unlink (fn);
+  fn = "tmp/abc.txt";
+  fh = fopen (fn, "w");
+  ck_assert (fh != NULL);
+  fclose (fh);
+  rc = fileDelete (fn);
+  ck_assert (rc == 0);
+  rc = fileDelete ("tmp/def.txt");
+  ck_assert (rc < 0);
+  unlink (fn);
+}
+END_TEST
+
 Suite *
 fileutil_suite (void)
 {
@@ -264,6 +286,7 @@ fileutil_suite (void)
   tcase_add_test (tc, file_copy);
   tcase_add_test (tc, file_move);
   tcase_add_test (tc, file_make_backups);
+  tcase_add_test (tc, file_delete);
   suite_add_tcase (s, tc);
   return s;
 }

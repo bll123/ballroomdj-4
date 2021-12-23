@@ -273,7 +273,7 @@ START_TEST(vlist_create_free)
 {
   list_t    *list;
 
-  list = vlistAlloc (LIST_ORDERED, VALUE_DATA, istringCompare, NULL, NULL);
+  list = vlistAlloc (LIST_ORDERED, istringCompare, NULL, NULL);
   ck_assert (list != NULL);
   ck_assert (list->count == 0);
   ck_assert (list->allocCount == 0);
@@ -289,7 +289,7 @@ START_TEST(vlist_add)
   list_t        *list;
   namevalue_t   *nv;
 
-  list = vlistAlloc (LIST_ORDERED, VALUE_DATA, istringCompare, NULL, NULL);
+  list = vlistAlloc (LIST_ORDERED, istringCompare, NULL, NULL);
   ck_assert (list != NULL);
   ck_assert (list->dsiz == sizeof (namevalue_t *));
   vlistSetData (list, "ffff", "555");
@@ -313,10 +313,9 @@ START_TEST(vlist_add_sort)
   list_t        *list;
   namevalue_t   *nv;
 
-  list = vlistAlloc (LIST_UNORDERED, VALUE_LONG, istringCompare, NULL, NULL);
+  list = vlistAlloc (LIST_UNORDERED, istringCompare, NULL, NULL);
   ck_assert (list != NULL);
   ck_assert (list->dsiz == sizeof (namevalue_t *));
-  ck_assert (list->valuetype == VALUE_LONG);
   vlistSetLong (list, "ffff", 0L);
   vlistSetLong (list, "zzzz", 1L);
   vlistSetLong (list, "rrrr", 2L);
@@ -347,7 +346,7 @@ START_TEST(vlist_replace)
   list_t        *list;
   namevalue_t   *nv;
 
-  list = vlistAlloc (LIST_ORDERED, VALUE_DATA, istringCompare, NULL, NULL);
+  list = vlistAlloc (LIST_ORDERED, istringCompare, NULL, NULL);
   ck_assert (list != NULL);
   ck_assert (list->type == LIST_NAMEVALUE);
   ck_assert (list->dsiz == sizeof (namevalue_t *));
@@ -383,7 +382,7 @@ START_TEST(vlist_get_data)
   list_t        *list;
   char          *value;
 
-  list = vlistAlloc (LIST_UNORDERED, VALUE_DATA, istringCompare, NULL, NULL);
+  list = vlistAlloc (LIST_UNORDERED, istringCompare, NULL, NULL);
   vlistSetSize (list, 7);
   ck_assert (list->count == 0);
   ck_assert (list->allocCount == 7);
@@ -408,10 +407,9 @@ START_TEST(vlist_free)
 {
   list_t        *list;
 
-  list = vlistAlloc (LIST_UNORDERED, VALUE_DATA, istringCompare, free, free);
+  list = vlistAlloc (LIST_UNORDERED, istringCompare, free, free);
   ck_assert (list != NULL);
   ck_assert (list->dsiz == sizeof (namevalue_t *));
-  ck_assert (list->valuetype == VALUE_DATA);
   vlistSetData (list, strdup ("ffff"), strdup("0L"));
   vlistSetData (list, strdup ("zzzz"), strdup("1L"));
   vlistSetData (list, strdup ("rrrr"), strdup("2L"));

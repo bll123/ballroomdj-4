@@ -25,6 +25,12 @@ foreach {fn} $flist {
     if { $key eq "version" } {
       set value 10
     }
+    if { $value eq "no" } {
+      set value 0
+    }
+    if { $value eq "yes" } {
+      set value 1
+    }
     puts $ofh $key
     puts $ofh "..$value"
   }

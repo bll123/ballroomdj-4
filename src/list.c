@@ -33,7 +33,6 @@ listAlloc (size_t dsiz, listorder_t ordered, listCompare_t compare,
   list->dsiz = dsiz;
   list->ordered = ordered;
   list->type = LIST_BASIC;
-  list->valuetype = VALUE_NONE;
   list->bumper1 = 0x11223344;
   list->bumper2 = 0x44332211;
   list->compare = compare;
@@ -130,14 +129,13 @@ listSort (list_t *list)
 /* value list */
 
 list_t *
-vlistAlloc (listorder_t ordered, valuetype_t valuetype, listCompare_t compare,
+vlistAlloc (listorder_t ordered, listCompare_t compare,
     listFree_t freeHook, listFree_t freeHookB)
 {
   list_t    *list;
 
   list = listAlloc (sizeof (namevalue_t *), ordered, compare, NULL);
   list->type = LIST_NAMEVALUE;
-  list->valuetype = valuetype;
   list->freeHook = freeHook;
   list->freeHookB = freeHookB;
   return list;
@@ -163,6 +161,7 @@ vlistSetData (list_t *list, char *name, void *value)
   nv = malloc (sizeof (namevalue_t));
   assert (nv != NULL);
   nv->name = name;
+  nv->valuetype = VALUE_DATA;
   nv->u.data = value;
   listSet (list, nv);
   return list;
@@ -176,6 +175,7 @@ vlistSetLong (list_t *list, char *name, long value)
   nv = malloc (sizeof (namevalue_t));
   assert (nv != NULL);
   nv->name = name;
+  nv->valuetype = VALUE_LONG;
   nv->u.l = value;
   listSet (list, nv);
   return list;
@@ -187,13 +187,33 @@ vlistGetData (list_t *list, char *key)
   void  *value = "";
 
   if (list != NULL &&
-      list->type == LIST_NAMEVALUE &&
-      list->valuetype == VALUE_DATA) {
+      list->type == LIST_NAMEVALUE) {
     long loc = listFind (list, key);
 
     if (loc >= 0) {
       namevalue_t *nv = list->data [loc];
-      value = (char *) nv->u.data;
+      if (nv->valuetype == VALUE_DATA) {
+        value = (char *) nv->u.data;
+      }
+    }
+  }
+  return value;
+}
+
+long
+vlistGetLong (list_t *list, char *key)
+{
+  long    value = 0L;
+
+  if (list != NULL &&
+      list->type == LIST_NAMEVALUE) {
+    long loc = listFind (list, key);
+
+    if (loc >= 0) {
+      namevalue_t *nv = list->data [loc];
+      if (nv->valuetype == VALUE_LONG) {
+        value = nv->u.l;
+      }
     }
   }
   return value;
@@ -225,7 +245,7 @@ listFreeItem (list_t *list, size_t idx)
       if (nv->name != NULL && list->freeHook != NULL) {
         list->freeHook (nv->name);
       }
-      if (list->valuetype == VALUE_DATA && nv->u.data != NULL &&
+      if (nv->valuetype == VALUE_DATA && nv->u.data != NULL &&
           list->freeHookB != NULL) {
         list->freeHookB (nv->u.data);
       }

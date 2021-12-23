@@ -32,7 +32,6 @@ typedef struct {
   size_t          allocCount;
   listorder_t     ordered;
   listtype_t      type;
-  valuetype_t     valuetype;
   listFree_t      freeHook;
   listFree_t      freeHookB;
 } list_t;
@@ -47,19 +46,21 @@ void      listSort (list_t *);
 /* value list */
 
 typedef struct {
-  char        *name;
+  char          *name;
+  valuetype_t   valuetype;
   union {
     void        *data;
     long        l;
   } u;
 } namevalue_t;
 
-list_t *  vlistAlloc (listorder_t, valuetype_t, listCompare_t, listFree_t, listFree_t);
+list_t *  vlistAlloc (listorder_t, listCompare_t, listFree_t, listFree_t);
 void      vlistFree (list_t *);
 void      vlistSetSize (list_t *, size_t);
 list_t *  vlistSetData (list_t *, char *, void *);
 list_t *  vlistSetLong (list_t *, char *, long);
 void *    vlistGetData (list_t *, char *);
+long      vlistGetLong (list_t *, char *);
 long      vlistFind (list_t *, char *);
 void      vlistSort (list_t *);
 

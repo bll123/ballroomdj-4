@@ -16,7 +16,7 @@ songAlloc (void)
 
   song = malloc (sizeof (song_t));
   assert (song != NULL);
-  song->songInfo = vlistAlloc (LIST_UNORDERED, VALUE_DATA, istringCompare,
+  song->songInfo = vlistAlloc (LIST_UNORDERED, istringCompare,
       free, free);
   return song;
 }

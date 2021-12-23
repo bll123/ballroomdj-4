@@ -160,7 +160,8 @@ fileutil$(OBJ_EXT): fileutil.c fileutil.h sysvars.h $(MKC_OUTPUT)
 
 list$(OBJ_EXT): list.c list.h $(MKC_OUTPUT)
 
-lock$(OBJ_EXT): lock.c lock.h portability.h process.h tmutil.h $(MKC_OUTPUT)
+lock$(OBJ_EXT): lock.c lock.h portability.h process.h \
+	tmutil.h fileutil.h $(MKC_OUTPUT)
 
 log$(OBJ_EXT): log.c log.h tmutil.h fileutil.h $(MKC_OUTPUT)
 

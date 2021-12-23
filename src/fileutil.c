@@ -9,6 +9,9 @@
 #if _hdr_bsd_string
 # include <bsd/string.h>
 #endif
+#if _hdr_unistd
+# include <unistd.h>
+#endif
 
 #include "fileutil.h"
 #include "sysvars.h"
@@ -146,13 +149,21 @@ int
 fileMove (char *fname, char *nfn)
 {
   char      cmd [MAXPATHLEN];
+  int       rc;
 
   if (isWindows ()) {
     snprintf (cmd, MAXPATHLEN, "move /f \"%s\" \"%s\"\n", fname, nfn);
+    rc = system (cmd);
   } else {
-    snprintf (cmd, MAXPATHLEN, "mv -f '%s' '%s'\n", fname, nfn);
+    rc = rename (fname, nfn);
   }
-  int rc = system (cmd);
+  return rc;
+}
+
+int
+fileDelete (char *fname)
+{
+  int rc = unlink (fname);
   return rc;
 }
 

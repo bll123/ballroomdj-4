@@ -19,5 +19,6 @@ void          makeBackups (char *, int);
 int           fileExists (char *);
 int           fileCopy (char *, char *);
 int           fileMove (char *, char *);
+int           fileDelete (char *);
 
 #endif /* INC_FILEUTIL_H */

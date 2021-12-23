@@ -24,7 +24,7 @@ dbOpen (char *fn)
   if (! initialized) {
     bdjdb = malloc (sizeof (db_t));
     assert (bdjdb != NULL);
-    bdjdb->songs = vlistAlloc (LIST_UNORDERED, VALUE_DATA, istringCompare,
+    bdjdb->songs = vlistAlloc (LIST_UNORDERED, istringCompare,
         free, songFree);
     bdjdb->count = 0L;
     dbLoad (bdjdb, fn);
