@@ -3,7 +3,7 @@
 
 loadunit c-main
 
-output  bdjconfig.h
+output  config.h
 
 standard
 

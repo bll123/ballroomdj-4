@@ -21,7 +21,7 @@ SHLIBDIR = $(BINDIR)
 MKC_PREFIX = bdj
 MKC_CONFDIR = mkc_config
 MKC_FILES = mkc_files
-MKC_OUTPUT = bdjconfig.h
+MKC_OUTPUT = config.h
 MKC_ENV_SHR = $(MKC_PREFIX)-shared.env
 
 MKC_CONF = $(MKC_CONFDIR)/$(MKC_PREFIX).mkc
@@ -195,30 +195,29 @@ $(BINDIR)/check_all$(EXE_EXT): $(CHECKOBJS)
 # DEPENDS - Do not remove this line
 
 $(OBJDIR)/bdj4$(OBJ_EXT): bdj4.c bdj4main.h
-$(OBJDIR)/bdj4main$(OBJ_EXT): bdj4main.c bdjconfig.h bdj4main.h musicdb.h song.h list.h \
+$(OBJDIR)/bdj4main$(OBJ_EXT): bdj4main.c config.h bdj4main.h musicdb.h song.h list.h \
  tagdef.h bdjstring.h sysvars.h log.h
-$(OBJDIR)/bdjstring$(OBJ_EXT): bdjstring.c bdjconfig.h bdjstring.h
-$(OBJDIR)/check_all$(OBJ_EXT): check_all.c bdjconfig.h check_bdj.h
-$(OBJDIR)/check_datafile$(OBJ_EXT): check_datafile.c bdjconfig.h datafile.h list.h \
- check_bdj.h
-$(OBJDIR)/check_fileutil$(OBJ_EXT): check_fileutil.c bdjconfig.h fileutil.h check_bdj.h
-$(OBJDIR)/check_list$(OBJ_EXT): check_list.c bdjconfig.h list.h bdjstring.h check_bdj.h
-$(OBJDIR)/check_lock$(OBJ_EXT): check_lock.c bdjconfig.h lock.h bdjstring.h check_bdj.h
-$(OBJDIR)/check_rafile$(OBJ_EXT): check_rafile.c bdjconfig.h rafile.h check_bdj.h
-$(OBJDIR)/check_sock$(OBJ_EXT): check_sock.c bdjconfig.h sock.h check_bdj.h tmutil.h
-$(OBJDIR)/check_tmutil$(OBJ_EXT): check_tmutil.c bdjconfig.h tmutil.h check_bdj.h
-$(OBJDIR)/datafile$(OBJ_EXT): datafile.c bdjconfig.h datafile.h list.h tmutil.h fileutil.h
-$(OBJDIR)/fileutil$(OBJ_EXT): fileutil.c bdjconfig.h fileutil.h sysvars.h
-$(OBJDIR)/list$(OBJ_EXT): list.c bdjconfig.h list.h
-$(OBJDIR)/lock$(OBJ_EXT): lock.c bdjconfig.h portability.h process.h tmutil.h lock.h \
+$(OBJDIR)/bdjstring$(OBJ_EXT): bdjstring.c config.h bdjstring.h
+$(OBJDIR)/check_all$(OBJ_EXT): check_all.c config.h check_bdj.h
+$(OBJDIR)/check_datafile$(OBJ_EXT): check_datafile.c config.h datafile.h list.h check_bdj.h
+$(OBJDIR)/check_fileutil$(OBJ_EXT): check_fileutil.c config.h fileutil.h check_bdj.h
+$(OBJDIR)/check_list$(OBJ_EXT): check_list.c config.h list.h bdjstring.h check_bdj.h
+$(OBJDIR)/check_lock$(OBJ_EXT): check_lock.c config.h lock.h bdjstring.h check_bdj.h
+$(OBJDIR)/check_rafile$(OBJ_EXT): check_rafile.c config.h rafile.h check_bdj.h
+$(OBJDIR)/check_sock$(OBJ_EXT): check_sock.c config.h sock.h check_bdj.h tmutil.h
+$(OBJDIR)/check_tmutil$(OBJ_EXT): check_tmutil.c config.h tmutil.h check_bdj.h
+$(OBJDIR)/datafile$(OBJ_EXT): datafile.c config.h datafile.h list.h tmutil.h fileutil.h
+$(OBJDIR)/fileutil$(OBJ_EXT): fileutil.c config.h fileutil.h sysvars.h
+$(OBJDIR)/list$(OBJ_EXT): list.c config.h list.h
+$(OBJDIR)/lock$(OBJ_EXT): lock.c config.h portability.h process.h tmutil.h lock.h \
  fileutil.h
-$(OBJDIR)/log$(OBJ_EXT): log.c bdjconfig.h log.h tmutil.h fileutil.h
-$(OBJDIR)/musicdb$(OBJ_EXT): musicdb.c bdjconfig.h musicdb.h song.h list.h rafile.h \
+$(OBJDIR)/log$(OBJ_EXT): log.c config.h log.h tmutil.h fileutil.h
+$(OBJDIR)/musicdb$(OBJ_EXT): musicdb.c config.h musicdb.h song.h list.h rafile.h \
  bdjstring.h lock.h datafile.h tagdef.h log.h
-$(OBJDIR)/process$(OBJ_EXT): process.c bdjconfig.h process.h
-$(OBJDIR)/rafile$(OBJ_EXT): rafile.c bdjconfig.h rafile.h lock.h tmutil.h log.h
-$(OBJDIR)/sock$(OBJ_EXT): sock.c bdjconfig.h sock.h tmutil.h log.h
-$(OBJDIR)/song$(OBJ_EXT): song.c bdjconfig.h song.h list.h bdjstring.h tagdef.h log.h
-$(OBJDIR)/sysvars$(OBJ_EXT): sysvars.c bdjconfig.h sysvars.h
-$(OBJDIR)/tagdef$(OBJ_EXT): tagdef.c bdjconfig.h tagdef.h bdjstring.h list.h
-$(OBJDIR)/tmutil$(OBJ_EXT): tmutil.c bdjconfig.h tmutil.h
+$(OBJDIR)/process$(OBJ_EXT): process.c config.h process.h
+$(OBJDIR)/rafile$(OBJ_EXT): rafile.c config.h rafile.h lock.h tmutil.h log.h
+$(OBJDIR)/sock$(OBJ_EXT): sock.c config.h sock.h tmutil.h log.h
+$(OBJDIR)/song$(OBJ_EXT): song.c config.h song.h list.h bdjstring.h tagdef.h log.h
+$(OBJDIR)/sysvars$(OBJ_EXT): sysvars.c config.h sysvars.h
+$(OBJDIR)/tagdef$(OBJ_EXT): tagdef.c config.h tagdef.h bdjstring.h list.h
+$(OBJDIR)/tmutil$(OBJ_EXT): tmutil.c config.h tmutil.h

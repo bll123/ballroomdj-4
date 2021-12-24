@@ -1,4 +1,4 @@
-#include "bdjconfig.h"
+#include "config.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -20,6 +20,7 @@
 #include "sysvars.h"
 
 char        sysvars [SV_MAX][MAXPATHLEN];
+long        lsysvars [SVL_MAX];
 
 void
 sysvarsInit (void)
@@ -78,6 +79,8 @@ sysvarsInit (void)
 #endif
   gethostname (tbuf, MAXPATHLEN);
   strlcpy (sysvars [SV_HOSTNAME], tbuf, MAXPATHLEN);
+
+  lsysvars [SVL_BDJIDX] = 0;
 }
 
 inline int

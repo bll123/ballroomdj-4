@@ -1,7 +1,7 @@
 #ifndef INC_PORTABILITY_H
 #define INC_PORTABILITY_H
 
-#include "bdjconfig.h"
+#include "config.h"
 #if _hdr_windows
 # include <windows.h>
 #endif

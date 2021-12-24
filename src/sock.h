@@ -1,7 +1,7 @@
 #ifndef INC_SOCK_H
 #define INC_SOCK_H
 
-#include "bdjconfig.h"
+#include "config.h"
 
 #include <sys/types.h>
 

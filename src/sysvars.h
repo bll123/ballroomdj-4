@@ -29,7 +29,13 @@ typedef enum {
   SV_MAX
 } sysvarkey_t;
 
+typedef enum {
+  SVL_BDJIDX,
+  SVL_MAX
+} sysvarlkey_t;
+
 extern char       sysvars [SV_MAX][MAXPATHLEN];
+extern long       lsysvars [SVL_MAX];
 
 void sysvarsInit (void);
 int isMacOS (void);
