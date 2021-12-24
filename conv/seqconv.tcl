@@ -14,6 +14,7 @@ if { ! [file exists $dir] || ! [file isdirectory $dir] } {
 set flist [glob -directory $dir *.seq]
 
 foreach {fn} $flist {
+  puts "## Converting: [file tail $fn]"
   set ifh [open $fn r]
   set nfn [file join data [file rootname [file tail $fn]].seq4]
   set ofh [open $nfn w]

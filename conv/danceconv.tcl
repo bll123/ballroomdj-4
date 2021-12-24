@@ -11,6 +11,7 @@ if { ! [file exists $dir] || ! [file isdirectory $dir] } {
   exit 1
 }
 
+puts "## Converting dancedefaults.tcl"
 source [file join $dir dancedefaults.tcl]
 set nfn [file join data dances.txt]
 set fh [open $nfn w]

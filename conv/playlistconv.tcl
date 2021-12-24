@@ -14,6 +14,7 @@ if { ! [file exists $dir] || ! [file isdirectory $dir] } {
 set flist [glob -directory $dir *.playlist]
 
 foreach {fn} $flist {
+  puts "## Converting: [file tail $fn]"
   set ifh [open $fn r]
   set nfn [file join data [file rootname [file tail $fn]].playlist4]
   set ofh [open $nfn w]
@@ -24,12 +25,6 @@ foreach {fn} $flist {
     regexp {^([^:]*):(.*)$} $line all key value
     if { $key eq "version" } {
       set value 10
-    }
-    if { $value eq "no" } {
-      set value 0
-    }
-    if { $value eq "yes" } {
-      set value 1
     }
     puts $ofh $key
     puts $ofh "..$value"

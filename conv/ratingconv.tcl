@@ -11,6 +11,7 @@ if { ! [file exists $dir] || ! [file isdirectory $dir] } {
   exit 1
 }
 
+puts "## Converting: ratings.tcl"
 source [file join $dir ratings.tcl]
 set nfn [file join data ratings.txt]
 set fh [open $nfn w]
