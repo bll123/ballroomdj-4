@@ -130,7 +130,8 @@ BDJMAINOBJS = $(OBJDIR)/bdj4$(OBJ_EXT) \
 	$(SHLIBDIR)/libbdj$(SHLIB_EXT)
 
 $(BINDIR)/bdj4$(EXE_EXT): $(BDJMAINOBJS)
-	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh -link -exec $(MKC_ECHO) \
+	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh \
+		-link -exec $(MKC_ECHO) \
 		-o $@ \
 		-r $(MKC_REQLIB) \
 		$(BDJMAINOBJS) \
@@ -159,7 +160,8 @@ BDJOBJS = $(OBJDIR)/bdj4main$(OBJ_EXT) \
 	$(OBJDIR)/tmutil$(OBJ_EXT)
 
 $(SHLIBDIR)/libbdj$(SHLIB_EXT): $(MKC_REQLIB) $(BDJOBJS)
-	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh -link -shared $(MKC_ECHO) -lib \
+	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh \
+		-link -shared $(MKC_ECHO) -lib \
 		-o $@ \
 		-r $(MKC_REQLIB) \
 		$(BDJOBJS) \
@@ -179,7 +181,8 @@ CHECKOBJS = $(OBJDIR)/check_all$(OBJ_EXT) \
 
 CHECKLIBS =
 $(BINDIR)/check_all$(EXE_EXT): $(CHECKOBJS)
-	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh -link -exec $(MKC_ECHO) \
+	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh \
+		-link -exec $(MKC_ECHO) \
 		-o $@ \
 		-r $(MKC_REQLIB) \
 		$(CHECKOBJS) \

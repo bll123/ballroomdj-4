@@ -80,19 +80,19 @@ sysvarsInit (void)
   strlcpy (sysvars [SV_HOSTNAME], tbuf, MAXPATHLEN);
 }
 
-int
+inline int
 isMacOS (void)
 {
   return (strcmp (sysvars[SV_OSNAME], "Darwin") == 0);
 }
 
-int
+inline int
 isWindows (void)
 {
   return (strcmp (sysvars[SV_OSNAME], "Windows") == 0);
 }
 
-int
+inline int
 isLinux (void)
 {
   return (strcmp (sysvars[SV_OSNAME], "Linux") == 0);

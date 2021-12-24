@@ -12,10 +12,20 @@ typedef enum {
 } listtype_t;
 
 typedef enum {
+  KEY_STR,
+  KEY_LONG
+} keytype_t;
+
+typedef enum {
   VALUE_DOUBLE,
   VALUE_DATA,
   VALUE_LONG
 } valuetype_t;
+
+typedef union {
+  char        *name;
+  long        key;
+} listkey_t;
 
 /* basic list */
 
@@ -30,6 +40,7 @@ typedef struct {
   size_t          dsiz;
   size_t          count;
   size_t          allocCount;
+  keytype_t       keytype;
   listorder_t     ordered;
   listtype_t      type;
   listFree_t      freeHook;
@@ -40,13 +51,13 @@ list_t *  listAlloc (size_t, listorder_t, listCompare_t, listFree_t);
 void      listFree (list_t *);
 void      listSetSize (list_t *, size_t);
 list_t *  listSet (list_t *, void *);
-long      listFind (list_t *, void *);
+long      listFind (list_t *, listkey_t);
 void      listSort (list_t *);
 
 /* value list */
 
 typedef struct {
-  char          *name;
+  listkey_t         key;
   valuetype_t   valuetype;
   union {
     void        *data;
@@ -55,16 +66,17 @@ typedef struct {
   } u;
 } namevalue_t;
 
-list_t *  vlistAlloc (listorder_t, listCompare_t, listFree_t, listFree_t);
+list_t *  vlistAlloc (keytype_t, listorder_t, listCompare_t,
+              listFree_t, listFree_t);
 void      vlistFree (list_t *);
 void      vlistSetSize (list_t *, size_t);
-list_t *  vlistSetData (list_t *, char *, void *);
-list_t *  vlistSetLong (list_t *, char *, long);
-list_t *  vlistSetDouble (list_t *, char *, double);
-void *    vlistGetData (list_t *, char *);
-long      vlistGetLong (list_t *, char *);
-double    vlistGetDouble (list_t *, char *);
-long      vlistFind (list_t *, char *);
+list_t *  vlistSetData (list_t *, listkey_t, void *);
+list_t *  vlistSetLong (list_t *, listkey_t, long);
+list_t *  vlistSetDouble (list_t *, listkey_t, double);
+void *    vlistGetData (list_t *, listkey_t);
+long      vlistGetLong (list_t *, listkey_t);
+double    vlistGetDouble (list_t *, listkey_t);
+long      vlistFind (list_t *, listkey_t);
 void      vlistSort (list_t *);
 
 #endif /* INC_LIST */

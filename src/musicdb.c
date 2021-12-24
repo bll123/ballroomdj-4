@@ -24,7 +24,7 @@ dbOpen (char *fn)
   if (! initialized) {
     bdjdb = malloc (sizeof (db_t));
     assert (bdjdb != NULL);
-    bdjdb->songs = vlistAlloc (LIST_UNORDERED, istringCompare,
+    bdjdb->songs = vlistAlloc (KEY_STR, LIST_UNORDERED, istringCompare,
         free, songFree);
     bdjdb->count = 0L;
     dbLoad (bdjdb, fn);
@@ -62,6 +62,7 @@ dbLoad (db_t *db, char *fn)
   parseinfo_t *pi;
   size_t      songDataCount;
   long        srrn;
+  listkey_t   lkey;
 
   pi = parseInit ();
   fstr = "";
@@ -79,12 +80,13 @@ dbLoad (db_t *db, char *fn)
     songDataCount = parseKeyValue (pi, data);
     song = songAlloc ();
     songSetAll (song, parseGetData (pi), songDataCount);
-    fstr = songGet (song, TAG_FILE);
-    sscanf (songGet (song, "rrn"), "%ld", &srrn);
+    fstr = songGet (song, TAG_KEY_FILE);
+    sscanf (songGet (song, TAG_KEY_rrn), "%ld", &srrn);
     if ((long) i != srrn) {
-      songSetLong (song, "rrn", (long) i);
+      songSetLong (song, TAG_KEY_rrn, (long) i);
     }
-    vlistSetData (db->songs, strdup (fstr), song);
+    lkey.name = strdup (fstr);
+    vlistSetData (db->songs, lkey, song);
     ++db->count;
   }
 

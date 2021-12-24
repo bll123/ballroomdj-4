@@ -18,8 +18,8 @@ songAlloc (void)
 
   song = malloc (sizeof (song_t));
   assert (song != NULL);
-  song->songInfo = vlistAlloc (LIST_UNORDERED, istringCompare,
-      free, free);
+  song->songInfo = vlistAlloc (KEY_LONG, LIST_UNORDERED,
+      istringCompare, free, free);
   return song;
 }
 
@@ -36,7 +36,9 @@ songFree (void *tsong)
 }
 
 char *
-songGet (song_t *song, char *key) {
+songGet (song_t *song, long idx) {
+  listkey_t     key;
+  key.key = idx;
   char *value = vlistGetData (song->songInfo, key);
   return value;
 }
@@ -44,29 +46,31 @@ songGet (song_t *song, char *key) {
 void
 songSetAll (song_t *song, char *data[], size_t count)
 {
-  long          key;
+  long          idx;
+  listkey_t     lkey;
 
   for (size_t i = 0; i < count; i += 2) {
-    key = tagdefGetKey (data[i]);
-    if (key < 0) {
+    idx = tagdefGetIdx (data[i]);
+    if (idx < 0) {
       logVarMsg (LOG_ERR, "songSetAll: Unknown song key: %s\n", data[i]);
       continue;
     }
 
-    switch (tagdefs[key].valuetype) {
+    lkey.key = idx;
+    switch (tagdefs[idx].valuetype) {
       case VALUE_DOUBLE:
       {
-        vlistSetDouble (song->songInfo, strdup (data[i]), atof (data[i+1]));
+        vlistSetDouble (song->songInfo, lkey, atof (data[i+1]));
         break;
       }
       case VALUE_LONG:
       {
-        vlistSetLong (song->songInfo, strdup (data[i]), atol (data[i+1]));
+        vlistSetLong (song->songInfo, lkey, atol (data[i+1]));
         break;
       }
       case VALUE_DATA:
       {
-        vlistSetData (song->songInfo, strdup (data[i]), strdup (data[i+1]));
+        vlistSetData (song->songInfo, lkey, strdup (data[i+1]));
         break;
       }
     }
@@ -75,7 +79,10 @@ songSetAll (song_t *song, char *data[], size_t count)
 }
 
 void
-songSetLong (song_t *song, char *tag, long value)
+songSetLong (song_t *song, long tagidx, long value)
 {
-  vlistSetLong (song->songInfo, strdup (tag), value);
+  listkey_t       lkey;
+
+  lkey.key = tagidx;
+  vlistSetLong (song->songInfo, lkey, value);
 }

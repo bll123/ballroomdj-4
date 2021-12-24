@@ -122,7 +122,7 @@ makeBackups (char *fname, int count)
   return;
 }
 
-int
+inline int
 fileExists (char *fname)
 {
   struct stat   statbuf;
@@ -160,7 +160,7 @@ fileMove (char *fname, char *nfn)
   return rc;
 }
 
-int
+inline int
 fileDelete (char *fname)
 {
   int rc = unlink (fname);

@@ -12,6 +12,7 @@ static void listInsert (list_t *, size_t, void *);
 static void listReplace (list_t *, size_t, void *);
 static int  listBinarySearch (const list_t *, void *, size_t *);
 static int  nameValueCompare (const list_t *, void *, void *);
+static int  longCompare (long, long);
 static int  listCompare (const list_t *, void *, void *);
 static void merge (list_t *, size_t, size_t, size_t);
 static void mergeSort (list_t *, size_t, size_t);
@@ -31,6 +32,7 @@ listAlloc (size_t dsiz, listorder_t ordered, listCompare_t compare,
   list->count = 0;
   list->allocCount = 0;
   list->dsiz = dsiz;
+  list->keytype = KEY_STR;
   list->ordered = ordered;
   list->type = LIST_BASIC;
   list->bumper1 = 0x11223344;
@@ -93,7 +95,7 @@ listSet (list_t *list, void *data)
 }
 
 long
-listFind (list_t *list, void *data)
+listFind (list_t *list, listkey_t key)
 {
   long        loc;
   namevalue_t nv;
@@ -105,10 +107,15 @@ listFind (list_t *list, void *data)
   if (list->count > 0) {
     if (list->ordered == LIST_ORDERED) {
       if (list->type == LIST_NAMEVALUE) {
-        nv.name = data;
+        if (list->keytype == KEY_STR) {
+          nv.key.name = key.name;
+        }
+        if (list->keytype == KEY_LONG) {
+          nv.key.key = key.key;
+        }
         rc = listBinarySearch (list, &nv, (size_t *) &loc);
       } else {
-        rc = listBinarySearch (list, data, (size_t *) &loc);
+        rc = listBinarySearch (list, key.name, (size_t *) &loc);
       }
       if (rc < 0) {
         loc = -1;
@@ -129,13 +136,14 @@ listSort (list_t *list)
 /* value list */
 
 list_t *
-vlistAlloc (listorder_t ordered, listCompare_t compare,
+vlistAlloc (keytype_t keytype, listorder_t ordered, listCompare_t compare,
     listFree_t freeHook, listFree_t freeHookB)
 {
   list_t    *list;
 
   list = listAlloc (sizeof (namevalue_t *), ordered, compare, NULL);
   list->type = LIST_NAMEVALUE;
+  list->keytype = keytype;
   list->freeHook = freeHook;
   list->freeHookB = freeHookB;
   return list;
@@ -154,13 +162,18 @@ vlistSetSize (list_t *list, size_t siz)
 }
 
 list_t *
-vlistSetData (list_t *list, char *name, void *value)
+vlistSetData (list_t *list, listkey_t key, void *value)
 {
   namevalue_t *nv;
 
   nv = malloc (sizeof (namevalue_t));
   assert (nv != NULL);
-  nv->name = name;
+  if (list->keytype == KEY_STR) {
+    nv->key.name = key.name;
+  }
+  if (list->keytype == KEY_LONG) {
+    nv->key.key = key.key;
+  }
   nv->valuetype = VALUE_DATA;
   nv->u.data = value;
   listSet (list, nv);
@@ -168,13 +181,18 @@ vlistSetData (list_t *list, char *name, void *value)
 }
 
 list_t *
-vlistSetLong (list_t *list, char *name, long value)
+vlistSetLong (list_t *list, listkey_t key, long value)
 {
   namevalue_t *nv;
 
   nv = malloc (sizeof (namevalue_t));
   assert (nv != NULL);
-  nv->name = name;
+  if (list->keytype == KEY_STR) {
+    nv->key.name = key.name;
+  }
+  if (list->keytype == KEY_LONG) {
+    nv->key.key = key.key;
+  }
   nv->valuetype = VALUE_LONG;
   nv->u.l = value;
   listSet (list, nv);
@@ -182,13 +200,18 @@ vlistSetLong (list_t *list, char *name, long value)
 }
 
 list_t *
-vlistSetDouble (list_t *list, char *name, double value)
+vlistSetDouble (list_t *list, listkey_t key, double value)
 {
   namevalue_t *nv;
 
   nv = malloc (sizeof (namevalue_t));
   assert (nv != NULL);
-  nv->name = name;
+  if (list->keytype == KEY_STR) {
+    nv->key.name = key.name;
+  }
+  if (list->keytype == KEY_LONG) {
+    nv->key.key = key.key;
+  }
   nv->valuetype = VALUE_DOUBLE;
   nv->u.d = value;
   listSet (list, nv);
@@ -196,7 +219,7 @@ vlistSetDouble (list_t *list, char *name, double value)
 }
 
 void *
-vlistGetData (list_t *list, char *key)
+vlistGetData (list_t *list, listkey_t key)
 {
   void  *value = NULL;
 
@@ -215,7 +238,7 @@ vlistGetData (list_t *list, char *key)
 }
 
 long
-vlistGetLong (list_t *list, char *key)
+vlistGetLong (list_t *list, listkey_t key)
 {
   long    value = -1L;
 
@@ -234,7 +257,7 @@ vlistGetLong (list_t *list, char *key)
 }
 
 double
-vlistGetDouble (list_t *list, char *key)
+vlistGetDouble (list_t *list, listkey_t key)
 {
   double  value = 0.0;
 
@@ -253,10 +276,10 @@ vlistGetDouble (list_t *list, char *key)
 }
 
 long
-vlistFind (list_t *list, char *name)
+vlistFind (list_t *list, listkey_t key)
 {
   long      rc;
-  rc = listFind (list, name);
+  rc = listFind (list, key);
   return rc;
 }
 
@@ -275,8 +298,10 @@ listFreeItem (list_t *list, size_t idx)
   if (dp != NULL) {
     if (list->type == LIST_NAMEVALUE) {
       namevalue_t *nv = (namevalue_t *) dp;
-      if (nv->name != NULL && list->freeHook != NULL) {
-        list->freeHook (nv->name);
+      if (list->keytype == KEY_STR &&
+          nv->key.name != NULL &&
+          list->freeHook != NULL) {
+        list->freeHook (nv->key.name);
       }
       if (nv->valuetype == VALUE_DATA && nv->u.data != NULL &&
           list->freeHookB != NULL) {
@@ -336,7 +361,26 @@ nameValueCompare (const list_t *list, void *d1, void *d2)
 
   nv1 = (namevalue_t *) d1;
   nv2 = (namevalue_t *) d2;
-  rc = list->compare (nv1->name, nv2->name);
+  rc = 0;
+  if (list->keytype == KEY_STR) {
+    rc = list->compare (nv1->key.name, nv2->key.name);
+  }
+  if (list->keytype == KEY_LONG) {
+    rc = longCompare (nv1->key.key, nv2->key.key);
+  }
+  return rc;
+}
+
+static int
+longCompare (long la, long lb)
+{
+  int rc = 0;
+
+  if (la < lb) {
+    rc = -1;
+  } else if (la > lb) {
+    rc = 1;
+  }
   return rc;
 }
 
