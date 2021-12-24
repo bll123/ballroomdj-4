@@ -9,6 +9,7 @@
 #include "list.h"
 #include "bdjstring.h"
 #include "tagdef.h"
+#include "log.h"
 
 song_t *
 songAlloc (void)
@@ -47,6 +48,11 @@ songSetAll (song_t *song, char *data[], size_t count)
 
   for (size_t i = 0; i < count; i += 2) {
     key = tagdefGetKey (data[i]);
+    if (key < 0) {
+      logVarMsg (LOG_ERR, "songSetAll: Unknown song key: %s\n", data[i]);
+      continue;
+    }
+
     switch (tagdefs[key].valuetype) {
       case VALUE_DOUBLE:
       {

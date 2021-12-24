@@ -198,7 +198,7 @@ vlistSetDouble (list_t *list, char *name, double value)
 void *
 vlistGetData (list_t *list, char *key)
 {
-  void  *value = "";
+  void  *value = NULL;
 
   if (list != NULL &&
       list->type == LIST_NAMEVALUE) {
@@ -217,7 +217,7 @@ vlistGetData (list_t *list, char *key)
 long
 vlistGetLong (list_t *list, char *key)
 {
-  long    value = 0L;
+  long    value = -1L;
 
   if (list != NULL &&
       list->type == LIST_NAMEVALUE) {

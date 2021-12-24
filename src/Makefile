@@ -187,7 +187,8 @@ $(OBJDIR)/rafile$(OBJ_EXT): rafile.c rafile.h lock.h tmutil.h \
 
 $(OBJDIR)/sock$(OBJ_EXT): sock.c sock.h tmutil.h log.h $(MKC_OUTPUT)
 
-$(OBJDIR)/song$(OBJ_EXT): song.c song.h list.h bdjstring.h $(MKC_OUTPUT)
+$(OBJDIR)/song$(OBJ_EXT): song.c song.h list.h bdjstring.h \
+	tagdef.h log.h $(MKC_OUTPUT)
 
 $(OBJDIR)/sysvars$(OBJ_EXT): sysvars.c sysvars.h $(MKC_OUTPUT)
 

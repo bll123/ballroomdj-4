@@ -243,6 +243,8 @@ START_TEST(list_find)
   ck_assert (loc == 1);
   loc = listFind (list, "rrrr");
   ck_assert (loc == 8);
+  loc = listFind (list, "xyzzy");
+  ck_assert (loc == -1);
   listFree (list);
 }
 END_TEST
