@@ -39,6 +39,7 @@ typedef struct {
   audioiddispflag_t   audioiddispflag;
   edittype_t          editType;
   valuetype_t         valuetype;
+  long                initialized;
   unsigned int        isBdjTag : 1;
   unsigned int        isNormTag : 1;
   unsigned int        albumEdit : 1;
@@ -95,6 +96,8 @@ typedef enum {
   TAG_KEY_dur,
   MAX_TAG_KEY
 } tagdefkey_t;
+
+#define TAGDEF_INITIALIZED 0x11332244
 
 extern tagdef_t tagdefs[MAX_TAG_KEY];
 

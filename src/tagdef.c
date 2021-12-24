@@ -27,6 +27,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] =
       AIDD_NO,                      /* audio id disp        */
       ET_NA,                        /* edit type            */
       VALUE_DATA,                   /* value type           */
+      TAGDEF_INITIALIZED,           /* initialized          */
       1,                            /* is bdj tag           */
       0,                            /* is norm tag          */
       0,                            /* album edit           */
@@ -50,6 +51,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] =
       AIDD_NO,                      /* audio id disp        */
       ET_NA,                        /* edit type            */
       VALUE_LONG,                   /* value type           */
+      TAGDEF_INITIALIZED,           /* initialized          */
       0,                            /* is bdj tag           */
       0,                            /* is norm tag          */
       0,                            /* album edit           */
@@ -73,6 +75,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] =
       AIDD_YES,                     /* audio id disp        */
       ET_ENTRY,                     /* edit type            */
       VALUE_DATA,                   /* value type           */
+      TAGDEF_INITIALIZED,           /* initialized          */
       0,                            /* is bdj tag           */
       1,                            /* is norm tag          */
       1,                            /* album edit           */
@@ -96,6 +99,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] =
       AIDD_YES,                     /* audio id disp        */
       ET_ENTRY,                     /* edit type            */
       VALUE_DATA,                   /* value type           */
+      TAGDEF_INITIALIZED,           /* initialized          */
       0,                            /* is bdj tag           */
       1,                            /* is norm tag          */
       1,                            /* album edit           */
@@ -119,6 +123,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] =
       AIDD_YES,                     /* audio id disp        */
       ET_ENTRY,                     /* edit type            */
       VALUE_DATA,                   /* value type           */
+      TAGDEF_INITIALIZED,           /* initialized          */
       0,                            /* is bdj tag           */
       1,                            /* is norm tag          */
       1,                            /* album edit           */
@@ -142,6 +147,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] =
       AIDD_NO,                      /* audio id disp        */
       ET_NA,                        /* edit type            */
       VALUE_LONG,                   /* value type           */
+      TAGDEF_INITIALIZED,           /* initialized          */
       0,                            /* is bdj tag           */
       0,                            /* is norm tag          */
       0,                            /* album edit           */
@@ -165,6 +171,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] =
       AIDD_NO,                      /* audio id disp        */
       ET_ENTRY,                     /* edit type            */
       VALUE_LONG,                   /* value type           */
+      TAGDEF_INITIALIZED,           /* initialized          */
       1,                            /* is bdj tag           */
       1,                            /* is norm tag          */
       0,                            /* album edit           */
@@ -188,6 +195,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] =
       AIDD_OPT,                     /* audio id disp        */
       ET_ENTRY,                     /* edit type            */
       VALUE_DATA,                   /* value type           */
+      TAGDEF_INITIALIZED,           /* initialized          */
       0,                            /* is bdj tag           */
       1,                            /* is norm tag          */
       1,                            /* album edit           */
@@ -211,6 +219,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] =
       AIDD_OPT,                     /* audio id disp        */
       ET_ENTRY,                     /* edit type            */
       VALUE_DATA,                   /* value type           */
+      TAGDEF_INITIALIZED,           /* initialized          */
       0,                            /* is bdj tag           */
       1,                            /* is norm tag          */
       1,                            /* album edit           */
@@ -234,6 +243,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] =
       AIDD_NO,                      /* audio id disp        */
       ET_COMBOBOX,                  /* edit type            */
       VALUE_DATA,                   /* value type           */
+      TAGDEF_INITIALIZED,           /* initialized          */
       1,                            /* is bdj tag           */
       0,                            /* is norm tag          */
       0,                            /* album edit           */
@@ -257,6 +267,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] =
       AIDD_NO,                      /* audio id disp        */
       ET_COMBOBOX,                  /* edit type            */
       VALUE_DATA,                   /* value type           */
+      TAGDEF_INITIALIZED,           /* initialized          */
       1,                            /* is bdj tag           */
       0,                            /* is norm tag          */
       0,                            /* album edit           */
@@ -280,6 +291,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] =
       AIDD_NO,                      /* audio id disp        */
       ET_COMBOBOX,                  /* edit type            */
       VALUE_DATA,                   /* value type           */
+      TAGDEF_INITIALIZED,           /* initialized          */
       1,                            /* is bdj tag           */
       0,                            /* is norm tag          */
       0,                            /* album edit           */
@@ -303,6 +315,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] =
       AIDD_OPT,                     /* audio id disp        */
       ET_NA,                        /* edit type            */
       VALUE_DATA,                   /* value type           */
+      TAGDEF_INITIALIZED,           /* initialized          */
       0,                            /* is bdj tag           */
       1,                            /* is norm tag          */
       0,                            /* album edit           */
@@ -326,6 +339,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] =
       AIDD_NO,                      /* audio id disp        */
       ET_NA,                        /* edit type            */
       VALUE_DATA,                   /* value type           */
+      TAGDEF_INITIALIZED,           /* initialized          */
       0,                            /* is bdj tag           */
       0,                            /* is norm tag          */
       0,                            /* album edit           */
@@ -349,6 +363,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] =
       AIDD_YES,                     /* audio id disp        */
       ET_ENTRY,                     /* edit type            */
       VALUE_LONG,                   /* value type           */
+      TAGDEF_INITIALIZED,           /* initialized          */
       0,                            /* is bdj tag           */
       1,                            /* is norm tag          */
       1,                            /* album edit           */
@@ -372,6 +387,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] =
       AIDD_YES,                     /* audio id disp        */
       ET_NA,                        /* edit type            */
       VALUE_LONG,                   /* value type           */
+      TAGDEF_INITIALIZED,           /* initialized          */
       0,                            /* is bdj tag           */
       1,                            /* is norm tag          */
       0,                            /* album edit           */
@@ -395,6 +411,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] =
       AIDD_NO,                      /* audio id disp        */
       ET_ENTRY,                     /* edit type            */
       VALUE_DATA,                   /* value type           */
+      TAGDEF_INITIALIZED,           /* initialized          */
       1,                            /* is bdj tag           */
       0,                            /* is norm tag          */
       1,                            /* album edit           */
@@ -418,6 +435,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] =
       AIDD_YES,                     /* audio id disp        */
       ET_NA,                        /* edit type            */
       VALUE_DOUBLE,                 /* value type           */
+      TAGDEF_INITIALIZED,           /* initialized          */
       1,                            /* is bdj tag           */
       0,                            /* is norm tag          */
       0,                            /* album edit           */
@@ -441,6 +459,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] =
       AIDD_NO,                      /* audio id disp        */
       ET_NA,                        /* edit type            */
       VALUE_DATA,                   /* value type           */
+      TAGDEF_INITIALIZED,           /* initialized          */
       0,                            /* is bdj tag           */
       0,                            /* is norm tag          */
       0,                            /* album edit           */
@@ -464,6 +483,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] =
       AIDD_NO,                      /* audio id disp        */
       ET_DISABLED_ENTRY,            /* edit type            */
       VALUE_DATA,                   /* value type           */
+      TAGDEF_INITIALIZED,           /* initialized          */
       0,                            /* is bdj tag           */
       0,                            /* is norm tag          */
       0,                            /* album edit           */
@@ -487,6 +507,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] =
       AIDD_NO,                      /* audio id disp        */
       ET_NA,                        /* edit type            */
       VALUE_DATA,                   /* value type           */
+      TAGDEF_INITIALIZED,           /* initialized          */
       0,                            /* is bdj tag           */
       0,                            /* is norm tag          */
       0,                            /* album edit           */
@@ -510,6 +531,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] =
       AIDD_YES,                     /* audio id disp        */
       ET_COMBOBOX,                  /* edit type            */
       VALUE_DATA,                   /* value type           */
+      TAGDEF_INITIALIZED,           /* initialized          */
       0,                            /* is bdj tag           */
       1,                            /* is norm tag          */
       1,                            /* album edit           */
@@ -533,6 +555,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] =
       AIDD_NO,                      /* audio id disp        */
       ET_ENTRY,                     /* edit type            */
       VALUE_DATA,                   /* value type           */
+      TAGDEF_INITIALIZED,           /* initialized          */
       1,                            /* is bdj tag           */
       0,                            /* is norm tag          */
       0,                            /* album edit           */
@@ -556,6 +579,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] =
       AIDD_NO,                      /* audio id disp        */
       ET_ENTRY,                     /* edit type            */
       VALUE_DATA,                   /* value type           */
+      TAGDEF_INITIALIZED,           /* initialized          */
       1,                            /* is bdj tag           */
       0,                            /* is norm tag          */
       0,                            /* album edit           */
@@ -579,6 +603,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] =
       AIDD_NO,                      /* audio id disp        */
       ET_NA,                        /* edit type            */
       VALUE_DATA,                   /* value type           */
+      TAGDEF_INITIALIZED,           /* initialized          */
       0,                            /* is bdj tag           */
       1,                            /* is norm tag          */
       0,                            /* album edit           */
@@ -602,6 +627,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] =
       AIDD_NO,                      /* audio id disp        */
       ET_CHECKBUTTON,               /* edit type            */
       VALUE_DATA,                   /* value type           */ /*###*/
+      TAGDEF_INITIALIZED,           /* initialized          */
       1,                            /* is bdj tag           */
       0,                            /* is norm tag          */
       0,                            /* album edit           */
@@ -625,6 +651,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] =
       AIDD_NO,                      /* audio id disp        */
       ET_ENTRY,                     /* edit type            */
       VALUE_DATA,                   /* value type           */
+      TAGDEF_INITIALIZED,           /* initialized          */
       1,                            /* is bdj tag           */
       0,                            /* is norm tag          */
       0,                            /* album edit           */
@@ -648,6 +675,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] =
       AIDD_NO,                      /* audio id disp        */
       ET_NA,                        /* edit type            */
       VALUE_DATA,                   /* value type           */
+      TAGDEF_INITIALIZED,           /* initialized          */
       1,                            /* is bdj tag           */
       0,                            /* is norm tag          */
       0,                            /* album edit           */
@@ -671,6 +699,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] =
       AIDD_NO,                      /* audio id disp        */
       ET_ENTRY,                     /* edit type            */
       VALUE_DATA,                   /* value type           */
+      TAGDEF_INITIALIZED,           /* initialized          */
       1,                            /* is bdj tag           */
       0,                            /* is norm tag          */
       0,                            /* album edit           */
@@ -694,6 +723,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] =
       AIDD_NO,                      /* audio id disp        */
       ET_ENTRY,                     /* edit type            */
       VALUE_DATA,                   /* value type           */
+      TAGDEF_INITIALIZED,           /* initialized          */
       1,                            /* is bdj tag           */
       0,                            /* is norm tag          */
       0,                            /* album edit           */
@@ -717,6 +747,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] =
       AIDD_NO,                      /* audio id disp        */
       ET_SCALE,                     /* edit type            */
       VALUE_LONG,                   /* value type           */
+      TAGDEF_INITIALIZED,           /* initialized          */
       1,                            /* is bdj tag           */
       0,                            /* is norm tag          */
       0,                            /* album edit           */
@@ -740,6 +771,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] =
       AIDD_NO,                      /* audio id disp        */
       ET_COMBOBOX,                  /* edit type            */
       VALUE_DATA,                   /* value type           */
+      TAGDEF_INITIALIZED,           /* initialized          */
       1,                            /* is bdj tag           */
       0,                            /* is norm tag          */
       1,                            /* album edit           */
@@ -763,6 +795,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] =
       AIDD_NO,                      /* audio id disp        */
       ET_ENTRY,                     /* edit type            */
       VALUE_DATA,                   /* value type           */
+      TAGDEF_INITIALIZED,           /* initialized          */
       1,                            /* is bdj tag           */
       0,                            /* is norm tag          */
       0,                            /* album edit           */
@@ -786,6 +819,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] =
       AIDD_YES,                     /* audio id disp        */
       ET_ENTRY,                     /* edit type            */
       VALUE_DATA,                   /* value type           */
+      TAGDEF_INITIALIZED,           /* initialized          */
       0,                            /* is bdj tag           */
       1,                            /* is norm tag          */
       0,                            /* album edit           */
@@ -809,6 +843,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] =
       AIDD_YES,                     /* audio id disp        */
       ET_ENTRY,                     /* edit type            */
       VALUE_LONG,                   /* value type           */
+      TAGDEF_INITIALIZED,           /* initialized          */
       0,                            /* is bdj tag           */
       1,                            /* is norm tag          */
       1,                            /* album edit           */
@@ -832,6 +867,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] =
       AIDD_YES,                     /* audio id disp        */
       ET_NA,                        /* edit type            */
       VALUE_LONG,                   /* value type           */
+      TAGDEF_INITIALIZED,           /* initialized          */
       0,                            /* is bdj tag           */
       1,                            /* is norm tag          */
       0,                            /* album edit           */
@@ -855,6 +891,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] =
       AIDD_NO,                      /* audio id disp        */
       ET_CHECKBUTTON,               /* edit type            */
       VALUE_LONG,                   /* value type           */
+      TAGDEF_INITIALIZED,           /* initialized          */
       1,                            /* is bdj tag           */
       0,                            /* is norm tag          */
       1,                            /* album edit           */
@@ -878,6 +915,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] =
       AIDD_NO,                      /* audio id disp        */
       ET_NA,                        /* edit type            */
       VALUE_LONG,                   /* value type           */
+      TAGDEF_INITIALIZED,           /* initialized          */
       0,                            /* is bdj tag           */
       0,                            /* is norm tag          */
       0,                            /* album edit           */
@@ -901,6 +939,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] =
       AIDD_NO,                      /* audio id disp        */
       ET_NA,                        /* edit type            */
       VALUE_LONG,                   /* value type           */
+      TAGDEF_INITIALIZED,           /* initialized          */
       0,                            /* is bdj tag           */
       0,                            /* is norm tag          */
       0,                            /* album edit           */
@@ -924,6 +963,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] =
       AIDD_NO,                      /* audio id disp        */
       ET_SCALE,                     /* edit type            */
       VALUE_LONG,                   /* value type           */
+      TAGDEF_INITIALIZED,           /* initialized          */
       1,                            /* is bdj tag           */
       0,                            /* is norm tag          */
       0,                            /* album edit           */
@@ -947,6 +987,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] =
       AIDD_NO,                      /* audio id disp        */
       ET_NA,                        /* edit type            */
       VALUE_LONG,                   /* value type           */
+      TAGDEF_INITIALIZED,           /* initialized          */
       0,                            /* is bdj tag           */
       0,                            /* is norm tag          */
       0,                            /* album edit           */
@@ -970,6 +1011,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] =
       AIDD_NO,                      /* audio id disp        */
       ET_NA,                        /* edit type            */
       VALUE_LONG,                   /* value type           */
+      TAGDEF_INITIALIZED,           /* initialized          */
       0,                            /* is bdj tag           */
       0,                            /* is norm tag          */
       0,                            /* album edit           */
@@ -993,6 +1035,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] =
       AIDD_NO,                      /* audio id disp        */
       ET_NA,                        /* edit type            */
       VALUE_LONG,                   /* value type           */
+      TAGDEF_INITIALIZED,           /* initialized          */
       0,                            /* is bdj tag           */
       0,                            /* is norm tag          */
       0,                            /* album edit           */
@@ -1054,6 +1097,7 @@ tagdefInit (void)
   tagdeflookup = vlistAlloc (KEY_STR, LIST_UNORDERED, stringCompare, NULL, NULL);
   vlistSetSize (tagdeflookup, MAX_TAG_KEY);
   for (size_t i = 0; i < MAX_TAG_KEY; ++i) {
+    assert (tagdefs[i].initialized == TAGDEF_INITIALIZED);
     lkey.name = tagdefs[i].name;
     vlistSetLong (tagdeflookup, lkey, (long) i);
   }
