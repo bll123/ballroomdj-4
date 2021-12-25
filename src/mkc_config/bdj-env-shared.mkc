@@ -22,6 +22,14 @@ addcflag -Wno-shift-sign-overflow
 addcflag -Wno-stringop-overflow
 addcflag -Wno-stringop-truncation
 
+# darwin/vlc
+addcflag -I/Applications/VLC.app/Contents/MacOS/include
+addldflag -L/Applications/VLC.app/Contents/MacOS/lib
+# windows/vlc
+addcflag -Ivlc-3.0.8
+addldflag -L'/c/Program Files/VideoLAN/vlc'
+addldflag -L'/c/Program Files (x86)/VideoLAN/vlc'
+
 # darwin/macports
 addcflag -I/opt/local/include
 addldflag -L/opt/local/lib

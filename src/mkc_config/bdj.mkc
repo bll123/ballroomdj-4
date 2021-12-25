@@ -20,6 +20,7 @@ hdr     pthread.h
 hdr     signal.h
 hdr     string.h
 hdr     unistd.h
+hdr	vlc/vlc.h  
 hdr	windows.h
 hdr	winsock2.h
 
@@ -54,6 +55,7 @@ lib	strlcpy -lbsd
 lib	strlcat -lbsd
 lib     strtok_r
 lib     uname
+lib     libvlc_audio_output_device_enum -lvlc
 
 define  SO_REUSEPORT
 

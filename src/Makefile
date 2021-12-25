@@ -163,7 +163,8 @@ BDJOBJS = $(OBJDIR)/bdj4main$(OBJ_EXT) \
 	$(OBJDIR)/songlist$(OBJ_EXT) \
 	$(OBJDIR)/sysvars$(OBJ_EXT) \
 	$(OBJDIR)/tagdef$(OBJ_EXT) \
-	$(OBJDIR)/tmutil$(OBJ_EXT)
+	$(OBJDIR)/tmutil$(OBJ_EXT) \
+	$(OBJDIR)/vlci$(OBJ_EXT)
 
 $(SHLIBDIR)/libbdj$(SHLIB_EXT): $(MKC_REQLIB) $(BDJOBJS)
 	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh \
@@ -226,7 +227,9 @@ $(OBJDIR)/process$(OBJ_EXT): process.c config.h process.h
 $(OBJDIR)/rafile$(OBJ_EXT): rafile.c config.h rafile.h lock.h tmutil.h log.h
 $(OBJDIR)/sock$(OBJ_EXT): sock.c config.h sock.h tmutil.h log.h
 $(OBJDIR)/song$(OBJ_EXT): song.c config.h song.h list.h bdjstring.h tagdef.h log.h
-$(OBJDIR)/songlist$(OBJ_EXT): songlist.c config.h songlist.h list.h datafile.h fileutil.h
+$(OBJDIR)/songlist$(OBJ_EXT): songlist.c config.h songlist.h list.h datafile.h fileutil.h \
+ bdjstring.h
 $(OBJDIR)/sysvars$(OBJ_EXT): sysvars.c config.h sysvars.h
 $(OBJDIR)/tagdef$(OBJ_EXT): tagdef.c config.h tagdef.h bdjstring.h list.h
 $(OBJDIR)/tmutil$(OBJ_EXT): tmutil.c config.h tmutil.h
+$(OBJDIR)/vlci$(OBJ_EXT): vlci.c config.h vlci.h list.h bdjstring.h
