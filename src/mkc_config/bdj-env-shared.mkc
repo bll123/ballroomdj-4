@@ -25,14 +25,19 @@ addcflag -Wno-stringop-truncation
 # darwin/vlc
 addincpath /Applications/VLC.app/Contents/MacOS/include
 addldsrchpath /Applications/VLC.app/Contents/MacOS/lib
+
+# darwin/macports
+addincpath /opt/local/include
+addldsrchpath /opt/local/lib
+
 # windows/vlc
 addincpath vlc-3.0.16
 addldsrchpath '/c/Program Files/VideoLAN/vlc'
 addldsrchpath '/c/Program Files (x86)/VideoLAN/vlc'
 
-# darwin/macports
-addincpath /opt/local/include
-addldsrchpath /opt/local/lib
+# darwin/volume
+addldflag '-framework Cocoa'
+addldflag '-framework CoreAudio'
 
 # turn off mac os warning
 addcflag -Wno-poison-system-directories

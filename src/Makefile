@@ -165,7 +165,12 @@ BDJOBJS = $(OBJDIR)/bdj4main$(OBJ_EXT) \
 	$(OBJDIR)/sysvars$(OBJ_EXT) \
 	$(OBJDIR)/tagdef$(OBJ_EXT) \
 	$(OBJDIR)/tmutil$(OBJ_EXT) \
-	$(OBJDIR)/vlci$(OBJ_EXT)
+	$(OBJDIR)/vlci$(OBJ_EXT) \
+	$(OBJDIR)/volume$(OBJ_EXT) \
+	$(OBJDIR)/volalsa$(OBJ_EXT) \
+	$(OBJDIR)/volmac$(OBJ_EXT) \
+	$(OBJDIR)/volpa$(OBJ_EXT) \
+	$(OBJDIR)/volwin$(OBJ_EXT)
 
 $(SHLIBDIR)/libbdj$(SHLIB_EXT): $(MKC_REQLIB) $(BDJOBJS)
 	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh \
@@ -200,6 +205,18 @@ $(BINDIR)/check_all$(EXE_EXT): $(CHECKOBJS)
 		$(LIBS)
 	patchelf --set-rpath '$$ORIGIN/../bin' $@
 
+# some platform/compiler specific targets
+
+$(OBJDIR)/volmac$(OBJ_EXT): volmac.m volume.h $(MKC_OUTPUT)
+	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh \
+		-compile $(MKC_ECHO) \
+		-o $@ -shared $<
+	
+$(OBJDIR)/volwin$(OBJ_EXT): volwin.cpp volume.h $(MKC_OUTPUT)
+	@$(_MKCONFIG_SHELL) CC=$(CXX) $(MKC_DIR)/mkc.sh \
+		-compile $(MKC_ECHO) \
+		-o $@ -shared $<
+	
 # DEPENDS - Do not remove this line
 
 $(OBJDIR)/bdj4$(OBJ_EXT): bdj4.c bdj4main.h
@@ -234,3 +251,6 @@ $(OBJDIR)/sysvars$(OBJ_EXT): sysvars.c config.h sysvars.h
 $(OBJDIR)/tagdef$(OBJ_EXT): tagdef.c config.h tagdef.h bdjstring.h list.h
 $(OBJDIR)/tmutil$(OBJ_EXT): tmutil.c config.h tmutil.h
 $(OBJDIR)/vlci$(OBJ_EXT): vlci.c config.h vlci.h list.h bdjstring.h
+$(OBJDIR)/volalsa$(OBJ_EXT): volalsa.c config.h
+$(OBJDIR)/volpa$(OBJ_EXT): volpa.c config.h volume.h
+$(OBJDIR)/volume$(OBJ_EXT): volume.c config.h volume.h

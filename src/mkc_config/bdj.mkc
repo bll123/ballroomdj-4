@@ -9,18 +9,21 @@ output  config.h
 
 standard
 
+hdr     alsa/asoundlib.h
 hdr	arpa/inet.h
 hdr	bsd/string.h
+hdr     commctrl.h
 hdr     fcntl.h
 hdr     libintl.h
 hdr     netdb.h
 hdr     netinet/in.h
 hdr     poll.h
 hdr     pthread.h
+hdr     pulse/pulseaudio.h
 hdr     signal.h
 hdr     string.h
 hdr     unistd.h
-hdr	vlc/vlc.h  
+hdr	vlc/vlc.h
 hdr	windows.h
 hdr	winsock2.h
 
@@ -41,12 +44,14 @@ typ     socklen_t
 typ	struct sockaddr_in
 
 lib	bindtextdomain -lintl, -lintl -liconv
+lib     CoInitialize -lole32
 lib     fcntl
 lib	gettext -lintl, -lintl -liconv
 lib     GetVersionEx
 lib     ioctlsocket -lws2_32
 lib     kill
 lib     localtime_r
+lib     pa_threaded_mainloop_start -lpulse -lm
 lib     pthread_create -lpthread
 lib     pthread_join -lpthread
 lib     select -lws2_32
@@ -56,6 +61,10 @@ lib	strlcat -lbsd
 lib     strtok_r
 lib     uname
 lib     libvlc_audio_output_device_enum -lvlc
+
+if notpa _lib_pa_threaded_mainloop_start
+ lib     snd_mixer_open -lasound -lm
+endif
 
 define  SO_REUSEPORT
 

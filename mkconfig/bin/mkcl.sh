@@ -245,7 +245,7 @@ for f in $@ $olibs; do
         doappend objects " $f"
       fi
       ;;
-    *.c|*.d|*.m)
+    *.c|*.d|*.m|*.cpp)
       if [ ! -f "$f" ]; then
         puts "## unable to locate $f"
         grc=1
