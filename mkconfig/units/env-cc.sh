@@ -345,7 +345,7 @@ check_addincpath () {
   printyesno $name "${flag}"
   if [ "$flag" != 0 ]; then
     dosubst flag ' ' '\\\\\\\\\ '
-    doappend CFLAGS_APPLICATION " -I"
+    doappend CFLAGS_APPLICATION " "
     initifs
     setifs
     doappend CFLAGS_APPLICATION $flag
@@ -465,7 +465,7 @@ check_addldsrchpath () {
   printyesno $name "$flag"
   if [ "$flag" != 0 ]; then
     dosubst flag ' ' '\\\\\\\\\ '
-    doappend ldflags_application " -L"
+    doappend ldflags_application " "
     initifs
     setifs
     doappend ldflags_application $flag
