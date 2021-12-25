@@ -318,19 +318,16 @@ check_cflags () {
 
 check_addcflag () {
   name=$1
-  flag=$2
+  shift
+  flag=$*
 
   printlabel CFLAGS_APPLICATION "Add C flag: ${flag}"
 
   test_cflag "$flag"
   printyesno $name "${flag}"
   if [ "$flag" != 0 ]; then
-    dosubst flag ' ' '\\\\\\\\\ '
     doappend CFLAGS_APPLICATION " "
-    initifs
-    setifs
-    doappend CFLAGS_APPLICATION $flag
-    resetifs
+    doappend CFLAGS_APPLICATION "$flag"
     setdata ${_MKCONFIG_PREFIX} CFLAGS_APPLICATION "$CFLAGS_APPLICATION"
   fi
 }
@@ -438,19 +435,16 @@ check_pkg_libs () {
 
 check_addldflag () {
   name=$1
-  flag=$2
+  shift
+  flag=$*
 
   printlabel LDFLAGS_APPLICATION "Add LD flag: ${flag}"
 
   test_ldflags "$flag"
   printyesno $name "$flag"
   if [ "$flag" != 0 ]; then
-    dosubst flag ' ' '\\\\\\\\\ '
     doappend ldflags_application " "
-    initifs
-    setifs
-    doappend ldflags_application $flag
-    resetifs
+    doappend ldflags_application "$flag"
     _setflags ldflags_application LDFLAGS_APPLICATION
   fi
 }
