@@ -68,7 +68,6 @@ endif
 
 # these confuse other compilers...make them CLANG only
 if UsingCLANG == _MKCONFIG_USING_CLANG Y
- addcflag -Werror,-Wunused-command-line-argument
  ifnotoption NO_PIE
   addcflag -fstack-protector-strong
   addcflag -fstack-protector-all

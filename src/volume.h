@@ -1,5 +1,5 @@
-#ifndef _INC_AUDIOMAIN
-#define _INC_AUDIOMAIN
+#ifndef INC_VOLUME
+#define INC_VOLUME
 
 typedef enum {
   VOL_GET,
@@ -14,4 +14,4 @@ int volumeGetSinkList (char *sinkname, char **sinklist);
 int process (volaction_t action, char *sinkname, int *vol, char **sinklist);
 void audioDisconnect (void);
 
-#endif /* _INC_AUDIOMAIN */
+#endif /* INC_VOLUME */

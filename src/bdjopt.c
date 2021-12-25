@@ -362,7 +362,7 @@ bdjoptGetIdx (char *keynm)
   bdjoptkey_t idx;
 
   lkey.name = keynm;
-  idx = vlistGetLong (bdjoptlookup, lkey);
+  idx = (bdjoptkey_t) vlistGetLong (bdjoptlookup, lkey);
   return idx;
 }
 
@@ -389,7 +389,7 @@ bdjoptLoad (char *path)
   strdata = parseGetData (pi);
   for (size_t i = 0; i < count; i += 2) {
     bdjoptkey_t idx = bdjoptGetIdx (strdata [i]);
-    if (idx < 0 || idx >= OPT_MAX) {
+    if (idx >= OPT_MAX) {
       /* unused option key, ignore for now */
       continue;
     }

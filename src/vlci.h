@@ -23,7 +23,7 @@ double            vlcGetTime (vlcData_t *vlcData);
 int               vlcIsPlaying (vlcData_t *vlcData);
 int               vlcIsPaused (vlcData_t *vlcData);
 int               vlcStop (vlcData_t *vlcData);
-int               vlcPause (vlcData_t *vlcData);;
+int               vlcPause (vlcData_t *vlcData);
 int               vlcPlay (vlcData_t *vlcData);
 double            vlcRate (vlcData_t *vlcData, double drate);
 double            vlcSeek (vlcData_t *vlcData, double dpos);

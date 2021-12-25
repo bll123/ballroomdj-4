@@ -66,9 +66,9 @@ START_TEST(sock_connect_accept)
 {
   int           err;
   pid_t         pid;
-  Sock_t        c;
-  Sock_t        r;
-  Sock_t        l;
+  Sock_t        c = -1;
+  Sock_t        r = -1;
+  Sock_t        l = -1;
 
   pid = check_fork ();
 
@@ -89,8 +89,8 @@ START_TEST(sock_connect_accept)
   } else {
     sockClose (r);
   }
-  check_waitpid_and_exit (pid);
   sockClose (l);
+  check_waitpid_and_exit (pid);
 }
 END_TEST
 
@@ -100,9 +100,9 @@ START_TEST(sock_check_connect_accept)
   int           rc;
   int           err;
   pid_t         pid;
-  Sock_t        c;
-  Sock_t        l;
-  Sock_t        r;
+  Sock_t        c = -1;
+  Sock_t        l = -1;
+  Sock_t        r = -1;
 
   si = NULL;
   pid = check_fork ();
@@ -131,10 +131,10 @@ START_TEST(sock_check_connect_accept)
   } else {
     sockClose (r);
   }
-  check_waitpid_and_exit (pid);
   sockRemoveCheck (si, l);
   sockFreeCheck (si);
   sockClose (l);
+  check_waitpid_and_exit (pid);
 }
 END_TEST
 
@@ -144,9 +144,9 @@ START_TEST(sock_write)
   int           rc;
   int           err;
   pid_t         pid;
-  Sock_t        c;
-  Sock_t        l;
-  Sock_t        r;
+  Sock_t        c = -1;
+  Sock_t        l = -1;
+  Sock_t        r = -1;
   char          *data = { "aaaabbbbccccddddeeeeffff" };
   char          datab [4096];
 
@@ -182,10 +182,10 @@ START_TEST(sock_write)
   } else {
     sockClose (r);
   }
-  check_waitpid_and_exit (pid);
   sockRemoveCheck (si, l);
   sockFreeCheck (si);
   sockClose (l);
+  check_waitpid_and_exit (pid);
 }
 END_TEST
 
@@ -195,9 +195,9 @@ START_TEST(sock_write_read)
   int           rc;
   int           err;
   pid_t         pid;
-  Sock_t        c;
-  Sock_t        l;
-  Sock_t        r;
+  Sock_t        c = -1;
+  Sock_t        l = -1;
+  Sock_t        r = -1;
   char          *data = { "aaaabbbbccccddddeeeeffff" };
   char          datab [4096];
   char          *ndata;
@@ -252,10 +252,10 @@ START_TEST(sock_write_read)
   } else {
     sockClose (r);
   }
-  check_waitpid_and_exit (pid);
   sockRemoveCheck (si, l);
   sockFreeCheck (si);
   sockClose (l);
+  check_waitpid_and_exit (pid);
 }
 END_TEST
 
@@ -265,9 +265,9 @@ START_TEST(sock_write_read_buff)
   int           rc;
   int           err;
   pid_t         pid;
-  Sock_t        c;
-  Sock_t        l;
-  Sock_t        r;
+  Sock_t        c = -1;
+  Sock_t        l = -1;
+  Sock_t        r = -1;
   char          *data = { "aaaabbbbccccddddeeeeffff" };
   char          buff [80];
   char          *ndata;
@@ -310,10 +310,10 @@ START_TEST(sock_write_read_buff)
   } else {
     sockClose (r);
   }
-  check_waitpid_and_exit (pid);
   sockRemoveCheck (si, l);
   sockFreeCheck (si);
   sockClose (l);
+  check_waitpid_and_exit (pid);
 }
 END_TEST
 
@@ -323,9 +323,9 @@ START_TEST(sock_write_read_buff_fail)
   int           rc;
   int           err;
   pid_t         pid;
-  Sock_t        c;
-  Sock_t        l;
-  Sock_t        r;
+  Sock_t        c = -1;
+  Sock_t        l = -1;
+  Sock_t        r = -1;
   char          *data = { "aaaabbbbccccddddeeeeffff" };
   char          buff [10];
   char          *ndata;
@@ -364,10 +364,10 @@ START_TEST(sock_write_read_buff_fail)
   } else {
     sockClose (r);
   }
-  check_waitpid_and_exit (pid);
   sockRemoveCheck (si, l);
   sockFreeCheck (si);
   sockClose (l);
+  check_waitpid_and_exit (pid);
 }
 END_TEST
 
@@ -377,9 +377,9 @@ START_TEST(sock_write_check_read)
   int           rc;
   int           err;
   pid_t         pid;
-  Sock_t        c;
-  Sock_t        l;
-  Sock_t        r;
+  Sock_t        c = -1;
+  Sock_t        l = -1;
+  Sock_t        r = -1;
   char          *data = { "aaaabbbbccccddddeeeeffff" };
   char          datab [4096];
   char          *ndata;
@@ -441,11 +441,11 @@ START_TEST(sock_write_check_read)
   } else {
     sockClose (r);
   }
-  check_waitpid_and_exit (pid);
   sockRemoveCheck (si, l);
   sockRemoveCheck (si, r);
   sockFreeCheck (si);
   sockClose (l);
+  check_waitpid_and_exit (pid);
 }
 END_TEST
 
@@ -455,9 +455,9 @@ START_TEST(sock_close)
   int           rc;
   int           err;
   pid_t         pid;
-  Sock_t        c;
-  Sock_t        l;
-  Sock_t        r;
+  Sock_t        c = -1;
+  Sock_t        l = -1;
+  Sock_t        r = -1;
   char          *ndata;
   size_t        len;
 
@@ -506,11 +506,11 @@ START_TEST(sock_close)
   } else {
     sockClose (r);
   }
-  check_waitpid_and_exit (pid);
   sockRemoveCheck (si, l);
   sockRemoveCheck (si, r);
   sockFreeCheck (si);
   sockClose (l);
+  check_waitpid_and_exit (pid);
 }
 END_TEST
 
@@ -520,9 +520,9 @@ START_TEST(sock_write_close)
   int           rc;
   int           err;
   pid_t         pid;
-  Sock_t        c;
-  Sock_t        l;
-  Sock_t        r;
+  Sock_t        c = -1;
+  Sock_t        l = -1;
+  Sock_t        r = -1;
   char          *data = { "aaaabbbbccccddddeeeeffff" };
   char          datab [4096];
   char          *ndata;
@@ -590,11 +590,11 @@ START_TEST(sock_write_close)
   } else {
     sockClose (r);
   }
-  check_waitpid_and_exit (pid);
   sockRemoveCheck (si, l);
   sockRemoveCheck (si, r);
   sockFreeCheck (si);
   sockClose (l);
+  check_waitpid_and_exit (pid);
 }
 END_TEST
 
@@ -604,9 +604,9 @@ START_TEST(sock_server_close)
   int           rc;
   int           err;
   pid_t         pid;
-  Sock_t        c;
-  Sock_t        l;
-  Sock_t        r;
+  Sock_t        c = -1;
+  Sock_t        l = -1;
+  Sock_t        r = -1;
   char          *data = { "aaaabbbbccccddddeeeeffff" };
   char          datab [4096];
 
@@ -646,10 +646,10 @@ START_TEST(sock_server_close)
     }
     sockClose (r);
   }
-  check_waitpid_and_exit (pid);
   sockRemoveCheck (si, l);
   sockFreeCheck (si);
   sockClose (l);
+  check_waitpid_and_exit (pid);
 }
 END_TEST
 

@@ -1111,7 +1111,7 @@ tagdefGetIdx (char *keynm)
   tagdefkey_t idx;
 
   lkey.name = keynm;
-  idx = vlistGetLong (tagdeflookup, lkey);
+  idx = (tagdefkey_t) vlistGetLong (tagdeflookup, lkey);
   return idx;
 }
 

@@ -90,7 +90,6 @@ vlcGetTime (vlcData_t *vlcData)
 int
 vlcIsPlaying (vlcData_t *vlcData)
 {
-  int       rc;
   int       rval;
 
   if (vlcData == NULL || vlcData->inst == NULL || vlcData->mp == NULL) {
@@ -107,13 +106,12 @@ vlcIsPlaying (vlcData_t *vlcData)
       vlcData->state == libvlc_Playing) {
     rval = 1;
   }
-  return rc;
+  return 0;
 }
 
 int
 vlcIsPaused (vlcData_t *vlcData)
 {
-  int       rc;
   int       rval;
 
   if (vlcData == NULL || vlcData->inst == NULL || vlcData->mp == NULL) {
@@ -124,7 +122,7 @@ vlcIsPaused (vlcData_t *vlcData)
   if (vlcData->state == libvlc_Paused) {
     rval = 1;
   }
-  return rc;
+  return rval;
 }
 
 /* media commands */
@@ -149,11 +147,8 @@ vlcPause (vlcData_t *vlcData)
     return -1;
   }
 
-  if (vlcData->state != libvlc_Playing &&
-      vlcData->state != libvlc_Paused) {
-    /* don't do anything if the state is not currently playing or paused */
-    rc = 1;
-  } else if (vlcData->state == libvlc_Playing) {
+  rc = 1;
+  if (vlcData->state == libvlc_Playing) {
     libvlc_media_player_set_pause (vlcData->mp, 1);
     rc = 0;
   } else if (vlcData->state == libvlc_Paused) {
@@ -210,7 +205,7 @@ vlcSeek (vlcData_t *vlcData, double dpos)
     libvlc_media_player_set_position (vlcData->mp, pos);
   }
   pos = libvlc_media_player_get_position (vlcData->mp);
-  return pos;
+  return (double) pos;
 }
 
 /* other commands */
@@ -450,7 +445,7 @@ vlcEventHandler (const struct libvlc_event_t *event, void *userdata)
   vlcData_t     *vlcData = (vlcData_t *) userdata;
 
   if (event->type == libvlc_MediaStateChanged) {
-    vlcData->state = event->u.media_state_changed.new_state;
+    vlcData->state = (libvlc_state_t) event->u.media_state_changed.new_state;
   }
 }
 

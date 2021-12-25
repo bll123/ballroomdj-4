@@ -15,6 +15,7 @@ hdr	bsd/string.h
 hdr     commctrl.h
 hdr     fcntl.h
 hdr     libintl.h
+hdr     MacTypes.h
 hdr     netdb.h
 hdr     netinet/in.h
 hdr     poll.h
@@ -51,6 +52,7 @@ lib     GetVersionEx
 lib     ioctlsocket -lws2_32
 lib     kill
 lib     localtime_r
+lib     OpenProcess
 lib     pa_threaded_mainloop_start -lpulse -lm
 lib     pthread_create -lpthread
 lib     pthread_join -lpthread
