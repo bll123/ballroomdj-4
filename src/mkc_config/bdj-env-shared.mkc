@@ -23,16 +23,16 @@ addcflag -Wno-stringop-overflow
 addcflag -Wno-stringop-truncation
 
 # darwin/vlc
-addcflag -I/Applications/VLC.app/Contents/MacOS/include
-addldflag -L/Applications/VLC.app/Contents/MacOS/lib
+addincpath /Applications/VLC.app/Contents/MacOS/include
+addldsrchpath /Applications/VLC.app/Contents/MacOS/lib
 # windows/vlc
-addcflag -Ivlc-3.0.8
-addldflag -L'/c/Program Files/VideoLAN/vlc'
-addldflag -L'/c/Program Files (x86)/VideoLAN/vlc'
+addincpath vlc-3.0.16
+addldsrchpath '/c/Program Files/VideoLAN/vlc'
+addldsrchpath '/c/Program Files (x86)/VideoLAN/vlc'
 
 # darwin/macports
-addcflag -I/opt/local/include
-addldflag -L/opt/local/lib
+addincpath /opt/local/include
+addldsrchpath /opt/local/lib
 
 # turn off mac os warning
 addcflag -Wno-poison-system-directories

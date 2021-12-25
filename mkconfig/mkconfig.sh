@@ -16,6 +16,7 @@
 
 # disable path name expansion
 set -f  # set this globally.
+origcwd=`pwd`
 
 unset CDPATH
 # this is a workaround for ksh93 on solaris

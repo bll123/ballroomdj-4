@@ -206,3 +206,32 @@ int main () { return 0; }" > t.c
   cat $TMPF >&9
   rm -f $TMPF > /dev/null 2>&1
 }
+
+test_incpath () {
+  flag=$1
+
+  if [ -d "$flag" ]; then
+    test_cflag "-I$flag"
+  else
+    if [ -d "$origcwd/$flag" ]; then
+      test_cflag "-I$flag"
+    else
+      flag=0
+    fi
+  fi
+}
+
+test_ldsrchpath () {
+  flag=$1
+
+  if [ -d "$flag" ]; then
+    test_ldflags "-L$flag"
+  else
+    if [ -d "$origcwd/$flag" ]; then
+      test_ldflags "-I$flag"
+    else
+      flag=0
+    fi
+  fi
+}
+

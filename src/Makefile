@@ -18,6 +18,7 @@ SHLIBDIR = $(BINDIR)
 
 # mkconfig settings
 
+# _MKCONFIG_SHELL = /bin/bash
 MKC_PREFIX = bdj
 MKC_CONFDIR = mkc_config
 MKC_FILES = mkc_files

@@ -1727,7 +1727,9 @@ check_cdcl () {
         nm="_c_type_${dname}"
         setdata ${_MKCONFIG_PREFIX} ${nm} "${c}"
       fi
-      doappend cdcls " ${dcl};
+      doappend cdcls " "
+      doappend cdcls ${dcl}
+      doappend cdcls ";
 "
     fi
   fi
