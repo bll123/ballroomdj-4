@@ -46,6 +46,10 @@ CFLAGS_DEBUG = -O0 -g
 all: $(MKC_ENV_SHR)
 	. ./$(MKC_ENV_SHR); $(MAKE) -e rall
 
+mcheck: $(MKC_ENV_SHR)
+	. ./$(MKC_ENV_SHR); $(MAKE) -e rall
+	(cd ..;valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all ./bin/bdj4)
+
 rall: $(LIBRARIES) $(TESTPROGRAMS) $(PROGRAMS)
 	$(MAKE) -e libraries
 	PKG_CONFIG_PATH=../plocal/lib/pkgconfig $(MAKE) -e testprograms
@@ -120,7 +124,7 @@ clean:
 
 .PHONY: tclean
 tclean:
-	@-$(RM) -f *~ w *.orig
+	@-$(RM) -f *~ w *.orig $(MKC_CONFDIR)/*.orig
 	@-$(RM) -f $(MKC_FILES)/mkc_compile.log $(MKC_CONFDIR)/*~
 	@-$(RM) -f ../tmp/* ../conv/*~ ../locale/*~
 
@@ -144,6 +148,7 @@ $(BINDIR)/bdj4$(EXE_EXT): $(BDJMAINOBJS)
 # bdj libraries
 
 BDJOBJS = $(OBJDIR)/bdj4main$(OBJ_EXT) \
+	$(OBJDIR)/bdjopt$(OBJ_EXT) \
 	$(OBJDIR)/bdjstring$(OBJ_EXT) \
 	$(OBJDIR)/datafile$(OBJ_EXT) \
 	$(OBJDIR)/fileutil$(OBJ_EXT) \
@@ -155,6 +160,7 @@ BDJOBJS = $(OBJDIR)/bdj4main$(OBJ_EXT) \
 	$(OBJDIR)/rafile$(OBJ_EXT) \
 	$(OBJDIR)/sock$(OBJ_EXT) \
 	$(OBJDIR)/song$(OBJ_EXT) \
+	$(OBJDIR)/songlist$(OBJ_EXT) \
 	$(OBJDIR)/sysvars$(OBJ_EXT) \
 	$(OBJDIR)/tagdef$(OBJ_EXT) \
 	$(OBJDIR)/tmutil$(OBJ_EXT)
@@ -196,7 +202,9 @@ $(BINDIR)/check_all$(EXE_EXT): $(CHECKOBJS)
 
 $(OBJDIR)/bdj4$(OBJ_EXT): bdj4.c bdj4main.h
 $(OBJDIR)/bdj4main$(OBJ_EXT): bdj4main.c config.h bdj4main.h musicdb.h song.h list.h \
- tagdef.h bdjstring.h sysvars.h log.h
+ tagdef.h bdjstring.h sysvars.h log.h songlist.h
+$(OBJDIR)/bdjopt$(OBJ_EXT): bdjopt.c config.h bdjopt.h list.h sysvars.h fileutil.h \
+ bdjstring.h datafile.h
 $(OBJDIR)/bdjstring$(OBJ_EXT): bdjstring.c config.h bdjstring.h
 $(OBJDIR)/check_all$(OBJ_EXT): check_all.c config.h check_bdj.h
 $(OBJDIR)/check_datafile$(OBJ_EXT): check_datafile.c config.h datafile.h list.h check_bdj.h
@@ -218,6 +226,7 @@ $(OBJDIR)/process$(OBJ_EXT): process.c config.h process.h
 $(OBJDIR)/rafile$(OBJ_EXT): rafile.c config.h rafile.h lock.h tmutil.h log.h
 $(OBJDIR)/sock$(OBJ_EXT): sock.c config.h sock.h tmutil.h log.h
 $(OBJDIR)/song$(OBJ_EXT): song.c config.h song.h list.h bdjstring.h tagdef.h log.h
+$(OBJDIR)/songlist$(OBJ_EXT): songlist.c config.h songlist.h list.h datafile.h fileutil.h
 $(OBJDIR)/sysvars$(OBJ_EXT): sysvars.c config.h sysvars.h
 $(OBJDIR)/tagdef$(OBJ_EXT): tagdef.c config.h tagdef.h bdjstring.h list.h
 $(OBJDIR)/tmutil$(OBJ_EXT): tmutil.c config.h tmutil.h

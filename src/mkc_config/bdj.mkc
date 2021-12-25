@@ -1,6 +1,8 @@
 #
 #
 
+option-file mkc_config/options.dat
+
 loadunit c-main
 
 output  config.h
@@ -11,7 +13,6 @@ hdr	arpa/inet.h
 hdr	bsd/string.h
 hdr     fcntl.h
 hdr     libintl.h
-hdr     mcheck.h
 hdr     netdb.h
 hdr     netinet/in.h
 hdr     poll.h

@@ -1,4 +1,6 @@
 
+option-file mkc_config/options.dat
+
 loadunit env-main
 loadunit env-systype
 loadunit env-cc

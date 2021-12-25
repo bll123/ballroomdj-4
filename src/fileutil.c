@@ -167,3 +167,25 @@ fileDelete (char *fname)
   return rc;
 }
 
+char *
+fileReadAll (char *fname)
+{
+  FILE        *fh;
+  struct stat statbuf;
+  int         rc;
+  size_t      len;
+  char        *data;
+
+  rc = stat (fname, &statbuf);
+  if (rc != 0) {
+    return NULL;
+  }
+  fh = fopen (fname, "r");
+  data = malloc ((size_t) statbuf.st_size);
+  assert (data != NULL);
+  len = fread (data, (size_t) statbuf.st_size, 1, fh);
+  assert (len == (size_t) statbuf.st_size);
+  fclose (fh);
+
+  return data;
+}

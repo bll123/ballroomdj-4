@@ -37,9 +37,10 @@ typedef enum {
 extern char       sysvars [SV_MAX][MAXPATHLEN];
 extern long       lsysvars [SVL_MAX];
 
-void sysvarsInit (void);
-int isMacOS (void);
-int isWindows (void);
-int isLinux (void);
+void    sysvarsInit (void);
+void    sysvarSetLong (sysvarlkey_t, long);
+int     isMacOS (void);
+int     isWindows (void);
+int     isLinux (void);
 
 #endif /* INC_SYSVARS_H */

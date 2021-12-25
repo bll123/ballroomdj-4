@@ -75,11 +75,15 @@ raOpen (char *fname, int version)
 void
 raClose (rafile_t *rafile)
 {
-  fclose (rafile->fh);
-  raUnlock (rafile);
-  rafile->fh = NULL;
-  free (rafile->fname);
-  free (rafile);
+  if (rafile != NULL) {
+    fclose (rafile->fh);
+    raUnlock (rafile);
+    rafile->fh = NULL;
+    if (rafile->fname != NULL) {
+      free (rafile->fname);
+    }
+    free (rafile);
+  }
 }
 
 size_t

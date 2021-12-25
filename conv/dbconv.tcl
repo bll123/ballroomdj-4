@@ -48,6 +48,10 @@ dict for {fn data} $musicdbList {
       # not wanted
       continue
     }
+    if { $tag eq "ALBART" } {
+      # not wanted - old, leftover
+      continue
+    }
     if { $tag eq "FILE" } {
       # already
       continue

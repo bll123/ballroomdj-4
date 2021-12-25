@@ -37,7 +37,12 @@ void
 dbClose (void)
 {
   /* for each song in db, free the song */
-  vlistFree (bdjdb->songs);
+  if (bdjdb != NULL) {
+    if (bdjdb->songs != NULL) {
+      vlistFree (bdjdb->songs);
+    }
+    free (bdjdb);
+  }
   initialized = 0;
   bdjdb = NULL;
 }
@@ -81,7 +86,7 @@ dbLoad (db_t *db, char *fn)
     song = songAlloc ();
     songSetAll (song, parseGetData (pi), songDataCount);
     fstr = songGet (song, TAG_KEY_FILE);
-    sscanf (songGet (song, TAG_KEY_rrn), "%ld", &srrn);
+    srrn = songGetLong (song, TAG_KEY_rrn);
     if ((long) i != srrn) {
       songSetLong (song, TAG_KEY_rrn, (long) i);
     }
@@ -92,6 +97,7 @@ dbLoad (db_t *db, char *fn)
 
   logVarMsg (LOG_SESS, "dbLoad: database loaded: ", "%d", db->count);
   raEndBatch (radb);
+  raClose (radb);
   parseFree (pi);
   return 0;
 }

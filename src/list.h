@@ -48,7 +48,7 @@ typedef struct {
 } list_t;
 
 list_t *  listAlloc (size_t, listorder_t, listCompare_t, listFree_t);
-void      listFree (list_t *);
+void      listFree (void *);
 void      listSetSize (list_t *, size_t);
 list_t *  listSet (list_t *, void *);
 long      listFind (list_t *, listkey_t);
@@ -68,7 +68,7 @@ typedef struct {
 
 list_t *  vlistAlloc (keytype_t, listorder_t, listCompare_t,
               listFree_t, listFree_t);
-void      vlistFree (list_t *);
+void      vlistFree (void *);
 void      vlistSetSize (list_t *, size_t);
 list_t *  vlistSetData (list_t *, listkey_t, void *);
 list_t *  vlistSetLong (list_t *, listkey_t, long);

@@ -83,6 +83,12 @@ sysvarsInit (void)
   lsysvars [SVL_BDJIDX] = 0;
 }
 
+void
+sysvarSetLong (sysvarlkey_t idx, long value)
+{
+  lsysvars [idx] = value;
+}
+
 inline int
 isMacOS (void)
 {

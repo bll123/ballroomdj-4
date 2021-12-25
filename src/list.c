@@ -44,8 +44,10 @@ listAlloc (size_t dsiz, listorder_t ordered, listCompare_t compare,
 }
 
 void
-listFree (list_t *list)
+listFree (void *tlist)
 {
+  list_t *list = (list_t *) tlist;
+
   if (list != NULL) {
     if (list->data != NULL) {
       for (size_t i = 0; i < list->count; ++i) {
@@ -150,7 +152,7 @@ vlistAlloc (keytype_t keytype, listorder_t ordered, listCompare_t compare,
 }
 
 void
-vlistFree (list_t *list)
+vlistFree (void *list)
 {
   listFree (list);
 }
@@ -362,7 +364,7 @@ nameValueCompare (const list_t *list, void *d1, void *d2)
   nv1 = (namevalue_t *) d1;
   nv2 = (namevalue_t *) d2;
   rc = 0;
-  if (list->keytype == KEY_STR) {
+  if (list->compare != NULL && list->keytype == KEY_STR) {
     rc = list->compare (nv1->key.name, nv2->key.name);
   }
   if (list->keytype == KEY_LONG) {
@@ -395,7 +397,7 @@ listCompare (const list_t *list, void *a, void *b)
   } else {
     if (list->type == LIST_NAMEVALUE) {
       rc = nameValueCompare (list, a, b);
-    } else {
+    } else if (list->compare != NULL || list->keytype == KEY_LONG) {
       rc = list->compare (a, b);
     }
   }

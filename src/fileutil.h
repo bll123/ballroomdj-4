@@ -20,5 +20,6 @@ int           fileExists (char *);
 int           fileCopy (char *, char *);
 int           fileMove (char *, char *);
 int           fileDelete (char *);
+char *        fileReadAll (char *);
 
 #endif /* INC_FILEUTIL_H */

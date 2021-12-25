@@ -24,6 +24,7 @@
 #include "bdjstring.h"
 #include "sysvars.h"
 #include "log.h"
+#include "songlist.h"
 
 static void *openDatabase (void *);
 static void initLocale (void);
@@ -53,8 +54,14 @@ int
 bdj4startup (int argc, char *argv[])
 {
   initLocale ();
-  logStart ();
   sysvarsInit ();
+
+  /* ### FIX later */
+  if (argc > 1 && strcmp (argv[1], "-profile") == 0) {
+    sysvarSetLong (SVL_BDJIDX, atol (argv[2]));
+  }
+
+  logStart ();
 
   /* may need to be moved to launcher */
   if (isMacOS()) {
@@ -114,6 +121,8 @@ bdj4finalizeStartup (void)
 void
 bdj4shutdown (void)
 {
-  logEnd ();
+  dbClose ();
   tagdefCleanup ();
+  songlistCleanup ();
+  logEnd ();
 }
