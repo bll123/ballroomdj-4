@@ -3,7 +3,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <bsd/string.h>
+#if _hdr_bsd_string
+# include <bsd/string.h>
+#endif
 
 #include "bdjopt.h"
 #include "list.h"

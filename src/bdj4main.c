@@ -63,7 +63,7 @@ bdj4startup (int argc, char *argv[])
 
   logStart ();
 
-  /* may need to be moved to launcher */
+  /* will definitely need to be moved to launcher */
   if (isMacOS()) {
     char  npath [MAXPATHLEN];
 

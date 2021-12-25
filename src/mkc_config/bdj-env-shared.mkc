@@ -36,8 +36,8 @@ addldsrchpath '/c/Program Files/VideoLAN/vlc'
 addldsrchpath '/c/Program Files (x86)/VideoLAN/vlc'
 
 # darwin/volume
-addldflag '-framework Cocoa'
-addldflag '-framework CoreAudio'
+addldflag -framework Cocoa
+addldflag -framework CoreAudio
 
 # turn off mac os warning
 addcflag -Wno-poison-system-directories

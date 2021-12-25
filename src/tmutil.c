@@ -5,7 +5,9 @@
 #include <string.h>
 #include <sys/time.h>
 #include <time.h>
-#include <bsd/string.h>
+#if _hdr_bsd_string
+# include <bsd/string.h>
+#endif
 #if _hdr_unistd
 # include <unistd.h>
 #endif

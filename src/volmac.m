@@ -45,15 +45,15 @@ process (volaction_t action, char *sinkname, int *vol, char **sinklist)
       &outputDeviceID);
 
   if (outputDeviceID == kAudioObjectUnknown) {
-    return 0;
+    return -1;
   }
 
   propertyAOPA.mSelector = kAudioHardwareServiceDeviceProperty_VirtualMasterVolume;
   propertyAOPA.mScope = kAudioDevicePropertyScopeOutput;
   propertyAOPA.mElement = kAudioObjectPropertyElementMaster;
 
-  if (set == 1) {
-    volume = (Float32) vol / 100.0;
+  if (action == VOL_SET) {
+    volume = (Float32) *vol / 100.0;
     AudioObjectSetPropertyData(
         outputDeviceID,
         &propertyAOPA,
@@ -70,8 +70,9 @@ process (volaction_t action, char *sinkname, int *vol, char **sinklist)
       NULL,
       &volumeSize,
       &volume);
-  ivol = (int) round(volume*100.0);
-  return ivol;
+  ivol = (int) round((double) volume * 100.0);
+  *vol = ivol;
+  return 0;
 }
 
 #endif /* hdr_mactypes */

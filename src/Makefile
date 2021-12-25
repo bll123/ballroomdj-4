@@ -143,7 +143,7 @@ $(BINDIR)/bdj4$(EXE_EXT): $(BDJMAINOBJS)
 		-L $(SHLIBDIR) -rpath $(BINDIR) \
 		-l bdj \
 		$(LIBS)
-	patchelf --set-rpath '$$ORIGIN/../bin' $@
+	./build/postbuild.sh $@
 
 
 # bdj libraries
@@ -203,7 +203,7 @@ $(BINDIR)/check_all$(EXE_EXT): $(CHECKOBJS)
 		-l bdj \
 		$(CHECKLIBS) \
 		$(LIBS)
-	patchelf --set-rpath '$$ORIGIN/../bin' $@
+	./build/postbuild.sh $@
 
 # some platform/compiler specific targets
 

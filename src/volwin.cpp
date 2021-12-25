@@ -65,14 +65,14 @@ process (volaction_t action, char *sinkname, int *vol, char **sinklist)
       CLSCTX_ALL, NULL, (void**)&g_pEndptVol);
   EXIT_ON_ERROR(hr)
 
-  if (set) {
-    float got = (float) vol / 100.0; // needs to be within 1.0 to 0.0
+  if (action == VOL_SET) {
+    float got = (float) *vol / 100.0; // needs to be within 1.0 to 0.0
     hr = g_pEndptVol->SetMasterVolumeLevelScalar (got, NULL);
     EXIT_ON_ERROR(hr)
   }
   hr = g_pEndptVol->GetMasterVolumeLevelScalar (&currentVal);
   EXIT_ON_ERROR(hr)
-  vol = (int) round(100 * currentVal);
+  *vol = (int) round(100 * currentVal);
 
 Exit:
   SAFE_RELEASE(pEnumerator)
