@@ -57,8 +57,9 @@ lib     pthread_create -lpthread
 lib     pthread_join -lpthread
 lib     select -lws2_32
 lib     socket -lws2_32
-lib	strlcpy -lbsd
-lib	strlcat -lbsd
+# linux would require -lbsd; let's just our own...
+lib	strlcpy
+lib	strlcat
 lib     strtok_r
 lib     uname
 lib     libvlc_audio_output_device_enum -lvlc
@@ -98,13 +99,6 @@ include
 # define Socklen_t socklen_t
 #else
 # define Socklen_t int
-#endif
-
-#if ! _lib_strlcpy
-# define strlcpy strncpy
-#endif
-#if ! _lib_strlcat
-# define strlcat strncat
 #endif
 
 #if ! _typ_suseconds_t

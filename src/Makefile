@@ -49,7 +49,7 @@ all: $(MKC_ENV_SHR)
 
 mcheck: $(MKC_ENV_SHR)
 	. ./$(MKC_ENV_SHR); $(MAKE) -e rall
-	(cd ..;valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all ./bin/bdj4)
+	(cd ..;valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all ./bin/bdj4main)
 
 rall: $(LIBRARIES) $(TESTPROGRAMS) $(PROGRAMS)
 	$(MAKE) -e libraries
@@ -75,7 +75,8 @@ depend:
 
 # main targets
 
-PROGRAMS = $(BINDIR)/bdj4$(EXE_EXT)
+PROGRAMS = $(BINDIR)/bdj4$(EXE_EXT) $(BINDIR)/bdj4main$(EXE_EXT) \
+	$(BINDIR)/bdj4player$(EXE_EXT)
 .PHONY: programs
 programs: $(MKC_ENV_SHR) $(MKC_REQLIB) $(DEPENDS) $(PROGRAMS)
 
@@ -83,7 +84,8 @@ TESTPROGRAMS = $(BINDIR)/check_all$(EXE_EXT)
 .PHONY: testprograms
 testprograms: $(MKC_ENV_SHR) $(MKC_REQLIB) $(DEPENDS) $(TESTPROGRAMS)
 
-LIBRARIES = $(SHLIBDIR)/libbdj$(SHLIB_EXT)
+LIBRARIES = $(SHLIBDIR)/libbdj4common$(SHLIB_EXT) \
+	$(SHLIBDIR)/libbdj4$(SHLIB_EXT)
 .PHONY: libraries
 libraries: $(MKC_ENV_SHR) $(MKC__REQLIB) $(DEPENDS) $(LIBRARIES)
 
@@ -127,28 +129,61 @@ clean:
 tclean:
 	@-$(RM) -f *~ w *.orig $(MKC_CONFDIR)/*.orig
 	@-$(RM) -f $(MKC_FILES)/mkc_compile.log $(MKC_CONFDIR)/*~
-	@-$(RM) -f ../tmp/* ../conv/*~ ../locale/*~
+	@-$(RM) -f ../tmp/* ../conv/*~ ./locale/*~ ../locale/*~ ../*~
+	@-$(RM) -f ../install/*~ ../pkg/*~
 
 # bdj executables
 
-BDJMAINOBJS = $(OBJDIR)/bdj4$(OBJ_EXT) \
-	$(SHLIBDIR)/libbdj$(SHLIB_EXT)
+LAUNCHEROBJS = \
+	$(OBJDIR)/bdj4$(OBJ_EXT) \
+	$(OBJDIR)/sysvars$(OBJ_EXT) \
+	$(OBJDIR)/strlcat$(OBJ_EXT) \
+	$(OBJDIR)/strlcpy$(OBJ_EXT)
+RESOURCEFILES = 
 
-$(BINDIR)/bdj4$(EXE_EXT): $(BDJMAINOBJS)
+$(BINDIR)/bdj4$(EXE_EXT): $(LAUNCHEROBJS)
+	@. ./build/prebuild.sh $@ ; \
+	$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh \
+		-link -exec $(MKC_ECHO) \
+		-o $@ \
+		-r $(MKC_REQLIB) \
+		$(LAUNCHEROBJS) \
+		$(RESOURCEFILES)
+	./build/postbuild.sh $@
+
+BDJMAINOBJS = \
+	$(OBJDIR)/bdj4main$(OBJ_EXT) \
+	$(SHLIBDIR)/libbdj4$(SHLIB_EXT) \
+	$(SHLIBDIR)/libbdj4common$(SHLIB_EXT)
+
+$(BINDIR)/bdj4main$(EXE_EXT): $(BDJMAINOBJS)
 	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh \
 		-link -exec $(MKC_ECHO) \
 		-o $@ \
 		-r $(MKC_REQLIB) \
 		$(BDJMAINOBJS) \
 		-L $(SHLIBDIR) -rpath $(BINDIR) \
-		-l bdj \
-		$(LIBS)
+		-l bdj4 -l bdj4common
 	./build/postbuild.sh $@
 
+PLAYEROBJS = \
+	$(OBJDIR)/bdj4player$(OBJ_EXT) \
+	$(OBJDIR)/vlci$(OBJ_EXT) \
+	$(SHLIBDIR)/libbdj4common$(SHLIB_EXT)
+
+$(BINDIR)/bdj4player$(EXE_EXT): $(PLAYEROBJS)
+	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh \
+		-link -exec $(MKC_ECHO) \
+		-r $(MKC_REQLIB) \
+		-o $@ \
+		$(PLAYEROBJS) \
+		-L $(SHLIBDIR) -rpath $(BINDIR) \
+		-l bdj4common
+	./build/postbuild.sh $@
 
 # bdj libraries
 
-BDJOBJS = $(OBJDIR)/bdj4main$(OBJ_EXT) \
+BDJCOMMONOBJS = \
 	$(OBJDIR)/bdjopt$(OBJ_EXT) \
 	$(OBJDIR)/bdjstring$(OBJ_EXT) \
 	$(OBJDIR)/datafile$(OBJ_EXT) \
@@ -156,29 +191,41 @@ BDJOBJS = $(OBJDIR)/bdj4main$(OBJ_EXT) \
 	$(OBJDIR)/list$(OBJ_EXT) \
 	$(OBJDIR)/lock$(OBJ_EXT) \
 	$(OBJDIR)/log$(OBJ_EXT) \
-	$(OBJDIR)/musicdb$(OBJ_EXT) \
 	$(OBJDIR)/process$(OBJ_EXT) \
-	$(OBJDIR)/rafile$(OBJ_EXT) \
 	$(OBJDIR)/sock$(OBJ_EXT) \
-	$(OBJDIR)/song$(OBJ_EXT) \
-	$(OBJDIR)/songlist$(OBJ_EXT) \
+	$(OBJDIR)/strlcat$(OBJ_EXT) \
+	$(OBJDIR)/strlcpy$(OBJ_EXT) \
 	$(OBJDIR)/sysvars$(OBJ_EXT) \
+	$(OBJDIR)/tmutil$(OBJ_EXT)
+
+$(SHLIBDIR)/libbdj4common$(SHLIB_EXT): $(MKC_REQLIB) $(BDJCOMMONOBJS)
+	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh \
+		-link -shared $(MKC_ECHO) -lib \
+		-r $(MKC_REQLIB) \
+		-o $@ \
+		$(BDJCOMMONOBJS)
+
+BDJOBJS = \
+	$(OBJDIR)/bdj4init$(OBJ_EXT) \
+	$(OBJDIR)/musicdb$(OBJ_EXT) \
+	$(OBJDIR)/rafile$(OBJ_EXT) \
+	$(OBJDIR)/songlist$(OBJ_EXT) \
+	$(OBJDIR)/song$(OBJ_EXT) \
 	$(OBJDIR)/tagdef$(OBJ_EXT) \
-	$(OBJDIR)/tmutil$(OBJ_EXT) \
-	$(OBJDIR)/vlci$(OBJ_EXT) \
 	$(OBJDIR)/volume$(OBJ_EXT) \
 	$(OBJDIR)/volalsa$(OBJ_EXT) \
 	$(OBJDIR)/volmac$(OBJ_EXT) \
 	$(OBJDIR)/volpa$(OBJ_EXT) \
 	$(OBJDIR)/volwin$(OBJ_EXT)
 
-$(SHLIBDIR)/libbdj$(SHLIB_EXT): $(MKC_REQLIB) $(BDJOBJS)
+$(SHLIBDIR)/libbdj4$(SHLIB_EXT): $(MKC_REQLIB) $(BDJOBJS)
 	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh \
 		-link -shared $(MKC_ECHO) -lib \
-		-o $@ \
 		-r $(MKC_REQLIB) \
+		-o $@ \
 		$(BDJOBJS) \
-		$(LIBS)
+		-L $(SHLIBDIR) -rpath $(BINDIR) \
+		-l bdj4common
 
 # test routines
 
@@ -190,19 +237,17 @@ CHECKOBJS = $(OBJDIR)/check_all$(OBJ_EXT) \
 	$(OBJDIR)/check_rafile$(OBJ_EXT) \
 	$(OBJDIR)/check_sock$(OBJ_EXT) \
 	$(OBJDIR)/check_tmutil$(OBJ_EXT) \
-	$(SHLIBDIR)/libbdj$(SHLIB_EXT)
+	$(SHLIBDIR)/libbdj4$(SHLIB_EXT) \
+	$(SHLIBDIR)/libbdj4common$(SHLIB_EXT)
 
-CHECKLIBS =
 $(BINDIR)/check_all$(EXE_EXT): $(CHECKOBJS)
 	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh \
 		-link -exec $(MKC_ECHO) \
-		-o $@ \
 		-r $(MKC_REQLIB) \
+		-o $@ \
 		$(CHECKOBJS) \
 		-L $(SHLIBDIR) -rpath $(BINDIR) \
-		-l bdj \
-		$(CHECKLIBS) \
-		$(LIBS)
+		-l bdj4 -l bdj4common
 	./build/postbuild.sh $@
 
 # some platform/compiler specific targets
@@ -214,17 +259,19 @@ $(OBJDIR)/volmac$(OBJ_EXT): volmac.m volume.h $(MKC_OUTPUT)
 		$(MKC_DIR)/mkc.sh \
 		-compile $(MKC_ECHO) \
 		-o $@ -shared $<
-	
+
 $(OBJDIR)/volwin$(OBJ_EXT): volwin.cpp volume.h $(MKC_OUTPUT)
 	@$(_MKCONFIG_SHELL) CC=$(CXX) $(MKC_DIR)/mkc.sh \
 		-compile $(MKC_ECHO) \
 		-o $@ -shared $<
-	
+
 # DEPENDS - Do not remove this line
 
-$(OBJDIR)/bdj4$(OBJ_EXT): bdj4.c bdj4main.h
-$(OBJDIR)/bdj4main$(OBJ_EXT): bdj4main.c config.h bdj4main.h musicdb.h song.h list.h \
+$(OBJDIR)/bdj4$(OBJ_EXT): bdj4.c config.h sysvars.h bdjstring.h
+$(OBJDIR)/bdj4init$(OBJ_EXT): bdj4init.c config.h bdj4init.h musicdb.h song.h list.h \
  tagdef.h bdjstring.h sysvars.h log.h songlist.h
+$(OBJDIR)/bdj4main$(OBJ_EXT): bdj4main.c bdj4init.h
+$(OBJDIR)/bdj4player$(OBJ_EXT): bdj4player.c config.h vlci.h list.h sysvars.h
 $(OBJDIR)/bdjopt$(OBJ_EXT): bdjopt.c config.h bdjopt.h list.h sysvars.h fileutil.h \
  bdjstring.h datafile.h
 $(OBJDIR)/bdjstring$(OBJ_EXT): bdjstring.c config.h bdjstring.h
@@ -237,7 +284,7 @@ $(OBJDIR)/check_rafile$(OBJ_EXT): check_rafile.c config.h rafile.h check_bdj.h
 $(OBJDIR)/check_sock$(OBJ_EXT): check_sock.c config.h sock.h check_bdj.h tmutil.h
 $(OBJDIR)/check_tmutil$(OBJ_EXT): check_tmutil.c config.h tmutil.h check_bdj.h
 $(OBJDIR)/datafile$(OBJ_EXT): datafile.c config.h datafile.h list.h tmutil.h fileutil.h
-$(OBJDIR)/fileutil$(OBJ_EXT): fileutil.c config.h fileutil.h sysvars.h
+$(OBJDIR)/fileutil$(OBJ_EXT): fileutil.c config.h fileutil.h sysvars.h bdjstring.h
 $(OBJDIR)/list$(OBJ_EXT): list.c config.h list.h
 $(OBJDIR)/lock$(OBJ_EXT): lock.c config.h portability.h process.h tmutil.h lock.h \
  fileutil.h
@@ -250,9 +297,11 @@ $(OBJDIR)/sock$(OBJ_EXT): sock.c config.h sock.h tmutil.h log.h
 $(OBJDIR)/song$(OBJ_EXT): song.c config.h song.h list.h bdjstring.h tagdef.h log.h
 $(OBJDIR)/songlist$(OBJ_EXT): songlist.c config.h songlist.h list.h datafile.h fileutil.h \
  bdjstring.h
-$(OBJDIR)/sysvars$(OBJ_EXT): sysvars.c config.h sysvars.h
+$(OBJDIR)/strlcat$(OBJ_EXT): strlcat.c config.h bdjstring.h
+$(OBJDIR)/strlcpy$(OBJ_EXT): strlcpy.c config.h bdjstring.h
+$(OBJDIR)/sysvars$(OBJ_EXT): sysvars.c config.h sysvars.h bdjstring.h
 $(OBJDIR)/tagdef$(OBJ_EXT): tagdef.c config.h tagdef.h bdjstring.h list.h
-$(OBJDIR)/tmutil$(OBJ_EXT): tmutil.c config.h tmutil.h
+$(OBJDIR)/tmutil$(OBJ_EXT): tmutil.c config.h tmutil.h bdjstring.h
 $(OBJDIR)/vlci$(OBJ_EXT): vlci.c config.h vlci.h list.h bdjstring.h
 $(OBJDIR)/volalsa$(OBJ_EXT): volalsa.c config.h
 $(OBJDIR)/volpa$(OBJ_EXT): volpa.c config.h

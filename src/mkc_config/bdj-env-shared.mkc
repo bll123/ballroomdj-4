@@ -14,7 +14,7 @@ if iswindows ! ( ( == _MKCONFIG_SYSTYPE Linux ) || ( == _MKCONFIG_SYSTYPE Darwin
  option NO_PIE T
  addincpath ../plocal/include
  addldsrchpath ../plocal/lib
- addldflags -static-libgcc
+ addldflag -static-libgcc
 endif
 
 # standard flags

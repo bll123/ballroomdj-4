@@ -13,6 +13,8 @@ case $stype in
     ;;
   *BSD)
     ;;
-  MSYS*|CYGWIN*)
+  MINGW*|MSYS*|CYGWIN*)
+    ICON=bdj4_icon.ico
+    rm -f $ICON launcher.rc launcer.res
     ;;
 esac

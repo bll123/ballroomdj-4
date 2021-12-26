@@ -7,9 +7,6 @@
 #if _hdr_unistd
 # include <unistd.h>
 #endif
-#if _hdr_bsd_string
-# include <bsd/string.h>
-#endif
 #if _sys_utsname
 # include <sys/utsname.h>
 #endif
@@ -18,6 +15,7 @@
 #endif
 
 #include "sysvars.h"
+#include "bdjstring.h"
 
 char        sysvars [SV_MAX][MAXPATHLEN];
 long        lsysvars [SVL_MAX];

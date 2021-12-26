@@ -5,14 +5,12 @@
 #include <string.h>
 #include <sys/time.h>
 #include <time.h>
-#if _hdr_bsd_string
-# include <bsd/string.h>
-#endif
 #if _hdr_unistd
 # include <unistd.h>
 #endif
 
 #include "tmutil.h"
+#include "bdjstring.h"
 
 void
 msleep (size_t mt)

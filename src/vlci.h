@@ -36,7 +36,7 @@ char *            vlcVersion (vlcData_t *vlcData);
 const char *      vlcState (vlcData_t *vlcData);
 void              noInitialVolume (vlcData_t *vlcData);
 int               vlcMedia (vlcData_t *vlcdata, char *fn);
-int               vlcInit (vlcData_t *vlcData, int vlcargc, char *vlcargv[]);
+vlcData_t *       vlcInit (int vlcargc, char *vlcargv[]);
 void              vlcClose (vlcData_t *vlcData);
 void              vlcRelease (vlcData_t *vlcData);
 void              vlcExitHandler (vlcData_t *vlcData);

@@ -6,15 +6,13 @@
 #include <assert.h>
 #include <sys/stat.h>
 #include <string.h>
-#if _hdr_bsd_string
-# include <bsd/string.h>
-#endif
 #if _hdr_unistd
 # include <unistd.h>
 #endif
 
 #include "fileutil.h"
 #include "sysvars.h"
+#include "bdjstring.h"
 
 fileinfo_t *
 fileInfo (char *path)

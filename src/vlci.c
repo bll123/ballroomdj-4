@@ -13,9 +13,6 @@
 #include <sys/types.h>
 #include <assert.h>
 #include <string.h>
-#if _hdr_bsd_string
-# include <bsd/string.h>
-#endif
 #if _hdr_windows
 # include <windows.h>
 #endif
@@ -336,11 +333,12 @@ vlcMedia (vlcData_t *vlcData, char *fn)
 
 /* initialization and cleanup */
 
-int
-vlcInit (vlcData_t *vlcData, int vlcargc, char *vlcargv[])
+vlcData_t *
+vlcInit (int vlcargc, char *vlcargv[])
 {
-  char          *tptr;
-  char          *nptr;
+  vlcData_t *   vlcData;
+  char *        tptr;
+  char *        nptr;
   int           rc;
   int           i;
 
@@ -391,7 +389,7 @@ vlcInit (vlcData_t *vlcData, int vlcargc, char *vlcargv[])
     rc = 0;
   }
 
-  return rc;
+  return vlcData;
 }
 
 void
