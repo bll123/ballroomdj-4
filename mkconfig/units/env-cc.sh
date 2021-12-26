@@ -449,6 +449,22 @@ check_addldflag () {
   fi
 }
 
+check_addlibs () {
+  name=$1
+  shift
+  flag=$*
+
+  printlabel LDFLAGS_LIBS_APPLICATION "Add Library: ${flag}"
+
+  test_ldflags "$flag"
+  printyesno $name "$flag"
+  if [ "$flag" != 0 ]; then
+    doappend ldflags_libs_application " "
+    doappend ldflags_libs_application "$flag"
+    _setflags ldflags_libs_application LDFLAGS_LIBS_APPLICATION
+  fi
+}
+
 check_addldsrchpath () {
   name=$1
   flag=$2

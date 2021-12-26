@@ -147,6 +147,9 @@ while test $# -gt 0; do
       doappend CFLAGS_USER " $1"
       shift
       ;;
+    -Wc*)
+      doappend CFLAGS_APPLICATION " $1"
+      ;;
     --)
       shift
       break
@@ -234,6 +237,9 @@ for f in $@ $olibs; do
     -l*)
       addlib $f
       ;;
+    -Wl*)
+      addlib $f
+      ;;
     lib*)
       addlib $f
       ;;
@@ -245,7 +251,7 @@ for f in $@ $olibs; do
         doappend objects " $f"
       fi
       ;;
-    *.c|*.d|*.m|*.cpp)
+    *.c|*.d|*.m|*.cpp|*.res)
       if [ ! -f "$f" ]; then
         puts "## unable to locate $f"
         grc=1

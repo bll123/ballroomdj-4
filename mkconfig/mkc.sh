@@ -74,7 +74,7 @@ case $1 in
 esac
 
 if [ $found = F ]; then
-  echo "Usage: $0 {-compile|-link|-setopt|-reqlib|-staticlib|-sharedlib} <args>"
+  echo "Usage: $0 {-compile|-link|-setopt|-reqlib|-shared} <args>"
   exit 1
 fi
 exit $rc

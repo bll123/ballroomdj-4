@@ -127,7 +127,7 @@ _c_chk_link_libs () {
 
   ocounter=0
   clotherlibs="'$otherlibs'"
-  dosubst clotherlibs ',' "' '"
+  dosubst clotherlibs '#' "' '"
   if [ "${clotherlibs}" != "" ]; then
     eval "set -- $clotherlibs"
     ocount=$#

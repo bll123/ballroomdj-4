@@ -110,6 +110,10 @@ setvariable () {
       exec 8>>$VARSFILE
     fi
 
+    if [ "$prefix" = none ]; then
+      prefix=""
+    fi
+
     cmd="test \"X\$mkv_${prefix}_${svname}\" != X > /dev/null 2>&1"
     eval $cmd
     rc=$?
@@ -132,10 +136,15 @@ setdata () {
       _doexport $sdname "$sdval"
     fi
 
+    oprefix=$prefix
+    if [ "$prefix" = none ]; then
+      prefix=""
+    fi
+
     cmd="mkc_${prefix}_${sdname}=\"${sdval}\""
     eval $cmd
     puts "   setdata: $cmd" >&9
-    setvariable $prefix $sdname
+    setvariable $oprefix $sdname
 }
 
 getdata () {
@@ -506,7 +515,7 @@ check_option () {
 
   printyesno_actual $nm "$oval"
   # options always have a null prefix
-  setdata "" ${nm} "${oval}"
+  setdata none ${nm} "${oval}"
 }
 
 check_echo () {
