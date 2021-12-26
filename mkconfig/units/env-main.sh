@@ -161,6 +161,7 @@ check_pkg_exists () {
 
 test_cflag () {
   flag=$1
+  quoted=$2
 
   puts "#include <stdio.h>
 int main () { return 0; }" > t.c
@@ -168,8 +169,13 @@ int main () { return 0; }" > t.c
   # need to set w/all cflags; gcc doesn't always error out otherwise
   TMPF=t$$.txt
   setcflags
-  ${CC} ${CFLAGS} ${flag} t.c > $TMPF 2>&1
-  rc=$?
+  if [ "$quoted" != "" ]; then
+    ${CC} ${CFLAGS} "${flag}" t.c > $TMPF 2>&1
+    rc=$?
+  else
+    ${CC} ${CFLAGS} ${flag} t.c > $TMPF 2>&1
+    rc=$?
+  fi
   if [ $rc -ne 0 ]; then
     flag=0
   fi
@@ -184,6 +190,7 @@ int main () { return 0; }" > t.c
 
 test_ldflags () {
   flag=$1
+  quoted=$2
 
   setcflags
   setldflags
@@ -193,8 +200,13 @@ int main () { return 0; }" > t.c
   puts "# test ${flag}" >&9
   # need to set w/all cflags/ldflags; gcc doesn't always error out otherwise
   TMPF=t$$.txt
-  ${CC} ${CFLAGS} ${LDFLAGS} ${flag} -o t t.c > $TMPF 2>&1
-  rc=$?
+  if [ "$quoted" != "" ]; then
+    ${CC} ${CFLAGS} ${LDFLAGS} "${flag}" -o t t.c > $TMPF 2>&1
+    rc=$?
+  else
+    ${CC} ${CFLAGS} ${LDFLAGS} ${flag} -o t t.c > $TMPF 2>&1
+    rc=$?
+  fi
   if [ $rc -ne 0 ]; then
     flag=0
   fi
@@ -211,10 +223,10 @@ test_incpath () {
   flag=$1
 
   if [ -d "$flag" ]; then
-    test_cflag "-I$flag"
+    test_cflag "-I$flag" quoted
   else
     if [ -d "$origcwd/$flag" ]; then
-      test_cflag "-I$flag"
+      test_cflag "-I$origcwd/$flag" quoted
     else
       flag=0
     fi
@@ -225,10 +237,10 @@ test_ldsrchpath () {
   flag=$1
 
   if [ -d "$flag" ]; then
-    test_ldflags "-L$flag"
+    test_ldflags "-L$flag" quoted
   else
     if [ -d "$origcwd/$flag" ]; then
-      test_ldflags "-I$flag"
+      test_cflag "-L$origcwd/$flag" quoted
     else
       flag=0
     fi

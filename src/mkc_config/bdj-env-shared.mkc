@@ -1,6 +1,4 @@
 
-option-file mkc_config/options.dat
-
 loadunit env-main
 loadunit env-systype
 loadunit env-cc
@@ -12,13 +10,19 @@ output  bdj-shared.env
 standard_system
 standard_cc
 
+if iswindows ! ( ( == _MKCONFIG_SYSTYPE Linux ) || ( == _MKCONFIG_SYSTYPE Darwin ) )
+ option NO_PIE T
+ addincpath ../plocal/include
+ addldsrchpath ../plocal/lib
+ addldflags -static-libgcc
+endif
+
 # standard flags
 addcflag -Wextra
 addcflag -Wno-unused-but-set-variable
 addcflag -Wno-unused-parameter
 addcflag -Wno-unknown-pragmas
 addcflag -Wno-float-equal
-addcflag -Wno-shift-sign-overflow
 addcflag -Wno-stringop-overflow
 addcflag -Wno-stringop-truncation
 
@@ -32,15 +36,12 @@ addldsrchpath /opt/local/lib
 
 # windows/vlc
 addincpath vlc-3.0.16
-addldsrchpath '/c/Program Files/VideoLAN/vlc'
-addldsrchpath '/c/Program Files (x86)/VideoLAN/vlc'
+addldsrchpath '/c/Program Files/VideoLAN/VLC'
+addldsrchpath '/c/Program Files (x86)/VideoLAN/VLC'
 
 # darwin/volume
 addldflag -framework Cocoa
 addldflag -framework CoreAudio
-
-# turn off mac os warning
-addcflag -Wno-poison-system-directories
 
 # turn off gcc warning
 addcflag -Wno-format-truncation
@@ -68,6 +69,12 @@ endif
 
 # these confuse other compilers...make them CLANG only
 if UsingCLANG == _MKCONFIG_USING_CLANG Y
+ # turn off mac os warning
+ addcflag -Wno-poison-system-directories
+ addcflag -Wno-shift-sign-overflow
+ addcflag -Wno-reserved-macro-identifier
+ addcflag -Wno-documentation-deprecated-sync
+
  ifnotoption NO_PIE
   addcflag -fstack-protector-strong
   addcflag -fstack-protector-all

@@ -17,4 +17,10 @@
 # define PID_FMT "%lld"
 #endif
 
+#define SIZE_FMT "%lu"
+#if _siz_size_t == 8 && _siz_long == 4
+# undef SIZE_FMT
+# define SIZE_FMT "%llu"
+#endif
+
 #endif /* INC_PORTABILITY_H */

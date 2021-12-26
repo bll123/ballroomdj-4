@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <assert.h>
 #include <errno.h>
 #include <signal.h>
@@ -30,11 +31,12 @@
 #if _hdr_unistd
 # include <unistd.h>
 #endif
-#if _hdr_windows
-# include <windows.h>
-#endif
+/* winsock2.h should come before windows.h */
 #if _hdr_winsock2
 # include <winsock2.h>
+#endif
+#if _hdr_windows
+# include <windows.h>
 #endif
 
 #include "sock.h"
@@ -44,9 +46,10 @@
 static ssize_t  sockReadData (Sock_t, char *, size_t);
 static int      sockWriteData (Sock_t, char *, size_t);
 static void     sockFlush (Sock_t);
-static int      sockCanWrite (Sock_t);
+static Sock_t   sockCanWrite (Sock_t);
 static int      sockSetNonblocking (Sock_t sock);
 // static int       sockSetBlocking (Sock_t sock);
+static int      socketInvalid (Sock_t sock);
 
 Sock_t
 sockServer (short listenPort, int *err)
@@ -56,13 +59,13 @@ sockServer (short listenPort, int *err)
   int                 opt = 1;
 
   Sock_t lsock = socket (AF_INET, SOCK_STREAM, 0);
-  if (lsock < 0) {
+  if (socketInvalid (lsock)) {
     *err = errno;
     logError (LOG_ERR, "sockServer: socket:", errno);
     return lsock;
   }
 
-  rc = setsockopt (lsock, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof (opt));
+  rc = setsockopt (lsock, SOL_SOCKET, SO_REUSEADDR, (const char *) &opt, sizeof (opt));
   if (rc != 0) {
     *err = errno;
     logError (LOG_ERR, "sockServer: setsockopt:", errno);
@@ -70,7 +73,7 @@ sockServer (short listenPort, int *err)
     return -1;
   }
 #if _define_SO_REUSEPORT
-  rc = setsockopt (lsock, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof (opt));
+  rc = setsockopt (lsock, SOL_SOCKET, SO_REUSEPORT, (const char *) &opt, sizeof (opt));
   if (rc != 0) {
     logError (LOG_ERR, "sockServer: setsockopt-b:", errno);
     *err = errno;
@@ -81,7 +84,7 @@ sockServer (short listenPort, int *err)
 
   memset (&saddr, 0, sizeof (struct sockaddr_in));
   saddr.sin_family = AF_INET;
-  saddr.sin_port = htons ((Uint16_t) listenPort);
+  saddr.sin_port = htons ((uint16_t) listenPort);
   saddr.sin_addr.s_addr = inet_addr ("127.0.0.1");
 
   rc = bind (lsock, (struct sockaddr *) &saddr, sizeof (struct sockaddr_in));
@@ -126,7 +129,7 @@ sockAddCheck (sockinfo_t *sockinfo, Sock_t sock)
     sockinfo->socklist = NULL;
   }
 
-  if (sock < 0 || sock >= FD_SETSIZE) {
+  if (socketInvalid (sock) || sock >= FD_SETSIZE) {
     logVarMsg (LOG_ERR, "sockAddCheck: invalid socket", "%d", sock);
     return sockinfo;
   }
@@ -151,7 +154,7 @@ sockRemoveCheck (sockinfo_t *sockinfo, Sock_t sock)
     return;
   }
 
-  if (sock < 0 || sock >= FD_SETSIZE) {
+  if (socketInvalid (sock) < 0 || sock >= FD_SETSIZE) {
     logVarMsg (LOG_ERR, "sockRemoveCheck: invalid socket", "%d", sock);
     return;
   }
@@ -189,7 +192,7 @@ sockCheck (sockinfo_t *sockinfo)
   FD_ZERO (&(sockinfo->readfds));
   for (size_t i = 0; i < (size_t) sockinfo->count; ++i) {
     Sock_t tsock = sockinfo->socklist[i];
-    if (tsock < 0 || tsock >= FD_SETSIZE) {
+    if (socketInvalid (tsock) || tsock >= FD_SETSIZE) {
       continue;
     }
     FD_SET (tsock, &(sockinfo->readfds));
@@ -210,7 +213,7 @@ sockCheck (sockinfo_t *sockinfo)
   if (rc > 0) {
     for (size_t i = 0; i < (size_t) sockinfo->count; ++i) {
       Sock_t tsock = sockinfo->socklist[i];
-      if (tsock < 0) {
+      if (socketInvalid (tsock)) {
         continue;
       }
       if (FD_ISSET (tsock, &(sockinfo->readfds))) {
@@ -228,7 +231,7 @@ sockAccept (Sock_t lsock, int *err)
   Socklen_t           alen;
 
   Sock_t nsock = accept (lsock, (struct sockaddr *) &saddr, &alen);
-  if (nsock < 0) {
+  if (socketInvalid (nsock)) {
     *err = errno;
     logError (LOG_ERR, "sockAccept: accept", errno);
     return -1;
@@ -251,7 +254,7 @@ sockConnect (short connPort, int *err)
   int                 opt = 1;
 
   Sock_t clsock = socket (AF_INET, SOCK_STREAM, 0);
-  if (clsock < 0) {
+  if (socketInvalid (clsock)) {
     *err = errno;
     logError (LOG_ERR, "sockConnect: socket", errno);
     return clsock;
@@ -262,7 +265,7 @@ sockConnect (short connPort, int *err)
     return -1;
   }
 
-  rc = setsockopt (clsock, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof (opt));
+  rc = setsockopt (clsock, SOL_SOCKET, SO_REUSEADDR, (const char *) &opt, sizeof (opt));
   if (rc != 0) {
     *err = errno;
     logError (LOG_ERR, "sockConnect: setsockopt", errno);
@@ -270,7 +273,7 @@ sockConnect (short connPort, int *err)
     return -1;
   }
 #if _define_SO_REUSEPORT
-  rc = setsockopt (clsock, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof (opt));
+  rc = setsockopt (clsock, SOL_SOCKET, SO_REUSEPORT, (const char *) &opt, sizeof (opt));
   if (rc != 0) {
     *err = errno;
     logError (LOG_ERR, "sockConnect: setsockopt-b", errno);
@@ -282,7 +285,7 @@ sockConnect (short connPort, int *err)
   memset (&raddr, 0, sizeof (struct sockaddr_in));
   raddr.sin_family = AF_INET;
   raddr.sin_addr.s_addr = inet_addr ("127.0.0.1");
-  raddr.sin_port = htons ((Uint16_t) connPort);
+  raddr.sin_port = htons ((uint16_t) connPort);
   rc = connect (clsock, (struct sockaddr *) &raddr, sizeof (struct sockaddr_in));
   if (rc != 0) {
     *err = errno;
@@ -309,7 +312,7 @@ sockConnectWait (short connPort, size_t timeout)
   count = 0;
   clsock = sockConnect (connPort, &err);
   ++count;
-  while (clsock < 0 &&
+  while (socketInvalid (clsock) &&
      (err == 0 || err == EALREADY || err == EAGAIN ||
      err == EINPROGRESS || err == EINTR)) {
     msleep (30);
@@ -446,13 +449,14 @@ static int
 sockWriteData (Sock_t sock, char *data, size_t len)
 {
   size_t        tot = 0;
+  Sock_t        sval;
   ssize_t       rc;
 
   /* ugh.  the write() call blocks on a non-blocking socket.  sigh. */
   /* call select() and check the condition the socket is in to see  */
   /* if it is writable.                                             */
-  rc = sockCanWrite (sock);
-  if (rc != sock) {
+  sval = sockCanWrite (sock);
+  if (sval != sock) {
     return -1;
   }
   rc = write (sock, data, len);
@@ -511,7 +515,7 @@ sockFlush (Sock_t sock)
   }
 }
 
-static int
+static Sock_t
 sockCanWrite (Sock_t sock)
 {
   fd_set            readfds;
@@ -600,3 +604,13 @@ sockSetBlocking (Sock_t sock)
 }
 
 #endif
+
+static inline int
+socketInvalid (Sock_t sock)
+{
+#if _define_INVALID_SOCKET
+  return (sock == INVALID_SOCKET);
+#else
+  return (sock < 0);
+#endif
+}

@@ -207,8 +207,11 @@ $(BINDIR)/check_all$(EXE_EXT): $(CHECKOBJS)
 
 # some platform/compiler specific targets
 
+# volmac.m require clang on windows
+# and it won't affect the other platforms
 $(OBJDIR)/volmac$(OBJ_EXT): volmac.m volume.h $(MKC_OUTPUT)
-	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh \
+	@$(_MKCONFIG_SHELL) CC=clang \
+		$(MKC_DIR)/mkc.sh \
 		-compile $(MKC_ECHO) \
 		-o $@ -shared $<
 	
@@ -242,7 +245,7 @@ $(OBJDIR)/log$(OBJ_EXT): log.c config.h log.h tmutil.h fileutil.h
 $(OBJDIR)/musicdb$(OBJ_EXT): musicdb.c config.h musicdb.h song.h list.h rafile.h \
  bdjstring.h lock.h datafile.h tagdef.h log.h
 $(OBJDIR)/process$(OBJ_EXT): process.c config.h process.h
-$(OBJDIR)/rafile$(OBJ_EXT): rafile.c config.h rafile.h lock.h tmutil.h log.h
+$(OBJDIR)/rafile$(OBJ_EXT): rafile.c config.h rafile.h lock.h tmutil.h log.h portability.h
 $(OBJDIR)/sock$(OBJ_EXT): sock.c config.h sock.h tmutil.h log.h
 $(OBJDIR)/song$(OBJ_EXT): song.c config.h song.h list.h bdjstring.h tagdef.h log.h
 $(OBJDIR)/songlist$(OBJ_EXT): songlist.c config.h songlist.h list.h datafile.h fileutil.h \
@@ -252,5 +255,5 @@ $(OBJDIR)/tagdef$(OBJ_EXT): tagdef.c config.h tagdef.h bdjstring.h list.h
 $(OBJDIR)/tmutil$(OBJ_EXT): tmutil.c config.h tmutil.h
 $(OBJDIR)/vlci$(OBJ_EXT): vlci.c config.h vlci.h list.h bdjstring.h
 $(OBJDIR)/volalsa$(OBJ_EXT): volalsa.c config.h
-$(OBJDIR)/volpa$(OBJ_EXT): volpa.c config.h volume.h
+$(OBJDIR)/volpa$(OBJ_EXT): volpa.c config.h
 $(OBJDIR)/volume$(OBJ_EXT): volume.c config.h volume.h

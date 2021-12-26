@@ -40,6 +40,7 @@ openDatabase (void *id)
 #if _lib_pthread_create
   pthread_exit (NULL);
 #endif
+  return NULL;
 }
 
 static void
@@ -48,6 +49,7 @@ initLocale (void)
   setlocale (LC_ALL, "");
   bindtextdomain ("bdj", "locale");
   textdomain ("bdj");
+  return;
 }
 
 int

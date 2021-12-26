@@ -7,7 +7,7 @@
 
 typedef struct {
   int             count;
-  int             max;
+  Sock_t          max;
   fd_set          readfds;
   Sock_t          *socklist;
 } sockinfo_t;
@@ -16,17 +16,17 @@ typedef struct {
 #define SOCK_WRITE_TIMEOUT  2
 
 Sock_t        sockServer (short, int *);
-void          sockClose (int);
-sockinfo_t *  sockAddCheck (sockinfo_t *, int);
-void          sockRemoveCheck (sockinfo_t *, int);
+void          sockClose (Sock_t);
+sockinfo_t *  sockAddCheck (sockinfo_t *, Sock_t);
+void          sockRemoveCheck (sockinfo_t *, Sock_t);
 void          sockFreeCheck (sockinfo_t *);
 Sock_t        sockCheck (sockinfo_t *);
-Sock_t        sockAccept (int, int *);
+Sock_t        sockAccept (Sock_t, int *);
 Sock_t        sockConnect (short, int *);
 Sock_t        sockConnectWait (short, size_t);
-char *        sockRead (int, size_t *);
-char *        sockReadBuff (int, size_t *, char *data, size_t);
-int           sockWriteStr (int, char *, size_t);
-int           sockWriteBinary (int, char *, size_t);
+char *        sockRead (Sock_t, size_t *);
+char *        sockReadBuff (Sock_t, size_t *, char *data, size_t);
+int           sockWriteStr (Sock_t, char *, size_t);
+int           sockWriteBinary (Sock_t, char *, size_t);
 
 #endif /* INC_SOCK_H */

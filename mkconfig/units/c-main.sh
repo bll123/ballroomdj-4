@@ -23,9 +23,9 @@
 #       #  define const
 #       # endif
 #       # if ! _key_void || ! _param_void_star
-#          typedef char *_pvoid;
+#          typedef char *ptrvoid;
 #       # else
-#          typedef void *_pvoid;
+#          typedef void *ptrvoid;
 #       # endif
 #
 #       #endif /* MKC_STANDARD_DEFS */

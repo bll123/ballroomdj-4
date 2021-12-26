@@ -1,8 +1,6 @@
 #
 #
 
-option-file mkc_config/options.dat
-
 loadunit c-main
 
 output  config.h
@@ -12,7 +10,7 @@ standard
 hdr     alsa/asoundlib.h
 hdr	arpa/inet.h
 hdr	bsd/string.h
-hdr     commctrl.h
+hdr     endpointvolume.h
 hdr     fcntl.h
 hdr     libintl.h
 hdr     MacTypes.h
@@ -22,11 +20,13 @@ hdr     poll.h
 hdr     pthread.h
 hdr     pulse/pulseaudio.h
 hdr     signal.h
+hdr     stdint.h
 hdr     string.h
 hdr     unistd.h
 hdr	vlc/vlc.h
-hdr	windows.h
+# winsock2 should come before windows.h
 hdr	winsock2.h
+hdr	windows.h
 if not_have_pkg_check ! _pkg_libs_check
   hdr    check.h
 endif
@@ -41,6 +41,7 @@ typ     uint16_t
 typ     SOCKET
 typ     socklen_t
 typ	struct sockaddr_in
+typ     suseconds_t
 
 lib	bindtextdomain -lintl, -lintl -liconv
 lib     CoInitialize -lole32
@@ -70,16 +71,16 @@ if not_have_pkg_check ! _pkg_libs_check && _hdr_check
   lib    tcase_create -lcheck -pthread -lm
 endif
 
+define  INVALID_SOCKET
 define  SO_REUSEPORT
 
 size	long
 size	pid_t
+size	size_t
 
 include
 
-#if _typ_uint16_t
-# define Uint16_t uint16_t
-#else
+#if ! _typ_uint16_t
 # if _typ___int16
 #  define Uint16_t unsigned __int16
 # else
@@ -104,6 +105,10 @@ include
 #endif
 #if ! _lib_strlcat
 # define strlcat strncat
+#endif
+
+#if ! _typ_suseconds_t
+# define suseconds_t useconds_t
 #endif
 
 endinclude

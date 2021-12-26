@@ -2,14 +2,39 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <check.h>
+#include <sys/time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#if _hdr_unistd
-# include <unistd.h>
+
+#if _hdr_arpa_inet
+# include <arpa/inet.h>
+#endif
+#if _hdr_fcntl
+# include <fcntl.h>
+#endif
+#if _hdr_netdb
+# include <netdb.h>
+#endif
+#if _hdr_netinet_in
+# include <netinet/in.h>
 #endif
 #if _sys_select
 # include <sys/select.h>
+#endif
+#if _sys_socket
+# include <sys/socket.h>
+#endif
+#if _hdr_unistd
+# include <unistd.h>
+#endif
+/* winsock2.h should come before windows.h */
+#if _hdr_winsock2
+# include <winsock2.h>
+#endif
+#if _hdr_windows
+# include <windows.h>
 #endif
 
 #include "sock.h"

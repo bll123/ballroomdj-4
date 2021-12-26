@@ -250,7 +250,7 @@ _loadoptions () {
 
       topt=`puts "$o" | sed 's/=.*//'`
       tval=`puts "$o" | sed 's/.*=//'`
-      eval "_mkc_opt_${topt}=\"${tval}\""
+      eval "mkc__opt_${topt}=\"${tval}\""
     done
     exec <&6 6<&-
     optionsloaded=T
@@ -319,33 +319,30 @@ check_ifoption () {
     trc=0  # if option is not set, it's false
 
     found=F
-    if [ $optionsloaded = T ]; then
-      eval tval=\$_mkc_opt_${oopt}
-      # override the option value with the environment variable
-      eval tenvval=\$${oopt}
-      if [ "$tenvval" != "" ]; then
-        tval=$tenvval
-      fi
-      if [ "$tval" != "" ]; then
-        found=T
-        trc=$tval
-        tolower trc
-        puts "  found option: $oopt $trc" >&9
-        if [ "$trc" = t ]; then trc=1; fi
-        if [ "$trc" = f ]; then trc=0; fi
-        if [ "$trc" = enable ]; then trc=1; fi
-        if [ "$trc" = disable ]; then trc=0; fi
-        if [ "$trc" = true ]; then trc=1; fi
-        if [ "$trc" = false ]; then trc=0; fi
-        if [ "$trc" = yes ]; then trc=1; fi
-        if [ "$trc" = no ]; then trc=0; fi
-      fi
+
+    eval tval=\$mkc__opt_${oopt}
+    # override the option value with the environment variable
+    eval tenvval=\$${oopt}
+    if [ "$tenvval" != "" ]; then
+      tval=$tenvval
+    fi
+    if [ "$tval" != "" ]; then
+      found=T
+      trc=$tval
+      tolower trc
+      puts "  found option: $oopt $trc" >&9
+      if [ "$trc" = t ]; then trc=1; fi
+      if [ "$trc" = f ]; then trc=0; fi
+      if [ "$trc" = enable ]; then trc=1; fi
+      if [ "$trc" = disable ]; then trc=0; fi
+      if [ "$trc" = true ]; then trc=1; fi
+      if [ "$trc" = false ]; then trc=0; fi
+      if [ "$trc" = yes ]; then trc=1; fi
+      if [ "$trc" = no ]; then trc=0; fi
     fi
 
     # these must be set before ifnotoption processing
-    if [ $optionsloaded = F ]; then
-      trc=0
-    elif [ "$found" = F ]; then
+    if [ "$found" = F ]; then
       trc=0
     fi
 
@@ -353,9 +350,7 @@ check_ifoption () {
       if [ $trc -eq 0 ]; then trc=1; else trc=0; fi
     fi
 
-    if [ $optionsloaded = F ]; then
-      printyesno_actual $name "no options file"
-    elif [ "$found" = F ]; then
+    if [ "$found" = F ]; then
       printyesno_actual $name "option not found"
     else
       printyesno $name $trc
@@ -489,7 +484,7 @@ _read_option () {
 
   oval=$def
   if [ $optionsloaded = T ]; then
-    eval tval=\$_mkc_opt_${onm}
+    eval tval=\$mkc__opt_${onm}
     if [ "$tval" != "" ]; then
       found=T
       puts "  found option: $onm $tval" >&9
@@ -510,7 +505,8 @@ check_option () {
   _read_option $onm "$def"
 
   printyesno_actual $nm "$oval"
-  setdata ${_MKCONFIG_PREFIX} ${nm} "${oval}"
+  # options always have a null prefix
+  setdata "" ${nm} "${oval}"
 }
 
 check_echo () {
@@ -849,7 +845,7 @@ main_process () {
             optnm=$2
             shift; shift
             tval=$@
-            nm="_opt_${optnm}"
+            nm="opt_${optnm}"
             check_option ${nm} $optnm "${tval}"
             ;;
           output*)

@@ -25,10 +25,10 @@ long        lsysvars [SVL_MAX];
 void
 sysvarsInit (void)
 {
+  char                tbuf [MAXPATHLEN+1];
 #if _lib_uname
   int                 rc;
   struct utsname      ubuf;
-  char                tbuf [MAXPATHLEN+1];
 
   rc = uname (&ubuf);
   assert (rc == 0);
@@ -38,19 +38,15 @@ sysvarsInit (void)
   strlcpy (sysvars [SV_OSVERS], ubuf.version, MAXPATHLEN);
 #endif
 #if _lib_GetVersionEx
-  OSVERSIONINFOEX osvi;
-  DWORD dwVersion = 0;
-  DWORD dwMajorVersion = 0;
-  DWORD dwMinorVersion = 0;
-  DWORD dwBuild = 0;
+  OSVERSIONINFOA osvi;
 
-  memset (&osvi, 0, sizeof (OSVERSIONINFOEX));
-  osvi.dwOSVersionInfoSize = sizeof (OSVERSIONINFOEX);
+  memset (&osvi, 0, sizeof (OSVERSIONINFOA));
+  osvi.dwOSVersionInfoSize = sizeof (OSVERSIONINFOA);
   GetVersionEx (&osvi);
 
   strlcpy (sysvars [SV_OSNAME], "Windows", MAXPATHLEN);
   strlcpy (sysvars [SV_OSDISP], "Windows", MAXPATHLEN);
-  snprintf (sysvars [SV_OSVERS], MAXPATHLEN, "%d.%d",
+  snprintf (sysvars [SV_OSVERS], MAXPATHLEN, "%ld.%ld",
       osvi.dwMajorVersion, osvi.dwMinorVersion);
   if (strcmp (sysvars [SV_OSVERS], "5.0") == 0) {
     strlcat (sysvars [SV_OSDISP], " 2000", MAXPATHLEN);

@@ -7,7 +7,7 @@
 
 #include "config.h"
 
-#if _hdr_commctrl
+#if _hdr_endpointvolume
 
 #include <string.h>
 #include <windows.h>
@@ -17,8 +17,10 @@
 #include <stdio.h>
 #include <math.h>
 
+#include "volume.h"
+
 #define EXIT_ON_ERROR(hr)  \
-    if (FAILED(hr)) { printf ("error %d occurred\n", -hr); goto Exit; }
+    if (FAILED(hr)) { printf ("error %ld occurred\n", -hr); goto Exit; }
 
 #define SAFE_RELEASE(punk)  \
     if ((punk) != NULL) { (punk)->Release(); (punk) = NULL; }
@@ -39,7 +41,6 @@ process (volaction_t action, char *sinkname, int *vol, char **sinklist)
   IMMDevice             *pDevice = NULL;
   OSVERSIONINFO         VersionInfo;
   float                 currentVal;
-  int                   rc;
 
   ZeroMemory(&VersionInfo, sizeof(OSVERSIONINFO));
   VersionInfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
@@ -79,7 +80,7 @@ Exit:
   SAFE_RELEASE(pDevice)
   SAFE_RELEASE(g_pEndptVol)
   CoUninitialize();
-  return vol;
+  return *vol;
 }
 
 } /* extern C */

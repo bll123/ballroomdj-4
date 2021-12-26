@@ -1,8 +1,10 @@
 CHANGES
 
     2.6.4                                   --
-      Fix addcflags and addldflags to preserve spaces within the flag.
       Env: Added 'addincpath' and 'addldsrchpath' directives.
+      Env: Fixed addldpath/addcflags to handle multiple arguments.
+      Options: Fix mismatched naming.
+      Options: Fix option test so it does not require an options file.
 
     2.6.3                                   2021-1-30
       Fix 'pkg libs' directive.

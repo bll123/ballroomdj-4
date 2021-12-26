@@ -11,4 +11,5 @@ main (int argc, char *argv[])
   bdj4finalizeStartup ();
   /* enter main loops */
   bdj4shutdown ();
+  return 0;
 }
