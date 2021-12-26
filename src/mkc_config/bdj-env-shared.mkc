@@ -15,6 +15,7 @@ if iswindows ! ( ( == _MKCONFIG_SYSTYPE Linux ) || ( == _MKCONFIG_SYSTYPE Darwin
  addincpath ../plocal/include
  addldsrchpath ../plocal/lib
  addldflag -static-libgcc
+ addlibs -Wl,-Bstatic -lpthread -Wl,-Bdynamic
 endif
 
 # standard flags
@@ -25,6 +26,10 @@ addcflag -Wno-unknown-pragmas
 addcflag -Wno-float-equal
 addcflag -Wno-stringop-overflow
 addcflag -Wno-stringop-truncation
+
+# for pthreads
+addcflag -pthread
+addldflag -pthread
 
 # darwin/vlc
 addincpath /Applications/VLC.app/Contents/MacOS/include

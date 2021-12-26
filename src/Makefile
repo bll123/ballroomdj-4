@@ -139,17 +139,20 @@ LAUNCHEROBJS = \
 	$(OBJDIR)/sysvars$(OBJ_EXT) \
 	$(OBJDIR)/strlcat$(OBJ_EXT) \
 	$(OBJDIR)/strlcpy$(OBJ_EXT)
-RESOURCEFILES = 
+RESOURCEFILES =
 
 $(BINDIR)/bdj4$(EXE_EXT): $(LAUNCHEROBJS)
 	@. ./build/prebuild.sh $@ ; \
-	$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh \
+	$(MAKE) -e rbdj4
+
+rbdj4:
+	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh \
 		-link -exec $(MKC_ECHO) \
-		-o $@ \
+		-o $(BINDIR)/bdj4$(EXE_EXT) \
 		-r $(MKC_REQLIB) \
 		$(LAUNCHEROBJS) \
 		$(RESOURCEFILES)
-	./build/postbuild.sh $@
+	./build/postbuild.sh $(BINDIR)/bdj4$(EXE_EXT)
 
 BDJMAINOBJS = \
 	$(OBJDIR)/bdj4main$(OBJ_EXT) \

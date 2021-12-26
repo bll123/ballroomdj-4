@@ -133,11 +133,16 @@ int
 fileCopy (char *fname, char *nfn)
 {
   char      cmd [MAXPATHLEN];
+  char      tfname [MAXPATHLEN];
+  char      tnfn [MAXPATHLEN];
 
   if (isWindows ()) {
-    snprintf (cmd, MAXPATHLEN, "copy /f \"%s\" \"%s\"\n", fname, nfn);
+    toWinPath (fname, tfname, MAXPATHLEN);
+    toWinPath (nfn, tnfn, MAXPATHLEN);
+    snprintf (cmd, MAXPATHLEN, "copy /y \"%s\" \"%s\" >NUL",
+        tfname, tnfn);
   } else {
-    snprintf (cmd, MAXPATHLEN, "cp -f '%s' '%s'\n", fname, nfn);
+    snprintf (cmd, MAXPATHLEN, "cp -f '%s' '%s' >/dev/null 2>&1", fname, nfn);
   }
   int rc = system (cmd);
   return rc;
@@ -149,12 +154,14 @@ fileMove (char *fname, char *nfn)
   char      cmd [MAXPATHLEN];
   int       rc;
 
+#if _lib_rename
+  rc = rename (fname, nfn);
+#else
   if (isWindows ()) {
-    snprintf (cmd, MAXPATHLEN, "move /f \"%s\" \"%s\"\n", fname, nfn);
+    snprintf (cmd, MAXPATHLEN, "move /y \"%s\" \"%s\" > NUL", fname, nfn);
     rc = system (cmd);
-  } else {
-    rc = rename (fname, nfn);
   }
+#endif
   return rc;
 }
 
@@ -186,4 +193,18 @@ fileReadAll (char *fname)
   fclose (fh);
 
   return data;
+}
+
+void
+toWinPath (char *from, char *to, size_t maxlen)
+{
+  strlcpy (to, from, maxlen);
+  for (size_t i = 0; i < maxlen; ++i) {
+    if (to [i] == '\0') {
+      break;
+    }
+    if (to [i] == '/') {
+      to [i] = '\\';
+    }
+  }
 }

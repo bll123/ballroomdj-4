@@ -21,5 +21,6 @@ int           fileCopy (char *, char *);
 int           fileMove (char *, char *);
 int           fileDelete (char *);
 char *        fileReadAll (char *);
+void          toWinPath (char *from, char *to, size_t maxlen);
 
 #endif /* INC_FILEUTIL_H */
