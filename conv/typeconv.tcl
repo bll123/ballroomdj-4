@@ -19,7 +19,7 @@ set fh [open $nfn w]
 puts $fh "# BDJ4 dance types"
 puts $fh "# [clock format [clock seconds] -gmt 1]"
 puts $fh "datafiletype"
-puts $fh "..simple"
+puts $fh "..list"
 puts $fh "version"
 puts $fh "..2"
 foreach {item} $typevals {
