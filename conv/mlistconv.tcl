@@ -21,6 +21,8 @@ foreach {fn} $flist {
   puts $fh "# BDJ4 songlist"
   puts $fh "# Converted from $fn"
   puts $fh "# [clock format [clock seconds] -gmt 1]"
+  puts $fh "datafiletype"
+  puts $fh "..simplekey"
   puts $fh version
   puts $fh "..10"
   puts $fh count

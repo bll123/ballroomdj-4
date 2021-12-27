@@ -21,6 +21,8 @@ foreach {fn} $flist {
   puts $ofh "# BDJ4 playlist"
   puts $ofh "# Converted from $fn"
   puts $ofh "# [clock format [clock seconds] -gmt 1]"
+  puts $ofh "datafiletype"
+  puts $ofh "..playlist"
   while { [gets $ifh line] >= 0 } {
     regexp {^([^:]*):(.*)$} $line all key value
     if { $key eq "version" } {

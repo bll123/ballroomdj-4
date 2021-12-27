@@ -11,17 +11,18 @@ if { ! [file exists $dir] || ! [file isdirectory $dir] } {
   exit 1
 }
 
-puts "## Converting: sortopt.tcl"
-source [file join $dir sortopt.tcl]
-set nfn [file join data sortopt.txt]
+set fn dancespeeds.tcl
+puts "## Converting: $fn"
+source [file join $dir $fn]
+set nfn [file join data speeds.txt]
 set fh [open $nfn w]
-puts $fh "# BDJ4 sort options"
+puts $fh "# BDJ4 speeds"
 puts $fh "# [clock format [clock seconds] -gmt 1]"
 puts $fh "datafiletype"
 puts $fh "..simple"
 puts $fh "version"
 puts $fh "..2"
-foreach {item} $sortOptionList {
+foreach {item} $spdvals {
   puts $fh $item
 }
 close $fh

@@ -4,6 +4,7 @@ if [[ $# != 1 || ! -d $1  ]]; then
   echo "Usage: $0 <directory>"
   exit 1
 fi
+dir=$1
 
 if [[ ! -d data ]]; then
   echo "No bdj4 data directory"
@@ -25,3 +26,6 @@ fi
 ./conv/ratingconv.tcl $dir
 ./conv/seqconv.tcl $dir
 ./conv/sortoptconv.tcl $dir
+./conv/autoselconv.tcl $dir
+./conv/speedconv.tcl $dir
+./conv/typeconv.tcl $dir
