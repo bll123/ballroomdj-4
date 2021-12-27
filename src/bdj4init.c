@@ -9,9 +9,6 @@
 #if _hdr_libintl
 # include <libintl.h>
 #endif
-#if _hdr_pthread
-# include <pthread.h>
-#endif
 #if _hdr_unistd
 # include <unistd.h>
 #endif
@@ -22,24 +19,16 @@
 #include "bdjstring.h"
 #include "sysvars.h"
 #include "log.h"
+#include "tmutil.h"
 #include "songlist.h"
 
-static void *openDatabase (void *);
+#if 1 // temporary
+# include "genre.h"
+# include "rating.h"
+# include "songlist.h"
+#endif
+
 static void initLocale (void);
-
-#if _lib_pthread_create
-static pthread_t   thread;
-#endif
-
-static void *
-openDatabase (void *id)
-{
-  dbOpen ("data/musicdb.dat");
-#if _lib_pthread_create
-  pthread_exit (NULL);
-#endif
-  return NULL;
-}
 
 static void
 initLocale (void)
@@ -53,18 +42,26 @@ initLocale (void)
 int
 bdj4startup (int argc, char *argv[])
 {
+  mtime_t   mt;
+  mtime_t   dbmt;
   int       c = 0;
   int       option_index = 0;
   static struct option bdj_options [] = {
     { "profile",    required_argument,  NULL,   'p' },
+    { "dbgstderr",  no_argument,        NULL,   's' },
     { NULL,         0,                  NULL,   0 }
   };
 
+  mtimestart (&mt);
   initLocale ();
   sysvarsInit ();
 
   while ((c = getopt_long (argc, argv, "", bdj_options, &option_index)) != -1) {
     switch (c) {
+      case 's': {
+        logStderr ();
+        break;
+      }
       case 'p': {
         if (optarg) {
           sysvarSetLong (SVL_BDJIDX, atol (optarg));
@@ -80,23 +77,23 @@ bdj4startup (int argc, char *argv[])
   logStart ();
 
   tagdefInit ();
-#if _lib_pthread_create
-  /* put the database read into a separate thread */
-  pthread_create (&thread, NULL, openDatabase, NULL);
-#else
-  int junk;
-  openDatabase (&junk);
+  mtimestart (&dbmt);
+  dbOpen ("data/musicdb.dat");
+  logVarMsg (LOG_SESS, "bdj4startup:",
+      "Database read: %ld items in %ld ms", dbCount(), mtimeend (&dbmt));
+  logVarMsg (LOG_SESS, "bdj4startup:",
+      "Total startup time: %ld ms", mtimeend (&mt));
+
+#if 1 // temporary
+  datafile_t *r = ratingAlloc ("data/ratings.txt");
+  datafile_t *g = genreAlloc ("data/genres.txt");
+  datafile_t *sl = songlistAlloc ("data/dj.bll.01.songlist");
+  genreFree (g);
+  ratingFree (r);
+  songlistFree (sl);
 #endif
 
   return 0;
-}
-
-void
-bdj4finalizeStartup (void)
-{
-#if _lib_pthread_create
-  pthread_join (thread, NULL);
-#endif
 }
 
 void
@@ -104,6 +101,5 @@ bdj4shutdown (void)
 {
   dbClose ();
   tagdefCleanup ();
-  songlistCleanup ();
   logEnd ();
 }

@@ -11,6 +11,7 @@
 #include "fileutil.h"
 #include "bdjstring.h"
 #include "datafile.h"
+#include "portability.h"
 
 static bdjoptkey_t  bdjoptGetIdx (char *);
 static void         bdjoptLoad (char *);

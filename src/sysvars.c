@@ -16,6 +16,7 @@
 
 #include "sysvars.h"
 #include "bdjstring.h"
+#include "portability.h"
 
 char        sysvars [SV_MAX][MAXPATHLEN];
 long        lsysvars [SVL_MAX];

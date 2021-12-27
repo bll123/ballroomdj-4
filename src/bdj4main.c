@@ -7,8 +7,6 @@ int
 main (int argc, char *argv[])
 {
   bdj4startup (argc, argv);
-  /* do other stuff */
-  bdj4finalizeStartup ();
   /* enter main loops */
   bdj4shutdown ();
   return 0;

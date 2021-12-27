@@ -14,6 +14,7 @@
 #include "fileutil.h"
 #include "sysvars.h"
 #include "bdjstring.h"
+#include "portability.h"
 
 fileinfo_t *
 fileInfo (char *path)
@@ -96,7 +97,6 @@ fileInfoFree (fileinfo_t *fi)
   }
 }
 
-
 void
 makeBackups (char *fname, int count)
 {
@@ -138,8 +138,8 @@ fileCopy (char *fname, char *nfn)
   char      tnfn [MAXPATHLEN];
 
   if (isWindows ()) {
-    toWinPath (fname, tfname, MAXPATHLEN);
-    toWinPath (nfn, tnfn, MAXPATHLEN);
+    fileConvWinPath (fname, tfname, MAXPATHLEN);
+    fileConvWinPath (nfn, tnfn, MAXPATHLEN);
     snprintf (cmd, MAXPATHLEN, "copy /y/b \"%s\" \"%s\" >NUL",
         tfname, tnfn);
   } else {
@@ -186,17 +186,18 @@ fileReadAll (char *fname)
     return NULL;
   }
   fh = fopen (fname, "r");
-  data = malloc ((size_t) statbuf.st_size);
+  data = malloc ((size_t) statbuf.st_size + 1);
   assert (data != NULL);
   len = fread (data, (size_t) statbuf.st_size, 1, fh);
-  assert (len == (size_t) statbuf.st_size);
+  assert ((statbuf.st_size == 0 && len == 0) || len == 1);
+  data [statbuf.st_size] = '\0';
   fclose (fh);
 
   return data;
 }
 
 void
-toWinPath (char *from, char *to, size_t maxlen)
+fileConvWinPath (char *from, char *to, size_t maxlen)
 {
   strlcpy (to, from, maxlen);
   for (size_t i = 0; i < maxlen; ++i) {

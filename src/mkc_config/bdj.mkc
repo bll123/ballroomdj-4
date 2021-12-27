@@ -39,8 +39,6 @@ sys     socket.h
 sys	time.h
 sys	utsname.h
 
-typ     __int16
-typ     uint16_t
 typ     SOCKET
 typ     socklen_t
 typ	struct sockaddr_in
@@ -93,14 +91,6 @@ size	size_t
 size	SOCKET
 
 include
-
-#if ! _typ_uint16_t
-# if _typ___int16
-#  define Uint16_t unsigned __int16
-# else
-#  define Uint16_t unsigned short
-# endif
-#endif
 
 #define Sock_t int
 #define _siz_Sock_t _siz_int

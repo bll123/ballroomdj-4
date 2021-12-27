@@ -11,6 +11,7 @@
 #include "tmutil.h"
 #include "fileutil.h"
 #include "sysvars.h"
+#include "portability.h"
 
 static bdjlog_t *syslogs [LOG_MAX];
 
@@ -19,7 +20,6 @@ static int      stderrLogging = 0;
 void
 logStderr (void)
 {
-fprintf (stderr, "start stderr\n"); fflush (stdout);
   stderrLogging = 1;
 }
 
@@ -75,7 +75,6 @@ logError (logidx_t idx, char *msg, int err)
 
   l = syslogs [idx];
   if (! stderrLogging && (l == NULL || l->fh == NULL || ! l->loggingOn)) {
-fprintf (stderr, "log-a\n"); fflush (stdout);
     return;
   }
 
@@ -89,7 +88,6 @@ logMsg (logidx_t idx, char *msg)
 
   l = syslogs [idx];
   if (! stderrLogging && (l == NULL || l->fh == NULL || ! l->loggingOn)) {
-fprintf (stderr, "log-b\n"); fflush (stdout);
     return;
   }
 
@@ -108,15 +106,12 @@ logVarMsg (logidx_t idx, char *msg, char *fmt, ...)
   l = syslogs [idx];
   fh = stderr;
   if (! stderrLogging && (l == NULL || l->fh == NULL || ! l->loggingOn)) {
-fprintf (stderr, "log-c\n"); fflush (stdout);
     return;
   }
   if (! stderrLogging && l != NULL && l->fh != NULL && l->loggingOn) {
-fprintf (stderr, "log-d\n"); fflush (stdout);
     fh = l->fh;
   }
   if (! stderrLogging && idx == LOG_DBG && l != NULL && ! l->debugOn) {
-fprintf (stderr, "log-e\n"); fflush (stdout);
     return;
   }
 

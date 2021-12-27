@@ -10,6 +10,7 @@
 
 #include "sysvars.h"
 #include "bdjstring.h"
+#include "portability.h"
 
 int
 main (int argc, char *argv[])

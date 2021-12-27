@@ -292,6 +292,47 @@ START_TEST(file_delete)
 }
 END_TEST
 
+START_TEST(file_readall)
+{
+  FILE    *fh;
+  char    *data;
+
+  char *fn = "tmp/abc.txt";
+  fh = fopen (fn, "w");
+  fclose (fh);
+  /* empty file */
+  data = fileReadAll (fn);
+
+  fh = fopen (fn, "w");
+  fprintf (fh, "%s", "a");
+  fclose (fh);
+  /* one byte file */
+  data = fileReadAll (fn);
+  ck_assert (strlen (data) == 1);
+  ck_assert (memcmp (data, "a", 1) == 0);
+
+  char *tdata = "lkjsdflkdjsfljsdfljsdfd\n";
+  fh = fopen (fn, "w");
+  fprintf (fh, "%s", tdata);
+  fclose (fh);
+  data = fileReadAll (fn);
+  ck_assert (strlen (data) == strlen (tdata));
+  ck_assert (memcmp (data, tdata, strlen (tdata)) == 0);
+}
+END_TEST
+
+START_TEST(file_winpath)
+{
+  char    *from;
+  char    to [MAXPATHLEN];
+
+  from = "/tmp/abc.txt";
+  fileConvWinPath (from, to, MAXPATHLEN);
+  ck_assert (strcmp (to, "\\tmp\\abc.txt") == 0);
+  ck_assert (strlen (from) == strlen (to));
+}
+END_TEST
+
 Suite *
 fileutil_suite (void)
 {
@@ -306,6 +347,8 @@ fileutil_suite (void)
   tcase_add_test (tc, file_move);
   tcase_add_test (tc, file_make_backups);
   tcase_add_test (tc, file_delete);
+  tcase_add_test (tc, file_readall);
+  tcase_add_test (tc, file_winpath);
   suite_add_tcase (s, tc);
   return s;
 }

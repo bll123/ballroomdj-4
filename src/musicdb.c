@@ -12,7 +12,6 @@
 #include "lock.h"
 #include "datafile.h"
 #include "tagdef.h"
-#include "log.h"
 
 /* globals */
 static int         initialized = 0;
@@ -95,7 +94,6 @@ dbLoad (db_t *db, char *fn)
     ++db->count;
   }
 
-  logVarMsg (LOG_SESS, "dbLoad: database loaded: ", "%d", db->count);
   raEndBatch (radb);
   raClose (radb);
   parseFree (pi);
