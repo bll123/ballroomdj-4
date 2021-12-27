@@ -27,16 +27,16 @@ START_TEST(milli_start_end)
   time_t      tm_e;
   mtime_t     mi;
 
-  mtimestart (&mi);
   tm_s = time (NULL);
+  mtimestart (&mi);
   msleep (2000);
-  tm_e = time (NULL);
   size_t m = mtimeend (&mi);
-  long d = (long) ((tm_e - tm_s) * 1000 - (time_t) m);
+  tm_e = time (NULL);
+  long d = (((long) tm_e - (long) tm_s) * 1000 - (long) m);
   if (d < 0) {
     d = - d;
   }
-  ck_assert (d < 20);
+  ck_assert (d < 100);
 }
 END_TEST
 

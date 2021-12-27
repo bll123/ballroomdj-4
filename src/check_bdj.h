@@ -5,6 +5,7 @@
 
 Suite *     fileutil_suite (void);
 Suite *     list_suite (void);
+Suite *     process_suite (void);
 Suite *     lock_suite (void);
 Suite *     datafile_suite (void);
 Suite *     rafile_suite (void);

@@ -9,6 +9,7 @@
 #include "lock.h"
 #include "bdjstring.h"
 #include "check_bdj.h"
+#include "portability.h"
 
 #define LOCK_FN "tmp/test_lock.lck"
 
@@ -28,7 +29,7 @@ START_TEST(lock_acquire_release)
   ck_assert (rc == 0);
   ck_assert (statbuf.st_size > 0);
   fh = fopen (LOCK_FN, "r");
-  rc = fscanf (fh, "%d", &fpid);
+  rc = fscanf (fh, PID_FMT, &fpid);
   fclose (fh);
   ck_assert (fpid == pid);
   rc = lockReleasePid (LOCK_FN, pid);

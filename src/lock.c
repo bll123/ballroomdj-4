@@ -54,7 +54,7 @@ lockAcquirePid (char *fn, pid_t pid)
 
   if (fd >= 0) {
     snprintf (pidstr, sizeof (pidstr), PID_FMT, pid);
-    len = strlen (pidstr);
+    len = strnlen (pidstr, sizeof (pidstr));
     rwlen = write (fd, pidstr, len);
     assert (rwlen == (ssize_t) len);
     close (fd);

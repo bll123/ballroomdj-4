@@ -53,7 +53,7 @@ mcheck: $(MKC_ENV_SHR)
 
 rall: $(LIBRARIES) $(TESTPROGRAMS) $(PROGRAMS)
 	$(MAKE) -e libraries
-	PKG_CONFIG_PATH=../plocal/lib/pkgconfig $(MAKE) -e testprograms
+	$(MAKE) -e testprograms
 	$(MAKE) -e programs
 
 .PHONY: install rinstall
@@ -93,7 +93,8 @@ libraries: $(MKC_ENV_SHR) $(MKC__REQLIB) $(DEPENDS) $(LIBRARIES)
 
 $(MKC_ENV_SHR): $(MKC_ENV_SHR_CONF)
 	@-$(RM) -f $(MKC_ENV_SHR)
-	CC=$(CC) $(_MKCONFIG_SHELL) $(MKC_DIR)/mkconfig.sh \
+	PKG_CONFIG_PATH=../plocal/lib/pkgconfig CC=$(CC) \
+		$(_MKCONFIG_SHELL) $(MKC_DIR)/mkconfig.sh \
 		$(MKC_ENV_SHR_CONF)
 
 $(MKC_REQLIB):  $(MKC_OUTPUT)
@@ -130,7 +131,7 @@ tclean:
 	@-$(RM) -f *~ w *.orig $(MKC_CONFDIR)/*.orig
 	@-$(RM) -f $(MKC_FILES)/mkc_compile.log $(MKC_CONFDIR)/*~
 	@-$(RM) -f ../tmp/* ../conv/*~ ./locale/*~ ../locale/*~ ../*~
-	@-$(RM) -f ../install/*~ ../pkg/*~
+	@-$(RM) -f ../install/*~ ../pkg/*~ build/*~
 
 # bdj executables
 
@@ -229,6 +230,7 @@ $(SHLIBDIR)/libbdj4$(SHLIB_EXT): $(MKC_REQLIB) $(BDJOBJS)
 		$(BDJOBJS) \
 		-L $(SHLIBDIR) -rpath $(BINDIR) \
 		-l bdj4common
+	./build/postbuild.sh $@
 
 # test routines
 
@@ -237,6 +239,7 @@ CHECKOBJS = $(OBJDIR)/check_all$(OBJ_EXT) \
 	$(OBJDIR)/check_list$(OBJ_EXT) \
 	$(OBJDIR)/check_lock$(OBJ_EXT) \
 	$(OBJDIR)/check_datafile$(OBJ_EXT) \
+	$(OBJDIR)/check_process$(OBJ_EXT) \
 	$(OBJDIR)/check_rafile$(OBJ_EXT) \
 	$(OBJDIR)/check_sock$(OBJ_EXT) \
 	$(OBJDIR)/check_tmutil$(OBJ_EXT) \
@@ -278,11 +281,16 @@ $(OBJDIR)/bdj4player$(OBJ_EXT): bdj4player.c config.h vlci.h list.h sysvars.h
 $(OBJDIR)/bdjopt$(OBJ_EXT): bdjopt.c config.h bdjopt.h list.h sysvars.h fileutil.h \
  bdjstring.h datafile.h
 $(OBJDIR)/bdjstring$(OBJ_EXT): bdjstring.c config.h bdjstring.h
-$(OBJDIR)/check_all$(OBJ_EXT): check_all.c config.h check_bdj.h
+$(OBJDIR)/check_all$(OBJ_EXT): check_all.c config.h check_bdj.h sysvars.h tagdef.h \
+ bdjstring.h list.h
 $(OBJDIR)/check_datafile$(OBJ_EXT): check_datafile.c config.h datafile.h list.h check_bdj.h
-$(OBJDIR)/check_fileutil$(OBJ_EXT): check_fileutil.c config.h fileutil.h check_bdj.h
+$(OBJDIR)/check_fileutil$(OBJ_EXT): check_fileutil.c config.h fileutil.h check_bdj.h \
+ portability.h
 $(OBJDIR)/check_list$(OBJ_EXT): check_list.c config.h list.h bdjstring.h check_bdj.h
-$(OBJDIR)/check_lock$(OBJ_EXT): check_lock.c config.h lock.h bdjstring.h check_bdj.h
+$(OBJDIR)/check_lock$(OBJ_EXT): check_lock.c config.h lock.h bdjstring.h check_bdj.h \
+ portability.h
+$(OBJDIR)/check_process$(OBJ_EXT): check_process.c config.h process.h check_bdj.h \
+ portability.h
 $(OBJDIR)/check_rafile$(OBJ_EXT): check_rafile.c config.h rafile.h check_bdj.h
 $(OBJDIR)/check_sock$(OBJ_EXT): check_sock.c config.h sock.h check_bdj.h tmutil.h
 $(OBJDIR)/check_tmutil$(OBJ_EXT): check_tmutil.c config.h tmutil.h check_bdj.h
@@ -291,7 +299,7 @@ $(OBJDIR)/fileutil$(OBJ_EXT): fileutil.c config.h fileutil.h sysvars.h bdjstring
 $(OBJDIR)/list$(OBJ_EXT): list.c config.h list.h
 $(OBJDIR)/lock$(OBJ_EXT): lock.c config.h portability.h process.h tmutil.h lock.h \
  fileutil.h
-$(OBJDIR)/log$(OBJ_EXT): log.c config.h log.h tmutil.h fileutil.h
+$(OBJDIR)/log$(OBJ_EXT): log.c config.h log.h tmutil.h fileutil.h sysvars.h
 $(OBJDIR)/musicdb$(OBJ_EXT): musicdb.c config.h musicdb.h song.h list.h rafile.h \
  bdjstring.h lock.h datafile.h tagdef.h log.h
 $(OBJDIR)/process$(OBJ_EXT): process.c config.h process.h

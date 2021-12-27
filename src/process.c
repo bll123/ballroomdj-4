@@ -12,6 +12,7 @@
 
 #if _lib_kill
 
+/* boolean */
 int
 processExists (pid_t pid)
 {
@@ -22,24 +23,27 @@ processExists (pid_t pid)
 
 #if _lib_OpenProcess
 
+/* this doesn't seem to be very stable. */
+/* it can get invalid parameter errors. */
+
 int
 processExists (pid_t pid)
 {
   HANDLE hProcess;
   DWORD exitCode;
 
-  hProcess = OpenProcess (SYNCHRONIZE, FALSE, pid);
+  hProcess = OpenProcess (PROCESS_QUERY_LIMITED_INFORMATION, FALSE, pid);
   if (NULL == hProcess) {
     if (GetLastError () == ERROR_INVALID_PARAMETER) {
       return -1;
     }
-
     return -1;
   }
 
   if (GetExitCodeProcess (hProcess, &exitCode)) {
     CloseHandle (hProcess);
-    return (exitCode == STILL_ACTIVE);
+    /* return 0 if the process is still active */
+    return (exitCode != STILL_ACTIVE);
   }
 
   CloseHandle (hProcess);

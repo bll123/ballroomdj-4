@@ -5,6 +5,7 @@
 #include <locale.h>
 #include <string.h>
 #include <errno.h>
+#include <getopt.h>
 #if _hdr_libintl
 # include <libintl.h>
 #endif
@@ -52,12 +53,28 @@ initLocale (void)
 int
 bdj4startup (int argc, char *argv[])
 {
+  int       c = 0;
+  int       option_index = 0;
+  static struct option bdj_options [] = {
+    { "profile",    required_argument,  NULL,   'p' },
+    { NULL,         0,                  NULL,   0 }
+  };
+
   initLocale ();
   sysvarsInit ();
 
-  /* ### FIX later */
-  if (argc > 1 && strcmp (argv[1], "-profile") == 0) {
-    sysvarSetLong (SVL_BDJIDX, atol (argv[2]));
+  while ((c = getopt_long (argc, argv, "", bdj_options, &option_index)) != -1) {
+    switch (c) {
+      case 'p': {
+        if (optarg) {
+          sysvarSetLong (SVL_BDJIDX, atol (optarg));
+        }
+        break;
+      }
+      default: {
+        break;
+      }
+    }
   }
 
   logStart ();
@@ -77,7 +94,7 @@ bdj4startup (int argc, char *argv[])
 void
 bdj4finalizeStartup (void)
 {
-#if _lib_pthread_join
+#if _lib_pthread_create
   pthread_join (thread, NULL);
 #endif
 }

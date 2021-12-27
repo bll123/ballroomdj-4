@@ -1,3 +1,7 @@
+/*
+ * https://docs.microsoft.com/en-us/windows/win32/winsock/windows-sockets-error-codes-2https://docs.microsoft.com/en-us/windows/win32/winsock/windows-sockets-error-codes-2
+ */
+
 #include "config.h"
 
 #include <stdio.h>
@@ -31,6 +35,7 @@
 #if _hdr_unistd
 # include <unistd.h>
 #endif
+
 /* winsock2.h should come before windows.h */
 #if _hdr_winsock2
 # include <winsock2.h>
@@ -43,13 +48,27 @@
 #include "tmutil.h"
 #include "log.h"
 
+#define SOCK_FMT "%d"
+#if _siz_Sock_t == 8 && _siz_long == 8
+# undef SOCK_FMT
+# define SOCK_FMT "%ld"
+#endif
+#if _siz_Sock_t == 8 && _siz_long == 4
+# undef SOCK_FMT
+# define SOCK_FMT "%lld"
+#endif
+
 static ssize_t  sockReadData (Sock_t, char *, size_t);
 static int      sockWriteData (Sock_t, char *, size_t);
 static void     sockFlush (Sock_t);
 static Sock_t   sockCanWrite (Sock_t);
 static int      sockSetNonblocking (Sock_t sock);
 // static int       sockSetBlocking (Sock_t sock);
-static int      socketInvalid (Sock_t sock);
+static void     sockInit (void);
+static void     sockCleanup (void);
+
+static int      sockInitialized = 0;
+static int      sockCount = 0;
 
 Sock_t
 sockServer (short listenPort, int *err)
@@ -58,19 +77,29 @@ sockServer (short listenPort, int *err)
   int                 rc;
   int                 opt = 1;
 
+  if (! sockInitialized) {
+    sockInit ();
+  }
+
   Sock_t lsock = socket (AF_INET, SOCK_STREAM, 0);
   if (socketInvalid (lsock)) {
     *err = errno;
     logError (LOG_ERR, "sockServer: socket:", errno);
-    return lsock;
+#if _lib_WSAGetLastError
+    logVarMsg (LOG_ERR, "sockCheck: select: wsa err", "%d", WSAGetLastError() );
+#endif
+    return INVALID_SOCKET;
   }
 
   rc = setsockopt (lsock, SOL_SOCKET, SO_REUSEADDR, (const char *) &opt, sizeof (opt));
   if (rc != 0) {
     *err = errno;
     logError (LOG_ERR, "sockServer: setsockopt:", errno);
+#if _lib_WSAGetLastError
+    logVarMsg (LOG_ERR, "sockCheck: select: wsa err", "%d", WSAGetLastError() );
+#endif
     close (lsock);
-    return -1;
+    return INVALID_SOCKET;
   }
 #if _define_SO_REUSEPORT
   rc = setsockopt (lsock, SOL_SOCKET, SO_REUSEPORT, (const char *) &opt, sizeof (opt));
@@ -78,14 +107,14 @@ sockServer (short listenPort, int *err)
     logError (LOG_ERR, "sockServer: setsockopt-b:", errno);
     *err = errno;
     close (lsock);
-    return -1;
+    return INVALID_SOCKET;
   }
 #endif
 
   memset (&saddr, 0, sizeof (struct sockaddr_in));
   saddr.sin_family = AF_INET;
-  saddr.sin_port = htons ((uint16_t) listenPort);
   saddr.sin_addr.s_addr = inet_addr ("127.0.0.1");
+  saddr.sin_port = htons ((uint16_t) listenPort);
 
   rc = bind (lsock, (struct sockaddr *) &saddr, sizeof (struct sockaddr_in));
   while (rc != 0 && (errno == EADDRINUSE)) {
@@ -95,17 +124,24 @@ sockServer (short listenPort, int *err)
   if (rc != 0) {
     *err = errno;
     logError (LOG_ERR, "sockServer: bind:", errno);
+#if _lib_WSAGetLastError
+    logVarMsg (LOG_ERR, "sockCheck: select: wsa err", "%d", WSAGetLastError() );
+#endif
     close (lsock);
-    return -1;
+    return INVALID_SOCKET;
   }
   rc = listen (lsock, 10);
   if (rc != 0) {
     *err = errno;
     logError (LOG_ERR, "sockServer: listen:", errno);
+#if _lib_WSAGetLastError
+    logVarMsg (LOG_ERR, "sockCheck: select: wsa err", "%d", WSAGetLastError() );
+#endif
     close (lsock);
-    return -1;
+    return INVALID_SOCKET;
   }
 
+  ++sockCount;
   *err = 0;
   return lsock;
 }
@@ -113,7 +149,14 @@ sockServer (short listenPort, int *err)
 void
 sockClose (Sock_t sock)
 {
-  close (sock);
+  if (!socketInvalid (sock) && sock > 2) {
+    close (sock);
+    --sockCount;
+  }
+  if (sockCount <= 0) {
+    sockCleanup ();
+    sockCount = 0;
+  }
 }
 
 sockinfo_t *
@@ -129,8 +172,8 @@ sockAddCheck (sockinfo_t *sockinfo, Sock_t sock)
     sockinfo->socklist = NULL;
   }
 
-  if (socketInvalid (sock) || sock >= FD_SETSIZE) {
-    logVarMsg (LOG_ERR, "sockAddCheck: invalid socket", "%d", sock);
+  if (socketInvalid (sock) || sockinfo->count >= FD_SETSIZE) {
+    logVarMsg (LOG_ERR, "sockAddCheck: invalid socket", SOCK_FMT, sock);
     return sockinfo;
   }
 
@@ -154,14 +197,14 @@ sockRemoveCheck (sockinfo_t *sockinfo, Sock_t sock)
     return;
   }
 
-  if (socketInvalid (sock) < 0 || sock >= FD_SETSIZE) {
-    logVarMsg (LOG_ERR, "sockRemoveCheck: invalid socket", "%d", sock);
+  if (socketInvalid (sock)) {
+    logVarMsg (LOG_ERR, "sockRemoveCheck: invalid socket", SOCK_FMT, sock);
     return;
   }
 
   for (size_t i = 0; i < (size_t) sockinfo->count; ++i) {
     if (sockinfo->socklist[i] == sock) {
-      sockinfo->socklist[i] = -1;
+      sockinfo->socklist[i] = INVALID_SOCKET;
       break;
     }
   }
@@ -192,7 +235,7 @@ sockCheck (sockinfo_t *sockinfo)
   FD_ZERO (&(sockinfo->readfds));
   for (size_t i = 0; i < (size_t) sockinfo->count; ++i) {
     Sock_t tsock = sockinfo->socklist[i];
-    if (socketInvalid (tsock) || tsock >= FD_SETSIZE) {
+    if (socketInvalid (tsock)) {
       continue;
     }
     FD_SET (tsock, &(sockinfo->readfds));
@@ -208,11 +251,14 @@ sockCheck (sockinfo_t *sockinfo)
       return 0;
     }
     logError (LOG_ERR, "sockCheck: select", errno);
+#if _lib_WSAGetLastError
+    logVarMsg (LOG_ERR, "sockCheck: select: wsa err", "%d", WSAGetLastError() );
+#endif
     return -1;
   }
   if (rc > 0) {
     for (size_t i = 0; i < (size_t) sockinfo->count; ++i) {
-      Sock_t tsock = sockinfo->socklist[i];
+      Sock_t tsock = sockinfo->socklist [i];
       if (socketInvalid (tsock)) {
         continue;
       }
@@ -230,18 +276,23 @@ sockAccept (Sock_t lsock, int *err)
   struct sockaddr_in  saddr;
   Socklen_t           alen;
 
+  alen = sizeof (struct sockaddr_in);
   Sock_t nsock = accept (lsock, (struct sockaddr *) &saddr, &alen);
   if (socketInvalid (nsock)) {
     *err = errno;
     logError (LOG_ERR, "sockAccept: accept", errno);
-    return -1;
+#if _lib_WSAGetLastError
+    logVarMsg (LOG_ERR, "sockAccept: accept: wsa err", "%d", WSAGetLastError() );
+#endif
+    return INVALID_SOCKET;
   }
 
   if (sockSetNonblocking (nsock) < 0) {
     close (nsock);
-    return -1;
+    return INVALID_SOCKET;
   }
 
+  ++sockCount;
   *err = 0;
   return nsock;
 }
@@ -253,16 +304,23 @@ sockConnect (short connPort, int *err)
   int                 rc;
   int                 opt = 1;
 
+  if (! sockInitialized) {
+    sockInit ();
+  }
+
   Sock_t clsock = socket (AF_INET, SOCK_STREAM, 0);
   if (socketInvalid (clsock)) {
     *err = errno;
-    logError (LOG_ERR, "sockConnect: socket", errno);
-    return clsock;
+    logError (LOG_ERR, "sockConnect: connect", errno);
+#if _lib_WSAGetLastError
+    logVarMsg (LOG_ERR, "sockConnect: connect: wsa err", "%d", WSAGetLastError() );
+#endif
+    return INVALID_SOCKET;
   }
   if (sockSetNonblocking (clsock) < 0) {
     *err = errno;
     close (clsock);
-    return -1;
+    return INVALID_SOCKET;
   }
 
   rc = setsockopt (clsock, SOL_SOCKET, SO_REUSEADDR, (const char *) &opt, sizeof (opt));
@@ -270,7 +328,7 @@ sockConnect (short connPort, int *err)
     *err = errno;
     logError (LOG_ERR, "sockConnect: setsockopt", errno);
     close (clsock);
-    return -1;
+    return INVALID_SOCKET;
   }
 #if _define_SO_REUSEPORT
   rc = setsockopt (clsock, SOL_SOCKET, SO_REUSEPORT, (const char *) &opt, sizeof (opt));
@@ -278,7 +336,7 @@ sockConnect (short connPort, int *err)
     *err = errno;
     logError (LOG_ERR, "sockConnect: setsockopt-b", errno);
     close (clsock);
-    return -1;
+    return INVALID_SOCKET;
   }
 #endif
 
@@ -289,13 +347,25 @@ sockConnect (short connPort, int *err)
   rc = connect (clsock, (struct sockaddr *) &raddr, sizeof (struct sockaddr_in));
   if (rc != 0) {
     *err = errno;
-    if (errno != EINPROGRESS && errno != EAGAIN && errno != EINTR) {
+#if _lib_WSAGetLastError
+    if (WSAGetLastError() == WSAEWOULDBLOCK) {
+      errno = EWOULDBLOCK;
+    }
+#endif
+    *err = errno;
+    if (errno != EINPROGRESS && errno != EAGAIN && errno != EINTR && errno != EWOULDBLOCK) {
       logError (LOG_ERR, "sockConnect: connect", errno);
+#if _lib_WSAGetLastError
+      logVarMsg (LOG_ERR, "sockConnect: connect: wsa err", "%d", WSAGetLastError() );
+#endif
+      close (clsock);
+      return INVALID_SOCKET;
     }
   }
   /* darwin needs a boost to get the socket fully connected */
   msleep (1);
 
+  ++sockCount;
   *err = 0;
   return clsock;
 }
@@ -318,7 +388,7 @@ sockConnectWait (short connPort, size_t timeout)
     msleep (30);
     size_t m = mtimeend (&mi);
     if (m > timeout) {
-      return -1;
+      return INVALID_SOCKET;
     }
     clsock = sockConnect (connPort, &err);
     ++count;
@@ -399,6 +469,17 @@ sockWriteBinary (Sock_t sock, char *data, size_t len)
   return 0;
 }
 
+/* boolean */
+inline int
+socketInvalid (Sock_t sock)
+{
+#if _define_INVALID_SOCKET
+  return (sock == INVALID_SOCKET);
+#else
+  return (sock < 0);
+#endif
+}
+
 /* internal routines */
 
 static ssize_t
@@ -411,21 +492,39 @@ sockReadData (Sock_t sock, char *data, size_t len)
 
   timeout = len * SOCK_READ_TIMEOUT;
   mtimestart (&mi);
-  rc = read (sock, data, len);
-  if (rc < 0 &&
-      errno != EINTR && errno != EAGAIN && errno != EWOULDBLOCK) {
-    logError (LOG_ERR, "sockReadData: read", errno);
-    return -1;
+  rc = recv (sock, data, len, 0);
+  if (rc < 0) {
+#if _lib_WSAGetLastError
+    if (WSAGetLastError() == WSAEWOULDBLOCK) {
+      errno = EWOULDBLOCK;
+    }
+#endif
+    if (errno != EINTR && errno != EAGAIN && errno != EWOULDBLOCK) {
+      logError (LOG_ERR, "sockReadData: recv", errno);
+#if _lib_WSAGetLastError
+      logVarMsg (LOG_ERR, "sockReadData: recv: wsa err", "%d", WSAGetLastError() );
+#endif
+      return -1;
+    }
   }
   if (rc > 0) {
     tot += (size_t) rc;
   }
   while (tot < len) {
-    rc = read (sock, data + tot, len - tot);
-    if (rc < 0 &&
-        errno != EINTR && errno != EAGAIN && errno != EWOULDBLOCK) {
-      logError (LOG_ERR, "sockReadData: read-b", errno);
-      return -1;
+    rc = recv (sock, data + tot, len - tot, 0);
+    if (rc < 0) {
+#if _lib_WSAGetLastError
+      if (WSAGetLastError() == WSAEWOULDBLOCK) {
+        errno = EWOULDBLOCK;
+      }
+#endif
+      if (errno != EINTR && errno != EAGAIN && errno != EWOULDBLOCK) {
+        logError (LOG_ERR, "sockReadData: recv-b", errno);
+#if _lib_WSAGetLastError
+        logVarMsg (LOG_ERR, "sockReadData: recv-b: wsa err", "%d", WSAGetLastError() );
+#endif
+        return -1;
+      }
     }
     if (rc > 0) {
       tot += (size_t) rc;
@@ -459,20 +558,26 @@ sockWriteData (Sock_t sock, char *data, size_t len)
   if (sval != sock) {
     return -1;
   }
-  rc = write (sock, data, len);
+  rc = send (sock, data, len, 0);
   if (rc < 0 &&
       errno != EINTR && errno != EAGAIN && errno != EWOULDBLOCK) {
-    logError (LOG_ERR, "sockWriteData: write", errno);
+    logError (LOG_ERR, "sockWriteData: send", errno);
+#if _lib_WSAGetLastError
+    logVarMsg (LOG_ERR, "sockWriteData: send: wsa err", "%d", WSAGetLastError() );
+#endif
     return -1;
   }
   if (rc > 0) {
     tot += (size_t) rc;
   }
   while (tot < len) {
-    rc = write (sock, data + tot, len - tot);
+    rc = send (sock, data + tot, len - tot, 0);
     if (rc < 0 &&
         errno != EINTR && errno != EAGAIN && errno != EWOULDBLOCK) {
-      logError (LOG_ERR, "sockWriteData: write-b", errno);
+      logError (LOG_ERR, "sockWriteData: send-b", errno);
+#if _lib_WSAGetLastError
+      logVarMsg (LOG_ERR, "sockWriteData: send-b: wsa err", "%d", WSAGetLastError() );
+#endif
       return -1;
     }
     if (rc > 0) {
@@ -491,18 +596,36 @@ sockFlush (Sock_t sock)
   ssize_t   rc;
 
   count = 0;
-  rc = read (sock, data, len);
-  if (rc < 0 &&
-      errno != EINTR && errno != EAGAIN && errno != EWOULDBLOCK) {
-    logError (LOG_ERR, "sockFlush: read", errno);
-    return;
+  rc = recv (sock, data, len, 0);
+  if (rc < 0) {
+#if _lib_WSAGetLastError
+    if (WSAGetLastError() == WSAEWOULDBLOCK) {
+      errno = EWOULDBLOCK;
+    }
+#endif
+    if (errno != EINTR && errno != EAGAIN && errno != EWOULDBLOCK) {
+      logError (LOG_ERR, "sockFlush: recv", errno);
+#if _lib_WSAGetLastError
+      logVarMsg (LOG_ERR, "sockFlush: recv: wsa err", "%d", WSAGetLastError() );
+#endif
+      return;
+    }
   }
   while (rc >= 0) {
-    rc = read (sock, data, len);
-    if (rc < 0 &&
-        errno != EINTR && errno != EAGAIN && errno != EWOULDBLOCK) {
-      logError (LOG_ERR, "sockFlush: read-b", errno);
-      return;
+    rc = recv (sock, data, len, 0);
+    if (rc < 0) {
+#if _lib_WSAGetLastError
+      if (WSAGetLastError() == WSAEWOULDBLOCK) {
+        errno = EWOULDBLOCK;
+      }
+#endif
+      if (errno != EINTR && errno != EAGAIN && errno != EWOULDBLOCK) {
+        logError (LOG_ERR, "sockFlush: recv-b", errno);
+#if _lib_WSAGetLastError
+        logVarMsg (LOG_ERR, "sockFlush: recv-b wsa err", "%d", WSAGetLastError() );
+#endif
+        return;
+      }
     }
     if (rc == 0) {
       ++count;
@@ -536,6 +659,9 @@ sockCanWrite (Sock_t sock)
       return sockCanWrite (sock);
     }
     logError (LOG_ERR, "sockCanWrite: select", errno);
+#if _lib_WSAGetLastError
+    logVarMsg (LOG_ERR, "sockCanWrite: select: wsa err", "%d", WSAGetLastError() );
+#endif
     return -1;
   }
   if (FD_ISSET (sock, &writefds) && ! FD_ISSET(sock, &readfds)) {
@@ -568,6 +694,9 @@ sockSetNonblocking (Sock_t sock)
   unsigned long flag = 1;
   if (ioctlsocket (sock, FIONBIO, &flag) < 0) {
     logError (LOG_ERR, "sockSetNonblocking: ioctlsocket", errno);
+#if _lib_WSAGetLastError
+    logVarMsg (LOG_ERR, "sockSetNonblocking: ioctlsocket: wsa err", "%d", WSAGetLastError() );
+#endif
   }
 #endif
   return 0;
@@ -605,12 +734,29 @@ sockSetBlocking (Sock_t sock)
 
 #endif
 
-static inline int
-socketInvalid (Sock_t sock)
+
+static void
+sockInit (void)
 {
-#if _define_INVALID_SOCKET
-  return (sock == INVALID_SOCKET);
-#else
-  return (sock < 0);
+#if _lib_WSAStartup
+  WSADATA wsa;
+  int rc = WSAStartup (MAKEWORD (2, 2), &wsa);
+  if (rc < 0) {
+    logError (LOG_ERR, "sockInit: WSAStartup:", errno);
+#if _lib_WSAGetLastError
+    logVarMsg (LOG_ERR, "sockInit: WSAStartup: wsa err", "%d", WSAGetLastError() );
 #endif
+  }
+  assert (rc == 0);
+#endif
+  sockInitialized = 1;
+}
+
+static void
+sockCleanup (void)
+{
+#if _lib_WSACleanup
+  WSACleanup ();
+#endif
+  sockInitialized = 0;
 }

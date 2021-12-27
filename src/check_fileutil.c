@@ -1,6 +1,8 @@
 #include "config.h"
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <check.h>
 #include <sys/types.h>
 #include <time.h>
@@ -10,6 +12,7 @@
 
 #include "fileutil.h"
 #include "check_bdj.h"
+#include "portability.h"
 
 typedef struct {
   char    *path;
@@ -35,17 +38,22 @@ static ftest_t tests [] = {
 START_TEST(fileinfo_chk)
 {
   fileinfo_t    *fi;
+  char          tfmt [40];
 
   for (size_t i = 0; i < TCOUNT; ++i) {
     fi = fileInfo (tests[i].path);
+    sprintf (tfmt, "%s: i:%s %s/%s", "dlem", SIZE_FMT, SIZE_FMT, SIZE_FMT);
     ck_assert_msg (fi->dlen == tests[i].dlen,
-        "dlen: i:%ld %ld/%ld", i, fi->dlen, tests[i].dlen);
+        tfmt, i, fi->dlen, tests[i].dlen);
+    sprintf (tfmt, "%s: i:%s %s/%s", "blem", SIZE_FMT, SIZE_FMT, SIZE_FMT);
     ck_assert_msg (fi->blen == tests[i].blen,
-        "blen: i:%ld %ld/%ld", i, fi->blen, tests[i].blen);
+        tfmt, i, fi->blen, tests[i].blen);
+    sprintf (tfmt, "%s: i:%s %s/%s", "flem", SIZE_FMT, SIZE_FMT, SIZE_FMT);
     ck_assert_msg (fi->flen == tests[i].flen,
-        "flen: i:%ld %ld/%ld", i, fi->flen, tests[i].flen);
+        tfmt, i, fi->flen, tests[i].flen);
+    sprintf (tfmt, "%s: i:%s %s/%s", "elem", SIZE_FMT, SIZE_FMT, SIZE_FMT);
     ck_assert_msg (fi->elen == tests[i].elen,
-        "elen: i:%ld %ld/%ld", i, fi->elen, tests[i].elen);
+        tfmt, i, fi->elen, tests[i].elen);
     fileInfoFree (fi);
   }
 }
@@ -75,8 +83,8 @@ START_TEST(file_copy)
   FILE      *fh;
   int       rc;
 
-  char *ofn = "tmp/abc.txt";
-  char *nfn = "tmp/abc.txt.0";
+  char *ofn = "tmp/abc.txt.a";
+  char *nfn = "tmp/abc.txt.b";
   unlink (ofn);
   unlink (nfn);
   fh = fopen (ofn, "w");
@@ -98,8 +106,8 @@ START_TEST(file_move)
   FILE      *fh;
   int       rc;
 
-  char *ofn = "tmp/abc.txt";
-  char *nfn = "tmp/abc.txt.0";
+  char *ofn = "tmp/abc.txt.c";
+  char *nfn = "tmp/abc.txt.d";
   unlink (ofn);
   unlink (nfn);
   fh = fopen (ofn, "w");
@@ -124,11 +132,13 @@ START_TEST(file_make_backups)
   char      *r;
 
   char *ofn = "tmp/abc.txt";
+  char *ofn0a = "tmp/abc.txt.0";
   char *ofn0 = "tmp/abc.txt.bak.0";
   char *ofn1 = "tmp/abc.txt.bak.1";
   char *ofn2 = "tmp/abc.txt.bak.2";
   char *ofn3 = "tmp/abc.txt.bak.3";
   unlink (ofn);
+  unlink (ofn0a);
   unlink (ofn0);
   unlink (ofn1);
   unlink (ofn2);
@@ -141,6 +151,8 @@ START_TEST(file_make_backups)
 
   rc = fileExists (ofn);
   ck_assert (rc != 0);
+  rc = fileExists (ofn0a);
+  ck_assert (rc == 0);
   rc = fileExists (ofn0);
   ck_assert (rc == 0);
   rc = fileExists (ofn1);
@@ -154,6 +166,8 @@ START_TEST(file_make_backups)
 
   rc = fileExists (ofn);
   ck_assert (rc != 0);
+  rc = fileExists (ofn0a);
+  ck_assert (rc == 0);
   rc = fileExists (ofn0);
   ck_assert (rc == 0);
   rc = fileExists (ofn1);
@@ -184,6 +198,8 @@ START_TEST(file_make_backups)
 
   rc = fileExists (ofn);
   ck_assert (rc != 0);
+  rc = fileExists (ofn0a);
+  ck_assert (rc == 0);
   rc = fileExists (ofn0);
   ck_assert (rc == 0);
   rc = fileExists (ofn1);
@@ -220,6 +236,8 @@ START_TEST(file_make_backups)
 
   rc = fileExists (ofn);
   ck_assert (rc != 0);
+  rc = fileExists (ofn0a);
+  ck_assert (rc == 0);
   rc = fileExists (ofn0);
   ck_assert (rc == 0);
   rc = fileExists (ofn1);
@@ -248,6 +266,7 @@ START_TEST(file_make_backups)
   ck_assert (strcmp (buff, "2") == 0);
 
   unlink (ofn);
+  unlink (ofn0a);
   unlink (ofn0);
   unlink (ofn1);
   unlink (ofn2);

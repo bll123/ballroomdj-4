@@ -4,6 +4,8 @@
 #include <check.h>
 
 #include "check_bdj.h"
+#include "sysvars.h"
+#include "tagdef.h"
 
 int
 main (void)
@@ -12,9 +14,14 @@ main (void)
   Suite   *s;
   SRunner *sr;
 
+  sysvarsInit ();
+  tagdefInit ();
+
   s = tmutil_suite();
   sr = srunner_create (s);
   s = fileutil_suite();
+  srunner_add_suite (sr, s);
+  s = process_suite();
   srunner_add_suite (sr, s);
   s = lock_suite();
   srunner_add_suite (sr, s);
@@ -29,5 +36,8 @@ main (void)
   srunner_run_all (sr, CK_ENV);
   number_failed = srunner_ntests_failed (sr);
   srunner_free (sr);
+
+  tagdefCleanup ();
+
   return (number_failed == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }

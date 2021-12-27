@@ -6,6 +6,7 @@
 #include <assert.h>
 #include <sys/stat.h>
 #include <string.h>
+#include <errno.h>
 #if _hdr_unistd
 # include <unistd.h>
 #endif
@@ -114,12 +115,12 @@ makeBackups (char *fname, int count)
       } else {
         fileCopy (ofn, nfn);
       }
-    } else {
     }
   }
   return;
 }
 
+/* boolean */
 inline int
 fileExists (char *fname)
 {
@@ -139,7 +140,7 @@ fileCopy (char *fname, char *nfn)
   if (isWindows ()) {
     toWinPath (fname, tfname, MAXPATHLEN);
     toWinPath (nfn, tnfn, MAXPATHLEN);
-    snprintf (cmd, MAXPATHLEN, "copy /y \"%s\" \"%s\" >NUL",
+    snprintf (cmd, MAXPATHLEN, "copy /y/b \"%s\" \"%s\" >NUL",
         tfname, tnfn);
   } else {
     snprintf (cmd, MAXPATHLEN, "cp -f '%s' '%s' >/dev/null 2>&1", fname, nfn);
@@ -151,17 +152,16 @@ fileCopy (char *fname, char *nfn)
 int
 fileMove (char *fname, char *nfn)
 {
-  char      cmd [MAXPATHLEN];
-  int       rc;
+  int       rc = -1;
 
-#if _lib_rename
-  rc = rename (fname, nfn);
-#else
-  if (isWindows ()) {
-    snprintf (cmd, MAXPATHLEN, "move /y \"%s\" \"%s\" > NUL", fname, nfn);
-    rc = system (cmd);
+  /*
+   * Windows won't rename to an existing file, but does
+   * not return an error.
+   */
+  if (isWindows()) {
+    fileDelete (nfn);
   }
-#endif
+  rc = rename (fname, nfn);
   return rc;
 }
 

@@ -15,6 +15,10 @@ typedef struct {
 #define SOCK_READ_TIMEOUT   5
 #define SOCK_WRITE_TIMEOUT  2
 
+#if ! _define_INVALID_SOCKET
+# define INVALID_SOCKET -1
+#endif
+
 Sock_t        sockServer (short, int *);
 void          sockClose (Sock_t);
 sockinfo_t *  sockAddCheck (sockinfo_t *, Sock_t);
@@ -28,5 +32,6 @@ char *        sockRead (Sock_t, size_t *);
 char *        sockReadBuff (Sock_t, size_t *, char *data, size_t);
 int           sockWriteStr (Sock_t, char *, size_t);
 int           sockWriteBinary (Sock_t, char *, size_t);
+int           socketInvalid (Sock_t sock);
 
 #endif /* INC_SOCK_H */

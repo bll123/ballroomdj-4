@@ -60,18 +60,20 @@ START_TEST(rafile_write)
 
   raWrite (rafile, RAFILE_NEW, "aaaa");
   rc = stat (RAFN, &statbuf);
-  ck_assert (rc == 0 && statbuf.st_size > lastsize);
+  ck_assert (rc == 0 && statbuf.st_size >= lastsize);
   lastsize = statbuf.st_size;
   raWrite (rafile, RAFILE_NEW, "bbbb");
   rc = stat (RAFN, &statbuf);
-  ck_assert (rc == 0 && statbuf.st_size > lastsize);
+  ck_assert (rc == 0 && statbuf.st_size >= lastsize);
   lastsize = statbuf.st_size;
   raWrite (rafile, RAFILE_NEW, "cccc");
   rc = stat (RAFN, &statbuf);
-  ck_assert (rc == 0 && statbuf.st_size > lastsize);
+  ck_assert (rc == 0 && statbuf.st_size >= lastsize);
 
   ck_assert (rafile->count == 3L);
   raClose (rafile);
+  rc = stat (RAFN, &statbuf);
+  ck_assert (rc == 0 && statbuf.st_size == RRN_TO_OFFSET(4L));
 }
 END_TEST
 

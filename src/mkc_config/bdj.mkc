@@ -1,10 +1,12 @@
 #
 #
 
+loadunit env-systype
 loadunit c-main
 
 output  config.h
 
+standard_system
 standard
 
 hdr     alsa/asoundlib.h
@@ -48,10 +50,10 @@ lib     CoInitialize -lole32
 lib     fcntl
 if iswindows ! ( ( == _MKCONFIG_SYSTYPE Linux ) || ( == _MKCONFIG_SYSTYPE Darwin ) )
  # on windows, a static link is wanted
- lib	gettext -Wl,-Bstatic -lintl -Wl,-Bdynamic # -Wl,-Bstatic -lintl -liconv -Wl,-Bdynamic
+ lib	gettext -Wl,-Bstatic -lintl -Wl,-Bdynamic % -Wl,-Bstatic -lintl -liconv -Wl,-Bdynamic
  lib    pthread_create -Wl,-Bstatic -lpthread -Wl,-Bdynamic
 else
- lib	gettext -lintl# -lintl -liconv
+ lib	gettext -lintl % -lintl -liconv
  lib    pthread_create -lpthread
 endif
 lib     GetVersionEx
@@ -65,8 +67,12 @@ lib     socket -lws2_32
 # linux would require -lbsd; let's just use our own.
 lib	strlcpy
 lib	strlcat
+lib	strnlen
 lib     strtok_r
 lib     uname
+lib     WSACleanup -lws2_32
+lib     WSAGetLastError -lws2_32
+lib     WSAStartup -lws2_32
 lib     libvlc_audio_output_device_enum -lvlc
 
 if notpa _lib_pa_threaded_mainloop_start
@@ -80,9 +86,11 @@ endif
 define  INVALID_SOCKET
 define  SO_REUSEPORT
 
+size	int
 size	long
 size	pid_t
 size	size_t
+size	SOCKET
 
 include
 
@@ -94,9 +102,12 @@ include
 # endif
 #endif
 
-# define Sock_t int
+#define Sock_t int
+#define _siz_Sock_t _siz_int
 #if _typ_SOCKET
 # undef Sock_t
+# undef _siz_Sock_t
+# define _siz_Sock_t _siz_SOCKET
 # define Sock_t SOCKET
 #endif
 

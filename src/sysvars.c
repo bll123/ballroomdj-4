@@ -43,29 +43,29 @@ sysvarsInit (void)
   GetVersionEx (&osvi);
 
   strlcpy (sysvars [SV_OSNAME], "Windows", MAXPATHLEN);
-  strlcpy (sysvars [SV_OSDISP], "Windows", MAXPATHLEN);
+  strlcpy (sysvars [SV_OSDISP], "Windows ", MAXPATHLEN);
   snprintf (sysvars [SV_OSVERS], MAXPATHLEN, "%ld.%ld",
       osvi.dwMajorVersion, osvi.dwMinorVersion);
   if (strcmp (sysvars [SV_OSVERS], "5.0") == 0) {
-    strlcat (sysvars [SV_OSDISP], " 2000", MAXPATHLEN);
+    strlcat (sysvars [SV_OSDISP], "2000", MAXPATHLEN);
   }
   else if (strcmp (sysvars [SV_OSVERS], "5.1") == 0) {
-    strlcat (sysvars [SV_OSDISP], " XP", MAXPATHLEN);
+    strlcat (sysvars [SV_OSDISP], "XP", MAXPATHLEN);
   }
   else if (strcmp (sysvars [SV_OSVERS], "5.2") == 0) {
-    strlcat (sysvars [SV_OSDISP], " XP Pro", MAXPATHLEN);
+    strlcat (sysvars [SV_OSDISP], "XP Pro", MAXPATHLEN);
   }
   else if (strcmp (sysvars [SV_OSVERS], "6.0") == 0) {
-    strlcat (sysvars [SV_OSDISP], " Vista", MAXPATHLEN);
+    strlcat (sysvars [SV_OSDISP], "Vista", MAXPATHLEN);
   }
   else if (strcmp (sysvars [SV_OSVERS], "6.1") == 0) {
-    strlcat (sysvars [SV_OSDISP], " 7", MAXPATHLEN);
+    strlcat (sysvars [SV_OSDISP], "7", MAXPATHLEN);
   }
   else if (strcmp (sysvars [SV_OSVERS], "6.2") == 0) {
-    strlcat (sysvars [SV_OSDISP], " 8.0", MAXPATHLEN);
+    strlcat (sysvars [SV_OSDISP], "8.0", MAXPATHLEN);
   }
   else if (strcmp (sysvars [SV_OSVERS], "6.3") == 0) {
-    strlcat (sysvars [SV_OSDISP], " 8.1", MAXPATHLEN);
+    strlcat (sysvars [SV_OSDISP], "8.1", MAXPATHLEN);
   }
   else {
     strlcat (sysvars [SV_OSDISP], sysvars [SV_OSVERS], MAXPATHLEN);
@@ -83,18 +83,21 @@ sysvarSetLong (sysvarlkey_t idx, long value)
   lsysvars [idx] = value;
 }
 
+/* boolean */
 inline int
 isMacOS (void)
 {
   return (strcmp (sysvars[SV_OSNAME], "Darwin") == 0);
 }
 
+/* boolean */
 inline int
 isWindows (void)
 {
   return (strcmp (sysvars[SV_OSNAME], "Windows") == 0);
 }
 
+/* boolean */
 inline int
 isLinux (void)
 {
