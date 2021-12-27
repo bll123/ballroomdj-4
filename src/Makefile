@@ -212,6 +212,7 @@ $(SHLIBDIR)/libbdj4common$(SHLIB_EXT): $(MKC_REQLIB) $(BDJCOMMONOBJS)
 BDJOBJS = \
 	$(OBJDIR)/bdj4init$(OBJ_EXT) \
 	$(OBJDIR)/genre$(OBJ_EXT) \
+	$(OBJDIR)/level$(OBJ_EXT) \
 	$(OBJDIR)/musicdb$(OBJ_EXT) \
 	$(OBJDIR)/rafile$(OBJ_EXT) \
 	$(OBJDIR)/rating$(OBJ_EXT) \

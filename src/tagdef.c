@@ -1044,7 +1044,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] =
       0,                            /* listing display      */
       0,                            /* song list display    */
       0                             /* text search          */
-    }
+    },
   };
 
 

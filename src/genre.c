@@ -19,7 +19,7 @@ genreAlloc (char *fname)
 {
   datafile_t    *df;
 
-  df = datafileAlloc (genredfkeys, GENRE_DFKEY_COUNT, fname);
+  df = datafileAlloc (genredfkeys, GENRE_DFKEY_COUNT, fname, DFTYPE_KEY_LONG);
   return df;
 }
 

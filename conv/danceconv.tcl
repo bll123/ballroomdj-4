@@ -17,8 +17,6 @@ set nfn [file join data dances.txt]
 set fh [open $nfn w]
 puts $fh "# BDJ4 dances"
 puts $fh "# [clock format [clock seconds] -gmt 1]"
-puts $fh "datafiletype"
-puts $fh "..stringkey"
 puts $fh version
 puts $fh "..2"
 puts $fh count

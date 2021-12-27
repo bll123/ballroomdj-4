@@ -17,8 +17,6 @@ set nfn [file join data levels.txt]
 set fh [open $nfn w]
 puts $fh "# BDJ4 levels"
 puts $fh "# [clock format [clock seconds] -gmt 1]"
-puts $fh "datafiletype"
-puts $fh "..simplekey"
 puts $fh version
 puts $fh "..2"
 puts $fh count

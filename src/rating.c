@@ -19,7 +19,7 @@ ratingAlloc (char *fname)
 {
   datafile_t    *df;
 
-  df = datafileAlloc (ratingdfkeys, RATING_DFKEY_COUNT, fname);
+  df = datafileAlloc (ratingdfkeys, RATING_DFKEY_COUNT, fname, DFTYPE_KEY_LONG);
   return df;
 }
 

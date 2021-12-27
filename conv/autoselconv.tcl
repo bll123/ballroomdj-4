@@ -18,8 +18,6 @@ set nfn [file join data autoselection.txt]
 set ofh [open $nfn w]
 puts $ofh "# BDJ4 autoselection"
 puts $ofh "# [clock format [clock seconds] -gmt 1]"
-puts $ofh "datafiletype"
-puts $ofh "..simple"
 while { [gets $ifh line] >= 0 } {
   if { [regexp {^#} $line] } {
     puts $ofh $line

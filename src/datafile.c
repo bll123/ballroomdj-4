@@ -9,6 +9,7 @@
 #include "tmutil.h"
 #include "list.h"
 #include "fileutil.h"
+#include "bdjstring.h"
 
 typedef enum {
   PARSE_SIMPLE,
@@ -65,7 +66,8 @@ parseKeyValue (parseinfo_t *pi, char *data)
 /* datafile loading routines */
 
 datafile_t *
-datafileAlloc (datafilekey_t *dfkeys, size_t dfkeycount, char *fname)
+datafileAlloc (datafilekey_t *dfkeys, size_t dfkeycount, char *fname,
+    datafiletype_t dftype)
 {
   datafile_t      *df;
 
@@ -73,7 +75,7 @@ datafileAlloc (datafilekey_t *dfkeys, size_t dfkeycount, char *fname)
   assert (df != NULL);
   df->fname = NULL;
   df->data = NULL;
-  datafileLoad (dfkeys, dfkeycount, df, fname);
+  datafileLoad (dfkeys, dfkeycount, df, fname, dftype);
   return df;
 }
 
@@ -90,17 +92,21 @@ datafileFree (void *tdf)
 
 void
 datafileLoad (datafilekey_t *dfkeys, size_t dfkeycount,
-    datafile_t *df, char *fname)
+    datafile_t *df, char *fname, datafiletype_t dftype)
 {
-  char          *data;
-  char          **strdata;
-  parseinfo_t   *pi;
+  char          *data = NULL;
+  char          **strdata = NULL;
+  parseinfo_t   *pi = NULL;
   long          key = -1L;
-  long          ikey;
   size_t        dataCount;
   listkey_t     lkey;
   list_t        *itemList = NULL;
   valuetype_t   vt;
+  size_t        inc = 2;
+  char          *keyString = NULL;
+  int           first = 1;
+  long          ikey;
+  char          *ikeystr = NULL;
 
   /* may be re-using the song list */
   datafileFreeInternal (df);
@@ -111,16 +117,51 @@ datafileLoad (datafilekey_t *dfkeys, size_t dfkeycount,
   dataCount = parseKeyValue (pi, data);
   strdata = parseGetData (pi);
 
-  for (size_t i = 0; i < dataCount; i += 2) {
-    if (strcmp (strdata [i], "version") == 0) {
+  switch (dftype) {
+    case DFTYPE_LIST: {
+      inc = 1;
+      df->data = listAlloc (sizeof (char *), LIST_UNORDERED, NULL, free);
+      listSetSize (df->data, dataCount);
+      break;
+    }
+    case DFTYPE_KEY_STRING:
+    case DFTYPE_KEY_LONG: {
+      inc = 2;
+      /* allocated within the loop */
+      break;
+    }
+    case DFTYPE_KEY_VAL: {
+      inc = 2;
+      df->data = vlistAlloc (KEY_STR, LIST_ORDERED,
+          stringCompare, free, free);
+      break;
+    }
+    default: {
+      break;
+    }
+  }
+
+  for (size_t i = 0; i < dataCount; i += inc) {
+    if (inc == 2 && strcmp (strdata [i], "version") == 0) {
+      df->version = atol (strdata [i + 1]);
       continue;
     }
     if (strcmp (strdata [i], "count") == 0) {
-      df->data = vlistAlloc (KEY_LONG, LIST_UNORDERED, NULL, NULL, listFree);
+      keytype_t   keytype = KEY_LONG;
+
+      if (dftype == DFTYPE_KEY_LONG) {
+        keytype = KEY_LONG;
+      }
+      if (dftype == DFTYPE_KEY_STRING) {
+        keytype = KEY_STR;
+      }
+      df->data = vlistAlloc (keytype, LIST_UNORDERED,
+          istringCompare, NULL, listFree);
       vlistSetSize (df->data, (size_t) atol (strdata [i + 1]));
       continue;
     }
-    if (strcmp (strdata [i], "KEY") == 0) {
+
+    if (dftype == DFTYPE_KEY_LONG && strcmp (strdata [i], "KEY") == 0) {
       if (key >= 0) {
         lkey.key = key;
         vlistSetData (df->data, lkey, itemList);
@@ -130,27 +171,70 @@ datafileLoad (datafilekey_t *dfkeys, size_t dfkeycount,
       itemList = vlistAlloc (KEY_LONG, LIST_ORDERED, NULL, NULL, free);
       continue;
     }
+    if (! first &&
+        dftype == DFTYPE_KEY_STRING &&
+        strcmp (keyString, strdata [i]) == 0) {
+      if (ikeystr != NULL) {
+        lkey.name = strdup (ikeystr);
+        vlistSetData (df->data, lkey, itemList);
+        ikeystr = NULL;
+      }
+      keyString = strdata [i + 1];
+      itemList = vlistAlloc (KEY_LONG, LIST_ORDERED, NULL, NULL, free);
+      continue;
+    }
 
-    /* for the moment, do a brute force search */
-    for (size_t j = 0; j < dfkeycount; ++j) {
-      if (strcmp (strdata [i], dfkeys [j].name) == 0) {
-        ikey = dfkeys [j].itemkey;
-        vt = dfkeys [j].valuetype;
+    if (dftype == DFTYPE_LIST) {
+      listSet (df->data, strdup (strdata [i]));
+    }
+    if (dftype == DFTYPE_KEY_LONG || dftype == DFTYPE_KEY_STRING) {
+      if (first && dftype == DFTYPE_KEY_STRING) {
+        keyString = strdata [i];
+        ikeystr = strdata [i + 1];
+      }
+
+      /* for the moment, do a brute force search */
+      for (size_t j = 0; j < dfkeycount; ++j) {
+        if (strcmp (strdata [i], dfkeys [j].name) == 0) {
+          ikey = dfkeys [j].itemkey;
+          vt = dfkeys [j].valuetype;
+        }
+      }
+
+      if (dftype == DFTYPE_KEY_STRING) {
+        lkey.name = strdup (strdata [i]);
+      }
+      if (dftype == DFTYPE_KEY_LONG) {
+        lkey.key = ikey;
+      }
+      if (vt == VALUE_DATA) {
+        vlistSetData (itemList, lkey, strdup (strdata [i + 1]));
+      }
+      if (vt == VALUE_LONG) {
+        vlistSetLong (itemList, lkey, atol (strdata [i + 1]));
       }
     }
-    lkey.key = ikey;
-    if (vt == VALUE_DATA) {
-      vlistSetData (itemList, lkey, strdup (strdata [i + 1]));
+    if (dftype == DFTYPE_KEY_VAL) {
+      lkey.name = strdup (strdata [i]);
+      vlistSetData (df->data, lkey, strdup (strdata [i + 1]));
+      key = -1L;
     }
-    if (vt == VALUE_LONG) {
-      vlistSetLong (itemList, lkey, atol (strdata [i + 1]));
-    }
+
+    first = 0;
   }
-  if (key >= 0) {
+
+  if (dftype == DFTYPE_KEY_LONG && key >= 0) {
     lkey.key = key;
     vlistSetData (df->data, lkey, itemList);
-    key = -1L;
   }
+  if (dftype == DFTYPE_KEY_STRING && ikeystr != NULL) {
+    lkey.name = strdup (ikeystr);
+    vlistSetData (df->data, lkey, itemList);
+  }
+  if (dftype == DFTYPE_KEY_STRING) {
+    vlistSort (df->data);
+  }
+
   parseFree (pi);
   free (data);
 }
