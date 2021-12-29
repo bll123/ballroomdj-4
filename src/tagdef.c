@@ -1053,8 +1053,6 @@ static list_t *tagdeflookup = NULL;
 void
 tagdefInit (void)
 {
-  listkey_t     lkey;
-
   assert (MAX_TAG_KEY == (sizeof (tagdefs) / sizeof (tagdef_t)));
 
   tagdefs [TAG_KEY_AFMODTIME].label = _("Audio File Date");
@@ -1094,30 +1092,27 @@ tagdefInit (void)
   tagdefs [TAG_KEY_VOLUMEADJUSTPERC].label = _("Adjustment");
   tagdefs [TAG_KEY_VOLUMEADJUSTPERC].shortLabel = _("Vol. Adj.");
 
-  tagdeflookup = vlistAlloc (KEY_STR, LIST_UNORDERED, stringCompare, NULL, NULL);
-  vlistSetSize (tagdeflookup, MAX_TAG_KEY);
+  tagdeflookup = slistAlloc (LIST_UNORDERED, stringCompare, NULL, NULL);
+  slistSetSize (tagdeflookup, MAX_TAG_KEY);
   for (size_t i = 0; i < MAX_TAG_KEY; ++i) {
     assert (tagdefs[i].initialized == TAGDEF_INITIALIZED);
-    lkey.name = tagdefs[i].name;
-    vlistSetLong (tagdeflookup, lkey, (long) i);
+    slistSetLong (tagdeflookup, tagdefs [i].name, (long) i);
   }
-  vlistSort (tagdeflookup);
+  slistSort (tagdeflookup);
 }
 
 tagdefkey_t
 tagdefGetIdx (char *keynm)
 {
-  listkey_t   lkey;
   tagdefkey_t idx;
 
-  lkey.name = keynm;
-  idx = (tagdefkey_t) vlistGetLong (tagdeflookup, lkey);
+  idx = (tagdefkey_t) slistGetLong (tagdeflookup, keynm);
   return idx;
 }
 
 void
 tagdefCleanup (void)
 {
-  vlistFree (tagdeflookup);
+  slistFree (tagdeflookup);
   tagdeflookup = NULL;
 }

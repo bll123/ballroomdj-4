@@ -23,11 +23,10 @@ dbOpen (char *fn)
   if (! initialized) {
     bdjdb = malloc (sizeof (db_t));
     assert (bdjdb != NULL);
-    bdjdb->songs = vlistAlloc (KEY_STR, LIST_UNORDERED, istringCompare,
-        free, songFree);
+    bdjdb->songs = slistAlloc (LIST_UNORDERED, istringCompare, free, songFree);
     bdjdb->count = 0L;
     dbLoad (bdjdb, fn);
-    vlistSort (bdjdb->songs);
+    slistSort (bdjdb->songs);
     initialized = 1;
   }
 }
@@ -38,7 +37,7 @@ dbClose (void)
   /* for each song in db, free the song */
   if (bdjdb != NULL) {
     if (bdjdb->songs != NULL) {
-      vlistFree (bdjdb->songs);
+      slistFree (bdjdb->songs);
     }
     free (bdjdb);
   }
@@ -66,12 +65,11 @@ dbLoad (db_t *db, char *fn)
   parseinfo_t *pi;
   size_t      songDataCount;
   long        srrn;
-  listkey_t   lkey;
 
   pi = parseInit ();
   fstr = "";
   radb = raOpen (fn, 10);
-  vlistSetSize (db->songs, raGetCount (radb));
+  slistSetSize (db->songs, raGetCount (radb));
 
   raStartBatch (radb);
 
@@ -89,8 +87,7 @@ dbLoad (db_t *db, char *fn)
     if ((long) i != srrn) {
       songSetLong (song, TAG_KEY_rrn, (long) i);
     }
-    lkey.name = strdup (fstr);
-    vlistSetData (db->songs, lkey, song);
+    slistSetData (db->songs, fstr, song);
     ++db->count;
   }
 

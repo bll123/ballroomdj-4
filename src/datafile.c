@@ -99,7 +99,6 @@ datafileLoad (datafilekey_t *dfkeys, size_t dfkeycount,
   parseinfo_t   *pi = NULL;
   long          key = -1L;
   size_t        dataCount;
-  listkey_t     lkey;
   list_t        *itemList = NULL;
   valuetype_t   vt;
   size_t        inc = 2;
@@ -111,29 +110,37 @@ datafileLoad (datafilekey_t *dfkeys, size_t dfkeycount,
   /* may be re-using the song list */
   datafileFreeInternal (df);
   df->fname = strdup (fname);
+  df->dftype = dftype;
 
   data = fileReadAll (df->fname);
   pi = parseInit ();
-  dataCount = parseKeyValue (pi, data);
+  if (dftype == DFTYPE_LIST) {
+    dataCount = parseSimple (pi, data);
+  } else {
+    dataCount = parseKeyValue (pi, data);
+  }
   strdata = parseGetData (pi);
 
   switch (dftype) {
     case DFTYPE_LIST: {
       inc = 1;
-      df->data = listAlloc (sizeof (char *), LIST_UNORDERED, NULL, free);
+      df->data = listAlloc (sizeof (char *), NULL, free);
       listSetSize (df->data, dataCount);
       break;
     }
-    case DFTYPE_KEY_STRING:
+    case DFTYPE_KEY_STRING: {
+      inc = 2;
+      df->data = slistAlloc (LIST_UNORDERED, istringCompare, free, listFree);
+      break;
+    }
     case DFTYPE_KEY_LONG: {
       inc = 2;
-      /* allocated within the loop */
+      df->data = llistAlloc (LIST_UNORDERED, listFree);
       break;
     }
     case DFTYPE_KEY_VAL: {
       inc = 2;
-      df->data = vlistAlloc (KEY_STR, LIST_ORDERED,
-          stringCompare, free, free);
+      df->data = llistAlloc (LIST_ORDERED, free);
       break;
     }
     default: {
@@ -147,40 +154,34 @@ datafileLoad (datafilekey_t *dfkeys, size_t dfkeycount,
       continue;
     }
     if (strcmp (strdata [i], "count") == 0) {
-      keytype_t   keytype = KEY_LONG;
-
       if (dftype == DFTYPE_KEY_LONG) {
-        keytype = KEY_LONG;
+        llistSetSize (df->data, (size_t) atol (strdata [i + 1]));
       }
       if (dftype == DFTYPE_KEY_STRING) {
-        keytype = KEY_STR;
+        slistSetSize (df->data, (size_t) atol (strdata [i + 1]));
       }
-      df->data = vlistAlloc (keytype, LIST_UNORDERED,
-          istringCompare, NULL, listFree);
-      vlistSetSize (df->data, (size_t) atol (strdata [i + 1]));
       continue;
     }
 
-    if (dftype == DFTYPE_KEY_LONG && strcmp (strdata [i], "KEY") == 0) {
+    if (dftype == DFTYPE_KEY_LONG &&
+        strcmp (strdata [i], "KEY") == 0) {
       if (key >= 0) {
-        lkey.key = key;
-        vlistSetData (df->data, lkey, itemList);
+        llistSetData (df->data, key, itemList);
         key = -1L;
       }
       key = atol (strdata [i + 1]);
-      itemList = vlistAlloc (KEY_LONG, LIST_ORDERED, NULL, NULL, free);
+      itemList = llistAlloc (LIST_ORDERED, free);
       continue;
     }
     if (! first &&
         dftype == DFTYPE_KEY_STRING &&
         strcmp (keyString, strdata [i]) == 0) {
       if (ikeystr != NULL) {
-        lkey.name = strdup (ikeystr);
-        vlistSetData (df->data, lkey, itemList);
+        slistSetData (df->data, ikeystr, itemList);
         ikeystr = NULL;
       }
       keyString = strdata [i + 1];
-      itemList = vlistAlloc (KEY_LONG, LIST_ORDERED, NULL, NULL, free);
+      itemList = slistAlloc (LIST_ORDERED, istringCompare, free, free);
       continue;
     }
 
@@ -202,21 +203,24 @@ datafileLoad (datafilekey_t *dfkeys, size_t dfkeycount,
       }
 
       if (dftype == DFTYPE_KEY_STRING) {
-        lkey.name = strdup (strdata [i]);
+        if (vt == VALUE_DATA) {
+          slistSetData (itemList, strdata [i], strdup (strdata [i + 1]));
+        }
+        if (vt == VALUE_LONG) {
+          slistSetLong (itemList, strdata [i], atol (strdata [i + 1]));
+        }
       }
       if (dftype == DFTYPE_KEY_LONG) {
-        lkey.key = ikey;
-      }
-      if (vt == VALUE_DATA) {
-        vlistSetData (itemList, lkey, strdup (strdata [i + 1]));
-      }
-      if (vt == VALUE_LONG) {
-        vlistSetLong (itemList, lkey, atol (strdata [i + 1]));
+        if (vt == VALUE_DATA) {
+          llistSetData (itemList, ikey, strdup (strdata [i + 1]));
+        }
+        if (vt == VALUE_LONG) {
+          llistSetLong (itemList, ikey, atol (strdata [i + 1]));
+        }
       }
     }
     if (dftype == DFTYPE_KEY_VAL) {
-      lkey.name = strdup (strdata [i]);
-      vlistSetData (df->data, lkey, strdup (strdata [i + 1]));
+      slistSetData (df->data, strdata [i], strdup (strdata [i + 1]));
       key = -1L;
     }
 
@@ -224,15 +228,13 @@ datafileLoad (datafilekey_t *dfkeys, size_t dfkeycount,
   }
 
   if (dftype == DFTYPE_KEY_LONG && key >= 0) {
-    lkey.key = key;
-    vlistSetData (df->data, lkey, itemList);
+    llistSetData (df->data, key, itemList);
   }
   if (dftype == DFTYPE_KEY_STRING && ikeystr != NULL) {
-    lkey.name = strdup (ikeystr);
-    vlistSetData (df->data, lkey, itemList);
+    slistSetData (df->data, ikeystr, itemList);
   }
   if (dftype == DFTYPE_KEY_STRING) {
-    vlistSort (df->data);
+    slistSort (df->data);
   }
 
   parseFree (pi);
@@ -299,7 +301,24 @@ datafileFreeInternal (datafile_t *df)
       df->fname = NULL;
     }
     if (df->data != NULL) {
-      vlistFree (df->data);
+      switch (df->dftype) {
+        case DFTYPE_LIST: {
+          listFree (df->data);
+          break;
+        }
+        case DFTYPE_KEY_STRING: {
+          slistFree (df->data);
+          break;
+        }
+        case DFTYPE_KEY_VAL:
+        case DFTYPE_KEY_LONG: {
+          llistFree (df->data);
+          break;
+        }
+        default: {
+          break;
+        }
+      }
       df->data = NULL;
     }
   }

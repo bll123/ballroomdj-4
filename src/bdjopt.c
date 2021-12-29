@@ -308,17 +308,15 @@ void
 bdjoptInit (void)
 {
   char      path [MAXPATHLEN];
-  listkey_t lkey;
 
-  bdjoptlookup = vlistAlloc (KEY_STR, LIST_UNORDERED, stringCompare, NULL, NULL);
-  vlistSetSize (bdjoptlookup, OPT_MAX);
+  bdjoptlookup = slistAlloc (LIST_UNORDERED, stringCompare, NULL, NULL);
+  slistSetSize (bdjoptlookup, OPT_MAX);
   for (size_t i = 0; i < OPT_MAX; ++i) {
-    lkey.name = bdjoptdefs[i].optname;
-    vlistSetLong (bdjoptlookup, lkey, (long) i);
+    slistSetLong (bdjoptlookup, bdjoptdefs [i].optname, (long) i);
   }
-  vlistSort (bdjoptlookup);
+  slistSort (bdjoptlookup);
 
-  bdjopt = vlistAlloc (KEY_LONG, LIST_ORDERED, stringCompare, NULL, free);
+  bdjopt = llistAlloc (LIST_ORDERED, free);
 
   /* global */
   strlcpy (path, "data/", MAXPATHLEN);
@@ -349,7 +347,8 @@ void
 bdjoptFree (void)
 {
   if (bdjopt != NULL) {
-    free (bdjopt);
+    llistFree (bdjopt);
+    bdjopt = NULL;
   }
 }
 
@@ -358,11 +357,9 @@ bdjoptFree (void)
 static bdjoptkey_t
 bdjoptGetIdx (char *keynm)
 {
-  listkey_t   lkey;
   bdjoptkey_t idx;
 
-  lkey.name = keynm;
-  idx = (bdjoptkey_t) vlistGetLong (bdjoptlookup, lkey);
+  idx = (bdjoptkey_t) slistGetLong (bdjoptlookup, keynm);
   return idx;
 }
 
@@ -373,7 +370,6 @@ bdjoptLoad (char *path)
   parseinfo_t   *pi;
   char          **strdata;
   size_t        count;
-  listkey_t     lkey;
 
 
   if (lsysvars [SVL_BDJIDX] != 0L) {
@@ -393,22 +389,21 @@ bdjoptLoad (char *path)
       /* unused option key, ignore for now */
       continue;
     }
-    lkey.key = idx;
 
     switch (bdjoptdefs [idx].valuetype) {
       case VALUE_DOUBLE:
       {
-        vlistSetDouble (bdjopt, lkey, atof (strdata [i+1]));
+        llistSetDouble (bdjopt, idx, atof (strdata [i+1]));
         break;
       }
       case VALUE_LONG:
       {
-        vlistSetLong (bdjopt, lkey, atol (strdata [i+1]));
+        llistSetLong (bdjopt, idx, atol (strdata [i+1]));
         break;
       }
       case VALUE_DATA:
       {
-        vlistSetData (bdjopt, lkey, strdup (strdata [i+1]));
+        llistSetData (bdjopt, idx, strdup (strdata [i+1]));
         break;
       }
     }

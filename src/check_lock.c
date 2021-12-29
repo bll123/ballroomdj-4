@@ -24,18 +24,18 @@ START_TEST(lock_acquire_release)
   pid = getpid ();
   unlink (LOCK_FN);
   rc = lockAcquirePid (LOCK_FN, pid);
-  ck_assert (rc >= 0);
+  ck_assert_int_gt (rc, 0);
   rc = stat (LOCK_FN, &statbuf);
-  ck_assert (rc == 0);
-  ck_assert (statbuf.st_size > 0);
+  ck_assert_int_eq (rc, 0);
+  ck_assert_int_gt (statbuf.st_size, 0);
   fh = fopen (LOCK_FN, "r");
   rc = fscanf (fh, PID_FMT, &fpid);
   fclose (fh);
-  ck_assert (fpid == pid);
+  ck_assert_int_eq (fpid, pid);
   rc = lockReleasePid (LOCK_FN, pid);
-  ck_assert (rc == 0);
+  ck_assert_int_eq (rc, 0);
   rc = stat (LOCK_FN, &statbuf);
-  ck_assert (rc < 0);
+  ck_assert_int_lt (rc, 0);
 }
 END_TEST
 
@@ -47,11 +47,11 @@ START_TEST(lock_already)
   pid = getpid ();
   unlink (LOCK_FN);
   rc = lockAcquirePid (LOCK_FN, pid);
-  ck_assert (rc >= 0);
+  ck_assert_int_gt (rc, 0);
   rc = lockAcquirePid (LOCK_FN, pid);
-  ck_assert (rc < 0);
+  ck_assert_int_lt (rc, 0);
   rc = lockReleasePid (LOCK_FN, pid);
-  ck_assert (rc == 0);
+  ck_assert_int_eq (rc, 0);
 }
 END_TEST
 
@@ -63,11 +63,11 @@ START_TEST(lock_other_dead)
   pid = getpid ();
   unlink (LOCK_FN);
   rc = lockAcquirePid (LOCK_FN, 5);
-  ck_assert (rc >= 0);
+  ck_assert_int_gt (rc, 0);
   rc = lockAcquirePid (LOCK_FN, pid);
-  ck_assert (rc >= 0);
+  ck_assert_int_gt (rc, 0);
   rc = lockReleasePid (LOCK_FN, pid);
-  ck_assert (rc == 0);
+  ck_assert_int_eq (rc, 0);
 }
 END_TEST
 
@@ -79,11 +79,11 @@ START_TEST(lock_unlock_fail)
   pid = getpid ();
   unlink (LOCK_FN);
   rc = lockAcquirePid (LOCK_FN, pid);
-  ck_assert (rc >= 0);
+  ck_assert_int_gt (rc, 0);
   rc = lockReleasePid (LOCK_FN, 5);
-  ck_assert (rc < 0);
+  ck_assert_int_lt (rc, 0);
   rc = lockReleasePid (LOCK_FN, pid);
-  ck_assert (rc == 0);
+  ck_assert_int_eq (rc, 0);
 }
 END_TEST
 

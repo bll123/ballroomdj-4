@@ -246,20 +246,19 @@ vlcAudioDevList (vlcData_t *vlcData)
   libvlc_audio_output_device_t  *adevlist;
   libvlc_audio_output_device_t  *adevlistptr;
   list_t                        *devlist;
-  listkey_t                     lkey;
 
   if (vlcData == NULL || vlcData->inst == NULL || vlcData->mp == NULL ||
       strcmp (vlcData->version, "2.2.0") < 0) {
     return NULL;
   }
 
-  devlist = vlistAlloc (KEY_STR, LIST_UNORDERED, stringCompare, free, free);
+  devlist = slistAlloc (LIST_UNORDERED, stringCompare, free, free);
 
   adevlist = libvlc_audio_output_device_enum (vlcData->mp);
   adevlistptr = adevlist;
   while (adevlistptr != (libvlc_audio_output_device_t *) NULL) {
-    lkey.name = strdup (adevlistptr->psz_device);
-    vlistSetData (devlist, lkey, strdup (adevlistptr->psz_description));
+    slistSetData (devlist, adevlistptr->psz_device,
+        strdup (adevlistptr->psz_description));
     adevlistptr = adevlistptr->p_next;
   }
 

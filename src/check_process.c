@@ -16,9 +16,9 @@ START_TEST(process_exists)
 
   pid = getpid ();
   int rc = processExists (pid);
-  ck_assert (rc == 0);
+  ck_assert_int_eq (rc, 0);
   rc = processExists (90876);
-  ck_assert (rc < 0);
+  ck_assert_int_lt (rc, 0);
 }
 END_TEST
 

@@ -17,7 +17,7 @@ START_TEST(msleep_chk)
   tm_s = time (NULL);
   msleep (2000);
   tm_e = time (NULL);
-  ck_assert (tm_e - tm_s >= 2);
+  ck_assert_int_ge (tm_e - tm_s, 2);
 }
 END_TEST
 
@@ -36,7 +36,7 @@ START_TEST(milli_start_end)
   if (d < 0) {
     d = - d;
   }
-  ck_assert (d < 100);
+  ck_assert_int_lt (d, 100);
 }
 END_TEST
 
@@ -45,7 +45,7 @@ START_TEST(dstamp_chk)
   char        buff [80];
 
   dstamp (buff, sizeof (buff));
-  ck_assert (strlen (buff) == 23);
+  ck_assert_int_eq (strlen (buff), 23);
 }
 END_TEST
 

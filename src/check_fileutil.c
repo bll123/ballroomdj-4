@@ -68,12 +68,12 @@ START_TEST(file_exists)
   unlink (fn);
   fn = "tmp/abc.txt";
   fh = fopen (fn, "w");
-  ck_assert (fh != NULL);
+  ck_assert_ptr_nonnull (fh);
   fclose (fh);
   rc = fileExists (fn);
-  ck_assert (rc != 0);
+  ck_assert_int_ne (rc, 0);
   rc = fileExists ("tmp/def.txt");
-  ck_assert (rc == 0);
+  ck_assert_int_eq (rc, 0);
   unlink (fn);
 }
 END_TEST
@@ -88,14 +88,14 @@ START_TEST(file_copy)
   unlink (ofn);
   unlink (nfn);
   fh = fopen (ofn, "w");
-  ck_assert (fh != NULL);
+  ck_assert_ptr_nonnull (fh);
   fclose (fh);
   rc = fileCopy (ofn, nfn);
-  ck_assert (rc == 0);
+  ck_assert_int_eq (rc, 0);
   rc = fileExists (ofn);
-  ck_assert (rc != 0);
+  ck_assert_int_ne (rc, 0);
   rc = fileExists (nfn);
-  ck_assert (rc != 0);
+  ck_assert_int_ne (rc, 0);
   unlink (ofn);
   unlink (nfn);
 }
@@ -111,14 +111,14 @@ START_TEST(file_move)
   unlink (ofn);
   unlink (nfn);
   fh = fopen (ofn, "w");
-  ck_assert (fh != NULL);
+  ck_assert_ptr_nonnull (fh);
   fclose (fh);
   rc = fileMove (ofn, nfn);
-  ck_assert (rc == 0);
+  ck_assert_int_eq (rc, 0);
   rc = fileExists (ofn);
-  ck_assert (rc == 0);
+  ck_assert_int_eq (rc, 0);
   rc = fileExists (nfn);
-  ck_assert (rc != 0);
+  ck_assert_int_ne (rc, 0);
   unlink (ofn);
   unlink (nfn);
 }
@@ -145,125 +145,125 @@ START_TEST(file_make_backups)
   unlink (ofn3);
 
   fh = fopen (ofn, "w");
-  ck_assert (fh != NULL);
+  ck_assert_ptr_nonnull (fh);
   fprintf (fh, "1\n");
   fclose (fh);
 
   rc = fileExists (ofn);
-  ck_assert (rc != 0);
+  ck_assert_int_ne (rc, 0);
   rc = fileExists (ofn0a);
-  ck_assert (rc == 0);
+  ck_assert_int_eq (rc, 0);
   rc = fileExists (ofn0);
-  ck_assert (rc == 0);
+  ck_assert_int_eq (rc, 0);
   rc = fileExists (ofn1);
-  ck_assert (rc == 0);
+  ck_assert_int_eq (rc, 0);
   rc = fileExists (ofn2);
-  ck_assert (rc == 0);
+  ck_assert_int_eq (rc, 0);
   rc = fileExists (ofn3);
-  ck_assert (rc == 0);
+  ck_assert_int_eq (rc, 0);
 
   makeBackups (ofn, 2);
 
   rc = fileExists (ofn);
-  ck_assert (rc != 0);
+  ck_assert_int_ne (rc, 0);
   rc = fileExists (ofn0a);
-  ck_assert (rc == 0);
+  ck_assert_int_eq (rc, 0);
   rc = fileExists (ofn0);
-  ck_assert (rc == 0);
+  ck_assert_int_eq (rc, 0);
   rc = fileExists (ofn1);
-  ck_assert (rc != 0);
+  ck_assert_int_ne (rc, 0);
   rc = fileExists (ofn2);
-  ck_assert (rc == 0);
+  ck_assert_int_eq (rc, 0);
   rc = fileExists (ofn3);
-  ck_assert (rc == 0);
+  ck_assert_int_eq (rc, 0);
 
   fh = fopen (ofn, "r");
-  ck_assert (fh != NULL);
+  ck_assert_ptr_nonnull (fh);
   r = fgets (buff, 2, fh);
   fclose (fh);
-  ck_assert (strcmp (buff, "1") == 0);
+  ck_assert_str_eq (buff, "1");
 
   fh = fopen (ofn1, "r");
-  ck_assert (fh != NULL);
+  ck_assert_ptr_nonnull (fh);
   r = fgets (buff, 2, fh);
   fclose (fh);
-  ck_assert (strcmp (buff, "1") == 0);
+  ck_assert_str_eq (buff, "1");
 
   fh = fopen (ofn, "w");
-  ck_assert (fh != NULL);
+  ck_assert_ptr_nonnull (fh);
   fprintf (fh, "2\n");
   fclose (fh);
 
   makeBackups (ofn, 2);
 
   rc = fileExists (ofn);
-  ck_assert (rc != 0);
+  ck_assert_int_ne (rc, 0);
   rc = fileExists (ofn0a);
-  ck_assert (rc == 0);
+  ck_assert_int_eq (rc, 0);
   rc = fileExists (ofn0);
-  ck_assert (rc == 0);
+  ck_assert_int_eq (rc, 0);
   rc = fileExists (ofn1);
-  ck_assert (rc != 0);
+  ck_assert_int_ne (rc, 0);
   rc = fileExists (ofn2);
-  ck_assert (rc != 0);
+  ck_assert_int_ne (rc, 0);
   rc = fileExists (ofn3);
-  ck_assert (rc == 0);
+  ck_assert_int_eq (rc, 0);
 
   fh = fopen (ofn, "r");
-  ck_assert (fh != NULL);
+  ck_assert_ptr_nonnull (fh);
   r = fgets (buff, 2, fh);
   fclose (fh);
-  ck_assert (strcmp (buff, "2") == 0);
+  ck_assert_str_eq (buff, "2");
 
   fh = fopen (ofn1, "r");
-  ck_assert (fh != NULL);
+  ck_assert_ptr_nonnull (fh);
   r = fgets (buff, 2, fh);
   fclose (fh);
-  ck_assert (strcmp (buff, "2") == 0);
+  ck_assert_str_eq (buff, "2");
 
   fh = fopen (ofn2, "r");
-  ck_assert (fh != NULL);
+  ck_assert_ptr_nonnull (fh);
   r = fgets (buff, 2, fh);
   fclose (fh);
-  ck_assert (strcmp (buff, "1") == 0);
+  ck_assert_str_eq (buff, "1");
 
   fh = fopen (ofn, "w");
-  ck_assert (fh != NULL);
+  ck_assert_ptr_nonnull (fh);
   fprintf (fh, "3\n");
   fclose (fh);
 
   makeBackups (ofn, 2);
 
   rc = fileExists (ofn);
-  ck_assert (rc != 0);
+  ck_assert_int_ne (rc, 0);
   rc = fileExists (ofn0a);
-  ck_assert (rc == 0);
+  ck_assert_int_eq (rc, 0);
   rc = fileExists (ofn0);
-  ck_assert (rc == 0);
+  ck_assert_int_eq (rc, 0);
   rc = fileExists (ofn1);
-  ck_assert (rc != 0);
+  ck_assert_int_ne (rc, 0);
   rc = fileExists (ofn2);
-  ck_assert (rc != 0);
+  ck_assert_int_ne (rc, 0);
   rc = fileExists (ofn3);
-  ck_assert (rc == 0);
+  ck_assert_int_eq (rc, 0);
 
   fh = fopen (ofn, "r");
-  ck_assert (fh != NULL);
+  ck_assert_ptr_nonnull (fh);
   r = fgets (buff, 2, fh);
   fclose (fh);
-  ck_assert (strcmp (buff, "3") == 0);
+  ck_assert_str_eq (buff, "3");
 
   fh = fopen (ofn1, "r");
-  ck_assert (fh != NULL);
+  ck_assert_ptr_nonnull (fh);
   r = fgets (buff, 2, fh);
   fclose (fh);
-  ck_assert (strcmp (buff, "3") == 0);
+  ck_assert_str_eq (buff, "3");
 
   fh = fopen (ofn2, "r");
-  ck_assert (fh != NULL);
+  ck_assert_ptr_nonnull (fh);
   r = fgets (buff, 2, fh);
   fclose (fh);
-  ck_assert (strcmp (buff, "2") == 0);
+  ck_assert_str_eq (buff, "2");
 
   unlink (ofn);
   unlink (ofn0a);
@@ -282,12 +282,12 @@ START_TEST(file_delete)
   unlink (fn);
   fn = "tmp/abc.txt";
   fh = fopen (fn, "w");
-  ck_assert (fh != NULL);
+  ck_assert_ptr_nonnull (fh);
   fclose (fh);
   rc = fileDelete (fn);
-  ck_assert (rc == 0);
+  ck_assert_int_eq (rc, 0);
   rc = fileDelete ("tmp/def.txt");
-  ck_assert (rc < 0);
+  ck_assert_int_lt (rc, 0);
   unlink (fn);
 }
 END_TEST
@@ -308,16 +308,16 @@ START_TEST(file_readall)
   fclose (fh);
   /* one byte file */
   data = fileReadAll (fn);
-  ck_assert (strlen (data) == 1);
-  ck_assert (memcmp (data, "a", 1) == 0);
+  ck_assert_int_eq (strlen (data), 1);
+  ck_assert_mem_eq (data, "a", 1);
 
   char *tdata = "lkjsdflkdjsfljsdfljsdfd\n";
   fh = fopen (fn, "w");
   fprintf (fh, "%s", tdata);
   fclose (fh);
   data = fileReadAll (fn);
-  ck_assert (strlen (data) == strlen (tdata));
-  ck_assert (memcmp (data, tdata, strlen (tdata)) == 0);
+  ck_assert_int_eq (strlen (data), strlen (tdata));
+  ck_assert_mem_eq (data, tdata, strlen (tdata));
 }
 END_TEST
 
@@ -328,8 +328,8 @@ START_TEST(file_winpath)
 
   from = "/tmp/abc.txt";
   fileConvWinPath (from, to, MAXPATHLEN);
-  ck_assert (strcmp (to, "\\tmp\\abc.txt") == 0);
-  ck_assert (strlen (from) == strlen (to));
+  ck_assert_str_eq (to, "\\tmp\\abc.txt");
+  ck_assert_int_eq (strlen (from), strlen (to));
 }
 END_TEST
 

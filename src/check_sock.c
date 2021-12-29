@@ -66,8 +66,8 @@ START_TEST(sock_server_create)
   int         err;
 
   Sock_t s = sockServer (32700, &err);
-  ck_assert (s > 2);
-  ck_assert (! socketInvalid (s));
+  ck_assert_int_gt (s, 2);
+  ck_assert_int_eq (socketInvalid (s), 0);
   sockClose (s);
 }
 END_TEST
@@ -79,11 +79,11 @@ START_TEST(sock_server_create_check)
 
   si = NULL;
   Sock_t s = sockServer (32701, &err);
-  ck_assert (s > 2);
-  ck_assert (! socketInvalid (s));
+  ck_assert_int_gt (s, 2);
+  ck_assert_int_eq (socketInvalid (s), 0);
   si = sockAddCheck (si, s);
-  ck_assert (si->count == 1);
-  ck_assert (si->socklist[0] == s);
+  ck_assert_int_eq (si->count, 1);
+  ck_assert_int_eq (si->socklist[0], s);
   sockRemoveCheck (si, s);
   sockFreeCheck (si);
   sockClose (s);
@@ -98,11 +98,11 @@ START_TEST(sock_server_check)
 
   si = NULL;
   Sock_t s = sockServer (32702, &err);
-  ck_assert (s > 2);
-  ck_assert (! socketInvalid (s));
+  ck_assert_int_gt (s, 2);
+  ck_assert_int_eq (socketInvalid (s), 0);
   si = sockAddCheck (si, s);
   rc = sockCheck (si);
-  ck_assert (rc == 0);
+  ck_assert_int_eq (rc, 0);
   sockRemoveCheck (si, s);
   sockFreeCheck (si);
   sockClose (s);
@@ -209,16 +209,16 @@ START_TEST(sock_connect_accept)
 #endif
 
   l = sockServer (32703, &err);
-  ck_assert (l > 2);
-  ck_assert (! socketInvalid (l));
+  ck_assert_int_gt (l, 2);
+  ck_assert_int_eq (socketInvalid (l), 0);
   r = sockAccept (l, &err);
-  ck_assert (! socketInvalid (r));
-  ck_assert (l != r);
+  ck_assert_int_eq (socketInvalid (r), 0);
+  ck_assert_int_ne (l, r);
 
   msleep (200);
   sockClose (r);
   sockClose (l);
-  ck_assert (gthreadrc == 0);
+  ck_assert_int_eq (gthreadrc, 0);
 #if _lib_pthread_create
   pthread_join (thread, NULL);
 #endif
@@ -242,8 +242,8 @@ START_TEST(sock_check_connect_accept)
 #endif
 
   l = sockServer (32704, &err);
-  ck_assert (l > 2);
-  ck_assert (! socketInvalid (l));
+  ck_assert_int_gt (l, 2);
+  ck_assert_int_eq (socketInvalid (l), 0);
   si = sockAddCheck (si, l);
   rc = sockCheck (si);
   int count = 0;
@@ -252,16 +252,16 @@ START_TEST(sock_check_connect_accept)
     rc = sockCheck (si);
     ++count;
   }
-  ck_assert (rc == l);
+  ck_assert_int_eq (rc, l);
   r = sockAccept (l, &err);
-  ck_assert (! socketInvalid (r));
-  ck_assert (l != r);
+  ck_assert_int_eq (socketInvalid (r), 0);
+  ck_assert_int_ne (l, r);
   msleep (200);
   sockClose (r);
   sockRemoveCheck (si, l);
   sockFreeCheck (si);
   sockClose (l);
-  ck_assert (gthreadrc == 0);
+  ck_assert_int_eq (gthreadrc, 0);
 #if _lib_pthread_create
   pthread_join (thread, NULL);
 #endif
@@ -285,8 +285,8 @@ START_TEST(sock_write)
 #endif
 
   l = sockServer (32705, &err);
-  ck_assert (l > 2);
-  ck_assert (! socketInvalid (l));
+  ck_assert_int_gt (l, 2);
+  ck_assert_int_eq (socketInvalid (l), 0);
   si = sockAddCheck (si, l);
   rc = sockCheck (si);
   int count = 0;
@@ -295,16 +295,16 @@ START_TEST(sock_write)
     rc = sockCheck (si);
     ++count;
   }
-  ck_assert (rc == l);
+  ck_assert_int_eq (rc, l);
   r = sockAccept (l, &err);
-  ck_assert (! socketInvalid (r));
-  ck_assert (l != r);
+  ck_assert_int_eq (socketInvalid (r), 0);
+  ck_assert_int_ne (l, r);
   msleep (200);
   sockClose (r);
   sockRemoveCheck (si, l);
   sockFreeCheck (si);
   sockClose (l);
-  ck_assert (gthreadrc == 0);
+  ck_assert_int_eq (gthreadrc, 0);
 #if _lib_pthread_create
   pthread_join (thread, NULL);
 #endif
@@ -333,8 +333,8 @@ START_TEST(sock_write_read)
   memset (datab, 'a', 4096);
 
   l = sockServer (32706, &err);
-  ck_assert (l > 2);
-  ck_assert (! socketInvalid (l));
+  ck_assert_int_gt (l, 2);
+  ck_assert_int_eq (socketInvalid (l), 0);
   si = sockAddCheck (si, l);
   rc = sockCheck (si);
   int count = 0;
@@ -343,27 +343,27 @@ START_TEST(sock_write_read)
     rc = sockCheck (si);
     ++count;
   }
-  ck_assert (rc == l);
+  ck_assert_int_eq (rc, l);
   r = sockAccept (l, &err);
-  ck_assert (! socketInvalid (r));
-  ck_assert (l != r);
+  ck_assert_int_eq (socketInvalid (r), 0);
+  ck_assert_int_ne (l, r);
 
   msleep (30); /* give time for client to write */
 
   ndata = sockRead (r, &len);
-  ck_assert (ndata != NULL);
+  ck_assert_ptr_nonnull (ndata);
   if (ndata != NULL) {
-    ck_assert (strlen (ndata) + 1 == len);
-    ck_assert (strlen (ndata) == strlen (data));
-    ck_assert (strcmp (ndata, data) == 0);
+    ck_assert_int_eq (strlen (ndata) + 1, len);
+    ck_assert_int_eq (strlen (ndata), strlen (data));
+    ck_assert_str_eq (ndata, data);
     free (ndata);
   }
 
   ndata = sockRead (r, &len);
-  ck_assert (ndata != NULL);
-  ck_assert (len == 4096);
+  ck_assert_ptr_nonnull (ndata);
+  ck_assert_int_eq (len, 4096);
   if (ndata != NULL) {
-    ck_assert (memcmp (ndata, datab, 4096) == 0);
+    ck_assert_mem_eq (ndata, datab, 4096);
     free (ndata);
   }
   msleep (200);
@@ -371,7 +371,7 @@ START_TEST(sock_write_read)
   sockRemoveCheck (si, l);
   sockFreeCheck (si);
   sockClose (l);
-  ck_assert (gthreadrc == 0);
+  ck_assert_int_eq (gthreadrc, 0);
 #if _lib_pthread_create
   pthread_join (thread, NULL);
 #endif
@@ -399,8 +399,8 @@ START_TEST(sock_write_read_buff)
 #endif
 
   l = sockServer (32707, &err);
-  ck_assert (l > 2);
-  ck_assert (! socketInvalid (l));
+  ck_assert_int_gt (l, 2);
+  ck_assert_int_eq (socketInvalid (l), 0);
   si = sockAddCheck (si, l);
   rc = sockCheck (si);
   int count = 0;
@@ -409,26 +409,26 @@ START_TEST(sock_write_read_buff)
     rc = sockCheck (si);
     ++count;
   }
-  ck_assert (rc == l);
+  ck_assert_int_eq (rc, l);
   r = sockAccept (l, &err);
-  ck_assert (! socketInvalid (r));
-  ck_assert (l != r);
+  ck_assert_int_eq (socketInvalid (r), 0);
+  ck_assert_int_ne (l, r);
 
   msleep (30); /* time for client to write */
 
   ndata = sockReadBuff (r, &len, buff, sizeof(buff));
-  ck_assert (ndata != NULL);
+  ck_assert_ptr_nonnull (ndata);
   if (ndata != NULL) {
-    ck_assert (strlen (ndata) + 1 == len);
-    ck_assert (strlen (ndata) == strlen (data));
-    ck_assert (strcmp (ndata, data) == 0);
+    ck_assert_int_eq (strlen (ndata) + 1, len);
+    ck_assert_int_eq (strlen (ndata), strlen (data));
+    ck_assert_str_eq (ndata, data);
   }
   msleep (200);
   sockClose (r);
   sockRemoveCheck (si, l);
   sockFreeCheck (si);
   sockClose (l);
-  ck_assert (gthreadrc == 0);
+  ck_assert_int_eq (gthreadrc, 0);
 #if _lib_pthread_create
   pthread_join (thread, NULL);
 #endif
@@ -455,8 +455,8 @@ START_TEST(sock_write_read_buff_fail)
 #endif
 
   l = sockServer (32708, &err);
-  ck_assert (l > 2);
-  ck_assert (! socketInvalid (l));
+  ck_assert_int_gt (l, 2);
+  ck_assert_int_eq (socketInvalid (l), 0);
   si = sockAddCheck (si, l);
   rc = sockCheck (si);
   int count = 0;
@@ -465,20 +465,20 @@ START_TEST(sock_write_read_buff_fail)
     rc = sockCheck (si);
     ++count;
   }
-  ck_assert (rc == l);
+  ck_assert_int_eq (rc, l);
   r = sockAccept (l, &err);
-  ck_assert (! socketInvalid (r));
-  ck_assert (l != r);
+  ck_assert_int_eq  (socketInvalid (r), 0);
+  ck_assert_int_ne (l, r);
 
   ndata = sockReadBuff (r, &len, buff, sizeof(buff));
-  ck_assert (ndata == NULL);
-  ck_assert (len == 0);
+  ck_assert_ptr_null (ndata);
+  ck_assert_int_eq (len, 0);
   msleep (200);
   sockClose (r);
   sockRemoveCheck (si, l);
   sockFreeCheck (si);
   sockClose (l);
-  ck_assert (gthreadrc == 0);
+  ck_assert_int_eq (gthreadrc, 0);
 #if _lib_pthread_create
   pthread_join (thread, NULL);
 #endif
@@ -507,8 +507,8 @@ START_TEST(sock_write_check_read)
   memset (datab, 'a', 4096);
 
   l = sockServer (32709, &err);
-  ck_assert (l > 2);
-  ck_assert (! socketInvalid (l));
+  ck_assert_int_gt (l, 2);
+  ck_assert_int_eq (socketInvalid (l), 0);
   si = sockAddCheck (si, l);
   rc = sockCheck (si);
   int count = 0;
@@ -517,10 +517,10 @@ START_TEST(sock_write_check_read)
     rc = sockCheck (si);
     ++count;
   }
-  ck_assert (rc == l);
+  ck_assert_int_eq (rc, l);
   r = sockAccept (l, &err);
-  ck_assert (! socketInvalid (r));
-  ck_assert (l != r);
+  ck_assert_int_eq (socketInvalid (r), 0);
+  ck_assert_int_ne (l, r);
   si = sockAddCheck (si, r);
 
   rc = sockCheck (si);
@@ -530,21 +530,21 @@ START_TEST(sock_write_check_read)
     rc = sockCheck (si);
     ++count;
   }
-  ck_assert (rc == r);
+  ck_assert_int_eq (rc, r);
   ndata = sockRead (r, &len);
-  ck_assert (ndata != NULL);
+  ck_assert_ptr_nonnull (ndata);
   if (ndata != NULL) {
-    ck_assert (strlen (ndata) + 1 == len);
-    ck_assert (strlen (ndata) == strlen (data));
-    ck_assert (strcmp (ndata, data) == 0);
+    ck_assert_int_eq (strlen (ndata) + 1, len);
+    ck_assert_int_eq (strlen (ndata), strlen (data));
+    ck_assert_str_eq (ndata, data);
     free (ndata);
   }
 
   ndata = sockRead (r, &len);
-  ck_assert (ndata != NULL);
+  ck_assert_ptr_nonnull (ndata);
   if (ndata != NULL) {
-    ck_assert (len == 4096);
-    ck_assert (memcmp (ndata, datab, 4096) == 0);
+    ck_assert_int_eq (len, 4096);
+    ck_assert_mem_eq (ndata, datab, 4096);
     free (ndata);
   }
   msleep (200);
@@ -553,7 +553,7 @@ START_TEST(sock_write_check_read)
   sockRemoveCheck (si, r);
   sockFreeCheck (si);
   sockClose (l);
-  ck_assert (gthreadrc == 0);
+  ck_assert_int_eq (gthreadrc, 0);
 #if _lib_pthread_create
   pthread_join (thread, NULL);
 #endif
@@ -579,8 +579,8 @@ START_TEST(sock_close)
 #endif
 
   l = sockServer (32710, &err);
-  ck_assert (l > 2);
-  ck_assert (! socketInvalid (l));
+  ck_assert_int_gt (l, 2);
+  ck_assert_int_eq (socketInvalid (l), 0);
 
   si = sockAddCheck (si, l);
   rc = sockCheck (si);
@@ -590,10 +590,10 @@ START_TEST(sock_close)
     rc = sockCheck (si);
     ++count;
   }
-  ck_assert (rc == l);
+  ck_assert_int_eq (rc, l);
   r = sockAccept (l, &err);
-  ck_assert (! socketInvalid (r));
-  ck_assert (l != r);
+  ck_assert_int_eq (socketInvalid (r), 0);
+  ck_assert_int_ne (l, r);
   si = sockAddCheck (si, r);
 
   msleep (20); /* a delay to allow client to close */
@@ -607,7 +607,7 @@ START_TEST(sock_close)
   }
   if (rc > 0) {
     ndata = sockRead (r, &len);
-    ck_assert (ndata == NULL);
+    ck_assert_ptr_null (ndata);
     if (ndata != NULL) {
       free (ndata);
     }
@@ -618,7 +618,7 @@ START_TEST(sock_close)
   sockRemoveCheck (si, r);
   sockFreeCheck (si);
   sockClose (l);
-  ck_assert (gthreadrc == 0);
+  ck_assert_int_eq (gthreadrc, 0);
 #if _lib_pthread_create
   pthread_join (thread, NULL);
 #endif
@@ -646,8 +646,8 @@ START_TEST(sock_write_close)
   memset (datab, 'a', 4096);
 
   l = sockServer (32711, &err);
-  ck_assert (l > 2);
-  ck_assert (! socketInvalid (l));
+  ck_assert_int_gt (l, 2);
+  ck_assert_int_eq (socketInvalid (l), 0);
 
   si = sockAddCheck (si, l);
   rc = sockCheck (si);
@@ -657,10 +657,10 @@ START_TEST(sock_write_close)
     rc = sockCheck (si);
     ++count;
   }
-  ck_assert (rc == l);
+  ck_assert_int_eq (rc, l);
   r = sockAccept (l, &err);
-  ck_assert (! socketInvalid (r));
-  ck_assert (l != r);
+  ck_assert_int_eq (socketInvalid (r), 0);
+  ck_assert_int_ne (l, r);
   si = sockAddCheck (si, r);
 
   msleep (20); /* a delay to allow client to close */
@@ -672,9 +672,9 @@ START_TEST(sock_write_close)
     rc = sockCheck (si);
     ++count;
   }
-  ck_assert (rc == r);
+  ck_assert_int_eq (rc, r);
   ndata = sockRead (r, &len);
-  ck_assert (ndata != NULL);
+  ck_assert_ptr_nonnull (ndata);
   if (ndata != NULL) {
     free (ndata);
   }
@@ -686,9 +686,9 @@ START_TEST(sock_write_close)
     rc = sockCheck (si);
     ++count;
   }
-  ck_assert (rc == r);
+  ck_assert_int_eq (rc, r);
   ndata = sockRead (r, &len);
-  ck_assert (ndata != NULL);
+  ck_assert_ptr_nonnull (ndata);
   if (ndata != NULL) {
     free (ndata);
   }
@@ -698,7 +698,7 @@ START_TEST(sock_write_close)
   sockRemoveCheck (si, r);
   sockFreeCheck (si);
   sockClose (l);
-  ck_assert (gthreadrc == 0);
+  ck_assert_int_eq (gthreadrc, 0);
 #if _lib_pthread_create
   pthread_join (thread, NULL);
 #endif
@@ -723,8 +723,8 @@ START_TEST(sock_server_close)
   memset (datab, 'a', 4096);
 
   l = sockServer (32712, &err);
-  ck_assert (l > 2);
-  ck_assert (! socketInvalid (l));
+  ck_assert_int_gt (l, 2);
+  ck_assert_int_eq (socketInvalid (l), 0);
 
   si = sockAddCheck (si, l);
   rc = sockCheck (si);
@@ -734,10 +734,10 @@ START_TEST(sock_server_close)
     rc = sockCheck (si);
     ++count;
   }
-  ck_assert (rc == l);
+  ck_assert_int_eq (rc, l);
   r = sockAccept (l, &err);
-  ck_assert (! socketInvalid (r));
-  ck_assert (l != r);
+  ck_assert_int_eq (socketInvalid (r), 0);
+  ck_assert_int_ne (l, r);
   sockClose (r);
   for (int i = 0; i < 60; ++i) {
     msleep (100);
@@ -746,7 +746,7 @@ START_TEST(sock_server_close)
   sockRemoveCheck (si, l);
   sockFreeCheck (si);
   sockClose (l);
-  ck_assert (gthreadrc == 0);
+  ck_assert_int_eq (gthreadrc, 0);
 #if _lib_pthread_create
   pthread_join (thread, NULL);
 #endif
