@@ -23,8 +23,13 @@
 #include "songlist.h"
 
 #if 1 // temporary
+# include "sortopt.h"
+# include "sequence.h"
+# include "dnctypes.h"
+# include "dncspeeds.h"
 # include "genre.h"
 # include "rating.h"
+# include "level.h"
 # include "songlist.h"
 #endif
 
@@ -85,11 +90,21 @@ bdj4startup (int argc, char *argv[])
       "Total startup time: %ld ms", mtimeend (&mt));
 
 #if 1 // temporary
+  datafile_t *so = sortoptAlloc ("data/sortopt.txt");
+  sortoptFree (so);
+  datafile_t *seq = sequenceAlloc ("data/standardrounds.seq");
+  sequenceFree (seq);
+  datafile_t *spd = dncspeedsAlloc ("data/dancespeeds.txt");
+  dncspeedsFree (spd);
+  datafile_t *typ = dnctypesAlloc ("data/dancetypes.txt");
+  dnctypesFree (typ);
   datafile_t *r = ratingAlloc ("data/ratings.txt");
-  datafile_t *g = genreAlloc ("data/genres.txt");
-  datafile_t *sl = songlistAlloc ("data/dj.bll.01.songlist");
-  genreFree (g);
   ratingFree (r);
+  datafile_t *g = genreAlloc ("data/genres.txt");
+  genreFree (g);
+  datafile_t *lvl = levelAlloc ("data/levels.txt");
+  levelFree (lvl);
+  datafile_t *sl = songlistAlloc ("data/dj.bll.01.songlist");
   songlistFree (sl);
 #endif
 

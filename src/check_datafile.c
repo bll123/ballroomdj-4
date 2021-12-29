@@ -23,7 +23,36 @@ START_TEST(parse_init_free)
 }
 END_TEST
 
-START_TEST(parse_basic)
+START_TEST(parse_simple)
+{
+  parseinfo_t     *pi;
+
+  char *tstr = strdup ("# comment\nA\na\n# comment\nB\nb\nC\nc\nD\n# comment\nd\nE\ne\nF\nf");
+  pi = parseInit ();
+  ck_assert_ptr_nonnull (pi);
+  size_t count = parseSimple (pi, tstr);
+  ck_assert_int_eq (count, 12);
+  ck_assert_int_ge (pi->allocCount, 12);
+  char **strdata = parseGetData (pi);
+  ck_assert_ptr_eq (pi->strdata, strdata);
+  ck_assert_str_eq (strdata[0], "A");
+  ck_assert_str_eq (strdata[1], "a");
+  ck_assert_str_eq (strdata[2], "B");
+  ck_assert_str_eq (strdata[3], "b");
+  ck_assert_str_eq (strdata[4], "C");
+  ck_assert_str_eq (strdata[5], "c");
+  ck_assert_str_eq (strdata[6], "D");
+  ck_assert_str_eq (strdata[7], "d");
+  ck_assert_str_eq (strdata[8], "E");
+  ck_assert_str_eq (strdata[9], "e");
+  ck_assert_str_eq (strdata[10], "F");
+  ck_assert_str_eq (strdata[11], "f");
+  parseFree (pi);
+  free (tstr);
+}
+END_TEST
+
+START_TEST(parse_keyvalue)
 {
   parseinfo_t     *pi;
 
@@ -81,31 +110,22 @@ START_TEST(parse_with_comments)
 }
 END_TEST
 
-START_TEST(parse_simple)
+START_TEST(datafile_simple)
 {
-  parseinfo_t     *pi;
+  datafile_t        *df;
 
-  char *tstr = strdup ("# comment\nA\na\n# comment\nB\nb\nC\nc\nD\n# comment\nd\nE\ne\nF\nf");
-  pi = parseInit ();
-  ck_assert_ptr_nonnull (pi);
-  size_t count = parseSimple (pi, tstr);
-  ck_assert_int_eq (count, 12);
-  ck_assert_int_ge (pi->allocCount, 12);
-  char **strdata = parseGetData (pi);
-  ck_assert_ptr_eq (pi->strdata, strdata);
-  ck_assert_str_eq (strdata[0], "A");
-  ck_assert_str_eq (strdata[1], "a");
-  ck_assert_str_eq (strdata[2], "B");
-  ck_assert_str_eq (strdata[3], "b");
-  ck_assert_str_eq (strdata[4], "C");
-  ck_assert_str_eq (strdata[5], "c");
-  ck_assert_str_eq (strdata[6], "D");
-  ck_assert_str_eq (strdata[7], "d");
-  ck_assert_str_eq (strdata[8], "E");
-  ck_assert_str_eq (strdata[9], "e");
-  ck_assert_str_eq (strdata[10], "F");
-  ck_assert_str_eq (strdata[11], "f");
-  parseFree (pi);
+  char *fn = "tmp/dftesta.txt";
+  char *tstr = strdup ("# comment\nA\na\n# comment\nB\nb\nC\nc\nD\n# comment\nd\nE\ne\nF\nf\n");
+  FILE *fh = fopen (fn, "w");
+  fprintf (fh, "%s", tstr);
+  fclose (fh);
+
+  df = datafileAlloc (NULL, 0, fn, DFTYPE_LIST);
+  ck_assert_ptr_nonnull (df);
+  ck_assert_int_eq (df->dftype, DFTYPE_LIST);
+  ck_assert_str_eq (df->fname, fn);
+  ck_assert_ptr_nonnull (df->data);
+  datafileFree (df);
   free (tstr);
 }
 END_TEST
@@ -119,9 +139,10 @@ datafile_suite (void)
   s = suite_create ("Datafile Suite");
   tc = tcase_create ("Datafile");
   tcase_add_test (tc, parse_init_free);
-  tcase_add_test (tc, parse_basic);
-  tcase_add_test (tc, parse_with_comments);
   tcase_add_test (tc, parse_simple);
+  tcase_add_test (tc, parse_keyvalue);
+  tcase_add_test (tc, parse_with_comments);
+  tcase_add_test (tc, datafile_simple);
   suite_add_tcase (s, tc);
   return s;
 }

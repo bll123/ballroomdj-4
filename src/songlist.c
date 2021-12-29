@@ -7,11 +7,12 @@
 
 #include "songlist.h"
 #include "datafile.h"
+#include "fileutil.h"
 
 static datafilekey_t songlistdfkeys[] = {
-  { SONGLIST_FILE, "FILE", VALUE_DATA },
-  { SONGLIST_TITLE, "TITLE", VALUE_DATA },
-  { SONGLIST_DANCE, "DANCE", VALUE_DATA },
+  { "DANCE",  SONGLIST_DANCE, VALUE_DATA, NULL },
+  { "FILE",   SONGLIST_FILE,  VALUE_DATA, NULL },
+  { "TITLE",  SONGLIST_TITLE, VALUE_DATA, NULL },
 };
 #define SONGLIST_DFKEY_COUNT (sizeof (songlistdfkeys) / sizeof (datafilekey_t))
 
@@ -20,6 +21,9 @@ songlistAlloc (char *fname)
 {
   datafile_t    *df;
 
+  if (! fileExists (fname)) {
+    return NULL;
+  }
   df = datafileAlloc (songlistdfkeys, SONGLIST_DFKEY_COUNT, fname, DFTYPE_KEY_LONG);
   return df;
 }

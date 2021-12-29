@@ -20,10 +20,13 @@ typedef struct {
   size_t  count;
 } parseinfo_t;
 
+typedef long (*dfConvFunc_t)(const char *);
+
 typedef struct {
-  size_t      itemkey;
-  char        *name;
-  valuetype_t valuetype;
+  char            *name;
+  size_t          itemkey;
+  valuetype_t     valuetype;
+  dfConvFunc_t    convFunc;
 } datafilekey_t;
 
 typedef struct {
@@ -38,6 +41,7 @@ void          parseFree (parseinfo_t *);
 char **       parseGetData (parseinfo_t *);
 size_t        parseSimple (parseinfo_t *, char *);
 size_t        parseKeyValue (parseinfo_t *, char *);
+long          parseConvBoolean (const char *);
 
 datafile_t *  datafileAlloc (datafilekey_t *, size_t dfkeycount, char *,
                   datafiletype_t dftype);

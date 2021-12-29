@@ -27,6 +27,7 @@ while { [gets $ifh line] >= 0 } {
   if { $key eq "version" } {
     set value 3
   }
+  if { $key eq "tagdistance" } { set key histdistance }
   puts $ofh $key
   puts $ofh "..$value"
 }

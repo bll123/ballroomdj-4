@@ -18,6 +18,8 @@ typedef enum {
 
 static size_t parse (parseinfo_t *pi, char *data, parsetype_t parsetype);
 static void   datafileFreeInternal (datafile_t *df);
+static long   dfkeyBinarySearch (const datafilekey_t *dfkeys,
+                  size_t count, char *key);
 
 /* parsing routines */
 
@@ -63,6 +65,19 @@ parseKeyValue (parseinfo_t *pi, char *data)
   return parse (pi, data, PARSE_KEYVALUE);
 }
 
+long
+parseConvBoolean (const char *data)
+{
+  long      val = 0;
+
+  if (strcmp (data, "on") == 0 ||
+      strcmp (data, "yes") == 0 ||
+      strcmp (data, "1") == 0) {
+    val = 1;
+  }
+  return val;
+}
+
 /* datafile loading routines */
 
 datafile_t *
@@ -105,7 +120,10 @@ datafileLoad (datafilekey_t *dfkeys, size_t dfkeycount,
   char          *keyString = NULL;
   int           first = 1;
   long          ikey;
+  long          lval;
   char          *ikeystr = NULL;
+  char          *tkeystr;
+  char          *tvalstr;
 
   /* may be re-using the song list */
   datafileFreeInternal (df);
@@ -149,78 +167,87 @@ datafileLoad (datafilekey_t *dfkeys, size_t dfkeycount,
   }
 
   for (size_t i = 0; i < dataCount; i += inc) {
+    tkeystr = strdata [i];
+    tvalstr = strdata [i + 1];
+
     if (inc == 2 && strcmp (strdata [i], "version") == 0) {
-      df->version = atol (strdata [i + 1]);
+      df->version = atol (tvalstr);
       continue;
     }
     if (strcmp (strdata [i], "count") == 0) {
       if (dftype == DFTYPE_KEY_LONG) {
-        llistSetSize (df->data, (size_t) atol (strdata [i + 1]));
+        llistSetSize (df->data, (size_t) atol (tvalstr));
       }
       if (dftype == DFTYPE_KEY_STRING) {
-        slistSetSize (df->data, (size_t) atol (strdata [i + 1]));
+        slistSetSize (df->data, (size_t) atol (tvalstr));
       }
       continue;
     }
 
     if (dftype == DFTYPE_KEY_LONG &&
-        strcmp (strdata [i], "KEY") == 0) {
+        strcmp (tkeystr, "KEY") == 0) {
       if (key >= 0) {
         llistSetData (df->data, key, itemList);
         key = -1L;
       }
-      key = atol (strdata [i + 1]);
+      key = atol (tvalstr);
       itemList = llistAlloc (LIST_ORDERED, free);
       continue;
     }
     if (! first &&
         dftype == DFTYPE_KEY_STRING &&
-        strcmp (keyString, strdata [i]) == 0) {
+        strcmp (keyString, tkeystr) == 0) {
       if (ikeystr != NULL) {
         slistSetData (df->data, ikeystr, itemList);
         ikeystr = NULL;
       }
-      keyString = strdata [i + 1];
+      keyString = tkeystr;
       itemList = slistAlloc (LIST_ORDERED, istringCompare, free, free);
       continue;
     }
 
     if (dftype == DFTYPE_LIST) {
-      listSet (df->data, strdup (strdata [i]));
+      listSet (df->data, strdup (tkeystr));
     }
     if (dftype == DFTYPE_KEY_LONG || dftype == DFTYPE_KEY_STRING) {
       if (first && dftype == DFTYPE_KEY_STRING) {
-        keyString = strdata [i];
-        ikeystr = strdata [i + 1];
+        keyString = tkeystr;
+        ikeystr = tvalstr;
       }
 
-      /* for the moment, do a brute force search */
-      for (size_t j = 0; j < dfkeycount; ++j) {
-        if (strcmp (strdata [i], dfkeys [j].name) == 0) {
-          ikey = dfkeys [j].itemkey;
-          vt = dfkeys [j].valuetype;
+      long idx = dfkeyBinarySearch (dfkeys, dfkeycount, tkeystr);
+      if (idx >= 0) {
+        ikey = dfkeys [idx].itemkey;
+        vt = dfkeys [idx].valuetype;
+
+        if (dfkeys [idx].convFunc != NULL) {
+          lval = dfkeys [idx].convFunc (tvalstr);
+        } else {
+          if (vt == VALUE_LONG) {
+            lval = atol (tvalstr);
+          }
         }
       }
 
       if (dftype == DFTYPE_KEY_STRING) {
         if (vt == VALUE_DATA) {
-          slistSetData (itemList, strdata [i], strdup (strdata [i + 1]));
+          slistSetData (itemList, tkeystr, strdup (tvalstr));
         }
         if (vt == VALUE_LONG) {
-          slistSetLong (itemList, strdata [i], atol (strdata [i + 1]));
+          slistSetLong (itemList, tkeystr, lval);
         }
       }
       if (dftype == DFTYPE_KEY_LONG) {
         if (vt == VALUE_DATA) {
-          llistSetData (itemList, ikey, strdup (strdata [i + 1]));
+          llistSetData (itemList, ikey, strdup (tvalstr));
         }
         if (vt == VALUE_LONG) {
-          llistSetLong (itemList, ikey, atol (strdata [i + 1]));
+          llistSetLong (itemList, ikey, atol (tvalstr));
         }
       }
     }
     if (dftype == DFTYPE_KEY_VAL) {
-      slistSetData (df->data, strdata [i], strdup (strdata [i + 1]));
+      slistSetData (df->data, tkeystr, strdup (tvalstr));
       key = -1L;
     }
 
@@ -322,5 +349,31 @@ datafileFreeInternal (datafile_t *df)
       df->data = NULL;
     }
   }
+}
+
+static long
+dfkeyBinarySearch (const datafilekey_t *dfkeys, size_t count, char *key)
+{
+  long      l = 0;
+  long      r = (long) count - 1;
+  long      m = 0;
+  int       rc;
+
+  while (l <= r) {
+    m = l + (r - l) / 2;
+
+    rc = stringCompare (dfkeys [m].name, key);
+    if (rc == 0) {
+      return m;
+    }
+
+    if (rc < 0) {
+      l = m + 1;
+    } else {
+      r = m - 1;
+    }
+  }
+
+  return -1;
 }
 

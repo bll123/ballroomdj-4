@@ -14,7 +14,7 @@ if { ! [file exists $dir] || ! [file isdirectory $dir] } {
 set fn dancespeeds.tcl
 puts "## Converting: $fn"
 source [file join $dir $fn]
-set nfn [file join data speeds.txt]
+set nfn [file join data dancespeeds.txt]
 set fh [open $nfn w]
 puts $fh "# BDJ4 speeds"
 puts $fh "# [clock format [clock seconds] -gmt 1]"

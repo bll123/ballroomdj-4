@@ -7,11 +7,12 @@
 
 #include "level.h"
 #include "datafile.h"
+#include "fileutil.h"
 
 static datafilekey_t leveldfkeys[] = {
-  { LEVEL_LABEL, "label", VALUE_DATA },
-  { LEVEL_DEFAULT_FLAG, "default", VALUE_LONG },
-  { LEVEL_WEIGHT, "weight", VALUE_LONG },
+  { "default",  LEVEL_DEFAULT_FLAG, VALUE_LONG, parseConvBoolean },
+  { "label",    LEVEL_LABEL,        VALUE_DATA, NULL },
+  { "weight",   LEVEL_WEIGHT,       VALUE_LONG, NULL },
 };
 #define LEVEL_DFKEY_COUNT (sizeof (leveldfkeys) / sizeof (datafilekey_t))
 
@@ -19,6 +20,10 @@ datafile_t *
 levelAlloc (char *fname)
 {
   datafile_t    *df;
+
+  if (! fileExists (fname)) {
+    return NULL;
+  }
 
   df = datafileAlloc (leveldfkeys, LEVEL_DFKEY_COUNT, fname, DFTYPE_KEY_LONG);
   return df;

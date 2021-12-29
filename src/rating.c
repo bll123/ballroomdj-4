@@ -7,10 +7,11 @@
 
 #include "rating.h"
 #include "datafile.h"
+#include "fileutil.h"
 
 static datafilekey_t ratingdfkeys[] = {
-  { RATING_RATING, "rating", VALUE_DATA },
-  { RATING_WEIGHT, "weight", VALUE_LONG },
+  { "rating", RATING_RATING, VALUE_DATA, NULL },
+  { "weight", RATING_WEIGHT, VALUE_LONG, NULL },
 };
 #define RATING_DFKEY_COUNT (sizeof (ratingdfkeys) / sizeof (datafilekey_t))
 
@@ -19,6 +20,9 @@ ratingAlloc (char *fname)
 {
   datafile_t    *df;
 
+  if (! fileExists (fname)) {
+    return NULL;
+  }
   df = datafileAlloc (ratingdfkeys, RATING_DFKEY_COUNT, fname, DFTYPE_KEY_LONG);
   return df;
 }
