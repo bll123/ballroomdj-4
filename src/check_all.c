@@ -6,6 +6,7 @@
 #include "check_bdj.h"
 #include "sysvars.h"
 #include "tagdef.h"
+#include "log.h"
 
 int
 main (void)
@@ -17,6 +18,7 @@ main (void)
   sysvarsInit ();
   tagdefInit ();
 
+  logStart ();
   s = tmutil_suite();
   sr = srunner_create (s);
   s = fileutil_suite();
@@ -38,6 +40,6 @@ main (void)
   srunner_free (sr);
 
   tagdefCleanup ();
-
+  logEnd ();
   return (number_failed == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }

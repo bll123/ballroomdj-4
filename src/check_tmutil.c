@@ -32,11 +32,16 @@ START_TEST(milli_start_end)
   msleep (2000);
   size_t m = mtimeend (&mi);
   tm_e = time (NULL);
-  long d = (((long) tm_e - (long) tm_s) * 1000 - (long) m);
+  long d = (long) tm_e - (long) tm_s;
+  if (d >= 3) {
+    --d;
+  }
+  d *= 1000;
+  d -= (long) m;
   if (d < 0) {
     d = - d;
   }
-  ck_assert_int_lt (d, 100);
+  ck_assert_int_lt (d, 30);
 }
 END_TEST
 
@@ -45,7 +50,16 @@ START_TEST(dstamp_chk)
   char        buff [80];
 
   dstamp (buff, sizeof (buff));
-  ck_assert_int_eq (strlen (buff), 23);
+  ck_assert_int_eq (strlen (buff), 10);
+}
+END_TEST
+
+START_TEST(tstamp_chk)
+{
+  char        buff [80];
+
+  tstamp (buff, sizeof (buff));
+  ck_assert_int_eq (strlen (buff), 12);
 }
 END_TEST
 
@@ -60,6 +74,7 @@ tmutil_suite (void)
   tcase_add_test (tc, msleep_chk);
   tcase_add_test (tc, milli_start_end);
   tcase_add_test (tc, dstamp_chk);
+  tcase_add_test (tc, tstamp_chk);
   suite_add_tcase (s, tc);
   return s;
 }

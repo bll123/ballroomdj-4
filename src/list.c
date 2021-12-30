@@ -6,6 +6,7 @@
 #include <assert.h>
 
 #include "list.h"
+#include "log.h"
 
 typedef struct {
   listkey_t     lkey;
@@ -136,12 +137,15 @@ listIterateData (list_t *list)
 {
   void      *value = NULL;
 
+  logProcBegin ("listIterateData");
   if (list == NULL) {
+    logProcEnd ("listIterateData", "null-list");
     return NULL;
   }
 
   if (list->iteratorIndex >= list->count) {
     list->iteratorIndex = 0;
+    logProcEnd ("listIterateData", "end-list");
     return NULL;  /* indicate the end of the list */
   }
 
@@ -150,6 +154,7 @@ listIterateData (list_t *list)
   }
   ++list->iteratorIndex;
 
+  logProcEnd ("listIterateData", "");
   return value;
 }
 
@@ -274,12 +279,15 @@ slistIterateKeyStr (list_t *list)
 {
   char      *value = NULL;
 
+  logProcBegin ("slistIterateKeyStr");
   if (list == NULL || list->keytype == KEY_LONG) {
+    logProcEnd ("slistIterateKeyStr", "null-list/key-long");
     return NULL;
   }
 
   if (list->iteratorIndex >= list->count) {
     list->iteratorIndex = 0;
+    logProcEnd ("slistIterateKeyStr", "end-list");
     return NULL;      /* indicate the end of the list */
   }
 
@@ -299,6 +307,7 @@ slistIterateKeyStr (list_t *list)
   }
 
   ++list->iteratorIndex;
+  logProcEnd ("slistIterateKeyStr", "");
   return value;
 }
 
@@ -422,12 +431,15 @@ llistIterateKeyLong (list_t *list)
 {
   long      value = -1L;
 
+  logProcBegin ("llistIterateKeyLong");
   if (list == NULL || list->keytype == KEY_STR) {
+    logProcEnd ("llistIterateKeyLong", "null-list/key-str");
     return -1L;
   }
 
   if (list->iteratorIndex >= list->count) {
     list->iteratorIndex = 0;
+    logProcEnd ("llistIterateKeyLong", "end-list");
     return -1L;      /* indicate the end of the list */
   }
 
@@ -442,6 +454,7 @@ llistIterateKeyLong (list_t *list)
   }
 
   ++list->iteratorIndex;
+  logProcEnd ("llistIterateKeyLong", "");
   return value;
 }
 

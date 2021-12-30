@@ -5,11 +5,12 @@
 
 typedef enum {
   DFTYPE_LIST,
-    /* key string: use the first item key found after version/count as
-     * the break.  Otherwise the same as key long.
-     */
+    /* key_string: use the first item key found after version/count as
+       the break.  Otherwise the same as key long. */
   DFTYPE_KEY_STRING,
+    /* key_long: has a 'KEY' value that begins a block of key/values. */
   DFTYPE_KEY_LONG,
+    /* only key/values */
   DFTYPE_KEY_VAL,
   DFTYPE_MAX,
 } datafiletype_t;
@@ -48,6 +49,7 @@ datafile_t *  datafileAlloc (datafilekey_t *, size_t dfkeycount, char *,
 void          datafileFree (void *);
 void          datafileLoad (datafilekey_t *, size_t dfkeycount,
                   datafile_t *, char *, datafiletype_t dftype);
+list_t *      datafileGetData (datafile_t *);
 int           datafileSave (datafilekey_t *, size_t dfkeycount, datafile_t *);
 
 #endif /* INC_DATAFILE_H */

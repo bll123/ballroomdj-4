@@ -31,7 +31,7 @@ raOpen (char *fname, int version)
   int             rc;
   char            *mode;
 
-
+  logProcBegin ("raOpen");
   rafile = malloc (sizeof (rafile_t));
   assert (rafile != NULL);
   rafile->fh = NULL;
@@ -58,6 +58,7 @@ raOpen (char *fname, int version)
       /* probably an incorrect filename   */
       /* don't try to do anything with it */
       free (rafile);
+      logProcEnd ("raOpen", "bad-header");
       return NULL;
     }
   }
@@ -70,12 +71,14 @@ raOpen (char *fname, int version)
   rafile->fname = strdup (fname);
   assert (rafile->fname != NULL);
   memset (ranulls, 0, RAFILE_REC_SIZE);
+  logProcEnd ("raOpen", "");
   return rafile;
 }
 
 void
 raClose (rafile_t *rafile)
 {
+  logProcBegin ("raClose");
   if (rafile != NULL) {
     fclose (rafile->fh);
     raUnlock (rafile);
@@ -85,6 +88,7 @@ raClose (rafile_t *rafile)
     }
     free (rafile);
   }
+  logProcEnd ("raClose", "");
 }
 
 size_t
@@ -103,15 +107,19 @@ raGetNextRRN (rafile_t *rafile)
 void
 raStartBatch (rafile_t *rafile)
 {
+  logProcBegin ("raStartBatch");
   raLock (rafile);
   rafile->inbatch = 1;
+  logProcEnd ("raStartBatch", "");
 }
 
 void
 raEndBatch (rafile_t *rafile)
 {
+  logProcBegin ("raEndBatch");
   rafile->inbatch = 0;
   raUnlock (rafile);
+  logProcEnd ("raEndBatch", "");
 }
 
 int
@@ -119,9 +127,10 @@ raWrite (rafile_t *rafile, size_t rrn, char *data)
 {
   size_t len = strlen (data);
 
+  logProcBegin ("raWrite");
   /* leave one byte for the terminating null */
   if (len > (RAFILE_REC_SIZE - 1)) {
-    logVarMsg (LOG_ERR, "raWrite: bad data len", "%ld", len);
+    logMsg (LOG_DBG, "bad data len", "%ld", len);
     return 1;
   }
 
@@ -142,20 +151,23 @@ raWrite (rafile_t *rafile, size_t rrn, char *data)
   fwrite (data, len, 1, rafile->fh);
   fflush (rafile->fh);
   raUnlock (rafile);
+  logProcEnd ("raWrite", "");
   return 0;
 }
 
 int
 raClear (rafile_t *rafile, size_t rrn)
 {
+  logProcBegin ("raClear");
   if (rrn < 1L || rrn > rafile->count) {
-    logVarMsg (LOG_ERR, "raClear: bad rrn", "%ld", rrn);
+    logMsg (LOG_DBG, "bad rrn", "%ld", rrn);
     return 1;
   }
   raLock (rafile);
   fseek (rafile->fh, RRN_TO_OFFSET (rrn), SEEK_SET);
   fwrite (ranulls, RAFILE_REC_SIZE, 1, rafile->fh);
   raUnlock (rafile);
+  logProcEnd ("raClear", "");
   return 0;
 }
 
@@ -164,8 +176,9 @@ raRead (rafile_t *rafile, size_t rrn, char *data)
 {
   size_t        rc;
 
+  logProcBegin ("raRead");
   if (rrn < 1L || rrn > rafile->count) {
-    logVarMsg (LOG_ERR, "raRead: bad rrn", "%ld", rrn);
+    logMsg (LOG_DBG, "bad rrn", "%ld", rrn);
     return 0;
   }
 
@@ -173,6 +186,7 @@ raRead (rafile_t *rafile, size_t rrn, char *data)
   fseek (rafile->fh, RRN_TO_OFFSET (rrn), SEEK_SET);
   rc = fread (data, RAFILE_REC_SIZE, 1, rafile->fh);
   raUnlock (rafile);
+  logProcEnd ("raRead", "");
   return rc;
 }
 
@@ -189,6 +203,7 @@ raReadHeader (rafile_t *rafile)
   int       rasize;
   size_t    count;
 
+  logProcBegin ("raReadHeader");
   raLock (rafile);
   rrc = 1;
   fseek (rafile->fh, 0L, SEEK_SET);
@@ -210,6 +225,7 @@ raReadHeader (rafile_t *rafile)
     }
   }
   raUnlock (rafile);
+  logProcEnd ("raReadHeader", "");
   return rrc;
 }
 
@@ -218,6 +234,7 @@ raWriteHeader (rafile_t *rafile, int version)
 {
   char    tfmt [20];
 
+  logProcBegin ("raWriteHeader");
   /* locks are handled by the caller */
   /* the header never gets smaller, so it's not necessary to flush its data */
   fseek (rafile->fh, 0L, SEEK_SET);
@@ -227,6 +244,7 @@ raWriteHeader (rafile_t *rafile, int version)
   snprintf (tfmt, sizeof (tfmt), "#RACOUNT=%s\n", SIZE_FMT);
   fprintf (rafile->fh, tfmt, rafile->count);
   fflush (rafile->fh);
+  logProcEnd ("raWriteHeader", "");
 }
 
 static void
@@ -235,7 +253,9 @@ raLock (rafile_t *rafile)
   int     rc;
   int     count;
 
+  logProcBegin ("raLock");
   if (rafile->inbatch) {
+    logProcEnd ("raLock", "in-batch");
     return;
   }
 
@@ -252,15 +272,19 @@ raLock (rafile_t *rafile)
     /* global failure; stop everything */
   }
   rafile->locked = 1;
+  logProcEnd ("raLock", "");
 }
 
 static void
 raUnlock (rafile_t *rafile)
 {
+  logProcBegin ("raUnlock");
   if (rafile->inbatch) {
+    logProcEnd ("raUnlock", "in-batch");
     return;
   }
 
   lockRelease (RAFILE_LOCK_FN);
   rafile->locked = 0;
+  logProcEnd ("raUnlock", "");
 }

@@ -13,9 +13,12 @@
 #include "sysvars.h"
 #include "portability.h"
 
+const char * logTail (const char *fn);
+
 static bdjlog_t *syslogs [LOG_MAX];
 
 static int      stderrLogging = 0;
+static int      logIndent = 0;
 
 void
 logStderr (void)
@@ -23,16 +26,8 @@ logStderr (void)
   stderrLogging = 1;
 }
 
-void
-logDebugOn (bdjlog_t *l)
-{
-  if (l != NULL) {
-    l->debugOn = 1;
-  }
-}
-
 bdjlog_t *
-logOpen (char *fn)
+logOpen (const char *fn)
 {
   bdjlog_t      *l;
 
@@ -40,13 +35,9 @@ logOpen (char *fn)
   assert (l != NULL);
 
   l->fh = NULL;
-  l->loggingOn = 0;
-  l->debugOn = 0;
 
   l->fh = fopen (fn, "w");
-  if (l->fh != NULL) {
-    l->loggingOn = 1;
-  } else {
+  if (l->fh == NULL) {
     fprintf (stderr, "Unable to open %s %d %s\n", fn, errno, strerror (errno));
   }
   return l;
@@ -62,67 +53,66 @@ logClose (logidx_t idx)
     return;
   }
 
-  l->loggingOn = 0;
   fclose (l->fh);
   l->fh = NULL;
   free (l);
 }
 
 void
-logError (logidx_t idx, char *msg, int err)
+rlogProcBegin (const char *tag, const char *fn, int line)
 {
-  bdjlog_t      *l;
-
-  l = syslogs [idx];
-  if (! stderrLogging && (l == NULL || l->fh == NULL || ! l->loggingOn)) {
-    return;
-  }
-
-  logVarMsg (idx, msg, "err: %d %s", err, strerror (err));
+  rlogVarMsg (LOG_DBG, fn, line, "-- %s begin", tag);
+  logIndent += 2;
 }
 
 void
-logMsg (logidx_t idx, char *msg)
+rlogProcEnd (const char *tag, const char *suffix, const char *fn, int line)
 {
-  bdjlog_t      *l;
-
-  l = syslogs [idx];
-  if (! stderrLogging && (l == NULL || l->fh == NULL || ! l->loggingOn)) {
-    return;
+  logIndent -= 2;
+  if (logIndent < 0) {
+    logIndent = 0;
   }
-
-  logVarMsg (idx, msg, NULL);
+  rlogVarMsg (LOG_DBG, fn, line, "-- %s end %s", tag, suffix);
 }
 
 void
-logVarMsg (logidx_t idx, char *msg, char *fmt, ...)
+rlogError (const char *msg, int err, const char *fn, int line)
+{
+  rlogVarMsg (LOG_ERR, fn, line, "err: %s %d %s", msg, err, strerror (err));
+  rlogVarMsg (LOG_DBG, fn, line, "err: %s %d %s", msg, err, strerror (err));
+}
+
+void
+rlogVarMsg (logidx_t idx, const char *fn, int line, const char *fmt, ...)
 {
   FILE          *fh;
   bdjlog_t      *l;
   char          ttm [40];
-  char          tbuff [2048];
+  char          tbuff [4096];
+  char          tfn [MAXPATHLEN];
   va_list       args;
 
   l = syslogs [idx];
   fh = stderr;
-  if (! stderrLogging && (l == NULL || l->fh == NULL || ! l->loggingOn)) {
+  if (! stderrLogging && (l == NULL || l->fh == NULL)) {
     return;
   }
-  if (! stderrLogging && l != NULL && l->fh != NULL && l->loggingOn) {
+  if (! stderrLogging && l != NULL && l->fh != NULL) {
     fh = l->fh;
   }
-  if (! stderrLogging && idx == LOG_DBG && l != NULL && ! l->debugOn) {
-    return;
-  }
 
-  dstamp (ttm, sizeof (ttm));
+  tstamp (ttm, sizeof (ttm));
   *tbuff = '\0';
+  *tfn = '\0';
   if (fmt != NULL) {
     va_start (args, fmt);
     vsnprintf (tbuff, sizeof (tbuff), fmt, args);
     va_end (args);
   }
-  fprintf (fh, "%s %s %s\n", ttm, msg, tbuff);
+  if (fn != NULL) {
+    snprintf (tfn, MAXPATHLEN, "(%s / %d)", logTail (fn), line);
+  }
+  fprintf (fh, "%s: %*s%s %s\n", ttm, logIndent, "", tbuff, tfn);
   fflush (fh);
 }
 
@@ -130,6 +120,7 @@ void
 logStart (void)
 {
   char      tnm [MAXPATHLEN];
+  char      tdt [40];
   char      idxtag [20];
 
   *idxtag = '\0';
@@ -137,26 +128,28 @@ logStart (void)
     snprintf (idxtag, sizeof (idxtag), "-%ld", lsysvars [SVL_BDJIDX]);
   }
 
+  dstamp (tdt, sizeof (tdt));
+
   snprintf (tnm, MAXPATHLEN, LOG_ERROR_NAME,
       sysvars [SV_HOSTNAME], idxtag, LOG_EXTENSION);
   makeBackups (tnm, 1);
   syslogs [LOG_ERR] = NULL;
   syslogs [LOG_ERR] = logOpen (tnm);
-  logMsg (LOG_ERR, "=== started");
+  rlogVarMsg (LOG_ERR, NULL, 0, "=== started %s", tdt);
 
   snprintf (tnm, MAXPATHLEN, LOG_SESSION_NAME,
       sysvars [SV_HOSTNAME], idxtag, LOG_EXTENSION);
   makeBackups (tnm, 1);
   syslogs [LOG_SESS] = NULL;
   syslogs [LOG_SESS] = logOpen (tnm);
-  logMsg (LOG_SESS, "=== started");
+  rlogVarMsg (LOG_SESS, NULL, 0, "=== started %s", tdt);
 
   snprintf (tnm, MAXPATHLEN, LOG_DEBUG_NAME,
       sysvars [SV_HOSTNAME], idxtag, LOG_EXTENSION);
   makeBackups (tnm, 1);
   syslogs [LOG_DBG] = NULL;
   syslogs [LOG_DBG] = logOpen (tnm);
-  logMsg (LOG_DBG, "=== started");
+  rlogVarMsg (LOG_DBG, NULL, 0, "=== started %s", tdt);
 }
 
 void
@@ -170,3 +163,22 @@ logEnd (void)
   syslogs [LOG_DBG] = NULL;
 }
 
+/* internal routines */
+
+const char *
+logTail (const char *fn)
+{
+  const char    *p;
+
+  p = fn + strlen (fn) - 1;
+  while (*p != '/' && *p != '\\') {
+    if (p == fn) {
+      break;
+    }
+    --p;
+  }
+  if (p != fn) {
+    ++p;
+  }
+  return p;
+}

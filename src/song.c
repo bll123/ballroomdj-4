@@ -54,7 +54,7 @@ songSetAll (song_t *song, char *data[], size_t count)
   for (size_t i = 0; i < count; i += 2) {
     idx = tagdefGetIdx (data [i]);
     if (idx < 0 || idx >= MAX_TAG_KEY) {
-      logVarMsg (LOG_ERR, "songSetAll: Unknown tag key: %s\n", data[i]);
+      logMsg (LOG_DBG, "Unknown tag key: %s\n", data[i]);
       continue;
     }
 

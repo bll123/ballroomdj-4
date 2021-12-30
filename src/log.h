@@ -6,7 +6,6 @@
 typedef struct {
   FILE          *fh;
   int           loggingOn;
-  int           debugOn;
 } bdjlog_t;
 
 typedef enum {
@@ -21,11 +20,18 @@ typedef enum {
 #define LOG_DEBUG_NAME    "data/%s/logdbg%s%s"
 #define LOG_EXTENSION     ".txt"
 
-bdjlog_t *  logOpen (char *fn);
+/* logProcBegin/End always use LOG_DBG */
+#define logProcBegin(tag)   rlogProcBegin (tag, __FILE__, __LINE__)
+#define logProcEnd(tag,suffix)  rlogProcEnd (tag, suffix, __FILE__, __LINE__)
+#define logError(msg)       rlogError (msg, errno, __FILE__, __LINE__)
+#define logMsg(idx,fmt,...) rlogVarMsg (idx, __FILE__, __LINE__, fmt, ##__VA_ARGS__)
+
+bdjlog_t *  logOpen (const char *fn);
 void        logClose (logidx_t);
-void        logError (logidx_t, char *, int);
-void        logMsg (logidx_t, char *);
-void        logVarMsg (logidx_t, char *, char *, ...);
+void        rlogProcBegin (const char *tag, const char *fn, int line);
+void        rlogProcEnd (const char *tag, const char *suffix, const char *fn, int line);
+void        rlogError (const char *msg, int err, const char *fn, int line);
+void        rlogVarMsg (logidx_t, const char *, int, const char *, ...);
 void        logStderr (void);
 void        logStart (void);
 void        logEnd (void);

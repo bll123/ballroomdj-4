@@ -84,10 +84,8 @@ bdj4startup (int argc, char *argv[])
   tagdefInit ();
   mtimestart (&dbmt);
   dbOpen ("data/musicdb.dat");
-  logVarMsg (LOG_SESS, "bdj4startup:",
-      "Database read: %ld items in %ld ms", dbCount(), mtimeend (&dbmt));
-  logVarMsg (LOG_SESS, "bdj4startup:",
-      "Total startup time: %ld ms", mtimeend (&mt));
+  logMsg (LOG_SESS, "Database read: %ld items in %ld ms", dbCount(), mtimeend (&dbmt));
+  logMsg (LOG_SESS, "Total startup time: %ld ms", mtimeend (&mt));
 
 #if 1 // temporary
   datafile_t *so = sortoptAlloc ("data/sortopt.txt");
