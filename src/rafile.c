@@ -9,6 +9,8 @@
 #include <string.h>
 #include <errno.h>
 
+#define BDJLOG_OFF 1
+
 #include "rafile.h"
 #include "lock.h"
 #include "tmutil.h"

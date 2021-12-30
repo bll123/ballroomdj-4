@@ -44,8 +44,9 @@ typ     socklen_t
 typ	struct sockaddr_in
 typ     suseconds_t
 
-lib     CoInitialize -lole32
+lib     CreateProcess
 lib     fcntl
+lib     fork
 if iswindows ! ( ( == _MKCONFIG_SYSTYPE Linux ) || ( == _MKCONFIG_SYSTYPE Darwin ) )
  # on windows, a static link is wanted
  lib	gettext -Wl,-Bstatic -lintl -Wl,-Bdynamic % -Wl,-Bstatic -lintl -liconv -Wl,-Bdynamic
@@ -65,7 +66,6 @@ lib     socket -lws2_32
 # linux would require -lbsd; let's just use our own.
 lib	strlcpy
 lib	strlcat
-lib	strnlen
 lib     strtok_r
 lib     uname
 lib     WSACleanup -lws2_32

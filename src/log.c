@@ -17,8 +17,7 @@ const char * logTail (const char *fn);
 
 static bdjlog_t *syslogs [LOG_MAX];
 
-static int      stderrLogging = 0;
-static int      logIndent = 0;
+static int stderrLogging = 0;
 
 void
 logStderr (void)
@@ -27,7 +26,25 @@ logStderr (void)
 }
 
 bdjlog_t *
-logOpen (const char *fn)
+logOpen (const char *fn, const char *processtag)
+{
+  bdjlog_t      *l;
+
+  l = malloc (sizeof (bdjlog_t));
+  assert (l != NULL);
+
+  l->fh = NULL;
+  l->indent = 0;
+  l->processTag = processtag;
+  l->fh = fopen (fn, "w");
+  if (l->fh == NULL) {
+    fprintf (stderr, "Unable to open %s %d %s\n", fn, errno, strerror (errno));
+  }
+  return l;
+}
+
+bdjlog_t *
+logOpenAppend (const char *fn, const char *processtag)
 {
   bdjlog_t      *l;
 
@@ -36,7 +53,9 @@ logOpen (const char *fn)
 
   l->fh = NULL;
 
-  l->fh = fopen (fn, "w");
+  l->indent = 0;
+  l->processTag = processtag;
+  l->fh = fopen (fn, "a");
   if (l->fh == NULL) {
     fprintf (stderr, "Unable to open %s %d %s\n", fn, errno, strerror (errno));
   }
@@ -62,15 +81,15 @@ void
 rlogProcBegin (const char *tag, const char *fn, int line)
 {
   rlogVarMsg (LOG_DBG, fn, line, "-- %s begin", tag);
-  logIndent += 2;
+  syslogs [LOG_DBG]->indent += 2;
 }
 
 void
 rlogProcEnd (const char *tag, const char *suffix, const char *fn, int line)
 {
-  logIndent -= 2;
-  if (logIndent < 0) {
-    logIndent = 0;
+  syslogs [LOG_DBG]->indent -= 2;
+  if (syslogs [LOG_DBG]->indent < 0) {
+    syslogs [LOG_DBG]->indent = 0;
   }
   rlogVarMsg (LOG_DBG, fn, line, "-- %s end %s", tag, suffix);
 }
@@ -112,12 +131,13 @@ rlogVarMsg (logidx_t idx, const char *fn, int line, const char *fmt, ...)
   if (fn != NULL) {
     snprintf (tfn, MAXPATHLEN, "(%s / %d)", logTail (fn), line);
   }
-  fprintf (fh, "%s: %*s%s %s\n", ttm, logIndent, "", tbuff, tfn);
+  fprintf (fh, "%s: %s %*s%s %s\n", ttm, l->processTag,
+      l->indent, "", tbuff, tfn);
   fflush (fh);
 }
 
 void
-logStart (void)
+logStart (const char *processtag)
 {
   char      tnm [MAXPATHLEN];
   char      tdt [40];
@@ -133,23 +153,51 @@ logStart (void)
   snprintf (tnm, MAXPATHLEN, LOG_ERROR_NAME,
       sysvars [SV_HOSTNAME], idxtag, LOG_EXTENSION);
   makeBackups (tnm, 1);
-  syslogs [LOG_ERR] = NULL;
-  syslogs [LOG_ERR] = logOpen (tnm);
+  syslogs [LOG_ERR] = logOpen (tnm, processtag);
   rlogVarMsg (LOG_ERR, NULL, 0, "=== started %s", tdt);
 
   snprintf (tnm, MAXPATHLEN, LOG_SESSION_NAME,
       sysvars [SV_HOSTNAME], idxtag, LOG_EXTENSION);
   makeBackups (tnm, 1);
-  syslogs [LOG_SESS] = NULL;
-  syslogs [LOG_SESS] = logOpen (tnm);
+  syslogs [LOG_SESS] = logOpen (tnm, processtag);
   rlogVarMsg (LOG_SESS, NULL, 0, "=== started %s", tdt);
 
   snprintf (tnm, MAXPATHLEN, LOG_DEBUG_NAME,
       sysvars [SV_HOSTNAME], idxtag, LOG_EXTENSION);
   makeBackups (tnm, 1);
-  syslogs [LOG_DBG] = NULL;
-  syslogs [LOG_DBG] = logOpen (tnm);
+  syslogs [LOG_DBG] = logOpen (tnm, processtag);
   rlogVarMsg (LOG_DBG, NULL, 0, "=== started %s", tdt);
+}
+
+void
+logStartAppend (const char *processnm, const char *processtag)
+{
+  char      tnm [MAXPATHLEN];
+  char      tdt [40];
+  char      idxtag [20];
+
+  *idxtag = '\0';
+  if (lsysvars [SVL_BDJIDX] != 0) {
+    snprintf (idxtag, sizeof (idxtag), "-%ld", lsysvars [SVL_BDJIDX]);
+  }
+
+  dstamp (tdt, sizeof (tdt));
+
+  snprintf (tnm, MAXPATHLEN, LOG_ERROR_NAME,
+      sysvars [SV_HOSTNAME], idxtag, LOG_EXTENSION);
+  syslogs [LOG_ERR] = logOpenAppend (tnm, processtag);
+  rlogVarMsg (LOG_ERR, NULL, 0, "=== %s started %s", processnm, tdt);
+
+  snprintf (tnm, MAXPATHLEN, LOG_SESSION_NAME,
+      sysvars [SV_HOSTNAME], idxtag, LOG_EXTENSION);
+  syslogs [LOG_SESS] = logOpenAppend (tnm, processtag);
+  rlogVarMsg (LOG_SESS, NULL, 0, "=== %s started %s", processnm, tdt);
+
+  snprintf (tnm, MAXPATHLEN, LOG_DEBUG_NAME,
+      sysvars [SV_HOSTNAME], idxtag, LOG_EXTENSION);
+  makeBackups (tnm, 1);
+  syslogs [LOG_DBG] = logOpenAppend (tnm, processtag);
+  rlogVarMsg (LOG_DBG, NULL, 0, "=== %s started %s", processnm, tdt);
 }
 
 void
@@ -171,10 +219,7 @@ logTail (const char *fn)
   const char    *p;
 
   p = fn + strlen (fn) - 1;
-  while (*p != '/' && *p != '\\') {
-    if (p == fn) {
-      break;
-    }
+  while (p != fn && *p != '/' && *p != '\\') {
     --p;
   }
   if (p != fn) {

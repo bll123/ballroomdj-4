@@ -18,7 +18,7 @@ main (void)
   sysvarsInit ();
   tagdefInit ();
 
-  logStart ();
+  logStart ("c");
   s = tmutil_suite();
   sr = srunner_create (s);
   s = fileutil_suite();
