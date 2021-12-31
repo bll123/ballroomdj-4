@@ -319,27 +319,23 @@ bdjoptInit (void)
   bdjopt = llistAlloc (LIST_ORDERED, free);
 
   /* global */
-  strlcpy (path, "data/", MAXPATHLEN);
-  strlcat (path, BDJ_CONFIG_BASEFN, MAXPATHLEN);
+  fileMakePath (path, MAXPATHLEN, "", BDJ_CONFIG_BASEFN,
+      BDJ_CONFIG_EXT, FILE_MP_USEIDX);
   bdjoptLoad (path);
 
   /* per machine */
-  strlcpy (path, "data/", MAXPATHLEN);
-  strlcat (path, sysvars [SV_HOSTNAME], MAXPATHLEN);
-  strlcat (path, "/", MAXPATHLEN);
-  strlcat (path, BDJ_CONFIG_BASEFN, MAXPATHLEN);
+  fileMakePath (path, MAXPATHLEN, "", BDJ_CONFIG_BASEFN,
+      BDJ_CONFIG_EXT, FILE_MP_HOSTNAME | FILE_MP_USEIDX);
   bdjoptLoad (path);
 
   /* profile */
-  strlcpy (path, "data/profiles/", MAXPATHLEN);
-  strlcat (path, BDJ_CONFIG_BASEFN, MAXPATHLEN);
+  fileMakePath (path, MAXPATHLEN, "/profiles", BDJ_CONFIG_BASEFN,
+      BDJ_CONFIG_EXT, FILE_MP_USEIDX);
   bdjoptLoad (path);
 
   /* per machine per profile */
-  strlcpy (path, "data/", MAXPATHLEN);
-  strlcat (path, sysvars [SV_HOSTNAME], MAXPATHLEN);
-  strlcat (path, "/profiles/", MAXPATHLEN);
-  strlcat (path, BDJ_CONFIG_BASEFN, MAXPATHLEN);
+  fileMakePath (path, MAXPATHLEN, "/profiles", BDJ_CONFIG_BASEFN,
+      BDJ_CONFIG_EXT, FILE_MP_HOSTNAME | FILE_MP_USEIDX);
   bdjoptLoad (path);
 }
 
@@ -371,13 +367,6 @@ bdjoptLoad (char *path)
   char          **strdata;
   size_t        count;
 
-
-  if (lsysvars [SVL_BDJIDX] != 0L) {
-    char      temp [10];
-    snprintf (temp, sizeof (temp), "-%ld\n", lsysvars [SVL_BDJIDX]);
-    strlcat (path, temp, MAXPATHLEN);
-  }
-  strlcat (path, BDJ_CONFIG_EXT, MAXPATHLEN);
 
   data = fileReadAll (path);
   pi = parseInit ();

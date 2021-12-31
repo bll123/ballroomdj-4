@@ -16,9 +16,9 @@ typedef enum {
   LOG_MAX
 } logidx_t;
 
-#define LOG_ERROR_NAME    "data/%s/logerror%s%s"
-#define LOG_SESSION_NAME  "data/%s/logsession%s%s"
-#define LOG_DEBUG_NAME    "data/%s/logdbg%s%s"
+#define LOG_ERROR_NAME    "logerror"
+#define LOG_SESSION_NAME  "logsession"
+#define LOG_DEBUG_NAME    "logdbg"
 #define LOG_EXTENSION     ".txt"
 
 #if defined (BDJLOG_OFF)

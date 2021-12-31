@@ -13,11 +13,13 @@
 #include "sysvars.h"
 #include "portability.h"
 
-const char * logTail (const char *fn);
+static void         logInit (void);
+static const char * logTail (const char *fn);
 
 static bdjlog_t *syslogs [LOG_MAX];
-
-static int stderrLogging = 0;
+static char *   logbasenm [LOG_MAX];
+static int      stderrLogging = 0;
+static int      initialized = 0;
 
 void
 logStderr (void)
@@ -141,32 +143,18 @@ logStart (const char *processtag)
 {
   char      tnm [MAXPATHLEN];
   char      tdt [40];
-  char      idxtag [20];
 
-  *idxtag = '\0';
-  if (lsysvars [SVL_BDJIDX] != 0) {
-    snprintf (idxtag, sizeof (idxtag), "-%ld", lsysvars [SVL_BDJIDX]);
-  }
+  logInit ();
 
   dstamp (tdt, sizeof (tdt));
 
-  snprintf (tnm, MAXPATHLEN, LOG_ERROR_NAME,
-      sysvars [SV_HOSTNAME], idxtag, LOG_EXTENSION);
-  makeBackups (tnm, 1);
-  syslogs [LOG_ERR] = logOpen (tnm, processtag);
-  rlogVarMsg (LOG_ERR, NULL, 0, "=== started %s", tdt);
-
-  snprintf (tnm, MAXPATHLEN, LOG_SESSION_NAME,
-      sysvars [SV_HOSTNAME], idxtag, LOG_EXTENSION);
-  makeBackups (tnm, 1);
-  syslogs [LOG_SESS] = logOpen (tnm, processtag);
-  rlogVarMsg (LOG_SESS, NULL, 0, "=== started %s", tdt);
-
-  snprintf (tnm, MAXPATHLEN, LOG_DEBUG_NAME,
-      sysvars [SV_HOSTNAME], idxtag, LOG_EXTENSION);
-  makeBackups (tnm, 1);
-  syslogs [LOG_DBG] = logOpen (tnm, processtag);
-  rlogVarMsg (LOG_DBG, NULL, 0, "=== started %s", tdt);
+  for (logidx_t idx = LOG_ERR; idx < LOG_MAX; ++idx) {
+    fileMakePath (tnm, MAXPATHLEN, "", logbasenm [idx], LOG_EXTENSION,
+        FILE_MP_HOSTNAME | FILE_MP_USEIDX);
+    makeBackups (tnm, 1);
+    syslogs [idx] = logOpen (tnm, processtag);
+    rlogVarMsg (idx, NULL, 0, "=== started %s", tdt);
+  }
 }
 
 void
@@ -174,30 +162,16 @@ logStartAppend (const char *processnm, const char *processtag)
 {
   char      tnm [MAXPATHLEN];
   char      tdt [40];
-  char      idxtag [20];
 
-  *idxtag = '\0';
-  if (lsysvars [SVL_BDJIDX] != 0) {
-    snprintf (idxtag, sizeof (idxtag), "-%ld", lsysvars [SVL_BDJIDX]);
-  }
-
+  logInit ();
   dstamp (tdt, sizeof (tdt));
 
-  snprintf (tnm, MAXPATHLEN, LOG_ERROR_NAME,
-      sysvars [SV_HOSTNAME], idxtag, LOG_EXTENSION);
-  syslogs [LOG_ERR] = logOpenAppend (tnm, processtag);
-  rlogVarMsg (LOG_ERR, NULL, 0, "=== %s started %s", processnm, tdt);
-
-  snprintf (tnm, MAXPATHLEN, LOG_SESSION_NAME,
-      sysvars [SV_HOSTNAME], idxtag, LOG_EXTENSION);
-  syslogs [LOG_SESS] = logOpenAppend (tnm, processtag);
-  rlogVarMsg (LOG_SESS, NULL, 0, "=== %s started %s", processnm, tdt);
-
-  snprintf (tnm, MAXPATHLEN, LOG_DEBUG_NAME,
-      sysvars [SV_HOSTNAME], idxtag, LOG_EXTENSION);
-  makeBackups (tnm, 1);
-  syslogs [LOG_DBG] = logOpenAppend (tnm, processtag);
-  rlogVarMsg (LOG_DBG, NULL, 0, "=== %s started %s", processnm, tdt);
+  for (logidx_t idx = LOG_ERR; idx < LOG_MAX; ++idx) {
+    fileMakePath (tnm, MAXPATHLEN, "", logbasenm [idx], LOG_EXTENSION,
+        FILE_MP_HOSTNAME | FILE_MP_USEIDX);
+    syslogs [idx] = logOpenAppend (tnm, processtag);
+    rlogVarMsg (idx, NULL, 0, "=== started %s", tdt);
+  }
 }
 
 void
@@ -212,6 +186,17 @@ logEnd (void)
 }
 
 /* internal routines */
+
+static void
+logInit (void)
+{
+  if (! initialized) {
+    logbasenm [LOG_ERR] = LOG_ERROR_NAME;
+    logbasenm [LOG_SESS] = LOG_SESSION_NAME;
+    logbasenm [LOG_DBG] = LOG_DEBUG_NAME;
+    initialized = 1;
+  }
+}
 
 const char *
 logTail (const char *fn)

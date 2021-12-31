@@ -42,28 +42,31 @@ main (int argc, char *argv[])
   }
 
   if (isWindows()) {
+#if _lib_SetDllDirectory
     char *    buff;
-    char *    cwd;
+    char *    tbuff;
     size_t    sz = 4096;
 
     buff = malloc (sz);
     assert (buff != NULL);
-    cwd = malloc (sz);
-    assert (cwd != NULL);
+    tbuff = malloc (sz);
+    assert (tbuff != NULL);
 
-    if (getcwd (cwd, sz) == NULL) {
+    if (getcwd (tbuff, sz) == NULL) {
       fprintf (stderr, "main: getcwd: %d %s\n", errno, strerror (errno));
     }
-    snprintf (buff, sz, "%s\\bin", cwd);
+    snprintf (buff, sz, "%s", tbuff);
+    snprintf (tbuff, "%s\\bin", buff);  /* our package */
 
-#if _lib_SetDllDirectory
     /* cannot get the .dll working with the PATH environment variable */
-    SetDllDirectory (buff);
+    SetDllDirectory (tbuff);
     SetDllDirectory ("C:\\Program Files\\VideoLAN\\VLC");
-#endif
+    snprintf (tbuff, "%s\\plocal\\bin", buff); /* other packages */
+    SetDllDirectory (tbuff);
 
     free (buff);
-    free (cwd);
+    free (tbuff);
+#endif
   }
 
   /* launch the program */

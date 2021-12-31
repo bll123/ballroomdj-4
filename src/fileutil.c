@@ -222,3 +222,30 @@ fileConvWinPath (char *from, char *to, size_t maxlen)
     }
   }
 }
+
+char *
+fileMakePath (char *buff, size_t buffsz, const char *subpath,
+    const char *base, const char *extension, int flags)
+{
+  char      suffix [30];
+
+  *suffix = '\0';
+
+  if ((flags & FILE_MP_USEIDX) == FILE_MP_USEIDX) {
+    if (lsysvars [SVL_BDJIDX] != 0L) {
+      snprintf (suffix, sizeof (suffix), "-%ld", lsysvars [SVL_BDJIDX]);
+    }
+  }
+  if ((flags & FILE_MP_HOSTNAME) == FILE_MP_HOSTNAME) {
+    snprintf (buff, buffsz, "data/%s/%s%s%s%s", sysvars [SV_HOSTNAME],
+        subpath, base, suffix, extension);
+  }
+  if ((flags & FILE_MP_HOSTNAME) != FILE_MP_HOSTNAME) {
+    snprintf (buff, buffsz, "data/%s%s%s%s",
+        subpath, base, suffix, extension);
+  }
+fprintf (stderr, "path:%s\n", buff);
+fflush (stderr);
+
+  return buff;
+}
