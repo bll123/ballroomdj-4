@@ -20,6 +20,7 @@
 #include "tagdef.h"
 #include "bdjstring.h"
 #include "sysvars.h"
+#include "bdjvars.h"
 #include "log.h"
 #include "tmutil.h"
 #include "fileutil.h"
@@ -87,9 +88,10 @@ bdj4startup (int argc, char *argv[])
     }
   }
 
-fprintf (stderr, "profile: %ld\n", lsysvars [SVL_BDJIDX]);
-fflush (stderr);
   logStart ("m");
+  bdjvarsInit ();
+
+  logMsg (LOG_SESS, "Using profile %ld", lsysvars [SVL_BDJIDX]);
 
   tagdefInit ();
   mtimestart (&dbmt);

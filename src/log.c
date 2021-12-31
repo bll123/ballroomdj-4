@@ -6,6 +6,14 @@
 #include <stdarg.h>
 #include <errno.h>
 #include <assert.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#if _hdr_fcntl
+# include <fcntl.h>
+#endif
+#if _hdr_unistd
+# include <unistd.h>
+#endif
 
 #include "log.h"
 #include "tmutil.h"
@@ -13,6 +21,10 @@
 #include "sysvars.h"
 #include "portability.h"
 
+static void         rlogStart (const char *processnm,
+                        const char *processtag, int truncflag);
+static bdjlog_t *   rlogOpen (const char *fn,
+                        const char *processtag, int truncflag);
 static void         logInit (void);
 static const char * logTail (const char *fn);
 
@@ -30,37 +42,14 @@ logStderr (void)
 bdjlog_t *
 logOpen (const char *fn, const char *processtag)
 {
-  bdjlog_t      *l;
-
-  l = malloc (sizeof (bdjlog_t));
-  assert (l != NULL);
-
-  l->fh = NULL;
-  l->indent = 0;
-  l->processTag = processtag;
-  l->fh = fopen (fn, "w");
-  if (l->fh == NULL) {
-    fprintf (stderr, "Unable to open %s %d %s\n", fn, errno, strerror (errno));
-  }
+  bdjlog_t *l = rlogOpen (fn, processtag, 1);
   return l;
 }
 
 bdjlog_t *
 logOpenAppend (const char *fn, const char *processtag)
 {
-  bdjlog_t      *l;
-
-  l = malloc (sizeof (bdjlog_t));
-  assert (l != NULL);
-
-  l->fh = NULL;
-
-  l->indent = 0;
-  l->processTag = processtag;
-  l->fh = fopen (fn, "a");
-  if (l->fh == NULL) {
-    fprintf (stderr, "Unable to open %s %d %s\n", fn, errno, strerror (errno));
-  }
+  bdjlog_t *l = rlogOpen (fn, processtag, 0);
   return l;
 }
 
@@ -74,15 +63,15 @@ logClose (logidx_t idx)
     return;
   }
 
-  fclose (l->fh);
-  l->fh = NULL;
+  close (l->fd);
+  l->fd = -1;
   free (l);
 }
 
 void
 rlogProcBegin (const char *tag, const char *fn, int line)
 {
-  rlogVarMsg (LOG_DBG, fn, line, "-- %s begin", tag);
+  rlogVarMsg (LOG_DBG, fn, line, "- %s begin", tag);
   syslogs [LOG_DBG]->indent += 2;
 }
 
@@ -93,7 +82,7 @@ rlogProcEnd (const char *tag, const char *suffix, const char *fn, int line)
   if (syslogs [LOG_DBG]->indent < 0) {
     syslogs [LOG_DBG]->indent = 0;
   }
-  rlogVarMsg (LOG_DBG, fn, line, "-- %s end %s", tag, suffix);
+  rlogVarMsg (LOG_DBG, fn, line, "- %s end %s", tag, suffix);
 }
 
 void
@@ -106,20 +95,21 @@ rlogError (const char *msg, int err, const char *fn, int line)
 void
 rlogVarMsg (logidx_t idx, const char *fn, int line, const char *fmt, ...)
 {
-  FILE          *fh;
+  int           fd;
   bdjlog_t      *l;
   char          ttm [40];
-  char          tbuff [4096];
+  char          tbuff [512];
+  char          wbuff [1024];
   char          tfn [MAXPATHLEN];
   va_list       args;
 
   l = syslogs [idx];
-  fh = stderr;
-  if (! stderrLogging && (l == NULL || l->fh == NULL)) {
+  fd = STDERR_FILENO;
+  if (! stderrLogging && (l == NULL || l->fd == -1)) {
     return;
   }
-  if (! stderrLogging && l != NULL && l->fh != NULL) {
-    fh = l->fh;
+  if (! stderrLogging && l != NULL && l->fd != -1) {
+    fd = l->fd;
   }
 
   tstamp (ttm, sizeof (ttm));
@@ -131,47 +121,25 @@ rlogVarMsg (logidx_t idx, const char *fn, int line, const char *fmt, ...)
     va_end (args);
   }
   if (fn != NULL) {
-    snprintf (tfn, MAXPATHLEN, "(%s / %d)", logTail (fn), line);
+    snprintf (tfn, MAXPATHLEN, "(%s: %d)", logTail (fn), line);
   }
-  fprintf (fh, "%s: %s %*s%s %s\n", ttm, l->processTag,
-      l->indent, "", tbuff, tfn);
-  fflush (fh);
+  size_t wlen = snprintf (wbuff, sizeof (wbuff), "%s: %-2s %*s%s %s\n",
+      ttm, l->processTag, l->indent, "", tbuff, tfn);
+  if (write (fd, wbuff, wlen) < 0) {
+    fprintf (stderr, "log write failed: %d %s\n", errno, strerror (errno));
+  }
 }
 
 void
 logStart (const char *processtag)
 {
-  char      tnm [MAXPATHLEN];
-  char      tdt [40];
-
-  logInit ();
-
-  dstamp (tdt, sizeof (tdt));
-
-  for (logidx_t idx = LOG_ERR; idx < LOG_MAX; ++idx) {
-    fileMakePath (tnm, MAXPATHLEN, "", logbasenm [idx], LOG_EXTENSION,
-        FILE_MP_HOSTNAME | FILE_MP_USEIDX);
-    makeBackups (tnm, 1);
-    syslogs [idx] = logOpen (tnm, processtag);
-    rlogVarMsg (idx, NULL, 0, "=== started %s", tdt);
-  }
+  rlogStart (NULL, processtag, 1);
 }
 
 void
 logStartAppend (const char *processnm, const char *processtag)
 {
-  char      tnm [MAXPATHLEN];
-  char      tdt [40];
-
-  logInit ();
-  dstamp (tdt, sizeof (tdt));
-
-  for (logidx_t idx = LOG_ERR; idx < LOG_MAX; ++idx) {
-    fileMakePath (tnm, MAXPATHLEN, "", logbasenm [idx], LOG_EXTENSION,
-        FILE_MP_HOSTNAME | FILE_MP_USEIDX);
-    syslogs [idx] = logOpenAppend (tnm, processtag);
-    rlogVarMsg (idx, NULL, 0, "=== started %s", tdt);
-  }
+  rlogStart (processnm, processtag, 0);
 }
 
 void
@@ -186,6 +154,50 @@ logEnd (void)
 }
 
 /* internal routines */
+
+static void
+rlogStart (const char *processnm, const char *processtag, int truncflag)
+{
+  char      tnm [MAXPATHLEN];
+  char      tdt [40];
+
+  logInit ();
+  dstamp (tdt, sizeof (tdt));
+
+  for (logidx_t idx = LOG_ERR; idx < LOG_MAX; ++idx) {
+    fileMakePath (tnm, MAXPATHLEN, "", logbasenm [idx], LOG_EXTENSION,
+        FILE_MP_HOSTNAME | FILE_MP_USEIDX);
+    syslogs [idx] = rlogOpen (tnm, processtag, truncflag);
+    if (processnm != NULL) {
+      rlogVarMsg (idx, NULL, 0, "=== %s started %s", processnm, tdt);
+    } else {
+      rlogVarMsg (idx, NULL, 0, "=== started %s", tdt);
+    }
+  }
+}
+
+static bdjlog_t *
+rlogOpen (const char *fn, const char *processtag, int truncflag)
+{
+  bdjlog_t      *l;
+  int           flags;
+
+  l = malloc (sizeof (bdjlog_t));
+  assert (l != NULL);
+
+  l->fd = -1;
+  l->indent = 0;
+  l->processTag = processtag;
+  flags = O_WRONLY | O_APPEND | O_SYNC | O_CREAT | O_CLOEXEC;
+  if (truncflag) {
+    flags |= O_TRUNC;
+  }
+  l->fd = open (fn, flags);
+  if (l->fd < 0) {
+    fprintf (stderr, "Unable to open %s %d %s\n", fn, errno, strerror (errno));
+  }
+  return l;
+}
 
 static void
 logInit (void)

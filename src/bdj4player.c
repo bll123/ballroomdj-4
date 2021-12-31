@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <string.h>
 #include <errno.h>
 #include <assert.h>
@@ -18,7 +19,23 @@
 static int      processMsg (long route, long msg, char *args);
 static void     mainProcessing (void);
 
+static char *   vlcDefaultOptions [] = {
+      "--quiet",
+      "--intf=dummy",
+      "--audio-filter", "scaletempo",
+      "--ignore-config",
+      "--no-media-library",
+      "--no-playlist-autostart",
+      "--no-random",
+      "--no-loop",
+      "--no-repeat",
+      "--play-and-stop",
+      "--novideo",
+};
+#define VLC_DFLT_OPT_SZ (sizeof (vlcDefaultOptions) / sizeof (char *))
+
 static Sock_t   mainSock = INVALID_SOCKET;
+
 
 int
 main (int argc, char *argv[])
@@ -27,14 +44,16 @@ main (int argc, char *argv[])
 
   sysvarsInit ();
   logStartAppend ("bdj4player", "p");
+  bdjvarsInit ();
 
-  vlcData = vlcInit (0, NULL);
+  vlcData = vlcInit (VLC_DFLT_OPT_SZ, vlcDefaultOptions);
   assert (vlcData != NULL);
 
   uint16_t listenPort = lbdjvars [BDJVL_PLAYER_PORT];
   sockhMainLoop (listenPort, processMsg, mainProcessing);
 
   vlcClose (vlcData);
+  logEnd ();
   return 0;
 }
 
@@ -43,10 +62,17 @@ main (int argc, char *argv[])
 static int
 processMsg (long route, long msg, char *args)
 {
+  logProcBegin ("processMsg");
   switch (route) {
+    case ROUTE_NONE: {
+      break;
+    }
     case ROUTE_PLAYER: {
+      logMsg (LOG_DBG, "got: route-player");
       switch (msg) {
         case MSG_REQUEST_EXIT: {
+          logMsg (LOG_DBG, "got: req-exit");
+          logProcEnd ("processMsg", "req-exit");
           return 1;
         }
         default: {
@@ -76,6 +102,7 @@ processMsg (long route, long msg, char *args)
     }
   }
 
+  logProcEnd ("processMsg", "");
   return 0;
 }
 
@@ -86,7 +113,8 @@ mainProcessing (void)
     int       err;
 
     uint16_t mainPort = lbdjvars [BDJVL_MAIN_PORT];
-    mainSock = sockConnect (mainPort, &err);
+    mainSock = sockConnect (mainPort, &err, 1000);
+    logMsg (LOG_DBG, "main-socket: %zd", (size_t) mainSock);
   }
 
   return;

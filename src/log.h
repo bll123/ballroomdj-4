@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 typedef struct {
-  FILE          *fh;
+  int           fd;
   int           indent;
   const char    *processTag;
 } bdjlog_t;

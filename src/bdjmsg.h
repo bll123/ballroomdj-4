@@ -2,6 +2,7 @@
 #define INC_BDJMSG_H
 
 typedef enum {
+  ROUTE_NONE,
   ROUTE_MAIN,
   ROUTE_GUI,
   ROUTE_PLAYER,
@@ -9,6 +10,7 @@ typedef enum {
 } bdjmsgroute_t;
 
 typedef enum {
+  MSG_NONE,
   MSG_CLOSE_SOCKET,
   MSG_REQUEST_CLOSE,
   MSG_PLAYER_START,

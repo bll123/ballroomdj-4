@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <string.h>
 #include <errno.h>
 
@@ -72,13 +73,16 @@ stopPlayer (void)
 static int
 processMsg (long route, long msg, char *args)
 {
+  logProcBegin ("processMsg");
+  logMsg (LOG_DBG, "got: route: %ld msg:%ld", route, msg);
   switch (route) {
+    case ROUTE_NONE: {
+      logMsg (LOG_DBG, "got: route none");
+      break;
+    }
     case ROUTE_PLAYER: {
+      logMsg (LOG_DBG, "got: route-player");
       switch (msg) {
-        case MSG_PLAYER_START: {
-          startPlayer ();
-          break;
-        }
         default: {
           break;
         }
@@ -86,9 +90,16 @@ processMsg (long route, long msg, char *args)
       break;
     }
     case ROUTE_MAIN: {
+      logMsg (LOG_DBG, "got: route-main");
       switch (msg) {
+        case MSG_PLAYER_START: {
+          logMsg (LOG_DBG, "got: start-player");
+          startPlayer ();
+          break;
+        }
         case MSG_REQUEST_EXIT: {
           stopPlayer ();
+          logProcEnd ("processMsg", "req-exit");
           return 1;
         }
         default: {
@@ -98,11 +109,8 @@ processMsg (long route, long msg, char *args)
       break;
     }
     case ROUTE_GUI: {
+      logMsg (LOG_DBG, "got: route-gui");
       switch (msg) {
-        case MSG_PLAYER_START: {
-          startPlayer ();
-          break;
-        }
         default: {
           break;
         }
@@ -114,6 +122,7 @@ processMsg (long route, long msg, char *args)
     }
   }
 
+  logProcEnd ("processMsg", "");
   return 0;
 }
 
@@ -124,7 +133,8 @@ mainProcessing (void)
     int       err;
 
     uint16_t playerPort = lbdjvars [BDJVL_PLAYER_PORT];
-    playerSocket = sockConnect (playerPort, &err);
+    playerSocket = sockConnect (playerPort, &err, 1000);
+    logMsg (LOG_DBG, "player-socket: %zd", (size_t) playerSocket);
   }
 
   return;

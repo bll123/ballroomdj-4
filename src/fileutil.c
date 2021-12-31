@@ -244,8 +244,6 @@ fileMakePath (char *buff, size_t buffsz, const char *subpath,
     snprintf (buff, buffsz, "data/%s%s%s%s",
         subpath, base, suffix, extension);
   }
-fprintf (stderr, "path:%s\n", buff);
-fflush (stderr);
 
   return buff;
 }

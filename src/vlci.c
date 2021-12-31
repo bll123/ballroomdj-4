@@ -370,7 +370,7 @@ vlcMedia (vlcData_t *vlcData, char *fn)
 /* initialization and cleanup */
 
 vlcData_t *
-vlcInit (int vlcargc, char *vlcargv[])
+vlcInit (int vlcargc, char *vlcargv [])
 {
   vlcData_t *   vlcData;
   char *        tptr;

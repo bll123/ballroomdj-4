@@ -5,13 +5,19 @@
 #include <string.h>
 
 #include "bdjmsg.h"
+#include "bdjstring.h"
+
+#define LSZ 4
 
 size_t
 msgEncode (long route, long msg, char *args, char *msgbuff, size_t mlen)
 {
-  // ### FIX TODO handle args
-  size_t len = snprintf (msgbuff, mlen, "%08ld%c%08ld%c%s",
-      route, '\0', msg, '\0', "");
+  if (args == NULL) {
+    args = "";
+  }
+  size_t len = snprintf (msgbuff, mlen, "%0*ld%c%0*ld%c%s",
+      LSZ, route, '~', LSZ, msg, '~', args);
+  ++len;
   return len;
 }
 
@@ -19,7 +25,10 @@ void
 msgDecode (char *msgbuff, long *route, long *msg, char *args)
 {
   *route = atol (msgbuff);
-  char *p = msgbuff + strlen (msgbuff) + 1;
+  char *p = msgbuff + LSZ + 1;
   *msg = atol (p);
-  // ### FIX TODO handle args
+  p += LSZ + 1;
+  if (args != NULL) {
+    strlcpy (args, p, BDJMSG_MAX);
+  }
 }

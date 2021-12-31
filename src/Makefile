@@ -47,19 +47,16 @@ CFLAGS_DEBUG = -O0 -g
 all: $(MKC_ENV_SHR)
 	. ./$(MKC_ENV_SHR); $(MAKE) -e rall
 
-depcheck: 
-	cc -MM -MG *.c |
-		perl -p -e 's,\\\n,,' \
-		> dep.new
-	mv -f dep.new dep.all
-	-tsort dep.all > dep.txt 2>&1	
-	rm -f *.d
-
 mcheck: $(MKC_ENV_SHR)
 	. ./$(MKC_ENV_SHR); $(MAKE) -e rall
-	(cd ..;valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all ./bin/bdj4main)
+	(cd ..;valgrind --tool=memcheck \
+		--leak-check=full \
+		--read-inline-info=yes \
+		--track-origins=yes \
+		--show-leak-kinds=all \
+		./bin/bdj4main)
 
-rall: $(LIBRARIES) $(TESTPROGRAMS) $(PROGRAMS)
+rall:
 	$(MAKE) -e libraries
 	$(MAKE) -e testprograms
 	$(MAKE) -e programs
@@ -84,19 +81,19 @@ depend:
 # main targets
 
 PROGRAMS = $(BINDIR)/bdj4$(EXE_EXT) $(BINDIR)/bdj4main$(EXE_EXT) \
-	$(BINDIR)/bdj4player$(EXE_EXT)
+	$(BINDIR)/bdj4player$(EXE_EXT) $(BINDIR)/clicomm$(EXE_EXT)
 .PHONY: programs
-programs: $(MKC_ENV_SHR) $(MKC_REQLIB) $(DEPENDS) $(PROGRAMS)
+programs: $(MKC_ENV_SHR) $(MKC_REQLIB) $(PROGRAMS)
 
 TESTPROGRAMS = $(BINDIR)/check_all$(EXE_EXT)
 .PHONY: testprograms
-testprograms: $(MKC_ENV_SHR) $(MKC_REQLIB) $(DEPENDS) $(TESTPROGRAMS)
+testprograms: $(MKC_ENV_SHR) $(MKC_REQLIB) $(TESTPROGRAMS)
 
 LIBRARIES = $(SHLIBDIR)/libbdj4common$(SHLIB_EXT) \
 	$(SHLIBDIR)/libbdj4player$(SHLIB_EXT) \
 	$(SHLIBDIR)/libbdj4$(SHLIB_EXT)
 .PHONY: libraries
-libraries: $(MKC_ENV_SHR) $(MKC__REQLIB) $(DEPENDS) $(LIBRARIES)
+libraries: $(MKC_ENV_SHR) $(MKC__REQLIB) $(LIBRARIES)
 
 # mkconfig targets
 
@@ -125,7 +122,7 @@ $(OBJDIR)/%.o: %.c
 .PHONY: distclean
 distclean:
 	@-$(MAKE) clean
-	@-$(RM) -f $(MKC_ENV_SHR) $(MKC_REQLIB) $(DEPENDS)
+	@-$(RM) -f $(MKC_ENV_SHR) $(MKC_REQLIB)
 	@-$(RM) -f $(MKC_OUTPUT)
 	@-$(RM) -rf $(MKC_FILES)
 
@@ -141,7 +138,6 @@ tclean:
 	@-$(RM) -f $(MKC_FILES)/mkc_compile.log $(MKC_CONFDIR)/*~
 	@-$(RM) -f ../tmp/* ../conv/*~ ./locale/*~ ../locale/*~ ../*~
 	@-$(RM) -f ../install/*~ ../pkg/*~ build/*~
-	@-$(RM) -f *.d dep.txt dep.all
 
 # bdj executables
 
@@ -193,6 +189,20 @@ $(BINDIR)/bdj4player$(EXE_EXT): $(PLAYEROBJS) \
 		$(PLAYEROBJS) \
 		-L $(SHLIBDIR) -rpath $(BINDIR) \
 		-l bdj4player -l bdj4common
+	./build/postbuild.sh $@
+
+CLICOMMOBJS = \
+	$(OBJDIR)/clicomm$(OBJ_EXT)
+	
+$(BINDIR)/clicomm$(EXE_EXT): $(CLICOMMOBJS) \
+		$(SHLIBDIR)/libbdj4common$(SHLIB_EXT)
+	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh \
+		-link -exec $(MKC_ECHO) \
+		-o $@ \
+		-r $(MKC_REQLIB) \
+		$(CLICOMMOBJS) \
+		-L $(SHLIBDIR) -rpath $(BINDIR) \
+		-l bdj4common
 	./build/postbuild.sh $@
 
 # bdj libraries
@@ -320,10 +330,10 @@ $(OBJDIR)/bdj4init$(OBJ_EXT): bdj4init.c config.h bdj4init.h musicdb.h song.h li
  tagdef.h bdjstring.h sysvars.h portability.h log.h tmutil.h fileutil.h \
  sortopt.h datafile.h sequence.h dnctypes.h dncspeeds.h genre.h rating.h \
  level.h songlist.h
-$(OBJDIR)/bdj4main$(OBJ_EXT): bdj4main.c bdj4init.h sockh.h sock.h config.h bdjvars.h log.h \
- process.h portability.h
+$(OBJDIR)/bdj4main$(OBJ_EXT): bdj4main.c bdj4init.h sockh.h sock.h config.h bdjvars.h \
+ bdjmsg.h log.h process.h portability.h bdjstring.h sysvars.h
 $(OBJDIR)/bdj4player$(OBJ_EXT): bdj4player.c config.h vlci.h list.h sysvars.h portability.h \
- bdjvars.h sockh.h sock.h log.h
+ bdjvars.h bdjmsg.h sockh.h sock.h log.h bdjstring.h
 $(OBJDIR)/bdjmsg$(OBJ_EXT): bdjmsg.c config.h bdjmsg.h
 $(OBJDIR)/bdjopt$(OBJ_EXT): bdjopt.c config.h bdjopt.h list.h sysvars.h portability.h \
  fileutil.h bdjstring.h datafile.h
