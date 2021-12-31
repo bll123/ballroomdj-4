@@ -22,7 +22,6 @@
 #include "sysvars.h"
 #include "log.h"
 #include "tmutil.h"
-#include "process.h"
 #include "fileutil.h"
 
 #if 1 // temporary
@@ -45,26 +44,6 @@ initLocale (void)
   bindtextdomain ("bdj", "locale");
   textdomain ("bdj");
   return;
-}
-
-static void
-startPlayer (void)
-{
-  char      tbuff [MAXPATHLEN];
-  pid_t     pid;
-
-  logProcBegin ("startPlayer");
-  strlcpy (tbuff, "bin/bdj4player", MAXPATHLEN);
-  if (isWindows()) {
-    strlcat (tbuff, ".exe", MAXPATHLEN);
-  }
-  int rc = processStart (tbuff, &pid);
-  if (rc < 0) {
-    logMsg (LOG_DBG, "player %s failed to start", tbuff);
-  } else {
-    logMsg (LOG_DBG, "player started pid: %zd", (ssize_t) pid);
-  }
-  logProcEnd ("startPlayer", "");
 }
 
 int
@@ -136,10 +115,6 @@ fflush (stderr);
   levelFree (lvl);
   datafile_t *sl = songlistAlloc ("data/dj.bll.01.songlist");
   songlistFree (sl);
-#endif
-
-#if 1 // temporary
-  startPlayer ();
 #endif
 
   return 0;

@@ -47,6 +47,14 @@ CFLAGS_DEBUG = -O0 -g
 all: $(MKC_ENV_SHR)
 	. ./$(MKC_ENV_SHR); $(MAKE) -e rall
 
+depcheck: 
+	cc -MM -MG *.c |
+		perl -p -e 's,\\\n,,' \
+		> dep.new
+	mv -f dep.new dep.all
+	-tsort dep.all > dep.txt 2>&1	
+	rm -f *.d
+
 mcheck: $(MKC_ENV_SHR)
 	. ./$(MKC_ENV_SHR); $(MAKE) -e rall
 	(cd ..;valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all ./bin/bdj4main)
@@ -133,6 +141,7 @@ tclean:
 	@-$(RM) -f $(MKC_FILES)/mkc_compile.log $(MKC_CONFDIR)/*~
 	@-$(RM) -f ../tmp/* ../conv/*~ ./locale/*~ ../locale/*~ ../*~
 	@-$(RM) -f ../install/*~ ../pkg/*~ build/*~
+	@-$(RM) -f *.d dep.txt dep.all
 
 # bdj executables
 
@@ -189,6 +198,7 @@ $(BINDIR)/bdj4player$(EXE_EXT): $(PLAYEROBJS) \
 # bdj libraries
 
 LIBCOMMONOBJS = \
+	$(OBJDIR)/bdjmsg$(OBJ_EXT) \
 	$(OBJDIR)/bdjopt$(OBJ_EXT) \
 	$(OBJDIR)/bdjstring$(OBJ_EXT) \
 	$(OBJDIR)/datafile$(OBJ_EXT) \
@@ -198,6 +208,7 @@ LIBCOMMONOBJS = \
 	$(OBJDIR)/log$(OBJ_EXT) \
 	$(OBJDIR)/process$(OBJ_EXT) \
 	$(OBJDIR)/sock$(OBJ_EXT) \
+	$(OBJDIR)/sockh$(OBJ_EXT) \
 	$(OBJDIR)/strlcat$(OBJ_EXT) \
 	$(OBJDIR)/strlcpy$(OBJ_EXT) \
 	$(OBJDIR)/sysvars$(OBJ_EXT) \
@@ -213,6 +224,7 @@ $(SHLIBDIR)/libbdj4common$(SHLIB_EXT): $(MKC_REQLIB) $(LIBCOMMONOBJS)
 LIBBDJOBJS = \
 	$(OBJDIR)/autosel$(OBJ_EXT) \
 	$(OBJDIR)/bdj4init$(OBJ_EXT) \
+	$(OBJDIR)/bdjvars$(OBJ_EXT) \
 	$(OBJDIR)/dncspeeds$(OBJ_EXT) \
 	$(OBJDIR)/dnctypes$(OBJ_EXT) \
 	$(OBJDIR)/genre$(OBJ_EXT) \
@@ -305,15 +317,18 @@ $(OBJDIR)/volwin$(OBJ_EXT): volwin.cpp volume.h $(MKC_OUTPUT)
 $(OBJDIR)/autosel$(OBJ_EXT): autosel.c config.h autosel.h datafile.h list.h
 $(OBJDIR)/bdj4$(OBJ_EXT): bdj4.c config.h sysvars.h portability.h bdjstring.h
 $(OBJDIR)/bdj4init$(OBJ_EXT): bdj4init.c config.h bdj4init.h musicdb.h song.h list.h \
- tagdef.h bdjstring.h sysvars.h portability.h log.h tmutil.h process.h \
- fileutil.h sortopt.h datafile.h sequence.h dnctypes.h dncspeeds.h \
- genre.h rating.h level.h songlist.h
-$(OBJDIR)/bdj4main$(OBJ_EXT): bdj4main.c bdj4init.h
+ tagdef.h bdjstring.h sysvars.h portability.h log.h tmutil.h fileutil.h \
+ bdjvars.h sortopt.h datafile.h sequence.h dnctypes.h dncspeeds.h genre.h \
+ rating.h level.h songlist.h
+$(OBJDIR)/bdj4main$(OBJ_EXT): bdj4main.c bdj4init.h log.h sysvars.h portability.h config.h \
+ process.h sockh.h sock.h bdjvars.h bdjstring.h bdjmsg.h
 $(OBJDIR)/bdj4player$(OBJ_EXT): bdj4player.c config.h vlci.h list.h sysvars.h portability.h \
  log.h
+$(OBJDIR)/bdjmsg$(OBJ_EXT): bdjmsg.c bdjmsg.h
 $(OBJDIR)/bdjopt$(OBJ_EXT): bdjopt.c config.h bdjopt.h list.h sysvars.h portability.h \
  fileutil.h bdjstring.h datafile.h
 $(OBJDIR)/bdjstring$(OBJ_EXT): bdjstring.c config.h bdjstring.h
+$(OBJDIR)/bdjvars$(OBJ_EXT): bdjvars.c bdjvars.h sysvars.h portability.h config.h
 $(OBJDIR)/check_all$(OBJ_EXT): check_all.c config.h check_bdj.h sysvars.h portability.h \
  tagdef.h bdjstring.h list.h log.h
 $(OBJDIR)/check_datafile$(OBJ_EXT): check_datafile.c config.h datafile.h list.h log.h \
@@ -349,6 +364,7 @@ $(OBJDIR)/rafile$(OBJ_EXT): rafile.c config.h rafile.h lock.h tmutil.h log.h por
 $(OBJDIR)/rating$(OBJ_EXT): rating.c config.h rating.h datafile.h list.h fileutil.h
 $(OBJDIR)/sequence$(OBJ_EXT): sequence.c config.h sequence.h datafile.h list.h fileutil.h
 $(OBJDIR)/sock$(OBJ_EXT): sock.c config.h sock.h tmutil.h log.h
+$(OBJDIR)/sockh$(OBJ_EXT): sockh.c sockh.h sock.h config.h log.h bdjmsg.h tmutil.h
 $(OBJDIR)/song$(OBJ_EXT): song.c config.h song.h list.h bdjstring.h tagdef.h log.h
 $(OBJDIR)/songlist$(OBJ_EXT): songlist.c config.h songlist.h datafile.h list.h fileutil.h
 $(OBJDIR)/sortopt$(OBJ_EXT): sortopt.c config.h sortopt.h datafile.h list.h fileutil.h
@@ -359,5 +375,5 @@ $(OBJDIR)/tagdef$(OBJ_EXT): tagdef.c config.h tagdef.h bdjstring.h list.h
 $(OBJDIR)/tmutil$(OBJ_EXT): tmutil.c config.h tmutil.h bdjstring.h
 $(OBJDIR)/vlci$(OBJ_EXT): vlci.c config.h vlci.h list.h bdjstring.h log.h
 $(OBJDIR)/volalsa$(OBJ_EXT): volalsa.c config.h
-$(OBJDIR)/volpa$(OBJ_EXT): volpa.c config.h
+$(OBJDIR)/volpa$(OBJ_EXT): volpa.c config.h volume.h
 $(OBJDIR)/volume$(OBJ_EXT): volume.c config.h volume.h
