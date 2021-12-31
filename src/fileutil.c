@@ -172,6 +172,19 @@ fileDelete (char *fname)
   return rc;
 }
 
+int
+fileMakeDir (char *dirname)
+{
+  int rc;
+#if _args_mkdir == 2
+  rc = mkdir (dirname, 0600);
+#endif
+#if _args_mkdir == 1
+  rc = mkdir (dirname);
+#endif
+  return rc;
+}
+
 char *
 fileReadAll (char *fname)
 {

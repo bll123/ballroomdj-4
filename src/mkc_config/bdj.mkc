@@ -36,7 +36,9 @@ endif
 
 sys     select.h
 sys     socket.h
+sys	stat.h
 sys	time.h
+sys	types.h
 sys	utsname.h
 
 typ     SOCKET
@@ -44,6 +46,7 @@ typ     socklen_t
 typ	struct sockaddr_in
 typ     suseconds_t
 
+lib     CoInitialize -lole32
 lib     CreateProcess
 lib     fcntl
 lib     fork
@@ -59,9 +62,11 @@ lib     GetVersionEx
 lib     ioctlsocket -lws2_32
 lib     kill
 lib     localtime_r
+lib     mkdir
 lib     OpenProcess
 lib     pa_threaded_mainloop_start -lpulse -lm
 lib     select -lws2_32
+lib     SetDllDirectory
 lib     socket -lws2_32
 # linux would require -lbsd; let's just use our own.
 lib	strlcpy
@@ -80,6 +85,8 @@ endif
 if not_have_pkg_check ! _pkg_libs_check && _hdr_check
   lib    tcase_create -lcheck -pthread -lm
 endif
+
+args noconst mkdir
 
 define  INVALID_SOCKET
 define  SO_REUSEPORT

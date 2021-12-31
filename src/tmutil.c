@@ -42,12 +42,9 @@ dstamp (char *buff, size_t max)
 {
   struct timeval    curr;
   struct tm         *tp;
-  char              tbuff [20];
 
   gettimeofday (&curr, NULL);
   time_t s = curr.tv_sec;
-  long u = curr.tv_usec;
-  long m = u / 1000;
 #if _lib_localtime_r
   struct tm         t;
   localtime_r (&s, &t);

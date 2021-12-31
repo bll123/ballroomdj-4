@@ -19,7 +19,8 @@ void          makeBackups (char *, int);
 int           fileExists (char *);
 int           fileCopy (char *, char *);
 int           fileMove (char *, char *);
-int           fileDelete (char *);
+int           fileDelete (char *fname);
+int           fileMakeDir (char *dirname);
 char *        fileReadAll (char *);
 void          fileConvWinPath (char *from, char *to, size_t maxlen);
 

@@ -6,6 +6,8 @@
 #include <string.h>
 #include <errno.h>
 #include <getopt.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 #if _hdr_libintl
 # include <libintl.h>
 #endif
@@ -21,6 +23,7 @@
 #include "log.h"
 #include "tmutil.h"
 #include "process.h"
+#include "fileutil.h"
 
 #if 1 // temporary
 # include "sortopt.h"
@@ -71,6 +74,8 @@ bdj4startup (int argc, char *argv[])
   mtime_t   dbmt;
   int       c = 0;
   int       option_index = 0;
+  char      tbuff [MAXPATHLEN];
+
   static struct option bdj_options [] = {
     { "profile",    required_argument,  NULL,   'p' },
     { "dbgstderr",  no_argument,        NULL,   's' },
@@ -80,6 +85,10 @@ bdj4startup (int argc, char *argv[])
   mtimestart (&mt);
   initLocale ();
   sysvarsInit ();
+  snprintf (tbuff, MAXPATHLEN, "data/%s", sysvars [SV_HOSTNAME]);
+  if (! fileExists (tbuff)) {
+    fileMakeDir (tbuff);
+  }
 
   while ((c = getopt_long (argc, argv, "", bdj_options, &option_index)) != -1) {
     switch (c) {

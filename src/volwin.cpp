@@ -42,44 +42,44 @@ process (volaction_t action, char *sinkname, int *vol, char **sinklist)
   OSVERSIONINFO         VersionInfo;
   float                 currentVal;
 
-  ZeroMemory(&VersionInfo, sizeof(OSVERSIONINFO));
-  VersionInfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-  GetVersionEx(&VersionInfo);
+  ZeroMemory (&VersionInfo, sizeof (OSVERSIONINFO));
+  VersionInfo.dwOSVersionInfoSize = sizeof (OSVERSIONINFO);
+  GetVersionEx (&VersionInfo);
   if (VersionInfo.dwMajorVersion <= 5) {
     return -1;
   }
 
-  CoInitialize(NULL);
+  CoInitialize (NULL);
 
   // Get enumerator for audio endpoint devices.
-  hr = CoCreateInstance(__uuidof(MMDeviceEnumerator),
+  hr = CoCreateInstance (__uuidof (MMDeviceEnumerator),
       NULL, CLSCTX_INPROC_SERVER,
-      __uuidof(IMMDeviceEnumerator),
+      __uuidof (IMMDeviceEnumerator),
       (void**)&pEnumerator);
-  EXIT_ON_ERROR(hr)
+  EXIT_ON_ERROR (hr)
 
   // Get default audio-rendering device.
-  hr = pEnumerator->GetDefaultAudioEndpoint(eRender, eConsole, &pDevice);
-  EXIT_ON_ERROR(hr)
+  hr = pEnumerator->GetDefaultAudioEndpoint (eRender, eConsole, &pDevice);
+  EXIT_ON_ERROR (hr)
 
-  hr = pDevice->Activate(__uuidof(IAudioEndpointVolume),
-      CLSCTX_ALL, NULL, (void**)&g_pEndptVol);
+  hr = pDevice->Activate (__uuidof (IAudioEndpointVolume),
+      CLSCTX_ALL, NULL, (void**) &g_pEndptVol);
   EXIT_ON_ERROR(hr)
 
   if (action == VOL_SET) {
     float got = (float) *vol / 100.0; // needs to be within 1.0 to 0.0
     hr = g_pEndptVol->SetMasterVolumeLevelScalar (got, NULL);
-    EXIT_ON_ERROR(hr)
+    EXIT_ON_ERROR (hr)
   }
   hr = g_pEndptVol->GetMasterVolumeLevelScalar (&currentVal);
-  EXIT_ON_ERROR(hr)
+  EXIT_ON_ERROR (hr)
   *vol = (int) round(100 * currentVal);
 
 Exit:
-  SAFE_RELEASE(pEnumerator)
-  SAFE_RELEASE(pDevice)
-  SAFE_RELEASE(g_pEndptVol)
-  CoUninitialize();
+  SAFE_RELEASE (pEnumerator)
+  SAFE_RELEASE (pDevice)
+  SAFE_RELEASE (g_pEndptVol)
+  CoUninitialize ();
   return *vol;
 }
 

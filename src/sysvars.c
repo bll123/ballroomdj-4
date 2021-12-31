@@ -74,6 +74,13 @@ sysvarsInit (void)
 #endif
   gethostname (tbuf, MAXPATHLEN);
   strlcpy (sysvars [SV_HOSTNAME], tbuf, MAXPATHLEN);
+  if (isWindows()) {
+    /* gethostname() does not appear to work on windows */
+    char *hn = strdup (getenv ("COMPUTERNAME"));
+    strtolower (hn);
+    strlcpy (sysvars [SV_HOSTNAME], hn, MAXPATHLEN);
+    free (hn);
+  }
 
   lsysvars [SVL_BDJIDX] = 0;
 }

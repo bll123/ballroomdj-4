@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <assert.h>
 #if _hdr_unistd
 # include <unistd.h>
 #endif
@@ -17,44 +18,52 @@ main (int argc, char *argv[])
 {
   sysvarsInit ();
 
+/* ### FIX need to get the executable's directory, and change dir to one up,
+   if we're not already there */
+
   if (isMacOS()) {
-    char  npath [MAXPATHLEN];
+    char  *   npath;
+    size_t    sz = 4096;
+
+    npath = malloc (sz);
+    assert (npath != NULL);
 
     char  *path = getenv ("PATH");
-    strlcpy (npath, "PATH=", MAXPATHLEN);
-    strlcat (npath, path, MAXPATHLEN);
-    strlcat (npath, ":/opt/local/bin", MAXPATHLEN);
+    strlcpy (npath, "PATH=", sz);
+    strlcat (npath, path, sz);
+    strlcat (npath, ":/opt/local/bin", sz);
     putenv (npath);
+
     putenv ("DYLD_FALLBACK_LIBRARY_PATH="
         "/Applications/VLC.app/Contents/MacOS/lib/");
+
+    putenv ("VLC_PLUGIN_PATH=/Applications/VLC.app/Contents/MacOS/plugins");
+    free (npath);
   }
 
   if (isWindows()) {
-    char  npath [MAXPATHLEN];
-    char  buff [MAXPATHLEN];
-    char  cwd [MAXPATHLEN];
-    char  *path;
+    char *    buff;
+    char *    cwd;
+    size_t    sz = 4096;
 
-    path = getenv ("PATH");
-    strlcpy (npath, "PATH=", MAXPATHLEN);
-    strlcat (npath, path, MAXPATHLEN);
-    /* ### FIX need to know correct drive letter/path */
-    snprintf (buff, MAXPATHLEN, "C:\\Program Files\\VideoLAN\\VLC");
-    strlcat (npath, ";", MAXPATHLEN);
-    strlcat (npath, buff, MAXPATHLEN);
+    buff = malloc (sz);
+    assert (buff != NULL);
+    cwd = malloc (sz);
+    assert (cwd != NULL);
 
-    path = getenv ("PATH");
-    strlcpy (npath, "PATH=", MAXPATHLEN);
-    strlcat (npath, path, MAXPATHLEN);
-    if (getcwd (cwd, MAXPATHLEN) == NULL) {
+    if (getcwd (cwd, sz) == NULL) {
       fprintf (stderr, "main: getcwd: %d %s\n", errno, strerror (errno));
     }
-    snprintf (buff, MAXPATHLEN, ";%s", cwd);
-    strlcat (npath, buff, MAXPATHLEN);
-    /* ### FIX Need to know what drive letter we are on */
-    snprintf (buff, MAXPATHLEN, ";C:%s\\..\\plocal\\lib", cwd);
-    strlcat (npath, buff, MAXPATHLEN);
-    putenv (npath);
+    snprintf (buff, sz, "%s\\bin", cwd);
+
+#if _lib_SetDllDirectory
+    /* cannot get the .dll working with the PATH environment variable */
+    SetDllDirectory (buff);
+    SetDllDirectory ("C:\\Program Files\\VideoLAN\\VLC");
+#endif
+
+    free (buff);
+    free (cwd);
   }
 
   /* launch the program */

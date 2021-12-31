@@ -101,7 +101,7 @@ processStart (const char *fn, pid_t *pid)
 #if _lib_CreateProcess
 
 int
-processStart (const char *fn)
+processStart (const char *fn, pid_t *pid)
 {
   STARTUPINFO         si;
   PROCESS_INFORMATION pi;
@@ -123,7 +123,7 @@ processStart (const char *fn)
     &si,            // STARTUPINFO structure
     &pi )           // PROCESS_INFORMATION structure
   ) {
-    printf ("CreateProcess failed (%d).\n", GetLastError());
+    printf ("CreateProcess failed (%ld).\n", GetLastError());
     return -1;
   }
 

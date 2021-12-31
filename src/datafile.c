@@ -133,12 +133,12 @@ datafileLoad (datafilekey_t *dfkeys, size_t dfkeycount,
   long          key = -1L;
   size_t        dataCount;
   list_t        *itemList = NULL;
-  valuetype_t   vt;
+  valuetype_t   vt = 0;
   size_t        inc = 2;
   char          *keyString = NULL;
   int           first = 1;
-  long          ikey;
-  long          lval;
+  long          ikey = 0;
+  long          lval = 0;
   char          *ikeystr = NULL;
   char          *tkeystr;
   char          *tvalstr;
