@@ -18,14 +18,15 @@ sockhMainLoop (uint16_t listenPort, sockProcessMsg_t msgProc,
   Sock_t      listenSock;
   Sock_t      msgsock;
   int         err;
-  sockinfo_t  *si;
+  sockinfo_t  *si = NULL;
   char        msgbuff [1024];
   size_t      len;
+  int         done = 0;
 
   listenSock = sockServer (listenPort, &err);
   si = sockAddCheck (si, listenSock);
 
-  while ((msgsock = sockCheck (si)) >= 0) {
+  while (done < 100 && (msgsock = sockCheck (si)) >= 0) {
     if (msgsock == listenSock) {
       Sock_t clsock = sockAccept (listenSock, &err);
       si = sockAddCheck (si, clsock);
@@ -48,11 +49,19 @@ sockhMainLoop (uint16_t listenPort, sockProcessMsg_t msgProc,
             break;
           }
           default: {
-            msgProc (route, msg, NULL);
+            done = msgProc (route, msg, NULL);
+            if (done) {
+              sockhRequestClose (si);
+            }
           }
         } /* switch */
       } /* msg is ok */
     } /* message from client */
+
+    if (done) {
+      /* wait for close messages to come in */
+      ++done;
+    }
 
     otherProc ();
     msleep (SOCK_MAINLOOP_TIMEOUT);
@@ -63,11 +72,18 @@ sockhMainLoop (uint16_t listenPort, sockProcessMsg_t msgProc,
   sockClose (listenSock);
 }
 
+int
+sockhSendMessage (Sock_t sock, long route, long msg, char *args)
+{
+  char        msgbuff [BDJMSG_MAX];
+
+  size_t len = msgEncode (route, msg, NULL, msgbuff, sizeof (msgbuff));
+  sockWriteBinary (sock, msgbuff, len);
+}
+
 void
 sockhRequestClose (sockinfo_t *sockinfo)
 {
-  int               rc;
-
   if (sockinfo == NULL) {
     return;
   }
@@ -87,8 +103,6 @@ sockhRequestClose (sockinfo_t *sockinfo)
 void
 sockhCloseClients (sockinfo_t *sockinfo)
 {
-  int               rc;
-
   if (sockinfo == NULL) {
     return;
   }
