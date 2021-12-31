@@ -34,14 +34,15 @@ static char *   vlcDefaultOptions [] = {
 };
 #define VLC_DFLT_OPT_SZ (sizeof (vlcDefaultOptions) / sizeof (char *))
 
-static Sock_t   mainSock = INVALID_SOCKET;
-
+static programstate_t   programState = STATE_NOT_RUNNING;
+static Sock_t           mainSock = INVALID_SOCKET;
 
 int
 main (int argc, char *argv[])
 {
   vlcData_t *     vlcData;
 
+  programState = STATE_INITIALIZING;
   sysvarsInit ();
   logStartAppend ("bdj4player", "p");
   bdjvarsInit ();
@@ -49,11 +50,14 @@ main (int argc, char *argv[])
   vlcData = vlcInit (VLC_DFLT_OPT_SZ, vlcDefaultOptions);
   assert (vlcData != NULL);
 
+  programState = STATE_RUNNING;
+
   uint16_t listenPort = lbdjvars [BDJVL_PLAYER_PORT];
   sockhMainLoop (listenPort, processMsg, mainProcessing);
 
   vlcClose (vlcData);
   logEnd ();
+  programState = STATE_NOT_RUNNING;
   return 0;
 }
 
@@ -72,6 +76,10 @@ processMsg (long route, long msg, char *args)
       switch (msg) {
         case MSG_REQUEST_EXIT: {
           logMsg (LOG_DBG, "got: req-exit");
+          programState = STATE_CLOSING;
+          sockhSendMessage (mainSock, ROUTE_MAIN, MSG_CLOSE_SOCKET, NULL);
+          sockClose (mainSock);
+          mainSock = INVALID_SOCKET;
           logProcEnd ("processMsg", "req-exit");
           return 1;
         }
@@ -109,7 +117,7 @@ processMsg (long route, long msg, char *args)
 static void
 mainProcessing (void)
 {
-  if (mainSock == INVALID_SOCKET) {
+  if (programState == STATE_RUNNING && mainSock == INVALID_SOCKET) {
     int       err;
 
     uint16_t mainPort = lbdjvars [BDJVL_MAIN_PORT];

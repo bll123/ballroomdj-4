@@ -2,6 +2,13 @@
 #define INC_BDJVARS_H
 
 typedef enum {
+  STATE_NOT_RUNNING,
+  STATE_INITIALIZING,
+  STATE_RUNNING,
+  STATE_CLOSING,
+} programstate_t;
+
+typedef enum {
   BDJV_UNKNOWN,
   BDJV_MAX
 } bdjvarkey_t;

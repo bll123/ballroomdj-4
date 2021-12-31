@@ -20,17 +20,21 @@ static void     stopPlayer (void);
 static int      processMsg (long route, long msg, char *args);
 static void     mainProcessing (void);
 
-static int      playerStarted = 0;
-static Sock_t   playerSocket = INVALID_SOCKET;
+static programstate_t   programState = STATE_NOT_RUNNING;
+static int              playerStarted = 0;
+static Sock_t           playerSocket = INVALID_SOCKET;
 
 int
 main (int argc, char *argv[])
 {
+  programState = STATE_INITIALIZING;
   bdj4startup (argc, argv);
 
+  programState = STATE_RUNNING;
   uint16_t listenPort = lbdjvars [BDJVL_MAIN_PORT];
   sockhMainLoop (listenPort, processMsg, mainProcessing);
   bdj4shutdown ();
+  programState = STATE_NOT_RUNNING;
   return 0;
 }
 
@@ -68,6 +72,9 @@ stopPlayer (void)
     return;
   }
   sockhSendMessage (playerSocket, ROUTE_PLAYER, MSG_REQUEST_EXIT, NULL);
+  sockhSendMessage (playerSocket, ROUTE_PLAYER, MSG_CLOSE_SOCKET, NULL);
+  sockClose (playerSocket);
+  playerSocket = INVALID_SOCKET;
 }
 
 static int
@@ -98,6 +105,7 @@ processMsg (long route, long msg, char *args)
           break;
         }
         case MSG_REQUEST_EXIT: {
+          programState = STATE_CLOSING;
           stopPlayer ();
           logProcEnd ("processMsg", "req-exit");
           return 1;
@@ -129,7 +137,9 @@ processMsg (long route, long msg, char *args)
 static void
 mainProcessing (void)
 {
-  if (playerStarted && playerSocket == INVALID_SOCKET) {
+  if (programState == STATE_RUNNING &&
+      playerStarted &&
+      playerSocket == INVALID_SOCKET) {
     int       err;
 
     uint16_t playerPort = lbdjvars [BDJVL_PLAYER_PORT];

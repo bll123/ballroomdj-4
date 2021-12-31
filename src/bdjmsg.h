@@ -12,7 +12,6 @@ typedef enum {
 typedef enum {
   MSG_NONE,
   MSG_CLOSE_SOCKET,
-  MSG_REQUEST_CLOSE,
   MSG_PLAYER_START,
   MSG_REQUEST_EXIT,     // standard shutdown
   MSG_FORCE_EXIT,       // only for testing
