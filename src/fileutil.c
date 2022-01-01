@@ -221,7 +221,7 @@ fileOpenShared (const char *fname, int truncflag, filehandle_t *fhandle)
   if (truncflag) {
     flags |= O_TRUNC;
   }
-  fd = open (fname, flags);
+  fd = open (fname, flags, 0600);
   fhandle->fd = fd;
   rc = fd;
 #endif

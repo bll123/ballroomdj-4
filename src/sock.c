@@ -349,8 +349,15 @@ sockConnect (uint16_t connPort, int *err, size_t timeout)
     }
     msleep (5);
     rc = connect (clsock, (struct sockaddr *) &raddr, sizeof (struct sockaddr_in));
+
+    /* the system may finish the connection on its own, in which case   */
+    /* the next call returns EISCONN                                    */
+
+    if (rc < 0 && errno == EISCONN) {
+      *err = 0;
+      rc = 0;
+    }
 #if _lib_WSAGetLastError
-    /* handle windows weirdness */
     if (WSAGetLastError() == WSAEISCONN) {
       *err = 0;
       rc = 0;
@@ -360,7 +367,7 @@ sockConnect (uint16_t connPort, int *err, size_t timeout)
   }
 
   /* darwin needs a boost to get the socket fully connected */
-  msleep (1);
+//  msleep (1);
 
   logMsg (LOG_DBG, "Connected to port:%d sock:%zd %d tries", connPort, (size_t) clsock, count);
   ++sockCount;
