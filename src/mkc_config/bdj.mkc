@@ -99,6 +99,7 @@ args noconst mkdir
 define  INVALID_SOCKET
 define  O_SYNC
 define  O_CLOEXEC
+define  S_IRWXU
 define  SO_REUSEPORT
 define  SOCK_CLOEXEC
 

@@ -93,7 +93,7 @@ getPidFromFile (char *fn)
   fh = fopen (fn, "r");
   if (fh != NULL) {
     int rc = fscanf (fh, "%zd", &temp);
-    pid = (size_t) temp;
+    pid = (pid_t) temp;
     if (rc != 1) {
       pid = -1;
     }

@@ -228,10 +228,10 @@ fileOpenShared (const char *fname, int truncflag, filehandle_t *fhandle)
   return rc;
 }
 
-int
+size_t
 fileWriteShared (filehandle_t *fhandle, char *data, size_t len)
 {
-  int       rc;
+  size_t rc;
 
 #if _lib_WriteFile
   DWORD   wlen;
@@ -257,8 +257,8 @@ int
 fileMakeDir (char *dirname)
 {
   int rc;
-#if _args_mkdir == 2
-  rc = mkdir (dirname, 0600);
+#if _args_mkdir == 2 && _define_S_IRWXU
+  rc = mkdir (dirname, S_IRWXU);
 #endif
 #if _args_mkdir == 1
   rc = mkdir (dirname);

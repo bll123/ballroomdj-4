@@ -37,7 +37,7 @@ int           fileMove (char *, char *);
 int           fileDelete (const char *fname);
 int           fileOpenShared (const char *fname, int truncflag,
                   filehandle_t *fileHandle);
-int           fileWriteShared (filehandle_t *fileHandle, char *data, size_t len);
+size_t        fileWriteShared (filehandle_t *fileHandle, char *data, size_t len);
 void          fileCloseShared (filehandle_t *fileHandle);
 int           fileMakeDir (char *dirname);
 char *        fileReadAll (char *);

@@ -5,8 +5,6 @@
 #include <string.h>
 #include <assert.h>
 
-#define BDJLOG_OFF 1
-
 #include "datafile.h"
 #include "tmutil.h"
 #include "list.h"

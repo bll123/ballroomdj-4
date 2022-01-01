@@ -67,27 +67,27 @@ main (int argc, char *argv[])
   }
 
   if (isWindows()) {
-    char *    buff;
+    char *    pbuff;
     char *    tbuff;
     char *    path;
     size_t    sz = 4096;
 
-    buff = malloc (sz);
-    assert (buff != NULL);
+    pbuff = malloc (sz);
+    assert (pbuff != NULL);
     tbuff = malloc (sz);
     assert (tbuff != NULL);
     path = malloc (sz);
     assert (path != NULL);
 
-    fileToWinPath (sysvars [SV_BDJ4EXECDIR], buff, sz);
+    fileToWinPath (sysvars [SV_BDJ4EXECDIR], pbuff, sz);
     strlcpy (path, "PATH=", sz);
     strlcat (path, getenv ("PATH"), sz);
     strlcat (path, ";", sz);
-    strlcat (path, buff, sz);
+    strlcat (path, pbuff, sz);
 
     strlcat (path, ";", sz);
-    snprintf (buff, sz, "%s\\..\\plocal\\bin", sysvars [SV_BDJ4EXECDIR]);
-    fileRealPath (buff, tbuff);
+    snprintf (pbuff, sz, "%s\\..\\plocal\\bin", sysvars [SV_BDJ4EXECDIR]);
+    fileRealPath (pbuff, tbuff);
     strlcat (path, tbuff, sz);
 
     strlcat (path, ";", sz);
@@ -95,7 +95,7 @@ main (int argc, char *argv[])
     strlcat (path, "C:\\Program Files\\VideoLAN\\VLC", sz);
     putenv (path);
 
-    free (buff);
+    free (pbuff);
     free (tbuff);
     free (path);
   }
@@ -106,6 +106,12 @@ main (int argc, char *argv[])
   if (isWindows()) {
     strlcat (buff, ".exe", MAXPATHLEN);
   }
-  execv (buff, argv);
+  /* this is necessary on mac os, as otherwise it will use the path   */
+  /* from the start of this launcher, and the executable path can no  */
+  /* be determined, as we've done a chdir().                          */
+  argv [0] = buff;
+  if (execv (buff, argv) < 0) {
+    fprintf (stderr, "Unable to start %s %d %s\n", buff, errno, strerror (errno));
+  }
   return 0;
 }

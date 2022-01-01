@@ -6,9 +6,8 @@
 #include <signal.h>
 #include <string.h>
 #include <errno.h>
-#if _hdr_unistd
-# include <unistd.h>
-#endif
+#include <unistd.h>
+
 #if _hdr_windows
 # include <windows.h>
 #endif
@@ -63,14 +62,17 @@ processExists (pid_t pid)
 int
 processStart (const char *fn, pid_t *pid, long profile)
 {
-  char        tmp [25];
+  char        tmp [80];
 
   logProcBegin (LOG_LVL_4, "processStart");
   snprintf (tmp, sizeof (tmp), "%ld", profile);
 
 #if _lib_fork
-  pid_t       tpid;
+  pid_t     tpid;
 
+  signal (SIGCHLD, SIG_IGN);
+
+  /* this may be slower, but it works; speed is not a major issue */
   tpid = fork ();
   if (tpid < 0) {
     logError ("fork");
@@ -79,9 +81,8 @@ processStart (const char *fn, pid_t *pid, long profile)
   }
   if (tpid == 0) {
     /* child */
-    if (daemon (1, 1) < 0) {
-      logError ("daemon");
-      exit (1);
+    if (setsid () < 0) {
+      logError ("setsid");
     }
     /* close any open file descriptors */
     for (int i = 3; i < 30; ++i) {
@@ -101,25 +102,21 @@ processStart (const char *fn, pid_t *pid, long profile)
 #if _lib_CreateProcess
   STARTUPINFO         si;
   PROCESS_INFORMATION pi;
-  char                *args [4];
 
   ZeroMemory (&si, sizeof (si));
   si.cb = sizeof(si);
   ZeroMemory (&pi, sizeof (pi));
 
-  args [0] = fn;
-  args [1] = "--profile"
-  args [2] = tmp;
-  args [3] = NULL;
+  snprintf (tmp, sizeof (tmp), "--profile %ld\n", profile);
 
   // Start the child process.
   if (! CreateProcess (
       fn,             // module name
-      args,           // command line
+      tmp,           // command line
       NULL,           // process handle
       NULL,           // thread handle
       FALSE,          // handle inheritance
-      CREATE_DEFAULT_ERROR_NONE | DETACHED_PROCES,
+      DETACHED_PROCESS,
       NULL,           // parent's environment
       NULL,           // parent's starting directory
       &si,            // STARTUPINFO structure
