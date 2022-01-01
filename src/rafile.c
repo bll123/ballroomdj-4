@@ -39,9 +39,9 @@ raOpen (char *fname, int version)
   rafile->fh = NULL;
 
   frc = stat (fname, &statbuf);
-  mode = "r+";
+  mode = "rb+";
   if (frc != 0) {
-    mode = "w+";
+    mode = "wb+";
   }
 
   rafile->fh = fopen (fname, mode);

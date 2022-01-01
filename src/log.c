@@ -8,9 +8,7 @@
 #include <assert.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#if _hdr_fcntl
-# include <fcntl.h>
-#endif
+#include <fcntl.h>
 #if _hdr_unistd
 # include <unistd.h>
 #endif
@@ -63,8 +61,8 @@ logClose (logidx_t idx)
     return;
   }
 
-  close (l->fd);
-  l->fd = -1;
+  fileCloseShared (&l->fhandle);
+  l->opened = 0;
   free (l);
 }
 
@@ -95,7 +93,7 @@ rlogError (const char *msg, int err, const char *fn, int line)
 void
 rlogVarMsg (logidx_t idx, const char *fn, int line, const char *fmt, ...)
 {
-  int           fd;
+  filehandle_t  *fhandle;
   bdjlog_t      *l;
   char          ttm [40];
   char          tbuff [512];
@@ -104,12 +102,11 @@ rlogVarMsg (logidx_t idx, const char *fn, int line, const char *fmt, ...)
   va_list       args;
 
   l = syslogs [idx];
-  fd = STDERR_FILENO;
-  if (! stderrLogging && (l == NULL || l->fd == -1)) {
+  if (! stderrLogging && (l == NULL || ! l->opened)) {
     return;
   }
-  if (! stderrLogging && l != NULL && l->fd != -1) {
-    fd = l->fd;
+  if (! stderrLogging && l != NULL && l->opened) {
+    fhandle = &l->fhandle;
   }
 
   tstamp (ttm, sizeof (ttm));
@@ -125,7 +122,7 @@ rlogVarMsg (logidx_t idx, const char *fn, int line, const char *fmt, ...)
   }
   size_t wlen = snprintf (wbuff, sizeof (wbuff), "%s: %-2s %*s%s %s\n",
       ttm, l->processTag, l->indent, "", tbuff, tfn);
-  if (write (fd, wbuff, wlen) < 0) {
+  if (fileWriteShared (fhandle, wbuff, wlen) < 0) {
     fprintf (stderr, "log write failed: %d %s\n", errno, strerror (errno));
   }
 }
@@ -180,22 +177,18 @@ static bdjlog_t *
 rlogOpen (const char *fn, const char *processtag, int truncflag)
 {
   bdjlog_t      *l;
-  int           flags;
 
   l = malloc (sizeof (bdjlog_t));
   assert (l != NULL);
 
-  l->fd = -1;
+  l->opened = 0;
   l->indent = 0;
   l->processTag = processtag;
-  flags = O_WRONLY | O_APPEND | O_SYNC | O_CREAT | O_CLOEXEC;
-  if (truncflag) {
-    flags |= O_TRUNC;
-  }
-  l->fd = open (fn, flags);
-  if (l->fd < 0) {
+  int rc = fileOpenShared (fn, truncflag, &l->fhandle);
+  if (rc < 0) {
     fprintf (stderr, "Unable to open %s %d %s\n", fn, errno, strerror (errno));
   }
+  l->opened = 1;
   return l;
 }
 

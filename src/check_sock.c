@@ -7,12 +7,10 @@
 #include <sys/time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <fcntl.h>
 
 #if _hdr_arpa_inet
 # include <arpa/inet.h>
-#endif
-#if _hdr_fcntl
-# include <fcntl.h>
 #endif
 #if _hdr_netdb
 # include <netdb.h>

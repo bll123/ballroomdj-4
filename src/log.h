@@ -2,9 +2,13 @@
 #define INC_BDJLOG_H
 
 #include <stdio.h>
+#include <stdint.h>
+
+#include "fileutil.h"
 
 typedef struct {
-  int           fd;
+  filehandle_t  fhandle;
+  int           opened;
   int           indent;
   const char    *processTag;
 } bdjlog_t;

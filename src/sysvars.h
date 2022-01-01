@@ -8,6 +8,8 @@ typedef enum {
   SV_OSVERS,
   SV_OSDISP,
   SV_HOSTNAME,
+  SV_BDJ4EXECDIR,     // where the executables are
+  SV_BDJ4DIR,         // where the data directory is
   SV_MAX
 } sysvarkey_t;
 
@@ -19,7 +21,7 @@ typedef enum {
 extern char       sysvars [SV_MAX][MAXPATHLEN];
 extern long       lsysvars [SVL_MAX];
 
-void    sysvarsInit (void);
+void    sysvarsInit (const char *);
 void    sysvarSetLong (sysvarlkey_t, long);
 int     isMacOS (void);
 int     isWindows (void);

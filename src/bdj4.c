@@ -12,14 +12,16 @@
 #include "sysvars.h"
 #include "bdjstring.h"
 #include "portability.h"
+#include "fileutil.h"
 
 int
 main (int argc, char *argv[])
 {
-  sysvarsInit ();
+  char      buff [MAXPATHLEN];
 
-/* ### FIX need to get the executable's directory, and change dir to one up,
-   if we're not already there */
+  sysvarsInit (argv [0]);
+
+  chdir (sysvars [SV_BDJ4DIR]);
 
   if (isMacOS()) {
     char  *   npath;
@@ -42,35 +44,45 @@ main (int argc, char *argv[])
   }
 
   if (isWindows()) {
-#if _lib_SetDllDirectory
     char *    buff;
     char *    tbuff;
+    char *    path;
     size_t    sz = 4096;
 
     buff = malloc (sz);
     assert (buff != NULL);
     tbuff = malloc (sz);
     assert (tbuff != NULL);
+    path = malloc (sz);
+    assert (path != NULL);
 
-    if (getcwd (tbuff, sz) == NULL) {
-      fprintf (stderr, "main: getcwd: %d %s\n", errno, strerror (errno));
-    }
-    snprintf (buff, sz, "%s", tbuff);
-    snprintf (tbuff, "%s\\bin", buff);  /* our package */
+    fileToWinPath (sysvars [SV_BDJ4EXECDIR], buff, sz);
+    strlcpy (path, "PATH=", sz);
+    strlcat (path, getenv ("PATH"), sz);
+    strlcat (path, ";", sz);
+    strlcat (path, buff, sz);
 
-    /* cannot get the .dll working with the PATH environment variable */
-    SetDllDirectory (tbuff);
-    SetDllDirectory ("C:\\Program Files\\VideoLAN\\VLC");
-    snprintf (tbuff, "%s\\plocal\\bin", buff); /* other packages */
-    SetDllDirectory (tbuff);
+    strlcat (path, ";", sz);
+    snprintf (buff, sz, "%s\\..\\plocal\\bin", sysvars [SV_BDJ4EXECDIR]);
+    fileRealPath (buff, tbuff);
+    strlcat (path, tbuff, sz);
+
+    strlcat (path, ";", sz);
+    /* do not use double quotes w/putenv */
+    strlcat (path, "C:\\Program Files\\VideoLAN\\VLC", sz);
+    putenv (path);
 
     free (buff);
     free (tbuff);
-#endif
+    free (path);
   }
 
   /* launch the program */
 
-  execv ("bin/bdj4main", argv);
+  snprintf (buff, MAXPATHLEN, "%s/bdj4main", sysvars [SV_BDJ4EXECDIR]);
+  if (isWindows()) {
+    strlcat (buff, ".exe", MAXPATHLEN);
+  }
+  execv (buff, argv);
   return 0;
 }

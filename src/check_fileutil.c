@@ -327,7 +327,7 @@ START_TEST(file_winpath)
   char    to [MAXPATHLEN];
 
   from = "/tmp/abc.txt";
-  fileConvWinPath (from, to, MAXPATHLEN);
+  fileToWinPath (from, to, MAXPATHLEN);
   ck_assert_str_eq (to, "\\tmp\\abc.txt");
   ck_assert_int_eq (strlen (from), strlen (to));
 }

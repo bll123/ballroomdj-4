@@ -4,6 +4,9 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
+#if _hdr_unistd
+# include <unistd.h>
+#endif
 
 #include "sockh.h"
 #include "bdjmsg.h"
@@ -13,7 +16,7 @@
 #include "tmutil.h"
 
 int
-main (void)
+main (int argc, char *argv[])
 {
   char    buff [80];
   long    route = ROUTE_NONE;
@@ -23,7 +26,8 @@ main (void)
   char    *rval;
   int     err;
 
-  sysvarsInit ();
+  sysvarsInit (argv [0]);
+  chdir (sysvars [SV_BDJ4DIR]);
   bdjvarsInit ();
   logStartAppend ("clicomm", "cl");
   uint16_t mainPort = lbdjvars [BDJVL_MAIN_PORT];

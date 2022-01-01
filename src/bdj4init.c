@@ -64,7 +64,10 @@ bdj4startup (int argc, char *argv[])
 
   mtimestart (&mt);
   initLocale ();
-  sysvarsInit ();
+  sysvarsInit (argv[0]);
+
+  chdir (sysvars [SV_BDJ4DIR]);
+
   snprintf (tbuff, MAXPATHLEN, "data/%s", sysvars [SV_HOSTNAME]);
   if (! fileExists (tbuff)) {
     fileMakeDir (tbuff);

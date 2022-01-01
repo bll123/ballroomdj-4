@@ -1,6 +1,10 @@
 #include "config.h"
 
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
 #include <check.h>
 
 #include "check_bdj.h"
@@ -9,13 +13,14 @@
 #include "log.h"
 
 int
-main (void)
+main (int argc, char *argv [])
 {
   int     number_failed;
   Suite   *s;
   SRunner *sr;
 
-  sysvarsInit ();
+  sysvarsInit (argv [0]);
+  chdir (sysvars [SV_BDJ4DIR]);
   tagdefInit ();
 
   logStart ("c");

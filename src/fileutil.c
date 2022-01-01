@@ -7,8 +7,17 @@
 #include <sys/stat.h>
 #include <string.h>
 #include <errno.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #if _hdr_unistd
 # include <unistd.h>
+#endif
+#if _hdr_io
+# include <io.h>
+#endif
+#if _hdr_windows
+# include <windows.h>
 #endif
 
 #include "fileutil.h"
@@ -138,8 +147,8 @@ fileCopy (char *fname, char *nfn)
   char      tnfn [MAXPATHLEN];
 
   if (isWindows ()) {
-    fileConvWinPath (fname, tfname, MAXPATHLEN);
-    fileConvWinPath (nfn, tnfn, MAXPATHLEN);
+    fileToWinPath (fname, tfname, MAXPATHLEN);
+    fileToWinPath (nfn, tnfn, MAXPATHLEN);
     snprintf (cmd, MAXPATHLEN, "copy /y/b \"%s\" \"%s\" >NUL",
         tfname, tnfn);
   } else {
@@ -166,10 +175,82 @@ fileMove (char *fname, char *nfn)
 }
 
 inline int
-fileDelete (char *fname)
+fileDelete (const char *fname)
 {
   int rc = unlink (fname);
   return rc;
+}
+
+int
+fileOpenShared (const char *fname, int truncflag, filehandle_t *fhandle)
+{
+  int         rc;
+
+#if _lib_CreateFile
+  HANDLE    handle;
+  DWORD     cd;
+
+  cd = OPEN_ALWAYS;
+  if (truncflag) {
+    cd = CREATE_ALWAYS;
+  }
+
+  rc = 0;
+  handle = CreateFile (fname,
+      FILE_APPEND_DATA,
+      FILE_SHARE_DELETE | FILE_SHARE_READ | FILE_SHARE_WRITE,
+      NULL,
+      cd,
+      FILE_ATTRIBUTE_NORMAL,
+      NULL);
+  if (handle == NULL) {
+    rc = -1;
+  }
+  fhandle->handle = handle;
+#else
+  int         fd;
+  int         flags;
+
+  flags = O_WRONLY | O_APPEND | O_CREAT;
+# if _define_O_SYNC
+  flags |= O_SYNC;
+# endif
+# if _define_O_CLOEXEC
+  flags |= O_CLOEXEC;
+# endif
+  if (truncflag) {
+    flags |= O_TRUNC;
+  }
+  fd = open (fname, flags);
+  fhandle->fd = fd;
+  rc = fd;
+#endif
+  return rc;
+}
+
+int
+fileWriteShared (filehandle_t *fhandle, char *data, size_t len)
+{
+  int       rc;
+
+#if _lib_WriteFile
+  DWORD   wlen;
+  rc = WriteFile(fhandle->handle, data, len, &wlen, NULL);
+#else
+  rc = write (fhandle->fd, data, len);
+#endif
+  return rc;
+}
+
+void
+fileCloseShared (filehandle_t *fhandle)
+{
+#if _lib_CloseHandle
+  CloseHandle (fhandle->handle);
+#else
+  close (fhandle->fd);
+#endif
+  return;
 }
 
 int
@@ -210,7 +291,7 @@ fileReadAll (char *fname)
 }
 
 void
-fileConvWinPath (char *from, char *to, size_t maxlen)
+fileToWinPath (char *from, char *to, size_t maxlen)
 {
   strlcpy (to, from, maxlen);
   for (size_t i = 0; i < maxlen; ++i) {
@@ -221,6 +302,30 @@ fileConvWinPath (char *from, char *to, size_t maxlen)
       to [i] = '\\';
     }
   }
+}
+
+void
+fileNormPath (char *buff, size_t len)
+{
+  for (size_t i = 0; i < len; ++i) {
+    if (buff [i] == '\0') {
+      break;
+    }
+    if (buff [i] == '\\') {
+      buff [i] = '/';
+    }
+  }
+}
+
+void
+fileRealPath (char *from, char *to)
+{
+#if _lib_realpath
+  realpath (from, to);
+#endif
+#if _lib_GetFullPathName
+  GetFullPathName (from, MAXPATHLEN, to, NULL);
+#endif
 }
 
 char *

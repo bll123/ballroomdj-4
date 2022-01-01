@@ -13,12 +13,10 @@
 #include <string.h>
 #include <sys/time.h>
 #include <sys/types.h>
+#include <fcntl.h>
 
 #if _hdr_arpa_inet
 # include <arpa/inet.h>
-#endif
-#if _hdr_fcntl
-# include <fcntl.h>
 #endif
 #if _hdr_netdb
 # include <netdb.h>
@@ -82,7 +80,11 @@ sockServer (uint16_t listenPort, int *err)
     sockInit ();
   }
 
-  Sock_t lsock = socket (AF_INET, SOCK_STREAM | SOCK_CLOEXEC, 0);
+  int typ = SOCK_STREAM;
+#if _define_SOCK_CLOEXEC
+  typ |= SOCK_CLOEXEC;
+#endif
+  Sock_t lsock = socket (AF_INET, typ, 0);
   if (socketInvalid (lsock)) {
     *err = errno;
     logError ("socket:");
@@ -296,7 +298,11 @@ sockConnect (uint16_t connPort, int *err, size_t timeout)
     sockInit ();
   }
 
-  Sock_t clsock = socket (AF_INET, SOCK_STREAM | SOCK_CLOEXEC, 0);
+  int typ = SOCK_STREAM;
+#if _define_SOCK_CLOEXEC
+  typ |= SOCK_CLOEXEC;
+#endif
+  Sock_t clsock = socket (AF_INET, typ, 0);
   if (socketInvalid (clsock)) {
     *err = errno;
     logError ("connect");
@@ -343,6 +349,13 @@ sockConnect (uint16_t connPort, int *err, size_t timeout)
     }
     msleep (5);
     rc = connect (clsock, (struct sockaddr *) &raddr, sizeof (struct sockaddr_in));
+#if _lib_WSAGetLastError
+    /* handle windows weirdness */
+    if (WSAGetLastError() == WSAEISCONN) {
+      *err = 0;
+      rc = 0;
+    }
+#endif
     ++count;
   }
 

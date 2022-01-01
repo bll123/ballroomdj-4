@@ -51,7 +51,7 @@ startPlayer (void)
   }
 
   logProcBegin ("startPlayer");
-  strlcpy (tbuff, "bin/bdj4player", MAXPATHLEN);
+  snprintf (tbuff, MAXPATHLEN, "%s/bdj4player", sysvars [SV_BDJ4EXECDIR]);
   if (isWindows()) {
     strlcat (tbuff, ".exe", MAXPATHLEN);
   }

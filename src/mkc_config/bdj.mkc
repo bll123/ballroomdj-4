@@ -13,6 +13,7 @@ hdr     alsa/asoundlib.h
 hdr	arpa/inet.h
 hdr     endpointvolume.h
 hdr     fcntl.h
+hdr     io.h
 hdr     libintl.h
 hdr     MacTypes.h
 hdr     netdb.h
@@ -41,15 +42,19 @@ sys	time.h
 sys	types.h
 sys	utsname.h
 
+typ     HANDLE
 typ     SOCKET
 typ     socklen_t
 typ	struct sockaddr_in
 typ     suseconds_t
 
+lib     CloseHandle
 lib     CoInitialize -lole32
+lib     CreateFile
 lib     CreateProcess
 lib     fcntl
 lib     fork
+lib     GetFullPathName
 if iswindows ! ( ( == _MKCONFIG_SYSTYPE Linux ) || ( == _MKCONFIG_SYSTYPE Darwin ) )
  # on windows, a static link is wanted
  lib	gettext -Wl,-Bstatic -lintl -Wl,-Bdynamic % -Wl,-Bstatic -lintl -liconv -Wl,-Bdynamic
@@ -63,8 +68,10 @@ lib     ioctlsocket -lws2_32
 lib     kill
 lib     localtime_r
 lib     mkdir
+lib     _open_osfhandle
 lib     OpenProcess
 lib     pa_threaded_mainloop_start -lpulse -lm
+lib     realpath
 lib     select -lws2_32
 lib     SetDllDirectory
 lib     socket -lws2_32
@@ -73,6 +80,7 @@ lib	strlcpy
 lib	strlcat
 lib     strtok_r
 lib     uname
+lib     WriteFile
 lib     WSACleanup -lws2_32
 lib     WSAGetLastError -lws2_32
 lib     WSAStartup -lws2_32
@@ -89,7 +97,10 @@ endif
 args noconst mkdir
 
 define  INVALID_SOCKET
+define  O_SYNC
+define  O_CLOEXEC
 define  SO_REUSEPORT
+define  SOCK_CLOEXEC
 
 size	int
 size	long

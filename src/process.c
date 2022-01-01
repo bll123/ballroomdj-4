@@ -68,14 +68,14 @@ processExists (pid_t pid)
 
 #endif
 
-#if _lib_fork
-
 int
 processStart (const char *fn, pid_t *pid)
 {
+  logProcBegin ("processStart");
+
+#if _lib_fork
   pid_t       tpid;
 
-  logProcBegin ("processStart");
   tpid = fork ();
   if (tpid < 0) {
     logError ("fork");
@@ -92,17 +92,9 @@ processStart (const char *fn, pid_t *pid)
     exit (0);
   }
   *pid = tpid;
-  logProcEnd ("processStart", "");
-  return 0;
-}
-
 #endif
 
 #if _lib_CreateProcess
-
-int
-processStart (const char *fn, pid_t *pid)
-{
   STARTUPINFO         si;
   PROCESS_INFORMATION pi;
 
@@ -111,19 +103,19 @@ processStart (const char *fn, pid_t *pid)
   ZeroMemory (&pi, sizeof (pi));
 
   // Start the child process.
-  if (!CreateProcess (
-    fn,             // module name
-    NULL,           // command line
-    NULL,           // process handle
-    NULL,           // thread handle
-    FALSE,          // handle inheritance
-    0,              // creation flags
-    NULL,           // parent's environment
-    NULL,           // parent's starting directory
-    &si,            // STARTUPINFO structure
-    &pi )           // PROCESS_INFORMATION structure
+  if (! CreateProcess (
+      fn,             // module name
+      NULL,           // command line
+      NULL,           // process handle
+      NULL,           // thread handle
+      FALSE,          // handle inheritance
+      0,              // creation flags
+      NULL,           // parent's environment
+      NULL,           // parent's starting directory
+      &si,            // STARTUPINFO structure
+      &pi )           // PROCESS_INFORMATION structure
   ) {
-    printf ("CreateProcess failed (%ld).\n", GetLastError());
+    logError ("CreateProcess");
     return -1;
   }
 
@@ -134,7 +126,8 @@ processStart (const char *fn, pid_t *pid)
 
   /* ### FIX would like process id back */
 
+#endif
+  logProcEnd ("processStart", "");
   return 0;
 }
 
-#endif

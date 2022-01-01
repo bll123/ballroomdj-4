@@ -16,15 +16,18 @@
 
 #include "sysvars.h"
 #include "bdjstring.h"
+#include "fileutil.h"
 #include "portability.h"
 
 char        sysvars [SV_MAX][MAXPATHLEN];
 long        lsysvars [SVL_MAX];
 
 void
-sysvarsInit (void)
+sysvarsInit (const char *argv0)
 {
   char                tbuf [MAXPATHLEN+1];
+  char                tcwd [MAXPATHLEN+1];
+  char                buff [MAXPATHLEN+1];
 #if _lib_uname
   int                 rc;
   struct utsname      ubuf;
@@ -80,6 +83,38 @@ sysvarsInit (void)
     strtolower (hn);
     strlcpy (sysvars [SV_HOSTNAME], hn, MAXPATHLEN);
     free (hn);
+  }
+
+  getcwd (tcwd, MAXPATHLEN);
+
+  strlcpy (tbuf, argv0, MAXPATHLEN);
+  strlcpy (buff, argv0, MAXPATHLEN);
+  fileNormPath (buff, MAXPATHLEN);
+  if (*buff != '/' &&
+      (strlen (buff) > 2 && *(buff + 1) == ':' && *(buff + 2) != '/')) {
+    strlcpy (tbuf, tcwd, MAXPATHLEN);
+    strlcat (tbuf, buff, MAXPATHLEN);
+  }
+  /* this gives us the real path to the executable */
+  fileRealPath (tbuf, buff);
+  fileNormPath (buff, MAXPATHLEN);
+
+  /* strip off the filename */
+  char *p = strrchr (buff, '/');
+  *p = '\0';
+  strlcpy (sysvars [SV_BDJ4EXECDIR], buff, MAXPATHLEN);
+
+  if (fileExists ("data")) {
+    /* if there is a data directory in the current working directory  */
+    /* a change of directories is contra-indicated.                   */
+
+    fileNormPath (tcwd, MAXPATHLEN);
+    strlcpy (sysvars [SV_BDJ4DIR], tcwd, MAXPATHLEN);
+  } else {
+    /* strip off the /bin */
+    char *p = strrchr (buff, '/');
+    *p = '\0';
+    strlcpy (sysvars [SV_BDJ4DIR], buff, MAXPATHLEN);
   }
 
   lsysvars [SVL_BDJIDX] = 0;

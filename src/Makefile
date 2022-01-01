@@ -144,6 +144,7 @@ tclean:
 LAUNCHEROBJS = \
 	$(OBJDIR)/bdj4$(OBJ_EXT) \
 	$(OBJDIR)/bdjstring$(OBJ_EXT) \
+	$(OBJDIR)/fileutil$(OBJ_EXT) \
 	$(OBJDIR)/sysvars$(OBJ_EXT) \
 	$(OBJDIR)/strlcat$(OBJ_EXT) \
 	$(OBJDIR)/strlcpy$(OBJ_EXT)
@@ -327,14 +328,14 @@ $(OBJDIR)/volwin$(OBJ_EXT): volwin.cpp volume.h $(MKC_OUTPUT)
 $(OBJDIR)/autosel$(OBJ_EXT): autosel.c config.h autosel.h datafile.h list.h
 $(OBJDIR)/bdj4$(OBJ_EXT): bdj4.c config.h sysvars.h portability.h bdjstring.h
 $(OBJDIR)/bdj4init$(OBJ_EXT): bdj4init.c config.h bdj4init.h musicdb.h song.h list.h \
- tagdef.h bdjstring.h sysvars.h portability.h log.h tmutil.h fileutil.h \
- sortopt.h datafile.h sequence.h dnctypes.h dncspeeds.h genre.h rating.h \
- level.h songlist.h
+ tagdef.h bdjstring.h sysvars.h portability.h bdjvars.h log.h tmutil.h \
+ fileutil.h sortopt.h datafile.h sequence.h dnctypes.h dncspeeds.h \
+ genre.h rating.h level.h songlist.h
 $(OBJDIR)/bdj4main$(OBJ_EXT): bdj4main.c bdj4init.h sockh.h sock.h config.h bdjvars.h \
  bdjmsg.h log.h process.h portability.h bdjstring.h sysvars.h
 $(OBJDIR)/bdj4player$(OBJ_EXT): bdj4player.c config.h vlci.h list.h sysvars.h portability.h \
  bdjvars.h bdjmsg.h sockh.h sock.h log.h bdjstring.h
-$(OBJDIR)/bdjmsg$(OBJ_EXT): bdjmsg.c config.h bdjmsg.h
+$(OBJDIR)/bdjmsg$(OBJ_EXT): bdjmsg.c config.h bdjmsg.h bdjstring.h
 $(OBJDIR)/bdjopt$(OBJ_EXT): bdjopt.c config.h bdjopt.h list.h sysvars.h portability.h \
  fileutil.h bdjstring.h datafile.h
 $(OBJDIR)/bdjstring$(OBJ_EXT): bdjstring.c config.h bdjstring.h
@@ -353,6 +354,8 @@ $(OBJDIR)/check_process$(OBJ_EXT): check_process.c config.h process.h check_bdj.
 $(OBJDIR)/check_rafile$(OBJ_EXT): check_rafile.c config.h rafile.h check_bdj.h
 $(OBJDIR)/check_sock$(OBJ_EXT): check_sock.c config.h sock.h check_bdj.h tmutil.h log.h
 $(OBJDIR)/check_tmutil$(OBJ_EXT): check_tmutil.c config.h tmutil.h check_bdj.h
+$(OBJDIR)/clicomm$(OBJ_EXT): clicomm.c config.h sockh.h sock.h bdjmsg.h sysvars.h \
+ portability.h bdjvars.h log.h tmutil.h
 $(OBJDIR)/datafile$(OBJ_EXT): datafile.c config.h datafile.h list.h tmutil.h fileutil.h \
  bdjstring.h log.h
 $(OBJDIR)/dncspeeds$(OBJ_EXT): dncspeeds.c config.h dncspeeds.h datafile.h list.h \
@@ -380,10 +383,11 @@ $(OBJDIR)/songlist$(OBJ_EXT): songlist.c config.h songlist.h datafile.h list.h f
 $(OBJDIR)/sortopt$(OBJ_EXT): sortopt.c config.h sortopt.h datafile.h list.h fileutil.h
 $(OBJDIR)/strlcat$(OBJ_EXT): strlcat.c config.h bdjstring.h
 $(OBJDIR)/strlcpy$(OBJ_EXT): strlcpy.c config.h bdjstring.h
-$(OBJDIR)/sysvars$(OBJ_EXT): sysvars.c config.h sysvars.h portability.h bdjstring.h
+$(OBJDIR)/sysvars$(OBJ_EXT): sysvars.c config.h sysvars.h portability.h bdjstring.h \
+ fileutil.h
 $(OBJDIR)/tagdef$(OBJ_EXT): tagdef.c config.h tagdef.h bdjstring.h list.h
 $(OBJDIR)/tmutil$(OBJ_EXT): tmutil.c config.h tmutil.h bdjstring.h
 $(OBJDIR)/vlci$(OBJ_EXT): vlci.c config.h vlci.h list.h bdjstring.h log.h
 $(OBJDIR)/volalsa$(OBJ_EXT): volalsa.c config.h
-$(OBJDIR)/volpa$(OBJ_EXT): volpa.c config.h volume.h
+$(OBJDIR)/volpa$(OBJ_EXT): volpa.c config.h
 $(OBJDIR)/volume$(OBJ_EXT): volume.c config.h volume.h

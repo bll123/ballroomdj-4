@@ -6,6 +6,14 @@
 #include <stdint.h>
 #include <sys/types.h>
 
+/* winsock2.h should come before windows.h */
+#if _hdr_winsock2
+# include <winsock2.h>
+#endif
+#if _hdr_windows
+# include <windows.h>
+#endif
+
 typedef struct {
   int             count;
   Sock_t          max;

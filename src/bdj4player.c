@@ -7,14 +7,14 @@
 #include <errno.h>
 #include <assert.h>
 
-#include "vlci.h"
+#include "sock.h"
 #include "sysvars.h"
 #include "bdjvars.h"
 #include "bdjmsg.h"
 #include "sockh.h"
-#include "sock.h"
 #include "log.h"
 #include "bdjstring.h"
+#include "vlci.h"
 
 static int      processMsg (long route, long msg, char *args);
 static void     mainProcessing (void);
@@ -43,7 +43,7 @@ main (int argc, char *argv[])
   vlcData_t *     vlcData;
 
   programState = STATE_INITIALIZING;
-  sysvarsInit ();
+  sysvarsInit (argv[0]);
   logStartAppend ("bdj4player", "p");
   bdjvarsInit ();
 
