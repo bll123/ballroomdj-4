@@ -15,23 +15,35 @@
 #include "log.h"
 #include "tmutil.h"
 
+static void processBuff (char *buff);
+
 int
 main (int argc, char *argv[])
 {
-  char    buff [80];
-  long    route = ROUTE_NONE;
-  long    msg = MSG_NONE;
-  int     routeok = 0;
-  int     msgok = 0;
-  char    *rval;
-  int     err;
+  char            buff [80];
+  long            route = ROUTE_NONE;
+  long            msg = MSG_NONE;
+  int             routeok = 0;
+  int             msgok = 0;
+  int             argsok = 0;
+  int             playerstart = 0;
+  char            *args;
+  char            *rval;
+  int             err;
+  Sock_t          mainSock = INVALID_SOCKET;
+  Sock_t          playerSock = INVALID_SOCKET;
+
 
   sysvarsInit (argv [0]);
-  chdir (sysvars [SV_BDJ4DIR]);
+  if (chdir (sysvars [SV_BDJ4DIR]) < 0) {
+    fprintf (stderr, "Unable to chdir: %s\n", sysvars [SV_BDJ4DIR]);
+    exit (1);
+  }
   bdjvarsInit ();
   logStartAppend ("clicomm", "cl", LOG_LVL_6);
+
   uint16_t mainPort = lbdjvars [BDJVL_MAIN_PORT];
-  Sock_t mainSock = sockConnect (mainPort, &err, 1000);
+  mainSock = sockConnect (mainPort, &err, 1000);
   while (socketInvalid (mainSock)) {
     msleep (100);
     mainSock = sockConnect (mainPort, &err, 1000);
@@ -42,7 +54,9 @@ main (int argc, char *argv[])
     fflush (stdout);
     rval = fgets (buff, sizeof (buff), stdin);
     buff [strlen (buff) - 1] = '\0';
+    processBuff (buff);
     routeok = 0;
+    argsok = 0;
     if (strcmp (buff, "main") == 0) {
       route = ROUTE_MAIN;
       routeok = 1;
@@ -59,14 +73,27 @@ main (int argc, char *argv[])
       sockClose (mainSock);
       exit (0);
     }
+
     printf ("  Msg: ");
     fflush (stdout);
     rval = fgets (buff, sizeof (buff), stdin);
     buff [strlen (buff) - 1] = '\0';
+    processBuff (buff);
     msgok = 0;
     if (strcmp (buff, "start-player") == 0) {
       msg = MSG_PLAYER_START;
       msgok = 1;
+      playerstart = 1;
+    }
+    if (strcmp (buff, "prep") == 0) {
+      msg = MSG_PREP_SONG;
+      msgok = 1;
+      argsok = 1;
+    }
+    if (strcmp (buff, "play") == 0) {
+      msg = MSG_PLAY_SONG;
+      msgok = 1;
+      argsok = 1;
     }
     if (strcmp (buff, "exit") == 0) {
       msg = MSG_REQUEST_EXIT;
@@ -80,8 +107,24 @@ main (int argc, char *argv[])
       sockClose (mainSock);
       exit (0);
     }
+
+    args = NULL;
+    if (argsok) {
+      printf ("  Args: ");
+      fflush (stdout);
+      rval = fgets (buff, sizeof (buff), stdin);
+      buff [strlen (buff) - 1] = '\0';
+      processBuff (buff);
+      args = buff;
+    }
+
     if (routeok && msgok) {
-      sockhSendMessage (mainSock, route, msg, NULL);
+      if (route == ROUTE_MAIN) {
+        sockhSendMessage (mainSock, route, msg, args);
+      }
+      if (route == ROUTE_PLAYER) {
+        sockhSendMessage (playerSock, route, msg, args);
+      }
     } else {
       if (! routeok) {
         fprintf (stdout, "    invalid route\n");
@@ -92,6 +135,31 @@ main (int argc, char *argv[])
         fflush (stdout);
       }
     }
+
+    if (playerstart) {
+      uint16_t playerPort = lbdjvars [BDJVL_PLAYER_PORT];
+      playerSock = sockConnect (playerPort, &err, 1000);
+      while (socketInvalid (playerSock)) {
+        msleep (100);
+        playerSock = sockConnect (playerPort, &err, 1000);
+      }
+      playerstart = 0;
+    }
   }
   return 0;
+}
+
+
+static void
+processBuff (char *buff)
+{
+  size_t    idx = 0;
+
+  for (char *p = buff; *p; ++p) {
+    if (*p != 0x8 && *p != 0x7F) {
+      buff [idx] = *p;
+      ++idx;
+    }
+  }
+  buff [idx] = '\0';
 }

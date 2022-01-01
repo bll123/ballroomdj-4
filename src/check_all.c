@@ -20,7 +20,10 @@ main (int argc, char *argv [])
   SRunner *sr;
 
   sysvarsInit (argv [0]);
-  chdir (sysvars [SV_BDJ4DIR]);
+  if (chdir (sysvars [SV_BDJ4DIR]) < 0) {
+    fprintf (stderr, "Unable to chdir: %s\n", sysvars [SV_BDJ4DIR]);
+    exit (1);
+  }
   tagdefInit ();
 
   logStart ("c", LOG_LVL_6);

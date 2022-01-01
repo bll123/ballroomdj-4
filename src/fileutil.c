@@ -321,10 +321,10 @@ void
 fileRealPath (char *from, char *to)
 {
 #if _lib_realpath
-  realpath (from, to);
+  (void) ! realpath (from, to);
 #endif
 #if _lib_GetFullPathName
-  GetFullPathName (from, MAXPATHLEN, to, NULL);
+  (void) ! GetFullPathName (from, MAXPATHLEN, to, NULL);
 #endif
 }
 

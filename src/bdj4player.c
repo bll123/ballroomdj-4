@@ -6,18 +6,35 @@
 #include <string.h>
 #include <errno.h>
 #include <assert.h>
+#include <getopt.h>
+#include <ctype.h>
 
-#include "sock.h"
-#include "sysvars.h"
-#include "bdjvars.h"
 #include "bdjmsg.h"
-#include "sockh.h"
-#include "log.h"
 #include "bdjstring.h"
+#include "bdjvars.h"
+#include "fileutil.h"
+#include "list.h"
+#include "log.h"
+#include "portability.h"
+#include "sock.h"
+#include "sockh.h"
+#include "sysvars.h"
 #include "vlci.h"
 
-static int      processMsg (long route, long msg, char *args);
-static void     mainProcessing (void);
+typedef struct {
+  programstate_t  programState;
+  Sock_t          mainSock;
+  vlcData_t       *vlcData;
+  list_t          *prepList;
+  long            globalCount;
+} playerData_t;
+
+static int      processMsg (long route, long msg, char *args, void *udata);
+static void     mainProcessing (void *udata);
+static void     prepSong (playerData_t *playerData, char *sfname);
+static void     playSong (playerData_t *playerData, char *sfname);
+static void     makeSongTempName (playerData_t *playerData,
+                    char *in, char *out, size_t maxlen);
 
 static char *   vlcDefaultOptions [] = {
       "--quiet",
@@ -34,53 +51,94 @@ static char *   vlcDefaultOptions [] = {
 };
 #define VLC_DFLT_OPT_SZ (sizeof (vlcDefaultOptions) / sizeof (char *))
 
-static programstate_t   programState = STATE_NOT_RUNNING;
-static Sock_t           mainSock = INVALID_SOCKET;
-
 int
 main (int argc, char *argv[])
 {
-  vlcData_t *     vlcData;
+  playerData_t    playerData;
+  int             c = 0;
+  int             option_index = 0;
 
-  programState = STATE_INITIALIZING;
+  static struct option bdj_options [] = {
+    { "profile",    required_argument,  NULL,   'p' },
+    { NULL,         0,                  NULL,   0 }
+  };
+
+  playerData.programState = STATE_INITIALIZING;
+  playerData.mainSock = INVALID_SOCKET;
+  playerData.vlcData = NULL;
+  playerData.prepList = slistAlloc (LIST_ORDERED, istringCompare, free, free);
+  playerData.globalCount = 1;
+
   sysvarsInit (argv[0]);
-  logStartAppend ("bdj4player", "p", LOG_LVL_1);
+
+  while ((c = getopt_long (argc, argv, "", bdj_options, &option_index)) != -1) {
+    switch (c) {
+      case 'p': {
+        if (optarg) {
+          sysvarSetLong (SVL_BDJIDX, atol (optarg));
+        }
+        break;
+      }
+      default: {
+        break;
+      }
+    }
+  }
+
   bdjvarsInit ();
+  logStartAppend ("bdj4player", "p", LOG_LVL_5);
 
-  vlcData = vlcInit (VLC_DFLT_OPT_SZ, vlcDefaultOptions);
-  assert (vlcData != NULL);
+  logMsg (LOG_SESS, LOG_LVL_1, "Using profile %ld", lsysvars [SVL_BDJIDX]);
 
-  programState = STATE_RUNNING;
+  playerData.vlcData = vlcInit (VLC_DFLT_OPT_SZ, vlcDefaultOptions);
+  assert (playerData.vlcData != NULL);
+
+  playerData.programState = STATE_RUNNING;
 
   uint16_t listenPort = lbdjvars [BDJVL_PLAYER_PORT];
-  sockhMainLoop (listenPort, processMsg, mainProcessing);
+  sockhMainLoop (listenPort, processMsg, mainProcessing, &playerData);
 
-  vlcClose (vlcData);
+  if (playerData.vlcData != NULL) {
+    vlcClose (playerData.vlcData);
+  }
+  if (playerData.prepList != NULL) {
+    slistFree (playerData.prepList);
+  }
   logEnd ();
-  programState = STATE_NOT_RUNNING;
+  playerData.programState = STATE_NOT_RUNNING;
   return 0;
 }
 
 /* internal routines */
 
 static int
-processMsg (long route, long msg, char *args)
+processMsg (long route, long msg, char *args, void *udata)
 {
+  playerData_t      *playerData;
+
   logProcBegin (LOG_LVL_4, "processMsg");
-  logMsg (LOG_DBG, LOG_LVL_4, "got: route: %ld msg:%ld", route, msg);
+  playerData = (playerData_t *) udata;
+
+  logMsg (LOG_DBG, LOG_LVL_4, "got: route: %ld msg:%ld args:%s", route, msg, args);
   switch (route) {
-    case ROUTE_NONE: {
-      break;
-    }
+    case ROUTE_NONE:
     case ROUTE_PLAYER: {
       logMsg (LOG_DBG, LOG_LVL_4, "got: route-player");
       switch (msg) {
+        case MSG_PREP_SONG: {
+          prepSong (playerData, args);
+          break;
+        }
+        case MSG_PLAY_SONG: {
+          playSong (playerData, args);
+          break;
+        }
         case MSG_REQUEST_EXIT: {
           logMsg (LOG_DBG, LOG_LVL_4, "got: req-exit");
-          programState = STATE_CLOSING;
-          sockhSendMessage (mainSock, ROUTE_MAIN, MSG_CLOSE_SOCKET, NULL);
-          sockClose (mainSock);
-          mainSock = INVALID_SOCKET;
+          playerData->programState = STATE_CLOSING;
+          sockhSendMessage (playerData->mainSock, ROUTE_MAIN, MSG_CLOSE_SOCKET, NULL);
+          sockClose (playerData->mainSock);
+          playerData->mainSock = INVALID_SOCKET;
           logProcEnd (LOG_LVL_4, "processMsg", "req-exit");
           return 1;
         }
@@ -88,12 +146,6 @@ processMsg (long route, long msg, char *args)
           break;
         }
       }
-      break;
-    }
-    case ROUTE_MAIN: {
-      break;
-    }
-    case ROUTE_GUI: {
       break;
     }
     default: {
@@ -106,15 +158,78 @@ processMsg (long route, long msg, char *args)
 }
 
 static void
-mainProcessing (void)
+mainProcessing (void *udata)
 {
-  if (programState == STATE_RUNNING && mainSock == INVALID_SOCKET) {
+  playerData_t      *playerData;
+
+  playerData = (playerData_t *) udata;
+
+  if (playerData->programState == STATE_RUNNING &&
+      playerData->mainSock == INVALID_SOCKET) {
     int       err;
 
     uint16_t mainPort = lbdjvars [BDJVL_MAIN_PORT];
-    mainSock = sockConnect (mainPort, &err, 1000);
-    logMsg (LOG_DBG, LOG_LVL_4, "main-socket: %zd", (size_t) mainSock);
+    playerData->mainSock = sockConnect (mainPort, &err, 1000);
+    logMsg (LOG_DBG, LOG_LVL_4, "main-socket: %zd", (size_t) playerData->mainSock);
   }
 
   return;
+}
+
+
+static void
+prepSong (playerData_t *playerData, char *sfname)
+{
+  char      stname [MAXPATHLEN];
+
+  logProcBegin (LOG_LVL_2, "prepSong");
+  if (! fileExists (sfname)) {
+    logMsg (LOG_DBG, LOG_LVL_1, "no file: %s\n", sfname);
+    logProcEnd (LOG_LVL_2, "prepSong", "no-file");
+    return;
+  }
+  makeSongTempName (playerData, sfname, stname, sizeof (stname));
+  logMsg (LOG_DBG, LOG_LVL_2, "copy from %s to %s\n", sfname, stname);
+  fileCopy (sfname, stname);
+  // TODO : add the name to a list of prepared files.
+  logProcEnd (LOG_LVL_2, "prepSong", "");
+}
+
+static void
+playSong (playerData_t *playerData, char *sfname)
+{
+  char      stname [MAXPATHLEN];
+
+  logProcBegin (LOG_LVL_2, "playSong");
+  makeSongTempName (playerData, sfname, stname, sizeof (stname)); // temporary
+  if (! fileExists (stname)) {
+    logMsg (LOG_DBG, LOG_LVL_1, "no file: %s\n", stname);
+    logProcEnd (LOG_LVL_2, "playSong", "no-file");
+    return;
+  }
+  vlcMedia (playerData->vlcData, stname);
+  vlcPlay (playerData->vlcData);
+  logProcEnd (LOG_LVL_2, "playSong", "");
+}
+
+static void
+makeSongTempName (playerData_t *playerData, char *in, char *out, size_t maxlen)
+{
+  char        tnm [MAXPATHLEN];
+  size_t      idx;
+  fileinfo_t  *fi;
+
+  fi = fileInfo (in);
+
+  idx = 0;
+  for (char *p = fi->filename; *p && idx < maxlen; ++p) {
+    if (isascii (*p) && isgraph (*p)) {
+      tnm [idx++] = *p;
+    }
+  }
+  tnm [idx] = '\0';
+  fileInfoFree (fi);
+
+  snprintf (out, maxlen, "tmp/%ld-%ld-%s", lsysvars [SVL_BDJIDX],
+      playerData->globalCount, tnm);
 }

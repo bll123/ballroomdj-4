@@ -5,9 +5,8 @@
 #include <string.h>
 #include <errno.h>
 #include <assert.h>
-#if _hdr_unistd
-# include <unistd.h>
-#endif
+#include <getopt.h>
+#include <unistd.h>
 
 #include "sysvars.h"
 #include "bdjstring.h"
@@ -18,10 +17,34 @@ int
 main (int argc, char *argv[])
 {
   char      buff [MAXPATHLEN];
+  int       c = 0;
+  int       option_index = 0;
+
+  static struct option bdj_options [] = {
+    { "profile",    required_argument,  NULL,   'p' },
+    { NULL,         0,                  NULL,   0 }
+  };
 
   sysvarsInit (argv [0]);
 
-  chdir (sysvars [SV_BDJ4DIR]);
+  while ((c = getopt_long (argc, argv, "", bdj_options, &option_index)) != -1) {
+    switch (c) {
+      case 'p': {
+        if (optarg) {
+          sysvarSetLong (SVL_BDJIDX, atol (optarg));
+        }
+        break;
+      }
+      default: {
+        break;
+      }
+    }
+  }
+
+  if (chdir (sysvars [SV_BDJ4DIR]) < 0) {
+    fprintf (stderr, "Unable to chdir: %s\n", sysvars [SV_BDJ4DIR]);
+    exit (1);
+  }
 
   if (isMacOS()) {
     char  *   npath;

@@ -27,8 +27,9 @@ msgDecode (char *msgbuff, long *route, long *msg, char *args)
   *route = atol (msgbuff);
   char *p = msgbuff + LSZ + 1;
   *msg = atol (p);
-  p += LSZ + 1;
   if (args != NULL) {
+    *args = '\0';
+    p += LSZ + 1;
     strlcpy (args, p, BDJMSG_MAX);
   }
 }

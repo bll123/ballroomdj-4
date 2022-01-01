@@ -29,14 +29,7 @@ static const char * logTail (const char *fn);
 
 static bdjlog_t *syslogs [LOG_MAX];
 static char *   logbasenm [LOG_MAX];
-static int      stderrLogging = 0;
 static int      initialized = 0;
-
-void
-logStderr (void)
-{
-  stderrLogging = 1;
-}
 
 bdjlog_t *
 logOpen (const char *fn, const char *processtag)

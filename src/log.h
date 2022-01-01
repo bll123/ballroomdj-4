@@ -54,7 +54,6 @@ void        rlogError (const char *msg, int err, const char *fn, int line);
 void        rlogVarMsg (logidx_t, bdjloglvl_t level,
                 const char *fn, int line, const char *fmt, ...);
 void        logSetLevel (logidx_t idx, bdjloglvl_t level);
-void        logStderr (void);
 void        logStart (const char *processtag, bdjloglvl_t level);
 void        logStartAppend (const char *processnm,
                 const char *processtag, bdjloglvl_t level);

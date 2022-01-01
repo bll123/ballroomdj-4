@@ -14,7 +14,7 @@
 
 void
 sockhMainLoop (uint16_t listenPort, sockProcessMsg_t msgProc,
-            sockOtherProcessing_t otherProc)
+            sockOtherProcessing_t otherProc, void *userData)
 {
   Sock_t      listenSock = INVALID_SOCKET;
   Sock_t      msgsock = INVALID_SOCKET;
@@ -25,6 +25,7 @@ sockhMainLoop (uint16_t listenPort, sockProcessMsg_t msgProc,
   int         done = 0;
   long        route = ROUTE_NONE;
   long        msg = MSG_NONE;
+  char        args [BDJMSG_MAX];
 
 
   logProcBegin (LOG_LVL_5, "sockhMainLoop");
@@ -61,9 +62,8 @@ sockhMainLoop (uint16_t listenPort, sockProcessMsg_t msgProc,
         }
         logMsg (LOG_DBG, LOG_LVL_5, "got message: %s", rval);
 
-        // ### FIX handle args
-        msgDecode (msgbuff, &route, &msg, NULL);
-        logMsg (LOG_DBG, LOG_LVL_5, "got: route: %ld msg:%ld", route, msg);
+        msgDecode (msgbuff, &route, &msg, args);
+        logMsg (LOG_DBG, LOG_LVL_5, "got: route: %ld msg:%ld args:%s", route, msg, args);
         switch (msg) {
           case MSG_FORCE_EXIT: {
             logMsg (LOG_DBG, LOG_LVL_5, "force exit");
@@ -77,10 +77,7 @@ sockhMainLoop (uint16_t listenPort, sockProcessMsg_t msgProc,
             break;
           }
           default: {
-            done = msgProc (route, msg, NULL);
-            if (done) {
-              sockhRequestClose (si);
-            }
+            done = msgProc (route, msg, args, userData);
           }
         } /* switch */
       } /* msg from client */
@@ -91,7 +88,7 @@ sockhMainLoop (uint16_t listenPort, sockProcessMsg_t msgProc,
       ++done;
     }
 
-    otherProc ();
+    otherProc (userData);
     msleep (SOCK_MAINLOOP_TIMEOUT);
   } /* wait for a message */
 
@@ -107,30 +104,11 @@ sockhSendMessage (Sock_t sock, long route, long msg, char *args)
   char        msgbuff [BDJMSG_MAX];
 
   logProcBegin (LOG_LVL_5, "sockhSendMessage");
-  logMsg (LOG_DBG, LOG_LVL_5, "route:%ld msg:%ld", route, msg);
+  logMsg (LOG_DBG, LOG_LVL_5, "route:%ld msg:%ld args:%s", route, msg, args);
   size_t len = msgEncode (route, msg, args, msgbuff, sizeof (msgbuff));
   int rc = sockWriteBinary (sock, msgbuff, len);
   logProcEnd (LOG_LVL_5, "sockhSendMessage", "");
   return rc;
-}
-
-void
-sockhRequestClose (sockinfo_t *sockinfo)
-{
-  if (sockinfo == NULL) {
-    return;
-  }
-
-  for (size_t i = 0; i < (size_t) sockinfo->count; ++i) {
-    Sock_t tsock = sockinfo->socklist[i];
-    if (socketInvalid (tsock)) {
-      continue;
-    }
-
-    //### FIX TODO  send a msg, request close
-  }
-
-  return;
 }
 
 void

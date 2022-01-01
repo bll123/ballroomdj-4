@@ -58,15 +58,12 @@ bdj4startup (int argc, char *argv[])
 
   static struct option bdj_options [] = {
     { "profile",    required_argument,  NULL,   'p' },
-    { "dbgstderr",  no_argument,        NULL,   's' },
     { NULL,         0,                  NULL,   0 }
   };
 
   mtimestart (&mt);
   initLocale ();
   sysvarsInit (argv[0]);
-
-  chdir (sysvars [SV_BDJ4DIR]);
 
   snprintf (tbuff, MAXPATHLEN, "data/%s", sysvars [SV_HOSTNAME]);
   if (! fileExists (tbuff)) {
@@ -75,10 +72,6 @@ bdj4startup (int argc, char *argv[])
 
   while ((c = getopt_long (argc, argv, "", bdj_options, &option_index)) != -1) {
     switch (c) {
-      case 's': {
-        logStderr ();
-        break;
-      }
       case 'p': {
         if (optarg) {
           sysvarSetLong (SVL_BDJIDX, atol (optarg));
@@ -91,9 +84,13 @@ bdj4startup (int argc, char *argv[])
     }
   }
 
-  logStart ("m", LOG_LVL_1);
+  if (chdir (sysvars [SV_BDJ4DIR]) < 0) {
+    fprintf (stderr, "Unable to chdir: %s\n", sysvars [SV_BDJ4DIR]);
+    exit (1);
+  }
   bdjvarsInit ();
 
+  logStart ("m", LOG_LVL_5);
   logMsg (LOG_SESS, LOG_LVL_1, "Using profile %ld", lsysvars [SVL_BDJIDX]);
 
   tagdefInit ();

@@ -16,25 +16,17 @@
 #include "process.h"
 #include "log.h"
 
-#if _lib_kill
-
 /* boolean */
 int
 processExists (pid_t pid)
 {
+#if _lib_kill
   return (kill (pid, 0));
-}
-
 #endif
-
 #if _lib_OpenProcess
+    /* this doesn't seem to be very stable. */
+    /* it can get invalid parameter errors. */
 
-/* this doesn't seem to be very stable. */
-/* it can get invalid parameter errors. */
-
-int
-processExists (pid_t pid)
-{
   HANDLE hProcess;
   DWORD exitCode;
 
@@ -43,8 +35,8 @@ processExists (pid_t pid)
   if (NULL == hProcess) {
     int err = GetLastError ();
     if (err == ERROR_INVALID_PARAMETER) {
-      logMsg (LOG_DBG, LOG_LVL_4, "openprocess: %d", err);
-      logProcEnd (LOG_LVL_4, "processExists", "fail-a");
+      logMsg (LOG_DBG, LOG_LVL_1, "openprocess: %d", err);
+      logProcEnd (LOG_LVL_1, "processExists", "fail-a");
       return -1;
     }
     logMsg (LOG_DBG, LOG_LVL_4, "openprocess: %d", err);
@@ -64,14 +56,17 @@ processExists (pid_t pid)
   CloseHandle (hProcess);
   logProcEnd (LOG_LVL_4, "processExists", "");
   return -1;
+#endif
 }
 
-#endif
 
 int
-processStart (const char *fn, pid_t *pid)
+processStart (const char *fn, pid_t *pid, long profile)
 {
+  char        tmp [25];
+
   logProcBegin (LOG_LVL_4, "processStart");
+  snprintf (tmp, sizeof (tmp), "%ld", profile);
 
 #if _lib_fork
   pid_t       tpid;
@@ -83,8 +78,17 @@ processStart (const char *fn, pid_t *pid)
     return -1;
   }
   if (tpid == 0) {
+    /* child */
+    if (daemon (1, 1) < 0) {
+      logError ("daemon");
+      exit (1);
+    }
+    /* close any open file descriptors */
+    for (int i = 3; i < 30; ++i) {
+      close (i);
+    }
     logEnd ();
-    int rc = execl (fn, fn, NULL);
+    int rc = execl (fn, fn, "--profile", tmp, NULL);
     if (rc < 0) {
       logError ("execl");
       exit (1);
@@ -97,19 +101,25 @@ processStart (const char *fn, pid_t *pid)
 #if _lib_CreateProcess
   STARTUPINFO         si;
   PROCESS_INFORMATION pi;
+  char                *args [4];
 
   ZeroMemory (&si, sizeof (si));
   si.cb = sizeof(si);
   ZeroMemory (&pi, sizeof (pi));
 
+  args [0] = fn;
+  args [1] = "--profile"
+  args [2] = tmp;
+  args [3] = NULL;
+
   // Start the child process.
   if (! CreateProcess (
       fn,             // module name
-      NULL,           // command line
+      args,           // command line
       NULL,           // process handle
       NULL,           // thread handle
       FALSE,          // handle inheritance
-      0,              // creation flags
+      CREATE_DEFAULT_ERROR_NONE | DETACHED_PROCES,
       NULL,           // parent's environment
       NULL,           // parent's starting directory
       &si,            // STARTUPINFO structure

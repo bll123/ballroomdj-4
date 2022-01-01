@@ -160,7 +160,7 @@ raClear (rafile_t *rafile, size_t rrn)
 {
   logProcBegin (LOG_LVL_6, "raClear");
   if (rrn < 1L || rrn > rafile->count) {
-    logMsg (LOG_LVL_1, LOG_DBG, "bad rrn", "%ld", rrn);
+    logMsg (LOG_DBG, LOG_LVL_1, "bad rrn", "%ld", rrn);
     return 1;
   }
   raLock (rafile);
@@ -178,7 +178,7 @@ raRead (rafile_t *rafile, size_t rrn, char *data)
 
   logProcBegin (LOG_LVL_6, "raRead");
   if (rrn < 1L || rrn > rafile->count) {
-    logMsg (LOG_LVL_1, LOG_DBG, "bad rrn", "%ld", rrn);
+    logMsg (LOG_DBG, LOG_LVL_1, "bad rrn", "%ld", rrn);
     return 0;
   }
 

@@ -2,7 +2,7 @@
 #define INC_BDJMSG_H
 
 typedef enum {
-  ROUTE_NONE,
+  ROUTE_NONE,       // anonymous
   ROUTE_MAIN,
   ROUTE_GUI,
   ROUTE_PLAYER,
@@ -12,9 +12,11 @@ typedef enum {
 typedef enum {
   MSG_NONE,
   MSG_CLOSE_SOCKET,
-  MSG_PLAYER_START,
-  MSG_REQUEST_EXIT,     // standard shutdown
-  MSG_FORCE_EXIT,       // only for testing
+  MSG_PLAYER_START,         // goes to main, not player
+  MSG_PREP_SONG,            // arguments: path to song
+  MSG_PLAY_SONG,            // arguments: path to song
+  MSG_REQUEST_EXIT,         // standard shutdown
+  MSG_FORCE_EXIT,           // only for testing, may not work yet.
   MSG_MAX
 } bdjmsgmsg_t;
 

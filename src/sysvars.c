@@ -85,7 +85,7 @@ sysvarsInit (const char *argv0)
     free (hn);
   }
 
-  getcwd (tcwd, MAXPATHLEN);
+  (void) ! getcwd (tcwd, MAXPATHLEN);
 
   strlcpy (tbuf, argv0, MAXPATHLEN);
   strlcpy (buff, argv0, MAXPATHLEN);

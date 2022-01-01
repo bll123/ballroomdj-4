@@ -46,16 +46,6 @@
 #include "tmutil.h"
 #include "log.h"
 
-#define SOCK_FMT "%d"
-#if _siz_Sock_t == 8 && _siz_long == 8
-# undef SOCK_FMT
-# define SOCK_FMT "%ld"
-#endif
-#if _siz_Sock_t == 8 && _siz_long == 4
-# undef SOCK_FMT
-# define SOCK_FMT "%lld"
-#endif
-
 static ssize_t  sockReadData (Sock_t, char *, size_t);
 static int      sockWriteData (Sock_t, char *, size_t);
 static void     sockFlush (Sock_t);
