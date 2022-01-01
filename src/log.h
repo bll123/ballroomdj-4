@@ -6,12 +6,17 @@
 
 #include "fileutil.h"
 
-typedef struct {
-  filehandle_t  fhandle;
-  int           opened;
-  int           indent;
-  const char    *processTag;
-} bdjlog_t;
+typedef enum {
+  LOG_LVL_NONE,
+  LOG_LVL_1,
+  LOG_LVL_2,
+  LOG_LVL_3,
+  LOG_LVL_4,
+  LOG_LVL_5,
+  LOG_LVL_6,
+  LOG_LVL_ALL,
+  LOG_LDVL_MAX
+} bdjloglvl_t;
 
 typedef enum {
   LOG_ERR,
@@ -20,33 +25,39 @@ typedef enum {
   LOG_MAX
 } logidx_t;
 
+typedef struct {
+  filehandle_t  fhandle;
+  int           opened;
+  int           indent;
+  bdjloglvl_t   level;
+  const char    *processTag;
+} bdjlog_t;
+
 #define LOG_ERROR_NAME    "logerror"
 #define LOG_SESSION_NAME  "logsession"
 #define LOG_DEBUG_NAME    "logdbg"
 #define LOG_EXTENSION     ".txt"
 
-#if defined (BDJLOG_OFF)
-# define logProcBegin(tag)
-# define logProcEnd(tag,suffix)
-# define logError(msg)
-# define logMsg(idx,fmt,...)
-#else
-# define logProcBegin(tag)   rlogProcBegin (tag, __FILE__, __LINE__)
-# define logProcEnd(tag,suffix)  rlogProcEnd (tag, suffix, __FILE__, __LINE__)
-# define logError(msg)       rlogError (msg, errno, __FILE__, __LINE__)
-# define logMsg(idx,fmt,...) rlogVarMsg (idx, __FILE__, __LINE__, fmt, ##__VA_ARGS__)
-#endif
+#define logProcBegin(lvl,tag)   rlogProcBegin (lvl, tag, __FILE__, __LINE__)
+#define logProcEnd(lvl,tag,suffix)  rlogProcEnd (lvl, tag, suffix, __FILE__, __LINE__)
+#define logError(msg)           rlogError (msg, errno, __FILE__, __LINE__)
+#define logMsg(idx,lvl,fmt,...) rlogVarMsg (idx, lvl, __FILE__, __LINE__, fmt, ##__VA_ARGS__)
 
 bdjlog_t *  logOpen (const char *fn, const char *processtag);
 bdjlog_t *  logOpenAppend (const char *fn, const char *processtag);
 void        logClose (logidx_t);
-void        rlogProcBegin (const char *tag, const char *fn, int line);
-void        rlogProcEnd (const char *tag, const char *suffix, const char *fn, int line);
+void        rlogProcBegin (bdjloglvl_t level, const char *tag,
+                const char *fn, int line);
+void        rlogProcEnd (bdjloglvl_t level, const char *tag,
+                const char *suffix, const char *fn, int line);
 void        rlogError (const char *msg, int err, const char *fn, int line);
-void        rlogVarMsg (logidx_t, const char *, int, const char *, ...);
+void        rlogVarMsg (logidx_t, bdjloglvl_t level,
+                const char *fn, int line, const char *fmt, ...);
+void        logSetLevel (logidx_t idx, bdjloglvl_t level);
 void        logStderr (void);
-void        logStart (const char *processtag);
-void        logStartAppend (const char *processnm, const char *processtag);
+void        logStart (const char *processtag, bdjloglvl_t level);
+void        logStartAppend (const char *processnm,
+                const char *processtag, bdjloglvl_t level);
 void        logEnd (void);
 
 #endif /* INC_BDJLOG_H */

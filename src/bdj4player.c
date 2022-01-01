@@ -44,7 +44,7 @@ main (int argc, char *argv[])
 
   programState = STATE_INITIALIZING;
   sysvarsInit (argv[0]);
-  logStartAppend ("bdj4player", "p");
+  logStartAppend ("bdj4player", "p", LOG_LVL_1);
   bdjvarsInit ();
 
   vlcData = vlcInit (VLC_DFLT_OPT_SZ, vlcDefaultOptions);
@@ -66,21 +66,22 @@ main (int argc, char *argv[])
 static int
 processMsg (long route, long msg, char *args)
 {
-  logProcBegin ("processMsg");
+  logProcBegin (LOG_LVL_4, "processMsg");
+  logMsg (LOG_DBG, LOG_LVL_4, "got: route: %ld msg:%ld", route, msg);
   switch (route) {
     case ROUTE_NONE: {
       break;
     }
     case ROUTE_PLAYER: {
-      logMsg (LOG_DBG, "got: route-player");
+      logMsg (LOG_DBG, LOG_LVL_4, "got: route-player");
       switch (msg) {
         case MSG_REQUEST_EXIT: {
-          logMsg (LOG_DBG, "got: req-exit");
+          logMsg (LOG_DBG, LOG_LVL_4, "got: req-exit");
           programState = STATE_CLOSING;
           sockhSendMessage (mainSock, ROUTE_MAIN, MSG_CLOSE_SOCKET, NULL);
           sockClose (mainSock);
           mainSock = INVALID_SOCKET;
-          logProcEnd ("processMsg", "req-exit");
+          logProcEnd (LOG_LVL_4, "processMsg", "req-exit");
           return 1;
         }
         default: {
@@ -90,19 +91,9 @@ processMsg (long route, long msg, char *args)
       break;
     }
     case ROUTE_MAIN: {
-      switch (msg) {
-        default: {
-          break;
-        }
-      }
       break;
     }
     case ROUTE_GUI: {
-      switch (msg) {
-        default: {
-          break;
-        }
-      }
       break;
     }
     default: {
@@ -110,7 +101,7 @@ processMsg (long route, long msg, char *args)
     }
   }
 
-  logProcEnd ("processMsg", "");
+  logProcEnd (LOG_LVL_4, "processMsg", "");
   return 0;
 }
 
@@ -122,7 +113,7 @@ mainProcessing (void)
 
     uint16_t mainPort = lbdjvars [BDJVL_MAIN_PORT];
     mainSock = sockConnect (mainPort, &err, 1000);
-    logMsg (LOG_DBG, "main-socket: %zd", (size_t) mainSock);
+    logMsg (LOG_DBG, LOG_LVL_4, "main-socket: %zd", (size_t) mainSock);
   }
 
   return;

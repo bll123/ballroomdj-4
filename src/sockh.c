@@ -27,10 +27,10 @@ sockhMainLoop (uint16_t listenPort, sockProcessMsg_t msgProc,
   long        msg = MSG_NONE;
 
 
-  logProcBegin ("sockhMainLoop");
+  logProcBegin (LOG_LVL_5, "sockhMainLoop");
   listenSock = sockServer (listenPort, &err);
   si = sockAddCheck (si, listenSock);
-  logMsg (LOG_DBG, "add listen sock %zd", (size_t) listenSock);
+  logMsg (LOG_DBG, LOG_LVL_5, "add listen sock %zd", (size_t) listenSock);
 
   while (done < 100) {
     msgsock = sockCheck (si);
@@ -40,12 +40,12 @@ sockhMainLoop (uint16_t listenPort, sockProcessMsg_t msgProc,
 
     if (msgsock != 0) {
       if (msgsock == listenSock) {
-        logMsg (LOG_DBG, "got connection request");
+        logMsg (LOG_DBG, LOG_LVL_5, "got connection request");
         Sock_t clsock = sockAccept (listenSock, &err);
         if (! socketInvalid (clsock)) {
-          logMsg (LOG_DBG, "connected");
+          logMsg (LOG_DBG, LOG_LVL_5, "connected");
           si = sockAddCheck (si, clsock);
-          logMsg (LOG_DBG, "add client sock %zd", (size_t) clsock);
+          logMsg (LOG_DBG, LOG_LVL_5, "add client sock %zd", (size_t) clsock);
         }
       } else {
         char *rval = sockReadBuff (msgsock, &len, msgbuff, sizeof (msgbuff));
@@ -54,24 +54,24 @@ sockhMainLoop (uint16_t listenPort, sockProcessMsg_t msgProc,
           /* either an indicator that the code is mucked up,
            * or that the socket has been closed.
            */
-          logMsg (LOG_DBG, "remove sock %zd", (size_t) msgsock);
+          logMsg (LOG_DBG, LOG_LVL_5, "remove sock %zd", (size_t) msgsock);
           sockRemoveCheck (si, msgsock);
           sockClose (msgsock);
           continue;
         }
-        logMsg (LOG_DBG, "got message: %s", rval);
+        logMsg (LOG_DBG, LOG_LVL_5, "got message: %s", rval);
 
         // ### FIX handle args
         msgDecode (msgbuff, &route, &msg, NULL);
-        logMsg (LOG_DBG, "got: route: %ld msg:%ld", route, msg);
+        logMsg (LOG_DBG, LOG_LVL_5, "got: route: %ld msg:%ld", route, msg);
         switch (msg) {
           case MSG_FORCE_EXIT: {
-            logMsg (LOG_DBG, "force exit");
+            logMsg (LOG_DBG, LOG_LVL_5, "force exit");
             exit (1);
             break;
           }
           case MSG_CLOSE_SOCKET: {
-            logMsg (LOG_DBG, "got: close socket");
+            logMsg (LOG_DBG, LOG_LVL_5, "got: close socket");
             sockRemoveCheck (si, msgsock);
             sockClose (msgsock);
             break;
@@ -98,7 +98,7 @@ sockhMainLoop (uint16_t listenPort, sockProcessMsg_t msgProc,
   sockhCloseClients (si);
   sockFreeCheck (si);
   sockClose (listenSock);
-  logProcEnd ("sockhMainLoop", "");
+  logProcEnd (LOG_LVL_5, "sockhMainLoop", "");
 }
 
 int
@@ -106,11 +106,11 @@ sockhSendMessage (Sock_t sock, long route, long msg, char *args)
 {
   char        msgbuff [BDJMSG_MAX];
 
-  logProcBegin ("sockhSendMessage");
-  logMsg (LOG_DBG, "route:%ld msg:%ld", route, msg);
+  logProcBegin (LOG_LVL_5, "sockhSendMessage");
+  logMsg (LOG_DBG, LOG_LVL_5, "route:%ld msg:%ld", route, msg);
   size_t len = msgEncode (route, msg, args, msgbuff, sizeof (msgbuff));
   int rc = sockWriteBinary (sock, msgbuff, len);
-  logProcEnd ("sockhSendMessage", "");
+  logProcEnd (LOG_LVL_5, "sockhSendMessage", "");
   return rc;
 }
 

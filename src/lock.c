@@ -53,7 +53,7 @@ lockAcquirePid (char *fn, pid_t pid)
   }
 
   if (fd >= 0) {
-    snprintf (pidstr, sizeof (pidstr), PID_FMT, pid);
+    snprintf (pidstr, sizeof (pidstr), "%zd", (size_t) pid);
     len = strnlen (pidstr, sizeof (pidstr));
     rwlen = write (fd, pidstr, len);
     assert (rwlen == (ssize_t) len);
@@ -87,11 +87,13 @@ static pid_t
 getPidFromFile (char *fn)
 {
   FILE      *fh;
+  size_t    temp;
 
   pid_t pid = -1;
   fh = fopen (fn, "r");
   if (fh != NULL) {
-    int rc = fscanf (fh, PID_FMT, &pid);
+    int rc = fscanf (fh, "%zd", &temp);
+    pid = (size_t) temp;
     if (rc != 1) {
       pid = -1;
     }

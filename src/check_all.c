@@ -23,7 +23,7 @@ main (int argc, char *argv [])
   chdir (sysvars [SV_BDJ4DIR]);
   tagdefInit ();
 
-  logStart ("c");
+  logStart ("c", LOG_LVL_6);
   s = tmutil_suite();
   sr = srunner_create (s);
   s = fileutil_suite();

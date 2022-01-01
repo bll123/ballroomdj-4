@@ -20,7 +20,8 @@
 #include "portability.h"
 
 static void         rlogStart (const char *processnm,
-                        const char *processtag, int truncflag);
+                        const char *processtag, int truncflag,
+                        bdjloglvl_t level);
 static bdjlog_t *   rlogOpen (const char *fn,
                         const char *processtag, int truncflag);
 static void         logInit (void);
@@ -67,33 +68,33 @@ logClose (logidx_t idx)
 }
 
 void
-rlogProcBegin (const char *tag, const char *fn, int line)
+rlogProcBegin (bdjloglvl_t level, const char *tag, const char *fn, int line)
 {
-  rlogVarMsg (LOG_DBG, fn, line, "- %s begin", tag);
+  rlogVarMsg (LOG_DBG, level, fn, line, "- %s begin", tag);
   syslogs [LOG_DBG]->indent += 2;
 }
 
 void
-rlogProcEnd (const char *tag, const char *suffix, const char *fn, int line)
+rlogProcEnd (bdjloglvl_t level, const char *tag, const char *suffix, const char *fn, int line)
 {
   syslogs [LOG_DBG]->indent -= 2;
   if (syslogs [LOG_DBG]->indent < 0) {
     syslogs [LOG_DBG]->indent = 0;
   }
-  rlogVarMsg (LOG_DBG, fn, line, "- %s end %s", tag, suffix);
+  rlogVarMsg (LOG_DBG, level, fn, line, "- %s end %s", tag, suffix);
 }
 
 void
 rlogError (const char *msg, int err, const char *fn, int line)
 {
-  rlogVarMsg (LOG_ERR, fn, line, "err: %s %d %s", msg, err, strerror (err));
-  rlogVarMsg (LOG_DBG, fn, line, "err: %s %d %s", msg, err, strerror (err));
+  rlogVarMsg (LOG_ERR, LOG_LVL_1, fn, line, "err: %s %d %s", msg, err, strerror (err));
+  rlogVarMsg (LOG_DBG, LOG_LVL_1, fn, line, "err: %s %d %s", msg, err, strerror (err));
 }
 
 void
-rlogVarMsg (logidx_t idx, const char *fn, int line, const char *fmt, ...)
+rlogVarMsg (logidx_t idx, bdjloglvl_t level,
+    const char *fn, int line, const char *fmt, ...)
 {
-  filehandle_t  *fhandle;
   bdjlog_t      *l;
   char          ttm [40];
   char          tbuff [512];
@@ -102,11 +103,11 @@ rlogVarMsg (logidx_t idx, const char *fn, int line, const char *fmt, ...)
   va_list       args;
 
   l = syslogs [idx];
-  if (! stderrLogging && (l == NULL || ! l->opened)) {
+  if (l == NULL || ! l->opened) {
     return;
   }
-  if (! stderrLogging && l != NULL && l->opened) {
-    fhandle = &l->fhandle;
+  if (level > l->level) {
+    return;
   }
 
   tstamp (ttm, sizeof (ttm));
@@ -122,21 +123,29 @@ rlogVarMsg (logidx_t idx, const char *fn, int line, const char *fmt, ...)
   }
   size_t wlen = snprintf (wbuff, sizeof (wbuff), "%s: %-2s %*s%s %s\n",
       ttm, l->processTag, l->indent, "", tbuff, tfn);
-  if (fileWriteShared (fhandle, wbuff, wlen) < 0) {
+  if (fileWriteShared (&l->fhandle, wbuff, wlen) < 0) {
     fprintf (stderr, "log write failed: %d %s\n", errno, strerror (errno));
   }
 }
 
 void
-logStart (const char *processtag)
+logSetLevel (logidx_t idx, bdjloglvl_t level)
 {
-  rlogStart (NULL, processtag, 1);
+  syslogs [idx]->level = level;
+}
+
+/* these routines act upon all three open logs */
+
+void
+logStart (const char *processtag, bdjloglvl_t level)
+{
+  rlogStart (NULL, processtag, 1, level);
 }
 
 void
-logStartAppend (const char *processnm, const char *processtag)
+logStartAppend (const char *processnm, const char *processtag, bdjloglvl_t level)
 {
-  rlogStart (processnm, processtag, 0);
+  rlogStart (processnm, processtag, 0, level);
 }
 
 void
@@ -153,7 +162,8 @@ logEnd (void)
 /* internal routines */
 
 static void
-rlogStart (const char *processnm, const char *processtag, int truncflag)
+rlogStart (const char *processnm, const char *processtag,
+    int truncflag, bdjloglvl_t level)
 {
   char      tnm [MAXPATHLEN];
   char      tdt [40];
@@ -165,10 +175,11 @@ rlogStart (const char *processnm, const char *processtag, int truncflag)
     fileMakePath (tnm, MAXPATHLEN, "", logbasenm [idx], LOG_EXTENSION,
         FILE_MP_HOSTNAME | FILE_MP_USEIDX);
     syslogs [idx] = rlogOpen (tnm, processtag, truncflag);
+    syslogs [idx]->level = level;
     if (processnm != NULL) {
-      rlogVarMsg (idx, NULL, 0, "=== %s started %s", processnm, tdt);
+      rlogVarMsg (idx, LOG_LVL_1, NULL, 0, "=== %s started %s", processnm, tdt);
     } else {
-      rlogVarMsg (idx, NULL, 0, "=== started %s", tdt);
+      rlogVarMsg (idx, LOG_LVL_1, NULL, 0, "=== started %s", tdt);
     }
   }
 }
@@ -183,6 +194,7 @@ rlogOpen (const char *fn, const char *processtag, int truncflag)
 
   l->opened = 0;
   l->indent = 0;
+  l->level = LOG_LVL_1;
   l->processTag = processtag;
   int rc = fileOpenShared (fn, truncflag, &l->fhandle);
   if (rc < 0) {

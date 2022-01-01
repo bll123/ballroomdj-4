@@ -16,7 +16,7 @@ START_TEST(parse_init_free)
 {
   parseinfo_t     *pi;
 
-  logMsg (LOG_DBG, "=== parse_init_free");
+  logMsg (LOG_DBG, LOG_LVL_1, "=== parse_init_free");
   pi = parseInit ();
   ck_assert_ptr_nonnull (pi);
   ck_assert_int_eq (pi->allocCount, 0);
@@ -29,7 +29,7 @@ START_TEST(parse_simple)
 {
   parseinfo_t     *pi;
 
-  logMsg (LOG_DBG, "=== parse_simple");
+  logMsg (LOG_DBG, LOG_LVL_1, "=== parse_simple");
   char *tstr = strdup ("# comment\nA\na\n# comment\nB\nb\nC\nc\nD\n# comment\nd\nE\ne\nF\nf");
   pi = parseInit ();
   ck_assert_ptr_nonnull (pi);
@@ -59,7 +59,7 @@ START_TEST(parse_keyvalue)
 {
   parseinfo_t     *pi;
 
-  logMsg (LOG_DBG, "=== parse_keyvalue");
+  logMsg (LOG_DBG, LOG_LVL_1, "=== parse_keyvalue");
   char *tstr = strdup ("A\n..a\nB\n..b\nC\n..c\nD\n..d\nE\n..e\nF\n..f");
   pi = parseInit ();
   ck_assert_ptr_nonnull (pi);
@@ -89,7 +89,7 @@ START_TEST(parse_with_comments)
 {
   parseinfo_t     *pi;
 
-  logMsg (LOG_DBG, "=== parse_with_comments");
+  logMsg (LOG_DBG, LOG_LVL_1, "=== parse_with_comments");
   char *tstr = strdup ("# comment\nA\n..a\n# comment\nB\n..b\nC\n..c\nD\n# comment\n..d\nE\n..e\nF\n..f");
   pi = parseInit ();
   ck_assert_ptr_nonnull (pi);
@@ -120,7 +120,7 @@ START_TEST(datafile_simple)
   datafile_t *    df;
   char *          value;
 
-  logMsg (LOG_DBG, "=== datafile_simple");
+  logMsg (LOG_DBG, LOG_LVL_1, "=== datafile_simple");
   char *fn = "tmp/dftesta.txt";
   char *tstr = strdup ("# comment\nA\na\n# comment\nB\nb\nC\nc\nD\n# comment\nd\nE\ne\nF\nf\n");
   FILE *fh = fopen (fn, "w");
@@ -176,7 +176,7 @@ START_TEST(datafile_keyval_nodfkey)
   char *            key;
   char *            value;
 
-  logMsg (LOG_DBG, "=== datafile_keyval_nodfkey");
+  logMsg (LOG_DBG, LOG_LVL_1, "=== datafile_keyval_nodfkey");
   char *fn = "tmp/dftestb.txt";
   char *tstr = strdup ("A\n..a\nB\n..b\nC\n..c\nD\n..d\nE\n..e\nF\n..f\n");
   FILE *fh = fopen (fn, "w");
@@ -246,7 +246,7 @@ START_TEST(datafile_keyval_dfkey)
   long              lval;
   char *            value;
 
-  logMsg (LOG_DBG, "=== datafile_keyval_dfkey");
+  logMsg (LOG_DBG, LOG_LVL_1, "=== datafile_keyval_dfkey");
   char *fn = "tmp/dftestb.txt";
   char *tstr = strdup ("A\n..a\nB\n..5\nC\n..c\nD\n..d\nE\n..e\nF\n..f\n");
   FILE *fh = fopen (fn, "w");
@@ -308,7 +308,7 @@ START_TEST(datafile_keylong)
   list_t *          vallist;
   long              lval;
 
-  logMsg (LOG_DBG, "=== datafile_keylong");
+  logMsg (LOG_DBG, LOG_LVL_1, "=== datafile_keylong");
   char *fn = "tmp/dftestb.txt";
   char *tstr = strdup ("KEY\n..0\nA\n..a\nB\n..0\n"
       "KEY\n..1\nA\n..a\nB\n..1\n"

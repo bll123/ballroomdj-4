@@ -50,19 +50,19 @@ startPlayer (void)
     return;
   }
 
-  logProcBegin ("startPlayer");
+  logProcBegin (LOG_LVL_4, "startPlayer");
   snprintf (tbuff, MAXPATHLEN, "%s/bdj4player", sysvars [SV_BDJ4EXECDIR]);
   if (isWindows()) {
     strlcat (tbuff, ".exe", MAXPATHLEN);
   }
   int rc = processStart (tbuff, &pid);
   if (rc < 0) {
-    logMsg (LOG_DBG, "player %s failed to start", tbuff);
+    logMsg (LOG_DBG, LOG_LVL_4, "player %s failed to start", tbuff);
   } else {
-    logMsg (LOG_DBG, "player started pid: %zd", (ssize_t) pid);
+    logMsg (LOG_DBG, LOG_LVL_4, "player started pid: %zd", (ssize_t) pid);
     playerStarted = 1;
   }
-  logProcEnd ("startPlayer", "");
+  logProcEnd (LOG_LVL_4, "startPlayer", "");
 }
 
 static void
@@ -80,34 +80,27 @@ stopPlayer (void)
 static int
 processMsg (long route, long msg, char *args)
 {
-  logProcBegin ("processMsg");
-  logMsg (LOG_DBG, "got: route: %ld msg:%ld", route, msg);
+  logProcBegin (LOG_LVL_4, "processMsg");
+  logMsg (LOG_DBG, LOG_LVL_4, "got: route: %ld msg:%ld", route, msg);
   switch (route) {
     case ROUTE_NONE: {
-      logMsg (LOG_DBG, "got: route none");
       break;
     }
     case ROUTE_PLAYER: {
-      logMsg (LOG_DBG, "got: route-player");
-      switch (msg) {
-        default: {
-          break;
-        }
-      }
       break;
     }
     case ROUTE_MAIN: {
-      logMsg (LOG_DBG, "got: route-main");
+      logMsg (LOG_DBG, LOG_LVL_4, "got: route-main");
       switch (msg) {
         case MSG_PLAYER_START: {
-          logMsg (LOG_DBG, "got: start-player");
+          logMsg (LOG_DBG, LOG_LVL_4, "got: start-player");
           startPlayer ();
           break;
         }
         case MSG_REQUEST_EXIT: {
           programState = STATE_CLOSING;
           stopPlayer ();
-          logProcEnd ("processMsg", "req-exit");
+          logProcEnd (LOG_LVL_4, "processMsg", "req-exit");
           return 1;
         }
         default: {
@@ -117,12 +110,6 @@ processMsg (long route, long msg, char *args)
       break;
     }
     case ROUTE_GUI: {
-      logMsg (LOG_DBG, "got: route-gui");
-      switch (msg) {
-        default: {
-          break;
-        }
-      }
       break;
     }
     default: {
@@ -130,7 +117,7 @@ processMsg (long route, long msg, char *args)
     }
   }
 
-  logProcEnd ("processMsg", "");
+  logProcEnd (LOG_LVL_4, "processMsg", "");
   return 0;
 }
 
@@ -144,7 +131,7 @@ mainProcessing (void)
 
     uint16_t playerPort = lbdjvars [BDJVL_PLAYER_PORT];
     playerSocket = sockConnect (playerPort, &err, 1000);
-    logMsg (LOG_DBG, "player-socket: %zd", (size_t) playerSocket);
+    logMsg (LOG_DBG, LOG_LVL_4, "player-socket: %zd", (size_t) playerSocket);
   }
 
   return;

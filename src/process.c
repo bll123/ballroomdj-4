@@ -38,31 +38,31 @@ processExists (pid_t pid)
   HANDLE hProcess;
   DWORD exitCode;
 
-  logProcBegin ("processExists");
+  logProcBegin (LOG_LVL_4, "processExists");
   hProcess = OpenProcess (PROCESS_QUERY_LIMITED_INFORMATION, FALSE, pid);
   if (NULL == hProcess) {
     int err = GetLastError ();
     if (err == ERROR_INVALID_PARAMETER) {
-      logMsg (LOG_DBG, "openprocess: %d", err);
-      logProcEnd ("processExists", "fail-a");
+      logMsg (LOG_DBG, LOG_LVL_4, "openprocess: %d", err);
+      logProcEnd (LOG_LVL_4, "processExists", "fail-a");
       return -1;
     }
-    logMsg (LOG_DBG, "openprocess: %d", err);
-    logProcEnd ("processExists", "fail-b");
+    logMsg (LOG_DBG, LOG_LVL_4, "openprocess: %d", err);
+    logProcEnd (LOG_LVL_4, "processExists", "fail-b");
     return -1;
   }
 
   if (GetExitCodeProcess (hProcess, &exitCode)) {
     CloseHandle (hProcess);
-    logMsg (LOG_DBG, "found: %lld", exitCode);
+    logMsg (LOG_DBG, LOG_LVL_4, "found: %lld", exitCode);
     /* return 0 if the process is still active */
-    logProcEnd ("processExists", "ok");
+    logProcEnd (LOG_LVL_4, "processExists", "ok");
     return (exitCode != STILL_ACTIVE);
   }
-  logMsg (LOG_DBG, "getexitcodeprocess: %d", GetLastError());
+  logMsg (LOG_DBG, LOG_LVL_4, "getexitcodeprocess: %d", GetLastError());
 
   CloseHandle (hProcess);
-  logProcEnd ("processExists", "");
+  logProcEnd (LOG_LVL_4, "processExists", "");
   return -1;
 }
 
@@ -71,7 +71,7 @@ processExists (pid_t pid)
 int
 processStart (const char *fn, pid_t *pid)
 {
-  logProcBegin ("processStart");
+  logProcBegin (LOG_LVL_4, "processStart");
 
 #if _lib_fork
   pid_t       tpid;
@@ -79,7 +79,7 @@ processStart (const char *fn, pid_t *pid)
   tpid = fork ();
   if (tpid < 0) {
     logError ("fork");
-    logProcEnd ("processStart", "fork-fail");
+    logProcEnd (LOG_LVL_4, "processStart", "fork-fail");
     return -1;
   }
   if (tpid == 0) {
@@ -127,7 +127,7 @@ processStart (const char *fn, pid_t *pid)
   /* ### FIX would like process id back */
 
 #endif
-  logProcEnd ("processStart", "");
+  logProcEnd (LOG_LVL_4, "processStart", "");
   return 0;
 }
 

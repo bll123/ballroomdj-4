@@ -38,22 +38,17 @@ static ftest_t tests [] = {
 START_TEST(fileinfo_chk)
 {
   fileinfo_t    *fi;
-  char          tfmt [40];
 
   for (size_t i = 0; i < TCOUNT; ++i) {
     fi = fileInfo (tests[i].path);
-    sprintf (tfmt, "%s: i:%s %s/%s", "dlem", SIZE_FMT, SIZE_FMT, SIZE_FMT);
     ck_assert_msg (fi->dlen == tests[i].dlen,
-        tfmt, i, fi->dlen, tests[i].dlen);
-    sprintf (tfmt, "%s: i:%s %s/%s", "blem", SIZE_FMT, SIZE_FMT, SIZE_FMT);
+        "%s: i:%zd %zd/%zd", "dlem", i, fi->dlen, tests[i].dlen);
     ck_assert_msg (fi->blen == tests[i].blen,
-        tfmt, i, fi->blen, tests[i].blen);
-    sprintf (tfmt, "%s: i:%s %s/%s", "flem", SIZE_FMT, SIZE_FMT, SIZE_FMT);
+        "%s: i:%zd %zd/%zd", "blen", i, fi->blen, tests[i].blen);
     ck_assert_msg (fi->flen == tests[i].flen,
-        tfmt, i, fi->flen, tests[i].flen);
-    sprintf (tfmt, "%s: i:%s %s/%s", "elem", SIZE_FMT, SIZE_FMT, SIZE_FMT);
+        "%s: i:%zd %zd/%zd", "flem", i, fi->flen, tests[i].flen);
     ck_assert_msg (fi->elen == tests[i].elen,
-        tfmt, i, fi->elen, tests[i].elen);
+        "%s: i:%zd %zd/%zd", "elem", i, fi->elen, tests[i].elen);
     fileInfoFree (fi);
   }
 }

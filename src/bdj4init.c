@@ -91,17 +91,17 @@ bdj4startup (int argc, char *argv[])
     }
   }
 
-  logStart ("m");
+  logStart ("m", LOG_LVL_1);
   bdjvarsInit ();
 
-  logMsg (LOG_SESS, "Using profile %ld", lsysvars [SVL_BDJIDX]);
+  logMsg (LOG_SESS, LOG_LVL_1, "Using profile %ld", lsysvars [SVL_BDJIDX]);
 
   tagdefInit ();
   mtimestart (&dbmt);
   fileMakePath (tbuff, MAXPATHLEN, "", MUSICDB_FNAME, MUSICDB_EXT, FILE_MP_NONE);
   dbOpen (tbuff);
-  logMsg (LOG_SESS, "Database read: %ld items in %ld ms", dbCount(), mtimeend (&dbmt));
-  logMsg (LOG_SESS, "Total startup time: %ld ms", mtimeend (&mt));
+  logMsg (LOG_SESS, LOG_LVL_1, "Database read: %ld items in %ld ms", dbCount(), mtimeend (&dbmt));
+  logMsg (LOG_SESS, LOG_LVL_1, "Total startup time: %ld ms", mtimeend (&mt));
 
 #if 1 // temporary
   datafile_t *so = sortoptAlloc ("data/sortopt.txt");

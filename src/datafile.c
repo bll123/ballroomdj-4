@@ -31,27 +31,27 @@ parseInit (void)
 {
   parseinfo_t   *pi;
 
-  logProcBegin ("parseInit");
+  logProcBegin (LOG_LVL_6, "parseInit");
   pi = malloc (sizeof (parseinfo_t));
   assert (pi != NULL);
   pi->strdata = NULL;
   pi->allocCount = 0;
   pi->count = 0;
-  logProcEnd ("parseInit", "");
+  logProcEnd (LOG_LVL_6, "parseInit", "");
   return pi;
 }
 
 void
 parseFree (parseinfo_t *pi)
 {
-  logProcBegin ("parseFree");
+  logProcBegin (LOG_LVL_6, "parseFree");
   if (pi != NULL) {
     if (pi->strdata != NULL) {
       free (pi->strdata);
     }
     free (pi);
   }
-  logProcEnd ("parseFree", "");
+  logProcEnd (LOG_LVL_6, "parseFree", "");
 }
 
 char **
@@ -63,16 +63,16 @@ parseGetData (parseinfo_t *pi)
 size_t
 parseSimple (parseinfo_t *pi, char *data)
 {
-  logProcBegin ("parseSimple");
-  logProcEnd ("parseSimple", "");
+  logProcBegin (LOG_LVL_6, "parseSimple");
+  logProcEnd (LOG_LVL_6, "parseSimple", "");
   return parse (pi, data, PARSE_SIMPLE);
 }
 
 size_t
 parseKeyValue (parseinfo_t *pi, char *data)
 {
-  logProcBegin ("parseKeyValue");
-  logProcEnd ("parseKeyValue", "");
+  logProcBegin (LOG_LVL_6, "parseKeyValue");
+  logProcEnd (LOG_LVL_6, "parseKeyValue", "");
   return parse (pi, data, PARSE_KEYVALUE);
 }
 
@@ -81,13 +81,13 @@ parseConvBoolean (const char *data)
 {
   long      val = 0;
 
-  logProcBegin ("parseConvBoolean");
+  logProcBegin (LOG_LVL_6, "parseConvBoolean");
   if (strcmp (data, "on") == 0 ||
       strcmp (data, "yes") == 0 ||
       strcmp (data, "1") == 0) {
     val = 1;
   }
-  logProcEnd ("parseConvBoolean", "");
+  logProcEnd (LOG_LVL_6, "parseConvBoolean", "");
   return val;
 }
 
@@ -99,14 +99,14 @@ datafileAlloc (datafilekey_t *dfkeys, size_t dfkeycount, char *fname,
 {
   datafile_t      *df;
 
-  logProcBegin ("datafileAlloc");
+  logProcBegin (LOG_LVL_6, "datafileAlloc");
   df = malloc (sizeof (datafile_t));
   assert (df != NULL);
   df->fname = NULL;
   df->data = NULL;
   df->dftype = dftype;
   datafileLoad (dfkeys, dfkeycount, df, fname, dftype);
-  logProcEnd ("datafileAlloc", "");
+  logProcEnd (LOG_LVL_6, "datafileAlloc", "");
   return df;
 }
 
@@ -115,12 +115,12 @@ datafileFree (void *tdf)
 {
   datafile_t    *df = (datafile_t *) tdf;
 
-  logProcBegin ("datafileFree");
+  logProcBegin (LOG_LVL_6, "datafileFree");
   if (df != NULL) {
     datafileFreeInternal (df);
     free (df);
   }
-  logProcEnd ("datafileFree", "");
+  logProcEnd (LOG_LVL_6, "datafileFree", "");
 }
 
 void
@@ -143,7 +143,7 @@ datafileLoad (datafilekey_t *dfkeys, size_t dfkeycount,
   char          *tkeystr;
   char          *tvalstr;
 
-  logProcBegin ("datafileLoad");
+  logProcBegin (LOG_LVL_6, "datafileLoad");
   /* may be re-using the song list */
   datafileFreeInternal (df);
   df->fname = strdup (fname);
@@ -157,7 +157,7 @@ datafileLoad (datafilekey_t *dfkeys, size_t dfkeycount,
   }
   strdata = parseGetData (pi);
 
-  logMsg (LOG_DBG, "dftype: %ld", dftype);
+  logMsg (LOG_DBG, LOG_LVL_6, "dftype: %ld", dftype);
   switch (dftype) {
     case DFTYPE_LIST: {
       inc = 1;
@@ -179,10 +179,10 @@ datafileLoad (datafilekey_t *dfkeys, size_t dfkeycount,
       inc = 2;
       if (dfkeys == NULL) {
         df->data = slistAlloc (LIST_UNORDERED, istringCompare, free, free);
-        logMsg (LOG_DBG, "key_val: slist");
+        logMsg (LOG_DBG, LOG_LVL_6, "key_val: slist");
       } else {
         df->data = llistAlloc (LIST_UNORDERED, free);
-        logMsg (LOG_DBG, "key_val: llist");
+        logMsg (LOG_DBG, LOG_LVL_6, "key_val: llist");
       }
       break;
     }
@@ -232,13 +232,13 @@ datafileLoad (datafilekey_t *dfkeys, size_t dfkeycount,
     }
 
     if (dftype == DFTYPE_LIST) {
-      logMsg (LOG_DBG, "set: list");
+      logMsg (LOG_DBG, LOG_LVL_6, "set: list");
       listSet (df->data, strdup (tkeystr));
     }
     if (dftype == DFTYPE_KEY_LONG ||
         (dftype == DFTYPE_KEY_VAL && dfkeys != NULL) ||
         (dftype == DFTYPE_KEY_STRING && dfkeys != NULL)) {
-      logMsg (LOG_DBG, "use dfkeys");
+      logMsg (LOG_DBG, LOG_LVL_6, "use dfkeys");
       if (first && dftype == DFTYPE_KEY_STRING) {
         keyString = tkeystr;
         ikeystr = tvalstr;
@@ -246,26 +246,26 @@ datafileLoad (datafilekey_t *dfkeys, size_t dfkeycount,
 
       long idx = dfkeyBinarySearch (dfkeys, dfkeycount, tkeystr);
       if (idx >= 0) {
-        logMsg (LOG_DBG, "found %s idx: %ld", tkeystr, idx);
+        logMsg (LOG_DBG, LOG_LVL_6, "found %s idx: %ld", tkeystr, idx);
         ikey = dfkeys [idx].itemkey;
         vt = dfkeys [idx].valuetype;
-        logMsg (LOG_DBG, "ikey:%ld vt:%d tvalstr:%s", ikey, vt, tvalstr);
+        logMsg (LOG_DBG, LOG_LVL_6, "ikey:%ld vt:%d tvalstr:%s", ikey, vt, tvalstr);
 
         if (dfkeys [idx].convFunc != NULL) {
           lval = dfkeys [idx].convFunc (tvalstr);
-          logMsg (LOG_DBG, "converted value: %s to %ld", tvalstr, lval);
+          logMsg (LOG_DBG, LOG_LVL_6, "converted value: %s to %ld", tvalstr, lval);
         } else {
           if (vt == VALUE_LONG) {
             lval = atol (tvalstr);
-            logMsg (LOG_DBG, "value: %ld", lval);
+            logMsg (LOG_DBG, LOG_LVL_6, "value: %ld", lval);
           }
         }
       } else {
-        logMsg (LOG_DBG, "Unable to locate key: %s", tkeystr);
+        logMsg (LOG_DBG, LOG_LVL_6, "Unable to locate key: %s", tkeystr);
       }
 
       if (dftype == DFTYPE_KEY_STRING) {
-        logMsg (LOG_DBG, "set: key_string");
+        logMsg (LOG_DBG, LOG_LVL_6, "set: key_string");
         if (vt == VALUE_DATA) {
           slistSetData (itemList, tkeystr, strdup (tvalstr));
         }
@@ -274,7 +274,7 @@ datafileLoad (datafilekey_t *dfkeys, size_t dfkeycount,
         }
       }
       if (dftype == DFTYPE_KEY_LONG) {
-        logMsg (LOG_DBG, "set: key_long");
+        logMsg (LOG_DBG, LOG_LVL_6, "set: key_long");
         if (vt == VALUE_DATA) {
           llistSetData (itemList, ikey, strdup (tvalstr));
         }
@@ -283,7 +283,7 @@ datafileLoad (datafilekey_t *dfkeys, size_t dfkeycount,
         }
       }
       if (dftype == DFTYPE_KEY_VAL) {
-        logMsg (LOG_DBG, "set: key_val");
+        logMsg (LOG_DBG, LOG_LVL_6, "set: key_val");
         if (vt == VALUE_DATA) {
           llistSetData (df->data, ikey, strdup (tvalstr));
         }
@@ -293,7 +293,7 @@ datafileLoad (datafilekey_t *dfkeys, size_t dfkeycount,
       }
     }
     if (dftype == DFTYPE_KEY_VAL && dfkeys == NULL) {
-      logMsg (LOG_DBG, "set: key_val");
+      logMsg (LOG_DBG, LOG_LVL_6, "set: key_val");
       slistSetData (df->data, tkeystr, strdup (tvalstr));
       key = -1L;
     }
@@ -313,7 +313,7 @@ datafileLoad (datafilekey_t *dfkeys, size_t dfkeycount,
 
   parseFree (pi);
   free (data);
-  logProcEnd ("datafileLoad", "");
+  logProcEnd (LOG_LVL_6, "datafileLoad", "");
 }
 
 list_t *
@@ -342,7 +342,7 @@ parse (parseinfo_t *pi, char *data, parsetype_t parsetype)
   char        *str;
   size_t      dataCounter;
 
-  logProcBegin ("parse");
+  logProcBegin (LOG_LVL_6, "parse");
   tokptr = NULL;
   if (pi->allocCount < 60) {
     pi->allocCount = 60;
@@ -372,7 +372,7 @@ parse (parseinfo_t *pi, char *data, parsetype_t parsetype)
     str = strtok_r (NULL, "\n", &tokptr);
   }
   pi->count = dataCounter;
-  logProcEnd ("parse", "");
+  logProcEnd (LOG_LVL_6, "parse", "");
   return dataCounter;
 }
 
@@ -381,7 +381,7 @@ parse (parseinfo_t *pi, char *data, parsetype_t parsetype)
 static void
 datafileFreeInternal (datafile_t *df)
 {
-  logProcBegin ("datafileFreeInternal");
+  logProcBegin (LOG_LVL_6, "datafileFreeInternal");
   if (df != NULL) {
     if (df->fname != NULL) {
       free (df->fname);
@@ -409,7 +409,7 @@ datafileFreeInternal (datafile_t *df)
       df->data = NULL;
     }
   }
-  logProcEnd ("datafileFreeInternal", "");
+  logProcEnd (LOG_LVL_6, "datafileFreeInternal", "");
 }
 
 static long

@@ -29,7 +29,7 @@ main (int argc, char *argv[])
   sysvarsInit (argv [0]);
   chdir (sysvars [SV_BDJ4DIR]);
   bdjvarsInit ();
-  logStartAppend ("clicomm", "cl");
+  logStartAppend ("clicomm", "cl", LOG_LVL_6);
   uint16_t mainPort = lbdjvars [BDJVL_MAIN_PORT];
   Sock_t mainSock = sockConnect (mainPort, &err, 1000);
   while (socketInvalid (mainSock)) {

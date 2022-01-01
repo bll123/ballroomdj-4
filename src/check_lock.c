@@ -20,6 +20,7 @@ START_TEST(lock_acquire_release)
   FILE          *fh;
   pid_t         pid;
   pid_t         fpid;
+  size_t        temp;
 
   pid = getpid ();
   unlink (LOCK_FN);
@@ -29,7 +30,8 @@ START_TEST(lock_acquire_release)
   ck_assert_int_eq (rc, 0);
   ck_assert_int_gt (statbuf.st_size, 0);
   fh = fopen (LOCK_FN, "r");
-  rc = fscanf (fh, PID_FMT, &fpid);
+  rc = fscanf (fh, "%zd", &temp);
+  fpid = (pid_t) temp;
   fclose (fh);
   ck_assert_int_eq (fpid, pid);
   rc = lockReleasePid (LOCK_FN, pid);
