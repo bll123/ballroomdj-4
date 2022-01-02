@@ -36,12 +36,13 @@ static void           mergeSort (list_t *, size_t, size_t);
 /* data size must be consistent   */
 
 list_t *
-listAlloc (size_t dsiz, listCompare_t compare, listFree_t freeHook)
+listAlloc (char *name, size_t dsiz, listCompare_t compare, listFree_t freeHook)
 {
   list_t    *list;
 
   list = malloc (sizeof (list_t));
   assert (list != NULL);
+  list->name = name;
   list->data = NULL;
   list->count = 0;
   list->allocCount = 0;
@@ -57,6 +58,7 @@ listAlloc (size_t dsiz, listCompare_t compare, listFree_t freeHook)
   list->cacheKeyType = KEY_STR;
   list->keyCache.strkey = NULL;
   list->locCache = LIST_LOC_INVALID;
+  list->cacheHits = 0;
   return list;
 }
 
@@ -80,6 +82,9 @@ listFree (void *tlist)
         free (list->keyCache.strkey);
         list->keyCache.strkey = NULL;
       }
+    }
+    if (list->cacheHits > 0) {
+      logMsg (LOG_DBG, LOG_LVL_1, "list %s: %ld cache hits", list->name, list->cacheHits);
     }
     free (list);
   }
@@ -161,12 +166,12 @@ listIterateData (list_t *list)
 /* key/value list, keyed by a string*/
 
 list_t *
-slistAlloc (listorder_t ordered, listCompare_t compare,
+slistAlloc (char *name, listorder_t ordered, listCompare_t compare,
     listFree_t freeHook, listFree_t freeHookB)
 {
   list_t    *list;
 
-  list = listAlloc (sizeof (namevalue_t *), compare, NULL);
+  list = listAlloc (name, sizeof (namevalue_t *), compare, NULL);
   list->ordered = ordered;
   list->type = LIST_NAMEVALUE;
   list->keytype = KEY_STR;
@@ -223,6 +228,18 @@ slistSetDouble (list_t *list, char *key, double value)
   return list;
 }
 
+list_t *
+slistSetList (list_t *list, char *key, list_t *value)
+{
+  namevalue_t *nv;
+
+  nv = slistSetKey (list, key);
+  nv->valuetype = VALUE_LIST;
+  nv->u.data = value;
+  listSet (list, nv);
+  return list;
+}
+
 void *
 slistGetData (list_t *list, char *key)
 {
@@ -230,7 +247,8 @@ slistGetData (list_t *list, char *key)
   namevalue_t     *nv;
 
   nv = slistGetNV (list, key);
-  if (nv != NULL && nv->valuetype == VALUE_DATA) {
+  if (nv != NULL &&
+      (nv->valuetype == VALUE_DATA || nv->valuetype == VALUE_LIST)) {
     value = (char *) nv->u.data;
   }
   return value;
@@ -314,11 +332,11 @@ slistIterateKeyStr (list_t *list)
 /* key/value list, keyed by a long */
 
 list_t *
-llistAlloc (listorder_t ordered, listFree_t freeHookB)
+llistAlloc (char *name, listorder_t ordered, listFree_t freeHookB)
 {
   list_t    *list;
 
-  list = listAlloc (sizeof (namevalue_t *), NULL, NULL);
+  list = listAlloc (name, sizeof (namevalue_t *), NULL, NULL);
   list->ordered = ordered;
   list->type = LIST_NAMEVALUE;
   list->keytype = KEY_LONG;
@@ -381,6 +399,18 @@ llistSetDouble (list_t *list, long key, double value)
   return list;
 }
 
+list_t *
+llistSetList (list_t *list, long key, list_t *value)
+{
+  namevalue_t *nv;
+
+  nv = llistSetKey (key);
+  nv->valuetype = VALUE_LIST;
+  nv->u.data = value;
+  listSet (list, nv);
+  return list;
+}
+
 void *
 llistGetData (list_t *list, long key)
 {
@@ -388,7 +418,8 @@ llistGetData (list_t *list, long key)
   namevalue_t     *nv;
 
   nv = llistGetNV (list, key);
-  if (nv != NULL && nv->valuetype == VALUE_DATA) {
+  if (nv != NULL &&
+      (nv->valuetype == VALUE_DATA || nv->valuetype == VALUE_LIST)) {
     value = (char *) nv->u.data;
   }
   return value;
@@ -452,7 +483,6 @@ llistIterateKeyLong (list_t *list)
   if (list->type == LIST_NAMEVALUE) {
     namevalue_t *nv = (namevalue_t *) list->data[list->iteratorIndex];
     value = nv->lkey.lkey;
-
 
     list->cacheKeyType = KEY_LONG;
     list->keyCache.lkey = value;
@@ -529,6 +559,7 @@ slistGetNV (list_t *list, char *key)
           strcmp (key, list->keyCache.strkey) == 0) {
         loc = list->locCache;
         nv = list->data [loc];
+        ++list->cacheHits;
         return nv;
       }
 
@@ -581,6 +612,7 @@ llistGetNV (list_t *list, long key)
           key == list->keyCache.lkey) {
         loc = list->locCache;
         nv = list->data [loc];
+        ++list->cacheHits;
         return nv;
       }
 
@@ -619,6 +651,9 @@ listFreeItem (list_t *list, size_t idx)
       if (nv->valuetype == VALUE_DATA && nv->u.data != NULL &&
           list->freeHookB != NULL) {
         list->freeHookB (nv->u.data);
+      }
+      if (nv->valuetype == VALUE_LIST && nv->u.data != NULL) {
+        listFree (nv->u.data);
       }
       free (nv);
     } else {

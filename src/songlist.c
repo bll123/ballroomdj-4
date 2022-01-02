@@ -9,6 +9,7 @@
 #include "datafile.h"
 #include "fileop.h"
 
+  /* must be sorted in ascii order */
 static datafilekey_t songlistdfkeys[] = {
   { "DANCE",  SONGLIST_DANCE, VALUE_DATA, NULL },
   { "FILE",   SONGLIST_FILE,  VALUE_DATA, NULL },
@@ -24,7 +25,8 @@ songlistAlloc (char *fname)
   if (! fileopExists (fname)) {
     return NULL;
   }
-  df = datafileAlloc (songlistdfkeys, SONGLIST_DFKEY_COUNT, fname, DFTYPE_KEY_LONG);
+  df = datafileAlloc ("songlist", songlistdfkeys, SONGLIST_DFKEY_COUNT,
+      fname, DFTYPE_KEY_LONG);
   return df;
 }
 

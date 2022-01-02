@@ -9,6 +9,7 @@
 #include "datafile.h"
 #include "fileop.h"
 
+  /* must be sorted in ascii order */
 static datafilekey_t genredfkeys[] = {
   { "classical",  GENRE_CLASSICAL_FLAG, VALUE_LONG, parseConvBoolean },
   { "genre",      GENRE_GENRE,          VALUE_DATA, NULL },
@@ -23,7 +24,7 @@ genreAlloc (char *fname)
   if (! fileopExists (fname)) {
     return NULL;
   }
-  df = datafileAlloc (genredfkeys, GENRE_DFKEY_COUNT, fname, DFTYPE_KEY_LONG);
+  df = datafileAlloc ("genre", genredfkeys, GENRE_DFKEY_COUNT, fname, DFTYPE_KEY_LONG);
   return df;
 }
 

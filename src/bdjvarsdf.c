@@ -6,6 +6,7 @@
 
 #include "bdjvarsdf.h"
 #include "datafile.h"
+#include "autosel.h"
 #include "dncspeeds.h"
 #include "dnctypes.h"
 #include "genre.h"
@@ -34,6 +35,8 @@ bdjvarsdfInit (void)
   bdjvarsdf [BDJVDF_LEVELS] = levelAlloc (fn);
   datautilMakePath (fn, sizeof (fn), "", "sortopt", ".txt", DATAUTIL_MP_NONE);
   bdjvarsdf [BDJVDF_SORT_OPT] = sortoptAlloc (fn);
+  datautilMakePath (fn, sizeof (fn), "", "autosel", ".txt", DATAUTIL_MP_NONE);
+  bdjvarsdf [BDJVDF_AUTO_SEL] = autoselAlloc (fn);
 }
 
 void
@@ -45,4 +48,5 @@ bdjvarsdfCleanup (void)
   genreFree (bdjvarsdf [BDJVDF_GENRES]);
   levelFree (bdjvarsdf [BDJVDF_LEVELS]);
   sortoptFree (bdjvarsdf [BDJVDF_SORT_OPT]);
+  autoselFree (bdjvarsdf [BDJVDF_AUTO_SEL]);
 }

@@ -9,6 +9,7 @@
 #include "datafile.h"
 #include "fileop.h"
 
+  /* must be sorted in ascii order */
 static datafilekey_t leveldfkeys[] = {
   { "default",  LEVEL_DEFAULT_FLAG, VALUE_LONG, parseConvBoolean },
   { "label",    LEVEL_LABEL,        VALUE_DATA, NULL },
@@ -25,7 +26,7 @@ levelAlloc (char *fname)
     return NULL;
   }
 
-  df = datafileAlloc (leveldfkeys, LEVEL_DFKEY_COUNT, fname, DFTYPE_KEY_LONG);
+  df = datafileAlloc ("level", leveldfkeys, LEVEL_DFKEY_COUNT, fname, DFTYPE_KEY_LONG);
   return df;
 }
 

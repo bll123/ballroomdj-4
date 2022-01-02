@@ -17,7 +17,7 @@ sortoptAlloc (char *fname)
   if (! fileopExists (fname)) {
     return NULL;
   }
-  df = datafileAlloc (NULL, 0, fname, DFTYPE_LIST);
+  df = datafileAlloc ("sortopt", NULL, 0, fname, DFTYPE_LIST);
   return df;
 }
 

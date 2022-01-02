@@ -28,7 +28,8 @@ autoselAlloc (char *fname)
 {
   datafile_t    *df;
 
-  df = datafileAlloc (autoseldfkeys, AUTOSEL_DFKEY_COUNT, fname, DFTYPE_KEY_VAL);
+  df = datafileAlloc ("autosel", autoseldfkeys, AUTOSEL_DFKEY_COUNT,
+      fname, DFTYPE_KEY_VAL);
   return df;
 }
 

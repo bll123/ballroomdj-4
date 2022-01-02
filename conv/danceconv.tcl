@@ -24,7 +24,8 @@ puts $fh "..[expr {[llength $Dance]/2}]"
 foreach {key data} $Dance {
   puts $fh "DANCE\n..$key"
   foreach {k v} $data {
-    puts $fh $k
+    if { $k eq "ann" } { set k ANNOUNCE }
+    puts $fh [string toupper $k]
     puts $fh "..$v"
   }
 }

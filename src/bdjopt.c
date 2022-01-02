@@ -309,14 +309,14 @@ bdjoptInit (void)
 {
   char      path [MAXPATHLEN];
 
-  bdjoptlookup = slistAlloc (LIST_UNORDERED, stringCompare, NULL, NULL);
+  bdjoptlookup = slistAlloc ("bdjoptlookup", LIST_UNORDERED, stringCompare, NULL, NULL);
   slistSetSize (bdjoptlookup, OPT_MAX);
   for (size_t i = 0; i < OPT_MAX; ++i) {
     slistSetLong (bdjoptlookup, bdjoptdefs [i].optname, (long) i);
   }
   slistSort (bdjoptlookup);
 
-  bdjopt = llistAlloc (LIST_ORDERED, free);
+  bdjopt = llistAlloc ("bdjopt", LIST_ORDERED, free);
 
   /* global */
   datautilMakePath (path, MAXPATHLEN, "", BDJ_CONFIG_BASEFN,
@@ -380,6 +380,8 @@ bdjoptLoad (char *path)
     }
 
     switch (bdjoptdefs [idx].valuetype) {
+      case VALUE_LIST:
+        break;
       case VALUE_DOUBLE:
       {
         llistSetDouble (bdjopt, idx, atof (strdata [i+1]));

@@ -1092,7 +1092,7 @@ tagdefInit (void)
   tagdefs [TAG_KEY_VOLUMEADJUSTPERC].label = _("Adjustment");
   tagdefs [TAG_KEY_VOLUMEADJUSTPERC].shortLabel = _("Vol. Adj.");
 
-  tagdeflookup = slistAlloc (LIST_UNORDERED, stringCompare, NULL, NULL);
+  tagdeflookup = slistAlloc ("tagdefs", LIST_UNORDERED, stringCompare, NULL, NULL);
   slistSetSize (tagdeflookup, MAX_TAG_KEY);
   for (size_t i = 0; i < MAX_TAG_KEY; ++i) {
     assert (tagdefs[i].initialized == TAGDEF_INITIALIZED);

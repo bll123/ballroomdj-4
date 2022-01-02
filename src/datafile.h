@@ -4,13 +4,14 @@
 #include "list.h"
 
 typedef enum {
+    /* list: simple list */
   DFTYPE_LIST,
     /* key_string: use the first item key found after version/count as
        the break.  Otherwise the same as key long. */
   DFTYPE_KEY_STRING,
     /* key_long: has a 'KEY' value that begins a block of key/values. */
   DFTYPE_KEY_LONG,
-    /* only key/values */
+    /* key_val: only key/values; generally not used. */
   DFTYPE_KEY_VAL,
   DFTYPE_MAX,
 } datafiletype_t;
@@ -21,7 +22,25 @@ typedef struct {
   size_t  count;
 } parseinfo_t;
 
-typedef long (*dfConvFunc_t)(const char *);
+typedef struct {
+  char            *name;
+  char            *itemname;
+  char            *fname;
+  datafiletype_t  dftype;
+  list_t          *data;
+  long            version;
+} datafile_t;
+
+typedef struct {
+  valuetype_t   valuetype;
+  union {
+    long        l;
+    list_t      *list;
+    char        *str;
+  } u;
+} datafileret_t;
+
+typedef void (*dfConvFunc_t)(char *, datafileret_t *);
 
 typedef struct {
   char            *name;
@@ -30,22 +49,16 @@ typedef struct {
   dfConvFunc_t    convFunc;
 } datafilekey_t;
 
-typedef struct {
-  char            *fname;
-  datafiletype_t  dftype;
-  list_t          *data;
-  long            version;
-} datafile_t;
-
 parseinfo_t * parseInit (void);
 void          parseFree (parseinfo_t *);
 char **       parseGetData (parseinfo_t *);
 size_t        parseSimple (parseinfo_t *, char *);
 size_t        parseKeyValue (parseinfo_t *, char *);
-long          parseConvBoolean (const char *);
+void          parseConvBoolean (char *, datafileret_t *);
+void          parseConvTextList (char *, datafileret_t *);
 
-datafile_t *  datafileAlloc (datafilekey_t *, size_t dfkeycount, char *,
-                  datafiletype_t dftype);
+datafile_t *  datafileAlloc (char *name, datafilekey_t *, size_t dfkeycount,
+                  char *fname, datafiletype_t dftype);
 void          datafileFree (void *);
 void          datafileLoad (datafilekey_t *, size_t dfkeycount,
                   datafile_t *, char *, datafiletype_t dftype);

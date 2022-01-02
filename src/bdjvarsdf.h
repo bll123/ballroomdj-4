@@ -11,6 +11,7 @@ typedef enum {
   BDJVDF_GENRES,
   BDJVDF_LEVELS,
   BDJVDF_SORT_OPT,
+  BDJVDF_AUTO_SEL,
   BDJVDF_MAX,
 } bdjvarkeydf_t;
 

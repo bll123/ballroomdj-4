@@ -18,7 +18,7 @@ songAlloc (void)
 
   song = malloc (sizeof (song_t));
   assert (song != NULL);
-  song->songInfo = llistAlloc (LIST_UNORDERED, free);
+  song->songInfo = llistAlloc ("song", LIST_UNORDERED, free);
   return song;
 }
 
@@ -59,6 +59,10 @@ songSetAll (song_t *song, char *data[], size_t count)
     }
 
     switch (tagdefs [idx].valuetype) {
+      case VALUE_LIST:
+      {
+        break;
+      }
       case VALUE_DOUBLE:
       {
         llistSetDouble (song->songInfo, idx, atof (data[i+1]));

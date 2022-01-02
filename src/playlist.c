@@ -12,13 +12,14 @@
 #include "portability.h"
 
 static void     playlistFreeList (void *tpllist);
-static long     plConvResume (const char *);
-static long     plConvWait (const char *);
-static long     plConvStopType (const char *);
+static void     plConvResume (char *, datafileret_t *ret);
+static void     plConvWait (char *, datafileret_t *ret);
+static void     plConvStopType (char *, datafileret_t *ret);
 
+  /* must be sorted in ascii order */
 static datafilekey_t playlistdfkeys[] = {
   { "AllowedKeywords",  PLAYLIST_ALLOWED_KEYWORDS,
-      VALUE_DATA, NULL },
+      VALUE_DATA, parseConvTextList },
   { "DanceRating",      PLAYLIST_RATING,
       VALUE_DATA, NULL },
   { "Gap",              PLAYLIST_GAP,
@@ -38,7 +39,7 @@ static datafilekey_t playlistdfkeys[] = {
   { "PlayAnnounce",     PLAYLIST_ANNOUNCE,
       VALUE_LONG, parseConvBoolean },
   { "RequiredKeywords", PLAYLIST_REQ_KEYWORDS,
-      VALUE_DATA, NULL },
+      VALUE_DATA, parseConvTextList },
   { "Resume",           PLAYLIST_RESUME,
       VALUE_DATA, plConvResume },
   { "Sequence",         PLAYLIST_SEQ_NAME,
@@ -74,7 +75,8 @@ playlistAlloc (char *fname)
   if (! fileopExists (tfn)) {
     return NULL;
   }
-  pldf = datafileAlloc (playlistdfkeys, PLAYLIST_DFKEY_COUNT, fname, DFTYPE_KEY_VAL);
+  pldf = datafileAlloc ("playlist", playlistdfkeys, PLAYLIST_DFKEY_COUNT,
+      fname, DFTYPE_KEY_VAL);
   snprintf (tfn, sizeof (tfn), "data/%s.pldance", pi->basename);
   if (! fileopExists (tfn)) {
     datafileFree (pldf);
@@ -82,7 +84,7 @@ playlistAlloc (char *fname)
   }
     /* ### FIX TODO: want to redo this to use a dynamic list of dance keys */
     /* the dance loader must be written &etc. */
-  pldancedf = datafileAlloc (NULL, 0, fname, DFTYPE_KEY_VAL);
+  pldancedf = datafileAlloc ("playlist-dances", NULL, 0, fname, DFTYPE_KEY_VAL);
   pathInfoFree (pi);
 
   pllist = datafileGetData (pldf);
@@ -119,33 +121,33 @@ playlistFreeList (void *tpllist)
   llistSetData (pllist, PLAYLIST_DANCES, NULL);
 }
 
-static long
-plConvResume (const char *data)
+static void
+plConvResume (char *data, datafileret_t *ret)
 {
-  long val = RESUME_FROM_LAST;
+  ret->valuetype = VALUE_LONG;
+  ret->u.l = RESUME_FROM_LAST;
   if (strcmp (data, "From Start") == 0) {
-    val = RESUME_FROM_START;
+    ret->u.l = RESUME_FROM_START;
   }
-  return val;
 }
 
-static long
-plConvWait (const char *data)
+static void
+plConvWait (char *data, datafileret_t *ret)
 {
-  long val = WAIT_CONTINUE;
+  ret->valuetype = VALUE_LONG;
+  ret->u.l = WAIT_CONTINUE;
   if (strcmp (data, "") == 0) {
-    val = WAIT_PAUSE;
+    ret->u.l = WAIT_PAUSE;
   }
-  return val;
 }
 
-static long
-plConvStopType (const char *data)
+static void
+plConvStopType (char *data, datafileret_t *ret)
 {
-  long val = STOP_AT;
+  ret->valuetype = VALUE_LONG;
+  ret->u.l = STOP_AT;
   if (strcmp (data, "In") == 0) {
-    val = STOP_IN;
+    ret->u.l = STOP_IN;
   }
-  return val;
 }
 

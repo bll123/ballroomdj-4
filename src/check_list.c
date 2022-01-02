@@ -12,7 +12,7 @@ START_TEST(simple_list_create_free)
 {
   list_t    *list;
 
-  list = listAlloc (sizeof (char *), istringCompare, NULL);
+  list = listAlloc ("chk", sizeof (char *), istringCompare, NULL);
   ck_assert_ptr_nonnull (list);
   ck_assert_int_eq (list->count, 0);
   ck_assert_int_eq (list->allocCount, 0);
@@ -27,7 +27,7 @@ START_TEST(simple_list_add_unordered)
 {
   list_t    *list;
 
-  list = listAlloc (sizeof (char *), istringCompare, NULL);
+  list = listAlloc ("chk", sizeof (char *), istringCompare, NULL);
   ck_assert_ptr_nonnull (list);
   ck_assert_int_eq (list->ordered, LIST_UNORDERED);
   /* change to ordered list */
@@ -58,7 +58,7 @@ START_TEST(simple_list_add_unordered_iterate)
   list_t *  list;
   char *    value;
 
-  list = listAlloc (sizeof (char *), istringCompare, NULL);
+  list = listAlloc ("chk", sizeof (char *), istringCompare, NULL);
   ck_assert_ptr_nonnull (list);
   ck_assert_int_eq (list->dsiz, sizeof (char *));
   listSet (list, "ffff");
@@ -96,7 +96,7 @@ START_TEST(simple_list_add_ordered_iterate)
   list_t *  list;
   char *    value;
 
-  list = listAlloc (sizeof (char *), istringCompare, NULL);
+  list = listAlloc ("chk", sizeof (char *), istringCompare, NULL);
   ck_assert_ptr_nonnull (list);
   ck_assert_int_eq (list->dsiz, sizeof (char *));
   ck_assert_int_eq (list->ordered, LIST_UNORDERED);
@@ -134,7 +134,7 @@ START_TEST(simple_list_add_ordered_beg)
   list_t *  list;
   char *    value;
 
-  list = listAlloc (sizeof (char *), istringCompare, NULL);
+  list = listAlloc ("chk", sizeof (char *), istringCompare, NULL);
   /* change to ordered list */
   listSort (list);
   ck_assert_ptr_nonnull (list);
@@ -161,7 +161,7 @@ START_TEST(simple_list_add_ordered_end)
   list_t *  list;
   char *    value;
 
-  list = listAlloc (sizeof (char *), istringCompare, NULL);
+  list = listAlloc ("chk", sizeof (char *), istringCompare, NULL);
   /* change to ordered list */
   listSort (list);
   ck_assert_ptr_nonnull (list);
@@ -188,7 +188,7 @@ START_TEST(simple_list_add_ordered_prealloc)
   list_t *  list;
   char *    value;
 
-  list = listAlloc (sizeof (char *), istringCompare, NULL);
+  list = listAlloc ("chk", sizeof (char *), istringCompare, NULL);
   listSetSize (list, 7);
   /* change to ordered list */
   listSort (list);
@@ -229,7 +229,7 @@ START_TEST(simple_list_add_sort)
   list_t *  list;
   char *    value;
 
-  list = listAlloc (sizeof (char *), istringCompare, NULL);
+  list = listAlloc ("chk", sizeof (char *), istringCompare, NULL);
   ck_assert_ptr_nonnull (list);
   ck_assert_int_eq (list->dsiz, sizeof (char *));
   listSet (list, "ffff");
@@ -282,7 +282,7 @@ START_TEST(slist_create_free)
 {
   list_t    *list;
 
-  list = slistAlloc (LIST_ORDERED, istringCompare, NULL, NULL);
+  list = slistAlloc ("chk", LIST_ORDERED, istringCompare, NULL, NULL);
   ck_assert_ptr_nonnull (list);
   ck_assert_int_eq (list->count, 0);
   ck_assert_int_eq (list->allocCount, 0);
@@ -298,7 +298,7 @@ START_TEST(slist_get_data_str)
   list_t        *list;
   char          *value;
 
-  list = slistAlloc (LIST_UNORDERED, istringCompare, NULL, NULL);
+  list = slistAlloc ("chk", LIST_UNORDERED, istringCompare, NULL, NULL);
   slistSetSize (list, 7);
   ck_assert_int_eq (list->count, 0);
   ck_assert_int_eq (list->allocCount, 7);
@@ -325,7 +325,7 @@ START_TEST(slist_add_str_iterate)
   char *        value;
   char *        key;
 
-  list = slistAlloc (LIST_ORDERED, istringCompare, NULL, NULL);
+  list = slistAlloc ("chk", LIST_ORDERED, istringCompare, NULL, NULL);
   ck_assert_ptr_nonnull (list);
   slistSetData (list, "ffff", "555");
   slistSetData (list, "cccc", "222");
@@ -374,7 +374,7 @@ START_TEST(slist_add_sort_str)
   long          value;
   char          *key;
 
-  list = slistAlloc (LIST_UNORDERED, istringCompare, NULL, NULL);
+  list = slistAlloc ("chk", LIST_UNORDERED, istringCompare, NULL, NULL);
   ck_assert_ptr_nonnull (list);
   slistSetLong (list, "ffff", 0L);
   slistSetLong (list, "zzzz", 1L);
@@ -419,7 +419,7 @@ START_TEST(slist_replace_str)
   char          *key;
   char          *value;
 
-  list = slistAlloc (LIST_ORDERED, istringCompare, NULL, NULL);
+  list = slistAlloc ("chk", LIST_ORDERED, istringCompare, NULL, NULL);
   ck_assert_ptr_nonnull (list);
   ck_assert_int_eq (list->type, LIST_NAMEVALUE);
 
@@ -516,7 +516,7 @@ START_TEST(slist_free_str)
 {
   list_t        *list;
 
-  list = slistAlloc (LIST_UNORDERED, istringCompare, free, free);
+  list = slistAlloc ("chk", LIST_UNORDERED, istringCompare, free, free);
   ck_assert_ptr_nonnull (list);
   slistSetData (list, "ffff", strdup("0L"));
   slistSetData (list, "zzzz", strdup("1L"));
@@ -534,7 +534,7 @@ START_TEST(llist_create_free)
 {
   list_t    *list;
 
-  list = llistAlloc (LIST_ORDERED, NULL);
+  list = llistAlloc ("chk", LIST_ORDERED, NULL);
   ck_assert_ptr_nonnull (list);
   ck_assert_int_eq (list->count, 0);
   ck_assert_int_eq (list->allocCount, 0);
@@ -550,7 +550,7 @@ START_TEST(llist_get_data_str)
   list_t        *list;
   char          *value;
 
-  list = llistAlloc (LIST_UNORDERED, NULL);
+  list = llistAlloc ("chk", LIST_UNORDERED, NULL);
   llistSetSize (list, 7);
   ck_assert_int_eq (list->count, 0);
   ck_assert_int_eq (list->allocCount, 7);
@@ -577,7 +577,7 @@ START_TEST(llist_add_str_iterate)
   char *        value;
   long          key;
 
-  list = llistAlloc (LIST_ORDERED, NULL);
+  list = llistAlloc ("chk", LIST_ORDERED, NULL);
   ck_assert_ptr_nonnull (list);
   llistSetData (list, 6L, "555");
   llistSetData (list, 3L, "222");
@@ -626,7 +626,7 @@ START_TEST(llist_add_sort_str)
   long          value;
   long          key;
 
-  list = llistAlloc (LIST_UNORDERED, NULL);
+  list = llistAlloc ("chk", LIST_UNORDERED, NULL);
   ck_assert_ptr_nonnull (list);
   llistSetLong (list, 6L, 0L);
   llistSetLong (list, 26L, 1L);
@@ -671,7 +671,7 @@ START_TEST(llist_replace_str)
   long          key;
   char          *value;
 
-  list = llistAlloc (LIST_ORDERED, NULL);
+  list = llistAlloc ("chk", LIST_ORDERED, NULL);
   ck_assert_ptr_nonnull (list);
   ck_assert_int_eq (list->type, LIST_NAMEVALUE);
 
@@ -768,7 +768,7 @@ START_TEST(llist_free_str)
 {
   list_t        *list;
 
-  list = llistAlloc (LIST_UNORDERED, free);
+  list = llistAlloc ("chk", LIST_UNORDERED, free);
   ck_assert_ptr_nonnull (list);
   llistSetData (list, 6L, strdup("0L"));
   llistSetData (list, 26L, strdup("1L"));

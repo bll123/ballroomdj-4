@@ -9,6 +9,7 @@
 #include "datafile.h"
 #include "fileop.h"
 
+  /* must be sorted in ascii order */
 static datafilekey_t ratingdfkeys[] = {
   { "rating", RATING_RATING, VALUE_DATA, NULL },
   { "weight", RATING_WEIGHT, VALUE_LONG, NULL },
@@ -23,7 +24,8 @@ ratingAlloc (char *fname)
   if (! fileopExists (fname)) {
     return NULL;
   }
-  df = datafileAlloc (ratingdfkeys, RATING_DFKEY_COUNT, fname, DFTYPE_KEY_LONG);
+  df = datafileAlloc ("rating", ratingdfkeys, RATING_DFKEY_COUNT,
+      fname, DFTYPE_KEY_LONG);
   return df;
 }
 
