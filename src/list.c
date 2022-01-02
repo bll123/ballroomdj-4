@@ -333,6 +333,12 @@ llistFree (void *list)
   listFree (list);
 }
 
+void
+llistSetFreeHook (list_t *list, listFree_t freeHookB)
+{
+  list->freeHookB = freeHookB;
+}
+
 inline void
 llistSetSize (list_t *list, size_t siz)
 {

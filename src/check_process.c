@@ -8,7 +8,7 @@
 
 #include "process.h"
 #include "check_bdj.h"
-#include "portability.h"
+#include "sysvars.h"
 
 START_TEST(process_exists)
 {

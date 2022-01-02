@@ -9,8 +9,7 @@ typedef enum {
 } programstate_t;
 
 typedef enum {
-  BDJV_UNKNOWN,
-  BDJV_MAX
+  BDJV_MAX,
 } bdjvarkey_t;
 
 typedef enum {
@@ -21,7 +20,7 @@ typedef enum {
 } bdjvarkeyl_t;
 
 extern char *     bdjvars [BDJV_MAX];
-extern long       lbdjvars [BDJVL_MAX];
+extern long       bdjvarsl [BDJVL_MAX];
 
 void    bdjvarsInit (void);
 

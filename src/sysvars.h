@@ -1,6 +1,8 @@
 #ifndef INC_SYSVARS_H
 #define INC_SYSVARS_H
 
+#include "config.h"
+
 #include "portability.h"
 
 typedef enum {

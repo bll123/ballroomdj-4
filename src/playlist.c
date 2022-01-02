@@ -7,63 +7,88 @@
 
 #include "playlist.h"
 #include "datafile.h"
-#include "fileutil.h"
+#include "fileop.h"
+#include "pathutil.h"
+#include "portability.h"
 
-static long      plConvResume (const char *);
-static long      plConvWait (const char *);
-static long      plConvStopType (const char *);
+static void     playlistFreeList (void *tpllist);
+static long     plConvResume (const char *);
+static long     plConvWait (const char *);
+static long     plConvStopType (const char *);
 
 static datafilekey_t playlistdfkeys[] = {
-  { "AllowedKeywords",   PLAYLIST_ALLOWED_KEYWORDS,
+  { "AllowedKeywords",  PLAYLIST_ALLOWED_KEYWORDS,
       VALUE_DATA, NULL },
-  { "DanceRating",       PLAYLIST_RATING,
+  { "DanceRating",      PLAYLIST_RATING,
       VALUE_DATA, NULL },
-  { "ManualList",        PLAYLIST_MANUAL_LIST_NAME,
+  { "Gap",              PLAYLIST_GAP,
       VALUE_DATA, NULL },
-  { "MaxPlayTime",       PLAYLIST_MAX_PLAY_TIME,
+  { "HighDanceLevel",   PLAYLIST_LEVEL_LOW,
       VALUE_DATA, NULL },
-  { "PauseEachSong",     PLAYLIST_PAUSE_EACH_SONG,
+  { "LowDanceLevel",    PLAYLIST_LEVEL_HIGH,
+      VALUE_DATA, NULL },
+  { "ManualList",       PLAYLIST_MANUAL_LIST_NAME,
+      VALUE_DATA, NULL },
+  { "MaxPlayTime",      PLAYLIST_MAX_PLAY_TIME,
+      VALUE_DATA, NULL },
+  { "MqMessage",        PLAYLIST_MQ_MESSAGE,
+      VALUE_DATA, NULL },
+  { "PauseEachSong",    PLAYLIST_PAUSE_EACH_SONG,
       VALUE_LONG, parseConvBoolean },
-  { "PlayAnnounce",      PLAYLIST_ANNOUNCE,
+  { "PlayAnnounce",     PLAYLIST_ANNOUNCE,
       VALUE_LONG, parseConvBoolean },
-  { "RequiredKeywords",  PLAYLIST_REQ_KEYWORDS,
+  { "RequiredKeywords", PLAYLIST_REQ_KEYWORDS,
       VALUE_DATA, NULL },
-  { "Resume",            PLAYLIST_RESUME,
+  { "Resume",           PLAYLIST_RESUME,
       VALUE_DATA, plConvResume },
-  { "Sequence",          PLAYLIST_SEQ_NAME,
+  { "Sequence",         PLAYLIST_SEQ_NAME,
       VALUE_DATA, NULL },
-  { "StopAfterWait",     PLAYLIST_STOP_AFTER_WAIT,
+  { "StopAfter",        PLAYLIST_STOP_AFTER,
       VALUE_DATA, plConvWait },
-  { "StopTime",          PLAYLIST_STOP_TIME,
+  { "StopAfterWait",    PLAYLIST_STOP_AFTER_WAIT,
+      VALUE_DATA, plConvWait },
+  { "StopTime",         PLAYLIST_STOP_TIME,
       VALUE_DATA, NULL },
-  { "StopType",          PLAYLIST_STOP_TYPE,
+  { "StopType",         PLAYLIST_STOP_TYPE,
       VALUE_DATA, plConvStopType },
-  { "StopWait",          PLAYLIST_STOP_WAIT,
+  { "StopWait",         PLAYLIST_STOP_WAIT,
       VALUE_DATA, plConvWait },
-  { "UseStatus",         PLAYLIST_USE_STATUS,
+  { "UseStatus",        PLAYLIST_USE_STATUS,
       VALUE_DATA, parseConvBoolean },
-  { "UseUnrated",        PLAYLIST_USE_UNRATED,
+  { "UseUnrated",       PLAYLIST_USE_UNRATED,
       VALUE_DATA, parseConvBoolean },
-  { "gap",               PLAYLIST_GAP,
-      VALUE_DATA, NULL },
-  { "highDanceLevel",    PLAYLIST_LEVEL_LOW,
-      VALUE_DATA, NULL },
-  { "lowDanceLevel",     PLAYLIST_LEVEL_HIGH,
-      VALUE_DATA, NULL },
-  { "mqMessage",         PLAYLIST_MQ_MESSAGE,
-      VALUE_DATA, NULL },
 };
 #define PLAYLIST_DFKEY_COUNT (sizeof (playlistdfkeys) / sizeof (datafilekey_t))
 
 datafile_t *
 playlistAlloc (char *fname)
 {
-  datafile_t    *df;
+  datafile_t    *pldf;
+  datafile_t    *pldancedf;
+  pathinfo_t    *pi;
+  char          tfn [MAXPATHLEN];
+  list_t        *pllist;
 
-  if (! fileExists (fname)) {
+  pi = pathInfo (fname);
+  snprintf (tfn, sizeof (tfn), "data/%s.pl", pi->basename);
+  if (! fileopExists (tfn)) {
     return NULL;
   }
-  df = datafileAlloc (playlistdfkeys, PLAYLIST_DFKEY_COUNT, fname, DFTYPE_KEY_VAL);
+  pldf = datafileAlloc (playlistdfkeys, PLAYLIST_DFKEY_COUNT, fname, DFTYPE_KEY_VAL);
+  snprintf (tfn, sizeof (tfn), "data/%s.pldance", pi->basename);
+  if (! fileopExists (tfn)) {
+    datafileFree (pldf);
+    return NULL;
+  }
+    /* ### FIX TODO: want to redo this to use a dynamic list of dance keys */
+    /* the dance loader must be written &etc. */
+  pldancedf = datafileAlloc (NULL, 0, fname, DFTYPE_KEY_VAL);
+  pathInfoFree (pi);
+
+  pllist = datafileGetData (pldf);
+  llistSetFreeHook (pllist, playlistFreeList);
+  llistSetData (pllist, PLAYLIST_DANCEDF, pldancedf);
+  llistSetData (pllist, PLAYLIST_DANCES, datafileGetData (pldancedf));
 
   // rebuild allowed keywords
   // rebuild required keywords
@@ -73,7 +98,7 @@ playlistAlloc (char *fname)
   // handle dances; this may require a re-parse?
   // have datafile save the parse???
 
-  return df;
+  return pldf;
 }
 
 void
@@ -84,7 +109,17 @@ playlistFree (datafile_t *df)
 
 /* internal routines */
 
-long
+static void
+playlistFreeList (void *tpllist)
+{
+  list_t      *pllist = (list_t *) tpllist;
+  datafileFree (llistGetData (pllist, PLAYLIST_DANCEDF));
+  llistSetData (pllist, PLAYLIST_DANCEDF, NULL);
+    /* this is no longer a valid pointer */
+  llistSetData (pllist, PLAYLIST_DANCES, NULL);
+}
+
+static long
 plConvResume (const char *data)
 {
   long val = RESUME_FROM_LAST;
@@ -94,7 +129,7 @@ plConvResume (const char *data)
   return val;
 }
 
-long
+static long
 plConvWait (const char *data)
 {
   long val = WAIT_CONTINUE;
@@ -104,7 +139,7 @@ plConvWait (const char *data)
   return val;
 }
 
-long
+static long
 plConvStopType (const char *data)
 {
   long val = STOP_AT;

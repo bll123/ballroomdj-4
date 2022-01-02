@@ -21,18 +21,15 @@
 #include "bdjstring.h"
 #include "sysvars.h"
 #include "bdjvars.h"
+#include "bdjvarsdf.h"
 #include "log.h"
 #include "tmutil.h"
-#include "fileutil.h"
+#include "fileop.h"
+#include "portability.h"
+#include "datautil.h"
 
 #if 1 // temporary
-# include "sortopt.h"
 # include "sequence.h"
-# include "dnctypes.h"
-# include "dncspeeds.h"
-# include "genre.h"
-# include "rating.h"
-# include "level.h"
 # include "songlist.h"
 #endif
 
@@ -66,8 +63,8 @@ bdj4startup (int argc, char *argv[])
   sysvarsInit (argv[0]);
 
   snprintf (tbuff, MAXPATHLEN, "data/%s", sysvars [SV_HOSTNAME]);
-  if (! fileExists (tbuff)) {
-    fileMakeDir (tbuff);
+  if (! fileopExists (tbuff)) {
+    fileopMakeDir (tbuff);
   }
 
   while ((c = getopt_long (argc, argv, "", bdj_options, &option_index)) != -1) {
@@ -89,32 +86,22 @@ bdj4startup (int argc, char *argv[])
     exit (1);
   }
   bdjvarsInit ();
+  bdjvarsdfInit ();
 
   logStart ("m", LOG_LVL_5);
   logMsg (LOG_SESS, LOG_LVL_1, "Using profile %ld", lsysvars [SVL_BDJIDX]);
 
   tagdefInit ();
   mtimestart (&dbmt);
-  fileMakePath (tbuff, MAXPATHLEN, "", MUSICDB_FNAME, MUSICDB_EXT, FILE_MP_NONE);
+  datautilMakePath (tbuff, MAXPATHLEN, "",
+      MUSICDB_FNAME, MUSICDB_EXT, DATAUTIL_MP_NONE);
   dbOpen (tbuff);
   logMsg (LOG_SESS, LOG_LVL_1, "Database read: %ld items in %ld ms", dbCount(), mtimeend (&dbmt));
   logMsg (LOG_SESS, LOG_LVL_1, "Total startup time: %ld ms", mtimeend (&mt));
 
 #if 1 // temporary
-  datafile_t *so = sortoptAlloc ("data/sortopt.txt");
-  sortoptFree (so);
   datafile_t *seq = sequenceAlloc ("data/standardrounds.seq");
   sequenceFree (seq);
-  datafile_t *spd = dncspeedsAlloc ("data/dancespeeds.txt");
-  dncspeedsFree (spd);
-  datafile_t *typ = dnctypesAlloc ("data/dancetypes.txt");
-  dnctypesFree (typ);
-  datafile_t *r = ratingAlloc ("data/ratings.txt");
-  ratingFree (r);
-  datafile_t *g = genreAlloc ("data/genres.txt");
-  genreFree (g);
-  datafile_t *lvl = levelAlloc ("data/levels.txt");
-  levelFree (lvl);
   datafile_t *sl = songlistAlloc ("data/dj.bll.01.songlist");
   songlistFree (sl);
 #endif
@@ -127,5 +114,6 @@ bdj4shutdown (void)
 {
   dbClose ();
   tagdefCleanup ();
+  bdjvarsdfCleanup ();
   logEnd ();
 }

@@ -10,8 +10,9 @@
 
 #include "sysvars.h"
 #include "bdjstring.h"
+#include "fileop.h"
+#include "pathutil.h"
 #include "portability.h"
-#include "fileutil.h"
 
 int
 main (int argc, char *argv[])
@@ -79,7 +80,7 @@ main (int argc, char *argv[])
     path = malloc (sz);
     assert (path != NULL);
 
-    fileToWinPath (sysvars [SV_BDJ4EXECDIR], pbuff, sz);
+    pathToWinPath (sysvars [SV_BDJ4EXECDIR], pbuff, sz);
     strlcpy (path, "PATH=", sz);
     strlcat (path, getenv ("PATH"), sz);
     strlcat (path, ";", sz);
@@ -87,7 +88,7 @@ main (int argc, char *argv[])
 
     strlcat (path, ";", sz);
     snprintf (pbuff, sz, "%s\\..\\plocal\\bin", sysvars [SV_BDJ4EXECDIR]);
-    fileRealPath (pbuff, tbuff);
+    pathRealPath (pbuff, tbuff);
     strlcat (path, tbuff, sz);
 
     strlcat (path, ";", sz);

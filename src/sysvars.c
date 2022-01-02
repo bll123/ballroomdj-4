@@ -16,8 +16,9 @@
 
 #include "sysvars.h"
 #include "bdjstring.h"
-#include "fileutil.h"
+#include "fileop.h"
 #include "portability.h"
+#include "pathutil.h"
 
 char        sysvars [SV_MAX][MAXPATHLEN];
 long        lsysvars [SVL_MAX];
@@ -89,26 +90,26 @@ sysvarsInit (const char *argv0)
 
   strlcpy (tbuf, argv0, MAXPATHLEN);
   strlcpy (buff, argv0, MAXPATHLEN);
-  fileNormPath (buff, MAXPATHLEN);
+  pathNormPath (buff, MAXPATHLEN);
   if (*buff != '/' &&
       (strlen (buff) > 2 && *(buff + 1) == ':' && *(buff + 2) != '/')) {
     strlcpy (tbuf, tcwd, MAXPATHLEN);
     strlcat (tbuf, buff, MAXPATHLEN);
   }
   /* this gives us the real path to the executable */
-  fileRealPath (tbuf, buff);
-  fileNormPath (buff, MAXPATHLEN);
+  pathRealPath (tbuf, buff);
+  pathNormPath (buff, MAXPATHLEN);
 
   /* strip off the filename */
   char *p = strrchr (buff, '/');
   *p = '\0';
   strlcpy (sysvars [SV_BDJ4EXECDIR], buff, MAXPATHLEN);
 
-  if (fileExists ("data")) {
+  if (fileopExists ("data")) {
     /* if there is a data directory in the current working directory  */
     /* a change of directories is contra-indicated.                   */
 
-    fileNormPath (tcwd, MAXPATHLEN);
+    pathNormPath (tcwd, MAXPATHLEN);
     strlcpy (sysvars [SV_BDJ4DIR], tcwd, MAXPATHLEN);
   } else {
     /* strip off the /bin */

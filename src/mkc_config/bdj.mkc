@@ -39,7 +39,6 @@ sys     select.h
 sys     socket.h
 sys	stat.h
 sys	time.h
-sys	types.h
 sys	utsname.h
 
 typ     HANDLE

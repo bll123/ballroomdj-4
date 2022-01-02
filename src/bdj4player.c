@@ -12,14 +12,15 @@
 #include "bdjmsg.h"
 #include "bdjstring.h"
 #include "bdjvars.h"
-#include "fileutil.h"
+#include "fileop.h"
 #include "list.h"
 #include "log.h"
-#include "portability.h"
 #include "sock.h"
 #include "sockh.h"
 #include "sysvars.h"
 #include "vlci.h"
+#include "portability.h"
+#include "pathutil.h"
 
 typedef struct {
   programstate_t  programState;
@@ -95,7 +96,7 @@ main (int argc, char *argv[])
 
   playerData.programState = STATE_RUNNING;
 
-  uint16_t listenPort = lbdjvars [BDJVL_PLAYER_PORT];
+  uint16_t listenPort = bdjvarsl [BDJVL_PLAYER_PORT];
   sockhMainLoop (listenPort, processMsg, mainProcessing, &playerData);
 
   if (playerData.vlcData != NULL) {
@@ -168,7 +169,7 @@ mainProcessing (void *udata)
       playerData->mainSock == INVALID_SOCKET) {
     int       err;
 
-    uint16_t mainPort = lbdjvars [BDJVL_MAIN_PORT];
+    uint16_t mainPort = bdjvarsl [BDJVL_MAIN_PORT];
     playerData->mainSock = sockConnect (mainPort, &err, 1000);
     logMsg (LOG_DBG, LOG_LVL_4, "main-socket: %zd", (size_t) playerData->mainSock);
   }
@@ -183,14 +184,14 @@ prepSong (playerData_t *playerData, char *sfname)
   char      stname [MAXPATHLEN];
 
   logProcBegin (LOG_LVL_2, "prepSong");
-  if (! fileExists (sfname)) {
+  if (! fileopExists (sfname)) {
     logMsg (LOG_DBG, LOG_LVL_1, "no file: %s\n", sfname);
     logProcEnd (LOG_LVL_2, "prepSong", "no-file");
     return;
   }
   makeSongTempName (playerData, sfname, stname, sizeof (stname));
   logMsg (LOG_DBG, LOG_LVL_2, "copy from %s to %s\n", sfname, stname);
-  fileCopy (sfname, stname);
+  fileopCopy (sfname, stname);
   // TODO : add the name to a list of prepared files.
   logProcEnd (LOG_LVL_2, "prepSong", "");
 }
@@ -202,7 +203,7 @@ playSong (playerData_t *playerData, char *sfname)
 
   logProcBegin (LOG_LVL_2, "playSong");
   makeSongTempName (playerData, sfname, stname, sizeof (stname)); // temporary
-  if (! fileExists (stname)) {
+  if (! fileopExists (stname)) {
     logMsg (LOG_DBG, LOG_LVL_1, "no file: %s\n", stname);
     logProcEnd (LOG_LVL_2, "playSong", "no-file");
     return;
@@ -217,18 +218,18 @@ makeSongTempName (playerData_t *playerData, char *in, char *out, size_t maxlen)
 {
   char        tnm [MAXPATHLEN];
   size_t      idx;
-  fileinfo_t  *fi;
+  pathinfo_t  *pi;
 
-  fi = fileInfo (in);
+  pi = pathInfo (in);
 
   idx = 0;
-  for (char *p = fi->filename; *p && idx < maxlen; ++p) {
+  for (char *p = pi->filename; *p && idx < maxlen; ++p) {
     if (isascii (*p) && isgraph (*p)) {
       tnm [idx++] = *p;
     }
   }
   tnm [idx] = '\0';
-  fileInfoFree (fi);
+  pathInfoFree (pi);
 
   snprintf (out, maxlen, "tmp/%ld-%ld-%s", lsysvars [SVL_BDJIDX],
       playerData->globalCount, tnm);

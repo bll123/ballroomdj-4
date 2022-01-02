@@ -11,9 +11,9 @@
 #include "bdjmsg.h"
 #include "log.h"
 #include "process.h"
-#include "portability.h"
 #include "bdjstring.h"
 #include "sysvars.h"
+#include "portability.h"
 
 typedef struct {
   programstate_t   programState;
@@ -38,7 +38,7 @@ main (int argc, char *argv[])
   bdj4startup (argc, argv);
 
   mainData.programState = STATE_RUNNING;
-  uint16_t listenPort = lbdjvars [BDJVL_MAIN_PORT];
+  uint16_t listenPort = bdjvarsl [BDJVL_MAIN_PORT];
   sockhMainLoop (listenPort, processMsg, mainProcessing, &mainData);
   bdj4shutdown ();
   mainData.programState = STATE_NOT_RUNNING;
@@ -135,7 +135,7 @@ mainProcessing (void *udata)
       mainData->playerSocket == INVALID_SOCKET) {
     int       err;
 
-    uint16_t playerPort = lbdjvars [BDJVL_PLAYER_PORT];
+    uint16_t playerPort = bdjvarsl [BDJVL_PLAYER_PORT];
     mainData->playerSocket = sockConnect (playerPort, &err, 1000);
     logMsg (LOG_DBG, LOG_LVL_4, "player-socket: %zd",
         (size_t) mainData->playerSocket);

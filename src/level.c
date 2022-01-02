@@ -7,7 +7,7 @@
 
 #include "level.h"
 #include "datafile.h"
-#include "fileutil.h"
+#include "fileop.h"
 
 static datafilekey_t leveldfkeys[] = {
   { "default",  LEVEL_DEFAULT_FLAG, VALUE_LONG, parseConvBoolean },
@@ -21,7 +21,7 @@ levelAlloc (char *fname)
 {
   datafile_t    *df;
 
-  if (! fileExists (fname)) {
+  if (! fileopExists (fname)) {
     return NULL;
   }
 

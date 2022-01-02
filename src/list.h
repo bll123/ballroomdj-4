@@ -83,6 +83,7 @@ char *    slistIterateKeyStr (list_t *list);
    */
 list_t *  llistAlloc (listorder_t, listFree_t);
 void      llistFree (void *);
+void      llistSetFreeHook (list_t *, listFree_t freefunc);
 void      llistSetSize (list_t *, size_t);
 list_t *  llistSetData (list_t *, long, void *);
 list_t *  llistSetLong (list_t *, long, long);

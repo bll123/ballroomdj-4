@@ -10,11 +10,11 @@
 #include <signal.h>
 #include <assert.h>
 
-#include "portability.h"
+#include "sysvars.h"
 #include "process.h"
 #include "tmutil.h"
 #include "lock.h"
-#include "fileutil.h"
+#include "fileop.h"
 
 static pid_t   getPidFromFile (char *);
 
@@ -44,7 +44,7 @@ lockAcquirePid (char *fn, pid_t pid)
       rc = processExists (fpid);
       if (rc < 0) {
         /* process does not exist */
-        fileDelete (fn);
+        fileopDelete (fn);
       }
     }
     msleep (20);
@@ -75,7 +75,7 @@ lockReleasePid (char *fn, pid_t pid)
   int rc = -1;
   pid_t fpid = getPidFromFile (fn);
   if (fpid == pid) {
-    fileDelete (fn);
+    fileopDelete (fn);
     rc = 0;
   }
   return rc;

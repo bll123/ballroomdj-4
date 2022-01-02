@@ -13,7 +13,6 @@
 #include "lock.h"
 #include "tmutil.h"
 #include "log.h"
-#include "portability.h"
 
 static int  raReadHeader (rafile_t *);
 static void raWriteHeader (rafile_t *, int);

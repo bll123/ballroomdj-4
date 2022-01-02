@@ -8,9 +8,11 @@
 #include "datafile.h"
 #include "tmutil.h"
 #include "list.h"
-#include "fileutil.h"
+#include "fileop.h"
 #include "bdjstring.h"
 #include "log.h"
+#include "portability.h"
+#include "filedata.h"
 
 typedef enum {
   PARSE_SIMPLE,
@@ -146,7 +148,7 @@ datafileLoad (datafilekey_t *dfkeys, size_t dfkeycount,
   datafileFreeInternal (df);
   df->fname = strdup (fname);
 
-  data = fileReadAll (df->fname);
+  data = filedataReadAll (df->fname);
   pi = parseInit ();
   if (dftype == DFTYPE_LIST) {
     dataCount = parseSimple (pi, data);
@@ -327,7 +329,7 @@ int
 datafileSave (datafilekey_t *dfkeys, size_t dfkeycount, datafile_t *data)
 {
 /* ### FIX : TODO */
-  makeBackups (data->fname, 2);
+  datafileBackup (data->fname, 2);
   return 0;
 }
 
@@ -372,6 +374,29 @@ parse (parseinfo_t *pi, char *data, parsetype_t parsetype)
   pi->count = dataCounter;
   logProcEnd (LOG_LVL_6, "parse", "");
   return dataCounter;
+}
+
+void
+datafileBackup (char *fname, int count)
+{
+  char      ofn [MAXPATHLEN];
+  char      nfn [MAXPATHLEN];
+
+  for (int i = count; i >= 1; --i) {
+    snprintf (nfn, MAXPATHLEN, "%s.bak.%d", fname, i);
+    snprintf (ofn, MAXPATHLEN, "%s.bak.%d", fname, i - 1);
+    if (i - 1 == 0) {
+      strlcpy (ofn, fname, MAXPATHLEN);
+    }
+    if (fileopExists (ofn)) {
+      if ((i - 1) != 0) {
+        fileopMove (ofn, nfn);
+      } else {
+        fileopCopy (ofn, nfn);
+      }
+    }
+  }
+  return;
 }
 
 /* internal datafile routines */

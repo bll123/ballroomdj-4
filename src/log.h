@@ -14,8 +14,11 @@ typedef enum {
   LOG_LVL_4,
   LOG_LVL_5,
   LOG_LVL_6,
+  LOG_LVL_7,
+  LOG_LVL_8,
+  LOG_LVL_9,
   LOG_LVL_ALL,
-  LOG_LDVL_MAX
+  LOG_LVL_MAX
 } bdjloglvl_t;
 
 typedef enum {

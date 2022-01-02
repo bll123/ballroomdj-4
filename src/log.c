@@ -16,7 +16,7 @@
 #include "log.h"
 #include "tmutil.h"
 #include "fileutil.h"
-#include "sysvars.h"
+#include "datautil.h"
 #include "portability.h"
 
 static void         rlogStart (const char *processnm,
@@ -63,6 +63,9 @@ logClose (logidx_t idx)
 void
 rlogProcBegin (bdjloglvl_t level, const char *tag, const char *fn, int line)
 {
+  if (syslogs [LOG_DBG] == NULL) {
+    return;
+  }
   rlogVarMsg (LOG_DBG, level, fn, line, "- %s begin", tag);
   syslogs [LOG_DBG]->indent += 2;
 }
@@ -70,6 +73,9 @@ rlogProcBegin (bdjloglvl_t level, const char *tag, const char *fn, int line)
 void
 rlogProcEnd (bdjloglvl_t level, const char *tag, const char *suffix, const char *fn, int line)
 {
+  if (syslogs [LOG_DBG] == NULL) {
+    return;
+  }
   syslogs [LOG_DBG]->indent -= 2;
   if (syslogs [LOG_DBG]->indent < 0) {
     syslogs [LOG_DBG]->indent = 0;
@@ -80,6 +86,9 @@ rlogProcEnd (bdjloglvl_t level, const char *tag, const char *suffix, const char 
 void
 rlogError (const char *msg, int err, const char *fn, int line)
 {
+  if (syslogs [LOG_ERR] == NULL) {
+    return;
+  }
   rlogVarMsg (LOG_ERR, LOG_LVL_1, fn, line, "err: %s %d %s", msg, err, strerror (err));
   rlogVarMsg (LOG_DBG, LOG_LVL_1, fn, line, "err: %s %d %s", msg, err, strerror (err));
 }
@@ -165,8 +174,8 @@ rlogStart (const char *processnm, const char *processtag,
   dstamp (tdt, sizeof (tdt));
 
   for (logidx_t idx = LOG_ERR; idx < LOG_MAX; ++idx) {
-    fileMakePath (tnm, MAXPATHLEN, "", logbasenm [idx], LOG_EXTENSION,
-        FILE_MP_HOSTNAME | FILE_MP_USEIDX);
+    datautilMakePath (tnm, MAXPATHLEN, "", logbasenm [idx], LOG_EXTENSION,
+        DATAUTIL_MP_HOSTNAME | DATAUTIL_MP_USEIDX);
     syslogs [idx] = rlogOpen (tnm, processtag, truncflag);
     syslogs [idx]->level = level;
     if (processnm != NULL) {

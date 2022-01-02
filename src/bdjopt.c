@@ -6,11 +6,11 @@
 
 #include "bdjopt.h"
 #include "list.h"
-#include "sysvars.h"
-#include "list.h"
-#include "fileutil.h"
+#include "fileop.h"
+#include "filedata.h"
 #include "bdjstring.h"
 #include "datafile.h"
+#include "datautil.h"
 #include "portability.h"
 
 static bdjoptkey_t  bdjoptGetIdx (char *);
@@ -319,23 +319,23 @@ bdjoptInit (void)
   bdjopt = llistAlloc (LIST_ORDERED, free);
 
   /* global */
-  fileMakePath (path, MAXPATHLEN, "", BDJ_CONFIG_BASEFN,
-      BDJ_CONFIG_EXT, FILE_MP_USEIDX);
-  bdjoptLoad (path);
-
-  /* per machine */
-  fileMakePath (path, MAXPATHLEN, "", BDJ_CONFIG_BASEFN,
-      BDJ_CONFIG_EXT, FILE_MP_HOSTNAME | FILE_MP_USEIDX);
+  datautilMakePath (path, MAXPATHLEN, "", BDJ_CONFIG_BASEFN,
+      BDJ_CONFIG_EXT, DATAUTIL_MP_USEIDX);
   bdjoptLoad (path);
 
   /* profile */
-  fileMakePath (path, MAXPATHLEN, "/profiles", BDJ_CONFIG_BASEFN,
-      BDJ_CONFIG_EXT, FILE_MP_USEIDX);
+  datautilMakePath (path, MAXPATHLEN, "/profiles", BDJ_CONFIG_BASEFN,
+      BDJ_CONFIG_EXT, DATAUTIL_MP_USEIDX);
+  bdjoptLoad (path);
+
+  /* per machine */
+  datautilMakePath (path, MAXPATHLEN, "", BDJ_CONFIG_BASEFN,
+      BDJ_CONFIG_EXT, DATAUTIL_MP_HOSTNAME | DATAUTIL_MP_USEIDX);
   bdjoptLoad (path);
 
   /* per machine per profile */
-  fileMakePath (path, MAXPATHLEN, "/profiles", BDJ_CONFIG_BASEFN,
-      BDJ_CONFIG_EXT, FILE_MP_HOSTNAME | FILE_MP_USEIDX);
+  datautilMakePath (path, MAXPATHLEN, "/profiles", BDJ_CONFIG_BASEFN,
+      BDJ_CONFIG_EXT, DATAUTIL_MP_HOSTNAME | DATAUTIL_MP_USEIDX);
   bdjoptLoad (path);
 }
 
@@ -368,7 +368,7 @@ bdjoptLoad (char *path)
   size_t        count;
 
 
-  data = fileReadAll (path);
+  data = filedataReadAll (path);
   pi = parseInit ();
   count = parseKeyValue (pi, data);
   strdata = parseGetData (pi);

@@ -7,14 +7,14 @@
 
 #include "dnctypes.h"
 #include "datafile.h"
-#include "fileutil.h"
+#include "fileop.h"
 
 datafile_t *
 dnctypesAlloc (char *fname)
 {
   datafile_t    *df;
 
-  if (! fileExists (fname)) {
+  if (! fileopExists (fname)) {
     return NULL;
   }
   df = datafileAlloc (NULL, 0, fname, DFTYPE_LIST);

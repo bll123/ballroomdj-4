@@ -42,7 +42,7 @@ main (int argc, char *argv[])
   bdjvarsInit ();
   logStartAppend ("clicomm", "cl", LOG_LVL_6);
 
-  uint16_t mainPort = lbdjvars [BDJVL_MAIN_PORT];
+  uint16_t mainPort = bdjvarsl [BDJVL_MAIN_PORT];
   mainSock = sockConnect (mainPort, &err, 1000);
   while (socketInvalid (mainSock)) {
     msleep (100);
@@ -137,7 +137,7 @@ main (int argc, char *argv[])
     }
 
     if (playerstart) {
-      uint16_t playerPort = lbdjvars [BDJVL_PLAYER_PORT];
+      uint16_t playerPort = bdjvarsl [BDJVL_PLAYER_PORT];
       playerSock = sockConnect (playerPort, &err, 1000);
       while (socketInvalid (playerSock)) {
         msleep (100);

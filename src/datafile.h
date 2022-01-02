@@ -51,5 +51,6 @@ void          datafileLoad (datafilekey_t *, size_t dfkeycount,
                   datafile_t *, char *, datafiletype_t dftype);
 list_t *      datafileGetData (datafile_t *);
 int           datafileSave (datafilekey_t *, size_t dfkeycount, datafile_t *);
+void          datafileBackup (char *fname, int count);
 
 #endif /* INC_DATAFILE_H */

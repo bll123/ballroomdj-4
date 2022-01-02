@@ -29,7 +29,7 @@ main (int argc, char *argv [])
   logStart ("c", LOG_LVL_6);
   s = tmutil_suite();
   sr = srunner_create (s);
-  s = fileutil_suite();
+  s = fileop_suite();
   srunner_add_suite (sr, s);
   s = process_suite();
   srunner_add_suite (sr, s);
@@ -42,6 +42,8 @@ main (int argc, char *argv [])
   s = rafile_suite();
   srunner_add_suite (sr, s);
   s = sock_suite();
+  srunner_add_suite (sr, s);
+  s = pathutil_suite();
   srunner_add_suite (sr, s);
   srunner_run_all (sr, CK_ENV);
   number_failed = srunner_ntests_failed (sr);

@@ -7,7 +7,7 @@
 
 #include "genre.h"
 #include "datafile.h"
-#include "fileutil.h"
+#include "fileop.h"
 
 static datafilekey_t genredfkeys[] = {
   { "classical",  GENRE_CLASSICAL_FLAG, VALUE_LONG, parseConvBoolean },
@@ -20,7 +20,7 @@ genreAlloc (char *fname)
 {
   datafile_t    *df;
 
-  if (! fileExists (fname)) {
+  if (! fileopExists (fname)) {
     return NULL;
   }
   df = datafileAlloc (genredfkeys, GENRE_DFKEY_COUNT, fname, DFTYPE_KEY_LONG);

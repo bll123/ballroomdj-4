@@ -9,7 +9,7 @@
 #include "lock.h"
 #include "bdjstring.h"
 #include "check_bdj.h"
-#include "portability.h"
+#include "sysvars.h"
 
 #define LOCK_FN "tmp/test_lock.lck"
 

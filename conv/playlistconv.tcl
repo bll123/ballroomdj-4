@@ -35,11 +35,17 @@ foreach {fn} $flist {
     if { $key eq "maxplaytime" } { set key MaxPlayTime }
     if { $key eq "pauseeachsong" } { set key PauseEachSong }
     if { $key eq "resume" } { set key Resume }
+    if { $key eq "stopafter" } { set key StopAfter }
+    if { $key eq "stopwait" } { set key StopWait }
     if { $key eq "stopafterwait" } { set key StopAfterWait }
     if { $key eq "stoptime" } { set key StopTime }
     if { $key eq "stoptype" } { set key StopType }
     if { $key eq "StatusOK" } { set key UseStatus }
     if { $key eq "UnratedOK" } { set key UseUnrated }
+    if { $key eq "gap" } { set key Gap }
+    if { $key eq "highDanceLevel" } { set key HighDanceLevel }
+    if { $key eq "lowDanceLevel" } { set key LowDanceLevel }
+    if { $key eq "mqMessage" } { set key MqMessage }
     if { $key eq "version" } {
       set value 10
     }
