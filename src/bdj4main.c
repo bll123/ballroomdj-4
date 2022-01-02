@@ -59,7 +59,7 @@ startPlayer (maindata_t *mainData)
 
   logProcBegin (LOG_LVL_4, "startPlayer");
   snprintf (tbuff, MAXPATHLEN, "%s/bdj4player", sysvars [SV_BDJ4EXECDIR]);
-  if (isWindows()) {
+  if (isWindows ()) {
     strlcat (tbuff, ".exe", MAXPATHLEN);
   }
   int rc = processStart (tbuff, &pid, lsysvars [SVL_BDJIDX]);

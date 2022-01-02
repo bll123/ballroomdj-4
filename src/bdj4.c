@@ -67,7 +67,7 @@ main (int argc, char *argv[])
     free (npath);
   }
 
-  if (isWindows()) {
+  if (isWindows ()) {
     char *    pbuff;
     char *    tbuff;
     char *    path;

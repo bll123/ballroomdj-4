@@ -142,7 +142,7 @@ tclean:
 	@-$(RM) -f $(MKC_FILES)/mkc_compile.log $(MKC_CONFDIR)/*~
 	@-$(RM) -f ../tmp/* ../conv/*~ ./locale/*~ ../locale/*~ ../*~
 	@-$(RM) -f ../install/*~ ../pkg/*~ build/*~ utils/*~
-	@-$(RM) -f si-tmp.txt si-sort.txt
+	@-$(RM) -f si-in.txt si-sort.txt
 
 # bdj executables
 
@@ -385,7 +385,8 @@ $(OBJDIR)/datautil$(OBJ_EXT): datautil.c config.h datautil.h sysvars.h portabili
 $(OBJDIR)/dncspeeds$(OBJ_EXT): dncspeeds.c config.h dncspeeds.h datafile.h list.h fileop.h
 $(OBJDIR)/dnctypes$(OBJ_EXT): dnctypes.c config.h dnctypes.h datafile.h list.h fileop.h
 $(OBJDIR)/filedata$(OBJ_EXT): filedata.c config.h filedata.h
-$(OBJDIR)/fileop$(OBJ_EXT): fileop.c config.h fileop.h bdjstring.h portability.h pathutil.h
+$(OBJDIR)/fileop$(OBJ_EXT): fileop.c config.h fileop.h bdjstring.h portability.h pathutil.h \
+ sysvars.h
 $(OBJDIR)/fileutil$(OBJ_EXT): fileutil.c config.h fileutil.h bdjstring.h portability.h
 $(OBJDIR)/genre$(OBJ_EXT): genre.c config.h genre.h datafile.h list.h fileop.h
 $(OBJDIR)/level$(OBJ_EXT): level.c config.h level.h datafile.h list.h fileop.h
@@ -412,7 +413,7 @@ $(OBJDIR)/sortopt$(OBJ_EXT): sortopt.c config.h sortopt.h datafile.h list.h file
 $(OBJDIR)/strlcat$(OBJ_EXT): strlcat.c config.h bdjstring.h
 $(OBJDIR)/strlcpy$(OBJ_EXT): strlcpy.c config.h bdjstring.h
 $(OBJDIR)/sysvars$(OBJ_EXT): sysvars.c config.h sysvars.h portability.h bdjstring.h \
- fileop.h pathutil.h
+ pathutil.h
 $(OBJDIR)/tagdef$(OBJ_EXT): tagdef.c config.h tagdef.h bdjstring.h list.h
 $(OBJDIR)/tmutil$(OBJ_EXT): tmutil.c config.h tmutil.h bdjstring.h
 $(OBJDIR)/vlci$(OBJ_EXT): vlci.c config.h vlci.h list.h bdjstring.h log.h fileutil.h

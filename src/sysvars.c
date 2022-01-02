@@ -4,9 +4,9 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
-#if _hdr_unistd
-# include <unistd.h>
-#endif
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 #if _sys_utsname
 # include <sys/utsname.h>
 #endif
@@ -16,7 +16,6 @@
 
 #include "sysvars.h"
 #include "bdjstring.h"
-#include "fileop.h"
 #include "portability.h"
 #include "pathutil.h"
 
@@ -26,9 +25,12 @@ long        lsysvars [SVL_MAX];
 void
 sysvarsInit (const char *argv0)
 {
-  char                tbuf [MAXPATHLEN+1];
-  char                tcwd [MAXPATHLEN+1];
-  char                buff [MAXPATHLEN+1];
+  char          tbuf [MAXPATHLEN+1];
+  char          tcwd [MAXPATHLEN+1];
+  char          buff [MAXPATHLEN+1];
+  struct stat   statbuf;
+
+
 #if _lib_uname
   int                 rc;
   struct utsname      ubuf;
@@ -78,7 +80,7 @@ sysvarsInit (const char *argv0)
 #endif
   gethostname (tbuf, MAXPATHLEN);
   strlcpy (sysvars [SV_HOSTNAME], tbuf, MAXPATHLEN);
-  if (isWindows()) {
+  if (isWindows ()) {
     /* gethostname() does not appear to work on windows */
     char *hn = strdup (getenv ("COMPUTERNAME"));
     strtolower (hn);
@@ -105,7 +107,9 @@ sysvarsInit (const char *argv0)
   *p = '\0';
   strlcpy (sysvars [SV_BDJ4EXECDIR], buff, MAXPATHLEN);
 
-  if (fileopExists ("data")) {
+  /* do not want to include fileop due to circular dependencies */
+  rc = stat ("data", &statbuf);
+  if (rc == 0) {
     /* if there is a data directory in the current working directory  */
     /* a change of directories is contra-indicated.                   */
 

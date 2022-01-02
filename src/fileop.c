@@ -23,6 +23,7 @@
 #include "bdjstring.h"
 #include "portability.h"
 #include "pathutil.h"
+#include "sysvars.h"
 
 /* boolean */
 inline int
