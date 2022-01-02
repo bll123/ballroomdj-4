@@ -91,7 +91,6 @@ bdj4startup (int argc, char *argv[])
   logStart ("m", LOG_LVL_5);
   logMsg (LOG_SESS, LOG_LVL_1, "Using profile %ld", lsysvars [SVL_BDJIDX]);
 
-  tagdefInit ();
   mtimestart (&dbmt);
   datautilMakePath (tbuff, MAXPATHLEN, "",
       MUSICDB_FNAME, MUSICDB_EXT, DATAUTIL_MP_NONE);
@@ -113,7 +112,6 @@ void
 bdj4shutdown (void)
 {
   dbClose ();
-  tagdefCleanup ();
   bdjvarsdfCleanup ();
   logEnd ();
 }

@@ -69,7 +69,6 @@ playlistAlloc (char *fname)
   pathinfo_t    *pi;
   char          tfn [MAXPATHLEN];
   list_t        *pllist;
-  char          *ddata;
 
   pi = pathInfo (fname);
   snprintf (tfn, sizeof (tfn), "data/%s.pl", pi->basename);

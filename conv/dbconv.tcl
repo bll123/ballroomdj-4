@@ -61,10 +61,16 @@ dict for {fn data} $musicdbList {
       set value $newrrn
     }
     set value [dict get $data $tag]
+    if { $tag eq "rrn" } { set tag RRN }
     puts $fh "$tag\n..$value"
   }
   incr newrrn
 }
+
+# need to make sure file is formatted correctly.
+# write out a null at the end-1
+seek $fh [expr {($newrrn - 1) * $rsize + $hsize - 1}]
+puts -nonewline $fh "\0"
 
 close $fh
 exit 0

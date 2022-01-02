@@ -54,9 +54,6 @@ fileOpenShared (const char *fname, int truncflag, filehandle_t *fhandle)
   int         flags;
 
   flags = O_WRONLY | O_APPEND | O_CREAT;
-# if _define_O_SYNC
-  flags |= O_SYNC;
-# endif
 # if _define_O_CLOEXEC
   flags |= O_CLOEXEC;
 # endif

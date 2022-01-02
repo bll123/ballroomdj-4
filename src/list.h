@@ -17,6 +17,7 @@ typedef enum {
 } listtype_t;
 
 typedef enum {
+  VALUE_NONE,
   VALUE_DOUBLE,
   VALUE_DATA,
   VALUE_LONG,

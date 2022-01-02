@@ -26,9 +26,6 @@ typedef enum {
 } anchor_t;
 
 typedef struct {
-  char                *name;
-  char                *label;
-  char                *shortLabel;
   unsigned int        defaultEditOrder;
   unsigned int        editIndex;
   unsigned int        editWidth;
@@ -38,7 +35,6 @@ typedef struct {
   unsigned int        songlistWeight;
   audioiddispflag_t   audioiddispflag;
   edittype_t          editType;
-  valuetype_t         valuetype;
   long                initialized;
   unsigned int        isBdjTag : 1;
   unsigned int        isNormTag : 1;
@@ -92,17 +88,13 @@ typedef enum {
   TAG_KEY_WRITETIME,
   TAG_KEY_VARIOUSARTISTS,
   TAG_KEY_VOLUMEADJUSTPERC,
-  TAG_KEY_rrn,
-  TAG_KEY_dur,
+  TAG_KEY_RRN,
+  TAG_KEY_DUR,
   MAX_TAG_KEY
 } tagdefkey_t;
 
 #define TAGDEF_INITIALIZED 0x11332244
 
 extern tagdef_t tagdefs[MAX_TAG_KEY];
-
-void          tagdefInit (void);
-tagdefkey_t   tagdefGetIdx (char *);
-void          tagdefCleanup (void);
 
 #endif /* INC_TAGDEF_H */

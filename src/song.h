@@ -9,9 +9,9 @@ typedef struct {
 
 song_t *  songAlloc (void);
 void      songFree (void *);
-char *    songGet (song_t *, long);
+void      songParse (song_t *song, char *data);
+char *    songGetData (song_t *, long);
 long      songGetLong (song_t *, long);
-void      songSetAll (song_t *, char *[], size_t);
 void      songSetLong (song_t *, long, long);
 
 #endif /* INC_SONG */

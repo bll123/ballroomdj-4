@@ -24,7 +24,6 @@ main (int argc, char *argv [])
     fprintf (stderr, "Unable to chdir: %s\n", sysvars [SV_BDJ4DIR]);
     exit (1);
   }
-  tagdefInit ();
 
   logStart ("c", LOG_LVL_6);
   s = tmutil_suite();
@@ -49,7 +48,6 @@ main (int argc, char *argv [])
   number_failed = srunner_ntests_failed (sr);
   srunner_free (sr);
 
-  tagdefCleanup ();
   logEnd ();
   return (number_failed == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }

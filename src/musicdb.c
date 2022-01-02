@@ -12,6 +12,7 @@
 #include "lock.h"
 #include "datafile.h"
 #include "tagdef.h"
+#include "log.h"
 
 /* globals */
 static int         initialized = 0;
@@ -26,7 +27,6 @@ dbOpen (char *fn)
     bdjdb->songs = slistAlloc ("db-songs", LIST_UNORDERED, istringCompare, free, songFree);
     bdjdb->count = 0L;
     dbLoad (bdjdb, fn);
-    slistSort (bdjdb->songs);
     initialized = 1;
   }
 }
@@ -62,11 +62,9 @@ dbLoad (db_t *db, char *fn)
   char        *fstr;
   song_t      *song;
   rafile_t    *radb;
-  parseinfo_t *pi;
-  size_t      songDataCount;
   long        srrn;
+  int         rc;
 
-  pi = parseInit ();
   fstr = "";
   radb = raOpen (fn, 10);
   slistSetSize (db->songs, raGetCount (radb));
@@ -74,25 +72,27 @@ dbLoad (db_t *db, char *fn)
   raStartBatch (radb);
 
   for (size_t i = 1L; i <= radb->count; ++i) {
-    raRead (radb, i, data);
-    if (! *data) {
+    rc = raRead (radb, i, data);
+    if (rc != 1) {
+      logMsg (LOG_DBG, LOG_LVL_1, "ERR: Unable to access rrn %zd", i);
+    }
+    if (rc == 0 || ! *data) {
       continue;
     }
 
-    songDataCount = parseKeyValue (pi, data);
     song = songAlloc ();
-    songSetAll (song, parseGetData (pi), songDataCount);
-    fstr = songGet (song, TAG_KEY_FILE);
-    srrn = songGetLong (song, TAG_KEY_rrn);
+    songParse (song, data);
+    fstr = songGetData (song, TAG_KEY_FILE);
+    srrn = songGetLong (song, TAG_KEY_RRN);
     if ((long) i != srrn) {
-      songSetLong (song, TAG_KEY_rrn, (long) i);
+      songSetLong (song, TAG_KEY_RRN, (long) i);
     }
     slistSetData (db->songs, fstr, song);
     ++db->count;
   }
+  slistSort (db->songs);
 
   raEndBatch (radb);
   raClose (radb);
-  parseFree (pi);
   return 0;
 }

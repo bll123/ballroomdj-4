@@ -31,27 +31,27 @@ parseInit (void)
 {
   parseinfo_t   *pi;
 
-  logProcBegin (LOG_LVL_6, "parseInit");
+  logProcBegin (LOG_LVL_8, "parseInit");
   pi = malloc (sizeof (parseinfo_t));
   assert (pi != NULL);
   pi->strdata = NULL;
   pi->allocCount = 0;
   pi->count = 0;
-  logProcEnd (LOG_LVL_6, "parseInit", "");
+  logProcEnd (LOG_LVL_8, "parseInit", "");
   return pi;
 }
 
 void
 parseFree (parseinfo_t *pi)
 {
-  logProcBegin (LOG_LVL_6, "parseFree");
+  logProcBegin (LOG_LVL_8, "parseFree");
   if (pi != NULL) {
     if (pi->strdata != NULL) {
       free (pi->strdata);
     }
     free (pi);
   }
-  logProcEnd (LOG_LVL_6, "parseFree", "");
+  logProcEnd (LOG_LVL_8, "parseFree", "");
 }
 
 char **
@@ -63,23 +63,23 @@ parseGetData (parseinfo_t *pi)
 size_t
 parseSimple (parseinfo_t *pi, char *data)
 {
-  logProcBegin (LOG_LVL_6, "parseSimple");
-  logProcEnd (LOG_LVL_6, "parseSimple", "");
+  logProcBegin (LOG_LVL_8, "parseSimple");
+  logProcEnd (LOG_LVL_8, "parseSimple", "");
   return parse (pi, data, PARSE_SIMPLE);
 }
 
 size_t
 parseKeyValue (parseinfo_t *pi, char *data)
 {
-  logProcBegin (LOG_LVL_6, "parseKeyValue");
-  logProcEnd (LOG_LVL_6, "parseKeyValue", "");
+  logProcBegin (LOG_LVL_8, "parseKeyValue");
+  logProcEnd (LOG_LVL_8, "parseKeyValue", "");
   return parse (pi, data, PARSE_KEYVALUE);
 }
 
 void
 parseConvBoolean (char *data, datafileret_t *ret)
 {
-  logProcBegin (LOG_LVL_6, "parseConvBoolean");
+  logProcBegin (LOG_LVL_8, "parseConvBoolean");
   ret->valuetype = VALUE_LONG;
   ret->u.l = 0;
   if (strcmp (data, "on") == 0 ||
@@ -87,7 +87,7 @@ parseConvBoolean (char *data, datafileret_t *ret)
       strcmp (data, "1") == 0) {
     ret->u.l = 1;
   }
-  logProcEnd (LOG_LVL_6, "parseConvBoolean", "");
+  logProcEnd (LOG_LVL_8, "parseConvBoolean", "");
 }
 
 void
@@ -96,17 +96,16 @@ parseConvTextList (char *data, datafileret_t *ret)
   char          *tokptr;
   char          *p;
 
-  logProcBegin (LOG_LVL_6, "parseConvTextList");
+  logProcBegin (LOG_LVL_8, "parseConvTextList");
   ret->valuetype = VALUE_LIST;
   ret->u.list = NULL;
-  ret->u.list = listAlloc ("textlist", sizeof (char *), stringCompare, free);
+  ret->u.list = listAlloc ("textlist", sizeof (char *), istringCompare, free);
   p = strtok_r (data, " ,", &tokptr);
   while (p != NULL) {
-    listSet (ret->u.list, p);
+    listSet (ret->u.list, strdup (p));
     p = strtok_r (NULL, " ,", &tokptr);
   }
-
-  logProcEnd (LOG_LVL_6, "parseConvTextList", "");
+  logProcEnd (LOG_LVL_8, "parseConvTextList", "");
 }
 
 /* datafile loading routines */
@@ -116,14 +115,14 @@ datafileAlloc (char *name)
 {
   datafile_t      *df;
 
-  logProcBegin (LOG_LVL_6, "datafileAlloc");
+  logProcBegin (LOG_LVL_8, "datafileAlloc");
   df = malloc (sizeof (datafile_t));
   assert (df != NULL);
   df->name = name;
   df->fname = NULL;
   df->data = NULL;
   df->dftype = DFTYPE_NONE;
-  logProcEnd (LOG_LVL_6, "datafileAlloc", "");
+  logProcEnd (LOG_LVL_8, "datafileAlloc", "");
   return df;
 }
 
@@ -147,12 +146,12 @@ datafileFree (void *tdf)
 {
   datafile_t    *df = (datafile_t *) tdf;
 
-  logProcBegin (LOG_LVL_6, "datafileFree");
+  logProcBegin (LOG_LVL_8, "datafileFree");
   if (df != NULL) {
     datafileFreeInternal (df);
     free (df);
   }
-  logProcEnd (LOG_LVL_6, "datafileFree", "");
+  logProcEnd (LOG_LVL_8, "datafileFree", "");
 }
 
 char *
@@ -160,13 +159,13 @@ datafileLoad (datafile_t *df, datafiletype_t dftype, char *fname)
 {
   char    *data;
 
-  logProcBegin (LOG_LVL_6, "datafileLoad");
+  logProcBegin (LOG_LVL_8, "datafileLoad");
   /* may be re-using the song list */
   datafileFreeInternal (df);
   df->dftype = dftype;
   df->fname = strdup (fname);
   data = filedataReadAll (df->fname);
-  logProcEnd (LOG_LVL_6, "datafileLoad", "");
+  logProcEnd (LOG_LVL_8, "datafileLoad", "");
   return data;
 }
 
@@ -191,7 +190,7 @@ datafileParse (char *data, char *name, datafiletype_t dftype,
   char          *tvalstr;
   datafileret_t ret;
 
-  logProcBegin (LOG_LVL_6, "datafileParse");
+  logProcBegin (LOG_LVL_8, "datafileParse");
 
   pi = parseInit ();
   if (dftype == DFTYPE_LIST) {
@@ -201,7 +200,7 @@ datafileParse (char *data, char *name, datafiletype_t dftype,
   }
   strdata = parseGetData (pi);
 
-  logMsg (LOG_DBG, LOG_LVL_6, "dftype: %ld", dftype);
+  logMsg (LOG_DBG, LOG_LVL_8, "dftype: %ld", dftype);
   switch (dftype) {
     case DFTYPE_LIST: {
       inc = 1;
@@ -223,10 +222,12 @@ datafileParse (char *data, char *name, datafiletype_t dftype,
       inc = 2;
       if (dfkeys == NULL) {
         nlist = slistAlloc (name, LIST_UNORDERED, istringCompare, free, free);
-        logMsg (LOG_DBG, LOG_LVL_6, "key_val: slist");
+        slistSetSize (nlist, dataCount / 2);
+        logMsg (LOG_DBG, LOG_LVL_8, "key_val: slist");
       } else {
         nlist = llistAlloc (name, LIST_UNORDERED, free);
-        logMsg (LOG_DBG, LOG_LVL_6, "key_val: llist");
+        llistSetSize (nlist, dataCount / 2);
+        logMsg (LOG_DBG, LOG_LVL_8, "key_val: llist");
       }
       break;
     }
@@ -241,7 +242,7 @@ datafileParse (char *data, char *name, datafiletype_t dftype,
 
     if (inc == 2 && strcmp (strdata [i], "version") == 0) {
 //      version = atol (tvalstr);
-// ### FIX TOD: want to save version.
+// ### FIX TOD: want to save version somewhere...
       continue;
     }
     if (strcmp (strdata [i], "count") == 0) {
@@ -257,7 +258,7 @@ datafileParse (char *data, char *name, datafiletype_t dftype,
     if (dftype == DFTYPE_KEY_LONG &&
         strcmp (tkeystr, "KEY") == 0) {
       if (key >= 0) {
-        llistSetData (nlist, key, itemList);
+        llistSetList (nlist, key, itemList);
         key = -1L;
       }
       key = atol (tvalstr);
@@ -268,7 +269,7 @@ datafileParse (char *data, char *name, datafiletype_t dftype,
         dftype == DFTYPE_KEY_STRING &&
         strcmp (keyString, tkeystr) == 0) {
       if (ikeystr != NULL) {
-        slistSetData (nlist, ikeystr, itemList);
+        slistSetList (nlist, ikeystr, itemList);
         ikeystr = NULL;
       }
       keyString = tkeystr;
@@ -277,13 +278,13 @@ datafileParse (char *data, char *name, datafiletype_t dftype,
     }
 
     if (dftype == DFTYPE_LIST) {
-      logMsg (LOG_DBG, LOG_LVL_6, "set: list");
+      logMsg (LOG_DBG, LOG_LVL_8, "set: list");
       listSet (nlist, strdup (tkeystr));
     }
     if (dftype == DFTYPE_KEY_LONG ||
         (dftype == DFTYPE_KEY_VAL && dfkeys != NULL) ||
         (dftype == DFTYPE_KEY_STRING && dfkeys != NULL)) {
-      logMsg (LOG_DBG, LOG_LVL_6, "use dfkeys");
+      logMsg (LOG_DBG, LOG_LVL_8, "use dfkeys");
       if (first && dftype == DFTYPE_KEY_STRING) {
         keyString = tkeystr;
         ikeystr = tvalstr;
@@ -291,30 +292,33 @@ datafileParse (char *data, char *name, datafiletype_t dftype,
 
       long idx = dfkeyBinarySearch (dfkeys, dfkeycount, tkeystr);
       if (idx >= 0) {
-        logMsg (LOG_DBG, LOG_LVL_6, "found %s idx: %ld", tkeystr, idx);
+        logMsg (LOG_DBG, LOG_LVL_8, "found %s idx: %ld", tkeystr, idx);
         ikey = dfkeys [idx].itemkey;
         vt = dfkeys [idx].valuetype;
-        logMsg (LOG_DBG, LOG_LVL_6, "ikey:%ld vt:%d tvalstr:%s", ikey, vt, tvalstr);
+        logMsg (LOG_DBG, LOG_LVL_8, "ikey:%ld vt:%d tvalstr:%s", ikey, vt, tvalstr);
 
+        ret.valuetype = VALUE_NONE;
         if (dfkeys [idx].convFunc != NULL) {
           dfkeys [idx].convFunc (tvalstr, &ret);
           vt = ret.valuetype;
           if (vt == VALUE_LONG) {
             lval = ret.u.l;
-            logMsg (LOG_DBG, LOG_LVL_6, "converted value: %s to %ld", tvalstr, lval);
+            logMsg (LOG_DBG, LOG_LVL_8, "converted value: %s to %ld", tvalstr, lval);
           }
         } else {
           if (vt == VALUE_LONG) {
             lval = atol (tvalstr);
-            logMsg (LOG_DBG, LOG_LVL_6, "value: %ld", lval);
+            logMsg (LOG_DBG, LOG_LVL_8, "value: %ld", lval);
           }
         }
       } else {
-        logMsg (LOG_DBG, LOG_LVL_6, "Unable to locate key: %s", tkeystr);
+        logMsg (LOG_DBG, LOG_LVL_8, "ERR: Unable to locate key: %s", tkeystr);
       }
 
+        /* key_string and key_long have a key pointing to a key/val list. */
+        /* a list of data items, each of which is a list                  */
       if (dftype == DFTYPE_KEY_STRING) {
-        logMsg (LOG_DBG, LOG_LVL_6, "set: key_string");
+        logMsg (LOG_DBG, LOG_LVL_8, "set: key_string");
         if (vt == VALUE_DATA) {
           slistSetData (itemList, tkeystr, strdup (tvalstr));
         }
@@ -326,7 +330,7 @@ datafileParse (char *data, char *name, datafiletype_t dftype,
         }
       }
       if (dftype == DFTYPE_KEY_LONG) {
-        logMsg (LOG_DBG, LOG_LVL_6, "set: key_long");
+        logMsg (LOG_DBG, LOG_LVL_8, "set: key_long");
         if (vt == VALUE_DATA) {
           llistSetData (itemList, ikey, strdup (tvalstr));
         }
@@ -337,8 +341,9 @@ datafileParse (char *data, char *name, datafiletype_t dftype,
           llistSetList (itemList, ikey, ret.u.list);
         }
       }
+        /* a key/val type has a single list keyed by a long (dfkeys is set) */
       if (dftype == DFTYPE_KEY_VAL) {
-        logMsg (LOG_DBG, LOG_LVL_6, "set: key_val");
+        logMsg (LOG_DBG, LOG_LVL_8, "set: key_val");
         if (vt == VALUE_DATA) {
           llistSetData (nlist, ikey, strdup (tvalstr));
         }
@@ -346,12 +351,12 @@ datafileParse (char *data, char *name, datafiletype_t dftype,
           llistSetLong (nlist, ikey, lval);
         }
         if (vt == VALUE_LIST) {
-          llistSetList (itemList, ikey, ret.u.list);
+          llistSetList (nlist, ikey, ret.u.list);
         }
       }
     }
     if (dftype == DFTYPE_KEY_VAL && dfkeys == NULL) {
-      logMsg (LOG_DBG, LOG_LVL_6, "set: key_val");
+      logMsg (LOG_DBG, LOG_LVL_8, "set: key_val");
       slistSetData (nlist, tkeystr, strdup (tvalstr));
       key = -1L;
     }
@@ -360,17 +365,21 @@ datafileParse (char *data, char *name, datafiletype_t dftype,
   }
 
   if (dftype == DFTYPE_KEY_LONG && key >= 0) {
-    llistSetData (nlist, key, itemList);
+    llistSetList (nlist, key, itemList);
   }
   if (dftype == DFTYPE_KEY_STRING && ikeystr != NULL) {
-    slistSetData (nlist, ikeystr, itemList);
+    slistSetList (nlist, ikeystr, itemList);
   }
-  if (dftype == DFTYPE_KEY_STRING) {
+
+  if (dftype == DFTYPE_KEY_STRING ||
+      (dftype == DFTYPE_KEY_VAL && dfkeys == NULL)) {
     slistSort (nlist);
+  } else if (dftype != DFTYPE_LIST) {
+    llistSort (nlist);
   }
 
   parseFree (pi);
-  logProcEnd (LOG_LVL_6, "datafileParse", "");
+  logProcEnd (LOG_LVL_8, "datafileParse", "");
   return nlist;
 }
 
@@ -391,6 +400,29 @@ datafileSave (datafilekey_t *dfkeys, size_t dfkeycount, datafile_t *data)
   return 0;
 }
 
+void
+datafileBackup (char *fname, int count)
+{
+  char      ofn [MAXPATHLEN];
+  char      nfn [MAXPATHLEN];
+
+  for (int i = count; i >= 1; --i) {
+    snprintf (nfn, MAXPATHLEN, "%s.bak.%d", fname, i);
+    snprintf (ofn, MAXPATHLEN, "%s.bak.%d", fname, i - 1);
+    if (i - 1 == 0) {
+      strlcpy (ofn, fname, MAXPATHLEN);
+    }
+    if (fileopExists (ofn)) {
+      if ((i - 1) != 0) {
+        fileopMove (ofn, nfn);
+      } else {
+        fileopCopy (ofn, nfn);
+      }
+    }
+  }
+  return;
+}
+
 /* internal parse routines */
 
 static size_t
@@ -400,7 +432,7 @@ parse (parseinfo_t *pi, char *data, parsetype_t parsetype)
   char        *str;
   size_t      dataCounter;
 
-  logProcBegin (LOG_LVL_6, "parse");
+  logProcBegin (LOG_LVL_8, "parse");
   tokptr = NULL;
   if (pi->allocCount < 60) {
     pi->allocCount = 60;
@@ -430,31 +462,8 @@ parse (parseinfo_t *pi, char *data, parsetype_t parsetype)
     str = strtok_r (NULL, "\n", &tokptr);
   }
   pi->count = dataCounter;
-  logProcEnd (LOG_LVL_6, "parse", "");
+  logProcEnd (LOG_LVL_8, "parse", "");
   return dataCounter;
-}
-
-void
-datafileBackup (char *fname, int count)
-{
-  char      ofn [MAXPATHLEN];
-  char      nfn [MAXPATHLEN];
-
-  for (int i = count; i >= 1; --i) {
-    snprintf (nfn, MAXPATHLEN, "%s.bak.%d", fname, i);
-    snprintf (ofn, MAXPATHLEN, "%s.bak.%d", fname, i - 1);
-    if (i - 1 == 0) {
-      strlcpy (ofn, fname, MAXPATHLEN);
-    }
-    if (fileopExists (ofn)) {
-      if ((i - 1) != 0) {
-        fileopMove (ofn, nfn);
-      } else {
-        fileopCopy (ofn, nfn);
-      }
-    }
-  }
-  return;
 }
 
 /* internal datafile routines */
@@ -462,7 +471,7 @@ datafileBackup (char *fname, int count)
 static void
 datafileFreeInternal (datafile_t *df)
 {
-  logProcBegin (LOG_LVL_6, "datafileFreeInternal");
+  logProcBegin (LOG_LVL_8, "datafileFreeInternal");
   if (df != NULL) {
     if (df->fname != NULL) {
       free (df->fname);
@@ -490,7 +499,7 @@ datafileFreeInternal (datafile_t *df)
       df->data = NULL;
     }
   }
-  logProcEnd (LOG_LVL_6, "datafileFreeInternal", "");
+  logProcEnd (LOG_LVL_8, "datafileFreeInternal", "");
 }
 
 static long

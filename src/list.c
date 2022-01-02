@@ -18,12 +18,12 @@ typedef struct {
   } u;
 } namevalue_t;
 
+static void           listFreeItem (list_t *, size_t);
 static long           listLocate (list_t *list, listkey_t key);
 static namevalue_t *  slistSetKey (list_t *list, char *key);
 static namevalue_t *  slistGetNV (list_t *list, char *key);
 static namevalue_t *  llistSetKey (long key);
 static namevalue_t *  llistGetNV (list_t *list, long key);
-static void           listFreeItem (list_t *, size_t);
 static void           listInsert (list_t *, size_t, void *);
 static void           listReplace (list_t *, size_t, void *);
 static int            listBinarySearch (const list_t *, void *, size_t *);
@@ -103,6 +103,11 @@ listSet (list_t *list, void *data)
   size_t        loc;
   int           rc;
 
+  if (list == NULL) {
+    logMsg (LOG_DBG, LOG_LVL_1, "listset: null list");
+    return;
+  }
+
   loc = 0L;
   rc = -1;
   if (list->count > 0) {
@@ -142,15 +147,15 @@ listIterateData (list_t *list)
 {
   void      *value = NULL;
 
-  logProcBegin (LOG_LVL_6, "listIterateData");
+  logProcBegin (LOG_LVL_8, "listIterateData");
   if (list == NULL) {
-    logProcEnd (LOG_LVL_6, "listIterateData", "null-list");
+    logProcEnd (LOG_LVL_8, "listIterateData", "null-list");
     return NULL;
   }
 
   if (list->iteratorIndex >= list->count) {
     list->iteratorIndex = 0;
-    logProcEnd (LOG_LVL_6, "listIterateData", "end-list");
+    logProcEnd (LOG_LVL_8, "listIterateData", "end-list");
     return NULL;  /* indicate the end of the list */
   }
 
@@ -159,7 +164,7 @@ listIterateData (list_t *list)
   }
   ++list->iteratorIndex;
 
-  logProcEnd (LOG_LVL_6, "listIterateData", "");
+  logProcEnd (LOG_LVL_8, "listIterateData", "");
   return value;
 }
 
@@ -297,15 +302,15 @@ slistIterateKeyStr (list_t *list)
 {
   char      *value = NULL;
 
-  logProcBegin (LOG_LVL_6, "slistIterateKeyStr");
+  logProcBegin (LOG_LVL_8, "slistIterateKeyStr");
   if (list == NULL || list->keytype == KEY_LONG) {
-    logProcEnd (LOG_LVL_6, "slistIterateKeyStr", "null-list/key-long");
+    logProcEnd (LOG_LVL_8, "slistIterateKeyStr", "null-list/key-long");
     return NULL;
   }
 
   if (list->iteratorIndex >= list->count) {
     list->iteratorIndex = 0;
-    logProcEnd (LOG_LVL_6, "slistIterateKeyStr", "end-list");
+    logProcEnd (LOG_LVL_8, "slistIterateKeyStr", "end-list");
     return NULL;      /* indicate the end of the list */
   }
 
@@ -325,7 +330,7 @@ slistIterateKeyStr (list_t *list)
   }
 
   ++list->iteratorIndex;
-  logProcEnd (LOG_LVL_6, "slistIterateKeyStr", "");
+  logProcEnd (LOG_LVL_8, "slistIterateKeyStr", "");
   return value;
 }
 
@@ -468,15 +473,15 @@ llistIterateKeyLong (list_t *list)
 {
   long      value = -1L;
 
-  logProcBegin (LOG_LVL_6, "llistIterateKeyLong");
+  logProcBegin (LOG_LVL_8, "llistIterateKeyLong");
   if (list == NULL || list->keytype == KEY_STR) {
-    logProcEnd (LOG_LVL_6, "llistIterateKeyLong", "null-list/key-str");
+    logProcEnd (LOG_LVL_8, "llistIterateKeyLong", "null-list/key-str");
     return -1L;
   }
 
   if (list->iteratorIndex >= list->count) {
     list->iteratorIndex = 0;
-    logProcEnd (LOG_LVL_6, "llistIterateKeyLong", "end-list");
+    logProcEnd (LOG_LVL_8, "llistIterateKeyLong", "end-list");
     return -1L;      /* indicate the end of the list */
   }
 
@@ -490,7 +495,7 @@ llistIterateKeyLong (list_t *list)
   }
 
   ++list->iteratorIndex;
-  logProcEnd (LOG_LVL_6, "llistIterateKeyLong", "");
+  logProcEnd (LOG_LVL_8, "llistIterateKeyLong", "");
   return value;
 }
 

@@ -64,17 +64,19 @@ START_TEST(rafile_write)
   ck_assert_int_eq (rc, 0);
   ck_assert_int_ge (statbuf.st_size, lastsize);
   lastsize = statbuf.st_size;
+  ck_assert_int_eq (rafile->count, 1L);
   raWrite (rafile, RAFILE_NEW, "bbbb");
   rc = stat (RAFN, &statbuf);
   ck_assert_int_eq (rc, 0);
   ck_assert_int_ge (statbuf.st_size, lastsize);
   lastsize = statbuf.st_size;
+  ck_assert_int_eq (rafile->count, 2L);
   raWrite (rafile, RAFILE_NEW, "cccc");
   rc = stat (RAFN, &statbuf);
   ck_assert_int_eq (rc, 0);
   ck_assert_int_ge (statbuf.st_size, lastsize);
-
   ck_assert_int_eq (rafile->count, 3L);
+
   raClose (rafile);
   rc = stat (RAFN, &statbuf);
   ck_assert_int_eq (rc, 0);
@@ -144,15 +146,19 @@ START_TEST(rafile_reread)
 {
   rafile_t      *rafile;
   char          data [RAFILE_REC_SIZE];
+  int           rc;
 
   rafile = raOpen (RAFN, 10);
   ck_assert_ptr_nonnull (rafile);
   ck_assert_int_eq (rafile->count, 3L);
-  raRead (rafile, 1L, data);
+  rc = raRead (rafile, 1L, data);
+  ck_assert_int_eq (rc, 1);
   ck_assert_str_eq (data, "ffff");
-  raRead (rafile, 2L, data);
+  rc = raRead (rafile, 2L, data);
+  ck_assert_int_eq (rc, 1);
   ck_assert_str_eq (data, "eeee");
-  raRead (rafile, 3L, data);
+  rc = raRead (rafile, 3L, data);
+  ck_assert_int_eq (rc, 1);
   ck_assert_str_eq (data, "dddd");
 
   raClose (rafile);
@@ -189,11 +195,14 @@ START_TEST(rafile_clear)
   rc = raClear (rafile, 2L);
   ck_assert_int_eq (rc, 0);
 
-  raRead (rafile, 1L, data);
+  rc = raRead (rafile, 1L, data);
+  ck_assert_int_eq (rc, 1);
   ck_assert_str_eq (data, "ffff");
-  raRead (rafile, 2L, data);
+  rc = raRead (rafile, 2L, data);
+  ck_assert_int_eq (rc, 1);
   ck_assert_str_eq (data, "");
-  raRead (rafile, 3L, data);
+  rc = raRead (rafile, 3L, data);
+  ck_assert_int_eq (rc, 1);
   ck_assert_str_eq (data, "dddd");
 
   raClose (rafile);

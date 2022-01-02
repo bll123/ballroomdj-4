@@ -12,7 +12,10 @@ typedef enum {
   DFTYPE_KEY_STRING,
     /* key_long: has a 'KEY' value that begins a block of key/values. */
   DFTYPE_KEY_LONG,
-    /* key_val: only key/values; generally not used. */
+    /* key_val:
+     *    not used w/o dftypes defined.
+     *    with dftypes: keyed by a long value.
+     */
   DFTYPE_KEY_VAL,
   DFTYPE_MAX,
 } datafiletype_t;
