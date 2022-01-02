@@ -128,7 +128,7 @@ START_TEST(datafile_simple)
   fprintf (fh, "%s", tstr);
   fclose (fh);
 
-  df = datafileAlloc ("chk", NULL, 0, fn, DFTYPE_LIST);
+  df = datafileAllocParse ("chk", DFTYPE_LIST, fn, NULL, 0);
   ck_assert_ptr_nonnull (df);
   ck_assert_int_eq (df->dftype, DFTYPE_LIST);
   ck_assert_str_eq (df->fname, fn);
@@ -184,7 +184,7 @@ START_TEST(datafile_keyval_nodfkey)
   fprintf (fh, "%s", tstr);
   fclose (fh);
 
-  df = datafileAlloc ("chk", NULL, 0, fn, DFTYPE_KEY_VAL);
+  df = datafileAllocParse ("chk", DFTYPE_KEY_VAL, fn, NULL, 0);
   ck_assert_ptr_nonnull (df);
   ck_assert_int_eq (df->dftype, DFTYPE_KEY_VAL);
   ck_assert_str_eq (df->fname, fn);
@@ -254,7 +254,7 @@ START_TEST(datafile_keyval_dfkey)
   fprintf (fh, "%s", tstr);
   fclose (fh);
 
-  df = datafileAlloc ("chk", dfkeyskl, 6, fn, DFTYPE_KEY_VAL);
+  df = datafileAllocParse ("chk", DFTYPE_KEY_VAL, fn, dfkeyskl, 6);
   ck_assert_ptr_nonnull (df);
   ck_assert_int_eq (df->dftype, DFTYPE_KEY_VAL);
   ck_assert_str_eq (df->fname, fn);
@@ -319,7 +319,7 @@ START_TEST(datafile_keylong)
   fprintf (fh, "%s", tstr);
   fclose (fh);
 
-  df = datafileAlloc ("chk", dfkeyskl, 6, fn, DFTYPE_KEY_LONG);
+  df = datafileAllocParse ("chk", DFTYPE_KEY_LONG, fn, dfkeyskl, 6);
   ck_assert_ptr_nonnull (df);
   ck_assert_int_eq (df->dftype, DFTYPE_KEY_LONG);
   ck_assert_str_eq (df->fname, fn);

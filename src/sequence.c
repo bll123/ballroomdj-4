@@ -17,7 +17,7 @@ sequenceAlloc (char *fname)
   if (! fileopExists (fname)) {
     return NULL;
   }
-  df = datafileAlloc ("sequence", NULL, 0, fname, DFTYPE_LIST);
+  df = datafileAllocParse ("sequence", DFTYPE_LIST, fname, NULL, 0);
   return df;
 }
 

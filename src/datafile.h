@@ -4,6 +4,7 @@
 #include "list.h"
 
 typedef enum {
+  DFTYPE_NONE,
     /* list: simple list */
   DFTYPE_LIST,
     /* key_string: use the first item key found after version/count as
@@ -24,7 +25,6 @@ typedef struct {
 
 typedef struct {
   char            *name;
-  char            *itemname;
   char            *fname;
   datafiletype_t  dftype;
   list_t          *data;
@@ -57,11 +57,13 @@ size_t        parseKeyValue (parseinfo_t *, char *);
 void          parseConvBoolean (char *, datafileret_t *);
 void          parseConvTextList (char *, datafileret_t *);
 
-datafile_t *  datafileAlloc (char *name, datafilekey_t *, size_t dfkeycount,
-                  char *fname, datafiletype_t dftype);
+datafile_t *  datafileAlloc (char *name);
+datafile_t *  datafileAllocParse (char *name, datafiletype_t dftype,
+                  char *fname, datafilekey_t *dfkeys, size_t dfkeycount);
 void          datafileFree (void *);
-void          datafileLoad (datafilekey_t *, size_t dfkeycount,
-                  datafile_t *, char *, datafiletype_t dftype);
+char *        datafileLoad (datafile_t *df, datafiletype_t dftype, char *fname);
+list_t *      datafileParse (char *data, char *name, datafiletype_t dftype,
+                  datafilekey_t *dfkeys, size_t dfkeycount);
 list_t *      datafileGetData (datafile_t *);
 int           datafileSave (datafilekey_t *, size_t dfkeycount, datafile_t *);
 void          datafileBackup (char *fname, int count);

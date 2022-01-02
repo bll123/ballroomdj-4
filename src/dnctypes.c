@@ -17,7 +17,7 @@ dnctypesAlloc (char *fname)
   if (! fileopExists (fname)) {
     return NULL;
   }
-  df = datafileAlloc ("dance-types", NULL, 0, fname, DFTYPE_LIST);
+  df = datafileAllocParse ("dance-types", DFTYPE_LIST, fname, NULL, 0);
   return df;
 }
 

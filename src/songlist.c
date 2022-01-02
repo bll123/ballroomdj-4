@@ -25,8 +25,7 @@ songlistAlloc (char *fname)
   if (! fileopExists (fname)) {
     return NULL;
   }
-  df = datafileAlloc ("songlist", songlistdfkeys, SONGLIST_DFKEY_COUNT,
-      fname, DFTYPE_KEY_LONG);
+  df = datafileAllocParse ("songlist", DFTYPE_KEY_LONG, fname, songlistdfkeys, SONGLIST_DFKEY_COUNT);
   return df;
 }
 

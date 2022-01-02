@@ -26,7 +26,7 @@ levelAlloc (char *fname)
     return NULL;
   }
 
-  df = datafileAlloc ("level", leveldfkeys, LEVEL_DFKEY_COUNT, fname, DFTYPE_KEY_LONG);
+  df = datafileAllocParse ("level", DFTYPE_KEY_LONG, fname, leveldfkeys, LEVEL_DFKEY_COUNT);
   return df;
 }
 

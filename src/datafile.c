@@ -112,23 +112,33 @@ parseConvTextList (char *data, datafileret_t *ret)
 /* datafile loading routines */
 
 datafile_t *
-datafileAlloc (char *name, datafilekey_t *dfkeys, size_t dfkeycount, char *fname,
-    datafiletype_t dftype)
+datafileAlloc (char *name)
 {
   datafile_t      *df;
-  char            tbuff [80];
 
   logProcBegin (LOG_LVL_6, "datafileAlloc");
   df = malloc (sizeof (datafile_t));
   assert (df != NULL);
   df->name = name;
-  snprintf (tbuff, sizeof (tbuff), "%s-item", name);
-  df->itemname = strdup (tbuff);
   df->fname = NULL;
   df->data = NULL;
-  df->dftype = dftype;
-  datafileLoad (dfkeys, dfkeycount, df, fname, dftype);
+  df->dftype = DFTYPE_NONE;
   logProcEnd (LOG_LVL_6, "datafileAlloc", "");
+  return df;
+}
+
+datafile_t *
+datafileAllocParse (char *name, datafiletype_t dftype, char *fname,
+    datafilekey_t *dfkeys, size_t dfkeycount)
+{
+  datafile_t *df = datafileAlloc (name);
+  if (df != NULL) {
+    char *ddata = datafileLoad (df, dftype, fname);
+    if (ddata != NULL) {
+      df->data = datafileParse (ddata, name, dftype, dfkeys, dfkeycount);
+      free (ddata);
+    }
+  }
   return df;
 }
 
@@ -140,19 +150,31 @@ datafileFree (void *tdf)
   logProcBegin (LOG_LVL_6, "datafileFree");
   if (df != NULL) {
     datafileFreeInternal (df);
-    if (df->itemname != NULL) {
-      free (df->itemname);
-    }
     free (df);
   }
   logProcEnd (LOG_LVL_6, "datafileFree", "");
 }
 
-void
-datafileLoad (datafilekey_t *dfkeys, size_t dfkeycount,
-    datafile_t *df, char *fname, datafiletype_t dftype)
+char *
+datafileLoad (datafile_t *df, datafiletype_t dftype, char *fname)
 {
-  char          *data = NULL;
+  char    *data;
+
+  logProcBegin (LOG_LVL_6, "datafileLoad");
+  /* may be re-using the song list */
+  datafileFreeInternal (df);
+  df->dftype = dftype;
+  df->fname = strdup (fname);
+  data = filedataReadAll (df->fname);
+  logProcEnd (LOG_LVL_6, "datafileLoad", "");
+  return data;
+}
+
+list_t *
+datafileParse (char *data, char *name, datafiletype_t dftype,
+    datafilekey_t *dfkeys, size_t dfkeycount)
+{
+  list_t        *nlist = NULL;
   char          **strdata = NULL;
   parseinfo_t   *pi = NULL;
   long          key = -1L;
@@ -169,12 +191,8 @@ datafileLoad (datafilekey_t *dfkeys, size_t dfkeycount,
   char          *tvalstr;
   datafileret_t ret;
 
-  logProcBegin (LOG_LVL_6, "datafileLoad");
-  /* may be re-using the song list */
-  datafileFreeInternal (df);
-  df->fname = strdup (fname);
+  logProcBegin (LOG_LVL_6, "datafileParse");
 
-  data = filedataReadAll (df->fname);
   pi = parseInit ();
   if (dftype == DFTYPE_LIST) {
     dataCount = parseSimple (pi, data);
@@ -187,27 +205,27 @@ datafileLoad (datafilekey_t *dfkeys, size_t dfkeycount,
   switch (dftype) {
     case DFTYPE_LIST: {
       inc = 1;
-      df->data = listAlloc (df->name, sizeof (char *), NULL, free);
-      listSetSize (df->data, dataCount);
+      nlist = listAlloc (name, sizeof (char *), NULL, free);
+      listSetSize (nlist, dataCount);
       break;
     }
     case DFTYPE_KEY_STRING: {
       inc = 2;
-      df->data = slistAlloc (df->name, LIST_UNORDERED, istringCompare, free, listFree);
+      nlist = slistAlloc (name, LIST_UNORDERED, istringCompare, free, listFree);
       break;
     }
     case DFTYPE_KEY_LONG: {
       inc = 2;
-      df->data = llistAlloc (df->name, LIST_UNORDERED, listFree);
+      nlist = llistAlloc (name, LIST_UNORDERED, listFree);
       break;
     }
     case DFTYPE_KEY_VAL: {
       inc = 2;
       if (dfkeys == NULL) {
-        df->data = slistAlloc (df->name, LIST_UNORDERED, istringCompare, free, free);
+        nlist = slistAlloc (name, LIST_UNORDERED, istringCompare, free, free);
         logMsg (LOG_DBG, LOG_LVL_6, "key_val: slist");
       } else {
-        df->data = llistAlloc (df->name, LIST_UNORDERED, free);
+        nlist = llistAlloc (name, LIST_UNORDERED, free);
         logMsg (LOG_DBG, LOG_LVL_6, "key_val: llist");
       }
       break;
@@ -222,15 +240,16 @@ datafileLoad (datafilekey_t *dfkeys, size_t dfkeycount,
     tvalstr = strdata [i + 1];
 
     if (inc == 2 && strcmp (strdata [i], "version") == 0) {
-      df->version = atol (tvalstr);
+//      version = atol (tvalstr);
+// ### FIX TOD: want to save version.
       continue;
     }
     if (strcmp (strdata [i], "count") == 0) {
       if (dftype == DFTYPE_KEY_LONG) {
-        llistSetSize (df->data, (size_t) atol (tvalstr));
+        llistSetSize (nlist, (size_t) atol (tvalstr));
       }
       if (dftype == DFTYPE_KEY_STRING) {
-        slistSetSize (df->data, (size_t) atol (tvalstr));
+        slistSetSize (nlist, (size_t) atol (tvalstr));
       }
       continue;
     }
@@ -238,28 +257,28 @@ datafileLoad (datafilekey_t *dfkeys, size_t dfkeycount,
     if (dftype == DFTYPE_KEY_LONG &&
         strcmp (tkeystr, "KEY") == 0) {
       if (key >= 0) {
-        llistSetData (df->data, key, itemList);
+        llistSetData (nlist, key, itemList);
         key = -1L;
       }
       key = atol (tvalstr);
-      itemList = llistAlloc (df->itemname, LIST_ORDERED, free);
+      itemList = llistAlloc ("item", LIST_ORDERED, free);
       continue;
     }
     if (! first &&
         dftype == DFTYPE_KEY_STRING &&
         strcmp (keyString, tkeystr) == 0) {
       if (ikeystr != NULL) {
-        slistSetData (df->data, ikeystr, itemList);
+        slistSetData (nlist, ikeystr, itemList);
         ikeystr = NULL;
       }
       keyString = tkeystr;
-      itemList = slistAlloc (df->itemname, LIST_ORDERED, istringCompare, free, free);
+      itemList = slistAlloc ("item", LIST_ORDERED, istringCompare, free, free);
       continue;
     }
 
     if (dftype == DFTYPE_LIST) {
       logMsg (LOG_DBG, LOG_LVL_6, "set: list");
-      listSet (df->data, strdup (tkeystr));
+      listSet (nlist, strdup (tkeystr));
     }
     if (dftype == DFTYPE_KEY_LONG ||
         (dftype == DFTYPE_KEY_VAL && dfkeys != NULL) ||
@@ -321,10 +340,10 @@ datafileLoad (datafilekey_t *dfkeys, size_t dfkeycount,
       if (dftype == DFTYPE_KEY_VAL) {
         logMsg (LOG_DBG, LOG_LVL_6, "set: key_val");
         if (vt == VALUE_DATA) {
-          llistSetData (df->data, ikey, strdup (tvalstr));
+          llistSetData (nlist, ikey, strdup (tvalstr));
         }
         if (vt == VALUE_LONG) {
-          llistSetLong (df->data, ikey, lval);
+          llistSetLong (nlist, ikey, lval);
         }
         if (vt == VALUE_LIST) {
           llistSetList (itemList, ikey, ret.u.list);
@@ -333,7 +352,7 @@ datafileLoad (datafilekey_t *dfkeys, size_t dfkeycount,
     }
     if (dftype == DFTYPE_KEY_VAL && dfkeys == NULL) {
       logMsg (LOG_DBG, LOG_LVL_6, "set: key_val");
-      slistSetData (df->data, tkeystr, strdup (tvalstr));
+      slistSetData (nlist, tkeystr, strdup (tvalstr));
       key = -1L;
     }
 
@@ -341,18 +360,18 @@ datafileLoad (datafilekey_t *dfkeys, size_t dfkeycount,
   }
 
   if (dftype == DFTYPE_KEY_LONG && key >= 0) {
-    llistSetData (df->data, key, itemList);
+    llistSetData (nlist, key, itemList);
   }
   if (dftype == DFTYPE_KEY_STRING && ikeystr != NULL) {
-    slistSetData (df->data, ikeystr, itemList);
+    slistSetData (nlist, ikeystr, itemList);
   }
   if (dftype == DFTYPE_KEY_STRING) {
-    slistSort (df->data);
+    slistSort (nlist);
   }
 
   parseFree (pi);
-  free (data);
-  logProcEnd (LOG_LVL_6, "datafileLoad", "");
+  logProcEnd (LOG_LVL_6, "datafileParse", "");
+  return nlist;
 }
 
 list_t *

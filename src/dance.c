@@ -36,7 +36,7 @@ danceAlloc (char *fname)
   if (! fileopExists (fname)) {
     return NULL;
   }
-  df = datafileAlloc ("dance", dancedfkeys, RATING_DFKEY_COUNT, fname, DFTYPE_KEY_LONG);
+  df = datafileAllocParse ("dance", DFTYPE_KEY_LONG, fname, dancedfkeys, RATING_DFKEY_COUNT);
   return df;
 }
 

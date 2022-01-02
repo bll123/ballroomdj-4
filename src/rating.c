@@ -24,8 +24,7 @@ ratingAlloc (char *fname)
   if (! fileopExists (fname)) {
     return NULL;
   }
-  df = datafileAlloc ("rating", ratingdfkeys, RATING_DFKEY_COUNT,
-      fname, DFTYPE_KEY_LONG);
+  df = datafileAllocParse ("rating", DFTYPE_KEY_LONG, fname, ratingdfkeys, RATING_DFKEY_COUNT);
   return df;
 }
 
