@@ -63,7 +63,7 @@ bdj4startup (int argc, char *argv[])
   initLocale ();
   sysvarsInit (argv[0]);
 
-  snprintf (tbuff, MAXPATHLEN, "data/%s", sysvars [SV_HOSTNAME]);
+  datautilMakePath (tbuff, sizeof (tbuff), "", sysvars [SV_HOSTNAME], "", DATAUTIL_MP_NONE);
   if (! fileopExists (tbuff)) {
     fileopMakeDir (tbuff);
   }

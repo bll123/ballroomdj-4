@@ -8,6 +8,7 @@
 #include "genre.h"
 #include "datafile.h"
 #include "fileop.h"
+#include "bdjvarsdf.h"
 
   /* must be sorted in ascii order */
 static datafilekey_t genredfkeys[] = {
@@ -34,3 +35,14 @@ genreFree (datafile_t *df)
 {
   datafileFree (df);
 }
+
+void
+genreConv (char *keydata, datafileret_t *ret)
+{
+  list_t      *lookup;
+
+  ret->valuetype = VALUE_LONG;
+  lookup = datafileGetLookup (bdjvarsdf [BDJVDF_GENRES]);
+  ret->u.l = slistGetLong (lookup, keydata);
+}
+

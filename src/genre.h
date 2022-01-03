@@ -11,5 +11,6 @@ typedef enum {
 
 datafile_t *  genreAlloc (char *);
 void          genreFree (datafile_t *);
+void          genreConv (char *keydata, datafileret_t *ret);
 
 #endif /* INC_GENRE_H */

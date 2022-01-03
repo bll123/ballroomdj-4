@@ -7,9 +7,6 @@ typedef enum {
   DFTYPE_NONE,
     /* list: simple list */
   DFTYPE_LIST,
-    /* key_string: use the first item key found after version/count as
-       the break.  Otherwise the same as key long. */
-  DFTYPE_KEY_STRING,
     /* key_long: has a 'KEY' value that begins a block of key/values. */
   DFTYPE_KEY_LONG,
     /* key_val:

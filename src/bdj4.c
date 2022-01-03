@@ -80,7 +80,6 @@ main (int argc, char *argv[])
 
     putenv ("DYLD_FALLBACK_LIBRARY_PATH="
         "/Applications/VLC.app/Contents/MacOS/lib/");
-
     putenv ("VLC_PLUGIN_PATH=/Applications/VLC.app/Contents/MacOS/plugins");
     free (npath);
   }

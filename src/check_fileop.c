@@ -104,8 +104,8 @@ fileop_suite (void)
   Suite     *s;
   TCase     *tc;
 
-  s = suite_create ("File Utils Suite");
-  tc = tcase_create ("File Utils");
+  s = suite_create ("File Ops Suite");
+  tc = tcase_create ("File Op");
   tcase_add_test (tc, fileop_exists);
   tcase_add_test (tc, fileop_copy);
   tcase_add_test (tc, fileop_move);

@@ -10,6 +10,9 @@
 #include "fileop.h"
 #include "pathutil.h"
 #include "portability.h"
+#include "datautil.h"
+#include "rating.h"
+#include "level.h"
 
 static void     playlistFreeList (void *tpllist);
 static void     plConvResume (char *, datafileret_t *ret);
@@ -21,13 +24,13 @@ static datafilekey_t playlistdfkeys[] = {
   { "AllowedKeywords",  PLAYLIST_ALLOWED_KEYWORDS,
       VALUE_DATA, parseConvTextList },
   { "DanceRating",      PLAYLIST_RATING,
-      VALUE_DATA, NULL },
+      VALUE_DATA, ratingConv },
   { "Gap",              PLAYLIST_GAP,
       VALUE_DATA, NULL },
   { "HighDanceLevel",   PLAYLIST_LEVEL_LOW,
-      VALUE_DATA, NULL },
+      VALUE_DATA, levelConv },
   { "LowDanceLevel",    PLAYLIST_LEVEL_HIGH,
-      VALUE_DATA, NULL },
+      VALUE_DATA, levelConv },
   { "ManualList",       PLAYLIST_MANUAL_LIST_NAME,
       VALUE_DATA, NULL },
   { "MaxPlayTime",      PLAYLIST_MAX_PLAY_TIME,
@@ -71,13 +74,13 @@ playlistAlloc (char *fname)
   list_t        *pllist;
 
   pi = pathInfo (fname);
-  snprintf (tfn, sizeof (tfn), "data/%s.pl", pi->basename);
+  datautilMakePath (tfn, sizeof (tfn), "", pi->basename, ".pl", DATAUTIL_MP_NONE);
   if (! fileopExists (tfn)) {
     return NULL;
   }
   pldf = datafileAllocParse ("playlist", DFTYPE_KEY_VAL, fname,
       playlistdfkeys, PLAYLIST_DFKEY_COUNT, DATAFILE_NO_LOOKUP);
-  snprintf (tfn, sizeof (tfn), "data/%s.pldance", pi->basename);
+  datautilMakePath (tfn, sizeof (tfn), "", pi->basename, ".pldance", DATAUTIL_MP_NONE);
   if (! fileopExists (tfn)) {
     datafileFree (pldf);
     return NULL;

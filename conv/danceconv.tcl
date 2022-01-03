@@ -21,7 +21,10 @@ puts $fh version
 puts $fh "..2"
 puts $fh count
 puts $fh "..[expr {[llength $Dance]/2}]"
+set ikey 0
 foreach {key data} $Dance {
+  puts $fh "KEY\n..$ikey"
+  incr ikey;
   puts $fh "DANCE\n..$key"
   foreach {k v} $data {
     if { $k eq "ann" } { set k ANNOUNCE }

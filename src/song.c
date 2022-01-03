@@ -13,6 +13,7 @@
 #include "datafile.h"
 #include "level.h"
 #include "rating.h"
+#include "genre.h"
 
   /* must be sorted in ascii order */
 static datafilekey_t songdfkeys[] = {
@@ -38,7 +39,7 @@ static datafilekey_t songdfkeys[] = {
   { "DURATION_HMS",         TAG_KEY_DURATION_HMS,         VALUE_DOUBLE, NULL },
   { "DURATION_STR",         TAG_KEY_DURATION_STR,         VALUE_DATA, NULL },
   { "FILE",                 TAG_KEY_FILE,                 VALUE_DATA, NULL },
-  { "GENRE",                TAG_KEY_GENRE,                VALUE_DATA, NULL },
+  { "GENRE",                TAG_KEY_GENRE,                VALUE_DATA, genreConv },
   { "KEYWORD",              TAG_KEY_KEYWORD,              VALUE_DATA, NULL },
   { "MQDISPLAY",            TAG_KEY_MQDISPLAY,            VALUE_DATA, NULL },
   { "MUSICBRAINZ_TRACKID",  TAG_KEY_MUSICBRAINZ_TRACKID,  VALUE_DATA, NULL },

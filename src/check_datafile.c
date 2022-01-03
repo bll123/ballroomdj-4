@@ -389,6 +389,132 @@ START_TEST(datafile_keylong)
 }
 END_TEST
 
+START_TEST(datafile_keylong_lookup)
+{
+  datafile_t        *df;
+  long              key;
+  char *            value;
+  list_t *          vallist;
+  long              lval;
+  char              *keystr;
+
+  logMsg (LOG_DBG, LOG_LVL_1, "=== datafile_keylong_lookup");
+  char *fn = "tmp/dftestb.txt";
+  char *tstr = strdup ("KEY\n..0\nA\n..a\nB\n..0\nC\n..4\n"
+      "KEY\n..1\nA\n..b\nB\n..1\nC\n..5\n"
+      "KEY\n..2\nA\n..c\nB\n..2\nC\n..6\n"
+      "KEY\n..3\nA\n..d\nB\n..3\nC\n..7\n");
+  FILE *fh = fopen (fn, "w");
+  fprintf (fh, "%s", tstr);
+  fclose (fh);
+
+  df = datafileAllocParse ("chk", DFTYPE_KEY_LONG, fn, dfkeyskl, 6, 14);
+  ck_assert_ptr_nonnull (df);
+  ck_assert_int_eq (df->dftype, DFTYPE_KEY_LONG);
+  ck_assert_str_eq (df->fname, fn);
+  ck_assert_ptr_nonnull (df->data);
+  ck_assert_ptr_nonnull (df->lookup);
+
+  list_t *list = datafileGetList (df);
+  llistStartIterator (list);
+  key = llistIterateKeyLong (list);
+  ck_assert_int_eq (key, 0L);
+
+  vallist = llistGetData (list, key);
+  llistStartIterator (vallist);
+  key = llistIterateKeyLong (vallist);
+  ck_assert_int_eq (key, 14L);
+  value = llistGetData (vallist, key);
+  ck_assert_str_eq (value, "a");
+  key = llistIterateKeyLong (vallist);
+  ck_assert_int_eq (key, 15L);
+  lval = llistGetLong (vallist, key);
+  ck_assert_int_eq (lval, 0L);
+  key = llistIterateKeyLong (vallist);
+  ck_assert_int_eq (key, 16L);
+  value = llistGetData (vallist, key);
+  ck_assert_str_eq (value, "4");
+
+  key = llistIterateKeyLong (list);
+  ck_assert_int_eq (key, 1L);
+
+  vallist = llistGetData (list, key);
+  llistStartIterator (vallist);
+  key = llistIterateKeyLong (vallist);
+  ck_assert_int_eq (key, 14L);
+  value = llistGetData (vallist, key);
+  ck_assert_str_eq (value, "b");
+  key = llistIterateKeyLong (vallist);
+  ck_assert_int_eq (key, 15L);
+  lval = llistGetLong (vallist, key);
+  ck_assert_int_eq (lval, 1L);
+  key = llistIterateKeyLong (vallist);
+  ck_assert_int_eq (key, 16L);
+  value = llistGetData (vallist, key);
+  ck_assert_str_eq (value, "5");
+
+  key = llistIterateKeyLong (list);
+  ck_assert_int_eq (key, 2L);
+
+  vallist = llistGetData (list, key);
+  llistStartIterator (vallist);
+  key = llistIterateKeyLong (vallist);
+  ck_assert_int_eq (key, 14L);
+  value = llistGetData (vallist, key);
+  ck_assert_str_eq (value, "c");
+  key = llistIterateKeyLong (vallist);
+  ck_assert_int_eq (key, 15L);
+  lval = llistGetLong (vallist, key);
+  ck_assert_int_eq (lval, 2L);
+  key = llistIterateKeyLong (vallist);
+  ck_assert_int_eq (key, 16L);
+  value = llistGetData (vallist, key);
+  ck_assert_str_eq (value, "6");
+
+  key = llistIterateKeyLong (list);
+  ck_assert_int_eq (key, 3L);
+
+  vallist = llistGetData (list, key);
+  llistStartIterator (vallist);
+  key = llistIterateKeyLong (vallist);
+  ck_assert_int_eq (key, 14L);
+  value = llistGetData (vallist, key);
+  ck_assert_str_eq (value, "d");
+  key = llistIterateKeyLong (vallist);
+  ck_assert_int_eq (key, 15L);
+  lval = llistGetLong (vallist, key);
+  ck_assert_int_eq (lval, 3L);
+  key = llistIterateKeyLong (vallist);
+  ck_assert_int_eq (key, 16L);
+  value = llistGetData (vallist, key);
+  ck_assert_str_eq (value, "7");
+
+  list_t *lookup = datafileGetLookup (df);
+  ck_assert_ptr_nonnull (df->lookup);
+  slistStartIterator (lookup);
+  keystr = slistIterateKeyStr (lookup);
+  ck_assert_str_eq (keystr, "a");
+  lval = slistGetLong (lookup, keystr);
+  ck_assert_int_eq (lval, 0L);
+  keystr = slistIterateKeyStr (lookup);
+  ck_assert_str_eq (keystr, "b");
+  lval = slistGetLong (lookup, keystr);
+  ck_assert_int_eq (lval, 1L);
+  keystr = slistIterateKeyStr (lookup);
+  ck_assert_str_eq (keystr, "c");
+  lval = slistGetLong (lookup, keystr);
+  ck_assert_int_eq (lval, 2L);
+  keystr = slistIterateKeyStr (lookup);
+  ck_assert_str_eq (keystr, "d");
+  lval = slistGetLong (lookup, keystr);
+  ck_assert_int_eq (lval, 3L);
+
+  datafileFree (df);
+  free (tstr);
+  unlink (fn);
+}
+END_TEST
+
 START_TEST(datafile_backup)
 {
   FILE      *fh;
@@ -554,6 +680,7 @@ datafile_suite (void)
   tcase_add_test (tc, datafile_keyval_nodfkey);
   tcase_add_test (tc, datafile_keyval_dfkey);
   tcase_add_test (tc, datafile_keylong);
+  tcase_add_test (tc, datafile_keylong_lookup);
   tcase_add_test (tc, datafile_backup);
   suite_add_tcase (s, tc);
   return s;

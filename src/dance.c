@@ -44,7 +44,7 @@ danceAlloc (char *fname)
     return NULL;
   }
 
-  df = datafileAllocParse ("dance", DFTYPE_KEY_STRING, fname,
+  df = datafileAllocParse ("dance", DFTYPE_KEY_LONG, fname,
       dancedfkeys, DANCE_DFKEY_COUNT, DANCE_DANCE);
   return df;
 }
