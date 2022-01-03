@@ -105,7 +105,7 @@ songGetData (song_t *song, long idx) {
 long
 songGetLong (song_t *song, long idx) {
   if (song == NULL || song->songInfo == NULL) {
-    return NULL;
+    return -1L;
   }
 
   long value = llistGetLong (song->songInfo, idx);

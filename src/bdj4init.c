@@ -114,9 +114,13 @@ bdj4startup (int argc, char *argv[])
 void
 bdj4shutdown (void)
 {
+  mtime_t       mt;
+
+  mtimestart (&mt);
   bdjoptFree ();
   dbClose ();
   bdjvarsdfloadCleanup ();
   bdjvarsCleanup ();
+  logMsg (LOG_SESS, LOG_LVL_1, "Total shutdown time: %ld ms", mtimeend (&mt));
   logEnd ();
 }

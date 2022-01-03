@@ -71,6 +71,7 @@ main (int argc, char *argv[])
     }
     if (strcmp (buff, "cliexit") == 0) {
       sockClose (mainSock);
+      logEnd ();
       exit (0);
     }
 
@@ -146,6 +147,7 @@ main (int argc, char *argv[])
       playerstart = 0;
     }
   }
+
   return 0;
 }
 
@@ -156,6 +158,10 @@ processBuff (char *buff)
   size_t    idx = 0;
 
   for (char *p = buff; *p; ++p) {
+    if (*p == 0x15) {
+      idx = 0;
+      continue;
+    }
     if (*p != 0x8 && *p != 0x7F) {
       buff [idx] = *p;
       ++idx;

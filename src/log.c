@@ -57,7 +57,6 @@ logClose (logidx_t idx)
 
   fileCloseShared (&l->fhandle);
   l->opened = 0;
-  free (l);
 }
 
 void
@@ -153,12 +152,13 @@ logStartAppend (const char *processnm, const char *processtag, bdjloglvl_t level
 void
 logEnd (void)
 {
-  logClose (LOG_ERR);
-  logClose (LOG_SESS);
-  logClose (LOG_DBG);
-  syslogs [LOG_ERR] = NULL;
-  syslogs [LOG_SESS] = NULL;
-  syslogs [LOG_DBG] = NULL;
+  for (logidx_t idx = LOG_ERR; idx < LOG_MAX; ++idx) {
+    if (syslogs [idx] != NULL) {
+      logClose (idx);
+      free (syslogs [idx]);
+      syslogs [idx] = NULL;
+    }
+  }
 }
 
 /* internal routines */

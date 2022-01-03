@@ -121,6 +121,7 @@ datafileAlloc (char *name)
   df->name = name;
   df->fname = NULL;
   df->data = NULL;
+  df->lookup = NULL;
   df->dftype = DFTYPE_NONE;
   logProcEnd (LOG_LVL_8, "datafileAlloc", "");
   return df;
@@ -282,11 +283,8 @@ datafileParseMerge (list_t *nlist, char *data, char *name,
     char      temp [80];
 
     snprintf (temp, sizeof (temp), "%s-lookup", name);
-      /* The key value will be pointing at an already malloc'd
-       * value.  Do not free it.
-       */
 // ### FIX: optimize whether to use istringCompare or stringCompare.
-    *lookup = slistAlloc (temp, LIST_UNORDERED, istringCompare, NULL, NULL);
+    *lookup = slistAlloc (temp, LIST_UNORDERED, istringCompare, free, NULL);
     slistSetSize (*lookup, listGetSize (nlist));
   }
 
@@ -433,6 +431,10 @@ datafileParseMerge (list_t *nlist, char *data, char *name,
   }
   if (dftype == DFTYPE_KEY_STRING && ikeystr != NULL) {
     slistSetList (nlist, ikeystr, itemList);
+  }
+
+  if (lookupKey != DATAFILE_NO_LOOKUP) {
+    slistSort (*lookup);
   }
 
   parseFree (pi);
@@ -584,16 +586,16 @@ datafileFreeInternal (datafile_t *df)
       free (df->fname);
       df->fname = NULL;
     }
+    if (df->lookup != NULL) {
+      slistFree (df->lookup);
+    }
     if (df->data != NULL) {
       switch (df->dftype) {
         case DFTYPE_LIST: {
           listFree (df->data);
           break;
         }
-        case DFTYPE_KEY_STRING: {
-          slistFree (df->data);
-          break;
-        }
+        case DFTYPE_KEY_STRING:
         case DFTYPE_KEY_LONG: {
           llistFree (df->data);
           break;

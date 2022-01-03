@@ -52,9 +52,20 @@ mcheck: $(MKC_ENV_SHR)
 	(cd ..;valgrind --tool=memcheck \
 		--leak-check=full \
 		--read-inline-info=yes \
+		--trace-children=yes \
 		--track-origins=yes \
 		--show-leak-kinds=all \
-		./bin/bdj4main)
+		./bin/bdj4)
+
+mcheckcli: $(MKC_ENV_SHR)
+	. ./$(MKC_ENV_SHR); $(MAKE) -e rall
+	(cd ..;valgrind --tool=memcheck \
+		--leak-check=full \
+		--read-inline-info=yes \
+		--trace-children=yes \
+		--track-origins=yes \
+		--show-leak-kinds=all \
+		./bin/bdj4 --clicomm)
 
 rall:
 	$(MAKE) -e libraries
@@ -103,9 +114,12 @@ $(MKC_ENV_SHR): $(MKC_ENV_SHR_CONF)
 		$(_MKCONFIG_SHELL) $(MKC_DIR)/mkconfig.sh \
 		$(MKC_ENV_SHR_CONF)
 
+# remove -lvlc from the required libraries, as it is only need for the player.
 $(MKC_REQLIB):  $(MKC_OUTPUT)
 	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh -reqlib \
 		-o $(MKC_REQLIB) $(MKC_OUTPUT)
+	sed 's/-lvlc//' $(MKC_REQLIB) > $(MKC_REQLIB).n
+	mv -f $(MKC_REQLIB).n $(MKC_REQLIB)
 
 $(MKC_OUTPUT):       $(MKC_ENV_SHR) $(MKC_CONF)
 	@-$(RM) -f $(MKC_OUTPUT)
@@ -138,7 +152,7 @@ eclean:
 
 .PHONY: tclean
 tclean:
-	@-$(RM) -f *~ w *.orig $(MKC_CONFDIR)/*.orig
+	@-$(RM) -f *~ w ww *.orig $(MKC_CONFDIR)/*.orig
 	@-$(RM) -f $(MKC_FILES)/mkc_compile.log $(MKC_CONFDIR)/*~
 	@-$(RM) -f ../tmp/* ../conv/*~ ./locale/*~ ../locale/*~ ../*~
 	@-$(RM) -f ../install/*~ ../pkg/*~ build/*~ utils/*~
@@ -171,13 +185,13 @@ rbdj4:
 
 BDJMAINOBJS = $(OBJDIR)/bdj4main$(OBJ_EXT)
 
-$(BINDIR)/bdj4main$(EXE_EXT): $(BDJMAINOBJS) \
+$(BINDIR)/bdj4main$(EXE_EXT): $(MKC_REQLIB) $(BDJMAINOBJS) \
 		$(SHLIBDIR)/libbdj4$(SHLIB_EXT) \
 		$(SHLIBDIR)/libbdj4common$(SHLIB_EXT)
 	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh \
 		-link -exec $(MKC_ECHO) \
-		-o $@ \
 		-r $(MKC_REQLIB) \
+		-o $@ \
 		$(BDJMAINOBJS) \
 		-L $(SHLIBDIR) -rpath $(BINDIR) \
 		-l bdj4 -l bdj4common
@@ -195,7 +209,7 @@ $(BINDIR)/bdj4player$(EXE_EXT): $(PLAYEROBJS) \
 		-o $@ \
 		$(PLAYEROBJS) \
 		-L $(SHLIBDIR) -rpath $(BINDIR) \
-		-l bdj4player -l bdj4common
+		-l vlc -l bdj4player -l bdj4common
 	./build/postbuild.sh $@
 
 CLICOMMOBJS = \
@@ -206,7 +220,6 @@ $(BINDIR)/clicomm$(EXE_EXT): $(CLICOMMOBJS) \
 	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh \
 		-link -exec $(MKC_ECHO) \
 		-o $@ \
-		-r $(MKC_REQLIB) \
 		$(CLICOMMOBJS) \
 		-L $(SHLIBDIR) -rpath $(BINDIR) \
 		-l bdj4common
@@ -236,10 +249,9 @@ LIBCOMMONOBJS = \
 	$(OBJDIR)/sysvars$(OBJ_EXT) \
 	$(OBJDIR)/tmutil$(OBJ_EXT)
 
-$(SHLIBDIR)/libbdj4common$(SHLIB_EXT): $(MKC_REQLIB) $(LIBCOMMONOBJS)
+$(SHLIBDIR)/libbdj4common$(SHLIB_EXT): $(LIBCOMMONOBJS)
 	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh \
 		-link -shared $(MKC_ECHO) -lib \
-		-r $(MKC_REQLIB) \
 		-o $@ \
 		$(LIBCOMMONOBJS)
 
@@ -267,11 +279,10 @@ LIBBDJOBJS = \
 	$(OBJDIR)/volume$(OBJ_EXT) \
 	$(OBJDIR)/volwin$(OBJ_EXT)
 
-$(SHLIBDIR)/libbdj4$(SHLIB_EXT): $(MKC_REQLIB) $(LIBBDJOBJS) \
+$(SHLIBDIR)/libbdj4$(SHLIB_EXT): $(LIBBDJOBJS) \
 		$(SHLIBDIR)/libbdj4common$(SHLIB_EXT)
 	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh \
 		-link -shared $(MKC_ECHO) -lib \
-		-r $(MKC_REQLIB) \
 		-o $@ \
 		$(LIBBDJOBJS) \
 		-L $(SHLIBDIR) -rpath $(BINDIR) \
@@ -393,7 +404,7 @@ $(OBJDIR)/fileop$(OBJ_EXT): fileop.c config.h fileop.h bdjstring.h portability.h
  sysvars.h
 $(OBJDIR)/fileutil$(OBJ_EXT): fileutil.c config.h fileutil.h bdjstring.h portability.h
 $(OBJDIR)/genre$(OBJ_EXT): genre.c config.h genre.h datafile.h list.h fileop.h
-$(OBJDIR)/level$(OBJ_EXT): level.c config.h level.h datafile.h list.h fileop.h
+$(OBJDIR)/level$(OBJ_EXT): level.c config.h level.h datafile.h list.h fileop.h bdjvarsdf.h
 $(OBJDIR)/list$(OBJ_EXT): list.c config.h list.h log.h fileutil.h
 $(OBJDIR)/lock$(OBJ_EXT): lock.c config.h sysvars.h portability.h process.h tmutil.h lock.h \
  fileop.h
@@ -405,7 +416,8 @@ $(OBJDIR)/playlist$(OBJ_EXT): playlist.c config.h playlist.h datafile.h list.h f
  pathutil.h portability.h
 $(OBJDIR)/process$(OBJ_EXT): process.c config.h process.h log.h fileutil.h
 $(OBJDIR)/rafile$(OBJ_EXT): rafile.c config.h rafile.h lock.h tmutil.h log.h fileutil.h
-$(OBJDIR)/rating$(OBJ_EXT): rating.c config.h rating.h datafile.h list.h fileop.h
+$(OBJDIR)/rating$(OBJ_EXT): rating.c config.h rating.h datafile.h list.h fileop.h \
+ bdjvarsdf.h
 $(OBJDIR)/sequence$(OBJ_EXT): sequence.c config.h sequence.h datafile.h list.h fileop.h
 $(OBJDIR)/sock$(OBJ_EXT): sock.c config.h sock.h tmutil.h log.h fileutil.h
 $(OBJDIR)/sockh$(OBJ_EXT): sockh.c config.h sockh.h sock.h tmutil.h log.h fileutil.h \

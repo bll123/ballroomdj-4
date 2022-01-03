@@ -23,7 +23,7 @@ bdjvarsdfloadInit (void)
 {
   char      fn [MAXPATHLEN];
 
-    /* dance speeds and dance types must be loaded before dance */
+    /* dance types must be loaded before dance */
   datautilMakePath (fn, sizeof (fn), "", "dancetypes", ".txt", DATAUTIL_MP_NONE);
   bdjvarsdf [BDJVDF_DANCE_TYPES] = dnctypesAlloc (fn);
 
@@ -48,10 +48,11 @@ bdjvarsdfloadInit (void)
 void
 bdjvarsdfloadCleanup (void)
 {
-  dnctypesFree (bdjvarsdf [BDJVDF_DANCE_TYPES]);
-  ratingFree (bdjvarsdf [BDJVDF_RATINGS]);
-  genreFree (bdjvarsdf [BDJVDF_GENRES]);
-  levelFree (bdjvarsdf [BDJVDF_LEVELS]);
-  sortoptFree (bdjvarsdf [BDJVDF_SORT_OPT]);
   autoselFree (bdjvarsdf [BDJVDF_AUTO_SEL]);
+  sortoptFree (bdjvarsdf [BDJVDF_SORT_OPT]);
+  levelFree (bdjvarsdf [BDJVDF_LEVELS]);
+  genreFree (bdjvarsdf [BDJVDF_GENRES]);
+  ratingFree (bdjvarsdf [BDJVDF_RATINGS]);
+  danceFree (bdjvarsdf [BDJVDF_DANCES]);
+  dnctypesFree (bdjvarsdf [BDJVDF_DANCE_TYPES]);
 }

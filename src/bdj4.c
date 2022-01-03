@@ -20,16 +20,34 @@ main (int argc, char *argv[])
   char      buff [MAXPATHLEN];
   int       c = 0;
   int       option_index = 0;
+  char      *prog;
 
   static struct option bdj_options [] = {
+    { "check_all",  no_argument,        NULL,   1 },
+    { "clicomm",    no_argument,        NULL,   2 },
+    { "player",     no_argument,        NULL,   3 },
     { "profile",    required_argument,  NULL,   'p' },
     { NULL,         0,                  NULL,   0 }
   };
+
+  prog = "bdj4main";
 
   sysvarsInit (argv [0]);
 
   while ((c = getopt_long (argc, argv, "", bdj_options, &option_index)) != -1) {
     switch (c) {
+      case 1: {
+        prog = "check_all";
+        break;
+      }
+      case 2: {
+        prog = "clicomm";
+        break;
+      }
+      case 3: {
+        prog = "bdj4player";
+        break;
+      }
       case 'p': {
         if (optarg) {
           sysvarSetLong (SVL_BDJIDX, atol (optarg));
@@ -103,7 +121,7 @@ main (int argc, char *argv[])
 
   /* launch the program */
 
-  snprintf (buff, MAXPATHLEN, "%s/bdj4main", sysvars [SV_BDJ4EXECDIR]);
+  snprintf (buff, MAXPATHLEN, "%s/%s", sysvars [SV_BDJ4EXECDIR], prog);
   if (isWindows()) {
     strlcat (buff, ".exe", MAXPATHLEN);
   }
