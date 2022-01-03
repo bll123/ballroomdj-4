@@ -8,6 +8,7 @@
 #include "level.h"
 #include "datafile.h"
 #include "fileop.h"
+#include "bdjvarsdf.h"
 
   /* must be sorted in ascii order */
 static datafilekey_t leveldfkeys[] = {
@@ -26,7 +27,8 @@ levelAlloc (char *fname)
     return NULL;
   }
 
-  df = datafileAllocParse ("level", DFTYPE_KEY_LONG, fname, leveldfkeys, LEVEL_DFKEY_COUNT);
+  df = datafileAllocParse ("level", DFTYPE_KEY_LONG, fname,
+      leveldfkeys, LEVEL_DFKEY_COUNT, LEVEL_LABEL);
   return df;
 }
 
@@ -34,4 +36,14 @@ void
 levelFree (datafile_t *df)
 {
   datafileFree (df);
+}
+
+void
+levelConv (char *keydata, datafileret_t *ret)
+{
+  list_t      *lookup;
+
+  ret->valuetype = VALUE_LONG;
+  lookup = datafileGetLookup (bdjvarsdf [BDJVDF_LEVELS]);
+  ret->u.l = slistGetLong (lookup, keydata);
 }

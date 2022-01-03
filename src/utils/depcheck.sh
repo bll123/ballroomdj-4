@@ -18,7 +18,6 @@ for fn in *.c *.h; do
 done
 tsort < $TIN | egrep -v '(config.h|check.h)' > $TSORT
 rc=$?
-exit $?
 
 rm -f $TIN $TSORT > /dev/null 2>&1
-exit 0
+exit $rc

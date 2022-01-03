@@ -11,5 +11,6 @@ typedef enum {
 
 datafile_t *  ratingAlloc (char *);
 void          ratingFree (datafile_t *);
+void          ratingConv (char *keydata, datafileret_t *ret);
 
 #endif /* INC_RATING_H */

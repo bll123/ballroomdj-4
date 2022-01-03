@@ -21,8 +21,6 @@ typedef enum {
 
 static size_t parse (parseinfo_t *pi, char *data, parsetype_t parsetype);
 static void   datafileFreeInternal (datafile_t *df);
-static long   dfkeyBinarySearch (const datafilekey_t *dfkeys,
-                  size_t count, char *key);
 
 /* parsing routines */
 
@@ -130,7 +128,7 @@ datafileAlloc (char *name)
 
 datafile_t *
 datafileAllocParse (char *name, datafiletype_t dftype, char *fname,
-    datafilekey_t *dfkeys, size_t dfkeycount)
+    datafilekey_t *dfkeys, size_t dfkeycount, long lookupKey)
 {
   logProcBegin (LOG_LVL_5, "datafileAllocParse");
   logMsg (LOG_DBG, LOG_LVL_5, "alloc/parse %s", fname);
@@ -138,7 +136,8 @@ datafileAllocParse (char *name, datafiletype_t dftype, char *fname,
   if (df != NULL) {
     char *ddata = datafileLoad (df, dftype, fname);
     if (ddata != NULL) {
-      df->data = datafileParse (ddata, name, dftype, dfkeys, dfkeycount);
+      df->data = datafileParse (ddata, name, dftype,
+          dfkeys, dfkeycount, lookupKey, &df->lookup);
       if (dftype == DFTYPE_KEY_STRING ||
           (dftype == DFTYPE_KEY_VAL && dfkeys == NULL)) {
         slistSort (df->data);
@@ -184,17 +183,20 @@ datafileLoad (datafile_t *df, datafiletype_t dftype, char *fname)
 
 list_t *
 datafileParse (char *data, char *name, datafiletype_t dftype,
-    datafilekey_t *dfkeys, size_t dfkeycount)
+    datafilekey_t *dfkeys, size_t dfkeycount, long lookupKey,
+    list_t **lookup)
 {
   list_t        *nlist = NULL;
 
-  nlist = datafileParseMerge (nlist, data, name, dftype, dfkeys, dfkeycount);
+  nlist = datafileParseMerge (nlist, data, name, dftype,
+      dfkeys, dfkeycount, lookupKey, lookup);
   return nlist;
 }
 
 list_t *
 datafileParseMerge (list_t *nlist, char *data, char *name,
-    datafiletype_t dftype, datafilekey_t *dfkeys, size_t dfkeycount)
+    datafiletype_t dftype, datafilekey_t *dfkeys,
+    size_t dfkeycount, long lookupKey, list_t **lookup)
 {
   char          **strdata = NULL;
   parseinfo_t   *pi = NULL;
@@ -230,14 +232,15 @@ datafileParseMerge (list_t *nlist, char *data, char *name,
         nlist = listAlloc (name, sizeof (char *), NULL, free);
         listSetSize (nlist, dataCount);
       } else {
-        listSetSize (nlist, dataCount + nlist->count);
+        listSetSize (nlist, dataCount + listGetSize (nlist));
       }
       break;
     }
     case DFTYPE_KEY_STRING: {
+        /* this will be turned into a long-keyed name-value list */
       inc = 2;
       if (nlist == NULL) {
-        nlist = slistAlloc (name, LIST_UNORDERED, istringCompare, free, listFree);
+        nlist = llistAlloc (name, LIST_UNORDERED, listFree);
       }
       break;
     }
@@ -252,10 +255,11 @@ datafileParseMerge (list_t *nlist, char *data, char *name,
       inc = 2;
       if (dfkeys == NULL) {
         if (nlist == NULL) {
-          nlist = slistAlloc (name, LIST_UNORDERED, istringCompare, free, free);
+          nlist = slistAlloc (name, LIST_UNORDERED,
+              istringCompare, free, free);
           slistSetSize (nlist, dataCount / 2);
         } else {
-          slistSetSize (nlist, dataCount / 2 + nlist->count);
+          slistSetSize (nlist, dataCount / 2 + listGetSize (nlist));
         }
         logMsg (LOG_DBG, LOG_LVL_8, "key_val: slist");
       } else {
@@ -263,7 +267,7 @@ datafileParseMerge (list_t *nlist, char *data, char *name,
           nlist = llistAlloc (name, LIST_UNORDERED, free);
           llistSetSize (nlist, dataCount / 2);
         } else {
-          llistSetSize (nlist, dataCount / 2 + nlist->count);
+          llistSetSize (nlist, dataCount / 2 + listGetSize (nlist));
         }
         logMsg (LOG_DBG, LOG_LVL_8, "key_val: llist");
       }
@@ -272,6 +276,18 @@ datafileParseMerge (list_t *nlist, char *data, char *name,
     default: {
       break;
     }
+  }
+
+  if (lookupKey != DATAFILE_NO_LOOKUP) {
+    char      temp [80];
+
+    snprintf (temp, sizeof (temp), "%s-lookup", name);
+      /* The key value will be pointing at an already malloc'd
+       * value.  Do not free it.
+       */
+// ### FIX: optimize whether to use istringCompare or stringCompare.
+    *lookup = slistAlloc (temp, LIST_UNORDERED, istringCompare, NULL, NULL);
+    slistSetSize (*lookup, listGetSize (nlist));
   }
 
   for (size_t i = 0; i < dataCount; i += inc) {
@@ -290,28 +306,35 @@ datafileParseMerge (list_t *nlist, char *data, char *name,
       if (dftype == DFTYPE_KEY_STRING) {
         slistSetSize (nlist, (size_t) atol (tvalstr));
       }
+      slistSetSize (*lookup, listGetSize (nlist));
       continue;
     }
 
     if (dftype == DFTYPE_KEY_LONG &&
         strcmp (tkeystr, "KEY") == 0) {
+      char      temp [80];
       if (key >= 0) {
         llistSetList (nlist, key, itemList);
         key = -1L;
       }
       key = atol (tvalstr);
-      itemList = llistAlloc ("item", LIST_ORDERED, free);
+      snprintf (temp, sizeof (temp), "%s-item-%ld", name, key);
+      itemList = llistAlloc (temp, LIST_ORDERED, free);
       continue;
     }
     if (! first &&
         dftype == DFTYPE_KEY_STRING &&
         strcmp (keyString, tkeystr) == 0) {
+      char    temp [80];
+
       if (ikeystr != NULL) {
         slistSetList (nlist, ikeystr, itemList);
         ikeystr = NULL;
       }
       keyString = tkeystr;
-      itemList = slistAlloc ("item", LIST_ORDERED, istringCompare, free, free);
+      snprintf (temp, sizeof (temp), "%s-item-%s", name, tkeystr);
+      itemList = slistAlloc (temp, LIST_ORDERED,
+          istringCompare, free, free);
       continue;
     }
 
@@ -353,8 +376,11 @@ datafileParseMerge (list_t *nlist, char *data, char *name,
         logMsg (LOG_DBG, LOG_LVL_8, "ERR: Unable to locate key: %s", tkeystr);
       }
 
+      if (lookup != NULL && ikey == lookupKey) {
+        slistSetLong (*lookup, tvalstr, ikey);
+      }
+
         /* key_string and key_long have a key pointing to a key/val list. */
-        /* a list of data items, each of which is a list                  */
       if (dftype == DFTYPE_KEY_STRING) {
         logMsg (LOG_DBG, LOG_LVL_8, "set: key_string");
         if (vt == VALUE_DATA) {
@@ -414,11 +440,46 @@ datafileParseMerge (list_t *nlist, char *data, char *name,
   return nlist;
 }
 
+long
+dfkeyBinarySearch (const datafilekey_t *dfkeys, size_t count, char *key)
+{
+  long      l = 0;
+  long      r = (long) count - 1;
+  long      m = 0;
+  int       rc;
+
+  while (l <= r) {
+    m = l + (r - l) / 2;
+
+    rc = stringCompare (dfkeys [m].name, key);
+    if (rc == 0) {
+      return m;
+    }
+
+    if (rc < 0) {
+      l = m + 1;
+    } else {
+      r = m - 1;
+    }
+  }
+
+  return -1;
+}
+
 list_t *
-datafileGetData (datafile_t *df)
+datafileGetList (datafile_t *df)
 {
   if (df != NULL) {
     return df->data;
+  }
+  return NULL;
+}
+
+list_t *
+datafileGetLookup (datafile_t *df)
+{
+  if (df != NULL) {
+    return df->lookup;
   }
   return NULL;
 }
@@ -557,31 +618,5 @@ datafileFreeInternal (datafile_t *df)
     }
   }
   logProcEnd (LOG_LVL_8, "datafileFreeInternal", "");
-}
-
-static long
-dfkeyBinarySearch (const datafilekey_t *dfkeys, size_t count, char *key)
-{
-  long      l = 0;
-  long      r = (long) count - 1;
-  long      m = 0;
-  int       rc;
-
-  while (l <= r) {
-    m = l + (r - l) / 2;
-
-    rc = stringCompare (dfkeys [m].name, key);
-    if (rc == 0) {
-      return m;
-    }
-
-    if (rc < 0) {
-      l = m + 1;
-    } else {
-      r = m - 1;
-    }
-  }
-
-  return -1;
 }
 

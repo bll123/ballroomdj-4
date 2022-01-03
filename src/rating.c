@@ -8,6 +8,7 @@
 #include "rating.h"
 #include "datafile.h"
 #include "fileop.h"
+#include "bdjvarsdf.h"
 
   /* must be sorted in ascii order */
 static datafilekey_t ratingdfkeys[] = {
@@ -24,8 +25,8 @@ ratingAlloc (char *fname)
   if (! fileopExists (fname)) {
     return NULL;
   }
-  df = datafileAllocParse ("rating", DFTYPE_KEY_LONG, fname, ratingdfkeys, RATING_DFKEY_COUNT);
-
+  df = datafileAllocParse ("rating", DFTYPE_KEY_LONG, fname,
+      ratingdfkeys, RATING_DFKEY_COUNT, RATING_RATING);
   return df;
 }
 
@@ -34,3 +35,20 @@ ratingFree (datafile_t *df)
 {
   datafileFree (df);
 }
+
+list_t *
+ratingGetList (datafile_t *df)
+{
+  return df->data;
+}
+
+void
+ratingConv (char *keydata, datafileret_t *ret)
+{
+  list_t      *lookup;
+
+  ret->valuetype = VALUE_LONG;
+  lookup = datafileGetLookup (bdjvarsdf [BDJVDF_RATINGS]);
+  ret->u.l = slistGetLong (lookup, keydata);
+}
+

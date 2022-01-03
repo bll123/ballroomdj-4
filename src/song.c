@@ -11,6 +11,8 @@
 #include "tagdef.h"
 #include "log.h"
 #include "datafile.h"
+#include "level.h"
+#include "rating.h"
 
   /* must be sorted in ascii order */
 static datafilekey_t songdfkeys[] = {
@@ -24,8 +26,8 @@ static datafilekey_t songdfkeys[] = {
   { "COMPOSER",             TAG_KEY_COMPOSER,             VALUE_DATA, NULL },
   { "CONDUCTOR",            TAG_KEY_CONDUCTOR,            VALUE_DATA, NULL },
   { "DANCE",                TAG_KEY_DANCE,                VALUE_DATA, NULL },
-  { "DANCELEVEL",           TAG_KEY_DANCELEVEL,           VALUE_DATA, NULL },
-  { "DANCERATING",          TAG_KEY_DANCERATING,          VALUE_DATA, NULL },
+  { "DANCELEVEL",           TAG_KEY_DANCELEVEL,           VALUE_DATA, levelConv },
+  { "DANCERATING",          TAG_KEY_DANCERATING,          VALUE_DATA, ratingConv },
   { "DATE",                 TAG_KEY_DATE,                 VALUE_DATA, NULL },
   { "DBADDDATE",            TAG_KEY_DBADDDATE,            VALUE_DATA, NULL },
   { "DISCNUMBER",           TAG_KEY_DISCNUMBER,           VALUE_LONG, NULL },
@@ -86,7 +88,7 @@ void
 songParse (song_t *song, char *data)
 {
   song->songInfo = datafileParse (data, "song", DFTYPE_KEY_VAL,
-      songdfkeys, SONG_DFKEY_COUNT);
+      songdfkeys, SONG_DFKEY_COUNT, DATAFILE_NO_LOOKUP, NULL);
   llistSort (song->songInfo);
 }
 

@@ -75,7 +75,8 @@ playlistAlloc (char *fname)
   if (! fileopExists (tfn)) {
     return NULL;
   }
-  pldf = datafileAllocParse ("playlist", DFTYPE_KEY_VAL, fname, playlistdfkeys, PLAYLIST_DFKEY_COUNT);
+  pldf = datafileAllocParse ("playlist", DFTYPE_KEY_VAL, fname,
+      playlistdfkeys, PLAYLIST_DFKEY_COUNT, DATAFILE_NO_LOOKUP);
   snprintf (tfn, sizeof (tfn), "data/%s.pldance", pi->basename);
   if (! fileopExists (tfn)) {
     datafileFree (pldf);
@@ -83,13 +84,14 @@ playlistAlloc (char *fname)
   }
     /* ### FIX TODO: want to redo this to use a dynamic list of dance keys */
     /* the dance loader must be written &etc. */
-  pldancedf = datafileAllocParse ("playlist-dances", DFTYPE_KEY_VAL, fname, NULL, 0);
+  pldancedf = datafileAllocParse ("playlist-dances", DFTYPE_KEY_VAL, fname,
+      NULL, 0, DATAFILE_NO_LOOKUP);
   pathInfoFree (pi);
 
-  pllist = datafileGetData (pldf);
+  pllist = datafileGetList (pldf);
   llistSetFreeHook (pllist, playlistFreeList);
   llistSetData (pllist, PLAYLIST_DANCEDF, pldancedf);
-  llistSetData (pllist, PLAYLIST_DANCES, datafileGetData (pldancedf));
+  llistSetData (pllist, PLAYLIST_DANCES, datafileGetList (pldancedf));
 
   // rebuild allowed keywords
   // rebuild required keywords

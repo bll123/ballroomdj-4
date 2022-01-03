@@ -21,7 +21,7 @@
 #include "bdjstring.h"
 #include "sysvars.h"
 #include "bdjvars.h"
-#include "bdjvarsdf.h"
+#include "bdjvarsdfload.h"
 #include "log.h"
 #include "tmutil.h"
 #include "fileop.h"
@@ -91,7 +91,7 @@ bdj4startup (int argc, char *argv[])
   logStart ("m", LOG_LVL_5);
   logMsg (LOG_SESS, LOG_LVL_1, "Using profile %ld", lsysvars [SVL_BDJIDX]);
 
-  bdjvarsdfInit ();
+  bdjvarsdfloadInit ();
   bdjoptInit ();
 
   mtimestart (&dbmt);
@@ -116,6 +116,7 @@ bdj4shutdown (void)
 {
   bdjoptFree ();
   dbClose ();
-  bdjvarsdfCleanup ();
+  bdjvarsdfloadCleanup ();
+  bdjvarsCleanup ();
   logEnd ();
 }

@@ -7,7 +7,7 @@
 #include "bdjvars.h"
 #include "sysvars.h"
 
-static void bdjvarsAdjustPorts (void);
+static void   bdjvarsAdjustPorts (void);
 
 char *     bdjvars [BDJV_MAX];
 long       bdjvarsl [BDJVL_MAX];
@@ -22,6 +22,12 @@ bdjvarsInit (void)
   bdjvarsAdjustPorts ();
 }
 
+void
+bdjvarsCleanup (void)
+{
+  return;
+}
+
 /* internal routines */
 
 void
@@ -32,3 +38,4 @@ bdjvarsAdjustPorts (void)
   bdjvarsl [BDJVL_MAIN_PORT] += bdjvarsl [BDJVL_NUM_PORTS] * idx;
   bdjvarsl [BDJVL_PLAYER_PORT] += bdjvarsl [BDJVL_NUM_PORTS] * idx;
 }
+

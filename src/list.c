@@ -33,7 +33,8 @@ static int            listCompare (const list_t *, void *, void *);
 static void           merge (list_t *, size_t, size_t, size_t);
 static void           mergeSort (list_t *, size_t, size_t);
 
-/* data size must be consistent   */
+/* data size must be consistent           */
+/* simple list, only a list of values     */
 
 list_t *
 listAlloc (char *name, size_t dsiz, listCompare_t compare, listFree_t freeHook)
@@ -47,7 +48,9 @@ listAlloc (char *name, size_t dsiz, listCompare_t compare, listFree_t freeHook)
 
   list = malloc (sizeof (list_t));
   assert (list != NULL);
-  list->name = name;
+    /* always allocate the name so that dynamic names can be created */
+  list->name = strdup (name);
+  assert (list->name != NULL);
   list->data = NULL;
   list->count = 0;
   list->allocCount = 0;
@@ -73,6 +76,10 @@ listFree (void *tlist)
   list_t *list = (list_t *) tlist;
 
   if (list != NULL) {
+    if (list->name != NULL) {
+      free (list->name);
+      list->name = NULL;
+    }
     if (list->data != NULL) {
       for (size_t i = 0; i < list->count; ++i) {
         listFreeItem (list, i);
@@ -93,6 +100,56 @@ listFree (void *tlist)
     }
     free (list);
   }
+}
+
+long
+listGetStrIdx (list_t *list, char *keydata)
+{
+  size_t      idx;
+  long        ridx;
+  int         rc;
+  char        *str;
+
+  if (list->keytype == KEY_LONG) {
+    return -1;
+  }
+
+  ridx = -1;
+  if (list->ordered == LIST_ORDERED) {
+    rc = listBinarySearch (list, keydata, &idx);
+    if (rc == 0) {
+      ridx = (long) idx;
+    }
+  } else {
+    listStartIterator (list);
+    while ((str = listIterateData (list)) != NULL) {
+      if (list->compare (str, keydata) == 0) {
+        ridx = list->currentIndex;
+        break;
+      }
+    }
+  }
+
+  return ridx;
+}
+
+inline listtype_t
+listGetType (list_t *list)
+{
+  if (list == NULL) {
+    return LIST_TYPE_UNKNOWN;
+  }
+  return list->type;
+}
+
+
+inline size_t
+listGetSize (list_t *list)
+{
+  if (list == NULL) {
+    return 0;
+  }
+  return list->count;
 }
 
 void
@@ -154,6 +211,7 @@ inline void
 listStartIterator (list_t *list)
 {
   list->iteratorIndex = 0;
+  list->currentIndex = 0;
 }
 
 void *
@@ -175,6 +233,7 @@ listIterateData (list_t *list)
 
   if (list->type == LIST_BASIC) {
     value = list->data [list->iteratorIndex];
+    list->currentIndex = list->iteratorIndex;
   }
   ++list->iteratorIndex;
 
@@ -185,8 +244,8 @@ listIterateData (list_t *list)
 /* key/value list, keyed by a string*/
 
 list_t *
-slistAlloc (char *name, listorder_t ordered, listCompare_t compare,
-    listFree_t freeHook, listFree_t freeHookB)
+slistAlloc (char *name, listorder_t ordered,
+    listCompare_t compare, listFree_t freeHook, listFree_t freeHookB)
 {
   list_t    *list;
 

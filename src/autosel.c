@@ -29,7 +29,8 @@ autoselAlloc (char *fname)
 {
   datafile_t    *df;
 
-  df = datafileAllocParse ("autosel", DFTYPE_KEY_VAL, fname, autoseldfkeys, AUTOSEL_DFKEY_COUNT);
+  df = datafileAllocParse ("autosel", DFTYPE_KEY_VAL, fname,
+      autoseldfkeys, AUTOSEL_DFKEY_COUNT, DATAFILE_NO_LOOKUP);
   return df;
 }
 

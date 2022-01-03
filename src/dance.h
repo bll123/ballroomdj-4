@@ -17,7 +17,13 @@ typedef enum {
   DANCE_KEY_MAX,
 } dancekey_t;
 
-datafile_t *  danceAlloc (char *);
+typedef enum {
+  DANCE_SPEED_SLOW,
+  DANCE_SPEED_NORMAL,
+  DANCE_SPEED_FAST,
+} dancespeed_t;
+
+datafile_t    *danceAlloc (char *);
 void          danceFree (datafile_t *);
 
 #endif /* INC_DANCE_H */

@@ -1,19 +1,20 @@
-#ifndef INC_LIST
-#define INC_LIST
+#ifndef INC_LIST_H
+#define INC_LIST_H
 
 typedef enum {
   KEY_STR,
-  KEY_LONG
+  KEY_LONG,
 } keytype_t;
 
 typedef enum {
   LIST_ORDERED,
-  LIST_UNORDERED
+  LIST_UNORDERED,
 } listorder_t;
 
 typedef enum {
+  LIST_TYPE_UNKNOWN,
   LIST_BASIC,
-  LIST_NAMEVALUE
+  LIST_NAMEVALUE,
 } listtype_t;
 
 typedef enum {
@@ -42,6 +43,7 @@ typedef struct {
   size_t          count;
   size_t          allocCount;
   size_t          iteratorIndex;
+  size_t          currentIndex;
   keytype_t       keytype;
   listorder_t     ordered;
   listtype_t      type;
@@ -58,20 +60,24 @@ typedef struct {
   /*
    * simple lists only store a list of data.
    */
-list_t *  listAlloc (char *name, size_t datasize,
+list_t    * listAlloc (char *name, size_t datasize,
               listCompare_t compare, listFree_t freefunc);
 void      listFree (void *list);
+listtype_t  listGetType (list_t *list);
+size_t    listGetSize (list_t *list);
 void      listSetSize (list_t *list, size_t size);
+long      listGetStrIdx (list_t *list, char *keydata);
 list_t *  listSet (list_t *list, void *data);
 void      listSort (list_t *list);
 void      listStartIterator (list_t *list);
+            /* listIterateData only works for simple lists */
 void *    listIterateData (list_t *list);
 
   /*
    * key/value list.  keyed by a string.
    */
-list_t *  slistAlloc (char *name, listorder_t, listCompare_t,
-              listFree_t, listFree_t);
+list_t *  slistAlloc (char *name, listorder_t,
+              listCompare_t, listFree_t, listFree_t);
 void      slistFree (void *);
 void      slistSetSize (list_t *, size_t);
 list_t *  slistSetData (list_t *, char *, void *);
@@ -103,4 +109,4 @@ void      llistSort (list_t *);
 void      llistStartIterator (list_t *list);
 long      llistIterateKeyLong (list_t *list);
 
-#endif /* INC_LIST */
+#endif /* INC_LIST_H */

@@ -128,13 +128,13 @@ START_TEST(datafile_simple)
   fprintf (fh, "%s", tstr);
   fclose (fh);
 
-  df = datafileAllocParse ("chk", DFTYPE_LIST, fn, NULL, 0);
+  df = datafileAllocParse ("chk", DFTYPE_LIST, fn, NULL, 0, DATAFILE_NO_LOOKUP);
   ck_assert_ptr_nonnull (df);
   ck_assert_int_eq (df->dftype, DFTYPE_LIST);
   ck_assert_str_eq (df->fname, fn);
   ck_assert_ptr_nonnull (df->data);
 
-  list_t *list = datafileGetData (df);
+  list_t *list = datafileGetList (df);
   listStartIterator (list);
   value = listIterateData (list);
   ck_assert_str_eq (value, "A");
@@ -184,13 +184,13 @@ START_TEST(datafile_keyval_nodfkey)
   fprintf (fh, "%s", tstr);
   fclose (fh);
 
-  df = datafileAllocParse ("chk", DFTYPE_KEY_VAL, fn, NULL, 0);
+  df = datafileAllocParse ("chk", DFTYPE_KEY_VAL, fn, NULL, 0, DATAFILE_NO_LOOKUP);
   ck_assert_ptr_nonnull (df);
   ck_assert_int_eq (df->dftype, DFTYPE_KEY_VAL);
   ck_assert_str_eq (df->fname, fn);
   ck_assert_ptr_nonnull (df->data);
 
-  list_t *list = datafileGetData (df);
+  list_t *list = datafileGetList (df);
   slistStartIterator (list);
   key = slistIterateKeyStr (list);
   ck_assert_str_eq (key, "A");
@@ -254,13 +254,13 @@ START_TEST(datafile_keyval_dfkey)
   fprintf (fh, "%s", tstr);
   fclose (fh);
 
-  df = datafileAllocParse ("chk", DFTYPE_KEY_VAL, fn, dfkeyskl, 6);
+  df = datafileAllocParse ("chk", DFTYPE_KEY_VAL, fn, dfkeyskl, 6, DATAFILE_NO_LOOKUP);
   ck_assert_ptr_nonnull (df);
   ck_assert_int_eq (df->dftype, DFTYPE_KEY_VAL);
   ck_assert_str_eq (df->fname, fn);
   ck_assert_ptr_nonnull (df->data);
 
-  list_t *list = datafileGetData (df);
+  list_t *list = datafileGetList (df);
   llistStartIterator (list);
   key = llistIterateKeyLong (list);
   ck_assert_int_eq (key, 14);
@@ -319,13 +319,13 @@ START_TEST(datafile_keylong)
   fprintf (fh, "%s", tstr);
   fclose (fh);
 
-  df = datafileAllocParse ("chk", DFTYPE_KEY_LONG, fn, dfkeyskl, 6);
+  df = datafileAllocParse ("chk", DFTYPE_KEY_LONG, fn, dfkeyskl, 6, DATAFILE_NO_LOOKUP);
   ck_assert_ptr_nonnull (df);
   ck_assert_int_eq (df->dftype, DFTYPE_KEY_LONG);
   ck_assert_str_eq (df->fname, fn);
   ck_assert_ptr_nonnull (df->data);
 
-  list_t *list = datafileGetData (df);
+  list_t *list = datafileGetList (df);
   llistStartIterator (list);
   key = llistIterateKeyLong (list);
   ck_assert_int_eq (key, 0L);

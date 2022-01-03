@@ -67,7 +67,8 @@ main (int argc, char *argv[])
   playerData.programState = STATE_INITIALIZING;
   playerData.mainSock = INVALID_SOCKET;
   playerData.vlcData = NULL;
-  playerData.prepList = slistAlloc ("preplist", LIST_ORDERED, istringCompare, free, free);
+  playerData.prepList = slistAlloc ("preplist", LIST_ORDERED,
+      istringCompare, free, free);
   playerData.globalCount = 1;
 
   sysvarsInit (argv[0]);

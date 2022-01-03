@@ -24,7 +24,8 @@ genreAlloc (char *fname)
   if (! fileopExists (fname)) {
     return NULL;
   }
-  df = datafileAllocParse ("genre", DFTYPE_KEY_LONG, fname, genredfkeys, GENRE_DFKEY_COUNT);
+  df = datafileAllocParse ("genre", DFTYPE_KEY_LONG, fname,
+      genredfkeys, GENRE_DFKEY_COUNT, GENRE_GENRE);
   return df;
 }
 

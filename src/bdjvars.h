@@ -23,5 +23,6 @@ extern char *     bdjvars [BDJV_MAX];
 extern long       bdjvarsl [BDJVL_MAX];
 
 void    bdjvarsInit (void);
+void    bdjvarsCleanup (void);
 
 #endif /* INC_BDJVARS_H */

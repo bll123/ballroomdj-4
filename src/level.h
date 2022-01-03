@@ -12,5 +12,6 @@ typedef enum {
 
 datafile_t *  levelAlloc (char *);
 void          levelFree (datafile_t *);
+void          levelConv (char *keydata, datafileret_t *ret);
 
 #endif /* INC_LEVEL_H */

@@ -114,15 +114,16 @@ bdjoptInit (void)
   datautilMakePath (path, MAXPATHLEN, "", BDJ_CONFIG_BASEFN,
       BDJ_CONFIG_EXT, DATAUTIL_MP_USEIDX);
   df = datafileAllocParse ("bdjopt-g", DFTYPE_KEY_VAL, path,
-      bdjoptglobaldfkeys, BDJOPT_GLOBAL_DFKEY_COUNT);
+      bdjoptglobaldfkeys, BDJOPT_GLOBAL_DFKEY_COUNT, DATAFILE_NO_LOOKUP);
 
   /* profile */
   datautilMakePath (path, MAXPATHLEN, "profiles", BDJ_CONFIG_BASEFN,
       BDJ_CONFIG_EXT, DATAUTIL_MP_USEIDX);
   ddata = datafileLoad (df, DFTYPE_KEY_VAL, path);
-  tlist = datafileGetData (df);
-  tlist = datafileParseMerge (tlist, ddata, "bdjopt-p", DFTYPE_KEY_VAL,
-      bdjoptprofiledfkeys, BDJOPT_PROFILE_DFKEY_COUNT);
+  tlist = datafileGetList (df);
+  datafileParseMerge (tlist, ddata, "bdjopt-p", DFTYPE_KEY_VAL,
+      bdjoptprofiledfkeys, BDJOPT_PROFILE_DFKEY_COUNT,
+      DATAFILE_NO_LOOKUP, NULL);
   datafileSetData (df, tlist);
   free (ddata);
 
@@ -130,9 +131,10 @@ bdjoptInit (void)
   datautilMakePath (path, MAXPATHLEN, "", BDJ_CONFIG_BASEFN,
       BDJ_CONFIG_EXT, DATAUTIL_MP_HOSTNAME | DATAUTIL_MP_USEIDX);
   ddata = datafileLoad (df, DFTYPE_KEY_VAL, path);
-  tlist = datafileGetData (df);
+  tlist = datafileGetList (df);
   tlist = datafileParseMerge (tlist, ddata, "bdjopt-m", DFTYPE_KEY_VAL,
-      bdjoptmachdfkeys, BDJOPT_MACHINE_DFKEY_COUNT);
+      bdjoptmachdfkeys, BDJOPT_MACHINE_DFKEY_COUNT,
+      DATAFILE_NO_LOOKUP, NULL);
   datafileSetData (df, tlist);
   free (ddata);
 
@@ -140,9 +142,10 @@ bdjoptInit (void)
   datautilMakePath (path, MAXPATHLEN, "profiles", BDJ_CONFIG_BASEFN,
       BDJ_CONFIG_EXT, DATAUTIL_MP_HOSTNAME | DATAUTIL_MP_USEIDX);
   ddata = datafileLoad (df, DFTYPE_KEY_VAL, path);
-  tlist = datafileGetData (df);
+  tlist = datafileGetList (df);
   tlist = datafileParseMerge (tlist, ddata, "bdjopt-m", DFTYPE_KEY_VAL,
-      bdjoptmachprofiledfkeys, BDJOPT_MACH_PROFILE_DFKEY_COUNT);
+      bdjoptmachprofiledfkeys, BDJOPT_MACH_PROFILE_DFKEY_COUNT,
+      DATAFILE_NO_LOOKUP, NULL);
   datafileSetData (df, tlist);
   free (ddata);
 

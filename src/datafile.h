@@ -31,6 +31,7 @@ typedef struct {
   char            *fname;
   datafiletype_t  dftype;
   list_t          *data;
+  list_t          *lookup;
   long            version;
 } datafile_t;
 
@@ -52,6 +53,8 @@ typedef struct {
   dfConvFunc_t    convFunc;
 } datafilekey_t;
 
+#define DATAFILE_NO_LOOKUP -1
+
 parseinfo_t * parseInit (void);
 void          parseFree (parseinfo_t *);
 char **       parseGetData (parseinfo_t *);
@@ -62,15 +65,21 @@ void          parseConvTextList (char *, datafileret_t *);
 
 datafile_t *  datafileAlloc (char *name);
 datafile_t *  datafileAllocParse (char *name, datafiletype_t dftype,
-                  char *fname, datafilekey_t *dfkeys, size_t dfkeycount);
+                  char *fname, datafilekey_t *dfkeys, size_t dfkeycount,
+                  long lookupKey);
 void          datafileFree (void *);
 char *        datafileLoad (datafile_t *df, datafiletype_t dftype, char *fname);
-list_t *      datafileParse (char *data, char *name, datafiletype_t dftype,
-                  datafilekey_t *dfkeys, size_t dfkeycount);
-list_t *      datafileParseMerge (list_t *nlist, char *data, char *name,
+list_t        *datafileParse (char *data, char *name, datafiletype_t dftype,
+                  datafilekey_t *dfkeys, size_t dfkeycount,
+                  long lookupKey, list_t **lookup);
+list_t        *datafileParseMerge (list_t *nlist, char *data, char *name,
                   datafiletype_t dftype,
-                  datafilekey_t *dfkeys, size_t dfkeycount);
-list_t *      datafileGetData (datafile_t *);
+                  datafilekey_t *dfkeys, size_t dfkeycount,
+                  long lookupKey, list_t **lookup);
+long          dfkeyBinarySearch (const datafilekey_t *dfkeys,
+                  size_t count, char *key);
+list_t *      datafileGetList (datafile_t *);
+list_t *      datafileGetLookup (datafile_t *);
 void          datafileSetData (datafile_t *df, void *data);
 int           datafileSave (datafilekey_t *, size_t dfkeycount, datafile_t *);
 void          datafileBackup (char *fname, int count);
