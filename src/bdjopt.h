@@ -88,12 +88,6 @@ typedef enum {
   OPTTYPE_MACH_PROF
 } bdjopttype_t;
 
-typedef struct {
-  bdjopttype_t    optiontype;
-  char            *optname;
-  valuetype_t     valuetype;
-} bdjoptdef_t;
-
 #define BDJ_CONFIG_BASEFN   "bdjconfig"
 #define BDJ_CONFIG_EXT      ".txt"
 

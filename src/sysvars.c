@@ -83,6 +83,7 @@ sysvarsInit (const char *argv0)
   if (isWindows ()) {
     /* gethostname() does not appear to work on windows */
     char *hn = strdup (getenv ("COMPUTERNAME"));
+    assert (hn != NULL);
     strtolower (hn);
     strlcpy (sysvars [SV_HOSTNAME], hn, MAXPATHLEN);
     free (hn);

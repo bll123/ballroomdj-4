@@ -25,6 +25,7 @@ ratingAlloc (char *fname)
     return NULL;
   }
   df = datafileAllocParse ("rating", DFTYPE_KEY_LONG, fname, ratingdfkeys, RATING_DFKEY_COUNT);
+
   return df;
 }
 

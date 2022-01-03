@@ -16,8 +16,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <strings.h>
-#include <memory.h>
+#include <string.h>
+#include <assert.h>
 #include <math.h>
 #include <pulse/pulseaudio.h>
 
@@ -58,6 +58,7 @@ serverInfoCallback (
   callback_t    *cbdata = (callback_t *) userdata;
 
   cbdata->defname = strdup (i->default_sink_name);
+  assert (cbdata->defname != NULL);
   pa_threaded_mainloop_signal (gstate.pamainloop, 0);
 }
 

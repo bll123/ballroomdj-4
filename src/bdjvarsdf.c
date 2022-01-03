@@ -44,7 +44,7 @@ bdjvarsdfInit (void)
 
   datautilMakePath (fn, sizeof (fn), "", "sortopt", ".txt", DATAUTIL_MP_NONE);
   bdjvarsdf [BDJVDF_SORT_OPT] = sortoptAlloc (fn);
-  datautilMakePath (fn, sizeof (fn), "", "autosel", ".txt", DATAUTIL_MP_NONE);
+  datautilMakePath (fn, sizeof (fn), "", "autoselection", ".txt", DATAUTIL_MP_NONE);
   bdjvarsdf [BDJVDF_AUTO_SEL] = autoselAlloc (fn);
 }
 

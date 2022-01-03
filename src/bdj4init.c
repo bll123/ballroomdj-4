@@ -27,6 +27,7 @@
 #include "fileop.h"
 #include "portability.h"
 #include "datautil.h"
+#include "bdjopt.h"
 
 #if 1 // temporary
 # include "sequence.h"
@@ -86,10 +87,12 @@ bdj4startup (int argc, char *argv[])
     exit (1);
   }
   bdjvarsInit ();
-  bdjvarsdfInit ();
 
   logStart ("m", LOG_LVL_5);
   logMsg (LOG_SESS, LOG_LVL_1, "Using profile %ld", lsysvars [SVL_BDJIDX]);
+
+  bdjvarsdfInit ();
+  bdjoptInit ();
 
   mtimestart (&dbmt);
   datautilMakePath (tbuff, MAXPATHLEN, "",
@@ -111,6 +114,7 @@ bdj4startup (int argc, char *argv[])
 void
 bdj4shutdown (void)
 {
+  bdjoptFree ();
   dbClose ();
   bdjvarsdfCleanup ();
   logEnd ();

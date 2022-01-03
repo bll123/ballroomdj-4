@@ -18,6 +18,7 @@ static datafilekey_t autoseldfkeys[] = {
   { "logvalue",       AUTOSEL_LOG_VALUE,        VALUE_DOUBLE, NULL },
   { "low",            AUTOSEL_LOW,              VALUE_DOUBLE, NULL },
   { "ratingweight",   AUTOSEL_RATING_WEIGHT,    VALUE_DOUBLE, NULL },
+  { "tagadjust",      AUTOSEL_TAGADJUST,        VALUE_DOUBLE, NULL },
   { "tagmatch",       AUTOSEL_TAGMATCH,         VALUE_DOUBLE, NULL },
   { "typematch",      AUTOSEL_TYPE_MATCH,       VALUE_DOUBLE, NULL },
 };

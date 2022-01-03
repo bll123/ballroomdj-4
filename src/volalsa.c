@@ -132,7 +132,9 @@ process (volaction_t action, char *sinkname, int *vol, char **sinklist)
         }
         cardlist[cardcount].cardnumber = cnumber;
         cardlist[cardcount].id = strdup (cid);
+        assert (cardlist [cardcount].id != NULL);
         cardlist[cardcount].name = strdup (mname);
+        assert (cardlist [cardcount].name != NULL);
         ++cardcount;
         elem = snd_mixer_elem_next (elem);
       }
@@ -200,6 +202,7 @@ skip:
     long                lvol;
 
     cardid = strdup (sinkname);
+    assert (cardid != NULL);
     stridx = index (cardid, ' ');
     if (stridx == NULL) {
       fprintf (stderr, "Invalid sinkname %s\n", sinkname);

@@ -87,16 +87,25 @@ songParse (song_t *song, char *data)
 {
   song->songInfo = datafileParse (data, "song", DFTYPE_KEY_VAL,
       songdfkeys, SONG_DFKEY_COUNT);
+  llistSort (song->songInfo);
 }
 
 char *
 songGetData (song_t *song, long idx) {
+  if (song == NULL || song->songInfo == NULL) {
+    return NULL;
+  }
+
   char *value = llistGetData (song->songInfo, idx);
   return value;
 }
 
 long
 songGetLong (song_t *song, long idx) {
+  if (song == NULL || song->songInfo == NULL) {
+    return NULL;
+  }
+
   long value = llistGetLong (song->songInfo, idx);
   return value;
 }
@@ -104,6 +113,10 @@ songGetLong (song_t *song, long idx) {
 void
 songSetLong (song_t *song, long tagidx, long value)
 {
+  if (song == NULL || song->songInfo == NULL) {
+    return;
+  }
+
   llistSetLong (song->songInfo, tagidx, value);
 }
 

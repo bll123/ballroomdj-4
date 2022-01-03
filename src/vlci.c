@@ -257,6 +257,7 @@ vlcAudioDevSet (vlcData_t *vlcData, char *dev)
   vlcData->device = NULL;
   if (strlen (dev) > 0) {
     vlcData->device = strdup (dev);
+    assert (vlcData->device != NULL);
   }
 
   logProcEnd (LOG_LVL_4, "vlcAudioDevSet", "");
@@ -395,6 +396,7 @@ vlcInit (int vlcargc, char *vlcargv [])
 
   for (i = 0; i < vlcargc; ++i) {
     nptr = strdup (vlcargv [i]);
+    assert (nptr != NULL);
     vlcData->argv [i] = nptr;
   }
   vlcData->argc = vlcargc;

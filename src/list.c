@@ -40,6 +40,11 @@ listAlloc (char *name, size_t dsiz, listCompare_t compare, listFree_t freeHook)
 {
   list_t    *list;
 
+  if (dsiz == 0) {
+    logMsg (LOG_DBG, LOG_LVL_1, "Invalid list alloc: dsiz == 0");
+    return NULL;
+  }
+
   list = malloc (sizeof (list_t));
   assert (list != NULL);
   list->name = name;
@@ -93,8 +98,17 @@ listFree (void *tlist)
 void
 listSetSize (list_t *list, size_t siz)
 {
-  list->allocCount = siz;
-  list->data = realloc (list->data, list->allocCount * list->dsiz);
+  if (list == NULL) {
+    logMsg (LOG_DBG, LOG_LVL_1, "listsetsize: null list");
+    return;
+  }
+
+  if (siz > list->allocCount) {
+    list->allocCount = siz;
+    list->data = realloc (list->data, list->allocCount * list->dsiz);
+    assert (list->data != NULL);
+    list->allocCount = siz;
+  }
 }
 
 list_t *
@@ -326,6 +340,7 @@ slistIterateKeyStr (list_t *list)
 
     list->cacheKeyType = KEY_STR;
     list->keyCache.strkey = strdup (value);
+    assert (list->keyCache.strkey != NULL);
     list->locCache = list->iteratorIndex;
   }
 
@@ -581,6 +596,7 @@ slistGetNV (list_t *list, char *key)
     if (loc >= 0) {
       list->cacheKeyType = KEY_STR;
       list->keyCache.strkey = strdup (key);
+      assert (list->keyCache.strkey != NULL);
       list->locCache = loc;
 
       nv = list->data [loc];
@@ -678,6 +694,7 @@ listInsert (list_t *list, size_t loc, void *data)
   if (list->count > list->allocCount) {
     ++list->allocCount;
     list->data = realloc (list->data, list->allocCount * list->dsiz);
+    assert (list->data != NULL);
   }
 
   assert (list->data != NULL);

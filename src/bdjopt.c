@@ -9,7 +9,7 @@
 #include "datautil.h"
 #include "portability.h"
 
-static list_t   *bdjopt = NULL;
+static datafile_t   *bdjopt = NULL;
 
 static datafilekey_t bdjoptglobaldfkeys[] = {
   { "AUTOORGANIZE",       OPT_G_AUTOORGANIZE,       VALUE_DATA, NULL },
@@ -108,6 +108,7 @@ bdjoptInit (void)
   datafile_t    *df;
   char          path [MAXPATHLEN];
   char          *ddata;
+  list_t        *tlist;
 
   /* global */
   datautilMakePath (path, MAXPATHLEN, "", BDJ_CONFIG_BASEFN,
@@ -116,35 +117,40 @@ bdjoptInit (void)
       bdjoptglobaldfkeys, BDJOPT_GLOBAL_DFKEY_COUNT);
 
   /* profile */
-  datautilMakePath (path, MAXPATHLEN, "/profiles", BDJ_CONFIG_BASEFN,
+  datautilMakePath (path, MAXPATHLEN, "profiles", BDJ_CONFIG_BASEFN,
       BDJ_CONFIG_EXT, DATAUTIL_MP_USEIDX);
   ddata = datafileLoad (df, DFTYPE_KEY_VAL, path);
-  datafileParseMerge (df->data, ddata, "bdjopt-p", DFTYPE_KEY_VAL,
+  tlist = datafileGetData (df);
+  tlist = datafileParseMerge (tlist, ddata, "bdjopt-p", DFTYPE_KEY_VAL,
       bdjoptprofiledfkeys, BDJOPT_PROFILE_DFKEY_COUNT);
+  datafileSetData (df, tlist);
   free (ddata);
 
   /* per machine */
   datautilMakePath (path, MAXPATHLEN, "", BDJ_CONFIG_BASEFN,
       BDJ_CONFIG_EXT, DATAUTIL_MP_HOSTNAME | DATAUTIL_MP_USEIDX);
   ddata = datafileLoad (df, DFTYPE_KEY_VAL, path);
-  datafileParseMerge (df->data, ddata, "bdjopt-m", DFTYPE_KEY_VAL,
+  tlist = datafileGetData (df);
+  tlist = datafileParseMerge (tlist, ddata, "bdjopt-m", DFTYPE_KEY_VAL,
       bdjoptmachdfkeys, BDJOPT_MACHINE_DFKEY_COUNT);
+  datafileSetData (df, tlist);
   free (ddata);
 
   /* per machine per profile */
-  datautilMakePath (path, MAXPATHLEN, "/profiles", BDJ_CONFIG_BASEFN,
+  datautilMakePath (path, MAXPATHLEN, "profiles", BDJ_CONFIG_BASEFN,
       BDJ_CONFIG_EXT, DATAUTIL_MP_HOSTNAME | DATAUTIL_MP_USEIDX);
   ddata = datafileLoad (df, DFTYPE_KEY_VAL, path);
-  datafileParseMerge (df->data, ddata, "bdjopt-m", DFTYPE_KEY_VAL,
+  tlist = datafileGetData (df);
+  tlist = datafileParseMerge (tlist, ddata, "bdjopt-m", DFTYPE_KEY_VAL,
       bdjoptmachprofiledfkeys, BDJOPT_MACH_PROFILE_DFKEY_COUNT);
+  datafileSetData (df, tlist);
   free (ddata);
+
+  bdjopt = df;
 }
 
 void
 bdjoptFree (void)
 {
-  if (bdjopt != NULL) {
-    llistFree (bdjopt);
-    bdjopt = NULL;
-  }
+  datafileFree (bdjopt);
 }

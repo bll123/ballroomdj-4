@@ -71,6 +71,7 @@ list_t *      datafileParseMerge (list_t *nlist, char *data, char *name,
                   datafiletype_t dftype,
                   datafilekey_t *dfkeys, size_t dfkeycount);
 list_t *      datafileGetData (datafile_t *);
+void          datafileSetData (datafile_t *df, void *data);
 int           datafileSave (datafilekey_t *, size_t dfkeycount, datafile_t *);
 void          datafileBackup (char *fname, int count);
 
