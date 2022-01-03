@@ -45,9 +45,42 @@ foreach path [list {} profiles $hostname [file join $hostname profiles]] {
           # synchronization will not be implemented in version 4.
           continue
         }
-        if { $key eq "version" } {
-          set value 10
+        if { [regexp {^[a-z_]} $key] } {
+          continue
         }
+        if { [regexp {^MQCOL} $key] } {
+          continue
+        }
+        if { [regexp {^UI.*COLOR$} $key] } {
+          continue
+        }
+        if { [regexp {^KEY} $key] } {
+          continue
+        }
+        if { $key eq "DEBUGON" } { continue }
+        if { $key eq "MQDANCELOC" } { continue }
+        if { $key eq "MQPROGBARCOLOR" } { continue }
+        if { $key eq "MQSHOWARTIST" } { continue }
+        if { $key eq "MQSHOWBUTTONS" } { continue }
+        if { $key eq "MQSHOWCLOCK" } { continue }
+        if { $key eq "MQSHOWCOUNTDOWN" } { continue }
+        if { $key eq "MQSHOWPROGBAR" } { continue }
+        if { $key eq "MQSHOWTITLE" } { continue }
+        if { $key eq "CBFONTSIZE" } { continue }
+        if { $key eq "MQCLOCKFONTSIZE" } { continue }
+        if { $key eq "MQDANCEFONT" } { continue }
+        if { $key eq "INSTPASSWORD" } { continue }
+        if { $key eq "NATIVEFILEDIALOGS" } { continue }
+        if { $key eq "SCALEDWIDGETS" } { continue }
+
+        if { $key eq "UITHEME" } { set value {} }
+        if { $key eq "version" } { set value 10 }
+        if { $key eq "MUSICDIR" } { set key DIRMUSIC }
+        if { $key eq "ORIGINALDIR" } { set key DIRORIGINAL }
+        if { $key eq "DELETEDIR" } { set key DIRDELETE }
+        if { $key eq "MTMPDIR" } { set key DIRMUSICTMP }
+        if { $key eq "IMAGEDIR" } { set key DIRIMAGE }
+        if { $key eq "ARCHIVEDIR" } { set key DIRARCHIVE }
         puts $ofh $key
         puts $ofh "..$value"
       }

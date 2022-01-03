@@ -247,6 +247,7 @@ LIBBDJOBJS = \
 	$(OBJDIR)/autosel$(OBJ_EXT) \
 	$(OBJDIR)/bdj4init$(OBJ_EXT) \
 	$(OBJDIR)/bdjvarsdf$(OBJ_EXT) \
+	$(OBJDIR)/dance$(OBJ_EXT) \
 	$(OBJDIR)/dncspeeds$(OBJ_EXT) \
 	$(OBJDIR)/dnctypes$(OBJ_EXT) \
 	$(OBJDIR)/genre$(OBJ_EXT) \
@@ -351,13 +352,13 @@ $(OBJDIR)/bdj4player$(OBJ_EXT): bdj4player.c config.h bdjmsg.h bdjstring.h bdjva
  fileop.h list.h log.h fileutil.h sock.h sockh.h sysvars.h portability.h \
  vlci.h pathutil.h
 $(OBJDIR)/bdjmsg$(OBJ_EXT): bdjmsg.c config.h bdjmsg.h bdjstring.h
-$(OBJDIR)/bdjopt$(OBJ_EXT): bdjopt.c config.h bdjopt.h list.h fileop.h filedata.h \
- bdjstring.h datafile.h datautil.h portability.h
+$(OBJDIR)/bdjopt$(OBJ_EXT): bdjopt.c config.h bdjopt.h list.h datafile.h datautil.h \
+ portability.h
 $(OBJDIR)/bdjstring$(OBJ_EXT): bdjstring.c config.h bdjstring.h
 $(OBJDIR)/bdjvars$(OBJ_EXT): bdjvars.c config.h bdjvars.h sysvars.h portability.h
-$(OBJDIR)/bdjvarsdf$(OBJ_EXT): bdjvarsdf.c config.h bdjvarsdf.h datafile.h list.h \
- dncspeeds.h dnctypes.h genre.h level.h rating.h sortopt.h portability.h \
- datautil.h
+$(OBJDIR)/bdjvarsdf$(OBJ_EXT): bdjvarsdf.c config.h bdjvarsdf.h datafile.h list.h dance.h \
+ autosel.h dncspeeds.h dnctypes.h genre.h level.h rating.h sortopt.h \
+ portability.h datautil.h
 $(OBJDIR)/check_all$(OBJ_EXT): check_all.c config.h check_bdj.h sysvars.h portability.h \
  tagdef.h bdjstring.h list.h log.h fileutil.h
 $(OBJDIR)/check_datafile$(OBJ_EXT): check_datafile.c config.h fileop.h datafile.h list.h \
@@ -379,6 +380,7 @@ $(OBJDIR)/check_sock$(OBJ_EXT): check_sock.c config.h sock.h check_bdj.h tmutil.
 $(OBJDIR)/check_tmutil$(OBJ_EXT): check_tmutil.c config.h tmutil.h check_bdj.h
 $(OBJDIR)/clicomm$(OBJ_EXT): clicomm.c config.h sockh.h sock.h bdjmsg.h sysvars.h \
  portability.h bdjvars.h log.h fileutil.h tmutil.h
+$(OBJDIR)/dance$(OBJ_EXT): dance.c config.h dance.h datafile.h list.h fileop.h bdjvarsdf.h
 $(OBJDIR)/datafile$(OBJ_EXT): datafile.c config.h datafile.h list.h tmutil.h fileop.h \
  bdjstring.h log.h fileutil.h portability.h filedata.h
 $(OBJDIR)/datautil$(OBJ_EXT): datautil.c config.h datautil.h sysvars.h portability.h
@@ -395,7 +397,7 @@ $(OBJDIR)/lock$(OBJ_EXT): lock.c config.h sysvars.h portability.h process.h tmut
  fileop.h
 $(OBJDIR)/log$(OBJ_EXT): log.c config.h log.h fileutil.h tmutil.h datautil.h portability.h
 $(OBJDIR)/musicdb$(OBJ_EXT): musicdb.c config.h musicdb.h song.h list.h rafile.h \
- bdjstring.h lock.h datafile.h tagdef.h
+ bdjstring.h lock.h datafile.h tagdef.h log.h fileutil.h
 $(OBJDIR)/pathutil$(OBJ_EXT): pathutil.c config.h bdjstring.h pathutil.h portability.h
 $(OBJDIR)/playlist$(OBJ_EXT): playlist.c config.h playlist.h datafile.h list.h fileop.h \
  pathutil.h portability.h
@@ -407,7 +409,7 @@ $(OBJDIR)/sock$(OBJ_EXT): sock.c config.h sock.h tmutil.h log.h fileutil.h
 $(OBJDIR)/sockh$(OBJ_EXT): sockh.c config.h sockh.h sock.h tmutil.h log.h fileutil.h \
  bdjmsg.h
 $(OBJDIR)/song$(OBJ_EXT): song.c config.h song.h list.h bdjstring.h tagdef.h log.h \
- fileutil.h
+ fileutil.h datafile.h
 $(OBJDIR)/songlist$(OBJ_EXT): songlist.c config.h songlist.h datafile.h list.h fileop.h
 $(OBJDIR)/sortopt$(OBJ_EXT): sortopt.c config.h sortopt.h datafile.h list.h fileop.h
 $(OBJDIR)/strlcat$(OBJ_EXT): strlcat.c config.h bdjstring.h

@@ -10,8 +10,8 @@
 #include "fileop.h"
 #include "bdjvarsdf.h"
 
-static void danceConvSpeed (const char *data, datafileret_t *ret);
-static void danceConvType (const char *data, datafileret_t *ret);
+static void danceConvSpeed (char *data, datafileret_t *ret);
+static void danceConvType (char *data, datafileret_t *ret);
 
   /* must be sorted in ascii order */
 static datafilekey_t dancedfkeys[] = {
@@ -36,7 +36,8 @@ danceAlloc (char *fname)
   if (! fileopExists (fname)) {
     return NULL;
   }
-  df = datafileAllocParse ("dance", DFTYPE_KEY_LONG, fname, dancedfkeys, RATING_DFKEY_COUNT);
+  df = datafileAllocParse ("dance", DFTYPE_KEY_LONG, fname,
+      dancedfkeys, DANCE_DFKEY_COUNT);
   return df;
 }
 
@@ -50,14 +51,14 @@ danceFree (datafile_t *df)
 /* internal routines */
 
 static void
-danceConvSpeed (const char *data, datafileret_t *ret)
+danceConvSpeed (char *data, datafileret_t *ret)
 {
   ret->valuetype = VALUE_LONG;
   ret->u.l = 0;
 }
 
 static void
-danceConvType (const char *data, datafileret_t *ret)
+danceConvType (char *data, datafileret_t *ret)
 {
   ret->valuetype = VALUE_LONG;
   ret->u.l = 0;

@@ -6,6 +6,7 @@
 
 #include "bdjvarsdf.h"
 #include "datafile.h"
+#include "dance.h"
 #include "autosel.h"
 #include "dncspeeds.h"
 #include "dnctypes.h"
@@ -23,16 +24,24 @@ bdjvarsdfInit (void)
 {
   char      fn [MAXPATHLEN];
 
+    /* dance speeds and dance types must be loaded before dance */
   datautilMakePath (fn, sizeof (fn), "", "dancespeeds", ".txt", DATAUTIL_MP_NONE);
   bdjvarsdf [BDJVDF_DANCE_SPEEDS] = dncspeedsAlloc (fn);
   datautilMakePath (fn, sizeof (fn), "", "dancetypes", ".txt", DATAUTIL_MP_NONE);
   bdjvarsdf [BDJVDF_DANCE_TYPES] = dnctypesAlloc (fn);
+
+    /* the database load depends on dances */
+  datautilMakePath (fn, sizeof (fn), "", "dance", ".txt", DATAUTIL_MP_NONE);
+  bdjvarsdf [BDJVDF_DANCES] = danceAlloc (fn);
+
+    /* the database load depends on ratings, levels and genres */
   datautilMakePath (fn, sizeof (fn), "", "ratings", ".txt", DATAUTIL_MP_NONE);
   bdjvarsdf [BDJVDF_RATINGS] = ratingAlloc (fn);
   datautilMakePath (fn, sizeof (fn), "", "genres", ".txt", DATAUTIL_MP_NONE);
   bdjvarsdf [BDJVDF_GENRES] = genreAlloc (fn);
   datautilMakePath (fn, sizeof (fn), "", "levels", ".txt", DATAUTIL_MP_NONE);
   bdjvarsdf [BDJVDF_LEVELS] = levelAlloc (fn);
+
   datautilMakePath (fn, sizeof (fn), "", "sortopt", ".txt", DATAUTIL_MP_NONE);
   bdjvarsdf [BDJVDF_SORT_OPT] = sortoptAlloc (fn);
   datautilMakePath (fn, sizeof (fn), "", "autosel", ".txt", DATAUTIL_MP_NONE);

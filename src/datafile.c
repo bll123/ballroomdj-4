@@ -135,6 +135,12 @@ datafileAllocParse (char *name, datafiletype_t dftype, char *fname,
     char *ddata = datafileLoad (df, dftype, fname);
     if (ddata != NULL) {
       df->data = datafileParse (ddata, name, dftype, dfkeys, dfkeycount);
+      if (dftype == DFTYPE_KEY_STRING ||
+          (dftype == DFTYPE_KEY_VAL && dfkeys == NULL)) {
+        slistSort (df->data);
+      } else if (dftype != DFTYPE_LIST) {
+        llistSort (df->data);
+      }
       free (ddata);
     }
   }
@@ -174,6 +180,15 @@ datafileParse (char *data, char *name, datafiletype_t dftype,
     datafilekey_t *dfkeys, size_t dfkeycount)
 {
   list_t        *nlist = NULL;
+
+  nlist = datafileParseMerge (nlist, data, name, dftype, dfkeys, dfkeycount);
+  return nlist;
+}
+
+list_t *
+datafileParseMerge (list_t *nlist, char *data, char *name,
+    datafiletype_t dftype, datafilekey_t *dfkeys, size_t dfkeycount)
+{
   char          **strdata = NULL;
   parseinfo_t   *pi = NULL;
   long          key = -1L;
@@ -204,29 +219,37 @@ datafileParse (char *data, char *name, datafiletype_t dftype,
   switch (dftype) {
     case DFTYPE_LIST: {
       inc = 1;
-      nlist = listAlloc (name, sizeof (char *), NULL, free);
+      if (nlist != NULL) {
+        nlist = listAlloc (name, sizeof (char *), NULL, free);
+      }
       listSetSize (nlist, dataCount);
       break;
     }
     case DFTYPE_KEY_STRING: {
       inc = 2;
-      nlist = slistAlloc (name, LIST_UNORDERED, istringCompare, free, listFree);
+      if (nlist != NULL) {
+        nlist = slistAlloc (name, LIST_UNORDERED, istringCompare, free, listFree);
+      }
       break;
     }
     case DFTYPE_KEY_LONG: {
       inc = 2;
-      nlist = llistAlloc (name, LIST_UNORDERED, listFree);
+      if (nlist != NULL) {
+        nlist = llistAlloc (name, LIST_UNORDERED, listFree);
+      }
       break;
     }
     case DFTYPE_KEY_VAL: {
       inc = 2;
       if (dfkeys == NULL) {
-        nlist = slistAlloc (name, LIST_UNORDERED, istringCompare, free, free);
-        slistSetSize (nlist, dataCount / 2);
+        if (nlist != NULL) {
+          nlist = slistAlloc (name, LIST_UNORDERED, istringCompare, free, free);
+        }
         logMsg (LOG_DBG, LOG_LVL_8, "key_val: slist");
       } else {
-        nlist = llistAlloc (name, LIST_UNORDERED, free);
-        llistSetSize (nlist, dataCount / 2);
+        if (nlist != NULL) {
+          nlist = llistAlloc (name, LIST_UNORDERED, free);
+        }
         logMsg (LOG_DBG, LOG_LVL_8, "key_val: llist");
       }
       break;
@@ -369,13 +392,6 @@ datafileParse (char *data, char *name, datafiletype_t dftype,
   }
   if (dftype == DFTYPE_KEY_STRING && ikeystr != NULL) {
     slistSetList (nlist, ikeystr, itemList);
-  }
-
-  if (dftype == DFTYPE_KEY_STRING ||
-      (dftype == DFTYPE_KEY_VAL && dfkeys == NULL)) {
-    slistSort (nlist);
-  } else if (dftype != DFTYPE_LIST) {
-    llistSort (nlist);
   }
 
   parseFree (pi);

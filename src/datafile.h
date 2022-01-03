@@ -67,6 +67,9 @@ void          datafileFree (void *);
 char *        datafileLoad (datafile_t *df, datafiletype_t dftype, char *fname);
 list_t *      datafileParse (char *data, char *name, datafiletype_t dftype,
                   datafilekey_t *dfkeys, size_t dfkeycount);
+list_t *      datafileParseMerge (list_t *nlist, char *data, char *name,
+                  datafiletype_t dftype,
+                  datafilekey_t *dfkeys, size_t dfkeycount);
 list_t *      datafileGetData (datafile_t *);
 int           datafileSave (datafilekey_t *, size_t dfkeycount, datafile_t *);
 void          datafileBackup (char *fname, int count);

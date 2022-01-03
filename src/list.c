@@ -105,7 +105,7 @@ listSet (list_t *list, void *data)
 
   if (list == NULL) {
     logMsg (LOG_DBG, LOG_LVL_1, "listset: null list");
-    return;
+    return list;
   }
 
   loc = 0L;
