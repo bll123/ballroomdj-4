@@ -331,6 +331,179 @@ START_TEST(queue_multi_many)
 }
 END_TEST
 
+START_TEST(queue_iterate)
+{
+  long      count;
+  char      *data;
+
+  logMsg (LOG_DBG, LOG_LVL_1, "=== queue_iterate");
+  queue_t *q = queueAlloc ();
+
+  queuePush (q, "aaaa");
+  queuePush (q, "bbbb");
+  queuePush (q, "cccc");
+  queuePush (q, "dddd");
+  queuePush (q, "eeee");
+  queuePush (q, "ffff");
+  count = queueGetCount (q);
+  ck_assert_int_eq (count, 6);
+
+  queueStartIterator (q);
+  data = queueIterateData (q);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "aaaa");
+  data = queueIterateData (q);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "bbbb");
+  data = queueIterateData (q);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "cccc");
+  data = queueIterateData (q);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "dddd");
+  data = queueIterateData (q);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "eeee");
+  data = queueIterateData (q);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "ffff");
+  data = queueIterateData (q);
+  ck_assert_ptr_null (data);
+
+  queueFree (q);
+}
+END_TEST
+
+START_TEST(queue_remove_by_idx)
+{
+  long      count;
+  char      *data;
+
+  logMsg (LOG_DBG, LOG_LVL_1, "=== queue_remove_by_idx");
+  queue_t *q = queueAlloc ();
+
+  queuePush (q, "aaaa");
+  queuePush (q, "bbbb");
+  queuePush (q, "cccc");
+  queuePush (q, "dddd");
+  queuePush (q, "eeee");
+  queuePush (q, "ffff");
+  count = queueGetCount (q);
+  ck_assert_int_eq (count, 6);
+
+  // remove from middle
+  data = queueRemoveByIdx (q, 3);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "dddd");
+  count = queueGetCount (q);
+  ck_assert_int_eq (count, 5);
+  queueStartIterator (q);
+  data = queueIterateData (q);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "aaaa");
+  data = queueIterateData (q);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "bbbb");
+  data = queueIterateData (q);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "cccc");
+  data = queueIterateData (q);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "eeee");
+  data = queueIterateData (q);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "ffff");
+  data = queueIterateData (q);
+  ck_assert_ptr_null (data);
+
+  // remove head
+  data = queueRemoveByIdx (q, 0);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "aaaa");
+  count = queueGetCount (q);
+  ck_assert_int_eq (count, 4);
+  queueStartIterator (q);
+  data = queueIterateData (q);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "bbbb");
+  data = queueIterateData (q);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "cccc");
+  data = queueIterateData (q);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "eeee");
+  data = queueIterateData (q);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "ffff");
+  data = queueIterateData (q);
+  ck_assert_ptr_null (data);
+
+  // remove tail
+  data = queueRemoveByIdx (q, 3);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "ffff");
+  count = queueGetCount (q);
+  ck_assert_int_eq (count, 3);
+  queueStartIterator (q);
+  data = queueIterateData (q);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "bbbb");
+  data = queueIterateData (q);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "cccc");
+  data = queueIterateData (q);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "eeee");
+  data = queueIterateData (q);
+  ck_assert_ptr_null (data);
+
+  // remove fail
+  data = queueRemoveByIdx (q, 3);
+  ck_assert_ptr_null (data);
+
+  // remove middle
+  data = queueRemoveByIdx (q, 1);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "cccc");
+  count = queueGetCount (q);
+  ck_assert_int_eq (count, 2);
+  queueStartIterator (q);
+  data = queueIterateData (q);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "bbbb");
+  data = queueIterateData (q);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "eeee");
+  data = queueIterateData (q);
+  ck_assert_ptr_null (data);
+
+  // remove head
+  data = queueRemoveByIdx (q, 0);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "bbbb");
+  count = queueGetCount (q);
+  ck_assert_int_eq (count, 1);
+  queueStartIterator (q);
+  data = queueIterateData (q);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "eeee");
+  data = queueIterateData (q);
+  ck_assert_ptr_null (data);
+
+  // remove head
+  data = queueRemoveByIdx (q, 0);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "eeee");
+  count = queueGetCount (q);
+  ck_assert_int_eq (count, 0);
+  queueStartIterator (q);
+  data = queueIterateData (q);
+  ck_assert_ptr_null (data);
+
+  queueFree (q);
+}
+END_TEST
+
 Suite *
 queue_suite (void)
 {
@@ -348,7 +521,10 @@ queue_suite (void)
   tcase_add_test (tc, queue_multi_one);
   tcase_add_test (tc, queue_multi_two);
   tcase_add_test (tc, queue_multi_many);
+  tcase_add_test (tc, queue_iterate);
+  tcase_add_test (tc, queue_remove_by_idx);
   suite_add_tcase (s, tc);
+
   return s;
 }
 

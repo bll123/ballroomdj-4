@@ -8,6 +8,9 @@
 
 #include "queue.h"
 
+static void * queueRemove (queue_t *q, queuenode_t *node);
+
+
 queue_t *
 queueAlloc (void)
 {
@@ -16,13 +19,11 @@ queueAlloc (void)
   q = malloc (sizeof (queue_t));
   assert (q != NULL);
   q->count = 0;
-  q->iteratorIndex = 0;
   q->currentIndex = 0;
   q->iteratorNode = NULL;
   q->currentNode = NULL;
-  q->root.data = NULL;
-  q->root.next = NULL;
-  q->tail = &q->root;
+  q->head = NULL;
+  q->tail = NULL;
   return q;
 }
 
@@ -33,9 +34,9 @@ queueFree (queue_t *q)
   queuenode_t     *tnode;
 
   if (q != NULL) {
-    node = &q->root;
-    tnode = NULL;
-    while (node->next != NULL) {
+    node = q->head;
+    tnode = node;
+    while (node != NULL && node->next != NULL) {
       node = node->next;
       if (tnode != NULL) {
         free (tnode);
@@ -60,11 +61,16 @@ queuePush (queue_t *q, void *data)
 
   node = malloc (sizeof (queuenode_t));
   assert (node != NULL);
-
+  node->prev = q->tail;
   node->next = NULL;
   node->data = data;
 
-  q->tail->next = node;
+  if (q->head == NULL) {
+    q->head = node;
+  }
+  if (node->prev != NULL) {
+    node->prev->next = node;
+  }
   q->tail = node;
   q->count++;
 }
@@ -78,24 +84,34 @@ queuePop (queue_t *q)
   if (q == NULL) {
     return NULL;
   }
-  if (q->root.next == NULL) {
-    return NULL;
-  }
-  node = q->root.next;
-  data = node->data;
-  q->root.next = node->next;
-  if (q->root.next == NULL) {
-    q->tail = &q->root;
-  }
-  q->count--;
-  free (node);
+  node = q->head;
+
+  data = queueRemove (q, node);
   return data;
 }
 
-void
-queueRemove (queue_t *q, long idx, void *data)
+void *
+queueRemoveByIdx (queue_t *q, long idx)
 {
-  return;
+  long              count = 0;
+  queuenode_t       *node = NULL;
+  void              *data = NULL;
+
+  if (q == NULL) {
+    return NULL;
+  }
+  if (idx < 0 || idx >= q->count) {
+    return NULL;
+  }
+  node = q->head;
+  while (node != NULL && count != idx) {
+    ++count;
+    node = node->next;
+  }
+  if (node != NULL) {
+    data = queueRemove (q, node);
+  }
+  return data;
 }
 
 long
@@ -111,24 +127,54 @@ void
 queueStartIterator (queue_t *q)
 {
   if (q != NULL) {
-    q->iteratorIndex = 0;
     q->currentIndex = 0;
-    q->iteratorNode = q->root.next;
-    q->currentNode = q->root.next;
+    q->iteratorNode = q->head;
+    q->currentNode = q->head;
   }
 }
 
 void *
 queueIterateData (queue_t *q)
 {
-  void      *data;
+  void      *data = NULL;
 
   if (q->iteratorNode != NULL) {
     data = q->iteratorNode->data;
     q->currentIndex++;
     q->currentNode = q->iteratorNode;
     q->iteratorNode = q->iteratorNode->next;
-    return data;
   }
-  return NULL;
+  return data;
 }
+
+/* internal routines */
+
+static void *
+queueRemove (queue_t *q, queuenode_t *node)
+{
+  void          *data = NULL;
+
+  if (q == NULL) {
+    return NULL;
+  }
+  if (q->head == NULL) {
+    return NULL;
+  }
+
+  data = node->data;
+  if (node->prev == NULL) {
+    q->head = node->next;
+  } else {
+    node->prev->next = node->next;
+  }
+
+  if (node->next == NULL) {
+    q->tail = node->prev;
+  } else {
+    node->next->prev = node->prev;
+  }
+  q->count--;
+  free (node);
+  return data;
+}
+
