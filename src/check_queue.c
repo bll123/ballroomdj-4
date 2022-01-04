@@ -20,7 +20,7 @@ START_TEST(queue_alloc_free)
   long        count;
 
   logMsg (LOG_DBG, LOG_LVL_1, "=== queue_alloc_free");
-  queue_t *q = queueAlloc ();
+  queue_t *q = queueAlloc (NULL);
   ck_assert_ptr_nonnull (q);
   count = queueGetCount (q);
   ck_assert_int_eq (count, 0);
@@ -33,7 +33,7 @@ START_TEST(queue_push_one)
   long      count;
 
   logMsg (LOG_DBG, LOG_LVL_1, "=== queue_push_one");
-  queue_t *q = queueAlloc ();
+  queue_t *q = queueAlloc (NULL);
   queuePush (q, "aaaa");
   count = queueGetCount (q);
   ck_assert_int_eq (count, 1);
@@ -46,7 +46,7 @@ START_TEST(queue_push_two)
   long      count;
 
   logMsg (LOG_DBG, LOG_LVL_1, "=== queue_push_two");
-  queue_t *q = queueAlloc ();
+  queue_t *q = queueAlloc (NULL);
   queuePush (q, "aaaa");
   count = queueGetCount (q);
   ck_assert_int_eq (count, 1);
@@ -62,7 +62,7 @@ START_TEST(queue_push_many)
   long      count;
 
   logMsg (LOG_DBG, LOG_LVL_1, "=== queue_push_many");
-  queue_t *q = queueAlloc ();
+  queue_t *q = queueAlloc (NULL);
   queuePush (q, "aaaa");
   count = queueGetCount (q);
   ck_assert_int_eq (count, 1);
@@ -88,7 +88,7 @@ START_TEST(queue_push_pop_one)
   char      *data;
 
   logMsg (LOG_DBG, LOG_LVL_1, "=== queue_push_pop_one");
-  queue_t *q = queueAlloc ();
+  queue_t *q = queueAlloc (NULL);
   queuePush (q, "aaaa");
   count = queueGetCount (q);
   ck_assert_int_eq (count, 1);
@@ -109,7 +109,7 @@ START_TEST(queue_push_pop_two)
   char      *data;
 
   logMsg (LOG_DBG, LOG_LVL_1, "=== queue_push_pop_two");
-  queue_t *q = queueAlloc ();
+  queue_t *q = queueAlloc (NULL);
   queuePush (q, "aaaa");
   queuePush (q, "bbbb");
   count = queueGetCount (q);
@@ -136,7 +136,7 @@ START_TEST(queue_multi_one)
   char      *data;
 
   logMsg (LOG_DBG, LOG_LVL_1, "=== queue_multi_one");
-  queue_t *q = queueAlloc ();
+  queue_t *q = queueAlloc (NULL);
 
   queuePush (q, "aaaa");
   count = queueGetCount (q);
@@ -174,7 +174,7 @@ START_TEST(queue_multi_two)
   char      *data;
 
   logMsg (LOG_DBG, LOG_LVL_1, "=== queue_multi_two");
-  queue_t *q = queueAlloc ();
+  queue_t *q = queueAlloc (NULL);
 
   queuePush (q, "aaaa");
   queuePush (q, "bbbb");
@@ -250,7 +250,7 @@ START_TEST(queue_multi_many)
   char      *data;
 
   logMsg (LOG_DBG, LOG_LVL_1, "=== queue_multi_two");
-  queue_t *q = queueAlloc ();
+  queue_t *q = queueAlloc (NULL);
 
   queuePush (q, "aaaa");
   queuePush (q, "bbbb");
@@ -337,7 +337,7 @@ START_TEST(queue_iterate)
   char      *data;
 
   logMsg (LOG_DBG, LOG_LVL_1, "=== queue_iterate");
-  queue_t *q = queueAlloc ();
+  queue_t *q = queueAlloc (NULL);
 
   queuePush (q, "aaaa");
   queuePush (q, "bbbb");
@@ -380,7 +380,7 @@ START_TEST(queue_remove_by_idx)
   char      *data;
 
   logMsg (LOG_DBG, LOG_LVL_1, "=== queue_remove_by_idx");
-  queue_t *q = queueAlloc ();
+  queue_t *q = queueAlloc (NULL);
 
   queuePush (q, "aaaa");
   queuePush (q, "bbbb");
@@ -504,6 +504,154 @@ START_TEST(queue_remove_by_idx)
 }
 END_TEST
 
+START_TEST(queue_remove_node)
+{
+  long      count;
+  char      *data;
+
+  logMsg (LOG_DBG, LOG_LVL_1, "=== queue_remove_node");
+  queue_t *q = queueAlloc (NULL);
+
+  queuePush (q, "aaaa");
+  queuePush (q, "bbbb");
+  queuePush (q, "cccc");
+  queuePush (q, "dddd");
+  queuePush (q, "eeee");
+  queuePush (q, "ffff");
+  count = queueGetCount (q);
+  ck_assert_int_eq (count, 6);
+
+  // remove from middle
+  queueStartIterator (q);
+  data = queueIterateData (q);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "aaaa");
+  data = queueIterateData (q);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "bbbb");
+  data = queueIterateData (q);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "cccc");
+  data = queueIterateRemoveNode (q);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "cccc");
+  count = queueGetCount (q);
+  ck_assert_int_eq (count, 5);
+  data = queueIterateData (q);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "dddd");
+  data = queueIterateData (q);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "eeee");
+  data = queueIterateData (q);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "ffff");
+  data = queueIterateData (q);
+  ck_assert_ptr_null (data);
+
+  // remove from head
+  queueStartIterator (q);
+  data = queueIterateData (q);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "aaaa");
+  data = queueIterateRemoveNode (q);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "aaaa");
+  count = queueGetCount (q);
+  ck_assert_int_eq (count, 4);
+  data = queueIterateData (q);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "bbbb");
+  data = queueIterateData (q);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "dddd");
+  data = queueIterateData (q);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "eeee");
+  data = queueIterateData (q);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "ffff");
+  data = queueIterateData (q);
+  ck_assert_ptr_null (data);
+
+  // remove tail
+  queueStartIterator (q);
+  data = queueIterateData (q);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "bbbb");
+  data = queueIterateData (q);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "dddd");
+  data = queueIterateData (q);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "eeee");
+  data = queueIterateData (q);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "ffff");
+  data = queueIterateRemoveNode (q);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "ffff");
+  count = queueGetCount (q);
+  ck_assert_int_eq (count, 3);
+  data = queueIterateData (q);
+  ck_assert_ptr_null (data);
+
+  // remove fail
+  data = queueIterateRemoveNode (q);
+  ck_assert_ptr_null (data);
+
+  // remove middle
+  queueStartIterator (q);
+  data = queueIterateData (q);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "bbbb");
+  data = queueIterateData (q);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "dddd");
+  data = queueIterateRemoveNode (q);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "dddd");
+  count = queueGetCount (q);
+  ck_assert_int_eq (count, 2);
+  data = queueIterateData (q);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "eeee");
+  data = queueIterateData (q);
+  ck_assert_ptr_null (data);
+
+  // remove head
+  queueStartIterator (q);
+  data = queueIterateData (q);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "bbbb");
+  data = queueIterateRemoveNode (q);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "bbbb");
+  count = queueGetCount (q);
+  ck_assert_int_eq (count, 1);
+  data = queueIterateData (q);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "eeee");
+  data = queueIterateData (q);
+  ck_assert_ptr_null (data);
+
+  // remove head
+  queueStartIterator (q);
+  data = queueIterateData (q);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "eeee");
+  data = queueIterateRemoveNode (q);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "eeee");
+  count = queueGetCount (q);
+  ck_assert_int_eq (count, 0);
+  data = queueIterateData (q);
+  ck_assert_ptr_null (data);
+
+  queueFree (q);
+}
+END_TEST
+
 Suite *
 queue_suite (void)
 {
@@ -523,6 +671,7 @@ queue_suite (void)
   tcase_add_test (tc, queue_multi_many);
   tcase_add_test (tc, queue_iterate);
   tcase_add_test (tc, queue_remove_by_idx);
+  tcase_add_test (tc, queue_remove_node);
   suite_add_tcase (s, tc);
 
   return s;

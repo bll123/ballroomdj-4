@@ -21,12 +21,18 @@
 #include "vlci.h"
 #include "portability.h"
 #include "pathutil.h"
+#include "queue.h"
+
+typedef struct {
+  char          *songname;
+  char          *tempname;
+} prepqueue_t;
 
 typedef struct {
   programstate_t  programState;
   Sock_t          mainSock;
   vlcData_t       *vlcData;
-  list_t          *prepList;
+  queue_t         *prepQueue;
   long            globalCount;
 } playerData_t;
 
@@ -40,6 +46,7 @@ static void     playerPause (playerData_t *playerData);
 static void     playerPlay (playerData_t *playerData);
 static void     playerStop (playerData_t *playerData);
 static void     playerClose (playerData_t *playerData);
+static void     prepQueueFree (void *);
 
 static char *   vlcDefaultOptions [] = {
       "--quiet",
@@ -71,8 +78,7 @@ main (int argc, char *argv[])
   playerData.programState = STATE_INITIALIZING;
   playerData.mainSock = INVALID_SOCKET;
   playerData.vlcData = NULL;
-  playerData.prepList = slistAlloc ("preplist", LIST_ORDERED,
-      istringCompare, free, free);
+  playerData.prepQueue = queueAlloc (prepQueueFree);
   playerData.globalCount = 1;
 
   sysvarsInit (argv[0]);
@@ -108,8 +114,8 @@ main (int argc, char *argv[])
     playerStop (&playerData);
     playerClose (&playerData);
   }
-  if (playerData.prepList != NULL) {
-    slistFree (playerData.prepList);
+  if (playerData.prepQueue != NULL) {
+    queueFree (playerData.prepQueue);
   }
   logEnd ();
   playerData.programState = STATE_NOT_RUNNING;
@@ -200,17 +206,38 @@ mainProcessing (void *udata)
 static void
 songPrep (playerData_t *playerData, char *sfname)
 {
-  char      stname [MAXPATHLEN];
+  char            stname [MAXPATHLEN];
+  prepqueue_t     *pq;
 
   logProcBegin (LOG_LVL_2, "songPrep");
   if (! fileopExists (sfname)) {
-    logMsg (LOG_DBG, LOG_LVL_1, "no file: %s\n", sfname);
+    logMsg (LOG_DBG, LOG_LVL_1, "ERR: no file: %s\n", sfname);
     logProcEnd (LOG_LVL_2, "songPrep", "no-file");
     return;
   }
+
+  pq = malloc (sizeof (prepqueue_t));
+  assert (pq != NULL);
+  pq->songname = strdup (sfname);
+  pq->tempname = NULL;
+
+  /* TODO: if we are in client/server mode, then need to request the song
+   * from the server and save it
+   */
+  /* VLC still cannot handle internationalized names.
+   * I wonder how they handle them internally.
+   */
   songMakeTempName (playerData, sfname, stname, sizeof (stname));
-  logMsg (LOG_DBG, LOG_LVL_2, "copy from %s to %s\n", sfname, stname);
   fileopCopy (sfname, stname);
+  if (! fileopExists (stname)) {
+    logMsg (LOG_DBG, LOG_LVL_1, "ERR: file copy failed: %s\n", stname);
+    logProcEnd (LOG_LVL_2, "songPrep", "copy-failed");
+    prepQueueFree (pq);
+    return;
+  }
+  pq->tempname = strdup (stname);
+  queuePush (playerData->prepQueue, pq);
+
   // TODO : add the name to a list of prepared files.
   logProcEnd (LOG_LVL_2, "songPrep", "");
 }
@@ -218,15 +245,34 @@ songPrep (playerData_t *playerData, char *sfname)
 static void
 songPlay (playerData_t *playerData, char *sfname)
 {
-  char      stname [MAXPATHLEN];
+  char              stname [MAXPATHLEN];
+  prepqueue_t       *pq;
+  int               found = 0;
 
   logProcBegin (LOG_LVL_2, "songPlay");
-  songMakeTempName (playerData, sfname, stname, sizeof (stname)); // temporary
+  found = 0;
+  queueStartIterator (playerData->prepQueue);
+  pq = queueIterateData (playerData->prepQueue);
+  while (pq != NULL) {
+    if (strcmp (sfname, pq->songname) == 0) {
+      strlcpy (stname, pq->tempname, MAXPATHLEN);
+      queueIterateRemoveNode (playerData->prepQueue);
+      found = 1;
+      break;
+    }
+    pq = queueIterateData (playerData->prepQueue);
+  }
+  if (! found) {
+    logProcEnd (LOG_LVL_2, "songPlay", "not-found");
+    return;
+  }
+
   if (! fileopExists (stname)) {
-    logMsg (LOG_DBG, LOG_LVL_1, "no file: %s\n", stname);
+    logMsg (LOG_DBG, LOG_LVL_1, "ERR: no file: %s\n", stname);
     logProcEnd (LOG_LVL_2, "songPlay", "no-file");
     return;
   }
+
   vlcMedia (playerData->vlcData, stname);
   vlcPlay (playerData->vlcData);
   logProcEnd (LOG_LVL_2, "songPlay", "");
@@ -250,6 +296,8 @@ songMakeTempName (playerData_t *playerData, char *in, char *out, size_t maxlen)
   tnm [idx] = '\0';
   pathInfoFree (pi);
 
+    /* the profile index so we don't stomp on other bdj instances   */
+    /* the global count so we don't stomp on ourselves              */
   snprintf (out, maxlen, "tmp/%ld-%ld-%s", lsysvars [SVL_BDJIDX],
       playerData->globalCount, tnm);
 }
@@ -280,3 +328,18 @@ playerClose (playerData_t *playerData)
   vlcClose (playerData->vlcData);
 }
 
+static void
+prepQueueFree (void *data)
+{
+  prepqueue_t     *pq = data;
+
+  if (pq != NULL) {
+    if (pq->songname != NULL) {
+      free (pq->songname);
+    }
+    if (pq->tempname != NULL) {
+      free (pq->tempname);
+    }
+    free (pq);
+  }
+}

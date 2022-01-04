@@ -50,80 +50,93 @@ main (int argc, char *argv[])
   }
 
   while (1) {
-    printf ("Route to: ");
-    fflush (stdout);
-    rval = fgets (buff, sizeof (buff), stdin);
-    buff [strlen (buff) - 1] = '\0';
-    processBuff (buff);
     routeok = 0;
-    argsok = 0;
-    if (strcmp (buff, "main") == 0) {
-      route = ROUTE_MAIN;
-      routeok = 1;
-    }
-    if (strcmp (buff, "player") == 0) {
-      route = ROUTE_PLAYER;
-      routeok = 1;
-    }
-    if (strcmp (buff, "gui") == 0) {
-      route = ROUTE_GUI;
-      routeok = 1;
-    }
-    if (strcmp (buff, "cliexit") == 0) {
-      sockClose (mainSock);
-      logEnd ();
-      exit (0);
+    while (routeok == 0) {
+      printf ("Route to: ");
+      fflush (stdout);
+      rval = fgets (buff, sizeof (buff), stdin);
+      buff [strlen (buff) - 1] = '\0';
+      processBuff (buff);
+      if (strcmp (buff, "main") == 0) {
+        route = ROUTE_MAIN;
+        routeok = 1;
+      }
+      if (strcmp (buff, "player") == 0) {
+        route = ROUTE_PLAYER;
+        routeok = 1;
+      }
+      if (strcmp (buff, "gui") == 0) {
+        route = ROUTE_GUI;
+        routeok = 1;
+      }
+      if (strcmp (buff, "cliexit") == 0) {
+        sockClose (mainSock);
+        logEnd ();
+        exit (0);
+      }
+      if (! routeok) {
+        fprintf (stdout, "    invalid route\n");
+        fflush (stdout);
+      }
     }
 
-    printf ("  Msg: ");
-    fflush (stdout);
-    rval = fgets (buff, sizeof (buff), stdin);
-    buff [strlen (buff) - 1] = '\0';
-    processBuff (buff);
     msgok = 0;
-    if (strcmp (buff, "start-player") == 0) {
-      msg = MSG_PLAYER_START;
-      msgok = 1;
-      playerstart = 1;
-    }
-    if (strcmp (buff, "prep-song") == 0) {
-      msg = MSG_SONG_PREP;
-      msgok = 1;
-      argsok = 1;
-    }
-    if (strcmp (buff, "play-song") == 0) {
-      msg = MSG_SONG_PLAY;
-      msgok = 1;
-      argsok = 1;
-    }
-    if (strcmp (buff, "pause") == 0) {
-      msg = MSG_PLAYER_PAUSE;
-      msgok = 1;
-    }
-    if (strcmp (buff, "play") == 0) {
-      msg = MSG_PLAYER_PLAY;
-      msgok = 1;
-    }
-    if (strcmp (buff, "stop") == 0) {
-      msg = MSG_PLAYER_STOP;
-      msgok = 1;
-    }
-    if (strcmp (buff, "playlist-load") == 0) {
-      msg = MSG_PLAYLIST_LOAD;
-      msgok = 1;
-      argsok = 1;
-    }
-    if (strcmp (buff, "exit") == 0) {
-      msg = MSG_EXIT_REQUEST;
-      msgok = 1;
-    }
-    if (strcmp (buff, "force-exit") == 0) {
-      msg = MSG_EXIT_FORCE;
-      msgok = 1;
-    }
-    if (strcmp (buff, "cliexit") == 0) {
-      sockClose (mainSock);
-      exit (0);
+    argsok = 0;
+    while (msgok == 0) {
+      printf ("  Msg: ");
+      fflush (stdout);
+      rval = fgets (buff, sizeof (buff), stdin);
+      buff [strlen (buff) - 1] = '\0';
+      processBuff (buff);
+      msgok = 0;
+      if (strcmp (buff, "start-player") == 0) {
+        msg = MSG_PLAYER_START;
+        msgok = 1;
+        playerstart = 1;
+      }
+      if (strcmp (buff, "prep-song") == 0) {
+        msg = MSG_SONG_PREP;
+        msgok = 1;
+        argsok = 1;
+      }
+      if (strcmp (buff, "play-song") == 0) {
+        msg = MSG_SONG_PLAY;
+        msgok = 1;
+        argsok = 1;
+      }
+      if (strcmp (buff, "pause") == 0) {
+        msg = MSG_PLAYER_PAUSE;
+        msgok = 1;
+      }
+      if (strcmp (buff, "play") == 0) {
+        msg = MSG_PLAYER_PLAY;
+        msgok = 1;
+      }
+      if (strcmp (buff, "stop") == 0) {
+        msg = MSG_PLAYER_STOP;
+        msgok = 1;
+      }
+      if (strcmp (buff, "playlist-load") == 0) {
+        msg = MSG_PLAYLIST_LOAD;
+        msgok = 1;
+        argsok = 1;
+      }
+      if (strcmp (buff, "exit") == 0) {
+        msg = MSG_EXIT_REQUEST;
+        msgok = 1;
+      }
+      if (strcmp (buff, "force-exit") == 0) {
+        msg = MSG_EXIT_FORCE;
+        msgok = 1;
+      }
+      if (strcmp (buff, "cliexit") == 0) {
+        sockClose (mainSock);
+        exit (0);
+      }
+      if (! msgok) {
+        fprintf (stdout, "    invalid msg\n");
+        fflush (stdout);
+      }
     }
 
     args = NULL;
@@ -142,15 +155,6 @@ main (int argc, char *argv[])
       }
       if (route == ROUTE_PLAYER) {
         sockhSendMessage (playerSock, route, msg, args);
-      }
-    } else {
-      if (! routeok) {
-        fprintf (stdout, "    invalid route\n");
-        fflush (stdout);
-      }
-      if (! msgok) {
-        fprintf (stdout, "    invalid msg\n");
-        fflush (stdout);
       }
     }
 

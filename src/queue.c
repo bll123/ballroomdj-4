@@ -12,7 +12,7 @@ static void * queueRemove (queue_t *q, queuenode_t *node);
 
 
 queue_t *
-queueAlloc (void)
+queueAlloc (queueFree_t freeHook)
 {
   queue_t     *q;
 
@@ -24,6 +24,7 @@ queueAlloc (void)
   q->currentNode = NULL;
   q->head = NULL;
   q->tail = NULL;
+  q->freeHook = freeHook;
   return q;
 }
 
@@ -39,11 +40,17 @@ queueFree (queue_t *q)
     while (node != NULL && node->next != NULL) {
       node = node->next;
       if (tnode != NULL) {
+        if (tnode->data != NULL && q->freeHook != NULL) {
+          q->freeHook (tnode->data);
+        }
         free (tnode);
       }
       tnode = node;
     }
     if (tnode != NULL) {
+      if (tnode->data != NULL && q->freeHook != NULL) {
+        q->freeHook (tnode->data);
+      }
       free (tnode);
     }
     free (q);
@@ -147,6 +154,19 @@ queueIterateData (queue_t *q)
   return data;
 }
 
+void *
+queueIterateRemoveNode (queue_t *q)
+{
+  void        *data = NULL;
+
+  if (q == NULL) {
+    return NULL;
+  }
+  data = queueRemove (q, q->currentNode);
+  q->currentNode = q->iteratorNode;
+  return data;
+}
+
 /* internal routines */
 
 static void *
@@ -154,6 +174,9 @@ queueRemove (queue_t *q, queuenode_t *node)
 {
   void          *data = NULL;
 
+  if (node == NULL) {
+    return NULL;
+  }
   if (q == NULL) {
     return NULL;
   }

@@ -39,6 +39,7 @@ main (int argc, char *argv[])
   mainData.programState = STATE_INITIALIZING;
   mainData.playerStarted = 0;
   mainData.playerSocket = INVALID_SOCKET;
+  mainData.playlist = NULL;
 
   bdj4startup (argc, argv);
 

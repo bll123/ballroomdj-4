@@ -55,6 +55,7 @@ mcheck: $(MKC_ENV_SHR)
 		--trace-children=yes \
 		--track-origins=yes \
 		--show-leak-kinds=all \
+		--suppressions=src/utils/valgrind-suppression.txt \
 		./bin/bdj4)
 
 mcheckcli: $(MKC_ENV_SHR)
@@ -65,6 +66,7 @@ mcheckcli: $(MKC_ENV_SHR)
 		--trace-children=yes \
 		--track-origins=yes \
 		--show-leak-kinds=all \
+		--suppressions=src/utils/valgrind-suppression.txt \
 		./bin/bdj4 --clicomm)
 
 rall:
@@ -242,6 +244,7 @@ LIBCOMMONOBJS = \
 	$(OBJDIR)/log$(OBJ_EXT) \
 	$(OBJDIR)/pathutil$(OBJ_EXT) \
 	$(OBJDIR)/process$(OBJ_EXT) \
+	$(OBJDIR)/queue$(OBJ_EXT) \
 	$(OBJDIR)/sock$(OBJ_EXT) \
 	$(OBJDIR)/sockh$(OBJ_EXT) \
 	$(OBJDIR)/strlcat$(OBJ_EXT) \
@@ -266,7 +269,6 @@ LIBBDJOBJS = \
 	$(OBJDIR)/level$(OBJ_EXT) \
 	$(OBJDIR)/musicdb$(OBJ_EXT) \
 	$(OBJDIR)/playlist$(OBJ_EXT) \
-	$(OBJDIR)/queue$(OBJ_EXT) \
 	$(OBJDIR)/rafile$(OBJ_EXT) \
 	$(OBJDIR)/rating$(OBJ_EXT) \
 	$(OBJDIR)/sequence$(OBJ_EXT) \
@@ -360,10 +362,11 @@ $(OBJDIR)/bdj4init$(OBJ_EXT): bdj4init.c config.h bdj4init.h musicdb.h song.h li
  log.h fileutil.h tmutil.h fileop.h datautil.h bdjopt.h sequence.h \
  datafile.h songlist.h
 $(OBJDIR)/bdj4main$(OBJ_EXT): bdj4main.c bdj4init.h sockh.h sock.h config.h bdjvars.h \
- bdjmsg.h log.h fileutil.h process.h bdjstring.h sysvars.h portability.h
+ bdjmsg.h log.h fileutil.h process.h bdjstring.h sysvars.h portability.h \
+ playlist.h datafile.h list.h
 $(OBJDIR)/bdj4player$(OBJ_EXT): bdj4player.c config.h bdjmsg.h bdjstring.h bdjvars.h \
  fileop.h list.h log.h fileutil.h sock.h sockh.h sysvars.h portability.h \
- vlci.h pathutil.h
+ vlci.h pathutil.h queue.h
 $(OBJDIR)/bdjmsg$(OBJ_EXT): bdjmsg.c config.h bdjmsg.h bdjstring.h
 $(OBJDIR)/bdjopt$(OBJ_EXT): bdjopt.c config.h bdjopt.h list.h datafile.h datautil.h \
  portability.h
@@ -388,6 +391,8 @@ $(OBJDIR)/check_pathutil$(OBJ_EXT): check_pathutil.c config.h pathutil.h check_b
  portability.h
 $(OBJDIR)/check_process$(OBJ_EXT): check_process.c config.h process.h check_bdj.h sysvars.h \
  portability.h
+$(OBJDIR)/check_queue$(OBJ_EXT): check_queue.c config.h queue.h check_bdj.h portability.h \
+ log.h fileutil.h
 $(OBJDIR)/check_rafile$(OBJ_EXT): check_rafile.c config.h rafile.h check_bdj.h
 $(OBJDIR)/check_sock$(OBJ_EXT): check_sock.c config.h sock.h check_bdj.h tmutil.h log.h \
  fileutil.h
@@ -405,7 +410,7 @@ $(OBJDIR)/filedata$(OBJ_EXT): filedata.c config.h filedata.h
 $(OBJDIR)/fileop$(OBJ_EXT): fileop.c config.h fileop.h bdjstring.h portability.h pathutil.h \
  sysvars.h
 $(OBJDIR)/fileutil$(OBJ_EXT): fileutil.c config.h fileutil.h bdjstring.h portability.h
-$(OBJDIR)/genre$(OBJ_EXT): genre.c config.h genre.h datafile.h list.h fileop.h
+$(OBJDIR)/genre$(OBJ_EXT): genre.c config.h genre.h datafile.h list.h fileop.h bdjvarsdf.h
 $(OBJDIR)/level$(OBJ_EXT): level.c config.h level.h datafile.h list.h fileop.h bdjvarsdf.h
 $(OBJDIR)/list$(OBJ_EXT): list.c config.h list.h log.h fileutil.h
 $(OBJDIR)/lock$(OBJ_EXT): lock.c config.h sysvars.h portability.h process.h tmutil.h lock.h \
@@ -415,8 +420,9 @@ $(OBJDIR)/musicdb$(OBJ_EXT): musicdb.c config.h musicdb.h song.h list.h rafile.h
  bdjstring.h lock.h datafile.h tagdef.h log.h fileutil.h
 $(OBJDIR)/pathutil$(OBJ_EXT): pathutil.c config.h bdjstring.h pathutil.h portability.h
 $(OBJDIR)/playlist$(OBJ_EXT): playlist.c config.h playlist.h datafile.h list.h fileop.h \
- pathutil.h portability.h
+ pathutil.h portability.h datautil.h rating.h level.h
 $(OBJDIR)/process$(OBJ_EXT): process.c config.h process.h log.h fileutil.h
+$(OBJDIR)/queue$(OBJ_EXT): queue.c config.h queue.h
 $(OBJDIR)/rafile$(OBJ_EXT): rafile.c config.h rafile.h lock.h tmutil.h log.h fileutil.h
 $(OBJDIR)/rating$(OBJ_EXT): rating.c config.h rating.h datafile.h list.h fileop.h \
  bdjvarsdf.h
@@ -425,7 +431,7 @@ $(OBJDIR)/sock$(OBJ_EXT): sock.c config.h sock.h tmutil.h log.h fileutil.h
 $(OBJDIR)/sockh$(OBJ_EXT): sockh.c config.h sockh.h sock.h tmutil.h log.h fileutil.h \
  bdjmsg.h
 $(OBJDIR)/song$(OBJ_EXT): song.c config.h song.h list.h bdjstring.h tagdef.h log.h \
- fileutil.h datafile.h level.h rating.h
+ fileutil.h datafile.h level.h rating.h genre.h
 $(OBJDIR)/songlist$(OBJ_EXT): songlist.c config.h songlist.h datafile.h list.h fileop.h
 $(OBJDIR)/sortopt$(OBJ_EXT): sortopt.c config.h sortopt.h datafile.h list.h fileop.h
 $(OBJDIR)/strlcat$(OBJ_EXT): strlcat.c config.h bdjstring.h
