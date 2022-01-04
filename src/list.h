@@ -33,26 +33,35 @@ typedef union {
   long        lkey;
 } listkey_t;
 
+typedef union {
+  void        *data;
+  long        l;
+  double      d;
+} listvalue_t;
+
+typedef struct {
+  listkey_t     key;
+  valuetype_t   valuetype;
+  listvalue_t   value;
+} listitem_t;
+
 typedef struct {
   char            *name;
-  long            bumper1;
-  void            **data;      /* array of pointers */
-  long            bumper2;
-  listCompare_t   compare;
-  size_t          dsiz;
   size_t          count;
   size_t          allocCount;
-  size_t          iteratorIndex;
-  size_t          currentIndex;
   keytype_t       keytype;
   listorder_t     ordered;
-  listtype_t      type;
-  listFree_t      freeHook;
-  listFree_t      freeHookB;
-  keytype_t       cacheKeyType;
+  long            bumper1;
+  listitem_t      *data;        /* array */
+  long            bumper2;
+  listCompare_t   compare;
+  size_t          iteratorIndex;
+  size_t          currentIndex;
   listkey_t       keyCache;
   long            locCache;
   long            cacheHits;
+  listFree_t      keyFreeHook;
+  listFree_t      valueFreeHook;
 } list_t;
 
 #define LIST_LOC_INVALID        -1L
@@ -60,51 +69,38 @@ typedef struct {
   /*
    * simple lists only store a list of data.
    */
-list_t    * listAlloc (char *name, size_t datasize,
-              listCompare_t compare, listFree_t freefunc);
-void      listFree (void *list);
-listtype_t  listGetType (list_t *list);
-size_t    listGetSize (list_t *list);
-void      listSetSize (list_t *list, size_t size);
-long      listGetStrIdx (list_t *list, char *keydata);
-list_t *  listSet (list_t *list, void *data);
-void      listSort (list_t *list);
-void      listStartIterator (list_t *list);
-            /* listIterateData only works for simple lists */
-void *    listIterateData (list_t *list);
+list_t      *listAlloc (char *name, listorder_t ordered, listCompare_t compare,
+                listFree_t keyFreeHook, listFree_t valueFreeHook);
+void        listFree (void *list);
+size_t      listGetSize (list_t *list);
+void        listSetSize (list_t *list, size_t size);
+void        listSetData (list_t *list, char *keystr, void *data);
+void        listSetLong (list_t *list, char *keystr, long lval);
+void        listSetDouble (list_t *list, char *keystr, double dval);
+void        listSetList (list_t *list, char *keystr, list_t *data);
+void        *listGetData (list_t *list, char *keystr);
+long        listGetLong (list_t *list, char *keystr);
+double      listGetDouble (list_t *list, char *keystr);
+list_t      *listGetList (list_t *list, char *keystr);
+long        listGetStrIdx (list_t *list, char *keystr);
+void        listSort (list_t *list);
+void        listStartIterator (list_t *list);
+void *      listIterateKeyStr (list_t *list);
 
-  /*
-   * key/value list.  keyed by a string.
-   */
-list_t *  slistAlloc (char *name, listorder_t,
-              listCompare_t, listFree_t, listFree_t);
-void      slistFree (void *);
-void      slistSetSize (list_t *, size_t);
-list_t *  slistSetData (list_t *, char *, void *);
-list_t *  slistSetLong (list_t *, char *, long);
-list_t *  slistSetDouble (list_t *, char *, double);
-list_t *  slistSetList (list_t *, char *, list_t *);
-void *    slistGetData (list_t *, char *);
-long      slistGetLong (list_t *, char *);
-double    slistGetDouble (list_t *, char *);
-void      slistSort (list_t *);
-void      slistStartIterator (list_t *list);
-char *    slistIterateKeyStr (list_t *list);
-
-  /*
-   * key/value list.  keyed by a long.
-   */
+  /* keyed by a long */
 list_t *  llistAlloc (char *name, listorder_t, listFree_t);
 void      llistFree (void *);
-void      llistSetFreeHook (list_t *, listFree_t freefunc);
 void      llistSetSize (list_t *, size_t);
-list_t *  llistSetData (list_t *, long, void *);
-list_t *  llistSetLong (list_t *, long, long);
-list_t *  llistSetDouble (list_t *, long, double);
-list_t *  llistSetList (list_t *, long, list_t *);
+void      llistSetFreeHook (list_t *, listFree_t valueFreeHook);
+void      llistSetData (list_t *, long, void *);
+void      llistSetLong (list_t *, long, long);
+void      llistSetDouble (list_t *, long, double);
+void      llistSetList (list_t *, long, list_t *);
 void *    llistGetData (list_t *, long);
 long      llistGetLong (list_t *, long);
 double    llistGetDouble (list_t *, long);
+list_t    *llistGetList (list_t *, long);
+long      listGetLongIdx (list_t *list, long lkey);
 void      llistSort (list_t *);
 void      llistStartIterator (list_t *list);
 long      llistIterateKeyLong (list_t *list);

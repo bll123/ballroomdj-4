@@ -43,6 +43,6 @@ genreConv (char *keydata, datafileret_t *ret)
 
   ret->valuetype = VALUE_LONG;
   lookup = datafileGetLookup (bdjvarsdf [BDJVDF_GENRES]);
-  ret->u.l = slistGetLong (lookup, keydata);
+  ret->u.l = listGetLong (lookup, keydata);
 }
 

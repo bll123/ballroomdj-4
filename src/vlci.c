@@ -279,13 +279,13 @@ vlcAudioDevList (vlcData_t *vlcData)
     return NULL;
   }
 
-  devlist = slistAlloc ("vlci-devs", LIST_UNORDERED,
+  devlist = listAlloc ("vlci-devs", LIST_UNORDERED,
       stringCompare, free, free);
 
   adevlist = libvlc_audio_output_device_enum (vlcData->mp);
   adevlistptr = adevlist;
   while (adevlistptr != (libvlc_audio_output_device_t *) NULL) {
-    slistSetData (devlist, adevlistptr->psz_device,
+    listSetData (devlist, adevlistptr->psz_device,
         strdup (adevlistptr->psz_description));
     adevlistptr = adevlistptr->p_next;
   }

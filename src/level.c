@@ -45,5 +45,5 @@ levelConv (char *keydata, datafileret_t *ret)
 
   ret->valuetype = VALUE_LONG;
   lookup = datafileGetLookup (bdjvarsdf [BDJVDF_LEVELS]);
-  ret->u.l = slistGetLong (lookup, keydata);
+  ret->u.l = listGetLong (lookup, keydata);
 }
