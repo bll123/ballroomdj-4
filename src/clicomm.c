@@ -86,22 +86,39 @@ main (int argc, char *argv[])
       msgok = 1;
       playerstart = 1;
     }
-    if (strcmp (buff, "prep") == 0) {
-      msg = MSG_PREP_SONG;
+    if (strcmp (buff, "prep-song") == 0) {
+      msg = MSG_SONG_PREP;
       msgok = 1;
       argsok = 1;
     }
+    if (strcmp (buff, "play-song") == 0) {
+      msg = MSG_SONG_PLAY;
+      msgok = 1;
+      argsok = 1;
+    }
+    if (strcmp (buff, "pause") == 0) {
+      msg = MSG_PLAYER_PAUSE;
+      msgok = 1;
+    }
     if (strcmp (buff, "play") == 0) {
-      msg = MSG_PLAY_SONG;
+      msg = MSG_PLAYER_PLAY;
+      msgok = 1;
+    }
+    if (strcmp (buff, "stop") == 0) {
+      msg = MSG_PLAYER_STOP;
+      msgok = 1;
+    }
+    if (strcmp (buff, "playlist-load") == 0) {
+      msg = MSG_PLAYLIST_LOAD;
       msgok = 1;
       argsok = 1;
     }
     if (strcmp (buff, "exit") == 0) {
-      msg = MSG_REQUEST_EXIT;
+      msg = MSG_EXIT_REQUEST;
       msgok = 1;
     }
     if (strcmp (buff, "force-exit") == 0) {
-      msg = MSG_FORCE_EXIT;
+      msg = MSG_EXIT_FORCE;
       msgok = 1;
     }
     if (strcmp (buff, "cliexit") == 0) {

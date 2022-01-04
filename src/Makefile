@@ -266,6 +266,7 @@ LIBBDJOBJS = \
 	$(OBJDIR)/level$(OBJ_EXT) \
 	$(OBJDIR)/musicdb$(OBJ_EXT) \
 	$(OBJDIR)/playlist$(OBJ_EXT) \
+	$(OBJDIR)/queue$(OBJ_EXT) \
 	$(OBJDIR)/rafile$(OBJ_EXT) \
 	$(OBJDIR)/rating$(OBJ_EXT) \
 	$(OBJDIR)/sequence$(OBJ_EXT) \
@@ -316,6 +317,7 @@ CHECKOBJS = $(OBJDIR)/check_all$(OBJ_EXT) \
 	$(OBJDIR)/check_lock$(OBJ_EXT) \
 	$(OBJDIR)/check_datafile$(OBJ_EXT) \
 	$(OBJDIR)/check_process$(OBJ_EXT) \
+	$(OBJDIR)/check_queue$(OBJ_EXT) \
 	$(OBJDIR)/check_rafile$(OBJ_EXT) \
 	$(OBJDIR)/check_sock$(OBJ_EXT) \
 	$(OBJDIR)/check_tmutil$(OBJ_EXT) \

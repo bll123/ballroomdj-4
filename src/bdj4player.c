@@ -32,10 +32,14 @@ typedef struct {
 
 static int      processMsg (long route, long msg, char *args, void *udata);
 static void     mainProcessing (void *udata);
-static void     prepSong (playerData_t *playerData, char *sfname);
-static void     playSong (playerData_t *playerData, char *sfname);
-static void     makeSongTempName (playerData_t *playerData,
+static void     songPrep (playerData_t *playerData, char *sfname);
+static void     songPlay (playerData_t *playerData, char *sfname);
+static void     songMakeTempName (playerData_t *playerData,
                     char *in, char *out, size_t maxlen);
+static void     playerPause (playerData_t *playerData);
+static void     playerPlay (playerData_t *playerData);
+static void     playerStop (playerData_t *playerData);
+static void     playerClose (playerData_t *playerData);
 
 static char *   vlcDefaultOptions [] = {
       "--quiet",
@@ -101,7 +105,8 @@ main (int argc, char *argv[])
   sockhMainLoop (listenPort, processMsg, mainProcessing, &playerData);
 
   if (playerData.vlcData != NULL) {
-    vlcClose (playerData.vlcData);
+    playerStop (&playerData);
+    playerClose (&playerData);
   }
   if (playerData.prepList != NULL) {
     slistFree (playerData.prepList);
@@ -127,18 +132,30 @@ processMsg (long route, long msg, char *args, void *udata)
     case ROUTE_PLAYER: {
       logMsg (LOG_DBG, LOG_LVL_4, "got: route-player");
       switch (msg) {
-        case MSG_PREP_SONG: {
-          prepSong (playerData, args);
+        case MSG_PLAYER_PAUSE: {
+          playerPause (playerData);
           break;
         }
-        case MSG_PLAY_SONG: {
-          playSong (playerData, args);
+        case MSG_PLAYER_PLAY: {
+          playerPlay (playerData);
           break;
         }
-        case MSG_REQUEST_EXIT: {
+        case MSG_PLAYER_STOP: {
+          playerStop (playerData);
+          break;
+        }
+        case MSG_SONG_PREP: {
+          songPrep (playerData, args);
+          break;
+        }
+        case MSG_SONG_PLAY: {
+          songPlay (playerData, args);
+          break;
+        }
+        case MSG_EXIT_REQUEST: {
           logMsg (LOG_DBG, LOG_LVL_4, "got: req-exit");
           playerData->programState = STATE_CLOSING;
-          sockhSendMessage (playerData->mainSock, ROUTE_MAIN, MSG_CLOSE_SOCKET, NULL);
+          sockhSendMessage (playerData->mainSock, ROUTE_MAIN, MSG_SOCKET_CLOSE, NULL);
           sockClose (playerData->mainSock);
           playerData->mainSock = INVALID_SOCKET;
           logProcEnd (LOG_LVL_4, "processMsg", "req-exit");
@@ -178,44 +195,45 @@ mainProcessing (void *udata)
   return;
 }
 
+/* internal routines - song handling */
 
 static void
-prepSong (playerData_t *playerData, char *sfname)
+songPrep (playerData_t *playerData, char *sfname)
 {
   char      stname [MAXPATHLEN];
 
-  logProcBegin (LOG_LVL_2, "prepSong");
+  logProcBegin (LOG_LVL_2, "songPrep");
   if (! fileopExists (sfname)) {
     logMsg (LOG_DBG, LOG_LVL_1, "no file: %s\n", sfname);
-    logProcEnd (LOG_LVL_2, "prepSong", "no-file");
+    logProcEnd (LOG_LVL_2, "songPrep", "no-file");
     return;
   }
-  makeSongTempName (playerData, sfname, stname, sizeof (stname));
+  songMakeTempName (playerData, sfname, stname, sizeof (stname));
   logMsg (LOG_DBG, LOG_LVL_2, "copy from %s to %s\n", sfname, stname);
   fileopCopy (sfname, stname);
   // TODO : add the name to a list of prepared files.
-  logProcEnd (LOG_LVL_2, "prepSong", "");
+  logProcEnd (LOG_LVL_2, "songPrep", "");
 }
 
 static void
-playSong (playerData_t *playerData, char *sfname)
+songPlay (playerData_t *playerData, char *sfname)
 {
   char      stname [MAXPATHLEN];
 
-  logProcBegin (LOG_LVL_2, "playSong");
-  makeSongTempName (playerData, sfname, stname, sizeof (stname)); // temporary
+  logProcBegin (LOG_LVL_2, "songPlay");
+  songMakeTempName (playerData, sfname, stname, sizeof (stname)); // temporary
   if (! fileopExists (stname)) {
     logMsg (LOG_DBG, LOG_LVL_1, "no file: %s\n", stname);
-    logProcEnd (LOG_LVL_2, "playSong", "no-file");
+    logProcEnd (LOG_LVL_2, "songPlay", "no-file");
     return;
   }
   vlcMedia (playerData->vlcData, stname);
   vlcPlay (playerData->vlcData);
-  logProcEnd (LOG_LVL_2, "playSong", "");
+  logProcEnd (LOG_LVL_2, "songPlay", "");
 }
 
 static void
-makeSongTempName (playerData_t *playerData, char *in, char *out, size_t maxlen)
+songMakeTempName (playerData_t *playerData, char *in, char *out, size_t maxlen)
 {
   char        tnm [MAXPATHLEN];
   size_t      idx;
@@ -235,3 +253,30 @@ makeSongTempName (playerData_t *playerData, char *in, char *out, size_t maxlen)
   snprintf (out, maxlen, "tmp/%ld-%ld-%s", lsysvars [SVL_BDJIDX],
       playerData->globalCount, tnm);
 }
+
+/* internal routines - player handling */
+
+static void
+playerPause (playerData_t *playerData)
+{
+  vlcPause (playerData->vlcData);
+}
+
+static void
+playerPlay (playerData_t *playerData)
+{
+  vlcPlay (playerData->vlcData);
+}
+
+static void
+playerStop (playerData_t *playerData)
+{
+  vlcStop (playerData->vlcData);
+}
+
+static void
+playerClose (playerData_t *playerData)
+{
+  vlcClose (playerData->vlcData);
+}
+

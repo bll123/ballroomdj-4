@@ -14,17 +14,22 @@
 #include "bdjstring.h"
 #include "sysvars.h"
 #include "portability.h"
+#include "playlist.h"
 
 typedef struct {
-  programstate_t   programState;
-  int              playerStarted;
-  Sock_t           playerSocket;
+  programstate_t    programState;
+  int               playerStarted;
+  Sock_t            playerSocket;
+//  playerstate_t     playerState;
+// need playlist queue
+  void              *playlist;
 } maindata_t;
 
 static void     startPlayer (maindata_t *mainData);
 static void     stopPlayer (maindata_t *mainData);
 static int      processMsg (long route, long msg, char *args, void *udata);
 static void     mainProcessing (void *udata);
+static void     mainLoadPlaylist (maindata_t *mainData, char *plname);
 
 int
 main (int argc, char *argv[])
@@ -42,6 +47,9 @@ main (int argc, char *argv[])
   sockhMainLoop (listenPort, processMsg, mainProcessing, &mainData);
   bdj4shutdown ();
   mainData.programState = STATE_NOT_RUNNING;
+  if (mainData.playlist != NULL) {
+    playlistFree (mainData.playlist);
+  }
   return 0;
 }
 
@@ -78,10 +86,11 @@ stopPlayer (maindata_t *mainData)
   if (! mainData->playerStarted) {
     return;
   }
-  sockhSendMessage (mainData->playerSocket, ROUTE_PLAYER, MSG_REQUEST_EXIT, NULL);
-  sockhSendMessage (mainData->playerSocket, ROUTE_PLAYER, MSG_CLOSE_SOCKET, NULL);
+  sockhSendMessage (mainData->playerSocket, ROUTE_PLAYER, MSG_EXIT_REQUEST, NULL);
+  sockhSendMessage (mainData->playerSocket, ROUTE_PLAYER, MSG_SOCKET_CLOSE, NULL);
   sockClose (mainData->playerSocket);
   mainData->playerSocket = INVALID_SOCKET;
+  mainData->playerStarted = 0;
 }
 
 static int
@@ -102,7 +111,27 @@ processMsg (long route, long msg, char *args, void *udata)
           startPlayer (mainData);
           break;
         }
-        case MSG_REQUEST_EXIT: {
+        case MSG_PLAYER_PAUSE: {
+          logMsg (LOG_DBG, LOG_LVL_4, "got: player-pause");
+          sockhSendMessage (mainData->playerSocket, ROUTE_PLAYER, msg, args);
+          break;
+        }
+          case MSG_PLAYER_PLAY: {
+          logMsg (LOG_DBG, LOG_LVL_4, "got: player-play");
+          sockhSendMessage (mainData->playerSocket, ROUTE_PLAYER, msg, args);
+          break;
+        }
+        case MSG_PLAYER_STOP: {
+          logMsg (LOG_DBG, LOG_LVL_4, "got: player-stop");
+          sockhSendMessage (mainData->playerSocket, ROUTE_PLAYER, msg, args);
+          break;
+        }
+        case MSG_PLAYLIST_LOAD: {
+          logMsg (LOG_DBG, LOG_LVL_4, "got: player-load");
+          mainLoadPlaylist (mainData, args);
+          break;
+        }
+        case MSG_EXIT_REQUEST: {
           mainData->programState = STATE_CLOSING;
           stopPlayer (mainData);
           logProcEnd (LOG_LVL_4, "processMsg", "req-exit");
@@ -142,4 +171,10 @@ mainProcessing (void *udata)
   }
 
   return;
+}
+
+static void
+mainLoadPlaylist (maindata_t *mainData, char *plname)
+{
+  mainData->playlist = playlistAlloc (plname);
 }

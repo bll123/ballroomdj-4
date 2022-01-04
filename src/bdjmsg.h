@@ -11,12 +11,16 @@ typedef enum {
 
 typedef enum {
   MSG_NONE,
-  MSG_CLOSE_SOCKET,
+  MSG_EXIT_FORCE,           // only for testing, may not work yet.
+  MSG_EXIT_REQUEST,         // standard shutdown
+  MSG_PLAYER_PAUSE,         // to main
+  MSG_PLAYER_PLAY,          // to main
   MSG_PLAYER_START,         // goes to main, not player
-  MSG_PREP_SONG,            // arguments: path to song
-  MSG_PLAY_SONG,            // arguments: path to song
-  MSG_REQUEST_EXIT,         // standard shutdown
-  MSG_FORCE_EXIT,           // only for testing, may not work yet.
+  MSG_PLAYER_STOP,          // to main
+  MSG_PLAYLIST_LOAD,        // arguments: playlist name
+  MSG_SOCKET_CLOSE,
+  MSG_SONG_PLAY,            // arguments: path to song
+  MSG_SONG_PREP,            // arguments: path to song
   MSG_MAX
 } bdjmsgmsg_t;
 

@@ -65,12 +65,12 @@ sockhMainLoop (uint16_t listenPort, sockProcessMsg_t msgProc,
         msgDecode (msgbuff, &route, &msg, args);
         logMsg (LOG_DBG, LOG_LVL_5, "got: route: %ld msg:%ld args:%s", route, msg, args);
         switch (msg) {
-          case MSG_FORCE_EXIT: {
+          case MSG_EXIT_FORCE: {
             logMsg (LOG_DBG, LOG_LVL_5, "force exit");
             exit (1);
             break;
           }
-          case MSG_CLOSE_SOCKET: {
+          case MSG_SOCKET_CLOSE: {
             logMsg (LOG_DBG, LOG_LVL_5, "got: close socket");
             sockRemoveCheck (si, msgsock);
             sockClose (msgsock);

@@ -15,4 +15,5 @@ syntax: regexp
 ^src/bdj4$
 ^src/.*\.so$
 ^src/.*\.dll$
+^test.dir/test.files/
 ^tmp/

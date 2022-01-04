@@ -38,6 +38,8 @@ main (int argc, char *argv [])
   srunner_add_suite (sr, s);
   s = lock_suite();
   srunner_add_suite (sr, s);
+  s = queue_suite();
+  srunner_add_suite (sr, s);
   s = list_suite();
   srunner_add_suite (sr, s);
   s = rafile_suite();
