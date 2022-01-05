@@ -1,0 +1,14 @@
+loadunit env-systype
+loadunit c-main
+
+output tconfig.h
+
+standard_system
+standard
+
+hdr     check.h
+
+if not_have_pkg_check ! _pkg_libs_check && _hdr_check
+  lib    tcase_create -lcheck -pthread -lm
+endif
+

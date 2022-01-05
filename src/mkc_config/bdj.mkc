@@ -54,22 +54,12 @@ lib     CreateProcess
 lib     fcntl
 lib     fork
 lib     GetFullPathName
-if iswindows ! ( ( == _MKCONFIG_SYSTYPE Linux ) || ( == _MKCONFIG_SYSTYPE Darwin ) )
- # on windows, a static link is wanted
- lib	gettext -Wl,-Bstatic -lintl -Wl,-Bdynamic % -Wl,-Bstatic -lintl -liconv -Wl,-Bdynamic
- lib    pthread_create -Wl,-Bstatic -lpthread -Wl,-Bdynamic
-else
- lib	gettext -lintl % -lintl -liconv
- lib    pthread_create -lpthread
-endif
 lib     GetVersionEx
 lib     ioctlsocket -lws2_32
 lib     kill
 lib     localtime_r
 lib     mkdir
-lib     _open_osfhandle
 lib     OpenProcess
-lib     pa_threaded_mainloop_start -lpulse -lm
 lib     realpath
 lib     select -lws2_32
 lib     SetDllDirectory
@@ -78,20 +68,12 @@ lib     socket -lws2_32
 lib	strlcpy
 lib	strlcat
 lib     strtok_r
+lib     symlink
 lib     uname
 lib     WriteFile
 lib     WSACleanup -lws2_32
 lib     WSAGetLastError -lws2_32
 lib     WSAStartup -lws2_32
-lib     libvlc_audio_output_device_enum -lvlc
-
-if notpa _lib_pa_threaded_mainloop_start
- lib     snd_mixer_open -lasound -lm
-endif
-
-if not_have_pkg_check ! _pkg_libs_check && _hdr_check
-  lib    tcase_create -lcheck -pthread -lm
-endif
 
 args noconst mkdir
 

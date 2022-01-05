@@ -23,10 +23,18 @@ MKC_PREFIX = bdj
 MKC_CONFDIR = mkc_config
 MKC_FILES = mkc_files
 MKC_OUTPUT = config.h
+MKC_COUTPUT = cconfig.h
+MKC_POUTPUT = pconfig.h
+MKC_TOUTPUT = tconfig.h
 MKC_ENV_SHR = $(MKC_PREFIX)-shared.env
+MKC_ENV_TEST = $(MKC_PREFIX)-test.env
 
 MKC_CONF = $(MKC_CONFDIR)/$(MKC_PREFIX).mkc
+MKC_CCONF = $(MKC_CONFDIR)/$(MKC_PREFIX)common.mkc
+MKC_PCONF = $(MKC_CONFDIR)/$(MKC_PREFIX)player.mkc
+MKC_TCONF = $(MKC_CONFDIR)/$(MKC_PREFIX)test.mkc
 MKC_ENV_SHR_CONF = $(MKC_CONFDIR)/$(MKC_PREFIX)-env-shared.mkc
+MKC_ENV_TEST_CONF = $(MKC_CONFDIR)/$(MKC_PREFIX)-env-test.mkc
 
 OBJ_EXT = .o
 EXE_EXT =
@@ -35,9 +43,12 @@ EXE_EXT =
 
 MKC_DIR = ../mkconfig
 MKCONFIG_TYPE = sh
-MKC_REQLIB = $(MKC_PREFIX).reqlibs
-#MKC_ECHO =
-MKC_ECHO = -e
+MKC_REQLIB = $(MKC_PREFIX)-reqlibs.main
+MKC_CREQLIB = $(MKC_PREFIX)-reqlibs.common
+MKC_PREQLIB = $(MKC_PREFIX)-reqlibs.player
+MKC_TREQLIB = $(MKC_PREFIX)-reqlibs.test
+MKC_ECHO =
+#MKC_ECHO = -e
 
 CFLAGS_DEBUG = -O0 -g
 
@@ -71,8 +82,8 @@ mcheckcli: $(MKC_ENV_SHR)
 
 rall:
 	$(MAKE) -e libraries
-	$(MAKE) -e testprograms
 	$(MAKE) -e programs
+	. ./$(MKC_ENV_TEST); $(MAKE) -e testprograms
 
 .PHONY: install rinstall
 install:  $(MKC_ENV_SHR)
@@ -96,17 +107,17 @@ depend:
 PROGRAMS = $(BINDIR)/bdj4$(EXE_EXT) $(BINDIR)/bdj4main$(EXE_EXT) \
 	$(BINDIR)/bdj4player$(EXE_EXT) $(BINDIR)/clicomm$(EXE_EXT)
 .PHONY: programs
-programs: $(MKC_ENV_SHR) $(MKC_REQLIB) $(PROGRAMS)
+programs: $(PROGRAMS)
 
 TESTPROGRAMS = $(BINDIR)/check_all$(EXE_EXT)
 .PHONY: testprograms
-testprograms: $(MKC_ENV_SHR) $(MKC_REQLIB) $(TESTPROGRAMS)
+testprograms: $(TESTPROGRAMS)
 
 LIBRARIES = $(SHLIBDIR)/libbdj4common$(SHLIB_EXT) \
 	$(SHLIBDIR)/libbdj4player$(SHLIB_EXT) \
 	$(SHLIBDIR)/libbdj4$(SHLIB_EXT)
 .PHONY: libraries
-libraries: $(MKC_ENV_SHR) $(MKC__REQLIB) $(LIBRARIES)
+libraries: $(LIBRARIES)
 
 # mkconfig targets
 
@@ -116,16 +127,41 @@ $(MKC_ENV_SHR): $(MKC_ENV_SHR_CONF)
 		$(_MKCONFIG_SHELL) $(MKC_DIR)/mkconfig.sh \
 		$(MKC_ENV_SHR_CONF)
 
-# remove -lvlc from the required libraries, as it is only need for the player.
 $(MKC_REQLIB):  $(MKC_OUTPUT)
 	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh -reqlib \
 		-o $(MKC_REQLIB) $(MKC_OUTPUT)
-	sed 's/-lvlc//' $(MKC_REQLIB) > $(MKC_REQLIB).n
-	mv -f $(MKC_REQLIB).n $(MKC_REQLIB)
+
+$(MKC_CREQLIB):  $(MKC_COUTPUT)
+	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh -reqlib \
+		-o $(MKC_CREQLIB) $(MKC_COUTPUT)
+
+$(MKC_PREQLIB):  $(MKC_POUTPUT)
+	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh -reqlib \
+		-o $(MKC_PREQLIB) $(MKC_POUTPUT)
+
+$(MKC_TREQLIB):  $(MKC_TOUTPUT)
+	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh -reqlib \
+		-o $(MKC_TREQLIB) $(MKC_TOUTPUT)
 
 $(MKC_OUTPUT):       $(MKC_ENV_SHR) $(MKC_CONF)
 	@-$(RM) -f $(MKC_OUTPUT)
-	. ./$(MKC_ENV_SHR);$(_MKCONFIG_SHELL) $(MKC_DIR)/mkconfig.sh $(MKC_CONF)
+	. ./$(MKC_ENV_SHR);$(_MKCONFIG_SHELL) \
+		$(MKC_DIR)/mkconfig.sh $(MKC_CONF)
+
+$(MKC_COUTPUT):       $(MKC_ENV_SHR) $(MKC_CCONF)
+	@-$(RM) -f $(MKC_COUTPUT)
+	. ./$(MKC_ENV_SHR);$(_MKCONFIG_SHELL) \
+		$(MKC_DIR)/mkconfig.sh $(MKC_CCONF)
+
+$(MKC_POUTPUT):       $(MKC_ENV_SHR) $(MKC_PCONF)
+	@-$(RM) -f $(MKC_POUTPUT)
+	. ./$(MKC_ENV_SHR);$(_MKCONFIG_SHELL) \
+		$(MKC_DIR)/mkconfig.sh $(MKC_PCONF)
+
+$(MKC_TOUTPUT):       $(MKC_ENV_TEST) $(MKC_TCONF)
+	@-$(RM) -f $(MKC_TOUTPUT)
+	. ./$(MKC_ENV_TEST);$(_MKCONFIG_SHELL) \
+		$(MKC_DIR)/mkconfig.sh $(MKC_TCONF)
 
 # compilation
 
@@ -138,15 +174,16 @@ $(OBJDIR)/%.o: %.c
 .PHONY: distclean
 distclean:
 	@-$(MAKE) clean
-	@-$(RM) -f $(MKC_ENV_SHR) $(MKC_REQLIB)
-	@-$(RM) -f $(MKC_OUTPUT)
+	@-$(RM) -f $(MKC_ENV_SHR) $(MKC_ENV_TEST)
+	@-$(RM) -f $(MKC_REQLIB) $(MKC_CREQLIB) $(MKC_PREQLIB) $(MKC_TREQLIB)
+	@-$(RM) -f $(MKC_OUTPUT) $(MKC_COUTPUT) $(MKC_POUTPUT) $(MKC_TOUTPUT)
 	@-$(RM) -rf $(MKC_FILES)
 
 .PHONY: clean
 clean:
 	@-$(MAKE) tclean
 	@-$(MAKE) eclean
-	@-$(RM) -f $(OBJDIR)/*
+	@-$(RM) -f $(OBJDIR)/* launcher.res
 
 .PHONY: eclean
 eclean:
@@ -187,12 +224,13 @@ rbdj4:
 
 BDJMAINOBJS = $(OBJDIR)/bdj4main$(OBJ_EXT)
 
-$(BINDIR)/bdj4main$(EXE_EXT): $(MKC_REQLIB) $(BDJMAINOBJS) \
+$(BINDIR)/bdj4main$(EXE_EXT): $(MKC_REQLIB) $(MKC_CREQLIB) $(BDJMAINOBJS) \
 		$(SHLIBDIR)/libbdj4$(SHLIB_EXT) \
 		$(SHLIBDIR)/libbdj4common$(SHLIB_EXT)
 	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh \
 		-link -exec $(MKC_ECHO) \
 		-r $(MKC_REQLIB) \
+		-r $(MKC_CREQLIB) \
 		-o $@ \
 		$(BDJMAINOBJS) \
 		-L $(SHLIBDIR) -rpath $(BINDIR) \
@@ -202,12 +240,13 @@ $(BINDIR)/bdj4main$(EXE_EXT): $(MKC_REQLIB) $(BDJMAINOBJS) \
 PLAYEROBJS = $(OBJDIR)/bdj4player$(OBJ_EXT) \
 	$(OBJDIR)/vlci$(OBJ_EXT)
 
-$(BINDIR)/bdj4player$(EXE_EXT): $(PLAYEROBJS) \
+$(BINDIR)/bdj4player$(EXE_EXT): $(MKC_PREQLIB) $(MKC_CREQLIB) $(PLAYEROBJS) \
 		$(SHLIBDIR)/libbdj4player$(SHLIB_EXT) \
 		$(SHLIBDIR)/libbdj4common$(SHLIB_EXT)
 	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh \
 		-link -exec $(MKC_ECHO) \
-		-r $(MKC_REQLIB) \
+		-r $(MKC_PREQLIB) \
+		-r $(MKC_CREQLIB) \
 		-o $@ \
 		$(PLAYEROBJS) \
 		-L $(SHLIBDIR) -rpath $(BINDIR) \
@@ -217,10 +256,11 @@ $(BINDIR)/bdj4player$(EXE_EXT): $(PLAYEROBJS) \
 CLICOMMOBJS = \
 	$(OBJDIR)/clicomm$(OBJ_EXT)
 
-$(BINDIR)/clicomm$(EXE_EXT): $(CLICOMMOBJS) \
+$(BINDIR)/clicomm$(EXE_EXT): $(MKC_CREQLIB) $(CLICOMMOBJS) \
 		$(SHLIBDIR)/libbdj4common$(SHLIB_EXT)
 	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh \
 		-link -exec $(MKC_ECHO) \
+		-r $(MKC_CREQLIB) \
 		-o $@ \
 		$(CLICOMMOBJS) \
 		-L $(SHLIBDIR) -rpath $(BINDIR) \
@@ -252,9 +292,10 @@ LIBCOMMONOBJS = \
 	$(OBJDIR)/sysvars$(OBJ_EXT) \
 	$(OBJDIR)/tmutil$(OBJ_EXT)
 
-$(SHLIBDIR)/libbdj4common$(SHLIB_EXT): $(LIBCOMMONOBJS)
+$(SHLIBDIR)/libbdj4common$(SHLIB_EXT): $(MKC_CREQLIB) $(LIBCOMMONOBJS)
 	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh \
 		-link -shared $(MKC_ECHO) -lib \
+		-r $(MKC_CREQLIB) \
 		-o $@ \
 		$(LIBCOMMONOBJS)
 
@@ -275,17 +316,13 @@ LIBBDJOBJS = \
 	$(OBJDIR)/song$(OBJ_EXT) \
 	$(OBJDIR)/songlist$(OBJ_EXT) \
 	$(OBJDIR)/sortopt$(OBJ_EXT) \
-	$(OBJDIR)/tagdef$(OBJ_EXT) \
-	$(OBJDIR)/volalsa$(OBJ_EXT) \
-	$(OBJDIR)/volmac$(OBJ_EXT) \
-	$(OBJDIR)/volpa$(OBJ_EXT) \
-	$(OBJDIR)/volume$(OBJ_EXT) \
-	$(OBJDIR)/volwin$(OBJ_EXT)
+	$(OBJDIR)/tagdef$(OBJ_EXT)
 
-$(SHLIBDIR)/libbdj4$(SHLIB_EXT): $(LIBBDJOBJS) \
+$(SHLIBDIR)/libbdj4$(SHLIB_EXT): $(MKC_CREQLIB) $(LIBBDJOBJS) \
 		$(SHLIBDIR)/libbdj4common$(SHLIB_EXT)
 	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh \
 		-link -shared $(MKC_ECHO) -lib \
+		-r $(MKC_CREQLIB) \
 		-o $@ \
 		$(LIBBDJOBJS) \
 		-L $(SHLIBDIR) -rpath $(BINDIR) \
@@ -299,11 +336,13 @@ LIBPLAYOBJS = \
 	$(OBJDIR)/volpa$(OBJ_EXT) \
 	$(OBJDIR)/volwin$(OBJ_EXT)
 
-$(SHLIBDIR)/libbdj4player$(SHLIB_EXT): $(MKC_REQLIB) $(LIBPLAYOBJS) \
+$(SHLIBDIR)/libbdj4player$(SHLIB_EXT): \
+		$(MKC_PREQLIB) $(MKC_CREQLIB) $(LIBPLAYOBJS) \
 		$(SHLIBDIR)/libbdj4common$(SHLIB_EXT)
 	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh \
 		-link -shared $(MKC_ECHO) -lib \
-		-r $(MKC_REQLIB) \
+		-r $(MKC_PREQLIB) \
+		-r $(MKC_CREQLIB) \
 		-o $@ \
 		$(LIBPLAYOBJS) \
 		-L $(SHLIBDIR) -rpath $(BINDIR) \
@@ -327,10 +366,13 @@ CHECKOBJS = $(OBJDIR)/check_all$(OBJ_EXT) \
 	$(SHLIBDIR)/libbdj4$(SHLIB_EXT) \
 	$(SHLIBDIR)/libbdj4common$(SHLIB_EXT)
 
-$(BINDIR)/check_all$(EXE_EXT): $(CHECKOBJS)
+$(BINDIR)/check_all$(EXE_EXT): \
+		$(MKC_TREQLIB) $(MKC_REQLIB) $(MKC_CREQLIB) $(CHECKOBJS)
 	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh \
 		-link -exec $(MKC_ECHO) \
+		-r $(MKC_TREQLIB) \
 		-r $(MKC_REQLIB) \
+		-r $(MKC_CREQLIB) \
 		-o $@ \
 		$(CHECKOBJS) \
 		-L $(SHLIBDIR) -rpath $(BINDIR) \
@@ -412,7 +454,7 @@ $(OBJDIR)/fileop$(OBJ_EXT): fileop.c config.h fileop.h bdjstring.h portability.h
 $(OBJDIR)/fileutil$(OBJ_EXT): fileutil.c config.h fileutil.h bdjstring.h portability.h
 $(OBJDIR)/genre$(OBJ_EXT): genre.c config.h genre.h datafile.h list.h fileop.h bdjvarsdf.h
 $(OBJDIR)/level$(OBJ_EXT): level.c config.h level.h datafile.h list.h fileop.h bdjvarsdf.h
-$(OBJDIR)/list$(OBJ_EXT): list.c config.h list.h log.h fileutil.h
+$(OBJDIR)/list$(OBJ_EXT): list.c config.h list.h log.h fileutil.h bdjstring.h
 $(OBJDIR)/lock$(OBJ_EXT): lock.c config.h sysvars.h portability.h process.h tmutil.h lock.h \
  fileop.h
 $(OBJDIR)/log$(OBJ_EXT): log.c config.h log.h fileutil.h tmutil.h datautil.h portability.h

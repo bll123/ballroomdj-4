@@ -434,6 +434,11 @@ if [ "$logfile" != "" ]; then
   out=`eval $cmd 2>&1`
   rc=$?
   puts "$out" >&9
+  if [ $doecho = F -a $rc -ne 0 ]; then
+    puts ""
+    puts "    $cmd"
+    puts "$out"
+  fi
   if [ $doecho = T ]; then
     puts "$out"
   fi
@@ -445,6 +450,11 @@ if [ $rc -eq 0 ]; then
   puts "$out" | grep -i warning: >/dev/null 2>&1
   rc=$?
   if [ $rc -eq 0 ]; then
+    if [ $doecho = F ]; then
+      puts ""
+      puts "    $cmd"
+      puts "$out"
+    fi
     disp="${disp} warnings"
   else
     disp="${disp} ok"

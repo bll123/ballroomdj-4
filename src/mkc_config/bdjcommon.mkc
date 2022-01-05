@@ -1,0 +1,19 @@
+loadunit env-systype
+loadunit c-main
+
+output cconfig.h
+
+standard_system
+standard
+
+hdr     libintl.h
+hdr     pthread.h
+
+if iswindows ! ( ( == _MKCONFIG_SYSTYPE Linux ) || ( == _MKCONFIG_SYSTYPE Darwin ) )
+ # on windows, a static link is wanted
+ staticlib    gettext -lintl, -lintl -liconv
+ staticlib    pthread_create -lpthread
+else
+ lib    gettext -lintl, -lintl -liconv
+ lib    pthread_create -lpthread
+endif

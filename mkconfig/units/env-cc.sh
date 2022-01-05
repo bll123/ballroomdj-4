@@ -759,6 +759,70 @@ check_sharednameflag () {
   setdata ${_MKCONFIG_PREFIX} SHLDNAMEFLAG "$SHLDNAMEFLAG"
 }
 
+check_sharedliblinkflag () {
+  printlabel LDFLAGS_SHARED_LIB_LINK "link flag for shared libraries "
+
+  LDFLAGS_SHARED_LIB_LINK="-Wl,-Bdynamic"
+  if [ "$_MKCONFIG_USING_GNU_LD" != Y ]; then
+    case ${_MKCONFIG_SYSTYPE} in
+      AIX)
+        LDFLAGS_SHARED_LIB_LINK=""
+        ;;
+      HP-UX)
+        LDFLAGS_SHARED_LIB_LINK=""
+        ;;
+      OSF1)
+        LDFLAGS_SHARED_LIB_LINK=""
+        ;;
+      SunOS)
+        # -Bdynamic
+        ;;
+      *)
+        LDFLAGS_SHARED_LIB_LINK=""
+        ;;
+    esac
+    if [ "$_MKCONFIG_USING_GCC" = Y ]; then
+      LDFLAGS_SHARED_LIB_LINK=`echo "$LDFLAGS_SHARED_LIB_LINK" |
+          sed -e 's/^-/-Wl,-/' -e 's/^\+/-Wl,+/' -e 's/  */ -Wl,/g'`
+    fi
+  fi
+
+  printyesno_val LDFLAGS_SHARED_LIB_LINK "$LDFLAGS_SHARED_LIB_LINK"
+  setdata ${_MKCONFIG_PREFIX} LDFLAGS_SHARED_LIB_LINK "$LDFLAGS_SHARED_LIB_LINK"
+}
+
+check_staticliblinkflag () {
+  printlabel LDFLAGS_STATIC_LIB_LINK "link flag for static libraries "
+
+  LDFLAGS_STATIC_LIB_LINK="-Wl,-Bstatic"
+  if [ "$_MKCONFIG_USING_GNU_LD" != Y ]; then
+    case ${_MKCONFIG_SYSTYPE} in
+      AIX)
+        LDFLAGS_STATIC_LIB_LINK=""
+        ;;
+      HP-UX)
+        LDFLAGS_STATIC_LIB_LINK=""
+        ;;
+      OSF1)
+        LDFLAGS_STATIC_LIB_LINK=""
+        ;;
+      SunOS)
+        # -Bdynamic
+        ;;
+      *)
+        LDFLAGS_STATIC_LIB_LINK=""
+        ;;
+    esac
+    if [ "$_MKCONFIG_USING_GCC" = Y ]; then
+      LDFLAGS_STATIC_LIB_LINK=`echo "$LDFLAGS_STATIC_LIB_LINK" |
+          sed -e 's/^-/-Wl,-/' -e 's/^\+/-Wl,+/' -e 's/  */ -Wl,/g'`
+    fi
+  fi
+
+  printyesno_val LDFLAGS_STATIC_LIB_LINK "$LDFLAGS_STATIC_LIB_LINK"
+  setdata ${_MKCONFIG_PREFIX} LDFLAGS_STATIC_LIB_LINK "$LDFLAGS_STATIC_LIB_LINK"
+}
+
 check_shareexeclinkflag () {
   printlabel LDFLAGS_EXEC_LINK "shared executable link flag "
 
@@ -930,4 +994,14 @@ check_standard_cc () {
   check_using_cplusplus
   check_cflags
   check_ldflags
+}
+
+check_shared_flags () {
+  check_cflags_shared
+  check_ldflags_shared
+  check_sharednameflag
+  check_shareexeclinkflag
+  check_sharerunpathflag
+  check_sharedliblinkflag
+  check_staticliblinkflag
 }

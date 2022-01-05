@@ -712,6 +712,12 @@ CPP_EXTERNS_END
   do_c_check_compile ${name} "${code}" all
 }
 
+check_staticlib () {
+  staticlib=T
+  check_lib "$@"
+  unset staticlib
+}
+
 check_lib () {
   func=$2
   shift;shift
@@ -771,6 +777,9 @@ return 1;
 
   tag=""
   if [ $rc -eq 0 -a "$dlibs" != "" ]; then
+    if [ "$staticlib" = "T" ]; then
+      dlibs="$LDFLAGS_STATIC_LIB_LINK $dlibs $LDFLAGS_SHARED_LIB_LINK"
+    fi
     tag=" with ${dlibs}"
     cmd="mkc_${_MKCONFIG_PREFIX}_lib_${name}=\"${dlibs}\""
     eval $cmd

@@ -5,7 +5,7 @@ loadunit env-cc
 loadunit env-msgfmt
 loadunit env-extension
 
-output  bdj-shared.env
+output  bdj-test.env
 
 standard_system
 standard_cc
@@ -105,5 +105,8 @@ addldflag -Wl,--as-needed
 extension obj
 extension exe
 extension shlib
+
+pkg    include check
+pkg    libs check
 
 cmd_msgfmt
