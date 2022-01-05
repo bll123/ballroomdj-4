@@ -36,6 +36,7 @@ pliInit (void)
   pliData = malloc (sizeof (plidata_t));
   assert (pliData != NULL);
   pliData->plData = vlcInit (VLC_DFLT_OPT_SZ, vlcDefaultOptions);
+  assert (pliData->plData != NULL);
   return pliData;
 }
 
@@ -51,37 +52,52 @@ pliFree (plidata_t *pliData)
 void
 pliMediaSetup (plidata_t *pliData, char *afname)
 {
-  vlcMedia (pliData->plData, afname);
+  if (pliData != NULL && pliData->plData != NULL) {
+    vlcMedia (pliData->plData, afname);
+  }
 }
 
 void
 pliStartPlayback (plidata_t *pliData)
 {
-  vlcPlay (pliData->plData);
+  if (pliData != NULL && pliData->plData != NULL) {
+    vlcPlay (pliData->plData);
+  }
 }
 
 void
 pliPause (plidata_t *pliData)
 {
-  vlcPause (pliData->plData);
+  if (pliData != NULL && pliData->plData != NULL) {
+    vlcPause (pliData->plData);
+  }
 }
 
 void
 pliPlay (plidata_t *pliData)
 {
-  vlcPlay (pliData->plData);
+  if (pliData != NULL && pliData->plData != NULL) {
+    vlcPlay (pliData->plData);
+  }
 }
 
 void
 pliStop (plidata_t *pliData)
 {
-  vlcStop (pliData->plData);
+  if (pliData != NULL && pliData->plData != NULL) {
+    vlcStop (pliData->plData);
+  }
 }
 
 void
 pliClose (plidata_t *pliData)
 {
-  vlcClose (pliData->plData);
+  if (pliData != NULL) {
+    if (pliData->plData != NULL) {
+      vlcClose (pliData->plData);
+    }
+    pliData->plData = NULL;
+  }
 }
 
 #endif /* have libvlc_new */

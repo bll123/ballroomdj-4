@@ -422,10 +422,10 @@ $(OBJDIR)/bdj4init$(OBJ_EXT): bdj4init.c config.h bdj4init.h musicdb.h song.h li
  datafile.h songlist.h
 $(OBJDIR)/bdj4main$(OBJ_EXT): bdj4main.c bdj4init.h sockh.h sock.h config.h bdjvars.h \
  bdjmsg.h log.h fileutil.h process.h bdjstring.h sysvars.h portability.h \
- playlist.h datafile.h list.h
+ playlist.h datafile.h list.h queue.h
 $(OBJDIR)/bdj4player$(OBJ_EXT): bdj4player.c config.h bdjmsg.h bdjstring.h bdjvars.h \
  fileop.h list.h log.h fileutil.h sock.h sockh.h sysvars.h portability.h \
- pathutil.h queue.h pli.h vlci.h pconfig.h
+ pathutil.h queue.h pli.h vlci.h pconfig.h process.h
 $(OBJDIR)/bdjmsg$(OBJ_EXT): bdjmsg.c config.h bdjmsg.h bdjstring.h
 $(OBJDIR)/bdjopt$(OBJ_EXT): bdjopt.c config.h bdjopt.h list.h datafile.h datautil.h \
  portability.h

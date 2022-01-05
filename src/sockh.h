@@ -6,7 +6,7 @@
 #include "sock.h"
 
 typedef int (*sockProcessMsg_t)(long, long, char *, void *);
-typedef void (*sockOtherProcessing_t)(void *);
+typedef int (*sockOtherProcessing_t)(void *);
 
 #define SOCK_MAINLOOP_TIMEOUT   5
 

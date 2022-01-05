@@ -23,6 +23,7 @@ sockhMainLoop (uint16_t listenPort, sockProcessMsg_t msgProc,
   char        msgbuff [1024];
   size_t      len = 0;
   int         done = 0;
+  int         tdone = 0;
   long        route = ROUTE_NONE;
   long        msg = MSG_NONE;
   char        args [BDJMSG_MAX];
@@ -76,7 +77,10 @@ sockhMainLoop (uint16_t listenPort, sockProcessMsg_t msgProc,
             break;
           }
           default: {
-            done = msgProc (route, msg, args, userData);
+            tdone = msgProc (route, msg, args, userData);
+            if (tdone) {
+              ++done;
+            }
           }
         } /* switch */
       } /* msg from client */
@@ -87,7 +91,12 @@ sockhMainLoop (uint16_t listenPort, sockProcessMsg_t msgProc,
       ++done;
     }
 
-    otherProc (userData);
+    tdone = otherProc (userData);
+    if (tdone) {
+      args [0] = '\0';
+      tdone = msgProc (ROUTE_NONE, MSG_EXIT_REQUEST, args, userData);
+      ++done;
+    }
     msleep (SOCK_MAINLOOP_TIMEOUT);
   } /* wait for a message */
 

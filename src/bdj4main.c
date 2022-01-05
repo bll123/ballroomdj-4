@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <errno.h>
+#include <signal.h>
 
 #include "bdj4init.h"
 #include "sockh.h"
@@ -15,21 +16,24 @@
 #include "sysvars.h"
 #include "portability.h"
 #include "playlist.h"
+#include "queue.h"
 
 typedef struct {
   programstate_t    programState;
   int               playerStarted;
   Sock_t            playerSocket;
-//  playerstate_t     playerState;
-// need playlist queue
+  queue_t           playlistQueue;
   void              *playlist;
 } maindata_t;
 
-static void     startPlayer (maindata_t *mainData);
-static void     stopPlayer (maindata_t *mainData);
-static int      processMsg (long route, long msg, char *args, void *udata);
-static void     mainProcessing (void *udata);
+static void     mainStartPlayer (maindata_t *mainData);
+static void     mainStopPlayer (maindata_t *mainData);
+static int      mainProcessMsg (long route, long msg, char *args, void *udata);
+static int      mainProcessing (void *udata);
 static void     mainLoadPlaylist (maindata_t *mainData, char *plname);
+static void     mainSigHandler (int sig);
+
+static int gKillReceived = 0;
 
 int
 main (int argc, char *argv[])
@@ -41,11 +45,13 @@ main (int argc, char *argv[])
   mainData.playerSocket = INVALID_SOCKET;
   mainData.playlist = NULL;
 
+  processCatchSignals (mainSigHandler);
+
   bdj4startup (argc, argv);
 
   mainData.programState = STATE_RUNNING;
   uint16_t listenPort = bdjvarsl [BDJVL_MAIN_PORT];
-  sockhMainLoop (listenPort, processMsg, mainProcessing, &mainData);
+  sockhMainLoop (listenPort, mainProcessMsg, mainProcessing, &mainData);
   bdj4shutdown ();
   mainData.programState = STATE_NOT_RUNNING;
   if (mainData.playlist != NULL) {
@@ -57,7 +63,7 @@ main (int argc, char *argv[])
 /* internal routines */
 
 static void
-startPlayer (maindata_t *mainData)
+mainStartPlayer (maindata_t *mainData)
 {
   char      tbuff [MAXPATHLEN];
   pid_t     pid;
@@ -66,7 +72,7 @@ startPlayer (maindata_t *mainData)
     return;
   }
 
-  logProcBegin (LOG_LVL_4, "startPlayer");
+  logProcBegin (LOG_LVL_4, "mainStartPlayer");
   snprintf (tbuff, MAXPATHLEN, "%s/bdj4player", sysvars [SV_BDJ4EXECDIR]);
   if (isWindows ()) {
     strlcat (tbuff, ".exe", MAXPATHLEN);
@@ -78,11 +84,11 @@ startPlayer (maindata_t *mainData)
     logMsg (LOG_DBG, LOG_LVL_4, "player started pid: %zd", (ssize_t) pid);
     mainData->playerStarted = 1;
   }
-  logProcEnd (LOG_LVL_4, "startPlayer", "");
+  logProcEnd (LOG_LVL_4, "mainStartPlayer", "");
 }
 
 static void
-stopPlayer (maindata_t *mainData)
+mainStopPlayer (maindata_t *mainData)
 {
   if (! mainData->playerStarted) {
     return;
@@ -95,11 +101,11 @@ stopPlayer (maindata_t *mainData)
 }
 
 static int
-processMsg (long route, long msg, char *args, void *udata)
+mainProcessMsg (long route, long msg, char *args, void *udata)
 {
   maindata_t      *mainData;
 
-  logProcBegin (LOG_LVL_4, "processMsg");
+  logProcBegin (LOG_LVL_4, "mainProcessMsg");
   mainData = (maindata_t *) udata;
 
   logMsg (LOG_DBG, LOG_LVL_4, "got: route: %ld msg:%ld args:%s", route, msg, args);
@@ -109,7 +115,7 @@ processMsg (long route, long msg, char *args, void *udata)
       switch (msg) {
         case MSG_PLAYER_START: {
           logMsg (LOG_DBG, LOG_LVL_4, "got: start-player");
-          startPlayer (mainData);
+          mainStartPlayer (mainData);
           break;
         }
         case MSG_PLAYER_PAUSE: {
@@ -133,9 +139,10 @@ processMsg (long route, long msg, char *args, void *udata)
           break;
         }
         case MSG_EXIT_REQUEST: {
+          gKillReceived = 0;
           mainData->programState = STATE_CLOSING;
-          stopPlayer (mainData);
-          logProcEnd (LOG_LVL_4, "processMsg", "req-exit");
+          mainStopPlayer (mainData);
+          logProcEnd (LOG_LVL_4, "mainProcessMsg", "req-exit");
           return 1;
         }
         default: {
@@ -149,11 +156,11 @@ processMsg (long route, long msg, char *args, void *udata)
     }
   }
 
-  logProcEnd (LOG_LVL_4, "processMsg", "");
+  logProcEnd (LOG_LVL_4, "mainProcessMsg", "");
   return 0;
 }
 
-static void
+static int
 mainProcessing (void *udata)
 {
   maindata_t      *mainData;
@@ -171,11 +178,17 @@ mainProcessing (void *udata)
         (size_t) mainData->playerSocket);
   }
 
-  return;
+  return gKillReceived;
 }
 
 static void
 mainLoadPlaylist (maindata_t *mainData, char *plname)
 {
   mainData->playlist = playlistAlloc (plname);
+}
+
+static void
+mainSigHandler (int sig)
+{
+  gKillReceived = 1;
 }

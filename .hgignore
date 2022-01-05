@@ -9,7 +9,7 @@ syntax: regexp
 ^src/config\.h$
 ^src/.config\.h$
 ^src/objects/
-^src/.*\.env$
+^src/bdj-.*\.env$
 ^src/bdj-reqlibs
 ^src/w$
 ^src/check_all$

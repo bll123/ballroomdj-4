@@ -141,3 +141,15 @@ processStart (const char *fn, pid_t *pid, long profile)
   return 0;
 }
 
+void
+processCatchSignals (void (*sigHandler)(int))
+{
+  struct sigaction    sigact;
+  struct sigaction    oldact;
+
+  memset (&sigact, '\0', sizeof (sigact));
+  sigact.sa_handler = sigHandler;
+  sigaction (SIGHUP, &sigact, &oldact);       /* 1: hangup      */
+  sigaction (SIGINT, &sigact, &oldact);       /* 2: interrupt   */
+  sigaction (SIGTERM, &sigact, &oldact);      /* 15: terminate  */
+}

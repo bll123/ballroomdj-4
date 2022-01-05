@@ -23,6 +23,7 @@
 #include "pathutil.h"
 #include "queue.h"
 #include "pli.h"
+#include "process.h"
 
 typedef struct {
   char          *songname;
@@ -37,8 +38,8 @@ typedef struct {
   long            globalCount;
 } playerData_t;
 
-static int      processMsg (long route, long msg, char *args, void *udata);
-static void     mainProcessing (void *udata);
+static int      playerProcessMsg (long route, long msg, char *args, void *udata);
+static int      playerProcessing (void *udata);
 static void     songPrep (playerData_t *playerData, char *sfname);
 static void     songPlay (playerData_t *playerData, char *sfname);
 static void     songMakeTempName (playerData_t *playerData,
@@ -47,7 +48,11 @@ static void     playerPause (playerData_t *playerData);
 static void     playerPlay (playerData_t *playerData);
 static void     playerStop (playerData_t *playerData);
 static void     playerClose (playerData_t *playerData);
-static void     prepQueueFree (void *);
+static void     playerPrepQueueFree (void *);
+static void     playerCleanPrepSongs (playerData_t *playerData);
+static void     playerSigHandler (int sig);
+
+static int      gKillReceived = 0;
 
 int
 main (int argc, char *argv[])
@@ -65,8 +70,10 @@ main (int argc, char *argv[])
   playerData.programState = STATE_INITIALIZING;
   playerData.mainSock = INVALID_SOCKET;
   playerData.pliData = NULL;
-  playerData.prepQueue = queueAlloc (prepQueueFree);
+  playerData.prepQueue = queueAlloc (playerPrepQueueFree);
   playerData.globalCount = 1;
+
+  processCatchSignals (playerSigHandler);
 
   sysvarsInit (argv[0]);
 
@@ -95,7 +102,7 @@ main (int argc, char *argv[])
   playerData.programState = STATE_RUNNING;
 
   uint16_t listenPort = bdjvarsl [BDJVL_PLAYER_PORT];
-  sockhMainLoop (listenPort, processMsg, mainProcessing, &playerData);
+  sockhMainLoop (listenPort, playerProcessMsg, playerProcessing, &playerData);
 
   if (playerData.pliData != NULL) {
     playerStop (&playerData);
@@ -103,6 +110,7 @@ main (int argc, char *argv[])
     pliFree (playerData.pliData);
   }
   if (playerData.prepQueue != NULL) {
+    playerCleanPrepSongs (&playerData);
     queueFree (playerData.prepQueue);
   }
   logEnd ();
@@ -113,11 +121,11 @@ main (int argc, char *argv[])
 /* internal routines */
 
 static int
-processMsg (long route, long msg, char *args, void *udata)
+playerProcessMsg (long route, long msg, char *args, void *udata)
 {
   playerData_t      *playerData;
 
-  logProcBegin (LOG_LVL_4, "processMsg");
+  logProcBegin (LOG_LVL_4, "playerProcessMsg");
   playerData = (playerData_t *) udata;
 
   logMsg (LOG_DBG, LOG_LVL_4, "got: route: %ld msg:%ld args:%s", route, msg, args);
@@ -147,12 +155,13 @@ processMsg (long route, long msg, char *args, void *udata)
           break;
         }
         case MSG_EXIT_REQUEST: {
+          gKillReceived = 0;
           logMsg (LOG_DBG, LOG_LVL_4, "got: req-exit");
           playerData->programState = STATE_CLOSING;
           sockhSendMessage (playerData->mainSock, ROUTE_MAIN, MSG_SOCKET_CLOSE, NULL);
           sockClose (playerData->mainSock);
           playerData->mainSock = INVALID_SOCKET;
-          logProcEnd (LOG_LVL_4, "processMsg", "req-exit");
+          logProcEnd (LOG_LVL_4, "playerProcessMsg", "req-exit");
           return 1;
         }
         default: {
@@ -166,12 +175,12 @@ processMsg (long route, long msg, char *args, void *udata)
     }
   }
 
-  logProcEnd (LOG_LVL_4, "processMsg", "");
+  logProcEnd (LOG_LVL_4, "playerProcessMsg", "");
   return 0;
 }
 
-static void
-mainProcessing (void *udata)
+static int
+playerProcessing (void *udata)
 {
   playerData_t      *playerData;
 
@@ -186,7 +195,7 @@ mainProcessing (void *udata)
     logMsg (LOG_DBG, LOG_LVL_4, "main-socket: %zd", (size_t) playerData->mainSock);
   }
 
-  return;
+  return gKillReceived;
 }
 
 /* internal routines - song handling */
@@ -230,7 +239,7 @@ songPrep (playerData_t *playerData, char *sfname)
   if (! fileopExists (stname)) {
     logMsg (LOG_DBG, LOG_LVL_1, "ERR: file copy failed: %s\n", stname);
     logProcEnd (LOG_LVL_2, "songPrep", "copy-failed");
-    prepQueueFree (pq);
+    playerPrepQueueFree (pq);
     return;
   }
   pq->tempname = strdup (stname);
@@ -328,7 +337,7 @@ playerClose (playerData_t *playerData)
 }
 
 static void
-prepQueueFree (void *data)
+playerPrepQueueFree (void *data)
 {
   prepqueue_t     *pq = data;
 
@@ -341,4 +350,27 @@ prepQueueFree (void *data)
     }
     free (pq);
   }
+}
+
+static void
+playerCleanPrepSongs (playerData_t *playerData)
+{
+  prepqueue_t     *pq = NULL;
+
+  if (playerData->prepQueue != NULL) {
+    queueStartIterator (playerData->prepQueue);
+    pq = queueIterateData (playerData->prepQueue);
+    while (pq != NULL) {
+      if (pq->tempname != NULL) {
+        fileopDelete (pq->tempname);
+      }
+      pq = queueIterateData (playerData->prepQueue);
+    }
+  }
+}
+
+static void
+playerSigHandler (int sig)
+{
+  gKillReceived = 1;
 }
