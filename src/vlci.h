@@ -1,10 +1,20 @@
 #ifndef INC_VLCI_H
 #define INC_VLCI_H
 
+#include "config.h"
+#include "pconfig.h"
+
+/* winsock2.h should come before windows.h */
+#if _hdr_winsock2
+# include <winsock2.h>
+#endif
+#if _hdr_windows
+# include <windows.h>
+#endif
+
 #include <vlc/vlc.h>
 #include <vlc/libvlc_version.h>
 
-#include "config.h"
 #include "list.h"
 
 typedef struct {

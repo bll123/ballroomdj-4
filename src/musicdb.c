@@ -64,7 +64,7 @@ dbLoad (db_t *db, char *fn)
   song_t      *song;
   rafile_t    *radb;
   long        srrn;
-  int         rc;
+  long        rc;
 
   fstr = "";
   radb = raOpen (fn, 10);
@@ -73,7 +73,7 @@ dbLoad (db_t *db, char *fn)
   raStartBatch (radb);
 
   for (size_t i = 1L; i <= radb->count; ++i) {
-    rc = raRead (radb, i, data);
+    rc = (long) raRead (radb, i, data);
     if (rc != 1) {
       logMsg (LOG_DBG, LOG_LVL_1, "ERR: Unable to access rrn %zd", i);
     }

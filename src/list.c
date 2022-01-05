@@ -252,7 +252,7 @@ listIterateKeyStr (list_t *list)
 
   list->keyCache.strkey = strdup (value);
   assert (list->keyCache.strkey != NULL);
-  list->locCache = list->iteratorIndex;
+  list->locCache = (long) list->iteratorIndex;
 
   ++list->iteratorIndex;
   logProcEnd (LOG_LVL_8, "listIterateKeyStr", "");
@@ -420,7 +420,7 @@ llistIterateKeyLong (list_t *list)
   value = list->data [list->iteratorIndex].key.lkey;
 
   list->keyCache.lkey = value;
-  list->locCache = list->iteratorIndex;
+  list->locCache = (long) list->iteratorIndex;
 
   ++list->iteratorIndex;
   logProcEnd (LOG_LVL_8, "llistIterateKeyLong", "");
@@ -497,7 +497,7 @@ listGetIdx (list_t *list, listkey_t *key)
     listStartIterator (list);
     while ((str = listIterateKeyStr (list)) != NULL) {
       if (list->compare (str, key->strkey) == 0) {
-        ridx = list->currentIndex;
+        ridx = (long) list->currentIndex;
         break;
       }
     }

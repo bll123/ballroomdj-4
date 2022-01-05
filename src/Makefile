@@ -55,7 +55,7 @@ CFLAGS_DEBUG = -O0 -g
 #
 
 .PHONY: all rall
-all: $(MKC_ENV_SHR)
+all: $(MKC_ENV_SHR) $(MKC_ENV_TEST)
 	. ./$(MKC_ENV_SHR); $(MAKE) -e rall
 
 mcheck: $(MKC_ENV_SHR)
@@ -67,7 +67,7 @@ mcheck: $(MKC_ENV_SHR)
 		--track-origins=yes \
 		--show-leak-kinds=all \
 		--suppressions=src/utils/valgrind-suppression.txt \
-		./bin/bdj4)
+		./bin/bdj4 --main)
 
 mcheckcli: $(MKC_ENV_SHR)
 	. ./$(MKC_ENV_SHR); $(MAKE) -e rall
@@ -126,6 +126,12 @@ $(MKC_ENV_SHR): $(MKC_ENV_SHR_CONF)
 	PKG_CONFIG_PATH=../plocal/lib/pkgconfig CC=$(CC) \
 		$(_MKCONFIG_SHELL) $(MKC_DIR)/mkconfig.sh \
 		$(MKC_ENV_SHR_CONF)
+
+$(MKC_ENV_TEST): $(MKC_ENV_TEST_CONF)
+	@-$(RM) -f $(MKC_ENV_TEST)
+	PKG_CONFIG_PATH=../plocal/lib/pkgconfig CC=$(CC) \
+		$(_MKCONFIG_SHELL) $(MKC_DIR)/mkconfig.sh \
+		$(MKC_ENV_TEST_CONF)
 
 $(MKC_REQLIB):  $(MKC_OUTPUT)
 	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh -reqlib \
@@ -209,14 +215,16 @@ LAUNCHEROBJS = \
 	$(OBJDIR)/strlcpy$(OBJ_EXT)
 RESOURCEFILES =
 
-$(BINDIR)/bdj4$(EXE_EXT): $(LAUNCHEROBJS)
+# the launcher requires  -lintl
+$(BINDIR)/bdj4$(EXE_EXT): $(MKC_REQLIB) $(MKC_CREQLIB) $(LAUNCHEROBJS)
 	@. ./build/prebuild.sh $@ ; \
 	$(MAKE) -e rbdj4
 
-# do not use the required libs for the bdj4 launcher
 rbdj4:
 	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh \
 		-link -exec $(MKC_ECHO) \
+		-r $(MKC_REQLIB) \
+		-r $(MKC_CREQLIB) \
 		-o $(BINDIR)/bdj4$(EXE_EXT) \
 		$(LAUNCHEROBJS) \
 		$(RESOURCEFILES)
@@ -240,11 +248,13 @@ $(BINDIR)/bdj4main$(EXE_EXT): $(MKC_REQLIB) $(MKC_CREQLIB) $(BDJMAINOBJS) \
 PLAYEROBJS = $(OBJDIR)/bdj4player$(OBJ_EXT) \
 	$(OBJDIR)/vlci$(OBJ_EXT)
 
-$(BINDIR)/bdj4player$(EXE_EXT): $(MKC_PREQLIB) $(MKC_CREQLIB) $(PLAYEROBJS) \
+$(BINDIR)/bdj4player$(EXE_EXT): \
+		$(MKC_REQLIB) $(MKC_PREQLIB) $(MKC_CREQLIB) $(PLAYEROBJS) \
 		$(SHLIBDIR)/libbdj4player$(SHLIB_EXT) \
 		$(SHLIBDIR)/libbdj4common$(SHLIB_EXT)
 	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh \
 		-link -exec $(MKC_ECHO) \
+		-r $(MKC_REQLIB) \
 		-r $(MKC_PREQLIB) \
 		-r $(MKC_CREQLIB) \
 		-o $@ \
@@ -256,10 +266,11 @@ $(BINDIR)/bdj4player$(EXE_EXT): $(MKC_PREQLIB) $(MKC_CREQLIB) $(PLAYEROBJS) \
 CLICOMMOBJS = \
 	$(OBJDIR)/clicomm$(OBJ_EXT)
 
-$(BINDIR)/clicomm$(EXE_EXT): $(MKC_CREQLIB) $(CLICOMMOBJS) \
+$(BINDIR)/clicomm$(EXE_EXT): $(MKC_REQLIB) $(MKC_CREQLIB) $(CLICOMMOBJS) \
 		$(SHLIBDIR)/libbdj4common$(SHLIB_EXT)
 	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh \
 		-link -exec $(MKC_ECHO) \
+		-r $(MKC_REQLIB) \
 		-r $(MKC_CREQLIB) \
 		-o $@ \
 		$(CLICOMMOBJS) \
@@ -292,9 +303,11 @@ LIBCOMMONOBJS = \
 	$(OBJDIR)/sysvars$(OBJ_EXT) \
 	$(OBJDIR)/tmutil$(OBJ_EXT)
 
-$(SHLIBDIR)/libbdj4common$(SHLIB_EXT): $(MKC_CREQLIB) $(LIBCOMMONOBJS)
+$(SHLIBDIR)/libbdj4common$(SHLIB_EXT): \
+		$(MKC_REQLIB) $(MKC_CREQLIB) $(LIBCOMMONOBJS)
 	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh \
 		-link -shared $(MKC_ECHO) -lib \
+		-r $(MKC_REQLIB) \
 		-r $(MKC_CREQLIB) \
 		-o $@ \
 		$(LIBCOMMONOBJS)
@@ -318,10 +331,11 @@ LIBBDJOBJS = \
 	$(OBJDIR)/sortopt$(OBJ_EXT) \
 	$(OBJDIR)/tagdef$(OBJ_EXT)
 
-$(SHLIBDIR)/libbdj4$(SHLIB_EXT): $(MKC_CREQLIB) $(LIBBDJOBJS) \
+$(SHLIBDIR)/libbdj4$(SHLIB_EXT): $(MKC_REQLIB) $(MKC_CREQLIB) $(LIBBDJOBJS) \
 		$(SHLIBDIR)/libbdj4common$(SHLIB_EXT)
 	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh \
 		-link -shared $(MKC_ECHO) -lib \
+		-r $(MKC_REQLIB) \
 		-r $(MKC_CREQLIB) \
 		-o $@ \
 		$(LIBBDJOBJS) \
@@ -337,10 +351,11 @@ LIBPLAYOBJS = \
 	$(OBJDIR)/volwin$(OBJ_EXT)
 
 $(SHLIBDIR)/libbdj4player$(SHLIB_EXT): \
-		$(MKC_PREQLIB) $(MKC_CREQLIB) $(LIBPLAYOBJS) \
+		$(MKC_REQLIB) $(MKC_PREQLIB) $(MKC_CREQLIB) $(LIBPLAYOBJS) \
 		$(SHLIBDIR)/libbdj4common$(SHLIB_EXT)
 	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh \
 		-link -shared $(MKC_ECHO) -lib \
+		-r $(MKC_REQLIB) \
 		-r $(MKC_PREQLIB) \
 		-r $(MKC_CREQLIB) \
 		-o $@ \
@@ -408,7 +423,7 @@ $(OBJDIR)/bdj4main$(OBJ_EXT): bdj4main.c bdj4init.h sockh.h sock.h config.h bdjv
  playlist.h datafile.h list.h
 $(OBJDIR)/bdj4player$(OBJ_EXT): bdj4player.c config.h bdjmsg.h bdjstring.h bdjvars.h \
  fileop.h list.h log.h fileutil.h sock.h sockh.h sysvars.h portability.h \
- vlci.h pathutil.h queue.h
+ vlci.h pconfig.h pathutil.h queue.h
 $(OBJDIR)/bdjmsg$(OBJ_EXT): bdjmsg.c config.h bdjmsg.h bdjstring.h
 $(OBJDIR)/bdjopt$(OBJ_EXT): bdjopt.c config.h bdjopt.h list.h datafile.h datautil.h \
  portability.h
@@ -436,8 +451,8 @@ $(OBJDIR)/check_process$(OBJ_EXT): check_process.c config.h process.h check_bdj.
 $(OBJDIR)/check_queue$(OBJ_EXT): check_queue.c config.h queue.h check_bdj.h portability.h \
  log.h fileutil.h
 $(OBJDIR)/check_rafile$(OBJ_EXT): check_rafile.c config.h rafile.h check_bdj.h
-$(OBJDIR)/check_sock$(OBJ_EXT): check_sock.c config.h sock.h check_bdj.h tmutil.h log.h \
- fileutil.h
+$(OBJDIR)/check_sock$(OBJ_EXT): check_sock.c config.h cconfig.h sock.h check_bdj.h tmutil.h \
+ log.h fileutil.h
 $(OBJDIR)/check_tmutil$(OBJ_EXT): check_tmutil.c config.h tmutil.h check_bdj.h
 $(OBJDIR)/clicomm$(OBJ_EXT): clicomm.c config.h sockh.h sock.h bdjmsg.h sysvars.h \
  portability.h bdjvars.h log.h fileutil.h tmutil.h
@@ -482,7 +497,8 @@ $(OBJDIR)/sysvars$(OBJ_EXT): sysvars.c config.h sysvars.h portability.h bdjstrin
  pathutil.h
 $(OBJDIR)/tagdef$(OBJ_EXT): tagdef.c config.h tagdef.h bdjstring.h list.h
 $(OBJDIR)/tmutil$(OBJ_EXT): tmutil.c config.h tmutil.h bdjstring.h
-$(OBJDIR)/vlci$(OBJ_EXT): vlci.c config.h vlci.h list.h bdjstring.h log.h fileutil.h
+$(OBJDIR)/vlci$(OBJ_EXT): vlci.c config.h vlci.h pconfig.h list.h bdjstring.h log.h \
+ fileutil.h
 $(OBJDIR)/volalsa$(OBJ_EXT): volalsa.c config.h
 $(OBJDIR)/volpa$(OBJ_EXT): volpa.c config.h volume.h
 $(OBJDIR)/volume$(OBJ_EXT): volume.c config.h volume.h

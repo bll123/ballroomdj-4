@@ -55,6 +55,7 @@ bdj4startup (int argc, char *argv[])
   char      tbuff [MAXPATHLEN];
 
   static struct option bdj_options [] = {
+    { "main",       no_argument,        NULL,   0 },
     { "profile",    required_argument,  NULL,   'p' },
     { NULL,         0,                  NULL,   0 }
   };

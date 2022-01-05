@@ -15,6 +15,9 @@
 #if _hdr_io
 # include <io.h>
 #endif
+#if _hdr_winsock2
+# include <winsock2.h>
+#endif
 #if _hdr_windows
 # include <windows.h>
 #endif
@@ -61,6 +64,7 @@ fileopCopy (char *fname, char *nfn)
   return rc;
 }
 
+/* link if possible, otherwise copy */
 int
 fileopCopyLink (char *fname, char *nfn)
 {
@@ -70,11 +74,28 @@ fileopCopyLink (char *fname, char *nfn)
   int       rc = -1;
 
   if (isWindows ()) {
-    pathToWinPath (fname, tfname, MAXPATHLEN);
-    pathToWinPath (nfn, tnfn, MAXPATHLEN);
-    snprintf (cmd, MAXPATHLEN, "copy /y/b \"%s\" \"%s\" >NUL",
-        tfname, tnfn);
-    rc = system (cmd);
+    int       haveWinSymLinks = 0;
+#if _lib_CreateSymbolicLink
+    ++haveWinSymLinks;
+#endif
+    if (atof (sysvars [SV_OSVERS]) >= 10.0 &&
+        atol (sysvars [SV_OSBUILD]) >= 14973) {
+      /* is windows ever going to allow symlinks?   */
+      /* only allowed in developer mode, sigh       */
+      ++haveWinSymLinks;
+    }
+
+    if (haveWinSymLinks == 3) {
+#if _lib_CreateSymbolicLink
+      rc = CreateSymbolicLink (nfn, fname, 0);
+#endif
+    } else {
+      pathToWinPath (fname, tfname, MAXPATHLEN);
+      pathToWinPath (nfn, tnfn, MAXPATHLEN);
+      snprintf (cmd, MAXPATHLEN, "copy /y/b \"%s\" \"%s\" >NUL",
+          tfname, tnfn);
+      rc = system (cmd);
+    }
   } else {
 #if _lib_symlink
     rc = symlink (fname, nfn);

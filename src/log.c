@@ -122,8 +122,8 @@ rlogVarMsg (logidx_t idx, bdjloglvl_t level,
   if (fn != NULL) {
     snprintf (tfn, MAXPATHLEN, "(%s: %d)", logTail (fn), line);
   }
-  size_t wlen = snprintf (wbuff, sizeof (wbuff), "%s: %-2s %*s%s %s\n",
-      ttm, l->processTag, l->indent, "", tbuff, tfn);
+  size_t wlen = (size_t) snprintf (wbuff, sizeof (wbuff),
+      "%s: %-2s %*s%s %s\n", ttm, l->processTag, l->indent, "", tbuff, tfn);
   if (fileWriteShared (&l->fhandle, wbuff, wlen) < 0) {
     fprintf (stderr, "log write failed: %d %s\n", errno, strerror (errno));
   }

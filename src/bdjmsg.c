@@ -15,7 +15,7 @@ msgEncode (long route, long msg, char *args, char *msgbuff, size_t mlen)
   if (args == NULL) {
     args = "";
   }
-  size_t len = snprintf (msgbuff, mlen, "%0*ld%c%0*ld%c%s",
+  size_t len = (size_t) snprintf (msgbuff, mlen, "%0*ld%c%0*ld%c%s",
       LSZ, route, '~', LSZ, msg, '~', args);
   ++len;
   return len;

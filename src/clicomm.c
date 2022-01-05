@@ -174,8 +174,6 @@ main (int argc, char *argv[])
       playerstart = 0;
     }
   }
-
-  return 0;
 }
 
 

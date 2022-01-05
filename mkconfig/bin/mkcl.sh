@@ -194,7 +194,7 @@ havesource=F
 
 if [ "$reqlibfiles" != "" ]; then
   for rf in $reqlibfiles; do
-    doappend olibs "`cat $rf`"
+    doappend olibs "`cat $rf` "
   done
 fi
 

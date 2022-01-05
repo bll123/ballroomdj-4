@@ -325,7 +325,7 @@ datafileParseMerge (list_t *nlist, char *data, char *name,
       long idx = dfkeyBinarySearch (dfkeys, dfkeycount, tkeystr);
       if (idx >= 0) {
         logMsg (LOG_DBG, LOG_LVL_8, "found %s idx: %ld", tkeystr, idx);
-        ikey = dfkeys [idx].itemkey;
+        ikey = (long) dfkeys [idx].itemkey;
         vt = dfkeys [idx].valuetype;
         logMsg (LOG_DBG, LOG_LVL_8, "ikey:%ld vt:%d tvalstr:%s", ikey, vt, tvalstr);
 

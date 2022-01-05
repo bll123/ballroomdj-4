@@ -64,6 +64,6 @@ danceConvSpeed (char *keydata, datafileret_t *ret)
 {
   ret->valuetype = VALUE_LONG;
   long idx = dfkeyBinarySearch (dancespeeddfkeys, DANCE_SPEED_DFKEY_COUNT, keydata);
-  ret->u.l = dancespeeddfkeys [idx].itemkey;
+  ret->u.l = (long) dancespeeddfkeys [idx].itemkey;
 }
 

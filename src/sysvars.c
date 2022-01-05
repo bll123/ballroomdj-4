@@ -10,6 +10,9 @@
 #if _sys_utsname
 # include <sys/utsname.h>
 #endif
+#if _hdr_winsock2
+# include <winsock2.h>
+#endif
 #if _hdr_windows
 # include <windows.h>
 #endif
@@ -30,7 +33,7 @@ sysvarsInit (const char *argv0)
   char          buff [MAXPATHLEN+1];
   struct stat   statbuf;
   int           rc;
-
+  char          *p;
 
 #if _lib_uname
   struct utsname      ubuf;
@@ -41,6 +44,7 @@ sysvarsInit (const char *argv0)
   /* ### fix osdisp this later */
   strlcpy (sysvars [SV_OSDISP], ubuf.sysname, MAXPATHLEN);
   strlcpy (sysvars [SV_OSVERS], ubuf.version, MAXPATHLEN);
+  strlcpy (sysvars [SV_OSBUILD], "", MAXPATHLEN);
 #endif
 #if _lib_GetVersionEx
   OSVERSIONINFOA osvi;
@@ -53,6 +57,8 @@ sysvarsInit (const char *argv0)
   strlcpy (sysvars [SV_OSDISP], "Windows ", MAXPATHLEN);
   snprintf (sysvars [SV_OSVERS], MAXPATHLEN, "%ld.%ld",
       osvi.dwMajorVersion, osvi.dwMinorVersion);
+  snprintf (sysvars [SV_OSBUILD], MAXPATHLEN, "%ld",
+      osvi.dwBuildNumber);
   if (strcmp (sysvars [SV_OSVERS], "5.0") == 0) {
     strlcat (sysvars [SV_OSDISP], "2000", MAXPATHLEN);
   }
@@ -77,6 +83,8 @@ sysvarsInit (const char *argv0)
   else {
     strlcat (sysvars [SV_OSDISP], sysvars [SV_OSVERS], MAXPATHLEN);
   }
+  strlcat (sysvars [SV_OSDISP], " ", MAXPATHLEN);
+  strlcat (sysvars [SV_OSDISP], sysvars [SV_OSBUILD], MAXPATHLEN);
 #endif
   gethostname (tbuf, MAXPATHLEN);
   strlcpy (sysvars [SV_HOSTNAME], tbuf, MAXPATHLEN);
@@ -104,7 +112,7 @@ sysvarsInit (const char *argv0)
   pathNormPath (buff, MAXPATHLEN);
 
   /* strip off the filename */
-  char *p = strrchr (buff, '/');
+  p = strrchr (buff, '/');
   *p = '\0';
   strlcpy (sysvars [SV_BDJ4EXECDIR], buff, MAXPATHLEN);
 
@@ -118,7 +126,7 @@ sysvarsInit (const char *argv0)
     strlcpy (sysvars [SV_BDJ4DIR], tcwd, MAXPATHLEN);
   } else {
     /* strip off the /bin */
-    char *p = strrchr (buff, '/');
+    p = strrchr (buff, '/');
     *p = '\0';
     strlcpy (sysvars [SV_BDJ4DIR], buff, MAXPATHLEN);
   }

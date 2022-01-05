@@ -68,7 +68,6 @@ sockhMainLoop (uint16_t listenPort, sockProcessMsg_t msgProc,
           case MSG_EXIT_FORCE: {
             logMsg (LOG_DBG, LOG_LVL_5, "force exit");
             exit (1);
-            break;
           }
           case MSG_SOCKET_CLOSE: {
             logMsg (LOG_DBG, LOG_LVL_5, "got: close socket");

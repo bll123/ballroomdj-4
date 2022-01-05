@@ -425,7 +425,7 @@ sockWriteBinary (Sock_t sock, char *data, size_t dlen)
   uint32_t    len;
   ssize_t     rc;
 
-  len = dlen;
+  len = (uint32_t) dlen;
   len = htonl (len);
   rc = sockWriteData (sock, (char *) &len, sizeof (len));
   if (rc < 0) {

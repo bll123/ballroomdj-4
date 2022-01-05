@@ -9,6 +9,7 @@ typedef enum {
 } programstate_t;
 
 typedef enum {
+  BDJV_UNKNOWN,
   BDJV_MAX,
 } bdjvarkey_t;
 

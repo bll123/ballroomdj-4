@@ -24,13 +24,13 @@ audioDisconnect (void) {
 int
 process (volaction_t action, char *sinkname, int *vol, char **sinklist)
 {
-  AudioDeviceID outputDeviceID;
-  UInt32 outputDeviceIDSize = sizeof (outputDeviceID);
-  OSStatus status;
+  AudioDeviceID   outputDeviceID;
+  UInt32          outputDeviceIDSize = sizeof (outputDeviceID);
+  OSStatus        status;
   AudioObjectPropertyAddress propertyAOPA;
-  Float32 volume;
-  UInt32 volumeSize = sizeof (volume);
-  int ivol;
+  Float32         volume;
+  UInt32          volumeSize = sizeof (volume);
+  int             ivol;
 
   propertyAOPA.mSelector = kAudioHardwarePropertyDefaultOutputDevice;
   propertyAOPA.mScope = kAudioObjectPropertyScopeGlobal;
@@ -53,7 +53,7 @@ process (volaction_t action, char *sinkname, int *vol, char **sinklist)
   propertyAOPA.mElement = kAudioObjectPropertyElementMaster;
 
   if (action == VOL_SET) {
-    volume = (Float32) *vol / 100.0;
+    volume = (Float32) ((double) (*vol) / 100.0);
     AudioObjectSetPropertyData(
         outputDeviceID,
         &propertyAOPA,
@@ -70,7 +70,7 @@ process (volaction_t action, char *sinkname, int *vol, char **sinklist)
       NULL,
       &volumeSize,
       &volume);
-  ivol = (int) round((double) volume * 100.0);
+  ivol = (int) (round((double) volume * 100.0));
   *vol = ivol;
   return 0;
 }

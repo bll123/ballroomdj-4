@@ -8,6 +8,7 @@
 typedef enum {
   SV_OSNAME,
   SV_OSVERS,
+  SV_OSBUILD,
   SV_OSDISP,
   SV_HOSTNAME,
   SV_BDJ4EXECDIR,     // where the executables are

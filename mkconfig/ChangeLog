@@ -1,8 +1,11 @@
 CHANGES
 
     2.6.4                                   --
+      CC: Added 'staticlib' directive.
       Env: Added 'addincpath' and 'addldsrchpath' directives.
       Env: Fixed addldpath/addcflags to handle multiple arguments.
+      Env: Added 'sharedliblinkflag' and 'staticliblinkflag'.
+      Env: Added 'shared_flags' directive that runs all shared options.
       Options: Fix mismatched naming.
       Options: Fix option test so it does not require an options file.
 

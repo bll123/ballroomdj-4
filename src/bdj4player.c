@@ -19,10 +19,10 @@
 #include "sock.h"
 #include "sockh.h"
 #include "sysvars.h"
-#include "vlci.h"
 #include "portability.h"
 #include "pathutil.h"
 #include "queue.h"
+#include "vlci.h"
 
 typedef struct {
   char          *songname;
@@ -72,6 +72,7 @@ main (int argc, char *argv[])
   int             option_index = 0;
 
   static struct option bdj_options [] = {
+    { "player",     no_argument,        NULL,   0 },
     { "profile",    required_argument,  NULL,   'p' },
     { NULL,         0,                  NULL,   0 }
   };

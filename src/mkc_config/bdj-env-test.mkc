@@ -81,10 +81,13 @@ if UsingCLANG == _MKCONFIG_USING_CLANG Y
  addcflag -Wno-shift-sign-overflow
  addcflag -Wno-reserved-macro-identifier
  addcflag -Wno-reserved-id-macro
- addcflag -Wno-documentation-deprecated-sync
  addcflag -Wno-implicit-int-conversion
  addcflag -Wno-switch-enum
  addcflag -Wno-gnu-zero-variadic-macro-arguments
+ addcflag -Wno-gnu-binary-literal
+ addcflag -Wno-documentation-deprecated-sync
+ addcflag -Wno-documentation-unknown-command
+ addcflag -Wno-documentation
 
  ifnotoption NO_PIE
   addcflag -fstack-protector-strong

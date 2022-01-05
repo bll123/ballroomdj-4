@@ -226,7 +226,7 @@ _c_chk_link () {
   _clotherlibs=$otherlibs
   if [ "$staticlib" = "T" ]; then
     _tolibs=${_clotherlibs}
-    _clotherlibs="$LDFLAGS_STATIC_LIB_LINK ${_tolibs} $LDFLAGS_SHARED_LIB_LINK"
+    _clotherlibs="$LDFLAGS_STATIC_LIB_LINK ${_tolibs} $LDFLAGS_SHARED_LIB_LINK "
     unset _tolibs
   fi
   if [ "${_clotherlibs}" != "" ]; then

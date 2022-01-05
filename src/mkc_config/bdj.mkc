@@ -31,10 +31,6 @@ hdr	windows.h
 # anything that might include windows.h should come next
 hdr	vlc/vlc.h
 
-if not_have_pkg_check ! _pkg_libs_check
-  hdr    check.h
-endif
-
 sys     select.h
 sys     socket.h
 sys	stat.h
@@ -51,6 +47,7 @@ lib     CloseHandle
 lib     CoInitialize -lole32
 lib     CreateFile
 lib     CreateProcess
+lib     CreateSymbolicLink
 lib     fcntl
 lib     fork
 lib     GetFullPathName
