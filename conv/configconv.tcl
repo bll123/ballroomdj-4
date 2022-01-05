@@ -57,7 +57,10 @@ foreach path [list {} profiles $hostname [file join $hostname profiles]] {
         if { [regexp {^KEY} $key] } {
           continue
         }
+        if { $key eq "ACOUSTID_CLIENT" } { continue }
         if { $key eq "DEBUGON" } { continue }
+        # debug level should be in the global; so just remove it.
+        if { $key eq "DEBUGLVL" } { continue }
         if { $key eq "MQDANCELOC" } { continue }
         if { $key eq "MQPROGBARCOLOR" } { continue }
         if { $key eq "MQSHOWARTIST" } { continue }
@@ -72,9 +75,13 @@ foreach path [list {} profiles $hostname [file join $hostname profiles]] {
         if { $key eq "INSTPASSWORD" } { continue }
         if { $key eq "NATIVEFILEDIALOGS" } { continue }
         if { $key eq "SCALEDWIDGETS" } { continue }
-
+        if { $key eq "MQDANCEFONTMULT" } { continue }
         if { $key eq "UITHEME" } { set value {} }
         if { $key eq "version" } { set value 10 }
+
+        if { $key eq "CLPATHFMT" } { set key PATHFMT_CL }
+        if { $key eq "CLVAPATHFMT" } { set key PATHFMT_CLVA }
+        if { $key eq "VAPATHFMT" } { set key PATHFMT_VA }
         if { $key eq "MUSICDIR" } { set key DIRMUSIC }
         if { $key eq "ORIGINALDIR" } { set key DIRORIGINAL }
         if { $key eq "DELETEDIR" } { set key DIRDELETE }

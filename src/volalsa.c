@@ -39,7 +39,8 @@ volumeDisconnect (void) {
 }
 
 int
-volumeProcess (volaction_t action, char *sinkname, int *vol, char **sinklist)
+volumeProcess (volaction_t action, char *sinkname,
+    int *vol, volsinklist_t *sinklist)
 {
   static snd_mixer_t    *handle = NULL;
   snd_mixer_elem_t      *elem;
@@ -50,7 +51,7 @@ volumeProcess (volaction_t action, char *sinkname, int *vol, char **sinklist)
   snd_mixer_selem_id_alloca (&sid);
 
   if (action == VOL_GETSINKLIST) {
-    /* regular expresssions */
+    /* regular expressions */
     regex_t               regex;
     int                   rc;
     regmatch_t            matches[3];
@@ -171,8 +172,17 @@ volumeProcess (volaction_t action, char *sinkname, int *vol, char **sinklist)
         }
       }
 
-      printf ("{%s %s} {%s} {%s}\n", cardlist[clidx].id,
-          cardlist[clidx].name, name, descr);
+      idx = sinklist->count;
+      ++sinklist->count;
+      sinklist->sinklist = realloc (sinklist->sinklist,
+          sinklist->count * sizeof (volsinkitem_t));
+      sinklist->sinklist [idx].defaultFlag = 0;
+      sinklist->sinklist [idx].idNumber = 0;
+      sinklist->sinklist [idx].name = strdup (name);
+      sinklist->sinklist [idx].description = strdup (description);
+
+      printf ("id: %s name: %s\n", cardlist[clidx].id, cardlist[clidx].name);
+//          cardlist[clidx].name, name, descr);
       if (descr != NULL) {
         free(descr);
       }

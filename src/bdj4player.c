@@ -24,6 +24,8 @@
 #include "queue.h"
 #include "pli.h"
 #include "process.h"
+#include "volume.h"
+#include "bdjopt.h"
 
 typedef struct {
   char          *songname;
@@ -36,6 +38,9 @@ typedef struct {
   plidata_t       *pliData;
   queue_t         *prepQueue;
   long            globalCount;
+  int             originalSystemVolume;
+  int             realVolume;
+  char            *defaultSink;
 } playerData_t;
 
 static int      playerProcessMsg (long route, long msg, char *args, void *udata);
@@ -60,6 +65,7 @@ main (int argc, char *argv[])
   playerData_t    playerData;
   int             c = 0;
   int             option_index = 0;
+  volsinklist_t   sinklist;
 
   static struct option bdj_options [] = {
     { "player",     no_argument,        NULL,   0 },
@@ -92,9 +98,38 @@ main (int argc, char *argv[])
   }
 
   bdjvarsInit ();
-  logStartAppend ("bdj4player", "p", LOG_LVL_5);
 
+  logStartAppend ("bdj4player", "p", LOG_LVL_5);
   logMsg (LOG_SESS, LOG_LVL_1, "Using profile %ld", lsysvars [SVL_BDJIDX]);
+
+  bdjoptInit ();
+
+  sinklist.defname = NULL;
+  sinklist.count = 0;
+  sinklist.sinklist = NULL;
+  volumeGetSinkList ("", &sinklist);
+  playerData.defaultSink = strdup (sinklist.defname);
+  playerData.originalSystemVolume = volumeGet (playerData.defaultSink);
+  playerData.realVolume = (int) bdjoptGetLong (OPT_P_DEFAULTVOLUME);
+  volumeSet (playerData.defaultSink, playerData.realVolume);
+
+  if (sinklist.sinklist != NULL) {
+    fprintf (stderr, "def: %s\n", sinklist.defname);
+    fprintf (stderr, "orig vol: %d\n", playerData.originalSystemVolume);
+    fprintf (stderr, "real vol: %d\n", playerData.realVolume);
+    for (size_t i = 0; i < sinklist.count; ++i) {
+      logMsg (LOG_DBG, LOG_LVL_3, "%d %3d %s %s\n",
+               sinklist.sinklist [i].defaultFlag,
+               sinklist.sinklist [i].idxNumber,
+               sinklist.sinklist [i].name,
+               sinklist.sinklist [i].description);
+      fprintf (stderr, "%d %3d %s %s\n",
+               sinklist.sinklist [i].defaultFlag,
+               sinklist.sinklist [i].idxNumber,
+               sinklist.sinklist [i].name,
+               sinklist.sinklist [i].description);
+    }
+  }
 
   playerData.pliData = pliInit ();
   assert (playerData.pliData != NULL);
@@ -109,11 +144,20 @@ main (int argc, char *argv[])
     playerClose (&playerData);
     pliFree (playerData.pliData);
   }
+
+  volumeSet (playerData.defaultSink, playerData.originalSystemVolume);
+  if (playerData.defaultSink != NULL) {
+    free (playerData.defaultSink);
+  }
+  volumeFreeSinkList (&sinklist);
+
   if (playerData.prepQueue != NULL) {
     playerCleanPrepSongs (&playerData);
     queueFree (playerData.prepQueue);
   }
   logEnd ();
+  bdjoptFree ();
+  bdjvarsCleanup ();
   playerData.programState = STATE_NOT_RUNNING;
   return 0;
 }

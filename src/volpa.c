@@ -22,13 +22,9 @@
 #include <pulse/pulseaudio.h>
 
 #include "volume.h"
+#include "bdjstring.h"
 
 static void getSinkCallback (pa_context *context, const pa_sink_info *i, int eol, void *userdata);
-
-typedef struct {
-  char      *defname;
-  void      *data;
-} getSinkData_t;
 
 #define STATE_OK    0
 #define STATE_WAIT  1
@@ -46,7 +42,7 @@ static int          ginit = 0;
 typedef union {
   char            *defname;
   pa_cvolume      *vol;
-  getSinkData_t   *sinkdata;
+  volsinklist_t   *sinklist;
 } callback_t;
 
 static void
@@ -199,19 +195,26 @@ getSinkCallback (
   void                  *userdata)
 {
   callback_t    *cbdata = (callback_t *) userdata;
-
-  char *defflag = "no";
+  int           defflag = 0;
+  size_t        idx;
 
   if (eol != 0) {
     pa_threaded_mainloop_signal (gstate.pamainloop, 0);
     return;
   }
-  if (strcmp (i->name, cbdata->sinkdata->defname) == 0) {
-    defflag = "yes";
+  if (strcmp (i->name, cbdata->sinklist->defname) == 0) {
+    defflag = 1;
   }
 
-  printf ("%s %d {%s} {%s}\n", defflag, i->index,
-       i->name, i->description);
+  idx = cbdata->sinklist->count;
+  ++cbdata->sinklist->count;
+  cbdata->sinklist->sinklist = realloc (cbdata->sinklist->sinklist,
+      cbdata->sinklist->count * sizeof (volsinkitem_t));
+  cbdata->sinklist->sinklist [idx].defaultFlag = defflag;
+  cbdata->sinklist->sinklist [idx].idxNumber = i->index;
+  cbdata->sinklist->sinklist [idx].name = strdup (i->name);
+  cbdata->sinklist->sinklist [idx].description = strdup (i->description);
+
   pa_threaded_mainloop_signal (gstate.pamainloop, 0);
 }
 
@@ -228,7 +231,8 @@ volumeDisconnect (void)
 }
 
 int
-volumeProcess (volaction_t action, char *sinkname, int *vol, char **sinklist)
+volumeProcess (volaction_t action, char *sinkname,
+    int *vol, volsinklist_t *sinklist)
 {
   pa_operation          *op;
   callback_t            cbdata;
@@ -258,7 +262,6 @@ volumeProcess (volaction_t action, char *sinkname, int *vol, char **sinklist)
 
   if (action == VOL_GETSINKLIST) {
     char            *defsinkname;
-    getSinkData_t   sinkdata;
 
     defsinkname = NULL;
     pa_threaded_mainloop_lock (gstate.pamainloop);
@@ -273,9 +276,10 @@ volumeProcess (volaction_t action, char *sinkname, int *vol, char **sinklist)
     pa_threaded_mainloop_unlock (gstate.pamainloop);
     defsinkname = cbdata.defname;
 
-    cbdata.sinkdata = &sinkdata;
-    sinkdata.defname = defsinkname;
-    sinkdata.data = sinklist;
+    sinklist->defname = strdup (defsinkname);
+    sinklist->sinklist = NULL;
+    sinklist->count = 0;
+    cbdata.sinklist = sinklist;
     pa_threaded_mainloop_lock (gstate.pamainloop);
     op = pa_context_get_sink_info_list (
         gstate.pacontext, &getSinkCallback, &cbdata);

@@ -1,22 +1,37 @@
 #ifndef INC_VOLUME
 #define INC_VOLUME
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 typedef enum {
   VOL_GET,
   VOL_SET,
   VOL_GETSINKLIST
 } volaction_t;
 
-#if defined (__cplusplus) || defined (c_plusplus)
-extern "C" {
-#endif
+typedef struct {
+  int       defaultFlag;
+  int       idxNumber;
+  char      *name;
+  char      *description;
+} volsinkitem_t;
 
-int volumeGet (char *sinkname);
-int volumeSet (char *sinkname, int vol);
-int volumeGetSinkList (char *sinkname, char **sinklist);
+typedef struct {
+  char            *defname;
+  size_t          count;
+  volsinkitem_t   *sinklist;
+} volsinklist_t;
 
-int process (volaction_t action, char *sinkname, int *vol, char **sinklist);
-void audioDisconnect (void);
+int     volumeGet (char *sinkname);
+int     volumeSet (char *sinkname, int vol);
+int     volumeGetSinkList (char *sinkname, volsinklist_t *sinklist);
+void    volumeFreeSinkList (volsinklist_t *sinklist);
+
+int     volumeProcess (volaction_t action, char *sinkname,
+            int *vol, volsinklist_t *sinklist);
+void    volumeDisconnect (void);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 }

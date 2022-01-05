@@ -33,7 +33,8 @@ volumeDisconnect (void) {
 }
 
 int
-volumeProcess (volaction_t action, char *sinkname, int *vol, char **sinklist)
+volumeProcess (volaction_t action, char *sinkname,
+    int *vol, volsinklist_t *sinklist)
 {
   IAudioEndpointVolume  *g_pEndptVol = NULL;
   HRESULT               hr = S_OK;

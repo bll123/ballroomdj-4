@@ -2,7 +2,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <string.h>
+#include <assert.h>
 
 #include "bdjopt.h"
 #include "datafile.h"
@@ -12,46 +14,44 @@
 static datafile_t   *bdjopt = NULL;
 
 static datafilekey_t bdjoptglobaldfkeys[] = {
-  { "AUTOORGANIZE",       OPT_G_AUTOORGANIZE,       VALUE_DATA, NULL },
-  { "CHANGESPACE",        OPT_G_CHANGESPACE,        VALUE_DATA, NULL },
-  { "CLPATHFMT",          OPT_G_CLPATHFMT,          VALUE_DATA, NULL },
-  { "CLVAPATHFMT",        OPT_G_CLVAPATHFMT,        VALUE_DATA, NULL },
-  { "DEBUGLVL",           OPT_G_DEBUGLVL,           VALUE_DATA, NULL },
+  { "AUTOORGANIZE",       OPT_G_AUTOORGANIZE,       VALUE_LONG, parseConvBoolean },
+  { "CHANGESPACE",        OPT_G_CHANGESPACE,        VALUE_LONG, parseConvBoolean },
+  { "DEBUGLVL",           OPT_G_DEBUGLVL,           VALUE_LONG, NULL },
+  { "ENABLEIMGPLAYER",    OPT_G_ENABLEIMGPLAYER,    VALUE_LONG, parseConvBoolean },
   { "ITUNESSUPPORT",      OPT_G_ITUNESSUPPORT,      VALUE_DATA, NULL },
-  { "LOADDANCEFROMGENRE", OPT_G_LOADDANCEFROMGENRE, VALUE_DATA, NULL },
+  { "LOADDANCEFROMGENRE", OPT_G_LOADDANCEFROMGENRE, VALUE_LONG, parseConvBoolean },
   { "MUSICDIRDFLT",       OPT_G_MUSICDIRDFLT,       VALUE_DATA, NULL },
   { "PATHFMT",            OPT_G_PATHFMT,            VALUE_DATA, NULL },
+  { "PATHFMT_CL",         OPT_G_PATHFMT_CL,         VALUE_DATA, NULL },
+  { "PATHFMT_CLVA",       OPT_G_PATHFMT_CLVA,       VALUE_DATA, NULL },
+  { "PATHFMT_VA",         OPT_G_PATHFMT_VA,         VALUE_DATA, NULL },
   { "PLAYER",             OPT_G_PLAYER,             VALUE_DATA, NULL },
-  { "PLAYERQLEN0",        OPT_G_PLAYERQLEN0,        VALUE_DATA, NULL },
-  { "PLAYERQLEN1",        OPT_G_PLAYERQLEN1,        VALUE_DATA, NULL },
+  { "PLAYERQLEN0",        OPT_G_PLAYERQLEN0,        VALUE_LONG, NULL },
+  { "PLAYERQLEN1",        OPT_G_PLAYERQLEN1,        VALUE_LONG, NULL },
   { "REMCONTROLHTML",     OPT_G_REMCONTROLHTML,     VALUE_DATA, NULL },
-  { "SHOWALBUM",          OPT_G_SHOWALBUM,          VALUE_DATA, NULL },
-  { "SHOWBPM",            OPT_G_SHOWBPM,            VALUE_DATA, NULL },
-  { "SHOWCLASSICAL",      OPT_G_SHOWCLASSICAL,      VALUE_DATA, NULL },
-  { "SHOWSTATUS",         OPT_G_SHOWSTATUS,         VALUE_DATA, NULL },
-  { "SHUTDOWNSCRIPT",     OPT_G_SHUTDOWNSCRIPT,     VALUE_DATA, NULL },
-  { "SLOWDEVICE",         OPT_G_SLOWDEVICE,         VALUE_DATA, NULL },
-  { "STARTMAXIMIZED",     OPT_G_STARTMAXIMIZED,     VALUE_DATA, NULL },
-  { "STARTUPSCRIPT",      OPT_G_STARTUPSCRIPT,      VALUE_DATA, NULL },
-  { "VAPATHFMT",          OPT_G_VAPATHFMT,          VALUE_DATA, NULL },
+  { "SHOWALBUM",          OPT_G_SHOWALBUM,          VALUE_LONG, parseConvBoolean },
+  { "SHOWBPM",            OPT_G_SHOWBPM,            VALUE_LONG, parseConvBoolean },
+  { "SHOWCLASSICAL",      OPT_G_SHOWCLASSICAL,      VALUE_LONG, parseConvBoolean },
+  { "SHOWSTATUS",         OPT_G_SHOWSTATUS,         VALUE_LONG, parseConvBoolean },
+  { "SLOWDEVICE",         OPT_G_SLOWDEVICE,         VALUE_LONG, parseConvBoolean },
+  { "STARTMAXIMIZED",     OPT_G_STARTMAXIMIZED,     VALUE_LONG, parseConvBoolean },
   { "VARIOUS",            OPT_G_VARIOUS,            VALUE_DATA, NULL },
   { "WRITETAGS",          OPT_G_WRITETAGS,          VALUE_DATA, NULL },
 };
 #define BDJOPT_GLOBAL_DFKEY_COUNT (sizeof (bdjoptglobaldfkeys) / sizeof (datafilekey_t))
 
 static datafilekey_t bdjoptprofiledfkeys[] = {
-  { "ALLOWEDIT",            OPT_P_ALLOWEDIT,            VALUE_DATA, NULL },
+  { "ALLOWEDIT",            OPT_P_ALLOWEDIT,            VALUE_LONG, parseConvBoolean },
   { "AUTOSTARTUP",          OPT_P_AUTOSTARTUP,          VALUE_DATA, NULL },
-  { "DEFAULTVOLUME",        OPT_P_DEFAULTVOLUME,        VALUE_DATA, NULL },
+  { "DEFAULTVOLUME",        OPT_P_DEFAULTVOLUME,        VALUE_LONG, NULL },
   { "DONEMSG",              OPT_P_DONEMSG,              VALUE_DATA, NULL },
-  { "ENABLEIMGPLAYER",      OPT_P_ENABLEIMGPLAYER,      VALUE_DATA, NULL },
-  { "FADEINTIME",           OPT_P_FADEINTIME,           VALUE_DATA, NULL },
-  { "FADEOUTTIME",          OPT_P_FADEOUTTIME,          VALUE_DATA, NULL },
+  { "FADEINTIME",           OPT_P_FADEINTIME,           VALUE_DOUBLE, NULL },
+  { "FADEOUTTIME",          OPT_P_FADEOUTTIME,          VALUE_DOUBLE, NULL },
   { "FADETYPE",             OPT_P_FADETYPE,             VALUE_DATA, NULL },
-  { "GAP",                  OPT_P_GAP,                  VALUE_DATA, NULL },
+  { "GAP",                  OPT_P_GAP,                  VALUE_DOUBLE, NULL },
   { "MAXPLAYTIME",          OPT_P_MAXPLAYTIME,          VALUE_DATA, NULL },
-  { "MOBILEMARQUEE",        OPT_P_MOBILEMARQUEE,        VALUE_DATA, NULL },
-  { "MOBILEMQPORT",         OPT_P_MOBILEMQPORT,         VALUE_DATA, NULL },
+  { "MOBILEMARQUEE",        OPT_P_MOBILEMARQUEE,        VALUE_LONG, parseConvBoolean },
+  { "MOBILEMQPORT",         OPT_P_MOBILEMQPORT,         VALUE_LONG, NULL },
   { "MOBILEMQTAG",          OPT_P_MOBILEMQTAG,          VALUE_DATA, NULL },
   { "MOBILEMQTITLE",        OPT_P_MOBILEMQTITLE,        VALUE_DATA, NULL },
   { "MQFONT",               OPT_P_MQFONT,               VALUE_DATA, NULL },
@@ -61,17 +61,17 @@ static datafilekey_t bdjoptprofiledfkeys[] = {
   { "PROFILENAME",          OPT_P_PROFILENAME,          VALUE_DATA, NULL },
   { "QUEUENAME0",           OPT_P_QUEUENAME0,           VALUE_DATA, NULL },
   { "QUEUENAME1",           OPT_P_QUEUENAME1,           VALUE_DATA, NULL },
-  { "QUICKPLAYENABLED",     OPT_P_QUICKPLAYENABLED,     VALUE_DATA, NULL },
-  { "QUICKPLAYSHOW",        OPT_P_QUICKPLAYSHOW,        VALUE_DATA, NULL },
+  { "QUICKPLAYENABLED",     OPT_P_QUICKPLAYENABLED,     VALUE_LONG, parseConvBoolean },
+  { "QUICKPLAYSHOW",        OPT_P_QUICKPLAYSHOW,        VALUE_LONG, parseConvBoolean },
   { "REMCONTROLPASS",       OPT_P_REMCONTROLPASS,       VALUE_DATA, NULL },
-  { "REMCONTROLPORT",       OPT_P_REMCONTROLPORT,       VALUE_DATA, NULL },
-  { "REMCONTROLSHOWDANCE",  OPT_P_REMCONTROLSHOWDANCE,  VALUE_DATA, NULL },
-  { "REMCONTROLSHOWSONG",   OPT_P_REMCONTROLSHOWSONG,   VALUE_DATA, NULL },
+  { "REMCONTROLPORT",       OPT_P_REMCONTROLPORT,       VALUE_LONG, NULL },
+  { "REMCONTROLSHOWDANCE",  OPT_P_REMCONTROLSHOWDANCE,  VALUE_LONG, parseConvBoolean },
+  { "REMCONTROLSHOWSONG",   OPT_P_REMCONTROLSHOWSONG,   VALUE_LONG, parseConvBoolean },
   { "REMCONTROLUSER",       OPT_P_REMCONTROLUSER,       VALUE_DATA, NULL },
-  { "REMOTECONTROL",        OPT_P_REMOTECONTROL,        VALUE_DATA, NULL },
+  { "REMOTECONTROL",        OPT_P_REMOTECONTROL,        VALUE_LONG, parseConvBoolean },
   { "SERVERNAME",           OPT_P_SERVERNAME,           VALUE_DATA, NULL },
   { "SERVERPASS",           OPT_P_SERVERPASS,           VALUE_DATA, NULL },
-  { "SERVERPORT",           OPT_P_SERVERPORT,           VALUE_DATA, NULL },
+  { "SERVERPORT",           OPT_P_SERVERPORT,           VALUE_LONG, NULL },
   { "SERVERTYPE",           OPT_P_SERVERTYPE,           VALUE_DATA, NULL },
   { "SERVERUSER",           OPT_P_SERVERUSER,           VALUE_DATA, NULL },
   { "UIACCENTCOLOR",        OPT_P_UIACCENTCOLOR,        VALUE_DATA, NULL },
@@ -88,12 +88,14 @@ static datafilekey_t bdjoptmachdfkeys[] = {
   { "DIRMUSICTMP",    OPT_M_DIR_MUSICTMP,   VALUE_DATA, NULL },
   { "DIRORIGINAL",    OPT_M_DIR_ORIGINAL,   VALUE_DATA, NULL },
   { "HOST",           OPT_M_HOST,           VALUE_DATA, NULL },
+  { "SHUTDOWNSCRIPT", OPT_M_SHUTDOWNSCRIPT, VALUE_DATA, NULL },
+  { "STARTUPSCRIPT",  OPT_M_STARTUPSCRIPT,  VALUE_DATA, NULL },
 };
 #define BDJOPT_MACHINE_DFKEY_COUNT (sizeof (bdjoptmachdfkeys) / sizeof (datafilekey_t))
 
 static datafilekey_t bdjoptmachprofiledfkeys[] = {
-  { "FONTSIZE",             OPT_MP_FONTSIZE,              VALUE_DATA, NULL },
-  { "LISTINGFONTSIZE",      OPT_MP_LISTINGFONTSIZE,       VALUE_DATA, NULL },
+  { "FONTSIZE",             OPT_MP_FONTSIZE,              VALUE_LONG, NULL },
+  { "LISTINGFONTSIZE",      OPT_MP_LISTINGFONTSIZE,       VALUE_LONG, NULL },
   { "PLAYEROPTIONS",        OPT_MP_PLAYEROPTIONS,         VALUE_DATA, NULL },
   { "PLAYERSHUTDOWNSCRIPT", OPT_MP_PLAYERSHUTDOWNSCRIPT,  VALUE_DATA, NULL },
   { "PLAYERSTARTSCRIPT",    OPT_MP_PLAYERSTARTSCRIPT,     VALUE_DATA, NULL },
@@ -149,11 +151,83 @@ bdjoptInit (void)
   datafileSetData (df, tlist);
   free (ddata);
 
+#if 0
+long tl;
+char *tval;
+char *tnm;
+long lval;
+valuetype_t vt;
+int found;
+llistStartIterator (tlist);
+while ((tl = llistIterateKeyLong (tlist)) >= 0) {
+  found = 0;
+  vt = llistGetValueType (tlist, tl);
+  for (size_t i = 0; ! found && i < BDJOPT_GLOBAL_DFKEY_COUNT; ++i) {
+    if (bdjoptglobaldfkeys [i].itemkey == tl) {
+      found = 1;
+      tnm = bdjoptglobaldfkeys [i].name;
+    }
+  }
+  for (size_t i = 0; ! found && i < BDJOPT_PROFILE_DFKEY_COUNT; ++i) {
+    if (bdjoptprofiledfkeys [i].itemkey == tl) {
+      found = 1;
+      tnm = bdjoptprofiledfkeys [i].name;
+    }
+  }
+  for (size_t i = 0; ! found && i < BDJOPT_MACHINE_DFKEY_COUNT; ++i) {
+    if (bdjoptmachdfkeys [i].itemkey == tl) {
+      found = 1;
+      tnm = bdjoptmachdfkeys [i].name;
+    }
+  }
+  for (size_t i = 0; ! found && i < BDJOPT_MACH_PROFILE_DFKEY_COUNT; ++i) {
+    if (bdjoptmachprofiledfkeys [i].itemkey == tl) {
+      found = 1;
+      tnm = bdjoptmachprofiledfkeys [i].name;
+    }
+  }
+  if (vt == VALUE_DATA) {
+    tval = (char *) llistGetData (tlist, tl);
+    fprintf (stderr, "%ld: %s %s\n", tl, tnm, tval);
+  }
+  if (vt == VALUE_LONG) {
+    lval = llistGetLong (tlist, tl);
+    fprintf (stderr, "%ld: %s %ld\n", tl, tnm, lval);
+  }
+}
+#endif
+
   bdjopt = df;
 }
 
 void
 bdjoptFree (void)
 {
-  datafileFree (bdjopt);
+  if (bdjopt != NULL) {
+    datafileFree (bdjopt);
+  }
+  bdjopt = NULL;
+}
+
+
+void *
+bdjoptGetData (size_t idx)
+{
+  void      *value = NULL;
+
+  if (bdjopt == NULL) {
+    return NULL;
+  }
+  value = llistGetData (bdjopt->data, idx);
+  return value;
+}
+
+long
+bdjoptGetLong (size_t idx)
+{
+  if (bdjopt == NULL) {
+    return 0;
+  }
+  long value = llistGetLong (bdjopt->data, idx);
+  return value;
 }

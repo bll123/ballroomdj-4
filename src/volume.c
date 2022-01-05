@@ -25,7 +25,6 @@ volumeSet (char *sinkname, int vol)
 {
   int               rc;
 
-  vol = 0;
   rc = volumeProcess (VOL_SET, sinkname, &vol, NULL);
   volumeDisconnect ();
   return vol;
@@ -33,7 +32,7 @@ volumeSet (char *sinkname, int vol)
 
 
 int
-volumeGetSinkList (char *sinkname, char **sinklist)
+volumeGetSinkList (char *sinkname, volsinklist_t *sinklist)
 {
   int               rc;
   int               vol;
@@ -44,4 +43,26 @@ volumeGetSinkList (char *sinkname, char **sinklist)
   return vol;
 }
 
+void
+volumeFreeSinkList (volsinklist_t *sinklist)
+{
+  if (sinklist != NULL) {
+    if (sinklist->defname != NULL) {
+      free (sinklist->defname);
+      sinklist->defname = NULL;
+    }
+    if (sinklist->sinklist != NULL) {
+      for (size_t i = 0; i < sinklist->count; ++i) {
+        if (sinklist->sinklist [i].name != NULL) {
+          free (sinklist->sinklist [i].name);
+        }
+        if (sinklist->sinklist [i].description != NULL) {
+          free (sinklist->sinklist [i].description);
+        }
+      }
+      free (sinklist->sinklist);
+      sinklist->sinklist = NULL;
+    }
+  }
+}
 

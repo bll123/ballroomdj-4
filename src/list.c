@@ -54,6 +54,9 @@ listFree (void *tlist)
   list_t *list = (list_t *) tlist;
 
   if (list != NULL) {
+    if (list->cacheHits > 0) {
+      logMsg (LOG_DBG, LOG_LVL_1, "list %s: %ld cache hits", list->name, list->cacheHits);
+    }
     if (list->name != NULL) {
       free (list->name);
       list->name = NULL;
@@ -72,9 +75,6 @@ listFree (void *tlist)
       free (list->keyCache.strkey);
       list->keyCache.strkey = NULL;
       list->locCache = LIST_LOC_INVALID;
-    }
-    if (list->cacheHits > 0) {
-      logMsg (LOG_DBG, LOG_LVL_1, "list %s: %ld cache hits", list->name, list->cacheHits);
     }
     free (list);
   }
@@ -198,6 +198,20 @@ list_t *
 listGetList (list_t *list, char *keydata)
 {
   return listGetData (list, keydata);
+}
+
+valuetype_t
+listGetValueType (list_t *list, char *keydata)
+{
+  listkey_t       key;
+  long            idx;
+
+  key.strkey = keydata;
+  idx = listGetIdx (list, &key);
+  if (idx >= 0) {
+    return list->data [idx].valuetype;
+  }
+  return VALUE_NONE;
 }
 
 long
@@ -386,6 +400,20 @@ list_t *
 llistGetList (list_t *list, long lkey)
 {
   return llistGetData (list, lkey);
+}
+
+valuetype_t
+llistGetValueType (list_t *list, long lkey)
+{
+  listkey_t       key;
+  long            idx;
+
+  key.lkey = lkey;
+  idx = listGetIdx (list, &key);
+  if (idx >= 0) {
+    return list->data [idx].valuetype;
+  }
+  return VALUE_NONE;
 }
 
 inline void
