@@ -66,7 +66,7 @@ fileopCopy (char *fname, char *nfn)
 
 /* link if possible, otherwise copy */
 int
-fileopCopyLink (char *fname, char *nfn)
+fileopLinkCopy (char *fname, char *nfn)
 {
   char      cmd [MAXPATHLEN];
   char      tfname [MAXPATHLEN];

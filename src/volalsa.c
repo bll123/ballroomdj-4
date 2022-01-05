@@ -34,12 +34,12 @@ typedef struct cardlist {
 } cardlist_t;
 
 void
-audioDisconnect (void) {
+volumeDisconnect (void) {
   return;
 }
 
 int
-process (volaction_t action, char *sinkname, int *vol, char **sinklist)
+volumeProcess (volaction_t action, char *sinkname, int *vol, char **sinklist)
 {
   static snd_mixer_t    *handle = NULL;
   snd_mixer_elem_t      *elem;

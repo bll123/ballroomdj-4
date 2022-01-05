@@ -22,7 +22,7 @@
 #include "portability.h"
 #include "pathutil.h"
 #include "queue.h"
-#include "vlci.h"
+#include "pli.h"
 
 typedef struct {
   char          *songname;
@@ -32,7 +32,7 @@ typedef struct {
 typedef struct {
   programstate_t  programState;
   Sock_t          mainSock;
-  vlcData_t       *vlcData;
+  plidata_t       *pliData;
   queue_t         *prepQueue;
   long            globalCount;
 } playerData_t;
@@ -49,21 +49,6 @@ static void     playerStop (playerData_t *playerData);
 static void     playerClose (playerData_t *playerData);
 static void     prepQueueFree (void *);
 
-static char *   vlcDefaultOptions [] = {
-      "--quiet",
-      "--intf=dummy",
-      "--audio-filter", "scaletempo",
-      "--ignore-config",
-      "--no-media-library",
-      "--no-playlist-autostart",
-      "--no-random",
-      "--no-loop",
-      "--no-repeat",
-      "--play-and-stop",
-      "--novideo",
-};
-#define VLC_DFLT_OPT_SZ (sizeof (vlcDefaultOptions) / sizeof (char *))
-
 int
 main (int argc, char *argv[])
 {
@@ -79,7 +64,7 @@ main (int argc, char *argv[])
 
   playerData.programState = STATE_INITIALIZING;
   playerData.mainSock = INVALID_SOCKET;
-  playerData.vlcData = NULL;
+  playerData.pliData = NULL;
   playerData.prepQueue = queueAlloc (prepQueueFree);
   playerData.globalCount = 1;
 
@@ -104,17 +89,18 @@ main (int argc, char *argv[])
 
   logMsg (LOG_SESS, LOG_LVL_1, "Using profile %ld", lsysvars [SVL_BDJIDX]);
 
-  playerData.vlcData = vlcInit (VLC_DFLT_OPT_SZ, vlcDefaultOptions);
-  assert (playerData.vlcData != NULL);
+  playerData.pliData = pliInit ();
+  assert (playerData.pliData != NULL);
 
   playerData.programState = STATE_RUNNING;
 
   uint16_t listenPort = bdjvarsl [BDJVL_PLAYER_PORT];
   sockhMainLoop (listenPort, processMsg, mainProcessing, &playerData);
 
-  if (playerData.vlcData != NULL) {
+  if (playerData.pliData != NULL) {
     playerStop (&playerData);
     playerClose (&playerData);
+    pliFree (playerData.pliData);
   }
   if (playerData.prepQueue != NULL) {
     queueFree (playerData.prepQueue);
@@ -240,7 +226,7 @@ songPrep (playerData_t *playerData, char *sfname)
    * Symlinks work on Linux/Mac OS.
    */
   fileopDelete (stname);
-  fileopCopyLink (tsfname, stname);
+  fileopLinkCopy (tsfname, stname);
   if (! fileopExists (stname)) {
     logMsg (LOG_DBG, LOG_LVL_1, "ERR: file copy failed: %s\n", stname);
     logProcEnd (LOG_LVL_2, "songPrep", "copy-failed");
@@ -285,8 +271,8 @@ songPlay (playerData_t *playerData, char *sfname)
     return;
   }
 
-  vlcMedia (playerData->vlcData, stname);
-  vlcPlay (playerData->vlcData);
+  pliMediaSetup (playerData->pliData, stname);
+  pliStartPlayback (playerData->pliData);
   logProcEnd (LOG_LVL_2, "songPlay", "");
 }
 
@@ -320,25 +306,25 @@ songMakeTempName (playerData_t *playerData, char *in, char *out, size_t maxlen)
 static void
 playerPause (playerData_t *playerData)
 {
-  vlcPause (playerData->vlcData);
+  pliPause (playerData->pliData);
 }
 
 static void
 playerPlay (playerData_t *playerData)
 {
-  vlcPlay (playerData->vlcData);
+  pliPlay (playerData->pliData);
 }
 
 static void
 playerStop (playerData_t *playerData)
 {
-  vlcStop (playerData->vlcData);
+  pliStop (playerData->pliData);
 }
 
 static void
 playerClose (playerData_t *playerData)
 {
-  vlcClose (playerData->vlcData);
+  pliClose (playerData->pliData);
 }
 
 static void

@@ -17,12 +17,12 @@
  */
 
 void
-audioDisconnect (void) {
+volumeDisconnect (void) {
   return;
 }
 
 int
-process (volaction_t action, char *sinkname, int *vol, char **sinklist)
+volumeProcess (volaction_t action, char *sinkname, int *vol, char **sinklist)
 {
   AudioDeviceID   outputDeviceID;
   UInt32          outputDeviceIDSize = sizeof (outputDeviceID);

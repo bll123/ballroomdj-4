@@ -153,7 +153,7 @@ pulse_disconnect (void)
 }
 
 static void
-processfailure (char *name)
+volumeProcessFailure (char *name)
 {
   int       rc;
 
@@ -179,7 +179,7 @@ init_context (void) {
   pa_proplist_free (paprop);
   if (gstate.pacontext == NULL) {
     pa_threaded_mainloop_unlock (gstate.pamainloop);
-    processfailure ("new context");
+    volumeProcessFailure ("new context");
     return;
   }
 
@@ -216,7 +216,8 @@ getSinkCallback (
 }
 
 void
-audioDisconnect (void) {
+volumeDisconnect (void)
+{
   /*
    * If this program is made efficient by keeping a connection open
    * to pulseaudio, then pulseaudio will reset the audio track volume
@@ -227,7 +228,7 @@ audioDisconnect (void) {
 }
 
 int
-process (volaction_t action, char *sinkname, int *vol, char **sinklist)
+volumeProcess (volaction_t action, char *sinkname, int *vol, char **sinklist)
 {
   pa_operation          *op;
   callback_t            cbdata;
@@ -251,7 +252,7 @@ process (volaction_t action, char *sinkname, int *vol, char **sinklist)
   pa_threaded_mainloop_unlock (gstate.pamainloop);
 
   if (gstate.pastate != PA_CONTEXT_READY) {
-    processfailure ("init context");
+    volumeProcessFailure ("init context");
     return -1;
   }
 
@@ -265,7 +266,7 @@ process (volaction_t action, char *sinkname, int *vol, char **sinklist)
         gstate.pacontext, &serverInfoCallback, &cbdata);
     if (! op) {
       pa_threaded_mainloop_unlock (gstate.pamainloop);
-      processfailure ("serverinfo");
+      volumeProcessFailure ("serverinfo");
       return -1;
     }
     waitop (op);
@@ -280,7 +281,7 @@ process (volaction_t action, char *sinkname, int *vol, char **sinklist)
         gstate.pacontext, &getSinkCallback, &cbdata);
     if (! op) {
       pa_threaded_mainloop_unlock (gstate.pamainloop);
-      processfailure ("getsink");
+      volumeProcessFailure ("getsink");
       return -1;
     }
     waitop (op);
@@ -299,7 +300,7 @@ process (volaction_t action, char *sinkname, int *vol, char **sinklist)
         gstate.pacontext, sinkname, &sinkVolCallback, &cbdata);
     if (! op) {
       pa_threaded_mainloop_unlock (gstate.pamainloop);
-      processfailure ("getsinkbyname");
+      volumeProcessFailure ("getsinkbyname");
       return -1;
     }
     waitop (op);
@@ -325,7 +326,7 @@ process (volaction_t action, char *sinkname, int *vol, char **sinklist)
           gstate.pacontext, sinkname, nvol, nullCallback, &cbdata);
       if (! op) {
         pa_threaded_mainloop_unlock (gstate.pamainloop);
-        processfailure ("setvol");
+        volumeProcessFailure ("setvol");
         return -1;
       }
       waitop (op);
@@ -337,7 +338,7 @@ process (volaction_t action, char *sinkname, int *vol, char **sinklist)
         gstate.pacontext, sinkname, &sinkVolCallback, &cbdata);
     if (! op) {
       pa_threaded_mainloop_unlock (gstate.pamainloop);
-      processfailure ("getvol");
+      volumeProcessFailure ("getvol");
       return -1;
     }
     waitop (op);

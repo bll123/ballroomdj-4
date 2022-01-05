@@ -15,8 +15,8 @@ volumeGet (char *sinkname)
   int               rc;
 
   vol = 0;
-  rc = process (VOL_GET, sinkname, &vol, NULL);
-  audioDisconnect ();
+  rc = volumeProcess (VOL_GET, sinkname, &vol, NULL);
+  volumeDisconnect ();
   return vol;
 }
 
@@ -26,8 +26,8 @@ volumeSet (char *sinkname, int vol)
   int               rc;
 
   vol = 0;
-  rc = process (VOL_SET, sinkname, &vol, NULL);
-  audioDisconnect ();
+  rc = volumeProcess (VOL_SET, sinkname, &vol, NULL);
+  volumeDisconnect ();
   return vol;
 }
 
@@ -39,8 +39,8 @@ volumeGetSinkList (char *sinkname, char **sinklist)
   int               vol;
 
   vol = 0;
-  rc = process (VOL_GETSINKLIST, sinkname, &vol, sinklist);
-  audioDisconnect ();
+  rc = volumeProcess (VOL_GETSINKLIST, sinkname, &vol, sinklist);
+  volumeDisconnect ();
   return vol;
 }
 

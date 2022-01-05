@@ -6,10 +6,11 @@ syntax: regexp
 ^dev/
 ^locale/
 ^packages/
-^src/config.h$
+^src/config\.h$
+^src/.config\.h$
 ^src/objects/
 ^src/.*\.env$
-^src/.*\.reqlibs$
+^src/bdj-reqlibs
 ^src/w$
 ^src/check_all$
 ^src/bdj4$

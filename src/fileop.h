@@ -11,7 +11,7 @@
 int           fileopExists (char *);
 int           fileopDelete (const char *fname);
 int           fileopCopy (char *, char *);
-int           fileopCopyLink (char *, char *);
+int           fileopLinkCopy (char *, char *);
 int           fileopMove (char *, char *);
 int           fileopMakeDir (char *dirname);
 

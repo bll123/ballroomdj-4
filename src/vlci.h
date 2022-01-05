@@ -52,6 +52,4 @@ void              vlcRelease (vlcData_t *vlcData);
 void              vlcExitHandler (vlcData_t *vlcData);
 void              vlcEventHandler (const struct libvlc_event_t *event, void *);
 
-
-
 #endif /* INC_VLCI_H */

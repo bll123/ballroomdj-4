@@ -1,8 +1,10 @@
-
-#define SILENCE_LOG       0 /* vlc */
-#define STATE_TO_VALUE    0 /* vlc */
-
 #include "config.h"
+#include "pconfig.h"
+
+#if _lib_libvlc_new
+
+#define SILENCE_LOG       1 /* vlc */
+#define STATE_TO_VALUE    0 /* vlc */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -51,7 +53,7 @@ static libvlc_state_t stateToValue (char *name);
 #endif
 #if SILENCE_LOG
 static void silence (void *data, int level, const libvlc_log_t *ctx,
-    const char *fmt, va_list args)
+    const char *fmt, va_list args);
 #endif
 
 /* get media values */
@@ -513,7 +515,7 @@ stateToStr (libvlc_state_t state)
   return tptr;
 }
 
-#if STATE_TO_VALUE
+# if STATE_TO_VALUE
 
 static libvlc_state_t
 stateToValue (char *name)
@@ -531,13 +533,15 @@ stateToValue (char *name)
   return state;
 }
 
-#endif
+# endif
 
-#if SILENCE_LOG
+# if SILENCE_LOG
 static void
 silence (void *data, int level, const libvlc_log_t *ctx,
     const char *fmt, va_list args)
 {
+  return;
 }
-#endif
+# endif
 
+#endif /* have libvlc_new() */
