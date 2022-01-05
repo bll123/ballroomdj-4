@@ -8,6 +8,7 @@
 #include <assert.h>
 #include <getopt.h>
 #include <ctype.h>
+#include <unistd.h>
 
 #include "bdjmsg.h"
 #include "bdjstring.h"
@@ -206,6 +207,7 @@ mainProcessing (void *udata)
 static void
 songPrep (playerData_t *playerData, char *sfname)
 {
+  char            tsfname [MAXPATHLEN];  // testing: remove later
   char            stname [MAXPATHLEN];
   prepqueue_t     *pq;
 
@@ -224,11 +226,20 @@ songPrep (playerData_t *playerData, char *sfname)
   /* TODO: if we are in client/server mode, then need to request the song
    * from the server and save it
    */
+  songMakeTempName (playerData, sfname, stname, sizeof (stname));
+  if (*sfname != '/') {
+    /* ### FIX: remove later: for testing */
+    (void) ! getcwd (tsfname, MAXPATHLEN);
+    strlcat (tsfname, "/", MAXPATHLEN);
+    strlcat (tsfname, sfname, MAXPATHLEN);
+  }
+
   /* VLC still cannot handle internationalized names.
    * I wonder how they handle them internally.
+   * Symlinks work on Linux/Mac OS.
    */
-  songMakeTempName (playerData, sfname, stname, sizeof (stname));
-  fileopCopy (sfname, stname);
+  fileopDelete (stname);
+  fileopCopyLink (tsfname, stname);
   if (! fileopExists (stname)) {
     logMsg (LOG_DBG, LOG_LVL_1, "ERR: file copy failed: %s\n", stname);
     logProcEnd (LOG_LVL_2, "songPrep", "copy-failed");
@@ -289,7 +300,7 @@ songMakeTempName (playerData_t *playerData, char *in, char *out, size_t maxlen)
 
   idx = 0;
   for (char *p = pi->filename; *p && idx < maxlen; ++p) {
-    if (isascii (*p) && isgraph (*p)) {
+    if ((isascii (*p) && isalnum (*p)) || *p == '.' ) {
       tnm [idx++] = *p;
     }
   }
@@ -300,6 +311,7 @@ songMakeTempName (playerData_t *playerData, char *in, char *out, size_t maxlen)
     /* the global count so we don't stomp on ourselves              */
   snprintf (out, maxlen, "tmp/%ld-%ld-%s", lsysvars [SVL_BDJIDX],
       playerData->globalCount, tnm);
+  ++playerData->globalCount;
 }
 
 /* internal routines - player handling */

@@ -29,10 +29,10 @@ sysvarsInit (const char *argv0)
   char          tcwd [MAXPATHLEN+1];
   char          buff [MAXPATHLEN+1];
   struct stat   statbuf;
+  int           rc;
 
 
 #if _lib_uname
-  int                 rc;
   struct utsname      ubuf;
 
   rc = uname (&ubuf);

@@ -62,6 +62,28 @@ fileopCopy (char *fname, char *nfn)
 }
 
 int
+fileopCopyLink (char *fname, char *nfn)
+{
+  char      cmd [MAXPATHLEN];
+  char      tfname [MAXPATHLEN];
+  char      tnfn [MAXPATHLEN];
+  int       rc = -1;
+
+  if (isWindows ()) {
+    pathToWinPath (fname, tfname, MAXPATHLEN);
+    pathToWinPath (nfn, tnfn, MAXPATHLEN);
+    snprintf (cmd, MAXPATHLEN, "copy /y/b \"%s\" \"%s\" >NUL",
+        tfname, tnfn);
+    rc = system (cmd);
+  } else {
+#if _lib_symlink
+    rc = symlink (fname, nfn);
+#endif
+  }
+  return rc;
+}
+
+int
 fileopMove (char *fname, char *nfn)
 {
   int       rc = -1;

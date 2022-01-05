@@ -57,6 +57,9 @@ main (int argc, char *argv[])
       rval = fgets (buff, sizeof (buff), stdin);
       buff [strlen (buff) - 1] = '\0';
       processBuff (buff);
+      if (strcmp (buff, "") == 0) {
+        break;
+      }
       if (strcmp (buff, "main") == 0) {
         route = ROUTE_MAIN;
         routeok = 1;
@@ -89,6 +92,9 @@ main (int argc, char *argv[])
       buff [strlen (buff) - 1] = '\0';
       processBuff (buff);
       msgok = 0;
+      if (strcmp (buff, "") == 0) {
+        break;
+      }
       if (strcmp (buff, "start-player") == 0) {
         msg = MSG_PLAYER_START;
         msgok = 1;
