@@ -7,6 +7,7 @@
 #include <string.h>
 #include <errno.h>
 #include <unistd.h>
+#include <signal.h>
 
 #if _hdr_winsock2
 # include <winsock2.h>
@@ -144,6 +145,7 @@ processStart (const char *fn, pid_t *pid, long profile)
 void
 processCatchSignals (void (*sigHandler)(int))
 {
+#if _lib_sigaction
   struct sigaction    sigact;
   struct sigaction    oldact;
 
@@ -152,4 +154,12 @@ processCatchSignals (void (*sigHandler)(int))
   sigaction (SIGHUP, &sigact, &oldact);       /* 1: hangup      */
   sigaction (SIGINT, &sigact, &oldact);       /* 2: interrupt   */
   sigaction (SIGTERM, &sigact, &oldact);      /* 15: terminate  */
+#endif
+#if ! _lib_sigaction && _lib_signal
+# if _define_SIGHUP
+  signal (SIGHUP, sigHandler);
+# endif
+  signal (SIGINT, sigHandler);
+  signal (SIGTERM, sigHandler);
+#endif
 }

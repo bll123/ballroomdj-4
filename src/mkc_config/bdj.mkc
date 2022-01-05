@@ -60,6 +60,8 @@ lib     OpenProcess
 lib     realpath
 lib     select -lws2_32
 lib     SetDllDirectory
+lib     sigaction
+lib     signal
 lib     socket -lws2_32
 # linux would require -lbsd; let's just use our own.
 lib	strlcpy
@@ -77,6 +79,7 @@ args noconst mkdir
 define  INVALID_SOCKET
 define  O_SYNC
 define  O_CLOEXEC
+define  SIGHUP
 define  S_IRWXU
 define  SO_REUSEPORT
 define  SOCK_CLOEXEC
