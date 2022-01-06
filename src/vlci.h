@@ -2,7 +2,7 @@
 #define INC_VLCI_H
 
 #include "config.h"
-#include "pconfig.h"
+#include "configp.h"
 
 /* winsock2.h should come before windows.h */
 #if _hdr_winsock2

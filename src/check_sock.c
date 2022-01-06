@@ -1,5 +1,5 @@
 #include "config.h"
-#include "cconfig.h"
+#include "configc.h"
 
 #include <stdio.h>
 #include <stdlib.h>

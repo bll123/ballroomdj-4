@@ -1,7 +1,7 @@
 loadunit env-systype
 loadunit c-main
 
-output pconfig.h
+output configp.h
 
 standard_system
 standard

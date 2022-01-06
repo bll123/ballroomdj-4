@@ -1,5 +1,5 @@
 #include "config.h"
-#include "pconfig.h"
+#include "configp.h"
 
 #if _lib_libvlc_new
 

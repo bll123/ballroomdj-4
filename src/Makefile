@@ -23,9 +23,9 @@ MKC_PREFIX = bdj
 MKC_CONFDIR = mkc_config
 MKC_FILES = mkc_files
 MKC_OUTPUT = config.h
-MKC_COUTPUT = cconfig.h
-MKC_POUTPUT = pconfig.h
-MKC_TOUTPUT = tconfig.h
+MKC_COUTPUT = configc.h
+MKC_POUTPUT = configp.h
+MKC_TOUTPUT = configt.h
 MKC_ENV_SHR = $(MKC_PREFIX)-shared.env
 MKC_ENV_TEST = $(MKC_PREFIX)-test.env
 
@@ -426,7 +426,7 @@ $(OBJDIR)/bdj4main$(OBJ_EXT): bdj4main.c config.h bdj4init.h sockh.h sock.h bdjv
  playlist.h datafile.h list.h song.h queue.h musicq.h plq.h
 $(OBJDIR)/bdj4player$(OBJ_EXT): bdj4player.c config.h bdjmsg.h bdjstring.h bdjvars.h \
  fileop.h list.h log.h fileutil.h sock.h sockh.h sysvars.h portability.h \
- pathutil.h queue.h pli.h vlci.h pconfig.h process.h volume.h bdjopt.h
+ pathutil.h queue.h pli.h vlci.h configp.h process.h volume.h bdjopt.h
 $(OBJDIR)/bdjmsg$(OBJ_EXT): bdjmsg.c config.h bdjmsg.h bdjstring.h
 $(OBJDIR)/bdjopt$(OBJ_EXT): bdjopt.c config.h bdjopt.h list.h datafile.h datautil.h \
  portability.h
@@ -454,7 +454,7 @@ $(OBJDIR)/check_process$(OBJ_EXT): check_process.c config.h process.h check_bdj.
 $(OBJDIR)/check_queue$(OBJ_EXT): check_queue.c config.h queue.h check_bdj.h portability.h \
  log.h fileutil.h
 $(OBJDIR)/check_rafile$(OBJ_EXT): check_rafile.c config.h rafile.h check_bdj.h
-$(OBJDIR)/check_sock$(OBJ_EXT): check_sock.c config.h cconfig.h sock.h check_bdj.h tmutil.h \
+$(OBJDIR)/check_sock$(OBJ_EXT): check_sock.c configc.h sock.h config.h check_bdj.h tmutil.h \
  log.h fileutil.h
 $(OBJDIR)/check_tmutil$(OBJ_EXT): check_tmutil.c config.h tmutil.h check_bdj.h
 $(OBJDIR)/clicomm$(OBJ_EXT): clicomm.c config.h sockh.h sock.h bdjmsg.h sysvars.h \
@@ -485,7 +485,7 @@ $(OBJDIR)/pathutil$(OBJ_EXT): pathutil.c config.h bdjstring.h pathutil.h portabi
 $(OBJDIR)/playlist$(OBJ_EXT): playlist.c config.h playlist.h datafile.h list.h song.h \
  fileop.h portability.h datautil.h rating.h level.h dance.h songlist.h \
  sequence.h log.h fileutil.h
-$(OBJDIR)/plivlc$(OBJ_EXT): plivlc.c config.h pconfig.h pli.h vlci.h list.h
+$(OBJDIR)/plivlc$(OBJ_EXT): plivlc.c config.h configp.h pli.h vlci.h list.h
 $(OBJDIR)/plq$(OBJ_EXT): plq.c config.h plq.h queue.h playlist.h datafile.h list.h song.h
 $(OBJDIR)/process$(OBJ_EXT): process.c config.h process.h log.h fileutil.h
 $(OBJDIR)/queue$(OBJ_EXT): queue.c config.h queue.h
@@ -509,7 +509,7 @@ $(OBJDIR)/sysvars$(OBJ_EXT): sysvars.c config.h sysvars.h portability.h bdjstrin
  pathutil.h
 $(OBJDIR)/tagdef$(OBJ_EXT): tagdef.c config.h tagdef.h bdjstring.h list.h
 $(OBJDIR)/tmutil$(OBJ_EXT): tmutil.c config.h tmutil.h bdjstring.h
-$(OBJDIR)/vlci$(OBJ_EXT): vlci.c config.h pconfig.h vlci.h list.h bdjstring.h log.h \
+$(OBJDIR)/vlci$(OBJ_EXT): vlci.c config.h configp.h vlci.h list.h bdjstring.h log.h \
  fileutil.h
 $(OBJDIR)/volalsa$(OBJ_EXT): volalsa.c config.h
 $(OBJDIR)/volpa$(OBJ_EXT): volpa.c config.h volume.h bdjstring.h

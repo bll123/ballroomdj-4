@@ -189,6 +189,7 @@ runpathnames=
 islib=0
 ispath=0
 isrpath=0
+isinc=0
 olibs=
 havesource=F
 
@@ -202,7 +203,14 @@ grc=0
 for f in $@ $olibs; do
   case $f in
     -D*)
-      doappend CFLAGS_USER $1
+      doappend CFLAGS_USER " $1"
+      shift
+      ;;
+    -I)
+      isinc=1
+      ;;
+    -I*)
+      doappend CFLAGS_USER " $1"
       shift
       ;;
     -L)
@@ -267,7 +275,9 @@ for f in $@ $olibs; do
       fi
       ;;
     *)
-      if [ $islib -eq 1 ]; then
+      if [ $isinc -eq 1 ]; then
+        doappend CFLAGS_USER " -I $f"
+      elif [ $islib -eq 1 ]; then
         addlib "-l$f"
       elif [ $isrpath -eq 1 ]; then
         if [ ! -d "$f" ]; then
@@ -287,6 +297,7 @@ for f in $@ $olibs; do
       islib=0
       ispath=0
       isrpath=0
+      isinc=0
       ;;
   esac
 done
