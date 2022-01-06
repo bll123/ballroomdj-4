@@ -24,10 +24,22 @@ typedef enum {
   PLAYLIST_STOP_TIME,
   PLAYLIST_STOP_TYPE,
   PLAYLIST_STOP_WAIT,
+  PLAYLIST_TYPE,
   PLAYLIST_USE_STATUS,
   PLAYLIST_USE_UNRATED,
   PLAYLIST_KEY_MAX,
 } playlistkey_t;
+
+typedef enum {
+  PLDANCE_DANCE,
+  PLDANCE_KEY_MAX,
+} pldancekey_t;
+
+typedef enum {
+  PLTYPE_AUTO,
+  PLTYPE_MANUAL,
+  PLTYPE_SEQ,
+} pltype_t;
 
 typedef enum {
   RESUME_FROM_START,

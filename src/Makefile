@@ -321,7 +321,9 @@ LIBBDJOBJS = \
 	$(OBJDIR)/genre$(OBJ_EXT) \
 	$(OBJDIR)/level$(OBJ_EXT) \
 	$(OBJDIR)/musicdb$(OBJ_EXT) \
+	$(OBJDIR)/musicq$(OBJ_EXT) \
 	$(OBJDIR)/playlist$(OBJ_EXT) \
+	$(OBJDIR)/plq$(OBJ_EXT) \
 	$(OBJDIR)/rafile$(OBJ_EXT) \
 	$(OBJDIR)/rating$(OBJ_EXT) \
 	$(OBJDIR)/sequence$(OBJ_EXT) \
@@ -420,12 +422,12 @@ $(OBJDIR)/bdj4init$(OBJ_EXT): bdj4init.c config.h bdj4init.h musicdb.h song.h li
  tagdef.h bdjstring.h sysvars.h portability.h bdjvars.h bdjvarsdfload.h \
  log.h fileutil.h tmutil.h fileop.h datautil.h bdjopt.h sequence.h \
  datafile.h songlist.h
-$(OBJDIR)/bdj4main$(OBJ_EXT): bdj4main.c bdj4init.h sockh.h sock.h config.h bdjvars.h \
+$(OBJDIR)/bdj4main$(OBJ_EXT): bdj4main.c config.h bdj4init.h sockh.h sock.h bdjvars.h \
  bdjmsg.h log.h fileutil.h process.h bdjstring.h sysvars.h portability.h \
- playlist.h datafile.h list.h queue.h
+ playlist.h datafile.h list.h queue.h musicq.h plq.h
 $(OBJDIR)/bdj4player$(OBJ_EXT): bdj4player.c config.h bdjmsg.h bdjstring.h bdjvars.h \
  fileop.h list.h log.h fileutil.h sock.h sockh.h sysvars.h portability.h \
- pathutil.h queue.h pli.h vlci.h pconfig.h process.h
+ pathutil.h queue.h pli.h vlci.h pconfig.h process.h volume.h bdjopt.h
 $(OBJDIR)/bdjmsg$(OBJ_EXT): bdjmsg.c config.h bdjmsg.h bdjstring.h
 $(OBJDIR)/bdjopt$(OBJ_EXT): bdjopt.c config.h bdjopt.h list.h datafile.h datautil.h \
  portability.h
@@ -477,10 +479,12 @@ $(OBJDIR)/lock$(OBJ_EXT): lock.c config.h sysvars.h portability.h process.h tmut
 $(OBJDIR)/log$(OBJ_EXT): log.c config.h log.h fileutil.h tmutil.h datautil.h portability.h
 $(OBJDIR)/musicdb$(OBJ_EXT): musicdb.c config.h musicdb.h song.h list.h rafile.h \
  bdjstring.h lock.h datafile.h tagdef.h log.h fileutil.h
+$(OBJDIR)/musicq$(OBJ_EXT): musicq.c config.h musicq.h queue.h
 $(OBJDIR)/pathutil$(OBJ_EXT): pathutil.c config.h bdjstring.h pathutil.h portability.h
 $(OBJDIR)/playlist$(OBJ_EXT): playlist.c config.h playlist.h datafile.h list.h fileop.h \
  pathutil.h portability.h datautil.h rating.h level.h
 $(OBJDIR)/plivlc$(OBJ_EXT): plivlc.c config.h pconfig.h pli.h vlci.h list.h
+$(OBJDIR)/plq$(OBJ_EXT): plq.c config.h plq.h queue.h playlist.h datafile.h list.h
 $(OBJDIR)/process$(OBJ_EXT): process.c config.h process.h log.h fileutil.h
 $(OBJDIR)/queue$(OBJ_EXT): queue.c config.h queue.h
 $(OBJDIR)/rafile$(OBJ_EXT): rafile.c config.h rafile.h lock.h tmutil.h log.h fileutil.h
@@ -503,5 +507,5 @@ $(OBJDIR)/tmutil$(OBJ_EXT): tmutil.c config.h tmutil.h bdjstring.h
 $(OBJDIR)/vlci$(OBJ_EXT): vlci.c config.h pconfig.h vlci.h list.h bdjstring.h log.h \
  fileutil.h
 $(OBJDIR)/volalsa$(OBJ_EXT): volalsa.c config.h
-$(OBJDIR)/volpa$(OBJ_EXT): volpa.c config.h volume.h
+$(OBJDIR)/volpa$(OBJ_EXT): volpa.c config.h volume.h bdjstring.h
 $(OBJDIR)/volume$(OBJ_EXT): volume.c config.h volume.h

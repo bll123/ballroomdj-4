@@ -13,14 +13,23 @@ typedef enum {
   MSG_NONE,
   MSG_EXIT_FORCE,           // only for testing, may not work yet.
   MSG_EXIT_REQUEST,         // standard shutdown
-  MSG_PLAYER_PAUSE,         // to main
-  MSG_PLAYER_PLAY,          // to main
-  MSG_PLAYER_START,         // goes to main, not player
-  MSG_PLAYER_STOP,          // to main
-  MSG_PLAYLIST_LOAD,        // arguments: playlist name
+  MSG_PLAYBACK_START,       // to main
+  MSG_PLAYER_PAUSE,         // direct to player
+  MSG_PLAYER_PLAY,          // direct to player
+  MSG_PLAYER_STOP,          // direct to player
+  MSG_PLAYER_STATUS_Q,      // query: to player
+  MSG_PLAYER_VOLSINK_Q,     // query: get list of volume sinks
+  MSG_PLAYER_VOLSINK_SET,   // to player: set volume sink
+  MSG_PLAYER_VOLUME_Q,      // query: to player
+  MSG_PLAYER_VOLUME_SET,    // arguments: volume
+  MSG_PLAYLIST_QUEUE,       // arguments: playlist name
+  MSG_PLQ_LENGTH_Q,         // query: playlist queue length
+  MSG_PLQ_CONTENTS_Q,       // query: playlist queue contents
+  MSG_MUSICQ_LENGTH_Q,      // query: musicq length
+  MSG_MUSICQ_CONTENTS_Q,    // query: musicq contents
   MSG_SOCKET_CLOSE,
-  MSG_SONG_PLAY,            // arguments: path to song
-  MSG_SONG_PREP,            // arguments: path to song
+  MSG_SONG_PLAY,            // arguments: full path to song
+  MSG_SONG_PREP,            // arguments: full path to song
   MSG_MAX
 } bdjmsgmsg_t;
 

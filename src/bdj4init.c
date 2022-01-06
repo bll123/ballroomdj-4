@@ -89,7 +89,7 @@ bdj4startup (int argc, char *argv[])
   }
   bdjvarsInit ();
 
-  logStart ("m", LOG_LVL_8);
+  logStart ("m", LOG_LVL_5);
   logMsg (LOG_SESS, LOG_LVL_1, "Using profile %ld", lsysvars [SVL_BDJIDX]);
 
   bdjvarsdfloadInit ();

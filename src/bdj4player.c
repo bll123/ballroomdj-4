@@ -1,3 +1,9 @@
+/*
+ * bdj4play
+ *  Does the actual playback of the music by calling the api to the
+ *  music player.   Handles volume changes, fades.
+ */
+
 #include "config.h"
 
 #include <stdio.h>
@@ -40,32 +46,36 @@ typedef struct {
   long            globalCount;
   int             originalSystemVolume;
   int             realVolume;
+  int             currentVolume;
   char            *defaultSink;
-} playerData_t;
+  char            *currentSink;
+  volsinklist_t   sinklist;
+} playerdata_t;
 
 static int      playerProcessMsg (long route, long msg, char *args, void *udata);
 static int      playerProcessing (void *udata);
-static void     songPrep (playerData_t *playerData, char *sfname);
-static void     songPlay (playerData_t *playerData, char *sfname);
-static void     songMakeTempName (playerData_t *playerData,
+static void     songPrep (playerdata_t *playerData, char *sfname);
+static void     songPlay (playerdata_t *playerData, char *sfname);
+static void     songMakeTempName (playerdata_t *playerData,
                     char *in, char *out, size_t maxlen);
-static void     playerPause (playerData_t *playerData);
-static void     playerPlay (playerData_t *playerData);
-static void     playerStop (playerData_t *playerData);
-static void     playerClose (playerData_t *playerData);
+static void     playerPause (playerdata_t *playerData);
+static void     playerPlay (playerdata_t *playerData);
+static void     playerStop (playerdata_t *playerData);
+static void     playerClose (playerdata_t *playerData);
 static void     playerPrepQueueFree (void *);
-static void     playerCleanPrepSongs (playerData_t *playerData);
+static void     playerCleanPrepSongs (playerdata_t *playerData);
 static void     playerSigHandler (int sig);
+static void     playerSetAudioSink (playerdata_t *playerData, char *sinkname);
+static void     playerInitSinklist (playerdata_t *playerData);
 
 static int      gKillReceived = 0;
 
 int
 main (int argc, char *argv[])
 {
-  playerData_t    playerData;
+  playerdata_t    playerData;
   int             c = 0;
   int             option_index = 0;
-  volsinklist_t   sinklist;
 
   static struct option bdj_options [] = {
     { "player",     no_argument,        NULL,   0 },
@@ -104,30 +114,35 @@ main (int argc, char *argv[])
 
   bdjoptInit ();
 
-  sinklist.defname = NULL;
-  sinklist.count = 0;
-  sinklist.sinklist = NULL;
-  volumeGetSinkList ("", &sinklist);
-  playerData.defaultSink = strdup (sinklist.defname);
-  playerData.originalSystemVolume = volumeGet (playerData.defaultSink);
-  playerData.realVolume = (int) bdjoptGetLong (OPT_P_DEFAULTVOLUME);
-  volumeSet (playerData.defaultSink, playerData.realVolume);
+  playerData.sinklist.defname = "";
+  playerData.sinklist.count = 0;
+  playerData.sinklist.sinklist = NULL;
+  playerData.defaultSink = "";
+  playerData.currentSink = "";
 
-  if (sinklist.sinklist != NULL) {
-    fprintf (stderr, "def: %s\n", sinklist.defname);
+  playerInitSinklist (&playerData);
+    /* sets the current sink */
+  playerSetAudioSink (&playerData, bdjoptGetData (OPT_M_AUDIOSINK));
+
+  playerData.originalSystemVolume = volumeGet (playerData.currentSink);
+  playerData.realVolume = (int) bdjoptGetLong (OPT_P_DEFAULTVOLUME);
+  volumeSet (playerData.currentSink, playerData.realVolume);
+
+  if (playerData.sinklist.sinklist != NULL) {
+    fprintf (stderr, "def: %s\n", playerData.sinklist.defname);
     fprintf (stderr, "orig vol: %d\n", playerData.originalSystemVolume);
     fprintf (stderr, "real vol: %d\n", playerData.realVolume);
-    for (size_t i = 0; i < sinklist.count; ++i) {
+    for (size_t i = 0; i < playerData.sinklist.count; ++i) {
       logMsg (LOG_DBG, LOG_LVL_3, "%d %3d %s %s\n",
-               sinklist.sinklist [i].defaultFlag,
-               sinklist.sinklist [i].idxNumber,
-               sinklist.sinklist [i].name,
-               sinklist.sinklist [i].description);
+               playerData.sinklist.sinklist [i].defaultFlag,
+               playerData.sinklist.sinklist [i].idxNumber,
+               playerData.sinklist.sinklist [i].name,
+               playerData.sinklist.sinklist [i].description);
       fprintf (stderr, "%d %3d %s %s\n",
-               sinklist.sinklist [i].defaultFlag,
-               sinklist.sinklist [i].idxNumber,
-               sinklist.sinklist [i].name,
-               sinklist.sinklist [i].description);
+               playerData.sinklist.sinklist [i].defaultFlag,
+               playerData.sinklist.sinklist [i].idxNumber,
+               playerData.sinklist.sinklist [i].name,
+               playerData.sinklist.sinklist [i].description);
     }
   }
 
@@ -145,11 +160,10 @@ main (int argc, char *argv[])
     pliFree (playerData.pliData);
   }
 
-  volumeSet (playerData.defaultSink, playerData.originalSystemVolume);
-  if (playerData.defaultSink != NULL) {
-    free (playerData.defaultSink);
-  }
-  volumeFreeSinkList (&sinklist);
+  volumeSet (playerData.currentSink, playerData.originalSystemVolume);
+  playerData.defaultSink = "";
+  playerData.currentSink = "";
+  volumeFreeSinkList (&playerData.sinklist);
 
   if (playerData.prepQueue != NULL) {
     playerCleanPrepSongs (&playerData);
@@ -167,10 +181,10 @@ main (int argc, char *argv[])
 static int
 playerProcessMsg (long route, long msg, char *args, void *udata)
 {
-  playerData_t      *playerData;
+  playerdata_t      *playerData;
 
   logProcBegin (LOG_LVL_4, "playerProcessMsg");
-  playerData = (playerData_t *) udata;
+  playerData = (playerdata_t *) udata;
 
   logMsg (LOG_DBG, LOG_LVL_4, "got: route: %ld msg:%ld args:%s", route, msg, args);
   switch (route) {
@@ -188,6 +202,10 @@ playerProcessMsg (long route, long msg, char *args, void *udata)
         }
         case MSG_PLAYER_STOP: {
           playerStop (playerData);
+          break;
+        }
+        case MSG_PLAYER_VOLSINK_SET: {
+          playerSetAudioSink (playerData, args);
           break;
         }
         case MSG_SONG_PREP: {
@@ -226,9 +244,9 @@ playerProcessMsg (long route, long msg, char *args, void *udata)
 static int
 playerProcessing (void *udata)
 {
-  playerData_t      *playerData;
+  playerdata_t      *playerData;
 
-  playerData = (playerData_t *) udata;
+  playerData = (playerdata_t *) udata;
 
   if (playerData->programState == STATE_RUNNING &&
       playerData->mainSock == INVALID_SOCKET) {
@@ -245,7 +263,7 @@ playerProcessing (void *udata)
 /* internal routines - song handling */
 
 static void
-songPrep (playerData_t *playerData, char *sfname)
+songPrep (playerdata_t *playerData, char *sfname)
 {
   char            tsfname [MAXPATHLEN];  // testing: remove later
   char            stname [MAXPATHLEN];
@@ -294,7 +312,7 @@ songPrep (playerData_t *playerData, char *sfname)
 }
 
 static void
-songPlay (playerData_t *playerData, char *sfname)
+songPlay (playerdata_t *playerData, char *sfname)
 {
   char              stname [MAXPATHLEN];
   prepqueue_t       *pq;
@@ -330,7 +348,7 @@ songPlay (playerData_t *playerData, char *sfname)
 }
 
 static void
-songMakeTempName (playerData_t *playerData, char *in, char *out, size_t maxlen)
+songMakeTempName (playerdata_t *playerData, char *in, char *out, size_t maxlen)
 {
   char        tnm [MAXPATHLEN];
   size_t      idx;
@@ -357,25 +375,25 @@ songMakeTempName (playerData_t *playerData, char *in, char *out, size_t maxlen)
 /* internal routines - player handling */
 
 static void
-playerPause (playerData_t *playerData)
+playerPause (playerdata_t *playerData)
 {
   pliPause (playerData->pliData);
 }
 
 static void
-playerPlay (playerData_t *playerData)
+playerPlay (playerdata_t *playerData)
 {
   pliPlay (playerData->pliData);
 }
 
 static void
-playerStop (playerData_t *playerData)
+playerStop (playerdata_t *playerData)
 {
   pliStop (playerData->pliData);
 }
 
 static void
-playerClose (playerData_t *playerData)
+playerClose (playerdata_t *playerData)
 {
   pliClose (playerData->pliData);
 }
@@ -397,7 +415,7 @@ playerPrepQueueFree (void *data)
 }
 
 static void
-playerCleanPrepSongs (playerData_t *playerData)
+playerCleanPrepSongs (playerdata_t *playerData)
 {
   prepqueue_t     *pq = NULL;
 
@@ -417,4 +435,43 @@ static void
 playerSigHandler (int sig)
 {
   gKillReceived = 1;
+}
+
+static void
+playerSetAudioSink (playerdata_t *playerData, char *sinkname)
+{
+  int           found = 0;
+  int           idx = -1;
+
+    /* the sink list is not ordered */
+  found = 0;
+  for (size_t i = 0; i < playerData->sinklist.count; ++i) {
+    if (strcmp (sinkname, playerData->sinklist.sinklist [i].name) == 0) {
+      found = 1;
+      idx = i;
+      break;
+    }
+  }
+
+  if (found && idx >= 0) {
+    playerData->currentSink = playerData->sinklist.sinklist [idx].name;
+  } else {
+    playerData->currentSink = playerData->sinklist.defname;
+  }
+  logMsg (LOG_DBG, LOG_LVL_1, "audio sink set to %s\n", playerData->currentSink);
+}
+
+static void
+playerInitSinklist (playerdata_t *playerData)
+{
+  volumeFreeSinkList (&playerData->sinklist);
+
+  playerData->sinklist.defname = "";
+  playerData->sinklist.count = 0;
+  playerData->sinklist.sinklist = NULL;
+  playerData->defaultSink = "";
+  playerData->currentSink = "";
+
+  volumeGetSinkList ("", &playerData->sinklist);
+  playerData->defaultSink = playerData->sinklist.defname;
 }

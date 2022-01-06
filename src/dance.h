@@ -25,5 +25,6 @@ typedef enum {
 
 datafile_t    *danceAlloc (char *);
 void          danceFree (datafile_t *);
+void          danceConvDance (char *keydata, datafileret_t *ret);
 
 #endif /* INC_DANCE_H */

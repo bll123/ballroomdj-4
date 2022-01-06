@@ -96,7 +96,7 @@ main (int argc, char *argv[])
         break;
       }
       if (strcmp (buff, "start-player") == 0) {
-        msg = MSG_PLAYER_START;
+        msg = MSG_PLAYBACK_START;
         msgok = 1;
         playerstart = 1;
       }
@@ -122,8 +122,8 @@ main (int argc, char *argv[])
         msg = MSG_PLAYER_STOP;
         msgok = 1;
       }
-      if (strcmp (buff, "playlist-load") == 0) {
-        msg = MSG_PLAYLIST_LOAD;
+      if (strcmp (buff, "playlist-q") == 0) {
+        msg = MSG_PLAYLIST_QUEUE;
         msgok = 1;
         argsok = 1;
       }
@@ -147,7 +147,7 @@ main (int argc, char *argv[])
 
     args = NULL;
     if (argsok) {
-      printf ("  Args: ");
+      printf ("  %s args: ", buff);
       fflush (stdout);
       rval = fgets (buff, sizeof (buff), stdin);
       buff [strlen (buff) - 1] = '\0';

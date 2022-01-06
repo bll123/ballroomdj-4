@@ -63,8 +63,6 @@ volumeProcess (volaction_t action, char *sinkname,
     char                  *name;
     char                  *descr;
     char                  *io;
-    char                  *tstring;
-    int                   ok;
     int                   clidx;
     /* asound: cards */
     const char            *cid;
@@ -139,6 +137,7 @@ volumeProcess (volaction_t action, char *sinkname,
         ++cardcount;
         elem = snd_mixer_elem_next (elem);
       }
+
       snd_mixer_close (handle);
     }
 
@@ -177,21 +176,20 @@ volumeProcess (volaction_t action, char *sinkname,
       sinklist->sinklist = realloc (sinklist->sinklist,
           sinklist->count * sizeof (volsinkitem_t));
       sinklist->sinklist [idx].defaultFlag = 0;
-      sinklist->sinklist [idx].idNumber = 0;
+      sinklist->sinklist [idx].idxNumber = idx;
       sinklist->sinklist [idx].name = strdup (name);
-      sinklist->sinklist [idx].description = strdup (description);
+      sinklist->sinklist [idx].description = strdup (descr);
+      // cardlist [clidx]  .id and .name are not used.
 
-      printf ("id: %s name: %s\n", cardlist[clidx].id, cardlist[clidx].name);
-//          cardlist[clidx].name, name, descr);
       if (descr != NULL) {
         free(descr);
       }
 skip:
       if (name != NULL) {
-        free(name);
+        free (name);
       }
       if (io != NULL) {
-        free(io);
+        free (io);
       }
       n++;
     }

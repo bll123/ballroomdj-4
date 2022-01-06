@@ -47,10 +47,6 @@ void
 volumeFreeSinkList (volsinklist_t *sinklist)
 {
   if (sinklist != NULL) {
-    if (sinklist->defname != NULL) {
-      free (sinklist->defname);
-      sinklist->defname = NULL;
-    }
     if (sinklist->sinklist != NULL) {
       for (size_t i = 0; i < sinklist->count; ++i) {
         if (sinklist->sinklist [i].name != NULL) {
@@ -61,6 +57,8 @@ volumeFreeSinkList (volsinklist_t *sinklist)
         }
       }
       free (sinklist->sinklist);
+      sinklist->defname = "";
+      sinklist->count = 0;
       sinklist->sinklist = NULL;
     }
   }

@@ -28,10 +28,12 @@ bdjvarsdfloadInit (void)
   bdjvarsdf [BDJVDF_DANCE_TYPES] = dnctypesAlloc (fn);
 
     /* the database load depends on dances */
+    /* playlist loads depend on dances */
   datautilMakePath (fn, sizeof (fn), "", "dance", ".txt", DATAUTIL_MP_NONE);
   bdjvarsdf [BDJVDF_DANCES] = danceAlloc (fn);
 
     /* the database load depends on ratings, levels and genres */
+    /* playlist loads depend on ratings and levels */
   datautilMakePath (fn, sizeof (fn), "", "ratings", ".txt", DATAUTIL_MP_NONE);
   bdjvarsdf [BDJVDF_RATINGS] = ratingAlloc (fn);
   datautilMakePath (fn, sizeof (fn), "", "genres", ".txt", DATAUTIL_MP_NONE);

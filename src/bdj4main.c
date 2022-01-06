@@ -1,3 +1,11 @@
+/*
+ * bdj4main
+ *  Main entry point for the player process.
+ *  Handles startup of the player, playlists and the music queue.
+ */
+
+#include "config.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -17,20 +25,23 @@
 #include "portability.h"
 #include "playlist.h"
 #include "queue.h"
+#include "musicq.h"
+#include "plq.h"
 
 typedef struct {
   programstate_t    programState;
   int               playerStarted;
   Sock_t            playerSocket;
-  queue_t           playlistQueue;
-  void              *playlist;
+  plq_t             *playlistQueue;
+  void              *currentPlaylist;
+  musicq_t          *musicQueue;
 } maindata_t;
 
 static void     mainStartPlayer (maindata_t *mainData);
 static void     mainStopPlayer (maindata_t *mainData);
 static int      mainProcessMsg (long route, long msg, char *args, void *udata);
 static int      mainProcessing (void *udata);
-static void     mainLoadPlaylist (maindata_t *mainData, char *plname);
+static void     mainPlaylistQueue (maindata_t *mainData, char *plname);
 static void     mainSigHandler (int sig);
 
 static int gKillReceived = 0;
@@ -43,20 +54,27 @@ main (int argc, char *argv[])
   mainData.programState = STATE_INITIALIZING;
   mainData.playerStarted = 0;
   mainData.playerSocket = INVALID_SOCKET;
-  mainData.playlist = NULL;
+  mainData.playlistQueue = NULL;
+  mainData.musicQueue = NULL;
 
   processCatchSignals (mainSigHandler);
 
   bdj4startup (argc, argv);
 
+  mainData.playlistQueue = plqAlloc ();
+  mainData.musicQueue = musicqAlloc ();
+
   mainData.programState = STATE_RUNNING;
   uint16_t listenPort = bdjvarsl [BDJVL_MAIN_PORT];
   sockhMainLoop (listenPort, mainProcessMsg, mainProcessing, &mainData);
   bdj4shutdown ();
-  mainData.programState = STATE_NOT_RUNNING;
-  if (mainData.playlist != NULL) {
-    playlistFree (mainData.playlist);
+  if (mainData.playlistQueue != NULL) {
+    plqFree (mainData.playlistQueue);
   }
+  if (mainData.musicQueue != NULL) {
+    musicqFree (mainData.musicQueue);
+  }
+  mainData.programState = STATE_NOT_RUNNING;
   return 0;
 }
 
@@ -113,29 +131,14 @@ mainProcessMsg (long route, long msg, char *args, void *udata)
     case ROUTE_NONE:
     case ROUTE_MAIN: {
       switch (msg) {
-        case MSG_PLAYER_START: {
+        case MSG_PLAYBACK_START: {
           logMsg (LOG_DBG, LOG_LVL_4, "got: start-player");
           mainStartPlayer (mainData);
           break;
         }
-        case MSG_PLAYER_PAUSE: {
-          logMsg (LOG_DBG, LOG_LVL_4, "got: player-pause");
-          sockhSendMessage (mainData->playerSocket, ROUTE_PLAYER, msg, args);
-          break;
-        }
-          case MSG_PLAYER_PLAY: {
-          logMsg (LOG_DBG, LOG_LVL_4, "got: player-play");
-          sockhSendMessage (mainData->playerSocket, ROUTE_PLAYER, msg, args);
-          break;
-        }
-        case MSG_PLAYER_STOP: {
-          logMsg (LOG_DBG, LOG_LVL_4, "got: player-stop");
-          sockhSendMessage (mainData->playerSocket, ROUTE_PLAYER, msg, args);
-          break;
-        }
-        case MSG_PLAYLIST_LOAD: {
+        case MSG_PLAYLIST_QUEUE: {
           logMsg (LOG_DBG, LOG_LVL_4, "got: player-load");
-          mainLoadPlaylist (mainData, args);
+          mainPlaylistQueue (mainData, args);
           break;
         }
         case MSG_EXIT_REQUEST: {
@@ -182,9 +185,9 @@ mainProcessing (void *udata)
 }
 
 static void
-mainLoadPlaylist (maindata_t *mainData, char *plname)
+mainPlaylistQueue (maindata_t *mainData, char *plname)
 {
-  mainData->playlist = playlistAlloc (plname);
+  plqPush (mainData->playlistQueue, plname);
 }
 
 static void

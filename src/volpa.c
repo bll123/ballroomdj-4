@@ -214,6 +214,9 @@ getSinkCallback (
   cbdata->sinklist->sinklist [idx].idxNumber = i->index;
   cbdata->sinklist->sinklist [idx].name = strdup (i->name);
   cbdata->sinklist->sinklist [idx].description = strdup (i->description);
+  if (defflag) {
+    cbdata->sinklist->defname = cbdata->sinklist->sinklist [idx].name;
+  }
 
   pa_threaded_mainloop_signal (gstate.pamainloop, 0);
 }
@@ -276,7 +279,7 @@ volumeProcess (volaction_t action, char *sinkname,
     pa_threaded_mainloop_unlock (gstate.pamainloop);
     defsinkname = cbdata.defname;
 
-    sinklist->defname = strdup (defsinkname);
+    sinklist->defname = defsinkname;  // temporary, will be replaced.
     sinklist->sinklist = NULL;
     sinklist->count = 0;
     cbdata.sinklist = sinklist;
@@ -290,6 +293,10 @@ volumeProcess (volaction_t action, char *sinkname,
     }
     waitop (op);
     pa_threaded_mainloop_unlock (gstate.pamainloop);
+    if (sinklist->defname == defsinkname) {
+        /* the pointer is still the same, no default was found */
+      sinklist->defname = "";
+    }
     if (defsinkname != NULL) {
       free (defsinkname);
     }

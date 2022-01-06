@@ -57,6 +57,16 @@ danceFree (datafile_t *df)
   }
 }
 
+void
+danceConvDance (char *keydata, datafileret_t *ret)
+{
+  list_t        *lookup;
+
+  ret->valuetype = VALUE_LONG;
+  lookup = datafileGetLookup (bdjvarsdf [BDJVDF_DANCES]);
+  ret->u.l = listGetLong (lookup, keydata);
+}
+
 /* internal routines */
 
 static void
