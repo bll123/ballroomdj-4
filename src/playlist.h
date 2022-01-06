@@ -2,6 +2,7 @@
 #define INC_PLAYLIST_H
 
 #include "datafile.h"
+#include "song.h"
 
 typedef enum {
   PLAYLIST_ALLOWED_KEYWORDS,
@@ -32,6 +33,11 @@ typedef enum {
 
 typedef enum {
   PLDANCE_DANCE,
+  PLDANCE_SELECTED,
+  PLDANCE_COUNT,
+  PLDANCE_MAXPLAYTIME,
+  PLDANCE_LOWBPM,
+  PLDANCE_HIGHBPM,
   PLDANCE_KEY_MAX,
 } pldancekey_t;
 
@@ -56,7 +62,21 @@ typedef enum {
   STOP_AT,
 } plstoptype_t;
 
-datafile_t *  playlistAlloc (char *);
-void          playlistFree (datafile_t *);
+typedef struct {
+  datafile_t    *plinfodf;
+  datafile_t    *dancesdf;
+  datafile_t    *songlistdf;
+  datafile_t    *seqdf;
+  list_t        *plinfo;
+  list_t        *dances;
+  list_t        *songlist;
+  list_t        *seq;
+  int           sequenceIdx;
+  int           manualIdx;
+} playlist_t;
+
+playlist_t    *playlistAlloc (char *);
+void          playlistFree (playlist_t *);
+song_t        *playlistGetNextSong (playlist_t *);
 
 #endif /* INC_PLAYLIST_H */

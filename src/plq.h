@@ -2,10 +2,10 @@
 #define INC_PLQ_H
 
 #include "queue.h"
-#include "datafile.h"
+#include "playlist.h"
 
 typedef struct {
-  datafile_t      *playlist;
+  playlist_t      *playlist;
 } plqitem_t;
 
 typedef struct {

@@ -32,9 +32,9 @@ foreach {fn} $flist {
   set keyidx 0
   while { [gets $ifh line] >= 0 } {
     regexp {^([^:]*):(.*)$} $line all key value
-    if { $key eq "list" } {
-      continue
-    }
+    if { $key eq "list" } { continue }
+    if { $key eq "versoin"} { continue }
+
     if { $key eq "playannounce" } { set key PlayAnnounce }
     if { $key eq "maxplaytime" } { set key MaxPlayTime }
     if { $key eq "pauseeachsong" } { set key PauseEachSong }
@@ -50,16 +50,18 @@ foreach {fn} $flist {
     if { $key eq "highDanceLevel" } { set key HighDanceLevel }
     if { $key eq "lowDanceLevel" } { set key LowDanceLevel }
     if { $key eq "mqMessage" } { set key MqMessage }
-    if { $key eq "version" } {
-      set value 1
+    if { $key eq "ManualList" && $value eq "None" } {
+      set value {}
     }
     if { $key eq "ManualList" && $value ne {} } {
       set pltype Manual
     }
+    if { $key eq "Sequence" && $value eq "None" } {
+      set value {}
+    }
     if { $key eq "Sequence" && $value ne {} } {
       set pltype Sequence
     }
-    set key [string toupper $key]
     if { $key eq "VERSION" } { set key version }
 
     if { [regexp {:\d+:} $value] } {
@@ -85,6 +87,7 @@ foreach {fn} $flist {
       puts $dfh "..$highbpm"
       incr keyidx
     } else {
+      set key [string toupper $key]
       puts $ofh $key
       puts $ofh "..$value"
     }

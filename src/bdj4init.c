@@ -29,11 +29,6 @@
 #include "datautil.h"
 #include "bdjopt.h"
 
-#if 1 // temporary
-# include "sequence.h"
-# include "songlist.h"
-#endif
-
 static void initLocale (void);
 
 static void
@@ -53,10 +48,12 @@ bdj4startup (int argc, char *argv[])
   int       c = 0;
   int       option_index = 0;
   char      tbuff [MAXPATHLEN];
+  int       loglevel = LOG_LVL_2;
 
   static struct option bdj_options [] = {
     { "main",       no_argument,        NULL,   0 },
     { "profile",    required_argument,  NULL,   'p' },
+    { "debug",      required_argument,  NULL,   'd' },
     { NULL,         0,                  NULL,   0 }
   };
 
@@ -71,6 +68,12 @@ bdj4startup (int argc, char *argv[])
 
   while ((c = getopt_long (argc, argv, "", bdj_options, &option_index)) != -1) {
     switch (c) {
+      case 'd': {
+        if (optarg) {
+          loglevel = atol (optarg);
+        }
+        break;
+      }
       case 'p': {
         if (optarg) {
           sysvarSetLong (SVL_BDJIDX, atol (optarg));
@@ -89,7 +92,7 @@ bdj4startup (int argc, char *argv[])
   }
   bdjvarsInit ();
 
-  logStart ("m", LOG_LVL_5);
+  logStart ("m", loglevel);
   logMsg (LOG_SESS, LOG_LVL_1, "Using profile %ld", lsysvars [SVL_BDJIDX]);
 
   bdjvarsdfloadInit ();
@@ -101,13 +104,6 @@ bdj4startup (int argc, char *argv[])
   dbOpen (tbuff);
   logMsg (LOG_SESS, LOG_LVL_1, "Database read: %ld items in %ld ms", dbCount(), mtimeend (&dbmt));
   logMsg (LOG_SESS, LOG_LVL_1, "Total startup time: %ld ms", mtimeend (&mt));
-
-#if 1 // temporary
-  datafile_t *seq = sequenceAlloc ("data/standardrounds.seq");
-  sequenceFree (seq);
-  datafile_t *sl = songlistAlloc ("data/dj.bll.01.songlist");
-  songlistFree (sl);
-#endif
 
   return 0;
 }

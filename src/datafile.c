@@ -215,7 +215,8 @@ datafileParseMerge (list_t *nlist, char *data, char *name,
   char          *tlookupkey = NULL;
   datafileret_t ret;
 
-  logProcBegin (LOG_LVL_8, "datafileParse");
+  logProcBegin (LOG_LVL_8, "datafileParseMerge");
+  logMsg (LOG_DBG, LOG_LVL_8, "begin parse %s", name);
 
   if (dfkeys != NULL) {
     datafileCheckDfkeys (name, dfkeys, dfkeycount);
@@ -278,10 +279,14 @@ datafileParseMerge (list_t *nlist, char *data, char *name,
   if (lookupKey != DATAFILE_NO_LOOKUP) {
     char      temp [80];
 
+    logMsg (LOG_DBG, LOG_LVL_8, "with lookup: key:%ld", lookupKey);
     snprintf (temp, sizeof (temp), "%s-lookup", name);
-// ### FIX: optimize whether to use istringCompare or stringCompare.
     *lookup = listAlloc (temp, LIST_UNORDERED, istringCompare, free, NULL);
     listSetSize (*lookup, listGetSize (nlist));
+  }
+
+  if (dfkeys != NULL) {
+    logMsg (LOG_DBG, LOG_LVL_8, "use dfkeys");
   }
 
   for (size_t i = 0; i < dataCount; i += inc) {
@@ -310,6 +315,7 @@ datafileParseMerge (list_t *nlist, char *data, char *name,
         if (lookup != NULL &&
             lookupKey != DATAFILE_NO_LOOKUP &&
             tlookupkey != NULL) {
+          logMsg (LOG_DBG, LOG_LVL_8, "lookup: set %s to %ld", tlookupkey, key);
           listSetLong (*lookup, tlookupkey, key);
         }
         key = -1L;
@@ -326,8 +332,6 @@ datafileParseMerge (list_t *nlist, char *data, char *name,
     }
     if (dftype == DFTYPE_KEY_LONG ||
         (dftype == DFTYPE_KEY_VAL && dfkeys != NULL)) {
-      logMsg (LOG_DBG, LOG_LVL_8, "use dfkeys");
-
       long idx = dfkeyBinarySearch (dfkeys, dfkeycount, tkeystr);
       if (idx >= 0) {
         logMsg (LOG_DBG, LOG_LVL_8, "found %s idx: %ld", tkeystr, idx);
@@ -359,9 +363,10 @@ datafileParseMerge (list_t *nlist, char *data, char *name,
         tlookupkey = tvalstr;
       }
 
+      logMsg (LOG_DBG, LOG_LVL_8, "set: dftype:%ld vt:%d", dftype, vt);
+
         /* key_long has a key pointing to a key/val list. */
       if (dftype == DFTYPE_KEY_LONG) {
-        logMsg (LOG_DBG, LOG_LVL_8, "set: key_long");
         if (vt == VALUE_DATA) {
           llistSetData (itemList, ikey, strdup (tvalstr));
         }
@@ -374,7 +379,6 @@ datafileParseMerge (list_t *nlist, char *data, char *name,
       }
         /* a key/val type has a single list keyed by a long (dfkeys is set) */
       if (dftype == DFTYPE_KEY_VAL) {
-        logMsg (LOG_DBG, LOG_LVL_8, "set: key_val");
         if (vt == VALUE_DATA) {
           llistSetData (nlist, ikey, strdup (tvalstr));
         }
@@ -409,7 +413,7 @@ datafileParseMerge (list_t *nlist, char *data, char *name,
   }
 
   parseFree (pi);
-  logProcEnd (LOG_LVL_8, "datafileParse", "");
+  logProcEnd (LOG_LVL_8, "datafileParseMerge", "");
   return nlist;
 }
 

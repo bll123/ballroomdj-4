@@ -7,7 +7,8 @@
 #include "bdjmsg.h"
 #include "bdjstring.h"
 
-#define LSZ 4
+#define LSZ         4
+#define MSG_RS      '~'
 
 size_t
 msgEncode (long route, long msg, char *args, char *msgbuff, size_t mlen)
@@ -16,7 +17,7 @@ msgEncode (long route, long msg, char *args, char *msgbuff, size_t mlen)
     args = "";
   }
   size_t len = (size_t) snprintf (msgbuff, mlen, "%0*ld%c%0*ld%c%s",
-      LSZ, route, '~', LSZ, msg, '~', args);
+      LSZ, route, MSG_RS, LSZ, msg, MSG_RS, args);
   ++len;
   return len;
 }

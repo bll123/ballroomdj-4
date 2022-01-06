@@ -17,6 +17,7 @@
 #include "sortopt.h"
 #include "portability.h"
 #include "datautil.h"
+#include "dance.h"
 
 void
 bdjvarsdfloadInit (void)
@@ -29,7 +30,7 @@ bdjvarsdfloadInit (void)
 
     /* the database load depends on dances */
     /* playlist loads depend on dances */
-  datautilMakePath (fn, sizeof (fn), "", "dance", ".txt", DATAUTIL_MP_NONE);
+  datautilMakePath (fn, sizeof (fn), "", "dances", ".txt", DATAUTIL_MP_NONE);
   bdjvarsdf [BDJVDF_DANCES] = danceAlloc (fn);
 
     /* the database load depends on ratings, levels and genres */

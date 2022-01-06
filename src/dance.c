@@ -10,6 +10,7 @@
 #include "fileop.h"
 #include "bdjvarsdf.h"
 #include "dnctypes.h"
+#include "log.h"
 
 static void danceConvSpeed (char *keydata, datafileret_t *ret);
 
@@ -41,6 +42,7 @@ danceAlloc (char *fname)
   datafile_t        *df;
 
   if (! fileopExists (fname)) {
+    logMsg (LOG_DBG, LOG_LVL_1, "missing file: %s\n", fname);
     return NULL;
   }
 
@@ -63,8 +65,11 @@ danceConvDance (char *keydata, datafileret_t *ret)
   list_t        *lookup;
 
   ret->valuetype = VALUE_LONG;
+  ret->u.l = -1;
   lookup = datafileGetLookup (bdjvarsdf [BDJVDF_DANCES]);
-  ret->u.l = listGetLong (lookup, keydata);
+  if (lookup != NULL) {
+    ret->u.l = listGetLong (lookup, keydata);
+  }
 }
 
 /* internal routines */

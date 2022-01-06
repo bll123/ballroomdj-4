@@ -8,14 +8,16 @@
 #include "playlist.h"
 #include "datafile.h"
 #include "fileop.h"
-#include "pathutil.h"
 #include "portability.h"
 #include "datautil.h"
 #include "rating.h"
 #include "level.h"
 #include "dance.h"
+#include "song.h"
+#include "songlist.h"
+#include "sequence.h"
+#include "log.h"
 
-static void     playlistFreeList (void *tpllist);
 static void     plConvResume (char *, datafileret_t *ret);
 static void     plConvWait (char *, datafileret_t *ret);
 static void     plConvStopType (char *, datafileret_t *ret);
@@ -70,75 +72,149 @@ static datafilekey_t playlistdfkeys[] = {
 
   /* must be sorted in ascii order */
 static datafilekey_t playlistdancedfkeys[] = {
-  { "DANCE",          PLDANCE_DANCE,  VALUE_DATA, danceConvDance },
-  { "SELECTED",       PLDANCE_DANCE,  VALUE_LONG, parseConvBoolean },
-  { "COUNT",          PLDANCE_DANCE,  VALUE_LONG, NULL },
-  { "MAXPLAYTIME",    PLDANCE_DANCE,  VALUE_DATA, NULL },
-  { "LOWBPM",         PLDANCE_DANCE,  VALUE_LONG, NULL },
-  { "HIGHBPM",        PLDANCE_DANCE,  VALUE_LONG, NULL },
+  { "COUNT",          PLDANCE_COUNT,        VALUE_LONG, NULL },
+  { "DANCE",          PLDANCE_DANCE,        VALUE_DATA, danceConvDance },
+  { "HIGHBPM",        PLDANCE_HIGHBPM,      VALUE_LONG, NULL },
+  { "LOWBPM",         PLDANCE_LOWBPM,       VALUE_LONG, NULL },
+  { "MAXPLAYTIME",    PLDANCE_MAXPLAYTIME,  VALUE_DATA, NULL },
+  { "SELECTED",       PLDANCE_SELECTED,     VALUE_LONG, parseConvBoolean },
 };
 #define PLAYLIST_DANCE_DFKEY_COUNT (sizeof (playlistdancedfkeys) / sizeof (datafilekey_t))
 
-datafile_t *
+playlist_t *
 playlistAlloc (char *fname)
 {
-  datafile_t    *pldf;
-  datafile_t    *pldancedf;
-  pathinfo_t    *pi;
+  playlist_t    *pl = NULL;
   char          tfn [MAXPATHLEN];
-  list_t        *pllist;
+  pltype_t      type;
 
-  pi = pathInfo (fname);
-  datautilMakePath (tfn, sizeof (tfn), "", pi->basename, ".pl", DATAUTIL_MP_NONE);
+  datautilMakePath (tfn, sizeof (tfn), "", fname, ".pl", DATAUTIL_MP_NONE);
   if (! fileopExists (tfn)) {
+    logMsg (LOG_DBG, LOG_LVL_1, "Missing playlist-pl %s\n", tfn);
     return NULL;
   }
 
-  pldf = datafileAllocParse ("playlist", DFTYPE_KEY_VAL, fname,
+  pl = malloc (sizeof (playlist_t));
+  assert (pl != NULL);
+  pl->sequenceIdx = 0;
+  pl->manualIdx = 0;
+  pl->plinfodf = NULL;
+  pl->dancesdf = NULL;
+  pl->songlistdf = NULL;
+  pl->seqdf = NULL;
+  pl->plinfo = NULL;
+  pl->dances = NULL;
+  pl->songlist = NULL;
+  pl->seq = NULL;
+
+  pl->plinfodf = datafileAllocParse ("playlist", DFTYPE_KEY_VAL, tfn,
       playlistdfkeys, PLAYLIST_DFKEY_COUNT, DATAFILE_NO_LOOKUP);
-  datautilMakePath (tfn, sizeof (tfn), "", pi->basename, ".pldance", DATAUTIL_MP_NONE);
   if (! fileopExists (tfn)) {
-    datafileFree (pldf);
+    logMsg (LOG_DBG, LOG_LVL_1, "Bad playlist-pl %s\n", tfn);
+    playlistFree (pl);
+    return NULL;
+  }
+  pl->plinfo = datafileGetList (pl->plinfodf);
+
+  datautilMakePath (tfn, sizeof (tfn), "", fname, ".pldances", DATAUTIL_MP_NONE);
+  if (! fileopExists (tfn)) {
+    logMsg (LOG_DBG, LOG_LVL_1, "Missing playlist-dance %s\n", tfn);
+    playlistFree (pl);
     return NULL;
   }
 
-  pldancedf = datafileAllocParse ("playlist-dances", DFTYPE_KEY_LONG, fname,
+  pl->dancesdf = datafileAllocParse ("playlist-dances", DFTYPE_KEY_LONG, tfn,
       playlistdancedfkeys, PLAYLIST_DANCE_DFKEY_COUNT, DATAFILE_NO_LOOKUP);
-  pathInfoFree (pi);
+  if (pl->dancesdf == NULL) {
+    logMsg (LOG_DBG, LOG_LVL_1, "Bad playlist-dance %s\n", tfn);
+    playlistFree (pl);
+    return NULL;
+  }
+  pl->dances = datafileGetList (pl->dancesdf);
 
-  pllist = datafileGetList (pldf);
-  llistSetFreeHook (pllist, playlistFreeList);
-  llistSetData (pllist, PLAYLIST_DANCEDF, pldancedf);
-  llistSetData (pllist, PLAYLIST_DANCES, datafileGetList (pldancedf));
+  type = llistGetLong (pl->plinfo, PLAYLIST_TYPE);
 
-  // rebuild allowed keywords
-  // rebuild required keywords
-  // convert high level
-  // convert low level
+  if (type == PLTYPE_MANUAL) {
+    char *slfname = llistGetData (pl->plinfo, PLAYLIST_MANUAL_LIST_NAME);
+    datautilMakePath (tfn, sizeof (tfn), "", slfname, ".songlist", DATAUTIL_MP_NONE);
+    if (! fileopExists (tfn)) {
+      logMsg (LOG_DBG, LOG_LVL_1, "Missing songlist %s\n", tfn);
+      playlistFree (pl);
+      return NULL;
+    }
+    pl->songlistdf = songlistAlloc (tfn);
+    if (pl->songlistdf == NULL) {
+      logMsg (LOG_DBG, LOG_LVL_1, "Bad songlist %s\n", tfn);
+      playlistFree (pl);
+      return NULL;
+    }
+    pl->songlist = datafileGetList (pl->songlistdf);
+  }
 
-  // handle dances; this may require a re-parse?
-  // have datafile save the parse???
+  if (type == PLTYPE_SEQ) {
+    char *seqfname = llistGetData (pl->plinfo, PLAYLIST_SEQ_NAME);
+    datautilMakePath (tfn, sizeof (tfn), "", seqfname, ".sequence", DATAUTIL_MP_NONE);
+    if (! fileopExists (tfn)) {
+      logMsg (LOG_DBG, LOG_LVL_1, "Missing sequence %s\n", tfn);
+      playlistFree (pl);
+      return NULL;
+    }
+    pl->seqdf = sequenceAlloc (seqfname);
+    if (pl->seqdf == NULL) {
+      logMsg (LOG_DBG, LOG_LVL_1, "Bad sequence %s\n", seqfname);
+      playlistFree (pl);
+      return NULL;
+    }
+    pl->seq = datafileGetList (pl->seqdf);
+  }
 
-  return pldf;
+  return pl;
 }
 
 void
-playlistFree (datafile_t *df)
+playlistFree (playlist_t *pl)
 {
-  datafileFree (df);
+  if (pl != NULL) {
+    if (pl->plinfodf != NULL) {
+      datafileFree (pl->plinfodf);
+    }
+    if (pl->dancesdf != NULL) {
+      datafileFree (pl->dancesdf);
+    }
+    if (pl->songlistdf != NULL) {
+      songlistFree (pl->songlistdf);
+    }
+    if (pl->seqdf != NULL) {
+      sequenceFree (pl->seqdf);
+    }
+    free (pl);
+  }
+}
+
+song_t *
+playlistGetNextSong (playlist_t *pl)
+{
+  pltype_t    type;
+  song_t      *song = NULL;
+
+  type = llistGetLong (pl->plinfo, PLAYLIST_TYPE);
+
+  switch (type) {
+    case PLTYPE_AUTO: {
+      break;
+    }
+    case PLTYPE_MANUAL: {
+        /* manual playlists are easy... */
+      break;
+    }
+    case PLTYPE_SEQ: {
+      break;
+    }
+  }
+  return song;
 }
 
 /* internal routines */
-
-static void
-playlistFreeList (void *tpllist)
-{
-  list_t      *pllist = (list_t *) tpllist;
-  datafileFree (llistGetData (pllist, PLAYLIST_DANCEDF));
-  llistSetData (pllist, PLAYLIST_DANCEDF, NULL);
-    /* this is no longer a valid pointer */
-  llistSetData (pllist, PLAYLIST_DANCES, NULL);
-}
 
 static void
 plConvResume (char *data, datafileret_t *ret)
