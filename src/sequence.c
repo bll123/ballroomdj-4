@@ -8,6 +8,7 @@
 #include "sequence.h"
 #include "datafile.h"
 #include "fileop.h"
+#include "log.h"
 
 datafile_t *
 sequenceAlloc (char *fname)
@@ -15,6 +16,7 @@ sequenceAlloc (char *fname)
   datafile_t    *df;
 
   if (! fileopExists (fname)) {
+    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: sequence: missing %s\n", fname);
     return NULL;
   }
   df = datafileAllocParse ("sequence", DFTYPE_LIST, fname, NULL, 0,

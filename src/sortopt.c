@@ -8,6 +8,7 @@
 #include "sortopt.h"
 #include "datafile.h"
 #include "fileop.h"
+#include "log.h"
 
 datafile_t *
 sortoptAlloc (char *fname)
@@ -15,6 +16,7 @@ sortoptAlloc (char *fname)
   datafile_t    *df;
 
   if (! fileopExists (fname)) {
+    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: sortopt: missing %s\n", fname);
     return NULL;
   }
   df = datafileAllocParse ("sortopt", DFTYPE_LIST, fname, NULL, 0,

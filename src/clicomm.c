@@ -40,7 +40,7 @@ main (int argc, char *argv[])
     exit (1);
   }
   bdjvarsInit ();
-  logStartAppend ("clicomm", "cl", LOG_LVL_6);
+  logStartAppend ("clicomm", "cl", LOG_IMPORTANT);
 
   uint16_t mainPort = bdjvarsl [BDJVL_MAIN_PORT];
   mainSock = sockConnect (mainPort, &err, 1000);

@@ -3,10 +3,12 @@
 
 #include "list.h"
 
-#define SONG_ADJUST_NONE    0b00000000
-#define SONG_ADJUST_NORM    0b00000001
-#define SONG_ADJUST_TRIM    0b00000010
-#define SONG_ADJUST_SPEED   0b00000100
+typedef enum {
+  SONG_ADJUST_NONE    = 0x0000,
+  SONG_ADJUST_NORM    = 0x0001,
+  SONG_ADJUST_TRIM    = 0x0002,
+  SONG_ADJUST_SPEED   = 0x0004,
+} songadjust_t;
 
 typedef struct {
   list_t      *songInfo;

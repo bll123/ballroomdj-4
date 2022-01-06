@@ -79,8 +79,8 @@ sockServer (uint16_t listenPort, int *err)
     *err = errno;
     logError ("socket:");
 #if _lib_WSAGetLastError
-    logMsg (LOG_ERR, LOG_LVL_5, "socket: wsa last-error: %d", WSAGetLastError() );
-    logMsg (LOG_DBG, LOG_LVL_5, "socket: wsa last-error: %d", WSAGetLastError() );
+    logMsg (LOG_ERR, LOG_SOCKET, "socket: wsa last-error: %d", WSAGetLastError() );
+    logMsg (LOG_DBG, LOG_SOCKET, "socket: wsa last-error: %d", WSAGetLastError() );
 #endif
     return INVALID_SOCKET;
   }
@@ -102,8 +102,8 @@ sockServer (uint16_t listenPort, int *err)
     *err = errno;
     logError ("bind:");
 #if _lib_WSAGetLastError
-    logMsg (LOG_ERR, LOG_LVL_5, "bind: wsa last-error: %d", WSAGetLastError() );
-    logMsg (LOG_DBG, LOG_LVL_5, "bind: wsa last-error: %d", WSAGetLastError() );
+    logMsg (LOG_ERR, LOG_SOCKET, "bind: wsa last-error: %d", WSAGetLastError() );
+    logMsg (LOG_DBG, LOG_SOCKET, "bind: wsa last-error: %d", WSAGetLastError() );
 #endif
     close (lsock);
     return INVALID_SOCKET;
@@ -113,8 +113,8 @@ sockServer (uint16_t listenPort, int *err)
     *err = errno;
     logError ("listen:");
 #if _lib_WSAGetLastError
-    logMsg (LOG_ERR, LOG_LVL_5, "select: wsa last-error: %d", WSAGetLastError() );
-    logMsg (LOG_DBG, LOG_LVL_5, "select: wsa last-error: %d", WSAGetLastError() );
+    logMsg (LOG_ERR, LOG_SOCKET, "select: wsa last-error: %d", WSAGetLastError() );
+    logMsg (LOG_DBG, LOG_SOCKET, "select: wsa last-error: %d", WSAGetLastError() );
 #endif
     close (lsock);
     return INVALID_SOCKET;
@@ -152,7 +152,7 @@ sockAddCheck (sockinfo_t *sockinfo, Sock_t sock)
   }
 
   if (socketInvalid (sock) || sockinfo->count >= FD_SETSIZE) {
-    logMsg (LOG_DBG, LOG_LVL_5, "sockAddCheck: invalid socket");
+    logMsg (LOG_DBG, LOG_SOCKET, "sockAddCheck: invalid socket");
     return sockinfo;
   }
 
@@ -177,7 +177,7 @@ sockRemoveCheck (sockinfo_t *sockinfo, Sock_t sock)
   }
 
   if (socketInvalid (sock)) {
-    logMsg (LOG_DBG, LOG_LVL_5, "invalid socket");
+    logMsg (LOG_DBG, LOG_SOCKET, "invalid socket");
     return;
   }
 
@@ -231,7 +231,7 @@ sockCheck (sockinfo_t *sockinfo)
     }
     logError ("select");
 #if _lib_WSAGetLastError
-    logMsg (LOG_DBG, LOG_LVL_5, "select: wsa last-error:%d", WSAGetLastError());
+    logMsg (LOG_DBG, LOG_SOCKET, "select: wsa last-error:%d", WSAGetLastError());
 #endif
     return INVALID_SOCKET;
   }
@@ -261,7 +261,7 @@ sockAccept (Sock_t lsock, int *err)
     *err = errno;
     logError ("accept");
 #if _lib_WSAGetLastError
-    logMsg (LOG_DBG, LOG_LVL_5, "accept: wsa last-error:%d", WSAGetLastError());
+    logMsg (LOG_DBG, LOG_SOCKET, "accept: wsa last-error:%d", WSAGetLastError());
 #endif
     return INVALID_SOCKET;
   }
@@ -297,7 +297,7 @@ sockConnect (uint16_t connPort, int *err, size_t timeout)
     *err = errno;
     logError ("connect");
 #if _lib_WSAGetLastError
-    logMsg (LOG_DBG, LOG_LVL_5, "socket: wsa last-error:%d", WSAGetLastError());
+    logMsg (LOG_DBG, LOG_SOCKET, "socket: wsa last-error:%d", WSAGetLastError());
 #endif
     return INVALID_SOCKET;
   }
@@ -327,14 +327,14 @@ sockConnect (uint16_t connPort, int *err, size_t timeout)
     if (*err != EINPROGRESS && *err != EAGAIN && *err != EINTR && *err != EWOULDBLOCK) {
       logError ("connect");
 #if _lib_WSAGetLastError
-      logMsg (LOG_DBG, LOG_LVL_5, "connect: wsa last-error:%d", WSAGetLastError());
+      logMsg (LOG_DBG, LOG_SOCKET, "connect: wsa last-error:%d", WSAGetLastError());
 #endif
       close (clsock);
       return INVALID_SOCKET;
     }
     size_t m = mtimeend (&mi);
     if (m > timeout) {
-      logMsg (LOG_DBG, LOG_LVL_5, "timeout on connect");
+      logMsg (LOG_DBG, LOG_SOCKET, "timeout on connect");
       return INVALID_SOCKET;
     }
     msleep (5);
@@ -356,7 +356,7 @@ sockConnect (uint16_t connPort, int *err, size_t timeout)
     ++count;
   }
 
-  logMsg (LOG_DBG, LOG_LVL_5, "Connected to port:%d sock:%zd %d tries", connPort, (size_t) clsock, count);
+  logMsg (LOG_DBG, LOG_SOCKET, "Connected to port:%d sock:%zd %d tries", connPort, (size_t) clsock, count);
   ++sockCount;
   return clsock;
 }
@@ -471,7 +471,7 @@ sockReadData (Sock_t sock, char *data, size_t len)
     if (errno != EINTR && errno != EAGAIN && errno != EWOULDBLOCK) {
       logError ("recv");
 #if _lib_WSAGetLastError
-      logMsg (LOG_DBG, LOG_LVL_5, "recv: wsa last-error:%d", WSAGetLastError());
+      logMsg (LOG_DBG, LOG_SOCKET, "recv: wsa last-error:%d", WSAGetLastError());
 #endif
       return -1;
     }
@@ -490,7 +490,7 @@ sockReadData (Sock_t sock, char *data, size_t len)
       if (errno != EINTR && errno != EAGAIN && errno != EWOULDBLOCK) {
         logError ("recv-b");
 #if _lib_WSAGetLastError
-        logMsg (LOG_DBG, LOG_LVL_5, "recv: wsa last-error:%d", WSAGetLastError());
+        logMsg (LOG_DBG, LOG_SOCKET, "recv: wsa last-error:%d", WSAGetLastError());
 #endif
         return -1;
       }
@@ -520,15 +520,15 @@ sockWriteData (Sock_t sock, char *data, size_t len)
   Sock_t        sval;
   ssize_t       rc;
 
-  logProcBegin (LOG_LVL_5, "sockWriteData");
-  logMsg (LOG_DBG, LOG_LVL_5, "want to send: %zd bytes", len);
+  logProcBegin (LOG_SOCKET, "sockWriteData");
+  logMsg (LOG_DBG, LOG_SOCKET, "want to send: %zd bytes", len);
   /* ugh.  the write() call blocks on a non-blocking socket.  sigh. */
   /* call select() and check the condition the socket is in to see  */
   /* if it is writable.                                             */
   sval = sockCanWrite (sock);
   if (sval != sock) {
-    logMsg (LOG_DBG, LOG_LVL_5, "socket not writable");
-    logProcEnd (LOG_LVL_5, "sockWriteData", "not-writable");
+    logMsg (LOG_DBG, LOG_SOCKET, "socket not writable");
+    logProcEnd (LOG_SOCKET, "sockWriteData", "not-writable");
     return -1;
   }
   rc = send (sock, data, len, 0);
@@ -536,15 +536,15 @@ sockWriteData (Sock_t sock, char *data, size_t len)
       errno != EINTR && errno != EAGAIN && errno != EWOULDBLOCK) {
     logError ("send");
 #if _lib_WSAGetLastError
-    logMsg (LOG_DBG, LOG_LVL_5, "send: wsa last-error:%d", WSAGetLastError());
+    logMsg (LOG_DBG, LOG_SOCKET, "send: wsa last-error:%d", WSAGetLastError());
 #endif
-    logProcEnd (LOG_LVL_5, "sockWriteData", "send-a-fail");
+    logProcEnd (LOG_SOCKET, "sockWriteData", "send-a-fail");
     return -1;
   }
-  logMsg (LOG_DBG, LOG_LVL_5, "sent: %zd bytes", rc);
+  logMsg (LOG_DBG, LOG_SOCKET, "sent: %zd bytes", rc);
   if (rc > 0) {
     tot += (size_t) rc;
-    logMsg (LOG_DBG, LOG_LVL_5, "tot: %zd bytes", tot);
+    logMsg (LOG_DBG, LOG_SOCKET, "tot: %zd bytes", tot);
   }
   while (tot < len) {
     rc = send (sock, data + tot, len - tot, 0);
@@ -552,18 +552,18 @@ sockWriteData (Sock_t sock, char *data, size_t len)
         errno != EINTR && errno != EAGAIN && errno != EWOULDBLOCK) {
       logError ("send-b");
 #if _lib_WSAGetLastError
-      logMsg (LOG_DBG, LOG_LVL_5, "send: wsa last-error:%d", WSAGetLastError());
+      logMsg (LOG_DBG, LOG_SOCKET, "send: wsa last-error:%d", WSAGetLastError());
 #endif
-      logProcEnd (LOG_LVL_5, "sockWriteData", "send-b-fail");
+      logProcEnd (LOG_SOCKET, "sockWriteData", "send-b-fail");
       return -1;
     }
-    logMsg (LOG_DBG, LOG_LVL_5, "sent: %zd bytes", rc);
+    logMsg (LOG_DBG, LOG_SOCKET, "sent: %zd bytes", rc);
     if (rc > 0) {
       tot += (size_t) rc;
-      logMsg (LOG_DBG, LOG_LVL_5, "tot: %zd bytes", tot);
+      logMsg (LOG_DBG, LOG_SOCKET, "tot: %zd bytes", tot);
     }
   }
-  logProcEnd (LOG_LVL_5, "sockWriteData", "");
+  logProcEnd (LOG_SOCKET, "sockWriteData", "");
   return 0;
 }
 
@@ -586,7 +586,7 @@ sockFlush (Sock_t sock)
     if (errno != EINTR && errno != EAGAIN && errno != EWOULDBLOCK) {
       logError ("recv");
 #if _lib_WSAGetLastError
-      logMsg (LOG_DBG, LOG_LVL_5, "recv: wsa last-error:%d", WSAGetLastError());
+      logMsg (LOG_DBG, LOG_SOCKET, "recv: wsa last-error:%d", WSAGetLastError());
 #endif
       return;
     }
@@ -602,7 +602,7 @@ sockFlush (Sock_t sock)
       if (errno != EINTR && errno != EAGAIN && errno != EWOULDBLOCK) {
         logError ("recv-b");
 #if _lib_WSAGetLastError
-        logMsg (LOG_DBG, LOG_LVL_5, "recv: wsa last-error:%d", WSAGetLastError());
+        logMsg (LOG_DBG, LOG_SOCKET, "recv: wsa last-error:%d", WSAGetLastError());
 #endif
         return;
       }
@@ -640,7 +640,7 @@ sockCanWrite (Sock_t sock)
     }
     logError ("select");
 #if _lib_WSAGetLastError
-    logMsg (LOG_DBG, LOG_LVL_5, "select: wsa last-error:%d", WSAGetLastError());
+    logMsg (LOG_DBG, LOG_SOCKET, "select: wsa last-error:%d", WSAGetLastError());
 #endif
     return -1;
   }
@@ -675,7 +675,7 @@ sockSetNonblocking (Sock_t sock)
   if (ioctlsocket (sock, FIONBIO, &flag) < 0) {
     logError ("ioctlsocket");
 #if _lib_WSAGetLastError
-    logMsg (LOG_DBG, LOG_LVL_5, "ioctlsocket: wsa last-error:%d", WSAGetLastError());
+    logMsg (LOG_DBG, LOG_SOCKET, "ioctlsocket: wsa last-error:%d", WSAGetLastError());
 #endif
   }
 #endif
@@ -724,7 +724,7 @@ sockInit (void)
   if (rc < 0) {
     logError ("WSAStartup:");
 #if _lib_WSAGetLastError
-    logMsg (LOG_DBG, LOG_LVL_5, "wsastartup: wsa last-error:%d", WSAGetLastError());
+    logMsg (LOG_DBG, LOG_SOCKET, "wsastartup: wsa last-error:%d", WSAGetLastError());
 #endif
   }
   assert (rc == 0);
@@ -752,8 +752,8 @@ sockSetOptions (Sock_t sock, int *err)
     *err = errno;
     logError ("setsockopt:");
 #if _lib_WSAGetLastError
-    logMsg (LOG_ERR, LOG_LVL_5, "setsockopt: wsa last-error: %d", WSAGetLastError() );
-    logMsg (LOG_DBG, LOG_LVL_5, "setsockopt: wsa last-error: %d", WSAGetLastError() );
+    logMsg (LOG_ERR, LOG_SOCKET, "setsockopt: wsa last-error: %d", WSAGetLastError() );
+    logMsg (LOG_DBG, LOG_SOCKET, "setsockopt: wsa last-error: %d", WSAGetLastError() );
 #endif
     close (sock);
     return INVALID_SOCKET;

@@ -48,7 +48,7 @@ bdj4startup (int argc, char *argv[])
   int       c = 0;
   int       option_index = 0;
   char      tbuff [MAXPATHLEN];
-  int       loglevel = LOG_LVL_2;
+  int       loglevel = LOG_IMPORTANT | LOG_MAIN;
 
   static struct option bdj_options [] = {
     { "main",       no_argument,        NULL,   0 },
@@ -93,7 +93,7 @@ bdj4startup (int argc, char *argv[])
   bdjvarsInit ();
 
   logStart ("m", loglevel);
-  logMsg (LOG_SESS, LOG_LVL_1, "Using profile %ld", lsysvars [SVL_BDJIDX]);
+  logMsg (LOG_SESS, LOG_IMPORTANT, "Using profile %ld", lsysvars [SVL_BDJIDX]);
 
   bdjvarsdfloadInit ();
   bdjoptInit ();
@@ -102,8 +102,8 @@ bdj4startup (int argc, char *argv[])
   datautilMakePath (tbuff, MAXPATHLEN, "",
       MUSICDB_FNAME, MUSICDB_EXT, DATAUTIL_MP_NONE);
   dbOpen (tbuff);
-  logMsg (LOG_SESS, LOG_LVL_1, "Database read: %ld items in %ld ms", dbCount(), mtimeend (&dbmt));
-  logMsg (LOG_SESS, LOG_LVL_1, "Total startup time: %ld ms", mtimeend (&mt));
+  logMsg (LOG_SESS, LOG_IMPORTANT, "Database read: %ld items in %ld ms", dbCount(), mtimeend (&dbmt));
+  logMsg (LOG_SESS, LOG_IMPORTANT, "Total startup time: %ld ms", mtimeend (&mt));
 
   return 0;
 }
@@ -118,6 +118,6 @@ bdj4shutdown (void)
   dbClose ();
   bdjvarsdfloadCleanup ();
   bdjvarsCleanup ();
-  logMsg (LOG_SESS, LOG_LVL_1, "Total shutdown time: %ld ms", mtimeend (&mt));
+  logMsg (LOG_SESS, LOG_IMPORTANT, "Total shutdown time: %ld ms", mtimeend (&mt));
   logEnd ();
 }

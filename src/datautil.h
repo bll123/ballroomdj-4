@@ -1,9 +1,11 @@
 #ifndef INC_DATAUTIL_H
 #define INC_DATAUTIL_H
 
-#define DATAUTIL_MP_NONE          0b00000000
-#define DATAUTIL_MP_HOSTNAME      0b00000001
-#define DATAUTIL_MP_USEIDX        0b00000010
+typedef enum {
+  DATAUTIL_MP_NONE      = 0x0000,
+  DATAUTIL_MP_HOSTNAME  = 0x0001,
+  DATAUTIL_MP_USEIDX    = 0x0002,
+} datautil_mp_t;
 
 char *        datautilMakePath (char *buff, size_t buffsz, const char *subpath,
                   const char *base, const char *extension, int flags);

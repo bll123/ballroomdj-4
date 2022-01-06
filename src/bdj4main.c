@@ -90,19 +90,19 @@ mainStartPlayer (maindata_t *mainData)
     return;
   }
 
-  logProcBegin (LOG_LVL_4, "mainStartPlayer");
+  logProcBegin (LOG_MAIN, "mainStartPlayer");
   snprintf (tbuff, MAXPATHLEN, "%s/bdj4player", sysvars [SV_BDJ4EXECDIR]);
   if (isWindows ()) {
     strlcat (tbuff, ".exe", MAXPATHLEN);
   }
   int rc = processStart (tbuff, &pid, lsysvars [SVL_BDJIDX]);
   if (rc < 0) {
-    logMsg (LOG_DBG, LOG_LVL_4, "player %s failed to start", tbuff);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "player %s failed to start", tbuff);
   } else {
-    logMsg (LOG_DBG, LOG_LVL_4, "player started pid: %zd", (ssize_t) pid);
+    logMsg (LOG_DBG, LOG_BASIC, "player started pid: %zd", (ssize_t) pid);
     mainData->playerStarted = 1;
   }
-  logProcEnd (LOG_LVL_4, "mainStartPlayer", "");
+  logProcEnd (LOG_MAIN, "mainStartPlayer", "");
 }
 
 static void
@@ -123,21 +123,21 @@ mainProcessMsg (long route, long msg, char *args, void *udata)
 {
   maindata_t      *mainData;
 
-  logProcBegin (LOG_LVL_4, "mainProcessMsg");
+  logProcBegin (LOG_MAIN, "mainProcessMsg");
   mainData = (maindata_t *) udata;
 
-  logMsg (LOG_DBG, LOG_LVL_4, "got: route: %ld msg:%ld args:%s", route, msg, args);
+  logMsg (LOG_DBG, LOG_MAIN, "got: route: %ld msg:%ld args:%s", route, msg, args);
   switch (route) {
     case ROUTE_NONE:
     case ROUTE_MAIN: {
       switch (msg) {
         case MSG_PLAYBACK_START: {
-          logMsg (LOG_DBG, LOG_LVL_4, "got: start-player");
+          logMsg (LOG_DBG, LOG_MAIN, "got: start-player");
           mainStartPlayer (mainData);
           break;
         }
         case MSG_PLAYLIST_QUEUE: {
-          logMsg (LOG_DBG, LOG_LVL_4, "got: player-load");
+          logMsg (LOG_DBG, LOG_MAIN, "got: player-load");
           mainPlaylistQueue (mainData, args);
           break;
         }
@@ -145,7 +145,7 @@ mainProcessMsg (long route, long msg, char *args, void *udata)
           gKillReceived = 0;
           mainData->programState = STATE_CLOSING;
           mainStopPlayer (mainData);
-          logProcEnd (LOG_LVL_4, "mainProcessMsg", "req-exit");
+          logProcEnd (LOG_MAIN, "mainProcessMsg", "req-exit");
           return 1;
         }
         default: {
@@ -159,7 +159,7 @@ mainProcessMsg (long route, long msg, char *args, void *udata)
     }
   }
 
-  logProcEnd (LOG_LVL_4, "mainProcessMsg", "");
+  logProcEnd (LOG_MAIN, "mainProcessMsg", "");
   return 0;
 }
 
@@ -177,7 +177,7 @@ mainProcessing (void *udata)
 
     uint16_t playerPort = bdjvarsl [BDJVL_PLAYER_PORT];
     mainData->playerSocket = sockConnect (playerPort, &err, 1000);
-    logMsg (LOG_DBG, LOG_LVL_4, "player-socket: %zd",
+    logMsg (LOG_DBG, LOG_MAIN, "player-socket: %zd",
         (size_t) mainData->playerSocket);
   }
 

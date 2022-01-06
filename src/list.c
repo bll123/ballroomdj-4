@@ -55,7 +55,7 @@ listFree (void *tlist)
 
   if (list != NULL) {
     if (list->cacheHits > 0) {
-      logMsg (LOG_DBG, LOG_LVL_1, "list %s: %ld cache hits", list->name, list->cacheHits);
+      logMsg (LOG_DBG, LOG_IMPORTANT, "list %s: %ld cache hits", list->name, list->cacheHits);
     }
     if (list->name != NULL) {
       free (list->name);
@@ -93,7 +93,7 @@ void
 listSetSize (list_t *list, size_t siz)
 {
   if (list == NULL) {
-    logMsg (LOG_DBG, LOG_LVL_1, "listsetsize: null list");
+    logMsg (LOG_DBG, LOG_IMPORTANT, "listsetsize: null list");
     return;
   }
 
@@ -242,15 +242,15 @@ listIterateKeyStr (list_t *list)
 {
   void      *value = NULL;
 
-  logProcBegin (LOG_LVL_8, "listIterateKeyStr");
+  logProcBegin (LOG_LIST, "listIterateKeyStr");
   if (list == NULL) {
-    logProcEnd (LOG_LVL_8, "listIterateKeyStr", "null-list");
+    logProcEnd (LOG_LIST, "listIterateKeyStr", "null-list");
     return NULL;
   }
 
   if (list->iteratorIndex >= list->count) {
     list->iteratorIndex = 0;
-    logProcEnd (LOG_LVL_8, "listIterateKeyStr", "end-list");
+    logProcEnd (LOG_LIST, "listIterateKeyStr", "end-list");
     return NULL;  /* indicate the end of the list */
   }
 
@@ -269,7 +269,7 @@ listIterateKeyStr (list_t *list)
   list->locCache = (long) list->iteratorIndex;
 
   ++list->iteratorIndex;
-  logProcEnd (LOG_LVL_8, "listIterateKeyStr", "");
+  logProcEnd (LOG_LIST, "listIterateKeyStr", "");
   return value;
 }
 
@@ -433,15 +433,15 @@ llistIterateKeyLong (list_t *list)
 {
   long      value = -1L;
 
-  logProcBegin (LOG_LVL_8, "llistIterateKeyLong");
+  logProcBegin (LOG_LIST, "llistIterateKeyLong");
   if (list == NULL || list->keytype == KEY_STR) {
-    logProcEnd (LOG_LVL_8, "llistIterateKeyLong", "null-list/key-str");
+    logProcEnd (LOG_LIST, "llistIterateKeyLong", "null-list/key-str");
     return -1L;
   }
 
   if (list->iteratorIndex >= list->count) {
     list->iteratorIndex = 0;
-    logProcEnd (LOG_LVL_8, "llistIterateKeyLong", "end-list");
+    logProcEnd (LOG_LIST, "llistIterateKeyLong", "end-list");
     return -1L;      /* indicate the end of the list */
   }
 
@@ -451,7 +451,7 @@ llistIterateKeyLong (list_t *list)
   list->locCache = (long) list->iteratorIndex;
 
   ++list->iteratorIndex;
-  logProcEnd (LOG_LVL_8, "llistIterateKeyLong", "");
+  logProcEnd (LOG_LIST, "llistIterateKeyLong", "");
   return value;
 }
 

@@ -109,8 +109,8 @@ main (int argc, char *argv[])
 
   bdjvarsInit ();
 
-  logStartAppend ("bdj4player", "p", LOG_LVL_5);
-  logMsg (LOG_SESS, LOG_LVL_1, "Using profile %ld", lsysvars [SVL_BDJIDX]);
+  logStartAppend ("bdj4player", "p", LOG_MAIN);
+  logMsg (LOG_SESS, LOG_IMPORTANT, "Using profile %ld", lsysvars [SVL_BDJIDX]);
 
   bdjoptInit ();
 
@@ -129,16 +129,8 @@ main (int argc, char *argv[])
   volumeSet (playerData.currentSink, playerData.realVolume);
 
   if (playerData.sinklist.sinklist != NULL) {
-    fprintf (stderr, "def: %s\n", playerData.sinklist.defname);
-    fprintf (stderr, "orig vol: %d\n", playerData.originalSystemVolume);
-    fprintf (stderr, "real vol: %d\n", playerData.realVolume);
     for (size_t i = 0; i < playerData.sinklist.count; ++i) {
-      logMsg (LOG_DBG, LOG_LVL_3, "%d %3d %s %s\n",
-               playerData.sinklist.sinklist [i].defaultFlag,
-               playerData.sinklist.sinklist [i].idxNumber,
-               playerData.sinklist.sinklist [i].name,
-               playerData.sinklist.sinklist [i].description);
-      fprintf (stderr, "%d %3d %s %s\n",
+      logMsg (LOG_DBG, LOG_BASIC, "%d %3d %s %s\n",
                playerData.sinklist.sinklist [i].defaultFlag,
                playerData.sinklist.sinklist [i].idxNumber,
                playerData.sinklist.sinklist [i].name,
@@ -183,14 +175,14 @@ playerProcessMsg (long route, long msg, char *args, void *udata)
 {
   playerdata_t      *playerData;
 
-  logProcBegin (LOG_LVL_4, "playerProcessMsg");
+  logProcBegin (LOG_MAIN, "playerProcessMsg");
   playerData = (playerdata_t *) udata;
 
-  logMsg (LOG_DBG, LOG_LVL_4, "got: route: %ld msg:%ld args:%s", route, msg, args);
+  logMsg (LOG_DBG, LOG_MAIN, "got: route: %ld msg:%ld args:%s", route, msg, args);
   switch (route) {
     case ROUTE_NONE:
     case ROUTE_PLAYER: {
-      logMsg (LOG_DBG, LOG_LVL_4, "got: route-player");
+      logMsg (LOG_DBG, LOG_BASIC, "got: route-player");
       switch (msg) {
         case MSG_PLAYER_PAUSE: {
           playerPause (playerData);
@@ -218,12 +210,12 @@ playerProcessMsg (long route, long msg, char *args, void *udata)
         }
         case MSG_EXIT_REQUEST: {
           gKillReceived = 0;
-          logMsg (LOG_DBG, LOG_LVL_4, "got: req-exit");
+          logMsg (LOG_DBG, LOG_BASIC, "got: req-exit");
           playerData->programState = STATE_CLOSING;
           sockhSendMessage (playerData->mainSock, ROUTE_MAIN, MSG_SOCKET_CLOSE, NULL);
           sockClose (playerData->mainSock);
           playerData->mainSock = INVALID_SOCKET;
-          logProcEnd (LOG_LVL_4, "playerProcessMsg", "req-exit");
+          logProcEnd (LOG_BASIC, "playerProcessMsg", "req-exit");
           return 1;
         }
         default: {
@@ -237,7 +229,7 @@ playerProcessMsg (long route, long msg, char *args, void *udata)
     }
   }
 
-  logProcEnd (LOG_LVL_4, "playerProcessMsg", "");
+  logProcEnd (LOG_BASIC, "playerProcessMsg", "");
   return 0;
 }
 
@@ -254,7 +246,7 @@ playerProcessing (void *udata)
 
     uint16_t mainPort = bdjvarsl [BDJVL_MAIN_PORT];
     playerData->mainSock = sockConnect (mainPort, &err, 1000);
-    logMsg (LOG_DBG, LOG_LVL_4, "main-socket: %zd", (size_t) playerData->mainSock);
+    logMsg (LOG_DBG, LOG_BASIC, "main-socket: %zd", (size_t) playerData->mainSock);
   }
 
   return gKillReceived;
@@ -269,10 +261,10 @@ songPrep (playerdata_t *playerData, char *sfname)
   char            stname [MAXPATHLEN];
   prepqueue_t     *pq;
 
-  logProcBegin (LOG_LVL_2, "songPrep");
+  logProcBegin (LOG_BASIC, "songPrep");
   if (! fileopExists (sfname)) {
-    logMsg (LOG_DBG, LOG_LVL_1, "ERR: no file: %s\n", sfname);
-    logProcEnd (LOG_LVL_2, "songPrep", "no-file");
+    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: no file: %s\n", sfname);
+    logProcEnd (LOG_BASIC, "songPrep", "no-file");
     return;
   }
 
@@ -299,8 +291,8 @@ songPrep (playerdata_t *playerData, char *sfname)
   fileopDelete (stname);
   fileopLinkCopy (tsfname, stname);
   if (! fileopExists (stname)) {
-    logMsg (LOG_DBG, LOG_LVL_1, "ERR: file copy failed: %s\n", stname);
-    logProcEnd (LOG_LVL_2, "songPrep", "copy-failed");
+    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: file copy failed: %s\n", stname);
+    logProcEnd (LOG_BASIC, "songPrep", "copy-failed");
     playerPrepQueueFree (pq);
     return;
   }
@@ -308,7 +300,7 @@ songPrep (playerdata_t *playerData, char *sfname)
   queuePush (playerData->prepQueue, pq);
 
   // TODO : add the name to a list of prepared files.
-  logProcEnd (LOG_LVL_2, "songPrep", "");
+  logProcEnd (LOG_BASIC, "songPrep", "");
 }
 
 static void
@@ -318,7 +310,7 @@ songPlay (playerdata_t *playerData, char *sfname)
   prepqueue_t       *pq;
   int               found = 0;
 
-  logProcBegin (LOG_LVL_2, "songPlay");
+  logProcBegin (LOG_BASIC, "songPlay");
   found = 0;
   queueStartIterator (playerData->prepQueue);
   pq = queueIterateData (playerData->prepQueue);
@@ -332,19 +324,19 @@ songPlay (playerdata_t *playerData, char *sfname)
     pq = queueIterateData (playerData->prepQueue);
   }
   if (! found) {
-    logProcEnd (LOG_LVL_2, "songPlay", "not-found");
+    logProcEnd (LOG_BASIC, "songPlay", "not-found");
     return;
   }
 
   if (! fileopExists (stname)) {
-    logMsg (LOG_DBG, LOG_LVL_1, "ERR: no file: %s\n", stname);
-    logProcEnd (LOG_LVL_2, "songPlay", "no-file");
+    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: no file: %s\n", stname);
+    logProcEnd (LOG_BASIC, "songPlay", "no-file");
     return;
   }
 
   pliMediaSetup (playerData->pliData, stname);
   pliStartPlayback (playerData->pliData);
-  logProcEnd (LOG_LVL_2, "songPlay", "");
+  logProcEnd (LOG_BASIC, "songPlay", "");
 }
 
 static void
@@ -458,7 +450,7 @@ playerSetAudioSink (playerdata_t *playerData, char *sinkname)
   } else {
     playerData->currentSink = playerData->sinklist.defname;
   }
-  logMsg (LOG_DBG, LOG_LVL_1, "audio sink set to %s\n", playerData->currentSink);
+  logMsg (LOG_DBG, LOG_IMPORTANT, "audio sink set to %s\n", playerData->currentSink);
 }
 
 static void

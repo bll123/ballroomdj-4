@@ -7,18 +7,19 @@
 #include "fileutil.h"
 
 typedef enum {
-  LOG_LVL_NONE,
-  LOG_LVL_1,
-  LOG_LVL_2,
-  LOG_LVL_3,
-  LOG_LVL_4,
-  LOG_LVL_5,
-  LOG_LVL_6,
-  LOG_LVL_7,
-  LOG_LVL_8,
-  LOG_LVL_9,
-  LOG_LVL_ALL,
-  LOG_LVL_MAX
+  LOG_NONE      = 0x00000000,
+  LOG_IMPORTANT = 0x00000001,
+  LOG_BASIC     = 0x00000002,
+  LOG_MAIN      = 0x00000004,
+  LOG_DATAFILE  = 0x00000008,
+  LOG_LIST      = 0x00000010,
+  LOG_PLAYER    = 0x00000020,
+  LOG_PROCESS   = 0x00000040,
+  LOG_VOLUME    = 0x00000080,
+  LOG_SOCKET    = 0x00000100,
+  LOG_DB        = 0x00000200,
+  LOG_RAFILE    = 0x00000400,
+  LOG_ALL       = 0xFFFFFFFF,
 } bdjloglvl_t;
 
 typedef enum {
@@ -32,7 +33,7 @@ typedef struct {
   filehandle_t  fhandle;
   int           opened;
   int           indent;
-  bdjloglvl_t   level;
+  long          level;
   const char    *processTag;
 } bdjlog_t;
 

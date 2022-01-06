@@ -9,6 +9,7 @@
 #include "datafile.h"
 #include "fileop.h"
 #include "bdjvarsdf.h"
+#include "log.h"
 
 datafile_t *
 dnctypesAlloc (char *fname)
@@ -16,6 +17,7 @@ dnctypesAlloc (char *fname)
   datafile_t    *df;
 
   if (! fileopExists (fname)) {
+    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: dnctypes: missing %s\n", fname);
     return NULL;
   }
   df = datafileAllocParse ("dance-types", DFTYPE_LIST, fname,

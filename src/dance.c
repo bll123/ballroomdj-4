@@ -42,7 +42,7 @@ danceAlloc (char *fname)
   datafile_t        *df;
 
   if (! fileopExists (fname)) {
-    logMsg (LOG_DBG, LOG_LVL_1, "missing file: %s\n", fname);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "dance: missing: %s\n", fname);
     return NULL;
   }
 

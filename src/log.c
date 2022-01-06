@@ -88,8 +88,8 @@ rlogError (const char *msg, int err, const char *fn, int line)
   if (syslogs [LOG_ERR] == NULL) {
     return;
   }
-  rlogVarMsg (LOG_ERR, LOG_LVL_1, fn, line, "err: %s %d %s", msg, err, strerror (err));
-  rlogVarMsg (LOG_DBG, LOG_LVL_1, fn, line, "err: %s %d %s", msg, err, strerror (err));
+  rlogVarMsg (LOG_ERR, LOG_IMPORTANT, fn, line, "err: %s %d %s", msg, err, strerror (err));
+  rlogVarMsg (LOG_DBG, LOG_IMPORTANT, fn, line, "err: %s %d %s", msg, err, strerror (err));
 }
 
 void
@@ -107,7 +107,7 @@ rlogVarMsg (logidx_t idx, bdjloglvl_t level,
   if (l == NULL || ! l->opened) {
     return;
   }
-  if (level > l->level) {
+  if ((level & l->level) != level) {
     return;
   }
 
@@ -179,9 +179,9 @@ rlogStart (const char *processnm, const char *processtag,
     syslogs [idx] = rlogOpen (tnm, processtag, truncflag);
     syslogs [idx]->level = level;
     if (processnm != NULL) {
-      rlogVarMsg (idx, LOG_LVL_1, NULL, 0, "=== %s started %s", processnm, tdt);
+      rlogVarMsg (idx, LOG_IMPORTANT, NULL, 0, "=== %s started %s", processnm, tdt);
     } else {
-      rlogVarMsg (idx, LOG_LVL_1, NULL, 0, "=== started %s", tdt);
+      rlogVarMsg (idx, LOG_IMPORTANT, NULL, 0, "=== started %s", tdt);
     }
   }
 }
@@ -196,7 +196,7 @@ rlogOpen (const char *fn, const char *processtag, int truncflag)
 
   l->opened = 0;
   l->indent = 0;
-  l->level = LOG_LVL_1;
+  l->level = LOG_IMPORTANT;
   l->processTag = processtag;
   int rc = fileOpenShared (fn, truncflag, &l->fhandle);
   if (rc < 0) {

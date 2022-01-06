@@ -33,31 +33,31 @@ processExists (pid_t pid)
   HANDLE hProcess;
   DWORD exitCode;
 
-  logProcBegin (LOG_LVL_4, "processExists");
+  logProcBegin (LOG_PROCESS, "processExists");
   hProcess = OpenProcess (PROCESS_QUERY_LIMITED_INFORMATION, FALSE, pid);
   if (NULL == hProcess) {
     int err = GetLastError ();
     if (err == ERROR_INVALID_PARAMETER) {
-      logMsg (LOG_DBG, LOG_LVL_1, "openprocess: %d", err);
-      logProcEnd (LOG_LVL_1, "processExists", "fail-a");
+      logMsg (LOG_DBG, LOG_IMPORTANT, "openprocess: %d", err);
+      logProcEnd (LOG_IMPORTANT, "processExists", "fail-a");
       return -1;
     }
-    logMsg (LOG_DBG, LOG_LVL_4, "openprocess: %d", err);
-    logProcEnd (LOG_LVL_4, "processExists", "fail-b");
+    logMsg (LOG_DBG, LOG_PROCESS, "openprocess: %d", err);
+    logProcEnd (LOG_PROCESS, "processExists", "fail-b");
     return -1;
   }
 
   if (GetExitCodeProcess (hProcess, &exitCode)) {
     CloseHandle (hProcess);
-    logMsg (LOG_DBG, LOG_LVL_4, "found: %lld", exitCode);
+    logMsg (LOG_DBG, LOG_PROCESS, "found: %lld", exitCode);
     /* return 0 if the process is still active */
-    logProcEnd (LOG_LVL_4, "processExists", "ok");
+    logProcEnd (LOG_PROCESS, "processExists", "ok");
     return (exitCode != STILL_ACTIVE);
   }
-  logMsg (LOG_DBG, LOG_LVL_4, "getexitcodeprocess: %d", GetLastError());
+  logMsg (LOG_DBG, LOG_PROCESS, "getexitcodeprocess: %d", GetLastError());
 
   CloseHandle (hProcess);
-  logProcEnd (LOG_LVL_4, "processExists", "");
+  logProcEnd (LOG_PROCESS, "processExists", "");
   return -1;
 #endif
 }
@@ -68,7 +68,7 @@ processStart (const char *fn, pid_t *pid, long profile)
 {
   char        tmp [80];
 
-  logProcBegin (LOG_LVL_4, "processStart");
+  logProcBegin (LOG_PROCESS, "processStart");
   snprintf (tmp, sizeof (tmp), "%ld", profile);
 
 #if _lib_fork
@@ -80,7 +80,7 @@ processStart (const char *fn, pid_t *pid, long profile)
   tpid = fork ();
   if (tpid < 0) {
     logError ("fork");
-    logProcEnd (LOG_LVL_4, "processStart", "fork-fail");
+    logProcEnd (LOG_PROCESS, "processStart", "fork-fail");
     return -1;
   }
   if (tpid == 0) {
@@ -138,7 +138,7 @@ processStart (const char *fn, pid_t *pid, long profile)
   /* ### FIX would like process id back */
 
 #endif
-  logProcEnd (LOG_LVL_4, "processStart", "");
+  logProcEnd (LOG_PROCESS, "processStart", "");
   return 0;
 }
 

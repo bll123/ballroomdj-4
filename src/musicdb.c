@@ -75,7 +75,7 @@ dbLoad (db_t *db, char *fn)
   for (size_t i = 1L; i <= radb->count; ++i) {
     rc = (long) raRead (radb, i, data);
     if (rc != 1) {
-      logMsg (LOG_DBG, LOG_LVL_1, "ERR: Unable to access rrn %zd", i);
+      logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Unable to access rrn %zd", i);
     }
     if (rc == 0 || ! *data) {
       continue;

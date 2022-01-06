@@ -64,7 +64,7 @@ START_TEST(sock_server_create)
 {
   int         err;
 
-  logMsg (LOG_DBG, LOG_LVL_1, "=== sock_server_create");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "=== sock_server_create");
   Sock_t s = sockServer (32700, &err);
   ck_assert_int_gt (s, 2);
   ck_assert_int_eq (socketInvalid (s), 0);
@@ -77,7 +77,7 @@ START_TEST(sock_server_create_check)
   sockinfo_t    *si;
   int         err;
 
-  logMsg (LOG_DBG, LOG_LVL_1, "=== sock_server_create_check");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "=== sock_server_create_check");
   si = NULL;
   Sock_t s = sockServer (32701, &err);
   ck_assert_int_gt (s, 2);
@@ -97,7 +97,7 @@ START_TEST(sock_server_check)
   int           rc;
   int         err;
 
-  logMsg (LOG_DBG, LOG_LVL_1, "=== sock_server_check");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "=== sock_server_check");
   si = NULL;
   Sock_t s = sockServer (32702, &err);
   ck_assert_int_gt (s, 2);
@@ -206,7 +206,7 @@ START_TEST(sock_connect_accept)
   Sock_t        r = -1;
   Sock_t        l = -1;
 
-  logMsg (LOG_DBG, LOG_LVL_1, "=== sock_connect_accept");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "=== sock_connect_accept");
   gport = 32703;
   gthreadrc = 0;
 #if _lib_pthread_create
@@ -238,7 +238,7 @@ START_TEST(sock_check_connect_accept)
   Sock_t        l = -1;
   Sock_t        r = -1;
 
-  logMsg (LOG_DBG, LOG_LVL_1, "=== sock_check_connect_accept");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "=== sock_check_connect_accept");
   sockClose (gclsock);
   si = NULL;
   gport = 32704;
@@ -282,7 +282,7 @@ START_TEST(sock_write)
   Sock_t        l = -1;
   Sock_t        r = -1;
 
-  logMsg (LOG_DBG, LOG_LVL_1, "=== sock_write");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "=== sock_write");
   sockClose (gclsock);
   si = NULL;
   gport = 32705;
@@ -330,7 +330,7 @@ START_TEST(sock_write_read)
   char          *ndata;
   size_t        len;
 
-  logMsg (LOG_DBG, LOG_LVL_1, "=== sock_write_read");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "=== sock_write_read");
   sockClose (gclsock);
   si = NULL;
   gport = 32706;
@@ -400,7 +400,7 @@ START_TEST(sock_write_read_buff)
   char          *ndata;
   size_t        len;
 
-  logMsg (LOG_DBG, LOG_LVL_1, "=== sock_write_read_buff");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "=== sock_write_read_buff");
   sockClose (gclsock);
   si = NULL;
   gport = 32707;
@@ -457,7 +457,7 @@ START_TEST(sock_write_read_buff_fail)
   char          *ndata;
   size_t        len;
 
-  logMsg (LOG_DBG, LOG_LVL_1, "=== sock_write_read_buff_fail");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "=== sock_write_read_buff_fail");
   sockClose (gclsock);
   si = NULL;
   gport = 32708;
@@ -509,7 +509,7 @@ START_TEST(sock_write_check_read)
   char          *ndata;
   size_t        len;
 
-  logMsg (LOG_DBG, LOG_LVL_1, "=== sock_write_check_read");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "=== sock_write_check_read");
   sockClose (gclsock);
   si = NULL;
   gport = 32709;
@@ -591,7 +591,7 @@ START_TEST(sock_close)
   char          *ndata;
   size_t        len;
 
-  logMsg (LOG_DBG, LOG_LVL_1, "=== sock_close");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "=== sock_close");
   sockClose (gclsock);
   si = NULL;
   gport = 32710;
@@ -658,7 +658,7 @@ START_TEST(sock_write_close)
   char          *ndata;
   size_t        len;
 
-  logMsg (LOG_DBG, LOG_LVL_1, "=== sock_write_close");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "=== sock_write_close");
   sockClose (gclsock);
   si = NULL;
   gport = 32711;
@@ -737,7 +737,7 @@ START_TEST(sock_server_close)
   Sock_t        r = -1;
   char          datab [4096];
 
-  logMsg (LOG_DBG, LOG_LVL_1, "=== sock_server_close");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "=== sock_server_close");
   si = NULL;
   gport = 32712;
   gthreadrc = 0;

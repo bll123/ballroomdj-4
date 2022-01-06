@@ -420,8 +420,7 @@ $(OBJDIR)/bdj4$(OBJ_EXT): bdj4.c config.h sysvars.h portability.h bdjstring.h fi
  pathutil.h
 $(OBJDIR)/bdj4init$(OBJ_EXT): bdj4init.c config.h bdj4init.h musicdb.h song.h list.h \
  tagdef.h bdjstring.h sysvars.h portability.h bdjvars.h bdjvarsdfload.h \
- log.h fileutil.h tmutil.h fileop.h datautil.h bdjopt.h sequence.h \
- datafile.h songlist.h
+ log.h fileutil.h tmutil.h fileop.h datautil.h bdjopt.h
 $(OBJDIR)/bdj4main$(OBJ_EXT): bdj4main.c config.h bdj4init.h sockh.h sock.h bdjvars.h \
  bdjmsg.h log.h fileutil.h process.h bdjstring.h sysvars.h portability.h \
  playlist.h datafile.h list.h song.h queue.h musicq.h plq.h
@@ -461,18 +460,20 @@ $(OBJDIR)/check_tmutil$(OBJ_EXT): check_tmutil.c config.h tmutil.h check_bdj.h
 $(OBJDIR)/clicomm$(OBJ_EXT): clicomm.c config.h sockh.h sock.h bdjmsg.h sysvars.h \
  portability.h bdjvars.h log.h fileutil.h tmutil.h
 $(OBJDIR)/dance$(OBJ_EXT): dance.c config.h dance.h datafile.h list.h fileop.h bdjvarsdf.h \
- dnctypes.h
+ dnctypes.h log.h fileutil.h
 $(OBJDIR)/datafile$(OBJ_EXT): datafile.c config.h datafile.h list.h tmutil.h fileop.h \
  bdjstring.h log.h fileutil.h portability.h filedata.h
 $(OBJDIR)/datautil$(OBJ_EXT): datautil.c config.h datautil.h sysvars.h portability.h
 $(OBJDIR)/dnctypes$(OBJ_EXT): dnctypes.c config.h dnctypes.h datafile.h list.h fileop.h \
- bdjvarsdf.h
+ bdjvarsdf.h log.h fileutil.h
 $(OBJDIR)/filedata$(OBJ_EXT): filedata.c config.h filedata.h
 $(OBJDIR)/fileop$(OBJ_EXT): fileop.c config.h fileop.h bdjstring.h portability.h pathutil.h \
  sysvars.h
 $(OBJDIR)/fileutil$(OBJ_EXT): fileutil.c config.h fileutil.h bdjstring.h portability.h
-$(OBJDIR)/genre$(OBJ_EXT): genre.c config.h genre.h datafile.h list.h fileop.h bdjvarsdf.h
-$(OBJDIR)/level$(OBJ_EXT): level.c config.h level.h datafile.h list.h fileop.h bdjvarsdf.h
+$(OBJDIR)/genre$(OBJ_EXT): genre.c config.h genre.h datafile.h list.h fileop.h bdjvarsdf.h \
+ log.h fileutil.h
+$(OBJDIR)/level$(OBJ_EXT): level.c config.h level.h datafile.h list.h fileop.h bdjvarsdf.h \
+ log.h fileutil.h
 $(OBJDIR)/list$(OBJ_EXT): list.c config.h list.h log.h fileutil.h bdjstring.h
 $(OBJDIR)/lock$(OBJ_EXT): lock.c config.h sysvars.h portability.h process.h tmutil.h lock.h \
  fileop.h
@@ -490,15 +491,18 @@ $(OBJDIR)/process$(OBJ_EXT): process.c config.h process.h log.h fileutil.h
 $(OBJDIR)/queue$(OBJ_EXT): queue.c config.h queue.h
 $(OBJDIR)/rafile$(OBJ_EXT): rafile.c config.h rafile.h lock.h tmutil.h log.h fileutil.h
 $(OBJDIR)/rating$(OBJ_EXT): rating.c config.h rating.h datafile.h list.h fileop.h \
- bdjvarsdf.h
-$(OBJDIR)/sequence$(OBJ_EXT): sequence.c config.h sequence.h datafile.h list.h fileop.h
+ bdjvarsdf.h log.h fileutil.h
+$(OBJDIR)/sequence$(OBJ_EXT): sequence.c config.h sequence.h datafile.h list.h fileop.h \
+ log.h fileutil.h
 $(OBJDIR)/sock$(OBJ_EXT): sock.c config.h sock.h tmutil.h log.h fileutil.h
 $(OBJDIR)/sockh$(OBJ_EXT): sockh.c config.h sockh.h sock.h tmutil.h log.h fileutil.h \
  bdjmsg.h
 $(OBJDIR)/song$(OBJ_EXT): song.c config.h song.h list.h bdjstring.h tagdef.h log.h \
  fileutil.h datafile.h level.h rating.h genre.h
-$(OBJDIR)/songlist$(OBJ_EXT): songlist.c config.h songlist.h datafile.h list.h fileop.h
-$(OBJDIR)/sortopt$(OBJ_EXT): sortopt.c config.h sortopt.h datafile.h list.h fileop.h
+$(OBJDIR)/songlist$(OBJ_EXT): songlist.c config.h songlist.h datafile.h list.h fileop.h \
+ log.h fileutil.h
+$(OBJDIR)/sortopt$(OBJ_EXT): sortopt.c config.h sortopt.h datafile.h list.h fileop.h log.h \
+ fileutil.h
 $(OBJDIR)/strlcat$(OBJ_EXT): strlcat.c config.h bdjstring.h
 $(OBJDIR)/strlcpy$(OBJ_EXT): strlcpy.c config.h bdjstring.h
 $(OBJDIR)/sysvars$(OBJ_EXT): sysvars.c config.h sysvars.h portability.h bdjstring.h \

@@ -8,6 +8,7 @@
 #include "songlist.h"
 #include "datafile.h"
 #include "fileop.h"
+#include "log.h"
 
   /* must be sorted in ascii order */
 static datafilekey_t songlistdfkeys[] = {
@@ -23,6 +24,7 @@ songlistAlloc (char *fname)
   datafile_t    *df;
 
   if (! fileopExists (fname)) {
+    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: songlist: missing %s\n", fname);
     return NULL;
   }
   df = datafileAllocParse ("songlist", DFTYPE_KEY_LONG, fname,
