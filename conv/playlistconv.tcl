@@ -26,6 +26,10 @@ foreach {fn} $flist {
   puts $dfh "# BDJ4 playlist dances"
   puts $dfh "# Converted from $fn"
   puts $dfh "# [clock format [clock seconds] -gmt 1]"
+  puts $dfh "version"
+  puts $dfh "..1"
+  set pltype Automatic
+  set keyidx 0
   while { [gets $ifh line] >= 0 } {
     regexp {^([^:]*):(.*)$} $line all key value
     if { $key eq "list" } {
@@ -47,32 +51,46 @@ foreach {fn} $flist {
     if { $key eq "lowDanceLevel" } { set key LowDanceLevel }
     if { $key eq "mqMessage" } { set key MqMessage }
     if { $key eq "version" } {
-      set value 10
+      set value 1
     }
+    if { $key eq "ManualList" && $value ne {} } {
+      set pltype Manual
+    }
+    if { $key eq "Sequence" && $value ne {} } {
+      set pltype Sequence
+    }
+    set key [string toupper $key]
+    if { $key eq "VERSION" } { set key version }
+
     if { [regexp {:\d+:} $value] } {
+      puts $dfh KEY
+      puts $dfh "..$keyidx"
       puts $dfh DANCE
       puts $dfh "..$key"
       regexp {(\d):(\d*):(\d*):(\d*):(\d*):} $value \
           all selected count maxmin maxsec lowbpm highbpm
-      puts $dfh "selected"
+      puts $dfh "SELECTED"
       puts $dfh "..$selected"
-      puts $dfh "count"
+      puts $dfh "COUNT"
       puts $dfh "..$count"
-      puts $dfh "maxplaytime"
+      puts $dfh "MAXPLAYTIME"
       set tm {}
       if { $maxmin ne {} && $maxsec ne {} } {
         set tm "$maxmin:$maxsec"
       }
       puts $dfh "..$tm"
-      puts $dfh "lowbpm"
+      puts $dfh "LOWBPM"
       puts $dfh "..$lowbpm"
-      puts $dfh "highbpm"
+      puts $dfh "HIGHBPM"
       puts $dfh "..$highbpm"
+      incr keyidx
     } else {
       puts $ofh $key
       puts $ofh "..$value"
     }
   }
+  puts $ofh "TYPE"
+  puts $ofh "..$pltype"
   close $ifh
   close $ofh
 }

@@ -18,7 +18,7 @@ set nfn [file join data dancetypes.txt]
 set fh [open $nfn w]
 puts $fh "# BDJ4 dance types"
 puts $fh "# [clock format [clock seconds] -gmt 1]"
-puts $fh "# version 2"
+puts $fh "# version 1"
 foreach {item} $typevals {
   puts $fh $item
 }

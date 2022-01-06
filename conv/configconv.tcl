@@ -77,7 +77,7 @@ foreach path [list {} profiles $hostname [file join $hostname profiles]] {
         if { $key eq "SCALEDWIDGETS" } { continue }
         if { $key eq "MQDANCEFONTMULT" } { continue }
         if { $key eq "UITHEME" } { set value {} }
-        if { $key eq "version" } { set value 10 }
+        if { $key eq "version" } { set value 1 }
 
         if { $key eq "CLPATHFMT" } { set key PATHFMT_CL }
         if { $key eq "CLVAPATHFMT" } { set key PATHFMT_CLVA }

@@ -18,7 +18,7 @@ set fh [open $nfn w]
 puts $fh "# BDJ4 ratings"
 puts $fh "# [clock format [clock seconds] -gmt 1]"
 puts $fh version
-puts $fh "..2"
+puts $fh "..1"
 puts $fh count
 puts $fh "..[expr {[llength $Ratings]/2}]"
 foreach {key data} $Ratings {

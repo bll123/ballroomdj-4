@@ -27,5 +27,4 @@ fi
 ./conv/seqconv.tcl $dir
 ./conv/sortoptconv.tcl $dir
 ./conv/autoselconv.tcl $dir
-./conv/speedconv.tcl $dir
 ./conv/typeconv.tcl $dir

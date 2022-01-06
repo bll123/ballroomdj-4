@@ -21,7 +21,7 @@ foreach {fn} $flist {
   puts $ofh "# BDJ4 sequence"
   puts $ofh "# Converted from $fn"
   puts $ofh "# [clock format [clock seconds] -gmt 1]"
-  puts $ofh "# version 2"
+  puts $ofh "# version 1"
   while { [gets $ifh line] >= 0 } {
     puts $ofh $line
   }

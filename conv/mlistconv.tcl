@@ -22,7 +22,7 @@ foreach {fn} $flist {
   puts $fh "# Converted from $fn"
   puts $fh "# [clock format [clock seconds] -gmt 1]"
   puts $fh version
-  puts $fh "..10"
+  puts $fh "..1"
   puts $fh count
   puts $fh "..$slcount"
   foreach {key data} $sllist {

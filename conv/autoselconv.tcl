@@ -25,7 +25,7 @@ while { [gets $ifh line] >= 0 } {
   }
   regexp {^([^=]*)=(.*)$} $line all key value
   if { $key eq "version" } {
-    set value 3
+    set value 1
   }
   if { $key eq "tagdistance" } { set key histdistance }
   puts $ofh $key
