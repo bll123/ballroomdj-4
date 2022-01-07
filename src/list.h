@@ -91,6 +91,7 @@ void *      listIterateKeyStr (list_t *list);
   /* keyed by a long */
 list_t *  llistAlloc (char *name, listorder_t, listFree_t);
 void      llistFree (void *);
+size_t    llistGetSize (list_t *list);
 void      llistSetSize (list_t *, size_t);
 void      llistSetFreeHook (list_t *, listFree_t valueFreeHook);
 void      llistSetData (list_t *, long, void *);

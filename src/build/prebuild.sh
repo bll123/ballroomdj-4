@@ -11,7 +11,7 @@ case $stype in
     ;;
   MINGW*|MSYS*|CYGWIN*)
     ICON=bdj4_icon.ico
-    cp -f ../i/$ICON .
+    cp -f ../img/$ICON .
     echo "id ICON $ICON" > launcher.rc
     windres launcher.rc -O coff -o launcher.res
     rm -f $ICON launcher.rc

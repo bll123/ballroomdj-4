@@ -2,7 +2,7 @@
 #define INC_PROCESS_H
 
 int   processExists (pid_t);
-int   processStart (const char *fn, pid_t *pid, long profile);
+int   processStart (const char *fn, pid_t *pid, long profile, long loglvl);
 void  processCatchSignals (void (*sigHandler)(int));
 
 #endif /* INC_PROCESS_H */

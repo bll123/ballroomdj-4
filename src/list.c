@@ -291,6 +291,15 @@ llistFree (void *list)
   listFree (list);
 }
 
+inline size_t
+llistGetSize (list_t *list)
+{
+  if (list == NULL) {
+    return 0;
+  }
+  return list->count;
+}
+
 inline void
 llistSetSize (list_t *list, size_t siz)
 {

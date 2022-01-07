@@ -97,3 +97,10 @@ dbLoad (db_t *db, char *fn)
   raClose (radb);
   return 0;
 }
+
+song_t *
+dbGetByName (char *songname)
+{
+  song_t *song = listGetData (bdjdb->songs, songname);
+  return song;
+}

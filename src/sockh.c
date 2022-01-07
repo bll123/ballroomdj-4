@@ -24,6 +24,7 @@ sockhMainLoop (uint16_t listenPort, sockProcessMsg_t msgProc,
   size_t      len = 0;
   int         done = 0;
   int         tdone = 0;
+  long        routefrom = ROUTE_NONE;
   long        route = ROUTE_NONE;
   long        msg = MSG_NONE;
   char        args [BDJMSG_MAX];
@@ -63,7 +64,7 @@ sockhMainLoop (uint16_t listenPort, sockProcessMsg_t msgProc,
         }
         logMsg (LOG_DBG, LOG_SOCKET, "got message: %s", rval);
 
-        msgDecode (msgbuff, &route, &msg, args);
+        msgDecode (msgbuff, &routefrom, &route, &msg, args, sizeof (args));
         logMsg (LOG_DBG, LOG_SOCKET, "got: route: %ld msg:%ld args:%s", route, msg, args);
         switch (msg) {
           case MSG_EXIT_FORCE: {
@@ -77,7 +78,7 @@ sockhMainLoop (uint16_t listenPort, sockProcessMsg_t msgProc,
             break;
           }
           default: {
-            tdone = msgProc (route, msg, args, userData);
+            tdone = msgProc (routefrom, route, msg, args, userData);
             if (tdone) {
               ++done;
             }
@@ -94,7 +95,7 @@ sockhMainLoop (uint16_t listenPort, sockProcessMsg_t msgProc,
     tdone = otherProc (userData);
     if (tdone) {
       args [0] = '\0';
-      tdone = msgProc (ROUTE_NONE, MSG_EXIT_REQUEST, args, userData);
+      tdone = msgProc (ROUTE_NONE, ROUTE_NONE, MSG_EXIT_REQUEST, args, userData);
       ++done;
     }
     msleep (SOCK_MAINLOOP_TIMEOUT);
@@ -107,13 +108,13 @@ sockhMainLoop (uint16_t listenPort, sockProcessMsg_t msgProc,
 }
 
 int
-sockhSendMessage (Sock_t sock, long route, long msg, char *args)
+sockhSendMessage (Sock_t sock, long routefrom, long route, long msg, char *args)
 {
   char        msgbuff [BDJMSG_MAX];
 
   logProcBegin (LOG_SOCKET, "sockhSendMessage");
   logMsg (LOG_DBG, LOG_SOCKET, "route:%ld msg:%ld args:%s", route, msg, args);
-  size_t len = msgEncode (route, msg, args, msgbuff, sizeof (msgbuff));
+  size_t len = msgEncode (routefrom, route, msg, args, msgbuff, sizeof (msgbuff));
   int rc = sockWriteBinary (sock, msgbuff, len);
   logProcEnd (LOG_SOCKET, "sockhSendMessage", "");
   return rc;

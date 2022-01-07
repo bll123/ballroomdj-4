@@ -18,22 +18,54 @@ static datafilekey_t songlistdfkeys[] = {
 };
 #define SONGLIST_DFKEY_COUNT (sizeof (songlistdfkeys) / sizeof (datafilekey_t))
 
-datafile_t *
+songlist_t *
 songlistAlloc (char *fname)
 {
-  datafile_t    *df;
+  songlist_t    *sl;
+
+  sl = malloc (sizeof (songlist_t));
+  assert (sl != NULL);
+  sl->df = NULL;
+  sl->songlist = NULL;
 
   if (! fileopExists (fname)) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: songlist: missing %s\n", fname);
     return NULL;
   }
-  df = datafileAllocParse ("songlist", DFTYPE_KEY_LONG, fname,
+  sl->df = datafileAllocParse ("songlist", DFTYPE_KEY_LONG, fname,
       songlistdfkeys, SONGLIST_DFKEY_COUNT, DATAFILE_NO_LOOKUP);
-  return df;
+  if (sl->df == NULL) {
+    songlistFree (sl);
+    return NULL;
+  }
+  sl->fname = strdup (fname);
+  assert (sl->fname != NULL);
+  sl->songlist = datafileGetList (sl->df);
+  return sl;
 }
 
 void
-songlistFree (datafile_t *df)
+songlistFree (songlist_t *sl)
 {
-  datafileFree (df);
+  if (sl != NULL) {
+    if (sl->df != NULL) {
+      datafileFree (sl->df);
+    }
+    if (sl->fname != NULL) {
+      free (sl->fname);
+    }
+    free (sl);
+  }
+}
+
+char *
+songlistGetData (songlist_t *sl, long idx, long key)
+{
+  if (idx >= llistGetSize (sl->songlist)) {
+    logMsg (LOG_DBG, LOG_BASIC, "end of songlist %s reached", sl->fname);
+    return NULL;
+  }
+
+  list_t *tlist = llistGetList (sl->songlist, idx);
+  return llistGetData (tlist, key);
 }

@@ -30,6 +30,7 @@ foreach path [list {} profiles $hostname [file join $hostname profiles]] {
     if { [file exists $fn] } {
       puts "## Converting: [file join $path $cnm]$sfx"
       set ifh [open $fn r]
+      file mkdir [file join data $path]
       set ofh [open "[file join data $path $nnm]$sfx" w]
 
       puts $ofh "# BDJ4 [file join $path $nnm]"

@@ -23,6 +23,7 @@
 
 #include "volume.h"
 #include "bdjstring.h"
+#include "tmutil.h"
 
 static void getSinkCallback (pa_context *context, const pa_sink_info *i, int eol, void *userdata);
 
@@ -169,9 +170,9 @@ init_context (void) {
   pa_threaded_mainloop_lock (gstate.pamainloop);
   paapi = pa_threaded_mainloop_get_api (gstate.pamainloop);
   paprop = pa_proplist_new();
-  pa_proplist_sets (paprop, PA_PROP_APPLICATION_NAME, "ballroomdj");
+  pa_proplist_sets (paprop, PA_PROP_APPLICATION_NAME, "ballroomdj4");
   pa_proplist_sets (paprop, PA_PROP_MEDIA_ROLE, "music");
-  gstate.pacontext = pa_context_new_with_proplist (paapi, "ballroomdj", paprop);
+  gstate.pacontext = pa_context_new_with_proplist (paapi, "ballroomdj4", paprop);
   pa_proplist_free (paprop);
   if (gstate.pacontext == NULL) {
     pa_threaded_mainloop_unlock (gstate.pamainloop);
@@ -240,6 +241,7 @@ volumeProcess (volaction_t action, char *sinkname,
   pa_operation          *op;
   callback_t            cbdata;
   unsigned int          tvol;
+  int                   count;
 
   if (! ginit) {
     gstate.pacontext = NULL;
@@ -248,15 +250,24 @@ volumeProcess (volaction_t action, char *sinkname,
     ginit = 1;
   }
 
-  if (gstate.pacontext == NULL) {
-    init_context ();
-  }
+  count = 0;
+  while (ginit == 1 && count < 20) {
+    if (gstate.pacontext == NULL) {
+      init_context ();
+    }
 
-  pa_threaded_mainloop_lock (gstate.pamainloop);
-  while (gstate.state == STATE_WAIT) {
-    pa_threaded_mainloop_wait (gstate.pamainloop);
+    pa_threaded_mainloop_lock (gstate.pamainloop);
+    while (gstate.state == STATE_WAIT) {
+      pa_threaded_mainloop_wait (gstate.pamainloop);
+    }
+    pa_threaded_mainloop_unlock (gstate.pamainloop);
+
+    if (gstate.pastate == PA_CONTEXT_READY) {
+      break;
+    }
+    msleep (5);
+    ++count;
   }
-  pa_threaded_mainloop_unlock (gstate.pamainloop);
 
   if (gstate.pastate != PA_CONTEXT_READY) {
     volumeProcessFailure ("init context");

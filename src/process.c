@@ -39,11 +39,11 @@ processExists (pid_t pid)
     int err = GetLastError ();
     if (err == ERROR_INVALID_PARAMETER) {
       logMsg (LOG_DBG, LOG_IMPORTANT, "openprocess: %d", err);
-      logProcEnd (LOG_IMPORTANT, "processExists", "fail-a");
+      logProcEnd (LOG_IMPORTANT, "openprocess", "fail-a");
       return -1;
     }
-    logMsg (LOG_DBG, LOG_PROCESS, "openprocess: %d", err);
-    logProcEnd (LOG_PROCESS, "processExists", "fail-b");
+    logMsg (LOG_DBG, LOG_IMPORTANT, "openprocess: %d", err);
+    logProcEnd (LOG_IMPORTANT, "openprocess", "fail-b");
     return -1;
   }
 
@@ -54,7 +54,7 @@ processExists (pid_t pid)
     logProcEnd (LOG_PROCESS, "processExists", "ok");
     return (exitCode != STILL_ACTIVE);
   }
-  logMsg (LOG_DBG, LOG_PROCESS, "getexitcodeprocess: %d", GetLastError());
+  logMsg (LOG_DBG, LOG_IMPORTANT, "getexitcodeprocess: %d", GetLastError());
 
   CloseHandle (hProcess);
   logProcEnd (LOG_PROCESS, "processExists", "");
@@ -64,12 +64,14 @@ processExists (pid_t pid)
 
 
 int
-processStart (const char *fn, pid_t *pid, long profile)
+processStart (const char *fn, pid_t *pid, long profile, long loglvl)
 {
-  char        tmp [80];
+  char        tmp [100];
+  char        tmp2 [40];
 
   logProcBegin (LOG_PROCESS, "processStart");
   snprintf (tmp, sizeof (tmp), "%ld", profile);
+  snprintf (tmp2, sizeof (tmp), "%ld", loglvl);
 
 #if _lib_fork
   pid_t     tpid;
@@ -93,7 +95,7 @@ processStart (const char *fn, pid_t *pid, long profile)
       close (i);
     }
     logEnd ();
-    int rc = execl (fn, fn, "--profile", tmp, NULL);
+    int rc = execl (fn, fn, "--profile", tmp, "--debug", tmp2, NULL);
     if (rc < 0) {
       logError ("execl");
       exit (1);
@@ -111,7 +113,7 @@ processStart (const char *fn, pid_t *pid, long profile)
   si.cb = sizeof(si);
   ZeroMemory (&pi, sizeof (pi));
 
-  snprintf (tmp, sizeof (tmp), "--profile %ld\n", profile);
+  snprintf (tmp, sizeof (tmp), "--profile %ld --debug %ld", profile, loglvl);
 
   // Start the child process.
   if (! CreateProcess (

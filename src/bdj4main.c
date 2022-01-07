@@ -27,8 +27,11 @@
 #include "queue.h"
 #include "musicq.h"
 #include "plq.h"
+#include "tmutil.h"
+#include "bdjopt.h"
 
 typedef struct {
+  mtime_t           tmstart;
   programstate_t    programState;
   int               playerStarted;
   Sock_t            playerSocket;
@@ -39,7 +42,8 @@ typedef struct {
 
 static void     mainStartPlayer (maindata_t *mainData);
 static void     mainStopPlayer (maindata_t *mainData);
-static int      mainProcessMsg (long route, long msg, char *args, void *udata);
+static int      mainProcessMsg (long routefrom, long route, long msg,
+                    char *args, void *udata);
 static int      mainProcessing (void *udata);
 static void     mainPlaylistQueue (maindata_t *mainData, char *plname);
 static void     mainSigHandler (int sig);
@@ -51,6 +55,7 @@ main (int argc, char *argv[])
 {
   maindata_t    mainData;
 
+  mtimestart (&mainData.tmstart);
   mainData.programState = STATE_INITIALIZING;
   mainData.playerStarted = 0;
   mainData.playerSocket = INVALID_SOCKET;
@@ -64,7 +69,6 @@ main (int argc, char *argv[])
   mainData.playlistQueue = plqAlloc ();
   mainData.musicQueue = musicqAlloc ();
 
-  mainData.programState = STATE_RUNNING;
   uint16_t listenPort = bdjvarsl [BDJVL_MAIN_PORT];
   sockhMainLoop (listenPort, mainProcessMsg, mainProcessing, &mainData);
   bdj4shutdown ();
@@ -95,7 +99,8 @@ mainStartPlayer (maindata_t *mainData)
   if (isWindows ()) {
     strlcat (tbuff, ".exe", MAXPATHLEN);
   }
-  int rc = processStart (tbuff, &pid, lsysvars [SVL_BDJIDX]);
+  int rc = processStart (tbuff, &pid, lsysvars [SVL_BDJIDX],
+      bdjoptGetLong (OPT_G_DEBUGLVL));
   if (rc < 0) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "player %s failed to start", tbuff);
   } else {
@@ -111,29 +116,45 @@ mainStopPlayer (maindata_t *mainData)
   if (! mainData->playerStarted) {
     return;
   }
-  sockhSendMessage (mainData->playerSocket, ROUTE_PLAYER, MSG_EXIT_REQUEST, NULL);
-  sockhSendMessage (mainData->playerSocket, ROUTE_PLAYER, MSG_SOCKET_CLOSE, NULL);
+  sockhSendMessage (mainData->playerSocket, ROUTE_MAIN, ROUTE_PLAYER,
+      MSG_EXIT_REQUEST, NULL);
+  sockhSendMessage (mainData->playerSocket, ROUTE_MAIN, ROUTE_PLAYER,
+      MSG_SOCKET_CLOSE, NULL);
   sockClose (mainData->playerSocket);
   mainData->playerSocket = INVALID_SOCKET;
   mainData->playerStarted = 0;
 }
 
 static int
-mainProcessMsg (long route, long msg, char *args, void *udata)
+mainProcessMsg (long routefrom, long route, long msg, char *args, void *udata)
 {
   maindata_t      *mainData;
 
   logProcBegin (LOG_MAIN, "mainProcessMsg");
   mainData = (maindata_t *) udata;
 
-  logMsg (LOG_DBG, LOG_MAIN, "got: route: %ld msg:%ld args:%s", route, msg, args);
+  logMsg (LOG_DBG, LOG_MAIN, "got: from: %ld route: %ld msg:%ld args:%s",
+      routefrom, route, msg, args);
+
   switch (route) {
     case ROUTE_NONE:
     case ROUTE_MAIN: {
       switch (msg) {
-        case MSG_PLAYBACK_START: {
-          logMsg (LOG_DBG, LOG_MAIN, "got: start-player");
-          mainStartPlayer (mainData);
+        case MSG_ECHO_RESP: {
+          if (routefrom == ROUTE_PLAYER) {
+            mainData->programState = STATE_RUNNING;
+            logMsg (LOG_SESS, LOG_IMPORTANT, "running: time-to-start: %ld ms", mtimeend (&mainData->tmstart));
+          }
+          break;
+        }
+        case MSG_ECHO: {
+          Sock_t      tsock;
+
+          tsock = mainData->playerSocket;
+          sockhSendMessage (tsock, ROUTE_MAIN, routefrom, MSG_ECHO_RESP, NULL);
+          break;
+        }
+        case MSG_SET_DEBUG_LVL: {
           break;
         }
         case MSG_PLAYLIST_QUEUE: {
@@ -169,16 +190,31 @@ mainProcessing (void *udata)
   maindata_t      *mainData;
 
   mainData = (maindata_t *) udata;
+  if (mainData->programState == STATE_INITIALIZING) {
+    mainData->programState = STATE_LISTENING;
+    logMsg (LOG_DBG, LOG_MAIN, "listening");
+  }
 
-  if (mainData->programState == STATE_RUNNING &&
+  if (mainData->programState == STATE_LISTENING &&
+      ! mainData->playerStarted) {
+    mainStartPlayer (mainData);
+    mainData->programState = STATE_CONNECTING;
+    logMsg (LOG_DBG, LOG_MAIN, "connecting");
+  }
+
+  if (mainData->programState == STATE_CONNECTING &&
       mainData->playerStarted &&
       mainData->playerSocket == INVALID_SOCKET) {
     int       err;
 
     uint16_t playerPort = bdjvarsl [BDJVL_PLAYER_PORT];
     mainData->playerSocket = sockConnect (playerPort, &err, 1000);
-    logMsg (LOG_DBG, LOG_MAIN, "player-socket: %zd",
-        (size_t) mainData->playerSocket);
+    if (mainData->playerSocket != INVALID_SOCKET) {
+      sockhSendMessage (mainData->playerSocket, ROUTE_MAIN, ROUTE_PLAYER,
+          MSG_ECHO, NULL);
+      mainData->programState = STATE_WAIT_HANDSHAKE;
+      logMsg (LOG_DBG, LOG_MAIN, "wait for handshake");
+    }
   }
 
   return gKillReceived;

@@ -1,10 +1,26 @@
 #!/bin/bash
 
-if [[ $# != 1 || ! -d $1  ]]; then
-  echo "Usage: $0 <directory>"
+if [[ $# != 1 || ! -d $1 || ! -d $1/../data ]]; then
+  echo "No ballroomdj directory"
   exit 1
 fi
 dir=$1
+
+systype=$(uname -s | tr '[A-Z]' '[a-z]')
+
+bits=64
+arch=$(uname -m)
+case $arch in
+  i?86*)
+    bits=32
+    ;;
+esac
+
+tclsh="$dir/../$systype/64/tcl/bin/tclsh"
+if [[ ! -f "$tclsh" ]]; then
+  echo "Unable to locate tclsh"
+  exit 1
+fi
 
 if [[ ! -d data ]]; then
   echo "No bdj4 data directory"
@@ -16,15 +32,15 @@ if [[ ! -d conv ]]; then
   exit 1
 fi
 
-./conv/configconv.tcl $dir
-./conv/danceconv.tcl $dir
-./conv/dbconv.tcl $dir
-./conv/genreconv.tcl $dir
-./conv/levelsconv.tcl $dir
-./conv/mlistconv.tcl $dir
-./conv/playlistconv.tcl $dir
-./conv/ratingconv.tcl $dir
-./conv/seqconv.tcl $dir
-./conv/sortoptconv.tcl $dir
-./conv/autoselconv.tcl $dir
-./conv/typeconv.tcl $dir
+"$tclsh" ./conv/configconv.tcl $dir
+"$tclsh" ./conv/danceconv.tcl $dir
+"$tclsh" ./conv/dbconv.tcl $dir
+"$tclsh" ./conv/genreconv.tcl $dir
+"$tclsh" ./conv/levelsconv.tcl $dir
+"$tclsh" ./conv/mlistconv.tcl $dir
+"$tclsh" ./conv/playlistconv.tcl $dir
+"$tclsh" ./conv/ratingconv.tcl $dir
+"$tclsh" ./conv/seqconv.tcl $dir
+"$tclsh" ./conv/sortoptconv.tcl $dir
+"$tclsh" ./conv/autoselconv.tcl $dir
+"$tclsh" ./conv/typeconv.tcl $dir

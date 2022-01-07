@@ -103,7 +103,7 @@ bdj4startup (int argc, char *argv[])
       MUSICDB_FNAME, MUSICDB_EXT, DATAUTIL_MP_NONE);
   dbOpen (tbuff);
   logMsg (LOG_SESS, LOG_IMPORTANT, "Database read: %ld items in %ld ms", dbCount(), mtimeend (&dbmt));
-  logMsg (LOG_SESS, LOG_IMPORTANT, "Total startup time: %ld ms", mtimeend (&mt));
+  logMsg (LOG_SESS, LOG_IMPORTANT, "Total init time: %ld ms", mtimeend (&mt));
 
   return 0;
 }

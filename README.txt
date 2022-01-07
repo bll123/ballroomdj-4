@@ -1,9 +1,10 @@
-BallroomDJ4
+BallroomDJ 4
 
-BallroomDJ4 is currently under development.
+BallroomDJ 4 is currently under development.
 
 LICENSES
     mutagen : GPLv2 License
+    qrcode  : MIT License (templates/qrcode/LICENSE)
     Windows:
       metaflac   : GPLv2 License et.al. windows/LICENSE.metaflac
       libmad     : GPL License
@@ -15,6 +16,3 @@ LICENSES
       nghttp2    : MIT License
       zlib       : zlib/libpng License
       zstd       : BSD License
-
-
-

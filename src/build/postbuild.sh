@@ -21,7 +21,7 @@ case $stype in
   *BSD)
     ;;
   MINGW*|MSYS*|CYGWIN*)
-    ICON=bdj4_icon.ico
-    rm -f $ICON launcher.rc launcer.res
+    ICON=bdj3_icon.ico
+    rm -f $ICON launcher.rc launcher.res
     ;;
 esac

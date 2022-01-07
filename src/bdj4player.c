@@ -32,6 +32,7 @@
 #include "process.h"
 #include "volume.h"
 #include "bdjopt.h"
+#include "tmutil.h"
 
 typedef struct {
   char          *songname;
@@ -39,6 +40,7 @@ typedef struct {
 } prepqueue_t;
 
 typedef struct {
+  mtime_t         tmstart;
   programstate_t  programState;
   Sock_t          mainSock;
   plidata_t       *pliData;
@@ -52,7 +54,8 @@ typedef struct {
   volsinklist_t   sinklist;
 } playerdata_t;
 
-static int      playerProcessMsg (long route, long msg, char *args, void *udata);
+static int      playerProcessMsg (long routefrom, long route, long msg,
+                    char *args, void *udata);
 static int      playerProcessing (void *udata);
 static void     songPrep (playerdata_t *playerData, char *sfname);
 static void     songPlay (playerdata_t *playerData, char *sfname);
@@ -76,12 +79,16 @@ main (int argc, char *argv[])
   playerdata_t    playerData;
   int             c = 0;
   int             option_index = 0;
+  int             loglevel = LOG_IMPORTANT | LOG_MAIN;
 
   static struct option bdj_options [] = {
+    { "debug",     no_argument,         NULL,   'd' },
     { "player",     no_argument,        NULL,   0 },
     { "profile",    required_argument,  NULL,   'p' },
     { NULL,         0,                  NULL,   0 }
   };
+
+  mtimestart (&playerData.tmstart);
 
   playerData.programState = STATE_INITIALIZING;
   playerData.mainSock = INVALID_SOCKET;
@@ -95,6 +102,12 @@ main (int argc, char *argv[])
 
   while ((c = getopt_long (argc, argv, "", bdj_options, &option_index)) != -1) {
     switch (c) {
+      case 'd': {
+        if (optarg) {
+          loglevel = atol (optarg);
+        }
+        break;
+      }
       case 'p': {
         if (optarg) {
           sysvarSetLong (SVL_BDJIDX, atol (optarg));
@@ -109,7 +122,7 @@ main (int argc, char *argv[])
 
   bdjvarsInit ();
 
-  logStartAppend ("bdj4player", "p", LOG_MAIN);
+  logStartAppend ("bdj4player", "p", loglevel);
   logMsg (LOG_SESS, LOG_IMPORTANT, "Using profile %ld", lsysvars [SVL_BDJIDX]);
 
   bdjoptInit ();
@@ -141,8 +154,6 @@ main (int argc, char *argv[])
   playerData.pliData = pliInit ();
   assert (playerData.pliData != NULL);
 
-  playerData.programState = STATE_RUNNING;
-
   uint16_t listenPort = bdjvarsl [BDJVL_PLAYER_PORT];
   sockhMainLoop (listenPort, playerProcessMsg, playerProcessing, &playerData);
 
@@ -171,19 +182,36 @@ main (int argc, char *argv[])
 /* internal routines */
 
 static int
-playerProcessMsg (long route, long msg, char *args, void *udata)
+playerProcessMsg (long routefrom, long route, long msg, char *args, void *udata)
 {
   playerdata_t      *playerData;
 
   logProcBegin (LOG_MAIN, "playerProcessMsg");
   playerData = (playerdata_t *) udata;
 
-  logMsg (LOG_DBG, LOG_MAIN, "got: route: %ld msg:%ld args:%s", route, msg, args);
+  logMsg (LOG_DBG, LOG_MAIN, "got: from %ld route: %ld msg:%ld args:%s",
+      routefrom, route, msg, args);
+
   switch (route) {
     case ROUTE_NONE:
     case ROUTE_PLAYER: {
       logMsg (LOG_DBG, LOG_BASIC, "got: route-player");
       switch (msg) {
+        case MSG_ECHO_RESP: {
+          if (routefrom == ROUTE_MAIN) {
+            playerData->programState = STATE_RUNNING;
+            logMsg (LOG_SESS, LOG_IMPORTANT, "running: time-to-start: %ld ms", mtimeend (&playerData->tmstart));
+          }
+          break;
+        }
+        case MSG_ECHO: {
+          Sock_t      tsock;
+
+          tsock = playerData->mainSock;
+          sockhSendMessage (tsock, ROUTE_PLAYER, routefrom,
+              MSG_ECHO_RESP, NULL);
+          break;
+        }
         case MSG_PLAYER_PAUSE: {
           playerPause (playerData);
           break;
@@ -212,7 +240,8 @@ playerProcessMsg (long route, long msg, char *args, void *udata)
           gKillReceived = 0;
           logMsg (LOG_DBG, LOG_BASIC, "got: req-exit");
           playerData->programState = STATE_CLOSING;
-          sockhSendMessage (playerData->mainSock, ROUTE_MAIN, MSG_SOCKET_CLOSE, NULL);
+          sockhSendMessage (playerData->mainSock, ROUTE_PLAYER, ROUTE_MAIN,
+              MSG_SOCKET_CLOSE, NULL);
           sockClose (playerData->mainSock);
           playerData->mainSock = INVALID_SOCKET;
           logProcEnd (LOG_BASIC, "playerProcessMsg", "req-exit");
@@ -240,13 +269,23 @@ playerProcessing (void *udata)
 
   playerData = (playerdata_t *) udata;
 
-  if (playerData->programState == STATE_RUNNING &&
+  if (playerData->programState == STATE_INITIALIZING) {
+    playerData->programState = STATE_CONNECTING;
+    logMsg (LOG_DBG, LOG_MAIN, "listening/connecting");
+  }
+
+  if (playerData->programState == STATE_CONNECTING &&
       playerData->mainSock == INVALID_SOCKET) {
     int       err;
 
     uint16_t mainPort = bdjvarsl [BDJVL_MAIN_PORT];
     playerData->mainSock = sockConnect (mainPort, &err, 1000);
-    logMsg (LOG_DBG, LOG_BASIC, "main-socket: %zd", (size_t) playerData->mainSock);
+    if (playerData->mainSock != INVALID_SOCKET) {
+      sockhSendMessage (playerData->mainSock, ROUTE_PLAYER, ROUTE_MAIN,
+          MSG_ECHO, NULL);
+      playerData->programState = STATE_WAIT_HANDSHAKE;
+      logMsg (LOG_DBG, LOG_MAIN, "wait for handshake");
+    }
   }
 
   return gKillReceived;
@@ -447,10 +486,11 @@ playerSetAudioSink (playerdata_t *playerData, char *sinkname)
 
   if (found && idx >= 0) {
     playerData->currentSink = playerData->sinklist.sinklist [idx].name;
+    logMsg (LOG_DBG, LOG_IMPORTANT, "audio sink set to %s", playerData->sinklist.sinklist [idx].description);
   } else {
     playerData->currentSink = playerData->sinklist.defname;
+    logMsg (LOG_DBG, LOG_IMPORTANT, "audio sink set to default");
   }
-  logMsg (LOG_DBG, LOG_IMPORTANT, "audio sink set to %s\n", playerData->currentSink);
 }
 
 static void

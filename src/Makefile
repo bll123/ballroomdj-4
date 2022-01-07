@@ -177,6 +177,10 @@ $(OBJDIR)/%.o: %.c
 
 # cleaning
 
+.PHONY: dataclean
+dataclean:
+	@-test -d ../data && $(RM) -rf ../data/*
+
 .PHONY: distclean
 distclean:
 	@-$(MAKE) clean
@@ -184,6 +188,8 @@ distclean:
 	@-$(RM) -f $(MKC_REQLIB) $(MKC_CREQLIB) $(MKC_PREQLIB) $(MKC_TREQLIB)
 	@-$(RM) -f $(MKC_OUTPUT) $(MKC_COUTPUT) $(MKC_POUTPUT) $(MKC_TOUTPUT)
 	@-$(RM) -rf $(MKC_FILES)
+	@-test -d ../test.dir/data && $(RM) -rf ../test.dir/data/*
+	@-$(RM) -f ../install/manifest.txt ../install/src-manifest.txt
 
 .PHONY: clean
 clean:
@@ -201,6 +207,7 @@ tclean:
 	@-$(RM) -f $(MKC_FILES)/mkc_compile.log $(MKC_CONFDIR)/*~
 	@-$(RM) -f ../tmp/* ../conv/*~ ./locale/*~ ../locale/*~ ../*~
 	@-$(RM) -f ../install/*~ ../pkg/*~ build/*~ utils/*~
+	@-$(RM) -f ../templates/*~ 
 	@-$(RM) -f si-in.txt si-sort.txt
 
 # bdj executables
@@ -423,10 +430,12 @@ $(OBJDIR)/bdj4init$(OBJ_EXT): bdj4init.c config.h bdj4init.h musicdb.h song.h li
  log.h fileutil.h tmutil.h fileop.h datautil.h bdjopt.h
 $(OBJDIR)/bdj4main$(OBJ_EXT): bdj4main.c config.h bdj4init.h sockh.h sock.h bdjvars.h \
  bdjmsg.h log.h fileutil.h process.h bdjstring.h sysvars.h portability.h \
- playlist.h datafile.h list.h song.h queue.h musicq.h plq.h
+ playlist.h datafile.h list.h song.h songlist.h queue.h musicq.h plq.h \
+ tmutil.h
 $(OBJDIR)/bdj4player$(OBJ_EXT): bdj4player.c config.h bdjmsg.h bdjstring.h bdjvars.h \
  fileop.h list.h log.h fileutil.h sock.h sockh.h sysvars.h portability.h \
- pathutil.h queue.h pli.h vlci.h configp.h process.h volume.h bdjopt.h
+ pathutil.h queue.h pli.h vlci.h configp.h process.h volume.h bdjopt.h \
+ tmutil.h
 $(OBJDIR)/bdjmsg$(OBJ_EXT): bdjmsg.c config.h bdjmsg.h bdjstring.h
 $(OBJDIR)/bdjopt$(OBJ_EXT): bdjopt.c config.h bdjopt.h list.h datafile.h datautil.h \
  portability.h
@@ -454,7 +463,7 @@ $(OBJDIR)/check_process$(OBJ_EXT): check_process.c config.h process.h check_bdj.
 $(OBJDIR)/check_queue$(OBJ_EXT): check_queue.c config.h queue.h check_bdj.h portability.h \
  log.h fileutil.h
 $(OBJDIR)/check_rafile$(OBJ_EXT): check_rafile.c config.h rafile.h check_bdj.h
-$(OBJDIR)/check_sock$(OBJ_EXT): check_sock.c configc.h sock.h config.h check_bdj.h tmutil.h \
+$(OBJDIR)/check_sock$(OBJ_EXT): check_sock.c config.h configc.h sock.h check_bdj.h tmutil.h \
  log.h fileutil.h
 $(OBJDIR)/check_tmutil$(OBJ_EXT): check_tmutil.c config.h tmutil.h check_bdj.h
 $(OBJDIR)/clicomm$(OBJ_EXT): clicomm.c config.h sockh.h sock.h bdjmsg.h sysvars.h \
@@ -483,10 +492,11 @@ $(OBJDIR)/musicdb$(OBJ_EXT): musicdb.c config.h musicdb.h song.h list.h rafile.h
 $(OBJDIR)/musicq$(OBJ_EXT): musicq.c config.h musicq.h queue.h
 $(OBJDIR)/pathutil$(OBJ_EXT): pathutil.c config.h bdjstring.h pathutil.h portability.h
 $(OBJDIR)/playlist$(OBJ_EXT): playlist.c config.h playlist.h datafile.h list.h song.h \
- fileop.h portability.h datautil.h rating.h level.h dance.h songlist.h \
- sequence.h log.h fileutil.h
+ songlist.h fileop.h portability.h datautil.h rating.h level.h dance.h \
+ sequence.h log.h fileutil.h musicdb.h
 $(OBJDIR)/plivlc$(OBJ_EXT): plivlc.c config.h configp.h pli.h vlci.h list.h
-$(OBJDIR)/plq$(OBJ_EXT): plq.c config.h plq.h queue.h playlist.h datafile.h list.h song.h
+$(OBJDIR)/plq$(OBJ_EXT): plq.c config.h plq.h queue.h playlist.h datafile.h list.h song.h \
+ songlist.h
 $(OBJDIR)/process$(OBJ_EXT): process.c config.h process.h log.h fileutil.h
 $(OBJDIR)/queue$(OBJ_EXT): queue.c config.h queue.h
 $(OBJDIR)/rafile$(OBJ_EXT): rafile.c config.h rafile.h lock.h tmutil.h log.h fileutil.h
@@ -512,5 +522,5 @@ $(OBJDIR)/tmutil$(OBJ_EXT): tmutil.c config.h tmutil.h bdjstring.h
 $(OBJDIR)/vlci$(OBJ_EXT): vlci.c config.h configp.h vlci.h list.h bdjstring.h log.h \
  fileutil.h
 $(OBJDIR)/volalsa$(OBJ_EXT): volalsa.c config.h
-$(OBJDIR)/volpa$(OBJ_EXT): volpa.c config.h volume.h bdjstring.h
+$(OBJDIR)/volpa$(OBJ_EXT): volpa.c config.h volume.h bdjstring.h tmutil.h
 $(OBJDIR)/volume$(OBJ_EXT): volume.c config.h volume.h

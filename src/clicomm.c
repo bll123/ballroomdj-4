@@ -26,7 +26,6 @@ main (int argc, char *argv[])
   int             routeok = 0;
   int             msgok = 0;
   int             argsok = 0;
-  int             playerstart = 0;
   char            *args;
   char            *rval;
   int             err;
@@ -47,6 +46,13 @@ main (int argc, char *argv[])
   while (socketInvalid (mainSock)) {
     msleep (100);
     mainSock = sockConnect (mainPort, &err, 1000);
+  }
+
+  uint16_t playerPort = bdjvarsl [BDJVL_PLAYER_PORT];
+  playerSock = sockConnect (playerPort, &err, 1000);
+  while (socketInvalid (playerSock)) {
+    msleep (100);
+    playerSock = sockConnect (playerPort, &err, 1000);
   }
 
   while (1) {
@@ -95,11 +101,6 @@ main (int argc, char *argv[])
       if (strcmp (buff, "") == 0) {
         break;
       }
-      if (strcmp (buff, "start-player") == 0) {
-        msg = MSG_PLAYBACK_START;
-        msgok = 1;
-        playerstart = 1;
-      }
       if (strcmp (buff, "prep-song") == 0) {
         msg = MSG_SONG_PREP;
         msgok = 1;
@@ -124,6 +125,11 @@ main (int argc, char *argv[])
       }
       if (strcmp (buff, "playlist-q") == 0) {
         msg = MSG_PLAYLIST_QUEUE;
+        msgok = 1;
+        argsok = 1;
+      }
+      if (strcmp (buff, "debug") == 0) {
+        msg = MSG_SET_DEBUG_LVL;
         msgok = 1;
         argsok = 1;
       }
@@ -157,21 +163,11 @@ main (int argc, char *argv[])
 
     if (routeok && msgok) {
       if (route == ROUTE_MAIN) {
-        sockhSendMessage (mainSock, route, msg, args);
+        sockhSendMessage (mainSock, ROUTE_CLICOMM, route, msg, args);
       }
       if (route == ROUTE_PLAYER) {
-        sockhSendMessage (playerSock, route, msg, args);
+        sockhSendMessage (playerSock, ROUTE_CLICOMM, route, msg, args);
       }
-    }
-
-    if (playerstart) {
-      uint16_t playerPort = bdjvarsl [BDJVL_PLAYER_PORT];
-      playerSock = sockConnect (playerPort, &err, 1000);
-      while (socketInvalid (playerSock)) {
-        msleep (100);
-        playerSock = sockConnect (playerPort, &err, 1000);
-      }
-      playerstart = 0;
     }
   }
 }

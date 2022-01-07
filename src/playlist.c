@@ -17,6 +17,7 @@
 #include "songlist.h"
 #include "sequence.h"
 #include "log.h"
+#include "musicdb.h"
 
 static void     plConvResume (char *, datafileret_t *ret);
 static void     plConvWait (char *, datafileret_t *ret);
@@ -100,11 +101,10 @@ playlistAlloc (char *fname)
   pl->manualIdx = 0;
   pl->plinfodf = NULL;
   pl->dancesdf = NULL;
-  pl->songlistdf = NULL;
+  pl->songlist = NULL;
   pl->seqdf = NULL;
   pl->plinfo = NULL;
   pl->dances = NULL;
-  pl->songlist = NULL;
   pl->seq = NULL;
 
   pl->plinfodf = datafileAllocParse ("playlist", DFTYPE_KEY_VAL, tfn,
@@ -142,13 +142,12 @@ playlistAlloc (char *fname)
       playlistFree (pl);
       return NULL;
     }
-    pl->songlistdf = songlistAlloc (tfn);
-    if (pl->songlistdf == NULL) {
+    pl->songlist = songlistAlloc (tfn);
+    if (pl->songlist == NULL) {
       logMsg (LOG_DBG, LOG_IMPORTANT, "Bad songlist %s\n", tfn);
       playlistFree (pl);
       return NULL;
     }
-    pl->songlist = datafileGetList (pl->songlistdf);
   }
 
   if (type == PLTYPE_SEQ) {
@@ -181,8 +180,8 @@ playlistFree (playlist_t *pl)
     if (pl->dancesdf != NULL) {
       datafileFree (pl->dancesdf);
     }
-    if (pl->songlistdf != NULL) {
-      songlistFree (pl->songlistdf);
+    if (pl->songlist != NULL) {
+      songlistFree (pl->songlist);
     }
     if (pl->seqdf != NULL) {
       sequenceFree (pl->seqdf);
@@ -204,7 +203,11 @@ playlistGetNextSong (playlist_t *pl)
       break;
     }
     case PLTYPE_MANUAL: {
-        /* manual playlists are easy... */
+      char *title = songlistGetData (pl->songlist, pl->manualIdx, SONGLIST_TITLE);
+      if (title != NULL) {
+        song = dbGetByName (title);
+        ++pl->manualIdx;
+      }
       break;
     }
     case PLTYPE_SEQ: {

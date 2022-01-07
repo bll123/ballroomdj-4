@@ -25,10 +25,11 @@ main (int argc, char *argv[])
   static struct option bdj_options [] = {
     { "check_all",  no_argument,        NULL,   1 },
     { "clicomm",    no_argument,        NULL,   2 },
-    { "gui",       no_argument,         NULL,   3 },
+    { "gui",        no_argument,        NULL,   3 },
     { "main",       no_argument,        NULL,   4 },
     { "player",     no_argument,        NULL,   5 },
     { "profile",    required_argument,  NULL,   'p' },
+    { "debug",      required_argument,  NULL,   'd' },
     { NULL,         0,                  NULL,   0 }
   };
 
@@ -56,6 +57,9 @@ main (int argc, char *argv[])
       }
       case 5: {
         prog = "bdj4player";
+        break;
+      }
+      case 'd': {
         break;
       }
       case 'p': {
