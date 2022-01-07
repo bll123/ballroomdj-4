@@ -1,0 +1,48 @@
+version=2
+#
+# dance selection
+#
+# values:
+#  = 1.0 no change
+#  > 1.0 reduces the chance
+#    1000.0 essentially turns the dance off
+#  < 1.0 increases the chance
+#
+#
+# if the dance has exceeded the expected count
+limit=1000.0
+#
+# if the dance is lower than the expected count
+low=0.5
+#
+# if the previous dance and the dance are both fast
+bothfast=1000.0
+#
+# if the dance has a tag that matches the previous dance
+tagmatch=600.0
+# how many songs to search back in history
+tagdistance=3
+# tagmatch reduction multiplier (tagmatch*(tagadjust^distance))
+tagadjust=0.4
+#
+# if the dance's type matches the previous dance
+typematch=600.0
+#
+# same dance log function value
+# a higher number will reduce the chance of the same dance
+# higher numbers make the mix more regular/repetitive
+# a lower number will allow the same dance sooner
+# adjust by very small increments (0.05).
+logvalue=1.95
+#
+# number of beginning dances
+begincount=3
+# if < begincount, then set the chance of a fast dance
+beginfast=1000.0
+#
+# song selection
+#
+# the weight of a rating and level.  These should add to 1.
+# the percentages here adjust which song (for the dance) is selected
+ratingweight=0.90
+levelweight=0.10

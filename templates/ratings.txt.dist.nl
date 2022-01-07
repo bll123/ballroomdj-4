@@ -1,0 +1,36 @@
+# BDJ4 ratings
+# Fri Jan 07 10:51:32 GMT 2022
+version
+..1
+count
+..5
+KEY
+..0
+rating
+..Onbeoordeeld
+weight
+..5
+KEY
+..1
+rating
+..Slecht
+weight
+..0
+KEY
+..2
+rating
+..Redelijk
+weight
+..0
+KEY
+..3
+rating
+..Goed
+weight
+..15
+KEY
+..4
+rating
+..Uitstekend
+weight
+..80

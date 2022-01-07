@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script type="text/javascript" src="file://#BASEURL#/jquery.min.js"></script>
+  <script type="text/javascript" src="file://#BASEURL#/qrcode.js"></script>
+  <style type="text/css">
+    div {
+      border: 10px solid #ffffff;
+    }
+    .big {
+      font-size: 24px;
+    }
+    .hdiv {
+      margin: auto;
+      width: 20%;
+      clear: both;
+    }
+    .vdiv {
+      padding-top: 25px;
+      padding-bottom: 25px;
+    }
+  </style>
+</head>
+<body>
+  <div class="hdiv">
+    <p class="big">#TITLE#</p>
+  </div>
+  <div id="qrcode" class="hdiv vdiv"></div>
+  <div class="hdiv">
+    <p>#QRCODEURL#</p>
+  </div>
+  <script type="text/javascript">
+  var qrcode = new QRCode(document.getElementById("qrcode"), {
+      text : "#QRCODEURL#",
+      width : 512,
+      height : 512,
+      colorDark : "#000000",
+      colorLight : "#ffffff",
+      correctLevel : QRCode.CorrectLevel.H
+  });
+  </script>
+</body>
+</html>

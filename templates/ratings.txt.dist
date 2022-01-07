@@ -1,0 +1,36 @@
+# BDJ4 ratings
+# Fri Jan 07 10:47:40 GMT 2022
+version
+..1
+count
+..5
+KEY
+..0
+rating
+..Unrated
+weight
+..5
+KEY
+..1
+rating
+..Poor
+weight
+..0
+KEY
+..2
+rating
+..Fair
+weight
+..0
+KEY
+..3
+rating
+..Good
+weight
+..15
+KEY
+..4
+rating
+..Great
+weight
+..80

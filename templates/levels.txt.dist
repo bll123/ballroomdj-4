@@ -1,0 +1,30 @@
+# BDJ4 levels
+# Fri Jan 07 10:47:40 GMT 2022
+version
+..1
+count
+..3
+KEY
+..0
+label
+..Easy
+default
+..0
+weight
+..50
+KEY
+..1
+label
+..Normal
+default
+..1
+weight
+..40
+KEY
+..2
+label
+..Advanced
+default
+..0
+weight
+..10

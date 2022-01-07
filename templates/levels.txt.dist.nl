@@ -1,0 +1,30 @@
+# BDJ4 levels
+# Fri Jan 07 10:51:32 GMT 2022
+version
+..1
+count
+..3
+KEY
+..0
+label
+..Gemakkelijk
+default
+..0
+weight
+..10
+KEY
+..1
+label
+..Standaard
+default
+..1
+weight
+..10
+KEY
+..2
+label
+..Geavanceerd
+default
+..0
+weight
+..10
