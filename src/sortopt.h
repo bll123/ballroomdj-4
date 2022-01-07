@@ -3,7 +3,11 @@
 
 #include "datafile.h"
 
-datafile_t *  sortoptAlloc (char *);
-void          sortoptFree (datafile_t *);
+typedef struct {
+  datafile_t        *df;
+} sortopt_t;
+
+sortopt_t     *sortoptAlloc (char *);
+void          sortoptFree (sortopt_t *);
 
 #endif /* INC_SORTOPT_H */

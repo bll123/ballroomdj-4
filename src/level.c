@@ -19,33 +19,44 @@ static datafilekey_t leveldfkeys[] = {
 };
 #define LEVEL_DFKEY_COUNT (sizeof (leveldfkeys) / sizeof (datafilekey_t))
 
-datafile_t *
+level_t *
 levelAlloc (char *fname)
 {
-  datafile_t    *df;
+  level_t    *level;
 
   if (! fileopExists (fname)) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: level: missing %s\n", fname);
     return NULL;
   }
 
-  df = datafileAllocParse ("level", DFTYPE_KEY_LONG, fname,
+  level = malloc (sizeof (level_t));
+  assert (level != NULL);
+
+  level->df = datafileAllocParse ("level", DFTYPE_KEY_LONG, fname,
       leveldfkeys, LEVEL_DFKEY_COUNT, LEVEL_LABEL);
-  return df;
+  return level;
 }
 
 void
-levelFree (datafile_t *df)
+levelFree (level_t *level)
 {
-  datafileFree (df);
+  if (level != NULL) {
+    if (level->df != NULL) {
+      datafileFree (level->df);
+    }
+    free (level);
+  }
 }
 
 void
 levelConv (char *keydata, datafileret_t *ret)
 {
+  level_t     *level;
   list_t      *lookup;
 
   ret->valuetype = VALUE_LONG;
-  lookup = datafileGetLookup (bdjvarsdf [BDJVDF_LEVELS]);
+
+  level = bdjvarsdf [BDJVDF_LEVELS];
+  lookup = datafileGetLookup (level->df);
   ret->u.l = listGetLong (lookup, keydata);
 }

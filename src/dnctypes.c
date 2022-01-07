@@ -11,38 +11,43 @@
 #include "bdjvarsdf.h"
 #include "log.h"
 
-datafile_t *
+dnctype_t *
 dnctypesAlloc (char *fname)
 {
-  datafile_t    *df;
+  dnctype_t       *dtype;
 
   if (! fileopExists (fname)) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: dnctypes: missing %s\n", fname);
     return NULL;
   }
-  df = datafileAllocParse ("dance-types", DFTYPE_LIST, fname,
+
+  dtype = malloc (sizeof (dnctype_t));
+  assert (dtype != NULL);
+
+  dtype->df = datafileAllocParse ("dance-types", DFTYPE_LIST, fname,
       NULL, 0, DATAFILE_NO_LOOKUP);
-  listSort (df->data);
-  return df;
+  listSort (dtype->df->data);
+  return dtype;
 }
 
 void
-dnctypesFree (datafile_t *df)
+dnctypesFree (dnctype_t *dtype)
 {
-  datafileFree (df);
-}
-
-list_t *
-dnctypesGetList (datafile_t *df)
-{
-  return df->data;
+  if (dtype != NULL) {
+    if (dtype->df != NULL) {
+      datafileFree (dtype->df);
+    }
+    free (dtype);
+  }
 }
 
 void
 dnctypesConv (char *keydata, datafileret_t *ret)
 {
+  dnctype_t       *dtype;
+
   ret->valuetype = VALUE_LONG;
-  ret->u.l = listGetStrIdx (dnctypesGetList (bdjvarsdf [BDJVDF_DANCE_TYPES]), keydata);
-  ret->u.l = 0;
+  dtype = bdjvarsdf [BDJVDF_DANCE_TYPES];
+  ret->u.l = listGetStrIdx (datafileGetList (dtype->df), keydata);
 }
 

@@ -61,7 +61,7 @@ songlistFree (songlist_t *sl)
 char *
 songlistGetData (songlist_t *sl, long idx, long key)
 {
-  if (idx >= llistGetSize (sl->songlist)) {
+  if ((size_t) idx >= llistGetSize (sl->songlist)) {
     logMsg (LOG_DBG, LOG_BASIC, "end of songlist %s reached", sl->fname);
     return NULL;
   }

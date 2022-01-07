@@ -7,6 +7,7 @@
 
 #include "autosel.h"
 #include "datafile.h"
+#include "log.h"
 
 static datafilekey_t autoseldfkeys[] = {
   { "begincount",     AUTOSEL_BEG_COUNT,        VALUE_LONG,    NULL },
@@ -24,18 +25,31 @@ static datafilekey_t autoseldfkeys[] = {
 };
 #define AUTOSEL_DFKEY_COUNT (sizeof (autoseldfkeys) / sizeof (datafilekey_t))
 
-datafile_t *
+autosel_t *
 autoselAlloc (char *fname)
 {
-  datafile_t    *df;
+  autosel_t     *autosel;
 
-  df = datafileAllocParse ("autosel", DFTYPE_KEY_VAL, fname,
+  if (! fileopExists (fname)) {
+    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: autosel: missing %s\n", fname);
+    return NULL;
+  }
+
+  autosel = malloc (sizeof (autosel_t));
+  assert (autosel != NULL);
+
+  autosel->df = datafileAllocParse ("autosel", DFTYPE_KEY_VAL, fname,
       autoseldfkeys, AUTOSEL_DFKEY_COUNT, DATAFILE_NO_LOOKUP);
-  return df;
+  return autosel;
 }
 
 void
-autoselFree (datafile_t *df)
+autoselFree (autosel_t *autosel)
 {
-  datafileFree (df);
+  if (autosel != NULL) {
+    if (autosel->df != NULL) {
+      datafileFree (autosel->df);
+    }
+    free (autosel);
+  }
 }

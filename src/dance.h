@@ -23,8 +23,12 @@ typedef enum {
   DANCE_SPEED_FAST,
 } dancespeed_t;
 
-datafile_t    *danceAlloc (char *);
-void          danceFree (datafile_t *);
+typedef struct {
+  datafile_t      *df;
+} dance_t;
+
+dance_t       *danceAlloc (char *);
+void          danceFree (dance_t *);
 void          danceConvDance (char *keydata, datafileret_t *ret);
 
 #endif /* INC_DANCE_H */

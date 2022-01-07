@@ -9,9 +9,12 @@ typedef enum {
   RATING_KEY_MAX
 } ratingkey_t;
 
-datafile_t *  ratingAlloc (char *);
-void          ratingFree (datafile_t *);
-list_t *      ratingGetList (datafile_t *df);
-void          ratingConv (char *keydata, datafileret_t *ret);
+typedef struct {
+  datafile_t        *df;
+} rating_t;
+
+rating_t    *ratingAlloc (char *);
+void        ratingFree (rating_t *rating);
+void        ratingConv (char *keydata, datafileret_t *ret);
 
 #endif /* INC_RATING_H */

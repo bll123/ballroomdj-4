@@ -18,33 +18,44 @@ static datafilekey_t genredfkeys[] = {
 };
 #define GENRE_DFKEY_COUNT (sizeof (genredfkeys) / sizeof (datafilekey_t))
 
-datafile_t *
+genre_t *
 genreAlloc (char *fname)
 {
-  datafile_t    *df;
+  genre_t       *genre;
 
   if (! fileopExists (fname)) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: genre: missing %s\n", fname);
     return NULL;
   }
-  df = datafileAllocParse ("genre", DFTYPE_KEY_LONG, fname,
+
+  genre = malloc (sizeof (genre));
+  assert (genre != NULL);
+
+  genre->df = datafileAllocParse ("genre", DFTYPE_KEY_LONG, fname,
       genredfkeys, GENRE_DFKEY_COUNT, GENRE_GENRE);
-  return df;
+  return genre;
 }
 
 void
-genreFree (datafile_t *df)
+genreFree (genre_t *genre)
 {
-  datafileFree (df);
+  if (genre != NULL) {
+    if (genre->df != NULL) {
+      datafileFree (genre->df);
+    }
+    free (genre);
+  }
 }
 
 void
 genreConv (char *keydata, datafileret_t *ret)
 {
+  genre_t     *genre;
   list_t      *lookup;
 
   ret->valuetype = VALUE_LONG;
-  lookup = datafileGetLookup (bdjvarsdf [BDJVDF_GENRES]);
+  genre = bdjvarsdf [BDJVDF_GENRES];
+  lookup = datafileGetLookup (genre->df);
   ret->u.l = listGetLong (lookup, keydata);
 }
 

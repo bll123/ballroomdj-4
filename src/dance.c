@@ -36,37 +36,45 @@ static datafilekey_t dancespeeddfkeys[] = {
 };
 #define DANCE_SPEED_DFKEY_COUNT (sizeof (dancespeeddfkeys) / sizeof (datafilekey_t))
 
-datafile_t *
+dance_t *
 danceAlloc (char *fname)
 {
-  datafile_t        *df;
+  dance_t           *dance;
 
   if (! fileopExists (fname)) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "dance: missing: %s\n", fname);
     return NULL;
   }
 
-  df = datafileAllocParse ("dance", DFTYPE_KEY_LONG, fname,
+  dance = malloc (sizeof (dance_t));
+  assert (dance != NULL);
+
+  dance->df = datafileAllocParse ("dance", DFTYPE_KEY_LONG, fname,
       dancedfkeys, DANCE_DFKEY_COUNT, DANCE_DANCE);
-  return df;
+  return dance;
 }
 
 void
-danceFree (datafile_t *df)
+danceFree (dance_t *dance)
 {
-  if (df != NULL) {
-    datafileFree (df);
+  if (dance != NULL) {
+    if (dance->df != NULL) {
+      datafileFree (dance->df);
+    }
+    free (dance);
   }
 }
 
 void
 danceConvDance (char *keydata, datafileret_t *ret)
 {
+  dance_t       *dance;
   list_t        *lookup;
 
   ret->valuetype = VALUE_LONG;
   ret->u.l = -1;
-  lookup = datafileGetLookup (bdjvarsdf [BDJVDF_DANCES]);
+  dance = bdjvarsdf [BDJVDF_DANCES];
+  lookup = datafileGetLookup (dance->df);
   if (lookup != NULL) {
     ret->u.l = listGetLong (lookup, keydata);
   }

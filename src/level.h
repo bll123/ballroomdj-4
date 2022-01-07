@@ -10,8 +10,12 @@ typedef enum {
   LEVEL_KEY_MAX
 } levelkey_t;
 
-datafile_t *  levelAlloc (char *);
-void          levelFree (datafile_t *);
-void          levelConv (char *keydata, datafileret_t *ret);
+typedef struct {
+  datafile_t        *df;
+} level_t;
+
+level_t     *levelAlloc (char *);
+void        levelFree (level_t *);
+void        levelConv (char *keydata, datafileret_t *ret);
 
 #endif /* INC_LEVEL_H */

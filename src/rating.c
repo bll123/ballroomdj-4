@@ -18,39 +18,44 @@ static datafilekey_t ratingdfkeys[] = {
 };
 #define RATING_DFKEY_COUNT (sizeof (ratingdfkeys) / sizeof (datafilekey_t))
 
-datafile_t *
+rating_t *
 ratingAlloc (char *fname)
 {
-  datafile_t    *df;
+  rating_t        *rating;
 
   if (! fileopExists (fname)) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: rating: missing %s\n", fname);
     return NULL;
   }
-  df = datafileAllocParse ("rating", DFTYPE_KEY_LONG, fname,
+
+  rating = malloc (sizeof (rating_t));
+  assert (rating != NULL);
+
+  rating->df = datafileAllocParse ("rating", DFTYPE_KEY_LONG, fname,
       ratingdfkeys, RATING_DFKEY_COUNT, RATING_RATING);
-  return df;
+  return rating;
 }
 
 void
-ratingFree (datafile_t *df)
+ratingFree (rating_t *rating)
 {
-  datafileFree (df);
-}
-
-list_t *
-ratingGetList (datafile_t *df)
-{
-  return df->data;
+  if (rating != NULL) {
+    if (rating->df != NULL) {
+      datafileFree (rating->df);
+    }
+    free (rating);
+  }
 }
 
 void
 ratingConv (char *keydata, datafileret_t *ret)
 {
+  rating_t    *rating;
   list_t      *lookup;
 
   ret->valuetype = VALUE_LONG;
-  lookup = datafileGetLookup (bdjvarsdf [BDJVDF_RATINGS]);
+  rating = bdjvarsdf [BDJVDF_RATINGS];
+  lookup = datafileGetLookup (rating->df);
   ret->u.l = listGetLong (lookup, keydata);
 }
 

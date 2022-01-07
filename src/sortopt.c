@@ -10,22 +10,31 @@
 #include "fileop.h"
 #include "log.h"
 
-datafile_t *
+sortopt_t *
 sortoptAlloc (char *fname)
 {
-  datafile_t    *df;
+  sortopt_t     *sortopt;
 
   if (! fileopExists (fname)) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: sortopt: missing %s\n", fname);
     return NULL;
   }
-  df = datafileAllocParse ("sortopt", DFTYPE_LIST, fname, NULL, 0,
+
+  sortopt = malloc (sizeof (sortopt_t));
+  assert (sortopt != NULL);
+
+  sortopt->df = datafileAllocParse ("sortopt", DFTYPE_LIST, fname, NULL, 0,
       DATAFILE_NO_LOOKUP);
-  return df;
+  return sortopt;
 }
 
 void
-sortoptFree (datafile_t *df)
+sortoptFree (sortopt_t *sortopt)
 {
-  datafileFree (df);
+  if (sortopt != NULL) {
+    if (sortopt->df != NULL) {
+      datafileFree (sortopt->df);
+    }
+    free (sortopt);
+  }
 }
