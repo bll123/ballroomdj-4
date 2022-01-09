@@ -25,7 +25,6 @@ sockhMainLoop (uint16_t listenPort, sockProcessMsg_t msgProc,
   size_t      len = 0;
   int         done = 0;
   int         tdone = 0;
-  int         otherflag = 0;
   long        routefrom = ROUTE_NONE;
   long        route = ROUTE_NONE;
   long        msg = MSG_NONE;
@@ -94,10 +93,7 @@ sockhMainLoop (uint16_t listenPort, sockProcessMsg_t msgProc,
       ++done;
     }
 
-    if (otherflag == 0) {
-      tdone = otherProc (userData);
-    }
-    otherflag = 1 - otherflag;
+    tdone = otherProc (userData);
     if (tdone) {
       args [0] = '\0';
       tdone = msgProc (ROUTE_NONE, ROUTE_NONE, MSG_EXIT_REQUEST, args, userData);

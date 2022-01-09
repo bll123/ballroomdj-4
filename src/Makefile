@@ -499,7 +499,6 @@ $(OBJDIR)/pathutil$(OBJ_EXT): pathutil.c config.h bdjstring.h pathutil.h portabi
 $(OBJDIR)/playlist$(OBJ_EXT): playlist.c config.h playlist.h datafile.h list.h song.h \
  songlist.h sequence.h fileop.h portability.h datautil.h rating.h level.h \
  dance.h log.h fileutil.h musicdb.h
-$(OBJDIR)/pli$(OBJ_EXT): pli.c
 $(OBJDIR)/plivlc$(OBJ_EXT): plivlc.c config.h configp.h pli.h vlci.h list.h tmutil.h
 $(OBJDIR)/plq$(OBJ_EXT): plq.c config.h plq.h queue.h playlist.h datafile.h list.h song.h \
  songlist.h sequence.h

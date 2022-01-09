@@ -45,10 +45,10 @@ static datafilekey_t bdjoptprofiledfkeys[] = {
   { "AUTOSTARTUP",          OPT_P_AUTOSTARTUP,          VALUE_DATA, NULL },
   { "DEFAULTVOLUME",        OPT_P_DEFAULTVOLUME,        VALUE_LONG, NULL },
   { "DONEMSG",              OPT_P_DONEMSG,              VALUE_DATA, NULL },
-  { "FADEINTIME",           OPT_P_FADEINTIME,           VALUE_DOUBLE, NULL },
-  { "FADEOUTTIME",          OPT_P_FADEOUTTIME,          VALUE_DOUBLE, NULL },
+  { "FADEINTIME",           OPT_P_FADEINTIME,           VALUE_LONG, NULL },
+  { "FADEOUTTIME",          OPT_P_FADEOUTTIME,          VALUE_LONG, NULL },
   { "FADETYPE",             OPT_P_FADETYPE,             VALUE_DATA, NULL },
-  { "GAP",                  OPT_P_GAP,                  VALUE_DOUBLE, NULL },
+  { "GAP",                  OPT_P_GAP,                  VALUE_LONG, NULL },
   { "MAXPLAYTIME",          OPT_P_MAXPLAYTIME,          VALUE_LONG, NULL },
   { "MOBILEMARQUEE",        OPT_P_MOBILEMARQUEE,        VALUE_LONG, parseConvBoolean },
   { "MOBILEMQPORT",         OPT_P_MOBILEMQPORT,         VALUE_LONG, NULL },
@@ -226,7 +226,7 @@ long
 bdjoptGetLong (size_t idx)
 {
   if (bdjopt == NULL) {
-    return 0;
+    return -1;
   }
   long value = llistGetLong (bdjopt->data, idx);
   return value;

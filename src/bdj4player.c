@@ -311,7 +311,7 @@ playerProcessing (void *udata)
 
   if (playerData->programState != STATE_RUNNING) {
       /* all of the processing that follows requires a running state */
-    return 0;
+    return gKillReceived;
   }
 
   if (playerData->playerState == PL_STATE_STOPPED &&
@@ -319,7 +319,6 @@ playerProcessing (void *udata)
     time_t            currTime = mstime ();
 
     if (currTime >= playerData->gapFinishTime) {
-fprintf (stderr, "finish gap: %zd\n", currTime);
       playerData->inGap = false;
       playerData->gapFinishTime = 0;
     }
@@ -409,6 +408,7 @@ fprintf (stderr, "gap finish: %zd\n", playerData->gapFinishTime);
     /* windows must do a physical copy, and this may take a bit of time */
   if ((playerData->playerState == PL_STATE_PLAYING ||
        playerData->playerState == PL_STATE_STOPPED) &&
+      ! playerData->inGap &&
       ! playerData->inFade) {
     playerProcessPrepRequest (playerData);
   }
