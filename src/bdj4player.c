@@ -17,6 +17,7 @@
 #include <ctype.h>
 #include <unistd.h>
 #include <time.h>
+#include <math.h>
 
 #include "bdjmsg.h"
 #include "bdjopt.h"
@@ -62,7 +63,15 @@ typedef struct {
   playerstate_t   playerState;
   time_t          playTimeStart;
   time_t          playTimeCheck;
+  time_t          fadeTimeCheck;
   time_t          gapFinishTime;
+  long            gap;
+  long            fadeType;
+  long            fadeinTime;
+  long            fadeoutTime;
+  long            fadeCount;
+  long            fadeSamples;
+  time_t          fadeTimeNext;
   bool            inFadeOut : 1;
   bool            inFadeIn : 1;
   bool            inFade : 1;
@@ -86,6 +95,8 @@ static void     playerCleanPrepSongs (playerdata_t *playerData);
 static void     playerSigHandler (int sig);
 static void     playerSetAudioSink (playerdata_t *playerData, char *sinkname);
 static void     playerInitSinklist (playerdata_t *playerData);
+static void     playerFadeVolSet (playerdata_t *playerData);
+static double   calcFadeIndex (playerdata_t *playerData);
 
 static int      gKillReceived = 0;
 
@@ -122,6 +133,10 @@ main (int argc, char *argv[])
   playerData.gapFinishTime = 0;
   playerData.inGap = false;
   playerData.mainHandshake = false;
+  playerData.fadeCount = 0;
+  playerData.fadeSamples = 1;
+  playerData.playTimeCheck = 0;
+  playerData.fadeTimeCheck = 0;
 
   sysvarsInit (argv[0]);
 
@@ -152,6 +167,11 @@ main (int argc, char *argv[])
 
   bdjoptInit ();
 
+  playerData.gap = bdjoptGetLong (OPT_P_GAP);
+  playerData.fadeType = bdjoptGetLong (OPT_P_FADETYPE);
+  playerData.fadeinTime = bdjoptGetLong (OPT_P_FADEINTIME);
+  playerData.fadeoutTime = bdjoptGetLong (OPT_P_FADEOUTTIME);
+
   playerData.sinklist.defname = "";
   playerData.sinklist.count = 0;
   playerData.sinklist.sinklist = NULL;
@@ -164,6 +184,7 @@ main (int argc, char *argv[])
 
   playerData.originalSystemVolume = volumeGet (playerData.currentSink);
   playerData.realVolume = (int) bdjoptGetLong (OPT_P_DEFAULTVOLUME);
+  playerData.currentVolume = playerData.realVolume;
   volumeSet (playerData.currentSink, playerData.realVolume);
 
   if (playerData.sinklist.sinklist != NULL) {
@@ -314,6 +335,14 @@ playerProcessing (void *udata)
     return gKillReceived;
   }
 
+  if (playerData->inFade) {
+    time_t            currTime = mstime ();
+
+    if (currTime >= playerData->fadeTimeNext) {
+      playerFadeVolSet (playerData);
+    }
+  }
+
   if (playerData->playerState == PL_STATE_STOPPED &&
       playerData->inGap) {
     time_t            currTime = mstime ();
@@ -328,11 +357,15 @@ playerProcessing (void *udata)
       ! playerData->inGap &&
       playerData->playRequest != NULL) {
     logMsg (LOG_DBG, LOG_BASIC, "play: %s", playerData->playRequest);
+    if (playerData->fadeinTime == 0) {
+      volumeSet (playerData->currentSink, playerData->realVolume);
+    }
     pliMediaSetup (playerData->pliData, playerData->playRequest);
     pliStartPlayback (playerData->pliData);
     playerData->playerState = PL_STATE_LOADING;
     free (playerData->playRequest);
     playerData->playRequest = NULL;
+
     logMsg (LOG_DBG, LOG_BASIC, "pl state: loading");
   }
 
@@ -346,8 +379,6 @@ playerProcessing (void *udata)
     } else if (plistate == PLI_STATE_PLAYING) {
       ssize_t     maxdur = 0;
 
-      playerData->playTimeStart = mstime ();
-
       if (pq->dur <= 1) {
         pq->dur = pliGetDuration (playerData->pliData);
         logMsg (LOG_DBG, LOG_BASIC, "Replace duration with vlc data: %zd", pq->dur);
@@ -357,13 +388,28 @@ playerProcessing (void *udata)
         pq->dur = maxdur;
       }
 
+      playerData->playTimeStart = mstime ();
+        /* want to start check for real finish 500 ms before end */
+      playerData->playTimeCheck = playerData->playTimeStart;
+      playerData->fadeTimeCheck = playerData->playTimeCheck;
+      playerData->playTimeCheck += pq->dur - 500;
+      playerData->fadeTimeCheck += pq->dur;
+      if (playerData->fadeoutTime > 0) {
+        playerData->fadeTimeCheck -= playerData->fadeoutTime;
+      }
+
+      if (playerData->fadeinTime > 0) {
+        playerData->inFade = true;
+        playerData->inFadeIn = true;
+        playerData->fadeCount = 1;
+        playerData->fadeSamples = playerData->fadeinTime / 100 + 1;
+        playerFadeVolSet (playerData);
+      }
+
       logMsg (LOG_DBG, LOG_BASIC, "pl state: playing");
       sockhSendMessage (playerData->mainSock, ROUTE_PLAYER, ROUTE_MAIN,
           MSG_PLAYBACK_BEGIN, NULL);
 
-        /* want to start check for real finish 500 ms before end */
-      playerData->playTimeCheck = mstime ();
-      playerData->playTimeCheck += pq->dur - 500;
       playerData->playerState = PL_STATE_PLAYING;
     } else {
       /* ### FIX: need to process this; stopped/ended/error */
@@ -374,6 +420,17 @@ playerProcessing (void *udata)
   if (playerData->playerState == PL_STATE_PLAYING) {
     prepqueue_t       *pq = playerData->currentSong;
     time_t            currTime = mstime ();
+
+    if (playerData->fadeoutTime > 0 &&
+        ! playerData->inFade &&
+        currTime >= playerData->fadeTimeCheck) {
+      playerData->inFade = true;
+      playerData->inFadeOut = true;
+      playerData->fadeSamples = playerData->fadeoutTime / 100 + 1;
+      playerData->fadeCount = playerData->fadeSamples;
+      playerFadeVolSet (playerData);
+      playerData->fadeTimeCheck = 0;
+    }
 
     if (currTime >= playerData->playTimeCheck) {
       plistate_t plistate = pliState (playerData->pliData);
@@ -392,13 +449,10 @@ playerProcessing (void *udata)
         sockhSendMessage (playerData->mainSock, ROUTE_PLAYER, ROUTE_MAIN,
             MSG_PLAYBACK_FINISH, NULL);
 
-        ssize_t gap = bdjoptGetLong (OPT_P_GAP);
-fprintf (stderr, "gap: %zd\n", gap);
-        if (gap > 0) {
+        if (playerData->gap > 0) {
+          volumeSet (playerData->currentSink, 0);
           playerData->inGap = true;
-          playerData->gapFinishTime = mstime () + gap;
-fprintf (stderr, "curr tm : %zd\n", mstime());
-fprintf (stderr, "gap finish: %zd\n", playerData->gapFinishTime);
+          playerData->gapFinishTime = mstime () + playerData->gap;
         }
       }
     }
@@ -663,4 +717,67 @@ playerInitSinklist (playerdata_t *playerData)
   volumeGetSinkList ("", &playerData->sinklist);
   playerData->defaultSink = playerData->sinklist.defname;
   logProcEnd (LOG_MAIN, "playerInitSinklist", "");
+}
+
+static void
+playerFadeVolSet (playerdata_t *playerData)
+{
+  double findex = calcFadeIndex (playerData);
+
+  int newvol = (int) round ((double) playerData->realVolume * findex);
+
+  if (newvol > playerData->realVolume) {
+    newvol = playerData->realVolume;
+  }
+  volumeSet (playerData->currentSink, newvol);
+  if (playerData->inFadeIn) {
+    ++playerData->fadeCount;
+  }
+  if (playerData->inFadeOut) {
+    --playerData->fadeCount;
+  }
+  playerData->fadeTimeNext = mstime() + 100;
+  if (playerData->inFadeIn &&
+      newvol >= playerData->realVolume) {
+    playerData->inFade = false;
+    playerData->inFadeIn = false;
+  }
+  if (playerData->inFadeOut &&
+      newvol <= 0) {
+    playerData->inFade = false;
+    playerData->inFadeOut = false;
+  }
+}
+
+static double
+calcFadeIndex (playerdata_t *playerData)
+{
+  double      findex;
+
+  double index = (double) playerData->fadeCount;
+  double range = (double) playerData->fadeSamples;
+
+  findex = fmax(0.0, fmin (1.0, index / range));
+  switch (playerData->fadeType) {
+    case FADETYPE_TRIANGLE: {
+      break;
+    }
+    case FADETYPE_QUARTER_SINE: {
+      findex = sin (findex * M_PI / 2.0);
+      break;
+    }
+    case FADETYPE_HALF_SINE: {
+      findex = 1.0 - cos (findex * M_PI) / 2.0;
+      break;
+    }
+    case FADETYPE_LOGARITHMIC: {
+      findex = pow (0.1, (1.0 - findex) * 5.0);
+      break;
+    }
+    case FADETYPE_INVERTED_PARABOLA: {
+      findex = 1.0 - (1.0 - findex) * (1.0 - findex);
+      break;
+    }
+  }
+  return findex;
 }

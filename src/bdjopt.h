@@ -4,6 +4,14 @@
 #include "list.h"
 
 typedef enum {
+  FADETYPE_TRIANGLE,
+  FADETYPE_QUARTER_SINE,
+  FADETYPE_HALF_SINE,
+  FADETYPE_LOGARITHMIC,
+  FADETYPE_INVERTED_PARABOLA,
+} bdjfadetype_t;
+
+typedef enum {
 //  OPT_G_BEGIN,
   OPT_G_AUTOORGANIZE,
   OPT_G_CHANGESPACE,

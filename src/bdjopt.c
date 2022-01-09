@@ -12,6 +12,8 @@
 #include "datautil.h"
 #include "portability.h"
 
+static void bdjoptConvFadeType (char *, datafileret_t *);
+
 static datafile_t   *bdjopt = NULL;
 
 static datafilekey_t bdjoptglobaldfkeys[] = {
@@ -47,7 +49,7 @@ static datafilekey_t bdjoptprofiledfkeys[] = {
   { "DONEMSG",              OPT_P_DONEMSG,              VALUE_DATA, NULL },
   { "FADEINTIME",           OPT_P_FADEINTIME,           VALUE_LONG, NULL },
   { "FADEOUTTIME",          OPT_P_FADEOUTTIME,          VALUE_LONG, NULL },
-  { "FADETYPE",             OPT_P_FADETYPE,             VALUE_DATA, NULL },
+  { "FADETYPE",             OPT_P_FADETYPE,             VALUE_DATA, bdjoptConvFadeType },
   { "GAP",                  OPT_P_GAP,                  VALUE_LONG, NULL },
   { "MAXPLAYTIME",          OPT_P_MAXPLAYTIME,          VALUE_LONG, NULL },
   { "MOBILEMARQUEE",        OPT_P_MOBILEMARQUEE,        VALUE_LONG, parseConvBoolean },
@@ -239,4 +241,26 @@ bdjoptSetLong (size_t idx, long value)
     return;
   }
   llistSetLong (bdjopt->data, idx, value);
+}
+
+static void
+bdjoptConvFadeType (char *data, datafileret_t *ret)
+{
+  bdjfadetype_t   fadetype = FADETYPE_TRIANGLE;
+
+  ret->valuetype = VALUE_LONG;
+
+  if (strcmp (data, "quartersine") == 0) {
+    fadetype = FADETYPE_QUARTER_SINE;
+  }
+  if (strcmp (data, "halfsine") == 0) {
+    fadetype = FADETYPE_HALF_SINE;;
+  }
+  if (strcmp (data, "logarithmic") == 0) {
+    fadetype = FADETYPE_LOGARITHMIC;
+  }
+  if (strcmp (data, "invertedparabola") == 0) {
+    fadetype = FADETYPE_INVERTED_PARABOLA;
+  }
+  ret->u.l = fadetype;
 }
