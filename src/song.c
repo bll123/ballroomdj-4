@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <string.h>
 #include <assert.h>
 
@@ -14,6 +15,9 @@
 #include "level.h"
 #include "rating.h"
 #include "genre.h"
+#include "fileop.h"
+#include "portability.h"
+#include "bdjopt.h"
 
   /* must be sorted in ascii order */
 static datafilekey_t songdfkeys[] = {
@@ -34,16 +38,13 @@ static datafilekey_t songdfkeys[] = {
   { "DISCNUMBER",           TAG_KEY_DISCNUMBER,           VALUE_LONG, NULL },
   { "DISCTOTAL",            TAG_KEY_DISCTOTAL,            VALUE_LONG, NULL },
   { "DISPLAYIMG",           TAG_KEY_DISPLAYIMG,           VALUE_DATA, NULL },
-  { "DUR",                  TAG_KEY_DUR,                  VALUE_LONG, NULL },
-  { "DURATION",             TAG_KEY_DURATION,             VALUE_DATA, NULL },
-  { "DURATION_HMS",         TAG_KEY_DURATION_HMS,         VALUE_DOUBLE, NULL },
-  { "DURATION_STR",         TAG_KEY_DURATION_STR,         VALUE_DATA, NULL },
+  { "DURATION",             TAG_KEY_DURATION,             VALUE_LONG, NULL },
   { "FILE",                 TAG_KEY_FILE,                 VALUE_DATA, NULL },
   { "GENRE",                TAG_KEY_GENRE,                VALUE_DATA, genreConv },
   { "KEYWORD",              TAG_KEY_KEYWORD,              VALUE_DATA, NULL },
   { "MQDISPLAY",            TAG_KEY_MQDISPLAY,            VALUE_DATA, NULL },
   { "MUSICBRAINZ_TRACKID",  TAG_KEY_MUSICBRAINZ_TRACKID,  VALUE_DATA, NULL },
-  { "NOMAXPLAYTIME",        TAG_KEY_NOMAXPLAYTIME,        VALUE_DATA, NULL },
+  { "NOMAXPLAYTIME",        TAG_KEY_NOMAXPLAYTIME,        VALUE_LONG, parseConvBoolean },
   { "NOTES",                TAG_KEY_NOTES,                VALUE_DATA, NULL },
   { "RRN",                  TAG_KEY_RRN,                  VALUE_LONG, NULL },
   { "SAMESONG",             TAG_KEY_SAMESONG,             VALUE_DATA, NULL },
@@ -113,6 +114,16 @@ songGetLong (song_t *song, long idx) {
   return value;
 }
 
+double
+songGetDouble (song_t *song, long idx) {
+  if (song == NULL || song->songInfo == NULL) {
+    return -1;
+  }
+
+  double value = llistGetDouble (song->songInfo, idx);
+  return value;
+}
+
 void
 songSetLong (song_t *song, long tagidx, long value)
 {
@@ -121,5 +132,21 @@ songSetLong (song_t *song, long tagidx, long value)
   }
 
   llistSetLong (song->songInfo, tagidx, value);
+}
+
+bool
+songAudioFileExists (song_t *song)
+{
+  char      tbuff [MAXPATHLEN];
+  char      *sfname;
+
+  sfname = songGetData (song, TAG_KEY_FILE);
+  if (sfname [0] == '/' || (sfname [1] == ':' && sfname [2] == '/')) {
+    strlcpy (tbuff, sfname, MAXPATHLEN);
+  } else {
+    snprintf (tbuff, MAXPATHLEN, "%s/%s",
+        (char *) bdjoptGetData (OPT_M_DIR_MUSIC), sfname);
+  }
+  return fileopExists (tbuff);
 }
 

@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <string.h>
 #include <assert.h>
 
@@ -27,6 +28,7 @@ listAlloc (char *name, listorder_t ordered, listCompare_t compare,
 {
   list_t    *list;
 
+  logProcBegin (LOG_LIST, "listAlloc");
   list = malloc (sizeof (list_t));
   assert (list != NULL);
     /* always allocate the name so that dynamic names can be created */
@@ -45,6 +47,8 @@ listAlloc (char *name, listorder_t ordered, listCompare_t compare,
   list->cacheHits = 0;
   list->keyFreeHook = keyFreeHook;
   list->valueFreeHook = valueFreeHook;
+  logMsg (LOG_DBG, LOG_LIST, "alloc %s", name);
+  logProcEnd (LOG_LIST, "listAlloc", "");
   return list;
 }
 
@@ -161,6 +165,7 @@ listGetData (list_t *list, char *keydata)
   if (idx >= 0) {
     value = list->data [idx].value.data;
   }
+  logMsg (LOG_DBG, LOG_LIST, "list:%s key:%s idx:%ld", list->name, keydata, idx);
   return value;
 }
 
@@ -176,6 +181,7 @@ listGetLong (list_t *list, char *keydata)
   if (idx >= 0) {
     value = list->data [idx].value.l;
   }
+  logMsg (LOG_DBG, LOG_LIST, "list:%s key:%s idx:%ld value:%ld", list->name, keydata, idx, value);
   return value;
 }
 
@@ -191,6 +197,7 @@ listGetDouble (list_t *list, char *keydata)
   if (idx >= 0) {
     value = list->data [idx].value.d;
   }
+  logMsg (LOG_DBG, LOG_LIST, "list:%s key:%s idx:%ld value:%8.2g", list->name, keydata, idx, value);
   return value;
 }
 
@@ -235,6 +242,13 @@ listStartIterator (list_t *list)
 {
   list->iteratorIndex = 0;
   list->currentIndex = 0;
+}
+
+void
+listDumpInfo (list_t *list)
+{
+  logMsg (LOG_DBG, LOG_BASIC, "list: %s count: %ld key:%d ordered:%d",
+      list->name, list->count, list->keytype, list->ordered);
 }
 
 void *
@@ -372,6 +386,7 @@ llistGetData (list_t *list, long lkey)
   if (idx >= 0) {
     value = (char *) list->data [idx].value.data;
   }
+  logMsg (LOG_DBG, LOG_LIST, "list:%s key:%ld idx:%ld", list->name, lkey, idx);
   return value;
 }
 
@@ -387,6 +402,7 @@ llistGetLong (list_t *list, long lkey)
   if (idx >= 0) {
     value = list->data [idx].value.l;
   }
+  logMsg (LOG_DBG, LOG_LIST, "list:%s key:%ld idx:%ld value:%ld", list->name, lkey, idx, value);
   return value;
 }
 
@@ -402,6 +418,7 @@ llistGetDouble (list_t *list, long lkey)
   if (idx >= 0) {
     value = list->data [idx].value.d;
   }
+  logMsg (LOG_DBG, LOG_LIST, "list:%s key:%ld idx:%ld value:%8.2g", list->name, lkey, idx, value);
   return value;
 }
 
@@ -462,6 +479,12 @@ llistIterateKeyLong (list_t *list)
   ++list->iteratorIndex;
   logProcEnd (LOG_LIST, "llistIterateKeyLong", "");
   return value;
+}
+
+void
+llistDumpInfo (list_t *list)
+{
+  listDumpInfo (list);
 }
 
 /* internal routines */

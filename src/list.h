@@ -87,6 +87,7 @@ long        listGetStrIdx (list_t *list, char *keystr);
 void        listSort (list_t *list);
 void        listStartIterator (list_t *list);
 void *      listIterateKeyStr (list_t *list);
+void        listDumpInfo (list_t *list);
 
   /* keyed by a long */
 list_t *  llistAlloc (char *name, listorder_t, listFree_t);
@@ -107,5 +108,6 @@ long      listGetLongIdx (list_t *list, long lkey);
 void      llistSort (list_t *);
 void      llistStartIterator (list_t *list);
 long      llistIterateKeyLong (list_t *list);
+void      llistDumpInfo (list_t *list);
 
 #endif /* INC_LIST_H */

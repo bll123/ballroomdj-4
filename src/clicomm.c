@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <stdbool.h>
 #include <string.h>
 #if _hdr_unistd
 # include <unistd.h>
@@ -44,14 +45,14 @@ main (int argc, char *argv[])
   uint16_t mainPort = bdjvarsl [BDJVL_MAIN_PORT];
   mainSock = sockConnect (mainPort, &err, 1000);
   while (socketInvalid (mainSock)) {
-    msleep (100);
+    mssleep (100);
     mainSock = sockConnect (mainPort, &err, 1000);
   }
 
   uint16_t playerPort = bdjvarsl [BDJVL_PLAYER_PORT];
   playerSock = sockConnect (playerPort, &err, 1000);
   while (socketInvalid (playerSock)) {
-    msleep (100);
+    mssleep (100);
     playerSock = sockConnect (playerPort, &err, 1000);
   }
 
@@ -79,7 +80,14 @@ main (int argc, char *argv[])
         routeok = 1;
       }
       if (strcmp (buff, "cliexit") == 0) {
-        sockClose (mainSock);
+        if (mainSock != INVALID_SOCKET) {
+          sockhSendMessage (mainSock, ROUTE_CLICOMM, ROUTE_MAIN, MSG_SOCKET_CLOSE, NULL);
+          sockClose (mainSock);
+        }
+        if (playerSock != INVALID_SOCKET) {
+          sockhSendMessage (playerSock, ROUTE_CLICOMM, ROUTE_PLAYER, MSG_SOCKET_CLOSE, NULL);
+          sockClose (playerSock);
+        }
         logEnd ();
         exit (0);
       }
@@ -112,15 +120,15 @@ main (int argc, char *argv[])
         argsok = 1;
       }
       if (strcmp (buff, "pause") == 0) {
-        msg = MSG_PLAYER_PAUSE;
+        msg = MSG_PLAY_PAUSE;
         msgok = 1;
       }
       if (strcmp (buff, "play") == 0) {
-        msg = MSG_PLAYER_PLAY;
+        msg = MSG_PLAY_PLAY;
         msgok = 1;
       }
       if (strcmp (buff, "stop") == 0) {
-        msg = MSG_PLAYER_STOP;
+        msg = MSG_PLAY_STOP;
         msgok = 1;
       }
       if (strcmp (buff, "playlist-q") == 0) {
@@ -142,7 +150,14 @@ main (int argc, char *argv[])
         msgok = 1;
       }
       if (strcmp (buff, "cliexit") == 0) {
-        sockClose (mainSock);
+        if (mainSock != INVALID_SOCKET) {
+          sockhSendMessage (mainSock, ROUTE_CLICOMM, ROUTE_MAIN, MSG_SOCKET_CLOSE, NULL);
+          sockClose (mainSock);
+        }
+        if (playerSock != INVALID_SOCKET) {
+          sockhSendMessage (playerSock, ROUTE_CLICOMM, ROUTE_PLAYER, MSG_SOCKET_CLOSE, NULL);
+          sockClose (playerSock);
+        }
         exit (0);
       }
       if (! msgok) {

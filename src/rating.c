@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <string.h>
 #include <assert.h>
 
@@ -33,6 +34,7 @@ ratingAlloc (char *fname)
 
   rating->df = datafileAllocParse ("rating", DFTYPE_KEY_LONG, fname,
       ratingdfkeys, RATING_DFKEY_COUNT, RATING_RATING);
+  llistDumpInfo (datafileGetList (rating->df));
   return rating;
 }
 

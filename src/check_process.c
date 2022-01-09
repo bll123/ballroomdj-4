@@ -1,6 +1,8 @@
 #include "config.h"
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
 #include <check.h>
 #include <sys/types.h>
 #include <sys/stat.h>

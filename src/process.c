@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <sys/types.h>
 #include <signal.h>
 #include <string.h>
@@ -19,7 +20,6 @@
 #include "process.h"
 #include "log.h"
 
-/* boolean */
 int
 processExists (pid_t pid)
 {
@@ -76,8 +76,6 @@ processStart (const char *fn, pid_t *pid, long profile, long loglvl)
 #if _lib_fork
   pid_t     tpid;
 
-  signal (SIGCHLD, SIG_IGN);
-
   /* this may be slower, but it works; speed is not a major issue */
   tpid = fork ();
   if (tpid < 0) {
@@ -87,9 +85,9 @@ processStart (const char *fn, pid_t *pid, long profile, long loglvl)
   }
   if (tpid == 0) {
     /* child */
-    if (setsid () < 0) {
-      logError ("setsid");
-    }
+//    if (setsid () < 0) {
+//      logError ("setsid");
+//    }
     /* close any open file descriptors */
     for (int i = 3; i < 30; ++i) {
       close (i);

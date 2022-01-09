@@ -5,12 +5,13 @@
 
 typedef struct {
   struct timeval    start;
-} mtime_t;
+} mstime_t;
 
-void      msleep (size_t);
-void      mtimestart (mtime_t *);
-size_t    mtimeend (mtime_t *);
-char      *dstamp (char *, size_t);
-char      *tstamp (char *, size_t);
+void      mssleep (size_t);
+time_t    mstime (void);
+void      mstimestart (mstime_t *);
+size_t    mstimeend (mstime_t *);
+char      *tmutilDstamp (char *, size_t);
+char      *tmutilTstamp (char *, size_t);
 
 #endif /* INC_TMUTIL_H */

@@ -1,6 +1,8 @@
 #ifndef INC_TAGDEF_H
 #define INC_TAGDEF_H
 
+#include <stdbool.h>
+
 #include "bdjstring.h"
 #include "list.h"
 
@@ -36,14 +38,14 @@ typedef struct {
   audioiddispflag_t   audioiddispflag;
   edittype_t          editType;
   long                initialized;
-  unsigned int        isBdjTag : 1;
-  unsigned int        isNormTag : 1;
-  unsigned int        albumEdit : 1;
-  unsigned int        allEdit : 1;
-  unsigned int        isEditable : 1;
-  unsigned int        listingDisplay : 1;
-  unsigned int        songListDisplay : 1;
-  unsigned int        textSearchable : 1;
+  bool                isBdjTag : 1;
+  bool                isNormTag : 1;
+  bool                albumEdit : 1;
+  bool                allEdit : 1;
+  bool                isEditable : 1;
+  bool                listingDisplay : 1;
+  bool                songListDisplay : 1;
+  bool                textSearchable : 1;
 } tagdef_t;
 
 typedef enum {
@@ -65,8 +67,6 @@ typedef enum {
   TAG_KEY_DISCTOTAL,
   TAG_KEY_DISPLAYIMG,
   TAG_KEY_DURATION,
-  TAG_KEY_DURATION_HMS,
-  TAG_KEY_DURATION_STR,
   TAG_KEY_FILE,
   TAG_KEY_GENRE,
   TAG_KEY_KEYWORD,
@@ -89,7 +89,6 @@ typedef enum {
   TAG_KEY_VARIOUSARTISTS,
   TAG_KEY_VOLUMEADJUSTPERC,
   TAG_KEY_RRN,
-  TAG_KEY_DUR,
   MAX_TAG_KEY
 } tagdefkey_t;
 

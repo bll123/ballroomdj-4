@@ -16,6 +16,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <string.h>
 #include <assert.h>
 #include <math.h>
@@ -265,7 +266,14 @@ volumeProcess (volaction_t action, char *sinkname,
     if (gstate.pastate == PA_CONTEXT_READY) {
       break;
     }
-    msleep (5);
+
+    if (count == 0) {
+      /* pulseaudio is not restarting properly after the computer sleeps */
+      system ("pulseaudio --start");
+      mssleep(200);
+    }
+
+    mssleep(20);
     ++count;
   }
 

@@ -78,7 +78,7 @@ foreach {fn} $flist {
       puts $dfh "MAXPLAYTIME"
       set tm {}
       if { $maxmin ne {} && $maxsec ne {} } {
-        set tm "$maxmin:$maxsec"
+        set tm [expr {($maxmin * 60 + $maxsec)*1000}]
       }
       puts $dfh "..$tm"
       puts $dfh "LOWBPM"
@@ -88,6 +88,12 @@ foreach {fn} $flist {
       incr keyidx
     } else {
       set key [string toupper $key]
+      if { $key eq "MAXPLAYTIME" } {
+        if { $value ne {} } {
+          regexp {(\d+):(\d+)} $value all min sec
+          set value [expr {($min * 60 + $sec)*1000}]
+        }
+      }
       puts $ofh $key
       puts $ofh "..$value"
     }

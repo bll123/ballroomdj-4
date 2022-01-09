@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <string.h>
 #include <assert.h>
 
@@ -15,6 +16,7 @@ dnctype_t *
 dnctypesAlloc (char *fname)
 {
   dnctype_t       *dtype;
+  list_t          *dtyplist;
 
   if (! fileopExists (fname)) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: dnctypes: missing %s\n", fname);
@@ -26,7 +28,10 @@ dnctypesAlloc (char *fname)
 
   dtype->df = datafileAllocParse ("dance-types", DFTYPE_LIST, fname,
       NULL, 0, DATAFILE_NO_LOOKUP);
-  listSort (dtype->df->data);
+
+  dtyplist = datafileGetList (dtype->df);
+  listSort (dtyplist);
+  listDumpInfo (dtyplist);
   return dtype;
 }
 

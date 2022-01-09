@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <stdbool.h>
 #include <string.h>
 #include <errno.h>
 
@@ -24,6 +25,7 @@ sockhMainLoop (uint16_t listenPort, sockProcessMsg_t msgProc,
   size_t      len = 0;
   int         done = 0;
   int         tdone = 0;
+  int         otherflag = 0;
   long        routefrom = ROUTE_NONE;
   long        route = ROUTE_NONE;
   long        msg = MSG_NONE;
@@ -92,13 +94,16 @@ sockhMainLoop (uint16_t listenPort, sockProcessMsg_t msgProc,
       ++done;
     }
 
-    tdone = otherProc (userData);
+    if (otherflag == 0) {
+      tdone = otherProc (userData);
+    }
+    otherflag = 1 - otherflag;
     if (tdone) {
       args [0] = '\0';
       tdone = msgProc (ROUTE_NONE, ROUTE_NONE, MSG_EXIT_REQUEST, args, userData);
       ++done;
     }
-    msleep (SOCK_MAINLOOP_TIMEOUT);
+    mssleep (SOCK_MAINLOOP_TIMEOUT);
   } /* wait for a message */
 
   sockhCloseClients (si);
@@ -108,7 +113,8 @@ sockhMainLoop (uint16_t listenPort, sockProcessMsg_t msgProc,
 }
 
 int
-sockhSendMessage (Sock_t sock, long routefrom, long route, long msg, char *args)
+sockhSendMessage (Sock_t sock, long routefrom, long route,
+    long msg, char *args)
 {
   char        msgbuff [BDJMSG_MAX];
 

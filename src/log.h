@@ -6,6 +6,13 @@
 
 #include "fileutil.h"
 
+/*
+ * 7 : important + basic + main
+ * 15 : 7 + datafile
+ * 23 : 7 + list
+ * 31 : 7 + datafile + list
+ * 263 : 7 + socket
+ */
 typedef enum {
   LOG_NONE      = 0x00000000,
   LOG_IMPORTANT = 0x00000001,

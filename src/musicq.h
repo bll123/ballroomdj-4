@@ -2,12 +2,28 @@
 #define INC_MUSICQ_H
 
 #include "queue.h"
+#include "song.h"
+
+typedef enum {
+  MUSICQ_A,
+  MUSICQ_B,
+  MUSICQ_MAX,
+} musicqidx_t;
 
 typedef struct {
-  queue_t         *q;
+  song_t      *song;
+} musicqitem_t;
+
+typedef struct {
+  queue_t         *q [MUSICQ_MAX];
 } musicq_t;
 
-musicq_t *   musicqAlloc (void);
-void         musicqFree (musicq_t *q);
+musicq_t *  musicqAlloc (void);
+void        musicqFree (musicq_t *musicq);
+void        musicqPush (musicq_t *musicq, musicqidx_t idx, song_t *song);
+song_t      *musicqGetCurrent (musicq_t *musicq, musicqidx_t idx);
+song_t      *musicqGetByIdx (musicq_t *musicq, musicqidx_t musicqidx, long idx);
+song_t      *musicqPop (musicq_t *musicq, musicqidx_t idx);
+long        musicqGetLen (musicq_t *musicq, musicqidx_t idx);
 
 #endif /* INC_MUSICQ_H */

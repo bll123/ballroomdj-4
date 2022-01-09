@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <locale.h>
 #include <string.h>
 #include <errno.h>
@@ -43,8 +44,8 @@ initLocale (void)
 int
 bdj4startup (int argc, char *argv[])
 {
-  mtime_t   mt;
-  mtime_t   dbmt;
+  mstime_t   mt;
+  mstime_t   dbmt;
   int       c = 0;
   int       option_index = 0;
   char      tbuff [MAXPATHLEN];
@@ -57,7 +58,7 @@ bdj4startup (int argc, char *argv[])
     { NULL,         0,                  NULL,   0 }
   };
 
-  mtimestart (&mt);
+  mstimestart (&mt);
   initLocale ();
   sysvarsInit (argv[0]);
 
@@ -98,12 +99,14 @@ bdj4startup (int argc, char *argv[])
   bdjvarsdfloadInit ();
   bdjoptInit ();
 
-  mtimestart (&dbmt);
+  bdjoptSetLong (OPT_G_DEBUGLVL, loglevel);
+
+  mstimestart (&dbmt);
   datautilMakePath (tbuff, MAXPATHLEN, "",
       MUSICDB_FNAME, MUSICDB_EXT, DATAUTIL_MP_NONE);
   dbOpen (tbuff);
-  logMsg (LOG_SESS, LOG_IMPORTANT, "Database read: %ld items in %ld ms", dbCount(), mtimeend (&dbmt));
-  logMsg (LOG_SESS, LOG_IMPORTANT, "Total init time: %ld ms", mtimeend (&mt));
+  logMsg (LOG_SESS, LOG_IMPORTANT, "Database read: %ld items in %ld ms", dbCount(), mstimeend (&dbmt));
+  logMsg (LOG_SESS, LOG_IMPORTANT, "Total init time: %ld ms", mstimeend (&mt));
 
   return 0;
 }
@@ -111,13 +114,13 @@ bdj4startup (int argc, char *argv[])
 void
 bdj4shutdown (void)
 {
-  mtime_t       mt;
+  mstime_t       mt;
 
-  mtimestart (&mt);
+  mstimestart (&mt);
   bdjoptFree ();
   dbClose ();
   bdjvarsdfloadCleanup ();
   bdjvarsCleanup ();
-  logMsg (LOG_SESS, LOG_IMPORTANT, "Total shutdown time: %ld ms", mtimeend (&mt));
+  logMsg (LOG_SESS, LOG_IMPORTANT, "init cleanup time: %ld ms", mstimeend (&mt));
   logEnd ();
 }

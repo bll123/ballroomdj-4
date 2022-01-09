@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <string.h>
 #include <stdarg.h>
 #include <errno.h>
@@ -17,6 +18,7 @@
 #include "tmutil.h"
 #include "fileutil.h"
 #include "datautil.h"
+#include "bdjstring.h"
 #include "portability.h"
 
 static void         rlogStart (const char *processnm,
@@ -26,6 +28,7 @@ static bdjlog_t *   rlogOpen (const char *fn,
                         const char *processtag, int truncflag);
 static void         logInit (void);
 static const char * logTail (const char *fn);
+void                logDumpLevel (bdjloglvl_t level);
 
 static bdjlog_t *syslogs [LOG_MAX];
 static char *   logbasenm [LOG_MAX];
@@ -107,11 +110,11 @@ rlogVarMsg (logidx_t idx, bdjloglvl_t level,
   if (l == NULL || ! l->opened) {
     return;
   }
-  if ((level & l->level) != level) {
+  if (! (level & l->level)) {
     return;
   }
 
-  tstamp (ttm, sizeof (ttm));
+  tmutilTstamp (ttm, sizeof (ttm));
   *tbuff = '\0';
   *tfn = '\0';
   if (fmt != NULL) {
@@ -133,6 +136,7 @@ void
 logSetLevel (logidx_t idx, bdjloglvl_t level)
 {
   syslogs [idx]->level = level;
+  logDumpLevel (level);
 }
 
 /* these routines act upon all three open logs */
@@ -171,7 +175,7 @@ rlogStart (const char *processnm, const char *processtag,
   char      tdt [40];
 
   logInit ();
-  dstamp (tdt, sizeof (tdt));
+  tmutilDstamp (tdt, sizeof (tdt));
 
   for (logidx_t idx = LOG_ERR; idx < LOG_MAX; ++idx) {
     datautilMakePath (tnm, MAXPATHLEN, "", logbasenm [idx], LOG_EXTENSION,
@@ -184,6 +188,7 @@ rlogStart (const char *processnm, const char *processtag,
       rlogVarMsg (idx, LOG_IMPORTANT, NULL, 0, "=== started %s", tdt);
     }
   }
+  logDumpLevel (level);
 }
 
 static bdjlog_t *
@@ -230,4 +235,47 @@ logTail (const char *fn)
     ++p;
   }
   return p;
+}
+
+void
+logDumpLevel (bdjloglvl_t level)
+{
+  char          tbuff [MAXPATHLEN];
+
+  *tbuff = '\0';
+  strlcat (tbuff, "log-dump: ", MAXPATHLEN);
+  if ((level & LOG_IMPORTANT) == LOG_IMPORTANT) {
+    strlcat (tbuff, "important ", MAXPATHLEN);
+  }
+  if ((level & LOG_BASIC) == LOG_BASIC) {
+    strlcat (tbuff, "basic ", MAXPATHLEN);
+  }
+  if ((level & LOG_MAIN) == LOG_MAIN) {
+    strlcat (tbuff, "main ", MAXPATHLEN);
+  }
+  if ((level & LOG_DATAFILE) == LOG_DATAFILE) {
+    strlcat (tbuff, "datafile ", MAXPATHLEN);
+  }
+  if ((level & LOG_LIST) == LOG_LIST) {
+    strlcat (tbuff, "list ", MAXPATHLEN);
+  }
+  if ((level & LOG_PLAYER) == LOG_PLAYER) {
+    strlcat (tbuff, "player ", MAXPATHLEN);
+  }
+  if ((level & LOG_PROCESS) == LOG_PROCESS) {
+    strlcat (tbuff, "process ", MAXPATHLEN);
+  }
+  if ((level & LOG_VOLUME) == LOG_VOLUME) {
+    strlcat (tbuff, "volume ", MAXPATHLEN);
+  }
+  if ((level & LOG_SOCKET) == LOG_SOCKET) {
+    strlcat (tbuff, "socket ", MAXPATHLEN);
+  }
+  if ((level & LOG_DB) == LOG_DB) {
+    strlcat (tbuff, "db ", MAXPATHLEN);
+  }
+  if ((level & LOG_RAFILE) == LOG_RAFILE) {
+    strlcat (tbuff, "rafile ", MAXPATHLEN);
+  }
+  rlogVarMsg (LOG_SESS, LOG_IMPORTANT, NULL, 0, tbuff);
 }

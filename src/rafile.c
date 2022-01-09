@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <assert.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -257,7 +258,7 @@ raLock (rafile_t *rafile)
   rc = lockAcquire (RAFILE_LOCK_FN);
   count = 0;
   while (rc < 0 && count < 10) {
-    msleep (50);
+    mssleep (50);
     rc = lockAcquire (RAFILE_LOCK_FN);
     ++count;
   }

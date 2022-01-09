@@ -26,8 +26,8 @@ extern long       lsysvars [SVL_MAX];
 
 void    sysvarsInit (const char *);
 void    sysvarSetLong (sysvarlkey_t, long);
-int     isMacOS (void);
-int     isWindows (void);
-int     isLinux (void);
+bool    isMacOS (void);
+bool    isWindows (void);
+bool    isLinux (void);
 
 #endif /* INC_SYSVARS_H */

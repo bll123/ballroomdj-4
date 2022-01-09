@@ -8,7 +8,7 @@
 typedef int (*sockProcessMsg_t)(long, long, long, char *, void *);
 typedef int (*sockOtherProcessing_t)(void *);
 
-#define SOCK_MAINLOOP_TIMEOUT   5
+#define SOCK_MAINLOOP_TIMEOUT   10
 
 void    sockhMainLoop (uint16_t listenPort, sockProcessMsg_t msgProc,
             sockOtherProcessing_t, void *userData);

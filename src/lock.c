@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <string.h>
@@ -47,7 +48,7 @@ lockAcquirePid (char *fn, pid_t pid)
         fileopDelete (fn);
       }
     }
-    msleep (20);
+    mssleep (20);
     ++count;
     fd = open (fn, O_CREAT | O_EXCL | O_RDWR, 0600);
   }

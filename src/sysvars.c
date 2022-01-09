@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <assert.h>
 #include <string.h>
 #include <sys/types.h>
@@ -140,22 +141,19 @@ sysvarSetLong (sysvarlkey_t idx, long value)
   lsysvars [idx] = value;
 }
 
-/* boolean */
-inline int
+inline bool
 isMacOS (void)
 {
   return (strcmp (sysvars[SV_OSNAME], "Darwin") == 0);
 }
 
-/* boolean */
-inline int
+inline bool
 isWindows (void)
 {
   return (strcmp (sysvars[SV_OSNAME], "Windows") == 0);
 }
 
-/* boolean */
-inline int
+inline bool
 isLinux (void)
 {
   return (strcmp (sysvars[SV_OSNAME], "Linux") == 0);

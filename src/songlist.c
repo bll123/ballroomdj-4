@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <string.h>
 #include <assert.h>
 
@@ -41,6 +42,7 @@ songlistAlloc (char *fname)
   sl->fname = strdup (fname);
   assert (sl->fname != NULL);
   sl->songlist = datafileGetList (sl->df);
+  llistDumpInfo (sl->songlist);
   return sl;
 }
 

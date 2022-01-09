@@ -42,27 +42,19 @@ foreach path [list {} profiles $hostname [file join $hostname profiles]] {
           continue
         }
         regexp {^([^:]*):(.*)$} $line all key value
-        if { $key eq "SYNCROLE" } {
-          # synchronization will not be implemented in version 4.
-          continue
-        }
-        if { [regexp {^[a-z_]} $key] } {
-          continue
-        }
-        if { [regexp {^MQCOL} $key] } {
-          continue
-        }
-        if { [regexp {^UI.*COLOR$} $key] } {
-          continue
-        }
-        if { [regexp {^KEY} $key] } {
-          continue
-        }
+
+        if { $key eq "SYNCROLE" } { continue }
+        if { [regexp {^[a-z_]} $key] } { continue }
+        if { [regexp {^MQCOL} $key] } { continue }
+        if { [regexp {^UI.*COLOR$} $key] } { continue }
+        if { [regexp {^KEY} $key] } { continue }
         if { $key eq "ACOUSTID_CLIENT" } { continue }
         if { $key eq "DEBUGON" } { continue }
+        if { $key eq "PLAYERQLEN1" } { continue }
         # debug level should be in the global; so just remove it.
         if { $key eq "DEBUGLVL" } { continue }
         if { $key eq "MQDANCELOC" } { continue }
+        if { $key eq "MQFONT" } { continue }
         if { $key eq "MQPROGBARCOLOR" } { continue }
         if { $key eq "MQSHOWARTIST" } { continue }
         if { $key eq "MQSHOWBUTTONS" } { continue }
@@ -80,6 +72,7 @@ foreach path [list {} profiles $hostname [file join $hostname profiles]] {
         if { $key eq "UITHEME" } { set value {} }
         if { $key eq "version" } { set value 1 }
 
+        if { $key eq "PLAYERQLEN0" } { set key "PLAYERQLEN" }
         if { $key eq "CLPATHFMT" } { set key PATHFMT_CL }
         if { $key eq "CLVAPATHFMT" } { set key PATHFMT_CLVA }
         if { $key eq "VAPATHFMT" } { set key PATHFMT_VA }
@@ -89,6 +82,17 @@ foreach path [list {} profiles $hostname [file join $hostname profiles]] {
         if { $key eq "MTMPDIR" } { set key DIRMUSICTMP }
         if { $key eq "IMAGEDIR" } { set key DIRIMAGE }
         if { $key eq "ARCHIVEDIR" } { set key DIRARCHIVE }
+
+        if { $key eq "FADEINTIME" || $key eq "FADEOUTTIME" ||
+            $key eq "GAP" } {
+          set value [expr {int ($value * 1000)}]
+        }
+        if { $key eq "MAXPLAYTIME" } {
+          if { $value ne {} } {
+            regexp {(\d+):(\d+)} $value all min sec
+            set value [expr {($min * 60 + $sec) * 1000}]
+          }
+        }
         puts $ofh $key
         puts $ofh "..$value"
       }

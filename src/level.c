@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <string.h>
 #include <assert.h>
 
@@ -34,6 +35,7 @@ levelAlloc (char *fname)
 
   level->df = datafileAllocParse ("level", DFTYPE_KEY_LONG, fname,
       leveldfkeys, LEVEL_DFKEY_COUNT, LEVEL_LABEL);
+  llistDumpInfo (datafileGetList (level->df));
   return level;
 }
 

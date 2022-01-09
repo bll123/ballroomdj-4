@@ -8,7 +8,7 @@
 # include <windows.h>
 #endif
 
-int           fileopExists (char *);
+bool          fileopExists (char *);
 int           fileopDelete (const char *fname);
 int           fileopCopy (char *, char *);
 int           fileopLinkCopy (char *, char *);

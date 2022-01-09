@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <string.h>
 #include <assert.h>
 
@@ -39,7 +40,7 @@ static datafilekey_t playlistdfkeys[] = {
   { "MANUALLIST",       PLAYLIST_MANUAL_LIST_NAME,
       VALUE_DATA, NULL },
   { "MAXPLAYTIME",      PLAYLIST_MAX_PLAY_TIME,
-      VALUE_DATA, NULL },
+      VALUE_LONG, NULL },
   { "MQMESSAGE",        PLAYLIST_MQ_MESSAGE,
       VALUE_DATA, NULL },
   { "PAUSEEACHSONG",    PLAYLIST_PAUSE_EACH_SONG,
@@ -77,7 +78,7 @@ static datafilekey_t playlistdancedfkeys[] = {
   { "DANCE",          PLDANCE_DANCE,        VALUE_DATA, danceConvDance },
   { "HIGHBPM",        PLDANCE_HIGHBPM,      VALUE_LONG, NULL },
   { "LOWBPM",         PLDANCE_LOWBPM,       VALUE_LONG, NULL },
-  { "MAXPLAYTIME",    PLDANCE_MAXPLAYTIME,  VALUE_DATA, NULL },
+  { "MAXPLAYTIME",    PLDANCE_MAXPLAYTIME,  VALUE_LONG, NULL },
   { "SELECTED",       PLDANCE_SELECTED,     VALUE_LONG, parseConvBoolean },
 };
 #define PLAYLIST_DANCE_DFKEY_COUNT (sizeof (playlistdancedfkeys) / sizeof (datafilekey_t))
@@ -102,10 +103,9 @@ playlistAlloc (char *fname)
   pl->plinfodf = NULL;
   pl->dancesdf = NULL;
   pl->songlist = NULL;
-  pl->seqdf = NULL;
+  pl->sequence = NULL;
   pl->plinfo = NULL;
   pl->dances = NULL;
-  pl->seq = NULL;
 
   pl->plinfodf = datafileAllocParse ("playlist", DFTYPE_KEY_VAL, tfn,
       playlistdfkeys, PLAYLIST_DFKEY_COUNT, DATAFILE_NO_LOOKUP);
@@ -115,6 +115,7 @@ playlistAlloc (char *fname)
     return NULL;
   }
   pl->plinfo = datafileGetList (pl->plinfodf);
+  llistDumpInfo (pl->plinfo);
 
   datautilMakePath (tfn, sizeof (tfn), "", fname, ".pldances", DATAUTIL_MP_NONE);
   if (! fileopExists (tfn)) {
@@ -131,6 +132,7 @@ playlistAlloc (char *fname)
     return NULL;
   }
   pl->dances = datafileGetList (pl->dancesdf);
+  llistDumpInfo (pl->dances);
 
   type = llistGetLong (pl->plinfo, PLAYLIST_TYPE);
 
@@ -158,13 +160,12 @@ playlistAlloc (char *fname)
       playlistFree (pl);
       return NULL;
     }
-    pl->seqdf = sequenceAlloc (seqfname);
-    if (pl->seqdf == NULL) {
+    pl->sequence = sequenceAlloc (seqfname);
+    if (pl->sequence == NULL) {
       logMsg (LOG_DBG, LOG_IMPORTANT, "Bad sequence %s\n", seqfname);
       playlistFree (pl);
       return NULL;
     }
-    pl->seq = datafileGetList (pl->seqdf);
   }
 
   return pl;
@@ -183,8 +184,8 @@ playlistFree (playlist_t *pl)
     if (pl->songlist != NULL) {
       songlistFree (pl->songlist);
     }
-    if (pl->seqdf != NULL) {
-      sequenceFree (pl->seqdf);
+    if (pl->sequence != NULL) {
+      sequenceFree (pl->sequence);
     }
     free (pl);
   }
@@ -203,9 +204,15 @@ playlistGetNextSong (playlist_t *pl)
       break;
     }
     case PLTYPE_MANUAL: {
-      char *title = songlistGetData (pl->songlist, pl->manualIdx, SONGLIST_TITLE);
-      if (title != NULL) {
-        song = dbGetByName (title);
+      char *sfname = songlistGetData (pl->songlist, pl->manualIdx, SONGLIST_FILE);
+      if (sfname != NULL) {
+        song = dbGetByName (sfname);
+        while (! songAudioFileExists (song)) {
+          logMsg (LOG_DBG, LOG_IMPORTANT, "manual: missing: %s\n", sfname);
+          ++pl->manualIdx;
+          song = dbGetByName (sfname);
+        }
+        logMsg (LOG_DBG, LOG_PLAYER, "manual: get: %s\n", sfname);
         ++pl->manualIdx;
       }
       break;

@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <string.h>
 #include <errno.h>
 #include <assert.h>
@@ -81,6 +82,44 @@ queuePush (queue_t *q, void *data)
   q->tail = node;
   q->count++;
 }
+
+void *
+queueGetCurrent (queue_t *q)
+{
+  void          *data;
+  queuenode_t   *node;
+
+  if (q == NULL) {
+    return NULL;
+  }
+  node = q->head;
+
+  data = node->data;
+  return data;
+}
+
+void *
+queueGetByIdx (queue_t *q, long idx)
+{
+  long              count = 0;
+  queuenode_t       *node = NULL;
+  void              *data = NULL;
+
+  if (q == NULL) {
+    return NULL;
+  }
+  if (idx >= q->count) {
+    return NULL;
+  }
+  node = q->head;
+  while (node != NULL && count != idx) {
+    ++count;
+    node = node->next;
+  }
+  data = node->data;
+  return data;
+}
+
 
 void *
 queuePop (queue_t *q)

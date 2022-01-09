@@ -5,7 +5,7 @@ loadunit env-cc
 loadunit env-msgfmt
 loadunit env-extension
 
-output  bdj-test.env
+output  bdj-env.test
 
 standard_system
 standard_cc

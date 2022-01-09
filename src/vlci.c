@@ -3,11 +3,12 @@
 
 #if _lib_libvlc_new
 
-#define SILENCE_LOG       1 /* vlc */
+#define SILENCE_LOG       0 /* vlc */
 #define STATE_TO_VALUE    0 /* vlc */
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <string.h>
 #include <memory.h>
 #include <stdarg.h>
@@ -28,7 +29,6 @@
 #include "vlci.h"
 #include "list.h"
 #include "bdjstring.h"
-#include "log.h"
 
 typedef struct {
   libvlc_state_t        state;
@@ -58,40 +58,30 @@ static void silence (void *data, int level, const libvlc_log_t *ctx,
 
 /* get media values */
 
-double
+ssize_t
 vlcGetDuration (vlcData_t *vlcData)
 {
   libvlc_time_t     tm;
-  double            dtm;
 
-  logProcBegin (LOG_PLAYER, "vlcGetDuration");
   if (vlcData == NULL || vlcData->inst == NULL || vlcData->mp == NULL) {
-    logProcEnd (LOG_PLAYER, "vlcGetDuration", "nodata");
-    return -1.0;
+    return -1;
   }
 
   tm = libvlc_media_player_get_length (vlcData->mp);
-  dtm = (double) tm / 1000.0;
-  logProcEnd (LOG_PLAYER, "vlcGetDuration", "");
-  return dtm;
+  return tm;
 }
 
-double
+ssize_t
 vlcGetTime (vlcData_t *vlcData)
 {
   libvlc_time_t     tm;
-  double            dtm;
 
-  logProcBegin (LOG_PLAYER, "vlcGetTime");
   if (vlcData == NULL || vlcData->inst == NULL || vlcData->mp == NULL) {
-    logProcEnd (LOG_PLAYER, "vlcGetTime", "nodata");
-    return -1.0;
+    return -1;
   }
 
   tm = libvlc_media_player_get_time (vlcData->mp);
-  dtm = (double) tm / 1000.0;
-  logProcEnd (LOG_PLAYER, "vlcGetTime", "");
-  return dtm;
+  return tm;
 }
 
 /* media checks */
@@ -101,7 +91,6 @@ vlcIsPlaying (vlcData_t *vlcData)
 {
   int       rval;
 
-  logProcBegin (LOG_PLAYER, "vlcIsPlaying");
   if (vlcData == NULL || vlcData->inst == NULL || vlcData->mp == NULL) {
     return -1;
   }
@@ -116,7 +105,6 @@ vlcIsPlaying (vlcData_t *vlcData)
       vlcData->state == libvlc_Playing) {
     rval = 1;
   }
-  logProcEnd (LOG_PLAYER, "vlcIsPlaying", "");
   return 0;
 }
 
@@ -125,7 +113,6 @@ vlcIsPaused (vlcData_t *vlcData)
 {
   int       rval;
 
-  logProcBegin (LOG_PLAYER, "vlcIsPaused");
   if (vlcData == NULL || vlcData->inst == NULL || vlcData->mp == NULL) {
     return -1;
   }
@@ -134,7 +121,6 @@ vlcIsPaused (vlcData_t *vlcData)
   if (vlcData->state == libvlc_Paused) {
     rval = 1;
   }
-  logProcEnd (LOG_PLAYER, "vlcIsPaused", "");
   return rval;
 }
 
@@ -147,9 +133,7 @@ vlcStop (vlcData_t *vlcData)
     return -1;
   }
 
-  logProcBegin (LOG_PLAYER, "vlcStop");
   libvlc_media_player_stop (vlcData->mp);
-  logProcEnd (LOG_PLAYER, "vlcStop", "");
   return 0;
 }
 
@@ -158,7 +142,6 @@ vlcPause (vlcData_t *vlcData)
 {
   int   rc;
 
-  logProcBegin (LOG_PLAYER, "vlcPause");
   if (vlcData == NULL || vlcData->inst == NULL || vlcData->mp == NULL) {
     return -1;
   }
@@ -171,7 +154,6 @@ vlcPause (vlcData_t *vlcData)
     libvlc_media_player_set_pause (vlcData->mp, 0);
     rc = 0;
   }
-  logProcEnd (LOG_PLAYER, "vlcPause", "");
   return rc;
 }
 
@@ -182,9 +164,7 @@ vlcPlay (vlcData_t *vlcData)
     return -1;
   }
 
-  logProcBegin (LOG_PLAYER, "vlcPlay");
   libvlc_media_player_play (vlcData->mp);
-  logProcEnd (LOG_PLAYER, "vlcPlay", "");
   return 0;
 }
 
@@ -193,7 +173,6 @@ vlcRate (vlcData_t *vlcData, double drate)
 {
   float     rate;
 
-  logProcBegin (LOG_PLAYER, "vlcRate");
   if (vlcData == NULL || vlcData->inst == NULL || vlcData->mp == NULL) {
     return -1;
   }
@@ -203,7 +182,6 @@ vlcRate (vlcData_t *vlcData, double drate)
     libvlc_media_player_set_rate (vlcData->mp, rate);
   }
   rate = libvlc_media_player_get_rate (vlcData->mp);
-  logProcEnd (LOG_PLAYER, "vlcRate", "");
   return (double) rate;
 }
 
@@ -214,7 +192,6 @@ vlcSeek (vlcData_t *vlcData, double dpos)
   float             pos;
   double            dtm;
 
-  logProcBegin (LOG_PLAYER, "vlcSeek");
   if (vlcData == NULL || vlcData->inst == NULL || vlcData->mp == NULL) {
     return -1.0;
   }
@@ -227,7 +204,6 @@ vlcSeek (vlcData_t *vlcData, double dpos)
     libvlc_media_player_set_position (vlcData->mp, pos);
   }
   pos = libvlc_media_player_get_position (vlcData->mp);
-  logProcEnd (LOG_PLAYER, "vlcSeek", "");
   return (double) pos;
 }
 
@@ -238,13 +214,11 @@ vlcHaveAudioDevList (void)
 {
   int       rc;
 
-  logProcBegin (LOG_PLAYER, "vlcHaveAudioDevList");
   rc = 0;
 #if _lib_libvlc_audio_output_device_enum && \
     LIBVLC_VERSION_INT >= LIBVLC_VERSION(2,2,0,0)
   rc = 1;
 #endif
-  logProcEnd (LOG_PLAYER, "vlcHaveAudioDevList", "");
   return rc;
 }
 
@@ -255,7 +229,6 @@ vlcAudioDevSet (vlcData_t *vlcData, char *dev)
     return -1;
   }
 
-  logProcBegin (LOG_PLAYER, "vlcAudioDevSet");
   if (vlcData->device != NULL) {
     free (vlcData->device);
   }
@@ -265,7 +238,6 @@ vlcAudioDevSet (vlcData_t *vlcData, char *dev)
     assert (vlcData->device != NULL);
   }
 
-  logProcEnd (LOG_PLAYER, "vlcAudioDevSet", "");
   return 0;
 }
 
@@ -278,7 +250,6 @@ vlcAudioDevList (vlcData_t *vlcData)
   libvlc_audio_output_device_t  *adevlistptr;
   list_t                        *devlist;
 
-  logProcBegin (LOG_PLAYER, "vlcAudioDevList");
   if (vlcData == NULL || vlcData->inst == NULL || vlcData->mp == NULL ||
       strcmp (vlcData->version, "2.2.0") < 0) {
     return NULL;
@@ -296,7 +267,6 @@ vlcAudioDevList (vlcData_t *vlcData)
   }
 
   libvlc_audio_output_device_list_release (adevlist);
-  logProcEnd (LOG_PLAYER, "vlcAudioDevList", "");
   return devlist;
 }
 
@@ -305,36 +275,40 @@ vlcAudioDevList (vlcData_t *vlcData)
 char *
 vlcVersion (vlcData_t *vlcData)
 {
-  logProcBegin (LOG_PLAYER, "vlcVersion");
-  logProcEnd (LOG_PLAYER, "vlcVersion", "");
   return vlcData->version;
 }
 
-const char *
+libvlc_state_t
 vlcState (vlcData_t *vlcData)
+{
+  if (vlcData == NULL || vlcData->inst == NULL || vlcData->mp == NULL) {
+    return libvlc_NothingSpecial;
+  }
+
+  return vlcData->state;
+}
+
+const char *
+vlcStateStr (vlcData_t *vlcData)
 {
   libvlc_state_t    plstate;
 
-  logProcBegin (LOG_PLAYER, "vlcState");
   if (vlcData == NULL || vlcData->inst == NULL || vlcData->mp == NULL) {
     return NULL;
   }
 
   plstate = vlcData->state;
-  logProcEnd (LOG_PLAYER, "vlcState", "");
   return (stateToStr(plstate));
 }
 
 void
 noInitialVolume (vlcData_t *vlcData)
 {
-  logProcBegin (LOG_PLAYER, "noInitialVolume");
   if (vlcData == NULL) {
     return;
   }
 
   vlcData->initialvolume = 0;
-  logProcEnd (LOG_PLAYER, "noInitialVolume", "");
 }
 
 /* media commands */
@@ -342,35 +316,39 @@ noInitialVolume (vlcData_t *vlcData)
 int
 vlcMedia (vlcData_t *vlcData, char *fn)
 {
-  libvlc_media_t            *m;
-  libvlc_event_manager_t    *em;
-  struct stat               statbuf;
+  libvlc_event_manager_t  *em;
+  struct stat             statbuf;
 
-  logProcBegin (LOG_PLAYER, "vlcMedia");
   if (vlcData == NULL || vlcData->inst == NULL || vlcData->mp == NULL) {
-    logProcEnd (LOG_PLAYER, "vlcMedia", "");
     return -1;
   }
 
   if (stat (fn, &statbuf) != 0) {
-    logProcEnd (LOG_PLAYER, "vlcMedia", "");
     return -1;
   }
 
-  m = libvlc_media_new_path (vlcData->inst, fn);
+  if (vlcData->m != NULL) {
+    em = libvlc_media_event_manager (vlcData->m);
+    libvlc_event_detach (em, libvlc_MediaStateChanged,
+        &vlcEventHandler, vlcData);
+    libvlc_media_release (vlcData->m);
+    vlcData->m = NULL;
+  }
+
+  vlcData->m = libvlc_media_new_path (vlcData->inst, fn);
   libvlc_media_player_set_rate (vlcData->mp, 1.0);
-  em = libvlc_media_event_manager (m);
+  libvlc_media_player_set_media (vlcData->mp, vlcData->m);
+
+  em = libvlc_media_event_manager (vlcData->m);
   libvlc_event_attach (em, libvlc_MediaStateChanged,
       &vlcEventHandler, vlcData);
-  libvlc_media_player_set_media (vlcData->mp, m);
+
 #if ! defined(VLC_NO_DEVLIST)
   /* on mac os x, the device has to be set after the media is set */
   if (vlcData->device != NULL) {
     libvlc_audio_output_device_set (vlcData->mp, NULL, vlcData->device);
   }
 #endif
-  libvlc_media_release (m);
-  logProcEnd (LOG_PLAYER, "vlcMedia", "");
   return 0;
 }
 
@@ -385,12 +363,12 @@ vlcInit (int vlcargc, char *vlcargv [])
   int           rc;
   int           i;
 
-  logProcBegin (LOG_PLAYER, "vlcInit");
   rc = 1;
 
   vlcData = (vlcData_t *) malloc (sizeof (vlcData_t));
   assert (vlcData != NULL);
   vlcData->inst = NULL;
+  vlcData->m = NULL;
   vlcData->mp = NULL;
   vlcData->argv = NULL;
   vlcData->state = libvlc_NothingSpecial;
@@ -408,7 +386,7 @@ vlcInit (int vlcargc, char *vlcargv [])
   vlcData->argc = vlcargc;
   vlcData->argv [vlcData->argc] = NULL;
 
-  strlcpy (vlcData->version, libvlc_get_version (), sizeof (vlcData->version));
+  strncpy (vlcData->version, libvlc_get_version (), sizeof (vlcData->version));
   tptr = strchr (vlcData->version, ' ');
   if (tptr != NULL) {
     *tptr = '\0';
@@ -420,9 +398,11 @@ vlcInit (int vlcargc, char *vlcargv [])
 #if SILENCE_LOG
   libvlc_log_set (vlcData->inst, silence, NULL);
 #endif
+
   if (vlcData->inst != NULL && vlcData->mp == NULL) {
     vlcData->mp = libvlc_media_player_new (vlcData->inst);
   }
+
   if (vlcData->inst != NULL && vlcData->mp != NULL) {
     if (vlcData->initialvolume) {
       libvlc_audio_set_volume (vlcData->mp, 100);
@@ -434,17 +414,23 @@ vlcInit (int vlcargc, char *vlcargv [])
     rc = 0;
   }
 
-  logProcEnd (LOG_PLAYER, "vlcInit", "");
   return vlcData;
 }
 
 void
 vlcClose (vlcData_t *vlcData)
 {
-  int   i;
+  libvlc_event_manager_t  *em;
+  int                     i;
 
-  logProcBegin (LOG_PLAYER, "vlcClose");
   if (vlcData != NULL) {
+    if (vlcData->m != NULL) {
+      em = libvlc_media_event_manager (vlcData->m);
+      libvlc_event_detach (em, libvlc_MediaStateChanged,
+          &vlcEventHandler, vlcData);
+      libvlc_media_release (vlcData->m);
+      vlcData->m = NULL;
+    }
     if (vlcData->mp != NULL) {
       libvlc_media_player_stop (vlcData->mp);
       libvlc_media_player_release (vlcData->mp);
@@ -468,15 +454,12 @@ vlcClose (vlcData_t *vlcData)
     vlcData->state = libvlc_NothingSpecial;
     free (vlcData);
   }
-  logProcEnd (LOG_PLAYER, "vlcClose", "");
 }
 
 void
 vlcRelease (vlcData_t *vlcData)
 {
-  logProcBegin (LOG_PLAYER, "vlcClose");
   vlcClose (vlcData);
-  logProcEnd (LOG_PLAYER, "vlcClose", "");
 }
 
 /* event handlers */

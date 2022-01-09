@@ -40,6 +40,6 @@ char *        sockRead (Sock_t, size_t *);
 char *        sockReadBuff (Sock_t, size_t *, char *data, size_t dlen);
 int           sockWriteStr (Sock_t, char *s, size_t slen);
 int           sockWriteBinary (Sock_t, char *data, size_t dlen);
-int           socketInvalid (Sock_t sock);
+bool          socketInvalid (Sock_t sock);
 
 #endif /* INC_SOCK_H */

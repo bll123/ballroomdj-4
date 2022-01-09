@@ -2,11 +2,13 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <string.h>
 #include <assert.h>
 
 #include "autosel.h"
 #include "datafile.h"
+#include "fileop.h"
 #include "log.h"
 
 static datafilekey_t autoseldfkeys[] = {

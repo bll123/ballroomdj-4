@@ -9,62 +9,78 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <stdbool.h>
 #include <string.h>
 #include <errno.h>
 #include <assert.h>
 #include <getopt.h>
 #include <ctype.h>
 #include <unistd.h>
+#include <time.h>
 
 #include "bdjmsg.h"
+#include "bdjopt.h"
 #include "bdjstring.h"
 #include "bdjvars.h"
 #include "fileop.h"
 #include "list.h"
 #include "log.h"
+#include "pathutil.h"
+#include "pli.h"
+#include "portability.h"
+#include "process.h"
+#include "queue.h"
 #include "sock.h"
 #include "sockh.h"
 #include "sysvars.h"
-#include "portability.h"
-#include "pathutil.h"
-#include "queue.h"
-#include "pli.h"
-#include "process.h"
-#include "volume.h"
-#include "bdjopt.h"
 #include "tmutil.h"
+#include "volume.h"
 
 typedef struct {
+  char          *songfullpath;
   char          *songname;
   char          *tempname;
+  ssize_t       dur;
 } prepqueue_t;
 
 typedef struct {
-  mtime_t         tmstart;
-  programstate_t  programState;
   Sock_t          mainSock;
-  plidata_t       *pliData;
-  queue_t         *prepQueue;
+  programstate_t  programState;
+  mstime_t        tmstart;
   long            globalCount;
+  plidata_t       *pliData;
+  queue_t         *prepRequestQueue;
+  queue_t         *prepQueue;
+  prepqueue_t     *currentSong;
+  char            *playRequest;
   int             originalSystemVolume;
   int             realVolume;
   int             currentVolume;
   char            *defaultSink;
   char            *currentSink;
   volsinklist_t   sinklist;
+  playerstate_t   playerState;
+  time_t          playTimeStart;
+  time_t          playTimeCheck;
+  time_t          gapFinishTime;
+  bool            inFadeOut : 1;
+  bool            inFadeIn : 1;
+  bool            inFade : 1;
+  bool            inGap : 1;
+  bool            mainHandshake : 1;
 } playerdata_t;
 
 static int      playerProcessMsg (long routefrom, long route, long msg,
                     char *args, void *udata);
 static int      playerProcessing (void *udata);
-static void     songPrep (playerdata_t *playerData, char *sfname);
-static void     songPlay (playerdata_t *playerData, char *sfname);
+static void     playerSongPrep (playerdata_t *playerData, char *sfname);
+void            playerProcessPrepRequest (playerdata_t *playerData);
+static void     playerSongPlay (playerdata_t *playerData, char *sfname);
 static void     songMakeTempName (playerdata_t *playerData,
                     char *in, char *out, size_t maxlen);
 static void     playerPause (playerdata_t *playerData);
 static void     playerPlay (playerdata_t *playerData);
 static void     playerStop (playerdata_t *playerData);
-static void     playerClose (playerdata_t *playerData);
 static void     playerPrepQueueFree (void *);
 static void     playerCleanPrepSongs (playerdata_t *playerData);
 static void     playerSigHandler (int sig);
@@ -82,21 +98,30 @@ main (int argc, char *argv[])
   int             loglevel = LOG_IMPORTANT | LOG_MAIN;
 
   static struct option bdj_options [] = {
-    { "debug",     no_argument,         NULL,   'd' },
+    { "debug",      required_argument,  NULL,   'd' },
     { "player",     no_argument,        NULL,   0 },
     { "profile",    required_argument,  NULL,   'p' },
     { NULL,         0,                  NULL,   0 }
   };
 
-  mtimestart (&playerData.tmstart);
+  mstimestart (&playerData.tmstart);
+
+  processCatchSignals (playerSigHandler);
 
   playerData.programState = STATE_INITIALIZING;
   playerData.mainSock = INVALID_SOCKET;
   playerData.pliData = NULL;
+  playerData.prepRequestQueue = queueAlloc (playerPrepQueueFree);
   playerData.prepQueue = queueAlloc (playerPrepQueueFree);
+  playerData.playRequest = NULL;
   playerData.globalCount = 1;
-
-  processCatchSignals (playerSigHandler);
+  playerData.playerState = PL_STATE_STOPPED;
+  playerData.inFade = false;
+  playerData.inFadeIn = false;
+  playerData.inFadeOut = false;
+  playerData.gapFinishTime = 0;
+  playerData.inGap = false;
+  playerData.mainHandshake = false;
 
   sysvarsInit (argv[0]);
 
@@ -152,14 +177,13 @@ main (int argc, char *argv[])
   }
 
   playerData.pliData = pliInit ();
-  assert (playerData.pliData != NULL);
 
   uint16_t listenPort = bdjvarsl [BDJVL_PLAYER_PORT];
   sockhMainLoop (listenPort, playerProcessMsg, playerProcessing, &playerData);
 
   if (playerData.pliData != NULL) {
-    playerStop (&playerData);
-    playerClose (&playerData);
+    pliStop (playerData.pliData);
+    pliClose (playerData.pliData);
     pliFree (playerData.pliData);
   }
 
@@ -197,30 +221,19 @@ playerProcessMsg (long routefrom, long route, long msg, char *args, void *udata)
     case ROUTE_PLAYER: {
       logMsg (LOG_DBG, LOG_BASIC, "got: route-player");
       switch (msg) {
-        case MSG_ECHO_RESP: {
-          if (routefrom == ROUTE_MAIN) {
-            playerData->programState = STATE_RUNNING;
-            logMsg (LOG_SESS, LOG_IMPORTANT, "running: time-to-start: %ld ms", mtimeend (&playerData->tmstart));
-          }
+        case MSG_HANDSHAKE: {
+          playerData->mainHandshake = true;
           break;
         }
-        case MSG_ECHO: {
-          Sock_t      tsock;
-
-          tsock = playerData->mainSock;
-          sockhSendMessage (tsock, ROUTE_PLAYER, routefrom,
-              MSG_ECHO_RESP, NULL);
-          break;
-        }
-        case MSG_PLAYER_PAUSE: {
+        case MSG_PLAY_PAUSE: {
           playerPause (playerData);
           break;
         }
-        case MSG_PLAYER_PLAY: {
+        case MSG_PLAY_PLAY: {
           playerPlay (playerData);
           break;
         }
-        case MSG_PLAYER_STOP: {
+        case MSG_PLAY_STOP: {
           playerStop (playerData);
           break;
         }
@@ -229,11 +242,11 @@ playerProcessMsg (long routefrom, long route, long msg, char *args, void *udata)
           break;
         }
         case MSG_SONG_PREP: {
-          songPrep (playerData, args);
+          playerSongPrep (playerData, args);
           break;
         }
         case MSG_SONG_PLAY: {
-          songPlay (playerData, args);
+          playerSongPlay (playerData, args);
           break;
         }
         case MSG_EXIT_REQUEST: {
@@ -271,7 +284,7 @@ playerProcessing (void *udata)
 
   if (playerData->programState == STATE_INITIALIZING) {
     playerData->programState = STATE_CONNECTING;
-    logMsg (LOG_DBG, LOG_MAIN, "listening/connecting");
+    logMsg (LOG_DBG, LOG_MAIN, "prog listening/connecting");
   }
 
   if (playerData->programState == STATE_CONNECTING &&
@@ -282,74 +295,213 @@ playerProcessing (void *udata)
     playerData->mainSock = sockConnect (mainPort, &err, 1000);
     if (playerData->mainSock != INVALID_SOCKET) {
       sockhSendMessage (playerData->mainSock, ROUTE_PLAYER, ROUTE_MAIN,
-          MSG_ECHO, NULL);
+          MSG_HANDSHAKE, NULL);
       playerData->programState = STATE_WAIT_HANDSHAKE;
-      logMsg (LOG_DBG, LOG_MAIN, "wait for handshake");
+      logMsg (LOG_DBG, LOG_MAIN, "prog: wait for handshake");
     }
   }
 
+  if (playerData->programState == STATE_WAIT_HANDSHAKE) {
+    if (playerData->mainHandshake) {
+      playerData->programState = STATE_RUNNING;
+      logMsg (LOG_DBG, LOG_MAIN, "prog: running");
+      logMsg (LOG_SESS, LOG_IMPORTANT, "running: time-to-start: %ld ms", mstimeend (&playerData->tmstart));
+    }
+  }
+
+  if (playerData->programState != STATE_RUNNING) {
+      /* all of the processing that follows requires a running state */
+    return 0;
+  }
+
+  if (playerData->playerState == PL_STATE_STOPPED &&
+      playerData->inGap) {
+    time_t            currTime = mstime ();
+
+    if (currTime >= playerData->gapFinishTime) {
+fprintf (stderr, "finish gap: %zd\n", currTime);
+      playerData->inGap = false;
+      playerData->gapFinishTime = 0;
+    }
+  }
+
+  if (playerData->playerState == PL_STATE_STOPPED &&
+      ! playerData->inGap &&
+      playerData->playRequest != NULL) {
+    logMsg (LOG_DBG, LOG_BASIC, "play: %s", playerData->playRequest);
+    pliMediaSetup (playerData->pliData, playerData->playRequest);
+    pliStartPlayback (playerData->pliData);
+    playerData->playerState = PL_STATE_LOADING;
+    free (playerData->playRequest);
+    playerData->playRequest = NULL;
+    logMsg (LOG_DBG, LOG_BASIC, "pl state: loading");
+  }
+
+  if (playerData->playerState == PL_STATE_LOADING) {
+    prepqueue_t       *pq = playerData->currentSong;
+
+    plistate_t plistate = pliState (playerData->pliData);
+    if (plistate == PLI_STATE_OPENING ||
+        plistate == PLI_STATE_BUFFERING) {
+      ;
+    } else if (plistate == PLI_STATE_PLAYING) {
+      ssize_t     maxdur = 0;
+
+      playerData->playTimeStart = mstime ();
+
+      if (pq->dur <= 1) {
+        pq->dur = pliGetDuration (playerData->pliData);
+        logMsg (LOG_DBG, LOG_BASIC, "Replace duration with vlc data: %zd", pq->dur);
+      }
+      maxdur = bdjoptGetLong (OPT_P_MAXPLAYTIME);
+      if (pq->dur > maxdur) {
+        pq->dur = maxdur;
+      }
+
+      logMsg (LOG_DBG, LOG_BASIC, "pl state: playing");
+      sockhSendMessage (playerData->mainSock, ROUTE_PLAYER, ROUTE_MAIN,
+          MSG_PLAYBACK_BEGIN, NULL);
+
+        /* want to start check for real finish 500 ms before end */
+      playerData->playTimeCheck = mstime ();
+      playerData->playTimeCheck += pq->dur - 500;
+      playerData->playerState = PL_STATE_PLAYING;
+    } else {
+      /* ### FIX: need to process this; stopped/ended/error */
+      ;
+    }
+  }
+
+  if (playerData->playerState == PL_STATE_PLAYING) {
+    prepqueue_t       *pq = playerData->currentSong;
+    time_t            currTime = mstime ();
+
+    if (currTime >= playerData->playTimeCheck) {
+      plistate_t plistate = pliState (playerData->pliData);
+      ssize_t plidur = pliGetDuration (playerData->pliData);
+      ssize_t pltm = pliGetTime (playerData->pliData);
+
+      if (plistate == PLI_STATE_STOPPED ||
+          plistate == PLI_STATE_ENDED ||
+          plistate == PLI_STATE_ERROR ||
+          pltm >= plidur ||
+          pltm >= pq->dur) {
+        logMsg (LOG_DBG, LOG_BASIC, "actual play time: %zd", mstime() - playerData->playTimeStart);
+        playerStop (playerData);
+        playerData->playerState = PL_STATE_STOPPED;
+        logMsg (LOG_DBG, LOG_BASIC, "pl state: stopped");
+        sockhSendMessage (playerData->mainSock, ROUTE_PLAYER, ROUTE_MAIN,
+            MSG_PLAYBACK_FINISH, NULL);
+
+        ssize_t gap = bdjoptGetLong (OPT_P_GAP);
+fprintf (stderr, "gap: %zd\n", gap);
+        if (gap > 0) {
+          playerData->inGap = true;
+          playerData->gapFinishTime = mstime () + gap;
+fprintf (stderr, "curr tm : %zd\n", mstime());
+fprintf (stderr, "gap finish: %zd\n", playerData->gapFinishTime);
+        }
+      }
+    }
+  }
+
+    /* only process the prep requests when the player isn't doing much  */
+    /* windows must do a physical copy, and this may take a bit of time */
+  if ((playerData->playerState == PL_STATE_PLAYING ||
+       playerData->playerState == PL_STATE_STOPPED) &&
+      ! playerData->inFade) {
+    playerProcessPrepRequest (playerData);
+  }
   return gKillReceived;
 }
 
 /* internal routines - song handling */
 
 static void
-songPrep (playerdata_t *playerData, char *sfname)
+playerSongPrep (playerdata_t *playerData, char *args)
 {
-  char            tsfname [MAXPATHLEN];  // testing: remove later
-  char            stname [MAXPATHLEN];
+  prepqueue_t     *npq;
   prepqueue_t     *pq;
+  char            *tokptr = NULL;
+  char            *aptr;
 
-  logProcBegin (LOG_BASIC, "songPrep");
-  if (! fileopExists (sfname)) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: no file: %s\n", sfname);
-    logProcEnd (LOG_BASIC, "songPrep", "no-file");
+
+  logProcBegin (LOG_BASIC, "playerSongPrep");
+
+  aptr = strtok_r (args, MSG_ARGS_RS_STR, &tokptr);
+
+  queueStartIterator (playerData->prepQueue);
+  pq = queueIterateData (playerData->prepQueue);
+  while (pq != NULL) {
+    if (strcmp (aptr, pq->songname) == 0) {
+        /* already */
+      logProcEnd (LOG_BASIC, "playerSongPrep", "already");
+      return;
+    }
+    pq = queueIterateData (playerData->prepQueue);
+  }
+
+  npq = malloc (sizeof (prepqueue_t));
+  assert (npq != NULL);
+  npq->songname = strdup (aptr);
+  assert (npq->songname != NULL);
+  logMsg (LOG_DBG, LOG_BASIC, "prep request: %s", npq->songname);
+  npq->songfullpath = songFullFileName (npq->songname);
+  aptr = strtok_r (NULL, MSG_ARGS_RS_STR, &tokptr);
+  npq->dur = atol (aptr);
+  logMsg (LOG_DBG, LOG_BASIC, "prep duration: %zd", npq->dur);
+  npq->tempname = NULL;
+  queuePush (playerData->prepRequestQueue, npq);
+  logProcEnd (LOG_BASIC, "playerSongPrep", "");
+}
+
+void
+playerProcessPrepRequest (playerdata_t *playerData)
+{
+  char            stname [MAXPATHLEN];
+  prepqueue_t     *npq;
+
+  npq = queuePop (playerData->prepRequestQueue);
+  if (npq == NULL) {
     return;
   }
 
-  pq = malloc (sizeof (prepqueue_t));
-  assert (pq != NULL);
-  pq->songname = strdup (sfname);
-  pq->tempname = NULL;
-
+  logMsg (LOG_DBG, LOG_BASIC, "prep: %s", npq->songname);
   /* TODO: if we are in client/server mode, then need to request the song
    * from the server and save it
    */
-  songMakeTempName (playerData, sfname, stname, sizeof (stname));
-  if (*sfname != '/') {
-    /* ### FIX: remove later: for testing */
-    (void) ! getcwd (tsfname, MAXPATHLEN);
-    strlcat (tsfname, "/", MAXPATHLEN);
-    strlcat (tsfname, sfname, MAXPATHLEN);
-  }
+  songMakeTempName (playerData, npq->songname, stname, sizeof (stname));
 
   /* VLC still cannot handle internationalized names.
    * I wonder how they handle them internally.
    * Symlinks work on Linux/Mac OS.
    */
   fileopDelete (stname);
-  fileopLinkCopy (tsfname, stname);
+  fileopLinkCopy (npq->songfullpath, stname);
   if (! fileopExists (stname)) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: file copy failed: %s\n", stname);
-    logProcEnd (LOG_BASIC, "songPrep", "copy-failed");
-    playerPrepQueueFree (pq);
+    logProcEnd (LOG_BASIC, "playerSongPrep", "copy-failed");
+    playerPrepQueueFree (npq);
     return;
   }
-  pq->tempname = strdup (stname);
-  queuePush (playerData->prepQueue, pq);
+
+  npq->tempname = strdup (stname);
+  assert (npq->tempname != NULL);
+  queuePush (playerData->prepQueue, npq);
 
   // TODO : add the name to a list of prepared files.
-  logProcEnd (LOG_BASIC, "songPrep", "");
+  logProcEnd (LOG_BASIC, "playerSongPrep", "");
 }
 
 static void
-songPlay (playerdata_t *playerData, char *sfname)
+playerSongPlay (playerdata_t *playerData, char *sfname)
 {
   char              stname [MAXPATHLEN];
   prepqueue_t       *pq;
   int               found = 0;
 
-  logProcBegin (LOG_BASIC, "songPlay");
+  logProcBegin (LOG_BASIC, "playerSongPlay");
+  logMsg (LOG_DBG, LOG_BASIC, "play request: %s", sfname);
   found = 0;
   queueStartIterator (playerData->prepQueue);
   pq = queueIterateData (playerData->prepQueue);
@@ -357,25 +509,26 @@ songPlay (playerdata_t *playerData, char *sfname)
     if (strcmp (sfname, pq->songname) == 0) {
       strlcpy (stname, pq->tempname, MAXPATHLEN);
       queueIterateRemoveNode (playerData->prepQueue);
+      playerData->currentSong = pq;
       found = 1;
       break;
     }
     pq = queueIterateData (playerData->prepQueue);
   }
   if (! found) {
-    logProcEnd (LOG_BASIC, "songPlay", "not-found");
+      /* the song must be prepped before playing */
+    logProcEnd (LOG_BASIC, "playerSongPlay", "not-found");
     return;
   }
 
   if (! fileopExists (stname)) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: no file: %s\n", stname);
-    logProcEnd (LOG_BASIC, "songPlay", "no-file");
+    logProcEnd (LOG_BASIC, "playerSongPlay", "no-file");
     return;
   }
 
-  pliMediaSetup (playerData->pliData, stname);
-  pliStartPlayback (playerData->pliData);
-  logProcEnd (LOG_BASIC, "songPlay", "");
+  playerData->playRequest = strdup (stname);
+  logProcEnd (LOG_BASIC, "playerSongPlay", "");
 }
 
 static void
@@ -389,7 +542,8 @@ songMakeTempName (playerdata_t *playerData, char *in, char *out, size_t maxlen)
 
   idx = 0;
   for (char *p = pi->filename; *p && idx < maxlen; ++p) {
-    if ((isascii (*p) && isalnum (*p)) || *p == '.' ) {
+    if ((isascii (*p) && isalnum (*p)) ||
+        *p == '.' || *p == '-' || *p == '_') {
       tnm [idx++] = *p;
     }
   }
@@ -424,17 +578,14 @@ playerStop (playerdata_t *playerData)
 }
 
 static void
-playerClose (playerdata_t *playerData)
-{
-  pliClose (playerData->pliData);
-}
-
-static void
 playerPrepQueueFree (void *data)
 {
   prepqueue_t     *pq = data;
 
   if (pq != NULL) {
+    if (pq->songfullpath != NULL) {
+      free (pq->songfullpath);
+    }
     if (pq->songname != NULL) {
       free (pq->songname);
     }
@@ -450,6 +601,7 @@ playerCleanPrepSongs (playerdata_t *playerData)
 {
   prepqueue_t     *pq = NULL;
 
+  logProcBegin (LOG_MAIN, "playerCleanPrepSongs");
   if (playerData->prepQueue != NULL) {
     queueStartIterator (playerData->prepQueue);
     pq = queueIterateData (playerData->prepQueue);
@@ -460,6 +612,7 @@ playerCleanPrepSongs (playerdata_t *playerData)
       pq = queueIterateData (playerData->prepQueue);
     }
   }
+  logProcEnd (LOG_MAIN, "playerCleanPrepSongs", "");
 }
 
 static void
@@ -474,6 +627,7 @@ playerSetAudioSink (playerdata_t *playerData, char *sinkname)
   int           found = 0;
   int           idx = -1;
 
+  logProcBegin (LOG_MAIN, "playerSetAudioSink");
     /* the sink list is not ordered */
   found = 0;
   for (size_t i = 0; i < playerData->sinklist.count; ++i) {
@@ -491,6 +645,7 @@ playerSetAudioSink (playerdata_t *playerData, char *sinkname)
     playerData->currentSink = playerData->sinklist.defname;
     logMsg (LOG_DBG, LOG_IMPORTANT, "audio sink set to default");
   }
+  logProcEnd (LOG_MAIN, "playerSetAudioSink", "");
 }
 
 static void
@@ -498,6 +653,7 @@ playerInitSinklist (playerdata_t *playerData)
 {
   volumeFreeSinkList (&playerData->sinklist);
 
+  logProcBegin (LOG_MAIN, "playerInitSinklist");
   playerData->sinklist.defname = "";
   playerData->sinklist.count = 0;
   playerData->sinklist.sinklist = NULL;
@@ -506,4 +662,5 @@ playerInitSinklist (playerdata_t *playerData)
 
   volumeGetSinkList ("", &playerData->sinklist);
   playerData->defaultSink = playerData->sinklist.defname;
+  logProcEnd (LOG_MAIN, "playerInitSinklist", "");
 }

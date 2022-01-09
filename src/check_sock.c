@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <stdbool.h>
 #include <check.h>
 #include <sys/time.h>
 #include <sys/types.h>
@@ -127,7 +128,7 @@ static void *
 connectClose (void *id)
 {
   Sock_t c = connectWait ();
-  msleep (200);
+  mssleep (200);
   sockClose (c);
   return NULL;
 }
@@ -155,7 +156,7 @@ connectWrite (void *id)
   if (rc != 0) { gthreadrc = 1; }
   rc = sockWriteBinary (c, datab, 4096);
   if (rc != 0) { gthreadrc = 1; }
-  msleep (200);
+  mssleep (200);
   sockClose (c);
 #if _lib_pthread_create
   pthread_exit (NULL);
@@ -220,7 +221,7 @@ START_TEST(sock_connect_accept)
   ck_assert_int_eq (socketInvalid (r), 0);
   ck_assert_int_ne (l, r);
 
-  msleep (200);
+  mssleep (200);
   sockClose (r);
   sockClose (l);
   ck_assert_int_eq (gthreadrc, 0);
@@ -254,7 +255,7 @@ START_TEST(sock_check_connect_accept)
   rc = sockCheck (si);
   int count = 0;
   while (rc == 0 && count < 100) {
-    msleep (20);
+    mssleep (20);
     rc = sockCheck (si);
     ++count;
   }
@@ -262,7 +263,7 @@ START_TEST(sock_check_connect_accept)
   r = sockAccept (l, &err);
   ck_assert_int_eq (socketInvalid (r), 0);
   ck_assert_int_ne (l, r);
-  msleep (200);
+  mssleep (200);
   sockClose (r);
   sockRemoveCheck (si, l);
   sockFreeCheck (si);
@@ -298,7 +299,7 @@ START_TEST(sock_write)
   rc = sockCheck (si);
   int count = 0;
   while (rc == 0 && count < 100) {
-    msleep (20);
+    mssleep (20);
     rc = sockCheck (si);
     ++count;
   }
@@ -306,7 +307,7 @@ START_TEST(sock_write)
   r = sockAccept (l, &err);
   ck_assert_int_eq (socketInvalid (r), 0);
   ck_assert_int_ne (l, r);
-  msleep (200);
+  mssleep (200);
   sockClose (r);
   sockRemoveCheck (si, l);
   sockFreeCheck (si);
@@ -347,7 +348,7 @@ START_TEST(sock_write_read)
   rc = sockCheck (si);
   int count = 0;
   while (rc == 0 && count < 100) {
-    msleep (20);
+    mssleep (20);
     rc = sockCheck (si);
     ++count;
   }
@@ -356,7 +357,7 @@ START_TEST(sock_write_read)
   ck_assert_int_eq (socketInvalid (r), 0);
   ck_assert_int_ne (l, r);
 
-  msleep (30); /* give time for client to write */
+  mssleep (30); /* give time for client to write */
 
   ndata = sockRead (r, &len);
   ck_assert_ptr_nonnull (ndata);
@@ -367,7 +368,7 @@ START_TEST(sock_write_read)
     free (ndata);
   }
 
-  msleep (30); /* give time for client to write */
+  mssleep (30); /* give time for client to write */
 
   ndata = sockRead (r, &len);
   ck_assert_ptr_nonnull (ndata);
@@ -376,7 +377,7 @@ START_TEST(sock_write_read)
     ck_assert_mem_eq (ndata, datab, 4096);
     free (ndata);
   }
-  msleep (200);
+  mssleep (200);
   sockClose (r);
   sockRemoveCheck (si, l);
   sockFreeCheck (si);
@@ -416,7 +417,7 @@ START_TEST(sock_write_read_buff)
   rc = sockCheck (si);
   int count = 0;
   while (rc == 0 && count < 100) {
-    msleep (20);
+    mssleep (20);
     rc = sockCheck (si);
     ++count;
   }
@@ -425,7 +426,7 @@ START_TEST(sock_write_read_buff)
   ck_assert_int_eq (socketInvalid (r), 0);
   ck_assert_int_ne (l, r);
 
-  msleep (30); /* time for client to write */
+  mssleep (30); /* time for client to write */
 
   ndata = sockReadBuff (r, &len, buff, sizeof(buff));
   ck_assert_ptr_nonnull (ndata);
@@ -434,7 +435,7 @@ START_TEST(sock_write_read_buff)
     ck_assert_int_eq (strlen (ndata), strlen (data));
     ck_assert_str_eq (ndata, data);
   }
-  msleep (200);
+  mssleep (200);
   sockClose (r);
   sockRemoveCheck (si, l);
   sockFreeCheck (si);
@@ -473,7 +474,7 @@ START_TEST(sock_write_read_buff_fail)
   rc = sockCheck (si);
   int count = 0;
   while (rc == 0 && count < 100) {
-    msleep (20);
+    mssleep (20);
     rc = sockCheck (si);
     ++count;
   }
@@ -485,7 +486,7 @@ START_TEST(sock_write_read_buff_fail)
   ndata = sockReadBuff (r, &len, buff, sizeof(buff));
   ck_assert_ptr_null (ndata);
   ck_assert_int_eq (len, 0);
-  msleep (200);
+  mssleep (200);
   sockClose (r);
   sockRemoveCheck (si, l);
   sockFreeCheck (si);
@@ -526,7 +527,7 @@ START_TEST(sock_write_check_read)
   rc = sockCheck (si);
   int count = 0;
   while (rc == 0 && count < 100) {
-    msleep (20);
+    mssleep (20);
     rc = sockCheck (si);
     ++count;
   }
@@ -539,7 +540,7 @@ START_TEST(sock_write_check_read)
   rc = sockCheck (si);
   count = 0;
   while (rc == 0 && count < 100) {
-    msleep (20);
+    mssleep (20);
     rc = sockCheck (si);
     ++count;
   }
@@ -556,7 +557,7 @@ START_TEST(sock_write_check_read)
   rc = sockCheck (si);
   count = 0;
   while (rc == 0 && count < 100) {
-    msleep (20);
+    mssleep (20);
     rc = sockCheck (si);
     ++count;
   }
@@ -568,7 +569,7 @@ START_TEST(sock_write_check_read)
     ck_assert_mem_eq (ndata, datab, 4096);
     free (ndata);
   }
-  msleep (200);
+  mssleep (200);
   sockClose (r);
   sockRemoveCheck (si, l);
   sockRemoveCheck (si, r);
@@ -608,7 +609,7 @@ START_TEST(sock_close)
   rc = sockCheck (si);
   int count = 0;
   while (rc == 0 && count < 100) {
-    msleep (20);
+    mssleep (20);
     rc = sockCheck (si);
     ++count;
   }
@@ -618,12 +619,12 @@ START_TEST(sock_close)
   ck_assert_int_ne (l, r);
   si = sockAddCheck (si, r);
 
-  msleep (20); /* a delay to allow client to close */
+  mssleep (20); /* a delay to allow client to close */
 
   rc = sockCheck (si);
   count = 0;
   while (rc == 0 && count < 100) {
-    msleep (20);
+    mssleep (20);
     rc = sockCheck (si);
     ++count;
   }
@@ -634,7 +635,7 @@ START_TEST(sock_close)
       free (ndata);
     }
   }
-  msleep (200);
+  mssleep (200);
   sockClose (r);
   sockRemoveCheck (si, l);
   sockRemoveCheck (si, r);
@@ -676,7 +677,7 @@ START_TEST(sock_write_close)
   rc = sockCheck (si);
   int count = 0;
   while (rc == 0 && count < 100) {
-    msleep (20);
+    mssleep (20);
     rc = sockCheck (si);
     ++count;
   }
@@ -686,12 +687,12 @@ START_TEST(sock_write_close)
   ck_assert_int_ne (l, r);
   si = sockAddCheck (si, r);
 
-  msleep (20); /* a delay to allow client to close */
+  mssleep (20); /* a delay to allow client to close */
 
   rc = sockCheck (si);
   count = 0;
   while (rc == 0 && count < 100) {
-    msleep (20);
+    mssleep (20);
     rc = sockCheck (si);
     ++count;
   }
@@ -705,7 +706,7 @@ START_TEST(sock_write_close)
   rc = sockCheck (si);
   count = 0;
   while (rc == 0 && count < 100) {
-    msleep (20);
+    mssleep (20);
     rc = sockCheck (si);
     ++count;
   }
@@ -715,7 +716,7 @@ START_TEST(sock_write_close)
   if (ndata != NULL) {
     free (ndata);
   }
-  msleep (200);
+  mssleep (200);
   sockClose (r);
   sockRemoveCheck (si, l);
   sockRemoveCheck (si, r);
@@ -754,7 +755,7 @@ START_TEST(sock_server_close)
   rc = sockCheck (si);
   int count = 0;
   while (rc == 0 && count < 100) {
-    msleep (20);
+    mssleep (20);
     rc = sockCheck (si);
     ++count;
   }
@@ -764,7 +765,7 @@ START_TEST(sock_server_close)
   ck_assert_int_ne (l, r);
   sockClose (r);
   for (int i = 0; i < 60; ++i) {
-    msleep (100);
+    mssleep (100);
   }
   sockClose (r);
   sockRemoveCheck (si, l);

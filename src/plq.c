@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
 #include <errno.h>
@@ -26,7 +27,10 @@ void
 plqFree (plq_t *plq)
 {
   if (plq != NULL) {
-    queueFree (plq->q);
+    if (plq->q != NULL) {
+
+      queueFree (plq->q);
+    }
     free (plq);
   }
 }
@@ -39,6 +43,7 @@ plqPush (plq_t *plq, char *plname)
   plqitem = malloc (sizeof (plqitem_t));
   assert (plqitem != NULL);
   plqitem->playlist = playlistAlloc (plname);
+  queuePush (plq->q, plqitem);
 }
 
 static void
@@ -52,4 +57,11 @@ plqQueueFree (void *titem)
     }
     free (plqitem);
   }
+}
+
+playlist_t *
+plqGetCurrent (plq_t *plq)
+{
+  plqitem_t *plqitem = queueGetCurrent (plq->q);
+  return plqitem->playlist;
 }

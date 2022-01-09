@@ -1,6 +1,8 @@
 #include "config.h"
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
 #include <check.h>
 #include <sys/types.h>
 #include <time.h>
@@ -15,7 +17,7 @@ START_TEST(msleep_chk)
   time_t      tm_e;
 
   tm_s = time (NULL);
-  msleep (2000);
+  mssleep (2000);
   tm_e = time (NULL);
   ck_assert_int_ge (tm_e - tm_s, 2);
 }
@@ -25,12 +27,12 @@ START_TEST(milli_start_end)
 {
   time_t      tm_s;
   time_t      tm_e;
-  mtime_t     mi;
+  mstime_t     mi;
 
   tm_s = time (NULL);
-  mtimestart (&mi);
-  msleep (2000);
-  size_t m = mtimeend (&mi);
+  mstimestart (&mi);
+  mssleep (2000);
+  size_t m = mstimeend (&mi);
   tm_e = time (NULL);
   long d = (long) tm_e - (long) tm_s;
   if (d >= 3) {
@@ -45,20 +47,20 @@ START_TEST(milli_start_end)
 }
 END_TEST
 
-START_TEST(dstamp_chk)
+START_TEST(tmutilDstamp_chk)
 {
   char        buff [80];
 
-  dstamp (buff, sizeof (buff));
+  tmutilDstamp (buff, sizeof (buff));
   ck_assert_int_eq (strlen (buff), 10);
 }
 END_TEST
 
-START_TEST(tstamp_chk)
+START_TEST(tmutilTstamp_chk)
 {
   char        buff [80];
 
-  tstamp (buff, sizeof (buff));
+  tmutilTstamp (buff, sizeof (buff));
   ck_assert_int_eq (strlen (buff), 12);
 }
 END_TEST
@@ -73,8 +75,8 @@ tmutil_suite (void)
   tc = tcase_create ("Time Utils");
   tcase_add_test (tc, msleep_chk);
   tcase_add_test (tc, milli_start_end);
-  tcase_add_test (tc, dstamp_chk);
-  tcase_add_test (tc, tstamp_chk);
+  tcase_add_test (tc, tmutilDstamp_chk);
+  tcase_add_test (tc, tmutilTstamp_chk);
   suite_add_tcase (s, tc);
   return s;
 }

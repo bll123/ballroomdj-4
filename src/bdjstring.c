@@ -1,6 +1,7 @@
 #include "config.h"
 
 #include <stdlib.h>
+#include <stdbool.h>
 #include <wchar.h>
 #include <string.h>
 #include <ctype.h>

@@ -19,6 +19,8 @@ void      songFree (void *);
 void      songParse (song_t *song, char *data);
 char *    songGetData (song_t *, long);
 long      songGetLong (song_t *, long);
+double    songGetDouble (song_t *, long);
 void      songSetLong (song_t *, long, long);
+bool      songAudioFileExists (song_t *song);
 
 #endif /* INC_SONG */

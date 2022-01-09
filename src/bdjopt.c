@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <stdbool.h>
 #include <string.h>
 #include <assert.h>
 
@@ -26,8 +27,7 @@ static datafilekey_t bdjoptglobaldfkeys[] = {
   { "PATHFMT_CLVA",       OPT_G_PATHFMT_CLVA,       VALUE_DATA, NULL },
   { "PATHFMT_VA",         OPT_G_PATHFMT_VA,         VALUE_DATA, NULL },
   { "PLAYER",             OPT_G_PLAYER,             VALUE_DATA, NULL },
-  { "PLAYERQLEN0",        OPT_G_PLAYERQLEN0,        VALUE_LONG, NULL },
-  { "PLAYERQLEN1",        OPT_G_PLAYERQLEN1,        VALUE_LONG, NULL },
+  { "PLAYERQLEN",         OPT_G_PLAYERQLEN,         VALUE_LONG, NULL },
   { "REMCONTROLHTML",     OPT_G_REMCONTROLHTML,     VALUE_DATA, NULL },
   { "SHOWALBUM",          OPT_G_SHOWALBUM,          VALUE_LONG, parseConvBoolean },
   { "SHOWBPM",            OPT_G_SHOWBPM,            VALUE_LONG, parseConvBoolean },
@@ -49,7 +49,7 @@ static datafilekey_t bdjoptprofiledfkeys[] = {
   { "FADEOUTTIME",          OPT_P_FADEOUTTIME,          VALUE_DOUBLE, NULL },
   { "FADETYPE",             OPT_P_FADETYPE,             VALUE_DATA, NULL },
   { "GAP",                  OPT_P_GAP,                  VALUE_DOUBLE, NULL },
-  { "MAXPLAYTIME",          OPT_P_MAXPLAYTIME,          VALUE_DATA, NULL },
+  { "MAXPLAYTIME",          OPT_P_MAXPLAYTIME,          VALUE_LONG, NULL },
   { "MOBILEMARQUEE",        OPT_P_MOBILEMARQUEE,        VALUE_LONG, parseConvBoolean },
   { "MOBILEMQPORT",         OPT_P_MOBILEMQPORT,         VALUE_LONG, NULL },
   { "MOBILEMQTAG",          OPT_P_MOBILEMQTAG,          VALUE_DATA, NULL },
@@ -230,4 +230,13 @@ bdjoptGetLong (size_t idx)
   }
   long value = llistGetLong (bdjopt->data, idx);
   return value;
+}
+
+void
+bdjoptSetLong (size_t idx, long value)
+{
+  if (bdjopt == NULL) {
+    return;
+  }
+  llistSetLong (bdjopt->data, idx, value);
 }

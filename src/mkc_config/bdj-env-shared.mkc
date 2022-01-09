@@ -5,7 +5,7 @@ loadunit env-cc
 loadunit env-msgfmt
 loadunit env-extension
 
-output  bdj-shared.env
+output  bdj-env.shared
 
 standard_system
 standard_cc

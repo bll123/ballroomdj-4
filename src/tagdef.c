@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <assert.h>
 #if _hdr_libintl
 # include <libintl.h>
@@ -370,46 +371,6 @@ tagdef_t tagdefs[MAX_TAG_KEY] = {
     0,                            /* editable             */
     1,                            /* listing display      */
     1,                            /* song list display    */
-    0                             /* text search          */
-  },
-  [TAG_KEY_DURATION_HMS] =
-  { 0,                            /* default edit order   */
-    0,                            /* edit index           */
-    0,                            /* edit width           */
-    ANCHOR_WEST,                  /* listing anchor       */
-    0,                            /* listing weight       */
-    ANCHOR_WEST,                  /* song list anchor     */
-    0,                            /* song list weight     */
-    AIDD_NO,                      /* audio id disp        */
-    ET_NA,                        /* edit type            */
-    TAGDEF_INITIALIZED,           /* initialized          */
-    0,                            /* is bdj tag           */
-    0,                            /* is norm tag          */
-    0,                            /* album edit           */
-    0,                            /* all edit             */
-    0,                            /* editable             */
-    0,                            /* listing display      */
-    0,                            /* song list display    */
-    0                             /* text search          */
-  },
-  [TAG_KEY_DURATION_STR] =
-  { 9,                            /* default edit order   */
-    16,                           /* edit index           */
-    15,                           /* edit width           */
-    ANCHOR_WEST,                  /* listing anchor       */
-    0,                            /* listing weight       */
-    ANCHOR_WEST,                  /* song list anchor     */
-    0,                            /* song list weight     */
-    AIDD_NO,                      /* audio id disp        */
-    ET_DISABLED_ENTRY,            /* edit type            */
-    TAGDEF_INITIALIZED,           /* initialized          */
-    0,                            /* is bdj tag           */
-    0,                            /* is norm tag          */
-    0,                            /* album edit           */
-    0,                            /* all edit             */
-    0,                            /* editable             */
-    0,                            /* listing display      */
-    0,                            /* song list display    */
     0                             /* text search          */
   },
   [TAG_KEY_FILE] =
@@ -833,26 +794,6 @@ tagdef_t tagdefs[MAX_TAG_KEY] = {
     0                             /* text search          */
   },
   [TAG_KEY_RRN] =
-  { 0,                            /* default edit order   */
-    0,                            /* edit index           */
-    0,                            /* edit width           */
-    ANCHOR_EAST,                  /* listing anchor       */
-    0,                            /* listing weight       */
-    ANCHOR_WEST,                  /* song list anchor     */
-    0,                            /* song list weight     */
-    AIDD_NO,                      /* audio id disp        */
-    ET_NA,                        /* edit type            */
-    TAGDEF_INITIALIZED,           /* initialized          */
-    0,                            /* is bdj tag           */
-    0,                            /* is norm tag          */
-    0,                            /* album edit           */
-    0,                            /* all edit             */
-    0,                            /* editable             */
-    0,                            /* listing display      */
-    0,                            /* song list display    */
-    0                             /* text search          */
-  },
-  [TAG_KEY_DUR] =
   { 0,                            /* default edit order   */
     0,                            /* edit index           */
     0,                            /* edit width           */

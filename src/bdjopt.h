@@ -17,8 +17,7 @@ typedef enum {
   OPT_G_PATHFMT_CLVA,
   OPT_G_PATHFMT_VA,
   OPT_G_PLAYER,
-  OPT_G_PLAYERQLEN0,
-  OPT_G_PLAYERQLEN1,
+  OPT_G_PLAYERQLEN,
   OPT_G_REMCONTROLHTML,
   OPT_G_SHOWALBUM,
   OPT_G_SHOWBPM,
@@ -103,5 +102,6 @@ void    bdjoptInit (void);
 void    bdjoptFree (void);
 void    *bdjoptGetData (size_t idx);
 long    bdjoptGetLong (size_t idx);
+void    bdjoptSetLong (size_t idx, long value);
 
 #endif /* INC_BDJOPT_H */

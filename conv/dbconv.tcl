@@ -52,6 +52,8 @@ dict for {fn data} $musicdbList {
       # not wanted - old, leftover
       continue
     }
+    if { $tag eq "DURATION_HMS" } { continue }
+    if { $tag eq "DURATION_STR" } { continue }
     if { $tag eq "FILE" } {
       # already
       continue
@@ -62,6 +64,9 @@ dict for {fn data} $musicdbList {
     }
     set value [dict get $data $tag]
     if { $tag eq "rrn" } { set tag RRN }
+    if { $tag eq "DURATION" } {
+      set value [expr {int($value * 1000)}]
+    }
     puts $fh "$tag\n..$value"
   }
   incr newrrn

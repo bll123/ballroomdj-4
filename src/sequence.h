@@ -3,7 +3,11 @@
 
 #include "datafile.h"
 
-datafile_t *  sequenceAlloc (char *);
-void          sequenceFree (datafile_t *);
+typedef struct {
+  datafile_t      *df;
+} sequence_t;
+
+sequence_t    *sequenceAlloc (char *);
+void          sequenceFree (sequence_t *);
 
 #endif /* INC_SEQUENCE_H */

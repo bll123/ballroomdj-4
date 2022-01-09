@@ -2,6 +2,14 @@
 #define INC_BDJVARS_H
 
 typedef enum {
+  PL_STATE_STOPPED,
+  PL_STATE_LOADING,
+  PL_STATE_LOADED,
+  PL_STATE_PLAYING,
+  PL_STATE_PAUSED,
+} playerstate_t;
+
+typedef enum {
   STATE_NOT_RUNNING,
   STATE_INITIALIZING,
   STATE_LISTENING,
@@ -28,5 +36,6 @@ extern long       bdjvarsl [BDJVL_MAX];
 
 void    bdjvarsInit (void);
 void    bdjvarsCleanup (void);
+char    *songFullFileName (char *sfname);
 
 #endif /* INC_BDJVARS_H */

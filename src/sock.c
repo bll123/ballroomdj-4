@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <stdbool.h>
 #include <assert.h>
 #include <errno.h>
 #include <signal.h>
@@ -94,7 +95,7 @@ sockServer (uint16_t listenPort, int *err)
   count = 0;
   rc = bind (lsock, (struct sockaddr *) &saddr, sizeof (struct sockaddr_in));
   while (rc != 0 && count < 1000 && (errno == EADDRINUSE)) {
-    msleep (100);
+    mssleep (100);
     ++count;
     rc = bind (lsock, (struct sockaddr *) &saddr, sizeof (struct sockaddr_in));
   }
@@ -282,7 +283,7 @@ sockConnect (uint16_t connPort, int *err, size_t timeout)
   struct sockaddr_in  raddr;
   int                 rc;
   int                 count;
-  mtime_t             mi;
+  mstime_t             mi;
 
   if (! sockInitialized) {
     sockInit ();
@@ -315,7 +316,7 @@ sockConnect (uint16_t connPort, int *err, size_t timeout)
   raddr.sin_port = htons (connPort);
   rc = connect (clsock, (struct sockaddr *) &raddr, sizeof (struct sockaddr_in));
   count = 1;
-  mtimestart (&mi);
+  mstimestart (&mi);
   while (rc != 0) {
     *err = errno;
 #if _lib_WSAGetLastError
@@ -332,12 +333,12 @@ sockConnect (uint16_t connPort, int *err, size_t timeout)
       close (clsock);
       return INVALID_SOCKET;
     }
-    size_t m = mtimeend (&mi);
+    size_t m = mstimeend (&mi);
     if (m > timeout) {
       logMsg (LOG_DBG, LOG_SOCKET, "timeout on connect");
       return INVALID_SOCKET;
     }
-    msleep (5);
+    mssleep (5);
     rc = connect (clsock, (struct sockaddr *) &raddr, sizeof (struct sockaddr_in));
 
     /* the system may finish the connection on its own, in which case   */
@@ -438,8 +439,7 @@ sockWriteBinary (Sock_t sock, char *data, size_t dlen)
   return 0;
 }
 
-/* boolean */
-inline int
+inline bool
 socketInvalid (Sock_t sock)
 {
 #if _define_INVALID_SOCKET
@@ -456,11 +456,11 @@ sockReadData (Sock_t sock, char *data, size_t len)
 {
   size_t        tot = 0;
   ssize_t       rc;
-  mtime_t       mi;
+  mstime_t       mi;
   size_t        timeout;
 
   timeout = len * SOCK_READ_TIMEOUT;
-  mtimestart (&mi);
+  mstimestart (&mi);
   rc = recv (sock, data, len, 0);
   if (rc < 0) {
 #if _lib_WSAGetLastError
@@ -499,9 +499,9 @@ sockReadData (Sock_t sock, char *data, size_t len)
       tot += (size_t) rc;
     }
     if (tot == 0) {
-      msleep (5);
+      mssleep (5);
     }
-    size_t m = mtimeend (&mi);
+    size_t m = mstimeend (&mi);
     if (m > timeout) {
       break;
     }

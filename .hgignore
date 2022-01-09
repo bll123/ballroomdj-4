@@ -8,7 +8,7 @@ syntax: regexp
 ^packages/
 ^src/config.?\.h$
 ^src/objects/
-^src/bdj-.*\.env$
+^src/bdj-env
 ^src/bdj-reqlibs
 ^src/w$
 ^src/check_all$

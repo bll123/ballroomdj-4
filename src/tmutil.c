@@ -1,6 +1,7 @@
 #include "config.h"
 
 #include <stdio.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/time.h>
@@ -13,20 +14,34 @@
 #include "bdjstring.h"
 
 void
-msleep (size_t mt)
+mssleep (size_t mt)
 {
   size_t t = mt * 1000;
   usleep ((useconds_t) t);
 }
 
-void
-mtimestart (mtime_t *t)
+time_t
+mstime (void)
 {
-  gettimeofday (&t->start, NULL);
+  struct timeval    curr;
+
+  gettimeofday (&curr, NULL);
+
+  time_t s = curr.tv_sec;
+  long u = curr.tv_usec;
+  long m = u / 1000;
+  size_t tot = s * 1000 + m;
+  return tot;
+}
+
+void
+mstimestart (mstime_t *mt)
+{
+  gettimeofday (&mt->start, NULL);
 }
 
 size_t
-mtimeend (mtime_t *t)
+mstimeend (mstime_t *t)
 {
   struct timeval    end;
 
@@ -38,14 +53,14 @@ mtimeend (mtime_t *t)
 }
 
 char *
-dstamp (char *buff, size_t max)
+tmutilDstamp (char *buff, size_t max)
 {
   struct timeval    curr;
   struct tm         *tp;
 
   gettimeofday (&curr, NULL);
   time_t s = curr.tv_sec;
-#if _lib_localtime_r
+#if 1 || _lib_localtime_r
   struct tm         t;
   localtime_r (&s, &t);
   tp = &t;
@@ -57,7 +72,7 @@ dstamp (char *buff, size_t max)
 }
 
 char *
-tstamp (char *buff, size_t max)
+tmutilTstamp (char *buff, size_t max)
 {
   struct timeval    curr;
   struct tm         *tp;
@@ -67,7 +82,7 @@ tstamp (char *buff, size_t max)
   time_t s = curr.tv_sec;
   long u = curr.tv_usec;
   long m = u / 1000;
-#if _lib_localtime_r
+#if 1 || _lib_localtime_r
   struct tm         t;
   localtime_r (&s, &t);
   tp = &t;

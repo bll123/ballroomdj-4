@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <string.h>
 #include <assert.h>
 
@@ -328,7 +329,7 @@ datafileParseMerge (list_t *nlist, char *data, char *name,
 
     if (dftype == DFTYPE_LIST) {
       logMsg (LOG_DBG, LOG_DATAFILE, "set: list");
-      listSetData (nlist, strdup (tkeystr), NULL);
+      listSetData (nlist, tkeystr, NULL);
     }
     if (dftype == DFTYPE_KEY_LONG ||
         (dftype == DFTYPE_KEY_VAL && dfkeys != NULL)) {

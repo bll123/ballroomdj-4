@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <string.h>
 #include <assert.h>
 
@@ -10,22 +11,31 @@
 #include "fileop.h"
 #include "log.h"
 
-datafile_t *
+sequence_t *
 sequenceAlloc (char *fname)
 {
-  datafile_t    *df;
+  sequence_t    *sequence;
 
   if (! fileopExists (fname)) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: sequence: missing %s\n", fname);
     return NULL;
   }
-  df = datafileAllocParse ("sequence", DFTYPE_LIST, fname, NULL, 0,
+
+  sequence = malloc (sizeof (sequence_t));
+
+  sequence->df = datafileAllocParse ("sequence", DFTYPE_LIST, fname, NULL, 0,
       DATAFILE_NO_LOOKUP);
-  return df;
+  llistDumpInfo (datafileGetList (sequence->df));
+  return sequence;
 }
 
 void
-sequenceFree (datafile_t *df)
+sequenceFree (sequence_t *sequence)
 {
-  datafileFree (df);
+  if (sequence != NULL) {
+    if (sequence->df != NULL) {
+      datafileFree (sequence->df);
+    }
+    free (sequence);
+  }
 }
