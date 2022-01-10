@@ -19,7 +19,7 @@ dnctypesAlloc (char *fname)
   list_t          *dtyplist;
 
   if (! fileopExists (fname)) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: dnctypes: missing %s\n", fname);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: dnctypes: missing %s", fname);
     return NULL;
   }
 

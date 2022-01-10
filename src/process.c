@@ -71,7 +71,7 @@ processStart (const char *fn, pid_t *pid, long profile, long loglvl)
 
   logProcBegin (LOG_PROCESS, "processStart");
   snprintf (tmp, sizeof (tmp), "%ld", profile);
-  snprintf (tmp2, sizeof (tmp), "%ld", loglvl);
+  snprintf (tmp2, sizeof (tmp2), "%ld", loglvl);
 
 #if _lib_fork
   pid_t     tpid;
@@ -85,9 +85,9 @@ processStart (const char *fn, pid_t *pid, long profile, long loglvl)
   }
   if (tpid == 0) {
     /* child */
-//    if (setsid () < 0) {
-//      logError ("setsid");
-//    }
+    if (setsid () < 0) {
+      logError ("setsid");
+    }
     /* close any open file descriptors */
     for (int i = 3; i < 30; ++i) {
       close (i);

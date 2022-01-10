@@ -86,7 +86,7 @@ queuePush (queue_t *q, void *data)
 void *
 queueGetCurrent (queue_t *q)
 {
-  void          *data;
+  void          *data = NULL;
   queuenode_t   *node;
 
   if (q == NULL) {
@@ -94,7 +94,9 @@ queueGetCurrent (queue_t *q)
   }
   node = q->head;
 
-  data = node->data;
+  if (node != NULL) {
+    data = node->data;
+  }
   return data;
 }
 

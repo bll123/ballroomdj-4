@@ -6,9 +6,13 @@ output configt.h
 standard_system
 standard
 
+hdr     pthread.h
+
 if not_have_pkg_check ! _pkg_libs_check
   hdr    check.h
 endif
+
+lib     pthread_create -lpthread
 
 if not_have_pkg_check ! _pkg_libs_check && _hdr_check
   lib    tcase_create -lcheck -pthread -lm

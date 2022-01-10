@@ -92,7 +92,7 @@ playlistAlloc (char *fname)
 
   datautilMakePath (tfn, sizeof (tfn), "", fname, ".pl", DATAUTIL_MP_NONE);
   if (! fileopExists (tfn)) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "Missing playlist-pl %s\n", tfn);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "Missing playlist-pl %s", tfn);
     return NULL;
   }
 
@@ -110,7 +110,7 @@ playlistAlloc (char *fname)
   pl->plinfodf = datafileAllocParse ("playlist", DFTYPE_KEY_VAL, tfn,
       playlistdfkeys, PLAYLIST_DFKEY_COUNT, DATAFILE_NO_LOOKUP);
   if (! fileopExists (tfn)) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "Bad playlist-pl %s\n", tfn);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "Bad playlist-pl %s", tfn);
     playlistFree (pl);
     return NULL;
   }
@@ -119,7 +119,7 @@ playlistAlloc (char *fname)
 
   datautilMakePath (tfn, sizeof (tfn), "", fname, ".pldances", DATAUTIL_MP_NONE);
   if (! fileopExists (tfn)) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "Missing playlist-dance %s\n", tfn);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "Missing playlist-dance %s", tfn);
     playlistFree (pl);
     return NULL;
   }
@@ -127,26 +127,26 @@ playlistAlloc (char *fname)
   pl->dancesdf = datafileAllocParse ("playlist-dances", DFTYPE_KEY_LONG, tfn,
       playlistdancedfkeys, PLAYLIST_DANCE_DFKEY_COUNT, DATAFILE_NO_LOOKUP);
   if (pl->dancesdf == NULL) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "Bad playlist-dance %s\n", tfn);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "Bad playlist-dance %s", tfn);
     playlistFree (pl);
     return NULL;
   }
   pl->dances = datafileGetList (pl->dancesdf);
   llistDumpInfo (pl->dances);
 
-  type = llistGetLong (pl->plinfo, PLAYLIST_TYPE);
+  type = (pltype_t) llistGetLong (pl->plinfo, PLAYLIST_TYPE);
 
   if (type == PLTYPE_MANUAL) {
     char *slfname = llistGetData (pl->plinfo, PLAYLIST_MANUAL_LIST_NAME);
     datautilMakePath (tfn, sizeof (tfn), "", slfname, ".songlist", DATAUTIL_MP_NONE);
     if (! fileopExists (tfn)) {
-      logMsg (LOG_DBG, LOG_IMPORTANT, "Missing songlist %s\n", tfn);
+      logMsg (LOG_DBG, LOG_IMPORTANT, "Missing songlist %s", tfn);
       playlistFree (pl);
       return NULL;
     }
     pl->songlist = songlistAlloc (tfn);
     if (pl->songlist == NULL) {
-      logMsg (LOG_DBG, LOG_IMPORTANT, "Bad songlist %s\n", tfn);
+      logMsg (LOG_DBG, LOG_IMPORTANT, "Bad songlist %s", tfn);
       playlistFree (pl);
       return NULL;
     }
@@ -156,13 +156,13 @@ playlistAlloc (char *fname)
     char *seqfname = llistGetData (pl->plinfo, PLAYLIST_SEQ_NAME);
     datautilMakePath (tfn, sizeof (tfn), "", seqfname, ".sequence", DATAUTIL_MP_NONE);
     if (! fileopExists (tfn)) {
-      logMsg (LOG_DBG, LOG_IMPORTANT, "Missing sequence %s\n", tfn);
+      logMsg (LOG_DBG, LOG_IMPORTANT, "Missing sequence %s", tfn);
       playlistFree (pl);
       return NULL;
     }
     pl->sequence = sequenceAlloc (seqfname);
     if (pl->sequence == NULL) {
-      logMsg (LOG_DBG, LOG_IMPORTANT, "Bad sequence %s\n", seqfname);
+      logMsg (LOG_DBG, LOG_IMPORTANT, "Bad sequence %s", seqfname);
       playlistFree (pl);
       return NULL;
     }
@@ -197,24 +197,32 @@ playlistGetNextSong (playlist_t *pl)
   pltype_t    type;
   song_t      *song = NULL;
 
-  type = llistGetLong (pl->plinfo, PLAYLIST_TYPE);
+  if (pl == NULL) {
+    return NULL;
+  }
+
+  type = (pltype_t) llistGetLong (pl->plinfo, PLAYLIST_TYPE);
 
   switch (type) {
     case PLTYPE_AUTO: {
       break;
     }
     case PLTYPE_MANUAL: {
-      char *sfname = songlistGetData (pl->songlist, pl->manualIdx, SONGLIST_FILE);
-      if (sfname != NULL) {
+      char *sfname;
+
+      sfname = songlistGetData (pl->songlist, pl->manualIdx, SONGLIST_FILE);
+      while (sfname != NULL) {
         song = dbGetByName (sfname);
-        while (! songAudioFileExists (song)) {
-          logMsg (LOG_DBG, LOG_IMPORTANT, "manual: missing: %s\n", sfname);
-          ++pl->manualIdx;
-          song = dbGetByName (sfname);
+        if (song != NULL && songAudioFileExists (song)) {
+          break;
         }
-        logMsg (LOG_DBG, LOG_PLAYER, "manual: get: %s\n", sfname);
+        song = NULL;
+        logMsg (LOG_DBG, LOG_IMPORTANT, "manual: missing: %s", sfname);
         ++pl->manualIdx;
+        sfname = songlistGetData (pl->songlist, pl->manualIdx, SONGLIST_FILE);
       }
+      ++pl->manualIdx;
+      logMsg (LOG_DBG, LOG_BASIC, "manual: get: %s", sfname);
       break;
     }
     case PLTYPE_SEQ: {

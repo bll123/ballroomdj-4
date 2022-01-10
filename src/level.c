@@ -26,7 +26,7 @@ levelAlloc (char *fname)
   level_t    *level;
 
   if (! fileopExists (fname)) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: level: missing %s\n", fname);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: level: missing %s", fname);
     return NULL;
   }
 

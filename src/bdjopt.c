@@ -213,7 +213,7 @@ bdjoptFree (void)
 
 
 void *
-bdjoptGetData (size_t idx)
+bdjoptGetData (long idx)
 {
   void      *value = NULL;
 
@@ -225,7 +225,7 @@ bdjoptGetData (size_t idx)
 }
 
 long
-bdjoptGetLong (size_t idx)
+bdjoptGetLong (long idx)
 {
   if (bdjopt == NULL) {
     return -1;
@@ -235,7 +235,7 @@ bdjoptGetLong (size_t idx)
 }
 
 void
-bdjoptSetLong (size_t idx, long value)
+bdjoptSetLong (long idx, long value)
 {
   if (bdjopt == NULL) {
     return;

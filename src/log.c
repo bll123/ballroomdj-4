@@ -128,7 +128,7 @@ rlogVarMsg (logidx_t idx, bdjloglvl_t level,
   size_t wlen = (size_t) snprintf (wbuff, sizeof (wbuff),
       "%s: %-2s %*s%s %s\n", ttm, l->processTag, l->indent, "", tbuff, tfn);
   if (fileWriteShared (&l->fhandle, wbuff, wlen) < 0) {
-    fprintf (stderr, "log write failed: %d %s\n", errno, strerror (errno));
+    fprintf (stderr, "log write failed: %d %s", errno, strerror (errno));
   }
 }
 

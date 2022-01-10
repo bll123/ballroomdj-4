@@ -17,7 +17,7 @@ sortoptAlloc (char *fname)
   sortopt_t     *sortopt;
 
   if (! fileopExists (fname)) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: sortopt: missing %s\n", fname);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: sortopt: missing %s", fname);
     return NULL;
   }
 

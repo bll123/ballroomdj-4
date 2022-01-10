@@ -33,7 +33,7 @@ autoselAlloc (char *fname)
   autosel_t     *autosel;
 
   if (! fileopExists (fname)) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: autosel: missing %s\n", fname);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: autosel: missing %s", fname);
     return NULL;
   }
 

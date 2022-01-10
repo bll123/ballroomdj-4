@@ -30,7 +30,7 @@ songlistAlloc (char *fname)
   sl->songlist = NULL;
 
   if (! fileopExists (fname)) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: songlist: missing %s\n", fname);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: songlist: missing %s", fname);
     return NULL;
   }
   sl->df = datafileAllocParse ("songlist", DFTYPE_KEY_LONG, fname,

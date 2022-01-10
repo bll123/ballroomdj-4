@@ -12,10 +12,9 @@ typedef enum {
 } bdjfadetype_t;
 
 typedef enum {
-//  OPT_G_BEGIN,
   OPT_G_AUTOORGANIZE,
   OPT_G_CHANGESPACE,
-  OPT_G_DEBUGLVL,
+  OPT_G_DEBUGLVL,                 //
   OPT_G_ENABLEIMGPLAYER,
   OPT_G_ITUNESSUPPORT,
   OPT_G_LOADDANCEFROMGENRE,
@@ -25,7 +24,7 @@ typedef enum {
   OPT_G_PATHFMT_CLVA,
   OPT_G_PATHFMT_VA,
   OPT_G_PLAYER,
-  OPT_G_PLAYERQLEN,
+  OPT_G_PLAYERQLEN,               //
   OPT_G_REMCONTROLHTML,
   OPT_G_SHOWALBUM,
   OPT_G_SHOWBPM,
@@ -35,20 +34,16 @@ typedef enum {
   OPT_G_STARTMAXIMIZED,
   OPT_G_VARIOUS,
   OPT_G_WRITETAGS,
-//  OPT_G_END,
-//  OPT_M_BEGIN,
-  OPT_M_AUDIOSINK,
+  OPT_M_AUDIOSINK,                //
   OPT_M_DIR_ARCHIVE,
   OPT_M_DIR_DELETE,
   OPT_M_DIR_IMAGE,
-  OPT_M_DIR_MUSIC,
+  OPT_M_DIR_MUSIC,                //
   OPT_M_DIR_MUSICTMP,
   OPT_M_DIR_ORIGINAL,
   OPT_M_HOST,
   OPT_M_SHUTDOWNSCRIPT,
   OPT_M_STARTUPSCRIPT,
-//  OPT_M_END,
-//  OPT_MP_BEGIN,
   OPT_MP_FONTSIZE,
   OPT_MP_LISTINGFONTSIZE,
   OPT_MP_PLAYEROPTIONS,
@@ -56,17 +51,15 @@ typedef enum {
   OPT_MP_PLAYERSTARTSCRIPT,
   OPT_MP_UIFIXEDFONT,
   OPT_MP_UIFONT,
-//  OPT_MP_END,
-//  OPT_P_BEGIN,
   OPT_P_ALLOWEDIT,
   OPT_P_AUTOSTARTUP,
-  OPT_P_DEFAULTVOLUME,
+  OPT_P_DEFAULTVOLUME,              //
   OPT_P_DONEMSG,
-  OPT_P_FADEINTIME,
-  OPT_P_FADEOUTTIME,
-  OPT_P_FADETYPE,
-  OPT_P_GAP,
-  OPT_P_MAXPLAYTIME,
+  OPT_P_FADEINTIME,                 //
+  OPT_P_FADEOUTTIME,                //
+  OPT_P_FADETYPE,                   //
+  OPT_P_GAP,                        //
+  OPT_P_MAXPLAYTIME,                //
   OPT_P_MOBILEMARQUEE,
   OPT_P_MOBILEMQPORT,
   OPT_P_MOBILEMQTAG,
@@ -93,7 +86,6 @@ typedef enum {
   OPT_P_SERVERUSER,
   OPT_P_UIACCENTCOLOR,
   OPT_P_UITHEME,
-//  OPT_P_END,
 } bdjoptkey_t;
 
 typedef enum {
@@ -108,8 +100,8 @@ typedef enum {
 
 void    bdjoptInit (void);
 void    bdjoptFree (void);
-void    *bdjoptGetData (size_t idx);
-long    bdjoptGetLong (size_t idx);
-void    bdjoptSetLong (size_t idx, long value);
+void    *bdjoptGetData (long idx);
+long    bdjoptGetLong (long idx);
+void    bdjoptSetLong (long idx, long value);
 
 #endif /* INC_BDJOPT_H */

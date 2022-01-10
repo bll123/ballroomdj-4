@@ -28,7 +28,6 @@ plqFree (plq_t *plq)
 {
   if (plq != NULL) {
     if (plq->q != NULL) {
-
       queueFree (plq->q);
     }
     free (plq);
@@ -44,6 +43,15 @@ plqPush (plq_t *plq, char *plname)
   assert (plqitem != NULL);
   plqitem->playlist = playlistAlloc (plname);
   queuePush (plq->q, plqitem);
+}
+
+void
+plqPop (plq_t *plq)
+{
+  plqitem_t     *plqitem;
+
+  plqitem = queuePop (plq->q);
+  plqQueueFree (plqitem);
 }
 
 static void
@@ -62,6 +70,14 @@ plqQueueFree (void *titem)
 playlist_t *
 plqGetCurrent (plq_t *plq)
 {
+  playlist_t      *playlist = NULL;
+  if (plq == NULL || plq->q == NULL) {
+    return NULL;
+  }
+
   plqitem_t *plqitem = queueGetCurrent (plq->q);
-  return plqitem->playlist;
+  if (plqitem != NULL) {
+    playlist = plqitem->playlist;
+  }
+  return playlist;
 }

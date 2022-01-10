@@ -17,7 +17,7 @@ sequenceAlloc (char *fname)
   sequence_t    *sequence;
 
   if (! fileopExists (fname)) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: sequence: missing %s\n", fname);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: sequence: missing %s", fname);
     return NULL;
   }
 

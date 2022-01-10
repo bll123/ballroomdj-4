@@ -49,7 +49,7 @@ bdj4startup (int argc, char *argv[])
   int       c = 0;
   int       option_index = 0;
   char      tbuff [MAXPATHLEN];
-  int       loglevel = LOG_IMPORTANT | LOG_MAIN;
+  uint16_t  loglevel = LOG_IMPORTANT | LOG_MAIN;
 
   static struct option bdj_options [] = {
     { "main",       no_argument,        NULL,   0 },
@@ -71,7 +71,7 @@ bdj4startup (int argc, char *argv[])
     switch (c) {
       case 'd': {
         if (optarg) {
-          loglevel = atol (optarg);
+          loglevel = atoi (optarg);
         }
         break;
       }

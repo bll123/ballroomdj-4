@@ -25,7 +25,7 @@ ratingAlloc (char *fname)
   rating_t        *rating;
 
   if (! fileopExists (fname)) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: rating: missing %s\n", fname);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: rating: missing %s", fname);
     return NULL;
   }
 

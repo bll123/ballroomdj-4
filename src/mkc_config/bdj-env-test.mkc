@@ -15,9 +15,6 @@ if iswindows ! ( ( == _MKCONFIG_SYSTYPE Linux ) || ( == _MKCONFIG_SYSTYPE Darwin
  addincpath ../plocal/include
  addldsrchpath ../plocal/lib
  addldflag -static-libgcc
- # The gcc compiler automatically links in the pthread library when
- # -pthread is specified.  On Windows the static pthread library is wanted.
- addlibs -Wl,-Bstatic -lpthread -Wl,-Bdynamic
 endif
 
 # standard flags
@@ -84,7 +81,6 @@ if UsingCLANG == _MKCONFIG_USING_CLANG Y
  addcflag -Wno-implicit-int-conversion
  addcflag -Wno-switch-enum
  addcflag -Wno-gnu-zero-variadic-macro-arguments
- addcflag -Wno-gnu-binary-literal
  addcflag -Wno-documentation-deprecated-sync
  addcflag -Wno-documentation-unknown-command
  addcflag -Wno-documentation

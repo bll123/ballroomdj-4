@@ -25,7 +25,7 @@ genreAlloc (char *fname)
   genre_t       *genre;
 
   if (! fileopExists (fname)) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: genre: missing %s\n", fname);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: genre: missing %s", fname);
     return NULL;
   }
 

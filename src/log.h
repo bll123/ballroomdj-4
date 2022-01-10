@@ -14,19 +14,20 @@
  * 263 : 7 + socket
  */
 typedef enum {
-  LOG_NONE      = 0x00000000,
-  LOG_IMPORTANT = 0x00000001,
-  LOG_BASIC     = 0x00000002,
-  LOG_MAIN      = 0x00000004,
-  LOG_DATAFILE  = 0x00000008,
-  LOG_LIST      = 0x00000010,
-  LOG_PLAYER    = 0x00000020,
-  LOG_PROCESS   = 0x00000040,
-  LOG_VOLUME    = 0x00000080,
-  LOG_SOCKET    = 0x00000100,
-  LOG_DB        = 0x00000200,
-  LOG_RAFILE    = 0x00000400,
-  LOG_ALL       = 0xFFFFFFFF,
+  LOG_NONE      = 0x0000,
+  LOG_IMPORTANT = 0x0001,
+  LOG_BASIC     = 0x0002,
+  LOG_MAIN      = 0x0004,
+  LOG_DATAFILE  = 0x0008,
+  LOG_LIST      = 0x0010,
+  LOG_PLAYER    = 0x0020,
+  LOG_PROCESS   = 0x0040,
+  LOG_VOLUME    = 0x0080,
+  LOG_SOCKET    = 0x0100,
+  LOG_DB        = 0x0200,
+  LOG_RAFILE    = 0x0400,
+  LOG_PROC_MAIN = 0x0800,
+  LOG_ALL       = 0xFFFF,
 } bdjloglvl_t;
 
 typedef enum {

@@ -605,7 +605,7 @@ datafileCheckDfkeys (char *name, datafilekey_t *dfkeys, size_t dfkeycount)
   for (size_t i = 0; i < dfkeycount; ++i) {
     if (strcmp (dfkeys [i].name, last) <= 0) {
       fprintf (stderr, "datafile: %s dfkey out of order: %s\n", name, dfkeys [i].name);
-      logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: datafile: %s dfkey out of order: %s\n", name, dfkeys [i].name);
+      logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: datafile: %s dfkey out of order: %s", name, dfkeys [i].name);
     }
     last = dfkeys [i].name;
   }

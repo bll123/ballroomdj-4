@@ -3,7 +3,6 @@
 
 #if _lib_libvlc_new
 
-#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>

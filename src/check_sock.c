@@ -1,4 +1,5 @@
 #include "config.h"
+#include "configt.h"
 #include "configc.h"
 
 #include <stdio.h>

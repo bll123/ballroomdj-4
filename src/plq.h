@@ -12,9 +12,10 @@ typedef struct {
   queue_t         *q;
 } plq_t;
 
-plq_t *     plqAlloc (void);
+plq_t       *plqAlloc (void);
 void        plqFree (plq_t *plq);
 void        plqPush (plq_t *plq, char *plname);
+void        plqPop (plq_t *plq);
 playlist_t  *plqGetCurrent (plq_t *plq);
 
 #endif /* INC_PLQ_H */

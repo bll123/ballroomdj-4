@@ -28,9 +28,9 @@ mstime (void)
   gettimeofday (&curr, NULL);
 
   time_t s = curr.tv_sec;
-  long u = curr.tv_usec;
-  long m = u / 1000;
-  size_t tot = s * 1000 + m;
+  time_t u = curr.tv_usec;
+  time_t m = u / 1000;
+  time_t tot = s * 1000 + m;
   return tot;
 }
 

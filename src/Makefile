@@ -451,25 +451,26 @@ $(OBJDIR)/bdjvarsdfload$(OBJ_EXT): bdjvarsdfload.c config.h bdjvarsdfload.h bdjv
  sortopt.h portability.h datautil.h
 $(OBJDIR)/check_all$(OBJ_EXT): check_all.c config.h check_bdj.h sysvars.h portability.h \
  tagdef.h bdjstring.h list.h log.h fileutil.h
-$(OBJDIR)/check_datafile$(OBJ_EXT): check_datafile.c config.h fileop.h datafile.h list.h \
- log.h fileutil.h check_bdj.h
-$(OBJDIR)/check_filedata$(OBJ_EXT): check_filedata.c config.h filedata.h check_bdj.h \
+$(OBJDIR)/check_datafile$(OBJ_EXT): check_datafile.c config.h configt.h fileop.h datafile.h \
+ list.h log.h fileutil.h check_bdj.h
+$(OBJDIR)/check_filedata$(OBJ_EXT): check_filedata.c config.h configt.h filedata.h \
+ check_bdj.h portability.h
+$(OBJDIR)/check_fileop$(OBJ_EXT): check_fileop.c config.h configt.h fileop.h check_bdj.h \
  portability.h
-$(OBJDIR)/check_fileop$(OBJ_EXT): check_fileop.c config.h fileop.h check_bdj.h \
- portability.h
-$(OBJDIR)/check_list$(OBJ_EXT): check_list.c config.h list.h bdjstring.h check_bdj.h
-$(OBJDIR)/check_lock$(OBJ_EXT): check_lock.c config.h lock.h bdjstring.h check_bdj.h \
+$(OBJDIR)/check_list$(OBJ_EXT): check_list.c config.h configt.h list.h bdjstring.h \
+ check_bdj.h
+$(OBJDIR)/check_lock$(OBJ_EXT): check_lock.c config.h configt.h lock.h bdjstring.h \
+ check_bdj.h sysvars.h portability.h
+$(OBJDIR)/check_pathutil$(OBJ_EXT): check_pathutil.c config.h configt.h pathutil.h \
+ check_bdj.h portability.h
+$(OBJDIR)/check_process$(OBJ_EXT): check_process.c config.h configt.h process.h check_bdj.h \
  sysvars.h portability.h
-$(OBJDIR)/check_pathutil$(OBJ_EXT): check_pathutil.c config.h pathutil.h check_bdj.h \
- portability.h
-$(OBJDIR)/check_process$(OBJ_EXT): check_process.c config.h process.h check_bdj.h sysvars.h \
- portability.h
-$(OBJDIR)/check_queue$(OBJ_EXT): check_queue.c config.h queue.h check_bdj.h portability.h \
- log.h fileutil.h
-$(OBJDIR)/check_rafile$(OBJ_EXT): check_rafile.c config.h rafile.h check_bdj.h
-$(OBJDIR)/check_sock$(OBJ_EXT): check_sock.c config.h configc.h sock.h check_bdj.h tmutil.h \
- log.h fileutil.h
-$(OBJDIR)/check_tmutil$(OBJ_EXT): check_tmutil.c config.h tmutil.h check_bdj.h
+$(OBJDIR)/check_queue$(OBJ_EXT): check_queue.c config.h configt.h queue.h check_bdj.h \
+ portability.h log.h fileutil.h
+$(OBJDIR)/check_rafile$(OBJ_EXT): check_rafile.c config.h configt.h rafile.h check_bdj.h
+$(OBJDIR)/check_sock$(OBJ_EXT): check_sock.c config.h configt.h configc.h sock.h \
+ check_bdj.h tmutil.h log.h fileutil.h
+$(OBJDIR)/check_tmutil$(OBJ_EXT): check_tmutil.c config.h configt.h tmutil.h check_bdj.h
 $(OBJDIR)/clicomm$(OBJ_EXT): clicomm.c config.h sockh.h sock.h bdjmsg.h sysvars.h \
  portability.h bdjvars.h log.h fileutil.h tmutil.h
 $(OBJDIR)/dance$(OBJ_EXT): dance.c config.h dance.h datafile.h list.h fileop.h bdjvarsdf.h \
