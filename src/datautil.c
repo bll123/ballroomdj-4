@@ -14,11 +14,16 @@ datautilMakePath (char *buff, size_t buffsz, const char *subpath,
 {
   char      suffix [30];
   char      *subpathsep;
+  char      *dirprefix = "data";
 
   *suffix = '\0';
   subpathsep = "";
   if (*subpath) {
     subpathsep = "/";
+  }
+
+  if ((flags & DATAUTIL_MP_TMPPREFIX) == DATAUTIL_MP_TMPPREFIX) {
+    dirprefix = "tmp";
   }
 
   if ((flags & DATAUTIL_MP_USEIDX) == DATAUTIL_MP_USEIDX) {
@@ -27,11 +32,11 @@ datautilMakePath (char *buff, size_t buffsz, const char *subpath,
     }
   }
   if ((flags & DATAUTIL_MP_HOSTNAME) == DATAUTIL_MP_HOSTNAME) {
-    snprintf (buff, buffsz, "data/%s/%s%s%s%s%s", sysvars [SV_HOSTNAME],
-        subpath, subpathsep, base, suffix, extension);
+    snprintf (buff, buffsz, "%s/%s/%s%s%s%s%s", dirprefix,
+        sysvars [SV_HOSTNAME], subpath, subpathsep, base, suffix, extension);
   }
   if ((flags & DATAUTIL_MP_HOSTNAME) != DATAUTIL_MP_HOSTNAME) {
-    snprintf (buff, buffsz, "data/%s%s%s%s%s",
+    snprintf (buff, buffsz, "%s/%s%s%s%s%s", dirprefix,
         subpath, subpathsep, base, suffix, extension);
   }
 

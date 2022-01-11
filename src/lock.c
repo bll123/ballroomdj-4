@@ -16,18 +16,20 @@
 #include "tmutil.h"
 #include "lock.h"
 #include "fileop.h"
+#include "datautil.h"
+#include "portability.h"
 
 static pid_t   getPidFromFile (char *);
 
 int
-lockAcquire (char *fn)
+lockAcquire (char *fn, datautil_mp_t flags)
 {
-  int rc = lockAcquirePid (fn, getpid());
+  int rc = lockAcquirePid (fn, getpid(), flags);
   return rc;
 }
 
 int
-lockAcquirePid (char *fn, pid_t pid)
+lockAcquirePid (char *fn, pid_t pid, datautil_mp_t flags)
 {
   int       fd;
   size_t    len;
@@ -35,22 +37,27 @@ lockAcquirePid (char *fn, pid_t pid)
   int       rc;
   int       count;
   char      pidstr [16];
+  char      tfn [MAXPATHLEN];
 
-  fd = open (fn, O_CREAT | O_EXCL | O_RDWR, 0600);
+
+  datautilMakePath (tfn, sizeof (tfn), "", fn, ".lck",
+      flags | DATAUTIL_MP_TMPPREFIX);
+
+  fd = open (tfn, O_CREAT | O_EXCL | O_RDWR, 0600);
   count = 0;
   while (fd < 0 && count < 30) {
     /* check for detached lock file */
-    pid_t fpid = getPidFromFile (fn);
+    pid_t fpid = getPidFromFile (tfn);
     if (fpid > 0) {
       rc = processExists (fpid);
       if (rc < 0) {
         /* process does not exist */
-        fileopDelete (fn);
+        fileopDelete (tfn);
       }
     }
     mssleep (20);
     ++count;
-    fd = open (fn, O_CREAT | O_EXCL | O_RDWR, 0600);
+    fd = open (tfn, O_CREAT | O_EXCL | O_RDWR, 0600);
   }
 
   if (fd >= 0) {
@@ -65,18 +72,22 @@ lockAcquirePid (char *fn, pid_t pid)
 
 
 int
-lockRelease (char *fn)
+lockRelease (char *fn, datautil_mp_t flags)
 {
-  return lockReleasePid (fn, getpid());
+  return lockReleasePid (fn, getpid(), flags);
 }
 
 int
-lockReleasePid (char *fn, pid_t pid)
+lockReleasePid (char *fn, pid_t pid, datautil_mp_t flags)
 {
+  char      tfn [MAXPATHLEN];
+
+  datautilMakePath (tfn, sizeof (tfn), "", fn, ".lck",
+      flags | DATAUTIL_MP_TMPPREFIX);
   int rc = -1;
-  pid_t fpid = getPidFromFile (fn);
+  pid_t fpid = getPidFromFile (tfn);
   if (fpid == pid) {
-    fileopDelete (fn);
+    fileopDelete (tfn);
     rc = 0;
   }
   return rc;

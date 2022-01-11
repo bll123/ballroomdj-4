@@ -3,9 +3,11 @@
 
 #include <sys/types.h>
 
-int   lockAcquire (char *);
-int   lockAcquirePid (char *, pid_t);
-int   lockRelease (char *);
-int   lockReleasePid (char *, pid_t);
+#include "datautil.h"
+
+int   lockAcquire (char *, datautil_mp_t);
+int   lockAcquirePid (char *, pid_t, datautil_mp_t);
+int   lockRelease (char *, datautil_mp_t);
+int   lockReleasePid (char *, pid_t, datautil_mp_t);
 
 #endif /* INC_LOCK_H */

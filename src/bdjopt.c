@@ -10,9 +10,13 @@
 #include "bdjopt.h"
 #include "datafile.h"
 #include "datautil.h"
+#include "fileop.h"
 #include "portability.h"
+#include "sysvars.h"
 
 static void bdjoptConvFadeType (char *, datafileret_t *);
+static void bdjoptCreateNewConfigs (void);
+static void bdjoptCreateDefaultFiles (void);
 
 static datafile_t   *bdjopt = NULL;
 
@@ -117,6 +121,9 @@ bdjoptInit (void)
   /* global */
   datautilMakePath (path, MAXPATHLEN, "", BDJ_CONFIG_BASEFN,
       BDJ_CONFIG_EXT, DATAUTIL_MP_USEIDX);
+  if (! fileopExists (path)) {
+    bdjoptCreateNewConfigs ();
+  }
   df = datafileAllocParse ("bdjopt-g", DFTYPE_KEY_VAL, path,
       bdjoptglobaldfkeys, BDJOPT_GLOBAL_DFKEY_COUNT, DATAFILE_NO_LOOKUP);
 
@@ -240,6 +247,7 @@ bdjoptSetLong (long idx, long value)
   if (bdjopt == NULL) {
     return;
   }
+fprintf (stderr, "data: %p\n", bdjopt->data);
   llistSetLong (bdjopt->data, idx, value);
 }
 
@@ -263,4 +271,70 @@ bdjoptConvFadeType (char *data, datafileret_t *ret)
     fadetype = FADETYPE_INVERTED_PARABOLA;
   }
   ret->u.l = fadetype;
+}
+
+static void
+bdjoptCreateNewConfigs (void)
+{
+  long      currProfile = lsysvars [SVL_BDJIDX];
+  char      path [MAXPATHLEN];
+  char      tpath [MAXPATHLEN];
+
+    /* see if profile 0 exists */
+  sysvarSetLong (SVL_BDJIDX, 0);
+  datautilMakePath (path, MAXPATHLEN, "", BDJ_CONFIG_BASEFN,
+      BDJ_CONFIG_EXT, DATAUTIL_MP_USEIDX);
+  if (! fileopExists (path)) {
+    bdjoptCreateDefaultFiles ();
+  }
+
+    /* global */
+  sysvarSetLong (SVL_BDJIDX, currProfile);
+  datautilMakePath (tpath, MAXPATHLEN, "", BDJ_CONFIG_BASEFN,
+      BDJ_CONFIG_EXT, DATAUTIL_MP_USEIDX);
+  fileopCopy (path, tpath);
+
+    /* profile */
+  sysvarSetLong (SVL_BDJIDX, 0);
+  datautilMakePath (path, MAXPATHLEN, "profiles", BDJ_CONFIG_BASEFN,
+      BDJ_CONFIG_EXT, DATAUTIL_MP_USEIDX);
+  sysvarSetLong (SVL_BDJIDX, currProfile);
+  datautilMakePath (tpath, MAXPATHLEN, "profiles", BDJ_CONFIG_BASEFN,
+      BDJ_CONFIG_EXT, DATAUTIL_MP_USEIDX);
+  fileopCopy (path, tpath);
+
+    /* per machine */
+  sysvarSetLong (SVL_BDJIDX, 0);
+  datautilMakePath (path, MAXPATHLEN, "", BDJ_CONFIG_BASEFN,
+      BDJ_CONFIG_EXT, DATAUTIL_MP_HOSTNAME | DATAUTIL_MP_USEIDX);
+  sysvarSetLong (SVL_BDJIDX, currProfile);
+  datautilMakePath (tpath, MAXPATHLEN, "", BDJ_CONFIG_BASEFN,
+      BDJ_CONFIG_EXT, DATAUTIL_MP_HOSTNAME | DATAUTIL_MP_USEIDX);
+  fileopCopy (path, tpath);
+
+    /* per machine per profile */
+  sysvarSetLong (SVL_BDJIDX, 0);
+  datautilMakePath (path, MAXPATHLEN, "profiles", BDJ_CONFIG_BASEFN,
+      BDJ_CONFIG_EXT, DATAUTIL_MP_HOSTNAME | DATAUTIL_MP_USEIDX);
+  sysvarSetLong (SVL_BDJIDX, currProfile);
+  datautilMakePath (tpath, MAXPATHLEN, "profiles", BDJ_CONFIG_BASEFN,
+      BDJ_CONFIG_EXT, DATAUTIL_MP_HOSTNAME | DATAUTIL_MP_USEIDX);
+  fileopCopy (path, tpath);
+
+  sysvarSetLong (SVL_BDJIDX, currProfile);
+}
+
+static void
+bdjoptCreateDefaultFiles (void)
+{
+  char      path [MAXPATHLEN];
+
+  datautilMakePath (path, MAXPATHLEN, "", BDJ_CONFIG_BASEFN,
+      BDJ_CONFIG_EXT, DATAUTIL_MP_USEIDX);
+  datautilMakePath (path, MAXPATHLEN, "profiles", BDJ_CONFIG_BASEFN,
+      BDJ_CONFIG_EXT, DATAUTIL_MP_USEIDX);
+  datautilMakePath (path, MAXPATHLEN, "", BDJ_CONFIG_BASEFN,
+      BDJ_CONFIG_EXT, DATAUTIL_MP_HOSTNAME | DATAUTIL_MP_USEIDX);
+  datautilMakePath (path, MAXPATHLEN, "profiles", BDJ_CONFIG_BASEFN,
+      BDJ_CONFIG_EXT, DATAUTIL_MP_HOSTNAME | DATAUTIL_MP_USEIDX);
 }

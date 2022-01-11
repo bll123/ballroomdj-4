@@ -5,9 +5,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
-#if _hdr_unistd
-# include <unistd.h>
-#endif
+#include <getopt.h>
+#include <unistd.h>
 
 #include "sockh.h"
 #include "bdjmsg.h"
@@ -32,9 +31,35 @@ main (int argc, char *argv[])
   int             err;
   Sock_t          mainSock = INVALID_SOCKET;
   Sock_t          playerSock = INVALID_SOCKET;
+  int             c;
+  int             option_index = 0;
 
+
+  static struct option bdj_options [] = {
+    { "debug",      required_argument,  NULL,   'd' },
+    { "profile",    required_argument,  NULL,   'p' },
+    { NULL,         0,                  NULL,   0 }
+  };
 
   sysvarsInit (argv [0]);
+
+  while ((c = getopt_long (argc, argv, "", bdj_options, &option_index)) != -1) {
+    switch (c) {
+      case 'd': {
+        break;
+      }
+      case 'p': {
+        if (optarg) {
+          sysvarSetLong (SVL_BDJIDX, atol (optarg));
+        }
+        break;
+      }
+      default: {
+        break;
+      }
+    }
+  }
+
   if (chdir (sysvars [SV_BDJ4DIR]) < 0) {
     fprintf (stderr, "Unable to chdir: %s\n", sysvars [SV_BDJ4DIR]);
     exit (1);

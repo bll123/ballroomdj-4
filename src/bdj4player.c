@@ -23,8 +23,10 @@
 #include "bdjopt.h"
 #include "bdjstring.h"
 #include "bdjvars.h"
+#include "datautil.h"
 #include "fileop.h"
 #include "list.h"
+#include "lock.h"
 #include "log.h"
 #include "pathutil.h"
 #include "pli.h"
@@ -36,6 +38,8 @@
 #include "sysvars.h"
 #include "tmutil.h"
 #include "volume.h"
+
+#define PLAYER_LOCK_FN    "player"
 
 typedef struct {
   char          *songfullpath;
@@ -104,6 +108,8 @@ main (int argc, char *argv[])
 {
   playerdata_t    playerData;
   int             c = 0;
+  int             rc = 0;
+  int             count = 0;
   int             option_index = 0;
   uint16_t        loglevel = LOG_IMPORTANT | LOG_MAIN;
 
@@ -158,6 +164,20 @@ main (int argc, char *argv[])
         break;
       }
     }
+  }
+
+  rc = lockAcquire (PLAYER_LOCK_FN, DATAUTIL_MP_USEIDX);
+  count = 0;
+  while (rc < 0) {
+      /* try for the next free profile */
+    long profile = lsysvars [SVL_BDJIDX];
+    ++profile;
+    sysvarSetLong (SVL_BDJIDX, profile);
+    ++count;
+    if (count > 20) {
+      exit (1);
+    }
+    rc = lockAcquire (PLAYER_LOCK_FN, DATAUTIL_MP_USEIDX);
   }
 
   bdjvarsInit ();
@@ -223,6 +243,7 @@ main (int argc, char *argv[])
   bdjoptFree ();
   bdjvarsCleanup ();
   playerData.programState = STATE_NOT_RUNNING;
+  lockRelease (PLAYER_LOCK_FN, DATAUTIL_MP_USEIDX);
   return 0;
 }
 

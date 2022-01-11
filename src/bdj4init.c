@@ -29,6 +29,8 @@
 #include "portability.h"
 #include "datautil.h"
 #include "bdjopt.h"
+#include "lock.h"
+#include "bdjvars.h"
 
 static void initLocale (void);
 
@@ -44,9 +46,11 @@ initLocale (void)
 int
 bdj4startup (int argc, char *argv[])
 {
-  mstime_t   mt;
-  mstime_t   dbmt;
+  mstime_t  mt;
+  mstime_t  dbmt;
   int       c = 0;
+  int       rc = 0;
+  int       count = 0;
   int       option_index = 0;
   char      tbuff [MAXPATHLEN];
   uint16_t  loglevel = LOG_IMPORTANT | LOG_MAIN;
@@ -88,6 +92,21 @@ bdj4startup (int argc, char *argv[])
     }
   }
 
+  rc = lockAcquire (MAIN_LOCK_FN, DATAUTIL_MP_USEIDX);
+  count = 0;
+  while (rc < 0) {
+      /* try for the next free profile */
+    long profile = lsysvars [SVL_BDJIDX];
+    ++profile;
+    sysvarSetLong (SVL_BDJIDX, profile);
+    ++count;
+    if (count > 20) {
+      bdj4shutdown ();
+      exit (1);
+    }
+    rc = lockAcquire (MAIN_LOCK_FN, DATAUTIL_MP_USEIDX);
+  }
+
   if (chdir (sysvars [SV_BDJ4DIR]) < 0) {
     fprintf (stderr, "Unable to chdir: %s\n", sysvars [SV_BDJ4DIR]);
     exit (1);
@@ -124,4 +143,5 @@ bdj4shutdown (void)
   bdjvarsCleanup ();
   logMsg (LOG_SESS, LOG_IMPORTANT, "init cleanup time: %ld ms", mstimeend (&mt));
   logEnd ();
+  lockRelease (MAIN_LOCK_FN, DATAUTIL_MP_USEIDX);
 }
