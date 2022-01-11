@@ -45,7 +45,7 @@ pathInfo (char *path)
     if (path [i] == '/' || path [i] == '\\') {
       pos = i + 1;
       if (pos >= last) {
-        /* no extension, continue back to pind the basename */
+        /* no extension, continue back to find the basename */
         chkforext = 0;
         trailingslash = 1;
         continue;
@@ -53,9 +53,8 @@ pathInfo (char *path)
       break;
     }
     if (chkforext && path [i] == '.') {
-      pos = i + 1;
-      pi->extension = &path [pos];
-      pi->elen = (size_t) (last - pos + 1);
+      pi->extension = &path [i + 1];
+      pi->elen = (size_t) (last - i);
       chkforext = 0;
     }
   }
@@ -83,10 +82,14 @@ pathInfo (char *path)
   if (pos <= 1) {
     ++pi->dlen;
   }
-  // printf ("%s : last:%ld pos:%ld\n", path, last, pos);
-  // printf ("  flen:%ld blen:%ld elen:%ld ts:%d\n", pi->flen, pi->blen, pi->elen, trailingslash);
-  // printf ("  dlen:%ld\n", pi->dlen);
-  // fflush (stdout);
+// fprintf (stderr, "%s : last:%ld pos:%ld\n", path, last, pos);
+// fprintf (stderr, "  flen:%ld blen:%ld elen:%ld ts:%d\n", pi->flen, pi->blen, pi->elen, trailingslash);
+// fprintf (stderr, "  dlen:%ld\n", pi->dlen);
+// fprintf (stderr, "  dir:%s\n", pi->dirname);
+// fprintf (stderr, "  file:%s\n", pi->filename);
+// fprintf (stderr, "  base:%s\n", pi->basename);
+// fprintf (stderr, "  ext:%s\n", pi->extension);
+// fflush (stderr);
 
   return pi;
 }

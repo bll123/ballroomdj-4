@@ -25,6 +25,7 @@ typedef struct {
 } ftest_t;
 
 static ftest_t tests [] = {
+  { "01 Bolero.mp3", 0, 13, 9, 3 },
   { "/usr/binx", 4, 4, 4, 0 },
   { "/usr", 1, 3, 3, 0 },
   { "/home/bll/stuff.txt", 9, 9, 5, 3 },
@@ -44,13 +45,13 @@ START_TEST(pathinfo_chk)
   for (size_t i = 0; i < TCOUNT; ++i) {
     pi = pathInfo (tests[i].path);
     ck_assert_msg (pi->dlen == tests[i].dlen,
-        "%s: i:%zd %zd/%zd", "dlem", i, pi->dlen, tests[i].dlen);
+        "%s: i:%zd %zd/%zd", "dlen", i, pi->dlen, tests[i].dlen);
     ck_assert_msg (pi->blen == tests[i].blen,
         "%s: i:%zd %zd/%zd", "blen", i, pi->blen, tests[i].blen);
     ck_assert_msg (pi->flen == tests[i].flen,
-        "%s: i:%zd %zd/%zd", "flem", i, pi->flen, tests[i].flen);
+        "%s: i:%zd %zd/%zd", "flen", i, pi->flen, tests[i].flen);
     ck_assert_msg (pi->elen == tests[i].elen,
-        "%s: i:%zd %zd/%zd", "elem", i, pi->elen, tests[i].elen);
+        "%s: i:%zd %zd/%zd", "elen", i, pi->elen, tests[i].elen);
     pathInfoFree (pi);
   }
 }

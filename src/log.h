@@ -12,6 +12,7 @@
  * 23 : 7 + list
  * 31 : 7 + datafile + list
  * 263 : 7 + socket
+ * 4103 : 7 + songsel
  */
 typedef enum {
   LOG_NONE      = 0x0000,
@@ -26,7 +27,8 @@ typedef enum {
   LOG_SOCKET    = 0x0100,
   LOG_DB        = 0x0200,
   LOG_RAFILE    = 0x0400,
-  LOG_PROC_MAIN = 0x0800,
+  LOG_PROC      = 0x0800,
+  LOG_SONGSEL   = 0x1000,
   LOG_ALL       = 0xFFFF,
 } bdjloglvl_t;
 

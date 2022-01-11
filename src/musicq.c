@@ -72,6 +72,9 @@ musicqGetCurrent (musicq_t *musicq, musicqidx_t idx)
   }
 
   musicqitem = queueGetCurrent (musicq->q [idx]);
+  if (musicqitem == NULL) {
+    return NULL;
+  }
   return musicqitem->song;
 }
 

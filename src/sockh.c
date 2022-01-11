@@ -31,7 +31,7 @@ sockhMainLoop (uint16_t listenPort, sockProcessMsg_t msgProc,
   char        args [BDJMSG_MAX];
 
 
-  logProcBegin (LOG_SOCKET, "sockhMainLoop");
+  logProcBegin (LOG_PROC, "sockhMainLoop");
   listenSock = sockServer (listenPort, &err);
   si = sockAddCheck (si, listenSock);
   logMsg (LOG_DBG, LOG_SOCKET, "add listen sock %zd", (size_t) listenSock);
@@ -105,7 +105,7 @@ sockhMainLoop (uint16_t listenPort, sockProcessMsg_t msgProc,
   sockhCloseClients (si);
   sockFreeCheck (si);
   sockClose (listenSock);
-  logProcEnd (LOG_SOCKET, "sockhMainLoop", "");
+  logProcEnd (LOG_PROC, "sockhMainLoop", "");
 }
 
 int
@@ -114,11 +114,11 @@ sockhSendMessage (Sock_t sock, long routefrom, long route,
 {
   char        msgbuff [BDJMSG_MAX];
 
-  logProcBegin (LOG_SOCKET, "sockhSendMessage");
+  logProcBegin (LOG_PROC, "sockhSendMessage");
   logMsg (LOG_DBG, LOG_SOCKET, "route:%ld msg:%ld args:%s", route, msg, args);
   size_t len = msgEncode (routefrom, route, msg, args, msgbuff, sizeof (msgbuff));
   int rc = sockWriteBinary (sock, msgbuff, len);
-  logProcEnd (LOG_SOCKET, "sockhSendMessage", "");
+  logProcEnd (LOG_PROC, "sockhSendMessage", "");
   return rc;
 }
 

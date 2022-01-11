@@ -79,6 +79,7 @@ void        listSetLong (list_t *list, char *keystr, long lval);
 void        listSetDouble (list_t *list, char *keystr, double dval);
 void        listSetList (list_t *list, char *keystr, list_t *data);
 void        *listGetData (list_t *list, char *keystr);
+void        *listGetDataByIdx (list_t *list, long idx);
 long        listGetLong (list_t *list, char *keystr);
 double      listGetDouble (list_t *list, char *keystr);
 list_t      *listGetList (list_t *list, char *keystr);
@@ -87,6 +88,8 @@ long        listGetStrIdx (list_t *list, char *keystr);
 void        listSort (list_t *list);
 void        listStartIterator (list_t *list);
 void *      listIterateKeyStr (list_t *list);
+void *      listIterateValue (list_t *list);
+long        listIterateGetIdx (list_t *list);
 void        listDumpInfo (list_t *list);
 
   /* keyed by a long */
@@ -100,6 +103,7 @@ void      llistSetLong (list_t *, long, long);
 void      llistSetDouble (list_t *, long, double);
 void      llistSetList (list_t *, long, list_t *);
 void *    llistGetData (list_t *, long);
+void *    llistGetDataByIdx (list_t *, long);
 long      llistGetLong (list_t *, long);
 double    llistGetDouble (list_t *, long);
 list_t    *llistGetList (list_t *, long);
@@ -108,6 +112,7 @@ long      listGetLongIdx (list_t *list, long lkey);
 void      llistSort (list_t *);
 void      llistStartIterator (list_t *list);
 long      llistIterateKeyLong (list_t *list);
+void *    llistIterateValue (list_t *list);
 void      llistDumpInfo (list_t *list);
 
 #endif /* INC_LIST_H */

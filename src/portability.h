@@ -27,4 +27,7 @@
 # define MAXPATHLEN         255
 #endif
 
+double  dRandom (void);
+void    sRandom (void);
+
 #endif /* INC_PORTABILITY_H */

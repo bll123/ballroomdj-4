@@ -16,5 +16,8 @@ void    dbClose (void);
 size_t  dbCount (void);
 int     dbLoad (db_t *, char *);
 song_t  *dbGetByName (char *);
+song_t  *dbGetByIdx (size_t idx);
+void    dbStartIterator (void);
+song_t  *dbIterate (size_t *idx);
 
 #endif /* INC_MUSICDB_H */

@@ -48,6 +48,7 @@ lib     CoInitialize -lole32
 lib     CreateFile
 lib     CreateProcess
 lib     CreateSymbolicLink
+lib     drand48
 lib     fcntl
 lib     fork
 lib     GetFullPathName
@@ -57,6 +58,8 @@ lib     kill
 lib     localtime_r
 lib     mkdir
 lib     OpenProcess
+lib     rand
+lib     random
 lib     realpath
 lib     select -lws2_32
 lib     SetDllDirectory
@@ -64,6 +67,9 @@ lib     sigaction
 lib     signal
 lib     socket -lws2_32
 # linux would require -lbsd; let's just use our own.
+lib     srand48
+lib     srandom
+lib     srand
 lib	strlcpy
 lib	strlcat
 lib     strtok_r

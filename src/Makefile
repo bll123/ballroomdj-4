@@ -333,11 +333,13 @@ LIBBDJOBJS = \
 	$(OBJDIR)/musicq$(OBJ_EXT) \
 	$(OBJDIR)/playlist$(OBJ_EXT) \
 	$(OBJDIR)/plq$(OBJ_EXT) \
+	$(OBJDIR)/portability$(OBJ_EXT) \
 	$(OBJDIR)/rafile$(OBJ_EXT) \
 	$(OBJDIR)/rating$(OBJ_EXT) \
 	$(OBJDIR)/sequence$(OBJ_EXT) \
 	$(OBJDIR)/song$(OBJ_EXT) \
 	$(OBJDIR)/songlist$(OBJ_EXT) \
+	$(OBJDIR)/songsel$(OBJ_EXT) \
 	$(OBJDIR)/sortopt$(OBJ_EXT) \
 	$(OBJDIR)/tagdef$(OBJ_EXT)
 
@@ -433,8 +435,8 @@ $(OBJDIR)/bdj4init$(OBJ_EXT): bdj4init.c config.h bdj4init.h musicdb.h song.h li
  log.h fileutil.h tmutil.h fileop.h datautil.h bdjopt.h
 $(OBJDIR)/bdj4main$(OBJ_EXT): bdj4main.c config.h bdj4init.h sockh.h sock.h bdjvars.h \
  bdjmsg.h log.h fileutil.h process.h bdjstring.h sysvars.h portability.h \
- playlist.h datafile.h list.h song.h songlist.h sequence.h queue.h \
- musicq.h plq.h tmutil.h bdjopt.h tagdef.h
+ playlist.h datafile.h list.h song.h songlist.h sequence.h songsel.h \
+ queue.h musicq.h plq.h tmutil.h bdjopt.h tagdef.h
 $(OBJDIR)/bdj4player$(OBJ_EXT): bdj4player.c config.h bdjmsg.h bdjopt.h list.h bdjstring.h \
  bdjvars.h fileop.h log.h fileutil.h pathutil.h pli.h vlci.h configp.h \
  portability.h process.h queue.h sock.h sockh.h sysvars.h tmutil.h \
@@ -498,26 +500,30 @@ $(OBJDIR)/musicdb$(OBJ_EXT): musicdb.c config.h musicdb.h song.h list.h rafile.h
 $(OBJDIR)/musicq$(OBJ_EXT): musicq.c config.h musicq.h queue.h song.h list.h
 $(OBJDIR)/pathutil$(OBJ_EXT): pathutil.c config.h bdjstring.h pathutil.h portability.h
 $(OBJDIR)/playlist$(OBJ_EXT): playlist.c config.h playlist.h datafile.h list.h song.h \
- songlist.h sequence.h fileop.h portability.h datautil.h rating.h level.h \
- dance.h log.h fileutil.h musicdb.h
+ songlist.h sequence.h songsel.h fileop.h portability.h datautil.h \
+ rating.h level.h dance.h log.h fileutil.h musicdb.h
 $(OBJDIR)/plivlc$(OBJ_EXT): plivlc.c config.h configp.h pli.h vlci.h list.h tmutil.h
 $(OBJDIR)/plq$(OBJ_EXT): plq.c config.h plq.h queue.h playlist.h datafile.h list.h song.h \
- songlist.h sequence.h
+ songlist.h sequence.h songsel.h
+$(OBJDIR)/portability$(OBJ_EXT): portability.c config.h portability.h
 $(OBJDIR)/process$(OBJ_EXT): process.c config.h process.h log.h fileutil.h
 $(OBJDIR)/queue$(OBJ_EXT): queue.c config.h queue.h
 $(OBJDIR)/rafile$(OBJ_EXT): rafile.c config.h rafile.h lock.h tmutil.h log.h fileutil.h
 $(OBJDIR)/rating$(OBJ_EXT): rating.c config.h rating.h datafile.h list.h fileop.h \
  bdjvarsdf.h log.h fileutil.h
 $(OBJDIR)/sequence$(OBJ_EXT): sequence.c config.h sequence.h datafile.h list.h fileop.h \
- log.h fileutil.h
+ log.h fileutil.h dance.h datautil.h portability.h
 $(OBJDIR)/sock$(OBJ_EXT): sock.c config.h sock.h tmutil.h log.h fileutil.h
 $(OBJDIR)/sockh$(OBJ_EXT): sockh.c config.h sockh.h sock.h tmutil.h log.h fileutil.h \
  bdjmsg.h
 $(OBJDIR)/song$(OBJ_EXT): song.c config.h song.h list.h bdjstring.h tagdef.h log.h \
  fileutil.h datafile.h level.h rating.h genre.h fileop.h portability.h \
- bdjopt.h
+ bdjopt.h dance.h
 $(OBJDIR)/songlist$(OBJ_EXT): songlist.c config.h songlist.h datafile.h list.h fileop.h \
  log.h fileutil.h
+$(OBJDIR)/songsel$(OBJ_EXT): songsel.c config.h songsel.h song.h list.h musicdb.h tagdef.h \
+ bdjstring.h rating.h datafile.h level.h bdjvarsdf.h log.h fileutil.h \
+ portability.h autosel.h
 $(OBJDIR)/sortopt$(OBJ_EXT): sortopt.c config.h sortopt.h datafile.h list.h fileop.h log.h \
  fileutil.h
 $(OBJDIR)/strlcat$(OBJ_EXT): strlcat.c config.h bdjstring.h

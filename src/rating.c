@@ -34,7 +34,8 @@ ratingAlloc (char *fname)
 
   rating->df = datafileAllocParse ("rating", DFTYPE_KEY_LONG, fname,
       ratingdfkeys, RATING_DFKEY_COUNT, RATING_RATING);
-  llistDumpInfo (datafileGetList (rating->df));
+  rating->rating = datafileGetList (rating->df);
+  llistDumpInfo (rating->rating);
   return rating;
 }
 
@@ -49,6 +50,13 @@ ratingFree (rating_t *rating)
   }
 }
 
+long
+ratingGetWeight (rating_t *rating, long idx)
+{
+  list_t *list = llistGetList (rating->rating, idx);
+  return llistGetLong (list, RATING_WEIGHT);
+}
+
 void
 ratingConv (char *keydata, datafileret_t *ret)
 {
@@ -60,4 +68,3 @@ ratingConv (char *keydata, datafileret_t *ret)
   lookup = datafileGetLookup (rating->df);
   ret->u.l = listGetLong (lookup, keydata);
 }
-

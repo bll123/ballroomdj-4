@@ -16,9 +16,21 @@ case $arch in
     ;;
 esac
 
-tclsh="$dir/../$systype/64/tcl/bin/tclsh"
-if [[ ! -f "$tclsh" ]]; then
-  echo "Unable to locate tclsh"
+tclsh=""
+if [[ $TCLSH != "" ]]; then
+  tclsh=$TCLSH
+else
+  for f in "$dir/../$systype/64/tcl/bin/tclsh" \
+      /usr/bin/tclsh $HOME/local/bin/tclsh $HOME/bin/tclsh \
+      /opt/local/bin/tclsh; do
+    if [[ -f $f ]]; then
+      tclsh=$f
+      break
+    fi
+  done
+fi
+if [[ $tclsh == "" ]]; then
+  echo "ERR: Unable to locate tclsh"
   exit 1
 fi
 

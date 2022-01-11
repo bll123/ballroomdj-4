@@ -29,6 +29,7 @@ typedef struct {
 
 dance_t       *danceAlloc (char *);
 void          danceFree (dance_t *);
+list_t        * danceGetLookup (void);
 void          danceConvDance (char *keydata, datafileret_t *ret);
 
 #endif /* INC_DANCE_H */

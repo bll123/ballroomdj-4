@@ -19,6 +19,7 @@
 #include "sequence.h"
 #include "log.h"
 #include "musicdb.h"
+#include "songsel.h"
 
 static void     plConvResume (char *, datafileret_t *ret);
 static void     plConvWait (char *, datafileret_t *ret);
@@ -98,14 +99,14 @@ playlistAlloc (char *fname)
 
   pl = malloc (sizeof (playlist_t));
   assert (pl != NULL);
-  pl->sequenceIdx = 0;
   pl->manualIdx = 0;
   pl->plinfodf = NULL;
-  pl->dancesdf = NULL;
+  pl->pldancesdf = NULL;
   pl->songlist = NULL;
   pl->sequence = NULL;
+  pl->songsel = NULL;
   pl->plinfo = NULL;
-  pl->dances = NULL;
+  pl->pldances = NULL;
 
   pl->plinfodf = datafileAllocParse ("playlist", DFTYPE_KEY_VAL, tfn,
       playlistdfkeys, PLAYLIST_DFKEY_COUNT, DATAFILE_NO_LOOKUP);
@@ -124,15 +125,15 @@ playlistAlloc (char *fname)
     return NULL;
   }
 
-  pl->dancesdf = datafileAllocParse ("playlist-dances", DFTYPE_KEY_LONG, tfn,
+  pl->pldancesdf = datafileAllocParse ("playlist-dances", DFTYPE_KEY_LONG, tfn,
       playlistdancedfkeys, PLAYLIST_DANCE_DFKEY_COUNT, DATAFILE_NO_LOOKUP);
-  if (pl->dancesdf == NULL) {
+  if (pl->pldancesdf == NULL) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "Bad playlist-dance %s", tfn);
     playlistFree (pl);
     return NULL;
   }
-  pl->dances = datafileGetList (pl->dancesdf);
-  llistDumpInfo (pl->dances);
+  pl->pldances = datafileGetList (pl->pldancesdf);
+  llistDumpInfo (pl->pldances);
 
   type = (pltype_t) llistGetLong (pl->plinfo, PLAYLIST_TYPE);
 
@@ -166,6 +167,8 @@ playlistAlloc (char *fname)
       playlistFree (pl);
       return NULL;
     }
+    pl->songsel = songselAlloc (sequenceGetDanceList (pl->sequence));
+    sequenceStartIterator (pl->sequence);
   }
 
   return pl;
@@ -178,14 +181,17 @@ playlistFree (playlist_t *pl)
     if (pl->plinfodf != NULL) {
       datafileFree (pl->plinfodf);
     }
-    if (pl->dancesdf != NULL) {
-      datafileFree (pl->dancesdf);
+    if (pl->pldancesdf != NULL) {
+      datafileFree (pl->pldancesdf);
     }
     if (pl->songlist != NULL) {
       songlistFree (pl->songlist);
     }
     if (pl->sequence != NULL) {
       sequenceFree (pl->sequence);
+    }
+    if (pl->songsel != NULL) {
+      songselFree (pl->songsel);
     }
     free (pl);
   }
@@ -226,6 +232,8 @@ playlistGetNextSong (playlist_t *pl)
       break;
     }
     case PLTYPE_SEQ: {
+      long dancekey = sequenceIterate (pl->sequence);
+      song = songselSelect (pl->songsel, dancekey);
       break;
     }
   }

@@ -269,8 +269,8 @@ volumeProcess (volaction_t action, char *sinkname,
 
     if (count == 0) {
       /* pulseaudio is not restarting properly after the computer sleeps */
-      system ("pulseaudio --start");
-      mssleep(200);
+      (void) ! system ("pulseaudio --start");
+      mssleep (400);
     }
 
     mssleep(20);

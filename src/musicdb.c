@@ -84,10 +84,10 @@ dbLoad (db_t *db, char *fn)
 
     song = songAlloc ();
     songParse (song, data);
-    fstr = songGetData (song, TAG_KEY_FILE);
-    srrn = songGetLong (song, TAG_KEY_RRN);
+    fstr = songGetData (song, TAG_FILE);
+    srrn = songGetLong (song, TAG_RRN);
     if ((long) i != srrn) {
-      songSetLong (song, TAG_KEY_RRN, (long) i);
+      songSetLong (song, TAG_RRN, (long) i);
     }
     listSetData (db->songs, fstr, song);
     ++db->count;
@@ -105,3 +105,27 @@ dbGetByName (char *songname)
   song_t *song = listGetData (bdjdb->songs, songname);
   return song;
 }
+
+song_t *
+dbGetByIdx (size_t idx)
+{
+  song_t *song = listGetDataByIdx (bdjdb->songs, (long) idx);
+  return song;
+}
+
+void
+dbStartIterator (void)
+{
+  listStartIterator (bdjdb->songs);
+}
+
+song_t *
+dbIterate (size_t *idx)
+{
+  song_t    *song;
+
+  song = listIterateValue (bdjdb->songs);
+  *idx = listIterateGetIdx (bdjdb->songs);
+  return song;
+}
+

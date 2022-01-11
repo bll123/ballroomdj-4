@@ -520,7 +520,7 @@ sockWriteData (Sock_t sock, char *data, size_t len)
   Sock_t        sval;
   ssize_t       rc;
 
-  logProcBegin (LOG_SOCKET, "sockWriteData");
+  logProcBegin (LOG_PROC, "sockWriteData");
   logMsg (LOG_DBG, LOG_SOCKET, "want to send: %zd bytes", len);
   /* ugh.  the write() call blocks on a non-blocking socket.  sigh. */
   /* call select() and check the condition the socket is in to see  */
@@ -528,7 +528,7 @@ sockWriteData (Sock_t sock, char *data, size_t len)
   sval = sockCanWrite (sock);
   if (sval != sock) {
     logMsg (LOG_DBG, LOG_SOCKET, "socket not writable");
-    logProcEnd (LOG_SOCKET, "sockWriteData", "not-writable");
+    logProcEnd (LOG_PROC, "sockWriteData", "not-writable");
     return -1;
   }
   rc = send (sock, data, len, 0);
@@ -538,7 +538,7 @@ sockWriteData (Sock_t sock, char *data, size_t len)
 #if _lib_WSAGetLastError
     logMsg (LOG_DBG, LOG_SOCKET, "send: wsa last-error:%d", WSAGetLastError());
 #endif
-    logProcEnd (LOG_SOCKET, "sockWriteData", "send-a-fail");
+    logProcEnd (LOG_PROC, "sockWriteData", "send-a-fail");
     return -1;
   }
   logMsg (LOG_DBG, LOG_SOCKET, "sent: %zd bytes", rc);
@@ -554,7 +554,7 @@ sockWriteData (Sock_t sock, char *data, size_t len)
 #if _lib_WSAGetLastError
       logMsg (LOG_DBG, LOG_SOCKET, "send: wsa last-error:%d", WSAGetLastError());
 #endif
-      logProcEnd (LOG_SOCKET, "sockWriteData", "send-b-fail");
+      logProcEnd (LOG_PROC, "sockWriteData", "send-b-fail");
       return -1;
     }
     logMsg (LOG_DBG, LOG_SOCKET, "sent: %zd bytes", rc);
@@ -563,7 +563,7 @@ sockWriteData (Sock_t sock, char *data, size_t len)
       logMsg (LOG_DBG, LOG_SOCKET, "tot: %zd bytes", tot);
     }
   }
-  logProcEnd (LOG_SOCKET, "sockWriteData", "");
+  logProcEnd (LOG_PROC, "sockWriteData", "");
   return 0;
 }
 

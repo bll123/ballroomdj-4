@@ -13,7 +13,7 @@
 #include "list.h"
 
 tagdef_t tagdefs[MAX_TAG_KEY] = {
-  [TAG_KEY_ADJUSTFLAGS] =
+  [TAG_ADJUSTFLAGS] =
   { 0,                            /* default edit order   */
     0,                            /* edit index           */
     0,                            /* edit width           */
@@ -33,7 +33,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] = {
     0,                            /* song list display    */
     0                             /* text search          */
   },
-  [TAG_KEY_AFMODTIME] =
+  [TAG_AFMODTIME] =
   { 0,                            /* default edit order   */
     0,                            /* edit index           */
     0,                            /* edit width           */
@@ -53,7 +53,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] = {
     1,                            /* song list display    */
     0                             /* text search          */
   },
-  [TAG_KEY_ALBUM] =
+  [TAG_ALBUM] =
   { 0,                            /* default edit order   */
     7,                            /* edit index           */
     0,                            /* edit width           */
@@ -73,7 +73,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] = {
     1,                            /* song list display    */
     1                             /* text search          */
   },
-  [TAG_KEY_ALBUMARTIST] =
+  [TAG_ALBUMARTIST] =
   { 1,                            /* default edit order   */
     4,                            /* edit index           */
     0,                            /* edit width           */
@@ -93,7 +93,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] = {
     1,                            /* song list display    */
     1                             /* text search          */
   },
-  [TAG_KEY_ARTIST] =
+  [TAG_ARTIST] =
   { 3,                            /* default edit order   */
     5,                            /* edit index           */
     0,                            /* edit width           */
@@ -113,7 +113,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] = {
     1,                            /* song list display    */
     1                             /* text search          */
   },
-  [TAG_KEY_AUTOORGFLAG] =
+  [TAG_AUTOORGFLAG] =
   { 0,                            /* default edit order   */
     0,                            /* edit index           */
     0,                            /* edit width           */
@@ -133,7 +133,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] = {
     0,                            /* song list display    */
     0                             /* text search          */
   },
-  [TAG_KEY_BPM] =
+  [TAG_BPM] =
   { 0,                            /* default edit order   */
     15,                           /* edit index           */
     0,                            /* edit width           */
@@ -153,7 +153,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] = {
     1,                            /* song list display    */
     0                             /* text search          */
   },
-  [TAG_KEY_COMPOSER] =
+  [TAG_COMPOSER] =
   { 0,                            /* default edit order   */
     2,                            /* edit index           */
     0,                            /* edit width           */
@@ -173,7 +173,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] = {
     1,                            /* song list display    */
     1                             /* text search          */
   },
-  [TAG_KEY_CONDUCTOR] =
+  [TAG_CONDUCTOR] =
   { 0,                            /* default edit order   */
     3,                            /* edit index           */
     0,                            /* edit width           */
@@ -193,7 +193,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] = {
     1,                            /* song list display    */
     1                             /* text search          */
   },
-  [TAG_KEY_DANCE] =
+  [TAG_DANCE] =
   { 5,                            /* default edit order   */
     9,                            /* edit index           */
     0,                            /* edit width           */
@@ -213,7 +213,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] = {
     1,                            /* song list display    */
     0                             /* text search          */
   },
-  [TAG_KEY_DANCELEVEL] =
+  [TAG_DANCELEVEL] =
   { 7,                            /* default edit order   */
     11,                           /* edit index           */
     0,                            /* edit width           */
@@ -233,7 +233,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] = {
     1,                            /* song list display    */
     0                             /* text search          */
   },
-  [TAG_KEY_DANCERATING] =
+  [TAG_DANCERATING] =
   { 6,                            /* default edit order   */
     10,                           /* edit index           */
     0,                            /* edit width           */
@@ -253,7 +253,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] = {
     1,                            /* song list display    */
     0                             /* text search          */
   },
-  [TAG_KEY_DATE] =
+  [TAG_DATE] =
   { 0,                            /* default edit order   */
     0,                            /* edit index           */
     0,                            /* edit width           */
@@ -273,7 +273,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] = {
     0,                            /* song list display    */
     0                             /* text search          */
   },
-  [TAG_KEY_DBADDDATE] =
+  [TAG_DBADDDATE] =
   { 0,                            /* default edit order   */
     0,                            /* edit index           */
     0,                            /* edit width           */
@@ -293,7 +293,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] = {
     1,                            /* song list display    */
     0                             /* text search          */
   },
-  [TAG_KEY_DISCNUMBER] =
+  [TAG_DISCNUMBER] =
   { 13,                           /* default edit order   */
     13,                           /* edit index           */
     5,                            /* edit width           */
@@ -313,7 +313,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] = {
     1,                            /* song list display    */
     0                             /* text search          */
   },
-  [TAG_KEY_DISCTOTAL] =
+  [TAG_DISCTOTAL] =
   { 0,                            /* default edit order   */
     0,                            /* edit index           */
     0,                            /* edit width           */
@@ -333,7 +333,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] = {
     0,                            /* song list display    */
     0                             /* text search          */
   },
-  [TAG_KEY_DISPLAYIMG] =
+  [TAG_DISPLAYIMG] =
   { 0,                            /* default edit order   */
     0,                            /* edit index           */
     0,                            /* edit width           */
@@ -353,7 +353,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] = {
     0,                            /* song list display    */
     1                             /* text search          */
   },
-  [TAG_KEY_DURATION] =
+  [TAG_DURATION] =
   { 9,                            /* default edit order   */
     16,                           /* edit index           */
     15,                           /* edit width           */
@@ -373,7 +373,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] = {
     1,                            /* song list display    */
     0                             /* text search          */
   },
-  [TAG_KEY_FILE] =
+  [TAG_FILE] =
   { 0,                            /* default edit order   */
     0,                            /* edit index           */
     0,                            /* edit width           */
@@ -393,7 +393,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] = {
     0,                            /* song list display    */
     1                             /* text search          */
   },
-  [TAG_KEY_GENRE] =
+  [TAG_GENRE] =
   { 1,                            /* default edit order   */
     1,                            /* edit index           */
     0,                            /* edit width           */
@@ -413,7 +413,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] = {
     1,                            /* song list display    */
     0                             /* text search          */
   },
-  [TAG_KEY_KEYWORD] =
+  [TAG_KEYWORD] =
   { 0,                            /* default edit order   */
     0,                            /* edit index           */
     20,                           /* edit width           */
@@ -433,7 +433,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] = {
     1,                            /* song list display    */
     1                             /* text search          */
   },
-  [TAG_KEY_MQDISPLAY] =
+  [TAG_MQDISPLAY] =
   { 0,                            /* default edit order   */
     0,                            /* edit index           */
     20,                           /* edit width           */
@@ -453,7 +453,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] = {
     0,                            /* song list display    */
     1                             /* text search          */
   },
-  [TAG_KEY_MUSICBRAINZ_TRACKID] =
+  [TAG_MUSICBRAINZ_TRACKID] =
   { 0,                            /* default edit order   */
     0,                            /* edit index           */
     0,                            /* edit width           */
@@ -473,7 +473,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] = {
     0,                            /* song list display    */
     0                             /* text search          */
   },
-  [TAG_KEY_NOMAXPLAYTIME] =
+  [TAG_NOMAXPLAYTIME] =
   { 0,                            /* default edit order   */
     0,                            /* edit index           */
     0,                            /* edit width           */
@@ -493,7 +493,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] = {
     0,                            /* song list display    */
     0                             /* text search          */
   },
-  [TAG_KEY_NOTES] =
+  [TAG_NOTES] =
   { 8,                            /* default edit order   */
     12,                           /* edit index           */
     0,                            /* edit width           */
@@ -513,7 +513,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] = {
     1,                            /* song list display    */
     1                             /* text search          */
   },
-  [TAG_KEY_SAMESONG] =
+  [TAG_SAMESONG] =
   { 0,                            /* default edit order   */
     0,                            /* edit index           */
     0,                            /* edit width           */
@@ -533,7 +533,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] = {
     0,                            /* song list display    */
     0                             /* text search          */
   },
-  [TAG_KEY_SONGEND] =
+  [TAG_SONGEND] =
   { 0,                            /* default edit order   */
     0,                            /* edit index           */
     10,                           /* edit width           */
@@ -553,7 +553,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] = {
     0,                            /* song list display    */
     0                             /* text search          */
   },
-  [TAG_KEY_SONGSTART] =
+  [TAG_SONGSTART] =
   { 0,                            /* default edit order   */
     0,                            /* edit index           */
     10,                           /* edit width           */
@@ -573,7 +573,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] = {
     0,                            /* song list display    */
     0                             /* text search          */
   },
-  [TAG_KEY_SPEEDADJUSTMENT] =
+  [TAG_SPEEDADJUSTMENT] =
   { 0,                            /* default edit order   */
     0,                            /* edit index           */
     0,                            /* edit width           */
@@ -593,7 +593,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] = {
     0,                            /* song list display    */
     0                             /* text search          */
   },
-  [TAG_KEY_STATUS] =
+  [TAG_STATUS] =
   { 0,                            /* default edit order   */
     17,                           /* edit index           */
     0,                            /* edit width           */
@@ -613,7 +613,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] = {
     1,                            /* song list display    */
     0                             /* text search          */
   },
-  [TAG_KEY_TAGS] =
+  [TAG_TAGS] =
   { 8,                            /* default edit order   */
     12,                           /* edit index           */
     0,                            /* edit width           */
@@ -633,7 +633,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] = {
     1,                            /* song list display    */
     1                             /* text search          */
   },
-  [TAG_KEY_TITLE] =
+  [TAG_TITLE] =
   { 4,                            /* default edit order   */
     8,                            /* edit index           */
     0,                            /* edit width           */
@@ -653,7 +653,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] = {
     1,                            /* song list display    */
     1                             /* text search          */
   },
-  [TAG_KEY_TRACKNUMBER] =
+  [TAG_TRACKNUMBER] =
   { 0,                            /* default edit order   */
     14,                           /* edit index           */
     5,                            /* edit width           */
@@ -673,7 +673,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] = {
     1,                            /* song list display    */
     0                             /* text search          */
   },
-  [TAG_KEY_TRACKTOTAL] =
+  [TAG_TRACKTOTAL] =
   { 0,                            /* default edit order   */
     0,                            /* edit index           */
     0,                            /* edit width           */
@@ -693,7 +693,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] = {
     0,                            /* song list display    */
     0                             /* text search          */
   },
-  [TAG_KEY_VARIOUSARTISTS] =
+  [TAG_VARIOUSARTISTS] =
   { 0,                            /* default edit order   */
     6,                            /* edit index           */
     0,                            /* edit width           */
@@ -713,7 +713,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] = {
     0,                            /* song list display    */
     0                             /* text search          */
   },
-  [TAG_KEY_UPDATEFLAG] =
+  [TAG_UPDATEFLAG] =
   { 0,                            /* default edit order   */
     0,                            /* edit index           */
     0,                            /* edit width           */
@@ -733,7 +733,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] = {
     0,                            /* song list display    */
     0                             /* text search          */
   },
-  [TAG_KEY_UPDATETIME] =
+  [TAG_UPDATETIME] =
   { 0,                            /* default edit order   */
     0,                            /* edit index           */
     0,                            /* edit width           */
@@ -753,7 +753,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] = {
     0,                            /* song list display    */
     0                             /* text search          */
   },
-  [TAG_KEY_VOLUMEADJUSTPERC] =
+  [TAG_VOLUMEADJUSTPERC] =
   { 0,                            /* default edit order   */
     0,                            /* edit index           */
     0,                            /* edit width           */
@@ -773,7 +773,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] = {
     0,                            /* song list display    */
     0                             /* text search          */
   },
-  [TAG_KEY_WRITETIME] =
+  [TAG_WRITETIME] =
   { 0,                            /* default edit order   */
     0,                            /* edit index           */
     0,                            /* edit width           */
@@ -793,7 +793,7 @@ tagdef_t tagdefs[MAX_TAG_KEY] = {
     0,                            /* song list display    */
     0                             /* text search          */
   },
-  [TAG_KEY_RRN] =
+  [TAG_RRN] =
   { 0,                            /* default edit order   */
     0,                            /* edit index           */
     0,                            /* edit width           */

@@ -28,7 +28,7 @@ listAlloc (char *name, listorder_t ordered, listCompare_t compare,
 {
   list_t    *list;
 
-  logProcBegin (LOG_LIST, "listAlloc");
+  logProcBegin (LOG_PROC, "listAlloc");
   list = malloc (sizeof (list_t));
   assert (list != NULL);
     /* always allocate the name so that dynamic names can be created */
@@ -48,7 +48,7 @@ listAlloc (char *name, listorder_t ordered, listCompare_t compare,
   list->keyFreeHook = keyFreeHook;
   list->valueFreeHook = valueFreeHook;
   logMsg (LOG_DBG, LOG_LIST, "alloc %s", name);
-  logProcEnd (LOG_LIST, "listAlloc", "");
+  logProcEnd (LOG_PROC, "listAlloc", "");
   return list;
 }
 
@@ -169,6 +169,20 @@ listGetData (list_t *list, char *keydata)
   return value;
 }
 
+void *
+listGetDataByIdx (list_t *list, long idx)
+{
+  void    *value;
+
+
+  if (list == NULL) {
+    return NULL;
+  }
+  value = list->data [idx].value.data;
+  logMsg (LOG_DBG, LOG_LIST, "list:%s idx:%ld", list->name, idx);
+  return value;
+}
+
 long
 listGetLong (list_t *list, char *keydata)
 {
@@ -256,15 +270,15 @@ listIterateKeyStr (list_t *list)
 {
   void      *value = NULL;
 
-  logProcBegin (LOG_LIST, "listIterateKeyStr");
+  logProcBegin (LOG_PROC, "listIterateKeyStr");
   if (list == NULL) {
-    logProcEnd (LOG_LIST, "listIterateKeyStr", "null-list");
+    logProcEnd (LOG_PROC, "listIterateKeyStr", "null-list");
     return NULL;
   }
 
   if (list->iteratorIndex >= list->count) {
     list->iteratorIndex = 0;
-    logProcEnd (LOG_LIST, "listIterateKeyStr", "end-list");
+    logProcEnd (LOG_PROC, "listIterateKeyStr", "end-list");
     return NULL;  /* indicate the end of the list */
   }
 
@@ -283,8 +297,42 @@ listIterateKeyStr (list_t *list)
   list->locCache = (long) list->iteratorIndex;
 
   ++list->iteratorIndex;
-  logProcEnd (LOG_LIST, "listIterateKeyStr", "");
+  logProcEnd (LOG_PROC, "listIterateKeyStr", "");
   return value;
+}
+
+void *
+listIterateValue (list_t *list)
+{
+  void      *value = NULL;
+
+  logProcBegin (LOG_PROC, "listIterateValue");
+  if (list == NULL) {
+    logProcEnd (LOG_PROC, "listIterateValue", "null-list");
+    return NULL;
+  }
+
+  if (list->iteratorIndex >= list->count) {
+    list->iteratorIndex = 0;
+    logProcEnd (LOG_PROC, "listIterateValue", "end-list");
+    return NULL;  /* indicate the end of the list */
+  }
+
+  value = list->data [list->iteratorIndex].value.data;
+  list->currentIndex = list->iteratorIndex;
+  ++list->iteratorIndex;
+  logProcEnd (LOG_PROC, "listIterateValue", "");
+  return value;
+}
+
+long
+listIterateGetIdx (list_t *list)
+{
+  if (list == NULL) {
+    return -1;
+  }
+
+  return list->currentIndex;
 }
 
 /* key/value list, keyed by a long */
@@ -390,6 +438,12 @@ llistGetData (list_t *list, long lkey)
   return value;
 }
 
+void *
+llistGetDataByIdx (list_t *list, long idx)
+{
+  return listGetDataByIdx (list, idx);
+}
+
 long
 llistGetLong (list_t *list, long lkey)
 {
@@ -459,15 +513,15 @@ llistIterateKeyLong (list_t *list)
 {
   long      value = -1L;
 
-  logProcBegin (LOG_LIST, "llistIterateKeyLong");
+  logProcBegin (LOG_PROC, "llistIterateKeyLong");
   if (list == NULL || list->keytype == KEY_STR) {
-    logProcEnd (LOG_LIST, "llistIterateKeyLong", "null-list/key-str");
+    logProcEnd (LOG_PROC, "llistIterateKeyLong", "null-list/key-str");
     return -1L;
   }
 
   if (list->iteratorIndex >= list->count) {
     list->iteratorIndex = 0;
-    logProcEnd (LOG_LIST, "llistIterateKeyLong", "end-list");
+    logProcEnd (LOG_PROC, "llistIterateKeyLong", "end-list");
     return -1L;      /* indicate the end of the list */
   }
 
@@ -477,8 +531,14 @@ llistIterateKeyLong (list_t *list)
   list->locCache = (long) list->iteratorIndex;
 
   ++list->iteratorIndex;
-  logProcEnd (LOG_LIST, "llistIterateKeyLong", "");
+  logProcEnd (LOG_PROC, "llistIterateKeyLong", "");
   return value;
+}
+
+void *
+llistIterateValue (list_t *list)
+{
+  return listIterateValue (list);
 }
 
 void

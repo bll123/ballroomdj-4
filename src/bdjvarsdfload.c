@@ -31,6 +31,7 @@ bdjvarsdfloadInit (void)
 
     /* the database load depends on dances */
     /* playlist loads depend on dances */
+    /* sequence loads depend on dances */
   datautilMakePath (fn, sizeof (fn), "", "dances", ".txt", DATAUTIL_MP_NONE);
   bdjvarsdf [BDJVDF_DANCES] = danceAlloc (fn);
 

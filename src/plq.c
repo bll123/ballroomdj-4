@@ -42,6 +42,10 @@ plqPush (plq_t *plq, char *plname)
   plqitem = malloc (sizeof (plqitem_t));
   assert (plqitem != NULL);
   plqitem->playlist = playlistAlloc (plname);
+  if (plqitem->playlist == NULL) {
+    free (plqitem);
+    return;
+  }
   queuePush (plq->q, plqitem);
 }
 

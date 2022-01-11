@@ -55,3 +55,16 @@ autoselFree (autosel_t *autosel)
     free (autosel);
   }
 }
+
+double
+autoselGetDouble (autosel_t *autosel, autoselkey_t idx)
+{
+  list_t  *list;
+
+  if (autosel == NULL || autosel->df == NULL) {
+    return -1.0;
+  }
+
+  list = datafileGetList (autosel->df);
+  return llistGetDouble (list, idx);
+}

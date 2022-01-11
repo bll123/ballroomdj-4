@@ -35,7 +35,8 @@ levelAlloc (char *fname)
 
   level->df = datafileAllocParse ("level", DFTYPE_KEY_LONG, fname,
       leveldfkeys, LEVEL_DFKEY_COUNT, LEVEL_LABEL);
-  llistDumpInfo (datafileGetList (level->df));
+  level->level = datafileGetList (level->df);
+  llistDumpInfo (level->level);
   return level;
 }
 
@@ -48,6 +49,13 @@ levelFree (level_t *level)
     }
     free (level);
   }
+}
+
+long
+levelGetWeight (level_t *level, long idx)
+{
+  list_t  *list = llistGetList (level->level, idx);
+  return llistGetLong (list, LEVEL_WEIGHT);
 }
 
 void

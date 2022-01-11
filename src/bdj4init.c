@@ -60,6 +60,7 @@ bdj4startup (int argc, char *argv[])
 
   mstimestart (&mt);
   initLocale ();
+  sRandom ();
   sysvarsInit (argv[0]);
 
   datautilMakePath (tbuff, sizeof (tbuff), "", sysvars [SV_HOSTNAME], "", DATAUTIL_MP_NONE);

@@ -11,10 +11,12 @@ typedef enum {
 
 typedef struct {
   datafile_t        *df;
+  list_t            *rating;
 } rating_t;
 
 rating_t    *ratingAlloc (char *);
 void        ratingFree (rating_t *rating);
+long        ratingGetWeight (rating_t *rating, long idx);
 void        ratingConv (char *keydata, datafileret_t *ret);
 
 #endif /* INC_RATING_H */

@@ -66,6 +66,14 @@ danceFree (dance_t *dance)
   }
 }
 
+list_t *
+danceGetLookup (void)
+{
+  dance_t *dance = bdjvarsdf [BDJVDF_DANCES];
+  list_t  *lookup = datafileGetLookup (dance->df);
+  return lookup;
+}
+
 void
 danceConvDance (char *keydata, datafileret_t *ret)
 {

@@ -51,6 +51,7 @@ typedef struct {
 } datafilekey_t;
 
 #define DATAFILE_NO_LOOKUP -1
+#define DATAFILE_LOOKUP_LONG -2
 
 parseinfo_t * parseInit (void);
 void          parseFree (parseinfo_t *);

@@ -5,6 +5,7 @@
 #include "song.h"
 #include "songlist.h"
 #include "sequence.h"
+#include "songsel.h"
 
 typedef enum {
   PLAYLIST_ALLOWED_KEYWORDS,
@@ -66,12 +67,12 @@ typedef enum {
 
 typedef struct {
   datafile_t    *plinfodf;
-  datafile_t    *dancesdf;
+  datafile_t    *pldancesdf;
   songlist_t    *songlist;
   sequence_t    *sequence;
+  songsel_t     *songsel;
   list_t        *plinfo;
-  list_t        *dances;
-  int           sequenceIdx;
+  list_t        *pldances;
   int           manualIdx;
 } playlist_t;
 

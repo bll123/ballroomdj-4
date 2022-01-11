@@ -83,6 +83,15 @@ foreach path [list {} profiles $hostname [file join $hostname profiles]] {
         if { $key eq "IMAGEDIR" } { set key DIRIMAGE }
         if { $key eq "ARCHIVEDIR" } { set key DIRARCHIVE }
 
+        if { $key eq "FADEINTIME" && $value eq {} } {
+          set value 0
+        }
+        if { $key eq "FADEOUTTIME" && $value eq {} } {
+          set value 0
+        }
+        if { $key eq "GAP" && $value eq {} } {
+          set value 0
+        }
         if { $key eq "FADEINTIME" || $key eq "FADEOUTTIME" ||
             $key eq "GAP" } {
           set value [expr {int ($value * 1000)}]
@@ -91,6 +100,9 @@ foreach path [list {} profiles $hostname [file join $hostname profiles]] {
           if { $value ne {} } {
             regexp {(\d+):(\d+)} $value all min sec
             set value [expr {($min * 60 + $sec) * 1000}]
+          }
+          if { $value eq {} } {
+            set value 360000
           }
         }
         puts $ofh $key

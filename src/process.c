@@ -33,17 +33,17 @@ processExists (pid_t pid)
   HANDLE hProcess;
   DWORD exitCode;
 
-  logProcBegin (LOG_PROCESS, "processExists");
+  logProcBegin (LOG_PROC, "processExists");
   hProcess = OpenProcess (PROCESS_QUERY_LIMITED_INFORMATION, FALSE, pid);
   if (NULL == hProcess) {
     int err = GetLastError ();
     if (err == ERROR_INVALID_PARAMETER) {
       logMsg (LOG_DBG, LOG_IMPORTANT, "openprocess: %d", err);
-      logProcEnd (LOG_IMPORTANT, "openprocess", "fail-a");
+      logProcEnd (LOG_PROC, "openprocess", "fail-a");
       return -1;
     }
     logMsg (LOG_DBG, LOG_IMPORTANT, "openprocess: %d", err);
-    logProcEnd (LOG_IMPORTANT, "openprocess", "fail-b");
+    logProcEnd (LOG_PROC, "openprocess", "fail-b");
     return -1;
   }
 
@@ -51,13 +51,13 @@ processExists (pid_t pid)
     CloseHandle (hProcess);
     logMsg (LOG_DBG, LOG_PROCESS, "found: %lld", exitCode);
     /* return 0 if the process is still active */
-    logProcEnd (LOG_PROCESS, "processExists", "ok");
+    logProcEnd (LOG_PROC, "processExists", "ok");
     return (exitCode != STILL_ACTIVE);
   }
   logMsg (LOG_DBG, LOG_IMPORTANT, "getexitcodeprocess: %d", GetLastError());
 
   CloseHandle (hProcess);
-  logProcEnd (LOG_PROCESS, "processExists", "");
+  logProcEnd (LOG_PROC, "processExists", "");
   return -1;
 #endif
 }
@@ -69,7 +69,7 @@ processStart (const char *fn, pid_t *pid, long profile, long loglvl)
   char        tmp [100];
   char        tmp2 [40];
 
-  logProcBegin (LOG_PROCESS, "processStart");
+  logProcBegin (LOG_PROC, "processStart");
   snprintf (tmp, sizeof (tmp), "%ld", profile);
   snprintf (tmp2, sizeof (tmp2), "%ld", loglvl);
 
@@ -80,7 +80,7 @@ processStart (const char *fn, pid_t *pid, long profile, long loglvl)
   tpid = fork ();
   if (tpid < 0) {
     logError ("fork");
-    logProcEnd (LOG_PROCESS, "processStart", "fork-fail");
+    logProcEnd (LOG_PROC, "processStart", "fork-fail");
     return -1;
   }
   if (tpid == 0) {
@@ -138,7 +138,7 @@ processStart (const char *fn, pid_t *pid, long profile, long loglvl)
   /* ### FIX would like process id back */
 
 #endif
-  logProcEnd (LOG_PROCESS, "processStart", "");
+  logProcEnd (LOG_PROC, "processStart", "");
   return 0;
 }
 
@@ -163,3 +163,36 @@ processCatchSignals (void (*sigHandler)(int))
   signal (SIGTERM, sigHandler);
 #endif
 }
+
+void
+processSigChildIgnore (void)
+{
+#if _lib_sigaction
+  struct sigaction    sigact;
+  struct sigaction    oldact;
+
+  memset (&sigact, '\0', sizeof (sigact));
+  sigact.sa_handler = SIG_IGN;
+  sigaction (SIGCHLD, &sigact, &oldact);       /* 1: hangup      */
+#endif
+#if ! _lib_sigaction && _lib_signal
+  signal (SIGCHLD, SIG_IGN);
+#endif
+}
+
+void
+processSigChildDefault (void)
+{
+#if _lib_sigaction
+  struct sigaction    sigact;
+  struct sigaction    oldact;
+
+  memset (&sigact, '\0', sizeof (sigact));
+  sigact.sa_handler = SIG_DFL;
+  sigaction (SIGCHLD, &sigact, &oldact);       /* 1: hangup      */
+#endif
+#if _lib_signal
+  signal (SIGCHLD, SIG_DFL);
+#endif
+}
+

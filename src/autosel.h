@@ -25,5 +25,6 @@ typedef struct {
 
 autosel_t     *autoselAlloc (char *);
 void          autoselFree (autosel_t *);
+double        autoselGetDouble (autosel_t *autosel, autoselkey_t idx);
 
 #endif /* INC_AUTOSEL_H */
