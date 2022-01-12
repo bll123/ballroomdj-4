@@ -244,7 +244,7 @@ datafileParseMerge (list_t *nlist, char *data, char *name,
       }
       break;
     }
-    case DFTYPE_KEY_LONG: {
+    case DFTYPE_INDIRECT: {
       inc = 2;
       if (nlist == NULL) {
         nlist = llistAlloc (name, LIST_UNORDERED, listFree);
@@ -301,14 +301,14 @@ datafileParseMerge (list_t *nlist, char *data, char *name,
       continue;
     }
     if (strcmp (strdata [i], "count") == 0) {
-      if (dftype == DFTYPE_KEY_LONG) {
+      if (dftype == DFTYPE_INDIRECT) {
         llistSetSize (nlist, (size_t) atol (tvalstr));
       }
       listSetSize (*lookup, listGetSize (nlist));
       continue;
     }
 
-    if (dftype == DFTYPE_KEY_LONG &&
+    if (dftype == DFTYPE_INDIRECT &&
         strcmp (tkeystr, "KEY") == 0) {
       char      temp [80];
 
@@ -332,7 +332,7 @@ datafileParseMerge (list_t *nlist, char *data, char *name,
       logMsg (LOG_DBG, LOG_DATAFILE, "set: list");
       listSetData (nlist, tkeystr, NULL);
     }
-    if (dftype == DFTYPE_KEY_LONG ||
+    if (dftype == DFTYPE_INDIRECT ||
         (dftype == DFTYPE_KEY_VAL && dfkeys != NULL)) {
       long idx = dfkeyBinarySearch (dfkeys, dfkeycount, tkeystr);
       if (idx >= 0) {
@@ -372,7 +372,7 @@ datafileParseMerge (list_t *nlist, char *data, char *name,
       logMsg (LOG_DBG, LOG_DATAFILE, "set: dftype:%ld vt:%d", dftype, vt);
 
         /* key_long has a key pointing to a key/val list. */
-      if (dftype == DFTYPE_KEY_LONG) {
+      if (dftype == DFTYPE_INDIRECT) {
         if (vt == VALUE_DATA) {
           llistSetData (itemList, ikey, strdup (tvalstr));
         }
@@ -411,7 +411,7 @@ datafileParseMerge (list_t *nlist, char *data, char *name,
     first = 0;
   }
 
-  if (dftype == DFTYPE_KEY_LONG && key >= 0) {
+  if (dftype == DFTYPE_INDIRECT && key >= 0) {
     llistSetList (nlist, key, itemList);
     if (lookup != NULL &&
         lookupKey != DATAFILE_NO_LOOKUP &&
@@ -582,7 +582,7 @@ datafileFreeInternal (datafile_t *df)
           listFree (df->data);
           break;
         }
-        case DFTYPE_KEY_LONG: {
+        case DFTYPE_INDIRECT: {
           llistFree (df->data);
           break;
         }

@@ -47,8 +47,8 @@ foreach {fn} $flist {
     if { $key eq "StatusOK" } { set key UseStatus }
     if { $key eq "UnratedOK" } { set key UseUnrated }
     if { $key eq "gap" } { set key Gap }
-    if { $key eq "highDanceLevel" } { set key HighDanceLevel }
-    if { $key eq "lowDanceLevel" } { set key LowDanceLevel }
+    if { $key eq "highDanceLevel" } { set key DanceLevelHigh }
+    if { $key eq "lowDanceLevel" } { set key DanceLevelLow }
     if { $key eq "mqMessage" } { set key MqMessage }
     if { $key eq "ManualList" && $value eq "None" } {
       set value {}

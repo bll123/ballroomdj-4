@@ -33,7 +33,7 @@ songlistAlloc (char *fname)
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: songlist: missing %s", fname);
     return NULL;
   }
-  sl->df = datafileAllocParse ("songlist", DFTYPE_KEY_LONG, fname,
+  sl->df = datafileAllocParse ("songlist", DFTYPE_INDIRECT, fname,
       songlistdfkeys, SONGLIST_DFKEY_COUNT, DATAFILE_NO_LOOKUP);
   if (sl->df == NULL) {
     songlistFree (sl);
@@ -61,13 +61,12 @@ songlistFree (songlist_t *sl)
 }
 
 char *
-songlistGetData (songlist_t *sl, long idx, long key)
+songlistGetData (songlist_t *sl, long ikey, long lidx)
 {
-  if ((size_t) idx >= llistGetSize (sl->songlist)) {
+  if ((size_t) ikey >= llistGetSize (sl->songlist)) {
     logMsg (LOG_DBG, LOG_BASIC, "end of songlist %s reached", sl->fname);
     return NULL;
   }
 
-  list_t *tlist = llistGetList (sl->songlist, idx);
-  return llistGetData (tlist, key);
+  return ilistGetData (sl->songlist, ikey, lidx);
 }

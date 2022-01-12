@@ -283,8 +283,8 @@ mainMusicQueueFill (maindata_t *mainData)
 {
   long        maxlen;
   long        currlen;
-  song_t      *song;
-  playlist_t  *playlist;
+  song_t      *song = NULL;
+  playlist_t  *playlist = NULL;
 
   logProcBegin (LOG_PROC, "mainMusicQueueFill");
   maxlen = bdjoptGetLong (OPT_G_PLAYERQLEN);
@@ -293,13 +293,18 @@ mainMusicQueueFill (maindata_t *mainData)
   logMsg (LOG_DBG, LOG_BASIC, "fill: %ld < %ld", currlen, maxlen);
   while (playlist != NULL && currlen < maxlen) {
     song = playlistGetNextSong (playlist);
+    while (song != NULL && currlen < maxlen) {
+      musicqPush (mainData->musicQueue, mainData->musicqCurrent, song);
+      song = playlistGetNextSong (playlist);
+      currlen = musicqGetLen (mainData->musicQueue, mainData->musicqCurrent);
+    }
     if (song == NULL) {
       plqPop (mainData->playlistQueue);
       playlist = plqGetCurrent (mainData->playlistQueue);
-    } else {
-      musicqPush (mainData->musicQueue, mainData->musicqCurrent, song);
-      currlen = musicqGetLen (mainData->musicQueue, mainData->musicqCurrent);
     }
+  }
+  if (playlist == NULL) {
+    plqPop (mainData->playlistQueue);
   }
   logProcEnd (LOG_PROC, "mainMusicQueueFill", "");
 }

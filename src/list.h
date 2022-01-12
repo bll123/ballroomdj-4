@@ -59,7 +59,8 @@ typedef struct {
   size_t          currentIndex;
   listkey_t       keyCache;
   long            locCache;
-  long            cacheHits;
+  long            readCacheHits;
+  long            writeCacheHits;
   listFree_t      keyFreeHook;
   listFree_t      valueFreeHook;
 } list_t;
@@ -83,7 +84,6 @@ void        *listGetDataByIdx (list_t *list, long idx);
 long        listGetLong (list_t *list, char *keystr);
 double      listGetDouble (list_t *list, char *keystr);
 list_t      *listGetList (list_t *list, char *keystr);
-valuetype_t listGetValueType (list_t *, char *keystr);
 long        listGetStrIdx (list_t *list, char *keystr);
 void        listSort (list_t *list);
 void        listStartIterator (list_t *list);
@@ -107,12 +107,17 @@ void *    llistGetDataByIdx (list_t *, long);
 long      llistGetLong (list_t *, long);
 double    llistGetDouble (list_t *, long);
 list_t    *llistGetList (list_t *, long);
-valuetype_t llistGetValueType (list_t *, long);
-long      listGetLongIdx (list_t *list, long lkey);
 void      llistSort (list_t *);
 void      llistStartIterator (list_t *list);
 long      llistIterateKeyLong (list_t *list);
 void *    llistIterateValue (list_t *list);
 void      llistDumpInfo (list_t *list);
+
+void      ilistSetData (list_t *, long ikey, long lidx, void *value);
+void      ilistSetLong (list_t *, long ikey, long lidx, long value);
+void      ilistSetDouble (list_t *, long ikey, long lidx, double value);
+void *    ilistGetData (list_t *, long ikey, long lidx);
+long      ilistGetLong (list_t *, long ikey, long lidx);
+double    ilistGetDouble (list_t *, long ikey, long lidx);
 
 #endif /* INC_LIST_H */

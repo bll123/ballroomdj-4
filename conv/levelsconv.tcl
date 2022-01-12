@@ -24,6 +24,7 @@ puts $fh "..[expr {[llength $Levels]/2}]"
 foreach {key data} $Levels {
   puts $fh "KEY\n..$key"
   foreach {k v} $data {
+    set k [string toupper $k]
     puts $fh $k
     puts $fh "..$v"
   }

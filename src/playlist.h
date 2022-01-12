@@ -1,6 +1,8 @@
 #ifndef INC_PLAYLIST_H
 #define INC_PLAYLIST_H
 
+#include <stdbool.h>
+
 #include "datafile.h"
 #include "song.h"
 #include "songlist.h"
@@ -79,5 +81,6 @@ typedef struct {
 playlist_t    *playlistAlloc (char *);
 void          playlistFree (playlist_t *);
 song_t        *playlistGetNextSong (playlist_t *);
+bool          playlistFilterSong (song_t *song, void *tplaylist);
 
 #endif /* INC_PLAYLIST_H */

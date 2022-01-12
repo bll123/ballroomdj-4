@@ -6,20 +6,23 @@
 #include <string.h>
 #include <assert.h>
 
-#include "playlist.h"
-#include "datafile.h"
-#include "fileop.h"
-#include "portability.h"
-#include "datautil.h"
-#include "rating.h"
-#include "level.h"
+#include "bdjvarsdf.h"
 #include "dance.h"
-#include "song.h"
-#include "songlist.h"
-#include "sequence.h"
+#include "datafile.h"
+#include "datautil.h"
+#include "fileop.h"
+#include "level.h"
 #include "log.h"
 #include "musicdb.h"
+#include "playlist.h"
+#include "portability.h"
+#include "rating.h"
+#include "sequence.h"
+#include "song.h"
+#include "songlist.h"
 #include "songsel.h"
+#include "status.h"
+#include "tagdef.h"
 
 static void     plConvResume (char *, datafileret_t *ret);
 static void     plConvWait (char *, datafileret_t *ret);
@@ -30,14 +33,14 @@ static void     plConvType (char *, datafileret_t *ret);
 static datafilekey_t playlistdfkeys[] = {
   { "ALLOWEDKEYWORDS",  PLAYLIST_ALLOWED_KEYWORDS,
       VALUE_DATA, parseConvTextList },
+  { "DANCELEVELHIGH",   PLAYLIST_LEVEL_HIGH,
+      VALUE_DATA, levelConv },
+  { "DANCELEVELLOW",    PLAYLIST_LEVEL_LOW,
+      VALUE_DATA, levelConv },
   { "DANCERATING",      PLAYLIST_RATING,
       VALUE_DATA, ratingConv },
   { "GAP",              PLAYLIST_GAP,
       VALUE_DATA, NULL },
-  { "HIGHDANCELEVEL",   PLAYLIST_LEVEL_LOW,
-      VALUE_DATA, levelConv },
-  { "LOWDANCELEVEL",    PLAYLIST_LEVEL_HIGH,
-      VALUE_DATA, levelConv },
   { "MANUALLIST",       PLAYLIST_MANUAL_LIST_NAME,
       VALUE_DATA, NULL },
   { "MAXPLAYTIME",      PLAYLIST_MAX_PLAY_TIME,
@@ -125,7 +128,7 @@ playlistAlloc (char *fname)
     return NULL;
   }
 
-  pl->pldancesdf = datafileAllocParse ("playlist-dances", DFTYPE_KEY_LONG, tfn,
+  pl->pldancesdf = datafileAllocParse ("playlist-dances", DFTYPE_INDIRECT, tfn,
       playlistdancedfkeys, PLAYLIST_DANCE_DFKEY_COUNT, DATAFILE_NO_LOOKUP);
   if (pl->pldancesdf == NULL) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "Bad playlist-dance %s", tfn);
@@ -167,7 +170,6 @@ playlistAlloc (char *fname)
       playlistFree (pl);
       return NULL;
     }
-    pl->songsel = songselAlloc (sequenceGetDanceList (pl->sequence));
     sequenceStartIterator (pl->sequence);
   }
 
@@ -232,12 +234,82 @@ playlistGetNextSong (playlist_t *pl)
       break;
     }
     case PLTYPE_SEQ: {
+      if (pl->songsel == NULL) {
+        pl->songsel = songselAlloc (sequenceGetDanceList (pl->sequence),
+            playlistFilterSong, pl);
+      }
       long dancekey = sequenceIterate (pl->sequence);
       song = songselSelect (pl->songsel, dancekey);
       break;
     }
   }
   return song;
+}
+
+bool
+playlistFilterSong (song_t *song, void *tplaylist)
+{
+  playlist_t    *pl = tplaylist;
+  long          rating;
+  long          plRating;
+  long          plLevelLow;
+  long          plLevelHigh;
+  long          level;
+  char          *keyword;
+  list_t        *kwList;
+  long          idx;
+  status_t      *status;
+  long          sstatus;
+
+
+  plRating = llistGetLong (pl->plinfo, PLAYLIST_RATING);
+  rating = songGetLong (song, TAG_DANCERATING);
+  if (rating < plRating) {
+    logMsg (LOG_DBG, LOG_SONGSEL, "rating %ld < %ld", rating, plRating);
+    return false;
+  }
+
+  plLevelLow = llistGetLong (pl->plinfo, PLAYLIST_LEVEL_LOW);
+  plLevelHigh = llistGetLong (pl->plinfo, PLAYLIST_LEVEL_HIGH);
+  level = songGetLong (song, TAG_DANCELEVEL);
+  if (level < plLevelLow || level > plLevelHigh) {
+    logMsg (LOG_DBG, LOG_SONGSEL, "level %ld < %ld / > %ld", level, plLevelLow, plLevelHigh);
+    return false;
+  }
+
+  keyword = songGetData (song, TAG_KEYWORD);
+  if (keyword != NULL) {
+    kwList = llistGetList (pl->plinfo, PLAYLIST_ALLOWED_KEYWORDS);
+    idx = listGetStrIdx (kwList, keyword);
+    if (listGetSize (kwList) > 0 && idx < 0) {
+      logMsg (LOG_DBG, LOG_SONGSEL, "keyword %s not in allowed", keyword);
+      return false;
+    }
+  }
+
+  kwList = llistGetList (pl->plinfo, PLAYLIST_REQ_KEYWORDS);
+  if (listGetSize (kwList) > 0) {
+    if (keyword == NULL) {
+      logMsg (LOG_DBG, LOG_SONGSEL, "keyword empty", keyword);
+      return false;
+    }
+    idx = listGetStrIdx (kwList, keyword);
+    if (idx < 0) {
+      logMsg (LOG_DBG, LOG_SONGSEL, "keyword not in required", keyword);
+      return false;
+    }
+  }
+
+  if (llistGetLong (pl->plinfo, PLAYLIST_USE_STATUS)) {
+    sstatus = songGetLong (song, TAG_STATUS);
+    status = bdjvarsdf [BDJVDF_STATUS];
+    if (status != NULL && ! statusPlayCheck (status, sstatus)) {
+      logMsg (LOG_DBG, LOG_SONGSEL, "status %ld not playable", status);
+      return false;
+    }
+  }
+
+  return true;
 }
 
 /* internal routines */

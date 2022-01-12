@@ -6,19 +6,20 @@
 #include <string.h>
 #include <assert.h>
 
-#include "song.h"
-#include "list.h"
-#include "bdjstring.h"
-#include "tagdef.h"
-#include "log.h"
-#include "datafile.h"
-#include "level.h"
-#include "rating.h"
-#include "genre.h"
-#include "fileop.h"
-#include "portability.h"
 #include "bdjopt.h"
+#include "bdjstring.h"
 #include "dance.h"
+#include "datafile.h"
+#include "fileop.h"
+#include "genre.h"
+#include "level.h"
+#include "list.h"
+#include "log.h"
+#include "portability.h"
+#include "rating.h"
+#include "song.h"
+#include "status.h"
+#include "tagdef.h"
 
   /* must be sorted in ascii order */
 static datafilekey_t songdfkeys[] = {
@@ -52,7 +53,7 @@ static datafilekey_t songdfkeys[] = {
   { "SONGEND",              TAG_SONGEND,              VALUE_DATA, NULL },
   { "SONGSTART",            TAG_SONGSTART,            VALUE_DATA, NULL },
   { "SPEEDADJUSTMENT",      TAG_SPEEDADJUSTMENT,      VALUE_LONG, NULL },
-  { "STATUS",               TAG_STATUS,               VALUE_DATA, NULL },
+  { "STATUS",               TAG_STATUS,               VALUE_LONG, statusConv },
   { "TAGS",                 TAG_TAGS,                 VALUE_LIST, parseConvTextList },
   { "TITLE",                TAG_TITLE,                VALUE_DATA, NULL },
   { "TRACKNUMBER",          TAG_TRACKNUMBER,          VALUE_LONG, NULL },

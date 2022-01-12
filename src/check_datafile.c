@@ -323,9 +323,9 @@ START_TEST(datafile_keylong)
   fprintf (fh, "%s", tstr);
   fclose (fh);
 
-  df = datafileAllocParse ("chk", DFTYPE_KEY_LONG, fn, dfkeyskl, 6, DATAFILE_NO_LOOKUP);
+  df = datafileAllocParse ("chk", DFTYPE_INDIRECT, fn, dfkeyskl, 6, DATAFILE_NO_LOOKUP);
   ck_assert_ptr_nonnull (df);
-  ck_assert_int_eq (df->dftype, DFTYPE_KEY_LONG);
+  ck_assert_int_eq (df->dftype, DFTYPE_INDIRECT);
   ck_assert_str_eq (df->fname, fn);
   ck_assert_ptr_nonnull (df->data);
 
@@ -412,9 +412,9 @@ START_TEST(datafile_keylong_lookup)
   fprintf (fh, "%s", tstr);
   fclose (fh);
 
-  df = datafileAllocParse ("chk", DFTYPE_KEY_LONG, fn, dfkeyskl, 6, 14);
+  df = datafileAllocParse ("chk", DFTYPE_INDIRECT, fn, dfkeyskl, 6, 14);
   ck_assert_ptr_nonnull (df);
-  ck_assert_int_eq (df->dftype, DFTYPE_KEY_LONG);
+  ck_assert_int_eq (df->dftype, DFTYPE_INDIRECT);
   ck_assert_str_eq (df->fname, fn);
   ck_assert_ptr_nonnull (df->data);
   ck_assert_ptr_nonnull (df->lookup);

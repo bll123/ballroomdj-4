@@ -42,3 +42,4 @@ if ! exist conv (
 "%tclsh%" ./conv/sortoptconv.tcl $dir
 "%tclsh%" ./conv/autoselconv.tcl $dir
 "%tclsh%" ./conv/typeconv.tcl $dir
+"%tclsh%" ./conv/statusconv.tcl $dir

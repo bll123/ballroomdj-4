@@ -160,52 +160,6 @@ bdjoptInit (void)
   datafileSetData (df, tlist);
   free (ddata);
 
-#if 0
-long tl;
-char *tval;
-char *tnm;
-long lval;
-valuetype_t vt;
-int found;
-llistStartIterator (tlist);
-while ((tl = llistIterateKeyLong (tlist)) >= 0) {
-  found = 0;
-  vt = llistGetValueType (tlist, tl);
-  for (size_t i = 0; ! found && i < BDJOPT_GLOBAL_DFKEY_COUNT; ++i) {
-    if (bdjoptglobaldfkeys [i].itemkey == tl) {
-      found = 1;
-      tnm = bdjoptglobaldfkeys [i].name;
-    }
-  }
-  for (size_t i = 0; ! found && i < BDJOPT_PROFILE_DFKEY_COUNT; ++i) {
-    if (bdjoptprofiledfkeys [i].itemkey == tl) {
-      found = 1;
-      tnm = bdjoptprofiledfkeys [i].name;
-    }
-  }
-  for (size_t i = 0; ! found && i < BDJOPT_MACHINE_DFKEY_COUNT; ++i) {
-    if (bdjoptmachdfkeys [i].itemkey == tl) {
-      found = 1;
-      tnm = bdjoptmachdfkeys [i].name;
-    }
-  }
-  for (size_t i = 0; ! found && i < BDJOPT_MACH_PROFILE_DFKEY_COUNT; ++i) {
-    if (bdjoptmachprofiledfkeys [i].itemkey == tl) {
-      found = 1;
-      tnm = bdjoptmachprofiledfkeys [i].name;
-    }
-  }
-  if (vt == VALUE_DATA) {
-    tval = (char *) llistGetData (tlist, tl);
-    fprintf (stderr, "%ld: %s %s\n", tl, tnm, tval);
-  }
-  if (vt == VALUE_LONG) {
-    lval = llistGetLong (tlist, tl);
-    fprintf (stderr, "%ld: %s %ld\n", tl, tnm, lval);
-  }
-}
-#endif
-
   bdjopt = df;
 }
 
@@ -247,7 +201,6 @@ bdjoptSetLong (long idx, long value)
   if (bdjopt == NULL) {
     return;
   }
-fprintf (stderr, "data: %p\n", bdjopt->data);
   llistSetLong (bdjopt->data, idx, value);
 }
 

@@ -50,7 +50,7 @@ danceAlloc (char *fname)
   dance = malloc (sizeof (dance_t));
   assert (dance != NULL);
 
-  dance->df = datafileAllocParse ("dance", DFTYPE_KEY_LONG, fname,
+  dance->df = datafileAllocParse ("dance", DFTYPE_INDIRECT, fname,
       dancedfkeys, DANCE_DFKEY_COUNT, DANCE_DANCE);
   return dance;
 }

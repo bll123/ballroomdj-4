@@ -14,8 +14,8 @@
 
   /* must be sorted in ascii order */
 static datafilekey_t genredfkeys[] = {
-  { "classical",  GENRE_CLASSICAL_FLAG, VALUE_LONG, parseConvBoolean },
-  { "genre",      GENRE_GENRE,          VALUE_DATA, NULL },
+  { "CLASSICAL",  GENRE_CLASSICAL_FLAG, VALUE_LONG, parseConvBoolean },
+  { "GENRE",      GENRE_GENRE,          VALUE_DATA, NULL },
 };
 #define GENRE_DFKEY_COUNT (sizeof (genredfkeys) / sizeof (datafilekey_t))
 
@@ -32,7 +32,7 @@ genreAlloc (char *fname)
   genre = malloc (sizeof (genre));
   assert (genre != NULL);
 
-  genre->df = datafileAllocParse ("genre", DFTYPE_KEY_LONG, fname,
+  genre->df = datafileAllocParse ("genre", DFTYPE_INDIRECT, fname,
       genredfkeys, GENRE_DFKEY_COUNT, GENRE_GENRE);
   llistDumpInfo (datafileGetList (genre->df));
   return genre;

@@ -20,6 +20,7 @@ typedef struct {
 } songselperc_t;
 
 typedef struct {
+  long        danceKey;
   list_t      *songIdxList;
   list_t      *currIdxList;
   list_t      *ratingList;
@@ -30,7 +31,10 @@ typedef struct {
   list_t    *danceSelList;
 } songsel_t;
 
-songsel_t     * songselAlloc (list_t *dancelist);
+typedef bool (*songselFilter_t)(song_t *, void *);
+
+songsel_t     * songselAlloc (list_t *dancelist,
+                  songselFilter_t filterProc, void *userdata);
 void          songselFree (songsel_t *songsel);
 song_t        * songselSelect (songsel_t *songsel, long danceIdx);
 

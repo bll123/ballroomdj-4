@@ -14,8 +14,8 @@
 
   /* must be sorted in ascii order */
 static datafilekey_t ratingdfkeys[] = {
-  { "rating", RATING_RATING, VALUE_DATA, NULL },
-  { "weight", RATING_WEIGHT, VALUE_LONG, NULL },
+  { "RATING", RATING_RATING, VALUE_DATA, NULL },
+  { "WEIGHT", RATING_WEIGHT, VALUE_LONG, NULL },
 };
 #define RATING_DFKEY_COUNT (sizeof (ratingdfkeys) / sizeof (datafilekey_t))
 
@@ -32,7 +32,7 @@ ratingAlloc (char *fname)
   rating = malloc (sizeof (rating_t));
   assert (rating != NULL);
 
-  rating->df = datafileAllocParse ("rating", DFTYPE_KEY_LONG, fname,
+  rating->df = datafileAllocParse ("rating", DFTYPE_INDIRECT, fname,
       ratingdfkeys, RATING_DFKEY_COUNT, RATING_RATING);
   rating->rating = datafileGetList (rating->df);
   llistDumpInfo (rating->rating);
@@ -51,10 +51,9 @@ ratingFree (rating_t *rating)
 }
 
 long
-ratingGetWeight (rating_t *rating, long idx)
+ratingGetWeight (rating_t *rating, long ikey)
 {
-  list_t *list = llistGetList (rating->rating, idx);
-  return llistGetLong (list, RATING_WEIGHT);
+  return ilistGetLong (rating->rating, ikey, RATING_WEIGHT);
 }
 
 void

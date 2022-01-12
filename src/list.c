@@ -44,7 +44,8 @@ listAlloc (char *name, listorder_t ordered, listCompare_t compare,
   list->compare = compare;
   list->keyCache.strkey = NULL;
   list->locCache = LIST_LOC_INVALID;
-  list->cacheHits = 0;
+  list->readCacheHits = 0;
+  list->writeCacheHits = 0;
   list->keyFreeHook = keyFreeHook;
   list->valueFreeHook = valueFreeHook;
   logMsg (LOG_DBG, LOG_LIST, "alloc %s", name);
@@ -58,8 +59,9 @@ listFree (void *tlist)
   list_t *list = (list_t *) tlist;
 
   if (list != NULL) {
-    if (list->cacheHits > 0) {
-      logMsg (LOG_DBG, LOG_IMPORTANT, "list %s: %ld cache hits", list->name, list->cacheHits);
+    if (list->readCacheHits > 0 || list->writeCacheHits > 0) {
+      logMsg (LOG_DBG, LOG_IMPORTANT, "list %s: cache read:%ld write:%ld",
+          list->name, list->readCacheHits, list->writeCacheHits);
     }
     if (list->name != NULL) {
       free (list->name);
@@ -219,20 +221,6 @@ list_t *
 listGetList (list_t *list, char *keydata)
 {
   return listGetData (list, keydata);
-}
-
-valuetype_t
-listGetValueType (list_t *list, char *keydata)
-{
-  listkey_t       key;
-  long            idx;
-
-  key.strkey = keydata;
-  idx = listGetIdx (list, &key);
-  if (idx >= 0) {
-    return list->data [idx].valuetype;
-  }
-  return VALUE_NONE;
 }
 
 long
@@ -482,20 +470,6 @@ llistGetList (list_t *list, long lkey)
   return llistGetData (list, lkey);
 }
 
-valuetype_t
-llistGetValueType (list_t *list, long lkey)
-{
-  listkey_t       key;
-  long            idx;
-
-  key.lkey = lkey;
-  idx = listGetIdx (list, &key);
-  if (idx >= 0) {
-    return list->data [idx].valuetype;
-  }
-  return VALUE_NONE;
-}
-
 inline void
 llistSort (list_t *list)
 {
@@ -547,6 +521,133 @@ llistDumpInfo (list_t *list)
   listDumpInfo (list);
 }
 
+/* indirect routines */
+
+void
+ilistSetData (list_t *list, long ikey, long lidx, void *data)
+{
+  listitem_t    item;
+  list_t        *ilist;
+
+  if (list == NULL) {
+    return;
+  }
+
+  ilist = llistGetList (list, ikey);
+  if (ilist != NULL) {
+    item.key.lkey = lidx;
+    item.valuetype = VALUE_DATA;
+    item.value.data = data;
+    listSet (ilist, &item);
+  }
+}
+
+void
+ilistSetLong (list_t *list, long ikey, long lidx, long data)
+{
+  listitem_t    item;
+  list_t        *ilist;
+
+  if (list == NULL) {
+    return;
+  }
+
+  ilist = llistGetList (list, ikey);
+  if (ilist != NULL) {
+    item.key.lkey = lidx;
+    item.valuetype = VALUE_LONG;
+    item.value.l = data;
+    listSet (list, &item);
+  }
+}
+
+void
+ilistSetDouble (list_t *list, long ikey, long lidx, double data)
+{
+  listitem_t    item;
+  list_t        *ilist;
+
+  if (list == NULL) {
+    return;
+  }
+
+  ilist = llistGetList (list, ikey);
+  if (ilist != NULL) {
+    item.key.lkey = lidx;
+    item.valuetype = VALUE_DOUBLE;
+    item.value.d = data;
+    listSet (list, &item);
+  }
+}
+
+void *
+ilistGetData (list_t *list, long ikey, long lidx)
+{
+  void            *value = NULL;
+  listkey_t       key;
+  long            idx;
+  list_t          *ilist;
+
+  if (list == NULL) {
+    return NULL;
+  }
+
+  ilist = llistGetList (list, ikey);
+  if (ilist != NULL) {
+    key.lkey = lidx;
+    idx = listGetIdx (list, &key);
+    if (idx >= 0) {
+      value = (char *) ilist->data [idx].value.data;
+    }
+  }
+  logMsg (LOG_DBG, LOG_LIST, "list:%s key:%ld idx:%ld", ilist->name, lidx, idx);
+  return value;
+}
+
+long
+ilistGetLong (list_t *list, long ikey, long lidx)
+{
+  long            value = -1L;
+  listkey_t       key;
+  long            idx;
+  list_t          *ilist;
+
+  if (list == NULL) {
+    return -1L;
+  }
+
+  ilist = llistGetList (list, ikey);
+  key.lkey = lidx;
+  idx = listGetIdx (list, &key);
+  if (idx >= 0) {
+    value = list->data [idx].value.l;
+  }
+  logMsg (LOG_DBG, LOG_LIST, "list:%s key:%ld idx:%ld value:%ld", list->name, lidx, idx, value);
+  return value;
+}
+
+double
+ilistGetDouble (list_t *list, long ikey, long lidx)
+{
+  double          value = -1.0;
+  listkey_t       key;
+  long            idx;
+  list_t          *ilist;
+
+  if (list == NULL) {
+    return -1.0;
+  }
+
+  ilist = llistGetList (list, ikey);
+  key.lkey = lidx;
+  idx = listGetIdx (list, &key);
+  if (idx >= 0) {
+    value = list->data [idx].value.d;
+  }
+  logMsg (LOG_DBG, LOG_LIST, "list:%s key:%ld idx:%ld value:%8.2g", list->name, lidx, idx, value);
+  return value;
+}
+
 /* internal routines */
 
 static void
@@ -562,19 +663,29 @@ listSetKey (list_t *list, listkey_t *key, char *keydata)
 static void
 listSet (list_t *list, listitem_t *item)
 {
-  size_t          loc;
-  int             rc;
+  size_t          loc = 0L;
+  int             rc = -1;
+  int             found = 0;
 
-  loc = 0L;
-  rc = -1;
+  if (list->locCache >= 0L) {
+    if ((list->keytype == KEY_STR &&
+         strcmp (item->key.strkey, list->keyCache.strkey) == 0) ||
+        (list->keytype == KEY_LONG &&
+         item->key.lkey == list->keyCache.lkey)) {
+      loc = list->locCache;
+      ++list->writeCacheHits;
+      found = 1;
+    }
+  }
 
-  if (list->count > 0) {
+  if (! found && list->count > 0) {
     if (list->ordered == LIST_ORDERED) {
       rc = listBinarySearch (list, &item->key, &loc);
     } else {
       loc = list->count;
     }
   }
+
   if (list->ordered == LIST_ORDERED) {
     if (rc < 0) {
       listInsert (list, loc, item);
@@ -602,7 +713,7 @@ listGetIdx (list_t *list, listkey_t *key)
         (list->keytype == KEY_LONG &&
          key->lkey == list->keyCache.lkey)) {
       ridx = list->locCache;
-      ++list->cacheHits;
+      ++list->readCacheHits;
       return ridx;
     }
   }
@@ -824,3 +935,4 @@ mergeSort (list_t *list, size_t l, size_t r)
     merge (list, l, m, r);
   }
 }
+
