@@ -25,9 +25,9 @@ sockhMainLoop (uint16_t listenPort, sockProcessMsg_t msgProc,
   size_t      len = 0;
   int         done = 0;
   int         tdone = 0;
-  long        routefrom = ROUTE_NONE;
-  long        route = ROUTE_NONE;
-  long        msg = MSG_NONE;
+  bdjmsgroute_t routefrom = ROUTE_NONE;
+  bdjmsgroute_t route = ROUTE_NONE;
+  bdjmsgmsg_t msg = MSG_NONE;
   char        args [BDJMSG_MAX];
 
 
@@ -109,13 +109,13 @@ sockhMainLoop (uint16_t listenPort, sockProcessMsg_t msgProc,
 }
 
 int
-sockhSendMessage (Sock_t sock, long routefrom, long route,
-    long msg, char *args)
+sockhSendMessage (Sock_t sock, bdjmsgroute_t routefrom,
+    bdjmsgroute_t route, bdjmsgmsg_t msg, char *args)
 {
   char        msgbuff [BDJMSG_MAX];
 
   logProcBegin (LOG_PROC, "sockhSendMessage");
-  logMsg (LOG_DBG, LOG_SOCKET, "route:%ld msg:%ld args:%s", route, msg, args);
+  logMsg (LOG_DBG, LOG_SOCKET, "route:%d msg:%d args:%s", route, msg, args);
   size_t len = msgEncode (routefrom, route, msg, args, msgbuff, sizeof (msgbuff));
   int rc = sockWriteBinary (sock, msgbuff, len);
   logProcEnd (LOG_PROC, "sockhSendMessage", "");

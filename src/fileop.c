@@ -35,7 +35,7 @@ fileopExists (char *fname)
 {
   struct stat   statbuf;
 
-  int rc = lstat (fname, &statbuf);
+  int rc = stat (fname, &statbuf);
   return (rc == 0);
 }
 

@@ -47,9 +47,9 @@ typedef enum {
 #define MSG_ARGS_RS         0x1E
 #define MSG_ARGS_RS_STR     "\x1E"
 
-size_t    msgEncode (long routefrom, long route, long msg,
-              char *args, char *msgbuff, size_t mlen);
-void      msgDecode (char *msgbuff, long *routefrom, long *route, long *msg,
-              char *args, size_t alen);
+size_t    msgEncode (bdjmsgroute_t routefrom, bdjmsgroute_t route,
+              bdjmsgmsg_t msg, char *args, char *msgbuff, size_t mlen);
+void      msgDecode (char *msgbuff, bdjmsgroute_t *routefrom,
+              bdjmsgroute_t *route, bdjmsgmsg_t *msg, char *args, size_t alen);
 
 #endif /* INC_BDJMSG_H */

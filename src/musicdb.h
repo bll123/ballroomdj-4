@@ -3,9 +3,11 @@
 
 #include "song.h"
 
+typedef ssize_t   dbidx_t;
+
 typedef struct {
-  size_t      count;
-  list_t      *songs;
+  ssize_t   count;
+  list_t    *songs;
 } db_t;
 
 #define MUSICDB_FNAME   "musicdb"
@@ -16,8 +18,8 @@ void    dbClose (void);
 size_t  dbCount (void);
 int     dbLoad (db_t *, char *);
 song_t  *dbGetByName (char *);
-song_t  *dbGetByIdx (size_t idx);
+song_t  *dbGetByIdx (dbidx_t idx);
 void    dbStartIterator (void);
-song_t  *dbIterate (size_t *idx);
+song_t  *dbIterate (dbidx_t *idx);
 
 #endif /* INC_MUSICDB_H */

@@ -101,9 +101,9 @@ queueGetCurrent (queue_t *q)
 }
 
 void *
-queueGetByIdx (queue_t *q, long idx)
+queueGetByIdx (queue_t *q, ssize_t idx)
 {
-  long              count = 0;
+  ssize_t           count = 0;
   queuenode_t       *node = NULL;
   void              *data = NULL;
 
@@ -139,9 +139,9 @@ queuePop (queue_t *q)
 }
 
 void *
-queueRemoveByIdx (queue_t *q, long idx)
+queueRemoveByIdx (queue_t *q, ssize_t idx)
 {
-  long              count = 0;
+  ssize_t           count = 0;
   queuenode_t       *node = NULL;
   void              *data = NULL;
 
@@ -162,7 +162,7 @@ queueRemoveByIdx (queue_t *q, long idx)
   return data;
 }
 
-long
+ssize_t
 queueGetCount (queue_t *q)
 {
   if (q != NULL) {

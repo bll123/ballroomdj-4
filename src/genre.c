@@ -14,7 +14,7 @@
 
   /* must be sorted in ascii order */
 static datafilekey_t genredfkeys[] = {
-  { "CLASSICAL",  GENRE_CLASSICAL_FLAG, VALUE_LONG, parseConvBoolean },
+  { "CLASSICAL",  GENRE_CLASSICAL_FLAG, VALUE_NUM, parseConvBoolean },
   { "GENRE",      GENRE_GENRE,          VALUE_DATA, NULL },
 };
 #define GENRE_DFKEY_COUNT (sizeof (genredfkeys) / sizeof (datafilekey_t))
@@ -55,9 +55,9 @@ genreConv (char *keydata, datafileret_t *ret)
   genre_t     *genre;
   list_t      *lookup;
 
-  ret->valuetype = VALUE_LONG;
+  ret->valuetype = VALUE_NUM;
   genre = bdjvarsdf [BDJVDF_GENRES];
   lookup = datafileGetLookup (genre->df);
-  ret->u.l = listGetLong (lookup, keydata);
+  ret->u.num = listGetNum (lookup, keydata);
 }
 

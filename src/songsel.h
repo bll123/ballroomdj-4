@@ -3,28 +3,39 @@
 
 #include "song.h"
 #include "list.h"
+#include "musicdb.h"
+#include "queue.h"
+
+typedef enum {
+  SONGSEL_ATTR_RATING,
+  SONGSEL_ATTR_LEVEL,
+  SONGSEL_ATTR_MAX,
+} songselattr_t;
 
 typedef struct {
-  size_t        dbidx;
-  long          ratingIdx;
-  long          levelIdx;
+  listidx_t     idx;
+} songselidx_t;
+
+typedef struct {
+  dbidx_t       dbidx;
+  listidx_t     attrIdx [SONGSEL_ATTR_MAX];
   double        percentage;
-} songselsong_t;
+} songselsongdata_t;
 
   /* used for both ratings and levels */
 typedef struct {
-  size_t        origCount;      // count of number of songs for this idx
-  long          weight;         // weight for this idx
-  size_t        count;          // current count of number of songs
+  ssize_t       origCount;      // count of number of songs for this idx
+  ssize_t       weight;         // weight for this idx
+  ssize_t       count;          // current count of number of songs
   double        calcperc;       // current percentage adjusted by weight
 } songselperc_t;
 
 typedef struct {
-  long        danceKey;
+  listidx_t   danceKey;
   list_t      *songIdxList;
-  list_t      *currIdxList;
-  list_t      *ratingList;
-  list_t      *levelList;
+  queue_t     *currentIndexes;
+  list_t      *currentIdxList;
+  list_t      *attrList [SONGSEL_ATTR_MAX];
 } songseldance_t;
 
 typedef struct {
@@ -36,6 +47,6 @@ typedef bool (*songselFilter_t)(song_t *, void *);
 songsel_t     * songselAlloc (list_t *dancelist,
                   songselFilter_t filterProc, void *userdata);
 void          songselFree (songsel_t *songsel);
-song_t        * songselSelect (songsel_t *songsel, long danceIdx);
+song_t        * songselSelect (songsel_t *songsel, listidx_t danceIdx);
 
 #endif /* INC_SONGSEL_H */

@@ -22,7 +22,7 @@ sequenceAlloc (char *fname)
   datafile_t    *df;
   list_t        *danceLookup;
   char          *seqkey;
-  long          lkey;
+  listidx_t     lkey;
   char          fn [MAXPATHLEN];
 
 
@@ -41,11 +41,11 @@ sequenceAlloc (char *fname)
 
   danceLookup = danceGetLookup ();
   sequence->sequence = llistAlloc ("sequence", LIST_UNORDERED, free);
-  llistSetSize (sequence->sequence, listGetSize (tlist));
+  llistSetSize (sequence->sequence, listGetCount (tlist));
 
   listStartIterator (tlist);
   while ((seqkey = listIterateKeyStr (tlist)) != NULL) {
-    lkey = listGetLong (danceLookup, seqkey);
+    lkey = listGetNum (danceLookup, seqkey);
     llistSetData (sequence->sequence, lkey, strdup (seqkey));
   }
 
@@ -86,19 +86,19 @@ sequenceStartIterator (sequence_t *sequence)
   listStartIterator (sequence->sequence);
 }
 
-long
+listidx_t
 sequenceIterate (sequence_t *sequence)
 {
-  long            lkey;
+  listidx_t     lkey;
 
   if (sequence == NULL || sequence->sequence == NULL) {
     return -1L;
   }
 
-  lkey = llistIterateKeyLong (sequence->sequence);
+  lkey = llistIterateKeyNum (sequence->sequence);
   if (lkey < 0) {
       /* a sequence just restarts from the beginning */
-    lkey = llistIterateKeyLong (sequence->sequence);
+    lkey = llistIterateKeyNum (sequence->sequence);
   }
   return lkey;
 }

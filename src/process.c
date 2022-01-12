@@ -64,7 +64,7 @@ processExists (pid_t pid)
 
 
 int
-processStart (const char *fn, pid_t *pid, long profile, long loglvl)
+processStart (const char *fn, pid_t *pid, ssize_t profile, ssize_t loglvl)
 {
   char        tmp [100];
   char        tmp2 [40];
@@ -167,32 +167,36 @@ processCatchSignals (void (*sigHandler)(int))
 void
 processSigChildIgnore (void)
 {
-#if _lib_sigaction
+#if _define_SIGCHLD
+# if _lib_sigaction
   struct sigaction    sigact;
   struct sigaction    oldact;
 
   memset (&sigact, '\0', sizeof (sigact));
   sigact.sa_handler = SIG_IGN;
   sigaction (SIGCHLD, &sigact, &oldact);       /* 1: hangup      */
-#endif
-#if ! _lib_sigaction && _lib_signal
+# endif
+# if ! _lib_sigaction && _lib_signal
   signal (SIGCHLD, SIG_IGN);
+# endif
 #endif
 }
 
 void
 processSigChildDefault (void)
 {
-#if _lib_sigaction
+#if _define_SIGCHLD
+# if _lib_sigaction
   struct sigaction    sigact;
   struct sigaction    oldact;
 
   memset (&sigact, '\0', sizeof (sigact));
   sigact.sa_handler = SIG_DFL;
   sigaction (SIGCHLD, &sigact, &oldact);       /* 1: hangup      */
-#endif
-#if _lib_signal
+# endif
+# if _lib_signal
   signal (SIGCHLD, SIG_DFL);
+# endif
 #endif
 }
 

@@ -51,8 +51,8 @@ dnctypesConv (char *keydata, datafileret_t *ret)
 {
   dnctype_t       *dtype;
 
-  ret->valuetype = VALUE_LONG;
+  ret->valuetype = VALUE_NUM;
   dtype = bdjvarsdf [BDJVDF_DANCE_TYPES];
-  ret->u.l = listGetStrIdx (datafileGetList (dtype->df), keydata);
+  ret->u.num = listGetStrIdx (datafileGetList (dtype->df), keydata);
 }
 

@@ -65,7 +65,7 @@ main (int argc, char *argv[])
       }
       case 'p': {
         if (optarg) {
-          sysvarSetLong (SVL_BDJIDX, atol (optarg));
+          sysvarSetNum (SVL_BDJIDX, atol (optarg));
         }
         break;
       }

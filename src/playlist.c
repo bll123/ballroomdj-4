@@ -44,13 +44,13 @@ static datafilekey_t playlistdfkeys[] = {
   { "MANUALLIST",       PLAYLIST_MANUAL_LIST_NAME,
       VALUE_DATA, NULL },
   { "MAXPLAYTIME",      PLAYLIST_MAX_PLAY_TIME,
-      VALUE_LONG, NULL },
+      VALUE_NUM, NULL },
   { "MQMESSAGE",        PLAYLIST_MQ_MESSAGE,
       VALUE_DATA, NULL },
   { "PAUSEEACHSONG",    PLAYLIST_PAUSE_EACH_SONG,
-      VALUE_LONG, parseConvBoolean },
+      VALUE_NUM, parseConvBoolean },
   { "PLAYANNOUNCE",     PLAYLIST_ANNOUNCE,
-      VALUE_LONG, parseConvBoolean },
+      VALUE_NUM, parseConvBoolean },
   { "REQUIREDKEYWORDS", PLAYLIST_REQ_KEYWORDS,
       VALUE_DATA, parseConvTextList },
   { "RESUME",           PLAYLIST_RESUME,
@@ -78,12 +78,12 @@ static datafilekey_t playlistdfkeys[] = {
 
   /* must be sorted in ascii order */
 static datafilekey_t playlistdancedfkeys[] = {
-  { "COUNT",          PLDANCE_COUNT,        VALUE_LONG, NULL },
+  { "COUNT",          PLDANCE_COUNT,        VALUE_NUM, NULL },
   { "DANCE",          PLDANCE_DANCE,        VALUE_DATA, danceConvDance },
-  { "HIGHBPM",        PLDANCE_HIGHBPM,      VALUE_LONG, NULL },
-  { "LOWBPM",         PLDANCE_LOWBPM,       VALUE_LONG, NULL },
-  { "MAXPLAYTIME",    PLDANCE_MAXPLAYTIME,  VALUE_LONG, NULL },
-  { "SELECTED",       PLDANCE_SELECTED,     VALUE_LONG, parseConvBoolean },
+  { "HIGHBPM",        PLDANCE_HIGHBPM,      VALUE_NUM, NULL },
+  { "LOWBPM",         PLDANCE_LOWBPM,       VALUE_NUM, NULL },
+  { "MAXPLAYTIME",    PLDANCE_MAXPLAYTIME,  VALUE_NUM, NULL },
+  { "SELECTED",       PLDANCE_SELECTED,     VALUE_NUM, parseConvBoolean },
 };
 #define PLAYLIST_DANCE_DFKEY_COUNT (sizeof (playlistdancedfkeys) / sizeof (datafilekey_t))
 
@@ -138,7 +138,7 @@ playlistAlloc (char *fname)
   pl->pldances = datafileGetList (pl->pldancesdf);
   llistDumpInfo (pl->pldances);
 
-  type = (pltype_t) llistGetLong (pl->plinfo, PLAYLIST_TYPE);
+  type = (pltype_t) llistGetNum (pl->plinfo, PLAYLIST_TYPE);
 
   if (type == PLTYPE_MANUAL) {
     char *slfname = llistGetData (pl->plinfo, PLAYLIST_MANUAL_LIST_NAME);
@@ -209,7 +209,7 @@ playlistGetNextSong (playlist_t *pl)
     return NULL;
   }
 
-  type = (pltype_t) llistGetLong (pl->plinfo, PLAYLIST_TYPE);
+  type = (pltype_t) llistGetNum (pl->plinfo, PLAYLIST_TYPE);
 
   switch (type) {
     case PLTYPE_AUTO: {
@@ -238,7 +238,7 @@ playlistGetNextSong (playlist_t *pl)
         pl->songsel = songselAlloc (sequenceGetDanceList (pl->sequence),
             playlistFilterSong, pl);
       }
-      long dancekey = sequenceIterate (pl->sequence);
+      listidx_t dancekey = sequenceIterate (pl->sequence);
       song = songselSelect (pl->songsel, dancekey);
       break;
     }
@@ -250,28 +250,28 @@ bool
 playlistFilterSong (song_t *song, void *tplaylist)
 {
   playlist_t    *pl = tplaylist;
-  long          rating;
-  long          plRating;
-  long          plLevelLow;
-  long          plLevelHigh;
-  long          level;
+  listidx_t     rating;
+  listidx_t     plRating;
+  listidx_t     plLevelLow;
+  listidx_t     plLevelHigh;
+  listidx_t     level;
   char          *keyword;
   list_t        *kwList;
-  long          idx;
+  listidx_t     idx;
   status_t      *status;
-  long          sstatus;
+  listidx_t     sstatus;
 
 
-  plRating = llistGetLong (pl->plinfo, PLAYLIST_RATING);
-  rating = songGetLong (song, TAG_DANCERATING);
+  plRating = llistGetNum (pl->plinfo, PLAYLIST_RATING);
+  rating = songGetNum (song, TAG_DANCERATING);
   if (rating < plRating) {
     logMsg (LOG_DBG, LOG_SONGSEL, "rating %ld < %ld", rating, plRating);
     return false;
   }
 
-  plLevelLow = llistGetLong (pl->plinfo, PLAYLIST_LEVEL_LOW);
-  plLevelHigh = llistGetLong (pl->plinfo, PLAYLIST_LEVEL_HIGH);
-  level = songGetLong (song, TAG_DANCELEVEL);
+  plLevelLow = llistGetNum (pl->plinfo, PLAYLIST_LEVEL_LOW);
+  plLevelHigh = llistGetNum (pl->plinfo, PLAYLIST_LEVEL_HIGH);
+  level = songGetNum (song, TAG_DANCELEVEL);
   if (level < plLevelLow || level > plLevelHigh) {
     logMsg (LOG_DBG, LOG_SONGSEL, "level %ld < %ld / > %ld", level, plLevelLow, plLevelHigh);
     return false;
@@ -281,14 +281,14 @@ playlistFilterSong (song_t *song, void *tplaylist)
   if (keyword != NULL) {
     kwList = llistGetList (pl->plinfo, PLAYLIST_ALLOWED_KEYWORDS);
     idx = listGetStrIdx (kwList, keyword);
-    if (listGetSize (kwList) > 0 && idx < 0) {
+    if (listGetCount (kwList) > 0 && idx < 0) {
       logMsg (LOG_DBG, LOG_SONGSEL, "keyword %s not in allowed", keyword);
       return false;
     }
   }
 
   kwList = llistGetList (pl->plinfo, PLAYLIST_REQ_KEYWORDS);
-  if (listGetSize (kwList) > 0) {
+  if (listGetCount (kwList) > 0) {
     if (keyword == NULL) {
       logMsg (LOG_DBG, LOG_SONGSEL, "keyword empty", keyword);
       return false;
@@ -300,8 +300,8 @@ playlistFilterSong (song_t *song, void *tplaylist)
     }
   }
 
-  if (llistGetLong (pl->plinfo, PLAYLIST_USE_STATUS)) {
-    sstatus = songGetLong (song, TAG_STATUS);
+  if (llistGetNum (pl->plinfo, PLAYLIST_USE_STATUS)) {
+    sstatus = songGetNum (song, TAG_STATUS);
     status = bdjvarsdf [BDJVDF_STATUS];
     if (status != NULL && ! statusPlayCheck (status, sstatus)) {
       logMsg (LOG_DBG, LOG_SONGSEL, "status %ld not playable", status);
@@ -317,43 +317,43 @@ playlistFilterSong (song_t *song, void *tplaylist)
 static void
 plConvResume (char *data, datafileret_t *ret)
 {
-  ret->valuetype = VALUE_LONG;
-  ret->u.l = RESUME_FROM_LAST;
+  ret->valuetype = VALUE_NUM;
+  ret->u.num = RESUME_FROM_LAST;
   if (strcmp (data, "From Start") == 0) {
-    ret->u.l = RESUME_FROM_START;
+    ret->u.num = RESUME_FROM_START;
   }
 }
 
 static void
 plConvWait (char *data, datafileret_t *ret)
 {
-  ret->valuetype = VALUE_LONG;
-  ret->u.l = WAIT_CONTINUE;
+  ret->valuetype = VALUE_NUM;
+  ret->u.num = WAIT_CONTINUE;
   if (strcmp (data, "") == 0) {
-    ret->u.l = WAIT_PAUSE;
+    ret->u.num = WAIT_PAUSE;
   }
 }
 
 static void
 plConvStopType (char *data, datafileret_t *ret)
 {
-  ret->valuetype = VALUE_LONG;
-  ret->u.l = STOP_AT;
+  ret->valuetype = VALUE_NUM;
+  ret->u.num = STOP_AT;
   if (strcmp (data, "In") == 0) {
-    ret->u.l = STOP_IN;
+    ret->u.num = STOP_IN;
   }
 }
 
 static void
 plConvType (char *data, datafileret_t *ret)
 {
-  ret->valuetype = VALUE_LONG;
-  ret->u.l = PLTYPE_MANUAL;
+  ret->valuetype = VALUE_NUM;
+  ret->u.num = PLTYPE_MANUAL;
   if (strcmp (data, "Automatic") == 0) {
-    ret->u.l = PLTYPE_AUTO;
+    ret->u.num = PLTYPE_AUTO;
   }
   if (strcmp (data, "Sequence") == 0) {
-    ret->u.l = PLTYPE_SEQ;
+    ret->u.num = PLTYPE_SEQ;
   }
 }
 

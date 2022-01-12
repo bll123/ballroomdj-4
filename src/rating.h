@@ -2,6 +2,7 @@
 #define INC_RATING_H
 
 #include "datafile.h"
+#include "list.h"
 
 typedef enum {
   RATING_RATING,
@@ -16,7 +17,7 @@ typedef struct {
 
 rating_t    *ratingAlloc (char *);
 void        ratingFree (rating_t *rating);
-long        ratingGetWeight (rating_t *rating, long idx);
+ssize_t     ratingGetWeight (rating_t *rating, listidx_t idx);
 void        ratingConv (char *keydata, datafileret_t *ret);
 
 #endif /* INC_RATING_H */

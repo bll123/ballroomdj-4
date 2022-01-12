@@ -11,16 +11,16 @@
 #include "bdjstring.h"
 
 static void     listSetKey (list_t *list, listkey_t *key, char *keydata);
-static void     listSet (list_t *list, listitem_t *item);
-static long     listGetIdx (list_t *list, listkey_t *key);
-static void     listFreeItem (list_t *, size_t);
-static void     listInsert (list_t *, size_t loc, listitem_t *item);
-static void     listReplace (list_t *, size_t, listitem_t *item);
-static int      listBinarySearch (const list_t *, listkey_t *key, size_t *);
-static int      longCompare (long, long);
+static listidx_t  listSet (list_t *list, listitem_t *item);
+static listidx_t  listGetIdx (list_t *list, listkey_t *key);
+static void     listFreeItem (list_t *, ssize_t);
+static void     listInsert (list_t *, ssize_t loc, listitem_t *item);
+static void     listReplace (list_t *, ssize_t, listitem_t *item);
+static int      listBinarySearch (const list_t *, listkey_t *key, ssize_t *);
+static int      idxCompare (listidx_t, listidx_t);
 static int      listCompare (const list_t *, listkey_t *a, listkey_t *b);
-static void     merge (list_t *, size_t, size_t, size_t);
-static void     mergeSort (list_t *, size_t, size_t);
+static void     merge (list_t *, ssize_t, ssize_t, ssize_t);
+static void     mergeSort (list_t *, ssize_t, ssize_t);
 
 list_t *
 listAlloc (char *name, listorder_t ordered, listCompare_t compare,
@@ -68,7 +68,7 @@ listFree (void *tlist)
       list->name = NULL;
     }
     if (list->data != NULL) {
-      for (size_t i = 0; i < list->count; ++i) {
+      for (ssize_t i = 0; i < list->count; ++i) {
         listFreeItem (list, i);
       } /* for each list item */
       free (list->data);
@@ -86,8 +86,8 @@ listFree (void *tlist)
   }
 }
 
-inline size_t
-listGetSize (list_t *list)
+inline ssize_t
+listGetCount (list_t *list)
 {
   if (list == NULL) {
     return 0;
@@ -96,7 +96,7 @@ listGetSize (list_t *list)
 }
 
 void
-listSetSize (list_t *list, size_t siz)
+listSetSize (list_t *list, ssize_t siz)
 {
   if (list == NULL) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "listsetsize: null list");
@@ -111,7 +111,7 @@ listSetSize (list_t *list, size_t siz)
   }
 }
 
-void
+listidx_t
 listSetData (list_t *list, char *keydata, void *data)
 {
   listitem_t    item;
@@ -119,32 +119,32 @@ listSetData (list_t *list, char *keydata, void *data)
   listSetKey (list, &item.key, keydata);
   item.valuetype = VALUE_DATA;
   item.value.data = data;
-  listSet (list, &item);
+  return listSet (list, &item);
 }
 
-void
-listSetLong (list_t *list, char *keydata, long lval)
+listidx_t
+listSetNum (list_t *list, char *keydata, ssize_t lval)
 {
   listitem_t    item;
 
   listSetKey (list, &item.key, keydata);
-  item.valuetype = VALUE_LONG;
-  item.value.l = lval;
-  listSet (list, &item);
+  item.valuetype = VALUE_NUM;
+  item.value.num = lval;
+  return listSet (list, &item);
 }
 
-void
+listidx_t
 listSetDouble (list_t *list, char *keydata, double dval)
 {
   listitem_t    item;
 
   listSetKey (list, &item.key, keydata);
   item.valuetype = VALUE_DOUBLE;
-  item.value.d = dval;
-  listSet (list, &item);
+  item.value.dval = dval;
+  return listSet (list, &item);
 }
 
-void
+listidx_t
 listSetList (list_t *list, char *keydata, list_t *data)
 {
   listitem_t    item;
@@ -152,7 +152,7 @@ listSetList (list_t *list, char *keydata, list_t *data)
   listSetKey (list, &item.key, keydata);
   item.valuetype = VALUE_LIST;
   item.value.data = data;
-  listSet (list, &item);
+  return listSet (list, &item);
 }
 
 void *
@@ -160,7 +160,7 @@ listGetData (list_t *list, char *keydata)
 {
   void            *value = NULL;
   listkey_t       key;
-  long            idx;
+  listidx_t            idx;
 
   key.strkey = keydata;
   idx = listGetIdx (list, &key);
@@ -172,7 +172,7 @@ listGetData (list_t *list, char *keydata)
 }
 
 void *
-listGetDataByIdx (list_t *list, long idx)
+listGetDataByIdx (list_t *list, listidx_t idx)
 {
   void    *value;
 
@@ -180,22 +180,42 @@ listGetDataByIdx (list_t *list, long idx)
   if (list == NULL) {
     return NULL;
   }
+  if (idx >= list->count) {
+    return NULL;
+  }
   value = list->data [idx].value.data;
   logMsg (LOG_DBG, LOG_LIST, "list:%s idx:%ld", list->name, idx);
   return value;
 }
 
-long
-listGetLong (list_t *list, char *keydata)
+ssize_t
+listGetNumByIdx (list_t *list, listidx_t idx)
 {
-  long            value = -1L;
+  ssize_t     value;
+
+
+  if (list == NULL) {
+    return -1;
+  }
+  if (idx >= list->count) {
+    return -1;
+  }
+  value = list->data [idx].value.num;
+  logMsg (LOG_DBG, LOG_LIST, "list:%s idx:%ld", list->name, idx);
+  return value;
+}
+
+ssize_t
+listGetNum (list_t *list, char *keydata)
+{
+  ssize_t            value = -1L;
   listkey_t       key;
-  long            idx;
+  listidx_t            idx;
 
   key.strkey = keydata;
   idx = listGetIdx (list, &key);
   if (idx >= 0) {
-    value = list->data [idx].value.l;
+    value = list->data [idx].value.num;
   }
   logMsg (LOG_DBG, LOG_LIST, "list:%s key:%s idx:%ld value:%ld", list->name, keydata, idx, value);
   return value;
@@ -206,12 +226,12 @@ listGetDouble (list_t *list, char *keydata)
 {
   double          value = 0.0;
   listkey_t       key;
-  long            idx;
+  listidx_t            idx;
 
   key.strkey = keydata;
   idx = listGetIdx (list, &key);
   if (idx >= 0) {
-    value = list->data [idx].value.d;
+    value = list->data [idx].value.dval;
   }
   logMsg (LOG_DBG, LOG_LIST, "list:%s key:%s idx:%ld value:%8.2g", list->name, keydata, idx, value);
   return value;
@@ -223,7 +243,7 @@ listGetList (list_t *list, char *keydata)
   return listGetData (list, keydata);
 }
 
-long
+listidx_t
 listGetStrIdx (list_t *list, char *keydata)
 {
   listkey_t         key;
@@ -282,7 +302,7 @@ listIterateKeyStr (list_t *list)
 
   list->keyCache.strkey = strdup (value);
   assert (list->keyCache.strkey != NULL);
-  list->locCache = (long) list->iteratorIndex;
+  list->locCache = list->iteratorIndex;
 
   ++list->iteratorIndex;
   logProcEnd (LOG_PROC, "listIterateKeyStr", "");
@@ -313,7 +333,31 @@ listIterateValue (list_t *list)
   return value;
 }
 
-long
+ssize_t
+listIterateNum (list_t *list)
+{
+  ssize_t     value = -1;
+
+  logProcBegin (LOG_PROC, "listIterateNum");
+  if (list == NULL) {
+    logProcEnd (LOG_PROC, "listIterateNum", "null-list");
+    return -1;
+  }
+
+  if (list->iteratorIndex >= list->count) {
+    list->iteratorIndex = 0;
+    logProcEnd (LOG_PROC, "listIterateNum", "end-list");
+    return -1;  /* indicate the end of the list */
+  }
+
+  value = list->data [list->iteratorIndex].value.num;
+  list->currentIndex = list->iteratorIndex;
+  ++list->iteratorIndex;
+  logProcEnd (LOG_PROC, "listIterateNum", "");
+  return value;
+}
+
+listidx_t
 listIterateGetIdx (list_t *list)
 {
   if (list == NULL) {
@@ -323,7 +367,7 @@ listIterateGetIdx (list_t *list)
   return list->currentIndex;
 }
 
-/* key/value list, keyed by a long */
+/* key/value list, keyed by a listidx_t */
 
 list_t *
 llistAlloc (char *name, listorder_t ordered, listFree_t valueFreeHook)
@@ -331,7 +375,7 @@ llistAlloc (char *name, listorder_t ordered, listFree_t valueFreeHook)
   list_t    *list;
 
   list = listAlloc (name, ordered, NULL, NULL, valueFreeHook);
-  list->keytype = KEY_LONG;
+  list->keytype = KEY_NUM;
   return list;
 }
 
@@ -341,8 +385,8 @@ llistFree (void *list)
   listFree (list);
 }
 
-inline size_t
-llistGetSize (list_t *list)
+inline ssize_t
+llistGetCount (list_t *list)
 {
   if (list == NULL) {
     return 0;
@@ -351,7 +395,7 @@ llistGetSize (list_t *list)
 }
 
 inline void
-llistSetSize (list_t *list, size_t siz)
+llistSetSize (list_t *list, ssize_t siz)
 {
   listSetSize (list, siz);
 }
@@ -366,108 +410,114 @@ llistSetFreeHook (list_t *list, listFree_t valueFreeHook)
   list->valueFreeHook = valueFreeHook;
 }
 
-void
-llistSetData (list_t *list, long lkey, void *data)
+listidx_t
+llistSetData (list_t *list, listidx_t lidx, void *data)
 {
   listitem_t    item;
 
-  item.key.lkey = lkey;
+  item.key.idx = lidx;
   item.valuetype = VALUE_DATA;
   item.value.data = data;
-  listSet (list, &item);
+  return listSet (list, &item);
 }
 
-void
-llistSetLong (list_t *list, long lkey, long data)
+listidx_t
+llistSetNum (list_t *list, listidx_t lidx, ssize_t data)
 {
   listitem_t    item;
 
-  item.key.lkey = lkey;
-  item.valuetype = VALUE_LONG;
-  item.value.l = data;
-  listSet (list, &item);
+  item.key.idx = lidx;
+  item.valuetype = VALUE_NUM;
+  item.value.num = data;
+  return listSet (list, &item);
 }
 
-void
-llistSetDouble (list_t *list, long lkey, double data)
+listidx_t
+llistSetDouble (list_t *list, listidx_t lidx, double data)
 {
   listitem_t    item;
 
-  item.key.lkey = lkey;
+  item.key.idx = lidx;
   item.valuetype = VALUE_DOUBLE;
-  item.value.d = data;
-  listSet (list, &item);
+  item.value.dval = data;
+  return listSet (list, &item);
 }
 
-void
-llistSetList (list_t *list, long lkey, list_t *data)
+listidx_t
+llistSetList (list_t *list, listidx_t lidx, list_t *data)
 {
   listitem_t    item;
 
-  item.key.lkey = lkey;
+  item.key.idx = lidx;
   item.valuetype = VALUE_LIST;
   item.value.data = data;
-  listSet (list, &item);
+  return listSet (list, &item);
 }
 
 void *
-llistGetData (list_t *list, long lkey)
+llistGetData (list_t *list, listidx_t lidx)
 {
   void            *value = NULL;
   listkey_t       key;
-  long            idx;
+  listidx_t       idx;
 
-  key.lkey = lkey;
+  key.idx = lidx;
   idx = listGetIdx (list, &key);
   if (idx >= 0) {
     value = (char *) list->data [idx].value.data;
   }
-  logMsg (LOG_DBG, LOG_LIST, "list:%s key:%ld idx:%ld", list->name, lkey, idx);
+  logMsg (LOG_DBG, LOG_LIST, "list:%s key:%ld idx:%ld", list->name, lidx, idx);
   return value;
 }
 
-void *
-llistGetDataByIdx (list_t *list, long idx)
+inline void *
+llistGetDataByIdx (list_t *list, listidx_t lidx)
 {
-  return listGetDataByIdx (list, idx);
+  return listGetDataByIdx (list, lidx);
 }
 
-long
-llistGetLong (list_t *list, long lkey)
+inline ssize_t
+llistGetNumByIdx (list_t *list, listidx_t lidx)
 {
-  long            value = -1;
-  listkey_t       key;
-  long            idx;
+  return listGetNumByIdx (list, lidx);
+}
 
-  key.lkey = lkey;
+ssize_t
+llistGetNum (list_t *list, listidx_t lidx)
+{
+  ssize_t            value = -1;
+  listkey_t       key;
+  listidx_t       idx;
+
+  key.idx = lidx;
   idx = listGetIdx (list, &key);
   if (idx >= 0) {
-    value = list->data [idx].value.l;
+    value = list->data [idx].value.num;
   }
-  logMsg (LOG_DBG, LOG_LIST, "list:%s key:%ld idx:%ld value:%ld", list->name, lkey, idx, value);
+  logMsg (LOG_DBG, LOG_LIST, "list:%s key:%ld idx:%ld value:%ld", list->name, lidx, idx, value);
   return value;
 }
 
 double
-llistGetDouble (list_t *list, long lkey)
+llistGetDouble (list_t *list, listidx_t lidx)
 {
   double          value = -1.0;
   listkey_t       key;
-  long            idx;
+  listidx_t            idx;
 
-  key.lkey = lkey;
+  key.idx = lidx;
   idx = listGetIdx (list, &key);
   if (idx >= 0) {
-    value = list->data [idx].value.d;
+    value = list->data [idx].value.dval;
   }
-  logMsg (LOG_DBG, LOG_LIST, "list:%s key:%ld idx:%ld value:%8.2g", list->name, lkey, idx, value);
+  logMsg (LOG_DBG, LOG_LIST, "list:%s key:%ld idx:%ld value:%8.2g", list->name, lidx, idx, value);
   return value;
 }
 
 list_t *
-llistGetList (list_t *list, long lkey)
+llistGetList (list_t *list, listidx_t lidx)
 {
-  return llistGetData (list, lkey);
+  return llistGetData (list, lidx);
 }
 
 inline void
@@ -482,37 +532,43 @@ llistStartIterator (list_t *list)
   list->iteratorIndex = 0;
 }
 
-long
-llistIterateKeyLong (list_t *list)
+listidx_t
+llistIterateKeyNum (list_t *list)
 {
-  long      value = -1L;
+  ssize_t      value = -1L;
 
-  logProcBegin (LOG_PROC, "llistIterateKeyLong");
+  logProcBegin (LOG_PROC, "llistIterateKeyNum");
   if (list == NULL || list->keytype == KEY_STR) {
-    logProcEnd (LOG_PROC, "llistIterateKeyLong", "null-list/key-str");
+    logProcEnd (LOG_PROC, "llistIterateKeyNum", "null-list/key-str");
     return -1L;
   }
 
   if (list->iteratorIndex >= list->count) {
     list->iteratorIndex = 0;
-    logProcEnd (LOG_PROC, "llistIterateKeyLong", "end-list");
+    logProcEnd (LOG_PROC, "llistIterateKeyNum", "end-list");
     return -1L;      /* indicate the end of the list */
   }
 
-  value = list->data [list->iteratorIndex].key.lkey;
+  value = list->data [list->iteratorIndex].key.idx;
 
-  list->keyCache.lkey = value;
-  list->locCache = (long) list->iteratorIndex;
+  list->keyCache.idx = value;
+  list->locCache = list->iteratorIndex;
 
   ++list->iteratorIndex;
-  logProcEnd (LOG_PROC, "llistIterateKeyLong", "");
+  logProcEnd (LOG_PROC, "llistIterateKeyNum", "");
   return value;
 }
 
-void *
+inline void *
 llistIterateValue (list_t *list)
 {
   return listIterateValue (list);
+}
+
+inline ssize_t
+llistIterateNum (list_t *list)
+{
+  return listIterateNum (list);
 }
 
 void
@@ -523,70 +579,73 @@ llistDumpInfo (list_t *list)
 
 /* indirect routines */
 
-void
-ilistSetData (list_t *list, long ikey, long lidx, void *data)
+listidx_t
+ilistSetData (list_t *list, listidx_t ikey, listidx_t lidx, void *data)
 {
   listitem_t    item;
   list_t        *ilist;
 
   if (list == NULL) {
-    return;
+    return -1;
   }
 
   ilist = llistGetList (list, ikey);
   if (ilist != NULL) {
-    item.key.lkey = lidx;
+    item.key.idx = lidx;
     item.valuetype = VALUE_DATA;
     item.value.data = data;
-    listSet (ilist, &item);
+    return listSet (ilist, &item);
   }
+  return -1;
 }
 
-void
-ilistSetLong (list_t *list, long ikey, long lidx, long data)
+listidx_t
+ilistSetNum (list_t *list, listidx_t ikey, listidx_t lidx, ssize_t data)
 {
   listitem_t    item;
   list_t        *ilist;
 
   if (list == NULL) {
-    return;
+    return -1;
   }
 
   ilist = llistGetList (list, ikey);
   if (ilist != NULL) {
-    item.key.lkey = lidx;
-    item.valuetype = VALUE_LONG;
-    item.value.l = data;
-    listSet (list, &item);
+    item.key.idx = lidx;
+    item.valuetype = VALUE_NUM;
+    item.value.num = data;
+    return listSet (list, &item);
   }
+  return -1;
 }
 
-void
-ilistSetDouble (list_t *list, long ikey, long lidx, double data)
+listidx_t
+ilistSetDouble (list_t *list, listidx_t ikey, listidx_t lidx, double data)
 {
   listitem_t    item;
   list_t        *ilist;
 
   if (list == NULL) {
-    return;
+    return -1;
   }
 
   ilist = llistGetList (list, ikey);
   if (ilist != NULL) {
-    item.key.lkey = lidx;
+    item.key.idx = lidx;
     item.valuetype = VALUE_DOUBLE;
-    item.value.d = data;
-    listSet (list, &item);
+    item.value.dval = data;
+    return listSet (list, &item);
   }
+  return -1;
 }
 
 void *
-ilistGetData (list_t *list, long ikey, long lidx)
+ilistGetData (list_t *list, listidx_t ikey, listidx_t lidx)
 {
   void            *value = NULL;
   listkey_t       key;
-  long            idx;
-  list_t          *ilist;
+  listidx_t       idx = 0;
+  list_t          *ilist = NULL;
 
   if (list == NULL) {
     return NULL;
@@ -594,22 +653,22 @@ ilistGetData (list_t *list, long ikey, long lidx)
 
   ilist = llistGetList (list, ikey);
   if (ilist != NULL) {
-    key.lkey = lidx;
-    idx = listGetIdx (list, &key);
+    key.idx = lidx;
+    idx = listGetIdx (ilist, &key);
     if (idx >= 0) {
       value = (char *) ilist->data [idx].value.data;
     }
+    logMsg (LOG_DBG, LOG_LIST, "list:%s key:%ld idx:%ld", ilist->name, lidx, idx);
   }
-  logMsg (LOG_DBG, LOG_LIST, "list:%s key:%ld idx:%ld", ilist->name, lidx, idx);
   return value;
 }
 
-long
-ilistGetLong (list_t *list, long ikey, long lidx)
+ssize_t
+ilistGetNum (list_t *list, listidx_t ikey, listidx_t lidx)
 {
-  long            value = -1L;
+  ssize_t            value = -1L;
   listkey_t       key;
-  long            idx;
+  listidx_t            idx;
   list_t          *ilist;
 
   if (list == NULL) {
@@ -617,21 +676,23 @@ ilistGetLong (list_t *list, long ikey, long lidx)
   }
 
   ilist = llistGetList (list, ikey);
-  key.lkey = lidx;
-  idx = listGetIdx (list, &key);
-  if (idx >= 0) {
-    value = list->data [idx].value.l;
+  if (ilist != NULL) {
+    key.idx = lidx;
+    idx = listGetIdx (ilist, &key);
+    if (idx >= 0) {
+      value = ilist->data [idx].value.num;
+    }
+    logMsg (LOG_DBG, LOG_LIST, "list:%s key:%ld idx:%ld value:%ld", list->name, lidx, idx, value);
   }
-  logMsg (LOG_DBG, LOG_LIST, "list:%s key:%ld idx:%ld value:%ld", list->name, lidx, idx, value);
   return value;
 }
 
 double
-ilistGetDouble (list_t *list, long ikey, long lidx)
+ilistGetDouble (list_t *list, listidx_t ikey, listidx_t lidx)
 {
   double          value = -1.0;
   listkey_t       key;
-  long            idx;
+  listidx_t            idx;
   list_t          *ilist;
 
   if (list == NULL) {
@@ -639,12 +700,14 @@ ilistGetDouble (list_t *list, long ikey, long lidx)
   }
 
   ilist = llistGetList (list, ikey);
-  key.lkey = lidx;
-  idx = listGetIdx (list, &key);
-  if (idx >= 0) {
-    value = list->data [idx].value.d;
+  if (ilist != NULL) {
+    key.idx = lidx;
+    idx = listGetIdx (ilist, &key);
+    if (idx >= 0) {
+      value = ilist->data [idx].value.dval;
+    }
+    logMsg (LOG_DBG, LOG_LIST, "list:%s key:%ld idx:%ld value:%8.2g", list->name, lidx, idx, value);
   }
-  logMsg (LOG_DBG, LOG_LIST, "list:%s key:%ld idx:%ld value:%8.2g", list->name, lidx, idx, value);
   return value;
 }
 
@@ -660,18 +723,18 @@ listSetKey (list_t *list, listkey_t *key, char *keydata)
   }
 }
 
-static void
+static listidx_t
 listSet (list_t *list, listitem_t *item)
 {
-  size_t          loc = 0L;
+  listidx_t       loc = 0L;
   int             rc = -1;
   int             found = 0;
 
   if (list->locCache >= 0L) {
     if ((list->keytype == KEY_STR &&
          strcmp (item->key.strkey, list->keyCache.strkey) == 0) ||
-        (list->keytype == KEY_LONG &&
-         item->key.lkey == list->keyCache.lkey)) {
+        (list->keytype == KEY_NUM &&
+         item->key.idx == list->keyCache.idx)) {
       loc = list->locCache;
       ++list->writeCacheHits;
       found = 1;
@@ -695,14 +758,14 @@ listSet (list_t *list, listitem_t *item)
   } else {
     listInsert (list, loc, item);
   }
-  return;
+  return loc;
 }
 
-static long
+static listidx_t
 listGetIdx (list_t *list, listkey_t *key)
 {
-  size_t      idx;
-  long        ridx;
+  listidx_t   idx;
+  listidx_t   ridx;
   int         rc;
   char        *str;
 
@@ -710,8 +773,8 @@ listGetIdx (list_t *list, listkey_t *key)
   if (list->locCache >= 0L) {
     if ((list->keytype == KEY_STR &&
          strcmp (key->strkey, list->keyCache.strkey) == 0) ||
-        (list->keytype == KEY_LONG &&
-         key->lkey == list->keyCache.lkey)) {
+        (list->keytype == KEY_NUM &&
+         key->idx == list->keyCache.idx)) {
       ridx = list->locCache;
       ++list->readCacheHits;
       return ridx;
@@ -722,13 +785,13 @@ listGetIdx (list_t *list, listkey_t *key)
   if (list->ordered == LIST_ORDERED) {
     rc = listBinarySearch (list, key, &idx);
     if (rc == 0) {
-      ridx = (long) idx;
+      ridx = idx;
     }
   } else {
     listStartIterator (list);
     while ((str = listIterateKeyStr (list)) != NULL) {
       if (list->compare (str, key->strkey) == 0) {
-        ridx = (long) list->currentIndex;
+        ridx = list->currentIndex;
         break;
       }
     }
@@ -738,8 +801,8 @@ listGetIdx (list_t *list, listkey_t *key)
     if (list->keytype == KEY_STR) {
       list->keyCache.strkey = strdup (key->strkey);
     }
-    if (list->keytype == KEY_LONG) {
-      list->keyCache.lkey = key->lkey;
+    if (list->keytype == KEY_NUM) {
+      list->keyCache.idx = key->idx;
     }
     list->locCache = ridx;
   }
@@ -747,7 +810,7 @@ listGetIdx (list_t *list, listkey_t *key)
 }
 
 static void
-listFreeItem (list_t *list, size_t idx)
+listFreeItem (list_t *list, ssize_t idx)
 {
   listitem_t    *dp;
 
@@ -782,9 +845,9 @@ listFreeItem (list_t *list, size_t idx)
 }
 
 static void
-listInsert (list_t *list, size_t loc, listitem_t *item)
+listInsert (list_t *list, ssize_t loc, listitem_t *item)
 {
-  size_t      copycount;
+  ssize_t      copycount;
 
   ++list->count;
   if (list->count > list->allocCount) {
@@ -807,7 +870,7 @@ listInsert (list_t *list, size_t loc, listitem_t *item)
 }
 
 static void
-listReplace (list_t *list, size_t loc, listitem_t *item)
+listReplace (list_t *list, ssize_t loc, listitem_t *item)
 {
   assert (list->data != NULL);
   assert ((list->count > 0 && loc < list->count) ||
@@ -820,7 +883,7 @@ listReplace (list_t *list, size_t loc, listitem_t *item)
 }
 
 static int
-longCompare (long la, long lb)
+idxCompare (listidx_t la, listidx_t lb)
 {
   int rc = 0;
 
@@ -847,8 +910,8 @@ listCompare (const list_t *list, listkey_t *a, listkey_t *b)
       if (list->keytype == KEY_STR) {
         rc = stringCompare (a->strkey, b->strkey);
       }
-      if (list->keytype == KEY_LONG) {
-        rc = longCompare (a->lkey, b->lkey);
+      if (list->keytype == KEY_NUM) {
+        rc = idxCompare (a->idx, b->idx);
       }
     }
   }
@@ -857,13 +920,13 @@ listCompare (const list_t *list, listkey_t *a, listkey_t *b)
 
 /* returns the location after as a negative number if not found */
 static int
-listBinarySearch (const list_t *list, listkey_t *key, size_t *loc)
+listBinarySearch (const list_t *list, listkey_t *key, ssize_t *loc)
 {
-  long      l = 0;
-  long      r = (long) list->count - 1;
-  long      m = 0;
-  long      rm;
-  int       rc;
+  listidx_t     l = 0;
+  listidx_t     r = list->count - 1;
+  listidx_t     m = 0;
+  listidx_t     rm;
+  int           rc;
 
   rm = 0;
   while (l <= r) {
@@ -894,9 +957,9 @@ listBinarySearch (const list_t *list, listkey_t *key, size_t *loc)
  */
 
 static void
-merge (list_t *list, size_t start, size_t mid, size_t end)
+merge (list_t *list, ssize_t start, ssize_t mid, ssize_t end)
 {
-  size_t      start2 = mid + 1;
+  ssize_t      start2 = mid + 1;
   listitem_t  value;
 
   int rc = listCompare (list, &list->data [mid].key, &list->data [start2].key);
@@ -910,7 +973,7 @@ merge (list_t *list, size_t start, size_t mid, size_t end)
       start++;
     } else {
       value = list->data [start2];
-      size_t index = start2;
+      ssize_t index = start2;
 
       while (index != start) {
         list->data [index] = list->data [index - 1];
@@ -926,10 +989,10 @@ merge (list_t *list, size_t start, size_t mid, size_t end)
 }
 
 static void
-mergeSort (list_t *list, size_t l, size_t r)
+mergeSort (list_t *list, ssize_t l, ssize_t r)
 {
   if (list->count > 0 && l < r) {
-    size_t m = l + (r - l) / 2;
+    ssize_t m = l + (r - l) / 2;
     mergeSort (list, l, m);
     mergeSort (list, m + 1, r);
     merge (list, l, m, r);

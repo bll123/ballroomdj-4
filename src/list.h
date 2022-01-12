@@ -1,9 +1,11 @@
 #ifndef INC_LIST_H
 #define INC_LIST_H
 
+typedef ssize_t listidx_t;
+
 typedef enum {
   KEY_STR,
-  KEY_LONG,
+  KEY_NUM,
 } keytype_t;
 
 typedef enum {
@@ -21,7 +23,7 @@ typedef enum {
   VALUE_NONE,
   VALUE_DOUBLE,
   VALUE_DATA,
-  VALUE_LONG,
+  VALUE_NUM,
   VALUE_LIST,
 } valuetype_t;
 
@@ -30,13 +32,13 @@ typedef void (*listFree_t)(void *);
 
 typedef union {
   char        *strkey;
-  long        lkey;
+  listidx_t   idx;
 } listkey_t;
 
 typedef union {
   void        *data;
-  long        l;
-  double      d;
+  ssize_t     num;
+  double      dval;
 } listvalue_t;
 
 typedef struct {
@@ -47,18 +49,18 @@ typedef struct {
 
 typedef struct {
   char            *name;
-  size_t          count;
-  size_t          allocCount;
+  ssize_t         count;
+  ssize_t         allocCount;
   keytype_t       keytype;
   listorder_t     ordered;
   long            bumper1;
   listitem_t      *data;        /* array */
   long            bumper2;
   listCompare_t   compare;
-  size_t          iteratorIndex;
-  size_t          currentIndex;
+  ssize_t         iteratorIndex;
+  ssize_t         currentIndex;
   listkey_t       keyCache;
-  long            locCache;
+  listidx_t       locCache;
   long            readCacheHits;
   long            writeCacheHits;
   listFree_t      keyFreeHook;
@@ -73,51 +75,55 @@ typedef struct {
 list_t      *listAlloc (char *name, listorder_t ordered, listCompare_t compare,
                 listFree_t keyFreeHook, listFree_t valueFreeHook);
 void        listFree (void *list);
-size_t      listGetSize (list_t *list);
-void        listSetSize (list_t *list, size_t size);
-void        listSetData (list_t *list, char *keystr, void *data);
-void        listSetLong (list_t *list, char *keystr, long lval);
-void        listSetDouble (list_t *list, char *keystr, double dval);
-void        listSetList (list_t *list, char *keystr, list_t *data);
+ssize_t     listGetCount (list_t *list);
+void        listSetSize (list_t *list, ssize_t size);
+listidx_t   listSetData (list_t *list, char *keystr, void *data);
+listidx_t   listSetNum (list_t *list, char *keystr, ssize_t lval);
+listidx_t   listSetDouble (list_t *list, char *keystr, double dval);
+listidx_t   listSetList (list_t *list, char *keystr, list_t *data);
 void        *listGetData (list_t *list, char *keystr);
-void        *listGetDataByIdx (list_t *list, long idx);
-long        listGetLong (list_t *list, char *keystr);
+void        *listGetDataByIdx (list_t *list, listidx_t idx);
+ssize_t     listGetNumByIdx (list_t *list, listidx_t idx);
+ssize_t     listGetNum (list_t *list, char *keystr);
 double      listGetDouble (list_t *list, char *keystr);
 list_t      *listGetList (list_t *list, char *keystr);
-long        listGetStrIdx (list_t *list, char *keystr);
+listidx_t   listGetStrIdx (list_t *list, char *keystr);
 void        listSort (list_t *list);
 void        listStartIterator (list_t *list);
 void *      listIterateKeyStr (list_t *list);
 void *      listIterateValue (list_t *list);
-long        listIterateGetIdx (list_t *list);
+ssize_t     listIterateNum (list_t *list);
+listidx_t   listIterateGetIdx (list_t *list);
 void        listDumpInfo (list_t *list);
 
-  /* keyed by a long */
+  /* keyed by a listidx_t */
 list_t *  llistAlloc (char *name, listorder_t, listFree_t);
 void      llistFree (void *);
-size_t    llistGetSize (list_t *list);
-void      llistSetSize (list_t *, size_t);
+ssize_t   llistGetCount (list_t *list);
+void      llistSetSize (list_t *, ssize_t);
 void      llistSetFreeHook (list_t *, listFree_t valueFreeHook);
-void      llistSetData (list_t *, long, void *);
-void      llistSetLong (list_t *, long, long);
-void      llistSetDouble (list_t *, long, double);
-void      llistSetList (list_t *, long, list_t *);
-void *    llistGetData (list_t *, long);
-void *    llistGetDataByIdx (list_t *, long);
-long      llistGetLong (list_t *, long);
-double    llistGetDouble (list_t *, long);
-list_t    *llistGetList (list_t *, long);
+listidx_t llistSetData (list_t *, listidx_t idx, void *data);
+listidx_t llistSetNum (list_t *, listidx_t idx, ssize_t lval);
+listidx_t llistSetDouble (list_t *, listidx_t idx, double dval);
+listidx_t llistSetList (list_t *, listidx_t idx, list_t *listval);
+void *    llistGetData (list_t *, listidx_t idx);
+void *    llistGetDataByIdx (list_t *, listidx_t idx);
+ssize_t   llistGetNumByIdx (list_t *list, listidx_t idx);
+ssize_t   llistGetNum (list_t *, listidx_t idx);
+double    llistGetDouble (list_t *, listidx_t idx);
+list_t    *llistGetList (list_t *, listidx_t idx);
 void      llistSort (list_t *);
 void      llistStartIterator (list_t *list);
-long      llistIterateKeyLong (list_t *list);
+listidx_t llistIterateKeyNum (list_t *list);
 void *    llistIterateValue (list_t *list);
+ssize_t   llistIterateNum (list_t *list);
 void      llistDumpInfo (list_t *list);
 
-void      ilistSetData (list_t *, long ikey, long lidx, void *value);
-void      ilistSetLong (list_t *, long ikey, long lidx, long value);
-void      ilistSetDouble (list_t *, long ikey, long lidx, double value);
-void *    ilistGetData (list_t *, long ikey, long lidx);
-long      ilistGetLong (list_t *, long ikey, long lidx);
-double    ilistGetDouble (list_t *, long ikey, long lidx);
+listidx_t ilistSetData (list_t *, listidx_t ikey, listidx_t lidx, void *value);
+listidx_t ilistSetNum (list_t *, listidx_t ikey, listidx_t lidx, ssize_t value);
+listidx_t ilistSetDouble (list_t *, listidx_t ikey, listidx_t lidx, double value);
+void *    ilistGetData (list_t *, listidx_t ikey, listidx_t lidx);
+ssize_t   ilistGetNum (list_t *, listidx_t ikey, listidx_t lidx);
+double    ilistGetDouble (list_t *, listidx_t ikey, listidx_t lidx);
 
 #endif /* INC_LIST_H */

@@ -14,7 +14,7 @@
 
   /* must be sorted in ascii order */
 static datafilekey_t statusdfkeys[] = {
-  { "PLAYFLAG",   STATUS_PLAY_FLAG,  VALUE_LONG, parseConvBoolean },
+  { "PLAYFLAG",   STATUS_PLAY_FLAG,  VALUE_NUM, parseConvBoolean },
   { "STATUS",     STATUS_LABEL,      VALUE_DATA, NULL },
 };
 #define STATUS_DFKEY_COUNT (sizeof (statusdfkeys) / sizeof (datafilekey_t))
@@ -51,9 +51,9 @@ statusFree (status_t *status)
 }
 
 bool
-statusPlayCheck (status_t *status, long ikey)
+statusPlayCheck (status_t *status, listidx_t ikey)
 {
-  return ilistGetLong (status->status, ikey, STATUS_PLAY_FLAG);
+  return ilistGetNum (status->status, ikey, STATUS_PLAY_FLAG);
 }
 
 void
@@ -62,9 +62,9 @@ statusConv (char *keydata, datafileret_t *ret)
   status_t     *status;
   list_t      *lookup;
 
-  ret->valuetype = VALUE_LONG;
+  ret->valuetype = VALUE_NUM;
 
   status = bdjvarsdf [BDJVDF_STATUS];
   lookup = datafileGetLookup (status->df);
-  ret->u.l = listGetLong (lookup, keydata);
+  ret->u.num = listGetNum (lookup, keydata);
 }

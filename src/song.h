@@ -17,10 +17,10 @@ typedef struct {
 song_t *  songAlloc (void);
 void      songFree (void *);
 void      songParse (song_t *song, char *data);
-char *    songGetData (song_t *, long);
-long      songGetLong (song_t *, long);
-double    songGetDouble (song_t *, long);
-void      songSetLong (song_t *, long, long);
+char *    songGetData (song_t *, listidx_t);
+ssize_t   songGetNum (song_t *, listidx_t);
+double    songGetDouble (song_t *, listidx_t);
+void      songSetNum (song_t *, listidx_t, ssize_t);
 bool      songAudioFileExists (song_t *song);
 
 #endif /* INC_SONG */

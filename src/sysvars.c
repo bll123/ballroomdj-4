@@ -24,7 +24,7 @@
 #include "pathutil.h"
 
 char        sysvars [SV_MAX][MAXPATHLEN];
-long        lsysvars [SVL_MAX];
+ssize_t     lsysvars [SVL_MAX];
 
 void
 sysvarsInit (const char *argv0)
@@ -136,7 +136,7 @@ sysvarsInit (const char *argv0)
 }
 
 void
-sysvarSetLong (sysvarlkey_t idx, long value)
+sysvarSetNum (sysvarlkey_t idx, ssize_t value)
 {
   lsysvars [idx] = value;
 }

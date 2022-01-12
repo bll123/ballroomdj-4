@@ -12,6 +12,6 @@ sequence_t    *sequenceAlloc (char *);
 void          sequenceFree (sequence_t *);
 list_t        *sequenceGetDanceList (sequence_t *);
 void          sequenceStartIterator (sequence_t *sequence);
-long          sequenceIterate (sequence_t *sequence);
+listidx_t     sequenceIterate (sequence_t *sequence);
 
 #endif /* INC_SEQUENCE_H */

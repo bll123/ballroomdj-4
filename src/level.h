@@ -2,6 +2,7 @@
 #define INC_LEVEL_H
 
 #include "datafile.h"
+#include "list.h"
 
 typedef enum {
   LEVEL_LABEL,
@@ -17,7 +18,7 @@ typedef struct {
 
 level_t     *levelAlloc (char *);
 void        levelFree (level_t *);
-long        levelGetWeight (level_t *level, long idx);
+ssize_t     levelGetWeight (level_t *level, listidx_t idx);
 void        levelConv (char *keydata, datafileret_t *ret);
 
 #endif /* INC_LEVEL_H */

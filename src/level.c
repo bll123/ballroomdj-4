@@ -14,9 +14,9 @@
 
   /* must be sorted in ascii order */
 static datafilekey_t leveldfkeys[] = {
-  { "DEFAULT",  LEVEL_DEFAULT_FLAG, VALUE_LONG, parseConvBoolean },
+  { "DEFAULT",  LEVEL_DEFAULT_FLAG, VALUE_NUM, parseConvBoolean },
   { "LABEL",    LEVEL_LABEL,        VALUE_DATA, NULL },
-  { "WEIGHT",   LEVEL_WEIGHT,       VALUE_LONG, NULL },
+  { "WEIGHT",   LEVEL_WEIGHT,       VALUE_NUM, NULL },
 };
 #define LEVEL_DFKEY_COUNT (sizeof (leveldfkeys) / sizeof (datafilekey_t))
 
@@ -51,10 +51,10 @@ levelFree (level_t *level)
   }
 }
 
-long
-levelGetWeight (level_t *level, long ikey)
+ssize_t
+levelGetWeight (level_t *level, listidx_t ikey)
 {
-  return ilistGetLong (level->level, ikey, LEVEL_WEIGHT);
+  return ilistGetNum (level->level, ikey, LEVEL_WEIGHT);
 }
 
 void
@@ -63,10 +63,9 @@ levelConv (char *keydata, datafileret_t *ret)
   level_t     *level;
   list_t      *lookup;
 
-  ret->valuetype = VALUE_LONG;
+  ret->valuetype = VALUE_NUM;
 
   level = bdjvarsdf [BDJVDF_LEVELS];
   lookup = datafileGetLookup (level->df);
-  ret->u.l = listGetLong (lookup, keydata);
-fprintf (stderr, "keydata: %s val: %ld\n", keydata, ret->u.l);
+  ret->u.num = listGetNum (lookup, keydata);
 }

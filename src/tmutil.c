@@ -60,7 +60,7 @@ tmutilDstamp (char *buff, size_t max)
 
   gettimeofday (&curr, NULL);
   time_t s = curr.tv_sec;
-#if 1 || _lib_localtime_r
+#if _lib_localtime_r
   struct tm         t;
   localtime_r (&s, &t);
   tp = &t;
@@ -82,7 +82,7 @@ tmutilTstamp (char *buff, size_t max)
   time_t s = curr.tv_sec;
   long u = curr.tv_usec;
   long m = u / 1000;
-#if 1 || _lib_localtime_r
+#if _lib_localtime_r
   struct tm         t;
   localtime_r (&s, &t);
   tp = &t;

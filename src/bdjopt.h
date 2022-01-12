@@ -100,8 +100,8 @@ typedef enum {
 
 void    bdjoptInit (void);
 void    bdjoptFree (void);
-void    *bdjoptGetData (long idx);
-long    bdjoptGetLong (long idx);
-void    bdjoptSetLong (long idx, long value);
+void    *bdjoptGetData (ssize_t idx);
+long    bdjoptGetNum (ssize_t idx);
+void    bdjoptSetNum (ssize_t idx, ssize_t value);
 
 #endif /* INC_BDJOPT_H */

@@ -19,7 +19,7 @@
 
 START_TEST(queue_alloc_free)
 {
-  long        count;
+  ssize_t       count;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== queue_alloc_free");
   queue_t *q = queueAlloc (NULL);
@@ -32,7 +32,7 @@ END_TEST
 
 START_TEST(queue_push_one)
 {
-  long      count;
+  ssize_t       count;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== queue_push_one");
   queue_t *q = queueAlloc (NULL);
@@ -45,7 +45,7 @@ END_TEST
 
 START_TEST(queue_push_two)
 {
-  long      count;
+  ssize_t       count;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== queue_push_two");
   queue_t *q = queueAlloc (NULL);
@@ -61,7 +61,7 @@ END_TEST
 
 START_TEST(queue_push_many)
 {
-  long      count;
+  ssize_t       count;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== queue_push_many");
   queue_t *q = queueAlloc (NULL);
@@ -86,7 +86,7 @@ END_TEST
 
 START_TEST(queue_push_pop_one)
 {
-  long      count;
+  ssize_t   count;
   char      *data;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== queue_push_pop_one");
@@ -107,7 +107,7 @@ END_TEST
 
 START_TEST(queue_push_pop_two)
 {
-  long      count;
+  ssize_t   count;
   char      *data;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== queue_push_pop_two");
@@ -134,7 +134,7 @@ END_TEST
 
 START_TEST(queue_multi_one)
 {
-  long      count;
+  ssize_t   count;
   char      *data;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== queue_multi_one");
@@ -172,7 +172,7 @@ END_TEST
 
 START_TEST(queue_multi_two)
 {
-  long      count;
+  ssize_t   count;
   char      *data;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== queue_multi_two");
@@ -248,7 +248,7 @@ END_TEST
 
 START_TEST(queue_multi_many)
 {
-  long      count;
+  ssize_t   count;
   char      *data;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== queue_multi_two");
@@ -335,7 +335,7 @@ END_TEST
 
 START_TEST(queue_iterate)
 {
-  long      count;
+  ssize_t   count;
   char      *data;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== queue_iterate");
@@ -378,7 +378,7 @@ END_TEST
 
 START_TEST(queue_remove_by_idx)
 {
-  long      count;
+  ssize_t   count;
   char      *data;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== queue_remove_by_idx");
@@ -508,7 +508,7 @@ END_TEST
 
 START_TEST(queue_remove_node)
 {
-  long      count;
+  ssize_t   count;
   char      *data;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== queue_remove_node");

@@ -18,11 +18,11 @@ static void danceConvSpeed (char *keydata, datafileret_t *ret);
   /* must be sorted in ascii order */
 static datafilekey_t dancedfkeys[] = {
   { "ANNOUNCE",   DANCE_ANNOUNCE, VALUE_DATA, NULL },
-  { "COUNT",      DANCE_COUNT, VALUE_LONG, NULL },
+  { "COUNT",      DANCE_COUNT, VALUE_NUM, NULL },
   { "DANCE",      DANCE_DANCE, VALUE_DATA, NULL },
-  { "HIGHBPM",    DANCE_HIGH_BPM, VALUE_LONG, NULL },
-  { "LOWBPM",     DANCE_LOW_BPM, VALUE_LONG, NULL },
-  { "SELECT",     DANCE_SELECT, VALUE_LONG, NULL },
+  { "HIGHBPM",    DANCE_HIGH_BPM, VALUE_NUM, NULL },
+  { "LOWBPM",     DANCE_LOW_BPM, VALUE_NUM, NULL },
+  { "SELECT",     DANCE_SELECT, VALUE_NUM, NULL },
   { "SPEED",      DANCE_SPEED, VALUE_LIST, danceConvSpeed },
   { "TAGS",       DANCE_TAGS, VALUE_LIST, parseConvTextList },
   { "TIMESIG",    DANCE_TIMESIG, VALUE_DATA, NULL },
@@ -80,12 +80,12 @@ danceConvDance (char *keydata, datafileret_t *ret)
   dance_t       *dance;
   list_t        *lookup;
 
-  ret->valuetype = VALUE_LONG;
-  ret->u.l = -1;
+  ret->valuetype = VALUE_NUM;
+  ret->u.num = -1;
   dance = bdjvarsdf [BDJVDF_DANCES];
   lookup = datafileGetLookup (dance->df);
   if (lookup != NULL) {
-    ret->u.l = listGetLong (lookup, keydata);
+    ret->u.num = listGetNum (lookup, keydata);
   }
 }
 
@@ -94,8 +94,8 @@ danceConvDance (char *keydata, datafileret_t *ret)
 static void
 danceConvSpeed (char *keydata, datafileret_t *ret)
 {
-  ret->valuetype = VALUE_LONG;
-  long idx = dfkeyBinarySearch (dancespeeddfkeys, DANCE_SPEED_DFKEY_COUNT, keydata);
-  ret->u.l = (long) dancespeeddfkeys [idx].itemkey;
+  ret->valuetype = VALUE_NUM;
+  listidx_t idx = dfkeyBinarySearch (dancespeeddfkeys, DANCE_SPEED_DFKEY_COUNT, keydata);
+  ret->u.num = dancespeeddfkeys [idx].itemkey;
 }
 

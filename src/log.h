@@ -43,7 +43,7 @@ typedef struct {
   filehandle_t  fhandle;
   int           opened;
   int           indent;
-  long          level;
+  ssize_t       level;
   const char    *processTag;
 } bdjlog_t;
 

@@ -4,16 +4,18 @@
 #include <stdint.h>
 
 #include "sock.h"
+#include "bdjmsg.h"
 
-typedef int (*sockProcessMsg_t)(long, long, long, char *, void *);
+typedef int (*sockProcessMsg_t)(bdjmsgroute_t routefrom, bdjmsgroute_t routeto,
+    bdjmsgmsg_t msg, char *args, void *userdata);
 typedef int (*sockOtherProcessing_t)(void *);
 
 #define SOCK_MAINLOOP_TIMEOUT   10
 
 void    sockhMainLoop (uint16_t listenPort, sockProcessMsg_t msgProc,
             sockOtherProcessing_t, void *userData);
-int     sockhSendMessage (Sock_t sock, long routefrom, long route, long msg,
-            char *args);
+int     sockhSendMessage (Sock_t sock, bdjmsgroute_t routefrom,
+            bdjmsgroute_t route, bdjmsgmsg_t msg, char *args);
 void    sockhRequestClose (sockinfo_t *sockinfo);
 void    sockhCloseClients (sockinfo_t *sockinfo);
 

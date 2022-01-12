@@ -28,9 +28,9 @@ typedef enum {
 } datafiletype_t;
 
 typedef struct {
-  char    **strdata;
-  size_t  allocCount;
-  size_t  count;
+  char        **strdata;
+  ssize_t     allocCount;
+  ssize_t     count;
 } parseinfo_t;
 
 typedef struct {
@@ -45,7 +45,7 @@ typedef struct {
 typedef struct {
   valuetype_t   valuetype;
   union {
-    long        l;
+    ssize_t     num;
     list_t      *list;
     char        *str;
   } u;
@@ -73,18 +73,18 @@ void          parseConvTextList (char *, datafileret_t *);
 datafile_t *  datafileAlloc (char *name);
 datafile_t *  datafileAllocParse (char *name, datafiletype_t dftype,
                   char *fname, datafilekey_t *dfkeys, size_t dfkeycount,
-                  long lookupKey);
+                  listidx_t lookupKey);
 void          datafileFree (void *);
 char *        datafileLoad (datafile_t *df, datafiletype_t dftype, char *fname);
 list_t        *datafileParse (char *data, char *name, datafiletype_t dftype,
                   datafilekey_t *dfkeys, size_t dfkeycount,
-                  long lookupKey, list_t **lookup);
+                  listidx_t lookupKey, list_t **lookup);
 list_t        *datafileParseMerge (list_t *nlist, char *data, char *name,
                   datafiletype_t dftype,
                   datafilekey_t *dfkeys, size_t dfkeycount,
-                  long lookupKey, list_t **lookup);
-long          dfkeyBinarySearch (const datafilekey_t *dfkeys,
-                  size_t count, char *key);
+                  listidx_t lookupKey, list_t **lookup);
+listidx_t     dfkeyBinarySearch (const datafilekey_t *dfkeys,
+                  ssize_t count, char *key);
 list_t *      datafileGetList (datafile_t *);
 list_t *      datafileGetLookup (datafile_t *);
 void          datafileSetData (datafile_t *df, void *data);

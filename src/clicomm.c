@@ -21,8 +21,8 @@ int
 main (int argc, char *argv[])
 {
   char            buff [80];
-  long            route = ROUTE_NONE;
-  long            msg = MSG_NONE;
+  bdjmsgroute_t   route = ROUTE_NONE;
+  bdjmsgmsg_t     msg = MSG_NONE;
   int             routeok = 0;
   int             msgok = 0;
   int             argsok = 0;
@@ -50,7 +50,7 @@ main (int argc, char *argv[])
       }
       case 'p': {
         if (optarg) {
-          sysvarSetLong (SVL_BDJIDX, atol (optarg));
+          sysvarSetNum (SVL_BDJIDX, atol (optarg));
         }
         break;
       }

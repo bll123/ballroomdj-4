@@ -15,7 +15,7 @@
   /* must be sorted in ascii order */
 static datafilekey_t ratingdfkeys[] = {
   { "RATING", RATING_RATING, VALUE_DATA, NULL },
-  { "WEIGHT", RATING_WEIGHT, VALUE_LONG, NULL },
+  { "WEIGHT", RATING_WEIGHT, VALUE_NUM, NULL },
 };
 #define RATING_DFKEY_COUNT (sizeof (ratingdfkeys) / sizeof (datafilekey_t))
 
@@ -50,10 +50,10 @@ ratingFree (rating_t *rating)
   }
 }
 
-long
-ratingGetWeight (rating_t *rating, long ikey)
+ssize_t
+ratingGetWeight (rating_t *rating, listidx_t ikey)
 {
-  return ilistGetLong (rating->rating, ikey, RATING_WEIGHT);
+  return ilistGetNum (rating->rating, ikey, RATING_WEIGHT);
 }
 
 void
@@ -62,8 +62,8 @@ ratingConv (char *keydata, datafileret_t *ret)
   rating_t    *rating;
   list_t      *lookup;
 
-  ret->valuetype = VALUE_LONG;
+  ret->valuetype = VALUE_NUM;
   rating = bdjvarsdf [BDJVDF_RATINGS];
   lookup = datafileGetLookup (rating->df);
-  ret->u.l = listGetLong (lookup, keydata);
+  ret->u.num = listGetNum (lookup, keydata);
 }

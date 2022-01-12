@@ -32,7 +32,7 @@ typedef enum {
 } bdjvarkeyl_t;
 
 extern char *     bdjvars [BDJV_MAX];
-extern long       bdjvarsl [BDJVL_MAX];
+extern ssize_t    bdjvarsl [BDJVL_MAX];
 
 void    bdjvarsInit (void);
 void    bdjvarsCleanup (void);

@@ -82,7 +82,7 @@ bdj4startup (int argc, char *argv[])
       }
       case 'p': {
         if (optarg) {
-          sysvarSetLong (SVL_BDJIDX, atol (optarg));
+          sysvarSetNum (SVL_BDJIDX, atol (optarg));
         }
         break;
       }
@@ -96,9 +96,9 @@ bdj4startup (int argc, char *argv[])
   count = 0;
   while (rc < 0) {
       /* try for the next free profile */
-    long profile = lsysvars [SVL_BDJIDX];
+    ssize_t profile = lsysvars [SVL_BDJIDX];
     ++profile;
-    sysvarSetLong (SVL_BDJIDX, profile);
+    sysvarSetNum (SVL_BDJIDX, profile);
     ++count;
     if (count > 20) {
       bdj4shutdown ();
@@ -119,7 +119,7 @@ bdj4startup (int argc, char *argv[])
   bdjvarsdfloadInit ();
   bdjoptInit ();
 
-  bdjoptSetLong (OPT_G_DEBUGLVL, loglevel);
+  bdjoptSetNum (OPT_G_DEBUGLVL, loglevel);
 
   mstimestart (&dbmt);
   datautilMakePath (tbuff, MAXPATHLEN, "",

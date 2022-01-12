@@ -12,10 +12,10 @@
 #include "log.h"
 
 static datafilekey_t autoseldfkeys[] = {
-  { "begincount",     AUTOSEL_BEG_COUNT,        VALUE_LONG,    NULL },
+  { "begincount",     AUTOSEL_BEG_COUNT,        VALUE_NUM,    NULL },
   { "beginfast",      AUTOSEL_BEG_FAST,         VALUE_DOUBLE, NULL },
   { "bothfast",       AUTOSEL_BOTHFAST,         VALUE_DOUBLE, NULL },
-  { "histdistance",   AUTOSEL_HIST_DISTANCE,    VALUE_LONG,   NULL },
+  { "histdistance",   AUTOSEL_HIST_DISTANCE,    VALUE_NUM,   NULL },
   { "levelweight",    AUTOSEL_LEVEL_WEIGHT,     VALUE_DOUBLE, NULL },
   { "limit",          AUTOSEL_LIMIT,            VALUE_DOUBLE, NULL },
   { "logvalue",       AUTOSEL_LOG_VALUE,        VALUE_DOUBLE, NULL },

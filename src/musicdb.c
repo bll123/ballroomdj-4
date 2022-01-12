@@ -64,8 +64,8 @@ dbLoad (db_t *db, char *fn)
   char        *fstr;
   song_t      *song;
   rafile_t    *radb;
-  long        srrn;
-  long        rc;
+  rafileidx_t srrn;
+  rafileidx_t rc;
 
   fstr = "";
   radb = raOpen (fn, 10);
@@ -73,8 +73,8 @@ dbLoad (db_t *db, char *fn)
 
   raStartBatch (radb);
 
-  for (size_t i = 1L; i <= radb->count; ++i) {
-    rc = (long) raRead (radb, i, data);
+  for (rafileidx_t i = 1L; i <= raGetCount (radb); ++i) {
+    rc = raRead (radb, i, data);
     if (rc != 1) {
       logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Unable to access rrn %zd", i);
     }
@@ -85,9 +85,9 @@ dbLoad (db_t *db, char *fn)
     song = songAlloc ();
     songParse (song, data);
     fstr = songGetData (song, TAG_FILE);
-    srrn = songGetLong (song, TAG_RRN);
-    if ((long) i != srrn) {
-      songSetLong (song, TAG_RRN, (long) i);
+    srrn = songGetNum (song, TAG_RRN);
+    if (i != srrn) {
+      songSetNum (song, TAG_RRN, i);
     }
     listSetData (db->songs, fstr, song);
     ++db->count;
@@ -107,9 +107,9 @@ dbGetByName (char *songname)
 }
 
 song_t *
-dbGetByIdx (size_t idx)
+dbGetByIdx (dbidx_t idx)
 {
-  song_t *song = listGetDataByIdx (bdjdb->songs, (long) idx);
+  song_t *song = listGetDataByIdx (bdjdb->songs, idx);
   return song;
 }
 
@@ -120,7 +120,7 @@ dbStartIterator (void)
 }
 
 song_t *
-dbIterate (size_t *idx)
+dbIterate (dbidx_t *idx)
 {
   song_t    *song;
 

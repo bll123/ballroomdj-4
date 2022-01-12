@@ -37,7 +37,6 @@ typedef struct {
   unsigned int        songlistWeight;
   audioiddispflag_t   audioiddispflag;
   edittype_t          editType;
-  long                initialized;
   bool                isBdjTag : 1;
   bool                isNormTag : 1;
   bool                albumEdit : 1;
@@ -91,8 +90,6 @@ typedef enum {
   TAG_RRN,
   MAX_TAG_KEY
 } tagdefkey_t;
-
-#define TAGDEF_INITIALIZED 0x11332244
 
 extern tagdef_t tagdefs[MAX_TAG_KEY];
 

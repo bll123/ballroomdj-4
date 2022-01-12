@@ -69,10 +69,10 @@ typedef struct {
   time_t          playTimeCheck;
   time_t          fadeTimeCheck;
   time_t          gapFinishTime;
-  long            gap;
-  long            fadeType;
-  long            fadeinTime;
-  long            fadeoutTime;
+  ssize_t         gap;
+  ssize_t         fadeType;
+  ssize_t         fadeinTime;
+  ssize_t         fadeoutTime;
   long            fadeCount;
   long            fadeSamples;
   time_t          fadeTimeNext;
@@ -83,8 +83,8 @@ typedef struct {
   bool            mainHandshake : 1;
 } playerdata_t;
 
-static int      playerProcessMsg (long routefrom, long route, long msg,
-                    char *args, void *udata);
+static int      playerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
+                    bdjmsgmsg_t msg, char *args, void *udata);
 static int      playerProcessing (void *udata);
 static void     playerSongPrep (playerdata_t *playerData, char *sfname);
 void            playerProcessPrepRequest (playerdata_t *playerData);
@@ -156,7 +156,7 @@ main (int argc, char *argv[])
       }
       case 'p': {
         if (optarg) {
-          sysvarSetLong (SVL_BDJIDX, atol (optarg));
+          sysvarSetNum (SVL_BDJIDX, atol (optarg));
         }
         break;
       }
@@ -170,9 +170,9 @@ main (int argc, char *argv[])
   count = 0;
   while (rc < 0) {
       /* try for the next free profile */
-    long profile = lsysvars [SVL_BDJIDX];
+    ssize_t profile = lsysvars [SVL_BDJIDX];
     ++profile;
-    sysvarSetLong (SVL_BDJIDX, profile);
+    sysvarSetNum (SVL_BDJIDX, profile);
     ++count;
     if (count > 20) {
       exit (1);
@@ -187,10 +187,10 @@ main (int argc, char *argv[])
 
   bdjoptInit ();
 
-  playerData.gap = bdjoptGetLong (OPT_P_GAP);
-  playerData.fadeType = bdjoptGetLong (OPT_P_FADETYPE);
-  playerData.fadeinTime = bdjoptGetLong (OPT_P_FADEINTIME);
-  playerData.fadeoutTime = bdjoptGetLong (OPT_P_FADEOUTTIME);
+  playerData.gap = bdjoptGetNum (OPT_P_GAP);
+  playerData.fadeType = bdjoptGetNum (OPT_P_FADETYPE);
+  playerData.fadeinTime = bdjoptGetNum (OPT_P_FADEINTIME);
+  playerData.fadeoutTime = bdjoptGetNum (OPT_P_FADEOUTTIME);
 
   playerData.sinklist.defname = "";
   playerData.sinklist.count = 0;
@@ -203,7 +203,7 @@ main (int argc, char *argv[])
   playerSetAudioSink (&playerData, bdjoptGetData (OPT_M_AUDIOSINK));
 
   playerData.originalSystemVolume = volumeGet (playerData.currentSink);
-  playerData.realVolume = (int) bdjoptGetLong (OPT_P_DEFAULTVOLUME);
+  playerData.realVolume = (int) bdjoptGetNum (OPT_P_DEFAULTVOLUME);
   playerData.currentVolume = playerData.realVolume;
   volumeSet (playerData.currentSink, playerData.realVolume);
 
@@ -250,14 +250,15 @@ main (int argc, char *argv[])
 /* internal routines */
 
 static int
-playerProcessMsg (long routefrom, long route, long msg, char *args, void *udata)
+playerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
+    bdjmsgmsg_t msg, char *args, void *udata)
 {
   playerdata_t      *playerData;
 
   logProcBegin (LOG_PROC, "playerProcessMsg");
   playerData = (playerdata_t *) udata;
 
-  logMsg (LOG_DBG, LOG_MAIN, "got: from %ld route: %ld msg:%ld args:%s",
+  logMsg (LOG_DBG, LOG_MAIN, "got: from %d route: %d msg:%d args:%s",
       routefrom, route, msg, args);
 
   switch (route) {
@@ -412,7 +413,7 @@ playerProcessing (void *udata)
         pq->dur = pliGetDuration (playerData->pliData);
         logMsg (LOG_DBG, LOG_BASIC, "Replace duration with vlc data: %zd", pq->dur);
       }
-      maxdur = bdjoptGetLong (OPT_P_MAXPLAYTIME);
+      maxdur = bdjoptGetNum (OPT_P_MAXPLAYTIME);
       if (pq->dur > maxdur) {
         pq->dur = maxdur;
       }

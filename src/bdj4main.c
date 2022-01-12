@@ -47,8 +47,8 @@ typedef struct {
 
 static void     mainStartPlayer (maindata_t *mainData);
 static void     mainStopPlayer (maindata_t *mainData);
-static int      mainProcessMsg (long routefrom, long route, long msg,
-                    char *args, void *udata);
+static int      mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
+                    bdjmsgmsg_t msg, char *args, void *udata);
 static int      mainProcessing (void *udata);
 static void     mainPlaylistQueue (maindata_t *mainData, char *plname);
 static void     mainSigHandler (int sig);
@@ -117,7 +117,7 @@ mainStartPlayer (maindata_t *mainData)
     strlcat (tbuff, ".exe", MAXPATHLEN);
   }
   int rc = processStart (tbuff, &pid, lsysvars [SVL_BDJIDX],
-      bdjoptGetLong (OPT_G_DEBUGLVL));
+      bdjoptGetNum (OPT_G_DEBUGLVL));
   if (rc < 0) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "player %s failed to start", tbuff);
   } else {
@@ -146,7 +146,8 @@ mainStopPlayer (maindata_t *mainData)
 }
 
 static int
-mainProcessMsg (long routefrom, long route, long msg, char *args, void *udata)
+mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
+    bdjmsgmsg_t msg, char *args, void *udata)
 {
   maindata_t      *mainData;
 
@@ -281,13 +282,13 @@ mainSigHandler (int sig)
 static void
 mainMusicQueueFill (maindata_t *mainData)
 {
-  long        maxlen;
-  long        currlen;
+  ssize_t     maxlen;
+  ssize_t     currlen;
   song_t      *song = NULL;
   playlist_t  *playlist = NULL;
 
   logProcBegin (LOG_PROC, "mainMusicQueueFill");
-  maxlen = bdjoptGetLong (OPT_G_PLAYERQLEN);
+  maxlen = bdjoptGetNum (OPT_G_PLAYERQLEN);
   playlist = plqGetCurrent (mainData->playlistQueue);
   currlen = musicqGetLen (mainData->musicQueue, mainData->musicqCurrent);
   logMsg (LOG_DBG, LOG_BASIC, "fill: %ld < %ld", currlen, maxlen);
@@ -325,7 +326,7 @@ mainMusicQueuePrep (maindata_t *mainData)
     song = musicqGetByIdx (mainData->musicQueue, mainData->musicqCurrent, i);
     if (song != NULL) {
       sfname = songGetData (song, TAG_FILE);
-      dur = songGetLong (song, TAG_DURATION);
+      dur = songGetNum (song, TAG_DURATION);
 
       snprintf (tbuff, MAXPATHLEN, "%s%c%zd", sfname, MSG_ARGS_RS, dur);
 

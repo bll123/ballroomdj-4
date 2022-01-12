@@ -83,12 +83,13 @@ lib     WSAStartup -lws2_32
 args noconst mkdir
 
 define  INVALID_SOCKET
-define  O_SYNC
 define  O_CLOEXEC
+define  O_SYNC
+define  SIGCHLD
 define  SIGHUP
 define  S_IRWXU
-define  SO_REUSEPORT
 define  SOCK_CLOEXEC
+define  SO_REUSEPORT
 
 size	int
 size	long

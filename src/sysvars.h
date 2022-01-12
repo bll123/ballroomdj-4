@@ -22,10 +22,10 @@ typedef enum {
 } sysvarlkey_t;
 
 extern char       sysvars [SV_MAX][MAXPATHLEN];
-extern long       lsysvars [SVL_MAX];
+extern ssize_t    lsysvars [SVL_MAX];
 
 void    sysvarsInit (const char *);
-void    sysvarSetLong (sysvarlkey_t, long);
+void    sysvarSetNum (sysvarlkey_t, ssize_t);
 bool    isMacOS (void);
 bool    isWindows (void);
 bool    isLinux (void);

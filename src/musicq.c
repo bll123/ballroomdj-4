@@ -79,7 +79,7 @@ musicqGetCurrent (musicq_t *musicq, musicqidx_t idx)
 }
 
 song_t *
-musicqGetByIdx (musicq_t *musicq, musicqidx_t musicqidx, long idx)
+musicqGetByIdx (musicq_t *musicq, musicqidx_t musicqidx, listidx_t idx)
 {
   musicqitem_t      *musicqitem;
 
@@ -107,7 +107,7 @@ musicqPop (musicq_t *musicq, musicqidx_t idx)
   return musicqitem->song;
 }
 
-long
+ssize_t
 musicqGetLen (musicq_t *musicq, musicqidx_t idx)
 {
   if (musicq == NULL || musicq->q [idx] == NULL) {

@@ -2,6 +2,7 @@
 #define INC_STATUS_H
 
 #include "datafile.h"
+#include "list.h"
 
 typedef enum {
   STATUS_LABEL,
@@ -16,7 +17,7 @@ typedef struct {
 
 status_t    * statusAlloc (char *);
 void        statusFree (status_t *);
-bool        statusPlayCheck (status_t *status, long ikey);
+bool        statusPlayCheck (status_t *status, listidx_t ikey);
 void        statusConv (char *keydata, datafileret_t *ret);
 
 #endif /* INC_STATUS_H */

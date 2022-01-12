@@ -14,8 +14,8 @@
 
 static void   bdjvarsAdjustPorts (void);
 
-char *     bdjvars [BDJV_MAX];
-long       bdjvarsl [BDJVL_MAX];
+char *      bdjvars [BDJV_MAX];
+ssize_t     bdjvarsl [BDJVL_MAX];
 
 void
 bdjvarsInit (void)
@@ -55,7 +55,7 @@ songFullFileName (char *sfname)
 static void
 bdjvarsAdjustPorts (void)
 {
-  long idx = lsysvars [SVL_BDJIDX];
+  ssize_t idx = lsysvars [SVL_BDJIDX];
 
   bdjvarsl [BDJVL_MAIN_PORT] += bdjvarsl [BDJVL_NUM_PORTS] * idx;
   bdjvarsl [BDJVL_PLAYER_PORT] += bdjvarsl [BDJVL_NUM_PORTS] * idx;
