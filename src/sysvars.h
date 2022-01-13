@@ -13,6 +13,7 @@ typedef enum {
   SV_HOSTNAME,
   SV_BDJ4EXECDIR,     // where the executables are
   SV_BDJ4DIR,         // where the data directory is
+  SV_SHLIB_EXT,
   SV_MAX
 } sysvarkey_t;
 

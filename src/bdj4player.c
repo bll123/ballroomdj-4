@@ -53,7 +53,7 @@ typedef struct {
   programstate_t  programState;
   mstime_t        tmstart;
   long            globalCount;
-  plidata_t       *pliData;
+  pli_t           *pliData;
   queue_t         *prepRequestQueue;
   queue_t         *prepQueue;
   prepqueue_t     *currentSong;
@@ -109,14 +109,13 @@ main (int argc, char *argv[])
   playerdata_t    playerData;
   int             c = 0;
   int             rc = 0;
-  int             count = 0;
   int             option_index = 0;
   uint16_t        loglevel = LOG_IMPORTANT | LOG_MAIN;
 
   static struct option bdj_options [] = {
     { "debug",      required_argument,  NULL,   'd' },
-    { "player",     no_argument,        NULL,   0 },
     { "profile",    required_argument,  NULL,   'p' },
+    { "player",     no_argument,        NULL,   0 },
     { NULL,         0,                  NULL,   0 }
   };
 
@@ -166,25 +165,18 @@ main (int argc, char *argv[])
     }
   }
 
-  rc = lockAcquire (PLAYER_LOCK_FN, DATAUTIL_MP_USEIDX);
-  count = 0;
-  while (rc < 0) {
-      /* try for the next free profile */
-    ssize_t profile = lsysvars [SVL_BDJIDX];
-    ++profile;
-    sysvarSetNum (SVL_BDJIDX, profile);
-    ++count;
-    if (count > 20) {
-      exit (1);
-    }
-    rc = lockAcquire (PLAYER_LOCK_FN, DATAUTIL_MP_USEIDX);
-  }
-
-  bdjvarsInit ();
-
   logStartAppend ("bdj4player", "p", loglevel);
   logMsg (LOG_SESS, LOG_IMPORTANT, "Using profile %ld", lsysvars [SVL_BDJIDX]);
 
+  rc = lockAcquire (PLAYER_LOCK_FN, DATAUTIL_MP_USEIDX);
+  if (rc < 0) {
+    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: player: unable to acquire lock: profile: %zd", lsysvars [SVL_BDJIDX]);
+    logMsg (LOG_SESS, LOG_IMPORTANT, "ERR: player: unable to acquire lock: profile: %zd", lsysvars [SVL_BDJIDX]);
+    logEnd ();
+    exit (0);
+  }
+
+  bdjvarsInit ();
   bdjoptInit ();
 
   playerData.gap = bdjoptGetNum (OPT_P_GAP);
@@ -258,13 +250,13 @@ playerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
   logProcBegin (LOG_PROC, "playerProcessMsg");
   playerData = (playerdata_t *) udata;
 
-  logMsg (LOG_DBG, LOG_MAIN, "got: from %d route: %d msg:%d args:%s",
+  logMsg (LOG_DBG, LOG_MSGS, "got: from %d route: %d msg:%d args:%s",
       routefrom, route, msg, args);
 
   switch (route) {
     case ROUTE_NONE:
     case ROUTE_PLAYER: {
-      logMsg (LOG_DBG, LOG_BASIC, "got: route-player");
+      logMsg (LOG_DBG, LOG_MSGS, "got: route-player");
       switch (msg) {
         case MSG_HANDSHAKE: {
           playerData->mainHandshake = true;
@@ -302,7 +294,7 @@ playerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_EXIT_REQUEST: {
           gKillReceived = 0;
-          logMsg (LOG_DBG, LOG_BASIC, "got: req-exit");
+          logMsg (LOG_DBG, LOG_MSGS, "got: req-exit");
           playerData->programState = STATE_CLOSING;
           sockhSendMessage (playerData->mainSock, ROUTE_PLAYER, ROUTE_MAIN,
               MSG_SOCKET_CLOSE, NULL);
@@ -411,7 +403,7 @@ playerProcessing (void *udata)
 
       if (pq->dur <= 1) {
         pq->dur = pliGetDuration (playerData->pliData);
-        logMsg (LOG_DBG, LOG_BASIC, "Replace duration with vlc data: %zd", pq->dur);
+        logMsg (LOG_DBG, LOG_MAIN, "Replace duration with vlc data: %zd", pq->dur);
       }
       maxdur = bdjoptGetNum (OPT_P_MAXPLAYTIME);
       if (pq->dur > maxdur) {
@@ -510,11 +502,15 @@ playerSongPrep (playerdata_t *playerData, char *args)
   prepqueue_t     *pq;
   char            *tokptr = NULL;
   char            *aptr;
+  char            stname [MAXPATHLEN];
 
 
   logProcBegin (LOG_PROC, "playerSongPrep");
 
   aptr = strtok_r (args, MSG_ARGS_RS_STR, &tokptr);
+  if (aptr == NULL) {
+    return;
+  }
 
   queueStartIterator (playerData->prepQueue);
   pq = queueIterateData (playerData->prepQueue);
@@ -535,8 +531,10 @@ playerSongPrep (playerdata_t *playerData, char *args)
   npq->songfullpath = songFullFileName (npq->songname);
   aptr = strtok_r (NULL, MSG_ARGS_RS_STR, &tokptr);
   npq->dur = atol (aptr);
-  logMsg (LOG_DBG, LOG_BASIC, "prep duration: %zd", npq->dur);
-  npq->tempname = NULL;
+  logMsg (LOG_DBG, LOG_MAIN, "prep duration: %zd", npq->dur);
+  songMakeTempName (playerData, npq->songname, stname, sizeof (stname));
+  npq->tempname = strdup (stname);
+  assert (npq->tempname != NULL);
   queuePush (playerData->prepRequestQueue, npq);
   logProcEnd (LOG_PROC, "playerSongPrep", "");
 }
@@ -544,7 +542,6 @@ playerSongPrep (playerdata_t *playerData, char *args)
 void
 playerProcessPrepRequest (playerdata_t *playerData)
 {
-  char            stname [MAXPATHLEN];
   prepqueue_t     *npq;
 
   npq = queuePop (playerData->prepRequestQueue);
@@ -552,30 +549,27 @@ playerProcessPrepRequest (playerdata_t *playerData)
     return;
   }
 
-  logMsg (LOG_DBG, LOG_BASIC, "prep: %s", npq->songname);
-  /* TODO: if we are in client/server mode, then need to request the song
+  logProcBegin (LOG_PROC, "playerProcessPrepRequest");
+  /* FIX: TODO: if we are in client/server mode, then need to request the song
    * from the server and save it
    */
-  songMakeTempName (playerData, npq->songname, stname, sizeof (stname));
+  logMsg (LOG_DBG, LOG_BASIC, "prep: %s : %s", npq->songname, npq->tempname);
 
   /* VLC still cannot handle internationalized names.
    * I wonder how they handle them internally.
    * Symlinks work on Linux/Mac OS.
    */
-  fileopDelete (stname);
-  fileopLinkCopy (npq->songfullpath, stname);
-  if (! fileopExists (stname)) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: file copy failed: %s", stname);
+  fileopDelete (npq->tempname);
+  fileopLinkCopy (npq->songfullpath, npq->tempname);
+  if (! fileopExists (npq->tempname)) {
+    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: file copy failed: %s", npq->tempname);
     logProcEnd (LOG_PROC, "playerSongPrep", "copy-failed");
     playerPrepQueueFree (npq);
+    logProcEnd (LOG_PROC, "playerProcessPrepRequest", "copy-fail");
     return;
   }
 
-  npq->tempname = strdup (stname);
-  assert (npq->tempname != NULL);
   queuePush (playerData->prepQueue, npq);
-
-  // TODO : add the name to a list of prepared files.
   logProcEnd (LOG_PROC, "playerSongPrep", "");
 }
 
@@ -583,26 +577,38 @@ static void
 playerSongPlay (playerdata_t *playerData, char *sfname)
 {
   char              stname [MAXPATHLEN];
-  prepqueue_t       *pq;
+  prepqueue_t       *pq = NULL;
   int               found = 0;
+  int               count = 0;
 
   logProcBegin (LOG_PROC, "playerSongPlay");
   logMsg (LOG_DBG, LOG_BASIC, "play request: %s", sfname);
   found = 0;
-  queueStartIterator (playerData->prepQueue);
-  pq = queueIterateData (playerData->prepQueue);
-  while (pq != NULL) {
-    if (strcmp (sfname, pq->songname) == 0) {
-      strlcpy (stname, pq->tempname, MAXPATHLEN);
-      playerData->currentSong = pq;
-      queueIterateRemoveNode (playerData->prepQueue);
-      found = 1;
-      break;
-    }
+  count = 0;
+  while (! found && count < 2) {
+    queueStartIterator (playerData->prepQueue);
     pq = queueIterateData (playerData->prepQueue);
+    while (pq != NULL) {
+      if (strcmp (sfname, pq->songname) == 0) {
+        strlcpy (stname, pq->tempname, MAXPATHLEN);
+        playerData->currentSong = pq;
+        queueIterateRemoveNode (playerData->prepQueue);
+        found = 1;
+        break;
+      }
+      pq = queueIterateData (playerData->prepQueue);
+    }
+    if (! found) {
+        /* the song must be prepped before playing */
+        /* try again. */
+      logMsg (LOG_DBG, LOG_IMPORTANT, "WARN: song %s not prepped; processing queue", sfname);
+      playerSongPrep (playerData, sfname);
+      playerProcessPrepRequest (playerData);
+      ++count;
+    }
   }
   if (! found) {
-      /* the song must be prepped before playing */
+    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: unable to locate song %s", sfname);
     logProcEnd (LOG_PROC, "playerSongPlay", "not-found");
     return;
   }

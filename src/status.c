@@ -15,7 +15,7 @@
   /* must be sorted in ascii order */
 static datafilekey_t statusdfkeys[] = {
   { "PLAYFLAG",   STATUS_PLAY_FLAG,  VALUE_NUM, parseConvBoolean },
-  { "STATUS",     STATUS_LABEL,      VALUE_DATA, NULL },
+  { "STATUS",     STATUS_STATUS,      VALUE_DATA, NULL },
 };
 #define STATUS_DFKEY_COUNT (sizeof (statusdfkeys) / sizeof (datafilekey_t))
 
@@ -33,7 +33,7 @@ statusAlloc (char *fname)
   assert (status != NULL);
 
   status->df = datafileAllocParse ("status", DFTYPE_INDIRECT, fname,
-      statusdfkeys, STATUS_DFKEY_COUNT, STATUS_LABEL);
+      statusdfkeys, STATUS_DFKEY_COUNT, STATUS_STATUS);
   status->status = datafileGetList (status->df);
   llistDumpInfo (status->status);
   return status;

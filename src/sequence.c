@@ -48,9 +48,7 @@ sequenceAlloc (char *fname)
     lkey = listGetNum (danceLookup, seqkey);
     llistSetData (sequence->sequence, lkey, strdup (seqkey));
   }
-
   datafileFree (df);
-
   listDumpInfo (sequence->sequence);
   return sequence;
 }

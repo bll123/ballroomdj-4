@@ -1,0 +1,12 @@
+loadunit env-systype
+loadunit c-main
+
+output configvlc.h
+
+standard_system
+standard
+
+hdr	vlc/vlc.h
+
+lib     libvlc_new -lvlc
+lib     libvlc_audio_output_device_enum -lvlc

@@ -21,6 +21,7 @@
 #include "bdjstring.h"
 #include "portability.h"
 
+static bool         logCheck (logidx_t idx, bdjloglvl_t level);
 static void         rlogStart (const char *processnm,
                         const char *processtag, int truncflag,
                         bdjloglvl_t level);
@@ -65,7 +66,7 @@ logClose (logidx_t idx)
 void
 rlogProcBegin (bdjloglvl_t level, const char *tag, const char *fn, int line)
 {
-  if (syslogs [LOG_DBG] == NULL) {
+  if (! logCheck (LOG_DBG, level)) {
     return;
   }
   rlogVarMsg (LOG_DBG, level, fn, line, "- %s begin", tag);
@@ -75,7 +76,7 @@ rlogProcBegin (bdjloglvl_t level, const char *tag, const char *fn, int line)
 void
 rlogProcEnd (bdjloglvl_t level, const char *tag, const char *suffix, const char *fn, int line)
 {
-  if (syslogs [LOG_DBG] == NULL) {
+  if (! logCheck (LOG_DBG, level)) {
     return;
   }
   syslogs [LOG_DBG]->indent -= 2;
@@ -106,13 +107,10 @@ rlogVarMsg (logidx_t idx, bdjloglvl_t level,
   char          tfn [MAXPATHLEN];
   va_list       args;
 
+  if (! logCheck (idx, level)) {
+    return;
+  }
   l = syslogs [idx];
-  if (l == NULL || ! l->opened) {
-    return;
-  }
-  if (! (level & l->level)) {
-    return;
-  }
 
   tmutilTstamp (ttm, sizeof (ttm));
   *tbuff = '\0';
@@ -166,6 +164,21 @@ logEnd (void)
 }
 
 /* internal routines */
+
+static bool
+logCheck (logidx_t idx, bdjloglvl_t level)
+{
+  bdjlog_t      *l;
+
+  l = syslogs [LOG_DBG];
+  if (l == NULL || ! l->opened) {
+    return false;
+  }
+  if (! (level & l->level)) {
+    return false;
+  }
+  return true;
+}
 
 static void
 rlogStart (const char *processnm, const char *processtag,

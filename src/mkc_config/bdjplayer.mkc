@@ -8,10 +8,7 @@ standard
 
 hdr     alsa/asoundlib.h
 hdr     pulse/pulseaudio.h
-hdr	vlc/vlc.h
 
-lib     libvlc_new -lvlc
-lib     libvlc_audio_output_device_enum -lvlc
 lib     pa_threaded_mainloop_start -lpulse -lm
 if notpa ! _lib_pa_threaded_mainloop_start
  lib     snd_mixer_open -lasound -lm

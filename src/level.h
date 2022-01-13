@@ -5,7 +5,7 @@
 #include "list.h"
 
 typedef enum {
-  LEVEL_LABEL,
+  LEVEL_LEVEL,
   LEVEL_DEFAULT_FLAG,
   LEVEL_WEIGHT,
   LEVEL_KEY_MAX

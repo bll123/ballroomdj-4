@@ -11,6 +11,7 @@ standard
 
 hdr     alsa/asoundlib.h
 hdr	arpa/inet.h
+hdr     dlfcn.h
 hdr     endpointvolume.h
 hdr     fcntl.h
 hdr     io.h
@@ -48,6 +49,7 @@ lib     CoInitialize -lole32
 lib     CreateFile
 lib     CreateProcess
 lib     CreateSymbolicLink
+lib     dlopen -ldl
 lib     drand48
 lib     fcntl
 lib     fork
@@ -55,6 +57,7 @@ lib     GetFullPathName
 lib     GetVersionEx
 lib     ioctlsocket -lws2_32
 lib     kill
+lib     LoadLibrary
 lib     localtime_r
 lib     mkdir
 lib     OpenProcess

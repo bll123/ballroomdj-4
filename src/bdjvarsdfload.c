@@ -48,7 +48,7 @@ bdjvarsdfloadInit (void)
     /* status is an optional configuration file   */
     /* the database load depends on it if present */
   datautilMakePath (fn, sizeof (fn), "", "status", ".txt", DATAUTIL_MP_NONE);
-  bdjvarsdf [BDJVDF_STATUS] = levelAlloc (fn);
+  bdjvarsdf [BDJVDF_STATUS] = statusAlloc (fn);
 
   datautilMakePath (fn, sizeof (fn), "", "sortopt", ".txt", DATAUTIL_MP_NONE);
   bdjvarsdf [BDJVDF_SORT_OPT] = sortoptAlloc (fn);

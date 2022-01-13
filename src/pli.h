@@ -1,7 +1,8 @@
 #ifndef INC_PLI_H
 #define INC_PLI_H
 
-#include "vlci.h"
+#include "portability.h"
+#include "tmutil.h"
 
 typedef enum {
   PLI_CMD_STATUS_WAIT,
@@ -20,22 +21,52 @@ typedef enum {
 } plistate_t;
 
 typedef struct {
+  char              *name;
   void              *plData;
   ssize_t           duration;
   ssize_t           playTime;
   plistate_t        state;
+  mstime_t          playStart;                    // for the null player
 } plidata_t;
 
-plidata_t     *pliInit (void);
-void          pliFree (plidata_t *pliData);
-void          pliMediaSetup (plidata_t *pliData, char *mediaPath);
-void          pliStartPlayback (plidata_t *pliData);
-void          pliClose (plidata_t *pliData);
-void          pliPause (plidata_t *pliData);
-void          pliPlay (plidata_t *pliData);
-void          pliStop (plidata_t *pliData);
-ssize_t       pliGetDuration (plidata_t *pliData);
-ssize_t       pliGetTime (plidata_t *pliData);
-plistate_t    pliState (plidata_t *pliData);
+typedef struct {
+  void              *dlHandle;
+  plidata_t         *(*pliiInit) (void);
+  void              (*pliiFree) (plidata_t *);
+  void              (*pliiMediaSetup) (plidata_t *, char *);
+  void              (*pliiStartPlayback) (plidata_t *);
+  void              (*pliiClose) (plidata_t *);
+  void              (*pliiPause) (plidata_t *);
+  void              (*pliiPlay) (plidata_t *);
+  void              (*pliiStop) (plidata_t *);
+  ssize_t           (*pliiGetDuration) (plidata_t *);
+  ssize_t           (*pliiGetTime) (plidata_t *);
+  plistate_t        (*pliiState) (plidata_t *);
+  plidata_t         *pliData;
+} pli_t;
+
+pli_t         *pliInit (void);
+void          pliFree (pli_t *pli);
+void          pliMediaSetup (pli_t *pli, char *mediaPath);
+void          pliStartPlayback (pli_t *pli);
+void          pliClose (pli_t *pli);
+void          pliPause (pli_t *pli);
+void          pliPlay (pli_t *pli);
+void          pliStop (pli_t *pli);
+ssize_t       pliGetDuration (pli_t *pli);
+ssize_t       pliGetTime (pli_t *pli);
+plistate_t    pliState (pli_t *pli);
+
+plidata_t     *pliiInit (void);
+void          pliiFree (plidata_t *pliData);
+void          pliiMediaSetup (plidata_t *pliData, char *mediaPath);
+void          pliiStartPlayback (plidata_t *pliData);
+void          pliiClose (plidata_t *pliData);
+void          pliiPause (plidata_t *pliData);
+void          pliiPlay (plidata_t *pliData);
+void          pliiStop (plidata_t *pliData);
+ssize_t       pliiGetDuration (plidata_t *pliData);
+ssize_t       pliiGetTime (plidata_t *pliData);
+plistate_t    pliiState (plidata_t *pliData);
 
 #endif

@@ -326,10 +326,12 @@ sockConnect (uint16_t connPort, int *err, size_t timeout)
     }
 #endif
     if (*err != EINPROGRESS && *err != EAGAIN && *err != EINTR && *err != EWOULDBLOCK) {
-      logError ("connect");
+      if (*err != ECONNREFUSED) {
+        logError ("connect");
 #if _lib_WSAGetLastError
-      logMsg (LOG_DBG, LOG_SOCKET, "connect: wsa last-error:%d", WSAGetLastError());
+        logMsg (LOG_DBG, LOG_SOCKET, "connect: wsa last-error:%d", WSAGetLastError());
 #endif
+      }
       close (clsock);
       return INVALID_SOCKET;
     }

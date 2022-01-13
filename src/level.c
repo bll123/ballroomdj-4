@@ -15,7 +15,7 @@
   /* must be sorted in ascii order */
 static datafilekey_t leveldfkeys[] = {
   { "DEFAULT",  LEVEL_DEFAULT_FLAG, VALUE_NUM, parseConvBoolean },
-  { "LABEL",    LEVEL_LABEL,        VALUE_DATA, NULL },
+  { "LEVEL",    LEVEL_LEVEL,        VALUE_DATA, NULL },
   { "WEIGHT",   LEVEL_WEIGHT,       VALUE_NUM, NULL },
 };
 #define LEVEL_DFKEY_COUNT (sizeof (leveldfkeys) / sizeof (datafilekey_t))
@@ -34,7 +34,7 @@ levelAlloc (char *fname)
   assert (level != NULL);
 
   level->df = datafileAllocParse ("level", DFTYPE_INDIRECT, fname,
-      leveldfkeys, LEVEL_DFKEY_COUNT, LEVEL_LABEL);
+      leveldfkeys, LEVEL_DFKEY_COUNT, LEVEL_LEVEL);
   level->level = datafileGetList (level->df);
   llistDumpInfo (level->level);
   return level;

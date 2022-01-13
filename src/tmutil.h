@@ -10,7 +10,7 @@ typedef struct {
 void      mssleep (size_t);
 time_t    mstime (void);
 void      mstimestart (mstime_t *);
-size_t    mstimeend (mstime_t *);
+time_t    mstimeend (mstime_t *);
 char      *tmutilDstamp (char *, size_t);
 char      *tmutilTstamp (char *, size_t);
 

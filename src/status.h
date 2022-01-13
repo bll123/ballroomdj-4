@@ -5,7 +5,7 @@
 #include "list.h"
 
 typedef enum {
-  STATUS_LABEL,
+  STATUS_STATUS,
   STATUS_PLAY_FLAG,
   STATUS_KEY_MAX
 } statuskey_t;

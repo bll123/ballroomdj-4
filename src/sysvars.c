@@ -117,6 +117,8 @@ sysvarsInit (const char *argv0)
   *p = '\0';
   strlcpy (sysvars [SV_BDJ4EXECDIR], buff, MAXPATHLEN);
 
+  strlcpy (sysvars [SV_SHLIB_EXT], SHLIB_EXT, MAXPATHLEN);
+
   /* do not want to include fileop due to circular dependencies */
   rc = stat ("data", &statbuf);
   if (rc == 0) {

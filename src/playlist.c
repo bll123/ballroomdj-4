@@ -51,8 +51,6 @@ static datafilekey_t playlistdfkeys[] = {
       VALUE_NUM, parseConvBoolean },
   { "PLAYANNOUNCE",     PLAYLIST_ANNOUNCE,
       VALUE_NUM, parseConvBoolean },
-  { "REQUIREDKEYWORDS", PLAYLIST_REQ_KEYWORDS,
-      VALUE_DATA, parseConvTextList },
   { "RESUME",           PLAYLIST_RESUME,
       VALUE_DATA, plConvResume },
   { "SEQUENCE",         PLAYLIST_SEQ_NAME,
@@ -200,10 +198,13 @@ playlistFree (playlist_t *pl)
 }
 
 song_t *
-playlistGetNextSong (playlist_t *pl)
+playlistGetNextSong (playlist_t *pl, playlistCheck_t checkProc, void *userdata)
 {
   pltype_t    type;
   song_t      *song = NULL;
+  int         count;
+  char        *sfname;
+
 
   if (pl == NULL) {
     return NULL;
@@ -216,8 +217,6 @@ playlistGetNextSong (playlist_t *pl)
       break;
     }
     case PLTYPE_MANUAL: {
-      char *sfname;
-
       sfname = songlistGetData (pl->songlist, pl->manualIdx, SONGLIST_FILE);
       while (sfname != NULL) {
         song = dbGetByName (sfname);
@@ -230,7 +229,7 @@ playlistGetNextSong (playlist_t *pl)
         sfname = songlistGetData (pl->songlist, pl->manualIdx, SONGLIST_FILE);
       }
       ++pl->manualIdx;
-      logMsg (LOG_DBG, LOG_BASIC, "manual: get: %s", sfname);
+      logMsg (LOG_DBG, LOG_BASIC, "manual: select: %s", sfname);
       break;
     }
     case PLTYPE_SEQ: {
@@ -239,7 +238,25 @@ playlistGetNextSong (playlist_t *pl)
             playlistFilterSong, pl);
       }
       listidx_t dancekey = sequenceIterate (pl->sequence);
+      logMsg (LOG_DBG, LOG_BASIC, "sequence: dance: %zd", dancekey);
       song = songselSelect (pl->songsel, dancekey);
+      count = 0;
+      while (song != NULL && count < VALID_SONG_ATTEMPTS) {
+        if (songAudioFileExists (song)) {
+          if (checkProc (song, userdata)) {
+            break;
+          }
+        }
+        song = songselSelect (pl->songsel, dancekey);
+        ++count;
+      }
+      if (count >= VALID_SONG_ATTEMPTS) {
+        song = NULL;
+      } else {
+        songselSelectFinalize (pl->songsel, dancekey);
+        sfname = songGetData (song, TAG_FILE);
+        logMsg (LOG_DBG, LOG_BASIC, "sequence: select: %s", sfname);
+      }
       break;
     }
   }
@@ -247,7 +264,7 @@ playlistGetNextSong (playlist_t *pl)
 }
 
 bool
-playlistFilterSong (song_t *song, void *tplaylist)
+playlistFilterSong (dbidx_t dbidx, song_t *song, void *tplaylist)
 {
   playlist_t    *pl = tplaylist;
   listidx_t     rating;
@@ -265,7 +282,7 @@ playlistFilterSong (song_t *song, void *tplaylist)
   plRating = llistGetNum (pl->plinfo, PLAYLIST_RATING);
   rating = songGetNum (song, TAG_DANCERATING);
   if (rating < plRating) {
-    logMsg (LOG_DBG, LOG_SONGSEL, "rating %ld < %ld", rating, plRating);
+    logMsg (LOG_DBG, LOG_SONGSEL, "reject: %zd rating %ld < %ld", dbidx, rating, plRating);
     return false;
   }
 
@@ -273,7 +290,7 @@ playlistFilterSong (song_t *song, void *tplaylist)
   plLevelHigh = llistGetNum (pl->plinfo, PLAYLIST_LEVEL_HIGH);
   level = songGetNum (song, TAG_DANCELEVEL);
   if (level < plLevelLow || level > plLevelHigh) {
-    logMsg (LOG_DBG, LOG_SONGSEL, "level %ld < %ld / > %ld", level, plLevelLow, plLevelHigh);
+    logMsg (LOG_DBG, LOG_SONGSEL, "reject: %zd level %ld < %ld / > %ld", dbidx, level, plLevelLow, plLevelHigh);
     return false;
   }
 
@@ -282,20 +299,7 @@ playlistFilterSong (song_t *song, void *tplaylist)
     kwList = llistGetList (pl->plinfo, PLAYLIST_ALLOWED_KEYWORDS);
     idx = listGetStrIdx (kwList, keyword);
     if (listGetCount (kwList) > 0 && idx < 0) {
-      logMsg (LOG_DBG, LOG_SONGSEL, "keyword %s not in allowed", keyword);
-      return false;
-    }
-  }
-
-  kwList = llistGetList (pl->plinfo, PLAYLIST_REQ_KEYWORDS);
-  if (listGetCount (kwList) > 0) {
-    if (keyword == NULL) {
-      logMsg (LOG_DBG, LOG_SONGSEL, "keyword empty", keyword);
-      return false;
-    }
-    idx = listGetStrIdx (kwList, keyword);
-    if (idx < 0) {
-      logMsg (LOG_DBG, LOG_SONGSEL, "keyword not in required", keyword);
+      logMsg (LOG_DBG, LOG_SONGSEL, "reject: %zd keyword %s not in allowed", dbidx, keyword);
       return false;
     }
   }
@@ -304,7 +308,7 @@ playlistFilterSong (song_t *song, void *tplaylist)
     sstatus = songGetNum (song, TAG_STATUS);
     status = bdjvarsdf [BDJVDF_STATUS];
     if (status != NULL && ! statusPlayCheck (status, sstatus)) {
-      logMsg (LOG_DBG, LOG_SONGSEL, "status %ld not playable", status);
+      logMsg (LOG_DBG, LOG_SONGSEL, "reject %zd status %ld not playable", dbidx, status);
       return false;
     }
   }

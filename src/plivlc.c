@@ -1,5 +1,5 @@
 #include "config.h"
-#include "configp.h"
+#include "configvlc.h"
 
 #if _lib_libvlc_new
 
@@ -37,7 +37,7 @@ static char *   vlcDefaultOptions [] = {
 #define VLC_DFLT_OPT_SZ (sizeof (vlcDefaultOptions) / sizeof (char *))
 
 plidata_t *
-pliInit (void)
+pliiInit (void)
 {
   plidata_t *pliData;
 
@@ -46,19 +46,21 @@ pliInit (void)
   if (pliData != NULL) {
     pliData->plData = vlcInit (VLC_DFLT_OPT_SZ, vlcDefaultOptions);
   }
+  pliData->name = "VLC Integrated";
   return pliData;
 }
 
 void
-pliFree (plidata_t *pliData)
+pliiFree (plidata_t *pliData)
 {
   if (pliData != NULL) {
-    pliClose (pliData);
+    pliiClose (pliData);
+    free (pliData);
   }
 }
 
 void
-pliMediaSetup (plidata_t *pliData, char *mediaPath)
+pliiMediaSetup (plidata_t *pliData, char *mediaPath)
 {
   if (pliData != NULL && pliData->plData != NULL && mediaPath != NULL) {
     vlcMedia (pliData->plData, mediaPath);
@@ -66,7 +68,7 @@ pliMediaSetup (plidata_t *pliData, char *mediaPath)
 }
 
 void
-pliStartPlayback (plidata_t *pliData)
+pliiStartPlayback (plidata_t *pliData)
 {
   if (pliData != NULL && pliData->plData != NULL) {
     vlcPlay (pliData->plData);
@@ -74,7 +76,7 @@ pliStartPlayback (plidata_t *pliData)
 }
 
 void
-pliPause (plidata_t *pliData)
+pliiPause (plidata_t *pliData)
 {
   if (pliData != NULL && pliData->plData != NULL) {
     vlcPause (pliData->plData);
@@ -82,7 +84,7 @@ pliPause (plidata_t *pliData)
 }
 
 void
-pliPlay (plidata_t *pliData)
+pliiPlay (plidata_t *pliData)
 {
   if (pliData != NULL && pliData->plData != NULL) {
     vlcPlay (pliData->plData);
@@ -90,7 +92,7 @@ pliPlay (plidata_t *pliData)
 }
 
 void
-pliStop (plidata_t *pliData)
+pliiStop (plidata_t *pliData)
 {
   if (pliData != NULL && pliData->plData != NULL) {
     vlcStop (pliData->plData);
@@ -98,7 +100,7 @@ pliStop (plidata_t *pliData)
 }
 
 void
-pliClose (plidata_t *pliData)
+pliiClose (plidata_t *pliData)
 {
   if (pliData != NULL) {
     if (pliData->plData != NULL) {
@@ -109,7 +111,7 @@ pliClose (plidata_t *pliData)
 }
 
 ssize_t
-pliGetDuration (plidata_t *pliData)
+pliiGetDuration (plidata_t *pliData)
 {
   ssize_t     duration = 0;
 
@@ -122,7 +124,7 @@ pliGetDuration (plidata_t *pliData)
 }
 
 ssize_t
-pliGetTime (plidata_t *pliData)
+pliiGetTime (plidata_t *pliData)
 {
   ssize_t     playTime = 0;
 
@@ -135,7 +137,7 @@ pliGetTime (plidata_t *pliData)
 }
 
 plistate_t
-pliState (plidata_t *pliData)
+pliiState (plidata_t *pliData)
 {
   libvlc_state_t      vlcstate;
   plistate_t          plistate = PLI_STATE_NONE; /* unknown */

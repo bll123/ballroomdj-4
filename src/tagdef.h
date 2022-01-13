@@ -58,17 +58,17 @@ typedef enum {
   TAG_COMPOSER,
   TAG_CONDUCTOR,
   TAG_DANCE,
-  TAG_DANCELEVEL,
-  TAG_DANCERATING,
+  TAG_DANCELEVEL,             //
+  TAG_DANCERATING,            //
   TAG_DATE,
   TAG_DBADDDATE,
   TAG_DISCNUMBER,
   TAG_DISCTOTAL,
   TAG_DISPLAYIMG,
-  TAG_DURATION,
-  TAG_FILE,
+  TAG_DURATION,               //
+  TAG_FILE,                   //
   TAG_GENRE,
-  TAG_KEYWORD,
+  TAG_KEYWORD,                //
   TAG_MQDISPLAY,
   TAG_MUSICBRAINZ_TRACKID,
   TAG_NOMAXPLAYTIME,
@@ -77,7 +77,7 @@ typedef enum {
   TAG_SONGEND,
   TAG_SONGSTART,
   TAG_SPEEDADJUSTMENT,
-  TAG_STATUS,
+  TAG_STATUS,                 //
   TAG_TAGS,
   TAG_TITLE,
   TAG_TRACKNUMBER,
@@ -87,7 +87,7 @@ typedef enum {
   TAG_WRITETIME,
   TAG_VARIOUSARTISTS,
   TAG_VOLUMEADJUSTPERC,
-  TAG_RRN,
+  TAG_RRN,                    //
   MAX_TAG_KEY
 } tagdefkey_t;
 

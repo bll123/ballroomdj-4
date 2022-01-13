@@ -40,16 +40,16 @@ mstimestart (mstime_t *mt)
   gettimeofday (&mt->start, NULL);
 }
 
-size_t
+time_t
 mstimeend (mstime_t *t)
 {
   struct timeval    end;
 
   gettimeofday (&end, NULL);
-  long s = end.tv_sec - t->start.tv_sec;
-  long u = end.tv_usec - t->start.tv_usec;
-  long m = s * 1000 + u / 1000;
-  return (size_t) m;
+  time_t s = end.tv_sec - t->start.tv_sec;
+  time_t u = end.tv_usec - t->start.tv_usec;
+  time_t m = s * 1000 + u / 1000;
+  return m;
 }
 
 char *

@@ -422,6 +422,13 @@ datafileParseMerge (list_t *nlist, char *data, char *name,
 
   if (lookupKey != DATAFILE_NO_LOOKUP) {
     listSort (*lookup);
+    listStartIterator (*lookup);
+    while ((tkeystr = listIterateKeyStr (*lookup)) != NULL) {
+      ikey = listIterateGetIdx (*lookup);
+      lval = listGetNumByIdx (*lookup, ikey);
+      logMsg (LOG_DBG, LOG_DATAFILE | LOG_BASIC,
+          "%s: %s / %zd", name, tkeystr, lval);
+    }
   }
 
   parseFree (pi);

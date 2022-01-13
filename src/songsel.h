@@ -17,6 +17,7 @@ typedef struct {
 } songselidx_t;
 
 typedef struct {
+  listidx_t     idx;
   dbidx_t       dbidx;
   listidx_t     attrIdx [SONGSEL_ATTR_MAX];
   double        percentage;
@@ -39,14 +40,17 @@ typedef struct {
 } songseldance_t;
 
 typedef struct {
-  list_t    *danceSelList;
+  list_t              *danceSelList;
+  double              autoselWeight [SONGSEL_ATTR_MAX];
+  songselsongdata_t   *lastSelection;
 } songsel_t;
 
-typedef bool (*songselFilter_t)(song_t *, void *);
+typedef bool (*songselFilter_t)(dbidx_t, song_t *, void *);
 
-songsel_t     * songselAlloc (list_t *dancelist,
-                  songselFilter_t filterProc, void *userdata);
-void          songselFree (songsel_t *songsel);
-song_t        * songselSelect (songsel_t *songsel, listidx_t danceIdx);
+songsel_t * songselAlloc (list_t *dancelist,
+              songselFilter_t filterProc, void *userdata);
+void      songselFree (songsel_t *songsel);
+song_t    * songselSelect (songsel_t *songsel, listidx_t danceIdx);
+void      songselSelectFinalize (songsel_t *songsel, listidx_t danceIdx);
 
 #endif /* INC_SONGSEL_H */

@@ -33,23 +33,15 @@ foreach {fn} $flist {
   while { [gets $ifh line] >= 0 } {
     regexp {^([^:]*):(.*)$} $line all key value
     if { $key eq "list" } { continue }
-    if { $key eq "versoin"} { continue }
+    if { $key eq "version"} { continue }
 
-    if { $key eq "playannounce" } { set key PlayAnnounce }
-    if { $key eq "maxplaytime" } { set key MaxPlayTime }
-    if { $key eq "pauseeachsong" } { set key PauseEachSong }
-    if { $key eq "resume" } { set key Resume }
-    if { $key eq "stopafter" } { set key StopAfter }
-    if { $key eq "stopwait" } { set key StopWait }
-    if { $key eq "stopafterwait" } { set key StopAfterWait }
-    if { $key eq "stoptime" } { set key StopTime }
-    if { $key eq "stoptype" } { set key StopType }
+    if { $key eq "RequiredKeywords" } { continue }
+
     if { $key eq "StatusOK" } { set key UseStatus }
     if { $key eq "UnratedOK" } { set key UseUnrated }
-    if { $key eq "gap" } { set key Gap }
     if { $key eq "highDanceLevel" } { set key DanceLevelHigh }
     if { $key eq "lowDanceLevel" } { set key DanceLevelLow }
-    if { $key eq "mqMessage" } { set key MqMessage }
+
     if { $key eq "ManualList" && $value eq "None" } {
       set value {}
     }

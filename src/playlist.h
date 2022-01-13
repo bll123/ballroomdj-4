@@ -4,6 +4,7 @@
 #include <stdbool.h>
 
 #include "datafile.h"
+#include "musicdb.h"
 #include "song.h"
 #include "songlist.h"
 #include "sequence.h"
@@ -22,7 +23,6 @@ typedef enum {
   PLAYLIST_MQ_MESSAGE,
   PLAYLIST_PAUSE_EACH_SONG,
   PLAYLIST_RATING,
-  PLAYLIST_REQ_KEYWORDS,
   PLAYLIST_RESUME,
   PLAYLIST_SEQ_NAME,
   PLAYLIST_STOP_AFTER,
@@ -78,9 +78,13 @@ typedef struct {
   int           manualIdx;
 } playlist_t;
 
+#define VALID_SONG_ATTEMPTS   40
+
+typedef bool (*playlistCheck_t)(song_t *, void *);
+
 playlist_t    *playlistAlloc (char *);
 void          playlistFree (playlist_t *);
-song_t        *playlistGetNextSong (playlist_t *);
-bool          playlistFilterSong (song_t *song, void *tplaylist);
+song_t        *playlistGetNextSong (playlist_t *, playlistCheck_t checkProc, void *userdata);
+bool          playlistFilterSong (dbidx_t dbidx, song_t *song, void *tplaylist);
 
 #endif /* INC_PLAYLIST_H */

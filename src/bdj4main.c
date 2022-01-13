@@ -56,6 +56,7 @@ static void     mainMusicQueueFill (maindata_t *mainData);
 static void     mainMusicQueuePrep (maindata_t *mainData);
 static void     mainMusicQueuePlay (maindata_t *mainData);
 static void     mainMusicQueueNext (maindata_t *mainData);
+static bool     mainCheckMusicQueue (song_t *song, void *tdata);
 
 static int gKillReceived = 0;
 
@@ -154,7 +155,7 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
   logProcBegin (LOG_PROC, "mainProcessMsg");
   mainData = (maindata_t *) udata;
 
-  logMsg (LOG_DBG, LOG_MAIN, "got: from: %ld route: %ld msg:%ld args:%s",
+  logMsg (LOG_DBG, LOG_MSGS, "got: from: %ld route: %ld msg:%ld args:%s",
       routefrom, route, msg, args);
 
   switch (route) {
@@ -192,7 +193,7 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_PLAYLIST_QUEUE: {
-          logMsg (LOG_DBG, LOG_MAIN, "got: playlist-queue");
+          logMsg (LOG_DBG, LOG_MSGS, "got: playlist-queue");
           mainPlaylistQueue (mainData, args);
           break;
         }
@@ -293,19 +294,14 @@ mainMusicQueueFill (maindata_t *mainData)
   currlen = musicqGetLen (mainData->musicQueue, mainData->musicqCurrent);
   logMsg (LOG_DBG, LOG_BASIC, "fill: %ld < %ld", currlen, maxlen);
   while (playlist != NULL && currlen < maxlen) {
-    song = playlistGetNextSong (playlist);
-    while (song != NULL && currlen < maxlen) {
-      musicqPush (mainData->musicQueue, mainData->musicqCurrent, song);
-      song = playlistGetNextSong (playlist);
-      currlen = musicqGetLen (mainData->musicQueue, mainData->musicqCurrent);
-    }
+    song = playlistGetNextSong (playlist, mainCheckMusicQueue, mainData);
     if (song == NULL) {
       plqPop (mainData->playlistQueue);
       playlist = plqGetCurrent (mainData->playlistQueue);
+      continue;
     }
-  }
-  if (playlist == NULL) {
-    plqPop (mainData->playlistQueue);
+    musicqPush (mainData->musicQueue, mainData->musicqCurrent, song);
+    currlen = musicqGetLen (mainData->musicQueue, mainData->musicqCurrent);
   }
   logProcEnd (LOG_PROC, "mainMusicQueueFill", "");
 }
@@ -367,4 +363,12 @@ mainMusicQueueNext (maindata_t *mainData)
   mainMusicQueueFill (mainData);
   mainMusicQueuePrep (mainData);
   logProcEnd (LOG_PROC, "mainMusicQueueNext", "");
+}
+
+static bool
+mainCheckMusicQueue (song_t *song, void *tdata)
+{
+//  maindata_t  *mainData = tdata;
+
+  return true;
 }

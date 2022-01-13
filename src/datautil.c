@@ -25,6 +25,9 @@ datautilMakePath (char *buff, size_t buffsz, const char *subpath,
   if ((flags & DATAUTIL_MP_TMPPREFIX) == DATAUTIL_MP_TMPPREFIX) {
     dirprefix = "tmp";
   }
+  if ((flags & DATAUTIL_MP_EXECPREFIX) == DATAUTIL_MP_EXECPREFIX) {
+    dirprefix = sysvars [SV_BDJ4EXECDIR];
+  }
 
   if ((flags & DATAUTIL_MP_USEIDX) == DATAUTIL_MP_USEIDX) {
     if (lsysvars [SVL_BDJIDX] != 0L) {
