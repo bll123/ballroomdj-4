@@ -26,7 +26,8 @@ MKC_CONFDIR = mkc_config
 MKC_FILES = mkc_files
 MKC_OUTPUT = config.h
 MKC_COUTPUT = configc.h
-MKC_POUTPUT = configp.h
+MKC_ALSAOUTPUT = configalsa.h
+MKC_PAOUTPUT = configpa.h
 MKC_VLCOUTPUT = configvlc.h
 MKC_TOUTPUT = configt.h
 MKC_ENV_SHR = $(MKC_PREFIX)-env.shared
@@ -34,7 +35,8 @@ MKC_ENV_TEST = $(MKC_PREFIX)-env.test
 
 MKC_CONF = $(MKC_CONFDIR)/$(MKC_PREFIX).mkc
 MKC_CCONF = $(MKC_CONFDIR)/$(MKC_PREFIX)common.mkc
-MKC_PCONF = $(MKC_CONFDIR)/$(MKC_PREFIX)player.mkc
+MKC_ALSACONF = $(MKC_CONFDIR)/$(MKC_PREFIX)alsa.mkc
+MKC_PACONF = $(MKC_CONFDIR)/$(MKC_PREFIX)pa.mkc
 MKC_VLCCONF = $(MKC_CONFDIR)/$(MKC_PREFIX)vlc.mkc
 MKC_TCONF = $(MKC_CONFDIR)/$(MKC_PREFIX)test.mkc
 MKC_ENV_SHR_CONF = $(MKC_CONFDIR)/$(MKC_PREFIX)-env-shared.mkc
@@ -50,6 +52,8 @@ MKCONFIG_TYPE = sh
 MKC_REQLIB = $(MKC_PREFIX)-reqlibs.main
 MKC_CREQLIB = $(MKC_PREFIX)-reqlibs.common
 MKC_PREQLIB = $(MKC_PREFIX)-reqlibs.player
+MKC_ALSAREQLIB = $(MKC_PREFIX)-reqlibs.alsa
+MKC_PAREQLIB = $(MKC_PREFIX)-reqlibs.pa
 MKC_VLCREQLIB = $(MKC_PREFIX)-reqlibs.vlc
 MKC_TREQLIB = $(MKC_PREFIX)-reqlibs.test
 MKC_ECHO =
@@ -109,8 +113,11 @@ depend:
 
 # main targets
 
-PROGRAMS = $(BINDIR)/bdj4$(EXE_EXT) $(BINDIR)/bdj4main$(EXE_EXT) \
-	$(BINDIR)/bdj4player$(EXE_EXT) $(BINDIR)/clicomm$(EXE_EXT)
+PROGRAMS = \
+	$(BINDIR)/bdj4$(EXE_EXT) \
+	$(BINDIR)/bdj4main$(EXE_EXT) \
+	$(BINDIR)/bdj4player$(EXE_EXT) \
+	$(BINDIR)/clicomm$(EXE_EXT)
 .PHONY: programs
 programs: $(PROGRAMS)
 
@@ -118,11 +125,16 @@ TESTPROGRAMS = $(BINDIR)/check_all$(EXE_EXT)
 .PHONY: testprograms
 testprograms: $(TESTPROGRAMS)
 
-LIBRARIES = $(SHLIBDIR)/libbdj4common$(SHLIB_EXT) \
+LIBRARIES = \
+	$(SHLIBDIR)/libbdj4common$(SHLIB_EXT) \
 	$(SHLIBDIR)/libbdj4player$(SHLIB_EXT) \
 	$(SHLIBDIR)/libbdj4$(SHLIB_EXT) \
 	$(SHLIBDIR)/libplivlc$(SHLIB_EXT) \
-	$(SHLIBDIR)/libplinull$(SHLIB_EXT)
+	$(SHLIBDIR)/libplinull$(SHLIB_EXT) \
+	$(SHLIBDIR)/libvolalsa$(SHLIB_EXT) \
+	$(SHLIBDIR)/libvolmac$(SHLIB_EXT) \
+	$(SHLIBDIR)/libvolpa$(SHLIB_EXT) \
+	$(SHLIBDIR)/libvolwin$(SHLIB_EXT)
 .PHONY: libraries
 libraries: $(LIBRARIES)
 
@@ -148,9 +160,13 @@ $(MKC_CREQLIB):  $(MKC_COUTPUT)
 	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh -reqlib \
 		-o $(MKC_CREQLIB) $(MKC_COUTPUT)
 
-$(MKC_PREQLIB):  $(MKC_POUTPUT)
+$(MKC_ALSAREQLIB):  $(MKC_ALSAOUTPUT)
 	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh -reqlib \
-		-o $(MKC_PREQLIB) $(MKC_POUTPUT)
+		-o $(MKC_ALSAREQLIB) $(MKC_ALSAOUTPUT)
+
+$(MKC_PAREQLIB):  $(MKC_PAOUTPUT)
+	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh -reqlib \
+		-o $(MKC_PAREQLIB) $(MKC_PAOUTPUT)
 
 $(MKC_VLCREQLIB):  $(MKC_VLCOUTPUT)
 	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh -reqlib \
@@ -170,10 +186,15 @@ $(MKC_COUTPUT):       $(MKC_ENV_SHR) $(MKC_CCONF)
 	. ./$(MKC_ENV_SHR);$(_MKCONFIG_SHELL) \
 		$(MKC_DIR)/mkconfig.sh $(MKC_CCONF)
 
-$(MKC_POUTPUT):       $(MKC_ENV_SHR) $(MKC_PCONF)
-	@-$(RM) -f $(MKC_POUTPUT)
+$(MKC_ALSAOUTPUT):       $(MKC_ENV_SHR) $(MKC_ALSACONF)
+	@-$(RM) -f $(MKC_ALSAOUTPUT)
 	. ./$(MKC_ENV_SHR);$(_MKCONFIG_SHELL) \
-		$(MKC_DIR)/mkconfig.sh $(MKC_PCONF)
+		$(MKC_DIR)/mkconfig.sh $(MKC_ALSACONF)
+
+$(MKC_PAOUTPUT):       $(MKC_ENV_SHR) $(MKC_PACONF)
+	@-$(RM) -f $(MKC_PAOUTPUT)
+	. ./$(MKC_ENV_SHR);$(_MKCONFIG_SHELL) \
+		$(MKC_DIR)/mkconfig.sh $(MKC_PACONF)
 
 $(MKC_VLCOUTPUT):       $(MKC_ENV_SHR) $(MKC_VLCCONF)
 	@-$(RM) -f $(MKC_VLCOUTPUT)
@@ -202,9 +223,9 @@ distclean:
 	@-$(MAKE) clean
 	@-$(RM) -f $(MKC_ENV_SHR) $(MKC_ENV_TEST)
 	@-$(RM) -f $(MKC_REQLIB) $(MKC_CREQLIB) $(MKC_VLCREQLIB) $(MKC_TREQLIB)
-	@-$(RM) -f $(MKC_PREQLIB)
+	@-$(RM) -f $(MKC_PAREQLIB) $(MKC_ALSAREQLIB)
 	@-$(RM) -f $(MKC_OUTPUT) $(MKC_COUTPUT) $(MKC_VLCOUTPUT)
-	@-$(RM) -f $(MKC_POUTPUT) $(MKC_TOUTPUT)
+	@-$(RM) -f $(MKC_ALSAOUTPUT) $(MKC_PAOUTPUT) $(MKC_TOUTPUT)
 	@-$(RM) -rf $(MKC_FILES)
 	@-test -d ../test.dir/data && $(RM) -rf ../test.dir/data/*
 	@-$(RM) -f ../install/manifest.txt ../install/src-manifest.txt
@@ -273,13 +294,12 @@ $(BINDIR)/bdj4main$(EXE_EXT): $(MKC_REQLIB) $(MKC_CREQLIB) $(BDJMAINOBJS) \
 PLAYEROBJS = $(OBJDIR)/bdj4player$(OBJ_EXT)
 
 $(BINDIR)/bdj4player$(EXE_EXT): \
-		$(MKC_REQLIB) $(MKC_PREQLIB) $(MKC_CREQLIB) $(PLAYEROBJS) \
+		$(MKC_REQLIB) $(MKC_CREQLIB) $(PLAYEROBJS) \
 		$(SHLIBDIR)/libbdj4player$(SHLIB_EXT) \
 		$(SHLIBDIR)/libbdj4common$(SHLIB_EXT)
 	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh \
 		-link -exec $(MKC_ECHO) \
 		-r $(MKC_REQLIB) \
-		-r $(MKC_PREQLIB) \
 		-r $(MKC_CREQLIB) \
 		-o $@ \
 		$(PLAYEROBJS) \
@@ -374,20 +394,15 @@ $(SHLIBDIR)/libbdj4$(SHLIB_EXT): $(MKC_REQLIB) $(MKC_CREQLIB) $(LIBBDJOBJS) \
 
 LIBPLAYOBJS = \
 	$(OBJDIR)/pli$(OBJ_EXT) \
-	$(OBJDIR)/volume$(OBJ_EXT) \
-	$(OBJDIR)/volalsa$(OBJ_EXT) \
-	$(OBJDIR)/volmac$(OBJ_EXT) \
-	$(OBJDIR)/volpa$(OBJ_EXT) \
-	$(OBJDIR)/volwin$(OBJ_EXT)
+	$(OBJDIR)/volume$(OBJ_EXT)
 
 $(SHLIBDIR)/libbdj4player$(SHLIB_EXT): \
-		$(MKC_REQLIB) $(MKC_PREQLIB) $(MKC_CREQLIB) $(LIBPLAYOBJS) \
+		$(MKC_REQLIB) $(MKC_CREQLIB) $(LIBPLAYOBJS) \
 		$(SHLIBDIR)/libbdj4$(SHLIB_EXT) \
 		$(SHLIBDIR)/libbdj4common$(SHLIB_EXT)
 	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh \
 		-link -shared $(MKC_ECHO) -lib \
 		-r $(MKC_REQLIB) \
-		-r $(MKC_PREQLIB) \
 		-r $(MKC_CREQLIB) \
 		-o $@ \
 		$(LIBPLAYOBJS) \
@@ -427,6 +442,52 @@ $(SHLIBDIR)/libplinull$(SHLIB_EXT): \
 		$(LIBPLINULLOBJS) \
 		-L $(SHLIBDIR) -rpath $(BINDIR) \
 		-l bdj4common
+	./build/postbuild.sh $@
+
+LIBVOLALSAOBJS = \
+	$(OBJDIR)/volalsa$(OBJ_EXT)
+
+$(SHLIBDIR)/libvolalsa$(SHLIB_EXT): \
+		$(MKC_ALSAREQLIB) $(LIBVOLALSAOBJS)
+	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh \
+		-link -shared $(MKC_ECHO) -lib \
+		-r $(MKC_ALSAREQLIB) \
+		-o $@ \
+		$(LIBVOLALSAOBJS)
+	./build/postbuild.sh $@
+
+LIBVOLMACOBJS = \
+	$(OBJDIR)/volmac$(OBJ_EXT)
+
+$(SHLIBDIR)/libvolmac$(SHLIB_EXT): \
+		$(LIBVOLMACOBJS)
+	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh \
+		-link -shared $(MKC_ECHO) -lib \
+		-o $@ \
+		$(LIBVOLMACOBJS)
+	./build/postbuild.sh $@
+
+LIBVOLPAOBJS = \
+	$(OBJDIR)/volpa$(OBJ_EXT)
+
+$(SHLIBDIR)/libvolpa$(SHLIB_EXT): \
+		$(MKC_PAREQLIB) $(LIBVOLPAOBJS)
+	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh \
+		-link -shared $(MKC_ECHO) -lib \
+		-r $(MKC_PAREQLIB) \
+		-o $@ \
+		$(LIBVOLPAOBJS)
+	./build/postbuild.sh $@
+
+LIBVOLWINOBJS = \
+	$(OBJDIR)/volwin$(OBJ_EXT)
+
+$(SHLIBDIR)/libvolwin$(SHLIB_EXT): \
+		$(LIBVOLWINOBJS)
+	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh \
+		-link -shared $(MKC_ECHO) -lib \
+		-o $@ \
+		$(LIBVOLWINOBJS)
 	./build/postbuild.sh $@
 
 # test routines
@@ -489,7 +550,7 @@ $(OBJDIR)/bdj4main$(OBJ_EXT): bdj4main.c config.h bdj4init.h sockh.h sock.h bdjm
  songsel.h queue.h musicq.h plq.h tmutil.h bdjopt.h tagdef.h
 $(OBJDIR)/bdj4player$(OBJ_EXT): bdj4player.c config.h bdjmsg.h bdjopt.h list.h bdjstring.h \
  bdjvars.h datautil.h fileop.h lock.h log.h fileutil.h pathutil.h pli.h \
- tmutil.h portability.h process.h queue.h sock.h sockh.h sysvars.h \
+ portability.h tmutil.h process.h queue.h sock.h sockh.h sysvars.h \
  volume.h
 $(OBJDIR)/bdjmsg$(OBJ_EXT): bdjmsg.c config.h bdjmsg.h bdjstring.h
 $(OBJDIR)/bdjopt$(OBJ_EXT): bdjopt.c config.h bdjopt.h list.h datafile.h datautil.h \
@@ -553,8 +614,11 @@ $(OBJDIR)/playlist$(OBJ_EXT): playlist.c config.h bdjvarsdf.h datafile.h list.h 
  datautil.h fileop.h level.h log.h fileutil.h musicdb.h song.h playlist.h \
  songlist.h sequence.h songsel.h queue.h portability.h rating.h status.h \
  tagdef.h bdjstring.h
-$(OBJDIR)/plinull$(OBJ_EXT): plinull.c config.h configp.h pli.h tmutil.h
-$(OBJDIR)/plivlc$(OBJ_EXT): plivlc.c config.h configvlc.h
+$(OBJDIR)/pli$(OBJ_EXT): pli.c config.h bdjopt.h list.h datautil.h pli.h portability.h \
+ tmutil.h sysvars.h
+$(OBJDIR)/plinull$(OBJ_EXT): plinull.c config.h pli.h portability.h tmutil.h
+$(OBJDIR)/plivlc$(OBJ_EXT): plivlc.c config.h configvlc.h pli.h portability.h tmutil.h \
+ vlci.h list.h
 $(OBJDIR)/plq$(OBJ_EXT): plq.c config.h plq.h queue.h playlist.h datafile.h list.h \
  musicdb.h song.h songlist.h sequence.h songsel.h
 $(OBJDIR)/portability$(OBJ_EXT): portability.c config.h portability.h
@@ -587,7 +651,9 @@ $(OBJDIR)/sysvars$(OBJ_EXT): sysvars.c config.h sysvars.h portability.h bdjstrin
  pathutil.h
 $(OBJDIR)/tagdef$(OBJ_EXT): tagdef.c config.h tagdef.h bdjstring.h list.h
 $(OBJDIR)/tmutil$(OBJ_EXT): tmutil.c config.h tmutil.h bdjstring.h
-$(OBJDIR)/vlci$(OBJ_EXT): vlci.c config.h configvlc.h
-$(OBJDIR)/volalsa$(OBJ_EXT): volalsa.c config.h
-$(OBJDIR)/volpa$(OBJ_EXT): volpa.c config.h volume.h bdjstring.h tmutil.h
-$(OBJDIR)/volume$(OBJ_EXT): volume.c config.h volume.h
+$(OBJDIR)/vlci$(OBJ_EXT): vlci.c config.h configvlc.h vlci.h list.h bdjstring.h
+$(OBJDIR)/volalsa$(OBJ_EXT): volalsa.c config.h configalsa.h volume.h portability.h
+$(OBJDIR)/volpa$(OBJ_EXT): volpa.c config.h configpa.h volume.h portability.h bdjstring.h \
+ tmutil.h
+$(OBJDIR)/volume$(OBJ_EXT): volume.c config.h bdjopt.h list.h datautil.h portability.h \
+ sysvars.h volume.h

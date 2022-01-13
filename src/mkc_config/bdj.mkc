@@ -17,6 +17,7 @@ hdr     fcntl.h
 hdr     io.h
 hdr     libintl.h
 hdr     MacTypes.h
+hdr     math.h
 hdr     netdb.h
 hdr     netinet/in.h
 hdr     poll.h
@@ -64,6 +65,7 @@ lib     OpenProcess
 lib     rand
 lib     random
 lib     realpath
+lib     round -lm
 lib     select -lws2_32
 lib     SetDllDirectory
 lib     sigaction

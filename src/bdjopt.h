@@ -23,7 +23,7 @@ typedef enum {
   OPT_G_PATHFMT_CL,
   OPT_G_PATHFMT_CLVA,
   OPT_G_PATHFMT_VA,
-  OPT_G_PLAYER,
+  OPT_G_PLAYER_INTFC,             //
   OPT_G_PLAYERQLEN,               //
   OPT_G_REMCONTROLHTML,
   OPT_G_SHOWALBUM,
@@ -33,6 +33,7 @@ typedef enum {
   OPT_G_SLOWDEVICE,
   OPT_G_STARTMAXIMIZED,
   OPT_G_VARIOUS,
+  OPT_G_VOLUME_INTFC,             //
   OPT_G_WRITETAGS,
   OPT_M_AUDIOSINK,                //
   OPT_M_DIR_ARCHIVE,

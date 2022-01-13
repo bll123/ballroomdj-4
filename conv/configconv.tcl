@@ -105,14 +105,26 @@ foreach path [list {} profiles $hostname [file join $hostname profiles]] {
             set value 360000
           }
         }
+        if { $key eq "PLAYER" } {
+          set value libplivlc
+        }
         puts $ofh $key
         puts $ofh "..$value"
       }
 
+      if { $path eq "" } {
+        puts $ofh VOLUME
+        if { $::tcl_platform(os) eq "Linux" } { set value libvolpa }
+        if { $::tcl_platform(os) eq "Windows" } { set value libvolwin }
+        if { $::tcl_platform(os) eq "Darwin" } { set value libvolmac }
+        puts $ofh "..$value"
+      }
       close $ifh
       close $ofh
     }
   }
+
+
 }
 
 

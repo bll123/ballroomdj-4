@@ -1,5 +1,3 @@
-/*
- */
 #include "config.h"
 
 #include <stdio.h>
@@ -7,41 +5,86 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
+#include <errno.h>
+#include <assert.h>
 
+#include "bdjopt.h"
+#include "datautil.h"
+#include "portability.h"
+#include "sysvars.h"
 #include "volume.h"
 
+volume_t *
+volumeInit (void)
+{
+  volume_t      *volume;
+
+  char      dlpath [MAXPATHLEN];
+
+  volume = malloc (sizeof (volume_t));
+  assert (volume != NULL);
+  volume->volumeProcess = NULL;
+  volume->volumeDisconnect = NULL;
+
+  datautilMakePath (dlpath, sizeof (dlpath), "",
+      bdjoptGetData (OPT_G_VOLUME_INTFC),
+      sysvars [SV_SHLIB_EXT], DATAUTIL_MP_EXECPREFIX);
+  volume->dlHandle = dylibLoad (dlpath);
+  if (volume->dlHandle == NULL) {
+    volumeFree (volume);
+    return NULL;
+  }
+
+  volume->volumeProcess = dylibLookup (volume->dlHandle, "volumeProcess");
+  volume->volumeDisconnect = dylibLookup (volume->dlHandle, "volumeDisconnect");
+
+  return volume;
+}
+
+void
+volumeFree (volume_t *volume)
+{
+  if (volume != NULL) {
+    if (volume->dlHandle != NULL) {
+      dylibClose (volume->dlHandle);
+    }
+    free (volume);
+  }
+}
+
+
 int
-volumeGet (char *sinkname)
+volumeGet (volume_t *volume, char *sinkname)
 {
   int               vol;
   int               rc;
 
   vol = 0;
-  rc = volumeProcess (VOL_GET, sinkname, &vol, NULL);
-  volumeDisconnect ();
+  rc = volume->volumeProcess (VOL_GET, sinkname, &vol, NULL);
+  volume->volumeDisconnect ();
   return vol;
 }
 
 int
-volumeSet (char *sinkname, int vol)
+volumeSet (volume_t *volume, char *sinkname, int vol)
 {
   int               rc;
 
-  rc = volumeProcess (VOL_SET, sinkname, &vol, NULL);
-  volumeDisconnect ();
+  rc = volume->volumeProcess (VOL_SET, sinkname, &vol, NULL);
+  volume->volumeDisconnect ();
   return vol;
 }
 
 
 int
-volumeGetSinkList (char *sinkname, volsinklist_t *sinklist)
+volumeGetSinkList (volume_t *volume, char *sinkname, volsinklist_t *sinklist)
 {
   int               rc;
   int               vol;
 
   vol = 0;
-  rc = volumeProcess (VOL_GETSINKLIST, sinkname, &vol, sinklist);
-  volumeDisconnect ();
+  rc = volume->volumeProcess (VOL_GETSINKLIST, sinkname, &vol, sinklist);
+  volume->volumeDisconnect ();
   return vol;
 }
 
@@ -65,4 +108,3 @@ volumeFreeSinkList (volsinklist_t *sinklist)
     }
   }
 }
-

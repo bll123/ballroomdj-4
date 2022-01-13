@@ -30,7 +30,7 @@ typedef struct {
 } plidata_t;
 
 typedef struct {
-  void              *dlHandle;
+  dlhandle_t        *dlHandle;
   plidata_t         *(*pliiInit) (void);
   void              (*pliiFree) (plidata_t *);
   void              (*pliiMediaSetup) (plidata_t *, char *);

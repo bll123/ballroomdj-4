@@ -11,6 +11,7 @@
  */
 
 #include "config.h"
+#include "configpa.h"
 
 #if _hdr_pulse_pulseaudio
 

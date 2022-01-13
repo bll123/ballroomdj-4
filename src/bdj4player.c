@@ -54,6 +54,7 @@ typedef struct {
   mstime_t        tmstart;
   long            globalCount;
   pli_t           *pliData;
+  volume_t        *volume;
   queue_t         *prepRequestQueue;
   queue_t         *prepQueue;
   prepqueue_t     *currentSong;
@@ -190,14 +191,17 @@ main (int argc, char *argv[])
   playerData.defaultSink = "";
   playerData.currentSink = "";
 
+  playerData.volume = volumeInit ();
+
   playerInitSinklist (&playerData);
     /* sets the current sink */
   playerSetAudioSink (&playerData, bdjoptGetData (OPT_M_AUDIOSINK));
 
-  playerData.originalSystemVolume = volumeGet (playerData.currentSink);
+  playerData.originalSystemVolume =
+      volumeGet (playerData.volume, playerData.currentSink);
   playerData.realVolume = (int) bdjoptGetNum (OPT_P_DEFAULTVOLUME);
   playerData.currentVolume = playerData.realVolume;
-  volumeSet (playerData.currentSink, playerData.realVolume);
+  volumeSet (playerData.volume, playerData.currentSink, playerData.realVolume);
 
   if (playerData.sinklist.sinklist != NULL) {
     for (size_t i = 0; i < playerData.sinklist.count; ++i) {
@@ -220,10 +224,11 @@ main (int argc, char *argv[])
     pliFree (playerData.pliData);
   }
 
-  volumeSet (playerData.currentSink, playerData.originalSystemVolume);
+  volumeSet (playerData.volume, playerData.currentSink, playerData.originalSystemVolume);
   playerData.defaultSink = "";
   playerData.currentSink = "";
   volumeFreeSinkList (&playerData.sinklist);
+  volumeFree (playerData.volume);
 
   if (playerData.prepQueue != NULL) {
     queueFree (playerData.prepQueue);
@@ -380,7 +385,7 @@ playerProcessing (void *udata)
       playerData->playRequest != NULL) {
     logMsg (LOG_DBG, LOG_BASIC, "play: %s", playerData->playRequest);
     if (playerData->fadeinTime == 0) {
-      volumeSet (playerData->currentSink, playerData->realVolume);
+      volumeSet (playerData->volume, playerData->currentSink, playerData->realVolume);
     }
     pliMediaSetup (playerData->pliData, playerData->playRequest);
     pliStartPlayback (playerData->pliData);
@@ -474,7 +479,7 @@ playerProcessing (void *udata)
             MSG_PLAYBACK_FINISH, NULL);
 
         if (playerData->gap > 0) {
-          volumeSet (playerData->currentSink, 0);
+          volumeSet (playerData->volume, playerData->currentSink, 0);
           playerData->inGap = true;
           playerData->gapFinishTime = mstime () + playerData->gap;
         }
@@ -734,7 +739,7 @@ playerInitSinklist (playerdata_t *playerData)
   playerData->defaultSink = "";
   playerData->currentSink = "";
 
-  volumeGetSinkList ("", &playerData->sinklist);
+  volumeGetSinkList (playerData->volume, "", &playerData->sinklist);
   playerData->defaultSink = playerData->sinklist.defname;
   logProcEnd (LOG_PROC, "playerInitSinklist", "");
 }
@@ -749,7 +754,7 @@ playerFadeVolSet (playerdata_t *playerData)
   if (newvol > playerData->realVolume) {
     newvol = playerData->realVolume;
   }
-  volumeSet (playerData->currentSink, newvol);
+  volumeSet (playerData->volume, playerData->currentSink, newvol);
   if (playerData->inFadeIn) {
     ++playerData->fadeCount;
   }

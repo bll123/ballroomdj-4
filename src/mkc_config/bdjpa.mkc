@@ -1,16 +1,11 @@
 loadunit env-systype
 loadunit c-main
 
-output configp.h
+output configpa.h
 
 standard_system
 standard
 
-hdr     alsa/asoundlib.h
 hdr     pulse/pulseaudio.h
 
 lib     pa_threaded_mainloop_start -lpulse -lm
-if notpa ! _lib_pa_threaded_mainloop_start
- lib     snd_mixer_open -lasound -lm
-endif
-

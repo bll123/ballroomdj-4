@@ -32,7 +32,7 @@ static datafilekey_t bdjoptglobaldfkeys[] = {
   { "PATHFMT_CL",         OPT_G_PATHFMT_CL,         VALUE_DATA, NULL },
   { "PATHFMT_CLVA",       OPT_G_PATHFMT_CLVA,       VALUE_DATA, NULL },
   { "PATHFMT_VA",         OPT_G_PATHFMT_VA,         VALUE_DATA, NULL },
-  { "PLAYER",             OPT_G_PLAYER,             VALUE_DATA, NULL },
+  { "PLAYER",             OPT_G_PLAYER_INTFC,       VALUE_DATA, NULL },
   { "PLAYERQLEN",         OPT_G_PLAYERQLEN,         VALUE_NUM, NULL },
   { "REMCONTROLHTML",     OPT_G_REMCONTROLHTML,     VALUE_DATA, NULL },
   { "SHOWALBUM",          OPT_G_SHOWALBUM,          VALUE_NUM, parseConvBoolean },
@@ -42,6 +42,7 @@ static datafilekey_t bdjoptglobaldfkeys[] = {
   { "SLOWDEVICE",         OPT_G_SLOWDEVICE,         VALUE_NUM, parseConvBoolean },
   { "STARTMAXIMIZED",     OPT_G_STARTMAXIMIZED,     VALUE_NUM, parseConvBoolean },
   { "VARIOUS",            OPT_G_VARIOUS,            VALUE_DATA, NULL },
+  { "VOLUME",             OPT_G_VOLUME_INTFC,       VALUE_DATA, NULL },
   { "WRITETAGS",          OPT_G_WRITETAGS,          VALUE_DATA, NULL },
 };
 #define BDJOPT_GLOBAL_DFKEY_COUNT (sizeof (bdjoptglobaldfkeys) / sizeof (datafilekey_t))

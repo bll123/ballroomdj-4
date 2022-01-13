@@ -14,8 +14,9 @@
  */
 
 #include "config.h"
+#include "configalsa.h"
 
-#if _hdr_alsa_asoundlib && ! _hdr_pulse_pulseaudio
+#if _hdr_alsa_asoundlib
 
 #include <stdio.h>
 #include <stdlib.h>

@@ -1,0 +1,12 @@
+loadunit env-systype
+loadunit c-main
+
+output configalsa.h
+
+standard_system
+standard
+
+hdr     alsa/asoundlib.h
+
+lib     snd_mixer_open -lasound -lm
+
