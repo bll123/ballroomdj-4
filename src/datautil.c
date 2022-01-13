@@ -22,16 +22,16 @@ datautilMakePath (char *buff, size_t buffsz, const char *subpath,
     subpathsep = "/";
   }
 
-  if ((flags & DATAUTIL_MP_TMPPREFIX) == DATAUTIL_MP_TMPPREFIX) {
+  if ((flags & DATAUTIL_MP_TMPDIR) == DATAUTIL_MP_TMPDIR) {
     dirprefix = "tmp";
   }
-  if ((flags & DATAUTIL_MP_EXECPREFIX) == DATAUTIL_MP_EXECPREFIX) {
+  if ((flags & DATAUTIL_MP_EXECDIR) == DATAUTIL_MP_EXECDIR) {
     dirprefix = sysvars [SV_BDJ4EXECDIR];
   }
 
   if ((flags & DATAUTIL_MP_USEIDX) == DATAUTIL_MP_USEIDX) {
     if (lsysvars [SVL_BDJIDX] != 0L) {
-      snprintf (suffix, sizeof (suffix), "-%ld", lsysvars [SVL_BDJIDX]);
+      snprintf (suffix, sizeof (suffix), "-%zd", lsysvars [SVL_BDJIDX]);
     }
   }
   if ((flags & DATAUTIL_MP_HOSTNAME) == DATAUTIL_MP_HOSTNAME) {

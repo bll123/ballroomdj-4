@@ -27,12 +27,7 @@
 # define MAXPATHLEN         255
 #endif
 
-typedef void * dlhandle_t;
-
 double        dRandom (void);
 void          sRandom (void);
-dlhandle_t    *dylibLoad (char *path);
-void          dylibClose (dlhandle_t *dlhandle);
-void          *dylibLookup (dlhandle_t *dlhandle, char *funcname);
 
 #endif /* INC_PORTABILITY_H */

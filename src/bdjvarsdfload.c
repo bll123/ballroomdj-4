@@ -61,6 +61,7 @@ bdjvarsdfloadCleanup (void)
 {
   autoselFree (bdjvarsdf [BDJVDF_AUTO_SEL]);
   sortoptFree (bdjvarsdf [BDJVDF_SORT_OPT]);
+  statusFree (bdjvarsdf [BDJVDF_STATUS]);
   levelFree (bdjvarsdf [BDJVDF_LEVELS]);
   genreFree (bdjvarsdf [BDJVDF_GENRES]);
   ratingFree (bdjvarsdf [BDJVDF_RATINGS]);

@@ -12,7 +12,6 @@ standard
 hdr     alsa/asoundlib.h
 hdr	arpa/inet.h
 hdr     dlfcn.h
-hdr     endpointvolume.h
 hdr     fcntl.h
 hdr     io.h
 hdr     libintl.h
@@ -46,7 +45,6 @@ typ	struct sockaddr_in
 typ     suseconds_t
 
 lib     CloseHandle
-lib     CoInitialize -lole32
 lib     CreateFile
 lib     CreateProcess
 lib     CreateSymbolicLink

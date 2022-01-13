@@ -10,6 +10,7 @@
 
 #include "bdjopt.h"
 #include "datautil.h"
+#include "dylib.h"
 #include "pli.h"
 #include "portability.h"
 #include "sysvars.h"
@@ -26,7 +27,7 @@ pliInit (void)
 
   datautilMakePath (dlpath, sizeof (dlpath), "",
       bdjoptGetData (OPT_G_PLAYER_INTFC),
-      sysvars [SV_SHLIB_EXT], DATAUTIL_MP_EXECPREFIX);
+      sysvars [SV_SHLIB_EXT], DATAUTIL_MP_EXECDIR);
   pli->dlHandle = dylibLoad (dlpath);
   if (pli->dlHandle == NULL) {
     free (pli);
@@ -54,7 +55,9 @@ pliFree (pli_t *pli)
 {
   if (pli != NULL) {
     pliClose (pli);
-    dylibClose (pli->dlHandle);
+    if (pli->dlHandle != NULL) {
+      dylibClose (pli->dlHandle);
+    }
     free (pli);
   }
 }

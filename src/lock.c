@@ -41,7 +41,7 @@ lockAcquirePid (char *fn, pid_t pid, datautil_mp_t flags)
 
 
   datautilMakePath (tfn, sizeof (tfn), "", fn, ".lck",
-      flags | DATAUTIL_MP_TMPPREFIX);
+      flags | DATAUTIL_MP_TMPDIR);
 
   fd = open (tfn, O_CREAT | O_EXCL | O_RDWR, 0600);
   count = 0;
@@ -83,7 +83,7 @@ lockReleasePid (char *fn, pid_t pid, datautil_mp_t flags)
   char      tfn [MAXPATHLEN];
 
   datautilMakePath (tfn, sizeof (tfn), "", fn, ".lck",
-      flags | DATAUTIL_MP_TMPPREFIX);
+      flags | DATAUTIL_MP_TMPDIR);
   int rc = -1;
   pid_t fpid = getPidFromFile (tfn);
   if (fpid == pid) {

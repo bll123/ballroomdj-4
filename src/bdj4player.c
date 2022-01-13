@@ -230,6 +230,9 @@ main (int argc, char *argv[])
   volumeFreeSinkList (&playerData.sinklist);
   volumeFree (playerData.volume);
 
+  if (playerData.currentSong != NULL) {
+    playerPrepQueueFree (playerData.currentSong);
+  }
   if (playerData.prepQueue != NULL) {
     queueFree (playerData.prepQueue);
   }
@@ -478,6 +481,14 @@ playerProcessing (void *udata)
         sockhSendMessage (playerData->mainSock, ROUTE_PLAYER, ROUTE_MAIN,
             MSG_PLAYBACK_FINISH, NULL);
 
+          /* before going into the gap, check the system volume */
+          /* and see if the user changed it */
+        int tvol = volumeGet (playerData->volume, playerData->currentSink);
+        if (tvol != playerData->realVolume) {
+          playerData->realVolume = tvol;
+          playerData->currentVolume = tvol;
+        }
+
         if (playerData->gap > 0) {
           volumeSet (playerData->volume, playerData->currentSink, 0);
           playerData->inGap = true;
@@ -494,6 +505,9 @@ playerProcessing (void *udata)
       ! playerData->inGap &&
       ! playerData->inFade) {
     playerProcessPrepRequest (playerData);
+  }
+
+  if (playerData->playerState == PL_STATE_STOPPED) {
   }
   return gKillReceived;
 }

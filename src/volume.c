@@ -10,6 +10,7 @@
 
 #include "bdjopt.h"
 #include "datautil.h"
+#include "dylib.h"
 #include "portability.h"
 #include "sysvars.h"
 #include "volume.h"
@@ -28,7 +29,7 @@ volumeInit (void)
 
   datautilMakePath (dlpath, sizeof (dlpath), "",
       bdjoptGetData (OPT_G_VOLUME_INTFC),
-      sysvars [SV_SHLIB_EXT], DATAUTIL_MP_EXECPREFIX);
+      sysvars [SV_SHLIB_EXT], DATAUTIL_MP_EXECDIR);
   volume->dlHandle = dylibLoad (dlpath);
   if (volume->dlHandle == NULL) {
     volumeFree (volume);

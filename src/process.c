@@ -70,8 +70,8 @@ processStart (const char *fn, pid_t *pid, ssize_t profile, ssize_t loglvl)
   char        tmp2 [40];
 
   logProcBegin (LOG_PROC, "processStart");
-  snprintf (tmp, sizeof (tmp), "%ld", profile);
-  snprintf (tmp2, sizeof (tmp2), "%ld", loglvl);
+  snprintf (tmp, sizeof (tmp), "%zd", profile);
+  snprintf (tmp2, sizeof (tmp2), "%zd", loglvl);
 
 #if _lib_fork
   pid_t     tpid;
@@ -111,16 +111,16 @@ processStart (const char *fn, pid_t *pid, ssize_t profile, ssize_t loglvl)
   si.cb = sizeof(si);
   ZeroMemory (&pi, sizeof (pi));
 
-  snprintf (tmp, sizeof (tmp), "--profile %ld --debug %ld", profile, loglvl);
+  snprintf (tmp, sizeof (tmp), "%s --profile %zd --debug %zd", fn, profile, loglvl);
 
   // Start the child process.
   if (! CreateProcess (
       fn,             // module name
-      tmp,           // command line
+      tmp,            // command line
       NULL,           // process handle
       NULL,           // thread handle
       FALSE,          // handle inheritance
-      DETACHED_PROCESS,
+      0,              // DETACHED_PROCESS
       NULL,           // parent's environment
       NULL,           // parent's starting directory
       &si,            // STARTUPINFO structure

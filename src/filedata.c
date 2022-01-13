@@ -27,9 +27,9 @@ filedataReadAll (char *fname)
   fh = fopen (fname, "r");
   data = malloc ((size_t) statbuf.st_size + 1);
   assert (data != NULL);
-  len = fread (data, (size_t) statbuf.st_size, 1, fh);
-  assert ((statbuf.st_size == 0 && len == 0) || len == 1);
-  data [statbuf.st_size] = '\0';
+  len = fread (data, 1, (size_t) statbuf.st_size, fh);
+  assert ((statbuf.st_size == 0 && len == 0) || len > 0);
+  data [len] = '\0';
   fclose (fh);
 
   return data;

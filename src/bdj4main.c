@@ -15,22 +15,23 @@
 #include <signal.h>
 
 #include "bdj4init.h"
-#include "sockh.h"
-#include "sock.h"
-#include "bdjvars.h"
 #include "bdjmsg.h"
-#include "log.h"
-#include "process.h"
-#include "bdjstring.h"
-#include "sysvars.h"
-#include "portability.h"
-#include "playlist.h"
-#include "queue.h"
-#include "musicq.h"
-#include "plq.h"
-#include "tmutil.h"
 #include "bdjopt.h"
+#include "bdjstring.h"
+#include "bdjvars.h"
+#include "datautil.h"
+#include "log.h"
+#include "musicq.h"
+#include "playlist.h"
+#include "plq.h"
+#include "portability.h"
+#include "process.h"
+#include "queue.h"
+#include "sock.h"
+#include "sockh.h"
+#include "sysvars.h"
 #include "tagdef.h"
+#include "tmutil.h"
 
 typedef struct {
   mstime_t          tmstart;
@@ -106,6 +107,8 @@ mainStartPlayer (maindata_t *mainData)
 {
   char      tbuff [MAXPATHLEN];
   pid_t     pid;
+  char      *extension;
+
 
   logProcBegin (LOG_PROC, "mainStartPlayer");
   if (mainData->playerStarted) {
@@ -113,10 +116,12 @@ mainStartPlayer (maindata_t *mainData)
     return;
   }
 
-  snprintf (tbuff, MAXPATHLEN, "%s/bdj4player", sysvars [SV_BDJ4EXECDIR]);
+  extension = "";
   if (isWindows ()) {
-    strlcat (tbuff, ".exe", MAXPATHLEN);
+    extension = ".exe";
   }
+  datautilMakePath (tbuff, sizeof (tbuff), "",
+      "bdj4player", extension, DATAUTIL_MP_EXECDIR);
   int rc = processStart (tbuff, &pid, lsysvars [SVL_BDJIDX],
       bdjoptGetNum (OPT_G_DEBUGLVL));
   if (rc < 0) {

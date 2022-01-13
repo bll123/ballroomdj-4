@@ -544,10 +544,10 @@ parse (parseinfo_t *pi, char *data, parsetype_t parsetype)
   }
 
   dataCounter = 0;
-  str = strtok_r (data, "\n", &tokptr);
+  str = strtok_r (data, "\r\n", &tokptr);
   while (str != NULL) {
     if (*str == '#') {
-      str = strtok_r (NULL, "\n", &tokptr);
+      str = strtok_r (NULL, "\r\n", &tokptr);
       continue;
     }
 
@@ -562,7 +562,7 @@ parse (parseinfo_t *pi, char *data, parsetype_t parsetype)
     }
     pi->strdata [dataCounter] = str;
     ++dataCounter;
-    str = strtok_r (NULL, "\n", &tokptr);
+    str = strtok_r (NULL, "\r\n", &tokptr);
   }
   pi->count = dataCounter;
   logProcEnd (LOG_PROC, "parse", "");

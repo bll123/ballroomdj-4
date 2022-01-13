@@ -84,14 +84,14 @@ songselAlloc (list_t *dancelist, songselFilter_t filterProc, void *userdata)
   logMsg (LOG_DBG, LOG_SONGSEL, "processing songs");
   dbStartIterator ();
   while ((song = dbIterate(&dbidx)) != NULL) {
-    songselperc_t   *perc;
-    songselsongdata_t   *songdata;
-    songselidx_t    *songidx;
-    listidx_t       rating;
-    listidx_t       level;
-    listidx_t       ratingIdx;
-    listidx_t       levelIdx;
-    ssize_t         weight;
+    songselperc_t   *perc = NULL;
+    songselsongdata_t   *songdata = NULL;
+    songselidx_t    *songidx = NULL;
+    listidx_t       rating = 0;
+    listidx_t       level = 0;
+    listidx_t       ratingIdx = 0;
+    listidx_t       levelIdx = 0;
+    ssize_t         weight = 0;
 
 
     dkey = songGetNum (song, TAG_DANCE);

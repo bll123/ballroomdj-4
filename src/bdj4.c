@@ -9,11 +9,12 @@
 #include <getopt.h>
 #include <unistd.h>
 
-#include "sysvars.h"
 #include "bdjstring.h"
+#include "datautil.h"
 #include "fileop.h"
 #include "pathutil.h"
 #include "portability.h"
+#include "sysvars.h"
 
 int
 main (int argc, char *argv[])
@@ -22,6 +23,7 @@ main (int argc, char *argv[])
   int       c = 0;
   int       option_index = 0;
   char      *prog;
+  char      *extension;
 
   static struct option bdj_options [] = {
     { "check_all",  no_argument,        NULL,   1 },
@@ -135,10 +137,13 @@ main (int argc, char *argv[])
 
   /* launch the program */
 
-  snprintf (buff, MAXPATHLEN, "%s/%s", sysvars [SV_BDJ4EXECDIR], prog);
+  extension = "";
   if (isWindows()) {
-    strlcat (buff, ".exe", MAXPATHLEN);
+    extension = ".exe";
   }
+  datautilMakePath (buff, sizeof (buff), "",
+      prog, extension, DATAUTIL_MP_EXECDIR);
+
   /* this is necessary on mac os, as otherwise it will use the path   */
   /* from the start of this launcher, and the executable path can no  */
   /* be determined, as we've done a chdir().                          */

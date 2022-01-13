@@ -13,6 +13,9 @@
 #if _hdr_dlfcn
 # include <dlfcn.h>
 #endif
+#if _hdr_winsock2
+# include <winsock2.h>
+#endif
 #if _hdr_windows
 # include <windows.h>
 #endif
@@ -58,47 +61,3 @@ sRandom (void)
 #endif
 }
 
-dlhandle_t *
-dylibLoad (char *path)
-{
-  void      *handle;
-
-#if _lib_dlopen
-  handle = dlopen (path, RTLD_LAZY);
-#endif
-#if _lib_LoadLibrary
-  handle = LoadLibrary (path);
-#endif
-  if (handle == NULL) {
-    fprintf (stderr, "dlopen %s failed: %d %s\n", path, errno, strerror (errno));
-  }
-  return handle;
-}
-
-void
-dylibClose (dlhandle_t *handle)
-{
-#if _lib_dlopen
-  dlclose (handle);
-#endif
-#if _lib_LoadLibrary
-  FreeLibrary (handle);
-#endif
-}
-
-void *
-dylibLookup (dlhandle_t *handle, char *funcname)
-{
-  void      *addr;
-
-#if _lib_dlopen
-  addr = dlsym (handle, funcname);
-#endif
-#if _lib_LoadLibrary
-  addr = GetProcAddress (handle, funcname);
-#endif
-  if (addr == NULL) {
-    fprintf (stderr, "sym lookup %s failed: %d %s\n", funcname, errno, strerror (errno));
-  }
-  return addr;
-}

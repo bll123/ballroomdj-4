@@ -115,7 +115,7 @@ foreach path [list {} profiles $hostname [file join $hostname profiles]] {
       if { $path eq "" } {
         puts $ofh VOLUME
         if { $::tcl_platform(os) eq "Linux" } { set value libvolpa }
-        if { $::tcl_platform(os) eq "Windows" } { set value libvolwin }
+        if { $::tcl_platform(platform) eq "windows" } { set value libvolwin }
         if { $::tcl_platform(os) eq "Darwin" } { set value libvolmac }
         puts $ofh "..$value"
       }

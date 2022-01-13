@@ -1,0 +1,12 @@
+loadunit env-systype
+loadunit c-main
+
+output configvolwin.h
+
+standard_system
+standard
+
+hdr     endpointvolume.h
+hdr     windows.h
+
+lib     CoInitialize -lole32

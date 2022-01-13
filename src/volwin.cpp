@@ -6,16 +6,19 @@
  */
 
 #include "config.h"
+#include "configvolwin.h"
 
 #if _hdr_endpointvolume
 
 #include <string.h>
+#include <stdio.h>
+#include <math.h>
+
+#include <winsock2.h>
 #include <windows.h>
 #include <commctrl.h>
 #include <mmdeviceapi.h>
 #include <endpointvolume.h>
-#include <stdio.h>
-#include <math.h>
 
 #include "volume.h"
 

@@ -20,7 +20,7 @@ tclsh=""
 if [[ $TCLSH != "" ]]; then
   tclsh=$TCLSH
 else
-  for f in "$dir/../$systype/64/tcl/bin/tclsh" \
+  for f in "$dir/../../$systype/64/tcl/bin/tclsh" \
       /usr/bin/tclsh $HOME/local/bin/tclsh $HOME/bin/tclsh \
       /opt/local/bin/tclsh; do
     if [[ -f $f ]]; then
