@@ -94,17 +94,17 @@ musicqGetByIdx (musicq_t *musicq, musicqidx_t musicqidx, listidx_t idx)
   return NULL;
 }
 
-song_t *
+void
 musicqPop (musicq_t *musicq, musicqidx_t idx)
 {
   musicqitem_t      *musicqitem;
 
   if (musicq == NULL || musicq->q [idx] == NULL) {
-    return NULL;
+    return;
   }
 
   musicqitem = queuePop (musicq->q [idx]);
-  return musicqitem->song;
+  musicqQueueFree (musicqitem);
 }
 
 ssize_t

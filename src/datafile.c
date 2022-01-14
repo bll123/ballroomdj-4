@@ -103,7 +103,7 @@ parseConvTextList (char *data, datafileret_t *ret)
   if (data != NULL) {
     p = strtok_r (data, " ,", &tokptr);
     while (p != NULL) {
-      listSetData (ret->u.list, strdup (p), NULL);
+      listSetData (ret->u.list, p, NULL);
       p = strtok_r (NULL, " ,", &tokptr);
     }
   }

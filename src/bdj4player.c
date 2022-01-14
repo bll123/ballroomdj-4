@@ -53,7 +53,7 @@ typedef struct {
   programstate_t  programState;
   mstime_t        tmstart;
   long            globalCount;
-  pli_t           *pliData;
+  pli_t           *pli;
   volume_t        *volume;
   queue_t         *prepRequestQueue;
   queue_t         *prepQueue;
@@ -127,7 +127,7 @@ main (int argc, char *argv[])
 
   playerData.programState = STATE_INITIALIZING;
   playerData.mainSock = INVALID_SOCKET;
-  playerData.pliData = NULL;
+  playerData.pli = NULL;
   playerData.prepRequestQueue = queueAlloc (playerPrepQueueFree);
   playerData.prepQueue = queueAlloc (playerPrepQueueFree);
   playerData.playRequest = NULL;
@@ -143,6 +143,7 @@ main (int argc, char *argv[])
   playerData.fadeSamples = 1;
   playerData.playTimeCheck = 0;
   playerData.fadeTimeCheck = 0;
+  playerData.currentSong = NULL;
 
   sysvarsInit (argv[0]);
 
@@ -213,15 +214,15 @@ main (int argc, char *argv[])
     }
   }
 
-  playerData.pliData = pliInit ();
+  playerData.pli = pliInit ();
 
   uint16_t listenPort = bdjvarsl [BDJVL_PLAYER_PORT];
   sockhMainLoop (listenPort, playerProcessMsg, playerProcessing, &playerData);
 
-  if (playerData.pliData != NULL) {
-    pliStop (playerData.pliData);
-    pliClose (playerData.pliData);
-    pliFree (playerData.pliData);
+  if (playerData.pli != NULL) {
+    pliStop (playerData.pli);
+    pliClose (playerData.pli);
+    pliFree (playerData.pli);
   }
 
   volumeSet (playerData.volume, playerData.currentSink, playerData.originalSystemVolume);
@@ -390,8 +391,8 @@ playerProcessing (void *udata)
     if (playerData->fadeinTime == 0) {
       volumeSet (playerData->volume, playerData->currentSink, playerData->realVolume);
     }
-    pliMediaSetup (playerData->pliData, playerData->playRequest);
-    pliStartPlayback (playerData->pliData);
+    pliMediaSetup (playerData->pli, playerData->playRequest);
+    pliStartPlayback (playerData->pli);
     playerData->playerState = PL_STATE_LOADING;
     free (playerData->playRequest);
     playerData->playRequest = NULL;
@@ -402,7 +403,7 @@ playerProcessing (void *udata)
   if (playerData->playerState == PL_STATE_LOADING) {
     prepqueue_t       *pq = playerData->currentSong;
 
-    plistate_t plistate = pliState (playerData->pliData);
+    plistate_t plistate = pliState (playerData->pli);
     if (plistate == PLI_STATE_OPENING ||
         plistate == PLI_STATE_BUFFERING) {
       ;
@@ -410,7 +411,7 @@ playerProcessing (void *udata)
       ssize_t     maxdur = 0;
 
       if (pq->dur <= 1) {
-        pq->dur = pliGetDuration (playerData->pliData);
+        pq->dur = pliGetDuration (playerData->pli);
         logMsg (LOG_DBG, LOG_MAIN, "Replace duration with vlc data: %zd", pq->dur);
       }
       maxdur = bdjoptGetNum (OPT_P_MAXPLAYTIME);
@@ -463,9 +464,9 @@ playerProcessing (void *udata)
     }
 
     if (currTime >= playerData->playTimeCheck) {
-      plistate_t plistate = pliState (playerData->pliData);
-      ssize_t plidur = pliGetDuration (playerData->pliData);
-      ssize_t pltm = pliGetTime (playerData->pliData);
+      plistate_t plistate = pliState (playerData->pli);
+      ssize_t plidur = pliGetDuration (playerData->pli);
+      ssize_t pltm = pliGetTime (playerData->pli);
 
       if (plistate == PLI_STATE_STOPPED ||
           plistate == PLI_STATE_ENDED ||
@@ -673,19 +674,19 @@ songMakeTempName (playerdata_t *playerData, char *in, char *out, size_t maxlen)
 static void
 playerPause (playerdata_t *playerData)
 {
-  pliPause (playerData->pliData);
+  pliPause (playerData->pli);
 }
 
 static void
 playerPlay (playerdata_t *playerData)
 {
-  pliPlay (playerData->pliData);
+  pliPlay (playerData->pli);
 }
 
 static void
 playerStop (playerdata_t *playerData)
 {
-  pliStop (playerData->pliData);
+  pliStop (playerData->pli);
 }
 
 static void

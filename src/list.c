@@ -63,14 +63,10 @@ listFree (void *tlist)
       logMsg (LOG_DBG, LOG_IMPORTANT, "list %s: cache read:%ld write:%ld",
           list->name, list->readCacheHits, list->writeCacheHits);
     }
-    if (list->name != NULL) {
-      free (list->name);
-      list->name = NULL;
-    }
     if (list->data != NULL) {
       for (ssize_t i = 0; i < list->count; ++i) {
         listFreeItem (list, i);
-      } /* for each list item */
+      }
       free (list->data);
       list->data = NULL;
     } /* data is not null */
@@ -81,6 +77,10 @@ listFree (void *tlist)
       free (list->keyCache.strkey);
       list->keyCache.strkey = NULL;
       list->locCache = LIST_LOC_INVALID;
+    }
+    if (list->name != NULL) {
+      free (list->name);
+      list->name = NULL;
     }
     free (list);
   }
@@ -795,6 +795,13 @@ listGetIdx (list_t *list, listkey_t *key)
         break;
       }
     }
+  }
+
+  if (list->keytype == KEY_STR &&
+      list->keyCache.strkey != NULL) {
+    free (list->keyCache.strkey);
+    list->keyCache.strkey = NULL;
+    list->locCache = LIST_LOC_INVALID;
   }
 
   if (ridx >= 0) {

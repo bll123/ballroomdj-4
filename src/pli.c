@@ -55,6 +55,9 @@ pliFree (pli_t *pli)
 {
   if (pli != NULL) {
     pliClose (pli);
+    if (pli->pliData != NULL) {
+      pli->pliiFree (pli->pliData);
+    }
     if (pli->dlHandle != NULL) {
       dylibClose (pli->dlHandle);
     }

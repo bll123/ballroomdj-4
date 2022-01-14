@@ -569,15 +569,15 @@ $(OBJDIR)/volwin$(OBJ_EXT): volwin.cpp volume.h $(MKC_OUTPUT)
 
 $(OBJDIR)/autosel$(OBJ_EXT): autosel.c config.h autosel.h datafile.h list.h fileop.h log.h \
  fileutil.h
-$(OBJDIR)/bdj4$(OBJ_EXT): bdj4.c config.h sysvars.h portability.h bdjstring.h fileop.h \
- pathutil.h
+$(OBJDIR)/bdj4$(OBJ_EXT): bdj4.c config.h bdjstring.h datautil.h fileop.h pathutil.h \
+ portability.h sysvars.h
 $(OBJDIR)/bdj4init$(OBJ_EXT): bdj4init.c config.h bdj4init.h musicdb.h song.h list.h \
  tagdef.h bdjstring.h sysvars.h portability.h bdjvars.h bdjvarsdfload.h \
  log.h fileutil.h tmutil.h fileop.h datautil.h bdjopt.h lock.h
-$(OBJDIR)/bdj4main$(OBJ_EXT): bdj4main.c config.h bdj4init.h sockh.h sock.h bdjmsg.h \
- bdjvars.h log.h fileutil.h process.h bdjstring.h sysvars.h portability.h \
- playlist.h datafile.h list.h musicdb.h song.h songlist.h sequence.h \
- songsel.h queue.h musicq.h plq.h tmutil.h bdjopt.h tagdef.h
+$(OBJDIR)/bdj4main$(OBJ_EXT): bdj4main.c config.h bdj4init.h bdjmsg.h bdjopt.h list.h \
+ bdjstring.h bdjvars.h datautil.h log.h fileutil.h musicq.h queue.h \
+ song.h playlist.h datafile.h musicdb.h songlist.h sequence.h songsel.h \
+ plq.h portability.h process.h sock.h sockh.h sysvars.h tagdef.h tmutil.h
 $(OBJDIR)/bdj4player$(OBJ_EXT): bdj4player.c config.h bdjmsg.h bdjopt.h list.h bdjstring.h \
  bdjvars.h datautil.h fileop.h lock.h log.h fileutil.h pathutil.h pli.h \
  dylib.h portability.h tmutil.h process.h queue.h sock.h sockh.h \
@@ -683,10 +683,10 @@ $(OBJDIR)/sysvars$(OBJ_EXT): sysvars.c config.h sysvars.h portability.h bdjstrin
 $(OBJDIR)/tagdef$(OBJ_EXT): tagdef.c config.h tagdef.h bdjstring.h list.h
 $(OBJDIR)/tmutil$(OBJ_EXT): tmutil.c config.h tmutil.h bdjstring.h
 $(OBJDIR)/vlci$(OBJ_EXT): vlci.c config.h configvlc.h vlci.h list.h bdjstring.h
-$(OBJDIR)/volalsa$(OBJ_EXT): volalsa.c config.h configalsa.h volume.h portability.h
-$(OBJDIR)/volnull$(OBJ_EXT): volnull.c config.h volume.h portability.h
-$(OBJDIR)/volpa$(OBJ_EXT): volpa.c config.h configpa.h volume.h portability.h bdjstring.h \
- tmutil.h
+$(OBJDIR)/volalsa$(OBJ_EXT): volalsa.c config.h configalsa.h volume.h dylib.h portability.h
+$(OBJDIR)/volnull$(OBJ_EXT): volnull.c config.h volume.h dylib.h portability.h
+$(OBJDIR)/volpa$(OBJ_EXT): volpa.c config.h configpa.h volume.h dylib.h portability.h \
+ bdjstring.h tmutil.h
 $(OBJDIR)/volume$(OBJ_EXT): volume.c config.h bdjopt.h list.h datautil.h dylib.h \
  portability.h sysvars.h volume.h
 $(OBJDIR)/volwin$(OBJ_EXT): volwin.cpp config.h configvolwin.h
