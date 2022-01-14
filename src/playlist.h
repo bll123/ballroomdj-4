@@ -11,27 +11,19 @@
 #include "songsel.h"
 
 typedef enum {
-  PLAYLIST_ALLOWED_KEYWORDS,
+  PLAYLIST_ALLOWED_KEYWORDS,      //
   PLAYLIST_ANNOUNCE,
-  PLAYLIST_DANCEDF,             // used internally
-  PLAYLIST_DANCES,              // used internally
-  PLAYLIST_GAP,
-  PLAYLIST_LEVEL_HIGH,
-  PLAYLIST_LEVEL_LOW,
-  PLAYLIST_MANUAL_LIST_NAME,
-  PLAYLIST_MAX_PLAY_TIME,
+  PLAYLIST_GAP,                   //
+  PLAYLIST_LEVEL_HIGH,            //
+  PLAYLIST_LEVEL_LOW,             //
+  PLAYLIST_MANUAL_LIST_NAME,      //
+  PLAYLIST_MAX_PLAY_TIME,         //
   PLAYLIST_MQ_MESSAGE,
   PLAYLIST_PAUSE_EACH_SONG,
-  PLAYLIST_RATING,
-  PLAYLIST_RESUME,
-  PLAYLIST_SEQ_NAME,
-  PLAYLIST_STOP_AFTER,
-  PLAYLIST_STOP_AFTER_WAIT,
-  PLAYLIST_STOP_TIME,
-  PLAYLIST_STOP_TYPE,
-  PLAYLIST_STOP_WAIT,
-  PLAYLIST_TYPE,
-  PLAYLIST_USE_STATUS,
+  PLAYLIST_RATING,                //
+  PLAYLIST_SEQ_NAME,              //
+  PLAYLIST_TYPE,                  //
+  PLAYLIST_USE_STATUS,            //
   PLAYLIST_USE_UNRATED,
   PLAYLIST_KEY_MAX,
 } playlistkey_t;
@@ -68,6 +60,7 @@ typedef enum {
 } plstoptype_t;
 
 typedef struct {
+  char          *name;
   datafile_t    *plinfodf;
   datafile_t    *pldancesdf;
   songlist_t    *songlist;
@@ -83,7 +76,9 @@ typedef struct {
 typedef bool (*playlistCheck_t)(song_t *, void *);
 
 playlist_t    *playlistAlloc (char *);
-void          playlistFree (playlist_t *);
+void          playlistFree (void *);
+char          *playlistGetName (playlist_t *pl);
+ssize_t       playlistGetConfigNum (playlist_t *pl, playlistkey_t key);
 song_t        *playlistGetNextSong (playlist_t *, playlistCheck_t checkProc, void *userdata);
 bool          playlistFilterSong (dbidx_t dbidx, song_t *song, void *tplaylist);
 

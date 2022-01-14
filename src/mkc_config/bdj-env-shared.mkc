@@ -50,7 +50,7 @@ addcflag -Wno-format-truncation
 # I don't think the style of mixing declarations in with
 # the code is going to be maintainable.
 addcflag -Wdeclaration-after-statement
-addclfag -Wmissing-prototypes
+addcflag -Wmissing-prototypes
 
 # gcc hardening
 # reference: wiki.debian.org/Hardening

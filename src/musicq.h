@@ -16,8 +16,9 @@ typedef enum {
 } musicqflag_t;
 
 typedef struct {
-  song_t          *song;
-  musicqflag_t   flags;
+  song_t        *song;
+  char          *playlistName;
+  musicqflag_t  flags;
 } musicqitem_t;
 
 typedef struct {
@@ -26,11 +27,13 @@ typedef struct {
 
 musicq_t *  musicqAlloc (void);
 void        musicqFree (musicq_t *musicq);
-void        musicqPush (musicq_t *musicq, musicqidx_t idx, song_t *song);
+void        musicqPush (musicq_t *musicq, musicqidx_t idx,
+                song_t *song, char *plname);
 song_t      *musicqGetCurrent (musicq_t *musicq, musicqidx_t musicqidx);
 musicqflag_t musicqGetFlags (musicq_t *musicq, musicqidx_t musicqidx, ssize_t qkey);
 void        musicqSetFlags (musicq_t *musicq, musicqidx_t musicqidx,
                 ssize_t qkey, musicqflag_t flags);
+char        *musicqGetPlaylistName (musicq_t *musicq, musicqidx_t musicqidx, ssize_t qkey);
 song_t      *musicqGetByIdx (musicq_t *musicq, musicqidx_t musicqidx, ssize_t qkey);
 void        musicqPop (musicq_t *musicq, musicqidx_t musicqidx);
 ssize_t     musicqGetLen (musicq_t *musicq, musicqidx_t musicqidx);

@@ -36,8 +36,8 @@ int               vlcIsPaused (vlcData_t *vlcData);
 int               vlcStop (vlcData_t *vlcData);
 int               vlcPause (vlcData_t *vlcData);
 int               vlcPlay (vlcData_t *vlcData);
+ssize_t           vlcSeek (vlcData_t *vlcData, ssize_t dpos);
 double            vlcRate (vlcData_t *vlcData, double drate);
-double            vlcSeek (vlcData_t *vlcData, double dpos);
 int               vlcHaveAudioDevList (void);
 int               vlcAudioDevSet (vlcData_t *vlcData, char *dev);
 #if _lib_libvlc_audio_output_device_enum

@@ -11,8 +11,14 @@ if { ! [file exists $dir] || ! [file isdirectory $dir] } {
   exit 1
 }
 
+
 puts "## Converting: status.tcl"
-source [file join $dir status.tcl]
+set infn [file join $dir status.tcl]
+if { ! [file exists $infn] } {
+  puts "   no status file"
+  exit 1
+}
+source $infn
 set nfn [file join data status.txt]
 set fh [open $nfn w]
 puts $fh "# BDJ4 status"

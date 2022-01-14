@@ -21,23 +21,15 @@ typedef enum {
   MSG_PLAY_PLAY,            // to main:
                             //    starts playback, passed on to player.
   MSG_PLAY_STOP,            // to main: passed on to player.
-//  MSG_PLAYER_STATUS_Q,      // query: to player
-//  MSG_PLAYER_VOLSINK_Q,     // query: get list of volume sinks
   MSG_PLAYER_VOLSINK_SET,   // to player: set volume sink
-  MSG_PLAYER_VOLUME_Q,      // query: to player
-  MSG_PLAYER_VOLUME_SET,    // arguments: volume
-  MSG_PLAYLIST_QUEUE,       // arguments: playlist name
-  MSG_PLAYLIST_MAXTIME,     // arguments: playlist's max time
   MSG_PLAYBACK_BEGIN,       // to main: player has started playing a song
   MSG_PLAYBACK_FINISH,      // to main: player has finished playing song
                             // args: song fname
-//  MSG_PLQ_LENGTH_Q,         // query: playlist queue length
-//  MSG_PLQ_CONTENTS_Q,       // query: playlist queue contents
-//  MSG_MUSICQ_LENGTH_Q,      // query: musicq length
-//  MSG_MUSICQ_CONTENTS_Q,    // query: musicq contents
+  MSG_PLAYLIST_QUEUE,       // args: playlist name
   MSG_SOCKET_CLOSE,
-  MSG_SONG_PLAY,            // arguments: song fname
-  MSG_SONG_PREP,            // arguments: song fname, duration
+  MSG_SONG_PLAY,            // args: song fname
+  MSG_SONG_PREP,            // args: song fname, duration, song-start
+                            //    song-end, volume-adjustment-perc, gap
   MSG_MAX
 } bdjmsgmsg_t;
 

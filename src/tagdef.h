@@ -74,8 +74,8 @@ typedef enum {
   TAG_NOMAXPLAYTIME,
   TAG_NOTES,
   TAG_SAMESONG,
-  TAG_SONGEND,
-  TAG_SONGSTART,
+  TAG_SONGEND,                //
+  TAG_SONGSTART,              //
   TAG_SPEEDADJUSTMENT,
   TAG_STATUS,                 //
   TAG_TAGS,
@@ -86,7 +86,7 @@ typedef enum {
   TAG_UPDATETIME,
   TAG_WRITETIME,
   TAG_VARIOUSARTISTS,
-  TAG_VOLUMEADJUSTPERC,
+  TAG_VOLUMEADJUSTPERC,       //
   TAG_RRN,                    //
   MAX_TAG_KEY
 } tagdefkey_t;

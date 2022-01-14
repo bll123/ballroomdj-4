@@ -35,16 +35,31 @@ pliInit (void)
   }
 
   pli->pliiInit = dylibLookup (pli->dlHandle, "pliiInit");
+  assert (pli->pliiInit != NULL);
   pli->pliiFree = dylibLookup (pli->dlHandle, "pliiFree");
+  assert (pli->pliiFree != NULL);
   pli->pliiMediaSetup = dylibLookup (pli->dlHandle, "pliiMediaSetup");
+  assert (pli->pliiMediaSetup != NULL);
   pli->pliiStartPlayback = dylibLookup (pli->dlHandle, "pliiStartPlayback");
+  assert (pli->pliiStartPlayback != NULL);
   pli->pliiClose = dylibLookup (pli->dlHandle, "pliiClose");
+  assert (pli->pliiClose != NULL);
   pli->pliiPause = dylibLookup (pli->dlHandle, "pliiPause");
+  assert (pli->pliiPause != NULL);
   pli->pliiPlay = dylibLookup (pli->dlHandle, "pliiPlay");
+  assert (pli->pliiPlay != NULL);
   pli->pliiStop = dylibLookup (pli->dlHandle, "pliiStop");
+  assert (pli->pliiStop != NULL);
+  pli->pliiSeek = dylibLookup (pli->dlHandle, "pliiSeek");
+  assert (pli->pliiSeek != NULL);
+  pli->pliiRate = dylibLookup (pli->dlHandle, "pliiRate");
+  assert (pli->pliiRate != NULL);
   pli->pliiGetDuration = dylibLookup (pli->dlHandle, "pliiGetDuration");
+  assert (pli->pliiGetDuration != NULL);
   pli->pliiGetTime = dylibLookup (pli->dlHandle, "pliiGetTime");
+  assert (pli->pliiGetTime != NULL);
   pli->pliiState = dylibLookup (pli->dlHandle, "pliiState");
+  assert (pli->pliiState != NULL);
 
   pli->pliData = pli->pliiInit ();
   return pli;
@@ -74,10 +89,10 @@ pliMediaSetup (pli_t *pli, char *mediaPath)
 }
 
 void
-pliStartPlayback (pli_t *pli)
+pliStartPlayback (pli_t *pli, ssize_t dpos)
 {
   if (pli != NULL) {
-    pli->pliiStartPlayback (pli->pliData);
+    pli->pliiStartPlayback (pli->pliData, dpos);
   }
 }
 
@@ -103,6 +118,28 @@ pliStop (pli_t *pli)
   if (pli != NULL) {
     pli->pliiStop (pli->pliData);
   }
+}
+
+ssize_t
+pliSeek (pli_t *pli, ssize_t dpos)
+{
+  ssize_t     dret = -1;
+
+  if (pli != NULL) {
+    dret = pli->pliiSeek (pli->pliData, dpos);
+  }
+  return dret;
+}
+
+double
+pliRate (pli_t *pli, double drate)
+{
+  double      dret = -1.0;
+
+  if (pli != NULL) {
+    dret = pli->pliiRate (pli->pliData, drate);
+  }
+  return dret;
 }
 
 void

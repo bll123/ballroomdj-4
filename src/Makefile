@@ -72,7 +72,6 @@ all: $(MKC_ENV_SHR) $(MKC_ENV_TEST)
 
 # recommended to change PLAYER and VOLUME in data/bdjconfig.txt to
 # be the null libraries.
-# --suppressions=src/utils/valgrind-suppression.txt
 mcheck: $(MKC_ENV_SHR)
 	. ./$(MKC_ENV_SHR); $(MAKE) -e rall
 	(cd ..;valgrind --tool=memcheck \
@@ -81,6 +80,17 @@ mcheck: $(MKC_ENV_SHR)
 		--trace-children=yes \
 		--track-origins=yes \
 		--show-leak-kinds=all \
+		./bin/bdj4 --main --debug 2055)
+
+mchecksupp: $(MKC_ENV_SHR)
+	. ./$(MKC_ENV_SHR); $(MAKE) -e rall
+	(cd ..;valgrind --tool=memcheck \
+		--leak-check=full \
+		--read-inline-info=yes \
+		--trace-children=yes \
+		--track-origins=yes \
+		--show-leak-kinds=all \
+		--suppressions=src/utils/valgrind-suppression.txt \
 		./bin/bdj4 --main --debug 2055)
 
 mcheckcli: $(MKC_ENV_SHR)
@@ -386,7 +396,6 @@ LIBBDJOBJS = \
 	$(OBJDIR)/musicdb$(OBJ_EXT) \
 	$(OBJDIR)/musicq$(OBJ_EXT) \
 	$(OBJDIR)/playlist$(OBJ_EXT) \
-	$(OBJDIR)/plq$(OBJ_EXT) \
 	$(OBJDIR)/portability$(OBJ_EXT) \
 	$(OBJDIR)/rafile$(OBJ_EXT) \
 	$(OBJDIR)/rating$(OBJ_EXT) \
@@ -577,7 +586,7 @@ $(OBJDIR)/bdj4init$(OBJ_EXT): bdj4init.c config.h bdj4init.h musicdb.h song.h li
 $(OBJDIR)/bdj4main$(OBJ_EXT): bdj4main.c config.h bdj4init.h bdjmsg.h bdjopt.h list.h \
  bdjstring.h bdjvars.h datautil.h log.h fileutil.h musicq.h queue.h \
  song.h playlist.h datafile.h musicdb.h songlist.h sequence.h songsel.h \
- plq.h portability.h process.h sock.h sockh.h sysvars.h tagdef.h tmutil.h
+ portability.h process.h sock.h sockh.h sysvars.h tagdef.h tmutil.h
 $(OBJDIR)/bdj4player$(OBJ_EXT): bdj4player.c config.h bdjmsg.h bdjopt.h list.h bdjstring.h \
  bdjvars.h datautil.h fileop.h lock.h log.h fileutil.h pathutil.h pli.h \
  dylib.h portability.h tmutil.h process.h queue.h sock.h sockh.h \
@@ -650,8 +659,6 @@ $(OBJDIR)/pli$(OBJ_EXT): pli.c config.h bdjopt.h list.h datautil.h dylib.h pli.h
 $(OBJDIR)/plinull$(OBJ_EXT): plinull.c config.h pli.h dylib.h portability.h tmutil.h
 $(OBJDIR)/plivlc$(OBJ_EXT): plivlc.c config.h configvlc.h pli.h dylib.h portability.h \
  tmutil.h vlci.h list.h
-$(OBJDIR)/plq$(OBJ_EXT): plq.c config.h plq.h queue.h playlist.h datafile.h list.h \
- musicdb.h song.h songlist.h sequence.h songsel.h
 $(OBJDIR)/portability$(OBJ_EXT): portability.c config.h portability.h
 $(OBJDIR)/process$(OBJ_EXT): process.c config.h process.h log.h fileutil.h
 $(OBJDIR)/queue$(OBJ_EXT): queue.c config.h queue.h

@@ -43,12 +43,15 @@ musicqQueueFree (void *titem)
   musicqitem_t        *musicqitem = titem;
 
   if (musicqitem != NULL) {
+    if (musicqitem->playlistName != NULL) {
+      free (musicqitem->playlistName);
+    }
     free (musicqitem);
   }
 }
 
 void
-musicqPush (musicq_t *musicq, musicqidx_t idx, song_t *song)
+musicqPush (musicq_t *musicq, musicqidx_t idx, song_t *song, char *plname)
 {
   musicqitem_t      *musicqitem;
 
@@ -59,6 +62,7 @@ musicqPush (musicq_t *musicq, musicqidx_t idx, song_t *song)
   musicqitem = malloc (sizeof (musicqitem_t));
   assert (musicqitem != NULL);
   musicqitem->song = song;
+  musicqitem->playlistName = strdup (plname);
   musicqitem->flags = MUSICQ_FLAG_NONE;
   queuePush (musicq->q [idx], musicqitem);
 }
@@ -126,6 +130,22 @@ musicqSetFlags (musicq_t *musicq, musicqidx_t musicqidx,
     musicqitem->flags = flags;
   }
   return;
+}
+
+char *
+musicqGetPlaylistName (musicq_t *musicq, musicqidx_t musicqidx, ssize_t qkey)
+{
+  musicqitem_t      *musicqitem;
+
+  if (musicq == NULL || musicq->q [musicqidx] == NULL) {
+    return NULL;
+  }
+
+  musicqitem = queueGetByIdx (musicq->q [musicqidx], qkey);
+  if (musicqitem != NULL) {
+    return musicqitem->playlistName;
+  }
+  return NULL;
 }
 
 void

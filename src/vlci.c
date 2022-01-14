@@ -16,6 +16,7 @@
 #include <sys/types.h>
 #include <assert.h>
 #include <string.h>
+#include <math.h>
 #if _hdr_winsock2
 # include <winsock2.h>
 #endif
@@ -168,6 +169,28 @@ vlcPlay (vlcData_t *vlcData)
   return 0;
 }
 
+ssize_t
+vlcSeek (vlcData_t *vlcData, ssize_t dpos)
+{
+  libvlc_time_t     tm = 0;
+  float             pos = 0.0;
+  ssize_t           newpos = dpos;
+
+  if (vlcData == NULL || vlcData->inst == NULL || vlcData->mp == NULL) {
+    return -1.0;
+  }
+
+  if (vlcData->state == libvlc_Playing && dpos > 0) {
+    tm = libvlc_media_player_get_length (vlcData->mp);
+    pos = (float) ((double) dpos / (double) tm);
+    libvlc_media_player_set_position (vlcData->mp, pos);
+  }
+  pos = libvlc_media_player_get_position (vlcData->mp);
+  newpos = (ssize_t) round ((double) pos * (double) tm);
+fprintf (stderr, "vlci: seek: dpos: %zd new-pos: %.6f new-pos: %zd\n", dpos, pos, newpos);
+  return newpos;
+}
+
 double
 vlcRate (vlcData_t *vlcData, double drate)
 {
@@ -183,28 +206,6 @@ vlcRate (vlcData_t *vlcData, double drate)
   }
   rate = libvlc_media_player_get_rate (vlcData->mp);
   return (double) rate;
-}
-
-double
-vlcSeek (vlcData_t *vlcData, double dpos)
-{
-  libvlc_time_t     tm;
-  float             pos;
-  double            dtm;
-
-  if (vlcData == NULL || vlcData->inst == NULL || vlcData->mp == NULL) {
-    return -1.0;
-  }
-
-  if (vlcData->state == libvlc_Playing) {
-    tm = libvlc_media_player_get_length (vlcData->mp);
-    dtm = (double) tm / 1000.0;
-    dpos = dpos / dtm;
-    pos = (float) dpos;
-    libvlc_media_player_set_position (vlcData->mp, pos);
-  }
-  pos = libvlc_media_player_get_position (vlcData->mp);
-  return (double) pos;
 }
 
 /* other commands */

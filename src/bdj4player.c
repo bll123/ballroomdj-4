@@ -46,6 +46,9 @@ typedef struct {
   char          *songname;
   char          *tempname;
   ssize_t       dur;
+  ssize_t       songstart;
+  ssize_t       voladjperc;
+  ssize_t       gap;
 } prepqueue_t;
 
 typedef struct {
@@ -69,8 +72,8 @@ typedef struct {
   time_t          playTimeStart;
   time_t          playTimeCheck;
   time_t          fadeTimeCheck;
-  time_t          gapFinishTime;
   ssize_t         gap;
+  time_t          gapFinishTime;
   ssize_t         fadeType;
   ssize_t         fadeinTime;
   ssize_t         fadeoutTime;
@@ -84,6 +87,7 @@ typedef struct {
   bool            mainHandshake : 1;
 } playerdata_t;
 
+static void     playerCheckSystemVolume (playerdata_t *playerData);
 static int      playerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
                     bdjmsgmsg_t msg, char *args, void *udata);
 static int      playerProcessing (void *udata);
@@ -182,7 +186,6 @@ main (int argc, char *argv[])
   bdjvarsInit ();
   bdjoptInit ();
 
-  playerData.gap = bdjoptGetNum (OPT_P_GAP);
   playerData.fadeType = bdjoptGetNum (OPT_P_FADETYPE);
   playerData.fadeinTime = bdjoptGetNum (OPT_P_FADEINTIME);
   playerData.fadeoutTime = bdjoptGetNum (OPT_P_FADEOUTTIME);
@@ -201,9 +204,11 @@ main (int argc, char *argv[])
 
   playerData.originalSystemVolume =
       volumeGet (playerData.volume, playerData.currentSink);
+  logMsg (LOG_DBG, LOG_PLAYER, "Original system volume: %d", playerData.originalSystemVolume);
   playerData.realVolume = (int) bdjoptGetNum (OPT_P_DEFAULTVOLUME);
   playerData.currentVolume = playerData.realVolume;
   volumeSet (playerData.volume, playerData.currentSink, playerData.realVolume);
+  logMsg (LOG_DBG, LOG_PLAYER, "set volume: %d", playerData.realVolume);
 
   if (playerData.sinklist.sinklist != NULL) {
     for (size_t i = 0; i < playerData.sinklist.count; ++i) {
@@ -389,12 +394,15 @@ playerProcessing (void *udata)
   if (playerData->playerState == PL_STATE_STOPPED &&
       ! playerData->inGap &&
       playerData->playRequest != NULL) {
+    prepqueue_t       *pq = playerData->currentSong;
+
     logMsg (LOG_DBG, LOG_BASIC, "play: %s", playerData->playRequest);
     if (playerData->fadeinTime == 0) {
       volumeSet (playerData->volume, playerData->currentSink, playerData->realVolume);
+      logMsg (LOG_DBG, LOG_PLAYER, "no fade-in set volume: %d", playerData->realVolume);
     }
     pliMediaSetup (playerData->pli, playerData->playRequest);
-    pliStartPlayback (playerData->pli);
+    pliStartPlayback (playerData->pli, pq->songstart);
     playerData->playerState = PL_STATE_LOADING;
     free (playerData->playRequest);
     playerData->playRequest = NULL;
@@ -404,25 +412,27 @@ playerProcessing (void *udata)
 
   if (playerData->playerState == PL_STATE_LOADING) {
     prepqueue_t       *pq = playerData->currentSong;
+    plistate_t        plistate;
 
-    plistate_t plistate = pliState (playerData->pli);
+    plistate = pliState (playerData->pli);
     if (plistate == PLI_STATE_OPENING ||
         plistate == PLI_STATE_BUFFERING) {
       ;
     } else if (plistate == PLI_STATE_PLAYING) {
-      ssize_t     maxdur = 0;
-
       if (pq->dur <= 1) {
         pq->dur = pliGetDuration (playerData->pli);
-        logMsg (LOG_DBG, LOG_MAIN, "Replace duration with vlc data: %zd", pq->dur);
-      }
-      maxdur = bdjoptGetNum (OPT_P_MAXPLAYTIME);
-      if (pq->dur > maxdur) {
-        pq->dur = maxdur;
+        logMsg (LOG_DBG, LOG_MAIN, "Replace duration with player data: %zd", pq->dur);
       }
 
-      playerData->playTimeStart = mstime ();
+      if (pq->songstart > 0) {
+//        pliSeek (playerData->pli, (double) pq->songstart);
+      }
+
+        /* save for later use */
+      playerData->gap = pq->gap;
+
         /* want to start check for real finish 500 ms before end */
+      playerData->playTimeStart = mstime ();
       playerData->playTimeCheck = playerData->playTimeStart;
       playerData->fadeTimeCheck = playerData->playTimeCheck;
       playerData->playTimeCheck += pq->dur - 500;
@@ -451,7 +461,6 @@ playerProcessing (void *udata)
   }
 
   if (playerData->playerState == PL_STATE_PLAYING) {
-    int               tvol;
     prepqueue_t       *pq = playerData->currentSong;
     time_t            currTime = mstime ();
 
@@ -461,11 +470,7 @@ playerProcessing (void *udata)
 
         /* before going into the fade, check the system volume */
         /* and see if the user changed it */
-      tvol = volumeGet (playerData->volume, playerData->currentSink);
-      if (tvol != playerData->realVolume) {
-        playerData->realVolume = tvol;
-        playerData->currentVolume = tvol;
-      }
+      playerCheckSystemVolume (playerData);
 
       playerData->inFade = true;
       playerData->inFadeOut = true;
@@ -500,8 +505,13 @@ playerProcessing (void *udata)
         sockhSendMessage (playerData->mainSock, ROUTE_PLAYER, ROUTE_MAIN,
             MSG_PLAYBACK_FINISH, NULL);
 
+        if (playerData->fadeoutTime == 0) {
+          playerCheckSystemVolume (playerData);
+        }
+
         if (playerData->gap > 0) {
           volumeSet (playerData->volume, playerData->currentSink, 0);
+          logMsg (LOG_DBG, LOG_PLAYER, "gap set volume: %d", 0);
           playerData->inGap = true;
           playerData->gapFinishTime = mstime () + playerData->gap;
         }
@@ -522,6 +532,19 @@ playerProcessing (void *udata)
 }
 
 /* internal routines - song handling */
+
+static void
+playerCheckSystemVolume (playerdata_t *playerData)
+{
+  int         tvol;
+
+  tvol = volumeGet (playerData->volume, playerData->currentSink);
+  logMsg (LOG_DBG, LOG_PLAYER, "get volume: %d", tvol);
+  if (tvol != playerData->realVolume) {
+    playerData->realVolume = tvol;
+    playerData->currentVolume = tvol;
+  }
+}
 
 static void
 playerSongPrep (playerdata_t *playerData, char *args)
@@ -545,9 +568,23 @@ playerSongPrep (playerdata_t *playerData, char *args)
   assert (npq->songname != NULL);
   logMsg (LOG_DBG, LOG_BASIC, "prep request: %s", npq->songname);
   npq->songfullpath = songFullFileName (npq->songname);
+
   aptr = strtok_r (NULL, MSG_ARGS_RS_STR, &tokptr);
   npq->dur = atol (aptr);
   logMsg (LOG_DBG, LOG_MAIN, "prep duration: %zd", npq->dur);
+
+  aptr = strtok_r (NULL, MSG_ARGS_RS_STR, &tokptr);
+  npq->songstart = atol (aptr);
+  logMsg (LOG_DBG, LOG_MAIN, "prep songstart: %zd", npq->songstart);
+
+  aptr = strtok_r (NULL, MSG_ARGS_RS_STR, &tokptr);
+  npq->voladjperc = atol (aptr);
+  logMsg (LOG_DBG, LOG_MAIN, "prep voladjperc: %zd", npq->voladjperc);
+
+  aptr = strtok_r (NULL, MSG_ARGS_RS_STR, &tokptr);
+  npq->gap = atol (aptr);
+  logMsg (LOG_DBG, LOG_MAIN, "prep gap: %zd", npq->gap);
+
   songMakeTempName (playerData, npq->songname, stname, sizeof (stname));
   npq->tempname = strdup (stname);
   assert (npq->tempname != NULL);
@@ -768,6 +805,7 @@ playerFadeVolSet (playerdata_t *playerData)
     newvol = playerData->realVolume;
   }
   volumeSet (playerData->volume, playerData->currentSink, newvol);
+  logMsg (LOG_DBG, LOG_PLAYER, "fade set volume: %d", newvol);
   if (playerData->inFadeIn) {
     ++playerData->fadeCount;
   }
@@ -784,6 +822,7 @@ playerFadeVolSet (playerdata_t *playerData)
     playerData->inFade = false;
     playerData->inFadeOut = false;
     volumeSet (playerData->volume, playerData->currentSink, 0);
+    logMsg (LOG_DBG, LOG_PLAYER, "fade-out done volume: %d", 0);
   }
 }
 

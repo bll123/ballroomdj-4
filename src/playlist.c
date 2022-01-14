@@ -24,9 +24,6 @@
 #include "status.h"
 #include "tagdef.h"
 
-static void     plConvResume (char *, datafileret_t *ret);
-static void     plConvWait (char *, datafileret_t *ret);
-static void     plConvStopType (char *, datafileret_t *ret);
 static void     plConvType (char *, datafileret_t *ret);
 
   /* must be sorted in ascii order */
@@ -34,13 +31,13 @@ static datafilekey_t playlistdfkeys[] = {
   { "ALLOWEDKEYWORDS",  PLAYLIST_ALLOWED_KEYWORDS,
       VALUE_DATA, parseConvTextList },
   { "DANCELEVELHIGH",   PLAYLIST_LEVEL_HIGH,
-      VALUE_DATA, levelConv },
+      VALUE_NUM, levelConv },
   { "DANCELEVELLOW",    PLAYLIST_LEVEL_LOW,
-      VALUE_DATA, levelConv },
+      VALUE_NUM, levelConv },
   { "DANCERATING",      PLAYLIST_RATING,
-      VALUE_DATA, ratingConv },
+      VALUE_NUM, ratingConv },
   { "GAP",              PLAYLIST_GAP,
-      VALUE_DATA, NULL },
+      VALUE_NUM, NULL },
   { "MANUALLIST",       PLAYLIST_MANUAL_LIST_NAME,
       VALUE_DATA, NULL },
   { "MAXPLAYTIME",      PLAYLIST_MAX_PLAY_TIME,
@@ -51,26 +48,14 @@ static datafilekey_t playlistdfkeys[] = {
       VALUE_NUM, parseConvBoolean },
   { "PLAYANNOUNCE",     PLAYLIST_ANNOUNCE,
       VALUE_NUM, parseConvBoolean },
-  { "RESUME",           PLAYLIST_RESUME,
-      VALUE_DATA, plConvResume },
   { "SEQUENCE",         PLAYLIST_SEQ_NAME,
       VALUE_DATA, NULL },
-  { "STOPAFTER",        PLAYLIST_STOP_AFTER,
-      VALUE_DATA, plConvWait },
-  { "STOPAFTERWAIT",    PLAYLIST_STOP_AFTER_WAIT,
-      VALUE_DATA, plConvWait },
-  { "STOPTIME",         PLAYLIST_STOP_TIME,
-      VALUE_DATA, NULL },
-  { "STOPTYPE",         PLAYLIST_STOP_TYPE,
-      VALUE_DATA, plConvStopType },
-  { "STOPWAIT",         PLAYLIST_STOP_WAIT,
-      VALUE_DATA, plConvWait },
   { "TYPE",             PLAYLIST_TYPE,
-      VALUE_DATA, plConvType },
+      VALUE_NUM, plConvType },
   { "USESTATUS",        PLAYLIST_USE_STATUS,
-      VALUE_DATA, parseConvBoolean },
+      VALUE_NUM, parseConvBoolean },
   { "USEUNRATED",       PLAYLIST_USE_UNRATED,
-      VALUE_DATA, parseConvBoolean },
+      VALUE_NUM, parseConvBoolean },
 };
 #define PLAYLIST_DFKEY_COUNT (sizeof (playlistdfkeys) / sizeof (datafilekey_t))
 
@@ -100,6 +85,7 @@ playlistAlloc (char *fname)
 
   pl = malloc (sizeof (playlist_t));
   assert (pl != NULL);
+  pl->name = strdup (fname);
   pl->manualIdx = 0;
   pl->plinfodf = NULL;
   pl->pldancesdf = NULL;
@@ -175,8 +161,10 @@ playlistAlloc (char *fname)
 }
 
 void
-playlistFree (playlist_t *pl)
+playlistFree (void *tpl)
 {
+  playlist_t      *pl = tpl;
+
   if (pl != NULL) {
     if (pl->plinfodf != NULL) {
       datafileFree (pl->plinfodf);
@@ -193,8 +181,34 @@ playlistFree (playlist_t *pl)
     if (pl->songsel != NULL) {
       songselFree (pl->songsel);
     }
+    if (pl->name != NULL) {
+      free (pl->name);
+    }
     free (pl);
   }
+}
+
+char *
+playlistGetName (playlist_t *pl)
+{
+  if (pl == NULL) {
+    return NULL;
+  }
+
+  return pl->name;
+}
+
+ssize_t
+playlistGetConfigNum (playlist_t *pl, playlistkey_t key)
+{
+  ssize_t     val;
+
+  if (pl == NULL || pl->plinfo == NULL) {
+    return -1;
+  }
+
+  val = llistGetNum (pl->plinfo, key);
+  return val;
 }
 
 song_t *
@@ -319,36 +333,6 @@ playlistFilterSong (dbidx_t dbidx, song_t *song, void *tplaylist)
 }
 
 /* internal routines */
-
-static void
-plConvResume (char *data, datafileret_t *ret)
-{
-  ret->valuetype = VALUE_NUM;
-  ret->u.num = RESUME_FROM_LAST;
-  if (strcmp (data, "From Start") == 0) {
-    ret->u.num = RESUME_FROM_START;
-  }
-}
-
-static void
-plConvWait (char *data, datafileret_t *ret)
-{
-  ret->valuetype = VALUE_NUM;
-  ret->u.num = WAIT_CONTINUE;
-  if (strcmp (data, "") == 0) {
-    ret->u.num = WAIT_PAUSE;
-  }
-}
-
-static void
-plConvStopType (char *data, datafileret_t *ret)
-{
-  ret->valuetype = VALUE_NUM;
-  ret->u.num = STOP_AT;
-  if (strcmp (data, "In") == 0) {
-    ret->u.num = STOP_IN;
-  }
-}
 
 static void
 plConvType (char *data, datafileret_t *ret)

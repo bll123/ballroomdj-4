@@ -68,10 +68,26 @@ pliiMediaSetup (plidata_t *pliData, char *mediaPath)
 }
 
 void
-pliiStartPlayback (plidata_t *pliData)
+pliiStartPlayback (plidata_t *pliData, ssize_t dpos)
 {
+  libvlc_state_t      vlcstate;
+
+    /* Do the busy loop so that the seek can be done immediately as */
+    /* vlc starts playing.  This should help avoid startup glitches */
   if (pliData != NULL && pliData->plData != NULL) {
     vlcPlay (pliData->plData);
+    vlcstate = vlcState (pliData->plData);
+    while (vlcstate == libvlc_NothingSpecial ||
+           vlcstate == libvlc_Opening ||
+           vlcstate == libvlc_Buffering ||
+           vlcstate == libvlc_Stopped) {
+      mssleep (1);
+      vlcstate = vlcState (pliData->plData);
+    }
+fprintf (stderr, "pliseek: dpos: %zd vlcstate: %d\n", dpos, vlcstate);
+    if (vlcstate == libvlc_Playing && dpos > 0) {
+      vlcSeek (pliData->plData, dpos);
+    }
   }
 }
 
@@ -97,6 +113,28 @@ pliiStop (plidata_t *pliData)
   if (pliData != NULL && pliData->plData != NULL) {
     vlcStop (pliData->plData);
   }
+}
+
+ssize_t
+pliiSeek (plidata_t *pliData, ssize_t dpos)
+{
+  ssize_t     dret = -1;
+
+  if (pliData != NULL && pliData->plData != NULL) {
+    dret = vlcSeek (pliData->plData, dpos);
+  }
+  return dret;
+}
+
+double
+pliiRate (plidata_t *pliData, double drate)
+{
+  double    dret = -1.0;
+
+  if (pliData != NULL && pliData->plData != NULL) {
+    dret = vlcRate (pliData->plData, drate);
+  }
+  return dret;
 }
 
 void

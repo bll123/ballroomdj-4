@@ -35,23 +35,36 @@ foreach {fn} $flist {
     if { $key eq "list" } { continue }
     if { $key eq "version"} { continue }
 
-    if { $key eq "RequiredKeywords" } { continue }
+    set key [string toupper $key]
+    if { $key eq "REQUIREDKEYWORDS" } { continue }
+    if { $key eq "STOPTIME" } { continue }
+    if { $key eq "STOPAFTER" } { continue }
+    if { $key eq "STOPAFTERWAIT" } { continue }
+    if { $key eq "STOPTIMEWAIT" } { continue }
+    if { $key eq "STOPTYPE" } { continue }
+    if { $key eq "RESUME" } { continue }
 
-    if { $key eq "StatusOK" } { set key UseStatus }
-    if { $key eq "UnratedOK" } { set key UseUnrated }
-    if { $key eq "highDanceLevel" } { set key DanceLevelHigh }
-    if { $key eq "lowDanceLevel" } { set key DanceLevelLow }
+    if { $key eq "STATUSOK" } { set key USESTATUS }
+    if { $key eq "UNRATEDOK" } { set key USEUNRATED }
+    if { $key eq "HIGHDANCELEVEL" } { set key DANCELEVELHIGH }
+    if { $key eq "LOWDANCELEVEL" } { set key DANCELEVELLOW }
 
-    if { $key eq "ManualList" && $value eq "None" } {
+    if { $key eq "MANUALLIST" && $value eq "None" } {
       set value {}
     }
-    if { $key eq "ManualList" && $value ne {} } {
+    if { $key eq "MANUALLIST" && $value ne {} } {
       set pltype Manual
     }
-    if { $key eq "Sequence" && $value eq "None" } {
+    if { $key eq "SEQUENCE" && $value eq "None" } {
       set value {}
     }
-    if { $key eq "Sequence" && $value ne {} } {
+    if { $key eq "GAP" && $value eq {} } {
+      set value -1
+    }
+    if { $key eq "MAXPLAYTIME" && $value eq {} } {
+      set value -1
+    }
+    if { $key eq "SEQUENCE" && $value ne {} } {
       set pltype Sequence
     }
     if { $key eq "VERSION" } { set key version }
@@ -79,9 +92,8 @@ foreach {fn} $flist {
       puts $dfh "..$highbpm"
       incr keyidx
     } else {
-      set key [string toupper $key]
       if { $key eq "MAXPLAYTIME" } {
-        if { $value ne {} } {
+        if { $value ne {} && $value ne "-1" } {
           regexp {(\d+):(\d+)} $value all min sec
           set value [expr {($min * 60 + $sec)*1000}]
         }

@@ -91,9 +91,9 @@ processStart (const char *fn, pid_t *pid, ssize_t profile, ssize_t loglvl)
   }
   if (tpid == 0) {
     /* child */
-    if (setsid () < 0) {
-      logError ("setsid");
-    }
+//    if (setsid () < 0) {
+//      logError ("setsid");
+//    }
     /* close any open file descriptors */
     for (int i = 3; i < 30; ++i) {
       close (i);
@@ -126,7 +126,7 @@ processStart (const char *fn, pid_t *pid, ssize_t profile, ssize_t loglvl)
       NULL,           // process handle
       NULL,           // thread handle
       FALSE,          // handle inheritance
-      0,              // DETACHED_PROCESS
+      0,              // set to DETACHED_PROCESS
       NULL,           // parent's environment
       NULL,           // parent's starting directory
       &si,            // STARTUPINFO structure

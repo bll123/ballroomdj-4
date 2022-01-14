@@ -37,7 +37,9 @@ volumeInit (void)
   }
 
   volume->volumeProcess = dylibLookup (volume->dlHandle, "volumeProcess");
+  assert (volume->volumeProcess != NULL);
   volume->volumeDisconnect = dylibLookup (volume->dlHandle, "volumeDisconnect");
+  assert (volume->volumeDisconnect != NULL);
 
   return volume;
 }

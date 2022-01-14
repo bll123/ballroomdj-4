@@ -39,17 +39,20 @@ void
 pliiMediaSetup (plidata_t *pliData, char *mediaPath)
 {
   if (pliData != NULL && mediaPath != NULL) {
+    pliData->duration = 20000;
     pliData->playTime = 0;
   }
 }
 
 void
-pliiStartPlayback (plidata_t *pliData)
+pliiStartPlayback (plidata_t *pliData, ssize_t dpos)
 {
   if (pliData != NULL) {
+    pliData->duration = 20000;
     pliData->playTime = 0;
     mstimestart (&pliData->playStart);
     pliData->state = PLI_STATE_PLAYING;
+    pliiSeek (pliData, dpos);
   }
 }
 
@@ -75,6 +78,28 @@ pliiStop (plidata_t *pliData)
   if (pliData != NULL) {
     pliData->state = PLI_STATE_STOPPED;
   }
+}
+
+ssize_t
+pliiSeek (plidata_t *pliData, ssize_t dpos)
+{
+  ssize_t     dret = dpos;
+
+  if (pliData != NULL) {
+    pliData->duration = 20000 - dpos;
+  }
+  return dret;
+}
+
+double
+pliiRate (plidata_t *pliData, double drate)
+{
+  double    dret = -1.0;
+
+  if (pliData != NULL) {
+    dret = 1.0;
+  }
+  return dret;
 }
 
 void
@@ -114,10 +139,18 @@ pliiState (plidata_t *pliData)
   plistate_t          plistate = PLI_STATE_NONE; /* unknown */
 
   if (pliData != NULL) {
+fprintf (stderr, "222\n");
+fflush (stderr);
     pliData->playTime = mstimeend (&pliData->playStart);
+fprintf (stderr, "333 playtime: %zd duration: %zd\n", pliData->playTime, pliData->duration);
+fflush (stderr);
     if (pliData->playTime >= pliData->duration) {
+fprintf (stderr, "444\n");
+fflush (stderr);
       pliData->state = PLI_STATE_STOPPED;
     }
+fprintf (stderr, "555\n");
+fflush (stderr);
     plistate = pliData->state;
   }
   return plistate;
