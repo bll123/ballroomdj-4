@@ -106,6 +106,8 @@ rlogVarMsg (logidx_t idx, bdjloglvl_t level,
   char          wbuff [1024];
   char          tfn [MAXPATHLEN];
   va_list       args;
+  size_t        wlen;
+
 
   if (! logCheck (idx, level)) {
     return;
@@ -123,7 +125,7 @@ rlogVarMsg (logidx_t idx, bdjloglvl_t level,
   if (fn != NULL) {
     snprintf (tfn, MAXPATHLEN, "(%s: %d)", logTail (fn), line);
   }
-  size_t wlen = (size_t) snprintf (wbuff, sizeof (wbuff),
+  wlen = (size_t) snprintf (wbuff, sizeof (wbuff),
       "%s: %-2s %*s%s %s\n", ttm, l->processTag, l->indent, "", tbuff, tfn);
   if (fileWriteShared (&l->fhandle, wbuff, wlen) < 0) {
     fprintf (stderr, "log write failed: %d %s", errno, strerror (errno));
@@ -207,7 +209,9 @@ rlogStart (const char *processnm, const char *processtag,
 static bdjlog_t *
 rlogOpen (const char *fn, const char *processtag, int truncflag)
 {
-  bdjlog_t      *l;
+  bdjlog_t      *l = NULL;
+  int           rc;
+
 
   l = malloc (sizeof (bdjlog_t));
   assert (l != NULL);
@@ -216,7 +220,7 @@ rlogOpen (const char *fn, const char *processtag, int truncflag)
   l->indent = 0;
   l->level = LOG_IMPORTANT;
   l->processTag = processtag;
-  int rc = fileOpenShared (fn, truncflag, &l->fhandle);
+  rc = fileOpenShared (fn, truncflag, &l->fhandle);
   if (rc < 0) {
     fprintf (stderr, "Unable to open %s %d %s\n", fn, errno, strerror (errno));
   }

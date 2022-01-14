@@ -21,8 +21,12 @@
 pathinfo_t *
 pathInfo (char *path)
 {
-  pathinfo_t    *pi;
+  pathinfo_t    *pi = NULL;
   ssize_t       pos;
+  ssize_t       last;
+  int           chkforext;
+  int           trailingslash;
+
 
   pi = malloc (sizeof (pathinfo_t));
   assert (pi != NULL);
@@ -36,9 +40,9 @@ pathInfo (char *path)
   pi->blen = 0;
   pi->elen = 0;
 
-  ssize_t last = (ssize_t) strlen (path) - 1;
-  int chkforext = 1;
-  int trailingslash = 0;
+  last = (ssize_t) strlen (path) - 1;
+  chkforext = 1;
+  trailingslash = 0;
   pos = 0;
 
   for (ssize_t i = last; i >= 0; --i) {

@@ -75,11 +75,14 @@ playlist_t *
 plqGetCurrent (plq_t *plq)
 {
   playlist_t      *playlist = NULL;
+  plqitem_t       *plqitem = NULL;
+
+
   if (plq == NULL || plq->q == NULL) {
     return NULL;
   }
 
-  plqitem_t *plqitem = queueGetCurrent (plq->q);
+  plqitem = queueGetCurrent (plq->q);
   if (plqitem != NULL) {
     playlist = plqitem->playlist;
   }

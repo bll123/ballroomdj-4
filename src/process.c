@@ -63,18 +63,24 @@ processExists (pid_t pid)
 }
 
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeclaration-after-statement"
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeclaration-after-statement"
+
 int
 processStart (const char *fn, pid_t *pid, ssize_t profile, ssize_t loglvl)
 {
   char        tmp [100];
   char        tmp2 [40];
 
+
   logProcBegin (LOG_PROC, "processStart");
   snprintf (tmp, sizeof (tmp), "%zd", profile);
   snprintf (tmp2, sizeof (tmp2), "%zd", loglvl);
 
 #if _lib_fork
-  pid_t     tpid;
+  pid_t       tpid;
 
   /* this may be slower, but it works; speed is not a major issue */
   tpid = fork ();
@@ -141,6 +147,9 @@ processStart (const char *fn, pid_t *pid, ssize_t profile, ssize_t loglvl)
   logProcEnd (LOG_PROC, "processStart", "");
   return 0;
 }
+
+#pragma GCC diagnostic pop
+#pragma clang diagnostic pop
 
 void
 processCatchSignals (void (*sigHandler)(int))

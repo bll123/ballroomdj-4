@@ -133,9 +133,12 @@ datafile_t *
 datafileAllocParse (char *name, datafiletype_t dftype, char *fname,
     datafilekey_t *dfkeys, size_t dfkeycount, listidx_t lookupKey)
 {
+  datafile_t      *df;
+
+
   logProcBegin (LOG_PROC, "datafileAllocParse");
   logMsg (LOG_DBG, LOG_DATAFILE, "alloc/parse %s", fname);
-  datafile_t *df = datafileAlloc (name);
+  df = datafileAlloc (name);
   if (df != NULL) {
     char *ddata = datafileLoad (df, dftype, fname);
     if (ddata != NULL) {

@@ -20,9 +20,10 @@
 START_TEST(queue_alloc_free)
 {
   ssize_t       count;
+  queue_t       *q;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== queue_alloc_free");
-  queue_t *q = queueAlloc (NULL);
+  q = queueAlloc (NULL);
   ck_assert_ptr_nonnull (q);
   count = queueGetCount (q);
   ck_assert_int_eq (count, 0);
@@ -33,9 +34,10 @@ END_TEST
 START_TEST(queue_push_one)
 {
   ssize_t       count;
+  queue_t       *q;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== queue_push_one");
-  queue_t *q = queueAlloc (NULL);
+  q = queueAlloc (NULL);
   queuePush (q, "aaaa");
   count = queueGetCount (q);
   ck_assert_int_eq (count, 1);
@@ -46,9 +48,10 @@ END_TEST
 START_TEST(queue_push_two)
 {
   ssize_t       count;
+  queue_t       *q;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== queue_push_two");
-  queue_t *q = queueAlloc (NULL);
+  q = queueAlloc (NULL);
   queuePush (q, "aaaa");
   count = queueGetCount (q);
   ck_assert_int_eq (count, 1);
@@ -62,9 +65,10 @@ END_TEST
 START_TEST(queue_push_many)
 {
   ssize_t       count;
+  queue_t       *q;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== queue_push_many");
-  queue_t *q = queueAlloc (NULL);
+  q = queueAlloc (NULL);
   queuePush (q, "aaaa");
   count = queueGetCount (q);
   ck_assert_int_eq (count, 1);
@@ -88,9 +92,10 @@ START_TEST(queue_push_pop_one)
 {
   ssize_t   count;
   char      *data;
+  queue_t       *q;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== queue_push_pop_one");
-  queue_t *q = queueAlloc (NULL);
+  q = queueAlloc (NULL);
   queuePush (q, "aaaa");
   count = queueGetCount (q);
   ck_assert_int_eq (count, 1);
@@ -109,9 +114,10 @@ START_TEST(queue_push_pop_two)
 {
   ssize_t   count;
   char      *data;
+  queue_t       *q;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== queue_push_pop_two");
-  queue_t *q = queueAlloc (NULL);
+  q = queueAlloc (NULL);
   queuePush (q, "aaaa");
   queuePush (q, "bbbb");
   count = queueGetCount (q);
@@ -136,9 +142,10 @@ START_TEST(queue_multi_one)
 {
   ssize_t   count;
   char      *data;
+  queue_t       *q;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== queue_multi_one");
-  queue_t *q = queueAlloc (NULL);
+  q = queueAlloc (NULL);
 
   queuePush (q, "aaaa");
   count = queueGetCount (q);
@@ -174,9 +181,10 @@ START_TEST(queue_multi_two)
 {
   ssize_t   count;
   char      *data;
+  queue_t       *q;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== queue_multi_two");
-  queue_t *q = queueAlloc (NULL);
+  q = queueAlloc (NULL);
 
   queuePush (q, "aaaa");
   queuePush (q, "bbbb");
@@ -250,9 +258,10 @@ START_TEST(queue_multi_many)
 {
   ssize_t   count;
   char      *data;
+  queue_t       *q;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== queue_multi_two");
-  queue_t *q = queueAlloc (NULL);
+  q = queueAlloc (NULL);
 
   queuePush (q, "aaaa");
   queuePush (q, "bbbb");
@@ -337,9 +346,10 @@ START_TEST(queue_iterate)
 {
   ssize_t   count;
   char      *data;
+  queue_t       *q;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== queue_iterate");
-  queue_t *q = queueAlloc (NULL);
+  q = queueAlloc (NULL);
 
   queuePush (q, "aaaa");
   queuePush (q, "bbbb");
@@ -380,9 +390,10 @@ START_TEST(queue_remove_by_idx)
 {
   ssize_t   count;
   char      *data;
+  queue_t       *q;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== queue_remove_by_idx");
-  queue_t *q = queueAlloc (NULL);
+  q = queueAlloc (NULL);
 
   queuePush (q, "aaaa");
   queuePush (q, "bbbb");
@@ -510,9 +521,10 @@ START_TEST(queue_remove_node)
 {
   ssize_t   count;
   char      *data;
+  queue_t       *q;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== queue_remove_node");
-  queue_t *q = queueAlloc (NULL);
+  q = queueAlloc (NULL);
 
   queuePush (q, "aaaa");
   queuePush (q, "bbbb");

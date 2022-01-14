@@ -65,6 +65,8 @@ int
 main (int argc, char *argv[])
 {
   maindata_t    mainData;
+  uint16_t      listenPort;
+
 
   mstimestart (&mainData.tmstart);
   mainData.programState = STATE_INITIALIZING;
@@ -85,7 +87,7 @@ main (int argc, char *argv[])
   mainData.playlistQueue = plqAlloc ();
   mainData.musicQueue = musicqAlloc ();
 
-  uint16_t listenPort = bdjvarsl [BDJVL_MAIN_PORT];
+  listenPort = bdjvarsl [BDJVL_MAIN_PORT];
   sockhMainLoop (listenPort, mainProcessMsg, mainProcessing, &mainData);
 
   logProcEnd (LOG_PROC, "main", "");
@@ -107,7 +109,8 @@ mainStartPlayer (maindata_t *mainData)
 {
   char      tbuff [MAXPATHLEN];
   pid_t     pid;
-  char      *extension;
+  char      *extension = "";
+  int       rc;
 
 
   logProcBegin (LOG_PROC, "mainStartPlayer");
@@ -122,7 +125,7 @@ mainStartPlayer (maindata_t *mainData)
   }
   datautilMakePath (tbuff, sizeof (tbuff), "",
       "bdj4player", extension, DATAUTIL_MP_EXECDIR);
-  int rc = processStart (tbuff, &pid, lsysvars [SVL_BDJIDX],
+  rc = processStart (tbuff, &pid, lsysvars [SVL_BDJIDX],
       bdjoptGetNum (OPT_G_DEBUGLVL));
   if (rc < 0) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "player %s failed to start", tbuff);
@@ -227,7 +230,8 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 static int
 mainProcessing (void *udata)
 {
-  maindata_t      *mainData;
+  maindata_t      *mainData = NULL;
+
 
   mainData = (maindata_t *) udata;
   if (mainData->programState == STATE_INITIALIZING) {
@@ -245,9 +249,10 @@ mainProcessing (void *udata)
   if (mainData->programState == STATE_CONNECTING &&
       mainData->playerStarted &&
       mainData->playerSock == INVALID_SOCKET) {
-    int       err;
+    int           err;
+    uint16_t      playerPort;
 
-    uint16_t playerPort = bdjvarsl [BDJVL_PLAYER_PORT];
+    playerPort = bdjvarsl [BDJVL_PLAYER_PORT];
     mainData->playerSock = sockConnect (playerPort, &err, 1000);
     if (mainData->playerSock != INVALID_SOCKET) {
       sockhSendMessage (mainData->playerSock, ROUTE_MAIN, ROUTE_PLAYER,
@@ -293,6 +298,7 @@ mainMusicQueueFill (maindata_t *mainData)
   song_t      *song = NULL;
   playlist_t  *playlist = NULL;
 
+
   logProcBegin (LOG_PROC, "mainMusicQueueFill");
   maxlen = bdjoptGetNum (OPT_G_PLAYERQLEN);
   playlist = plqGetCurrent (mainData->playlistQueue);
@@ -317,15 +323,19 @@ mainMusicQueuePrep (maindata_t *mainData)
   char tbuff [MAXPATHLEN];
 
   logProcBegin (LOG_PROC, "mainMusicQueuePrep");
-    /* 5 is number of songs to prep ahead of time */
+    /* 5 is the number of songs to prep ahead of time */
   for (ssize_t i = 0; i < 5; ++i) {
-    song_t    *song;
-    char      *sfname;
-    ssize_t   dur;
+    song_t          *song = NULL;
+    char            *sfname = NULL;
+    ssize_t         dur;
+    musicqflag_t    flags;
 
 
     song = musicqGetByIdx (mainData->musicQueue, mainData->musicqCurrent, i);
-    if (song != NULL) {
+    flags = musicqGetFlags (mainData->musicQueue, mainData->musicqCurrent, i);
+
+    if (song != NULL &&
+        (flags & MUSICQ_FLAG_PREP) != MUSICQ_FLAG_PREP) {
       sfname = songGetData (song, TAG_FILE);
       dur = songGetNum (song, TAG_DURATION);
 
@@ -334,6 +344,8 @@ mainMusicQueuePrep (maindata_t *mainData)
       logMsg (LOG_DBG, LOG_MAIN, "prep song %s", sfname);
       sockhSendMessage (mainData->playerSock, ROUTE_MAIN, ROUTE_PLAYER,
           MSG_SONG_PREP, tbuff);
+      musicqSetFlags (mainData->musicQueue, mainData->musicqCurrent,
+          i, MUSICQ_FLAG_PREP);
     }
   }
   logProcEnd (LOG_PROC, "mainMusicQueuePrep", "");

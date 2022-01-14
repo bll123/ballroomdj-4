@@ -10,8 +10,14 @@ typedef enum {
   MUSICQ_MAX,
 } musicqidx_t;
 
+typedef enum {
+  MUSICQ_FLAG_NONE  = 0x0000,
+  MUSICQ_FLAG_PREP  = 0x0001,
+} musicqflag_t;
+
 typedef struct {
-  song_t      *song;
+  song_t          *song;
+  musicqflag_t   flags;
 } musicqitem_t;
 
 typedef struct {
@@ -21,9 +27,12 @@ typedef struct {
 musicq_t *  musicqAlloc (void);
 void        musicqFree (musicq_t *musicq);
 void        musicqPush (musicq_t *musicq, musicqidx_t idx, song_t *song);
-song_t      *musicqGetCurrent (musicq_t *musicq, musicqidx_t idx);
-song_t      *musicqGetByIdx (musicq_t *musicq, musicqidx_t musicqidx, listidx_t idx);
-void        musicqPop (musicq_t *musicq, musicqidx_t idx);
-ssize_t     musicqGetLen (musicq_t *musicq, musicqidx_t idx);
+song_t      *musicqGetCurrent (musicq_t *musicq, musicqidx_t musicqidx);
+musicqflag_t musicqGetFlags (musicq_t *musicq, musicqidx_t musicqidx, ssize_t qkey);
+void        musicqSetFlags (musicq_t *musicq, musicqidx_t musicqidx,
+                ssize_t qkey, musicqflag_t flags);
+song_t      *musicqGetByIdx (musicq_t *musicq, musicqidx_t musicqidx, ssize_t qkey);
+void        musicqPop (musicq_t *musicq, musicqidx_t musicqidx);
+ssize_t     musicqGetLen (musicq_t *musicq, musicqidx_t musicqidx);
 
 #endif /* INC_MUSICQ_H */

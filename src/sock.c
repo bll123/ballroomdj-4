@@ -66,16 +66,19 @@ sockServer (uint16_t listenPort, int *err)
   struct sockaddr_in  saddr;
   int                 rc;
   int                 count;
+  int                 typ;
+  Sock_t              lsock;
+
 
   if (! sockInitialized) {
     sockInit ();
   }
 
-  int typ = SOCK_STREAM;
+  typ = SOCK_STREAM;
 #if _define_SOCK_CLOEXEC
   typ |= SOCK_CLOEXEC;
 #endif
-  Sock_t lsock = socket (AF_INET, typ, 0);
+  lsock = socket (AF_INET, typ, 0);
   if (socketInvalid (lsock)) {
     *err = errno;
     logError ("socket:");
@@ -255,9 +258,11 @@ sockAccept (Sock_t lsock, int *err)
 {
   struct sockaddr_in  saddr;
   Socklen_t           alen;
+  Sock_t              nsock;
+
 
   alen = sizeof (struct sockaddr_in);
-  Sock_t nsock = accept (lsock, (struct sockaddr *) &saddr, &alen);
+  nsock = accept (lsock, (struct sockaddr *) &saddr, &alen);
   if (socketInvalid (nsock)) {
     *err = errno;
     logError ("accept");
@@ -283,17 +288,23 @@ sockConnect (uint16_t connPort, int *err, size_t timeout)
   struct sockaddr_in  raddr;
   int                 rc;
   int                 count;
-  mstime_t             mi;
+  mstime_t            mi;
+  int                 typ;
+  Sock_t              clsock;
+  size_t              m;
+
+
+
 
   if (! sockInitialized) {
     sockInit ();
   }
 
-  int typ = SOCK_STREAM;
+  typ = SOCK_STREAM;
 #if _define_SOCK_CLOEXEC
   typ |= SOCK_CLOEXEC;
 #endif
-  Sock_t clsock = socket (AF_INET, typ, 0);
+  clsock = socket (AF_INET, typ, 0);
   if (socketInvalid (clsock)) {
     *err = errno;
     logError ("connect");
@@ -335,7 +346,7 @@ sockConnect (uint16_t connPort, int *err, size_t timeout)
       close (clsock);
       return INVALID_SOCKET;
     }
-    size_t m = mstimeend (&mi);
+    m = mstimeend (&mi);
     if (m > timeout) {
       logMsg (LOG_DBG, LOG_SOCKET, "timeout on connect");
       return INVALID_SOCKET;
@@ -482,6 +493,8 @@ sockReadData (Sock_t sock, char *data, size_t len)
     tot += (size_t) rc;
   }
   while (tot < len) {
+    size_t        m;
+
     rc = recv (sock, data + tot, len - tot, 0);
     if (rc < 0) {
 #if _lib_WSAGetLastError
@@ -503,7 +516,7 @@ sockReadData (Sock_t sock, char *data, size_t len)
     if (tot == 0) {
       mssleep (5);
     }
-    size_t m = mstimeend (&mi);
+    m = mstimeend (&mi);
     if (m > timeout) {
       break;
     }
@@ -626,6 +639,8 @@ sockCanWrite (Sock_t sock)
   fd_set            readfds;
   fd_set            writefds;
   struct timeval    tv;
+  int               rc;
+
 
   FD_ZERO (&readfds);
   FD_ZERO (&writefds);
@@ -635,7 +650,7 @@ sockCanWrite (Sock_t sock)
   tv.tv_sec = 0;
   tv.tv_usec = (suseconds_t) (SOCK_WRITE_TIMEOUT * 1 * 1000);
 
-  int rc = select (sock + 1, &readfds, &writefds, NULL, &tv);
+  rc = select (sock + 1, &readfds, &writefds, NULL, &tv);
   if (rc < 0) {
     if (errno == EINTR) {
       return sockCanWrite (sock);

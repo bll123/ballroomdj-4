@@ -81,11 +81,13 @@ int
 lockReleasePid (char *fn, pid_t pid, datautil_mp_t flags)
 {
   char      tfn [MAXPATHLEN];
+  int       rc;
+  pid_t     fpid;
 
   datautilMakePath (tfn, sizeof (tfn), "", fn, ".lck",
       flags | DATAUTIL_MP_TMPDIR);
-  int rc = -1;
-  pid_t fpid = getPidFromFile (tfn);
+  rc = -1;
+  fpid = getPidFromFile (tfn);
   if (fpid == pid) {
     fileopDelete (tfn);
     rc = 0;

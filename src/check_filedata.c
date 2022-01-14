@@ -20,6 +20,7 @@ START_TEST(file_readall)
 {
   FILE    *fh;
   char    *data;
+  char    *tdata;
 
   char *fn = "tmp/abc.txt";
   fh = fopen (fn, "w");
@@ -35,7 +36,7 @@ START_TEST(file_readall)
   ck_assert_int_eq (strlen (data), 1);
   ck_assert_mem_eq (data, "a", 1);
 
-  char *tdata = "lkjsdflkdjsfljsdfljsdfd\n";
+  tdata = "lkjsdflkdjsfljsdfljsdfd\n";
   fh = fopen (fn, "w");
   fprintf (fh, "%s", tdata);
   fclose (fh);

@@ -979,8 +979,11 @@ merge (list_t *list, ssize_t start, ssize_t mid, ssize_t end)
     if (rc <= 0) {
       start++;
     } else {
+      ssize_t       index;
+
+
       value = list->data [start2];
-      ssize_t index = start2;
+      index = start2;
 
       while (index != start) {
         list->data [index] = list->data [index - 1];

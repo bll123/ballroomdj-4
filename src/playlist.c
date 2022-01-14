@@ -233,11 +233,13 @@ playlistGetNextSong (playlist_t *pl, playlistCheck_t checkProc, void *userdata)
       break;
     }
     case PLTYPE_SEQ: {
+      listidx_t     dancekey;
+
       if (pl->songsel == NULL) {
         pl->songsel = songselAlloc (sequenceGetDanceList (pl->sequence),
             playlistFilterSong, pl);
       }
-      listidx_t dancekey = sequenceIterate (pl->sequence);
+      dancekey = sequenceIterate (pl->sequence);
       logMsg (LOG_DBG, LOG_BASIC, "sequence: dance: %zd", dancekey);
       song = songselSelect (pl->songsel, dancekey);
       count = 0;

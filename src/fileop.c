@@ -52,6 +52,8 @@ fileopCopy (char *fname, char *nfn)
   char      cmd [MAXPATHLEN];
   char      tfname [MAXPATHLEN];
   char      tnfn [MAXPATHLEN];
+  int       rc;
+
 
   if (isWindows ()) {
     pathToWinPath (fname, tfname, MAXPATHLEN);
@@ -61,7 +63,7 @@ fileopCopy (char *fname, char *nfn)
   } else {
     snprintf (cmd, MAXPATHLEN, "cp -f '%s' '%s' >/dev/null 2>&1", fname, nfn);
   }
-  int rc = system (cmd);
+  rc = system (cmd);
   return rc;
 }
 

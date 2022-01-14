@@ -6,7 +6,7 @@
 
 #include "fileutil.h"
 
-typedef int32_t   bdjloglvl_t;
+typedef uint32_t   bdjloglvl_t;
 
 #define LOG_NONE        0x00000000
 #define LOG_IMPORTANT   0x00000001  // 1

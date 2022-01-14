@@ -97,32 +97,42 @@ songParse (song_t *song, char *data)
 }
 
 char *
-songGetData (song_t *song, listidx_t idx) {
+songGetData (song_t *song, listidx_t idx)
+{
+  char    *value;
+
   if (song == NULL || song->songInfo == NULL) {
     return NULL;
   }
 
-  char *value = llistGetData (song->songInfo, idx);
+  value = llistGetData (song->songInfo, idx);
   return value;
 }
 
 ssize_t
-songGetNum (song_t *song, listidx_t idx) {
+songGetNum (song_t *song, listidx_t idx)
+{
+  ssize_t     value;
+
   if (song == NULL || song->songInfo == NULL) {
     return -1L;
   }
 
-  ssize_t value = llistGetNum (song->songInfo, idx);
+  value = llistGetNum (song->songInfo, idx);
   return value;
 }
 
 double
-songGetDouble (song_t *song, listidx_t idx) {
+songGetDouble (song_t *song, listidx_t idx)
+{
+  double      value;
+
+
   if (song == NULL || song->songInfo == NULL) {
     return -1;
   }
 
-  double value = llistGetDouble (song->songInfo, idx);
+  value = llistGetDouble (song->songInfo, idx);
   return value;
 }
 

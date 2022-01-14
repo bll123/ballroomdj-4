@@ -189,10 +189,12 @@ bdjoptGetData (ssize_t idx)
 ssize_t
 bdjoptGetNum (ssize_t idx)
 {
+  ssize_t       value;
+
   if (bdjopt == NULL) {
     return -1;
   }
-  ssize_t value = llistGetNum (bdjopt->data, idx);
+  value = llistGetNum (bdjopt->data, idx);
   return value;
 }
 

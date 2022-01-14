@@ -65,9 +65,10 @@ static Sock_t       gclsock;
 START_TEST(sock_server_create)
 {
   int         err;
+  Sock_t      s;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== sock_server_create");
-  Sock_t s = sockServer (32700, &err);
+  s = sockServer (32700, &err);
   ck_assert_int_gt (s, 2);
   ck_assert_int_eq (socketInvalid (s), 0);
   sockClose (s);
@@ -77,11 +78,12 @@ END_TEST
 START_TEST(sock_server_create_check)
 {
   sockinfo_t    *si;
-  int         err;
+  int           err;
+  Sock_t        s;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== sock_server_create_check");
   si = NULL;
-  Sock_t s = sockServer (32701, &err);
+  s = sockServer (32701, &err);
   ck_assert_int_gt (s, 2);
   ck_assert_int_eq (socketInvalid (s), 0);
   si = sockAddCheck (si, s);
@@ -98,10 +100,11 @@ START_TEST(sock_server_check)
   sockinfo_t    *si;
   int           rc;
   int         err;
+  Sock_t        s;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== sock_server_check");
   si = NULL;
-  Sock_t s = sockServer (32702, &err);
+  s = sockServer (32702, &err);
   ck_assert_int_gt (s, 2);
   ck_assert_int_eq (socketInvalid (s), 0);
   si = sockAddCheck (si, s);
@@ -117,8 +120,9 @@ static Sock_t
 connectWait (void)
 {
   int       err;
+  Sock_t    c;
 
-  Sock_t c = sockConnect (gport, &err, 3000);
+  c = sockConnect (gport, &err, 3000);
   gclsock = -1;
   if (socketInvalid (c)) { gthreadrc = 1; }
   gclsock = c;
@@ -128,7 +132,10 @@ connectWait (void)
 static void *
 connectClose (void *id)
 {
-  Sock_t c = connectWait ();
+  Sock_t    c;
+
+
+  c = connectWait ();
   mssleep (200);
   sockClose (c);
   return NULL;
@@ -137,7 +144,9 @@ connectClose (void *id)
 static void *
 connectCloseEarly (void *id)
 {
-  Sock_t c = connectWait ();
+  Sock_t    c;
+
+  c = connectWait ();
   sockClose (c);
 #if _lib_pthread_create
   pthread_exit (NULL);
@@ -150,10 +159,12 @@ connectWrite (void *id)
 {
   char          *data = { "aaaabbbbccccddddeeeeffff" };
   char          datab [4096];
+  Sock_t        c;
+  int           rc;
 
   memset (datab, 'a', 4096);
-  Sock_t c = connectWait ();
-  int rc = sockWriteStr (c, data, strlen (data));
+  c = connectWait ();
+  rc = sockWriteStr (c, data, strlen (data));
   if (rc != 0) { gthreadrc = 1; }
   rc = sockWriteBinary (c, datab, 4096);
   if (rc != 0) { gthreadrc = 1; }
@@ -170,10 +181,12 @@ connectWriteClose (void *id)
 {
   char          *data = { "aaaabbbbccccddddeeeeffff" };
   char          datab [4096];
+  Sock_t        c;
+  int           rc;
 
   memset (datab, 'a', 4096);
-  Sock_t c = connectWait ();
-  int rc = sockWriteStr (c, data, strlen (data));
+  c = connectWait ();
+  rc = sockWriteStr (c, data, strlen (data));
   if (rc != 0) { gthreadrc = 1; }
   rc = sockWriteBinary (c, datab, 4096);
   if (rc != 0) { gthreadrc = 1; }
@@ -189,10 +202,12 @@ connectWriteCloseFail (void *id)
 {
   char          *data = { "aaaabbbbccccddddeeeeffff" };
   char          datab [4096];
+  Sock_t        c;
+  int           rc;
 
   memset (datab, 'a', 4096);
-  Sock_t c = connectWait ();
-  int rc = sockWriteStr (c, data, strlen (data));
+  c = connectWait ();
+  rc = sockWriteStr (c, data, strlen (data));
   rc = sockWriteBinary (c, datab, 4096);
   /* rc may be 0 or non-zero depending on system */
   sockClose (c);
@@ -239,6 +254,8 @@ START_TEST(sock_check_connect_accept)
   int           err;
   Sock_t        l = -1;
   Sock_t        r = -1;
+  int           count;
+
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== sock_check_connect_accept");
   sockClose (gclsock);
@@ -254,7 +271,7 @@ START_TEST(sock_check_connect_accept)
   ck_assert_int_eq (socketInvalid (l), 0);
   si = sockAddCheck (si, l);
   rc = sockCheck (si);
-  int count = 0;
+  count = 0;
   while (rc == 0 && count < 100) {
     mssleep (20);
     rc = sockCheck (si);
@@ -283,6 +300,7 @@ START_TEST(sock_write)
   int           err;
   Sock_t        l = -1;
   Sock_t        r = -1;
+  int           count;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== sock_write");
   sockClose (gclsock);
@@ -298,7 +316,7 @@ START_TEST(sock_write)
   ck_assert_int_eq (socketInvalid (l), 0);
   si = sockAddCheck (si, l);
   rc = sockCheck (si);
-  int count = 0;
+  count = 0;
   while (rc == 0 && count < 100) {
     mssleep (20);
     rc = sockCheck (si);
@@ -331,6 +349,7 @@ START_TEST(sock_write_read)
   char          datab [4096];
   char          *ndata;
   size_t        len;
+  int           count;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== sock_write_read");
   sockClose (gclsock);
@@ -347,7 +366,7 @@ START_TEST(sock_write_read)
   ck_assert_int_eq (socketInvalid (l), 0);
   si = sockAddCheck (si, l);
   rc = sockCheck (si);
-  int count = 0;
+  count = 0;
   while (rc == 0 && count < 100) {
     mssleep (20);
     rc = sockCheck (si);
@@ -401,6 +420,7 @@ START_TEST(sock_write_read_buff)
   char          buff [80];
   char          *ndata;
   size_t        len;
+  int           count;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== sock_write_read_buff");
   sockClose (gclsock);
@@ -416,7 +436,7 @@ START_TEST(sock_write_read_buff)
   ck_assert_int_eq (socketInvalid (l), 0);
   si = sockAddCheck (si, l);
   rc = sockCheck (si);
-  int count = 0;
+  count = 0;
   while (rc == 0 && count < 100) {
     mssleep (20);
     rc = sockCheck (si);
@@ -458,6 +478,7 @@ START_TEST(sock_write_read_buff_fail)
   char          buff [10];
   char          *ndata;
   size_t        len;
+  int           count;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== sock_write_read_buff_fail");
   sockClose (gclsock);
@@ -473,7 +494,7 @@ START_TEST(sock_write_read_buff_fail)
   ck_assert_int_eq (socketInvalid (l), 0);
   si = sockAddCheck (si, l);
   rc = sockCheck (si);
-  int count = 0;
+  count = 0;
   while (rc == 0 && count < 100) {
     mssleep (20);
     rc = sockCheck (si);
@@ -510,6 +531,7 @@ START_TEST(sock_write_check_read)
   char          datab [4096];
   char          *ndata;
   size_t        len;
+  int           count;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== sock_write_check_read");
   sockClose (gclsock);
@@ -526,7 +548,7 @@ START_TEST(sock_write_check_read)
   ck_assert_int_eq (socketInvalid (l), 0);
   si = sockAddCheck (si, l);
   rc = sockCheck (si);
-  int count = 0;
+  count = 0;
   while (rc == 0 && count < 100) {
     mssleep (20);
     rc = sockCheck (si);
@@ -592,6 +614,7 @@ START_TEST(sock_close)
   Sock_t        r = -1;
   char          *ndata;
   size_t        len;
+  int           count;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== sock_close");
   sockClose (gclsock);
@@ -608,7 +631,7 @@ START_TEST(sock_close)
 
   si = sockAddCheck (si, l);
   rc = sockCheck (si);
-  int count = 0;
+  count = 0;
   while (rc == 0 && count < 100) {
     mssleep (20);
     rc = sockCheck (si);
@@ -659,6 +682,7 @@ START_TEST(sock_write_close)
   char          datab [4096];
   char          *ndata;
   size_t        len;
+  int           count;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== sock_write_close");
   sockClose (gclsock);
@@ -676,7 +700,7 @@ START_TEST(sock_write_close)
 
   si = sockAddCheck (si, l);
   rc = sockCheck (si);
-  int count = 0;
+  count = 0;
   while (rc == 0 && count < 100) {
     mssleep (20);
     rc = sockCheck (si);
@@ -738,6 +762,7 @@ START_TEST(sock_server_close)
   Sock_t        l = -1;
   Sock_t        r = -1;
   char          datab [4096];
+  int           count;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== sock_server_close");
   si = NULL;
@@ -754,7 +779,7 @@ START_TEST(sock_server_close)
 
   si = sockAddCheck (si, l);
   rc = sockCheck (si);
-  int count = 0;
+  count = 0;
   while (rc == 0 && count < 100) {
     mssleep (20);
     rc = sockCheck (si);

@@ -94,8 +94,10 @@ danceConvDance (char *keydata, datafileret_t *ret)
 static void
 danceConvSpeed (char *keydata, datafileret_t *ret)
 {
+  listidx_t       idx;
+
   ret->valuetype = VALUE_NUM;
-  listidx_t idx = dfkeyBinarySearch (dancespeeddfkeys, DANCE_SPEED_DFKEY_COUNT, keydata);
+  idx = dfkeyBinarySearch (dancespeeddfkeys, DANCE_SPEED_DFKEY_COUNT, keydata);
   ret->u.num = dancespeeddfkeys [idx].itemkey;
 }
 

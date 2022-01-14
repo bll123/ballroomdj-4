@@ -59,6 +59,7 @@ musicqPush (musicq_t *musicq, musicqidx_t idx, song_t *song)
   musicqitem = malloc (sizeof (musicqitem_t));
   assert (musicqitem != NULL);
   musicqitem->song = song;
+  musicqitem->flags = MUSICQ_FLAG_NONE;
   queuePush (musicq->q [idx], musicqitem);
 }
 
@@ -79,7 +80,7 @@ musicqGetCurrent (musicq_t *musicq, musicqidx_t idx)
 }
 
 song_t *
-musicqGetByIdx (musicq_t *musicq, musicqidx_t musicqidx, listidx_t idx)
+musicqGetByIdx (musicq_t *musicq, musicqidx_t musicqidx, ssize_t qkey)
 {
   musicqitem_t      *musicqitem;
 
@@ -87,32 +88,65 @@ musicqGetByIdx (musicq_t *musicq, musicqidx_t musicqidx, listidx_t idx)
     return NULL;
   }
 
-  musicqitem = queueGetByIdx (musicq->q [musicqidx], idx);
+  musicqitem = queueGetByIdx (musicq->q [musicqidx], qkey);
   if (musicqitem != NULL) {
     return musicqitem->song;
   }
   return NULL;
 }
 
-void
-musicqPop (musicq_t *musicq, musicqidx_t idx)
+musicqflag_t
+musicqGetFlags (musicq_t *musicq, musicqidx_t musicqidx, ssize_t qkey)
 {
   musicqitem_t      *musicqitem;
 
-  if (musicq == NULL || musicq->q [idx] == NULL) {
+  if (musicq == NULL || musicq->q [musicqidx] == NULL) {
+    return MUSICQ_FLAG_NONE;
+  }
+
+  musicqitem = queueGetByIdx (musicq->q [musicqidx], qkey);
+  if (musicqitem != NULL) {
+    return musicqitem->flags;
+  }
+  return MUSICQ_FLAG_NONE;
+}
+
+void
+musicqSetFlags (musicq_t *musicq, musicqidx_t musicqidx,
+    ssize_t qkey, musicqflag_t flags)
+{
+  musicqitem_t      *musicqitem;
+
+  if (musicq == NULL || musicq->q [musicqidx] == NULL) {
     return;
   }
 
-  musicqitem = queuePop (musicq->q [idx]);
+  musicqitem = queueGetByIdx (musicq->q [musicqidx], qkey);
+  if (musicqitem != NULL) {
+    musicqitem->flags = flags;
+  }
+  return;
+}
+
+void
+musicqPop (musicq_t *musicq, musicqidx_t musicqidx)
+{
+  musicqitem_t      *musicqitem;
+
+  if (musicq == NULL || musicq->q [musicqidx] == NULL) {
+    return;
+  }
+
+  musicqitem = queuePop (musicq->q [musicqidx]);
   musicqQueueFree (musicqitem);
 }
 
 ssize_t
-musicqGetLen (musicq_t *musicq, musicqidx_t idx)
+musicqGetLen (musicq_t *musicq, musicqidx_t musicqidx)
 {
-  if (musicq == NULL || musicq->q [idx] == NULL) {
+  if (musicq == NULL || musicq->q [musicqidx] == NULL) {
     return 0;
   }
 
-  return queueGetCount (musicq->q [idx]);
+  return queueGetCount (musicq->q [musicqidx]);
 }

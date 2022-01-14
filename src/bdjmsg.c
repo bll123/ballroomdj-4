@@ -15,10 +15,13 @@ size_t
 msgEncode (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     bdjmsgmsg_t msg, char *args, char *msgbuff, size_t mlen)
 {
+  size_t      len;
+
+
   if (args == NULL) {
     args = "";
   }
-  size_t len = (size_t) snprintf (msgbuff, mlen, "%0*d%c%0*d%c%0*d%c%s",
+  len = (size_t) snprintf (msgbuff, mlen, "%0*d%c%0*d%c%0*d%c%s",
       LSZ, routefrom, MSG_RS, LSZ, route, MSG_RS, LSZ, msg, MSG_RS, args);
   ++len;
   return len;

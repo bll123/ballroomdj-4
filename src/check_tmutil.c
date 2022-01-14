@@ -28,14 +28,15 @@ START_TEST(milli_start_end)
 {
   time_t      tm_s;
   time_t      tm_e;
-  mstime_t     mi;
+  mstime_t    mi;
+  time_t      m, d;
 
   tm_s = time (NULL);
   mstimestart (&mi);
   mssleep (2000);
-  size_t m = mstimeend (&mi);
+  m = mstimeend (&mi);
   tm_e = time (NULL);
-  long d = (long) tm_e - (long) tm_s;
+  d = (long) tm_e - (long) tm_s;
   if (d >= 3) {
     --d;
   }

@@ -30,16 +30,20 @@ END_TEST
 
 START_TEST(parse_simple)
 {
-  parseinfo_t     *pi;
+  parseinfo_t     *pi = NULL;
+  char            *tstr = NULL;
+  size_t          count;
+  char            **strdata = NULL;
+
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== parse_simple");
-  char *tstr = strdup ("# comment\nA\na\n# comment\nB\nb\nC\nc\nD\n# comment\nd\nE\ne\nF\nf");
+  tstr = strdup ("# comment\nA\na\n# comment\nB\nb\nC\nc\nD\n# comment\nd\nE\ne\nF\nf");
   pi = parseInit ();
   ck_assert_ptr_nonnull (pi);
-  size_t count = parseSimple (pi, tstr);
+  count = parseSimple (pi, tstr);
   ck_assert_int_eq (count, 12);
   ck_assert_int_ge (pi->allocCount, 12);
-  char **strdata = parseGetData (pi);
+  strdata = parseGetData (pi);
   ck_assert_ptr_eq (pi->strdata, strdata);
   ck_assert_str_eq (strdata[0], "A");
   ck_assert_str_eq (strdata[1], "a");
@@ -61,15 +65,19 @@ END_TEST
 START_TEST(parse_keyvalue)
 {
   parseinfo_t     *pi;
+  char            *tstr = NULL;
+  size_t          count;
+  char            **strdata = NULL;
+
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== parse_keyvalue");
-  char *tstr = strdup ("A\n..a\nB\n..b\nC\n..c\nD\n..d\nE\n..e\nF\n..f");
+  tstr = strdup ("A\n..a\nB\n..b\nC\n..c\nD\n..d\nE\n..e\nF\n..f");
   pi = parseInit ();
   ck_assert_ptr_nonnull (pi);
-  size_t count = parseKeyValue (pi, tstr);
+  count = parseKeyValue (pi, tstr);
   ck_assert_int_eq (count, 12);
   ck_assert_int_ge (pi->allocCount, 12);
-  char **strdata = parseGetData (pi);
+  strdata = parseGetData (pi);
   ck_assert_ptr_eq (pi->strdata, strdata);
   ck_assert_str_eq (strdata[0], "A");
   ck_assert_str_eq (strdata[1], "a");
@@ -91,15 +99,18 @@ END_TEST
 START_TEST(parse_with_comments)
 {
   parseinfo_t     *pi;
+  char            *tstr = NULL;
+  size_t          count;
+  char            **strdata = NULL;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== parse_with_comments");
-  char *tstr = strdup ("# comment\nA\n..a\n# comment\nB\n..b\nC\n..c\nD\n# comment\n..d\nE\n..e\nF\n..f");
+  tstr = strdup ("# comment\nA\n..a\n# comment\nB\n..b\nC\n..c\nD\n# comment\n..d\nE\n..e\nF\n..f");
   pi = parseInit ();
   ck_assert_ptr_nonnull (pi);
-  size_t count = parseKeyValue (pi, tstr);
+  count = parseKeyValue (pi, tstr);
   ck_assert_int_eq (count, 12);
   ck_assert_int_ge (pi->allocCount, 12);
-  char **strdata = parseGetData (pi);
+  strdata = parseGetData (pi);
   ck_assert_ptr_eq (pi->strdata, strdata);
   ck_assert_str_eq (strdata[0], "A");
   ck_assert_str_eq (strdata[1], "a");
@@ -122,11 +133,16 @@ START_TEST(datafile_simple)
 {
   datafile_t *    df;
   char *          value;
+  char            *tstr = NULL;
+  char            *fn;
+  FILE            *fh;
+  list_t          *list;
+
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== datafile_simple");
-  char *fn = "tmp/dftesta.txt";
-  char *tstr = strdup ("# comment\nA\na\n# comment\nB\nb\nC\nc\nD\n# comment\nd\nE\ne\nF\nf\n");
-  FILE *fh = fopen (fn, "w");
+  fn = "tmp/dftesta.txt";
+  tstr = strdup ("# comment\nA\na\n# comment\nB\nb\nC\nc\nD\n# comment\nd\nE\ne\nF\nf\n");
+  fh = fopen (fn, "w");
   fprintf (fh, "%s", tstr);
   fclose (fh);
 
@@ -136,7 +152,7 @@ START_TEST(datafile_simple)
   ck_assert_str_eq (df->fname, fn);
   ck_assert_ptr_nonnull (df->data);
 
-  list_t *list = datafileGetList (df);
+  list = datafileGetList (df);
   listStartIterator (list);
   value = listIterateKeyStr (list);
   ck_assert_str_eq (value, "A");
@@ -173,68 +189,6 @@ START_TEST(datafile_simple)
 }
 END_TEST
 
-#if 0
-
-START_TEST(datafile_keyval_nodfkey)
-{
-  datafile_t        *df;
-  char *            key;
-  char *            value;
-
-  logMsg (LOG_DBG, LOG_IMPORTANT, "=== datafile_keyval_nodfkey");
-  char *fn = "tmp/dftestb.txt";
-  char *tstr = strdup ("A\n..a\nB\n..b\nC\n..c\nD\n..d\nE\n..e\nF\n..f\n");
-  FILE *fh = fopen (fn, "w");
-  fprintf (fh, "%s", tstr);
-  fclose (fh);
-
-  df = datafileAllocParse ("chk", DFTYPE_KEY_VAL, fn, NULL, 0, DATAFILE_NO_LOOKUP);
-  ck_assert_ptr_nonnull (df);
-  ck_assert_int_eq (df->dftype, DFTYPE_KEY_VAL);
-  ck_assert_str_eq (df->fname, fn);
-  ck_assert_ptr_nonnull (df->data);
-
-  list_t *list = datafileGetList (df);
-  slistStartIterator (list);
-  key = slistIterateKeyStr (list);
-  ck_assert_str_eq (key, "A");
-  value = slistGetData (list, key);
-  ck_assert_str_eq (value, "a");
-  key = slistIterateKeyStr (list);
-  ck_assert_str_eq (key, "B");
-  value = slistGetData (list, key);
-  ck_assert_str_eq (value, "b");
-  key = slistIterateKeyStr (list);
-  ck_assert_str_eq (key, "C");
-  value = slistGetData (list, key);
-  ck_assert_str_eq (value, "c");
-  key = slistIterateKeyStr (list);
-  ck_assert_str_eq (key, "D");
-  value = slistGetData (list, key);
-  ck_assert_str_eq (value, "d");
-  key = slistIterateKeyStr (list);
-  ck_assert_str_eq (key, "E");
-  value = slistGetData (list, key);
-  ck_assert_str_eq (value, "e");
-  key = slistIterateKeyStr (list);
-  ck_assert_str_eq (key, "F");
-  value = slistGetData (list, key);
-  ck_assert_str_eq (value, "f");
-
-  key = slistIterateKeyStr (list);
-  ck_assert_ptr_null (key);
-
-  key = slistIterateKeyStr (list);
-  ck_assert_str_eq (key, "A");
-  value = slistGetData (list, key);
-  ck_assert_str_eq (value, "a");
-
-  datafileFree (df);
-  free (tstr);
-  unlink (fn);
-}
-END_TEST
-
   static datafilekey_t dfkeyskl[] = {
     { "A", 14, VALUE_DATA, NULL },
     { "B", 15, VALUE_NUM, NULL },
@@ -250,11 +204,16 @@ START_TEST(datafile_keyval_dfkey)
   listidx_t         key;
   ssize_t           lval;
   char *            value;
+  char            *tstr = NULL;
+  char            *fn = NULL;
+  FILE            *fh;
+  list_t          *list;
+
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== datafile_keyval_dfkey");
-  char *fn = "tmp/dftestb.txt";
-  char *tstr = strdup ("A\n..a\nB\n..5\nC\n..c\nD\n..d\nE\n..e\nF\n..f\n");
-  FILE *fh = fopen (fn, "w");
+  fn = "tmp/dftestb.txt";
+  tstr = strdup ("A\n..a\nB\n..5\nC\n..c\nD\n..d\nE\n..e\nF\n..f\n");
+  fh = fopen (fn, "w");
   fprintf (fh, "%s", tstr);
   fclose (fh);
 
@@ -264,7 +223,7 @@ START_TEST(datafile_keyval_dfkey)
   ck_assert_str_eq (df->fname, fn);
   ck_assert_ptr_nonnull (df->data);
 
-  list_t *list = datafileGetList (df);
+  list = datafileGetList (df);
   llistStartIterator (list);
   key = llistIterateKeyNum (list);
   ck_assert_int_eq (key, 14);
@@ -312,14 +271,18 @@ START_TEST(datafile_keylong)
   char *            value;
   list_t *          vallist;
   ssize_t           lval;
+  char            *tstr = NULL;
+  char            *fn = NULL;
+  FILE            *fh;
+  list_t          *list;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== datafile_keylong");
-  char *fn = "tmp/dftestb.txt";
-  char *tstr = strdup ("KEY\n..0\nA\n..a\nB\n..0\n"
+  fn = "tmp/dftestb.txt";
+  tstr = strdup ("KEY\n..0\nA\n..a\nB\n..0\n"
       "KEY\n..1\nA\n..a\nB\n..1\n"
       "KEY\n..2\nA\n..a\nB\n..2\n"
       "KEY\n..3\nA\n..a\nB\n..3\n");
-  FILE *fh = fopen (fn, "w");
+  fh = fopen (fn, "w");
   fprintf (fh, "%s", tstr);
   fclose (fh);
 
@@ -329,7 +292,7 @@ START_TEST(datafile_keylong)
   ck_assert_str_eq (df->fname, fn);
   ck_assert_ptr_nonnull (df->data);
 
-  list_t *list = datafileGetList (df);
+  list = datafileGetList (df);
   llistStartIterator (list);
   key = llistIterateKeyNum (list);
   ck_assert_int_eq (key, 0L);
@@ -401,14 +364,20 @@ START_TEST(datafile_keylong_lookup)
   list_t *          vallist;
   ssize_t           lval;
   char              *keystr;
+  char            *tstr = NULL;
+  char            *fn = NULL;
+  FILE            *fh;
+  list_t          *list;
+  list_t          *lookup;
+
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== datafile_keylong_lookup");
-  char *fn = "tmp/dftestb.txt";
-  char *tstr = strdup ("KEY\n..0\nA\n..a\nB\n..0\nC\n..4\n"
+  fn = "tmp/dftestb.txt";
+  tstr = strdup ("KEY\n..0\nA\n..a\nB\n..0\nC\n..4\n"
       "KEY\n..1\nA\n..b\nB\n..1\nC\n..5\n"
       "KEY\n..2\nA\n..c\nB\n..2\nC\n..6\n"
       "KEY\n..3\nA\n..d\nB\n..3\nC\n..7\n");
-  FILE *fh = fopen (fn, "w");
+  fh = fopen (fn, "w");
   fprintf (fh, "%s", tstr);
   fclose (fh);
 
@@ -419,7 +388,7 @@ START_TEST(datafile_keylong_lookup)
   ck_assert_ptr_nonnull (df->data);
   ck_assert_ptr_nonnull (df->lookup);
 
-  list_t *list = datafileGetList (df);
+  list = datafileGetList (df);
   llistStartIterator (list);
   key = llistIterateKeyNum (list);
   ck_assert_int_eq (key, 0L);
@@ -493,24 +462,24 @@ START_TEST(datafile_keylong_lookup)
   value = llistGetData (vallist, key);
   ck_assert_str_eq (value, "7");
 
-  list_t *lookup = datafileGetLookup (df);
+  lookup = datafileGetLookup (df);
   ck_assert_ptr_nonnull (df->lookup);
-  slistStartIterator (lookup);
-  keystr = slistIterateKeyStr (lookup);
+  listStartIterator (lookup);
+  keystr = listIterateKeyStr (lookup);
   ck_assert_str_eq (keystr, "a");
-  lval = slistGetNum (lookup, keystr);
+  lval = listGetNum (lookup, keystr);
   ck_assert_int_eq (lval, 0L);
-  keystr = slistIterateKeyStr (lookup);
+  keystr = listIterateKeyStr (lookup);
   ck_assert_str_eq (keystr, "b");
-  lval = slistGetNum (lookup, keystr);
+  lval = listGetNum (lookup, keystr);
   ck_assert_int_eq (lval, 1L);
-  keystr = slistIterateKeyStr (lookup);
+  keystr = listIterateKeyStr (lookup);
   ck_assert_str_eq (keystr, "c");
-  lval = slistGetNum (lookup, keystr);
+  lval = listGetNum (lookup, keystr);
   ck_assert_int_eq (lval, 2L);
-  keystr = slistIterateKeyStr (lookup);
+  keystr = listIterateKeyStr (lookup);
   ck_assert_str_eq (keystr, "d");
-  lval = slistGetNum (lookup, keystr);
+  lval = listGetNum (lookup, keystr);
   ck_assert_int_eq (lval, 3L);
 
   datafileFree (df);
@@ -667,7 +636,6 @@ START_TEST(datafile_backup)
   unlink (ofn2);
 }
 END_TEST
-#endif
 
 Suite *
 datafile_suite (void)
@@ -682,13 +650,10 @@ datafile_suite (void)
   tcase_add_test (tc, parse_keyvalue);
   tcase_add_test (tc, parse_with_comments);
   tcase_add_test (tc, datafile_simple);
-#if 0
-  tcase_add_test (tc, datafile_keyval_nodfkey);
   tcase_add_test (tc, datafile_keyval_dfkey);
   tcase_add_test (tc, datafile_keylong);
   tcase_add_test (tc, datafile_keylong_lookup);
   tcase_add_test (tc, datafile_backup);
-#endif
   suite_add_tcase (s, tc);
   return s;
 }

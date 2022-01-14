@@ -33,6 +33,8 @@ main (int argc, char *argv[])
   Sock_t          playerSock = INVALID_SOCKET;
   int             c;
   int             option_index = 0;
+  uint16_t        mainPort;
+  uint16_t        playerPort;
 
 
   static struct option bdj_options [] = {
@@ -68,14 +70,14 @@ main (int argc, char *argv[])
   bdjvarsInit ();
   logStartAppend ("clicomm", "cl", LOG_IMPORTANT);
 
-  uint16_t mainPort = bdjvarsl [BDJVL_MAIN_PORT];
+  mainPort = bdjvarsl [BDJVL_MAIN_PORT];
   mainSock = sockConnect (mainPort, &err, 1000);
   while (socketInvalid (mainSock)) {
     mssleep (100);
     mainSock = sockConnect (mainPort, &err, 1000);
   }
 
-  uint16_t playerPort = bdjvarsl [BDJVL_PLAYER_PORT];
+  playerPort = bdjvarsl [BDJVL_PLAYER_PORT];
   playerSock = sockConnect (playerPort, &err, 1000);
   while (socketInvalid (playerSock)) {
     mssleep (100);

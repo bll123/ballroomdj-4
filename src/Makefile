@@ -558,7 +558,7 @@ $(OBJDIR)/volmac$(OBJ_EXT): volmac.m volume.h $(MKC_OUTPUT)
 	@$(_MKCONFIG_SHELL) CC=clang \
 		$(MKC_DIR)/mkc.sh \
 		-compile $(MKC_ECHO) \
-		-o $@ -shared $<
+		-o $@ -shared -Wno-unknown-warning-option $<
 
 $(OBJDIR)/volwin$(OBJ_EXT): volwin.cpp volume.h $(MKC_OUTPUT)
 	@$(_MKCONFIG_SHELL) CC=$(CXX) $(MKC_DIR)/mkc.sh \

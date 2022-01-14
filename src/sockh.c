@@ -29,6 +29,7 @@ sockhMainLoop (uint16_t listenPort, sockProcessMsg_t msgProc,
   bdjmsgroute_t route = ROUTE_NONE;
   bdjmsgmsg_t msg = MSG_NONE;
   char        args [BDJMSG_MAX];
+  Sock_t      clsock;
 
 
   logProcBegin (LOG_PROC, "sockhMainLoop");
@@ -45,7 +46,7 @@ sockhMainLoop (uint16_t listenPort, sockProcessMsg_t msgProc,
     if (msgsock != 0) {
       if (msgsock == listenSock) {
         logMsg (LOG_DBG, LOG_SOCKET, "got connection request");
-        Sock_t clsock = sockAccept (listenSock, &err);
+        clsock = sockAccept (listenSock, &err);
         if (! socketInvalid (clsock)) {
           logMsg (LOG_DBG, LOG_SOCKET, "connected");
           si = sockAddCheck (si, clsock);
@@ -113,11 +114,13 @@ sockhSendMessage (Sock_t sock, bdjmsgroute_t routefrom,
     bdjmsgroute_t route, bdjmsgmsg_t msg, char *args)
 {
   char        msgbuff [BDJMSG_MAX];
+  size_t      len;
+  int         rc;
 
   logProcBegin (LOG_PROC, "sockhSendMessage");
   logMsg (LOG_DBG, LOG_SOCKET, "route:%d msg:%d args:%s", route, msg, args);
-  size_t len = msgEncode (routefrom, route, msg, args, msgbuff, sizeof (msgbuff));
-  int rc = sockWriteBinary (sock, msgbuff, len);
+  len = msgEncode (routefrom, route, msg, args, msgbuff, sizeof (msgbuff));
+  rc = sockWriteBinary (sock, msgbuff, len);
   logProcEnd (LOG_PROC, "sockhSendMessage", "");
   return rc;
 }

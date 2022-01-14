@@ -83,13 +83,15 @@ main (int argc, char *argv[])
   }
 
   if (isMacOS()) {
-    char  *   npath;
+    char      *path = NULL;
+    char      *npath = NULL;
     size_t    sz = 4096;
+
 
     npath = malloc (sz);
     assert (npath != NULL);
 
-    char  *path = getenv ("PATH");
+    path = getenv ("PATH");
     strlcpy (npath, "PATH=", sz);
     strlcat (npath, path, sz);
     strlcat (npath, ":/opt/local/bin", sz);
