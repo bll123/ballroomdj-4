@@ -62,7 +62,7 @@ autoselGetDouble (autosel_t *autosel, autoselkey_t idx)
   list_t  *list;
 
   if (autosel == NULL || autosel->df == NULL) {
-    return -1.0;
+    return LIST_DOUBLE_INVALID;
   }
 
   list = datafileGetList (autosel->df);

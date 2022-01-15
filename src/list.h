@@ -68,6 +68,8 @@ typedef struct {
 } list_t;
 
 #define LIST_LOC_INVALID        -1L
+#define LIST_VALUE_INVALID      -65534L
+#define LIST_DOUBLE_INVALID     -65534.0
 
   /*
    * simple lists only store a list of data.

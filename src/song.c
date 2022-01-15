@@ -115,7 +115,7 @@ songGetNum (song_t *song, listidx_t idx)
   ssize_t     value;
 
   if (song == NULL || song->songInfo == NULL) {
-    return -1L;
+    return LIST_VALUE_INVALID;
   }
 
   value = llistGetNum (song->songInfo, idx);
@@ -129,7 +129,7 @@ songGetDouble (song_t *song, listidx_t idx)
 
 
   if (song == NULL || song->songInfo == NULL) {
-    return -1;
+    return LIST_DOUBLE_INVALID;
   }
 
   value = llistGetDouble (song->songInfo, idx);

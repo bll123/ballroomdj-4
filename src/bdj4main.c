@@ -45,6 +45,7 @@ typedef struct {
   queue_t           *playlistQueue;
   musicq_t          *musicQueue;
   musicqidx_t       musicqCurrentIdx;
+  list_t            *announceList;
   playerstate_t     playerState;
   ssize_t           gap;
   bool              playerHandshake : 1;
@@ -97,6 +98,8 @@ main (int argc, char *argv[])
       istringCompare, free, playlistFree);
   mainData.playlistQueue = queueAlloc (NULL);
   mainData.musicQueue = musicqAlloc ();
+  mainData.announceList = listAlloc ("announcements", LIST_ORDERED,
+      istringCompare, free, NULL);
 
   listenPort = bdjvarsl [BDJVL_MAIN_PORT];
   sockhMainLoop (listenPort, mainProcessMsg, mainProcessing, &mainData);
@@ -111,6 +114,9 @@ main (int argc, char *argv[])
   }
   if (mainData.musicQueue != NULL) {
     musicqFree (mainData.musicQueue);
+  }
+  if (mainData.announceList != NULL) {
+    listFree (mainData.announceList);
   }
   mainData.programState = STATE_NOT_RUNNING;
   return 0;
@@ -295,11 +301,13 @@ mainPlaylistQueue (maindata_t *mainData, char *plname)
 
   logProcBegin (LOG_PROC, "mainPlaylistQueue");
   playlist = playlistAlloc (plname);
-  listSetData (mainData->playlistList, plname, playlist);
-  queuePush (mainData->playlistQueue, playlist);
-  logMsg (LOG_DBG, LOG_MAIN, "push pl %s", plname);
-  mainMusicQueueFill (mainData);
-  mainMusicQueuePrep (mainData);
+  if (playlist != NULL) {
+    listSetData (mainData->playlistList, plname, playlist);
+    queuePush (mainData->playlistQueue, playlist);
+    logMsg (LOG_DBG, LOG_MAIN, "push pl %s", plname);
+    mainMusicQueueFill (mainData);
+    mainMusicQueuePrep (mainData);
+  }
   logProcEnd (LOG_PROC, "mainPlaylistQueue", "");
 }
 
@@ -380,12 +388,14 @@ mainPrepSong (maindata_t *mainData, song_t *song,
   ssize_t       dur = 0;
   ssize_t       maxdur = -1;
   ssize_t       pldur = -1;
+  ssize_t       plddur = -1;
   ssize_t       plgap = -1;
   ssize_t       songstart = 0;
   ssize_t       songend = -1;
   ssize_t       voladjperc = 0;
   ssize_t       gap = 0;
   ssize_t       plannounce = 0;
+  dancekey_t    dancekey;
   char          *annfname = NULL;
 
 
@@ -414,15 +424,24 @@ mainPrepSong (maindata_t *mainData, song_t *song,
       dur -= songstart;
       logMsg (LOG_DBG, LOG_MAIN, "dur-songstart: %zd", dur);
     }
-      /* the playlist max-play-time overrides the global max-play-time */
-    if (pldur >= 10000) {
-      if (dur > pldur) {
-        dur = pldur;
-        logMsg (LOG_DBG, LOG_MAIN, "dur-pldur: %zd", dur);
+      /* if the playlist has a maximum play time specified for a dance */
+      /* it overrides any of the other max play times */
+    dancekey = songGetNum (song, TAG_DANCE);
+    plddur = playlistGetDanceNum (playlist, dancekey, PLDANCE_MAXPLAYTIME);
+    if (plddur >= 5000) {
+      dur = plddur;
+      logMsg (LOG_DBG, LOG_MAIN, "dur-pldur: %zd", dur);
+    } else {
+        /* the playlist max-play-time overrides the global max-play-time */
+      if (pldur >= 5000) {
+        if (dur > pldur) {
+          dur = pldur;
+          logMsg (LOG_DBG, LOG_MAIN, "dur-pldur: %zd", dur);
+        }
+      } else if (dur > maxdur) {
+        dur = maxdur;
+        logMsg (LOG_DBG, LOG_MAIN, "dur-maxdur: %zd", dur);
       }
-    } else if (dur > maxdur) {
-      dur = maxdur;
-      logMsg (LOG_DBG, LOG_MAIN, "dur-maxdur: %zd", dur);
     }
 
     gap = mainData->gap;
@@ -433,7 +452,6 @@ mainPrepSong (maindata_t *mainData, song_t *song,
 
     plannounce = playlistGetConfigNum (playlist, PLAYLIST_ANNOUNCE);
     if (plannounce) {
-      ssize_t       dancekey;
       dance_t       *dances;
       song_t        *tsong;
 
@@ -441,9 +459,16 @@ mainPrepSong (maindata_t *mainData, song_t *song,
       dances = bdjvarsdf [BDJVDF_DANCES];
       annfname = danceGetData (dances, dancekey, DANCE_ANNOUNCE);
       if (annfname != NULL) {
+        ssize_t   tval;
+
         tsong = dbGetByName (annfname);
         if (tsong != NULL) {
-          mainPrepSong (mainData, tsong, annfname, plname, PREP_ANNOUNCE);
+          tval = listGetNum (mainData->announceList, annfname);
+          if (tval == LIST_VALUE_INVALID) {
+            /* only prep the announcement if it has not been prepped before */
+            mainPrepSong (mainData, tsong, annfname, plname, PREP_ANNOUNCE);
+          }
+          listSetNum (mainData->announceList, annfname, 1);
         } else {
           annfname = NULL;
         }

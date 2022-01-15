@@ -12,17 +12,18 @@ typedef uint32_t   bdjloglvl_t;
 #define LOG_IMPORTANT   0x00000001  // 1
 #define LOG_BASIC       0x00000002  // 2
 #define LOG_MSGS        0x00000004  // 4
-#define LOG_DATAFILE    0x00000008  // 8
+#define LOG_MAIN        0x00000008  // 8
 #define LOG_LIST        0x00000010  // 16
 #define LOG_SONGSEL     0x00000020  // 32
-#define LOG_PROCESS     0x00000040  // 64
+#define LOG_AUTOSEL     0x00000040  // 64
 #define LOG_VOLUME      0x00000080  // 128
 #define LOG_SOCKET      0x00000100  // 256
 #define LOG_DB          0x00000200  // 512
 #define LOG_RAFILE      0x00000400  // 1024
 #define LOG_PROC        0x00000800  // 2048
 #define LOG_PLAYER      0x00001000  // 4096
-#define LOG_MAIN        0x00002000  // 8192
+#define LOG_DATAFILE    0x00002000  // 8192
+#define LOG_PROCESS     0x00004000  // 16384
 #define LOG_ALL         0xFFFFFFFF
 
 typedef enum {

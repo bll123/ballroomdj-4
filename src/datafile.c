@@ -354,11 +354,19 @@ datafileParseMerge (list_t *nlist, char *data, char *name,
           }
         } else {
           if (vt == VALUE_NUM) {
-            lval = atol (tvalstr);
+            if (strcmp (tvalstr, "") == 0) {
+              lval = LIST_VALUE_INVALID;
+            } else {
+              lval = atol (tvalstr);
+            }
             logMsg (LOG_DBG, LOG_DATAFILE, "value: %ld", lval);
           }
           if (vt == VALUE_DOUBLE) {
-            dval = atof (tvalstr);
+            if (strcmp (tvalstr, "") == 0) {
+              dval = LIST_DOUBLE_INVALID;
+            } else {
+              dval = atof (tvalstr);
+            }
             logMsg (LOG_DBG, LOG_DATAFILE, "value: %.2f", dval);
           }
         }

@@ -12,7 +12,7 @@
 
 typedef enum {
   PLAYLIST_ALLOWED_KEYWORDS,      //
-  PLAYLIST_ANNOUNCE,
+  PLAYLIST_ANNOUNCE,              //
   PLAYLIST_GAP,                   //
   PLAYLIST_LEVEL_HIGH,            //
   PLAYLIST_LEVEL_LOW,             //
@@ -30,11 +30,11 @@ typedef enum {
 
 typedef enum {
   PLDANCE_DANCE,
-  PLDANCE_SELECTED,
+  PLDANCE_BPM_LOW,                //
+  PLDANCE_BPM_HIGH,               //
   PLDANCE_COUNT,
-  PLDANCE_MAXPLAYTIME,
-  PLDANCE_LOWBPM,
-  PLDANCE_HIGHBPM,
+  PLDANCE_MAXPLAYTIME,            //
+  PLDANCE_SELECTED,
   PLDANCE_KEY_MAX,
 } pldancekey_t;
 
@@ -79,7 +79,11 @@ playlist_t    *playlistAlloc (char *);
 void          playlistFree (void *);
 char          *playlistGetName (playlist_t *pl);
 ssize_t       playlistGetConfigNum (playlist_t *pl, playlistkey_t key);
-song_t        *playlistGetNextSong (playlist_t *, playlistCheck_t checkProc, void *userdata);
-bool          playlistFilterSong (dbidx_t dbidx, song_t *song, void *tplaylist);
+ssize_t       playlistGetDanceNum (playlist_t *pl, dancekey_t dancekey,
+                  pldancekey_t key);
+song_t        *playlistGetNextSong (playlist_t *, playlistCheck_t checkProc,
+                  void *userdata);
+bool          playlistFilterSong (dbidx_t dbidx, song_t *song,
+                  void *tplaylist);
 
 #endif /* INC_PLAYLIST_H */

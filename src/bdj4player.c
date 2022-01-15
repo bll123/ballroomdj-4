@@ -206,11 +206,11 @@ main (int argc, char *argv[])
 
   playerData.originalSystemVolume =
       volumeGet (playerData.volume, playerData.currentSink);
-  logMsg (LOG_DBG, LOG_MAIN, "Original system volume: %d", playerData.originalSystemVolume);
+  logMsg (LOG_DBG, LOG_VOLUME, "Original system volume: %d", playerData.originalSystemVolume);
   playerData.realVolume = (int) bdjoptGetNum (OPT_P_DEFAULTVOLUME);
   playerData.currentVolume = playerData.realVolume;
   volumeSet (playerData.volume, playerData.currentSink, playerData.realVolume);
-  logMsg (LOG_DBG, LOG_MAIN, "set volume: %d", playerData.realVolume);
+  logMsg (LOG_DBG, LOG_VOLUME, "set volume: %d", playerData.realVolume);
 
   if (playerData.sinklist.sinklist != NULL) {
     for (size_t i = 0; i < playerData.sinklist.count; ++i) {
@@ -234,6 +234,7 @@ main (int argc, char *argv[])
   }
 
   volumeSet (playerData.volume, playerData.currentSink, playerData.originalSystemVolume);
+  logMsg (LOG_DBG, LOG_VOLUME, "set to orig volume: %d", playerData.originalSystemVolume);
   playerData.defaultSink = "";
   playerData.currentSink = "";
   volumeFreeSinkList (&playerData.sinklist);
@@ -417,7 +418,7 @@ playerProcessing (void *udata)
     logMsg (LOG_DBG, LOG_BASIC, "play: %s", pq->tempname);
     if (pq->announce == PREP_ANNOUNCE || playerData->fadeinTime == 0) {
       volumeSet (playerData->volume, playerData->currentSink, playerData->realVolume);
-      logMsg (LOG_DBG, LOG_MAIN, "no fade-in set volume: %d", playerData->realVolume);
+      logMsg (LOG_DBG, LOG_VOLUME, "no fade-in set volume: %d", playerData->realVolume);
     }
     pliMediaSetup (playerData->pli, pq->tempname);
     pliStartPlayback (playerData->pli, pq->songstart);
@@ -528,7 +529,7 @@ playerProcessing (void *udata)
 
         if (playerData->gap > 0) {
           volumeSet (playerData->volume, playerData->currentSink, 0);
-          logMsg (LOG_DBG, LOG_MAIN, "gap set volume: %d", 0);
+          logMsg (LOG_DBG, LOG_VOLUME, "gap set volume: %d", 0);
           playerData->inGap = true;
           playerData->gapFinishTime = mstime () + playerData->gap;
         }
@@ -556,7 +557,7 @@ playerCheckSystemVolume (playerdata_t *playerData)
   int         tvol;
 
   tvol = volumeGet (playerData->volume, playerData->currentSink);
-  logMsg (LOG_DBG, LOG_MAIN, "get volume: %d", tvol);
+  logMsg (LOG_DBG, LOG_VOLUME, "get volume: %d", tvol);
   if (tvol != playerData->realVolume) {
     playerData->realVolume = tvol;
     playerData->currentVolume = tvol;
@@ -691,10 +692,7 @@ playerLocatePreppedSong (playerdata_t *playerData, char *sfname)
       pq = queueIterateData (playerData->prepQueue);
     }
     if (! found) {
-        /* the song must be prepped before playing */
-        /* try again. */
-      logMsg (LOG_DBG, LOG_IMPORTANT, "WARN: song %s not prepped; processing queue", sfname);
-      playerSongPrep (playerData, sfname);
+      logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: song %s not prepped; processing queue", sfname);
       playerProcessPrepRequest (playerData);
       ++count;
     }
@@ -729,7 +727,7 @@ songMakeTempName (playerdata_t *playerData, char *in, char *out, size_t maxlen)
 
     /* the profile index so we don't stomp on other bdj instances   */
     /* the global count so we don't stomp on ourselves              */
-  snprintf (out, maxlen, "tmp/%ld-%ld-%s", lsysvars [SVL_BDJIDX],
+  snprintf (out, maxlen, "tmp/%02ld-%03ld-%s", lsysvars [SVL_BDJIDX],
       playerData->globalCount, tnm);
   ++playerData->globalCount;
 }
@@ -836,7 +834,7 @@ playerFadeVolSet (playerdata_t *playerData)
     newvol = playerData->realVolume;
   }
   volumeSet (playerData->volume, playerData->currentSink, newvol);
-  logMsg (LOG_DBG, LOG_MAIN, "fade set volume: %d", newvol);
+  logMsg (LOG_DBG, LOG_VOLUME, "fade set volume: %d", newvol);
   if (playerData->inFadeIn) {
     ++playerData->fadeCount;
   }
@@ -853,7 +851,7 @@ playerFadeVolSet (playerdata_t *playerData)
     playerData->inFade = false;
     playerData->inFadeOut = false;
     volumeSet (playerData->volume, playerData->currentSink, 0);
-    logMsg (LOG_DBG, LOG_MAIN, "fade-out done volume: %d", 0);
+    logMsg (LOG_DBG, LOG_VOLUME, "fade-out done volume: %d", 0);
   }
 }
 

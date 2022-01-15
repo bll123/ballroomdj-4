@@ -61,10 +61,10 @@ static datafilekey_t playlistdfkeys[] = {
 
   /* must be sorted in ascii order */
 static datafilekey_t playlistdancedfkeys[] = {
+  { "BPMHIGH",        PLDANCE_BPM_HIGH,     VALUE_NUM, NULL },
+  { "BPMLOW",         PLDANCE_BPM_LOW,      VALUE_NUM, NULL },
   { "COUNT",          PLDANCE_COUNT,        VALUE_NUM, NULL },
   { "DANCE",          PLDANCE_DANCE,        VALUE_DATA, danceConvDance },
-  { "HIGHBPM",        PLDANCE_HIGHBPM,      VALUE_NUM, NULL },
-  { "LOWBPM",         PLDANCE_LOWBPM,       VALUE_NUM, NULL },
   { "MAXPLAYTIME",    PLDANCE_MAXPLAYTIME,  VALUE_NUM, NULL },
   { "SELECTED",       PLDANCE_SELECTED,     VALUE_NUM, parseConvBoolean },
 };
@@ -79,7 +79,7 @@ playlistAlloc (char *fname)
 
   datautilMakePath (tfn, sizeof (tfn), "", fname, ".pl", DATAUTIL_MP_NONE);
   if (! fileopExists (tfn)) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "Missing playlist-pl %s", tfn);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Missing playlist-pl %s", tfn);
     return NULL;
   }
 
@@ -204,10 +204,23 @@ playlistGetConfigNum (playlist_t *pl, playlistkey_t key)
   ssize_t     val;
 
   if (pl == NULL || pl->plinfo == NULL) {
-    return -1;
+    return LIST_VALUE_INVALID;
   }
 
   val = llistGetNum (pl->plinfo, key);
+  return val;
+}
+
+ssize_t
+playlistGetDanceNum (playlist_t *pl, dancekey_t dancekey, pldancekey_t key)
+{
+  ssize_t     val;
+
+  if (pl == NULL || pl->plinfo == NULL) {
+    return LIST_VALUE_INVALID;
+  }
+
+  val = ilistGetNum (pl->pldances, dancekey, key);
   return val;
 }
 
@@ -288,11 +301,11 @@ playlistFilterSong (dbidx_t dbidx, song_t *song, void *tplaylist)
   listidx_t     plLevelLow;
   listidx_t     plLevelHigh;
   listidx_t     level;
+  dancekey_t    dancekey;
   char          *keyword;
-  list_t        *kwList;
   listidx_t     idx;
-  status_t      *status;
-  listidx_t     sstatus;
+  ssize_t       plbpmhigh;
+  ssize_t       plbpmlow;
 
 
   plRating = llistGetNum (pl->plinfo, PLAYLIST_RATING);
@@ -312,6 +325,8 @@ playlistFilterSong (dbidx_t dbidx, song_t *song, void *tplaylist)
 
   keyword = songGetData (song, TAG_KEYWORD);
   if (keyword != NULL) {
+    list_t        *kwList;
+
     kwList = llistGetList (pl->plinfo, PLAYLIST_ALLOWED_KEYWORDS);
     idx = listGetStrIdx (kwList, keyword);
     if (listGetCount (kwList) > 0 && idx < 0) {
@@ -321,10 +336,26 @@ playlistFilterSong (dbidx_t dbidx, song_t *song, void *tplaylist)
   }
 
   if (llistGetNum (pl->plinfo, PLAYLIST_USE_STATUS)) {
+    status_t      *status;
+    listidx_t     sstatus;
+
     sstatus = songGetNum (song, TAG_STATUS);
     status = bdjvarsdf [BDJVDF_STATUS];
     if (status != NULL && ! statusPlayCheck (status, sstatus)) {
       logMsg (LOG_DBG, LOG_SONGSEL, "reject %zd status %ld not playable", dbidx, status);
+      return false;
+    }
+  }
+
+  dancekey = songGetNum (song, TAG_DANCE);
+  plbpmlow = ilistGetNum (pl->pldances, dancekey, PLDANCE_BPM_LOW);
+  plbpmhigh = ilistGetNum (pl->pldances, dancekey, PLDANCE_BPM_HIGH);
+  if (plbpmlow > 0 && plbpmhigh > 0) {
+    ssize_t     bpm;
+
+    bpm = songGetNum (song, TAG_BPM);
+    if (bpm < 0 || bpm < plbpmlow || bpm > plbpmhigh) {
+      logMsg (LOG_DBG, LOG_SONGSEL, "reject %zd bpm %zd [%zd,%zd]", dbidx, bpm, plbpmlow, plbpmhigh);
       return false;
     }
   }

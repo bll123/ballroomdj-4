@@ -35,46 +35,46 @@ foreach {fn} $flist {
     if { $key eq "list" } { continue }
     if { $key eq "version"} { continue }
 
-    set key [string toupper $key]
-    if { $key eq "REQUIREDKEYWORDS" } { continue }
-    if { $key eq "STOPTIME" } { continue }
-    if { $key eq "STOPWAIT" } { continue }
-    if { $key eq "STOPAFTER" } { continue }
-    if { $key eq "STOPAFTERWAIT" } { continue }
-    if { $key eq "STOPTYPE" } { continue }
-    if { $key eq "RESUME" } { continue }
+    set tkey [string toupper $key]
+    if { $tkey eq "REQUIREDKEYWORDS" } { continue }
+    if { $tkey eq "STOPTIME" } { continue }
+    if { $tkey eq "STOPWAIT" } { continue }
+    if { $tkey eq "STOPAFTER" } { continue }
+    if { $tkey eq "STOPAFTERWAIT" } { continue }
+    if { $tkey eq "STOPTYPE" } { continue }
+    if { $tkey eq "RESUME" } { continue }
 
-    if { $key eq "STATUSOK" } { set key USESTATUS }
-    if { $key eq "UNRATEDOK" } { set key USEUNRATED }
-    if { $key eq "HIGHDANCELEVEL" } { set key DANCELEVELHIGH }
-    if { $key eq "LOWDANCELEVEL" } { set key DANCELEVELLOW }
+    if { $tkey eq "STATUSOK" } { set key USESTATUS }
+    if { $tkey eq "UNRATEDOK" } { set key USEUNRATED }
+    if { $tkey eq "HIGHDANCELEVEL" } { set key DANCELEVELHIGH }
+    if { $tkey eq "LOWDANCELEVEL" } { set key DANCELEVELLOW }
 
-    if { $key eq "MANUALLIST" && $value eq "None" } {
+    if { $tkey eq "MANUALLIST" && $value eq "None" } {
       set value {}
     }
-    if { $key eq "MANUALLIST" && $value ne {} } {
+    if { $tkey eq "MANUALLIST" && $value ne {} } {
       set pltype Manual
     }
-    if { $key eq "SEQUENCE" && $value eq "None" } {
+    if { $tkey eq "SEQUENCE" && $value eq "None" } {
       set value {}
     }
-    if { $key eq "GAP" && $value eq {} } {
+    if { $tkey eq "GAP" && $value eq {} } {
       set value -1
     }
-    if { $key eq "MAXPLAYTIME" && $value eq {} } {
+    if { $tkey eq "MAXPLAYTIME" && $value eq {} } {
       set value -1
     }
-    if { $key eq "SEQUENCE" && $value ne {} } {
+    if { $tkey eq "SEQUENCE" && $value ne {} } {
       set pltype Sequence
     }
-    if { $key eq "VERSION" } { set key version }
+    if { $tkey eq "VERSION" } { set key version }
 
     if { [regexp {:\d+:} $value] } {
       puts $dfh KEY
       puts $dfh "..$keyidx"
       puts $dfh DANCE
       puts $dfh "..$key"
-      regexp {(\d):(\d*):(\d*):(\d*):(\d*):} $value \
+      regexp {(\d):(\d*):(\d*):(\d*):(\d*):(\d*)} $value \
           all selected count maxmin maxsec lowbpm highbpm
       puts $dfh "SELECTED"
       puts $dfh "..$selected"
@@ -86,18 +86,19 @@ foreach {fn} $flist {
         set tm [expr {($maxmin * 60 + $maxsec)*1000}]
       }
       puts $dfh "..$tm"
-      puts $dfh "LOWBPM"
+      puts $dfh "BPMLOW"
       puts $dfh "..$lowbpm"
-      puts $dfh "HIGHBPM"
+      puts $dfh "BPMHIGH"
       puts $dfh "..$highbpm"
       incr keyidx
     } else {
-      if { $key eq "MAXPLAYTIME" } {
+      if { $tkey eq "MAXPLAYTIME" } {
         if { $value ne {} && $value ne "-1" } {
           regexp {(\d+):(\d+)} $value all min sec
           set value [expr {($min * 60 + $sec)*1000}]
         }
       }
+      set key [string toupper $key]
       puts $ofh $key
       puts $ofh "..$value"
     }
