@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
 #include <errno.h>
@@ -20,9 +21,11 @@ ssize_t     bdjvarsl [BDJVL_MAX];
 void
 bdjvarsInit (void)
 {
-  bdjvarsl [BDJVL_MAIN_PORT] = 35548;
-  bdjvarsl [BDJVL_PLAYER_PORT] = bdjvarsl [BDJVL_MAIN_PORT] + 1;
-  bdjvarsl [BDJVL_NUM_PORTS] = 2;
+  uint16_t        port = 35548;
+  bdjvarsl [BDJVL_MAIN_PORT] = port++;
+  bdjvarsl [BDJVL_PLAYER_PORT] = port++;
+  bdjvarsl [BDJVL_GUI_PORT] = port++;
+  bdjvarsl [BDJVL_NUM_PORTS] = 3;
 
   bdjvarsAdjustPorts ();
 }
@@ -59,5 +62,6 @@ bdjvarsAdjustPorts (void)
 
   bdjvarsl [BDJVL_MAIN_PORT] += bdjvarsl [BDJVL_NUM_PORTS] * idx;
   bdjvarsl [BDJVL_PLAYER_PORT] += bdjvarsl [BDJVL_NUM_PORTS] * idx;
+  bdjvarsl [BDJVL_GUI_PORT] += bdjvarsl [BDJVL_NUM_PORTS] * idx;
 }
 

@@ -16,16 +16,20 @@ typedef enum {
   MSG_SET_DEBUG_LVL,
   MSG_EXIT_FORCE,           // only for testing, may not work yet.
   MSG_EXIT_REQUEST,         // standard shutdown
-  MSG_PLAY_FADE,            // to main: passed on to player.
-  MSG_PLAY_PAUSE,           // to main: passed on to player.
+  MSG_PLAY_PAUSE,           // to player
   MSG_PLAY_PLAY,            // to main:
                             //    starts playback, passed on to player.
-  MSG_PLAY_STOP,            // to main: passed on to player.
+  MSG_PLAY_FADE,            // to player.
+  MSG_PLAY_PAUSEATEND,      // args: 0/1
+  MSG_PLAY_STOP,            // to player.
   MSG_PLAYER_VOLSINK_SET,   // to player: set volume sink
-  MSG_PLAYBACK_BEGIN,       // to main: player has started playing a song
+  MSG_PLAYBACK_STOP,        // to main: player has stopped playing song
+                            //    do not continue.
   MSG_PLAYBACK_FINISH,      // to main: player has finished playing song
                             // args: song fname
   MSG_PLAYLIST_QUEUE,       // args: playlist name
+  MSG_PLAY_PAUSEATEND_STATE,// args: 0/1
+  MSG_PLAYER_STATE,         // args: player state
   MSG_SOCKET_CLOSE,
   MSG_SONG_PLAY,            // args: song fname
   MSG_SONG_PREP,            // args: song fname, duration, song-start

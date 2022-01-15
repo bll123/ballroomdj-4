@@ -117,6 +117,10 @@ sockhSendMessage (Sock_t sock, bdjmsgroute_t routefrom,
   size_t      len;
   int         rc;
 
+  if (sock == INVALID_SOCKET) {
+    return -1;
+  }
+
   logProcBegin (LOG_PROC, "sockhSendMessage");
   logMsg (LOG_DBG, LOG_SOCKET, "route:%d msg:%d args:%s", route, msg, args);
   len = msgEncode (routefrom, route, msg, args, msgbuff, sizeof (msgbuff));

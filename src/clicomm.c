@@ -155,6 +155,15 @@ main (int argc, char *argv[])
         msg = MSG_PLAY_PLAY;
         msgok = 1;
       }
+      if (strcmp (buff, "fade") == 0) {
+        msg = MSG_PLAY_FADE;
+        msgok = 1;
+      }
+      if (strcmp (buff, "pauseatend") == 0) {
+        msg = MSG_PLAY_PAUSEATEND;
+        msgok = 1;
+        argsok = 1;
+      }
       if (strcmp (buff, "stop") == 0) {
         msg = MSG_PLAY_STOP;
         msgok = 1;

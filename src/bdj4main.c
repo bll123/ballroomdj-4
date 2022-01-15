@@ -63,6 +63,7 @@ static void     mainMusicQueuePrep (maindata_t *mainData);
 static char     *mainPrepSong (maindata_t *maindata, song_t *song,
                     char *sfname, char *plname, bdjmsgprep_t flag);
 static void     mainMusicQueuePlay (maindata_t *mainData);
+static void     mainMusicQueueFinish (maindata_t *mainData);
 static void     mainMusicQueueNext (maindata_t *mainData);
 static bool     mainCheckMusicQueue (song_t *song, void *tdata);
 
@@ -199,25 +200,21 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_SET_DEBUG_LVL: {
           break;
         }
-        case MSG_PLAY_FADE: {
-          break;
-        }
         case MSG_PLAY_PLAY: {
           mainMusicQueuePlay (mainData);
           break;
         }
-        case MSG_PLAY_PAUSE: {
-          break;
-        }
-        case MSG_PLAY_STOP: {
-          break;
-        }
-        case MSG_PLAYBACK_BEGIN: {
-          mainData->playerState = PL_STATE_PLAYING;
+        case MSG_PLAYBACK_STOP: {
+          mainMusicQueueFinish (mainData);
           break;
         }
         case MSG_PLAYBACK_FINISH: {
           mainMusicQueueNext (mainData);
+          break;
+        }
+        case MSG_PLAYER_STATE: {
+          mainData->playerState = atol (args);
+          logMsg (LOG_DBG, LOG_MSGS, "got: player-stat: %d", mainData->playerState);
           break;
         }
         case MSG_PLAYLIST_QUEUE: {
@@ -492,12 +489,13 @@ mainMusicQueuePlay (maindata_t *mainData)
 {
   musicqflag_t      flags;
   char              *sfname;
-
+  song_t            *song;
 
   logProcBegin (LOG_PROC, "mainMusicQueuePlay");
   if (mainData->playerState == PL_STATE_STOPPED) {
       /* grab a song out of the music queue and start playing */
-    song_t *song = musicqGetCurrent (mainData->musicQueue, mainData->musicqCurrentIdx);
+    logMsg (LOG_DBG, LOG_MAIN, "player is stopped, get song, start");
+    song = musicqGetCurrent (mainData->musicQueue, mainData->musicqCurrentIdx);
     flags = musicqGetFlags (mainData->musicQueue, mainData->musicqCurrentIdx, 0);
     if ((flags & MUSICQ_FLAG_ANNOUNCE) == MUSICQ_FLAG_ANNOUNCE) {
       char      *annfname;
@@ -513,6 +511,7 @@ mainMusicQueuePlay (maindata_t *mainData)
         MSG_SONG_PLAY, sfname);
   }
   if (mainData->playerState == PL_STATE_PAUSED) {
+    logMsg (LOG_DBG, LOG_MAIN, "player is paused, send play msg");
     sockhSendMessage (mainData->playerSock, ROUTE_MAIN, ROUTE_PLAYER,
         MSG_PLAY_PLAY, NULL);
   }
@@ -520,11 +519,19 @@ mainMusicQueuePlay (maindata_t *mainData)
 }
 
 static void
+mainMusicQueueFinish (maindata_t *mainData)
+{
+  logProcBegin (LOG_PROC, "mainMusicQueueFinish");
+  mainData->playerState = PL_STATE_STOPPED;
+  musicqPop (mainData->musicQueue, mainData->musicqCurrentIdx);
+  logProcEnd (LOG_PROC, "mainMusicQueueFinish", "");
+}
+
+static void
 mainMusicQueueNext (maindata_t *mainData)
 {
   logProcBegin (LOG_PROC, "mainMusicQueueNext");
-  mainData->playerState = PL_STATE_STOPPED;
-  musicqPop (mainData->musicQueue, mainData->musicqCurrentIdx);
+  mainMusicQueueFinish (mainData);
   mainMusicQueuePlay (mainData);
   mainMusicQueueFill (mainData);
   mainMusicQueuePrep (mainData);

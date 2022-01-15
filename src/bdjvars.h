@@ -4,7 +4,6 @@
 typedef enum {
   PL_STATE_STOPPED,
   PL_STATE_LOADING,
-  PL_STATE_LOADED,
   PL_STATE_PLAYING,
   PL_STATE_PAUSED,
 } playerstate_t;
@@ -27,8 +26,9 @@ typedef enum {
 typedef enum {
   BDJVL_MAIN_PORT,
   BDJVL_PLAYER_PORT,
+  BDJVL_GUI_PORT,
   BDJVL_NUM_PORTS,
-  BDJVL_MAX
+  BDJVL_MAX,
 } bdjvarkeyl_t;
 
 extern char *     bdjvars [BDJV_MAX];
