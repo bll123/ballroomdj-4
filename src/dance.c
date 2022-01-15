@@ -6,11 +6,12 @@
 #include <string.h>
 #include <assert.h>
 
+#include "bdjvarsdf.h"
 #include "dance.h"
 #include "datafile.h"
-#include "fileop.h"
-#include "bdjvarsdf.h"
 #include "dnctypes.h"
+#include "fileop.h"
+#include "list.h"
 #include "log.h"
 
 static void danceConvSpeed (char *keydata, datafileret_t *ret);
@@ -52,6 +53,7 @@ danceAlloc (char *fname)
 
   dance->df = datafileAllocParse ("dance", DFTYPE_INDIRECT, fname,
       dancedfkeys, DANCE_DFKEY_COUNT, DANCE_DANCE);
+  dance->dances = datafileGetList (dance->df);
   return dance;
 }
 
@@ -72,6 +74,18 @@ danceGetLookup (void)
   dance_t *dance = bdjvarsdf [BDJVDF_DANCES];
   list_t  *lookup = datafileGetLookup (dance->df);
   return lookup;
+}
+
+char *
+danceGetData (dance_t *dance, listidx_t dkey, listidx_t idx)
+{
+  return ilistGetData (dance->dances, dkey, idx);
+}
+
+ssize_t
+danceGetNum (dance_t *dance, listidx_t dkey, listidx_t idx)
+{
+  return ilistGetNum (dance->dances, dkey, idx);
 }
 
 void

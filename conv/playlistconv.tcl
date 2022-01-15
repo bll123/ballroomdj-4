@@ -38,9 +38,9 @@ foreach {fn} $flist {
     set key [string toupper $key]
     if { $key eq "REQUIREDKEYWORDS" } { continue }
     if { $key eq "STOPTIME" } { continue }
+    if { $key eq "STOPWAIT" } { continue }
     if { $key eq "STOPAFTER" } { continue }
     if { $key eq "STOPAFTERWAIT" } { continue }
-    if { $key eq "STOPTIMEWAIT" } { continue }
     if { $key eq "STOPTYPE" } { continue }
     if { $key eq "RESUME" } { continue }
 

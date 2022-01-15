@@ -39,6 +39,7 @@ void
 pliiMediaSetup (plidata_t *pliData, char *mediaPath)
 {
   if (pliData != NULL && mediaPath != NULL) {
+    pliData->state = PLI_STATE_STOPPED;
     pliData->duration = 20000;
     pliData->playTime = 0;
   }
@@ -77,6 +78,8 @@ pliiStop (plidata_t *pliData)
 {
   if (pliData != NULL) {
     pliData->state = PLI_STATE_STOPPED;
+    pliData->duration = 20000;
+    pliData->playTime = 0;
   }
 }
 
@@ -139,18 +142,10 @@ pliiState (plidata_t *pliData)
   plistate_t          plistate = PLI_STATE_NONE; /* unknown */
 
   if (pliData != NULL) {
-fprintf (stderr, "222\n");
-fflush (stderr);
     pliData->playTime = mstimeend (&pliData->playStart);
-fprintf (stderr, "333 playtime: %zd duration: %zd\n", pliData->playTime, pliData->duration);
-fflush (stderr);
     if (pliData->playTime >= pliData->duration) {
-fprintf (stderr, "444\n");
-fflush (stderr);
       pliData->state = PLI_STATE_STOPPED;
     }
-fprintf (stderr, "555\n");
-fflush (stderr);
     plistate = pliData->state;
   }
   return plistate;

@@ -2,6 +2,7 @@
 #define INC_DANCE_H
 
 #include "datafile.h"
+#include "list.h"
 
 typedef enum {
   DANCE_ANNOUNCE,
@@ -25,10 +26,13 @@ typedef enum {
 
 typedef struct {
   datafile_t      *df;
+  list_t          *dances;
 } dance_t;
 
 dance_t       *danceAlloc (char *);
 void          danceFree (dance_t *);
+char *        danceGetData (dance_t *, listidx_t dkey, listidx_t idx);
+ssize_t       danceGetNum (dance_t *, listidx_t dkey, listidx_t idx);
 list_t        * danceGetLookup (void);
 void          danceConvDance (char *keydata, datafileret_t *ret);
 

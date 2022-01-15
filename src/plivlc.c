@@ -71,20 +71,25 @@ void
 pliiStartPlayback (plidata_t *pliData, ssize_t dpos)
 {
   libvlc_state_t      vlcstate;
+  long                count;
 
     /* Do the busy loop so that the seek can be done immediately as */
     /* vlc starts playing.  This should help avoid startup glitches */
   if (pliData != NULL && pliData->plData != NULL) {
     vlcPlay (pliData->plData);
     vlcstate = vlcState (pliData->plData);
+    count = 0;
     while (vlcstate == libvlc_NothingSpecial ||
            vlcstate == libvlc_Opening ||
            vlcstate == libvlc_Buffering ||
            vlcstate == libvlc_Stopped) {
       mssleep (1);
       vlcstate = vlcState (pliData->plData);
+      ++count;
+      if (count > 10000) {
+        break;
+      }
     }
-fprintf (stderr, "pliseek: dpos: %zd vlcstate: %d\n", dpos, vlcstate);
     if (vlcstate == libvlc_Playing && dpos > 0) {
       vlcSeek (pliData->plData, dpos);
     }

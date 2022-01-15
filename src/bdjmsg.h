@@ -33,6 +33,11 @@ typedef enum {
   MSG_MAX
 } bdjmsgmsg_t;
 
+typedef enum {
+  PREP_SONG,
+  PREP_ANNOUNCE,
+} bdjmsgprep_t;
+
 #define BDJMSG_MAX_ARGS     1024
 #define BDJMSG_MAX          (8 * 2 + 3 + BDJMSG_MAX_ARGS)
 

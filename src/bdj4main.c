@@ -19,6 +19,8 @@
 #include "bdjopt.h"
 #include "bdjstring.h"
 #include "bdjvars.h"
+#include "bdjvarsdf.h"
+#include "dance.h"
 #include "datautil.h"
 #include "log.h"
 #include "musicq.h"
@@ -42,7 +44,7 @@ typedef struct {
   list_t            *playlistList;
   queue_t           *playlistQueue;
   musicq_t          *musicQueue;
-  musicqidx_t       musicqCurrent;
+  musicqidx_t       musicqCurrentIdx;
   playerstate_t     playerState;
   ssize_t           gap;
   bool              playerHandshake : 1;
@@ -57,6 +59,8 @@ static void     mainPlaylistQueue (maindata_t *mainData, char *plname);
 static void     mainSigHandler (int sig);
 static void     mainMusicQueueFill (maindata_t *mainData);
 static void     mainMusicQueuePrep (maindata_t *mainData);
+static char     *mainPrepSong (maindata_t *maindata, song_t *song,
+                    char *sfname, char *plname, bdjmsgprep_t flag);
 static void     mainMusicQueuePlay (maindata_t *mainData);
 static void     mainMusicQueueNext (maindata_t *mainData);
 static bool     mainCheckMusicQueue (song_t *song, void *tdata);
@@ -78,7 +82,7 @@ main (int argc, char *argv[])
   mainData.playlistList = NULL;
   mainData.playlistQueue = NULL;
   mainData.musicQueue = NULL;
-  mainData.musicqCurrent = MUSICQ_A;
+  mainData.musicqCurrentIdx = MUSICQ_A;
   mainData.playerState = PL_STATE_STOPPED;
   mainData.playerHandshake = false;
 
@@ -317,7 +321,7 @@ mainMusicQueueFill (maindata_t *mainData)
   logProcBegin (LOG_PROC, "mainMusicQueueFill");
   maxlen = bdjoptGetNum (OPT_G_PLAYERQLEN);
   playlist = queueGetCurrent (mainData->playlistQueue);
-  currlen = musicqGetLen (mainData->musicQueue, mainData->musicqCurrent);
+  currlen = musicqGetLen (mainData->musicQueue, mainData->musicqCurrentIdx);
   logMsg (LOG_DBG, LOG_BASIC, "fill: %ld < %ld", currlen, maxlen);
   while (playlist != NULL && currlen < maxlen) {
     song = playlistGetNextSong (playlist, mainCheckMusicQueue, mainData);
@@ -326,8 +330,8 @@ mainMusicQueueFill (maindata_t *mainData)
       playlist = queueGetCurrent (mainData->playlistQueue);
       continue;
     }
-    musicqPush (mainData->musicQueue, mainData->musicqCurrent, song, playlistGetName (playlist));
-    currlen = musicqGetLen (mainData->musicQueue, mainData->musicqCurrent);
+    musicqPush (mainData->musicQueue, mainData->musicqCurrentIdx, song, playlistGetName (playlist));
+    currlen = musicqGetLen (mainData->musicQueue, mainData->musicqCurrentIdx);
   }
   logProcEnd (LOG_PROC, "mainMusicQueueFill", "");
 }
@@ -335,94 +339,151 @@ mainMusicQueueFill (maindata_t *mainData)
 static void
 mainMusicQueuePrep (maindata_t *mainData)
 {
-  char tbuff [MAXPATHLEN];
-
   logProcBegin (LOG_PROC, "mainMusicQueuePrep");
     /* 5 is the number of songs to prep ahead of time */
   for (ssize_t i = 0; i < 5; ++i) {
-    song_t          *song = NULL;
-    char            *sfname = NULL;
-    ssize_t         dur;
-    musicqflag_t    flags;
-    playlist_t      *playlist;
-    char            *plname;
+    char          *sfname = NULL;
+    song_t        *song = NULL;
+    musicqflag_t  flags;
+    char          *plname = NULL;
+    char          *annfname = NULL;
 
-
-    song = musicqGetByIdx (mainData->musicQueue, mainData->musicqCurrent, i);
-    flags = musicqGetFlags (mainData->musicQueue, mainData->musicqCurrent, i);
-    plname = musicqGetPlaylistName (mainData->musicQueue, mainData->musicqCurrent, i);
+    song = musicqGetByIdx (mainData->musicQueue, mainData->musicqCurrentIdx, i);
+    flags = musicqGetFlags (mainData->musicQueue, mainData->musicqCurrentIdx, i);
+    plname = musicqGetPlaylistName (mainData->musicQueue, mainData->musicqCurrentIdx, i);
 
     if (song != NULL &&
         (flags & MUSICQ_FLAG_PREP) != MUSICQ_FLAG_PREP) {
-      ssize_t       maxdur;
-      ssize_t       pldur;
-      ssize_t       plgap;
-      ssize_t       songstart;
-      ssize_t       songend;
-      ssize_t       voladjperc;
-      ssize_t       gap;
-
-
-      sfname = songGetData (song, TAG_FILE);
-      voladjperc = songGetNum (song, TAG_VOLUMEADJUSTPERC);
-      dur = songGetNum (song, TAG_DURATION);
-      maxdur = bdjoptGetNum (OPT_P_MAXPLAYTIME);
-      songstart = songGetNum (song, TAG_SONGSTART);
-      songend = songGetNum (song, TAG_SONGEND);
-      playlist = listGetData (mainData->playlistList, plname);
-      pldur = playlistGetConfigNum (playlist, PLAYLIST_MAX_PLAY_TIME);
-        /* apply songend if set to a reasonable value */
-      logMsg (LOG_DBG, LOG_MAIN, "dur: %zd songstart: %zd songend: %zd",
-          dur, songstart, songend);
-      if (songend >= 10000 && dur > songend) {
-        dur = songend;
-        logMsg (LOG_DBG, LOG_MAIN, "dur-songend: %zd", dur);
-      }
-        /* adjust the song's duration by the songstart value */
-      if (songstart > 0) {
-        dur -= songstart;
-        logMsg (LOG_DBG, LOG_MAIN, "dur-songstart: %zd", dur);
-      }
-        /* the playlist max-play-time overrides the global max-play-time */
-      if (pldur >= 10000) {
-        if (dur > pldur) {
-          dur = pldur;
-          logMsg (LOG_DBG, LOG_MAIN, "dur-pldur: %zd", dur);
-        }
-      } else if (dur > maxdur) {
-        dur = maxdur;
-        logMsg (LOG_DBG, LOG_MAIN, "dur-maxdur: %zd", dur);
-      }
-
-      gap = mainData->gap;
-      plgap = playlistGetConfigNum (playlist, PLAYLIST_GAP);
-      if (plgap >= 0) {
-        gap = plgap;
-      }
-
-      snprintf (tbuff, MAXPATHLEN, "%s%c%zd%c%zd%c%zd%c%zd", sfname,
-          MSG_ARGS_RS, dur, MSG_ARGS_RS, songstart,
-          MSG_ARGS_RS, voladjperc, MSG_ARGS_RS, gap);
-
-      logMsg (LOG_DBG, LOG_MAIN, "prep song %s", sfname);
-      sockhSendMessage (mainData->playerSock, ROUTE_MAIN, ROUTE_PLAYER,
-          MSG_SONG_PREP, tbuff);
-      musicqSetFlags (mainData->musicQueue, mainData->musicqCurrent,
+      musicqSetFlags (mainData->musicQueue, mainData->musicqCurrentIdx,
           i, MUSICQ_FLAG_PREP);
+      annfname = mainPrepSong (mainData, song, sfname, plname, PREP_SONG);
+      if (annfname != NULL && strcmp (annfname, "") != 0 ) {
+        musicqSetFlags (mainData->musicQueue, mainData->musicqCurrentIdx,
+            i, MUSICQ_FLAG_ANNOUNCE);
+        musicqSetAnnounce (mainData->musicQueue, mainData->musicqCurrentIdx,
+            i, annfname);
+      } else {
+        annfname = NULL;
+      }
     }
   }
   logProcEnd (LOG_PROC, "mainMusicQueuePrep", "");
 }
 
 
+static char *
+mainPrepSong (maindata_t *mainData, song_t *song,
+    char *sfname, char *plname, bdjmsgprep_t flag)
+{
+  char          tbuff [MAXPATHLEN];
+  playlist_t    *playlist = NULL;
+  ssize_t       dur = 0;
+  ssize_t       maxdur = -1;
+  ssize_t       pldur = -1;
+  ssize_t       plgap = -1;
+  ssize_t       songstart = 0;
+  ssize_t       songend = -1;
+  ssize_t       voladjperc = 0;
+  ssize_t       gap = 0;
+  ssize_t       plannounce = 0;
+  char          *annfname = NULL;
+
+
+  sfname = songGetData (song, TAG_FILE);
+  dur = songGetNum (song, TAG_DURATION);
+  voladjperc = songGetNum (song, TAG_VOLUMEADJUSTPERC);
+  gap = 0;
+  songstart = 0;
+
+    /* announcements don't need any of the following... */
+  if (flag != PREP_ANNOUNCE) {
+    maxdur = bdjoptGetNum (OPT_P_MAXPLAYTIME);
+    songstart = songGetNum (song, TAG_SONGSTART);
+    songend = songGetNum (song, TAG_SONGEND);
+    playlist = listGetData (mainData->playlistList, plname);
+    pldur = playlistGetConfigNum (playlist, PLAYLIST_MAX_PLAY_TIME);
+      /* apply songend if set to a reasonable value */
+    logMsg (LOG_DBG, LOG_MAIN, "dur: %zd songstart: %zd songend: %zd",
+        dur, songstart, songend);
+    if (songend >= 10000 && dur > songend) {
+      dur = songend;
+      logMsg (LOG_DBG, LOG_MAIN, "dur-songend: %zd", dur);
+    }
+      /* adjust the song's duration by the songstart value */
+    if (songstart > 0) {
+      dur -= songstart;
+      logMsg (LOG_DBG, LOG_MAIN, "dur-songstart: %zd", dur);
+    }
+      /* the playlist max-play-time overrides the global max-play-time */
+    if (pldur >= 10000) {
+      if (dur > pldur) {
+        dur = pldur;
+        logMsg (LOG_DBG, LOG_MAIN, "dur-pldur: %zd", dur);
+      }
+    } else if (dur > maxdur) {
+      dur = maxdur;
+      logMsg (LOG_DBG, LOG_MAIN, "dur-maxdur: %zd", dur);
+    }
+
+    gap = mainData->gap;
+    plgap = playlistGetConfigNum (playlist, PLAYLIST_GAP);
+    if (plgap >= 0) {
+      gap = plgap;
+    }
+
+    plannounce = playlistGetConfigNum (playlist, PLAYLIST_ANNOUNCE);
+    if (plannounce) {
+      ssize_t       dancekey;
+      dance_t       *dances;
+      song_t        *tsong;
+
+      dancekey = songGetNum (song, TAG_DANCE);
+      dances = bdjvarsdf [BDJVDF_DANCES];
+      annfname = danceGetData (dances, dancekey, DANCE_ANNOUNCE);
+      if (annfname != NULL) {
+        tsong = dbGetByName (annfname);
+        if (tsong != NULL) {
+          mainPrepSong (mainData, tsong, annfname, plname, PREP_ANNOUNCE);
+        } else {
+          annfname = NULL;
+        }
+      } /* found an announcement for the dance */
+    } /* announcements are on in the playlist */
+  } /* if this is a normal song */
+
+  snprintf (tbuff, MAXPATHLEN, "%s%c%zd%c%zd%c%zd%c%zd%c%d", sfname,
+      MSG_ARGS_RS, dur, MSG_ARGS_RS, songstart,
+      MSG_ARGS_RS, voladjperc, MSG_ARGS_RS, gap, MSG_ARGS_RS, flag);
+
+  logMsg (LOG_DBG, LOG_MAIN, "prep song %s", sfname);
+  sockhSendMessage (mainData->playerSock, ROUTE_MAIN, ROUTE_PLAYER,
+      MSG_SONG_PREP, tbuff);
+  return annfname;
+}
+
+
 static void
 mainMusicQueuePlay (maindata_t *mainData)
 {
+  musicqflag_t      flags;
+  char              *sfname;
+
+
   logProcBegin (LOG_PROC, "mainMusicQueuePlay");
   if (mainData->playerState == PL_STATE_STOPPED) {
       /* grab a song out of the music queue and start playing */
-    song_t *song = musicqGetCurrent (mainData->musicQueue, mainData->musicqCurrent);
-    char *sfname = songGetData (song, TAG_FILE);
+    song_t *song = musicqGetCurrent (mainData->musicQueue, mainData->musicqCurrentIdx);
+    flags = musicqGetFlags (mainData->musicQueue, mainData->musicqCurrentIdx, 0);
+    if ((flags & MUSICQ_FLAG_ANNOUNCE) == MUSICQ_FLAG_ANNOUNCE) {
+      char      *annfname;
+
+      annfname = musicqGetAnnounce (mainData->musicQueue, mainData->musicqCurrentIdx, 0);
+      if (annfname != NULL) {
+        sockhSendMessage (mainData->playerSock, ROUTE_MAIN, ROUTE_PLAYER,
+            MSG_SONG_PLAY, annfname);
+      }
+    }
+    sfname = songGetData (song, TAG_FILE);
     sockhSendMessage (mainData->playerSock, ROUTE_MAIN, ROUTE_PLAYER,
         MSG_SONG_PLAY, sfname);
   }
@@ -438,7 +499,7 @@ mainMusicQueueNext (maindata_t *mainData)
 {
   logProcBegin (LOG_PROC, "mainMusicQueueNext");
   mainData->playerState = PL_STATE_STOPPED;
-  musicqPop (mainData->musicQueue, mainData->musicqCurrent);
+  musicqPop (mainData->musicQueue, mainData->musicqCurrentIdx);
   mainMusicQueuePlay (mainData);
   mainMusicQueueFill (mainData);
   mainMusicQueuePrep (mainData);

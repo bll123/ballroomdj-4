@@ -187,7 +187,7 @@ vlcSeek (vlcData_t *vlcData, ssize_t dpos)
   }
   pos = libvlc_media_player_get_position (vlcData->mp);
   newpos = (ssize_t) round ((double) pos * (double) tm);
-fprintf (stderr, "vlci: seek: dpos: %zd new-pos: %.6f new-pos: %zd\n", dpos, pos, newpos);
+  // fprintf (stderr, "vlci: seek: dpos: %zd new-pos: %.6f new-pos: %zd\n", dpos, pos, newpos);
   return newpos;
 }
 
