@@ -22,6 +22,7 @@
 #include "bdjvarsdf.h"
 #include "dance.h"
 #include "datautil.h"
+#include "filedata.h"
 #include "log.h"
 #include "musicq.h"
 #include "playlist.h"
@@ -33,6 +34,7 @@
 #include "sysvars.h"
 #include "tagdef.h"
 #include "tmutil.h"
+#include "webclient.h"
 
   /* playlistList contains all of the playlists that have been seen */
   /* so that playlist lookups can be processed */
@@ -49,6 +51,8 @@ typedef struct {
   list_t            *announceList;
   playerstate_t     playerState;
   ssize_t           gap;
+  webclient_t       *webclient;
+  char              *mobmqUserkey;
   bool              playerHandshake : 1;
   bool              playerStarted : 1;
   bool              mobilemqHandshake : 1;
@@ -63,6 +67,8 @@ static void     mainStopMobileMq (maindata_t *mainData);
 static int      mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
                     bdjmsgmsg_t msg, char *args, void *udata);
 static int      mainProcessing (void *udata);
+static void     mainSendMobileMarqueeData (maindata_t *mainData);
+static void     mainMobilePostCallback (void *userdata, char *resp, size_t len);
 static void     mainConnectMobileMq (maindata_t *mainData);
 static void     mainPlaylistQueue (maindata_t *mainData, char *plname);
 static void     mainSigHandler (int sig);
@@ -95,6 +101,8 @@ main (int argc, char *argv[])
   mainData.musicQueue = NULL;
   mainData.musicqCurrentIdx = MUSICQ_A;
   mainData.playerState = PL_STATE_STOPPED;
+  mainData.webclient = NULL;
+  mainData.mobmqUserkey = NULL;
   mainData.playerStarted = false;
   mainData.playerHandshake = false;
   mainData.mobilemqStarted = false;
@@ -131,6 +139,12 @@ main (int argc, char *argv[])
   }
   if (mainData.announceList != NULL) {
     listFree (mainData.announceList);
+  }
+  if (mainData.webclient != NULL) {
+    webclientClose (mainData.webclient);
+  }
+  if (mainData.mobmqUserkey != NULL) {
+    free (mainData.mobmqUserkey);
   }
   mainData.programState = STATE_NOT_RUNNING;
   return 0;
@@ -370,74 +384,140 @@ mainProcessing (void *udata)
   }
 
   if (mainData->marqueeChanged) {
-    char        tbuff [200];
-    char        jbuff [2048];
-    char        *title;
-    char        *dstr;
-    ssize_t     mqLen;
-    ssize_t     musicqLen;
-
-
-    mainData->marqueeChanged = false;
-
-    mqLen = bdjoptGetNum (OPT_G_PLAYERQLEN);
-    musicqLen = musicqGetLen (mainData->musicQueue, mainData->musicqCurrentIdx);
-    title = bdjoptGetData (OPT_P_MOBILEMQTITLE);
-    if (title == NULL) {
-      title = "";
-    }
-
-    dstr = "";
-    if (musicqLen > 0) {
-      dstr = musicqGetDance (mainData->musicQueue, mainData->musicqCurrentIdx, 0);
-      if (dstr == NULL) {
-        dstr = "";
-      }
-    }
-
-    strlcpy (jbuff, "{ ", sizeof (jbuff));
-
-    snprintf (tbuff, sizeof (tbuff), "\"mqlen\" : \"%zd\", ", mqLen);
-    strlcat (jbuff, tbuff, sizeof (jbuff));
-    snprintf (tbuff, sizeof (tbuff), "\"title\" : \"%s\", ", title);
-    strlcat (jbuff, tbuff, sizeof (jbuff));
-
-    snprintf (tbuff, sizeof (tbuff), "\"current\" : \"%s\"", dstr);
-    strlcat (jbuff, tbuff, sizeof (jbuff));
-
-    if (musicqGetLen (mainData->musicQueue, mainData->musicqCurrentIdx) > 0) {
-      for (ssize_t i = 1; i <= mqLen; ++i) {
-        if (mainData->playerState == PL_STATE_IN_GAP ||
-            (mainData->playerState == PL_STATE_IN_FADEOUT && i > 1)) {
-          dstr = "";
-        } else {
-          dstr = musicqGetDance (mainData->musicQueue, mainData->musicqCurrentIdx, i);
-          if (dstr == NULL) {
-            dstr = "";
-          }
-        }
-        snprintf (tbuff, sizeof (tbuff), "\"mq%zd\" : \"%s\"", i, dstr);
-        strlcat (jbuff, ", ", sizeof (jbuff));
-        strlcat (jbuff, tbuff, sizeof (jbuff));
-      }
-    } else {
-      strlcat (jbuff, ", ", sizeof (jbuff));
-      strlcat (jbuff, "\"skip\" : \"true\"", sizeof (jbuff));
-    }
-    strlcat (jbuff, " }", sizeof (jbuff));
-
-    sockhSendMessage (mainData->mobilemqSock, ROUTE_MAIN, ROUTE_MOBILEMQ,
-        MSG_MARQUEE_DATA, jbuff);
+    mainSendMobileMarqueeData (mainData);
   }
 
   return gKillReceived;
 }
 
 static void
+mainSendMobileMarqueeData (maindata_t *mainData)
+{
+  char        tbuff [200];
+  char        tbuffb [200];
+  char        qbuff [2048];
+  char        jbuff [2048];
+  char        *title;
+  char        *dstr;
+  char        *tag;
+  ssize_t     mqLen;
+  ssize_t     musicqLen;
+
+
+  if (bdjoptGetNum (OPT_P_MOBILEMARQUEE) == MOBILEMQ_OFF) {
+    return;
+  }
+
+  mainData->marqueeChanged = false;
+
+  mqLen = bdjoptGetNum (OPT_G_PLAYERQLEN);
+  musicqLen = musicqGetLen (mainData->musicQueue, mainData->musicqCurrentIdx);
+  title = bdjoptGetData (OPT_P_MOBILEMQTITLE);
+  if (title == NULL) {
+    title = "";
+  }
+
+  dstr = "";
+  if (musicqLen > 0) {
+    dstr = musicqGetDance (mainData->musicQueue, mainData->musicqCurrentIdx, 0);
+    if (dstr == NULL) {
+      dstr = "";
+    }
+  }
+
+  strlcpy (jbuff, "{ ", sizeof (jbuff));
+
+  snprintf (tbuff, sizeof (tbuff), "\"mqlen\" : \"%zd\", ", mqLen);
+  strlcat (jbuff, tbuff, sizeof (jbuff));
+  snprintf (tbuff, sizeof (tbuff), "\"title\" : \"%s\", ", title);
+  strlcat (jbuff, tbuff, sizeof (jbuff));
+
+  snprintf (tbuff, sizeof (tbuff), "\"current\" : \"%s\"", dstr);
+  strlcat (jbuff, tbuff, sizeof (jbuff));
+
+  if (musicqGetLen (mainData->musicQueue, mainData->musicqCurrentIdx) > 0) {
+    for (ssize_t i = 1; i <= mqLen; ++i) {
+      if (mainData->playerState == PL_STATE_IN_GAP ||
+          (mainData->playerState == PL_STATE_IN_FADEOUT && i > 1)) {
+        dstr = "";
+      } else {
+        dstr = musicqGetDance (mainData->musicQueue, mainData->musicqCurrentIdx, i);
+        if (dstr == NULL) {
+          dstr = "";
+        }
+      }
+      snprintf (tbuff, sizeof (tbuff), "\"mq%zd\" : \"%s\"", i, dstr);
+      strlcat (jbuff, ", ", sizeof (jbuff));
+      strlcat (jbuff, tbuff, sizeof (jbuff));
+    }
+  } else {
+    strlcat (jbuff, ", ", sizeof (jbuff));
+    strlcat (jbuff, "\"skip\" : \"true\"", sizeof (jbuff));
+  }
+  strlcat (jbuff, " }", sizeof (jbuff));
+
+  sockhSendMessage (mainData->mobilemqSock, ROUTE_MAIN, ROUTE_MOBILEMQ,
+      MSG_MARQUEE_DATA, jbuff);
+
+  if (bdjoptGetNum (OPT_P_MOBILEMARQUEE) == MOBILEMQ_LOCAL) {
+    return;
+  }
+
+  /* internet mode from here on */
+
+  if (mainData->mobmqUserkey == NULL) {
+    datautilMakePath (tbuff, sizeof (tbuff), "",
+        "mmq", ".key", DATAUTIL_MP_USEIDX);
+    mainData->mobmqUserkey = filedataReadAll (tbuff);
+  }
+
+  tag = bdjoptGetData (OPT_P_MOBILEMQTAG);
+  snprintf (tbuff, sizeof (tbuff),
+      "https://%s/marquee4.php", sysvars [SV_MOBMQ_HOST]);
+  snprintf (qbuff, sizeof (qbuff), "v=2&mqdata=%s&key=%s&tag=%s",
+      jbuff, "93457645", tag);
+  if (mainData->mobmqUserkey != NULL) {
+    snprintf (tbuffb, sizeof (tbuffb), "&userkey=%s", mainData->mobmqUserkey);
+    strlcat (qbuff, tbuffb, MAXPATHLEN);
+  }
+  mainData->webclient = webclientPost (mainData->webclient,
+      tbuff, qbuff, mainData, mainMobilePostCallback);
+}
+
+static void
+mainMobilePostCallback (void *userdata, char *resp, size_t len)
+{
+  maindata_t    *mainData = userdata;
+  char          tbuff [MAXPATHLEN];
+
+  if (strncmp (resp, "OK", 2) == 0) {
+    ;
+  } else if (strncmp (resp, "NG", 2) == 0) {
+    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: unable to post mobmq data: %.*s\n", (int) len, resp);
+  } else {
+    FILE    *fh;
+
+    /* this should be the user key */
+    mainData->mobmqUserkey = strndup (resp, len);
+    /* need to save this for future use */
+    datautilMakePath (tbuff, sizeof (tbuff), "",
+        "mmq", ".key", DATAUTIL_MP_USEIDX);
+    fh = fopen (tbuff, "w");
+    fprintf (fh, "%.*s", (int) len, resp);
+    fclose (fh);
+  }
+}
+
+
+static void
 mainConnectMobileMq (maindata_t *mainData)
 {
   uint16_t    port;
   int         err;
+
+  if (bdjoptGetNum (OPT_P_MOBILEMARQUEE) == MOBILEMQ_OFF) {
+    return;
+  }
 
   port = bdjvarsl [BDJVL_MOBILEMQ_PORT];
   mainData->mobilemqSock = sockConnect (port, &err, 1000);

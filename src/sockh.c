@@ -27,7 +27,7 @@ sockhMainLoop (uint16_t listenPort, sockProcessMsg_t msgProc,
   int         tdone = 0;
   bdjmsgroute_t routefrom = ROUTE_NONE;
   bdjmsgroute_t route = ROUTE_NONE;
-  bdjmsgmsg_t msg = MSG_NONE;
+  bdjmsgmsg_t msg = MSG_NULL;
   char        args [BDJMSG_MAX];
   Sock_t      clsock;
 
@@ -69,6 +69,9 @@ sockhMainLoop (uint16_t listenPort, sockProcessMsg_t msgProc,
         msgDecode (msgbuff, &routefrom, &route, &msg, args, sizeof (args));
         logMsg (LOG_DBG, LOG_SOCKET, "got: route: %ld msg:%ld args:%s", route, msg, args);
         switch (msg) {
+          case MSG_NULL: {
+            break;
+          }
           case MSG_EXIT_FORCE: {
             logMsg (LOG_DBG, LOG_SOCKET, "force exit");
             exit (1);

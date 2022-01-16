@@ -21,15 +21,14 @@
 #include "bdjstring.h"
 #include "portability.h"
 
-static bool         logCheck (logidx_t idx, bdjloglvl_t level);
 static void         rlogStart (const char *processnm,
                         const char *processtag, int truncflag,
-                        bdjloglvl_t level);
+                        loglevel_t level);
 static bdjlog_t *   rlogOpen (const char *fn,
                         const char *processtag, int truncflag);
 static void         logInit (void);
 static const char * logTail (const char *fn);
-void                logDumpLevel (bdjloglvl_t level);
+void                logDumpLevel (loglevel_t level);
 
 static bdjlog_t *syslogs [LOG_MAX];
 static char *   logbasenm [LOG_MAX];
@@ -64,7 +63,7 @@ logClose (logidx_t idx)
 }
 
 void
-rlogProcBegin (bdjloglvl_t level, const char *tag, const char *fn, int line)
+rlogProcBegin (loglevel_t level, const char *tag, const char *fn, int line)
 {
   if (! logCheck (LOG_DBG, level)) {
     return;
@@ -74,7 +73,7 @@ rlogProcBegin (bdjloglvl_t level, const char *tag, const char *fn, int line)
 }
 
 void
-rlogProcEnd (bdjloglvl_t level, const char *tag, const char *suffix, const char *fn, int line)
+rlogProcEnd (loglevel_t level, const char *tag, const char *suffix, const char *fn, int line)
 {
   if (! logCheck (LOG_DBG, level)) {
     return;
@@ -97,7 +96,7 @@ rlogError (const char *msg, int err, const char *fn, int line)
 }
 
 void
-rlogVarMsg (logidx_t idx, bdjloglvl_t level,
+rlogVarMsg (logidx_t idx, loglevel_t level,
     const char *fn, int line, const char *fmt, ...)
 {
   bdjlog_t      *l;
@@ -133,7 +132,7 @@ rlogVarMsg (logidx_t idx, bdjloglvl_t level,
 }
 
 void
-logSetLevel (logidx_t idx, bdjloglvl_t level)
+logSetLevel (logidx_t idx, loglevel_t level)
 {
   syslogs [idx]->level = level;
   logDumpLevel (level);
@@ -142,13 +141,13 @@ logSetLevel (logidx_t idx, bdjloglvl_t level)
 /* these routines act upon all three open logs */
 
 void
-logStart (const char *processtag, bdjloglvl_t level)
+logStart (const char *processtag, loglevel_t level)
 {
   rlogStart (NULL, processtag, 1, level);
 }
 
 void
-logStartAppend (const char *processnm, const char *processtag, bdjloglvl_t level)
+logStartAppend (const char *processnm, const char *processtag, loglevel_t level)
 {
   rlogStart (processnm, processtag, 0, level);
 }
@@ -165,10 +164,8 @@ logEnd (void)
   }
 }
 
-/* internal routines */
-
-static bool
-logCheck (logidx_t idx, bdjloglvl_t level)
+bool
+logCheck (logidx_t idx, loglevel_t level)
 {
   bdjlog_t      *l;
 
@@ -182,9 +179,11 @@ logCheck (logidx_t idx, bdjloglvl_t level)
   return true;
 }
 
+/* internal routines */
+
 static void
 rlogStart (const char *processnm, const char *processtag,
-    int truncflag, bdjloglvl_t level)
+    int truncflag, loglevel_t level)
 {
   char      tnm [MAXPATHLEN];
   char      tdt [40];
@@ -255,7 +254,7 @@ logTail (const char *fn)
 }
 
 void
-logDumpLevel (bdjloglvl_t level)
+logDumpLevel (loglevel_t level)
 {
   char          tbuff [MAXPATHLEN];
 

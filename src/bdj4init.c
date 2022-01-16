@@ -46,14 +46,14 @@ initLocale (void)
 int
 bdj4startup (int argc, char *argv[])
 {
-  mstime_t  mt;
-  mstime_t  dbmt;
-  int       c = 0;
-  int       rc = 0;
-  int       count = 0;
-  int       option_index = 0;
-  char      tbuff [MAXPATHLEN];
-  uint16_t  loglevel = LOG_IMPORTANT | LOG_MAIN;
+  mstime_t    mt;
+  mstime_t    dbmt;
+  int         c = 0;
+  int         rc = 0;
+  int         count = 0;
+  int         option_index = 0;
+  char        tbuff [MAXPATHLEN];
+  loglevel_t  loglevel = LOG_IMPORTANT | LOG_MAIN;
 
   static struct option bdj_options [] = {
     { "main",       no_argument,        NULL,   0 },

@@ -26,6 +26,13 @@ hdr     signal.h
 hdr     stdint.h
 hdr     string.h
 hdr     unistd.h
+if not_have_pkg_openssl ! _pkg_libs_openssl
+ hdr    openssl/ssl.h
+ hdr    openssl/err.h
+endif
+if not_have_pkg_curl ! _pkg_libs_curl
+ hdr    curl/curl.h
+endif
 # winsock2 should come before windows.h
 hdr	winsock2.h
 hdr	windows.h
@@ -82,6 +89,15 @@ lib     WriteFile
 lib     WSACleanup -lws2_32
 lib     WSAGetLastError -lws2_32
 lib     WSAStartup -lws2_32
+hdr	openssl/ssl.h
+hdr	openssl/err.h
+
+if not_have_pkg_curl ! _pkg_libs_curl
+ lib    curl_global_init -L../plocal/bin -lcurl -lc-ares -lnghttp2 -lzstd -lz
+endif
+if not_have_pkg_openssl ! _pkg_libs_openssl && _hdr_openssl_ssl_h
+ lib    SSL_connect -lssl -lcrypto, -L../plocal/bin -lssl -lcrypto
+endif
 
 args noconst mkdir
 

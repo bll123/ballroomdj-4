@@ -8,7 +8,6 @@
 #include <assert.h>
 
 #include "bdjopt.h"
-#include "bdjvars.h"
 #include "datafile.h"
 #include "datautil.h"
 #include "fileop.h"

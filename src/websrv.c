@@ -1,5 +1,4 @@
 #include "config.h"
-#include "configssl.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,11 +10,14 @@
 
 #include "mongoose.h"
 
+#include "log.h"
 #include "websrv.h"
+
+static void websrvLog (const void *msg, size_t len, void *userdata);
 
 websrv_t *
 websrvInit (uint16_t listenPort, mg_event_handler_t eventHandler,
-    bool *done, void *userdata)
+    void *userdata)
 {
   websrv_t        *websrv;
   char            tbuff [100];
@@ -23,12 +25,16 @@ websrvInit (uint16_t listenPort, mg_event_handler_t eventHandler,
   websrv = malloc (sizeof (websrv_t));
   assert (websrv != NULL);
 
+  mg_log_set_callback (websrvLog, NULL);
+  if (logCheck (LOG_DBG, LOG_WEBSRV)) {
+    mg_log_set ("4");
+  }
+
   mg_mgr_init (&websrv->mgr);
   websrv->mgr.userdata = userdata;
-//  mg_log_set ("4");
 
   snprintf (tbuff, sizeof (tbuff), "http://0.0.0.0:%d", listenPort);
-  mg_http_listen (&websrv->mgr, tbuff, eventHandler, &userdata);
+  mg_http_listen (&websrv->mgr, tbuff, eventHandler, userdata);
   return websrv;
 }
 
@@ -45,4 +51,11 @@ void
 websrvProcess (websrv_t *websrv)
 {
   mg_mgr_poll (&websrv->mgr, 100);
+}
+
+static void
+websrvLog (const void *tmsg, size_t len, void *userdata)
+{
+  const char  *msg = tmsg;
+  logMsg (LOG_DBG, LOG_WEBSRV, "%.*s", len, msg);
 }

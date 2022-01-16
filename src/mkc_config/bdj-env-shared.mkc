@@ -113,4 +113,7 @@ extension obj
 extension exe
 extension shlib
 
+pkg libs openssl
+pkg libs libcurl
+
 cmd_msgfmt

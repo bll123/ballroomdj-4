@@ -3,10 +3,11 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <stdbool.h>
 
 #include "fileutil.h"
 
-typedef uint32_t   bdjloglvl_t;
+typedef uint32_t   loglevel_t;
 
 #define LOG_NONE        0x00000000
 #define LOG_IMPORTANT   0x00000001  // 1
@@ -24,6 +25,8 @@ typedef uint32_t   bdjloglvl_t;
 #define LOG_PLAYER      0x00001000  // 4096
 #define LOG_DATAFILE    0x00002000  // 8192
 #define LOG_PROCESS     0x00004000  // 16384
+#define LOG_WEBSRV      0x00008000  // 32768
+#define LOG_WEBCLIENT   0x00010000  // 65536
 #define LOG_ALL         0xFFFFFFFF
 
 typedef enum {
@@ -53,18 +56,19 @@ typedef struct {
 
 bdjlog_t *  logOpen (const char *fn, const char *processtag);
 bdjlog_t *  logOpenAppend (const char *fn, const char *processtag);
-void        logClose (logidx_t);
-void        rlogProcBegin (bdjloglvl_t level, const char *tag,
+void        logClose (logidx_t idx);
+bool        logCheck (logidx_t idx, loglevel_t level);
+void        rlogProcBegin (loglevel_t level, const char *tag,
                 const char *fn, int line);
-void        rlogProcEnd (bdjloglvl_t level, const char *tag,
+void        rlogProcEnd (loglevel_t level, const char *tag,
                 const char *suffix, const char *fn, int line);
 void        rlogError (const char *msg, int err, const char *fn, int line);
-void        rlogVarMsg (logidx_t, bdjloglvl_t level,
+void        rlogVarMsg (logidx_t, loglevel_t level,
                 const char *fn, int line, const char *fmt, ...);
-void        logSetLevel (logidx_t idx, bdjloglvl_t level);
-void        logStart (const char *processtag, bdjloglvl_t level);
+void        logSetLevel (logidx_t idx, loglevel_t level);
+void        logStart (const char *processtag, loglevel_t level);
 void        logStartAppend (const char *processnm,
-                const char *processtag, bdjloglvl_t level);
+                const char *processtag, loglevel_t level);
 void        logEnd (void);
 
 #endif /* INC_BDJLOG_H */

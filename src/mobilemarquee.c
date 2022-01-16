@@ -1,5 +1,4 @@
 #include "config.h"
-#include "configssl.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -37,7 +36,6 @@ typedef struct {
   long            tval4;
   websrv_t        *websrv;
   char            *marqueeData;
-  bool            done;
   bool            mainHandshake : 1;
   long            tval5;
 } mobmqdata_t;
@@ -50,16 +48,15 @@ static int  mobilemqProcessing (void *udata);
 static void mobilemqSigHandler (int sig);
 
 static int            gKillReceived = 0;
-  /* mongoose seems to trash the userdata, so use a global */
-static mobmqdata_t    mobmqData;
 
 int
 main (int argc, char *argv[])
 {
+  mobmqdata_t     mobmqData;
   int             c = 0;
   int             rc = 0;
   int             option_index = 0;
-  bdjloglvl_t     loglevel = LOG_IMPORTANT | LOG_MAIN;
+  loglevel_t      loglevel = LOG_IMPORTANT | LOG_MAIN;
   uint16_t        listenPort;
   char            *tval;
 
@@ -128,7 +125,6 @@ main (int argc, char *argv[])
   }
   mobmqData.websrv = NULL;
   mobmqData.marqueeData = NULL;
-  mobmqData.done = false;
   mobmqData.mainHandshake = false;
 
   mobmqData.tval1 = 0x11223344;
@@ -137,8 +133,7 @@ main (int argc, char *argv[])
   mobmqData.tval4 = 0x11223344;
   mobmqData.tval5 = 0x11223344;
 
-  mobmqData.websrv = websrvInit (mobmqData.port, mmEventHandler,
-      &mobmqData.done, NULL);
+  mobmqData.websrv = websrvInit (mobmqData.port, mmEventHandler, &mobmqData);
 
   listenPort = bdjvarsl [BDJVL_MOBILEMQ_PORT];
   sockhMainLoop (listenPort, mobilemqProcessMsg, mobilemqProcessing, &mobmqData);
@@ -165,16 +160,33 @@ main (int argc, char *argv[])
 static void
 mmEventHandler (struct mg_connection *c, int ev, void *ev_data, void *userdata)
 {
+  mobmqdata_t   *mobmqData = userdata;
   char          *data = NULL;
   char          *title = NULL;
   char          tbuff [400];
+
+  if (mobmqData->tval1 != 0x11223344) {
+    fprintf (stderr, "1: udata trached\n");
+  }
+  if (mobmqData->tval2 != 0x11223344) {
+    fprintf (stderr, "2: udata trached\n");
+  }
+  if (mobmqData->tval3 != 0x11223344) {
+    fprintf (stderr, "3: udata trached\n");
+  }
+  if (mobmqData->tval4 != 0x11223344) {
+    fprintf (stderr, "4: udata trached\n");
+  }
+  if (mobmqData->tval5 != 0x11223344) {
+    fprintf (stderr, "5: udata trached\n");
+  }
 
   if (ev == MG_EV_HTTP_MSG) {
     struct mg_http_message *hm = (struct mg_http_message *) ev_data;
 
     if (mg_http_match_uri (hm, "/mmupdate")) {
-      data = mobmqData.marqueeData;
-      title = mobmqData.title;
+      data = mobmqData->marqueeData;
+      title = mobmqData->title;
       if (data == NULL) {
         if (title == NULL) {
           title = "";

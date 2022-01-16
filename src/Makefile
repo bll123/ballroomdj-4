@@ -31,7 +31,6 @@ MKC_OUTPUT_PA = configpa.h
 MKC_OUTPUT_VOLWIN = configvolwin.h
 MKC_OUTPUT_VLC = configvlc.h
 MKC_OUTPUT_TEST = configt.h
-MKC_OUTPUT_SSL = configssl.h
 MKC_ENV_SHR = $(MKC_PREFIX)-env.shared
 MKC_ENV_TEST = $(MKC_PREFIX)-env.test
 
@@ -42,7 +41,6 @@ MKC_CONF_PA = $(MKC_CONFDIR)/$(MKC_PREFIX)pa.mkc
 MKC_CONF_VOLWIN = $(MKC_CONFDIR)/$(MKC_PREFIX)volwin.mkc
 MKC_CONF_VLC = $(MKC_CONFDIR)/$(MKC_PREFIX)vlc.mkc
 MKC_CONF_TEST = $(MKC_CONFDIR)/$(MKC_PREFIX)test.mkc
-MKC_CONF_SSL = $(MKC_CONFDIR)/$(MKC_PREFIX)ssl.mkc
 MKC_ENV_SHR_CONF = $(MKC_CONFDIR)/$(MKC_PREFIX)-env-shared.mkc
 MKC_ENV_TEST_CONF = $(MKC_CONFDIR)/$(MKC_PREFIX)-env-test.mkc
 
@@ -61,7 +59,6 @@ MKC_REQLIB_PA = $(MKC_PREFIX)-reqlibs.pa
 MKC_REQLIB_VOLWIN = $(MKC_PREFIX)-reqlibs.volwin
 MKC_REQLIB_VLC = $(MKC_PREFIX)-reqlibs.vlc
 MKC_REQLIB_TEST = $(MKC_PREFIX)-reqlibs.test
-MKC_REQLIB_SSL = $(MKC_PREFIX)-reqlibs.ssl
 MKC_ECHO =
 #MKC_ECHO = -e
 
@@ -200,10 +197,6 @@ $(MKC_REQLIB_TEST):  $(MKC_OUTPUT_TEST)
 	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh -reqlib \
 		-o $(MKC_REQLIB_TEST) $(MKC_OUTPUT_TEST)
 
-$(MKC_REQLIB_SSL):  $(MKC_OUTPUT_SSL)
-	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh -reqlib \
-		-o $(MKC_REQLIB_SSL) $(MKC_OUTPUT_SSL)
-
 $(MKC_OUTPUT):       $(MKC_ENV_SHR) $(MKC_CONF)
 	@-$(RM) -f $(MKC_OUTPUT)
 	. ./$(MKC_ENV_SHR);$(_MKCONFIG_SHELL) \
@@ -238,11 +231,6 @@ $(MKC_OUTPUT_TEST):       $(MKC_ENV_TEST) $(MKC_CONF_TEST)
 	@-$(RM) -f $(MKC_OUTPUT_TEST)
 	. ./$(MKC_ENV_TEST);$(_MKCONFIG_SHELL) \
 		$(MKC_DIR)/mkconfig.sh $(MKC_CONF_TEST)
-
-$(MKC_OUTPUT_SSL):       $(MKC_ENV_SSL) $(MKC_CONF_SSL)
-	@-$(RM) -f $(MKC_OUTPUT_SSL)
-	. ./$(MKC_ENV_SSL);$(_MKCONFIG_SHELL) \
-		$(MKC_DIR)/mkconfig.sh $(MKC_CONF_SSL)
 
 # compilation
 
@@ -287,6 +275,7 @@ tclean:
 	@-$(RM) -f ../install/*~ ../pkg/*~ build/*~ utils/*~
 	@-$(RM) -f ../templates/*~ ../vlc-log.txt vlc-log.txt
 	@-$(RM) -f si-in.txt si-sort.txt
+	@-$(RM) -f ../web/*~ ../http/*~
 
 # bdj executables
 
@@ -294,6 +283,7 @@ LAUNCHEROBJS = \
 	$(OBJDIR)/bdj4$(OBJ_EXT) \
 	$(OBJDIR)/bdjstring$(OBJ_EXT) \
 	$(OBJDIR)/datautil$(OBJ_EXT) \
+	$(OBJDIR)/filedata$(OBJ_EXT) \
 	$(OBJDIR)/fileop$(OBJ_EXT) \
 	$(OBJDIR)/pathutil$(OBJ_EXT) \
 	$(OBJDIR)/sysvars$(OBJ_EXT) \
@@ -368,13 +358,12 @@ MMOBJS = \
 	$(OBJDIR)/websrv$(OBJ_EXT)
 
 $(BINDIR)/mobilemarquee$(EXE_EXT): $(MKC_REQLIB) $(MKC_REQLIB_COMMON) \
-		$(MKC_REQLIB_SSL) $(MMOBJS) \
+		$(MMOBJS) \
 		$(SHLIBDIR)/libbdj4common$(SHLIB_EXT)
 	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh \
 		-link -exec $(MKC_ECHO) \
 		-r $(MKC_REQLIB) \
 		-r $(MKC_REQLIB_COMMON) \
-		-r $(MKC_REQLIB_SSL) \
 		-o $@ \
 		$(MMOBJS) \
 		-L $(SHLIBDIR) -rpath $(BINDIR) \
@@ -437,7 +426,8 @@ LIBBDJOBJS = \
 	$(OBJDIR)/songsel$(OBJ_EXT) \
 	$(OBJDIR)/sortopt$(OBJ_EXT) \
 	$(OBJDIR)/status$(OBJ_EXT) \
-	$(OBJDIR)/tagdef$(OBJ_EXT)
+	$(OBJDIR)/tagdef$(OBJ_EXT) \
+	$(OBJDIR)/webclient$(OBJ_EXT)
 
 $(SHLIBDIR)/libbdj4$(SHLIB_EXT): $(MKC_REQLIB) $(MKC_REQLIB_COMMON) $(LIBBDJOBJS) \
 		$(SHLIBDIR)/libbdj4common$(SHLIB_EXT)
@@ -599,7 +589,7 @@ $(OBJDIR)/mongoose$(OBJ_EXT): ../packages/mongoose/mongoose.c $(MKC_OUTPUT)
 		-o $@ -shared \
 		-Wno-declaration-after-statement \
 		-DMG_ENABLE_IPV6=1 \
-		-DMG_ENABLE_LOG=0 \
+		-DMG_ENABLE_LOG=1 \
 		-DMG_ENABLE_SSI=0 \
 		-DMG_ENABLE_DIRLIST=0 \
 		-DMG_ENABLE_OPENSSL=1 \
@@ -692,11 +682,13 @@ $(OBJDIR)/lock$(OBJ_EXT): lock.c config.h sysvars.h portability.h process.h tmut
  datautil.h fileop.h
 $(OBJDIR)/log$(OBJ_EXT): log.c config.h log.h fileutil.h tmutil.h datautil.h bdjstring.h \
  portability.h
-$(OBJDIR)/mobilemarquee$(OBJ_EXT): mobilemarquee.c config.h configssl.h \
- ../packages/mongoose/mongoose.h bdjopt.h list.h
+$(OBJDIR)/mobilemarquee$(OBJ_EXT): mobilemarquee.c config.h ../packages/mongoose/mongoose.h \
+ bdjmsg.h bdjopt.h list.h bdjvars.h lock.h datautil.h log.h fileutil.h \
+ process.h sockh.h sock.h sysvars.h portability.h tmutil.h websrv.h
 $(OBJDIR)/musicdb$(OBJ_EXT): musicdb.c config.h musicdb.h song.h list.h rafile.h \
  bdjstring.h lock.h datautil.h datafile.h tagdef.h log.h fileutil.h
-$(OBJDIR)/musicq$(OBJ_EXT): musicq.c config.h musicq.h queue.h song.h list.h
+$(OBJDIR)/musicq$(OBJ_EXT): musicq.c config.h bdjvarsdf.h datafile.h list.h dance.h \
+ musicq.h queue.h song.h tagdef.h bdjstring.h
 $(OBJDIR)/pathutil$(OBJ_EXT): pathutil.c config.h bdjstring.h pathutil.h portability.h
 $(OBJDIR)/playlist$(OBJ_EXT): playlist.c config.h bdjvarsdf.h datafile.h list.h dance.h \
  datautil.h fileop.h level.h log.h fileutil.h musicdb.h song.h playlist.h \
@@ -744,4 +736,8 @@ $(OBJDIR)/volpa$(OBJ_EXT): volpa.c config.h configpa.h volume.h dylib.h portabil
  bdjstring.h tmutil.h
 $(OBJDIR)/volume$(OBJ_EXT): volume.c config.h bdjopt.h list.h datautil.h dylib.h \
  portability.h sysvars.h volume.h
+$(OBJDIR)/webclient$(OBJ_EXT): webclient.c config.h ../packages/mongoose/mongoose.h log.h \
+ fileutil.h sysvars.h portability.h webclient.h
+$(OBJDIR)/websrv$(OBJ_EXT): websrv.c config.h ../packages/mongoose/mongoose.h log.h \
+ fileutil.h websrv.h
 $(OBJDIR)/volwin$(OBJ_EXT): volwin.cpp config.h configvolwin.h

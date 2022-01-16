@@ -19,3 +19,4 @@ syntax: regexp
 ^src/.*\.dll$
 ^test.dir/test.files/
 ^tmp/
+^web/marquee4.html$

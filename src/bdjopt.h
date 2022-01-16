@@ -4,6 +4,31 @@
 #include "list.h"
 
 typedef enum {
+  PL_STATE_STOPPED,
+  PL_STATE_LOADING,
+  PL_STATE_PLAYING,
+  PL_STATE_PAUSED,
+  PL_STATE_IN_FADEOUT,
+  PL_STATE_IN_GAP,
+} playerstate_t;
+
+typedef enum {
+  STATE_NOT_RUNNING,
+  STATE_INITIALIZING,
+  STATE_LISTENING,
+  STATE_CONNECTING,
+  STATE_WAIT_HANDSHAKE,
+  STATE_RUNNING,
+  STATE_CLOSING,
+} programstate_t;
+
+typedef enum {
+  MOBILEMQ_OFF,
+  MOBILEMQ_LOCAL,
+  MOBILEMQ_INTERNET,
+} bdjmobilemq_t;
+
+typedef enum {
   FADETYPE_TRIANGLE,
   FADETYPE_QUARTER_SINE,
   FADETYPE_HALF_SINE,

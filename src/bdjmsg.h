@@ -12,7 +12,7 @@ typedef enum {
 } bdjmsgroute_t;
 
 typedef enum {
-  MSG_NONE,
+  MSG_NULL,
   MSG_HANDSHAKE,
   MSG_SET_DEBUG_LVL,
   MSG_EXIT_FORCE,           // only for testing, may not work yet.

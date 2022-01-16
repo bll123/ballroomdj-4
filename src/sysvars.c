@@ -20,11 +20,20 @@
 
 #include "sysvars.h"
 #include "bdjstring.h"
+#include "filedata.h"
 #include "portability.h"
 #include "pathutil.h"
 
 char        sysvars [SV_MAX][MAXPATHLEN];
 ssize_t     lsysvars [SVL_MAX];
+
+static char *cacertFiles [] = {
+  "/etc/ssl/certs/ca-certificates.crt",
+  "/opt/local/etc/openssl/cert.pem",
+  "/usr/local/etc/openssl/cert.pem",
+  "http/curl-ca-bundle.crt",
+};
+#define CACERT_FILE_COUNT (sizeof (cacertFiles) / sizeof (char *))
 
 void
 sysvarsInit (const char *argv0)
@@ -132,6 +141,37 @@ sysvarsInit (const char *argv0)
     p = strrchr (buff, '/');
     *p = '\0';
     strlcpy (sysvars [SV_BDJ4DIR], buff, MAXPATHLEN);
+  }
+
+  strlcpy (sysvars [SV_MOBMQ_HOST], "ballroomdj.org", MAXPATHLEN);
+
+  for (size_t i = 0; i < CACERT_FILE_COUNT; ++i) {
+    rc = stat (cacertFiles [i], &statbuf);
+    if (rc == 0) {
+      strlcpy (sysvars [SV_CA_FILE], cacertFiles [i], MAXPATHLEN);
+      break;
+    }
+  }
+
+  strlcpy (sysvars [SV_BDJ4_VERSION], "unknown", MAXPATHLEN);
+  rc = stat ("VERSION.txt", &statbuf);
+  if (rc == 0) {
+    char    *data;
+    char    *tokptr;
+    char    *tokptrb;
+    char    *v;
+    char    *b;
+
+    data = filedataReadAll ("VERSION.txt");
+    v = strtok_r (data, "\r\n", &tokptr);
+    p = strtok_r (v, "=", &tokptrb);
+    p = strtok_r (NULL, "=", &tokptrb);
+    strlcpy (sysvars [SV_BDJ4_VERSION], p, MAXPATHLEN);
+    b = strtok_r (NULL, "\r\n", &tokptr);
+    p = strtok_r (b, "=", &tokptrb);
+    p = strtok_r (NULL, "=", &tokptrb);
+    strlcpy (sysvars [SV_BDJ4_BUILD], p, MAXPATHLEN);
+    free (data);
   }
 
   lsysvars [SVL_BDJIDX] = 0;

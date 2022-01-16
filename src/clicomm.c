@@ -22,7 +22,7 @@ main (int argc, char *argv[])
 {
   char            buff [80];
   bdjmsgroute_t   route = ROUTE_NONE;
-  bdjmsgmsg_t     msg = MSG_NONE;
+  bdjmsgmsg_t     msg = MSG_NULL;
   int             routeok = 0;
   int             msgok = 0;
   int             argsok = 0;

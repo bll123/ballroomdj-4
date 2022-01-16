@@ -130,7 +130,7 @@ main (int argc, char *argv[])
   int             c = 0;
   int             rc = 0;
   int             option_index = 0;
-  bdjloglvl_t     loglevel = LOG_IMPORTANT | LOG_MAIN;
+  loglevel_t      loglevel = LOG_IMPORTANT | LOG_MAIN;
   uint16_t        listenPort;
 
   static struct option bdj_options [] = {

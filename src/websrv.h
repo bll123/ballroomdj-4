@@ -6,7 +6,7 @@ typedef struct {
 } websrv_t;
 
 websrv_t *websrvInit (uint16_t listenPort, mg_event_handler_t eventHandler,
-    bool *done, void *userdata);
+    void *userdata);
 void websrvFree (websrv_t *websrv);
 void websrvProcess (websrv_t *websrv);
 

@@ -171,7 +171,7 @@ bdj.doUpdate = function () {
     }
   };
   if (tag) {
-    xhr.open('GET', '/marquee.php?v=1&tag='+tag, true);
+    xhr.open('GET', '/marquee4.php?v=2&tag='+tag, true);
   } else {
     xhr.open('GET', '/mmupdate', true);
   }
