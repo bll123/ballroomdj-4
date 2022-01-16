@@ -8,6 +8,7 @@
 #include <assert.h>
 
 #include "bdjopt.h"
+#include "bdjvars.h"
 #include "datafile.h"
 #include "datautil.h"
 #include "fileop.h"
@@ -17,6 +18,7 @@
 static void bdjoptConvFadeType (char *, datafileret_t *);
 static void bdjoptCreateNewConfigs (void);
 static void bdjoptCreateDefaultFiles (void);
+static void bdjoptConvMobileMq (char *data, datafileret_t *ret);
 
 static datafile_t   *bdjopt = NULL;
 
@@ -57,7 +59,7 @@ static datafilekey_t bdjoptprofiledfkeys[] = {
   { "FADETYPE",             OPT_P_FADETYPE,             VALUE_DATA, bdjoptConvFadeType },
   { "GAP",                  OPT_P_GAP,                  VALUE_NUM, NULL },
   { "MAXPLAYTIME",          OPT_P_MAXPLAYTIME,          VALUE_NUM, NULL },
-  { "MOBILEMARQUEE",        OPT_P_MOBILEMARQUEE,        VALUE_NUM, parseConvBoolean },
+  { "MOBILEMARQUEE",        OPT_P_MOBILEMARQUEE,        VALUE_NUM, bdjoptConvMobileMq },
   { "MOBILEMQPORT",         OPT_P_MOBILEMQPORT,         VALUE_NUM, NULL },
   { "MOBILEMQTAG",          OPT_P_MOBILEMQTAG,          VALUE_DATA, NULL },
   { "MOBILEMQTITLE",        OPT_P_MOBILEMQTITLE,        VALUE_DATA, NULL },
@@ -294,3 +296,20 @@ bdjoptCreateDefaultFiles (void)
   datautilMakePath (path, MAXPATHLEN, "profiles", BDJ_CONFIG_BASEFN,
       BDJ_CONFIG_EXT, DATAUTIL_MP_HOSTNAME | DATAUTIL_MP_USEIDX);
 }
+
+static void
+bdjoptConvMobileMq (char *data, datafileret_t *ret)
+{
+  bdjmobilemq_t   val = MOBILEMQ_OFF;
+
+  ret->valuetype = VALUE_NUM;
+
+  if (strcmp (data, "internet") == 0) {
+    val = MOBILEMQ_INTERNET;
+  }
+  if (strcmp (data, "local") == 0) {
+    val = MOBILEMQ_INTERNET;
+  }
+  ret->u.num = val;
+}
+

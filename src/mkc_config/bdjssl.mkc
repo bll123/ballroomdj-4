@@ -1,0 +1,12 @@
+loadunit env-systype
+loadunit c-main
+
+output configssl.h
+
+standard_system
+standard
+
+hdr	openssl/ssl.h
+hdr	openssl/err.h
+
+lib     SSL_connect -lssl -lcrypto, -L../plocal/bin -lssl -lcrypto

@@ -7,6 +7,7 @@ typedef enum {
   ROUTE_GUI,
   ROUTE_PLAYER,
   ROUTE_CLICOMM,
+  ROUTE_MOBILEMQ,
   ROUTE_MAX
 } bdjmsgroute_t;
 
@@ -34,6 +35,7 @@ typedef enum {
   MSG_SONG_PLAY,            // args: song fname
   MSG_SONG_PREP,            // args: song fname, duration, song-start
                             //    song-end, volume-adjustment-perc, gap
+  MSG_MARQUEE_DATA,         // args: mq data
   MSG_MAX
 } bdjmsgmsg_t;
 

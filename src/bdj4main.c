@@ -39,8 +39,9 @@
 typedef struct {
   mstime_t          tmstart;
   programstate_t    programState;
-  int               playerStarted;
   Sock_t            playerSock;
+  Sock_t            mobilemqSock;
+  Sock_t            guiSock;
   list_t            *playlistList;
   queue_t           *playlistQueue;
   musicq_t          *musicQueue;
@@ -49,13 +50,20 @@ typedef struct {
   playerstate_t     playerState;
   ssize_t           gap;
   bool              playerHandshake : 1;
+  bool              playerStarted : 1;
+  bool              mobilemqHandshake : 1;
+  bool              mobilemqStarted : 1;
+  bool              marqueeChanged : 1;
 } maindata_t;
 
 static void     mainStartPlayer (maindata_t *mainData);
 static void     mainStopPlayer (maindata_t *mainData);
+static void     mainStartMobileMq (maindata_t *mainData);
+static void     mainStopMobileMq (maindata_t *mainData);
 static int      mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
                     bdjmsgmsg_t msg, char *args, void *udata);
 static int      mainProcessing (void *udata);
+static void     mainConnectMobileMq (maindata_t *mainData);
 static void     mainPlaylistQueue (maindata_t *mainData, char *plname);
 static void     mainSigHandler (int sig);
 static void     mainMusicQueueFill (maindata_t *mainData);
@@ -79,14 +87,19 @@ main (int argc, char *argv[])
   mstimestart (&mainData.tmstart);
 
   mainData.programState = STATE_INITIALIZING;
-  mainData.playerStarted = 0;
   mainData.playerSock = INVALID_SOCKET;
+  mainData.mobilemqSock = INVALID_SOCKET;
+  mainData.mobilemqStarted = false;
   mainData.playlistList = NULL;
   mainData.playlistQueue = NULL;
   mainData.musicQueue = NULL;
   mainData.musicqCurrentIdx = MUSICQ_A;
   mainData.playerState = PL_STATE_STOPPED;
+  mainData.playerStarted = false;
   mainData.playerHandshake = false;
+  mainData.mobilemqStarted = false;
+  mainData.mobilemqHandshake = false;
+  mainData.marqueeChanged = false;
 
   processCatchSignals (mainSigHandler);
   processSigChildIgnore ();
@@ -152,7 +165,7 @@ mainStartPlayer (maindata_t *mainData)
     logMsg (LOG_DBG, LOG_IMPORTANT, "player %s failed to start", tbuff);
   } else {
     logMsg (LOG_DBG, LOG_BASIC, "player started pid: %zd", (ssize_t) pid);
-    mainData->playerStarted = 1;
+    mainData->playerStarted = true;
   }
   logProcEnd (LOG_PROC, "mainStartPlayer", "");
 }
@@ -171,8 +184,58 @@ mainStopPlayer (maindata_t *mainData)
       MSG_SOCKET_CLOSE, NULL);
   sockClose (mainData->playerSock);
   mainData->playerSock = INVALID_SOCKET;
-  mainData->playerStarted = 0;
+  mainData->playerStarted = false;
   logProcEnd (LOG_PROC, "mainStopPlayer", "");
+}
+
+static void
+mainStartMobileMq (maindata_t *mainData)
+{
+  char      tbuff [MAXPATHLEN];
+  pid_t     pid;
+  char      *extension = "";
+  int       rc;
+
+  if (bdjoptGetNum (OPT_P_MOBILEMARQUEE) == MOBILEMQ_OFF) {
+    return;
+  }
+  if (mainData->mobilemqStarted) {
+    return;
+  }
+
+  extension = "";
+  if (isWindows ()) {
+    extension = ".exe";
+  }
+  datautilMakePath (tbuff, sizeof (tbuff), "",
+      "mobilemarquee", extension, DATAUTIL_MP_EXECDIR);
+  rc = processStart (tbuff, &pid, lsysvars [SVL_BDJIDX],
+      bdjoptGetNum (OPT_G_DEBUGLVL));
+  if (rc < 0) {
+    logMsg (LOG_DBG, LOG_IMPORTANT, "mobilemarquee %s failed to start", tbuff);
+  } else {
+    logMsg (LOG_DBG, LOG_BASIC, "mobilemarquee started pid: %zd", (ssize_t) pid);
+    mainData->mobilemqStarted = true;
+  }
+}
+
+static void
+mainStopMobileMq (maindata_t *mainData)
+{
+  if (bdjoptGetNum (OPT_P_MOBILEMARQUEE) == MOBILEMQ_OFF) {
+    return;
+  }
+  if (! mainData->mobilemqStarted) {
+    return;
+  }
+
+  sockhSendMessage (mainData->mobilemqSock, ROUTE_MAIN, ROUTE_MOBILEMQ,
+      MSG_EXIT_REQUEST, NULL);
+  sockhSendMessage (mainData->mobilemqSock, ROUTE_MAIN, ROUTE_MOBILEMQ,
+      MSG_SOCKET_CLOSE, NULL);
+  sockClose (mainData->mobilemqSock);
+  mainData->mobilemqSock = INVALID_SOCKET;
+  mainData->mobilemqStarted = false;
 }
 
 static int
@@ -195,6 +258,9 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           if (routefrom == ROUTE_PLAYER) {
             mainData->playerHandshake = true;
           }
+          if (routefrom == ROUTE_MOBILEMQ) {
+            mainData->mobilemqHandshake = true;
+          }
           break;
         }
         case MSG_SET_DEBUG_LVL: {
@@ -214,7 +280,8 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_PLAYER_STATE: {
           mainData->playerState = atol (args);
-          logMsg (LOG_DBG, LOG_MSGS, "got: player-stat: %d", mainData->playerState);
+          logMsg (LOG_DBG, LOG_MSGS, "got: player-state: %d", mainData->playerState);
+          mainData->marqueeChanged = true;
           break;
         }
         case MSG_PLAYLIST_QUEUE: {
@@ -226,6 +293,7 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           gKillReceived = 0;
           mainData->programState = STATE_CLOSING;
           mainStopPlayer (mainData);
+          mainStopMobileMq (mainData);
           logProcEnd (LOG_PROC, "mainProcessMsg", "req-exit");
           return 1;
         }
@@ -259,6 +327,7 @@ mainProcessing (void *udata)
   if (mainData->programState == STATE_LISTENING &&
       ! mainData->playerStarted) {
     mainStartPlayer (mainData);
+    mainStartMobileMq (mainData);
     mainData->programState = STATE_CONNECTING;
     logMsg (LOG_DBG, LOG_MAIN, "prog: connecting");
   }
@@ -267,15 +336,24 @@ mainProcessing (void *udata)
       mainData->playerStarted &&
       mainData->playerSock == INVALID_SOCKET) {
     int           err;
-    uint16_t      playerPort;
+    uint16_t      port;
 
-    playerPort = bdjvarsl [BDJVL_PLAYER_PORT];
-    mainData->playerSock = sockConnect (playerPort, &err, 1000);
+    port = bdjvarsl [BDJVL_PLAYER_PORT];
+    mainData->playerSock = sockConnect (port, &err, 1000);
     if (mainData->playerSock != INVALID_SOCKET) {
       sockhSendMessage (mainData->playerSock, ROUTE_MAIN, ROUTE_PLAYER,
           MSG_HANDSHAKE, NULL);
       mainData->programState = STATE_WAIT_HANDSHAKE;
       logMsg (LOG_DBG, LOG_MAIN, "prog: wait for handshake");
+    }
+
+    mainConnectMobileMq (mainData);
+
+    port = bdjvarsl [BDJVL_GUI_PORT];
+    mainData->guiSock = sockConnect (port, &err, 1000);
+    if (mainData->guiSock != INVALID_SOCKET) {
+      sockhSendMessage (mainData->guiSock, ROUTE_MAIN, ROUTE_GUI,
+          MSG_HANDSHAKE, NULL);
     }
   }
 
@@ -287,8 +365,88 @@ mainProcessing (void *udata)
     }
   }
 
+  if (mainData->programState != STATE_RUNNING) {
+    return gKillReceived;
+  }
+
+  if (mainData->marqueeChanged) {
+    char        tbuff [200];
+    char        jbuff [2048];
+    char        *title;
+    char        *dstr;
+    ssize_t     mqLen;
+    ssize_t     musicqLen;
+
+
+    mainData->marqueeChanged = false;
+
+    mqLen = bdjoptGetNum (OPT_G_PLAYERQLEN);
+    musicqLen = musicqGetLen (mainData->musicQueue, mainData->musicqCurrentIdx);
+    title = bdjoptGetData (OPT_P_MOBILEMQTITLE);
+    if (title == NULL) {
+      title = "";
+    }
+
+    dstr = "";
+    if (musicqLen > 0) {
+      dstr = musicqGetDance (mainData->musicQueue, mainData->musicqCurrentIdx, 0);
+      if (dstr == NULL) {
+        dstr = "";
+      }
+    }
+
+    strlcpy (jbuff, "{ ", sizeof (jbuff));
+
+    snprintf (tbuff, sizeof (tbuff), "\"mqlen\" : \"%zd\", ", mqLen);
+    strlcat (jbuff, tbuff, sizeof (jbuff));
+    snprintf (tbuff, sizeof (tbuff), "\"title\" : \"%s\", ", title);
+    strlcat (jbuff, tbuff, sizeof (jbuff));
+
+    snprintf (tbuff, sizeof (tbuff), "\"current\" : \"%s\"", dstr);
+    strlcat (jbuff, tbuff, sizeof (jbuff));
+
+    if (musicqGetLen (mainData->musicQueue, mainData->musicqCurrentIdx) > 0) {
+      for (ssize_t i = 1; i <= mqLen; ++i) {
+        if (mainData->playerState == PL_STATE_IN_GAP ||
+            (mainData->playerState == PL_STATE_IN_FADEOUT && i > 1)) {
+          dstr = "";
+        } else {
+          dstr = musicqGetDance (mainData->musicQueue, mainData->musicqCurrentIdx, i);
+          if (dstr == NULL) {
+            dstr = "";
+          }
+        }
+        snprintf (tbuff, sizeof (tbuff), "\"mq%zd\" : \"%s\"", i, dstr);
+        strlcat (jbuff, ", ", sizeof (jbuff));
+        strlcat (jbuff, tbuff, sizeof (jbuff));
+      }
+    } else {
+      strlcat (jbuff, ", ", sizeof (jbuff));
+      strlcat (jbuff, "\"skip\" : \"true\"", sizeof (jbuff));
+    }
+    strlcat (jbuff, " }", sizeof (jbuff));
+
+    sockhSendMessage (mainData->mobilemqSock, ROUTE_MAIN, ROUTE_MOBILEMQ,
+        MSG_MARQUEE_DATA, jbuff);
+  }
+
   return gKillReceived;
 }
+
+static void
+mainConnectMobileMq (maindata_t *mainData)
+{
+  uint16_t    port;
+  int         err;
+
+  port = bdjvarsl [BDJVL_MOBILEMQ_PORT];
+  mainData->mobilemqSock = sockConnect (port, &err, 1000);
+  if (mainData->mobilemqSock != INVALID_SOCKET) {
+    sockhSendMessage (mainData->mobilemqSock, ROUTE_MAIN, ROUTE_MOBILEMQ,
+        MSG_HANDSHAKE, NULL);
+  }
+}
+
 
 static void
 mainPlaylistQueue (maindata_t *mainData, char *plname)
@@ -317,18 +475,19 @@ mainSigHandler (int sig)
 static void
 mainMusicQueueFill (maindata_t *mainData)
 {
-  ssize_t     maxlen;
+  ssize_t     mqLen;
   ssize_t     currlen;
   song_t      *song = NULL;
   playlist_t  *playlist = NULL;
 
 
   logProcBegin (LOG_PROC, "mainMusicQueueFill");
-  maxlen = bdjoptGetNum (OPT_G_PLAYERQLEN);
+  mqLen = bdjoptGetNum (OPT_G_PLAYERQLEN);
   playlist = queueGetCurrent (mainData->playlistQueue);
   currlen = musicqGetLen (mainData->musicQueue, mainData->musicqCurrentIdx);
-  logMsg (LOG_DBG, LOG_BASIC, "fill: %ld < %ld", currlen, maxlen);
-  while (playlist != NULL && currlen < maxlen) {
+  logMsg (LOG_DBG, LOG_BASIC, "fill: %ld < %ld", currlen, mqLen);
+    /* want current + mqLen songs */
+  while (playlist != NULL && currlen <= mqLen) {
     song = playlistGetNextSong (playlist, mainCheckMusicQueue, mainData);
     if (song == NULL) {
       queuePop (mainData->playlistQueue);
@@ -336,6 +495,7 @@ mainMusicQueueFill (maindata_t *mainData)
       continue;
     }
     musicqPush (mainData->musicQueue, mainData->musicqCurrentIdx, song, playlistGetName (playlist));
+    mainData->marqueeChanged = true;
     currlen = musicqGetLen (mainData->musicQueue, mainData->musicqCurrentIdx);
   }
   logProcEnd (LOG_PROC, "mainMusicQueueFill", "");
@@ -524,6 +684,7 @@ mainMusicQueueFinish (maindata_t *mainData)
   logProcBegin (LOG_PROC, "mainMusicQueueFinish");
   mainData->playerState = PL_STATE_STOPPED;
   musicqPop (mainData->musicQueue, mainData->musicqCurrentIdx);
+  mainData->marqueeChanged = true;
   logProcEnd (LOG_PROC, "mainMusicQueueFinish", "");
 }
 

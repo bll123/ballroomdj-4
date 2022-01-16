@@ -107,6 +107,10 @@ main (int argc, char *argv[])
         route = ROUTE_GUI;
         routeok = 1;
       }
+      if (strcmp (buff, "mm") == 0) {
+        route = ROUTE_MOBILEMQ;
+        routeok = 1;
+      }
       if (strcmp (buff, "cliexit") == 0) {
         if (mainSock != INVALID_SOCKET) {
           sockhSendMessage (mainSock, ROUTE_CLICOMM, ROUTE_MAIN, MSG_SOCKET_CLOSE, NULL);

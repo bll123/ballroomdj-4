@@ -119,7 +119,7 @@ static void     playerFadeVolSet (playerdata_t *playerData);
 static double   calcFadeIndex (playerdata_t *playerData);
 static void     playerStartFadeOut (playerdata_t *playerData);
 static void     playerSetCheckTimes (playerdata_t *playerData, prepqueue_t *pq);
-static void     playerSendPlayerState (playerdata_t *playerData);
+static void     playerSetPlayerState (playerdata_t *playerData, playerstate_t pstate);
 
 static int      gKillReceived = 0;
 
@@ -325,10 +325,10 @@ playerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_PLAY_STOP: {
           playerStop (playerData);
-          playerData->playerState = PL_STATE_STOPPED;
           playerData->pauseAtEnd = false;
           playerSendPauseAtEndState (playerData);
-          playerSendPlayerState (playerData);
+          playerSetPlayerState (playerData, PL_STATE_STOPPED);
+          logMsg (LOG_DBG, LOG_BASIC, "pl state: stopped (req)");
           break;
         }
         case MSG_PLAYER_VOLSINK_SET: {
@@ -431,13 +431,16 @@ playerProcessing (void *udata)
     }
   }
 
-  if (playerData->playerState == PL_STATE_STOPPED &&
+  if (playerData->playerState == PL_STATE_IN_GAP &&
       playerData->inGap) {
     time_t            currTime = mstime ();
 
     if (currTime >= playerData->gapFinishTime) {
       playerData->inGap = false;
       playerData->gapFinishTime = 0;
+        /* don't send this state transition to main         */
+        /* this keeps the mobile marquee in a steady state  */
+      playerData->playerState = PL_STATE_STOPPED;
     }
   }
 
@@ -446,7 +449,6 @@ playerProcessing (void *udata)
       queueGetCount (playerData->playRequest) > 0) {
     prepqueue_t       *pq = NULL;
     char              *request;
-
 
     request = queuePop (playerData->playRequest);
     pq = playerLocatePreppedSong (playerData, request);
@@ -466,11 +468,9 @@ playerProcessing (void *udata)
     }
     pliMediaSetup (playerData->pli, pq->tempname);
     pliStartPlayback (playerData->pli, pq->songstart);
-    playerData->playerState = PL_STATE_LOADING;
-    playerSendPlayerState (playerData);
-    free (request);
-
+    playerSetPlayerState (playerData, PL_STATE_LOADING);
     logMsg (LOG_DBG, LOG_BASIC, "pl state: loading");
+    free (request);
   }
 
   if (playerData->playerState == PL_STATE_LOADING) {
@@ -499,16 +499,16 @@ playerProcessing (void *udata)
         playerFadeVolSet (playerData);
       }
 
+      playerSetPlayerState (playerData, PL_STATE_PLAYING);
       logMsg (LOG_DBG, LOG_BASIC, "pl state: playing");
-      playerData->playerState = PL_STATE_PLAYING;
-      playerSendPlayerState (playerData);
     } else {
       /* ### FIX: need to process this; stopped/ended/error */
       ;
     }
   }
 
-  if (playerData->playerState == PL_STATE_PLAYING) {
+  if (playerData->playerState == PL_STATE_PLAYING ||
+      playerData->playerState == PL_STATE_IN_FADEOUT) {
     prepqueue_t       *pq = playerData->currentSong;
     time_t            currTime = mstime ();
 
@@ -544,13 +544,12 @@ playerProcessing (void *udata)
 
         logMsg (LOG_DBG, LOG_BASIC, "actual play time: %zd", mstime() - playerData->playTimeStart);
         playerStop (playerData);
-        playerData->playerState = PL_STATE_STOPPED;
-        playerSendPlayerState (playerData);
-        logMsg (LOG_DBG, LOG_BASIC, "pl state: stopped");
         if (pq->announce == PREP_SONG) {
           if (playerData->pauseAtEnd) {
             playerData->pauseAtEnd = false;
             playerSendPauseAtEndState (playerData);
+            playerSetPlayerState (playerData, PL_STATE_STOPPED);
+            logMsg (LOG_DBG, LOG_BASIC, "pl state: stopped (fin)");
               /* let the main know we're done with this song. */
             sockhSendMessage (playerData->mainSock, ROUTE_PLAYER, ROUTE_MAIN,
                 MSG_PLAYBACK_STOP, NULL);
@@ -571,10 +570,17 @@ playerProcessing (void *udata)
         }
 
         if (playerData->gap > 0) {
+          playerSetPlayerState (playerData, PL_STATE_IN_GAP);
+          logMsg (LOG_DBG, LOG_BASIC, "pl state: in gap");
           volumeSet (playerData->volume, playerData->currentSink, 0);
           logMsg (LOG_DBG, LOG_VOLUME, "gap set volume: %d", 0);
           playerData->inGap = true;
           playerData->gapFinishTime = mstime () + playerData->gap;
+        } else {
+            /* don't send this state transition to main         */
+            /* this keeps the mobile marquee in a steady state  */
+          playerData->playerState = PL_STATE_STOPPED;
+          logMsg (LOG_DBG, LOG_BASIC, "pl state: stopped (no gap)");
         }
       } /* has stopped */
     } /* time to check...*/
@@ -787,8 +793,8 @@ playerPause (playerdata_t *playerData)
   if (playerData->inFadeOut) {
     playerData->pauseAtEnd = true;
   } else if (plistate == PLI_STATE_PLAYING) {
-    playerData->playerState = PL_STATE_PAUSED;
-    playerSendPlayerState (playerData);
+    playerSetPlayerState (playerData, PL_STATE_PAUSED);
+    logMsg (LOG_DBG, LOG_BASIC, "pl state: paused");
     pliPause (playerData->pli);
     if (playerData->inFadeIn) {
       playerData->inFade = false;
@@ -808,8 +814,8 @@ playerPlay (playerdata_t *playerData)
         /* all of the check times must be reset */
       prepqueue_t       *pq = playerData->currentSong;
       playerSetCheckTimes (playerData, pq);
-      playerData->playerState = PL_STATE_PLAYING;
-      playerSendPlayerState (playerData);
+      playerSetPlayerState (playerData, PL_STATE_PLAYING);
+      logMsg (LOG_DBG, LOG_BASIC, "pl state: playing");
     }
     pliPlay (playerData->pli);
   }
@@ -1022,6 +1028,8 @@ playerStartFadeOut (playerdata_t *playerData)
   playerData->fadeSamples = tm / FADEOUT_TIMESLICE - 2;
   playerData->fadeCount = playerData->fadeSamples;
   playerFadeVolSet (playerData);
+  playerSetPlayerState (playerData, PL_STATE_IN_FADEOUT);
+  logMsg (LOG_DBG, LOG_BASIC, "pl state: in fadeout");
 }
 
 
@@ -1045,10 +1053,11 @@ playerSetCheckTimes (playerdata_t *playerData, prepqueue_t *pq)
 }
 
 static void
-playerSendPlayerState (playerdata_t *playerData)
+playerSetPlayerState (playerdata_t *playerData, playerstate_t pstate)
 {
   char    tbuff [20];
 
+  playerData->playerState = pstate;
   snprintf (tbuff, sizeof (tbuff), "%d", playerData->playerState);
   sockhSendMessage (playerData->mainSock, ROUTE_PLAYER, ROUTE_MAIN,
       MSG_PLAYER_STATE, tbuff);

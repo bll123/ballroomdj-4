@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- VERSION 2022-1-15 -->
+<!-- VERSION 2010-10-31 -->
 <html>
 <head>
   <title>Marquee</title>
@@ -76,6 +76,9 @@
         <p id="current" class="pbold pcol"></p>
       </div>
       <div class="linebox">
+        <p id="mq0" class="plist"></p>
+      </div>
+      <div class="linebox">
         <p id="mq1" class="plist"></p>
       </div>
       <div class="linebox">
@@ -101,9 +104,6 @@
       </div>
       <div class="linebox">
         <p id="mq9" class="plist"></p>
-      </div>
-      <div class="linebox">
-        <p id="mq10" class="plist"></p>
       </div>
     </div>
   </div>
@@ -139,9 +139,9 @@ bdj.updateData = function (data) {
   }
 
   if (jd.skip == 'true') {
-    var mqlen = 10;
+    var mqlen = 12;
     var i;
-    for (i = 1; i <= mqlen; ++i) {
+    for (i = 0; i < mqlen; ++i) {
       nm = "mq"+i;
       o = document.getElementById(nm);
       if (o) {
@@ -151,7 +151,7 @@ bdj.updateData = function (data) {
   } else {
     var mqlen = jd.mqlen;
     var i;
-    for (i = 1; i <= mqlen; ++i) {
+    for (i = 0; i < mqlen; ++i) {
       nm = "mq"+i;
       o = document.getElementById(nm);
       if (o) {
@@ -162,8 +162,8 @@ bdj.updateData = function (data) {
 }
 bdj.doUpdate = function () {
   var tag = null;
-//WEB  var urlParams = new URLSearchParams(window.location.search);
-//WEB  tag = urlParams.get('tag');
+  var urlParams = new URLSearchParams(window.location.search);
+  tag = urlParams.get('tag');
   var xhr = new XMLHttpRequest();
   xhr.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
@@ -173,7 +173,7 @@ bdj.doUpdate = function () {
   if (tag) {
     xhr.open('GET', '/marquee.php?v=1&tag='+tag, true);
   } else {
-    xhr.open('GET', '/mmupdate', true);
+    xhr.open('GET', '/bdjupdate', true);
   }
   xhr.send();
 }

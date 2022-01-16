@@ -6,6 +6,8 @@ typedef enum {
   PL_STATE_LOADING,
   PL_STATE_PLAYING,
   PL_STATE_PAUSED,
+  PL_STATE_IN_FADEOUT,
+  PL_STATE_IN_GAP,
 } playerstate_t;
 
 typedef enum {
@@ -19,6 +21,12 @@ typedef enum {
 } programstate_t;
 
 typedef enum {
+  MOBILEMQ_OFF,
+  MOBILEMQ_LOCAL,
+  MOBILEMQ_INTERNET,
+} bdjmobilemq_t;
+
+typedef enum {
   BDJV_UNKNOWN,
   BDJV_MAX,
 } bdjvarkey_t;
@@ -27,6 +35,7 @@ typedef enum {
   BDJVL_MAIN_PORT,
   BDJVL_PLAYER_PORT,
   BDJVL_GUI_PORT,
+  BDJVL_MOBILEMQ_PORT,
   BDJVL_NUM_PORTS,
   BDJVL_MAX,
 } bdjvarkeyl_t;

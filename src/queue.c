@@ -118,7 +118,9 @@ queueGetByIdx (queue_t *q, ssize_t idx)
     ++count;
     node = node->next;
   }
-  data = node->data;
+  if (node != NULL) {
+    data = node->data;
+  }
   return data;
 }
 

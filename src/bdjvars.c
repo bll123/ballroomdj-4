@@ -25,7 +25,8 @@ bdjvarsInit (void)
   bdjvarsl [BDJVL_MAIN_PORT] = port++;
   bdjvarsl [BDJVL_PLAYER_PORT] = port++;
   bdjvarsl [BDJVL_GUI_PORT] = port++;
-  bdjvarsl [BDJVL_NUM_PORTS] = 3;
+  bdjvarsl [BDJVL_MOBILEMQ_PORT] = port++;
+  bdjvarsl [BDJVL_NUM_PORTS] = 4;
 
   bdjvarsAdjustPorts ();
 }
@@ -63,5 +64,6 @@ bdjvarsAdjustPorts (void)
   bdjvarsl [BDJVL_MAIN_PORT] += bdjvarsl [BDJVL_NUM_PORTS] * idx;
   bdjvarsl [BDJVL_PLAYER_PORT] += bdjvarsl [BDJVL_NUM_PORTS] * idx;
   bdjvarsl [BDJVL_GUI_PORT] += bdjvarsl [BDJVL_NUM_PORTS] * idx;
+  bdjvarsl [BDJVL_MOBILEMQ_PORT] += bdjvarsl [BDJVL_NUM_PORTS] * idx;
 }
 

@@ -22,6 +22,16 @@
 static pid_t   getPidFromFile (char *);
 
 int
+lockExists (char *fn, datautil_mp_t flags)
+{
+  int rc = lockAcquirePid (fn, getpid(), flags);
+  if (rc > 0) {
+    lockRelease (fn, flags);
+  }
+  return rc;
+}
+
+int
 lockAcquire (char *fn, datautil_mp_t flags)
 {
   int rc = lockAcquirePid (fn, getpid(), flags);

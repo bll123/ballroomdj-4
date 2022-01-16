@@ -76,9 +76,6 @@
         <p id="current" class="pbold pcol"></p>
       </div>
       <div class="linebox">
-        <p id="mq0" class="plist"></p>
-      </div>
-      <div class="linebox">
         <p id="mq1" class="plist"></p>
       </div>
       <div class="linebox">
@@ -104,6 +101,9 @@
       </div>
       <div class="linebox">
         <p id="mq9" class="plist"></p>
+      </div>
+      <div class="linebox">
+        <p id="mq10" class="plist"></p>
       </div>
     </div>
   </div>
@@ -139,9 +139,9 @@ bdj.updateData = function (data) {
   }
 
   if (jd.skip == 'true') {
-    var mqlen = 12;
+    var mqlen = 10;
     var i;
-    for (i = 0; i < mqlen; ++i) {
+    for (i = 1; i <= mqlen; ++i) {
       nm = "mq"+i;
       o = document.getElementById(nm);
       if (o) {
@@ -151,7 +151,7 @@ bdj.updateData = function (data) {
   } else {
     var mqlen = jd.mqlen;
     var i;
-    for (i = 0; i < mqlen; ++i) {
+    for (i = 1; i <= mqlen; ++i) {
       nm = "mq"+i;
       o = document.getElementById(nm);
       if (o) {
@@ -173,14 +173,14 @@ bdj.doUpdate = function () {
   if (tag) {
     xhr.open('GET', '/marquee.php?v=1&tag='+tag, true);
   } else {
-    xhr.open('GET', '/bdjupdate', true);
+    xhr.open('GET', '/mmupdate', true);
   }
   xhr.send();
 }
 bdj.doLoad = function () {
   if (bdj.updIntervalId == '') {
     bdj.doUpdate();
-    bdj.updIntervalId = setInterval(bdj.doUpdate,1000);
+    bdj.updIntervalId = setInterval(bdj.doUpdate,500);
   }
 }
 

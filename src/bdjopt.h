@@ -61,8 +61,8 @@ typedef enum {
   OPT_P_FADETYPE,                   //
   OPT_P_GAP,                        //
   OPT_P_MAXPLAYTIME,                //
-  OPT_P_MOBILEMARQUEE,
-  OPT_P_MOBILEMQPORT,
+  OPT_P_MOBILEMARQUEE,              //
+  OPT_P_MOBILEMQPORT,               //
   OPT_P_MOBILEMQTAG,
   OPT_P_MOBILEMQTITLE,
   OPT_P_MQFONT,

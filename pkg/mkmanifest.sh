@@ -1,7 +1,7 @@
 #!/bin/bash
 
 find LICENSE.txt README.txt VERSION.txt \
-      bin conv img install locale plocal/bin templates \
+      bin conv img install licences locale plocal/bin templates \
       -type f -print |
     grep -v 'check_all' |
     grep -v 'clicomm' |

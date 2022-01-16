@@ -8,8 +8,11 @@
 #include <errno.h>
 #include <assert.h>
 
+#include "bdjvarsdf.h"
+#include "dance.h"
 #include "musicq.h"
 #include "queue.h"
+#include "tagdef.h"
 
 static void musicqQueueFree (void *tq);
 
@@ -54,11 +57,11 @@ musicqQueueFree (void *titem)
 }
 
 void
-musicqPush (musicq_t *musicq, musicqidx_t idx, song_t *song, char *plname)
+musicqPush (musicq_t *musicq, musicqidx_t musicqidx, song_t *song, char *plname)
 {
   musicqitem_t      *musicqitem;
 
-  if (musicq == NULL || musicq->q [idx] == NULL) {
+  if (musicq == NULL || musicq->q [musicqidx] == NULL) {
     return;
   }
 
@@ -68,19 +71,19 @@ musicqPush (musicq_t *musicq, musicqidx_t idx, song_t *song, char *plname)
   musicqitem->playlistName = strdup (plname);
   musicqitem->announce = NULL;
   musicqitem->flags = MUSICQ_FLAG_NONE;
-  queuePush (musicq->q [idx], musicqitem);
+  queuePush (musicq->q [musicqidx], musicqitem);
 }
 
 song_t *
-musicqGetCurrent (musicq_t *musicq, musicqidx_t idx)
+musicqGetCurrent (musicq_t *musicq, musicqidx_t musicqidx)
 {
   musicqitem_t      *musicqitem;
 
-  if (musicq == NULL || musicq->q [idx] == NULL) {
+  if (musicq == NULL || musicq->q [musicqidx] == NULL) {
     return NULL;
   }
 
-  musicqitem = queueGetCurrent (musicq->q [idx]);
+  musicqitem = queueGetCurrent (musicq->q [musicqidx]);
   if (musicqitem == NULL) {
     return NULL;
   }
@@ -206,4 +209,31 @@ musicqGetLen (musicq_t *musicq, musicqidx_t musicqidx)
   }
 
   return queueGetCount (musicq->q [musicqidx]);
+}
+
+
+char *
+musicqGetDance (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx)
+{
+  musicqitem_t  *musicqitem;
+  song_t        *song;
+  listidx_t     dancekey;
+  char          *danceStr;
+  dance_t       *dances;
+
+  if (musicq == NULL || musicq->q [musicqidx] == NULL) {
+    return NULL;
+  }
+  if (idx >= queueGetCount (musicq->q [musicqidx])) {
+    return NULL;
+  }
+
+  musicqitem = queueGetByIdx (musicq->q [musicqidx], idx);
+  if (musicqitem != NULL) {
+    song = musicqitem->song;
+    dancekey = songGetNum (song, TAG_DANCE);
+    dances = bdjvarsdf [BDJVDF_DANCES];
+    danceStr = danceGetData (dances, dancekey, DANCE_DANCE);
+  }
+  return danceStr;
 }
