@@ -54,7 +54,6 @@ typ     suseconds_t
 lib     CloseHandle
 lib     CreateFile
 lib     CreateProcess
-lib     CreateSymbolicLink
 lib     dlopen -ldl
 lib     drand48
 lib     fcntl
@@ -84,6 +83,7 @@ lib	strlcpy
 lib	strlcat
 lib     strtok_r
 lib     symlink
+lib     TerminateProcess
 lib     uname
 lib     WriteFile
 lib     WSACleanup -lws2_32

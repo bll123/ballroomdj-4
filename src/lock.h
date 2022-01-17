@@ -5,7 +5,10 @@
 
 #include "datautil.h"
 
-#define MOBILEMQ_LOCK_FN "mobilemq"
+#define MAIN_LOCK_FN        "main"
+#define MOBILEMQ_LOCK_FN    "mobilemq"
+#define REMCTRL_LOCK_FN     "remctrl"
+#define PLAYER_LOCK_FN      "player"
 
 int   lockExists (char *, datautil_mp_t);
 int   lockAcquire (char *, datautil_mp_t);

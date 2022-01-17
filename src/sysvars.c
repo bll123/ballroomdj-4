@@ -21,6 +21,7 @@
 #include "sysvars.h"
 #include "bdjstring.h"
 #include "filedata.h"
+#include "fileop.h"
 #include "portability.h"
 #include "pathutil.h"
 
@@ -41,7 +42,6 @@ sysvarsInit (const char *argv0)
   char          tbuf [MAXPATHLEN+1];
   char          tcwd [MAXPATHLEN+1];
   char          buff [MAXPATHLEN+1];
-  struct stat   statbuf;
   int           rc;
   char          *p;
 
@@ -129,8 +129,7 @@ sysvarsInit (const char *argv0)
   strlcpy (sysvars [SV_SHLIB_EXT], SHLIB_EXT, MAXPATHLEN);
 
   /* do not want to include fileop due to circular dependencies */
-  rc = stat ("data", &statbuf);
-  if (rc == 0) {
+  if (fileopExists ("data")) {
     /* if there is a data directory in the current working directory  */
     /* a change of directories is contra-indicated.                   */
 
@@ -146,16 +145,14 @@ sysvarsInit (const char *argv0)
   strlcpy (sysvars [SV_MOBMQ_HOST], "ballroomdj.org", MAXPATHLEN);
 
   for (size_t i = 0; i < CACERT_FILE_COUNT; ++i) {
-    rc = stat (cacertFiles [i], &statbuf);
-    if (rc == 0) {
+    if (fileopExists (cacertFiles [i])) {
       strlcpy (sysvars [SV_CA_FILE], cacertFiles [i], MAXPATHLEN);
       break;
     }
   }
 
   strlcpy (sysvars [SV_BDJ4_VERSION], "unknown", MAXPATHLEN);
-  rc = stat ("VERSION.txt", &statbuf);
-  if (rc == 0) {
+  if (fileopExists ("VERSION.txt")) {
     char    *data;
     char    *tokptr;
     char    *tokptrb;
@@ -175,6 +172,7 @@ sysvarsInit (const char *argv0)
   }
 
   lsysvars [SVL_BDJIDX] = 0;
+  lsysvars [SVL_BASEPORT] = 35548;
 }
 
 void

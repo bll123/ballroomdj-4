@@ -50,7 +50,7 @@ websrvFree (websrv_t *websrv)
 void
 websrvProcess (websrv_t *websrv)
 {
-  mg_mgr_poll (&websrv->mgr, 100);
+  mg_mgr_poll (&websrv->mgr, 10);
 }
 
 static void

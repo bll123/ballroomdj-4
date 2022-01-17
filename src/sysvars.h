@@ -23,6 +23,7 @@ typedef enum {
 
 typedef enum {
   SVL_BDJIDX,
+  SVL_BASEPORT,
   SVL_MAX
 } sysvarlkey_t;
 

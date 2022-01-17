@@ -8,7 +8,6 @@
 #include <string.h>
 #include <errno.h>
 #include <unistd.h>
-#include <signal.h>
 
 #if _hdr_winsock2
 # include <winsock2.h>
@@ -20,6 +19,7 @@
 #include "process.h"
 #include "log.h"
 
+/* returns 0 if process exists */
 int
 processExists (pid_t pid)
 {
@@ -61,7 +61,6 @@ processExists (pid_t pid)
   return -1;
 #endif
 }
-
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeclaration-after-statement"
@@ -151,8 +150,43 @@ processStart (const char *fn, pid_t *pid, ssize_t profile, ssize_t loglvl)
 #pragma GCC diagnostic pop
 #pragma clang diagnostic pop
 
+int
+processKill (pid_t pid)
+{
+#if _lib_kill
+  return (kill (pid, SIGTERM));
+#endif
+#if _lib_TerminateProcess
+  HANDLE hProcess;
+  DWORD exitCode;
+
+  logProcBegin (LOG_PROC, "processKill");
+  hProcess = OpenProcess (PROCESS_QUERY_LIMITED_INFORMATION, FALSE, pid);
+  if (NULL == hProcess) {
+    int err = GetLastError ();
+    if (err == ERROR_INVALID_PARAMETER) {
+      logMsg (LOG_DBG, LOG_IMPORTANT, "openprocess: %d", err);
+      logProcEnd (LOG_PROC, "openprocess", "fail-a");
+      return -1;
+    }
+    logMsg (LOG_DBG, LOG_IMPORTANT, "openprocess: %d", err);
+    logProcEnd (LOG_PROC, "openprocess", "fail-b");
+    return -1;
+  }
+
+  if (TerminateProcess (hProcess, 0)) {
+    CloseHandle (hProcess);
+    logMsg (LOG_DBG, LOG_PROCESS, "terminated: %lld", exitCode);
+    return 0;
+  }
+
+  CloseHandle (hProcess);
+  return -1;
+#endif
+}
+
 void
-processCatchSignals (void (*sigHandler)(int))
+processCatchSignal (void (*sigHandler)(int), int sig)
 {
 #if _lib_sigaction
   struct sigaction    sigact;
@@ -160,52 +194,42 @@ processCatchSignals (void (*sigHandler)(int))
 
   memset (&sigact, '\0', sizeof (sigact));
   sigact.sa_handler = sigHandler;
-  sigaction (SIGHUP, &sigact, &oldact);       /* 1: hangup      */
-  sigaction (SIGINT, &sigact, &oldact);       /* 2: interrupt   */
-  sigaction (SIGTERM, &sigact, &oldact);      /* 15: terminate  */
+  sigaction (sig, &sigact, &oldact);
 #endif
 #if ! _lib_sigaction && _lib_signal
-# if _define_SIGHUP
-  signal (SIGHUP, sigHandler);
-# endif
-  signal (SIGINT, sigHandler);
-  signal (SIGTERM, sigHandler);
+  signal (sig, sigHandler);
 #endif
 }
 
 void
-processSigChildIgnore (void)
+processIgnoreSignal (int sig)
 {
-#if _define_SIGCHLD
-# if _lib_sigaction
+#if _lib_sigaction
   struct sigaction    sigact;
   struct sigaction    oldact;
 
   memset (&sigact, '\0', sizeof (sigact));
   sigact.sa_handler = SIG_IGN;
-  sigaction (SIGCHLD, &sigact, &oldact);       /* 1: hangup      */
-# endif
-# if ! _lib_sigaction && _lib_signal
-  signal (SIGCHLD, SIG_IGN);
-# endif
+  sigaction (sig, &sigact, &oldact);
+#endif
+#if _lib_signal
+  signal (sig, SIG_IGN);
 #endif
 }
 
 void
-processSigChildDefault (void)
+processDefaultSignal (int sig)
 {
-#if _define_SIGCHLD
-# if _lib_sigaction
+#if _lib_sigaction
   struct sigaction    sigact;
   struct sigaction    oldact;
 
   memset (&sigact, '\0', sizeof (sigact));
   sigact.sa_handler = SIG_DFL;
-  sigaction (SIGCHLD, &sigact, &oldact);       /* 1: hangup      */
-# endif
-# if _lib_signal
-  signal (SIGCHLD, SIG_DFL);
-# endif
+  sigaction (sig, &sigact, &oldact);
+#endif
+#if _lib_signal
+  signal (sig, SIG_DFL);
 #endif
 }
 

@@ -31,7 +31,7 @@ main (int argc, char *argv[])
   int             err;
   Sock_t          mainSock = INVALID_SOCKET;
   Sock_t          playerSock = INVALID_SOCKET;
-  int             c;
+  int             c = 0;
   int             option_index = 0;
   uint16_t        mainPort;
   uint16_t        playerPort;

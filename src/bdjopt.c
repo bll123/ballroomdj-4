@@ -10,6 +10,7 @@
 #include "bdjopt.h"
 #include "datafile.h"
 #include "datautil.h"
+#include "filemanip.h"
 #include "fileop.h"
 #include "portability.h"
 #include "sysvars.h"
@@ -249,7 +250,7 @@ bdjoptCreateNewConfigs (void)
   sysvarSetNum (SVL_BDJIDX, currProfile);
   datautilMakePath (tpath, MAXPATHLEN, "", BDJ_CONFIG_BASEFN,
       BDJ_CONFIG_EXT, DATAUTIL_MP_USEIDX);
-  fileopCopy (path, tpath);
+  filemanipCopy (path, tpath);
 
     /* profile */
   sysvarSetNum (SVL_BDJIDX, 0);
@@ -258,7 +259,7 @@ bdjoptCreateNewConfigs (void)
   sysvarSetNum (SVL_BDJIDX, currProfile);
   datautilMakePath (tpath, MAXPATHLEN, "profiles", BDJ_CONFIG_BASEFN,
       BDJ_CONFIG_EXT, DATAUTIL_MP_USEIDX);
-  fileopCopy (path, tpath);
+  filemanipCopy (path, tpath);
 
     /* per machine */
   sysvarSetNum (SVL_BDJIDX, 0);
@@ -267,7 +268,7 @@ bdjoptCreateNewConfigs (void)
   sysvarSetNum (SVL_BDJIDX, currProfile);
   datautilMakePath (tpath, MAXPATHLEN, "", BDJ_CONFIG_BASEFN,
       BDJ_CONFIG_EXT, DATAUTIL_MP_HOSTNAME | DATAUTIL_MP_USEIDX);
-  fileopCopy (path, tpath);
+  filemanipCopy (path, tpath);
 
     /* per machine per profile */
   sysvarSetNum (SVL_BDJIDX, 0);
@@ -276,7 +277,7 @@ bdjoptCreateNewConfigs (void)
   sysvarSetNum (SVL_BDJIDX, currProfile);
   datautilMakePath (tpath, MAXPATHLEN, "profiles", BDJ_CONFIG_BASEFN,
       BDJ_CONFIG_EXT, DATAUTIL_MP_HOSTNAME | DATAUTIL_MP_USEIDX);
-  fileopCopy (path, tpath);
+  filemanipCopy (path, tpath);
 
   sysvarSetNum (SVL_BDJIDX, currProfile);
 }

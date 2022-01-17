@@ -8,6 +8,7 @@ typedef enum {
   ROUTE_PLAYER,
   ROUTE_CLICOMM,
   ROUTE_MOBILEMQ,
+  ROUTE_REMCTRL,
   ROUTE_MAX
 } bdjmsgroute_t;
 

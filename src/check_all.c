@@ -35,6 +35,8 @@ main (int argc, char *argv [])
   srunner_add_suite (sr, s);
   s = fileop_suite();
   srunner_add_suite (sr, s);
+  s = filemanip_suite();
+  srunner_add_suite (sr, s);
   s = sock_suite();
   srunner_add_suite (sr, s);
   s = lock_suite();

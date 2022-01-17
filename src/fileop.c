@@ -24,11 +24,6 @@
 #endif
 
 #include "fileop.h"
-#include "bdjstring.h"
-#include "portability.h"
-#include "pathutil.h"
-#include "sysvars.h"
-
 
 inline bool
 fileopExists (char *fname)
@@ -43,83 +38,6 @@ inline int
 fileopDelete (const char *fname)
 {
   int rc = unlink (fname);
-  return rc;
-}
-
-int
-fileopCopy (char *fname, char *nfn)
-{
-  char      cmd [MAXPATHLEN];
-  char      tfname [MAXPATHLEN];
-  char      tnfn [MAXPATHLEN];
-  int       rc;
-
-
-  if (isWindows ()) {
-    pathToWinPath (fname, tfname, MAXPATHLEN);
-    pathToWinPath (nfn, tnfn, MAXPATHLEN);
-    snprintf (cmd, MAXPATHLEN, "copy /y/b \"%s\" \"%s\" >NUL",
-        tfname, tnfn);
-  } else {
-    snprintf (cmd, MAXPATHLEN, "cp -f '%s' '%s' >/dev/null 2>&1", fname, nfn);
-  }
-  rc = system (cmd);
-  return rc;
-}
-
-/* link if possible, otherwise copy */
-int
-fileopLinkCopy (char *fname, char *nfn)
-{
-  char      cmd [MAXPATHLEN];
-  char      tfname [MAXPATHLEN];
-  char      tnfn [MAXPATHLEN];
-  int       rc = -1;
-
-  if (isWindows ()) {
-    int       haveWinSymLinks = 0;
-#if _lib_CreateSymbolicLink
-    ++haveWinSymLinks;
-#endif
-    if (atof (sysvars [SV_OSVERS]) >= 10.0 &&
-        atol (sysvars [SV_OSBUILD]) >= 14973) {
-      /* is windows ever going to allow symlinks?   */
-      /* only allowed in developer mode, sigh       */
-      ++haveWinSymLinks;
-    }
-
-    if (haveWinSymLinks == 3) {
-#if _lib_CreateSymbolicLink
-      rc = CreateSymbolicLink (nfn, fname, 0);
-#endif
-    } else {
-      pathToWinPath (fname, tfname, MAXPATHLEN);
-      pathToWinPath (nfn, tnfn, MAXPATHLEN);
-      snprintf (cmd, MAXPATHLEN, "copy /y/b \"%s\" \"%s\" >NUL",
-          tfname, tnfn);
-      rc = system (cmd);
-    }
-  } else {
-#if _lib_symlink
-    rc = symlink (fname, nfn);
-#endif
-  }
-  return rc;
-}
-
-int
-fileopMove (char *fname, char *nfn)
-{
-  int       rc = -1;
-
-  /*
-   * Windows won't rename to an existing file, but does
-   * not return an error.
-   */
-  if (isWindows()) {
-    fileopDelete (nfn);
-  }
-  rc = rename (fname, nfn);
   return rc;
 }
 

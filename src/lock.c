@@ -21,14 +21,21 @@
 
 static pid_t   getPidFromFile (char *);
 
-int
+  /* returns PID if the process exists            */
+  /* returns 0 if no lock exists or no process exists for this lock */
+pid_t
 lockExists (char *fn, datautil_mp_t flags)
 {
-  int rc = lockAcquirePid (fn, getpid(), flags);
-  if (rc > 0) {
-    lockRelease (fn, flags);
+  char      tfn [MAXPATHLEN];
+  pid_t     fpid = 0;
+
+  datautilMakePath (tfn, sizeof (tfn), "", fn, ".lck",
+      flags | DATAUTIL_MP_TMPDIR);
+  fpid = getPidFromFile (tfn);
+  if (fpid == -1 || ! processExists (fpid)) {
+    fpid = 0;
   }
-  return rc;
+  return fpid;
 }
 
 int

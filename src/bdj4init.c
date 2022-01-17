@@ -142,6 +142,5 @@ bdj4shutdown (void)
   bdjvarsdfloadCleanup ();
   bdjvarsCleanup ();
   logMsg (LOG_SESS, LOG_IMPORTANT, "init cleanup time: %ld ms", mstimeend (&mt));
-  logEnd ();
   lockRelease (MAIN_LOCK_FN, DATAUTIL_MP_USEIDX);
 }

@@ -23,21 +23,16 @@
 #include "websrv.h"
 
 typedef struct {
-  long            tval1;
   Sock_t          mainSock;
   programstate_t  programState;
-  mstime_t        tmstart;
+  mstime_t        tm;
   uint16_t        port;
   bdjmobilemq_t   type;
-  long            tval2;
   char            *name;
-  long            tval3;
   char            *title;
-  long            tval4;
   websrv_t        *websrv;
   char            *marqueeData;
   bool            mainHandshake : 1;
-  long            tval5;
 } mobmqdata_t;
 
 static void mmEventHandler (struct mg_connection *c, int ev,
@@ -63,12 +58,15 @@ main (int argc, char *argv[])
   static struct option bdj_options [] = {
     { "debug",      required_argument,  NULL,   'd' },
     { "profile",    required_argument,  NULL,   'p' },
-    { "player",     no_argument,        NULL,   0 },
     { NULL,         0,                  NULL,   0 }
   };
 
-  mstimestart (&mobmqData.tmstart);
-  processCatchSignals (mobilemqSigHandler);
+  mstimestart (&mobmqData.tm);
+#if _define_SIGHUP
+  processCatchSignal (mobilemqSigHandler, SIGHUP);
+#endif
+  processCatchSignal (mobilemqSigHandler, SIGINT);
+  processDefaultSignal (SIGTERM);
 
   sysvarsInit (argv[0]);
 
@@ -108,6 +106,7 @@ main (int argc, char *argv[])
 
   mobmqData.type = bdjoptGetNum (OPT_P_MOBILEMARQUEE);
   if (mobmqData.type == MOBILEMQ_OFF) {
+    lockRelease (MOBILEMQ_LOCK_FN, DATAUTIL_MP_USEIDX);
     exit (0);
   }
 
@@ -127,12 +126,6 @@ main (int argc, char *argv[])
   mobmqData.marqueeData = NULL;
   mobmqData.mainHandshake = false;
 
-  mobmqData.tval1 = 0x11223344;
-  mobmqData.tval2 = 0x11223344;
-  mobmqData.tval3 = 0x11223344;
-  mobmqData.tval4 = 0x11223344;
-  mobmqData.tval5 = 0x11223344;
-
   mobmqData.websrv = websrvInit (mobmqData.port, mmEventHandler, &mobmqData);
 
   listenPort = bdjvarsl [BDJVL_MOBILEMQ_PORT];
@@ -150,6 +143,7 @@ main (int argc, char *argv[])
   }
   bdjoptFree ();
   bdjvarsCleanup ();
+  logMsg (LOG_SESS, LOG_IMPORTANT, "running: time-to-end: %ld ms", mstimeend (&mobmqData.tm));
   logEnd ();
   lockRelease (MOBILEMQ_LOCK_FN, DATAUTIL_MP_USEIDX);
   return 0;
@@ -164,22 +158,6 @@ mmEventHandler (struct mg_connection *c, int ev, void *ev_data, void *userdata)
   char          *data = NULL;
   char          *title = NULL;
   char          tbuff [400];
-
-  if (mobmqData->tval1 != 0x11223344) {
-    fprintf (stderr, "1: udata trached\n");
-  }
-  if (mobmqData->tval2 != 0x11223344) {
-    fprintf (stderr, "2: udata trached\n");
-  }
-  if (mobmqData->tval3 != 0x11223344) {
-    fprintf (stderr, "3: udata trached\n");
-  }
-  if (mobmqData->tval4 != 0x11223344) {
-    fprintf (stderr, "4: udata trached\n");
-  }
-  if (mobmqData->tval5 != 0x11223344) {
-    fprintf (stderr, "5: udata trached\n");
-  }
 
   if (ev == MG_EV_HTTP_MSG) {
     struct mg_http_message *hm = (struct mg_http_message *) ev_data;
@@ -232,6 +210,8 @@ mobilemqProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_EXIT_REQUEST: {
+          mstimestart (&mobmqData->tm);
+          logMsg (LOG_SESS, LOG_IMPORTANT, "got exit request");
           gKillReceived = 0;
           sockhSendMessage (mobmqData->mainSock, ROUTE_MOBILEMQ, ROUTE_MAIN,
               MSG_SOCKET_CLOSE, NULL);
@@ -289,16 +269,22 @@ mobilemqProcessing (void *udata)
   if (mobmqData->programState == STATE_WAIT_HANDSHAKE) {
     if (mobmqData->mainHandshake) {
       mobmqData->programState = STATE_RUNNING;
-      logMsg (LOG_SESS, LOG_IMPORTANT, "running: time-to-start: %ld ms", mstimeend (&mobmqData->tmstart));
+      logMsg (LOG_SESS, LOG_IMPORTANT, "running: time-to-start: %ld ms", mstimeend (&mobmqData->tm));
     }
   }
 
   if (mobmqData->programState != STATE_RUNNING) {
       /* all of the processing that follows requires a running state */
+    if (gKillReceived) {
+      logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
+    }
     return gKillReceived;
   }
 
   websrvProcess (websrv);
+  if (gKillReceived) {
+    logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
+  }
   return gKillReceived;
 }
 

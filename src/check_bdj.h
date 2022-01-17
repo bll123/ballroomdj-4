@@ -5,6 +5,7 @@
 
 Suite *     datafile_suite (void);
 Suite *     filedata_suite (void);
+Suite *     filemanip_suite (void);
 Suite *     fileop_suite (void);
 Suite *     list_suite (void);
 Suite *     lock_suite (void);

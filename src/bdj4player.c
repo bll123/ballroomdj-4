@@ -25,6 +25,7 @@
 #include "bdjvars.h"
 #include "datautil.h"
 #include "fileop.h"
+#include "filemanip.h"
 #include "list.h"
 #include "lock.h"
 #include "log.h"
@@ -38,8 +39,6 @@
 #include "sysvars.h"
 #include "tmutil.h"
 #include "volume.h"
-
-#define PLAYER_LOCK_FN    "player"
 
 typedef struct {
   char          *songfullpath;
@@ -56,7 +55,7 @@ typedef struct {
   Sock_t          mainSock;
   Sock_t          guiSock;
   programstate_t  programState;
-  mstime_t        tmstart;
+  mstime_t        tm;
   long            globalCount;
   pli_t           *pli;
   volume_t        *volume;
@@ -140,10 +139,16 @@ main (int argc, char *argv[])
     { NULL,         0,                  NULL,   0 }
   };
 
-  mstimestart (&playerData.tmstart);
+  mstimestart (&playerData.tm);
 
-  processCatchSignals (playerSigHandler);
-  processSigChildDefault ();
+#if _define_SIGHUP
+  processCatchSignal (playerSigHandler, SIGHUP);
+#endif
+  processCatchSignal (playerSigHandler, SIGINT);
+  processDefaultSignal (SIGTERM);
+#if _define_SIGCHLD
+  processDefaultSignal (SIGCHLD);
+#endif
 
   playerData.programState = STATE_INITIALIZING;
   playerData.mainSock = INVALID_SOCKET;
@@ -268,11 +273,12 @@ main (int argc, char *argv[])
   if (playerData.playRequest != NULL) {
     queueFree (playerData.playRequest);
   }
-  logEnd ();
   bdjoptFree ();
   bdjvarsCleanup ();
   playerData.programState = STATE_NOT_RUNNING;
   lockRelease (PLAYER_LOCK_FN, DATAUTIL_MP_USEIDX);
+  logMsg (LOG_SESS, LOG_IMPORTANT, "running: time-to-end: %ld ms", mstimeend (&playerData.tm));
+  logEnd ();
   return 0;
 }
 
@@ -348,6 +354,8 @@ playerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_EXIT_REQUEST: {
+          mstimestart (&playerData->tm);
+          logMsg (LOG_SESS, LOG_IMPORTANT, "got exit request");
           gKillReceived = 0;
           logMsg (LOG_DBG, LOG_MSGS, "got: req-exit");
           playerData->programState = STATE_CLOSING;
@@ -414,12 +422,15 @@ playerProcessing (void *udata)
     if (playerData->mainHandshake) {
       playerData->programState = STATE_RUNNING;
       logMsg (LOG_DBG, LOG_MAIN, "prog: running");
-      logMsg (LOG_SESS, LOG_IMPORTANT, "running: time-to-start: %ld ms", mstimeend (&playerData->tmstart));
+      logMsg (LOG_SESS, LOG_IMPORTANT, "running: time-to-start: %ld ms", mstimeend (&playerData->tm));
     }
   }
 
   if (playerData->programState != STATE_RUNNING) {
       /* all of the processing that follows requires a running state */
+    if (gKillReceived) {
+      logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
+    }
     return gKillReceived;
   }
 
@@ -453,6 +464,9 @@ playerProcessing (void *udata)
     request = queuePop (playerData->playRequest);
     pq = playerLocatePreppedSong (playerData, request);
     if (pq == NULL) {
+      if (gKillReceived) {
+        logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
+      }
       return gKillReceived;
     }
 
@@ -597,6 +611,9 @@ playerProcessing (void *udata)
     playerProcessPrepRequest (playerData);
   }
 
+  if (gKillReceived) {
+    logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
+  }
   return gKillReceived;
 }
 
@@ -686,7 +703,7 @@ playerProcessPrepRequest (playerdata_t *playerData)
    * Symlinks work on Linux/Mac OS.
    */
   fileopDelete (npq->tempname);
-  fileopLinkCopy (npq->songfullpath, npq->tempname);
+  filemanipLinkCopy (npq->songfullpath, npq->tempname);
   if (! fileopExists (npq->tempname)) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: file copy failed: %s", npq->tempname);
     logProcEnd (LOG_PROC, "playerSongPrep", "copy-failed");

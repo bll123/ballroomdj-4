@@ -6,14 +6,15 @@
 #include <string.h>
 #include <assert.h>
 
-#include "datafile.h"
-#include "tmutil.h"
-#include "list.h"
-#include "fileop.h"
 #include "bdjstring.h"
+#include "datafile.h"
+#include "filedata.h"
+#include "filemanip.h"
+#include "fileop.h"
+#include "list.h"
 #include "log.h"
 #include "portability.h"
-#include "filedata.h"
+#include "tmutil.h"
 
 typedef enum {
   PARSE_SIMPLE,
@@ -523,9 +524,9 @@ datafileBackup (char *fname, int count)
     }
     if (fileopExists (ofn)) {
       if ((i - 1) != 0) {
-        fileopMove (ofn, nfn);
+        filemanipMove (ofn, nfn);
       } else {
-        fileopCopy (ofn, nfn);
+        filemanipCopy (ofn, nfn);
       }
     }
   }

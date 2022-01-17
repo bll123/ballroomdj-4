@@ -21,12 +21,14 @@ ssize_t     bdjvarsl [BDJVL_MAX];
 void
 bdjvarsInit (void)
 {
-  uint16_t        port = 35548;
+  uint16_t        port = lsysvars [SVL_BASEPORT];
+
   bdjvarsl [BDJVL_MAIN_PORT] = port++;
   bdjvarsl [BDJVL_PLAYER_PORT] = port++;
   bdjvarsl [BDJVL_GUI_PORT] = port++;
   bdjvarsl [BDJVL_MOBILEMQ_PORT] = port++;
-  bdjvarsl [BDJVL_NUM_PORTS] = 4;
+  bdjvarsl [BDJVL_REMCONTROL_PORT] = port++;
+  bdjvarsl [BDJVL_NUM_PORTS] = 5;
 
   bdjvarsAdjustPorts ();
 }
@@ -59,11 +61,14 @@ songFullFileName (char *sfname)
 static void
 bdjvarsAdjustPorts (void)
 {
-  ssize_t idx = lsysvars [SVL_BDJIDX];
+  ssize_t     idx = lsysvars [SVL_BDJIDX];
+  uint16_t    port;
 
-  bdjvarsl [BDJVL_MAIN_PORT] += bdjvarsl [BDJVL_NUM_PORTS] * idx;
-  bdjvarsl [BDJVL_PLAYER_PORT] += bdjvarsl [BDJVL_NUM_PORTS] * idx;
-  bdjvarsl [BDJVL_GUI_PORT] += bdjvarsl [BDJVL_NUM_PORTS] * idx;
-  bdjvarsl [BDJVL_MOBILEMQ_PORT] += bdjvarsl [BDJVL_NUM_PORTS] * idx;
+  port = lsysvars [SVL_BASEPORT] + bdjvarsl [BDJVL_NUM_PORTS] * idx;
+  bdjvarsl [BDJVL_MAIN_PORT] = port++;
+  bdjvarsl [BDJVL_PLAYER_PORT] = port++;
+  bdjvarsl [BDJVL_GUI_PORT] = port++;
+  bdjvarsl [BDJVL_MOBILEMQ_PORT] = port++;
+  bdjvarsl [BDJVL_REMCONTROL_PORT] = port++;
 }
 

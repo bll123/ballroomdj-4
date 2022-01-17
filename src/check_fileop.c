@@ -35,52 +35,6 @@ START_TEST(fileop_exists)
 }
 END_TEST
 
-START_TEST(fileop_copy)
-{
-  FILE      *fh;
-  int       rc;
-
-  char *ofn = "tmp/abc.txt.a";
-  char *nfn = "tmp/abc.txt.b";
-  unlink (ofn);
-  unlink (nfn);
-  fh = fopen (ofn, "w");
-  ck_assert_ptr_nonnull (fh);
-  fclose (fh);
-  rc = fileopCopy (ofn, nfn);
-  ck_assert_int_eq (rc, 0);
-  rc = fileopExists (ofn);
-  ck_assert_int_ne (rc, 0);
-  rc = fileopExists (nfn);
-  ck_assert_int_ne (rc, 0);
-  unlink (ofn);
-  unlink (nfn);
-}
-END_TEST
-
-START_TEST(fileop_move)
-{
-  FILE      *fh;
-  int       rc;
-
-  char *ofn = "tmp/abc.txt.c";
-  char *nfn = "tmp/abc.txt.d";
-  unlink (ofn);
-  unlink (nfn);
-  fh = fopen (ofn, "w");
-  ck_assert_ptr_nonnull (fh);
-  fclose (fh);
-  rc = fileopMove (ofn, nfn);
-  ck_assert_int_eq (rc, 0);
-  rc = fileopExists (ofn);
-  ck_assert_int_eq (rc, 0);
-  rc = fileopExists (nfn);
-  ck_assert_int_ne (rc, 0);
-  unlink (ofn);
-  unlink (nfn);
-}
-END_TEST
-
 START_TEST(fileop_delete)
 {
   FILE      *fh;
@@ -109,8 +63,6 @@ fileop_suite (void)
   s = suite_create ("File Ops Suite");
   tc = tcase_create ("File Op");
   tcase_add_test (tc, fileop_exists);
-  tcase_add_test (tc, fileop_copy);
-  tcase_add_test (tc, fileop_move);
   tcase_add_test (tc, fileop_delete);
   suite_add_tcase (s, tc);
   return s;
