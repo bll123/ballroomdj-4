@@ -83,6 +83,7 @@ ssize_t       playlistGetDanceNum (playlist_t *pl, dancekey_t dancekey,
                   pldancekey_t key);
 song_t        *playlistGetNextSong (playlist_t *, playlistCheck_t checkProc,
                   void *userdata);
+list_t        *playlistGetPlaylistList (void);
 bool          playlistFilterSong (dbidx_t dbidx, song_t *song,
                   void *tplaylist);
 

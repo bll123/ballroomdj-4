@@ -25,14 +25,15 @@ typedef struct {
 } ftest_t;
 
 static ftest_t tests [] = {
-  { "01 Bolero.mp3", 0, 13, 9, 3 },
+  { "profile", 0, 7, 7, 0 },
+  { "01 Bolero.mp3", 0, 13, 9, 4 },
   { "/usr/binx", 4, 4, 4, 0 },
   { "/usr", 1, 3, 3, 0 },
-  { "/home/bll/stuff.txt", 9, 9, 5, 3 },
+  { "/home/bll/stuff.txt", 9, 9, 5, 4 },
   { "/home/bll/stuff/", 9, 5, 5, 0 },
   { "/home/bll/stuff", 9, 5, 5, 0 },
-  { "/home/bll/stuff.x", 9, 7, 5, 1 },
-  { "/home/bll/x.stuff", 9, 7, 1, 5 },
+  { "/home/bll/stuff.x", 9, 7, 5, 2 },
+  { "/home/bll/x.stuff", 9, 7, 1, 6 },
   { "/home/bll/stuff.x/", 9, 7, 7, 0 },
   { "/", 1, 1, 1, 0 },
 };

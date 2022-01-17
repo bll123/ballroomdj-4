@@ -27,12 +27,14 @@ typedef enum {
 typedef struct {
   datafile_t      *df;
   list_t          *dances;
+  list_t          *danceList;
 } dance_t;
 
 dance_t       *danceAlloc (char *);
 void          danceFree (dance_t *);
 char *        danceGetData (dance_t *, listidx_t dkey, listidx_t idx);
 ssize_t       danceGetNum (dance_t *, listidx_t dkey, listidx_t idx);
+list_t        *danceGetDanceList (dance_t *);
 list_t        * danceGetLookup (void);
 void          danceConvDance (char *keydata, datafileret_t *ret);
 

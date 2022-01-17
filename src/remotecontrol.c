@@ -29,6 +29,9 @@ typedef struct {
   uint16_t        port;
   char            *user;
   char            *pass;
+  int             haveData;
+  char            *danceList;
+  char            *playlistList;
   websrv_t        *websrv;
   bool            enabled : 1;
   bool            mainHandshake : 1;
@@ -113,6 +116,9 @@ main (int argc, char *argv[])
   remctrlData.port = bdjoptGetNum (OPT_P_REMCONTROLPORT);
   remctrlData.user = strdup (bdjoptGetData (OPT_P_REMCONTROLUSER));
   remctrlData.pass = strdup (bdjoptGetData (OPT_P_REMCONTROLPASS));
+  remctrlData.haveData = 0;
+  remctrlData.danceList = "";
+  remctrlData.playlistList = "";
   remctrlData.websrv = NULL;
   remctrlData.mainHandshake = false;
 
@@ -127,6 +133,12 @@ main (int argc, char *argv[])
   }
   if (remctrlData.pass != NULL) {
     free (remctrlData.pass);
+  }
+  if (*remctrlData.danceList) {
+    free (remctrlData.danceList);
+  }
+  if (*remctrlData.playlistList) {
+    free (remctrlData.playlistList);
   }
   bdjoptFree ();
   bdjvarsCleanup ();
@@ -149,21 +161,28 @@ rcEventHandler (struct mg_connection *c, int ev, void *ev_data, void *userdata)
     struct mg_http_message *hm = (struct mg_http_message *) ev_data;
     mg_http_creds(hm, user, sizeof(user), pass, sizeof(pass)); // "user" is now user name and "pass" is now password from request
 
-fprintf (stderr, "query: %.*s\n", (int) hm->query.len, hm->query.ptr);
     if (user [0] == '\0' || pass [0] == '\0') {
-      mg_http_reply (c, 401, NULL, "");
+      mg_http_reply (c, 401, "Content-type: text/plain; charset=utf-8\r\n"
+          "WWW-Authenticate: Basic realm=BallroomDJ 4 Remote\r\n", "Unauthorized");
     } else if (strcmp (user, remctrlData->user) != 0 ||
         strcmp (pass, remctrlData->pass) != 0) {
-      mg_http_reply (c, 401, NULL, "");
-    } else if (mg_http_match_uri (hm, "cmd")) {
-    } else if (mg_http_match_uri (hm, "echo")) {
-    } else if (mg_http_match_uri (hm, "getdancelist")) {
-    } else if (mg_http_match_uri (hm, "getplaylistsel")) {
+      mg_http_reply (c, 403, "Content-type: text/plain; charset=utf-8\r\n"
+          "WWW-Authenticate: Basic realm=BallroomDJ 4 Remote\r\n", "Unauthorized");
+    } else if (mg_http_match_uri (hm, "/bdj4update")) {
+    } else if (mg_http_match_uri (hm, "/cmd")) {
+fprintf (stderr, "uri: %.*s\n", (int) hm->uri.len, hm->uri.ptr);
+fprintf (stderr, "  query: %.*s\n", (int) hm->query.len, hm->query.ptr);
+    } else if (mg_http_match_uri (hm, "/getdancelist")) {
+      mg_http_reply (c, 200, "Content-type: text/plain; charset=utf-8\r\n",
+          remctrlData->danceList);
+    } else if (mg_http_match_uri (hm, "/getplaylistsel")) {
+      mg_http_reply (c, 200, "Content-type: text/plain; charset=utf-8\r\n",
+          remctrlData->playlistList);
     } else if (mg_http_match_uri (hm, "#.key") ||
         mg_http_match_uri (hm, "#.crt") ||
         mg_http_match_uri (hm, "#.pem") ||
         mg_http_match_uri (hm, "#.csr")) {
-      mg_http_reply (c, 403, NULL, "");
+      mg_http_reply (c, 404, NULL, "");
     } else {
       struct mg_http_serve_opts opts = { .root_dir = "http" };
       mg_http_serve_dir (c, hm, &opts);
@@ -197,6 +216,18 @@ remctrlProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           sockClose (remctrlData->mainSock);
           remctrlData->mainSock = INVALID_SOCKET;
           return 1;
+        }
+        case MSG_DANCE_LIST_DATA: {
+fprintf (stderr, "dance list:\n%s\n", args);
+          remctrlData->haveData++;
+          remctrlData->danceList = strdup (args);
+          break;
+        }
+        case MSG_PLAYLIST_LIST_DATA: {
+fprintf (stderr, "playlist list:\n%s\n", args);
+          remctrlData->haveData++;
+          remctrlData->playlistList = strdup (args);
+          break;
         }
         default: {
           break;
@@ -241,11 +272,17 @@ remctrlProcessing (void *udata)
     if (remctrlData->mainHandshake) {
       remctrlData->programState = STATE_RUNNING;
       logMsg (LOG_SESS, LOG_IMPORTANT, "running: time-to-start: %ld ms", mstimeend (&remctrlData->tm));
+      sockhSendMessage (remctrlData->mainSock, ROUTE_REMCTRL, ROUTE_MAIN,
+          MSG_GET_DANCE_LIST, NULL);
+      sockhSendMessage (remctrlData->mainSock, ROUTE_REMCTRL, ROUTE_MAIN,
+          MSG_GET_PLAYLIST_LIST, NULL);
     }
   }
 
-  if (remctrlData->programState != STATE_RUNNING) {
-      /* all of the processing that follows requires a running state */
+/* ### FIX change to < 2 */
+  if (remctrlData->programState != STATE_RUNNING ||
+      remctrlData->haveData < 1) {
+    /* all of the processing that follows requires a running state */
     if (gKillReceived) {
       logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
     }

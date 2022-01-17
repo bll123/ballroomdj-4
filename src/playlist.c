@@ -10,10 +10,12 @@
 #include "dance.h"
 #include "datafile.h"
 #include "datautil.h"
+#include "filemanip.h"
 #include "fileop.h"
 #include "level.h"
 #include "log.h"
 #include "musicdb.h"
+#include "pathutil.h"
 #include "playlist.h"
 #include "portability.h"
 #include "rating.h"
@@ -363,6 +365,41 @@ playlistFilterSong (dbidx_t dbidx, song_t *song, void *tplaylist)
   return true;
 }
 
+list_t *
+playlistGetPlaylistList (void)
+{
+  char        *tplfnm;
+  char        tfn [MAXPATHLEN];
+  list_t      *filelist;
+  list_t      *plList;
+  playlist_t  *pl;
+  pathinfo_t  *pi;
+
+
+  plList = listAlloc ("playlistlist", LIST_ORDERED, istringCompare, free, free);
+
+  datautilMakePath (tfn, sizeof (tfn), "", "", "", DATAUTIL_MP_NONE);
+  filelist = filemanipBasicDirList (tfn, ".pl");
+
+  listStartIterator (filelist);
+  while ((tplfnm = listIterateKeyStr (filelist)) != NULL) {
+    pi = pathInfo (tplfnm);
+    strlcpy (tfn, pi->basename, MAXPATHLEN);
+    tfn [pi->blen] = '\0';
+    pl = playlistAlloc (tfn);
+    if (pl != NULL) {
+      listSetData (plList, pl->name, strdup (tfn));
+      playlistFree (pl);
+    }
+    pathInfoFree (pi);
+  }
+
+  listFree (filelist);
+
+  return plList;
+}
+
+
 /* internal routines */
 
 static void
@@ -377,4 +414,5 @@ plConvType (char *data, datafileret_t *ret)
     ret->u.num = PLTYPE_SEQ;
   }
 }
+
 

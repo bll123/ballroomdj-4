@@ -647,9 +647,9 @@ $(OBJDIR)/bdj4init$(OBJ_EXT): bdj4init.c config.h bdj4init.h musicdb.h song.h li
  log.h fileutil.h tmutil.h fileop.h datautil.h bdjopt.h lock.h
 $(OBJDIR)/bdj4main$(OBJ_EXT): bdj4main.c config.h bdj4init.h bdjmsg.h bdjopt.h list.h \
  bdjstring.h bdjvars.h bdjvarsdf.h datafile.h dance.h datautil.h \
- filedata.h log.h fileutil.h musicq.h queue.h song.h playlist.h musicdb.h \
- songlist.h sequence.h songsel.h portability.h process.h sock.h sockh.h \
- sysvars.h tagdef.h tmutil.h webclient.h
+ filedata.h lock.h log.h fileutil.h musicq.h queue.h song.h playlist.h \
+ musicdb.h songlist.h sequence.h songsel.h portability.h process.h sock.h \
+ sockh.h sysvars.h tagdef.h tmutil.h webclient.h
 $(OBJDIR)/bdj4player$(OBJ_EXT): bdj4player.c config.h bdjmsg.h bdjopt.h list.h bdjstring.h \
  bdjvars.h datautil.h fileop.h filemanip.h lock.h log.h fileutil.h \
  pathutil.h pli.h dylib.h portability.h tmutil.h process.h queue.h sock.h \
@@ -671,7 +671,7 @@ $(OBJDIR)/check_datafile$(OBJ_EXT): check_datafile.c config.h configt.h fileop.h
 $(OBJDIR)/check_filedata$(OBJ_EXT): check_filedata.c config.h configt.h filedata.h \
  check_bdj.h portability.h
 $(OBJDIR)/check_filemanip$(OBJ_EXT): check_filemanip.c config.h configt.h filemanip.h \
- fileop.h check_bdj.h portability.h
+ list.h fileop.h check_bdj.h portability.h
 $(OBJDIR)/check_fileop$(OBJ_EXT): check_fileop.c config.h configt.h fileop.h check_bdj.h \
  portability.h
 $(OBJDIR)/check_list$(OBJ_EXT): check_list.c config.h configt.h list.h bdjstring.h \
@@ -680,8 +680,8 @@ $(OBJDIR)/check_lock$(OBJ_EXT): check_lock.c config.h configt.h lock.h datautil.
  bdjstring.h check_bdj.h sysvars.h portability.h
 $(OBJDIR)/check_pathutil$(OBJ_EXT): check_pathutil.c config.h configt.h pathutil.h \
  check_bdj.h portability.h
-$(OBJDIR)/check_process$(OBJ_EXT): check_process.c config.h configt.h process.h check_bdj.h \
- sysvars.h portability.h
+$(OBJDIR)/check_process$(OBJ_EXT): check_process.c config.h configt.h check_bdj.h \
+ datautil.h portability.h process.h sysvars.h
 $(OBJDIR)/check_queue$(OBJ_EXT): check_queue.c config.h configt.h queue.h check_bdj.h \
  portability.h log.h fileutil.h
 $(OBJDIR)/check_rafile$(OBJ_EXT): check_rafile.c config.h configt.h rafile.h check_bdj.h
@@ -691,8 +691,8 @@ $(OBJDIR)/check_tmutil$(OBJ_EXT): check_tmutil.c config.h configt.h tmutil.h che
 $(OBJDIR)/chkprocess$(OBJ_EXT): chkprocess.c
 $(OBJDIR)/clicomm$(OBJ_EXT): clicomm.c config.h sockh.h sock.h bdjmsg.h sysvars.h \
  portability.h bdjvars.h log.h fileutil.h tmutil.h
-$(OBJDIR)/dance$(OBJ_EXT): dance.c config.h bdjvarsdf.h datafile.h list.h dance.h \
- dnctypes.h fileop.h log.h fileutil.h
+$(OBJDIR)/dance$(OBJ_EXT): dance.c config.h bdjstring.h bdjvarsdf.h datafile.h list.h \
+ dance.h dnctypes.h fileop.h log.h fileutil.h
 $(OBJDIR)/datafile$(OBJ_EXT): datafile.c config.h bdjstring.h datafile.h list.h filedata.h \
  filemanip.h fileop.h log.h fileutil.h portability.h tmutil.h
 $(OBJDIR)/datautil$(OBJ_EXT): datautil.c config.h datautil.h sysvars.h portability.h
@@ -700,8 +700,8 @@ $(OBJDIR)/dnctypes$(OBJ_EXT): dnctypes.c config.h dnctypes.h datafile.h list.h f
  bdjvarsdf.h log.h fileutil.h
 $(OBJDIR)/dylib$(OBJ_EXT): dylib.c config.h dylib.h pathutil.h portability.h
 $(OBJDIR)/filedata$(OBJ_EXT): filedata.c config.h filedata.h
-$(OBJDIR)/filemanip$(OBJ_EXT): filemanip.c config.h filemanip.h fileop.h bdjstring.h \
- portability.h pathutil.h sysvars.h
+$(OBJDIR)/filemanip$(OBJ_EXT): filemanip.c config.h bdjstring.h filemanip.h list.h fileop.h \
+ pathutil.h portability.h sysvars.h
 $(OBJDIR)/fileop$(OBJ_EXT): fileop.c config.h fileop.h
 $(OBJDIR)/fileutil$(OBJ_EXT): fileutil.c config.h fileutil.h bdjstring.h portability.h
 $(OBJDIR)/genre$(OBJ_EXT): genre.c config.h genre.h datafile.h list.h fileop.h bdjvarsdf.h \

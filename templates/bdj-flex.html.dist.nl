@@ -556,7 +556,7 @@ bdj.sendCmd = function (cmd) {
   var xhr = new XMLHttpRequest();
   xhr.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
-      // sending a command will get the same response back as bdjupdate
+      // sending a command will get the same response back as bdj4update
       bdj.updateData (xhr.responseText);
     }
   };
@@ -661,7 +661,7 @@ bdj.doUpdate = function () {
       bdj.updateData (xhr.responseText);
     }
   };
-  xhr.open('GET', '/bdjupdate', true);
+  xhr.open('GET', '/bdj4update', true);
   xhr.send();
 }
 bdj.setSize = function (o,s) {

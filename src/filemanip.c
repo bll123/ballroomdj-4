@@ -9,10 +9,9 @@
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <dirent.h>
 #include <fcntl.h>
-#if _hdr_unistd
-# include <unistd.h>
-#endif
+#include <unistd.h>
 #if _hdr_io
 # include <io.h>
 #endif
@@ -23,11 +22,12 @@
 # include <windows.h>
 #endif
 
+#include "bdjstring.h"
 #include "filemanip.h"
 #include "fileop.h"
-#include "bdjstring.h"
-#include "portability.h"
+#include "list.h"
 #include "pathutil.h"
+#include "portability.h"
 #include "sysvars.h"
 
 int
@@ -90,3 +90,34 @@ filemanipLinkCopy (char *fname, char *nfn)
   return rc;
 }
 
+list_t *
+filemanipBasicDirList (char *dirname, char *extension)
+{
+  DIR           *dh;
+  struct dirent *dirent;
+  list_t        *fileList;
+  pathinfo_t    *pi;
+  size_t        len = 0;
+  size_t        elen = 0;
+
+  if (extension != NULL) {
+    elen = strlen (extension);
+  }
+
+  fileList = listAlloc (dirname, LIST_UNORDERED, istringCompare, free, NULL);
+  dh = opendir (dirname);
+  while ((dirent = readdir (dh)) != NULL) {
+    if (extension != NULL) {
+      pi = pathInfo (dirent->d_name);
+      if (elen == pi->elen &&
+          strncmp (pi->extension, extension, pi->elen) == 0) {
+        listSetData (fileList, dirent->d_name, NULL);
+      }
+      pathInfoFree (pi);
+    } else {
+      listSetData (fileList, dirent->d_name, NULL);
+    }
+  }
+  closedir (dh);
+  return fileList;
+}

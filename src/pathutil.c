@@ -57,8 +57,8 @@ pathInfo (char *path)
       break;
     }
     if (chkforext && path [i] == '.') {
-      pi->extension = &path [i + 1];
-      pi->elen = (size_t) (last - i);
+      pi->extension = &path [i];
+      pi->elen = (size_t) (last - i + 1);
       chkforext = 0;
     }
   }
@@ -68,9 +68,6 @@ pathInfo (char *path)
   pi->basename = &path [pos];
   pi->filename = &path [pos];
   pi->blen = (size_t) (last - pos - (ssize_t) pi->elen + 1);
-  if (pi->elen > 0) {
-    --pi->blen;
-  }
   pi->flen = (size_t) (last - pos + 1);
   if (trailingslash && pos > 1) {
     --pi->blen;

@@ -94,6 +94,8 @@ static int      mainStartProcess (maindata_t *mainData, mainprocessidx_t idx,
                     char *fname);
 static void     mainStopProcess (maindata_t *mainData, mainprocessidx_t idx,
                     bdjmsgroute_t route, char *lockfn, bool force);
+static void     mainSendDanceList (maindata_t *mainData);
+static void     mainSendPlaylistList (maindata_t *mainData);
 
 static int gKillReceived = 0;
 
@@ -208,6 +210,22 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           }
           break;
         }
+        case MSG_EXIT_REQUEST: {
+          mstimestart (&mainData->tm);
+          logMsg (LOG_SESS, LOG_IMPORTANT, "got exit request");
+          gKillReceived = 0;
+          mainData->programState = STATE_CLOSING;
+          mainStopProcess (mainData, PROCESS_PLAYER, ROUTE_PLAYER, NULL, false);
+          mainStopProcess (mainData, PROCESS_MOBILEMQ, ROUTE_MOBILEMQ, NULL, false);
+          mainStopProcess (mainData, PROCESS_REMCTRL, ROUTE_REMCTRL, NULL, false);
+          logProcEnd (LOG_PROC, "mainProcessMsg", "req-exit");
+          return 1;
+        }
+        case MSG_PLAYLIST_QUEUE: {
+          logMsg (LOG_DBG, LOG_MSGS, "got: playlist-queue");
+          mainPlaylistQueue (mainData, args);
+          break;
+        }
         case MSG_SET_DEBUG_LVL: {
           break;
         }
@@ -229,21 +247,13 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           mainData->marqueeChanged = true;
           break;
         }
-        case MSG_PLAYLIST_QUEUE: {
-          logMsg (LOG_DBG, LOG_MSGS, "got: playlist-queue");
-          mainPlaylistQueue (mainData, args);
+        case MSG_GET_DANCE_LIST: {
+          mainSendDanceList (mainData);
           break;
         }
-        case MSG_EXIT_REQUEST: {
-          mstimestart (&mainData->tm);
-          logMsg (LOG_SESS, LOG_IMPORTANT, "got exit request");
-          gKillReceived = 0;
-          mainData->programState = STATE_CLOSING;
-          mainStopProcess (mainData, PROCESS_PLAYER, ROUTE_PLAYER, NULL, false);
-          mainStopProcess (mainData, PROCESS_MOBILEMQ, ROUTE_MOBILEMQ, NULL, false);
-          mainStopProcess (mainData, PROCESS_REMCTRL, ROUTE_REMCTRL, NULL, false);
-          logProcEnd (LOG_PROC, "mainProcessMsg", "req-exit");
-          return 1;
+        case MSG_GET_PLAYLIST_LIST: {
+          mainSendPlaylistList (mainData);
+          break;
         }
         default: {
           break;
@@ -833,3 +843,57 @@ mainStopProcess (maindata_t *mainData, mainprocessidx_t idx,
   }
   logProcEnd (LOG_PROC, "mainStopProcess", "");
 }
+
+static void
+mainSendDanceList (maindata_t *mainData)
+{
+  dance_t       *dances;
+  list_t        *danceList;
+  listidx_t     idx;
+  char          *dancenm;
+  char          tbuff [200];
+  char          rbuff [3096];
+
+  dances = bdjvarsdf [BDJVDF_DANCES];
+  danceList = danceGetDanceList (dances);
+
+  rbuff [0] = '\0';
+  listStartIterator (danceList);
+  while ((dancenm = listIterateKeyStr (danceList)) != NULL) {
+    idx = listGetNum (danceList, dancenm);
+    snprintf (tbuff, sizeof (tbuff), "<option value=\"%zd\">%s</option>\n", idx, dancenm);
+    strlcat (rbuff, tbuff, sizeof (rbuff));
+  }
+
+/* ### FIX: cache the resulting option list */
+
+  sockhSendMessage (SOCKOF (PROCESS_REMCTRL),
+      ROUTE_MAIN, ROUTE_REMCTRL, MSG_DANCE_LIST_DATA, rbuff);
+}
+
+static void
+mainSendPlaylistList (maindata_t *mainData)
+{
+  list_t        *playlistList;
+  char          *plfnm;
+  char          *plnm;
+  char          tbuff [200];
+  char          rbuff [3096];
+
+    /* note that maindata->playlistlist is something else */
+  playlistList = playlistGetPlaylistList ();
+
+  rbuff [0] = '\0';
+  listStartIterator (playlistList);
+  while ((plnm = listIterateKeyStr (playlistList)) != NULL) {
+    plfnm = listGetData (playlistList, plnm);
+    snprintf (tbuff, sizeof (tbuff), "<option value=\"%s\">%s</option>\n", plfnm, plnm);
+    strlcat (rbuff, tbuff, sizeof (rbuff));
+  }
+
+/* ### FIX: cache the resulting option list */
+
+  sockhSendMessage (SOCKOF (PROCESS_REMCTRL),
+      ROUTE_MAIN, ROUTE_REMCTRL, MSG_PLAYLIST_LIST_DATA, rbuff);
+}
+

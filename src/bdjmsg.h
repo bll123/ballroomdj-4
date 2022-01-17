@@ -37,6 +37,10 @@ typedef enum {
   MSG_SONG_PREP,            // args: song fname, duration, song-start
                             //    song-end, volume-adjustment-perc, gap
   MSG_MARQUEE_DATA,         // args: mq data
+  MSG_GET_DANCE_LIST,       //
+  MSG_DANCE_LIST_DATA,      // args: html option list
+  MSG_GET_PLAYLIST_LIST,    //
+  MSG_PLAYLIST_LIST_DATA,   // args: html option list
   MSG_MAX
 } bdjmsgmsg_t;
 

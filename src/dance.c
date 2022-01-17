@@ -6,6 +6,7 @@
 #include <string.h>
 #include <assert.h>
 
+#include "bdjstring.h"
 #include "bdjvarsdf.h"
 #include "dance.h"
 #include "datafile.h"
@@ -50,6 +51,7 @@ danceAlloc (char *fname)
 
   dance = malloc (sizeof (dance_t));
   assert (dance != NULL);
+  dance->danceList = NULL;
 
   dance->df = datafileAllocParse ("dance", DFTYPE_INDIRECT, fname,
       dancedfkeys, DANCE_DFKEY_COUNT, DANCE_DANCE);
@@ -63,6 +65,9 @@ danceFree (dance_t *dance)
   if (dance != NULL) {
     if (dance->df != NULL) {
       datafileFree (dance->df);
+    }
+    if (dance->danceList != NULL) {
+      listFree (dance->danceList);
     }
     free (dance);
   }
@@ -86,6 +91,30 @@ ssize_t
 danceGetNum (dance_t *dance, listidx_t dkey, listidx_t idx)
 {
   return ilistGetNum (dance->dances, dkey, idx);
+}
+
+list_t *
+danceGetDanceList (dance_t *dance)
+{
+  list_t    *dl;
+  listidx_t key;
+  char      *nm;
+
+  if (dance->danceList != NULL) {
+    return dance->danceList;
+  }
+
+  dl = listAlloc ("dancelist", LIST_UNORDERED, istringCompare, free, NULL);
+  listSetSize (dl, llistGetCount (dance->dances));
+  llistStartIterator (dance->dances);
+  while ((key = llistIterateKeyNum (dance->dances)) >= 0) {
+    nm = ilistGetData (dance->dances, key, DANCE_DANCE);
+    listSetNum (dl, nm, key);
+  }
+  listSort (dl);
+
+  dance->danceList = dl;
+  return dl;
 }
 
 void
