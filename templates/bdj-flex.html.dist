@@ -3,7 +3,7 @@
 <!--
 http://danielstern.ca/range.css/#/
 -->
-<!-- VERSION 2010-10-31D -->
+<!-- VERSION 2022-1-17 -->
 <html>
 <head>
   <title>BallroomDJ</title>
@@ -424,27 +424,17 @@ http://danielstern.ca/range.css/#/
         </div>
         <div class="linebox">
           <input class="stretch grow wb" type="submit"
-              onclick="javascript:bdj.sendQuickplayCmd('qpqueue');"
+              onclick="javascript:bdj.sendDanceCmd('queue');"
               name="queue" value="Queue">
         </div>
         <div class="linebox">
           <input class="stretch grow wb" type="submit"
-              onclick="javascript:bdj.sendQuickplayCmd('qpplay5');"
-              name="play5" value="Play 5">
+              onclick="javascript:bdj.sendDanceCmd('queue5');"
+              name="queue5" value="Queue 5">
         </div>
         <div class="linebox">
           <input class="stretch grow wb" type="submit"
-              onclick="javascript:bdj.sendQuickplayCmd('qpplaymany');"
-              name="playmany" value="Play Continuously">
-        </div>
-        <div class="linebox">
-          <input class="stretch grow wb" type="submit"
-              onclick="javascript:bdj.sendCmd('qpclear');"
-              name="clear" value="Clear Player">
-        </div>
-        <div class="linebox">
-          <input class="stretch grow wb" type="submit"
-              onclick="javascript:bdj.sendCmd('qpclearqueue');"
+              onclick="javascript:bdj.sendDanceCmd('clear');"
               name="clear" value="Clear Queue">
         </div>
         <div class="linebox">
@@ -455,10 +445,10 @@ http://danielstern.ca/range.css/#/
         </div>
         <div class="linebox">
           <input class="stretch grow wb" type="submit"
-            onclick="javascript:bdj.sendQPPlaylistCmd('qpplaylist');"
+            onclick="javascript:bdj.sendPLCmd('playlist');"
             name="plclearplay" value="Clear & Play">
           <input class="stretch grow wb" type="submit"
-            onclick="javascript:bdj.sendQPPlaylistCmd('qpplaylistqueue');"
+            onclick="javascript:bdj.sendPLCmd('playlistqueue');"
             name="plqueue" value="Queue">
         </div>
     </div>
@@ -542,12 +532,12 @@ bdj.nextPage = function () {
   }
 }
 
-bdj.sendQuickplayCmd = function (cmd) {
+bdj.sendDanceCmd = function (cmd) {
   var o = document.getElementById("dancelist");
   bdj.sendCmd (cmd + ' {' + o.options[o.selectedIndex].value + '}');
 }
 
-bdj.sendQPPlaylistCmd = function (cmd) {
+bdj.sendPLCmd = function (cmd) {
   var o = document.getElementById("playlistsel");
   bdj.sendCmd (cmd + ' {' + o.options[o.selectedIndex].value + '}');
 }
@@ -704,7 +694,7 @@ bdj.doLoad = function () {
     bdj.getDanceList();
     bdj.getPlayListSel();
     bdj.doUpdate();
-    bdj.updIntervalId = setInterval(bdj.doUpdate,500);
+    bdj.updIntervalId = setInterval(bdj.doUpdate,300);
   }
 }
 

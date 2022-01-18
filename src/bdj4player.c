@@ -76,6 +76,7 @@ typedef struct {
   mstime_t        playTimeStart;
   mstime_t        playTimeCheck;
   mstime_t        fadeTimeCheck;
+  mstime_t        volumeTimeCheck;
   ssize_t         gap;
   mstime_t        gapFinishTime;
   ssize_t         fadeType;
@@ -114,7 +115,9 @@ static void     playerNextSong (playerdata_t *playerData);
 static void     playerPauseAtEnd (playerdata_t *playerData);
 static void     playerSendPauseAtEndState (playerdata_t *playerData);
 static void     playerFade (playerdata_t *playerData);
+static void     playerRate (playerdata_t *playerData, char *trate);
 static void     playerStop (playerdata_t *playerData);
+static void     playerVolumeSet (playerdata_t *playerData, char *tvol);
 static void     playerVolumeMute (playerdata_t *playerData);
 static void     playerPrepQueueFree (void *);
 static void     playerSigHandler (int sig);
@@ -380,13 +383,18 @@ playerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           playerNextSong (playerData);
           break;
         }
+        case MSG_PLAY_RATE: {
+          playerRate (playerData, args);
+          break;
+        }
         case MSG_PLAYER_VOL_MUTE: {
           logMsg (LOG_DBG, LOG_MSGS, "got: volmute", args);
           playerVolumeMute (playerData);
           break;
         }
         case MSG_PLAYER_VOLUME: {
-          logMsg (LOG_DBG, LOG_MSGS, "got: volume", args);
+          logMsg (LOG_DBG, LOG_MSGS, "got: volume %s", args);
+          playerVolumeSet (playerData, args);
           break;
         }
         case MSG_PLAY_STOP: {
@@ -486,7 +494,7 @@ playerProcessing (void *udata)
         /* don't send this state transition to main         */
         /* this keeps the mobile marquee in a steady state  */
       playerData->playerState = PL_STATE_STOPPED;
-      logMsg (LOG_DBG, LOG_BASIC, "pl state: stopped");
+      logMsg (LOG_DBG, LOG_BASIC, "pl state: stopped (no-main)");
     }
   }
 
@@ -555,6 +563,14 @@ playerProcessing (void *udata)
     }
   }
 
+  if (playerData->playerState == PL_STATE_PLAYING &&
+      ! playerData->inFade &&
+      ! playerData->inGap &&
+      mstimeCheck (&playerData->volumeTimeCheck)) {
+    playerCheckSystemVolume (playerData);
+    mstimeset (&playerData->volumeTimeCheck, 1000);
+  }
+
   if (playerData->playerState == PL_STATE_PLAYING ||
       playerData->playerState == PL_STATE_IN_FADEOUT) {
     prepqueue_t       *pq = playerData->currentSong;
@@ -588,24 +604,27 @@ playerProcessing (void *udata)
         playerData->inFadeOut = false;
         playerData->inFadeIn = false;
         playerData->stopPlaying = false;
+        playerData->currentSpeed = 100;
 
         logMsg (LOG_DBG, LOG_BASIC, "actual play time: %zd", mstimeend (&playerData->playTimeStart));
         playerStop (playerData);
 
         if (pq->announce == PREP_SONG) {
           if (playerData->pauseAtEnd) {
+            playerData->gap = 0;
             playerData->pauseAtEnd = false;
             playerSendPauseAtEndState (playerData);
             playerSetPlayerState (playerData, PL_STATE_STOPPED);
-            logMsg (LOG_DBG, LOG_BASIC, "pl state: stopped (fin)");
             if (! playerData->repeat) {
                 /* let the main know we're done with this song. */
+              logMsg (LOG_DBG, LOG_BASIC, "pl state: stopped (no continue)");
               sockhSendMessage (SOCKOF (PROCESS_MAIN), ROUTE_PLAYER, ROUTE_MAIN,
                   MSG_PLAYBACK_STOP, NULL);
             }
           } else {
             if (! playerData->repeat) {
                 /* done, go on to next song */
+              logMsg (LOG_DBG, LOG_BASIC, "pl state: stopped (continue)");
               sockhSendMessage (SOCKOF (PROCESS_MAIN), ROUTE_PLAYER, ROUTE_MAIN,
                   MSG_PLAYBACK_FINISH, NULL);
             }
@@ -641,7 +660,7 @@ playerProcessing (void *udata)
             /* don't send this state transition to main         */
             /* this keeps the mobile marquee in a steady state  */
           playerData->playerState = PL_STATE_STOPPED;
-          logMsg (LOG_DBG, LOG_BASIC, "pl state: stopped (no gap)");
+          logMsg (LOG_DBG, LOG_BASIC, "pl state: stopped (no gap; no-main)");
         }
       } /* has stopped */
     } /* time to check...*/
@@ -909,12 +928,9 @@ playerPlay (playerdata_t *playerData)
 static void
 playerNextSong (playerdata_t *playerData)
 {
-  prepqueue_t *pq;
-
   playerData->stopPlaying = true;
   playerData->repeat = false;
-  pq = playerData->currentSong;
-  pq->gap = 0;
+  playerData->gap = 0;
 }
 
 static void
@@ -961,6 +977,22 @@ playerFade (playerdata_t *playerData)
 }
 
 static void
+playerRate (playerdata_t *playerData, char *trate)
+{
+  double rate;
+
+  if (playerData->programState != STATE_RUNNING) {
+    return;
+  }
+
+  if (playerData->playerState == PL_STATE_PLAYING) {
+    rate = atof (trate);
+    pliRate (playerData->pli, rate);
+    playerData->currentSpeed = rate;
+  }
+}
+
+static void
 playerStop (playerdata_t *playerData)
 {
   plistate_t plistate = pliState (playerData->pli);
@@ -969,6 +1001,22 @@ playerStop (playerdata_t *playerData)
       plistate == PLI_STATE_PAUSED) {
     pliStop (playerData->pli);
   }
+}
+
+static void
+playerVolumeSet (playerdata_t *playerData, char *tvol)
+{
+  int       newvol;
+
+  if (playerData->programState != STATE_RUNNING) {
+    return;
+  }
+
+  newvol = (int) atol (tvol);
+
+  volumeSet (playerData->volume, playerData->currentSink, newvol);
+  playerData->realVolume = newvol;
+  playerData->currentVolume = newvol;
 }
 
 static void
@@ -1163,6 +1211,7 @@ playerSetCheckTimes (playerdata_t *playerData, prepqueue_t *pq)
   mstimestart (&playerData->playTimeStart);
   mstimeset (&playerData->playTimeCheck, newdur - 500);
   mstimeset (&playerData->fadeTimeCheck, newdur);
+  mstimeset (&playerData->volumeTimeCheck, 1000);
   if (pq->announce == PREP_SONG && playerData->fadeoutTime > 0) {
     mstimeset (&playerData->fadeTimeCheck, newdur - playerData->fadeoutTime);
   }
@@ -1237,7 +1286,7 @@ playerSendStatusResp (playerdata_t *playerData)
   strlcat (rbuff, tbuff, sizeof (rbuff));
 
   snprintf (tbuff, sizeof (tbuff),
-      "\"rate\" : \"%d%%\"", playerData->currentSpeed);
+      "\"speed\" : \"%d%%\"", playerData->currentSpeed);
   strlcat (rbuff, ", ", sizeof (rbuff));
   strlcat (rbuff, tbuff, sizeof (rbuff));
 

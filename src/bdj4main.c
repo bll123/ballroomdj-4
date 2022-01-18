@@ -221,6 +221,7 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_PLAY_PLAYPAUSE: {
+fprintf (stderr, "got playpause: pl state: %d\n", mainData->playerState);
           if (mainData->playerState == PL_STATE_PLAYING ||
               mainData->playerState == PL_STATE_IN_FADEOUT) {
             sockhSendMessage (SOCKOF (PROCESS_PLAYER),
@@ -707,6 +708,7 @@ mainMusicQueuePlay (maindata_t *mainData)
   song_t            *song;
 
   logProcBegin (LOG_PROC, "mainMusicQueuePlay");
+  logMsg (LOG_DBG, LOG_BASIC, "playerState: %d", mainData->playerState);
   if (mainData->playerState == PL_STATE_STOPPED) {
       /* grab a song out of the music queue and start playing */
     logMsg (LOG_DBG, LOG_MAIN, "player is stopped, get song, start");

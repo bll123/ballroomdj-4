@@ -89,10 +89,10 @@ pliMediaSetup (pli_t *pli, char *mediaPath)
 }
 
 void
-pliStartPlayback (pli_t *pli, ssize_t dpos)
+pliStartPlayback (pli_t *pli, ssize_t pos)
 {
   if (pli != NULL) {
-    pli->pliiStartPlayback (pli->pliData, dpos);
+    pli->pliiStartPlayback (pli->pliData, pos);
   }
 }
 
@@ -121,25 +121,25 @@ pliStop (pli_t *pli)
 }
 
 ssize_t
-pliSeek (pli_t *pli, ssize_t dpos)
+pliSeek (pli_t *pli, ssize_t pos)
 {
-  ssize_t     dret = -1;
+  ssize_t     ret = -1;
 
   if (pli != NULL) {
-    dret = pli->pliiSeek (pli->pliData, dpos);
+    ret = pli->pliiSeek (pli->pliData, pos);
   }
-  return dret;
+  return ret;
 }
 
-double
-pliRate (pli_t *pli, double drate)
+ssize_t
+pliRate (pli_t *pli, ssize_t rate)
 {
-  double      dret = -1.0;
+  ssize_t   ret = 100;
 
   if (pli != NULL) {
-    dret = pli->pliiRate (pli->pliData, drate);
+    ret = pli->pliiRate (pli->pliData, rate);
   }
-  return dret;
+  return ret;
 }
 
 void

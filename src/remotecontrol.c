@@ -202,33 +202,29 @@ rcEventHandler (struct mg_connection *c, int ev, void *ev_data, void *userdata)
             "Cache-Control max-age=0\r\n", remctrlData->playerStatus);
       }
     } else if (mg_http_match_uri (hm, "/cmd")) {
-       bool ok = true;
-fprintf (stderr, "uri: %.*s\n", (int) hm->uri.len, hm->uri.ptr);
-fprintf (stderr, "  query: %s\n", querystr);
-if (qp != NULL) {
-  fprintf (stderr, "  qp: %s\n", qp);
-}
+      bool ok = true;
+
       if (strcmp (querystr, "fade") == 0) {
         sockhSendMessage (SOCKOF (PROCESS_PLAYER),
             ROUTE_REMCTRL, ROUTE_PLAYER, MSG_PLAY_FADE, NULL);
       } else if (strcmp (querystr, "nextsong") == 0) {
         sockhSendMessage (SOCKOF (PROCESS_PLAYER),
             ROUTE_REMCTRL, ROUTE_PLAYER, MSG_PLAY_NEXTSONG, NULL);
-      } else if (strcmp (querystr, "repeat") == 0) {
-        sockhSendMessage (SOCKOF (PROCESS_PLAYER),
-            ROUTE_REMCTRL, ROUTE_PLAYER, MSG_PLAY_REPEAT, NULL);
       } else if (strcmp (querystr, "pauseatend") == 0) {
         sockhSendMessage (SOCKOF (PROCESS_PLAYER),
             ROUTE_REMCTRL, ROUTE_PLAYER, MSG_PLAY_PAUSEATEND, NULL);
       } else if (strcmp (querystr, "play") == 0) {
-        sockhSendMessage (SOCKOF (PROCESS_PLAYER),
+        sockhSendMessage (SOCKOF (PROCESS_MAIN),
             ROUTE_REMCTRL, ROUTE_MAIN, MSG_PLAY_PLAYPAUSE, NULL);
+      } else if (strcmp (querystr, "repeat") == 0) {
+        sockhSendMessage (SOCKOF (PROCESS_PLAYER),
+            ROUTE_REMCTRL, ROUTE_PLAYER, MSG_PLAY_REPEAT, NULL);
       } else if (strcmp (querystr, "speed") == 0) {
         sockhSendMessage (SOCKOF (PROCESS_PLAYER),
-            ROUTE_REMCTRL, ROUTE_MAIN, MSG_PLAY_RATE, qp);
-      } else if (strcmp (querystr, "vol") == 0) {
+            ROUTE_REMCTRL, ROUTE_PLAYER, MSG_PLAY_RATE, qp);
+      } else if (strcmp (querystr, "volume") == 0) {
         sockhSendMessage (SOCKOF (PROCESS_PLAYER),
-            ROUTE_REMCTRL, ROUTE_MAIN, MSG_PLAYER_VOLUME, qp);
+            ROUTE_REMCTRL, ROUTE_PLAYER, MSG_PLAYER_VOLUME, qp);
       } else if (strcmp (querystr, "volmute") == 0) {
         sockhSendMessage (SOCKOF (PROCESS_PLAYER),
             ROUTE_REMCTRL, ROUTE_PLAYER, MSG_PLAYER_VOL_MUTE, NULL);

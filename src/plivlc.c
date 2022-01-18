@@ -10,6 +10,7 @@
 #include <string.h>
 #include <errno.h>
 #include <assert.h>
+#include <math.h>
 
 #include "pli.h"
 #include "vlci.h"
@@ -131,15 +132,19 @@ pliiSeek (plidata_t *pliData, ssize_t dpos)
   return dret;
 }
 
-double
-pliiRate (plidata_t *pliData, double drate)
+ssize_t
+pliiRate (plidata_t *pliData, ssize_t rate)
 {
-  double    dret = -1.0;
+  ssize_t     ret = 100;
+  double      dret = -1.0;
+  double      drate;
 
   if (pliData != NULL && pliData->plData != NULL) {
+    drate = (double) rate / 100.0;
     dret = vlcRate (pliData->plData, drate);
+    ret = (ssize_t) round (dret * 100.0);
   }
-  return dret;
+  return ret;
 }
 
 void

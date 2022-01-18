@@ -3,7 +3,7 @@
 <!--
 http://danielstern.ca/range.css/#/
 -->
-<!-- VERSION 2010-10-31H -->
+<!-- VERSION 2022-1-17 -->
 <html>
 <head>
   <title>BallroomDJ</title>
@@ -440,27 +440,21 @@ http://danielstern.ca/range.css/#/
     <p class="">&nbsp;</p>
     <select id="dancelist" name="dancelist"></select>
     <input class="wb" type="submit"
-      onclick="javascript:bdj.sendQuickplayCmd('qpqueue');"
+      onclick="javascript:bdj.sendDanceCmd('queue');"
       name="queue" value="Wachtrij">
     <input class="wb" type="submit"
-      onclick="javascript:bdj.sendQuickplayCmd('qpplay5');"
-      name="play5" value="Play 5">
+      onclick="javascript:bdj.sendDanceCmd('queue5');"
+      name="queue5" value="Queue 5">
     <input class="wb" type="submit"
-      onclick="javascript:bdj.sendQuickplayCmd('qpplaymany');"
-      name="playmany" value="Play Continuously">
-    <input class="wb" type="submit"
-      onclick="javascript:bdj.sendCmd('qpclear');"
-      name="clear" value="Clear Player">
-    <input class="wb" type="submit"
-      onclick="javascript:bdj.sendCmd('qpclearqueue');"
-      name="clearq" value="Clear Queue">
+      onclick="javascript:bdj.sendCmd('clear');"
+      name="clear" value="Clear Queue">
     <hr>
     <select id="playlistsel" name="playlistsel"></select>
     <input class="wb" type="submit"
-      onclick="javascript:bdj.sendQPPlaylistCmd('qpplaylist');"
+      onclick="javascript:bdj.sendPLCmd('playlist');"
       name="plclearplay" value="Clear & Play">
     <input class="wb" type="submit"
-      onclick="javascript:bdj.sendQPPlaylistCmd('qpplaylistqueue');"
+      onclick="javascript:bdj.sendPLCmd('playlistqueue');"
       name="plqueue" value="Queue">
   </div>
   <script type="text/javascript">
@@ -541,12 +535,12 @@ bdj.nextPage = function () {
   }
 }
 
-bdj.sendQuickplayCmd = function (cmd) {
+bdj.sendDanceCmd = function (cmd) {
   var o = document.getElementById("dancelist");
   bdj.sendCmd (cmd + ' {' + o.options[o.selectedIndex].value + '}');
 }
 
-bdj.sendQPPlaylistCmd = function (cmd) {
+bdj.sendPLCmd = function (cmd) {
   var o = document.getElementById("playlistsel");
   bdj.sendCmd (cmd + ' {' + o.options[o.selectedIndex].value + '}');
 }
@@ -695,7 +689,7 @@ bdj.doLoad = function () {
   bdj.getDanceList();
   bdj.getPlayListSel();
   bdj.doUpdate();
-  updIntervalId = setInterval(bdj.doUpdate,500);
+  updIntervalId = setInterval(bdj.doUpdate,300);
 }
 
 window.onload = function () { bdj.doLoad(); };

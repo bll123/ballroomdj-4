@@ -84,25 +84,25 @@ pliiStop (plidata_t *pliData)
 }
 
 ssize_t
-pliiSeek (plidata_t *pliData, ssize_t dpos)
+pliiSeek (plidata_t *pliData, ssize_t pos)
 {
-  ssize_t     dret = dpos;
+  ssize_t     ret = pos;
 
   if (pliData != NULL) {
-    pliData->duration = 20000 - dpos;
+    pliData->duration = 20000 - pos;
   }
-  return dret;
+  return ret;
 }
 
-double
-pliiRate (plidata_t *pliData, double drate)
+ssize_t
+pliiRate (plidata_t *pliData, ssize_t rate)
 {
-  double    dret = -1.0;
+  ssize_t   ret;
 
   if (pliData != NULL) {
-    dret = 1.0;
+    ret = 100;
   }
-  return dret;
+  return ret;
 }
 
 void
