@@ -141,6 +141,26 @@ main (int argc, char *argv[])
       if (strcmp (buff, "") == 0) {
         break;
       }
+      if (strcmp (buff, "moveup") == 0) {
+        msg = MSG_MUSICQ_MOVE_UP;
+        msgok = 1;
+        argsok = 1;
+      }
+      if (strcmp (buff, "movetop") == 0) {
+        msg = MSG_MUSICQ_MOVE_TOP;
+        msgok = 1;
+        argsok = 1;
+      }
+      if (strcmp (buff, "movedown") == 0) {
+        msg = MSG_MUSICQ_MOVE_DOWN;
+        msgok = 1;
+        argsok = 1;
+      }
+      if (strcmp (buff, "tpause") == 0) {
+        msg = MSG_MUSICQ_TOGGLE_PAUSE;
+        msgok = 1;
+        argsok = 1;
+      }
       if (strcmp (buff, "prep-song") == 0) {
         msg = MSG_SONG_PREP;
         msgok = 1;

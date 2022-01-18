@@ -74,6 +74,13 @@ musicqPush (musicq_t *musicq, musicqidx_t musicqidx, song_t *song, char *plname)
   queuePush (musicq->q [musicqidx], musicqitem);
 }
 
+void
+musicqMove (musicq_t *musicq, musicqidx_t musicqidx,
+    ssize_t fromidx, ssize_t toidx)
+{
+  queueMove (musicq->q [musicqidx], fromidx, toidx);
+}
+
 song_t *
 musicqGetCurrent (musicq_t *musicq, musicqidx_t musicqidx)
 {
@@ -123,7 +130,7 @@ musicqGetFlags (musicq_t *musicq, musicqidx_t musicqidx, ssize_t qkey)
 }
 
 void
-musicqSetFlags (musicq_t *musicq, musicqidx_t musicqidx,
+musicqSetFlag (musicq_t *musicq, musicqidx_t musicqidx,
     ssize_t qkey, musicqflag_t flags)
 {
   musicqitem_t      *musicqitem;
@@ -135,6 +142,23 @@ musicqSetFlags (musicq_t *musicq, musicqidx_t musicqidx,
   musicqitem = queueGetByIdx (musicq->q [musicqidx], qkey);
   if (musicqitem != NULL) {
     musicqitem->flags |= flags;
+  }
+  return;
+}
+
+void
+musicqClearFlag (musicq_t *musicq, musicqidx_t musicqidx,
+    ssize_t qkey, musicqflag_t flags)
+{
+  musicqitem_t      *musicqitem;
+
+  if (musicq == NULL || musicq->q [musicqidx] == NULL) {
+    return;
+  }
+
+  musicqitem = queueGetByIdx (musicq->q [musicqidx], qkey);
+  if (musicqitem != NULL) {
+    musicqitem->flags &= ~flags;
   }
   return;
 }

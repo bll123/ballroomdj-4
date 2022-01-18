@@ -33,9 +33,13 @@ musicq_t *  musicqAlloc (void);
 void        musicqFree (musicq_t *musicq);
 void        musicqPush (musicq_t *musicq, musicqidx_t idx,
                 song_t *song, char *plname);
+void        musicqMove (musicq_t *musicq, musicqidx_t musicqidx,
+                ssize_t fromidx, ssize_t toidx);
 song_t      *musicqGetCurrent (musicq_t *musicq, musicqidx_t musicqidx);
 musicqflag_t musicqGetFlags (musicq_t *musicq, musicqidx_t musicqidx, ssize_t qkey);
-void        musicqSetFlags (musicq_t *musicq, musicqidx_t musicqidx,
+void        musicqSetFlag (musicq_t *musicq, musicqidx_t musicqidx,
+                ssize_t qkey, musicqflag_t flags);
+void        musicqClearFlag (musicq_t *musicq, musicqidx_t musicqidx,
                 ssize_t qkey, musicqflag_t flags);
 char        *musicqGetAnnounce (musicq_t *musicq, musicqidx_t musicqidx,
                 ssize_t qkey);

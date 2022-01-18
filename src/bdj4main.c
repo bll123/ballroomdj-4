@@ -55,7 +55,7 @@ typedef struct {
   ssize_t           gap;
   webclient_t       *webclient;
   char              *mobmqUserkey;
-  bool              marqueeChanged : 1;
+  bool              musicqChanged : 1;
 } maindata_t;
 
 static int      mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
@@ -72,6 +72,10 @@ static void     mainMusicQueueFill (maindata_t *mainData);
 static void     mainMusicQueuePrep (maindata_t *mainData);
 static char     *mainPrepSong (maindata_t *maindata, song_t *song,
                     char *sfname, char *plname, bdjmsgprep_t flag);
+static void     mainTogglePause (maindata_t *mainData, ssize_t idx);
+static void     mainMusicqMove (maindata_t *mainData, ssize_t fromidx, ssize_t direction);
+static void     mainMusicqMoveTop (maindata_t *mainData, ssize_t fromidx);
+static void     mainPlaybackBegin (maindata_t *mainData);
 static void     mainMusicQueuePlay (maindata_t *mainData);
 static void     mainMusicQueueFinish (maindata_t *mainData);
 static void     mainMusicQueueNext (maindata_t *mainData);
@@ -109,7 +113,7 @@ main (int argc, char *argv[])
     mainData.processes [i].started = false;
     mainData.processes [i].handshake = false;
   }
-  mainData.marqueeChanged = false;
+  mainData.musicqChanged = false;
 
 #if _define_SIGHUP
   processCatchSignal (mainSigHandler, SIGHUP);
@@ -242,6 +246,11 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           }
           break;
         }
+        case MSG_PLAYBACK_BEGIN: {
+          /* do any begin song processing */
+          mainPlaybackBegin (mainData);
+          break;
+        }
         case MSG_PLAYBACK_STOP: {
           mainMusicQueueFinish (mainData);
           break;
@@ -250,10 +259,26 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           mainMusicQueueNext (mainData);
           break;
         }
+        case MSG_MUSICQ_TOGGLE_PAUSE: {
+          mainTogglePause (mainData, atol (args));
+          break;
+        }
+        case MSG_MUSICQ_MOVE_DOWN: {
+          mainMusicqMove (mainData, atol (args), 1);
+          break;
+        }
+        case MSG_MUSICQ_MOVE_TOP: {
+          mainMusicqMoveTop (mainData, atol (args));
+          break;
+        }
+        case MSG_MUSICQ_MOVE_UP: {
+          mainMusicqMove (mainData, atol (args), -1);
+          break;
+        }
         case MSG_PLAYER_STATE: {
           mainData->playerState = atol (args);
           logMsg (LOG_DBG, LOG_MSGS, "got: player-state: %d", mainData->playerState);
-          mainData->marqueeChanged = true;
+          mainData->musicqChanged = true;
           break;
         }
         case MSG_GET_DANCE_LIST: {
@@ -372,7 +397,7 @@ mainProcessing (void *udata)
     return gKillReceived;
   }
 
-  if (mainData->marqueeChanged) {
+  if (mainData->musicqChanged) {
     mainSendMobileMarqueeData (mainData);
   }
 
@@ -400,7 +425,7 @@ mainSendMobileMarqueeData (maindata_t *mainData)
     return;
   }
 
-  mainData->marqueeChanged = false;
+  mainData->musicqChanged = false;
 
   mqLen = bdjoptGetNum (OPT_G_PLAYERQLEN);
   musicqLen = musicqGetLen (mainData->musicQueue, mainData->musicqCurrentIdx);
@@ -448,8 +473,8 @@ mainSendMobileMarqueeData (maindata_t *mainData)
   }
   strlcat (jbuff, " }", sizeof (jbuff));
 
-  sockhSendMessage (SOCKOF (PROCESS_MOBILEMQ), ROUTE_MAIN, ROUTE_MOBILEMQ,
-      MSG_MARQUEE_DATA, jbuff);
+  sockhSendMessage (SOCKOF (PROCESS_MOBILEMQ),
+      ROUTE_MAIN, ROUTE_MOBILEMQ, MSG_MARQUEE_DATA, jbuff);
 
   if (bdjoptGetNum (OPT_P_MOBILEMARQUEE) == MOBILEMQ_LOCAL) {
     return;
@@ -526,7 +551,7 @@ mainQueueClear (maindata_t *mainData)
   musicqClear (mainData->musicQueue, MUSICQ_A, startIdx);
   startIdx = mainData->musicqCurrentIdx == MUSICQ_B ? 1 : 0;
   musicqClear (mainData->musicQueue, MUSICQ_B, startIdx);
-  mainData->marqueeChanged = true;
+  mainData->musicqChanged = true;
 }
 
 static void
@@ -536,7 +561,7 @@ mainPlaylistQueue (maindata_t *mainData, char *plname)
 
 
   logProcBegin (LOG_PROC, "mainPlaylistQueue");
-  playlist = playlistAlloc (plname);
+  playlist = playlistLoad (plname);
   if (playlist != NULL) {
     logMsg (LOG_DBG, LOG_BASIC, "Queue Playlist: %s", plname);
     listSetData (mainData->playlistList, plname, playlist);
@@ -579,7 +604,7 @@ mainMusicQueueFill (maindata_t *mainData)
       continue;
     }
     musicqPush (mainData->musicQueue, mainData->musicqCurrentIdx, song, playlistGetName (playlist));
-    mainData->marqueeChanged = true;
+    mainData->musicqChanged = true;
     currlen = musicqGetLen (mainData->musicQueue, mainData->musicqCurrentIdx);
   }
   logProcEnd (LOG_PROC, "mainMusicQueueFill", "");
@@ -603,11 +628,11 @@ mainMusicQueuePrep (maindata_t *mainData)
 
     if (song != NULL &&
         (flags & MUSICQ_FLAG_PREP) != MUSICQ_FLAG_PREP) {
-      musicqSetFlags (mainData->musicQueue, mainData->musicqCurrentIdx,
+      musicqSetFlag (mainData->musicQueue, mainData->musicqCurrentIdx,
           i, MUSICQ_FLAG_PREP);
       annfname = mainPrepSong (mainData, song, sfname, plname, PREP_SONG);
       if (annfname != NULL && strcmp (annfname, "") != 0 ) {
-        musicqSetFlags (mainData->musicQueue, mainData->musicqCurrentIdx,
+        musicqSetFlag (mainData->musicQueue, mainData->musicqCurrentIdx,
             i, MUSICQ_FLAG_ANNOUNCE);
         musicqSetAnnounce (mainData->musicQueue, mainData->musicqCurrentIdx,
             i, annfname);
@@ -727,6 +752,86 @@ mainPrepSong (maindata_t *mainData, song_t *song,
   return annfname;
 }
 
+static void
+mainTogglePause (maindata_t *mainData, ssize_t idx)
+{
+  ssize_t       musicqLen;
+  musicqflag_t  flags;
+
+  musicqLen = musicqGetLen (mainData->musicQueue, mainData->musicqCurrentIdx);
+  if (idx <= 0 || idx > musicqLen) {
+    return;
+  }
+
+  flags = musicqGetFlags (mainData->musicQueue, mainData->musicqCurrentIdx, idx);
+  if ((flags & MUSICQ_FLAG_PAUSE) == MUSICQ_FLAG_PAUSE) {
+    musicqClearFlag (mainData->musicQueue, mainData->musicqCurrentIdx, idx, MUSICQ_FLAG_PAUSE);
+  } else {
+    musicqSetFlag (mainData->musicQueue, mainData->musicqCurrentIdx, idx, MUSICQ_FLAG_PAUSE);
+  }
+}
+
+static void
+mainMusicqMove (maindata_t *mainData, ssize_t fromidx, ssize_t direction)
+{
+  ssize_t       toidx;
+  ssize_t       musicqLen;
+
+  musicqLen = musicqGetLen (mainData->musicQueue, mainData->musicqCurrentIdx);
+
+  if (direction == 0) {
+    toidx = 1;
+  } else {
+    toidx = fromidx + direction;
+  }
+  if (mainData->playerState == PL_STATE_STOPPED &&
+      fromidx == 1 && toidx == 0) {
+    /* moving up into the to-be-played position is a special case */
+  }
+
+  if (toidx > fromidx && fromidx >= musicqLen) {
+    return;
+  }
+  if (toidx < fromidx && fromidx <= 1) {
+    return;
+  }
+
+  musicqMove (mainData->musicQueue, mainData->musicqCurrentIdx, fromidx, toidx);
+  mainData->musicqChanged = true;
+}
+
+static void
+mainMusicqMoveTop (maindata_t *mainData, ssize_t fromidx)
+{
+  ssize_t       toidx;
+  ssize_t       musicqLen;
+
+  musicqLen = musicqGetLen (mainData->musicQueue, mainData->musicqCurrentIdx);
+
+  if (fromidx >= musicqLen || fromidx <= 1) {
+    return;
+  }
+
+  toidx = fromidx - 1;
+  while (toidx != 0) {
+    musicqMove (mainData->musicQueue, mainData->musicqCurrentIdx, fromidx, toidx);
+    fromidx--;
+    toidx--;
+  }
+  mainData->musicqChanged = true;
+}
+
+static void
+mainPlaybackBegin (maindata_t *mainData)
+{
+  musicqflag_t  flags;
+
+  flags = musicqGetFlags (mainData->musicQueue, mainData->musicqCurrentIdx, 0);
+  if ((flags & MUSICQ_FLAG_PAUSE) == MUSICQ_FLAG_PAUSE) {
+    sockhSendMessage (SOCKOF (PROCESS_PLAYER),
+        ROUTE_MAIN, ROUTE_PLAYER, MSG_PLAY_PAUSEATEND, NULL);
+  }
+}
 
 static void
 mainMusicQueuePlay (maindata_t *mainData)
@@ -772,7 +877,7 @@ mainMusicQueueFinish (maindata_t *mainData)
   logProcBegin (LOG_PROC, "mainMusicQueueFinish");
   mainData->playerState = PL_STATE_STOPPED;
   musicqPop (mainData->musicQueue, mainData->musicqCurrentIdx);
-  mainData->marqueeChanged = true;
+  mainData->musicqChanged = true;
   logProcEnd (LOG_PROC, "mainMusicQueueFinish", "");
 }
 

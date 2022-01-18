@@ -11,7 +11,6 @@
 
 static void * queueRemove (queue_t *q, queuenode_t *node);
 
-
 queue_t *
 queueAlloc (queueFree_t freeHook)
 {
@@ -156,6 +155,45 @@ queueClear (queue_t *q, ssize_t startIdx)
     node = node->prev;
     queueRemove (q, pnode);
   }
+  return;
+}
+
+void
+queueMove (queue_t *q, ssize_t fromidx, ssize_t toidx)
+{
+  queuenode_t   *node = NULL;
+  queuenode_t   *fromnode = NULL;
+  queuenode_t   *tonode = NULL;
+  void          *tdata = NULL;
+  ssize_t       count;
+
+  if (q == NULL) {
+    return;
+  }
+  if (fromidx < 0 || fromidx >= q->count || toidx < 0 || toidx >= q->count) {
+    return;
+  }
+  node = q->head;
+
+  count = 0;
+  while (node != NULL && (fromnode == NULL || tonode == NULL)) {
+    if (count == fromidx) {
+      fromnode = node;
+    }
+    if (count == toidx) {
+      tonode = node;
+    }
+    node = node->next;
+    ++count;
+  }
+
+  if (fromnode != NULL && tonode != NULL) {
+    /* messing with the pointers is a pain; simply swap the content pointers */
+    tdata = fromnode->data;
+    fromnode->data = tonode->data;
+    tonode->data = tdata;
+  }
+
   return;
 }
 

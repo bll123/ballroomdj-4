@@ -47,7 +47,7 @@ webclientPost (webclient_t *webclient, char *uri, char *query,
     curl_easy_setopt (webclient->curl, CURLOPT_USERAGENT, tbuff);
   }
 
-//* need to use curl_easy_escape
+// possibly need to use curl_easy_escape; at least with the url.
   curl_easy_setopt (webclient->curl, CURLOPT_URL, uri);
   curl_easy_setopt (webclient->curl, CURLOPT_POSTFIELDS, query);
   res = curl_easy_perform (webclient->curl);

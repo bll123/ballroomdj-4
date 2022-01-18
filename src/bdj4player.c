@@ -278,9 +278,6 @@ main (int argc, char *argv[])
   volumeFreeSinkList (&playerData.sinklist);
   volumeFree (playerData.volume);
 
-  if (playerData.currentSong != NULL) {
-    playerPrepQueueFree (playerData.currentSong);
-  }
   if (playerData.prepQueue != NULL) {
     queueFree (playerData.prepQueue);
   }
@@ -557,6 +554,11 @@ playerProcessing (void *udata)
 
       playerSetPlayerState (playerData, PL_STATE_PLAYING);
       logMsg (LOG_DBG, LOG_BASIC, "pl state: playing");
+
+      if (pq->announce == PREP_SONG) {
+        sockhSendMessage (SOCKOF (PROCESS_MAIN),
+            ROUTE_PLAYER, ROUTE_MAIN, MSG_PLAYBACK_BEGIN, NULL);
+      }
     } else {
       /* ### FIX: need to process this; stopped/ended/error */
       ;
@@ -631,16 +633,19 @@ playerProcessing (void *udata)
           }
 
           if (! playerData->repeat) {
-            playerPrepQueueFree (playerData->currentSong);
             playerData->currentSong = NULL;
           }
         }
-        if (! playerData->repeat) {
-          char      *request;
+
+        if (! playerData->repeat || pq->announce == PREP_ANNOUNCE) {
+          char          *request;
+          prepqueue_t   *tpq;
+
           request = queuePop (playerData->playRequest);
           free (request);
           if (pq->announce == PREP_SONG) {
-            queueIterateRemoveNode (playerData->prepQueue);
+            tpq = queueIterateRemoveNode (playerData->prepQueue);
+            playerPrepQueueFree (tpq);
           }
         }
 

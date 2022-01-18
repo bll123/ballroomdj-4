@@ -24,7 +24,6 @@ typedef enum {
   PLAYLIST_SEQ_NAME,              //
   PLAYLIST_TYPE,                  //
   PLAYLIST_USE_STATUS,            //
-  PLAYLIST_USE_UNRATED,
   PLAYLIST_KEY_MAX,
 } playlistkey_t;
 
@@ -75,6 +74,8 @@ typedef struct {
 
 typedef bool (*playlistCheck_t)(song_t *, void *);
 
+playlist_t    *playlistLoad (char *);
+playlist_t    *playlistCreate (char *plfname, pltype_t type, char *ofname);
 playlist_t    *playlistAlloc (char *);
 void          playlistFree (void *);
 char          *playlistGetName (playlist_t *pl);

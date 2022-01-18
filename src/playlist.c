@@ -56,8 +56,6 @@ static datafilekey_t playlistdfkeys[] = {
       VALUE_NUM, plConvType },
   { "USESTATUS",        PLAYLIST_USE_STATUS,
       VALUE_NUM, parseConvBoolean },
-  { "USEUNRATED",       PLAYLIST_USE_UNRATED,
-      VALUE_NUM, parseConvBoolean },
 };
 #define PLAYLIST_DFKEY_COUNT (sizeof (playlistdfkeys) / sizeof (datafilekey_t))
 
@@ -73,11 +71,12 @@ static datafilekey_t playlistdancedfkeys[] = {
 #define PLAYLIST_DANCE_DFKEY_COUNT (sizeof (playlistdancedfkeys) / sizeof (datafilekey_t))
 
 playlist_t *
-playlistAlloc (char *fname)
+playlistLoad (char *fname)
 {
   playlist_t    *pl = NULL;
   char          tfn [MAXPATHLEN];
   pltype_t      type;
+
 
   datautilMakePath (tfn, sizeof (tfn), "", fname, ".pl", DATAUTIL_MP_NONE);
   if (! fileopExists (tfn)) {
@@ -85,17 +84,7 @@ playlistAlloc (char *fname)
     return NULL;
   }
 
-  pl = malloc (sizeof (playlist_t));
-  assert (pl != NULL);
-  pl->name = strdup (fname);
-  pl->manualIdx = 0;
-  pl->plinfodf = NULL;
-  pl->pldancesdf = NULL;
-  pl->songlist = NULL;
-  pl->sequence = NULL;
-  pl->songsel = NULL;
-  pl->plinfo = NULL;
-  pl->pldances = NULL;
+  pl = playlistAlloc (fname);
 
   pl->plinfodf = datafileAllocParse ("playlist", DFTYPE_KEY_VAL, tfn,
       playlistdfkeys, PLAYLIST_DFKEY_COUNT, DATAFILE_NO_LOOKUP);
@@ -158,6 +147,89 @@ playlistAlloc (char *fname)
     }
     sequenceStartIterator (pl->sequence);
   }
+
+  return pl;
+}
+
+playlist_t *
+playlistCreate (char *plfname, pltype_t type, char *ofname)
+{
+  playlist_t    *pl = NULL;
+  char          tbuff [40];
+  listidx_t     dkey;
+  list_t        *dl;
+  list_t        *tl;
+  ssize_t       idx;
+
+
+  pl = playlistAlloc (plfname);
+
+  snprintf (tbuff, sizeof (tbuff), "plinfo-%s", plfname);
+  pl->plinfo = llistAlloc (tbuff, LIST_UNORDERED, free);
+  llistSetSize (pl->plinfo, PLAYLIST_KEY_MAX);
+  llistSetData (pl->plinfo, PLAYLIST_ALLOWED_KEYWORDS, NULL);
+  llistSetNum (pl->plinfo, PLAYLIST_ANNOUNCE, 0);
+  llistSetNum (pl->plinfo, PLAYLIST_GAP, 1000);
+  llistSetNum (pl->plinfo, PLAYLIST_LEVEL_HIGH, LIST_VALUE_INVALID);
+  llistSetNum (pl->plinfo, PLAYLIST_LEVEL_LOW, 0);
+  llistSetData (pl->plinfo, PLAYLIST_MANUAL_LIST_NAME, NULL);
+  llistSetNum (pl->plinfo, PLAYLIST_MAX_PLAY_TIME, 0);
+  llistSetData (pl->plinfo, PLAYLIST_MQ_MESSAGE, NULL);
+  llistSetNum (pl->plinfo, PLAYLIST_PAUSE_EACH_SONG, 0);
+  llistSetNum (pl->plinfo, PLAYLIST_RATING, 0);
+  llistSetData (pl->plinfo, PLAYLIST_SEQ_NAME, NULL);
+  llistSetNum (pl->plinfo, PLAYLIST_TYPE, type);
+
+  if (ofname == NULL) {
+    ofname = plfname;
+  }
+  if (type == PLTYPE_MANUAL) {
+    llistSetData (pl->plinfo, PLAYLIST_MANUAL_LIST_NAME, strdup (ofname));
+    pl->songlist = songlistAlloc (ofname);
+  }
+  if (type == PLTYPE_SEQ) {
+    llistSetData (pl->plinfo, PLAYLIST_SEQ_NAME, strdup (ofname));
+    pl->sequence = sequenceAlloc (ofname);
+  }
+
+  snprintf (tbuff, sizeof (tbuff), "pldance-%s", plfname);
+  pl->pldances = llistAlloc (tbuff, LIST_ORDERED, free);
+  idx = 0;
+  dl = danceGetDanceList (bdjvarsdf [BDJVDF_DANCES]);
+  listStartIterator (dl);
+  while ((dkey = listIterateNum (dl)) != LIST_VALUE_INVALID) {
+    snprintf (tbuff, sizeof (tbuff), "pldance-%s-%zd", plfname, dkey);
+    tl = llistAlloc (tbuff, LIST_UNORDERED, NULL);
+    llistSetList (pl->pldances, idx, tl);
+    ilistSetNum (pl->pldances, idx, PLDANCE_BPM_HIGH, LIST_VALUE_INVALID);
+    ilistSetNum (pl->pldances, idx, PLDANCE_BPM_LOW, LIST_VALUE_INVALID);
+    ilistSetNum (pl->pldances, idx, PLDANCE_COUNT, 0);
+    ilistSetNum (pl->pldances, idx, PLDANCE_DANCE, dkey);
+    ilistSetNum (pl->pldances, idx, PLDANCE_MAXPLAYTIME, LIST_VALUE_INVALID);
+    ilistSetNum (pl->pldances, idx, PLDANCE_SELECTED, 0);
+    ++idx;
+  }
+  listFree (dl);
+
+  return pl;
+}
+
+playlist_t *
+playlistAlloc (char *fname)
+{
+  playlist_t    *pl = NULL;
+
+  pl = malloc (sizeof (playlist_t));
+  assert (pl != NULL);
+  pl->name = strdup (fname);
+  pl->manualIdx = 0;
+  pl->plinfodf = NULL;
+  pl->pldancesdf = NULL;
+  pl->songlist = NULL;
+  pl->sequence = NULL;
+  pl->songsel = NULL;
+  pl->plinfo = NULL;
+  pl->pldances = NULL;
 
   return pl;
 }
