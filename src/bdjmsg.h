@@ -15,13 +15,18 @@ typedef enum {
 typedef enum {
   MSG_NULL,
   MSG_HANDSHAKE,
-  MSG_SET_DEBUG_LVL,
-  MSG_EXIT_FORCE,           // only for testing, may not work yet.
+  MSG_SOCKET_CLOSE,
   MSG_EXIT_REQUEST,         // standard shutdown
-  MSG_PLAY_PAUSE,           // to player
-  MSG_PLAY_PLAY,            // to main:
+    /* to main */
+  MSG_PLAY_PLAY,            // to main (always).
                             //    starts playback, passed on to player.
-  MSG_PLAY_PLAYPAUSE,       // to player:
+  MSG_PLAY_PLAYPAUSE,       // to main (always).
+  MSG_PLAYLIST_QUEUE,       // to main args: playlist name
+  MSG_PLAYLIST_CLEARPLAY,   // to main args: playlist name
+  MSG_GET_STATUS,           // get main/player status
+  MSG_QUEUE_CLEAR,          // to main
+    /* to player */
+  MSG_PLAY_PAUSE,           // to player
   MSG_PLAY_FADE,            // to player.
   MSG_PLAY_PAUSEATEND,      // to player: toggle
   MSG_PLAY_STOP,            // to player.
@@ -31,24 +36,23 @@ typedef enum {
   MSG_PLAYER_VOL_MUTE,      // to player. toggle.
   MSG_PLAYER_VOLUME,        // to player. args: volume as percentage.
   MSG_PLAYER_VOLSINK_SET,   // to player: set volume sink
-  MSG_PLAYBACK_STOP,        // to main: player has stopped playing song
-                            //    do not continue.
-  MSG_PLAYBACK_FINISH,      // to main: player has finished playing song
-                            // args: song fname
-  MSG_PLAYLIST_QUEUE,       // args: playlist name
-  MSG_PLAY_PAUSEATEND_STATE,// args: 0/1
-  MSG_PLAYER_STATE,         // args: player state
-  MSG_SOCKET_CLOSE,
   MSG_SONG_PLAY,            // args: song fname
   MSG_SONG_PREP,            // args: song fname, duration, song-start
                             //    song-end, volume-adjustment-perc, gap
-  MSG_MARQUEE_DATA,         // args: mq data
+    /* from player */
+  MSG_PLAYBACK_STOP,        // to main: player has stopped playing song
+                            //    do not continue.
+  MSG_PLAYBACK_FINISH,      // to main: player has finished playing song
+                            //    args: song fname
+  MSG_PLAY_PAUSEATEND_STATE,// args: 0/1
+  MSG_PLAYER_STATE,         // args: player state
   MSG_GET_DANCE_LIST,       //
+  MSG_PLAYER_STATUS_DATA,   // response to get_status; to main
+    /* to/from web servers */
+  MSG_MARQUEE_DATA,         // args: mq data
   MSG_DANCE_LIST_DATA,      // args: html option list
   MSG_GET_PLAYLIST_LIST,    //
   MSG_PLAYLIST_LIST_DATA,   // args: html option list
-  MSG_GET_STATUS,           // get main/player status
-  MSG_PLAYER_STATUS_DATA,   // response to main
   MSG_STATUS_DATA,          // response to remote control
   MSG_MAX
 } bdjmsgmsg_t;

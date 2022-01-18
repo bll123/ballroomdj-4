@@ -193,17 +193,8 @@ main (int argc, char *argv[])
         msgok = 1;
         argsok = 1;
       }
-      if (strcmp (buff, "debug") == 0) {
-        msg = MSG_SET_DEBUG_LVL;
-        msgok = 1;
-        argsok = 1;
-      }
       if (strcmp (buff, "exit") == 0) {
         msg = MSG_EXIT_REQUEST;
-        msgok = 1;
-      }
-      if (strcmp (buff, "force-exit") == 0) {
-        msg = MSG_EXIT_FORCE;
         msgok = 1;
       }
       if (strcmp (buff, "cliexit") == 0) {

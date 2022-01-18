@@ -201,6 +201,13 @@ musicqPop (musicq_t *musicq, musicqidx_t musicqidx)
   musicqQueueFree (musicqitem);
 }
 
+/* does not clear the initial entry -- that's the song that is playing */
+void
+musicqClear (musicq_t *musicq, musicqidx_t musicqidx, ssize_t startIdx)
+{
+  queueClear (musicq->q [musicqidx], startIdx);
+}
+
 ssize_t
 musicqGetLen (musicq_t *musicq, musicqidx_t musicqidx)
 {

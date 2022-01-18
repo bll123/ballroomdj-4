@@ -119,6 +119,7 @@ main (int argc, char *argv[])
   if (tval != NULL) {
     mobmqData.name = strdup (tval);
   }
+  tval = bdjoptGetData (OPT_P_MOBILEMQTITLE);
   mobmqData.title = NULL;
   if (tval != NULL) {
     mobmqData.title = strdup (tval);

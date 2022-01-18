@@ -445,7 +445,7 @@ http://danielstern.ca/range.css/#/
         </div>
         <div class="linebox">
           <input class="stretch grow wb" type="submit"
-            onclick="javascript:bdj.sendPLCmd('playlist');"
+            onclick="javascript:bdj.sendPLCmd('playlistclearplay');"
             name="plclearplay" value="Clear & Play">
           <input class="stretch grow wb" type="submit"
             onclick="javascript:bdj.sendPLCmd('playlistqueue');"
@@ -534,12 +534,12 @@ bdj.nextPage = function () {
 
 bdj.sendDanceCmd = function (cmd) {
   var o = document.getElementById("dancelist");
-  bdj.sendCmd (cmd + ' {' + o.options[o.selectedIndex].value + '}');
+  bdj.sendCmd (cmd + ' ' + o.options[o.selectedIndex].value);
 }
 
 bdj.sendPLCmd = function (cmd) {
   var o = document.getElementById("playlistsel");
-  bdj.sendCmd (cmd + ' {' + o.options[o.selectedIndex].value + '}');
+  bdj.sendCmd (cmd + ' ' + o.options[o.selectedIndex].value);
 }
 
 bdj.sendCmd = function (cmd) {

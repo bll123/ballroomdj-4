@@ -65,6 +65,7 @@ static void     mainSendMobileMarqueeData (maindata_t *mainData);
 static void     mainMobilePostCallback (void *userdata, char *resp, size_t len);
 static void     mainConnectProcess (maindata_t *mainData, processconnidx_t idx,
                     bdjmsgroute_t route, uint16_t port);
+static void     mainQueueClear (maindata_t *mainData);
 static void     mainPlaylistQueue (maindata_t *mainData, char *plname);
 static void     mainSigHandler (int sig);
 static void     mainMusicQueueFill (maindata_t *mainData);
@@ -208,12 +209,23 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           logProcEnd (LOG_PROC, "mainProcessMsg", "req-exit");
           return 1;
         }
-        case MSG_PLAYLIST_QUEUE: {
-          logMsg (LOG_DBG, LOG_MSGS, "got: playlist-queue");
+        case MSG_QUEUE_CLEAR: {
+          /* clears both the playlist queue and the music queue */
+          logMsg (LOG_DBG, LOG_MSGS, "got: queue-clear");
+          mainQueueClear (mainData);
+          break;
+        }
+        case MSG_PLAYLIST_CLEARPLAY: {
+          mainQueueClear (mainData);
+          /* clear out any playing song */
+          sockhSendMessage (SOCKOF (PROCESS_PLAYER),
+              ROUTE_MAIN, ROUTE_PLAYER, MSG_PLAY_NEXTSONG, NULL);
           mainPlaylistQueue (mainData, args);
           break;
         }
-        case MSG_SET_DEBUG_LVL: {
+        case MSG_PLAYLIST_QUEUE: {
+          logMsg (LOG_DBG, LOG_MSGS, "got: playlist-queue %s", args);
+          mainPlaylistQueue (mainData, args);
           break;
         }
         case MSG_PLAY_PLAY: {
@@ -221,7 +233,6 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_PLAY_PLAYPAUSE: {
-fprintf (stderr, "got playpause: pl state: %d\n", mainData->playerState);
           if (mainData->playerState == PL_STATE_PLAYING ||
               mainData->playerState == PL_STATE_IN_FADEOUT) {
             sockhSendMessage (SOCKOF (PROCESS_PLAYER),
@@ -504,6 +515,20 @@ mainConnectProcess (maindata_t *mainData, processconnidx_t idx,
   }
 }
 
+/* clears both the playlist and music queues */
+static void
+mainQueueClear (maindata_t *mainData)
+{
+  int startIdx;
+
+  queueClear (mainData->playlistQueue, 0);
+  startIdx = mainData->musicqCurrentIdx == MUSICQ_A ? 1 : 0;
+  musicqClear (mainData->musicQueue, MUSICQ_A, startIdx);
+  startIdx = mainData->musicqCurrentIdx == MUSICQ_B ? 1 : 0;
+  musicqClear (mainData->musicQueue, MUSICQ_B, startIdx);
+  mainData->marqueeChanged = true;
+}
+
 static void
 mainPlaylistQueue (maindata_t *mainData, char *plname)
 {
@@ -513,11 +538,14 @@ mainPlaylistQueue (maindata_t *mainData, char *plname)
   logProcBegin (LOG_PROC, "mainPlaylistQueue");
   playlist = playlistAlloc (plname);
   if (playlist != NULL) {
+    logMsg (LOG_DBG, LOG_BASIC, "Queue Playlist: %s", plname);
     listSetData (mainData->playlistList, plname, playlist);
     queuePush (mainData->playlistQueue, playlist);
     logMsg (LOG_DBG, LOG_MAIN, "push pl %s", plname);
     mainMusicQueueFill (mainData);
     mainMusicQueuePrep (mainData);
+  } else {
+    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Queue Playlist failed: %s", plname);
   }
   logProcEnd (LOG_PROC, "mainPlaylistQueue", "");
 }
@@ -713,19 +741,21 @@ mainMusicQueuePlay (maindata_t *mainData)
       /* grab a song out of the music queue and start playing */
     logMsg (LOG_DBG, LOG_MAIN, "player is stopped, get song, start");
     song = musicqGetCurrent (mainData->musicQueue, mainData->musicqCurrentIdx);
-    flags = musicqGetFlags (mainData->musicQueue, mainData->musicqCurrentIdx, 0);
-    if ((flags & MUSICQ_FLAG_ANNOUNCE) == MUSICQ_FLAG_ANNOUNCE) {
-      char      *annfname;
+    if (song != NULL) {
+      flags = musicqGetFlags (mainData->musicQueue, mainData->musicqCurrentIdx, 0);
+      if ((flags & MUSICQ_FLAG_ANNOUNCE) == MUSICQ_FLAG_ANNOUNCE) {
+        char      *annfname;
 
-      annfname = musicqGetAnnounce (mainData->musicQueue, mainData->musicqCurrentIdx, 0);
-      if (annfname != NULL) {
-        sockhSendMessage (SOCKOF (PROCESS_PLAYER),
-            ROUTE_MAIN, ROUTE_PLAYER, MSG_SONG_PLAY, annfname);
+        annfname = musicqGetAnnounce (mainData->musicQueue, mainData->musicqCurrentIdx, 0);
+        if (annfname != NULL) {
+          sockhSendMessage (SOCKOF (PROCESS_PLAYER),
+              ROUTE_MAIN, ROUTE_PLAYER, MSG_SONG_PLAY, annfname);
+        }
       }
+      sfname = songGetData (song, TAG_FILE);
+      sockhSendMessage (SOCKOF (PROCESS_PLAYER),
+          ROUTE_MAIN, ROUTE_PLAYER, MSG_SONG_PLAY, sfname);
     }
-    sfname = songGetData (song, TAG_FILE);
-    sockhSendMessage (SOCKOF (PROCESS_PLAYER),
-        ROUTE_MAIN, ROUTE_PLAYER, MSG_SONG_PLAY, sfname);
   }
   if (mainData->playerState == PL_STATE_IN_GAP ||
       mainData->playerState == PL_STATE_PAUSED) {

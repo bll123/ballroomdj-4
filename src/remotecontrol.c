@@ -175,7 +175,7 @@ rcEventHandler (struct mg_connection *c, int ev, void *ev_data, void *userdata)
   char          pass [40];
   char          querystr [40];
   char          *tokptr;
-  char          *qp;
+  char          *qstrptr;
 
   if (ev == MG_EV_HTTP_MSG) {
     struct mg_http_message *hm = (struct mg_http_message *) ev_data;
@@ -183,15 +183,21 @@ rcEventHandler (struct mg_connection *c, int ev, void *ev_data, void *userdata)
     mg_http_creds(hm, user, sizeof(user), pass, sizeof(pass)); // "user" is now user name and "pass" is now password from request
 
     mg_url_decode (hm->query.ptr, hm->query.len, querystr, sizeof (querystr), 1);
-    qp = strtok_r (querystr, " ", &tokptr);
-    qp = strtok_r (NULL, " ", &tokptr);
+    qstrptr = strtok_r (querystr, " ", &tokptr);
+    qstrptr = strtok_r (NULL, " ", &tokptr);
 
+    if (*querystr) {
+      logMsg (LOG_DBG, LOG_BASIC, "process: %s", querystr);
+      if (qstrptr != NULL) {
+        logMsg (LOG_DBG, LOG_BASIC, "  args: %s", qstrptr);
+      }
+    }
     if (user [0] == '\0' || pass [0] == '\0') {
       mg_http_reply (c, 401, "Content-type: text/plain; charset=utf-8\r\n"
           "WWW-Authenticate: Basic realm=BallroomDJ 4 Remote\r\n", "Unauthorized");
     } else if (strcmp (user, remctrlData->user) != 0 ||
         strcmp (pass, remctrlData->pass) != 0) {
-      mg_http_reply (c, 403, "Content-type: text/plain; charset=utf-8\r\n"
+      mg_http_reply (c, 401, "Content-type: text/plain; charset=utf-8\r\n"
           "WWW-Authenticate: Basic realm=BallroomDJ 4 Remote\r\n", "Unauthorized");
     } else if (mg_http_match_uri (hm, "/getstatus")) {
       if (remctrlData->playerStatus == NULL) {
@@ -204,7 +210,10 @@ rcEventHandler (struct mg_connection *c, int ev, void *ev_data, void *userdata)
     } else if (mg_http_match_uri (hm, "/cmd")) {
       bool ok = true;
 
-      if (strcmp (querystr, "fade") == 0) {
+      if (strcmp (querystr, "clear") == 0) {
+        sockhSendMessage (SOCKOF (PROCESS_MAIN),
+            ROUTE_REMCTRL, ROUTE_MAIN, MSG_QUEUE_CLEAR, NULL);
+      } else if (strcmp (querystr, "fade") == 0) {
         sockhSendMessage (SOCKOF (PROCESS_PLAYER),
             ROUTE_REMCTRL, ROUTE_PLAYER, MSG_PLAY_FADE, NULL);
       } else if (strcmp (querystr, "nextsong") == 0) {
@@ -216,15 +225,21 @@ rcEventHandler (struct mg_connection *c, int ev, void *ev_data, void *userdata)
       } else if (strcmp (querystr, "play") == 0) {
         sockhSendMessage (SOCKOF (PROCESS_MAIN),
             ROUTE_REMCTRL, ROUTE_MAIN, MSG_PLAY_PLAYPAUSE, NULL);
+      } else if (strcmp (querystr, "playlistclearplay") == 0) {
+        sockhSendMessage (SOCKOF (PROCESS_MAIN),
+            ROUTE_REMCTRL, ROUTE_MAIN, MSG_PLAYLIST_CLEARPLAY, qstrptr);
+      } else if (strcmp (querystr, "playlistqueue") == 0) {
+        sockhSendMessage (SOCKOF (PROCESS_MAIN),
+            ROUTE_REMCTRL, ROUTE_MAIN, MSG_PLAYLIST_QUEUE, qstrptr);
       } else if (strcmp (querystr, "repeat") == 0) {
         sockhSendMessage (SOCKOF (PROCESS_PLAYER),
             ROUTE_REMCTRL, ROUTE_PLAYER, MSG_PLAY_REPEAT, NULL);
       } else if (strcmp (querystr, "speed") == 0) {
         sockhSendMessage (SOCKOF (PROCESS_PLAYER),
-            ROUTE_REMCTRL, ROUTE_PLAYER, MSG_PLAY_RATE, qp);
+            ROUTE_REMCTRL, ROUTE_PLAYER, MSG_PLAY_RATE, qstrptr);
       } else if (strcmp (querystr, "volume") == 0) {
         sockhSendMessage (SOCKOF (PROCESS_PLAYER),
-            ROUTE_REMCTRL, ROUTE_PLAYER, MSG_PLAYER_VOLUME, qp);
+            ROUTE_REMCTRL, ROUTE_PLAYER, MSG_PLAYER_VOLUME, qstrptr);
       } else if (strcmp (querystr, "volmute") == 0) {
         sockhSendMessage (SOCKOF (PROCESS_PLAYER),
             ROUTE_REMCTRL, ROUTE_PLAYER, MSG_PLAYER_VOL_MUTE, NULL);

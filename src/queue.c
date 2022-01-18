@@ -140,6 +140,25 @@ queuePop (queue_t *q)
   return data;
 }
 
+void
+queueClear (queue_t *q, ssize_t startIdx)
+{
+  queuenode_t   *node;
+  queuenode_t   *pnode;
+
+  if (q == NULL) {
+    return;
+  }
+  node = q->tail;
+
+  while (node != NULL && q->count > startIdx) {
+    pnode = node;
+    node = node->prev;
+    queueRemove (q, pnode);
+  }
+  return;
+}
+
 void *
 queueRemoveByIdx (queue_t *q, ssize_t idx)
 {
