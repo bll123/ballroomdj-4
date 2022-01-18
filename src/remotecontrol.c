@@ -11,30 +11,35 @@
 
 #include "mongoose.h"
 
+#include "bdj4.h"
 #include "bdjmsg.h"
 #include "bdjopt.h"
 #include "bdjvars.h"
 #include "lock.h"
 #include "log.h"
 #include "process.h"
+#include "sock.h"
 #include "sockh.h"
 #include "sysvars.h"
 #include "tmutil.h"
 #include "websrv.h"
 
+#define SOCKOF(idx) (remctrlData->processes [idx].sock)
+
 typedef struct {
-  Sock_t          mainSock;
+  processconn_t   processes [PROCESS_MAX];
   programstate_t  programState;
   mstime_t        tm;
+  mstime_t        statusCheck;
   uint16_t        port;
   char            *user;
   char            *pass;
   int             haveData;
   char            *danceList;
   char            *playlistList;
+  char            *playerStatus;
   websrv_t        *websrv;
   bool            enabled : 1;
-  bool            mainHandshake : 1;
 } remctrldata_t;
 
 static void rcEventHandler (struct mg_connection *c, int ev,
@@ -43,6 +48,10 @@ static int  remctrlProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     bdjmsgmsg_t msg, char *args, void *udata);
 static int  remctrlProcessing (void *udata);
 static void remctrlSigHandler (int sig);
+static void remctrlConnectProcess (remctrldata_t *remctrlData,
+    processconnidx_t idx, bdjmsgroute_t route, uint16_t port);
+static void remctrlDisconnectProcess (remctrldata_t *remctrlData,
+    processconnidx_t idx, bdjmsgroute_t route);
 
 static int            gKillReceived = 0;
 
@@ -111,16 +120,21 @@ main (int argc, char *argv[])
     exit (0);
   }
 
-  remctrlData.mainSock = INVALID_SOCKET;
-  remctrlData.programState = STATE_INITIALIZING;
-  remctrlData.port = bdjoptGetNum (OPT_P_REMCONTROLPORT);
-  remctrlData.user = strdup (bdjoptGetData (OPT_P_REMCONTROLUSER));
-  remctrlData.pass = strdup (bdjoptGetData (OPT_P_REMCONTROLPASS));
-  remctrlData.haveData = 0;
   remctrlData.danceList = "";
+  remctrlData.haveData = 0;
+  remctrlData.pass = strdup (bdjoptGetData (OPT_P_REMCONTROLPASS));
+  remctrlData.playerStatus = NULL;
+  mstimestart (&remctrlData.statusCheck);
   remctrlData.playlistList = "";
+  remctrlData.port = bdjoptGetNum (OPT_P_REMCONTROLPORT);
+  remctrlData.programState = STATE_INITIALIZING;
+  remctrlData.user = strdup (bdjoptGetData (OPT_P_REMCONTROLUSER));
   remctrlData.websrv = NULL;
-  remctrlData.mainHandshake = false;
+  for (processconnidx_t i = PROCESS_PLAYER; i < PROCESS_MAX; ++i) {
+    remctrlData.processes [i].sock = INVALID_SOCKET;
+    remctrlData.processes [i].started = false;
+    remctrlData.processes [i].handshake = false;
+  }
 
   remctrlData.websrv = websrvInit (remctrlData.port, rcEventHandler, &remctrlData);
 
@@ -134,6 +148,9 @@ main (int argc, char *argv[])
   if (remctrlData.pass != NULL) {
     free (remctrlData.pass);
   }
+  if (remctrlData.playerStatus != NULL) {
+    free (remctrlData.playerStatus);
+  }
   if (*remctrlData.danceList) {
     free (remctrlData.danceList);
   }
@@ -142,7 +159,7 @@ main (int argc, char *argv[])
   }
   bdjoptFree ();
   bdjvarsCleanup ();
-  logMsg (LOG_SESS, LOG_IMPORTANT, "running: time-to-end: %ld ms", mstimeend (&remctrlData.tm));
+  logMsg (LOG_SESS, LOG_IMPORTANT, "time-to-end: %ld ms", mstimeend (&remctrlData.tm));
   logEnd ();
   lockRelease (REMCTRL_LOCK_FN, DATAUTIL_MP_USEIDX);
   return 0;
@@ -156,10 +173,18 @@ rcEventHandler (struct mg_connection *c, int ev, void *ev_data, void *userdata)
   remctrldata_t *remctrlData = userdata;
   char          user [40];
   char          pass [40];
+  char          querystr [40];
+  char          *tokptr;
+  char          *qp;
 
   if (ev == MG_EV_HTTP_MSG) {
     struct mg_http_message *hm = (struct mg_http_message *) ev_data;
+
     mg_http_creds(hm, user, sizeof(user), pass, sizeof(pass)); // "user" is now user name and "pass" is now password from request
+
+    mg_url_decode (hm->query.ptr, hm->query.len, querystr, sizeof (querystr), 1);
+    qp = strtok_r (querystr, " ", &tokptr);
+    qp = strtok_r (NULL, " ", &tokptr);
 
     if (user [0] == '\0' || pass [0] == '\0') {
       mg_http_reply (c, 401, "Content-type: text/plain; charset=utf-8\r\n"
@@ -168,10 +193,55 @@ rcEventHandler (struct mg_connection *c, int ev, void *ev_data, void *userdata)
         strcmp (pass, remctrlData->pass) != 0) {
       mg_http_reply (c, 403, "Content-type: text/plain; charset=utf-8\r\n"
           "WWW-Authenticate: Basic realm=BallroomDJ 4 Remote\r\n", "Unauthorized");
-    } else if (mg_http_match_uri (hm, "/bdj4update")) {
+    } else if (mg_http_match_uri (hm, "/getstatus")) {
+      if (remctrlData->playerStatus == NULL) {
+        mg_http_reply (c, 204, "Content-type: text/plain; charset=utf-8\r\n"
+            "Cache-Control max-age=0\r\n", "");
+      } else {
+        mg_http_reply (c, 200, "Content-type: text/plain; charset=utf-8\r\n"
+            "Cache-Control max-age=0\r\n", remctrlData->playerStatus);
+      }
     } else if (mg_http_match_uri (hm, "/cmd")) {
+       bool ok = true;
 fprintf (stderr, "uri: %.*s\n", (int) hm->uri.len, hm->uri.ptr);
-fprintf (stderr, "  query: %.*s\n", (int) hm->query.len, hm->query.ptr);
+fprintf (stderr, "  query: %s\n", querystr);
+if (qp != NULL) {
+  fprintf (stderr, "  qp: %s\n", qp);
+}
+      if (strcmp (querystr, "fade") == 0) {
+        sockhSendMessage (SOCKOF (PROCESS_PLAYER),
+            ROUTE_REMCTRL, ROUTE_PLAYER, MSG_PLAY_FADE, NULL);
+      } else if (strcmp (querystr, "nextsong") == 0) {
+        sockhSendMessage (SOCKOF (PROCESS_PLAYER),
+            ROUTE_REMCTRL, ROUTE_PLAYER, MSG_PLAY_NEXTSONG, NULL);
+      } else if (strcmp (querystr, "repeat") == 0) {
+        sockhSendMessage (SOCKOF (PROCESS_PLAYER),
+            ROUTE_REMCTRL, ROUTE_PLAYER, MSG_PLAY_REPEAT, NULL);
+      } else if (strcmp (querystr, "pauseatend") == 0) {
+        sockhSendMessage (SOCKOF (PROCESS_PLAYER),
+            ROUTE_REMCTRL, ROUTE_PLAYER, MSG_PLAY_PAUSEATEND, NULL);
+      } else if (strcmp (querystr, "play") == 0) {
+        sockhSendMessage (SOCKOF (PROCESS_PLAYER),
+            ROUTE_REMCTRL, ROUTE_MAIN, MSG_PLAY_PLAYPAUSE, NULL);
+      } else if (strcmp (querystr, "speed") == 0) {
+        sockhSendMessage (SOCKOF (PROCESS_PLAYER),
+            ROUTE_REMCTRL, ROUTE_MAIN, MSG_PLAY_RATE, qp);
+      } else if (strcmp (querystr, "vol") == 0) {
+        sockhSendMessage (SOCKOF (PROCESS_PLAYER),
+            ROUTE_REMCTRL, ROUTE_MAIN, MSG_PLAYER_VOLUME, qp);
+      } else if (strcmp (querystr, "volmute") == 0) {
+        sockhSendMessage (SOCKOF (PROCESS_PLAYER),
+            ROUTE_REMCTRL, ROUTE_PLAYER, MSG_PLAYER_VOL_MUTE, NULL);
+      } else {
+        ok = false;
+      }
+      if (ok) {
+        mg_http_reply (c, 200, "Content-type: text/plain; charset=utf-8\r\n",
+            "Cache-Control max-age=0\r\n", NULL);
+      } else {
+        mg_http_reply (c, 400, "Content-type: text/plain; charset=utf-8\r\n",
+            "Cache-Control max-age=0\r\n", NULL);
+      }
     } else if (mg_http_match_uri (hm, "/getdancelist")) {
       mg_http_reply (c, 200, "Content-type: text/plain; charset=utf-8\r\n",
           remctrlData->danceList);
@@ -204,29 +274,37 @@ remctrlProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     case ROUTE_REMCTRL: {
       switch (msg) {
         case MSG_HANDSHAKE: {
-          remctrlData->mainHandshake = true;
+          if (routefrom == ROUTE_MAIN) {
+            remctrlData->processes [PROCESS_MAIN].handshake = true;
+          }
+          if (routefrom == ROUTE_PLAYER) {
+            remctrlData->processes [PROCESS_PLAYER].handshake = true;
+          }
           break;
         }
         case MSG_EXIT_REQUEST: {
           mstimestart (&remctrlData->tm);
           logMsg (LOG_SESS, LOG_IMPORTANT, "got exit request");
           gKillReceived = 0;
-          sockhSendMessage (remctrlData->mainSock, ROUTE_REMCTRL, ROUTE_MAIN,
-              MSG_SOCKET_CLOSE, NULL);
-          sockClose (remctrlData->mainSock);
-          remctrlData->mainSock = INVALID_SOCKET;
+          remctrlDisconnectProcess (remctrlData, PROCESS_MAIN, ROUTE_MAIN);
+          remctrlDisconnectProcess (remctrlData, PROCESS_PLAYER, ROUTE_PLAYER);
           return 1;
         }
         case MSG_DANCE_LIST_DATA: {
-fprintf (stderr, "dance list:\n%s\n", args);
           remctrlData->haveData++;
           remctrlData->danceList = strdup (args);
           break;
         }
         case MSG_PLAYLIST_LIST_DATA: {
-fprintf (stderr, "playlist list:\n%s\n", args);
           remctrlData->haveData++;
           remctrlData->playlistList = strdup (args);
+          break;
+        }
+        case MSG_STATUS_DATA: {
+          if (remctrlData->playerStatus != NULL) {
+            free (remctrlData->playerStatus);
+          }
+          remctrlData->playerStatus = strdup (args);
           break;
         }
         default: {
@@ -254,39 +332,50 @@ remctrlProcessing (void *udata)
     remctrlData->programState = STATE_CONNECTING;
   }
 
-  if (remctrlData->programState == STATE_CONNECTING &&
-      remctrlData->mainSock == INVALID_SOCKET) {
-    int       err;
-    uint16_t  mainPort;
+  if (remctrlData->programState == STATE_CONNECTING) {
+    uint16_t  port;
 
-    mainPort = bdjvarsl [BDJVL_MAIN_PORT];
-    remctrlData->mainSock = sockConnect (mainPort, &err, 1000);
-    if (remctrlData->mainSock != INVALID_SOCKET) {
-      sockhSendMessage (remctrlData->mainSock, ROUTE_REMCTRL, ROUTE_MAIN,
-          MSG_HANDSHAKE, NULL);
+    if (SOCKOF (PROCESS_MAIN) == INVALID_SOCKET) {
+      port = bdjvarsl [BDJVL_MAIN_PORT];
+      remctrlConnectProcess (remctrlData, PROCESS_MAIN, ROUTE_MAIN, port);
+    }
+
+    if (SOCKOF (PROCESS_PLAYER) == INVALID_SOCKET) {
+      port = bdjvarsl [BDJVL_PLAYER_PORT];
+      remctrlConnectProcess (remctrlData, PROCESS_PLAYER, ROUTE_PLAYER, port);
+    }
+
+    if (SOCKOF (PROCESS_MAIN) != INVALID_SOCKET &&
+        SOCKOF (PROCESS_PLAYER) != INVALID_SOCKET) {
       remctrlData->programState = STATE_WAIT_HANDSHAKE;
     }
   }
 
   if (remctrlData->programState == STATE_WAIT_HANDSHAKE) {
-    if (remctrlData->mainHandshake) {
+    if (remctrlData->processes [PROCESS_MAIN].handshake &&
+        remctrlData->processes [PROCESS_PLAYER].handshake) {
       remctrlData->programState = STATE_RUNNING;
       logMsg (LOG_SESS, LOG_IMPORTANT, "running: time-to-start: %ld ms", mstimeend (&remctrlData->tm));
-      sockhSendMessage (remctrlData->mainSock, ROUTE_REMCTRL, ROUTE_MAIN,
+      sockhSendMessage (SOCKOF (PROCESS_MAIN), ROUTE_REMCTRL, ROUTE_MAIN,
           MSG_GET_DANCE_LIST, NULL);
-      sockhSendMessage (remctrlData->mainSock, ROUTE_REMCTRL, ROUTE_MAIN,
+      sockhSendMessage (SOCKOF (PROCESS_MAIN), ROUTE_REMCTRL, ROUTE_MAIN,
           MSG_GET_PLAYLIST_LIST, NULL);
     }
   }
 
-/* ### FIX change to < 2 */
   if (remctrlData->programState != STATE_RUNNING ||
-      remctrlData->haveData < 1) {
+      remctrlData->haveData < 2) {
     /* all of the processing that follows requires a running state */
     if (gKillReceived) {
       logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
     }
     return gKillReceived;
+  }
+
+  if (mstimeCheck (&remctrlData->statusCheck)) {
+    sockhSendMessage (SOCKOF (PROCESS_MAIN),
+        ROUTE_REMCTRL, ROUTE_MAIN, MSG_GET_STATUS, NULL);
+    mstimeset (&remctrlData->statusCheck, 500);
   }
 
   websrvProcess (websrv);
@@ -300,4 +389,32 @@ static void
 remctrlSigHandler (int sig)
 {
   gKillReceived = 1;
+}
+
+static void
+remctrlConnectProcess (remctrldata_t *remctrlData, processconnidx_t idx,
+    bdjmsgroute_t route, uint16_t port)
+{
+  int         err;
+
+  SOCKOF (idx) = sockConnect (port, &err, 1000);
+  if (SOCKOF (idx) != INVALID_SOCKET) {
+    sockhSendMessage (SOCKOF (idx), ROUTE_REMCTRL, route,
+        MSG_HANDSHAKE, NULL);
+    if (route == ROUTE_MAIN) {
+      logMsg (LOG_DBG, LOG_MAIN, "player: wait for handshake");
+    }
+  }
+}
+
+static void
+remctrlDisconnectProcess (remctrldata_t *remctrlData, processconnidx_t idx,
+    bdjmsgroute_t route)
+{
+  if (SOCKOF (idx) != INVALID_SOCKET) {
+    sockhSendMessage (SOCKOF (idx), ROUTE_REMCTRL, route,
+        MSG_SOCKET_CLOSE, NULL);
+    sockClose (SOCKOF (idx));
+    SOCKOF (idx) = INVALID_SOCKET;
+  }
 }

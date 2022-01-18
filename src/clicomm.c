@@ -166,6 +166,18 @@ main (int argc, char *argv[])
       if (strcmp (buff, "pauseatend") == 0) {
         msg = MSG_PLAY_PAUSEATEND;
         msgok = 1;
+      }
+      if (strcmp (buff, "nextsong") == 0) {
+        msg = MSG_PLAY_NEXTSONG;
+        msgok = 1;
+      }
+      if (strcmp (buff, "volmute") == 0) {
+        msg = MSG_PLAYER_VOL_MUTE;
+        msgok = 1;
+      }
+      if (strcmp (buff, "vol") == 0) {
+        msg = MSG_PLAYER_VOLUME;
+        msgok = 1;
         argsok = 1;
       }
       if (strcmp (buff, "stop") == 0) {

@@ -11,6 +11,7 @@
 
 #include "mongoose.h"
 
+#include "bdj4.h"
 #include "bdjmsg.h"
 #include "bdjopt.h"
 #include "bdjvars.h"
@@ -143,7 +144,7 @@ main (int argc, char *argv[])
   }
   bdjoptFree ();
   bdjvarsCleanup ();
-  logMsg (LOG_SESS, LOG_IMPORTANT, "running: time-to-end: %ld ms", mstimeend (&mobmqData.tm));
+  logMsg (LOG_SESS, LOG_IMPORTANT, "time-to-end: %ld ms", mstimeend (&mobmqData.tm));
   logEnd ();
   lockRelease (MOBILEMQ_LOCK_FN, DATAUTIL_MP_USEIDX);
   return 0;

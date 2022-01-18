@@ -97,7 +97,6 @@ filemanipBasicDirList (char *dirname, char *extension)
   struct dirent *dirent;
   list_t        *fileList;
   pathinfo_t    *pi;
-  size_t        len = 0;
   size_t        elen = 0;
 
   if (extension != NULL) {

@@ -485,7 +485,7 @@ bdj.sendCmd = function (cmd) {
   var xhr = new XMLHttpRequest();
   xhr.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
-      // sending a command will get the same response back as bdj4update
+      // sending a command will get the same response back as getstatus
       bdj.updateData (xhr.responseText);
     }
   };
@@ -513,14 +513,14 @@ bdj.updateData = function (data) {
   o.src = 'mrc/dark/'+jd.playstate+".svg";
 
   o = document.getElementById("pausestatusd");
-  if (jd.willpause == "true") {
+  if (jd.willpause == 1) {
     o.className = "divshown";
   } else {
     o.className = "divnone";
   }
 
   o = document.getElementById("repeatstatusd");
-  if (jd.repeat == "true") {
+  if (jd.repeat == 1) {
     o.className = "divshown";
   } else {
     o.className = "divnone";
@@ -528,7 +528,7 @@ bdj.updateData = function (data) {
 
   o = document.getElementById("pauseatendi");
   o.src = "led_off.svg";
-  if (jd.pauseatend == "true") {
+  if (jd.pauseatend == 1) {
     o.src = "led_on.svg";
   }
 
@@ -590,7 +590,7 @@ bdj.doUpdate = function () {
       bdj.updateData (xhr.responseText);
     }
   };
-  xhr.open('GET', '/bdj4update', true);
+  xhr.open('GET', '/getstatus', true);
   xhr.send();
 }
 bdj.setSize = function (o,s) {

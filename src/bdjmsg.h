@@ -21,9 +21,15 @@ typedef enum {
   MSG_PLAY_PAUSE,           // to player
   MSG_PLAY_PLAY,            // to main:
                             //    starts playback, passed on to player.
+  MSG_PLAY_PLAYPAUSE,       // to player:
   MSG_PLAY_FADE,            // to player.
-  MSG_PLAY_PAUSEATEND,      // args: 0/1
+  MSG_PLAY_PAUSEATEND,      // to player: toggle
   MSG_PLAY_STOP,            // to player.
+  MSG_PLAY_NEXTSONG,        // to player.
+  MSG_PLAY_REPEAT,          // to player. toggle
+  MSG_PLAY_RATE,            // to player. args: rate as percentage.
+  MSG_PLAYER_VOL_MUTE,      // to player. toggle.
+  MSG_PLAYER_VOLUME,        // to player. args: volume as percentage.
   MSG_PLAYER_VOLSINK_SET,   // to player: set volume sink
   MSG_PLAYBACK_STOP,        // to main: player has stopped playing song
                             //    do not continue.
@@ -41,6 +47,9 @@ typedef enum {
   MSG_DANCE_LIST_DATA,      // args: html option list
   MSG_GET_PLAYLIST_LIST,    //
   MSG_PLAYLIST_LIST_DATA,   // args: html option list
+  MSG_GET_STATUS,           // get main/player status
+  MSG_PLAYER_STATUS_DATA,   // response to main
+  MSG_STATUS_DATA,          // response to remote control
   MSG_MAX
 } bdjmsgmsg_t;
 

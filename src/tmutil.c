@@ -38,7 +38,7 @@ mstime (void)
 void
 mstimestart (mstime_t *mt)
 {
-  gettimeofday (&mt->start, NULL);
+  gettimeofday (&mt->tm, NULL);
 }
 
 time_t
@@ -48,10 +48,34 @@ mstimeend (mstime_t *t)
   time_t            s, u, m;
 
   gettimeofday (&end, NULL);
-  s = end.tv_sec - t->start.tv_sec;
-  u = end.tv_usec - t->start.tv_usec;
+  s = end.tv_sec - t->tm.tv_sec;
+  u = end.tv_usec - t->tm.tv_usec;
   m = s * 1000 + u / 1000;
   return m;
+}
+
+void
+mstimeset (mstime_t *mt, size_t addTime)
+{
+  gettimeofday (&mt->tm, NULL);
+  mt->tm.tv_sec += addTime / 1000;
+  mt->tm.tv_usec += (addTime - ((addTime / 1000) * 1000)) * 1000;
+}
+
+bool
+mstimeCheck (mstime_t *mt)
+{
+  struct timeval    ttm;
+
+  gettimeofday (&ttm, NULL);
+  if (ttm.tv_sec > mt->tm.tv_sec) {
+    return true;
+  }
+  if (ttm.tv_sec == mt->tm.tv_sec &&
+      ttm.tv_usec >= mt->tm.tv_usec) {
+    return true;
+  }
+  return false;
 }
 
 char *

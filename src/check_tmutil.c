@@ -24,7 +24,7 @@ START_TEST(msleep_chk)
 }
 END_TEST
 
-START_TEST(milli_start_end)
+START_TEST(tmutil_start_end)
 {
   time_t      tm_s;
   time_t      tm_e;
@@ -46,6 +46,43 @@ START_TEST(milli_start_end)
     d = - d;
   }
   ck_assert_int_lt (d, 30);
+}
+END_TEST
+
+START_TEST(tmutil_set)
+{
+  mstime_t    tmstart;
+  mstime_t    tmset;
+  time_t      diffa;
+  time_t      diffb;
+
+  mstimeset (&tmset, 2000);
+  mssleep (2000);
+  mstimestart (&tmstart);
+  diffa = mstimeend (&tmstart);
+  diffb = mstimeend (&tmset);
+  diffa -= diffb;
+  if (diffa < 0) {
+    diffa = - diffa;
+  }
+  ck_assert_int_lt (diffa, 10);
+}
+END_TEST
+
+START_TEST(tmutil_check)
+{
+  mstime_t    tmset;
+  bool        rc;
+
+  mstimeset (&tmset, 2000);
+  rc = mstimeCheck (&tmset);
+  ck_assert_int_eq (rc, false);
+  mssleep (1000);
+  rc = mstimeCheck (&tmset);
+  ck_assert_int_eq (rc, false);
+  mssleep (1000);
+  rc = mstimeCheck (&tmset);
+  ck_assert_int_eq (rc, true);
 }
 END_TEST
 
@@ -76,7 +113,9 @@ tmutil_suite (void)
   s = suite_create ("Time Utils Suite");
   tc = tcase_create ("Time Utils");
   tcase_add_test (tc, msleep_chk);
-  tcase_add_test (tc, milli_start_end);
+  tcase_add_test (tc, tmutil_start_end);
+  tcase_add_test (tc, tmutil_set);
+  tcase_add_test (tc, tmutil_check);
   tcase_add_test (tc, tmutilDstamp_chk);
   tcase_add_test (tc, tmutilTstamp_chk);
   suite_add_tcase (s, tc);

@@ -213,6 +213,28 @@ musicqGetLen (musicq_t *musicq, musicqidx_t musicqidx)
 
 
 char *
+musicqGetData (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx, tagdefkey_t tagidx)
+{
+  musicqitem_t  *musicqitem;
+  song_t        *song;
+  char          *data;
+
+  if (musicq == NULL || musicq->q [musicqidx] == NULL) {
+    return NULL;
+  }
+  if (idx >= queueGetCount (musicq->q [musicqidx])) {
+    return NULL;
+  }
+
+  musicqitem = queueGetByIdx (musicq->q [musicqidx], idx);
+  if (musicqitem != NULL) {
+    song = musicqitem->song;
+    data = songGetData (song, tagidx);
+  }
+  return data;
+}
+
+char *
 musicqGetDance (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx)
 {
   musicqitem_t  *musicqitem;
@@ -237,3 +259,4 @@ musicqGetDance (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx)
   }
   return danceStr;
 }
+

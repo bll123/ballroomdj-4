@@ -645,15 +645,15 @@ $(OBJDIR)/bdj4$(OBJ_EXT): bdj4.c config.h bdjstring.h datautil.h fileop.h pathut
 $(OBJDIR)/bdj4init$(OBJ_EXT): bdj4init.c config.h bdj4init.h musicdb.h song.h list.h \
  tagdef.h bdjstring.h sysvars.h portability.h bdjvars.h bdjvarsdfload.h \
  log.h fileutil.h tmutil.h fileop.h datautil.h bdjopt.h lock.h
-$(OBJDIR)/bdj4main$(OBJ_EXT): bdj4main.c config.h bdj4init.h bdjmsg.h bdjopt.h list.h \
- bdjstring.h bdjvars.h bdjvarsdf.h datafile.h dance.h datautil.h \
- filedata.h lock.h log.h fileutil.h musicq.h queue.h song.h playlist.h \
- musicdb.h songlist.h sequence.h songsel.h portability.h process.h sock.h \
- sockh.h sysvars.h tagdef.h tmutil.h webclient.h
-$(OBJDIR)/bdj4player$(OBJ_EXT): bdj4player.c config.h bdjmsg.h bdjopt.h list.h bdjstring.h \
- bdjvars.h datautil.h fileop.h filemanip.h lock.h log.h fileutil.h \
- pathutil.h pli.h dylib.h portability.h tmutil.h process.h queue.h sock.h \
- sockh.h sysvars.h volume.h
+$(OBJDIR)/bdj4main$(OBJ_EXT): bdj4main.c config.h bdj4.h sock.h bdj4init.h bdjmsg.h \
+ bdjopt.h list.h bdjstring.h bdjvars.h bdjvarsdf.h datafile.h dance.h \
+ datautil.h filedata.h lock.h log.h fileutil.h musicq.h queue.h song.h \
+ tagdef.h playlist.h musicdb.h songlist.h sequence.h songsel.h \
+ portability.h process.h sockh.h sysvars.h tmutil.h webclient.h
+$(OBJDIR)/bdj4player$(OBJ_EXT): bdj4player.c config.h bdj4.h sock.h bdjmsg.h bdjopt.h \
+ list.h bdjstring.h bdjvars.h datautil.h fileop.h filemanip.h lock.h \
+ log.h fileutil.h pathutil.h pli.h dylib.h portability.h tmutil.h \
+ process.h queue.h sockh.h sysvars.h volume.h
 $(OBJDIR)/bdjmsg$(OBJ_EXT): bdjmsg.c config.h bdjmsg.h bdjstring.h
 $(OBJDIR)/bdjopt$(OBJ_EXT): bdjopt.c config.h bdjopt.h list.h datafile.h datautil.h \
  filemanip.h fileop.h portability.h sysvars.h
@@ -714,17 +714,17 @@ $(OBJDIR)/lock$(OBJ_EXT): lock.c config.h sysvars.h portability.h process.h tmut
 $(OBJDIR)/log$(OBJ_EXT): log.c config.h log.h fileutil.h tmutil.h datautil.h bdjstring.h \
  portability.h
 $(OBJDIR)/mobilemarquee$(OBJ_EXT): mobilemarquee.c config.h ../packages/mongoose/mongoose.h \
- bdjmsg.h bdjopt.h list.h bdjvars.h lock.h datautil.h log.h fileutil.h \
- process.h sockh.h sock.h sysvars.h portability.h tmutil.h websrv.h
+ bdj4.h sock.h bdjmsg.h bdjopt.h list.h bdjvars.h lock.h datautil.h log.h \
+ fileutil.h process.h sockh.h sysvars.h portability.h tmutil.h websrv.h
 $(OBJDIR)/musicdb$(OBJ_EXT): musicdb.c config.h musicdb.h song.h list.h rafile.h \
  bdjstring.h lock.h datautil.h datafile.h tagdef.h log.h fileutil.h
 $(OBJDIR)/musicq$(OBJ_EXT): musicq.c config.h bdjvarsdf.h datafile.h list.h dance.h \
  musicq.h queue.h song.h tagdef.h bdjstring.h
 $(OBJDIR)/pathutil$(OBJ_EXT): pathutil.c config.h bdjstring.h pathutil.h portability.h
 $(OBJDIR)/playlist$(OBJ_EXT): playlist.c config.h bdjvarsdf.h datafile.h list.h dance.h \
- datautil.h fileop.h level.h log.h fileutil.h musicdb.h song.h playlist.h \
- songlist.h sequence.h songsel.h queue.h portability.h rating.h status.h \
- tagdef.h bdjstring.h
+ datautil.h filemanip.h fileop.h level.h log.h fileutil.h musicdb.h \
+ song.h pathutil.h playlist.h songlist.h sequence.h songsel.h queue.h \
+ portability.h rating.h status.h tagdef.h bdjstring.h
 $(OBJDIR)/pli$(OBJ_EXT): pli.c config.h bdjopt.h list.h datautil.h dylib.h pli.h \
  portability.h tmutil.h sysvars.h
 $(OBJDIR)/plinull$(OBJ_EXT): plinull.c config.h pli.h dylib.h portability.h tmutil.h
@@ -738,8 +738,8 @@ $(OBJDIR)/rafile$(OBJ_EXT): rafile.c config.h rafile.h lock.h datautil.h tmutil.
 $(OBJDIR)/rating$(OBJ_EXT): rating.c config.h rating.h datafile.h list.h fileop.h \
  bdjvarsdf.h log.h fileutil.h
 $(OBJDIR)/remotecontrol$(OBJ_EXT): remotecontrol.c config.h ../packages/mongoose/mongoose.h \
- bdjmsg.h bdjopt.h list.h bdjvars.h lock.h datautil.h log.h fileutil.h \
- process.h sockh.h sock.h sysvars.h portability.h tmutil.h websrv.h
+ bdj4.h sock.h bdjmsg.h bdjopt.h list.h bdjvars.h lock.h datautil.h log.h \
+ fileutil.h process.h sockh.h sysvars.h portability.h tmutil.h websrv.h
 $(OBJDIR)/sequence$(OBJ_EXT): sequence.c config.h sequence.h datafile.h list.h fileop.h \
  log.h fileutil.h dance.h datautil.h portability.h
 $(OBJDIR)/sock$(OBJ_EXT): sock.c config.h sock.h tmutil.h log.h fileutil.h
