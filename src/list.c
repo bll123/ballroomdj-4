@@ -197,11 +197,15 @@ void
 listSort (list_t *list)
 {
   mstime_t      tm;
+  time_t        elapsed;
 
   mstimestart (&tm);
   list->ordered = LIST_ORDERED;
   mergeSort (list, 0, list->count - 1);
-  logMsg (LOG_DBG, LOG_BASIC, "sort of %s took %ld ms", list->name, mstimeend (&tm));
+  elapsed = mstimeend (&tm);
+  if (elapsed > 0) {
+    logMsg (LOG_DBG, LOG_BASIC, "sort of %s took %ld ms", list->name, elapsed);
+  }
 }
 
 inline void
@@ -340,7 +344,7 @@ listidx_t
 listSet (list_t *list, listitem_t *item)
 {
   listidx_t       loc = 0L;
-  int             rc = LIST_LOC_INVALID;
+  int             rc = -1;
   int             found = 0;
 
   if (list->locCache >= 0L) {
@@ -351,6 +355,7 @@ listSet (list_t *list, listitem_t *item)
       loc = list->locCache;
       ++list->writeCacheHits;
       found = 1;
+      rc = 0;
     }
   }
 

@@ -20,6 +20,7 @@ nlistidx_t nlistSetStr (nlist_t *, nlistidx_t idx, char *data);
 nlistidx_t nlistSetNum (nlist_t *, nlistidx_t idx, ssize_t lval);
 nlistidx_t nlistSetDouble (nlist_t *, nlistidx_t idx, double dval);
 nlistidx_t nlistSetList (nlist_t *list, nlistidx_t lidx, nlist_t *data);
+nlistidx_t nlistIncrement (nlist_t *, nlistidx_t idx);
   /* get routines */
 void      *nlistGetData (nlist_t *, nlistidx_t idx);
 char      *nlistGetStr (nlist_t *, nlistidx_t idx);

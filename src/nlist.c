@@ -104,6 +104,25 @@ nlistSetList (nlist_t *list, nlistidx_t lidx, nlist_t *data)
   return listSet (list, &item);
 }
 
+nlistidx_t
+nlistIncrement (nlist_t *list, nlistidx_t lidx)
+{
+  listitem_t      item;
+  nlistidx_t      idx;
+  ssize_t         value = 0;
+
+  item.key.idx = lidx;
+  idx = listGetIdx (list, &item.key);
+  if (idx >= 0) {
+    value = list->data [idx].value.num;
+  }
+  ++value;
+  item.key.idx = lidx;
+  item.valuetype = VALUE_NUM;
+  item.value.num = value;
+  return listSet (list, &item);
+}
+
 void *
 nlistGetData (nlist_t *list, nlistidx_t lidx)
 {

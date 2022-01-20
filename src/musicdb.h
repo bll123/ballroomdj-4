@@ -2,13 +2,14 @@
 #define INC_MUSICDB_H
 
 #include "song.h"
+#include "nlist.h"
 
 typedef ssize_t   dbidx_t;
 
 typedef struct {
   ssize_t       count;
-  list_t        *songs;
-  ssize_t       *danceCounts;  // used by main for automatic playlists
+  nlist_t       *songs;
+  nlist_t       *danceCounts;  // used by main for automatic playlists
   ssize_t       danceCount;
 } db_t;
 
