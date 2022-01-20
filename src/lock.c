@@ -16,7 +16,7 @@
 #include "tmutil.h"
 #include "lock.h"
 #include "fileop.h"
-#include "datautil.h"
+#include "pathbld.h"
 #include "portability.h"
 
 static pid_t   getPidFromFile (char *);
@@ -29,8 +29,8 @@ lockExists (char *fn, datautil_mp_t flags)
   char      tfn [MAXPATHLEN];
   pid_t     fpid = 0;
 
-  datautilMakePath (tfn, sizeof (tfn), "", fn, ".lck",
-      flags | DATAUTIL_MP_TMPDIR);
+  pathbldMakePath (tfn, sizeof (tfn), "", fn, ".lck",
+      flags | PATHBLD_MP_TMPDIR);
   fpid = getPidFromFile (tfn);
   if (fpid == -1 || ! processExists (fpid)) {
     fpid = 0;
@@ -57,8 +57,8 @@ lockAcquirePid (char *fn, pid_t pid, datautil_mp_t flags)
   char      tfn [MAXPATHLEN];
 
 
-  datautilMakePath (tfn, sizeof (tfn), "", fn, ".lck",
-      flags | DATAUTIL_MP_TMPDIR);
+  pathbldMakePath (tfn, sizeof (tfn), "", fn, ".lck",
+      flags | PATHBLD_MP_TMPDIR);
 
   fd = open (tfn, O_CREAT | O_EXCL | O_RDWR, 0600);
   count = 0;
@@ -101,8 +101,8 @@ lockReleasePid (char *fn, pid_t pid, datautil_mp_t flags)
   int       rc;
   pid_t     fpid;
 
-  datautilMakePath (tfn, sizeof (tfn), "", fn, ".lck",
-      flags | DATAUTIL_MP_TMPDIR);
+  pathbldMakePath (tfn, sizeof (tfn), "", fn, ".lck",
+      flags | PATHBLD_MP_TMPDIR);
   rc = -1;
   fpid = getPidFromFile (tfn);
   if (fpid == pid) {

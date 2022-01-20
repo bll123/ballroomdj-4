@@ -3,7 +3,7 @@
 
 #include <sys/types.h>
 
-#include "datautil.h"
+#include "pathbld.h"
 
 #define MAIN_LOCK_FN        "main"
 #define MOBILEMQ_LOCK_FN    "mobilemq"

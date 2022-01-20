@@ -17,7 +17,7 @@
 #include "log.h"
 #include "tmutil.h"
 #include "fileutil.h"
-#include "datautil.h"
+#include "pathbld.h"
 #include "bdjstring.h"
 #include "portability.h"
 
@@ -192,8 +192,8 @@ rlogStart (const char *processnm, const char *processtag,
   tmutilDstamp (tdt, sizeof (tdt));
 
   for (logidx_t idx = LOG_ERR; idx < LOG_MAX; ++idx) {
-    datautilMakePath (tnm, MAXPATHLEN, "", logbasenm [idx], LOG_EXTENSION,
-        DATAUTIL_MP_HOSTNAME | DATAUTIL_MP_USEIDX);
+    pathbldMakePath (tnm, MAXPATHLEN, "", logbasenm [idx], LOG_EXTENSION,
+        PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
     syslogs [idx] = rlogOpen (tnm, processtag, truncflag);
     syslogs [idx]->level = level;
     if (processnm != NULL) {

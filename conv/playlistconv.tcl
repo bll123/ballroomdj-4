@@ -37,9 +37,7 @@ foreach {fn} $flist {
 
     set tkey [string toupper $key]
     if { $tkey eq "REQUIREDKEYWORDS" } { continue }
-    if { $tkey eq "STOPTIME" } { continue }
     if { $tkey eq "STOPWAIT" } { continue }
-    if { $tkey eq "STOPAFTER" } { continue }
     if { $tkey eq "STOPAFTERWAIT" } { continue }
     if { $tkey eq "STOPTYPE" } { continue }
     if { $tkey eq "RESUME" } { continue }
@@ -92,6 +90,13 @@ foreach {fn} $flist {
       puts $dfh "..$highbpm"
       incr keyidx
     } else {
+      if { $tkey eq "STOPTIME" } {
+        if { $value ne {} && $value ne "-1" } {
+          # this will be relative to midnight
+          regexp {(\d+):(\d+)} $value all hr min
+          set value [expr {($hr * 3600 + $min * 60)*1000}]
+        }
+      }
       if { $tkey eq "MAXPLAYTIME" } {
         if { $value ne {} && $value ne "-1" } {
           regexp {(\d+):(\d+)} $value all min sec

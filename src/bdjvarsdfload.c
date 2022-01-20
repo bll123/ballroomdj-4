@@ -12,7 +12,7 @@
 #include "dance.h"
 #include "dance.h"
 #include "datafile.h"
-#include "datautil.h"
+#include "pathbld.h"
 #include "dnctypes.h"
 #include "genre.h"
 #include "level.h"
@@ -27,32 +27,32 @@ bdjvarsdfloadInit (void)
   char      fn [MAXPATHLEN];
 
     /* dance types must be loaded before dance */
-  datautilMakePath (fn, sizeof (fn), "", "dancetypes", ".txt", DATAUTIL_MP_NONE);
+  pathbldMakePath (fn, sizeof (fn), "", "dancetypes", ".txt", PATHBLD_MP_NONE);
   bdjvarsdf [BDJVDF_DANCE_TYPES] = dnctypesAlloc (fn);
 
     /* the database load depends on dances */
     /* playlist loads depend on dances */
     /* sequence loads depend on dances */
-  datautilMakePath (fn, sizeof (fn), "", "dances", ".txt", DATAUTIL_MP_NONE);
+  pathbldMakePath (fn, sizeof (fn), "", "dances", ".txt", PATHBLD_MP_NONE);
   bdjvarsdf [BDJVDF_DANCES] = danceAlloc (fn);
 
     /* the database load depends on ratings, levels, genres and status */
     /* playlist loads depend on ratings and levels */
-  datautilMakePath (fn, sizeof (fn), "", "ratings", ".txt", DATAUTIL_MP_NONE);
+  pathbldMakePath (fn, sizeof (fn), "", "ratings", ".txt", PATHBLD_MP_NONE);
   bdjvarsdf [BDJVDF_RATINGS] = ratingAlloc (fn);
-  datautilMakePath (fn, sizeof (fn), "", "genres", ".txt", DATAUTIL_MP_NONE);
+  pathbldMakePath (fn, sizeof (fn), "", "genres", ".txt", PATHBLD_MP_NONE);
   bdjvarsdf [BDJVDF_GENRES] = genreAlloc (fn);
-  datautilMakePath (fn, sizeof (fn), "", "levels", ".txt", DATAUTIL_MP_NONE);
+  pathbldMakePath (fn, sizeof (fn), "", "levels", ".txt", PATHBLD_MP_NONE);
   bdjvarsdf [BDJVDF_LEVELS] = levelAlloc (fn);
 
     /* status is an optional configuration file   */
     /* the database load depends on it if present */
-  datautilMakePath (fn, sizeof (fn), "", "status", ".txt", DATAUTIL_MP_NONE);
+  pathbldMakePath (fn, sizeof (fn), "", "status", ".txt", PATHBLD_MP_NONE);
   bdjvarsdf [BDJVDF_STATUS] = statusAlloc (fn);
 
-  datautilMakePath (fn, sizeof (fn), "", "sortopt", ".txt", DATAUTIL_MP_NONE);
+  pathbldMakePath (fn, sizeof (fn), "", "sortopt", ".txt", PATHBLD_MP_NONE);
   bdjvarsdf [BDJVDF_SORT_OPT] = sortoptAlloc (fn);
-  datautilMakePath (fn, sizeof (fn), "", "autoselection", ".txt", DATAUTIL_MP_NONE);
+  pathbldMakePath (fn, sizeof (fn), "", "autoselection", ".txt", PATHBLD_MP_NONE);
   bdjvarsdf [BDJVDF_AUTO_SEL] = autoselAlloc (fn);
 }
 

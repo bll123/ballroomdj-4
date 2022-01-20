@@ -9,7 +9,7 @@
 #include "bdjvarsdf.h"
 #include "dance.h"
 #include "datafile.h"
-#include "datautil.h"
+#include "pathbld.h"
 #include "filemanip.h"
 #include "fileop.h"
 #include "ilist.h"
@@ -55,6 +55,10 @@ static datafilekey_t playlistdfkeys[] = {
       VALUE_NUM, parseConvBoolean },
   { "SEQUENCE",         PLAYLIST_SEQ_NAME,
       VALUE_DATA, NULL },
+  { "STOPAFTER",        PLAYLIST_STOP_AFTER,
+      VALUE_NUM, NULL },
+  { "STOPTIME",         PLAYLIST_STOP_TIME,
+      VALUE_NUM, NULL },
   { "TYPE",             PLAYLIST_TYPE,
       VALUE_NUM, plConvType },
   { "USESTATUS",        PLAYLIST_USE_STATUS,
@@ -81,7 +85,7 @@ playlistLoad (char *fname)
   pltype_t      type;
 
 
-  datautilMakePath (tfn, sizeof (tfn), "", fname, ".pl", DATAUTIL_MP_NONE);
+  pathbldMakePath (tfn, sizeof (tfn), "", fname, ".pl", PATHBLD_MP_NONE);
   if (! fileopExists (tfn)) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Missing playlist-pl %s", tfn);
     return NULL;
@@ -99,7 +103,7 @@ playlistLoad (char *fname)
   pl->plinfo = datafileGetList (pl->plinfodf);
   nlistDumpInfo (pl->plinfo);
 
-  datautilMakePath (tfn, sizeof (tfn), "", fname, ".pldances", DATAUTIL_MP_NONE);
+  pathbldMakePath (tfn, sizeof (tfn), "", fname, ".pldances", PATHBLD_MP_NONE);
   if (! fileopExists (tfn)) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Missing playlist-dance %s", tfn);
     playlistFree (pl);
@@ -120,7 +124,7 @@ playlistLoad (char *fname)
 
   if (type == PLTYPE_MANUAL) {
     char *slfname = nlistGetStr (pl->plinfo, PLAYLIST_MANUAL_LIST_NAME);
-    datautilMakePath (tfn, sizeof (tfn), "", slfname, ".songlist", DATAUTIL_MP_NONE);
+    pathbldMakePath (tfn, sizeof (tfn), "", slfname, ".songlist", PATHBLD_MP_NONE);
     if (! fileopExists (tfn)) {
       logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Missing songlist %s", tfn);
       playlistFree (pl);
@@ -136,7 +140,7 @@ playlistLoad (char *fname)
 
   if (type == PLTYPE_SEQ) {
     char *seqfname = nlistGetStr (pl->plinfo, PLAYLIST_SEQ_NAME);
-    datautilMakePath (tfn, sizeof (tfn), "", seqfname, ".sequence", DATAUTIL_MP_NONE);
+    pathbldMakePath (tfn, sizeof (tfn), "", seqfname, ".sequence", PATHBLD_MP_NONE);
     if (! fileopExists (tfn)) {
       logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Missing sequence %s", tfn);
       playlistFree (pl);
@@ -230,6 +234,7 @@ playlistAlloc (char *fname)
   pl->songsel = NULL;
   pl->plinfo = NULL;
   pl->pldances = NULL;
+  pl->count = 0;
 
   return pl;
 }
@@ -305,6 +310,7 @@ playlistGetNextSong (playlist_t *pl, playlistCheck_t checkProc, void *userdata)
   song_t      *song = NULL;
   int         count;
   char        *sfname;
+  ssize_t     stopAfter;
 
 
   if (pl == NULL) {
@@ -312,6 +318,11 @@ playlistGetNextSong (playlist_t *pl, playlistCheck_t checkProc, void *userdata)
   }
 
   type = (pltype_t) nlistGetNum (pl->plinfo, PLAYLIST_TYPE);
+  stopAfter = nlistGetNum (pl->plinfo, PLAYLIST_STOP_AFTER);
+  if (stopAfter > 0 && pl->count >= stopAfter) {
+    logMsg (LOG_DBG, LOG_BASIC, "pl %s stop after %d", pl->name, stopAfter);
+    return NULL;
+  }
 
   switch (type) {
     case PLTYPE_AUTO: {
@@ -330,6 +341,7 @@ playlistGetNextSong (playlist_t *pl, playlistCheck_t checkProc, void *userdata)
         sfname = songlistGetData (pl->songlist, pl->manualIdx, SONGLIST_FILE);
       }
       ++pl->manualIdx;
+      ++pl->count;
       logMsg (LOG_DBG, LOG_BASIC, "manual: select: %s", sfname);
       break;
     }
@@ -358,6 +370,7 @@ playlistGetNextSong (playlist_t *pl, playlistCheck_t checkProc, void *userdata)
       } else {
         songselSelectFinalize (pl->songsel, danceIdx);
         sfname = songGetData (song, TAG_FILE);
+        ++pl->count;
         logMsg (LOG_DBG, LOG_BASIC, "sequence: select: %s", sfname);
       }
       break;
@@ -450,7 +463,7 @@ playlistGetPlaylistList (void)
 
   pnlist = slistAlloc ("playlistlist", LIST_ORDERED, free, free);
 
-  datautilMakePath (tfn, sizeof (tfn), "", "", "", DATAUTIL_MP_NONE);
+  pathbldMakePath (tfn, sizeof (tfn), "", "", "", PATHBLD_MP_NONE);
   filelist = filemanipBasicDirList (tfn, ".pl");
 
   slistStartIterator (filelist);

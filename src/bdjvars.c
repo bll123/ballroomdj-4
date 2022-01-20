@@ -39,23 +39,6 @@ bdjvarsCleanup (void)
   return;
 }
 
-char *
-songFullFileName (char *sfname)
-{
-  char      *tname;
-
-  tname = malloc (MAXPATHLEN);
-  assert (tname != NULL);
-
-  if (sfname [0] == '/' || (sfname [1] == ':' && sfname [2] == '/')) {
-    strlcpy (tname, sfname, MAXPATHLEN);
-  } else {
-    snprintf (tname, MAXPATHLEN, "%s/%s",
-        (char *) bdjoptGetData (OPT_M_DIR_MUSIC), sfname);
-  }
-  return tname;
-}
-
 /* internal routines */
 
 static void

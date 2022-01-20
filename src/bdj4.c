@@ -10,7 +10,7 @@
 #include <unistd.h>
 
 #include "bdjstring.h"
-#include "datautil.h"
+#include "pathbld.h"
 #include "fileop.h"
 #include "pathutil.h"
 #include "portability.h"
@@ -145,8 +145,8 @@ main (int argc, char *argv[])
   if (isWindows()) {
     extension = ".exe";
   }
-  datautilMakePath (buff, sizeof (buff), "",
-      prog, extension, DATAUTIL_MP_EXECDIR);
+  pathbldMakePath (buff, sizeof (buff), "",
+      prog, extension, PATHBLD_MP_EXECDIR);
 
   /* this is necessary on mac os, as otherwise it will use the path   */
   /* from the start of this launcher, and the executable path can no  */

@@ -21,6 +21,5 @@ extern ssize_t    bdjvarsl [BDJVL_MAX];
 
 void    bdjvarsInit (void);
 void    bdjvarsCleanup (void);
-char    *songFullFileName (char *sfname);
 
 #endif /* INC_BDJVARS_H */

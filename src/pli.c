@@ -9,7 +9,7 @@
 #include <assert.h>
 
 #include "bdjopt.h"
-#include "datautil.h"
+#include "pathbld.h"
 #include "dylib.h"
 #include "pli.h"
 #include "portability.h"
@@ -25,9 +25,9 @@ pliInit (void)
   assert (pli != NULL);
   pli->pliData = NULL;
 
-  datautilMakePath (dlpath, sizeof (dlpath), "",
+  pathbldMakePath (dlpath, sizeof (dlpath), "",
       bdjoptGetData (OPT_G_PLAYER_INTFC),
-      sysvars [SV_SHLIB_EXT], DATAUTIL_MP_EXECDIR);
+      sysvars [SV_SHLIB_EXT], PATHBLD_MP_EXECDIR);
   pli->dlHandle = dylibLoad (dlpath);
   if (pli->dlHandle == NULL) {
     free (pli);

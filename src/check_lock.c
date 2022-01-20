@@ -28,7 +28,7 @@ START_TEST(lock_acquire_release)
 
   pid = getpid ();
   unlink (LOCK_FN);
-  rc = lockAcquirePid (LOCK_FN, pid, DATAUTIL_MP_NONE);
+  rc = lockAcquirePid (LOCK_FN, pid, PATHBLD_MP_NONE);
   ck_assert_int_gt (rc, 0);
   sprintf (tfn, "tmp/%s.lck", LOCK_FN);
   rc = stat (tfn, &statbuf);
@@ -39,7 +39,7 @@ START_TEST(lock_acquire_release)
   fpid = (pid_t) temp;
   fclose (fh);
   ck_assert_int_eq (fpid, pid);
-  rc = lockReleasePid (LOCK_FN, pid, DATAUTIL_MP_NONE);
+  rc = lockReleasePid (LOCK_FN, pid, PATHBLD_MP_NONE);
   ck_assert_int_eq (rc, 0);
   rc = stat (LOCK_FN, &statbuf);
   ck_assert_int_lt (rc, 0);
@@ -53,11 +53,11 @@ START_TEST(lock_already)
 
   pid = getpid ();
   unlink (LOCK_FN);
-  rc = lockAcquirePid (LOCK_FN, pid, DATAUTIL_MP_NONE);
+  rc = lockAcquirePid (LOCK_FN, pid, PATHBLD_MP_NONE);
   ck_assert_int_gt (rc, 0);
-  rc = lockAcquirePid (LOCK_FN, pid, DATAUTIL_MP_NONE);
+  rc = lockAcquirePid (LOCK_FN, pid, PATHBLD_MP_NONE);
   ck_assert_int_lt (rc, 0);
-  rc = lockReleasePid (LOCK_FN, pid, DATAUTIL_MP_NONE);
+  rc = lockReleasePid (LOCK_FN, pid, PATHBLD_MP_NONE);
   ck_assert_int_eq (rc, 0);
 }
 END_TEST
@@ -69,11 +69,11 @@ START_TEST(lock_other_dead)
 
   pid = getpid ();
   unlink (LOCK_FN);
-  rc = lockAcquirePid (LOCK_FN, 5, DATAUTIL_MP_NONE);
+  rc = lockAcquirePid (LOCK_FN, 5, PATHBLD_MP_NONE);
   ck_assert_int_gt (rc, 0);
-  rc = lockAcquirePid (LOCK_FN, pid, DATAUTIL_MP_NONE);
+  rc = lockAcquirePid (LOCK_FN, pid, PATHBLD_MP_NONE);
   ck_assert_int_gt (rc, 0);
-  rc = lockReleasePid (LOCK_FN, pid, DATAUTIL_MP_NONE);
+  rc = lockReleasePid (LOCK_FN, pid, PATHBLD_MP_NONE);
   ck_assert_int_eq (rc, 0);
 }
 END_TEST
@@ -85,11 +85,11 @@ START_TEST(lock_unlock_fail)
 
   pid = getpid ();
   unlink (LOCK_FN);
-  rc = lockAcquirePid (LOCK_FN, pid, DATAUTIL_MP_NONE);
+  rc = lockAcquirePid (LOCK_FN, pid, PATHBLD_MP_NONE);
   ck_assert_int_gt (rc, 0);
-  rc = lockReleasePid (LOCK_FN, 5, DATAUTIL_MP_NONE);
+  rc = lockReleasePid (LOCK_FN, 5, PATHBLD_MP_NONE);
   ck_assert_int_lt (rc, 0);
-  rc = lockReleasePid (LOCK_FN, pid, DATAUTIL_MP_NONE);
+  rc = lockReleasePid (LOCK_FN, pid, PATHBLD_MP_NONE);
   ck_assert_int_eq (rc, 0);
 }
 END_TEST

@@ -29,6 +29,8 @@ typedef enum {
                             //    starts playback, passed on to player.
   MSG_PLAY_PLAYPAUSE,       // to main (always).
   MSG_QUEUE_CLEAR,          // to main
+  MSG_DANCE_QUEUE,          // args: dance idx
+  MSG_DANCE_QUEUE5,         // args: dance idx
     /* to player */
   MSG_PLAYER_VOL_MUTE,      // to player. toggle.
   MSG_PLAYER_VOLSINK_SET,   // to player: set volume sink

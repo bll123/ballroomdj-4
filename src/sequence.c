@@ -8,7 +8,7 @@
 
 #include "dance.h"
 #include "datafile.h"
-#include "datautil.h"
+#include "pathbld.h"
 #include "fileop.h"
 #include "log.h"
 #include "nlist.h"
@@ -28,7 +28,7 @@ sequenceAlloc (char *fname)
   char          fn [MAXPATHLEN];
 
 
-  datautilMakePath (fn, sizeof (fn), "", fname, ".sequence", DATAUTIL_MP_NONE);
+  pathbldMakePath (fn, sizeof (fn), "", fname, ".sequence", PATHBLD_MP_NONE);
   if (! fileopExists (fn)) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: sequence: missing %s", fname);
     return NULL;

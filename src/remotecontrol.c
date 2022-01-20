@@ -103,7 +103,7 @@ main (int argc, char *argv[])
   logStartAppend ("remotecontrol", "rc", loglevel);
   logMsg (LOG_SESS, LOG_IMPORTANT, "Using profile %ld", lsysvars [SVL_BDJIDX]);
 
-  rc = lockAcquire (REMCTRL_LOCK_FN, DATAUTIL_MP_USEIDX);
+  rc = lockAcquire (REMCTRL_LOCK_FN, PATHBLD_MP_USEIDX);
   if (rc < 0) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: remctrl: unable to acquire lock: profile: %zd", lsysvars [SVL_BDJIDX]);
     logMsg (LOG_SESS, LOG_IMPORTANT, "ERR: remctrl: unable to acquire lock: profile: %zd", lsysvars [SVL_BDJIDX]);
@@ -116,7 +116,7 @@ main (int argc, char *argv[])
 
   remctrlData.enabled = (bdjoptGetNum (OPT_P_REMOTECONTROL) != 0);
   if (! remctrlData.enabled) {
-    lockRelease (REMCTRL_LOCK_FN, DATAUTIL_MP_USEIDX);
+    lockRelease (REMCTRL_LOCK_FN, PATHBLD_MP_USEIDX);
     exit (0);
   }
 
@@ -161,7 +161,7 @@ main (int argc, char *argv[])
   bdjvarsCleanup ();
   logMsg (LOG_SESS, LOG_IMPORTANT, "time-to-end: %ld ms", mstimeend (&remctrlData.tm));
   logEnd ();
-  lockRelease (REMCTRL_LOCK_FN, DATAUTIL_MP_USEIDX);
+  lockRelease (REMCTRL_LOCK_FN, PATHBLD_MP_USEIDX);
   return 0;
 }
 
@@ -231,6 +231,12 @@ rcEventHandler (struct mg_connection *c, int ev, void *ev_data, void *userdata)
       } else if (strcmp (querystr, "playlistqueue") == 0) {
         sockhSendMessage (SOCKOF (PROCESS_MAIN),
             ROUTE_REMCTRL, ROUTE_MAIN, MSG_PLAYLIST_QUEUE, qstrptr);
+      } else if (strcmp (querystr, "queue") == 0) {
+        sockhSendMessage (SOCKOF (PROCESS_MAIN),
+            ROUTE_REMCTRL, ROUTE_MAIN, MSG_DANCE_QUEUE, qstrptr);
+      } else if (strcmp (querystr, "queue5") == 0) {
+        sockhSendMessage (SOCKOF (PROCESS_MAIN),
+            ROUTE_REMCTRL, ROUTE_MAIN, MSG_DANCE_QUEUE5, qstrptr);
       } else if (strcmp (querystr, "repeat") == 0) {
         sockhSendMessage (SOCKOF (PROCESS_PLAYER),
             ROUTE_REMCTRL, ROUTE_PLAYER, MSG_PLAY_REPEAT, NULL);

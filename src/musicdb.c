@@ -8,14 +8,16 @@
 #include "bdjstring.h"
 #include "bdjvarsdf.h"
 #include "dance.h"
-#include "datafile.h"
+#include "fileop.h"
 #include "nlist.h"
 #include "slist.h"
 #include "lock.h"
 #include "log.h"
 #include "musicdb.h"
+#include "portability.h"
 #include "rafile.h"
 #include "song.h"
+#include "songutil.h"
 #include "tagdef.h"
 
 /* globals */
@@ -52,6 +54,9 @@ dbClose (void)
     if (musicdb->songs != NULL) {
       slistFree (musicdb->songs);
     }
+    if (musicdb->danceCounts != NULL) {
+      nlistFree (musicdb->danceCounts);
+    }
     free (musicdb);
   }
   initialized = 0;
@@ -73,11 +78,13 @@ dbLoad (db_t *db, char *fn)
 {
   char        data [RAFILE_REC_SIZE];
   char        *fstr;
+  char        *ffn;
   song_t      *song;
   rafile_t    *radb;
   rafileidx_t srrn;
   rafileidx_t rc;
   nlistidx_t  dkey;
+  bool        ok;
 
 
   fstr = "";
@@ -98,15 +105,28 @@ dbLoad (db_t *db, char *fn)
     song = songAlloc ();
     songParse (song, data);
     fstr = songGetData (song, TAG_FILE);
-    srrn = songGetNum (song, TAG_RRN);
-    dkey = songGetNum (song, TAG_DANCE);
-    if (dkey >= 0) {
-      nlistIncrement (db->danceCounts, dkey);
+    ffn = songFullFileName (fstr);
+    ok = false;
+    if (fileopExists (ffn)) {
+      ok = true;
     }
-    if (i != srrn) {
-      songSetNum (song, TAG_RRN, i);
+
+    if (! ok) {
+      logMsg (LOG_DBG, LOG_IMPORTANT, "song %s not found", fstr);
     }
-    slistSetData (db->songs, fstr, song);
+
+    if (ok) {
+      srrn = songGetNum (song, TAG_RRN);
+      dkey = songGetNum (song, TAG_DANCE);
+      if (dkey >= 0) {
+        nlistIncrement (db->danceCounts, dkey);
+      }
+      if (i != srrn) {
+        /* a double check to make sure the song has the correct rrn */
+        songSetNum (song, TAG_RRN, i);
+      }
+      slistSetData (db->songs, fstr, song);
+    }
     ++db->count;
   }
   slistSort (db->songs);

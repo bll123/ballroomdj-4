@@ -1,7 +1,8 @@
 /*
  * bdj4main
  *  Main entry point for the player process.
- *  Handles startup of the player, playlists and the music queue.
+ *  Handles startup of the player, mobile marquee and remote control.
+ *  Handles playlists and the music queue.
  */
 
 #include "config.h"
@@ -22,7 +23,7 @@
 #include "bdjvars.h"
 #include "bdjvarsdf.h"
 #include "dance.h"
-#include "datautil.h"
+#include "pathbld.h"
 #include "filedata.h"
 #include "lock.h"
 #include "log.h"
@@ -230,6 +231,12 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_PLAYLIST_QUEUE: {
           logMsg (LOG_DBG, LOG_MSGS, "got: playlist-queue %s", args);
           mainPlaylistQueue (mainData, args);
+          break;
+        }
+        case MSG_DANCE_QUEUE: {
+          break;
+        }
+        case MSG_DANCE_QUEUE5: {
           break;
         }
         case MSG_PLAY_PLAY: {
@@ -483,8 +490,8 @@ mainSendMobileMarqueeData (maindata_t *mainData)
   /* internet mode from here on */
 
   if (mainData->mobmqUserkey == NULL) {
-    datautilMakePath (tbuff, sizeof (tbuff), "",
-        "mmq", ".key", DATAUTIL_MP_USEIDX);
+    pathbldMakePath (tbuff, sizeof (tbuff), "",
+        "mmq", ".key", PATHBLD_MP_USEIDX);
     mainData->mobmqUserkey = filedataReadAll (tbuff);
   }
 
@@ -517,8 +524,8 @@ mainMobilePostCallback (void *userdata, char *resp, size_t len)
     /* this should be the user key */
     mainData->mobmqUserkey = strndup (resp, len);
     /* need to save this for future use */
-    datautilMakePath (tbuff, sizeof (tbuff), "",
-        "mmq", ".key", DATAUTIL_MP_USEIDX);
+    pathbldMakePath (tbuff, sizeof (tbuff), "",
+        "mmq", ".key", PATHBLD_MP_USEIDX);
     fh = fopen (tbuff, "w");
     fprintf (fh, "%.*s", (int) len, resp);
     fclose (fh);
@@ -956,8 +963,8 @@ mainStartProcess (maindata_t *mainData, processconnidx_t idx, char *fname)
   if (isWindows ()) {
     extension = ".exe";
   }
-  datautilMakePath (tbuff, sizeof (tbuff), "",
-      fname, extension, DATAUTIL_MP_EXECDIR);
+  pathbldMakePath (tbuff, sizeof (tbuff), "",
+      fname, extension, PATHBLD_MP_EXECDIR);
   rc = processStart (tbuff, &pid, lsysvars [SVL_BDJIDX],
       bdjoptGetNum (OPT_G_DEBUGLVL));
   if (rc < 0) {
@@ -990,7 +997,7 @@ mainStopProcess (maindata_t *mainData, processconnidx_t idx,
     mainData->processes [idx].handshake = false;
   }
   if (force) {
-    mainForceStop (lockfn, DATAUTIL_MP_USEIDX);
+    mainForceStop (lockfn, PATHBLD_MP_USEIDX);
   }
   logProcEnd (LOG_PROC, "mainStopProcess", "");
 }

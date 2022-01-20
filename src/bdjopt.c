@@ -9,7 +9,7 @@
 
 #include "bdjopt.h"
 #include "datafile.h"
-#include "datautil.h"
+#include "pathbld.h"
 #include "filemanip.h"
 #include "fileop.h"
 #include "nlist.h"
@@ -123,8 +123,8 @@ bdjoptInit (void)
   nlist_t       *tlist;
 
   /* global */
-  datautilMakePath (path, MAXPATHLEN, "", BDJ_CONFIG_BASEFN,
-      BDJ_CONFIG_EXT, DATAUTIL_MP_USEIDX);
+  pathbldMakePath (path, MAXPATHLEN, "", BDJ_CONFIG_BASEFN,
+      BDJ_CONFIG_EXT, PATHBLD_MP_USEIDX);
   if (! fileopExists (path)) {
     bdjoptCreateNewConfigs ();
   }
@@ -132,8 +132,8 @@ bdjoptInit (void)
       bdjoptglobaldfkeys, BDJOPT_GLOBAL_DFKEY_COUNT, DATAFILE_NO_LOOKUP);
 
   /* profile */
-  datautilMakePath (path, MAXPATHLEN, "profiles", BDJ_CONFIG_BASEFN,
-      BDJ_CONFIG_EXT, DATAUTIL_MP_USEIDX);
+  pathbldMakePath (path, MAXPATHLEN, "profiles", BDJ_CONFIG_BASEFN,
+      BDJ_CONFIG_EXT, PATHBLD_MP_USEIDX);
   ddata = datafileLoad (df, DFTYPE_KEY_VAL, path);
   tlist = datafileGetList (df);
   datafileParseMerge (tlist, ddata, "bdjopt-p", DFTYPE_KEY_VAL,
@@ -143,8 +143,8 @@ bdjoptInit (void)
   free (ddata);
 
   /* per machine */
-  datautilMakePath (path, MAXPATHLEN, "", BDJ_CONFIG_BASEFN,
-      BDJ_CONFIG_EXT, DATAUTIL_MP_HOSTNAME | DATAUTIL_MP_USEIDX);
+  pathbldMakePath (path, MAXPATHLEN, "", BDJ_CONFIG_BASEFN,
+      BDJ_CONFIG_EXT, PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
   ddata = datafileLoad (df, DFTYPE_KEY_VAL, path);
   tlist = datafileGetList (df);
   tlist = datafileParseMerge (tlist, ddata, "bdjopt-m", DFTYPE_KEY_VAL,
@@ -154,8 +154,8 @@ bdjoptInit (void)
   free (ddata);
 
   /* per machine per profile */
-  datautilMakePath (path, MAXPATHLEN, "profiles", BDJ_CONFIG_BASEFN,
-      BDJ_CONFIG_EXT, DATAUTIL_MP_HOSTNAME | DATAUTIL_MP_USEIDX);
+  pathbldMakePath (path, MAXPATHLEN, "profiles", BDJ_CONFIG_BASEFN,
+      BDJ_CONFIG_EXT, PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
   ddata = datafileLoad (df, DFTYPE_KEY_VAL, path);
   tlist = datafileGetList (df);
   tlist = datafileParseMerge (tlist, ddata, "bdjopt-m", DFTYPE_KEY_VAL,
@@ -241,43 +241,43 @@ bdjoptCreateNewConfigs (void)
 
     /* see if profile 0 exists */
   sysvarSetNum (SVL_BDJIDX, 0);
-  datautilMakePath (path, MAXPATHLEN, "", BDJ_CONFIG_BASEFN,
-      BDJ_CONFIG_EXT, DATAUTIL_MP_USEIDX);
+  pathbldMakePath (path, MAXPATHLEN, "", BDJ_CONFIG_BASEFN,
+      BDJ_CONFIG_EXT, PATHBLD_MP_USEIDX);
   if (! fileopExists (path)) {
     bdjoptCreateDefaultFiles ();
   }
 
     /* global */
   sysvarSetNum (SVL_BDJIDX, currProfile);
-  datautilMakePath (tpath, MAXPATHLEN, "", BDJ_CONFIG_BASEFN,
-      BDJ_CONFIG_EXT, DATAUTIL_MP_USEIDX);
+  pathbldMakePath (tpath, MAXPATHLEN, "", BDJ_CONFIG_BASEFN,
+      BDJ_CONFIG_EXT, PATHBLD_MP_USEIDX);
   filemanipCopy (path, tpath);
 
     /* profile */
   sysvarSetNum (SVL_BDJIDX, 0);
-  datautilMakePath (path, MAXPATHLEN, "profiles", BDJ_CONFIG_BASEFN,
-      BDJ_CONFIG_EXT, DATAUTIL_MP_USEIDX);
+  pathbldMakePath (path, MAXPATHLEN, "profiles", BDJ_CONFIG_BASEFN,
+      BDJ_CONFIG_EXT, PATHBLD_MP_USEIDX);
   sysvarSetNum (SVL_BDJIDX, currProfile);
-  datautilMakePath (tpath, MAXPATHLEN, "profiles", BDJ_CONFIG_BASEFN,
-      BDJ_CONFIG_EXT, DATAUTIL_MP_USEIDX);
+  pathbldMakePath (tpath, MAXPATHLEN, "profiles", BDJ_CONFIG_BASEFN,
+      BDJ_CONFIG_EXT, PATHBLD_MP_USEIDX);
   filemanipCopy (path, tpath);
 
     /* per machine */
   sysvarSetNum (SVL_BDJIDX, 0);
-  datautilMakePath (path, MAXPATHLEN, "", BDJ_CONFIG_BASEFN,
-      BDJ_CONFIG_EXT, DATAUTIL_MP_HOSTNAME | DATAUTIL_MP_USEIDX);
+  pathbldMakePath (path, MAXPATHLEN, "", BDJ_CONFIG_BASEFN,
+      BDJ_CONFIG_EXT, PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
   sysvarSetNum (SVL_BDJIDX, currProfile);
-  datautilMakePath (tpath, MAXPATHLEN, "", BDJ_CONFIG_BASEFN,
-      BDJ_CONFIG_EXT, DATAUTIL_MP_HOSTNAME | DATAUTIL_MP_USEIDX);
+  pathbldMakePath (tpath, MAXPATHLEN, "", BDJ_CONFIG_BASEFN,
+      BDJ_CONFIG_EXT, PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
   filemanipCopy (path, tpath);
 
     /* per machine per profile */
   sysvarSetNum (SVL_BDJIDX, 0);
-  datautilMakePath (path, MAXPATHLEN, "profiles", BDJ_CONFIG_BASEFN,
-      BDJ_CONFIG_EXT, DATAUTIL_MP_HOSTNAME | DATAUTIL_MP_USEIDX);
+  pathbldMakePath (path, MAXPATHLEN, "profiles", BDJ_CONFIG_BASEFN,
+      BDJ_CONFIG_EXT, PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
   sysvarSetNum (SVL_BDJIDX, currProfile);
-  datautilMakePath (tpath, MAXPATHLEN, "profiles", BDJ_CONFIG_BASEFN,
-      BDJ_CONFIG_EXT, DATAUTIL_MP_HOSTNAME | DATAUTIL_MP_USEIDX);
+  pathbldMakePath (tpath, MAXPATHLEN, "profiles", BDJ_CONFIG_BASEFN,
+      BDJ_CONFIG_EXT, PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
   filemanipCopy (path, tpath);
 
   sysvarSetNum (SVL_BDJIDX, currProfile);
@@ -288,14 +288,14 @@ bdjoptCreateDefaultFiles (void)
 {
   char      path [MAXPATHLEN];
 
-  datautilMakePath (path, MAXPATHLEN, "", BDJ_CONFIG_BASEFN,
-      BDJ_CONFIG_EXT, DATAUTIL_MP_USEIDX);
-  datautilMakePath (path, MAXPATHLEN, "profiles", BDJ_CONFIG_BASEFN,
-      BDJ_CONFIG_EXT, DATAUTIL_MP_USEIDX);
-  datautilMakePath (path, MAXPATHLEN, "", BDJ_CONFIG_BASEFN,
-      BDJ_CONFIG_EXT, DATAUTIL_MP_HOSTNAME | DATAUTIL_MP_USEIDX);
-  datautilMakePath (path, MAXPATHLEN, "profiles", BDJ_CONFIG_BASEFN,
-      BDJ_CONFIG_EXT, DATAUTIL_MP_HOSTNAME | DATAUTIL_MP_USEIDX);
+  pathbldMakePath (path, MAXPATHLEN, "", BDJ_CONFIG_BASEFN,
+      BDJ_CONFIG_EXT, PATHBLD_MP_USEIDX);
+  pathbldMakePath (path, MAXPATHLEN, "profiles", BDJ_CONFIG_BASEFN,
+      BDJ_CONFIG_EXT, PATHBLD_MP_USEIDX);
+  pathbldMakePath (path, MAXPATHLEN, "", BDJ_CONFIG_BASEFN,
+      BDJ_CONFIG_EXT, PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
+  pathbldMakePath (path, MAXPATHLEN, "profiles", BDJ_CONFIG_BASEFN,
+      BDJ_CONFIG_EXT, PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
 }
 
 static void

@@ -10,7 +10,7 @@
 #include <unistd.h>
 
 #include "check_bdj.h"
-#include "datautil.h"
+#include "pathbld.h"
 #include "portability.h"
 #include "process.h"
 #include "sysvars.h"
@@ -42,8 +42,8 @@ START_TEST(process_start)
   if (isWindows ()) {
     extension = ".exe";
   }
-  datautilMakePath (tbuff, sizeof (tbuff), "",
-      "chkprocess", extension, DATAUTIL_MP_EXECDIR);
+  pathbldMakePath (tbuff, sizeof (tbuff), "",
+      "chkprocess", extension, PATHBLD_MP_EXECDIR);
   /* if the signal is not ignored, the process goes into a zombie state */
   /* and still exists */
 #if _define_SIGCHLD
@@ -74,8 +74,8 @@ START_TEST(process_kill)
   if (isWindows ()) {
     extension = ".exe";
   }
-  datautilMakePath (tbuff, sizeof (tbuff), "",
-      "chkprocess", extension, DATAUTIL_MP_EXECDIR);
+  pathbldMakePath (tbuff, sizeof (tbuff), "",
+      "chkprocess", extension, PATHBLD_MP_EXECDIR);
   /* if the signal is not ignored, the process goes into a zombie state */
   /* and still exists */
 #if _define_SIGCHLD

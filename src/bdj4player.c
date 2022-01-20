@@ -24,7 +24,7 @@
 #include "bdjopt.h"
 #include "bdjstring.h"
 #include "bdjvars.h"
-#include "datautil.h"
+#include "pathbld.h"
 #include "fileop.h"
 #include "filemanip.h"
 #include "lock.h"
@@ -36,6 +36,7 @@
 #include "queue.h"
 #include "sock.h"
 #include "sockh.h"
+#include "songutil.h"
 #include "sysvars.h"
 #include "tmutil.h"
 #include "volume.h"
@@ -213,7 +214,7 @@ main (int argc, char *argv[])
   logStartAppend ("bdj4player", "p", loglevel);
   logMsg (LOG_SESS, LOG_IMPORTANT, "Using profile %ld", lsysvars [SVL_BDJIDX]);
 
-  rc = lockAcquire (PLAYER_LOCK_FN, DATAUTIL_MP_USEIDX);
+  rc = lockAcquire (PLAYER_LOCK_FN, PATHBLD_MP_USEIDX);
   if (rc < 0) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: player: unable to acquire lock: profile: %zd", lsysvars [SVL_BDJIDX]);
     logMsg (LOG_SESS, LOG_IMPORTANT, "ERR: player: unable to acquire lock: profile: %zd", lsysvars [SVL_BDJIDX]);
@@ -289,7 +290,7 @@ main (int argc, char *argv[])
   bdjoptFree ();
   bdjvarsCleanup ();
   playerData.programState = STATE_NOT_RUNNING;
-  lockRelease (PLAYER_LOCK_FN, DATAUTIL_MP_USEIDX);
+  lockRelease (PLAYER_LOCK_FN, PATHBLD_MP_USEIDX);
   logMsg (LOG_SESS, LOG_IMPORTANT, "time-to-end: %ld ms", mstimeend (&playerData.tm));
   logEnd ();
   return 0;

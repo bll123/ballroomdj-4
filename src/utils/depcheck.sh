@@ -7,14 +7,7 @@ TSORT=si-sort.txt
 for fn in *.c *.h; do
   echo $fn $fn >> $TIN
   sed -n -e '/^#include "/p' $fn |
-      sed -e 's,^#include ",,' -e 's,"$,,' -e "s,$, $fn," >> $TIN
-  case $fn in
-    *.c)
-      sed -n -e '/^#include "/p' $fn |
-          sed -e 's,^#include ",,' -e 's,"$,,' \
-          -e 's,\.h$,.c,' -e "s,$, $fn," >> $TIN
-      ;;
-  esac
+      sed -e 's,^#include ",,' -e 's,"$,,' -e "s,^,$fn ," >> $TIN
 done
 tsort < $TIN | egrep -v '(config.h|check.h)' > $TSORT
 rc=$?

@@ -25,6 +25,8 @@ typedef enum {
   PLAYLIST_PAUSE_EACH_SONG,
   PLAYLIST_RATING,                //
   PLAYLIST_SEQ_NAME,              //
+  PLAYLIST_STOP_AFTER,            //
+  PLAYLIST_STOP_TIME,
   PLAYLIST_TYPE,                  //
   PLAYLIST_USE_STATUS,            //
   PLAYLIST_KEY_MAX,
@@ -56,6 +58,7 @@ typedef struct {
   nlist_t       *plinfo;
   ilist_t       *pldances;
   int           manualIdx;
+  int           count;
 } playlist_t;
 
 #define VALID_SONG_ATTEMPTS   40

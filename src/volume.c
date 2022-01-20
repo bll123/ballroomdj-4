@@ -9,7 +9,7 @@
 #include <assert.h>
 
 #include "bdjopt.h"
-#include "datautil.h"
+#include "pathbld.h"
 #include "dylib.h"
 #include "portability.h"
 #include "sysvars.h"
@@ -27,9 +27,9 @@ volumeInit (void)
   volume->volumeProcess = NULL;
   volume->volumeDisconnect = NULL;
 
-  datautilMakePath (dlpath, sizeof (dlpath), "",
+  pathbldMakePath (dlpath, sizeof (dlpath), "",
       bdjoptGetData (OPT_G_VOLUME_INTFC),
-      sysvars [SV_SHLIB_EXT], DATAUTIL_MP_EXECDIR);
+      sysvars [SV_SHLIB_EXT], PATHBLD_MP_EXECDIR);
   volume->dlHandle = dylibLoad (dlpath);
   if (volume->dlHandle == NULL) {
     volumeFree (volume);

@@ -83,7 +83,7 @@ songselAlloc (list_t *dancelist, songselFilter_t filterProc, void *userdata)
     /* for each song in the database */
   logMsg (LOG_DBG, LOG_SONGSEL, "processing songs");
   dbStartIterator ();
-  while ((song = dbIterate(&dbidx)) != NULL) {
+  while ((song = dbIterate (&dbidx)) != NULL) {
     songselperc_t   *perc = NULL;
     songselsongdata_t   *songdata = NULL;
     songselidx_t    *songidx = NULL;

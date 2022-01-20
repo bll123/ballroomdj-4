@@ -27,7 +27,7 @@
 #include "tmutil.h"
 #include "fileop.h"
 #include "portability.h"
-#include "datautil.h"
+#include "pathbld.h"
 #include "bdjopt.h"
 #include "lock.h"
 #include "bdjvars.h"
@@ -40,7 +40,7 @@ initLocale (void)
   char    tpath [MAXPATHLEN];
 
   setlocale (LC_ALL, "");
-  datautilMakePath (tpath, sizeof (tpath), "locale", "", "", DATAUTIL_MP_MAINDIR);
+  pathbldMakePath (tpath, sizeof (tpath), "locale", "", "", PATHBLD_MP_MAINDIR);
   bindtextdomain ("bdj", tpath);
   textdomain ("bdj");
   return;
@@ -70,7 +70,7 @@ bdj4startup (int argc, char *argv[])
   sRandom ();
   sysvarsInit (argv[0]);
 
-  datautilMakePath (tbuff, sizeof (tbuff), "", sysvars [SV_HOSTNAME], "", DATAUTIL_MP_NONE);
+  pathbldMakePath (tbuff, sizeof (tbuff), "", sysvars [SV_HOSTNAME], "", PATHBLD_MP_NONE);
   if (! fileopExists (tbuff)) {
     fileopMakeDir (tbuff);
   }
@@ -95,7 +95,7 @@ bdj4startup (int argc, char *argv[])
     }
   }
 
-  rc = lockAcquire (MAIN_LOCK_FN, DATAUTIL_MP_USEIDX);
+  rc = lockAcquire (MAIN_LOCK_FN, PATHBLD_MP_USEIDX);
   count = 0;
   while (rc < 0) {
       /* try for the next free profile */
@@ -107,7 +107,7 @@ bdj4startup (int argc, char *argv[])
       bdj4shutdown ();
       exit (1);
     }
-    rc = lockAcquire (MAIN_LOCK_FN, DATAUTIL_MP_USEIDX);
+    rc = lockAcquire (MAIN_LOCK_FN, PATHBLD_MP_USEIDX);
   }
 
   if (chdir (sysvars [SV_BDJ4DIR]) < 0) {
@@ -125,8 +125,8 @@ bdj4startup (int argc, char *argv[])
   bdjoptSetNum (OPT_G_DEBUGLVL, loglevel);
 
   mstimestart (&dbmt);
-  datautilMakePath (tbuff, MAXPATHLEN, "",
-      MUSICDB_FNAME, MUSICDB_EXT, DATAUTIL_MP_NONE);
+  pathbldMakePath (tbuff, MAXPATHLEN, "",
+      MUSICDB_FNAME, MUSICDB_EXT, PATHBLD_MP_NONE);
   dbOpen (tbuff);
   logMsg (LOG_SESS, LOG_IMPORTANT, "Database read: %ld items in %ld ms", dbCount(), mstimeend (&dbmt));
   logMsg (LOG_SESS, LOG_IMPORTANT, "Total init time: %ld ms", mstimeend (&mt));
@@ -145,5 +145,5 @@ bdj4shutdown (void)
   bdjvarsdfloadCleanup ();
   bdjvarsCleanup ();
   logMsg (LOG_SESS, LOG_IMPORTANT, "init cleanup time: %ld ms", mstimeend (&mt));
-  lockRelease (MAIN_LOCK_FN, DATAUTIL_MP_USEIDX);
+  lockRelease (MAIN_LOCK_FN, PATHBLD_MP_USEIDX);
 }

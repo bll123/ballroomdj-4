@@ -94,7 +94,7 @@ main (int argc, char *argv[])
   logStartAppend ("mobilemarquee", "mm", loglevel);
   logMsg (LOG_SESS, LOG_IMPORTANT, "Using profile %ld", lsysvars [SVL_BDJIDX]);
 
-  rc = lockAcquire (MOBILEMQ_LOCK_FN, DATAUTIL_MP_USEIDX);
+  rc = lockAcquire (MOBILEMQ_LOCK_FN, PATHBLD_MP_USEIDX);
   if (rc < 0) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: mobilemq: unable to acquire lock: profile: %zd", lsysvars [SVL_BDJIDX]);
     logMsg (LOG_SESS, LOG_IMPORTANT, "ERR: mobilemq: unable to acquire lock: profile: %zd", lsysvars [SVL_BDJIDX]);
@@ -107,7 +107,7 @@ main (int argc, char *argv[])
 
   mobmqData.type = bdjoptGetNum (OPT_P_MOBILEMARQUEE);
   if (mobmqData.type == MOBILEMQ_OFF) {
-    lockRelease (MOBILEMQ_LOCK_FN, DATAUTIL_MP_USEIDX);
+    lockRelease (MOBILEMQ_LOCK_FN, PATHBLD_MP_USEIDX);
     exit (0);
   }
 
@@ -147,7 +147,7 @@ main (int argc, char *argv[])
   bdjvarsCleanup ();
   logMsg (LOG_SESS, LOG_IMPORTANT, "time-to-end: %ld ms", mstimeend (&mobmqData.tm));
   logEnd ();
-  lockRelease (MOBILEMQ_LOCK_FN, DATAUTIL_MP_USEIDX);
+  lockRelease (MOBILEMQ_LOCK_FN, PATHBLD_MP_USEIDX);
   return 0;
 }
 
