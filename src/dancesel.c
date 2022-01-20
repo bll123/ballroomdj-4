@@ -18,16 +18,16 @@
 #include "slist.h"
 
 typedef struct {
-  listidx_t     danceKey;
+  nlistidx_t    danceKey;
 } playedDance_t;
 
-static bool     matchTag (list_t *tags, list_t *otags);
+static bool     matchTag (slist_t *tags, slist_t *otags);
 
 dancesel_t *
 danceselAlloc (playlist_t *pl)
 {
   dancesel_t  *dancesel;
-  listidx_t   dkey;
+  nlistidx_t  dkey;
   ssize_t     sel;
   ssize_t     count;
   double      dcount = 0;
@@ -83,7 +83,7 @@ danceselFree (dancesel_t *dancesel)
       nlistFree (dancesel->distance);
     }
     if (dancesel->playedCounts != NULL) {
-      listFree (dancesel->playedCounts);
+      nlistFree (dancesel->playedCounts);
     }
     if (dancesel->playedDances != NULL) {
       queueFree (dancesel->playedDances);
@@ -99,7 +99,7 @@ danceselFree (dancesel_t *dancesel)
 }
 
 void
-danceselAddPlayed (dancesel_t *dancesel, listidx_t danceKey)
+danceselAddPlayed (dancesel_t *dancesel, nlistidx_t danceKey)
 {
   double        count;
   playedDance_t *pd = NULL;
@@ -119,11 +119,11 @@ danceselAddPlayed (dancesel_t *dancesel, listidx_t danceKey)
   queuePushHead (dancesel->playedDances, pd);
 }
 
-listidx_t
+nlistidx_t
 danceselSelect (dancesel_t *dancesel,
     danceselCallback_t callback, void *userdata)
 {
-  listidx_t     dkey;
+  nlistidx_t     dkey;
   double        tbase;
   double        tprob;
   double        abase;
@@ -132,19 +132,19 @@ danceselSelect (dancesel_t *dancesel,
   double        expcount;
   double        dcount;
     /* current dance values */
-  list_t        *tags = NULL;
+  slist_t       *tags = NULL;
   double        speed;
   double        type;
     /* previous dance data */
-  listidx_t     pdanceKey;
-  list_t        *pdtags = NULL;
+  nlistidx_t    pdanceKey;
+  slist_t       *pdtags = NULL;
   ssize_t       pdspeed;
   ssize_t       pdtype;
     /* working with the history (played dances) */
-  list_t        *htags = NULL;
+  slist_t       *htags = NULL;
   double        dist;
   double        tval;
-  listidx_t     hdkey;
+  nlistidx_t    hdkey;
   ssize_t       histCount;
   double        findex;
     /* autosel variables that will be used */
@@ -318,7 +318,7 @@ danceselSelect (dancesel_t *dancesel,
 /* internal routines */
 
 static bool
-matchTag (list_t *tags, list_t *otags)
+matchTag (slist_t *tags, slist_t *otags)
 {
   char      *ttag;
   char      *otag;

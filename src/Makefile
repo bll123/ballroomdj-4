@@ -747,7 +747,7 @@ $(OBJDIR)/ilist$(OBJ_EXT): ilist.c config.h bdjstring.h ilist.h list.h slist.h l
  fileutil.h nlist.h
 $(OBJDIR)/level$(OBJ_EXT): level.c config.h bdjvarsdf.h datafile.h list.h nlist.h slist.h \
  ilist.h fileop.h level.h log.h fileutil.h
-$(OBJDIR)/list$(OBJ_EXT): list.c config.h list.h log.h fileutil.h bdjstring.h
+$(OBJDIR)/list$(OBJ_EXT): list.c config.h list.h log.h fileutil.h bdjstring.h tmutil.h
 $(OBJDIR)/lock$(OBJ_EXT): lock.c config.h sysvars.h portability.h process.h tmutil.h lock.h \
  datautil.h fileop.h
 $(OBJDIR)/log$(OBJ_EXT): log.c config.h log.h fileutil.h tmutil.h datautil.h bdjstring.h \

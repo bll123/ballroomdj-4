@@ -10,8 +10,9 @@
 #include "datafile.h"
 #include "fileop.h"
 #include "log.h"
-#include "nlist.h"
+#include "ilist.h"
 #include "rating.h"
+#include "slist.h"
 
   /* must be sorted in ascii order */
 static datafilekey_t ratingdfkeys[] = {
@@ -36,7 +37,7 @@ ratingAlloc (char *fname)
   rating->df = datafileAllocParse ("rating", DFTYPE_INDIRECT, fname,
       ratingdfkeys, RATING_DFKEY_COUNT, RATING_RATING);
   rating->rating = datafileGetList (rating->df);
-  nlistDumpInfo (rating->rating);
+  ilistDumpInfo (rating->rating);
   return rating;
 }
 
@@ -52,7 +53,7 @@ ratingFree (rating_t *rating)
 }
 
 ssize_t
-ratingGetWeight (rating_t *rating, listidx_t ikey)
+ratingGetWeight (rating_t *rating, ilistidx_t ikey)
 {
   return ilistGetNum (rating->rating, ikey, RATING_WEIGHT);
 }
@@ -61,10 +62,10 @@ void
 ratingConv (char *keydata, datafileret_t *ret)
 {
   rating_t    *rating;
-  list_t      *lookup;
+  slist_t      *lookup;
 
   ret->valuetype = VALUE_NUM;
   rating = bdjvarsdf [BDJVDF_RATINGS];
   lookup = datafileGetLookup (rating->df);
-  ret->u.num = listGetNum (lookup, keydata);
+  ret->u.num = slistGetNum (lookup, keydata);
 }

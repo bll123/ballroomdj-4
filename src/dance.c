@@ -68,7 +68,7 @@ danceFree (dance_t *dance)
       datafileFree (dance->df);
     }
     if (dance->danceList != NULL) {
-      listFree (dance->danceList);
+      slistFree (dance->danceList);
     }
     free (dance);
   }
@@ -84,10 +84,10 @@ danceStartIterator (dance_t *dances)
   ilistStartIterator (dances->dances);
 }
 
-listidx_t
+ilistidx_t
 danceIterateKey (dance_t *dances)
 {
-  listidx_t     ikey;
+  ilistidx_t     ikey;
 
   if (dances == NULL || dances->dances == NULL) {
     return LIST_LOC_INVALID;
@@ -97,11 +97,11 @@ danceIterateKey (dance_t *dances)
   return ikey;
 }
 
-list_t *
+slist_t *
 danceGetLookup (void)
 {
   dance_t *dance = bdjvarsdf [BDJVDF_DANCES];
-  list_t  *lookup = datafileGetLookup (dance->df);
+  slist_t *lookup = datafileGetLookup (dance->df);
   return lookup;
 }
 
@@ -112,19 +112,19 @@ danceGetCount (dance_t *dance)
 }
 
 char *
-danceGetData (dance_t *dance, listidx_t dkey, listidx_t idx)
+danceGetData (dance_t *dance, ilistidx_t dkey, ilistidx_t idx)
 {
   return ilistGetData (dance->dances, dkey, idx);
 }
 
 slist_t *
-danceGetList (dance_t *dance, listidx_t dkey, listidx_t idx)
+danceGetList (dance_t *dance, ilistidx_t dkey, ilistidx_t idx)
 {
   return ilistGetList (dance->dances, dkey, idx);
 }
 
 ssize_t
-danceGetNum (dance_t *dance, listidx_t dkey, listidx_t idx)
+danceGetNum (dance_t *dance, ilistidx_t dkey, ilistidx_t idx)
 {
   return ilistGetNum (dance->dances, dkey, idx);
 }
@@ -132,9 +132,9 @@ danceGetNum (dance_t *dance, listidx_t dkey, listidx_t idx)
 slist_t *
 danceGetDanceList (dance_t *dance)
 {
-  slist_t   *dl;
-  listidx_t key;
-  char      *nm;
+  slist_t     *dl;
+  ilistidx_t  key;
+  char        *nm;
 
   if (dance->danceList != NULL) {
     return dance->danceList;
@@ -157,14 +157,14 @@ void
 danceConvDance (char *keydata, datafileret_t *ret)
 {
   dance_t       *dance;
-  list_t        *lookup;
+  slist_t       *lookup;
 
   ret->valuetype = VALUE_NUM;
   ret->u.num = -1;
   dance = bdjvarsdf [BDJVDF_DANCES];
   lookup = datafileGetLookup (dance->df);
   if (lookup != NULL) {
-    ret->u.num = listGetNum (lookup, keydata);
+    ret->u.num = slistGetNum (lookup, keydata);
   }
 }
 
@@ -173,7 +173,7 @@ danceConvDance (char *keydata, datafileret_t *ret)
 static void
 danceConvSpeed (char *keydata, datafileret_t *ret)
 {
-  listidx_t       idx;
+  nlistidx_t       idx;
 
   ret->valuetype = VALUE_NUM;
   idx = dfkeyBinarySearch (dancespeeddfkeys, DANCE_SPEED_DFKEY_COUNT, keydata);

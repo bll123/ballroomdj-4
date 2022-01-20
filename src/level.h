@@ -18,7 +18,7 @@ typedef struct {
 
 level_t     *levelAlloc (char *);
 void        levelFree (level_t *);
-ssize_t     levelGetWeight (level_t *level, listidx_t idx);
+ssize_t     levelGetWeight (level_t *level, ilistidx_t idx);
 void        levelConv (char *keydata, datafileret_t *ret);
 
 #endif /* INC_LEVEL_H */

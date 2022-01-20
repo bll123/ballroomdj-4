@@ -11,7 +11,8 @@
 #include "fileop.h"
 #include "level.h"
 #include "log.h"
-#include "nlist.h"
+#include "ilist.h"
+#include "slist.h"
 
   /* must be sorted in ascii order */
 static datafilekey_t leveldfkeys[] = {
@@ -37,7 +38,7 @@ levelAlloc (char *fname)
   level->df = datafileAllocParse ("level", DFTYPE_INDIRECT, fname,
       leveldfkeys, LEVEL_DFKEY_COUNT, LEVEL_LEVEL);
   level->level = datafileGetList (level->df);
-  nlistDumpInfo (level->level);
+  ilistDumpInfo (level->level);
   return level;
 }
 
@@ -53,7 +54,7 @@ levelFree (level_t *level)
 }
 
 ssize_t
-levelGetWeight (level_t *level, listidx_t ikey)
+levelGetWeight (level_t *level, ilistidx_t ikey)
 {
   return ilistGetNum (level->level, ikey, LEVEL_WEIGHT);
 }
@@ -62,11 +63,11 @@ void
 levelConv (char *keydata, datafileret_t *ret)
 {
   level_t     *level;
-  list_t      *lookup;
+  slist_t      *lookup;
 
   ret->valuetype = VALUE_NUM;
 
   level = bdjvarsdf [BDJVDF_LEVELS];
   lookup = datafileGetLookup (level->df);
-  ret->u.num = listGetNum (lookup, keydata);
+  ret->u.num = slistGetNum (lookup, keydata);
 }

@@ -9,6 +9,8 @@
 #include "list.h"
 #include "log.h"
 #include "bdjstring.h"
+#include "tmutil.h"
+
 
 static void     listFreeItem (list_t *, ssize_t);
 static void     listInsert (list_t *, ssize_t loc, listitem_t *item);
@@ -194,8 +196,12 @@ listGetNum (list_t *list, char *keydata)
 void
 listSort (list_t *list)
 {
+  mstime_t      tm;
+
+  mstimestart (&tm);
   list->ordered = LIST_ORDERED;
   mergeSort (list, 0, list->count - 1);
+  logMsg (LOG_DBG, LOG_BASIC, "sort of %s took %ld ms", list->name, mstimeend (&tm));
 }
 
 inline void

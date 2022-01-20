@@ -10,7 +10,7 @@
 #include "datafile.h"
 #include "fileop.h"
 #include "log.h"
-#include "nlist.h"
+#include "ilist.h"
 
   /* must be sorted in ascii order */
 static datafilekey_t songlistdfkeys[] = {
@@ -43,7 +43,7 @@ songlistAlloc (char *fname)
   sl->fname = strdup (fname);
   assert (sl->fname != NULL);
   sl->songlist = datafileGetList (sl->df);
-  nlistDumpInfo (sl->songlist);
+  ilistDumpInfo (sl->songlist);
   return sl;
 }
 
@@ -62,7 +62,7 @@ songlistFree (songlist_t *sl)
 }
 
 char *
-songlistGetData (songlist_t *sl, listidx_t ikey, listidx_t lidx)
+songlistGetData (songlist_t *sl, ilistidx_t ikey, ilistidx_t lidx)
 {
   if (ikey >= nlistGetCount (sl->songlist)) {
     logMsg (LOG_DBG, LOG_BASIC, "end of songlist %s reached", sl->fname);

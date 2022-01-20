@@ -13,24 +13,24 @@ typedef double  danceProb_t;
 typedef struct {
   dance_t       *dances;
   autosel_t     *autosel;
-  nlist_t        *base;
+  nlist_t       *base;
   double        basetotal;
-  nlist_t        *distance;
+  nlist_t       *distance;
   ssize_t       maxDistance;
-  nlist_t        *playedCounts;
+  nlist_t       *playedCounts;
   queue_t       *playedDances;
   double        totalPlayed;
-  nlist_t        *adjustBase;
+  nlist_t       *adjustBase;
   ssize_t       selCount;
-  nlist_t        *danceProbTable;
+  nlist_t       *danceProbTable;
 } dancesel_t;
 
-typedef ssize_t (*danceselCallback_t)(void *userdata, listidx_t danceKey);
+typedef ssize_t (*danceselCallback_t)(void *userdata, nlistidx_t danceKey);
 
 dancesel_t      *danceselAlloc (playlist_t *pl);
 void            danceselFree (dancesel_t *dancesel);
-void            danceselAddPlayed (dancesel_t *dancesel, listidx_t danceKey);
-listidx_t       danceselSelect (dancesel_t *dancesel,
+void            danceselAddPlayed (dancesel_t *dancesel, nlistidx_t danceKey);
+nlistidx_t      danceselSelect (dancesel_t *dancesel,
                     danceselCallback_t callback, void *userdata);
 
 #endif /* INC_DANCESEL_H */

@@ -2,6 +2,7 @@
 #define INC_AUTOSEL_H
 
 #include "datafile.h"
+#include "nlist.h"
 
 typedef enum {
   AUTOSEL_BEG_COUNT,          //
@@ -21,7 +22,7 @@ typedef enum {
 
 typedef struct {
   datafile_t      *df;
-  list_t          *autosel;
+  nlist_t         *autosel;
 } autosel_t;
 
 autosel_t     *autoselAlloc (char *);

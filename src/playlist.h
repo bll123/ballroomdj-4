@@ -4,7 +4,10 @@
 #include <stdbool.h>
 
 #include "datafile.h"
+#include "ilist.h"
 #include "musicdb.h"
+#include "nlist.h"
+#include "slist.h"
 #include "song.h"
 #include "songlist.h"
 #include "sequence.h"
@@ -50,8 +53,8 @@ typedef struct {
   songlist_t    *songlist;
   sequence_t    *sequence;
   songsel_t     *songsel;
-  list_t        *plinfo;
-  list_t        *pldances;
+  nlist_t       *plinfo;
+  ilist_t       *pldances;
   int           manualIdx;
 } playlist_t;
 
@@ -69,7 +72,7 @@ ssize_t       playlistGetDanceNum (playlist_t *pl, dancekey_t dancekey,
                   pldancekey_t key);
 song_t        *playlistGetNextSong (playlist_t *, playlistCheck_t checkProc,
                   void *userdata);
-list_t        *playlistGetPlaylistList (void);
+slist_t       *playlistGetPlaylistList (void);
 bool          playlistFilterSong (dbidx_t dbidx, song_t *song,
                   void *tplaylist);
 void          playlistAddPlayed (playlist_t *, song_t *song);

@@ -261,7 +261,7 @@ vlcAudioDevList (vlcData_t *vlcData)
   adevlist = libvlc_audio_output_device_enum (vlcData->mp);
   adevlistptr = adevlist;
   while (adevlistptr != (libvlc_audio_output_device_t *) NULL) {
-    slistSetData (devlist, adevlistptr->psz_device,
+    slistSetStr (devlist, adevlistptr->psz_device,
         strdup (adevlistptr->psz_description));
     adevlistptr = adevlistptr->p_next;
   }

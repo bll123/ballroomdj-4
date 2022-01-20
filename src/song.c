@@ -97,7 +97,7 @@ songParse (song_t *song, char *data)
 }
 
 char *
-songGetData (song_t *song, listidx_t idx)
+songGetData (song_t *song, nlistidx_t idx)
 {
   char    *value;
 
@@ -110,7 +110,7 @@ songGetData (song_t *song, listidx_t idx)
 }
 
 ssize_t
-songGetNum (song_t *song, listidx_t idx)
+songGetNum (song_t *song, nlistidx_t idx)
 {
   ssize_t     value;
 
@@ -123,7 +123,7 @@ songGetNum (song_t *song, listidx_t idx)
 }
 
 double
-songGetDouble (song_t *song, listidx_t idx)
+songGetDouble (song_t *song, nlistidx_t idx)
 {
   double      value;
 
@@ -137,7 +137,7 @@ songGetDouble (song_t *song, listidx_t idx)
 }
 
 void
-songSetNum (song_t *song, listidx_t tagidx, ssize_t value)
+songSetNum (song_t *song, nlistidx_t tagidx, ssize_t value)
 {
   if (song == NULL || song->songInfo == NULL) {
     return;

@@ -10,7 +10,8 @@
 #include "datafile.h"
 #include "fileop.h"
 #include "log.h"
-#include "nlist.h"
+#include "ilist.h"
+#include "slist.h"
 #include "status.h"
 
   /* must be sorted in ascii order */
@@ -36,7 +37,7 @@ statusAlloc (char *fname)
   status->df = datafileAllocParse ("status", DFTYPE_INDIRECT, fname,
       statusdfkeys, STATUS_DFKEY_COUNT, STATUS_STATUS);
   status->status = datafileGetList (status->df);
-  nlistDumpInfo (status->status);
+  ilistDumpInfo (status->status);
   return status;
 }
 
@@ -52,7 +53,7 @@ statusFree (status_t *status)
 }
 
 bool
-statusPlayCheck (status_t *status, nlistidx_t ikey)
+statusPlayCheck (status_t *status, ilistidx_t ikey)
 {
   return ilistGetNum (status->status, ikey, STATUS_PLAY_FLAG);
 }
@@ -61,11 +62,11 @@ void
 statusConv (char *keydata, datafileret_t *ret)
 {
   status_t     *status;
-  list_t      *lookup;
+  slist_t      *lookup;
 
   ret->valuetype = VALUE_NUM;
 
   status = bdjvarsdf [BDJVDF_STATUS];
   lookup = datafileGetLookup (status->df);
-  ret->u.num = listGetNum (lookup, keydata);
+  ret->u.num = slistGetNum (lookup, keydata);
 }

@@ -11,7 +11,8 @@
 #include "fileop.h"
 #include "genre.h"
 #include "log.h"
-#include "nlist.h"
+#include "ilist.h"
+#include "slist.h"
 
   /* must be sorted in ascii order */
 static datafilekey_t genredfkeys[] = {
@@ -35,7 +36,7 @@ genreAlloc (char *fname)
 
   genre->df = datafileAllocParse ("genre", DFTYPE_INDIRECT, fname,
       genredfkeys, GENRE_DFKEY_COUNT, GENRE_GENRE);
-  nlistDumpInfo (datafileGetList (genre->df));
+  ilistDumpInfo (datafileGetList (genre->df));
   return genre;
 }
 
@@ -54,11 +55,11 @@ void
 genreConv (char *keydata, datafileret_t *ret)
 {
   genre_t     *genre;
-  list_t      *lookup;
+  slist_t      *lookup;
 
   ret->valuetype = VALUE_NUM;
   genre = bdjvarsdf [BDJVDF_GENRES];
   lookup = datafileGetLookup (genre->df);
-  ret->u.num = listGetNum (lookup, keydata);
+  ret->u.num = slistGetNum (lookup, keydata);
 }
 

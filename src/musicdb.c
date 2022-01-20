@@ -79,7 +79,7 @@ dbLoad (db_t *db, char *fn)
   rafile_t    *radb;
   rafileidx_t srrn;
   rafileidx_t rc;
-  nlistidx_t   dkey;
+  nlistidx_t  dkey;
 
 
   fstr = "";
