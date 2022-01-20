@@ -15,7 +15,7 @@
 #include <vlc/vlc.h>
 #include <vlc/libvlc_version.h>
 
-#include "list.h"
+#include "slist.h"
 
 typedef struct {
   libvlc_instance_t     *inst;
@@ -41,7 +41,7 @@ double            vlcRate (vlcData_t *vlcData, double drate);
 int               vlcHaveAudioDevList (void);
 int               vlcAudioDevSet (vlcData_t *vlcData, char *dev);
 #if _lib_libvlc_audio_output_device_enum
-list_t *          vlcAudioDevList (vlcData_t *vlcData);
+slist_t *         vlcAudioDevList (vlcData_t *vlcData);
 #endif
 char *            vlcVersion (vlcData_t *vlcData);
 libvlc_state_t    vlcState (vlcData_t *vlcData);

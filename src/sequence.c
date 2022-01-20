@@ -6,13 +6,15 @@
 #include <string.h>
 #include <assert.h>
 
-#include "sequence.h"
+#include "dance.h"
 #include "datafile.h"
+#include "datautil.h"
 #include "fileop.h"
 #include "log.h"
-#include "dance.h"
-#include "datautil.h"
+#include "nlist.h"
 #include "portability.h"
+#include "sequence.h"
+#include "slist.h"
 
 sequence_t *
 sequenceAlloc (char *fname)
@@ -40,16 +42,16 @@ sequenceAlloc (char *fname)
   tlist = datafileGetList (df);
 
   danceLookup = danceGetLookup ();
-  sequence->sequence = llistAlloc ("sequence", LIST_UNORDERED, free);
-  llistSetSize (sequence->sequence, listGetCount (tlist));
+  sequence->sequence = nlistAlloc ("sequence", LIST_UNORDERED, free);
+  nlistSetSize (sequence->sequence, listGetCount (tlist));
 
-  listStartIterator (tlist);
-  while ((seqkey = listIterateKeyStr (tlist)) != NULL) {
+  slistStartIterator (tlist);
+  while ((seqkey = slistIterateKey (tlist)) != NULL) {
     lkey = listGetNum (danceLookup, seqkey);
-    llistSetData (sequence->sequence, lkey, strdup (seqkey));
+    nlistSetStr (sequence->sequence, lkey, strdup (seqkey));
   }
   datafileFree (df);
-  listDumpInfo (sequence->sequence);
+  nlistDumpInfo (sequence->sequence);
   return sequence;
 }
 
@@ -93,10 +95,10 @@ sequenceIterate (sequence_t *sequence)
     return -1L;
   }
 
-  lkey = llistIterateKeyNum (sequence->sequence);
+  lkey = nlistIterateKey (sequence->sequence);
   if (lkey < 0) {
       /* a sequence just restarts from the beginning */
-    lkey = llistIterateKeyNum (sequence->sequence);
+    lkey = nlistIterateKey (sequence->sequence);
   }
   return lkey;
 }

@@ -126,21 +126,30 @@ sysvarsInit (const char *argv0)
   *p = '\0';
   strlcpy (sysvars [SV_BDJ4EXECDIR], buff, MAXPATHLEN);
 
-  strlcpy (sysvars [SV_SHLIB_EXT], SHLIB_EXT, MAXPATHLEN);
+  /* strip off '/bin' */
+  p = strrchr (buff, '/');
+  *p = '\0';
+  strlcpy (sysvars [SV_BDJ4MAINDIR], buff, MAXPATHLEN);
 
-  /* do not want to include fileop due to circular dependencies */
   if (fileopExists ("data")) {
     /* if there is a data directory in the current working directory  */
     /* a change of directories is contra-indicated.                   */
 
     pathNormPath (tcwd, MAXPATHLEN);
     strlcpy (sysvars [SV_BDJ4DIR], tcwd, MAXPATHLEN);
+
+    strlcpy (sysvars [SV_BDJ4DATADIR], tcwd, MAXPATHLEN);
+    strlcat (sysvars [SV_BDJ4DATADIR], "/data", MAXPATHLEN);
   } else {
-    /* strip off the /bin */
-    p = strrchr (buff, '/');
-    *p = '\0';
-    strlcpy (sysvars [SV_BDJ4DIR], buff, MAXPATHLEN);
+    strlcpy (sysvars [SV_BDJ4DIR], sysvars [SV_BDJ4MAINDIR], MAXPATHLEN);
+    strlcpy (sysvars [SV_BDJ4DATADIR], sysvars [SV_BDJ4MAINDIR], MAXPATHLEN);
+    strlcat (sysvars [SV_BDJ4DATADIR], "/data", MAXPATHLEN);
   }
+
+  strlcpy (sysvars [SV_BDJ4HTTPDIR], sysvars [SV_BDJ4MAINDIR], MAXPATHLEN);
+  strlcat (sysvars [SV_BDJ4HTTPDIR], "/http", MAXPATHLEN);
+
+  strlcpy (sysvars [SV_SHLIB_EXT], SHLIB_EXT, MAXPATHLEN);
 
   strlcpy (sysvars [SV_MOBMQ_HOST], "ballroomdj.org", MAXPATHLEN);
 

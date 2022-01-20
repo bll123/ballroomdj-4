@@ -10,6 +10,7 @@
 #include "datafile.h"
 #include "fileop.h"
 #include "log.h"
+#include "nlist.h"
 
 static datafilekey_t autoseldfkeys[] = {
   { "begincount",     AUTOSEL_BEG_COUNT,        VALUE_NUM,    NULL },
@@ -42,6 +43,7 @@ autoselAlloc (char *fname)
 
   autosel->df = datafileAllocParse ("autosel", DFTYPE_KEY_VAL, fname,
       autoseldfkeys, AUTOSEL_DFKEY_COUNT, DATAFILE_NO_LOOKUP);
+  autosel->autosel = datafileGetList (autosel->df);
   return autosel;
 }
 
@@ -59,12 +61,19 @@ autoselFree (autosel_t *autosel)
 double
 autoselGetDouble (autosel_t *autosel, autoselkey_t idx)
 {
-  list_t  *list;
-
-  if (autosel == NULL || autosel->df == NULL) {
+  if (autosel == NULL || autosel->autosel == NULL) {
     return LIST_DOUBLE_INVALID;
   }
 
-  list = datafileGetList (autosel->df);
-  return llistGetDouble (list, idx);
+  return nlistGetDouble (autosel->autosel, idx);
+}
+
+ssize_t
+autoselGetNum (autosel_t *autosel, autoselkey_t idx)
+{
+  if (autosel == NULL || autosel->autosel == NULL) {
+    return LIST_LOC_INVALID;
+  }
+
+  return nlistGetNum (autosel->autosel, idx);
 }

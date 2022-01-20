@@ -22,6 +22,7 @@ typedef struct {
 queue_t *queueAlloc (queueFree_t freeHook);
 void    queueFree (queue_t *q);
 void    queuePush (queue_t *q, void *data);
+void    queuePushHead (queue_t *q, void *data);
 void    *queueGetCurrent (queue_t *q);
 void    *queueGetByIdx (queue_t *q, ssize_t idx);
 void    *queuePop  (queue_t *q);

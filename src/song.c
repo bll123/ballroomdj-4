@@ -13,7 +13,7 @@
 #include "fileop.h"
 #include "genre.h"
 #include "level.h"
-#include "list.h"
+#include "nlist.h"
 #include "log.h"
 #include "portability.h"
 #include "rating.h"
@@ -82,7 +82,7 @@ songFree (void *tsong)
   song_t  *song = (song_t *) tsong;
   if (song != NULL) {
     if (song->songInfo != NULL) {
-      llistFree (song->songInfo);
+      nlistFree (song->songInfo);
     }
     free (song);
   }
@@ -93,7 +93,7 @@ songParse (song_t *song, char *data)
 {
   song->songInfo = datafileParse (data, "song", DFTYPE_KEY_VAL,
       songdfkeys, SONG_DFKEY_COUNT, DATAFILE_NO_LOOKUP, NULL);
-  llistSort (song->songInfo);
+  nlistSort (song->songInfo);
 }
 
 char *
@@ -105,7 +105,7 @@ songGetData (song_t *song, listidx_t idx)
     return NULL;
   }
 
-  value = llistGetData (song->songInfo, idx);
+  value = nlistGetStr (song->songInfo, idx);
   return value;
 }
 
@@ -118,7 +118,7 @@ songGetNum (song_t *song, listidx_t idx)
     return LIST_VALUE_INVALID;
   }
 
-  value = llistGetNum (song->songInfo, idx);
+  value = nlistGetNum (song->songInfo, idx);
   return value;
 }
 
@@ -132,7 +132,7 @@ songGetDouble (song_t *song, listidx_t idx)
     return LIST_DOUBLE_INVALID;
   }
 
-  value = llistGetDouble (song->songInfo, idx);
+  value = nlistGetDouble (song->songInfo, idx);
   return value;
 }
 
@@ -143,7 +143,7 @@ songSetNum (song_t *song, listidx_t tagidx, ssize_t value)
     return;
   }
 
-  llistSetNum (song->songInfo, tagidx, value);
+  nlistSetNum (song->songInfo, tagidx, value);
 }
 
 bool

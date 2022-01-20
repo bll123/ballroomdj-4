@@ -11,8 +11,11 @@ typedef enum {
   SV_OSBUILD,
   SV_OSDISP,
   SV_HOSTNAME,
-  SV_BDJ4EXECDIR,     // where the executables are
-  SV_BDJ4DIR,         // where the data directory is
+  SV_BDJ4DATADIR,     // data/
+  SV_BDJ4DIR,         // path to the directory above data/ and tmp/
+  SV_BDJ4EXECDIR,     // main + /bin
+  SV_BDJ4HTTPDIR,     // main + /http
+  SV_BDJ4MAINDIR,     // path to the main directory above bin/, http/, etc.
   SV_SHLIB_EXT,
   SV_MOBMQ_HOST,
   SV_CA_FILE,

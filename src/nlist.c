@@ -1,0 +1,245 @@
+#include "config.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <string.h>
+#include <assert.h>
+
+#include "list.h"
+#include "log.h"
+#include "nlist.h"
+#include "bdjstring.h"
+
+/* key/value list, keyed by a nlistidx_t */
+
+nlist_t *
+nlistAlloc (char *name, nlistorder_t ordered, nlistFree_t valueFreeHook)
+{
+  nlist_t    *list;
+
+  list = listAlloc (name, ordered, NULL, valueFreeHook);
+  list->keytype = LIST_KEY_NUM;
+  return list;
+}
+
+inline void
+nlistFree (void *list)
+{
+  listFree (list);
+}
+
+inline ssize_t
+nlistGetCount (nlist_t *list)
+{
+  if (list == NULL) {
+    return 0;
+  }
+  return list->count;
+}
+
+inline void
+nlistSetSize (nlist_t *list, ssize_t siz)
+{
+  listSetSize (list, siz);
+}
+
+void
+nlistSetFreeHook (nlist_t *list, listFree_t valueFreeHook)
+{
+  if (list == NULL) {
+    return;
+  }
+
+  list->valueFreeHook = valueFreeHook;
+}
+
+nlistidx_t
+nlistSetData (nlist_t *list, nlistidx_t lidx, void *data)
+{
+  listitem_t    item;
+
+  item.key.idx = lidx;
+  item.valuetype = VALUE_DATA;
+  item.value.data = data;
+  return listSet (list, &item);
+}
+
+nlistidx_t
+nlistSetStr (nlist_t *list, nlistidx_t lidx, char *data)
+{
+  return nlistSetData (list, lidx, data);
+}
+
+nlistidx_t
+nlistSetNum (nlist_t *list, nlistidx_t lidx, ssize_t data)
+{
+  listitem_t    item;
+
+  item.key.idx = lidx;
+  item.valuetype = VALUE_NUM;
+  item.value.num = data;
+  return listSet (list, &item);
+}
+
+nlistidx_t
+nlistSetDouble (nlist_t *list, nlistidx_t lidx, double data)
+{
+  listitem_t    item;
+
+  item.key.idx = lidx;
+  item.valuetype = VALUE_DOUBLE;
+  item.value.dval = data;
+  return listSet (list, &item);
+}
+
+nlistidx_t
+nlistSetList (nlist_t *list, nlistidx_t lidx, nlist_t *data)
+{
+  listitem_t    item;
+
+  item.key.idx = lidx;
+  item.valuetype = VALUE_LIST;
+  item.value.data = data;
+  return listSet (list, &item);
+}
+
+void *
+nlistGetData (nlist_t *list, nlistidx_t lidx)
+{
+  void            *value = NULL;
+  listkey_t       key;
+  nlistidx_t       idx;
+
+  key.idx = lidx;
+  idx = listGetIdx (list, &key);
+  if (idx >= 0) {
+    value = (char *) list->data [idx].value.data;
+  }
+  logMsg (LOG_DBG, LOG_LIST, "list:%s key:%ld idx:%ld", list->name, lidx, idx);
+  return value;
+}
+
+char *
+nlistGetStr (nlist_t *list, nlistidx_t lidx)
+{
+  return nlistGetData (list, lidx);
+}
+
+inline void *
+nlistGetDataByIdx (nlist_t *list, nlistidx_t lidx)
+{
+  return listGetDataByIdx (list, lidx);
+}
+
+inline ssize_t
+nlistGetNumByIdx (nlist_t *list, nlistidx_t lidx)
+{
+  return listGetNumByIdx (list, lidx);
+}
+
+ssize_t
+nlistGetNum (nlist_t *list, nlistidx_t lidx)
+{
+  ssize_t         value = LIST_VALUE_INVALID;
+  listkey_t       key;
+  nlistidx_t       idx;
+
+  key.idx = lidx;
+  idx = listGetIdx (list, &key);
+  if (idx >= 0) {
+    value = list->data [idx].value.num;
+  }
+  logMsg (LOG_DBG, LOG_LIST, "list:%s key:%ld idx:%ld value:%ld", list->name, lidx, idx, value);
+  return value;
+}
+
+double
+nlistGetDouble (nlist_t *list, nlistidx_t lidx)
+{
+  double         value = LIST_DOUBLE_INVALID;
+  listkey_t      key;
+  nlistidx_t      idx;
+
+  key.idx = lidx;
+  idx = listGetIdx (list, &key);
+  if (idx >= 0) {
+    value = list->data [idx].value.dval;
+  }
+  logMsg (LOG_DBG, LOG_LIST, "list:%s key:%ld idx:%ld value:%8.2g", list->name, lidx, idx, value);
+  return value;
+}
+
+nlist_t *
+nlistGetList (nlist_t *list, nlistidx_t lidx)
+{
+  void            *value = NULL;
+  listkey_t       key;
+  nlistidx_t      idx;
+
+  key.idx = lidx;
+  idx = listGetIdx (list, &key);
+  if (idx >= 0) {
+    value = (char *) list->data [idx].value.data;
+  }
+  logMsg (LOG_DBG, LOG_LIST, "list:%s key:%ld idx:%ld", list->name, lidx, idx);
+  return value;
+}
+
+inline void
+nlistSort (nlist_t *list)
+{
+  listSort (list);
+}
+
+inline void
+nlistStartIterator (nlist_t *list)
+{
+  list->iteratorIndex = 0;
+}
+
+nlistidx_t
+nlistIterateKey (nlist_t *list)
+{
+  ssize_t      value = LIST_LOC_INVALID;
+
+  logProcBegin (LOG_PROC, "nlistIterateKey");
+  if (list == NULL || list->keytype == LIST_KEY_STR) {
+    logProcEnd (LOG_PROC, "nlistIterateKey", "null-list/key-str");
+    return LIST_LOC_INVALID;
+  }
+
+  if (list->iteratorIndex >= list->count) {
+    list->iteratorIndex = 0;
+    logProcEnd (LOG_PROC, "nlistIterateKey", "end-list");
+    return LIST_LOC_INVALID;      /* indicate the end of the list */
+  }
+
+  value = list->data [list->iteratorIndex].key.idx;
+
+  list->keyCache.idx = value;
+  list->locCache = list->iteratorIndex;
+
+  ++list->iteratorIndex;
+  logProcEnd (LOG_PROC, "nlistIterateKey", "");
+  return value;
+}
+
+inline void *
+nlistIterateValueData (nlist_t *list)
+{
+  return listIterateValue (list);
+}
+
+inline ssize_t
+nlistIterateValueNum (nlist_t *list)
+{
+  return listIterateNum (list);
+}
+
+void
+nlistDumpInfo (nlist_t *list)
+{
+  listDumpInfo (list);
+}
+

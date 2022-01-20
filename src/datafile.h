@@ -2,6 +2,9 @@
 #define INC_DATAFILE_H
 
 #include "list.h"
+#include "nlist.h"
+#include "slist.h"
+#include "ilist.h"
 
 /*
  * The datafilekey_t table is used to convert string keys to long keys.

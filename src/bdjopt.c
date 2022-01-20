@@ -12,6 +12,7 @@
 #include "datautil.h"
 #include "filemanip.h"
 #include "fileop.h"
+#include "nlist.h"
 #include "portability.h"
 #include "sysvars.h"
 
@@ -119,7 +120,7 @@ bdjoptInit (void)
   datafile_t    *df;
   char          path [MAXPATHLEN];
   char          *ddata;
-  list_t        *tlist;
+  nlist_t       *tlist;
 
   /* global */
   datautilMakePath (path, MAXPATHLEN, "", BDJ_CONFIG_BASEFN,
@@ -184,7 +185,7 @@ bdjoptGetData (ssize_t idx)
   if (bdjopt == NULL) {
     return NULL;
   }
-  value = llistGetData (bdjopt->data, idx);
+  value = nlistGetStr (bdjopt->data, idx);
   return value;
 }
 
@@ -196,7 +197,7 @@ bdjoptGetNum (ssize_t idx)
   if (bdjopt == NULL) {
     return -1;
   }
-  value = llistGetNum (bdjopt->data, idx);
+  value = nlistGetNum (bdjopt->data, idx);
   return value;
 }
 
@@ -206,7 +207,7 @@ bdjoptSetNum (ssize_t idx, ssize_t value)
   if (bdjopt == NULL) {
     return;
   }
-  llistSetNum (bdjopt->data, idx, value);
+  nlistSetNum (bdjopt->data, idx, value);
 }
 
 static void

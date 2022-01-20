@@ -1,4 +1,7 @@
-version=2
+# BDJ4 autoselection
+# Sat Jan 15 15:51:05 GMT 2022
+version
+..1
 #
 # dance selection
 #
@@ -10,39 +13,51 @@ version=2
 #
 #
 # if the dance has exceeded the expected count
-limit=1000.0
+limit
+..1000.0
 #
 # if the dance is lower than the expected count
-low=0.5
+low
+..0.5
 #
 # if the previous dance and the dance are both fast
-bothfast=1000.0
+bothfast
+..1000.0
 #
 # if the dance has a tag that matches the previous dance
-tagmatch=600.0
+tagmatch
+..600.0
 # how many songs to search back in history
-tagdistance=3
+histdistance
+..3
 # tagmatch reduction multiplier (tagmatch*(tagadjust^distance))
-tagadjust=0.4
+tagadjust
+..0.4
 #
 # if the dance's type matches the previous dance
-typematch=600.0
+typematch
+..600.0
 #
 # same dance log function value
 # a higher number will reduce the chance of the same dance
 # higher numbers make the mix more regular/repetitive
 # a lower number will allow the same dance sooner
 # adjust by very small increments (0.05).
-logvalue=1.95
+logvalue
+..1.95
 #
 # number of beginning dances
-begincount=3
+begincount
+..3
 # if < begincount, then set the chance of a fast dance
-beginfast=1000.0
+beginfast
+..1000.0
 #
 # song selection
 #
 # the weight of a rating and level.  These should add to 1.
 # the percentages here adjust which song (for the dance) is selected
-ratingweight=0.90
-levelweight=0.10
+ratingweight
+..0.90
+levelweight
+..0.10

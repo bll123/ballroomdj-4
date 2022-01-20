@@ -6,8 +6,10 @@
 typedef ssize_t   dbidx_t;
 
 typedef struct {
-  ssize_t   count;
-  list_t    *songs;
+  ssize_t       count;
+  list_t        *songs;
+  ssize_t       *danceCounts;  // used by main for automatic playlists
+  ssize_t       danceCount;
 } db_t;
 
 #define MUSICDB_FNAME   "musicdb"

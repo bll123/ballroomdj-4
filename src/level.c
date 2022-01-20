@@ -6,11 +6,12 @@
 #include <string.h>
 #include <assert.h>
 
-#include "level.h"
+#include "bdjvarsdf.h"
 #include "datafile.h"
 #include "fileop.h"
-#include "bdjvarsdf.h"
+#include "level.h"
 #include "log.h"
+#include "nlist.h"
 
   /* must be sorted in ascii order */
 static datafilekey_t leveldfkeys[] = {
@@ -36,7 +37,7 @@ levelAlloc (char *fname)
   level->df = datafileAllocParse ("level", DFTYPE_INDIRECT, fname,
       leveldfkeys, LEVEL_DFKEY_COUNT, LEVEL_LEVEL);
   level->level = datafileGetList (level->df);
-  llistDumpInfo (level->level);
+  nlistDumpInfo (level->level);
   return level;
 }
 

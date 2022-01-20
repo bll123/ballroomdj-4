@@ -28,6 +28,9 @@ datautilMakePath (char *buff, size_t buffsz, const char *subpath,
   if ((flags & DATAUTIL_MP_EXECDIR) == DATAUTIL_MP_EXECDIR) {
     dirprefix = sysvars [SV_BDJ4EXECDIR];
   }
+  if ((flags & DATAUTIL_MP_MAINDIR) == DATAUTIL_MP_MAINDIR) {
+    dirprefix = sysvars [SV_BDJ4MAINDIR];
+  }
 
   if ((flags & DATAUTIL_MP_USEIDX) == DATAUTIL_MP_USEIDX) {
     if (lsysvars [SVL_BDJIDX] != 0L) {

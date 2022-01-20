@@ -11,9 +11,11 @@
 #include "filedata.h"
 #include "filemanip.h"
 #include "fileop.h"
-#include "list.h"
+#include "ilist.h"
 #include "log.h"
+#include "nlist.h"
 #include "portability.h"
+#include "slist.h"
 #include "tmutil.h"
 
 typedef enum {
@@ -100,11 +102,11 @@ parseConvTextList (char *data, datafileret_t *ret)
   logProcBegin (LOG_PROC, "parseConvTextList");
   ret->valuetype = VALUE_LIST;
   ret->u.list = NULL;
-  ret->u.list = listAlloc ("textlist", LIST_ORDERED, istringCompare, free, NULL);
+  ret->u.list = slistAlloc ("textlist", LIST_ORDERED, free, NULL);
   if (data != NULL) {
     p = strtok_r (data, " ,", &tokptr);
     while (p != NULL) {
-      listSetData (ret->u.list, p, NULL);
+      slistSetData (ret->u.list, p, NULL);
       p = strtok_r (NULL, " ,", &tokptr);
     }
   }
@@ -146,9 +148,11 @@ datafileAllocParse (char *name, datafiletype_t dftype, char *fname,
       df->data = datafileParse (ddata, name, dftype,
           dfkeys, dfkeycount, lookupKey, &df->lookup);
       if (dftype == DFTYPE_KEY_VAL && dfkeys == NULL) {
-        listSort (df->data);
-      } else if (dftype != DFTYPE_LIST) {
-        llistSort (df->data);
+        slistSort (df->data);
+      } else if (dftype == DFTYPE_KEY_VAL) {
+        nlistSort (df->data);
+      } else if (dftype == DFTYPE_INDIRECT) {
+        ilistSort (df->data);
       }
       free (ddata);
     }
@@ -190,36 +194,37 @@ datafileLoad (datafile_t *df, datafiletype_t dftype, char *fname)
 
 list_t *
 datafileParse (char *data, char *name, datafiletype_t dftype,
-    datafilekey_t *dfkeys, size_t dfkeycount, listidx_t lookupKey,
-    list_t **lookup)
+    datafilekey_t *dfkeys, size_t dfkeycount, slistidx_t lookupKey,
+    slist_t **lookup)
 {
-  list_t        *nlist = NULL;
+  list_t        *datalist = NULL;
 
-  nlist = datafileParseMerge (nlist, data, name, dftype,
+  datalist = datafileParseMerge (datalist, data, name, dftype,
       dfkeys, dfkeycount, lookupKey, lookup);
-  return nlist;
+  return datalist;
 }
 
 list_t *
-datafileParseMerge (list_t *nlist, char *data, char *name,
+datafileParseMerge (list_t *datalist, char *data, char *name,
     datafiletype_t dftype, datafilekey_t *dfkeys,
-    size_t dfkeycount, listidx_t lookupKey, list_t **lookup)
+    size_t dfkeycount, slistidx_t lookupKey, slist_t **lookup)
 {
   char          **strdata = NULL;
   parseinfo_t   *pi = NULL;
   listidx_t     key = -1L;
   size_t        dataCount;
-  list_t        *itemList = NULL;
+  nlist_t       *itemList = NULL;
   valuetype_t   vt = 0;
   size_t        inc = 2;
   int           first = 1;
-  listidx_t     ikey = 0;
+  nlistidx_t    ikey = 0;
   ssize_t       lval = 0;
   double        dval = 0.0;
   char          *tkeystr;
   char          *tvalstr;
   char          *tlookupkey = NULL;
   datafileret_t ret;
+
 
   logProcBegin (LOG_PROC, "datafileParseMerge");
   logMsg (LOG_DBG, LOG_DATAFILE, "begin parse %s", name);
@@ -240,40 +245,39 @@ datafileParseMerge (list_t *nlist, char *data, char *name,
   switch (dftype) {
     case DFTYPE_LIST: {
       inc = 1;
-      if (nlist == NULL) {
-        nlist = listAlloc (name, LIST_UNORDERED, NULL, free, NULL);
-        listSetSize (nlist, dataCount);
+      if (datalist == NULL) {
+        datalist = slistAlloc (name, LIST_UNORDERED, free, NULL);
+        slistSetSize (datalist, dataCount);
       } else {
-        listSetSize (nlist, dataCount + listGetCount (nlist));
+        slistSetSize (datalist, dataCount + slistGetCount (datalist));
       }
       break;
     }
     case DFTYPE_INDIRECT: {
       inc = 2;
-      if (nlist == NULL) {
-        nlist = llistAlloc (name, LIST_UNORDERED, listFree);
+      if (datalist == NULL) {
+        datalist = ilistAlloc (name, LIST_UNORDERED, ilistFree);
       }
       break;
     }
     case DFTYPE_KEY_VAL: {
       inc = 2;
       if (dfkeys == NULL) {
-        if (nlist == NULL) {
-          nlist = listAlloc (name, LIST_UNORDERED,
-              istringCompare, free, free);
-          listSetSize (nlist, dataCount / 2);
+        if (datalist == NULL) {
+          datalist = slistAlloc (name, LIST_UNORDERED, free, NULL);
+          slistSetSize (datalist, dataCount / 2);
         } else {
-          listSetSize (nlist, dataCount / 2 + listGetCount (nlist));
+          slistSetSize (datalist, dataCount / 2 + listGetCount (datalist));
         }
         logMsg (LOG_DBG, LOG_DATAFILE, "key_val: list");
       } else {
-        if (nlist == NULL) {
-          nlist = llistAlloc (name, LIST_UNORDERED, free);
-          llistSetSize (nlist, dataCount / 2);
+        if (datalist == NULL) {
+          datalist = nlistAlloc (name, LIST_UNORDERED, free);
+          nlistSetSize (datalist, dataCount / 2);
         } else {
-          llistSetSize (nlist, dataCount / 2 + listGetCount (nlist));
+          nlistSetSize (datalist, dataCount / 2 + listGetCount (datalist));
         }
-        logMsg (LOG_DBG, LOG_DATAFILE, "key_val: llist");
+        logMsg (LOG_DBG, LOG_DATAFILE, "key_val: datalist");
       }
       break;
     }
@@ -287,8 +291,8 @@ datafileParseMerge (list_t *nlist, char *data, char *name,
 
     logMsg (LOG_DBG, LOG_DATAFILE, "with lookup: key:%ld", lookupKey);
     snprintf (temp, sizeof (temp), "%s-lookup", name);
-    *lookup = listAlloc (temp, LIST_UNORDERED, istringCompare, free, NULL);
-    listSetSize (*lookup, listGetCount (nlist));
+    *lookup = slistAlloc (temp, LIST_UNORDERED, free, NULL);
+    slistSetSize (*lookup, nlistGetCount (datalist));
   }
 
   if (dfkeys != NULL) {
@@ -300,15 +304,15 @@ datafileParseMerge (list_t *nlist, char *data, char *name,
     tvalstr = strdata [i + 1];
 
     if (inc == 2 && strcmp (strdata [i], "version") == 0) {
-//      version = atol (tvalstr);
-// ### FIX TOD: want to save version somewhere...
+      ssize_t version = atol (tvalstr);
+      listSetVersion (datalist, version);
       continue;
     }
     if (strcmp (strdata [i], "count") == 0) {
       if (dftype == DFTYPE_INDIRECT) {
-        llistSetSize (nlist, atol (tvalstr));
+        nlistSetSize (datalist, atol (tvalstr));
       }
-      listSetSize (*lookup, listGetCount (nlist));
+      slistSetSize (*lookup, listGetCount (datalist));
       continue;
     }
 
@@ -317,24 +321,24 @@ datafileParseMerge (list_t *nlist, char *data, char *name,
       char      temp [80];
 
       if (key >= 0) {
-        llistSetList (nlist, key, itemList);
+        nlistSetList (datalist, key, itemList);
         if (lookup != NULL &&
             lookupKey != DATAFILE_NO_LOOKUP &&
             tlookupkey != NULL) {
           logMsg (LOG_DBG, LOG_DATAFILE, "lookup: set %s to %ld", tlookupkey, key);
-          listSetNum (*lookup, tlookupkey, key);
+          slistSetNum (*lookup, tlookupkey, key);
         }
         key = -1L;
       }
       key = atol (tvalstr);
       snprintf (temp, sizeof (temp), "%s-item-%ld", name, key);
-      itemList = llistAlloc (temp, LIST_ORDERED, free);
+      itemList = nlistAlloc (temp, LIST_ORDERED, free);
       continue;
     }
 
     if (dftype == DFTYPE_LIST) {
-      logMsg (LOG_DBG, LOG_DATAFILE, "set: list");
-      listSetData (nlist, tkeystr, NULL);
+      logMsg (LOG_DBG, LOG_DATAFILE, "set: list %s", tkeystr);
+      slistSetData (datalist, tkeystr, NULL);
     }
     if (dftype == DFTYPE_INDIRECT ||
         (dftype == DFTYPE_KEY_VAL && dfkeys != NULL)) {
@@ -386,37 +390,37 @@ datafileParseMerge (list_t *nlist, char *data, char *name,
         /* dftype_indirect has a key pointing to a key/val list. */
       if (dftype == DFTYPE_INDIRECT) {
         if (vt == VALUE_DATA) {
-          llistSetData (itemList, ikey, strdup (tvalstr));
+          nlistSetStr (itemList, ikey, strdup (tvalstr));
         }
         if (vt == VALUE_NUM) {
-          llistSetNum (itemList, ikey, lval);
+          nlistSetNum (itemList, ikey, lval);
         }
         if (vt == VALUE_DOUBLE) {
-          llistSetDouble (itemList, ikey, dval);
+          nlistSetDouble (itemList, ikey, dval);
         }
         if (vt == VALUE_LIST) {
-          llistSetList (itemList, ikey, ret.u.list);
+          nlistSetList (itemList, ikey, ret.u.list);
         }
       }
         /* a key/val type has a single list keyed by a long (dfkeys is set) */
       if (dftype == DFTYPE_KEY_VAL) {
         if (vt == VALUE_DATA) {
-          llistSetData (nlist, ikey, strdup (tvalstr));
+          nlistSetStr (datalist, ikey, strdup (tvalstr));
         }
         if (vt == VALUE_NUM) {
-          llistSetNum (nlist, ikey, lval);
+          nlistSetNum (datalist, ikey, lval);
         }
         if (vt == VALUE_DOUBLE) {
-          llistSetDouble (nlist, ikey, dval);
+          nlistSetDouble (datalist, ikey, dval);
         }
         if (vt == VALUE_LIST) {
-          llistSetList (nlist, ikey, ret.u.list);
+          nlistSetList (datalist, ikey, ret.u.list);
         }
       }
     }
     if (dftype == DFTYPE_KEY_VAL && dfkeys == NULL) {
       logMsg (LOG_DBG, LOG_DATAFILE, "set: key_val");
-      listSetData (nlist, tkeystr, strdup (tvalstr));
+      slistSetData (datalist, tkeystr, strdup (tvalstr));
       key = -1L;
     }
 
@@ -424,20 +428,20 @@ datafileParseMerge (list_t *nlist, char *data, char *name,
   }
 
   if (dftype == DFTYPE_INDIRECT && key >= 0) {
-    llistSetList (nlist, key, itemList);
+    nlistSetList (datalist, key, itemList);
     if (lookup != NULL &&
         lookupKey != DATAFILE_NO_LOOKUP &&
         tlookupkey != NULL) {
-      listSetNum (*lookup, tlookupkey, key);
+      slistSetNum (*lookup, tlookupkey, key);
     }
   }
 
   if (lookupKey != DATAFILE_NO_LOOKUP) {
-    listSort (*lookup);
-    listStartIterator (*lookup);
-    while ((tkeystr = listIterateKeyStr (*lookup)) != NULL) {
-      ikey = listIterateGetIdx (*lookup);
-      lval = listGetNumByIdx (*lookup, ikey);
+    slistSort (*lookup);
+    slistStartIterator (*lookup);
+    while ((tkeystr = slistIterateKey (*lookup)) != NULL) {
+//FIX      ikey = slistIterateGetIdx (*lookup);
+      lval = slistGetNumByIdx (*lookup, ikey);
       logMsg (LOG_DBG, LOG_DATAFILE | LOG_BASIC,
           "%s: %s / %zd", name, tkeystr, lval);
     }
@@ -445,7 +449,7 @@ datafileParseMerge (list_t *nlist, char *data, char *name,
 
   parseFree (pi);
   logProcEnd (LOG_PROC, "datafileParseMerge", "");
-  return nlist;
+  return datalist;
 }
 
 listidx_t
@@ -602,7 +606,7 @@ datafileFreeInternal (datafile_t *df)
           break;
         }
         case DFTYPE_INDIRECT: {
-          llistFree (df->data);
+          nlistFree (df->data);
           break;
         }
         case DFTYPE_KEY_VAL:
@@ -610,10 +614,10 @@ datafileFreeInternal (datafile_t *df)
           list_t    *tlist;
 
           tlist = df->data;
-          if (tlist->keytype == KEY_STR) {
+          if (tlist->keytype == LIST_KEY_STR) {
             listFree (df->data);
           } else {
-            llistFree (df->data);
+            nlistFree (df->data);
           }
           break;
         }

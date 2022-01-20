@@ -6,11 +6,12 @@
 #include <string.h>
 #include <assert.h>
 
-#include "rating.h"
+#include "bdjvarsdf.h"
 #include "datafile.h"
 #include "fileop.h"
-#include "bdjvarsdf.h"
 #include "log.h"
+#include "nlist.h"
+#include "rating.h"
 
   /* must be sorted in ascii order */
 static datafilekey_t ratingdfkeys[] = {
@@ -35,7 +36,7 @@ ratingAlloc (char *fname)
   rating->df = datafileAllocParse ("rating", DFTYPE_INDIRECT, fname,
       ratingdfkeys, RATING_DFKEY_COUNT, RATING_RATING);
   rating->rating = datafileGetList (rating->df);
-  llistDumpInfo (rating->rating);
+  nlistDumpInfo (rating->rating);
   return rating;
 }
 

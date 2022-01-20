@@ -12,8 +12,9 @@
 #include "datafile.h"
 #include "dnctypes.h"
 #include "fileop.h"
-#include "list.h"
+#include "ilist.h"
 #include "log.h"
+#include "slist.h"
 
 static void danceConvSpeed (char *keydata, datafileret_t *ret);
 
@@ -73,6 +74,29 @@ danceFree (dance_t *dance)
   }
 }
 
+void
+danceStartIterator (dance_t *dances)
+{
+  if (dances == NULL || dances->dances == NULL) {
+    return;
+  }
+
+  ilistStartIterator (dances->dances);
+}
+
+listidx_t
+danceIterateKey (dance_t *dances)
+{
+  listidx_t     ikey;
+
+  if (dances == NULL || dances->dances == NULL) {
+    return LIST_LOC_INVALID;
+  }
+
+  ikey = ilistIterateKey (dances->dances);
+  return ikey;
+}
+
 list_t *
 danceGetLookup (void)
 {
@@ -81,10 +105,22 @@ danceGetLookup (void)
   return lookup;
 }
 
+ssize_t
+danceGetCount (dance_t *dance)
+{
+  return ilistGetCount (dance->dances);
+}
+
 char *
 danceGetData (dance_t *dance, listidx_t dkey, listidx_t idx)
 {
   return ilistGetData (dance->dances, dkey, idx);
+}
+
+slist_t *
+danceGetList (dance_t *dance, listidx_t dkey, listidx_t idx)
+{
+  return ilistGetList (dance->dances, dkey, idx);
 }
 
 ssize_t
@@ -93,10 +129,10 @@ danceGetNum (dance_t *dance, listidx_t dkey, listidx_t idx)
   return ilistGetNum (dance->dances, dkey, idx);
 }
 
-list_t *
+slist_t *
 danceGetDanceList (dance_t *dance)
 {
-  list_t    *dl;
+  slist_t   *dl;
   listidx_t key;
   char      *nm;
 
@@ -104,14 +140,14 @@ danceGetDanceList (dance_t *dance)
     return dance->danceList;
   }
 
-  dl = listAlloc ("dancelist", LIST_UNORDERED, istringCompare, free, NULL);
-  listSetSize (dl, llistGetCount (dance->dances));
-  llistStartIterator (dance->dances);
-  while ((key = llistIterateKeyNum (dance->dances)) >= 0) {
+  dl = slistAlloc ("dancelist", LIST_UNORDERED, free, NULL);
+  slistSetSize (dl, ilistGetCount (dance->dances));
+  ilistStartIterator (dance->dances);
+  while ((key = ilistIterateKey (dance->dances)) >= 0) {
     nm = ilistGetData (dance->dances, key, DANCE_DANCE);
-    listSetNum (dl, nm, key);
+    slistSetNum (dl, nm, key);
   }
-  listSort (dl);
+  slistSort (dl);
 
   dance->danceList = dl;
   return dl;

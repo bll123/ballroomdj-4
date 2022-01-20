@@ -2,7 +2,7 @@
 #define INC_SONGLIST_H
 
 #include "datafile.h"
-#include "list.h"
+#include "nlist.h"
 
 typedef enum {
   SONGLIST_FILE,
@@ -13,7 +13,7 @@ typedef enum {
 
 typedef struct {
   datafile_t      *df;
-  list_t          *songlist;
+  nlist_t         *songlist;
   char            *fname;
 } songlist_t;
 

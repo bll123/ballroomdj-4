@@ -11,6 +11,7 @@
 #include "fileop.h"
 #include "bdjvarsdf.h"
 #include "log.h"
+#include "slist.h"
 
 dnctype_t *
 dnctypesAlloc (char *fname)
@@ -53,6 +54,6 @@ dnctypesConv (char *keydata, datafileret_t *ret)
 
   ret->valuetype = VALUE_NUM;
   dtype = bdjvarsdf [BDJVDF_DANCE_TYPES];
-  ret->u.num = listGetStrIdx (datafileGetList (dtype->df), keydata);
+  ret->u.num = slistGetIdx (datafileGetList (dtype->df), keydata);
 }
 

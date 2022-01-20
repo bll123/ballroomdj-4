@@ -4,7 +4,6 @@
 #include <stdbool.h>
 
 #include "bdjstring.h"
-#include "list.h"
 
 typedef enum {
   AIDD_YES,

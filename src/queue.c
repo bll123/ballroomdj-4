@@ -82,6 +82,31 @@ queuePush (queue_t *q, void *data)
   q->count++;
 }
 
+void
+queuePushHead (queue_t *q, void *data)
+{
+  queuenode_t     *node;
+
+  if (q == NULL) {
+    return;
+  }
+
+  node = malloc (sizeof (queuenode_t));
+  assert (node != NULL);
+  node->prev = NULL;
+  node->next = q->head;
+  node->data = data;
+
+  if (q->tail == NULL) {
+    q->tail = node;
+  }
+  if (node->next != NULL) {
+    node->next->prev = node;
+  }
+  q->head = node;
+  q->count++;
+}
+
 void *
 queueGetCurrent (queue_t *q)
 {

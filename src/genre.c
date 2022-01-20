@@ -6,11 +6,12 @@
 #include <string.h>
 #include <assert.h>
 
-#include "genre.h"
+#include "bdjvarsdf.h"
 #include "datafile.h"
 #include "fileop.h"
-#include "bdjvarsdf.h"
+#include "genre.h"
 #include "log.h"
+#include "nlist.h"
 
   /* must be sorted in ascii order */
 static datafilekey_t genredfkeys[] = {
@@ -34,7 +35,7 @@ genreAlloc (char *fname)
 
   genre->df = datafileAllocParse ("genre", DFTYPE_INDIRECT, fname,
       genredfkeys, GENRE_DFKEY_COUNT, GENRE_GENRE);
-  llistDumpInfo (datafileGetList (genre->df));
+  nlistDumpInfo (datafileGetList (genre->df));
   return genre;
 }
 

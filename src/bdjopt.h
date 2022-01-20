@@ -1,8 +1,6 @@
 #ifndef INC_BDJOPT_H
 #define INC_BDJOPT_H
 
-#include "list.h"
-
 typedef enum {
   FADETYPE_TRIANGLE,
   FADETYPE_QUARTER_SINE,

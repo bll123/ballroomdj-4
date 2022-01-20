@@ -37,8 +37,11 @@ static void initLocale (void);
 static void
 initLocale (void)
 {
+  char    tpath [MAXPATHLEN];
+
   setlocale (LC_ALL, "");
-  bindtextdomain ("bdj", "locale");
+  datautilMakePath (tpath, sizeof (tpath), "locale", "", "", DATAUTIL_MP_MAINDIR);
+  bindtextdomain ("bdj", tpath);
   textdomain ("bdj");
   return;
 }

@@ -16,7 +16,7 @@ typedef uint32_t   loglevel_t;
 #define LOG_MAIN        0x00000008  // 8
 #define LOG_LIST        0x00000010  // 16
 #define LOG_SONGSEL     0x00000020  // 32
-#define LOG_AUTOSEL     0x00000040  // 64
+#define LOG_DANCESEL    0x00000040  // 64
 #define LOG_VOLUME      0x00000080  // 128
 #define LOG_SOCKET      0x00000100  // 256
 #define LOG_DB          0x00000200  // 512

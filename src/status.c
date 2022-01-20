@@ -10,6 +10,7 @@
 #include "datafile.h"
 #include "fileop.h"
 #include "log.h"
+#include "nlist.h"
 #include "status.h"
 
   /* must be sorted in ascii order */
@@ -35,7 +36,7 @@ statusAlloc (char *fname)
   status->df = datafileAllocParse ("status", DFTYPE_INDIRECT, fname,
       statusdfkeys, STATUS_DFKEY_COUNT, STATUS_STATUS);
   status->status = datafileGetList (status->df);
-  llistDumpInfo (status->status);
+  nlistDumpInfo (status->status);
   return status;
 }
 
@@ -51,7 +52,7 @@ statusFree (status_t *status)
 }
 
 bool
-statusPlayCheck (status_t *status, listidx_t ikey)
+statusPlayCheck (status_t *status, nlistidx_t ikey)
 {
   return ilistGetNum (status->status, ikey, STATUS_PLAY_FLAG);
 }

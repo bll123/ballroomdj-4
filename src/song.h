@@ -1,7 +1,7 @@
 #ifndef INC_SONG
 #define INC_SONG
 
-#include "list.h"
+#include "nlist.h"
 
 typedef enum {
   SONG_ADJUST_NONE    = 0x0000,
@@ -11,7 +11,7 @@ typedef enum {
 } songadjust_t;
 
 typedef struct {
-  list_t      *songInfo;
+  nlist_t      *songInfo;
 } song_t;
 
 song_t *  songAlloc (void);

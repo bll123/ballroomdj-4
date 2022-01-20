@@ -82,6 +82,8 @@ main (int argc, char *argv[])
     exit (1);
   }
 
+  fileopMakeDir ("tmp");
+
   if (isMacOS()) {
     char      *path = NULL;
     char      *npath = NULL;

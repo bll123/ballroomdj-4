@@ -2,7 +2,7 @@
 #define INC_LEVEL_H
 
 #include "datafile.h"
-#include "list.h"
+#include "ilist.h"
 
 typedef enum {
   LEVEL_LEVEL,
@@ -13,7 +13,7 @@ typedef enum {
 
 typedef struct {
   datafile_t        *df;
-  list_t            *level;
+  ilist_t           *level;
 } level_t;
 
 level_t     *levelAlloc (char *);

@@ -46,11 +46,11 @@ typedef struct {
   mstime_t          tm;
   programstate_t    programState;
   processconn_t     processes [PROCESS_MAX];
-  list_t            *playlistList;
+  slist_t           *playlistList;
   queue_t           *playlistQueue;
   musicq_t          *musicQueue;
   musicqidx_t       musicqCurrentIdx;
-  list_t            *announceList;
+  slist_t           *announceList;
   playerstate_t     playerState;
   ssize_t           gap;
   webclient_t       *webclient;
@@ -128,19 +128,19 @@ main (int argc, char *argv[])
   logProcBegin (LOG_PROC, "main");
 
   mainData.gap = bdjoptGetNum (OPT_P_GAP);
-  mainData.playlistList = listAlloc ("playlist-list", LIST_UNORDERED,
-      istringCompare, free, playlistFree);
+  mainData.playlistList = slistAlloc ("playlist-list", LIST_UNORDERED,
+      free, playlistFree);
   mainData.playlistQueue = queueAlloc (NULL);
   mainData.musicQueue = musicqAlloc ();
-  mainData.announceList = listAlloc ("announcements", LIST_ORDERED,
-      istringCompare, free, NULL);
+  mainData.announceList = slistAlloc ("announcements", LIST_ORDERED,
+      free, NULL);
 
   listenPort = bdjvarsl [BDJVL_MAIN_PORT];
   sockhMainLoop (listenPort, mainProcessMsg, mainProcessing, &mainData);
 
   logProcEnd (LOG_PROC, "main", "");
   if (mainData.playlistList != NULL) {
-    listFree (mainData.playlistList);
+    slistFree (mainData.playlistList);
   }
   if (mainData.playlistQueue != NULL) {
     queueFree (mainData.playlistQueue);
@@ -149,7 +149,7 @@ main (int argc, char *argv[])
     musicqFree (mainData.musicQueue);
   }
   if (mainData.announceList != NULL) {
-    listFree (mainData.announceList);
+    slistFree (mainData.announceList);
   }
   if (mainData.webclient != NULL) {
     webclientClose (mainData.webclient);
@@ -564,7 +564,7 @@ mainPlaylistQueue (maindata_t *mainData, char *plname)
   playlist = playlistLoad (plname);
   if (playlist != NULL) {
     logMsg (LOG_DBG, LOG_BASIC, "Queue Playlist: %s", plname);
-    listSetData (mainData->playlistList, plname, playlist);
+    slistSetData (mainData->playlistList, plname, playlist);
     queuePush (mainData->playlistQueue, playlist);
     logMsg (LOG_DBG, LOG_MAIN, "push pl %s", plname);
     mainMusicQueueFill (mainData);
@@ -676,7 +676,7 @@ mainPrepSong (maindata_t *mainData, song_t *song,
     maxdur = bdjoptGetNum (OPT_P_MAXPLAYTIME);
     songstart = songGetNum (song, TAG_SONGSTART);
     songend = songGetNum (song, TAG_SONGEND);
-    playlist = listGetData (mainData->playlistList, plname);
+    playlist = slistGetData (mainData->playlistList, plname);
     pldur = playlistGetConfigNum (playlist, PLAYLIST_MAX_PLAY_TIME);
       /* apply songend if set to a reasonable value */
     logMsg (LOG_DBG, LOG_MAIN, "dur: %zd songstart: %zd songend: %zd",
@@ -729,12 +729,12 @@ mainPrepSong (maindata_t *mainData, song_t *song,
 
         tsong = dbGetByName (annfname);
         if (tsong != NULL) {
-          tval = listGetNum (mainData->announceList, annfname);
+          tval = slistGetNum (mainData->announceList, annfname);
           if (tval == LIST_VALUE_INVALID) {
             /* only prep the announcement if it has not been prepped before */
             mainPrepSong (mainData, tsong, annfname, plname, PREP_ANNOUNCE);
           }
-          listSetNum (mainData->announceList, annfname, 1);
+          slistSetNum (mainData->announceList, annfname, 1);
         } else {
           annfname = NULL;
         }
@@ -825,12 +825,21 @@ static void
 mainPlaybackBegin (maindata_t *mainData)
 {
   musicqflag_t  flags;
+  playlist_t    *playlist = NULL;
+  song_t        *song = NULL;
 
+  /* if the pause flag is on for this entry in the music queue, */
+  /* tell the player to turn on the pause-at-end */
   flags = musicqGetFlags (mainData->musicQueue, mainData->musicqCurrentIdx, 0);
   if ((flags & MUSICQ_FLAG_PAUSE) == MUSICQ_FLAG_PAUSE) {
     sockhSendMessage (SOCKOF (PROCESS_PLAYER),
         ROUTE_MAIN, ROUTE_PLAYER, MSG_PLAY_PAUSEATEND, NULL);
   }
+
+  /* let the playlist know this song has been played */
+  playlist = queueGetCurrent (mainData->playlistQueue);
+  song = musicqGetCurrent (mainData->musicQueue, mainData->musicqCurrentIdx);
+  playlistAddPlayed (playlist, song);
 }
 
 static void
@@ -990,7 +999,7 @@ static void
 mainSendDanceList (maindata_t *mainData)
 {
   dance_t       *dances;
-  list_t        *danceList;
+  slist_t       *danceList;
   listidx_t     idx;
   char          *dancenm;
   char          tbuff [200];
@@ -1000,14 +1009,12 @@ mainSendDanceList (maindata_t *mainData)
   danceList = danceGetDanceList (dances);
 
   rbuff [0] = '\0';
-  listStartIterator (danceList);
-  while ((dancenm = listIterateKeyStr (danceList)) != NULL) {
-    idx = listGetNum (danceList, dancenm);
+  slistStartIterator (danceList);
+  while ((dancenm = slistIterateKey (danceList)) != NULL) {
+    idx = slistGetNum (danceList, dancenm);
     snprintf (tbuff, sizeof (tbuff), "<option value=\"%zd\">%s</option>\n", idx, dancenm);
     strlcat (rbuff, tbuff, sizeof (rbuff));
   }
-
-/* ### FIX: cache the resulting option list */
 
   sockhSendMessage (SOCKOF (PROCESS_REMCTRL),
       ROUTE_MAIN, ROUTE_REMCTRL, MSG_DANCE_LIST_DATA, rbuff);
@@ -1016,7 +1023,7 @@ mainSendDanceList (maindata_t *mainData)
 static void
 mainSendPlaylistList (maindata_t *mainData)
 {
-  list_t        *playlistList;
+  slist_t       *playlistList;
   char          *plfnm;
   char          *plnm;
   char          tbuff [200];
@@ -1026,15 +1033,14 @@ mainSendPlaylistList (maindata_t *mainData)
   playlistList = playlistGetPlaylistList ();
 
   rbuff [0] = '\0';
-  listStartIterator (playlistList);
-  while ((plnm = listIterateKeyStr (playlistList)) != NULL) {
+  slistStartIterator (playlistList);
+  while ((plnm = slistIterateKey (playlistList)) != NULL) {
     plfnm = listGetData (playlistList, plnm);
     snprintf (tbuff, sizeof (tbuff), "<option value=\"%s\">%s</option>\n", plfnm, plnm);
     strlcat (rbuff, tbuff, sizeof (rbuff));
   }
 
-  listFree (playlistList);
-/* ### FIX: cache the resulting option list */
+  slistFree (playlistList);
 
   sockhSendMessage (SOCKOF (PROCESS_REMCTRL),
       ROUTE_MAIN, ROUTE_REMCTRL, MSG_PLAYLIST_LIST_DATA, rbuff);

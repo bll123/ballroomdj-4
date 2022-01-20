@@ -43,21 +43,6 @@ typedef enum {
   PLTYPE_SEQ,
 } pltype_t;
 
-typedef enum {
-  RESUME_FROM_START,
-  RESUME_FROM_LAST,
-} plresume_t;
-
-typedef enum {
-  WAIT_CONTINUE,
-  WAIT_PAUSE,
-} plwait_t;
-
-typedef enum {
-  STOP_IN,
-  STOP_AT,
-} plstoptype_t;
-
 typedef struct {
   char          *name;
   datafile_t    *plinfodf;
@@ -87,5 +72,6 @@ song_t        *playlistGetNextSong (playlist_t *, playlistCheck_t checkProc,
 list_t        *playlistGetPlaylistList (void);
 bool          playlistFilterSong (dbidx_t dbidx, song_t *song,
                   void *tplaylist);
+void          playlistAddPlayed (playlist_t *, song_t *song);
 
 #endif /* INC_PLAYLIST_H */

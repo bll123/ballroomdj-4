@@ -1,4 +1,5 @@
 #include "config.h"
+#include "configt.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -43,7 +44,13 @@ main (int argc, char *argv [])
   srunner_add_suite (sr, s);
   s = queue_suite();
   srunner_add_suite (sr, s);
-  s = list_suite();
+//  s = list_suite();
+//  srunner_add_suite (sr, s);
+  s = nlist_suite();
+  srunner_add_suite (sr, s);
+  s = slist_suite();
+  srunner_add_suite (sr, s);
+  s = ilist_suite();
   srunner_add_suite (sr, s);
   s = rafile_suite();
   srunner_add_suite (sr, s);

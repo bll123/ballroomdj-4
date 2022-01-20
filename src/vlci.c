@@ -28,7 +28,7 @@
 #include <vlc/libvlc_version.h>
 
 #include "vlci.h"
-#include "list.h"
+#include "slist.h"
 #include "bdjstring.h"
 
 typedef struct {
@@ -244,25 +244,24 @@ vlcAudioDevSet (vlcData_t *vlcData, char *dev)
 
 #if _lib_libvlc_audio_output_device_enum
 
-list_t *
+slist_t *
 vlcAudioDevList (vlcData_t *vlcData)
 {
   libvlc_audio_output_device_t  *adevlist;
   libvlc_audio_output_device_t  *adevlistptr;
-  list_t                        *devlist;
+  slist_t                       *devlist;
 
   if (vlcData == NULL || vlcData->inst == NULL || vlcData->mp == NULL ||
       strcmp (vlcData->version, "2.2.0") < 0) {
     return NULL;
   }
 
-  devlist = listAlloc ("vlci-devs", LIST_UNORDERED,
-      stringCompare, free, free);
+  devlist = slistAlloc ("vlci-devs", LIST_UNORDERED, free, free);
 
   adevlist = libvlc_audio_output_device_enum (vlcData->mp);
   adevlistptr = adevlist;
   while (adevlistptr != (libvlc_audio_output_device_t *) NULL) {
-    listSetData (devlist, adevlistptr->psz_device,
+    slistSetData (devlist, adevlistptr->psz_device,
         strdup (adevlistptr->psz_description));
     adevlistptr = adevlistptr->p_next;
   }

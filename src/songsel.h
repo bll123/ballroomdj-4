@@ -2,7 +2,7 @@
 #define INC_SONGSEL_H
 
 #include "song.h"
-#include "list.h"
+#include "nlist.h"
 #include "musicdb.h"
 #include "queue.h"
 
@@ -13,13 +13,13 @@ typedef enum {
 } songselattr_t;
 
 typedef struct {
-  listidx_t     idx;
+  nlistidx_t     idx;
 } songselidx_t;
 
 typedef struct {
-  listidx_t     idx;
+  nlistidx_t    idx;
   dbidx_t       dbidx;
-  listidx_t     attrIdx [SONGSEL_ATTR_MAX];
+  nlistidx_t    attrIdx [SONGSEL_ATTR_MAX];
   double        percentage;
 } songselsongdata_t;
 
@@ -32,22 +32,22 @@ typedef struct {
 } songselperc_t;
 
 typedef struct {
-  listidx_t   danceKey;
-  list_t      *songIdxList;
+  nlistidx_t  danceKey;
+  nlist_t     *songIdxList;
   queue_t     *currentIndexes;
-  list_t      *currentIdxList;
-  list_t      *attrList [SONGSEL_ATTR_MAX];
+  nlist_t     *currentIdxList;
+  nlist_t     *attrList [SONGSEL_ATTR_MAX];
 } songseldance_t;
 
 typedef struct {
-  list_t              *danceSelList;
+  nlist_t              *danceSelList;
   double              autoselWeight [SONGSEL_ATTR_MAX];
   songselsongdata_t   *lastSelection;
 } songsel_t;
 
 typedef bool (*songselFilter_t)(dbidx_t, song_t *, void *);
 
-songsel_t * songselAlloc (list_t *dancelist,
+songsel_t * songselAlloc (nlist_t *dancelist,
               songselFilter_t filterProc, void *userdata);
 void      songselFree (songsel_t *songsel);
 song_t    * songselSelect (songsel_t *songsel, listidx_t danceIdx);

@@ -265,7 +265,7 @@ rcEventHandler (struct mg_connection *c, int ev, void *ev_data, void *userdata)
         mg_http_match_uri (hm, "#.csr")) {
       mg_http_reply (c, 404, NULL, "");
     } else {
-      struct mg_http_serve_opts opts = { .root_dir = "http" };
+      struct mg_http_serve_opts opts = { .root_dir = sysvars [SV_BDJ4HTTPDIR] };
       mg_http_serve_dir (c, hm, &opts);
     }
   }
