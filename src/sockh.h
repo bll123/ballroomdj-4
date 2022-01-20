@@ -10,7 +10,8 @@ typedef int (*sockProcessMsg_t)(bdjmsgroute_t routefrom, bdjmsgroute_t routeto,
     bdjmsgmsg_t msg, char *args, void *userdata);
 typedef int (*sockOtherProcessing_t)(void *);
 
-#define SOCK_MAINLOOP_TIMEOUT   5
+#define SOCKH_MAINLOOP_TIMEOUT   5
+#define SOCKH_EXIT_WAIT_COUNT    20
 
 void    sockhMainLoop (uint16_t listenPort, sockProcessMsg_t msgProc,
             sockOtherProcessing_t, void *userData);

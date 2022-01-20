@@ -37,7 +37,7 @@ sockhMainLoop (uint16_t listenPort, sockProcessMsg_t msgProc,
   si = sockAddCheck (si, listenSock);
   logMsg (LOG_DBG, LOG_SOCKET, "add listen sock %zd", (size_t) listenSock);
 
-  while (done < 100) {
+  while (done < SOCKH_EXIT_WAIT_COUNT) {
     msgsock = sockCheck (si);
     if (socketInvalid (msgsock)) {
       continue;
@@ -99,7 +99,7 @@ sockhMainLoop (uint16_t listenPort, sockProcessMsg_t msgProc,
       tdone = msgProc (ROUTE_NONE, ROUTE_NONE, MSG_EXIT_REQUEST, args, userData);
       ++done;
     }
-    mssleep (SOCK_MAINLOOP_TIMEOUT);
+    mssleep (SOCKH_MAINLOOP_TIMEOUT);
   } /* wait for a message */
 
   sockhCloseClients (si);

@@ -43,7 +43,7 @@ static datafilekey_t playlistdfkeys[] = {
       VALUE_NUM, ratingConv },
   { "GAP",              PLAYLIST_GAP,
       VALUE_NUM, NULL },
-  { "MANUAnlist",       PLAYLIST_MANUAL_LIST_NAME,
+  { "MANUALLIST",       PLAYLIST_MANUAL_LIST_NAME,
       VALUE_DATA, NULL },
   { "MAXPLAYTIME",      PLAYLIST_MAX_PLAY_TIME,
       VALUE_NUM, NULL },
@@ -89,10 +89,10 @@ playlistLoad (char *fname)
 
   pl = playlistAlloc (fname);
 
-  pl->plinfodf = datafileAllocParse ("playlist", DFTYPE_KEY_VAL, tfn,
+  pl->plinfodf = datafileAllocParse ("playlist-pl", DFTYPE_KEY_VAL, tfn,
       playlistdfkeys, PLAYLIST_DFKEY_COUNT, DATAFILE_NO_LOOKUP);
   if (! fileopExists (tfn)) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "Bad playlist-pl %s", tfn);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Bad playlist-pl %s", tfn);
     playlistFree (pl);
     return NULL;
   }
@@ -101,7 +101,7 @@ playlistLoad (char *fname)
 
   datautilMakePath (tfn, sizeof (tfn), "", fname, ".pldances", DATAUTIL_MP_NONE);
   if (! fileopExists (tfn)) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "Missing playlist-dance %s", tfn);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Missing playlist-dance %s", tfn);
     playlistFree (pl);
     return NULL;
   }
@@ -109,7 +109,7 @@ playlistLoad (char *fname)
   pl->pldancesdf = datafileAllocParse ("playlist-dances", DFTYPE_INDIRECT, tfn,
       playlistdancedfkeys, PLAYLIST_DANCE_DFKEY_COUNT, DATAFILE_NO_LOOKUP);
   if (pl->pldancesdf == NULL) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "Bad playlist-dance %s", tfn);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Bad playlist-dance %s", tfn);
     playlistFree (pl);
     return NULL;
   }
@@ -122,13 +122,13 @@ playlistLoad (char *fname)
     char *slfname = nlistGetStr (pl->plinfo, PLAYLIST_MANUAL_LIST_NAME);
     datautilMakePath (tfn, sizeof (tfn), "", slfname, ".songlist", DATAUTIL_MP_NONE);
     if (! fileopExists (tfn)) {
-      logMsg (LOG_DBG, LOG_IMPORTANT, "Missing songlist %s", tfn);
+      logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Missing songlist %s", tfn);
       playlistFree (pl);
       return NULL;
     }
     pl->songlist = songlistAlloc (tfn);
     if (pl->songlist == NULL) {
-      logMsg (LOG_DBG, LOG_IMPORTANT, "Bad songlist %s", tfn);
+      logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Bad songlist %s", tfn);
       playlistFree (pl);
       return NULL;
     }
@@ -138,13 +138,13 @@ playlistLoad (char *fname)
     char *seqfname = nlistGetStr (pl->plinfo, PLAYLIST_SEQ_NAME);
     datautilMakePath (tfn, sizeof (tfn), "", seqfname, ".sequence", DATAUTIL_MP_NONE);
     if (! fileopExists (tfn)) {
-      logMsg (LOG_DBG, LOG_IMPORTANT, "Missing sequence %s", tfn);
+      logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Missing sequence %s", tfn);
       playlistFree (pl);
       return NULL;
     }
     pl->sequence = sequenceAlloc (seqfname);
     if (pl->sequence == NULL) {
-      logMsg (LOG_DBG, LOG_IMPORTANT, "Bad sequence %s", seqfname);
+      logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Bad sequence %s", seqfname);
       playlistFree (pl);
       return NULL;
     }

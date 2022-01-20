@@ -35,11 +35,12 @@ dbOpen (char *fn)
     bdjdb = malloc (sizeof (db_t));
     assert (bdjdb != NULL);
     bdjdb->songs = slistAlloc ("db-songs", LIST_UNORDERED, free, songFree);
-    bdjdb->danceCounts = malloc (sizeof (ssize_t) * dcount);
+    bdjdb->danceCounts = NULL;
+//    bdjdb->danceCounts = malloc (sizeof (ssize_t) * dcount);
     bdjdb->danceCount = dcount;
-    for (ssize_t i = 0; i < dcount; ++i) {
-      bdjdb->danceCounts [i] = 0;
-    }
+//    for (ssize_t i = 0; i < dcount; ++i) {
+//      bdjdb->danceCounts [i] = 0;
+//    }
     bdjdb->count = 0L;
     dbLoad (bdjdb, fn);
     initialized = 1;
@@ -102,9 +103,9 @@ dbLoad (db_t *db, char *fn)
     fstr = songGetData (song, TAG_FILE);
     srrn = songGetNum (song, TAG_RRN);
     dkey = songGetNum (song, TAG_DANCE);
-    if (dkey != LIST_VALUE_INVALID) {
-      db->danceCounts [dkey] += 1;
-    }
+//    if (dkey != LIST_VALUE_INVALID) {
+//      db->danceCounts [dkey] += 1;
+//    }
     if (i != srrn) {
       songSetNum (song, TAG_RRN, i);
     }
@@ -113,9 +114,9 @@ dbLoad (db_t *db, char *fn)
   }
   slistSort (db->songs);
 
-  for (ssize_t i = 0; i < db->danceCount; ++i) {
-    logMsg (LOG_DBG, LOG_BASIC, "db-load: dance: %zd count: %zd", i, bdjdb->danceCounts [i]);
-  }
+//  for (ssize_t i = 0; i < db->danceCount; ++i) {
+//    logMsg (LOG_DBG, LOG_BASIC, "db-load: dance: %zd count: %zd", i, bdjdb->danceCounts [i]);
+//  }
 
   raEndBatch (radb);
   raClose (radb);

@@ -291,7 +291,7 @@ tclean:
 	@-$(RM) -f *~ w ww *.orig $(MKC_CONFDIR)/*.orig
 	@-$(RM) -f $(MKC_FILES)/mkc_compile.log $(MKC_CONFDIR)/*~
 	@-$(RM) -f ../tmp/* ../conv/*~ ./locale/*~ ../locale/*~ ../*~
-	@-$(RM) -f ../install/*~ ../pkg/*~ build/*~ utils/*~
+	@-$(RM) -f ../install/*~ ../pkg/*~ build/*~ utils/*~ ../data/*~
 	@-$(RM) -f ../templates/*~ ../vlc-log.txt vlc-log.txt
 	@-$(RM) -f si-in.txt si-sort.txt
 	@-$(RM) -f ../web/*~ ../http/*~
