@@ -23,10 +23,12 @@
 #include "bdjvars.h"
 #include "bdjvarsdf.h"
 #include "dance.h"
+#include "dancesel.h"
 #include "pathbld.h"
 #include "filedata.h"
 #include "lock.h"
 #include "log.h"
+#include "musicdb.h"
 #include "musicq.h"
 #include "playlist.h"
 #include "portability.h"
@@ -50,6 +52,7 @@ typedef struct {
   slist_t           *playlistList;
   queue_t           *playlistQueue;
   musicq_t          *musicQueue;
+  nlist_t           *danceCounts;
   musicqidx_t       musicqCurrentIdx;
   slist_t           *announceList;
   playerstate_t     playerState;
@@ -89,6 +92,7 @@ static void     mainStopProcess (maindata_t *mainData, processconnidx_t idx,
 static void     mainSendDanceList (maindata_t *mainData);
 static void     mainSendPlaylistList (maindata_t *mainData);
 static void     mainSendStatusResp (maindata_t *mainData, char *playerResp);
+static void     mainDanceCountsInit (maindata_t *mainData);
 
 static int gKillReceived = 0;
 
@@ -105,6 +109,7 @@ main (int argc, char *argv[])
   mainData.playlistList = NULL;
   mainData.playlistQueue = NULL;
   mainData.musicQueue = NULL;
+  mainData.danceCounts = NULL;
   mainData.musicqCurrentIdx = MUSICQ_A;
   mainData.playerState = PL_STATE_STOPPED;
   mainData.webclient = NULL;
@@ -133,6 +138,7 @@ main (int argc, char *argv[])
       free, playlistFree);
   mainData.playlistQueue = queueAlloc (NULL);
   mainData.musicQueue = musicqAlloc ();
+  mainDanceCountsInit (&mainData);
   mainData.announceList = slistAlloc ("announcements", LIST_ORDERED,
       free, NULL);
 
@@ -157,6 +163,9 @@ main (int argc, char *argv[])
   }
   if (mainData.mobmqUserkey != NULL) {
     free (mainData.mobmqUserkey);
+  }
+  if (mainData.danceCounts != NULL) {
+    nlistFree (mainData.danceCounts);
   }
   mainData.programState = STATE_NOT_RUNNING;
   bdj4shutdown ();
@@ -595,16 +604,36 @@ mainMusicQueueFill (maindata_t *mainData)
   ssize_t     currlen;
   song_t      *song = NULL;
   playlist_t  *playlist = NULL;
+  nlist_t     *musicqList = NULL;
+  pltype_t    pltype;
 
+
+  playlist = queueGetCurrent (mainData->playlistQueue);
+
+  pltype = (pltype_t) playlistGetConfigNum (playlist, PLAYLIST_TYPE);
+  if (pltype == PLTYPE_AUTO) {
+    ssize_t     len;
+    ilistidx_t  danceIdx;
+
+    len = musicqGetLen (mainData->musicQueue, mainData->musicqCurrentIdx);
+    musicqList = nlistAlloc ("musicqlist", LIST_UNORDERED, NULL);
+    nlistSetSize (musicqList, len);
+    /* traverse in reverse order */
+    for (ssize_t i = len - 1; i >= 0; --i) {
+      song = musicqGetByIdx (mainData->musicQueue, mainData->musicqCurrentIdx, i);
+      danceIdx = songGetNum (song, TAG_DANCE);
+      nlistSetNum (musicqList, danceIdx, 0);
+    }
+  }
 
   logProcBegin (LOG_PROC, "mainMusicQueueFill");
   mqLen = bdjoptGetNum (OPT_G_PLAYERQLEN);
-  playlist = queueGetCurrent (mainData->playlistQueue);
   currlen = musicqGetLen (mainData->musicQueue, mainData->musicqCurrentIdx);
   logMsg (LOG_DBG, LOG_BASIC, "fill: %ld < %ld", currlen, mqLen);
     /* want current + mqLen songs */
   while (playlist != NULL && currlen <= mqLen) {
-    song = playlistGetNextSong (playlist, mainCheckMusicQueue, mainData);
+    song = playlistGetNextSong (playlist, mainData->danceCounts,
+        musicqList, mainCheckMusicQueue, mainData);
     if (song == NULL) {
       queuePop (mainData->playlistQueue);
       playlist = queueGetCurrent (mainData->playlistQueue);
@@ -834,6 +863,7 @@ mainPlaybackBegin (maindata_t *mainData)
   musicqflag_t  flags;
   playlist_t    *playlist = NULL;
   song_t        *song = NULL;
+  ilistidx_t    danceIdx;
 
   /* if the pause flag is on for this entry in the music queue, */
   /* tell the player to turn on the pause-at-end */
@@ -847,6 +877,10 @@ mainPlaybackBegin (maindata_t *mainData)
   playlist = queueGetCurrent (mainData->playlistQueue);
   song = musicqGetCurrent (mainData->musicQueue, mainData->musicqCurrentIdx);
   playlistAddPlayed (playlist, song);
+  danceIdx = songGetNum (song, TAG_DANCE);
+  if (danceIdx >= 0) {
+    nlistDecrement (mainData->danceCounts, danceIdx);
+  }
 }
 
 static void
@@ -1100,4 +1134,25 @@ mainSendStatusResp (maindata_t *mainData, char *playerResp)
 
   sockhSendMessage (SOCKOF (PROCESS_REMCTRL),
       ROUTE_MAIN, ROUTE_REMCTRL, MSG_STATUS_DATA, rbuff);
+}
+
+static void
+mainDanceCountsInit (maindata_t *mainData)
+{
+  nlist_t     *dc;
+  ilistidx_t  didx;
+
+  dc = dbGetDanceCounts ();
+
+  if (mainData->danceCounts != NULL) {
+    nlistFree (mainData->danceCounts);
+  }
+
+  mainData->danceCounts = nlistAlloc ("main-dancecounts", LIST_ORDERED, NULL);
+  nlistSetSize (mainData->danceCounts, nlistGetCount (dc));
+
+  nlistStartIterator (dc);
+  while ((didx = nlistIterateKey (dc)) >= 0) {
+    nlistSetNum (mainData->danceCounts, didx, nlistGetNum (dc, didx));
+  }
 }

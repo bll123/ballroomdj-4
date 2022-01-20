@@ -3,14 +3,15 @@
 
 #include <stdbool.h>
 
+#include "dancesel.h"
 #include "datafile.h"
 #include "ilist.h"
 #include "musicdb.h"
 #include "nlist.h"
+#include "sequence.h"
 #include "slist.h"
 #include "song.h"
 #include "songlist.h"
-#include "sequence.h"
 #include "songsel.h"
 
 typedef enum {
@@ -55,8 +56,10 @@ typedef struct {
   songlist_t    *songlist;
   sequence_t    *sequence;
   songsel_t     *songsel;
+  dancesel_t    *dancesel;
   nlist_t       *plinfo;
   ilist_t       *pldances;
+  nlist_t       *countList;
   int           manualIdx;
   int           count;
 } playlist_t;
@@ -73,8 +76,9 @@ char          *playlistGetName (playlist_t *pl);
 ssize_t       playlistGetConfigNum (playlist_t *pl, playlistkey_t key);
 ssize_t       playlistGetDanceNum (playlist_t *pl, dancekey_t dancekey,
                   pldancekey_t key);
-song_t        *playlistGetNextSong (playlist_t *, playlistCheck_t checkProc,
-                  void *userdata);
+song_t        *playlistGetNextSong (playlist_t *,
+                  nlist_t *danceCounts, nlist_t *musicqList,
+                  playlistCheck_t checkProc, void *userdata);
 slist_t       *playlistGetPlaylistList (void);
 bool          playlistFilterSong (dbidx_t dbidx, song_t *song,
                   void *tplaylist);

@@ -77,6 +77,8 @@ static datafilekey_t playlistdancedfkeys[] = {
 };
 #define PLAYLIST_DANCE_DFKEY_COUNT (sizeof (playlistdancedfkeys) / sizeof (datafilekey_t))
 
+static void playlistCountList (playlist_t *pl);
+
 playlist_t *
 playlistLoad (char *fname)
 {
@@ -232,8 +234,10 @@ playlistAlloc (char *fname)
   pl->songlist = NULL;
   pl->sequence = NULL;
   pl->songsel = NULL;
+  pl->dancesel = NULL;
   pl->plinfo = NULL;
   pl->pldances = NULL;
+  pl->countList = NULL;
   pl->count = 0;
 
   return pl;
@@ -259,6 +263,12 @@ playlistFree (void *tpl)
     }
     if (pl->songsel != NULL) {
       songselFree (pl->songsel);
+    }
+    if (pl->dancesel != NULL) {
+      danceselFree (pl->dancesel);
+    }
+    if (pl->countList != NULL) {
+      nlistFree (pl->countList);
     }
     if (pl->name != NULL) {
       free (pl->name);
@@ -304,7 +314,8 @@ playlistGetDanceNum (playlist_t *pl, dancekey_t dancekey, pldancekey_t key)
 }
 
 song_t *
-playlistGetNextSong (playlist_t *pl, playlistCheck_t checkProc, void *userdata)
+playlistGetNextSong (playlist_t *pl, nlist_t *danceCounts,
+    nlist_t *musicqList, playlistCheck_t checkProc, void *userdata)
 {
   pltype_t    type;
   song_t      *song = NULL;
@@ -324,57 +335,62 @@ playlistGetNextSong (playlist_t *pl, playlistCheck_t checkProc, void *userdata)
     return NULL;
   }
 
-  switch (type) {
-    case PLTYPE_AUTO: {
-      break;
+  if (type == PLTYPE_AUTO || type == PLTYPE_SEQ) {
+    ilistidx_t     danceIdx;
+
+    if (type == PLTYPE_AUTO) {
+      if (pl->countList == NULL) {
+        playlistCountList (pl);
+      }
+      if (pl->dancesel == NULL) {
+        pl->dancesel = danceselAlloc (pl->countList);
+      }
+      danceIdx = danceselSelect (pl->dancesel, danceCounts, musicqList);
     }
-    case PLTYPE_MANUAL: {
-      sfname = songlistGetData (pl->songlist, pl->manualIdx, SONGLIST_FILE);
-      while (sfname != NULL) {
-        song = dbGetByName (sfname);
-        if (song != NULL && songAudioFileExists (song)) {
+    if (type == PLTYPE_SEQ) {
+      danceIdx = sequenceIterate (pl->sequence);
+    }
+
+    if (pl->songsel == NULL) {
+      pl->songsel = songselAlloc (sequenceGetDanceList (pl->sequence),
+          playlistFilterSong, pl);
+    }
+    logMsg (LOG_DBG, LOG_BASIC, "sequence: dance: %zd", danceIdx);
+    song = songselSelect (pl->songsel, danceIdx);
+    count = 0;
+    while (song != NULL && count < VALID_SONG_ATTEMPTS) {
+      if (songAudioFileExists (song)) {
+        if (checkProc (song, userdata)) {
           break;
         }
-        song = NULL;
-        logMsg (LOG_DBG, LOG_IMPORTANT, "manual: missing: %s", sfname);
-        ++pl->manualIdx;
-        sfname = songlistGetData (pl->songlist, pl->manualIdx, SONGLIST_FILE);
       }
-      ++pl->manualIdx;
-      ++pl->count;
-      logMsg (LOG_DBG, LOG_BASIC, "manual: select: %s", sfname);
-      break;
-    }
-    case PLTYPE_SEQ: {
-      ilistidx_t     danceIdx;
-
-      if (pl->songsel == NULL) {
-        pl->songsel = songselAlloc (sequenceGetDanceList (pl->sequence),
-            playlistFilterSong, pl);
-      }
-      danceIdx = sequenceIterate (pl->sequence);
-      logMsg (LOG_DBG, LOG_BASIC, "sequence: dance: %zd", danceIdx);
       song = songselSelect (pl->songsel, danceIdx);
-      count = 0;
-      while (song != NULL && count < VALID_SONG_ATTEMPTS) {
-        if (songAudioFileExists (song)) {
-          if (checkProc (song, userdata)) {
-            break;
-          }
-        }
-        song = songselSelect (pl->songsel, danceIdx);
-        ++count;
-      }
-      if (count >= VALID_SONG_ATTEMPTS) {
-        song = NULL;
-      } else {
-        songselSelectFinalize (pl->songsel, danceIdx);
-        sfname = songGetData (song, TAG_FILE);
-        ++pl->count;
-        logMsg (LOG_DBG, LOG_BASIC, "sequence: select: %s", sfname);
-      }
-      break;
+      ++count;
     }
+    if (count >= VALID_SONG_ATTEMPTS) {
+      song = NULL;
+    } else {
+      songselSelectFinalize (pl->songsel, danceIdx);
+      sfname = songGetData (song, TAG_FILE);
+      ++pl->count;
+      logMsg (LOG_DBG, LOG_BASIC, "sequence: select: %s", sfname);
+    }
+  }
+  if (type == PLTYPE_MANUAL) {
+    sfname = songlistGetData (pl->songlist, pl->manualIdx, SONGLIST_FILE);
+    while (sfname != NULL) {
+      song = dbGetByName (sfname);
+      if (song != NULL && songAudioFileExists (song)) {
+        break;
+      }
+      song = NULL;
+      logMsg (LOG_DBG, LOG_IMPORTANT, "manual: missing: %s", sfname);
+      ++pl->manualIdx;
+      sfname = songlistGetData (pl->songlist, pl->manualIdx, SONGLIST_FILE);
+    }
+    ++pl->manualIdx;
+    ++pl->count;
+    logMsg (LOG_DBG, LOG_BASIC, "manual: select: %s", sfname);
   }
   return song;
 }
@@ -514,5 +530,25 @@ playlistAddPlayed (playlist_t *pl, song_t *song)
     return;
   }
   danceIdx = songGetNum (song, TAG_DANCE);
+}
+
+static void
+playlistCountList (playlist_t *pl)
+{
+  ssize_t     sel;
+  ssize_t     count;
+  dance_t     *dances;
+  ilistidx_t  didx;
+
+  pl->countList = nlistAlloc ("pl-countlist", LIST_ORDERED, NULL);
+  dances = bdjvarsdf [BDJVDF_DANCES];
+  danceStartIterator (dances);
+  while ((didx = danceIterateKey (dances)) >= 0) {
+    sel = ilistGetNum (pl->pldances, didx, PLDANCE_SELECTED);
+    if (sel) {
+      count = ilistGetNum (pl->pldances, didx, PLDANCE_COUNT);
+      nlistSetDouble (pl->countList, didx, (double) count);
+    }
+  }
 }
 

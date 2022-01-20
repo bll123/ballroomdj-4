@@ -24,5 +24,6 @@ song_t  *dbGetByName (char *);
 song_t  *dbGetByIdx (dbidx_t idx);
 void    dbStartIterator (void);
 song_t  *dbIterate (dbidx_t *idx);
+nlist_t *dbGetDanceCounts (void);
 
 #endif /* INC_MUSICDB_H */

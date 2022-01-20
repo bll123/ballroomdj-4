@@ -4,8 +4,8 @@
 #include "bdj4.h"
 #include "autosel.h"
 #include "dance.h"
+#include "ilist.h"
 #include "nlist.h"
-#include "playlist.h"
 #include "queue.h"
 
 typedef double  danceProb_t;
@@ -23,14 +23,17 @@ typedef struct {
   nlist_t       *adjustBase;
   ssize_t       selCount;
   nlist_t       *danceProbTable;
+  /* autosel variables that will be used */
+  ssize_t       histDistance;
+  double        tagAdjust;
+  double        tagMatch;
+  double        logValue;
 } dancesel_t;
 
-typedef ssize_t (*danceselCallback_t)(void *userdata, nlistidx_t danceKey);
-
-dancesel_t      *danceselAlloc (playlist_t *pl);
+dancesel_t      *danceselAlloc (nlist_t *countList);
 void            danceselFree (dancesel_t *dancesel);
-void            danceselAddPlayed (dancesel_t *dancesel, nlistidx_t danceKey);
-nlistidx_t      danceselSelect (dancesel_t *dancesel,
-                    danceselCallback_t callback, void *userdata);
+void            danceselAddPlayed (dancesel_t *dancesel, ilistidx_t danceIdx);
+ilistidx_t      danceselSelect (dancesel_t *dancesel, nlist_t *danceCounts,
+                    nlist_t *musicqList);
 
 #endif /* INC_DANCESEL_H */

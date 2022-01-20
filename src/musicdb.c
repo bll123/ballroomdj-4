@@ -174,3 +174,8 @@ dbIterate (dbidx_t *idx)
   return song;
 }
 
+nlist_t *
+dbGetDanceCounts (void)
+{
+  return musicdb->danceCounts;
+}
