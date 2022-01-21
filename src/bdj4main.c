@@ -84,6 +84,7 @@ static void     mainMusicQueuePlay (maindata_t *mainData);
 static void     mainMusicQueueFinish (maindata_t *mainData);
 static void     mainMusicQueueNext (maindata_t *mainData);
 static bool     mainCheckMusicQueue (song_t *song, void *tdata);
+static ssize_t  mainMusicQueueHistory (void *mainData, ssize_t idx);
 static void     mainForceStop (char *lockfn, datautil_mp_t flags);
 static int      mainStartProcess (maindata_t *mainData, processconnidx_t idx,
                     char *fname);
@@ -604,36 +605,20 @@ mainMusicQueueFill (maindata_t *mainData)
   ssize_t     currlen;
   song_t      *song = NULL;
   playlist_t  *playlist = NULL;
-  nlist_t     *musicqList = NULL;
   pltype_t    pltype;
 
 
-  playlist = queueGetCurrent (mainData->playlistQueue);
-
-  pltype = (pltype_t) playlistGetConfigNum (playlist, PLAYLIST_TYPE);
-  if (pltype == PLTYPE_AUTO) {
-    ssize_t     len;
-    ilistidx_t  danceIdx;
-
-    len = musicqGetLen (mainData->musicQueue, mainData->musicqCurrentIdx);
-    musicqList = nlistAlloc ("musicqlist", LIST_UNORDERED, NULL);
-    nlistSetSize (musicqList, len);
-    /* traverse in reverse order */
-    for (ssize_t i = len - 1; i >= 0; --i) {
-      song = musicqGetByIdx (mainData->musicQueue, mainData->musicqCurrentIdx, i);
-      danceIdx = songGetNum (song, TAG_DANCE);
-      nlistSetNum (musicqList, danceIdx, 0);
-    }
-  }
-
   logProcBegin (LOG_PROC, "mainMusicQueueFill");
+  playlist = queueGetCurrent (mainData->playlistQueue);
+  pltype = (pltype_t) playlistGetConfigNum (playlist, PLAYLIST_TYPE);
+
   mqLen = bdjoptGetNum (OPT_G_PLAYERQLEN);
   currlen = musicqGetLen (mainData->musicQueue, mainData->musicqCurrentIdx);
   logMsg (LOG_DBG, LOG_BASIC, "fill: %ld < %ld", currlen, mqLen);
     /* want current + mqLen songs */
   while (playlist != NULL && currlen <= mqLen) {
     song = playlistGetNextSong (playlist, mainData->danceCounts,
-        musicqList, mainCheckMusicQueue, mainData);
+        currlen, mainCheckMusicQueue, mainMusicQueueHistory, mainData);
     if (song == NULL) {
       queuePop (mainData->playlistQueue);
       playlist = queueGetCurrent (mainData->playlistQueue);
@@ -642,7 +627,15 @@ mainMusicQueueFill (maindata_t *mainData)
     musicqPush (mainData->musicQueue, mainData->musicqCurrentIdx, song, playlistGetName (playlist));
     mainData->musicqChanged = true;
     currlen = musicqGetLen (mainData->musicQueue, mainData->musicqCurrentIdx);
+
+    if (pltype == PLTYPE_AUTO) {
+      playlist = queueGetCurrent (mainData->playlistQueue);
+      if (playlist != NULL && song != NULL) {
+        playlistAddCount (playlist, song);
+      }
+    }
   }
+
   logProcEnd (LOG_PROC, "mainMusicQueueFill", "");
 }
 
@@ -861,9 +854,6 @@ static void
 mainPlaybackBegin (maindata_t *mainData)
 {
   musicqflag_t  flags;
-  playlist_t    *playlist = NULL;
-  song_t        *song = NULL;
-  ilistidx_t    danceIdx;
 
   /* if the pause flag is on for this entry in the music queue, */
   /* tell the player to turn on the pause-at-end */
@@ -871,15 +861,6 @@ mainPlaybackBegin (maindata_t *mainData)
   if ((flags & MUSICQ_FLAG_PAUSE) == MUSICQ_FLAG_PAUSE) {
     sockhSendMessage (SOCKOF (PROCESS_PLAYER),
         ROUTE_MAIN, ROUTE_PLAYER, MSG_PLAY_PAUSEATEND, NULL);
-  }
-
-  /* let the playlist know this song has been played */
-  playlist = queueGetCurrent (mainData->playlistQueue);
-  song = musicqGetCurrent (mainData->musicQueue, mainData->musicqCurrentIdx);
-  playlistAddPlayed (playlist, song);
-  danceIdx = songGetNum (song, TAG_DANCE);
-  if (danceIdx >= 0) {
-    nlistDecrement (mainData->danceCounts, danceIdx);
   }
 }
 
@@ -924,7 +905,26 @@ mainMusicQueuePlay (maindata_t *mainData)
 static void
 mainMusicQueueFinish (maindata_t *mainData)
 {
+  playlist_t    *playlist;
+  song_t        *song;
+  ilistidx_t    danceIdx;
+
   logProcBegin (LOG_PROC, "mainMusicQueueFinish");
+
+  /* let the playlist know this song has been played */
+  song = musicqGetCurrent (mainData->musicQueue, mainData->musicqCurrentIdx);
+  playlist = queueGetCurrent (mainData->playlistQueue);
+  if (playlist != NULL && song != NULL) {
+    playlistAddPlayed (playlist, song);
+  }
+  /* update the dance counts */
+  if (song != NULL) {
+    danceIdx = songGetNum (song, TAG_DANCE);
+    if (danceIdx >= 0) {
+      nlistDecrement (mainData->danceCounts, danceIdx);
+    }
+  }
+
   mainData->playerState = PL_STATE_STOPPED;
   musicqPop (mainData->musicQueue, mainData->musicqCurrentIdx);
   mainData->musicqChanged = true;
@@ -948,6 +948,23 @@ mainCheckMusicQueue (song_t *song, void *tdata)
 //  maindata_t  *mainData = tdata;
 
   return true;
+}
+
+static ssize_t
+mainMusicQueueHistory (void *tmaindata, ssize_t idx)
+{
+  maindata_t    *mainData = tmaindata;
+  ilistidx_t    didx;
+  song_t        *song;
+
+  if (idx < 0 ||
+      idx >= musicqGetLen (mainData->musicQueue, mainData->musicqCurrentIdx)) {
+    return -1;
+  }
+
+  song = musicqGetByIdx (mainData->musicQueue, mainData->musicqCurrentIdx, idx);
+  didx = songGetNum (song, TAG_DANCE);
+  return didx;
 }
 
 static void

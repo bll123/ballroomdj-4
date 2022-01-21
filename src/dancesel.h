@@ -17,9 +17,9 @@ typedef struct {
   double        basetotal;
   nlist_t       *distance;
   ssize_t       maxDistance;
-  nlist_t       *playedCounts;
+  nlist_t       *selectedCounts;
+  double        totalSelCount;
   queue_t       *playedDances;
-  double        totalPlayed;
   nlist_t       *adjustBase;
   ssize_t       selCount;
   nlist_t       *danceProbTable;
@@ -30,10 +30,14 @@ typedef struct {
   double        logValue;
 } dancesel_t;
 
+typedef ilistidx_t (*danceselHistory_t)(void *userdata, ssize_t idx);
+
 dancesel_t      *danceselAlloc (nlist_t *countList);
 void            danceselFree (dancesel_t *dancesel);
+void            danceselAddCount (dancesel_t *dancesel, ilistidx_t danceIdx);
 void            danceselAddPlayed (dancesel_t *dancesel, ilistidx_t danceIdx);
 ilistidx_t      danceselSelect (dancesel_t *dancesel, nlist_t *danceCounts,
-                    nlist_t *musicqList);
+                    ssize_t priorCount, danceselHistory_t historyProc,
+                    void *userdata);
 
 #endif /* INC_DANCESEL_H */

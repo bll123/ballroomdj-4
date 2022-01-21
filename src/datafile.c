@@ -440,8 +440,7 @@ datafileParseMerge (list_t *datalist, char *data, char *name,
     slistSort (*lookup);
     slistStartIterator (*lookup);
     while ((tkeystr = slistIterateKey (*lookup)) != NULL) {
-//FIX      ikey = slistIterateGetIdx (*lookup);
-      lval = slistGetNumByIdx (*lookup, ikey);
+      lval = slistGetNum (*lookup, tkeystr);
       logMsg (LOG_DBG, LOG_DATAFILE | LOG_BASIC,
           "%s: %s / %zd", name, tkeystr, lval);
     }

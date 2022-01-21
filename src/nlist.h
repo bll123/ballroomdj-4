@@ -38,5 +38,6 @@ ssize_t   nlistIterateValueNum (nlist_t *list);
   /* aux routines */
 void      nlistSort (nlist_t *);
 void      nlistDumpInfo (nlist_t *list);
+nlistidx_t nlistSearchProbTable (nlist_t *probTable, double dval);
 
 #endif /* INC_NLIST_H */

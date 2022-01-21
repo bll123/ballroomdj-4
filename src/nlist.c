@@ -281,3 +281,40 @@ nlistDumpInfo (nlist_t *list)
   listDumpInfo (list);
 }
 
+/* returns the key value, not the table index */
+nlistidx_t
+nlistSearchProbTable (nlist_t *probTable, double dval)
+{
+  nlistidx_t        l = 0;
+  nlistidx_t        r = 0;
+  nlistidx_t        m = 0;
+  int               rca = 0;
+  int               rcb = 0;
+  double            d;
+
+
+  r = probTable->count;
+
+  while (l <= r) {
+    m = l + (r - l) / 2;
+
+    if (m != 0) {
+      d = probTable->data [m-1].value.dval;
+      rca = dval > d;
+    }
+    d = probTable->data [m].value.dval;
+    rcb = dval <= d;
+    if ((m == 0 || rca) && rcb) {
+      return probTable->data [m].key.idx;
+    }
+
+    if (! rcb) {
+      l = m + 1;
+    } else {
+      r = m - 1;
+    }
+  }
+
+  return -1;
+}
+

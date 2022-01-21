@@ -77,11 +77,13 @@ ssize_t       playlistGetConfigNum (playlist_t *pl, playlistkey_t key);
 ssize_t       playlistGetDanceNum (playlist_t *pl, dancekey_t dancekey,
                   pldancekey_t key);
 song_t        *playlistGetNextSong (playlist_t *,
-                  nlist_t *danceCounts, nlist_t *musicqList,
-                  playlistCheck_t checkProc, void *userdata);
+                  nlist_t *danceCounts,
+                  ssize_t priorCount, playlistCheck_t checkProc,
+                  danceselHistory_t historyProc, void *userdata);
 slist_t       *playlistGetPlaylistList (void);
 bool          playlistFilterSong (dbidx_t dbidx, song_t *song,
                   void *tplaylist);
+void          playlistAddCount (playlist_t *, song_t *song);
 void          playlistAddPlayed (playlist_t *, song_t *song);
 
 #endif /* INC_PLAYLIST_H */
