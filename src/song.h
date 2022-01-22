@@ -21,6 +21,7 @@ char *    songGetData (song_t *, nlistidx_t);
 ssize_t   songGetNum (song_t *, nlistidx_t);
 double    songGetDouble (song_t *, nlistidx_t);
 void      songSetNum (song_t *, nlistidx_t, ssize_t);
+void      songSetData (song_t *song, nlistidx_t tagidx, char *str);
 bool      songAudioFileExists (song_t *song);
 
 #endif /* INC_SONG */

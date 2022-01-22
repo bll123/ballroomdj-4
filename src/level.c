@@ -16,9 +16,9 @@
 
   /* must be sorted in ascii order */
 static datafilekey_t leveldfkeys[] = {
-  { "DEFAULT",  LEVEL_DEFAULT_FLAG, VALUE_NUM, parseConvBoolean },
-  { "LEVEL",    LEVEL_LEVEL,        VALUE_DATA, NULL },
-  { "WEIGHT",   LEVEL_WEIGHT,       VALUE_NUM, NULL },
+  { "DEFAULT",  LEVEL_DEFAULT_FLAG, VALUE_NUM, parseConvBoolean, -1 },
+  { "LEVEL",    LEVEL_LEVEL,        VALUE_DATA, NULL, -1 },
+  { "WEIGHT",   LEVEL_WEIGHT,       VALUE_NUM, NULL, -1 },
 };
 #define LEVEL_DFKEY_COUNT (sizeof (leveldfkeys) / sizeof (datafilekey_t))
 

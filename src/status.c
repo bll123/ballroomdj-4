@@ -16,8 +16,8 @@
 
   /* must be sorted in ascii order */
 static datafilekey_t statusdfkeys[] = {
-  { "PLAYFLAG",   STATUS_PLAY_FLAG,  VALUE_NUM, parseConvBoolean },
-  { "STATUS",     STATUS_STATUS,      VALUE_DATA, NULL },
+  { "PLAYFLAG",   STATUS_PLAY_FLAG,  VALUE_NUM, parseConvBoolean, -1 },
+  { "STATUS",     STATUS_STATUS,      VALUE_DATA, NULL, -1 },
 };
 #define STATUS_DFKEY_COUNT (sizeof (statusdfkeys) / sizeof (datafilekey_t))
 

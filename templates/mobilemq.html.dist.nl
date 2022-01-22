@@ -145,7 +145,7 @@ bdj.updateData = function (data) {
       nm = "mq"+i;
       o = document.getElementById(nm);
       if (o) {
-        o.innerHTML = "";
+        o.innerHTML = "&nbsp;";
       }
     }
   } else {
@@ -155,7 +155,11 @@ bdj.updateData = function (data) {
       nm = "mq"+i;
       o = document.getElementById(nm);
       if (o) {
-        o.innerHTML = eval ("jd.mq"+i);
+        val = eval ("jd.mq"+i);
+        if (val == '') {
+          val = '&nbsp;';
+        }
+        o.innerHTML = val;
       }
     }
   }

@@ -354,8 +354,18 @@ datafileParseMerge (list_t *datalist, char *data, char *name,
           dfkeys [idx].convFunc (tvalstr, &ret);
           vt = ret.valuetype;
           if (vt == VALUE_NUM) {
-            lval = ret.u.num;
-            logMsg (LOG_DBG, LOG_DATAFILE, "converted value: %s to %ld", tvalstr, lval);
+            if (ret.u.num == LIST_VALUE_INVALID && dfkeys [idx].backupKey != -1) {
+              logMsg (LOG_DBG, LOG_DATAFILE, "invalid value; backup key %ld set data to %s", dfkeys [idx].backupKey, tvalstr);
+              if (dftype == DFTYPE_INDIRECT) {
+                nlistSetStr (itemList, dfkeys [idx].backupKey, strdup (tvalstr));
+              }
+              if (dftype == DFTYPE_KEY_VAL) {
+                nlistSetStr (datalist, dfkeys [idx].backupKey, strdup (tvalstr));
+              }
+            } else {
+              lval = ret.u.num;
+              logMsg (LOG_DBG, LOG_DATAFILE, "converted value: %s to %ld", tvalstr, lval);
+            }
           }
         } else {
           if (vt == VALUE_NUM) {

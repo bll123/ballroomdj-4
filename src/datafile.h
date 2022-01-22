@@ -61,6 +61,7 @@ typedef struct {
   size_t          itemkey;
   valuetype_t     valuetype;
   dfConvFunc_t    convFunc;
+  ssize_t         backupKey;
 } datafilekey_t;
 
 #define DATAFILE_NO_LOOKUP -1

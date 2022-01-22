@@ -20,23 +20,23 @@ static void danceConvSpeed (char *keydata, datafileret_t *ret);
 
   /* must be sorted in ascii order */
 static datafilekey_t dancedfkeys[] = {
-  { "ANNOUNCE",   DANCE_ANNOUNCE, VALUE_DATA, NULL },
-  { "COUNT",      DANCE_COUNT, VALUE_NUM, NULL },
-  { "DANCE",      DANCE_DANCE, VALUE_DATA, NULL },
-  { "HIGHBPM",    DANCE_HIGH_BPM, VALUE_NUM, NULL },
-  { "LOWBPM",     DANCE_LOW_BPM, VALUE_NUM, NULL },
-  { "SELECT",     DANCE_SELECT, VALUE_NUM, NULL },
-  { "SPEED",      DANCE_SPEED, VALUE_LIST, danceConvSpeed },
-  { "TAGS",       DANCE_TAGS, VALUE_LIST, parseConvTextList },
-  { "TIMESIG",    DANCE_TIMESIG, VALUE_DATA, NULL },
-  { "TYPE",       DANCE_TYPE, VALUE_DATA, dnctypesConv },
+  { "ANNOUNCE",   DANCE_ANNOUNCE, VALUE_DATA, NULL, -1 },
+  { "COUNT",      DANCE_COUNT, VALUE_NUM, NULL, -1 },
+  { "DANCE",      DANCE_DANCE, VALUE_DATA, NULL, -1 },
+  { "HIGHBPM",    DANCE_HIGH_BPM, VALUE_NUM, NULL, -1 },
+  { "LOWBPM",     DANCE_LOW_BPM, VALUE_NUM, NULL, -1 },
+  { "SELECT",     DANCE_SELECT, VALUE_NUM, NULL, -1 },
+  { "SPEED",      DANCE_SPEED, VALUE_LIST, danceConvSpeed, -1 },
+  { "TAGS",       DANCE_TAGS, VALUE_LIST, parseConvTextList, -1 },
+  { "TIMESIG",    DANCE_TIMESIG, VALUE_DATA, NULL, -1 },
+  { "TYPE",       DANCE_TYPE, VALUE_DATA, dnctypesConv, -1 },
 };
 #define DANCE_DFKEY_COUNT (sizeof (dancedfkeys) / sizeof (datafilekey_t))
 
 static datafilekey_t dancespeeddfkeys[] = {
-  { "fast",       DANCE_SPEED_FAST,   VALUE_DATA, NULL },
-  { "normal",     DANCE_SPEED_NORMAL, VALUE_DATA, NULL },
-  { "slow",       DANCE_SPEED_SLOW,   VALUE_DATA, NULL },
+  { "fast",       DANCE_SPEED_FAST,   VALUE_DATA, NULL, -1 },
+  { "normal",     DANCE_SPEED_NORMAL, VALUE_DATA, NULL, -1 },
+  { "slow",       DANCE_SPEED_SLOW,   VALUE_DATA, NULL, -1 },
 };
 #define DANCE_SPEED_DFKEY_COUNT (sizeof (dancespeeddfkeys) / sizeof (datafilekey_t))
 

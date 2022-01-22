@@ -434,9 +434,11 @@ mainSendMobileMarqueeData (maindata_t *mainData)
   char        jbuff [2048];
   char        *title;
   char        *dstr;
+  char        *tstr;
   char        *tag;
   ssize_t     mqLen;
   ssize_t     musicqLen;
+  song_t      *song;
 
 
   if (bdjoptGetNum (OPT_P_MOBILEMARQUEE) == MOBILEMQ_OFF) {
@@ -452,36 +454,34 @@ mainSendMobileMarqueeData (maindata_t *mainData)
     title = "";
   }
 
-  dstr = "";
-  if (musicqLen > 0) {
-    dstr = musicqGetDance (mainData->musicQueue, mainData->musicqCurrentIdx, 0);
-    if (dstr == NULL) {
-      dstr = "";
-    }
-  }
-
   strlcpy (jbuff, "{ ", sizeof (jbuff));
 
   snprintf (tbuff, sizeof (tbuff), "\"mqlen\" : \"%zd\", ", mqLen);
   strlcat (jbuff, tbuff, sizeof (jbuff));
-  snprintf (tbuff, sizeof (tbuff), "\"title\" : \"%s\", ", title);
-  strlcat (jbuff, tbuff, sizeof (jbuff));
-
-  snprintf (tbuff, sizeof (tbuff), "\"current\" : \"%s\"", dstr);
+  snprintf (tbuff, sizeof (tbuff), "\"title\" : \"%s\"", title);
   strlcat (jbuff, tbuff, sizeof (jbuff));
 
   if (musicqGetLen (mainData->musicQueue, mainData->musicqCurrentIdx) > 0) {
-    for (ssize_t i = 1; i <= mqLen; ++i) {
+    for (ssize_t i = 0; i <= mqLen; ++i) {
       if (mainData->playerState == PL_STATE_IN_GAP ||
           (mainData->playerState == PL_STATE_IN_FADEOUT && i > 1)) {
         dstr = "";
       } else {
-        dstr = musicqGetDance (mainData->musicQueue, mainData->musicqCurrentIdx, i);
-        if (dstr == NULL) {
-          dstr = "";
+        song = musicqGetByIdx (mainData->musicQueue, mainData->musicqCurrentIdx, i);
+        /* if the song has an unknown dance, the marquee display */
+        /* will be filled in with the dance name. */
+        tstr = songGetData (song, TAG_MQDISPLAY);
+        if (tstr != NULL) {
+          dstr = tstr;
+        } else {
+          dstr = musicqGetDance (mainData->musicQueue, mainData->musicqCurrentIdx, i);
         }
       }
-      snprintf (tbuff, sizeof (tbuff), "\"mq%zd\" : \"%s\"", i, dstr);
+      if (i == 0) {
+        snprintf (tbuff, sizeof (tbuff), "\"current\" : \"%s\"", dstr);
+      } else {
+        snprintf (tbuff, sizeof (tbuff), "\"mq%zd\" : \"%s\"", i, dstr);
+      }
       strlcat (jbuff, ", ", sizeof (jbuff));
       strlcat (jbuff, tbuff, sizeof (jbuff));
     }
@@ -528,7 +528,7 @@ mainMobilePostCallback (void *userdata, char *resp, size_t len)
   if (strncmp (resp, "OK", 2) == 0) {
     ;
   } else if (strncmp (resp, "NG", 2) == 0) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: unable to post mobmq data: %.*s\n", (int) len, resp);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: unable to post mobmq data: %.*s", (int) len, resp);
   } else {
     FILE    *fh;
 

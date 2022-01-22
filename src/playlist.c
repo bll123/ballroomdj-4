@@ -34,46 +34,46 @@ static void     plConvType (char *, datafileret_t *ret);
   /* must be sorted in ascii order */
 static datafilekey_t playlistdfkeys[] = {
   { "ALLOWEDKEYWORDS",  PLAYLIST_ALLOWED_KEYWORDS,
-      VALUE_DATA, parseConvTextList },
+      VALUE_DATA, parseConvTextList, -1 },
   { "DANCELEVELHIGH",   PLAYLIST_LEVEL_HIGH,
-      VALUE_NUM, levelConv },
+      VALUE_NUM, levelConv, -1 },
   { "DANCELEVELLOW",    PLAYLIST_LEVEL_LOW,
-      VALUE_NUM, levelConv },
+      VALUE_NUM, levelConv, -1 },
   { "DANCERATING",      PLAYLIST_RATING,
-      VALUE_NUM, ratingConv },
+      VALUE_NUM, ratingConv, -1 },
   { "GAP",              PLAYLIST_GAP,
-      VALUE_NUM, NULL },
+      VALUE_NUM, NULL, -1 },
   { "MANUALLIST",       PLAYLIST_MANUAL_LIST_NAME,
-      VALUE_DATA, NULL },
+      VALUE_DATA, NULL, -1 },
   { "MAXPLAYTIME",      PLAYLIST_MAX_PLAY_TIME,
-      VALUE_NUM, NULL },
+      VALUE_NUM, NULL, -1 },
   { "MQMESSAGE",        PLAYLIST_MQ_MESSAGE,
-      VALUE_DATA, NULL },
+      VALUE_DATA, NULL, -1 },
   { "PAUSEEACHSONG",    PLAYLIST_PAUSE_EACH_SONG,
-      VALUE_NUM, parseConvBoolean },
+      VALUE_NUM, parseConvBoolean, -1 },
   { "PLAYANNOUNCE",     PLAYLIST_ANNOUNCE,
-      VALUE_NUM, parseConvBoolean },
+      VALUE_NUM, parseConvBoolean, -1 },
   { "SEQUENCE",         PLAYLIST_SEQ_NAME,
-      VALUE_DATA, NULL },
+      VALUE_DATA, NULL, -1 },
   { "STOPAFTER",        PLAYLIST_STOP_AFTER,
-      VALUE_NUM, NULL },
+      VALUE_NUM, NULL, -1 },
   { "STOPTIME",         PLAYLIST_STOP_TIME,
-      VALUE_NUM, NULL },
+      VALUE_NUM, NULL, -1 },
   { "TYPE",             PLAYLIST_TYPE,
-      VALUE_NUM, plConvType },
+      VALUE_NUM, plConvType, -1 },
   { "USESTATUS",        PLAYLIST_USE_STATUS,
-      VALUE_NUM, parseConvBoolean },
+      VALUE_NUM, parseConvBoolean, -1 },
 };
 #define PLAYLIST_DFKEY_COUNT (sizeof (playlistdfkeys) / sizeof (datafilekey_t))
 
   /* must be sorted in ascii order */
 static datafilekey_t playlistdancedfkeys[] = {
-  { "BPMHIGH",        PLDANCE_BPM_HIGH,     VALUE_NUM, NULL },
-  { "BPMLOW",         PLDANCE_BPM_LOW,      VALUE_NUM, NULL },
-  { "COUNT",          PLDANCE_COUNT,        VALUE_NUM, NULL },
-  { "DANCE",          PLDANCE_DANCE,        VALUE_DATA, danceConvDance },
-  { "MAXPLAYTIME",    PLDANCE_MAXPLAYTIME,  VALUE_NUM, NULL },
-  { "SELECTED",       PLDANCE_SELECTED,     VALUE_NUM, parseConvBoolean },
+  { "BPMHIGH",        PLDANCE_BPM_HIGH,     VALUE_NUM, NULL, -1 },
+  { "BPMLOW",         PLDANCE_BPM_LOW,      VALUE_NUM, NULL, -1 },
+  { "COUNT",          PLDANCE_COUNT,        VALUE_NUM, NULL, -1 },
+  { "DANCE",          PLDANCE_DANCE,        VALUE_DATA, danceConvDance, -1 },
+  { "MAXPLAYTIME",    PLDANCE_MAXPLAYTIME,  VALUE_NUM, NULL, -1 },
+  { "SELECTED",       PLDANCE_SELECTED,     VALUE_NUM, parseConvBoolean, -1 },
 };
 #define PLAYLIST_DANCE_DFKEY_COUNT (sizeof (playlistdancedfkeys) / sizeof (datafilekey_t))
 
@@ -339,7 +339,6 @@ playlistSetConfigNum (playlist_t *pl, playlistkey_t key, ssize_t value)
     return;
   }
 
-fprintf (stderr, "plscn: set %d to %ld\n", key, value);
   nlistSetNum (pl->plinfo, key, value);
   return;
 }
@@ -364,7 +363,6 @@ playlistSetDanceCount (playlist_t *pl, ilistidx_t danceIdx, ssize_t count)
     return;
   }
 
-fprintf (stderr, "plsdc: set %ld to %ld\n", danceIdx, count);
   ilistSetNum (pl->pldances, danceIdx, PLDANCE_SELECTED, 1);
   ilistSetNum (pl->pldances, danceIdx, PLDANCE_COUNT, count);
   return;
@@ -447,6 +445,21 @@ playlistGetNextSong (playlist_t *pl, nlist_t *danceCounts,
     while (sfname != NULL) {
       song = dbGetByName (sfname);
       if (song != NULL && songAudioFileExists (song)) {
+        ilistidx_t  tval;
+        char        *tstr;
+
+        /* check for unknown dances */
+        /* put something into the marquee display field if possible */
+        tval = songGetNum (song, TAG_DANCE);
+        if (tval < 0) {
+          tstr = songGetData (song, TAG_MQDISPLAY);
+          if (tstr == NULL) {
+            tstr = songlistGetData (pl->songlist, pl->manualIdx, SONGLIST_DANCESTR);
+            if (tstr != NULL) {
+              songSetData (song, TAG_MQDISPLAY, tstr);
+            }
+          }
+        }
         break;
       }
       song = NULL;

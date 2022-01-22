@@ -192,12 +192,12 @@ START_TEST(datafile_simple)
 END_TEST
 
   static datafilekey_t dfkeyskl[] = {
-    { "A", 14, VALUE_DATA, NULL },
-    { "B", 15, VALUE_NUM,  NULL },
-    { "C", 16, VALUE_DATA,  NULL },
-    { "D", 17, VALUE_NUM, NULL },
-    { "E", 18, VALUE_DATA, NULL },
-    { "F", 19, VALUE_DATA, NULL },
+    { "A", 14, VALUE_DATA, NULL, -1 },
+    { "B", 15, VALUE_NUM,  NULL, -1 },
+    { "C", 16, VALUE_DATA,  NULL, -1 },
+    { "D", 17, VALUE_NUM, NULL, -1 },
+    { "E", 18, VALUE_DATA, NULL, -1 },
+    { "F", 19, VALUE_DATA, NULL, -1 },
   };
 
 START_TEST(datafile_keyval_dfkey)

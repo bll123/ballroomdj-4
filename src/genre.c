@@ -16,8 +16,8 @@
 
   /* must be sorted in ascii order */
 static datafilekey_t genredfkeys[] = {
-  { "CLASSICAL",  GENRE_CLASSICAL_FLAG, VALUE_NUM, parseConvBoolean },
-  { "GENRE",      GENRE_GENRE,          VALUE_DATA, NULL },
+  { "CLASSICAL",  GENRE_CLASSICAL_FLAG, VALUE_NUM, parseConvBoolean, -1 },
+  { "GENRE",      GENRE_GENRE,          VALUE_DATA, NULL, -1 },
 };
 #define GENRE_DFKEY_COUNT (sizeof (genredfkeys) / sizeof (datafilekey_t))
 

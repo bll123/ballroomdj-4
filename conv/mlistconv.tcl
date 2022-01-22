@@ -28,6 +28,9 @@ foreach {fn} $flist {
   foreach {key data} $sllist {
     puts $fh "KEY\n..$key"
     foreach {k v} $data {
+      if { $k eq "DANCE" } {
+        regsub {\s\([^)]*\)$} $v {} v
+      }
       puts $fh $k
       puts $fh "..$v"
     }

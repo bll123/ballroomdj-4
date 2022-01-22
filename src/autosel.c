@@ -13,18 +13,18 @@
 #include "nlist.h"
 
 static datafilekey_t autoseldfkeys[] = {
-  { "begincount",     AUTOSEL_BEG_COUNT,        VALUE_NUM,    NULL },
-  { "beginfast",      AUTOSEL_BEG_FAST,         VALUE_DOUBLE, NULL },
-  { "bothfast",       AUTOSEL_BOTHFAST,         VALUE_DOUBLE, NULL },
-  { "histdistance",   AUTOSEL_HIST_DISTANCE,    VALUE_NUM,   NULL },
-  { "levelweight",    AUTOSEL_LEVEL_WEIGHT,     VALUE_DOUBLE, NULL },
-  { "limit",          AUTOSEL_LIMIT,            VALUE_DOUBLE, NULL },
-  { "logvalue",       AUTOSEL_LOG_VALUE,        VALUE_DOUBLE, NULL },
-  { "low",            AUTOSEL_LOW,              VALUE_DOUBLE, NULL },
-  { "ratingweight",   AUTOSEL_RATING_WEIGHT,    VALUE_DOUBLE, NULL },
-  { "tagadjust",      AUTOSEL_TAGADJUST,        VALUE_DOUBLE, NULL },
-  { "tagmatch",       AUTOSEL_TAGMATCH,         VALUE_DOUBLE, NULL },
-  { "typematch",      AUTOSEL_TYPE_MATCH,       VALUE_DOUBLE, NULL },
+  { "begincount",     AUTOSEL_BEG_COUNT,        VALUE_NUM,    NULL, -1 },
+  { "beginfast",      AUTOSEL_BEG_FAST,         VALUE_DOUBLE, NULL, -1 },
+  { "bothfast",       AUTOSEL_BOTHFAST,         VALUE_DOUBLE, NULL, -1 },
+  { "histdistance",   AUTOSEL_HIST_DISTANCE,    VALUE_NUM,   NULL, -1 },
+  { "levelweight",    AUTOSEL_LEVEL_WEIGHT,     VALUE_DOUBLE, NULL, -1 },
+  { "limit",          AUTOSEL_LIMIT,            VALUE_DOUBLE, NULL, -1 },
+  { "logvalue",       AUTOSEL_LOG_VALUE,        VALUE_DOUBLE, NULL, -1 },
+  { "low",            AUTOSEL_LOW,              VALUE_DOUBLE, NULL, -1 },
+  { "ratingweight",   AUTOSEL_RATING_WEIGHT,    VALUE_DOUBLE, NULL, -1 },
+  { "tagadjust",      AUTOSEL_TAGADJUST,        VALUE_DOUBLE, NULL, -1 },
+  { "tagmatch",       AUTOSEL_TAGMATCH,         VALUE_DOUBLE, NULL, -1 },
+  { "typematch",      AUTOSEL_TYPE_MATCH,       VALUE_DOUBLE, NULL, -1 },
 };
 #define AUTOSEL_DFKEY_COUNT (sizeof (autoseldfkeys) / sizeof (datafilekey_t))
 

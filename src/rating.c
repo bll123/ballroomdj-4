@@ -16,8 +16,8 @@
 
   /* must be sorted in ascii order */
 static datafilekey_t ratingdfkeys[] = {
-  { "RATING", RATING_RATING, VALUE_DATA, NULL },
-  { "WEIGHT", RATING_WEIGHT, VALUE_NUM, NULL },
+  { "RATING", RATING_RATING, VALUE_DATA, NULL, -1 },
+  { "WEIGHT", RATING_WEIGHT, VALUE_NUM, NULL, -1 },
 };
 #define RATING_DFKEY_COUNT (sizeof (ratingdfkeys) / sizeof (datafilekey_t))
 

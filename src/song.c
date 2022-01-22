@@ -23,46 +23,46 @@
 
   /* must be sorted in ascii order */
 static datafilekey_t songdfkeys[] = {
-  { "ADJUSTFLAGS",          TAG_ADJUSTFLAGS,          VALUE_DATA, NULL },
-  { "AFMODTIME",            TAG_AFMODTIME,            VALUE_NUM, NULL },
-  { "ALBUM",                TAG_ALBUM,                VALUE_DATA, NULL },
-  { "ALBUMARTIST",          TAG_ALBUMARTIST,          VALUE_DATA, NULL },
-  { "ARTIST",               TAG_ARTIST,               VALUE_DATA, NULL },
-  { "AUTOORGFLAG",          TAG_AUTOORGFLAG,          VALUE_NUM, NULL },
-  { "BPM",                  TAG_BPM,                  VALUE_NUM, NULL },
-  { "COMPOSER",             TAG_COMPOSER,             VALUE_DATA, NULL },
-  { "CONDUCTOR",            TAG_CONDUCTOR,            VALUE_DATA, NULL },
-  { "DANCE",                TAG_DANCE,                VALUE_NUM, danceConvDance },
-  { "DANCELEVEL",           TAG_DANCELEVEL,           VALUE_DATA, levelConv },
-  { "DANCERATING",          TAG_DANCERATING,          VALUE_DATA, ratingConv },
-  { "DATE",                 TAG_DATE,                 VALUE_DATA, NULL },
-  { "DBADDDATE",            TAG_DBADDDATE,            VALUE_DATA, NULL },
-  { "DISCNUMBER",           TAG_DISCNUMBER,           VALUE_NUM, NULL },
-  { "DISCTOTAL",            TAG_DISCTOTAL,            VALUE_NUM, NULL },
-  { "DISPLAYIMG",           TAG_DISPLAYIMG,           VALUE_DATA, NULL },
-  { "DURATION",             TAG_DURATION,             VALUE_NUM, NULL },
-  { "FILE",                 TAG_FILE,                 VALUE_DATA, NULL },
-  { "GENRE",                TAG_GENRE,                VALUE_DATA, genreConv },
-  { "KEYWORD",              TAG_KEYWORD,              VALUE_DATA, NULL },
-  { "MQDISPLAY",            TAG_MQDISPLAY,            VALUE_DATA, NULL },
-  { "MUSICBRAINZ_TRACKID",  TAG_MUSICBRAINZ_TRACKID,  VALUE_DATA, NULL },
-  { "NOMAXPLAYTIME",        TAG_NOMAXPLAYTIME,        VALUE_NUM, parseConvBoolean },
-  { "NOTES",                TAG_NOTES,                VALUE_DATA, NULL },
-  { "RRN",                  TAG_RRN,                  VALUE_NUM, NULL },
-  { "SAMESONG",             TAG_SAMESONG,             VALUE_DATA, NULL },
-  { "SONGEND",              TAG_SONGEND,              VALUE_NUM, NULL },
-  { "SONGSTART",            TAG_SONGSTART,            VALUE_NUM, NULL },
-  { "SPEEDADJUSTMENT",      TAG_SPEEDADJUSTMENT,      VALUE_NUM, NULL },
-  { "STATUS",               TAG_STATUS,               VALUE_NUM, statusConv },
-  { "TAGS",                 TAG_TAGS,                 VALUE_LIST, parseConvTextList },
-  { "TITLE",                TAG_TITLE,                VALUE_DATA, NULL },
-  { "TRACKNUMBER",          TAG_TRACKNUMBER,          VALUE_NUM, NULL },
-  { "TRACKTOTAL",           TAG_TRACKTOTAL,           VALUE_NUM, NULL },
-  { "UPDATEFLAG",           TAG_VARIOUSARTISTS,       VALUE_NUM, NULL },
-  { "UPDATETIME",           TAG_UPDATEFLAG,           VALUE_NUM, NULL },
-  { "VARIOUSARTISTS",       TAG_VOLUMEADJUSTPERC,     VALUE_NUM, NULL },
-  { "VOLUMEADJUSTPERC",     TAG_WRITETIME,            VALUE_NUM, NULL },
-  { "WRITETIME",            TAG_UPDATETIME,           VALUE_NUM, NULL },
+  { "ADJUSTFLAGS",          TAG_ADJUSTFLAGS,          VALUE_DATA, NULL, -1 },
+  { "AFMODTIME",            TAG_AFMODTIME,            VALUE_NUM, NULL, -1 },
+  { "ALBUM",                TAG_ALBUM,                VALUE_DATA, NULL, -1 },
+  { "ALBUMARTIST",          TAG_ALBUMARTIST,          VALUE_DATA, NULL, -1 },
+  { "ARTIST",               TAG_ARTIST,               VALUE_DATA, NULL, -1 },
+  { "AUTOORGFLAG",          TAG_AUTOORGFLAG,          VALUE_NUM, NULL, -1 },
+  { "BPM",                  TAG_BPM,                  VALUE_NUM, NULL, -1 },
+  { "COMPOSER",             TAG_COMPOSER,             VALUE_DATA, NULL, -1 },
+  { "CONDUCTOR",            TAG_CONDUCTOR,            VALUE_DATA, NULL, -1 },
+  { "DANCE",                TAG_DANCE,                VALUE_NUM, danceConvDance, -1 },
+  { "DANCELEVEL",           TAG_DANCELEVEL,           VALUE_DATA, levelConv, -1 },
+  { "DANCERATING",          TAG_DANCERATING,          VALUE_DATA, ratingConv, -1 },
+  { "DATE",                 TAG_DATE,                 VALUE_DATA, NULL, -1 },
+  { "DBADDDATE",            TAG_DBADDDATE,            VALUE_DATA, NULL, -1 },
+  { "DISCNUMBER",           TAG_DISCNUMBER,           VALUE_NUM, NULL, -1 },
+  { "DISCTOTAL",            TAG_DISCTOTAL,            VALUE_NUM, NULL, -1 },
+  { "DISPLAYIMG",           TAG_DISPLAYIMG,           VALUE_DATA, NULL, -1 },
+  { "DURATION",             TAG_DURATION,             VALUE_NUM, NULL, -1 },
+  { "FILE",                 TAG_FILE,                 VALUE_DATA, NULL, -1 },
+  { "GENRE",                TAG_GENRE,                VALUE_DATA, genreConv, -1 },
+  { "KEYWORD",              TAG_KEYWORD,              VALUE_DATA, NULL, -1 },
+  { "MQDISPLAY",            TAG_MQDISPLAY,            VALUE_DATA, NULL, -1 },
+  { "MUSICBRAINZ_TRACKID",  TAG_MUSICBRAINZ_TRACKID,  VALUE_DATA, NULL, -1 },
+  { "NOMAXPLAYTIME",        TAG_NOMAXPLAYTIME,        VALUE_NUM, parseConvBoolean, -1 },
+  { "NOTES",                TAG_NOTES,                VALUE_DATA, NULL, -1 },
+  { "RRN",                  TAG_RRN,                  VALUE_NUM, NULL, -1 },
+  { "SAMESONG",             TAG_SAMESONG,             VALUE_DATA, NULL, -1 },
+  { "SONGEND",              TAG_SONGEND,              VALUE_NUM, NULL, -1 },
+  { "SONGSTART",            TAG_SONGSTART,            VALUE_NUM, NULL, -1 },
+  { "SPEEDADJUSTMENT",      TAG_SPEEDADJUSTMENT,      VALUE_NUM, NULL, -1 },
+  { "STATUS",               TAG_STATUS,               VALUE_NUM, statusConv, -1 },
+  { "TAGS",                 TAG_TAGS,                 VALUE_LIST, parseConvTextList, -1 },
+  { "TITLE",                TAG_TITLE,                VALUE_DATA, NULL, -1 },
+  { "TRACKNUMBER",          TAG_TRACKNUMBER,          VALUE_NUM, NULL, -1 },
+  { "TRACKTOTAL",           TAG_TRACKTOTAL,           VALUE_NUM, NULL, -1 },
+  { "UPDATEFLAG",           TAG_VARIOUSARTISTS,       VALUE_NUM, NULL, -1 },
+  { "UPDATETIME",           TAG_UPDATEFLAG,           VALUE_NUM, NULL, -1 },
+  { "VARIOUSARTISTS",       TAG_VOLUMEADJUSTPERC,     VALUE_NUM, NULL, -1 },
+  { "VOLUMEADJUSTPERC",     TAG_WRITETIME,            VALUE_NUM, NULL, -1 },
+  { "WRITETIME",            TAG_UPDATETIME,           VALUE_NUM, NULL, -1 },
 };
 #define SONG_DFKEY_COUNT (sizeof (songdfkeys) / sizeof (datafilekey_t))
 
@@ -144,6 +144,16 @@ songSetNum (song_t *song, nlistidx_t tagidx, ssize_t value)
   }
 
   nlistSetNum (song->songInfo, tagidx, value);
+}
+
+void
+songSetData (song_t *song, nlistidx_t tagidx, char *str)
+{
+  if (song == NULL || song->songInfo == NULL) {
+    return;
+  }
+
+  nlistSetData (song->songInfo, tagidx, str);
 }
 
 bool

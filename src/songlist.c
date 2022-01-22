@@ -6,17 +6,19 @@
 #include <string.h>
 #include <assert.h>
 
-#include "songlist.h"
+#include "dance.h"
 #include "datafile.h"
 #include "fileop.h"
-#include "log.h"
 #include "ilist.h"
+#include "log.h"
+#include "songlist.h"
 
   /* must be sorted in ascii order */
 static datafilekey_t songlistdfkeys[] = {
-  { "DANCE",  SONGLIST_DANCE, VALUE_DATA, NULL },
-  { "FILE",   SONGLIST_FILE,  VALUE_DATA, NULL },
-  { "TITLE",  SONGLIST_TITLE, VALUE_DATA, NULL },
+  { "DANCE",    SONGLIST_DANCE,     VALUE_NUM, danceConvDance, SONGLIST_DANCESTR },
+  { "DANCESTR", SONGLIST_DANCESTR,  VALUE_DATA, NULL, -1 },
+  { "FILE",     SONGLIST_FILE,      VALUE_DATA, NULL, -1 },
+  { "TITLE",    SONGLIST_TITLE,     VALUE_DATA, NULL, -1 },
 };
 #define SONGLIST_DFKEY_COUNT (sizeof (songlistdfkeys) / sizeof (datafilekey_t))
 
