@@ -492,10 +492,8 @@ playerProcessing (void *udata)
       playerData->inGap) {
     if (mstimeCheck (&playerData->gapFinishTime)) {
       playerData->inGap = false;
-        /* don't send this state transition to main         */
-        /* this keeps the mobile marquee and main in a steady state  */
-      playerData->playerState = PL_STATE_STOPPED;
-      logMsg (LOG_DBG, LOG_BASIC, "pl state: stopped (no-main)");
+      playerSetPlayerState (playerData, PL_STATE_STOPPED);
+      logMsg (LOG_DBG, LOG_BASIC, "pl state: stopped");
     }
   }
 
@@ -666,10 +664,8 @@ playerProcessing (void *udata)
           playerData->inGap = true;
           mstimeset (&playerData->gapFinishTime, playerData->gap);
         } else {
-            /* don't send this state transition to main         */
-            /* this keeps the mobile marquee and main in a steady state  */
-          playerData->playerState = PL_STATE_STOPPED;
-          logMsg (LOG_DBG, LOG_BASIC, "pl state: stopped (no gap; no-main)");
+          playerSetPlayerState (playerData, PL_STATE_STOPPED);
+          logMsg (LOG_DBG, LOG_BASIC, "pl state: stopped (no gap)");
         }
       } /* has stopped */
     } /* time to check...*/
@@ -937,6 +933,7 @@ playerPlay (playerdata_t *playerData)
 static void
 playerNextSong (playerdata_t *playerData)
 {
+  logMsg (LOG_DBG, LOG_BASIC, "next song");
   playerData->stopPlaying = true;
   playerData->repeat = false;
   playerData->gap = 0;
@@ -977,6 +974,7 @@ playerFade (playerdata_t *playerData)
   }
 
   if (plistate == PLI_STATE_PLAYING) {
+    logMsg (LOG_DBG, LOG_BASIC, "fade");
     if (! playerData->inFade) {
       logMsg (LOG_DBG, LOG_VOLUME, "check sysvol: before fade request");
       playerCheckSystemVolume (playerData);

@@ -564,6 +564,7 @@ mainQueueClear (maindata_t *mainData)
 {
   int startIdx;
 
+  logMsg (LOG_DBG, LOG_BASIC, "clear music queue");
   queueClear (mainData->playlistQueue, 0);
   startIdx = mainData->musicqCurrentIdx == MUSICQ_A ? 1 : 0;
   musicqClear (mainData->musicQueue, MUSICQ_A, startIdx);
@@ -578,6 +579,7 @@ mainQueueDance (maindata_t *mainData, ssize_t danceIdx, ssize_t count)
   playlist_t      *playlist;
   char            plname [40];
 
+  logMsg (LOG_DBG, LOG_BASIC, "queue dance %ld %ld", danceIdx, count);
   snprintf (plname, sizeof (plname), "_main_dance_%ld_%ld",
       danceIdx, globalCounter++);
   playlist = playlistCreate (plname, PLTYPE_AUTO, NULL);
