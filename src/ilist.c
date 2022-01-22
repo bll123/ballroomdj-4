@@ -32,6 +32,15 @@ ilistFree (void *list)
 }
 
 inline ssize_t
+ilistGetVersion (ilist_t *list)
+{
+  if (list == NULL) {
+    return 0;
+  }
+  return list->version;
+}
+
+inline ssize_t
 ilistGetCount (ilist_t *list)
 {
   if (list == NULL) {
@@ -222,13 +231,13 @@ ilistSort (ilist_t *list)
 }
 
 inline void
-ilistStartIterator (ilist_t *list)
+ilistStartIterator (ilist_t *list, ilistidx_t *iteridx)
 {
-  list->iteratorIndex = 0;
+  *iteridx = -1;
 }
 
 ilistidx_t
-ilistIterateKey (ilist_t *list)
+ilistIterateKey (ilist_t *list, ilistidx_t *iteridx)
 {
   ssize_t      value = LIST_LOC_INVALID;
 
@@ -238,18 +247,18 @@ ilistIterateKey (ilist_t *list)
     return LIST_LOC_INVALID;
   }
 
-  if (list->iteratorIndex >= list->count) {
-    list->iteratorIndex = 0;
+  ++(*iteridx);
+  if (*iteridx >= list->count) {
+    *iteridx = -1;
     logProcEnd (LOG_PROC, "ilistIterateKey", "end-list");
     return LIST_LOC_INVALID;      /* indicate the end of the list */
   }
 
-  value = list->data [list->iteratorIndex].key.idx;
+  value = list->data [*iteridx].key.idx;
 
   list->keyCache.idx = value;
-  list->locCache = list->iteratorIndex;
+  list->locCache = *iteridx;
 
-  ++list->iteratorIndex;
   logProcEnd (LOG_PROC, "ilistIterateKey", "");
   return value;
 }

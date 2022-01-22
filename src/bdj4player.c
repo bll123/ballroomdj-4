@@ -63,6 +63,7 @@ typedef struct {
   volume_t        *volume;
   queue_t         *prepRequestQueue;
   queue_t         *prepQueue;
+  ssize_t         prepiteridx;
   prepqueue_t     *currentSong;
   queue_t         *playRequest;
   int             originalSystemVolume;
@@ -489,7 +490,7 @@ playerProcessing (void *udata)
     if (mstimeCheck (&playerData->gapFinishTime)) {
       playerData->inGap = false;
         /* don't send this state transition to main         */
-        /* this keeps the mobile marquee in a steady state  */
+        /* this keeps the mobile marquee and main in a steady state  */
       playerData->playerState = PL_STATE_STOPPED;
       logMsg (LOG_DBG, LOG_BASIC, "pl state: stopped (no-main)");
     }
@@ -644,7 +645,7 @@ playerProcessing (void *udata)
           request = queuePop (playerData->playRequest);
           free (request);
           if (pq->announce == PREP_SONG) {
-            tpq = queueIterateRemoveNode (playerData->prepQueue);
+            tpq = queueIterateRemoveNode (playerData->prepQueue, &playerData->prepiteridx);
             playerPrepQueueFree (tpq);
           }
         }
@@ -663,7 +664,7 @@ playerProcessing (void *udata)
           mstimeset (&playerData->gapFinishTime, playerData->gap);
         } else {
             /* don't send this state transition to main         */
-            /* this keeps the mobile marquee in a steady state  */
+            /* this keeps the mobile marquee and main in a steady state  */
           playerData->playerState = PL_STATE_STOPPED;
           logMsg (LOG_DBG, LOG_BASIC, "pl state: stopped (no gap; no-main)");
         }
@@ -831,14 +832,14 @@ playerLocatePreppedSong (playerdata_t *playerData, char *sfname)
   found = 0;
   count = 0;
   while (! found && count < 2) {
-    queueStartIterator (playerData->prepQueue);
-    pq = queueIterateData (playerData->prepQueue);
+    queueStartIterator (playerData->prepQueue, &playerData->prepiteridx);
+    pq = queueIterateData (playerData->prepQueue, &playerData->prepiteridx);
     while (pq != NULL) {
       if (strcmp (sfname, pq->songname) == 0) {
         found = 1;
         break;
       }
-      pq = queueIterateData (playerData->prepQueue);
+      pq = queueIterateData (playerData->prepQueue, &playerData->prepiteridx);
     }
     if (! found) {
       logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: song %s not prepped; processing queue", sfname);

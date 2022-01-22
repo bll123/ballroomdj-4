@@ -56,8 +56,6 @@ typedef struct {
   keytype_t       keytype;
   listorder_t     ordered;
   listitem_t      *data;        /* array */
-  ssize_t         iteratorIndex;
-  ssize_t         currentIndex;
   listkey_t       keyCache;
   listidx_t       locCache;
   long            readCacheHits;
@@ -88,10 +86,10 @@ void        *listGetDataByIdx (list_t *list, listidx_t idx);
 ssize_t     listGetNumByIdx (list_t *list, listidx_t idx);
 ssize_t     listGetNum (list_t *list, char *keystr);
 void        listSort (list_t *list);
-void        listStartIterator (list_t *list);
-void *      listIterateValue (list_t *list);
-ssize_t     listIterateNum (list_t *list);
-listidx_t   listIterateGetIdx (list_t *list);
+void        listStartIterator (list_t *list, listidx_t *iteridx);
+void *      listIterateValue (list_t *list, listidx_t *iteridx);
+ssize_t     listIterateNum (list_t *list, listidx_t *iteridx);
+listidx_t   listIterateGetIdx (list_t *list, listidx_t *iteridx);
 void        listDumpInfo (list_t *list);
 
 #endif /* INC_LIST_H */

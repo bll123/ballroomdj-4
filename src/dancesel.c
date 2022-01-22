@@ -36,6 +36,7 @@ danceselAlloc (nlist_t *countList)
   ilistidx_t  didx;
   double      dcount = 0.0;
   double      dtemp;
+  nlistidx_t  iteridx;
 
 
   logProcBegin (LOG_PROC, "danceselAlloc");
@@ -62,8 +63,8 @@ danceselAlloc (nlist_t *countList)
   dancesel->tagAdjust = autoselGetDouble (dancesel->autosel, AUTOSEL_TAGADJUST);
   dancesel->logValue = autoselGetDouble (dancesel->autosel, AUTOSEL_LOG_VALUE);
 
-  nlistStartIterator (countList);
-  while ((didx = nlistIterateKey (countList)) >= 0) {
+  nlistStartIterator (countList, &iteridx);
+  while ((didx = nlistIterateKey (countList, &iteridx)) >= 0) {
     dcount = nlistGetDouble (countList, didx);
     nlistSetDouble (dancesel->base, didx, dcount);
     dancesel->basetotal += dcount;
@@ -71,8 +72,8 @@ danceselAlloc (nlist_t *countList)
     nlistSetNum (dancesel->selectedCounts, didx, 0);
   }
 
-  nlistStartIterator (dancesel->base);
-  while ((didx = nlistIterateKey (dancesel->base)) >= 0) {
+  nlistStartIterator (dancesel->base, &iteridx);
+  while ((didx = nlistIterateKey (dancesel->base, &iteridx)) >= 0) {
     dcount = nlistGetDouble (dancesel->base, didx);
     dtemp = floor (dancesel->basetotal / dcount);
     nlistSetDouble (dancesel->distance, didx, dtemp);
@@ -154,6 +155,8 @@ danceselSelect (dancesel_t *dancesel, nlist_t *danceCounts,
   double        tbase;
   double        tprob;
   double        abase;
+  nlistidx_t    iteridx;
+  ssize_t       qiteridx;
   playedDance_t *pd;
     /* expected counts */
   double        expcount;
@@ -163,7 +166,7 @@ danceselSelect (dancesel_t *dancesel, nlist_t *danceCounts,
   double        speed;
   double        type;
     /* previous dance data */
-  ilistidx_t    pddanceIdx;
+  ilistidx_t    pddanceIdx = -1;
   slist_t       *pdtags = NULL;
   ssize_t       pdspeed;
   ssize_t       pdtype;
@@ -198,8 +201,8 @@ danceselSelect (dancesel_t *dancesel, nlist_t *danceCounts,
     logMsg (LOG_DBG, LOG_DANCESEL, "no previous dance");
   }
 
-  nlistStartIterator (dancesel->base);
-  while ((didx = nlistIterateKey (dancesel->base)) >= 0) {
+  nlistStartIterator (dancesel->base, &iteridx);
+  while ((didx = nlistIterateKey (dancesel->base, &iteridx)) >= 0) {
     tbase = nlistGetDouble (dancesel->base, didx);
     tprob = tbase / dancesel->basetotal;
     abase = tbase;
@@ -268,7 +271,7 @@ danceselSelect (dancesel_t *dancesel, nlist_t *danceCounts,
       /* now go back through the history */
       priorIdx = priorCount - 1;
 
-      queueStartIterator (dancesel->playedDances);
+      queueStartIterator (dancesel->playedDances, &qiteridx);
 
       histCount = 1;
       hdone = false;
@@ -285,7 +288,7 @@ danceselSelect (dancesel_t *dancesel, nlist_t *danceCounts,
       logMsg (LOG_DBG, LOG_DANCESEL, "process played dances (%ld)", histCount);
       while (! hdone &&
           histCount < dancesel->maxDistance &&
-          (pd = queueIterateData (dancesel->playedDances)) != NULL) {
+          (pd = queueIterateData (dancesel->playedDances, &qiteridx)) != NULL) {
         hdidx = pd->danceIdx;
         hdone = danceselProcessHistory (dancesel, didx, hdidx,
             tags, histCount);
@@ -296,16 +299,16 @@ danceselSelect (dancesel_t *dancesel, nlist_t *danceCounts,
 
   /* get the totals for the adjusted base values */
   adjTotal = 0.0;
-  nlistStartIterator (dancesel->adjustBase);
-  while ((didx = nlistIterateKey (dancesel->adjustBase)) >= 0) {
+  nlistStartIterator (dancesel->adjustBase, &iteridx);
+  while ((didx = nlistIterateKey (dancesel->adjustBase, &iteridx)) >= 0) {
     abase = nlistGetDouble (dancesel->adjustBase, didx);
     adjTotal += abase;
   }
 
   /* create a probability table of running totals */
   tprob = 0.0;
-  nlistStartIterator (dancesel->adjustBase);
-  while ((didx = nlistIterateKey (dancesel->adjustBase)) >= 0) {
+  nlistStartIterator (dancesel->adjustBase, &iteridx);
+  while ((didx = nlistIterateKey (dancesel->adjustBase, &iteridx)) >= 0) {
     abase = nlistGetDouble (dancesel->adjustBase, didx);
     tval = abase / adjTotal;
     tprob += tval;
@@ -399,14 +402,16 @@ danceselProcessHistory (dancesel_t *dancesel, ilistidx_t didx,
 static bool
 matchTag (slist_t *tags, slist_t *otags)
 {
-  char      *ttag;
-  char      *otag;
+  char        *ttag;
+  char        *otag;
+  slistidx_t  titeridx;
+  slistidx_t  oiteridx;
 
   if (tags != NULL && otags != NULL) {
-    slistStartIterator (tags);
-    while ((ttag = slistIterateKey (tags)) != NULL) {
-      slistStartIterator (otags);
-      while ((otag = slistIterateKey (otags)) != NULL) {
+    slistStartIterator (tags, &titeridx);
+    while ((ttag = slistIterateKey (tags, &titeridx)) != NULL) {
+      slistStartIterator (otags, &oiteridx);
+      while ((otag = slistIterateKey (otags, &oiteridx)) != NULL) {
         if (strcmp (ttag, otag) == 0) {
           return true;
         }

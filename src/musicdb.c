@@ -84,6 +84,7 @@ dbLoad (db_t *db, char *fn)
   rafileidx_t srrn;
   rafileidx_t rc;
   nlistidx_t  dkey;
+  nlistidx_t  iteridx;
   bool        ok;
 
 
@@ -110,6 +111,7 @@ dbLoad (db_t *db, char *fn)
     if (fileopExists (ffn)) {
       ok = true;
     }
+    free (ffn);
 
     if (! ok) {
       logMsg (LOG_DBG, LOG_IMPORTANT, "song %s not found", fstr);
@@ -131,8 +133,8 @@ dbLoad (db_t *db, char *fn)
   }
   slistSort (db->songs);
 
-  nlistStartIterator (db->danceCounts);
-  while ((dkey = nlistIterateKey (db->danceCounts)) >= 0) {
+  nlistStartIterator (db->danceCounts, &iteridx);
+  while ((dkey = nlistIterateKey (db->danceCounts, &iteridx)) >= 0) {
     ssize_t count = nlistGetNum (db->danceCounts, dkey);
     if (count > 0) {
       logMsg (LOG_DBG, LOG_BASIC, "db-load: dance: %zd count: %zd", dkey, count);
@@ -159,18 +161,18 @@ dbGetByIdx (dbidx_t idx)
 }
 
 void
-dbStartIterator (void)
+dbStartIterator (slistidx_t *iteridx)
 {
-  slistStartIterator (musicdb->songs);
+  slistStartIterator (musicdb->songs, iteridx);
 }
 
 song_t *
-dbIterate (dbidx_t *idx)
+dbIterate (dbidx_t *idx, slistidx_t *iteridx)
 {
   song_t    *song;
 
-  song = slistIterateValueData (musicdb->songs);
-  *idx = slistIterateGetIdx (musicdb->songs);
+  song = slistIterateValueData (musicdb->songs, iteridx);
+  *idx = slistIterateGetIdx (musicdb->songs, iteridx);
   return song;
 }
 

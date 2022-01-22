@@ -62,6 +62,7 @@ typedef struct {
   nlist_t       *countList;
   int           manualIdx;
   int           count;
+  nlistidx_t    seqiteridx;
 } playlist_t;
 
 #define VALID_SONG_ATTEMPTS   40
@@ -74,8 +75,11 @@ playlist_t    *playlistAlloc (char *);
 void          playlistFree (void *);
 char          *playlistGetName (playlist_t *pl);
 ssize_t       playlistGetConfigNum (playlist_t *pl, playlistkey_t key);
-ssize_t       playlistGetDanceNum (playlist_t *pl, dancekey_t dancekey,
+void          playlistSetConfigNum (playlist_t *pl, playlistkey_t key, ssize_t value);
+ssize_t       playlistGetDanceNum (playlist_t *pl, ilistidx_t dancekey,
                   pldancekey_t key);
+void          playlistSetDanceCount (playlist_t *pl, ilistidx_t dancekey,
+                  ssize_t value);
 song_t        *playlistGetNextSong (playlist_t *,
                   nlist_t *danceCounts,
                   ssize_t priorCount, playlistCheck_t checkProc,

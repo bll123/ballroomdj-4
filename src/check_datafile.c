@@ -138,6 +138,7 @@ START_TEST(datafile_simple)
   char            *fn;
   FILE            *fh;
   list_t          *list;
+  slistidx_t      iteridx;
 
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== datafile_simple");
@@ -154,34 +155,34 @@ START_TEST(datafile_simple)
   ck_assert_ptr_nonnull (df->data);
 
   list = datafileGetList (df);
-  slistStartIterator (list);
-  value = slistIterateKey (list);
+  slistStartIterator (list, &iteridx);
+  value = slistIterateKey (list, &iteridx);
   ck_assert_str_eq (value, "A");
-  value = slistIterateKey (list);
+  value = slistIterateKey (list, &iteridx);
   ck_assert_str_eq (value, "a");
-  value = slistIterateKey (list);
+  value = slistIterateKey (list, &iteridx);
   ck_assert_str_eq (value, "B");
-  value = slistIterateKey (list);
+  value = slistIterateKey (list, &iteridx);
   ck_assert_str_eq (value, "b");
-  value = slistIterateKey (list);
+  value = slistIterateKey (list, &iteridx);
   ck_assert_str_eq (value, "C");
-  value = slistIterateKey (list);
+  value = slistIterateKey (list, &iteridx);
   ck_assert_str_eq (value, "c");
-  value = slistIterateKey (list);
+  value = slistIterateKey (list, &iteridx);
   ck_assert_str_eq (value, "D");
-  value = slistIterateKey (list);
+  value = slistIterateKey (list, &iteridx);
   ck_assert_str_eq (value, "d");
-  value = slistIterateKey (list);
+  value = slistIterateKey (list, &iteridx);
   ck_assert_str_eq (value, "E");
-  value = slistIterateKey (list);
+  value = slistIterateKey (list, &iteridx);
   ck_assert_str_eq (value, "e");
-  value = slistIterateKey (list);
+  value = slistIterateKey (list, &iteridx);
   ck_assert_str_eq (value, "F");
-  value = slistIterateKey (list);
+  value = slistIterateKey (list, &iteridx);
   ck_assert_str_eq (value, "f");
-  value = slistIterateKey (list);
+  value = slistIterateKey (list, &iteridx);
   ck_assert_ptr_null (value);
-  value = slistIterateKey (list);
+  value = slistIterateKey (list, &iteridx);
   ck_assert_str_eq (value, "A");
 
   datafileFree (df);
@@ -192,9 +193,9 @@ END_TEST
 
   static datafilekey_t dfkeyskl[] = {
     { "A", 14, VALUE_DATA, NULL },
-    { "B", 15, VALUE_NUM, NULL },
-    { "C", 16, VALUE_DATA, NULL },
-    { "D", 17, VALUE_DATA, NULL },
+    { "B", 15, VALUE_NUM,  NULL },
+    { "C", 16, VALUE_DATA,  NULL },
+    { "D", 17, VALUE_NUM, NULL },
     { "E", 18, VALUE_DATA, NULL },
     { "F", 19, VALUE_DATA, NULL },
   };
@@ -209,11 +210,12 @@ START_TEST(datafile_keyval_dfkey)
   char            *fn = NULL;
   FILE            *fh;
   list_t          *list;
+  nlistidx_t      iteridx;
 
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== datafile_keyval_dfkey");
   fn = "tmp/dftestb.txt";
-  tstr = strdup ("A\n..a\nB\n..5\nC\n..c\nD\n..d\nE\n..e\nF\n..f\n");
+  tstr = strdup ("A\n..a\nB\n..5\nC\n..c\nD\n..6\nE\n..e\nF\n..f\n");
   fh = fopen (fn, "w");
   fprintf (fh, "%s", tstr);
   fclose (fh);
@@ -225,36 +227,36 @@ START_TEST(datafile_keyval_dfkey)
   ck_assert_ptr_nonnull (df->data);
 
   list = datafileGetList (df);
-  nlistStartIterator (list);
-  key = nlistIterateKey (list);
+  nlistStartIterator (list, &iteridx);
+  key = nlistIterateKey (list, &iteridx);
   ck_assert_int_eq (key, 14);
   value = nlistGetStr (list, key);
   ck_assert_str_eq (value, "a");
-  key = nlistIterateKey (list);
+  key = nlistIterateKey (list, &iteridx);
   ck_assert_int_eq (key, 15);
   lval = nlistGetNum (list, key);
   ck_assert_int_eq (lval, 5);
-  key = nlistIterateKey (list);
+  key = nlistIterateKey (list, &iteridx);
   ck_assert_int_eq (key, 16);
   value = nlistGetStr (list, key);
   ck_assert_str_eq (value, "c");
-  key = nlistIterateKey (list);
+  key = nlistIterateKey (list, &iteridx);
   ck_assert_int_eq (key, 17);
-  value = nlistGetStr (list, key);
-  ck_assert_str_eq (value, "d");
-  key = nlistIterateKey (list);
+  lval = nlistGetNum (list, key);
+  ck_assert_int_eq (lval, 6);
+  key = nlistIterateKey (list, &iteridx);
   ck_assert_int_eq (key, 18);
   value = nlistGetStr (list, key);
   ck_assert_str_eq (value, "e");
-  key = nlistIterateKey (list);
+  key = nlistIterateKey (list, &iteridx);
   ck_assert_int_eq (key, 19);
   value = nlistGetStr (list, key);
   ck_assert_str_eq (value, "f");
 
-  key = nlistIterateKey (list);
+  key = nlistIterateKey (list, &iteridx);
   ck_assert_int_eq (key, -1);
 
-  key = nlistIterateKey (list);
+  key = nlistIterateKey (list, &iteridx);
   ck_assert_int_eq (key, 14);
   value = nlistGetStr (list, key);
   ck_assert_str_eq (value, "a");
@@ -265,19 +267,19 @@ START_TEST(datafile_keyval_dfkey)
 }
 END_TEST
 
-START_TEST(datafile_keylong)
+START_TEST(datafile_indirect)
 {
   datafile_t      *df;
   listidx_t       key;
   char *          value;
-  list_t *        vallist;
   ssize_t         lval;
   char            *tstr = NULL;
   char            *fn = NULL;
   FILE            *fh;
   list_t          *list;
+  ilistidx_t      iteridx;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "=== datafile_keylong");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "=== datafile_indirect");
   fn = "tmp/dftestb.txt";
   tstr = strdup ("KEY\n..0\nA\n..a\nB\n..0\n"
       "KEY\n..1\nA\n..a\nB\n..1\n"
@@ -294,62 +296,54 @@ START_TEST(datafile_keylong)
   ck_assert_ptr_nonnull (df->data);
 
   list = datafileGetList (df);
-  nlistStartIterator (list);
-  key = nlistIterateKey (list);
-  ck_assert_int_eq (key, 0L);
+  ilistStartIterator (list, &iteridx);
+  key = ilistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 0);
 
-  vallist = nlistGetData (list, key);
-  nlistStartIterator (vallist);
-  key = nlistIterateKey (vallist);
-  ck_assert_int_eq (key, 14L);
-  value = nlistGetStr (vallist, key);
+  key = ilistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 1);
+  value = ilistGetStr (list, key, 14);
   ck_assert_str_eq (value, "a");
-  key = nlistIterateKey (vallist);
-  ck_assert_int_eq (key, 15L);
-  lval = nlistGetNum (vallist, key);
-  ck_assert_int_eq (lval, 0L);
 
-  key = nlistIterateKey (list);
-  ck_assert_int_eq (key, 1L);
+  key = ilistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 2);
+  lval = ilistGetNum (list, key, 15);
+  ck_assert_int_eq (lval, 2);
 
-  vallist = nlistGetData (list, key);
-  nlistStartIterator (vallist);
-  key = nlistIterateKey (vallist);
-  ck_assert_int_eq (key, 14L);
-  value = nlistGetStr (vallist, key);
+  key = ilistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 3);
+
+  key = ilistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, -1);
+
+  key = ilistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 0);
+  value = ilistGetStr (list, key, 14);
   ck_assert_str_eq (value, "a");
-  key = nlistIterateKey (vallist);
-  ck_assert_int_eq (key, 15L);
-  lval = nlistGetNum (vallist, key);
-  ck_assert_int_eq (lval, 1L);
 
-  key = nlistIterateKey (list);
-  ck_assert_int_eq (key, 2L);
+  key = ilistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 1);
+  lval = ilistGetNum (list, key, 15);
+  ck_assert_int_eq (lval, 1);
 
-  vallist = nlistGetData (list, key);
-  nlistStartIterator (vallist);
-  key = nlistIterateKey (vallist);
-  ck_assert_int_eq (key, 14L);
-  value = nlistGetStr (vallist, key);
+  key = ilistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 2);
+
+  key = ilistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 3);
+  value = ilistGetStr (list, key, 14);
   ck_assert_str_eq (value, "a");
-  key = nlistIterateKey (vallist);
-  ck_assert_int_eq (key, 15L);
-  lval = nlistGetNum (vallist, key);
-  ck_assert_int_eq (lval, 2L);
 
-  key = nlistIterateKey (list);
-  ck_assert_int_eq (key, 3L);
+  key = ilistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, -1);
 
-  vallist = nlistGetData (list, key);
-  nlistStartIterator (vallist);
-  key = nlistIterateKey (vallist);
-  ck_assert_int_eq (key, 14L);
-  value = nlistGetStr (vallist, key);
-  ck_assert_str_eq (value, "a");
-  key = nlistIterateKey (vallist);
-  ck_assert_int_eq (key, 15L);
-  lval = nlistGetNum (vallist, key);
-  ck_assert_int_eq (lval, 3L);
+  key = ilistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 0);
+  lval = ilistGetNum (list, key, 15);
+  ck_assert_int_eq (lval, 0);
+
+  key = ilistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 1);
 
   datafileFree (df);
   free (tstr);
@@ -357,27 +351,27 @@ START_TEST(datafile_keylong)
 }
 END_TEST
 
-START_TEST(datafile_keylong_lookup)
+START_TEST(datafile_indirect_lookup)
 {
   datafile_t        *df;
   listidx_t         key;
-  char *            value;
-  list_t *          vallist;
+  char            *value;
+  ilist_t          *list;
   ssize_t           lval;
   char              *keystr;
   char            *tstr = NULL;
   char            *fn = NULL;
   FILE            *fh;
-  list_t          *list;
-  list_t          *lookup;
+  slist_t          *lookup;
+  ilistidx_t      iteridx;
 
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "=== datafile_keylong_lookup");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "=== datafile_indirect_lookup");
   fn = "tmp/dftestb.txt";
-  tstr = strdup ("KEY\n..0\nA\n..a\nB\n..0\nC\n..4\n"
-      "KEY\n..1\nA\n..b\nB\n..1\nC\n..5\n"
-      "KEY\n..2\nA\n..c\nB\n..2\nC\n..6\n"
-      "KEY\n..3\nA\n..d\nB\n..3\nC\n..7\n");
+  tstr = strdup ("KEY\n..0\nA\n..a\nB\n..0\nC\n..4\nD\n..4\n"
+      "KEY\n..1\nA\n..b\nB\n..1\nC\n..5\nD\n..5\n"
+      "KEY\n..2\nA\n..c\nB\n..2\nC\n..6\nD\n..6\n"
+      "KEY\n..3\nA\n..d\nB\n..3\nC\n..7\nD\n..7\n");
   fh = fopen (fn, "w");
   fprintf (fh, "%s", tstr);
   fclose (fh);
@@ -390,98 +384,131 @@ START_TEST(datafile_keylong_lookup)
   ck_assert_ptr_nonnull (df->lookup);
 
   list = datafileGetList (df);
-  nlistStartIterator (list);
-  key = nlistIterateKey (list);
-  ck_assert_int_eq (key, 0L);
 
-  vallist = nlistGetData (list, key);
-  nlistStartIterator (vallist);
-  key = nlistIterateKey (vallist);
-  ck_assert_int_eq (key, 14L);
-  value = nlistGetStr (vallist, key);
-  ck_assert_str_eq (value, "a");
-  key = nlistIterateKey (vallist);
-  ck_assert_int_eq (key, 15L);
-  lval = nlistGetNum (vallist, key);
-  ck_assert_int_eq (lval, 0L);
-  key = nlistIterateKey (vallist);
-  ck_assert_int_eq (key, 16L);
-  value = nlistGetStr (vallist, key);
+  ilistStartIterator (list, &iteridx);
+  key = ilistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 0);
+  value = ilistGetStr (list, key, 16);
   ck_assert_str_eq (value, "4");
+  lval = ilistGetNum (list, key, 17);
+  ck_assert_int_eq (lval, 4);
 
-  key = nlistIterateKey (list);
-  ck_assert_int_eq (key, 1L);
-
-  vallist = nlistGetData (list, key);
-  nlistStartIterator (vallist);
-  key = nlistIterateKey (vallist);
-  ck_assert_int_eq (key, 14L);
-  value = nlistGetStr (vallist, key);
+  key = ilistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 1);
+  value = ilistGetStr (list, key, 14);
   ck_assert_str_eq (value, "b");
-  key = nlistIterateKey (vallist);
-  ck_assert_int_eq (key, 15L);
-  lval = nlistGetNum (vallist, key);
-  ck_assert_int_eq (lval, 1L);
-  key = nlistIterateKey (vallist);
-  ck_assert_int_eq (key, 16L);
-  value = nlistGetStr (vallist, key);
+  value = ilistGetStr (list, key, 16);
   ck_assert_str_eq (value, "5");
+  lval = ilistGetNum (list, key, 17);
+  ck_assert_int_eq (lval, 5);
 
-  key = nlistIterateKey (list);
-  ck_assert_int_eq (key, 2L);
-
-  vallist = nlistGetData (list, key);
-  nlistStartIterator (vallist);
-  key = nlistIterateKey (vallist);
-  ck_assert_int_eq (key, 14L);
-  value = nlistGetStr (vallist, key);
-  ck_assert_str_eq (value, "c");
-  key = nlistIterateKey (vallist);
-  ck_assert_int_eq (key, 15L);
-  lval = nlistGetNum (vallist, key);
-  ck_assert_int_eq (lval, 2L);
-  key = nlistIterateKey (vallist);
-  ck_assert_int_eq (key, 16L);
-  value = nlistGetStr (vallist, key);
+  key = ilistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 2);
+  lval = ilistGetNum (list, key, 15);
+  ck_assert_int_eq (lval, 2);
+  value = ilistGetStr (list, key, 16);
   ck_assert_str_eq (value, "6");
+  lval = ilistGetNum (list, key, 17);
+  ck_assert_int_eq (lval, 6);
 
-  key = nlistIterateKey (list);
-  ck_assert_int_eq (key, 3L);
+  key = ilistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 3);
+  lval = ilistGetNum (list, key, 15);
+  ck_assert_int_eq (lval, 3);
 
-  vallist = nlistGetData (list, key);
-  nlistStartIterator (vallist);
-  key = nlistIterateKey (vallist);
-  ck_assert_int_eq (key, 14L);
-  value = nlistGetStr (vallist, key);
-  ck_assert_str_eq (value, "d");
-  key = nlistIterateKey (vallist);
-  ck_assert_int_eq (key, 15L);
-  lval = nlistGetNum (vallist, key);
-  ck_assert_int_eq (lval, 3L);
-  key = nlistIterateKey (vallist);
-  ck_assert_int_eq (key, 16L);
-  value = nlistGetStr (vallist, key);
-  ck_assert_str_eq (value, "7");
+  key = ilistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, -1);
+
+  key = ilistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 0);
+  value = ilistGetStr (list, key, 14);
+  ck_assert_str_eq (value, "a");
+
+  key = ilistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 1);
+  lval = ilistGetNum (list, key, 15);
+  ck_assert_int_eq (lval, 1);
+
+  key = ilistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 2);
+  value = ilistGetStr (list, key, 14);
+  ck_assert_str_eq (value, "c");
+  lval = ilistGetNum (list, key, 15);
+  ck_assert_int_eq (lval, 2);
+  value = ilistGetStr (list, key, 16);
+  ck_assert_str_eq (value, "6");
+  lval = ilistGetNum (list, key, 17);
+  ck_assert_int_eq (lval, 6);
+
+  key = ilistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 3);
+
+  key = ilistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, -1);
+
+  key = ilistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 0);
+  value = ilistGetStr (list, key, 14);
+  ck_assert_str_eq (value, "a");
+
+  key = ilistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 1);
+  lval = ilistGetNum (list, key, 15);
+  ck_assert_int_eq (lval, 1);
+
+  key = ilistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 2);
+  value = ilistGetStr (list, key, 16);
+  ck_assert_str_eq (value, "6");
+  lval = ilistGetNum (list, key, 17);
+  ck_assert_int_eq (lval, 6);
+
+  key = ilistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 3);
+
+  key = ilistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, -1);
+
+  key = ilistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 0);
+  value = ilistGetStr (list, key, 14);
+  ck_assert_str_eq (value, "a");
+
+  key = ilistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 1);
+  lval = ilistGetNum (list, key, 15);
+  ck_assert_int_eq (lval, 1);
+
+  key = ilistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 2);
+  value = ilistGetStr (list, key, 16);
+  ck_assert_str_eq (value, "6");
+  lval = ilistGetNum (list, key, 17);
+  ck_assert_int_eq (lval, 6);
 
   lookup = datafileGetLookup (df);
   ck_assert_ptr_nonnull (df->lookup);
-  listStartIterator (lookup);
-  keystr = slistIterateKey (lookup);
+  listStartIterator (lookup, &iteridx);
+
+  keystr = slistIterateKey (lookup, &iteridx);
   ck_assert_str_eq (keystr, "a");
   lval = listGetNum (lookup, keystr);
-  ck_assert_int_eq (lval, 0L);
-  keystr = slistIterateKey (lookup);
+  ck_assert_int_eq (lval, 0);
+
+  keystr = slistIterateKey (lookup, &iteridx);
   ck_assert_str_eq (keystr, "b");
   lval = listGetNum (lookup, keystr);
-  ck_assert_int_eq (lval, 1L);
-  keystr = slistIterateKey (lookup);
+  ck_assert_int_eq (lval, 1);
+
+  keystr = slistIterateKey (lookup, &iteridx);
   ck_assert_str_eq (keystr, "c");
   lval = listGetNum (lookup, keystr);
-  ck_assert_int_eq (lval, 2L);
-  keystr = slistIterateKey (lookup);
+  ck_assert_int_eq (lval, 2);
+
+  keystr = slistIterateKey (lookup, &iteridx);
   ck_assert_str_eq (keystr, "d");
   lval = listGetNum (lookup, keystr);
-  ck_assert_int_eq (lval, 3L);
+  ck_assert_int_eq (lval, 3);
 
   datafileFree (df);
   free (tstr);
@@ -652,8 +679,8 @@ datafile_suite (void)
   tcase_add_test (tc, parse_with_comments);
   tcase_add_test (tc, datafile_simple);
   tcase_add_test (tc, datafile_keyval_dfkey);
-  tcase_add_test (tc, datafile_keylong);
-  tcase_add_test (tc, datafile_keylong_lookup);
+  tcase_add_test (tc, datafile_indirect);
+  tcase_add_test (tc, datafile_indirect_lookup);
   tcase_add_test (tc, datafile_backup);
   suite_add_tcase (s, tc);
   return s;

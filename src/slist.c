@@ -173,9 +173,9 @@ slistGetDouble (slist_t *list, char *sidx)
 }
 
 slistidx_t
-slistIterateGetIdx (slist_t *list)
+slistIterateGetIdx (slist_t *list, slistidx_t *iteridx)
 {
-  return listIterateGetIdx (list);
+  return listIterateGetIdx (list, iteridx);
 }
 
 inline void
@@ -185,13 +185,13 @@ slistSort (slist_t *list)
 }
 
 inline void
-slistStartIterator (slist_t *list)
+slistStartIterator (slist_t *list, slistidx_t *iteridx)
 {
-  list->iteratorIndex = 0;
+  *iteridx = -1;
 }
 
 char *
-slistIterateKey (slist_t *list)
+slistIterateKey (slist_t *list, slistidx_t *iteridx)
 {
   char    *value = NULL;
 
@@ -201,13 +201,14 @@ slistIterateKey (slist_t *list)
     return NULL;
   }
 
-  if (list->iteratorIndex >= list->count) {
-    list->iteratorIndex = 0;
+  ++(*iteridx);
+  if (*iteridx >= list->count) {
+    *iteridx = -1;
     logProcEnd (LOG_PROC, "slistIterateKey", "end-list");
     return NULL;
   }
 
-  value = list->data [list->iteratorIndex].key.strkey;
+  value = list->data [*iteridx].key.strkey;
 
   if (list->keyCache.strkey != NULL) {
     free (list->keyCache.strkey);
@@ -216,23 +217,22 @@ slistIterateKey (slist_t *list)
   }
 
   list->keyCache.strkey = strdup (value);
-  list->locCache = list->iteratorIndex;
+  list->locCache = *iteridx;
 
-  ++list->iteratorIndex;
   logProcEnd (LOG_PROC, "slistIterateKey", "");
   return value;
 }
 
 inline void *
-slistIterateValueData (slist_t *list)
+slistIterateValueData (slist_t *list, slistidx_t *iteridx)
 {
-  return listIterateValue (list);
+  return listIterateValue (list, iteridx);
 }
 
 inline ssize_t
-slistIterateValueNum (slist_t *list)
+slistIterateValueNum (slist_t *list, slistidx_t *iteridx)
 {
-  return listIterateNum (list);
+  return listIterateNum (list, iteridx);
 }
 
 void

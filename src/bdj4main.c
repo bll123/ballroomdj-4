@@ -43,13 +43,13 @@
 
 #define SOCKOF(idx) (mainData->processes [idx].sock)
 
-  /* playlistList contains all of the playlists that have been seen */
-  /* so that playlist lookups can be processed */
+/* playlistCache contains all of the playlists that have been seen */
+/* so that playlist lookups can be processed */
 typedef struct {
   mstime_t          tm;
   programstate_t    programState;
   processconn_t     processes [PROCESS_MAX];
-  slist_t           *playlistList;
+  slist_t           *playlistCache;
   queue_t           *playlistQueue;
   musicq_t          *musicQueue;
   nlist_t           *danceCounts;
@@ -70,6 +70,7 @@ static void     mainMobilePostCallback (void *userdata, char *resp, size_t len);
 static void     mainConnectProcess (maindata_t *mainData, processconnidx_t idx,
                     bdjmsgroute_t route, uint16_t port);
 static void     mainQueueClear (maindata_t *mainData);
+static void     mainQueueDance (maindata_t *mainData, ssize_t danceIdx, ssize_t count);
 static void     mainPlaylistQueue (maindata_t *mainData, char *plname);
 static void     mainSigHandler (int sig);
 static void     mainMusicQueueFill (maindata_t *mainData);
@@ -95,6 +96,7 @@ static void     mainSendPlaylistList (maindata_t *mainData);
 static void     mainSendStatusResp (maindata_t *mainData, char *playerResp);
 static void     mainDanceCountsInit (maindata_t *mainData);
 
+static long globalCounter = 0;
 static int gKillReceived = 0;
 
 int
@@ -107,7 +109,7 @@ main (int argc, char *argv[])
   mstimestart (&mainData.tm);
 
   mainData.programState = STATE_INITIALIZING;
-  mainData.playlistList = NULL;
+  mainData.playlistCache = NULL;
   mainData.playlistQueue = NULL;
   mainData.musicQueue = NULL;
   mainData.danceCounts = NULL;
@@ -135,7 +137,7 @@ main (int argc, char *argv[])
   logProcBegin (LOG_PROC, "main");
 
   mainData.gap = bdjoptGetNum (OPT_P_GAP);
-  mainData.playlistList = slistAlloc ("playlist-list", LIST_UNORDERED,
+  mainData.playlistCache = slistAlloc ("playlist-list", LIST_ORDERED,
       free, playlistFree);
   mainData.playlistQueue = queueAlloc (NULL);
   mainData.musicQueue = musicqAlloc ();
@@ -147,8 +149,8 @@ main (int argc, char *argv[])
   sockhMainLoop (listenPort, mainProcessMsg, mainProcessing, &mainData);
 
   logProcEnd (LOG_PROC, "main", "");
-  if (mainData.playlistList != NULL) {
-    slistFree (mainData.playlistList);
+  if (mainData.playlistCache != NULL) {
+    slistFree (mainData.playlistCache);
   }
   if (mainData.playlistQueue != NULL) {
     queueFree (mainData.playlistQueue);
@@ -244,9 +246,11 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_DANCE_QUEUE: {
+          mainQueueDance (mainData, atol (args), 1);
           break;
         }
         case MSG_DANCE_QUEUE5: {
+          mainQueueDance (mainData, atol (args), 5);
           break;
         }
         case MSG_PLAY_PLAY: {
@@ -572,6 +576,27 @@ mainQueueClear (maindata_t *mainData)
 }
 
 static void
+mainQueueDance (maindata_t *mainData, ssize_t danceIdx, ssize_t count)
+{
+  playlist_t      *playlist;
+  char            plname [40];
+
+  snprintf (plname, sizeof (plname), "_main_dance_%ld_%ld",
+      danceIdx, globalCounter++);
+  playlist = playlistCreate (plname, PLTYPE_AUTO, NULL);
+  playlistSetConfigNum (playlist, PLAYLIST_STOP_AFTER, count);
+  /* this will also set selected */
+  playlistSetDanceCount (playlist, danceIdx, 1);
+  logMsg (LOG_DBG, LOG_BASIC, "Queue Playlist: %s", plname);
+  slistSetData (mainData->playlistCache, plname, playlist);
+  queuePush (mainData->playlistQueue, playlist);
+  logMsg (LOG_DBG, LOG_MAIN, "push pl %s", plname);
+  mainMusicQueueFill (mainData);
+  mainMusicQueuePrep (mainData);
+  mainMusicQueuePlay (mainData);
+}
+
+static void
 mainPlaylistQueue (maindata_t *mainData, char *plname)
 {
   playlist_t      *playlist;
@@ -581,11 +606,12 @@ mainPlaylistQueue (maindata_t *mainData, char *plname)
   playlist = playlistLoad (plname);
   if (playlist != NULL) {
     logMsg (LOG_DBG, LOG_BASIC, "Queue Playlist: %s", plname);
-    slistSetData (mainData->playlistList, plname, playlist);
+    slistSetData (mainData->playlistCache, plname, playlist);
     queuePush (mainData->playlistQueue, playlist);
     logMsg (LOG_DBG, LOG_MAIN, "push pl %s", plname);
     mainMusicQueueFill (mainData);
     mainMusicQueuePrep (mainData);
+    mainMusicQueuePlay (mainData);
   } else {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Queue Playlist failed: %s", plname);
   }
@@ -642,6 +668,10 @@ mainMusicQueueFill (maindata_t *mainData)
 static void
 mainMusicQueuePrep (maindata_t *mainData)
 {
+  playlist_t    *playlist;
+  ssize_t       plannounce;
+
+
   logProcBegin (LOG_PROC, "mainMusicQueuePrep");
     /* 5 is the number of songs to prep ahead of time */
   for (ssize_t i = 0; i < 5; ++i) {
@@ -659,14 +689,18 @@ mainMusicQueuePrep (maindata_t *mainData)
         (flags & MUSICQ_FLAG_PREP) != MUSICQ_FLAG_PREP) {
       musicqSetFlag (mainData->musicQueue, mainData->musicqCurrentIdx,
           i, MUSICQ_FLAG_PREP);
+
+      playlist = slistGetData (mainData->playlistCache, plname);
+      plannounce = playlistGetConfigNum (playlist, PLAYLIST_ANNOUNCE);
       annfname = mainPrepSong (mainData, song, sfname, plname, PREP_SONG);
-      if (annfname != NULL && strcmp (annfname, "") != 0 ) {
-        musicqSetFlag (mainData->musicQueue, mainData->musicqCurrentIdx,
-            i, MUSICQ_FLAG_ANNOUNCE);
-        musicqSetAnnounce (mainData->musicQueue, mainData->musicqCurrentIdx,
-            i, annfname);
-      } else {
-        annfname = NULL;
+
+      if (plannounce == 1) {
+        if (annfname != NULL && strcmp (annfname, "") != 0 ) {
+          musicqSetFlag (mainData->musicQueue, mainData->musicqCurrentIdx,
+              i, MUSICQ_FLAG_ANNOUNCE);
+          musicqSetAnnounce (mainData->musicQueue, mainData->musicqCurrentIdx,
+              i, annfname);
+        }
       }
     }
   }
@@ -705,7 +739,7 @@ mainPrepSong (maindata_t *mainData, song_t *song,
     maxdur = bdjoptGetNum (OPT_P_MAXPLAYTIME);
     songstart = songGetNum (song, TAG_SONGSTART);
     songend = songGetNum (song, TAG_SONGEND);
-    playlist = slistGetData (mainData->playlistList, plname);
+    playlist = slistGetData (mainData->playlistCache, plname);
     pldur = playlistGetConfigNum (playlist, PLAYLIST_MAX_PLAY_TIME);
       /* apply songend if set to a reasonable value */
     logMsg (LOG_DBG, LOG_MAIN, "dur: %zd songstart: %zd songend: %zd",
@@ -719,8 +753,9 @@ mainPrepSong (maindata_t *mainData, song_t *song,
       dur -= songstart;
       logMsg (LOG_DBG, LOG_MAIN, "dur-songstart: %zd", dur);
     }
-      /* if the playlist has a maximum play time specified for a dance */
-      /* it overrides any of the other max play times */
+
+    /* if the playlist has a maximum play time specified for a dance */
+    /* it overrides any of the other max play times */
     dancekey = songGetNum (song, TAG_DANCE);
     plddur = playlistGetDanceNum (playlist, dancekey, PLDANCE_MAXPLAYTIME);
     if (plddur >= 5000) {
@@ -746,7 +781,7 @@ mainPrepSong (maindata_t *mainData, song_t *song,
     }
 
     plannounce = playlistGetConfigNum (playlist, PLAYLIST_ANNOUNCE);
-    if (plannounce) {
+    if (plannounce == 1) {
       dance_t       *dances;
       song_t        *tsong;
 
@@ -813,9 +848,9 @@ mainMusicqMove (maindata_t *mainData, ssize_t fromidx, ssize_t direction)
   } else {
     toidx = fromidx + direction;
   }
-  if (mainData->playerState == PL_STATE_STOPPED &&
-      fromidx == 1 && toidx == 0) {
-    /* moving up into the to-be-played position is a special case */
+  if (fromidx == 1 && toidx == 0 &&
+      mainData->playerState != PL_STATE_STOPPED) {
+    return;
   }
 
   if (toidx > fromidx && fromidx >= musicqLen) {
@@ -908,12 +943,14 @@ mainMusicQueueFinish (maindata_t *mainData)
   playlist_t    *playlist;
   song_t        *song;
   ilistidx_t    danceIdx;
+  char          *plname;
 
   logProcBegin (LOG_PROC, "mainMusicQueueFinish");
 
   /* let the playlist know this song has been played */
   song = musicqGetCurrent (mainData->musicQueue, mainData->musicqCurrentIdx);
-  playlist = queueGetCurrent (mainData->playlistQueue);
+  plname = musicqGetPlaylistName (mainData->musicQueue, mainData->musicqCurrentIdx, 0);
+  playlist = slistGetData (mainData->playlistCache, plname);
   if (playlist != NULL && song != NULL) {
     playlistAddPlayed (playlist, song);
   }
@@ -1058,17 +1095,18 @@ mainSendDanceList (maindata_t *mainData)
 {
   dance_t       *dances;
   slist_t       *danceList;
-  listidx_t     idx;
+  slistidx_t     idx;
   char          *dancenm;
   char          tbuff [200];
   char          rbuff [3096];
+  slistidx_t    iteridx;
 
   dances = bdjvarsdf [BDJVDF_DANCES];
   danceList = danceGetDanceList (dances);
 
   rbuff [0] = '\0';
-  slistStartIterator (danceList);
-  while ((dancenm = slistIterateKey (danceList)) != NULL) {
+  slistStartIterator (danceList, &iteridx);
+  while ((dancenm = slistIterateKey (danceList, &iteridx)) != NULL) {
     idx = slistGetNum (danceList, dancenm);
     snprintf (tbuff, sizeof (tbuff), "<option value=\"%zd\">%s</option>\n", idx, dancenm);
     strlcat (rbuff, tbuff, sizeof (rbuff));
@@ -1081,24 +1119,24 @@ mainSendDanceList (maindata_t *mainData)
 static void
 mainSendPlaylistList (maindata_t *mainData)
 {
-  slist_t       *playlistList;
+  slist_t       *plList;
   char          *plfnm;
   char          *plnm;
   char          tbuff [200];
   char          rbuff [3096];
+  slistidx_t    iteridx;
 
-    /* note that maindata->playlistlist is something else */
-  playlistList = playlistGetPlaylistList ();
+  plList = playlistGetPlaylistList ();
 
   rbuff [0] = '\0';
-  slistStartIterator (playlistList);
-  while ((plnm = slistIterateKey (playlistList)) != NULL) {
-    plfnm = listGetData (playlistList, plnm);
+  slistStartIterator (plList, &iteridx);
+  while ((plnm = slistIterateKey (plList, &iteridx)) != NULL) {
+    plfnm = listGetData (plList, plnm);
     snprintf (tbuff, sizeof (tbuff), "<option value=\"%s\">%s</option>\n", plfnm, plnm);
     strlcat (rbuff, tbuff, sizeof (rbuff));
   }
 
-  slistFree (playlistList);
+  slistFree (plList);
 
   sockhSendMessage (SOCKOF (PROCESS_REMCTRL),
       ROUTE_MAIN, ROUTE_REMCTRL, MSG_PLAYLIST_LIST_DATA, rbuff);
@@ -1123,29 +1161,25 @@ mainSendStatusResp (maindata_t *mainData, char *playerResp)
   strlcat (rbuff, ", ", sizeof (rbuff));
   strlcat (rbuff, tbuff, sizeof (rbuff));
 
-  if (bdjoptGetNum (OPT_P_REMCONTROLSHOWDANCE)) {
-    data = musicqGetDance (mainData->musicQueue, mainData->musicqCurrentIdx, 0);
-    if (data == NULL) { data = ""; }
-    snprintf (tbuff, sizeof (tbuff),
-        "\"dance\" : \"%s\"", data);
-    strlcat (rbuff, ", ", sizeof (rbuff));
-    strlcat (rbuff, tbuff, sizeof (rbuff));
-  }
+  data = musicqGetDance (mainData->musicQueue, mainData->musicqCurrentIdx, 0);
+  if (data == NULL) { data = ""; }
+  snprintf (tbuff, sizeof (tbuff),
+      "\"dance\" : \"%s\"", data);
+  strlcat (rbuff, ", ", sizeof (rbuff));
+  strlcat (rbuff, tbuff, sizeof (rbuff));
 
-  if (bdjoptGetNum (OPT_P_REMCONTROLSHOWSONG)) {
-    data = musicqGetData (mainData->musicQueue, mainData->musicqCurrentIdx, 0, TAG_ARTIST);
-    if (data == NULL) { data = ""; }
-    snprintf (tbuff, sizeof (tbuff),
-        "\"artist\" : \"%s\"", data);
-    strlcat (rbuff, ", ", sizeof (rbuff));
-    strlcat (rbuff, tbuff, sizeof (rbuff));
-    data = musicqGetData (mainData->musicQueue, mainData->musicqCurrentIdx, 0, TAG_TITLE);
-    if (data == NULL) { data = ""; }
-    snprintf (tbuff, sizeof (tbuff),
-        "\"title\" : \"%s\"", data);
-    strlcat (rbuff, ", ", sizeof (rbuff));
-    strlcat (rbuff, tbuff, sizeof (rbuff));
-  }
+  data = musicqGetData (mainData->musicQueue, mainData->musicqCurrentIdx, 0, TAG_ARTIST);
+  if (data == NULL) { data = ""; }
+  snprintf (tbuff, sizeof (tbuff),
+      "\"artist\" : \"%s\"", data);
+  strlcat (rbuff, ", ", sizeof (rbuff));
+  strlcat (rbuff, tbuff, sizeof (rbuff));
+  data = musicqGetData (mainData->musicQueue, mainData->musicqCurrentIdx, 0, TAG_TITLE);
+  if (data == NULL) { data = ""; }
+  snprintf (tbuff, sizeof (tbuff),
+      "\"title\" : \"%s\"", data);
+  strlcat (rbuff, ", ", sizeof (rbuff));
+  strlcat (rbuff, tbuff, sizeof (rbuff));
 
   strlcat (rbuff, " }", sizeof (rbuff));
 
@@ -1158,6 +1192,7 @@ mainDanceCountsInit (maindata_t *mainData)
 {
   nlist_t     *dc;
   ilistidx_t  didx;
+  nlistidx_t  iteridx;
 
   dc = dbGetDanceCounts ();
 
@@ -1168,8 +1203,8 @@ mainDanceCountsInit (maindata_t *mainData)
   mainData->danceCounts = nlistAlloc ("main-dancecounts", LIST_ORDERED, NULL);
   nlistSetSize (mainData->danceCounts, nlistGetCount (dc));
 
-  nlistStartIterator (dc);
-  while ((didx = nlistIterateKey (dc)) >= 0) {
+  nlistStartIterator (dc, &iteridx);
+  while ((didx = nlistIterateKey (dc, &iteridx)) >= 0) {
     nlistSetNum (mainData->danceCounts, didx, nlistGetNum (dc, didx));
   }
 }

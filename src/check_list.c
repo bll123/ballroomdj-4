@@ -56,6 +56,7 @@ START_TEST(simple_list_add_unordered_iterate)
 {
   list_t *  list;
   char *    value;
+  listidx_t iteridx;
 
 
   list = listAlloc ("chk", LIST_UNORDERED, istringCompare, NULL, NULL);
@@ -67,24 +68,24 @@ START_TEST(simple_list_add_unordered_iterate)
   listSetData (list, "cccc", NULL);
   listSetData (list, "aaaa", NULL);
   listSetData (list, "bbbb", NULL);
-  listStartIterator (list);
-  value = (char *) ilistIterateKey (list);
+  listStartIterator (list, &iteridx);
+  value = (char *) ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (value, "ffff");
-  value = (char *) ilistIterateKey (list);
+  value = (char *) ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (value, "zzzz");
-  value = (char *) ilistIterateKey (list);
+  value = (char *) ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (value, "rrrr");
-  value = (char *) ilistIterateKey (list);
+  value = (char *) ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (value, "kkkk");
-  value = (char *) ilistIterateKey (list);
+  value = (char *) ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (value, "cccc");
-  value = (char *) ilistIterateKey (list);
+  value = (char *) ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (value, "aaaa");
-  value = (char *) ilistIterateKey (list);
+  value = (char *) ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (value, "bbbb");
-  value = (char *) ilistIterateKey (list);
+  value = (char *) ilistIterateKey (list, &iteridx);
   ck_assert_ptr_null (value);
-  value = (char *) ilistIterateKey (list);
+  value = (char *) ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (value, "ffff");
   listFree (list);
 }
@@ -94,6 +95,7 @@ START_TEST(simple_list_add_ordered_iterate)
 {
   list_t *  list;
   char *    value;
+  listidx_t iteridx;
 
 
   list = listAlloc ("chk", LIST_ORDERED, istringCompare, NULL, NULL);
@@ -106,20 +108,20 @@ START_TEST(simple_list_add_ordered_iterate)
   listSetData (list, "cccc", NULL);
   listSetData (list, "aaaa", NULL);
   listSetData (list, "bbbb", NULL);
-  listStartIterator (list);
-  value = (char *) ilistIterateKey (list);
+  listStartIterator (list, &iteridx);
+  value = (char *) ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (value, "aaaa");
-  value = (char *) ilistIterateKey (list);
+  value = (char *) ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (value, "bbbb");
-  value = (char *) ilistIterateKey (list);
+  value = (char *) ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (value, "cccc");
-  value = (char *) ilistIterateKey (list);
+  value = (char *) ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (value, "ffff");
-  value = (char *) ilistIterateKey (list);
+  value = (char *) ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (value, "kkkk");
-  value = (char *) ilistIterateKey (list);
+  value = (char *) ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (value, "rrrr");
-  value = (char *) ilistIterateKey (list);
+  value = (char *) ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (value, "zzzz");
   listFree (list);
 }
@@ -129,6 +131,7 @@ START_TEST(simple_list_add_ordered_beg)
 {
   list_t *  list;
   char *    value;
+  listidx_t iteridx;
 
 
   list = listAlloc ("chk", LIST_ORDERED, istringCompare, NULL, NULL);
@@ -140,12 +143,12 @@ START_TEST(simple_list_add_ordered_beg)
   listSetData (list, "aaaa", NULL);
   ck_assert_int_eq (list->count, 3);
   ck_assert_int_eq (list->allocCount, 3);
-  listStartIterator (list);
-  value = (char *) ilistIterateKey (list);
+  listStartIterator (list, &iteridx);
+  value = (char *) ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (value, "aaaa");
-  value = (char *) ilistIterateKey (list);
+  value = (char *) ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (value, "bbbb");
-  value = (char *) ilistIterateKey (list);
+  value = (char *) ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (value, "cccc");
   listFree (list);
 }
@@ -155,6 +158,7 @@ START_TEST(simple_list_add_ordered_end)
 {
   list_t *  list;
   char *    value;
+  listidx_t iteridx;
 
 
   list = listAlloc ("chk", LIST_ORDERED, istringCompare, NULL, NULL);
@@ -166,12 +170,12 @@ START_TEST(simple_list_add_ordered_end)
   listSetData (list, "cccc", NULL);
   ck_assert_int_eq (list->count, 3);
   ck_assert_int_eq (list->allocCount, 3);
-  listStartIterator (list);
-  value = (char *) ilistIterateKey (list);
+  listStartIterator (list, &iteridx);
+  value = (char *) ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (value, "aaaa");
-  value = (char *) ilistIterateKey (list);
+  value = (char *) ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (value, "bbbb");
-  value = (char *) ilistIterateKey (list);
+  value = (char *) ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (value, "cccc");
   listFree (list);
 }
@@ -181,6 +185,7 @@ START_TEST(simple_list_add_ordered_prealloc)
 {
   list_t *  list;
   char *    value;
+  listidx_t iteridx;
 
 
   list = listAlloc ("chk", LIST_ORDERED, istringCompare, NULL, NULL);
@@ -197,20 +202,20 @@ START_TEST(simple_list_add_ordered_prealloc)
   listSetData (list, "bbbb", NULL);
   ck_assert_int_eq (list->count, 7);
   ck_assert_int_eq (list->allocCount, 7);
-  listStartIterator (list);
-  value = (char *) ilistIterateKey (list);
+  listStartIterator (list, &iteridx);
+  value = (char *) ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (value, "aaaa");
-  value = (char *) ilistIterateKey (list);
+  value = (char *) ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (value, "bbbb");
-  value = (char *) ilistIterateKey (list);
+  value = (char *) ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (value, "cccc");
-  value = (char *) ilistIterateKey (list);
+  value = (char *) ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (value, "ffff");
-  value = (char *) ilistIterateKey (list);
+  value = (char *) ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (value, "kkkk");
-  value = (char *) ilistIterateKey (list);
+  value = (char *) ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (value, "rrrr");
-  value = (char *) ilistIterateKey (list);
+  value = (char *) ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (value, "zzzz");
   listFree (list);
 }
@@ -220,6 +225,7 @@ START_TEST(simple_list_add_sort)
 {
   list_t *  list;
   char *    value;
+  listidx_t iteridx;
 
 
   list = listAlloc ("chk", LIST_UNORDERED, istringCompare, NULL, NULL);
@@ -233,38 +239,38 @@ START_TEST(simple_list_add_sort)
   listSetData (list, "bbbb", NULL);
   ck_assert_int_eq (list->count, 7);
   ck_assert_int_eq (list->allocCount, 7);
-  listStartIterator (list);
-  value = (char *) ilistIterateKey (list);
+  listStartIterator (list, &iteridx);
+  value = (char *) ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (value, "ffff");
-  value = (char *) ilistIterateKey (list);
+  value = (char *) ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (value, "zzzz");
-  value = (char *) ilistIterateKey (list);
+  value = (char *) ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (value, "rrrr");
-  value = (char *) ilistIterateKey (list);
+  value = (char *) ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (value, "kkkk");
-  value = (char *) ilistIterateKey (list);
+  value = (char *) ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (value, "cccc");
-  value = (char *) ilistIterateKey (list);
+  value = (char *) ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (value, "aaaa");
-  value = (char *) ilistIterateKey (list);
+  value = (char *) ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (value, "bbbb");
   listSort (list);
   ck_assert_int_eq (list->ordered, LIST_ORDERED);
   ck_assert_int_eq (list->count, 7);
-  listStartIterator (list);
-  value = (char *) ilistIterateKey (list);
+  listStartIterator (list, &iteridx);
+  value = (char *) ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (value, "aaaa");
-  value = (char *) ilistIterateKey (list);
+  value = (char *) ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (value, "bbbb");
-  value = (char *) ilistIterateKey (list);
+  value = (char *) ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (value, "cccc");
-  value = (char *) ilistIterateKey (list);
+  value = (char *) ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (value, "ffff");
-  value = (char *) ilistIterateKey (list);
+  value = (char *) ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (value, "kkkk");
-  value = (char *) ilistIterateKey (list);
+  value = (char *) ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (value, "rrrr");
-  value = (char *) ilistIterateKey (list);
+  value = (char *) ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (value, "zzzz");
   listFree (list);
 }
@@ -302,6 +308,7 @@ START_TEST(list_add_str_iterate)
   list_t *      list;
   char *        value;
   char *        key;
+  listidx_t     iteridx;
 
 
   list = listAlloc ("chk", LIST_ORDERED, istringCompare, NULL, NULL);
@@ -312,34 +319,34 @@ START_TEST(list_add_str_iterate)
   listSetData (list, "dddd", "333");
   listSetData (list, "aaaa", "000");
   listSetData (list, "bbbb", "111");
-  listStartIterator (list);
-  key = ilistIterateKey (list);
+  listStartIterator (list, &iteridx);
+  key = ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (key, "aaaa");
   value = (char *) listGetData (list, key);
   ck_assert_str_eq (value, "000");
-  key = ilistIterateKey (list);
+  key = ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (key, "bbbb");
   value = (char *) listGetData (list, key);
   ck_assert_str_eq (value, "111");
-  key = ilistIterateKey (list);
+  key = ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (key, "cccc");
   value = (char *) listGetData (list, key);
   ck_assert_str_eq (value, "222");
-  key = ilistIterateKey (list);
+  key = ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (key, "dddd");
   value = (char *) listGetData (list, key);
   ck_assert_str_eq (value, "333");
-  key = ilistIterateKey (list);
+  key = ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (key, "eeee");
   value = (char *) listGetData (list, key);
   ck_assert_str_eq (value, "444");
-  key = ilistIterateKey (list);
+  key = ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (key, "ffff");
   value = (char *) listGetData (list, key);
   ck_assert_str_eq (value, "555");
-  key = ilistIterateKey (list);
+  key = ilistIterateKey (list, &iteridx);
   ck_assert_ptr_null (key);
-  key = ilistIterateKey (list);
+  key = ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (key, "aaaa");
   value = (char *) listGetData (list, key);
   ck_assert_str_eq (value, "000");
@@ -352,6 +359,7 @@ START_TEST(list_add_sort_str)
   list_t *      list;
   ssize_t          value;
   char          *key;
+  listidx_t     iteridx;
 
 
   list = listAlloc ("chk", LIST_UNORDERED, istringCompare, NULL, NULL);
@@ -366,12 +374,12 @@ START_TEST(list_add_sort_str)
   ck_assert_int_eq (list->count, 7);
   ck_assert_int_eq (list->allocCount, 7);
 
-  listStartIterator (list);
-  key = ilistIterateKey (list);
+  listStartIterator (list, &iteridx);
+  key = ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (key, "ffff");
   value = listGetNum (list, key);
   ck_assert_int_eq (value, 0L);
-  key = ilistIterateKey (list);
+  key = ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (key, "zzzz");
   value = listGetNum (list, key);
   ck_assert_int_eq (value, 1L);
@@ -379,12 +387,12 @@ START_TEST(list_add_sort_str)
   listSort (list);
   ck_assert_int_eq (list->ordered, LIST_ORDERED);
   ck_assert_int_eq (list->count, 7);
-  listStartIterator (list);
-  key = ilistIterateKey (list);
+  listStartIterator (list, &iteridx);
+  key = ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (key, "aaaa");
   value = listGetNum (list, key);
   ck_assert_int_eq (value, 5L);
-  key = ilistIterateKey (list);
+  key = ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (key, "bbbb");
   value = listGetNum (list, key);
   ck_assert_int_eq (value, 6L);
@@ -398,6 +406,7 @@ START_TEST(list_replace_str)
   list_t        *list;
   char          *key;
   char          *value;
+  listidx_t     iteridx;
 
 
   list = listAlloc ("chk", LIST_ORDERED, istringCompare, NULL, NULL);
@@ -420,34 +429,34 @@ START_TEST(list_replace_str)
 
   ck_assert_int_eq (list->count, 6);
 
-  listStartIterator (list);
-  key = ilistIterateKey (list);
+  listStartIterator (list, &iteridx);
+  key = ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (key, "aaaa");
   value = (char *) listGetData (list, key);
   ck_assert_str_eq (value, "000");
-  key = ilistIterateKey (list);
+  key = ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (key, "bbbb");
   value = (char *) listGetData (list, key);
   ck_assert_str_eq (value, "111");
-  key = ilistIterateKey (list);
+  key = ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (key, "cccc");
   value = (char *) listGetData (list, key);
   ck_assert_str_eq (value, "222");
-  key = ilistIterateKey (list);
+  key = ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (key, "dddd");
   value = (char *) listGetData (list, key);
   ck_assert_str_eq (value, "333");
-  key = ilistIterateKey (list);
+  key = ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (key, "eeee");
   value = (char *) listGetData (list, key);
   ck_assert_str_eq (value, "444");
-  key = ilistIterateKey (list);
+  key = ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (key, "ffff");
   value = (char *) listGetData (list, key);
   ck_assert_str_eq (value, "555");
-  key = ilistIterateKey (list);
+  key = ilistIterateKey (list, &iteridx);
   ck_assert_ptr_null (key);
-  key = ilistIterateKey (list);
+  key = ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (key, "aaaa");
   value = (char *) listGetData (list, key);
   ck_assert_str_eq (value, "000");
@@ -456,34 +465,34 @@ START_TEST(list_replace_str)
   listSetData (list, "cccc", "777");
   listSetData (list, "dddd", "888");
 
-  listStartIterator (list);
-  key = ilistIterateKey (list);
+  listStartIterator (list, &iteridx);
+  key = ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (key, "aaaa");
   value = (char *) listGetData (list, key);
   ck_assert_str_eq (value, "000");
-  key = ilistIterateKey (list);
+  key = ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (key, "bbbb");
   value = (char *) listGetData (list, key);
   ck_assert_str_eq (value, "666");
-  key = ilistIterateKey (list);
+  key = ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (key, "cccc");
   value = (char *) listGetData (list, key);
   ck_assert_str_eq (value, "777");
-  key = ilistIterateKey (list);
+  key = ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (key, "dddd");
   value = (char *) listGetData (list, key);
   ck_assert_str_eq (value, "888");
-  key = ilistIterateKey (list);
+  key = ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (key, "eeee");
   value = (char *) listGetData (list, key);
   ck_assert_str_eq (value, "444");
-  key = ilistIterateKey (list);
+  key = ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (key, "ffff");
   value = (char *) listGetData (list, key);
   ck_assert_str_eq (value, "555");
-  key = ilistIterateKey (list);
+  key = ilistIterateKey (list, &iteridx);
   ck_assert_ptr_null (key);
-  key = ilistIterateKey (list);
+  key = ilistIterateKey (list, &iteridx);
   ck_assert_str_eq (key, "aaaa");
   value = (char *) listGetData (list, key);
   ck_assert_str_eq (value, "000");
@@ -558,6 +567,7 @@ START_TEST(nlist_add_str_iterate)
   list_t *      list;
   char *        value;
   listidx_t          key;
+  listidx_t     iteridx;
 
 
   list = nlistAlloc ("chk", LIST_ORDERED, NULL);
@@ -568,24 +578,24 @@ START_TEST(nlist_add_str_iterate)
   nlistSetStr (list, 4L, "333");
   nlistSetStr (list, 1L, "000");
   nlistSetStr (list, 2L, "111");
-  nlistStartIterator (list);
-  key = nlistIterateKey (list);
+  nlistStartIterator (list, &iteridx);
+  key = nlistIterateKey (list, &iteridx);
   ck_assert_int_eq (key, 1L);
   value = (char *) nlistGetStr (list, key);
   ck_assert_str_eq (value, "000");
-  key = nlistIterateKey (list);
+  key = nlistIterateKey (list, &iteridx);
   ck_assert_int_eq (key, 2L);
   value = (char *) nlistGetStr (list, key);
   ck_assert_str_eq (value, "111");
-  key = nlistIterateKey (list);
+  key = nlistIterateKey (list, &iteridx);
   ck_assert_int_eq (key, 3L);
   value = (char *) nlistGetStr (list, key);
   ck_assert_str_eq (value, "222");
-  key = nlistIterateKey (list);
+  key = nlistIterateKey (list, &iteridx);
   ck_assert_int_eq (key, 4L);
   value = (char *) nlistGetStr (list, key);
   ck_assert_str_eq (value, "333");
-  key = nlistIterateKey (list);
+  key = nlistIterateKey (list, &iteridx);
   ck_assert_int_eq (key, 5L);
   value = (char *) nlistGetStr (list, key);
   ck_assert_str_eq (value, "444");

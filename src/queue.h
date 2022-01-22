@@ -11,7 +11,6 @@ typedef struct queuenode {
 
 typedef struct {
   ssize_t       count;
-  ssize_t       currentIndex;
   queuenode_t   *iteratorNode;
   queuenode_t   *currentNode;
   queuenode_t   *head;
@@ -30,8 +29,8 @@ void    queueClear (queue_t *q, ssize_t startIdx);
 void    queueMove (queue_t *q, ssize_t fromIdx, ssize_t toIdx);
 void    *queueRemoveByIdx (queue_t *q, ssize_t idx);
 ssize_t queueGetCount (queue_t *q);
-void    queueStartIterator (queue_t *q);
-void    *queueIterateData (queue_t *q);
-void    *queueIterateRemoveNode (queue_t *q);
+void    queueStartIterator (queue_t *q, ssize_t *idx);
+void    *queueIterateData (queue_t *q, ssize_t *idx);
+void    *queueIterateRemoveNode (queue_t *q, ssize_t *idx);
 
 #endif /* INC_QUEUE_H */

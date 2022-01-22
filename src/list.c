@@ -84,24 +84,6 @@ listFree (void *tlist)
   }
 }
 
-inline ssize_t
-listGetCount (list_t *list)
-{
-  if (list == NULL) {
-    return 0;
-  }
-  return list->count;
-}
-
-inline ssize_t
-listGetVersion (list_t *list)
-{
-  if (list == NULL) {
-    return 0;
-  }
-  return list->version;
-}
-
 inline void
 listSetVersion (list_t *list, ssize_t version)
 {
@@ -209,10 +191,9 @@ listSort (list_t *list)
 }
 
 inline void
-listStartIterator (list_t *list)
+listStartIterator (list_t *list, listidx_t *iteridx)
 {
-  list->iteratorIndex = 0;
-  list->currentIndex = 0;
+  *iteridx = -1;
 }
 
 void
@@ -223,7 +204,7 @@ listDumpInfo (list_t *list)
 }
 
 void *
-listIterateValue (list_t *list)
+listIterateValue (list_t *list, listidx_t *iteridx)
 {
   void      *value = NULL;
 
@@ -233,21 +214,20 @@ listIterateValue (list_t *list)
     return NULL;
   }
 
-  if (list->iteratorIndex >= list->count) {
-    list->iteratorIndex = 0;
+  ++(*iteridx);
+  if (*iteridx >= list->count) {
+    *iteridx = -1;
     logProcEnd (LOG_PROC, "listIterateValue", "end-list");
     return NULL;  /* indicate the end of the list */
   }
 
-  value = list->data [list->iteratorIndex].value.data;
-  list->currentIndex = list->iteratorIndex;
-  ++list->iteratorIndex;
+  value = list->data [*iteridx].value.data;
   logProcEnd (LOG_PROC, "listIterateValue", "");
   return value;
 }
 
 ssize_t
-listIterateNum (list_t *list)
+listIterateNum (list_t *list, listidx_t *iteridx)
 {
   ssize_t     value = LIST_VALUE_INVALID;
 
@@ -257,27 +237,26 @@ listIterateNum (list_t *list)
     return LIST_VALUE_INVALID;
   }
 
-  if (list->iteratorIndex >= list->count) {
-    list->iteratorIndex = 0;
+  ++(*iteridx);
+  if (*iteridx >= list->count) {
+    *iteridx = -1;
     logProcEnd (LOG_PROC, "listIterateNum", "end-list");
     return LIST_VALUE_INVALID;  /* indicate the end of the list */
   }
 
-  value = list->data [list->iteratorIndex].value.num;
-  list->currentIndex = list->iteratorIndex;
-  ++list->iteratorIndex;
+  value = list->data [*iteridx].value.num;
   logProcEnd (LOG_PROC, "listIterateNum", "");
   return value;
 }
 
 listidx_t
-listIterateGetIdx (list_t *list)
+listIterateGetIdx (list_t *list, listidx_t *iteridx)
 {
   if (list == NULL) {
     return LIST_LOC_INVALID;
   }
 
-  return list->currentIndex;
+  return *iteridx;
 }
 
 listidx_t

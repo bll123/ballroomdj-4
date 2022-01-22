@@ -11,7 +11,7 @@ typedef struct {
 sequence_t    *sequenceAlloc (char *);
 void          sequenceFree (sequence_t *);
 nlist_t       *sequenceGetDanceList (sequence_t *);
-void          sequenceStartIterator (sequence_t *sequence);
-nlistidx_t    sequenceIterate (sequence_t *sequence);
+void          sequenceStartIterator (sequence_t *sequence, nlistidx_t *idx);
+nlistidx_t    sequenceIterate (sequence_t *sequence, nlistidx_t *idx);
 
 #endif /* INC_SEQUENCE_H */

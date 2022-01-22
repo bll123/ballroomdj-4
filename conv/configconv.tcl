@@ -69,6 +69,8 @@ foreach path [list {} profiles $hostname [file join $hostname profiles]] {
         if { $key eq "NATIVEFILEDIALOGS" } { continue }
         if { $key eq "SCALEDWIDGETS" } { continue }
         if { $key eq "MQDANCEFONTMULT" } { continue }
+        if { $key eq "REMCONTROLSHOWDANCE" } { continue }
+        if { $key eq "REMCONTROLSHOWSONG" } { continue }
         if { $key eq "UITHEME" } { set value {} }
         if { $key eq "version" } { set value 1 }
 

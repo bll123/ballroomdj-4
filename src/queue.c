@@ -19,7 +19,6 @@ queueAlloc (queueFree_t freeHook)
   q = malloc (sizeof (queue_t));
   assert (q != NULL);
   q->count = 0;
-  q->currentIndex = 0;
   q->iteratorNode = NULL;
   q->currentNode = NULL;
   q->head = NULL;
@@ -168,7 +167,7 @@ void
 queueClear (queue_t *q, ssize_t startIdx)
 {
   queuenode_t   *node;
-  queuenode_t   *pnode;
+  queuenode_t   *tnode;
 
   if (q == NULL) {
     return;
@@ -176,9 +175,12 @@ queueClear (queue_t *q, ssize_t startIdx)
   node = q->tail;
 
   while (node != NULL && q->count > startIdx) {
-    pnode = node;
+    tnode = node;
     node = node->prev;
-    queueRemove (q, pnode);
+    if (tnode->data != NULL && q->freeHook != NULL) {
+      q->freeHook (tnode->data);
+    }
+    queueRemove (q, tnode);
   }
   return;
 }
@@ -256,23 +258,23 @@ queueGetCount (queue_t *q)
 }
 
 void
-queueStartIterator (queue_t *q)
+queueStartIterator (queue_t *q, ssize_t *iteridx)
 {
   if (q != NULL) {
-    q->currentIndex = 0;
+    *iteridx = -1;
     q->iteratorNode = q->head;
     q->currentNode = q->head;
   }
 }
 
 void *
-queueIterateData (queue_t *q)
+queueIterateData (queue_t *q, ssize_t *iteridx)
 {
   void      *data = NULL;
 
   if (q->iteratorNode != NULL) {
     data = q->iteratorNode->data;
-    q->currentIndex++;
+    ++(*iteridx);
     q->currentNode = q->iteratorNode;
     q->iteratorNode = q->iteratorNode->next;
   }
@@ -280,7 +282,7 @@ queueIterateData (queue_t *q)
 }
 
 void *
-queueIterateRemoveNode (queue_t *q)
+queueIterateRemoveNode (queue_t *q, ssize_t *iteridx)
 {
   void        *data = NULL;
 

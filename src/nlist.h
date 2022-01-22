@@ -31,10 +31,10 @@ ssize_t   nlistGetNum (nlist_t *, nlistidx_t idx);
 double    nlistGetDouble (nlist_t *, nlistidx_t idx);
 nlist_t   *nlistGetList (nlist_t *, nlistidx_t idx);
   /* iterators */
-void      nlistStartIterator (nlist_t *list);
-nlistidx_t nlistIterateKey (nlist_t *list);
-void      *nlistIterateValueData (nlist_t *list);
-ssize_t   nlistIterateValueNum (nlist_t *list);
+void      nlistStartIterator (nlist_t *list, nlistidx_t *idx);
+nlistidx_t nlistIterateKey (nlist_t *list, nlistidx_t *idx);
+void      *nlistIterateValueData (nlist_t *list, nlistidx_t *idx);
+ssize_t   nlistIterateValueNum (nlist_t *list, nlistidx_t *idx);
   /* aux routines */
 void      nlistSort (nlist_t *);
 void      nlistDumpInfo (nlist_t *list);

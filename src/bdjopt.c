@@ -75,8 +75,6 @@ static datafilekey_t bdjoptprofiledfkeys[] = {
   { "QUICKPLAYSHOW",        OPT_P_QUICKPLAYSHOW,        VALUE_NUM, parseConvBoolean },
   { "REMCONTROLPASS",       OPT_P_REMCONTROLPASS,       VALUE_DATA, NULL },
   { "REMCONTROLPORT",       OPT_P_REMCONTROLPORT,       VALUE_NUM, NULL },
-  { "REMCONTROLSHOWDANCE",  OPT_P_REMCONTROLSHOWDANCE,  VALUE_NUM, parseConvBoolean },
-  { "REMCONTROLSHOWSONG",   OPT_P_REMCONTROLSHOWSONG,   VALUE_NUM, parseConvBoolean },
   { "REMCONTROLUSER",       OPT_P_REMCONTROLUSER,       VALUE_DATA, NULL },
   { "REMOTECONTROL",        OPT_P_REMOTECONTROL,        VALUE_NUM, parseConvBoolean },
   { "SERVERNAME",           OPT_P_SERVERNAME,           VALUE_DATA, NULL },

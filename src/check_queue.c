@@ -347,6 +347,7 @@ START_TEST(queue_iterate)
   ssize_t   count;
   char      *data;
   queue_t       *q;
+  ssize_t   qiteridx;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== queue_iterate");
   q = queueAlloc (NULL);
@@ -360,26 +361,26 @@ START_TEST(queue_iterate)
   count = queueGetCount (q);
   ck_assert_int_eq (count, 6);
 
-  queueStartIterator (q);
-  data = queueIterateData (q);
+  queueStartIterator (q, &qiteridx);
+  data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "aaaa");
-  data = queueIterateData (q);
+  data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "bbbb");
-  data = queueIterateData (q);
+  data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "cccc");
-  data = queueIterateData (q);
+  data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "dddd");
-  data = queueIterateData (q);
+  data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "eeee");
-  data = queueIterateData (q);
+  data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "ffff");
-  data = queueIterateData (q);
+  data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_null (data);
 
   queueFree (q);
@@ -391,6 +392,7 @@ START_TEST(queue_remove_by_idx)
   ssize_t   count;
   char      *data;
   queue_t       *q;
+  ssize_t   qiteridx;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== queue_remove_by_idx");
   q = queueAlloc (NULL);
@@ -410,23 +412,23 @@ START_TEST(queue_remove_by_idx)
   ck_assert_str_eq (data, "dddd");
   count = queueGetCount (q);
   ck_assert_int_eq (count, 5);
-  queueStartIterator (q);
-  data = queueIterateData (q);
+  queueStartIterator (q, &qiteridx);
+  data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "aaaa");
-  data = queueIterateData (q);
+  data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "bbbb");
-  data = queueIterateData (q);
+  data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "cccc");
-  data = queueIterateData (q);
+  data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "eeee");
-  data = queueIterateData (q);
+  data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "ffff");
-  data = queueIterateData (q);
+  data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_null (data);
 
   // remove head
@@ -435,20 +437,20 @@ START_TEST(queue_remove_by_idx)
   ck_assert_str_eq (data, "aaaa");
   count = queueGetCount (q);
   ck_assert_int_eq (count, 4);
-  queueStartIterator (q);
-  data = queueIterateData (q);
+  queueStartIterator (q, &qiteridx);
+  data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "bbbb");
-  data = queueIterateData (q);
+  data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "cccc");
-  data = queueIterateData (q);
+  data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "eeee");
-  data = queueIterateData (q);
+  data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "ffff");
-  data = queueIterateData (q);
+  data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_null (data);
 
   // remove tail
@@ -457,17 +459,17 @@ START_TEST(queue_remove_by_idx)
   ck_assert_str_eq (data, "ffff");
   count = queueGetCount (q);
   ck_assert_int_eq (count, 3);
-  queueStartIterator (q);
-  data = queueIterateData (q);
+  queueStartIterator (q, &qiteridx);
+  data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "bbbb");
-  data = queueIterateData (q);
+  data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "cccc");
-  data = queueIterateData (q);
+  data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "eeee");
-  data = queueIterateData (q);
+  data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_null (data);
 
   // remove fail
@@ -480,14 +482,14 @@ START_TEST(queue_remove_by_idx)
   ck_assert_str_eq (data, "cccc");
   count = queueGetCount (q);
   ck_assert_int_eq (count, 2);
-  queueStartIterator (q);
-  data = queueIterateData (q);
+  queueStartIterator (q, &qiteridx);
+  data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "bbbb");
-  data = queueIterateData (q);
+  data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "eeee");
-  data = queueIterateData (q);
+  data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_null (data);
 
   // remove head
@@ -496,11 +498,11 @@ START_TEST(queue_remove_by_idx)
   ck_assert_str_eq (data, "bbbb");
   count = queueGetCount (q);
   ck_assert_int_eq (count, 1);
-  queueStartIterator (q);
-  data = queueIterateData (q);
+  queueStartIterator (q, &qiteridx);
+  data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "eeee");
-  data = queueIterateData (q);
+  data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_null (data);
 
   // remove head
@@ -509,8 +511,8 @@ START_TEST(queue_remove_by_idx)
   ck_assert_str_eq (data, "eeee");
   count = queueGetCount (q);
   ck_assert_int_eq (count, 0);
-  queueStartIterator (q);
-  data = queueIterateData (q);
+  queueStartIterator (q, &qiteridx);
+  data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_null (data);
 
   queueFree (q);
@@ -522,6 +524,7 @@ START_TEST(queue_remove_node)
   ssize_t   count;
   char      *data;
   queue_t       *q;
+  ssize_t   qiteridx;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== queue_remove_node");
   q = queueAlloc (NULL);
@@ -536,130 +539,130 @@ START_TEST(queue_remove_node)
   ck_assert_int_eq (count, 6);
 
   // remove from middle
-  queueStartIterator (q);
-  data = queueIterateData (q);
+  queueStartIterator (q, &qiteridx);
+  data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "aaaa");
-  data = queueIterateData (q);
+  data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "bbbb");
-  data = queueIterateData (q);
+  data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "cccc");
-  data = queueIterateRemoveNode (q);
+  data = queueIterateRemoveNode (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "cccc");
   count = queueGetCount (q);
   ck_assert_int_eq (count, 5);
-  data = queueIterateData (q);
+  data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "dddd");
-  data = queueIterateData (q);
+  data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "eeee");
-  data = queueIterateData (q);
+  data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "ffff");
-  data = queueIterateData (q);
+  data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_null (data);
 
   // remove from head
-  queueStartIterator (q);
-  data = queueIterateData (q);
+  queueStartIterator (q, &qiteridx);
+  data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "aaaa");
-  data = queueIterateRemoveNode (q);
+  data = queueIterateRemoveNode (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "aaaa");
   count = queueGetCount (q);
   ck_assert_int_eq (count, 4);
-  data = queueIterateData (q);
+  data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "bbbb");
-  data = queueIterateData (q);
+  data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "dddd");
-  data = queueIterateData (q);
+  data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "eeee");
-  data = queueIterateData (q);
+  data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "ffff");
-  data = queueIterateData (q);
+  data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_null (data);
 
   // remove tail
-  queueStartIterator (q);
-  data = queueIterateData (q);
+  queueStartIterator (q, &qiteridx);
+  data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "bbbb");
-  data = queueIterateData (q);
+  data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "dddd");
-  data = queueIterateData (q);
+  data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "eeee");
-  data = queueIterateData (q);
+  data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "ffff");
-  data = queueIterateRemoveNode (q);
+  data = queueIterateRemoveNode (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "ffff");
   count = queueGetCount (q);
   ck_assert_int_eq (count, 3);
-  data = queueIterateData (q);
+  data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_null (data);
 
-  // remove fail
-  data = queueIterateRemoveNode (q);
+  // remove fa, &qiteridxil
+  data = queueIterateRemoveNode (q, &qiteridx);
   ck_assert_ptr_null (data);
 
   // remove middle
-  queueStartIterator (q);
-  data = queueIterateData (q);
+  queueStartIterator (q, &qiteridx);
+  data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "bbbb");
-  data = queueIterateData (q);
+  data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "dddd");
-  data = queueIterateRemoveNode (q);
+  data = queueIterateRemoveNode (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "dddd");
   count = queueGetCount (q);
   ck_assert_int_eq (count, 2);
-  data = queueIterateData (q);
+  data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "eeee");
-  data = queueIterateData (q);
+  data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_null (data);
 
   // remove head
-  queueStartIterator (q);
-  data = queueIterateData (q);
+  queueStartIterator (q, &qiteridx);
+  data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "bbbb");
-  data = queueIterateRemoveNode (q);
+  data = queueIterateRemoveNode (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "bbbb");
   count = queueGetCount (q);
   ck_assert_int_eq (count, 1);
-  data = queueIterateData (q);
+  data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "eeee");
-  data = queueIterateData (q);
+  data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_null (data);
 
   // remove head
-  queueStartIterator (q);
-  data = queueIterateData (q);
+  queueStartIterator (q, &qiteridx);
+  data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "eeee");
-  data = queueIterateRemoveNode (q);
+  data = queueIterateRemoveNode (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "eeee");
   count = queueGetCount (q);
   ck_assert_int_eq (count, 0);
-  data = queueIterateData (q);
+  data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_null (data);
 
   queueFree (q);
@@ -771,6 +774,8 @@ START_TEST(queue_move)
   char      *data;
   queue_t       *q;
   ssize_t   i;
+  ssize_t   qiteridx;
+
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== queue_move");
   q = queueAlloc (NULL);
@@ -831,26 +836,26 @@ START_TEST(queue_move)
 
   queueMove (q, 0, 5);
 
-  queueStartIterator (q);
-  data = queueIterateData (q);
+  queueStartIterator (q, &qiteridx);
+  data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "eeee");
-  data = queueIterateData (q);
+  data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "aaaa");
-  data = queueIterateData (q);
+  data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "dddd");
-  data = queueIterateData (q);
+  data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "cccc");
-  data = queueIterateData (q);
+  data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "ffff");
-  data = queueIterateData (q);
+  data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "bbbb");
-  data = queueIterateData (q);
+  data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_null (data);
 
   queueFree (q);

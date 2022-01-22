@@ -26,6 +26,7 @@ sequenceAlloc (char *fname)
   char          *seqkey;
   slistidx_t    lkey;
   char          fn [MAXPATHLEN];
+  nlistidx_t    iteridx;
 
 
   pathbldMakePath (fn, sizeof (fn), "", fname, ".sequence", PATHBLD_MP_NONE);
@@ -45,8 +46,8 @@ sequenceAlloc (char *fname)
   sequence->sequence = nlistAlloc ("sequence", LIST_UNORDERED, free);
   nlistSetSize (sequence->sequence, slistGetCount (tlist));
 
-  slistStartIterator (tlist);
-  while ((seqkey = slistIterateKey (tlist)) != NULL) {
+  slistStartIterator (tlist, &iteridx);
+  while ((seqkey = slistIterateKey (tlist, &iteridx)) != NULL) {
     lkey = slistGetNum (danceLookup, seqkey);
     nlistSetStr (sequence->sequence, lkey, strdup (seqkey));
   }
@@ -77,17 +78,17 @@ sequenceGetDanceList (sequence_t *sequence)
 }
 
 void
-sequenceStartIterator (sequence_t *sequence)
+sequenceStartIterator (sequence_t *sequence, nlistidx_t *iteridx)
 {
   if (sequence == NULL || sequence->sequence == NULL) {
     return;
   }
 
-  nlistStartIterator (sequence->sequence);
+  nlistStartIterator (sequence->sequence, iteridx);
 }
 
 listidx_t
-sequenceIterate (sequence_t *sequence)
+sequenceIterate (sequence_t *sequence, nlistidx_t *iteridx)
 {
   listidx_t     lkey;
 
@@ -95,10 +96,10 @@ sequenceIterate (sequence_t *sequence)
     return -1L;
   }
 
-  lkey = nlistIterateKey (sequence->sequence);
+  lkey = nlistIterateKey (sequence->sequence, iteridx);
   if (lkey < 0) {
-      /* a sequence just restarts from the beginning */
-    lkey = nlistIterateKey (sequence->sequence);
+    /* a sequence just restarts from the beginning */
+    lkey = nlistIterateKey (sequence->sequence, iteridx);
   }
   return lkey;
 }

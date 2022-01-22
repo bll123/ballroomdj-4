@@ -22,8 +22,8 @@ size_t  dbCount (void);
 int     dbLoad (db_t *, char *);
 song_t  *dbGetByName (char *);
 song_t  *dbGetByIdx (dbidx_t idx);
-void    dbStartIterator (void);
-song_t  *dbIterate (dbidx_t *idx);
+void    dbStartIterator (nlistidx_t *iteridx);
+song_t  *dbIterate (dbidx_t *dbidx, nlistidx_t *iteridx);
 nlist_t *dbGetDanceCounts (void);
 
 #endif /* INC_MUSICDB_H */

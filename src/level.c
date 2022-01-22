@@ -59,6 +59,12 @@ levelGetWeight (level_t *level, ilistidx_t ikey)
   return ilistGetNum (level->level, ikey, LEVEL_WEIGHT);
 }
 
+ssize_t
+levelGetMax (level_t *level)
+{
+  return ilistGetCount (level->level) - 1;
+}
+
 void
 levelConv (char *keydata, datafileret_t *ret)
 {

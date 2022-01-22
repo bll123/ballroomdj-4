@@ -267,7 +267,7 @@ datafileParseMerge (list_t *datalist, char *data, char *name,
           datalist = slistAlloc (name, LIST_UNORDERED, free, NULL);
           slistSetSize (datalist, dataCount / 2);
         } else {
-          slistSetSize (datalist, dataCount / 2 + listGetCount (datalist));
+          slistSetSize (datalist, dataCount / 2 + slistGetCount (datalist));
         }
         logMsg (LOG_DBG, LOG_DATAFILE, "key_val: list");
       } else {
@@ -275,7 +275,7 @@ datafileParseMerge (list_t *datalist, char *data, char *name,
           datalist = nlistAlloc (name, LIST_UNORDERED, free);
           nlistSetSize (datalist, dataCount / 2);
         } else {
-          nlistSetSize (datalist, dataCount / 2 + listGetCount (datalist));
+          nlistSetSize (datalist, dataCount / 2 + nlistGetCount (datalist));
         }
         logMsg (LOG_DBG, LOG_DATAFILE, "key_val: datalist");
       }
@@ -312,7 +312,7 @@ datafileParseMerge (list_t *datalist, char *data, char *name,
       if (dftype == DFTYPE_INDIRECT) {
         nlistSetSize (datalist, atol (tvalstr));
       }
-      slistSetSize (*lookup, listGetCount (datalist));
+      slistSetSize (*lookup, slistGetCount (datalist));
       continue;
     }
 
@@ -437,9 +437,11 @@ datafileParseMerge (list_t *datalist, char *data, char *name,
   }
 
   if (lookupKey != DATAFILE_NO_LOOKUP) {
+    slistidx_t    iteridx;
+
     slistSort (*lookup);
-    slistStartIterator (*lookup);
-    while ((tkeystr = slistIterateKey (*lookup)) != NULL) {
+    slistStartIterator (*lookup, &iteridx);
+    while ((tkeystr = slistIterateKey (*lookup, &iteridx)) != NULL) {
       lval = slistGetNum (*lookup, tkeystr);
       logMsg (LOG_DBG, LOG_DATAFILE | LOG_BASIC,
           "%s: %s / %zd", name, tkeystr, lval);

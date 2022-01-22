@@ -109,7 +109,7 @@ mcheck: $(MKC_ENV_SHR)
 		--trace-children=yes \
 		--track-origins=yes \
 		--show-leak-kinds=all \
-		./bin/bdj4 --main --debug 7)
+		./bin/bdj4 --main --debug 11)
 
 mchecksupp: $(MKC_ENV_SHR)
 	. ./$(MKC_ENV_SHR); $(MAKE) -e rall
@@ -120,7 +120,7 @@ mchecksupp: $(MKC_ENV_SHR)
 		--track-origins=yes \
 		--show-leak-kinds=all \
 		--suppressions=src/utils/valgrind-suppression.txt \
-		./bin/bdj4 --main --debug 7)
+		./bin/bdj4 --main --debug 11)
 
 mcheckcli: $(MKC_ENV_SHR)
 	. ./$(MKC_ENV_SHR); $(MAKE) -e rall
@@ -266,9 +266,7 @@ dataclean:
 .PHONY: distclean
 distclean:
 	@-$(MAKE) clean
-	@-$(RM) -f $(MKC_ENV_SHR) $(MKC_ENV_TEST)
-	@-$(RM) -f $(MKC_REQLIB) $(MKC_REQLIB_COMMON) $(MKC_REQLIB_VLC) $(MKC_REQLIB_TEST)
-	@-$(RM) -f $(MKC_REQLIB_PA) $(MKC_REQLIB_VOLWIN) $(MKC_REQLIB_ALSA)
+	@-$(RM) -f bdj-env.* bdj-reqlibs.*
 	@-$(RM) -f $(MKC_OUTPUT) $(MKC_OUTPUT_COMMON) $(MKC_VLCOUTPUT)
 	@-$(RM) -f $(MKC_OUTPUT_ALSA) $(MKC_OUTPUT_PA) $(MKC_OUTPUT_TEST)
 	@-$(RM) -f $(MKC_OUTPUT_VOLWIN)

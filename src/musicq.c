@@ -248,7 +248,7 @@ musicqGetData (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx, tagdefkey_t
 {
   musicqitem_t  *musicqitem;
   song_t        *song;
-  char          *data;
+  char          *data = NULL;
 
   if (musicq == NULL || musicq->q [musicqidx] == NULL) {
     return NULL;
@@ -268,11 +268,11 @@ musicqGetData (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx, tagdefkey_t
 char *
 musicqGetDance (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx)
 {
-  musicqitem_t  *musicqitem;
-  song_t        *song;
+  musicqitem_t  *musicqitem = NULL;
+  song_t        *song = NULL;
   listidx_t     dancekey;
-  char          *danceStr;
-  dance_t       *dances;
+  char          *danceStr = NULL;
+  dance_t       *dances = NULL;
 
   if (musicq == NULL || musicq->q [musicqidx] == NULL) {
     return NULL;

@@ -204,7 +204,7 @@ nlistGetDouble (nlist_t *list, nlistidx_t lidx)
   if (idx >= 0) {
     value = list->data [idx].value.dval;
   }
-  logMsg (LOG_DBG, LOG_LIST, "list:%s key:%ld idx:%ld value:%8.2g", list->name, lidx, idx, value);
+  logMsg (LOG_DBG, LOG_LIST, "list:%s key:%ld idx:%ld value:%.6f", list->name, lidx, idx, value);
   return value;
 }
 
@@ -231,13 +231,13 @@ nlistSort (nlist_t *list)
 }
 
 inline void
-nlistStartIterator (nlist_t *list)
+nlistStartIterator (nlist_t *list, nlistidx_t *iteridx)
 {
-  list->iteratorIndex = 0;
+  *iteridx = -1;
 }
 
 nlistidx_t
-nlistIterateKey (nlist_t *list)
+nlistIterateKey (nlist_t *list, nlistidx_t *iteridx)
 {
   ssize_t      value = LIST_LOC_INVALID;
 
@@ -247,32 +247,32 @@ nlistIterateKey (nlist_t *list)
     return LIST_LOC_INVALID;
   }
 
-  if (list->iteratorIndex >= list->count) {
-    list->iteratorIndex = 0;
+  ++(*iteridx);
+  if (*iteridx >= list->count) {
+    *iteridx = -1;
     logProcEnd (LOG_PROC, "nlistIterateKey", "end-list");
     return LIST_LOC_INVALID;      /* indicate the end of the list */
   }
 
-  value = list->data [list->iteratorIndex].key.idx;
+  value = list->data [*iteridx].key.idx;
 
   list->keyCache.idx = value;
-  list->locCache = list->iteratorIndex;
+  list->locCache = *iteridx;
 
-  ++list->iteratorIndex;
   logProcEnd (LOG_PROC, "nlistIterateKey", "");
   return value;
 }
 
 inline void *
-nlistIterateValueData (nlist_t *list)
+nlistIterateValueData (nlist_t *list, nlistidx_t *iteridx)
 {
-  return listIterateValue (list);
+  return listIterateValue (list, iteridx);
 }
 
 inline ssize_t
-nlistIterateValueNum (nlist_t *list)
+nlistIterateValueNum (nlist_t *list, nlistidx_t *iteridx)
 {
-  return listIterateNum (list);
+  return listIterateNum (list, iteridx);
 }
 
 void

@@ -75,17 +75,17 @@ danceFree (dance_t *dance)
 }
 
 void
-danceStartIterator (dance_t *dances)
+danceStartIterator (dance_t *dances, ilistidx_t *iteridx)
 {
   if (dances == NULL || dances->dances == NULL) {
     return;
   }
 
-  ilistStartIterator (dances->dances);
+  ilistStartIterator (dances->dances, iteridx);
 }
 
 ilistidx_t
-danceIterateKey (dance_t *dances)
+danceIterateKey (dance_t *dances, ilistidx_t *iteridx)
 {
   ilistidx_t     ikey;
 
@@ -93,7 +93,7 @@ danceIterateKey (dance_t *dances)
     return LIST_LOC_INVALID;
   }
 
-  ikey = ilistIterateKey (dances->dances);
+  ikey = ilistIterateKey (dances->dances, iteridx);
   return ikey;
 }
 
@@ -135,6 +135,7 @@ danceGetDanceList (dance_t *dance)
   slist_t     *dl;
   ilistidx_t  key;
   char        *nm;
+  ilistidx_t  iteridx;
 
   if (dance->danceList != NULL) {
     return dance->danceList;
@@ -142,8 +143,8 @@ danceGetDanceList (dance_t *dance)
 
   dl = slistAlloc ("dancelist", LIST_UNORDERED, free, NULL);
   slistSetSize (dl, ilistGetCount (dance->dances));
-  ilistStartIterator (dance->dances);
-  while ((key = ilistIterateKey (dance->dances)) >= 0) {
+  ilistStartIterator (dance->dances, &iteridx);
+  while ((key = ilistIterateKey (dance->dances, &iteridx)) >= 0) {
     nm = ilistGetData (dance->dances, key, DANCE_DANCE);
     slistSetNum (dl, nm, key);
   }
