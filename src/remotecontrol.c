@@ -30,7 +30,6 @@ typedef struct {
   processconn_t   processes [PROCESS_MAX];
   programstate_t  programState;
   mstime_t        tm;
-  mstime_t        statusCheck;
   uint16_t        port;
   char            *user;
   char            *pass;
@@ -124,7 +123,6 @@ main (int argc, char *argv[])
   remctrlData.haveData = 0;
   remctrlData.pass = strdup (bdjoptGetData (OPT_P_REMCONTROLPASS));
   remctrlData.playerStatus = NULL;
-  mstimestart (&remctrlData.statusCheck);
   remctrlData.playlistList = "";
   remctrlData.port = bdjoptGetNum (OPT_P_REMCONTROLPORT);
   remctrlData.programState = STATE_INITIALIZING;
@@ -283,8 +281,10 @@ remctrlProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 {
   remctrldata_t     *remctrlData = udata;
 
-  logMsg (LOG_DBG, LOG_MSGS, "got: from: %ld route: %ld msg:%ld args:%s",
-      routefrom, route, msg, args);
+  if (msg != MSG_STATUS_DATA) {
+    logMsg (LOG_DBG, LOG_MSGS, "got: from: %ld route: %ld msg:%ld args:%s",
+        routefrom, route, msg, args);
+  }
 
   switch (route) {
     case ROUTE_NONE:
@@ -387,12 +387,6 @@ remctrlProcessing (void *udata)
       logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
     }
     return gKillReceived;
-  }
-
-  if (mstimeCheck (&remctrlData->statusCheck)) {
-    sockhSendMessage (SOCKOF (PROCESS_MAIN),
-        ROUTE_REMCTRL, ROUTE_MAIN, MSG_GET_STATUS, NULL);
-    mstimeset (&remctrlData->statusCheck, 500);
   }
 
   websrvProcess (websrv);

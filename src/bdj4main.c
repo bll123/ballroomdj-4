@@ -71,7 +71,7 @@ static void     mainConnectProcess (maindata_t *mainData, processconnidx_t idx,
                     bdjmsgroute_t route, uint16_t port);
 static void     mainQueueClear (maindata_t *mainData);
 static void     mainQueueDance (maindata_t *mainData, ssize_t danceIdx, ssize_t count);
-static void     mainPlaylistQueue (maindata_t *mainData, char *plname);
+static void     mainQueuePlaylist (maindata_t *mainData, char *plname);
 static void     mainSigHandler (int sig);
 static void     mainMusicQueueFill (maindata_t *mainData);
 static void     mainMusicQueuePrep (maindata_t *mainData);
@@ -93,7 +93,7 @@ static void     mainStopProcess (maindata_t *mainData, processconnidx_t idx,
                     bdjmsgroute_t route, char *lockfn, bool force);
 static void     mainSendDanceList (maindata_t *mainData);
 static void     mainSendPlaylistList (maindata_t *mainData);
-static void     mainSendStatusResp (maindata_t *mainData, char *playerResp);
+static void     mainSendStatus (maindata_t *mainData, char *playerResp);
 static void     mainDanceCountsInit (maindata_t *mainData);
 
 static long globalCounter = 0;
@@ -196,8 +196,10 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
   logProcBegin (LOG_PROC, "mainProcessMsg");
   mainData = (maindata_t *) udata;
 
-  logMsg (LOG_DBG, LOG_MSGS, "got: from: %ld route: %ld msg:%ld args:%s",
-      routefrom, route, msg, args);
+  if (msg != MSG_PLAYER_STATUS_DATA) {
+    logMsg (LOG_DBG, LOG_MSGS, "got: from: %ld route: %ld msg:%ld args:%s",
+        routefrom, route, msg, args);
+  }
 
   switch (route) {
     case ROUTE_NONE:
@@ -237,12 +239,12 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           /* clear out any playing song */
           sockhSendMessage (SOCKOF (PROCESS_PLAYER),
               ROUTE_MAIN, ROUTE_PLAYER, MSG_PLAY_NEXTSONG, NULL);
-          mainPlaylistQueue (mainData, args);
+          mainQueuePlaylist (mainData, args);
           break;
         }
         case MSG_PLAYLIST_QUEUE: {
           logMsg (LOG_DBG, LOG_MSGS, "got: playlist-queue %s", args);
-          mainPlaylistQueue (mainData, args);
+          mainQueuePlaylist (mainData, args);
           break;
         }
         case MSG_DANCE_QUEUE: {
@@ -310,13 +312,8 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           mainSendPlaylistList (mainData);
           break;
         }
-        case MSG_GET_STATUS: {
-          sockhSendMessage (SOCKOF (PROCESS_PLAYER),
-              ROUTE_MAIN, ROUTE_PLAYER, MSG_GET_STATUS, NULL);
-          break;
-        }
         case MSG_PLAYER_STATUS_DATA: {
-          mainSendStatusResp (mainData, args);
+          mainSendStatus (mainData, args);
           break;
         }
         default: {
@@ -585,7 +582,7 @@ mainQueueDance (maindata_t *mainData, ssize_t danceIdx, ssize_t count)
       danceIdx, globalCounter++);
   playlist = playlistCreate (plname, PLTYPE_AUTO, NULL);
   playlistSetConfigNum (playlist, PLAYLIST_STOP_AFTER, count);
-  /* this will also set selected */
+  /* this will also set 'selected' */
   playlistSetDanceCount (playlist, danceIdx, 1);
   logMsg (LOG_DBG, LOG_BASIC, "Queue Playlist: %s", plname);
   slistSetData (mainData->playlistCache, plname, playlist);
@@ -597,12 +594,12 @@ mainQueueDance (maindata_t *mainData, ssize_t danceIdx, ssize_t count)
 }
 
 static void
-mainPlaylistQueue (maindata_t *mainData, char *plname)
+mainQueuePlaylist (maindata_t *mainData, char *plname)
 {
   playlist_t      *playlist;
 
 
-  logProcBegin (LOG_PROC, "mainPlaylistQueue");
+  logProcBegin (LOG_PROC, "mainQueuePlaylist");
   playlist = playlistLoad (plname);
   if (playlist != NULL) {
     logMsg (LOG_DBG, LOG_BASIC, "Queue Playlist: %s", plname);
@@ -615,7 +612,7 @@ mainPlaylistQueue (maindata_t *mainData, char *plname)
   } else {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Queue Playlist failed: %s", plname);
   }
-  logProcEnd (LOG_PROC, "mainPlaylistQueue", "");
+  logProcEnd (LOG_PROC, "mainQueuePlaylist", "");
 }
 
 static void
@@ -1144,7 +1141,7 @@ mainSendPlaylistList (maindata_t *mainData)
 
 
 static void
-mainSendStatusResp (maindata_t *mainData, char *playerResp)
+mainSendStatus (maindata_t *mainData, char *playerResp)
 {
   char    tbuff [200];
   char    rbuff [3096];
@@ -1185,6 +1182,9 @@ mainSendStatusResp (maindata_t *mainData, char *playerResp)
 
   sockhSendMessage (SOCKOF (PROCESS_REMCTRL),
       ROUTE_MAIN, ROUTE_REMCTRL, MSG_STATUS_DATA, rbuff);
+
+  /* build a message and send it to the gui */
+
 }
 
 static void

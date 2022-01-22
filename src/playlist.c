@@ -339,6 +339,7 @@ playlistSetConfigNum (playlist_t *pl, playlistkey_t key, ssize_t value)
     return;
   }
 
+fprintf (stderr, "plscn: set %d to %ld\n", key, value);
   nlistSetNum (pl->plinfo, key, value);
   return;
 }
@@ -363,6 +364,7 @@ playlistSetDanceCount (playlist_t *pl, ilistidx_t danceIdx, ssize_t count)
     return;
   }
 
+fprintf (stderr, "plsdc: set %ld to %ld\n", danceIdx, count);
   ilistSetNum (pl->pldances, danceIdx, PLDANCE_SELECTED, 1);
   ilistSetNum (pl->pldances, danceIdx, PLDANCE_COUNT, count);
   return;

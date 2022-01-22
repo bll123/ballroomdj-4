@@ -72,6 +72,7 @@ typedef struct {
   int             currentSpeed;
   char            *defaultSink;
   char            *currentSink;
+  mstime_t        statusCheck;
   volsinklist_t   sinklist;
   playerstate_t   playerState;
   mstime_t        playTimeStart;
@@ -129,7 +130,7 @@ static double   calcFadeIndex (playerdata_t *playerData);
 static void     playerStartFadeOut (playerdata_t *playerData);
 static void     playerSetCheckTimes (playerdata_t *playerData, prepqueue_t *pq);
 static void     playerSetPlayerState (playerdata_t *playerData, playerstate_t pstate);
-static void     playerSendStatusResp (playerdata_t *playerData);
+static void     playerSendStatus (playerdata_t *playerData);
 static void     playerConnectProcess (playerdata_t *playerData,
                     processconnidx_t idx, bdjmsgroute_t route, uint16_t port);
 static void     playerDisconnectProcess (playerdata_t *playerData,
@@ -171,6 +172,7 @@ main (int argc, char *argv[])
   playerData.globalCount = 1;
   playerData.playerState = PL_STATE_STOPPED;
   playerData.playRequest = queueAlloc (free);
+  mstimeset (&playerData.statusCheck, 0);
   playerData.pli = NULL;
   playerData.prepQueue = queueAlloc (playerPrepQueueFree);
   playerData.prepRequestQueue = queueAlloc (playerPrepQueueFree);
@@ -416,10 +418,6 @@ playerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           playerSongPlay (playerData, args);
           break;
         }
-        case MSG_GET_STATUS: {
-          playerSendStatusResp (playerData);
-          break;
-        }
         default: {
           break;
         }
@@ -477,6 +475,11 @@ playerProcessing (void *udata)
       logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
     }
     return gKillReceived;
+  }
+
+  if (mstimeCheck (&playerData->statusCheck)) {
+    playerSendStatus (playerData);
+    mstimeset (&playerData->statusCheck, 100);
   }
 
   if (playerData->inFade) {
@@ -1238,7 +1241,7 @@ playerSetPlayerState (playerdata_t *playerData, playerstate_t pstate)
 
 
 static void
-playerSendStatusResp (playerdata_t *playerData)
+playerSendStatus (playerdata_t *playerData)
 {
   char    tbuff [200];
   char    rbuff [3096];
