@@ -101,7 +101,7 @@ typedef struct {
 } playerdata_t;
 
 #define FADEIN_TIMESLICE      100
-#define FADEOUT_TIMESLICE     300
+#define FADEOUT_TIMESLICE     200
 
 
 static void     playerCheckSystemVolume (playerdata_t *playerData);
@@ -994,6 +994,8 @@ playerFade (playerdata_t *playerData)
       logMsg (LOG_DBG, LOG_VOLUME, "check sysvol: before fade request");
       playerCheckSystemVolume (playerData);
     }
+    mstimeset (&playerData->playTimeCheck, playerData->fadeoutTime - 500);
+    mstimeset (&playerData->playEndCheck, playerData->fadeoutTime);
     playerStartFadeOut (playerData);
   }
 }
@@ -1140,7 +1142,8 @@ playerFadeVolSet (playerdata_t *playerData)
   if (! playerData->mute) {
     volumeSet (playerData->volume, playerData->currentSink, newvol);
   }
-  logMsg (LOG_DBG, LOG_VOLUME, "fade set volume: %d", newvol);
+  logMsg (LOG_DBG, LOG_MAIN, "fade set volume: %d count:%ld time %zd",
+      newvol, playerData->fadeCount, mstimeend (&playerData->playEndCheck));
   if (playerData->inFadeIn) {
     ++playerData->fadeCount;
   }
@@ -1159,7 +1162,7 @@ playerFadeVolSet (playerdata_t *playerData)
       /* the player stop condition will reset the inFade flag */
     playerData->inFadeOut = false;
     volumeSet (playerData->volume, playerData->currentSink, 0);
-    logMsg (LOG_DBG, LOG_VOLUME, "fade-out done volume: %d", 0);
+    logMsg (LOG_DBG, LOG_MAIN, "fade-out done volume: %d time: %zd", 0, mstimeend (&playerData->playEndCheck));
   }
 }
 
@@ -1201,8 +1204,9 @@ playerStartFadeOut (playerdata_t *playerData)
 {
   playerData->inFade = true;
   playerData->inFadeOut = true;
-  playerData->fadeSamples = playerData->fadeoutTime / FADEOUT_TIMESLICE - 2;
+  playerData->fadeSamples = playerData->fadeoutTime / FADEOUT_TIMESLICE;
   playerData->fadeCount = playerData->fadeSamples;
+  logMsg (LOG_DBG, LOG_MAIN, "fade: samples: %ld", playerData->fadeCount);
   playerFadeVolSet (playerData);
   playerSetPlayerState (playerData, PL_STATE_IN_FADEOUT);
   logMsg (LOG_DBG, LOG_BASIC, "pl state: in fadeout");

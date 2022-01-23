@@ -463,8 +463,8 @@ mainSendMobileMarqueeData (maindata_t *mainData)
 
   if (musicqGetLen (mainData->musicQueue, mainData->musicqCurrentIdx) > 0) {
     for (ssize_t i = 0; i <= mqLen; ++i) {
-      if (mainData->playerState == PL_STATE_IN_GAP ||
-          (mainData->playerState == PL_STATE_IN_FADEOUT && i > 1)) {
+      if ((i > 0 && mainData->playerState == PL_STATE_IN_GAP) ||
+          (i > 1 && mainData->playerState == PL_STATE_IN_FADEOUT)) {
         dstr = "";
       } else {
         song = musicqGetByIdx (mainData->musicQueue, mainData->musicqCurrentIdx, i);
