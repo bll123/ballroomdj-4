@@ -753,6 +753,7 @@ mainPrepSong (maindata_t *mainData, song_t *song,
     if (speed < 0) {
       speed = 100;
     }
+
     playlist = slistGetData (mainData->playlistCache, plname);
     pldur = playlistGetConfigNum (playlist, PLAYLIST_MAX_PLAY_TIME);
       /* apply songend if set to a reasonable value */
@@ -762,10 +763,22 @@ mainPrepSong (maindata_t *mainData, song_t *song,
       dur = songend;
       logMsg (LOG_DBG, LOG_MAIN, "dur-songend: %zd", dur);
     }
-      /* adjust the song's duration by the songstart value */
+    /* adjust the song's duration by the songstart value */
     if (songstart > 0) {
       dur -= songstart;
       logMsg (LOG_DBG, LOG_MAIN, "dur-songstart: %zd", dur);
+    }
+
+    /* after adjusting the duration by song start/end, then adjust */
+    /* the duration by the speed of the song */
+    /* this is the real duration for the song */
+    if (speed != 100) {
+      double      drate;
+      double      ddur;
+
+      drate = (double) speed / 100.0;
+      ddur = (double) dur / drate;
+      dur = (ssize_t) ddur;
     }
 
     /* if the playlist has a maximum play time specified for a dance */
@@ -786,16 +799,6 @@ mainPrepSong (maindata_t *mainData, song_t *song,
         dur = maxdur;
         logMsg (LOG_DBG, LOG_MAIN, "dur-maxdur: %zd", dur);
       }
-    }
-
-    /* the duration needs to be adjusted by the speed of the song */
-    if (speed != 100) {
-      double      drate;
-      double      ddur;
-
-      drate = (double) speed / 100.0;
-      ddur = (double) dur * speed;
-      dur = (ssize_t) ddur;
     }
 
     gap = mainData->gap;

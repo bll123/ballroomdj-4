@@ -37,6 +37,8 @@ static char *   vlcDefaultOptions [] = {
 };
 #define VLC_DFLT_OPT_SZ (sizeof (vlcDefaultOptions) / sizeof (char *))
 
+static void     pliiWaitUntilPlaying (plidata_t *pliData);
+
 plidata_t *
 pliiInit (void)
 {
@@ -71,34 +73,20 @@ pliiMediaSetup (plidata_t *pliData, char *mediaPath)
 void
 pliiStartPlayback (plidata_t *pliData, ssize_t dpos, ssize_t speed)
 {
-  libvlc_state_t      vlcstate;
-  long                count;
-
-    /* Do the busy loop so that the seek can be done immediately as */
-    /* vlc starts playing.  This should help avoid startup glitches */
+  /* Do the busy loop so that the seek can be done immediately as */
+  /* vlc starts playing.  This should help avoid startup glitches */
   if (pliData != NULL && pliData->plData != NULL) {
     vlcPlay (pliData->plData);
-    vlcstate = vlcState (pliData->plData);
-    count = 0;
-    while (vlcstate == libvlc_NothingSpecial ||
-           vlcstate == libvlc_Opening ||
-           vlcstate == libvlc_Buffering ||
-           vlcstate == libvlc_Stopped) {
-      mssleep (1);
-      vlcstate = vlcState (pliData->plData);
-      ++count;
-      if (count > 10000) {
-        break;
-      }
-    }
-    if (vlcstate == libvlc_Playing && dpos > 0) {
+    if (dpos > 0) {
+      pliiWaitUntilPlaying (pliData);
       vlcSeek (pliData->plData, dpos);
-      if (speed != 100) {
-        double    drate;
+    }
+    if (speed != 100) {
+      double    drate;
 
-        drate = (double) speed / 100.0;
-        vlcRate (pliData->plData, drate);
-      }
+      pliiWaitUntilPlaying (pliData);
+      drate = (double) speed / 100.0;
+      vlcRate (pliData->plData, drate);
     }
   }
 }
@@ -215,4 +203,27 @@ pliiState (plidata_t *pliData)
   return plistate;
 }
 
+static void
+pliiWaitUntilPlaying (plidata_t *pliData)
+{
+  libvlc_state_t      vlcstate;
+  long                count;
+
+  vlcstate = vlcState (pliData->plData);
+  count = 0;
+  while (vlcstate == libvlc_NothingSpecial ||
+         vlcstate == libvlc_Opening ||
+         vlcstate == libvlc_Buffering ||
+         vlcstate == libvlc_Stopped) {
+    mssleep (1);
+    vlcstate = vlcState (pliData->plData);
+    ++count;
+    if (count > 10000) {
+      break;
+    }
+  }
+}
+
+
 #endif /* have libvlc_new */
+

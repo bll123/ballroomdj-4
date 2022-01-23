@@ -529,6 +529,7 @@ playerProcessing (void *udata)
     }
     pliMediaSetup (playerData->pli, pq->tempname);
     pliStartPlayback (playerData->pli, pq->songstart, pq->speed);
+    playerData->currentSpeed = pq->speed;
     playerSetPlayerState (playerData, PL_STATE_LOADING);
     logMsg (LOG_DBG, LOG_BASIC, "pl state: loading");
   }
