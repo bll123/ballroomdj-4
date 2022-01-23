@@ -720,6 +720,7 @@ mainPrepSong (maindata_t *mainData, song_t *song,
   ssize_t       plgap = -1;
   ssize_t       songstart = 0;
   ssize_t       songend = -1;
+  ssize_t       speed = 100;
   ssize_t       voladjperc = 0;
   ssize_t       gap = 0;
   ssize_t       plannounce = 0;
@@ -730,14 +731,28 @@ mainPrepSong (maindata_t *mainData, song_t *song,
   sfname = songGetData (song, TAG_FILE);
   dur = songGetNum (song, TAG_DURATION);
   voladjperc = songGetNum (song, TAG_VOLUMEADJUSTPERC);
+  if (voladjperc < 0) {
+    voladjperc = 0;
+  }
   gap = 0;
   songstart = 0;
+  speed = 100;
 
     /* announcements don't need any of the following... */
   if (flag != PREP_ANNOUNCE) {
     maxdur = bdjoptGetNum (OPT_P_MAXPLAYTIME);
     songstart = songGetNum (song, TAG_SONGSTART);
+    if (songstart < 0) {
+      songstart = 0;
+    }
     songend = songGetNum (song, TAG_SONGEND);
+    if (songend < 0) {
+      songend = 0;
+    }
+    speed = songGetNum (song, TAG_SPEEDADJUSTMENT);
+    if (speed < 0) {
+      speed = 100;
+    }
     playlist = slistGetData (mainData->playlistCache, plname);
     pldur = playlistGetConfigNum (playlist, PLAYLIST_MAX_PLAY_TIME);
       /* apply songend if set to a reasonable value */
@@ -773,6 +788,16 @@ mainPrepSong (maindata_t *mainData, song_t *song,
       }
     }
 
+    /* the duration needs to be adjusted by the speed of the song */
+    if (speed != 100) {
+      double      drate;
+      double      ddur;
+
+      drate = (double) speed / 100.0;
+      ddur = (double) dur * speed;
+      dur = (ssize_t) ddur;
+    }
+
     gap = mainData->gap;
     plgap = playlistGetConfigNum (playlist, PLAYLIST_GAP);
     if (plgap >= 0) {
@@ -805,8 +830,8 @@ mainPrepSong (maindata_t *mainData, song_t *song,
     } /* announcements are on in the playlist */
   } /* if this is a normal song */
 
-  snprintf (tbuff, MAXPATHLEN, "%s%c%zd%c%zd%c%zd%c%zd%c%d", sfname,
-      MSG_ARGS_RS, dur, MSG_ARGS_RS, songstart,
+  snprintf (tbuff, MAXPATHLEN, "%s%c%zd%c%zd%c%zd%c%zd%c%zd%c%d", sfname,
+      MSG_ARGS_RS, dur, MSG_ARGS_RS, songstart, MSG_ARGS_RS, speed,
       MSG_ARGS_RS, voladjperc, MSG_ARGS_RS, gap, MSG_ARGS_RS, flag);
 
   logMsg (LOG_DBG, LOG_MAIN, "prep song %s", sfname);
@@ -1146,13 +1171,55 @@ static void
 mainSendStatus (maindata_t *mainData, char *playerResp)
 {
   char    tbuff [200];
+  char    tbuff2 [40];
   char    rbuff [3096];
   int     musicqLen;
-  char    *data;
-
+  char    *data = NULL;
+  char    *tokstr = NULL;
+  char    *p;
 
   strlcpy (rbuff, "{ ", sizeof (rbuff));
-  strlcat (rbuff, playerResp, sizeof (rbuff));
+
+  p = strtok_r (playerResp, MSG_ARGS_RS_STR, &tokstr);
+  snprintf (tbuff, sizeof (tbuff),
+      "\"playstate\" : \"%s\"", p);
+  strlcat (rbuff, tbuff, sizeof (rbuff));
+
+  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
+  snprintf (tbuff, sizeof (tbuff),
+      "\"repeat\" : \"%s\"", p);
+  strlcat (rbuff, ", ", sizeof (rbuff));
+  strlcat (rbuff, tbuff, sizeof (rbuff));
+
+  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
+  snprintf (tbuff, sizeof (tbuff),
+      "\"pauseatend\" : \"%s\"", p);
+  strlcat (rbuff, ", ", sizeof (rbuff));
+  strlcat (rbuff, tbuff, sizeof (rbuff));
+
+  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
+  snprintf (tbuff, sizeof (tbuff),
+      "\"vol\" : \"%s%%\"", p);
+  strlcat (rbuff, ", ", sizeof (rbuff));
+  strlcat (rbuff, tbuff, sizeof (rbuff));
+
+  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
+  snprintf (tbuff, sizeof (tbuff),
+      "\"speed\" : \"%s%%\"", p);
+  strlcat (rbuff, ", ", sizeof (rbuff));
+  strlcat (rbuff, tbuff, sizeof (rbuff));
+
+  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
+  snprintf (tbuff, sizeof (tbuff),
+      "\"playedtime\" : \"%s\"", tmutilToMS (atol (p), tbuff2, sizeof (tbuff2)));
+  strlcat (rbuff, ", ", sizeof (rbuff));
+  strlcat (rbuff, tbuff, sizeof (rbuff));
+
+  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
+  snprintf (tbuff, sizeof (tbuff),
+      "\"duration\" : \"%s\"", tmutilToMS (atol (p), tbuff2, sizeof (tbuff2)));
+  strlcat (rbuff, ", ", sizeof (rbuff));
+  strlcat (rbuff, tbuff, sizeof (rbuff));
 
   musicqLen = musicqGetLen (mainData->musicQueue, mainData->musicqCurrentIdx);
   snprintf (tbuff, sizeof (tbuff),

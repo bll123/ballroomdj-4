@@ -68,4 +68,8 @@ ratingConv (char *keydata, datafileret_t *ret)
   rating = bdjvarsdf [BDJVDF_RATINGS];
   lookup = datafileGetLookup (rating->df);
   ret->u.num = slistGetNum (lookup, keydata);
+  if (ret->u.num == LIST_VALUE_INVALID) {
+    /* unknown ratings are dumped into the unrated bucket */
+    ret->u.num = RATING_UNRATED_IDX;
+  }
 }

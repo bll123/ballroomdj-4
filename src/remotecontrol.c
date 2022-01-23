@@ -200,10 +200,10 @@ rcEventHandler (struct mg_connection *c, int ev, void *ev_data, void *userdata)
     } else if (mg_http_match_uri (hm, "/getstatus")) {
       if (remctrlData->playerStatus == NULL) {
         mg_http_reply (c, 204, "Content-type: text/plain; charset=utf-8\r\n"
-            "Cache-Control max-age=0\r\n", "");
+            "Cache-Control: max-age=0\r\n", "");
       } else {
         mg_http_reply (c, 200, "Content-type: text/plain; charset=utf-8\r\n"
-            "Cache-Control max-age=0\r\n", remctrlData->playerStatus);
+            "Cache-Control: max-age=0\r\n", remctrlData->playerStatus);
       }
     } else if (mg_http_match_uri (hm, "/cmd")) {
       bool ok = true;
@@ -252,10 +252,10 @@ rcEventHandler (struct mg_connection *c, int ev, void *ev_data, void *userdata)
       }
       if (ok) {
         mg_http_reply (c, 200, "Content-type: text/plain; charset=utf-8\r\n",
-            "Cache-Control max-age=0\r\n", NULL);
+            "Cache-Control: max-age=0\r\n", NULL);
       } else {
         mg_http_reply (c, 400, "Content-type: text/plain; charset=utf-8\r\n",
-            "Cache-Control max-age=0\r\n", NULL);
+            "Cache-Control: max-age=0\r\n", NULL);
       }
     } else if (mg_http_match_uri (hm, "/getdancelist")) {
       mg_http_reply (c, 200, "Content-type: text/plain; charset=utf-8\r\n",

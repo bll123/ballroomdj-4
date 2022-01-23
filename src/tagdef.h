@@ -68,14 +68,14 @@ typedef enum {
   TAG_FILE,                   //
   TAG_GENRE,
   TAG_KEYWORD,                //
-  TAG_MQDISPLAY,
+  TAG_MQDISPLAY,              //
   TAG_MUSICBRAINZ_TRACKID,
   TAG_NOMAXPLAYTIME,
   TAG_NOTES,
   TAG_SAMESONG,
   TAG_SONGEND,                //
   TAG_SONGSTART,              //
-  TAG_SPEEDADJUSTMENT,
+  TAG_SPEEDADJUSTMENT,        //
   TAG_STATUS,                 //
   TAG_TAGS,
   TAG_TITLE,

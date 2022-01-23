@@ -104,6 +104,21 @@ START_TEST(tmutilTstamp_chk)
 }
 END_TEST
 
+START_TEST(tmutilToMS_chk)
+{
+  char        buff [80];
+
+  tmutilToMS (0, buff, sizeof (buff));
+  ck_assert_str_eq (buff, "0:00");
+  tmutilToMS (59000, buff, sizeof (buff));
+  ck_assert_str_eq (buff, "0:59");
+  tmutilToMS (60000, buff, sizeof (buff));
+  ck_assert_str_eq (buff, "1:00");
+  tmutilToMS (119000, buff, sizeof (buff));
+  ck_assert_str_eq (buff, "1:59");
+}
+END_TEST
+
 Suite *
 tmutil_suite (void)
 {
@@ -118,6 +133,7 @@ tmutil_suite (void)
   tcase_add_test (tc, tmutil_check);
   tcase_add_test (tc, tmutilDstamp_chk);
   tcase_add_test (tc, tmutilTstamp_chk);
+  tcase_add_test (tc, tmutilToMS_chk);
   suite_add_tcase (s, tc);
   return s;
 }

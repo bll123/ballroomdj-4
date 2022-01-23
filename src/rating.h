@@ -15,6 +15,8 @@ typedef struct {
   nlist_t           *rating;
 } rating_t;
 
+#define RATING_UNRATED_IDX 0
+
 rating_t    *ratingAlloc (char *);
 void        ratingFree (rating_t *rating);
 ssize_t     ratingGetWeight (rating_t *rating, nlistidx_t idx);

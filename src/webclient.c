@@ -24,6 +24,7 @@ webclientPost (webclient_t *webclient, char *uri, char *query,
   CURLcode        res;
   int             rc;
 
+
   if (webclient == NULL) {
     char    tbuff [200];
 
@@ -35,10 +36,12 @@ webclientPost (webclient_t *webclient, char *uri, char *query,
     curl_global_init (CURL_GLOBAL_ALL);
     webclient->curl = curl_easy_init ();
     assert (webclient->curl != NULL);
-//    if (logCheck (LOG_DBG, LOG_WEBCLIENT)) {
-//        /* can use CURLOPT_DEBUGFUNCTION */
-//      curl_easy_setopt (webclient->curl, CURLOPT_VERBOSE, 1);
-//    }
+#if 1
+    if (logCheck (LOG_DBG, LOG_WEBCLIENT)) {
+        /* can use CURLOPT_DEBUGFUNCTION */
+      curl_easy_setopt (webclient->curl, CURLOPT_VERBOSE, 1);
+    }
+#endif
     curl_easy_setopt (webclient->curl, CURLOPT_TCP_KEEPALIVE, 1);
     curl_easy_setopt (webclient->curl, CURLOPT_WRITEDATA, webclient);
     curl_easy_setopt (webclient->curl, CURLOPT_WRITEFUNCTION, webclientCallback);
@@ -47,7 +50,6 @@ webclientPost (webclient_t *webclient, char *uri, char *query,
     curl_easy_setopt (webclient->curl, CURLOPT_USERAGENT, tbuff);
   }
 
-// possibly need to use curl_easy_escape; at least with the url.
   curl_easy_setopt (webclient->curl, CURLOPT_URL, uri);
   curl_easy_setopt (webclient->curl, CURLOPT_POSTFIELDS, query);
   res = curl_easy_perform (webclient->curl);

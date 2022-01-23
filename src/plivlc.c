@@ -69,7 +69,7 @@ pliiMediaSetup (plidata_t *pliData, char *mediaPath)
 }
 
 void
-pliiStartPlayback (plidata_t *pliData, ssize_t dpos)
+pliiStartPlayback (plidata_t *pliData, ssize_t dpos, ssize_t speed)
 {
   libvlc_state_t      vlcstate;
   long                count;
@@ -93,6 +93,12 @@ pliiStartPlayback (plidata_t *pliData, ssize_t dpos)
     }
     if (vlcstate == libvlc_Playing && dpos > 0) {
       vlcSeek (pliData->plData, dpos);
+      if (speed != 100) {
+        double    drate;
+
+        drate = (double) speed / 100.0;
+        vlcRate (pliData->plData, drate);
+      }
     }
   }
 }

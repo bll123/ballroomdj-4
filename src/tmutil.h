@@ -16,5 +16,6 @@ void      mstimeset (mstime_t *tm, size_t addTime);
 bool      mstimeCheck (mstime_t *tm);
 char      *tmutilDstamp (char *, size_t);
 char      *tmutilTstamp (char *, size_t);
+char      *tmutilToMS (ssize_t ms, char *buff, size_t max);
 
 #endif /* INC_TMUTIL_H */

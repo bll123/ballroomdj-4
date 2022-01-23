@@ -46,7 +46,7 @@ pliiMediaSetup (plidata_t *pliData, char *mediaPath)
 }
 
 void
-pliiStartPlayback (plidata_t *pliData, ssize_t dpos)
+pliiStartPlayback (plidata_t *pliData, ssize_t dpos, ssize_t speed)
 {
   if (pliData != NULL) {
     pliData->duration = 20000;

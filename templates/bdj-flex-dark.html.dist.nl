@@ -59,9 +59,6 @@ http://danielstern.ca/range.css/#/
       flex-grow: 0;
       flex-shrink: 0;
     }
-    .mauto {
-      margin: auto;
-    }
     .vcenter {
       margin-top: auto;
       margin-bottom: auto;
@@ -70,7 +67,7 @@ http://danielstern.ca/range.css/#/
       padding-left: 3pt;
       padding-right: 3pt;
     }
-    .mauto {
+    .mleftauto {
       margin-left: auto;
     }
     .mpad {
@@ -78,6 +75,9 @@ http://danielstern.ca/range.css/#/
     }
     .mpadr {
       margin-right: 2pt;
+    }
+    .fright {
+      float: right;
     }
     .tright {
       text-align: right;
@@ -147,8 +147,7 @@ http://danielstern.ca/range.css/#/
       color: #ffa600;
     }
     .muteb {
-      padding: 0.2em;
-      padding-bottom: 0;
+      padding: 0;
     }
     .divshown {
       display: -webkit-flex;
@@ -269,11 +268,12 @@ http://danielstern.ca/range.css/#/
               oninput="javascript:bdj.chgVolume();"
               onchange="javascript:bdj.chgVolume();">
           <div class="rightbox vcenter">
+            <p class="mleftauto vcenter tright mpadr" id="vold">100%</p>
             <button class="muteb" id="muteb"
                 type="button"
                 onclick="javascript:bdj.chgMute();"><img
-                id="mutei" src="mrc/dark/mute.svg" alt="mute"></button>
-            <p class="mauto vcenter" id="vold">100%</p>
+                id="mutei" align="middle" src="mrc/dark/mute.svg"
+                alt="mute"></button>
           </div>
         </div>
         <div class="linebox">
@@ -335,18 +335,26 @@ http://danielstern.ca/range.css/#/
           </div>
         </div>
         <div class="linebox">
-          <p class="pbold white vcenter stretch grow padlr" id="dance"></p>
+          <p class="vcenter stretch grow padlr"><span
+          class="pbold white" id="dance"></span>
+          <span class="pbold white fright"><span
+            id="playedtime"></span>&nbsp;<span
+            id="dursep"></span>&nbsp;<span
+            id="duration"></span></p>
+          <div class="flexjend rightbox vcenter">
+            <p class="mpad tright"></p>
+          </div>
         </div>
         <div class="linebox">
-          <p class="pbold white vcenter stretch grow padlr" id="artist"></p>
+          <p class="white vcenter stretch grow padlr" id="artist"></p>
         </div>
         <div class="linebox">
-          <p class="pbold white vcenter stretch grow padlr" id="title"></p>
+          <p class="white vcenter stretch grow padlr" id="title"></p>
         </div>
       </div>
       <div id="controlspage2" class="divnone">
         <div class="linebox">
-          <p class="txtcenter mauto pbold heading">Quick Play</p>
+          <p class="txtcenter mleftauto pbold heading">Quick Play</p>
         </div>
         <div class="linebox">
           <select id="dancelist" name="dancelist"></select>
@@ -544,6 +552,21 @@ bdj.updateData = function (data) {
   o.innerHTML = jd.artist;
   o = document.getElementById("title");
   o.innerHTML = jd.title;
+  if (jd.duration != "0:00") {
+    o = document.getElementById("playedtime");
+    o.innerHTML = jd.playedtime;
+    o = document.getElementById("dursep");
+    o.innerHTML = '/';
+    o = document.getElementById("duration");
+    o.innerHTML = jd.duration;
+  } else {
+    o = document.getElementById("playedtime");
+    o.innerHTML = '';
+    o = document.getElementById("dursep");
+    o.innerHTML = '';
+    o = document.getElementById("duration");
+    o.innerHTML = '';
+  }
 }
 
 bdj.getDanceList = function () {
@@ -591,7 +614,8 @@ bdj.doLoad = function () {
   var o = document.getElementById("fadeb");
   var s = o.clientHeight;
   o = document.getElementById("mutei");
-  bdj.setSize(o,s);
+  o.width = s;
+/*  bdj.setSize(o,s); */
   o = document.getElementById("pausestatusi");
   bdj.setSize(o,s);
   o = document.getElementById("playstatusi");

@@ -89,10 +89,10 @@ pliMediaSetup (pli_t *pli, char *mediaPath)
 }
 
 void
-pliStartPlayback (pli_t *pli, ssize_t pos)
+pliStartPlayback (pli_t *pli, ssize_t pos, ssize_t speed)
 {
   if (pli != NULL) {
-    pli->pliiStartPlayback (pli->pliData, pos);
+    pli->pliiStartPlayback (pli->pliData, pos, speed);
   }
 }
 

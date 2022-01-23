@@ -49,6 +49,7 @@ typedef struct {
   char          *tempname;
   ssize_t       dur;
   ssize_t       songstart;
+  ssize_t       speed;
   ssize_t       voladjperc;
   ssize_t       gap;
   ssize_t       announce;
@@ -76,7 +77,9 @@ typedef struct {
   volsinklist_t   sinklist;
   playerstate_t   playerState;
   mstime_t        playTimeStart;
+  ssize_t         playTimePlayed;
   mstime_t        playTimeCheck;
+  mstime_t        playEndCheck;
   mstime_t        fadeTimeCheck;
   mstime_t        volumeTimeCheck;
   ssize_t         gap;
@@ -171,6 +174,8 @@ main (int argc, char *argv[])
   playerData.fadeSamples = 1;
   playerData.globalCount = 1;
   playerData.playerState = PL_STATE_STOPPED;
+  mstimestart (&playerData.playTimeStart);
+  playerData.playTimePlayed = 0;
   playerData.playRequest = queueAlloc (free);
   mstimeset (&playerData.statusCheck, 0);
   playerData.pli = NULL;
@@ -478,8 +483,8 @@ playerProcessing (void *udata)
   }
 
   if (mstimeCheck (&playerData->statusCheck)) {
+    /* the playerSendStatus() routine will set the statusCheck var */
     playerSendStatus (playerData);
-    mstimeset (&playerData->statusCheck, 100);
   }
 
   if (playerData->inFade) {
@@ -523,7 +528,7 @@ playerProcessing (void *udata)
       logMsg (LOG_DBG, LOG_VOLUME, "no fade-in set volume: %d", playerData->realVolume);
     }
     pliMediaSetup (playerData->pli, pq->tempname);
-    pliStartPlayback (playerData->pli, pq->songstart);
+    pliStartPlayback (playerData->pli, pq->songstart, pq->speed);
     playerSetPlayerState (playerData, PL_STATE_LOADING);
     logMsg (LOG_DBG, LOG_BASIC, "pl state: loading");
   }
@@ -544,6 +549,7 @@ playerProcessing (void *udata)
 
         /* save for later use */
       playerData->gap = pq->gap;
+      playerData->playTimePlayed = 0;
       playerSetCheckTimes (playerData, pq);
 
       if (pq->announce == PREP_SONG && playerData->fadeinTime > 0) {
@@ -596,14 +602,18 @@ playerProcessing (void *udata)
       ssize_t plidur = pliGetDuration (playerData->pli);
       ssize_t plitm = pliGetTime (playerData->pli);
 
+      /* for a song with a speed adjustment, vlc returns the current */
+      /* timestamp and the real duration, not adjusted values. */
+      /* pq->dur is adjusted for the speed. */
+      /* plitm cannot be used in conjunction with pq->dur */
       if (plistate == PLI_STATE_STOPPED ||
           plistate == PLI_STATE_ENDED ||
           plistate == PLI_STATE_ERROR ||
           playerData->stopPlaying ||
           plitm >= plidur ||
-          plitm >= pq->dur) {
+          mstimeCheck (&playerData->playEndCheck)) {
 
-          /* stop any fade */
+        /* stop any fade */
         playerData->inFade = false;
         playerData->inFadeOut = false;
         playerData->inFadeIn = false;
@@ -742,6 +752,10 @@ playerSongPrep (playerdata_t *playerData, char *args)
   logMsg (LOG_DBG, LOG_MAIN, "prep songstart: %zd", npq->songstart);
 
   aptr = strtok_r (NULL, MSG_ARGS_RS_STR, &tokptr);
+  npq->speed = atol (aptr);
+  logMsg (LOG_DBG, LOG_MAIN, "prep speed: %zd", npq->speed);
+
+  aptr = strtok_r (NULL, MSG_ARGS_RS_STR, &tokptr);
   npq->voladjperc = atol (aptr);
   logMsg (LOG_DBG, LOG_MAIN, "prep voladjperc: %zd", npq->voladjperc);
 
@@ -750,7 +764,7 @@ playerSongPrep (playerdata_t *playerData, char *args)
   logMsg (LOG_DBG, LOG_MAIN, "prep gap: %zd", npq->gap);
 
   aptr = strtok_r (NULL, MSG_ARGS_RS_STR, &tokptr);
-  npq->announce= atol (aptr);
+  npq->announce = atol (aptr);
   logMsg (LOG_DBG, LOG_MAIN, "prep announce: %zd", npq->announce);
 
   songMakeTempName (playerData, npq->songname, stname, sizeof (stname));
@@ -896,6 +910,7 @@ playerPause (playerdata_t *playerData)
     playerData->pauseAtEnd = true;
   } else if (plistate == PLI_STATE_PLAYING) {
     playerSetPlayerState (playerData, PL_STATE_PAUSED);
+    playerData->playTimePlayed += mstimeend (&playerData->playTimeStart);
     logMsg (LOG_DBG, LOG_BASIC, "pl state: paused");
     pliPause (playerData->pli);
     if (playerData->inFadeIn) {
@@ -1143,7 +1158,6 @@ playerFadeVolSet (playerdata_t *playerData)
       /* leave inFade set to prevent race conditions in the main loop */
       /* the player stop condition will reset the inFade flag */
     playerData->inFadeOut = false;
-    playerData->stopPlaying = true;
     volumeSet (playerData->volume, playerData->currentSink, 0);
     logMsg (LOG_DBG, LOG_VOLUME, "fade-out done volume: %d", 0);
   }
@@ -1185,19 +1199,9 @@ calcFadeIndex (playerdata_t *playerData)
 static void
 playerStartFadeOut (playerdata_t *playerData)
 {
-  ssize_t       plidur;
-  ssize_t       plitm;
-  ssize_t       tm;
-
   playerData->inFade = true;
   playerData->inFadeOut = true;
-  plidur = pliGetDuration (playerData->pli);
-  plitm = pliGetTime (playerData->pli);
-  tm = plidur - plitm;
-  if (tm > playerData->fadeoutTime) {
-    tm = playerData->fadeoutTime;
-  }
-  playerData->fadeSamples = tm / FADEOUT_TIMESLICE - 2;
+  playerData->fadeSamples = playerData->fadeoutTime / FADEOUT_TIMESLICE - 2;
   playerData->fadeCount = playerData->fadeSamples;
   playerFadeVolSet (playerData);
   playerSetPlayerState (playerData, PL_STATE_IN_FADEOUT);
@@ -1208,20 +1212,27 @@ playerStartFadeOut (playerdata_t *playerData)
 static void
 playerSetCheckTimes (playerdata_t *playerData, prepqueue_t *pq)
 {
-  ssize_t plitm;
   ssize_t newdur;
 
+  /* pq->dur is adjusted for speed.  */
+  /* plitm is not; it cannot be combined with pq->dur */
   newdur = pq->dur;
-  plitm = pliGetTime (playerData->pli);
-  newdur = pq->dur - plitm;
-    /* want to start check for real finish 500 ms before end */
+  newdur = pq->dur - playerData->playTimePlayed;
+  /* want to start check for real finish 500 ms before end */
   mstimestart (&playerData->playTimeStart);
+  mstimeset (&playerData->playEndCheck, newdur);
   mstimeset (&playerData->playTimeCheck, newdur - 500);
   mstimeset (&playerData->fadeTimeCheck, newdur);
   mstimeset (&playerData->volumeTimeCheck, 1000);
   if (pq->announce == PREP_SONG && playerData->fadeoutTime > 0) {
     mstimeset (&playerData->fadeTimeCheck, newdur - playerData->fadeoutTime);
   }
+  logMsg (LOG_DBG, LOG_MAIN, "pq->dur: %zd", pq->dur);
+  logMsg (LOG_DBG, LOG_MAIN, "newdur: %zd", newdur);
+  logMsg (LOG_DBG, LOG_MAIN, "playTimeStart: %zd", mstimeend (&playerData->playTimeStart));
+  logMsg (LOG_DBG, LOG_MAIN, "playEndCheck: %zd", mstimeend (&playerData->playEndCheck));
+  logMsg (LOG_DBG, LOG_MAIN, "playTimeCheck: %zd", mstimeend (&playerData->playTimeCheck));
+  logMsg (LOG_DBG, LOG_MAIN, "fadeTimeCheck: %zd", mstimeend (&playerData->fadeTimeCheck));
 }
 
 static void
@@ -1235,27 +1246,42 @@ playerSetPlayerState (playerdata_t *playerData, playerstate_t pstate)
       MSG_PLAYER_STATE, tbuff);
   sockhSendMessage (SOCKOF (PROCESS_GUI), ROUTE_PLAYER, ROUTE_GUI,
       MSG_PLAYER_STATE, tbuff);
+  /* any time there is a change of player state, send the status */
+  playerSendStatus (playerData);
 }
 
 
 static void
 playerSendStatus (playerdata_t *playerData)
 {
-  char    tbuff [200];
-  char    rbuff [3096];
-  char    *playstate;
+  char        rbuff [3096];
+  char        *playstate;
+  prepqueue_t *pq = playerData->currentSong;
+  ssize_t     tm;
+  ssize_t     dur;
 
   rbuff [0] = '\0';
 
+  dur = 0;
+  if (pq != NULL) {
+    dur = pq->dur;
+  }
+
   if (playerData->programState != STATE_RUNNING) {
     playstate = "stop";
+    dur = 0;
   } else {
     switch (playerData->playerState) {
       case PL_STATE_STOPPED: {
         playstate = "stop";
+        dur = 0;
         break;
       }
-      case PL_STATE_IN_GAP:
+      case PL_STATE_IN_GAP: {
+        playstate = "play";
+        dur = 0;
+        break;
+      }
       case PL_STATE_IN_FADEOUT:
       case PL_STATE_LOADING:
       case PL_STATE_PLAYING: {
@@ -1268,37 +1294,29 @@ playerSendStatus (playerdata_t *playerData)
       }
       default: {
         playstate = "stop";
+        dur = 0;
         break;
       }
     }
   }
 
-  snprintf (tbuff, sizeof (tbuff),
-      "\"playstate\" : \"%s\"", playstate);
-  strlcat (rbuff, tbuff, sizeof (rbuff));
+  tm = 0;
+  if (playerData->playerState == PL_STATE_PAUSED) {
+    tm = playerData->playTimePlayed;
+  } else {
+    tm = playerData->playTimePlayed + mstimeend (&playerData->playTimeStart);
+  }
 
-  snprintf (tbuff, sizeof (tbuff),
-      "\"repeat\" : \"%d\"", playerData->repeat);
-  strlcat (rbuff, ", ", sizeof (rbuff));
-  strlcat (rbuff, tbuff, sizeof (rbuff));
-
-  snprintf (tbuff, sizeof (tbuff),
-      "\"pauseatend\" : \"%d\"", playerData->pauseAtEnd);
-  strlcat (rbuff, ", ", sizeof (rbuff));
-  strlcat (rbuff, tbuff, sizeof (rbuff));
-
-  snprintf (tbuff, sizeof (tbuff),
-      "\"vol\" : \"%d%%\"", playerData->currentVolume);
-  strlcat (rbuff, ", ", sizeof (rbuff));
-  strlcat (rbuff, tbuff, sizeof (rbuff));
-
-  snprintf (tbuff, sizeof (tbuff),
-      "\"speed\" : \"%d%%\"", playerData->currentSpeed);
-  strlcat (rbuff, ", ", sizeof (rbuff));
-  strlcat (rbuff, tbuff, sizeof (rbuff));
+  snprintf (rbuff, sizeof (rbuff), "%s%c%d%c%d%c%d%c%d%c%zd%c%zd",
+      playstate, MSG_ARGS_RS, playerData->repeat, MSG_ARGS_RS,
+      playerData->pauseAtEnd, MSG_ARGS_RS,
+      playerData->currentVolume, MSG_ARGS_RS,
+      playerData->currentSpeed, MSG_ARGS_RS,
+      tm, MSG_ARGS_RS, dur);
 
   sockhSendMessage (SOCKOF (PROCESS_MAIN), ROUTE_PLAYER, ROUTE_MAIN,
       MSG_PLAYER_STATUS_DATA, rbuff);
+  mstimeset (&playerData->statusCheck, 100);
 }
 
 static void

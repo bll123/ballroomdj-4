@@ -127,3 +127,18 @@ tmutilTstamp (char *buff, size_t max)
   strlcat (buff, tbuff, max);
   return buff;
 }
+
+char *
+tmutilToMS (ssize_t ms, char *buff, size_t max)
+{
+  ssize_t     m, s;
+
+  m = ms / 1000 / 60;
+  s = (ms - (m * 1000 * 60)) / 1000;
+  snprintf (buff, max, "%zd:%02zd", m, s);
+  return buff;
+}
+
+
+
+

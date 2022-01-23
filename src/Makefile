@@ -82,6 +82,7 @@ install:  $(MKC_ENV_SHR)
 rinstall:
 	@$(MAKE) -e rall
 	(cd locale;./install.sh)
+	cp -rf ../img/mrc ../http
 
 .PHONY: depend
 depend:
@@ -671,10 +672,10 @@ $(OBJDIR)/bdj4init$(OBJ_EXT): bdj4init.c config.h bdj4init.h musicdb.h song.h nl
  lock.h
 $(OBJDIR)/bdj4main$(OBJ_EXT): bdj4main.c config.h bdj4.h sock.h bdj4init.h bdjmsg.h \
  bdjopt.h bdjstring.h bdjvars.h bdjvarsdf.h datafile.h list.h nlist.h \
- slist.h ilist.h dance.h dancesel.h autosel.h playlist.h musicdb.h song.h \
- sequence.h songlist.h songsel.h queue.h pathbld.h filedata.h lock.h \
- log.h fileutil.h musicq.h tagdef.h portability.h process.h sockh.h \
- sysvars.h tmutil.h webclient.h
+ slist.h ilist.h dance.h dancesel.h autosel.h queue.h pathbld.h \
+ filedata.h lock.h log.h fileutil.h musicdb.h song.h musicq.h tagdef.h \
+ playlist.h sequence.h songlist.h songsel.h portability.h process.h \
+ sockh.h sysvars.h tmutil.h webclient.h
 $(OBJDIR)/bdj4player$(OBJ_EXT): bdj4player.c config.h bdj4.h sock.h bdjmsg.h bdjopt.h \
  bdjstring.h bdjvars.h pathbld.h fileop.h filemanip.h slist.h list.h \
  lock.h log.h fileutil.h pathutil.h pli.h dylib.h portability.h tmutil.h \
@@ -726,9 +727,9 @@ $(OBJDIR)/clicomm$(OBJ_EXT): clicomm.c config.h sockh.h sock.h bdjmsg.h sysvars.
 $(OBJDIR)/dance$(OBJ_EXT): dance.c config.h bdjstring.h bdjvarsdf.h datafile.h list.h \
  nlist.h slist.h ilist.h dance.h dnctypes.h fileop.h log.h fileutil.h
 $(OBJDIR)/dancesel$(OBJ_EXT): dancesel.c config.h bdj4.h sock.h autosel.h datafile.h list.h \
- nlist.h slist.h ilist.h bdjvarsdf.h dance.h dancesel.h playlist.h \
- musicdb.h song.h sequence.h songlist.h songsel.h queue.h log.h \
- fileutil.h
+ nlist.h slist.h ilist.h bdjvarsdf.h dance.h dancesel.h queue.h log.h \
+ fileutil.h playlist.h musicdb.h song.h sequence.h songlist.h songsel.h \
+ portability.h
 $(OBJDIR)/datafile$(OBJ_EXT): datafile.c config.h bdjstring.h datafile.h list.h nlist.h \
  slist.h ilist.h filedata.h filemanip.h fileop.h log.h fileutil.h \
  portability.h tmutil.h
@@ -791,8 +792,8 @@ $(OBJDIR)/sockh$(OBJ_EXT): sockh.c config.h sockh.h sock.h bdjmsg.h tmutil.h log
 $(OBJDIR)/song$(OBJ_EXT): song.c config.h bdjopt.h bdjstring.h dance.h datafile.h list.h \
  nlist.h slist.h ilist.h fileop.h genre.h level.h log.h fileutil.h \
  portability.h rating.h song.h status.h tagdef.h
-$(OBJDIR)/songlist$(OBJ_EXT): songlist.c config.h songlist.h datafile.h list.h nlist.h \
- slist.h ilist.h fileop.h log.h fileutil.h
+$(OBJDIR)/songlist$(OBJ_EXT): songlist.c config.h dance.h datafile.h list.h nlist.h slist.h \
+ ilist.h fileop.h log.h fileutil.h songlist.h
 $(OBJDIR)/songsel$(OBJ_EXT): songsel.c config.h autosel.h datafile.h list.h nlist.h slist.h \
  ilist.h bdjvarsdf.h level.h log.h fileutil.h musicdb.h song.h \
  portability.h queue.h rating.h songsel.h tagdef.h bdjstring.h
