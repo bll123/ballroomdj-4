@@ -64,6 +64,11 @@ dict for {fn data} $musicdbList {
     }
     set value [dict get $data $tag]
 
+    if { $tag eq "VOLUMEADJUSTPERC" } {
+      set value [expr {int ($value)}]
+      set value [expr {double ($value) / 10.0}]
+    }
+
     if { $tag eq "SONGSTART" || $tag eq "SONGEND" } {
       if { $value ne {} && $value ne "-1" } {
         regexp {(\d+):(\d+)} $value all min sec

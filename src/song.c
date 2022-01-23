@@ -58,11 +58,11 @@ static datafilekey_t songdfkeys[] = {
   { "TITLE",                TAG_TITLE,                VALUE_DATA, NULL, -1 },
   { "TRACKNUMBER",          TAG_TRACKNUMBER,          VALUE_NUM, NULL, -1 },
   { "TRACKTOTAL",           TAG_TRACKTOTAL,           VALUE_NUM, NULL, -1 },
-  { "UPDATEFLAG",           TAG_VARIOUSARTISTS,       VALUE_NUM, NULL, -1 },
-  { "UPDATETIME",           TAG_UPDATEFLAG,           VALUE_NUM, NULL, -1 },
-  { "VARIOUSARTISTS",       TAG_VOLUMEADJUSTPERC,     VALUE_NUM, NULL, -1 },
-  { "VOLUMEADJUSTPERC",     TAG_WRITETIME,            VALUE_NUM, NULL, -1 },
-  { "WRITETIME",            TAG_UPDATETIME,           VALUE_NUM, NULL, -1 },
+  { "UPDATEFLAG",           TAG_UPDATEFLAG,           VALUE_NUM, NULL, -1 },
+  { "UPDATETIME",           TAG_UPDATETIME,           VALUE_NUM, NULL, -1 },
+  { "VARIOUSARTISTS",       TAG_VARIOUSARTISTS,       VALUE_NUM, NULL, -1 },
+  { "VOLUMEADJUSTPERC",     TAG_VOLUMEADJUSTPERC,     VALUE_DOUBLE, NULL, -1 },
+  { "WRITETIME",            TAG_WRITETIME,            VALUE_NUM, NULL, -1 },
 };
 #define SONG_DFKEY_COUNT (sizeof (songdfkeys) / sizeof (datafilekey_t))
 

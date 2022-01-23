@@ -83,9 +83,9 @@ typedef enum {
   TAG_TRACKTOTAL,
   TAG_UPDATEFLAG,
   TAG_UPDATETIME,
-  TAG_WRITETIME,
   TAG_VARIOUSARTISTS,
   TAG_VOLUMEADJUSTPERC,       //
+  TAG_WRITETIME,
   TAG_RRN,                    //
   MAX_TAG_KEY
 } tagdefkey_t;

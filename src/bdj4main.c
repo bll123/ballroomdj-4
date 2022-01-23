@@ -721,7 +721,7 @@ mainPrepSong (maindata_t *mainData, song_t *song,
   ssize_t       songstart = 0;
   ssize_t       songend = -1;
   ssize_t       speed = 100;
-  ssize_t       voladjperc = 0;
+  double        voladjperc = 0;
   ssize_t       gap = 0;
   ssize_t       plannounce = 0;
   dancekey_t    dancekey;
@@ -730,9 +730,9 @@ mainPrepSong (maindata_t *mainData, song_t *song,
 
   sfname = songGetData (song, TAG_FILE);
   dur = songGetNum (song, TAG_DURATION);
-  voladjperc = songGetNum (song, TAG_VOLUMEADJUSTPERC);
-  if (voladjperc < 0) {
-    voladjperc = 0;
+  voladjperc = songGetDouble (song, TAG_VOLUMEADJUSTPERC);
+  if (voladjperc < 0.0) {
+    voladjperc = 0.0;
   }
   gap = 0;
   songstart = 0;
@@ -833,7 +833,7 @@ mainPrepSong (maindata_t *mainData, song_t *song,
     } /* announcements are on in the playlist */
   } /* if this is a normal song */
 
-  snprintf (tbuff, MAXPATHLEN, "%s%c%zd%c%zd%c%zd%c%zd%c%zd%c%d", sfname,
+  snprintf (tbuff, MAXPATHLEN, "%s%c%zd%c%zd%c%zd%c%.1f%c%zd%c%d", sfname,
       MSG_ARGS_RS, dur, MSG_ARGS_RS, songstart, MSG_ARGS_RS, speed,
       MSG_ARGS_RS, voladjperc, MSG_ARGS_RS, gap, MSG_ARGS_RS, flag);
 

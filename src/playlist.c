@@ -456,7 +456,7 @@ playlistGetNextSong (playlist_t *pl, nlist_t *danceCounts,
           if (tstr == NULL) {
             tstr = songlistGetData (pl->songlist, pl->manualIdx, SONGLIST_DANCESTR);
             if (tstr != NULL) {
-              songSetData (song, TAG_MQDISPLAY, tstr);
+              songSetData (song, TAG_MQDISPLAY, strdup (tstr));
             }
           }
         }
