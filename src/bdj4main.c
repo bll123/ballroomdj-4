@@ -521,7 +521,7 @@ mainSendMobileMarqueeData (maindata_t *mainData)
   /* internet mode from here on */
 
   tag = bdjoptGetData (OPT_P_MOBILEMQTAG);
-  if (tag == NULL) {
+  if (tag != NULL) {
     if (mainData->mobmqUserkey == NULL) {
       pathbldMakePath (tbuff, sizeof (tbuff), "",
           "mmq", ".key", PATHBLD_MP_USEIDX);

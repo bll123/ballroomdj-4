@@ -1,7 +1,7 @@
 /*
  * bdj4play
- *  Does the actual playback of the music by calling the api to the
- *  music player.   Handles volume changes, fades.
+ *  Does the actual playback of the music.
+ *  Handles volume changes, fades.
  */
 
 #include "config.h"
@@ -101,7 +101,7 @@ typedef struct {
 } playerdata_t;
 
 #define FADEIN_TIMESLICE      100
-#define FADEOUT_TIMESLICE     200
+#define FADEOUT_TIMESLICE     250
 
 
 static void     playerCheckSystemVolume (playerdata_t *playerData);
@@ -633,7 +633,7 @@ playerProcessing (void *udata)
         playerData->stopPlaying = false;
         playerData->currentSpeed = 100;
 
-        logMsg (LOG_DBG, LOG_BASIC, "actual play time: %zd", mstimeend (&playerData->playTimeStart));
+        logMsg (LOG_DBG, LOG_BASIC, "actual play time: %zd", mstimeend (&playerData->playTimeStart) + playerData->playTimePlayed);
         playerStop (playerData);
 
         if (pq->announce == PREP_SONG) {
@@ -923,9 +923,10 @@ playerPause (playerdata_t *playerData)
     playerData->pauseAtEnd = true;
   } else if (plistate == PLI_STATE_PLAYING) {
     playerSetPlayerState (playerData, PL_STATE_PAUSED);
+    pliPause (playerData->pli);
+    /* set the play time after restarting the player */
     playerData->playTimePlayed += mstimeend (&playerData->playTimeStart);
     logMsg (LOG_DBG, LOG_BASIC, "pl state: paused");
-    pliPause (playerData->pli);
     if (playerData->inFadeIn) {
       playerData->inFade = false;
       playerData->inFadeIn = false;
@@ -947,14 +948,18 @@ playerPlay (playerdata_t *playerData)
       /* cancel the gap */
       mstimestart (&playerData->gapFinishTime);
     }
+    pliPlay (playerData->pli);
     if (playerData->playerState == PL_STATE_PAUSED) {
-        /* all of the check times must be reset */
       prepqueue_t       *pq = playerData->currentSong;
+
+      /* all of the check times must be reset */
+      /* set the times after restarting the player */
+      /* there are some subtleties about when to set the check times */
       playerSetCheckTimes (playerData, pq);
+      /* set the state and send the status last */
       playerSetPlayerState (playerData, PL_STATE_PLAYING);
       logMsg (LOG_DBG, LOG_BASIC, "pl state: playing");
     }
-    pliPlay (playerData->pli);
   }
 }
 

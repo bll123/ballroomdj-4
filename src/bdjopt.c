@@ -307,7 +307,7 @@ bdjoptConvMobileMq (char *data, datafileret_t *ret)
     val = MOBILEMQ_INTERNET;
   }
   if (strcmp (data, "local") == 0) {
-    val = MOBILEMQ_INTERNET;
+    val = MOBILEMQ_LOCAL;
   }
   ret->u.num = val;
 }
