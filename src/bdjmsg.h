@@ -19,18 +19,19 @@ typedef enum {
   MSG_EXIT_REQUEST,         // standard shutdown
     /* to main */
   MSG_GET_STATUS,           // get main/player status
-  MSG_MUSICQ_MOVE_DOWN,     // to main: args: idx
-  MSG_MUSICQ_MOVE_TOP,      // to main: args: idx
-  MSG_MUSICQ_MOVE_UP,       // to main: args: idx
-  MSG_MUSICQ_REMOVE,        // to main: args: idx
-  MSG_MUSICQ_TOGGLE_PAUSE,  // to main
-  MSG_MUSICQ_TRUNCATE,      // to main: args: idx
-  MSG_PLAYLIST_CLEARPLAY,   // to main args: playlist name
-  MSG_PLAYLIST_QUEUE,       // to main args: playlist name
-  MSG_PLAY_PLAY,            // to main (always).
+  MSG_MUSICQ_MOVE_DOWN,     // args: idx
+  MSG_MUSICQ_MOVE_TOP,      // args: idx
+  MSG_MUSICQ_MOVE_UP,       // args: idx
+  MSG_MUSICQ_REMOVE,        // args: idx
+  MSG_MUSICQ_TOGGLE_PAUSE,  //
+  MSG_MUSICQ_TRUNCATE,      // args: idx
+  MSG_MUSICQ_INSERT,        // args: idx, song name
+  MSG_PLAYLIST_CLEARPLAY,   // args: playlist name
+  MSG_PLAYLIST_QUEUE,       // args: playlist name
+  MSG_PLAY_PLAY,            // always to main
                             //    starts playback, passed on to player.
-  MSG_PLAY_PLAYPAUSE,       // to main (always).
-  MSG_QUEUE_CLEAR,          // to main
+  MSG_PLAY_PLAYPAUSE,       // always to main
+  MSG_QUEUE_CLEAR,          //
   MSG_DANCE_QUEUE,          // args: dance idx
   MSG_DANCE_QUEUE5,         // args: dance idx
     /* to player */

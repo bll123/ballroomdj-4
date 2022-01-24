@@ -862,6 +862,128 @@ START_TEST(queue_move)
 }
 END_TEST
 
+START_TEST(queue_insert_node)
+{
+  ssize_t   count;
+  char      *data;
+  queue_t       *q;
+  ssize_t   qiteridx;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "=== queue_insert_node");
+  q = queueAlloc (NULL);
+
+  queuePush (q, "aaaa");
+  queuePush (q, "bbbb");
+  queuePush (q, "cccc");
+  queuePush (q, "dddd");
+  queuePush (q, "eeee");
+  queuePush (q, "ffff");
+  count = queueGetCount (q);
+  ck_assert_int_eq (count, 6);
+
+  // insert into middle
+  queueInsert (q, 3, "zzzz");
+  count = queueGetCount (q);
+  ck_assert_int_eq (count, 7);
+
+  queueStartIterator (q, &qiteridx);
+  data = queueIterateData (q, &qiteridx);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "aaaa");
+  data = queueIterateData (q, &qiteridx);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "bbbb");
+  data = queueIterateData (q, &qiteridx);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "cccc");
+  data = queueIterateData (q, &qiteridx);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "zzzz");
+  data = queueIterateData (q, &qiteridx);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "dddd");
+  data = queueIterateData (q, &qiteridx);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "eeee");
+  data = queueIterateData (q, &qiteridx);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "ffff");
+  data = queueIterateData (q, &qiteridx);
+  ck_assert_ptr_null (data);
+
+  // insert at 1
+  queueInsert (q, 1, "wwww");
+  count = queueGetCount (q);
+  ck_assert_int_eq (count, 8);
+
+  queueStartIterator (q, &qiteridx);
+  data = queueIterateData (q, &qiteridx);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "aaaa");
+  data = queueIterateData (q, &qiteridx);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "wwww");
+  data = queueIterateData (q, &qiteridx);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "bbbb");
+  data = queueIterateData (q, &qiteridx);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "cccc");
+  data = queueIterateData (q, &qiteridx);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "zzzz");
+  data = queueIterateData (q, &qiteridx);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "dddd");
+  data = queueIterateData (q, &qiteridx);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "eeee");
+  data = queueIterateData (q, &qiteridx);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "ffff");
+  data = queueIterateData (q, &qiteridx);
+  ck_assert_ptr_null (data);
+
+  // insert at 0
+  queueInsert (q, 0, "xxxx");
+  count = queueGetCount (q);
+  ck_assert_int_eq (count, 9);
+
+  queueStartIterator (q, &qiteridx);
+  data = queueIterateData (q, &qiteridx);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "xxxx");
+  data = queueIterateData (q, &qiteridx);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "aaaa");
+  data = queueIterateData (q, &qiteridx);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "wwww");
+  data = queueIterateData (q, &qiteridx);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "bbbb");
+  data = queueIterateData (q, &qiteridx);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "cccc");
+  data = queueIterateData (q, &qiteridx);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "zzzz");
+  data = queueIterateData (q, &qiteridx);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "dddd");
+  data = queueIterateData (q, &qiteridx);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "eeee");
+  data = queueIterateData (q, &qiteridx);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "ffff");
+  data = queueIterateData (q, &qiteridx);
+  ck_assert_ptr_null (data);
+
+  queueFree (q);
+}
+END_TEST
+
 Suite *
 queue_suite (void)
 {
@@ -885,6 +1007,7 @@ queue_suite (void)
   tcase_add_test (tc, queue_getbyidx);
   tcase_add_test (tc, queue_clear);
   tcase_add_test (tc, queue_move);
+  tcase_add_test (tc, queue_insert_node);
   suite_add_tcase (s, tc);
 
   return s;

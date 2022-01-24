@@ -27,6 +27,7 @@ void    *queueGetByIdx (queue_t *q, ssize_t idx);
 void    *queuePop  (queue_t *q);
 void    queueClear (queue_t *q, ssize_t startIdx);
 void    queueMove (queue_t *q, ssize_t fromIdx, ssize_t toIdx);
+void    queueInsert (queue_t *q, ssize_t idx, void *data);
 void    *queueRemoveByIdx (queue_t *q, ssize_t idx);
 ssize_t queueGetCount (queue_t *q);
 void    queueStartIterator (queue_t *q, ssize_t *idx);

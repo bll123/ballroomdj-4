@@ -87,6 +87,7 @@ static void     mainMusicqMove (maindata_t *mainData, ssize_t fromidx, mainmove_
 static void     mainMusicqMoveTop (maindata_t *mainData, ssize_t fromidx);
 static void     mainMusicqClear (maindata_t *mainData, ssize_t idx);
 static void     mainMusicqRemove (maindata_t *mainData, ssize_t idx);
+static void     mainMusicqInsert (maindata_t *mainData, char *args);
 static void     mainPlaybackBegin (maindata_t *mainData);
 static void     mainMusicQueuePlay (maindata_t *mainData);
 static void     mainMusicQueueFinish (maindata_t *mainData);
@@ -313,6 +314,10 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_MUSICQ_TRUNCATE: {
           mainMusicqClear (mainData, atol (args));
+          break;
+        }
+        case MSG_MUSICQ_INSERT: {
+          mainMusicqInsert (mainData, args);
           break;
         }
         case MSG_PLAYER_STATE: {
@@ -710,8 +715,11 @@ mainMusicQueuePrep (maindata_t *mainData)
       musicqSetFlag (mainData->musicQueue, mainData->musicqCurrentIdx,
           i, MUSICQ_FLAG_PREP);
 
-      playlist = slistGetData (mainData->playlistCache, plname);
-      plannounce = playlistGetConfigNum (playlist, PLAYLIST_ANNOUNCE);
+      plannounce = false;
+      if (plname != NULL) {
+        playlist = slistGetData (mainData->playlistCache, plname);
+        plannounce = playlistGetConfigNum (playlist, PLAYLIST_ANNOUNCE);
+      }
       annfname = mainPrepSong (mainData, song, sfname, plname, PREP_SONG);
 
       if (plannounce == 1) {
@@ -775,8 +783,11 @@ mainPrepSong (maindata_t *mainData, song_t *song,
       speed = 100;
     }
 
-    playlist = slistGetData (mainData->playlistCache, plname);
-    pldur = playlistGetConfigNum (playlist, PLAYLIST_MAX_PLAY_TIME);
+    pldur = LIST_VALUE_INVALID;
+    if (plname != NULL) {
+      playlist = slistGetData (mainData->playlistCache, plname);
+      pldur = playlistGetConfigNum (playlist, PLAYLIST_MAX_PLAY_TIME);
+    }
       /* apply songend if set to a reasonable value */
     logMsg (LOG_DBG, LOG_MAIN, "dur: %zd songstart: %zd songend: %zd",
         dur, songstart, songend);
@@ -949,6 +960,28 @@ mainMusicqRemove (maindata_t *mainData, ssize_t idx)
 }
 
 static void
+mainMusicqInsert (maindata_t *mainData, char *args)
+{
+  char      *tokstr = NULL;
+  char      *p = NULL;
+  char      *sfname = NULL;
+  ssize_t   idx;
+  song_t    *song = NULL;
+
+  p = strtok_r (args, MSG_ARGS_RS_STR, &tokstr);
+  idx = atol (p);
+  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
+  sfname = p;
+
+  song = dbGetByName (sfname);
+
+  if (song != NULL) {
+    musicqInsert (mainData->musicQueue, mainData->musicqCurrentIdx, idx, song);
+    mainData->musicqChanged = true;
+  }
+}
+
+static void
 mainPlaybackBegin (maindata_t *mainData)
 {
   musicqflag_t  flags;
@@ -1013,9 +1046,11 @@ mainMusicQueueFinish (maindata_t *mainData)
   /* let the playlist know this song has been played */
   song = musicqGetCurrent (mainData->musicQueue, mainData->musicqCurrentIdx);
   plname = musicqGetPlaylistName (mainData->musicQueue, mainData->musicqCurrentIdx, 0);
-  playlist = slistGetData (mainData->playlistCache, plname);
-  if (playlist != NULL && song != NULL) {
-    playlistAddPlayed (playlist, song);
+  if (plname != NULL) {
+    playlist = slistGetData (mainData->playlistCache, plname);
+    if (playlist != NULL && song != NULL) {
+      playlistAddPlayed (playlist, song);
+    }
   }
   /* update the dance counts */
   if (song != NULL) {

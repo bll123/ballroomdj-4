@@ -10,6 +10,7 @@
 
 #include "sockh.h"
 #include "bdjmsg.h"
+#include "bdjstring.h"
 #include "sysvars.h"
 #include "bdjvars.h"
 #include "log.h"
@@ -20,13 +21,13 @@ static void processBuff (char *buff);
 int
 main (int argc, char *argv[])
 {
-  char            buff [80];
+  char            mbuff [1024];
+  char            buff [200];
   bdjmsgroute_t   route = ROUTE_NONE;
   bdjmsgmsg_t     msg = MSG_NULL;
   int             routeok = 0;
   int             msgok = 0;
-  int             argsok = 0;
-  char            *args;
+  int             argcount = 0;
   char            *rval;
   int             err;
   Sock_t          mainSock = INVALID_SOCKET;
@@ -134,7 +135,7 @@ main (int argc, char *argv[])
     }
 
     msgok = 0;
-    argsok = 0;
+    argcount = 0;
     while (msgok == 0) {
       printf ("  Msg: ");
       fflush (stdout);
@@ -148,42 +149,47 @@ main (int argc, char *argv[])
       if (strcmp (buff, "moveup") == 0) {
         msg = MSG_MUSICQ_MOVE_UP;
         msgok = 1;
-        argsok = 1;
+        argcount = 1;
       }
       if (strcmp (buff, "movetop") == 0) {
         msg = MSG_MUSICQ_MOVE_TOP;
         msgok = 1;
-        argsok = 1;
+        argcount = 1;
       }
       if (strcmp (buff, "movedown") == 0) {
         msg = MSG_MUSICQ_MOVE_DOWN;
         msgok = 1;
-        argsok = 1;
+        argcount = 1;
       }
       if (strcmp (buff, "mremove") == 0) {
         msg = MSG_MUSICQ_REMOVE;
         msgok = 1;
-        argsok = 1;
+        argcount = 1;
       }
       if (strcmp (buff, "mtruncate") == 0) {
         msg = MSG_MUSICQ_TRUNCATE;
         msgok = 1;
-        argsok = 1;
+        argcount = 1;
+      }
+      if (strcmp (buff, "minsert") == 0) {
+        msg = MSG_MUSICQ_INSERT;
+        msgok = 1;
+        argcount = 2;
       }
       if (strcmp (buff, "tpause") == 0) {
         msg = MSG_MUSICQ_TOGGLE_PAUSE;
         msgok = 1;
-        argsok = 1;
+        argcount = 1;
       }
       if (strcmp (buff, "prep-song") == 0) {
         msg = MSG_SONG_PREP;
         msgok = 1;
-        argsok = 1;
+        argcount = 1;
       }
       if (strcmp (buff, "play-song") == 0) {
         msg = MSG_SONG_PLAY;
         msgok = 1;
-        argsok = 1;
+        argcount = 1;
       }
       if (strcmp (buff, "pause") == 0) {
         msg = MSG_PLAY_PAUSE;
@@ -216,7 +222,7 @@ main (int argc, char *argv[])
       if (strcmp (buff, "vol") == 0) {
         msg = MSG_PLAYER_VOLUME;
         msgok = 1;
-        argsok = 1;
+        argcount = 1;
       }
       if (strcmp (buff, "stop") == 0) {
         msg = MSG_PLAY_STOP;
@@ -225,7 +231,7 @@ main (int argc, char *argv[])
       if (strcmp (buff, "playlist-q") == 0) {
         msg = MSG_PLAYLIST_QUEUE;
         msgok = 1;
-        argsok = 1;
+        argcount = 1;
       }
       if (strcmp (buff, "exit") == 0) {
         msg = MSG_EXIT_REQUEST;
@@ -248,22 +254,26 @@ main (int argc, char *argv[])
       }
     }
 
-    args = NULL;
-    if (argsok) {
+    mbuff [0] = '\0';
+    while (argcount) {
       printf ("  %s args: ", buff);
       fflush (stdout);
       rval = fgets (buff, sizeof (buff), stdin);
       buff [strlen (buff) - 1] = '\0';
       processBuff (buff);
-      args = buff;
+      if (mbuff [0] != '\0') {
+        strlcat (mbuff, MSG_ARGS_RS_STR, sizeof (mbuff));
+      }
+      strlcat (mbuff, buff, sizeof (mbuff));
+      --argcount;
     }
 
     if (routeok && msgok) {
       if (route == ROUTE_MAIN) {
-        sockhSendMessage (mainSock, ROUTE_CLICOMM, route, msg, args);
+        sockhSendMessage (mainSock, ROUTE_CLICOMM, route, msg, mbuff);
       }
       if (route == ROUTE_PLAYER) {
-        sockhSendMessage (playerSock, ROUTE_CLICOMM, route, msg, args);
+        sockhSendMessage (playerSock, ROUTE_CLICOMM, route, msg, mbuff);
       }
     }
   }

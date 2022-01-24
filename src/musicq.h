@@ -16,6 +16,7 @@ typedef enum {
   MUSICQ_FLAG_PREP      = 0x0001,
   MUSICQ_FLAG_ANNOUNCE  = 0x0002,
   MUSICQ_FLAG_PAUSE     = 0x0004,
+  MUSICQ_FLAG_REQUEST   = 0x0008,
 } musicqflag_t;
 
 typedef struct {
@@ -35,6 +36,8 @@ void        musicqPush (musicq_t *musicq, musicqidx_t idx,
                 song_t *song, char *plname);
 void        musicqMove (musicq_t *musicq, musicqidx_t musicqidx,
                 ssize_t fromidx, ssize_t toidx);
+void        musicqInsert (musicq_t *musicq, musicqidx_t musicqidx,
+                ssize_t idx, song_t *song);
 song_t      *musicqGetCurrent (musicq_t *musicq, musicqidx_t musicqidx);
 musicqflag_t musicqGetFlags (musicq_t *musicq, musicqidx_t musicqidx, ssize_t qkey);
 void        musicqSetFlag (musicq_t *musicq, musicqidx_t musicqidx,

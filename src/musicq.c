@@ -61,7 +61,7 @@ musicqPush (musicq_t *musicq, musicqidx_t musicqidx, song_t *song, char *plname)
 {
   musicqitem_t      *musicqitem;
 
-  if (musicq == NULL || musicq->q [musicqidx] == NULL) {
+  if (musicq == NULL || musicq->q [musicqidx] == NULL || song == NULL) {
     return;
   }
 
@@ -79,6 +79,27 @@ musicqMove (musicq_t *musicq, musicqidx_t musicqidx,
     ssize_t fromidx, ssize_t toidx)
 {
   queueMove (musicq->q [musicqidx], fromidx, toidx);
+}
+
+void
+musicqInsert (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx, song_t *song)
+{
+  musicqitem_t      *musicqitem;
+
+  if (musicq == NULL || musicq->q [musicqidx] == NULL || song == NULL) {
+    return;
+  }
+  if (idx < 1 || idx >= queueGetCount (musicq->q [musicqidx])) {
+    return;
+  }
+
+  musicqitem = malloc (sizeof (musicqitem_t));
+  assert (musicqitem != NULL);
+  musicqitem->song = song;
+  musicqitem->playlistName = NULL;
+  musicqitem->announce = NULL;
+  musicqitem->flags = MUSICQ_FLAG_REQUEST;
+  queueInsert (musicq->q [musicqidx], idx, musicqitem);
 }
 
 song_t *

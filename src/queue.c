@@ -224,6 +224,52 @@ queueMove (queue_t *q, ssize_t fromidx, ssize_t toidx)
   return;
 }
 
+void
+queueInsert (queue_t *q, ssize_t idx, void *data)
+{
+  queuenode_t   *node = NULL;
+  queuenode_t   *tnode = NULL;
+  ssize_t       count;
+
+  if (q == NULL) {
+    return;
+  }
+  if (idx < 0 || idx >= q->count) {
+    return;
+  }
+
+  node = malloc (sizeof (queuenode_t));
+  assert (node != NULL);
+  node->prev = NULL;
+  node->next = NULL;
+  node->data = data;
+
+  count = 0;
+  tnode = q->head;
+  while (tnode != NULL && count != idx) {
+    tnode = tnode->next;
+    ++count;
+  }
+
+  if (tnode != NULL) {
+    node->prev = tnode->prev;
+    node->next = tnode;
+    tnode->prev = node;
+    if (q->head == tnode) {
+      q->head = node;
+    }
+  } else {
+    q->head = node;
+    q->tail = node;
+  }
+  if (node->prev != NULL) {
+    node->prev->next = node;
+  }
+  ++q->count;
+
+  return;
+}
+
 void *
 queueRemoveByIdx (queue_t *q, ssize_t idx)
 {
