@@ -41,6 +41,11 @@
 #include "tmutil.h"
 #include "webclient.h"
 
+typedef enum {
+  MOVE_UP = -1,
+  MOVE_DOWN = 1,
+} mainmove_t;
+
 #define SOCKOF(idx) (mainData->processes [idx].sock)
 
 /* playlistCache contains all of the playlists that have been seen */
@@ -78,8 +83,10 @@ static void     mainMusicQueuePrep (maindata_t *mainData);
 static char     *mainPrepSong (maindata_t *maindata, song_t *song,
                     char *sfname, char *plname, bdjmsgprep_t flag);
 static void     mainTogglePause (maindata_t *mainData, ssize_t idx);
-static void     mainMusicqMove (maindata_t *mainData, ssize_t fromidx, ssize_t direction);
+static void     mainMusicqMove (maindata_t *mainData, ssize_t fromidx, mainmove_t direction);
 static void     mainMusicqMoveTop (maindata_t *mainData, ssize_t fromidx);
+static void     mainMusicqClear (maindata_t *mainData, ssize_t idx);
+static void     mainMusicqRemove (maindata_t *mainData, ssize_t idx);
 static void     mainPlaybackBegin (maindata_t *mainData);
 static void     mainMusicQueuePlay (maindata_t *mainData);
 static void     mainMusicQueueFinish (maindata_t *mainData);
@@ -240,11 +247,13 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           sockhSendMessage (SOCKOF (PROCESS_PLAYER),
               ROUTE_MAIN, ROUTE_PLAYER, MSG_PLAY_NEXTSONG, NULL);
           mainQueuePlaylist (mainData, args);
+          mainMusicQueuePlay (mainData);
           break;
         }
         case MSG_PLAYLIST_QUEUE: {
           logMsg (LOG_DBG, LOG_MSGS, "got: playlist-queue %s", args);
           mainQueuePlaylist (mainData, args);
+          mainMusicQueuePlay (mainData);
           break;
         }
         case MSG_DANCE_QUEUE: {
@@ -287,7 +296,7 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_MUSICQ_MOVE_DOWN: {
-          mainMusicqMove (mainData, atol (args), 1);
+          mainMusicqMove (mainData, atol (args), MOVE_DOWN);
           break;
         }
         case MSG_MUSICQ_MOVE_TOP: {
@@ -295,7 +304,15 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_MUSICQ_MOVE_UP: {
-          mainMusicqMove (mainData, atol (args), -1);
+          mainMusicqMove (mainData, atol (args), MOVE_UP);
+          break;
+        }
+        case MSG_MUSICQ_REMOVE: {
+          mainMusicqRemove (mainData, atol (args));
+          break;
+        }
+        case MSG_MUSICQ_TRUNCATE: {
+          mainMusicqClear (mainData, atol (args));
           break;
         }
         case MSG_PLAYER_STATE: {
@@ -461,10 +478,12 @@ mainSendMobileMarqueeData (maindata_t *mainData)
   snprintf (tbuff, sizeof (tbuff), "\"title\" : \"%s\"", title);
   strlcat (jbuff, tbuff, sizeof (jbuff));
 
-  if (musicqGetLen (mainData->musicQueue, mainData->musicqCurrentIdx) > 0) {
+  if (musicqLen > 0) {
     for (ssize_t i = 0; i <= mqLen; ++i) {
       if ((i > 0 && mainData->playerState == PL_STATE_IN_GAP) ||
           (i > 1 && mainData->playerState == PL_STATE_IN_FADEOUT)) {
+        dstr = "";
+      } else if (i > musicqLen) {
         dstr = "";
       } else {
         song = musicqGetByIdx (mainData->musicQueue, mainData->musicqCurrentIdx, i);
@@ -477,6 +496,7 @@ mainSendMobileMarqueeData (maindata_t *mainData)
           dstr = musicqGetDance (mainData->musicQueue, mainData->musicqCurrentIdx, i);
         }
       }
+
       if (i == 0) {
         snprintf (tbuff, sizeof (tbuff), "\"current\" : \"%s\"", dstr);
       } else {
@@ -500,23 +520,25 @@ mainSendMobileMarqueeData (maindata_t *mainData)
 
   /* internet mode from here on */
 
-  if (mainData->mobmqUserkey == NULL) {
-    pathbldMakePath (tbuff, sizeof (tbuff), "",
-        "mmq", ".key", PATHBLD_MP_USEIDX);
-    mainData->mobmqUserkey = filedataReadAll (tbuff);
-  }
-
   tag = bdjoptGetData (OPT_P_MOBILEMQTAG);
-  snprintf (tbuff, sizeof (tbuff),
-      "https://%s/marquee4.php", sysvars [SV_MOBMQ_HOST]);
-  snprintf (qbuff, sizeof (qbuff), "v=2&mqdata=%s&key=%s&tag=%s",
-      jbuff, "93457645", tag);
-  if (mainData->mobmqUserkey != NULL) {
-    snprintf (tbuffb, sizeof (tbuffb), "&userkey=%s", mainData->mobmqUserkey);
-    strlcat (qbuff, tbuffb, MAXPATHLEN);
+  if (tag == NULL) {
+    if (mainData->mobmqUserkey == NULL) {
+      pathbldMakePath (tbuff, sizeof (tbuff), "",
+          "mmq", ".key", PATHBLD_MP_USEIDX);
+      mainData->mobmqUserkey = filedataReadAll (tbuff);
+    }
+
+    snprintf (tbuff, sizeof (tbuff),
+        "https://%s/marquee4.php", sysvars [SV_MOBMQ_HOST]);
+    snprintf (qbuff, sizeof (qbuff), "v=2&mqdata=%s&key=%s&tag=%s",
+        jbuff, "93457645", tag);
+    if (mainData->mobmqUserkey != NULL) {
+      snprintf (tbuffb, sizeof (tbuffb), "&userkey=%s", mainData->mobmqUserkey);
+      strlcat (qbuff, tbuffb, MAXPATHLEN);
+    }
+    mainData->webclient = webclientPost (mainData->webclient,
+        tbuff, qbuff, mainData, mainMobilePostCallback);
   }
-  mainData->webclient = webclientPost (mainData->webclient,
-      tbuff, qbuff, mainData, mainMobilePostCallback);
 }
 
 static void
@@ -610,7 +632,6 @@ mainQueuePlaylist (maindata_t *mainData, char *plname)
     logMsg (LOG_DBG, LOG_MAIN, "push pl %s", plname);
     mainMusicQueueFill (mainData);
     mainMusicQueuePrep (mainData);
-    mainMusicQueuePlay (mainData);
   } else {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Queue Playlist failed: %s", plname);
   }
@@ -863,18 +884,14 @@ mainTogglePause (maindata_t *mainData, ssize_t idx)
 }
 
 static void
-mainMusicqMove (maindata_t *mainData, ssize_t fromidx, ssize_t direction)
+mainMusicqMove (maindata_t *mainData, ssize_t fromidx, mainmove_t direction)
 {
   ssize_t       toidx;
   ssize_t       musicqLen;
 
   musicqLen = musicqGetLen (mainData->musicQueue, mainData->musicqCurrentIdx);
 
-  if (direction == 0) {
-    toidx = 1;
-  } else {
-    toidx = fromidx + direction;
-  }
+  toidx = fromidx + direction;
   if (fromidx == 1 && toidx == 0 &&
       mainData->playerState != PL_STATE_STOPPED) {
     return;
@@ -883,7 +900,7 @@ mainMusicqMove (maindata_t *mainData, ssize_t fromidx, ssize_t direction)
   if (toidx > fromidx && fromidx >= musicqLen) {
     return;
   }
-  if (toidx < fromidx && fromidx <= 1) {
+  if (toidx < fromidx && fromidx < 1) {
     return;
   }
 
@@ -909,6 +926,25 @@ mainMusicqMoveTop (maindata_t *mainData, ssize_t fromidx)
     fromidx--;
     toidx--;
   }
+  mainData->musicqChanged = true;
+}
+
+static void
+mainMusicqClear (maindata_t *mainData, ssize_t idx)
+{
+  musicqClear (mainData->musicQueue, mainData->musicqCurrentIdx, idx);
+  /* there may be other playlists in the playlist queue */
+  mainMusicQueueFill (mainData);
+  mainMusicQueuePrep (mainData);
+  mainData->musicqChanged = true;
+}
+
+static void
+mainMusicqRemove (maindata_t *mainData, ssize_t idx)
+{
+  musicqRemove (mainData->musicQueue, mainData->musicqCurrentIdx, idx);
+  mainMusicQueueFill (mainData);
+  mainMusicQueuePrep (mainData);
   mainData->musicqChanged = true;
 }
 

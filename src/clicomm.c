@@ -160,6 +160,16 @@ main (int argc, char *argv[])
         msgok = 1;
         argsok = 1;
       }
+      if (strcmp (buff, "mremove") == 0) {
+        msg = MSG_MUSICQ_REMOVE;
+        msgok = 1;
+        argsok = 1;
+      }
+      if (strcmp (buff, "mtruncate") == 0) {
+        msg = MSG_MUSICQ_TRUNCATE;
+        msgok = 1;
+        argsok = 1;
+      }
       if (strcmp (buff, "tpause") == 0) {
         msg = MSG_MUSICQ_TOGGLE_PAUSE;
         msgok = 1;

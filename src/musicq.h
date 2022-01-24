@@ -49,6 +49,7 @@ char        *musicqGetPlaylistName (musicq_t *musicq, musicqidx_t musicqidx, ssi
 song_t      *musicqGetByIdx (musicq_t *musicq, musicqidx_t musicqidx, ssize_t qkey);
 void        musicqPop (musicq_t *musicq, musicqidx_t musicqidx);
 void        musicqClear (musicq_t *musicq, musicqidx_t musicqidx, ssize_t startIdx);
+void        musicqRemove (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx);
 ssize_t     musicqGetLen (musicq_t *musicq, musicqidx_t musicqidx);
 char *      musicqGetDance (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx);
 char *      musicqGetData (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx, tagdefkey_t tagidx);

@@ -512,6 +512,8 @@ playerProcessing (void *udata)
 
     pq = playerLocatePreppedSong (playerData, request);
     if (pq == NULL) {
+      request = queuePop (playerData->playRequest);
+      free (request);
       if (gKillReceived) {
         logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
       }

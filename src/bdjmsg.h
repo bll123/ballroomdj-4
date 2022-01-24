@@ -22,7 +22,9 @@ typedef enum {
   MSG_MUSICQ_MOVE_DOWN,     // to main: args: idx
   MSG_MUSICQ_MOVE_TOP,      // to main: args: idx
   MSG_MUSICQ_MOVE_UP,       // to main: args: idx
+  MSG_MUSICQ_REMOVE,        // to main: args: idx
   MSG_MUSICQ_TOGGLE_PAUSE,  // to main
+  MSG_MUSICQ_TRUNCATE,      // to main: args: idx
   MSG_PLAYLIST_CLEARPLAY,   // to main args: playlist name
   MSG_PLAYLIST_QUEUE,       // to main args: playlist name
   MSG_PLAY_PLAY,            // to main (always).

@@ -229,7 +229,21 @@ musicqPop (musicq_t *musicq, musicqidx_t musicqidx)
 void
 musicqClear (musicq_t *musicq, musicqidx_t musicqidx, ssize_t startIdx)
 {
+  if (startIdx < 1 || startIdx >= queueGetCount (musicq->q [musicqidx])) {
+    return;
+  }
+
   queueClear (musicq->q [musicqidx], startIdx);
+}
+
+void
+musicqRemove (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx)
+{
+  if (idx < 1 || idx >= queueGetCount (musicq->q [musicqidx])) {
+    return;
+  }
+
+  queueRemoveByIdx (musicq->q [musicqidx], idx);
 }
 
 ssize_t
