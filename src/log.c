@@ -10,9 +10,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#if _hdr_unistd
-# include <unistd.h>
-#endif
+#include <unistd.h>
 
 #include "log.h"
 #include "tmutil.h"

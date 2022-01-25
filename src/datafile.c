@@ -23,9 +23,9 @@ typedef enum {
   PARSE_KEYVALUE
 } parsetype_t;
 
-static size_t parse (parseinfo_t *pi, char *data, parsetype_t parsetype);
-static void   datafileFreeInternal (datafile_t *df);
-static void   datafileCheckDfkeys (char *name, datafilekey_t *dfkeys, size_t dfkeycount);
+static ssize_t  parse (parseinfo_t *pi, char *data, parsetype_t parsetype);
+static void     datafileFreeInternal (datafile_t *df);
+static void     datafileCheckDfkeys (char *name, datafilekey_t *dfkeys, ssize_t dfkeycount);
 
 /* parsing routines */
 
@@ -63,7 +63,7 @@ parseGetData (parseinfo_t *pi)
   return pi->strdata;
 }
 
-size_t
+ssize_t
 parseSimple (parseinfo_t *pi, char *data)
 {
   logProcBegin (LOG_PROC, "parseSimple");
@@ -71,7 +71,7 @@ parseSimple (parseinfo_t *pi, char *data)
   return parse (pi, data, PARSE_SIMPLE);
 }
 
-size_t
+ssize_t
 parseKeyValue (parseinfo_t *pi, char *data)
 {
   logProcBegin (LOG_PROC, "parseKeyValue");
@@ -134,7 +134,7 @@ datafileAlloc (char *name)
 
 datafile_t *
 datafileAllocParse (char *name, datafiletype_t dftype, char *fname,
-    datafilekey_t *dfkeys, size_t dfkeycount, listidx_t lookupKey)
+    datafilekey_t *dfkeys, ssize_t dfkeycount, listidx_t lookupKey)
 {
   datafile_t      *df;
 
@@ -194,7 +194,7 @@ datafileLoad (datafile_t *df, datafiletype_t dftype, char *fname)
 
 list_t *
 datafileParse (char *data, char *name, datafiletype_t dftype,
-    datafilekey_t *dfkeys, size_t dfkeycount, slistidx_t lookupKey,
+    datafilekey_t *dfkeys, ssize_t dfkeycount, slistidx_t lookupKey,
     slist_t **lookup)
 {
   list_t        *datalist = NULL;
@@ -207,12 +207,12 @@ datafileParse (char *data, char *name, datafiletype_t dftype,
 list_t *
 datafileParseMerge (list_t *datalist, char *data, char *name,
     datafiletype_t dftype, datafilekey_t *dfkeys,
-    size_t dfkeycount, slistidx_t lookupKey, slist_t **lookup)
+    ssize_t dfkeycount, slistidx_t lookupKey, slist_t **lookup)
 {
   char          **strdata = NULL;
   parseinfo_t   *pi = NULL;
   listidx_t     key = -1L;
-  size_t        dataCount;
+  ssize_t       dataCount;
   nlist_t       *itemList = NULL;
   valuetype_t   vt = 0;
   size_t        inc = 2;
@@ -299,7 +299,7 @@ datafileParseMerge (list_t *datalist, char *data, char *name,
     logMsg (LOG_DBG, LOG_DATAFILE, "use dfkeys");
   }
 
-  for (size_t i = 0; i < dataCount; i += inc) {
+  for (ssize_t i = 0; i < dataCount; i += inc) {
     tkeystr = strdata [i];
     tvalstr = strdata [i + 1];
 
@@ -518,7 +518,7 @@ datafileSetData (datafile_t *df, void *data)
 }
 
 int
-datafileSave (datafilekey_t *dfkeys, size_t dfkeycount, datafile_t *data)
+datafileSave (datafilekey_t *dfkeys, ssize_t dfkeycount, datafile_t *data)
 {
 /* ### FIX : TODO */
   datafileBackup (data->fname, 2);
@@ -550,7 +550,7 @@ datafileBackup (char *fname, int count)
 
 /* internal parse routines */
 
-static size_t
+static ssize_t
 parse (parseinfo_t *pi, char *data, parsetype_t parsetype)
 {
   char        *tokptr;
@@ -566,7 +566,8 @@ parse (parseinfo_t *pi, char *data, parsetype_t parsetype)
 
   if (pi->allocCount < 60) {
     pi->allocCount = 60;
-    pi->strdata = realloc (pi->strdata, sizeof (char *) * pi->allocCount);
+    pi->strdata = realloc (pi->strdata,
+        sizeof (char *) * (size_t) pi->allocCount);
     assert (pi->strdata != NULL);
   }
 
@@ -580,7 +581,8 @@ parse (parseinfo_t *pi, char *data, parsetype_t parsetype)
 
     if (dataCounter >= pi->allocCount) {
       pi->allocCount += 10;
-      pi->strdata = realloc (pi->strdata, sizeof (char *) * pi->allocCount);
+      pi->strdata = realloc (pi->strdata,
+          sizeof (char *) * (size_t) pi->allocCount);
       assert (pi->strdata != NULL);
     }
     if (parsetype == PARSE_KEYVALUE && dataCounter % 2 == 1) {
@@ -643,11 +645,11 @@ datafileFreeInternal (datafile_t *df)
 }
 
 static void
-datafileCheckDfkeys (char *name, datafilekey_t *dfkeys, size_t dfkeycount)
+datafileCheckDfkeys (char *name, datafilekey_t *dfkeys, ssize_t dfkeycount)
 {
   char          *last = "";
 
-  for (size_t i = 0; i < dfkeycount; ++i) {
+  for (ssize_t i = 0; i < dfkeycount; ++i) {
     if (strcmp (dfkeys [i].name, last) <= 0) {
       fprintf (stderr, "datafile: %s dfkey out of order: %s\n", name, dfkeys [i].name);
       logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: datafile: %s dfkey out of order: %s", name, dfkeys [i].name);

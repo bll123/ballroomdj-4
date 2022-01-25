@@ -15,7 +15,7 @@ if iswindows ! ( ( == _MKCONFIG_SYSTYPE Linux ) || ( == _MKCONFIG_SYSTYPE Darwin
  addincpath ../plocal/include
  addldsrchpath ../plocal/lib
  addldflag -static-libgcc
- addcflag -DMG_ARCH=MG_ARCH_W32
+ addcflag -DMG_ARCH=MG_ARCH_WIN32
 else
  addcflag -DMG_ARCH=MG_ARCH_UNIX
 endif

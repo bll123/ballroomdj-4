@@ -34,6 +34,8 @@ pliInit (void)
     return NULL;
   }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wpedantic"
   pli->pliiInit = dylibLookup (pli->dlHandle, "pliiInit");
   assert (pli->pliiInit != NULL);
   pli->pliiFree = dylibLookup (pli->dlHandle, "pliiFree");
@@ -60,6 +62,7 @@ pliInit (void)
   assert (pli->pliiGetTime != NULL);
   pli->pliiState = dylibLookup (pli->dlHandle, "pliiState");
   assert (pli->pliiState != NULL);
+#pragma clang diagnostic pop
 
   pli->pliData = pli->pliiInit ();
   return pli;

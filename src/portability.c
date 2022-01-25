@@ -49,7 +49,7 @@ void
 sRandom (void)
 {
   pid_t pid = getpid ();
-  size_t seed = time(NULL) ^ (pid + (pid << 15));
+  long  seed = (ssize_t) time (NULL) ^ (pid + (pid << 15));
 #if _lib_srand48
   srand48 (seed);
 #endif

@@ -16,7 +16,7 @@
 
   /* must be sorted in ascii order */
 static datafilekey_t statusdfkeys[] = {
-  { "PLAYFLAG",   STATUS_PLAY_FLAG,  VALUE_NUM, parseConvBoolean, -1 },
+  { "PLAYFLAG",   STATUS_PLAY_FLAG,   VALUE_NUM, parseConvBoolean, -1 },
   { "STATUS",     STATUS_STATUS,      VALUE_DATA, NULL, -1 },
 };
 #define STATUS_DFKEY_COUNT (sizeof (statusdfkeys) / sizeof (datafilekey_t))
@@ -55,7 +55,7 @@ statusFree (status_t *status)
 bool
 statusPlayCheck (status_t *status, ilistidx_t ikey)
 {
-  return ilistGetNum (status->status, ikey, STATUS_PLAY_FLAG);
+  return (ilistGetNum (status->status, ikey, STATUS_PLAY_FLAG) == 1);
 }
 
 void

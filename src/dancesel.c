@@ -78,8 +78,8 @@ danceselAlloc (nlist_t *countList)
     dtemp = floor (dancesel->basetotal / dcount);
     nlistSetDouble (dancesel->distance, didx, dtemp);
     logMsg (LOG_DBG, LOG_DANCESEL, "dist:%ld: %.2f", didx, dtemp);
-    dancesel->maxDistance =
-        dtemp > dancesel->maxDistance ? dtemp : dancesel->maxDistance;
+    dancesel->maxDistance = (ssize_t)
+        (dtemp > dancesel->maxDistance ? dtemp : dancesel->maxDistance);
   }
   dancesel->maxDistance = (ssize_t) round (dancesel->maxDistance);
 
@@ -168,8 +168,8 @@ danceselSelect (dancesel_t *dancesel, nlist_t *danceCounts,
     /* previous dance data */
   ilistidx_t    pddanceIdx = -1;
   slist_t       *pdtags = NULL;
-  ssize_t       pdspeed;
-  ssize_t       pdtype;
+  ssize_t       pdspeed = 0;
+  ssize_t       pdtype = 0;
     /* history */
   ssize_t       priorIdx;
   ssize_t       histCount;

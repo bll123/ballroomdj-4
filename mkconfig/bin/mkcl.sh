@@ -189,7 +189,6 @@ runpathnames=
 islib=0
 ispath=0
 isrpath=0
-isinc=0
 olibs=
 havesource=F
 
@@ -203,14 +202,7 @@ grc=0
 for f in $@ $olibs; do
   case $f in
     -D*)
-      doappend CFLAGS_USER " $1"
-      shift
-      ;;
-    -I)
-      isinc=1
-      ;;
-    -I*)
-      doappend CFLAGS_USER " $1"
+      doappend CFLAGS_USER $1
       shift
       ;;
     -L)
@@ -221,7 +213,6 @@ for f in $@ $olibs; do
       dosubst tf '-L' ''
       if [ ! -d "$tf" ]; then
         puts "## unable to locate dir $tf"
-        grc=1
       else
         addlibpath $tf
       fi
@@ -234,7 +225,6 @@ for f in $@ $olibs; do
       dosubst tf '-rpath' ''
       if [ ! -d "$tf" ]; then
         puts "## unable to locate dir $tf"
-        grc=1
       else
         addrunpath $tf
       fi
@@ -275,9 +265,7 @@ for f in $@ $olibs; do
       fi
       ;;
     *)
-      if [ $isinc -eq 1 ]; then
-        doappend CFLAGS_USER " -I $f"
-      elif [ $islib -eq 1 ]; then
+      if [ $islib -eq 1 ]; then
         addlib "-l$f"
       elif [ $isrpath -eq 1 ]; then
         if [ ! -d "$f" ]; then
@@ -297,7 +285,6 @@ for f in $@ $olibs; do
       islib=0
       ispath=0
       isrpath=0
-      isinc=0
       ;;
   esac
 done
@@ -307,17 +294,16 @@ for lfn in $libnames; do
   doappend libs " ${DC_LINK}${lfn}"
 done
 
+LDFLAGS_LIBPATH=-L
 libpath=
 for lp in $libpathnames; do
-  doappend libpath ":${lp}"
+  doappend libpath " ${DC_LINK}${LDFLAGS_LIBPATH}${lp}"
 done
-dosubst libpath '^:' ''
 
 runpath=
 for lp in $runpathnames; do
-  doappend runpath ":${lp}"
+  doappend runpath " ${LDFLAGS_RUNPATH}${lp}"
 done
-dosubst runpath '^:' ''
 
 outflags=""
 if [ "$outfile" = "" ]; then
@@ -380,18 +366,16 @@ fi
 if [ \( $shared = T \) -o \( $mkexec = T \) ]; then
   ldflags_libpath=""
   if [ "${libpath}" != "" -a "${LDFLAGS_LIBPATH}" != "" ]; then
-    dosubst libpath '^:' ''
-    ldflags_libpath="${LDFLAGS_LIBPATH}${libpath}"
+    ldflags_libpath="${libpath}"
   fi
   ldflags_runpath=""
   if [ "${runpath}" != "" -a "${LDFLAGS_RUNPATH}" != "" ]; then
-    dosubst runpath '^:' ''
-    ldflags_runpath="${LDFLAGS_RUNPATH}${runpath}"
+    ldflags_runpath="${runpath}"
   fi
 
   ldflags_shared_libs=""
   if [ "${libs}" != "" -a "${libpath}" != "" ]; then
-    ldflags_shared_libs="${DC_LINK}-L${libpath}"
+    ldflags_shared_libs="${libpath}"
   fi
 
   ldflags_exec_link=""

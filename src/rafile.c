@@ -10,10 +10,11 @@
 #include <string.h>
 #include <errno.h>
 
-#include "rafile.h"
 #include "lock.h"
-#include "tmutil.h"
 #include "log.h"
+#include "pathbld.h"
+#include "rafile.h"
+#include "tmutil.h"
 
 static int  raReadHeader (rafile_t *);
 static void raWriteHeader (rafile_t *, int);
@@ -171,7 +172,7 @@ raClear (rafile_t *rafile, rafileidx_t rrn)
   return 0;
 }
 
-size_t
+ssize_t
 raRead (rafile_t *rafile, rafileidx_t rrn, char *data)
 {
   rafileidx_t        rc;
@@ -184,7 +185,7 @@ raRead (rafile_t *rafile, rafileidx_t rrn, char *data)
 
   raLock (rafile);
   fseek (rafile->fh, RRN_TO_OFFSET (rrn), SEEK_SET);
-  rc = fread (data, RAFILE_REC_SIZE, 1, rafile->fh);
+  rc = (rafileidx_t) fread (data, RAFILE_REC_SIZE, 1, rafile->fh);
   raUnlock (rafile);
   logProcEnd (LOG_PROC, "raRead", "");
   return rc;

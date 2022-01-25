@@ -1,3 +1,4 @@
+/* from: https://doxygen.postgresql.org/strlcat_8c_source.html */
 /*
  * src/port/strlcat.c
  *

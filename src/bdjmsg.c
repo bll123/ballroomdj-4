@@ -34,11 +34,11 @@ msgDecode (char *msgbuff, bdjmsgroute_t *routefrom, bdjmsgroute_t *route,
   char        *p = NULL;
 
   p = msgbuff;
-  *routefrom = atol (p);
+  *routefrom = (bdjmsgroute_t) atol (p);
   p += LSZ + 1;
-  *route = atol (p);
+  *route = (bdjmsgroute_t) atol (p);
   p += LSZ + 1;
-  *msg = atol (p);
+  *msg = (bdjmsgmsg_t) atol (p);
   p += LSZ + 1;
   if (args != NULL) {
     *args = '\0';

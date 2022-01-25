@@ -65,7 +65,7 @@ START_TEST(tmutil_set)
   if (diffa < 0) {
     diffa = - diffa;
   }
-  ck_assert_int_lt (diffa, 10);
+  ck_assert_int_lt (diffa, 50);
 }
 END_TEST
 

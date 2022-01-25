@@ -308,7 +308,7 @@ searchForPercentage (songseldance_t *songseldance, double dval)
   nlistidx_t       dataidx = 0;
 
 
-  r = nlistGetCount (songseldance->currentIdxList);
+  r = nlistGetCount (songseldance->currentIdxList) - 1;
 
   while (l <= r) {
     m = l + (r - l) / 2;
@@ -319,6 +319,9 @@ searchForPercentage (songseldance_t *songseldance, double dval)
       rca = tsongdata->percentage < dval;
     }
     dataidx = nlistGetNumByIdx (songseldance->currentIdxList, m);
+    if (dataidx == LIST_VALUE_INVALID) {
+      return NULL;
+    }
     tsongdata = nlistGetDataByIdx (songseldance->songIdxList, dataidx);
     rcb = tsongdata->percentage >= dval;
     if ((m == 0 || rca) && rcb) {

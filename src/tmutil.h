@@ -3,6 +3,12 @@
 
 #include <stdbool.h>
 #include <sys/time.h>
+#include <unistd.h>
+
+#if ! _typ_suseconds_t && ! defined (BDJ_TYPEDEF_USECONDS)
+ typedef useconds_t suseconds_t;
+ #define BDJ_TYPEDEF_USECONDS 1
+#endif
 
 typedef struct {
   struct timeval    tm;
@@ -12,7 +18,7 @@ void      mssleep (size_t);
 time_t    mstime (void);
 void      mstimestart (mstime_t *tm);
 time_t    mstimeend (mstime_t *tm);
-void      mstimeset (mstime_t *tm, size_t addTime);
+void      mstimeset (mstime_t *tm, ssize_t addTime);
 bool      mstimeCheck (mstime_t *tm);
 char      *tmutilDstamp (char *, size_t);
 char      *tmutilTstamp (char *, size_t);

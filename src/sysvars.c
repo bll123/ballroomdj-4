@@ -42,11 +42,11 @@ sysvarsInit (const char *argv0)
   char          tbuf [MAXPATHLEN+1];
   char          tcwd [MAXPATHLEN+1];
   char          buff [MAXPATHLEN+1];
-  int           rc;
   char          *p;
 
 #if _lib_uname
-  struct utsname      ubuf;
+  int             rc;
+  struct utsname  ubuf;
 
   rc = uname (&ubuf);
   assert (rc == 0);

@@ -97,7 +97,7 @@ pliiSeek (plidata_t *pliData, ssize_t pos)
 ssize_t
 pliiRate (plidata_t *pliData, ssize_t rate)
 {
-  ssize_t   ret;
+  ssize_t   ret = 100;
 
   if (pliData != NULL) {
     ret = 100;

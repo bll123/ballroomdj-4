@@ -46,14 +46,15 @@ typedef enum {
   MOVE_DOWN = 1,
 } mainmove_t;
 
-#define SOCKOF(idx) (mainData->processes [idx].sock)
+#define SOCKOF(idx) (mainData->processconns [idx].sock)
 
 /* playlistCache contains all of the playlists that have been seen */
 /* so that playlist lookups can be processed */
 typedef struct {
   mstime_t          tm;
   programstate_t    programState;
-  processconn_t     processes [PROCESS_MAX];
+  process_t         *processes [PROCESS_MAX];
+  processconn_t     processconns [PROCESS_MAX];
   slist_t           *playlistCache;
   queue_t           *playlistQueue;
   musicq_t          *musicQueue;
@@ -94,7 +95,8 @@ static void     mainMusicQueueFinish (maindata_t *mainData);
 static void     mainMusicQueueNext (maindata_t *mainData);
 static bool     mainCheckMusicQueue (song_t *song, void *tdata);
 static ssize_t  mainMusicQueueHistory (void *mainData, ssize_t idx);
-static void     mainForceStop (char *lockfn, datautil_mp_t flags);
+static void     mainForceStop (maindata_t *mainData, char *lockfn,
+                    int flags, processconnidx_t idx);
 static int      mainStartProcess (maindata_t *mainData, processconnidx_t idx,
                     char *fname);
 static void     mainStopProcess (maindata_t *mainData, processconnidx_t idx,
@@ -126,9 +128,10 @@ main (int argc, char *argv[])
   mainData.webclient = NULL;
   mainData.mobmqUserkey = NULL;
   for (processconnidx_t i = PROCESS_PLAYER; i < PROCESS_MAX; ++i) {
-    mainData.processes [i].sock = INVALID_SOCKET;
-    mainData.processes [i].started = false;
-    mainData.processes [i].handshake = false;
+    mainData.processconns [i].sock = INVALID_SOCKET;
+    mainData.processconns [i].started = false;
+    mainData.processconns [i].handshake = false;
+    mainData.processes [i] = NULL;
   }
   mainData.musicqChanged = false;
 
@@ -188,6 +191,11 @@ main (int argc, char *argv[])
       MOBILEMQ_LOCK_FN, true);
   mainStopProcess (&mainData, PROCESS_REMCTRL, ROUTE_REMCTRL,
       REMCTRL_LOCK_FN, true);
+  for (processconnidx_t i = 0; i < PROCESS_MAX; ++i) {
+    if (mainData.processes [i] != NULL) {
+      processFree (mainData.processes [i]);
+    }
+  }
   logMsg (LOG_SESS, LOG_IMPORTANT, "time-to-end: %ld ms", mstimeend (&mainData.tm));
   logEnd ();
   return 0;
@@ -215,13 +223,13 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
       switch (msg) {
         case MSG_HANDSHAKE: {
           if (routefrom == ROUTE_PLAYER) {
-            mainData->processes [PROCESS_PLAYER].handshake = true;
+            mainData->processconns [PROCESS_PLAYER].handshake = true;
           }
           if (routefrom == ROUTE_MOBILEMQ) {
-            mainData->processes [PROCESS_MOBILEMQ].handshake = true;
+            mainData->processconns [PROCESS_MOBILEMQ].handshake = true;
           }
           if (routefrom == ROUTE_REMCTRL) {
-            mainData->processes [PROCESS_REMCTRL].handshake = true;
+            mainData->processconns [PROCESS_REMCTRL].handshake = true;
           }
           break;
         }
@@ -321,7 +329,7 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_PLAYER_STATE: {
-          mainData->playerState = atol (args);
+          mainData->playerState = (playerstate_t) atol (args);
           logMsg (LOG_DBG, LOG_MSGS, "got: player-state: %d", mainData->playerState);
           mainData->musicqChanged = true;
           break;
@@ -366,16 +374,16 @@ mainProcessing (void *udata)
   }
 
   if (mainData->programState == STATE_LISTENING &&
-      ! mainData->processes [PROCESS_PLAYER].started) {
+      ! mainData->processconns [PROCESS_PLAYER].started) {
     mainStartProcess (mainData, PROCESS_PLAYER, "bdj4player");
-    mainStartProcess (mainData, PROCESS_MOBILEMQ, "mobilemarquee");
-    mainStartProcess (mainData, PROCESS_REMCTRL, "remotecontrol");
+    mainStartProcess (mainData, PROCESS_MOBILEMQ, "bdj4mobmq");
+    mainStartProcess (mainData, PROCESS_REMCTRL, "bdj4rc");
     mainData->programState = STATE_CONNECTING;
     logMsg (LOG_DBG, LOG_MAIN, "prog: connecting");
   }
 
   if (mainData->programState == STATE_CONNECTING &&
-      mainData->processes [PROCESS_PLAYER].started &&
+      mainData->processconns [PROCESS_PLAYER].started &&
       SOCKOF (PROCESS_PLAYER) == INVALID_SOCKET) {
     uint16_t      port;
     int           connMax = 0;
@@ -423,7 +431,7 @@ mainProcessing (void *udata)
   }
 
   if (mainData->programState == STATE_WAIT_HANDSHAKE) {
-    if (mainData->processes [PROCESS_PLAYER].handshake) {
+    if (mainData->processconns [PROCESS_PLAYER].handshake) {
       mainData->programState = STATE_RUNNING;
       logMsg (LOG_DBG, LOG_MAIN, "prog: running");
       logMsg (LOG_SESS, LOG_IMPORTANT, "running: time-to-start: %ld ms", mstimeend (&mainData->tm));
@@ -560,7 +568,9 @@ mainMobilePostCallback (void *userdata, char *resp, size_t len)
     FILE    *fh;
 
     /* this should be the user key */
-    mainData->mobmqUserkey = strndup (resp, len);
+    strlcpy (tbuff, resp, 3);
+    tbuff [2] = '\0';
+    mainData->mobmqUserkey = strdup (tbuff);
     /* need to save this for future use */
     pathbldMakePath (tbuff, sizeof (tbuff), "",
         "mmq", ".key", PATHBLD_MP_USEIDX);
@@ -753,7 +763,7 @@ mainPrepSong (maindata_t *mainData, song_t *song,
   double        voladjperc = 0;
   ssize_t       gap = 0;
   ssize_t       plannounce = 0;
-  dancekey_t    dancekey;
+  ilistidx_t    danceidx;
   char          *annfname = NULL;
 
 
@@ -815,8 +825,8 @@ mainPrepSong (maindata_t *mainData, song_t *song,
 
     /* if the playlist has a maximum play time specified for a dance */
     /* it overrides any of the other max play times */
-    dancekey = songGetNum (song, TAG_DANCE);
-    plddur = playlistGetDanceNum (playlist, dancekey, PLDANCE_MAXPLAYTIME);
+    danceidx = songGetNum (song, TAG_DANCE);
+    plddur = playlistGetDanceNum (playlist, danceidx, PLDANCE_MAXPLAYTIME);
     if (plddur >= 5000) {
       dur = plddur;
       logMsg (LOG_DBG, LOG_MAIN, "dur-pldur: %zd", dur);
@@ -844,9 +854,9 @@ mainPrepSong (maindata_t *mainData, song_t *song,
       dance_t       *dances;
       song_t        *tsong;
 
-      dancekey = songGetNum (song, TAG_DANCE);
+      danceidx = songGetNum (song, TAG_DANCE);
       dances = bdjvarsdf [BDJVDF_DANCES];
-      annfname = danceGetData (dances, dancekey, DANCE_ANNOUNCE);
+      annfname = danceGetData (dances, danceidx, DANCE_ANNOUNCE);
       if (annfname != NULL) {
         ssize_t   tval;
 
@@ -1103,7 +1113,8 @@ mainMusicQueueHistory (void *tmaindata, ssize_t idx)
 }
 
 static void
-mainForceStop (char *lockfn, datautil_mp_t flags)
+mainForceStop (maindata_t *mainData, char *lockfn,
+    int flags, processconnidx_t idx)
 {
   pid_t pid;
   int   count = 0;
@@ -1115,7 +1126,7 @@ mainForceStop (char *lockfn, datautil_mp_t flags)
   }
   while (pid != 0 && count < 10) {
     exists = 1;
-    if (! processExists (pid)) {
+    if (! processExists (mainData->processes [idx])) {
       logMsg (LOG_DBG, LOG_MAIN, "%s exited", lockfn);
       exists = 0;
       break;
@@ -1126,7 +1137,7 @@ mainForceStop (char *lockfn, datautil_mp_t flags)
 
   if (exists) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "force-terminating %s", lockfn);
-    processKill (pid);
+    processKill (mainData->processes [idx]);
   }
 }
 
@@ -1134,13 +1145,12 @@ static int
 mainStartProcess (maindata_t *mainData, processconnidx_t idx, char *fname)
 {
   char      tbuff [MAXPATHLEN];
-  pid_t     pid;
   char      *extension = NULL;
   int       rc = -1;
 
   logProcBegin (LOG_PROC, "mainStartProcess");
-  mainData->processes [idx].name = fname;
-  if (mainData->processes [idx].started) {
+  mainData->processconns [idx].name = fname;
+  if (mainData->processconns [idx].started) {
     logProcEnd (LOG_PROC, "mainStartProcess", "already");
     return -1;
   }
@@ -1151,13 +1161,14 @@ mainStartProcess (maindata_t *mainData, processconnidx_t idx, char *fname)
   }
   pathbldMakePath (tbuff, sizeof (tbuff), "",
       fname, extension, PATHBLD_MP_EXECDIR);
-  rc = processStart (tbuff, &pid, lsysvars [SVL_BDJIDX],
+  mainData->processes [idx] = processStart (tbuff, lsysvars [SVL_BDJIDX],
       bdjoptGetNum (OPT_G_DEBUGLVL));
   if (rc < 0) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "%s %s failed to start", fname, tbuff);
   } else {
-    logMsg (LOG_DBG, LOG_BASIC, "%s started pid: %zd", fname, (ssize_t) pid);
-    mainData->processes [idx].started = true;
+    logMsg (LOG_DBG, LOG_BASIC, "%s started pid: %zd", fname,
+        (ssize_t) mainData->processes [idx]->pid);
+    mainData->processconns [idx].started = true;
   }
   logProcEnd (LOG_PROC, "mainStartProcess", "");
   return rc;
@@ -1169,7 +1180,7 @@ mainStopProcess (maindata_t *mainData, processconnidx_t idx,
 {
   logProcBegin (LOG_PROC, "mainStopProcess");
   if (! force) {
-    if (! mainData->processes [idx].started) {
+    if (! mainData->processconns [idx].started) {
       logProcEnd (LOG_PROC, "mainStopProcess", "not-started");
       return;
     }
@@ -1177,13 +1188,13 @@ mainStopProcess (maindata_t *mainData, processconnidx_t idx,
         MSG_EXIT_REQUEST, NULL);
     sockhSendMessage (SOCKOF (idx), ROUTE_MAIN, route,
         MSG_SOCKET_CLOSE, NULL);
-    sockClose (mainData->processes [idx].sock);
-    mainData->processes [idx].sock = INVALID_SOCKET;
-    mainData->processes [idx].started = false;
-    mainData->processes [idx].handshake = false;
+    sockClose (mainData->processconns [idx].sock);
+    mainData->processconns [idx].sock = INVALID_SOCKET;
+    mainData->processconns [idx].started = false;
+    mainData->processconns [idx].handshake = false;
   }
   if (force) {
-    mainForceStop (lockfn, PATHBLD_MP_USEIDX);
+    mainForceStop (mainData, lockfn, PATHBLD_MP_USEIDX, idx);
   }
   logProcEnd (LOG_PROC, "mainStopProcess", "");
 }
@@ -1247,7 +1258,7 @@ mainSendStatus (maindata_t *mainData, char *playerResp)
   char    tbuff [200];
   char    tbuff2 [40];
   char    rbuff [3096];
-  int     musicqLen;
+  ssize_t musicqLen;
   char    *data = NULL;
   char    *tokstr = NULL;
   char    *p;
@@ -1297,7 +1308,7 @@ mainSendStatus (maindata_t *mainData, char *playerResp)
 
   musicqLen = musicqGetLen (mainData->musicQueue, mainData->musicqCurrentIdx);
   snprintf (tbuff, sizeof (tbuff),
-      "\"qlength\" : \"%d\"", musicqLen);
+      "\"qlength\" : \"%zd\"", musicqLen);
   strlcat (rbuff, ", ", sizeof (rbuff));
   strlcat (rbuff, tbuff, sizeof (rbuff));
 

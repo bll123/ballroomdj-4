@@ -26,13 +26,6 @@ hdr     signal.h
 hdr     stdint.h
 hdr     string.h
 hdr     unistd.h
-if not_have_pkg_openssl ! _pkg_libs_openssl
- hdr    openssl/ssl.h
- hdr    openssl/err.h
-endif
-if not_have_pkg_curl ! _pkg_libs_curl
- hdr    curl/curl.h
-endif
 # winsock2 should come before windows.h
 hdr	winsock2.h
 hdr	windows.h
@@ -47,9 +40,21 @@ sys	utsname.h
 
 typ     HANDLE
 typ     SOCKET
+# curl/curl.h defines socklen_t
 typ     socklen_t
 typ	struct sockaddr_in
 typ     suseconds_t
+
+# more headers need to be added now
+header_reset
+
+if not_have_pkg_openssl ! _pkg_libs_openssl
+ hdr    openssl/ssl.h
+ hdr    openssl/err.h
+endif
+if not_have_pkg_curl ! _pkg_libs_curl
+ hdr    curl/curl.h
+endif
 
 lib     CloseHandle
 lib     CreateFile
@@ -71,7 +76,6 @@ lib     random
 lib     realpath
 lib     round -lm
 lib     select -lws2_32
-lib     SetDllDirectory
 lib     sigaction
 lib     signal
 lib     socket -lws2_32
@@ -89,14 +93,12 @@ lib     WriteFile
 lib     WSACleanup -lws2_32
 lib     WSAGetLastError -lws2_32
 lib     WSAStartup -lws2_32
-hdr	openssl/ssl.h
-hdr	openssl/err.h
 
 if not_have_pkg_curl ! _pkg_libs_curl
- lib    curl_global_init -L../plocal/bin -lcurl -lc-ares -lnghttp2 -lzstd -lz
+ lib    curl_version -L../plocal/lib -lcurl
 endif
-if not_have_pkg_openssl ! _pkg_libs_openssl && _hdr_openssl_ssl_h
- lib    SSL_connect -lssl -lcrypto, -L../plocal/bin -lssl -lcrypto
+if not_have_pkg_openssl ! _pkg_libs_openssl && _hdr_openssl_ssl
+ lib    SSL_connect -L../plocal/lib -lssl -lcrypto
 endif
 
 args noconst mkdir
@@ -117,24 +119,5 @@ size	size_t
 size	SOCKET
 
 include
-
-#define Sock_t int
-#define _siz_Sock_t _siz_int
-#if _typ_SOCKET
-# undef Sock_t
-# undef _siz_Sock_t
-# define _siz_Sock_t _siz_SOCKET
-# define Sock_t SOCKET
-#endif
-
-#if _typ_socklen_t
-# define Socklen_t socklen_t
-#else
-# define Socklen_t int
-#endif
-
-#if ! _typ_suseconds_t
-# define suseconds_t useconds_t
-#endif
 
 endinclude

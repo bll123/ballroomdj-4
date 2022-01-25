@@ -9,9 +9,10 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include "lock.h"
 #include "bdjstring.h"
 #include "check_bdj.h"
+#include "lock.h"
+#include "pathbld.h"
 #include "sysvars.h"
 
 #define LOCK_FN "test_lock"

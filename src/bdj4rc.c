@@ -8,6 +8,17 @@
 #include <errno.h>
 #include <assert.h>
 #include <getopt.h>
+#include <signal.h>
+#include <sys/time.h> // for mongoose
+#include <dirent.h> // for mongoose
+
+/* winsock2.h should come before windows.h */
+#if _hdr_winsock2
+# include <winsock2.h>
+#endif
+#if _hdr_windows
+# include <windows.h>       // for mongoose
+#endif
 
 #include "mongoose.h"
 
@@ -17,6 +28,7 @@
 #include "bdjvars.h"
 #include "lock.h"
 #include "log.h"
+#include "pathbld.h"
 #include "process.h"
 #include "sock.h"
 #include "sockh.h"
@@ -83,7 +95,7 @@ main (int argc, char *argv[])
     switch (c) {
       case 'd': {
         if (optarg) {
-          loglevel = atoi (optarg);
+          loglevel = (loglevel_t) atoi (optarg);
         }
         break;
       }

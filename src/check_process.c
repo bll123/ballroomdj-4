@@ -14,16 +14,22 @@
 #include "portability.h"
 #include "process.h"
 #include "sysvars.h"
+#include "tmutil.h"
 
 START_TEST(process_exists)
 {
   pid_t     pid;
   int       rc;
+  process_t process;
 
   pid = getpid ();
-  rc = processExists (pid);
+  process.pid = pid;
+  process.hasHandle = false;
+  rc = processExists (&process);
   ck_assert_int_eq (rc, 0);
-  rc = processExists (90876);
+  process.pid = 90876;
+  process.hasHandle = false;
+  rc = processExists (&process);
   ck_assert_int_lt (rc, 0);
 }
 END_TEST
@@ -31,10 +37,10 @@ END_TEST
 START_TEST(process_start)
 {
   pid_t     ppid;
-  pid_t     cpid;
   int       rc;
   char      *extension;
   char      tbuff [MAXPATHLEN];
+  process_t *process;
 
   ppid = getpid ();
 
@@ -49,24 +55,26 @@ START_TEST(process_start)
 #if _define_SIGCHLD
   processIgnoreSignal (SIGCHLD);
 #endif
-  rc = processStart (tbuff, &cpid, 5, 0);
+  /* abuse the --profile argument to pass the seconds to sleep */
+  process = processStart (tbuff, 5, 0);
+  ck_assert_ptr_nonnull (process);
+  ck_assert_int_ne (ppid, process->pid);
+  rc = processExists (process);
   ck_assert_int_eq (rc, 0);
-  ck_assert_int_ne (ppid, cpid);
-  rc = processExists (cpid);
-  ck_assert_int_eq (rc, 0);
-  sleep (6);
-  rc = processExists (cpid);
+  mssleep (6000);
+  rc = processExists (process);
   ck_assert_int_ne (rc, 0);
+  processFree (process);
 }
 END_TEST
 
 START_TEST(process_kill)
 {
   pid_t     ppid;
-  pid_t     cpid;
   int       rc;
   char      *extension;
   char      tbuff [MAXPATHLEN];
+  process_t *process;
 
   ppid = getpid ();
 
@@ -81,19 +89,30 @@ START_TEST(process_kill)
 #if _define_SIGCHLD
   processIgnoreSignal (SIGCHLD);
 #endif
-  rc = processStart (tbuff, &cpid, 60, 0);
+  /* abuse the --profile argument to pass the seconds to sleep */
+  process = processStart (tbuff, 60, 0);
+  ck_assert_ptr_nonnull (process);
+  ck_assert_int_ne (ppid, process->pid);
+
+  rc = processExists (process);
   ck_assert_int_eq (rc, 0);
-  ck_assert_int_ne (ppid, cpid);
-  rc = processExists (cpid);
+
+  mssleep (2000);
+  rc = processExists (process);
   ck_assert_int_eq (rc, 0);
-  sleep (2);
-  rc = processExists (cpid);
+
+  mssleep (2000);
+  rc = processExists (process);
   ck_assert_int_eq (rc, 0);
-  rc = processKill (cpid);
+
+  rc = processKill (process);
   ck_assert_int_eq (rc, 0);
-  sleep (2);
-  rc = processExists (cpid);
+
+  mssleep (2000);
+  rc = processExists (process);
   ck_assert_int_ne (rc, 0);
+
+  processFree (process);
 }
 END_TEST
 

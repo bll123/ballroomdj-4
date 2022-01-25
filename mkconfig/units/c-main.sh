@@ -142,6 +142,12 @@ standard_checks () {
   PH_ALL=T
 }
 
+check_header_reset () {
+  printlabel "" "reset headers"
+  out="${PH_PREFIX}all"
+  rm -f $out
+}
+
 check_hdr () {
   type=$1
   hdr=$2

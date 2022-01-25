@@ -33,7 +33,7 @@ START_TEST(parse_simple)
 {
   parseinfo_t     *pi = NULL;
   char            *tstr = NULL;
-  size_t          count;
+  ssize_t          count;
   char            **strdata = NULL;
 
 
@@ -67,7 +67,7 @@ START_TEST(parse_keyvalue)
 {
   parseinfo_t     *pi;
   char            *tstr = NULL;
-  size_t          count;
+  ssize_t          count;
   char            **strdata = NULL;
 
 
@@ -101,7 +101,7 @@ START_TEST(parse_with_comments)
 {
   parseinfo_t     *pi;
   char            *tstr = NULL;
-  size_t          count;
+  ssize_t          count;
   char            **strdata = NULL;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== parse_with_comments");

@@ -24,29 +24,32 @@ static pid_t   getPidFromFile (char *);
   /* returns PID if the process exists            */
   /* returns 0 if no lock exists or no process exists for this lock */
 pid_t
-lockExists (char *fn, datautil_mp_t flags)
+lockExists (char *fn, int flags)
 {
+  process_t process;
   char      tfn [MAXPATHLEN];
   pid_t     fpid = 0;
 
   pathbldMakePath (tfn, sizeof (tfn), "", fn, ".lck",
       flags | PATHBLD_MP_TMPDIR);
   fpid = getPidFromFile (tfn);
-  if (fpid == -1 || ! processExists (fpid)) {
+  process.pid = fpid;
+  process.hasHandle = false;
+  if (fpid == -1 || ! processExists (&process)) {
     fpid = 0;
   }
   return fpid;
 }
 
 int
-lockAcquire (char *fn, datautil_mp_t flags)
+lockAcquire (char *fn, int flags)
 {
   int rc = lockAcquirePid (fn, getpid(), flags);
   return rc;
 }
 
 int
-lockAcquirePid (char *fn, pid_t pid, datautil_mp_t flags)
+lockAcquirePid (char *fn, pid_t pid, int flags)
 {
   int       fd;
   size_t    len;
@@ -55,6 +58,7 @@ lockAcquirePid (char *fn, pid_t pid, datautil_mp_t flags)
   int       count;
   char      pidstr [16];
   char      tfn [MAXPATHLEN];
+  process_t process;
 
 
   pathbldMakePath (tfn, sizeof (tfn), "", fn, ".lck",
@@ -66,7 +70,9 @@ lockAcquirePid (char *fn, pid_t pid, datautil_mp_t flags)
     /* check for detached lock file */
     pid_t fpid = getPidFromFile (tfn);
     if (fpid > 0) {
-      rc = processExists (fpid);
+      process.pid = fpid;
+      process.hasHandle = false;
+      rc = processExists (&process);
       if (rc < 0) {
         /* process does not exist */
         fileopDelete (tfn);
@@ -89,13 +95,13 @@ lockAcquirePid (char *fn, pid_t pid, datautil_mp_t flags)
 
 
 int
-lockRelease (char *fn, datautil_mp_t flags)
+lockRelease (char *fn, int flags)
 {
   return lockReleasePid (fn, getpid(), flags);
 }
 
 int
-lockReleasePid (char *fn, pid_t pid, datautil_mp_t flags)
+lockReleasePid (char *fn, pid_t pid, int flags)
 {
   char      tfn [MAXPATHLEN];
   int       rc;

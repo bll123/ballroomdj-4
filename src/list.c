@@ -103,7 +103,8 @@ listSetSize (list_t *list, ssize_t siz)
 
   if (siz > list->allocCount) {
     list->allocCount = siz;
-    list->data = realloc (list->data, list->allocCount * sizeof (listitem_t));
+    list->data = realloc (list->data,
+        (size_t) list->allocCount * sizeof (listitem_t));
     assert (list->data != NULL);
     list->allocCount = siz;
   }
@@ -403,7 +404,8 @@ listInsert (list_t *list, ssize_t loc, listitem_t *item)
   ++list->count;
   if (list->count > list->allocCount) {
     ++list->allocCount;
-    list->data = realloc (list->data, list->allocCount * sizeof (listitem_t));
+    list->data = realloc (list->data,
+        (size_t) list->allocCount * sizeof (listitem_t));
     assert (list->data != NULL);
   }
 
@@ -413,7 +415,8 @@ listInsert (list_t *list, ssize_t loc, listitem_t *item)
 
   copycount = list->count - (loc + 1);
   if (copycount > 0) {
-    memcpy (list->data + loc + 1, list->data + loc, copycount * sizeof (listitem_t));
+    memcpy (list->data + loc + 1, list->data + loc,
+        (size_t) copycount * sizeof (listitem_t));
   }
   memcpy (&list->data [loc], item, sizeof (listitem_t));
 }
@@ -477,7 +480,7 @@ listBinarySearch (const list_t *list, listkey_t *key, ssize_t *loc)
 
     rc = listCompare (list, &list->data [m].key, key);
     if (rc == 0) {
-      *loc = (size_t) m;
+      *loc = (ssize_t) m;
       return 0;
     }
 
@@ -490,7 +493,7 @@ listBinarySearch (const list_t *list, listkey_t *key, ssize_t *loc)
     }
   }
 
-  *loc = (size_t) rm;
+  *loc = (ssize_t) rm;
   return -1;
 }
 

@@ -293,7 +293,7 @@ nlistSearchProbTable (nlist_t *probTable, double dval)
   double            d;
 
 
-  r = probTable->count;
+  r = probTable->count - 1;
 
   while (l <= r) {
     m = l + (r - l) / 2;

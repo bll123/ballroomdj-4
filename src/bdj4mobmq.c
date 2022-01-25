@@ -8,6 +8,17 @@
 #include <errno.h>
 #include <assert.h>
 #include <getopt.h>
+#include <signal.h>
+#include <sys/time.h> // for mongoose
+#include <dirent.h> // for mongoose
+
+/* winsock2.h should come before windows.h */
+#if _hdr_winsock2
+# include <winsock2.h>
+#endif
+#if _hdr_windows
+# include <windows.h>       // for mongoose
+#endif
 
 #include "mongoose.h"
 
@@ -17,6 +28,7 @@
 #include "bdjvars.h"
 #include "lock.h"
 #include "log.h"
+#include "pathbld.h"
 #include "process.h"
 #include "sockh.h"
 #include "sysvars.h"
@@ -75,7 +87,7 @@ main (int argc, char *argv[])
     switch (c) {
       case 'd': {
         if (optarg) {
-          loglevel = atoi (optarg);
+          loglevel = (loglevel_t) atoi (optarg);
         }
         break;
       }
@@ -105,7 +117,7 @@ main (int argc, char *argv[])
   bdjvarsInit ();
   bdjoptInit ();
 
-  mobmqData.type = bdjoptGetNum (OPT_P_MOBILEMARQUEE);
+  mobmqData.type = (bdjmobilemq_t) bdjoptGetNum (OPT_P_MOBILEMARQUEE);
   if (mobmqData.type == MOBILEMQ_OFF) {
     lockRelease (MOBILEMQ_LOCK_FN, PATHBLD_MP_USEIDX);
     exit (0);

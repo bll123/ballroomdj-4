@@ -6,9 +6,7 @@
 #include <string.h>
 #include <sys/time.h>
 #include <time.h>
-#if _hdr_unistd
-# include <unistd.h>
-#endif
+#include <unistd.h>
 
 #include "tmutil.h"
 #include "bdjstring.h"
@@ -55,11 +53,14 @@ mstimeend (mstime_t *t)
 }
 
 void
-mstimeset (mstime_t *mt, size_t addTime)
+mstimeset (mstime_t *mt, ssize_t addTime)
 {
+  time_t            s;
+
   gettimeofday (&mt->tm, NULL);
-  mt->tm.tv_sec += addTime / 1000;
-  mt->tm.tv_usec += (addTime - ((addTime / 1000) * 1000)) * 1000;
+  s = addTime / 1000;
+  mt->tm.tv_sec += s;
+  mt->tm.tv_usec += (addTime - (s * 1000)) * 1000;
 }
 
 bool

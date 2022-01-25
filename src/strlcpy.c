@@ -1,3 +1,4 @@
+/* from: https://doxygen.postgresql.org/strlcpy_8c_source.html */
 /*-------------------------------------------------------------------------
  *
  * strlcpy.c

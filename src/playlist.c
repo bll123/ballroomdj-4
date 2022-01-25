@@ -393,7 +393,7 @@ playlistGetNextSong (playlist_t *pl, nlist_t *danceCounts,
   }
 
   if (type == PLTYPE_AUTO || type == PLTYPE_SEQ) {
-    ilistidx_t     danceIdx;
+    ilistidx_t     danceIdx = LIST_VALUE_INVALID;
 
     if (type == PLTYPE_AUTO) {
       if (pl->countList == NULL) {
@@ -525,7 +525,7 @@ playlistFilterSong (dbidx_t dbidx, song_t *song, void *tplaylist)
     sstatus = songGetNum (song, TAG_STATUS);
     status = bdjvarsdf [BDJVDF_STATUS];
     if (status != NULL && ! statusPlayCheck (status, sstatus)) {
-      logMsg (LOG_DBG, LOG_SONGSEL, "reject %zd status %ld not playable", dbidx, status);
+      logMsg (LOG_DBG, LOG_SONGSEL, "reject %zd status not playable", dbidx);
       return false;
     }
   }

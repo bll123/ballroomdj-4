@@ -7,6 +7,8 @@
 #include <string.h>
 #include <errno.h>
 #include <assert.h>
+#include <sys/time.h> // for mongoose
+#include <dirent.h> // for mongoose
 
 #include "mongoose.h"
 

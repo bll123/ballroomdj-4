@@ -18,7 +18,7 @@ typedef struct {
 
 void    dbOpen (char *);
 void    dbClose (void);
-size_t  dbCount (void);
+ssize_t dbCount (void);
 int     dbLoad (db_t *, char *);
 song_t  *dbGetByName (char *);
 song_t  *dbGetByIdx (dbidx_t idx);

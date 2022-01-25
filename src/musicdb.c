@@ -63,10 +63,10 @@ dbClose (void)
   musicdb = NULL;
 }
 
-size_t
+ssize_t
 dbCount (void)
 {
-  size_t tcount = 0L;
+  ssize_t tcount = 0L;
   if (musicdb != NULL) {
     tcount = musicdb->count;
   }

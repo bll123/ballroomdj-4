@@ -91,7 +91,7 @@ START_TEST(rafile_read)
 {
   rafile_t      *rafile;
   char          data [RAFILE_REC_SIZE];
-  size_t        rc;
+  ssize_t        rc;
 
   rafile = raOpen (RAFN, 10);
   ck_assert_ptr_nonnull (rafile);
@@ -114,7 +114,7 @@ START_TEST(rafile_rewrite)
 {
   rafile_t      *rafile;
   struct stat   statbuf;
-  int           rc;
+  ssize_t       rc;
   off_t         lastsize;
 
   rafile = raOpen (RAFN, 10);
@@ -149,7 +149,7 @@ START_TEST(rafile_reread)
 {
   rafile_t      *rafile;
   char          data [RAFILE_REC_SIZE];
-  int           rc;
+  ssize_t       rc;
 
   rafile = raOpen (RAFN, 10);
   ck_assert_ptr_nonnull (rafile);
@@ -172,7 +172,7 @@ END_TEST
 START_TEST(rafile_bad_write_len)
 {
   rafile_t      *rafile;
-  int           rc;
+  ssize_t       rc;
   char          data [2 * RAFILE_REC_SIZE];
 
   rafile = raOpen (RAFN, 10);
@@ -189,7 +189,7 @@ END_TEST
 START_TEST(rafile_clear)
 {
   rafile_t      *rafile;
-  int           rc;
+  ssize_t       rc;
   char          data [2 * RAFILE_REC_SIZE];
 
   rafile = raOpen (RAFN, 10);
@@ -215,7 +215,7 @@ END_TEST
 START_TEST(rafile_bad_read)
 {
   rafile_t      *rafile;
-  size_t        rc;
+  ssize_t        rc;
   char          data [RAFILE_REC_SIZE];
 
   rafile = raOpen (RAFN, 10);
@@ -233,7 +233,7 @@ END_TEST
 START_TEST(rafile_bad_clear)
 {
   rafile_t      *rafile;
-  int           rc;
+  ssize_t       rc;
 
   rafile = raOpen (RAFN, 10);
   ck_assert_ptr_nonnull (rafile);

@@ -36,10 +36,13 @@ volumeInit (void)
     return NULL;
   }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wpedantic"
   volume->volumeProcess = dylibLookup (volume->dlHandle, "volumeProcess");
   assert (volume->volumeProcess != NULL);
   volume->volumeDisconnect = dylibLookup (volume->dlHandle, "volumeDisconnect");
   assert (volume->volumeDisconnect != NULL);
+#pragma clang diagnostic pop
 
   return volume;
 }

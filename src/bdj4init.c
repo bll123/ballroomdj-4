@@ -9,11 +9,9 @@
 #include <getopt.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <unistd.h>
 #if _hdr_libintl
 # include <libintl.h>
-#endif
-#if _hdr_unistd
-# include <unistd.h>
 #endif
 
 #include "bdj4init.h"
@@ -79,7 +77,7 @@ bdj4startup (int argc, char *argv[])
     switch (c) {
       case 'd': {
         if (optarg) {
-          loglevel = atoi (optarg);
+          loglevel = (loglevel_t) atoi (optarg);
         }
         break;
       }

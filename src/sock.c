@@ -15,6 +15,7 @@
 #include <sys/time.h>
 #include <sys/types.h>
 #include <fcntl.h>
+#include <unistd.h>
 
 #if _hdr_arpa_inet
 # include <arpa/inet.h>
@@ -30,9 +31,6 @@
 #endif
 #if _sys_socket
 # include <sys/socket.h>
-#endif
-#if _hdr_unistd
-# include <unistd.h>
 #endif
 
 /* winsock2.h should come before windows.h */
@@ -283,7 +281,7 @@ sockAccept (Sock_t lsock, int *err)
 }
 
 Sock_t
-sockConnect (uint16_t connPort, int *err, size_t timeout)
+sockConnect (uint16_t connPort, int *err, ssize_t timeout)
 {
   struct sockaddr_in  raddr;
   int                 rc;
@@ -291,9 +289,7 @@ sockConnect (uint16_t connPort, int *err, size_t timeout)
   mstime_t            mi;
   int                 typ;
   Sock_t              clsock;
-  size_t              m;
-
-
+  time_t              m;
 
 
   if (! sockInitialized) {
@@ -469,10 +465,10 @@ sockReadData (Sock_t sock, char *data, size_t len)
 {
   size_t        tot = 0;
   ssize_t       rc;
-  mstime_t       mi;
-  size_t        timeout;
+  mstime_t      mi;
+  ssize_t       timeout;
 
-  timeout = len * SOCK_READ_TIMEOUT;
+  timeout = (ssize_t) (len * SOCK_READ_TIMEOUT);
   mstimestart (&mi);
   rc = recv (sock, data, len, 0);
   if (rc < 0) {
@@ -493,7 +489,7 @@ sockReadData (Sock_t sock, char *data, size_t len)
     tot += (size_t) rc;
   }
   while (tot < len) {
-    size_t        m;
+    ssize_t        m;
 
     rc = recv (sock, data + tot, len - tot, 0);
     if (rc < 0) {

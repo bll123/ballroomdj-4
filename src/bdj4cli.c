@@ -7,6 +7,7 @@
 #include <string.h>
 #include <getopt.h>
 #include <unistd.h>
+#include <assert.h>
 
 #include "sockh.h"
 #include "bdjmsg.h"

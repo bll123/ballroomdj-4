@@ -8,9 +8,7 @@
 #include <check.h>
 #include <sys/types.h>
 #include <time.h>
-#if _hdr_unistd
-# include <unistd.h>
-#endif
+#include <unistd.h>
 
 #include "filemanip.h"
 #include "fileop.h"

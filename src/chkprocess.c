@@ -25,7 +25,7 @@ main (int argc, char *argv[])
       }
       case 'p': {
         if (optarg) {
-          val = atol (optarg);
+          val = (unsigned int) atol (optarg);
         }
         break;
       }

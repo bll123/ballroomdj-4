@@ -47,7 +47,7 @@ main (int argc, char *argv[])
         break;
       }
       case 2: {
-        prog = "clicomm";
+        prog = "bdj4cli";
         break;
       }
       case 3: {
@@ -148,9 +148,9 @@ main (int argc, char *argv[])
   pathbldMakePath (buff, sizeof (buff), "",
       prog, extension, PATHBLD_MP_EXECDIR);
 
-  /* this is necessary on mac os, as otherwise it will use the path   */
-  /* from the start of this launcher, and the executable path can no  */
-  /* be determined, as we've done a chdir().                          */
+  /* this is necessary on mac os, as otherwise it will use the path     */
+  /* from the start of this launcher, and the executable path can not   */
+  /* be determined, as we've done a chdir().                            */
   argv [0] = buff;
   if (execv (buff, argv) < 0) {
     fprintf (stderr, "Unable to start %s %d %s\n", buff, errno, strerror (errno));

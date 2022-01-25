@@ -11,6 +11,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <unistd.h>
 
 #if _hdr_arpa_inet
 # include <arpa/inet.h>
@@ -26,9 +27,6 @@
 #endif
 #if _sys_socket
 # include <sys/socket.h>
-#endif
-#if _hdr_unistd
-# include <unistd.h>
 #endif
 /* winsock2.h should come before windows.h */
 #if _hdr_winsock2
@@ -58,7 +56,7 @@ static void * connectWriteCloseFail (void *id);
 #if _lib_pthread_create
 static pthread_t   thread;
 #endif
-static short        gport;
+static uint16_t     gport;
 static int          gthreadrc;
 static Sock_t       gclsock;
 

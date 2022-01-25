@@ -58,7 +58,7 @@ typedef void (*dfConvFunc_t)(char *, datafileret_t *);
 
 typedef struct {
   char            *name;
-  size_t          itemkey;
+  ssize_t         itemkey;
   valuetype_t     valuetype;
   dfConvFunc_t    convFunc;
   ssize_t         backupKey;
@@ -69,30 +69,30 @@ typedef struct {
 parseinfo_t * parseInit (void);
 void          parseFree (parseinfo_t *);
 char **       parseGetData (parseinfo_t *);
-size_t        parseSimple (parseinfo_t *, char *);
-size_t        parseKeyValue (parseinfo_t *, char *);
+ssize_t       parseSimple (parseinfo_t *, char *);
+ssize_t       parseKeyValue (parseinfo_t *, char *);
 void          parseConvBoolean (char *, datafileret_t *);
 void          parseConvTextList (char *, datafileret_t *);
 
 datafile_t *  datafileAlloc (char *name);
 datafile_t *  datafileAllocParse (char *name, datafiletype_t dftype,
-                  char *fname, datafilekey_t *dfkeys, size_t dfkeycount,
+                  char *fname, datafilekey_t *dfkeys, ssize_t dfkeycount,
                   listidx_t lookupKey);
 void          datafileFree (void *);
 char *        datafileLoad (datafile_t *df, datafiletype_t dftype, char *fname);
 list_t        *datafileParse (char *data, char *name, datafiletype_t dftype,
-                  datafilekey_t *dfkeys, size_t dfkeycount,
+                  datafilekey_t *dfkeys, ssize_t dfkeycount,
                   listidx_t lookupKey, list_t **lookup);
 list_t        *datafileParseMerge (list_t *nlist, char *data, char *name,
                   datafiletype_t dftype,
-                  datafilekey_t *dfkeys, size_t dfkeycount,
+                  datafilekey_t *dfkeys, ssize_t dfkeycount,
                   listidx_t lookupKey, list_t **lookup);
 listidx_t     dfkeyBinarySearch (const datafilekey_t *dfkeys,
                   ssize_t count, char *key);
 list_t *      datafileGetList (datafile_t *);
 list_t *      datafileGetLookup (datafile_t *);
 void          datafileSetData (datafile_t *df, void *data);
-int           datafileSave (datafilekey_t *, size_t dfkeycount, datafile_t *);
+int           datafileSave (datafilekey_t *, ssize_t dfkeycount, datafile_t *);
 void          datafileBackup (char *fname, int count);
 
 #endif /* INC_DATAFILE_H */

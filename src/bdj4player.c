@@ -18,6 +18,7 @@
 #include <unistd.h>
 #include <time.h>
 #include <math.h>
+#include <signal.h>
 
 #include "bdj4.h"
 #include "bdjmsg.h"
@@ -70,7 +71,7 @@ typedef struct {
   int             originalSystemVolume;
   int             realVolume;
   int             currentVolume;  // real volume + any adjustments
-  int             currentSpeed;
+  ssize_t         currentSpeed;
   char            *defaultSink;
   char            *currentSink;
   mstime_t        statusCheck;
@@ -203,7 +204,7 @@ main (int argc, char *argv[])
     switch (c) {
       case 'd': {
         if (optarg) {
-          loglevel = atoi (optarg);
+          loglevel = (loglevel_t) atoi (optarg);
         }
         break;
       }
@@ -1029,8 +1030,8 @@ playerRate (playerdata_t *playerData, char *trate)
 
   if (playerData->playerState == PL_STATE_PLAYING) {
     rate = atof (trate);
-    pliRate (playerData->pli, rate);
-    playerData->currentSpeed = rate;
+    pliRate (playerData->pli, (ssize_t) rate);
+    playerData->currentSpeed = (ssize_t) rate;
   }
 }
 
@@ -1311,11 +1312,6 @@ playerSendStatus (playerdata_t *playerData)
         playstate = "pause";
         break;
       }
-      default: {
-        playstate = "stop";
-        dur = 0;
-        break;
-      }
     }
   }
 
@@ -1326,7 +1322,7 @@ playerSendStatus (playerdata_t *playerData)
     tm = playerData->playTimePlayed + mstimeend (&playerData->playTimeStart);
   }
 
-  snprintf (rbuff, sizeof (rbuff), "%s%c%d%c%d%c%d%c%d%c%zd%c%zd",
+  snprintf (rbuff, sizeof (rbuff), "%s%c%d%c%d%c%d%c%zd%c%zd%c%zd",
       playstate, MSG_ARGS_RS, playerData->repeat, MSG_ARGS_RS,
       playerData->pauseAtEnd, MSG_ARGS_RS,
       playerData->currentVolume, MSG_ARGS_RS,
