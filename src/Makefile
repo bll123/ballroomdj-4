@@ -106,7 +106,9 @@ check:
 # be the null libraries.
 .PHONY: mcheck mchecksupp mcheckcli
 mcheck: $(MKC_ENV_SHR)
-	. ./$(MKC_ENV_SHR); $(MAKE) -e rall
+	. ./$(MKC_ENV_SHR); \
+	G_ENABLE_DIAGNOSTIC=1; \
+	$(MAKE) -e rall
 	(cd ..;valgrind --tool=memcheck \
 		--leak-check=full \
 		--read-inline-info=yes \
@@ -116,7 +118,9 @@ mcheck: $(MKC_ENV_SHR)
 		./bin/bdj4 --main --debug 11)
 
 mchecksupp: $(MKC_ENV_SHR)
-	. ./$(MKC_ENV_SHR); $(MAKE) -e rall
+	. ./$(MKC_ENV_SHR); \
+	G_ENABLE_DIAGNOSTIC=1; \
+	$(MAKE) -e rall
 	(cd ..;valgrind --tool=memcheck \
 		--leak-check=full \
 		--read-inline-info=yes \

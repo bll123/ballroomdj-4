@@ -64,9 +64,8 @@ static datafilekey_t bdjoptprofiledfkeys[] = {
   { "MOBILEMQPORT",         OPT_P_MOBILEMQPORT,         VALUE_NUM, NULL, -1 },
   { "MOBILEMQTAG",          OPT_P_MOBILEMQTAG,          VALUE_DATA, NULL, -1 },
   { "MOBILEMQTITLE",        OPT_P_MOBILEMQTITLE,        VALUE_DATA, NULL, -1 },
-  { "MQFONT",               OPT_P_MQFONT,               VALUE_DATA, NULL, -1 },
-  { "MQFULLSCREEN",         OPT_P_MQFULLSCREEN,         VALUE_DATA, NULL, -1 },
-  { "MQQLEN",               OPT_P_MQQLEN,               VALUE_DATA, NULL, -1 },
+  { "MQQLEN",               OPT_P_MQQLEN,               VALUE_NUM, NULL, -1 },
+  { "MQSHOWINFO",           OPT_P_MQ_SHOW_INFO,         VALUE_NUM, parseConvBoolean, -1 },
   { "PAUSEMSG",             OPT_P_PAUSEMSG,             VALUE_DATA, NULL, -1 },
   { "PROFILENAME",          OPT_P_PROFILENAME,          VALUE_DATA, NULL, -1 },
   { "QUEUENAME0",           OPT_P_QUEUENAME0,           VALUE_DATA, NULL, -1 },
@@ -104,11 +103,10 @@ static datafilekey_t bdjoptmachdfkeys[] = {
 static datafilekey_t bdjoptmachprofiledfkeys[] = {
   { "FONTSIZE",             OPT_MP_FONTSIZE,              VALUE_NUM, NULL, -1 },
   { "LISTINGFONTSIZE",      OPT_MP_LISTINGFONTSIZE,       VALUE_NUM, NULL, -1 },
+  { "MQFONT",               OPT_MP_MQFONT,              VALUE_DATA, NULL, -1 },
   { "PLAYEROPTIONS",        OPT_MP_PLAYEROPTIONS,         VALUE_DATA, NULL, -1 },
   { "PLAYERSHUTDOWNSCRIPT", OPT_MP_PLAYERSHUTDOWNSCRIPT,  VALUE_DATA, NULL, -1 },
   { "PLAYERSTARTSCRIPT",    OPT_MP_PLAYERSTARTSCRIPT,     VALUE_DATA, NULL, -1 },
-  { "UIFIXEDFONT",          OPT_MP_UIFIXEDFONT,           VALUE_DATA, NULL, -1 },
-  { "UIFONT",               OPT_MP_UIFONT,                VALUE_DATA, NULL, -1 },
 };
 #define BDJOPT_MACH_PROFILE_DFKEY_COUNT (sizeof (bdjoptmachprofiledfkeys) / sizeof (datafilekey_t))
 

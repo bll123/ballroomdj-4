@@ -3,15 +3,15 @@
 
 typedef enum {
   ROUTE_NONE,       // anonymous
-  ROUTE_MAIN,
+  ROUTE_MAIN,       // 1
   ROUTE_PLAYERGUI,
   ROUTE_CONFIGGUI,
   ROUTE_MANAGEGUI,
-  ROUTE_PLAYER,
+  ROUTE_PLAYER,     // 5
   ROUTE_CLICOMM,
-  ROUTE_MOBILEMQ,
-  ROUTE_REMCTRL,
-  ROUTE_MARQUEE,
+  ROUTE_MOBILEMQ,   // 8
+  ROUTE_REMCTRL,    // 7
+  ROUTE_MARQUEE,    // 9
   ROUTE_MAX
 } bdjmsgroute_t;
 
@@ -65,13 +65,14 @@ typedef enum {
   MSG_PLAYER_STATUS_DATA,   // response to get_status; to main
     /* to/from web servers */
   MSG_GET_DANCE_LIST,       //
-  MSG_MARQUEE_DATA,         // args: mq json data
+  MSG_MARQUEE_DATA,         // args: mq json data ; also for msg to marquee
   MSG_DANCE_LIST_DATA,      // args: html option list
   MSG_GET_PLAYLIST_LIST,    //
   MSG_PLAYLIST_LIST_DATA,   // args: html option list
   MSG_STATUS_DATA,          // response to remote control
     /* to marquee */
   MSG_MARQUEE_SHOW,
+  MSG_MARQUEE_TIMER,        // args: played time, duration
   MSG_MAX,
 } bdjmsgmsg_t;
 

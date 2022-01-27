@@ -1313,8 +1313,11 @@ playerSendStatus (playerdata_t *playerData)
   tm = 0;
   if (playerData->playerState == PL_STATE_PAUSED) {
     tm = playerData->playTimePlayed;
-  } else {
+  } else if (playerData->playerState == PL_STATE_PLAYING ||
+      playerData->playerState == PL_STATE_IN_FADEOUT) {
     tm = playerData->playTimePlayed + mstimeend (&playerData->playTimeStart);
+  } else {
+    tm = 0;
   }
 
   snprintf (rbuff, sizeof (rbuff), "%s%c%d%c%d%c%d%c%zd%c%zd%c%zd",
@@ -1367,6 +1370,7 @@ playerSendMessage (playerdata_t *playerData, bdjmsgroute_t routefrom,
 
   rc = sockhSendMessage (SOCKOF (routeto), routefrom, routeto, msg, args);
   if (rc < 0) {
+    logMsg (LOG_DBG, LOG_IMPORTANT, "lost connection to %d", routeto);
     SOCKOF (routeto) = INVALID_SOCKET;
   }
 }

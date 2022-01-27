@@ -71,6 +71,7 @@ typedef struct {
 static int      mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
                     bdjmsgmsg_t msg, char *args, void *udata);
 static int      mainProcessing (void *udata);
+static void     mainSendMarqueeData (maindata_t *mainData);
 static void     mainSendMobileMarqueeData (maindata_t *mainData);
 static void     mainMobilePostCallback (void *userdata, char *resp, size_t len);
 static void     mainConnectProcess (maindata_t *mainData,
@@ -399,6 +400,10 @@ mainProcessing (void *udata)
       port = bdjvarsl [BDJVL_REMCONTROL_PORT];
       mainConnectProcess (mainData, ROUTE_REMCTRL, port);
     }
+    if (SOCKOF (ROUTE_MARQUEE) == INVALID_SOCKET) {
+      port = bdjvarsl [BDJVL_MARQUEE_PORT];
+      mainConnectProcess (mainData, ROUTE_MARQUEE, port);
+    }
 
     ++connMax;
     if (SOCKOF (ROUTE_PLAYER) != INVALID_SOCKET) {
@@ -415,6 +420,10 @@ mainProcessing (void *udata)
       if (SOCKOF (ROUTE_REMCTRL) != INVALID_SOCKET) {
         ++connCount;
       }
+    }
+    ++connMax;
+    if (SOCKOF (ROUTE_MARQUEE) != INVALID_SOCKET) {
+      ++connCount;
     }
     if (connCount == connMax) {
       mainData->programState = STATE_WAIT_HANDSHAKE;
@@ -438,13 +447,74 @@ mainProcessing (void *udata)
   }
 
   if (mainData->musicqChanged) {
+    mainSendMarqueeData (mainData);
     mainSendMobileMarqueeData (mainData);
+    mainData->musicqChanged = false;
   }
 
   if (gKillReceived) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
   }
   return gKillReceived;
+}
+
+static void
+mainSendMarqueeData (maindata_t *mainData)
+{
+  char        tbuff [200];
+  char        sbuff [3096];
+  char        *dstr;
+  char        *data;
+  char        *tstr;
+  ssize_t     mqLen;
+  ssize_t     musicqLen;
+  song_t      *song;
+
+
+  mqLen = bdjoptGetNum (OPT_P_MQQLEN);
+  musicqLen = musicqGetLen (mainData->musicQueue, mainData->musicqCurrentIdx);
+
+  /* artist/title, dance(s) */
+
+  sbuff [0] = '\0';
+
+  dstr = musicqGetData (mainData->musicQueue, mainData->musicqCurrentIdx, 0, TAG_ARTIST);
+  if (dstr == NULL) { tstr = ""; }
+  data = musicqGetData (mainData->musicQueue, mainData->musicqCurrentIdx, 0, TAG_TITLE);
+  tstr = "";
+  if (dstr != NULL && data != NULL) {
+    tstr = " / ";
+  }
+  if (data == NULL) { data = ""; }
+  snprintf (tbuff, sizeof (tbuff), "%s%s%s%c", dstr, tstr, data, MSG_ARGS_RS);
+  strlcat (sbuff, tbuff, sizeof (sbuff));
+
+  if (musicqLen > 0) {
+    for (ssize_t i = 0; i <= mqLen; ++i) {
+      if ((i > 0 && mainData->playerState == PL_STATE_IN_GAP) ||
+          (i > 1 && mainData->playerState == PL_STATE_IN_FADEOUT)) {
+        dstr = "";
+      } else if (i > musicqLen) {
+        dstr = "";
+      } else {
+        song = musicqGetByIdx (mainData->musicQueue, mainData->musicqCurrentIdx, i);
+        /* if the song has an unknown dance, the marquee display */
+        /* will be filled in with the dance name. */
+        tstr = songGetData (song, TAG_MQDISPLAY);
+        if (tstr != NULL) {
+          dstr = tstr;
+        } else {
+          dstr = musicqGetDance (mainData->musicQueue, mainData->musicqCurrentIdx, i);
+        }
+      }
+
+      snprintf (tbuff, sizeof (tbuff), "%s%c", dstr, MSG_ARGS_RS);
+      strlcat (sbuff, tbuff, sizeof (sbuff));
+    }
+  }
+
+  mainSendMessage (mainData, ROUTE_MAIN, ROUTE_MARQUEE,
+      MSG_MARQUEE_DATA, sbuff);
 }
 
 static void
@@ -467,9 +537,7 @@ mainSendMobileMarqueeData (maindata_t *mainData)
     return;
   }
 
-  mainData->musicqChanged = false;
-
-  mqLen = bdjoptGetNum (OPT_G_PLAYERQLEN);
+  mqLen = bdjoptGetNum (OPT_P_MQQLEN);
   musicqLen = musicqGetLen (mainData->musicQueue, mainData->musicqCurrentIdx);
   title = bdjoptGetData (OPT_P_MOBILEMQTITLE);
   if (title == NULL) {
@@ -1236,6 +1304,7 @@ mainSendStatus (maindata_t *mainData, char *playerResp)
   char    tbuff [200];
   char    tbuff2 [40];
   char    rbuff [3096];
+  char    sbuff [1024];
   ssize_t musicqLen;
   char    *data = NULL;
   char    *tokstr = NULL;
@@ -1278,11 +1347,19 @@ mainSendStatus (maindata_t *mainData, char *playerResp)
   strlcat (rbuff, ", ", sizeof (rbuff));
   strlcat (rbuff, tbuff, sizeof (rbuff));
 
+  /* for marquee */
+  snprintf (tbuff, sizeof (tbuff), "%s%c", p, MSG_ARGS_RS);
+  strlcpy (sbuff, tbuff, sizeof (sbuff));
+
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   snprintf (tbuff, sizeof (tbuff),
       "\"duration\" : \"%s\"", tmutilToMS (atol (p), tbuff2, sizeof (tbuff2)));
   strlcat (rbuff, ", ", sizeof (rbuff));
   strlcat (rbuff, tbuff, sizeof (rbuff));
+
+  /* for marquee */
+  snprintf (tbuff, sizeof (tbuff), "%s", p);
+  strlcat (sbuff, tbuff, sizeof (sbuff));
 
   musicqLen = musicqGetLen (mainData->musicQueue, mainData->musicqCurrentIdx);
   snprintf (tbuff, sizeof (tbuff),
@@ -1313,9 +1390,7 @@ mainSendStatus (maindata_t *mainData, char *playerResp)
   strlcat (rbuff, " }", sizeof (rbuff));
 
   mainSendMessage (mainData, ROUTE_MAIN, ROUTE_REMCTRL, MSG_STATUS_DATA, rbuff);
-
-  /* build a message and send it to the gui */
-
+  mainSendMessage (mainData, ROUTE_MAIN, ROUTE_MARQUEE, MSG_MARQUEE_TIMER, sbuff);
 }
 
 static void
@@ -1353,6 +1428,7 @@ mainSendMessage (maindata_t *mainData, bdjmsgroute_t routefrom,
 
   rc = sockhSendMessage (SOCKOF (routeto), routefrom, routeto, msg, args);
   if (rc < 0) {
+    logMsg (LOG_DBG, LOG_IMPORTANT, "lost connection to %d", routeto);
     SOCKOF (routeto) = INVALID_SOCKET;
   }
 }

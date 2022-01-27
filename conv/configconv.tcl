@@ -54,9 +54,8 @@ foreach path [list {} profiles $hostname [file join $hostname profiles]] {
         # debug level should be in the global; so just remove it.
         if { $key eq "DEBUGLVL" } { continue }
         if { $key eq "MQDANCELOC" } { continue }
-        if { $key eq "MQFONT" } { continue }
+        if { $key eq "MQFULLSCREEN" } { continue }
         if { $key eq "MQPROGBARCOLOR" } { continue }
-        if { $key eq "MQSHOWARTIST" } { continue }
         if { $key eq "MQSHOWBUTTONS" } { continue }
         if { $key eq "MQSHOWCLOCK" } { continue }
         if { $key eq "MQSHOWCOUNTDOWN" } { continue }
@@ -71,6 +70,9 @@ foreach path [list {} profiles $hostname [file join $hostname profiles]] {
         if { $key eq "MQDANCEFONTMULT" } { continue }
         if { $key eq "REMCONTROLSHOWDANCE" } { continue }
         if { $key eq "REMCONTROLSHOWSONG" } { continue }
+        if { $key eq "UIFIXEDFONT" } { continue }
+        if { $key eq "UIFONT" } { continue }
+
         if { $key eq "UITHEME" } { set value {} }
         if { $key eq "version" } { set value 1 }
 
@@ -85,6 +87,13 @@ foreach path [list {} profiles $hostname [file join $hostname profiles]] {
         if { $key eq "IMAGEDIR" } { set key DIRIMAGE }
         if { $key eq "ARCHIVEDIR" } { set key DIRARCHIVE }
 
+        if { $key eq "MQSHOWARTIST" } {
+          set key MQSHOWINFO
+        }
+        if { $key eq "MQFONT" && $value ne {} } {
+          # drop any size and remove the braces.
+          set value [lindex $value 0]
+        }
         if { $key eq "FADEINTIME" && $value eq {} } {
           set value 0
         }

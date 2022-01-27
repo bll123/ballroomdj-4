@@ -46,8 +46,9 @@ addldsrchpath '/c/Program Files (x86)/VideoLAN/VLC'
 addldflag -framework Cocoa
 addldflag -framework CoreAudio
 
-# mongoose
-addcflag -I../packages/mongoose
+# gtk
+addcflag -DGDK_DISABLE_DEPRECATED
+addcflag -DGTK_DISABLE_DEPRECATED
 
 # turn off gcc warning
 addcflag -Wno-format-truncation

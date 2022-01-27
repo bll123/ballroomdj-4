@@ -304,12 +304,7 @@ remctrlProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     case ROUTE_REMCTRL: {
       switch (msg) {
         case MSG_HANDSHAKE: {
-          if (routefrom == ROUTE_MAIN) {
-            remctrlData->processes [ROUTE_MAIN].handshake = true;
-          }
-          if (routefrom == ROUTE_PLAYER) {
-            remctrlData->processes [ROUTE_PLAYER].handshake = true;
-          }
+          remctrlData->processes [routefrom].handshake = true;
           break;
         }
         case MSG_EXIT_REQUEST: {
