@@ -31,6 +31,7 @@ MKC_OUTPUT_PA = configpa.h
 MKC_OUTPUT_VOLWIN = configvolwin.h
 MKC_OUTPUT_VLC = configvlc.h
 MKC_OUTPUT_TEST = configt.h
+MKC_ENV_GTK = $(MKC_PREFIX)-env.gtk
 MKC_ENV_SHR = $(MKC_PREFIX)-env.shared
 MKC_ENV_TEST = $(MKC_PREFIX)-env.test
 
@@ -41,6 +42,7 @@ MKC_CONF_PA = $(MKC_CONFDIR)/$(MKC_PREFIX)pa.mkc
 MKC_CONF_VOLWIN = $(MKC_CONFDIR)/$(MKC_PREFIX)volwin.mkc
 MKC_CONF_VLC = $(MKC_CONFDIR)/$(MKC_PREFIX)vlc.mkc
 MKC_CONF_TEST = $(MKC_CONFDIR)/$(MKC_PREFIX)test.mkc
+MKC_ENV_GTK_CONF = $(MKC_CONFDIR)/$(MKC_PREFIX)-env-gtk.mkc
 MKC_ENV_SHR_CONF = $(MKC_CONFDIR)/$(MKC_PREFIX)-env-shared.mkc
 MKC_ENV_TEST_CONF = $(MKC_CONFDIR)/$(MKC_PREFIX)-env-test.mkc
 
@@ -67,12 +69,13 @@ CFLAGS_DEBUG = -O0 -g
 #
 
 .PHONY: all rall
-all: $(MKC_ENV_SHR) $(MKC_ENV_TEST)
+all: $(MKC_ENV_GTK) $(MKC_ENV_SHR) $(MKC_ENV_TEST)
 	. ./$(MKC_ENV_SHR); $(MAKE) -e rall
 
 rall:
 	$(MAKE) -e libraries
 	$(MAKE) -e programs
+	. ./$(MKC_ENV_GTK); $(MAKE) -e guiprograms
 	. ./$(MKC_ENV_TEST); $(MAKE) -e testprograms
 
 .PHONY: install rinstall
@@ -157,6 +160,11 @@ PROGRAMS = \
 .PHONY: programs
 programs: $(PROGRAMS)
 
+GUIPROGRAMS = \
+	$(BINDIR)/bdj4marquee$(EXE_EXT)
+.PHONY: guiprograms
+guiprograms: $(GUIPROGRAMS)
+
 TESTPROGRAMS = $(BINDIR)/check_all$(EXE_EXT) $(BINDIR)/chkprocess$(EXE_EXT)
 .PHONY: testprograms
 testprograms: $(TESTPROGRAMS)
@@ -176,6 +184,12 @@ LIBRARIES = \
 libraries: $(LIBRARIES)
 
 # mkconfig targets
+
+$(MKC_ENV_GTK): $(MKC_ENV_GTK_CONF)
+	@-$(RM) -f $(MKC_ENV_GTK)
+	PKG_CONFIG_PATH=../plocal/lib/pkgconfig CC=$(CC) \
+		$(_MKCONFIG_SHELL) $(MKC_DIR)/mkconfig.sh \
+		$(MKC_ENV_GTK_CONF)
 
 $(MKC_ENV_SHR): $(MKC_ENV_SHR_CONF)
 	@-$(RM) -f $(MKC_ENV_SHR)
@@ -293,7 +307,7 @@ tclean:
 	@-$(RM) -f ../install/*~ ../pkg/*~ build/*~ utils/*~ ../data/*~
 	@-$(RM) -f ../templates/*~ ../vlc-log.txt vlc-log.txt
 	@-$(RM) -f si-in.txt si-sort.txt
-	@-$(RM) -f ../web/*~ ../http/*~
+	@-$(RM) -f ../web/*~ ../http/*~ ../core
 
 # bdj executables
 
@@ -335,6 +349,22 @@ $(BINDIR)/bdj4main$(EXE_EXT): $(MKC_REQLIB) $(MKC_REQLIB_COMMON) $(BDJMAINOBJS) 
 		-r $(MKC_REQLIB_COMMON) \
 		-o $@ \
 		$(BDJMAINOBJS) \
+		-L $(SHLIBDIR) -rpath $(BINDIR) \
+		-l bdj4 -l bdj4common
+	./build/postbuild.sh $@
+
+BDJMARQUEEOBJS = $(OBJDIR)/bdj4marquee$(OBJ_EXT)
+
+$(BINDIR)/bdj4marquee$(EXE_EXT): $(MKC_REQLIB) $(MKC_REQLIB_COMMON) \
+		$(BDJMARQUEEOBJS) \
+		$(SHLIBDIR)/libbdj4$(SHLIB_EXT) \
+		$(SHLIBDIR)/libbdj4common$(SHLIB_EXT)
+	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh \
+		-link -exec $(MKC_ECHO) \
+		-r $(MKC_REQLIB) \
+		-r $(MKC_REQLIB_COMMON) \
+		-o $@ \
+		$(BDJMARQUEEOBJS) \
 		-L $(SHLIBDIR) -rpath $(BINDIR) \
 		-l bdj4 -l bdj4common
 	./build/postbuild.sh $@
@@ -678,16 +708,17 @@ $(OBJDIR)/bdj4main$(OBJ_EXT): bdj4main.c config.h bdj4.h sock.h bdj4init.h bdjms
  filedata.h lock.h log.h fileutil.h musicdb.h song.h musicq.h tagdef.h \
  playlist.h sequence.h songlist.h songsel.h portability.h process.h \
  sockh.h sysvars.h tmutil.h webclient.h
+$(OBJDIR)/bdj4marquee$(OBJ_EXT): bdj4marquee.c
 $(OBJDIR)/bdj4mobmq$(OBJ_EXT): bdj4mobmq.c config.h ../packages/mongoose/mongoose.h bdj4.h \
- sock.h bdjmsg.h bdjopt.h bdjvars.h lock.h log.h fileutil.h process.h \
- sockh.h sysvars.h portability.h tmutil.h websrv.h
+ sock.h bdjmsg.h bdjopt.h bdjvars.h lock.h log.h fileutil.h pathbld.h \
+ process.h sockh.h sysvars.h portability.h tmutil.h websrv.h
 $(OBJDIR)/bdj4player$(OBJ_EXT): bdj4player.c config.h bdj4.h sock.h bdjmsg.h bdjopt.h \
  bdjstring.h bdjvars.h pathbld.h fileop.h filemanip.h slist.h list.h \
  lock.h log.h fileutil.h pathutil.h pli.h dylib.h portability.h tmutil.h \
  process.h queue.h sockh.h songutil.h sysvars.h volume.h
 $(OBJDIR)/bdj4rc$(OBJ_EXT): bdj4rc.c config.h ../packages/mongoose/mongoose.h bdj4.h sock.h \
- bdjmsg.h bdjopt.h bdjvars.h lock.h log.h fileutil.h process.h sockh.h \
- sysvars.h portability.h tmutil.h websrv.h
+ bdjmsg.h bdjopt.h bdjvars.h lock.h log.h fileutil.h pathbld.h process.h \
+ sockh.h sysvars.h portability.h tmutil.h websrv.h
 $(OBJDIR)/bdjmsg$(OBJ_EXT): bdjmsg.c config.h bdjmsg.h bdjstring.h
 $(OBJDIR)/bdjopt$(OBJ_EXT): bdjopt.c config.h bdjopt.h datafile.h list.h nlist.h slist.h \
  ilist.h pathbld.h filemanip.h fileop.h portability.h sysvars.h
@@ -713,8 +744,8 @@ $(OBJDIR)/check_ilist$(OBJ_EXT): check_ilist.c config.h configt.h ilist.h list.h
  bdjstring.h check_bdj.h log.h fileutil.h
 $(OBJDIR)/check_list$(OBJ_EXT): check_list.c config.h configt.h nlist.h list.h slist.h \
  ilist.h bdjstring.h check_bdj.h
-$(OBJDIR)/check_lock$(OBJ_EXT): check_lock.c config.h configt.h lock.h bdjstring.h \
- check_bdj.h sysvars.h portability.h
+$(OBJDIR)/check_lock$(OBJ_EXT): check_lock.c config.h configt.h bdjstring.h check_bdj.h \
+ lock.h pathbld.h sysvars.h portability.h
 $(OBJDIR)/check_nlist$(OBJ_EXT): check_nlist.c config.h configt.h nlist.h list.h \
  bdjstring.h check_bdj.h log.h fileutil.h
 $(OBJDIR)/check_pathutil$(OBJ_EXT): check_pathutil.c config.h configt.h pathutil.h \
@@ -810,9 +841,10 @@ $(OBJDIR)/sysvars$(OBJ_EXT): sysvars.c config.h sysvars.h portability.h bdjstrin
 $(OBJDIR)/tagdef$(OBJ_EXT): tagdef.c config.h tagdef.h bdjstring.h
 $(OBJDIR)/tmutil$(OBJ_EXT): tmutil.c config.h tmutil.h bdjstring.h
 $(OBJDIR)/vlci$(OBJ_EXT): vlci.c config.h configvlc.h vlci.h slist.h list.h bdjstring.h
-$(OBJDIR)/volalsa$(OBJ_EXT): volalsa.c config.h configalsa.h
+$(OBJDIR)/volalsa$(OBJ_EXT): volalsa.c config.h configalsa.h volume.h dylib.h portability.h
 $(OBJDIR)/volnull$(OBJ_EXT): volnull.c config.h volume.h dylib.h portability.h
-$(OBJDIR)/volpa$(OBJ_EXT): volpa.c config.h configpa.h
+$(OBJDIR)/volpa$(OBJ_EXT): volpa.c config.h configpa.h volume.h dylib.h portability.h \
+ bdjstring.h tmutil.h
 $(OBJDIR)/volume$(OBJ_EXT): volume.c config.h bdjopt.h pathbld.h dylib.h portability.h \
  sysvars.h volume.h
 $(OBJDIR)/webclient$(OBJ_EXT): webclient.c config.h log.h fileutil.h sysvars.h \

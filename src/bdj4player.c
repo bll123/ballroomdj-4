@@ -57,7 +57,7 @@ typedef struct {
 } prepqueue_t;
 
 typedef struct {
-  processconn_t   processes [PROCESS_MAX];
+  processconn_t   processes [ROUTE_MAX];
   programstate_t  programState;
   mstime_t        tm;
   long            globalCount;
@@ -136,9 +136,12 @@ static void     playerSetCheckTimes (playerdata_t *playerData, prepqueue_t *pq);
 static void     playerSetPlayerState (playerdata_t *playerData, playerstate_t pstate);
 static void     playerSendStatus (playerdata_t *playerData);
 static void     playerConnectProcess (playerdata_t *playerData,
-                    processconnidx_t idx, bdjmsgroute_t route, uint16_t port);
+                    bdjmsgroute_t route, uint16_t port);
 static void     playerDisconnectProcess (playerdata_t *playerData,
-                    processconnidx_t idx, bdjmsgroute_t route);
+                    bdjmsgroute_t route);
+static void     playerSendMessage (playerdata_t *playerData,
+                    bdjmsgroute_t routefrom, bdjmsgroute_t routeto,
+                    bdjmsgmsg_t msg, char *args);
 
 static int      gKillReceived = 0;
 
@@ -183,10 +186,11 @@ main (int argc, char *argv[])
   playerData.prepQueue = queueAlloc (playerPrepQueueFree);
   playerData.prepRequestQueue = queueAlloc (playerPrepQueueFree);
   playerData.programState = STATE_INITIALIZING;
-  for (processconnidx_t i = PROCESS_PLAYER; i < PROCESS_MAX; ++i) {
+  for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
     playerData.processes [i].sock = INVALID_SOCKET;
     playerData.processes [i].started = false;
     playerData.processes [i].handshake = false;
+    playerData.processes [i].name = NULL;
   }
 
   playerData.inFade = false;
@@ -325,16 +329,10 @@ playerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
       logMsg (LOG_DBG, LOG_MSGS, "got: route-player");
       switch (msg) {
         case MSG_HANDSHAKE: {
-          if (routefrom == ROUTE_MAIN) {
-            playerData->processes [PROCESS_MAIN].handshake = true;
-          }
+          playerData->processes [routefrom ].handshake = true;
           if (routefrom == ROUTE_REMCTRL) {
-            playerData->processes [PROCESS_REMCTRL].handshake = true;
-            playerConnectProcess (playerData, PROCESS_REMCTRL,
+            playerConnectProcess (playerData,
                 ROUTE_REMCTRL, bdjvarsl [BDJVL_REMCONTROL_PORT]);
-          }
-          if (routefrom == ROUTE_GUI) {
-            playerData->processes [PROCESS_GUI].handshake = true;
           }
           break;
         }
@@ -344,9 +342,9 @@ playerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           gKillReceived = 0;
           logMsg (LOG_DBG, LOG_MSGS, "got: req-exit");
           playerData->programState = STATE_CLOSING;
-          playerDisconnectProcess (playerData, PROCESS_MAIN, ROUTE_MAIN);
-          playerDisconnectProcess (playerData, PROCESS_REMCTRL, ROUTE_REMCTRL);
-          playerDisconnectProcess (playerData, PROCESS_GUI, ROUTE_GUI);
+          for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
+            playerDisconnectProcess (playerData, i);
+          }
           logProcEnd (LOG_PROC, "playerProcessMsg", "req-exit");
           return 1;
         }
@@ -452,23 +450,20 @@ playerProcessing (void *udata)
   }
 
   if (playerData->programState == STATE_CONNECTING &&
-      SOCKOF (PROCESS_MAIN) == INVALID_SOCKET) {
+      SOCKOF (ROUTE_MAIN) == INVALID_SOCKET) {
     uint16_t  port;
 
     port = bdjvarsl [BDJVL_MAIN_PORT];
-    playerConnectProcess (playerData, PROCESS_MAIN, ROUTE_MAIN, port);
+    playerConnectProcess (playerData, ROUTE_MAIN, port);
 
-    port = bdjvarsl [BDJVL_GUI_PORT];
-    playerConnectProcess (playerData, PROCESS_GUI, ROUTE_GUI, port);
-
-    if (SOCKOF (PROCESS_MAIN) != INVALID_SOCKET) {
+    if (SOCKOF (ROUTE_MAIN) != INVALID_SOCKET) {
       playerData->programState = STATE_WAIT_HANDSHAKE;
       logMsg (LOG_DBG, LOG_MAIN, "player: wait for handshake");
     }
   }
 
   if (playerData->programState == STATE_WAIT_HANDSHAKE) {
-    if (playerData->processes [PROCESS_MAIN].handshake) {
+    if (playerData->processes [ROUTE_MAIN].handshake) {
       playerData->programState = STATE_RUNNING;
       logMsg (LOG_DBG, LOG_MAIN, "prog: running");
       logMsg (LOG_SESS, LOG_IMPORTANT, "running: time-to-start: %ld ms", mstimeend (&playerData->tm));
@@ -578,8 +573,8 @@ playerProcessing (void *udata)
       logMsg (LOG_DBG, LOG_BASIC, "pl state: playing");
 
       if (pq->announce == PREP_SONG) {
-        sockhSendMessage (SOCKOF (PROCESS_MAIN),
-            ROUTE_PLAYER, ROUTE_MAIN, MSG_PLAYBACK_BEGIN, NULL);
+        playerSendMessage (playerData, ROUTE_PLAYER, ROUTE_MAIN,
+            MSG_PLAYBACK_BEGIN, NULL);
       }
     } else {
       /* ### FIX: need to process this; stopped/ended/error */
@@ -646,14 +641,14 @@ playerProcessing (void *udata)
             if (! playerData->repeat) {
                 /* let the main know we're done with this song. */
               logMsg (LOG_DBG, LOG_BASIC, "pl state: stopped (no continue)");
-              sockhSendMessage (SOCKOF (PROCESS_MAIN), ROUTE_PLAYER, ROUTE_MAIN,
+              playerSendMessage (playerData, ROUTE_PLAYER, ROUTE_MAIN,
                   MSG_PLAYBACK_STOP, NULL);
             }
           } else {
             if (! playerData->repeat) {
                 /* done, go on to next song */
               logMsg (LOG_DBG, LOG_BASIC, "pl state: stopped (continue)");
-              sockhSendMessage (SOCKOF (PROCESS_MAIN), ROUTE_PLAYER, ROUTE_MAIN,
+              playerSendMessage (playerData, ROUTE_PLAYER, ROUTE_MAIN,
                   MSG_PLAYBACK_FINISH, NULL);
             }
           }
@@ -990,7 +985,7 @@ playerSendPauseAtEndState (playerdata_t *playerData)
   char    tbuff [20];
 
   snprintf (tbuff, sizeof (tbuff), "%d", playerData->pauseAtEnd);
-  sockhSendMessage (SOCKOF (PROCESS_GUI), ROUTE_PLAYER, ROUTE_GUI,
+  playerSendMessage (playerData, ROUTE_PLAYER, ROUTE_PLAYERGUI,
       MSG_PLAY_PAUSEATEND_STATE, tbuff);
 }
 
@@ -1262,9 +1257,9 @@ playerSetPlayerState (playerdata_t *playerData, playerstate_t pstate)
 
   playerData->playerState = pstate;
   snprintf (tbuff, sizeof (tbuff), "%d", playerData->playerState);
-  sockhSendMessage (SOCKOF (PROCESS_MAIN), ROUTE_PLAYER, ROUTE_MAIN,
+  playerSendMessage (playerData, ROUTE_PLAYER, ROUTE_MAIN,
       MSG_PLAYER_STATE, tbuff);
-  sockhSendMessage (SOCKOF (PROCESS_GUI), ROUTE_PLAYER, ROUTE_GUI,
+  playerSendMessage (playerData, ROUTE_PLAYER, ROUTE_PLAYERGUI,
       MSG_PLAYER_STATE, tbuff);
   /* any time there is a change of player state, send the status */
   playerSendStatus (playerData);
@@ -1329,32 +1324,49 @@ playerSendStatus (playerdata_t *playerData)
       playerData->currentSpeed, MSG_ARGS_RS,
       tm, MSG_ARGS_RS, dur);
 
-  sockhSendMessage (SOCKOF (PROCESS_MAIN), ROUTE_PLAYER, ROUTE_MAIN,
+  playerSendMessage (playerData, ROUTE_PLAYER, ROUTE_MAIN,
       MSG_PLAYER_STATUS_DATA, rbuff);
   mstimeset (&playerData->statusCheck, 100);
 }
 
 static void
-playerConnectProcess (playerdata_t *playerData, processconnidx_t idx,
+playerConnectProcess (playerdata_t *playerData,
     bdjmsgroute_t route, uint16_t port)
 {
   int         err;
 
-  SOCKOF (idx) = sockConnect (port, &err, 1000);
-  if (SOCKOF (idx) != INVALID_SOCKET) {
-    sockhSendMessage (SOCKOF (idx), ROUTE_PLAYER, route,
+  SOCKOF (route) = sockConnect (port, &err, 1000);
+  if (SOCKOF (route) != INVALID_SOCKET) {
+    playerSendMessage (playerData, ROUTE_PLAYER, route,
         MSG_HANDSHAKE, NULL);
   }
 }
 
 static void
-playerDisconnectProcess (playerdata_t *playerData, processconnidx_t idx,
+playerDisconnectProcess (playerdata_t *playerData,
     bdjmsgroute_t route)
 {
-  if (SOCKOF (idx) != INVALID_SOCKET) {
-    sockhSendMessage (SOCKOF (idx), ROUTE_PLAYER, route,
+  if (SOCKOF (route) != INVALID_SOCKET) {
+    playerSendMessage (playerData, ROUTE_PLAYER, route,
         MSG_SOCKET_CLOSE, NULL);
-    sockClose (SOCKOF (idx));
-    SOCKOF (idx) = INVALID_SOCKET;
+    sockClose (SOCKOF (route));
+    SOCKOF (route) = INVALID_SOCKET;
+  }
+}
+
+static void
+playerSendMessage (playerdata_t *playerData, bdjmsgroute_t routefrom,
+    bdjmsgroute_t routeto, bdjmsgmsg_t msg, char *args)
+{
+  int         rc;
+
+
+  if (SOCKOF (routeto) == INVALID_SOCKET) {
+    return;
+  }
+
+  rc = sockhSendMessage (SOCKOF (routeto), routefrom, routeto, msg, args);
+  if (rc < 0) {
+    SOCKOF (routeto) = INVALID_SOCKET;
   }
 }

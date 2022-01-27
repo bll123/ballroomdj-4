@@ -33,10 +33,12 @@ main (int argc, char *argv[])
   int             err;
   Sock_t          mainSock = INVALID_SOCKET;
   Sock_t          playerSock = INVALID_SOCKET;
+  Sock_t          marqueeSock = INVALID_SOCKET;
   int             c = 0;
   int             option_index = 0;
   uint16_t        mainPort;
   uint16_t        playerPort;
+  uint16_t        marqueePort;
 
 
   static struct option bdj_options [] = {
@@ -86,6 +88,13 @@ main (int argc, char *argv[])
     playerSock = sockConnect (playerPort, &err, 1000);
   }
 
+  marqueePort = bdjvarsl [BDJVL_MARQUEE_PORT];
+  marqueeSock = sockConnect (marqueePort, &err, 1000);
+  while (socketInvalid (marqueeSock)) {
+    mssleep (100);
+    marqueeSock = sockConnect (marqueePort, &err, 1000);
+  }
+
   while (1) {
     routeok = 0;
     while (routeok == 0) {
@@ -105,8 +114,16 @@ main (int argc, char *argv[])
         route = ROUTE_PLAYER;
         routeok = 1;
       }
-      if (strcmp (buff, "gui") == 0) {
-        route = ROUTE_GUI;
+      if (strcmp (buff, "pgui") == 0) {
+        route = ROUTE_PLAYERGUI;
+        routeok = 1;
+      }
+      if (strcmp (buff, "cgui") == 0) {
+        route = ROUTE_CONFIGGUI;
+        routeok = 1;
+      }
+      if (strcmp (buff, "mgui") == 0) {
+        route = ROUTE_MANAGEGUI;
         routeok = 1;
       }
       if (strcmp (buff, "mm") == 0) {
@@ -117,6 +134,10 @@ main (int argc, char *argv[])
         route = ROUTE_REMCTRL;
         routeok = 1;
       }
+      if (strcmp (buff, "mq") == 0) {
+        route = ROUTE_MARQUEE;
+        routeok = 1;
+      }
       if (strcmp (buff, "cliexit") == 0) {
         if (mainSock != INVALID_SOCKET) {
           sockhSendMessage (mainSock, ROUTE_CLICOMM, ROUTE_MAIN, MSG_SOCKET_CLOSE, NULL);
@@ -125,6 +146,10 @@ main (int argc, char *argv[])
         if (playerSock != INVALID_SOCKET) {
           sockhSendMessage (playerSock, ROUTE_CLICOMM, ROUTE_PLAYER, MSG_SOCKET_CLOSE, NULL);
           sockClose (playerSock);
+        }
+        if (marqueeSock != INVALID_SOCKET) {
+          sockhSendMessage (marqueeSock, ROUTE_CLICOMM, ROUTE_MARQUEE, MSG_SOCKET_CLOSE, NULL);
+          sockClose (marqueeSock);
         }
         logEnd ();
         exit (0);
@@ -234,6 +259,10 @@ main (int argc, char *argv[])
         msgok = 1;
         argcount = 1;
       }
+      if (strcmp (buff, "mqshow") == 0) {
+        msg = MSG_MARQUEE_SHOW;
+        msgok = 1;
+      }
       if (strcmp (buff, "exit") == 0) {
         msg = MSG_EXIT_REQUEST;
         msgok = 1;
@@ -246,6 +275,10 @@ main (int argc, char *argv[])
         if (playerSock != INVALID_SOCKET) {
           sockhSendMessage (playerSock, ROUTE_CLICOMM, ROUTE_PLAYER, MSG_SOCKET_CLOSE, NULL);
           sockClose (playerSock);
+        }
+        if (marqueeSock != INVALID_SOCKET) {
+          sockhSendMessage (marqueeSock, ROUTE_CLICOMM, ROUTE_MARQUEE, MSG_SOCKET_CLOSE, NULL);
+          sockClose (marqueeSock);
         }
         exit (0);
       }
@@ -275,6 +308,9 @@ main (int argc, char *argv[])
       }
       if (route == ROUTE_PLAYER) {
         sockhSendMessage (playerSock, ROUTE_CLICOMM, route, msg, mbuff);
+      }
+      if (route == ROUTE_MARQUEE) {
+        sockhSendMessage (marqueeSock, ROUTE_CLICOMM, route, msg, mbuff);
       }
     }
   }

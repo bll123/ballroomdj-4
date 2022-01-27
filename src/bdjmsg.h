@@ -4,17 +4,21 @@
 typedef enum {
   ROUTE_NONE,       // anonymous
   ROUTE_MAIN,
-  ROUTE_GUI,
+  ROUTE_PLAYERGUI,
+  ROUTE_CONFIGGUI,
+  ROUTE_MANAGEGUI,
   ROUTE_PLAYER,
   ROUTE_CLICOMM,
   ROUTE_MOBILEMQ,
   ROUTE_REMCTRL,
+  ROUTE_MARQUEE,
   ROUTE_MAX
 } bdjmsgroute_t;
 
 typedef enum {
   MSG_NULL,
   MSG_HANDSHAKE,
+  MSG_CONNECT_REQ,          // request a re-connect
   MSG_SOCKET_CLOSE,
   MSG_EXIT_REQUEST,         // standard shutdown
     /* to main */
@@ -66,6 +70,8 @@ typedef enum {
   MSG_GET_PLAYLIST_LIST,    //
   MSG_PLAYLIST_LIST_DATA,   // args: html option list
   MSG_STATUS_DATA,          // response to remote control
+    /* to marquee */
+  MSG_MARQUEE_SHOW,
   MSG_MAX,
 } bdjmsgmsg_t;
 

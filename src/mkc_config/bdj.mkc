@@ -32,6 +32,7 @@ hdr	windows.h
 # anything that might include windows.h should come next
 hdr	vlc/vlc.h
 
+sys     resource.h
 sys     select.h
 sys     socket.h
 sys	stat.h
@@ -76,6 +77,7 @@ lib     random
 lib     realpath
 lib     round -lm
 lib     select -lws2_32
+lib     setrlimit
 lib     sigaction
 lib     signal
 lib     socket -lws2_32

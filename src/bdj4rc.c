@@ -39,7 +39,7 @@
 #define SOCKOF(idx) (remctrlData->processes [idx].sock)
 
 typedef struct {
-  processconn_t   processes [PROCESS_MAX];
+  processconn_t   processes [ROUTE_MAX];
   programstate_t  programState;
   mstime_t        tm;
   uint16_t        port;
@@ -60,9 +60,9 @@ static int  remctrlProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 static int  remctrlProcessing (void *udata);
 static void remctrlSigHandler (int sig);
 static void remctrlConnectProcess (remctrldata_t *remctrlData,
-    processconnidx_t idx, bdjmsgroute_t route, uint16_t port);
+    bdjmsgroute_t route, uint16_t port);
 static void remctrlDisconnectProcess (remctrldata_t *remctrlData,
-    processconnidx_t idx, bdjmsgroute_t route);
+    bdjmsgroute_t route);
 
 static int            gKillReceived = 0;
 
@@ -140,10 +140,11 @@ main (int argc, char *argv[])
   remctrlData.programState = STATE_INITIALIZING;
   remctrlData.user = strdup (bdjoptGetData (OPT_P_REMCONTROLUSER));
   remctrlData.websrv = NULL;
-  for (processconnidx_t i = PROCESS_PLAYER; i < PROCESS_MAX; ++i) {
+  for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
     remctrlData.processes [i].sock = INVALID_SOCKET;
     remctrlData.processes [i].started = false;
     remctrlData.processes [i].handshake = false;
+    remctrlData.processes [i].name = NULL;
   }
 
   remctrlData.websrv = websrvInit (remctrlData.port, rcEventHandler, &remctrlData);
@@ -221,43 +222,43 @@ rcEventHandler (struct mg_connection *c, int ev, void *ev_data, void *userdata)
       bool ok = true;
 
       if (strcmp (querystr, "clear") == 0) {
-        sockhSendMessage (SOCKOF (PROCESS_MAIN),
+        sockhSendMessage (SOCKOF (ROUTE_MAIN),
             ROUTE_REMCTRL, ROUTE_MAIN, MSG_QUEUE_CLEAR, NULL);
       } else if (strcmp (querystr, "fade") == 0) {
-        sockhSendMessage (SOCKOF (PROCESS_PLAYER),
+        sockhSendMessage (SOCKOF (ROUTE_PLAYER),
             ROUTE_REMCTRL, ROUTE_PLAYER, MSG_PLAY_FADE, NULL);
       } else if (strcmp (querystr, "nextsong") == 0) {
-        sockhSendMessage (SOCKOF (PROCESS_PLAYER),
+        sockhSendMessage (SOCKOF (ROUTE_PLAYER),
             ROUTE_REMCTRL, ROUTE_PLAYER, MSG_PLAY_NEXTSONG, NULL);
       } else if (strcmp (querystr, "pauseatend") == 0) {
-        sockhSendMessage (SOCKOF (PROCESS_PLAYER),
+        sockhSendMessage (SOCKOF (ROUTE_PLAYER),
             ROUTE_REMCTRL, ROUTE_PLAYER, MSG_PLAY_PAUSEATEND, NULL);
       } else if (strcmp (querystr, "play") == 0) {
-        sockhSendMessage (SOCKOF (PROCESS_MAIN),
+        sockhSendMessage (SOCKOF (ROUTE_MAIN),
             ROUTE_REMCTRL, ROUTE_MAIN, MSG_PLAY_PLAYPAUSE, NULL);
       } else if (strcmp (querystr, "playlistclearplay") == 0) {
-        sockhSendMessage (SOCKOF (PROCESS_MAIN),
+        sockhSendMessage (SOCKOF (ROUTE_MAIN),
             ROUTE_REMCTRL, ROUTE_MAIN, MSG_PLAYLIST_CLEARPLAY, qstrptr);
       } else if (strcmp (querystr, "playlistqueue") == 0) {
-        sockhSendMessage (SOCKOF (PROCESS_MAIN),
+        sockhSendMessage (SOCKOF (ROUTE_MAIN),
             ROUTE_REMCTRL, ROUTE_MAIN, MSG_PLAYLIST_QUEUE, qstrptr);
       } else if (strcmp (querystr, "queue") == 0) {
-        sockhSendMessage (SOCKOF (PROCESS_MAIN),
+        sockhSendMessage (SOCKOF (ROUTE_MAIN),
             ROUTE_REMCTRL, ROUTE_MAIN, MSG_DANCE_QUEUE, qstrptr);
       } else if (strcmp (querystr, "queue5") == 0) {
-        sockhSendMessage (SOCKOF (PROCESS_MAIN),
+        sockhSendMessage (SOCKOF (ROUTE_MAIN),
             ROUTE_REMCTRL, ROUTE_MAIN, MSG_DANCE_QUEUE5, qstrptr);
       } else if (strcmp (querystr, "repeat") == 0) {
-        sockhSendMessage (SOCKOF (PROCESS_PLAYER),
+        sockhSendMessage (SOCKOF (ROUTE_PLAYER),
             ROUTE_REMCTRL, ROUTE_PLAYER, MSG_PLAY_REPEAT, NULL);
       } else if (strcmp (querystr, "speed") == 0) {
-        sockhSendMessage (SOCKOF (PROCESS_PLAYER),
+        sockhSendMessage (SOCKOF (ROUTE_PLAYER),
             ROUTE_REMCTRL, ROUTE_PLAYER, MSG_PLAY_RATE, qstrptr);
       } else if (strcmp (querystr, "volume") == 0) {
-        sockhSendMessage (SOCKOF (PROCESS_PLAYER),
+        sockhSendMessage (SOCKOF (ROUTE_PLAYER),
             ROUTE_REMCTRL, ROUTE_PLAYER, MSG_PLAYER_VOLUME, qstrptr);
       } else if (strcmp (querystr, "volmute") == 0) {
-        sockhSendMessage (SOCKOF (PROCESS_PLAYER),
+        sockhSendMessage (SOCKOF (ROUTE_PLAYER),
             ROUTE_REMCTRL, ROUTE_PLAYER, MSG_PLAYER_VOL_MUTE, NULL);
       } else {
         ok = false;
@@ -304,10 +305,10 @@ remctrlProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
       switch (msg) {
         case MSG_HANDSHAKE: {
           if (routefrom == ROUTE_MAIN) {
-            remctrlData->processes [PROCESS_MAIN].handshake = true;
+            remctrlData->processes [ROUTE_MAIN].handshake = true;
           }
           if (routefrom == ROUTE_PLAYER) {
-            remctrlData->processes [PROCESS_PLAYER].handshake = true;
+            remctrlData->processes [ROUTE_PLAYER].handshake = true;
           }
           break;
         }
@@ -315,8 +316,8 @@ remctrlProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           mstimestart (&remctrlData->tm);
           logMsg (LOG_SESS, LOG_IMPORTANT, "got exit request");
           gKillReceived = 0;
-          remctrlDisconnectProcess (remctrlData, PROCESS_MAIN, ROUTE_MAIN);
-          remctrlDisconnectProcess (remctrlData, PROCESS_PLAYER, ROUTE_PLAYER);
+          remctrlDisconnectProcess (remctrlData, ROUTE_MAIN);
+          remctrlDisconnectProcess (remctrlData, ROUTE_PLAYER);
           return 1;
         }
         case MSG_DANCE_LIST_DATA: {
@@ -364,30 +365,30 @@ remctrlProcessing (void *udata)
   if (remctrlData->programState == STATE_CONNECTING) {
     uint16_t  port;
 
-    if (SOCKOF (PROCESS_MAIN) == INVALID_SOCKET) {
+    if (SOCKOF (ROUTE_MAIN) == INVALID_SOCKET) {
       port = bdjvarsl [BDJVL_MAIN_PORT];
-      remctrlConnectProcess (remctrlData, PROCESS_MAIN, ROUTE_MAIN, port);
+      remctrlConnectProcess (remctrlData, ROUTE_MAIN, port);
     }
 
-    if (SOCKOF (PROCESS_PLAYER) == INVALID_SOCKET) {
+    if (SOCKOF (ROUTE_PLAYER) == INVALID_SOCKET) {
       port = bdjvarsl [BDJVL_PLAYER_PORT];
-      remctrlConnectProcess (remctrlData, PROCESS_PLAYER, ROUTE_PLAYER, port);
+      remctrlConnectProcess (remctrlData, ROUTE_PLAYER, port);
     }
 
-    if (SOCKOF (PROCESS_MAIN) != INVALID_SOCKET &&
-        SOCKOF (PROCESS_PLAYER) != INVALID_SOCKET) {
+    if (SOCKOF (ROUTE_MAIN) != INVALID_SOCKET &&
+        SOCKOF (ROUTE_PLAYER) != INVALID_SOCKET) {
       remctrlData->programState = STATE_WAIT_HANDSHAKE;
     }
   }
 
   if (remctrlData->programState == STATE_WAIT_HANDSHAKE) {
-    if (remctrlData->processes [PROCESS_MAIN].handshake &&
-        remctrlData->processes [PROCESS_PLAYER].handshake) {
+    if (remctrlData->processes [ROUTE_MAIN].handshake &&
+        remctrlData->processes [ROUTE_PLAYER].handshake) {
       remctrlData->programState = STATE_RUNNING;
       logMsg (LOG_SESS, LOG_IMPORTANT, "running: time-to-start: %ld ms", mstimeend (&remctrlData->tm));
-      sockhSendMessage (SOCKOF (PROCESS_MAIN), ROUTE_REMCTRL, ROUTE_MAIN,
+      sockhSendMessage (SOCKOF (ROUTE_MAIN), ROUTE_REMCTRL, ROUTE_MAIN,
           MSG_GET_DANCE_LIST, NULL);
-      sockhSendMessage (SOCKOF (PROCESS_MAIN), ROUTE_REMCTRL, ROUTE_MAIN,
+      sockhSendMessage (SOCKOF (ROUTE_MAIN), ROUTE_REMCTRL, ROUTE_MAIN,
           MSG_GET_PLAYLIST_LIST, NULL);
     }
   }
@@ -415,14 +416,14 @@ remctrlSigHandler (int sig)
 }
 
 static void
-remctrlConnectProcess (remctrldata_t *remctrlData, processconnidx_t idx,
+remctrlConnectProcess (remctrldata_t *remctrlData,
     bdjmsgroute_t route, uint16_t port)
 {
   int         err;
 
-  SOCKOF (idx) = sockConnect (port, &err, 1000);
-  if (SOCKOF (idx) != INVALID_SOCKET) {
-    sockhSendMessage (SOCKOF (idx), ROUTE_REMCTRL, route,
+  SOCKOF (route) = sockConnect (port, &err, 1000);
+  if (SOCKOF (route) != INVALID_SOCKET) {
+    sockhSendMessage (SOCKOF (route), ROUTE_REMCTRL, route,
         MSG_HANDSHAKE, NULL);
     if (route == ROUTE_MAIN) {
       logMsg (LOG_DBG, LOG_MAIN, "player: wait for handshake");
@@ -431,13 +432,13 @@ remctrlConnectProcess (remctrldata_t *remctrlData, processconnidx_t idx,
 }
 
 static void
-remctrlDisconnectProcess (remctrldata_t *remctrlData, processconnidx_t idx,
+remctrlDisconnectProcess (remctrldata_t *remctrlData,
     bdjmsgroute_t route)
 {
-  if (SOCKOF (idx) != INVALID_SOCKET) {
-    sockhSendMessage (SOCKOF (idx), ROUTE_REMCTRL, route,
+  if (SOCKOF (route) != INVALID_SOCKET) {
+    sockhSendMessage (SOCKOF (route), ROUTE_REMCTRL, route,
         MSG_SOCKET_CLOSE, NULL);
-    sockClose (SOCKOF (idx));
-    SOCKOF (idx) = INVALID_SOCKET;
+    sockClose (SOCKOF (route));
+    SOCKOF (route) = INVALID_SOCKET;
   }
 }

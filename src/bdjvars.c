@@ -25,10 +25,13 @@ bdjvarsInit (void)
 
   bdjvarsl [BDJVL_MAIN_PORT] = port++;
   bdjvarsl [BDJVL_PLAYER_PORT] = port++;
-  bdjvarsl [BDJVL_GUI_PORT] = port++;
+  bdjvarsl [BDJVL_PLAYERGUI_PORT] = port++;
+  bdjvarsl [BDJVL_CONFIGGUI_PORT] = port++;
+  bdjvarsl [BDJVL_MANAGEGUI_PORT] = port++;
   bdjvarsl [BDJVL_MOBILEMQ_PORT] = port++;
   bdjvarsl [BDJVL_REMCONTROL_PORT] = port++;
-  bdjvarsl [BDJVL_NUM_PORTS] = 5;
+  bdjvarsl [BDJVL_MARQUEE_PORT] = port++;
+  bdjvarsl [BDJVL_NUM_PORTS] = BDJVL_NUM_PORTS;
 
   bdjvarsAdjustPorts ();
 }
@@ -50,8 +53,11 @@ bdjvarsAdjustPorts (void)
   port = lsysvars [SVL_BASEPORT] + bdjvarsl [BDJVL_NUM_PORTS] * idx;
   bdjvarsl [BDJVL_MAIN_PORT] = port++;
   bdjvarsl [BDJVL_PLAYER_PORT] = port++;
-  bdjvarsl [BDJVL_GUI_PORT] = port++;
+  bdjvarsl [BDJVL_PLAYERGUI_PORT] = port++;
+  bdjvarsl [BDJVL_CONFIGGUI_PORT] = port++;
+  bdjvarsl [BDJVL_MANAGEGUI_PORT] = port++;
   bdjvarsl [BDJVL_MOBILEMQ_PORT] = port++;
   bdjvarsl [BDJVL_REMCONTROL_PORT] = port++;
+  bdjvarsl [BDJVL_MARQUEE_PORT] = port++;
 }
 

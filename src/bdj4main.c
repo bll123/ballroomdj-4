@@ -53,8 +53,8 @@ typedef enum {
 typedef struct {
   mstime_t          tm;
   programstate_t    programState;
-  process_t         *processes [PROCESS_MAX];
-  processconn_t     processconns [PROCESS_MAX];
+  process_t         *processes [ROUTE_MAX];
+  processconn_t     processconns [ROUTE_MAX];
   slist_t           *playlistCache;
   queue_t           *playlistQueue;
   musicq_t          *musicQueue;
@@ -73,7 +73,7 @@ static int      mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 static int      mainProcessing (void *udata);
 static void     mainSendMobileMarqueeData (maindata_t *mainData);
 static void     mainMobilePostCallback (void *userdata, char *resp, size_t len);
-static void     mainConnectProcess (maindata_t *mainData, processconnidx_t idx,
+static void     mainConnectProcess (maindata_t *mainData,
                     bdjmsgroute_t route, uint16_t port);
 static void     mainQueueClear (maindata_t *mainData);
 static void     mainQueueDance (maindata_t *mainData, ssize_t danceIdx, ssize_t count);
@@ -95,16 +95,18 @@ static void     mainMusicQueueFinish (maindata_t *mainData);
 static void     mainMusicQueueNext (maindata_t *mainData);
 static bool     mainCheckMusicQueue (song_t *song, void *tdata);
 static ssize_t  mainMusicQueueHistory (void *mainData, ssize_t idx);
-static void     mainForceStop (maindata_t *mainData, char *lockfn,
-                    int flags, processconnidx_t idx);
-static int      mainStartProcess (maindata_t *mainData, processconnidx_t idx,
+static void     mainForceStop (maindata_t *mainData,
+                    int flags, bdjmsgroute_t route);
+static void     mainStartProcess (maindata_t *mainData, bdjmsgroute_t route,
                     char *fname);
-static void     mainStopProcess (maindata_t *mainData, processconnidx_t idx,
-                    bdjmsgroute_t route, char *lockfn, bool force);
+static void     mainStopProcess (maindata_t *mainData, bdjmsgroute_t route,
+                    bool force);
 static void     mainSendDanceList (maindata_t *mainData);
 static void     mainSendPlaylistList (maindata_t *mainData);
 static void     mainSendStatus (maindata_t *mainData, char *playerResp);
 static void     mainDanceCountsInit (maindata_t *mainData);
+static void     mainSendMessage (maindata_t *mainData, bdjmsgroute_t routefrom,
+                    bdjmsgroute_t routeto, bdjmsgmsg_t msg, char *args);
 
 static long globalCounter = 0;
 static int gKillReceived = 0;
@@ -127,10 +129,11 @@ main (int argc, char *argv[])
   mainData.playerState = PL_STATE_STOPPED;
   mainData.webclient = NULL;
   mainData.mobmqUserkey = NULL;
-  for (processconnidx_t i = PROCESS_PLAYER; i < PROCESS_MAX; ++i) {
+  for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
     mainData.processconns [i].sock = INVALID_SOCKET;
     mainData.processconns [i].started = false;
     mainData.processconns [i].handshake = false;
+    mainData.processconns [i].name = NULL;
     mainData.processes [i] = NULL;
   }
   mainData.musicqChanged = false;
@@ -185,14 +188,9 @@ main (int argc, char *argv[])
   bdj4shutdown ();
   /* give the other processes some time to shut down */
   mssleep (100);
-  mainStopProcess (&mainData, PROCESS_PLAYER, ROUTE_PLAYER,
-      PLAYER_LOCK_FN, true);
-  mainStopProcess (&mainData, PROCESS_MOBILEMQ, ROUTE_MOBILEMQ,
-      MOBILEMQ_LOCK_FN, true);
-  mainStopProcess (&mainData, PROCESS_REMCTRL, ROUTE_REMCTRL,
-      REMCTRL_LOCK_FN, true);
-  for (processconnidx_t i = 0; i < PROCESS_MAX; ++i) {
+  for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
     if (mainData.processes [i] != NULL) {
+      mainStopProcess (&mainData, i, true);
       processFree (mainData.processes [i]);
     }
   }
@@ -222,15 +220,11 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     case ROUTE_MAIN: {
       switch (msg) {
         case MSG_HANDSHAKE: {
-          if (routefrom == ROUTE_PLAYER) {
-            mainData->processconns [PROCESS_PLAYER].handshake = true;
-          }
-          if (routefrom == ROUTE_MOBILEMQ) {
-            mainData->processconns [PROCESS_MOBILEMQ].handshake = true;
-          }
-          if (routefrom == ROUTE_REMCTRL) {
-            mainData->processconns [PROCESS_REMCTRL].handshake = true;
-          }
+          mainData->processconns [routefrom].handshake = true;
+          break;
+        }
+        case MSG_CONNECT_REQ: {
+//          mainConnectProcess (mainData, ROUTE_PLAYER, port);
           break;
         }
         case MSG_EXIT_REQUEST: {
@@ -238,9 +232,11 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           logMsg (LOG_SESS, LOG_IMPORTANT, "got exit request");
           gKillReceived = 0;
           mainData->programState = STATE_CLOSING;
-          mainStopProcess (mainData, PROCESS_PLAYER, ROUTE_PLAYER, NULL, false);
-          mainStopProcess (mainData, PROCESS_MOBILEMQ, ROUTE_MOBILEMQ, NULL, false);
-          mainStopProcess (mainData, PROCESS_REMCTRL, ROUTE_REMCTRL, NULL, false);
+          for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
+            if (mainData->processes [i] != NULL) {
+              mainStopProcess (mainData, i, false);
+            }
+          }
           logProcEnd (LOG_PROC, "mainProcessMsg", "req-exit");
           return 1;
         }
@@ -253,8 +249,8 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_PLAYLIST_CLEARPLAY: {
           mainQueueClear (mainData);
           /* clear out any playing song */
-          sockhSendMessage (SOCKOF (PROCESS_PLAYER),
-              ROUTE_MAIN, ROUTE_PLAYER, MSG_PLAY_NEXTSONG, NULL);
+          mainSendMessage (mainData, ROUTE_MAIN, ROUTE_PLAYER,
+              MSG_PLAY_NEXTSONG, NULL);
           mainQueuePlaylist (mainData, args);
           mainMusicQueuePlay (mainData);
           break;
@@ -280,8 +276,8 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_PLAY_PLAYPAUSE: {
           if (mainData->playerState == PL_STATE_PLAYING ||
               mainData->playerState == PL_STATE_IN_FADEOUT) {
-            sockhSendMessage (SOCKOF (PROCESS_PLAYER),
-                ROUTE_MAIN, ROUTE_PLAYER, MSG_PLAY_PAUSE, NULL);
+            mainSendMessage (mainData, ROUTE_MAIN, ROUTE_PLAYER,
+                MSG_PLAY_PAUSE, NULL);
           } else {
             mainMusicQueuePlay (mainData);
           }
@@ -374,48 +370,49 @@ mainProcessing (void *udata)
   }
 
   if (mainData->programState == STATE_LISTENING &&
-      ! mainData->processconns [PROCESS_PLAYER].started) {
-    mainStartProcess (mainData, PROCESS_PLAYER, "bdj4player");
-    mainStartProcess (mainData, PROCESS_MOBILEMQ, "bdj4mobmq");
-    mainStartProcess (mainData, PROCESS_REMCTRL, "bdj4rc");
+      ! mainData->processconns [ROUTE_PLAYER].started) {
+    mainStartProcess (mainData, ROUTE_PLAYER, "bdj4player");
+    mainStartProcess (mainData, ROUTE_MOBILEMQ, "bdj4mobmq");
+    mainStartProcess (mainData, ROUTE_REMCTRL, "bdj4rc");
+    mainStartProcess (mainData, ROUTE_MARQUEE, "bdj4marquee");
     mainData->programState = STATE_CONNECTING;
     logMsg (LOG_DBG, LOG_MAIN, "prog: connecting");
   }
 
   if (mainData->programState == STATE_CONNECTING &&
-      mainData->processconns [PROCESS_PLAYER].started &&
-      SOCKOF (PROCESS_PLAYER) == INVALID_SOCKET) {
+      mainData->processconns [ROUTE_PLAYER].started &&
+      SOCKOF (ROUTE_PLAYER) == INVALID_SOCKET) {
     uint16_t      port;
     int           connMax = 0;
     int           connCount = 0;
 
     port = bdjvarsl [BDJVL_PLAYER_PORT];
-    mainConnectProcess (mainData, PROCESS_PLAYER, ROUTE_PLAYER, port);
+    mainConnectProcess (mainData, ROUTE_PLAYER, port);
 
-    if (SOCKOF (PROCESS_MOBILEMQ) == INVALID_SOCKET &&
+    if (SOCKOF (ROUTE_MOBILEMQ) == INVALID_SOCKET &&
         bdjoptGetNum (OPT_P_MOBILEMARQUEE) != MOBILEMQ_OFF) {
       port = bdjvarsl [BDJVL_MOBILEMQ_PORT];
-      mainConnectProcess (mainData, PROCESS_MOBILEMQ, ROUTE_MOBILEMQ, port);
+      mainConnectProcess (mainData, ROUTE_MOBILEMQ, port);
     }
-    if (SOCKOF (PROCESS_REMCTRL) == INVALID_SOCKET &&
+    if (SOCKOF (ROUTE_REMCTRL) == INVALID_SOCKET &&
         bdjoptGetNum (OPT_P_REMOTECONTROL)) {
       port = bdjvarsl [BDJVL_REMCONTROL_PORT];
-      mainConnectProcess (mainData, PROCESS_REMCTRL, ROUTE_REMCTRL, port);
+      mainConnectProcess (mainData, ROUTE_REMCTRL, port);
     }
 
     ++connMax;
-    if (SOCKOF (PROCESS_PLAYER) != INVALID_SOCKET) {
+    if (SOCKOF (ROUTE_PLAYER) != INVALID_SOCKET) {
       ++connCount;
     }
     if (bdjoptGetNum (OPT_P_MOBILEMARQUEE) != MOBILEMQ_OFF) {
       ++connMax;
-      if (SOCKOF (PROCESS_MOBILEMQ) != INVALID_SOCKET) {
+      if (SOCKOF (ROUTE_MOBILEMQ) != INVALID_SOCKET) {
         ++connCount;
       }
     }
     if (bdjoptGetNum (OPT_P_REMOTECONTROL)) {
       ++connMax;
-      if (SOCKOF (PROCESS_REMCTRL) != INVALID_SOCKET) {
+      if (SOCKOF (ROUTE_REMCTRL) != INVALID_SOCKET) {
         ++connCount;
       }
     }
@@ -423,15 +420,10 @@ mainProcessing (void *udata)
       mainData->programState = STATE_WAIT_HANDSHAKE;
       logMsg (LOG_DBG, LOG_MAIN, "prog: wait for handshake");
     }
-
-    if (SOCKOF (PROCESS_GUI) == INVALID_SOCKET) {
-      port = bdjvarsl [BDJVL_GUI_PORT];
-      mainConnectProcess (mainData, PROCESS_GUI, ROUTE_GUI, port);
-    }
   }
 
   if (mainData->programState == STATE_WAIT_HANDSHAKE) {
-    if (mainData->processconns [PROCESS_PLAYER].handshake) {
+    if (mainData->processconns [ROUTE_PLAYER].handshake) {
       mainData->programState = STATE_RUNNING;
       logMsg (LOG_DBG, LOG_MAIN, "prog: running");
       logMsg (LOG_SESS, LOG_IMPORTANT, "running: time-to-start: %ld ms", mstimeend (&mainData->tm));
@@ -524,8 +516,8 @@ mainSendMobileMarqueeData (maindata_t *mainData)
   }
   strlcat (jbuff, " }", sizeof (jbuff));
 
-  sockhSendMessage (SOCKOF (PROCESS_MOBILEMQ),
-      ROUTE_MAIN, ROUTE_MOBILEMQ, MSG_MARQUEE_DATA, jbuff);
+  mainSendMessage (mainData, ROUTE_MAIN, ROUTE_MOBILEMQ,
+      MSG_MARQUEE_DATA, jbuff);
 
   if (bdjoptGetNum (OPT_P_MOBILEMARQUEE) == MOBILEMQ_LOCAL) {
     return;
@@ -582,16 +574,14 @@ mainMobilePostCallback (void *userdata, char *resp, size_t len)
 
 
 static void
-mainConnectProcess (maindata_t *mainData, processconnidx_t idx,
-    bdjmsgroute_t route, uint16_t port)
+mainConnectProcess (maindata_t *mainData, bdjmsgroute_t route, uint16_t port)
 {
   int       err;
 
 
-  SOCKOF (idx) = sockConnect (port, &err, 1000);
-  if (SOCKOF (idx) != INVALID_SOCKET) {
-    sockhSendMessage (SOCKOF (idx),
-        ROUTE_MAIN, route, MSG_HANDSHAKE, NULL);
+  SOCKOF (route) = sockConnect (port, &err, 1000);
+  if (SOCKOF (route) != INVALID_SOCKET) {
+    mainSendMessage (mainData, ROUTE_MAIN, route, MSG_HANDSHAKE, NULL);
   }
 }
 
@@ -880,8 +870,7 @@ mainPrepSong (maindata_t *mainData, song_t *song,
       MSG_ARGS_RS, voladjperc, MSG_ARGS_RS, gap, MSG_ARGS_RS, flag);
 
   logMsg (LOG_DBG, LOG_MAIN, "prep song %s", sfname);
-  sockhSendMessage (SOCKOF (PROCESS_PLAYER),
-      ROUTE_MAIN, ROUTE_PLAYER, MSG_SONG_PREP, tbuff);
+  mainSendMessage (mainData, ROUTE_MAIN, ROUTE_PLAYER, MSG_SONG_PREP, tbuff);
   return annfname;
 }
 
@@ -1000,8 +989,8 @@ mainPlaybackBegin (maindata_t *mainData)
   /* tell the player to turn on the pause-at-end */
   flags = musicqGetFlags (mainData->musicQueue, mainData->musicqCurrentIdx, 0);
   if ((flags & MUSICQ_FLAG_PAUSE) == MUSICQ_FLAG_PAUSE) {
-    sockhSendMessage (SOCKOF (PROCESS_PLAYER),
-        ROUTE_MAIN, ROUTE_PLAYER, MSG_PLAY_PAUSEATEND, NULL);
+    mainSendMessage (mainData, ROUTE_MAIN, ROUTE_PLAYER,
+        MSG_PLAY_PAUSEATEND, NULL);
   }
 }
 
@@ -1025,20 +1014,19 @@ mainMusicQueuePlay (maindata_t *mainData)
 
         annfname = musicqGetAnnounce (mainData->musicQueue, mainData->musicqCurrentIdx, 0);
         if (annfname != NULL) {
-          sockhSendMessage (SOCKOF (PROCESS_PLAYER),
-              ROUTE_MAIN, ROUTE_PLAYER, MSG_SONG_PLAY, annfname);
+          mainSendMessage (mainData, ROUTE_MAIN, ROUTE_PLAYER,
+              MSG_SONG_PLAY, annfname);
         }
       }
       sfname = songGetData (song, TAG_FILE);
-      sockhSendMessage (SOCKOF (PROCESS_PLAYER),
-          ROUTE_MAIN, ROUTE_PLAYER, MSG_SONG_PLAY, sfname);
+      mainSendMessage (mainData, ROUTE_MAIN, ROUTE_PLAYER,
+          MSG_SONG_PLAY, sfname);
     }
   }
   if (mainData->playerState == PL_STATE_IN_GAP ||
       mainData->playerState == PL_STATE_PAUSED) {
     logMsg (LOG_DBG, LOG_MAIN, "player is paused/in gap, send play msg");
-    sockhSendMessage (SOCKOF (PROCESS_PLAYER),
-        ROUTE_MAIN, ROUTE_PLAYER, MSG_PLAY_PLAY, NULL);
+    mainSendMessage (mainData, ROUTE_MAIN, ROUTE_PLAYER, MSG_PLAY_PLAY, NULL);
   }
   logProcEnd (LOG_PROC, "mainMusicQueuePlay", "");
 }
@@ -1113,21 +1101,14 @@ mainMusicQueueHistory (void *tmaindata, ssize_t idx)
 }
 
 static void
-mainForceStop (maindata_t *mainData, char *lockfn,
-    int flags, processconnidx_t idx)
+mainForceStop (maindata_t *mainData, int flags, bdjmsgroute_t route)
 {
-  pid_t pid;
   int   count = 0;
-  int   exists = 0;
+  int   exists = 1;
 
-  pid = lockExists (lockfn, flags);
-  if (pid != 0) {
-    logMsg (LOG_DBG, LOG_MAIN, "%s still extant; wait", lockfn);
-  }
-  while (pid != 0 && count < 10) {
-    exists = 1;
-    if (! processExists (mainData->processes [idx])) {
-      logMsg (LOG_DBG, LOG_MAIN, "%s exited", lockfn);
+  while (count < 10) {
+    if (processExists (mainData->processes [route]) != 0) {
+      logMsg (LOG_DBG, LOG_MAIN, "%d exited", route);
       exists = 0;
       break;
     }
@@ -1136,23 +1117,23 @@ mainForceStop (maindata_t *mainData, char *lockfn,
   }
 
   if (exists) {
-    logMsg (LOG_SESS, LOG_IMPORTANT, "force-terminating %s", lockfn);
-    processKill (mainData->processes [idx]);
+    logMsg (LOG_SESS, LOG_IMPORTANT, "force-terminating %d", route);
+    processKill (mainData->processes [route]);
   }
 }
 
-static int
-mainStartProcess (maindata_t *mainData, processconnidx_t idx, char *fname)
+static void
+mainStartProcess (maindata_t *mainData, bdjmsgroute_t route, char *fname)
 {
   char      tbuff [MAXPATHLEN];
   char      *extension = NULL;
-  int       rc = -1;
+
 
   logProcBegin (LOG_PROC, "mainStartProcess");
-  mainData->processconns [idx].name = fname;
-  if (mainData->processconns [idx].started) {
+  mainData->processconns [route].name = fname;
+  if (mainData->processconns [route].started) {
     logProcEnd (LOG_PROC, "mainStartProcess", "already");
-    return -1;
+    return;
   }
 
   extension = "";
@@ -1161,40 +1142,37 @@ mainStartProcess (maindata_t *mainData, processconnidx_t idx, char *fname)
   }
   pathbldMakePath (tbuff, sizeof (tbuff), "",
       fname, extension, PATHBLD_MP_EXECDIR);
-  mainData->processes [idx] = processStart (tbuff, lsysvars [SVL_BDJIDX],
+  mainData->processes [route] = processStart (tbuff, lsysvars [SVL_BDJIDX],
       bdjoptGetNum (OPT_G_DEBUGLVL));
-  if (rc < 0) {
+  if (mainData->processes [route] == NULL) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "%s %s failed to start", fname, tbuff);
   } else {
     logMsg (LOG_DBG, LOG_BASIC, "%s started pid: %zd", fname,
-        (ssize_t) mainData->processes [idx]->pid);
-    mainData->processconns [idx].started = true;
+        (ssize_t) mainData->processes [route]->pid);
+    mainData->processconns [route].started = true;
   }
   logProcEnd (LOG_PROC, "mainStartProcess", "");
-  return rc;
 }
 
 static void
-mainStopProcess (maindata_t *mainData, processconnidx_t idx,
-    bdjmsgroute_t route, char *lockfn, bool force)
+mainStopProcess (maindata_t *mainData,
+    bdjmsgroute_t route, bool force)
 {
   logProcBegin (LOG_PROC, "mainStopProcess");
   if (! force) {
-    if (! mainData->processconns [idx].started) {
+    if (! mainData->processconns [route].started) {
       logProcEnd (LOG_PROC, "mainStopProcess", "not-started");
       return;
     }
-    sockhSendMessage (SOCKOF (idx), ROUTE_MAIN, route,
-        MSG_EXIT_REQUEST, NULL);
-    sockhSendMessage (SOCKOF (idx), ROUTE_MAIN, route,
-        MSG_SOCKET_CLOSE, NULL);
-    sockClose (mainData->processconns [idx].sock);
-    mainData->processconns [idx].sock = INVALID_SOCKET;
-    mainData->processconns [idx].started = false;
-    mainData->processconns [idx].handshake = false;
+    mainSendMessage (mainData, ROUTE_MAIN, route, MSG_EXIT_REQUEST, NULL);
+    mainSendMessage (mainData, ROUTE_MAIN, route, MSG_SOCKET_CLOSE, NULL);
+    sockClose (mainData->processconns [route].sock);
+    mainData->processconns [route].sock = INVALID_SOCKET;
+    mainData->processconns [route].started = false;
+    mainData->processconns [route].handshake = false;
   }
   if (force) {
-    mainForceStop (mainData, lockfn, PATHBLD_MP_USEIDX, idx);
+    mainForceStop (mainData, PATHBLD_MP_USEIDX, route);
   }
   logProcEnd (LOG_PROC, "mainStopProcess", "");
 }
@@ -1221,8 +1199,8 @@ mainSendDanceList (maindata_t *mainData)
     strlcat (rbuff, tbuff, sizeof (rbuff));
   }
 
-  sockhSendMessage (SOCKOF (PROCESS_REMCTRL),
-      ROUTE_MAIN, ROUTE_REMCTRL, MSG_DANCE_LIST_DATA, rbuff);
+  mainSendMessage (mainData, ROUTE_MAIN, ROUTE_REMCTRL,
+      MSG_DANCE_LIST_DATA, rbuff);
 }
 
 static void
@@ -1247,8 +1225,8 @@ mainSendPlaylistList (maindata_t *mainData)
 
   slistFree (plList);
 
-  sockhSendMessage (SOCKOF (PROCESS_REMCTRL),
-      ROUTE_MAIN, ROUTE_REMCTRL, MSG_PLAYLIST_LIST_DATA, rbuff);
+  mainSendMessage (mainData, ROUTE_MAIN, ROUTE_REMCTRL,
+      MSG_PLAYLIST_LIST_DATA, rbuff);
 }
 
 
@@ -1334,8 +1312,7 @@ mainSendStatus (maindata_t *mainData, char *playerResp)
 
   strlcat (rbuff, " }", sizeof (rbuff));
 
-  sockhSendMessage (SOCKOF (PROCESS_REMCTRL),
-      ROUTE_MAIN, ROUTE_REMCTRL, MSG_STATUS_DATA, rbuff);
+  mainSendMessage (mainData, ROUTE_MAIN, ROUTE_REMCTRL, MSG_STATUS_DATA, rbuff);
 
   /* build a message and send it to the gui */
 
@@ -1360,5 +1337,22 @@ mainDanceCountsInit (maindata_t *mainData)
   nlistStartIterator (dc, &iteridx);
   while ((didx = nlistIterateKey (dc, &iteridx)) >= 0) {
     nlistSetNum (mainData->danceCounts, didx, nlistGetNum (dc, didx));
+  }
+}
+
+static void
+mainSendMessage (maindata_t *mainData, bdjmsgroute_t routefrom,
+    bdjmsgroute_t routeto, bdjmsgmsg_t msg, char *args)
+{
+  int         rc;
+
+
+  if (SOCKOF (routeto) == INVALID_SOCKET) {
+    return;
+  }
+
+  rc = sockhSendMessage (SOCKOF (routeto), routefrom, routeto, msg, args);
+  if (rc < 0) {
+    SOCKOF (routeto) = INVALID_SOCKET;
   }
 }

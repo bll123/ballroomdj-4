@@ -22,15 +22,6 @@ typedef enum {
   STATE_CLOSING,
 } programstate_t;
 
-typedef enum {
-  PROCESS_PLAYER,         // must be first for initialization to work.
-  PROCESS_MAIN,
-  PROCESS_MOBILEMQ,
-  PROCESS_REMCTRL,
-  PROCESS_GUI,
-  PROCESS_MAX,
-} processconnidx_t;
-
 typedef struct {
   Sock_t        sock;
   char          *name;

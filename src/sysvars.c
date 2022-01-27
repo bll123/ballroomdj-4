@@ -8,6 +8,9 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#if _sys_resource
+# include <sys/resource.h>
+#endif
 #if _sys_utsname
 # include <sys/utsname.h>
 #endif
@@ -36,6 +39,8 @@ static char *cacertFiles [] = {
 };
 #define CACERT_FILE_COUNT (sizeof (cacertFiles) / sizeof (char *))
 
+static void enable_core_dump (void);
+
 void
 sysvarsInit (const char *argv0)
 {
@@ -43,11 +48,18 @@ sysvarsInit (const char *argv0)
   char          tcwd [MAXPATHLEN+1];
   char          buff [MAXPATHLEN+1];
   char          *p;
-
 #if _lib_uname
   int             rc;
   struct utsname  ubuf;
+#endif
+#if _lib_GetVersionEx
+  OSVERSIONINFOA osvi;
+#endif
 
+
+  enable_core_dump ();
+
+#if _lib_uname
   rc = uname (&ubuf);
   assert (rc == 0);
   strlcpy (sysvars [SV_OSNAME], ubuf.sysname, MAXPATHLEN);
@@ -57,8 +69,6 @@ sysvarsInit (const char *argv0)
   strlcpy (sysvars [SV_OSBUILD], "", MAXPATHLEN);
 #endif
 #if _lib_GetVersionEx
-  OSVERSIONINFOA osvi;
-
   memset (&osvi, 0, sizeof (OSVERSIONINFOA));
   osvi.dwOSVersionInfoSize = sizeof (OSVERSIONINFOA);
   GetVersionEx (&osvi);
@@ -206,5 +216,21 @@ inline bool
 isLinux (void)
 {
   return (strcmp (sysvars[SV_OSNAME], "Linux") == 0);
+}
+
+/* internal routines */
+
+static void
+enable_core_dump (void)
+{
+#if _lib_setrlimit
+  struct rlimit corelim;
+
+  corelim.rlim_cur = RLIM_INFINITY;
+  corelim.rlim_max = RLIM_INFINITY;
+
+  setrlimit (RLIMIT_CORE, &corelim);
+#endif
+  return;
 }
 

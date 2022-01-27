@@ -7,6 +7,7 @@
 #define MOBILEMQ_LOCK_FN    "mobilemq"
 #define REMCTRL_LOCK_FN     "remctrl"
 #define PLAYER_LOCK_FN      "player"
+#define MARQUEE_LOCK_FN     "marquee"
 
 pid_t lockExists (char *, int);
 int   lockAcquire (char *, int);
