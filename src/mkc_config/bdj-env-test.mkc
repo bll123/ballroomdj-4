@@ -111,7 +111,7 @@ extension obj
 extension exe
 extension shlib
 
-pkg    include check
-pkg    libs check
+pkg include check /opt/local/lib/pkgconfig
+pkg libs check /opt/local/lib/pkgconfig
 
 cmd_msgfmt

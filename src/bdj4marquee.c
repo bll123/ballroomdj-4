@@ -93,6 +93,7 @@ main (int argc, char *argv[])
   uint16_t        listenPort;
   loglevel_t      loglevel = LOG_IMPORTANT | LOG_MAIN;
   marquee_t       marquee;
+  char            *tval;
 
   static struct option bdj_options [] = {
     { "debug",      required_argument,  NULL,   'd' },
@@ -177,7 +178,12 @@ main (int argc, char *argv[])
   listenPort = bdjvarsl [BDJVL_MARQUEE_PORT];
   marquee.mqLen = bdjoptGetNum (OPT_P_MQQLEN);
   marquee.mqShowInfo = bdjoptGetNum (OPT_P_MQ_SHOW_INFO);
-  marquee.mqfont = strdup (bdjoptGetData (OPT_MP_MQFONT));
+
+
+  tval = bdjoptGetData (OPT_MP_MQFONT);
+  if (tval != NULL) {
+    marquee.mqfont = strdup (tval);
+  }
   if (marquee.mqfont == NULL) {
     marquee.mqfont = "";
   }

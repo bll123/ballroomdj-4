@@ -94,7 +94,10 @@ check_test_multword () {
 
   printlabel $name "test: multiword"
   checkcache_val ${_MKCONFIG_PREFIX} $name
-  if [ $? -eq 0 ]; then return; fi
+  if [ $? -eq 0 ]; then
+    eval "$name=$tval"
+    return
+  fi
   val="word1 word2"
   printyesno_val $name "$val"
   setdata ${_MKCONFIG_PREFIX} $name "$val"

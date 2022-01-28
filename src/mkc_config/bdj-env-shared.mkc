@@ -113,7 +113,7 @@ extension obj
 extension exe
 extension shlib
 
-pkg libs openssl
-pkg libs libcurl
+pkg libs openssl /opt/local/lib/pkgconfig
+pkg libs libcurl /opt/local/lib/pkgconfig
 
 cmd_msgfmt

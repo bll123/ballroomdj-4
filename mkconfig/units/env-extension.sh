@@ -27,7 +27,10 @@ check_objext () {
   name=OBJ_EXT
   printlabel $name "extension: object"
   checkcache_val ${_MKCONFIG_PREFIX} $name
-  if [ $? -eq 0 ]; then return; fi
+  if [ $? -eq 0 ]; then
+    eval "$name=$tval"
+    return
+  fi
 
   TMPF=objext
 
@@ -59,7 +62,10 @@ check_exeext () {
   name=EXE_EXT
   printlabel $name "extension: executable"
   checkcache_val ${_MKCONFIG_PREFIX} $name
-  if [ $? -eq 0 ]; then return; fi
+  if [ $? -eq 0 ]; then
+    eval "$name=$tval"
+    return
+  fi
 
   TMPF=exeext
 

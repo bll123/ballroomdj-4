@@ -114,9 +114,9 @@ extension obj
 extension exe
 extension shlib
 
-pkg libs openssl
-pkg libs libcurl
-pkg cflags gtk+-3.0
-pkg libs gtk+-3.0
+pkg libs openssl /opt/local/lib/pkgconfig
+pkg libs libcurl /opt/local/lib/pkgconfig
+pkg cflags gtk+-3.0 /opt/local/lib/pkgconfig
+pkg libs gtk+-3.0 /opt/local/lib/pkgconfig
 
 cmd_msgfmt
