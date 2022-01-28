@@ -23,8 +23,6 @@ check_cmd_msgfmt () {
   name=XMSGFMT
 
   printlabel $name "command: locate msgfmt"
-  checkcache_val ${_MKCONFIG_PREFIX} $name
-  if [ $? -eq 0 ]; then return; fi
 
   locatecmd xmsgfmt msgfmt
   locatecmd xgmsgfmt gmsgfmt

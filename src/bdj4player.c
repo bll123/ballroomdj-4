@@ -25,7 +25,9 @@
 #include "bdjopt.h"
 #include "bdjstring.h"
 #include "bdjvars.h"
+#include "conn.h"
 #include "pathbld.h"
+#include "progstart.h"
 #include "fileop.h"
 #include "filemanip.h"
 #include "lock.h"
@@ -42,8 +44,6 @@
 #include "tmutil.h"
 #include "volume.h"
 
-#define SOCKOF(idx) (playerData->processes [idx].sock)
-
 typedef struct {
   char          *songfullpath;
   char          *songname;
@@ -57,8 +57,8 @@ typedef struct {
 } prepqueue_t;
 
 typedef struct {
-  processconn_t   processes [ROUTE_MAX];
-  programstate_t  programState;
+  conn_t          *conn;
+  progstart_t     *progstart;
   mstime_t        tm;
   long            globalCount;
   pli_t           *pli;
@@ -109,6 +109,10 @@ static void     playerCheckSystemVolume (playerdata_t *playerData);
 static int      playerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
                     bdjmsgmsg_t msg, char *args, void *udata);
 static int      playerProcessing (void *udata);
+static bool     playerConnectingCallback (void *tpdata, programstate_t programState);
+static bool     playerHandshakeCallback (void *tpdata, programstate_t programState);
+static bool     playerStoppingCallback (void *tpdata, programstate_t programState);
+static bool     playerClosingCallback (void *tpdata, programstate_t programState);
 static void     playerSongPrep (playerdata_t *playerData, char *sfname);
 void            playerProcessPrepRequest (playerdata_t *playerData);
 static void     playerSongPlay (playerdata_t *playerData, char *sfname);
@@ -135,13 +139,6 @@ static void     playerStartFadeOut (playerdata_t *playerData);
 static void     playerSetCheckTimes (playerdata_t *playerData, prepqueue_t *pq);
 static void     playerSetPlayerState (playerdata_t *playerData, playerstate_t pstate);
 static void     playerSendStatus (playerdata_t *playerData);
-static void     playerConnectProcess (playerdata_t *playerData,
-                    bdjmsgroute_t route, uint16_t port);
-static void     playerDisconnectProcess (playerdata_t *playerData,
-                    bdjmsgroute_t route);
-static void     playerSendMessage (playerdata_t *playerData,
-                    bdjmsgroute_t routefrom, bdjmsgroute_t routeto,
-                    bdjmsgmsg_t msg, char *args);
 
 static int      gKillReceived = 0;
 
@@ -185,13 +182,11 @@ main (int argc, char *argv[])
   playerData.pli = NULL;
   playerData.prepQueue = queueAlloc (playerPrepQueueFree);
   playerData.prepRequestQueue = queueAlloc (playerPrepQueueFree);
-  playerData.programState = STATE_INITIALIZING;
-  for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
-    playerData.processes [i].sock = INVALID_SOCKET;
-    playerData.processes [i].started = false;
-    playerData.processes [i].handshake = false;
-    playerData.processes [i].name = NULL;
-  }
+  playerData.progstart = progstartInit ();
+  progstartSetCallback (playerData.progstart, STATE_CONNECTING, playerConnectingCallback);
+  progstartSetCallback (playerData.progstart, STATE_WAIT_HANDSHAKE, playerHandshakeCallback);
+  progstartSetCallback (playerData.progstart, STATE_STOPPING, playerStoppingCallback);
+  progstartSetCallback (playerData.progstart, STATE_CLOSING, playerClosingCallback);
 
   playerData.inFade = false;
   playerData.inFadeIn = false;
@@ -238,6 +233,8 @@ main (int argc, char *argv[])
   bdjvarsInit ();
   bdjoptInit ();
 
+  playerData.conn = connInit (ROUTE_PLAYER);
+
   playerData.fadeType = bdjoptGetNum (OPT_P_FADETYPE);
   playerData.fadeinTime = bdjoptGetNum (OPT_P_FADEINTIME);
   playerData.fadeoutTime = bdjoptGetNum (OPT_P_FADEOUTTIME);
@@ -278,38 +275,61 @@ main (int argc, char *argv[])
   listenPort = bdjvarsl [BDJVL_PLAYER_PORT];
   sockhMainLoop (listenPort, playerProcessMsg, playerProcessing, &playerData);
 
-  if (playerData.pli != NULL) {
-    pliStop (playerData.pli);
-    pliClose (playerData.pli);
-    pliFree (playerData.pli);
+  while (progstartShutdownProcess (playerData.progstart, &playerData) != STATE_CLOSED) {
+    ;
   }
-
-  volumeSet (playerData.volume, playerData.currentSink, playerData.originalSystemVolume);
-  logMsg (LOG_DBG, LOG_MAIN, "set to orig volume: %d", playerData.originalSystemVolume);
-  playerData.defaultSink = "";
-  playerData.currentSink = "";
-  volumeFreeSinkList (&playerData.sinklist);
-  volumeFree (playerData.volume);
-
-  if (playerData.prepQueue != NULL) {
-    queueFree (playerData.prepQueue);
-  }
-  if (playerData.prepRequestQueue != NULL) {
-    queueFree (playerData.prepRequestQueue);
-  }
-  if (playerData.playRequest != NULL) {
-    queueFree (playerData.playRequest);
-  }
-  bdjoptFree ();
-  bdjvarsCleanup ();
-  playerData.programState = STATE_NOT_RUNNING;
-  lockRelease (PLAYER_LOCK_FN, PATHBLD_MP_USEIDX);
-  logMsg (LOG_SESS, LOG_IMPORTANT, "time-to-end: %ld ms", mstimeend (&playerData.tm));
-  logEnd ();
+  progstartFree (playerData.progstart);
   return 0;
 }
 
 /* internal routines */
+
+static bool
+playerStoppingCallback (void *tpdata, programstate_t programState)
+{
+  playerdata_t    *playerData = tpdata;
+
+  connDisconnectAll (playerData->conn);
+  return true;
+}
+
+static bool
+playerClosingCallback (void *tpdata, programstate_t programState)
+{
+  playerdata_t    *playerData = tpdata;
+
+  connFree (playerData->conn);
+
+  if (playerData->pli != NULL) {
+    pliStop (playerData->pli);
+    pliClose (playerData->pli);
+    pliFree (playerData->pli);
+  }
+
+  volumeSet (playerData->volume, playerData->currentSink, playerData->originalSystemVolume);
+  logMsg (LOG_DBG, LOG_MAIN, "set to orig volume: %d", playerData->originalSystemVolume);
+  playerData->defaultSink = "";
+  playerData->currentSink = "";
+  volumeFreeSinkList (&playerData->sinklist);
+  volumeFree (playerData->volume);
+
+  if (playerData->prepQueue != NULL) {
+    queueFree (playerData->prepQueue);
+  }
+  if (playerData->prepRequestQueue != NULL) {
+    queueFree (playerData->prepRequestQueue);
+  }
+  if (playerData->playRequest != NULL) {
+    queueFree (playerData->playRequest);
+  }
+  bdjoptFree ();
+  bdjvarsCleanup ();
+  lockRelease (PLAYER_LOCK_FN, PATHBLD_MP_USEIDX);
+  logMsg (LOG_SESS, LOG_IMPORTANT, "time-to-end: %ld ms", mstimeend (&playerData->tm));
+  logEnd ();
+
+  return true;
+}
 
 static int
 playerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
@@ -329,10 +349,10 @@ playerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
       logMsg (LOG_DBG, LOG_MSGS, "got: route-player");
       switch (msg) {
         case MSG_HANDSHAKE: {
-          playerData->processes [routefrom ].handshake = true;
-          if (routefrom == ROUTE_REMCTRL) {
-            playerConnectProcess (playerData,
-                ROUTE_REMCTRL, bdjvarsl [BDJVL_REMCONTROL_PORT]);
+          connProcessHandshake (playerData->conn, routefrom);
+          if (connHaveHandshake (playerData->conn, ROUTE_REMCTRL) &&
+              ! connIsConnected (playerData->conn, ROUTE_REMCTRL)) {
+            connConnect (playerData->conn, ROUTE_REMCTRL);
           }
           break;
         }
@@ -341,15 +361,12 @@ playerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           logMsg (LOG_SESS, LOG_IMPORTANT, "got exit request");
           gKillReceived = 0;
           logMsg (LOG_DBG, LOG_MSGS, "got: req-exit");
-          playerData->programState = STATE_CLOSING;
-          for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
-            playerDisconnectProcess (playerData, i);
-          }
+          progstartShutdownProcess (playerData->progstart, playerData);
           logProcEnd (LOG_PROC, "playerProcessMsg", "req-exit");
           return 1;
         }
         case MSG_PLAY_PAUSE: {
-          logMsg (LOG_DBG, LOG_MSGS, "got: pause: progstate: %d", playerData->programState);
+          logMsg (LOG_DBG, LOG_MSGS, "got: pause:");
           playerPause (playerData);
           break;
         }
@@ -369,7 +386,7 @@ playerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_PLAY_FADE: {
-          logMsg (LOG_DBG, LOG_MSGS, "got: fade: progstate: %d", playerData->programState);
+          logMsg (LOG_DBG, LOG_MSGS, "got: fade:");
           playerFade (playerData);
           break;
         }
@@ -444,34 +461,8 @@ playerProcessing (void *udata)
 
   playerData = (playerdata_t *) udata;
 
-  if (playerData->programState == STATE_INITIALIZING) {
-    playerData->programState = STATE_CONNECTING;
-    logMsg (LOG_DBG, LOG_MAIN, "prog listening/connecting");
-  }
-
-  if (playerData->programState == STATE_CONNECTING &&
-      SOCKOF (ROUTE_MAIN) == INVALID_SOCKET) {
-    uint16_t  port;
-
-    port = bdjvarsl [BDJVL_MAIN_PORT];
-    playerConnectProcess (playerData, ROUTE_MAIN, port);
-
-    if (SOCKOF (ROUTE_MAIN) != INVALID_SOCKET) {
-      playerData->programState = STATE_WAIT_HANDSHAKE;
-      logMsg (LOG_DBG, LOG_MAIN, "player: wait for handshake");
-    }
-  }
-
-  if (playerData->programState == STATE_WAIT_HANDSHAKE) {
-    if (playerData->processes [ROUTE_MAIN].handshake) {
-      playerData->programState = STATE_RUNNING;
-      logMsg (LOG_DBG, LOG_MAIN, "prog: running");
-      logMsg (LOG_SESS, LOG_IMPORTANT, "running: time-to-start: %ld ms", mstimeend (&playerData->tm));
-    }
-  }
-
-  if (playerData->programState != STATE_RUNNING) {
-      /* all of the processing that follows requires a running state */
+  if (! progstartIsRunning (playerData->progstart)) {
+    progstartProcess (playerData->progstart, playerData);
     if (gKillReceived) {
       logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
     }
@@ -573,7 +564,7 @@ playerProcessing (void *udata)
       logMsg (LOG_DBG, LOG_BASIC, "pl state: playing");
 
       if (pq->announce == PREP_SONG) {
-        playerSendMessage (playerData, ROUTE_PLAYER, ROUTE_MAIN,
+        connSendMessage (playerData->conn, ROUTE_MAIN,
             MSG_PLAYBACK_BEGIN, NULL);
       }
     } else {
@@ -641,14 +632,14 @@ playerProcessing (void *udata)
             if (! playerData->repeat) {
                 /* let the main know we're done with this song. */
               logMsg (LOG_DBG, LOG_BASIC, "pl state: stopped (no continue)");
-              playerSendMessage (playerData, ROUTE_PLAYER, ROUTE_MAIN,
+              connSendMessage (playerData->conn, ROUTE_MAIN,
                   MSG_PLAYBACK_STOP, NULL);
             }
           } else {
             if (! playerData->repeat) {
                 /* done, go on to next song */
               logMsg (LOG_DBG, LOG_BASIC, "pl state: stopped (continue)");
-              playerSendMessage (playerData, ROUTE_PLAYER, ROUTE_MAIN,
+              connSendMessage (playerData->conn, ROUTE_MAIN,
                   MSG_PLAYBACK_FINISH, NULL);
             }
           }
@@ -707,7 +698,37 @@ playerProcessing (void *udata)
   return gKillReceived;
 }
 
-/* internal routines - song handling */
+static bool
+playerConnectingCallback (void *tpdata, programstate_t programState)
+{
+  playerdata_t  *playerData = tpdata;
+  bool          rc = false;
+
+  if (! connIsConnected (playerData->conn, ROUTE_MAIN)) {
+    connConnect (playerData->conn, ROUTE_MAIN);
+  }
+
+  if (connIsConnected (playerData->conn, ROUTE_MAIN)) {
+    rc = true;
+  }
+
+  return rc;
+}
+
+static bool
+playerHandshakeCallback (void *tpdata, programstate_t programState)
+{
+  playerdata_t  *playerData = tpdata;
+  bool          rc = false;
+
+  if (connHaveHandshake (playerData->conn, ROUTE_MAIN)) {
+    rc = true;
+    logMsg (LOG_SESS, LOG_IMPORTANT, "running: time-to-start: %ld ms", mstimeend (&playerData->tm));
+  }
+
+  return rc;
+}
+
 
 static void
 playerCheckSystemVolume (playerdata_t *playerData)
@@ -734,7 +755,7 @@ playerSongPrep (playerdata_t *playerData, char *args)
   char            stname [MAXPATHLEN];
 
 
-  if (playerData->programState != STATE_RUNNING) {
+  if (! progstartIsRunning (playerData->progstart)) {
     return;
   }
 
@@ -822,7 +843,7 @@ playerSongPlay (playerdata_t *playerData, char *sfname)
 {
   prepqueue_t       *pq = NULL;
 
-  if (playerData->programState != STATE_RUNNING) {
+  if (! progstartIsRunning (playerData->progstart)) {
     return;
   }
 
@@ -911,7 +932,7 @@ playerPause (playerdata_t *playerData)
 {
   plistate_t plistate = pliState (playerData->pli);
 
-  if (playerData->programState != STATE_RUNNING) {
+  if (! progstartIsRunning (playerData->progstart)) {
     return;
   }
 
@@ -971,7 +992,7 @@ playerNextSong (playerdata_t *playerData)
 static void
 playerPauseAtEnd (playerdata_t *playerData)
 {
-  if (playerData->programState != STATE_RUNNING) {
+  if (! progstartIsRunning (playerData->progstart)) {
     return;
   }
 
@@ -985,7 +1006,7 @@ playerSendPauseAtEndState (playerdata_t *playerData)
   char    tbuff [20];
 
   snprintf (tbuff, sizeof (tbuff), "%d", playerData->pauseAtEnd);
-  playerSendMessage (playerData, ROUTE_PLAYER, ROUTE_PLAYERGUI,
+  connSendMessage (playerData->conn, ROUTE_PLAYERGUI,
       MSG_PLAY_PAUSEATEND_STATE, tbuff);
 }
 
@@ -994,7 +1015,7 @@ playerFade (playerdata_t *playerData)
 {
   plistate_t plistate = pliState (playerData->pli);
 
-  if (playerData->programState != STATE_RUNNING) {
+  if (! progstartIsRunning (playerData->progstart)) {
     return;
   }
 
@@ -1019,7 +1040,7 @@ playerRate (playerdata_t *playerData, char *trate)
 {
   double rate;
 
-  if (playerData->programState != STATE_RUNNING) {
+  if (! progstartIsRunning (playerData->progstart)) {
     return;
   }
 
@@ -1046,7 +1067,7 @@ playerVolumeSet (playerdata_t *playerData, char *tvol)
 {
   int       newvol;
 
-  if (playerData->programState != STATE_RUNNING) {
+  if (! progstartIsRunning (playerData->progstart)) {
     return;
   }
 
@@ -1057,7 +1078,7 @@ playerVolumeSet (playerdata_t *playerData, char *tvol)
 static void
 playerVolumeMute (playerdata_t *playerData)
 {
-  if (playerData->programState != STATE_RUNNING) {
+  if (! progstartIsRunning (playerData->progstart)) {
     return;
   }
 
@@ -1257,9 +1278,9 @@ playerSetPlayerState (playerdata_t *playerData, playerstate_t pstate)
 
   playerData->playerState = pstate;
   snprintf (tbuff, sizeof (tbuff), "%d", playerData->playerState);
-  playerSendMessage (playerData, ROUTE_PLAYER, ROUTE_MAIN,
+  connSendMessage (playerData->conn, ROUTE_MAIN,
       MSG_PLAYER_STATE, tbuff);
-  playerSendMessage (playerData, ROUTE_PLAYER, ROUTE_PLAYERGUI,
+  connSendMessage (playerData->conn, ROUTE_PLAYERGUI,
       MSG_PLAYER_STATE, tbuff);
   /* any time there is a change of player state, send the status */
   playerSendStatus (playerData);
@@ -1282,7 +1303,7 @@ playerSendStatus (playerdata_t *playerData)
     dur = pq->dur;
   }
 
-  if (playerData->programState != STATE_RUNNING) {
+  if (! progstartIsRunning (playerData->progstart)) {
     playstate = "stop";
     dur = 0;
   } else {
@@ -1327,50 +1348,7 @@ playerSendStatus (playerdata_t *playerData)
       playerData->currentSpeed, MSG_ARGS_RS,
       tm, MSG_ARGS_RS, dur);
 
-  playerSendMessage (playerData, ROUTE_PLAYER, ROUTE_MAIN,
+  connSendMessage (playerData->conn, ROUTE_MAIN,
       MSG_PLAYER_STATUS_DATA, rbuff);
   mstimeset (&playerData->statusCheck, 100);
-}
-
-static void
-playerConnectProcess (playerdata_t *playerData,
-    bdjmsgroute_t route, uint16_t port)
-{
-  int         err;
-
-  SOCKOF (route) = sockConnect (port, &err, 1000);
-  if (SOCKOF (route) != INVALID_SOCKET) {
-    playerSendMessage (playerData, ROUTE_PLAYER, route,
-        MSG_HANDSHAKE, NULL);
-  }
-}
-
-static void
-playerDisconnectProcess (playerdata_t *playerData,
-    bdjmsgroute_t route)
-{
-  if (SOCKOF (route) != INVALID_SOCKET) {
-    playerSendMessage (playerData, ROUTE_PLAYER, route,
-        MSG_SOCKET_CLOSE, NULL);
-    sockClose (SOCKOF (route));
-    SOCKOF (route) = INVALID_SOCKET;
-  }
-}
-
-static void
-playerSendMessage (playerdata_t *playerData, bdjmsgroute_t routefrom,
-    bdjmsgroute_t routeto, bdjmsgmsg_t msg, char *args)
-{
-  int         rc;
-
-
-  if (SOCKOF (routeto) == INVALID_SOCKET) {
-    return;
-  }
-
-  rc = sockhSendMessage (SOCKOF (routeto), routefrom, routeto, msg, args);
-  if (rc < 0) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "lost connection to %d", routeto);
-    SOCKOF (routeto) = INVALID_SOCKET;
-  }
 }

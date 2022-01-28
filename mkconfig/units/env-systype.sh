@@ -39,11 +39,6 @@ check_system () {
 
   if [ "$arg" = "type" ]; then
     printlabel $name "system: type"
-    checkcache_val ${_MKCONFIG_PREFIX} $name
-    if [ $? -eq 0 ]; then
-      eval "$name=$tval"
-      return
-    fi
 
     if [ "${xuname}" != "" ]
     then
@@ -68,11 +63,6 @@ check_system () {
 
   if [ "$arg" = "rev" ]; then
     printlabel $name "system: rev"
-    checkcache_val ${_MKCONFIG_PREFIX} $name
-    if [ $? -eq 0 ]; then
-      eval "$name=$tval"
-      return
-    fi
 
     if [ "${xuname}" != "" ]
     then
@@ -124,11 +114,6 @@ check_system () {
 
   if [ "$arg" = "arch" ]; then
     printlabel $name "system: arch"
-    checkcache_val ${_MKCONFIG_PREFIX} $name
-    if [ $? -eq 0 ]; then
-      eval "$name=$tval"
-      return
-    fi
 
     if [ "${xuname}" != "" ]
     then

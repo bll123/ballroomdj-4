@@ -322,7 +322,8 @@ tclean:
 	@-$(RM) -f ../conv/*~ ./locale/*~ ../locale/*~ ../*~
 	@-$(RM) -f ../install/*~ ../pkg/*~ utils/*~ ../data/*~
 	@-$(RM) -f ../templates/*~ ../vlc-log.txt vlc-log.txt
-	@-$(RM) -f si-in.txt si-sort.txt
+	@-$(RM) -f si-in.txt si-sort.txt 
+	@-$(RM) -f ../vgcore.*
 	@-$(RM) -f ../web/*~ ../http/*~ ../core
 
 # bdj executables
@@ -461,6 +462,7 @@ LIBCOMMONOBJS = \
 	$(OBJDIR)/bdjopt$(OBJ_EXT) \
 	$(OBJDIR)/bdjstring$(OBJ_EXT) \
 	$(OBJDIR)/bdjvars$(OBJ_EXT) \
+	$(OBJDIR)/conn$(OBJ_EXT) \
 	$(OBJDIR)/datafile$(OBJ_EXT) \
 	$(OBJDIR)/filedata$(OBJ_EXT) \
 	$(OBJDIR)/filemanip$(OBJ_EXT) \
@@ -474,6 +476,7 @@ LIBCOMMONOBJS = \
 	$(OBJDIR)/pathbld$(OBJ_EXT) \
 	$(OBJDIR)/pathutil$(OBJ_EXT) \
 	$(OBJDIR)/process$(OBJ_EXT) \
+	$(OBJDIR)/progstart$(OBJ_EXT) \
 	$(OBJDIR)/queue$(OBJ_EXT) \
 	$(OBJDIR)/slist$(OBJ_EXT) \
 	$(OBJDIR)/sock$(OBJ_EXT) \
@@ -720,25 +723,25 @@ $(OBJDIR)/bdj4init$(OBJ_EXT): bdj4init.c config.h bdj4init.h musicdb.h song.h nl
  list.h tagdef.h bdjstring.h sysvars.h portability.h bdjvars.h \
  bdjvarsdfload.h log.h fileutil.h tmutil.h fileop.h pathbld.h bdjopt.h \
  lock.h
-$(OBJDIR)/bdj4main$(OBJ_EXT): bdj4main.c config.h bdj4.h sock.h bdj4init.h bdjmsg.h \
- bdjopt.h bdjstring.h bdjvars.h bdjvarsdf.h datafile.h list.h nlist.h \
- slist.h ilist.h dance.h dancesel.h autosel.h queue.h pathbld.h \
- filedata.h lock.h log.h fileutil.h musicdb.h song.h musicq.h tagdef.h \
- playlist.h sequence.h songlist.h songsel.h portability.h process.h \
- sockh.h sysvars.h tmutil.h webclient.h
-$(OBJDIR)/bdj4marquee$(OBJ_EXT): bdj4marquee.c config.h bdj4.h sock.h bdjmsg.h bdjopt.h \
+$(OBJDIR)/bdj4main$(OBJ_EXT): bdj4main.c config.h bdj4.h bdj4init.h bdjmsg.h bdjopt.h \
+ bdjstring.h bdjvarsdf.h datafile.h list.h nlist.h slist.h ilist.h \
+ bdjvars.h dance.h dancesel.h autosel.h queue.h filedata.h lock.h log.h \
+ fileutil.h musicdb.h song.h musicq.h tagdef.h pathbld.h playlist.h \
+ sequence.h songlist.h songsel.h portability.h process.h progstart.h \
+ sock.h sockh.h sysvars.h tmutil.h webclient.h
+$(OBJDIR)/bdj4marquee$(OBJ_EXT): bdj4marquee.c config.h bdj4.h bdjmsg.h bdjopt.h \
  bdjstring.h bdjvars.h lock.h log.h fileutil.h pathbld.h process.h \
- sockh.h sysvars.h portability.h tmutil.h
+ progstart.h sock.h sockh.h sysvars.h portability.h tmutil.h
 $(OBJDIR)/bdj4mobmq$(OBJ_EXT): bdj4mobmq.c config.h ../packages/mongoose/mongoose.h bdj4.h \
- sock.h bdjmsg.h bdjopt.h bdjvars.h lock.h log.h fileutil.h pathbld.h \
- process.h sockh.h sysvars.h portability.h tmutil.h websrv.h
-$(OBJDIR)/bdj4player$(OBJ_EXT): bdj4player.c config.h bdj4.h sock.h bdjmsg.h bdjopt.h \
- bdjstring.h bdjvars.h pathbld.h fileop.h filemanip.h slist.h list.h \
- lock.h log.h fileutil.h pathutil.h pli.h dylib.h portability.h tmutil.h \
- process.h queue.h sockh.h songutil.h sysvars.h volume.h
-$(OBJDIR)/bdj4rc$(OBJ_EXT): bdj4rc.c config.h ../packages/mongoose/mongoose.h bdj4.h sock.h \
  bdjmsg.h bdjopt.h bdjvars.h lock.h log.h fileutil.h pathbld.h process.h \
- sockh.h sysvars.h portability.h tmutil.h websrv.h
+ progstart.h sockh.h sock.h sysvars.h portability.h tmutil.h websrv.h
+$(OBJDIR)/bdj4player$(OBJ_EXT): bdj4player.c config.h bdj4.h bdjmsg.h bdjopt.h bdjstring.h \
+ bdjvars.h pathbld.h progstart.h fileop.h filemanip.h slist.h list.h \
+ lock.h log.h fileutil.h pathutil.h pli.h dylib.h portability.h tmutil.h \
+ process.h queue.h sock.h sockh.h songutil.h sysvars.h volume.h
+$(OBJDIR)/bdj4rc$(OBJ_EXT): bdj4rc.c config.h ../packages/mongoose/mongoose.h bdj4.h \
+ bdjmsg.h bdjopt.h bdjvars.h lock.h log.h fileutil.h pathbld.h process.h \
+ progstart.h sock.h sockh.h sysvars.h portability.h tmutil.h websrv.h
 $(OBJDIR)/bdjmsg$(OBJ_EXT): bdjmsg.c config.h bdjmsg.h bdjstring.h
 $(OBJDIR)/bdjopt$(OBJ_EXT): bdjopt.c config.h bdjopt.h datafile.h list.h nlist.h slist.h \
  ilist.h pathbld.h filemanip.h fileop.h portability.h sysvars.h
@@ -781,9 +784,10 @@ $(OBJDIR)/check_sock$(OBJ_EXT): check_sock.c config.h configt.h configc.h sock.h
  check_bdj.h tmutil.h log.h fileutil.h
 $(OBJDIR)/check_tmutil$(OBJ_EXT): check_tmutil.c config.h configt.h tmutil.h check_bdj.h
 $(OBJDIR)/chkprocess$(OBJ_EXT): chkprocess.c
+$(OBJDIR)/conn$(OBJ_EXT): conn.c config.h bdjvars.h conn.h sock.h bdjmsg.h log.h fileutil.h
 $(OBJDIR)/dance$(OBJ_EXT): dance.c config.h bdjstring.h bdjvarsdf.h datafile.h list.h \
  nlist.h slist.h ilist.h dance.h dnctypes.h fileop.h log.h fileutil.h
-$(OBJDIR)/dancesel$(OBJ_EXT): dancesel.c config.h bdj4.h sock.h autosel.h datafile.h list.h \
+$(OBJDIR)/dancesel$(OBJ_EXT): dancesel.c config.h bdj4.h autosel.h datafile.h list.h \
  nlist.h slist.h ilist.h bdjvarsdf.h dance.h dancesel.h queue.h log.h \
  fileutil.h playlist.h musicdb.h song.h sequence.h songlist.h songsel.h \
  portability.h
@@ -820,8 +824,8 @@ $(OBJDIR)/pathutil$(OBJ_EXT): pathutil.c config.h bdjstring.h pathutil.h portabi
 $(OBJDIR)/playlist$(OBJ_EXT): playlist.c config.h bdjvarsdf.h datafile.h list.h nlist.h \
  slist.h ilist.h dance.h pathbld.h filemanip.h fileop.h level.h log.h \
  fileutil.h musicdb.h song.h pathutil.h playlist.h dancesel.h bdj4.h \
- sock.h autosel.h queue.h sequence.h songlist.h songsel.h portability.h \
- rating.h status.h tagdef.h bdjstring.h
+ autosel.h queue.h sequence.h songlist.h songsel.h portability.h rating.h \
+ status.h tagdef.h bdjstring.h
 $(OBJDIR)/pli$(OBJ_EXT): pli.c config.h bdjopt.h pathbld.h dylib.h pli.h portability.h \
  tmutil.h sysvars.h
 $(OBJDIR)/plinull$(OBJ_EXT): plinull.c config.h pli.h dylib.h portability.h tmutil.h
@@ -829,6 +833,7 @@ $(OBJDIR)/plivlc$(OBJ_EXT): plivlc.c config.h configvlc.h pli.h dylib.h portabil
  tmutil.h vlci.h slist.h list.h
 $(OBJDIR)/portability$(OBJ_EXT): portability.c config.h portability.h
 $(OBJDIR)/process$(OBJ_EXT): process.c config.h process.h log.h fileutil.h
+$(OBJDIR)/progstart$(OBJ_EXT): progstart.c config.h log.h fileutil.h progstart.h
 $(OBJDIR)/queue$(OBJ_EXT): queue.c config.h queue.h
 $(OBJDIR)/rafile$(OBJ_EXT): rafile.c config.h lock.h log.h fileutil.h pathbld.h rafile.h \
  tmutil.h
@@ -861,9 +866,10 @@ $(OBJDIR)/sysvars$(OBJ_EXT): sysvars.c config.h sysvars.h portability.h bdjstrin
 $(OBJDIR)/tagdef$(OBJ_EXT): tagdef.c config.h tagdef.h bdjstring.h
 $(OBJDIR)/tmutil$(OBJ_EXT): tmutil.c config.h tmutil.h bdjstring.h
 $(OBJDIR)/vlci$(OBJ_EXT): vlci.c config.h configvlc.h vlci.h slist.h list.h bdjstring.h
-$(OBJDIR)/volalsa$(OBJ_EXT): volalsa.c config.h configalsa.h
+$(OBJDIR)/volalsa$(OBJ_EXT): volalsa.c config.h configalsa.h volume.h dylib.h portability.h
 $(OBJDIR)/volnull$(OBJ_EXT): volnull.c config.h volume.h dylib.h portability.h
-$(OBJDIR)/volpa$(OBJ_EXT): volpa.c config.h configpa.h
+$(OBJDIR)/volpa$(OBJ_EXT): volpa.c config.h configpa.h volume.h dylib.h portability.h \
+ bdjstring.h tmutil.h
 $(OBJDIR)/volume$(OBJ_EXT): volume.c config.h bdjopt.h pathbld.h dylib.h portability.h \
  sysvars.h volume.h
 $(OBJDIR)/webclient$(OBJ_EXT): webclient.c config.h log.h fileutil.h sysvars.h \

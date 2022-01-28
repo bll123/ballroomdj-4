@@ -17,23 +17,27 @@ static void   bdjvarsAdjustPorts (void);
 
 char *      bdjvars [BDJV_MAX];
 ssize_t     bdjvarsl [BDJVL_MAX];
+static bool initialized = false;
 
 void
 bdjvarsInit (void)
 {
-  uint16_t        port = lsysvars [SVL_BASEPORT];
+  if (! initialized) {
+    uint16_t        port = lsysvars [SVL_BASEPORT];
 
-  bdjvarsl [BDJVL_MAIN_PORT] = port++;
-  bdjvarsl [BDJVL_PLAYER_PORT] = port++;
-  bdjvarsl [BDJVL_PLAYERGUI_PORT] = port++;
-  bdjvarsl [BDJVL_CONFIGGUI_PORT] = port++;
-  bdjvarsl [BDJVL_MANAGEGUI_PORT] = port++;
-  bdjvarsl [BDJVL_MOBILEMQ_PORT] = port++;
-  bdjvarsl [BDJVL_REMCONTROL_PORT] = port++;
-  bdjvarsl [BDJVL_MARQUEE_PORT] = port++;
-  bdjvarsl [BDJVL_NUM_PORTS] = BDJVL_NUM_PORTS;
+    bdjvarsl [BDJVL_MAIN_PORT] = port++;
+    bdjvarsl [BDJVL_PLAYER_PORT] = port++;
+    bdjvarsl [BDJVL_PLAYERGUI_PORT] = port++;
+    bdjvarsl [BDJVL_CONFIGGUI_PORT] = port++;
+    bdjvarsl [BDJVL_MANAGEGUI_PORT] = port++;
+    bdjvarsl [BDJVL_MOBILEMQ_PORT] = port++;
+    bdjvarsl [BDJVL_REMCTRL_PORT] = port++;
+    bdjvarsl [BDJVL_MARQUEE_PORT] = port++;
+    bdjvarsl [BDJVL_NUM_PORTS] = BDJVL_NUM_PORTS;
 
-  bdjvarsAdjustPorts ();
+    bdjvarsAdjustPorts ();
+    initialized = true;
+  }
 }
 
 void
@@ -57,7 +61,12 @@ bdjvarsAdjustPorts (void)
   bdjvarsl [BDJVL_CONFIGGUI_PORT] = port++;
   bdjvarsl [BDJVL_MANAGEGUI_PORT] = port++;
   bdjvarsl [BDJVL_MOBILEMQ_PORT] = port++;
-  bdjvarsl [BDJVL_REMCONTROL_PORT] = port++;
+  bdjvarsl [BDJVL_REMCTRL_PORT] = port++;
   bdjvarsl [BDJVL_MARQUEE_PORT] = port++;
 }
 
+bool
+bdjvarsIsInitialized (void)
+{
+  return initialized;
+}

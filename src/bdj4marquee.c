@@ -17,18 +17,20 @@
 #include "bdjopt.h"
 #include "bdjstring.h"
 #include "bdjvars.h"
+#include "conn.h"
 #include "lock.h"
 #include "log.h"
 #include "pathbld.h"
 #include "process.h"
+#include "progstart.h"
 #include "sock.h"
 #include "sockh.h"
 #include "sysvars.h"
 #include "tmutil.h"
 
 typedef struct {
-  programstate_t  programState;
-  Sock_t          mainSock;
+  progstart_t     *progstart;
+  conn_t          *conn;
   sockserver_t    *sockserver;
   char            *mqfont;
   mstime_t        tm;
@@ -56,21 +58,24 @@ typedef struct {
   bool            inMax : 1;
   bool            setPrior : 1;
   bool            mqShowInfo : 1;
-  bool            mainHandshake : 1;
 } marquee_t;
 
-static int  marqueeCreateGui (marquee_t *marquee, int argc, char *argv []);
-static void marqueeActivate (GApplication *app, gpointer userdata);
-gboolean    marqueeMainLoop (void *tmarquee);
-static int  marqueeProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
-    bdjmsgmsg_t msg, char *args, void *udata);
+static bool     marqueeConnectingCallback (void *udata, programstate_t programState);
+static bool     marqueeHandshakeCallback (void *udata, programstate_t programState);
+static bool     marqueeStoppingCallback (void *udata, programstate_t programState);
+static bool     marqueeClosingCallback (void *udata, programstate_t programState);
+static int      marqueeCreateGui (marquee_t *marquee, int argc, char *argv []);
+static void     marqueeActivate (GApplication *app, gpointer userdata);
+gboolean        marqueeMainLoop  (void *tmarquee);
+static int      marqueeProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
+                    bdjmsgmsg_t msg, char *args, void *udata);
 static gboolean marqueeCloseWin (GtkWidget *window, GdkEvent *event, gpointer userdata);
 static gboolean marqueeToggleFullscreen (GtkWidget *window,
-    GdkEventButton *event, gpointer userdata);
+                    GdkEventButton *event, gpointer userdata);
 static gboolean marqueeResized (GtkWidget *window, GdkEventConfigure *event,
-    gpointer userdata);
+                    gpointer userdata);
 static gboolean marqueeWinState (GtkWidget *window, GdkEventWindowState *event,
-    gpointer userdata);
+                    gpointer userdata);
 static void marqueeStateChg (GtkWidget *w, GtkStateType flags, gpointer userdata);
 static void marqueeSigHandler (int sig);
 static void marqueeSetFontSize (marquee_t *marquee, GtkWidget *lab, char *style, int sz);
@@ -103,8 +108,11 @@ main (int argc, char *argv[])
   };
 
   mstimestart (&marquee.tm);
-  marquee.programState = STATE_INITIALIZING;
-  marquee.mainSock = INVALID_SOCKET;
+  marquee.progstart = progstartInit ();
+  progstartSetCallback (marquee.progstart, STATE_CONNECTING, marqueeConnectingCallback);
+  progstartSetCallback (marquee.progstart, STATE_WAIT_HANDSHAKE, marqueeHandshakeCallback);
+  progstartSetCallback (marquee.progstart, STATE_STOPPING, marqueeStoppingCallback);
+  progstartSetCallback (marquee.progstart, STATE_CLOSING, marqueeClosingCallback);
   marquee.sockserver = NULL;
   marquee.window = NULL;
   marquee.pbar = NULL;
@@ -128,7 +136,6 @@ main (int argc, char *argv[])
   marquee.unmaxSignal = 0;
   marquee.newFontSize = 0;
   marquee.setFontSize = 0;
-  marquee.mainHandshake = false;
 
 #if _define_SIGHUP
   processCatchSignal (marqueeSigHandler, SIGHUP);
@@ -178,7 +185,7 @@ main (int argc, char *argv[])
   listenPort = bdjvarsl [BDJVL_MARQUEE_PORT];
   marquee.mqLen = bdjoptGetNum (OPT_P_MQQLEN);
   marquee.mqShowInfo = bdjoptGetNum (OPT_P_MQ_SHOW_INFO);
-
+  marquee.conn = connInit (ROUTE_MARQUEE);
 
   tval = bdjoptGetData (OPT_MP_MQFONT);
   if (tval != NULL) {
@@ -193,24 +200,49 @@ main (int argc, char *argv[])
 
   status = marqueeCreateGui (&marquee, 0, NULL);
 
-  sockhCloseServer (marquee.sockserver);
-  bdjoptFree ();
-  bdjvarsCleanup ();
-
-  lockRelease (MARQUEE_LOCK_FN, PATHBLD_MP_USEIDX);
-  logMsg (LOG_SESS, LOG_IMPORTANT, "time-to-end: %ld ms", mstimeend (&marquee.tm));
-  logEnd ();
-
-  if (marquee.mqfont != NULL && *marquee.mqfont != '\0') {
-    free (marquee.mqfont);
+  while (progstartShutdownProcess (marquee.progstart, &marquee) != STATE_CLOSED) {
+    ;
   }
-  if (marquee.marqueeLabs != NULL) {
-    free (marquee.marqueeLabs);
-  }
+  progstartFree (marquee.progstart);
+
   return status;
 }
 
 /* internal routines */
+
+static bool
+marqueeStoppingCallback (void *udata, programstate_t programState)
+{
+  marquee_t   *marquee = udata;
+
+  connDisconnectAll (marquee->conn);
+  return true;
+}
+
+static bool
+marqueeClosingCallback (void *udata, programstate_t programState)
+{
+  marquee_t   *marquee = udata;
+
+  connFree (marquee->conn);
+
+  sockhCloseServer (marquee->sockserver);
+  bdjoptFree ();
+  bdjvarsCleanup ();
+
+  lockRelease (MARQUEE_LOCK_FN, PATHBLD_MP_USEIDX);
+  logMsg (LOG_SESS, LOG_IMPORTANT, "time-to-end: %ld ms", mstimeend (&marquee->tm));
+  logEnd ();
+
+  if (marquee->mqfont != NULL && *marquee->mqfont != '\0') {
+    free (marquee->mqfont);
+  }
+  if (marquee->marqueeLabs != NULL) {
+    free (marquee->marqueeLabs);
+  }
+
+  return true;
+}
 
 static int
 marqueeCreateGui (marquee_t *marquee, int argc, char *argv [])
@@ -348,33 +380,8 @@ marqueeMainLoop (void *tmarquee)
     cont = FALSE;
   }
 
-  if (marquee->programState == STATE_INITIALIZING) {
-    marquee->programState = STATE_CONNECTING;
-  }
-
-  if (marquee->programState == STATE_CONNECTING &&
-      marquee->mainSock == INVALID_SOCKET) {
-    int       err;
-    uint16_t  mainPort;
-
-    mainPort = bdjvarsl [BDJVL_MAIN_PORT];
-    marquee->mainSock = sockConnect (mainPort, &err, 1000);
-    if (marquee->mainSock != INVALID_SOCKET) {
-      sockhSendMessage (marquee->mainSock, ROUTE_MOBILEMQ, ROUTE_MAIN,
-          MSG_HANDSHAKE, NULL);
-      marquee->programState = STATE_WAIT_HANDSHAKE;
-    }
-  }
-
-  if (marquee->programState == STATE_WAIT_HANDSHAKE) {
-    if (marquee->mainHandshake) {
-      marquee->programState = STATE_RUNNING;
-      logMsg (LOG_SESS, LOG_IMPORTANT, "running: time-to-start: %ld ms", mstimeend (&marquee->tm));
-    }
-  }
-
-  if (marquee->programState != STATE_RUNNING) {
-      /* all of the processing that follows requires a running state */
+  if (! progstartIsRunning (marquee->progstart)) {
+    progstartProcess (marquee->progstart, marquee);
     if (gKillReceived) {
       logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
       cont = FALSE;
@@ -409,6 +416,39 @@ marqueeMainLoop (void *tmarquee)
   return cont;
 }
 
+static bool
+marqueeConnectingCallback (void *udata, programstate_t programState)
+{
+  marquee_t   *marquee = udata;
+  bool        rc = false;
+
+  if (! connIsConnected (marquee->conn, ROUTE_MAIN)) {
+    connConnect (marquee->conn, ROUTE_MAIN);
+  }
+
+  if (connIsConnected (marquee->conn, ROUTE_MAIN)) {
+    connSendMessage (marquee->conn, ROUTE_MAIN, MSG_HANDSHAKE, NULL);
+    rc = true;
+  }
+
+  return rc;
+}
+
+static bool
+marqueeHandshakeCallback (void *udata, programstate_t programState)
+{
+  marquee_t   *marquee = udata;
+  bool        rc = false;
+
+
+  if (connHaveHandshake (marquee->conn, ROUTE_MAIN)) {
+    logMsg (LOG_SESS, LOG_IMPORTANT, "running: time-to-start: %ld ms", mstimeend (&marquee->tm));
+    rc = true;
+  }
+
+  return rc;
+}
+
 static int
 marqueeProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     bdjmsgmsg_t msg, char *args, void *udata)
@@ -425,7 +465,7 @@ marqueeProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     case ROUTE_MARQUEE: {
       switch (msg) {
         case MSG_HANDSHAKE: {
-          marquee->mainHandshake = true;
+          connProcessHandshake (marquee->conn, routefrom);
           break;
         }
         case MSG_EXIT_REQUEST: {
@@ -433,6 +473,7 @@ marqueeProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           logMsg (LOG_SESS, LOG_IMPORTANT, "got exit request");
           gKillReceived = 0;
           logMsg (LOG_DBG, LOG_MSGS, "got: req-exit");
+          progstartShutdownProcess (marquee->progstart, marquee);
           logProcEnd (LOG_PROC, "marqueeProcessMsg", "req-exit");
           return 1;
         }

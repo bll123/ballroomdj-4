@@ -13,7 +13,7 @@ typedef enum {
   BDJVL_CONFIGGUI_PORT,
   BDJVL_MANAGEGUI_PORT,
   BDJVL_MOBILEMQ_PORT,
-  BDJVL_REMCONTROL_PORT,
+  BDJVL_REMCTRL_PORT,
   BDJVL_MARQUEE_PORT,
   BDJVL_NUM_PORTS,
   BDJVL_MAX,
@@ -23,6 +23,7 @@ extern char *     bdjvars [BDJV_MAX];
 extern ssize_t    bdjvarsl [BDJVL_MAX];
 
 void    bdjvarsInit (void);
+bool    bdjvarsIsInitialized (void);
 void    bdjvarsCleanup (void);
 
 #endif /* INC_BDJVARS_H */
