@@ -29,6 +29,7 @@
 #include "tmutil.h"
 
 typedef struct {
+  GtkApplication  *app;
   progstart_t     *progstart;
   conn_t          *conn;
   sockserver_t    *sockserver;
@@ -52,13 +53,16 @@ typedef struct {
   int             priorSize;
   bool            isMaximized : 1;
   bool            unMaximize : 1;
-  bool            isHidden : 1;
+  bool            isIconified : 1;
   bool            inResize : 1;
-  bool            doubleClickMax : 1;
+  bool            userDoubleClicked : 1;
+  bool            mqIconifyAction : 1;
   bool            inMax : 1;
   bool            setPrior : 1;
   bool            mqShowInfo : 1;
 } marquee_t;
+
+#define MARQUEE_EXIT_WAIT_COUNT   20
 
 static bool     marqueeConnectingCallback (void *udata, programstate_t programState);
 static bool     marqueeHandshakeCallback (void *udata, programstate_t programState);
@@ -87,6 +91,7 @@ static void marqueeSetTimer (marquee_t *marquee, char *args);
 static void marqueeUnmaxCallback (GtkWidget *w, GtkAllocation *retAllocSize, gpointer userdata);
 
 static int gKillReceived = 0;
+static int gdone = 0;
 
 int
 main (int argc, char *argv[])
@@ -125,9 +130,10 @@ main (int argc, char *argv[])
   marquee.priorSize = 0;
   marquee.isMaximized = false;
   marquee.unMaximize = false;
-  marquee.isHidden = false;
+  marquee.isIconified = false;
   marquee.inResize = false;
-  marquee.doubleClickMax = false;
+  marquee.userDoubleClicked = false;
+  marquee.mqIconifyAction = false;
   marquee.inMax = false;
   marquee.setPrior = false;
   marquee.mqfont = "";
@@ -248,16 +254,15 @@ static int
 marqueeCreateGui (marquee_t *marquee, int argc, char *argv [])
 {
   int             status;
-  GtkApplication  *app;
 
-  app = gtk_application_new (
+  marquee->app = gtk_application_new (
       "org.ballroomdj.BallroomDJ",
       G_APPLICATION_FLAGS_NONE
   );
-  g_signal_connect (app, "activate", G_CALLBACK (marqueeActivate), marquee);
+  g_signal_connect (marquee->app, "activate", G_CALLBACK (marqueeActivate), marquee);
 
-  status = g_application_run (G_APPLICATION (app), argc, argv);
-  g_object_unref (app);
+  status = g_application_run (G_APPLICATION (marquee->app), argc, argv);
+  g_object_unref (marquee->app);
   return status;
 }
 
@@ -376,7 +381,11 @@ marqueeMainLoop (void *tmarquee)
   gboolean    cont = TRUE;
 
   tdone = sockhProcessMain (marquee->sockserver, marqueeProcessMsg, marquee);
-  if (tdone) {
+  if (tdone || gdone) {
+    ++gdone;
+  }
+  if (gdone > MARQUEE_EXIT_WAIT_COUNT) {
+    g_application_quit (G_APPLICATION (marquee->app));
     cont = FALSE;
   }
 
@@ -478,9 +487,10 @@ marqueeProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           return 1;
         }
         case MSG_MARQUEE_SHOW: {
-          if (marquee->isHidden) {
+          if (marquee->isIconified) {
             gtk_widget_show (GTK_WIDGET (marquee->window));
-            marquee->isHidden = false;
+            marquee->mqIconifyAction = true;
+            marquee->isIconified = false;
           }
           break;
         }
@@ -517,9 +527,14 @@ marqueeCloseWin (GtkWidget *window, GdkEvent *event, gpointer userdata)
 {
   marquee_t   *marquee = userdata;
 
-  gtk_widget_hide (GTK_WIDGET (window));
-  marquee->isHidden = true;
-  return TRUE;
+  if (! gdone) {
+    gtk_window_iconify (GTK_WINDOW (window));
+    marquee->mqIconifyAction = true;
+    marquee->isIconified = true;
+    return TRUE;
+  }
+
+  return FALSE;
 }
 
 static gboolean
@@ -531,7 +546,7 @@ marqueeToggleFullscreen (GtkWidget *window, GdkEventButton *event, gpointer user
     return FALSE;
   }
 
-  marquee->doubleClickMax = true;
+  marquee->userDoubleClicked = true;
   if (marquee->isMaximized) {
     marquee->inMax = true;
     marquee->isMaximized = false;
@@ -590,11 +605,23 @@ marqueeWinState (GtkWidget *window, GdkEventWindowState *event, gpointer userdat
   marquee_t         *marquee = userdata;
 
 
+  if (event->changed_mask == GDK_WINDOW_STATE_ICONIFIED) {
+    if (marquee->mqIconifyAction) {
+      marquee->mqIconifyAction = false;
+      return FALSE;
+    }
+
+    if ((event->new_window_state & GDK_WINDOW_STATE_ICONIFIED) !=
+        GDK_WINDOW_STATE_ICONIFIED) {
+      marquee->isIconified = false;
+      return FALSE;
+    }
+  }
   if (event->changed_mask == GDK_WINDOW_STATE_MAXIMIZED) {
     /* if the user double-clicked, this is a know maximize change and */
     /* no processing needs to be done here */
-    if (marquee->doubleClickMax) {
-      marquee->doubleClickMax = false;
+    if (marquee->userDoubleClicked) {
+      marquee->userDoubleClicked = false;
       return FALSE;
     }
 
@@ -842,5 +869,3 @@ marqueeUnmaxCallback (GtkWidget *w, GtkAllocation *retAllocSize, gpointer userda
   marquee->unmaxSignal = 0;
   gtk_window_unmaximize (GTK_WINDOW (marquee->window));
 }
-
-

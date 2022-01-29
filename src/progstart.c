@@ -98,3 +98,9 @@ progstartIsRunning (progstart_t *progstart)
 {
   return (progstart->programState == STATE_RUNNING);
 }
+
+inline programstate_t
+progstartCurrState (progstart_t *progstart)
+{
+  return progstart->programState;
+}

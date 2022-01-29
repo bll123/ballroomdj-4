@@ -28,5 +28,6 @@ void            progstartSetCallback (progstart_t *progstart,
 programstate_t  progstartProcess (progstart_t *progstart, void *userdata);
 bool            progstartIsRunning (progstart_t *progstart);
 programstate_t  progstartShutdownProcess (progstart_t *progstart, void *userdata);
+programstate_t  progstartCurrState (progstart_t *progstart);
 
 #endif /* INC_PROGSTART_H */
