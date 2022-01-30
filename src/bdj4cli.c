@@ -255,7 +255,7 @@ main (int argc, char *argv[])
         msgok = 1;
       }
       if (strcmp (buff, "playlist-q") == 0) {
-        msg = MSG_PLAYLIST_QUEUE;
+        msg = MSG_QUEUE_PLAYLIST;
         msgok = 1;
         argcount = 1;
       }

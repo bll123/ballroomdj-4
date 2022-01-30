@@ -260,11 +260,6 @@ fprintf (stderr, "main: got handshake from %d\n", routefrom);
           connConnectResponse (mainData->conn, routefrom);
           break;
         }
-        case MSG_CONNECT_REQ: {
-fprintf (stderr, "main: got connect req from %d\n", routefrom);
-          connConnect (mainData->conn, routefrom);
-          break;
-        }
         case MSG_REMOVE_HANDSHAKE: {
 fprintf (stderr, "main: got remove handshake %d\n", routefrom);
           connClearHandshake (mainData->conn, routefrom);
@@ -293,17 +288,17 @@ fprintf (stderr, "main: got remove handshake %d\n", routefrom);
           mainMusicQueuePlay (mainData);
           break;
         }
-        case MSG_PLAYLIST_QUEUE: {
+        case MSG_QUEUE_PLAYLIST: {
           logMsg (LOG_DBG, LOG_MSGS, "got: playlist-queue %s", args);
           mainQueuePlaylist (mainData, args);
           mainMusicQueuePlay (mainData);
           break;
         }
-        case MSG_DANCE_QUEUE: {
+        case MSG_QUEUE_DANCE: {
           mainQueueDance (mainData, atol (args), 1);
           break;
         }
-        case MSG_DANCE_QUEUE5: {
+        case MSG_QUEUE_DANCE_5: {
           mainQueueDance (mainData, atol (args), 5);
           break;
         }

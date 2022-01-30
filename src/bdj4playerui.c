@@ -30,9 +30,20 @@
 #include "tmutil.h"
 #include "uiutils.h"
 
+enum {
+  DANCE_COL_IDX,
+  DANCE_COL_NAME,
+};
+
+enum {
+  PLAYLIST_COL_FNAME,
+  PLAYLIST_COL_NAME,
+};
+
 typedef struct {
   GtkApplication  *app;
   progstart_t     *progstart;
+  playerstate_t   playerState;
   conn_t          *conn;
   int             haveData;
   sockserver_t    *sockserver;
@@ -50,7 +61,7 @@ typedef struct {
   GtkWidget       *ppButton;
   GtkWidget       *repeatButton;
   bool            repeatLock;
-  GtkWidget       *beginButton;
+  GtkWidget       *songBeginButton;
   GtkWidget       *nextsongButton;
   GtkWidget       *pauseatendButton;
   bool            pauseatendLock;
@@ -62,12 +73,18 @@ typedef struct {
   /* position controls / display */
   GtkWidget       *speedScale;
   GtkWidget       *speedDisplayLab;
+  bool            speedLock;
+  mstime_t        speedLockTimeout;
+  mstime_t        speedLockSend;
   GtkWidget       *seekScale;
   double          lastdur;
   GtkWidget       *countdownTimerLab;
   GtkWidget       *durationLab;
   /* volume controls / display */
   GtkWidget       *volumeScale;
+  bool            volumeLock;
+  mstime_t        volumeLockTimeout;
+  mstime_t        volumeLockSend;
   GtkWidget       *volumeDisplayLab;
   /* notebook */
   GtkWidget       *notebook;
@@ -76,19 +93,28 @@ typedef struct {
   GtkWidget       *movedownButton;
   GtkWidget       *togglepauseButton;
   GtkWidget       *removeButton;
+  GtkWidget       *clearQueueButton;
+  GtkWidget       *danceSelectLab;
+  GtkWidget       *danceSelect;
+  GtkWidget       *queueDanceButton;
+  GtkWidget       *playlistSelectLab;
+  GtkWidget       *playlistSelect;
+  GtkWidget       *queuePlaylistButton;
   GtkWidget       *reqexternalButton;
   /* song selection tab */
   GtkWidget       *queueButton;
-  GtkWidget       *danceSelectLab;
-  GtkWidget       *danceSelect;
-  GtkWidget       *playlistSelectLab;
-  GtkWidget       *playlistSelect;
   /* tree views */
   GtkWidget       *musicqTree;
   GtkWidget       *songselTree;
 } playerui_t;
 
-#define PLUI_EXIT_WAIT_COUNT   20
+#define PLUI_EXIT_WAIT_COUNT      20
+
+/* there are all sorts of latency issues making the sliders work nicely */
+/* it will take at least 100ms and at most 200ms for the message to get */
+/* back.  Then there are the latency issues on this end. */
+#define PLUI_LOCK_TIME_WAIT   300
+#define PLUI_LOCK_TIME_SEND   30
 
 static bool     pluiConnectingCallback (void *udata, programstate_t programState);
 static bool     pluiHandshakeCallback (void *udata, programstate_t programState);
@@ -102,15 +128,21 @@ static int      pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
                     bdjmsgmsg_t msg, char *args, void *udata);
 static gboolean pluiCloseWin (GtkWidget *window, GdkEvent *event, gpointer userdata);
 static void     pluiProcessPauseatend (playerui_t *plui, int on);
+static void     pluiProcessPlayerState (playerui_t *plui, int playerState);
 static void     pluiProcessStatusData (playerui_t *plui, char *args);
 static void     pluiProcessDanceList (playerui_t *pluiData, char *danceList);
 static void     pluiProcessPlaylistList (playerui_t *pluiData, char *playlistList);
 static void     pluiFadeProcess (GtkButton *b, gpointer udata);
 static void     pluiPlayPauseProcess (GtkButton *b, gpointer udata);
 static void     pluiRepeatProcess (GtkButton *b, gpointer udata);
-static void     pluiBeginProcess (GtkButton *b, gpointer udata);
+static void     pluiSongBeginProcess (GtkButton *b, gpointer udata);
 static void     pluiNextSongProcess (GtkButton *b, gpointer udata);
 static void     pluiPauseatendProcess (GtkButton *b, gpointer udata);
+static gboolean pluiSpeedProcess (GtkRange *range, GtkScrollType *scroll, gdouble value, gpointer udata);
+static gboolean pluiVolumeProcess (GtkRange *range, GtkScrollType *scroll, gdouble value, gpointer udata);
+static void     pluiClearQueueProcess (GtkButton *b, gpointer udata);
+static void     pluiQueueDanceProcess (GtkTreeView *tv, GtkTreePath *path, GtkTreeViewColumn *column, gpointer udata);
+static void     pluiQueuePlaylistProcess (GtkTreeView *tv, GtkTreePath *path, GtkTreeViewColumn *column, gpointer udata);
 static void     pluiSigHandler (int sig);
 
 static int gKillReceived = 0;
@@ -152,7 +184,7 @@ main (int argc, char *argv[])
   plui.ppButton = NULL;
   plui.repeatButton = NULL;
   plui.repeatLock = false;
-  plui.beginButton = NULL;
+  plui.songBeginButton = NULL;
   plui.nextsongButton = NULL;
   plui.pauseatendButton = NULL;
   plui.pauseatendLock = false;
@@ -164,22 +196,31 @@ main (int argc, char *argv[])
   plui.seekScale = NULL;
   plui.lastdur = 180000.0;
   plui.speedScale = NULL;
+  plui.speedLock = false;
+  mstimeset (&plui.speedLockTimeout, 3600000);
+  mstimeset (&plui.speedLockSend, 3600000);
   plui.speedDisplayLab = NULL;
   plui.countdownTimerLab = NULL;
   plui.durationLab = NULL;
   plui.volumeScale = NULL;
+  plui.volumeLock = false;
+  mstimeset (&plui.volumeLockTimeout, 3600000);
+  mstimeset (&plui.volumeLockSend, 3600000);
   plui.volumeDisplayLab = NULL;
   plui.notebook = NULL;
   plui.moveupButton = NULL;
   plui.movedownButton = NULL;
   plui.togglepauseButton = NULL;
   plui.removeButton = NULL;
+  plui.clearQueueButton = NULL;
   plui.reqexternalButton = NULL;
   plui.queueButton = NULL;
   plui.danceSelectLab = NULL;
   plui.danceSelect = NULL;
+  plui.queueDanceButton = NULL;
   plui.playlistSelectLab = NULL;
   plui.playlistSelect = NULL;
+  plui.queuePlaylistButton = NULL;
   plui.musicqTree = NULL;
   plui.songselTree = NULL;
 
@@ -384,15 +425,15 @@ pluiActivate (GApplication *app, gpointer userdata)
   gtk_button_set_image (GTK_BUTTON (plui->repeatButton), image);
   g_signal_connect (plui->repeatButton, "toggled", G_CALLBACK (pluiRepeatProcess), plui);
 
-  plui->beginButton = GTK_WIDGET (gtk_builder_get_object (
+  plui->songBeginButton = GTK_WIDGET (gtk_builder_get_object (
       plui->gtkplayerui, "beginbutton"));
-  assert (plui->beginButton != NULL);
-  gtk_button_set_label (GTK_BUTTON (plui->beginButton), "");
+  assert (plui->songBeginButton != NULL);
+  gtk_button_set_label (GTK_BUTTON (plui->songBeginButton), "");
   pathbldMakePath (tbuff, sizeof (tbuff), "", "button_begin", ".svg",
       PATHBLD_MP_IMGDIR);
   image = gtk_image_new_from_file (tbuff);
-  gtk_button_set_image (GTK_BUTTON (plui->beginButton), image);
-  g_signal_connect (plui->beginButton, "clicked", G_CALLBACK (pluiBeginProcess), plui);
+  gtk_button_set_image (GTK_BUTTON (plui->songBeginButton), image);
+  g_signal_connect (plui->songBeginButton, "clicked", G_CALLBACK (pluiSongBeginProcess), plui);
 
   plui->nextsongButton = GTK_WIDGET (gtk_builder_get_object (
       plui->gtkplayerui, "nextsongbutton"));
@@ -430,6 +471,7 @@ pluiActivate (GApplication *app, gpointer userdata)
   plui->speedDisplayLab = GTK_WIDGET (gtk_builder_get_object (
       plui->gtkplayerui, "speeddisplaylabel"));
   assert (plui->speedDisplayLab != NULL);
+  g_signal_connect (plui->speedScale, "change-value", G_CALLBACK (pluiSpeedProcess), plui);
 
   plui->seekScale = GTK_WIDGET (gtk_builder_get_object (
       plui->gtkplayerui, "seekscale"));
@@ -458,6 +500,7 @@ pluiActivate (GApplication *app, gpointer userdata)
   plui->volumeDisplayLab = GTK_WIDGET (gtk_builder_get_object (
       plui->gtkplayerui, "volumedisplaylabel"));
   assert (plui->volumeDisplayLab != NULL);
+  g_signal_connect (plui->volumeScale, "change-value", G_CALLBACK (pluiVolumeProcess), plui);
 
   /* notebook */
   plui->notebook = GTK_WIDGET (gtk_builder_get_object (
@@ -501,20 +544,35 @@ pluiActivate (GApplication *app, gpointer userdata)
   image = gtk_image_new_from_file (tbuff);
   gtk_button_set_image (GTK_BUTTON (plui->removeButton), image);
 
+  plui->clearQueueButton = GTK_WIDGET (gtk_builder_get_object (
+      plui->gtkplayerui, "clearqueuebutton"));
+  assert (plui->clearQueueButton != NULL);
+  g_signal_connect (plui->clearQueueButton, "clicked", G_CALLBACK (pluiClearQueueProcess), plui);
+
   plui->reqexternalButton = GTK_WIDGET (gtk_builder_get_object (
       plui->gtkplayerui, "requestexternalbutton"));
   assert (plui->reqexternalButton != NULL);
+
+  plui->danceSelect = GTK_WIDGET (gtk_builder_get_object (
+      plui->gtkplayerui, "danceselect"));
+  assert (plui->danceSelect != NULL);
+  plui->queueDanceButton = GTK_WIDGET (gtk_builder_get_object (
+      plui->gtkplayerui, "queuedancebutton"));
+  assert (plui->queueDanceButton != NULL);
+  g_signal_connect (plui->danceSelect, "row-activated", G_CALLBACK (pluiQueueDanceProcess), plui);
+
+  plui->playlistSelect = GTK_WIDGET (gtk_builder_get_object (
+      plui->gtkplayerui, "playlistselect"));
+  assert (plui->playlistSelect != NULL);
+  plui->queuePlaylistButton = GTK_WIDGET (gtk_builder_get_object (
+      plui->gtkplayerui, "queueplaylistbutton"));
+  assert (plui->queuePlaylistButton != NULL);
+  g_signal_connect (plui->playlistSelect, "row-activated", G_CALLBACK (pluiQueuePlaylistProcess), plui);
 
   /* song selection tab */
   plui->queueButton = GTK_WIDGET (gtk_builder_get_object (
       plui->gtkplayerui, "queuebutton"));
   assert (plui->queueButton != NULL);
-  plui->danceSelect = GTK_WIDGET (gtk_builder_get_object (
-      plui->gtkplayerui, "danceselect"));
-  assert (plui->danceSelect != NULL);
-  plui->playlistSelect = GTK_WIDGET (gtk_builder_get_object (
-      plui->gtkplayerui, "playlistselect"));
-  assert (plui->playlistSelect != NULL);
 
   /* tree views */
   plui->musicqTree = GTK_WIDGET (gtk_builder_get_object (
@@ -552,6 +610,44 @@ pluiMainLoop (void *tplui)
       progstartShutdownProcess (plui->progstart, plui);
     }
     return cont;
+  }
+
+  if (mstimeCheck (&plui->volumeLockTimeout)) {
+    mstimeset (&plui->volumeLockTimeout, 3600000);
+    plui->volumeLock = false;
+  }
+
+  if (mstimeCheck (&plui->volumeLockSend)) {
+    double        value;
+    char          tbuff [40];
+
+    value = gtk_range_get_value (GTK_RANGE (plui->volumeScale));
+    snprintf (tbuff, sizeof (tbuff), "%.0f", value);
+    connSendMessage (plui->conn, ROUTE_PLAYER, MSG_PLAYER_VOLUME, tbuff);
+    if (plui->volumeLock) {
+      mstimeset (&plui->volumeLockSend, PLUI_LOCK_TIME_SEND);
+    } else {
+      mstimeset (&plui->volumeLockSend, 3600000);
+    }
+  }
+
+  if (mstimeCheck (&plui->speedLockTimeout)) {
+    mstimeset (&plui->speedLockTimeout, 3600000);
+    plui->speedLock = false;
+  }
+
+  if (mstimeCheck (&plui->speedLockSend)) {
+    double        value;
+    char          tbuff [40];
+
+    value = gtk_range_get_value (GTK_RANGE (plui->speedScale));
+    snprintf (tbuff, sizeof (tbuff), "%.0f", value);
+    connSendMessage (plui->conn, ROUTE_PLAYER, MSG_PLAY_SPEED, tbuff);
+    if (plui->speedLock) {
+      mstimeset (&plui->speedLockSend, PLUI_LOCK_TIME_SEND);
+    } else {
+      mstimeset (&plui->speedLockSend, 3600000);
+    }
   }
 
   if (gKillReceived) {
@@ -655,6 +751,10 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           pluiProcessPlaylistList (plui, args);
           break;
         }
+        case MSG_PLAYER_STATE: {
+          pluiProcessPlayerState (plui, atol (args));
+          break;
+        }
         case MSG_PLAY_PAUSEATEND_STATE: {
           pluiProcessPauseatend (plui, atol (args));
           break;
@@ -725,12 +825,28 @@ pluiProcessPlayerState (playerui_t *plui, int playerState)
     return;
   }
 
+  plui->playerState = playerState;
+
+  if (playerState == PL_STATE_IN_FADEOUT) {
+    gtk_widget_set_sensitive (GTK_WIDGET (plui->volumeScale), FALSE);
+    gtk_widget_set_sensitive (GTK_WIDGET (plui->seekScale), FALSE);
+    gtk_widget_set_sensitive (GTK_WIDGET (plui->speedScale), FALSE);
+  } else {
+    gtk_widget_set_sensitive (GTK_WIDGET (plui->volumeScale), TRUE);
+    gtk_widget_set_sensitive (GTK_WIDGET (plui->seekScale), TRUE);
+    gtk_widget_set_sensitive (GTK_WIDGET (plui->speedScale), TRUE);
+  }
+
   switch (playerState) {
+    case PL_STATE_UNKNOWN:
     case PL_STATE_STOPPED: {
       gtk_image_clear (GTK_IMAGE (plui->statusImg));
       gtk_image_set_from_pixbuf (GTK_IMAGE (plui->statusImg), plui->stopImg);
       break;
     }
+    case PL_STATE_LOADING:
+    case PL_STATE_IN_FADEOUT:
+    case PL_STATE_IN_GAP:
     case PL_STATE_PLAYING: {
       gtk_image_clear (GTK_IMAGE (plui->statusImg));
       gtk_image_set_from_pixbuf (GTK_IMAGE (plui->statusImg), plui->playImg);
@@ -754,7 +870,6 @@ pluiProcessStatusData (playerui_t *plui, char *args)
 {
   char          *p;
   char          *tokstr;
-  int           ps;
   char          tbuff [100];
   double        dval;
   double        ddur;
@@ -762,10 +877,7 @@ pluiProcessStatusData (playerui_t *plui, char *args)
 
   /* player state */
   p = strtok_r (args, MSG_ARGS_RS_STR, &tokstr);
-  if (strcmp (p, "play") == 0) { ps = PL_STATE_PLAYING; }
-  if (strcmp (p, "stop") == 0) { ps = PL_STATE_STOPPED; }
-  if (strcmp (p, "pause") == 0) { ps = PL_STATE_PAUSED; }
-  pluiProcessPlayerState (plui, ps);
+  /* this is handled by the MSG_PLAYER_STATE message */
 
   /* repeat */
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
@@ -790,17 +902,21 @@ pluiProcessStatusData (playerui_t *plui, char *args)
 
   /* vol */
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
-  snprintf (tbuff, sizeof (tbuff), "%3s", p);
-  gtk_label_set_label (GTK_LABEL (plui->volumeDisplayLab), p);
-  dval = atof (p);
-  gtk_range_set_value (GTK_RANGE (plui->volumeScale), dval);
+  if (! plui->volumeLock) {
+    snprintf (tbuff, sizeof (tbuff), "%3s", p);
+    gtk_label_set_label (GTK_LABEL (plui->volumeDisplayLab), p);
+    dval = atof (p);
+    gtk_range_set_value (GTK_RANGE (plui->volumeScale), dval);
+  }
 
   /* speed */
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
-  snprintf (tbuff, sizeof (tbuff), "%3s", p);
-  gtk_label_set_label (GTK_LABEL (plui->speedDisplayLab), p);
-  dval = atof (p);
-  gtk_range_set_value (GTK_RANGE (plui->speedScale), dval);
+  if (! plui->speedLock) {
+    snprintf (tbuff, sizeof (tbuff), "%3s", p);
+    gtk_label_set_label (GTK_LABEL (plui->speedDisplayLab), p);
+    dval = atof (p);
+    gtk_range_set_value (GTK_RANGE (plui->speedScale), dval);
+  }
 
   /* playedtime */
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
@@ -862,14 +978,16 @@ pluiProcessDanceList (playerui_t *plui, char *danceList)
   while (didx != NULL) {
     gtk_list_store_append (store, &iter);
     snprintf (tbuff, sizeof (tbuff), "%s    ", dstr);
-    gtk_list_store_set (store, &iter, 0, didx, 1, tbuff, -1);
+    gtk_list_store_set (store, &iter,
+        DANCE_COL_IDX, atol (didx),
+        DANCE_COL_NAME, tbuff, -1);
     didx = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
     dstr = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   }
 
   renderer = gtk_cell_renderer_text_new ();
   column = gtk_tree_view_column_new_with_attributes ("",
-    renderer, "text", 1, NULL);
+    renderer, "text", DANCE_COL_NAME, NULL);
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_FIXED);
 //  gtk_tree_view_column_set_expand (column, TRUE);
   gtk_tree_view_append_column (GTK_TREE_VIEW (plui->danceSelect), column);
@@ -899,14 +1017,16 @@ pluiProcessPlaylistList (playerui_t *plui, char *playlistList)
   while (fnm != NULL) {
     gtk_list_store_append (store, &iter);
     snprintf (tbuff, sizeof (tbuff), "%s    ", plnm);
-    gtk_list_store_set (store, &iter, 0, fnm, 1, tbuff, -1);
+    gtk_list_store_set (store, &iter,
+        PLAYLIST_COL_FNAME, fnm,
+        PLAYLIST_COL_NAME, tbuff, -1);
     fnm = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
     plnm = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   }
 
   renderer = gtk_cell_renderer_text_new ();
   column = gtk_tree_view_column_new_with_attributes ("",
-    renderer, "text", 1, NULL);
+    renderer, "text", PLAYLIST_COL_NAME, NULL);
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_FIXED);
 //  gtk_tree_view_column_set_expand (column, TRUE);
   gtk_tree_view_append_column (GTK_TREE_VIEW (plui->playlistSelect), column);
@@ -929,7 +1049,7 @@ pluiPlayPauseProcess (GtkButton *b, gpointer udata)
 {
   playerui_t      *plui = udata;
 
-  connSendMessage (plui->conn, ROUTE_PLAYER, MSG_PLAY_PLAYPAUSE, NULL);
+  connSendMessage (plui->conn, ROUTE_MAIN, MSG_PLAY_PLAYPAUSE, NULL);
 }
 
 static void
@@ -945,11 +1065,11 @@ pluiRepeatProcess (GtkButton *b, gpointer udata)
 }
 
 static void
-pluiBeginProcess (GtkButton *b, gpointer udata)
+pluiSongBeginProcess (GtkButton *b, gpointer udata)
 {
   playerui_t      *plui = udata;
 
-  connSendMessage (plui->conn, ROUTE_PLAYER, MSG_PLAY_BEGIN, NULL);
+  connSendMessage (plui->conn, ROUTE_PLAYER, MSG_PLAY_SONG_BEGIN, NULL);
 }
 
 static void
@@ -970,6 +1090,83 @@ pluiPauseatendProcess (GtkButton *b, gpointer udata)
   }
   connSendMessage (plui->conn, ROUTE_PLAYER, MSG_PLAY_PAUSEATEND, NULL);
 }
+
+static gboolean
+pluiSpeedProcess (GtkRange *range, GtkScrollType *scroll, gdouble value, gpointer udata)
+{
+  playerui_t    *plui = udata;
+  char          tbuff [40];
+
+  if (! plui->speedLock) {
+    mstimeset (&plui->speedLockSend, PLUI_LOCK_TIME_SEND);
+  }
+  plui->speedLock = true;
+  mstimeset (&plui->speedLockTimeout, PLUI_LOCK_TIME_WAIT);
+  snprintf (tbuff, sizeof (tbuff), "%3.0f", value);
+  gtk_label_set_label (GTK_LABEL (plui->speedDisplayLab), tbuff);
+  return FALSE;
+}
+
+static gboolean
+pluiVolumeProcess (GtkRange *range, GtkScrollType *scroll, gdouble value, gpointer udata)
+{
+  playerui_t    *plui = udata;
+  char          tbuff [40];
+
+  if (! plui->volumeLock) {
+    mstimeset (&plui->volumeLockSend, PLUI_LOCK_TIME_SEND);
+  }
+  plui->volumeLock = true;
+  mstimeset (&plui->volumeLockTimeout, PLUI_LOCK_TIME_WAIT);
+  snprintf (tbuff, sizeof (tbuff), "%3.0f", value);
+  gtk_label_set_label (GTK_LABEL (plui->volumeDisplayLab), tbuff);
+  return FALSE;
+}
+
+static void
+pluiClearQueueProcess (GtkButton *b, gpointer udata)
+{
+  playerui_t      *plui = udata;
+
+  connSendMessage (plui->conn, ROUTE_MAIN, MSG_QUEUE_CLEAR, NULL);
+}
+
+static void
+pluiQueueDanceProcess (GtkTreeView *tv, GtkTreePath *path,
+    GtkTreeViewColumn *column, gpointer udata)
+{
+  playerui_t    *plui = udata;
+  GtkTreeIter   iter;
+  GtkTreeModel  *model = gtk_tree_view_get_model (GTK_TREE_VIEW (plui->danceSelect));
+  unsigned long idx;
+  char          tbuff [20];
+
+  if (gtk_tree_model_get_iter (model, &iter, path)) {
+    gtk_tree_model_get (model, &iter, DANCE_COL_IDX, &idx, -1);
+    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (plui->queueDanceButton), FALSE);
+    snprintf (tbuff, sizeof (tbuff), "%lu", idx);
+    connSendMessage (plui->conn, ROUTE_MAIN, MSG_QUEUE_DANCE, tbuff);
+  }
+}
+
+static void
+pluiQueuePlaylistProcess (GtkTreeView *tv, GtkTreePath *path,
+    GtkTreeViewColumn *column, gpointer udata)
+{
+  playerui_t    *plui = udata;
+  GtkTreeIter   iter;
+  GtkTreeModel  *model = gtk_tree_view_get_model (GTK_TREE_VIEW (plui->playlistSelect));
+
+  if (gtk_tree_model_get_iter (model, &iter, path)) {
+    char    *plfname;
+
+    gtk_tree_model_get (model, &iter, PLAYLIST_COL_FNAME, &plfname, -1);
+    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (plui->queuePlaylistButton), FALSE);
+    connSendMessage (plui->conn, ROUTE_MAIN, MSG_QUEUE_PLAYLIST, plfname);
+    free (plfname);
+  }
+}
+
 
 static void
 pluiSigHandler (int sig)

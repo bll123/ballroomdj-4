@@ -113,10 +113,10 @@ connReconnect (conn_t *conn, bdjmsgroute_t route)
     return;
   }
 
+/* untested */
+
   connDisconnect (conn, route);
   connConnect (conn, route);
-  sockhSendMessage (conn [route].sock, conn [route].routefrom, route,
-      MSG_CONNECT_REQ, NULL);
 }
 
 void

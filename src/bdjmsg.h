@@ -19,7 +19,6 @@ typedef enum {
   MSG_NULL,
   MSG_HANDSHAKE,
   MSG_REMOVE_HANDSHAKE,
-  MSG_CONNECT_REQ,          // request a re-connect
   MSG_SOCKET_CLOSE,
   MSG_EXIT_REQUEST,         // standard shutdown
     /* to main */
@@ -32,23 +31,23 @@ typedef enum {
   MSG_MUSICQ_TRUNCATE,      // args: idx
   MSG_MUSICQ_INSERT,        // args: idx, song name
   MSG_PLAYLIST_CLEARPLAY,   // args: playlist name
-  MSG_PLAYLIST_QUEUE,       // args: playlist name
+  MSG_QUEUE_PLAYLIST,       // args: playlist name
   MSG_PLAY_PLAY,            // always to main
                             //    starts playback, passed on to player.
   MSG_PLAY_PLAYPAUSE,       // always to main
   MSG_QUEUE_CLEAR,          //
-  MSG_DANCE_QUEUE,          // args: dance idx
-  MSG_DANCE_QUEUE5,         // args: dance idx
+  MSG_QUEUE_DANCE,          // args: dance idx
+  MSG_QUEUE_DANCE_5,         // args: dance idx
     /* to player */
   MSG_PLAYER_VOL_MUTE,      // to player. toggle.
   MSG_PLAYER_VOLSINK_SET,   // to player: set volume sink
   MSG_PLAYER_VOLUME,        // to player. args: volume as percentage.
   MSG_PLAY_FADE,            // to player.
-  MSG_PLAY_BEGIN,           // to player.
+  MSG_PLAY_SONG_BEGIN,      // to player.
   MSG_PLAY_NEXTSONG,        // to player.
   MSG_PLAY_PAUSEATEND,      // to player: toggle
   MSG_PLAY_PAUSE,           // to player
-  MSG_PLAY_RATE,            // to player. args: rate as percentage.
+  MSG_PLAY_SPEED,           // to player. args: rate as percentage.
   MSG_PLAY_REPEAT,          // to player. toggle
   MSG_PLAY_STOP,            // to player.
   MSG_SONG_PLAY,            // args: song fname

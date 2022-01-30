@@ -56,11 +56,8 @@ foreach {fn} $flist {
     if { $tkey eq "SEQUENCE" && $value eq "None" } {
       set value {}
     }
-    if { $tkey eq "GAP" && $value eq {} } {
-      set value -1
-    }
-    if { $tkey eq "MAXPLAYTIME" && $value eq {} } {
-      set value -1
+    if { $tkey eq "GAP" && $value ne {} } {
+      set value [expr {int ($value * 1000)}]
     }
     if { $tkey eq "SEQUENCE" && $value ne {} } {
       set pltype Sequence

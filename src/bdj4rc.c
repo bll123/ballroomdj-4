@@ -271,19 +271,19 @@ remctrlEventHandler (struct mg_connection *c, int ev,
             ROUTE_MAIN, MSG_PLAYLIST_CLEARPLAY, qstrptr);
       } else if (strcmp (querystr, "playlistqueue") == 0) {
         connSendMessage (remctrlData->conn,
-            ROUTE_MAIN, MSG_PLAYLIST_QUEUE, qstrptr);
+            ROUTE_MAIN, MSG_QUEUE_PLAYLIST, qstrptr);
       } else if (strcmp (querystr, "queue") == 0) {
         connSendMessage (remctrlData->conn,
-            ROUTE_MAIN, MSG_DANCE_QUEUE, qstrptr);
+            ROUTE_MAIN, MSG_QUEUE_DANCE, qstrptr);
       } else if (strcmp (querystr, "queue5") == 0) {
         connSendMessage (remctrlData->conn,
-            ROUTE_MAIN, MSG_DANCE_QUEUE5, qstrptr);
+            ROUTE_MAIN, MSG_QUEUE_DANCE_5, qstrptr);
       } else if (strcmp (querystr, "repeat") == 0) {
         connSendMessage (remctrlData->conn,
             ROUTE_PLAYER, MSG_PLAY_REPEAT, NULL);
       } else if (strcmp (querystr, "speed") == 0) {
         connSendMessage (remctrlData->conn,
-            ROUTE_PLAYER, MSG_PLAY_RATE, qstrptr);
+            ROUTE_PLAYER, MSG_PLAY_SPEED, qstrptr);
       } else if (strcmp (querystr, "volume") == 0) {
         connSendMessage (remctrlData->conn,
             ROUTE_PLAYER, MSG_PLAYER_VOLUME, qstrptr);

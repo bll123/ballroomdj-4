@@ -126,7 +126,7 @@ static void     playerNextSong (playerdata_t *playerData);
 static void     playerPauseAtEnd (playerdata_t *playerData);
 static void     playerSendPauseAtEndState (playerdata_t *playerData);
 static void     playerFade (playerdata_t *playerData);
-static void     playerRate (playerdata_t *playerData, char *trate);
+static void     playerSpeed (playerdata_t *playerData, char *trate);
 static void     playerStop (playerdata_t *playerData);
 static void     playerVolumeSet (playerdata_t *playerData, char *tvol);
 static void     playerVolumeMute (playerdata_t *playerData);
@@ -356,11 +356,6 @@ fprintf (stderr, "player: got handshake from %d\n", routefrom);
           connConnectResponse (playerData->conn, routefrom);
           break;
         }
-        case MSG_CONNECT_REQ: {
-fprintf (stderr, "player: got connect req from %d\n", routefrom);
-          connConnect (playerData->conn, routefrom);
-          break;
-        }
         case MSG_REMOVE_HANDSHAKE: {
 fprintf (stderr, "player: got remove handshake %d\n", routefrom);
           connClearHandshake (playerData->conn, routefrom);
@@ -414,8 +409,8 @@ fprintf (stderr, "player: got remove handshake %d\n", routefrom);
           playerNextSong (playerData);
           break;
         }
-        case MSG_PLAY_RATE: {
-          playerRate (playerData, args);
+        case MSG_PLAY_SPEED: {
+          playerSpeed (playerData, args);
           break;
         }
         case MSG_PLAYER_VOL_MUTE: {
@@ -1045,7 +1040,7 @@ playerFade (playerdata_t *playerData)
 }
 
 static void
-playerRate (playerdata_t *playerData, char *trate)
+playerSpeed (playerdata_t *playerData, char *trate)
 {
   double rate;
 
@@ -1082,6 +1077,8 @@ playerVolumeSet (playerdata_t *playerData, char *tvol)
 
   newvol = (int) atol (tvol);
   volumeSet (playerData->volume, playerData->currentSink, newvol);
+  playerData->realVolume = newvol;
+  playerData->currentVolume = newvol;
 }
 
 static void

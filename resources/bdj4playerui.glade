@@ -725,11 +725,12 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkMenuButton">
+                          <object class="GtkMenuButton" id="queuedancebutton">
                             <property name="visible">True</property>
                             <property name="can-focus">True</property>
                             <property name="focus-on-click">False</property>
                             <property name="receives-default">True</property>
+                            <property name="draw-indicator">True</property>
                             <property name="popover">dancepopover</property>
                             <child>
                               <object class="GtkLabel" id="queuedancelabel">
@@ -746,11 +747,12 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkMenuButton">
+                          <object class="GtkMenuButton" id="queueplaylistbutton">
                             <property name="visible">True</property>
                             <property name="can-focus">True</property>
                             <property name="focus-on-click">False</property>
                             <property name="receives-default">True</property>
+                            <property name="draw-indicator">True</property>
                             <property name="popover">playlistpopover</property>
                             <child>
                               <object class="GtkLabel" id="queueplaylistlabel">
