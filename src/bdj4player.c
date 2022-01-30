@@ -77,6 +77,7 @@ typedef struct {
   mstime_t        statusCheck;
   volsinklist_t   sinklist;
   playerstate_t   playerState;
+  playerstate_t   lastPlayerState;      // used by sendstatus
   mstime_t        playTimeStart;
   ssize_t         playTimePlayed;
   mstime_t        playTimeCheck;
@@ -175,6 +176,7 @@ main (int argc, char *argv[])
   playerData.fadeSamples = 1;
   playerData.globalCount = 1;
   playerData.playerState = PL_STATE_STOPPED;
+  playerData.lastPlayerState = PL_STATE_UNKNOWN;
   mstimestart (&playerData.playTimeStart);
   playerData.playTimePlayed = 0;
   playerData.playRequest = queueAlloc (free);
@@ -1303,6 +1305,13 @@ playerSendStatus (playerdata_t *playerData)
   ssize_t     tm;
   ssize_t     dur;
 
+  if (playerData->playerState == playerData->lastPlayerState &&
+      playerData->playerState != PL_STATE_PLAYING &&
+      playerData->playerState != PL_STATE_IN_FADEOUT) {
+    return;
+  }
+  playerData->lastPlayerState = playerData->playerState;
+
   rbuff [0] = '\0';
 
   dur = 0;
@@ -1315,6 +1324,7 @@ playerSendStatus (playerdata_t *playerData)
     dur = 0;
   } else {
     switch (playerData->playerState) {
+      case PL_STATE_UNKNOWN:
       case PL_STATE_STOPPED: {
         playstate = "stop";
         dur = 0;

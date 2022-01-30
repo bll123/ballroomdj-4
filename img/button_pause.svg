@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg
    enable-background="new 0 0 128 128"
-   viewBox="0 0 12 18"
+   viewBox="0 0 18 18"
    version="1.1"
    id="svg29"
    sodipodi:docname="button_pause.svg"
-   width="12"
+   width="18"
    height="18"
    inkscape:version="1.1.1 (3bf5ae0d25, 2021-09-20)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
@@ -41,9 +41,9 @@
      inkscape:window-height="870"
      id="namedview31"
      showgrid="false"
-     inkscape:zoom="34.888889"
-     inkscape:cx="6.0047771"
-     inkscape:cy="9"
+     inkscape:zoom="28.944444"
+     inkscape:cx="9"
+     inkscape:cy="8.9827255"
      inkscape:window-x="51"
      inkscape:window-y="0"
      inkscape:window-maximized="0"
@@ -54,7 +54,8 @@
      fit-margin-bottom="0"
      inkscape:pagecheckerboard="true"
      showborder="true"
-     inkscape:showpageshadow="false" />
+     inkscape:showpageshadow="false"
+     width="18px" />
   <linearGradient
      id="a"
      x1="64"
@@ -73,7 +74,7 @@
   </linearGradient>
   <g
      id="g870"
-     transform="matrix(0.27388531,0,0,0.26410372,-23.106117,-7.4729099)">
+     transform="matrix(0.27388531,0,0,0.26410372,-20.106117,-7.4729099)">
     <path
        d="M 100.40119,90.372881 H 90.141186 c -1.03,0 -1.87,-0.84 -1.87,-1.87 v -52.26 c 0,-1.03 0.84,-1.87 1.87,-1.87 h 10.260004 c 1.03,0 1.87,0.84 1.87,1.87 v 52.26 c 0,1.03 -0.84,1.87 -1.87,1.87 z"
        id="path21"

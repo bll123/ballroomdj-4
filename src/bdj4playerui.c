@@ -49,9 +49,11 @@ typedef struct {
   GtkWidget       *fadeButton;
   GtkWidget       *ppButton;
   GtkWidget       *repeatButton;
+  bool            repeatLock;
   GtkWidget       *beginButton;
   GtkWidget       *nextsongButton;
   GtkWidget       *pauseatendButton;
+  bool            pauseatendLock;
   GdkPixbuf       *playImg;
   GdkPixbuf       *stopImg;
   GdkPixbuf       *pauseImg;
@@ -103,6 +105,12 @@ static void     pluiProcessPauseatend (playerui_t *plui, int on);
 static void     pluiProcessStatusData (playerui_t *plui, char *args);
 static void     pluiProcessDanceList (playerui_t *pluiData, char *danceList);
 static void     pluiProcessPlaylistList (playerui_t *pluiData, char *playlistList);
+static void     pluiFadeProcess (GtkButton *b, gpointer udata);
+static void     pluiPlayPauseProcess (GtkButton *b, gpointer udata);
+static void     pluiRepeatProcess (GtkButton *b, gpointer udata);
+static void     pluiBeginProcess (GtkButton *b, gpointer udata);
+static void     pluiNextSongProcess (GtkButton *b, gpointer udata);
+static void     pluiPauseatendProcess (GtkButton *b, gpointer udata);
 static void     pluiSigHandler (int sig);
 
 static int gKillReceived = 0;
@@ -143,9 +151,11 @@ main (int argc, char *argv[])
   plui.fadeButton = NULL;
   plui.ppButton = NULL;
   plui.repeatButton = NULL;
+  plui.repeatLock = false;
   plui.beginButton = NULL;
   plui.nextsongButton = NULL;
   plui.pauseatendButton = NULL;
+  plui.pauseatendLock = false;
   plui.stopImg = NULL;
   plui.playImg = NULL;
   plui.pauseImg = NULL;
@@ -242,6 +252,8 @@ pluiStoppingCallback (void *udata, programstate_t programState)
 {
   playerui_t   *plui = udata;
 
+  mstimestart (&plui->tm);
+  gdone = 1;
   connDisconnectAll (plui->conn);
   return true;
 }
@@ -305,8 +317,7 @@ pluiActivate (GApplication *app, gpointer userdata)
   gtk_window_set_application (GTK_WINDOW (plui->window), plui->app);
   gtk_window_set_default_icon_from_file ("img/bdj4_icon.svg", &gerr);
   g_signal_connect (plui->window, "delete-event", G_CALLBACK (pluiCloseWin), plui);
-  // ### FIX: get title from profile
-  gtk_window_set_title (GTK_WINDOW (plui->window), _("BDJ4"));
+  gtk_window_set_title (GTK_WINDOW (plui->window), bdjoptGetData (OPT_P_PROFILENAME));
 
   /* song display */
   plui->statusImg = GTK_WIDGET (gtk_builder_get_object (
@@ -317,9 +328,7 @@ pluiActivate (GApplication *app, gpointer userdata)
   image = gtk_image_new_from_file (tbuff);
   plui->stopImg = gtk_image_get_pixbuf (GTK_IMAGE (image));
   g_object_ref (plui->stopImg);
-  if (plui->statusImg != NULL) {
-    gtk_image_set_from_pixbuf (GTK_IMAGE (plui->statusImg), plui->stopImg);
-  }
+  gtk_image_set_from_pixbuf (GTK_IMAGE (plui->statusImg), plui->stopImg);
 
   pathbldMakePath (tbuff, sizeof (tbuff), "", "button_play", ".svg",
       PATHBLD_MP_IMGDIR);
@@ -348,10 +357,12 @@ pluiActivate (GApplication *app, gpointer userdata)
   plui->titleLab = GTK_WIDGET (gtk_builder_get_object (
       plui->gtkplayerui, "titlelabel"));
   assert (plui->titleLab != NULL);
+
   /* main controls */
   plui->fadeButton = GTK_WIDGET (gtk_builder_get_object (
       plui->gtkplayerui, "fadebutton"));
   assert (plui->fadeButton != NULL);
+  g_signal_connect (plui->fadeButton, "clicked", G_CALLBACK (pluiFadeProcess), plui);
 
   plui->ppButton = GTK_WIDGET (gtk_builder_get_object (
       plui->gtkplayerui, "playpausebutton"));
@@ -360,9 +371,8 @@ pluiActivate (GApplication *app, gpointer userdata)
   pathbldMakePath (tbuff, sizeof (tbuff), "", "button_playpause", ".svg",
       PATHBLD_MP_IMGDIR);
   image = gtk_image_new_from_file (tbuff);
-  if (plui->ppButton != NULL) {
-    gtk_button_set_image (GTK_BUTTON (plui->ppButton), image);
-  }
+  gtk_button_set_image (GTK_BUTTON (plui->ppButton), image);
+  g_signal_connect (plui->ppButton, "clicked", G_CALLBACK (pluiPlayPauseProcess), plui);
 
   plui->repeatButton = GTK_WIDGET (gtk_builder_get_object (
       plui->gtkplayerui, "repeatbutton"));
@@ -371,9 +381,8 @@ pluiActivate (GApplication *app, gpointer userdata)
   pathbldMakePath (tbuff, sizeof (tbuff), "", "button_repeat", ".svg",
       PATHBLD_MP_IMGDIR);
   image = gtk_image_new_from_file (tbuff);
-  if (plui->repeatButton != NULL) {
-    gtk_button_set_image (GTK_BUTTON (plui->repeatButton), image);
-  }
+  gtk_button_set_image (GTK_BUTTON (plui->repeatButton), image);
+  g_signal_connect (plui->repeatButton, "toggled", G_CALLBACK (pluiRepeatProcess), plui);
 
   plui->beginButton = GTK_WIDGET (gtk_builder_get_object (
       plui->gtkplayerui, "beginbutton"));
@@ -382,9 +391,8 @@ pluiActivate (GApplication *app, gpointer userdata)
   pathbldMakePath (tbuff, sizeof (tbuff), "", "button_begin", ".svg",
       PATHBLD_MP_IMGDIR);
   image = gtk_image_new_from_file (tbuff);
-  if (plui->beginButton != NULL) {
-    gtk_button_set_image (GTK_BUTTON (plui->beginButton), image);
-  }
+  gtk_button_set_image (GTK_BUTTON (plui->beginButton), image);
+  g_signal_connect (plui->beginButton, "clicked", G_CALLBACK (pluiBeginProcess), plui);
 
   plui->nextsongButton = GTK_WIDGET (gtk_builder_get_object (
       plui->gtkplayerui, "nextsongbutton"));
@@ -393,9 +401,8 @@ pluiActivate (GApplication *app, gpointer userdata)
   pathbldMakePath (tbuff, sizeof (tbuff), "", "button_nextsong", ".svg",
       PATHBLD_MP_IMGDIR);
   image = gtk_image_new_from_file (tbuff);
-  if (plui->nextsongButton != NULL) {
-    gtk_button_set_image (GTK_BUTTON (plui->nextsongButton), image);
-  }
+  gtk_button_set_image (GTK_BUTTON (plui->nextsongButton), image);
+  g_signal_connect (plui->nextsongButton, "clicked", G_CALLBACK (pluiNextSongProcess), plui);
 
   plui->pauseatendButton = GTK_WIDGET (gtk_builder_get_object (
       plui->gtkplayerui, "pauseatend"));
@@ -408,9 +415,8 @@ pluiActivate (GApplication *app, gpointer userdata)
       PATHBLD_MP_IMGDIR);
   plui->ledonImg = gtk_image_new_from_file (tbuff);
   g_object_ref (plui->ledonImg);
-  if (plui->pauseatendButton != NULL) {
-    gtk_button_set_image (GTK_BUTTON (plui->pauseatendButton), plui->ledoffImg);
-  }
+  gtk_button_set_image (GTK_BUTTON (plui->pauseatendButton), plui->ledoffImg);
+  g_signal_connect (plui->pauseatendButton, "toggled", G_CALLBACK (pluiPauseatendProcess), plui);
 
   /* position controls / display */
   plui->speedScale = GTK_WIDGET (gtk_builder_get_object (
@@ -466,9 +472,7 @@ pluiActivate (GApplication *app, gpointer userdata)
   pathbldMakePath (tbuff, sizeof (tbuff), "", "button_up", ".svg",
       PATHBLD_MP_IMGDIR);
   image = gtk_image_new_from_file (tbuff);
-  if (plui->moveupButton != NULL) {
-    gtk_button_set_image (GTK_BUTTON (plui->moveupButton), image);
-  }
+  gtk_button_set_image (GTK_BUTTON (plui->moveupButton), image);
 
   plui->movedownButton = GTK_WIDGET (gtk_builder_get_object (
       plui->gtkplayerui, "movedownbutton"));
@@ -477,9 +481,7 @@ pluiActivate (GApplication *app, gpointer userdata)
   pathbldMakePath (tbuff, sizeof (tbuff), "", "button_down", ".svg",
       PATHBLD_MP_IMGDIR);
   image = gtk_image_new_from_file (tbuff);
-  if (plui->movedownButton != NULL) {
-    gtk_button_set_image (GTK_BUTTON (plui->movedownButton), image);
-  }
+  gtk_button_set_image (GTK_BUTTON (plui->movedownButton), image);
 
   plui->togglepauseButton = GTK_WIDGET (gtk_builder_get_object (
       plui->gtkplayerui, "togglepausebutton"));
@@ -488,9 +490,7 @@ pluiActivate (GApplication *app, gpointer userdata)
   pathbldMakePath (tbuff, sizeof (tbuff), "", "button_pause", ".svg",
       PATHBLD_MP_IMGDIR);
   image = gtk_image_new_from_file (tbuff);
-  if (plui->togglepauseButton != NULL) {
-    gtk_button_set_image (GTK_BUTTON (plui->togglepauseButton), image);
-  }
+  gtk_button_set_image (GTK_BUTTON (plui->togglepauseButton), image);
 
   plui->removeButton = GTK_WIDGET (gtk_builder_get_object (
       plui->gtkplayerui, "removebutton"));
@@ -499,9 +499,7 @@ pluiActivate (GApplication *app, gpointer userdata)
   pathbldMakePath (tbuff, sizeof (tbuff), "", "button_audioremove", ".svg",
       PATHBLD_MP_IMGDIR);
   image = gtk_image_new_from_file (tbuff);
-  if (plui->removeButton != NULL) {
-    gtk_button_set_image (GTK_BUTTON (plui->removeButton), image);
-  }
+  gtk_button_set_image (GTK_BUTTON (plui->removeButton), image);
 
   plui->reqexternalButton = GTK_WIDGET (gtk_builder_get_object (
       plui->gtkplayerui, "requestexternalbutton"));
@@ -551,14 +549,14 @@ pluiMainLoop (void *tplui)
     progstartProcess (plui->progstart, plui);
     if (gKillReceived) {
       logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
-      cont = FALSE;
+      progstartShutdownProcess (plui->progstart, plui);
     }
     return cont;
   }
 
   if (gKillReceived) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
-    cont = FALSE;
+    progstartShutdownProcess (plui->progstart, plui);
   }
   return cont;
 }
@@ -640,7 +638,6 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_EXIT_REQUEST: {
-          mstimestart (&plui->tm);
           logMsg (LOG_SESS, LOG_IMPORTANT, "got exit request");
           gKillReceived = 0;
           logMsg (LOG_DBG, LOG_MSGS, "got: req-exit");
@@ -695,8 +692,6 @@ pluiCloseWin (GtkWidget *window, GdkEvent *event, gpointer userdata)
   playerui_t   *plui = userdata;
 
   if (! gdone) {
-    mstimestart (&plui->tm);
-    gdone = 1;
     progstartShutdownProcess (plui->progstart, plui);
     logMsg (LOG_DBG, LOG_MSGS, "got: close win request");
     return TRUE;
@@ -711,12 +706,16 @@ pluiProcessPauseatend (playerui_t *plui, int on)
   if (plui->pauseatendButton == NULL) {
     return;
   }
+  plui->pauseatendLock = true;
 
   if (on) {
     gtk_button_set_image (GTK_BUTTON (plui->pauseatendButton), plui->ledonImg);
+    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (plui->pauseatendButton), TRUE);
   } else {
     gtk_button_set_image (GTK_BUTTON (plui->pauseatendButton), plui->ledoffImg);
+    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (plui->pauseatendButton), FALSE);
   }
+  plui->pauseatendLock = false;
 }
 
 static void
@@ -771,14 +770,18 @@ pluiProcessStatusData (playerui_t *plui, char *args)
   /* repeat */
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   if (plui->repeatImg != NULL) {
+    plui->repeatLock = true;
     if (atol (p)) {
       pathbldMakePath (tbuff, sizeof (tbuff), "", "button_repeat", ".svg",
           PATHBLD_MP_IMGDIR);
       gtk_image_clear (GTK_IMAGE (plui->repeatImg));
       gtk_image_set_from_file (GTK_IMAGE (plui->repeatImg), tbuff);
+      gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (plui->repeatButton), TRUE);
     } else {
       gtk_image_clear (GTK_IMAGE (plui->repeatImg));
+      gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (plui->repeatButton), FALSE);
     }
+    plui->repeatLock = false;
   }
 
   /* pauseatend */
@@ -911,6 +914,61 @@ pluiProcessPlaylistList (playerui_t *plui, char *playlistList)
   gtk_tree_view_set_model (GTK_TREE_VIEW (plui->playlistSelect),
       GTK_TREE_MODEL (store));
   g_object_unref (store);
+}
+
+static void
+pluiFadeProcess (GtkButton *b, gpointer udata)
+{
+  playerui_t      *plui = udata;
+
+  connSendMessage (plui->conn, ROUTE_PLAYER, MSG_PLAY_FADE, NULL);
+}
+
+static void
+pluiPlayPauseProcess (GtkButton *b, gpointer udata)
+{
+  playerui_t      *plui = udata;
+
+  connSendMessage (plui->conn, ROUTE_PLAYER, MSG_PLAY_PLAYPAUSE, NULL);
+}
+
+static void
+pluiRepeatProcess (GtkButton *b, gpointer udata)
+{
+  playerui_t      *plui = udata;
+
+  if (plui->repeatLock) {
+    return;
+  }
+
+  connSendMessage (plui->conn, ROUTE_PLAYER, MSG_PLAY_REPEAT, NULL);
+}
+
+static void
+pluiBeginProcess (GtkButton *b, gpointer udata)
+{
+  playerui_t      *plui = udata;
+
+  connSendMessage (plui->conn, ROUTE_PLAYER, MSG_PLAY_BEGIN, NULL);
+}
+
+static void
+pluiNextSongProcess (GtkButton *b, gpointer udata)
+{
+  playerui_t      *plui = udata;
+
+  connSendMessage (plui->conn, ROUTE_PLAYER, MSG_PLAY_NEXTSONG, NULL);
+}
+
+static void
+pluiPauseatendProcess (GtkButton *b, gpointer udata)
+{
+  playerui_t      *plui = udata;
+
+  if (plui->pauseatendLock) {
+    return;
+  }
+  connSendMessage (plui->conn, ROUTE_PLAYER, MSG_PLAY_PAUSEATEND, NULL);
 }
 
 static void

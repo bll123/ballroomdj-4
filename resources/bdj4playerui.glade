@@ -88,6 +88,7 @@
                         <property name="can-focus">False</property>
                         <child>
                           <object class="GtkImage" id="playbackstatusimg">
+                            <property name="width-request">18</property>
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
                             <property name="margin-start">2</property>
@@ -464,13 +465,11 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkButton" id="repeatbutton">
+                      <object class="GtkToggleButton" id="repeatbutton">
                         <property name="label" translatable="yes">rpt</property>
-                        <property name="name">RepeatButton</property>
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
                         <property name="receives-default">True</property>
-                        <property name="tooltip-text" translatable="yes">Repeat</property>
                         <property name="margin-start">2</property>
                       </object>
                       <packing>
@@ -637,7 +636,6 @@
               <object class="GtkNotebook" id="notebook">
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
-                <property name="show-border">False</property>
                 <child>
                   <object class="GtkBox">
                     <property name="visible">True</property>
@@ -711,6 +709,19 @@
                             <property name="expand">True</property>
                             <property name="fill">True</property>
                             <property name="position">4</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkButton" id="clearqueuebutton">
+                            <property name="label" translatable="yes">Clear Queue</property>
+                            <property name="visible">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="receives-default">True</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">5</property>
                           </packing>
                         </child>
                         <child>

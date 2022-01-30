@@ -44,6 +44,7 @@ typedef enum {
   MSG_PLAYER_VOLSINK_SET,   // to player: set volume sink
   MSG_PLAYER_VOLUME,        // to player. args: volume as percentage.
   MSG_PLAY_FADE,            // to player.
+  MSG_PLAY_BEGIN,           // to player.
   MSG_PLAY_NEXTSONG,        // to player.
   MSG_PLAY_PAUSEATEND,      // to player: toggle
   MSG_PLAY_PAUSE,           // to player
