@@ -27,6 +27,7 @@
 #include "sockh.h"
 #include "sysvars.h"
 #include "tmutil.h"
+#include "uiutils.h"
 
 typedef struct {
   GtkApplication  *app;
@@ -85,7 +86,6 @@ static void marqueeSigHandler (int sig);
 static void marqueeSetFontSize (marquee_t *marquee, GtkWidget *lab, char *style, int sz);
 static void marqueeAdjustFontSizes (marquee_t *marquee, int sz);
 static void marqueeAdjustFontCallback (GtkWidget *w, GtkAllocation *retAllocSize, gpointer userdata);
-static void marqueeSetCss (GtkWidget *w, char *style);
 static void marqueePopulate (marquee_t *marquee, char *args);
 static void marqueeSetTimer (marquee_t *marquee, char *args);
 static void marqueeUnmaxCallback (GtkWidget *w, GtkAllocation *retAllocSize, gpointer userdata);
@@ -256,7 +256,7 @@ marqueeCreateGui (marquee_t *marquee, int argc, char *argv [])
   int             status;
 
   marquee->app = gtk_application_new (
-      "org.ballroomdj.BallroomDJ",
+      "org.ballroomdj.BallroomDJ.marquee",
       G_APPLICATION_FLAGS_NONE
   );
   g_signal_connect (marquee->app, "activate", G_CALLBACK (marqueeActivate), marquee);
@@ -286,7 +286,6 @@ marqueeActivate (GApplication *app, gpointer userdata)
 
   gtk_window_set_type_hint (GTK_WINDOW (window), GDK_WINDOW_TYPE_HINT_NORMAL);
   gtk_window_set_focus_on_map (GTK_WINDOW (window), FALSE);
-  gtk_window_set_keep_above (GTK_WINDOW (window), TRUE);
   gtk_window_set_title (GTK_WINDOW (window), _("Marquee"));
   gtk_window_set_default_icon_from_file ("img/bdj4_icon.svg", &gerr);
   gtk_window_set_default_size (GTK_WINDOW (window), 600, 600);
@@ -305,7 +304,7 @@ marqueeActivate (GApplication *app, gpointer userdata)
       FALSE, FALSE, 0);
   gtk_widget_set_halign (GTK_WIDGET (marquee->pbar), GTK_ALIGN_FILL);
   gtk_widget_set_hexpand (GTK_WIDGET (marquee->pbar), TRUE);
-  marqueeSetCss (GTK_WIDGET (marquee->pbar),
+  uiutilsSetCss (GTK_WIDGET (marquee->pbar),
       "progress, trough { min-height: 25px; } progressbar > trough > progress { background-color: #ffa600; }");
 
   vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 5);
@@ -328,15 +327,15 @@ marqueeActivate (GApplication *app, gpointer userdata)
   gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (marquee->danceLab),
       TRUE, TRUE, 0);
   gtk_widget_set_hexpand (GTK_WIDGET (marquee->danceLab), TRUE);
-  marqueeSetCss (GTK_WIDGET (marquee->danceLab),
+  uiutilsSetCss (GTK_WIDGET (marquee->danceLab),
       "label { color: #ffa600; }");
 
   marquee->countdownTimerLab = gtk_label_new ("0:00");
   gtk_box_pack_end (GTK_BOX (hbox), GTK_WIDGET (marquee->countdownTimerLab),
-      TRUE, TRUE, 0);
+      FALSE, FALSE, 0);
   gtk_label_set_max_width_chars (GTK_LABEL (marquee->countdownTimerLab), 6);
   gtk_widget_set_halign (GTK_WIDGET (marquee->countdownTimerLab), GTK_ALIGN_END);
-  marqueeSetCss (GTK_WIDGET (marquee->countdownTimerLab),
+  uiutilsSetCss (GTK_WIDGET (marquee->countdownTimerLab),
       "label { color: #ffa600; }");
 
   if (marquee->mqShowInfo) {
@@ -349,7 +348,7 @@ marqueeActivate (GApplication *app, gpointer userdata)
   marquee->sep = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
   gtk_box_pack_end (GTK_BOX (vbox), GTK_WIDGET (marquee->sep),
       TRUE, TRUE, 0);
-  marqueeSetCss (GTK_WIDGET (marquee->sep),
+  uiutilsSetCss (GTK_WIDGET (marquee->sep),
       "separator { min-height: 4px; background-color: #ffa600; }");
 
   marquee->marqueeLabs = malloc (sizeof (GtkWidget *) * marquee->mqLen);
@@ -436,7 +435,6 @@ marqueeConnectingCallback (void *udata, programstate_t programState)
   }
 
   if (connIsConnected (marquee->conn, ROUTE_MAIN)) {
-    connSendMessage (marquee->conn, ROUTE_MAIN, MSG_HANDSHAKE, NULL);
     rc = true;
   }
 
@@ -475,6 +473,7 @@ marqueeProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
       switch (msg) {
         case MSG_HANDSHAKE: {
           connProcessHandshake (marquee->conn, routefrom);
+          connConnectResponse (marquee->conn, routefrom);
           break;
         }
         case MSG_EXIT_REQUEST: {
@@ -781,18 +780,6 @@ marqueeAdjustFontCallback (GtkWidget *w, GtkAllocation *retAllocSize, gpointer u
   }
 
   marquee->inResize = false;
-}
-
-static void
-marqueeSetCss (GtkWidget *w, char *style)
-{
-  GtkCssProvider        *tcss;
-
-  tcss = gtk_css_provider_new ();
-  gtk_css_provider_load_from_data (tcss, style, -1, NULL);
-  gtk_style_context_add_provider (
-      gtk_widget_get_style_context (GTK_WIDGET (w)),
-      GTK_STYLE_PROVIDER (tcss), G_MAXUINT);
 }
 
 static void

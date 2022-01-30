@@ -25,6 +25,7 @@
 #include "bdj4.h"
 #include "bdjmsg.h"
 #include "bdjopt.h"
+#include "bdjstring.h"
 #include "bdjvars.h"
 #include "conn.h"
 #include "lock.h"
@@ -55,6 +56,7 @@ typedef struct {
 
 static bool     remctrlConnectingCallback (void *udata, programstate_t programState);
 static bool     remctrlHandshakeCallback (void *udata, programstate_t programState);
+static bool     remctrlInitDataCallback (void *udata, programstate_t programState);
 static bool     remctrlStoppingCallback (void *udata, programstate_t programState);
 static bool     remctrlClosingCallback (void *udata, programstate_t programState);
 static void     remctrlEventHandler (struct mg_connection *c, int ev,
@@ -62,6 +64,8 @@ static void     remctrlEventHandler (struct mg_connection *c, int ev,
 static int      remctrlProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
                     bdjmsgmsg_t msg, char *args, void *udata);
 static int      remctrlProcessing (void *udata);
+static void     remctrlProcessDanceList (remctrldata_t *remctrlData, char *danceList);
+static void     remctrlProcessPlaylistList (remctrldata_t *remctrlData, char *playlistList);
 static void     remctrlSigHandler (int sig);
 
 static int            gKillReceived = 0;
@@ -140,6 +144,7 @@ main (int argc, char *argv[])
   remctrlData.progstart = progstartInit ();
   progstartSetCallback (remctrlData.progstart, STATE_CONNECTING, remctrlConnectingCallback);
   progstartSetCallback (remctrlData.progstart, STATE_WAIT_HANDSHAKE, remctrlHandshakeCallback);
+  progstartSetCallback (remctrlData.progstart, STATE_INITIALIZE_DATA, remctrlInitDataCallback);
   progstartSetCallback (remctrlData.progstart, STATE_STOPPING, remctrlStoppingCallback);
   progstartSetCallback (remctrlData.progstart, STATE_CLOSING, remctrlClosingCallback);
   remctrlData.user = strdup (bdjoptGetData (OPT_P_REMCONTROLUSER));
@@ -330,6 +335,7 @@ remctrlProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
       switch (msg) {
         case MSG_HANDSHAKE: {
           connProcessHandshake (remctrlData->conn, routefrom);
+          connConnectResponse (remctrlData->conn, routefrom);
           break;
         }
         case MSG_EXIT_REQUEST: {
@@ -341,12 +347,12 @@ remctrlProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_DANCE_LIST_DATA: {
           remctrlData->haveData++;
-          remctrlData->danceList = strdup (args);
+          remctrlProcessDanceList (remctrlData, args);
           break;
         }
         case MSG_PLAYLIST_LIST_DATA: {
           remctrlData->haveData++;
-          remctrlData->playlistList = strdup (args);
+          remctrlProcessPlaylistList (remctrlData, args);
           break;
         }
         case MSG_STATUS_DATA: {
@@ -408,7 +414,7 @@ remctrlConnectingCallback (void *udata, programstate_t programState)
   }
 
   if (connIsConnected (remctrlData->conn, ROUTE_MAIN) &&
-      connIsConnected (remctrlData->conn, ROUTE_MAIN)) {
+      connIsConnected (remctrlData->conn, ROUTE_PLAYER)) {
     rc = true;
   }
 
@@ -427,11 +433,73 @@ remctrlHandshakeCallback (void *udata, programstate_t programState)
         MSG_GET_DANCE_LIST, NULL);
     connSendMessage (remctrlData->conn, ROUTE_MAIN,
         MSG_GET_PLAYLIST_LIST, NULL);
+    rc = true;
+  }
+
+  return rc;
+}
+
+
+static bool
+remctrlInitDataCallback (void *udata, programstate_t programState)
+{
+  remctrldata_t   *remctrlData = udata;
+  bool            rc = false;
+
+  if (remctrlData->haveData == 2) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "running: time-to-start: %ld ms", mstimeend (&remctrlData->tm));
     rc = true;
   }
 
   return rc;
+}
+
+
+static void
+remctrlProcessDanceList (remctrldata_t *remctrlData, char *danceList)
+{
+  char        *didx;
+  char        *dstr;
+  char        *tokstr;
+  char        tbuff [200];
+  char        obuff [3096];
+
+  obuff [0] = '\0';
+
+  didx = strtok_r (danceList, MSG_ARGS_RS_STR, &tokstr);
+  dstr = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
+  while (didx != NULL) {
+    snprintf (tbuff, sizeof (tbuff), "<option value=\"%ld\">%s</option>\n", atol (didx), dstr);
+    strlcat (obuff, tbuff, sizeof (obuff));
+    didx = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
+    dstr = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
+  }
+
+  remctrlData->danceList = strdup (obuff);
+}
+
+
+static void
+remctrlProcessPlaylistList (remctrldata_t *remctrlData, char *playlistList)
+{
+  char        *fnm;
+  char        *plnm;
+  char        *tokstr;
+  char        tbuff [200];
+  char        obuff [3096];
+
+  obuff [0] = '\0';
+
+  fnm = strtok_r (playlistList, MSG_ARGS_RS_STR, &tokstr);
+  plnm = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
+  while (fnm != NULL) {
+    snprintf (tbuff, sizeof (tbuff), "<option value=\"%s\">%s</option>\n", fnm, plnm);
+    strlcat (obuff, tbuff, sizeof (obuff));
+    fnm = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
+    plnm = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
+  }
+
+  remctrlData->playlistList = strdup (obuff);
 }
 
 

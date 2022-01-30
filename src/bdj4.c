@@ -32,6 +32,7 @@ main (int argc, char *argv[])
     { "main",       no_argument,        NULL,   4 },
     { "player",     no_argument,        NULL,   5 },
     { "marquee",    no_argument,        NULL,   6 },
+    { "playerui",   no_argument,        NULL,   7 },
     { "profile",    required_argument,  NULL,   'p' },
     { "debug",      required_argument,  NULL,   'd' },
     { NULL,         0,                  NULL,   0 }
@@ -67,6 +68,10 @@ main (int argc, char *argv[])
         prog = "bdj4marquee";
         break;
       }
+      case 7: {
+        prog = "bdj4playerui";
+        break;
+      }
       case 'd': {
         break;
       }
@@ -88,6 +93,8 @@ main (int argc, char *argv[])
   }
 
   fileopMakeDir ("tmp");
+
+  putenv ("GTK_OVERLAY_SCROLLING=0");
 
   if (isMacOS()) {
     char      *path = NULL;

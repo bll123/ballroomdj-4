@@ -147,17 +147,23 @@ sysvarsInit (const char *argv0)
 
     pathNormPath (tcwd, MAXPATHLEN);
     strlcpy (sysvars [SV_BDJ4DIR], tcwd, MAXPATHLEN);
-
-    strlcpy (sysvars [SV_BDJ4DATADIR], tcwd, MAXPATHLEN);
-    strlcat (sysvars [SV_BDJ4DATADIR], "/data", MAXPATHLEN);
   } else {
-    strlcpy (sysvars [SV_BDJ4DIR], sysvars [SV_BDJ4MAINDIR], MAXPATHLEN);
-    strlcpy (sysvars [SV_BDJ4DATADIR], sysvars [SV_BDJ4MAINDIR], MAXPATHLEN);
-    strlcat (sysvars [SV_BDJ4DATADIR], "/data", MAXPATHLEN);
+    if (isMacOS ()) {
+      strlcpy (buff, getenv ("HOME"), MAXPATHLEN);
+      strlcat (buff, "/Library/Application Support/BallroomDJ4", MAXPATHLEN);
+      strlcpy (sysvars [SV_BDJ4DIR], buff, MAXPATHLEN);
+    } else {
+      strlcpy (sysvars [SV_BDJ4DIR], sysvars [SV_BDJ4MAINDIR], MAXPATHLEN);
+    }
   }
 
-  strlcpy (sysvars [SV_BDJ4HTTPDIR], sysvars [SV_BDJ4MAINDIR], MAXPATHLEN);
-  strlcat (sysvars [SV_BDJ4HTTPDIR], "/http", MAXPATHLEN);
+  strlcpy (sysvars [SV_BDJ4IMGDIR], sysvars [SV_BDJ4MAINDIR], MAXPATHLEN);
+  strlcat (sysvars [SV_BDJ4IMGDIR], "/img", MAXPATHLEN);
+
+  strlcpy (sysvars [SV_BDJ4RESOURCEDIR], sysvars [SV_BDJ4MAINDIR], MAXPATHLEN);
+  strlcat (sysvars [SV_BDJ4RESOURCEDIR], "/resources", MAXPATHLEN);
+
+  strlcpy (sysvars [SV_BDJ4HTTPDIR], "http", MAXPATHLEN);
 
   strlcpy (sysvars [SV_SHLIB_EXT], SHLIB_EXT, MAXPATHLEN);
 

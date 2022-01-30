@@ -140,6 +140,18 @@ tmutilToMS (ssize_t ms, char *buff, size_t max)
   return buff;
 }
 
+char *
+tmutilToMSD (ssize_t ms, char *buff, size_t max)
+{
+  ssize_t     m, s, d;
+
+  m = ms / 1000 / 60;
+  s = (ms - (m * 1000 * 60)) / 1000;
+  d = (ms - (m * 1000 * 60) - (s * 1000)) / 100;
+  snprintf (buff, max, "%zd:%02zd.%zd", m, s, d);
+  return buff;
+}
+
 
 
 

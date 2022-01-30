@@ -253,6 +253,7 @@ mobmqProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
       switch (msg) {
         case MSG_HANDSHAKE: {
           connProcessHandshake (mobmqData->conn, routefrom);
+          connConnectResponse (mobmqData->conn, routefrom);
           break;
         }
         case MSG_EXIT_REQUEST: {
@@ -318,7 +319,6 @@ mobmqConnectingCallback (void *tmmdata, programstate_t programState)
   }
 
   if (connIsConnected (mobmqData->conn, ROUTE_MAIN)) {
-    connSendMessage (mobmqData->conn, ROUTE_MAIN, MSG_HANDSHAKE, NULL);
     rc = true;
   }
 

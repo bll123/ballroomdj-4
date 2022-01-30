@@ -107,8 +107,8 @@ static void     mainStartProcess (maindata_t *mainData, bdjmsgroute_t route,
                     char *fname);
 static void     mainStopProcess (maindata_t *mainData, bdjmsgroute_t route,
                     bool force);
-static void     mainSendDanceList (maindata_t *mainData);
-static void     mainSendPlaylistList (maindata_t *mainData);
+static void     mainSendDanceList (maindata_t *mainData, bdjmsgroute_t route);
+static void     mainSendPlaylistList (maindata_t *mainData, bdjmsgroute_t route);
 static void     mainSendStatus (maindata_t *mainData, char *playerResp);
 static void     mainDanceCountsInit (maindata_t *mainData);
 
@@ -255,11 +255,19 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     case ROUTE_MAIN: {
       switch (msg) {
         case MSG_HANDSHAKE: {
+fprintf (stderr, "main: got handshake from %d\n", routefrom);
           connProcessHandshake (mainData->conn, routefrom);
+          connConnectResponse (mainData->conn, routefrom);
           break;
         }
         case MSG_CONNECT_REQ: {
-//          mainConnectProcess (mainData, ROUTE_PLAYER, port);
+fprintf (stderr, "main: got connect req from %d\n", routefrom);
+          connConnect (mainData->conn, routefrom);
+          break;
+        }
+        case MSG_REMOVE_HANDSHAKE: {
+fprintf (stderr, "main: got remove handshake %d\n", routefrom);
+          connClearHandshake (mainData->conn, routefrom);
           break;
         }
         case MSG_EXIT_REQUEST: {
@@ -361,11 +369,11 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_GET_DANCE_LIST: {
-          mainSendDanceList (mainData);
+          mainSendDanceList (mainData, routefrom);
           break;
         }
         case MSG_GET_PLAYLIST_LIST: {
-          mainSendPlaylistList (mainData);
+          mainSendPlaylistList (mainData, routefrom);
           break;
         }
         case MSG_PLAYER_STATUS_DATA: {
@@ -562,6 +570,8 @@ mainSendMarqueeData (maindata_t *mainData)
   }
 
   connSendMessage (mainData->conn, ROUTE_MARQUEE,
+      MSG_MARQUEE_DATA, sbuff);
+  connSendMessage (mainData->conn, ROUTE_PLAYERUI,
       MSG_MARQUEE_DATA, sbuff);
 }
 
@@ -1277,7 +1287,7 @@ mainStopProcess (maindata_t *mainData,
 }
 
 static void
-mainSendDanceList (maindata_t *mainData)
+mainSendDanceList (maindata_t *mainData, bdjmsgroute_t route)
 {
   dance_t       *dances;
   slist_t       *danceList;
@@ -1294,16 +1304,16 @@ mainSendDanceList (maindata_t *mainData)
   slistStartIterator (danceList, &iteridx);
   while ((dancenm = slistIterateKey (danceList, &iteridx)) != NULL) {
     idx = slistGetNum (danceList, dancenm);
-    snprintf (tbuff, sizeof (tbuff), "<option value=\"%zd\">%s</option>\n", idx, dancenm);
+    snprintf (tbuff, sizeof (tbuff), "%zd%c%s%c",
+        idx, MSG_ARGS_RS, dancenm, MSG_ARGS_RS);
     strlcat (rbuff, tbuff, sizeof (rbuff));
   }
 
-  connSendMessage (mainData->conn, ROUTE_REMCTRL,
-      MSG_DANCE_LIST_DATA, rbuff);
+  connSendMessage (mainData->conn, route, MSG_DANCE_LIST_DATA, rbuff);
 }
 
 static void
-mainSendPlaylistList (maindata_t *mainData)
+mainSendPlaylistList (maindata_t *mainData, bdjmsgroute_t route)
 {
   slist_t       *plList;
   char          *plfnm;
@@ -1318,14 +1328,14 @@ mainSendPlaylistList (maindata_t *mainData)
   slistStartIterator (plList, &iteridx);
   while ((plnm = slistIterateKey (plList, &iteridx)) != NULL) {
     plfnm = listGetData (plList, plnm);
-    snprintf (tbuff, sizeof (tbuff), "<option value=\"%s\">%s</option>\n", plfnm, plnm);
+    snprintf (tbuff, sizeof (tbuff), "%s%c%s%c",
+        plfnm, MSG_ARGS_RS, plnm, MSG_ARGS_RS);
     strlcat (rbuff, tbuff, sizeof (rbuff));
   }
 
   slistFree (plList);
 
-  connSendMessage (mainData->conn, ROUTE_REMCTRL,
-      MSG_PLAYLIST_LIST_DATA, rbuff);
+  connSendMessage (mainData->conn, route, MSG_PLAYLIST_LIST_DATA, rbuff);
 }
 
 
@@ -1335,11 +1345,14 @@ mainSendStatus (maindata_t *mainData, char *playerResp)
   char    tbuff [200];
   char    tbuff2 [40];
   char    rbuff [3096];
-  char    sbuff [1024];
+  char    timerbuff [1024];
+  char    statusbuff [1024];
   ssize_t musicqLen;
   char    *data = NULL;
   char    *tokstr = NULL;
   char    *p;
+
+  statusbuff [0] = '\0';
 
   strlcpy (rbuff, "{ ", sizeof (rbuff));
 
@@ -1348,11 +1361,17 @@ mainSendStatus (maindata_t *mainData, char *playerResp)
       "\"playstate\" : \"%s\"", p);
   strlcat (rbuff, tbuff, sizeof (rbuff));
 
+  snprintf (tbuff, sizeof (tbuff), "%s%c", p, MSG_ARGS_RS);
+  strlcat (statusbuff, tbuff, sizeof (statusbuff));
+
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   snprintf (tbuff, sizeof (tbuff),
       "\"repeat\" : \"%s\"", p);
   strlcat (rbuff, ", ", sizeof (rbuff));
   strlcat (rbuff, tbuff, sizeof (rbuff));
+
+  snprintf (tbuff, sizeof (tbuff), "%s%c", p, MSG_ARGS_RS);
+  strlcat (statusbuff, tbuff, sizeof (statusbuff));
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   snprintf (tbuff, sizeof (tbuff),
@@ -1360,17 +1379,26 @@ mainSendStatus (maindata_t *mainData, char *playerResp)
   strlcat (rbuff, ", ", sizeof (rbuff));
   strlcat (rbuff, tbuff, sizeof (rbuff));
 
+  snprintf (tbuff, sizeof (tbuff), "%s%c", p, MSG_ARGS_RS);
+  strlcat (statusbuff, tbuff, sizeof (statusbuff));
+
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   snprintf (tbuff, sizeof (tbuff),
       "\"vol\" : \"%s%%\"", p);
   strlcat (rbuff, ", ", sizeof (rbuff));
   strlcat (rbuff, tbuff, sizeof (rbuff));
 
+  snprintf (tbuff, sizeof (tbuff), "%s%c", p, MSG_ARGS_RS);
+  strlcat (statusbuff, tbuff, sizeof (statusbuff));
+
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   snprintf (tbuff, sizeof (tbuff),
       "\"speed\" : \"%s%%\"", p);
   strlcat (rbuff, ", ", sizeof (rbuff));
   strlcat (rbuff, tbuff, sizeof (rbuff));
+
+  snprintf (tbuff, sizeof (tbuff), "%s%c", p, MSG_ARGS_RS);
+  strlcat (statusbuff, tbuff, sizeof (statusbuff));
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   snprintf (tbuff, sizeof (tbuff),
@@ -1380,7 +1408,10 @@ mainSendStatus (maindata_t *mainData, char *playerResp)
 
   /* for marquee */
   snprintf (tbuff, sizeof (tbuff), "%s%c", p, MSG_ARGS_RS);
-  strlcpy (sbuff, tbuff, sizeof (sbuff));
+  strlcpy (timerbuff, tbuff, sizeof (timerbuff));
+
+  snprintf (tbuff, sizeof (tbuff), "%s%c", p, MSG_ARGS_RS);
+  strlcat (statusbuff, tbuff, sizeof (statusbuff));
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   snprintf (tbuff, sizeof (tbuff),
@@ -1390,7 +1421,10 @@ mainSendStatus (maindata_t *mainData, char *playerResp)
 
   /* for marquee */
   snprintf (tbuff, sizeof (tbuff), "%s", p);
-  strlcat (sbuff, tbuff, sizeof (sbuff));
+  strlcat (timerbuff, tbuff, sizeof (timerbuff));
+
+  snprintf (tbuff, sizeof (tbuff), "%s%c", p, MSG_ARGS_RS);
+  strlcat (statusbuff, tbuff, sizeof (statusbuff));
 
   musicqLen = musicqGetLen (mainData->musicQueue, mainData->musicqCurrentIdx);
   snprintf (tbuff, sizeof (tbuff),
@@ -1405,12 +1439,19 @@ mainSendStatus (maindata_t *mainData, char *playerResp)
   strlcat (rbuff, ", ", sizeof (rbuff));
   strlcat (rbuff, tbuff, sizeof (rbuff));
 
+  snprintf (tbuff, sizeof (tbuff), "%s%c", data, MSG_ARGS_RS);
+  strlcat (statusbuff, tbuff, sizeof (statusbuff));
+
   data = musicqGetData (mainData->musicQueue, mainData->musicqCurrentIdx, 0, TAG_ARTIST);
   if (data == NULL) { data = ""; }
   snprintf (tbuff, sizeof (tbuff),
       "\"artist\" : \"%s\"", data);
   strlcat (rbuff, ", ", sizeof (rbuff));
   strlcat (rbuff, tbuff, sizeof (rbuff));
+
+  snprintf (tbuff, sizeof (tbuff), "%s%c", data, MSG_ARGS_RS);
+  strlcat (statusbuff, tbuff, sizeof (statusbuff));
+
   data = musicqGetData (mainData->musicQueue, mainData->musicqCurrentIdx, 0, TAG_TITLE);
   if (data == NULL) { data = ""; }
   snprintf (tbuff, sizeof (tbuff),
@@ -1418,10 +1459,14 @@ mainSendStatus (maindata_t *mainData, char *playerResp)
   strlcat (rbuff, ", ", sizeof (rbuff));
   strlcat (rbuff, tbuff, sizeof (rbuff));
 
+  snprintf (tbuff, sizeof (tbuff), "%s%c", data, MSG_ARGS_RS);
+  strlcat (statusbuff, tbuff, sizeof (statusbuff));
+
   strlcat (rbuff, " }", sizeof (rbuff));
 
   connSendMessage (mainData->conn, ROUTE_REMCTRL, MSG_STATUS_DATA, rbuff);
-  connSendMessage (mainData->conn, ROUTE_MARQUEE, MSG_MARQUEE_TIMER, sbuff);
+  connSendMessage (mainData->conn, ROUTE_PLAYERUI, MSG_STATUS_DATA, statusbuff);
+  connSendMessage (mainData->conn, ROUTE_MARQUEE, MSG_MARQUEE_TIMER, timerbuff);
 }
 
 static void

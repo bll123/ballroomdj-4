@@ -25,11 +25,20 @@ pathbldMakePath (char *buff, size_t buffsz, const char *subpath,
   if ((flags & PATHBLD_MP_TMPDIR) == PATHBLD_MP_TMPDIR) {
     dirprefix = "tmp";
   }
+  if ((flags & PATHBLD_MP_HTTPDIR) == PATHBLD_MP_HTTPDIR) {
+    dirprefix = "http";
+  }
   if ((flags & PATHBLD_MP_EXECDIR) == PATHBLD_MP_EXECDIR) {
     dirprefix = sysvars [SV_BDJ4EXECDIR];
   }
   if ((flags & PATHBLD_MP_MAINDIR) == PATHBLD_MP_MAINDIR) {
     dirprefix = sysvars [SV_BDJ4MAINDIR];
+  }
+  if ((flags & PATHBLD_MP_RESOURCEDIR) == PATHBLD_MP_RESOURCEDIR) {
+    dirprefix = sysvars [SV_BDJ4RESOURCEDIR];
+  }
+  if ((flags & PATHBLD_MP_IMGDIR) == PATHBLD_MP_IMGDIR) {
+    dirprefix = sysvars [SV_BDJ4IMGDIR];
   }
 
   if ((flags & PATHBLD_MP_USEIDX) == PATHBLD_MP_USEIDX) {

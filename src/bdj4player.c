@@ -349,11 +349,19 @@ playerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
       logMsg (LOG_DBG, LOG_MSGS, "got: route-player");
       switch (msg) {
         case MSG_HANDSHAKE: {
+fprintf (stderr, "player: got handshake from %d\n", routefrom);
           connProcessHandshake (playerData->conn, routefrom);
-          if (connHaveHandshake (playerData->conn, ROUTE_REMCTRL) &&
-              ! connIsConnected (playerData->conn, ROUTE_REMCTRL)) {
-            connConnect (playerData->conn, ROUTE_REMCTRL);
-          }
+          connConnectResponse (playerData->conn, routefrom);
+          break;
+        }
+        case MSG_CONNECT_REQ: {
+fprintf (stderr, "player: got connect req from %d\n", routefrom);
+          connConnect (playerData->conn, routefrom);
+          break;
+        }
+        case MSG_REMOVE_HANDSHAKE: {
+fprintf (stderr, "player: got remove handshake %d\n", routefrom);
+          connClearHandshake (playerData->conn, routefrom);
           break;
         }
         case MSG_EXIT_REQUEST: {
@@ -457,9 +465,8 @@ playerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 static int
 playerProcessing (void *udata)
 {
-  playerdata_t      *playerData;
+  playerdata_t      *playerData = udata;;
 
-  playerData = (playerdata_t *) udata;
 
   if (! progstartIsRunning (playerData->progstart)) {
     progstartProcess (playerData->progstart, playerData);
@@ -1006,7 +1013,7 @@ playerSendPauseAtEndState (playerdata_t *playerData)
   char    tbuff [20];
 
   snprintf (tbuff, sizeof (tbuff), "%d", playerData->pauseAtEnd);
-  connSendMessage (playerData->conn, ROUTE_PLAYERGUI,
+  connSendMessage (playerData->conn, ROUTE_PLAYERUI,
       MSG_PLAY_PAUSEATEND_STATE, tbuff);
 }
 
@@ -1280,7 +1287,7 @@ playerSetPlayerState (playerdata_t *playerData, playerstate_t pstate)
   snprintf (tbuff, sizeof (tbuff), "%d", playerData->playerState);
   connSendMessage (playerData->conn, ROUTE_MAIN,
       MSG_PLAYER_STATE, tbuff);
-  connSendMessage (playerData->conn, ROUTE_PLAYERGUI,
+  connSendMessage (playerData->conn, ROUTE_PLAYERUI,
       MSG_PLAYER_STATE, tbuff);
   /* any time there is a change of player state, send the status */
   playerSendStatus (playerData);

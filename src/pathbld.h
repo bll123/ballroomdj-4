@@ -9,6 +9,9 @@ typedef enum {
   PATHBLD_MP_EXECDIR     = 0x0008,
   PATHBLD_MP_MAINDIR     = 0x0010,
   PATHBLD_MP_MUSICDIR    = 0x0020,
+  PATHBLD_MP_RESOURCEDIR = 0x0040,
+  PATHBLD_MP_HTTPDIR     = 0x0080,
+  PATHBLD_MP_IMGDIR      = 0x0100,
 } pathbld_mp_t;
 
 char *        pathbldMakePath (char *buff, size_t buffsz, const char *subpath,

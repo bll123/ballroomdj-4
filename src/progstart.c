@@ -57,6 +57,11 @@ progstartProcess (progstart_t *progstart, void *userdata)
   }
 
   success = true;
+  /* skip over empty states */
+  while (progstart->callbacks [progstart->programState] == NULL &&
+         progstart->programState != STATE_RUNNING) {
+    ++progstart->programState;
+  }
   if (progstart->callbacks [progstart->programState] != NULL) {
     success = progstart->callbacks [progstart->programState] (userdata,
         progstart->programState);
@@ -80,6 +85,11 @@ progstartShutdownProcess (progstart_t *progstart, void *userdata)
   }
 
   success = true;
+  /* skip over empty states */
+  while (progstart->callbacks [progstart->programState] == NULL &&
+         progstart->programState != STATE_CLOSED) {
+    ++progstart->programState;
+  }
   if (progstart->callbacks [progstart->programState] != NULL) {
     success = progstart->callbacks [progstart->programState] (userdata,
         progstart->programState);

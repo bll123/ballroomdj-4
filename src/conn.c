@@ -30,9 +30,9 @@ connInit (bdjmsgroute_t routefrom)
 
   connports [ROUTE_NONE] = 0;
   connports [ROUTE_MAIN] = bdjvarsl [BDJVL_MAIN_PORT];
-  connports [ROUTE_PLAYERGUI] = bdjvarsl [BDJVL_PLAYERGUI_PORT];
-  connports [ROUTE_MANAGEGUI] = bdjvarsl [BDJVL_MANAGEGUI_PORT];
-  connports [ROUTE_CONFIGGUI] = bdjvarsl [BDJVL_CONFIGGUI_PORT];
+  connports [ROUTE_PLAYERUI] = bdjvarsl [BDJVL_PLAYERUI_PORT];
+  connports [ROUTE_MANAGEUI] = bdjvarsl [BDJVL_MANAGEUI_PORT];
+  connports [ROUTE_CONFIGUI] = bdjvarsl [BDJVL_CONFIGUI_PORT];
   connports [ROUTE_PLAYER] = bdjvarsl [BDJVL_PLAYER_PORT];
   connports [ROUTE_CLICOMM] = 0;
   connports [ROUTE_MOBILEMQ] = bdjvarsl [BDJVL_MOBILEMQ_PORT];
@@ -88,6 +88,8 @@ connDisconnect (conn_t *conn, bdjmsgroute_t route)
 
   if (conn [route].sock != INVALID_SOCKET) {
     sockhSendMessage (conn [route].sock, conn [route].routefrom, route,
+        MSG_REMOVE_HANDSHAKE, NULL);
+    sockhSendMessage (conn [route].sock, conn [route].routefrom, route,
         MSG_SOCKET_CLOSE, NULL);
     sockClose (conn [route].sock);
   }
@@ -100,13 +102,7 @@ void
 connDisconnectAll (conn_t *conn)
 {
   for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
-    if (conn [i].sock != INVALID_SOCKET) {
-      sockhSendMessage (conn [i].sock, conn [i].routefrom, i,
-          MSG_SOCKET_CLOSE, NULL);
-      sockClose (conn [i].sock);
-      conn [i].sock = INVALID_SOCKET;
-      conn [i].connected = false;
-    }
+    connDisconnect (conn, i);
   }
 }
 
@@ -119,6 +115,8 @@ connReconnect (conn_t *conn, bdjmsgroute_t route)
 
   connDisconnect (conn, route);
   connConnect (conn, route);
+  sockhSendMessage (conn [route].sock, conn [route].routefrom, route,
+      MSG_CONNECT_REQ, NULL);
 }
 
 void
@@ -149,9 +147,31 @@ connSendMessage (conn_t *conn, bdjmsgroute_t route,
       route, msg, args);
   if (rc < 0) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "lost connection to %d", route);
+    sockClose (conn [route].sock);
     conn [route].sock = INVALID_SOCKET;
     conn [route].connected = false;
+    conn [route].handshake = false;
   }
+}
+
+void
+connConnectResponse (conn_t *conn, bdjmsgroute_t route)
+{
+  if (connHaveHandshake (conn, route) &&
+      ! connIsConnected (conn, route)) {
+    connConnect (conn, route);
+  }
+}
+
+
+void
+connClearHandshake (conn_t *conn, bdjmsgroute_t route)
+{
+  if (route >= ROUTE_MAX) {
+    return;
+  }
+
+  conn [route].handshake = false;
 }
 
 inline bool
@@ -173,3 +193,4 @@ connHaveHandshake (conn_t *conn, bdjmsgroute_t route)
 
   return conn [route].handshake;
 }
+

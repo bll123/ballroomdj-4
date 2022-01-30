@@ -24,6 +24,8 @@ void      connReconnect (conn_t *conn, bdjmsgroute_t route);
 void      connProcessHandshake (conn_t *conn, bdjmsgroute_t routefrom);
 void      connSendMessage (conn_t *conn, bdjmsgroute_t route,
               bdjmsgmsg_t msg, char *args);
+void      connConnectResponse (conn_t *conn, bdjmsgroute_t route);
+void      connClearHandshake (conn_t *conn, bdjmsgroute_t route);
 bool      connIsConnected (conn_t *conn, bdjmsgroute_t route);
 bool      connHaveHandshake (conn_t *conn, bdjmsgroute_t route);
 

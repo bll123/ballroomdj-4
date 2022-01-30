@@ -4,9 +4,9 @@
 typedef enum {
   ROUTE_NONE,       // anonymous
   ROUTE_MAIN,       // 1
-  ROUTE_PLAYERGUI,
-  ROUTE_CONFIGGUI,
-  ROUTE_MANAGEGUI,
+  ROUTE_PLAYERUI,
+  ROUTE_CONFIGUI,
+  ROUTE_MANAGEUI,
   ROUTE_PLAYER,     // 5
   ROUTE_CLICOMM,
   ROUTE_MOBILEMQ,   // 8
@@ -18,6 +18,7 @@ typedef enum {
 typedef enum {
   MSG_NULL,
   MSG_HANDSHAKE,
+  MSG_REMOVE_HANDSHAKE,
   MSG_CONNECT_REQ,          // request a re-connect
   MSG_SOCKET_CLOSE,
   MSG_EXIT_REQUEST,         // standard shutdown

@@ -114,16 +114,16 @@ main (int argc, char *argv[])
         route = ROUTE_PLAYER;
         routeok = 1;
       }
-      if (strcmp (buff, "pgui") == 0) {
-        route = ROUTE_PLAYERGUI;
+      if (strcmp (buff, "pui") == 0) {
+        route = ROUTE_PLAYERUI;
         routeok = 1;
       }
-      if (strcmp (buff, "cgui") == 0) {
-        route = ROUTE_CONFIGGUI;
+      if (strcmp (buff, "cui") == 0) {
+        route = ROUTE_CONFIGUI;
         routeok = 1;
       }
-      if (strcmp (buff, "mgui") == 0) {
-        route = ROUTE_MANAGEGUI;
+      if (strcmp (buff, "mui") == 0) {
+        route = ROUTE_MANAGEUI;
         routeok = 1;
       }
       if (strcmp (buff, "mm") == 0) {
