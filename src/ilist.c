@@ -20,6 +20,7 @@ ilistAlloc (char *name, ilistorder_t ordered, ilistFree_t valueFreeHook)
 {
   ilist_t    *list;
 
+  ordered = LIST_ORDERED;
   list = listAlloc (name, ordered, listFree, NULL);
   list->keytype = LIST_KEY_NUM;
   return list;

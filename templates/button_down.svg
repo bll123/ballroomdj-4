@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg
    enable-background="new 0 0 128 128"
-   viewBox="0 0 16 18"
+   viewBox="0 0 18 18"
    version="1.1"
    id="svg29"
    sodipodi:docname="button_down.svg"
-   width="16"
+   width="18"
    height="18"
    inkscape:version="1.1.1 (3bf5ae0d25, 2021-09-20)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
@@ -37,13 +37,13 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="1181"
-     inkscape:window-height="480"
+     inkscape:window-width="1349"
+     inkscape:window-height="963"
      id="namedview31"
      showgrid="false"
-     inkscape:zoom="13.222222"
-     inkscape:cx="8.0168068"
-     inkscape:cy="9.0000001"
+     inkscape:zoom="22.444444"
+     inkscape:cx="9"
+     inkscape:cy="8.9777228"
      inkscape:window-x="51"
      inkscape:window-y="0"
      inkscape:window-maximized="0"
@@ -52,8 +52,9 @@
      fit-margin-top="0"
      fit-margin-right="0"
      fit-margin-bottom="0"
-     showborder="false"
-     inkscape:pagecheckerboard="true" />
+     showborder="true"
+     inkscape:pagecheckerboard="true"
+     inkscape:showpageshadow="false" />
   <linearGradient
      id="a"
      x1="64"
@@ -74,5 +75,5 @@
      style="fill:#000000;fill-opacity:1;stroke-width:0.32734"
      inkscape:connector-curvature="0"
      id="path25"
-     d="m 8.0008796,1.0000001 h 8.2481144 c 0.575375,0 0.935386,0.6300329 0.65252,1.133392 L 8.6533987,16.617479 c -0.289295,0.510028 -1.0157463,0.510028 -1.3018254,0 L -0.89975594,2.1333921 c -0.28607996,-0.5066925 0.073926,-1.133392 0.652521,-1.133392 z" />
+     d="m 9.0008796,1 h 8.2481144 c 0.575375,0 0.935386,0.6300329 0.65252,1.133392 L 9.6533987,16.617479 c -0.289295,0.510028 -1.0157463,0.510028 -1.3018254,0 L 0.1002441,2.133392 C -0.18583586,1.6266995 0.1741701,1 0.7527651,1 Z" />
 </svg>

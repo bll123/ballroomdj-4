@@ -61,6 +61,7 @@ typedef enum {
   TAG_DANCERATING,            //
   TAG_DATE,
   TAG_DBADDDATE,
+  TAG_DBIDX,                  // not saved
   TAG_DISCNUMBER,
   TAG_DISCTOTAL,
   TAG_DISPLAYIMG,

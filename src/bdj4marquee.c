@@ -35,7 +35,6 @@ typedef struct {
   conn_t          *conn;
   sockserver_t    *sockserver;
   char            *mqfont;
-  mstime_t        tm;
   GtkWidget       *window;
   GtkWidget       *vbox;
   GtkWidget       *pbar;
@@ -112,12 +111,15 @@ main (int argc, char *argv[])
     { NULL,         0,                  NULL,   0 }
   };
 
-  mstimestart (&marquee.tm);
-  marquee.progstart = progstartInit ();
-  progstartSetCallback (marquee.progstart, STATE_CONNECTING, marqueeConnectingCallback);
-  progstartSetCallback (marquee.progstart, STATE_WAIT_HANDSHAKE, marqueeHandshakeCallback);
-  progstartSetCallback (marquee.progstart, STATE_STOPPING, marqueeStoppingCallback);
-  progstartSetCallback (marquee.progstart, STATE_CLOSING, marqueeClosingCallback);
+  marquee.progstart = progstartInit ("marquee");
+  progstartSetCallback (marquee.progstart, STATE_CONNECTING,
+      marqueeConnectingCallback, &marquee);
+  progstartSetCallback (marquee.progstart, STATE_WAIT_HANDSHAKE,
+      marqueeHandshakeCallback, &marquee);
+  progstartSetCallback (marquee.progstart, STATE_STOPPING,
+      marqueeStoppingCallback, &marquee);
+  progstartSetCallback (marquee.progstart, STATE_CLOSING,
+      marqueeClosingCallback, &marquee);
   marquee.sockserver = NULL;
   marquee.window = NULL;
   marquee.pbar = NULL;
@@ -206,11 +208,11 @@ main (int argc, char *argv[])
 
   status = marqueeCreateGui (&marquee, 0, NULL);
 
-  while (progstartShutdownProcess (marquee.progstart, &marquee) != STATE_CLOSED) {
+  while (progstartShutdownProcess (marquee.progstart) != STATE_CLOSED) {
     ;
   }
   progstartFree (marquee.progstart);
-
+  logEnd ();
   return status;
 }
 
@@ -237,8 +239,6 @@ marqueeClosingCallback (void *udata, programstate_t programState)
   bdjvarsCleanup ();
 
   lockRelease (MARQUEE_LOCK_FN, PATHBLD_MP_USEIDX);
-  logMsg (LOG_SESS, LOG_IMPORTANT, "time-to-end: %ld ms", mstimeend (&marquee->tm));
-  logEnd ();
 
   if (marquee->mqfont != NULL && *marquee->mqfont != '\0') {
     free (marquee->mqfont);
@@ -262,6 +262,7 @@ marqueeCreateGui (marquee_t *marquee, int argc, char *argv [])
   g_signal_connect (marquee->app, "activate", G_CALLBACK (marqueeActivate), marquee);
 
   status = g_application_run (G_APPLICATION (marquee->app), argc, argv);
+  gtk_widget_destroy (marquee->window);
   g_object_unref (marquee->app);
   return status;
 }
@@ -368,8 +369,7 @@ marqueeActivate (GApplication *app, gpointer userdata)
   marquee->inResize = false;
 
   marqueeAdjustFontSizes (marquee, 0);
-
-  logMsg (LOG_SESS, LOG_IMPORTANT, "running: time-to-start: %ld ms", mstimeend (&marquee->tm));
+  progstartLogTime (marquee->progstart, "time-to-start-gui");
 }
 
 gboolean
@@ -389,7 +389,7 @@ marqueeMainLoop (void *tmarquee)
   }
 
   if (! progstartIsRunning (marquee->progstart)) {
-    progstartProcess (marquee->progstart, marquee);
+    progstartProcess (marquee->progstart);
     if (gKillReceived) {
       logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
       cont = FALSE;
@@ -449,7 +449,6 @@ marqueeHandshakeCallback (void *udata, programstate_t programState)
 
 
   if (connHaveHandshake (marquee->conn, ROUTE_MAIN)) {
-    logMsg (LOG_SESS, LOG_IMPORTANT, "running: time-to-start: %ld ms", mstimeend (&marquee->tm));
     rc = true;
   }
 
@@ -477,11 +476,10 @@ marqueeProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_EXIT_REQUEST: {
-          mstimestart (&marquee->tm);
           logMsg (LOG_SESS, LOG_IMPORTANT, "got exit request");
           gKillReceived = 0;
           logMsg (LOG_DBG, LOG_MSGS, "got: req-exit");
-          progstartShutdownProcess (marquee->progstart, marquee);
+          progstartShutdownProcess (marquee->progstart);
           logProcEnd (LOG_PROC, "marqueeProcessMsg", "req-exit");
           return 1;
         }

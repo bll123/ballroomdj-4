@@ -88,14 +88,13 @@ connDisconnect (conn_t *conn, bdjmsgroute_t route)
 
   if (conn [route].sock != INVALID_SOCKET) {
     sockhSendMessage (conn [route].sock, conn [route].routefrom, route,
-        MSG_REMOVE_HANDSHAKE, NULL);
-    sockhSendMessage (conn [route].sock, conn [route].routefrom, route,
         MSG_SOCKET_CLOSE, NULL);
     sockClose (conn [route].sock);
   }
 
   conn [route].sock = INVALID_SOCKET;
   conn [route].connected = false;
+  conn [route].handshake = false;
 }
 
 void
@@ -104,19 +103,6 @@ connDisconnectAll (conn_t *conn)
   for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
     connDisconnect (conn, i);
   }
-}
-
-void
-connReconnect (conn_t *conn, bdjmsgroute_t route)
-{
-  if (route >= ROUTE_MAX) {
-    return;
-  }
-
-/* untested */
-
-  connDisconnect (conn, route);
-  connConnect (conn, route);
 }
 
 void
@@ -135,10 +121,12 @@ connSendMessage (conn_t *conn, bdjmsgroute_t route,
 {
   int         rc;
 
+  if (conn == NULL) {
+    return;
+  }
   if (route >= ROUTE_MAX) {
     return;
   }
-
   if (conn [route].sock == INVALID_SOCKET) {
     return;
   }
@@ -157,6 +145,10 @@ connSendMessage (conn_t *conn, bdjmsgroute_t route,
 void
 connConnectResponse (conn_t *conn, bdjmsgroute_t route)
 {
+  if (conn == NULL) {
+    return;
+  }
+
   if (connHaveHandshake (conn, route) &&
       ! connIsConnected (conn, route)) {
     connConnect (conn, route);
@@ -167,6 +159,9 @@ connConnectResponse (conn_t *conn, bdjmsgroute_t route)
 void
 connClearHandshake (conn_t *conn, bdjmsgroute_t route)
 {
+  if (conn == NULL) {
+    return;
+  }
   if (route >= ROUTE_MAX) {
     return;
   }
@@ -177,6 +172,9 @@ connClearHandshake (conn_t *conn, bdjmsgroute_t route)
 inline bool
 connIsConnected (conn_t *conn, bdjmsgroute_t route)
 {
+  if (conn == NULL) {
+    return false;
+  }
   if (route >= ROUTE_MAX) {
     return false;
   }
@@ -187,6 +185,9 @@ connIsConnected (conn_t *conn, bdjmsgroute_t route)
 inline bool
 connHaveHandshake (conn_t *conn, bdjmsgroute_t route)
 {
+  if (conn == NULL) {
+    return false;
+  }
   if (route >= ROUTE_MAX) {
     return false;
   }

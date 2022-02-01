@@ -40,7 +40,6 @@
 typedef struct {
   conn_t          *conn;
   progstart_t     *progstart;
-  mstime_t        tm;
   uint16_t        port;
   bdjmobilemq_t   type;
   char            *name;
@@ -79,7 +78,6 @@ main (int argc, char *argv[])
     { NULL,         0,                  NULL,   0 }
   };
 
-  mstimestart (&mobmqData.tm);
 #if _define_SIGHUP
   processCatchSignal (mobmqSigHandler, SIGHUP);
 #endif
@@ -129,11 +127,15 @@ main (int argc, char *argv[])
     exit (0);
   }
 
-  mobmqData.progstart = progstartInit ();
-  progstartSetCallback (mobmqData.progstart, STATE_CONNECTING, mobmqConnectingCallback);
-  progstartSetCallback (mobmqData.progstart, STATE_WAIT_HANDSHAKE, mobmqHandshakeCallback);
-  progstartSetCallback (mobmqData.progstart, STATE_STOPPING, mobmqStoppingCallback);
-  progstartSetCallback (mobmqData.progstart, STATE_CLOSING, mobmqClosingCallback);
+  mobmqData.progstart = progstartInit ("mobilemq");
+  progstartSetCallback (mobmqData.progstart, STATE_CONNECTING,
+      mobmqConnectingCallback, &mobmqData);
+  progstartSetCallback (mobmqData.progstart, STATE_WAIT_HANDSHAKE,
+      mobmqHandshakeCallback, &mobmqData);
+  progstartSetCallback (mobmqData.progstart, STATE_STOPPING,
+      mobmqStoppingCallback, &mobmqData);
+  progstartSetCallback (mobmqData.progstart, STATE_CLOSING,
+      mobmqClosingCallback, &mobmqData);
   mobmqData.port = bdjoptGetNum (OPT_P_MOBILEMQPORT);
   mobmqData.name = NULL;
   tval = bdjoptGetData (OPT_P_MOBILEMQTAG);
@@ -153,10 +155,11 @@ main (int argc, char *argv[])
   listenPort = bdjvarsl [BDJVL_MOBILEMQ_PORT];
   sockhMainLoop (listenPort, mobmqProcessMsg, mobmqProcessing, &mobmqData);
 
-  while (progstartShutdownProcess (mobmqData.progstart, &mobmqData) != STATE_CLOSED) {
+  while (progstartShutdownProcess (mobmqData.progstart) != STATE_CLOSED) {
     ;
   }
   progstartFree (mobmqData.progstart);
+  logEnd ();
   return 0;
 }
 
@@ -190,8 +193,6 @@ mobmqClosingCallback (void *tmmdata, programstate_t programState)
   }
   bdjoptFree ();
   bdjvarsCleanup ();
-  logMsg (LOG_SESS, LOG_IMPORTANT, "time-to-end: %ld ms", mstimeend (&mobmqData->tm));
-  logEnd ();
   lockRelease (MOBILEMQ_LOCK_FN, PATHBLD_MP_USEIDX);
 
   return true;
@@ -257,10 +258,9 @@ mobmqProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_EXIT_REQUEST: {
-          mstimestart (&mobmqData->tm);
           logMsg (LOG_SESS, LOG_IMPORTANT, "got exit request");
           gKillReceived = 0;
-          progstartShutdownProcess (mobmqData->progstart, mobmqData);
+          progstartShutdownProcess (mobmqData->progstart);
           return 1;
         }
         case MSG_MARQUEE_DATA: {
@@ -293,7 +293,7 @@ mobmqProcessing (void *udata)
 
 
   if (! progstartIsRunning (mobmqData->progstart)) {
-    progstartProcess (mobmqData->progstart, mobmqData);
+    progstartProcess (mobmqData->progstart);
     if (gKillReceived) {
       logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
     }
@@ -333,7 +333,6 @@ mobmqHandshakeCallback (void *tmmdata, programstate_t programState)
 
   if (connHaveHandshake (mobmqData->conn, ROUTE_MAIN)) {
     rc = true;
-    logMsg (LOG_SESS, LOG_IMPORTANT, "running: time-to-start: %ld ms", mstimeend (&mobmqData->tm));
   }
 
   return rc;

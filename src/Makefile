@@ -110,7 +110,6 @@ check:
 .PHONY: mcheck mchecksupp mcheckcli
 mcheck: $(MKC_ENV_SHR)
 	. ./$(MKC_ENV_SHR); \
-	G_ENABLE_DIAGNOSTIC=1; \
 	$(MAKE) -e rall
 	(cd ..;valgrind --tool=memcheck \
 		--leak-check=full \
@@ -122,7 +121,6 @@ mcheck: $(MKC_ENV_SHR)
 
 mchecksupp: $(MKC_ENV_SHR)
 	. ./$(MKC_ENV_SHR); \
-	G_ENABLE_DIAGNOSTIC=1; \
 	$(MAKE) -e rall
 	(cd ..;valgrind --tool=memcheck \
 		--leak-check=full \
@@ -132,6 +130,18 @@ mchecksupp: $(MKC_ENV_SHR)
 		--show-leak-kinds=all \
 		--suppressions=src/utils/valgrind-suppression.txt \
 		./bin/bdj4 --main --debug 11)
+
+mcheckpluisupp: $(MKC_ENV_SHR)
+	. ./$(MKC_ENV_SHR); \
+	$(MAKE) -e rall
+	(cd ..;valgrind --tool=memcheck \
+		--leak-check=full \
+		--read-inline-info=yes \
+		--trace-children=yes \
+		--track-origins=yes \
+		--show-leak-kinds=all \
+		--suppressions=src/utils/valgrind-suppression.txt \
+		./bin/bdj4 --playerui --debug 11)
 
 mcheckcli: $(MKC_ENV_SHR)
 	. ./$(MKC_ENV_SHR); $(MAKE) -e rall
@@ -380,7 +390,8 @@ $(BINDIR)/bdj4marquee$(EXE_EXT): $(MKC_REQLIB) $(MKC_REQLIB_COMMON) \
 		$(MKC_REQLIB_GTK) \
 		$(BDJMARQUEEOBJS) \
 		$(SHLIBDIR)/libbdj4$(SHLIB_EXT) \
-		$(SHLIBDIR)/libbdj4common$(SHLIB_EXT)
+		$(SHLIBDIR)/libbdj4common$(SHLIB_EXT) \
+		$(SHLIBDIR)/libbdj4ui$(SHLIB_EXT)
 	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh \
 		-link -exec $(MKC_ECHO) \
 		-r $(MKC_REQLIB_GTK) \
@@ -389,7 +400,7 @@ $(BINDIR)/bdj4marquee$(EXE_EXT): $(MKC_REQLIB) $(MKC_REQLIB_COMMON) \
 		-o $@ \
 		$(BDJMARQUEEOBJS) \
 		-L $(SHLIBDIR) -rpath $(BINDIR) \
-		-l bdj4 -l bdj4common -l bdj4ui
+		-l bdj4ui -l bdj4 -l bdj4common
 	./utils/postbuild.sh $@
 
 BDJPLAYERUIOBJS = $(OBJDIR)/bdj4playerui$(OBJ_EXT)
@@ -398,7 +409,8 @@ $(BINDIR)/bdj4playerui$(EXE_EXT): $(MKC_REQLIB) $(MKC_REQLIB_COMMON) \
 		$(MKC_REQLIB_GTK) \
 		$(BDJPLAYERUIOBJS) \
 		$(SHLIBDIR)/libbdj4$(SHLIB_EXT) \
-		$(SHLIBDIR)/libbdj4common$(SHLIB_EXT)
+		$(SHLIBDIR)/libbdj4common$(SHLIB_EXT) \
+		$(SHLIBDIR)/libbdj4ui$(SHLIB_EXT)
 	@$(_MKCONFIG_SHELL) $(MKC_DIR)/mkc.sh \
 		-link -exec $(MKC_ECHO) \
 		-r $(MKC_REQLIB_GTK) \
@@ -407,7 +419,7 @@ $(BINDIR)/bdj4playerui$(EXE_EXT): $(MKC_REQLIB) $(MKC_REQLIB_COMMON) \
 		-o $@ \
 		$(BDJPLAYERUIOBJS) \
 		-L $(SHLIBDIR) -rpath $(BINDIR) \
-		-l bdj4 -l bdj4common -l bdj4ui
+		-l bdj4ui -l bdj4 -l bdj4common
 	./utils/postbuild.sh $@
 
 PLAYEROBJS = $(OBJDIR)/bdj4player$(OBJ_EXT)
@@ -575,6 +587,9 @@ $(SHLIBDIR)/libbdj4player$(SHLIB_EXT): \
 	./utils/postbuild.sh $@
 
 LIBUIOBJS = \
+	$(OBJDIR)/uimusicq$(OBJ_EXT) \
+	$(OBJDIR)/uiplayer$(OBJ_EXT) \
+	$(OBJDIR)/uisongsel$(OBJ_EXT) \
 	$(OBJDIR)/uiutils$(OBJ_EXT)
 
 $(SHLIBDIR)/libbdj4ui$(SHLIB_EXT): \
@@ -762,26 +777,29 @@ $(OBJDIR)/bdj4main$(OBJ_EXT): bdj4main.c config.h bdj4.h bdj4init.h bdjmsg.h bdj
  bdjvars.h conn.h sock.h dance.h dancesel.h autosel.h queue.h filedata.h \
  lock.h log.h fileutil.h musicdb.h song.h musicq.h tagdef.h pathbld.h \
  playlist.h sequence.h songlist.h songsel.h portability.h process.h \
- progstart.h sockh.h sysvars.h tmutil.h webclient.h
+ progstart.h tmutil.h sockh.h sysvars.h webclient.h
 $(OBJDIR)/bdj4marquee$(OBJ_EXT): bdj4marquee.c config.h bdj4.h bdjmsg.h bdjopt.h \
  bdjstring.h bdjvars.h conn.h sock.h lock.h log.h fileutil.h pathbld.h \
- process.h progstart.h sockh.h sysvars.h portability.h tmutil.h uiutils.h
+ process.h progstart.h ilist.h list.h slist.h tmutil.h sockh.h sysvars.h \
+ portability.h uiutils.h
 $(OBJDIR)/bdj4mobmq$(OBJ_EXT): bdj4mobmq.c config.h ../packages/mongoose/mongoose.h bdj4.h \
  bdjmsg.h bdjopt.h bdjvars.h conn.h sock.h lock.h log.h fileutil.h \
- pathbld.h process.h progstart.h sockh.h sysvars.h portability.h tmutil.h \
- websrv.h
+ pathbld.h process.h progstart.h ilist.h list.h slist.h tmutil.h sockh.h \
+ sysvars.h portability.h websrv.h
 $(OBJDIR)/bdj4player$(OBJ_EXT): bdj4player.c config.h bdj4.h bdjmsg.h bdjopt.h bdjstring.h \
- bdjvars.h conn.h sock.h pathbld.h progstart.h fileop.h filemanip.h \
- slist.h list.h lock.h log.h fileutil.h pathutil.h pli.h dylib.h \
- portability.h tmutil.h process.h queue.h sockh.h songutil.h sysvars.h \
+ bdjvars.h conn.h sock.h pathbld.h progstart.h ilist.h list.h slist.h \
+ tmutil.h fileop.h filemanip.h lock.h log.h fileutil.h pathutil.h pli.h \
+ dylib.h portability.h process.h queue.h sockh.h songutil.h sysvars.h \
  volume.h
 $(OBJDIR)/bdj4playerui$(OBJ_EXT): bdj4playerui.c config.h bdj4.h bdjmsg.h bdjopt.h \
- bdjstring.h bdjvars.h conn.h sock.h lock.h log.h fileutil.h pathbld.h \
- process.h progstart.h sockh.h sysvars.h portability.h tmutil.h uiutils.h
+ bdjstring.h bdjvars.h bdjvarsdfload.h conn.h sock.h lock.h log.h \
+ fileutil.h musicdb.h song.h nlist.h list.h pathbld.h process.h \
+ progstart.h ilist.h slist.h tmutil.h sockh.h sysvars.h portability.h \
+ uimusicq.h uiplayer.h uisongsel.h uiutils.h
 $(OBJDIR)/bdj4rc$(OBJ_EXT): bdj4rc.c config.h ../packages/mongoose/mongoose.h bdj4.h \
- bdjmsg.h bdjopt.h bdjvars.h conn.h sock.h lock.h log.h fileutil.h \
- pathbld.h process.h progstart.h sockh.h sysvars.h portability.h tmutil.h \
- websrv.h
+ bdjmsg.h bdjopt.h bdjstring.h bdjvars.h conn.h sock.h lock.h log.h \
+ fileutil.h pathbld.h process.h progstart.h ilist.h list.h slist.h \
+ tmutil.h sockh.h sysvars.h portability.h websrv.h
 $(OBJDIR)/bdjmsg$(OBJ_EXT): bdjmsg.c config.h bdjmsg.h bdjstring.h
 $(OBJDIR)/bdjopt$(OBJ_EXT): bdjopt.c config.h bdjopt.h datafile.h list.h nlist.h slist.h \
  ilist.h pathbld.h filemanip.h fileop.h portability.h sysvars.h
@@ -874,7 +892,8 @@ $(OBJDIR)/plivlc$(OBJ_EXT): plivlc.c config.h configvlc.h pli.h dylib.h portabil
  tmutil.h vlci.h slist.h list.h
 $(OBJDIR)/portability$(OBJ_EXT): portability.c config.h portability.h
 $(OBJDIR)/process$(OBJ_EXT): process.c config.h process.h log.h fileutil.h
-$(OBJDIR)/progstart$(OBJ_EXT): progstart.c config.h log.h fileutil.h progstart.h
+$(OBJDIR)/progstart$(OBJ_EXT): progstart.c config.h log.h fileutil.h progstart.h ilist.h \
+ list.h slist.h tmutil.h
 $(OBJDIR)/queue$(OBJ_EXT): queue.c config.h queue.h
 $(OBJDIR)/rafile$(OBJ_EXT): rafile.c config.h lock.h log.h fileutil.h pathbld.h rafile.h \
  tmutil.h
@@ -906,6 +925,15 @@ $(OBJDIR)/sysvars$(OBJ_EXT): sysvars.c config.h sysvars.h portability.h bdjstrin
  filedata.h fileop.h pathutil.h
 $(OBJDIR)/tagdef$(OBJ_EXT): tagdef.c config.h tagdef.h bdjstring.h
 $(OBJDIR)/tmutil$(OBJ_EXT): tmutil.c config.h tmutil.h bdjstring.h
+$(OBJDIR)/uimusicq$(OBJ_EXT): uimusicq.c config.h bdjvarsdf.h datafile.h list.h nlist.h \
+ slist.h ilist.h conn.h sock.h bdjmsg.h dance.h musicdb.h song.h \
+ pathbld.h playlist.h dancesel.h bdj4.h autosel.h queue.h sequence.h \
+ songlist.h songsel.h portability.h progstart.h tmutil.h uimusicq.h
+$(OBJDIR)/uiplayer$(OBJ_EXT): uiplayer.c config.h conn.h sock.h bdjmsg.h pathbld.h \
+ portability.h progstart.h ilist.h list.h slist.h tmutil.h uiplayer.h \
+ bdj4.h uiutils.h
+$(OBJDIR)/uisongsel$(OBJ_EXT): uisongsel.c config.h conn.h sock.h bdjmsg.h pathbld.h \
+ portability.h progstart.h ilist.h list.h slist.h tmutil.h uisongsel.h
 $(OBJDIR)/uiutils$(OBJ_EXT): uiutils.c config.h uiutils.h
 $(OBJDIR)/vlci$(OBJ_EXT): vlci.c config.h configvlc.h vlci.h slist.h list.h bdjstring.h
 $(OBJDIR)/volalsa$(OBJ_EXT): volalsa.c config.h configalsa.h volume.h dylib.h portability.h

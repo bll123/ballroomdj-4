@@ -18,7 +18,6 @@ typedef enum {
 typedef enum {
   MSG_NULL,
   MSG_HANDSHAKE,
-  MSG_REMOVE_HANDSHAKE,
   MSG_SOCKET_CLOSE,
   MSG_EXIT_REQUEST,         // standard shutdown
     /* to main */
@@ -64,8 +63,10 @@ typedef enum {
                             //    args: song fname
   MSG_PLAYER_STATE,         // args: player state
   MSG_PLAYER_STATUS_DATA,   // response to get_status; to main
+    /* to/from ui */
+  MSG_MUSIC_QUEUE_DATA,
     /* to/from web servers */
-  MSG_GET_DANCE_LIST,       //
+  MSG_GET_DANCE_LIST,
   MSG_MARQUEE_DATA,         // args: mq json data ; also for msg to marquee
   MSG_DANCE_LIST_DATA,      // args: html option list
   MSG_GET_PLAYLIST_LIST,    //

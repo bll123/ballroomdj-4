@@ -1,6 +1,9 @@
 #ifndef INC_PROGSTART_H
 #define INC_PROGSTART_H
 
+#include "ilist.h"
+#include "tmutil.h"
+
 typedef enum {
   STATE_NOT_RUNNING,
   STATE_INITIALIZING,
@@ -19,16 +22,20 @@ typedef bool (*progstartCallback_t)(void *userdata, programstate_t programState)
 
 typedef struct {
   programstate_t      programState;
-  progstartCallback_t callbacks [STATE_MAX];
+  ilist_t             *callbacks [STATE_MAX];
+  mstime_t            tm;
+  char                *progtag;
 } progstart_t;
 
-progstart_t     * progstartInit (void);
+progstart_t     * progstartInit (char *progtag);
 void            progstartFree (progstart_t *progstart);
 void            progstartSetCallback (progstart_t *progstart,
-                    programstate_t cbtype, progstartCallback_t callback);
-programstate_t  progstartProcess (progstart_t *progstart, void *userdata);
+                    programstate_t cbtype, progstartCallback_t callback,
+                    void *udata);
+programstate_t  progstartProcess (progstart_t *progstart);
 bool            progstartIsRunning (progstart_t *progstart);
-programstate_t  progstartShutdownProcess (progstart_t *progstart, void *userdata);
+programstate_t  progstartShutdownProcess (progstart_t *progstart);
 programstate_t  progstartCurrState (progstart_t *progstart);
+void            progstartLogTime (progstart_t *progstart, char *label);
 
 #endif /* INC_PROGSTART_H */

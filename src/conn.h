@@ -20,7 +20,6 @@ void      connFree (conn_t *conn);
 void      connConnect (conn_t *conn, bdjmsgroute_t route);
 void      connDisconnect (conn_t *conn, bdjmsgroute_t route);
 void      connDisconnectAll (conn_t *conn);
-void      connReconnect (conn_t *conn, bdjmsgroute_t route);
 void      connProcessHandshake (conn_t *conn, bdjmsgroute_t routefrom);
 void      connSendMessage (conn_t *conn, bdjmsgroute_t route,
               bdjmsgmsg_t msg, char *args);

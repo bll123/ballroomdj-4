@@ -128,7 +128,8 @@ sockhProcessMain (sockserver_t *sockserver, sockProcessMsg_t msgProc,
         case MSG_SOCKET_CLOSE: {
           logMsg (LOG_DBG, LOG_SOCKET, "got: close socket");
           sockRemoveCheck (sockserver->si, msgsock);
-          sockClose (msgsock);
+          /* the caller will close the socket */
+          done = msgProc (routefrom, route, msg, args, userData);
           break;
         }
         default: {

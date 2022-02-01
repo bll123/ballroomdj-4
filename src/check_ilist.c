@@ -57,6 +57,43 @@ START_TEST(ilist_get_data_str)
 }
 END_TEST
 
+START_TEST(ilist_get_data_str_sub)
+{
+  ilist_t        *list;
+  char          *value;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "==== ilist_get_data_str");
+
+  list = ilistAlloc ("chk-b", LIST_ORDERED, NULL);
+  ilistSetSize (list, 7);
+  ck_assert_int_eq (list->count, 0);
+  ck_assert_int_eq (list->allocCount, 7);
+  ilistSetStr (list, 6, 0, "0L");
+  ilistSetStr (list, 6, 1, "8L");
+  ilistSetStr (list, 26, 0, "1L");
+  ilistSetStr (list, 26, 1, "9L");
+  ilistSetStr (list, 18, 0, "2L");
+  ilistSetStr (list, 18, 1, "10L");
+  ilistSetStr (list, 11, 0, "3L");
+  ilistSetStr (list, 11, 1, "11L");
+  ilistSetStr (list, 3, 0, "4L");
+  ilistSetStr (list, 3, 1, "12L");
+  ilistSetStr (list, 1, 0, "5L");
+  ilistSetStr (list, 1, 1, "13L");
+  ilistSetStr (list, 2, 0, "6L");
+  ilistSetStr (list, 2, 1, "14L");
+  ck_assert_int_eq (list->count, 7);
+  ck_assert_int_eq (list->count, 7);
+  value = ilistGetStr (list, 3, 0);
+  ck_assert_ptr_nonnull (value);
+  ck_assert_str_eq (value, "4L");
+  value = ilistGetStr (list, 26, 1);
+  ck_assert_ptr_nonnull (value);
+  ck_assert_str_eq (value, "9L");
+  ilistFree (list);
+}
+END_TEST
+
 START_TEST(ilist_add_str_iterate)
 {
   ilist_t *      list;
@@ -292,6 +329,7 @@ ilist_suite (void)
   tc = tcase_create ("ilist");
   tcase_add_test (tc, ilist_create_free);
   tcase_add_test (tc, ilist_get_data_str);
+  tcase_add_test (tc, ilist_get_data_str_sub);
   tcase_add_test (tc, ilist_add_str_iterate);
   tcase_add_test (tc, ilist_add_sort_str);
   tcase_add_test (tc, ilist_replace_str);

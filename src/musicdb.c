@@ -85,6 +85,7 @@ dbLoad (db_t *db, char *fn)
   rafileidx_t rc;
   nlistidx_t  dkey;
   nlistidx_t  iteridx;
+  slistidx_t  dbidx;
   bool        ok;
 
 
@@ -127,7 +128,8 @@ dbLoad (db_t *db, char *fn)
         /* a double check to make sure the song has the correct rrn */
         songSetNum (song, TAG_RRN, i);
       }
-      slistSetData (db->songs, fstr, song);
+      dbidx = slistSetData (db->songs, fstr, song);
+      songSetNum (song, TAG_DBIDX, dbidx);
     }
     ++db->count;
   }

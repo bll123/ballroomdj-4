@@ -36,6 +36,7 @@
 #include "process.h"
 #include "progstart.h"
 #include "queue.h"
+#include "slist.h"
 #include "sock.h"
 #include "sockh.h"
 #include "sysvars.h"
@@ -51,7 +52,6 @@ typedef enum {
 /* playlistCache contains all of the playlists that have been seen */
 /* so that playlist lookups can be processed */
 typedef struct {
-  mstime_t          tm;
   progstart_t       *progstart;
   process_t         *processes [ROUTE_MAX];
   bool              started [ROUTE_MAX];
@@ -75,9 +75,9 @@ static int      mainProcessing (void *udata);
 static bool     mainListeningCallback (void *tmaindata, programstate_t programState);
 static bool     mainConnectingCallback (void *tmaindata, programstate_t programState);
 static bool     mainHandshakeCallback (void *tmaindata, programstate_t programState);
-static bool     mainRunningCallback (void *tmaindata, programstate_t programState);
 static bool     mainStoppingCallback (void *tmaindata, programstate_t programState);
 static bool     mainClosingCallback (void *tmaindata, programstate_t programState);
+static void     mainSendMusicQueueData (maindata_t *mainData);
 static void     mainSendMarqueeData (maindata_t *mainData);
 static void     mainSendMobileMarqueeData (maindata_t *mainData);
 static void     mainMobilePostCallback (void *userdata, char *resp, size_t len);
@@ -122,15 +122,17 @@ main (int argc, char *argv[])
   uint16_t      listenPort;
 
 
-  mstimestart (&mainData.tm);
-
-  mainData.progstart = progstartInit ();
-  progstartSetCallback (mainData.progstart, STATE_LISTENING, mainListeningCallback);
-  progstartSetCallback (mainData.progstart, STATE_CONNECTING, mainConnectingCallback);
-  progstartSetCallback (mainData.progstart, STATE_WAIT_HANDSHAKE, mainHandshakeCallback);
-  progstartSetCallback (mainData.progstart, STATE_RUNNING, mainRunningCallback);
-  progstartSetCallback (mainData.progstart, STATE_STOPPING, mainStoppingCallback);
-  progstartSetCallback (mainData.progstart, STATE_CLOSING, mainClosingCallback);
+  mainData.progstart = progstartInit ("main");
+  progstartSetCallback (mainData.progstart, STATE_LISTENING,
+      mainListeningCallback, &mainData);
+  progstartSetCallback (mainData.progstart, STATE_CONNECTING,
+      mainConnectingCallback, &mainData);
+  progstartSetCallback (mainData.progstart, STATE_WAIT_HANDSHAKE,
+      mainHandshakeCallback, &mainData);
+  progstartSetCallback (mainData.progstart, STATE_STOPPING,
+      mainStoppingCallback, &mainData);
+  progstartSetCallback (mainData.progstart, STATE_CLOSING,
+      mainClosingCallback, &mainData);
   mainData.playlistCache = NULL;
   mainData.playlistQueue = NULL;
   mainData.musicQueue = NULL;
@@ -171,10 +173,11 @@ main (int argc, char *argv[])
   sockhMainLoop (listenPort, mainProcessMsg, mainProcessing, &mainData);
 
   logProcEnd (LOG_PROC, "main", "");
-  while (progstartShutdownProcess (mainData.progstart, &mainData) != STATE_CLOSED) {
+  while (progstartShutdownProcess (mainData.progstart) != STATE_CLOSED) {
     ;
   }
   progstartFree (mainData.progstart);
+  logEnd ();
   return 0;
 }
 
@@ -231,8 +234,6 @@ mainClosingCallback (void *tmaindata, programstate_t programState)
       processFree (mainData->processes [i]);
     }
   }
-  logMsg (LOG_SESS, LOG_IMPORTANT, "time-to-end: %ld ms", mstimeend (&mainData->tm));
-  logEnd ();
   return true;
 }
 
@@ -255,21 +256,18 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     case ROUTE_MAIN: {
       switch (msg) {
         case MSG_HANDSHAKE: {
-fprintf (stderr, "main: got handshake from %d\n", routefrom);
           connProcessHandshake (mainData->conn, routefrom);
           connConnectResponse (mainData->conn, routefrom);
           break;
         }
-        case MSG_REMOVE_HANDSHAKE: {
-fprintf (stderr, "main: got remove handshake %d\n", routefrom);
-          connClearHandshake (mainData->conn, routefrom);
+        case MSG_SOCKET_CLOSE: {
+          connDisconnect (mainData->conn, routefrom);
           break;
         }
         case MSG_EXIT_REQUEST: {
-          mstimestart (&mainData->tm);
           logMsg (LOG_SESS, LOG_IMPORTANT, "got exit request");
           gKillReceived = 0;
-          progstartShutdownProcess (mainData->progstart, mainData);
+          progstartShutdownProcess (mainData->progstart);
           logProcEnd (LOG_PROC, "mainProcessMsg", "req-exit");
           return 1;
         }
@@ -399,7 +397,7 @@ mainProcessing (void *udata)
   mainData = (maindata_t *) udata;
 
   if (! progstartIsRunning (mainData->progstart)) {
-    progstartProcess (mainData->progstart, mainData);
+    progstartProcess (mainData->progstart);
     if (gKillReceived) {
       logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
     }
@@ -407,6 +405,7 @@ mainProcessing (void *udata)
   }
 
   if (mainData->musicqChanged) {
+    mainSendMusicQueueData (mainData);
     mainSendMarqueeData (mainData);
     mainSendMobileMarqueeData (mainData);
     mainData->musicqChanged = false;
@@ -499,15 +498,40 @@ mainHandshakeCallback (void *tmaindata, programstate_t programState)
   return rc;
 }
 
-static bool
-mainRunningCallback (void *tmaindata, programstate_t programState)
+static void
+mainSendMusicQueueData (maindata_t *mainData)
 {
-  maindata_t    *mainData = tmaindata;
+  char        tbuff [200];
+  char        sbuff [4100];
+  ssize_t     musicqLen;
+  slistidx_t  dbidx;
+  song_t      *song;
+  int         flags;
+  int         pflag;
 
-  logMsg (LOG_SESS, LOG_IMPORTANT, "running: time-to-start: %ld ms", mstimeend (&mainData->tm));
-  return true;
+
+  musicqLen = musicqGetLen (mainData->musicQueue, mainData->musicqCurrentIdx);
+
+  sbuff [0] = '\0';
+
+  for (ssize_t i = 1; i <= musicqLen; ++i) {
+    song = musicqGetByIdx (mainData->musicQueue, mainData->musicqCurrentIdx, i);
+    if (song != NULL) {
+      dbidx = songGetNum (song, TAG_DBIDX);
+      snprintf (tbuff, sizeof (tbuff), "%zd%c", dbidx, MSG_ARGS_RS);
+      strlcat (sbuff, tbuff, sizeof (sbuff));
+      flags = musicqGetFlags (mainData->musicQueue, mainData->musicqCurrentIdx, i);
+      pflag = false;
+      if ((flags & MUSICQ_FLAG_PAUSE) == MUSICQ_FLAG_PAUSE) {
+        pflag = true;
+      }
+      snprintf (tbuff, sizeof (tbuff), "%d%c", pflag, MSG_ARGS_RS);
+      strlcat (sbuff, tbuff, sizeof (sbuff));
+    }
+  }
+
+  connSendMessage (mainData->conn, ROUTE_PLAYERUI, MSG_MUSIC_QUEUE_DATA, sbuff);
 }
-
 
 static void
 mainSendMarqueeData (maindata_t *mainData)
@@ -565,8 +589,6 @@ mainSendMarqueeData (maindata_t *mainData)
   }
 
   connSendMessage (mainData->conn, ROUTE_MARQUEE,
-      MSG_MARQUEE_DATA, sbuff);
-  connSendMessage (mainData->conn, ROUTE_PLAYERUI,
       MSG_MARQUEE_DATA, sbuff);
 }
 
@@ -1175,9 +1197,15 @@ mainMusicQueueFinish (maindata_t *mainData)
 static void
 mainMusicQueueNext (maindata_t *mainData)
 {
+  playerstate_t     tplaystate;
+
   logProcBegin (LOG_PROC, "mainMusicQueueNext");
+  tplaystate = mainData->playerState;
   mainMusicQueueFinish (mainData);
-  mainMusicQueuePlay (mainData);
+  if (tplaystate != PL_STATE_STOPPED &&
+      tplaystate != PL_STATE_PAUSED) {
+    mainMusicQueuePlay (mainData);
+  }
   mainMusicQueueFill (mainData);
   mainMusicQueuePrep (mainData);
   logProcEnd (LOG_PROC, "mainMusicQueueNext", "");

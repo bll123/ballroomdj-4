@@ -42,7 +42,6 @@
 typedef struct {
   conn_t          *conn;
   progstart_t     *progstart;
-  mstime_t        tm;
   uint16_t        port;
   char            *user;
   char            *pass;
@@ -86,7 +85,6 @@ main (int argc, char *argv[])
     { NULL,         0,                  NULL,   0 }
   };
 
-  mstimestart (&remctrlData.tm);
 #if _define_SIGHUP
   processCatchSignal (remctrlSigHandler, SIGHUP);
 #endif
@@ -141,12 +139,17 @@ main (int argc, char *argv[])
   remctrlData.playerStatus = NULL;
   remctrlData.playlistList = "";
   remctrlData.port = bdjoptGetNum (OPT_P_REMCONTROLPORT);
-  remctrlData.progstart = progstartInit ();
-  progstartSetCallback (remctrlData.progstart, STATE_CONNECTING, remctrlConnectingCallback);
-  progstartSetCallback (remctrlData.progstart, STATE_WAIT_HANDSHAKE, remctrlHandshakeCallback);
-  progstartSetCallback (remctrlData.progstart, STATE_INITIALIZE_DATA, remctrlInitDataCallback);
-  progstartSetCallback (remctrlData.progstart, STATE_STOPPING, remctrlStoppingCallback);
-  progstartSetCallback (remctrlData.progstart, STATE_CLOSING, remctrlClosingCallback);
+  remctrlData.progstart = progstartInit ("remctrl");
+  progstartSetCallback (remctrlData.progstart, STATE_CONNECTING,
+      remctrlConnectingCallback, &remctrlData);
+  progstartSetCallback (remctrlData.progstart, STATE_WAIT_HANDSHAKE,
+      remctrlHandshakeCallback, &remctrlData);
+  progstartSetCallback (remctrlData.progstart, STATE_INITIALIZE_DATA,
+      remctrlInitDataCallback, &remctrlData);
+  progstartSetCallback (remctrlData.progstart, STATE_STOPPING,
+      remctrlStoppingCallback, &remctrlData);
+  progstartSetCallback (remctrlData.progstart, STATE_CLOSING,
+      remctrlClosingCallback, &remctrlData);
   remctrlData.user = strdup (bdjoptGetData (OPT_P_REMCONTROLUSER));
   remctrlData.websrv = NULL;
   remctrlData.conn = connInit (ROUTE_REMCTRL);
@@ -156,10 +159,11 @@ main (int argc, char *argv[])
   listenPort = bdjvarsl [BDJVL_REMCTRL_PORT];
   sockhMainLoop (listenPort, remctrlProcessMsg, remctrlProcessing, &remctrlData);
 
-  while (progstartShutdownProcess (remctrlData.progstart, &remctrlData) != STATE_CLOSED) {
+  while (progstartShutdownProcess (remctrlData.progstart) != STATE_CLOSED) {
     ;
   }
   progstartFree (remctrlData.progstart);
+  logEnd ();
 
   return 0;
 }
@@ -200,8 +204,6 @@ remctrlClosingCallback (void *udata, programstate_t programState)
   }
   bdjoptFree ();
   bdjvarsCleanup ();
-  logMsg (LOG_SESS, LOG_IMPORTANT, "time-to-end: %ld ms", mstimeend (&remctrlData->tm));
-  logEnd ();
   lockRelease (REMCTRL_LOCK_FN, PATHBLD_MP_USEIDX);
 
   return true;
@@ -339,10 +341,9 @@ remctrlProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_EXIT_REQUEST: {
-          mstimestart (&remctrlData->tm);
           logMsg (LOG_SESS, LOG_IMPORTANT, "got exit request");
           gKillReceived = 0;
-          progstartShutdownProcess (remctrlData->progstart, remctrlData);
+          progstartShutdownProcess (remctrlData->progstart);
           return 1;
         }
         case MSG_DANCE_LIST_DATA: {
@@ -384,7 +385,7 @@ remctrlProcessing (void *udata)
 
 
   if (! progstartIsRunning (remctrlData->progstart)) {
-    progstartProcess (remctrlData->progstart, remctrlData);
+    progstartProcess (remctrlData->progstart);
     if (gKillReceived) {
       logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
     }
@@ -447,7 +448,6 @@ remctrlInitDataCallback (void *udata, programstate_t programState)
   bool            rc = false;
 
   if (remctrlData->haveData == 2) {
-    logMsg (LOG_SESS, LOG_IMPORTANT, "running: time-to-start: %ld ms", mstimeend (&remctrlData->tm));
     rc = true;
   }
 

@@ -94,6 +94,9 @@ foreach path [list {} profiles $hostname [file join $hostname profiles]] {
           # drop any size and remove the braces.
           set value [lindex $value 0]
         }
+        if { $key eq "PROFILENAME" && $value eq {BallroomDJ} } {
+          set value {BallroomDJ 4}
+        }
         if { $key eq "FADEINTIME" && $value eq {} } {
           set value 0
         }
