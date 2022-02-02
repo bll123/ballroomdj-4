@@ -5,14 +5,10 @@
 #include <gtk/gtk.h>
 
 #include "conn.h"
+#include "musicq.h"
 #include "progstart.h"
 
 typedef struct {
-  progstart_t     *progstart;
-  conn_t          *conn;
-  GtkWidget       *parentwin;
-  GdkPixbuf       *pauseImg;
-  GdkPixbuf       *clearImg;
   /* music queue tab */
   GtkWidget       *box;
   GtkWidget       *playlistSelectButton;
@@ -25,6 +21,16 @@ typedef struct {
   bool            danceSelectOpen;
   /* tree views */
   GtkWidget       *musicqTree;
+} uimusicqui_t;
+
+typedef struct {
+  int             musicqManageIdx;
+  progstart_t     *progstart;
+  conn_t          *conn;
+  GtkWidget       *parentwin;
+  GdkPixbuf       *pauseImg;
+  GdkPixbuf       *clearImg;
+  uimusicqui_t    ui [MUSICQ_MAX];
   /* temporary stuff used for music queue update processing */
   nlist_t         *uniqueList;
   nlist_t         *dispList;
@@ -33,9 +39,10 @@ typedef struct {
 
 uimusicq_t  * uimusicqInit (progstart_t *progstart, conn_t *conn);
 void        uimusicqFree (uimusicq_t *uimusicq);
-GtkWidget   * uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin);
+GtkWidget   * uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci);
 int         uimusicqProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
                 bdjmsgmsg_t msg, char *args, void *udata);
+void        uimusicqSetManageIdx (uimusicq_t *uimusicq, int manageIdx);
 
 #endif /* INC_UIMUSICQ_H */
 

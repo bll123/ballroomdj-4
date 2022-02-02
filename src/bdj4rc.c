@@ -219,6 +219,7 @@ remctrlEventHandler (struct mg_connection *c, int ev,
   char          querystr [40];
   char          *tokptr;
   char          *qstrptr;
+  char          tbuff [200];
 
   if (ev == MG_EV_HTTP_MSG) {
     struct mg_http_message *hm = (struct mg_http_message *) ev_data;
@@ -233,6 +234,7 @@ remctrlEventHandler (struct mg_connection *c, int ev,
       logMsg (LOG_DBG, LOG_BASIC, "process: %s", querystr);
       if (qstrptr != NULL) {
         logMsg (LOG_DBG, LOG_BASIC, "  args: %s", qstrptr);
+        snprintf (tbuff, sizeof (tbuff), "0%c%s", MSG_ARGS_RS, qstrptr);
       }
     }
     if (user [0] == '\0' || pass [0] == '\0') {
@@ -255,7 +257,7 @@ remctrlEventHandler (struct mg_connection *c, int ev,
 
       if (strcmp (querystr, "clear") == 0) {
         connSendMessage (remctrlData->conn,
-            ROUTE_MAIN, MSG_QUEUE_CLEAR, NULL);
+            ROUTE_MAIN, MSG_QUEUE_CLEAR, "0");
       } else if (strcmp (querystr, "fade") == 0) {
         connSendMessage (remctrlData->conn,
             ROUTE_PLAYER, MSG_PLAY_FADE, NULL);
@@ -267,19 +269,19 @@ remctrlEventHandler (struct mg_connection *c, int ev,
             ROUTE_PLAYER, MSG_PLAY_PAUSEATEND, NULL);
       } else if (strcmp (querystr, "play") == 0) {
         connSendMessage (remctrlData->conn,
-            ROUTE_MAIN, MSG_PLAY_PLAYPAUSE, NULL);
+            ROUTE_MAIN, MSG_PLAY_PLAYPAUSE, "0");
       } else if (strcmp (querystr, "playlistclearplay") == 0) {
         connSendMessage (remctrlData->conn,
-            ROUTE_MAIN, MSG_PLAYLIST_CLEARPLAY, qstrptr);
+            ROUTE_MAIN, MSG_PLAYLIST_CLEARPLAY, tbuff);
       } else if (strcmp (querystr, "playlistqueue") == 0) {
         connSendMessage (remctrlData->conn,
-            ROUTE_MAIN, MSG_QUEUE_PLAYLIST, qstrptr);
+            ROUTE_MAIN, MSG_QUEUE_PLAYLIST, tbuff);
       } else if (strcmp (querystr, "queue") == 0) {
         connSendMessage (remctrlData->conn,
-            ROUTE_MAIN, MSG_QUEUE_DANCE, qstrptr);
+            ROUTE_MAIN, MSG_QUEUE_DANCE, tbuff);
       } else if (strcmp (querystr, "queue5") == 0) {
         connSendMessage (remctrlData->conn,
-            ROUTE_MAIN, MSG_QUEUE_DANCE_5, qstrptr);
+            ROUTE_MAIN, MSG_QUEUE_DANCE_5, tbuff);
       } else if (strcmp (querystr, "repeat") == 0) {
         connSendMessage (remctrlData->conn,
             ROUTE_PLAYER, MSG_PLAY_REPEAT, NULL);

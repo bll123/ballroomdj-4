@@ -24,6 +24,7 @@ main (int argc, char *argv[])
 {
   char            mbuff [1024];
   char            buff [200];
+  char            tbuff [200];
   bdjmsgroute_t   route = ROUTE_NONE;
   bdjmsgmsg_t     msg = MSG_NULL;
   int             routeok = 0;
@@ -39,6 +40,7 @@ main (int argc, char *argv[])
   uint16_t        mainPort;
   uint16_t        playerPort;
   uint16_t        marqueePort;
+  int             count;
 
 
   static struct option bdj_options [] = {
@@ -175,37 +177,37 @@ main (int argc, char *argv[])
       if (strcmp (buff, "moveup") == 0) {
         msg = MSG_MUSICQ_MOVE_UP;
         msgok = 1;
-        argcount = 1;
+        argcount = 2;
       }
       if (strcmp (buff, "movetop") == 0) {
         msg = MSG_MUSICQ_MOVE_TOP;
         msgok = 1;
-        argcount = 1;
+        argcount = 2;
       }
       if (strcmp (buff, "movedown") == 0) {
         msg = MSG_MUSICQ_MOVE_DOWN;
         msgok = 1;
-        argcount = 1;
+        argcount = 2;
       }
       if (strcmp (buff, "mremove") == 0) {
         msg = MSG_MUSICQ_REMOVE;
         msgok = 1;
-        argcount = 1;
+        argcount = 2;
       }
       if (strcmp (buff, "mtruncate") == 0) {
         msg = MSG_MUSICQ_TRUNCATE;
         msgok = 1;
-        argcount = 1;
+        argcount = 2;
       }
       if (strcmp (buff, "minsert") == 0) {
         msg = MSG_MUSICQ_INSERT;
         msgok = 1;
-        argcount = 2;
+        argcount = 3;
       }
       if (strcmp (buff, "tpause") == 0) {
         msg = MSG_MUSICQ_TOGGLE_PAUSE;
         msgok = 1;
-        argcount = 1;
+        argcount = 2;
       }
       if (strcmp (buff, "prep-song") == 0) {
         msg = MSG_SONG_PREP;
@@ -257,7 +259,7 @@ main (int argc, char *argv[])
       if (strcmp (buff, "playlist-q") == 0) {
         msg = MSG_QUEUE_PLAYLIST;
         msgok = 1;
-        argcount = 1;
+        argcount = 2;
       }
       if (strcmp (buff, "mqshow") == 0) {
         msg = MSG_MARQUEE_SHOW;
@@ -289,17 +291,19 @@ main (int argc, char *argv[])
     }
 
     mbuff [0] = '\0';
+    count = 0;
     while (argcount) {
-      printf ("  %s args: ", buff);
+      printf ("  %s arg %d/%d: ", buff, count, argcount);
       fflush (stdout);
-      rval = fgets (buff, sizeof (buff), stdin);
-      buff [strlen (buff) - 1] = '\0';
-      processBuff (buff);
+      rval = fgets (tbuff, sizeof (tbuff), stdin);
+      tbuff [strlen (tbuff) - 1] = '\0';
+      processBuff (tbuff);
       if (mbuff [0] != '\0') {
         strlcat (mbuff, MSG_ARGS_RS_STR, sizeof (mbuff));
       }
-      strlcat (mbuff, buff, sizeof (mbuff));
+      strlcat (mbuff, tbuff, sizeof (mbuff));
       --argcount;
+      ++count;
     }
 
     if (routeok && msgok) {

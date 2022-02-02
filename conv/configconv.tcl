@@ -90,6 +90,24 @@ foreach path [list {} profiles $hostname [file join $hostname profiles]] {
         if { $key eq "MQSHOWARTIST" } {
           set key MQSHOWINFO
         }
+        if { $key eq "QUEUENAME0" } {
+          set key QUEUE_NAME_A
+          if { $value eq "Queue 1" } {
+            set value {Music Queue}
+          }
+          if { $value eq "Wachtrij 1" } {
+            set value {Muziek Wachtrij}
+          }
+        }
+        if { $key eq "QUEUENAME1" } {
+          set key QUEUE_NAME_B
+          if { $value eq "Queue 2" } {
+            set value {Queue B}
+          }
+          if { $value eq "Wachtrij 2" } {
+            set value {Wachtrij B}
+          }
+        }
         if { $key eq "MQFONT" && $value ne {} } {
           # drop any size and remove the braces.
           set value [lindex $value 0]

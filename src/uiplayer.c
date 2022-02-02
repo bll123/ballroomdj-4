@@ -168,6 +168,7 @@ uiplayerActivate (uiplayer_t *uiplayer)
   /* size group A */
   widget = gtk_label_new ("%");
   gtk_box_pack_end (GTK_BOX (hbox), GTK_WIDGET (widget), FALSE, FALSE, 0);
+  gtk_widget_set_margin_start (GTK_WIDGET (widget), 1);
   gtk_size_group_add_widget (sgA, GTK_WIDGET (widget));
 
   /* size group B */
@@ -175,6 +176,7 @@ uiplayerActivate (uiplayer_t *uiplayer)
   assert (uiplayer->speedDisplayLab != NULL);
   gtk_widget_set_size_request (GTK_WIDGET (uiplayer->speedDisplayLab), 24, -1);
   gtk_widget_set_halign (GTK_WIDGET (uiplayer->speedDisplayLab), GTK_ALIGN_END);
+  gtk_label_set_xalign (GTK_LABEL (uiplayer->speedDisplayLab), 1.0);
   gtk_box_pack_end (GTK_BOX (hbox), GTK_WIDGET (uiplayer->speedDisplayLab),
       FALSE, FALSE, 0);
   gtk_size_group_add_widget (sgB, GTK_WIDGET (uiplayer->speedDisplayLab));
@@ -198,6 +200,7 @@ uiplayerActivate (uiplayer_t *uiplayer)
   widget = gtk_label_new ("Speed:");
   gtk_box_pack_end (GTK_BOX (hbox), GTK_WIDGET (widget), FALSE, FALSE, 0);
   gtk_widget_set_halign (GTK_WIDGET (widget), GTK_ALIGN_END);
+  gtk_label_set_xalign (GTK_LABEL (widget), 1.0);
   gtk_size_group_add_widget (sgD, GTK_WIDGET (widget));
 
   /* position controls / display */
@@ -262,6 +265,7 @@ uiplayerActivate (uiplayer_t *uiplayer)
   widget = gtk_label_new ("Position:");
   gtk_box_pack_end (GTK_BOX (hbox), GTK_WIDGET (widget), FALSE, FALSE, 0);
   gtk_widget_set_halign (GTK_WIDGET (widget), GTK_ALIGN_END);
+  gtk_label_set_xalign (GTK_LABEL (widget), 1.0);
   gtk_size_group_add_widget (sgD, GTK_WIDGET (widget));
 
   /* main controls */
@@ -293,6 +297,7 @@ uiplayerActivate (uiplayer_t *uiplayer)
       PATHBLD_MP_IMGDIR);
   image = gtk_image_new_from_file (tbuff);
   gtk_button_set_image (GTK_BUTTON (widget), image);
+  gtk_widget_set_tooltip_text (widget, "Play / Pause");
   gtk_widget_set_margin_start (GTK_WIDGET (widget), 2);
   g_signal_connect (widget, "clicked", G_CALLBACK (uiplayerPlayPauseProcess), uiplayer);
 
@@ -302,6 +307,7 @@ uiplayerActivate (uiplayer_t *uiplayer)
       PATHBLD_MP_IMGDIR);
   image = gtk_image_new_from_file (tbuff);
   gtk_button_set_image (GTK_BUTTON (uiplayer->repeatButton), image);
+  gtk_widget_set_tooltip_text (uiplayer->repeatButton, "Toggle Repeat");
   gtk_widget_set_margin_start (GTK_WIDGET (uiplayer->repeatButton), 2);
   gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (uiplayer->repeatButton),
       FALSE, FALSE, 0);
@@ -313,6 +319,7 @@ uiplayerActivate (uiplayer_t *uiplayer)
       PATHBLD_MP_IMGDIR);
   image = gtk_image_new_from_file (tbuff);
   gtk_button_set_image (GTK_BUTTON (widget), image);
+  gtk_widget_set_tooltip_text (widget, "Return to beginning of song");
   gtk_widget_set_margin_start (GTK_WIDGET (widget), 2);
   gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (widget), FALSE, FALSE, 0);
   g_signal_connect (widget, "clicked", G_CALLBACK (uiplayerSongBeginProcess), uiplayer);
@@ -323,6 +330,7 @@ uiplayerActivate (uiplayer_t *uiplayer)
       PATHBLD_MP_IMGDIR);
   image = gtk_image_new_from_file (tbuff);
   gtk_button_set_image (GTK_BUTTON (widget), image);
+  gtk_widget_set_tooltip_text (widget, "Next Song");
   gtk_widget_set_margin_start (GTK_WIDGET (widget), 2);
   gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (widget), FALSE, FALSE, 0);
   g_signal_connect (widget, "clicked", G_CALLBACK (uiplayerNextSongProcess), uiplayer);
@@ -350,6 +358,7 @@ uiplayerActivate (uiplayer_t *uiplayer)
   /* size group A */
   widget = gtk_label_new ("%");
   gtk_box_pack_end (GTK_BOX (hbox), GTK_WIDGET (widget), FALSE, FALSE, 0);
+  gtk_widget_set_margin_start (GTK_WIDGET (widget), 1);
   gtk_size_group_add_widget (sgA, GTK_WIDGET (widget));
 
   /* size group B */
@@ -357,6 +366,7 @@ uiplayerActivate (uiplayer_t *uiplayer)
   assert (uiplayer->volumeDisplayLab != NULL);
   gtk_widget_set_size_request (GTK_WIDGET (uiplayer->volumeDisplayLab), 24, -1);
   gtk_widget_set_halign (GTK_WIDGET (uiplayer->volumeDisplayLab), GTK_ALIGN_END);
+  gtk_label_set_xalign (GTK_LABEL (uiplayer->volumeDisplayLab), 1.0);
   gtk_box_pack_end (GTK_BOX (hbox), GTK_WIDGET (uiplayer->volumeDisplayLab),
       FALSE, FALSE, 0);
   gtk_size_group_add_widget (sgB, GTK_WIDGET (uiplayer->volumeDisplayLab));
@@ -380,6 +390,7 @@ uiplayerActivate (uiplayer_t *uiplayer)
   widget = gtk_label_new ("Volume:");
   gtk_box_pack_end (GTK_BOX (hbox), GTK_WIDGET (widget), FALSE, FALSE, 0);
   gtk_widget_set_halign (GTK_WIDGET (widget), GTK_ALIGN_END);
+  gtk_label_set_xalign (GTK_LABEL (widget), 1.0);
   gtk_size_group_add_widget (sgD, GTK_WIDGET (widget));
 
   return uiplayer->vbox;

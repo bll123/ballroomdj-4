@@ -23,10 +23,11 @@ musicqAlloc (void)
 {
   musicq_t *musicq = malloc (sizeof (musicq_t));
   assert (musicq != NULL);
-  musicq->q [MUSICQ_A] = queueAlloc (musicqQueueItemFree);
-  musicq->q [MUSICQ_B] = queueAlloc (musicqQueueItemFree);
-  musicq->uniqueidx = 0;
-  musicq->dispidx = 1;
+  for (int i = 0; i < MUSICQ_MAX; ++i) {
+    musicq->q [i] = queueAlloc (musicqQueueItemFree);
+    musicq->uniqueidx [i] = 0;
+    musicq->dispidx [i] = 1;
+  }
   return musicq;
 }
 
@@ -55,10 +56,10 @@ musicqPush (musicq_t *musicq, musicqidx_t musicqidx, song_t *song, char *plname)
 
   musicqitem = malloc (sizeof (musicqitem_t));
   assert (musicqitem != NULL);
-  musicqitem->dispidx = musicq->dispidx;
-  ++musicq->dispidx;
-  musicqitem->uniqueidx = musicq->uniqueidx;
-  ++musicq->uniqueidx;
+  musicqitem->dispidx = musicq->dispidx [musicqidx];
+  ++(musicq->dispidx [musicqidx]);
+  musicqitem->uniqueidx = musicq->uniqueidx [musicqidx];
+  ++(musicq->uniqueidx [musicqidx]);
   musicqitem->song = song;
   musicqitem->playlistName = strdup (plname);
   musicqitem->announce = NULL;
@@ -99,8 +100,8 @@ musicqInsert (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx, song_t *song
   musicqitem->playlistName = NULL;
   musicqitem->announce = NULL;
   musicqitem->flags = MUSICQ_FLAG_REQUEST;
-  musicqitem->uniqueidx = musicq->uniqueidx;
-  ++musicq->uniqueidx;
+  musicqitem->uniqueidx = musicq->uniqueidx [musicqidx];
+  ++musicq->uniqueidx [musicqidx];
 
   queueInsert (musicq->q [musicqidx], idx, musicqitem);
   musicqRenumber (musicq, musicqidx, olddispidx);
@@ -295,7 +296,7 @@ musicqClear (musicq_t *musicq, musicqidx_t musicqidx, ssize_t startIdx)
 
   olddispidx = musicqRenumberStart (musicq, musicqidx);
   queueClear (musicq->q [musicqidx], startIdx);
-  musicq->dispidx = olddispidx + queueGetCount (musicq->q [musicqidx]);
+  musicq->dispidx [musicqidx] = olddispidx + queueGetCount (musicq->q [musicqidx]);
 }
 
 void
@@ -310,7 +311,7 @@ musicqRemove (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx)
   olddispidx = musicqRenumberStart (musicq, musicqidx);
   queueRemoveByIdx (musicq->q [musicqidx], idx);
   musicqRenumber (musicq, musicqidx, olddispidx);
-  --musicq->dispidx;
+  --musicq->dispidx [musicqidx];
 }
 
 ssize_t

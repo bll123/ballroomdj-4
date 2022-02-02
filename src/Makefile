@@ -794,9 +794,9 @@ $(OBJDIR)/bdj4player$(OBJ_EXT): bdj4player.c config.h bdj4.h bdjmsg.h bdjopt.h b
  volume.h
 $(OBJDIR)/bdj4playerui$(OBJ_EXT): bdj4playerui.c config.h bdj4.h bdjmsg.h bdjopt.h \
  bdjstring.h bdjvars.h bdjvarsdfload.h conn.h sock.h lock.h log.h \
- fileutil.h musicdb.h song.h nlist.h list.h pathbld.h process.h \
- progstart.h ilist.h slist.h tmutil.h sockh.h sysvars.h portability.h \
- uimusicq.h uiplayer.h uisongsel.h uiutils.h
+ fileutil.h musicdb.h song.h nlist.h list.h musicq.h queue.h tagdef.h \
+ pathbld.h process.h progstart.h ilist.h slist.h tmutil.h sockh.h \
+ sysvars.h portability.h uimusicq.h uiplayer.h uisongsel.h uiutils.h
 $(OBJDIR)/bdj4rc$(OBJ_EXT): bdj4rc.c config.h ../packages/mongoose/mongoose.h bdj4.h \
  bdjmsg.h bdjopt.h bdjstring.h bdjvars.h conn.h sock.h lock.h log.h \
  fileutil.h pathbld.h process.h progstart.h ilist.h list.h slist.h \
@@ -828,6 +828,9 @@ $(OBJDIR)/check_list$(OBJ_EXT): check_list.c config.h configt.h nlist.h list.h s
  ilist.h bdjstring.h check_bdj.h
 $(OBJDIR)/check_lock$(OBJ_EXT): check_lock.c config.h configt.h bdjstring.h check_bdj.h \
  lock.h pathbld.h sysvars.h portability.h
+$(OBJDIR)/check_musicq$(OBJ_EXT): check_musicq.c config.h configt.h musicq.h queue.h song.h \
+ nlist.h list.h tagdef.h bdjstring.h check_bdj.h portability.h log.h \
+ fileutil.h
 $(OBJDIR)/check_nlist$(OBJ_EXT): check_nlist.c config.h configt.h nlist.h list.h \
  bdjstring.h check_bdj.h log.h fileutil.h
 $(OBJDIR)/check_pathutil$(OBJ_EXT): check_pathutil.c config.h configt.h pathutil.h \
@@ -926,10 +929,11 @@ $(OBJDIR)/sysvars$(OBJ_EXT): sysvars.c config.h sysvars.h portability.h bdjstrin
  filedata.h fileop.h pathutil.h
 $(OBJDIR)/tagdef$(OBJ_EXT): tagdef.c config.h tagdef.h bdjstring.h
 $(OBJDIR)/tmutil$(OBJ_EXT): tmutil.c config.h tmutil.h bdjstring.h
-$(OBJDIR)/uimusicq$(OBJ_EXT): uimusicq.c config.h bdjvarsdf.h datafile.h list.h nlist.h \
- slist.h ilist.h conn.h sock.h bdjmsg.h dance.h musicdb.h song.h \
- pathbld.h playlist.h dancesel.h bdj4.h autosel.h queue.h sequence.h \
- songlist.h songsel.h portability.h progstart.h tmutil.h uimusicq.h
+$(OBJDIR)/uimusicq$(OBJ_EXT): uimusicq.c config.h bdjstring.h bdjvarsdf.h datafile.h list.h \
+ nlist.h slist.h ilist.h conn.h sock.h bdjmsg.h dance.h musicdb.h song.h \
+ musicq.h queue.h tagdef.h pathbld.h playlist.h dancesel.h bdj4.h \
+ autosel.h sequence.h songlist.h songsel.h portability.h progstart.h \
+ tmutil.h uimusicq.h
 $(OBJDIR)/uiplayer$(OBJ_EXT): uiplayer.c config.h conn.h sock.h bdjmsg.h pathbld.h \
  portability.h progstart.h ilist.h list.h slist.h tmutil.h uiplayer.h \
  bdj4.h uiutils.h

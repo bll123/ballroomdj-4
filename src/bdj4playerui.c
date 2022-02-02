@@ -23,6 +23,7 @@
 #include "lock.h"
 #include "log.h"
 #include "musicdb.h"
+#include "musicq.h"
 #include "pathbld.h"
 #include "process.h"
 #include "progstart.h"
@@ -40,11 +41,16 @@ typedef struct {
   progstart_t     *progstart;
   conn_t          *conn;
   sockserver_t    *sockserver;
+  musicqidx_t     musicqPlayIdx;
+  musicqidx_t     musicqManageIdx;
   /* gtk stuff */
   GtkApplication  *app;
   GtkWidget       *window;
   GtkWidget       *vbox;
   GtkWidget       *notebook;
+  GtkWidget       *musicqImage [MUSICQ_MAX];
+  GdkPixbuf       *ledoffImg;
+  GdkPixbuf       *ledonImg;
   /* ui major elements */
   uiplayer_t      *uiplayer;
   uimusicq_t      *uimusicq;
@@ -64,6 +70,8 @@ static int      pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
                     bdjmsgmsg_t msg, char *args, void *udata);
 static gboolean pluiCloseWin (GtkWidget *window, GdkEvent *event, gpointer userdata);
 static void     pluiSigHandler (int sig);
+static void     pluiSwitchPage (GtkNotebook *nb, GtkWidget *page, guint pagenum, gpointer udata);
+
 
 static int gKillReceived = 0;
 static int gdone = 0;
@@ -103,6 +111,8 @@ main (int argc, char *argv[])
   plui.uiplayer = NULL;
   plui.uimusicq = NULL;
   plui.uisongselect = NULL;
+  plui.musicqPlayIdx = MUSICQ_A;
+  plui.musicqManageIdx = MUSICQ_A;
 
 #if _define_SIGHUP
   processCatchSignal (pluiSigHandler, SIGHUP);
@@ -192,6 +202,9 @@ pluiClosingCallback (void *udata, programstate_t programState)
 {
   playerui_t   *plui = udata;
 
+  g_object_unref (plui->ledonImg);
+  g_object_unref (plui->ledoffImg);
+
   connFree (plui->conn);
 
   sockhCloseServer (plui->sockserver);
@@ -233,7 +246,22 @@ pluiActivate (GApplication *app, gpointer userdata)
   GError              *gerr = NULL;
   GtkWidget           *tabLabel;
   GtkWidget           *widget;
+  GtkWidget           *image;
+  GtkWidget           *hbox;
+  char                *str;
+  char                tbuff [MAXPATHLEN];
 
+
+  pathbldMakePath (tbuff, sizeof (tbuff), "", "led_off", ".svg",
+      PATHBLD_MP_IMGDIR);
+  image = gtk_image_new_from_file (tbuff);
+  plui->ledoffImg = gtk_image_get_pixbuf (GTK_IMAGE (image));
+  g_object_ref (G_OBJECT (plui->ledoffImg));
+  pathbldMakePath (tbuff, sizeof (tbuff), "", "led_on", ".svg",
+      PATHBLD_MP_IMGDIR);
+  image = gtk_image_new_from_file (tbuff);
+  plui->ledonImg = gtk_image_get_pixbuf (GTK_IMAGE (image));
+  g_object_ref (G_OBJECT (plui->ledonImg));
 
   plui->window = gtk_application_window_new (GTK_APPLICATION (app));
   assert (plui->window != NULL);
@@ -251,6 +279,9 @@ pluiActivate (GApplication *app, gpointer userdata)
   gtk_box_pack_start (GTK_BOX (plui->vbox), GTK_WIDGET (widget),
       FALSE, FALSE, 0);
 
+  /* there doesn't seem to be any other good method to identify which */
+  /* notebook page is which.  The code is dependent on musicq_a being */
+  /* in tab 0, */
   plui->notebook = gtk_notebook_new ();
   assert (plui->notebook != NULL);
   gtk_notebook_set_show_border (GTK_NOTEBOOK (plui->notebook), TRUE);
@@ -259,11 +290,33 @@ pluiActivate (GApplication *app, gpointer userdata)
   gtk_widget_set_vexpand (GTK_WIDGET (plui->notebook), FALSE);
   gtk_box_pack_start (GTK_BOX (plui->vbox), plui->notebook,
       TRUE, TRUE, 0);
+  g_signal_connect (plui->notebook, "switch-page", G_CALLBACK (pluiSwitchPage), plui);
 
   /* music queue tab */
-  widget = uimusicqActivate (plui->uimusicq, plui->window);
-  tabLabel = gtk_label_new ("Music Queue");
-  gtk_notebook_append_page (GTK_NOTEBOOK (plui->notebook), widget, tabLabel);
+  widget = uimusicqActivate (plui->uimusicq, plui->window, 0);
+  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+  str = bdjoptGetData (OPT_P_QUEUE_NAME_A);
+  tabLabel = gtk_label_new (str);
+  gtk_box_pack_start (GTK_BOX (hbox), tabLabel, FALSE, FALSE, 1);
+  plui->musicqImage [MUSICQ_A] = gtk_image_new ();
+  gtk_image_set_from_pixbuf (GTK_IMAGE (plui->musicqImage [MUSICQ_A]), plui->ledonImg);
+  gtk_widget_set_margin_start (GTK_WIDGET (plui->musicqImage [MUSICQ_A]), 2);
+  gtk_box_pack_start (GTK_BOX (hbox), plui->musicqImage [MUSICQ_A], FALSE, FALSE, 0);
+  gtk_notebook_append_page (GTK_NOTEBOOK (plui->notebook), widget, hbox);
+  gtk_widget_show_all (GTK_WIDGET (hbox));
+
+  /* queue B tab */
+  widget = uimusicqActivate (plui->uimusicq, plui->window, 1);
+  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+  str = bdjoptGetData (OPT_P_QUEUE_NAME_B);
+  tabLabel = gtk_label_new (str);
+  gtk_box_pack_start (GTK_BOX (hbox), tabLabel, FALSE, FALSE, 1);
+  plui->musicqImage [MUSICQ_B] = gtk_image_new ();
+  gtk_image_set_from_pixbuf (GTK_IMAGE (plui->musicqImage [MUSICQ_B]), plui->ledoffImg);
+  gtk_widget_set_margin_start (GTK_WIDGET (plui->musicqImage [MUSICQ_B]), 2);
+  gtk_box_pack_start (GTK_BOX (hbox), plui->musicqImage [MUSICQ_B], FALSE, FALSE, 0);
+  gtk_notebook_append_page (GTK_NOTEBOOK (plui->notebook), widget, hbox);
+  gtk_widget_show_all (GTK_WIDGET (hbox));
 
   /* song selection tab */
   widget = uisongselActivate (plui->uisongselect);
@@ -415,5 +468,15 @@ static void
 pluiSigHandler (int sig)
 {
   gKillReceived = 1;
+}
+
+static void
+pluiSwitchPage (GtkNotebook *nb, GtkWidget *page, guint pagenum, gpointer udata)
+{
+  playerui_t  *plui = udata;
+
+  plui->musicqManageIdx = pagenum;
+  uimusicqSetManageIdx (plui->uimusicq, pagenum);
+  return;
 }
 

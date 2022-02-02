@@ -30,8 +30,8 @@ typedef struct {
 
 typedef struct {
   queue_t         *q [MUSICQ_MAX];
-  int             dispidx;
-  int             uniqueidx;
+  int             dispidx [MUSICQ_MAX];
+  int             uniqueidx [MUSICQ_MAX];
 } musicq_t;
 
 musicq_t *  musicqAlloc (void);
