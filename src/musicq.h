@@ -20,6 +20,8 @@ typedef enum {
 } musicqflag_t;
 
 typedef struct {
+  int           dispidx;
+  int           uniqueidx;
   song_t        *song;
   char          *playlistName;
   musicqflag_t  flags;
@@ -28,6 +30,8 @@ typedef struct {
 
 typedef struct {
   queue_t         *q [MUSICQ_MAX];
+  int             dispidx;
+  int             uniqueidx;
 } musicq_t;
 
 musicq_t *  musicqAlloc (void);
@@ -40,6 +44,8 @@ void        musicqInsert (musicq_t *musicq, musicqidx_t musicqidx,
                 ssize_t idx, song_t *song);
 song_t      *musicqGetCurrent (musicq_t *musicq, musicqidx_t musicqidx);
 musicqflag_t musicqGetFlags (musicq_t *musicq, musicqidx_t musicqidx, ssize_t qkey);
+int         musicqGetDispIdx (musicq_t *musicq, musicqidx_t musicqidx, ssize_t qkey);
+int         musicqGetUniqueIdx (musicq_t *musicq, musicqidx_t musicqidx, ssize_t qkey);
 void        musicqSetFlag (musicq_t *musicq, musicqidx_t musicqidx,
                 ssize_t qkey, musicqflag_t flags);
 void        musicqClearFlag (musicq_t *musicq, musicqidx_t musicqidx,

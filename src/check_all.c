@@ -56,6 +56,8 @@ main (int argc, char *argv [])
   srunner_add_suite (sr, s);
   s = datafile_suite();
   srunner_add_suite (sr, s);
+  s = musicq_suite();
+  srunner_add_suite (sr, s);
   srunner_run_all (sr, CK_ENV);
   number_failed = srunner_ntests_failed (sr);
   srunner_free (sr);

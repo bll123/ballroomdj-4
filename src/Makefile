@@ -702,6 +702,7 @@ CHECKOBJS = $(OBJDIR)/check_all$(OBJ_EXT) \
 	$(OBJDIR)/check_fileop$(OBJ_EXT) \
 	$(OBJDIR)/check_ilist$(OBJ_EXT) \
 	$(OBJDIR)/check_lock$(OBJ_EXT) \
+	$(OBJDIR)/check_musicq$(OBJ_EXT) \
 	$(OBJDIR)/check_nlist$(OBJ_EXT) \
 	$(OBJDIR)/check_process$(OBJ_EXT) \
 	$(OBJDIR)/check_queue$(OBJ_EXT) \

@@ -12,6 +12,7 @@ typedef struct {
   conn_t          *conn;
   GtkWidget       *parentwin;
   GdkPixbuf       *pauseImg;
+  GdkPixbuf       *clearImg;
   /* music queue tab */
   GtkWidget       *box;
   GtkWidget       *playlistSelectButton;
@@ -24,6 +25,10 @@ typedef struct {
   bool            danceSelectOpen;
   /* tree views */
   GtkWidget       *musicqTree;
+  /* temporary stuff used for music queue update processing */
+  nlist_t         *uniqueList;
+  nlist_t         *dispList;
+  nlist_t         *workList;
 } uimusicq_t;
 
 uimusicq_t  * uimusicqInit (progstart_t *progstart, conn_t *conn);

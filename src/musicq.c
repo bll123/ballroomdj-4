@@ -14,15 +14,19 @@
 #include "queue.h"
 #include "tagdef.h"
 
-static void musicqQueueFree (void *tq);
+static void musicqQueueItemFree (void *tqitem);
+static int  musicqRenumberStart (musicq_t *musicq, musicqidx_t musicqidx);
+static void musicqRenumber (musicq_t *musicq, musicqidx_t musicqidx, int olddispidx);
 
 musicq_t *
 musicqAlloc (void)
 {
   musicq_t *musicq = malloc (sizeof (musicq_t));
   assert (musicq != NULL);
-  musicq->q [MUSICQ_A] = queueAlloc (musicqQueueFree);
-  musicq->q [MUSICQ_B] = queueAlloc (musicqQueueFree);
+  musicq->q [MUSICQ_A] = queueAlloc (musicqQueueItemFree);
+  musicq->q [MUSICQ_B] = queueAlloc (musicqQueueItemFree);
+  musicq->uniqueidx = 0;
+  musicq->dispidx = 1;
   return musicq;
 }
 
@@ -41,22 +45,6 @@ musicqFree (musicq_t *musicq)
 }
 
 void
-musicqQueueFree (void *titem)
-{
-  musicqitem_t        *musicqitem = titem;
-
-  if (musicqitem != NULL) {
-    if (musicqitem->playlistName != NULL) {
-      free (musicqitem->playlistName);
-    }
-    if (musicqitem->announce != NULL) {
-      free (musicqitem->announce);
-    }
-    free (musicqitem);
-  }
-}
-
-void
 musicqPush (musicq_t *musicq, musicqidx_t musicqidx, song_t *song, char *plname)
 {
   musicqitem_t      *musicqitem;
@@ -67,6 +55,10 @@ musicqPush (musicq_t *musicq, musicqidx_t musicqidx, song_t *song, char *plname)
 
   musicqitem = malloc (sizeof (musicqitem_t));
   assert (musicqitem != NULL);
+  musicqitem->dispidx = musicq->dispidx;
+  ++musicq->dispidx;
+  musicqitem->uniqueidx = musicq->uniqueidx;
+  ++musicq->uniqueidx;
   musicqitem->song = song;
   musicqitem->playlistName = strdup (plname);
   musicqitem->announce = NULL;
@@ -78,13 +70,19 @@ void
 musicqMove (musicq_t *musicq, musicqidx_t musicqidx,
     ssize_t fromidx, ssize_t toidx)
 {
+  int   olddispidx;
+
+
+  olddispidx = musicqRenumberStart (musicq, musicqidx);
   queueMove (musicq->q [musicqidx], fromidx, toidx);
+  musicqRenumber (musicq, musicqidx, olddispidx);
 }
 
 void
 musicqInsert (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx, song_t *song)
 {
-  musicqitem_t      *musicqitem;
+  int           olddispidx;
+  musicqitem_t  *musicqitem;
 
   if (musicq == NULL || musicq->q [musicqidx] == NULL || song == NULL) {
     return;
@@ -93,13 +91,19 @@ musicqInsert (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx, song_t *song
     return;
   }
 
+  olddispidx = musicqRenumberStart (musicq, musicqidx);
+
   musicqitem = malloc (sizeof (musicqitem_t));
   assert (musicqitem != NULL);
   musicqitem->song = song;
   musicqitem->playlistName = NULL;
   musicqitem->announce = NULL;
   musicqitem->flags = MUSICQ_FLAG_REQUEST;
+  musicqitem->uniqueidx = musicq->uniqueidx;
+  ++musicq->uniqueidx;
+
   queueInsert (musicq->q [musicqidx], idx, musicqitem);
+  musicqRenumber (musicq, musicqidx, olddispidx);
 }
 
 song_t *
@@ -118,6 +122,7 @@ musicqGetCurrent (musicq_t *musicq, musicqidx_t musicqidx)
   return musicqitem->song;
 }
 
+/* gets by the real idx, not the display index */
 song_t *
 musicqGetByIdx (musicq_t *musicq, musicqidx_t musicqidx, ssize_t qkey)
 {
@@ -148,6 +153,38 @@ musicqGetFlags (musicq_t *musicq, musicqidx_t musicqidx, ssize_t qkey)
     return musicqitem->flags;
   }
   return MUSICQ_FLAG_NONE;
+}
+
+int
+musicqGetDispIdx (musicq_t *musicq, musicqidx_t musicqidx, ssize_t qkey)
+{
+  musicqitem_t      *musicqitem;
+
+  if (musicq == NULL || musicq->q [musicqidx] == NULL) {
+    return MUSICQ_FLAG_NONE;
+  }
+
+  musicqitem = queueGetByIdx (musicq->q [musicqidx], qkey);
+  if (musicqitem != NULL) {
+    return musicqitem->dispidx;
+  }
+  return -1;
+}
+
+int
+musicqGetUniqueIdx (musicq_t *musicq, musicqidx_t musicqidx, ssize_t qkey)
+{
+  musicqitem_t      *musicqitem;
+
+  if (musicq == NULL || musicq->q [musicqidx] == NULL) {
+    return MUSICQ_FLAG_NONE;
+  }
+
+  musicqitem = queueGetByIdx (musicq->q [musicqidx], qkey);
+  if (musicqitem != NULL) {
+    return musicqitem->uniqueidx;
+  }
+  return -1;
 }
 
 void
@@ -243,28 +280,37 @@ musicqPop (musicq_t *musicq, musicqidx_t musicqidx)
   }
 
   musicqitem = queuePop (musicq->q [musicqidx]);
-  musicqQueueFree (musicqitem);
+  musicqQueueItemFree (musicqitem);
 }
 
 /* does not clear the initial entry -- that's the song that is playing */
 void
 musicqClear (musicq_t *musicq, musicqidx_t musicqidx, ssize_t startIdx)
 {
+  int       olddispidx;
+
   if (startIdx < 1 || startIdx >= queueGetCount (musicq->q [musicqidx])) {
     return;
   }
 
+  olddispidx = musicqRenumberStart (musicq, musicqidx);
   queueClear (musicq->q [musicqidx], startIdx);
+  musicq->dispidx = olddispidx + queueGetCount (musicq->q [musicqidx]);
 }
 
 void
 musicqRemove (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx)
 {
+  int       olddispidx;
+
   if (idx < 1 || idx >= queueGetCount (musicq->q [musicqidx])) {
     return;
   }
 
+  olddispidx = musicqRenumberStart (musicq, musicqidx);
   queueRemoveByIdx (musicq->q [musicqidx], idx);
+  musicqRenumber (musicq, musicqidx, olddispidx);
+  --musicq->dispidx;
 }
 
 ssize_t
@@ -326,3 +372,47 @@ musicqGetDance (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx)
   return danceStr;
 }
 
+static void
+musicqQueueItemFree (void *titem)
+{
+  musicqitem_t        *musicqitem = titem;
+
+  if (musicqitem != NULL) {
+    if (musicqitem->playlistName != NULL) {
+      free (musicqitem->playlistName);
+    }
+    if (musicqitem->announce != NULL) {
+      free (musicqitem->announce);
+    }
+    free (musicqitem);
+  }
+}
+
+static int
+musicqRenumberStart (musicq_t *musicq, musicqidx_t musicqidx)
+{
+  musicqitem_t  *musicqitem;
+  int           dispidx = -1;
+
+  musicqitem = queueGetByIdx (musicq->q [musicqidx], 0);
+  if (musicqitem != NULL) {
+    dispidx = musicqitem->dispidx;
+  }
+  return dispidx;
+}
+
+static void
+musicqRenumber (musicq_t *musicq, musicqidx_t musicqidx, int olddispidx)
+{
+  ssize_t       count;
+  int           dispidx = olddispidx;
+  ssize_t       iteridx;
+  musicqitem_t  *musicqitem;
+
+  count = queueGetCount (musicq->q [musicqidx]);
+  queueStartIterator (musicq->q [musicqidx], &iteridx);
+  while ((musicqitem = queueIterateData (musicq->q [musicqidx], &iteridx)) != NULL) {
+    musicqitem->dispidx = dispidx;
+    ++dispidx;
+  }
+}
