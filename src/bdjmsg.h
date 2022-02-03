@@ -17,37 +17,39 @@ typedef enum {
 
 typedef enum {
   MSG_NULL,
+  MSG_EXIT_REQUEST,         // standard shutdown
   MSG_HANDSHAKE,
   MSG_SOCKET_CLOSE,
-  MSG_EXIT_REQUEST,         // standard shutdown
     /* to main */
   MSG_GET_STATUS,           // get main/player status
+  MSG_MUSICQ_INSERT,        // args: idx, song name
   MSG_MUSICQ_MOVE_DOWN,     // args: idx
   MSG_MUSICQ_MOVE_TOP,      // args: idx
   MSG_MUSICQ_MOVE_UP,       // args: idx
   MSG_MUSICQ_REMOVE,        // args: idx
+  MSG_MUSICQ_SET_PLAYBACK,  // args: music queue for playback
   MSG_MUSICQ_TOGGLE_PAUSE,  //
   MSG_MUSICQ_TRUNCATE,      // args: idx
-  MSG_MUSICQ_INSERT,        // args: idx, song name
   MSG_PLAYLIST_CLEARPLAY,   // args: playlist name
-  MSG_QUEUE_PLAYLIST,       // args: playlist name
   MSG_PLAY_PLAY,            // always to main
                             //    starts playback, passed on to player.
   MSG_PLAY_PLAYPAUSE,       // always to main
   MSG_QUEUE_CLEAR,          //
+  MSG_QUEUE_DANCE_5,        // args: dance idx
   MSG_QUEUE_DANCE,          // args: dance idx
-  MSG_QUEUE_DANCE_5,         // args: dance idx
+  MSG_QUEUE_PLAYLIST,       // args: playlist name
     /* to player */
   MSG_PLAYER_VOL_MUTE,      // to player. toggle.
   MSG_PLAYER_VOLSINK_SET,   // to player: set volume sink
   MSG_PLAYER_VOLUME,        // to player. args: volume as percentage.
   MSG_PLAY_FADE,            // to player.
-  MSG_PLAY_SONG_BEGIN,      // to player.
   MSG_PLAY_NEXTSONG,        // to player.
   MSG_PLAY_PAUSEATEND,      // to player: toggle
   MSG_PLAY_PAUSE,           // to player
-  MSG_PLAY_SPEED,           // to player. args: rate as percentage.
   MSG_PLAY_REPEAT,          // to player. toggle
+  MSG_PLAY_SEEK,            // to player. args: position
+  MSG_PLAY_SONG_BEGIN,      // to player.
+  MSG_PLAY_SPEED,           // to player. args: rate as percentage.
   MSG_PLAY_STOP,            // to player.
   MSG_SONG_PLAY,            // args: song fname
   MSG_SONG_PREP,            // args: song fname, duration, song-start
@@ -66,12 +68,12 @@ typedef enum {
     /* to/from ui */
   MSG_MUSIC_QUEUE_DATA,
     /* to/from web servers */
-  MSG_GET_DANCE_LIST,
-  MSG_MARQUEE_DATA,         // args: mq json data ; also for msg to marquee
   MSG_DANCE_LIST_DATA,      // args: html option list
+  MSG_GET_DANCE_LIST,
   MSG_GET_PLAYLIST_LIST,    //
+  MSG_MARQUEE_DATA,         // args: mq json data ; also for msg to marquee
+  MSG_MUSICQ_STATUS_DATA,   // main response to remote control
   MSG_PLAYLIST_LIST_DATA,   // args: html option list
-  MSG_STATUS_DATA,          // response to remote control
     /* to marquee */
   MSG_MARQUEE_SHOW,
   MSG_MARQUEE_TIMER,        // args: played time, duration

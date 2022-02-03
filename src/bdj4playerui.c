@@ -49,6 +49,7 @@ typedef struct {
   GtkWidget       *vbox;
   GtkWidget       *notebook;
   GtkWidget       *musicqImage [MUSICQ_MAX];
+  GtkWidget       *setPlaybackButton;
   GdkPixbuf       *ledoffImg;
   GdkPixbuf       *ledonImg;
   /* ui major elements */
@@ -71,6 +72,7 @@ static int      pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 static gboolean pluiCloseWin (GtkWidget *window, GdkEvent *event, gpointer userdata);
 static void     pluiSigHandler (int sig);
 static void     pluiSwitchPage (GtkNotebook *nb, GtkWidget *page, guint pagenum, gpointer udata);
+static void     pluiSetPlaybackQueue (GtkButton *b, gpointer udata);
 
 
 static int gKillReceived = 0;
@@ -292,6 +294,15 @@ pluiActivate (GApplication *app, gpointer userdata)
       TRUE, TRUE, 0);
   g_signal_connect (plui->notebook, "switch-page", G_CALLBACK (pluiSwitchPage), plui);
 
+  widget = gtk_button_new ();
+  assert (widget != NULL);
+  gtk_button_set_label (GTK_BUTTON (widget), "Set Queue for Playback");
+  gtk_widget_set_margin_start (GTK_WIDGET (widget), 2);
+  gtk_notebook_set_action_widget (GTK_NOTEBOOK (plui->notebook), widget, GTK_PACK_END);
+  gtk_widget_show_all (GTK_WIDGET (widget));
+  g_signal_connect (widget, "clicked", G_CALLBACK (pluiSetPlaybackQueue), plui);
+  plui->setPlaybackButton = widget;
+
   /* music queue tab */
   widget = uimusicqActivate (plui->uimusicq, plui->window, 0);
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
@@ -475,8 +486,32 @@ pluiSwitchPage (GtkNotebook *nb, GtkWidget *page, guint pagenum, gpointer udata)
 {
   playerui_t  *plui = udata;
 
-  plui->musicqManageIdx = pagenum;
-  uimusicqSetManageIdx (plui->uimusicq, pagenum);
+  /* note that the design requires that the music queues be the first */
+  /* tabs in the notebook */
+  if (pagenum < MUSICQ_MAX) {
+    plui->musicqManageIdx = pagenum;
+    uimusicqSetManageIdx (plui->uimusicq, pagenum);
+    gtk_widget_show_all (GTK_WIDGET (plui->setPlaybackButton));
+  } else {
+    gtk_widget_hide (GTK_WIDGET (plui->setPlaybackButton));
+  }
   return;
 }
 
+static void
+pluiSetPlaybackQueue (GtkButton *b, gpointer udata)
+{
+  playerui_t      *plui = udata;
+  char            tbuff [40];
+
+  plui->musicqPlayIdx = plui->musicqManageIdx;
+  if (plui->musicqPlayIdx == 0) {
+    gtk_image_set_from_pixbuf (GTK_IMAGE (plui->musicqImage [MUSICQ_A]), plui->ledonImg);
+    gtk_image_set_from_pixbuf (GTK_IMAGE (plui->musicqImage [MUSICQ_B]), plui->ledoffImg);
+  } else {
+    gtk_image_set_from_pixbuf (GTK_IMAGE (plui->musicqImage [MUSICQ_A]), plui->ledoffImg);
+    gtk_image_set_from_pixbuf (GTK_IMAGE (plui->musicqImage [MUSICQ_B]), plui->ledonImg);
+  }
+  snprintf (tbuff, sizeof (tbuff), "%d", plui->musicqPlayIdx);
+  connSendMessage (plui->conn, ROUTE_MAIN, MSG_MUSICQ_SET_PLAYBACK, tbuff);
+}

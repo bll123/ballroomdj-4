@@ -68,6 +68,27 @@ musicqPush (musicq_t *musicq, musicqidx_t musicqidx, song_t *song, char *plname)
 }
 
 void
+musicqPushHeadEmpty (musicq_t *musicq, musicqidx_t musicqidx)
+{
+  musicqitem_t      *musicqitem;
+
+  if (musicq == NULL || musicq->q [musicqidx] == NULL) {
+    return;
+  }
+
+  musicqitem = malloc (sizeof (musicqitem_t));
+  assert (musicqitem != NULL);
+  musicqitem->dispidx = 0;
+  musicqitem->uniqueidx = musicq->uniqueidx [musicqidx];
+  ++(musicq->uniqueidx [musicqidx]);
+  musicqitem->song = NULL;
+  musicqitem->playlistName = NULL;
+  musicqitem->announce = NULL;
+  musicqitem->flags = MUSICQ_FLAG_EMPTY;
+  queuePushHead (musicq->q [musicqidx], musicqitem);
+}
+
+void
 musicqMove (musicq_t *musicq, musicqidx_t musicqidx,
     ssize_t fromidx, ssize_t toidx)
 {

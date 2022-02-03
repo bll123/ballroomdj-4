@@ -8,6 +8,7 @@
 #include <time.h>
 #include <unistd.h>
 #include <assert.h>
+#include <math.h>
 
 #include "conn.h"
 #include "pathbld.h"
@@ -27,7 +28,8 @@ static bool  uiplayerClosingCallback (void *udata, programstate_t programState);
 
 static void     uiplayerProcessPauseatend (uiplayer_t *uiplayer, int on);
 static void     uiplayerProcessPlayerState (uiplayer_t *uiplayer, int playerState);
-static void     uiplayerProcessStatusData (uiplayer_t *uiplayer, char *args);
+static void     uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args);
+static void     uiplayerProcessMusicqStatusData (uiplayer_t *uiplayer, char *args);
 static void     uiplayerFadeProcess (GtkButton *b, gpointer udata);
 static void     uiplayerPlayPauseProcess (GtkButton *b, gpointer udata);
 static void     uiplayerRepeatProcess (GtkButton *b, gpointer udata);
@@ -35,6 +37,7 @@ static void     uiplayerSongBeginProcess (GtkButton *b, gpointer udata);
 static void     uiplayerNextSongProcess (GtkButton *b, gpointer udata);
 static void     uiplayerPauseatendProcess (GtkButton *b, gpointer udata);
 static gboolean uiplayerSpeedProcess (GtkRange *range, GtkScrollType *scroll, gdouble value, gpointer udata);
+static gboolean uiplayerSeekProcess (GtkRange *range, GtkScrollType *scroll, gdouble value, gpointer udata);
 static gboolean uiplayerVolumeProcess (GtkRange *range, GtkScrollType *scroll, gdouble value, gpointer udata);
 
 uiplayer_t *
@@ -193,8 +196,8 @@ uiplayerActivate (uiplayer_t *uiplayer)
       "scale, trough { min-height: 5px; }");
   gtk_box_pack_end (GTK_BOX (hbox), GTK_WIDGET (uiplayer->speedScale),
       FALSE, FALSE, 0);
-  g_signal_connect (uiplayer->speedScale, "change-value", G_CALLBACK (uiplayerSpeedProcess), uiplayer);
   gtk_size_group_add_widget (sgC, GTK_WIDGET (uiplayer->speedScale));
+  g_signal_connect (uiplayer->speedScale, "change-value", G_CALLBACK (uiplayerSpeedProcess), uiplayer);
 
   /* size group D */
   widget = gtk_label_new ("Speed:");
@@ -260,6 +263,7 @@ uiplayerActivate (uiplayer_t *uiplayer)
   gtk_box_pack_end (GTK_BOX (hbox), GTK_WIDGET (uiplayer->seekScale),
       FALSE, FALSE, 0);
   gtk_size_group_add_widget (sgC, GTK_WIDGET (uiplayer->seekScale));
+  g_signal_connect (uiplayer->seekScale, "change-value", G_CALLBACK (uiplayerSeekProcess), uiplayer);
 
   /* size group D */
   widget = gtk_label_new ("Position:");
@@ -383,8 +387,8 @@ uiplayerActivate (uiplayer_t *uiplayer)
       "scale, trough { min-height: 5px; }");
   gtk_box_pack_end (GTK_BOX (hbox), GTK_WIDGET (uiplayer->volumeScale),
       FALSE, FALSE, 0);
-  g_signal_connect (uiplayer->volumeScale, "change-value", G_CALLBACK (uiplayerVolumeProcess), uiplayer);
   gtk_size_group_add_widget (sgC, GTK_WIDGET (uiplayer->volumeScale));
+  g_signal_connect (uiplayer->volumeScale, "change-value", G_CALLBACK (uiplayerVolumeProcess), uiplayer);
 
   /* size group D */
   widget = gtk_label_new ("Volume:");
@@ -436,6 +440,25 @@ uiplayerMainLoop (uiplayer_t *uiplayer)
       mstimeset (&uiplayer->speedLockSend, 3600000);
     }
   }
+
+  if (mstimeCheck (&uiplayer->seekLockTimeout)) {
+    mstimeset (&uiplayer->seekLockTimeout, 3600000);
+    uiplayer->seekLock = false;
+  }
+
+  if (mstimeCheck (&uiplayer->seekLockSend)) {
+    double        value;
+    char          tbuff [40];
+
+    value = gtk_range_get_value (GTK_RANGE (uiplayer->seekScale));
+    snprintf (tbuff, sizeof (tbuff), "%.0f", round (value));
+    connSendMessage (uiplayer->conn, ROUTE_PLAYER, MSG_PLAY_SEEK, tbuff);
+    if (uiplayer->seekLock) {
+      mstimeset (&uiplayer->seekLockSend, UIPLAYER_LOCK_TIME_SEND);
+    } else {
+      mstimeset (&uiplayer->seekLockSend, 3600000);
+    }
+  }
 }
 
 int
@@ -456,8 +479,12 @@ uiplayerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           uiplayerProcessPauseatend (uiplayer, atol (args));
           break;
         }
-        case MSG_STATUS_DATA: {
-          uiplayerProcessStatusData (uiplayer, args);
+        case MSG_PLAYER_STATUS_DATA: {
+          uiplayerProcessPlayerStatusData (uiplayer, args);
+          break;
+        }
+        case MSG_MUSICQ_STATUS_DATA: {
+          uiplayerProcessMusicqStatusData (uiplayer, args);
           break;
         }
         default: {
@@ -487,6 +514,9 @@ uiplayerInitCallback (void *udata, programstate_t programState)
   uiplayer->speedLock = false;
   mstimeset (&uiplayer->speedLockTimeout, 3600000);
   mstimeset (&uiplayer->speedLockSend, 3600000);
+  uiplayer->seekLock = false;
+  mstimeset (&uiplayer->seekLockTimeout, 3600000);
+  mstimeset (&uiplayer->seekLockSend, 3600000);
   uiplayer->volumeLock = false;
   mstimeset (&uiplayer->volumeLockTimeout, 3600000);
   mstimeset (&uiplayer->volumeLockSend, 3600000);
@@ -573,7 +603,7 @@ uiplayerProcessPlayerState (uiplayer_t *uiplayer, int playerState)
 }
 
 static void
-uiplayerProcessStatusData (uiplayer_t *uiplayer, char *args)
+uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args)
 {
   char          *p;
   char          *tokstr;
@@ -627,9 +657,11 @@ uiplayerProcessStatusData (uiplayer_t *uiplayer, char *args)
 
   /* playedtime */
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
-  tmutilToMSD (atol (p), tbuff, sizeof (tbuff));
-  gtk_label_set_label (GTK_LABEL (uiplayer->countdownTimerLab), tbuff);
-  dval = atof (p);
+  if (! uiplayer->seekLock) {
+    tmutilToMSD (atol (p), tbuff, sizeof (tbuff));
+    gtk_label_set_label (GTK_LABEL (uiplayer->countdownTimerLab), tbuff);
+    dval = atof (p);    // used below
+  }
 
   /* duration */
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
@@ -641,14 +673,23 @@ uiplayerProcessStatusData (uiplayer_t *uiplayer, char *args)
     gtk_range_set_adjustment (GTK_RANGE (uiplayer->seekScale), adjustment);
     uiplayer->lastdur = ddur;
   }
-  if (ddur == 0.0) {
-    gtk_range_set_value (GTK_RANGE (uiplayer->seekScale), 0.0);
-  } else {
-    gtk_range_set_value (GTK_RANGE (uiplayer->seekScale), dval);
+  if (! uiplayer->seekLock) {
+    if (ddur == 0.0) {
+      gtk_range_set_value (GTK_RANGE (uiplayer->seekScale), 0.0);
+    } else {
+      gtk_range_set_value (GTK_RANGE (uiplayer->seekScale), dval);
+    }
   }
+}
+
+static void
+uiplayerProcessMusicqStatusData (uiplayer_t *uiplayer, char *args)
+{
+  char          *p;
+  char          *tokstr;
 
   /* dance */
-  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
+  p = strtok_r (args, MSG_ARGS_RS_STR, &tokstr);
   if (uiplayer->danceLab != NULL) {
     gtk_label_set_label (GTK_LABEL (uiplayer->danceLab), p);
   }
@@ -734,6 +775,24 @@ uiplayerSpeedProcess (GtkRange *range, GtkScrollType *scroll, gdouble value, gpo
   mstimeset (&uiplayer->speedLockTimeout, UIPLAYER_LOCK_TIME_WAIT);
   snprintf (tbuff, sizeof (tbuff), "%3.0f", value);
   gtk_label_set_label (GTK_LABEL (uiplayer->speedDisplayLab), tbuff);
+  return FALSE;
+}
+
+static gboolean
+uiplayerSeekProcess (GtkRange *range, GtkScrollType *scroll, gdouble value, gpointer udata)
+{
+  uiplayer_t    *uiplayer = udata;
+  char          tbuff [40];
+  ssize_t       position;
+
+  if (! uiplayer->seekLock) {
+    mstimeset (&uiplayer->seekLockSend, UIPLAYER_LOCK_TIME_SEND);
+  }
+  uiplayer->seekLock = true;
+  mstimeset (&uiplayer->seekLockTimeout, UIPLAYER_LOCK_TIME_WAIT);
+  position = (ssize_t) round (value);
+  tmutilToMSD (position, tbuff, sizeof (tbuff));
+  gtk_label_set_label (GTK_LABEL (uiplayer->countdownTimerLab), tbuff);
   return FALSE;
 }
 

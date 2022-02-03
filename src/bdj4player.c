@@ -126,6 +126,7 @@ static void     playerPauseAtEnd (playerdata_t *playerData);
 static void     playerSendPauseAtEndState (playerdata_t *playerData);
 static void     playerFade (playerdata_t *playerData);
 static void     playerSpeed (playerdata_t *playerData, char *trate);
+static void     playerSeek (playerdata_t *playerData, ssize_t pos);
 static void     playerStop (playerdata_t *playerData);
 static void     playerVolumeSet (playerdata_t *playerData, char *tvol);
 static void     playerVolumeMute (playerdata_t *playerData);
@@ -427,6 +428,16 @@ playerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           playerSendPauseAtEndState (playerData);
           playerSetPlayerState (playerData, PL_STATE_STOPPED);
           logMsg (LOG_DBG, LOG_BASIC, "pl state: stopped (msg-req)");
+          break;
+        }
+        case MSG_PLAY_SONG_BEGIN: {
+          logMsg (LOG_DBG, LOG_MSGS, "got: song begin", args);
+          playerSeek (playerData, 0);
+          break;
+        }
+        case MSG_PLAY_SEEK: {
+          logMsg (LOG_DBG, LOG_MSGS, "got: seek", args);
+          playerSeek (playerData, atol (args));
           break;
         }
         case MSG_PLAYER_VOLSINK_SET: {
@@ -1066,6 +1077,33 @@ playerSpeed (playerdata_t *playerData, char *trate)
 }
 
 static void
+playerSeek (playerdata_t *playerData, ssize_t reqpos)
+{
+  double        drate;
+  double        dpos;
+  ssize_t       nreqpos;
+  ssize_t       newpos;
+  prepqueue_t   *pq = playerData->currentSong;
+
+  /* if duration is adjusted for speed, so is reqpos                */
+  /* need to change it back to something the player will understand */
+  nreqpos = reqpos;
+  if (pq->speed != 100) {
+    drate = (double) pq->speed / 100.0;
+    dpos = (double) reqpos * drate;
+    nreqpos = (ssize_t) dpos;
+  }
+  newpos = pliSeek (playerData->pli, nreqpos);
+  if (pq->speed != 100) {
+    drate = (double) pq->speed / 100.0;
+    dpos = (double) newpos * drate;
+    newpos = (ssize_t) dpos;
+  }
+  playerData->playTimePlayed = newpos;
+  playerSetCheckTimes (playerData, pq);
+}
+
+static void
 playerStop (playerdata_t *playerData)
 {
   plistate_t plistate = pliState (playerData->pli);
@@ -1317,6 +1355,7 @@ playerSendStatus (playerdata_t *playerData)
       playerData->playerState != PL_STATE_IN_FADEOUT) {
     return;
   }
+
   playerData->lastPlayerState = playerData->playerState;
 
   rbuff [0] = '\0';

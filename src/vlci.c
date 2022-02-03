@@ -172,7 +172,7 @@ vlcPlay (vlcData_t *vlcData)
 ssize_t
 vlcSeek (vlcData_t *vlcData, ssize_t dpos)
 {
-  libvlc_time_t     tm = 0;
+  libvlc_time_t     dur = 0;
   float             pos = 0.0;
   ssize_t           newpos = dpos;
 
@@ -180,13 +180,13 @@ vlcSeek (vlcData_t *vlcData, ssize_t dpos)
     return -1.0;
   }
 
-  if (vlcData->state == libvlc_Playing && dpos > 0) {
-    tm = libvlc_media_player_get_length (vlcData->mp);
-    pos = (float) ((double) dpos / (double) tm);
+  if (vlcData->state == libvlc_Playing && dpos >= 0) {
+    dur = libvlc_media_player_get_length (vlcData->mp);
+    pos = (float) ((double) dpos / (double) dur);
     libvlc_media_player_set_position (vlcData->mp, pos);
   }
   pos = libvlc_media_player_get_position (vlcData->mp);
-  newpos = (ssize_t) round ((double) pos * (double) tm);
+  newpos = (ssize_t) round ((double) pos * (double) dur);
   // fprintf (stderr, "vlci: seek: dpos: %zd new-pos: %.6f new-pos: %zd\n", dpos, pos, newpos);
   return newpos;
 }

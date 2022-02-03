@@ -29,7 +29,6 @@ typedef struct {
   conn_t          *conn;
   GtkWidget       *parentwin;
   GdkPixbuf       *pauseImg;
-  GdkPixbuf       *clearImg;
   uimusicqui_t    ui [MUSICQ_MAX];
   /* temporary stuff used for music queue update processing */
   nlist_t         *uniqueList;

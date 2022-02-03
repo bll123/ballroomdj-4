@@ -30,6 +30,9 @@ typedef struct {
   GtkWidget       *durationLab;
   GtkWidget       *seekScale;
   double          lastdur;
+  bool            seekLock;
+  mstime_t        seekLockTimeout;
+  mstime_t        seekLockSend;
   /* main controls */
   GtkWidget       *repeatButton;
   bool            repeatLock;

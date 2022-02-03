@@ -328,7 +328,8 @@ remctrlProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 {
   remctrldata_t     *remctrlData = udata;
 
-  if (msg != MSG_STATUS_DATA) {
+  /* this just reduces the amount of stuff in the log */
+  if (msg != MSG_PLAYER_STATUS_DATA) {
     logMsg (LOG_DBG, LOG_MSGS, "got: from: %ld route: %ld msg:%ld args:%s",
         routefrom, route, msg, args);
   }
@@ -358,7 +359,7 @@ remctrlProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           remctrlProcessPlaylistList (remctrlData, args);
           break;
         }
-        case MSG_STATUS_DATA: {
+        case MSG_PLAYER_STATUS_DATA: {
           if (remctrlData->playerStatus != NULL) {
             free (remctrlData->playerStatus);
           }

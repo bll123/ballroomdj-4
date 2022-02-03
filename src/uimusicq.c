@@ -37,9 +37,9 @@ enum {
 };
 
 enum {
-  MUSICQ_COL_UNIQUE_IDX,
   MUSICQ_COL_IDX,
   MUSICQ_COL_DISP_IDX,
+  MUSICQ_COL_UNIQUE_IDX,
   MUSICQ_COL_DBIDX,
   MUSICQ_COL_PAUSEIND,
   MUSICQ_COL_DANCE,
@@ -121,10 +121,6 @@ uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
   /* temporary */
   tci = uimusicq->musicqManageIdx;
   uimusicq->musicqManageIdx = ci;
-
-  image = gtk_image_new ();
-  gtk_image_clear (GTK_IMAGE (image));
-  uimusicq->clearImg = gtk_image_get_pixbuf (GTK_IMAGE (image));
 
   uimusicq->parentwin = parentwin;
 
@@ -372,7 +368,8 @@ uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
   gtk_tree_view_append_column (GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree), column);
 
   renderer = gtk_cell_renderer_pixbuf_new ();
-  column = gtk_tree_view_column_new_with_attributes ("", renderer, NULL);
+  column = gtk_tree_view_column_new_with_attributes ("",
+      renderer, "pixbuf", MUSICQ_COL_PAUSEIND, NULL);
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
   gtk_tree_view_append_column (GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree), column);
 
@@ -633,7 +630,7 @@ uimusicqProcessMusicQueueDataNew (uimusicq_t *uimusicq, char * args)
     danceIdx = songGetNum (song, TAG_DANCE);
     danceStr = danceGetData (dances, danceIdx, DANCE_DANCE);
 
-    pixbuf = uimusicq->clearImg;
+    pixbuf = NULL;
     if (musicqupdate->pflag) {
       pixbuf = uimusicq->pauseImg;
     }
@@ -712,7 +709,7 @@ uimusicqProcessMusicQueueDataUpdate (uimusicq_t *uimusicq, char * args)
     char          *danceStr;
     GdkPixbuf     *pixbuf;
 
-    pixbuf = uimusicq->clearImg;
+    pixbuf = NULL;
     if (musicqupdate->pflag) {
       pixbuf = uimusicq->pauseImg;
     }
@@ -904,15 +901,13 @@ uimusicqMoveTopProcess (GtkButton *b, gpointer udata)
   connSendMessage (uimusicq->conn, ROUTE_MAIN,
       MSG_MUSICQ_MOVE_TOP, tbuff);
 
-  ci = uimusicq->musicqManageIdx;
-
   sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree));
   gtk_tree_selection_get_selected (sel, &model, &iter);
   valid = gtk_tree_model_get_iter_first (model, &iter);
   gtk_tree_selection_select_iter (sel, &iter);
   path = gtk_tree_model_get_path (model, &iter);
   gtk_tree_view_scroll_to_cell (GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree),
-      path, NULL, TRUE, 0.2, 0.0);
+      path, NULL, TRUE, 0.0, 0.0);
   gtk_tree_path_free (path);
 }
 

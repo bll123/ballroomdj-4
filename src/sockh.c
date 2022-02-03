@@ -155,7 +155,8 @@ sockhSendMessage (Sock_t sock, bdjmsgroute_t routefrom,
     return -1;
   }
 
-  if (msg != MSG_STATUS_DATA && msg != MSG_PLAYER_STATUS_DATA) {
+  /* this is only to keep the log clean */
+  if (msg != MSG_MUSICQ_STATUS_DATA && msg != MSG_PLAYER_STATUS_DATA) {
     logMsg (LOG_DBG, LOG_SOCKET, "route:%d msg:%d args:%s", route, msg, args);
   }
   len = msgEncode (routefrom, route, msg, args, msgbuff, sizeof (msgbuff));
