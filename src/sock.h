@@ -1,8 +1,6 @@
 #ifndef INC_SOCK_H
 #define INC_SOCK_H
 
-#include "config.h"
-
 #include <stdint.h>
 #include <sys/types.h>
 #include <unistd.h>

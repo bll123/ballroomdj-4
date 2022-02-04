@@ -108,6 +108,11 @@ foreach path [list {} profiles $hostname [file join $hostname profiles]] {
             set value {Wachtrij B}
           }
         }
+        if { $key eq "PLAYERQLEN" } {
+          if { $value < 10 } {
+            set value 30
+          }
+        }
         if { $key eq "MQFONT" && $value ne {} } {
           # drop any size and remove the braces.
           set value [lindex $value 0]

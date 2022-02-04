@@ -1,5 +1,6 @@
 #include "config.h"
 
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -20,6 +21,7 @@ int
 main (int argc, char *argv[])
 {
   char      buff [MAXPATHLEN];
+  int       validargs = 0;
   int       c = 0;
   int       option_index = 0;
   char      *prog;
@@ -27,8 +29,8 @@ main (int argc, char *argv[])
 
   static struct option bdj_options [] = {
     { "check_all",  no_argument,        NULL,   1 },
-    { "clicomm",    no_argument,        NULL,   2 },
-    { "playergui",  no_argument,        NULL,   3 },
+    { "cli",        no_argument,        NULL,   2 },
+    { "configui",   no_argument,        NULL,   3 },
     { "main",       no_argument,        NULL,   4 },
     { "player",     no_argument,        NULL,   5 },
     { "marquee",    no_argument,        NULL,   6 },
@@ -46,30 +48,37 @@ main (int argc, char *argv[])
     switch (c) {
       case 1: {
         prog = "check_all";
+        ++validargs;
         break;
       }
       case 2: {
         prog = "bdj4cli";
+        ++validargs;
         break;
       }
       case 3: {
-        prog = "bdj4gui";
+        prog = "bdj4configui";
+        ++validargs;
         break;
       }
       case 4: {
         prog = "bdj4main";
+        ++validargs;
         break;
       }
       case 5: {
         prog = "bdj4player";
+        ++validargs;
         break;
       }
       case 6: {
         prog = "bdj4marquee";
+        ++validargs;
         break;
       }
       case 7: {
         prog = "bdj4playerui";
+        ++validargs;
         break;
       }
       case 'd': {
@@ -85,6 +94,11 @@ main (int argc, char *argv[])
         break;
       }
     }
+  }
+
+  if (validargs > 1) {
+    fprintf (stderr, "Invalid arguments\n");
+    exit (1);
   }
 
   if (chdir (sysvars [SV_BDJ4DIR]) < 0) {

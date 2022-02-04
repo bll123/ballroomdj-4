@@ -1,6 +1,5 @@
 syntax: regexp
 ~$
-^src/mkc_files/
 ^data/
 ^bin/
 ^dev/
@@ -9,14 +8,8 @@ syntax: regexp
 ^locale/
 ^packages/
 ^src/config.*\.h$
-^src/objects/
-^src/bdj-env
-^src/bdj-reqlibs
+^src/build/
 ^src/w$
-^src/check_all$
-^src/bdj4$
-^src/.*\.so$
-^src/.*\.dll$
 ^test.dir/test.files/
 ^tmp/
 ^web/marquee4.html$

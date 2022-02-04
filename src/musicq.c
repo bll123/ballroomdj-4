@@ -1,5 +1,6 @@
 #include "config.h"
 
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -361,7 +362,8 @@ musicqGetData (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx, tagdefkey_t
   }
 
   musicqitem = queueGetByIdx (musicq->q [musicqidx], idx);
-  if (musicqitem != NULL) {
+  if (musicqitem != NULL &&
+     (musicqitem->flags & MUSICQ_FLAG_EMPTY) != MUSICQ_FLAG_EMPTY) {
     song = musicqitem->song;
     data = songGetData (song, tagidx);
   }
@@ -385,7 +387,8 @@ musicqGetDance (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx)
   }
 
   musicqitem = queueGetByIdx (musicq->q [musicqidx], idx);
-  if (musicqitem != NULL) {
+  if (musicqitem != NULL &&
+     (musicqitem->flags & MUSICQ_FLAG_EMPTY) != MUSICQ_FLAG_EMPTY) {
     song = musicqitem->song;
     dancekey = songGetNum (song, TAG_DANCE);
     dances = bdjvarsdf [BDJVDF_DANCES];

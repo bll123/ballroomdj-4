@@ -13,11 +13,13 @@ if exist "C:\Program Files (x86)" (
   set bits=64
 )
 
-set tclsh="%dir%\..\..\windows\%bits%\tcl\bin\tclsh.exe"
-
+set tclsh="%dir%\..\windows\%bits%\tcl\bin\tclsh.exe"
 if not exist %tclsh% (
-  echo "Unable to locate tclsh.exe"
-  exit /B 1
+  set tclsh="%dir%\..\..\windows\%bits%\tcl\bin\tclsh.exe"
+  if not exist %tclsh% (
+    echo "Unable to locate tclsh.exe"
+    exit /B 1
+  )
 )
 
 if not exist "data" (

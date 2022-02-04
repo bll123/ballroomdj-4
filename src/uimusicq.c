@@ -1,5 +1,6 @@
 #include "config.h"
 
+
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
@@ -145,6 +146,7 @@ uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
   image = gtk_image_new_from_file (tbuff);
   gtk_button_set_image (GTK_BUTTON (widget), image);
   gtk_widget_set_tooltip_text (widget, "Move to Top");
+  gtk_button_set_always_show_image (GTK_BUTTON (widget), TRUE); // macos
   gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (widget),
       FALSE, FALSE, 0);
   g_signal_connect (widget, "clicked",
@@ -159,6 +161,7 @@ uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
   image = gtk_image_new_from_file (tbuff);
   gtk_button_set_image (GTK_BUTTON (widget), image);
   gtk_widget_set_tooltip_text (widget, "Move Up");
+  gtk_button_set_always_show_image (GTK_BUTTON (widget), TRUE); // macos
   gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (widget),
       FALSE, FALSE, 0);
   g_signal_connect (widget, "clicked",
@@ -173,6 +176,7 @@ uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
   image = gtk_image_new_from_file (tbuff);
   gtk_button_set_image (GTK_BUTTON (widget), image);
   gtk_widget_set_tooltip_text (widget, "Move Down");
+  gtk_button_set_always_show_image (GTK_BUTTON (widget), TRUE); // macos
   gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (widget),
       FALSE, FALSE, 0);
   g_signal_connect (widget, "clicked",
@@ -188,6 +192,7 @@ uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
   uimusicq->pauseImg = gtk_image_get_pixbuf (GTK_IMAGE (image));
   gtk_button_set_image (GTK_BUTTON (widget), image);
   gtk_widget_set_tooltip_text (widget, "Toggle Pause");
+  gtk_button_set_always_show_image (GTK_BUTTON (widget), TRUE); // macos
   gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (widget),
       FALSE, FALSE, 0);
   g_signal_connect (widget, "clicked",
@@ -202,6 +207,7 @@ uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
   image = gtk_image_new_from_file (tbuff);
   gtk_button_set_image (GTK_BUTTON (widget), image);
   gtk_widget_set_tooltip_text (widget, "Remove from queue");
+  gtk_button_set_always_show_image (GTK_BUTTON (widget), TRUE); // macos
   gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (widget),
       FALSE, FALSE, 0);
   g_signal_connect (widget, "clicked",

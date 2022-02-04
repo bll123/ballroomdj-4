@@ -613,14 +613,20 @@ mainSendMarqueeData (maindata_t *mainData)
       } else if (i > musicqLen) {
         dstr = "";
       } else {
+        tstr = NULL;
         song = musicqGetByIdx (mainData->musicQueue, mainData->musicqPlayIdx, i);
-        /* if the song has an unknown dance, the marquee display */
-        /* will be filled in with the dance name. */
-        tstr = songGetData (song, TAG_MQDISPLAY);
+        if (song != NULL) {
+          /* if the song has an unknown dance, the marquee display */
+          /* will be filled in with the dance name. */
+          tstr = songGetData (song, TAG_MQDISPLAY);
+        }
         if (tstr != NULL) {
           dstr = tstr;
         } else {
           dstr = musicqGetDance (mainData->musicQueue, mainData->musicqPlayIdx, i);
+        }
+        if (dstr == NULL) {
+          dstr = "";
         }
       }
 
@@ -675,14 +681,20 @@ mainSendMobileMarqueeData (maindata_t *mainData)
       } else if (i > musicqLen) {
         dstr = "";
       } else {
+        tstr = NULL;
         song = musicqGetByIdx (mainData->musicQueue, mainData->musicqPlayIdx, i);
-        /* if the song has an unknown dance, the marquee display */
-        /* will be filled in with the dance name. */
-        tstr = songGetData (song, TAG_MQDISPLAY);
+        if (song != NULL) {
+          /* if the song has an unknown dance, the marquee display */
+          /* will be filled in with the dance name. */
+          tstr = songGetData (song, TAG_MQDISPLAY);
+        }
         if (tstr != NULL) {
           dstr = tstr;
         } else {
           dstr = musicqGetDance (mainData->musicQueue, mainData->musicqPlayIdx, i);
+        }
+        if (dstr == NULL) {
+          dstr = "";
         }
       }
 

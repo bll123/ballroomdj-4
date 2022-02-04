@@ -1,5 +1,6 @@
 #include "config.h"
 
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -36,6 +37,9 @@ pathbldMakePath (char *buff, size_t buffsz, const char *subpath,
   }
   if ((flags & PATHBLD_MP_RESOURCEDIR) == PATHBLD_MP_RESOURCEDIR) {
     dirprefix = sysvars [SV_BDJ4RESOURCEDIR];
+  }
+  if ((flags & PATHBLD_MP_TEMPLATEDIR) == PATHBLD_MP_TEMPLATEDIR) {
+    dirprefix = sysvars [SV_BDJ4TEMPLATEDIR];
   }
   if ((flags & PATHBLD_MP_IMGDIR) == PATHBLD_MP_IMGDIR) {
     dirprefix = sysvars [SV_BDJ4IMGDIR];

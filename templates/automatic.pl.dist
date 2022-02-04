@@ -1,8 +1,6 @@
 # BDJ4 playlist settings
-# Converted from data/automatic.playlist
-# Fri Jan 07 10:47:40 GMT 2022
-VERSION
-..5
+# Converted from /home/bll/s/ballroomdj/test.dir/data/automatic.playlist
+# Sun Jan 23 22:21:31 GMT 2022
 ALLOWEDKEYWORDS
 ..
 DANCERATING
@@ -19,29 +17,19 @@ PAUSEEACHSONG
 ..no
 PLAYANNOUNCE
 ..no
-REQUIREDKEYWORDS
-..
-RESUME
-..From Start
 SEQUENCE
 ..
 USESTATUS
 ..no
 STOPAFTER
 ..0
-STOPAFTERWAIT
-..Continue
 STOPTIME
 ..
-STOPTYPE
-..In
-STOPWAIT
-..Continue
 USEUNRATED
 ..no
-LOWDANCELEVEL
+DANCELEVELLOW
 ..Easy
-HIGHDANCELEVEL
+DANCELEVELHIGH
 ..Advanced
 TYPE
 ..Automatic

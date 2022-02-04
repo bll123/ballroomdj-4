@@ -13,6 +13,9 @@ case $stype in
     install_name_tool -change '../bin/libbdj4player.dylib' \
         '@executable_path/libbdj4player.dylib' \
         $@
+    install_name_tool -change '../bin/libbdj4ui.dylib' \
+        '@executable_path/libbdj4ui.dylib' \
+        $@
     # libvlc is handled with DYLD_FALLBACK_PATH
     ;;
   Linux)

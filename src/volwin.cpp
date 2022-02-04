@@ -6,7 +6,6 @@
  */
 
 #include "config.h"
-#include "configvolwin.h"
 
 #if _hdr_endpointvolume
 

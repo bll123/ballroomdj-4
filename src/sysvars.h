@@ -1,8 +1,6 @@
 #ifndef INC_SYSVARS_H
 #define INC_SYSVARS_H
 
-#include "config.h"
-
 #include "portability.h"
 
 typedef enum {
@@ -16,6 +14,7 @@ typedef enum {
   SV_BDJ4EXECDIR,     // main + /bin
   SV_BDJ4IMGDIR,      // main + /img
   SV_BDJ4RESOURCEDIR, // main + /resources
+  SV_BDJ4TEMPLATEDIR, // main + /templates
   SV_BDJ4HTTPDIR,     // 'http' (relative path)
   SV_SHLIB_EXT,
   SV_MOBMQ_HOST,

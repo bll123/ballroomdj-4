@@ -1,5 +1,6 @@
 #include "config.h"
 
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -162,6 +163,9 @@ sysvarsInit (const char *argv0)
 
   strlcpy (sysvars [SV_BDJ4RESOURCEDIR], sysvars [SV_BDJ4MAINDIR], MAXPATHLEN);
   strlcat (sysvars [SV_BDJ4RESOURCEDIR], "/resources", MAXPATHLEN);
+
+  strlcpy (sysvars [SV_BDJ4TEMPLATEDIR], sysvars [SV_BDJ4MAINDIR], MAXPATHLEN);
+  strlcat (sysvars [SV_BDJ4TEMPLATEDIR], "/templates", MAXPATHLEN);
 
   strlcpy (sysvars [SV_BDJ4HTTPDIR], "http", MAXPATHLEN);
 
