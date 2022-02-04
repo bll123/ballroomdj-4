@@ -15,8 +15,8 @@ cmake:
 	cmake -S . -B $(BUILDDIR)
 
 build:
-	make -C $(BUILDDIR) install
-	
+	cmake --build $(BUILDDIR)
+	cmake --install $(BUILDDIR)
 
 # testing
 .PHONY: check
