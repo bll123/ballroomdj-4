@@ -12,7 +12,17 @@ all:
 	$(MAKE) build
 
 cmake:
+	if test $$(uname -o) = Msys; then \
+	  $(MAKE) cmake-windows; \
+	else \
+	  $(MAKE) cmake-unix; \
+	fi
+
+cmake-unix:
 	cmake -S . -B $(BUILDDIR)
+
+cmake-windows:
+	cmake -G "MSYS Makefiles" -S . -B $(BUILDDIR)
 
 build:
 	cmake --build $(BUILDDIR)

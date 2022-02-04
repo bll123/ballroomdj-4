@@ -10,6 +10,10 @@
 #include <getopt.h>
 #include <unistd.h>
 
+#if _hdr_windows
+# include <windows.h>
+#endif
+
 #include "bdjstring.h"
 #include "pathbld.h"
 #include "fileop.h"

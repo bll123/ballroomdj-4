@@ -1,18 +1,25 @@
 cmake_minimum_required(VERSION 3.18)
 project (BallroomDJ4 VERSION 4.0.0)
 
+# avoid msys2/windows issue
+SET (CMAKE_C_COMPILER_WORKS 1)
+SET (CMAKE_CXX_COMPILER_WORKS 1)
+
 set (default_build_type "Debug")
-set (CMAKE_MODULE_PATH CmakeModules)
+set (CMAKE_MODULE_PATH utils)
 set (CMAKE_SHARED_LIBRARY_PREFIX "")
 set (CMAKE_STATIC_LIBRARY_PREFIX "")
 set (CMAKE_INSTALL_PREFIX "")
+set (CMAKE_PREFIX_PATH /opt/local;../plocal)
+
 # this doesn't seem to help with locating header files...
 include_directories (
-  "${CMAKE_BINARY_DIR}" "${PROJECT_SOURCE_DIR}" /opt/local/include
+  "${CMAKE_BINARY_DIR}" "${PROJECT_SOURCE_DIR}"
+  /opt/local/include ../plocal/include
 )
 
-
-# this seems to work on linux
+# This seems to work on linux.
+# cmake uses '@rpath' on macos; will have to see if that works.
 SET (CMAKE_SKIP_BUILD_RPATH FALSE)
 SET (CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
 SET (CMAKE_INSTALL_RPATH "\${ORIGIN}")
@@ -32,6 +39,7 @@ include (CheckSymbolExists)
 include (CheckTypeSize)
 include (CheckVariableExists)
 include (FindPkgConfig)
+include (CheckPrototypeDefinition)
 
 check_c_compiler_flag (-Wextra _cflag_extra)
 check_c_compiler_flag (-Wno-unused-but-set-variable _cflag_unused_set)
@@ -48,7 +56,17 @@ find_package (Iconv)
 # The FindGettext package is for translations
 find_package (Gettext)
 find_package (OpenSSL)
+
+# does not work on windows. find_library() fails.
 find_package (LIBVLC)
+
+# so hard-code the paths.
+# the library path will always be valid.
+if (NOT LIBVLC_LIBRARY)
+  set (LIBVLC_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/vlc-3.0.16")
+  set (LIBVLC_LIBRARY "C:/Program Files/VideoLAN/VLC/libvlc.dll")
+  set (LIBVLC_FOUND TRUE)
+endif()
 
 # is there a better way to handle libraries like this?
 macro (addIntlLibrary name)
@@ -57,11 +75,17 @@ macro (addIntlLibrary name)
   endif()
 endmacro()
 
+macro (addWinSockLibrary name)
+  if (WIN32)
+    target_link_libraries (${name} ws2_32)
+  endif()
+endmacro()
+
 pkg_check_modules (GTK gtk+-3.0)
 pkg_check_modules (CHECK check)
 pkg_check_modules (PA libpulse)
 
-set (CMAKE_REQUIRED_INCLUDES /opt/local/include)
+set (CMAKE_REQUIRED_INCLUDES /opt/local/include ../plocal/include)
 
 check_include_file (alsa/asoundlib.h _hdr_alsa_asoundlib)
 check_include_file (arpa/inet.h _hdr_arpa_inet)
@@ -150,7 +174,22 @@ check_function_exists (libvlc_new _lib_libvlc_new)
 check_function_exists (libvlc_audio_output_device_enum _lib_libvlc_audio_output_device_enum)
 set (CMAKE_REQUIRED_LIBRARIES "")
 
+check_prototype_definition (mkdir
+    "int mkdir(const char *pathname, mode_t mode)"
+    0
+    "sys/stat.h;unistd.h"
+    temp_mkdir)
+if (temp_mkdir)
+  set (_args_mkdir 2)
+else()
+  set (_args_mkdir 1)
+endif()
+
 check_symbol_exists (INVALID_SOCKET winsock2.h;windows.h _define_INVALID_SOCKET)
+if (WIN32)
+  # another cmake bug
+  set (_define_INVALID_SOCKET 1)
+endif ()
 check_symbol_exists (O_CLOEXEC fcntl.h _define_O_CLOEXEC)
 check_symbol_exists (SIGCHLD signal.h _define_SIGCHLD)
 check_symbol_exists (SIGHUP signal.h _define_SIGHUP)
@@ -198,6 +237,8 @@ add_library (libbdj4common SHARED
   sysvars.c
   tmutil.c
 )
+addIntlLibrary (libbdj4common)
+addWinSockLibrary (libbdj4common)
 
 add_library (libbdj4 SHARED
   autosel.c
@@ -233,6 +274,7 @@ target_link_libraries (libbdj4
   m
 )
 addIntlLibrary (libbdj4)
+addWinSockLibrary (libbdj4)
 
 add_library (libbdj4player SHARED
   pli.c
@@ -259,6 +301,7 @@ target_link_libraries (libbdj4ui
   m
 )
 addIntlLibrary (libbdj4ui)
+addWinSockLibrary (libbdj4ui)
 
 add_library (libplinull SHARED plinull.c)
 target_link_libraries (libplinull
@@ -313,6 +356,8 @@ add_executable (bdj4 bdj4.c
   bdjstring.c filedata.c fileop.c pathbld.c
   pathutil.c sysvars.c strlcat.c strlcpy.c
 )
+addIntlLibrary (bdj4)
+addWinSockLibrary (bdj4)
 
 add_executable (bdj4main bdj4main.c)
 target_link_libraries (bdj4main
@@ -320,7 +365,8 @@ target_link_libraries (bdj4main
   ${CURL_LIBRARIES} ${OPENSSL_SSL_LIBRARIES}
   m
 )
-
+addIntlLibrary (bdj4main)
+addWinSockLibrary (bdj4main)
 
 add_executable (bdj4player bdj4player.c)
 target_link_libraries (bdj4player
@@ -329,6 +375,8 @@ target_link_libraries (bdj4player
   ${CURL_LIBRARIES} ${OPENSSL_SSL_LIBRARIES}
   m
 )
+addIntlLibrary (bdj4player)
+addWinSockLibrary (bdj4player)
 
 add_executable(bdj4mobmq bdj4mobmq.c websrv.c ${MONGOOSE_SRC})
 target_include_directories (bdj4mobmq
@@ -339,6 +387,8 @@ target_link_libraries (bdj4mobmq
   ${CURL_LIBRARIES} ${OPENSSL_SSL_LIBRARIES}
   m
 )
+addIntlLibrary (bdj4mobmq)
+addWinSockLibrary (bdj4mobmq)
 
 add_executable(bdj4rc bdj4rc.c websrv.c ${MONGOOSE_SRC})
 target_include_directories (bdj4rc
@@ -349,6 +399,8 @@ target_link_libraries (bdj4rc
   ${CURL_LIBRARIES} ${OPENSSL_SSL_LIBRARIES}
   m
 )
+addIntlLibrary (bdj4rc)
+addWinSockLibrary (bdj4rc)
 
 add_executable (bdj4marquee bdj4marquee.c)
 target_link_libraries (bdj4marquee
@@ -358,6 +410,7 @@ target_link_libraries (bdj4marquee
   m
 )
 addIntlLibrary (bdj4marquee)
+addWinSockLibrary (bdj4marquee)
 
 add_executable (bdj4playerui bdj4playerui.c)
 target_link_libraries (bdj4playerui
@@ -366,7 +419,8 @@ target_link_libraries (bdj4playerui
   ${GTK_LDFLAGS}
   m
 )
-addIntlLibrary (libbdj4ui)
+addIntlLibrary (bdj4playerui)
+addWinSockLibrary (bdj4playerui)
 
 add_executable (check_all
   check_all.c
@@ -386,12 +440,20 @@ add_executable (check_all
   check_sock.c
   check_tmutil.c
 )
+
+if (WIN32)
+  # another cmake bug
+  set (CHECK_LDFLAGS "-L../plocal/lib -lcheck")
+endif()
+
 target_link_libraries (check_all
   libbdj4 libbdj4common
   ${CURL_LIBRARIES} ${OPENSSL_SSL_LIBRARIES}
   ${CHECK_LDFLAGS}
   pthread
 )
+addIntlLibrary (check_all)
+addWinSockLibrary (check_all)
 
 add_executable (chkprocess chkprocess.c)
 

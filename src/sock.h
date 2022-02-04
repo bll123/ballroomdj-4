@@ -13,6 +13,9 @@
 #if _hdr_winsock2
 # include <winsock2.h>
 #endif
+#if _hdr_WS2tcpip
+# include <WS2tcpip.h>
+#endif
 #if _hdr_windows
 # include <windows.h>
 #endif

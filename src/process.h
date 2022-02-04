@@ -1,6 +1,8 @@
 #ifndef INC_PROCESS_H
 #define INC_PROCESS_H
 
+#include <sys/types.h>
+
 #if _hdr_winsock2
 # include <winsock2.h>
 #endif

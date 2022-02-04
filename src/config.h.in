@@ -80,6 +80,8 @@
 
 #cmakedefine01 _lib_libvlc_audio_output_device_enum
 
+#cmakedefine _args_mkdir ${_args_mkdir}
+
 #cmakedefine01 _define_INVALID_SOCKET
 #cmakedefine01 _define_O_CLOEXEC
 #cmakedefine01 _define_O_SYNC
