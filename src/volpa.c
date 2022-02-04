@@ -10,9 +10,9 @@
  *   https://freedesktop.org/software/pulseaudio/doxygen/
  */
 
-#if _hdr_pulse_pulseaudio
-
 #include "config.h"
+
+#if _hdr_pulse_pulseaudio
 
 #include <stdio.h>
 #include <stdlib.h>

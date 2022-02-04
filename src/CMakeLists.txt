@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.18)
-project (BallroomDJ4 VERSION 4.0.0)
+set (BDJ4_VERSION 4.0.0)
+project (BallroomDJ4 VERSION ${BDJ4_VERSION})
 set (BDJ4ICON bdj4_icon.ico)
 
 # avoid msys2/windows issue
@@ -7,16 +8,17 @@ SET (CMAKE_C_COMPILER_WORKS 1)
 SET (CMAKE_CXX_COMPILER_WORKS 1)
 
 set (default_build_type "Debug")
+
 set (CMAKE_MODULE_PATH utils)
 set (CMAKE_SHARED_LIBRARY_PREFIX "")
 set (CMAKE_STATIC_LIBRARY_PREFIX "")
 set (CMAKE_INSTALL_PREFIX "")
-set (CMAKE_PREFIX_PATH /opt/local;../plocal)
+set (CMAKE_PREFIX_PATH /opt/local;${PROJECT_SOURCE_DIR}/../plocal)
 
 # this doesn't seem to help with locating header files...
 include_directories (
   "${CMAKE_BINARY_DIR}" "${PROJECT_SOURCE_DIR}"
-  /opt/local/include ../plocal/include
+  /opt/local/include ${PROJECT_SOURCE_DIR}/../plocal/include
 )
 
 # This seems to work on linux.
@@ -42,21 +44,8 @@ include (CheckVariableExists)
 include (FindPkgConfig)
 include (CheckPrototypeDefinition)
 
-check_c_compiler_flag (-Wextra _cflag_extra)
-check_c_compiler_flag (-Wno-unused-but-set-variable _cflag_unused_set)
-check_c_compiler_flag (-Wno-unused-parameter _cflag_unused_param)
-check_c_compiler_flag (-Wno-unknown-pragmas _cflag_unknown_pragma)
-check_c_compiler_flag (-Wno-float-equal _cflag_float_equal)
-check_c_compiler_flag (-Wno-stringop-overflow _cflag_stringop_overflow)
-check_c_compiler_flag (-Wno-stringop-truncation _cflag_stringop_trunc)
-
-find_package (ALSA)
-find_package (CURL)
 find_package (Intl)
 find_package (Iconv)
-# The FindGettext package is for translations
-find_package (Gettext)
-find_package (OpenSSL)
 
 # does not work on windows. find_library() fails.
 find_package (LIBVLC)
@@ -82,11 +71,68 @@ macro (addWinSockLibrary name)
   endif()
 endmacro()
 
+pkg_check_modules (OPENSSL openssl)
+pkg_check_modules (CURL libcurl)
+pkg_check_modules (ALSA alsa)
 pkg_check_modules (GTK gtk+-3.0)
 pkg_check_modules (CHECK check)
 pkg_check_modules (PA libpulse)
 
-set (CMAKE_REQUIRED_INCLUDES /opt/local/include ../plocal/include)
+add_compile_options (-Wextra)
+add_compile_options (-Wno-unused-but-set-variable)
+add_compile_options (-Wno-unused-parameter)
+add_compile_options (-Wno-unknown-pragmas)
+add_compile_options (-Wno-float-equal)
+add_compile_options (-Wno-stringop-overflow)
+add_compile_options (-Wno-stringop-truncation)
+add_compile_options (-Wno-format-truncation)
+add_compile_options (-Wdeclaration-after-statement)
+add_compile_options (-Wmissing-prototypes)
+add_compile_options (-Wformat)
+add_compile_options (-Wformat-security)
+add_compile_options (-Werror=format-security)
+
+add_compile_options (-DGDK_DISABLE_DEPRECATED)
+add_compile_options (-DGTK_DISABLE_DEPRECATED)
+
+if (NOT WIN32)
+  add_compile_options (-DMG_ARCH=MG_ARCH_UNIX)
+  if (CMAKE_C_COMPILER_ID STREQUAL "GNU")
+    add_compile_options (-fstack-protector-strong)
+    add_compile_options (-fstack-protector-all)
+    add_compile_options (-fstack-protector-strong)
+    add_compile_options (-fstack-protector-all)
+    add_compile_options (-D_FORTIFY_SOURCE=2)
+  endif()
+  if (CMAKE_C_COMPILER_ID STREQUAL "Clang")
+    add_compile_options (-Wno-poison-system-directories)
+    add_compile_options (-Wno-shift-sign-overflow)
+    add_compile_options (-Wno-reserved-macro-identifier)
+    add_compile_options (-Wno-reserved-id-macro)
+    add_compile_options (-Wno-implicit-int-conversion)
+    add_compile_options (-Wno-switch-enum)
+    add_compile_options (-Wno-gnu-zero-variadic-macro-arguments)
+    add_compile_options (-Wno-documentation-deprecated-sync)
+    add_compile_options (-Wno-documentation-unknown-command)
+    add_compile_options (-Wno-documentation)
+
+    add_compile_options (-fstack-protector-strong)
+    add_compile_options (-fstack-protector-all)
+    add_compile_options (-fstack-protector-strong)
+    add_compile_options (-fstack-protector-all)
+    add_compile_options (-D_FORTIFY_SOURCE=2)
+  endif()
+else()
+  message ("Compiling for windows")
+  add_compile_options (-static-libgcc)
+  add_compile_options (-D_FORTIFY_SOURCE=0)
+  add_compile_options (-DMG_ARCH=MG_ARCH_WIN32)
+endif()
+
+set (CMAKE_REQUIRED_INCLUDES
+  /opt/local/include
+  ${PROJECT_SOURCE_DIR}/../plocal/include
+)
 
 check_include_file (alsa/asoundlib.h _hdr_alsa_asoundlib)
 check_include_file (arpa/inet.h _hdr_arpa_inet)
@@ -271,7 +317,7 @@ target_include_directories (libbdj4
 )
 target_link_libraries (libbdj4
   libbdj4common
-  ${CURL_LIBRARIES} ${OPENSSL_SSL_LIBRARIES}
+  ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   m
 )
 addIntlLibrary (libbdj4)
@@ -321,12 +367,12 @@ target_link_libraries (libplivlc
 )
 
 add_library (libvolalsa SHARED volalsa.c)
-if (ALSA_INCLUDE_DIR)
+if (ALSA_FOUND)
   target_include_directories (libvolalsa
     PUBLIC "${ALSA_INCLUDE_DIR}"
   )
   target_link_libraries (libvolalsa
-    ${ALSA_LIBRARIES}
+    ${ALSA_LDFLAGS}
     m
   )
 endif ()
@@ -341,7 +387,7 @@ endif()
 add_library (libvolnull SHARED volnull.c)
 
 add_library (libvolpa SHARED volpa.c)
-if (PA_INCLUDE_DIRS)
+if (PA_FOUND)
   target_include_directories (libvolpa
     PUBLIC "${PA_INCLUDE_DIRS}"
   )
@@ -354,11 +400,12 @@ endif()
 add_library (libvolwin SHARED volwin.cpp)
 
 if (WIN32)
+  # for cmake, must use the .o file extension, not .res
   add_custom_command (
-    OUTPUT launcher.res
+    OUTPUT launcher.o
     COMMAND cp -f ${PROJECT_SOURCE_DIR}/../img/${BDJ4ICON} .
     COMMAND echo "id ICON ${BDJ4ICON}" > launcher.rc
-    COMMAND windres launcher.rc -O coff -o launcher.res
+    COMMAND windres launcher.rc -O coff -o launcher.o
     MAIN_DEPENDENCY ${PROJECT_SOURCE_DIR}/../img/${BDJ4ICON}
     BYPRODUCTS launcher.rc ${BDJ4ICON}
     VERBATIM
@@ -370,15 +417,24 @@ add_executable (bdj4 bdj4.c
   pathutil.c sysvars.c strlcat.c strlcpy.c
 )
 if (WIN32)
-  target_link_libraries (bdj4 launcher.res)
+  target_sources (bdj4 launcher.o)
 endif()
 addIntlLibrary (bdj4)
 addWinSockLibrary (bdj4)
 
+add_executable (bdj4cli bdj4cli.c)
+target_link_libraries (bdj4cli
+  libbdj4 libbdj4common
+  ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
+  m
+)
+addIntlLibrary (bdj4cli)
+addWinSockLibrary (bdj4cli)
+
 add_executable (bdj4main bdj4main.c)
 target_link_libraries (bdj4main
   libbdj4 libbdj4common
-  ${CURL_LIBRARIES} ${OPENSSL_SSL_LIBRARIES}
+  ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   m
 )
 addIntlLibrary (bdj4main)
@@ -388,7 +444,7 @@ add_executable (bdj4player bdj4player.c)
 target_link_libraries (bdj4player
   libbdj4 libbdj4common libbdj4player
   ${CMAKE_DL_LIBS}
-  ${CURL_LIBRARIES} ${OPENSSL_SSL_LIBRARIES}
+  ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   m
 )
 addIntlLibrary (bdj4player)
@@ -396,11 +452,11 @@ addWinSockLibrary (bdj4player)
 
 add_executable(bdj4mobmq bdj4mobmq.c websrv.c ${MONGOOSE_SRC})
 target_include_directories (bdj4mobmq
-  PUBLIC "${MONGOOSE_INC_DIR}"
+  PRIVATE "${MONGOOSE_INC_DIR}"
 )
 target_link_libraries (bdj4mobmq
   libbdj4 libbdj4common
-  ${CURL_LIBRARIES} ${OPENSSL_SSL_LIBRARIES}
+  ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   m
 )
 addIntlLibrary (bdj4mobmq)
@@ -408,11 +464,11 @@ addWinSockLibrary (bdj4mobmq)
 
 add_executable(bdj4rc bdj4rc.c websrv.c ${MONGOOSE_SRC})
 target_include_directories (bdj4rc
-  PUBLIC "${MONGOOSE_INC_DIR}"
+  PRIVATE "${MONGOOSE_INC_DIR}"
 )
 target_link_libraries (bdj4rc
   libbdj4 libbdj4common
-  ${CURL_LIBRARIES} ${OPENSSL_SSL_LIBRARIES}
+  ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   m
 )
 addIntlLibrary (bdj4rc)
@@ -421,7 +477,7 @@ addWinSockLibrary (bdj4rc)
 add_executable (bdj4marquee bdj4marquee.c)
 target_link_libraries (bdj4marquee
   libbdj4 libbdj4common libbdj4ui
-  ${CURL_LIBRARIES} ${OPENSSL_SSL_LIBRARIES}
+  ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}
   m
 )
@@ -431,7 +487,7 @@ addWinSockLibrary (bdj4marquee)
 add_executable (bdj4playerui bdj4playerui.c)
 target_link_libraries (bdj4playerui
   libbdj4 libbdj4common libbdj4ui
-  ${CURL_LIBRARIES} ${OPENSSL_SSL_LIBRARIES}
+  ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}
   m
 )
@@ -457,17 +513,13 @@ add_executable (check_all
   check_tmutil.c
 )
 
-if (WIN32)
-  # another cmake bug
-  set (CHECK_LDFLAGS "-L../plocal/lib -lcheck")
-endif()
-
 target_link_libraries (check_all
   libbdj4 libbdj4common
-  ${CURL_LIBRARIES} ${OPENSSL_SSL_LIBRARIES}
+  ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${CHECK_LDFLAGS}
   pthread
 )
+target_compile_options (check_all PRIVATE -pthread)
 addIntlLibrary (check_all)
 addWinSockLibrary (check_all)
 
@@ -477,7 +529,7 @@ install (TARGETS
   libbdj4common libbdj4 libbdj4player libbdj4ui
   libplinull libplivlc
   libvolalsa libvolmac libvolnull libvolpa libvolwin
-  bdj4 bdj4main bdj4player bdj4mobmq bdj4rc
+  bdj4 bdj4cli bdj4main bdj4player bdj4mobmq bdj4rc
   bdj4marquee bdj4playerui
   check_all chkprocess
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin

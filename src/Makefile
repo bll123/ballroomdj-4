@@ -19,10 +19,10 @@ cmake:
 	fi
 
 cmake-unix:
-	cmake -S . -B $(BUILDDIR)
+	cmake -S . -B $(BUILDDIR) -Werror=deprecated
 
 cmake-windows:
-	cmake -G "MSYS Makefiles" -S . -B $(BUILDDIR)
+	cmake -G "MSYS Makefiles" -S . -B $(BUILDDIR) -Werror=deprecated
 
 build:
 	cmake --build $(BUILDDIR)

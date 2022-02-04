@@ -13,10 +13,9 @@
  *   would be nice to know which of the PCMs are usable.
  */
 
+#include "config.h"
 
 #if _hdr_alsa_asoundlib
-
-#include "config.h"
 
 #include <stdio.h>
 #include <stdlib.h>

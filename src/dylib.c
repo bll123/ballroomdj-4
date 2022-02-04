@@ -39,6 +39,8 @@ dylibLoad (char *path)
 #endif
   if (handle == NULL) {
     fprintf (stderr, "dylib open %s failed: %d %s\n", path, errno, strerror (errno));
+  } else {
+//    fprintf (stderr, "dylib open %s OK\n", path);
   }
   return handle;
 }
@@ -69,6 +71,8 @@ dylibLookup (dlhandle_t *handle, char *funcname)
 #endif
   if (addr == NULL) {
     fprintf (stderr, "sym lookup %s failed: %d %s\n", funcname, errno, strerror (errno));
+  } else {
+//    fprintf (stderr, "sym lookup %s OK\n", funcname);
   }
   return addr;
 }

@@ -287,6 +287,7 @@ pluiActivate (GApplication *app, gpointer userdata)
   plui->notebook = gtk_notebook_new ();
   assert (plui->notebook != NULL);
   gtk_notebook_set_show_border (GTK_NOTEBOOK (plui->notebook), TRUE);
+  gtk_notebook_set_show_tabs (GTK_NOTEBOOK (plui->notebook), TRUE);
   gtk_widget_set_margin_top (GTK_WIDGET (plui->notebook), 4);
   gtk_widget_set_hexpand (GTK_WIDGET (plui->notebook), TRUE);
   gtk_widget_set_vexpand (GTK_WIDGET (plui->notebook), FALSE);

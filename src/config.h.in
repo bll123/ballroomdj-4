@@ -3,7 +3,7 @@
 
 #cmakedefine SHLIB_EXT "${SHLIB_EXT}"
 
-#cmakedefine BDJ4_VERSION ${VERSION}
+#cmakedefine BDJ4_VERSION ${BDJ4_VERSION}
 
 #cmakedefine01 _hdr_alsa_asoundlib
 #cmakedefine01 _hdr_arpa_inet
@@ -78,6 +78,7 @@
 #cmakedefine01 _lib_symlink
 #cmakedefine01 _lib_uname
 
+#cmakedefine01 _lib_libvlc_new
 #cmakedefine01 _lib_libvlc_audio_output_device_enum
 
 #cmakedefine _args_mkdir ${_args_mkdir}
