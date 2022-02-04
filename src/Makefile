@@ -28,6 +28,9 @@ build:
 	cmake --build $(BUILDDIR)
 	cmake --install $(BUILDDIR)
 
+# windows
+
+
 # testing
 .PHONY: check
 check:
@@ -109,7 +112,6 @@ distclean:
 clean:
 	@-$(MAKE) tclean
 	@-$(MAKE) eclean
-	@-$(RM) -f launcher.res
 
 .PHONY: eclean
 eclean:
@@ -123,5 +125,6 @@ tclean:
 	@-$(RM) -f ../templates/*~ ../vlc-log.txt vlc-log.txt
 	@-$(RM) -f si-in.txt si-sort.txt
 	@-$(RM) -f ../vgcore.*
+	@-$(RM) -f launcher.rc bdj4_icon.ico
 	@-$(RM) -f ../web/*~ ../http/*~ ../core ../resources/*~
 

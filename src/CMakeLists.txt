@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.18)
 project (BallroomDJ4 VERSION 4.0.0)
+set (BDJ4ICON bdj4_icon.ico)
 
 # avoid msys2/windows issue
 SET (CMAKE_C_COMPILER_WORKS 1)
@@ -352,10 +353,25 @@ endif()
 
 add_library (libvolwin SHARED volwin.cpp)
 
+if (WIN32)
+  add_custom_command (
+    OUTPUT launcher.res
+    COMMAND cp -f ${PROJECT_SOURCE_DIR}/../img/${BDJ4ICON} .
+    COMMAND echo "id ICON ${BDJ4ICON}" > launcher.rc
+    COMMAND windres launcher.rc -O coff -o launcher.res
+    MAIN_DEPENDENCY ${PROJECT_SOURCE_DIR}/../img/${BDJ4ICON}
+    BYPRODUCTS launcher.rc ${BDJ4ICON}
+    VERBATIM
+  )
+endif()
+
 add_executable (bdj4 bdj4.c
   bdjstring.c filedata.c fileop.c pathbld.c
   pathutil.c sysvars.c strlcat.c strlcpy.c
 )
+if (WIN32)
+  target_link_libraries (bdj4 launcher.res)
+endif()
 addIntlLibrary (bdj4)
 addWinSockLibrary (bdj4)
 
