@@ -6,10 +6,10 @@
 
 #include "bdj4.h"
 #include "conn.h"
-#include "progstart.h"
+#include "progstate.h"
 
 typedef struct {
-  progstart_t     *progstart;
+  progstate_t     *progstate;
   conn_t          *conn;
   playerstate_t   playerState;
   GtkWidget       *vbox;
@@ -51,7 +51,7 @@ typedef struct {
   GtkWidget       *volumeDisplayLab;
 } uiplayer_t;
 
-uiplayer_t  * uiplayerInit (progstart_t *progstart, conn_t *conn);
+uiplayer_t  * uiplayerInit (progstate_t *progstate, conn_t *conn);
 void        uiplayerFree (uiplayer_t *uiplayer);
 GtkWidget   * uiplayerActivate (uiplayer_t *uiplayer);
 void        uiplayerMainLoop (uiplayer_t *uiplayer);

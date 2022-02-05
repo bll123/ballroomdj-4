@@ -19,7 +19,7 @@
 #include "pathbld.h"
 #include "playlist.h"
 #include "portability.h"
-#include "progstart.h"
+#include "progstate.h"
 #include "slist.h"
 #include "song.h"
 #include "tagdef.h"
@@ -49,6 +49,13 @@ enum {
   MUSICQ_COL_MAX,
 };
 
+enum {
+  UIMUSICQ_SEL_NONE,
+  UIMUSICQ_SEL_PREV,
+  UIMUSICQ_SEL_NEXT,
+  UIMUSICQ_SEL_TOP,
+};
+
 typedef struct {
   slistidx_t      dbidx;
   int             idx;
@@ -72,20 +79,24 @@ static void   uimusicqShowDanceWindow (GtkButton *b, gpointer udata);
 static void   uimusicqShowPlaylistWindow (GtkButton *b, gpointer udata);
 static gboolean uimusicqCloseMenus (GtkWidget *w, GdkEventFocus *event, gpointer udata);
 static void   uimusicqMoveTopProcess (GtkButton *b, gpointer udata);
+static void   uimusicqStopRepeat (GtkButton *b, gpointer udata);
+static gboolean uimusicqMoveUpRepeat (void *udata);
 static void   uimusicqMoveUpProcess (GtkButton *b, gpointer udata);
+static gboolean uimusicqMoveDownRepeat (void *udata);
 static void   uimusicqMoveDownProcess (GtkButton *b, gpointer udata);
 static void   uimusicqTogglePauseProcess (GtkButton *b, gpointer udata);
 static void   uimusicqRemoveProcess (GtkButton *b, gpointer udata);
 static ssize_t uimusicqGetSelection (uimusicq_t *uimusicq);
+static void   uimusicqMusicQueueSetSelected (uimusicq_t *uimusicq, int ci, int which);
 
 uimusicq_t *
-uimusicqInit (progstart_t *progstart, conn_t *conn)
+uimusicqInit (progstate_t *progstate, conn_t *conn)
 {
   uimusicq_t    *uimusicq;
 
   uimusicq = malloc (sizeof (uimusicq_t) * MUSICQ_MAX);
   assert (uimusicq != NULL);
-  uimusicq->progstart = progstart;
+  uimusicq->progstate = progstate;
   uimusicq->conn = conn;
   uimusicq->uniqueList = NULL;
   uimusicq->dispList = NULL;
@@ -146,7 +157,7 @@ uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
   image = gtk_image_new_from_file (tbuff);
   gtk_button_set_image (GTK_BUTTON (widget), image);
   gtk_widget_set_tooltip_text (widget, "Move to Top");
-  gtk_button_set_always_show_image (GTK_BUTTON (widget), TRUE); // macos
+  gtk_button_set_always_show_image (GTK_BUTTON (widget), TRUE);
   gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (widget),
       FALSE, FALSE, 0);
   g_signal_connect (widget, "clicked",
@@ -161,11 +172,13 @@ uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
   image = gtk_image_new_from_file (tbuff);
   gtk_button_set_image (GTK_BUTTON (widget), image);
   gtk_widget_set_tooltip_text (widget, "Move Up");
-  gtk_button_set_always_show_image (GTK_BUTTON (widget), TRUE); // macos
+  gtk_button_set_always_show_image (GTK_BUTTON (widget), TRUE);
   gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (widget),
       FALSE, FALSE, 0);
-  g_signal_connect (widget, "clicked",
+  g_signal_connect (widget, "pressed",
       G_CALLBACK (uimusicqMoveUpProcess), uimusicq);
+  g_signal_connect (widget, "released",
+      G_CALLBACK (uimusicqStopRepeat), uimusicq);
 
   widget = gtk_button_new ();
   assert (widget != NULL);
@@ -176,11 +189,13 @@ uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
   image = gtk_image_new_from_file (tbuff);
   gtk_button_set_image (GTK_BUTTON (widget), image);
   gtk_widget_set_tooltip_text (widget, "Move Down");
-  gtk_button_set_always_show_image (GTK_BUTTON (widget), TRUE); // macos
+  gtk_button_set_always_show_image (GTK_BUTTON (widget), TRUE);
   gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (widget),
       FALSE, FALSE, 0);
-  g_signal_connect (widget, "clicked",
+  g_signal_connect (widget, "pressed",
       G_CALLBACK (uimusicqMoveDownProcess), uimusicq);
+  g_signal_connect (widget, "released",
+      G_CALLBACK (uimusicqStopRepeat), uimusicq);
 
   widget = gtk_button_new ();
   assert (widget != NULL);
@@ -403,6 +418,12 @@ uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
   return uimusicq->ui [ci].box;
 }
 
+inline void
+uimusicqMainLoop (uimusicq_t *uimusicq)
+{
+  return;
+}
+
 int
 uimusicqProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     bdjmsgmsg_t msg, char *args, void *udata)
@@ -476,7 +497,6 @@ uimusicqCreateDanceList (uimusicq_t *uimusicq)
   column = gtk_tree_view_column_new_with_attributes ("",
       renderer, "text", DANCE_COL_NAME, NULL);
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_FIXED);
-//  gtk_tree_view_column_set_expand (column, TRUE);
   gtk_tree_view_append_column (GTK_TREE_VIEW (uimusicq->ui [ci].danceSelect), column);
   gtk_tree_view_set_model (GTK_TREE_VIEW (uimusicq->ui [ci].danceSelect),
       GTK_TREE_MODEL (store));
@@ -879,6 +899,7 @@ uimusicqCloseMenus (GtkWidget *w, GdkEventFocus *event, gpointer udata)
     gtk_widget_hide (GTK_WIDGET (uimusicq->ui [ci].playlistSelectWin));
     uimusicq->ui [ci].playlistSelectOpen = false;
   }
+  gtk_window_present (GTK_WINDOW (uimusicq->parentwin));
 
   return FALSE;
 }
@@ -903,18 +924,34 @@ uimusicqMoveTopProcess (GtkButton *b, gpointer udata)
     return;
   }
 
+  uimusicqMusicQueueSetSelected (uimusicq, ci, UIMUSICQ_SEL_TOP);
+
   snprintf (tbuff, sizeof (tbuff), "%d%c%lu", ci, MSG_ARGS_RS, idx);
   connSendMessage (uimusicq->conn, ROUTE_MAIN,
       MSG_MUSICQ_MOVE_TOP, tbuff);
+}
 
-  sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree));
-  gtk_tree_selection_get_selected (sel, &model, &iter);
-  valid = gtk_tree_model_get_iter_first (model, &iter);
-  gtk_tree_selection_select_iter (sel, &iter);
-  path = gtk_tree_model_get_path (model, &iter);
-  gtk_tree_view_scroll_to_cell (GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree),
-      path, NULL, TRUE, 0.0, 0.0);
-  gtk_tree_path_free (path);
+static void
+uimusicqStopRepeat (GtkButton *b, gpointer udata)
+{
+  int         ci;
+  uimusicq_t  *uimusicq = udata;
+
+  ci = uimusicq->musicqManageIdx;
+  if (uimusicq->ui [ci].repeatTimer != 0) {
+    g_source_remove (uimusicq->ui [ci].repeatTimer);
+  }
+  uimusicq->ui [ci].repeatTimer = 0;
+}
+
+
+static gboolean
+uimusicqMoveUpRepeat (gpointer udata)
+{
+  uimusicq_t        *uimusicq = udata;
+
+  uimusicqMoveUpProcess (NULL, uimusicq);
+  return TRUE;
 }
 
 static void
@@ -924,10 +961,6 @@ uimusicqMoveUpProcess (GtkButton *b, gpointer udata)
   uimusicq_t        *uimusicq = udata;
   ssize_t           idx;
   char              tbuff [20];
-  GtkTreeSelection  *sel;
-  GtkTreeModel      *model;
-  GtkTreeIter       iter;
-  gboolean          valid;
 
   ci = uimusicq->musicqManageIdx;
 
@@ -936,22 +969,22 @@ uimusicqMoveUpProcess (GtkButton *b, gpointer udata)
     return;
   }
 
+  uimusicqMusicQueueSetSelected (uimusicq, ci, UIMUSICQ_SEL_PREV);
   snprintf (tbuff, sizeof (tbuff), "%d%c%lu", ci, MSG_ARGS_RS, idx);
   connSendMessage (uimusicq->conn, ROUTE_MAIN,
       MSG_MUSICQ_MOVE_UP, tbuff);
-
-  sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree));
-  gtk_tree_selection_get_selected (sel, &model, &iter);
-  valid = gtk_tree_model_iter_previous (model, &iter);
-  if (valid) {
-    GtkTreePath *path;
-
-    gtk_tree_selection_select_iter (sel, &iter);
-    path = gtk_tree_model_get_path (model, &iter);
-    gtk_tree_view_scroll_to_cell (GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree),
-        path, NULL, TRUE, 0.2, 0.0);
-    gtk_tree_path_free (path);
+  if (uimusicq->ui [ci].repeatTimer == 0) {
+    uimusicq->ui [ci].repeatTimer = g_timeout_add (UIMUSICQ_REPEAT_TIME, uimusicqMoveUpRepeat, uimusicq);
   }
+}
+
+static gboolean
+uimusicqMoveDownRepeat (gpointer udata)
+{
+  uimusicq_t        *uimusicq = udata;
+
+  uimusicqMoveDownProcess (NULL, uimusicq);
+  return TRUE;
 }
 
 static void
@@ -973,21 +1006,13 @@ uimusicqMoveDownProcess (GtkButton *b, gpointer udata)
     return;
   }
 
+  uimusicqMusicQueueSetSelected (uimusicq, ci, UIMUSICQ_SEL_NEXT);
   snprintf (tbuff, sizeof (tbuff), "%d%c%lu", ci, MSG_ARGS_RS, idx);
   connSendMessage (uimusicq->conn, ROUTE_MAIN,
       MSG_MUSICQ_MOVE_DOWN, tbuff);
 
-  sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree));
-  gtk_tree_selection_get_selected (sel, &model, &iter);
-  valid = gtk_tree_model_iter_next (model, &iter);
-  if (valid) {
-    GtkTreePath *path;
-
-    gtk_tree_selection_select_iter (sel, &iter);
-    path = gtk_tree_model_get_path (model, &iter);
-    gtk_tree_view_scroll_to_cell (GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree),
-        path, NULL, TRUE, 0.8, 0.0);
-    gtk_tree_path_free (path);
+  if (uimusicq->ui [ci].repeatTimer == 0) {
+    uimusicq->ui [ci].repeatTimer = g_timeout_add (UIMUSICQ_REPEAT_TIME, uimusicqMoveDownRepeat, uimusicq);
   }
 }
 
@@ -1044,7 +1069,8 @@ uimusicqGetSelection (uimusicq_t *uimusicq)
 
   ci = uimusicq->musicqManageIdx;
 
-  sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree));
+  sel = gtk_tree_view_get_selection (
+      GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree));
   count = gtk_tree_selection_count_selected_rows (sel);
   if (count != 1) {
     return -1;
@@ -1054,4 +1080,42 @@ uimusicqGetSelection (uimusicq_t *uimusicq)
   idx = tidx;
 
   return idx;
+}
+
+static void
+uimusicqMusicQueueSetSelected (uimusicq_t *uimusicq, int ci, int which)
+{
+  GtkTreeModel      *model;
+  gboolean          valid;
+  GtkTreeSelection  *sel;
+  GtkTreeIter       iter;
+
+  sel = gtk_tree_view_get_selection (
+      GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree));
+  gtk_tree_selection_get_selected (sel, &model, &iter);
+
+  switch (which) {
+    case UIMUSICQ_SEL_PREV: {
+      valid = gtk_tree_model_iter_previous (model, &iter);
+      break;
+    }
+    case UIMUSICQ_SEL_NEXT: {
+      valid = gtk_tree_model_iter_next (model, &iter);
+      break;
+    }
+    case UIMUSICQ_SEL_TOP: {
+      valid = gtk_tree_model_get_iter_first (model, &iter);
+      break;
+    }
+  }
+
+  if (valid) {
+    GtkTreePath *path;
+
+    gtk_tree_selection_select_iter (sel, &iter);
+    path = gtk_tree_model_get_path (model, &iter);
+    gtk_tree_view_scroll_to_cell (GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree),
+        path, NULL, FALSE, 0.0, 0.0);
+    gtk_tree_path_free (path);
+  }
 }

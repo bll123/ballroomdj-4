@@ -25,7 +25,6 @@ include_directories (
 # cmake uses '@rpath' on macos; will have to see if that works.
 SET (CMAKE_SKIP_BUILD_RPATH FALSE)
 SET (CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
-SET (CMAKE_INSTALL_RPATH "\${ORIGIN}")
 
 set (SHLIB_EXT ${CMAKE_SHARED_LIBRARY_SUFFIX})
 set (MONGOOSE_INC_DIR ../packages/mongoose)
@@ -58,11 +57,6 @@ if (NOT LIBVLC_LIBRARY)
   set (LIBVLC_FOUND TRUE)
 endif()
 
-string (REPLACE "\.dll" "" temp ${Intl_LIBRARY})
-set (Intl_LIBRARY ${temp})
-string (REPLACE "\.dll" "" temp ${Iconv_LIBRARY})
-set (Iconv_LIBRARY ${temp})
-
 # is there a better way to handle libraries like this?
 macro (addIntlLibrary name)
   if (Intl_LIBRARY)
@@ -86,16 +80,6 @@ pkg_check_modules (GTK gtk+-3.0)
 pkg_check_modules (CHECK check)
 pkg_check_modules (PA libpulse)
 
-set (BDJ4_CURL_LDFLAGS ${CURL_LDFLAGS})
-set (BDJ4_OPENSSL_LDFLAGS ${OPENSSL_LDFLAGS})
-set (BDJ4_GTK_LDFLAGS ${GTK_LDFLAGS})
-if (WIN32)
-  # on windows, link the external libraries statically
-  set (BDJ4_CURL_LDFLAGS ${CURL_STATIC_LDFLAGS})
-  set (BDJ4_OPENSSL_LDFLAGS ${OPENSSL_STATIC_LDFLAGS})
-  set (BDJ4_GTK_LDFLAGS ${GTK_STATIC_LDFLAGS})
-endif()
-
 add_compile_options (-Wextra)
 add_compile_options (-Wno-unused-parameter)
 add_compile_options (-Wno-unknown-pragmas)
@@ -110,6 +94,13 @@ add_compile_options (-DGDK_DISABLE_DEPRECATED)
 add_compile_options (-DGTK_DISABLE_DEPRECATED)
 
 if (NOT WIN32)
+  SET (CMAKE_INSTALL_RPATH "\${ORIGIN}")
+  if (APPLE)
+    add_compile_options (-mmacosx-version-min=10.13)
+    # does not work.
+    # SET (CMAKE_INSTALL_RPATH "@executable_path")
+  endif()
+
   add_compile_options (-DMG_ARCH=MG_ARCH_UNIX)
   # hardening
   add_compile_options (-fstack-protector-strong)
@@ -310,7 +301,7 @@ add_library (libbdj4common SHARED
   pathbld.c
   pathutil.c
   process.c
-  progstart.c
+  progstate.c
   queue.c
   slist.c
   sock.c
@@ -354,7 +345,7 @@ target_include_directories (libbdj4
 )
 target_link_libraries (libbdj4
   libbdj4common
-  ${BDJ4_CURL_LDFLAGS} ${BDJ4_OPENSSL_LDFLAGS}
+  ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   m
 )
 addIntlLibrary (libbdj4)
@@ -381,7 +372,7 @@ target_include_directories (libbdj4ui
 )
 target_link_libraries (libbdj4ui
   libbdj4 libbdj4common
-  ${BDJ4_GTK_LDFLAGS}
+  ${GTK_LDFLAGS}
   m
 )
 addIntlLibrary (libbdj4ui)
@@ -464,7 +455,7 @@ addWinSockLibrary (bdj4)
 add_executable (bdj4cli bdj4cli.c)
 target_link_libraries (bdj4cli
   libbdj4 libbdj4common
-  ${BDJ4_CURL_LDFLAGS} ${BDJ4_OPENSSL_LDFLAGS}
+  ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   m
 )
 addIntlLibrary (bdj4cli)
@@ -473,7 +464,7 @@ addWinSockLibrary (bdj4cli)
 add_executable (bdj4main bdj4main.c)
 target_link_libraries (bdj4main
   libbdj4 libbdj4common
-  ${BDJ4_CURL_LDFLAGS} ${BDJ4_OPENSSL_LDFLAGS}
+  ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   m
 )
 addIntlLibrary (bdj4main)
@@ -483,7 +474,7 @@ add_executable (bdj4player bdj4player.c)
 target_link_libraries (bdj4player
   libbdj4 libbdj4common libbdj4player
   ${CMAKE_DL_LIBS}
-  ${BDJ4_CURL_LDFLAGS} ${BDJ4_OPENSSL_LDFLAGS}
+  ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   m
 )
 addIntlLibrary (bdj4player)
@@ -495,7 +486,7 @@ target_include_directories (bdj4mobmq
 )
 target_link_libraries (bdj4mobmq
   libbdj4 libbdj4common
-  ${BDJ4_CURL_LDFLAGS} ${BDJ4_OPENSSL_LDFLAGS}
+  ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   m
 )
 addIntlLibrary (bdj4mobmq)
@@ -507,7 +498,7 @@ target_include_directories (bdj4rc
 )
 target_link_libraries (bdj4rc
   libbdj4 libbdj4common
-  ${BDJ4_CURL_LDFLAGS} ${BDJ4_OPENSSL_LDFLAGS}
+  ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   m
 )
 addIntlLibrary (bdj4rc)
@@ -516,8 +507,8 @@ addWinSockLibrary (bdj4rc)
 add_executable (bdj4marquee bdj4marquee.c)
 target_link_libraries (bdj4marquee
   libbdj4 libbdj4common libbdj4ui
-  ${BDJ4_CURL_LDFLAGS} ${BDJ4_OPENSSL_LDFLAGS}
-  ${BDJ4_GTK_LDFLAGS}
+  ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
+  ${GTK_LDFLAGS}
   m
 )
 addIntlLibrary (bdj4marquee)
@@ -526,8 +517,8 @@ addWinSockLibrary (bdj4marquee)
 add_executable (bdj4playerui bdj4playerui.c)
 target_link_libraries (bdj4playerui
   libbdj4 libbdj4common libbdj4ui
-  ${BDJ4_CURL_LDFLAGS} ${BDJ4_OPENSSL_LDFLAGS}
-  ${BDJ4_GTK_LDFLAGS}
+  ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
+  ${GTK_LDFLAGS}
   m
 )
 addIntlLibrary (bdj4playerui)
@@ -554,7 +545,7 @@ add_executable (check_all
 
 target_link_libraries (check_all
   libbdj4 libbdj4common
-  ${BDJ4_CURL_LDFLAGS} ${BDJ4_OPENSSL_LDFLAGS}
+  ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${CHECK_LDFLAGS}
   pthread
 )
@@ -573,3 +564,41 @@ install (TARGETS
   check_all chkprocess
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
+
+macro (macUpdateRPath name)
+  add_custom_command(TARGET ${name}
+      POST_BUILD
+      COMMAND
+        ${CMAKE_INSTALL_NAME_TOOL} -change
+            "@rpath/libbdj4common.dylib"
+            "@executable_path/libbdj4common.dylib"
+            $<TARGET_FILE:${name}>
+      COMMAND
+        ${CMAKE_INSTALL_NAME_TOOL} -change
+            "@rpath/libbdj4.dylib"
+            "@executable_path/libbdj4.dylib"
+            $<TARGET_FILE:${name}>
+      COMMAND
+        ${CMAKE_INSTALL_NAME_TOOL} -change
+            "@rpath/libbdj4player.dylib"
+            "@executable_path/libbdj4player.dylib"
+            $<TARGET_FILE:${name}>
+      COMMAND
+        ${CMAKE_INSTALL_NAME_TOOL} -change
+            "@rpath/libbdj4ui.dylib"
+            "@executable_path/libbdj4ui.dylib"
+            $<TARGET_FILE:${name}>
+      VERBATIM
+  )
+endmacro()
+
+if (APPLE)
+  macUpdateRPath (bdj4)
+  macUpdateRPath (bdj4cli)
+  macUpdateRPath (bdj4main)
+  macUpdateRPath (bdj4marquee)
+  macUpdateRPath (bdj4mobmq)
+  macUpdateRPath (bdj4player)
+  macUpdateRPath (bdj4playerui)
+  macUpdateRPath (bdj4rc)
+endif()

@@ -27,7 +27,7 @@
 #include "bdjvars.h"
 #include "conn.h"
 #include "pathbld.h"
-#include "progstart.h"
+#include "progstate.h"
 #include "fileop.h"
 #include "filemanip.h"
 #include "lock.h"
@@ -58,7 +58,7 @@ typedef struct {
 
 typedef struct {
   conn_t          *conn;
-  progstart_t     *progstart;
+  progstate_t     *progstate;
   char            *locknm;
   long            globalCount;
   pli_t           *pli;
@@ -183,14 +183,14 @@ main (int argc, char *argv[])
   playerData.pli = NULL;
   playerData.prepQueue = queueAlloc (playerPrepQueueFree);
   playerData.prepRequestQueue = queueAlloc (playerPrepQueueFree);
-  playerData.progstart = progstartInit ("player");
-  progstartSetCallback (playerData.progstart, STATE_CONNECTING,
+  playerData.progstate = progstateInit ("player");
+  progstateSetCallback (playerData.progstate, STATE_CONNECTING,
       playerConnectingCallback, &playerData);
-  progstartSetCallback (playerData.progstart, STATE_WAIT_HANDSHAKE,
+  progstateSetCallback (playerData.progstate, STATE_WAIT_HANDSHAKE,
       playerHandshakeCallback, &playerData);
-  progstartSetCallback (playerData.progstart, STATE_STOPPING,
+  progstateSetCallback (playerData.progstate, STATE_STOPPING,
       playerStoppingCallback, &playerData);
-  progstartSetCallback (playerData.progstart, STATE_CLOSING,
+  progstateSetCallback (playerData.progstate, STATE_CLOSING,
       playerClosingCallback, &playerData);
 
   playerData.inFade = false;
@@ -282,10 +282,10 @@ main (int argc, char *argv[])
   listenPort = bdjvarsl [BDJVL_PLAYER_PORT];
   sockhMainLoop (listenPort, playerProcessMsg, playerProcessing, &playerData);
 
-  while (progstartShutdownProcess (playerData.progstart) != STATE_CLOSED) {
+  while (progstateShutdownProcess (playerData.progstate) != STATE_CLOSED) {
     ;
   }
-  progstartFree (playerData.progstart);
+  progstateFree (playerData.progstate);
   logEnd ();
   return 0;
 }
@@ -367,7 +367,7 @@ playerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           logMsg (LOG_SESS, LOG_IMPORTANT, "got exit request");
           gKillReceived = 0;
           logMsg (LOG_DBG, LOG_MSGS, "got: req-exit");
-          progstartShutdownProcess (playerData->progstart);
+          progstateShutdownProcess (playerData->progstate);
           logProcEnd (LOG_PROC, "playerProcessMsg", "req-exit");
           return 1;
         }
@@ -476,8 +476,8 @@ playerProcessing (void *udata)
   playerdata_t      *playerData = udata;;
 
 
-  if (! progstartIsRunning (playerData->progstart)) {
-    progstartProcess (playerData->progstart);
+  if (! progstateIsRunning (playerData->progstate)) {
+    progstateProcess (playerData->progstate);
     if (gKillReceived) {
       logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
     }
@@ -768,7 +768,7 @@ playerSongPrep (playerdata_t *playerData, char *args)
   char            stname [MAXPATHLEN];
 
 
-  if (! progstartIsRunning (playerData->progstart)) {
+  if (! progstateIsRunning (playerData->progstate)) {
     return;
   }
 
@@ -856,7 +856,7 @@ playerSongPlay (playerdata_t *playerData, char *sfname)
 {
   prepqueue_t       *pq = NULL;
 
-  if (! progstartIsRunning (playerData->progstart)) {
+  if (! progstateIsRunning (playerData->progstate)) {
     return;
   }
 
@@ -945,7 +945,7 @@ playerPause (playerdata_t *playerData)
 {
   plistate_t plistate = pliState (playerData->pli);
 
-  if (! progstartIsRunning (playerData->progstart)) {
+  if (! progstateIsRunning (playerData->progstate)) {
     return;
   }
 
@@ -1020,7 +1020,7 @@ playerNextSong (playerdata_t *playerData)
 static void
 playerPauseAtEnd (playerdata_t *playerData)
 {
-  if (! progstartIsRunning (playerData->progstart)) {
+  if (! progstateIsRunning (playerData->progstate)) {
     return;
   }
 
@@ -1043,7 +1043,7 @@ playerFade (playerdata_t *playerData)
 {
   plistate_t plistate = pliState (playerData->pli);
 
-  if (! progstartIsRunning (playerData->progstart)) {
+  if (! progstateIsRunning (playerData->progstate)) {
     return;
   }
 
@@ -1068,7 +1068,7 @@ playerSpeed (playerdata_t *playerData, char *trate)
 {
   double rate;
 
-  if (! progstartIsRunning (playerData->progstart)) {
+  if (! progstateIsRunning (playerData->progstate)) {
     return;
   }
 
@@ -1122,7 +1122,7 @@ playerVolumeSet (playerdata_t *playerData, char *tvol)
 {
   int       newvol;
 
-  if (! progstartIsRunning (playerData->progstart)) {
+  if (! progstateIsRunning (playerData->progstate)) {
     return;
   }
 
@@ -1135,7 +1135,7 @@ playerVolumeSet (playerdata_t *playerData, char *tvol)
 static void
 playerVolumeMute (playerdata_t *playerData)
 {
-  if (! progstartIsRunning (playerData->progstart)) {
+  if (! progstateIsRunning (playerData->progstate)) {
     return;
   }
 
@@ -1368,7 +1368,7 @@ playerSendStatus (playerdata_t *playerData)
     dur = pq->dur;
   }
 
-  if (! progstartIsRunning (playerData->progstart)) {
+  if (! progstateIsRunning (playerData->progstate)) {
     playstate = "stop";
     dur = 0;
   } else {

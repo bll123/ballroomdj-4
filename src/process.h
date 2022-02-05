@@ -11,12 +11,16 @@
 # include <windows.h>
 #endif
 
+#include "bdjmsg.h"
+#include "conn.h"
+
 typedef struct {
-  bool      hasHandle;
 #if _typ_HANDLE
   HANDLE    processHandle;
 #endif
   pid_t     pid;
+  bool      started : 1;
+  bool      hasHandle : 1;
 } process_t;
 
 int         processExists (process_t *process);
@@ -27,5 +31,10 @@ void        processFree (process_t *process);
 void        processCatchSignal (void (*sigHandler)(int), int signal);
 void        processIgnoreSignal (int signal);
 void        processDefaultSignal (int signal);
+process_t   *processStartProcess (bdjmsgroute_t route, char *fname);
+void        processStopProcess (process_t *process, conn_t *conn,
+                bdjmsgroute_t route, bool force);
+void        processForceStop (process_t *process, int flags,
+                bdjmsgroute_t route);
 
 #endif /* INC_PROCESS_H */

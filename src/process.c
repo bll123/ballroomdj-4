@@ -17,8 +17,16 @@
 # include <windows.h>
 #endif
 
-#include "process.h"
+#include "bdjmsg.h"
+#include "bdjopt.h"
+#include "bdjstring.h"
+#include "conn.h"
 #include "log.h"
+#include "pathbld.h"
+#include "portability.h"
+#include "process.h"
+#include "sysvars.h"
+#include "tmutil.h"
 
 #if _typ_HANDLE
 static HANDLE processGetProcessHandle (pid_t pid, DWORD procaccess);
@@ -78,6 +86,8 @@ processStart (const char *fn, ssize_t profile, ssize_t loglvl)
   assert (process != NULL);
   process->pid = 0;
   process->hasHandle = false;
+  process->started = false;
+
   logProcBegin (LOG_PROC, "processStart");
   snprintf (tmp, sizeof (tmp), "%zd", profile);
   snprintf (tmp2, sizeof (tmp2), "%zd", loglvl);
@@ -150,6 +160,7 @@ processStart (const char *fn, ssize_t profile, ssize_t loglvl)
 
 #endif
   logProcEnd (LOG_PROC, "processStart", "");
+  process->started = true;
   return process;
 }
 
@@ -260,6 +271,82 @@ processDefaultSignal (int sig)
   signal (sig, SIG_DFL);
 #endif
 }
+
+/* these next three routines are for management of processes */
+
+process_t *
+processStartProcess (bdjmsgroute_t route, char *fname)
+{
+  char      tbuff [MAXPATHLEN];
+  char      *extension = NULL;
+  process_t *process = NULL;
+
+
+  logProcBegin (LOG_PROC, "processStartProcess");
+
+  extension = "";
+  if (isWindows ()) {
+    extension = ".exe";
+  }
+  pathbldMakePath (tbuff, sizeof (tbuff), "",
+      fname, extension, PATHBLD_MP_EXECDIR);
+  process = processStart (tbuff, lsysvars [SVL_BDJIDX],
+      bdjoptGetNum (OPT_G_DEBUGLVL));
+  if (process == NULL) {
+    logMsg (LOG_DBG, LOG_IMPORTANT, "%s %s failed to start", fname, tbuff);
+  } else {
+    logMsg (LOG_DBG, LOG_BASIC, "%s started pid: %zd", fname,
+        (ssize_t) process->pid);
+    process->started = true;
+  }
+  logProcEnd (LOG_PROC, "processStartProcess", "");
+
+  return process;
+}
+
+void
+processStopProcess (process_t *process, conn_t *conn,
+    bdjmsgroute_t route, bool force)
+{
+  logProcBegin (LOG_PROC, "processStopProcess");
+  if (! force) {
+    if (! process->started) {
+      logProcEnd (LOG_PROC, "processStopProcess", "not-started");
+      return;
+    }
+    connSendMessage (conn, route, MSG_EXIT_REQUEST, NULL);
+    connDisconnect (conn, route);
+    process->started = false;
+  }
+  if (force) {
+    processForceStop (process, PATHBLD_MP_USEIDX, route);
+  }
+  logProcEnd (LOG_PROC, "processStopProcess", "");
+}
+
+void
+processForceStop (process_t *process, int flags, bdjmsgroute_t route)
+{
+  int   count = 0;
+  int   exists = 1;
+
+  while (count < 10) {
+    if (processExists (process) != 0) {
+      logMsg (LOG_DBG, LOG_MAIN, "%d exited", route);
+      exists = 0;
+      break;
+    }
+    ++count;
+    mssleep (100);
+  }
+
+  if (exists) {
+    logMsg (LOG_SESS, LOG_IMPORTANT, "force-terminating %d", route);
+    processKill (process, false);
+  }
+}
+
+/* internal routines */
 
 #if _typ_HANDLE
 

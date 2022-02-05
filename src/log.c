@@ -140,9 +140,9 @@ logSetLevel (logidx_t idx, loglevel_t level)
 /* these routines act upon all three open logs */
 
 void
-logStart (const char *processtag, loglevel_t level)
+logStart (const char *processnm, const char *processtag, loglevel_t level)
 {
-  rlogStart (NULL, processtag, 1, level);
+  rlogStart (processnm, processtag, 1, level);
 }
 
 void
@@ -195,11 +195,7 @@ rlogStart (const char *processnm, const char *processtag,
         PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
     syslogs [idx] = rlogOpen (tnm, processtag, truncflag);
     syslogs [idx]->level = level;
-    if (processnm != NULL) {
-      rlogVarMsg (idx, LOG_IMPORTANT, NULL, 0, "=== %s started %s", processnm, tdt);
-    } else {
-      rlogVarMsg (idx, LOG_IMPORTANT, NULL, 0, "=== started %s", tdt);
-    }
+    rlogVarMsg (idx, LOG_IMPORTANT, NULL, 0, "=== %s started %s", processnm, tdt);
   }
   logDumpLevel (level);
 }

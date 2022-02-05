@@ -26,7 +26,7 @@ main (int argc, char *argv [])
     exit (1);
   }
 
-  logStart ("ck", LOG_ALL);
+  logStart ("check_all", "ck", LOG_ALL);
   s = tmutil_suite();
   sr = srunner_create (s);
   s = process_suite();

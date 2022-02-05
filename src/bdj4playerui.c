@@ -27,7 +27,7 @@
 #include "musicq.h"
 #include "pathbld.h"
 #include "process.h"
-#include "progstart.h"
+#include "progstate.h"
 #include "slist.h"
 #include "sock.h"
 #include "sockh.h"
@@ -39,8 +39,9 @@
 #include "uiutils.h"
 
 typedef struct {
-  progstart_t     *progstart;
+  progstate_t     *progstate;
   char            *locknm;
+  process_t       *processes [ROUTE_MAX];
   conn_t          *conn;
   sockserver_t    *sockserver;
   musicqidx_t     musicqPlayIdx;
@@ -62,6 +63,7 @@ typedef struct {
 
 #define PLUI_EXIT_WAIT_COUNT      20
 
+static bool     pluiListeningCallback (void *udata, programstate_t programState);
 static bool     pluiConnectingCallback (void *udata, programstate_t programState);
 static bool     pluiHandshakeCallback (void *udata, programstate_t programState);
 static bool     pluiStoppingCallback (void *udata, programstate_t programState);
@@ -101,14 +103,16 @@ main (int argc, char *argv[])
   };
 
   plui.notebook = NULL;
-  plui.progstart = progstartInit ("playerui");
-  progstartSetCallback (plui.progstart, STATE_CONNECTING,
+  plui.progstate = progstateInit ("playerui");
+  progstateSetCallback (plui.progstate, STATE_LISTENING,
+      pluiListeningCallback, &plui);
+  progstateSetCallback (plui.progstate, STATE_CONNECTING,
       pluiConnectingCallback, &plui);
-  progstartSetCallback (plui.progstart, STATE_WAIT_HANDSHAKE,
+  progstateSetCallback (plui.progstate, STATE_WAIT_HANDSHAKE,
       pluiHandshakeCallback, &plui);
-  progstartSetCallback (plui.progstart, STATE_STOPPING,
+  progstateSetCallback (plui.progstate, STATE_STOPPING,
       pluiStoppingCallback, &plui);
-  progstartSetCallback (plui.progstart, STATE_CLOSING,
+  progstateSetCallback (plui.progstate, STATE_CLOSING,
       pluiClosingCallback, &plui);
   plui.sockserver = NULL;
   plui.window = NULL;
@@ -117,6 +121,9 @@ main (int argc, char *argv[])
   plui.uisongselect = NULL;
   plui.musicqPlayIdx = MUSICQ_A;
   plui.musicqManageIdx = MUSICQ_A;
+  for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
+    plui.processes [i] = NULL;
+  }
 
 #if _define_SIGHUP
   processCatchSignal (pluiSigHandler, SIGHUP);
@@ -133,9 +140,9 @@ main (int argc, char *argv[])
   listenPort = bdjvarsl [BDJVL_PLAYERUI_PORT];
   plui.conn = connInit (ROUTE_PLAYERUI);
 
-  plui.uiplayer = uiplayerInit (plui.progstart, plui.conn);
-  plui.uimusicq = uimusicqInit (plui.progstart, plui.conn);
-  plui.uisongselect = uisongselInit (plui.progstart, plui.conn);
+  plui.uiplayer = uiplayerInit (plui.progstate, plui.conn);
+  plui.uimusicq = uimusicqInit (plui.progstate, plui.conn);
+  plui.uisongselect = uisongselInit (plui.progstate, plui.conn);
 
   plui.sockserver = sockhStartServer (listenPort);
   /* using a timeout of 5 seems to interfere with gtk; windows needs longer */
@@ -143,10 +150,10 @@ main (int argc, char *argv[])
 
   status = pluiCreateGui (&plui, 0, NULL);
 
-  while (progstartShutdownProcess (plui.progstart) != STATE_CLOSED) {
+  while (progstateShutdownProcess (plui.progstate) != STATE_CLOSED) {
     ;
   }
-  progstartFree (plui.progstart);
+  progstateFree (plui.progstate);
   logEnd ();
   return status;
 }
@@ -157,6 +164,12 @@ static bool
 pluiStoppingCallback (void *udata, programstate_t programState)
 {
   playerui_t   *plui = udata;
+
+  for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
+    if (plui->processes [i] != NULL) {
+      processStopProcess (plui->processes [i], plui->conn, i, false);
+    }
+  }
 
   gdone = 1;
   connDisconnectAll (plui->conn);
@@ -180,13 +193,21 @@ pluiClosingCallback (void *udata, programstate_t programState)
   uimusicqFree (plui->uimusicq);
   uisongselFree (plui->uisongselect);
 
+  /* give the other processes some time to shut down */
+  mssleep (200);
+  for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
+    if (plui->processes [i] != NULL) {
+      processStopProcess (plui->processes [i], plui->conn, i, true);
+      processFree (plui->processes [i]);
+    }
+  }
   return true;
 }
 
 static int
 pluiCreateGui (playerui_t *plui, int argc, char *argv [])
 {
-  int             status;
+  int           status;
 
   plui->app = gtk_application_new (
       "org.ballroomdj.BallroomDJ.playerui",
@@ -256,8 +277,7 @@ pluiActivate (GApplication *app, gpointer userdata)
   gtk_widget_set_vexpand (GTK_WIDGET (plui->notebook), FALSE);
   gtk_box_pack_start (GTK_BOX (plui->vbox), plui->notebook,
       TRUE, TRUE, 0);
-  uiutilsSetCss (GTK_WIDGET (plui->notebook),
-      "notebook tab { border-color: black; }");
+
   g_signal_connect (plui->notebook, "switch-page", G_CALLBACK (pluiSwitchPage), plui);
 
   widget = gtk_button_new ();
@@ -319,22 +339,34 @@ pluiMainLoop (void *tplui)
     cont = FALSE;
   }
 
-  if (! progstartIsRunning (plui->progstart)) {
-    progstartProcess (plui->progstart);
+  if (! progstateIsRunning (plui->progstate)) {
+    progstateProcess (plui->progstate);
     if (gKillReceived) {
       logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
-      progstartShutdownProcess (plui->progstart);
+      progstateShutdownProcess (plui->progstate);
     }
     return cont;
   }
 
   uiplayerMainLoop (plui->uiplayer);
+  uimusicqMainLoop (plui->uimusicq);
 
   if (gKillReceived) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
-    progstartShutdownProcess (plui->progstart);
+    progstateShutdownProcess (plui->progstate);
   }
   return cont;
+}
+
+static bool
+pluiListeningCallback (void *udata, programstate_t programState)
+{
+  playerui_t   *plui = udata;
+  bool          rc = false;
+
+  plui->processes [ROUTE_MAIN] = processStartProcess (
+      ROUTE_MAIN, "bdj4main");
+  return true;
 }
 
 static bool
@@ -369,7 +401,7 @@ pluiHandshakeCallback (void *udata, programstate_t programState)
   if (connHaveHandshake (plui->conn, ROUTE_MAIN) &&
       connHaveHandshake (plui->conn, ROUTE_PLAYER)) {
     gtk_widget_show_all (GTK_WIDGET (plui->window));
-    progstartLogTime (plui->progstart, "time-to-start-gui");
+    progstateLogTime (plui->progstate, "time-to-start-gui");
     rc = true;
   }
 
@@ -403,7 +435,7 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           logMsg (LOG_SESS, LOG_IMPORTANT, "got exit request");
           gKillReceived = 0;
           logMsg (LOG_DBG, LOG_MSGS, "got: req-exit");
-          progstartShutdownProcess (plui->progstart);
+          progstateShutdownProcess (plui->progstate);
           logProcEnd (LOG_PROC, "pluiProcessMsg", "req-exit");
           return 1;
         }
@@ -433,7 +465,7 @@ pluiCloseWin (GtkWidget *window, GdkEvent *event, gpointer userdata)
   playerui_t   *plui = userdata;
 
   if (! gdone) {
-    progstartShutdownProcess (plui->progstart);
+    progstateShutdownProcess (plui->progstate);
     logMsg (LOG_DBG, LOG_MSGS, "got: close win request");
     return TRUE;
   }
@@ -481,3 +513,4 @@ pluiSetPlaybackQueue (GtkButton *b, gpointer udata)
   snprintf (tbuff, sizeof (tbuff), "%d", plui->musicqPlayIdx);
   connSendMessage (plui->conn, ROUTE_MAIN, MSG_MUSICQ_SET_PLAYBACK, tbuff);
 }
+

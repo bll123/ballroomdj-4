@@ -32,7 +32,7 @@
 #include "log.h"
 #include "pathbld.h"
 #include "process.h"
-#include "progstart.h"
+#include "progstate.h"
 #include "sockh.h"
 #include "sysvars.h"
 #include "tmutil.h"
@@ -40,7 +40,7 @@
 
 typedef struct {
   conn_t          *conn;
-  progstart_t     *progstart;
+  progstate_t     *progstate;
   char            *locknm;
   uint16_t        port;
   bdjmobilemq_t   type;
@@ -131,14 +131,14 @@ main (int argc, char *argv[])
     exit (0);
   }
 
-  mobmqData.progstart = progstartInit ("mobilemq");
-  progstartSetCallback (mobmqData.progstart, STATE_CONNECTING,
+  mobmqData.progstate = progstateInit ("mobilemq");
+  progstateSetCallback (mobmqData.progstate, STATE_CONNECTING,
       mobmqConnectingCallback, &mobmqData);
-  progstartSetCallback (mobmqData.progstart, STATE_WAIT_HANDSHAKE,
+  progstateSetCallback (mobmqData.progstate, STATE_WAIT_HANDSHAKE,
       mobmqHandshakeCallback, &mobmqData);
-  progstartSetCallback (mobmqData.progstart, STATE_STOPPING,
+  progstateSetCallback (mobmqData.progstate, STATE_STOPPING,
       mobmqStoppingCallback, &mobmqData);
-  progstartSetCallback (mobmqData.progstart, STATE_CLOSING,
+  progstateSetCallback (mobmqData.progstate, STATE_CLOSING,
       mobmqClosingCallback, &mobmqData);
   mobmqData.port = bdjoptGetNum (OPT_P_MOBILEMQPORT);
   mobmqData.name = NULL;
@@ -159,10 +159,10 @@ main (int argc, char *argv[])
   listenPort = bdjvarsl [BDJVL_MOBILEMQ_PORT];
   sockhMainLoop (listenPort, mobmqProcessMsg, mobmqProcessing, &mobmqData);
 
-  while (progstartShutdownProcess (mobmqData.progstart) != STATE_CLOSED) {
+  while (progstateShutdownProcess (mobmqData.progstate) != STATE_CLOSED) {
     ;
   }
-  progstartFree (mobmqData.progstart);
+  progstateFree (mobmqData.progstate);
   logEnd ();
   return 0;
 }
@@ -264,7 +264,7 @@ mobmqProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_EXIT_REQUEST: {
           logMsg (LOG_SESS, LOG_IMPORTANT, "got exit request");
           gKillReceived = 0;
-          progstartShutdownProcess (mobmqData->progstart);
+          progstateShutdownProcess (mobmqData->progstate);
           return 1;
         }
         case MSG_MARQUEE_DATA: {
@@ -296,8 +296,8 @@ mobmqProcessing (void *udata)
   websrv_t        *websrv = mobmqData->websrv;
 
 
-  if (! progstartIsRunning (mobmqData->progstart)) {
-    progstartProcess (mobmqData->progstart);
+  if (! progstateIsRunning (mobmqData->progstate)) {
+    progstateProcess (mobmqData->progstate);
     if (gKillReceived) {
       logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
     }

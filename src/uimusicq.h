@@ -6,9 +6,12 @@
 
 #include "conn.h"
 #include "musicq.h"
-#include "progstart.h"
+#include "progstate.h"
+
+#define UIMUSICQ_REPEAT_TIME 250
 
 typedef struct {
+  guint           repeatTimer;
   /* music queue tab */
   GtkWidget       *box;
   GtkWidget       *playlistSelectButton;
@@ -25,7 +28,7 @@ typedef struct {
 
 typedef struct {
   int             musicqManageIdx;
-  progstart_t     *progstart;
+  progstate_t     *progstate;
   conn_t          *conn;
   GtkWidget       *parentwin;
   GdkPixbuf       *pauseImg;
@@ -36,9 +39,10 @@ typedef struct {
   nlist_t         *workList;
 } uimusicq_t;
 
-uimusicq_t  * uimusicqInit (progstart_t *progstart, conn_t *conn);
+uimusicq_t  * uimusicqInit (progstate_t *progstate, conn_t *conn);
 void        uimusicqFree (uimusicq_t *uimusicq);
 GtkWidget   * uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci);
+void        uimusicqMainLoop (uimusicq_t *uimuiscq);
 int         uimusicqProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
                 bdjmsgmsg_t msg, char *args, void *udata);
 void        uimusicqSetManageIdx (uimusicq_t *uimusicq, int manageIdx);

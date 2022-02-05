@@ -5,10 +5,10 @@
 #include <gtk/gtk.h>
 
 #include "conn.h"
-#include "progstart.h"
+#include "progstate.h"
 
 typedef struct {
-  progstart_t     *progstart;
+  progstate_t     *progstate;
   conn_t          *conn;
   /* song selection tab */
   GtkWidget       *box;
@@ -16,7 +16,7 @@ typedef struct {
   GtkWidget       *songselTree;
 } uisongselect_t;
 
-uisongselect_t  * uisongselInit (progstart_t *progstart, conn_t *conn);
+uisongselect_t  * uisongselInit (progstate_t *progstate, conn_t *conn);
 void            uisongselFree (uisongselect_t *uisongselect);
 GtkWidget       * uisongselActivate (uisongselect_t *uisongselect);
 

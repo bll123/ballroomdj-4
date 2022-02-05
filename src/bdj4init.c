@@ -121,10 +121,10 @@ bdj4startup (int argc, char *argv[], char *tag, bdjmsgroute_t route)
 
   /* for the time being, leave this as route_main */
   /* this will change in the future */
+  /* re-use the lock name as the program name */
   if (route == ROUTE_MAIN) {
-    logStart (tag, loglevel);
+    logStart (locknm, tag, loglevel);
   } else {
-    /* re-use the lock name as the program name */
     logStartAppend (locknm, tag, loglevel);
   }
   logMsg (LOG_SESS, LOG_IMPORTANT, "Using profile %ld", lsysvars [SVL_BDJIDX]);

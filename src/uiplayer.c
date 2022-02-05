@@ -14,7 +14,7 @@
 #include "conn.h"
 #include "pathbld.h"
 #include "portability.h"
-#include "progstart.h"
+#include "progstate.h"
 #include "uiplayer.h"
 #include "uiutils.h"
 
@@ -42,17 +42,17 @@ static gboolean uiplayerSeekProcess (GtkRange *range, GtkScrollType *scroll, gdo
 static gboolean uiplayerVolumeProcess (GtkRange *range, GtkScrollType *scroll, gdouble value, gpointer udata);
 
 uiplayer_t *
-uiplayerInit (progstart_t *progstart, conn_t *conn)
+uiplayerInit (progstate_t *progstate, conn_t *conn)
 {
   uiplayer_t    *uiplayer;
 
   uiplayer = malloc (sizeof (uiplayer_t));
   assert (uiplayer != NULL);
-  uiplayer->progstart = progstart;
+  uiplayer->progstate = progstate;
   uiplayer->conn = conn;
 
-  progstartSetCallback (uiplayer->progstart, STATE_CONNECTING, uiplayerInitCallback, uiplayer);
-  progstartSetCallback (uiplayer->progstart, STATE_CLOSING, uiplayerClosingCallback, uiplayer);
+  progstateSetCallback (uiplayer->progstate, STATE_CONNECTING, uiplayerInitCallback, uiplayer);
+  progstateSetCallback (uiplayer->progstate, STATE_CLOSING, uiplayerClosingCallback, uiplayer);
 
   return uiplayer;
 }
@@ -353,7 +353,7 @@ uiplayerActivate (uiplayer_t *uiplayer)
   g_object_ref (G_OBJECT (uiplayer->ledonImg));
   gtk_button_set_image (GTK_BUTTON (uiplayer->pauseatendButton), uiplayer->ledoffImg);
   gtk_button_set_image_position (GTK_BUTTON (uiplayer->pauseatendButton), GTK_POS_RIGHT);
-  gtk_button_set_always_show_image (GTK_BUTTON (widget), TRUE); // windows
+  gtk_button_set_always_show_image (GTK_BUTTON (widget), TRUE);
   gtk_widget_set_margin_start (GTK_WIDGET (uiplayer->pauseatendButton), 2);
   gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (uiplayer->pauseatendButton),
       FALSE, FALSE, 0);

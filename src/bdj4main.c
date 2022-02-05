@@ -34,7 +34,7 @@
 #include "playlist.h"
 #include "portability.h"
 #include "process.h"
-#include "progstart.h"
+#include "progstate.h"
 #include "queue.h"
 #include "slist.h"
 #include "sock.h"
@@ -55,9 +55,8 @@ typedef enum {
 /* playlistCache contains all of the playlists that have been seen */
 /* so that playlist lookups can be processed */
 typedef struct {
-  progstart_t       *progstart;
+  progstate_t       *progstate;
   process_t         *processes [ROUTE_MAX];
-  bool              started [ROUTE_MAX];
   conn_t            *conn;
   slist_t           *playlistCache;
   queue_t           *playlistQueue [MUSICQ_MAX];
@@ -109,12 +108,6 @@ static void     mainMusicQueueFinish (maindata_t *mainData);
 static void     mainMusicQueueNext (maindata_t *mainData);
 static bool     mainCheckMusicQueue (song_t *song, void *tdata);
 static ssize_t  mainMusicQueueHistory (void *mainData, ssize_t idx);
-static void     mainForceStop (maindata_t *mainData,
-                    int flags, bdjmsgroute_t route);
-static void     mainStartProcess (maindata_t *mainData, bdjmsgroute_t route,
-                    char *fname);
-static void     mainStopProcess (maindata_t *mainData, bdjmsgroute_t route,
-                    bool force);
 static void     mainSendDanceList (maindata_t *mainData, bdjmsgroute_t route);
 static void     mainSendPlaylistList (maindata_t *mainData, bdjmsgroute_t route);
 static void     mainSendPlayerStatus (maindata_t *mainData, char *playerResp);
@@ -133,16 +126,16 @@ main (int argc, char *argv[])
   uint16_t      listenPort;
 
 
-  mainData.progstart = progstartInit ("main");
-  progstartSetCallback (mainData.progstart, STATE_LISTENING,
+  mainData.progstate = progstateInit ("main");
+  progstateSetCallback (mainData.progstate, STATE_LISTENING,
       mainListeningCallback, &mainData);
-  progstartSetCallback (mainData.progstart, STATE_CONNECTING,
+  progstateSetCallback (mainData.progstate, STATE_CONNECTING,
       mainConnectingCallback, &mainData);
-  progstartSetCallback (mainData.progstart, STATE_WAIT_HANDSHAKE,
+  progstateSetCallback (mainData.progstate, STATE_WAIT_HANDSHAKE,
       mainHandshakeCallback, &mainData);
-  progstartSetCallback (mainData.progstart, STATE_STOPPING,
+  progstateSetCallback (mainData.progstate, STATE_STOPPING,
       mainStoppingCallback, &mainData);
-  progstartSetCallback (mainData.progstart, STATE_CLOSING,
+  progstateSetCallback (mainData.progstate, STATE_CLOSING,
       mainClosingCallback, &mainData);
   mainData.playlistCache = NULL;
   mainData.musicQueue = NULL;
@@ -160,7 +153,6 @@ main (int argc, char *argv[])
   }
   for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
     mainData.processes [i] = NULL;
-    mainData.started [i] = false;
   }
 
 #if _define_SIGHUP
@@ -190,10 +182,10 @@ main (int argc, char *argv[])
   sockhMainLoop (listenPort, mainProcessMsg, mainProcessing, &mainData);
 
   logProcEnd (LOG_PROC, "main", "");
-  while (progstartShutdownProcess (mainData.progstart) != STATE_CLOSED) {
+  while (progstateShutdownProcess (mainData.progstate) != STATE_CLOSED) {
     ;
   }
-  progstartFree (mainData.progstart);
+  progstateFree (mainData.progstate);
   logEnd ();
   return 0;
 }
@@ -207,9 +199,10 @@ mainStoppingCallback (void *tmaindata, programstate_t programState)
 
   for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
     if (mainData->processes [i] != NULL) {
-      mainStopProcess (mainData, i, false);
+      processStopProcess (mainData->processes [i], mainData->conn, i, false);
     }
   }
+  mssleep (200);
 
   return true;
 }
@@ -247,10 +240,10 @@ mainClosingCallback (void *tmaindata, programstate_t programState)
   }
   bdj4shutdown (ROUTE_MAIN);
   /* give the other processes some time to shut down */
-  mssleep (100);
+  mssleep (200);
   for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
     if (mainData->processes [i] != NULL) {
-      mainStopProcess (mainData, i, true);
+      processStopProcess (mainData->processes [i], mainData->conn, i, true);
       processFree (mainData->processes [i]);
     }
   }
@@ -288,7 +281,7 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_EXIT_REQUEST: {
           logMsg (LOG_SESS, LOG_IMPORTANT, "got exit request");
           gKillReceived = 0;
-          progstartShutdownProcess (mainData->progstart);
+          progstateShutdownProcess (mainData->progstate);
           logProcEnd (LOG_PROC, "mainProcessMsg", "req-exit");
           return 1;
         }
@@ -421,8 +414,8 @@ mainProcessing (void *udata)
 
   mainData = (maindata_t *) udata;
 
-  if (! progstartIsRunning (mainData->progstart)) {
-    progstartProcess (mainData->progstart);
+  if (! progstateIsRunning (mainData->progstate)) {
+    progstateProcess (mainData->progstate);
     if (gKillReceived) {
       logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
     }
@@ -454,14 +447,18 @@ mainListeningCallback (void *tmaindata, programstate_t programState)
 {
   maindata_t    *mainData = tmaindata;
 
-  mainStartProcess (mainData, ROUTE_PLAYER, "bdj4player");
+  mainData->processes [ROUTE_PLAYER] = processStartProcess (
+      ROUTE_PLAYER, "bdj4player");
   if (bdjoptGetNum (OPT_P_MOBILEMARQUEE) != MOBILEMQ_OFF) {
-    mainStartProcess (mainData, ROUTE_MOBILEMQ, "bdj4mobmq");
+    mainData->processes [ROUTE_MOBILEMQ] = processStartProcess (
+        ROUTE_MOBILEMQ, "bdj4mobmq");
   }
   if (bdjoptGetNum (OPT_P_REMOTECONTROL)) {
-    mainStartProcess (mainData, ROUTE_REMCTRL, "bdj4rc");
+    mainData->processes [ROUTE_REMCTRL] = processStartProcess (
+        ROUTE_REMCTRL, "bdj4rc");
   }
-  mainStartProcess (mainData, ROUTE_MARQUEE, "bdj4marquee");
+  mainData->processes [ROUTE_MARQUEE] = processStartProcess (
+      ROUTE_MARQUEE, "bdj4marquee");
   return true;
 }
 
@@ -1425,79 +1422,6 @@ mainMusicQueueHistory (void *tmaindata, ssize_t idx)
   song = musicqGetByIdx (mainData->musicQueue, mainData->musicqManageIdx, idx);
   didx = songGetNum (song, TAG_DANCE);
   return didx;
-}
-
-static void
-mainForceStop (maindata_t *mainData, int flags, bdjmsgroute_t route)
-{
-  int   count = 0;
-  int   exists = 1;
-
-  while (count < 10) {
-    if (processExists (mainData->processes [route]) != 0) {
-      logMsg (LOG_DBG, LOG_MAIN, "%d exited", route);
-      exists = 0;
-      break;
-    }
-    ++count;
-    mssleep (100);
-  }
-
-  if (exists) {
-    logMsg (LOG_SESS, LOG_IMPORTANT, "force-terminating %d", route);
-    processKill (mainData->processes [route], false);
-  }
-}
-
-static void
-mainStartProcess (maindata_t *mainData, bdjmsgroute_t route, char *fname)
-{
-  char      tbuff [MAXPATHLEN];
-  char      *extension = NULL;
-
-
-  logProcBegin (LOG_PROC, "mainStartProcess");
-  if (mainData->started [route]) {
-    logProcEnd (LOG_PROC, "mainStartProcess", "already");
-    return;
-  }
-
-  extension = "";
-  if (isWindows ()) {
-    extension = ".exe";
-  }
-  pathbldMakePath (tbuff, sizeof (tbuff), "",
-      fname, extension, PATHBLD_MP_EXECDIR);
-  mainData->processes [route] = processStart (tbuff, lsysvars [SVL_BDJIDX],
-      bdjoptGetNum (OPT_G_DEBUGLVL));
-  if (mainData->processes [route] == NULL) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "%s %s failed to start", fname, tbuff);
-  } else {
-    logMsg (LOG_DBG, LOG_BASIC, "%s started pid: %zd", fname,
-        (ssize_t) mainData->processes [route]->pid);
-    mainData->started [route] = true;
-  }
-  logProcEnd (LOG_PROC, "mainStartProcess", "");
-}
-
-static void
-mainStopProcess (maindata_t *mainData,
-    bdjmsgroute_t route, bool force)
-{
-  logProcBegin (LOG_PROC, "mainStopProcess");
-  if (! force) {
-    if (! mainData->started [route]) {
-      logProcEnd (LOG_PROC, "mainStopProcess", "not-started");
-      return;
-    }
-    connSendMessage (mainData->conn, route, MSG_EXIT_REQUEST, NULL);
-    connDisconnect (mainData->conn, route);
-    mainData->started [route] = false;
-  }
-  if (force) {
-    mainForceStop (mainData, PATHBLD_MP_USEIDX, route);
-  }
-  logProcEnd (LOG_PROC, "mainStopProcess", "");
 }
 
 static void

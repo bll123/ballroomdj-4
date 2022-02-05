@@ -66,7 +66,8 @@ void        rlogError (const char *msg, int err, const char *fn, int line);
 void        rlogVarMsg (logidx_t, loglevel_t level,
                 const char *fn, int line, const char *fmt, ...);
 void        logSetLevel (logidx_t idx, loglevel_t level);
-void        logStart (const char *processtag, loglevel_t level);
+void        logStart (const char *processnm,
+                const char *processtag, loglevel_t level);
 void        logStartAppend (const char *processnm,
                 const char *processtag, loglevel_t level);
 void        logEnd (void);

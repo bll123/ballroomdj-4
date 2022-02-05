@@ -23,7 +23,7 @@
 #include "log.h"
 #include "pathbld.h"
 #include "process.h"
-#include "progstart.h"
+#include "progstate.h"
 #include "sock.h"
 #include "sockh.h"
 #include "sysvars.h"
@@ -32,7 +32,7 @@
 
 typedef struct {
   GtkApplication  *app;
-  progstart_t     *progstart;
+  progstate_t     *progstate;
   char            *locknm;
   conn_t          *conn;
   sockserver_t    *sockserver;
@@ -113,14 +113,14 @@ main (int argc, char *argv[])
     { NULL,         0,                  NULL,   0 }
   };
 
-  marquee.progstart = progstartInit ("marquee");
-  progstartSetCallback (marquee.progstart, STATE_CONNECTING,
+  marquee.progstate = progstateInit ("marquee");
+  progstateSetCallback (marquee.progstate, STATE_CONNECTING,
       marqueeConnectingCallback, &marquee);
-  progstartSetCallback (marquee.progstart, STATE_WAIT_HANDSHAKE,
+  progstateSetCallback (marquee.progstate, STATE_WAIT_HANDSHAKE,
       marqueeHandshakeCallback, &marquee);
-  progstartSetCallback (marquee.progstart, STATE_STOPPING,
+  progstateSetCallback (marquee.progstate, STATE_STOPPING,
       marqueeStoppingCallback, &marquee);
-  progstartSetCallback (marquee.progstart, STATE_CLOSING,
+  progstateSetCallback (marquee.progstate, STATE_CLOSING,
       marqueeClosingCallback, &marquee);
   marquee.sockserver = NULL;
   marquee.window = NULL;
@@ -211,10 +211,10 @@ main (int argc, char *argv[])
 
   status = marqueeCreateGui (&marquee, 0, NULL);
 
-  while (progstartShutdownProcess (marquee.progstart) != STATE_CLOSED) {
+  while (progstateShutdownProcess (marquee.progstate) != STATE_CLOSED) {
     ;
   }
-  progstartFree (marquee.progstart);
+  progstateFree (marquee.progstate);
   logEnd ();
   return status;
 }
@@ -331,6 +331,7 @@ marqueeActivate (GApplication *app, gpointer userdata)
   gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (marquee->danceLab),
       TRUE, TRUE, 0);
   gtk_widget_set_hexpand (GTK_WIDGET (marquee->danceLab), TRUE);
+  gtk_widget_set_can_focus (GTK_WIDGET (marquee->danceLab), FALSE);
   uiutilsSetCss (GTK_WIDGET (marquee->danceLab),
       "label { color: #ffa600; }");
 
@@ -339,6 +340,7 @@ marqueeActivate (GApplication *app, gpointer userdata)
       FALSE, FALSE, 0);
   gtk_label_set_max_width_chars (GTK_LABEL (marquee->countdownTimerLab), 6);
   gtk_widget_set_halign (GTK_WIDGET (marquee->countdownTimerLab), GTK_ALIGN_END);
+  gtk_widget_set_can_focus (GTK_WIDGET (marquee->countdownTimerLab), FALSE);
   uiutilsSetCss (GTK_WIDGET (marquee->countdownTimerLab),
       "label { color: #ffa600; }");
 
@@ -347,6 +349,7 @@ marqueeActivate (GApplication *app, gpointer userdata)
     gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (marquee->infoLab),
         TRUE, TRUE, 0);
     gtk_widget_set_halign (GTK_WIDGET (marquee->infoLab), GTK_ALIGN_START);
+    gtk_widget_set_can_focus (GTK_WIDGET (marquee->infoLab), FALSE);
   }
 
   marquee->sep = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
@@ -365,6 +368,7 @@ marqueeActivate (GApplication *app, gpointer userdata)
         GTK_WIDGET (marquee->marqueeLabs [i]), FALSE, FALSE, 0);
     gtk_widget_set_margin_start (GTK_WIDGET (marquee->marqueeLabs [i]), 10);
     gtk_widget_set_margin_end (GTK_WIDGET (marquee->marqueeLabs [i]), 10);
+    gtk_widget_set_can_focus (GTK_WIDGET (marquee->marqueeLabs [i]), FALSE);
   }
 
   marquee->inResize = true;
@@ -372,7 +376,7 @@ marqueeActivate (GApplication *app, gpointer userdata)
   marquee->inResize = false;
 
   marqueeAdjustFontSizes (marquee, 0);
-  progstartLogTime (marquee->progstart, "time-to-start-gui");
+  progstateLogTime (marquee->progstate, "time-to-start-gui");
 }
 
 gboolean
@@ -391,8 +395,8 @@ marqueeMainLoop (void *tmarquee)
     cont = FALSE;
   }
 
-  if (! progstartIsRunning (marquee->progstart)) {
-    progstartProcess (marquee->progstart);
+  if (! progstateIsRunning (marquee->progstate)) {
+    progstateProcess (marquee->progstate);
     if (gKillReceived) {
       logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
       cont = FALSE;
@@ -482,7 +486,7 @@ marqueeProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           logMsg (LOG_SESS, LOG_IMPORTANT, "got exit request");
           gKillReceived = 0;
           logMsg (LOG_DBG, LOG_MSGS, "got: req-exit");
-          progstartShutdownProcess (marquee->progstart);
+          progstateShutdownProcess (marquee->progstate);
           logProcEnd (LOG_PROC, "marqueeProcessMsg", "req-exit");
           return 1;
         }

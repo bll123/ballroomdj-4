@@ -278,12 +278,17 @@ exitAll (conn_t *conn)
 
 
   /* send the standard exit request to the controlling processes first */
+  fprintf (stderr, "sending exit to starter\n");
+  sendMsg (conn, ROUTE_STARTER, MSG_EXIT_REQUEST, NULL);
   fprintf (stderr, "sending exit to playerui\n");
   sendMsg (conn, ROUTE_PLAYERUI, MSG_EXIT_REQUEST, NULL);
-  mssleep (200);
   fprintf (stderr, "sending exit to main\n");
-  sendMsg (conn, ROUTE_MAIN, MSG_EXIT_REQUEST, NULL);
+  sendMsg (conn, ROUTE_PLAYERUI, MSG_EXIT_REQUEST, NULL);
   mssleep (500);
+  if (isWindows ()) {
+    /* windows is slow */
+    mssleep (500);
+  }
 
   /* see which lock files exist, and send exit requests to them */
   for (route = ROUTE_MAIN; route < ROUTE_MAX; ++route) {
@@ -294,7 +299,7 @@ exitAll (conn_t *conn)
       sendMsg (conn, route, MSG_EXIT_REQUEST, NULL);
     }
   }
-  mssleep (500);
+  mssleep (800);
 
   /* see which lock files still exist and kill the processes */
   for (route = ROUTE_MAIN; route < ROUTE_MAX; ++route) {
@@ -306,7 +311,7 @@ exitAll (conn_t *conn)
     }
   }
 
-  /* see which lock files still exist and kill the processes with
+  /* see which lock files still exist and kill the processes with */
   /* a signal that is not caught; remove the lock file */
   for (route = ROUTE_MAIN; route < ROUTE_MAX; ++route) {
     locknm = lockName (route);

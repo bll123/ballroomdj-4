@@ -13,17 +13,17 @@
 #include "conn.h"
 #include "pathbld.h"
 #include "portability.h"
-#include "progstart.h"
+#include "progstate.h"
 #include "uisongsel.h"
 
 uisongselect_t *
-uisongselInit (progstart_t *progstart, conn_t *conn)
+uisongselInit (progstate_t *progstate, conn_t *conn)
 {
   uisongselect_t    *uisongselect;
 
   uisongselect = malloc (sizeof (uisongselect_t));
   assert (uisongselect != NULL);
-  uisongselect->progstart = progstart;
+  uisongselect->progstate = progstate;
   uisongselect->conn = conn;
 
   return uisongselect;
