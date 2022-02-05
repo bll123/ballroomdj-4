@@ -21,6 +21,7 @@ uiutilsSetCss (GtkWidget *w, char *style)
   gtk_css_provider_load_from_data (tcss, style, -1, NULL);
   gtk_style_context_add_provider (
       gtk_widget_get_style_context (GTK_WIDGET (w)),
-      GTK_STYLE_PROVIDER (tcss), G_MAXUINT);
+      GTK_STYLE_PROVIDER (tcss),
+      GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 }
 

@@ -53,7 +53,7 @@ find_package (LIBVLC)
 # so hard-code the paths.
 # the library path will always be valid.
 if (NOT LIBVLC_LIBRARY)
-  set (LIBVLC_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/vlc-3.0.16")
+  set (LIBVLC_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/vlc-3.0.16")
   set (LIBVLC_LIBRARY "C:/Program Files/VideoLAN/VLC/libvlc.dll")
   set (LIBVLC_FOUND TRUE)
 endif()
@@ -78,14 +78,20 @@ pkg_check_modules (GTK gtk+-3.0)
 pkg_check_modules (CHECK check)
 pkg_check_modules (PA libpulse)
 
+set (BDJ4_CURL_LDFLAGS ${CURL_LDFLAGS})
+set (BDJ4_OPENSSL_LDFLAGS ${OPENSSL_LDFLAGS})
+set (BDJ4_GTK_LDFLAGS ${GTK_LDFLAGS})
+if (WIN32)
+  # on windows, link the external libraries statically
+  set (BDJ4_CURL_LDFLAGS ${CURL_STATIC_LDFLAGS})
+  set (BDJ4_OPENSSL_LDFLAGS ${OPENSSL_STATIC_LDFLAGS})
+  set (BDJ4_GTK_LDFLAGS ${GTK_STATIC_LDFLAGS})
+endif()
+
 add_compile_options (-Wextra)
-add_compile_options (-Wno-unused-but-set-variable)
 add_compile_options (-Wno-unused-parameter)
 add_compile_options (-Wno-unknown-pragmas)
 add_compile_options (-Wno-float-equal)
-add_compile_options (-Wno-stringop-overflow)
-add_compile_options (-Wno-stringop-truncation)
-add_compile_options (-Wno-format-truncation)
 add_compile_options (-Wdeclaration-after-statement)
 add_compile_options (-Wmissing-prototypes)
 add_compile_options (-Wformat)
@@ -97,12 +103,18 @@ add_compile_options (-DGTK_DISABLE_DEPRECATED)
 
 if (NOT WIN32)
   add_compile_options (-DMG_ARCH=MG_ARCH_UNIX)
+  # hardening
+  add_compile_options (-fstack-protector-strong)
+  add_compile_options (-fstack-protector-all)
+  add_compile_options (-fstack-protector-strong)
+  add_compile_options (-fstack-protector-all)
+  add_compile_options (-D_FORTIFY_SOURCE=2)
+
   if (CMAKE_C_COMPILER_ID STREQUAL "GNU")
-    add_compile_options (-fstack-protector-strong)
-    add_compile_options (-fstack-protector-all)
-    add_compile_options (-fstack-protector-strong)
-    add_compile_options (-fstack-protector-all)
-    add_compile_options (-D_FORTIFY_SOURCE=2)
+    add_compile_options (-Wno-unused-but-set-variable)
+    add_compile_options (-Wno-stringop-overflow)
+    add_compile_options (-Wno-stringop-truncation)
+    add_compile_options (-Wno-format-truncation)
   endif()
   if (CMAKE_C_COMPILER_ID STREQUAL "Clang")
     add_compile_options (-Wno-poison-system-directories)
@@ -115,18 +127,12 @@ if (NOT WIN32)
     add_compile_options (-Wno-documentation-deprecated-sync)
     add_compile_options (-Wno-documentation-unknown-command)
     add_compile_options (-Wno-documentation)
-
-    add_compile_options (-fstack-protector-strong)
-    add_compile_options (-fstack-protector-all)
-    add_compile_options (-fstack-protector-strong)
-    add_compile_options (-fstack-protector-all)
-    add_compile_options (-D_FORTIFY_SOURCE=2)
   endif()
 else()
-  message ("Compiling for windows")
-  add_compile_options (-static-libgcc)
   add_compile_options (-D_FORTIFY_SOURCE=0)
   add_compile_options (-DMG_ARCH=MG_ARCH_WIN32)
+  add_compile_options (-static-libgcc)
+  add_compile_options (-Wl,-Bstatic)
 endif()
 
 set (CMAKE_REQUIRED_INCLUDES
@@ -153,7 +159,7 @@ check_include_file (stdint.h _hdr_stdint)
 check_include_file (string.h _hdr_string)
 check_include_file (unistd.h _hdr_unistd)
 check_include_file (winsock2.h _hdr_winsock2)
-check_include_file (WS2tcpip.h _hdr_WS2tcpip)
+check_include_file (ws2tcpip.h _hdr_ws2tcpip)
 check_include_file (windows.h _hdr_windows)
 
 set (CMAKE_REQUIRED_INCLUDES ${LIBVLC_INCLUDE_DIR})
@@ -172,6 +178,7 @@ check_include_file (sys/stat.h _sys_stat)
 check_include_file (sys/time.h _sys_time)
 check_include_file (sys/utsname.h _sys_utsname)
 
+set (CMAKE_REQUIRED_INCLUDES windows.h)
 check_function_exists (CloseHandle _lib_CloseHandle)
 check_function_exists (CreateFile _lib_CreateFile)
 check_function_exists (CreateProcess _lib_CreateProcess)
@@ -181,7 +188,19 @@ check_function_exists (LoadLibrary _lib_LoadLibrary)
 check_function_exists (OpenProcess _lib_OpenProcess)
 check_function_exists (TerminateProcess _lib_TerminateProcess)
 check_function_exists (WriteFile _lib_WriteFile)
+set (CMAKE_REQUIRED_INCLUDES "")
 
+# cmake weirdness
+# these do exist
+if (WIN32)
+  set (_lib_CreateFile 1)
+  set (_lib_CreateProcess 1)
+  set (_lib_GetFullPathName 1)
+  set (_lib_GetVersionEx 1)
+  set (_lib_LoadLibrary 1)
+endif()
+
+set (CMAKE_REQUIRED_INCLUDES winsock2.h;windows.h)
 set (CMAKE_REQUIRED_LIBRARIES ws2_32)
 check_function_exists (ioctlsocket _lib_ioctlsocket)
 check_function_exists (select _lib_select)
@@ -189,12 +208,15 @@ check_function_exists (socket _lib_socket)
 check_function_exists (WSACleanup _lib_WSACleanup)
 check_function_exists (WSAGetLastError _lib_WSAGetLastError)
 check_function_exists (WSAStartup _lib_WSAStartup)
+set (CMAKE_REQUIRED_INCLUDES "")
+set (CMAKE_REQUIRED_LIBRARIES "")
 
 set (CMAKE_REQUIRED_LIBRARIES "${CMAKE_DL_LIBS}")
 check_function_exists (dlopen _lib_dlopen)
 set (CMAKE_REQUIRED_LIBRARIES "")
 
 check_function_exists (drand48 _lib_drand48)
+check_function_exists (_execv _lib__execv)
 check_function_exists (fcntl _lib_fcntl)
 check_function_exists (fork _lib_fork)
 check_function_exists (kill _lib_kill)
@@ -317,7 +339,7 @@ target_include_directories (libbdj4
 )
 target_link_libraries (libbdj4
   libbdj4common
-  ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
+  ${BDJ4_CURL_LDFLAGS} ${BDJ4_OPENSSL_LDFLAGS}
   m
 )
 addIntlLibrary (libbdj4)
@@ -344,7 +366,7 @@ target_include_directories (libbdj4ui
 )
 target_link_libraries (libbdj4ui
   libbdj4 libbdj4common
-  ${GTK_LDFLAGS}
+  ${BDJ4_GTK_LDFLAGS}
   m
 )
 addIntlLibrary (libbdj4ui)
@@ -398,8 +420,10 @@ if (PA_FOUND)
 endif()
 
 add_library (libvolwin SHARED volwin.cpp)
+target_compile_options (libvolwin PRIVATE -static-libstdc++)
 
 if (WIN32)
+  # the the bdj4 executable
   # for cmake, must use the .o file extension, not .res
   add_custom_command (
     OUTPUT launcher.o
@@ -417,7 +441,7 @@ add_executable (bdj4 bdj4.c
   pathutil.c sysvars.c strlcat.c strlcpy.c
 )
 if (WIN32)
-  target_sources (bdj4 launcher.o)
+  target_sources (bdj4 PRIVATE launcher.o)
 endif()
 addIntlLibrary (bdj4)
 addWinSockLibrary (bdj4)
@@ -425,7 +449,7 @@ addWinSockLibrary (bdj4)
 add_executable (bdj4cli bdj4cli.c)
 target_link_libraries (bdj4cli
   libbdj4 libbdj4common
-  ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
+  ${BDJ4_CURL_LDFLAGS} ${BDJ4_OPENSSL_LDFLAGS}
   m
 )
 addIntlLibrary (bdj4cli)
@@ -434,7 +458,7 @@ addWinSockLibrary (bdj4cli)
 add_executable (bdj4main bdj4main.c)
 target_link_libraries (bdj4main
   libbdj4 libbdj4common
-  ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
+  ${BDJ4_CURL_LDFLAGS} ${BDJ4_OPENSSL_LDFLAGS}
   m
 )
 addIntlLibrary (bdj4main)
@@ -444,7 +468,7 @@ add_executable (bdj4player bdj4player.c)
 target_link_libraries (bdj4player
   libbdj4 libbdj4common libbdj4player
   ${CMAKE_DL_LIBS}
-  ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
+  ${BDJ4_CURL_LDFLAGS} ${BDJ4_OPENSSL_LDFLAGS}
   m
 )
 addIntlLibrary (bdj4player)
@@ -456,7 +480,7 @@ target_include_directories (bdj4mobmq
 )
 target_link_libraries (bdj4mobmq
   libbdj4 libbdj4common
-  ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
+  ${BDJ4_CURL_LDFLAGS} ${BDJ4_OPENSSL_LDFLAGS}
   m
 )
 addIntlLibrary (bdj4mobmq)
@@ -468,7 +492,7 @@ target_include_directories (bdj4rc
 )
 target_link_libraries (bdj4rc
   libbdj4 libbdj4common
-  ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
+  ${BDJ4_CURL_LDFLAGS} ${BDJ4_OPENSSL_LDFLAGS}
   m
 )
 addIntlLibrary (bdj4rc)
@@ -477,8 +501,8 @@ addWinSockLibrary (bdj4rc)
 add_executable (bdj4marquee bdj4marquee.c)
 target_link_libraries (bdj4marquee
   libbdj4 libbdj4common libbdj4ui
-  ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
-  ${GTK_LDFLAGS}
+  ${BDJ4_CURL_LDFLAGS} ${BDJ4_OPENSSL_LDFLAGS}
+  ${BDJ4_GTK_LDFLAGS}
   m
 )
 addIntlLibrary (bdj4marquee)
@@ -487,8 +511,8 @@ addWinSockLibrary (bdj4marquee)
 add_executable (bdj4playerui bdj4playerui.c)
 target_link_libraries (bdj4playerui
   libbdj4 libbdj4common libbdj4ui
-  ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
-  ${GTK_LDFLAGS}
+  ${BDJ4_CURL_LDFLAGS} ${BDJ4_OPENSSL_LDFLAGS}
+  ${BDJ4_GTK_LDFLAGS}
   m
 )
 addIntlLibrary (bdj4playerui)
@@ -515,7 +539,7 @@ add_executable (check_all
 
 target_link_libraries (check_all
   libbdj4 libbdj4common
-  ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
+  ${BDJ4_CURL_LDFLAGS} ${BDJ4_OPENSSL_LDFLAGS}
   ${CHECK_LDFLAGS}
   pthread
 )

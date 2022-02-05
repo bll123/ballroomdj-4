@@ -20,7 +20,26 @@
 #include "pathbld.h"
 #include "portability.h"
 
+static char *locknames [ROUTE_MAX] = {
+  [ROUTE_NONE] = "none",
+  [ROUTE_MAIN] = "main",
+  [ROUTE_PLAYERUI] = "playerui",
+  [ROUTE_CONFIGUI] = "configui",
+  [ROUTE_MANAGEUI] = "manageui",
+  [ROUTE_PLAYER] = "player",
+  [ROUTE_CLICOMM] = "cli",
+  [ROUTE_MOBILEMQ] = "mobilemq",
+  [ROUTE_REMCTRL] = "remctrl",
+  [ROUTE_MARQUEE] = "marquee",
+};
+
 static pid_t   getPidFromFile (char *);
+
+inline char *
+lockName (bdjmsgroute_t route)
+{
+  return locknames [route];
+}
 
   /* returns PID if the process exists            */
   /* returns 0 if no lock exists or no process exists for this lock */

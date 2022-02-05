@@ -59,6 +59,12 @@ connFree (conn_t *conn)
   }
 }
 
+inline uint16_t
+connPort (conn_t *conn, bdjmsgroute_t route)
+{
+  return connports [route];
+}
+
 void
 connConnect (conn_t *conn, bdjmsgroute_t route)
 {

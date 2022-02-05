@@ -25,7 +25,7 @@
 #cmakedefine01 _hdr_string
 #cmakedefine01 _hdr_unistd
 #cmakedefine01 _hdr_winsock2
-#cmakedefine01 _hdr_WS2tcpip
+#cmakedefine01 _hdr_ws2tcpip
 #cmakedefine01 _hdr_windows
 #cmakedefine01 _hdr_vlc_vlc
 #cmakedefine01 _sys_resource

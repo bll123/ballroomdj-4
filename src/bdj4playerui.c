@@ -14,6 +14,7 @@
 #include <gtk/gtk.h>
 
 #include "bdj4.h"
+#include "bdj4init.h"
 #include "bdjmsg.h"
 #include "bdjopt.h"
 #include "bdjstring.h"
@@ -39,6 +40,7 @@
 
 typedef struct {
   progstart_t     *progstart;
+  char            *locknm;
   conn_t          *conn;
   sockserver_t    *sockserver;
   musicqidx_t     musicqPlayIdx;
@@ -125,46 +127,8 @@ main (int argc, char *argv[])
   processDefaultSignal (SIGCHLD);
 #endif
 
-  sysvarsInit (argv[0]);
-
-  while ((c = getopt_long (argc, argv, "", bdj_options, &option_index)) != -1) {
-    switch (c) {
-      case 'd': {
-        if (optarg) {
-          loglevel = (loglevel_t) atoi (optarg);
-        }
-        break;
-      }
-      case 'p': {
-        if (optarg) {
-          sysvarSetNum (SVL_BDJIDX, atol (optarg));
-        }
-        break;
-      }
-      default: {
-        break;
-      }
-    }
-  }
-
-  logStartAppend ("bdj4plui", "pu", loglevel);
-  logMsg (LOG_SESS, LOG_IMPORTANT, "Using profile %ld", lsysvars [SVL_BDJIDX]);
-
-  rc = lockAcquire (PLAYERUI_LOCK_FN, PATHBLD_MP_USEIDX);
-  if (rc < 0) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: plui: unable to acquire lock: profile: %zd", lsysvars [SVL_BDJIDX]);
-    logMsg (LOG_SESS, LOG_IMPORTANT, "ERR: plui: unable to acquire lock: profile: %zd", lsysvars [SVL_BDJIDX]);
-    logEnd ();
-    exit (0);
-  }
-
-  bdjvarsInit ();
-  bdjoptInit ();
-  bdjvarsdfloadInit ();
-
-  pathbldMakePath (tbuff, MAXPATHLEN, "",
-      MUSICDB_FNAME, MUSICDB_EXT, PATHBLD_MP_NONE);
-  dbOpen (tbuff);
+  bdj4startup (argc, argv, "pu", ROUTE_PLAYERUI);
+  logProcBegin (LOG_PROC, "playerui");
 
   listenPort = bdjvarsl [BDJVL_PLAYERUI_PORT];
   plui.conn = connInit (ROUTE_PLAYERUI);
@@ -208,18 +172,14 @@ pluiClosingCallback (void *udata, programstate_t programState)
   g_object_unref (plui->ledoffImg);
 
   connFree (plui->conn);
-
   sockhCloseServer (plui->sockserver);
-  dbClose ();
-  bdjoptFree ();
-  bdjvarsCleanup ();
-  bdjvarsdfloadCleanup ();
+
+  bdj4shutdown (ROUTE_PLAYERUI);
 
   uiplayerFree (plui->uiplayer);
   uimusicqFree (plui->uimusicq);
   uisongselFree (plui->uisongselect);
 
-  lockRelease (PLAYERUI_LOCK_FN, PATHBLD_MP_USEIDX);
   return true;
 }
 
@@ -274,6 +234,10 @@ pluiActivate (GApplication *app, gpointer userdata)
 
   plui->vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   gtk_container_add (GTK_CONTAINER (plui->window), plui->vbox);
+  gtk_widget_set_margin_top (GTK_WIDGET (plui->vbox), 4);
+  gtk_widget_set_margin_bottom (GTK_WIDGET (plui->vbox), 4);
+  gtk_widget_set_margin_start (GTK_WIDGET (plui->vbox), 4);
+  gtk_widget_set_margin_end (GTK_WIDGET (plui->vbox), 4);
 
   /* player */
   widget = uiplayerActivate (plui->uiplayer);
@@ -287,12 +251,13 @@ pluiActivate (GApplication *app, gpointer userdata)
   plui->notebook = gtk_notebook_new ();
   assert (plui->notebook != NULL);
   gtk_notebook_set_show_border (GTK_NOTEBOOK (plui->notebook), TRUE);
-  gtk_notebook_set_show_tabs (GTK_NOTEBOOK (plui->notebook), TRUE);
   gtk_widget_set_margin_top (GTK_WIDGET (plui->notebook), 4);
   gtk_widget_set_hexpand (GTK_WIDGET (plui->notebook), TRUE);
   gtk_widget_set_vexpand (GTK_WIDGET (plui->notebook), FALSE);
   gtk_box_pack_start (GTK_BOX (plui->vbox), plui->notebook,
       TRUE, TRUE, 0);
+  uiutilsSetCss (GTK_WIDGET (plui->notebook),
+      "notebook tab { border-color: black; }");
   g_signal_connect (plui->notebook, "switch-page", G_CALLBACK (pluiSwitchPage), plui);
 
   widget = gtk_button_new ();

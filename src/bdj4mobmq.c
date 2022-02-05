@@ -41,6 +41,7 @@
 typedef struct {
   conn_t          *conn;
   progstart_t     *progstart;
+  char            *locknm;
   uint16_t        port;
   bdjmobilemq_t   type;
   char            *name;
@@ -74,6 +75,7 @@ main (int argc, char *argv[])
   char            *tval;
 
   static struct option bdj_options [] = {
+    { "mobilemq",   no_argument,        NULL,   0 },
     { "debug",      required_argument,  NULL,   'd' },
     { "profile",    required_argument,  NULL,   'p' },
     { NULL,         0,                  NULL,   0 }
@@ -87,7 +89,7 @@ main (int argc, char *argv[])
 
   sysvarsInit (argv[0]);
 
-  while ((c = getopt_long (argc, argv, "", bdj_options, &option_index)) != -1) {
+  while ((c = getopt_long_only (argc, argv, "p:d:", bdj_options, &option_index)) != -1) {
     switch (c) {
       case 'd': {
         if (optarg) {
@@ -110,7 +112,8 @@ main (int argc, char *argv[])
   logStartAppend ("mobilemarquee", "mm", loglevel);
   logMsg (LOG_SESS, LOG_IMPORTANT, "Using profile %ld", lsysvars [SVL_BDJIDX]);
 
-  rc = lockAcquire (MOBILEMQ_LOCK_FN, PATHBLD_MP_USEIDX);
+  mobmqData.locknm = lockName (ROUTE_MOBILEMQ);
+  rc = lockAcquire (mobmqData.locknm, PATHBLD_MP_USEIDX);
   if (rc < 0) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: mobilemq: unable to acquire lock: profile: %zd", lsysvars [SVL_BDJIDX]);
     logMsg (LOG_SESS, LOG_IMPORTANT, "ERR: mobilemq: unable to acquire lock: profile: %zd", lsysvars [SVL_BDJIDX]);
@@ -124,7 +127,7 @@ main (int argc, char *argv[])
 
   mobmqData.type = (bdjmobilemq_t) bdjoptGetNum (OPT_P_MOBILEMARQUEE);
   if (mobmqData.type == MOBILEMQ_OFF) {
-    lockRelease (MOBILEMQ_LOCK_FN, PATHBLD_MP_USEIDX);
+    lockRelease (mobmqData.locknm, PATHBLD_MP_USEIDX);
     exit (0);
   }
 
@@ -194,7 +197,7 @@ mobmqClosingCallback (void *tmmdata, programstate_t programState)
   }
   bdjoptFree ();
   bdjvarsCleanup ();
-  lockRelease (MOBILEMQ_LOCK_FN, PATHBLD_MP_USEIDX);
+  lockRelease (mobmqData->locknm, PATHBLD_MP_USEIDX);
 
   return true;
 }

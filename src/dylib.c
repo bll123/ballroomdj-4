@@ -24,7 +24,7 @@
 dlhandle_t *
 dylibLoad (char *path)
 {
-  void      *handle;
+  void      *handle = NULL;
 
 #if _lib_dlopen
   handle = dlopen (path, RTLD_LAZY);
@@ -60,7 +60,7 @@ dylibClose (dlhandle_t *handle)
 void *
 dylibLookup (dlhandle_t *handle, char *funcname)
 {
-  void      *addr;
+  void      *addr = NULL;
 
 #if _lib_dlopen
   addr = dlsym (handle, funcname);
@@ -71,6 +71,9 @@ dylibLookup (dlhandle_t *handle, char *funcname)
 #endif
   if (addr == NULL) {
     fprintf (stderr, "sym lookup %s failed: %d %s\n", funcname, errno, strerror (errno));
+#if _lib_LoadLibrary
+    fprintf (stderr, "sym lookup %s getlasterror: %ld\n", funcname, GetLastError() );
+#endif
   } else {
 //    fprintf (stderr, "sym lookup %s OK\n", funcname);
   }

@@ -59,6 +59,7 @@ typedef struct {
 typedef struct {
   conn_t          *conn;
   progstart_t     *progstart;
+  char            *locknm;
   long            globalCount;
   pli_t           *pli;
   volume_t        *volume;
@@ -203,7 +204,7 @@ main (int argc, char *argv[])
 
   sysvarsInit (argv[0]);
 
-  while ((c = getopt_long (argc, argv, "", bdj_options, &option_index)) != -1) {
+  while ((c = getopt_long_only (argc, argv, "p:d:", bdj_options, &option_index)) != -1) {
     switch (c) {
       case 'd': {
         if (optarg) {
@@ -226,7 +227,8 @@ main (int argc, char *argv[])
   logStartAppend ("bdj4player", "p", loglevel);
   logMsg (LOG_SESS, LOG_IMPORTANT, "Using profile %ld", lsysvars [SVL_BDJIDX]);
 
-  rc = lockAcquire (PLAYER_LOCK_FN, PATHBLD_MP_USEIDX);
+  playerData.locknm = lockName (ROUTE_PLAYER);
+  rc = lockAcquire (playerData.locknm, PATHBLD_MP_USEIDX);
   if (rc < 0) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: player: unable to acquire lock: profile: %zd", lsysvars [SVL_BDJIDX]);
     logMsg (LOG_SESS, LOG_IMPORTANT, "ERR: player: unable to acquire lock: profile: %zd", lsysvars [SVL_BDJIDX]);
@@ -251,6 +253,7 @@ main (int argc, char *argv[])
   playerData.currentSpeed = 100;
 
   playerData.volume = volumeInit ();
+  assert (playerData.volume != NULL);
 
   playerInitSinklist (&playerData);
     /* sets the current sink */
@@ -329,7 +332,7 @@ playerClosingCallback (void *tpdata, programstate_t programState)
   }
   bdjoptFree ();
   bdjvarsCleanup ();
-  lockRelease (PLAYER_LOCK_FN, PATHBLD_MP_USEIDX);
+  lockRelease (playerData->locknm, PATHBLD_MP_USEIDX);
 
   return true;
 }

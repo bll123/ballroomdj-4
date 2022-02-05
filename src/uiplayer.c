@@ -353,6 +353,7 @@ uiplayerActivate (uiplayer_t *uiplayer)
   g_object_ref (G_OBJECT (uiplayer->ledonImg));
   gtk_button_set_image (GTK_BUTTON (uiplayer->pauseatendButton), uiplayer->ledoffImg);
   gtk_button_set_image_position (GTK_BUTTON (uiplayer->pauseatendButton), GTK_POS_RIGHT);
+  gtk_button_set_always_show_image (GTK_BUTTON (widget), TRUE); // windows
   gtk_widget_set_margin_start (GTK_WIDGET (uiplayer->pauseatendButton), 2);
   gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (uiplayer->pauseatendButton),
       FALSE, FALSE, 0);

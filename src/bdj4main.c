@@ -172,7 +172,7 @@ main (int argc, char *argv[])
   processIgnoreSignal (SIGCHLD);
 #endif
 
-  bdj4startup (argc, argv);
+  bdj4startup (argc, argv, "m", ROUTE_MAIN);
   logProcBegin (LOG_PROC, "main");
 
   mainData.conn = connInit (ROUTE_MAIN);
@@ -245,7 +245,7 @@ mainClosingCallback (void *tmaindata, programstate_t programState)
   if (mainData->danceCounts != NULL) {
     nlistFree (mainData->danceCounts);
   }
-  bdj4shutdown ();
+  bdj4shutdown (ROUTE_MAIN);
   /* give the other processes some time to shut down */
   mssleep (100);
   for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
@@ -1445,7 +1445,7 @@ mainForceStop (maindata_t *mainData, int flags, bdjmsgroute_t route)
 
   if (exists) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "force-terminating %d", route);
-    processKill (mainData->processes [route]);
+    processKill (mainData->processes [route], false);
   }
 }
 

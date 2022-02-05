@@ -17,6 +17,7 @@ typedef struct {
 
 conn_t    * connInit (bdjmsgroute_t routefrom);
 void      connFree (conn_t *conn);
+uint16_t  connPort (conn_t *conn, bdjmsgroute_t route);
 void      connConnect (conn_t *conn, bdjmsgroute_t route);
 void      connDisconnect (conn_t *conn, bdjmsgroute_t route);
 void      connDisconnectAll (conn_t *conn);

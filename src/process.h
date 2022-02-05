@@ -1,6 +1,7 @@
 #ifndef INC_PROCESS_H
 #define INC_PROCESS_H
 
+#include <stdbool.h>
 #include <sys/types.h>
 
 #if _hdr_winsock2
@@ -20,7 +21,7 @@ typedef struct {
 
 int         processExists (process_t *process);
 process_t   *processStart (const char *fn, ssize_t profile, ssize_t loglvl);
-int         processKill (process_t *process);
+int         processKill (process_t *process, bool force);
 void        processFree (process_t *process);
 #if _typ_HANDLE
 HANDLE      processGetProcessHandle (pid_t pid);

@@ -104,7 +104,7 @@ START_TEST(process_kill)
   rc = processExists (process);
   ck_assert_int_eq (rc, 0);
 
-  rc = processKill (process);
+  rc = processKill (process, false);
   ck_assert_int_eq (rc, 0);
 
   mssleep (2000);

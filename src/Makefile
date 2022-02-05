@@ -12,10 +12,11 @@ all:
 	$(MAKE) build
 
 cmake:
-	if test $$(uname -o) = Msys; then \
-	  $(MAKE) cmake-windows; \
-	else \
+	if test \( $$(uname -s) = Linux \) -o \
+		\( $$(uname -s) = Darwin \) ; then \
 	  $(MAKE) cmake-unix; \
+	else \
+	  $(MAKE) cmake-windows; \
 	fi
 
 cmake-unix:

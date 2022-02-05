@@ -7,6 +7,11 @@ fi
 dir=$1
 
 systype=$(uname -s | tr '[A-Z]' '[a-z]')
+case $systype in
+  mingw*|msys*)
+    systype=windows
+    ;;
+esac
 
 bits=64
 arch=$(uname -m)
@@ -21,7 +26,7 @@ if [[ $TCLSH != "" ]]; then
   tclsh=$TCLSH
 else
   for f in "$dir/../$systype/64/tcl/bin/tclsh" \
-      "$dir/../../$systype/64/tcl/bin/tclsh"
+      "$dir/../../$systype/64/tcl/bin/tclsh" \
       /usr/bin/tclsh $HOME/local/bin/tclsh $HOME/bin/tclsh \
       /opt/local/bin/tclsh; do
     if [[ -f $f ]]; then

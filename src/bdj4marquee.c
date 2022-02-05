@@ -33,6 +33,7 @@
 typedef struct {
   GtkApplication  *app;
   progstart_t     *progstart;
+  char            *locknm;
   conn_t          *conn;
   sockserver_t    *sockserver;
   char            *mqfont;
@@ -157,7 +158,7 @@ main (int argc, char *argv[])
 
   sysvarsInit (argv[0]);
 
-  while ((c = getopt_long (argc, argv, "", bdj_options, &option_index)) != -1) {
+  while ((c = getopt_long_only (argc, argv, "p:d:", bdj_options, &option_index)) != -1) {
     switch (c) {
       case 'd': {
         if (optarg) {
@@ -180,7 +181,8 @@ main (int argc, char *argv[])
   logStartAppend ("bdj4marquee", "mq", loglevel);
   logMsg (LOG_SESS, LOG_IMPORTANT, "Using profile %ld", lsysvars [SVL_BDJIDX]);
 
-  rc = lockAcquire (MARQUEE_LOCK_FN, PATHBLD_MP_USEIDX);
+  marquee.locknm = lockName (ROUTE_MARQUEE);
+  rc = lockAcquire (marquee.locknm, PATHBLD_MP_USEIDX);
   if (rc < 0) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: marquee: unable to acquire lock: profile: %zd", lsysvars [SVL_BDJIDX]);
     logMsg (LOG_SESS, LOG_IMPORTANT, "ERR: marquee: unable to acquire lock: profile: %zd", lsysvars [SVL_BDJIDX]);
@@ -239,7 +241,7 @@ marqueeClosingCallback (void *udata, programstate_t programState)
   bdjoptFree ();
   bdjvarsCleanup ();
 
-  lockRelease (MARQUEE_LOCK_FN, PATHBLD_MP_USEIDX);
+  lockRelease (marquee->locknm, PATHBLD_MP_USEIDX);
 
   if (marquee->mqfont != NULL && *marquee->mqfont != '\0') {
     free (marquee->mqfont);

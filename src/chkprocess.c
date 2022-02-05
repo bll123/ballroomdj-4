@@ -21,7 +21,7 @@ main (int argc, char *argv[])
     { NULL,         0,                  NULL,   0 }
   };
 
-  while ((c = getopt_long (argc, argv, "", bdj_options, &option_index)) != -1) {
+  while ((c = getopt_long_only (argc, argv, "p:d:", bdj_options, &option_index)) != -1) {
     switch (c) {
       case 'd': {
         break;

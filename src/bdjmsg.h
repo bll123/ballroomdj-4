@@ -22,22 +22,22 @@ typedef enum {
   MSG_SOCKET_CLOSE,
     /* to main */
   MSG_GET_STATUS,           // get main/player status
-  MSG_MUSICQ_INSERT,        // args: idx, song name
-  MSG_MUSICQ_MOVE_DOWN,     // args: idx
-  MSG_MUSICQ_MOVE_TOP,      // args: idx
-  MSG_MUSICQ_MOVE_UP,       // args: idx
-  MSG_MUSICQ_REMOVE,        // args: idx
+  MSG_MUSICQ_INSERT,        // args: music-q-idx, idx, song name
+  MSG_MUSICQ_MOVE_DOWN,     // args: music-q-idx, idx
+  MSG_MUSICQ_MOVE_TOP,      // args: music-q-idx, idx
+  MSG_MUSICQ_MOVE_UP,       // args: music-q-idx, idx
+  MSG_MUSICQ_REMOVE,        // args: music-q-idx, idx
   MSG_MUSICQ_SET_PLAYBACK,  // args: music queue for playback
-  MSG_MUSICQ_TOGGLE_PAUSE,  //
-  MSG_MUSICQ_TRUNCATE,      // args: idx
+  MSG_MUSICQ_TOGGLE_PAUSE,  // args: music-q-idx
+  MSG_MUSICQ_TRUNCATE,      // args: music-q-idx, idx
   MSG_PLAYLIST_CLEARPLAY,   // args: playlist name
   MSG_PLAY_PLAY,            // always to main
                             //    starts playback, passed on to player.
   MSG_PLAY_PLAYPAUSE,       // always to main
-  MSG_QUEUE_CLEAR,          //
-  MSG_QUEUE_DANCE_5,        // args: dance idx
-  MSG_QUEUE_DANCE,          // args: dance idx
-  MSG_QUEUE_PLAYLIST,       // args: playlist name
+  MSG_QUEUE_CLEAR,          // args: music-q-idx
+  MSG_QUEUE_DANCE_5,        // args: music-q-idx, dance idx
+  MSG_QUEUE_DANCE,          // args: music-q-idx, dance idx
+  MSG_QUEUE_PLAYLIST,       // args: music-q-idx, playlist name
     /* to player */
   MSG_PLAYER_VOL_MUTE,      // to player. toggle.
   MSG_PLAYER_VOLSINK_SET,   // to player: set volume sink

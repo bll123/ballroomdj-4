@@ -43,6 +43,7 @@
 typedef struct {
   conn_t          *conn;
   progstart_t     *progstart;
+  char            *locknm;
   uint16_t        port;
   char            *user;
   char            *pass;
@@ -94,7 +95,7 @@ main (int argc, char *argv[])
 
   sysvarsInit (argv[0]);
 
-  while ((c = getopt_long (argc, argv, "", bdj_options, &option_index)) != -1) {
+  while ((c = getopt_long_only (argc, argv, "p:d:", bdj_options, &option_index)) != -1) {
     switch (c) {
       case 'd': {
         if (optarg) {
@@ -117,7 +118,8 @@ main (int argc, char *argv[])
   logStartAppend ("remotecontrol", "rc", loglevel);
   logMsg (LOG_SESS, LOG_IMPORTANT, "Using profile %ld", lsysvars [SVL_BDJIDX]);
 
-  rc = lockAcquire (REMCTRL_LOCK_FN, PATHBLD_MP_USEIDX);
+  remctrlData.locknm = lockName (ROUTE_REMCTRL);
+  rc = lockAcquire (remctrlData.locknm, PATHBLD_MP_USEIDX);
   if (rc < 0) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: remctrl: unable to acquire lock: profile: %zd", lsysvars [SVL_BDJIDX]);
     logMsg (LOG_SESS, LOG_IMPORTANT, "ERR: remctrl: unable to acquire lock: profile: %zd", lsysvars [SVL_BDJIDX]);
@@ -130,7 +132,7 @@ main (int argc, char *argv[])
 
   remctrlData.enabled = (bdjoptGetNum (OPT_P_REMOTECONTROL) != 0);
   if (! remctrlData.enabled) {
-    lockRelease (REMCTRL_LOCK_FN, PATHBLD_MP_USEIDX);
+    lockRelease (remctrlData.locknm, PATHBLD_MP_USEIDX);
     exit (0);
   }
 
@@ -205,7 +207,7 @@ remctrlClosingCallback (void *udata, programstate_t programState)
   }
   bdjoptFree ();
   bdjvarsCleanup ();
-  lockRelease (REMCTRL_LOCK_FN, PATHBLD_MP_USEIDX);
+  lockRelease (remctrlData->locknm, PATHBLD_MP_USEIDX);
 
   return true;
 }

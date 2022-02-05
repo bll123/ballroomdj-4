@@ -4,6 +4,9 @@
 #include <stdint.h>
 #include <sys/types.h>
 #include <unistd.h>
+#if _hdr_ws2tcpip
+# include <ws2tcpip.h>
+#endif
 
 #if _sys_socket
 # include <sys/socket.h>

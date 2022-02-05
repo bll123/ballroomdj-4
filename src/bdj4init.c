@@ -1,6 +1,5 @@
 #include "config.h"
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -16,6 +15,7 @@
 #endif
 
 #include "bdj4init.h"
+#include "bdjmsg.h"
 #include "musicdb.h"
 #include "tagdef.h"
 #include "bdjstring.h"
@@ -46,7 +46,7 @@ initLocale (void)
 }
 
 int
-bdj4startup (int argc, char *argv[])
+bdj4startup (int argc, char *argv[], char *tag, bdjmsgroute_t route)
 {
   mstime_t    mt;
   mstime_t    dbmt;
@@ -56,9 +56,13 @@ bdj4startup (int argc, char *argv[])
   int         option_index = 0;
   char        tbuff [MAXPATHLEN];
   loglevel_t  loglevel = LOG_IMPORTANT | LOG_MAIN;
+  char        *locknm = lockName (route);
 
   static struct option bdj_options [] = {
-    { "main",       no_argument,        NULL,   0 },
+    { "main",       no_argument,        NULL,   1 },
+    { "playerui",   no_argument,        NULL,   2 },
+    { "configui",   no_argument,        NULL,   3 },
+    { "manageui",   no_argument,        NULL,   4 },
     { "profile",    required_argument,  NULL,   'p' },
     { "debug",      required_argument,  NULL,   'd' },
     { NULL,         0,                  NULL,   0 }
@@ -74,7 +78,7 @@ bdj4startup (int argc, char *argv[])
     fileopMakeDir (tbuff);
   }
 
-  while ((c = getopt_long (argc, argv, "", bdj_options, &option_index)) != -1) {
+  while ((c = getopt_long_only (argc, argv, "p:d:", bdj_options, &option_index)) != -1) {
     switch (c) {
       case 'd': {
         if (optarg) {
@@ -94,7 +98,7 @@ bdj4startup (int argc, char *argv[])
     }
   }
 
-  rc = lockAcquire (MAIN_LOCK_FN, PATHBLD_MP_USEIDX);
+  rc = lockAcquire (lockName (route), PATHBLD_MP_USEIDX);
   count = 0;
   while (rc < 0) {
       /* try for the next free profile */
@@ -103,10 +107,10 @@ bdj4startup (int argc, char *argv[])
     sysvarSetNum (SVL_BDJIDX, profile);
     ++count;
     if (count > 20) {
-      bdj4shutdown ();
+      bdj4shutdown (route);
       exit (1);
     }
-    rc = lockAcquire (MAIN_LOCK_FN, PATHBLD_MP_USEIDX);
+    rc = lockAcquire (locknm, PATHBLD_MP_USEIDX);
   }
 
   if (chdir (sysvars [SV_BDJ4DIR]) < 0) {
@@ -115,7 +119,14 @@ bdj4startup (int argc, char *argv[])
   }
   bdjvarsInit ();
 
-  logStart ("m", loglevel);
+  /* for the time being, leave this as route_main */
+  /* this will change in the future */
+  if (route == ROUTE_MAIN) {
+    logStart (tag, loglevel);
+  } else {
+    /* re-use the lock name as the program name */
+    logStartAppend (locknm, tag, loglevel);
+  }
   logMsg (LOG_SESS, LOG_IMPORTANT, "Using profile %ld", lsysvars [SVL_BDJIDX]);
 
   bdjvarsdfloadInit ();
@@ -134,7 +145,7 @@ bdj4startup (int argc, char *argv[])
 }
 
 void
-bdj4shutdown (void)
+bdj4shutdown (bdjmsgroute_t route)
 {
   mstime_t       mt;
 
@@ -144,5 +155,5 @@ bdj4shutdown (void)
   bdjvarsdfloadCleanup ();
   bdjvarsCleanup ();
   logMsg (LOG_SESS, LOG_IMPORTANT, "init cleanup time: %ld ms", mstimeend (&mt));
-  lockRelease (MAIN_LOCK_FN, PATHBLD_MP_USEIDX);
+  lockRelease (lockName (route), PATHBLD_MP_USEIDX);
 }

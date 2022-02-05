@@ -3,13 +3,9 @@
 
 #include <sys/types.h>
 
-#define MAIN_LOCK_FN        "main"
-#define MOBILEMQ_LOCK_FN    "mobilemq"
-#define REMCTRL_LOCK_FN     "remctrl"
-#define PLAYER_LOCK_FN      "player"
-#define MARQUEE_LOCK_FN     "marquee"
-#define PLAYERUI_LOCK_FN    "playerui"
+#include "bdjmsg.h"
 
+char  * lockName (bdjmsgroute_t route);
 pid_t lockExists (char *, int);
 int   lockAcquire (char *, int);
 int   lockAcquirePid (char *, pid_t, int);

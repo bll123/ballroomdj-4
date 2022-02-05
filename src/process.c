@@ -166,10 +166,16 @@ processFree (process_t *process)
 #pragma clang diagnostic pop
 
 int
-processKill (process_t *process)
+processKill (process_t *process, bool force)
 {
+  int         sig = SIGTERM;
+
+  if (force) {
+    sig = SIGABRT;
+  }
+
 #if _lib_kill
-  return (kill (process->pid, SIGTERM));
+  return (kill (process->pid, sig));
 #endif
 #if _lib_TerminateProcess
   HANDLE hProcess = process->processHandle;

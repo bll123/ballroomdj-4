@@ -1,6 +1,5 @@
 #include "config.h"
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -21,6 +20,10 @@
 #include "portability.h"
 #include "sysvars.h"
 
+#if _lib__execv
+# define execv _execv
+#endif
+
 int
 main (int argc, char *argv[])
 {
@@ -33,14 +36,18 @@ main (int argc, char *argv[])
 
   static struct option bdj_options [] = {
     { "check_all",  no_argument,        NULL,   1 },
-    { "cli",        no_argument,        NULL,   2 },
-    { "configui",   no_argument,        NULL,   3 },
-    { "main",       no_argument,        NULL,   4 },
-    { "player",     no_argument,        NULL,   5 },
-    { "marquee",    no_argument,        NULL,   6 },
-    { "playerui",   no_argument,        NULL,   7 },
+    { "main",       no_argument,        NULL,   2 },
+    { "playerui",   no_argument,        NULL,   3 },
+    { "configui",   no_argument,        NULL,   4 },
+    { "manageui",   no_argument,        NULL,   5 },
+    { "player",     no_argument,        NULL,   6 },
+    { "cli",        no_argument,        NULL,   7 },
+    { "mobilemq",   no_argument,        NULL,   8 },
+    { "remctrl",    no_argument,        NULL,   9 },
+    { "marquee",    no_argument,        NULL,   10 },
     { "profile",    required_argument,  NULL,   'p' },
     { "debug",      required_argument,  NULL,   'd' },
+    { "theme",      required_argument,  NULL,   't' },
     { NULL,         0,                  NULL,   0 }
   };
 
@@ -48,7 +55,7 @@ main (int argc, char *argv[])
 
   sysvarsInit (argv [0]);
 
-  while ((c = getopt_long (argc, argv, "", bdj_options, &option_index)) != -1) {
+  while ((c = getopt_long_only (argc, argv, "p:d:t:", bdj_options, &option_index)) != -1) {
     switch (c) {
       case 1: {
         prog = "check_all";
@@ -56,32 +63,47 @@ main (int argc, char *argv[])
         break;
       }
       case 2: {
-        prog = "bdj4cli";
-        ++validargs;
-        break;
-      }
-      case 3: {
-        prog = "bdj4configui";
-        ++validargs;
-        break;
-      }
-      case 4: {
         prog = "bdj4main";
         ++validargs;
         break;
       }
+      case 3: {
+        prog = "bdj4playerui";
+        ++validargs;
+        break;
+      }
+      case 4: {
+        prog = "bdj4configui";
+        ++validargs;
+        break;
+      }
       case 5: {
-        prog = "bdj4player";
+        prog = "bdj4manageui";
         ++validargs;
         break;
       }
       case 6: {
-        prog = "bdj4marquee";
+        prog = "player";
         ++validargs;
         break;
       }
       case 7: {
-        prog = "bdj4playerui";
+        prog = "bdj4cli";
+        ++validargs;
+        break;
+      }
+      case 8: {
+        prog = "bdj4mobmq";
+        ++validargs;
+        break;
+      }
+      case 9: {
+        prog = "bdj4remctrl";
+        ++validargs;
+        break;
+      }
+      case 10: {
+        prog = "marquee";
         ++validargs;
         break;
       }
@@ -92,6 +114,11 @@ main (int argc, char *argv[])
         if (optarg) {
           sysvarSetNum (SVL_BDJIDX, atol (optarg));
         }
+        break;
+      }
+      case 't': {
+        snprintf (buff, sizeof (buff), "GTK_THEME=%s", optarg);
+        putenv (buff);
         break;
       }
       default: {
