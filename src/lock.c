@@ -55,7 +55,8 @@ lockExists (char *fn, int flags)
   fpid = getPidFromFile (tfn);
   process.pid = fpid;
   process.hasHandle = false;
-  if (fpid == -1 || ! processExists (&process)) {
+  if (fpid == -1 || processExists (&process) != 0) {
+    fileopDelete (tfn);
     fpid = 0;
   }
   return fpid;

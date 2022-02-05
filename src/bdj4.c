@@ -140,6 +140,7 @@ main (int argc, char *argv[])
   fileopMakeDir ("tmp");
 
   putenv ("GTK_OVERLAY_SCROLLING=0");
+  putenv ("GTK_CSD=0");
 
   if (isMacOS()) {
     char      *path = NULL;

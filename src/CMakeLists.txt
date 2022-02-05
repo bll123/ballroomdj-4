@@ -31,7 +31,6 @@ set (SHLIB_EXT ${CMAKE_SHARED_LIBRARY_SUFFIX})
 set (MONGOOSE_INC_DIR ../packages/mongoose)
 set (MONGOOSE_SRC ../packages/mongoose/mongoose.c)
 
-include (CheckCCompilerFlag)
 include (CheckFunctionExists)
 include (CheckIncludeFile)
 include (CheckIncludeFileCXX)
@@ -41,8 +40,9 @@ include (CheckLinkerFlag)
 include (CheckSymbolExists)
 include (CheckTypeSize)
 include (CheckVariableExists)
-include (FindPkgConfig)
 include (CheckPrototypeDefinition)
+
+find_package (PkgConfig)
 
 find_package (Intl)
 find_package (Iconv)
@@ -58,10 +58,18 @@ if (NOT LIBVLC_LIBRARY)
   set (LIBVLC_FOUND TRUE)
 endif()
 
+string (REPLACE "\.dll" "" temp ${Intl_LIBRARY})
+set (Intl_LIBRARY ${temp})
+string (REPLACE "\.dll" "" temp ${Iconv_LIBRARY})
+set (Iconv_LIBRARY ${temp})
+
 # is there a better way to handle libraries like this?
 macro (addIntlLibrary name)
   if (Intl_LIBRARY)
-    target_link_libraries (${name} ${Intl_LIBRARY} ${Iconv_LIBRARY})
+    target_link_libraries (${name}
+      ${Intl_LIBRARY}
+      ${Iconv_LIBRARY}
+    )
   endif()
 endmacro()
 
@@ -188,6 +196,7 @@ check_function_exists (LoadLibrary _lib_LoadLibrary)
 check_function_exists (OpenProcess _lib_OpenProcess)
 check_function_exists (TerminateProcess _lib_TerminateProcess)
 check_function_exists (WriteFile _lib_WriteFile)
+check_function_exists (_execv _lib__execv)
 set (CMAKE_REQUIRED_INCLUDES "")
 
 # cmake weirdness
@@ -215,8 +224,14 @@ set (CMAKE_REQUIRED_LIBRARIES "${CMAKE_DL_LIBS}")
 check_function_exists (dlopen _lib_dlopen)
 set (CMAKE_REQUIRED_LIBRARIES "")
 
+set (CMAKE_REQUIRED_INCLUDES pthread.h)
+set (CMAKE_REQUIRED_LIBRARIES pthread)
+check_function_exists (pthread_create _lib_pthread_create)
+set (CMAKE_REQUIRED_INCLUDES "")
+set (CMAKE_REQUIRED_LIBRARIES "")
+
+check_function_exists (ioctlsocket _lib_ioctlsocket)
 check_function_exists (drand48 _lib_drand48)
-check_function_exists (_execv _lib__execv)
 check_function_exists (fcntl _lib_fcntl)
 check_function_exists (fork _lib_fork)
 check_function_exists (kill _lib_kill)

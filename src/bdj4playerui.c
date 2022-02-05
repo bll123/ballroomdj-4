@@ -138,8 +138,8 @@ main (int argc, char *argv[])
   plui.uisongselect = uisongselInit (plui.progstart, plui.conn);
 
   plui.sockserver = sockhStartServer (listenPort);
-  /* using a timeout of 5 seems to interfere with gtk */
-  g_timeout_add (10, pluiMainLoop, &plui);
+  /* using a timeout of 5 seems to interfere with gtk; windows needs longer */
+  g_timeout_add (UI_MAIN_LOOP_TIMER, pluiMainLoop, &plui);
 
   status = pluiCreateGui (&plui, 0, NULL);
 

@@ -41,6 +41,7 @@ main (int argc, char *argv[])
   uint16_t        port;
   char            buff [1024];
   bool            forceexit = false;
+  int             loglevel = LOG_IMPORTANT | LOG_BASIC | LOG_MAIN;
 
 
   static struct option bdj_options [] = {
@@ -58,6 +59,9 @@ main (int argc, char *argv[])
   while ((c = getopt_long_only (argc, argv, "p:d:r:m:", bdj_options, &option_index)) != -1) {
     switch (c) {
       case 'd': {
+        if (optarg) {
+          loglevel = (loglevel_t) atoi (optarg);
+        }
         break;
       }
       case 'p': {
@@ -90,7 +94,7 @@ main (int argc, char *argv[])
   }
 
   bdjvarsInit ();
-  logStartAppend ("clicomm", "cl", LOG_IMPORTANT);
+  logStartAppend ("clicomm", "cl", loglevel);
 
   conn = connInit (ROUTE_CLICOMM);
 
@@ -274,29 +278,31 @@ exitAll (conn_t *conn)
 
 
   /* send the standard exit request to the controlling processes first */
+  fprintf (stderr, "sending exit to playerui\n");
   sendMsg (conn, ROUTE_PLAYERUI, MSG_EXIT_REQUEST, NULL);
   mssleep (200);
+  fprintf (stderr, "sending exit to main\n");
   sendMsg (conn, ROUTE_MAIN, MSG_EXIT_REQUEST, NULL);
-  mssleep (300);
+  mssleep (500);
 
   /* see which lock files exist, and send exit requests to them */
   for (route = ROUTE_MAIN; route < ROUTE_MAX; ++route) {
     locknm = lockName (route);
     pid = lockExists (locknm, PATHBLD_MP_USEIDX);
-    if (pid != 0) {
+    if (pid > 0) {
+      fprintf (stderr, "sending exit to %d\n", route);
       sendMsg (conn, route, MSG_EXIT_REQUEST, NULL);
     }
   }
-  mssleep (400);
+  mssleep (500);
 
   /* see which lock files still exist and kill the processes */
   for (route = ROUTE_MAIN; route < ROUTE_MAX; ++route) {
     locknm = lockName (route);
     pid = lockExists (locknm, PATHBLD_MP_USEIDX);
-    if (pid != 0) {
-#if _lib_kill
-      kill (pid, SIGTERM);
-#endif
+    if (pid > 0) {
+      fprintf (stderr, "terminate %d\n", route);
+      processTerminate (pid, false);
     }
   }
 
@@ -305,11 +311,15 @@ exitAll (conn_t *conn)
   for (route = ROUTE_MAIN; route < ROUTE_MAX; ++route) {
     locknm = lockName (route);
     pid = lockExists (locknm, PATHBLD_MP_USEIDX);
-    if (pid != 0) {
-#if _lib_kill
-      kill (pid, SIGABRT);
-#endif
+    if (pid > 0) {
+      fprintf (stderr, "terminate-force %d\n", route);
+      processTerminate (pid, true);
     }
-    fileopDelete (locknm);
+    mssleep (100);
+    pid = lockExists (locknm, PATHBLD_MP_USEIDX);
+    if (pid > 0) {
+      fprintf (stderr, "still-exists %d\n", route);
+      fileopDelete (locknm);
+    }
   }
 }

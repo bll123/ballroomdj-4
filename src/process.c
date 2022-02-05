@@ -20,6 +20,10 @@
 #include "process.h"
 #include "log.h"
 
+#if _typ_HANDLE
+static HANDLE processGetProcessHandle (pid_t pid, DWORD procaccess);
+#endif
+
 /* returns 0 if process exists */
 int
 processExists (process_t *process)
@@ -35,7 +39,7 @@ processExists (process_t *process)
   DWORD exitCode;
 
   if (! process->hasHandle) {
-    hProcess = processGetProcessHandle (process->pid);
+    hProcess = processGetProcessHandle (process->pid, PROCESS_QUERY_LIMITED_INFORMATION);
   }
 
   if (GetExitCodeProcess (hProcess, &exitCode)) {
@@ -168,58 +172,46 @@ processFree (process_t *process)
 int
 processKill (process_t *process, bool force)
 {
+#if _lib_kill
   int         sig = SIGTERM;
 
   if (force) {
     sig = SIGABRT;
   }
 
-#if _lib_kill
   return (kill (process->pid, sig));
 #endif
 #if _lib_TerminateProcess
   HANDLE hProcess = process->processHandle;
-  DWORD exitCode = 0;
-
-  if (! process->hasHandle) {
-    return -1;
-  }
 
   logProcBegin (LOG_PROC, "processKill");
-  if (TerminateProcess (hProcess, 0)) {
-    logMsg (LOG_DBG, LOG_PROCESS, "terminated: %lld", exitCode);
-    return 0;
+  if (! process->hasHandle) {
+    /* need PROCESS_TERMINATE */
+    hProcess = processGetProcessHandle (process->pid, PROCESS_TERMINATE);
   }
 
+  if (hProcess != NULL) {
+    if (TerminateProcess (hProcess, 0)) {
+      logMsg (LOG_DBG, LOG_PROCESS, "terminated");
+      logProcEnd (LOG_PROC, "processKill", "ran-terminate");
+      return 0;
+    }
+  }
+
+  logProcEnd (LOG_PROC, "processKill", "fail");
   return -1;
 #endif
 }
 
-#if _typ_HANDLE
-
-HANDLE
-processGetProcessHandle (pid_t pid)
+void
+processTerminate (pid_t pid, bool force)
 {
-  HANDLE  hProcess = NULL;
+  process_t     process;
 
-  hProcess = OpenProcess (PROCESS_QUERY_LIMITED_INFORMATION,
-      FALSE, pid);
-  if (NULL == hProcess) {
-    int err = GetLastError ();
-    if (err == ERROR_INVALID_PARAMETER) {
-      logMsg (LOG_DBG, LOG_IMPORTANT, "openprocess: %d", err);
-      logProcEnd (LOG_PROC, "openprocess", "fail-a");
-      return NULL;
-    }
-    logMsg (LOG_DBG, LOG_IMPORTANT, "openprocess: %d", err);
-    logProcEnd (LOG_PROC, "openprocess", "fail-b");
-    return NULL;
-  }
-
-  return hProcess;
+  process.hasHandle = false;
+  process.pid = pid;
+  processKill (&process, force);
 }
-
-#endif
 
 void
 processCatchSignal (void (*sigHandler)(int), int sig)
@@ -268,4 +260,29 @@ processDefaultSignal (int sig)
   signal (sig, SIG_DFL);
 #endif
 }
+
+#if _typ_HANDLE
+
+static HANDLE
+processGetProcessHandle (pid_t pid, DWORD procaccess)
+{
+  HANDLE  hProcess = NULL;
+
+  hProcess = OpenProcess (procaccess, FALSE, pid);
+  if (NULL == hProcess) {
+    int err = GetLastError ();
+    if (err == ERROR_INVALID_PARAMETER) {
+      logMsg (LOG_DBG, LOG_IMPORTANT, "openprocess: %d", err);
+      logProcEnd (LOG_PROC, "openprocess", "fail-a");
+      return NULL;
+    }
+    logMsg (LOG_DBG, LOG_IMPORTANT, "openprocess: %d", err);
+    logProcEnd (LOG_PROC, "openprocess", "fail-b");
+    return NULL;
+  }
+
+  return hProcess;
+}
+
+#endif /* _typ_HANDLE */
 

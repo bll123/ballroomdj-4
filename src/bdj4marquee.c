@@ -207,7 +207,7 @@ main (int argc, char *argv[])
   }
 
   marquee.sockserver = sockhStartServer (listenPort);
-  g_timeout_add (10, marqueeMainLoop, &marquee);
+  g_timeout_add (UI_MAIN_LOOP_TIMER, marqueeMainLoop, &marquee);
 
   status = marqueeCreateGui (&marquee, 0, NULL);
 

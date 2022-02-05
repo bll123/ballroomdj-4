@@ -22,10 +22,8 @@ typedef struct {
 int         processExists (process_t *process);
 process_t   *processStart (const char *fn, ssize_t profile, ssize_t loglvl);
 int         processKill (process_t *process, bool force);
+void        processTerminate (pid_t pid, bool force);
 void        processFree (process_t *process);
-#if _typ_HANDLE
-HANDLE      processGetProcessHandle (pid_t pid);
-#endif
 void        processCatchSignal (void (*sigHandler)(int), int signal);
 void        processIgnoreSignal (int signal);
 void        processDefaultSignal (int signal);
