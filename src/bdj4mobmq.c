@@ -110,13 +110,13 @@ main (int argc, char *argv[])
   }
 
   logStartAppend ("mobilemarquee", "mm", loglevel);
-  logMsg (LOG_SESS, LOG_IMPORTANT, "Using profile %ld", lsysvars [SVL_BDJIDX]);
+  logMsg (LOG_SESS, LOG_IMPORTANT, "Using profile %ld", sysvarsGetNum (SVL_BDJIDX));
 
   mobmqData.locknm = lockName (ROUTE_MOBILEMQ);
   rc = lockAcquire (mobmqData.locknm, PATHBLD_MP_USEIDX);
   if (rc < 0) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: mobilemq: unable to acquire lock: profile: %zd", lsysvars [SVL_BDJIDX]);
-    logMsg (LOG_SESS, LOG_IMPORTANT, "ERR: mobilemq: unable to acquire lock: profile: %zd", lsysvars [SVL_BDJIDX]);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: mobilemq: unable to acquire lock: profile: %zd", sysvarsGetNum (SVL_BDJIDX));
+    logMsg (LOG_SESS, LOG_IMPORTANT, "ERR: mobilemq: unable to acquire lock: profile: %zd", sysvarsGetNum (SVL_BDJIDX));
     logEnd ();
     exit (0);
   }
@@ -156,7 +156,7 @@ main (int argc, char *argv[])
 
   mobmqData.websrv = websrvInit (mobmqData.port, mobmqEventHandler, &mobmqData);
 
-  listenPort = bdjvarsl [BDJVL_MOBILEMQ_PORT];
+  listenPort = bdjvarsGetNum (BDJVL_MOBILEMQ_PORT);
   sockhMainLoop (listenPort, mobmqProcessMsg, mobmqProcessing, &mobmqData);
 
   while (progstateShutdownProcess (mobmqData.progstate) != STATE_CLOSED) {
@@ -237,7 +237,7 @@ mobmqEventHandler (struct mg_connection *c, int ev, void *ev_data, void *userdat
         mg_http_match_uri (hm, "#.csr")) {
       mg_http_reply (c, 404, NULL, "");
     } else {
-      struct mg_http_serve_opts opts = { .root_dir = sysvars [SV_BDJ4HTTPDIR] };
+      struct mg_http_serve_opts opts = { .root_dir = sysvarsGetStr (SV_BDJ4HTTPDIR) };
       mg_http_serve_dir (c, hm, &opts);
     }
   }

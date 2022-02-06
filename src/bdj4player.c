@@ -225,13 +225,13 @@ main (int argc, char *argv[])
   }
 
   logStartAppend ("bdj4player", "p", loglevel);
-  logMsg (LOG_SESS, LOG_IMPORTANT, "Using profile %ld", lsysvars [SVL_BDJIDX]);
+  logMsg (LOG_SESS, LOG_IMPORTANT, "Using profile %ld", sysvarsGetNum (SVL_BDJIDX));
 
   playerData.locknm = lockName (ROUTE_PLAYER);
   rc = lockAcquire (playerData.locknm, PATHBLD_MP_USEIDX);
   if (rc < 0) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: player: unable to acquire lock: profile: %zd", lsysvars [SVL_BDJIDX]);
-    logMsg (LOG_SESS, LOG_IMPORTANT, "ERR: player: unable to acquire lock: profile: %zd", lsysvars [SVL_BDJIDX]);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: player: unable to acquire lock: profile: %zd", sysvarsGetNum (SVL_BDJIDX));
+    logMsg (LOG_SESS, LOG_IMPORTANT, "ERR: player: unable to acquire lock: profile: %zd", sysvarsGetNum (SVL_BDJIDX));
     logEnd ();
     exit (0);
   }
@@ -279,7 +279,7 @@ main (int argc, char *argv[])
 
   playerData.pli = pliInit ();
 
-  listenPort = bdjvarsl [BDJVL_PLAYER_PORT];
+  listenPort = bdjvarsGetNum (BDJVL_PLAYER_PORT);
   sockhMainLoop (listenPort, playerProcessMsg, playerProcessing, &playerData);
 
   while (progstateShutdownProcess (playerData.progstate) != STATE_CLOSED) {
@@ -933,7 +933,7 @@ songMakeTempName (playerdata_t *playerData, char *in, char *out, size_t maxlen)
 
     /* the profile index so we don't stomp on other bdj instances   */
     /* the global count so we don't stomp on ourselves              */
-  snprintf (out, maxlen, "tmp/%02ld-%03ld-%s", lsysvars [SVL_BDJIDX],
+  snprintf (out, maxlen, "tmp/%02ld-%03ld-%s", sysvarsGetNum (SVL_BDJIDX),
       playerData->globalCount, tnm);
   ++playerData->globalCount;
 }

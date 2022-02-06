@@ -179,13 +179,13 @@ main (int argc, char *argv[])
   }
 
   logStartAppend ("bdj4marquee", "mq", loglevel);
-  logMsg (LOG_SESS, LOG_IMPORTANT, "Using profile %ld", lsysvars [SVL_BDJIDX]);
+  logMsg (LOG_SESS, LOG_IMPORTANT, "Using profile %ld", sysvarsGetNum (SVL_BDJIDX));
 
   marquee.locknm = lockName (ROUTE_MARQUEE);
   rc = lockAcquire (marquee.locknm, PATHBLD_MP_USEIDX);
   if (rc < 0) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: marquee: unable to acquire lock: profile: %zd", lsysvars [SVL_BDJIDX]);
-    logMsg (LOG_SESS, LOG_IMPORTANT, "ERR: marquee: unable to acquire lock: profile: %zd", lsysvars [SVL_BDJIDX]);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: marquee: unable to acquire lock: profile: %zd", sysvarsGetNum (SVL_BDJIDX));
+    logMsg (LOG_SESS, LOG_IMPORTANT, "ERR: marquee: unable to acquire lock: profile: %zd", sysvarsGetNum (SVL_BDJIDX));
     logEnd ();
     exit (0);
   }
@@ -193,7 +193,7 @@ main (int argc, char *argv[])
   bdjvarsInit ();
   bdjoptInit ();
 
-  listenPort = bdjvarsl [BDJVL_MARQUEE_PORT];
+  listenPort = bdjvarsGetNum (BDJVL_MARQUEE_PORT);
   marquee.mqLen = bdjoptGetNum (OPT_P_MQQLEN);
   marquee.mqShowInfo = bdjoptGetNum (OPT_P_MQ_SHOW_INFO);
   marquee.conn = connInit (ROUTE_MARQUEE);

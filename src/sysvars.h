@@ -30,10 +30,9 @@ typedef enum {
   SVL_MAX
 } sysvarlkey_t;
 
-extern char       sysvars [SV_MAX][MAXPATHLEN];
-extern ssize_t    lsysvars [SVL_MAX];
-
 void    sysvarsInit (const char *);
+char    * sysvarsGetStr (sysvarkey_t idx);
+ssize_t sysvarsGetNum (sysvarlkey_t idx);
 void    sysvarSetNum (sysvarlkey_t, ssize_t);
 bool    isMacOS (void);
 bool    isWindows (void);

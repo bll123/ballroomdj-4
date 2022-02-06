@@ -132,8 +132,8 @@ main (int argc, char *argv[])
     exit (1);
   }
 
-  if (chdir (sysvars [SV_BDJ4DIR]) < 0) {
-    fprintf (stderr, "Unable to chdir: %s\n", sysvars [SV_BDJ4DIR]);
+  if (chdir (sysvarsGetStr (SV_BDJ4DIR)) < 0) {
+    fprintf (stderr, "Unable to chdir: %s\n", sysvarsGetStr (SV_BDJ4DIR));
     exit (1);
   }
 
@@ -176,14 +176,14 @@ main (int argc, char *argv[])
     path = malloc (sz);
     assert (path != NULL);
 
-    pathToWinPath (sysvars [SV_BDJ4EXECDIR], pbuff, sz);
+    pathToWinPath (sysvarsGetStr (SV_BDJ4EXECDIR), pbuff, sz);
     strlcpy (path, "PATH=", sz);
     strlcat (path, getenv ("PATH"), sz);
     strlcat (path, ";", sz);
     strlcat (path, pbuff, sz);
 
     strlcat (path, ";", sz);
-    snprintf (pbuff, sz, "%s\\..\\plocal\\bin", sysvars [SV_BDJ4EXECDIR]);
+    snprintf (pbuff, sz, "%s\\..\\plocal\\bin", sysvarsGetStr (SV_BDJ4EXECDIR));
     pathRealPath (pbuff, tbuff);
     strlcat (path, tbuff, sz);
 

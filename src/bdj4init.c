@@ -73,7 +73,7 @@ bdj4startup (int argc, char *argv[], char *tag, bdjmsgroute_t route)
   sRandom ();
   sysvarsInit (argv[0]);
 
-  pathbldMakePath (tbuff, sizeof (tbuff), "", sysvars [SV_HOSTNAME], "", PATHBLD_MP_NONE);
+  pathbldMakePath (tbuff, sizeof (tbuff), "", sysvarsGetStr (SV_HOSTNAME), "", PATHBLD_MP_NONE);
   if (! fileopExists (tbuff)) {
     fileopMakeDir (tbuff);
   }
@@ -102,7 +102,7 @@ bdj4startup (int argc, char *argv[], char *tag, bdjmsgroute_t route)
   count = 0;
   while (rc < 0) {
       /* try for the next free profile */
-    ssize_t profile = lsysvars [SVL_BDJIDX];
+    ssize_t profile = sysvarsGetNum (SVL_BDJIDX);
     ++profile;
     sysvarSetNum (SVL_BDJIDX, profile);
     ++count;
@@ -113,8 +113,8 @@ bdj4startup (int argc, char *argv[], char *tag, bdjmsgroute_t route)
     rc = lockAcquire (locknm, PATHBLD_MP_USEIDX);
   }
 
-  if (chdir (sysvars [SV_BDJ4DIR]) < 0) {
-    fprintf (stderr, "Unable to chdir: %s\n", sysvars [SV_BDJ4DIR]);
+  if (chdir (sysvarsGetStr (SV_BDJ4DIR)) < 0) {
+    fprintf (stderr, "Unable to chdir: %s\n", sysvarsGetStr (SV_BDJ4DIR));
     exit (1);
   }
   bdjvarsInit ();
@@ -127,7 +127,7 @@ bdj4startup (int argc, char *argv[], char *tag, bdjmsgroute_t route)
   } else {
     logStartAppend (locknm, tag, loglevel);
   }
-  logMsg (LOG_SESS, LOG_IMPORTANT, "Using profile %ld", lsysvars [SVL_BDJIDX]);
+  logMsg (LOG_SESS, LOG_IMPORTANT, "Using profile %ld", sysvarsGetNum (SVL_BDJIDX));
 
   bdjvarsdfloadInit ();
   bdjoptInit ();

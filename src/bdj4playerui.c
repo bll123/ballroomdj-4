@@ -137,7 +137,7 @@ main (int argc, char *argv[])
   bdj4startup (argc, argv, "pu", ROUTE_PLAYERUI);
   logProcBegin (LOG_PROC, "playerui");
 
-  listenPort = bdjvarsl [BDJVL_PLAYERUI_PORT];
+  listenPort = bdjvarsGetNum (BDJVL_PLAYERUI_PORT);
   plui.conn = connInit (ROUTE_PLAYERUI);
 
   plui.uiplayer = uiplayerInit (plui.progstate, plui.conn);

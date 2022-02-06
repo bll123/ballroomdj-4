@@ -116,13 +116,13 @@ main (int argc, char *argv[])
   }
 
   logStartAppend ("remotecontrol", "rc", loglevel);
-  logMsg (LOG_SESS, LOG_IMPORTANT, "Using profile %ld", lsysvars [SVL_BDJIDX]);
+  logMsg (LOG_SESS, LOG_IMPORTANT, "Using profile %ld", sysvarsGetNum (SVL_BDJIDX));
 
   remctrlData.locknm = lockName (ROUTE_REMCTRL);
   rc = lockAcquire (remctrlData.locknm, PATHBLD_MP_USEIDX);
   if (rc < 0) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: remctrl: unable to acquire lock: profile: %zd", lsysvars [SVL_BDJIDX]);
-    logMsg (LOG_SESS, LOG_IMPORTANT, "ERR: remctrl: unable to acquire lock: profile: %zd", lsysvars [SVL_BDJIDX]);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: remctrl: unable to acquire lock: profile: %zd", sysvarsGetNum (SVL_BDJIDX));
+    logMsg (LOG_SESS, LOG_IMPORTANT, "ERR: remctrl: unable to acquire lock: profile: %zd", sysvarsGetNum (SVL_BDJIDX));
     logEnd ();
     exit (0);
   }
@@ -159,7 +159,7 @@ main (int argc, char *argv[])
 
   remctrlData.websrv = websrvInit (remctrlData.port, remctrlEventHandler, &remctrlData);
 
-  listenPort = bdjvarsl [BDJVL_REMCTRL_PORT];
+  listenPort = bdjvarsGetNum (BDJVL_REMCTRL_PORT);
   sockhMainLoop (listenPort, remctrlProcessMsg, remctrlProcessing, &remctrlData);
 
   while (progstateShutdownProcess (remctrlData.progstate) != STATE_CLOSED) {
@@ -319,7 +319,7 @@ remctrlEventHandler (struct mg_connection *c, int ev,
         mg_http_match_uri (hm, "#.csr")) {
       mg_http_reply (c, 404, NULL, "");
     } else {
-      struct mg_http_serve_opts opts = { .root_dir = sysvars [SV_BDJ4HTTPDIR] };
+      struct mg_http_serve_opts opts = { .root_dir = sysvarsGetStr (SV_BDJ4HTTPDIR) };
       mg_http_serve_dir (c, hm, &opts);
     }
   }

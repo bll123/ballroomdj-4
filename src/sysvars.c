@@ -29,8 +29,8 @@
 #include "portability.h"
 #include "pathutil.h"
 
-char        sysvars [SV_MAX][MAXPATHLEN];
-ssize_t     lsysvars [SVL_MAX];
+static char        sysvars [SV_MAX][MAXPATHLEN];
+static ssize_t     lsysvars [SVL_MAX];
 
 static char *cacertFiles [] = {
   "/etc/ssl/certs/ca-certificates.crt",
@@ -204,9 +204,34 @@ sysvarsInit (const char *argv0)
   lsysvars [SVL_BASEPORT] = 35548;
 }
 
-void
+inline char *
+sysvarsGetStr (sysvarkey_t idx)
+{
+  if (idx >= SV_MAX) {
+    return NULL;
+  }
+
+  return sysvars [idx];
+}
+
+inline ssize_t
+sysvarsGetNum (sysvarlkey_t idx)
+{
+  if (idx >= SVL_MAX) {
+    return -1;
+  }
+
+  return lsysvars [idx];
+}
+
+
+inline void
 sysvarSetNum (sysvarlkey_t idx, ssize_t value)
 {
+  if (idx >= SVL_MAX) {
+    return;
+  }
+
   lsysvars [idx] = value;
 }
 

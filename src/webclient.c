@@ -46,7 +46,7 @@ webclientPost (webclient_t *webclient, char *uri, char *query,
     curl_easy_setopt (webclient->curl, CURLOPT_WRITEDATA, webclient);
     curl_easy_setopt (webclient->curl, CURLOPT_WRITEFUNCTION, webclientCallback);
     snprintf (tbuff, sizeof (tbuff),
-        "BallroomDJ/%s ( https://ballroomdj.org/ )", sysvars [SV_BDJ4_VERSION]);
+        "BallroomDJ/%s ( https://ballroomdj.org/ )", sysvarsGetStr (SV_BDJ4_VERSION));
     curl_easy_setopt (webclient->curl, CURLOPT_USERAGENT, tbuff);
   }
 

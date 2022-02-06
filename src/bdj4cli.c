@@ -88,8 +88,8 @@ main (int argc, char *argv[])
     }
   }
 
-  if (chdir (sysvars [SV_BDJ4DIR]) < 0) {
-    fprintf (stderr, "Unable to chdir: %s\n", sysvars [SV_BDJ4DIR]);
+  if (chdir (sysvarsGetStr (SV_BDJ4DIR)) < 0) {
+    fprintf (stderr, "Unable to chdir: %s\n", sysvarsGetStr (SV_BDJ4DIR));
     exit (1);
   }
 

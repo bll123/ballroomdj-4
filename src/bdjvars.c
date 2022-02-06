@@ -16,15 +16,15 @@
 
 static void   bdjvarsAdjustPorts (void);
 
-char *      bdjvars [BDJV_MAX];
-ssize_t     bdjvarsl [BDJVL_MAX];
-static bool initialized = false;
+static char *   bdjvars [BDJV_MAX];
+static ssize_t  bdjvarsl [BDJVL_MAX];
+static bool     initialized = false;
 
 void
 bdjvarsInit (void)
 {
   if (! initialized) {
-    uint16_t        port = lsysvars [SVL_BASEPORT];
+    uint16_t        port = sysvarsGetNum (SVL_BASEPORT);
 
     bdjvarsl [BDJVL_MAIN_PORT] = port++;
     bdjvarsl [BDJVL_PLAYER_PORT] = port++;
@@ -34,6 +34,7 @@ bdjvarsInit (void)
     bdjvarsl [BDJVL_MOBILEMQ_PORT] = port++;
     bdjvarsl [BDJVL_REMCTRL_PORT] = port++;
     bdjvarsl [BDJVL_MARQUEE_PORT] = port++;
+    bdjvarsl [BDJVL_STARTER_PORT] = port++;
     bdjvarsl [BDJVL_NUM_PORTS] = BDJVL_NUM_PORTS;
 
     bdjvarsAdjustPorts ();
@@ -47,15 +48,37 @@ bdjvarsCleanup (void)
   return;
 }
 
+inline char *
+bdjvarsGetStr (bdjvarkey_t idx)
+{
+  if (idx >= BDJV_MAX) {
+    return NULL;
+  }
+
+  return bdjvars [idx];
+}
+
+inline ssize_t
+bdjvarsGetNum (bdjvarkeyl_t idx)
+{
+  if (idx >= BDJVL_MAX) {
+    return NULL;
+  }
+
+  return bdjvarsl [idx];
+}
+
+
 /* internal routines */
 
 static void
 bdjvarsAdjustPorts (void)
 {
-  ssize_t     idx = lsysvars [SVL_BDJIDX];
+  ssize_t     idx = sysvarsGetNum (SVL_BDJIDX);
   uint16_t    port;
 
-  port = lsysvars [SVL_BASEPORT] + bdjvarsl [BDJVL_NUM_PORTS] * idx;
+  port = sysvarsGetNum (SVL_BASEPORT) +
+      sysvarsGetNum (bdjvarsl [BDJVL_NUM_PORTS]) * idx;
   bdjvarsl [BDJVL_MAIN_PORT] = port++;
   bdjvarsl [BDJVL_PLAYER_PORT] = port++;
   bdjvarsl [BDJVL_PLAYERUI_PORT] = port++;
@@ -64,9 +87,10 @@ bdjvarsAdjustPorts (void)
   bdjvarsl [BDJVL_MOBILEMQ_PORT] = port++;
   bdjvarsl [BDJVL_REMCTRL_PORT] = port++;
   bdjvarsl [BDJVL_MARQUEE_PORT] = port++;
+  bdjvarsl [BDJVL_STARTER_PORT] = port++;
 }
 
-bool
+inline bool
 bdjvarsIsInitialized (void)
 {
   return initialized;

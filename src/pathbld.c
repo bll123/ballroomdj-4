@@ -30,29 +30,29 @@ pathbldMakePath (char *buff, size_t buffsz, const char *subpath,
     dirprefix = "http";
   }
   if ((flags & PATHBLD_MP_EXECDIR) == PATHBLD_MP_EXECDIR) {
-    dirprefix = sysvars [SV_BDJ4EXECDIR];
+    dirprefix = sysvarsGetStr (SV_BDJ4EXECDIR);
   }
   if ((flags & PATHBLD_MP_MAINDIR) == PATHBLD_MP_MAINDIR) {
-    dirprefix = sysvars [SV_BDJ4MAINDIR];
+    dirprefix = sysvarsGetStr (SV_BDJ4MAINDIR);
   }
   if ((flags & PATHBLD_MP_RESOURCEDIR) == PATHBLD_MP_RESOURCEDIR) {
-    dirprefix = sysvars [SV_BDJ4RESOURCEDIR];
+    dirprefix = sysvarsGetStr (SV_BDJ4RESOURCEDIR);
   }
   if ((flags & PATHBLD_MP_TEMPLATEDIR) == PATHBLD_MP_TEMPLATEDIR) {
-    dirprefix = sysvars [SV_BDJ4TEMPLATEDIR];
+    dirprefix = sysvarsGetStr (SV_BDJ4TEMPLATEDIR);
   }
   if ((flags & PATHBLD_MP_IMGDIR) == PATHBLD_MP_IMGDIR) {
-    dirprefix = sysvars [SV_BDJ4IMGDIR];
+    dirprefix = sysvarsGetStr (SV_BDJ4IMGDIR);
   }
 
   if ((flags & PATHBLD_MP_USEIDX) == PATHBLD_MP_USEIDX) {
-    if (lsysvars [SVL_BDJIDX] != 0L) {
-      snprintf (suffix, sizeof (suffix), "-%zd", lsysvars [SVL_BDJIDX]);
+    if (sysvarsGetNum (SVL_BDJIDX) != 0L) {
+      snprintf (suffix, sizeof (suffix), "-%zd", sysvarsGetNum (SVL_BDJIDX));
     }
   }
   if ((flags & PATHBLD_MP_HOSTNAME) == PATHBLD_MP_HOSTNAME) {
     snprintf (buff, buffsz, "%s/%s/%s%s%s%s%s", dirprefix,
-        sysvars [SV_HOSTNAME], subpath, subpathsep, base, suffix, extension);
+        sysvarsGetStr (SV_HOSTNAME), subpath, subpathsep, base, suffix, extension);
   }
   if ((flags & PATHBLD_MP_HOSTNAME) != PATHBLD_MP_HOSTNAME) {
     snprintf (buff, buffsz, "%s/%s%s%s%s%s", dirprefix,

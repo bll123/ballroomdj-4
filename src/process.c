@@ -290,7 +290,7 @@ processStartProcess (bdjmsgroute_t route, char *fname)
   }
   pathbldMakePath (tbuff, sizeof (tbuff), "",
       fname, extension, PATHBLD_MP_EXECDIR);
-  process = processStart (tbuff, lsysvars [SVL_BDJIDX],
+  process = processStart (tbuff, sysvarsGetNum (SVL_BDJIDX),
       bdjoptGetNum (OPT_G_DEBUGLVL));
   if (process == NULL) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "%s %s failed to start", fname, tbuff);

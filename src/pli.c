@@ -27,7 +27,7 @@ pliInit (void)
 
   pathbldMakePath (dlpath, sizeof (dlpath), "",
       bdjoptGetData (OPT_G_PLAYER_INTFC),
-      sysvars [SV_SHLIB_EXT], PATHBLD_MP_EXECDIR);
+      sysvarsGetStr (SV_SHLIB_EXT), PATHBLD_MP_EXECDIR);
   pli->dlHandle = dylibLoad (dlpath);
   if (pli->dlHandle == NULL) {
     fprintf (stderr, "Unable to open library %s\n", dlpath);

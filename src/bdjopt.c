@@ -232,7 +232,7 @@ bdjoptConvFadeType (char *data, datafileret_t *ret)
 static void
 bdjoptCreateNewConfigs (void)
 {
-  ssize_t   currProfile = lsysvars [SVL_BDJIDX];
+  ssize_t   currProfile = sysvarsGetNum (SVL_BDJIDX);
   char      path [MAXPATHLEN];
   char      tpath [MAXPATHLEN];
 

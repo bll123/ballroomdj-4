@@ -178,7 +178,7 @@ main (int argc, char *argv[])
   mainData.announceList = slistAlloc ("announcements", LIST_ORDERED,
       free, NULL);
 
-  listenPort = bdjvarsl [BDJVL_MAIN_PORT];
+  listenPort = bdjvarsGetNum (BDJVL_MAIN_PORT);
   sockhMainLoop (listenPort, mainProcessMsg, mainProcessing, &mainData);
 
   logProcEnd (LOG_PROC, "main", "");
@@ -727,7 +727,7 @@ mainSendMobileMarqueeData (maindata_t *mainData)
     }
 
     snprintf (tbuff, sizeof (tbuff),
-        "https://%s/marquee4.php", sysvars [SV_MOBMQ_HOST]);
+        "https://%s/marquee4.php", sysvarsGetStr (SV_MOBMQ_HOST));
     snprintf (qbuff, sizeof (qbuff), "v=2&mqdata=%s&key=%s&tag=%s",
         jbuff, "93457645", tag);
     if (mainData->mobmqUserkey != NULL) {
