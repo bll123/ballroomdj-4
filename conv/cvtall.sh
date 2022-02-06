@@ -21,14 +21,29 @@ case $arch in
     ;;
 esac
 
+# a) the usual location
+# b) for testing: to handle test.dir/data
+# c) mac os bdj3
+# d) personal install
+# e) personal install
+# f) macports install
+# g) brew install (?)
+# h) system install   older mac os system install is too old
+
 tclsh=""
 if [[ $TCLSH != "" ]]; then
   tclsh=$TCLSH
 else
-  for f in "$dir/../$systype/64/tcl/bin/tclsh" \
+  for f in \
+      "$dir/../$systype/64/tcl/bin/tclsh" \
       "$dir/../../$systype/64/tcl/bin/tclsh" \
-      /usr/bin/tclsh $HOME/local/bin/tclsh $HOME/bin/tclsh \
-      /opt/local/bin/tclsh; do
+      "$HOME/Applications/BallroomDJ.app/Contents/MacOS/$systype/64/tcl/bin/tclsh" \
+      "$HOME/local/bin/tclsh" \
+      "$HOME/bin/tclsh" \
+      /opt/local/bin/tclsh \
+      /usr/local/bin/tclsh \
+      /usr/bin/tclsh \
+      ; do
     if [[ -f $f ]]; then
       tclsh=$f
       break

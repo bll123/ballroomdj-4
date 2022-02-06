@@ -229,6 +229,7 @@ logInit (void)
     logbasenm [LOG_ERR] = LOG_ERROR_NAME;
     logbasenm [LOG_SESS] = LOG_SESSION_NAME;
     logbasenm [LOG_DBG] = LOG_DEBUG_NAME;
+    logbasenm [LOG_INSTALL] = LOG_INSTALL_NAME;
     initialized = 1;
   }
 }

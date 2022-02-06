@@ -274,7 +274,7 @@ uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
   gtk_container_add (GTK_CONTAINER (uimusicq->ui [ci].playlistSelectWin), widget);
 
   uimusicq->ui [ci].playlistSelect = gtk_tree_view_new ();
-  g_object_ref (G_OBJECT (uimusicq->ui [ci].playlistSelect));
+  g_object_ref_sink (G_OBJECT (uimusicq->ui [ci].playlistSelect));
   assert (uimusicq->ui [ci].playlistSelect != NULL);
   gtk_tree_view_set_activate_on_single_click (GTK_TREE_VIEW (uimusicq->ui [ci].playlistSelect), TRUE);
   gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (uimusicq->ui [ci].playlistSelect), FALSE);
@@ -326,7 +326,7 @@ uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
 
   uimusicq->ui [ci].danceSelect = gtk_tree_view_new ();
   assert (uimusicq->ui [ci].danceSelect != NULL);
-  g_object_ref (G_OBJECT (uimusicq->ui [ci].danceSelect));
+  g_object_ref_sink (G_OBJECT (uimusicq->ui [ci].danceSelect));
   gtk_tree_view_set_activate_on_single_click (GTK_TREE_VIEW (uimusicq->ui [ci].danceSelect), TRUE);
   gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (uimusicq->ui [ci].danceSelect), FALSE);
   sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (uimusicq->ui [ci].danceSelect));

@@ -33,6 +33,7 @@ typedef enum {
   LOG_ERR,
   LOG_SESS,
   LOG_DBG,
+  LOG_INSTALL,
   LOG_MAX
 } logidx_t;
 
@@ -47,6 +48,7 @@ typedef struct {
 #define LOG_ERROR_NAME    "logerror"
 #define LOG_SESSION_NAME  "logsession"
 #define LOG_DEBUG_NAME    "logdbg"
+#define LOG_INSTALL_NAME  "loginstall"
 #define LOG_EXTENSION     ".txt"
 
 #define logProcBegin(lvl,tag)   rlogProcBegin (lvl, tag, __FILE__, __LINE__)
