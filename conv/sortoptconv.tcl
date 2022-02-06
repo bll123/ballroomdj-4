@@ -11,9 +11,10 @@ if { ! [file exists $dir] || ! [file isdirectory $dir] } {
   exit 1
 }
 
-puts "## Converting: sortopt.tcl"
 source [file join $dir sortopt.tcl]
 set nfn [file join data sortopt.txt]
+puts "Converting: sortopt.tcl : $nfn"
+
 set fh [open $nfn w]
 puts $fh "# BDJ4 sort options"
 puts $fh "# [clock format [clock seconds] -gmt 1]"

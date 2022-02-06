@@ -13,10 +13,11 @@ if { ! [file exists $dir] || ! [file isdirectory $dir] } {
 
 set flist [glob -directory $dir *.seq]
 
+puts "Converting sequences"
 foreach {fn} $flist {
-  puts "## Converting: [file tail $fn]"
   set ifh [open $fn r]
   set nfn [file join data [file rootname [file tail $fn]].sequence]
+  puts "    - [file tail $fn] : $nfn"
   set ofh [open $nfn w]
   puts $ofh "# BDJ4 sequence"
   puts $ofh "# Converted from $fn"

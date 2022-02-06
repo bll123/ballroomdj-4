@@ -343,17 +343,20 @@ uiplayerActivate (uiplayer_t *uiplayer)
   uiplayer->pauseatendButton = gtk_toggle_button_new ();
   gtk_button_set_label (GTK_BUTTON (uiplayer->pauseatendButton), "Pause At End");
   assert (uiplayer->pauseatendButton != NULL);
+
   pathbldMakePath (tbuff, sizeof (tbuff), "", "led_off", ".svg",
       PATHBLD_MP_IMGDIR);
   uiplayer->ledoffImg = gtk_image_new_from_file (tbuff);
   g_object_ref_sink (G_OBJECT (uiplayer->ledoffImg));
+
   pathbldMakePath (tbuff, sizeof (tbuff), "", "led_on", ".svg",
       PATHBLD_MP_IMGDIR);
   uiplayer->ledonImg = gtk_image_new_from_file (tbuff);
   g_object_ref_sink (G_OBJECT (uiplayer->ledonImg));
+
   gtk_button_set_image (GTK_BUTTON (uiplayer->pauseatendButton), uiplayer->ledoffImg);
   gtk_button_set_image_position (GTK_BUTTON (uiplayer->pauseatendButton), GTK_POS_RIGHT);
-  gtk_button_set_always_show_image (GTK_BUTTON (widget), TRUE);
+  gtk_button_set_always_show_image (GTK_BUTTON (uiplayer->pauseatendButton), TRUE);
   gtk_widget_set_margin_start (GTK_WIDGET (uiplayer->pauseatendButton), 2);
   gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (uiplayer->pauseatendButton),
       FALSE, FALSE, 0);

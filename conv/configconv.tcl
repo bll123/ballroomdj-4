@@ -22,16 +22,18 @@ for { set i 1 } { $i < 20 } { incr i } {
   lappend suffixlist -$i.txt
 }
 
+puts "Converting: configuration"
 set cnm bdj_config
 set nnm bdjconfig
 foreach path [list {} profiles $hostname [file join $hostname profiles]] {
   foreach sfx $suffixlist {
     set fn "[file join $dir $path $cnm]$sfx"
     if { [file exists $fn] } {
-      puts "## Converting: [file join $path $cnm]$sfx"
+      set nfn "[file join data $path $nnm]$sfx"
+      puts "    - [file join $path $cnm]$sfx : $nfn"
       set ifh [open $fn r]
       file mkdir [file join data $path]
-      set ofh [open "[file join data $path $nnm]$sfx" w]
+      set ofh [open $nfn w]
 
       puts $ofh "# BDJ4 [file join $path $nnm]"
       puts $ofh "# [clock format [clock seconds] -gmt 1]"
@@ -136,6 +138,10 @@ foreach path [list {} profiles $hostname [file join $hostname profiles]] {
         if { $key eq "MAXPLAYTIME" } {
           if { $value ne {} } {
             regexp {(\d+):(\d+)} $value all min sec
+            regsub {^0*} $min {} min
+            if { $min eq {} } { set min 0 }
+            regsub {^0*} $sec {} sec
+            if { $sec eq {} } { set sec 0 }
             set value [expr {($min * 60 + $sec) * 1000}]
           }
           if { $value eq {} } {

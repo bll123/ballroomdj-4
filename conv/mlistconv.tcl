@@ -13,10 +13,11 @@ if { ! [file exists $dir] || ! [file isdirectory $dir] } {
 
 set flist [glob -directory $dir *.mlist]
 
+puts "Converting song lists"
 foreach {fn} $flist {
-  puts "## Converting: [file tail $fn]"
-  source $fn
   set nfn [file join data [file rootname [file tail $fn]].songlist]
+  puts "    - [file tail $fn] : $nfn"
+  source $fn
   set fh [open $nfn w]
   puts $fh "# BDJ4 songlist"
   puts $fh "# Converted from $fn"

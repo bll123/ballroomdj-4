@@ -13,10 +13,11 @@ if { ! [file exists $dir] || ! [file isdirectory $dir] } {
 
 set flist [glob -directory $dir *.playlist]
 
+puts "Converting playlists"
 foreach {fn} $flist {
-  puts "## Converting: [file tail $fn]"
-  set ifh [open $fn r]
   set nfn [file join data [file rootname [file tail $fn]].pl]
+  puts "    - [file tail $fn] : $nfn"
+  set ifh [open $fn r]
   set dfn [file join data [file rootname [file tail $fn]].pldances]
   set ofh [open $nfn w]
   set dfh [open $dfn w]
@@ -91,12 +92,20 @@ foreach {fn} $flist {
         if { $value ne {} && $value ne "-1" } {
           # this will be relative to midnight
           regexp {(\d+):(\d+)} $value all hr min
+          regsub {^0*} $hr {} hr
+          if { $hr eq {} } { set hr 0 }
+          regsub {^0*} $min {} min
+          if { $min eq {} } { set min 0 }
           set value [expr {($hr * 3600 + $min * 60)*1000}]
         }
       }
       if { $tkey eq "MAXPLAYTIME" } {
         if { $value ne {} && $value ne "-1" } {
           regexp {(\d+):(\d+)} $value all min sec
+          regsub {^0*} $min {} min
+          if { $min eq {} } { set min 0 }
+          regsub {^0*} $sec {} sec
+          if { $sec eq {} } { set sec 0 }
           set value [expr {($min * 60 + $sec)*1000}]
         }
       }

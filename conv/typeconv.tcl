@@ -12,14 +12,11 @@ if { ! [file exists $dir] || ! [file isdirectory $dir] } {
 }
 
 set fn dancetypes.tcl
-puts "## Converting: $fn"
+set nfn [file join data dancetypes.txt]
 set infn [file join $dir $fn]
-if { ! [file exists $infn] } {
-  # this is not locale-aware...
-  file copy -force templates/dancetypes.txt.dist data/dancetypes.txt
-} else {
+puts "Converting: $fn : $nfn"
+if { [file exists $infn] } {
   source $infn
-  set nfn [file join data dancetypes.txt]
   set fh [open $nfn w]
   puts $fh "# BDJ4 dance types"
   puts $fh "# [clock format [clock seconds] -gmt 1]"

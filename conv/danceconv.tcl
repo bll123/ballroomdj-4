@@ -11,9 +11,9 @@ if { ! [file exists $dir] || ! [file isdirectory $dir] } {
   exit 1
 }
 
-puts "## Converting: dancedefaults.tcl"
-source [file join $dir dancedefaults.tcl]
 set nfn [file join data dances.txt]
+puts "Converting: dancedefaults.tcl : $nfn"
+source [file join $dir dancedefaults.tcl]
 set fh [open $nfn w]
 puts $fh "# BDJ4 dances"
 puts $fh "# [clock format [clock seconds] -gmt 1]"

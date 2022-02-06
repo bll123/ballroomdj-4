@@ -195,7 +195,9 @@ rlogStart (const char *processnm, const char *processtag,
         PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
     syslogs [idx] = rlogOpen (tnm, processtag, truncflag);
     syslogs [idx]->level = level;
-    rlogVarMsg (idx, LOG_IMPORTANT, NULL, 0, "=== %s started %s", processnm, tdt);
+    if (idx != LOG_INSTALL) {
+      rlogVarMsg (idx, LOG_IMPORTANT, NULL, 0, "=== %s started %s", processnm, tdt);
+    }
   }
   logDumpLevel (level);
 }

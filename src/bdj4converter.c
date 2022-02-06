@@ -14,7 +14,9 @@
 #include <gtk/gtk.h>
 
 #include "bdjstring.h"
+#include "filedata.h"
 #include "log.h"
+#include "pathutil.h"
 #include "portability.h"
 #include "sysvars.h"
 #include "tmutil.h"
@@ -26,9 +28,11 @@ typedef struct {
   GtkWidget       *window;
   GtkWidget       *locEntry;
   GtkEntryBuffer  *locBuffer;
-  GtkEntryBuffer  *dispBuffer;
+  GtkTextBuffer   *dispBuffer;
   mstime_t        validateTimer;
 } converter_t;
+
+#define CONV_TEMP_FILE "tmp/bdj4convout.txt"
 
 static int  converterCreateGui (converter_t *converter, int argc, char *argv []);
 static void converterActivate (GApplication *app, gpointer udata);
@@ -39,8 +43,8 @@ static void converterValidateDir (converter_t *converter, bool okonly);
 static void converterValidateStart (GtkEditable *e, gpointer udata);
 static void converterConvert (GtkButton *b, gpointer udata);
 static char * locatebdj3 (void);
-static bool locationcheck (char *dir);
-static bool locatedb (char *dir);
+static bool locationcheck (const char *dir);
+static bool locatedb (const char *dir);
 
 int
 main (int argc, char *argv[])
@@ -69,7 +73,7 @@ main (int argc, char *argv[])
 
   /* initial location */
   converter.loc = locatebdj3 ();
-  logMsg (LOG_INSTALL, LOG_IMPORTANT, "initial loc: %s\n", converter.loc);
+  logMsg (LOG_INSTALL, LOG_IMPORTANT, "initial loc: %s", converter.loc);
 
   g_timeout_add (UI_MAIN_LOOP_TIMER, converterMainLoop, &converter);
   status = converterCreateGui (&converter, 0, NULL);
@@ -109,6 +113,7 @@ converterActivate (GApplication *app, gpointer udata)
   GtkWidget             *vbox;
   GtkWidget             *hbox;
   GtkWidget             *widget;
+  GtkWidget             *scwidget;
   GtkWidget             *image;
   GError                *gerr;
 
@@ -194,20 +199,32 @@ converterActivate (GApplication *app, gpointer udata)
       FALSE, FALSE, 0);
   g_signal_connect (widget, "clicked", G_CALLBACK (converterConvert), converter);
 
-  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
-  gtk_widget_set_hexpand (GTK_WIDGET (hbox), TRUE);
-  gtk_widget_set_vexpand (GTK_WIDGET (hbox), TRUE);
-  gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (hbox), TRUE, TRUE, 0);
+  scwidget = gtk_scrolled_window_new (NULL, NULL);
+  gtk_scrolled_window_set_overlay_scrolling (GTK_SCROLLED_WINDOW (scwidget), FALSE);
+  gtk_scrolled_window_set_propagate_natural_width (GTK_SCROLLED_WINDOW (scwidget), TRUE);
+  gtk_scrolled_window_set_propagate_natural_height (GTK_SCROLLED_WINDOW (scwidget), TRUE);
+  gtk_scrolled_window_set_min_content_height (GTK_SCROLLED_WINDOW (scwidget), 500);
+  gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scwidget), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+  gtk_widget_set_hexpand (GTK_WIDGET (scwidget), TRUE);
+  gtk_widget_set_vexpand (GTK_WIDGET (scwidget), FALSE);
+  gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (scwidget),
+      FALSE, FALSE, 0);
 
-  converter->dispBuffer = gtk_entry_buffer_new (NULL, 0);
-  widget = gtk_entry_new_with_buffer (converter->dispBuffer);
-  gtk_entry_set_input_purpose (GTK_ENTRY (converter->locEntry), GTK_INPUT_PURPOSE_TERMINAL);
-  gtk_editable_set_editable (GTK_EDITABLE (widget), FALSE);
+  converter->dispBuffer = gtk_text_buffer_new (NULL);
+  widget = gtk_text_view_new_with_buffer (converter->dispBuffer);
+  gtk_widget_set_size_request (GTK_WIDGET (widget), -1, 400);
   gtk_widget_set_can_focus (widget, FALSE);
   gtk_widget_set_halign (widget, GTK_ALIGN_FILL);
+  gtk_widget_set_valign (widget, GTK_ALIGN_START);
   gtk_widget_set_hexpand (GTK_WIDGET (widget), TRUE);
   gtk_widget_set_vexpand (GTK_WIDGET (widget), TRUE);
-  gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (widget), TRUE, TRUE, 0);
+  gtk_container_add (GTK_CONTAINER (scwidget), GTK_WIDGET (widget));
+
+  /* push the text view to the top */
+  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+  assert (hbox != NULL);
+  gtk_widget_set_vexpand (GTK_WIDGET (hbox), TRUE);
+  gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (hbox), TRUE, TRUE, 0);
 
   gtk_widget_show_all (GTK_WIDGET (window));
 }
@@ -247,7 +264,7 @@ converterSelectDirDialog (GtkButton *b, gpointer udata)
     }
     converter->loc = fn;
     gtk_entry_buffer_set_text (converter->locBuffer, fn, -1);
-    logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected loc: %s\n", converter->loc);
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected loc: %s", converter->loc);
   }
 
   g_object_unref (widget);
@@ -300,6 +317,46 @@ converterExit (GtkButton *b, gpointer udata)
 static void
 converterConvert (GtkButton *b, gpointer udata)
 {
+  converter_t *converter = udata;
+  char        bdjpath [MAXPATHLEN];
+  char        tbuff [MAXPATHLEN];
+  char        *cvtscript = "cvtall.sh";
+  int         rc;
+  FILE        *fh;
+
+
+  strlcpy (bdjpath, converter->loc, MAXPATHLEN);
+  pathNormPath (bdjpath, MAXPATHLEN);
+
+  if (isWindows ()) {
+    cvtscript = "cvtall.bat";
+  }
+
+  snprintf (tbuff, sizeof (tbuff), "conv/%s \"%s\" > %s",
+    cvtscript, bdjpath, CONV_TEMP_FILE);
+
+  logMsg (LOG_INSTALL, LOG_IMPORTANT, "cmd: %s", tbuff);
+  rc = system (tbuff);
+
+  if (rc == 0) {
+    char    *txt;
+    char    *p;
+    char    *tokstr = NULL;
+
+    txt = filedataReadAll (CONV_TEMP_FILE);
+    if (txt != NULL) {
+      gtk_text_buffer_set_text (converter->dispBuffer, txt, -1);
+      p = strtok_r (txt, "\r\n", &tokstr);
+      while (p != NULL) {
+        logMsg (LOG_INSTALL, LOG_IMPORTANT, "%s", p);
+        p = strtok_r (NULL, "\r\n", &tokstr);
+      }
+      free (txt);
+    }
+  } else {
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "fail: %d %s", errno, strerror (errno));
+  }
+
   return;
 }
 
@@ -317,7 +374,7 @@ locatebdj3 (void)
   /* make it possible to specify a location via the environment */
   loc = getenv ("BDJ3_LOCATION");
   if (loc != NULL) {
-    logMsg (LOG_INSTALL, LOG_IMPORTANT, "from-env: %s\n", loc);
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "from-env: %s", loc);
     if (locationcheck (loc)) {
       return strdup (loc);
     }
@@ -328,10 +385,10 @@ locatebdj3 (void)
     /* probably a windows machine */
     home = getenv ("USERPROFILE");
   }
-  logMsg (LOG_INSTALL, LOG_IMPORTANT, "home: %s\n", loc);
+  logMsg (LOG_INSTALL, LOG_IMPORTANT, "home: %s", loc);
 
   if (home == NULL) {
-    logMsg (LOG_INSTALL, LOG_IMPORTANT, "err: no home env\n", loc);
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "err: no home env", loc);
     return "";
   }
 
@@ -382,7 +439,7 @@ locatebdj3 (void)
 }
 
 static bool
-locationcheck (char *dir)
+locationcheck (const char *dir)
 {
   char          tbuff [MAXPATHLEN];
   struct stat   statbuf;
@@ -395,7 +452,7 @@ locationcheck (char *dir)
   strlcpy (tbuff, dir, MAXPATHLEN);
 
   rc = stat (tbuff, &statbuf);
-  logMsg (LOG_INSTALL, LOG_IMPORTANT, "try: %d %s\n", rc, tbuff);
+  logMsg (LOG_INSTALL, LOG_IMPORTANT, "try: %d %s", rc, tbuff);
   if (rc == 0) {
     if ((statbuf.st_mode & S_IFDIR) == S_IFDIR) {
       if (locatedb (tbuff)) {
@@ -409,7 +466,7 @@ locationcheck (char *dir)
 
 
 static bool
-locatedb (char *dir)
+locatedb (const char *dir)
 {
   char          tbuff [MAXPATHLEN];
   struct stat   statbuf;
@@ -420,7 +477,7 @@ locatedb (char *dir)
   strlcat (tbuff, "data", MAXPATHLEN);
 
   rc = stat (tbuff, &statbuf);
-  logMsg (LOG_INSTALL, LOG_IMPORTANT, "try: %d %s\n", rc, tbuff);
+  logMsg (LOG_INSTALL, LOG_IMPORTANT, "try: %d %s", rc, tbuff);
   if (rc != 0) {
     return false;
   }
@@ -432,7 +489,7 @@ locatedb (char *dir)
   strlcat (tbuff, "musicdb.txt", MAXPATHLEN);
 
   rc = stat (tbuff, &statbuf);
-  logMsg (LOG_INSTALL, LOG_IMPORTANT, "try: %d %s\n", rc, tbuff);
+  logMsg (LOG_INSTALL, LOG_IMPORTANT, "try: %d %s", rc, tbuff);
   if (rc != 0) {
     return false;
   }

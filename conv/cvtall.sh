@@ -1,10 +1,12 @@
 #!/bin/bash
 
-if [[ $# != 1 || ! -d $1 || ! -d $1/../data ]]; then
-  echo "No ballroomdj directory"
+# the "ERROR:" output prefixes must exist.
+
+if [[ $# != 1 || ! -d $1 || ! -d $1/data ]]; then
+  echo "ERROR: No ballroomdj directory"
   exit 1
 fi
-dir=$1
+dir="$1/data"
 
 systype=$(uname -s | tr '[A-Z]' '[a-z]')
 case $systype in
@@ -24,10 +26,10 @@ esac
 # a) the usual location
 # b) for testing: to handle test.dir/data
 # c) mac os bdj3
-# d) personal install
-# e) personal install
+# d) personal install of tcl
+# e) personal install of tcl
 # f) macports install
-# g) brew install (?)
+# g) brew install (? need to check)
 # h) system install   older mac os system install is too old
 
 tclsh=""
@@ -46,22 +48,23 @@ else
       ; do
     if [[ -f $f ]]; then
       tclsh=$f
+      echo "Located tclsh: $tclsh"
       break
     fi
   done
 fi
 if [[ $tclsh == "" ]]; then
-  echo "ERR: Unable to locate tclsh"
+  echo "ERROR: Unable to locate tclsh"
   exit 1
 fi
 
 if [[ ! -d data ]]; then
-  echo "No bdj4 data directory"
+  echo "ERROR: No bdj4 data directory"
   exit 1
 fi
 
 if [[ ! -d conv ]]; then
-  echo "No bdj4 conv directory"
+  echo "ERROR: No bdj4 conv directory"
   exit 1
 fi
 
@@ -78,3 +81,7 @@ fi
 "$tclsh" ./conv/autoselconv.tcl $dir
 "$tclsh" ./conv/typeconv.tcl $dir
 "$tclsh" ./conv/statusconv.tcl $dir
+echo "Conversion Complete"
+echo "OK"
+
+exit 0

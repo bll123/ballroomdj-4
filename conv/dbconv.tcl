@@ -14,7 +14,7 @@ if { ! [file exists $dir] || ! [file isdirectory $dir] } {
 set hsize 128
 set rsize 2048
 
-puts "## Converting: musicdb.txt"
+puts "Converting: musicdb.txt : musicdb.dat"
 set fh [open [file join $dir musicdb.txt] r]
 gets $fh line
 gets $fh line
@@ -72,6 +72,10 @@ dict for {fn data} $musicdbList {
     if { $tag eq "SONGSTART" || $tag eq "SONGEND" } {
       if { $value ne {} && $value ne "-1" } {
         regexp {(\d+):(\d+)} $value all min sec
+        regsub {^0*} $min {} min
+        if { $min eq {} } { set min 0 }
+        regsub {^0*} $sec {} sec
+        if { $sec eq {} } { set sec 0 }
         set value [expr {($min * 60 + $sec)*1000}]
       }
     }

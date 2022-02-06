@@ -1,6 +1,7 @@
 syntax: regexp
 ~$
 ^data/
+^data\.k/
 ^bin/
 ^dev/
 ^http/
