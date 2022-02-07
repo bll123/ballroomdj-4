@@ -15,4 +15,5 @@ LICENSES
       c-ares     : MIT License
       nghttp2    : MIT License
       zlib       : zlib/libpng License
+                   contrib/minizip has been modified to compile with msys2/gcc.
       zstd       : BSD License

@@ -32,7 +32,7 @@
 #include "lock.h"
 #include "log.h"
 #include "pathbld.h"
-#include "process.h"
+#include "procutil.h"
 #include "progstate.h"
 #include "sock.h"
 #include "sockh.h"
@@ -88,10 +88,10 @@ main (int argc, char *argv[])
   };
 
 #if _define_SIGHUP
-  processCatchSignal (remctrlSigHandler, SIGHUP);
+  procutilCatchSignal (remctrlSigHandler, SIGHUP);
 #endif
-  processCatchSignal (remctrlSigHandler, SIGINT);
-  processDefaultSignal (SIGTERM);
+  procutilCatchSignal (remctrlSigHandler, SIGINT);
+  procutilDefaultSignal (SIGTERM);
 
   sysvarsInit (argv[0]);
 

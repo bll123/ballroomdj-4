@@ -24,17 +24,17 @@
 #include "log.h"
 #include "pathbld.h"
 #include "portability.h"
-#include "process.h"
+#include "procutil.h"
 #include "sysvars.h"
 #include "tmutil.h"
 
 #if _typ_HANDLE
-static HANDLE processGetProcessHandle (pid_t pid, DWORD procaccess);
+static HANDLE procutilGetProcessHandle (pid_t pid, DWORD procaccess);
 #endif
 
 /* returns 0 if process exists */
 int
-processExists (process_t *process)
+procutilExists (procutil_t *process)
 {
 #if _lib_kill
   return (kill (process->pid, 0));
@@ -47,13 +47,13 @@ processExists (process_t *process)
   DWORD exitCode;
 
   if (! process->hasHandle) {
-    hProcess = processGetProcessHandle (process->pid, PROCESS_QUERY_LIMITED_INFORMATION);
+    hProcess = procutilGetProcessHandle (process->pid, PROCESS_QUERY_LIMITED_INFORMATION);
   }
 
   if (GetExitCodeProcess (hProcess, &exitCode)) {
     logMsg (LOG_DBG, LOG_PROCESS, "found: %lld", exitCode);
     /* return 0 if the process is still active */
-    logProcEnd (LOG_PROC, "processExists", "ok");
+    logProcEnd (LOG_PROC, "procutilExists", "ok");
     if (! process->hasHandle) {
       CloseHandle (hProcess);
     }
@@ -64,7 +64,7 @@ processExists (process_t *process)
   if (! process->hasHandle) {
     CloseHandle (hProcess);
   }
-  logProcEnd (LOG_PROC, "processExists", "");
+  logProcEnd (LOG_PROC, "procutilExists", "");
   return -1;
 #endif
 }
@@ -74,21 +74,21 @@ processExists (process_t *process)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeclaration-after-statement"
 
-process_t *
-processStart (const char *fn, ssize_t profile, ssize_t loglvl)
+procutil_t *
+procutilStart (const char *fn, ssize_t profile, ssize_t loglvl)
 {
-  process_t   *process;
+  procutil_t   *process;
   char        tmp [100];
   char        tmp2 [40];
 
 
-  process = malloc (sizeof (process_t));
+  process = malloc (sizeof (procutil_t));
   assert (process != NULL);
   process->pid = 0;
   process->hasHandle = false;
   process->started = false;
 
-  logProcBegin (LOG_PROC, "processStart");
+  logProcBegin (LOG_PROC, "procutilStart");
   snprintf (tmp, sizeof (tmp), "%zd", profile);
   snprintf (tmp2, sizeof (tmp2), "%zd", loglvl);
 
@@ -99,7 +99,7 @@ processStart (const char *fn, ssize_t profile, ssize_t loglvl)
   tpid = fork ();
   if (tpid < 0) {
     logError ("fork");
-    logProcEnd (LOG_PROC, "processStart", "fork-fail");
+    logProcEnd (LOG_PROC, "procutilStart", "fork-fail");
     return NULL;
   }
   if (tpid == 0) {
@@ -159,13 +159,13 @@ processStart (const char *fn, ssize_t profile, ssize_t loglvl)
   CloseHandle (pi.hThread);
 
 #endif
-  logProcEnd (LOG_PROC, "processStart", "");
+  logProcEnd (LOG_PROC, "procutilStart", "");
   process->started = true;
   return process;
 }
 
 void
-processFree (process_t *process)
+procutilFree (procutil_t *process)
 {
   if (process != NULL) {
     if (process->hasHandle) {
@@ -181,7 +181,7 @@ processFree (process_t *process)
 #pragma clang diagnostic pop
 
 int
-processKill (process_t *process, bool force)
+procutilKill (procutil_t *process, bool force)
 {
 #if _lib_kill
   int         sig = SIGTERM;
@@ -198,7 +198,7 @@ processKill (process_t *process, bool force)
   logProcBegin (LOG_PROC, "processKill");
   if (! process->hasHandle) {
     /* need PROCESS_TERMINATE */
-    hProcess = processGetProcessHandle (process->pid, PROCESS_TERMINATE);
+    hProcess = procutilGetProcessHandle (process->pid, PROCESS_TERMINATE);
   }
 
   if (hProcess != NULL) {
@@ -209,23 +209,23 @@ processKill (process_t *process, bool force)
     }
   }
 
-  logProcEnd (LOG_PROC, "processKill", "fail");
+  logProcEnd (LOG_PROC, "procutilKill", "fail");
   return -1;
 #endif
 }
 
 void
-processTerminate (pid_t pid, bool force)
+procutilTerminate (pid_t pid, bool force)
 {
-  process_t     process;
+  procutil_t     process;
 
   process.hasHandle = false;
   process.pid = pid;
-  processKill (&process, force);
+  procutilKill (&process, force);
 }
 
 void
-processCatchSignal (void (*sigHandler)(int), int sig)
+procutilCatchSignal (void (*sigHandler)(int), int sig)
 {
 #if _lib_sigaction
   struct sigaction    sigact;
@@ -241,7 +241,7 @@ processCatchSignal (void (*sigHandler)(int), int sig)
 }
 
 void
-processIgnoreSignal (int sig)
+procutilIgnoreSignal (int sig)
 {
 #if _lib_sigaction
   struct sigaction    sigact;
@@ -257,7 +257,7 @@ processIgnoreSignal (int sig)
 }
 
 void
-processDefaultSignal (int sig)
+procutilDefaultSignal (int sig)
 {
 #if _lib_sigaction
   struct sigaction    sigact;
@@ -274,15 +274,15 @@ processDefaultSignal (int sig)
 
 /* these next three routines are for management of processes */
 
-process_t *
-processStartProcess (bdjmsgroute_t route, char *fname)
+procutil_t *
+procutilStartProcess (bdjmsgroute_t route, char *fname)
 {
   char      tbuff [MAXPATHLEN];
   char      *extension = NULL;
-  process_t *process = NULL;
+  procutil_t *process = NULL;
 
 
-  logProcBegin (LOG_PROC, "processStartProcess");
+  logProcBegin (LOG_PROC, "procutilStartProcess");
 
   extension = "";
   if (isWindows ()) {
@@ -290,7 +290,7 @@ processStartProcess (bdjmsgroute_t route, char *fname)
   }
   pathbldMakePath (tbuff, sizeof (tbuff), "",
       fname, extension, PATHBLD_MP_EXECDIR);
-  process = processStart (tbuff, sysvarsGetNum (SVL_BDJIDX),
+  process = procutilStart (tbuff, sysvarsGetNum (SVL_BDJIDX),
       bdjoptGetNum (OPT_G_DEBUGLVL));
   if (process == NULL) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "%s %s failed to start", fname, tbuff);
@@ -299,19 +299,19 @@ processStartProcess (bdjmsgroute_t route, char *fname)
         (ssize_t) process->pid);
     process->started = true;
   }
-  logProcEnd (LOG_PROC, "processStartProcess", "");
+  logProcEnd (LOG_PROC, "procutilStartProcess", "");
 
   return process;
 }
 
 void
-processStopProcess (process_t *process, conn_t *conn,
+procutilStopProcess (procutil_t *process, conn_t *conn,
     bdjmsgroute_t route, bool force)
 {
-  logProcBegin (LOG_PROC, "processStopProcess");
+  logProcBegin (LOG_PROC, "procutilStopProcess");
   if (! force) {
     if (! process->started) {
-      logProcEnd (LOG_PROC, "processStopProcess", "not-started");
+      logProcEnd (LOG_PROC, "procutilStopProcess", "not-started");
       return;
     }
     connSendMessage (conn, route, MSG_EXIT_REQUEST, NULL);
@@ -319,19 +319,19 @@ processStopProcess (process_t *process, conn_t *conn,
     process->started = false;
   }
   if (force) {
-    processForceStop (process, PATHBLD_MP_USEIDX, route);
+    procutilForceStop (process, PATHBLD_MP_USEIDX, route);
   }
-  logProcEnd (LOG_PROC, "processStopProcess", "");
+  logProcEnd (LOG_PROC, "procutilStopProcess", "");
 }
 
 void
-processForceStop (process_t *process, int flags, bdjmsgroute_t route)
+procutilForceStop (procutil_t *process, int flags, bdjmsgroute_t route)
 {
   int   count = 0;
   int   exists = 1;
 
   while (count < 10) {
-    if (processExists (process) != 0) {
+    if (procutilExists (process) != 0) {
       logMsg (LOG_DBG, LOG_MAIN, "%d exited", route);
       exists = 0;
       break;
@@ -342,7 +342,7 @@ processForceStop (process_t *process, int flags, bdjmsgroute_t route)
 
   if (exists) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "force-terminating %d", route);
-    processKill (process, false);
+    procutilKill (process, false);
   }
 }
 
@@ -351,7 +351,7 @@ processForceStop (process_t *process, int flags, bdjmsgroute_t route)
 #if _typ_HANDLE
 
 static HANDLE
-processGetProcessHandle (pid_t pid, DWORD procaccess)
+procutilGetProcessHandle (pid_t pid, DWORD procaccess)
 {
   HANDLE  hProcess = NULL;
 

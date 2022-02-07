@@ -1,6 +1,8 @@
 #ifndef INC_FILEUTIL_H
 #define INC_FILEUTIL_H
 
+#include "config.h"
+
 #if _hdr_winsock2
 # include <winsock2.h>
 #endif

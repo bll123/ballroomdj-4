@@ -300,7 +300,7 @@ add_library (libbdj4common SHARED
   nlist.c
   pathbld.c
   pathutil.c
-  process.c
+  procutil.c
   progstate.c
   queue.c
   slist.c
@@ -428,6 +428,14 @@ endif()
 add_library (libvolwin SHARED volwin.cpp)
 target_compile_options (libvolwin PRIVATE -static-libstdc++)
 
+# reusable objects; there's no need to compile these twice
+add_library (libmongoose STATIC ${MONGOOSE_SRC})
+add_library (libwebsrv STATIC websrv.c)
+target_include_directories (libwebsrv
+  PRIVATE "${MONGOOSE_INC_DIR}"
+)
+add_library (liblocatebdj3 STATIC locatebdj3.c strlcpy.c strlcat.c)
+
 if (WIN32)
   # the the bdj4 executable
   # for cmake, must use the .o file extension, not .res
@@ -480,11 +488,12 @@ target_link_libraries (bdj4player
 addIntlLibrary (bdj4player)
 addWinSockLibrary (bdj4player)
 
-add_executable(bdj4mobmq bdj4mobmq.c websrv.c ${MONGOOSE_SRC})
+add_executable(bdj4mobmq bdj4mobmq.c)
 target_include_directories (bdj4mobmq
   PRIVATE "${MONGOOSE_INC_DIR}"
 )
 target_link_libraries (bdj4mobmq
+  libwebsrv libmongoose
   libbdj4 libbdj4common
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   m
@@ -492,11 +501,12 @@ target_link_libraries (bdj4mobmq
 addIntlLibrary (bdj4mobmq)
 addWinSockLibrary (bdj4mobmq)
 
-add_executable(bdj4rc bdj4rc.c websrv.c ${MONGOOSE_SRC})
+add_executable(bdj4rc bdj4rc.c)
 target_include_directories (bdj4rc
   PRIVATE "${MONGOOSE_INC_DIR}"
 )
 target_link_libraries (bdj4rc
+  libwebsrv libmongoose
   libbdj4 libbdj4common
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   m
@@ -516,12 +526,33 @@ addWinSockLibrary (bdj4marquee)
 
 add_executable (bdj4converter bdj4converter.c)
 target_link_libraries (bdj4converter
+  liblocatebdj3
   libbdj4 libbdj4common libbdj4ui
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}
   m
 )
 addIntlLibrary (bdj4converter)
+
+add_executable (bdj4installer bdj4installer.c)
+target_link_libraries (bdj4installer
+  liblocatebdj3
+  libbdj4 libbdj4common libbdj4ui
+  ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
+  ${GTK_LDFLAGS}
+  m
+)
+addIntlLibrary (bdj4installer)
+
+add_executable (bdj4locatebdj3 bdj4locatebdj3.c)
+target_link_libraries (bdj4locatebdj3
+  liblocatebdj3
+)
+
+add_executable (bdj4locale bdj4locale.c)
+addIntlLibrary (bdj4locale)
+
+add_executable (bdj4se bdj4se.c)
 
 add_executable (bdj4playerui bdj4playerui.c)
 target_link_libraries (bdj4playerui
@@ -544,7 +575,7 @@ add_executable (check_all
   check_musicq.c
   check_nlist.c
   check_pathutil.c
-  check_process.c
+  check_procutil.c
   check_queue.c
   check_rafile.c
   check_slist.c
@@ -568,8 +599,10 @@ install (TARGETS
   libbdj4common libbdj4 libbdj4player libbdj4ui
   libplinull libplivlc
   libvolalsa libvolmac libvolnull libvolpa libvolwin
-  bdj4 bdj4cli bdj4converter bdj4main bdj4player bdj4mobmq bdj4rc
-  bdj4marquee bdj4playerui
+  bdj4 bdj4cli
+  bdj4installer bdj4converter bdj4locale bdj4locatebdj3 bdj4se
+  bdj4main bdj4player bdj4mobmq bdj4rc bdj4marquee
+  bdj4playerui
   check_all chkprocess
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )

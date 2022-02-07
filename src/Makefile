@@ -107,7 +107,7 @@ dataclean:
 distclean:
 	@-$(MAKE) clean
 	@-$(RM) -rf build/*
-	@-$(RM) -f ../install/manifest.txt ../install/src-manifest.txt
+	@-$(RM) -f ../install/manifest.txt ../install/manifest-src.txt
 
 .PHONY: clean
 clean:
@@ -121,7 +121,7 @@ eclean:
 .PHONY: tclean
 tclean:
 	@-$(RM) -f *~ w ww *.orig
-	@-$(RM) -f ../conv/*~ ./locale/*~ ../locale/*~ ../*~
+	@-$(RM) -f ../conv/*~ ./locale/*~ ../locale/*~ ../*~ ../img/*~
 	@-$(RM) -f ../install/*~ ../pkg/*~ utils/*~ ../data/*~
 	@-$(RM) -f ../templates/*~ ../vlc-log.txt vlc-log.txt
 	@-$(RM) -f si-in.txt si-sort.txt

@@ -18,7 +18,7 @@
 #include "lock.h"
 #include "log.h"
 #include "pathbld.h"
-#include "process.h"
+#include "procutil.h"
 #include "sockh.h"
 #include "sysvars.h"
 #include "tmutil.h"
@@ -307,7 +307,7 @@ exitAll (conn_t *conn)
     pid = lockExists (locknm, PATHBLD_MP_USEIDX);
     if (pid > 0) {
       fprintf (stderr, "terminate %d\n", route);
-      processTerminate (pid, false);
+      procutilTerminate (pid, false);
     }
   }
 
@@ -318,7 +318,7 @@ exitAll (conn_t *conn)
     pid = lockExists (locknm, PATHBLD_MP_USEIDX);
     if (pid > 0) {
       fprintf (stderr, "terminate-force %d\n", route);
-      processTerminate (pid, true);
+      procutilTerminate (pid, true);
     }
     mssleep (100);
     pid = lockExists (locknm, PATHBLD_MP_USEIDX);

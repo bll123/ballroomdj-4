@@ -36,15 +36,17 @@ main (int argc, char *argv[])
 
   static struct option bdj_options [] = {
     { "check_all",  no_argument,        NULL,   1 },
-    { "main",       no_argument,        NULL,   2 },
-    { "playerui",   no_argument,        NULL,   3 },
-    { "configui",   no_argument,        NULL,   4 },
-    { "manageui",   no_argument,        NULL,   5 },
-    { "player",     no_argument,        NULL,   6 },
-    { "cli",        no_argument,        NULL,   7 },
+    { "cli",        no_argument,        NULL,   2 },
+    { "configui",   no_argument,        NULL,   3 },
+    { "converter",  no_argument,        NULL,   4 },
+    { "main",       no_argument,        NULL,   5 },
+    { "manageui",   no_argument,        NULL,   6 },
+    { "marquee",    no_argument,        NULL,   7 },
     { "mobilemq",   no_argument,        NULL,   8 },
-    { "remctrl",    no_argument,        NULL,   9 },
-    { "marquee",    no_argument,        NULL,   10 },
+    { "player",     no_argument,        NULL,   9 },
+    { "playerui",   no_argument,        NULL,   10 },
+    { "remctrl",    no_argument,        NULL,   11 },
+    { "installer",  no_argument,        NULL,   12 },
     { "profile",    required_argument,  NULL,   'p' },
     { "debug",      required_argument,  NULL,   'd' },
     { "theme",      required_argument,  NULL,   't' },
@@ -63,32 +65,32 @@ main (int argc, char *argv[])
         break;
       }
       case 2: {
-        prog = "bdj4main";
+        prog = "bdj4cli";
         ++validargs;
         break;
       }
       case 3: {
-        prog = "bdj4playerui";
-        ++validargs;
-        break;
-      }
-      case 4: {
         prog = "bdj4configui";
         ++validargs;
         break;
       }
+      case 4: {
+        prog = "bdj4converter";
+        ++validargs;
+        break;
+      }
       case 5: {
-        prog = "bdj4manageui";
+        prog = "bdj4main";
         ++validargs;
         break;
       }
       case 6: {
-        prog = "player";
+        prog = "bdj4manageui";
         ++validargs;
         break;
       }
       case 7: {
-        prog = "bdj4cli";
+        prog = "bdj4marquee";
         ++validargs;
         break;
       }
@@ -98,12 +100,22 @@ main (int argc, char *argv[])
         break;
       }
       case 9: {
-        prog = "bdj4remctrl";
+        prog = "player";
         ++validargs;
         break;
       }
       case 10: {
-        prog = "marquee";
+        prog = "bdj4playerui";
+        ++validargs;
+        break;
+      }
+      case 11: {
+        prog = "bdj4remctrl";
+        ++validargs;
+        break;
+      }
+      case 12: {
+        prog = "bdj4installer";
         ++validargs;
         break;
       }

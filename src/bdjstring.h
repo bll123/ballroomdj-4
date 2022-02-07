@@ -1,6 +1,8 @@
 #ifndef INC_BDJSTRING
 #define INC_BDJSTRING
 
+#include "config.h"
+
 #if _hdr_libintl
 # include <libintl.h>
 #endif

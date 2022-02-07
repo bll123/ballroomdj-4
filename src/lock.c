@@ -13,7 +13,7 @@
 #include <assert.h>
 
 #include "sysvars.h"
-#include "process.h"
+#include "procutil.h"
 #include "tmutil.h"
 #include "lock.h"
 #include "fileop.h"
@@ -46,7 +46,7 @@ lockName (bdjmsgroute_t route)
 pid_t
 lockExists (char *fn, int flags)
 {
-  process_t process;
+  procutil_t process;
   char      tfn [MAXPATHLEN];
   pid_t     fpid = 0;
 
@@ -55,7 +55,7 @@ lockExists (char *fn, int flags)
   fpid = getPidFromFile (tfn);
   process.pid = fpid;
   process.hasHandle = false;
-  if (fpid == -1 || processExists (&process) != 0) {
+  if (fpid == -1 || procutilExists (&process) != 0) {
     fileopDelete (tfn);
     fpid = 0;
   }
@@ -79,7 +79,7 @@ lockAcquirePid (char *fn, pid_t pid, int flags)
   int       count;
   char      pidstr [16];
   char      tfn [MAXPATHLEN];
-  process_t process;
+  procutil_t process;
 
 
   pathbldMakePath (tfn, sizeof (tfn), "", fn, ".lck",
@@ -93,7 +93,7 @@ lockAcquirePid (char *fn, pid_t pid, int flags)
     if (fpid > 0) {
       process.pid = fpid;
       process.hasHandle = false;
-      rc = processExists (&process);
+      rc = procutilExists (&process);
       if (rc < 0) {
         /* process does not exist */
         fileopDelete (tfn);

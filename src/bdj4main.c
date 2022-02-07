@@ -33,7 +33,7 @@
 #include "pathbld.h"
 #include "playlist.h"
 #include "portability.h"
-#include "process.h"
+#include "procutil.h"
 #include "progstate.h"
 #include "queue.h"
 #include "slist.h"
@@ -56,7 +56,7 @@ typedef enum {
 /* so that playlist lookups can be processed */
 typedef struct {
   progstate_t       *progstate;
-  process_t         *processes [ROUTE_MAX];
+  procutil_t         *processes [ROUTE_MAX];
   conn_t            *conn;
   slist_t           *playlistCache;
   queue_t           *playlistQueue [MUSICQ_MAX];
@@ -156,12 +156,12 @@ main (int argc, char *argv[])
   }
 
 #if _define_SIGHUP
-  processCatchSignal (mainSigHandler, SIGHUP);
+  procutilCatchSignal (mainSigHandler, SIGHUP);
 #endif
-  processCatchSignal (mainSigHandler, SIGINT);
-  processCatchSignal (mainSigHandler, SIGTERM);
+  procutilCatchSignal (mainSigHandler, SIGINT);
+  procutilCatchSignal (mainSigHandler, SIGTERM);
 #if _define_SIGCHLD
-  processIgnoreSignal (SIGCHLD);
+  procutilIgnoreSignal (SIGCHLD);
 #endif
 
   bdj4startup (argc, argv, "m", ROUTE_MAIN);
@@ -199,7 +199,7 @@ mainStoppingCallback (void *tmaindata, programstate_t programState)
 
   for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
     if (mainData->processes [i] != NULL) {
-      processStopProcess (mainData->processes [i], mainData->conn, i, false);
+      procutilStopProcess (mainData->processes [i], mainData->conn, i, false);
     }
   }
   mssleep (200);
@@ -243,8 +243,8 @@ mainClosingCallback (void *tmaindata, programstate_t programState)
   mssleep (200);
   for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
     if (mainData->processes [i] != NULL) {
-      processStopProcess (mainData->processes [i], mainData->conn, i, true);
-      processFree (mainData->processes [i]);
+      procutilStopProcess (mainData->processes [i], mainData->conn, i, true);
+      procutilFree (mainData->processes [i]);
     }
   }
   return true;
@@ -447,17 +447,17 @@ mainListeningCallback (void *tmaindata, programstate_t programState)
 {
   maindata_t    *mainData = tmaindata;
 
-  mainData->processes [ROUTE_PLAYER] = processStartProcess (
+  mainData->processes [ROUTE_PLAYER] = procutilStartProcess (
       ROUTE_PLAYER, "bdj4player");
   if (bdjoptGetNum (OPT_P_MOBILEMARQUEE) != MOBILEMQ_OFF) {
-    mainData->processes [ROUTE_MOBILEMQ] = processStartProcess (
+    mainData->processes [ROUTE_MOBILEMQ] = procutilStartProcess (
         ROUTE_MOBILEMQ, "bdj4mobmq");
   }
   if (bdjoptGetNum (OPT_P_REMOTECONTROL)) {
-    mainData->processes [ROUTE_REMCTRL] = processStartProcess (
+    mainData->processes [ROUTE_REMCTRL] = procutilStartProcess (
         ROUTE_REMCTRL, "bdj4rc");
   }
-  mainData->processes [ROUTE_MARQUEE] = processStartProcess (
+  mainData->processes [ROUTE_MARQUEE] = procutilStartProcess (
       ROUTE_MARQUEE, "bdj4marquee");
   return true;
 }

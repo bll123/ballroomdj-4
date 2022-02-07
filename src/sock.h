@@ -1,6 +1,8 @@
 #ifndef INC_SOCK_H
 #define INC_SOCK_H
 
+#include "config.h"
+
 #include <stdint.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -23,10 +25,7 @@
 # include <windows.h>
 #endif
 
-#define _siz_Sock_t _siz_int
 #if _typ_SOCKET
-# undef _siz_Sock_t
-# define _siz_Sock_t _siz_SOCKET
  typedef SOCKET Sock_t;
 #else
  typedef int Sock_t;

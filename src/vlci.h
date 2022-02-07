@@ -1,6 +1,8 @@
 #ifndef INC_VLCI_H
 #define INC_VLCI_H
 
+#include "config.h"
+
 /* winsock2.h should come before windows.h */
 #if _hdr_winsock2
 # include <winsock2.h>

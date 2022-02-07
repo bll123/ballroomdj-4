@@ -31,7 +31,7 @@
 #include "lock.h"
 #include "log.h"
 #include "pathbld.h"
-#include "process.h"
+#include "procutil.h"
 #include "progstate.h"
 #include "sockh.h"
 #include "sysvars.h"
@@ -82,10 +82,10 @@ main (int argc, char *argv[])
   };
 
 #if _define_SIGHUP
-  processCatchSignal (mobmqSigHandler, SIGHUP);
+  procutilCatchSignal (mobmqSigHandler, SIGHUP);
 #endif
-  processCatchSignal (mobmqSigHandler, SIGINT);
-  processDefaultSignal (SIGTERM);
+  procutilCatchSignal (mobmqSigHandler, SIGINT);
+  procutilDefaultSignal (SIGTERM);
 
   sysvarsInit (argv[0]);
 

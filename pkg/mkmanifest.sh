@@ -1,29 +1,47 @@
 #!/bin/bash
 
-find LICENSE.txt README.txt VERSION.txt \
-      bin conv img install licences locale plocal/bin templates \
-      -type f -print |
-    grep -v 'check_all' |
-    grep -v 'clicomm' |
-    grep -v 'img/README' |
-    grep -v 'img/mkicon.sh' |
-    grep -v '\.bat$' |
-    sort > install/manifest.txt
-
 systype=$(uname -s)
+
+manfn=install/manifest.txt
+mantmp=install/manifest.n
+
+findlist="LICENSE.txt README.txt VERSION.txt \
+    bin conv img install licenses locale templates"
+case ${systype} in
+  MSYS*|MINGW*)
+    findlist="$findlist plocal/bin"
+    ;;
+esac
+
+find ${findlist} -type f -print \
+      | sort > ${manfn}
+sed -e '/check_all/ d' \
+    -e '/bdj4cli/ d' \
+    -e '\,img/README, d' \
+    -e '\,img/mkicon.sh, d' \
+    -e '/bdj4se/ d' \
+    -e '/chkprocess/ d' \
+    -e '/checkmk/ d' \
+    -e '/curl-config/ d' \
+    -e '/libcheck.*dll/ d' \
+    -e '/ocspcheck.exe/ d' \
+    -e '/openssl.exe/ d' \
+    ${manfn} > ${mantmp}
+    mv -f ${mantmp} ${manfn}
+
 case $systype in
   Darwin)
-    cat install/manifest.txt |
+    cat ${manfn} |
       sed -e 's,\.so$,.dylib,' \
-      > install/manifest.n
-    mv -f install/manifest.n install/manifest
+      > ${mantmp}
+    mv -f ${mantmp} ${manfn}
     ;;
   MSYS*|MINGW**)
-    cat install/manifest.txt |
-      sed -e 's,bin/bdj4\([^\.]*\),bin/bdj4\1.exe,' \
+    cat ${manfn} |
+      sed -e 's,bin/\([^\.]*\),bin/\1.exe,' \
           -e 's,\.so$,.dll,' \
           -e 's,\.sh$,.bat,' \
-      > install/manifest.n
-    mv -f install/manifest.n install/manifest
+      > ${mantmp}
+    mv -f ${mantmp} ${manfn}
     ;;
 esac

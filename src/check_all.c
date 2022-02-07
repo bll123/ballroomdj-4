@@ -29,7 +29,7 @@ main (int argc, char *argv [])
   logStart ("check_all", "ck", LOG_ALL);
   s = tmutil_suite();
   sr = srunner_create (s);
-  s = process_suite();
+  s = procutil_suite();
   srunner_add_suite (sr, s);
   s = pathutil_suite();
   srunner_add_suite (sr, s);

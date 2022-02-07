@@ -8,13 +8,12 @@
 #include <errno.h>
 #include <assert.h>
 #include <unistd.h>
-#include <sys/types.h>
-#include <sys/stat.h>
 
 #include <gtk/gtk.h>
 
 #include "bdjstring.h"
 #include "filedata.h"
+#include "locatebdj3.c"
 #include "log.h"
 #include "pathutil.h"
 #include "portability.h"
@@ -42,9 +41,6 @@ static void converterExit (GtkButton *b, gpointer udata);
 static void converterValidateDir (converter_t *converter, bool okonly);
 static void converterValidateStart (GtkEditable *e, gpointer udata);
 static void converterConvert (GtkButton *b, gpointer udata);
-static char * locatebdj3 (void);
-static bool locationcheck (const char *dir);
-static bool locatedb (const char *dir);
 
 int
 main (int argc, char *argv[])
@@ -360,142 +356,3 @@ converterConvert (GtkButton *b, gpointer udata)
   return;
 }
 
-static char *
-locatebdj3 (void)
-{
-  char          *loc;
-  char          *home;
-  struct stat   statbuf;
-  char          tbuff [MAXPATHLEN];
-  int           grc;
-  int           rc;
-
-
-  /* make it possible to specify a location via the environment */
-  loc = getenv ("BDJ3_LOCATION");
-  if (loc != NULL) {
-    logMsg (LOG_INSTALL, LOG_IMPORTANT, "from-env: %s", loc);
-    if (locationcheck (loc)) {
-      return strdup (loc);
-    }
-  }
-
-  home = getenv ("HOME");
-  if (home == NULL) {
-    /* probably a windows machine */
-    home = getenv ("USERPROFILE");
-  }
-  logMsg (LOG_INSTALL, LOG_IMPORTANT, "home: %s", loc);
-
-  if (home == NULL) {
-    logMsg (LOG_INSTALL, LOG_IMPORTANT, "err: no home env", loc);
-    return "";
-  }
-
-  /* Linux, old MacOS, recent windows: $HOME/BallroomDJ */
-  strlcpy (tbuff, home, MAXPATHLEN);
-  strlcat (tbuff, "/", MAXPATHLEN);
-  strlcat (tbuff, "BallroomDJ", MAXPATHLEN);
-
-  if (locationcheck (tbuff)) {
-    return strdup (tbuff);
-  }
-
-  /* windows: %USERPROFILE%/Desktop/BallroomDJ */
-  strlcpy (tbuff, home, MAXPATHLEN);
-  strlcat (tbuff, "/", MAXPATHLEN);
-  strlcat (tbuff, "Desktop", MAXPATHLEN);
-  strlcat (tbuff, "/", MAXPATHLEN);
-  strlcat (tbuff, "BallroomDJ", MAXPATHLEN);
-
-  if (locationcheck (tbuff)) {
-    return strdup (tbuff);
-  }
-
-  /* macos $HOME/Library/Application Support/BallroomDJ */
-  /* this is not the main install dir, but the data directory */
-  strlcpy (tbuff, home, MAXPATHLEN);
-  strlcat (tbuff, "/", MAXPATHLEN);
-  strlcat (tbuff, "Library", MAXPATHLEN);
-  strlcat (tbuff, "/", MAXPATHLEN);
-  strlcat (tbuff, "Application Support", MAXPATHLEN);
-  strlcat (tbuff, "/", MAXPATHLEN);
-  strlcat (tbuff, "BallroomDJ", MAXPATHLEN);
-
-  if (locationcheck (tbuff)) {
-    return strdup (tbuff);
-  }
-
-  /* my personal location */
-  strlcpy (tbuff, home, MAXPATHLEN);
-  strlcat (tbuff, "/", MAXPATHLEN);
-  strlcat (tbuff, "music-local", MAXPATHLEN);
-
-  if (locationcheck (tbuff)) {
-    return strdup (tbuff);
-  }
-
-  return "";
-}
-
-static bool
-locationcheck (const char *dir)
-{
-  char          tbuff [MAXPATHLEN];
-  struct stat   statbuf;
-  int           rc;
-
-  if (dir == NULL) {
-    return false;
-  }
-
-  strlcpy (tbuff, dir, MAXPATHLEN);
-
-  rc = stat (tbuff, &statbuf);
-  logMsg (LOG_INSTALL, LOG_IMPORTANT, "try: %d %s", rc, tbuff);
-  if (rc == 0) {
-    if ((statbuf.st_mode & S_IFDIR) == S_IFDIR) {
-      if (locatedb (tbuff)) {
-        return true;
-      }
-    }
-  }
-
-  return false;
-}
-
-
-static bool
-locatedb (const char *dir)
-{
-  char          tbuff [MAXPATHLEN];
-  struct stat   statbuf;
-  int           rc;
-
-  strlcpy (tbuff, dir, MAXPATHLEN);
-  strlcat (tbuff, "/", MAXPATHLEN);
-  strlcat (tbuff, "data", MAXPATHLEN);
-
-  rc = stat (tbuff, &statbuf);
-  logMsg (LOG_INSTALL, LOG_IMPORTANT, "try: %d %s", rc, tbuff);
-  if (rc != 0) {
-    return false;
-  }
-  if ((statbuf.st_mode & S_IFDIR) != S_IFDIR) {
-    return false;
-  }
-
-  strlcat (tbuff, "/", MAXPATHLEN);
-  strlcat (tbuff, "musicdb.txt", MAXPATHLEN);
-
-  rc = stat (tbuff, &statbuf);
-  logMsg (LOG_INSTALL, LOG_IMPORTANT, "try: %d %s", rc, tbuff);
-  if (rc != 0) {
-    return false;
-  }
-  if ((statbuf.st_mode & S_IFREG) != S_IFREG) {
-    return false;
-  }
-
-  return true;
-}

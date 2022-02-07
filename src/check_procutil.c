@@ -11,35 +11,35 @@
 #include "check_bdj.h"
 #include "pathbld.h"
 #include "portability.h"
-#include "process.h"
+#include "procutil.h"
 #include "sysvars.h"
 #include "tmutil.h"
 
-START_TEST(process_exists)
+START_TEST(procutil_exists)
 {
   pid_t     pid;
   int       rc;
-  process_t process;
+  procutil_t process;
 
   pid = getpid ();
   process.pid = pid;
   process.hasHandle = false;
-  rc = processExists (&process);
+  rc = procutilExists (&process);
   ck_assert_int_eq (rc, 0);
   process.pid = 90876;
   process.hasHandle = false;
-  rc = processExists (&process);
+  rc = procutilExists (&process);
   ck_assert_int_lt (rc, 0);
 }
 END_TEST
 
-START_TEST(process_start)
+START_TEST(procutil_start)
 {
   pid_t     ppid;
   int       rc;
   char      *extension;
   char      tbuff [MAXPATHLEN];
-  process_t *process;
+  procutil_t *process;
 
   ppid = getpid ();
 
@@ -52,28 +52,28 @@ START_TEST(process_start)
   /* if the signal is not ignored, the process goes into a zombie state */
   /* and still exists */
 #if _define_SIGCHLD
-  processIgnoreSignal (SIGCHLD);
+  procutilIgnoreSignal (SIGCHLD);
 #endif
   /* abuse the --profile argument to pass the seconds to sleep */
-  process = processStart (tbuff, 5, 0);
+  process = procutilStart (tbuff, 5, 0);
   ck_assert_ptr_nonnull (process);
   ck_assert_int_ne (ppid, process->pid);
-  rc = processExists (process);
+  rc = procutilExists (process);
   ck_assert_int_eq (rc, 0);
   mssleep (6000);
-  rc = processExists (process);
+  rc = procutilExists (process);
   ck_assert_int_ne (rc, 0);
-  processFree (process);
+  procutilFree (process);
 }
 END_TEST
 
-START_TEST(process_kill)
+START_TEST(procutil_kill)
 {
   pid_t     ppid;
   int       rc;
   char      *extension;
   char      tbuff [MAXPATHLEN];
-  process_t *process;
+  procutil_t *process;
 
   ppid = getpid ();
 
@@ -86,46 +86,46 @@ START_TEST(process_kill)
   /* if the signal is not ignored, the process goes into a zombie state */
   /* and still exists */
 #if _define_SIGCHLD
-  processIgnoreSignal (SIGCHLD);
+  procutilIgnoreSignal (SIGCHLD);
 #endif
   /* abuse the --profile argument to pass the seconds to sleep */
-  process = processStart (tbuff, 60, 0);
+  process = procutilStart (tbuff, 60, 0);
   ck_assert_ptr_nonnull (process);
   ck_assert_int_ne (ppid, process->pid);
 
-  rc = processExists (process);
+  rc = procutilExists (process);
   ck_assert_int_eq (rc, 0);
 
   mssleep (2000);
-  rc = processExists (process);
+  rc = procutilExists (process);
   ck_assert_int_eq (rc, 0);
 
   mssleep (2000);
-  rc = processExists (process);
+  rc = procutilExists (process);
   ck_assert_int_eq (rc, 0);
 
-  rc = processKill (process, false);
+  rc = procutilKill (process, false);
   ck_assert_int_eq (rc, 0);
 
   mssleep (2000);
-  rc = processExists (process);
+  rc = procutilExists (process);
   ck_assert_int_ne (rc, 0);
 
-  processFree (process);
+  procutilFree (process);
 }
 END_TEST
 
 Suite *
-process_suite (void)
+procutil_suite (void)
 {
   Suite     *s;
   TCase     *tc;
 
-  s = suite_create ("Process Suite");
-  tc = tcase_create ("Process");
-  tcase_add_test (tc, process_exists);
-  tcase_add_test (tc, process_start);
-  tcase_add_test (tc, process_kill);
+  s = suite_create ("procutil Suite");
+  tc = tcase_create ("procutil");
+  tcase_add_test (tc, procutil_exists);
+  tcase_add_test (tc, procutil_start);
+  tcase_add_test (tc, procutil_kill);
   tcase_set_timeout (tc, 10.0);
   suite_add_tcase (s, tc);
   return s;

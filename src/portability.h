@@ -1,6 +1,8 @@
 #ifndef INC_PORTABILITY_H
 #define INC_PORTABILITY_H
 
+#include "config.h"
+
 #include <limits.h>
 #include <sys/param.h>
 #if _hdr_winsock2

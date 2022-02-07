@@ -22,7 +22,7 @@
 #include "lock.h"
 #include "log.h"
 #include "pathbld.h"
-#include "process.h"
+#include "procutil.h"
 #include "progstate.h"
 #include "sock.h"
 #include "sockh.h"
@@ -148,12 +148,12 @@ main (int argc, char *argv[])
   marquee.setFontSize = 0;
 
 #if _define_SIGHUP
-  processCatchSignal (marqueeSigHandler, SIGHUP);
+  procutilCatchSignal (marqueeSigHandler, SIGHUP);
 #endif
-  processCatchSignal (marqueeSigHandler, SIGINT);
-  processDefaultSignal (SIGTERM);
+  procutilCatchSignal (marqueeSigHandler, SIGINT);
+  procutilDefaultSignal (SIGTERM);
 #if _define_SIGCHLD
-  processDefaultSignal (SIGCHLD);
+  procutilDefaultSignal (SIGCHLD);
 #endif
 
   sysvarsInit (argv[0]);

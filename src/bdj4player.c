@@ -35,7 +35,7 @@
 #include "pathutil.h"
 #include "pli.h"
 #include "portability.h"
-#include "process.h"
+#include "procutil.h"
 #include "queue.h"
 #include "sock.h"
 #include "sockh.h"
@@ -162,12 +162,12 @@ main (int argc, char *argv[])
   };
 
 #if _define_SIGHUP
-  processCatchSignal (playerSigHandler, SIGHUP);
+  procutilCatchSignal (playerSigHandler, SIGHUP);
 #endif
-  processCatchSignal (playerSigHandler, SIGINT);
-  processDefaultSignal (SIGTERM);
+  procutilCatchSignal (playerSigHandler, SIGINT);
+  procutilDefaultSignal (SIGTERM);
 #if _define_SIGCHLD
-  processDefaultSignal (SIGCHLD);
+  procutilDefaultSignal (SIGCHLD);
 #endif
 
   playerData.currentSong = NULL;

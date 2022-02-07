@@ -62,7 +62,7 @@ inline ssize_t
 bdjvarsGetNum (bdjvarkeyl_t idx)
 {
   if (idx >= BDJVL_MAX) {
-    return NULL;
+    return -1;
   }
 
   return bdjvarsl [idx];

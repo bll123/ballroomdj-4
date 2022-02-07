@@ -26,7 +26,7 @@
 #include "musicdb.h"
 #include "musicq.h"
 #include "pathbld.h"
-#include "process.h"
+#include "procutil.h"
 #include "progstate.h"
 #include "slist.h"
 #include "sock.h"
@@ -41,7 +41,7 @@
 typedef struct {
   progstate_t     *progstate;
   char            *locknm;
-  process_t       *processes [ROUTE_MAX];
+  procutil_t       *processes [ROUTE_MAX];
   conn_t          *conn;
   sockserver_t    *sockserver;
   musicqidx_t     musicqPlayIdx;
@@ -126,12 +126,12 @@ main (int argc, char *argv[])
   }
 
 #if _define_SIGHUP
-  processCatchSignal (pluiSigHandler, SIGHUP);
+  procutilCatchSignal (pluiSigHandler, SIGHUP);
 #endif
-  processCatchSignal (pluiSigHandler, SIGINT);
-  processDefaultSignal (SIGTERM);
+  procutilCatchSignal (pluiSigHandler, SIGINT);
+  procutilDefaultSignal (SIGTERM);
 #if _define_SIGCHLD
-  processDefaultSignal (SIGCHLD);
+  procutilDefaultSignal (SIGCHLD);
 #endif
 
   bdj4startup (argc, argv, "pu", ROUTE_PLAYERUI);
@@ -167,7 +167,7 @@ pluiStoppingCallback (void *udata, programstate_t programState)
 
   for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
     if (plui->processes [i] != NULL) {
-      processStopProcess (plui->processes [i], plui->conn, i, false);
+      procutilStopProcess (plui->processes [i], plui->conn, i, false);
     }
   }
 
@@ -197,8 +197,8 @@ pluiClosingCallback (void *udata, programstate_t programState)
   mssleep (200);
   for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
     if (plui->processes [i] != NULL) {
-      processStopProcess (plui->processes [i], plui->conn, i, true);
-      processFree (plui->processes [i]);
+      procutilStopProcess (plui->processes [i], plui->conn, i, true);
+      procutilFree (plui->processes [i]);
     }
   }
   return true;
@@ -364,7 +364,7 @@ pluiListeningCallback (void *udata, programstate_t programState)
   playerui_t   *plui = udata;
   bool          rc = false;
 
-  plui->processes [ROUTE_MAIN] = processStartProcess (
+  plui->processes [ROUTE_MAIN] = procutilStartProcess (
       ROUTE_MAIN, "bdj4main");
   return true;
 }
