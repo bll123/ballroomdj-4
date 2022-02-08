@@ -48,6 +48,7 @@ main (int argc, char *argv[])
     { "route",      required_argument,  NULL,   'r' },
     { "msg",        required_argument,  NULL,   'm' },
     { "forceexit",  no_argument,        NULL,   'f' },
+    { "forcestop",  no_argument,        NULL,   'f' },
     { "clicomm",    no_argument,        NULL,   0 },
     { "debug",      required_argument,  NULL,   'd' },
     { "profile",    required_argument,  NULL,   'p' },

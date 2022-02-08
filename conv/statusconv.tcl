@@ -14,7 +14,7 @@ if { ! [file exists $dir] || ! [file isdirectory $dir] } {
 
 set infn [file join $dir status.tcl]
 set nfn [file join data status.txt]
-puts "Converting: status.tcl : $nfn"
+puts "-- Converting: status.tcl : $nfn"
 if { ! [file exists $infn] } {
   puts "   no status file"
   exit 1

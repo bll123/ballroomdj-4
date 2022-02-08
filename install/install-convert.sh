@@ -2,6 +2,12 @@
 
 LOG=""
 
+export newinstall
+export guienabled
+export targetdir
+export unpackdir
+export reinstall
+
 if [[ ! -d install ||
     ! -f install/install-helpers.sh ]]; then
   echo "Unable to locate install directory."
@@ -9,7 +15,7 @@ if [[ ! -d install ||
 fi
 
 . install/install-helpers.sh
-processcmdargs
+processcmdargs $@
 
 if [[ $targetdir == "" ]]; then
   echo "No target directory specified."

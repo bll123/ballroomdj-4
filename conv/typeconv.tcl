@@ -14,7 +14,7 @@ if { ! [file exists $dir] || ! [file isdirectory $dir] } {
 set fn dancetypes.tcl
 set nfn [file join data dancetypes.txt]
 set infn [file join $dir $fn]
-puts "Converting: $fn : $nfn"
+puts "-- Converting: $fn : $nfn"
 if { [file exists $infn] } {
   source $infn
   set fh [open $nfn w]

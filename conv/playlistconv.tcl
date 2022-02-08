@@ -13,7 +13,7 @@ if { ! [file exists $dir] || ! [file isdirectory $dir] } {
 
 set flist [glob -directory $dir *.playlist]
 
-puts "Converting playlists"
+puts "-- Converting: playlists"
 foreach {fn} $flist {
   set nfn [file join data [file rootname [file tail $fn]].pl]
   puts "    - [file tail $fn] : $nfn"

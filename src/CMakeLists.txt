@@ -18,11 +18,15 @@ set (CMAKE_PREFIX_PATH /opt/local;${PROJECT_SOURCE_DIR}/../plocal)
 # this doesn't seem to help with locating header files...
 include_directories (
   "${CMAKE_BINARY_DIR}" "${PROJECT_SOURCE_DIR}"
-  /opt/local/include ${PROJECT_SOURCE_DIR}/../plocal/include
+  ${PROJECT_SOURCE_DIR}/../plocal/include
+)
+
+include_directories (
+  SYSTEM /opt/local/include /usr/local/include
 )
 
 # This seems to work on linux.
-# cmake uses '@rpath' on macos; will have to see if that works.
+# cmake uses '@rpath' on macos -- does not.
 SET (CMAKE_SKIP_BUILD_RPATH FALSE)
 SET (CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
 

@@ -13,7 +13,7 @@ if { ! [file exists $dir] || ! [file isdirectory $dir] } {
 
 source [file join $dir sortopt.tcl]
 set nfn [file join data sortopt.txt]
-puts "Converting: sortopt.tcl : $nfn"
+puts "-- Converting: sortopt.tcl : $nfn"
 
 set fh [open $nfn w]
 puts $fh "# BDJ4 sort options"

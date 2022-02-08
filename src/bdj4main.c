@@ -1574,10 +1574,12 @@ static void
 mainSendMusicqStatus (maindata_t *mainData, char *rbuff, size_t siz)
 {
   char    tbuff [200];
-  char    statusbuff [1024];
+  char    statusbuff [40];
   ssize_t musicqLen;
   char    *data = NULL;
   bool    jsonflag = true;
+  dbidx_t dbidx;
+  song_t  *song;
 
   if (rbuff == NULL) {
     jsonflag = false;
@@ -1593,6 +1595,9 @@ mainSendMusicqStatus (maindata_t *mainData, char *rbuff, size_t siz)
     strlcat (rbuff, tbuff, siz);
   }
 
+  song = musicqGetByIdx (mainData->musicQueue, mainData->musicqPlayIdx, 0);
+
+  /* dance */
   data = musicqGetDance (mainData->musicQueue, mainData->musicqPlayIdx, 0);
   if (data == NULL) { data = ""; }
   snprintf (tbuff, sizeof (tbuff),
@@ -1602,10 +1607,8 @@ mainSendMusicqStatus (maindata_t *mainData, char *rbuff, size_t siz)
     strlcat (rbuff, tbuff, siz);
   }
 
-  snprintf (tbuff, sizeof (tbuff), "%s%c", data, MSG_ARGS_RS);
-  strlcat (statusbuff, tbuff, sizeof (statusbuff));
-
-  data = musicqGetData (mainData->musicQueue, mainData->musicqPlayIdx, 0, TAG_ARTIST);
+  /* artist */
+  data = songGetData (song, TAG_ARTIST);
   if (data == NULL) { data = ""; }
   snprintf (tbuff, sizeof (tbuff),
       "\"artist\" : \"%s\"", data);
@@ -1614,10 +1617,8 @@ mainSendMusicqStatus (maindata_t *mainData, char *rbuff, size_t siz)
     strlcat (rbuff, tbuff, siz);
   }
 
-  snprintf (tbuff, sizeof (tbuff), "%s%c", data, MSG_ARGS_RS);
-  strlcat (statusbuff, tbuff, sizeof (statusbuff));
-
-  data = musicqGetData (mainData->musicQueue, mainData->musicqPlayIdx, 0, TAG_TITLE);
+  /* title */
+  data = songGetData (song, TAG_TITLE);
   if (data == NULL) { data = ""; }
   snprintf (tbuff, sizeof (tbuff),
       "\"title\" : \"%s\"", data);
@@ -1626,8 +1627,9 @@ mainSendMusicqStatus (maindata_t *mainData, char *rbuff, size_t siz)
     strlcat (rbuff, tbuff, siz);
   }
 
-  snprintf (tbuff, sizeof (tbuff), "%s%c", data, MSG_ARGS_RS);
-  strlcat (statusbuff, tbuff, sizeof (statusbuff));
+  dbidx = songGetNum (song, TAG_DBIDX);
+  snprintf (tbuff, sizeof (tbuff), "%zd%c", dbidx, MSG_ARGS_RS);
+  strlcpy (statusbuff, tbuff, sizeof (statusbuff));
 
   connSendMessage (mainData->conn, ROUTE_PLAYERUI, MSG_MUSICQ_STATUS_DATA, statusbuff);
 }

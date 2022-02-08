@@ -12,7 +12,7 @@ if { ! [file exists $dir] || ! [file isdirectory $dir] } {
 }
 
 set nfn [file join data genres.txt]
-puts "Converting: genres.tcl : $nfn"
+puts "-- Converting: genres.tcl : $nfn"
 source [file join $dir genres.tcl]
 set fh [open $nfn w]
 puts $fh "# BDJ4 genres"

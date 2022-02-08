@@ -1,5 +1,14 @@
 #!/bin/bash
 
+pkgname=BallroomDJ4
+spkgnm=bdj4
+instdir=bdj4-install
+# macos install needs these
+typeset -u pkgnameuc
+pkgnameuc=${pkgname}
+typeset -l pkgnamelc
+pkgnamelc=${pkgname}
+
 function copyfiles (
   manifest=$1
   stage=$2
@@ -107,13 +116,13 @@ fi # is windows
 
 # create manifests
 
-echo "-- creating source manifest"
-(cd src; make distclean > /dev/null 2>&1)
-./pkg/mkmanifest-src.sh
-echo "-- building software"
-(cd src; make > ../tmp/pkg-build.log 2>&1; make tclean > /dev/null 2>&1 )
-echo "-- creating release manifest"
-./pkg/mkmanifest.sh
+#echo "-- creating source manifest"
+#(cd src; make distclean > /dev/null 2>&1)
+#./pkg/mkmanifest-src.sh
+#echo "-- building software"
+#(cd src; make > ../tmp/pkg-build.log 2>&1; make tclean > /dev/null 2>&1 )
+#echo "-- creating release manifest"
+#./pkg/mkmanifest.sh
 
 # update build number
 
@@ -128,24 +137,25 @@ _HERE_
 
 # staging / create packags
 
-echo "-- create source package"
-stagedir=tmp/bdj4-src
-nm=bdj4-src-${VERSION}.tar.gz
-
-copyfiles install/manifest-src.txt ${stagedir}
-(cd tmp;tar -c -z -f - $(basename $stagedir)) > ${nm}
-echo "## source package ${nm} created"
-rm -rf ${stagedir}
+# echo "-- create source package"
+# stagedir=tmp/${spkgnm}-src
+# nm=${spkgnm}-${VERSION}-src.tar.gz
+#
+# copyfiles install/manifest-src.txt ${stagedir}
+# (cd tmp;tar -c -z -f - $(basename $stagedir)) > ${nm}
+# echo "## source package ${nm} created"
+# rm -rf ${stagedir}
 
 echo "-- create release package"
 
-stagedir=tmp/bdj4
+stagedir=tmp/${instdir}
 manfn=install/manifest.txt
 tmpnm=tmp/tfile.dat
 tmpzip=tmp/tfile.zip
 tmpsep=tmp/sep.txt
+tmpmac=tmp/macos
 
-nm=bdj4-${tag}-${VERSION}-installer${sfx}
+nm=${spkgnm}-${VERSION}-${tag}-installer${sfx}
 
 test -d ${stagedir} && rm -rf ${stagedir}
 mkdir ${stagedir}
@@ -159,6 +169,21 @@ case $systype in
     ;;
   Darwin)
     mkdir -p ${stagedir}/Contents/MacOS
+    mkdir -p ${stagedir}/Contents/Resources
+    mkdir -p ${tmpmac}
+    (
+      cd $tmpmac
+      icotool -x ${cwd}/img/bdj_icon.ico
+      png2icns ${pkgname}.icns *.png > /dev/null
+    )
+    cp -f ${tmpmac}/${pkgname}.icns ${stagedir}/Contents/Resources
+    sed -e "s/#BDJVERSION#/${VERSION}/g" \
+        -e "s/#BDJPKGNAME#/${pkgname}/g" \
+        -e "s/#BDJUCPKGNAME#/${pkgnameuc}/g" \
+        -e "s/#BDJLCPKGNAME#/S{pkgnamelc}/g" \
+        pkg/macos/Info.plist \
+        > ${stagedir}/Contents/MacOS/Info.plist
+    echo -n 'BDJBDJ4#' > ${stagedir}/Contents/MacOS/PkgInfo
     copyfiles ${manfn} ${stagedir}/Contents/MacOS
     (cd tmp;tar -c -z -f - $(basename $stagedir)) > ${tmpnm}
     cat install/install-prefix.sh ${tmpnm} > ${nm}
@@ -168,9 +193,12 @@ case $systype in
     copyfiles ${manfn} ${stagedir}
     (cd tmp; zip -r ../${tmpzip} $(basename $stagedir) )
     echo -n '!~~BDJ4~~!' > ${tmpsep}
-    cat bin/bdj4se.exe ${tmpsep} \
-        plocal/bin/miniunz.exe ${tmpsep} \
-        ${tmpzip} > ${nm}
+    cat bin/bdj4se.exe \
+        ${tmpsep} \
+        plocal/bin/miniunz.exe \
+        ${tmpsep} \
+        ${tmpzip} \
+        > ${nm}
     rm -f ${tmpzip} ${tmpsep}
     ;;
 esac

@@ -18,3 +18,4 @@ syntax: regexp
 ^test.dir/test.files/
 ^tmp/
 ^web/marquee4.html$
+^x/

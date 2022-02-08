@@ -13,7 +13,7 @@ if { ! [file exists $dir] || ! [file isdirectory $dir] } {
 
 set flist [glob -directory $dir *.seq]
 
-puts "Converting sequences"
+puts "-- Converting: sequences"
 foreach {fn} $flist {
   set ifh [open $fn r]
   set nfn [file join data [file rootname [file tail $fn]].sequence]

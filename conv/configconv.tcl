@@ -22,7 +22,7 @@ for { set i 1 } { $i < 20 } { incr i } {
   lappend suffixlist -$i.txt
 }
 
-puts "Converting: configuration"
+puts "-- Converting: configuration"
 set cnm bdj_config
 set nnm bdjconfig
 foreach path [list {} profiles $hostname [file join $hostname profiles]] {

@@ -13,7 +13,7 @@ if { ! [file exists $dir] || ! [file isdirectory $dir] } {
 
 set nfn [file join data autoselection.txt]
 set fn autosel.txt
-puts "Converting: $fn : $nfn"
+puts "-- Converting: $fn : $nfn"
 set ifh [open [file join $dir $fn] r]
 set ofh [open $nfn w]
 puts $ofh "# BDJ4 autoselection"

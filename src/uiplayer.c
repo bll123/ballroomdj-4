@@ -11,10 +11,16 @@
 #include <assert.h>
 #include <math.h>
 
+#include "bdjvarsdf.h"
 #include "conn.h"
+#include "dance.h"
+#include "ilist.h"
+#include "musicdb.h"
 #include "pathbld.h"
 #include "portability.h"
 #include "progstate.h"
+#include "song.h"
+#include "tagdef.h"
 #include "uiplayer.h"
 #include "uiutils.h"
 
@@ -147,7 +153,6 @@ uiplayerActivate (uiplayer_t *uiplayer)
       FALSE, FALSE, 0);
 
   widget = gtk_label_new (" : ");
-  assert (uiplayer->danceLab != NULL);
   gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (widget), FALSE, FALSE, 0);
 
   uiplayer->artistLab = gtk_label_new ("");
@@ -156,7 +161,6 @@ uiplayerActivate (uiplayer_t *uiplayer)
       FALSE, FALSE, 0);
 
   widget = gtk_label_new (" : ");
-  assert (uiplayer->danceLab != NULL);
   gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (widget), FALSE, FALSE, 0);
 
   uiplayer->titleLab = gtk_label_new ("");
@@ -692,23 +696,38 @@ uiplayerProcessMusicqStatusData (uiplayer_t *uiplayer, char *args)
 {
   char          *p;
   char          *tokstr;
+  dbidx_t       dbidx;
+  song_t        *song;
+  char          *data;
+  ilistidx_t    danceIdx;
+  dance_t       *dances;
 
-  /* dance */
+  dances = bdjvarsdf [BDJVDF_DANCES];
+
   p = strtok_r (args, MSG_ARGS_RS_STR, &tokstr);
+  dbidx = atol (p);
+
+  song = dbGetByIdx (dbidx);
+  if (song == NULL) {
+    return;
+  }
+
   if (uiplayer->danceLab != NULL) {
-    gtk_label_set_label (GTK_LABEL (uiplayer->danceLab), p);
+    danceIdx = songGetNum (song, TAG_DANCE);
+    data = danceGetData (dances, danceIdx, DANCE_DANCE);
+    gtk_label_set_label (GTK_LABEL (uiplayer->danceLab), data);
   }
 
   /* artist */
-  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   if (uiplayer->artistLab != NULL) {
-    gtk_label_set_label (GTK_LABEL (uiplayer->artistLab), p);
+    data = songGetData (song, TAG_ARTIST);
+    gtk_label_set_label (GTK_LABEL (uiplayer->artistLab), data);
   }
 
   /* title */
-  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   if (uiplayer->titleLab != NULL) {
-    gtk_label_set_label (GTK_LABEL (uiplayer->titleLab), p);
+    data = songGetData (song, TAG_TITLE);
+    gtk_label_set_label (GTK_LABEL (uiplayer->titleLab), data);
   }
 }
 

@@ -1,30 +1,32 @@
 #!/bin/bash
 
-function logmsg (
+function logmsg {
   if [[ $LOG == "" ]]; then
     return
   fi
-)
+}
 
-function processcmdargs (
-  newinstall=T
-  guienabled=F
-  targetdir=""
-  unpackdir=""
-  for arg in $@; do
-    case $arg in
-      -newinstall)
+function processcmdargs {
+  while test $# -gt 0; do
+    case $1 in
+      -newinstall|--newinstall)
         newinstall=T
         ;;
-      -gui)
+      -gui|--gui)
         guienabled=T
         ;;
-      -targetdir)
-        targetdir=$arg
+      -reinstall|--reinstall)
+        reinstall=T
         ;;
-      -unpackdir)
-        unpackdir=$arg
+      -targetdir|--targetdir)
+        shift
+        targetdir=$1
+        ;;
+      -unpackdir|--unpackdir)
+        shift
+        unpackdir=$1
         ;;
     esac
+    shift
   done
-)
+}

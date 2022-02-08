@@ -12,7 +12,7 @@ if { ! [file exists $dir] || ! [file isdirectory $dir] } {
 }
 
 set nfn [file join data levels.txt]
-puts "Converting: dancelevels.tcl : $nfn"
+puts "-- Converting: dancelevels.tcl : $nfn"
 source [file join $dir dancelevels.tcl]
 set fh [open $nfn w]
 puts $fh "# BDJ4 levels"

@@ -2,6 +2,12 @@
 
 LOG=""
 
+export newinstall
+export guienabled
+export targetdir
+export unpackdir
+export reinstall
+
 if [[ ! -d install ||
     ! -f install/install-helpers.sh ]]; then
   echo "Unable to locate install directory."
@@ -9,7 +15,7 @@ if [[ ! -d install ||
 fi
 
 . install/install-helpers.sh
-processcmdargs
+processcmdargs $@
 
 if [[ $targetdir == "" ]]; then
   echo "No target directory specified."
@@ -19,8 +25,6 @@ fi
 if [[ ! -d $targetdir ]]; then
   mkdir -p "$targetdir"
 fi
-
-cwd=$(pwd)
 
 # only the directories that are not in the archive need to be created
 
@@ -32,7 +36,7 @@ fi
 dirlist="data tmp data/profiles data/$hostname data/$hostname/profiles"
 
 for d in $dirlist; do
-  td="$targetdir/$dir"
+  td="$targetdir/$d"
   test -d "$td" || mkdir "$td"
 done
 

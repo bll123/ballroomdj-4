@@ -14,7 +14,7 @@ if { ! [file exists $dir] || ! [file isdirectory $dir] } {
 set hsize 128
 set rsize 2048
 
-puts "Converting: musicdb.txt : musicdb.dat"
+puts "-- Converting: musicdb.txt : data/musicdb.dat"
 set fh [open [file join $dir musicdb.txt] r]
 gets $fh line
 gets $fh line
