@@ -74,7 +74,7 @@ levelConv (char *keydata, datafileret_t *ret)
 
   ret->valuetype = VALUE_NUM;
 
-  level = bdjvarsdf [BDJVDF_LEVELS];
+  level = bdjvarsdfGet (BDJVDF_LEVELS);
   lookup = datafileGetLookup (level->df);
   ret->u.num = slistGetNum (lookup, keydata);
 }

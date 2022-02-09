@@ -15,6 +15,7 @@ typedef enum {
   BDJVDF_MAX,
 } bdjvarkeydf_t;
 
-extern void *bdjvarsdf [BDJVDF_MAX];
+void  * bdjvarsdfGet (bdjvarkeydf_t idx);
+void  bdjvarsdfSet (bdjvarkeydf_t idx, void *data);
 
 #endif /* INC_BDJVARSDF_H */

@@ -101,7 +101,7 @@ danceIterateKey (dance_t *dances, ilistidx_t *iteridx)
 slist_t *
 danceGetLookup (void)
 {
-  dance_t *dance = bdjvarsdf [BDJVDF_DANCES];
+  dance_t *dance = bdjvarsdfGet (BDJVDF_DANCES);
   slist_t *lookup = datafileGetLookup (dance->df);
   return lookup;
 }
@@ -163,7 +163,7 @@ danceConvDance (char *keydata, datafileret_t *ret)
 
   ret->valuetype = VALUE_NUM;
   ret->u.num = -1;
-  dance = bdjvarsdf [BDJVDF_DANCES];
+  dance = bdjvarsdfGet (BDJVDF_DANCES);
   lookup = datafileGetLookup (dance->df);
   if (lookup != NULL) {
     ret->u.num = slistGetNum (lookup, keydata);

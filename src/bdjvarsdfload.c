@@ -29,43 +29,43 @@ bdjvarsdfloadInit (void)
 
     /* dance types must be loaded before dance */
   pathbldMakePath (fn, sizeof (fn), "", "dancetypes", ".txt", PATHBLD_MP_NONE);
-  bdjvarsdf [BDJVDF_DANCE_TYPES] = dnctypesAlloc (fn);
+  bdjvarsdfSet (BDJVDF_DANCE_TYPES, dnctypesAlloc (fn));
 
     /* the database load depends on dances */
     /* playlist loads depend on dances */
     /* sequence loads depend on dances */
   pathbldMakePath (fn, sizeof (fn), "", "dances", ".txt", PATHBLD_MP_NONE);
-  bdjvarsdf [BDJVDF_DANCES] = danceAlloc (fn);
+  bdjvarsdfSet (BDJVDF_DANCES, danceAlloc (fn));
 
     /* the database load depends on ratings, levels, genres and status */
     /* playlist loads depend on ratings and levels */
   pathbldMakePath (fn, sizeof (fn), "", "ratings", ".txt", PATHBLD_MP_NONE);
-  bdjvarsdf [BDJVDF_RATINGS] = ratingAlloc (fn);
+  bdjvarsdfSet (BDJVDF_RATINGS, ratingAlloc (fn));
   pathbldMakePath (fn, sizeof (fn), "", "genres", ".txt", PATHBLD_MP_NONE);
-  bdjvarsdf [BDJVDF_GENRES] = genreAlloc (fn);
+  bdjvarsdfSet (BDJVDF_GENRES, genreAlloc (fn));
   pathbldMakePath (fn, sizeof (fn), "", "levels", ".txt", PATHBLD_MP_NONE);
-  bdjvarsdf [BDJVDF_LEVELS] = levelAlloc (fn);
+  bdjvarsdfSet (BDJVDF_LEVELS, levelAlloc (fn));
 
     /* status is an optional configuration file   */
     /* the database load depends on it if present */
   pathbldMakePath (fn, sizeof (fn), "", "status", ".txt", PATHBLD_MP_NONE);
-  bdjvarsdf [BDJVDF_STATUS] = statusAlloc (fn);
+  bdjvarsdfSet (BDJVDF_STATUS, statusAlloc (fn));
 
   pathbldMakePath (fn, sizeof (fn), "", "sortopt", ".txt", PATHBLD_MP_NONE);
-  bdjvarsdf [BDJVDF_SORT_OPT] = sortoptAlloc (fn);
+  bdjvarsdfSet (BDJVDF_SORT_OPT, sortoptAlloc (fn));
   pathbldMakePath (fn, sizeof (fn), "", "autoselection", ".txt", PATHBLD_MP_NONE);
-  bdjvarsdf [BDJVDF_AUTO_SEL] = autoselAlloc (fn);
+  bdjvarsdfSet (BDJVDF_AUTO_SEL, autoselAlloc (fn));
 }
 
 void
 bdjvarsdfloadCleanup (void)
 {
-  autoselFree (bdjvarsdf [BDJVDF_AUTO_SEL]);
-  sortoptFree (bdjvarsdf [BDJVDF_SORT_OPT]);
-  statusFree (bdjvarsdf [BDJVDF_STATUS]);
-  levelFree (bdjvarsdf [BDJVDF_LEVELS]);
-  genreFree (bdjvarsdf [BDJVDF_GENRES]);
-  ratingFree (bdjvarsdf [BDJVDF_RATINGS]);
-  danceFree (bdjvarsdf [BDJVDF_DANCES]);
-  dnctypesFree (bdjvarsdf [BDJVDF_DANCE_TYPES]);
+  autoselFree (bdjvarsdfGet (BDJVDF_AUTO_SEL));
+  sortoptFree (bdjvarsdfGet (BDJVDF_SORT_OPT));
+  statusFree (bdjvarsdfGet (BDJVDF_STATUS));
+  levelFree (bdjvarsdfGet (BDJVDF_LEVELS));
+  genreFree (bdjvarsdfGet (BDJVDF_GENRES));
+  ratingFree (bdjvarsdfGet (BDJVDF_RATINGS));
+  danceFree (bdjvarsdfGet (BDJVDF_DANCES));
+  dnctypesFree (bdjvarsdfGet (BDJVDF_DANCE_TYPES));
 }

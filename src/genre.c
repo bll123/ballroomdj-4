@@ -59,7 +59,7 @@ genreConv (char *keydata, datafileret_t *ret)
   slist_t      *lookup;
 
   ret->valuetype = VALUE_NUM;
-  genre = bdjvarsdf [BDJVDF_GENRES];
+  genre = bdjvarsdfGet (BDJVDF_GENRES);
   lookup = datafileGetLookup (genre->df);
   ret->u.num = slistGetNum (lookup, keydata);
 }

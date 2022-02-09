@@ -391,7 +391,7 @@ musicqGetDance (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx)
      (musicqitem->flags & MUSICQ_FLAG_EMPTY) != MUSICQ_FLAG_EMPTY) {
     song = musicqitem->song;
     dancekey = songGetNum (song, TAG_DANCE);
-    dances = bdjvarsdf [BDJVDF_DANCES];
+    dances = bdjvarsdfGet (BDJVDF_DANCES);
     danceStr = danceGetData (dances, dancekey, DANCE_DANCE);
   }
   return danceStr;

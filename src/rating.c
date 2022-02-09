@@ -66,7 +66,7 @@ ratingConv (char *keydata, datafileret_t *ret)
   slist_t      *lookup;
 
   ret->valuetype = VALUE_NUM;
-  rating = bdjvarsdf [BDJVDF_RATINGS];
+  rating = bdjvarsdfGet (BDJVDF_RATINGS);
   lookup = datafileGetLookup (rating->df);
   ret->u.num = slistGetNum (lookup, keydata);
   if (ret->u.num == LIST_VALUE_INVALID) {

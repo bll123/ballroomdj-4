@@ -1066,7 +1066,7 @@ mainPrepSong (maindata_t *mainData, song_t *song,
       song_t        *tsong;
 
       danceidx = songGetNum (song, TAG_DANCE);
-      dances = bdjvarsdf [BDJVDF_DANCES];
+      dances = bdjvarsdfGet (BDJVDF_DANCES);
       annfname = danceGetData (dances, danceidx, DANCE_ANNOUNCE);
       if (annfname != NULL) {
         ssize_t   tval;
@@ -1439,7 +1439,7 @@ mainSendDanceList (maindata_t *mainData, bdjmsgroute_t route)
   char          rbuff [3096];
   slistidx_t    iteridx;
 
-  dances = bdjvarsdf [BDJVDF_DANCES];
+  dances = bdjvarsdfGet (BDJVDF_DANCES);
   danceList = danceGetDanceList (dances);
 
   rbuff [0] = '\0';

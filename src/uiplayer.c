@@ -702,7 +702,7 @@ uiplayerProcessMusicqStatusData (uiplayer_t *uiplayer, char *args)
   ilistidx_t    danceIdx;
   dance_t       *dances;
 
-  dances = bdjvarsdf [BDJVDF_DANCES];
+  dances = bdjvarsdfGet (BDJVDF_DANCES);
 
   p = strtok_r (args, MSG_ARGS_RS_STR, &tokstr);
   dbidx = atol (p);

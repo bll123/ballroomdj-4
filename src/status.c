@@ -67,7 +67,7 @@ statusConv (char *keydata, datafileret_t *ret)
 
   ret->valuetype = VALUE_NUM;
 
-  status = bdjvarsdf [BDJVDF_STATUS];
+  status = bdjvarsdfGet (BDJVDF_STATUS);
   lookup = datafileGetLookup (status->df);
   ret->u.num = slistGetNum (lookup, keydata);
 }

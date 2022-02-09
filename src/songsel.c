@@ -85,7 +85,7 @@ songselAlloc (list_t *dancelist, songselFilter_t filterProc, void *userdata)
   songsel->danceSelList = nlistAlloc ("songsel-sel", LIST_ORDERED, songselDanceFree);
   nlistSetSize (songsel->danceSelList, nlistGetCount (dancelist));
 
-  autosel = bdjvarsdf [BDJVDF_AUTO_SEL];
+  autosel = bdjvarsdfGet (BDJVDF_AUTO_SEL);
   songsel->autoselWeight [SONGSEL_ATTR_RATING] = autoselGetDouble (autosel, AUTOSEL_RATING_WEIGHT);
   songsel->autoselWeight [SONGSEL_ATTR_LEVEL] = autoselGetDouble (autosel, AUTOSEL_LEVEL_WEIGHT);
   songsel->lastSelection = NULL;
@@ -109,8 +109,8 @@ songselAlloc (list_t *dancelist, songselFilter_t filterProc, void *userdata)
     nlistSetData (songsel->danceSelList, danceIdx, songseldance);
   }
 
-  ratings = bdjvarsdf [BDJVDF_RATINGS];
-  levels = bdjvarsdf [BDJVDF_LEVELS];
+  ratings = bdjvarsdfGet (BDJVDF_RATINGS);
+  levels = bdjvarsdfGet (BDJVDF_LEVELS);
 
     /* for each song in the database */
   logMsg (LOG_DBG, LOG_SONGSEL, "processing songs");

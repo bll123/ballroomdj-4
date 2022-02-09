@@ -44,8 +44,8 @@ danceselAlloc (nlist_t *countList)
   assert (countList != NULL);
   dancesel = malloc (sizeof (dancesel_t));
   assert (dancesel != NULL);
-  dancesel->dances = bdjvarsdf [BDJVDF_DANCES];
-  dancesel->autosel = bdjvarsdf [BDJVDF_AUTO_SEL];
+  dancesel->dances = bdjvarsdfGet (BDJVDF_DANCES);
+  dancesel->autosel = bdjvarsdfGet (BDJVDF_AUTO_SEL);
   dcount = (double) danceGetCount (dancesel->dances);
   dancesel->base = nlistAlloc ("dancesel-base", LIST_ORDERED, NULL);
   dancesel->basetotal = 0.0;

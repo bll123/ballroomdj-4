@@ -197,7 +197,7 @@ playlistCreate (char *plfname, pltype_t type, char *ofname)
   ilistidx_t    iteridx;
 
 
-  levels = bdjvarsdf [BDJVDF_LEVELS];
+  levels = bdjvarsdfGet (BDJVDF_LEVELS);
 
   pl = playlistAlloc (plfname);
 
@@ -235,7 +235,7 @@ playlistCreate (char *plfname, pltype_t type, char *ofname)
   snprintf (tbuff, sizeof (tbuff), "pldance-c-%s", plfname);
   pl->pldances = ilistAlloc (tbuff, LIST_ORDERED, NULL);
 
-  dances = bdjvarsdf [BDJVDF_DANCES];
+  dances = bdjvarsdfGet (BDJVDF_DANCES);
   danceStartIterator (dances, &iteridx);
   while ((didx = danceIterateKey (dances, &iteridx)) >= 0) {
     ilistSetNum (pl->pldances, didx, PLDANCE_BPM_HIGH, LIST_VALUE_INVALID);
@@ -524,7 +524,7 @@ playlistFilterSong (dbidx_t dbidx, song_t *song, void *tplaylist)
     listidx_t     sstatus;
 
     sstatus = songGetNum (song, TAG_STATUS);
-    status = bdjvarsdf [BDJVDF_STATUS];
+    status = bdjvarsdfGet (BDJVDF_STATUS);
     if (status != NULL && ! statusPlayCheck (status, sstatus)) {
       logMsg (LOG_DBG, LOG_SONGSEL, "reject %zd status not playable", dbidx);
       return false;

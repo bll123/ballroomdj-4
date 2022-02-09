@@ -490,7 +490,7 @@ uimusicqCreateDanceList (uimusicq_t *uimusicq)
 
   store = gtk_list_store_new (DANCE_COL_MAX, G_TYPE_ULONG, G_TYPE_STRING);
 
-  dances = bdjvarsdf [BDJVDF_DANCES];
+  dances = bdjvarsdfGet (BDJVDF_DANCES);
   danceList = danceGetDanceList (dances);
 
   slistStartIterator (danceList, &iteridx);
@@ -651,7 +651,7 @@ uimusicqProcessMusicQueueDataNew (uimusicq_t *uimusicq, char * args)
   nlistidx_t        iteridx;
   musicqupdate_t    *musicqupdate = NULL;
 
-  dances = bdjvarsdf [BDJVDF_DANCES];
+  dances = bdjvarsdfGet (BDJVDF_DANCES);
 
   store = gtk_list_store_new (MUSICQ_COL_MAX,
       G_TYPE_ULONG, G_TYPE_ULONG, G_TYPE_ULONG, G_TYPE_ULONG,
@@ -734,7 +734,7 @@ uimusicqProcessMusicQueueDataUpdate (uimusicq_t *uimusicq, char * args)
   nlistFree (uimusicq->workList);
   uimusicq->workList = NULL;
 
-  dances = bdjvarsdf [BDJVDF_DANCES];
+  dances = bdjvarsdfGet (BDJVDF_DANCES);
 
   valid = gtk_tree_model_get_iter_first (model, &iter);
 

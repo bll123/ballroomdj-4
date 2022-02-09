@@ -32,7 +32,7 @@ dbOpen (char *fn)
     dance_t       *dances;
     ssize_t       dcount;
 
-    dances = bdjvarsdf [BDJVDF_DANCES];
+    dances = bdjvarsdfGet (BDJVDF_DANCES);
     dcount = danceGetCount (dances);
 
     musicdb = malloc (sizeof (db_t));
