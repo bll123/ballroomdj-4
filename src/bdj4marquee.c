@@ -42,7 +42,9 @@ typedef struct {
   GtkWidget       *pbar;
   GtkWidget       *danceLab;
   GtkWidget       *countdownTimerLab;
-  GtkWidget       *infoLab;
+  GtkWidget       *infoArtistLab;
+  GtkWidget       *infoSepLab;
+  GtkWidget       *infoTitleLab;
   GtkWidget       *sep;
   GtkWidget       **marqueeLabs;
   int             marginTotal;
@@ -87,7 +89,7 @@ static gboolean marqueeWinState (GtkWidget *window, GdkEventWindowState *event,
 static void marqueeStateChg (GtkWidget *w, GtkStateType flags, gpointer userdata);
 static void marqueeSigHandler (int sig);
 static void marqueeSetFontSize (marquee_t *marquee, GtkWidget *lab, char *style, int sz);
-static void marqueeCalcFontSizes (marquee_t *marquee, int sz, int *spacing, int *newsz);
+static int  marqueeCalcFontSizes (marquee_t *marquee, int sz);
 static void marqueeAdjustFontSizes (marquee_t *marquee, int sz);
 static void marqueeAdjustFontCallback (GtkWidget *w, GtkAllocation *retAllocSize, gpointer userdata);
 static void marqueePopulate (marquee_t *marquee, char *args);
@@ -130,7 +132,9 @@ main (int argc, char *argv[])
   marquee.pbar = NULL;
   marquee.danceLab = NULL;
   marquee.countdownTimerLab = NULL;
-  marquee.infoLab = NULL;
+  marquee.infoArtistLab = NULL;
+  marquee.infoSepLab = NULL;
+  marquee.infoTitleLab = NULL;
   marquee.sep = NULL;
   marquee.marqueeLabs = NULL;
   marquee.lastHeight = 0;
@@ -308,59 +312,90 @@ marqueeActivate (GApplication *app, gpointer userdata)
   marquee->marginTotal = 20;
 
   marquee->pbar = gtk_progress_bar_new ();
-  gtk_box_pack_start (GTK_BOX (marquee->vbox), GTK_WIDGET (marquee->pbar),
-      FALSE, FALSE, 0);
   gtk_widget_set_halign (GTK_WIDGET (marquee->pbar), GTK_ALIGN_FILL);
   gtk_widget_set_hexpand (GTK_WIDGET (marquee->pbar), TRUE);
   uiutilsSetCss (GTK_WIDGET (marquee->pbar),
       "progress, trough { min-height: 25px; } progressbar > trough > progress { background-color: #ffa600; }");
+  gtk_box_pack_start (GTK_BOX (marquee->vbox), GTK_WIDGET (marquee->pbar),
+      FALSE, FALSE, 0);
 
   vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 5);
-  gtk_box_pack_start (GTK_BOX (marquee->vbox), GTK_WIDGET (vbox),
-      FALSE, FALSE, 0);
   gtk_widget_set_margin_start (GTK_WIDGET (marquee->vbox), 10);
   gtk_widget_set_margin_end (GTK_WIDGET (marquee->vbox), 10);
   gtk_widget_set_hexpand (GTK_WIDGET (marquee->vbox), TRUE);
+  gtk_box_pack_start (GTK_BOX (marquee->vbox), GTK_WIDGET (vbox),
+      FALSE, FALSE, 0);
 
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 5);
-  gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (hbox),
-      FALSE, FALSE, 0);
   gtk_widget_set_halign (GTK_WIDGET (hbox), GTK_ALIGN_FILL);
   gtk_widget_set_hexpand (GTK_WIDGET (hbox), TRUE);
   gtk_widget_set_margin_end (GTK_WIDGET (hbox), 0);
   gtk_widget_set_margin_start (GTK_WIDGET (hbox), 0);
+  gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (hbox),
+      FALSE, FALSE, 0);
 
   marquee->danceLab = gtk_label_new (_("Not Playing"));
+  gtk_widget_set_margin_top (GTK_WIDGET (marquee->danceLab), 2);
   gtk_widget_set_halign (GTK_WIDGET (marquee->danceLab), GTK_ALIGN_START);
-  gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (marquee->danceLab),
-      TRUE, TRUE, 0);
   gtk_widget_set_hexpand (GTK_WIDGET (marquee->danceLab), TRUE);
   gtk_widget_set_can_focus (GTK_WIDGET (marquee->danceLab), FALSE);
   uiutilsSetCss (GTK_WIDGET (marquee->danceLab),
       "label { color: #ffa600; }");
+  gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (marquee->danceLab),
+      TRUE, TRUE, 0);
 
   marquee->countdownTimerLab = gtk_label_new ("0:00");
-  gtk_box_pack_end (GTK_BOX (hbox), GTK_WIDGET (marquee->countdownTimerLab),
-      FALSE, FALSE, 0);
+  gtk_widget_set_margin_top (GTK_WIDGET (marquee->countdownTimerLab), 2);
   gtk_label_set_max_width_chars (GTK_LABEL (marquee->countdownTimerLab), 6);
   gtk_widget_set_halign (GTK_WIDGET (marquee->countdownTimerLab), GTK_ALIGN_END);
   gtk_widget_set_can_focus (GTK_WIDGET (marquee->countdownTimerLab), FALSE);
   uiutilsSetCss (GTK_WIDGET (marquee->countdownTimerLab),
       "label { color: #ffa600; }");
+  gtk_box_pack_end (GTK_BOX (hbox), GTK_WIDGET (marquee->countdownTimerLab),
+      FALSE, FALSE, 0);
 
   if (marquee->mqShowInfo) {
-    marquee->infoLab = gtk_label_new ("");
-    gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (marquee->infoLab),
-        TRUE, TRUE, 0);
-    gtk_widget_set_halign (GTK_WIDGET (marquee->infoLab), GTK_ALIGN_START);
-    gtk_widget_set_can_focus (GTK_WIDGET (marquee->infoLab), FALSE);
+    hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 5);
+    gtk_widget_set_halign (GTK_WIDGET (hbox), GTK_ALIGN_FILL);
+    gtk_widget_set_hexpand (GTK_WIDGET (hbox), TRUE);
+    gtk_widget_set_margin_end (GTK_WIDGET (hbox), 0);
+    gtk_widget_set_margin_start (GTK_WIDGET (hbox), 0);
+    gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (hbox),
+        FALSE, FALSE, 0);
+
+    marquee->infoArtistLab = gtk_label_new ("");
+    gtk_widget_set_margin_top (GTK_WIDGET (marquee->infoArtistLab), 2);
+    gtk_widget_set_halign (GTK_WIDGET (marquee->infoArtistLab), GTK_ALIGN_START);
+    gtk_widget_set_hexpand (GTK_WIDGET (hbox), TRUE);
+    gtk_widget_set_can_focus (GTK_WIDGET (marquee->infoArtistLab), FALSE);
+    gtk_label_set_ellipsize (GTK_LABEL (marquee->infoArtistLab), PANGO_ELLIPSIZE_END);
+    gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (marquee->infoArtistLab),
+        FALSE, FALSE, 0);
+
+    marquee->infoSepLab = gtk_label_new ("");
+    gtk_widget_set_margin_top (GTK_WIDGET (marquee->infoSepLab), 2);
+    gtk_widget_set_halign (GTK_WIDGET (marquee->infoSepLab), GTK_ALIGN_START);
+    gtk_widget_set_hexpand (GTK_WIDGET (hbox), FALSE);
+    gtk_widget_set_can_focus (GTK_WIDGET (marquee->infoSepLab), FALSE);
+    gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (marquee->infoSepLab),
+        FALSE, FALSE, 0);
+
+    marquee->infoTitleLab = gtk_label_new ("");
+    gtk_widget_set_margin_top (GTK_WIDGET (marquee->infoTitleLab), 2);
+    gtk_widget_set_halign (GTK_WIDGET (marquee->infoTitleLab), GTK_ALIGN_START);
+    gtk_widget_set_hexpand (GTK_WIDGET (hbox), TRUE);
+    gtk_widget_set_can_focus (GTK_WIDGET (marquee->infoTitleLab), FALSE);
+    gtk_label_set_ellipsize (GTK_LABEL (marquee->infoArtistLab), PANGO_ELLIPSIZE_END);
+    gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (marquee->infoTitleLab),
+        FALSE, FALSE, 0);
   }
 
   marquee->sep = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
-  gtk_box_pack_end (GTK_BOX (vbox), GTK_WIDGET (marquee->sep),
-      TRUE, TRUE, 0);
+  gtk_widget_set_margin_top (GTK_WIDGET (marquee->sep), 2);
   uiutilsSetCss (GTK_WIDGET (marquee->sep),
       "separator { min-height: 4px; background-color: #ffa600; }");
+  gtk_box_pack_end (GTK_BOX (vbox), GTK_WIDGET (marquee->sep),
+      TRUE, TRUE, 0);
 
   marquee->marqueeLabs = malloc (sizeof (GtkWidget *) * marquee->mqLen);
 
@@ -368,11 +403,12 @@ marqueeActivate (GApplication *app, gpointer userdata)
     marquee->marqueeLabs [i] = gtk_label_new ("");
     gtk_widget_set_halign (GTK_WIDGET (marquee->marqueeLabs [i]), GTK_ALIGN_START);
     gtk_widget_set_hexpand (GTK_WIDGET (marquee->marqueeLabs [i]), TRUE);
-    gtk_box_pack_start (GTK_BOX (marquee->vbox),
-        GTK_WIDGET (marquee->marqueeLabs [i]), FALSE, FALSE, 0);
+    gtk_widget_set_margin_top (GTK_WIDGET (marquee->marqueeLabs [i]), 2);
     gtk_widget_set_margin_start (GTK_WIDGET (marquee->marqueeLabs [i]), 10);
     gtk_widget_set_margin_end (GTK_WIDGET (marquee->marqueeLabs [i]), 10);
     gtk_widget_set_can_focus (GTK_WIDGET (marquee->marqueeLabs [i]), FALSE);
+    gtk_box_pack_start (GTK_BOX (marquee->vbox),
+        GTK_WIDGET (marquee->marqueeLabs [i]), FALSE, FALSE, 0);
   }
 
   marquee->inResize = true;
@@ -412,8 +448,10 @@ marqueeMainLoop (void *tmarquee)
     marquee->inResize = true;
     marqueeSetFontSize (marquee, marquee->danceLab, "bold", marquee->setFontSize);
     marqueeSetFontSize (marquee, marquee->countdownTimerLab, "bold", marquee->setFontSize);
-    if (marquee->infoLab != NULL) {
-      marqueeSetFontSize (marquee, marquee->infoLab, "", (int) (marquee->setFontSize * INFO_LAB_HEIGHT_ADJUST));
+    if (marquee->infoArtistLab != NULL) {
+      marqueeSetFontSize (marquee, marquee->infoArtistLab, "", (int) (marquee->setFontSize * INFO_LAB_HEIGHT_ADJUST));
+      marqueeSetFontSize (marquee, marquee->infoSepLab, "", (int) (marquee->setFontSize * INFO_LAB_HEIGHT_ADJUST));
+      marqueeSetFontSize (marquee, marquee->infoTitleLab, "", (int) (marquee->setFontSize * INFO_LAB_HEIGHT_ADJUST));
     }
 
     for (int i = 0; i < marquee->mqLen; ++i) {
@@ -680,18 +718,18 @@ marqueeSetFontSize (marquee_t *marquee, GtkWidget *lab, char *style, int sz)
 }
 
 /* getting this to work correctly is a pain */
-static void
-marqueeCalcFontSizes (marquee_t *marquee, int sz, int *spacing, int *newsz)
+static int
+marqueeCalcFontSizes (marquee_t *marquee, int sz)
 {
   int             newsza;
   gint            width;
   gint            height;
   int             pbarHeight;
   int             sepHeight;
+  int             margin;
   int             infoHeight = 0;
   GtkAllocation   allocSize;
-  int             lspacing;
-  int             lnewsz;
+  int             newsz;
 
 
   gtk_window_get_size (GTK_WINDOW (marquee->window), &width, &height);
@@ -701,9 +739,11 @@ marqueeCalcFontSizes (marquee_t *marquee, int sz, int *spacing, int *newsz)
   gtk_widget_get_allocation (GTK_WIDGET (marquee->sep), &allocSize);
   sepHeight = allocSize.height;
   if (marquee->mqShowInfo) {
-    gtk_widget_get_allocation (GTK_WIDGET (marquee->infoLab), &allocSize);
+    gtk_widget_get_allocation (GTK_WIDGET (marquee->infoArtistLab), &allocSize);
     infoHeight = allocSize.height;
   }
+  margin = gtk_widget_get_margin_top (GTK_WIDGET (marquee->danceLab));
+  margin += gtk_box_get_spacing (GTK_BOX (marquee->vbox));
 
   marquee->newFontSize = sz;
 
@@ -716,31 +756,26 @@ marqueeCalcFontSizes (marquee_t *marquee, int sz, int *spacing, int *newsz)
     /* dance, mqlen */
     numtextitems = 1 + marquee->mqLen;
 
-    lspacing = gtk_box_get_spacing (GTK_BOX (marquee->vbox));
-    /* 40 is extra space needed so the marquee can be shrunk */
-    newsza = (height - 40 - marquee->marginTotal - pbarHeight - sepHeight -
-        infoHeight - (lspacing * numitems)) / numtextitems;
-    lspacing = (int) (newsza * 0.05);
+    /* 60 is extra space needed so the marquee can be shrunk */
+    newsza = (height - 60 - marquee->marginTotal - pbarHeight - sepHeight -
+        infoHeight - (margin * numitems)) / numtextitems;
     infoHeight = (int) (newsza * INFO_LAB_HEIGHT_ADJUST);
-    lnewsz = (height - 40 - marquee->marginTotal - pbarHeight - sepHeight -
-        infoHeight - (lspacing * numitems)) / numtextitems;
-    if (lnewsz > newsza) {
-      lnewsz = newsza;
+    newsz = (height - 60 - marquee->marginTotal - pbarHeight - sepHeight -
+        infoHeight - (margin * numitems)) / numtextitems;
+    if (newsz > newsza) {
+      newsz = newsza;
     }
   } else {
     /* the old size to restore from before being maximized */
-    lnewsz = sz;
-    lspacing = (int) (lnewsz * 0.05);
+    newsz = sz;
   }
 
-  *spacing = lspacing;
-  *newsz = lnewsz;
+  return newsz;
 }
 
 static void
 marqueeAdjustFontSizes (marquee_t *marquee, int sz)
 {
-  int   spacing = 0;
   int   newsz = 0;
 
   if (marquee->inResize) {
@@ -749,12 +784,12 @@ marqueeAdjustFontSizes (marquee_t *marquee, int sz)
 
   marquee->inResize = true;
 
-  marqueeCalcFontSizes (marquee, sz, &spacing, &newsz);
+  newsz = marqueeCalcFontSizes (marquee, sz);
 
   /* only set the size of the dance label and the info label */
   /* the callback will determine the true size, and make adjustments */
   marqueeSetFontSize (marquee, marquee->danceLab, "bold", newsz);
-  marqueeSetFontSize (marquee, marquee->infoLab, "", (int) (newsz * INFO_LAB_HEIGHT_ADJUST));
+  marqueeSetFontSize (marquee, marquee->infoArtistLab, "", (int) (newsz * INFO_LAB_HEIGHT_ADJUST));
 
   marquee->sizeSignal = g_signal_connect (marquee->danceLab, "size-allocate",
       G_CALLBACK (marqueeAdjustFontCallback), marquee);
@@ -765,7 +800,6 @@ static void
 marqueeAdjustFontCallback (GtkWidget *w, GtkAllocation *retAllocSize, gpointer userdata)
 {
   int             newsz;
-  int             spacing;
   gint            width;
   gint            height;
   int             pbarHeight;
@@ -787,9 +821,7 @@ marqueeAdjustFontCallback (GtkWidget *w, GtkAllocation *retAllocSize, gpointer u
   g_signal_handler_disconnect (GTK_WIDGET (w), marquee->sizeSignal);
   marquee->sizeSignal = 0;
 
-  marqueeCalcFontSizes (marquee, marquee->newFontSize, &spacing, &newsz);
-
-  gtk_box_set_spacing (GTK_BOX (marquee->vbox), spacing);
+  newsz = marqueeCalcFontSizes (marquee, marquee->newFontSize);
 
   /* newsz is the maximum height available */
   /* given the allocation size, determine the actual size available */
@@ -815,14 +847,39 @@ marqueePopulate (marquee_t *marquee, char *args)
 {
   char      *p;
   char      *tokptr;
+  int       showsep = 0;
 
   p = strtok_r (args, MSG_ARGS_RS_STR, &tokptr);
-  if (marquee->infoLab != NULL) {
-    gtk_label_set_label (GTK_LABEL (marquee->infoLab), p);
+  if (marquee->infoArtistLab != NULL) {
+    if (p != NULL && *p == MSG_ARGS_EMPTY) {
+      p = "";
+    }
+    if (p != NULL && *p != '\0') {
+      ++showsep;
+    }
+    gtk_label_set_label (GTK_LABEL (marquee->infoArtistLab), p);
   }
+
+  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokptr);
+  if (marquee->infoTitleLab != NULL) {
+    if (p != NULL && *p == MSG_ARGS_EMPTY) {
+      p = "";
+    }
+    if (p != NULL && *p != '\0') {
+      ++showsep;
+    }
+    gtk_label_set_label (GTK_LABEL (marquee->infoTitleLab), p);
+  }
+
+  if (showsep == 2) {
+    gtk_label_set_label (GTK_LABEL (marquee->infoSepLab), " / ");
+  } else {
+    gtk_label_set_label (GTK_LABEL (marquee->infoSepLab), "");
+  }
+
   /* first entry is the main dance */
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokptr);
-  if (*p == MSG_ARGS_EMPTY) {
+  if (p != NULL && *p == MSG_ARGS_EMPTY) {
     p = "";
   }
   gtk_label_set_label (GTK_LABEL (marquee->danceLab), p);

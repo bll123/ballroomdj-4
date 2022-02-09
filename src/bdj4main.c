@@ -590,14 +590,10 @@ mainSendMarqueeData (maindata_t *mainData)
   sbuff [0] = '\0';
 
   dstr = musicqGetData (mainData->musicQueue, mainData->musicqPlayIdx, 0, TAG_ARTIST);
-  if (dstr == NULL) { tstr = ""; }
-  data = musicqGetData (mainData->musicQueue, mainData->musicqPlayIdx, 0, TAG_TITLE);
-  tstr = "";
-  if (dstr != NULL && data != NULL) {
-    tstr = " / ";
-  }
-  if (data == NULL) { data = ""; }
-  snprintf (tbuff, sizeof (tbuff), "%s%s%s%c", dstr, tstr, data, MSG_ARGS_RS);
+  if (dstr == NULL || *dstr == '\0') { dstr = MSG_ARGS_EMPTY_STR; }
+  tstr = musicqGetData (mainData->musicQueue, mainData->musicqPlayIdx, 0, TAG_TITLE);
+  if (tstr == NULL || *tstr == '\0') { tstr = MSG_ARGS_EMPTY_STR; }
+  snprintf (tbuff, sizeof (tbuff), "%s%c%s%c", dstr, MSG_ARGS_RS, tstr, MSG_ARGS_RS);
   strlcat (sbuff, tbuff, sizeof (sbuff));
 
   if (musicqLen > 0) {
