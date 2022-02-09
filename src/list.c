@@ -321,7 +321,7 @@ listGetIdx (list_t *list, listkey_t *key)
   return ridx;
 }
 
-listidx_t
+void
 listSet (list_t *list, listitem_t *item)
 {
   listidx_t       loc = 0L;

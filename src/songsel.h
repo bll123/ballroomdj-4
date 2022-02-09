@@ -19,6 +19,8 @@ typedef struct {
 typedef struct {
   nlistidx_t    idx;
   dbidx_t       dbidx;
+  nlistidx_t    rating;
+  nlistidx_t    level;
   nlistidx_t    attrIdx [SONGSEL_ATTR_MAX];
   double        percentage;
 } songselsongdata_t;
@@ -32,7 +34,7 @@ typedef struct {
 } songselperc_t;
 
 typedef struct {
-  nlistidx_t  danceKey;
+  nlistidx_t  danceIdx;
   nlist_t     *songIdxList;
   queue_t     *currentIndexes;
   nlist_t     *currentIdxList;

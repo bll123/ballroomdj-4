@@ -91,7 +91,8 @@ typedef enum {
 
 #define MSG_ARGS_RS         0x1E      // RS
 #define MSG_ARGS_RS_STR     "\x1E"
-#define MSG_ARGS_EMPTY_STR  "\x03"    // ETX
+#define MSG_ARGS_EMPTY      0x03      // ETX
+#define MSG_ARGS_EMPTY_STR  "\x03"
 
 size_t    msgEncode (bdjmsgroute_t routefrom, bdjmsgroute_t route,
               bdjmsgmsg_t msg, char *args, char *msgbuff, size_t mlen);

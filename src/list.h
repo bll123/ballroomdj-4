@@ -80,7 +80,7 @@ ssize_t     listGetCount (list_t *list);
 listidx_t   listGetIdx (list_t *list, listkey_t *key);
 void        listSetSize (list_t *list, ssize_t size);
 void        listSetVersion (list_t *list, ssize_t version);
-listidx_t   listSet (list_t *list, listitem_t *item);
+void        listSet (list_t *list, listitem_t *item);
 void        *listGetData (list_t *list, char *keystr);
 void        *listGetDataByIdx (list_t *list, listidx_t idx);
 ssize_t     listGetNumByIdx (list_t *list, listidx_t idx);

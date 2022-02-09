@@ -55,7 +55,7 @@ nlistSetFreeHook (nlist_t *list, listFree_t valueFreeHook)
   list->valueFreeHook = valueFreeHook;
 }
 
-nlistidx_t
+void
 nlistSetData (nlist_t *list, nlistidx_t lidx, void *data)
 {
   listitem_t    item;
@@ -63,16 +63,16 @@ nlistSetData (nlist_t *list, nlistidx_t lidx, void *data)
   item.key.idx = lidx;
   item.valuetype = VALUE_DATA;
   item.value.data = data;
-  return listSet (list, &item);
+  listSet (list, &item);
 }
 
-nlistidx_t
+void
 nlistSetStr (nlist_t *list, nlistidx_t lidx, char *data)
 {
   return nlistSetData (list, lidx, data);
 }
 
-nlistidx_t
+void
 nlistSetNum (nlist_t *list, nlistidx_t lidx, ssize_t data)
 {
   listitem_t    item;
@@ -80,10 +80,10 @@ nlistSetNum (nlist_t *list, nlistidx_t lidx, ssize_t data)
   item.key.idx = lidx;
   item.valuetype = VALUE_NUM;
   item.value.num = data;
-  return listSet (list, &item);
+  listSet (list, &item);
 }
 
-nlistidx_t
+void
 nlistSetDouble (nlist_t *list, nlistidx_t lidx, double data)
 {
   listitem_t    item;
@@ -91,10 +91,10 @@ nlistSetDouble (nlist_t *list, nlistidx_t lidx, double data)
   item.key.idx = lidx;
   item.valuetype = VALUE_DOUBLE;
   item.value.dval = data;
-  return listSet (list, &item);
+  listSet (list, &item);
 }
 
-nlistidx_t
+void
 nlistSetList (nlist_t *list, nlistidx_t lidx, nlist_t *data)
 {
   listitem_t    item;
@@ -102,10 +102,10 @@ nlistSetList (nlist_t *list, nlistidx_t lidx, nlist_t *data)
   item.key.idx = lidx;
   item.valuetype = VALUE_LIST;
   item.value.data = data;
-  return listSet (list, &item);
+  listSet (list, &item);
 }
 
-nlistidx_t
+void
 nlistIncrement (nlist_t *list, nlistidx_t lidx)
 {
   listitem_t      item;
@@ -121,10 +121,10 @@ nlistIncrement (nlist_t *list, nlistidx_t lidx)
   item.key.idx = lidx;
   item.valuetype = VALUE_NUM;
   item.value.num = value;
-  return listSet (list, &item);
+  listSet (list, &item);
 }
 
-nlistidx_t
+void
 nlistDecrement (nlist_t *list, nlistidx_t lidx)
 {
   listitem_t      item;
@@ -140,7 +140,7 @@ nlistDecrement (nlist_t *list, nlistidx_t lidx)
   item.key.idx = lidx;
   item.valuetype = VALUE_NUM;
   item.value.num = value;
-  return listSet (list, &item);
+  listSet (list, &item);
 }
 
 void *

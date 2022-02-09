@@ -301,8 +301,6 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_QUEUE_PLAYLIST: {
           logMsg (LOG_DBG, LOG_MSGS, "got: playlist-queue %s", args);
-          /* if the current managed queue is the same as the playback queue */
-          /* then the player will be started */
           mainQueuePlaylist (mainData, args);
           break;
         }
@@ -606,9 +604,9 @@ mainSendMarqueeData (maindata_t *mainData)
     for (ssize_t i = 0; i <= mqLen; ++i) {
       if ((i > 0 && mainData->playerState == PL_STATE_IN_GAP) ||
           (i > 1 && mainData->playerState == PL_STATE_IN_FADEOUT)) {
-        dstr = "";
+        dstr = MSG_ARGS_EMPTY_STR;
       } else if (i > musicqLen) {
-        dstr = "";
+        dstr = MSG_ARGS_EMPTY_STR;
       } else {
         tstr = NULL;
         song = musicqGetByIdx (mainData->musicQueue, mainData->musicqPlayIdx, i);
@@ -617,13 +615,13 @@ mainSendMarqueeData (maindata_t *mainData)
           /* will be filled in with the dance name. */
           tstr = songGetData (song, TAG_MQDISPLAY);
         }
-        if (tstr != NULL) {
+        if (tstr != NULL && *tstr) {
           dstr = tstr;
         } else {
           dstr = musicqGetDance (mainData->musicQueue, mainData->musicqPlayIdx, i);
         }
         if (dstr == NULL) {
-          dstr = "";
+          dstr = MSG_ARGS_EMPTY_STR;
         }
       }
 
@@ -808,11 +806,14 @@ mainQueueDance (maindata_t *mainData, char *args, ssize_t count)
   logMsg (LOG_DBG, LOG_MAIN, "push pl %s", plname);
   mainMusicQueueFill (mainData);
   mainMusicQueuePrep (mainData);
+  mainData->marqueeChanged [mi] = true;
+  mainData->musicqChanged [mi] = true;
+  mainSendMusicqStatus (mainData, NULL, 0);
+#if 0 // make this an option probably
   if (mainData->musicqPlayIdx == (musicqidx_t) mi) {
     mainMusicQueuePlay (mainData);
   }
-  mainData->marqueeChanged [mi] = true;
-  mainData->musicqChanged [mi] = true;
+#endif
 }
 
 static void
@@ -838,9 +839,12 @@ mainQueuePlaylist (maindata_t *mainData, char *args)
     mainData->marqueeChanged [mi] = true;
     mainData->musicqChanged [mi] = true;
 
+    mainSendMusicqStatus (mainData, NULL, 0);
+#if 0 // make this an option probably
     if (mainData->musicqPlayIdx == (musicqidx_t) mi) {
       mainMusicQueuePlay (mainData);
     }
+#endif
   } else {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Queue Playlist failed: %s", plname);
   }

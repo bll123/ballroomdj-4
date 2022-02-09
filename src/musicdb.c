@@ -87,6 +87,7 @@ dbLoad (db_t *db, char *fn)
   nlistidx_t  dkey;
   nlistidx_t  iteridx;
   slistidx_t  dbidx;
+  slistidx_t  siteridx;
   bool        ok;
 
 
@@ -129,12 +130,19 @@ dbLoad (db_t *db, char *fn)
         /* a double check to make sure the song has the correct rrn */
         songSetNum (song, TAG_RRN, i);
       }
-      dbidx = slistSetData (db->songs, fstr, song);
-      songSetNum (song, TAG_DBIDX, dbidx);
+      slistSetData (db->songs, fstr, song);
     }
     ++db->count;
   }
   slistSort (db->songs);
+
+  /* set the database index according to the sorted values */
+  dbidx = 0;
+  slistStartIterator (db->songs, &siteridx);
+  while ((song = slistIterateValueData (db->songs, &siteridx)) != NULL) {
+    songSetNum (song, TAG_DBIDX, dbidx);
+    ++dbidx;
+  }
 
   nlistStartIterator (db->danceCounts, &iteridx);
   while ((dkey = nlistIterateKey (db->danceCounts, &iteridx)) >= 0) {
@@ -159,7 +167,13 @@ dbGetByName (char *songname)
 song_t *
 dbGetByIdx (dbidx_t idx)
 {
-  song_t *song = slistGetDataByIdx (musicdb->songs, idx);
+  song_t  *song;
+
+  if (idx < 0) {
+    return NULL;
+  }
+
+  song = slistGetDataByIdx (musicdb->songs, idx);
   return song;
 }
 

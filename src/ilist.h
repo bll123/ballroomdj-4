@@ -16,11 +16,11 @@ ssize_t   ilistGetVersion (ilist_t *list);
 ssize_t   ilistGetCount (ilist_t *list);
 void      ilistSetSize (ilist_t *, ssize_t);
   /* set routines */
-ilistidx_t ilistSetData (list_t *, ilistidx_t ikey, ilistidx_t lidx, void *value);
-ilistidx_t ilistSetStr (list_t *, ilistidx_t ikey, ilistidx_t lidx, char *value);
-ilistidx_t ilistSetNum (list_t *, ilistidx_t ikey, ilistidx_t lidx, ssize_t value);
-ilistidx_t ilistSetDouble (list_t *, ilistidx_t ikey, ilistidx_t lidx, double value);
-ilistidx_t ilistSetList (list_t *, ilistidx_t ikey, ilistidx_t lidx, slist_t *slist);
+void      ilistSetData (list_t *, ilistidx_t ikey, ilistidx_t lidx, void *value);
+void      ilistSetStr (list_t *, ilistidx_t ikey, ilistidx_t lidx, char *value);
+void      ilistSetNum (list_t *, ilistidx_t ikey, ilistidx_t lidx, ssize_t value);
+void      ilistSetDouble (list_t *, ilistidx_t ikey, ilistidx_t lidx, double value);
+void      ilistSetList (list_t *, ilistidx_t ikey, ilistidx_t lidx, slist_t *slist);
   /* get routines */
 void      *ilistGetData (list_t *, ilistidx_t ikey, ilistidx_t lidx);
 char      *ilistGetStr (list_t *, ilistidx_t ikey, ilistidx_t lidx);

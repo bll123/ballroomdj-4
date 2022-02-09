@@ -48,7 +48,7 @@ slistSetSize (slist_t *list, ssize_t siz)
   listSetSize (list, siz);
 }
 
-slistidx_t
+void
 slistSetData (slist_t *list, char *sidx, void *data)
 {
   listitem_t    item;
@@ -56,16 +56,16 @@ slistSetData (slist_t *list, char *sidx, void *data)
   slistSetKey (list, &item.key, sidx);
   item.valuetype = VALUE_DATA;
   item.value.data = data;
-  return listSet (list, &item);
+  listSet (list, &item);
 }
 
-slistidx_t
+void
 slistSetStr (slist_t *list, char *sidx, char *data)
 {
-  return slistSetData (list, sidx, data);
+  slistSetData (list, sidx, data);
 }
 
-slistidx_t
+void
 slistSetNum (slist_t *list, char *sidx, ssize_t data)
 {
   listitem_t    item;
@@ -73,10 +73,10 @@ slistSetNum (slist_t *list, char *sidx, ssize_t data)
   slistSetKey (list, &item.key, sidx);
   item.valuetype = VALUE_NUM;
   item.value.num = data;
-  return listSet (list, &item);
+  listSet (list, &item);
 }
 
-slistidx_t
+void
 slistSetDouble (slist_t *list, char *sidx, double data)
 {
   listitem_t    item;
@@ -84,10 +84,10 @@ slistSetDouble (slist_t *list, char *sidx, double data)
   slistSetKey (list, &item.key, sidx);
   item.valuetype = VALUE_DOUBLE;
   item.value.dval = data;
-  return listSet (list, &item);
+  listSet (list, &item);
 }
 
-slistidx_t
+void
 slistSetList (slist_t *list, char *sidx, slist_t *data)
 {
   listitem_t    item;
@@ -95,7 +95,7 @@ slistSetList (slist_t *list, char *sidx, slist_t *data)
   slistSetKey (list, &item.key, sidx);
   item.valuetype = VALUE_LIST;
   item.value.data = data;
-  return listSet (list, &item);
+  listSet (list, &item);
 }
 
 slistidx_t

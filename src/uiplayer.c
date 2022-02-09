@@ -696,9 +696,9 @@ uiplayerProcessMusicqStatusData (uiplayer_t *uiplayer, char *args)
 {
   char          *p;
   char          *tokstr;
-  dbidx_t       dbidx;
-  song_t        *song;
-  char          *data;
+  dbidx_t       dbidx = -1;
+  song_t        *song = NULL;
+  char          *data = NULL;
   ilistidx_t    danceIdx;
   dance_t       *dances;
 
@@ -706,6 +706,9 @@ uiplayerProcessMusicqStatusData (uiplayer_t *uiplayer, char *args)
 
   p = strtok_r (args, MSG_ARGS_RS_STR, &tokstr);
   dbidx = atol (p);
+  if (dbidx < 0) {
+    return;
+  }
 
   song = dbGetByIdx (dbidx);
   if (song == NULL) {

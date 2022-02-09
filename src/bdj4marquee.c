@@ -50,6 +50,7 @@ typedef struct {
   gulong          unmaxSignal;
   int             newFontSize;
   int             setFontSize;
+  double          fontAdjustment;
   int             mqLen;
   int             lastHeight;
   int             priorSize;
@@ -65,6 +66,7 @@ typedef struct {
 } marquee_t;
 
 #define MARQUEE_EXIT_WAIT_COUNT   20
+#define INFO_LAB_HEIGHT_ADJUST    0.85
 
 static bool     marqueeConnectingCallback (void *udata, programstate_t programState);
 static bool     marqueeHandshakeCallback (void *udata, programstate_t programState);
@@ -85,6 +87,7 @@ static gboolean marqueeWinState (GtkWidget *window, GdkEventWindowState *event,
 static void marqueeStateChg (GtkWidget *w, GtkStateType flags, gpointer userdata);
 static void marqueeSigHandler (int sig);
 static void marqueeSetFontSize (marquee_t *marquee, GtkWidget *lab, char *style, int sz);
+static void marqueeCalcFontSizes (marquee_t *marquee, int sz, int *spacing, int *newsz);
 static void marqueeAdjustFontSizes (marquee_t *marquee, int sz);
 static void marqueeAdjustFontCallback (GtkWidget *w, GtkAllocation *retAllocSize, gpointer userdata);
 static void marqueePopulate (marquee_t *marquee, char *args);
@@ -146,6 +149,7 @@ main (int argc, char *argv[])
   marquee.unmaxSignal = 0;
   marquee.newFontSize = 0;
   marquee.setFontSize = 0;
+  marquee.fontAdjustment = 0.0;
 
 #if _define_SIGHUP
   procutilCatchSignal (marqueeSigHandler, SIGHUP);
@@ -296,12 +300,12 @@ marqueeActivate (GApplication *app, gpointer userdata)
   marquee->window = window;
 
   marquee->vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 5);
-  gtk_widget_set_margin_top (GTK_WIDGET (marquee->vbox), 20);
+  gtk_widget_set_margin_top (GTK_WIDGET (marquee->vbox), 10);
   gtk_widget_set_margin_bottom (GTK_WIDGET (marquee->vbox), 10);
   gtk_container_add (GTK_CONTAINER (window), marquee->vbox);
   gtk_widget_set_hexpand (GTK_WIDGET (marquee->vbox), TRUE);
   gtk_widget_set_vexpand (GTK_WIDGET (marquee->vbox), TRUE);
-  marquee->marginTotal = 30;
+  marquee->marginTotal = 20;
 
   marquee->pbar = gtk_progress_bar_new ();
   gtk_box_pack_start (GTK_BOX (marquee->vbox), GTK_WIDGET (marquee->pbar),
@@ -409,7 +413,7 @@ marqueeMainLoop (void *tmarquee)
     marqueeSetFontSize (marquee, marquee->danceLab, "bold", marquee->setFontSize);
     marqueeSetFontSize (marquee, marquee->countdownTimerLab, "bold", marquee->setFontSize);
     if (marquee->infoLab != NULL) {
-      marqueeSetFontSize (marquee, marquee->infoLab, "", marquee->setFontSize - 10);
+      marqueeSetFontSize (marquee, marquee->infoLab, "", (int) (marquee->setFontSize * INFO_LAB_HEIGHT_ADJUST));
     }
 
     for (int i = 0; i < marquee->mqLen; ++i) {
@@ -675,22 +679,20 @@ marqueeSetFontSize (marquee_t *marquee, GtkWidget *lab, char *style, int sz)
   gtk_label_set_attributes (GTK_LABEL (lab), attrlist);
 }
 
+/* getting this to work correctly is a pain */
 static void
-marqueeAdjustFontSizes (marquee_t *marquee, int sz)
+marqueeCalcFontSizes (marquee_t *marquee, int sz, int *spacing, int *newsz)
 {
-  int             newsz;
-  int             spacing;
+  int             newsza;
   gint            width;
   gint            height;
   int             pbarHeight;
   int             sepHeight;
+  int             infoHeight = 0;
   GtkAllocation   allocSize;
+  int             lspacing;
+  int             lnewsz;
 
-  if (marquee->inResize) {
-    return;
-  }
-
-  marquee->inResize = true;
 
   gtk_window_get_size (GTK_WINDOW (marquee->window), &width, &height);
 
@@ -698,23 +700,61 @@ marqueeAdjustFontSizes (marquee_t *marquee, int sz)
   pbarHeight = allocSize.height;
   gtk_widget_get_allocation (GTK_WIDGET (marquee->sep), &allocSize);
   sepHeight = allocSize.height;
-
-  marquee->newFontSize = sz;
-  if (sz == 0) {
-    spacing = gtk_box_get_spacing (GTK_BOX (marquee->vbox));
-    /* 40 = space needed so that the window can be shrunk */
-    newsz = (height - 40 - marquee->marginTotal - pbarHeight - sepHeight -
-        (spacing * marquee->mqLen)) / (marquee->mqLen + 2);
-    spacing = newsz * 0.15;
-    newsz = (height - 40 - marquee->marginTotal - pbarHeight - sepHeight -
-        (spacing * marquee->mqLen)) / (marquee->mqLen + 2);
-  } else {
-    /* the old size to restore from before being maximized */
-    newsz = sz;
-    spacing = newsz * 0.15;
+  if (marquee->mqShowInfo) {
+    gtk_widget_get_allocation (GTK_WIDGET (marquee->infoLab), &allocSize);
+    infoHeight = allocSize.height;
   }
 
+  marquee->newFontSize = sz;
+
+  if (sz == 0) {
+    int     numitems;
+    int     numtextitems;
+
+    /* pbar, dance, info, sep, mqlen */
+    numitems = 3 + marquee->mqShowInfo + marquee->mqLen + 2;
+    /* dance, mqlen */
+    numtextitems = 1 + marquee->mqLen;
+
+    lspacing = gtk_box_get_spacing (GTK_BOX (marquee->vbox));
+    /* 40 is extra space needed so the marquee can be shrunk */
+    newsza = (height - 40 - marquee->marginTotal - pbarHeight - sepHeight -
+        infoHeight - (lspacing * numitems)) / numtextitems;
+    lspacing = (int) (newsza * 0.05);
+    infoHeight = (int) (newsza * INFO_LAB_HEIGHT_ADJUST);
+    lnewsz = (height - 40 - marquee->marginTotal - pbarHeight - sepHeight -
+        infoHeight - (lspacing * numitems)) / numtextitems;
+    if (lnewsz > newsza) {
+      lnewsz = newsza;
+    }
+  } else {
+    /* the old size to restore from before being maximized */
+    lnewsz = sz;
+    lspacing = (int) (lnewsz * 0.05);
+  }
+
+  *spacing = lspacing;
+  *newsz = lnewsz;
+}
+
+static void
+marqueeAdjustFontSizes (marquee_t *marquee, int sz)
+{
+  int   spacing = 0;
+  int   newsz = 0;
+
+  if (marquee->inResize) {
+    return;
+  }
+
+  marquee->inResize = true;
+
+  marqueeCalcFontSizes (marquee, sz, &spacing, &newsz);
+
+  /* only set the size of the dance label and the info label */
+  /* the callback will determine the true size, and make adjustments */
   marqueeSetFontSize (marquee, marquee->danceLab, "bold", newsz);
+  marqueeSetFontSize (marquee, marquee->infoLab, "", (int) (newsz * INFO_LAB_HEIGHT_ADJUST));
 
   marquee->sizeSignal = g_signal_connect (marquee->danceLab, "size-allocate",
       G_CALLBACK (marqueeAdjustFontCallback), marquee);
@@ -747,35 +787,18 @@ marqueeAdjustFontCallback (GtkWidget *w, GtkAllocation *retAllocSize, gpointer u
   g_signal_handler_disconnect (GTK_WIDGET (w), marquee->sizeSignal);
   marquee->sizeSignal = 0;
 
-  gtk_window_get_size (GTK_WINDOW (marquee->window), &width, &height);
-
-  gtk_widget_get_allocation (GTK_WIDGET (marquee->pbar), &allocSize);
-  pbarHeight = allocSize.height;
-  gtk_widget_get_allocation (GTK_WIDGET (marquee->sep), &allocSize);
-  sepHeight = allocSize.height;
-
-  spacing = gtk_box_get_spacing (GTK_BOX (marquee->vbox));
-
-  if (marquee->newFontSize == 0) {
-    /* 40 = space needed so that the window can be shrunk */
-    newsz = (height - 40 - marquee->marginTotal - pbarHeight - sepHeight -
-        (spacing * marquee->mqLen)) / (marquee->mqLen + 2);
-    spacing = newsz * 0.15;
-    newsz = (height - 40 - marquee->marginTotal - pbarHeight - sepHeight -
-        (spacing * marquee->mqLen)) / (marquee->mqLen + 2);
-  } else {
-    newsz = marquee->newFontSize;
-    spacing = newsz * 0.15;
-  }
+  marqueeCalcFontSizes (marquee, marquee->newFontSize, &spacing, &newsz);
 
   gtk_box_set_spacing (GTK_BOX (marquee->vbox), spacing);
-
 
   /* newsz is the maximum height available */
   /* given the allocation size, determine the actual size available */
   dnewsz = (double) newsz;
-  dheight = (double) retAllocSize->height;
-  dnewsz = round (dnewsz * (dnewsz / dheight));
+  if (marquee->fontAdjustment == 0.0) {
+    dheight = (double) retAllocSize->height;
+    marquee->fontAdjustment = (dnewsz / dheight);
+  }
+  dnewsz = round (dnewsz * marquee->fontAdjustment);
   newsz = (int) dnewsz;
   marquee->setFontSize = newsz;
 
@@ -799,11 +822,14 @@ marqueePopulate (marquee_t *marquee, char *args)
   }
   /* first entry is the main dance */
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokptr);
+  if (*p == MSG_ARGS_EMPTY) {
+    p = "";
+  }
   gtk_label_set_label (GTK_LABEL (marquee->danceLab), p);
 
   for (int i = 0; i < marquee->mqLen; ++i) {
     p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokptr);
-    if (p != NULL) {
+    if (p != NULL && *p != MSG_ARGS_EMPTY) {
       gtk_label_set_label (GTK_LABEL (marquee->marqueeLabs [i]), p);
     } else {
       gtk_label_set_label (GTK_LABEL (marquee->marqueeLabs [i]), "");

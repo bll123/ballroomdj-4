@@ -56,7 +56,7 @@ ilistSetSize (ilist_t *list, ssize_t siz)
   listSetSize (list, siz);
 }
 
-ilistidx_t
+void
 ilistSetData (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx, void *data)
 {
   listitem_t    item;
@@ -64,7 +64,7 @@ ilistSetData (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx, void *data)
   char          tbuff [40];
 
   if (list == NULL) {
-    return LIST_LOC_INVALID;
+    return;
   }
 
   datalist = nlistGetList (list, ikey);
@@ -77,18 +77,18 @@ ilistSetData (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx, void *data)
     item.key.idx = lidx;
     item.valuetype = VALUE_DATA;
     item.value.data = data;
-    return listSet (datalist, &item);
+    listSet (datalist, &item);
   }
-  return LIST_LOC_INVALID;
+  return;
 }
 
-ilistidx_t
+void
 ilistSetStr (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx, char *data)
 {
-  return ilistSetData (list, ikey, lidx, data);
+  ilistSetData (list, ikey, lidx, data);
 }
 
-ilistidx_t
+void
 ilistSetNum (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx, ssize_t data)
 {
   listitem_t    item;
@@ -96,7 +96,7 @@ ilistSetNum (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx, ssize_t data)
   char          tbuff [40];
 
   if (list == NULL) {
-    return LIST_LOC_INVALID;
+    return;
   }
 
   datalist = nlistGetList (list, ikey);
@@ -109,12 +109,12 @@ ilistSetNum (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx, ssize_t data)
     item.key.idx = lidx;
     item.valuetype = VALUE_NUM;
     item.value.num = data;
-    return listSet (datalist, &item);
+    listSet (datalist, &item);
   }
-  return LIST_LOC_INVALID;
+  return;
 }
 
-ilistidx_t
+void
 ilistSetDouble (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx, double data)
 {
   listitem_t    item;
@@ -122,7 +122,7 @@ ilistSetDouble (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx, double data)
   char          tbuff [40];
 
   if (list == NULL) {
-    return LIST_LOC_INVALID;
+    return;
   }
 
   datalist = nlistGetList (list, ikey);
@@ -135,9 +135,9 @@ ilistSetDouble (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx, double data)
     item.key.idx = lidx;
     item.valuetype = VALUE_DOUBLE;
     item.value.dval = data;
-    return listSet (datalist, &item);
+    listSet (datalist, &item);
   }
-  return LIST_LOC_INVALID;
+  return;
 }
 
 void *

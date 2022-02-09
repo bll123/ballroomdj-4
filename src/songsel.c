@@ -26,7 +26,7 @@ static void  songselRemoveSong (songsel_t *songsel,
 static songselsongdata_t  *searchForPercentage (songseldance_t *songseldance,
                           double dval);
 static songselperc_t  *songselInitPerc (list_t *plist, nlistidx_t idx,
-                          ssize_t weight, nlistidx_t *ridx);
+                          ssize_t weight);
 static void  songselDanceFree (void *titem);
 static void  songselIdxFree (void *titem);
 static void  songselSongDataFree (void *titem);
@@ -35,11 +35,39 @@ static void  calcPercentages (songseldance_t *songseldance);
 static void  calcAttributePerc (songsel_t *songsel,
                 songseldance_t *songseldance, songselattr_t attridx);
 
+/*
+ *  danceSelList:
+ *    indexed by the dance index.
+ *    contains a 'songseldance_t'; the song selection list for the dance.
+ *  song selection dance:
+ *    indexed by the dbidx.
+ *    contains:
+ *      danceidx
+ *      song index list
+ *      current index list
+ *      current indexes
+ *      attribute lists (rating, level)
+ *        these have the weights by rating/level.
+ *  song index list:
+ *    indexed by the list index.
+ *    this is the master list, and the current index list will be rebuilt
+ *    from this.
+ *  current indexes:
+ *    the current set of list indexes to choose from.
+ *    starts as a copy of a song index list.
+ *    this is a queue so that entries may be removed.
+ *    when emptied, it is re-copied from the song index list.
+ *  current index list:
+ *    a simple list of list indexes.
+ *    this is rebuilt entirely on every removal.
+ *
+ */
+
 songsel_t *
 songselAlloc (list_t *dancelist, songselFilter_t filterProc, void *userdata)
 {
   songsel_t       *songsel;
-  nlistidx_t       dkey;
+  nlistidx_t      danceIdx;
   song_t          *song;
   dbidx_t         dbidx;
   songseldance_t  *songseldance;
@@ -47,6 +75,7 @@ songselAlloc (list_t *dancelist, songselFilter_t filterProc, void *userdata)
   level_t         *levels;
   autosel_t       *autosel;
   nlistidx_t      iteridx;
+  nlistidx_t      siteridx;
   nlistidx_t      dbiteridx;
 
 
@@ -63,11 +92,11 @@ songselAlloc (list_t *dancelist, songselFilter_t filterProc, void *userdata)
 
   nlistStartIterator (dancelist, &iteridx);
     /* for each dance : first set up all the lists */
-  while ((dkey = nlistIterateKey (dancelist, &iteridx)) >= 0) {
-    logMsg (LOG_DBG, LOG_SONGSEL, "adding dance: %ld", dkey);
+  while ((danceIdx = nlistIterateKey (dancelist, &iteridx)) >= 0) {
+    logMsg (LOG_DBG, LOG_SONGSEL, "adding dance: %ld", danceIdx);
     songseldance = malloc (sizeof (songseldance_t));
     assert (songseldance != NULL);
-    songseldance->danceKey = dkey;
+    songseldance->danceIdx = danceIdx;
     songseldance->songIdxList = nlistAlloc ("songsel-songidx",
         LIST_ORDERED, songselSongDataFree);
     songseldance->currentIndexes = queueAlloc (songselIdxFree);
@@ -77,7 +106,7 @@ songselAlloc (list_t *dancelist, songselFilter_t filterProc, void *userdata)
         nlistAlloc ("songsel-rating", LIST_ORDERED, songselPercFree);
     songseldance->attrList [SONGSEL_ATTR_LEVEL] =
         nlistAlloc ("songsel-level", LIST_ORDERED, songselPercFree);
-    nlistSetData (songsel->danceSelList, dkey, songseldance);
+    nlistSetData (songsel->danceSelList, danceIdx, songseldance);
   }
 
   ratings = bdjvarsdf [BDJVDF_RATINGS];
@@ -87,18 +116,17 @@ songselAlloc (list_t *dancelist, songselFilter_t filterProc, void *userdata)
   logMsg (LOG_DBG, LOG_SONGSEL, "processing songs");
   dbStartIterator (&dbiteridx);
   while ((song = dbIterate (&dbidx, &dbiteridx)) != NULL) {
-    songselperc_t   *perc = NULL;
-    songselsongdata_t   *songdata = NULL;
-    songselidx_t    *songidx = NULL;
-    nlistidx_t       rating = 0;
-    nlistidx_t       level = 0;
-    nlistidx_t       ratingIdx = 0;
-    nlistidx_t       levelIdx = 0;
-    ssize_t         weight = 0;
+    songselperc_t     *perc = NULL;
+    songselsongdata_t *songdata = NULL;
+    nlistidx_t        rating = 0;
+    nlistidx_t        level = 0;
+    nlistidx_t        ratingIdx = 0;
+    nlistidx_t        levelIdx = 0;
+    ssize_t           weight = 0;
 
 
-    dkey = songGetNum (song, TAG_DANCE);
-    songseldance = nlistGetData (songsel->danceSelList, dkey);
+    danceIdx = songGetNum (song, TAG_DANCE);
+    songseldance = nlistGetData (songsel->danceSelList, danceIdx);
     if (songseldance == NULL) {
       continue;
     }
@@ -132,7 +160,7 @@ songselAlloc (list_t *dancelist, songselFilter_t filterProc, void *userdata)
     perc = nlistGetData (songseldance->attrList [SONGSEL_ATTR_RATING], rating);
     if (perc == NULL) {
       perc = songselInitPerc (songseldance->attrList [SONGSEL_ATTR_RATING],
-          rating, weight, &ratingIdx);
+          rating, weight);
     }
     ++perc->origCount;
     ++perc->count;
@@ -141,37 +169,57 @@ songselAlloc (list_t *dancelist, songselFilter_t filterProc, void *userdata)
     perc = nlistGetData (songseldance->attrList [SONGSEL_ATTR_LEVEL], level);
     if (perc == NULL) {
       perc = songselInitPerc (songseldance->attrList [SONGSEL_ATTR_LEVEL],
-          level, weight, &levelIdx);
+          level, weight);
     }
     ++perc->origCount;
     ++perc->count;
 
     songdata = malloc (sizeof (songselsongdata_t));
     assert (songdata != NULL);
-    songidx = malloc (sizeof (songselidx_t));
-    assert (songidx != NULL);
     songdata->dbidx = dbidx;
-    songdata->attrIdx [SONGSEL_ATTR_RATING] = ratingIdx;
-    songdata->attrIdx [SONGSEL_ATTR_LEVEL] = levelIdx;
     songdata->percentage = 0.0;
-    songidx->idx = nlistSetData (songseldance->songIdxList, dbidx, songdata);
-    songdata->idx = songidx->idx;
-    queuePush (songseldance->currentIndexes, songidx);
-    nlistSetNum (songseldance->currentIdxList, songidx->idx, songidx->idx);
+    songdata->attrIdx [SONGSEL_ATTR_RATING] = rating;
+    songdata->attrIdx [SONGSEL_ATTR_LEVEL] = level;
+    nlistSetData (songseldance->songIdxList, dbidx, songdata);
   }
 
+  /* for each dance */
   nlistStartIterator (songsel->danceSelList, &iteridx);
-    /* for each dance */
   while ((songseldance =
+      nlistIterateValueData (songsel->danceSelList, &iteridx)) != NULL) {
+    ssize_t           idx;
+    songselidx_t      *songidx = NULL;
+    songselsongdata_t *songdata = NULL;
+
+    /* for each selected song for that dance */
+    /* the rating/level attribute indexes must be set afterwards */
+    /* the indexes may only be determined after the list has been built */
+    logMsg (LOG_DBG, LOG_SONGSEL, "save list indexes.");
+    idx = 0;
+    nlistStartIterator (songseldance->songIdxList, &siteridx);
+    while ((songdata =
         nlistIterateValueData (songsel->danceSelList, &iteridx)) != NULL) {
+      /* save the list index */
+      songidx = malloc (sizeof (songselidx_t));
+      assert (songidx != NULL);
+      songidx->idx = idx;
+      songdata->idx = idx;
+      queuePush (songseldance->currentIndexes, songidx);
+      nlistSetNum (songseldance->currentIdxList, songidx->idx, songidx->idx);
+      ++idx;
+    }
+
     logMsg (LOG_DBG, LOG_SONGSEL, "rating: calcAttributePerc");
     calcAttributePerc (songsel, songseldance, SONGSEL_ATTR_RATING);
+
     logMsg (LOG_DBG, LOG_SONGSEL, "level: calcAttributePerc");
     calcAttributePerc (songsel, songseldance, SONGSEL_ATTR_LEVEL);
+
     logMsg (LOG_DBG, LOG_SONGSEL, "calculate running totals");
     calcPercentages (songseldance);
+
     logMsg (LOG_DBG, LOG_SONGSEL, "dance %ld : %ld songs",
-        songseldance->danceKey, nlistGetCount (songseldance->songIdxList));
+        songseldance->danceIdx, nlistGetCount (songseldance->songIdxList));
   }
 
   logProcEnd (LOG_PROC, "songselAlloc", "");
@@ -214,7 +262,7 @@ songselSelect (songsel_t *songsel, nlistidx_t danceIdx)
   if (songdata != NULL) {
     song = dbGetByIdx (songdata->dbidx);
     logMsg (LOG_DBG, LOG_SONGSEL, "selected idx:%zd dbidx:%zd from %zd",
-        songdata->idx, songdata->dbidx, songseldance->danceKey);
+        songdata->idx, songdata->dbidx, songseldance->danceIdx);
     songsel->lastSelection = songdata;
   }
   return song;
@@ -238,7 +286,7 @@ songselSelectFinalize (songsel_t *songsel, nlistidx_t danceIdx)
   if (songsel->lastSelection != NULL) {
     songdata = songsel->lastSelection;
     logMsg (LOG_DBG, LOG_SONGSEL, "removing idx:%zd dbidx:%zd from %zd",
-        songdata->idx, songdata->dbidx, songseldance->danceKey);
+        songdata->idx, songdata->dbidx, songseldance->danceIdx);
     songselRemoveSong (songsel, songseldance, songdata);
     songsel->lastSelection = NULL;
   }
@@ -358,7 +406,7 @@ calcPercentages (songseldance_t *songseldance)
   while ((dataidx = nlistIterateValueNum (currentIdxList, &iteridx)) >= 0) {
     songdata = nlistGetDataByIdx (songIdxList, dataidx);
     for (songselattr_t i = 0; i < SONGSEL_ATTR_MAX; ++i) {
-      perc = nlistGetDataByIdx (songseldance->attrList [i], songdata->attrIdx [i]);
+      perc = nlistGetData (songseldance->attrList [i], songdata->attrIdx [i]);
       if (perc != NULL) {
         wsum += perc->calcperc;
       }
@@ -406,8 +454,7 @@ calcAttributePerc (songsel_t *songsel, songseldance_t *songseldance,
 }
 
 static songselperc_t *
-songselInitPerc (list_t *attrlist, nlistidx_t idx,
-    ssize_t weight, nlistidx_t *ridx)
+songselInitPerc (list_t *attrlist, nlistidx_t idx, ssize_t weight)
 {
   songselperc_t       *perc;
 
@@ -417,7 +464,7 @@ songselInitPerc (list_t *attrlist, nlistidx_t idx,
   perc->weight = weight;
   perc->count = 0;
   perc->calcperc = 0.0;
-  *ridx = nlistSetData (attrlist, idx, perc);
+  nlistSetData (attrlist, idx, perc);
   return perc;
 }
 

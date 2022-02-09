@@ -129,6 +129,7 @@ uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
   GtkCellRenderer   *renderer = NULL;
   GtkTreeViewColumn *column = NULL;
   GtkTreeSelection  *sel;
+  GValue            gvalue = G_VALUE_INIT;
 
   /* temporary */
   tci = uimusicq->musicqManageIdx;
@@ -403,16 +404,26 @@ uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
   renderer = gtk_cell_renderer_text_new ();
   column = gtk_tree_view_column_new_with_attributes ("",
       renderer, "text", MUSICQ_COL_ARTIST, NULL);
-  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
+  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+  gtk_tree_view_column_set_fixed_width (column, 400);
+  gtk_tree_view_column_set_expand (column, TRUE);
+  g_value_init (&gvalue, G_TYPE_INT);
+  g_value_set_int (&gvalue, PANGO_ELLIPSIZE_END);
+  g_object_set_property (G_OBJECT (renderer), "ellipsize", &gvalue);
   gtk_tree_view_append_column (GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree), column);
 
   renderer = gtk_cell_renderer_text_new ();
   column = gtk_tree_view_column_new_with_attributes ("",
       renderer, "text", MUSICQ_COL_TITLE, NULL);
-  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
+  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+  gtk_tree_view_column_set_fixed_width (column, 400);
+  gtk_tree_view_column_set_expand (column, TRUE);
+  g_object_set_property (G_OBJECT (renderer), "ellipsize", &gvalue);
   gtk_tree_view_append_column (GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree), column);
 
   gtk_tree_view_set_model (GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree), NULL);
+
+  g_value_unset (&gvalue);
 
   uimusicq->musicqManageIdx = tci;
   return uimusicq->ui [ci].box;
@@ -542,7 +553,6 @@ uimusicqCreatePlaylistList (uimusicq_t *uimusicq)
   column = gtk_tree_view_column_new_with_attributes ("",
       renderer, "text", PLAYLIST_COL_NAME, NULL);
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
-//  gtk_tree_view_column_set_expand (column, TRUE);
   gtk_tree_view_append_column (GTK_TREE_VIEW (uimusicq->ui [ci].playlistSelect), column);
 
   gtk_tree_view_set_model (GTK_TREE_VIEW (uimusicq->ui [ci].playlistSelect),

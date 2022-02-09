@@ -15,11 +15,11 @@ void      slistFree (void * list);
 ssize_t   slistGetCount (slist_t *list);
 void      slistSetSize (slist_t *, ssize_t);
   /* set routines */
-slistidx_t slistSetData (slist_t *, char *sidx, void *data);
-slistidx_t slistSetStr (slist_t *, char *sidx, char *data);
-slistidx_t slistSetNum (slist_t *, char *sidx, ssize_t lval);
-slistidx_t slistSetDouble (slist_t *, char *sidx, double dval);
-slistidx_t slistSetList (slist_t *, char *sidx, slist_t *listval);
+void      slistSetData (slist_t *, char *sidx, void *data);
+void      slistSetStr (slist_t *, char *sidx, char *data);
+void      slistSetNum (slist_t *, char *sidx, ssize_t lval);
+void      slistSetDouble (slist_t *, char *sidx, double dval);
+void      slistSetList (slist_t *, char *sidx, slist_t *listval);
   /* get routines */
 slistidx_t  slistGetIdx (slist_t *, char *sidx);
 void      *slistGetData (slist_t *, char *sidx);
