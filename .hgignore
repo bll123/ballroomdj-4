@@ -12,6 +12,7 @@ syntax: regexp
 ^licenses/
 ^locale/
 ^packages/
+^plocal/
 ^src/config.*\.h$
 ^src/build/
 ^src/w$

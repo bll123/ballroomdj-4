@@ -8,12 +8,16 @@
 #include <errno.h>
 #include <assert.h>
 #include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 #include <gtk/gtk.h>
 
+#include "bdj4intl.h"
+#include "bdjopt.h"
 #include "bdjstring.h"
 #include "filedata.h"
-#include "locatebdj3.c"
+#include "fileop.h"
 #include "log.h"
 #include "pathutil.h"
 #include "portability.h"
@@ -22,16 +26,23 @@
 #include "uiutils.h"
 
 typedef struct {
-  char            *loc;
+  char            *target;
+  char            unpackdir [MAXPATHLEN];
   GtkApplication  *app;
   GtkWidget       *window;
-  GtkWidget       *locEntry;
-  GtkEntryBuffer  *locBuffer;
+  GtkWidget       *targetEntry;
+  GtkWidget       *reinstWidget;
+  GtkWidget       *feedbackMsg;
+  GtkEntryBuffer  *targetBuffer;
   GtkTextBuffer   *dispBuffer;
+  GtkWidget       *dispTextView;
   mstime_t        validateTimer;
+  bool            newinstall : 1;
+  bool            reinstall : 1;
 } installer_t;
 
-#define INST_TEMP_FILE "tmp/bdj4instout.txt"
+#define INST_TEMP_FILE  "tmp/bdj4instout.txt"
+#define CONV_RUN_FILE   "install/convrun.txt"
 
 static int  installerCreateGui (installer_t *installer, int argc, char *argv []);
 static void installerActivate (GApplication *app, gpointer udata);
@@ -41,21 +52,54 @@ static void installerExit (GtkButton *b, gpointer udata);
 static void installerValidateDir (installer_t *installer, bool okonly);
 static void installerValidateStart (GtkEditable *e, gpointer udata);
 static void installerInstall (GtkButton *b, gpointer udata);
+static void installerSaveTargetDir (installer_t *installer);
+static void installerCopyFiles (installer_t *installer);
+static void installerCleanOldFiles (installer_t *installer);
+static void installerCopyTemplates (installer_t *installer);
+static void installerRunConversion (installer_t *installer);
+static void installerDisplayText (installer_t *installer, char *txt);
+static void installerScrollToEnd (GtkWidget *w, GtkAllocation *retAllocSize, gpointer udata);;
 
 int
 main (int argc, char *argv[])
 {
   installer_t   installer;
   int           status;
+  char          *home;
+  char          tbuff [512];
+  char          buff [512];
 
 
-  installer.loc = "";
+  buff [0] = '\0';
+  home = getenv ("HOME");
+  if (home == NULL) {
+    /* probably a windows machine */
+    home = getenv ("USERPROFILE");
+  }
+
+  snprintf (tbuff, sizeof (tbuff), "%s/BDJ4", home);
+  strlcpy (buff, tbuff, sizeof (buff));
+  if (isMacOS ()) {
+    snprintf (buff, sizeof (buff), "%s/Applications/BallroomDJ4.app", home);
+  }
+  if (isWindows ()) {
+    pathToWinPath (buff, tbuff, sizeof (tbuff));
+  }
+
+  if (! isWindows()) {
+//    snprintf (tbuff, sizeof (tbuff), "%s/.config/BDJ4/installdir.txt", home);
+  }
+
+  installer.target = buff;
   installer.app = NULL;
   installer.window = NULL;
-  installer.locBuffer = NULL;
-  installer.locEntry = NULL;
+  installer.targetBuffer = NULL;
+  installer.targetEntry = NULL;
   installer.dispBuffer = NULL;
   mstimeset (&installer.validateTimer, 3600000);
+  getcwd (installer.unpackdir, MAXPATHLEN);
+  installer.newinstall = true;
+  installer.reinstall = false;
 
   /* for convenience in testing; normally will already be there */
   sysvarsInit (argv [0]);
@@ -68,14 +112,14 @@ main (int argc, char *argv[])
   logMsg (LOG_INSTALL, LOG_IMPORTANT, "conversion-start");
 
   /* initial location */
-  installer.loc = locatebdj3 ();
-  logMsg (LOG_INSTALL, LOG_IMPORTANT, "initial loc: %s", installer.loc);
+  logMsg (LOG_INSTALL, LOG_IMPORTANT, "initial target: %s", installer.target);
 
   g_timeout_add (UI_MAIN_LOOP_TIMER, installerMainLoop, &installer);
   status = installerCreateGui (&installer, 0, NULL);
 
-  if (installer.loc != NULL && *installer.loc) {
-    free (installer.loc);
+  if (installer.target != NULL && *installer.target) {
+// need to do this if using gnu info?
+//    free (installer.target);
   }
   logEnd ();
 
@@ -136,13 +180,37 @@ installerActivate (GApplication *app, gpointer udata)
   gtk_widget_set_hexpand (GTK_WIDGET (hbox), TRUE);
   gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (hbox), FALSE, FALSE, 0);
 
-  widget = gtk_label_new (_("If this is a new BallroomDJ 4 installation, select 'Exit'."));
+  widget = gtk_label_new (_("Enter the destination folder where BallroomDJ 4 will be installed."));
   gtk_widget_set_halign (widget, GTK_ALIGN_START);
   gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (widget), FALSE, FALSE, 0);
 
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
   gtk_widget_set_hexpand (GTK_WIDGET (hbox), TRUE);
   gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (hbox), FALSE, FALSE, 0);
+
+  installer->targetBuffer = gtk_entry_buffer_new (installer->target, -1);
+  installer->targetEntry = gtk_entry_new_with_buffer (installer->targetBuffer);
+  gtk_entry_set_width_chars (GTK_ENTRY (installer->targetEntry), 80);
+  gtk_entry_set_max_length (GTK_ENTRY (installer->targetEntry), MAXPATHLEN);
+  gtk_entry_set_input_purpose (GTK_ENTRY (installer->targetEntry), GTK_INPUT_PURPOSE_FREE_FORM);
+  gtk_widget_set_halign (installer->targetEntry, GTK_ALIGN_FILL);
+  gtk_widget_set_hexpand (GTK_WIDGET (installer->targetEntry), TRUE);
+  gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (installer->targetEntry),
+      TRUE, TRUE, 0);
+  g_signal_connect (installer->targetEntry, "changed", G_CALLBACK (installerValidateStart), installer);
+
+  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
+  gtk_widget_set_hexpand (GTK_WIDGET (hbox), TRUE);
+  gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (hbox), FALSE, FALSE, 0);
+
+  installer->reinstWidget = gtk_check_button_new_with_label (_("Re-Install"));
+  gtk_box_pack_start (GTK_BOX (hbox), installer->reinstWidget, FALSE, FALSE, 0);
+
+  installer->feedbackMsg = gtk_label_new ("");
+  uiutilsSetCss (GTK_WIDGET (installer->feedbackMsg),
+      "label { color: #ffa600; }");
+  gtk_widget_set_halign (installer->feedbackMsg, GTK_ALIGN_END);
+  gtk_box_pack_end (GTK_BOX (hbox), installer->feedbackMsg, FALSE, FALSE, 0);
 
   /* button box */
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
@@ -176,14 +244,14 @@ installerActivate (GApplication *app, gpointer udata)
       FALSE, FALSE, 0);
 
   installer->dispBuffer = gtk_text_buffer_new (NULL);
-  widget = gtk_text_view_new_with_buffer (installer->dispBuffer);
-  gtk_widget_set_size_request (GTK_WIDGET (widget), -1, 400);
-  gtk_widget_set_can_focus (widget, FALSE);
-  gtk_widget_set_halign (widget, GTK_ALIGN_FILL);
-  gtk_widget_set_valign (widget, GTK_ALIGN_START);
-  gtk_widget_set_hexpand (GTK_WIDGET (widget), TRUE);
-  gtk_widget_set_vexpand (GTK_WIDGET (widget), TRUE);
-  gtk_container_add (GTK_CONTAINER (scwidget), GTK_WIDGET (widget));
+  installer->dispTextView = gtk_text_view_new_with_buffer (installer->dispBuffer);
+  gtk_widget_set_size_request (installer->dispTextView, -1, 400);
+  gtk_widget_set_can_focus (installer->dispTextView, FALSE);
+  gtk_widget_set_halign (installer->dispTextView, GTK_ALIGN_FILL);
+  gtk_widget_set_valign (installer->dispTextView, GTK_ALIGN_START);
+  gtk_widget_set_hexpand (installer->dispTextView, TRUE);
+  gtk_widget_set_vexpand (installer->dispTextView, TRUE);
+  gtk_container_add (GTK_CONTAINER (scwidget), GTK_WIDGET (installer->dispTextView));
 
   /* push the text view to the top */
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
@@ -199,7 +267,42 @@ installerMainLoop (void *udata)
 {
   installer_t *installer = udata;
 
+  if (mstimeCheck (&installer->validateTimer)) {
+    installerValidateDir (installer, false);
+    mstimeset (&installer->validateTimer, 3600000);
+  }
+
   return TRUE;
+}
+
+static void
+installerValidateDir (installer_t *installer, bool okonly)
+{
+  struct stat   statbuf;
+  int           rc;
+  bool          locok = false;
+  const char    *fn;
+  bool          exists = false;
+
+  fn = gtk_entry_buffer_get_text (installer->targetBuffer);
+
+  gtk_label_set_text (GTK_LABEL (installer->feedbackMsg), "");
+  exists = fileopExists (fn);
+  if (exists) {
+    gtk_label_set_text (GTK_LABEL (installer->feedbackMsg), _("Folder already exists."));
+  } else {
+    gtk_label_set_text (GTK_LABEL (installer->feedbackMsg), "");
+  }
+}
+
+static void
+installerValidateStart (GtkEditable *e, gpointer udata)
+{
+  installer_t   *installer = udata;
+
+  /* if the user is typing, clear the message */
+  gtk_label_set_text (GTK_LABEL (installer->feedbackMsg), "");
+  mstimeset (&installer->validateTimer, 700);
 }
 
 static void
@@ -215,7 +318,159 @@ static void
 installerInstall (GtkButton *b, gpointer udata)
 {
   installer_t *installer = udata;
+  bool        exists = false;
+  char        tbuff [MAXPATHLEN];
+
+  installer->target = strdup (gtk_entry_buffer_get_text (installer->targetBuffer));
+  installer->reinstall = gtk_toggle_button_get_active (
+      GTK_TOGGLE_BUTTON (installer->reinstWidget));
+  exists = fileopExists (installer->target);
+  if (exists) {
+    if (isWindows ()) {
+      snprintf (tbuff, sizeof (tbuff), "%s/bin/bdj4.exe", installer->target);
+    } else {
+      snprintf (tbuff, sizeof (tbuff), "%s/bin/bdj4", installer->target);
+    }
+    exists = fileopExists (tbuff);
+    if (exists) {
+      installer->newinstall = false;
+    }
+
+    /* do not allow an overwrite of an existing directory that is not bdj4 */
+    if (installer->newinstall) {
+      gtk_label_set_text (GTK_LABEL (installer->feedbackMsg), _("Folder already exists."));
+
+      snprintf (tbuff, sizeof (tbuff), _("Folder %s already exists."),
+          installer->target);
+      installerDisplayText (installer, tbuff);
+      installerDisplayText (installer, _("Stopped"));
+      return;
+    }
+  }
+
+  if (installer->reinstall) {
+    installer->newinstall = true;
+  }
+
+  installerDisplayText (installer, _("Saving install location."));
+  installerSaveTargetDir (installer);
+
+  installerDisplayText (installer, _("Creating folder structure."));
+  /* create the directories that are not included in the distribution */
+  fileopMakeDir ("data");
+  /* this will create the directories necessary for the configs */
+  bdjoptCreateDirectories ();
+  fileopMakeDir ("tmp");
+  fileopMakeDir ("http");
+
+  installerDisplayText (installer, _("Copying files."));
+  installerCopyFiles (installer);
+  installerDisplayText (installer, _("  Copy finished."));
+
+  fileopMakeDir (installer->target);
+
+  if (chdir (installer->target)) {
+    fprintf (stderr, "Unable to chdir: %s\n", installer->target);
+    installerDisplayText (installer, _("Unable to set working directory."));
+    installerDisplayText (installer, _("Stopped"));
+    return;
+  }
+
+  installerDisplayText (installer, _("Cleaning old files."));
+  installerCleanOldFiles (installer);
+  installerDisplayText (installer, _("Copying template files."));
+  installerCopyTemplates (installer);
+
+  installerRunConversion (installer);
 
   return;
 }
 
+static void
+installerSaveTargetDir (installer_t *installer)
+{
+}
+
+static void
+installerCopyFiles (installer_t *installer)
+{
+  char      tbuff [MAXPATHLEN];
+
+  if (isWindows ()) {
+    snprintf (tbuff, MAXPATHLEN,
+        "robocopy /e /j /dcopy:DAT /timfix /njh /njs /np /ndl /nfl . \"%s\"",
+        installer->target);
+    system (tbuff);
+  } else {
+    snprintf (tbuff, MAXPATHLEN,
+        "tar -c -f - . | (cd \"%s\"; tar -x -f -)",
+        installer->target);
+    system (tbuff);
+  }
+}
+
+static void
+installerCleanOldFiles (installer_t *installer)
+{
+}
+
+static void
+installerCopyTemplates (installer_t *installer)
+{
+}
+
+static void
+installerRunConversion (installer_t *installer)
+{
+  char      tbuff [MAXPATHLEN];
+
+  if (installer->reinstall) {
+    fileopDelete (CONV_RUN_FILE);
+  }
+
+  if (installer->newinstall &&
+      ! fileopExists (CONV_RUN_FILE)) {
+    installerDisplayText (installer, _("Starting conversion process."));
+    strlcpy (tbuff, "./bin/bdj4converter", MAXPATHLEN);
+    if (isWindows ()) {
+      strlcat (tbuff, ".exe", MAXPATHLEN);
+    }
+    strlcat (tbuff, " ", MAXPATHLEN);
+    if (installer->newinstall) {
+      strlcat (tbuff, "--newinstall ", MAXPATHLEN);
+    }
+    if (installer->reinstall) {
+      strlcat (tbuff, "--reinstall ", MAXPATHLEN);
+    }
+    if (installer->reinstall) {
+      strlcat (tbuff, "--targetdir ", MAXPATHLEN);
+      strlcat (tbuff, installer->target, MAXPATHLEN);
+      strlcat (tbuff, " ", MAXPATHLEN);
+    }
+    system (tbuff);
+  } else {
+    installerDisplayText (installer, _("Conversion already done."));
+  }
+}
+
+static void
+installerDisplayText (installer_t *installer, char *txt)
+{
+  GtkTextIter iter;
+
+  gtk_text_buffer_get_end_iter (installer->dispBuffer, &iter);
+  gtk_text_buffer_insert (installer->dispBuffer, &iter, txt, -1);
+  gtk_text_buffer_get_end_iter (installer->dispBuffer, &iter);
+  gtk_text_buffer_insert (installer->dispBuffer, &iter, "\n", -1);
+}
+
+static void
+installerScrollToEnd (GtkWidget *w, GtkAllocation *retAllocSize, gpointer udata)
+{
+  installer_t *installer = udata;
+  GtkTextIter iter;
+
+  gtk_text_buffer_get_end_iter (installer->dispBuffer, &iter);
+  gtk_text_view_scroll_to_iter (GTK_TEXT_VIEW (installer->dispTextView),
+      &iter, 0, false, 0, 0);
+}

@@ -11,6 +11,7 @@
 
 #include <gtk/gtk.h>
 
+#include "bdj4intl.h"
 #include "bdjstring.h"
 #include "filedata.h"
 #include "locatebdj3.c"
@@ -28,6 +29,7 @@ typedef struct {
   GtkWidget       *locEntry;
   GtkEntryBuffer  *locBuffer;
   GtkTextBuffer   *dispBuffer;
+  GtkWidget       *dispTextView;
   mstime_t        validateTimer;
 } converter_t;
 
@@ -41,6 +43,7 @@ static void converterExit (GtkButton *b, gpointer udata);
 static void converterValidateDir (converter_t *converter, bool okonly);
 static void converterValidateStart (GtkEditable *e, gpointer udata);
 static void converterConvert (GtkButton *b, gpointer udata);
+static void converterScrollToEnd (GtkWidget *w, GtkAllocation *retAllocSize, gpointer udata);
 
 int
 main (int argc, char *argv[])
@@ -55,6 +58,7 @@ main (int argc, char *argv[])
   converter.locBuffer = NULL;
   converter.locEntry = NULL;
   converter.dispBuffer = NULL;
+  converter.dispTextView = NULL;
   mstimeset (&converter.validateTimer, 3600000);
 
   /* for convenience in testing; normally will already be there */
@@ -207,14 +211,16 @@ converterActivate (GApplication *app, gpointer udata)
       FALSE, FALSE, 0);
 
   converter->dispBuffer = gtk_text_buffer_new (NULL);
-  widget = gtk_text_view_new_with_buffer (converter->dispBuffer);
-  gtk_widget_set_size_request (GTK_WIDGET (widget), -1, 400);
-  gtk_widget_set_can_focus (widget, FALSE);
-  gtk_widget_set_halign (widget, GTK_ALIGN_FILL);
-  gtk_widget_set_valign (widget, GTK_ALIGN_START);
-  gtk_widget_set_hexpand (GTK_WIDGET (widget), TRUE);
-  gtk_widget_set_vexpand (GTK_WIDGET (widget), TRUE);
-  gtk_container_add (GTK_CONTAINER (scwidget), GTK_WIDGET (widget));
+  converter->dispTextView = gtk_text_view_new_with_buffer (converter->dispBuffer);
+  gtk_widget_set_size_request (GTK_WIDGET (converter->dispTextView), -1, 400);
+  gtk_widget_set_can_focus (converter->dispTextView, FALSE);
+  gtk_widget_set_halign (converter->dispTextView, GTK_ALIGN_FILL);
+  gtk_widget_set_valign (converter->dispTextView, GTK_ALIGN_START);
+  gtk_widget_set_hexpand (GTK_WIDGET (converter->dispTextView), TRUE);
+  gtk_widget_set_vexpand (GTK_WIDGET (converter->dispTextView), TRUE);
+  gtk_container_add (GTK_CONTAINER (scwidget), GTK_WIDGET (converter->dispTextView));
+  g_signal_connect (converter->dispTextView,
+      "size-allocate", G_CALLBACK (converterScrollToEnd), converter);
 
   /* push the text view to the top */
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
@@ -356,3 +362,14 @@ converterConvert (GtkButton *b, gpointer udata)
   return;
 }
 
+
+static void
+converterScrollToEnd (GtkWidget *w, GtkAllocation *retAllocSize, gpointer udata)
+{
+  converter_t *converter = udata;
+  GtkTextIter iter;
+
+  gtk_text_buffer_get_end_iter (converter->dispBuffer, &iter);
+  gtk_text_view_scroll_to_iter (GTK_TEXT_VIEW (converter->dispTextView),
+      &iter, 0, false, 0, 0);
+}

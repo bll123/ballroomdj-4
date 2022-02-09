@@ -7,9 +7,13 @@ mantmp=install/manifest.n
 
 findlist="LICENSE.txt README.txt VERSION.txt \
     bin conv img install licenses locale templates"
+
 case ${systype} in
+  Darwin)
+    findlist="$findlist plocal/bin plocal/share/themes/macOS* plocal/share/icons"
+    ;;
   MSYS*|MINGW*)
-    findlist="$findlist plocal/bin"
+    findlist="$findlist plocal/bin plocal/share/themes/Wind* plocal/share/icons"
     ;;
 esac
 
@@ -31,16 +35,11 @@ sed -e '/check_all/ d' \
 
 case $systype in
   Darwin)
-    cat ${manfn} |
-      sed -e 's,\.so$,.dylib,' \
-      > ${mantmp}
-    mv -f ${mantmp} ${manfn}
     ;;
   MSYS*|MINGW**)
+    # a) remove .sh files from manifest
     cat ${manfn} |
-      sed -e 's,bin/\([^\.]*\),bin/\1.exe,' \
-          -e 's,\.so$,.dll,' \
-          -e 's,\.sh$,.bat,' \
+      sed -e '/\.sh$/ d' \
       > ${mantmp}
     mv -f ${mantmp} ${manfn}
     ;;

@@ -57,8 +57,8 @@ filemanipCopy (char *fname, char *nfn)
 
 
   if (isWindows ()) {
-    pathToWinPath (fname, tfname, MAXPATHLEN);
-    pathToWinPath (nfn, tnfn, MAXPATHLEN);
+    pathToWinPath (tfname, fname, MAXPATHLEN);
+    pathToWinPath (tnfn, nfn, MAXPATHLEN);
     snprintf (cmd, MAXPATHLEN, "copy /y/b \"%s\" \"%s\" >NUL",
         tfname, tnfn);
   } else {
@@ -78,8 +78,8 @@ filemanipLinkCopy (char *fname, char *nfn)
   int       rc = -1;
 
   if (isWindows ()) {
-    pathToWinPath (fname, tfname, MAXPATHLEN);
-    pathToWinPath (nfn, tnfn, MAXPATHLEN);
+    pathToWinPath (tfname, fname, MAXPATHLEN);
+    pathToWinPath (tnfn, nfn, MAXPATHLEN);
     snprintf (cmd, MAXPATHLEN, "copy /y/b \"%s\" \"%s\" >NUL",
         tfname, tnfn);
     rc = system (cmd);

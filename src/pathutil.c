@@ -105,7 +105,7 @@ pathInfoFree (pathinfo_t *pi)
 }
 
 void
-pathToWinPath (char *from, char *to, size_t maxlen)
+pathToWinPath (char *to, char *from, size_t maxlen)
 {
   strlcpy (to, from, maxlen);
   for (size_t i = 0; i < maxlen; ++i) {
@@ -132,7 +132,7 @@ pathNormPath (char *buff, size_t len)
 }
 
 void
-pathRealPath (char *from, char *to)
+pathRealPath (char *to, char *from)
 {
 #if _lib_realpath
   (void) ! realpath (from, to);

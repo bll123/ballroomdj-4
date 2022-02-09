@@ -125,7 +125,7 @@ tmutilTstamp (char *buff, size_t max)
   tp = localtime (&s);
 #endif
   strftime (buff, max, "%H:%M:%S", tp);
-  snprintf (tbuff, sizeof (tbuff), ".%03ld", m);
+  snprintf (tbuff, sizeof (tbuff), ".%03zd", m);
   strlcat (buff, tbuff, max);
   return buff;
 }

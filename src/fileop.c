@@ -26,12 +26,21 @@
 #include "fileop.h"
 
 inline bool
-fileopExists (char *fname)
+fileopExists (const char *fname)
 {
   struct stat   statbuf;
 
   int rc = stat (fname, &statbuf);
   return (rc == 0);
+}
+
+inline bool
+fileopIsDirectory (const char *fname)
+{
+  struct stat   statbuf;
+
+  int rc = stat (fname, &statbuf);
+  return ((statbuf.st_mode & S_IFDIR) == S_IFDIR);
 }
 
 inline int
@@ -42,7 +51,7 @@ fileopDelete (const char *fname)
 }
 
 int
-fileopMakeDir (char *dirname)
+fileopMakeDir (const char *dirname)
 {
   int rc;
 #if _args_mkdir == 2 && _define_S_IRWXU

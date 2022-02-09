@@ -14,8 +14,8 @@ typedef struct {
 
 pathinfo_t *  pathInfo (char *path);
 void          pathInfoFree (pathinfo_t *);
-void          pathToWinPath (char *from, char *to, size_t maxlen);
+void          pathToWinPath (char *to, char *from, size_t maxlen);
 void          pathNormPath (char *buff, size_t len);
-void          pathRealPath (char *from, char *to);
+void          pathRealPath (char *to, char *from);
 
 #endif /* INC_PATHUTIL_H */

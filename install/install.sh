@@ -21,6 +21,13 @@ fi
 . install/install-helpers.sh
 processcmdargs $@
 
+targetsavedir="$HOME/.config/BDJ4"
+targetsavefn="${targetsavedir}/installdir.txt"
+test -d $targetsavedir || mkdir $targetsavedir
+if [[ $targetdir == "" && -f $targetsavefn ]]; then
+  targetdir=$(cat $targetsavefn)
+fi
+
 unpackdir=$(pwd)
 
 systype=$(uname -s)
@@ -65,6 +72,8 @@ fi
 if [[ $reinstall == T ]]; then
   newinstall=T
 fi
+
+echo "$targetdir" > "$targetsavefn"
 
 echo "-- Creating directory structure."
 ./install/install-mkdirs.sh \

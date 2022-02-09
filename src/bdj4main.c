@@ -789,8 +789,8 @@ mainQueueDance (maindata_t *mainData, char *args, ssize_t count)
   mainParseIntNum (args, &mi, &danceIdx);
   mainData->musicqManageIdx = mi;
 
-  logMsg (LOG_DBG, LOG_BASIC, "queue dance %d %ld %ld", mi, danceIdx, count);
-  snprintf (plname, sizeof (plname), "_main_dance_%ld_%ld",
+  logMsg (LOG_DBG, LOG_BASIC, "queue dance %d %zd %zd", mi, danceIdx, count);
+  snprintf (plname, sizeof (plname), "_main_dance_%zd_%ld",
       danceIdx, globalCounter++);
   playlist = playlistCreate (plname, PLTYPE_AUTO, NULL);
   playlistSetConfigNum (playlist, PLAYLIST_STOP_AFTER, count);

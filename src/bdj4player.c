@@ -933,7 +933,7 @@ songMakeTempName (playerdata_t *playerData, char *in, char *out, size_t maxlen)
 
     /* the profile index so we don't stomp on other bdj instances   */
     /* the global count so we don't stomp on ourselves              */
-  snprintf (out, maxlen, "tmp/%02ld-%03ld-%s", sysvarsGetNum (SVL_BDJIDX),
+  snprintf (out, maxlen, "tmp/%02zd-%03ld-%s", sysvarsGetNum (SVL_BDJIDX),
       playerData->globalCount, tnm);
   ++playerData->globalCount;
 }

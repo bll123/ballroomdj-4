@@ -1,6 +1,5 @@
 #include "config.h"
 
-
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
@@ -10,6 +9,7 @@
 #include <unistd.h>
 #include <assert.h>
 
+#include "bdj4intl.h"
 #include "conn.h"
 #include "pathbld.h"
 #include "portability.h"

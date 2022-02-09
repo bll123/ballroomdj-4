@@ -3,12 +3,6 @@
 
 #include "config.h"
 
-#if _hdr_libintl
-# include <libintl.h>
-#endif
-
-#define _(str) gettext(str)
-
 int       stringCompare (void *, void *);
 int       istringCompare (void *, void *);
 size_t    istrlen (const char *);

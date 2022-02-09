@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.18)
 set (BDJ4_VERSION 4.0.0)
 project (BallroomDJ4 VERSION ${BDJ4_VERSION})
 set (BDJ4ICON bdj4_icon.ico)
+set (BDJ4INSTICON bdj4_icon_inst.ico)
 
 # avoid msys2/windows issue
 SET (CMAKE_C_COMPILER_WORKS 1)
@@ -225,6 +226,14 @@ check_function_exists (pthread_create _lib_pthread_create)
 set (CMAKE_REQUIRED_INCLUDES "")
 set (CMAKE_REQUIRED_LIBRARIES "")
 
+set (CMAKE_REQUIRED_INCLUDES libintl.h)
+if (Intl_LIBRARY)
+   set (CMAKE_REQUIRED_LIBRARIES ${Intl_LIBRARY} ${Iconv_LIBRARY})
+endif()
+check_function_exists (bind_textdomain_codeset _lib_bind_textdomain_codeset)
+set (CMAKE_REQUIRED_INCLUDES "")
+set (CMAKE_REQUIRED_LIBRARIES "")
+
 check_function_exists (ioctlsocket _lib_ioctlsocket)
 check_function_exists (drand48 _lib_drand48)
 check_function_exists (fcntl _lib_fcntl)
@@ -441,7 +450,7 @@ target_include_directories (libwebsrv
 add_library (liblocatebdj3 STATIC locatebdj3.c strlcpy.c strlcat.c)
 
 if (WIN32)
-  # the the bdj4 executable
+  # the bdj4 executable
   # for cmake, must use the .o file extension, not .res
   add_custom_command (
     OUTPUT launcher.o
@@ -461,7 +470,7 @@ add_executable (bdj4 bdj4.c
 if (WIN32)
   target_sources (bdj4 PRIVATE launcher.o)
 endif()
-addIntlLibrary (bdj4)
+# for gethostname
 addWinSockLibrary (bdj4)
 
 add_executable (bdj4cli bdj4cli.c)
@@ -556,7 +565,24 @@ target_link_libraries (bdj4locatebdj3
 add_executable (bdj4locale bdj4locale.c)
 addIntlLibrary (bdj4locale)
 
+if (WIN32)
+  # the bdj4se executable
+  # for cmake, must use the .o file extension, not .res
+  add_custom_command (
+    OUTPUT selauncher.o
+    COMMAND cp -f ${PROJECT_SOURCE_DIR}/../img/${BDJ4INSTICON} .
+    COMMAND echo "id ICON ${BDJ4INSTICON}" > selauncher.rc
+    COMMAND windres selauncher.rc -O coff -o selauncher.o
+    MAIN_DEPENDENCY ${PROJECT_SOURCE_DIR}/../img/${BDJ4INSTICON}
+    BYPRODUCTS selauncher.rc ${BDJ4INSTICON}
+    VERBATIM
+  )
+endif()
+
 add_executable (bdj4se bdj4se.c)
+if (WIN32)
+  target_sources (bdj4se PRIVATE selauncher.o)
+endif()
 
 add_executable (bdj4playerui bdj4playerui.c)
 target_link_libraries (bdj4playerui

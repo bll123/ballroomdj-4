@@ -33,7 +33,7 @@ dylibLoad (char *path)
   HMODULE   whandle;
   char      npath [MAXPATHLEN];
 
-  pathToWinPath (path, npath, MAXPATHLEN);
+  pathToWinPath (npath, path, MAXPATHLEN);
   whandle = LoadLibrary (npath);
   handle = whandle;
 #endif

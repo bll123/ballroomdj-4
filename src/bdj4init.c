@@ -40,8 +40,11 @@ initLocale (void)
 
   setlocale (LC_ALL, "");
   pathbldMakePath (tpath, sizeof (tpath), "locale", "", "", PATHBLD_MP_MAINDIR);
-  bindtextdomain ("bdj", tpath);
-  textdomain ("bdj");
+  bindtextdomain ("bdj4", tpath);
+#if _lib_bind_textdomain_codeset
+  bind_textdomain_codeset ("bdj4", "UTF-8");
+#endif
+  textdomain ("bdj4");
   return;
 }
 

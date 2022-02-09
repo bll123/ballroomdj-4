@@ -33,6 +33,8 @@ main (int argc, char *argv[])
   int       option_index = 0;
   char      *prog;
   char      *extension;
+  bool      debugself = false;
+  bool      havetheme = false;
 
   static struct option bdj_options [] = {
     { "check_all",  no_argument,        NULL,   1 },
@@ -50,6 +52,7 @@ main (int argc, char *argv[])
     { "profile",    required_argument,  NULL,   'p' },
     { "debug",      required_argument,  NULL,   'd' },
     { "theme",      required_argument,  NULL,   't' },
+    { "debugself",  no_argument,        NULL,   'D' },
     { NULL,         0,                  NULL,   0 }
   };
 
@@ -122,6 +125,10 @@ main (int argc, char *argv[])
       case 'd': {
         break;
       }
+      case 'D': {
+        debugself = true;
+        break;
+      }
       case 'p': {
         if (optarg) {
           sysvarSetNum (SVL_BDJIDX, atol (optarg));
@@ -131,6 +138,7 @@ main (int argc, char *argv[])
       case 't': {
         snprintf (buff, sizeof (buff), "GTK_THEME=%s", optarg);
         putenv (buff);
+        havetheme = true;
         break;
       }
       default: {
@@ -181,6 +189,12 @@ main (int argc, char *argv[])
     char *    path;
     size_t    sz = 4096;
 
+    if (! havetheme) {
+      /* default theme */
+      snprintf (buff, sizeof (buff), "GTK_THEME=Windows-10-Dark");
+      putenv (buff);
+    }
+
     pbuff = malloc (sz);
     assert (pbuff != NULL);
     tbuff = malloc (sz);
@@ -188,7 +202,10 @@ main (int argc, char *argv[])
     path = malloc (sz);
     assert (path != NULL);
 
-    pathToWinPath (sysvarsGetStr (SV_BDJ4EXECDIR), pbuff, sz);
+    pathToWinPath (pbuff, sysvarsGetStr (SV_BDJ4EXECDIR), sz);
+    if (debugself) {
+      fprintf (stderr, "execdir: %s\n", pbuff);
+    }
     strlcpy (path, "PATH=", sz);
     strlcat (path, getenv ("PATH"), sz);
     strlcat (path, ";", sz);
@@ -196,7 +213,7 @@ main (int argc, char *argv[])
 
     strlcat (path, ";", sz);
     snprintf (pbuff, sz, "%s\\..\\plocal\\bin", sysvarsGetStr (SV_BDJ4EXECDIR));
-    pathRealPath (pbuff, tbuff);
+    pathRealPath (tbuff, pbuff);
     strlcat (path, tbuff, sz);
 
     strlcat (path, ";", sz);
@@ -222,6 +239,9 @@ main (int argc, char *argv[])
   /* from the start of this launcher, and the executable path can not   */
   /* be determined, as we've done a chdir().                            */
   argv [0] = buff;
+  if (debugself) {
+    fprintf (stderr, "exec: %s\n", buff);
+  }
   if (execv (buff, argv) < 0) {
     fprintf (stderr, "Unable to start %s %d %s\n", buff, errno, strerror (errno));
   }

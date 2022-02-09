@@ -14,6 +14,7 @@
 #include <gtk/gtk.h>
 
 #include "bdj4.h"
+#include "bdj4intl.h"
 #include "bdjmsg.h"
 #include "bdjopt.h"
 #include "bdjstring.h"
@@ -756,11 +757,11 @@ marqueeCalcFontSizes (marquee_t *marquee, int sz)
     /* dance, mqlen */
     numtextitems = 1 + marquee->mqLen;
 
-    /* 60 is extra space needed so the marquee can be shrunk */
-    newsza = (height - 60 - marquee->marginTotal - pbarHeight - sepHeight -
+    /* 40 is extra space needed so the marquee can be shrunk */
+    newsza = (height - 40 - marquee->marginTotal - pbarHeight - sepHeight -
         infoHeight - (margin * numitems)) / numtextitems;
     infoHeight = (int) (newsza * INFO_LAB_HEIGHT_ADJUST);
-    newsz = (height - 60 - marquee->marginTotal - pbarHeight - sepHeight -
+    newsz = (height - 40 - marquee->marginTotal - pbarHeight - sepHeight -
         infoHeight - (margin * numitems)) / numtextitems;
     if (newsz > newsza) {
       newsz = newsza;

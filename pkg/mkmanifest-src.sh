@@ -6,7 +6,7 @@ systype=$(uname -s)
 case $systype in
   Linux)
     find LICENSE.txt README.txt VERSION.txt \
-          src conv img install licenses locale pkg templates web \
+          src conv img install licenses locale pkg templates web wiki \
           packages/mongoose/mongoose.[ch] \
           -type f -print |
         sort > ${manfn}

@@ -21,6 +21,7 @@ typedef enum {
   SV_CA_FILE,
   SV_BDJ4_VERSION,
   SV_BDJ4_BUILD,
+  SV_BDJ4_RELEASELEVEL,
   SV_MAX
 } sysvarkey_t;
 

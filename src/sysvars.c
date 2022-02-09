@@ -58,13 +58,11 @@ sysvarsInit (const char *argv0)
 #endif
 
 
-  enable_core_dump ();
-
 #if _lib_uname
   rc = uname (&ubuf);
   assert (rc == 0);
   strlcpy (sysvars [SV_OSNAME], ubuf.sysname, MAXPATHLEN);
-  /* ### fix osdisp this later */
+  /* ### FIX : fix osdisp later */
   strlcpy (sysvars [SV_OSDISP], ubuf.sysname, MAXPATHLEN);
   strlcpy (sysvars [SV_OSVERS], ubuf.version, MAXPATHLEN);
   strlcpy (sysvars [SV_OSBUILD], "", MAXPATHLEN);
@@ -129,7 +127,7 @@ sysvarsInit (const char *argv0)
     strlcat (tbuf, buff, MAXPATHLEN);
   }
   /* this gives us the real path to the executable */
-  pathRealPath (tbuf, buff);
+  pathRealPath (buff, tbuf);
   pathNormPath (buff, MAXPATHLEN);
 
   /* strip off the filename */
@@ -185,23 +183,34 @@ sysvarsInit (const char *argv0)
     char    *data;
     char    *tokptr;
     char    *tokptrb;
-    char    *v;
-    char    *b;
+    char    *tp;
+    char    *p;
 
     data = filedataReadAll ("VERSION.txt");
-    v = strtok_r (data, "\r\n", &tokptr);
-    p = strtok_r (v, "=", &tokptrb);
-    p = strtok_r (NULL, "=", &tokptrb);
-    strlcpy (sysvars [SV_BDJ4_VERSION], p, MAXPATHLEN);
-    b = strtok_r (NULL, "\r\n", &tokptr);
-    p = strtok_r (b, "=", &tokptrb);
-    p = strtok_r (NULL, "=", &tokptrb);
-    strlcpy (sysvars [SV_BDJ4_BUILD], p, MAXPATHLEN);
+    tp = strtok_r (data, "\r\n", &tokptr);
+    while (tp != NULL) {
+      p = strtok_r (tp, "=", &tokptrb);
+      p = strtok_r (NULL, "=", &tokptrb);
+      if (*tp == 'V') {
+        strlcpy (sysvars [SV_BDJ4_VERSION], p, MAXPATHLEN);
+      }
+      if (*tp == 'B') {
+        strlcpy (sysvars [SV_BDJ4_BUILD], p, MAXPATHLEN);
+      }
+      if (*tp == 'R') {
+        strlcpy (sysvars [SV_BDJ4_RELEASELEVEL], p, MAXPATHLEN);
+      }
+      tp = strtok_r (NULL, "\r\n", &tokptr);
+    }
     free (data);
   }
 
   lsysvars [SVL_BDJIDX] = 0;
   lsysvars [SVL_BASEPORT] = 35548;
+
+  if (strcmp (sysvars [SV_BDJ4_RELEASELEVEL], "alpha") == 0) {
+    enable_core_dump ();
+  }
 }
 
 inline char *

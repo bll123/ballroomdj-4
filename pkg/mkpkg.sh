@@ -9,16 +9,77 @@ pkgnameuc=${pkgname}
 typeset -l pkgnamelc
 pkgnamelc=${pkgname}
 
-function copyfiles (
-  manifest=$1
+function copysrcfiles (
+  systype=$1
   stage=$2
 
-  echo "-- copying files using $manifest to $stage"
-  for fn in $(cat $manifest); do
-    dir=${stage}/$(dirname $fn)
-    test -d $dir || mkdir -p $dir
-    cp -pf $fn ${dir}
+  filelist="LICENSE.txt README.txt VERSION.txt
+      packages/mongoose/mongoose.[ch]"
+  dirlist="src conv img install licenses locale pkg templates web wiki \
+      conv img install licenses locale templates"
+
+  case ${systype} in
+    Darwin)
+      dirlist="$dirlist plocal/bin plocal/share/themes/macOS* plocal/share/icons"
+      ;;
+    MSYS*|MINGW*)
+      dirlist="$dirlist plocal/bin plocal/share/themes/Wind* plocal/share/icons"
+      ;;
+  esac
+
+  echo "-- copying files to $stage"
+  for f in $filelist; do
+    dir=$(dirname ${f})
+    test -d ${stage}/${dir} || mkdir -p ${stage}/${dir}
+    cp -pf ${f} ${stage}/${dir}
   done
+  for d in $dirlist; do
+    cp -pr ${d} ${stage}
+  done
+
+  echo "   removing exclusions"
+  test -d ${stage}/src/build && rm -rf ${stage}/src/build
+)
+
+function copyreleasefiles (
+  systype=$1
+  stage=$2
+
+  filelist="LICENSE.txt README.txt VERSION.txt"
+  dirlist="bin conv img install licenses locale templates"
+
+  case ${systype} in
+    Darwin)
+      dirlist="$dirlist plocal/bin plocal/share/themes/macOS* plocal/share/icons"
+      ;;
+    MSYS*|MINGW*)
+      dirlist="$dirlist plocal/bin plocal/share/themes/Wind* plocal/share/icons"
+      ;;
+  esac
+
+  echo "-- copying files to $stage"
+  for f in $filelist; do
+    dir=$(dirname ${f})
+    test -d ${stage}/${dir} || mkdir -p ${stage}/${dir}
+    cp -pf ${f} ${stage}/${dir}
+  done
+  for d in $dirlist; do
+    cp -pr ${d} ${stage}
+  done
+
+  echo "   removing exclusions"
+  rm -f \
+      ${stage}/bin/bdj4cli \
+      ${stage}/bin/bdj4se \
+      ${stage}/bin/check_all \
+      ${stage}/bin/chkprocess \
+      ${stage}/img/mkicon.sh \
+      ${stage}/img/README.txt \
+      ${stage}/plocal/bin/checkmk \
+      ${stage}/plocal/bin/curl-config \
+      ${stage}/plocal/bin/libcheck-*.dll \
+      ${stage}/plocal/bin/ocspcheck.exe \
+      ${stage}/plocal/bin/openssl.exe
 )
 
 # setup
@@ -53,12 +114,12 @@ case $systype in
     platform=unix
     sfx=.run
     ;;
-  MINGW64)
+  MINGW64*)
     tag=win64
     platform=windows
     sfx=.exe
     ;;
-  MINGW32)
+  MINGW32*)
     tag=win32
     platform=windows
     sfx=.exe
@@ -87,7 +148,25 @@ if [[ $tag == windows ]]; then
   cp -f packages/zstd*/LICENSE ${licdir}/zstd.LICENSE
 fi
 
+# create manifests
+
+# case $systype in
+#   Linux)
+#       echo "-- creating source manifest"
+#       (cd src; make distclean > /dev/null 2>&1)
+#     ;;
+# esac
+
+#echo "-- building software"
+#(
+#  cd src
+#  make distclean
+#  make > ../tmp/pkg-build.log 2>&1
+#  make tclean > /dev/null 2>&1
+#)
+
 # on windows, copy all of the required .dll files to plocal/bin
+# this must be done after the build and before the manifest is created.
 
 if [[ $platform == windows ]]; then
 
@@ -100,7 +179,7 @@ if [[ $platform == windows ]]; then
   dlllistfn=tmp/dll-list.txt
   > $dlllistfn
 
-  for fn in bin/*.exe; do
+  for fn in bin/*.exe /mingw64/bin/gdbus.exe ; do
     ldd $fn |
       grep mingw |
       sed -e 's,.*=> ,,' -e 's,\.dll .*,.dll,' >> $dlllistfn
@@ -112,17 +191,12 @@ if [[ $platform == windows ]]; then
 
   # stage the other required gtk files.
 
+  cp -f /mingw64/bin/gdbus.exe  plocal/bin
+
 fi # is windows
 
-# create manifests
-
-#echo "-- creating source manifest"
-#(cd src; make distclean > /dev/null 2>&1)
-#./pkg/mkmanifest-src.sh
-#echo "-- building software"
-#(cd src; make > ../tmp/pkg-build.log 2>&1; make tclean > /dev/null 2>&1 )
-#echo "-- creating release manifest"
-#./pkg/mkmanifest.sh
+echo "-- creating release manifest"
+./pkg/mkmanifest.sh
 
 # update build number
 
@@ -133,36 +207,55 @@ BUILD=$(($BUILD+1))
 cat > VERSION.txt << _HERE_
 VERSION=$VERSION
 BUILD=$BUILD
+RELEASELEVEL=$RELEASELEVEL
 _HERE_
+
+case $RELEASELEVEL in
+  alpha|beta)
+    rlstag=-$RELEASELEVEL
+    ;;
+  production)
+    rlstag=""
+    ;;
+esac
 
 # staging / create packags
 
-# echo "-- create source package"
-# stagedir=tmp/${spkgnm}-src
-# nm=${spkgnm}-${VERSION}-src.tar.gz
-#
-# copyfiles install/manifest-src.txt ${stagedir}
-# (cd tmp;tar -c -z -f - $(basename $stagedir)) > ${nm}
-# echo "## source package ${nm} created"
-# rm -rf ${stagedir}
+case $systype in
+  Linux)
+    echo "-- create source package"
+    stagedir=tmp/${spkgnm}-src
+    test -d ${stagedir} && rm -rf ${stagedir}
+    mkdir -p ${stagedir}
+    nm=${spkgnm}-${VERSION}-src${rlstag}.tar.gz
+
+    copysrcfiles ${systype} ${stagedir}
+    (cd tmp;tar -c -z -f - $(basename $stagedir)) > ${nm}
+    echo "## source package ${nm} created"
+    rm -rf ${stagedir}
+    ;;
+esac
 
 echo "-- create release package"
 
 stagedir=tmp/${instdir}
+test -d ${stagedir} && rm -rf ${stagedir}
+mkdir -p ${stagedir}
 manfn=install/manifest.txt
 tmpnm=tmp/tfile.dat
 tmpzip=tmp/tfile.zip
 tmpsep=tmp/sep.txt
 tmpmac=tmp/macos
 
-nm=${spkgnm}-${VERSION}-${tag}-installer${sfx}
+nm=${spkgnm}-${VERSION}-installer-${tag}${rlstag}${sfx}
 
 test -d ${stagedir} && rm -rf ${stagedir}
 mkdir ${stagedir}
 
 case $systype in
   Linux)
-    copyfiles ${manfn} ${stagedir}
+    copyreleasefiles ${systype} ${stagedir}
+    echo "-- creating install package"
     (cd tmp;tar -c -z -f - $(basename $stagedir)) > ${tmpnm}
     cat install/install-prefix.sh ${tmpnm} > ${nm}
     rm -f ${tmpnm}
@@ -184,14 +277,16 @@ case $systype in
         pkg/macos/Info.plist \
         > ${stagedir}/Contents/MacOS/Info.plist
     echo -n 'BDJBDJ4#' > ${stagedir}/Contents/MacOS/PkgInfo
-    copyfiles ${manfn} ${stagedir}/Contents/MacOS
+    copyreleasefiles ${systype} ${stagedir}/Contents/MacOS
+    echo "-- creating install package"
     (cd tmp;tar -c -z -f - $(basename $stagedir)) > ${tmpnm}
     cat install/install-prefix.sh ${tmpnm} > ${nm}
     rm -f ${tmpnm}
     ;;
-  MINGW64|MINGW32)
-    copyfiles ${manfn} ${stagedir}
-    (cd tmp; zip -r ../${tmpzip} $(basename $stagedir) )
+  MINGW64*|MINGW32*)
+    copyreleasefiles ${systype} ${stagedir}
+    echo "-- creating install package"
+    (cd tmp; zip -r ../${tmpzip} $(basename $stagedir) ) > pkg-zip.log 2>&1
     echo -n '!~~BDJ4~~!' > ${tmpsep}
     cat bin/bdj4se.exe \
         ${tmpsep} \

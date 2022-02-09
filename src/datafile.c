@@ -332,7 +332,7 @@ datafileParseMerge (list_t *datalist, char *data, char *name,
         key = -1L;
       }
       key = atol (tvalstr);
-      snprintf (temp, sizeof (temp), "%s-item-%ld", name, key);
+      snprintf (temp, sizeof (temp), "%s-item-%zd", name, key);
       itemList = nlistAlloc (temp, LIST_ORDERED, free);
       continue;
     }

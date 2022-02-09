@@ -11,6 +11,7 @@
 #include <assert.h>
 #include <math.h>
 
+#include "bdj4intl.h"
 #include "bdjvarsdf.h"
 #include "conn.h"
 #include "dance.h"

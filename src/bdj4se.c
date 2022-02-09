@@ -75,6 +75,7 @@ main (int argc, char *argv [])
     exit (1);
   }
 
+  printf ("-- Unpacking installation.\n");
   sz = fread (buff, 1, BUFFSZ, ifh);
   while (sz > 0) {
     p = buff;
@@ -124,7 +125,8 @@ main (int argc, char *argv [])
     exit (1);
   }
 
-  system ("./miniunz.exe -x bdj4-install.zip");
+  printf ("-- Unpacking archive.\n");
+  system (".\\miniunz.exe -o -x bdj4-install.zip > bdj4-unzip.log ");
 
   rc = chdir ("bdj4-install");
   if (rc != 0) {
@@ -132,7 +134,8 @@ main (int argc, char *argv [])
     exit (1);
   }
 
-  system ("start cmd.exe /c .\\install\\install.bat");
+  printf ("-- Starting install process.\n");
+  system ("start cmd.exe /c .\\install\\install-prefix.bat");
 
   return 0;
 }

@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <assert.h>
 
+#include "bdj4intl.h"
 #include "bdjstring.h"
 #include "bdjvarsdf.h"
 #include "conn.h"

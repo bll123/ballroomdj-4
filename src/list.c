@@ -357,7 +357,7 @@ listSet (list_t *list, listitem_t *item)
   } else {
     listInsert (list, loc, item);
   }
-  return loc;
+  return;
 }
 
 /* internal routines */
