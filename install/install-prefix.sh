@@ -4,11 +4,11 @@
 #
 # This is a binary file.
 # To see just the shell script, use the following command:
-#     size=2060; head -c $size $0; unset size
+#     size=2076; head -c $size $0; unset size
 #
 
 # size will be one byte larger than the size of this script
-size=2060
+size=2076
 
 archivenm=bdj4.tar.gz
 unpackdir=bdj4-install
@@ -85,7 +85,7 @@ fi
 
 if [[ $DISPLAY != "" ]]; then
   echo "-- Starting graphical installer."
-  ./bin/bdj4installer $@
+  ./bin/bdj4installer $@ > /dev/tty 2>&1
 else
   echo "-- Starting console installer."
   ./install/install.sh $@

@@ -212,17 +212,15 @@ bdjoptCreateDirectories (void)
 {
   char      path [MAXPATHLEN];
 
-  pathbldMakePath (path, MAXPATHLEN, "", BDJ_CONFIG_BASEFN,
-      BDJ_CONFIG_EXT, PATHBLD_MP_USEIDX);
+  pathbldMakePath (path, MAXPATHLEN, "", "", "", PATHBLD_MP_USEIDX);
   fileopMakeDir (path);
-  pathbldMakePath (path, MAXPATHLEN, "profiles", BDJ_CONFIG_BASEFN,
-      BDJ_CONFIG_EXT, PATHBLD_MP_USEIDX);
+  pathbldMakePath (path, MAXPATHLEN, "profiles", "", "", PATHBLD_MP_USEIDX);
   fileopMakeDir (path);
-  pathbldMakePath (path, MAXPATHLEN, "", BDJ_CONFIG_BASEFN,
-      BDJ_CONFIG_EXT, PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
+  pathbldMakePath (path, MAXPATHLEN, "", "", "",
+      PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
   fileopMakeDir (path);
-  pathbldMakePath (path, MAXPATHLEN, "profiles", BDJ_CONFIG_BASEFN,
-      BDJ_CONFIG_EXT, PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
+  pathbldMakePath (path, MAXPATHLEN, "profiles", "", "",
+      PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
   fileopMakeDir (path);
 }
 

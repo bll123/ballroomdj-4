@@ -82,5 +82,6 @@ fi
 "$tclsh" ./conv/typeconv.tcl $dir
 "$tclsh" ./conv/statusconv.tcl $dir
 echo "Conversion Completed Successfully"
+echo "OK"
 
 exit 0

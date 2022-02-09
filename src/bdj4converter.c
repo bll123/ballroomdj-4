@@ -31,6 +31,7 @@ typedef struct {
   GtkTextBuffer   *dispBuffer;
   GtkWidget       *dispTextView;
   mstime_t        validateTimer;
+  FILE            *tfh;
 } converter_t;
 
 #define CONV_TEMP_FILE "tmp/bdj4convout.txt"
@@ -44,6 +45,7 @@ static void converterValidateDir (converter_t *converter, bool okonly);
 static void converterValidateStart (GtkEditable *e, gpointer udata);
 static void converterConvert (GtkButton *b, gpointer udata);
 static void converterScrollToEnd (GtkWidget *w, GtkAllocation *retAllocSize, gpointer udata);
+static void converterDisplayText (converter_t *converter, char *txt);
 
 int
 main (int argc, char *argv[])
@@ -60,6 +62,7 @@ main (int argc, char *argv[])
   converter.dispBuffer = NULL;
   converter.dispTextView = NULL;
   mstimeset (&converter.validateTimer, 3600000);
+  converter.tfh = NULL;
 
   /* for convenience in testing; normally will already be there */
   sysvarsInit (argv [0]);
@@ -241,6 +244,39 @@ converterMainLoop (void *udata)
     mstimeset (&converter->validateTimer, 3600000);
   }
 
+  if (converter->tfh != NULL) {
+    char    tbuff [MAXPATHLEN];
+    size_t  len;
+
+    if (fgets (tbuff, MAXPATHLEN, converter->tfh) != NULL) {
+      if (strncmp (tbuff, "OK", 2) == 0) {
+        logMsg (LOG_INSTALL, LOG_IMPORTANT, "Finished");
+        fclose (converter->tfh);
+        converter->tfh = NULL;
+        return TRUE;
+      }
+      len = strlen (tbuff);
+      --len;
+      converterDisplayText (converter, tbuff);
+      while (len > 0 && (tbuff [len] == '\r' || tbuff [len] == '\n')) {
+        tbuff [len] = '\0';
+        --len;
+      }
+      logMsg (LOG_INSTALL, LOG_IMPORTANT, "%s", tbuff);
+      if (strncmp (tbuff, "ERROR", 5) == 0) {
+        logMsg (LOG_INSTALL, LOG_IMPORTANT, "Stopped due to error");
+        fclose (converter->tfh);
+        converter->tfh = NULL;
+        return TRUE;
+      }
+    } else {
+      long    pos;
+
+      pos = ftell (converter->tfh);
+      fseek (converter->tfh, pos, SEEK_SET);
+    }
+  }
+
   return TRUE;
 }
 
@@ -322,42 +358,42 @@ converterConvert (GtkButton *b, gpointer udata)
   converter_t *converter = udata;
   char        bdjpath [MAXPATHLEN];
   char        tbuff [MAXPATHLEN];
+  char        buff [MAXPATHLEN];
   char        *cvtscript = "cvtall.sh";
   int         rc;
   FILE        *fh;
+  char        *pfx;
+  char        *sfx;
 
 
   strlcpy (bdjpath, converter->loc, MAXPATHLEN);
   pathNormPath (bdjpath, MAXPATHLEN);
 
+  pfx = "";
+  sfx = " 2>&1 &";
   if (isWindows ()) {
     cvtscript = "cvtall.bat";
+    pfx = "start";
+    sfx = "";
   }
 
-  snprintf (tbuff, sizeof (tbuff), "conv/%s \"%s\" > %s",
-    cvtscript, bdjpath, CONV_TEMP_FILE);
+  /* truncate and create */
+  converter->tfh = fopen (CONV_TEMP_FILE, "w");
+  fclose (converter->tfh);
+
+  snprintf (tbuff, sizeof (tbuff), "%s conv/%s \"%s\" > %s %s",
+      pfx, cvtscript, bdjpath, CONV_TEMP_FILE, sfx);
 
   logMsg (LOG_INSTALL, LOG_IMPORTANT, "cmd: %s", tbuff);
   rc = system (tbuff);
+fprintf (stderr, "rc=%d\n", rc);
+  snprintf (tbuff, MAXPATHLEN, "Start conversion at: %s\n",
+      tmutilTstamp (buff, MAXPATHLEN));
+  converterDisplayText (converter, tbuff);
+  tbuff [strlen (tbuff) - 1] = '\0';
+  logMsg (LOG_INSTALL, LOG_IMPORTANT, tbuff);
 
-  if (rc == 0) {
-    char    *txt;
-    char    *p;
-    char    *tokstr = NULL;
-
-    txt = filedataReadAll (CONV_TEMP_FILE);
-    if (txt != NULL) {
-      gtk_text_buffer_set_text (converter->dispBuffer, txt, -1);
-      p = strtok_r (txt, "\r\n", &tokstr);
-      while (p != NULL) {
-        logMsg (LOG_INSTALL, LOG_IMPORTANT, "%s", p);
-        p = strtok_r (NULL, "\r\n", &tokstr);
-      }
-      free (txt);
-    }
-  } else {
-    logMsg (LOG_INSTALL, LOG_IMPORTANT, "fail: %d %s", errno, strerror (errno));
-  }
+  converter->tfh = fopen (CONV_TEMP_FILE, "r");
 
   return;
 }
@@ -372,4 +408,13 @@ converterScrollToEnd (GtkWidget *w, GtkAllocation *retAllocSize, gpointer udata)
   gtk_text_buffer_get_end_iter (converter->dispBuffer, &iter);
   gtk_text_view_scroll_to_iter (GTK_TEXT_VIEW (converter->dispTextView),
       &iter, 0, false, 0, 0);
+}
+
+static void
+converterDisplayText (converter_t *converter, char *txt)
+{
+  GtkTextIter iter;
+
+  gtk_text_buffer_get_end_iter (converter->dispBuffer, &iter);
+  gtk_text_buffer_insert (converter->dispBuffer, &iter, txt, -1);
 }

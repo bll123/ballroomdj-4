@@ -55,5 +55,6 @@ if not exist "conv" (
 %tclsh% ./conv/typeconv.tcl %dir%
 %tclsh% ./conv/statusconv.tcl %dir%
 echo Conversion Complete
+echo OK
 
 exit 0

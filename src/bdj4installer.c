@@ -25,7 +25,23 @@
 #include "tmutil.h"
 #include "uiutils.h"
 
+typedef enum {
+  INST_BEGIN,
+  INST_INIT,
+  INST_SAVE,
+  INST_MAKE_TARGET,
+  INST_COPY_FILES,
+  INST_CHDIR,
+  INST_CREATE_DIRS,
+  INST_CLEAN,
+  INST_COPY_TEMPLATES,
+  INST_CONV_START,
+  INST_CONVERTER,
+  INST_FINISH,
+} installstate_t;
+
 typedef struct {
+  installstate_t  instState;
   char            *target;
   char            unpackdir [MAXPATHLEN];
   GtkApplication  *app;
@@ -39,6 +55,7 @@ typedef struct {
   mstime_t        validateTimer;
   bool            newinstall : 1;
   bool            reinstall : 1;
+  bool            freetarget : 1;
 } installer_t;
 
 #define INST_TEMP_FILE  "tmp/bdj4instout.txt"
@@ -49,11 +66,17 @@ static void installerActivate (GApplication *app, gpointer udata);
 static int  installerMainLoop (void *udata);
 static void installerSelectDirDialog (GtkButton *b, gpointer udata);
 static void installerExit (GtkButton *b, gpointer udata);
-static void installerValidateDir (installer_t *installer, bool okonly);
+static void installerCheckDir (GtkButton *b, gpointer udata);
+static void installerValidateDir (installer_t *installer);
 static void installerValidateStart (GtkEditable *e, gpointer udata);
 static void installerInstall (GtkButton *b, gpointer udata);
+static bool installerCheckTarget (installer_t *installer);
+static void installerInstInit (installer_t *installer);
 static void installerSaveTargetDir (installer_t *installer);
+static void installerMakeTarget (installer_t *installer);
 static void installerCopyFiles (installer_t *installer);
+static void installerChangeDir (installer_t *installer);
+static void installerCreateDirs (installer_t *installer);
 static void installerCleanOldFiles (installer_t *installer);
 static void installerCopyTemplates (installer_t *installer);
 static void installerRunConversion (installer_t *installer);
@@ -90,6 +113,7 @@ main (int argc, char *argv[])
 //    snprintf (tbuff, sizeof (tbuff), "%s/.config/BDJ4/installdir.txt", home);
   }
 
+  installer.instState = INST_BEGIN;
   installer.target = buff;
   installer.app = NULL;
   installer.window = NULL;
@@ -100,6 +124,7 @@ main (int argc, char *argv[])
   getcwd (installer.unpackdir, MAXPATHLEN);
   installer.newinstall = true;
   installer.reinstall = false;
+  installer.freetarget = false;
 
   /* for convenience in testing; normally will already be there */
   sysvarsInit (argv [0]);
@@ -117,9 +142,8 @@ main (int argc, char *argv[])
   g_timeout_add (UI_MAIN_LOOP_TIMER, installerMainLoop, &installer);
   status = installerCreateGui (&installer, 0, NULL);
 
-  if (installer.target != NULL && *installer.target) {
-// need to do this if using gnu info?
-//    free (installer.target);
+  if (installer.freetarget && installer.target != NULL) {
+    free (installer.target);
   }
   logEnd ();
 
@@ -205,6 +229,8 @@ installerActivate (GApplication *app, gpointer udata)
 
   installer->reinstWidget = gtk_check_button_new_with_label (_("Re-Install"));
   gtk_box_pack_start (GTK_BOX (hbox), installer->reinstWidget, FALSE, FALSE, 0);
+  g_signal_connect (installer->reinstWidget, "toggled",
+      G_CALLBACK (installerCheckDir), installer);
 
   installer->feedbackMsg = gtk_label_new ("");
   uiutilsSetCss (GTK_WIDGET (installer->feedbackMsg),
@@ -268,15 +294,80 @@ installerMainLoop (void *udata)
   installer_t *installer = udata;
 
   if (mstimeCheck (&installer->validateTimer)) {
-    installerValidateDir (installer, false);
+    installerValidateDir (installer);
     mstimeset (&installer->validateTimer, 3600000);
+  }
+
+  switch (installer->instState) {
+    case INST_BEGIN: {
+      /* do nothing */
+      break;
+    }
+    case INST_INIT: {
+      installerInstInit (installer);
+      break;
+    }
+    case INST_SAVE: {
+      installerSaveTargetDir (installer);
+      break;
+    }
+    case INST_MAKE_TARGET: {
+      installerMakeTarget (installer);
+      break;
+    }
+    case INST_COPY_FILES: {
+      installerCopyFiles (installer);
+      break;
+    }
+    case INST_CHDIR: {
+      installerChangeDir (installer);
+      break;
+    }
+    case INST_CREATE_DIRS: {
+      installerCreateDirs (installer);
+      break;
+    }
+    case INST_CLEAN: {
+      installerCleanOldFiles (installer);
+      break;
+    }
+    case INST_COPY_TEMPLATES: {
+      installerCopyTemplates (installer);
+      break;
+    }
+    case INST_CONV_START: {
+      /* want to give gtk some time to update the display */
+      if (installer->newinstall &&
+          ! fileopExists (CONV_RUN_FILE)) {
+        installerDisplayText (installer, _("-- Starting conversion process."));
+      }
+      installer->instState = INST_CONVERTER;
+      break;
+    }
+    case INST_CONVERTER: {
+      installerRunConversion (installer);
+      break;
+    }
+    case INST_FINISH: {
+      installerDisplayText (installer, _("## Installation complete."));
+      installer->instState = INST_BEGIN;
+      break;
+    }
   }
 
   return TRUE;
 }
 
 static void
-installerValidateDir (installer_t *installer, bool okonly)
+installerCheckDir (GtkButton *b, gpointer udata)
+{
+  installer_t   *installer = udata;
+
+  installerValidateDir (installer);
+}
+
+static void
+installerValidateDir (installer_t *installer)
 {
   struct stat   statbuf;
   int           rc;
@@ -286,10 +377,17 @@ installerValidateDir (installer_t *installer, bool okonly)
 
   fn = gtk_entry_buffer_get_text (installer->targetBuffer);
 
+  installer->reinstall = gtk_toggle_button_get_active (
+      GTK_TOGGLE_BUTTON (installer->reinstWidget));
   gtk_label_set_text (GTK_LABEL (installer->feedbackMsg), "");
   exists = fileopExists (fn);
-  if (exists) {
-    gtk_label_set_text (GTK_LABEL (installer->feedbackMsg), _("Folder already exists."));
+  if (exists && ! installer->reinstall) {
+    exists = installerCheckTarget (installer);
+    if (exists) {
+      gtk_label_set_text (GTK_LABEL (installer->feedbackMsg), _("BDJ4 folder already exists."));
+    } else {
+      gtk_label_set_text (GTK_LABEL (installer->feedbackMsg), _("Error: Existing folder."));
+    }
   } else {
     gtk_label_set_text (GTK_LABEL (installer->feedbackMsg), "");
   }
@@ -302,7 +400,7 @@ installerValidateStart (GtkEditable *e, gpointer udata)
 
   /* if the user is typing, clear the message */
   gtk_label_set_text (GTK_LABEL (installer->feedbackMsg), "");
-  mstimeset (&installer->validateTimer, 700);
+  mstimeset (&installer->validateTimer, 500);
 }
 
 static void
@@ -318,32 +416,55 @@ static void
 installerInstall (GtkButton *b, gpointer udata)
 {
   installer_t *installer = udata;
+
+  installer->instState = INST_INIT;
+}
+
+static bool
+installerCheckTarget (installer_t *installer)
+{
+  char        tbuff [MAXPATHLEN];
+  bool        exists;
+  const char  *fn;
+
+  fn = gtk_entry_buffer_get_text (installer->targetBuffer);
+
+  if (isWindows ()) {
+    snprintf (tbuff, sizeof (tbuff), "%s/bin/bdj4.exe", fn);
+  } else {
+    snprintf (tbuff, sizeof (tbuff), "%s/bin/bdj4", fn);
+  }
+  exists = fileopExists (tbuff);
+  if (exists) {
+    installer->newinstall = false;
+  }
+
+  return exists;
+}
+
+static void
+installerInstInit (installer_t *installer)
+{
   bool        exists = false;
   char        tbuff [MAXPATHLEN];
 
   installer->target = strdup (gtk_entry_buffer_get_text (installer->targetBuffer));
+  installer->freetarget = true;
   installer->reinstall = gtk_toggle_button_get_active (
       GTK_TOGGLE_BUTTON (installer->reinstWidget));
   exists = fileopExists (installer->target);
   if (exists) {
-    if (isWindows ()) {
-      snprintf (tbuff, sizeof (tbuff), "%s/bin/bdj4.exe", installer->target);
-    } else {
-      snprintf (tbuff, sizeof (tbuff), "%s/bin/bdj4", installer->target);
-    }
-    exists = fileopExists (tbuff);
-    if (exists) {
-      installer->newinstall = false;
-    }
+    exists = installerCheckTarget (installer);
 
     /* do not allow an overwrite of an existing directory that is not bdj4 */
     if (installer->newinstall) {
       gtk_label_set_text (GTK_LABEL (installer->feedbackMsg), _("Folder already exists."));
 
-      snprintf (tbuff, sizeof (tbuff), _("Folder %s already exists."),
+      snprintf (tbuff, sizeof (tbuff), _("Error: Folder %s already exists."),
           installer->target);
       installerDisplayText (installer, tbuff);
-      installerDisplayText (installer, _("Stopped"));
+      installerDisplayText (installer, _(" * Stopped"));
+      installer->instState = INST_BEGIN;
       return;
     }
   }
@@ -352,43 +473,31 @@ installerInstall (GtkButton *b, gpointer udata)
     installer->newinstall = true;
   }
 
-  installerDisplayText (installer, _("Saving install location."));
-  installerSaveTargetDir (installer);
-
-  installerDisplayText (installer, _("Creating folder structure."));
-  /* create the directories that are not included in the distribution */
-  fileopMakeDir ("data");
-  /* this will create the directories necessary for the configs */
-  bdjoptCreateDirectories ();
-  fileopMakeDir ("tmp");
-  fileopMakeDir ("http");
-
-  installerDisplayText (installer, _("Copying files."));
-  installerCopyFiles (installer);
-  installerDisplayText (installer, _("  Copy finished."));
-
-  fileopMakeDir (installer->target);
-
-  if (chdir (installer->target)) {
-    fprintf (stderr, "Unable to chdir: %s\n", installer->target);
-    installerDisplayText (installer, _("Unable to set working directory."));
-    installerDisplayText (installer, _("Stopped"));
+  if (chdir (installer->unpackdir) < 0) {
+    fprintf (stderr, "Unable to chdir: %s\n", installer->unpackdir);
+    installerDisplayText (installer, _("Error: Unable to set working directory."));
+    installerDisplayText (installer, _(" * Stopped"));
+    installer->instState = INST_BEGIN;
     return;
   }
 
-  installerDisplayText (installer, _("Cleaning old files."));
-  installerCleanOldFiles (installer);
-  installerDisplayText (installer, _("Copying template files."));
-  installerCopyTemplates (installer);
-
-  installerRunConversion (installer);
-
-  return;
+  installer->instState = INST_SAVE;
 }
 
 static void
 installerSaveTargetDir (installer_t *installer)
 {
+  installerDisplayText (installer, _("-- Saving install location."));
+
+  installer->instState = INST_MAKE_TARGET;
+}
+
+static void
+installerMakeTarget (installer_t *installer)
+{
+  fileopMakeDir (installer->target);
+
+  installer->instState = INST_COPY_FILES;
 }
 
 static void
@@ -396,27 +505,62 @@ installerCopyFiles (installer_t *installer)
 {
   char      tbuff [MAXPATHLEN];
 
+  installerDisplayText (installer, _("-- Copying files."));
+
   if (isWindows ()) {
     snprintf (tbuff, MAXPATHLEN,
         "robocopy /e /j /dcopy:DAT /timfix /njh /njs /np /ndl /nfl . \"%s\"",
         installer->target);
-    system (tbuff);
+fprintf (stderr, "cmd: %s\n", tbuff);
+//    system (tbuff);
   } else {
     snprintf (tbuff, MAXPATHLEN,
         "tar -c -f - . | (cd \"%s\"; tar -x -f -)",
         installer->target);
     system (tbuff);
   }
+  installerDisplayText (installer, _("   Copy finished."));
+  installer->instState = INST_CHDIR;
+}
+
+static void
+installerChangeDir (installer_t *installer)
+{
+  if (chdir (installer->target)) {
+    fprintf (stderr, "Unable to chdir: %s\n", installer->target);
+    installerDisplayText (installer, _("Error: Unable to set working directory."));
+    installerDisplayText (installer, _(" * Stopped"));
+    installer->instState = INST_BEGIN;
+    return;
+  }
+  installer->instState = INST_CREATE_DIRS;
+}
+
+static void
+installerCreateDirs (installer_t *installer)
+{
+  installerDisplayText (installer, _("-- Creating folder structure."));
+  /* create the directories that are not included in the distribution */
+  fileopMakeDir ("data");
+  /* this will create the directories necessary for the configs */
+  bdjoptCreateDirectories ();
+  fileopMakeDir ("tmp");
+  fileopMakeDir ("http");
+  installer->instState = INST_CLEAN;
 }
 
 static void
 installerCleanOldFiles (installer_t *installer)
 {
+  installerDisplayText (installer, _("-- Cleaning old files."));
+  installer->instState = INST_COPY_TEMPLATES;
 }
 
 static void
 installerCopyTemplates (installer_t *installer)
 {
+  installerDisplayText (installer, _("-- Copying template files."));
+  installer->instState = INST_CONV_START;
 }
 
 static void
@@ -430,7 +574,7 @@ installerRunConversion (installer_t *installer)
 
   if (installer->newinstall &&
       ! fileopExists (CONV_RUN_FILE)) {
-    installerDisplayText (installer, _("Starting conversion process."));
+    installerDisplayText (installer, _("-- Starting conversion process."));
     strlcpy (tbuff, "./bin/bdj4converter", MAXPATHLEN);
     if (isWindows ()) {
       strlcat (tbuff, ".exe", MAXPATHLEN);
@@ -448,9 +592,12 @@ installerRunConversion (installer_t *installer)
       strlcat (tbuff, " ", MAXPATHLEN);
     }
     system (tbuff);
+    installerDisplayText (installer, _("   Conversion complete."));
   } else {
-    installerDisplayText (installer, _("Conversion already done."));
+    installerDisplayText (installer, _("-- Conversion already done."));
   }
+
+  installer->instState = INST_FINISH;
 }
 
 static void
