@@ -44,7 +44,6 @@ static datafilekey_t bdjoptglobaldfkeys[] = {
   { "SHOWCLASSICAL",      OPT_G_SHOWCLASSICAL,      VALUE_NUM, parseConvBoolean, -1 },
   { "SHOWSTATUS",         OPT_G_SHOWSTATUS,         VALUE_NUM, parseConvBoolean, -1 },
   { "SLOWDEVICE",         OPT_G_SLOWDEVICE,         VALUE_NUM, parseConvBoolean, -1 },
-  { "STARTMAXIMIZED",     OPT_G_STARTMAXIMIZED,     VALUE_NUM, parseConvBoolean, -1 },
   { "VARIOUS",            OPT_G_VARIOUS,            VALUE_DATA, NULL, -1 },
   { "VOLUME",             OPT_G_VOLUME_INTFC,       VALUE_DATA, NULL, -1 },
   { "WRITETAGS",          OPT_G_WRITETAGS,          VALUE_DATA, NULL, -1 },

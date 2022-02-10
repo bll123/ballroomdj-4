@@ -22,21 +22,9 @@ if [[ $targetdir == "" ]]; then
   exit 1
 fi
 
-if [[ ! -d $targetdir ]]; then
-  mkdir -p "$targetdir"
-fi
-
-hostname=$(hostname)
-if [[ $hostname == "" ]]; then
-  hostname=$(uname -n)
-fi
-
-# only the directories that are not in the archive need to be created
-dirlist="http tmp data data/profiles data/$hostname data/$hostname/profiles"
-
-for d in $dirlist; do
-  td="$targetdir/$d"
-  test -d "$td" || mkdir "$td"
+for f in $(cat install/cleanuplist.txt); do
+  test -f $f && rm -f $f
+  test -d $f && rm -rf $f
 done
 
 exit 0

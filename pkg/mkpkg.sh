@@ -15,6 +15,7 @@ function copysrcfiles (
 
   filelist="LICENSE.txt README.txt VERSION.txt
       packages/mongoose/mongoose.[ch]"
+  # the http directory will be created
   dirlist="src conv img install licenses locale pkg templates web wiki \
       conv img install licenses locale templates"
 
@@ -165,6 +166,8 @@ fi
 #  make tclean > /dev/null 2>&1
 #)
 
+(cd src; make tclean > /dev/null 2>&1)
+
 # on windows, copy all of the required .dll files to plocal/bin
 # this must be done after the build and before the manifest is created.
 
@@ -264,12 +267,7 @@ case $systype in
     mkdir -p ${stagedir}/Contents/MacOS
     mkdir -p ${stagedir}/Contents/Resources
     mkdir -p ${tmpmac}
-    (
-      cd $tmpmac
-      icotool -x ${cwd}/img/bdj_icon.ico
-      png2icns ${pkgname}.icns *.png > /dev/null
-    )
-    cp -f ${tmpmac}/${pkgname}.icns ${stagedir}/Contents/Resources
+    cp -f img/BallroomDJ4.icns ${stagedir}/Contents/Resources
     sed -e "s/#BDJVERSION#/${VERSION}/g" \
         -e "s/#BDJPKGNAME#/${pkgname}/g" \
         -e "s/#BDJUCPKGNAME#/${pkgnameuc}/g" \
@@ -297,6 +295,8 @@ case $systype in
     rm -f ${tmpzip} ${tmpsep}
     ;;
 esac
+chmod a+rx ${nm}
+
 echo "## release package ${nm} created"
 rm -rf ${stagedir}
 

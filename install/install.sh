@@ -142,20 +142,6 @@ if [[ $newinstall == T && -f install/install-templates.sh ]]; then
       -reinstall $reinstall
 fi
 
-# copy template files to http directory
-
-# TODO
-
-if [[ $newinstall == T && -f install/install-http.sh ]]; then
-  echo "-- Setting up web server directory."
-  ./install/install-http.sh \
-      -guienabled $guienabled \
-      -unpackdir "$unpackdir" \
-      -targetdir "$targetdir" \
-      -newinstall $newinstall \
-      -reinstall $reinstall
-fi
-
 # if the conversion script has not been run,
 # run it now.  Do this step last after the
 # template files have been copied.
