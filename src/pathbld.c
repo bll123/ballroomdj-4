@@ -35,14 +35,15 @@ pathbldMakePath (char *buff, size_t buffsz, const char *subpath,
   if ((flags & PATHBLD_MP_MAINDIR) == PATHBLD_MP_MAINDIR) {
     dirprefix = sysvarsGetStr (SV_BDJ4MAINDIR);
   }
-  if ((flags & PATHBLD_MP_RESOURCEDIR) == PATHBLD_MP_RESOURCEDIR) {
-    dirprefix = sysvarsGetStr (SV_BDJ4RESOURCEDIR);
-  }
   if ((flags & PATHBLD_MP_TEMPLATEDIR) == PATHBLD_MP_TEMPLATEDIR) {
     dirprefix = sysvarsGetStr (SV_BDJ4TEMPLATEDIR);
   }
   if ((flags & PATHBLD_MP_IMGDIR) == PATHBLD_MP_IMGDIR) {
-    dirprefix = sysvarsGetStr (SV_BDJ4IMGDIR);
+    if ((flags & PATHBLD_MP_RELATIVE) == PATHBLD_MP_RELATIVE) {
+      dirprefix = "img";
+    } else {
+      dirprefix = sysvarsGetStr (SV_BDJ4IMGDIR);
+    }
   }
 
   if ((flags & PATHBLD_MP_USEIDX) == PATHBLD_MP_USEIDX) {

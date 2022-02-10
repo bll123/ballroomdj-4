@@ -1,6 +1,5 @@
 #include "config.h"
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -13,15 +12,6 @@
 #include <dirent.h>
 #include <fcntl.h>
 #include <unistd.h>
-#if _hdr_io
-# include <io.h>
-#endif
-#if _hdr_winsock2
-# include <winsock2.h>
-#endif
-#if _hdr_windows
-# include <windows.h>
-#endif
 
 #include "bdjstring.h"
 #include "filemanip.h"
@@ -30,6 +20,10 @@
 #include "pathutil.h"
 #include "portability.h"
 #include "sysvars.h"
+
+#if _hdr_windows
+# include <windows.h>
+#endif
 
 int
 filemanipMove (char *fname, char *nfn)
@@ -53,22 +47,26 @@ filemanipCopy (char *fname, char *nfn)
   char      cmd [MAXPATHLEN];
   char      tfname [MAXPATHLEN];
   char      tnfn [MAXPATHLEN];
-  int       rc;
+  int       rc = -1;
 
 
   if (isWindows ()) {
     pathToWinPath (tfname, fname, MAXPATHLEN);
     pathToWinPath (tnfn, nfn, MAXPATHLEN);
-    snprintf (cmd, MAXPATHLEN, "copy /y/b \"%s\" \"%s\" >NUL",
-        tfname, tnfn);
+#if _lib_CopyFile
+    rc = CopyFile (tfname, tnfn, 0);
+    rc = (rc == 0);
+#endif
   } else {
     snprintf (cmd, MAXPATHLEN, "cp -f '%s' '%s' >/dev/null 2>&1", fname, nfn);
+    rc = system (cmd);
   }
-  rc = system (cmd);
   return rc;
 }
 
 /* link if possible, otherwise copy */
+/* windows has had symlinks for ages, but they require either */
+/* admin permission, or have the machine in developer mode */
 int
 filemanipLinkCopy (char *fname, char *nfn)
 {
@@ -80,9 +78,9 @@ filemanipLinkCopy (char *fname, char *nfn)
   if (isWindows ()) {
     pathToWinPath (tfname, fname, MAXPATHLEN);
     pathToWinPath (tnfn, nfn, MAXPATHLEN);
-    snprintf (cmd, MAXPATHLEN, "copy /y/b \"%s\" \"%s\" >NUL",
-        tfname, tnfn);
-    rc = system (cmd);
+#if _lib_CopyFile
+    CopyFile (tfname, tnfn, 0);
+#endif
   } else {
 #if _lib_symlink
     rc = symlink (fname, nfn);
@@ -107,10 +105,13 @@ filemanipBasicDirList (char *dirname, char *extension)
   fileList = slistAlloc (dirname, LIST_UNORDERED, free, NULL);
   dh = opendir (dirname);
   while ((dirent = readdir (dh)) != NULL) {
+    if (strcmp (dirent->d_name, ".") == 0 ||
+        strcmp (dirent->d_name, "..") == 0) {
+      continue;
+    }
     if (extension != NULL) {
       pi = pathInfo (dirent->d_name);
-      if (elen == pi->elen &&
-          strncmp (pi->extension, extension, pi->elen) == 0) {
+      if (pathInfoExtCheck (pi, extension)) {
         slistSetStr (fileList, dirent->d_name, NULL);
       }
       pathInfoFree (pi);
@@ -121,3 +122,23 @@ filemanipBasicDirList (char *dirname, char *extension)
   closedir (dh);
   return fileList;
 }
+
+void
+filemanipDeleteDir (const char *dir)
+{
+  char      cmd [MAXPATHLEN];
+  char      tdir [MAXPATHLEN];
+
+  if (! fileopExists (dir) || ! fileopIsDirectory (dir)) {
+    return;
+  }
+
+  if (isWindows ()) {
+    pathToWinPath (tdir, dir, MAXPATHLEN);
+    snprintf (cmd, MAXPATHLEN, "rmdir /s/q \"%s\" >NUL", tdir);
+  } else {
+    snprintf (cmd, MAXPATHLEN, "rm -rf '%s' >/dev/null 2>&1", dir);
+  }
+  system (cmd);
+}
+

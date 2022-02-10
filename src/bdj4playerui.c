@@ -22,6 +22,7 @@
 #include "bdjvars.h"
 #include "bdjvarsdfload.h"
 #include "conn.h"
+#include "localeutil.h"
 #include "lock.h"
 #include "log.h"
 #include "musicdb.h"
@@ -102,6 +103,8 @@ main (int argc, char *argv[])
     { "playerui",   no_argument,        NULL,   0 },
     { NULL,         0,                  NULL,   0 }
   };
+
+  localeInit ();
 
   plui.notebook = NULL;
   plui.progstate = progstateInit ("playerui");

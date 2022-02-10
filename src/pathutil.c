@@ -20,7 +20,7 @@
 #include "portability.h"
 
 pathinfo_t *
-pathInfo (char *path)
+pathInfo (const char *path)
 {
   pathinfo_t    *pi = NULL;
   ssize_t       pos;
@@ -104,8 +104,23 @@ pathInfoFree (pathinfo_t *pi)
   }
 }
 
+bool
+pathInfoExtCheck (pathinfo_t *pi, const char *extension)
+{
+  if (pi->elen != strlen (extension)) {
+    return false;
+  }
+
+  if (strncmp (pi->extension, extension, pi->elen) == 0) {
+    return true;
+  }
+
+  return false;
+}
+
+
 void
-pathToWinPath (char *to, char *from, size_t maxlen)
+pathToWinPath (char *to, const char *from, size_t maxlen)
 {
   strlcpy (to, from, maxlen);
   for (size_t i = 0; i < maxlen; ++i) {
@@ -132,7 +147,7 @@ pathNormPath (char *buff, size_t len)
 }
 
 void
-pathRealPath (char *to, char *from)
+pathRealPath (char *to, const char *from)
 {
 #if _lib_realpath
   (void) ! realpath (from, to);

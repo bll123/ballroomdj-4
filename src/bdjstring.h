@@ -6,8 +6,9 @@
 int       stringCompare (void *, void *);
 int       istringCompare (void *, void *);
 size_t    istrlen (const char *);
-char *    strtolower (char *s);
-char *    strtoupper (char *s);
+char *    stringToLower (char *s);
+char *    stringToUpper (char *s);
+void      stringTrim (char *s);
 
 #if ! _lib_strlcat
 size_t strlcat(char *dst, const char *src, size_t siz);

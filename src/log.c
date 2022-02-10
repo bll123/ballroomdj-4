@@ -125,9 +125,7 @@ rlogVarMsg (logidx_t idx, loglevel_t level,
   }
   wlen = (size_t) snprintf (wbuff, sizeof (wbuff),
       "%s: %-2s %*s%s %s\n", ttm, l->processTag, l->indent, "", tbuff, tfn);
-  if (fileWriteShared (&l->fhandle, wbuff, wlen) < 0) {
-    fprintf (stderr, "log write failed: %d %s", errno, strerror (errno));
-  }
+  fileWriteShared (&l->fhandle, wbuff, wlen);
 }
 
 void
@@ -218,7 +216,8 @@ rlogOpen (const char *fn, const char *processtag, int truncflag)
   l->processTag = processtag;
   rc = fileOpenShared (fn, truncflag, &l->fhandle);
   if (rc < 0) {
-    fprintf (stderr, "Unable to open %s %d %s\n", fn, errno, strerror (errno));
+    fprintf (stderr, "%s: Unable to open %s %d %s\n",
+        processtag, fn, errno, strerror (errno));
   }
   l->opened = 1;
   return l;

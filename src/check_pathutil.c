@@ -32,6 +32,8 @@ static ftest_t tests [] = {
   { "/home/bll/stuff.x", 9, 7, 5, 2 },
   { "/home/bll/x.stuff", 9, 7, 1, 6 },
   { "/home/bll/stuff.x/", 9, 7, 7, 0 },
+  { "bdjconfig.txt.g", 0, 15, 13, 2 },
+  { "dances.txt.nl", 0, 13, 10, 3 },
   { "/", 1, 1, 1, 0 },
 };
 #define TCOUNT (sizeof(tests)/sizeof (ftest_t))
@@ -43,13 +45,13 @@ START_TEST(pathinfo_chk)
   for (size_t i = 0; i < TCOUNT; ++i) {
     pi = pathInfo (tests[i].path);
     ck_assert_msg (pi->dlen == tests[i].dlen,
-        "%s: i:%zd %zd/%zd", "dlen", i, pi->dlen, tests[i].dlen);
+        "dlen: %s: i:%zd have: %zd want: %zd", "dlen", i, pi->dlen, tests[i].dlen);
     ck_assert_msg (pi->blen == tests[i].blen,
-        "%s: i:%zd %zd/%zd", "blen", i, pi->blen, tests[i].blen);
+        "blen: %s: i:%zd have: %zd want: %zd", "blen", i, pi->blen, tests[i].blen);
     ck_assert_msg (pi->flen == tests[i].flen,
-        "%s: i:%zd %zd/%zd", "flen", i, pi->flen, tests[i].flen);
+        "flen: %s: i:%zd have: %zd want: %zd", "flen", i, pi->flen, tests[i].flen);
     ck_assert_msg (pi->elen == tests[i].elen,
-        "%s: i:%zd %zd/%zd", "elen", i, pi->elen, tests[i].elen);
+        "elen: %s: i:%zd have: %zd want: %zd", "elen", i, pi->elen, tests[i].elen);
     pathInfoFree (pi);
   }
 }

@@ -38,6 +38,7 @@
 
 /* windows specific */
 #cmakedefine01 _lib_CloseHandle
+#cmakedefine01 _lib_CopyFile
 #cmakedefine01 _lib_CreateFile
 #cmakedefine01 _lib_CreateProcess
 #cmakedefine01 _lib_GetFullPathName

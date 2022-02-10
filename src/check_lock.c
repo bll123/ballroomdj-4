@@ -112,13 +112,13 @@ START_TEST(lock_exists)
   fpid = (pid_t) temp;
   fclose (fh);
 
-fprintf (stderr, "lock file exists; yes process\n");
+//fprintf (stderr, "lock file exists; yes process\n");
   pid = lockExists (LOCK_FN, PATHBLD_MP_NONE);
   ck_assert_int_eq (fpid, pid);
 
   rc = lockReleasePid (LOCK_FN, pid, PATHBLD_MP_NONE);
   ck_assert_int_eq (rc, 0);
-fprintf (stderr, "lock file does not exist; no process\n");
+//fprintf (stderr, "lock file does not exist; no process\n");
   pid = lockExists (LOCK_FN, PATHBLD_MP_NONE);
   ck_assert_int_eq (pid, 0);
 
@@ -126,7 +126,7 @@ fprintf (stderr, "lock file does not exist; no process\n");
   temp = 94534;
   fprintf (fh, "%zd", temp);
   fclose (fh);
-fprintf (stderr, "lock file exists; no process\n");
+//fprintf (stderr, "lock file exists; no process\n");
   pid = lockExists (LOCK_FN, PATHBLD_MP_NONE);
   ck_assert_int_eq (pid, 0);
   unlink (FULL_LOCK_FN);

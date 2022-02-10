@@ -13,11 +13,11 @@ typedef enum {
   SV_BDJ4MAINDIR,     // path to the main directory above bin/, http/, etc.
   SV_BDJ4EXECDIR,     // main + /bin
   SV_BDJ4IMGDIR,      // main + /img
-  SV_BDJ4RESOURCEDIR, // main + /resources
   SV_BDJ4TEMPLATEDIR, // main + /templates
   SV_BDJ4HTTPDIR,     // 'http' (relative path)
   SV_SHLIB_EXT,
   SV_MOBMQ_HOST,
+  SV_LOCALE,
   SV_CA_FILE,
   SV_BDJ4_VERSION,
   SV_BDJ4_BUILD,

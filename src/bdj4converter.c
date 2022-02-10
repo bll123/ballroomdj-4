@@ -14,6 +14,7 @@
 #include "bdj4intl.h"
 #include "bdjstring.h"
 #include "filedata.h"
+#include "localeutil.h"
 #include "locatebdj3.c"
 #include "log.h"
 #include "pathutil.h"
@@ -53,6 +54,7 @@ main (int argc, char *argv[])
   converter_t   converter;
   int           status;
 
+  localeInit ();
 
   converter.loc = "";
   converter.app = NULL;
@@ -258,10 +260,7 @@ converterMainLoop (void *udata)
       len = strlen (tbuff);
       --len;
       converterDisplayText (converter, tbuff);
-      while (len > 0 && (tbuff [len] == '\r' || tbuff [len] == '\n')) {
-        tbuff [len] = '\0';
-        --len;
-      }
+      stringTrim (tbuff);
       logMsg (LOG_INSTALL, LOG_IMPORTANT, "%s", tbuff);
       if (strncmp (tbuff, "ERROR", 5) == 0) {
         logMsg (LOG_INSTALL, LOG_IMPORTANT, "Stopped due to error");
@@ -386,11 +385,10 @@ converterConvert (GtkButton *b, gpointer udata)
 
   logMsg (LOG_INSTALL, LOG_IMPORTANT, "cmd: %s", tbuff);
   rc = system (tbuff);
-fprintf (stderr, "rc=%d\n", rc);
   snprintf (tbuff, MAXPATHLEN, "Start conversion at: %s\n",
       tmutilTstamp (buff, MAXPATHLEN));
   converterDisplayText (converter, tbuff);
-  tbuff [strlen (tbuff) - 1] = '\0';
+  stringTrim (tbuff);
   logMsg (LOG_INSTALL, LOG_IMPORTANT, tbuff);
 
   converter->tfh = fopen (CONV_TEMP_FILE, "r");

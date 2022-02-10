@@ -9,6 +9,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <locale.h>
+
 #if _sys_resource
 # include <sys/resource.h>
 #endif
@@ -111,7 +113,7 @@ sysvarsInit (const char *argv0)
     /* gethostname() does not appear to work on windows */
     char *hn = strdup (getenv ("COMPUTERNAME"));
     assert (hn != NULL);
-    strtolower (hn);
+    stringToLower (hn);
     strlcpy (sysvars [SV_HOSTNAME], hn, MAXPATHLEN);
     free (hn);
   }
@@ -156,11 +158,10 @@ sysvarsInit (const char *argv0)
     }
   }
 
+  /* the full path is needed so that symlinked bdj4 directories will work */
+
   strlcpy (sysvars [SV_BDJ4IMGDIR], sysvars [SV_BDJ4MAINDIR], MAXPATHLEN);
   strlcat (sysvars [SV_BDJ4IMGDIR], "/img", MAXPATHLEN);
-
-  strlcpy (sysvars [SV_BDJ4RESOURCEDIR], sysvars [SV_BDJ4MAINDIR], MAXPATHLEN);
-  strlcat (sysvars [SV_BDJ4RESOURCEDIR], "/resources", MAXPATHLEN);
 
   strlcpy (sysvars [SV_BDJ4TEMPLATEDIR], sysvars [SV_BDJ4MAINDIR], MAXPATHLEN);
   strlcat (sysvars [SV_BDJ4TEMPLATEDIR], "/templates", MAXPATHLEN);
@@ -177,6 +178,9 @@ sysvarsInit (const char *argv0)
       break;
     }
   }
+
+  strlcpy (sysvars [SV_LOCALE], setlocale (LC_ALL, NULL), MAXPATHLEN);
+  stringToLower (sysvars [SV_LOCALE]);
 
   strlcpy (sysvars [SV_BDJ4_VERSION], "unknown", MAXPATHLEN);
   if (fileopExists ("VERSION.txt")) {

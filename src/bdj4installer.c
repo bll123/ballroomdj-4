@@ -18,9 +18,14 @@
 #include "bdjstring.h"
 #include "filedata.h"
 #include "fileop.h"
+#include "filemanip.h"
+#include "fileutil.h"
+#include "localeutil.h"
 #include "log.h"
+#include "pathbld.h"
 #include "pathutil.h"
 #include "portability.h"
+#include "slist.h"
 #include "sysvars.h"
 #include "tmutil.h"
 #include "uiutils.h"
@@ -42,6 +47,7 @@ typedef enum {
 
 typedef struct {
   installstate_t  instState;
+  char            *home;
   char            *target;
   char            unpackdir [MAXPATHLEN];
   GtkApplication  *app;
@@ -60,6 +66,7 @@ typedef struct {
 
 #define INST_TEMP_FILE  "tmp/bdj4instout.txt"
 #define CONV_RUN_FILE   "install/convrun.txt"
+#define INST_SAVE_FNAME "installdir.txt"
 
 static int  installerCreateGui (installer_t *installer, int argc, char *argv []);
 static void installerActivate (GApplication *app, gpointer udata);
@@ -82,35 +89,35 @@ static void installerCopyTemplates (installer_t *installer);
 static void installerRunConversion (installer_t *installer);
 static void installerDisplayText (installer_t *installer, char *txt);
 static void installerScrollToEnd (GtkWidget *w, GtkAllocation *retAllocSize, gpointer udata);;
+static void installerSaveTargetFname (installer_t *installer, char *buff, size_t len);
+static void installerTemplateCopy (char *from, char *to);
 
 int
 main (int argc, char *argv[])
 {
   installer_t   installer;
   int           status;
-  char          *home;
   char          tbuff [512];
-  char          buff [512];
+  char          buff [MAXPATHLEN];
+  FILE          *fh;
 
+
+  localeInit ();
 
   buff [0] = '\0';
-  home = getenv ("HOME");
-  if (home == NULL) {
+  installer.home = getenv ("HOME");
+  if (installer.home == NULL) {
     /* probably a windows machine */
-    home = getenv ("USERPROFILE");
+    installer.home = getenv ("USERPROFILE");
   }
 
-  snprintf (tbuff, sizeof (tbuff), "%s/BDJ4", home);
+  snprintf (tbuff, sizeof (tbuff), "%s/BDJ4", installer.home);
   strlcpy (buff, tbuff, sizeof (buff));
   if (isMacOS ()) {
-    snprintf (buff, sizeof (buff), "%s/Applications/BallroomDJ4.app", home);
+    snprintf (buff, sizeof (buff), "%s/Applications/BallroomDJ4.app", installer.home);
   }
   if (isWindows ()) {
     pathToWinPath (buff, tbuff, sizeof (tbuff));
-  }
-
-  if (! isWindows()) {
-//    snprintf (tbuff, sizeof (tbuff), "%s/.config/BDJ4/installdir.txt", home);
   }
 
   installer.instState = INST_BEGIN;
@@ -118,9 +125,12 @@ main (int argc, char *argv[])
   installer.app = NULL;
   installer.window = NULL;
   installer.targetBuffer = NULL;
+  installer.feedbackMsg = NULL;
+  installer.reinstWidget = NULL;
   installer.targetEntry = NULL;
   installer.dispBuffer = NULL;
-  mstimeset (&installer.validateTimer, 3600000);
+  /* want to do an initial validation */
+  mstimeset (&installer.validateTimer, 500);
   getcwd (installer.unpackdir, MAXPATHLEN);
   installer.newinstall = true;
   installer.reinstall = false;
@@ -133,11 +143,14 @@ main (int argc, char *argv[])
     exit (1);
   }
 
-  logStartAppend ("bdj4installer", "cv", LOG_IMPORTANT);
-  logMsg (LOG_INSTALL, LOG_IMPORTANT, "conversion-start");
-
-  /* initial location */
-  logMsg (LOG_INSTALL, LOG_IMPORTANT, "initial target: %s", installer.target);
+  installerSaveTargetFname (&installer, tbuff, sizeof (tbuff));
+  fh = fopen (tbuff, "r");
+  if (fh != NULL) {
+    /* installer.target is pointing at buff */
+    fgets (buff, MAXPATHLEN, fh);
+    stringTrim (buff);
+    fclose (fh);
+  }
 
   g_timeout_add (UI_MAIN_LOOP_TIMER, installerMainLoop, &installer);
   status = installerCreateGui (&installer, 0, NULL);
@@ -325,6 +338,10 @@ installerMainLoop (void *udata)
     }
     case INST_CREATE_DIRS: {
       installerCreateDirs (installer);
+
+      logStartAppend ("bdj4installer", "in", LOG_IMPORTANT);
+      logMsg (LOG_INSTALL, LOG_IMPORTANT, "target: %s", installer->target);
+
       break;
     }
     case INST_CLEAN: {
@@ -374,6 +391,13 @@ installerValidateDir (installer_t *installer)
   bool          locok = false;
   const char    *fn;
   bool          exists = false;
+
+  if (installer->feedbackMsg == NULL ||
+      installer->targetBuffer == NULL ||
+      installer->reinstWidget == NULL) {
+    mstimeset (&installer->validateTimer, 500);
+    return;
+  }
 
   fn = gtk_entry_buffer_get_text (installer->targetBuffer);
 
@@ -487,7 +511,25 @@ installerInstInit (installer_t *installer)
 static void
 installerSaveTargetDir (installer_t *installer)
 {
+  char  tbuff [MAXPATHLEN];
+  FILE  *fh;
+
   installerDisplayText (installer, _("-- Saving install location."));
+
+  if (isWindows ()) {
+    snprintf (tbuff, MAXPATHLEN, "%s/AppData/Roaming/BDJ4", installer->home);
+  } else {
+    snprintf (tbuff, MAXPATHLEN, "%s/.config/BDJ4", installer->home);
+  }
+  fileopMakeDir (tbuff);
+
+  installerSaveTargetFname (installer, tbuff, MAXPATHLEN);
+
+  fh = fopen (tbuff, "w");
+  if (fh != NULL) {
+    fprintf (fh, "%s\n", installer->target);
+    fclose (fh);
+  }
 
   installer->instState = INST_MAKE_TARGET;
 }
@@ -515,7 +557,7 @@ fprintf (stderr, "cmd: %s\n", tbuff);
 //    system (tbuff);
   } else {
     snprintf (tbuff, MAXPATHLEN,
-        "tar -c -f - . | (cd \"%s\"; tar -x -f -)",
+        "tar -c -f - . | (cd '%s'; tar -x -f -)",
         installer->target);
     system (tbuff);
   }
@@ -552,14 +594,147 @@ installerCreateDirs (installer_t *installer)
 static void
 installerCleanOldFiles (installer_t *installer)
 {
+  FILE  *fh;
+  char  tbuff [MAXPATHLEN];
+
   installerDisplayText (installer, _("-- Cleaning old files."));
+
+  fh = fopen ("install/cleanuplist.txt", "r");
+  if (fh != NULL) {
+    while (fgets (tbuff, MAXPATHLEN, fh) != NULL) {
+      if (! fileopExists (tbuff)) {
+        continue;
+      }
+
+      if (fileopIsDirectory (tbuff)) {
+        filemanipDeleteDir (tbuff);
+      } else {
+        fileopDelete (tbuff);
+      }
+    }
+    fclose (fh);
+  }
+
   installer->instState = INST_COPY_TEMPLATES;
 }
 
 static void
 installerCopyTemplates (installer_t *installer)
 {
+  char            from [MAXPATHLEN];
+  char            to [MAXPATHLEN];
+  char            tbuff [MAXPATHLEN];
+  const char      *fname;
+  slist_t         *dirlist;
+  slistidx_t      iteridx;
+  pathinfo_t      *pi;
+
+
   installerDisplayText (installer, _("-- Copying template files."));
+
+  dirlist = filemanipBasicDirList ("templates", NULL);
+  slistStartIterator (dirlist, &iteridx);
+  while ((fname = slistIterateKey (dirlist, &iteridx)) != NULL) {
+    if (fileopIsDirectory (fname)) {
+      continue;
+    }
+    if (strcmp (fname, "qrcode.html") == 0) {
+      continue;
+    }
+    if (strcmp (fname, "html-list.txt") == 0) {
+      continue;
+    }
+
+    if (strcmp (fname, "bdj-flex-dark.html") == 0) {
+      pathbldMakePath (from, MAXPATHLEN, "", fname, "", PATHBLD_MP_TEMPLATEDIR);
+      pathbldMakePath (to, MAXPATHLEN, "", "bdj4remote", ".html", PATHBLD_MP_HTTPDIR);
+      installerTemplateCopy (from, to);
+      continue;
+    }
+    if (strcmp (fname, "mobilemq.html") == 0) {
+      pathbldMakePath (from, MAXPATHLEN, "", fname, "", PATHBLD_MP_TEMPLATEDIR);
+      pathbldMakePath (to, MAXPATHLEN, "", fname, "", PATHBLD_MP_HTTPDIR);
+      installerTemplateCopy (from, to);
+      continue;
+    }
+
+    pi = pathInfo (fname);
+    if (pathInfoExtCheck (pi, ".crt")) {
+      free (pi);
+      continue;
+    }
+    if (pathInfoExtCheck (pi, ".html")) {
+      free (pi);
+      continue;
+    }
+
+    if (pathInfoExtCheck (pi, ".svg")) {
+      pathbldMakePath (from, MAXPATHLEN, "", fname, "", PATHBLD_MP_TEMPLATEDIR);
+      pathbldMakePath (to, MAXPATHLEN, "", fname, "",
+          PATHBLD_MP_RELATIVE | PATHBLD_MP_IMGDIR);
+    } else if (strncmp (fname, "bdjconfig", 9) == 0) {
+      pathbldMakePath (from, MAXPATHLEN, "", fname, "", PATHBLD_MP_TEMPLATEDIR);
+
+      snprintf (tbuff, MAXPATHLEN, "%.*s", (int) pi->blen, pi->basename);
+      if (pathInfoExtCheck (pi, ".g")) {
+        pathbldMakePath (to, MAXPATHLEN, "", tbuff, "",
+            PATHBLD_MP_RELATIVE);
+      }
+      if (pathInfoExtCheck (pi, ".p")) {
+        pathbldMakePath (to, MAXPATHLEN, "profiles", tbuff, "",
+            PATHBLD_MP_RELATIVE);
+      }
+      if (pathInfoExtCheck (pi, ".m")) {
+        pathbldMakePath (to, MAXPATHLEN, "", tbuff, "",
+            PATHBLD_MP_RELATIVE | PATHBLD_MP_HOSTNAME);
+      }
+      if (pathInfoExtCheck (pi, ".mp")) {
+        pathbldMakePath (to, MAXPATHLEN, "profiles", tbuff, "",
+            PATHBLD_MP_RELATIVE | PATHBLD_MP_HOSTNAME);
+      }
+    } else if (pathInfoExtCheck (pi, ".txt") ||
+        pathInfoExtCheck (pi, ".sequence") ||
+        pathInfoExtCheck (pi, ".pldances") ||
+        pathInfoExtCheck (pi, ".pl") ) {
+      pathbldMakePath (from, MAXPATHLEN, "", fname, "", PATHBLD_MP_TEMPLATEDIR);
+      pathbldMakePath (to, MAXPATHLEN, "", fname, "", PATHBLD_MP_RELATIVE);
+    }
+
+    installerTemplateCopy (from, to);
+
+    free (pi);
+  }
+  slistFree (dirlist);
+
+  pathbldMakePath (from, MAXPATHLEN, "", "favicon.ico", "", PATHBLD_MP_IMGDIR);
+  pathbldMakePath (to, MAXPATHLEN, "", "favicon.ico", "", PATHBLD_MP_HTTPDIR);
+  installerTemplateCopy (from, to);
+
+  pathbldMakePath (from, MAXPATHLEN, "", "led_on.svg", "", PATHBLD_MP_IMGDIR);
+  pathbldMakePath (to, MAXPATHLEN, "", "led_on.svg", "", PATHBLD_MP_HTTPDIR);
+  installerTemplateCopy (from, to);
+
+  pathbldMakePath (from, MAXPATHLEN, "", "led_off.svg", "", PATHBLD_MP_IMGDIR);
+  pathbldMakePath (to, MAXPATHLEN, "", "led_off.svg", "", PATHBLD_MP_HTTPDIR);
+  installerTemplateCopy (from, to);
+
+  pathbldMakePath (from, MAXPATHLEN, "", "ballroomdj.svg", "", PATHBLD_MP_IMGDIR);
+  pathbldMakePath (to, MAXPATHLEN, "", "ballroomdj.svg", "", PATHBLD_MP_HTTPDIR);
+  installerTemplateCopy (from, to);
+
+  pathbldMakePath (from, MAXPATHLEN, "", "mrc", "", PATHBLD_MP_IMGDIR);
+  pathbldMakePath (to, MAXPATHLEN, "", "", "", PATHBLD_MP_HTTPDIR);
+  if (isWindows ()) {
+    snprintf (tbuff, MAXPATHLEN,
+        "robocopy /e /j /dcopy:DAT /timfix /njh /njs /np /ndl /nfl \"%s\" \"%s\"",
+        from, "http");
+fprintf (stderr, "cmd: %s\n", tbuff);
+//    system (tbuff);
+  } else {
+    snprintf (tbuff, MAXPATHLEN, "cp -r '%s' '%s'", from, "http");
+    system (tbuff);
+  }
+
   installer->instState = INST_CONV_START;
 }
 
@@ -620,4 +795,31 @@ installerScrollToEnd (GtkWidget *w, GtkAllocation *retAllocSize, gpointer udata)
   gtk_text_buffer_get_end_iter (installer->dispBuffer, &iter);
   gtk_text_view_scroll_to_iter (GTK_TEXT_VIEW (installer->dispTextView),
       &iter, 0, false, 0, 0);
+}
+
+static void
+installerSaveTargetFname (installer_t *installer, char *buff, size_t sz)
+{
+  if (isWindows ()) {
+    snprintf (buff, sz, "%s/AppData/Roaming/BDJ4/%s",
+        installer->home, INST_SAVE_FNAME);
+  } else {
+    snprintf (buff, sz, "%s/.config/BDJ4/%s",
+        installer->home, INST_SAVE_FNAME);
+  }
+}
+
+static void
+installerTemplateCopy (char *from, char *to)
+{
+  char      localesfx [20];
+  char      tbuff [MAXPATHLEN];
+
+  snprintf (localesfx, sizeof (localesfx), ".%s", sysvarsGetStr (SV_LOCALE));
+  strlcpy (tbuff, from, MAXPATHLEN);
+  strlcat (tbuff, localesfx, MAXPATHLEN);
+  if (fileopExists (tbuff)) {
+    from = tbuff;
+  }
+  filemanipCopy (from, to);
 }

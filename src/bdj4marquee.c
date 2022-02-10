@@ -20,6 +20,7 @@
 #include "bdjstring.h"
 #include "bdjvars.h"
 #include "conn.h"
+#include "localeutil.h"
 #include "lock.h"
 #include "log.h"
 #include "pathbld.h"
@@ -118,6 +119,8 @@ main (int argc, char *argv[])
     { "marquee",    no_argument,        NULL,   0 },
     { NULL,         0,                  NULL,   0 }
   };
+
+  localeInit ();
 
   marquee.progstate = progstateInit ("marquee");
   progstateSetCallback (marquee.progstate, STATE_CONNECTING,

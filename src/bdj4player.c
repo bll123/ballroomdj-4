@@ -922,7 +922,7 @@ songMakeTempName (playerdata_t *playerData, char *in, char *out, size_t maxlen)
   pi = pathInfo (in);
 
   idx = 0;
-  for (char *p = pi->filename; *p && idx < maxlen && idx < pi->flen; ++p) {
+  for (const char *p = pi->filename; *p && idx < maxlen && idx < pi->flen; ++p) {
     if ((isascii (*p) && isalnum (*p)) ||
         *p == '.' || *p == '-' || *p == '_') {
       tnm [idx++] = *p;

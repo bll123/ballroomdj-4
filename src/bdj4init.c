@@ -3,16 +3,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include <locale.h>
 #include <string.h>
 #include <errno.h>
 #include <getopt.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
-#if _hdr_libintl
-# include <libintl.h>
-#endif
 
 #include "bdj4init.h"
 #include "bdjmsg.h"
@@ -22,6 +18,7 @@
 #include "sysvars.h"
 #include "bdjvars.h"
 #include "bdjvarsdfload.h"
+#include "localeutil.h"
 #include "log.h"
 #include "tmutil.h"
 #include "fileop.h"
@@ -30,23 +27,6 @@
 #include "bdjopt.h"
 #include "lock.h"
 #include "bdjvars.h"
-
-static void initLocale (void);
-
-static void
-initLocale (void)
-{
-  char    tpath [MAXPATHLEN];
-
-  setlocale (LC_ALL, "");
-  pathbldMakePath (tpath, sizeof (tpath), "locale", "", "", PATHBLD_MP_MAINDIR);
-  bindtextdomain ("bdj4", tpath);
-#if _lib_bind_textdomain_codeset
-  bind_textdomain_codeset ("bdj4", "UTF-8");
-#endif
-  textdomain ("bdj4");
-  return;
-}
 
 int
 bdj4startup (int argc, char *argv[], char *tag, bdjmsgroute_t route)
@@ -72,7 +52,7 @@ bdj4startup (int argc, char *argv[], char *tag, bdjmsgroute_t route)
   };
 
   mstimestart (&mt);
-  initLocale ();
+  localeInit ();
   sRandom ();
   sysvarsInit (argv[0]);
 

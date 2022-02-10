@@ -328,6 +328,10 @@ listSet (list_t *list, listitem_t *item)
   int             rc = -1;
   int             found = 0;
 
+  if (list == NULL) {
+    return;
+  }
+
   if (list->locCache >= 0L) {
     if ((list->keytype == LIST_KEY_STR &&
          strcmp (item->key.strkey, list->keyCache.strkey) == 0) ||

@@ -184,6 +184,7 @@ check_include_file (sys/utsname.h _sys_utsname)
 
 set (CMAKE_REQUIRED_INCLUDES windows.h)
 check_function_exists (CloseHandle _lib_CloseHandle)
+check_function_exists (CopyFile _lib_CopyFile)
 check_function_exists (CreateFile _lib_CreateFile)
 check_function_exists (CreateProcess _lib_CreateProcess)
 check_function_exists (GetFullPathName _lib_GetFullPathName)
@@ -198,6 +199,7 @@ set (CMAKE_REQUIRED_INCLUDES "")
 # cmake weirdness
 # these do exist
 if (WIN32)
+  set (_lib_CopyFile 1)
   set (_lib_CreateFile 1)
   set (_lib_CreateProcess 1)
   set (_lib_GetFullPathName 1)
@@ -308,6 +310,7 @@ add_library (libbdj4common SHARED
   fileutil.c
   ilist.c
   list.c
+  localeutil.c
   lock.c
   log.c
   nlist.c

@@ -1,6 +1,6 @@
 #include "config.h"
 
-
+#include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <wchar.h>
@@ -10,7 +10,7 @@
 #include "bdjstring.h"
 
 char *
-strtolower (char * s) {
+stringToLower (char * s) {
   for (char *p = s; *p; p++) {
     *p = tolower (*p);
   }
@@ -18,11 +18,25 @@ strtolower (char * s) {
 }
 
 char *
-strtoupper (char * s) {
+stringToUpper (char * s) {
   for (char *p = s; *p; p++) {
     *p = toupper (*p);
   }
   return s;
+}
+
+void
+stringTrim (char *s) {
+  size_t      len;
+
+  len = strlen (s);
+  --len;
+  while (len > 0 && (s [len] == '\r' || s [len] == '\n')) {
+    s [len] = '\0';
+    --len;
+  }
+
+  return;
 }
 
 /* standard C comparison */
@@ -72,3 +86,4 @@ istrlen (const char *str)
   return len;
 }
 
+void      stringTrim (char *s);
