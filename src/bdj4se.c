@@ -15,6 +15,10 @@
 #define TAGSTR     "BDJ4"
 #define TAGSTRSFX  "~~!"
 
+#if _lib__execv
+# define execv _execv
+#endif
+
 static char * memsrch (char *buff, size_t bsz, char *srch, size_t ssz);
 
 int
@@ -22,20 +26,28 @@ main (int argc, char *argv [])
 {
   struct stat statbuf;
   char        *fn = argv [0];
-  FILE        *ifh;
-  FILE        *zfh;
-  FILE        *mufh;
-  char        *buff;
+  FILE        *ifh = NULL;
+  FILE        *zfh = NULL;
+  FILE        *mufh = NULL;
+  char        *buff = NULL;
   char        tagstr [40];
   char        tbuff [1024];
   char        *tmpdir;
-  char        *mup;
-  char        *zp;
-  char        *p;
+  char        *mup = NULL;
+  char        *zp = NULL;
+  char        *p = NULL;
   ssize_t     sz;
   bool        first = true;
   int         rc;
+  bool        isWindows = false;
+  char        *archivenm = "bdj4-install.tar.gz";
+  char        *targv [10];
 
+
+#if _lib_CreateFile  /* check if it is windows */
+  isWindows = true;
+  archivenm = "bdj4-install.zip";
+#endif
 
   buff = malloc (BUFFSZ);
   assert (buff != NULL);
@@ -51,7 +63,13 @@ main (int argc, char *argv [])
     exit (1);
   }
 
-  tmpdir = getenv ("TEMP");
+  tmpdir = getenv ("TMPDIR");
+  if (tmpdir == NULL) {
+    tmpdir = getenv ("TEMP");
+  }
+  if (tmpdir == NULL) {
+    tmpdir = getenv ("TMP");
+  }
   if (tmpdir == NULL) {
 #if _args_mkdir == 2 && _define_S_IRWXU
     mkdir ("tmp", S_IRWXU);
@@ -62,19 +80,22 @@ main (int argc, char *argv [])
     tmpdir = "tmp";
   }
 
-  snprintf (tbuff, sizeof (tbuff), "%s/%s", tmpdir, "miniunz.exe");
-  mufh = fopen (tbuff, "wb");
-  if (mufh == NULL) {
-    fprintf (stderr, "Unable to open output %d %s\n", errno, strerror (errno));
-    exit (1);
+  if (isWindows) {
+    snprintf (tbuff, sizeof (tbuff), "%s/%s", tmpdir, "miniunz.exe");
+    mufh = fopen (tbuff, "wb");
+    if (mufh == NULL) {
+      fprintf (stderr, "Unable to open output %d %s\n", errno, strerror (errno));
+      exit (1);
+    }
   }
 
-  snprintf (tbuff, sizeof (tbuff), "%s/%s", tmpdir, "bdj4-install.zip");
+  snprintf (tbuff, sizeof (tbuff), "%s/%s", tmpdir, archivenm);
   zfh = fopen (tbuff, "wb");
   if (zfh == NULL) {
     fprintf (stderr, "Unable to open output %d %s\n", errno, strerror (errno));
     exit (1);
   }
+fprintf (stderr, "tbuff=%s\n", tbuff);
 
   printf ("-- Unpacking installation.\n");
   sz = fread (buff, 1, BUFFSZ, ifh);
@@ -84,23 +105,31 @@ main (int argc, char *argv [])
     if (first) {
       ssize_t   tsz;
 
-      mup = memsrch (buff, sz, tagstr, strlen (tagstr));
-      if (mup == NULL) {
-        fprintf (stderr, "Unable to locate first tag\n");
-        exit (1);
+      if (isWindows) {
+        mup = memsrch (buff, sz, tagstr, strlen (tagstr));
+        if (mup == NULL) {
+          fprintf (stderr, "Unable to locate first tag\n");
+          exit (1);
+        }
+        mup += strlen (tagstr);
+        p = mup;
+        ++p;
+      } else {
+        mup = buff;
       }
-      mup += strlen (tagstr);
-      p = mup;
-      ++p;
+
       zp = memsrch (p, sz, tagstr, strlen (tagstr));
       if (zp == NULL) {
         fprintf (stderr, "Unable to locate second tag\n");
         exit (1);
       }
 
-      /* calculate the size of the first block */
-      tsz = (zp - mup);
-      tsz = fwrite (mup, 1, tsz, mufh);
+      if (isWindows) {
+        /* calculate the size of the first block */
+        tsz = (zp - mup);
+        tsz = fwrite (mup, 1, tsz, mufh);
+        fclose (mufh);
+      }
 
       /* calculate the size of the second block */
       zp += strlen (tagstr);
@@ -115,7 +144,6 @@ main (int argc, char *argv [])
   }
 
   fclose (ifh);
-  fclose (mufh);
   fclose (zfh);
 
   free (buff);
@@ -128,13 +156,19 @@ main (int argc, char *argv [])
 
   rc = stat ("bdj4-install", &statbuf);
   if (rc == 0) {
-#if _lib_CreateFile  /* check if it is windows */
-    system ("rmdir /s/q bdj4-install > NUL");
-#endif
+    if (isWindows) {
+      system ("rmdir /s/q bdj4-install > NUL");
+    } else {
+      system ("rm -rf bdj4-install");
+    }
   }
 
   printf ("-- Unpacking archive.\n");
-  system (".\\miniunz.exe -o -x bdj4-install.zip > bdj4-unzip.log ");
+  if (isWindows) {
+    system (".\\miniunz.exe -o -x bdj4-install.zip > bdj4-unzip.log ");
+  } else {
+    system ("tar -x -f bdj4-install.tar.gz");
+  }
 
   rc = chdir ("bdj4-install");
   if (rc != 0) {
@@ -143,7 +177,16 @@ main (int argc, char *argv [])
   }
 
   printf ("-- Starting install process.\n");
-  system ("start cmd.exe /c .\\install\\install-prefix.bat");
+  if (isWindows) {
+    targv [0] = "cmd.exe";
+    targv [1] = "/c";
+    targv [2] = ".\\install\\install-startup.bat";
+    targv [3] = NULL;
+    execv (targv[0], targv);
+  } else {
+    argv [0] = "./install/install-startup.sh";
+    execv (argv [0], argv);
+  }
 
   return 0;
 }

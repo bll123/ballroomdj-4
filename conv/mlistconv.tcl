@@ -1,22 +1,23 @@
 #!/usr/bin/tclsh
 
-if { $argc <= 0 } {
-  puts "usage: $argv0 <directory>"
+if { $argc != 2 } {
+  puts "usage: $argv0 <bdj3dir> <datatopdir>"
   exit 1
 }
 
-set dir [lindex $argv 0]
-if { ! [file exists $dir] || ! [file isdirectory $dir] } {
-  puts "Invalid directory $dir"
+set bdj3dir [lindex $argv 0]
+if { ! [file exists $bdj3dir] || ! [file isdirectory $bdj3dir] } {
+  puts "Invalid directory $bdj3dir"
   exit 1
 }
+set datatopdir [lindex $argv 1]
 
-set flist [glob -directory $dir *.mlist]
+set flist [glob -directory $bdj3dir *.mlist]
 
 puts "-- Converting: song lists"
 foreach {fn} $flist {
-  set nfn [file join data [file rootname [file tail $fn]].songlist]
-  puts "    - [file tail $fn] : $nfn"
+  set nfn [file join $datatopdir data [file rootname [file tail $fn]].songlist]
+  puts "    - [file tail $fn] : [file rootname [file tail $fn]].songlist"
   source $fn
   set fh [open $nfn w]
   puts $fh "# BDJ4 songlist"

@@ -1,12 +1,14 @@
 #!/bin/bash
 
-# the "ERROR:" output prefixes must exist.
+# 'ERROR' and 'OK' are used by the gui to determine when the script
+# is finished.
 
-if [[ $# != 1 || ! -d $1 || ! -d $1/data ]]; then
+if [[ $# != 1 || ! -d $1 || ! -d "$1/data" ]]; then
   echo "ERROR: No ballroomdj directory"
   exit 1
 fi
-dir="$1/data"
+bdj3dir="$1/data"
+datatopdir="$2"
 
 systype=$(uname -s | tr '[A-Z]' '[a-z]')
 case $systype in
@@ -37,8 +39,8 @@ if [[ $TCLSH != "" ]]; then
   tclsh=$TCLSH
 else
   for f in \
-      "$dir/../$systype/64/tcl/bin/tclsh" \
-      "$dir/../../$systype/64/tcl/bin/tclsh" \
+      "$bdj3dir/../$systype/64/tcl/bin/tclsh" \
+      "$bdj3dir/../../$systype/64/tcl/bin/tclsh" \
       "$HOME/Applications/BallroomDJ.app/Contents/MacOS/$systype/64/tcl/bin/tclsh" \
       "$HOME/local/bin/tclsh" \
       "$HOME/bin/tclsh" \
@@ -68,19 +70,19 @@ if [[ ! -d conv ]]; then
   exit 1
 fi
 
-"$tclsh" ./conv/configconv.tcl $dir
-"$tclsh" ./conv/danceconv.tcl $dir
-"$tclsh" ./conv/dbconv.tcl $dir
-"$tclsh" ./conv/genreconv.tcl $dir
-"$tclsh" ./conv/levelsconv.tcl $dir
-"$tclsh" ./conv/mlistconv.tcl $dir
-"$tclsh" ./conv/playlistconv.tcl $dir
-"$tclsh" ./conv/ratingconv.tcl $dir
-"$tclsh" ./conv/seqconv.tcl $dir
-"$tclsh" ./conv/sortoptconv.tcl $dir
-"$tclsh" ./conv/autoselconv.tcl $dir
-"$tclsh" ./conv/typeconv.tcl $dir
-"$tclsh" ./conv/statusconv.tcl $dir
+"$tclsh" ./conv/configconv.tcl "$bdj3dir" "$datatopdir"
+"$tclsh" ./conv/danceconv.tcl "$bdj3dir" "$datatopdir"
+"$tclsh" ./conv/dbconv.tcl "$bdj3dir" "$datatopdir"
+"$tclsh" ./conv/genreconv.tcl "$bdj3dir" "$datatopdir"
+"$tclsh" ./conv/levelsconv.tcl "$bdj3dir" "$datatopdir"
+"$tclsh" ./conv/mlistconv.tcl "$bdj3dir" "$datatopdir"
+"$tclsh" ./conv/playlistconv.tcl "$bdj3dir" "$datatopdir"
+"$tclsh" ./conv/ratingconv.tcl "$bdj3dir" "$datatopdir"
+"$tclsh" ./conv/seqconv.tcl "$bdj3dir" "$datatopdir"
+"$tclsh" ./conv/sortoptconv.tcl "$bdj3dir" "$datatopdir"
+"$tclsh" ./conv/autoselconv.tcl "$bdj3dir" "$datatopdir"
+"$tclsh" ./conv/typeconv.tcl "$bdj3dir" "$datatopdir"
+"$tclsh" ./conv/statusconv.tcl "$bdj3dir" "$datatopdir"
 echo "Conversion Completed Successfully"
 echo "OK"
 

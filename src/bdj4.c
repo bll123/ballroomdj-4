@@ -53,6 +53,8 @@ main (int argc, char * argv[])
     { "installer",  no_argument,        NULL,   12 },
     { "locale",     no_argument,        NULL,   13 },
     { "unpackdir",  required_argument,  NULL,   'u' },
+    { "reinstall",  no_argument,        NULL,   'r' },
+    { "guienabled", no_argument,        NULL,   'g' },
     { "profile",    required_argument,  NULL,   'p' },
     { "debug",      required_argument,  NULL,   'd' },
     { "theme",      required_argument,  NULL,   't' },
@@ -151,7 +153,13 @@ main (int argc, char * argv[])
         havetheme = true;
         break;
       }
+      case 'r': {
+        break;
+      }
       case 'u': {
+        break;
+      }
+      case 'g': {
         break;
       }
       default: {
@@ -165,8 +173,8 @@ main (int argc, char * argv[])
     exit (1);
   }
 
-  if (chdir (sysvarsGetStr (SV_BDJ4DIR)) < 0) {
-    fprintf (stderr, "Unable to chdir: %s\n", sysvarsGetStr (SV_BDJ4DIR));
+  if (chdir (sysvarsGetStr (SV_BDJ4DATATOPDIR)) < 0) {
+    fprintf (stderr, "Unable to chdir: %s\n", sysvarsGetStr (SV_BDJ4DATATOPDIR));
     exit (1);
   }
 

@@ -1,19 +1,20 @@
 #!/usr/bin/tclsh
 
-if { $argc <= 0 } {
-  puts "usage: $argv0 <directory>"
+if { $argc != 2 } {
+  puts "usage: $argv0 <bdj3dir> <datatopdir>"
   exit 1
 }
 
-set dir [lindex $argv 0]
-if { ! [file exists $dir] || ! [file isdirectory $dir] } {
-  puts "Invalid directory $dir"
+set bdj3dir [lindex $argv 0]
+if { ! [file exists $bdj3dir] || ! [file isdirectory $bdj3dir] } {
+  puts "Invalid directory $bdj3dir"
   exit 1
 }
+set datatopdir [lindex $argv 1]
 
-source [file join $dir sortopt.tcl]
-set nfn [file join data sortopt.txt]
-puts "-- Converting: sortopt.tcl : $nfn"
+source [file join $bdj3dir sortopt.tcl]
+set nfn [file join $datatopdir data sortopt.txt]
+puts "-- Converting: sortopt.tcl : sortopt.txt"
 
 set fh [open $nfn w]
 puts $fh "# BDJ4 sort options"

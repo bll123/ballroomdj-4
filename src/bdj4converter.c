@@ -68,8 +68,8 @@ main (int argc, char *argv[])
 
   /* for convenience in testing; normally will already be there */
   sysvarsInit (argv [0]);
-  if (chdir (sysvarsGetStr (SV_BDJ4DIR)) < 0) {
-    fprintf (stderr, "Unable to chdir: %s\n", sysvarsGetStr (SV_BDJ4DIR));
+  if (chdir (sysvarsGetStr (SV_BDJ4DATATOPDIR)) < 0) {
+    fprintf (stderr, "Unable to chdir: %s\n", sysvarsGetStr (SV_BDJ4DATATOPDIR));
     exit (1);
   }
 
@@ -380,8 +380,9 @@ converterConvert (GtkButton *b, gpointer udata)
   converter->tfh = fopen (CONV_TEMP_FILE, "w");
   fclose (converter->tfh);
 
-  snprintf (tbuff, sizeof (tbuff), "%s conv/%s \"%s\" > %s %s",
-      pfx, cvtscript, bdjpath, CONV_TEMP_FILE, sfx);
+  snprintf (tbuff, sizeof (tbuff), "%s %s/conv/%s \"%s\" > %s %s",
+      pfx, sysvarsGetStr (SV_BDJ4MAINDIR), cvtscript, bdjpath,
+      CONV_TEMP_FILE, sfx);
 
   logMsg (LOG_INSTALL, LOG_IMPORTANT, "cmd: %s", tbuff);
   rc = system (tbuff);

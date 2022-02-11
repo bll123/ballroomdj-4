@@ -1,15 +1,16 @@
 #!/usr/bin/tclsh
 
-if { $argc <= 0 } {
-  puts "usage: $argv0 <directory>"
+if { $argc != 2 } {
+  puts "usage: $argv0 <bdj3dir> <datatopdir>"
   exit 1
 }
 
-set dir [lindex $argv 0]
-if { ! [file exists $dir] || ! [file isdirectory $dir] } {
-  puts "Invalid directory $dir"
+set bdj3dir [lindex $argv 0]
+if { ! [file exists $bdj3dir] || ! [file isdirectory $bdj3dir] } {
+  puts "Invalid directory $bdj3dir"
   exit 1
 }
+set datatopdir [lindex $argv 1]
 
 if { $::tcl_platform(platform) eq "windows" } {
   set hostname [info hostname]
@@ -27,12 +28,12 @@ set cnm bdj_config
 set nnm bdjconfig
 foreach path [list {} profiles $hostname [file join $hostname profiles]] {
   foreach sfx $suffixlist {
-    set fn "[file join $dir $path $cnm]$sfx"
+    set fn "[file join $bdj3dir $path $cnm]$sfx"
     if { [file exists $fn] } {
-      set nfn "[file join data $path $nnm]$sfx"
-      puts "    - [file join $path $cnm]$sfx : $nfn"
+      set nfn "[file join $datatopdir data $path $nnm]$sfx"
+      puts "    - [file join $path $cnm]$sfx : [file join $path $nnm]$sfx"
       set ifh [open $fn r]
-      file mkdir [file join data $path]
+      file mkdir [file join $datatopdir data $path]
       set ofh [open $nfn w]
 
       puts $ofh "# BDJ4 [file join $path $nnm]"

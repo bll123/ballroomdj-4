@@ -2,6 +2,8 @@
 
 LOG=""
 
+export topdir
+export datatopdir
 export guienabled
 
 if [[ ! -d install ]]; then
@@ -40,7 +42,7 @@ if [[ ! -f "install/convrun.txt" ]]; then
         none|"'none'"|None|NONE)
           ;;
         *)
-          ./conv/cvtall.sh "$bdj3path"
+          ./conv/cvtall.sh "$bdj3path" "$datatopdir"
           ;;
       esac
     fi

@@ -315,6 +315,7 @@ add_library (libbdj4common SHARED
   nlist.c
   pathbld.c
   pathutil.c
+  portability.c
   procutil.c
   progstate.c
   queue.c
@@ -343,7 +344,6 @@ add_library (libbdj4 SHARED
   musicdb.c
   musicq.c
   playlist.c
-  portability.c
   rafile.c
   rating.c
   sequence.c
@@ -467,7 +467,7 @@ endif()
 
 add_executable (bdj4 bdj4.c
   bdjstring.c filedata.c fileop.c pathbld.c
-  pathutil.c sysvars.c strlcat.c strlcpy.c
+  pathutil.c portability.c sysvars.c strlcat.c strlcpy.c
 )
 if (WIN32)
   target_sources (bdj4 PRIVATE launcher.o)

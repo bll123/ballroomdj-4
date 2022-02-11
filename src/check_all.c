@@ -21,8 +21,8 @@ main (int argc, char *argv [])
   SRunner *sr;
 
   sysvarsInit (argv [0]);
-  if (chdir (sysvarsGetStr (SV_BDJ4DIR)) < 0) {
-    fprintf (stderr, "Unable to chdir: %s\n", sysvarsGetStr (SV_BDJ4DIR));
+  if (chdir (sysvarsGetStr (SV_BDJ4DATATOPDIR)) < 0) {
+    fprintf (stderr, "Unable to chdir: %s\n", sysvarsGetStr (SV_BDJ4DATATOPDIR));
     exit (1);
   }
 

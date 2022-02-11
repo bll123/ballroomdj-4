@@ -9,5 +9,6 @@
 
 double        dRandom (void);
 void          sRandom (void);
+char          *getHostname (char *buff, size_t sz);
 
 #endif /* INC_PORTABILITY_H */

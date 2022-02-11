@@ -1,6 +1,5 @@
 #include "config.h"
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -107,16 +106,8 @@ sysvarsInit (const char *argv0)
   strlcat (sysvars [SV_OSDISP], " ", MAXPATHLEN);
   strlcat (sysvars [SV_OSDISP], sysvars [SV_OSBUILD], MAXPATHLEN);
 #endif
-  gethostname (tbuf, MAXPATHLEN);
-  strlcpy (sysvars [SV_HOSTNAME], tbuf, MAXPATHLEN);
-  if (isWindows ()) {
-    /* gethostname() does not appear to work on windows */
-    char *hn = strdup (getenv ("COMPUTERNAME"));
-    assert (hn != NULL);
-    stringToLower (hn);
-    strlcpy (sysvars [SV_HOSTNAME], hn, MAXPATHLEN);
-    free (hn);
-  }
+
+  getHostname (sysvars [SV_HOSTNAME], MAXPATHLEN);
 
   (void) ! getcwd (tcwd, MAXPATHLEN);
 
@@ -147,18 +138,21 @@ sysvarsInit (const char *argv0)
     /* a change of directories is contra-indicated.                   */
 
     pathNormPath (tcwd, MAXPATHLEN);
-    strlcpy (sysvars [SV_BDJ4DIR], tcwd, MAXPATHLEN);
+    strlcpy (sysvars [SV_BDJ4DATATOPDIR], tcwd, MAXPATHLEN);
   } else {
     if (isMacOS ()) {
       strlcpy (buff, getenv ("HOME"), MAXPATHLEN);
       strlcat (buff, "/Library/Application Support/BallroomDJ4", MAXPATHLEN);
-      strlcpy (sysvars [SV_BDJ4DIR], buff, MAXPATHLEN);
+      strlcpy (sysvars [SV_BDJ4DATATOPDIR], buff, MAXPATHLEN);
     } else {
-      strlcpy (sysvars [SV_BDJ4DIR], sysvars [SV_BDJ4MAINDIR], MAXPATHLEN);
+      strlcpy (sysvars [SV_BDJ4DATATOPDIR], sysvars [SV_BDJ4MAINDIR], MAXPATHLEN);
     }
   }
 
-  /* the full path is needed so that symlinked bdj4 directories will work */
+  /* on mac os, the data directory is separated */
+  /* full path is also needed so that symlinked bdj4 directories will work */
+
+  strlcpy (sysvars [SV_BDJ4DATADIR], "data", MAXPATHLEN);
 
   strlcpy (sysvars [SV_BDJ4IMGDIR], sysvars [SV_BDJ4MAINDIR], MAXPATHLEN);
   strlcat (sysvars [SV_BDJ4IMGDIR], "/img", MAXPATHLEN);
@@ -167,6 +161,8 @@ sysvarsInit (const char *argv0)
   strlcat (sysvars [SV_BDJ4TEMPLATEDIR], "/templates", MAXPATHLEN);
 
   strlcpy (sysvars [SV_BDJ4HTTPDIR], "http", MAXPATHLEN);
+
+  strlcpy (sysvars [SV_BDJ4TMPDIR], "tmp", MAXPATHLEN);
 
   strlcpy (sysvars [SV_SHLIB_EXT], SHLIB_EXT, MAXPATHLEN);
 

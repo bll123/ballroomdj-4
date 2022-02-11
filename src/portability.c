@@ -9,10 +9,7 @@
 #include <time.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <limits.h>
-#if _hdr_dlfcn
-# include <dlfcn.h>
-#endif
+
 #if _hdr_winsock2
 # include <winsock2.h>
 #endif
@@ -20,6 +17,7 @@
 # include <windows.h>
 #endif
 
+#include "bdjstring.h"
 #include "portability.h"
 
 double
@@ -61,3 +59,20 @@ sRandom (void)
 #endif
 }
 
+char *
+getHostname (char *buff, size_t sz)
+{
+  *buff = '\0';
+  gethostname (buff, sz);
+
+  if (*buff == '\0') {
+    /* gethostname() does not appear to work on windows */
+    char *hn = getenv ("COMPUTERNAME");
+    if (hn != NULL) {
+      strlcpy (buff, hn, sz);
+      stringToLower (buff);
+    }
+  }
+
+  return buff;
+}

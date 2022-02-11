@@ -96,8 +96,8 @@ bdj4startup (int argc, char *argv[], char *tag, bdjmsgroute_t route)
     rc = lockAcquire (locknm, PATHBLD_MP_USEIDX);
   }
 
-  if (chdir (sysvarsGetStr (SV_BDJ4DIR)) < 0) {
-    fprintf (stderr, "Unable to chdir: %s\n", sysvarsGetStr (SV_BDJ4DIR));
+  if (chdir (sysvarsGetStr (SV_BDJ4DATATOPDIR)) < 0) {
+    fprintf (stderr, "Unable to chdir: %s\n", sysvarsGetStr (SV_BDJ4DATATOPDIR));
     exit (1);
   }
   bdjvarsInit ();

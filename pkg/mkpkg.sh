@@ -103,12 +103,12 @@ case $systype in
   Linux)
     tag=linux
     platform=unix
-    sfx=.run
+    sfx=
     ;;
   Darwin)
     tag=macos
     platform=unix
-    sfx=.run
+    sfx=
     ;;
   MINGW64*)
     tag=win64
@@ -121,16 +121,6 @@ case $systype in
     sfx=.exe
     ;;
 esac
-
-echo "-- checking"
-
-instpfx=install/install-prefix.sh
-sza=$(ls -l ${instpfx} | awk '{print $5}')
-szb=$(grep '^size=' ${instpfx} | sed -e 's/size=//')
-if [[ $sza -ne $szb ]]; then
-  echo "The ${instpfx} file has the wrong size set."
-  exit 1
-fi
 
 echo "-- copying licenses"
 licdir=licenses
@@ -285,12 +275,14 @@ nm=${spkgnm}-${VERSION}-installer-${tag}${rlstag}${sfx}
 test -d ${stagedir} && rm -rf ${stagedir}
 mkdir ${stagedir}
 
+echo -n '!~~BDJ4~~!' > ${tmpsep}
+
 case $systype in
   Linux)
     copyreleasefiles ${systype} ${stagedir}
     echo "-- creating install package"
     (cd tmp;tar -c -z -f - $(basename $stagedir)) > ${tmpnm}
-    cat install/install-prefix.sh ${tmpnm} > ${nm}
+    cat bin/bdj4se ${tmpsep} ${tmpnm} > ${nm}
     rm -f ${tmpnm}
     ;;
   Darwin)
@@ -308,14 +300,13 @@ case $systype in
     copyreleasefiles ${systype} ${stagedir}/Contents/MacOS
     echo "-- creating install package"
     (cd tmp;tar -c -z -f - $(basename $stagedir)) > ${tmpnm}
-    cat install/install-prefix.sh ${tmpnm} > ${nm}
+    cat bin/bdj4se ${tmpsep} ${tmpnm} > ${nm}
     rm -f ${tmpnm}
     ;;
   MINGW64*|MINGW32*)
     copyreleasefiles ${systype} ${stagedir}
     echo "-- creating install package"
     (cd tmp; zip -r ../${tmpzip} $(basename $stagedir) ) > pkg-zip.log 2>&1
-    echo -n '!~~BDJ4~~!' > ${tmpsep}
     cat bin/bdj4se.exe \
         ${tmpsep} \
         plocal/bin/miniunz.exe \

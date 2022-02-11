@@ -1,21 +1,22 @@
 #!/usr/bin/tclsh
 
-if { $argc <= 0 } {
-  puts "usage: $argv0 <directory>"
+if { $argc != 2 } {
+  puts "usage: $argv0 <bdj3dir> <datatopdir>"
   exit 1
 }
 
-set dir [lindex $argv 0]
-if { ! [file exists $dir] || ! [file isdirectory $dir] } {
-  puts "Invalid directory $dir"
+set bdj3dir [lindex $argv 0]
+if { ! [file exists $bdj3dir] || ! [file isdirectory $bdj3dir] } {
+  puts "Invalid directory $bdj3dir"
   exit 1
 }
+set datatopdir [lindex $argv 1]
 
 set hsize 128
 set rsize 2048
 
-puts "-- Converting: musicdb.txt : data/musicdb.dat"
-set fh [open [file join $dir musicdb.txt] r]
+puts "-- Converting: musicdb.txt : musicdb.dat"
+set fh [open [file join $bdj3dir musicdb.txt] r]
 gets $fh line
 gets $fh line
 gets $fh line
@@ -23,9 +24,9 @@ gets $fh line
 regexp {^#RAMAX=(\d+)$} $line all racount
 close $fh
 
-set fh [open [file join data musicdb.dat] w]
+set fh [open [file join $datatopdir data musicdb.dat] w]
 
-source [file joi $dir musicdb.txt]
+source [file join $bdj3dir musicdb.txt]
 
 set c 0
 dict for {fn data} $musicdbList {

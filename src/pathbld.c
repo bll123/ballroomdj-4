@@ -15,7 +15,7 @@ pathbldMakePath (char *buff, size_t buffsz, const char *subpath,
 {
   char      suffix [30];
   char      *subpathsep;
-  char      *dirprefix = "data";
+  char      *dirprefix;
 
   *suffix = '\0';
   subpathsep = "";
@@ -23,11 +23,12 @@ pathbldMakePath (char *buff, size_t buffsz, const char *subpath,
     subpathsep = "/";
   }
 
+  dirprefix = sysvarsGetStr (SV_BDJ4DATADIR);
   if ((flags & PATHBLD_MP_TMPDIR) == PATHBLD_MP_TMPDIR) {
-    dirprefix = "tmp";
+    dirprefix = sysvarsGetStr (SV_BDJ4TMPDIR);
   }
   if ((flags & PATHBLD_MP_HTTPDIR) == PATHBLD_MP_HTTPDIR) {
-    dirprefix = "http";
+    dirprefix = sysvarsGetStr (SV_BDJ4HTTPDIR);
   }
   if ((flags & PATHBLD_MP_EXECDIR) == PATHBLD_MP_EXECDIR) {
     dirprefix = sysvarsGetStr (SV_BDJ4EXECDIR);
