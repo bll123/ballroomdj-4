@@ -2,33 +2,15 @@
 
 LOG=""
 
-export newinstall
 export guienabled
-export targetdir
-export unpackdir
-export topdir
-export reinstall
 
-if [[ ! -d install ||
-    ! -f install/install-helpers.sh ]]; then
+if [[ ! -d install ]]; then
   echo "Unable to locate install directory."
   exit 1
 fi
 
 . install/install-helpers.sh
 processcmdargs $@
-
-if [[ $targetdir == "" ]]; then
-  echo "No target directory specified."
-  exit 1
-fi
-
-cwd=$(pwd)
-
-if [[ $topdir != $cwd ]]; then
-  echo "Working directory is not $topdir."
-  exit 1
-fi
 
 if [[ ! -f "install/convrun.txt" ]]; then
   if [[ $guienabled == T ]]; then

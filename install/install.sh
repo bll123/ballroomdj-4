@@ -149,12 +149,7 @@ fi
 
 echo "-- Creating directory structure."
 ./install/install-mkdirs.sh \
-    -guienabled $guienabled \
-    -unpackdir "$unpackdir" \
-    -targetdir "$targetdir" \
-    -topdir "$topdir" \
-    -newinstall $newinstall \
-    -reinstall $reinstall
+    -topdir "$topdir"
 
 if [[ $systype == Darwin ]]; then
   ln -sf bin/bdj4 "$topdir/BDJ4"
@@ -164,26 +159,14 @@ fi
 
 if [[ -f install/install-cleanup.sh ]]; then
   echo "-- Cleaning up old files."
-  ./install/install-cleanup.sh \
-      -guienabled $guienabled \
-      -unpackdir "$unpackdir" \
-      -targetdir "$targetdir" \
-      -topdir "$topdir" \
-      -newinstall $newinstall \
-      -reinstall $reinstall
+  ./install/install-cleanup.sh
 fi
 
 # copy template files over to data directory if needed.
 
 if [[ $newinstall == T && -f install/install-templates.sh ]]; then
   echo "-- Copying templates."
-  ./install/install-templates.sh \
-      -guienabled $guienabled \
-      -unpackdir "$unpackdir" \
-      -targetdir "$targetdir" \
-      -topdir "$topdir" \
-      -newinstall $newinstall \
-      -reinstall $reinstall
+  ./install/install-templates.sh
 fi
 
 # if the conversion script has not been run,
@@ -199,12 +182,7 @@ if [[ $newinstall == T && \
     ! -f "install/convrun.txt" ]]; then
   echo "-- Running conversion script"
   ./install/install-convert.sh \
-      -guienabled $guienabled \
-      -unpackdir "$unpackdir" \
-      -targetdir "$targetdir" \
-      -topdir "$topdir" \
-      -newinstall $newinstall \
-      -reinstall $reinstall
+      -guienabled $guienabled
 fi
 
 cleanInstall

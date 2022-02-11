@@ -2,15 +2,9 @@
 
 LOG=""
 
-export newinstall
-export guienabled
-export targetdir
-export unpackdir
 export topdir
-export reinstall
 
-if [[ ! -d install ||
-    ! -f install/install-helpers.sh ]]; then
+if [[ ! -d install ]]; then
   echo "Unable to locate install directory."
   exit 1
 fi

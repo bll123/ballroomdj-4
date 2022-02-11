@@ -9,7 +9,7 @@ cd %tmpdir%
 cd bdj4-install
 
 echo -- Starting graphical installer.
-.\bin\bdj4.exe --installer
+.\bin\bdj4.exe --installer --unpackdir "%tmpdir%/bdj4-install"
 
 echo -- Cleaning temporary files.
 if exist "%tmpdir%\bdj4-install.zip" (

@@ -4,13 +4,13 @@
 #
 # This is a binary file.
 # To see just the shell script, use the following command:
-#     size=2227; head -c $size $0; unset size
+#     size=2235; head -c $size $0; unset size
 #
 
 # size will be one byte larger than the size of this script
-size=2227
+size=2235
 
-archivenm=bdj4.tar.gz
+archivenm=bdj4-install.tar.gz
 unpacktgt=bdj4-install
 
 tmpdir=${TMPDIR:-}
