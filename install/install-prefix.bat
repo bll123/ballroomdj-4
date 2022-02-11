@@ -4,7 +4,7 @@ set tmpdir="%TEMP%"
 
 echo -- BallroomDJ 4 Installation Startup
 
-cd $tmpdir
+cd %tmpdir%
 
 cd bdj4-install
 

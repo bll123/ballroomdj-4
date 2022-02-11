@@ -310,7 +310,6 @@ add_library (libbdj4common SHARED
   fileutil.c
   ilist.c
   list.c
-  localeutil.c
   lock.c
   log.c
   nlist.c
@@ -328,7 +327,6 @@ add_library (libbdj4common SHARED
   sysvars.c
   tmutil.c
 )
-addIntlLibrary (libbdj4common)
 addWinSockLibrary (libbdj4common)
 
 add_library (libbdj4 SHARED
@@ -340,6 +338,7 @@ add_library (libbdj4 SHARED
   dancesel.c
   dnctypes.c
   genre.c
+  localeutil.c
   level.c
   musicdb.c
   musicq.c
@@ -482,7 +481,6 @@ target_link_libraries (bdj4cli
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   m
 )
-addIntlLibrary (bdj4cli)
 addWinSockLibrary (bdj4cli)
 
 add_executable (bdj4main bdj4main.c)
@@ -514,7 +512,6 @@ target_link_libraries (bdj4mobmq
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   m
 )
-addIntlLibrary (bdj4mobmq)
 addWinSockLibrary (bdj4mobmq)
 
 add_executable(bdj4rc bdj4rc.c)
@@ -527,7 +524,6 @@ target_link_libraries (bdj4rc
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   m
 )
-addIntlLibrary (bdj4rc)
 addWinSockLibrary (bdj4rc)
 
 add_executable (bdj4marquee bdj4marquee.c)

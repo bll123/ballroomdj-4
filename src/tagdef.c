@@ -5,9 +5,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <assert.h>
-#if _hdr_libintl
-# include <libintl.h>
-#endif
 
 #include "tagdef.h"
 

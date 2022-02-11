@@ -22,6 +22,7 @@ locatebdj3 (void)
   char          tbuff [MAXPATHLEN];
   int           grc;
   int           rc;
+  bool          iswin = false;
 
 
   /* make it possible to specify a location via the environment */
@@ -36,6 +37,7 @@ locatebdj3 (void)
   home = getenv ("HOME");
   if (home == NULL) {
     /* probably a windows machine */
+    iswin = true;
     home = getenv ("USERPROFILE");
   }
   //logMsg (LOG_INSTALL, LOG_IMPORTANT, "home: %s", loc);
@@ -47,7 +49,11 @@ locatebdj3 (void)
 
   /* Linux, old MacOS, recent windows: $HOME/BallroomDJ */
   strlcpy (tbuff, home, MAXPATHLEN);
-  strlcat (tbuff, "/", MAXPATHLEN);
+  if (iswin) {
+    strlcat (tbuff, "\\", MAXPATHLEN);
+  } else {
+    strlcat (tbuff, "/", MAXPATHLEN);
+  }
   strlcat (tbuff, "BallroomDJ", MAXPATHLEN);
 
   if (locationcheck (tbuff)) {

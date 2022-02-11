@@ -19,15 +19,6 @@ function copysrcfiles (
   dirlist="src conv img install licenses locale pkg templates web wiki \
       conv img install licenses locale templates"
 
-  case ${systype} in
-    Darwin)
-      dirlist="$dirlist plocal/bin plocal/share/themes/macOS* plocal/share/icons"
-      ;;
-    MSYS*|MINGW*)
-      dirlist="$dirlist plocal/bin plocal/share/themes/Wind* plocal/share/icons"
-      ;;
-  esac
-
   echo "-- copying files to $stage"
   for f in $filelist; do
     dir=$(dirname ${f})
@@ -35,7 +26,9 @@ function copysrcfiles (
     cp -pf ${f} ${stage}/${dir}
   done
   for d in $dirlist; do
-    cp -pr ${d} ${stage}
+    dir=$(dirname ${d})
+    test -d ${stage}/${dir} || mkdir -p ${stage}/${dir}
+    cp -pr ${d} ${stage}/${dir}
   done
 
   echo "   removing exclusions"
@@ -51,10 +44,13 @@ function copyreleasefiles (
 
   case ${systype} in
     Darwin)
-      dirlist="$dirlist plocal/bin plocal/share/themes/macOS* plocal/share/icons"
+      dirlist="$dirlist plocal/share/themes/macOS*"
       ;;
     MSYS*|MINGW*)
-      dirlist="$dirlist plocal/bin plocal/share/themes/Wind* plocal/share/icons"
+      dirlist="$dirlist plocal/bin plocal/share/themes/Wind*"
+      dirlist="$dirlist plocal/share/icons plocal/lib/gdk-pixbuf-2.0"
+      dirlist="$dirlist plocal/share/glib-2.0/schemas plocal/etc/gtk-3.0"
+      dirlist="$dirlist plocal/lib/girepository-1.0 plocal/etc/fonts"
       ;;
   esac
 
@@ -65,12 +61,13 @@ function copyreleasefiles (
     cp -pf ${f} ${stage}/${dir}
   done
   for d in $dirlist; do
-    cp -pr ${d} ${stage}
+    dir=$(dirname ${d})
+    test -d ${stage}/${dir} || mkdir -p ${stage}/${dir}
+    cp -pr ${d} ${stage}/${dir}
   done
 
   echo "   removing exclusions"
   rm -f \
-      ${stage}/bin/bdj4cli \
       ${stage}/bin/bdj4se \
       ${stage}/bin/check_all \
       ${stage}/bin/chkprocess \
@@ -182,7 +179,7 @@ if [[ $platform == windows ]]; then
   dlllistfn=tmp/dll-list.txt
   > $dlllistfn
 
-  for fn in bin/*.exe /mingw64/bin/gdbus.exe ; do
+  for fn in bin/*.exe /mingw64/bin/gdbus.exe /mingw64/bin/librsvg-2-2.dll ; do
     ldd $fn |
       grep mingw |
       sed -e 's,.*=> ,,' -e 's,\.dll .*,.dll,' >> $dlllistfn
@@ -194,9 +191,44 @@ if [[ $platform == windows ]]; then
 
   # stage the other required gtk files.
 
-  cp -f /mingw64/bin/gdbus.exe  plocal/bin
+  cp -f /mingw64/bin/librsvg-2-2.dll plocal/bin
+  cp -f /mingw64/bin/gdbus.exe plocal/bin
+  cp -rf /mingw64/lib/gdk-pixbuf-2.0 plocal/lib
+  cp -rf /mingw64/lib/girepository-1.0 plocal/lib
+  mkdir -p plocal/share/icons
+  cp -rf /mingw64/share/icons/* plocal/share/icons
+  mkdir -p plocal/share/glib-2.0
+  cp -rf /mingw64/share/glib-2.0/schemas plocal/share/glib-2.0
+  mkdir -p plocal/etc/gtk-3.0
+  cp -f /mingw64/etc/gtk-3.0/im-multipress.conf plocal/etc/gtk-3.0
+  cat > plocal/etc/gtk-3.0/settings.ini <<_HERE_
+[Settings]
+gtk-xft-antialias = 1
+gtk-icon-theme-name = Adwaita
+gtk-theme-name = Windows-10-Dark
+gtk-font-name = Segoe UI 11
+_HERE_
+  mkdir -p plocal/etc/fonts
+  cp -rf /mingw64/etc/fonts plocal/etc
+
+  # fix other windows specific stuff
+
+  nm=templates/bdjconfig.txt.g
+  sed -e 's/libvolpa/libvolwin/' ${nm} > ${nm}.n
+  mv -f ${nm}.n ${nm}
 
 fi # is windows
+
+if [[ $systype == Darwin ]]; then
+
+  # fix darwin specific stuff
+
+  nm=templates/bdjconfig.txt.g
+  sed -e 's/libvolpa/libvolmac/' ${nm} > ${nm}.n
+  mv -f ${nm}.n ${nm}
+
+fi
+
 
 echo "-- creating release manifest"
 ./pkg/mkmanifest.sh

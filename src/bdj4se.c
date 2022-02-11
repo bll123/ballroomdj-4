@@ -20,20 +20,21 @@ static char * memsrch (char *buff, size_t bsz, char *srch, size_t ssz);
 int
 main (int argc, char *argv [])
 {
-  char    *fn = argv [0];
-  FILE    *ifh;
-  FILE    *zfh;
-  FILE    *mufh;
-  char    *buff;
-  char    tagstr [40];
-  char    tbuff [1024];
-  char    *tmpdir;
-  char    *mup;
-  char    *zp;
-  char    *p;
-  ssize_t sz;
-  bool    first = true;
-  int     rc;
+  struct stat statbuf;
+  char        *fn = argv [0];
+  FILE        *ifh;
+  FILE        *zfh;
+  FILE        *mufh;
+  char        *buff;
+  char        tagstr [40];
+  char        tbuff [1024];
+  char        *tmpdir;
+  char        *mup;
+  char        *zp;
+  char        *p;
+  ssize_t     sz;
+  bool        first = true;
+  int         rc;
 
 
   buff = malloc (BUFFSZ);
@@ -123,6 +124,13 @@ main (int argc, char *argv [])
   if (rc != 0) {
     fprintf (stderr, "Unable to chdir to %s %d %s\n", tmpdir, errno, strerror (errno));
     exit (1);
+  }
+
+  rc = stat ("bdj4-install", &statbuf);
+  if (rc == 0) {
+#if _lib_CreateFile  /* check if it is windows */
+    system ("rmdir /s/q bdj4-install > NUL");
+#endif
   }
 
   printf ("-- Unpacking archive.\n");

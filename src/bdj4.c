@@ -25,7 +25,7 @@
 #endif
 
 int
-main (int argc, char *argv[])
+main (int argc, char * argv[])
 {
   char      buff [MAXPATHLEN];
   int       validargs = 0;
@@ -49,6 +49,7 @@ main (int argc, char *argv[])
     { "playerui",   no_argument,        NULL,   10 },
     { "remctrl",    no_argument,        NULL,   11 },
     { "installer",  no_argument,        NULL,   12 },
+    { "locale",     no_argument,        NULL,   13 },
     { "profile",    required_argument,  NULL,   'p' },
     { "debug",      required_argument,  NULL,   'd' },
     { "theme",      required_argument,  NULL,   't' },
@@ -122,6 +123,11 @@ main (int argc, char *argv[])
         ++validargs;
         break;
       }
+      case 13: {
+        prog = "bdj4locale";
+        ++validargs;
+        break;
+      }
       case 'd': {
         break;
       }
@@ -189,12 +195,6 @@ main (int argc, char *argv[])
     char *    path;
     size_t    sz = 4096;
 
-    if (! havetheme) {
-      /* default theme */
-      snprintf (buff, sizeof (buff), "GTK_THEME=Windows-10-Dark");
-      putenv (buff);
-    }
-
     pbuff = malloc (sz);
     assert (pbuff != NULL);
     tbuff = malloc (sz);
@@ -221,12 +221,22 @@ main (int argc, char *argv[])
     strlcat (path, "C:\\Program Files\\VideoLAN\\VLC", sz);
     putenv (path);
 
+    if (debugself) {
+      fprintf (stderr, "PATH=%s\n", getenv ("PATH"));
+    }
+
     free (pbuff);
     free (tbuff);
     free (path);
   }
 
   /* launch the program */
+
+  if (debugself) {
+    fprintf (stderr, "GTK_THEME=%s\n", getenv ("GTK_THEME"));
+    fprintf (stderr, "GTK_CSD=%s\n", getenv ("GTK_CSD"));
+    fprintf (stderr, "GTK_OVERLAY_SCROLLING=%s\n", getenv ("GTK_OVERLAY_SCROLLING"));
+  }
 
   extension = "";
   if (isWindows()) {

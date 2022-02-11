@@ -35,6 +35,7 @@ typedef enum {
   INST_INIT,
   INST_SAVE,
   INST_MAKE_TARGET,
+  INST_COPY_START,
   INST_COPY_FILES,
   INST_CHDIR,
   INST_CREATE_DIRS,
@@ -81,6 +82,7 @@ static bool installerCheckTarget (installer_t *installer);
 static void installerInstInit (installer_t *installer);
 static void installerSaveTargetDir (installer_t *installer);
 static void installerMakeTarget (installer_t *installer);
+static void installerCopyStart (installer_t *installer);
 static void installerCopyFiles (installer_t *installer);
 static void installerChangeDir (installer_t *installer);
 static void installerCreateDirs (installer_t *installer);
@@ -116,9 +118,6 @@ main (int argc, char *argv[])
   if (isMacOS ()) {
     snprintf (buff, sizeof (buff), "%s/Applications/BallroomDJ4.app", installer.home);
   }
-  if (isWindows ()) {
-    pathToWinPath (buff, tbuff, sizeof (tbuff));
-  }
 
   installer.instState = INST_BEGIN;
   installer.target = buff;
@@ -150,6 +149,12 @@ main (int argc, char *argv[])
     fgets (buff, MAXPATHLEN, fh);
     stringTrim (buff);
     fclose (fh);
+  }
+
+  if (isWindows ()) {
+    /* installer.target is pointing at buff */
+    strlcpy (tbuff, installer.target, sizeof (tbuff));
+    pathToWinPath (installer.target, tbuff, sizeof (tbuff));
   }
 
   g_timeout_add (UI_MAIN_LOOP_TIMER, installerMainLoop, &installer);
@@ -326,6 +331,10 @@ installerMainLoop (void *udata)
     }
     case INST_MAKE_TARGET: {
       installerMakeTarget (installer);
+      break;
+    }
+    case INST_COPY_START: {
+      installerCopyStart (installer);
       break;
     }
     case INST_COPY_FILES: {
@@ -539,6 +548,14 @@ installerMakeTarget (installer_t *installer)
 {
   fileopMakeDir (installer->target);
 
+  installer->instState = INST_COPY_START;
+}
+
+static void
+installerCopyStart (installer_t *installer)
+{
+  installerDisplayText (installer, _("-- Copying files."));
+
   installer->instState = INST_COPY_FILES;
 }
 
@@ -547,14 +564,11 @@ installerCopyFiles (installer_t *installer)
 {
   char      tbuff [MAXPATHLEN];
 
-  installerDisplayText (installer, _("-- Copying files."));
-
   if (isWindows ()) {
     snprintf (tbuff, MAXPATHLEN,
         "robocopy /e /j /dcopy:DAT /timfix /njh /njs /np /ndl /nfl . \"%s\"",
         installer->target);
-fprintf (stderr, "cmd: %s\n", tbuff);
-//    system (tbuff);
+    system (tbuff);
   } else {
     snprintf (tbuff, MAXPATHLEN,
         "tar -c -f - . | (cd '%s'; tar -x -f -)",
@@ -727,9 +741,9 @@ installerCopyTemplates (installer_t *installer)
   if (isWindows ()) {
     snprintf (tbuff, MAXPATHLEN,
         "robocopy /e /j /dcopy:DAT /timfix /njh /njs /np /ndl /nfl \"%s\" \"%s\"",
-        from, "http");
+        from, "http/mrc");
 fprintf (stderr, "cmd: %s\n", tbuff);
-//    system (tbuff);
+    system (tbuff);
   } else {
     snprintf (tbuff, MAXPATHLEN, "cp -r '%s' '%s'", from, "http");
     system (tbuff);
@@ -742,6 +756,7 @@ static void
 installerRunConversion (installer_t *installer)
 {
   char      tbuff [MAXPATHLEN];
+  char      buff [MAXPATHLEN];
 
   if (installer->reinstall) {
     fileopDelete (CONV_RUN_FILE);
@@ -753,6 +768,8 @@ installerRunConversion (installer_t *installer)
     strlcpy (tbuff, "./bin/bdj4converter", MAXPATHLEN);
     if (isWindows ()) {
       strlcat (tbuff, ".exe", MAXPATHLEN);
+      pathToWinPath (buff, tbuff, MAXPATHLEN);
+      strlcpy (tbuff, buff, MAXPATHLEN);
     }
     strlcat (tbuff, " ", MAXPATHLEN);
     if (installer->newinstall) {

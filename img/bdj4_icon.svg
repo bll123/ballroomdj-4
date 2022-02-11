@@ -9,7 +9,7 @@
    inkscape:version="1.1.1 (3bf5ae0d25, 2021-09-20)"
    viewBox="0 0 256 256"
    sodipodi:docname="bdj4_icon.svg"
-   inkscape:export-filename="/home/bll/s/bdj4/i/bdj4_icon_inst.png"
+   inkscape:export-filename="/home/bll/s/bdj4/img/bdj4_icon_inst.png"
    inkscape:export-xdpi="96"
    inkscape:export-ydpi="96"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
@@ -28,10 +28,10 @@
      borderopacity="1.0"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1"
-     inkscape:cx="-8.5"
-     inkscape:cy="127.5"
-     inkscape:current-layer="g39"
+     inkscape:zoom="2.2695312"
+     inkscape:cx="128"
+     inkscape:cy="128"
+     inkscape:current-layer="layer5"
      showgrid="true"
      inkscape:document-units="px"
      inkscape:grid-bbox="true"
@@ -79,7 +79,7 @@
      style="display:inline"
      transform="translate(-8.5333405,-8.5333405)">
     <rect
-       style="opacity:1;fill:#bbb5fb;fill-opacity:0.791411;stroke:none;stroke-width:0;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="opacity:1;fill:#e7f98b;fill-opacity:0.80997419;stroke:none;stroke-width:0;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect4218"
        width="256"
        height="256"
@@ -169,7 +169,7 @@
      inkscape:groupmode="layer"
      id="layer6"
      inkscape:label="Install"
-     style="display:none"
+     style="display:inline"
      transform="translate(-8.5333405,-8.5333405)">
     <text
        xml:space="preserve"
