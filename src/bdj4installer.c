@@ -10,6 +10,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <getopt.h>
 
 #include <gtk/gtk.h>
 
@@ -43,6 +44,7 @@ typedef enum {
   INST_COPY_TEMPLATES,
   INST_CONV_START,
   INST_CONVERTER,
+  INST_CREATE_SHORTCUT,
   INST_FINISH,
 } installstate_t;
 
@@ -50,6 +52,8 @@ typedef struct {
   installstate_t  instState;
   char            *home;
   char            *target;
+  char            topdir [MAXPATHLEN];;
+  char            currdir [MAXPATHLEN];
   char            unpackdir [MAXPATHLEN];
   GtkApplication  *app;
   GtkWidget       *window;
@@ -89,10 +93,12 @@ static void installerCreateDirs (installer_t *installer);
 static void installerCleanOldFiles (installer_t *installer);
 static void installerCopyTemplates (installer_t *installer);
 static void installerRunConversion (installer_t *installer);
+static void installerCreateShortcut (installer_t *installer);
 static void installerDisplayText (installer_t *installer, char *txt);
 static void installerScrollToEnd (GtkWidget *w, GtkAllocation *retAllocSize, gpointer udata);;
-static void installerSaveTargetFname (installer_t *installer, char *buff, size_t len);
+static void installerGetTargetFname (installer_t *installer, char *buff, size_t len);
 static void installerTemplateCopy (char *from, char *to);
+static void installerSetTopDir (installer_t *installer);
 
 int
 main (int argc, char *argv[])
@@ -102,9 +108,51 @@ main (int argc, char *argv[])
   char          tbuff [512];
   char          buff [MAXPATHLEN];
   FILE          *fh;
+  int           c = 0;
+  int           option_index = 0;
 
 
   localeInit ();
+
+  static struct option bdj_options [] = {
+    { "installer",  no_argument,        NULL,   12 },
+    { "unpackdir",  required_argument,  NULL,   'u' },
+    { "debug",      required_argument,  NULL,   'd' },
+    { "theme",      required_argument,  NULL,   't' },
+    { "debugself",  no_argument,        NULL,   'D' },
+    { NULL,         0,                  NULL,   0 }
+  };
+
+  installer.unpackdir [0] = '\0';
+
+  while ((c = getopt_long_only (argc, argv, "p:d:t:", bdj_options, &option_index)) != -1) {
+    switch (c) {
+      case 12: {
+        break;
+      }
+      case 'd': {
+        break;
+      }
+      case 'D': {
+        break;
+      }
+      case 't': {
+        break;
+      }
+      case 'u': {
+        strlcpy (installer.unpackdir, optarg, MAXPATHLEN);
+        break;
+      }
+      default: {
+        break;
+      }
+    }
+  }
+
+  if (*installer.unpackdir == '\0') {
+    fprintf (stderr, "Error: unpackdir argument is required\n");
+    exit (1);
+  }
 
   buff [0] = '\0';
   installer.home = getenv ("HOME");
@@ -130,19 +178,12 @@ main (int argc, char *argv[])
   installer.dispBuffer = NULL;
   /* want to do an initial validation */
   mstimeset (&installer.validateTimer, 500);
-  getcwd (installer.unpackdir, MAXPATHLEN);
+  getcwd (installer.currdir, MAXPATHLEN);
   installer.newinstall = true;
   installer.reinstall = false;
   installer.freetarget = false;
 
-  /* for convenience in testing; normally will already be there */
-  sysvarsInit (argv [0]);
-  if (chdir (sysvarsGetStr (SV_BDJ4DIR)) < 0) {
-    fprintf (stderr, "Unable to chdir: %s\n", sysvarsGetStr (SV_BDJ4DIR));
-    exit (1);
-  }
-
-  installerSaveTargetFname (&installer, tbuff, sizeof (tbuff));
+  installerGetTargetFname (&installer, tbuff, sizeof (tbuff));
   fh = fopen (tbuff, "r");
   if (fh != NULL) {
     /* installer.target is pointing at buff */
@@ -374,6 +415,10 @@ installerMainLoop (void *udata)
       installerRunConversion (installer);
       break;
     }
+    case INST_CREATE_SHORTCUT: {
+      installerCreateShortcut (installer);
+      break;
+    }
     case INST_FINISH: {
       installerDisplayText (installer, _("## Installation complete."));
       installer->instState = INST_BEGIN;
@@ -461,11 +506,12 @@ installerCheckTarget (installer_t *installer)
   const char  *fn;
 
   fn = gtk_entry_buffer_get_text (installer->targetBuffer);
+  installerSetTopDir (installer);
 
   if (isWindows ()) {
-    snprintf (tbuff, sizeof (tbuff), "%s/bin/bdj4.exe", fn);
+    snprintf (tbuff, sizeof (tbuff), "%s/bin/bdj4.exe", installer->topdir);
   } else {
-    snprintf (tbuff, sizeof (tbuff), "%s/bin/bdj4", fn);
+    snprintf (tbuff, sizeof (tbuff), "%s/bin/bdj4", installer->topdir);
   }
   exists = fileopExists (tbuff);
   if (exists) {
@@ -506,14 +552,6 @@ installerInstInit (installer_t *installer)
     installer->newinstall = true;
   }
 
-  if (chdir (installer->unpackdir) < 0) {
-    fprintf (stderr, "Unable to chdir: %s\n", installer->unpackdir);
-    installerDisplayText (installer, _("Error: Unable to set working directory."));
-    installerDisplayText (installer, _(" * Stopped"));
-    installer->instState = INST_BEGIN;
-    return;
-  }
-
   installer->instState = INST_SAVE;
 }
 
@@ -532,7 +570,7 @@ installerSaveTargetDir (installer_t *installer)
   }
   fileopMakeDir (tbuff);
 
-  installerSaveTargetFname (installer, tbuff, MAXPATHLEN);
+  installerGetTargetFname (installer, tbuff, MAXPATHLEN);
 
   fh = fopen (tbuff, "w");
   if (fh != NULL) {
@@ -556,6 +594,16 @@ installerCopyStart (installer_t *installer)
 {
   installerDisplayText (installer, _("-- Copying files."));
 
+  /* the unpackdir is not necessarilly the same as the current dir */
+  /* on mac os, they are different */
+  if (chdir (installer->unpackdir) < 0) {
+    fprintf (stderr, "Unable to chdir: %s\n", installer->unpackdir);
+    installerDisplayText (installer, _("Error: Unable to set working directory."));
+    installerDisplayText (installer, _(" * Stopped"));
+    installer->instState = INST_BEGIN;
+    return;
+  }
+
   installer->instState = INST_COPY_FILES;
 }
 
@@ -567,12 +615,12 @@ installerCopyFiles (installer_t *installer)
   if (isWindows ()) {
     snprintf (tbuff, MAXPATHLEN,
         "robocopy /e /j /dcopy:DAT /timfix /njh /njs /np /ndl /nfl . \"%s\"",
-        installer->target);
+        installer->topdir);
     system (tbuff);
   } else {
     snprintf (tbuff, MAXPATHLEN,
         "tar -c -f - . | (cd '%s'; tar -x -f -)",
-        installer->target);
+        installer->topdir);
     system (tbuff);
   }
   installerDisplayText (installer, _("   Copy finished."));
@@ -582,8 +630,8 @@ installerCopyFiles (installer_t *installer)
 static void
 installerChangeDir (installer_t *installer)
 {
-  if (chdir (installer->target)) {
-    fprintf (stderr, "Unable to chdir: %s\n", installer->target);
+  if (chdir (installer->topdir)) {
+    fprintf (stderr, "Unable to chdir: %s\n", installer->topdir);
     installerDisplayText (installer, _("Error: Unable to set working directory."));
     installerDisplayText (installer, _(" * Stopped"));
     installer->instState = INST_BEGIN;
@@ -789,6 +837,33 @@ installerRunConversion (installer_t *installer)
     installerDisplayText (installer, _("-- Conversion already done."));
   }
 
+  installer->instState = INST_CREATE_SHORTCUT;
+}
+
+static void
+installerCreateShortcut (installer_t *installer)
+{
+  char buff [MAXPATHLEN];
+
+  if (isWindows ()) {
+    if (! chdir ("install")) {
+      snprintf (buff, MAXPATHLEN, ".\makeshortcut.bat \"%s\"", installer->topdir);
+      system (buff);
+      chdir (installer->topdir);
+    }
+  }
+  if (isMacOS ()) {
+    /* this must exist and match the name of the app */
+    symlink ("bin/bdj4", "BDJ4");
+    /* desktop shortcut */
+    snprintf (buff, "%s/Applications/BDJ4.app", installer->home);
+    symlink (installer->targetdir, buff);
+  }
+  if (isLinux ()) {
+    snprintf (buff, "./install/linuxshortcut.sh '%s'", installer->topdir);
+    system (buff);
+  }
+
   installer->instState = INST_FINISH;
 }
 
@@ -815,7 +890,7 @@ installerScrollToEnd (GtkWidget *w, GtkAllocation *retAllocSize, gpointer udata)
 }
 
 static void
-installerSaveTargetFname (installer_t *installer, char *buff, size_t sz)
+installerGetTargetFname (installer_t *installer, char *buff, size_t sz)
 {
   if (isWindows ()) {
     snprintf (buff, sz, "%s/AppData/Roaming/BDJ4/%s",
@@ -839,4 +914,13 @@ installerTemplateCopy (char *from, char *to)
     from = tbuff;
   }
   filemanipCopy (from, to);
+}
+
+static void
+installerSetTopDir (installer_t *installer)
+{
+  strlcpy (installer->topdir, installer->target, MAXPATHLEN);
+  if (isMacOS ()) {
+    strlcat (installer->topdir, "/Contents/MacOS", MAXPATHLEN);
+  }
 }

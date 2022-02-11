@@ -28,6 +28,7 @@ int
 main (int argc, char * argv[])
 {
   char      buff [MAXPATHLEN];
+  char      unpackdir [MAXPATHLEN];
   int       validargs = 0;
   int       c = 0;
   int       option_index = 0;
@@ -35,6 +36,7 @@ main (int argc, char * argv[])
   char      *extension;
   bool      debugself = false;
   bool      havetheme = false;
+  bool      isinstaller = false;
 
   static struct option bdj_options [] = {
     { "check_all",  no_argument,        NULL,   1 },
@@ -121,6 +123,7 @@ main (int argc, char * argv[])
       }
       case 12: {
         prog = "bdj4installer";
+        isinstaller = true;
         ++validargs;
         break;
       }
@@ -146,6 +149,9 @@ main (int argc, char * argv[])
         snprintf (buff, sizeof (buff), "GTK_THEME=%s", optarg);
         putenv (buff);
         havetheme = true;
+        break;
+      }
+      case 'u': {
         break;
       }
       default: {
