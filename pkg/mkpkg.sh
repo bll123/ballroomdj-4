@@ -1,15 +1,13 @@
 #!/bin/bash
 
-pkgname=BallroomDJ4
+pkgname=BDJ4
 spkgnm=bdj4
 instdir=bdj4-install
 # macos install needs these
-typeset -u pkgnameuc
-pkgnameuc=${pkgname}
-typeset -l pkgnamelc
-pkgnamelc=${pkgname}
+pkgnameuc=$(echo ${pkgname} | tr 'a-z' 'A-Z')
+pkgnamelc=$(echo ${pkgname} | tr 'A-Z' 'a-z')
 
-function copysrcfiles (
+function copysrcfiles {
   systype=$1
   stage=$2
 
@@ -33,9 +31,9 @@ function copysrcfiles (
 
   echo "   removing exclusions"
   test -d ${stage}/src/build && rm -rf ${stage}/src/build
-)
+}
 
-function copyreleasefiles (
+function copyreleasefiles {
   systype=$1
   stage=$2
 
@@ -78,7 +76,7 @@ function copyreleasefiles (
       ${stage}/plocal/bin/libcheck-*.dll \
       ${stage}/plocal/bin/ocspcheck.exe \
       ${stage}/plocal/bin/openssl.exe
-)
+}
 
 # setup
 
@@ -127,7 +125,7 @@ esac
 echo "-- checking"
 
 instpfx=install/install-prefix.sh
-sza=$(stat --format '%s' ${instpfx})
+sza=$(ls -l ${instpfx} | awk '{print $5}')
 szb=$(grep '^size=' ${instpfx} | sed -e 's/size=//')
 if [[ $sza -ne $szb ]]; then
   echo "The ${instpfx} file has the wrong size set."
@@ -299,14 +297,14 @@ case $systype in
     mkdir -p ${stagedir}/Contents/MacOS
     mkdir -p ${stagedir}/Contents/Resources
     mkdir -p ${tmpmac}
-    cp -f img/BallroomDJ4.icns ${stagedir}/Contents/Resources
+    cp -f img/BDJ4.icns ${stagedir}/Contents/Resources
     sed -e "s/#BDJVERSION#/${VERSION}/g" \
         -e "s/#BDJPKGNAME#/${pkgname}/g" \
         -e "s/#BDJUCPKGNAME#/${pkgnameuc}/g" \
-        -e "s/#BDJLCPKGNAME#/S{pkgnamelc}/g" \
+        -e "s/#BDJLCPKGNAME#/${pkgnamelc}/g" \
         pkg/macos/Info.plist \
-        > ${stagedir}/Contents/MacOS/Info.plist
-    echo -n 'BDJBDJ4#' > ${stagedir}/Contents/MacOS/PkgInfo
+        > ${stagedir}/Contents/Info.plist
+    echo -n 'APPLBDJ4' > ${stagedir}/Contents/PkgInfo
     copyreleasefiles ${systype} ${stagedir}/Contents/MacOS
     echo "-- creating install package"
     (cd tmp;tar -c -z -f - $(basename $stagedir)) > ${tmpnm}

@@ -3,11 +3,20 @@
 # console installation script
 #
 
+function cleanInstall {
+  cd "$unpackdir"
+  while [[ ! -d bdj4-install ]]; do
+    cd ..
+  done
+  test -d bdj4-install && rm -rf bdj4-install
+}
+
 export newinstall=T
 # the graphical installer will run this script with -guienabled
 export guienabled=F
 export targetdir=""
 export unpackdir=""
+export topdir=""
 export reinstall=F
 
 LOG=""
@@ -26,10 +35,13 @@ targetsavefn="${targetsavedir}/installdir.txt"
 test -d $targetsavedir || mkdir $targetsavedir
 if [[ $targetdir == "" && -f $targetsavefn ]]; then
   targetdir=$(cat $targetsavefn)
+  if [[ ! -d $targetdir ]]; then
+    rm -f $targetsavefn
+    targetdir=""
+  fi
 fi
 
-unpackdir=$(pwd)
-
+currdir=$(pwd)
 systype=$(uname -s)
 
 if [[ $targetdir == "" && $guienabled == F ]]; then
@@ -37,7 +49,7 @@ if [[ $targetdir == "" && $guienabled == F ]]; then
   echo "Press 'Enter' to use the default."
   case ${systype} in
     Darwin)
-      targetdir="$HOME/Applications/BallroomDJ4.app"
+      targetdir="$HOME/Applications/BDJ4.app"
       ;;
     *)
       targetdir="$HOME/BDJ4"
@@ -57,14 +69,20 @@ if [[ $targetdir == "" && $guienabled == F ]]; then
 fi
 
 echo "-- Checking $targetdir."
-if [[ -d $targetdir ]]; then
-  if [[ -d $targetdir/bin && -f $targetdir/bin/bdj4 ]]; then
+
+topdir=$targetdir
+if [[ $systype == Darwin ]]; then
+  topdir=$targetdir/Contents/MacOS
+fi
+
+if [[ -d "$topdir" ]]; then
+  if [[ -d "$topdir/bin" && -f "$topdir/bin/bdj4" ]]; then
     newinstall=F
   fi
 
   if [[ $newinstall == T ]]; then
-    echo "Error: $targetdir already exists."
-    test -d "$unpackdir" && rm -rf "$unpackdir"
+    echo "Error: $topdir already exists."
+    cleanInstall
     exit 1
   fi
 fi
@@ -75,18 +93,29 @@ fi
 
 echo "$targetdir" > "$targetsavefn"
 
-echo "-- Creating directory structure."
-./install/install-mkdirs.sh \
-    -guienabled $guienabled \
-    -unpackdir "$unpackdir" \
-    -targetdir "$targetdir" \
-    -newinstall $newinstall \
-    -reinstall $reinstall
-
 # copy the installation to the target directory
 
 echo "-- Copying files."
+
+test -d "$targetdir" || mkdir -p "$targetdir"
+
+cd "$unpackdir"
+rc=$?
+if [[ $rc -ne 0 ]]; then
+  echo "Unable to change directories to $unpackdir."
+  cleanInstall
+  exit 1
+fi
+
 tar -c -f - . | (cd "$targetdir"; tar -x -f -)
+
+cd "$currdir"
+rc=$?
+if [[ $rc -ne 0 ]]; then
+  echo "Unable to change directories to $currdir."
+  cleanInstall
+  exit 1
+fi
 
 # at this point the target directory should exist, and
 # it can be used.
@@ -96,17 +125,17 @@ echo "-- Checking target."
 INSTVERSION=$VERSION
 INSTBUILD=$BUILD
 
-cd "$targetdir"
+cd "$topdir"
 rc=$?
 if [[ $rc -ne 0 ]]; then
-  echo "Unable to change directories to $targetdir."
-  test -d "$unpackdir" && rm -rf "$unpackdir"
+  echo "Unable to change directories to $topdir."
+  cleanInstall
   exit 1
 fi
 
 if [[ ! -f VERSION.txt ]]; then
   echo "Invalid install directory.  Something went wrong."
-  test -d "$unpackdir" && rm -rf "$unpackdir"
+  cleanInstall
   exit 1
 fi
 
@@ -114,8 +143,21 @@ fi
 
 if [[ $INSTVERSION != $VERSION ]]; then
   echo "Mismatched versions. Something went wrong."
-  test -d "$unpackdir" && rm -rf "$unpackdir"
+  cleanInstall
   exit 1
+fi
+
+echo "-- Creating directory structure."
+./install/install-mkdirs.sh \
+    -guienabled $guienabled \
+    -unpackdir "$unpackdir" \
+    -targetdir "$targetdir" \
+    -topdir "$topdir" \
+    -newinstall $newinstall \
+    -reinstall $reinstall
+
+if [[ $systype == Darwin ]]; then
+  ln -sf bin/bdj4 "$topdir/BDJ4"
 fi
 
 # clean up old files that are no longer in use
@@ -126,6 +168,7 @@ if [[ -f install/install-cleanup.sh ]]; then
       -guienabled $guienabled \
       -unpackdir "$unpackdir" \
       -targetdir "$targetdir" \
+      -topdir "$topdir" \
       -newinstall $newinstall \
       -reinstall $reinstall
 fi
@@ -138,6 +181,7 @@ if [[ $newinstall == T && -f install/install-templates.sh ]]; then
       -guienabled $guienabled \
       -unpackdir "$unpackdir" \
       -targetdir "$targetdir" \
+      -topdir "$topdir" \
       -newinstall $newinstall \
       -reinstall $reinstall
 fi
@@ -158,9 +202,10 @@ if [[ $newinstall == T && \
       -guienabled $guienabled \
       -unpackdir "$unpackdir" \
       -targetdir "$targetdir" \
+      -topdir "$topdir" \
       -newinstall $newinstall \
       -reinstall $reinstall
 fi
 
-test -d "$unpackdir" && rm -rf "$unpackdir"
+cleanInstall
 exit 0

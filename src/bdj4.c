@@ -50,6 +50,7 @@ main (int argc, char * argv[])
     { "remctrl",    no_argument,        NULL,   11 },
     { "installer",  no_argument,        NULL,   12 },
     { "locale",     no_argument,        NULL,   13 },
+    { "unpackdir",  required_argument,  NULL,   'u' },
     { "profile",    required_argument,  NULL,   'p' },
     { "debug",      required_argument,  NULL,   'd' },
     { "theme",      required_argument,  NULL,   't' },
@@ -57,7 +58,7 @@ main (int argc, char * argv[])
     { NULL,         0,                  NULL,   0 }
   };
 
-  prog = "bdj4main";
+  prog = "bdj4playerui";
 
   sysvarsInit (argv [0]);
 

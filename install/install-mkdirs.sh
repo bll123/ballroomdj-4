@@ -6,6 +6,7 @@ export newinstall
 export guienabled
 export targetdir
 export unpackdir
+export topdir
 export reinstall
 
 if [[ ! -d install ||
@@ -17,13 +18,13 @@ fi
 . install/install-helpers.sh
 processcmdargs $@
 
-if [[ $targetdir == "" ]]; then
+if [[ $topdir == "" ]]; then
   echo "No target directory specified."
   exit 1
 fi
 
-if [[ ! -d $targetdir ]]; then
-  mkdir -p "$targetdir"
+if [[ ! -d $topdir ]]; then
+  mkdir -p "$topdir"
 fi
 
 hostname=$(hostname)
@@ -35,7 +36,7 @@ fi
 dirlist="http tmp data data/profiles data/$hostname data/$hostname/profiles"
 
 for d in $dirlist; do
-  td="$targetdir/$d"
+  td="$topdir/$d"
   test -d "$td" || mkdir "$td"
 done
 

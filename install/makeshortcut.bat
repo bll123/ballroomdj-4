@@ -1,10 +1,14 @@
+@echo off
+
 : https://stackoverflow.com/questions/346107/creating-a-shortcut-for-a-exe-from-a-batch-file
-: thanks to Michael Przybylski
-@echo on
+: thanks to VVS
+
+set tgtpath=%1
+
+: cd "%USERPROFILE%\Desktop"
 set VBS=makeshortcut.vbs
-set SRC_LNK="shortcut1.lnk"
-set ARG1_APPLCT="C:\Program Files\Google\Chrome\Application\chrome.exe"
-set ARG2_APPARG="--profile-directory=QuteQProfile 25QuteQ"
-set ARG3_WRKDRC="C:\Program Files\Google\Chrome\Application"
-set ARG4_ICOLCT="%USERPROFILE%\Local Settings\Application Data\Google\Chrome\User Data\Profile 25\Google Profile.ico"
-cscript %VBS% %SRC_LNK% %ARG1_APPLCT% %ARG2_APPARG% %ARG3_WRKDRC% %ARG4_ICOLCT%
+set SRC_LNK="%USERPROFILE%\Desktop\BDJ4.lnk"
+set APPLOC="%tgtpath%\bin\bdj4.exe"
+set WRKDIR="%tgtpath%"
+
+cscript //Nologo %VBS% %SRC_LNK% %APPLOC% %WRKDIR%

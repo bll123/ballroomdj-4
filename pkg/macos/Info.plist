@@ -27,7 +27,7 @@
   <key>CFBundleShortVersionString</key>
   <string>#BDJVERSION#</string>
   <key>CFBundleSignature</key>
-  <string>BDJ4#</string>
+  <string>BDJ4</string>
   <key>CFBundleVersion</key>
   <string>#BDJVERSION#</string>
   <key>LSMinimumSystemVersion</key>

@@ -10,10 +10,13 @@ findlist="LICENSE.txt README.txt VERSION.txt \
 
 case ${systype} in
   Darwin)
-    findlist="$findlist plocal/bin plocal/share/themes/macOS* plocal/share/icons"
+    findlist="$findlist plocal/share/themes/macOS*"
     ;;
   MSYS*|MINGW*)
-    findlist="$findlist plocal/bin plocal/share/themes/Wind* plocal/share/icons"
+    findlist="$findlist plocal/bin plocal/share/themes/Wind*"
+    findlist="$findlist plocal/share/icons plocal/lib/gdk-pixbuf-2.0"
+    findlist="$findlist plocal/share/glib-2.0/schemas plocal/etc/gtk-3.0"
+    findlist="$findlist plocal/lib/girepository-1.0 plocal/etc/fonts"
     ;;
 esac
 

@@ -6,6 +6,7 @@ export newinstall
 export guienabled
 export targetdir
 export unpackdir
+export rundir
 export reinstall
 
 if [[ ! -d install ||
@@ -20,10 +21,6 @@ processcmdargs $@
 if [[ $targetdir == "" ]]; then
   echo "No target directory specified."
   exit 1
-fi
-
-if [[ ! -d $targetdir ]]; then
-  mkdir -p "$targetdir"
 fi
 
 function docopy {
@@ -48,8 +45,7 @@ if [[ $hostname == "" ]]; then
 fi
 
 set $(./bin/bdj4locale)
-typeset -l slocale
-slocale=$1
+slocale=$(echo $1 | tr 'A-Z' 'a-z')
 
 for f in templates/*; do
   to=$(basename $f)

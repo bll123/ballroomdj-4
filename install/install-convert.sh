@@ -6,6 +6,7 @@ export newinstall
 export guienabled
 export targetdir
 export unpackdir
+export topdir
 export reinstall
 
 if [[ ! -d install ||
@@ -24,8 +25,8 @@ fi
 
 cwd=$(pwd)
 
-if [[ $targetdir != $cwd ]]; then
-  echo "Working directory is not $targetdir."
+if [[ $topdir != $cwd ]]; then
+  echo "Working directory is not $topdir."
   exit 1
 fi
 
@@ -63,4 +64,3 @@ if [[ ! -f "install/convrun.txt" ]]; then
     fi
   fi
 fi
-

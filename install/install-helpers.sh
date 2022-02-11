@@ -26,6 +26,10 @@ function processcmdargs {
         shift
         unpackdir=$1
         ;;
+      -topdir|--topdir)
+        shift
+        topdir=$1
+        ;;
     esac
     shift
   done

@@ -4,14 +4,14 @@
 #
 # This is a binary file.
 # To see just the shell script, use the following command:
-#     size=2076; head -c $size $0; unset size
+#     size=2227; head -c $size $0; unset size
 #
 
 # size will be one byte larger than the size of this script
-size=2076
+size=2227
 
 archivenm=bdj4.tar.gz
-unpackdir=bdj4-install
+unpacktgt=bdj4-install
 
 tmpdir=${TMPDIR:-}
 if [[ $tmpdir == "" || ! -d $tmpdir ]]; then
@@ -48,9 +48,9 @@ if [[ $rc -ne 0 ]]; then
   exit 1
 fi
 
-test -d $unpackdir && rm -rf $unpackdir
-if [[ -d $unpackdir ]]; then
-  echo "  Extraction failed (unable to remove $tmpdir/$unpackdir)."
+test -d $unpacktgt && rm -rf $unpacktgt
+if [[ -d $unpacktgt ]]; then
+  echo "  Extraction failed (unable to remove $tmpdir/$unpacktgt)."
   test -f $archivenm && rm -f $archivenm
   exit 1
 fi
@@ -59,36 +59,40 @@ rc=$?
 if [[ $rc -ne 0 ]]; then
   echo "  Extraction failed (tar xf)."
   test -f $archivenm && rm -f $archivenm
-  test -d $unpackdir && rm -f $unpackdir
+  test -d $unpacktgt && rm -f $unpacktgt
   exit 1
 fi
 
-if [[ ! -d $unpackdir ||
-    ! -d $unpackdir/install ||
-    ! -f $unpackdir/bin/bdj4installer ]]; then
-  echo "  Unable to locate installer."
-  test -f $archivenm && rm -f $archivenm
-  test -d $unpackdir && rm -f $unpackdir
-  exit 1
+rundir=$unpacktgt
+if [[ -d "$unpacktgt" ]]; then
+  if [[ -d "$unpacktgt/Contents" ]]; then
+    rundir="$unpacktgt/Contents/MacOS"
+  fi
+  if [[ ! -d "$rundir/install" ]]; then
+    echo "  Unable to locate installer."
+    test -f $archivenm && rm -f $archivenm
+    test -d $unpacktgt && rm -f $unpacktgt
+    exit 1
+  fi
 fi
 
 echo "-- Cleaning temporary files."
 test -f $archivenm && rm -f $archivenm
 
-cd $unpackdir
+cd $rundir
 rc=$?
 if [[ $rc -ne 0 ]]; then
-  echo "  Extraction failed (cd $unpackdir)."
-  test -d $unpackdir && rm -f $unpackdir
+  echo "  Extraction failed (cd $unpacktgt)."
+  test -d $unpacktgt && rm -f $unpacktgt
   exit 1
 fi
 
 if [[ $DISPLAY != "" ]]; then
   echo "-- Starting graphical installer."
-  ./bin/bdj4installer $@ > /dev/tty 2>&1
+  ./bin/bdj4 --installer --unpackdir "$tmpdir/$unpacktgt" $@ > /dev/tty 2>&1
 else
   echo "-- Starting console installer."
-  ./install/install.sh $@
+  ./install/install.sh --unpackdir "$tmpdir/$unpacktgt" $@
 fi
 
 exit 0
