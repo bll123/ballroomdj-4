@@ -227,10 +227,6 @@ if [[ $systype == Darwin ]]; then
 
 fi
 
-
-echo "-- creating release manifest"
-./pkg/mkmanifest.sh
-
 # update build number
 
 echo "-- updating build number"
@@ -263,6 +259,11 @@ case $systype in
     nm=${spkgnm}-${VERSION}-src${rlstag}.tar.gz
 
     copysrcfiles ${systype} ${stagedir}
+
+    echo "-- creating source manifest"
+    ./pkg/mkmanifest.sh ${stagedir}
+    mv -f install/manifest.txt install/manifest-src.txt
+
     (cd tmp;tar -c -z -f - $(basename $stagedir)) > ${nm}
     echo "## source package ${nm} created"
     rm -rf ${stagedir}
@@ -290,6 +291,10 @@ echo -n '!~~BDJ4~~!' > ${tmpsep}
 case $systype in
   Linux)
     copyreleasefiles ${systype} ${stagedir}
+
+    echo "-- creating release manifest"
+    ./pkg/mkmanifest.sh ${stagedir}
+
     setLibVol $stagedir libvolpa
     echo "-- creating install package"
     (cd tmp;tar -c -z -f - $(basename $stagedir)) > ${tmpnm}
@@ -309,6 +314,10 @@ case $systype in
         > ${stagedir}/Contents/Info.plist
     echo -n 'APPLBDJ4' > ${stagedir}/Contents/PkgInfo
     copyreleasefiles ${systype} ${stagedir}/Contents/MacOS
+
+    echo "-- creating release manifest"
+    ./pkg/mkmanifest.sh ${stagedir}
+
     setLibVol $stagedir/Contents/MacOS libvolmac
     echo "-- creating install package"
     (cd tmp;tar -c -z -f - $(basename $stagedir)) > ${tmpnm}
@@ -317,6 +326,10 @@ case $systype in
     ;;
   MINGW64*|MINGW32*)
     copyreleasefiles ${systype} ${stagedir}
+
+    echo "-- creating release manifest"
+    ./pkg/mkmanifest.sh ${stagedir}
+
     echo "-- creating install package"
     setLibVol $stagedir libvolwin
     (cd tmp; zip -r ../${tmpzip} $(basename $stagedir) ) > pkg-zip.log 2>&1
