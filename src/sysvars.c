@@ -142,7 +142,7 @@ sysvarsInit (const char *argv0)
   } else {
     if (isMacOS ()) {
       strlcpy (buff, getenv ("HOME"), MAXPATHLEN);
-      strlcat (buff, "/Library/Application Support/BallroomDJ4", MAXPATHLEN);
+      strlcat (buff, "/Library/Application Support/BDJ4", MAXPATHLEN);
       strlcpy (sysvars [SV_BDJ4DATATOPDIR], buff, MAXPATHLEN);
     } else {
       strlcpy (sysvars [SV_BDJ4DATATOPDIR], sysvars [SV_BDJ4MAINDIR], MAXPATHLEN);

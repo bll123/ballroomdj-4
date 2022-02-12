@@ -24,7 +24,7 @@ test -f ../$archivenm && rm -f ../$archivenm
 cd $rundir
 rc=$?
 if [[ $rc -ne 0 ]]; then
-  echo "  Extraction failed (cd $unpacktgt)."
+  echo "  cd $unpacktgt failed."
   test -d $unpacktgt && rm -f $unpacktgt
   exit 1
 fi
@@ -39,7 +39,7 @@ fi
 
 if [[ $1 == "--cli" ]]; then
   echo "-- Starting console installer."
-  ./bin/bdj4 --installer --guienabled F --unpackdir "$unpackdir" $reinstall > /dev/tty 2>&1
+  ./bin/bdj4 --installer --guienabled F --unpackdir "$unpackdir" $reinstall
 else
   echo "-- Starting graphical installer."
   ./bin/bdj4 --installer --unpackdir "$unpackdir" $reinstall > /dev/tty 2>&1

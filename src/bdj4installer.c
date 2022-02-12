@@ -53,7 +53,7 @@ typedef struct {
   char            *target;
   char            hostname [MAXPATHLEN];
   char            locale [40];
-  char            topdir [MAXPATHLEN];
+  char            rundir [MAXPATHLEN];
   char            datatopdir [MAXPATHLEN];
   char            currdir [MAXPATHLEN];
   char            unpackdir [MAXPATHLEN];
@@ -73,7 +73,6 @@ typedef struct {
 } installer_t;
 
 #define INST_TEMP_FILE  "tmp/bdj4instout.txt"
-#define CONV_RUN_FILE   "install/convrun.txt"
 #define INST_SAVE_FNAME "installdir.txt"
 
 static int  installerCreateGui (installer_t *installer, int argc, char *argv []);
@@ -101,7 +100,7 @@ static void installerDisplayText (installer_t *installer, char *txt);
 static void installerScrollToEnd (GtkWidget *w, GtkAllocation *retAllocSize, gpointer udata);;
 static void installerGetTargetFname (installer_t *installer, char *buff, size_t len);
 static void installerTemplateCopy (char *from, char *to);
-static void installerSetTopDir (installer_t *installer);
+static void installerSetrundir (installer_t *installer);
 
 int
 main (int argc, char *argv[])
@@ -222,13 +221,18 @@ main (int argc, char *argv[])
     pathToWinPath (installer.target, tbuff, sizeof (tbuff));
   }
 
-  g_timeout_add (UI_MAIN_LOOP_TIMER, installerMainLoop, &installer);
-
   if (installer.guienabled) {
+    g_timeout_add (UI_MAIN_LOOP_TIMER, installerMainLoop, &installer);
     status = installerCreateGui (&installer, 0, NULL);
   } else {
+    installer.instState = INST_INIT;
     while (installer.instState != INST_FINISH) {
-      mssleep (20);
+      installerMainLoop (&installer);
+      if (installer.instState == INST_BEGIN) {
+        /* exit the loop */
+        installer.instState = INST_FINISH;
+      }
+      mssleep (50);
     }
   }
 
@@ -317,7 +321,7 @@ installerActivate (GApplication *app, gpointer udata)
   gtk_widget_set_hexpand (GTK_WIDGET (hbox), TRUE);
   gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (hbox), FALSE, FALSE, 0);
 
-  installer->reinstWidget = gtk_check_button_new_with_label (_("Re-Install"));
+  installer->reinstWidget = gtk_check_button_new_with_label (_("Re-install"));
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (installer->reinstWidget),
       installer->reinstall);
   gtk_box_pack_start (GTK_BOX (hbox), installer->reinstWidget, FALSE, FALSE, 0);
@@ -436,8 +440,7 @@ installerMainLoop (void *udata)
       break;
     }
     case INST_CONV_START: {
-      if (installer->newinstall &&
-          ! fileopExists (CONV_RUN_FILE)) {
+      if (installer->newinstall || installer->reinstall) {
         installerDisplayText (installer, _("-- Starting conversion process."));
       }
       installer->instState = INST_CONVERTER;
@@ -495,10 +498,14 @@ installerValidateDir (installer_t *installer)
   gtk_label_set_text (GTK_LABEL (installer->feedbackMsg), "");
 
   exists = fileopExists (fn);
-  if (exists && ! installer->reinstall) {
+  if (exists) {
     exists = installerCheckTarget (installer);
     if (exists) {
-      gtk_label_set_text (GTK_LABEL (installer->feedbackMsg), _("BDJ4 folder already exists."));
+      if (installer->reinstall) {
+        gtk_label_set_text (GTK_LABEL (installer->feedbackMsg), _("Over-writing existing BDJ4 installation."));
+      } else {
+        gtk_label_set_text (GTK_LABEL (installer->feedbackMsg), _("Updating existing BDJ4 installation."));
+      }
     } else {
       gtk_label_set_text (GTK_LABEL (installer->feedbackMsg), _("Error: Existing folder."));
     }
@@ -549,13 +556,12 @@ installerCheckTarget (installer_t *installer)
   bool        exists;
   const char  *fn;
 
-  fn = gtk_entry_buffer_get_text (installer->targetBuffer);
-  installerSetTopDir (installer);
+  installerSetrundir (installer);
 
   if (isWindows ()) {
-    snprintf (tbuff, sizeof (tbuff), "%s/bin/bdj4.exe", installer->topdir);
+    snprintf (tbuff, sizeof (tbuff), "%s/bin/bdj4.exe", installer->rundir);
   } else {
-    snprintf (tbuff, sizeof (tbuff), "%s/bin/bdj4", installer->topdir);
+    snprintf (tbuff, sizeof (tbuff), "%s/bin/bdj4", installer->rundir);
   }
   exists = fileopExists (tbuff);
   if (exists) {
@@ -578,12 +584,55 @@ installerInstInit (installer_t *installer)
         GTK_TOGGLE_BUTTON (installer->reinstWidget));
   }
 
+  if (! installer->guienabled) {
+    tbuff [0] = '\0';
+    printf (_("Enter the destination directory.\n"));
+    printf (_("Press 'Enter' to select the default.\n"));
+    printf ("[%s] : ", installer->target);
+    fflush (stdout);
+    fgets (tbuff, MAXPATHLEN, stdin);
+    if (*tbuff == '\n' || *tbuff == '\r') {
+      tbuff [0] = '\0';
+    }
+    if (*tbuff != '\0') {
+      strlcpy (installer->target, tbuff, MAXPATHLEN);
+    }
+    installerSetrundir (installer);
+  }
+
   exists = fileopExists (installer->target);
   if (exists) {
     exists = installerCheckTarget (installer);
 
-    /* do not allow an overwrite of an existing directory that is not bdj4 */
-    if (installer->newinstall) {
+    if (exists && ! installer->guienabled) {
+      if (installer->reinstall) {
+        printf (_("Over-writing existing BDJ4 installation."));
+      } else {
+        printf (_("Updating existing BDJ4 installation."));
+      }
+      printf ("\n");
+      fflush (stdout);
+
+      printf (_("Proceed with installation?\n"));
+      printf ("[Y] : ");
+      fflush (stdout);
+      fgets (tbuff, MAXPATHLEN, stdin);
+      if (*tbuff == '\n' || *tbuff == '\r') {
+        tbuff [0] = '\0';
+      }
+      if (*tbuff != '\0') {
+        if (strncmp (tbuff, "Y", 1) != 0 &&
+            strncmp (tbuff, "y", 1) != 0) {
+          printf (_(" * Installation aborted.\n"));
+          fflush (stdout);
+          installer->instState = INST_BEGIN;
+          return;
+        }
+      }
+    }
+
+    if (! exists) {
+      /* do not allow an overwrite of an existing directory that is not bdj4 */
       if (installer->guienabled) {
         gtk_label_set_text (GTK_LABEL (installer->feedbackMsg), _("Folder already exists."));
       }
@@ -595,10 +644,6 @@ installerInstInit (installer_t *installer)
       installer->instState = INST_BEGIN;
       return;
     }
-  }
-
-  if (installer->reinstall) {
-    installer->newinstall = true;
   }
 
   installer->instState = INST_SAVE;
@@ -634,6 +679,7 @@ static void
 installerMakeTarget (installer_t *installer)
 {
   fileopMakeDir (installer->target);
+  fileopMakeDir (installer->rundir);
 
   installer->instState = INST_COPY_START;
 }
@@ -646,7 +692,7 @@ installerCopyStart (installer_t *installer)
   /* the unpackdir is not necessarily the same as the current dir */
   /* on mac os, they are different */
   if (chdir (installer->unpackdir) < 0) {
-    fprintf (stderr, "Unable to chdir: %s\n", installer->unpackdir);
+    fprintf (stderr, "Unable to set working dir: %s\n", installer->unpackdir);
     installerDisplayText (installer, _("Error: Unable to set working directory."));
     installerDisplayText (installer, _(" * Stopped"));
     installer->instState = INST_BEGIN;
@@ -664,12 +710,12 @@ installerCopyFiles (installer_t *installer)
   if (isWindows ()) {
     snprintf (tbuff, MAXPATHLEN,
         "robocopy /e /j /dcopy:DAT /timfix /njh /njs /np /ndl /nfl . \"%s\"",
-        installer->topdir);
+        installer->rundir);
     system (tbuff);
   } else {
     snprintf (tbuff, MAXPATHLEN,
         "tar -c -f - . | (cd '%s'; tar -x -f -)",
-        installer->topdir);
+        installer->rundir);
     system (tbuff);
   }
   installerDisplayText (installer, _("   Copy finished."));
@@ -679,23 +725,23 @@ installerCopyFiles (installer_t *installer)
 static void
 installerChangeDir (installer_t *installer)
 {
-  strlcpy (installer->datatopdir, installer->topdir, MAXPATHLEN);
+  strlcpy (installer->datatopdir, installer->rundir, MAXPATHLEN);
   if (isMacOS ()) {
     snprintf (installer->datatopdir, MAXPATHLEN,
         "%s/Library/Application Support/BDJ4",
         installer->home);
   }
-installerDisplayText (installer, installer->datatopdir);
 
   fileopMakeDir (installer->datatopdir);
 
   if (chdir (installer->datatopdir)) {
-    fprintf (stderr, "Unable to chdir: %s\n", installer->datatopdir);
+    fprintf (stderr, "Unable to set working dir: %s\n", installer->datatopdir);
     installerDisplayText (installer, _("Error: Unable to set working directory."));
     installerDisplayText (installer, _(" * Stopped"));
     installer->instState = INST_BEGIN;
     return;
   }
+
   installer->instState = INST_CREATE_DIRS;
 }
 
@@ -722,8 +768,8 @@ installerCleanOldFiles (installer_t *installer)
 
   installerDisplayText (installer, _("-- Cleaning old files."));
 
-  if (chdir (installer->topdir)) {
-    fprintf (stderr, "Unable to chdir: %s\n", installer->topdir);
+  if (chdir (installer->rundir)) {
+    fprintf (stderr, "Unable to set working dir: %s\n", installer->rundir);
     installerDisplayText (installer, _("Error: Unable to set working directory."));
     installerDisplayText (installer, _(" * Stopped"));
     installer->instState = INST_BEGIN;
@@ -761,20 +807,26 @@ installerCopyTemplates (installer_t *installer)
   pathinfo_t      *pi;
 
 
+  if (! installer->newinstall && ! installer->reinstall) {
+    installer->instState = INST_CONV_START;
+    return;
+  }
+
   installerDisplayText (installer, _("-- Copying template files."));
 
   if (chdir (installer->datatopdir)) {
-    fprintf (stderr, "Unable to chdir: %s\n", installer->datatopdir);
+    fprintf (stderr, "Unable to set working dir: %s\n", installer->datatopdir);
     installerDisplayText (installer, _("Error: Unable to set working directory."));
     installerDisplayText (installer, _(" * Stopped"));
     installer->instState = INST_BEGIN;
     return;
   }
 
-  dirlist = filemanipBasicDirList ("templates", NULL);
+  snprintf (tbuff, MAXPATHLEN, "%s/templates", installer->rundir);
+  dirlist = filemanipBasicDirList (tbuff, NULL);
   slistStartIterator (dirlist, &iteridx);
   while ((fname = slistIterateKey (dirlist, &iteridx)) != NULL) {
-    if (fileopIsDirectory (fname)) {
+    if (strcmp (fname, "qrcode") == 0) {
       continue;
     }
     if (strcmp (fname, "qrcode.html") == 0) {
@@ -786,14 +838,14 @@ installerCopyTemplates (installer_t *installer)
 
     if (strcmp (fname, "bdj-flex-dark.html") == 0) {
       snprintf (from, MAXPATHLEN, "%s/templates/%s",
-          installer->topdir, fname);
+          installer->rundir, fname);
       snprintf (to, MAXPATHLEN, "http/bdj4remote.html");
       installerTemplateCopy (from, to);
       continue;
     }
     if (strcmp (fname, "mobilemq.html") == 0) {
       snprintf (from, MAXPATHLEN, "%s/templates/%s",
-          installer->topdir, fname);
+          installer->rundir, fname);
       snprintf (to, MAXPATHLEN, "http/%s", fname);
       installerTemplateCopy (from, to);
       continue;
@@ -811,12 +863,12 @@ installerCopyTemplates (installer_t *installer)
 
     if (pathInfoExtCheck (pi, ".svg")) {
       snprintf (from, MAXPATHLEN, "%s/templates/%s",
-          installer->topdir, fname);
+          installer->rundir, fname);
       snprintf (to, MAXPATHLEN, "%s/img/%s",
-          installer->topdir, fname);
+          installer->rundir, fname);
     } else if (strncmp (fname, "bdjconfig", 9) == 0) {
       snprintf (from, MAXPATHLEN, "%s/templates/%s",
-          installer->topdir, fname);
+          installer->rundir, fname);
 
       snprintf (tbuff, MAXPATHLEN, "%.*s", (int) pi->blen, pi->basename);
       if (pathInfoExtCheck (pi, ".g")) {
@@ -837,7 +889,7 @@ installerCopyTemplates (installer_t *installer)
         pathInfoExtCheck (pi, ".pldances") ||
         pathInfoExtCheck (pi, ".pl") ) {
       snprintf (from, MAXPATHLEN, "%s/templates/%s",
-          installer->topdir, fname);
+          installer->rundir, fname);
       snprintf (to, MAXPATHLEN, "data/%s", fname);
     }
 
@@ -847,33 +899,31 @@ installerCopyTemplates (installer_t *installer)
   }
   slistFree (dirlist);
 
-  snprintf (from, MAXPATHLEN, "%s/img/favicon.ico", installer->topdir);
+  snprintf (from, MAXPATHLEN, "%s/img/favicon.ico", installer->rundir);
   snprintf (to, MAXPATHLEN, "http/favicon.ico");
   installerTemplateCopy (from, to);
 
-  snprintf (from, MAXPATHLEN, "%s/img/led_on.svg", installer->topdir);
+  snprintf (from, MAXPATHLEN, "%s/img/led_on.svg", installer->rundir);
   snprintf (to, MAXPATHLEN, "http/led_on.svg");
   installerTemplateCopy (from, to);
 
-  snprintf (from, MAXPATHLEN, "%s/img/led_off.svg", installer->topdir);
+  snprintf (from, MAXPATHLEN, "%s/img/led_off.svg", installer->rundir);
   snprintf (to, MAXPATHLEN, "http/led_off.svg");
   installerTemplateCopy (from, to);
 
-  snprintf (from, MAXPATHLEN, "%s/img/ballroomdj.svg", installer->topdir);
+  snprintf (from, MAXPATHLEN, "%s/img/ballroomdj.svg", installer->rundir);
   snprintf (to, MAXPATHLEN, "http/ballroomdj.svg");
   installerTemplateCopy (from, to);
 
-  snprintf (from, MAXPATHLEN, "%s/img/mrc", installer->topdir);
+  snprintf (from, MAXPATHLEN, "%s/img/mrc", installer->rundir);
   snprintf (to, MAXPATHLEN, "http/mrc");
   if (isWindows ()) {
     snprintf (tbuff, MAXPATHLEN,
         "robocopy /e /j /dcopy:DAT /timfix /njh /njs /np /ndl /nfl \"%s\" \"%s\"",
         from, to);
-fprintf (stderr, "cmd: %s\n", tbuff);
     system (tbuff);
   } else {
     snprintf (tbuff, MAXPATHLEN, "cp -r '%s' '%s'", from, "http");
-fprintf (stderr, "cmd: %s\n", tbuff);
     system (tbuff);
   }
 
@@ -886,22 +936,38 @@ installerRunConversion (installer_t *installer)
   char      tbuff [MAXPATHLEN];
   char      buff [MAXPATHLEN];
 
-  if (installer->reinstall) {
-    fileopDelete (CONV_RUN_FILE);
+  if (! installer->newinstall && ! installer->reinstall) {
+    installer->instState = INST_CREATE_SHORTCUT;
+    return;
   }
 
-  if (installer->newinstall &&
-      ! fileopExists (CONV_RUN_FILE)) {
-    strlcpy (tbuff, "./bin/bdj4converter", MAXPATHLEN);
-    if (isWindows ()) {
-      strlcat (tbuff, ".exe", MAXPATHLEN);
-      pathToWinPath (buff, tbuff, MAXPATHLEN);
-      strlcpy (tbuff, buff, MAXPATHLEN);
+  if (chdir (installer->rundir)) {
+    fprintf (stderr, "Unable to set working dir: %s\n", installer->rundir);
+    installerDisplayText (installer, _("Error: Unable to set working directory."));
+    installerDisplayText (installer, _(" * Stopped"));
+    installer->instState = INST_BEGIN;
+    return;
+  }
+
+  if (installer->newinstall || installer->reinstall) {
+    /* windows does not have a non-gui conversion process */
+    if (installer->guienabled || isWindows()) {
+      strlcpy (tbuff, "./bin/bdj4converter", MAXPATHLEN);
+      if (isWindows ()) {
+        strlcat (tbuff, ".exe", MAXPATHLEN);
+        pathToWinPath (buff, tbuff, MAXPATHLEN);
+        strlcpy (tbuff, buff, MAXPATHLEN);
+      }
+    } else {
+      strlcpy (tbuff, "./install/install-convert.sh", MAXPATHLEN);
     }
 
-    strlcat (tbuff, " ", MAXPATHLEN);
-    strlcat (tbuff, "--datatopdir ", MAXPATHLEN);
+    strlcat (tbuff, " --datatopdir \"", MAXPATHLEN);
     strlcat (tbuff, installer->datatopdir, MAXPATHLEN);
+    strlcat (tbuff, "\"", MAXPATHLEN);
+    if (! installer->guienabled) {
+      strlcat (tbuff, " --guienabled F ", MAXPATHLEN);
+    }
 
     system (tbuff);
     installerDisplayText (installer, _("   Conversion complete."));
@@ -920,11 +986,11 @@ installerCreateShortcut (installer_t *installer)
   installerDisplayText (installer, _("-- Creating shortcut."));
   if (isWindows ()) {
     if (! chdir ("install")) {
-installerDisplayText (installer, "win -- chdir ok");
+ installerDisplayText (installer, "win -- chdir ok");
       snprintf (buff, MAXPATHLEN, ".\\makeshortcut.bat \"%s\"",
-          installer->topdir);
+          installer->rundir);
       system (buff);
-      chdir (installer->topdir);
+      chdir (installer->rundir);
     }
   }
   if (isMacOS ()) {
@@ -938,7 +1004,7 @@ installerDisplayText (installer, "win -- chdir ok");
   }
   if (isLinux ()) {
     snprintf (buff, MAXPATHLEN, "./install/linuxshortcut.sh '%s'",
-        installer->topdir);
+        installer->rundir);
     system (buff);
   }
 
@@ -956,7 +1022,8 @@ installerDisplayText (installer_t *installer, char *txt)
     gtk_text_buffer_get_end_iter (installer->dispBuffer, &iter);
     gtk_text_buffer_insert (installer->dispBuffer, &iter, "\n", -1);
   } else {
-    fprintf (stderr, "%s\n", txt);
+    printf ("%s\n", txt);
+    fflush (stdout);
   }
 }
 
@@ -999,10 +1066,10 @@ installerTemplateCopy (char *from, char *to)
 }
 
 static void
-installerSetTopDir (installer_t *installer)
+installerSetrundir (installer_t *installer)
 {
-  strlcpy (installer->topdir, installer->target, MAXPATHLEN);
+  strlcpy (installer->rundir, installer->target, MAXPATHLEN);
   if (isMacOS ()) {
-    strlcat (installer->topdir, "/Contents/MacOS", MAXPATHLEN);
+    strlcat (installer->rundir, "/Contents/MacOS", MAXPATHLEN);
   }
 }

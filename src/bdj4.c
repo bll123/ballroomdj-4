@@ -52,6 +52,7 @@ main (int argc, char * argv[])
     { "remctrl",    no_argument,        NULL,   11 },
     { "installer",  no_argument,        NULL,   12 },
     { "locale",     no_argument,        NULL,   13 },
+    { "forcestop",  no_argument,        NULL,   0 },
     { "unpackdir",  required_argument,  NULL,   'u' },
     { "reinstall",  no_argument,        NULL,   'r' },
     { "guienabled", no_argument,        NULL,   'g' },
@@ -174,8 +175,10 @@ main (int argc, char * argv[])
   }
 
   if (chdir (sysvarsGetStr (SV_BDJ4DATATOPDIR)) < 0) {
-    fprintf (stderr, "Unable to chdir: %s\n", sysvarsGetStr (SV_BDJ4DATATOPDIR));
-    exit (1);
+    if (! isinstaller) {
+      fprintf (stderr, "Unable to set working dir: %s\n", sysvarsGetStr (SV_BDJ4DATATOPDIR));
+      exit (1);
+    }
   }
 
   fileopMakeDir ("tmp");
@@ -202,6 +205,8 @@ main (int argc, char * argv[])
         "/Applications/VLC.app/Contents/MacOS/lib/");
     putenv ("VLC_PLUGIN_PATH=/Applications/VLC.app/Contents/MacOS/plugins");
     free (npath);
+
+    putenv ("G_FILENAME_ENCODING=UTF8-MAC");
   }
 
   if (isWindows ()) {

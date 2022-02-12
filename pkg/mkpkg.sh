@@ -78,6 +78,16 @@ function copyreleasefiles {
       ${stage}/plocal/bin/openssl.exe
 }
 
+function setLibVol {
+  dir=$1
+  nlibvol=$2
+
+  tfn="${dir}/templates/bdjconfig.txt.g"
+  sed -e "s,libvolnull,${nlibvol}," "$tfn" > "${tfn}.n"
+  mv -f "${tfn}.n" ${tfn}
+}
+
+
 # setup
 
 cwd=$(pwd)
@@ -280,6 +290,7 @@ echo -n '!~~BDJ4~~!' > ${tmpsep}
 case $systype in
   Linux)
     copyreleasefiles ${systype} ${stagedir}
+    setLibVol $stagedir libvolpa
     echo "-- creating install package"
     (cd tmp;tar -c -z -f - $(basename $stagedir)) > ${tmpnm}
     cat bin/bdj4se ${tmpsep} ${tmpnm} > ${nm}
@@ -298,6 +309,7 @@ case $systype in
         > ${stagedir}/Contents/Info.plist
     echo -n 'APPLBDJ4' > ${stagedir}/Contents/PkgInfo
     copyreleasefiles ${systype} ${stagedir}/Contents/MacOS
+    setLibVol $stagedir/Contents/MacOS libvolmac
     echo "-- creating install package"
     (cd tmp;tar -c -z -f - $(basename $stagedir)) > ${tmpnm}
     cat bin/bdj4se ${tmpsep} ${tmpnm} > ${nm}
@@ -306,6 +318,7 @@ case $systype in
   MINGW64*|MINGW32*)
     copyreleasefiles ${systype} ${stagedir}
     echo "-- creating install package"
+    setLibVol $stagedir libvolwin
     (cd tmp; zip -r ../${tmpzip} $(basename $stagedir) ) > pkg-zip.log 2>&1
     cat bin/bdj4se.exe \
         ${tmpsep} \

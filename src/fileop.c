@@ -1,6 +1,5 @@
 #include "config.h"
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -23,7 +22,12 @@
 # include <windows.h>
 #endif
 
+#include "bdjstring.h"
 #include "fileop.h"
+#include "portability.h"
+
+static int fileopMakeRecursiveDir (const char *dirname);
+static int fileopMkdir (const char *dirname);
 
 inline bool
 fileopExists (const char *fname)
@@ -54,6 +58,38 @@ int
 fileopMakeDir (const char *dirname)
 {
   int rc;
+  rc = fileopMakeRecursiveDir (dirname);
+  return rc;
+}
+
+static int
+fileopMakeRecursiveDir (const char *dirname)
+{
+  char    tbuff [MAXPATHLEN];
+  char    *p = NULL;
+  size_t  len;
+
+  strlcpy (tbuff, dirname, MAXPATHLEN);
+  len = strlen (tbuff);
+  if (tbuff [len - 1] == '/') {
+    tbuff [len - 1] = '\0';
+  }
+
+  for (p = tbuff + 1; *p; p++) {
+    if (*p == '/') {
+      *p = 0;
+      fileopMkdir (tbuff);
+      *p = '/';
+    }
+  }
+  fileopMkdir (tbuff);
+  return 0;
+}
+
+static int
+fileopMkdir (const char *dirname)
+{
+  int   rc;
 #if _args_mkdir == 2 && _define_S_IRWXU
   rc = mkdir (dirname, S_IRWXU);
 #endif
@@ -62,4 +98,3 @@ fileopMakeDir (const char *dirname)
 #endif
   return rc;
 }
-

@@ -13,6 +13,8 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+#include <glib.h>
+
 #include "bdjstring.h"
 #include "filemanip.h"
 #include "fileop.h"
@@ -116,7 +118,16 @@ filemanipBasicDirList (char *dirname, char *extension)
       }
       pathInfoFree (pi);
     } else {
-      slistSetStr (fileList, dirent->d_name, NULL);
+      char    *cvtname;
+      gsize   bread, bwrite;
+      GError  *gerr;
+
+      cvtname = g_filename_to_utf8 (dirent->d_name, strlen (dirent->d_name),
+          &bread, &bwrite, &gerr);
+      if (cvtname != NULL) {
+        slistSetStr (fileList, cvtname, NULL);
+      }
+      free (cvtname);
     }
   }
   closedir (dh);

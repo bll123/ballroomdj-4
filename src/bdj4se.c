@@ -41,7 +41,7 @@ main (int argc, char *argv [])
   int         rc;
   bool        isWindows = false;
   char        *archivenm = "bdj4-install.tar.gz";
-  char        *targv [10];
+  char        * targv [5];
 
 
 #if _lib_CreateFile  /* check if it is windows */
@@ -95,9 +95,9 @@ main (int argc, char *argv [])
     fprintf (stderr, "Unable to open output %d %s\n", errno, strerror (errno));
     exit (1);
   }
-fprintf (stderr, "tbuff=%s\n", tbuff);
 
   printf ("-- Unpacking installation.\n");
+  fflush (stdout);
   sz = fread (buff, 1, BUFFSZ, ifh);
   while (sz > 0) {
     p = buff;
@@ -164,6 +164,7 @@ fprintf (stderr, "tbuff=%s\n", tbuff);
   }
 
   printf ("-- Unpacking archive.\n");
+  fflush (stdout);
   if (isWindows) {
     system (".\\miniunz.exe -o -x bdj4-install.zip > bdj4-unzip.log ");
   } else {
@@ -176,12 +177,20 @@ fprintf (stderr, "tbuff=%s\n", tbuff);
     exit (1);
   }
 
+  rc = stat ("Contents", &statbuf);
+  if (rc == 0) {
+    rc = chdir ("Contents/MacOS");
+    if (rc != 0) {
+      fprintf (stderr, "Unable to chdir to %s %d %s\n", "Contents/MacOS", errno, strerror (errno));
+      exit (1);
+    }
+  }
+
   printf ("-- Starting install process.\n");
+  fflush (stdout);
   if (isWindows) {
-    targv [0] = "cmd.exe";
-    targv [1] = "/c";
-    targv [2] = ".\\install\\install-startup.bat";
-    targv [3] = NULL;
+    targv [0] = ".\\install\\install-startup.bat";
+    targv [1] = NULL;
     execv (targv[0], targv);
   } else {
     argv [0] = "./install/install-startup.sh";

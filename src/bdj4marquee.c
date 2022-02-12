@@ -712,6 +712,10 @@ marqueeSetFontSize (marquee_t *marquee, GtkWidget *lab, char *style, int sz)
   char                  tbuff [200];
 
 
+  if (lab == NULL) {
+    return;
+  }
+
   attrlist = pango_attr_list_new ();
   snprintf (tbuff, sizeof (tbuff), "%s %s", marquee->mqfont, style);
   font_desc = pango_font_description_from_string (tbuff);
@@ -737,6 +741,10 @@ marqueeCalcFontSizes (marquee_t *marquee, int sz)
 
 
   gtk_window_get_size (GTK_WINDOW (marquee->window), &width, &height);
+
+  if (marquee->pbar == NULL || marquee->danceLab == NULL) {
+    return 0;
+  }
 
   gtk_widget_get_allocation (GTK_WIDGET (marquee->pbar), &allocSize);
   pbarHeight = allocSize.height;

@@ -82,6 +82,7 @@ pkg_check_modules (OPENSSL openssl)
 pkg_check_modules (CURL libcurl)
 pkg_check_modules (ALSA alsa)
 pkg_check_modules (GTK gtk+-3.0)
+pkg_check_modules (GLIB glib-2.0)
 pkg_check_modules (CHECK check)
 pkg_check_modules (PA libpulse)
 
@@ -328,6 +329,14 @@ add_library (libbdj4common SHARED
   sysvars.c
   tmutil.c
 )
+message (NOTICE ${GLIB_INCLUDE_DIRS})
+message (NOTICE ${GLIB_LDFLAGS})
+target_include_directories (libbdj4common
+  PUBLIC "${GLIB_INCLUDE_DIRS}"
+)
+target_link_libraries (libbdj4common
+  ${GLIB_LDFLAGS}
+)
 addWinSockLibrary (libbdj4common)
 
 add_library (libbdj4 SHARED
@@ -356,7 +365,7 @@ add_library (libbdj4 SHARED
   webclient.c
 )
 target_include_directories (libbdj4
-  PUBLIC "${CURL_INCLUDE_DIR}"
+  PUBLIC "${CURL_INCLUDE_DIRS}"
 )
 target_link_libraries (libbdj4
   libbdj4common
@@ -665,12 +674,16 @@ endmacro()
 
 if (APPLE)
   macUpdateRPath (bdj4)
-  macUpdateRPath (bdj4cli)
-  macUpdateRPath (bdj4converter)
   macUpdateRPath (bdj4main)
   macUpdateRPath (bdj4marquee)
   macUpdateRPath (bdj4mobmq)
   macUpdateRPath (bdj4player)
   macUpdateRPath (bdj4playerui)
   macUpdateRPath (bdj4rc)
+  macUpdateRPath (bdj4cli)
+  macUpdateRPath (bdj4installer)
+  macUpdateRPath (bdj4converter)
+  macUpdateRPath (bdj4locatebdj3)
+  macUpdateRPath (bdj4locale)
+  macUpdateRPath (check_all)
 endif()
