@@ -44,6 +44,7 @@ typedef enum {
   INST_CONV_START,
   INST_CONVERTER,
   INST_CREATE_SHORTCUT,
+  INST_CLEANUP,
   INST_FINISH,
 } installstate_t;
 
@@ -84,7 +85,7 @@ static void installerCheckDir (GtkButton *b, gpointer udata);
 static void installerValidateDir (installer_t *installer);
 static void installerValidateStart (GtkEditable *e, gpointer udata);
 static void installerInstall (GtkButton *b, gpointer udata);
-static bool installerCheckTarget (installer_t *installer);
+static bool installerCheckTarget (installer_t *installer, const char *dir);
 static void installerInstInit (installer_t *installer);
 static void installerSaveTargetDir (installer_t *installer);
 static void installerMakeTarget (installer_t *installer);
@@ -96,11 +97,12 @@ static void installerCleanOldFiles (installer_t *installer);
 static void installerCopyTemplates (installer_t *installer);
 static void installerRunConversion (installer_t *installer);
 static void installerCreateShortcut (installer_t *installer);
+static void installerCleanup (installer_t *installer);
 static void installerDisplayText (installer_t *installer, char *txt);
 static void installerScrollToEnd (GtkWidget *w, GtkAllocation *retAllocSize, gpointer udata);;
 static void installerGetTargetFname (installer_t *installer, char *buff, size_t len);
 static void installerTemplateCopy (char *from, char *to);
-static void installerSetrundir (installer_t *installer);
+static void installerSetrundir (installer_t *installer, const char *dir);
 
 int
 main (int argc, char *argv[])
@@ -454,6 +456,10 @@ installerMainLoop (void *udata)
       installerCreateShortcut (installer);
       break;
     }
+    case INST_CLEANUP: {
+      installerCleanup (installer);
+      break;
+    }
     case INST_FINISH: {
       installerDisplayText (installer, _("## Installation complete."));
       installer->instState = INST_BEGIN;
@@ -478,7 +484,7 @@ installerValidateDir (installer_t *installer)
   struct stat   statbuf;
   int           rc;
   bool          locok = false;
-  const char    *fn;
+  const char    *dir;
   bool          exists = false;
 
   if (! installer->guienabled) {
@@ -492,14 +498,14 @@ installerValidateDir (installer_t *installer)
     return;
   }
 
-  fn = gtk_entry_buffer_get_text (installer->targetBuffer);
+  dir = gtk_entry_buffer_get_text (installer->targetBuffer);
   installer->reinstall = gtk_toggle_button_get_active (
       GTK_TOGGLE_BUTTON (installer->reinstWidget));
   gtk_label_set_text (GTK_LABEL (installer->feedbackMsg), "");
 
-  exists = fileopExists (fn);
+  exists = fileopExists (dir);
   if (exists) {
-    exists = installerCheckTarget (installer);
+    exists = installerCheckTarget (installer, dir);
     if (exists) {
       if (installer->reinstall) {
         gtk_label_set_text (GTK_LABEL (installer->feedbackMsg), _("Over-writing existing BDJ4 installation."));
@@ -550,13 +556,13 @@ installerInstall (GtkButton *b, gpointer udata)
 }
 
 static bool
-installerCheckTarget (installer_t *installer)
+installerCheckTarget (installer_t *installer, const char *dir)
 {
   char        tbuff [MAXPATHLEN];
   bool        exists;
   const char  *fn;
 
-  installerSetrundir (installer);
+  installerSetrundir (installer, dir);
 
   if (isWindows ()) {
     snprintf (tbuff, sizeof (tbuff), "%s/bin/bdj4.exe", installer->rundir);
@@ -566,6 +572,8 @@ installerCheckTarget (installer_t *installer)
   exists = fileopExists (tbuff);
   if (exists) {
     installer->newinstall = false;
+  } else {
+    installer->newinstall = true;
   }
 
   return exists;
@@ -597,12 +605,12 @@ installerInstInit (installer_t *installer)
     if (*tbuff != '\0') {
       strlcpy (installer->target, tbuff, MAXPATHLEN);
     }
-    installerSetrundir (installer);
+    installerSetrundir (installer, installer->target);
   }
 
   exists = fileopExists (installer->target);
   if (exists) {
-    exists = installerCheckTarget (installer);
+    exists = installerCheckTarget (installer, installer->target);
 
     if (exists && ! installer->guienabled) {
       if (installer->reinstall) {
@@ -983,10 +991,17 @@ installerCreateShortcut (installer_t *installer)
 {
   char buff [MAXPATHLEN];
 
+  if (chdir (installer->rundir)) {
+    fprintf (stderr, "Unable to set working dir: %s\n", installer->rundir);
+    installerDisplayText (installer, _("Error: Unable to set working directory."));
+    installerDisplayText (installer, _(" * Stopped"));
+    installer->instState = INST_BEGIN;
+    return;
+  }
+
   installerDisplayText (installer, _("-- Creating shortcut."));
   if (isWindows ()) {
     if (! chdir ("install")) {
- installerDisplayText (installer, "win -- chdir ok");
       snprintf (buff, MAXPATHLEN, ".\\makeshortcut.bat \"%s\"",
           installer->rundir);
       system (buff);
@@ -1005,6 +1020,31 @@ installerCreateShortcut (installer_t *installer)
   if (isLinux ()) {
     snprintf (buff, MAXPATHLEN, "./install/linuxshortcut.sh '%s'",
         installer->rundir);
+    system (buff);
+  }
+
+  installer->instState = INST_CLEANUP;
+}
+
+static void
+installerCleanup (installer_t *installer)
+{
+  char  buff [MAXPATHLEN];
+  char  *argv [5];
+
+  if (! fileopExists (installer->unpackdir)) {
+    installer->instState = INST_FINISH;
+    return;
+  }
+
+  installerDisplayText (installer, _("-- Cleaning up."));
+  if (isWindows ()) {
+    argv [0] = ".\\install\\install-rminstdir.bat";
+    argv [1] = installer->unpackdir;
+    argv [2] = NULL;
+    execv (argv [0], argv);
+  } else {
+    snprintf (buff, MAXPATHLEN, "rm -rf %s", installer->unpackdir);
     system (buff);
   }
 
@@ -1066,9 +1106,9 @@ installerTemplateCopy (char *from, char *to)
 }
 
 static void
-installerSetrundir (installer_t *installer)
+installerSetrundir (installer_t *installer, const char *dir)
 {
-  strlcpy (installer->rundir, installer->target, MAXPATHLEN);
+  strlcpy (installer->rundir, dir, MAXPATHLEN);
   if (isMacOS ()) {
     strlcat (installer->rundir, "/Contents/MacOS", MAXPATHLEN);
   }

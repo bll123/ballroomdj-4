@@ -2,17 +2,13 @@ syntax: regexp
 ~$
 ^bdj4-4
 ^data/
-^data\.k/
 ^bin/
 ^dev/
 ^http/
-^install/manifest.txt$
-^install/manifest-src.txt$
 ^licenses/
 ^locale/
 ^packages/
 ^plocal/
-^src/config.*\.h$
 ^src/build/
 ^src/w$
 ^test.dir/test.files/

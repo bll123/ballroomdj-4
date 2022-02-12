@@ -261,8 +261,9 @@ case $systype in
     copysrcfiles ${systype} ${stagedir}
 
     echo "-- creating source manifest"
+    touch ${stagedir}/install/manifest.txt
     ./pkg/mkmanifest.sh ${stagedir}
-    mv -f install/manifest.txt install/manifest-src.txt
+    mv -f install/manifest.txt ${stagedir}/install/manifest.txt
 
     (cd tmp;tar -c -z -f - $(basename $stagedir)) > ${nm}
     echo "## source package ${nm} created"
@@ -293,7 +294,9 @@ case $systype in
     copyreleasefiles ${systype} ${stagedir}
 
     echo "-- creating release manifest"
+    touch ${stagedir}/install/manifest.txt
     ./pkg/mkmanifest.sh ${stagedir}
+    mv -f install/manifest.txt ${stagedir}/install
 
     setLibVol $stagedir libvolpa
     echo "-- creating install package"
@@ -316,7 +319,9 @@ case $systype in
     copyreleasefiles ${systype} ${stagedir}/Contents/MacOS
 
     echo "-- creating release manifest"
+    touch ${stagedir}/install/manifest.txt
     ./pkg/mkmanifest.sh ${stagedir}
+    mv -f install/manifest.txt ${stagedir}/install
 
     setLibVol $stagedir/Contents/MacOS libvolmac
     echo "-- creating install package"
@@ -328,7 +333,9 @@ case $systype in
     copyreleasefiles ${systype} ${stagedir}
 
     echo "-- creating release manifest"
+    touch ${stagedir}/install/manifest.txt
     ./pkg/mkmanifest.sh ${stagedir}
+    mv -f install/manifest.txt ${stagedir}/install
 
     echo "-- creating install package"
     setLibVol $stagedir libvolwin

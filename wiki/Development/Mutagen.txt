@@ -1,0 +1,23 @@
+<!-- labels: developer -->
+[Wiki Home](Home)
+
+## Mutagen
+
+Mutagen is a python script, and this is why a python installation is
+necessary.
+
+Due to its high portability and excellent support, mutagen was chosen
+as the mp3 tagging tool. It is much better than most of the tagging
+libraries that are available.
+
+BDJ4 uses the standard output from mutagen, so unicode always
+needs to be tested carefully when there is a new release.
+
+As mutagen is not compiled, mp3 tag handling is slower. Most of the
+time this does not matter much.
+
+[​Quodlibet Mutagen](https://github.com/quodlibet/mutagen)
+
+## MP3 Tags
+
+[https://help.mp3tag.de/main_tags.html]
