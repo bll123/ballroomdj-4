@@ -101,12 +101,12 @@ static datafilekey_t bdjoptmachdfkeys[] = {
 #define BDJOPT_MACHINE_DFKEY_COUNT (sizeof (bdjoptmachdfkeys) / sizeof (datafilekey_t))
 
 static datafilekey_t bdjoptmachprofiledfkeys[] = {
-  { "FONTSIZE",             OPT_MP_FONTSIZE,              VALUE_NUM, NULL, -1 },
-  { "LISTINGFONTSIZE",      OPT_MP_LISTINGFONTSIZE,       VALUE_NUM, NULL, -1 },
-  { "MQFONT",               OPT_MP_MQFONT,              VALUE_DATA, NULL, -1 },
+  { "LISTINGFONT",          OPT_MP_LISTING_FONT,          VALUE_DATA, NULL, -1 },
+  { "MQFONT",               OPT_MP_MQFONT,                VALUE_DATA, NULL, -1 },
   { "PLAYEROPTIONS",        OPT_MP_PLAYEROPTIONS,         VALUE_DATA, NULL, -1 },
   { "PLAYERSHUTDOWNSCRIPT", OPT_MP_PLAYERSHUTDOWNSCRIPT,  VALUE_DATA, NULL, -1 },
   { "PLAYERSTARTSCRIPT",    OPT_MP_PLAYERSTARTSCRIPT,     VALUE_DATA, NULL, -1 },
+  { "UIFONT",               OPT_MP_UIFONT,                VALUE_DATA, NULL, -1 },
 };
 #define BDJOPT_MACH_PROFILE_DFKEY_COUNT (sizeof (bdjoptmachprofiledfkeys) / sizeof (datafilekey_t))
 

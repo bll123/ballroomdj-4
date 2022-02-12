@@ -74,7 +74,6 @@ foreach path [list {} profiles $hostname [file join $hostname profiles]] {
         if { $key eq "REMCONTROLSHOWDANCE" } { continue }
         if { $key eq "REMCONTROLSHOWSONG" } { continue }
         if { $key eq "UIFIXEDFONT" } { continue }
-        if { $key eq "UIFONT" } { continue }
         if { $key eq "STARTMAXIMIZED" } { continue }
 
         if { $key eq "UITHEME" } { set value {} }
@@ -90,6 +89,7 @@ foreach path [list {} profiles $hostname [file join $hostname profiles]] {
         if { $key eq "MTMPDIR" } { set key DIRMUSICTMP }
         if { $key eq "IMAGEDIR" } { set key DIRIMAGE }
         if { $key eq "ARCHIVEDIR" } { set key DIRARCHIVE }
+        if { $key eq "LISTINGFONTSIZE" } { set key LISTINGFONT }
 
         if { $key eq "MQSHOWARTIST" } {
           set key MQSHOWINFO

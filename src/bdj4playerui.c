@@ -1,6 +1,5 @@
 #include "config.h"
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -10,6 +9,7 @@
 #include <getopt.h>
 #include <unistd.h>
 #include <math.h>
+#include <ctype.h>
 
 #include <gtk/gtk.h>
 
@@ -43,7 +43,7 @@
 typedef struct {
   progstate_t     *progstate;
   char            *locknm;
-  procutil_t       *processes [ROUTE_MAX];
+  procutil_t      *processes [ROUTE_MAX];
   conn_t          *conn;
   sockserver_t    *sockserver;
   musicqidx_t     musicqPlayIdx;
@@ -61,6 +61,8 @@ typedef struct {
   uiplayer_t      *uiplayer;
   uimusicq_t      *uimusicq;
   uisongselect_t  *uisongselect;
+  /* options */
+  bool            showExtraQueues;
 } playerui_t;
 
 #define PLUI_EXIT_WAIT_COUNT      20
@@ -79,6 +81,10 @@ static gboolean pluiCloseWin (GtkWidget *window, GdkEvent *event, gpointer userd
 static void     pluiSigHandler (int sig);
 static void     pluiSwitchPage (GtkNotebook *nb, GtkWidget *page, guint pagenum, gpointer udata);
 static void     pluiSetPlaybackQueue (GtkButton *b, gpointer udata);
+static void     pluiToggleExtraQueues (GtkWidget *mi, gpointer udata);
+static void     pluiSetExtraQueues (playerui_t *plui);
+static void     pluiTogglePlayWhenQueued (GtkWidget *mi, gpointer udata);
+static void     pluiSetUIFont (playerui_t *plui);
 
 
 static int gKillReceived = 0;
@@ -125,6 +131,7 @@ main (int argc, char *argv[])
   plui.uisongselect = NULL;
   plui.musicqPlayIdx = MUSICQ_A;
   plui.musicqManageIdx = MUSICQ_A;
+  plui.showExtraQueues = true;
   for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
     plui.processes [i] = NULL;
   }
@@ -149,7 +156,10 @@ main (int argc, char *argv[])
   plui.uisongselect = uisongselInit (plui.progstate, plui.conn);
 
   plui.sockserver = sockhStartServer (listenPort);
-  /* using a timeout of 5 seems to interfere with gtk; windows needs longer */
+
+  gtk_init (&argc, &argv);
+  pluiSetUIFont (&plui);
+
   g_timeout_add (UI_MAIN_LOOP_TIMER, pluiMainLoop, &plui);
 
   status = pluiCreateGui (&plui, 0, NULL);
@@ -215,7 +225,7 @@ pluiCreateGui (playerui_t *plui, int argc, char *argv [])
 
   plui->app = gtk_application_new (
       "org.ballroomdj.BallroomDJ.playerui",
-      G_APPLICATION_FLAGS_NONE
+      G_APPLICATION_NON_UNIQUE
   );
 
   g_signal_connect (plui->app, "activate", G_CALLBACK (pluiActivate), plui);
@@ -235,6 +245,9 @@ pluiActivate (GApplication *app, gpointer userdata)
   GtkWidget           *widget;
   GtkWidget           *image;
   GtkWidget           *hbox;
+  GtkWidget           *menubar;
+  GtkWidget           *menu;
+  GtkWidget           *menuitem;
   char                *str;
   char                tbuff [MAXPATHLEN];
 
@@ -250,8 +263,9 @@ pluiActivate (GApplication *app, gpointer userdata)
   plui->ledonImg = gtk_image_get_pixbuf (GTK_IMAGE (image));
   g_object_ref (G_OBJECT (plui->ledonImg));
 
-  plui->window = gtk_application_window_new (GTK_APPLICATION (app));
+  plui->window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   assert (plui->window != NULL);
+  gtk_window_set_application (GTK_WINDOW (plui->window), GTK_APPLICATION (app));
   gtk_window_set_application (GTK_WINDOW (plui->window), plui->app);
   gtk_window_set_default_icon_from_file ("img/bdj4_icon.svg", &gerr);
   g_signal_connect (plui->window, "delete-event", G_CALLBACK (pluiCloseWin), plui);
@@ -263,6 +277,30 @@ pluiActivate (GApplication *app, gpointer userdata)
   gtk_widget_set_margin_bottom (GTK_WIDGET (plui->vbox), 4);
   gtk_widget_set_margin_start (GTK_WIDGET (plui->vbox), 4);
   gtk_widget_set_margin_end (GTK_WIDGET (plui->vbox), 4);
+
+  /* menu */
+  menubar = gtk_menu_bar_new ();
+  gtk_widget_set_hexpand (GTK_WIDGET (menubar), TRUE);
+  gtk_box_pack_start (GTK_BOX (plui->vbox), GTK_WIDGET (menubar),
+      FALSE, FALSE, 0);
+
+  menuitem = gtk_menu_item_new_with_label (_("Options"));
+  gtk_menu_shell_append (GTK_MENU_SHELL (menubar), menuitem);
+
+  menu = gtk_menu_new ();
+  gtk_menu_item_set_submenu (GTK_MENU_ITEM (menuitem), menu);
+
+  menuitem = gtk_check_menu_item_new_with_label (_("Show Extra Queues"));
+  gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (menuitem), TRUE);
+  gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
+  g_signal_connect (menuitem, "toggled",
+      G_CALLBACK (pluiToggleExtraQueues), plui);
+
+  menuitem = gtk_check_menu_item_new_with_label (_("Play When Queued"));
+  gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (menuitem), FALSE);
+  gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
+  g_signal_connect (menuitem, "toggled",
+      G_CALLBACK (pluiTogglePlayWhenQueued), plui);
 
   /* player */
   widget = uiplayerActivate (plui->uiplayer);
@@ -490,10 +528,10 @@ pluiSwitchPage (GtkNotebook *nb, GtkWidget *page, guint pagenum, gpointer udata)
 
   /* note that the design requires that the music queues be the first */
   /* tabs in the notebook */
-  if (pagenum < MUSICQ_MAX) {
+  if (pagenum < MUSICQ_MAX && plui->showExtraQueues) {
     plui->musicqManageIdx = pagenum;
     uimusicqSetManageIdx (plui->uimusicq, pagenum);
-    gtk_widget_show_all (GTK_WIDGET (plui->setPlaybackButton));
+    gtk_widget_show (GTK_WIDGET (plui->setPlaybackButton));
   } else {
     gtk_widget_hide (GTK_WIDGET (plui->setPlaybackButton));
   }
@@ -518,3 +556,75 @@ pluiSetPlaybackQueue (GtkButton *b, gpointer udata)
   connSendMessage (plui->conn, ROUTE_MAIN, MSG_MUSICQ_SET_PLAYBACK, tbuff);
 }
 
+static void
+pluiTogglePlayWhenQueued (GtkWidget *mi, gpointer udata)
+{
+}
+
+static void
+pluiToggleExtraQueues (GtkWidget *mi, gpointer udata)
+{
+  playerui_t      *plui = udata;
+
+  plui->showExtraQueues = ! plui->showExtraQueues;
+
+  pluiSetExtraQueues (plui);
+}
+
+static void
+pluiSetExtraQueues (playerui_t *plui)
+{
+  GtkWidget       *page;
+  int             pagenum;
+
+  page = gtk_notebook_get_nth_page (GTK_NOTEBOOK (plui->notebook), MUSICQ_B);
+  gtk_widget_set_visible (page, plui->showExtraQueues);
+  if (plui->showExtraQueues) {
+    pagenum = gtk_notebook_get_current_page (GTK_NOTEBOOK (plui->notebook));
+    /* I wish there was a way to identify the notebook tab */
+    if (pagenum == 0) {
+      gtk_widget_show (plui->setPlaybackButton);
+    }
+  } else {
+    gtk_widget_hide (plui->setPlaybackButton);
+  }
+}
+
+static void
+pluiSetUIFont (playerui_t *plui)
+{
+  GtkCssProvider  *tcss;
+  char            *uifont;
+  GdkScreen       *screen;
+  char            tbuff [MAXPATHLEN];
+  char            wbuff [MAXPATHLEN];
+  char            *p;
+  int             sz = 0;
+
+  uifont = bdjoptGetData (OPT_MP_UIFONT);
+  strlcpy (wbuff, uifont, MAXPATHLEN);
+  p = strrchr (wbuff, ' ');
+  if (p != NULL) {
+    ++p;
+    if (isdigit (*p)) {
+      --p;
+      *p = '\0';
+      ++p;
+      sz = atoi (p);
+    }
+  }
+  if (uifont != NULL && *uifont) {
+    tcss = gtk_css_provider_new ();
+    snprintf (tbuff, MAXPATHLEN, "* { font-family: '%s'; }", wbuff);
+    if (sz > 0) {
+      snprintf (wbuff, MAXPATHLEN, " * { font-size: %dpt; }", sz);
+    }
+    strlcat (tbuff, wbuff, MAXPATHLEN);
+    gtk_css_provider_load_from_data (tcss, tbuff, -1, NULL);
+    screen = gdk_screen_get_default ();
+    if (screen != NULL) {
+      gtk_style_context_add_provider_for_screen (screen, GTK_STYLE_PROVIDER (tcss),
+          GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+    }
+  }
+}

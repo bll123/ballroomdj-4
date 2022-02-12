@@ -272,7 +272,7 @@ marqueeCreateGui (marquee_t *marquee, int argc, char *argv [])
 
   marquee->app = gtk_application_new (
       "org.ballroomdj.BallroomDJ.marquee",
-      G_APPLICATION_FLAGS_NONE
+      G_APPLICATION_NON_UNIQUE
   );
   g_signal_connect (marquee->app, "activate", G_CALLBACK (marqueeActivate), marquee);
 
@@ -292,7 +292,9 @@ marqueeActivate (GApplication *app, gpointer userdata)
   GError                *gerr;
 
 
-  window = gtk_application_window_new (GTK_APPLICATION (app));
+  window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+  assert (window != NULL);
+  gtk_window_set_application (GTK_WINDOW (window), GTK_APPLICATION (app));
   g_signal_connect (window, "delete-event", G_CALLBACK (marqueeCloseWin), marquee);
   g_signal_connect (window, "button-press-event", G_CALLBACK (marqueeToggleFullscreen), marquee);
   g_signal_connect (window, "configure-event", G_CALLBACK (marqueeResized), marquee);
