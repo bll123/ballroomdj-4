@@ -90,6 +90,7 @@ static void   uimusicqRemoveProcess (GtkButton *b, gpointer udata);
 static ssize_t uimusicqGetSelection (uimusicq_t *uimusicq);
 static void   uimusicqMusicQueueSetSelected (uimusicq_t *uimusicq, int ci, int which);
 
+
 uimusicq_t *
 uimusicqInit (progstate_t *progstate, conn_t *conn)
 {
@@ -1130,3 +1131,4 @@ uimusicqMusicQueueSetSelected (uimusicq_t *uimusicq, int ci, int which)
     gtk_tree_path_free (path);
   }
 }
+

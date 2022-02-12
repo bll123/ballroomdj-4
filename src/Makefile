@@ -123,9 +123,10 @@ tclean:
 	@-$(RM) -f *~ w ww *.orig
 	@-$(RM) -f ../conv/*~ ./locale/*~ ../locale/*~ ../*~ ../img/*~
 	@-$(RM) -f ../install/*~ ../pkg/*~ utils/*~ ../data/*~
-	@-$(RM) -f ../templates/*~ ../vlc-log.txt vlc-log.txt
-	@-$(RM) -f si-in.txt si-sort.txt
-	@-$(RM) -f ../vgcore.*
+	@-$(RM) -f ../web/*~ ../http/*~ ../resources/*~
+	@-$(RM) -f ../pkg/macos/*~ ../templates/*~  ../wiki/*~
+	@-$(RM) -f ../vlc-log.txt vlc-log.txt
+	@-$(RM) -f ../vgcore.* ../core 
 	@-$(RM) -f launcher.rc bdj4_icon.ico
-	@-$(RM) -f ../web/*~ ../http/*~ ../core ../resources/*~
+	@-$(RM) -f selauncher.rc bdj4_icon_inst.ico
 

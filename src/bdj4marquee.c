@@ -883,10 +883,12 @@ marqueePopulate (marquee_t *marquee, char *args)
     gtk_label_set_label (GTK_LABEL (marquee->infoTitleLab), p);
   }
 
-  if (showsep == 2) {
-    gtk_label_set_label (GTK_LABEL (marquee->infoSepLab), " / ");
-  } else {
-    gtk_label_set_label (GTK_LABEL (marquee->infoSepLab), "");
+  if (marquee->infoSepLab != NULL) {
+    if (showsep == 2) {
+      gtk_label_set_label (GTK_LABEL (marquee->infoSepLab), " / ");
+    } else {
+      gtk_label_set_label (GTK_LABEL (marquee->infoSepLab), "");
+    }
   }
 
   /* first entry is the main dance */
