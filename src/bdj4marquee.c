@@ -271,7 +271,7 @@ marqueeCreateGui (marquee_t *marquee, int argc, char *argv [])
   int             status;
 
   marquee->app = gtk_application_new (
-      "org.ballroomdj.BallroomDJ.marquee",
+      "org.bdj4.BDJ4.marquee",
       G_APPLICATION_NON_UNIQUE
   );
   g_signal_connect (marquee->app, "activate", G_CALLBACK (marqueeActivate), marquee);
@@ -292,9 +292,10 @@ marqueeActivate (GApplication *app, gpointer userdata)
   GError                *gerr;
 
 
+//  window = gtk_application_window_new (GTK_APPLICATION (app));
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   assert (window != NULL);
-  gtk_window_set_application (GTK_WINDOW (window), GTK_APPLICATION (app));
+  gtk_window_set_application (GTK_WINDOW (window),
   g_signal_connect (window, "delete-event", G_CALLBACK (marqueeCloseWin), marquee);
   g_signal_connect (window, "button-press-event", G_CALLBACK (marqueeToggleFullscreen), marquee);
   g_signal_connect (window, "configure-event", G_CALLBACK (marqueeResized), marquee);
@@ -960,3 +961,4 @@ marqueeUnmaxCallback (GtkWidget *w, GtkAllocation *retAllocSize, gpointer userda
   marquee->unmaxSignal = 0;
   gtk_window_unmaximize (GTK_WINDOW (marquee->window));
 }
+

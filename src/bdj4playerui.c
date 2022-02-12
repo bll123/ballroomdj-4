@@ -157,7 +157,8 @@ main (int argc, char *argv[])
 
   plui.sockserver = sockhStartServer (listenPort);
 
-  gtk_init (&argc, &argv);
+  /* must call this to set the ui font */
+  gtk_init (&argc, NULL);
   pluiSetUIFont (&plui);
 
   g_timeout_add (UI_MAIN_LOOP_TIMER, pluiMainLoop, &plui);
@@ -224,7 +225,7 @@ pluiCreateGui (playerui_t *plui, int argc, char *argv [])
   int           status;
 
   plui->app = gtk_application_new (
-      "org.ballroomdj.BallroomDJ.playerui",
+      "org.bdj4.BDJ4.playerui",
       G_APPLICATION_NON_UNIQUE
   );
 
@@ -263,6 +264,7 @@ pluiActivate (GApplication *app, gpointer userdata)
   plui->ledonImg = gtk_image_get_pixbuf (GTK_IMAGE (image));
   g_object_ref (G_OBJECT (plui->ledonImg));
 
+//  plui->window = gtk_application_window_new (GTK_APPLICATION (app));
   plui->window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   assert (plui->window != NULL);
   gtk_window_set_application (GTK_WINDOW (plui->window), GTK_APPLICATION (app));
@@ -297,7 +299,7 @@ pluiActivate (GApplication *app, gpointer userdata)
       G_CALLBACK (pluiToggleExtraQueues), plui);
 
   menuitem = gtk_check_menu_item_new_with_label (_("Play When Queued"));
-  gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (menuitem), FALSE);
+  gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (menuitem), TRUE);
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
   g_signal_connect (menuitem, "toggled",
       G_CALLBACK (pluiTogglePlayWhenQueued), plui);
@@ -628,3 +630,4 @@ pluiSetUIFont (playerui_t *plui)
     }
   }
 }
+

@@ -130,6 +130,11 @@ foreach path [list {} profiles $hostname [file join $hostname profiles]] {
         if { $key eq "FADEOUTTIME" && $value eq {} } {
           set value 0
         }
+        if { $key eq "UIFONT" && $value eq {} } {
+          if { $::tcl_platform(platform) eq "windows" } {
+            set value "Arial 11"
+          }
+        }
         if { $key eq "GAP" && $value eq {} } {
           set value 0
         }

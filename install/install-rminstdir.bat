@@ -1,9 +1,11 @@
 @echo off
 
-dir=%1
+set d=%1
 
-if exist "%dir%" (
-  rmdir /s/q "%dir%"
+if not "%d%" == "" (
+  if exist "%d%" (
+    rmdir /s/q "%d%"
+  )
 )
 
 exit 0

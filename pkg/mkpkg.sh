@@ -199,12 +199,14 @@ if [[ $platform == windows ]]; then
   cp -rf /mingw64/share/glib-2.0/schemas plocal/share/glib-2.0
   mkdir -p plocal/etc/gtk-3.0
   cp -f /mingw64/etc/gtk-3.0/im-multipress.conf plocal/etc/gtk-3.0
+
+  # leave this here for the time being until UITHEME is implemented
   cat > plocal/etc/gtk-3.0/settings.ini <<_HERE_
 [Settings]
 gtk-xft-antialias = 1
 gtk-icon-theme-name = Adwaita
 gtk-theme-name = Windows-10-Dark
-gtk-font-name = Segoe UI 11
+gtk-font-name = Arial 11
 _HERE_
   mkdir -p plocal/etc/fonts
   cp -rf /mingw64/etc/fonts plocal/etc
@@ -215,6 +217,13 @@ _HERE_
   sed -e 's/libvolpa/libvolwin/' ${nm} > ${nm}.n
   mv -f ${nm}.n ${nm}
 
+  nm=templates/bdjconfig.txt.mp
+  sed -e '/UIFONT/ { n ; s/.*/..Arial 11/ }' ${nm} > ${nm}.n
+  mv -f ${nm}.n ${nm}
+
+  nm=templates/bdjconfig.txt.p
+  sed -e '/UITHEME/ { n ; s/.*/..Windows-10-Dark/ }' ${nm} > ${nm}.n
+  mv -f ${nm}.n ${nm}
 fi # is windows
 
 if [[ $systype == Darwin ]]; then

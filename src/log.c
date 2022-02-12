@@ -193,7 +193,7 @@ rlogStart (const char *processnm, const char *processtag,
         PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
     syslogs [idx] = rlogOpen (tnm, processtag, truncflag);
     syslogs [idx]->level = level;
-    if (idx != LOG_INSTALL) {
+    if (idx != LOG_INSTALL && idx != LOG_GTK) {
       rlogVarMsg (idx, LOG_IMPORTANT, NULL, 0, "=== %s started %s", processnm, tdt);
     }
   }
@@ -231,6 +231,7 @@ logInit (void)
     logbasenm [LOG_SESS] = LOG_SESSION_NAME;
     logbasenm [LOG_DBG] = LOG_DEBUG_NAME;
     logbasenm [LOG_INSTALL] = LOG_INSTALL_NAME;
+    logbasenm [LOG_GTK] = LOG_GTK_NAME;
     initialized = 1;
   }
 }

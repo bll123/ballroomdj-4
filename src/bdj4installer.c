@@ -14,6 +14,10 @@
 
 #include <gtk/gtk.h>
 
+#if _lib__execv
+# define execv _execv
+#endif
+
 #include "bdj4intl.h"
 #include "bdjopt.h"
 #include "bdjstring.h"
@@ -44,7 +48,6 @@ typedef enum {
   INST_CONV_START,
   INST_CONVERTER,
   INST_CREATE_SHORTCUT,
-  INST_CLEANUP,
   INST_FINISH,
 } installstate_t;
 
@@ -241,8 +244,8 @@ main (int argc, char *argv[])
   if (installer.freetarget && installer.target != NULL) {
     free (installer.target);
   }
+  installerCleanup (&installer);
   logEnd ();
-
   return status;
 }
 
@@ -456,10 +459,6 @@ installerMainLoop (void *udata)
       installerCreateShortcut (installer);
       break;
     }
-    case INST_CLEANUP: {
-      installerCleanup (installer);
-      break;
-    }
     case INST_FINISH: {
       installerDisplayText (installer, _("## Installation complete."));
       installer->instState = INST_BEGIN;
@@ -544,6 +543,7 @@ installerExit (GtkButton *b, gpointer udata)
   } else {
     installer->instState = INST_FINISH;
   }
+
   return;
 }
 
@@ -1023,7 +1023,7 @@ installerCreateShortcut (installer_t *installer)
     system (buff);
   }
 
-  installer->instState = INST_CLEANUP;
+  installer->instState = INST_FINISH;
 }
 
 static void
@@ -1033,11 +1033,9 @@ installerCleanup (installer_t *installer)
   char  *argv [5];
 
   if (! fileopExists (installer->unpackdir)) {
-    installer->instState = INST_FINISH;
     return;
   }
 
-  installerDisplayText (installer, _("-- Cleaning up."));
   if (isWindows ()) {
     argv [0] = ".\\install\\install-rminstdir.bat";
     argv [1] = installer->unpackdir;
@@ -1047,8 +1045,6 @@ installerCleanup (installer_t *installer)
     snprintf (buff, MAXPATHLEN, "rm -rf %s", installer->unpackdir);
     system (buff);
   }
-
-  installer->instState = INST_FINISH;
 }
 
 static void

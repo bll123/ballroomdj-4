@@ -113,6 +113,7 @@ distclean:
 clean:
 	@-$(MAKE) tclean
 	@-$(MAKE) eclean
+	@cmake --build build --target clean
 
 .PHONY: eclean
 eclean:
@@ -126,7 +127,7 @@ tclean:
 	@-$(RM) -f ../web/*~ ../http/*~ ../resources/*~
 	@-$(RM) -f ../pkg/macos/*~ ../templates/*~  ../wiki/*~
 	@-$(RM) -f ../vlc-log.txt vlc-log.txt
-	@-$(RM) -f ../vgcore.* ../core 
+	@-$(RM) -f ../vgcore.* ../core
 	@-$(RM) -f launcher.rc bdj4_icon.ico
 	@-$(RM) -f selauncher.rc bdj4_icon_inst.ico
 
