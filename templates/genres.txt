@@ -1,36 +1,35 @@
 # BDJ4 genres
-# Fri Jan 07 10:47:40 GMT 2022
 version
 ..1
 count
 ..5
 KEY
 ..0
-genre
+GENRE
 ..None
-classical
+CLASSICAL
 ..0
 KEY
 ..1
-genre
+GENRE
 ..Ballroom Dance
-classical
+CLASSICAL
 ..0
 KEY
 ..2
-genre
+GENRE
 ..Classical
-classical
+CLASSICAL
 ..1
 KEY
 ..3
-genre
+GENRE
 ..Jazz
-classical
+CLASSICAL
 ..0
 KEY
 ..4
-genre
+GENRE
 ..Rock
-classical
+CLASSICAL
 ..0

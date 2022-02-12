@@ -1,5 +1,4 @@
 # BDJ4 dance types
-# Fri Jan 07 10:47:40 GMT 2022
 # version 1
 smooth
 rhythm

@@ -1,6 +1,4 @@
 # BDJ4 playlist dances
-# Converted from data/standardrounds.playlist
-# Fri Jan 07 10:47:40 GMT 2022
 version
 ..1
 KEY

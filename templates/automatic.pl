@@ -1,5 +1,4 @@
 # BDJ4 playlist settings
-# Sun Jan 23 22:21:31 GMT 2022
 ALLOWEDKEYWORDS
 ..
 DANCERATING

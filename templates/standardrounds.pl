@@ -1,6 +1,4 @@
 # BDJ4 playlist settings
-# Converted from /home/bll/s/ballroomdj/test.dir/data/standardrounds.playlist
-# Sun Jan 23 22:21:31 GMT 2022
 ALLOWEDKEYWORDS
 ..
 DANCERATING

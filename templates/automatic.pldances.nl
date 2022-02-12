@@ -1,5 +1,4 @@
 # BDJ4 playlist dances
-# Fri Jan 07 10:47:40 GMT 2022
 version
 ..1
 KEY
