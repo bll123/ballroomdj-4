@@ -1,5 +1,4 @@
 # BDJ4 playlist dances
-# Converted from data/automatic.playlist
 # Fri Jan 07 10:47:40 GMT 2022
 version
 ..1
