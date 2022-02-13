@@ -26,6 +26,7 @@
 #include "filemanip.h"
 #include "fileutil.h"
 #include "localeutil.h"
+#include "locatebdj3.h"
 #include "log.h"
 #include "pathutil.h"
 #include "portability.h"
@@ -45,8 +46,10 @@ typedef enum {
   INST_CREATE_DIRS,
   INST_CLEAN,
   INST_COPY_TEMPLATES,
-  INST_CONV_START,
-  INST_CONVERTER,
+  INST_CONVERT_START,
+  INST_CONVERT,
+  INST_CONVERT_WAIT,
+  INST_CONVERT_FINISH,
   INST_CREATE_SHORTCUT,
   INST_FINISH,
 } installstate_t;
@@ -55,12 +58,14 @@ typedef struct {
   installstate_t  instState;
   char            *home;
   char            *target;
+  char            *bdj3loc;
   char            hostname [MAXPATHLEN];
   char            locale [40];
   char            rundir [MAXPATHLEN];
   char            datatopdir [MAXPATHLEN];
   char            currdir [MAXPATHLEN];
   char            unpackdir [MAXPATHLEN];
+  FILE            *cvtfh;
   GtkApplication  *app;
   GtkWidget       *window;
   GtkWidget       *targetEntry;
@@ -69,22 +74,27 @@ typedef struct {
   GtkEntryBuffer  *targetBuffer;
   GtkTextBuffer   *dispBuffer;
   GtkWidget       *dispTextView;
+  GtkWidget       *bdj3locEntry;        // bdj3 location
+  GtkEntryBuffer  *bdj3locBuffer;
   mstime_t        validateTimer;
   bool            newinstall : 1;
   bool            reinstall : 1;
   bool            freetarget : 1;
+  bool            freebdj3loc : 1;
   bool            guienabled : 1;
 } installer_t;
 
 #define INST_TEMP_FILE  "tmp/bdj4instout.txt"
 #define INST_SAVE_FNAME "installdir.txt"
+#define CONV_TEMP_FILE "tmp/bdj4convout.txt"
+#define BDJ3_LOC_FILE "install/bdj3loc.txt"
 
 static int  installerCreateGui (installer_t *installer, int argc, char *argv []);
 static void installerActivate (GApplication *app, gpointer udata);
 static int  installerMainLoop (void *udata);
-static void installerSelectDirDialog (GtkButton *b, gpointer udata);
 static void installerExit (GtkButton *b, gpointer udata);
 static void installerCheckDir (GtkButton *b, gpointer udata);
+static void installerSelectDirDialog (GtkButton *b, gpointer udata);
 static void installerValidateDir (installer_t *installer);
 static void installerValidateStart (GtkEditable *e, gpointer udata);
 static void installerInstall (GtkButton *b, gpointer udata);
@@ -98,12 +108,15 @@ static void installerChangeDir (installer_t *installer);
 static void installerCreateDirs (installer_t *installer);
 static void installerCleanOldFiles (installer_t *installer);
 static void installerCopyTemplates (installer_t *installer);
-static void installerRunConversion (installer_t *installer);
+static void installerConvertStart (installer_t *installer);
+static void installerConvert (installer_t *installer);
+static void installerConvertFinish (installer_t *installer);
 static void installerCreateShortcut (installer_t *installer);
 static void installerCleanup (installer_t *installer);
 static void installerDisplayText (installer_t *installer, char *txt);
 static void installerScrollToEnd (GtkWidget *w, GtkAllocation *retAllocSize, gpointer udata);;
 static void installerGetTargetFname (installer_t *installer, char *buff, size_t len);
+static void installerGetBDJ3Fname (installer_t *installer, char *buff, size_t len);
 static void installerTemplateCopy (char *from, char *to);
 static void installerSetrundir (installer_t *installer, const char *dir);
 
@@ -114,6 +127,7 @@ main (int argc, char *argv[])
   int           status;
   char          tbuff [512];
   char          buff [MAXPATHLEN];
+  char          bdj3buff [MAXPATHLEN];
   FILE          *fh;
   int           c = 0;
   int           option_index = 0;
@@ -132,6 +146,7 @@ main (int argc, char *argv[])
 
   localeInit ();
 
+  bdj3buff [0] = '\0';
   installer.unpackdir [0] = '\0';
   buff [0] = '\0';
   installer.home = getenv ("HOME");
@@ -141,7 +156,10 @@ main (int argc, char *argv[])
   }
   installer.instState = INST_BEGIN;
   installer.target = buff;
+  installer.rundir [0] = '\0';
   installer.locale [0] = '\0';
+  installer.bdj3loc = bdj3buff;
+  installer.cvtfh = NULL;
   installer.app = NULL;
   installer.window = NULL;
   installer.targetEntry = NULL;
@@ -154,6 +172,7 @@ main (int argc, char *argv[])
   installer.newinstall = true;
   installer.reinstall = false;
   installer.freetarget = false;
+  installer.freebdj3loc = false;
   installer.guienabled = true;
   mstimeset (&installer.validateTimer, 3600000);
 
@@ -220,6 +239,21 @@ main (int argc, char *argv[])
     fclose (fh);
   }
 
+  /* this only works if the installer.target is pointing at an existing */
+  /* install of BDJ4 */
+  installerGetBDJ3Fname (&installer, tbuff, sizeof (tbuff));
+  fh = fopen (tbuff, "r");
+  if (fh != NULL) {
+    /* installer.bdj3loc is pointing at bdj3buff */
+    fgets (bdj3buff, MAXPATHLEN, fh);
+    stringTrim (bdj3buff);
+    fclose (fh);
+  } else {
+    installer.bdj3loc = locatebdj3 ();
+    installer.freebdj3loc = true;
+  }
+  logMsg (LOG_INSTALL, LOG_IMPORTANT, "initial bdj3loc: %s", installer.bdj3loc);
+
   if (isWindows ()) {
     /* installer.target is pointing at buff */
     strlcpy (tbuff, installer.target, sizeof (tbuff));
@@ -252,6 +286,9 @@ main (int argc, char *argv[])
 
   if (installer.freetarget && installer.target != NULL) {
     free (installer.target);
+  }
+  if (installer.freebdj3loc && installer.bdj3loc != NULL) {
+    free (installer.bdj3loc);
   }
   installerCleanup (&installer);
   logEnd ();
@@ -348,6 +385,58 @@ installerActivate (GApplication *app, gpointer udata)
   gtk_widget_set_halign (installer->feedbackMsg, GTK_ALIGN_END);
   gtk_box_pack_end (GTK_BOX (hbox), installer->feedbackMsg, FALSE, FALSE, 0);
 
+  /* conversion process */
+  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
+  gtk_widget_set_hexpand (GTK_WIDGET (hbox), TRUE);
+  gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (hbox), FALSE, FALSE, 0);
+
+  widget = gtk_label_new (_("Enter the folder where BallroomDJ 3 is installed."));
+  gtk_widget_set_halign (widget, GTK_ALIGN_START);
+  gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (widget), FALSE, FALSE, 0);
+
+  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
+  gtk_widget_set_hexpand (GTK_WIDGET (hbox), TRUE);
+  gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (hbox), FALSE, FALSE, 0);
+
+  widget = gtk_label_new (_("The conversion process will only run for new installations and for re-installs."));
+  gtk_widget_set_halign (widget, GTK_ALIGN_START);
+  gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (widget), FALSE, FALSE, 0);
+
+  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
+  gtk_widget_set_hexpand (GTK_WIDGET (hbox), TRUE);
+  gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (hbox), FALSE, FALSE, 0);
+
+  widget = gtk_label_new (_("If there is no BallroomDJ 3 installation, enter a single '-'."));
+  gtk_widget_set_halign (widget, GTK_ALIGN_START);
+  gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (widget), FALSE, FALSE, 0);
+
+  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
+  gtk_widget_set_hexpand (GTK_WIDGET (hbox), TRUE);
+  gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (hbox), FALSE, FALSE, 0);
+
+  widget = gtk_label_new (_("BallroomDJ 3 Location:"));
+  gtk_widget_set_halign (widget, GTK_ALIGN_START);
+  gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (widget), FALSE, FALSE, 0);
+
+  installer->bdj3locBuffer = gtk_entry_buffer_new (installer->bdj3loc, -1);
+  installer->bdj3locEntry = gtk_entry_new_with_buffer (installer->bdj3locBuffer);
+  gtk_entry_set_width_chars (GTK_ENTRY (installer->bdj3locEntry), 80);
+  gtk_entry_set_max_length (GTK_ENTRY (installer->bdj3locEntry), MAXPATHLEN);
+  gtk_entry_set_input_purpose (GTK_ENTRY (installer->bdj3locEntry), GTK_INPUT_PURPOSE_FREE_FORM);
+  gtk_widget_set_halign (installer->bdj3locEntry, GTK_ALIGN_FILL);
+  gtk_widget_set_hexpand (GTK_WIDGET (installer->bdj3locEntry), TRUE);
+  gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (installer->bdj3locEntry),
+      TRUE, TRUE, 0);
+  g_signal_connect (installer->bdj3locEntry, "changed", G_CALLBACK (installerValidateStart), installer);
+
+  widget = gtk_button_new ();
+  image = gtk_image_new_from_icon_name ("folder", GTK_ICON_SIZE_BUTTON);
+  gtk_button_set_image (GTK_BUTTON (widget), image);
+  gtk_widget_set_halign (installer->bdj3locEntry, GTK_ALIGN_START);
+  gtk_widget_set_margin_start (GTK_WIDGET (widget), 0);
+  gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (widget), FALSE, FALSE, 0);
+  g_signal_connect (widget, "clicked", G_CALLBACK (installerSelectDirDialog), installer);
+
   /* button box */
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
   gtk_widget_set_hexpand (GTK_WIDGET (hbox), TRUE);
@@ -388,6 +477,8 @@ installerActivate (GApplication *app, gpointer udata)
   gtk_widget_set_hexpand (installer->dispTextView, TRUE);
   gtk_widget_set_vexpand (installer->dispTextView, TRUE);
   gtk_container_add (GTK_CONTAINER (scwidget), GTK_WIDGET (installer->dispTextView));
+  g_signal_connect (installer->dispTextView,
+      "size-allocate", G_CALLBACK (installerScrollToEnd), installer);
 
   /* push the text view to the top */
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
@@ -406,6 +497,38 @@ installerMainLoop (void *udata)
   if (mstimeCheck (&installer->validateTimer)) {
     installerValidateDir (installer);
     mstimeset (&installer->validateTimer, 3600000);
+  }
+
+  if (installer->cvtfh != NULL) {
+    char    tbuff [MAXPATHLEN];
+    size_t  len;
+
+    if (fgets (tbuff, MAXPATHLEN, installer->cvtfh) != NULL) {
+      if (strncmp (tbuff, "OK", 2) == 0) {
+        logMsg (LOG_INSTALL, LOG_IMPORTANT, "Finished");
+        fclose (installer->cvtfh);
+        installer->cvtfh = NULL;
+        installer->instState = INST_CONVERT_FINISH;
+        return TRUE;
+      } else {
+        stringTrim (tbuff);
+        installerDisplayText (installer, tbuff);
+        stringTrim (tbuff);
+        logMsg (LOG_INSTALL, LOG_IMPORTANT, "%s", tbuff);
+        if (strncmp (tbuff, "ERROR", 5) == 0) {
+          logMsg (LOG_INSTALL, LOG_IMPORTANT, "Stopped due to error");
+          fclose (installer->cvtfh);
+          installer->cvtfh = NULL;
+          installer->instState = INST_CONVERT_FINISH;
+          return TRUE;
+        }
+      }
+    } else {
+      long    pos;
+
+      pos = ftell (installer->cvtfh);
+      fseek (installer->cvtfh, pos, SEEK_SET);
+    }
   }
 
   switch (installer->instState) {
@@ -453,15 +576,20 @@ installerMainLoop (void *udata)
       installerCopyTemplates (installer);
       break;
     }
-    case INST_CONV_START: {
-      if (installer->newinstall || installer->reinstall) {
-        installerDisplayText (installer, _("-- Starting conversion process."));
-      }
-      installer->instState = INST_CONVERTER;
+    case INST_CONVERT_START: {
+      installerConvertStart (installer);
       break;
     }
-    case INST_CONVERTER: {
-      installerRunConversion (installer);
+    case INST_CONVERT: {
+      installerConvert (installer);
+      break;
+    }
+    case INST_CONVERT_WAIT: {
+      /* do nothing */
+      break;
+    }
+    case INST_CONVERT_FINISH: {
+      installerConvertFinish (installer);
       break;
     }
     case INST_CREATE_SHORTCUT: {
@@ -494,6 +622,7 @@ installerValidateDir (installer_t *installer)
   bool          locok = false;
   const char    *dir;
   bool          exists = false;
+  const char    *fn;
 
   if (! installer->guienabled) {
     return;
@@ -516,7 +645,7 @@ installerValidateDir (installer_t *installer)
     exists = installerCheckTarget (installer, dir);
     if (exists) {
       if (installer->reinstall) {
-        gtk_label_set_text (GTK_LABEL (installer->feedbackMsg), _("Over-writing existing BDJ4 installation."));
+        gtk_label_set_text (GTK_LABEL (installer->feedbackMsg), _("Overwriting existing BDJ4 installation."));
       } else {
         gtk_label_set_text (GTK_LABEL (installer->feedbackMsg), _("Updating existing BDJ4 installation."));
       }
@@ -525,6 +654,26 @@ installerValidateDir (installer_t *installer)
     }
   } else {
     gtk_label_set_text (GTK_LABEL (installer->feedbackMsg), "");
+  }
+
+  /* bdj3 location validation */
+
+  if (installer->bdj3locBuffer == NULL) {
+    mstimeset (&installer->validateTimer, 500);
+    return;
+  }
+
+  fn = gtk_entry_buffer_get_text (installer->bdj3locBuffer);
+  if (*fn == '\0' || strcmp (fn, "-") == 0 || locationcheck (fn)) {
+    locok = true;
+  }
+
+  if (! locok) {
+    gtk_entry_set_icon_from_icon_name (GTK_ENTRY (installer->bdj3locEntry),
+        GTK_ENTRY_ICON_SECONDARY, "dialog-error");
+  } else {
+    gtk_entry_set_icon_from_icon_name (GTK_ENTRY (installer->bdj3locEntry),
+        GTK_ENTRY_ICON_SECONDARY, NULL);
   }
 }
 
@@ -539,7 +688,38 @@ installerValidateStart (GtkEditable *e, gpointer udata)
 
   /* if the user is typing, clear the message */
   gtk_label_set_text (GTK_LABEL (installer->feedbackMsg), "");
+  gtk_entry_set_icon_from_icon_name (GTK_ENTRY (installer->bdj3locEntry),
+      GTK_ENTRY_ICON_SECONDARY, NULL);
   mstimeset (&installer->validateTimer, 500);
+}
+
+static void
+installerSelectDirDialog (GtkButton *b, gpointer udata)
+{
+  installer_t           *installer = udata;
+  GtkFileChooserNative  *widget = NULL;
+  gint                  res;
+  char                  *fn = NULL;
+
+  widget = gtk_file_chooser_native_new (
+      _("Select BallroomDJ 3 Location"),
+      GTK_WINDOW (installer->window),
+      GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER,
+      _("Select"), _("Close"));
+
+  res = gtk_native_dialog_run (GTK_NATIVE_DIALOG (widget));
+  if (res == GTK_RESPONSE_ACCEPT) {
+    fn = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (widget));
+    if (installer->bdj3loc != NULL && installer->freebdj3loc) {
+      free (installer->bdj3loc);
+    }
+    installer->bdj3loc = fn;
+    installer->freebdj3loc = true;
+    gtk_entry_buffer_set_text (installer->bdj3locBuffer, fn, -1);
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected loc: %s", installer->bdj3loc);
+  }
+
+  g_object_unref (widget);
 }
 
 static void
@@ -588,6 +768,8 @@ installerCheckTarget (installer_t *installer, const char *dir)
   return exists;
 }
 
+/* installation routines */
+
 static void
 installerInstInit (installer_t *installer)
 {
@@ -603,7 +785,7 @@ installerInstInit (installer_t *installer)
 
   if (! installer->guienabled) {
     tbuff [0] = '\0';
-    printf (_("Enter the destination directory.\n"));
+    printf (_("Enter the destination folder.\n"));
     printf (_("Press 'Enter' to select the default.\n"));
     printf ("[%s] : ", installer->target);
     fflush (stdout);
@@ -621,8 +803,9 @@ installerInstInit (installer_t *installer)
     exists = installerCheckTarget (installer, installer->target);
 
     if (exists && ! installer->guienabled) {
+      printf ("\n");
       if (installer->reinstall) {
-        printf (_("Over-writing existing BDJ4 installation."));
+        printf (_("Overwriting existing BDJ4 installation."));
       } else {
         printf (_("Updating existing BDJ4 installation."));
       }
@@ -710,7 +893,7 @@ installerCopyStart (installer_t *installer)
   /* on mac os, they are different */
   if (chdir (installer->unpackdir) < 0) {
     fprintf (stderr, "Unable to set working dir: %s\n", installer->unpackdir);
-    installerDisplayText (installer, _("Error: Unable to set working directory."));
+    installerDisplayText (installer, _("Error: Unable to set working folder."));
     installerDisplayText (installer, _(" * Stopped"));
     installer->instState = INST_BEGIN;
     return;
@@ -753,7 +936,7 @@ installerChangeDir (installer_t *installer)
 
   if (chdir (installer->datatopdir)) {
     fprintf (stderr, "Unable to set working dir: %s\n", installer->datatopdir);
-    installerDisplayText (installer, _("Error: Unable to set working directory."));
+    installerDisplayText (installer, _("Error: Unable to set working folder."));
     installerDisplayText (installer, _(" * Stopped"));
     installer->instState = INST_BEGIN;
     return;
@@ -787,7 +970,7 @@ installerCleanOldFiles (installer_t *installer)
 
   if (chdir (installer->rundir)) {
     fprintf (stderr, "Unable to set working dir: %s\n", installer->rundir);
-    installerDisplayText (installer, _("Error: Unable to set working directory."));
+    installerDisplayText (installer, _("Error: Unable to set working folder."));
     installerDisplayText (installer, _(" * Stopped"));
     installer->instState = INST_BEGIN;
     return;
@@ -825,7 +1008,7 @@ installerCopyTemplates (installer_t *installer)
 
 
   if (! installer->newinstall && ! installer->reinstall) {
-    installer->instState = INST_CONV_START;
+    installer->instState = INST_CONVERT_START;
     return;
   }
 
@@ -833,7 +1016,7 @@ installerCopyTemplates (installer_t *installer)
 
   if (chdir (installer->datatopdir)) {
     fprintf (stderr, "Unable to set working dir: %s\n", installer->datatopdir);
-    installerDisplayText (installer, _("Error: Unable to set working directory."));
+    installerDisplayText (installer, _("Error: Unable to set working folder."));
     installerDisplayText (installer, _(" * Stopped"));
     installer->instState = INST_BEGIN;
     return;
@@ -944,54 +1127,98 @@ installerCopyTemplates (installer_t *installer)
     system (tbuff);
   }
 
-  installer->instState = INST_CONV_START;
+  installer->instState = INST_CONVERT_START;
 }
 
+/* conversion routines */
+
 static void
-installerRunConversion (installer_t *installer)
+installerConvertStart (installer_t *installer)
 {
-  char      tbuff [MAXPATHLEN];
-  char      buff [MAXPATHLEN];
+  char  tbuff [MAXPATHLEN];
+  FILE  *fh;
 
   if (! installer->newinstall && ! installer->reinstall) {
     installer->instState = INST_CREATE_SHORTCUT;
     return;
   }
 
-  if (chdir (installer->rundir)) {
-    fprintf (stderr, "Unable to set working dir: %s\n", installer->rundir);
-    installerDisplayText (installer, _("Error: Unable to set working directory."));
-    installerDisplayText (installer, _(" * Stopped"));
-    installer->instState = INST_BEGIN;
-    return;
+  installerDisplayText (installer, _("-- Starting conversion process."));
+
+  if (! installer->guienabled) {
+    tbuff [0] = '\0';
+    printf (_("Enter the folder where BallroomDJ 3 is installed."));
+    printf ("\n");
+    printf (_("The conversion process will only run for new installations and for re-installs."));
+    printf ("\n");
+    printf (_("Press 'Enter' to select the default.\n"));
+    printf ("\n");
+    printf (_("If there is no BallroomDJ 3 installation, enter a single '-'."));
+    printf ("\n");
+    printf (_("BallroomDJ 3 Folder [%s] : "), installer->bdj3loc);
+    fflush (stdout);
+    fgets (tbuff, MAXPATHLEN, stdin);
+    if (*tbuff == '\n' || *tbuff == '\r') {
+      tbuff [0] = '\0';
+    }
+    if (*tbuff != '\0') {
+      strlcpy (installer->bdj3loc, tbuff, MAXPATHLEN);
+    }
   }
 
-  if (installer->newinstall || installer->reinstall) {
-    /* windows does not have a non-gui conversion process */
-    if (installer->guienabled || isWindows()) {
-      strlcpy (tbuff, "./bin/bdj4converter", MAXPATHLEN);
-      if (isWindows ()) {
-        strlcat (tbuff, ".exe", MAXPATHLEN);
-        pathToWinPath (buff, tbuff, MAXPATHLEN);
-        strlcpy (tbuff, buff, MAXPATHLEN);
-      }
-    } else {
-      strlcpy (tbuff, "./install/install-convert.sh", MAXPATHLEN);
-    }
-
-    strlcat (tbuff, " --datatopdir \"", MAXPATHLEN);
-    strlcat (tbuff, installer->datatopdir, MAXPATHLEN);
-    strlcat (tbuff, "\"", MAXPATHLEN);
-    if (! installer->guienabled) {
-      strlcat (tbuff, " --guienabled F ", MAXPATHLEN);
-    }
-
-    system (tbuff);
-    installerDisplayText (installer, _("   Conversion complete."));
-  } else {
-    installerDisplayText (installer, _("-- Conversion already done."));
+  fh = fopen (tbuff, "w");
+  if (fh != NULL) {
+    fprintf (fh, "%s\n", installer->bdj3loc);
+    fclose (fh);
   }
 
+  installer->instState = INST_CONVERT;
+}
+
+static void
+installerConvert (installer_t *installer)
+{
+  char        bdjpath [MAXPATHLEN];
+  char        tbuff [MAXPATHLEN];
+  char        buff [MAXPATHLEN];
+  char        *cvtscript = "cvtall.sh";
+  int         rc;
+  FILE        *fh;
+  char        *pfx;
+  char        *sfx;
+
+
+  strlcpy (bdjpath, installer->bdj3loc, MAXPATHLEN);
+  pathNormPath (bdjpath, MAXPATHLEN);
+
+  pfx = "";
+  sfx = " 2>&1 &";
+  if (isWindows ()) {
+    cvtscript = "cvtall.bat";
+    pfx = "start";
+    sfx = "";
+  }
+
+  /* truncate and create */
+  installer->cvtfh = fopen (CONV_TEMP_FILE, "w");
+  fclose (installer->cvtfh);
+
+  snprintf (tbuff, sizeof (tbuff), "%s %s/conv/%s \"%s\" \"%s\" > %s %s",
+      pfx, sysvarsGetStr (SV_BDJ4MAINDIR), cvtscript, bdjpath,
+      installer->datatopdir, CONV_TEMP_FILE, sfx);
+
+  logMsg (LOG_INSTALL, LOG_IMPORTANT, "cmd: %s", tbuff);
+  rc = system (tbuff);
+
+  installer->cvtfh = fopen (CONV_TEMP_FILE, "r");
+  installer->instState = INST_CONVERT_WAIT;
+  return;
+}
+
+static void
+installerConvertFinish (installer_t *installer)
+{
+  installerDisplayText (installer, _("   Conversion complete."));
   installer->instState = INST_CREATE_SHORTCUT;
 }
 
@@ -1002,7 +1229,7 @@ installerCreateShortcut (installer_t *installer)
 
   if (chdir (installer->rundir)) {
     fprintf (stderr, "Unable to set working dir: %s\n", installer->rundir);
-    installerDisplayText (installer, _("Error: Unable to set working directory."));
+    installerDisplayText (installer, _("Error: Unable to set working folder."));
     installerDisplayText (installer, _(" * Stopped"));
     installer->instState = INST_BEGIN;
     return;
@@ -1034,6 +1261,8 @@ installerCreateShortcut (installer_t *installer)
 
   installer->instState = INST_FINISH;
 }
+
+/* support routines */
 
 static void
 installerCleanup (installer_t *installer)
@@ -1092,6 +1321,18 @@ installerGetTargetFname (installer_t *installer, char *buff, size_t sz)
   } else {
     snprintf (buff, sz, "%s/.config/BDJ4/%s",
         installer->home, INST_SAVE_FNAME);
+  }
+}
+
+static void
+installerGetBDJ3Fname (installer_t *installer, char *buff, size_t sz)
+{
+  if (isMacOS ()) {
+    snprintf (buff, sz, "%s/Contents/MacOS/intall/%s",
+        installer->target, BDJ3_LOC_FILE);
+  } else {
+    snprintf (buff, sz, "%s/install/%s",
+        installer->target, BDJ3_LOC_FILE);
   }
 }
 

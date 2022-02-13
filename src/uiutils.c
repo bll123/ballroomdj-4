@@ -13,6 +13,7 @@
 #include "bdjstring.h"
 #include "log.h"
 #include "portability.h"
+#include "sysvars.h"
 #include "uiutils.h"
 
 static GLogWriterOutput uiutilsGtkLogger (GLogLevelFlags logLevel,
@@ -85,8 +86,14 @@ uiutilsGtkLogger (GLogLevelFlags logLevel,
 {
   char      *msg;
 
-  msg = g_log_writer_format_fields (logLevel, fields, n_fields, FALSE);
-  logMsg (LOG_GTK, LOG_IMPORTANT, msg);
+  if (logLevel != G_LOG_LEVEL_DEBUG) {
+    msg = g_log_writer_format_fields (logLevel, fields, n_fields, FALSE);
+    logMsg (LOG_GTK, LOG_IMPORTANT, msg);
+    if (strcmp (sysvarsGetStr (SV_BDJ4_RELEASELEVEL), "alpha") == 0) {
+      fprintf (stderr, "%s\n", msg);
+    }
+  }
+
   return G_LOG_WRITER_HANDLED;
 }
 

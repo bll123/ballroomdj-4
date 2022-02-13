@@ -41,7 +41,6 @@ main (int argc, char *argv [])
   int         rc;
   bool        isWindows = false;
   char        *archivenm = "bdj4-install.tar.gz";
-  char        * targv [5];
 
 
 #if _lib_CreateFile  /* check if it is windows */
@@ -189,17 +188,15 @@ main (int argc, char *argv [])
   printf ("-- Starting install process.\n");
   fflush (stdout);
   if (isWindows) {
-    targv [0] = ".\\install\\install-startup.bat";
-    targv [1] = NULL;
-    rc = execv (targv[0], targv);
+    argv [0] = ".\\install\\install-startup.bat";
+    rc = execv (argv[0], argv);
     if (rc != 0) {
       fprintf (stderr, "Unable to exec %d %s\n", errno, strerror (errno));
       exit (1);
     }
   } else {
-    targv [0] = "./install/install-startup.sh";
-    targv [1] = NULL;
-    rc = execv (targv [0], targv);
+    argv [0] = "./install/install-startup.sh";
+    rc = execv (argv [0], argv);
     if (rc != 0) {
       fprintf (stderr, "Unable to exec %d %s\n", errno, strerror (errno));
       exit (1);

@@ -543,16 +543,6 @@ target_link_libraries (bdj4marquee
 addIntlLibrary (bdj4marquee)
 addWinSockLibrary (bdj4marquee)
 
-add_executable (bdj4converter bdj4converter.c)
-target_link_libraries (bdj4converter
-  liblocatebdj3
-  libbdj4 libbdj4common libbdj4ui
-  ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
-  ${GTK_LDFLAGS}
-  m
-)
-addIntlLibrary (bdj4converter)
-
 add_executable (bdj4installer bdj4installer.c)
 target_link_libraries (bdj4installer
   liblocatebdj3
@@ -636,7 +626,7 @@ install (TARGETS
   libplinull libplivlc
   libvolalsa libvolmac libvolnull libvolpa libvolwin
   bdj4 bdj4cli
-  bdj4installer bdj4converter bdj4locale bdj4locatebdj3 bdj4se
+  bdj4installer bdj4locale bdj4locatebdj3 bdj4se
   bdj4main bdj4player bdj4mobmq bdj4rc bdj4marquee
   bdj4playerui
   check_all chkprocess
@@ -680,7 +670,6 @@ if (APPLE)
   macUpdateRPath (bdj4rc)
   macUpdateRPath (bdj4cli)
   macUpdateRPath (bdj4installer)
-  macUpdateRPath (bdj4converter)
   macUpdateRPath (bdj4locatebdj3)
   macUpdateRPath (bdj4locale)
   macUpdateRPath (check_all)

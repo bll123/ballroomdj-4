@@ -17,7 +17,7 @@ set flist [glob -directory $bdj3dir *.playlist]
 puts "-- Converting: playlists"
 foreach {fn} $flist {
   set nfn [file join $datatopdir data [file rootname [file tail $fn]].pl]
-  puts "    - [file tail $fn] : [file rootname [file tail $fn]].pl"
+  puts "   - [file tail $fn] : [file rootname [file tail $fn]].pl"
   set ifh [open $fn r]
   set dfn [file join data [file rootname [file tail $fn]].pldances]
   set ofh [open $nfn w]

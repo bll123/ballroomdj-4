@@ -3,8 +3,8 @@
 # 'ERROR' and 'OK' are used by the gui to determine when the script
 # is finished.
 
-if [[ $# != 1 || ! -d $1 || ! -d "$1/data" ]]; then
-  echo "ERROR: No ballroomdj directory"
+if [[ $# != 2 || ! -d $1 || ! -d "$1/data" || ! -d $2 ]]; then
+  echo "ERROR: Invalid arguments"
   exit 1
 fi
 bdj3dir="$1/data"
@@ -50,7 +50,7 @@ else
       ; do
     if [[ -f $f ]]; then
       tclsh=$f
-      echo "Located tclsh: $tclsh"
+      echo "   Located tclsh: $tclsh"
       break
     fi
   done
@@ -83,7 +83,6 @@ fi
 "$tclsh" ./conv/autoselconv.tcl "$bdj3dir" "$datatopdir"
 "$tclsh" ./conv/typeconv.tcl "$bdj3dir" "$datatopdir"
 "$tclsh" ./conv/statusconv.tcl "$bdj3dir" "$datatopdir"
-echo "Conversion Completed Successfully"
 echo "OK"
 
 exit 0

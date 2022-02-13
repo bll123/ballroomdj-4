@@ -44,7 +44,7 @@ locatebdj3 (void)
 
   if (home == NULL) {
     //logMsg (LOG_INSTALL, LOG_IMPORTANT, "err: no home env", loc);
-    return "";
+    return strdup ("");
   }
 
   /* Linux, old MacOS, recent windows: $HOME/BallroomDJ */
@@ -94,7 +94,7 @@ locatebdj3 (void)
     return strdup (tbuff);
   }
 
-  return "";
+  return strdup ("");
 }
 
 bool

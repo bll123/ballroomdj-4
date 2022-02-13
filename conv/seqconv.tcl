@@ -18,7 +18,7 @@ puts "-- Converting: sequences"
 foreach {fn} $flist {
   set ifh [open $fn r]
   set nfn [file join $datatopdir data [file rootname [file tail $fn]].sequence]
-  puts "    - [file tail $fn] : [file rootname [file tail $fn]].sequence"
+  puts "   - [file tail $fn] : [file rootname [file tail $fn]].sequence"
   set ofh [open $nfn w]
   puts $ofh "# BDJ4 sequence"
   puts $ofh "# Converted from $fn"
