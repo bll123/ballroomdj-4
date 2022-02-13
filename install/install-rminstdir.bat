@@ -2,7 +2,8 @@
 
 set d=%1
 
-taskkill /f /im gdbus.exe
+: don't care whether this exists or not.
+taskkill /f /im gdbus.exe 2> NUL
 
 if not "%d%" == "" (
   if exist "%d%" (

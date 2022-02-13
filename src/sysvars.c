@@ -73,7 +73,7 @@ sysvarsInit (const char *argv0)
   osvi.dwOSVersionInfoSize = sizeof (OSVERSIONINFOA);
   GetVersionEx (&osvi);
 
-  strlcpy (sysvars [SV_OSNAME], "Windows", MAXPATHLEN);
+  strlcpy (sysvars [SV_OSNAME], "windows", MAXPATHLEN);
   strlcpy (sysvars [SV_OSDISP], "Windows ", MAXPATHLEN);
   snprintf (sysvars [SV_OSVERS], MAXPATHLEN, "%ld.%ld",
       osvi.dwMajorVersion, osvi.dwMinorVersion);
@@ -106,6 +106,12 @@ sysvarsInit (const char *argv0)
   strlcat (sysvars [SV_OSDISP], " ", MAXPATHLEN);
   strlcat (sysvars [SV_OSDISP], sysvars [SV_OSBUILD], MAXPATHLEN);
 #endif
+  stringToLower (sysvars [SV_OSNAME]);
+  if (sizeof (void *) == 8) {
+    lsysvars [SVL_OSBITS] = 64;
+  } else {
+    lsysvars [SVL_OSBITS] = 32;
+  }
 
   getHostname (sysvars [SV_HOSTNAME], MAXPATHLEN);
 
@@ -247,19 +253,19 @@ sysvarSetNum (sysvarlkey_t idx, ssize_t value)
 inline bool
 isMacOS (void)
 {
-  return (strcmp (sysvars[SV_OSNAME], "Darwin") == 0);
+  return (strcmp (sysvars[SV_OSNAME], "darwin") == 0);
 }
 
 inline bool
 isWindows (void)
 {
-  return (strcmp (sysvars[SV_OSNAME], "Windows") == 0);
+  return (strcmp (sysvars[SV_OSNAME], "windows") == 0);
 }
 
 inline bool
 isLinux (void)
 {
-  return (strcmp (sysvars[SV_OSNAME], "Linux") == 0);
+  return (strcmp (sysvars[SV_OSNAME], "linux") == 0);
 }
 
 /* internal routines */

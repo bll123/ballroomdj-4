@@ -21,7 +21,7 @@
 #include "sysvars.h"
 
 #if _lib_CreateProcess
-static void winCreateProcess (char *cmd, char *argv []);
+static void winCreateProcess (char *cmd, char *argv [], bool isinstaller);
 #endif
 
 int
@@ -55,7 +55,7 @@ main (int argc, char * argv[])
     { "forcestop",  no_argument,        NULL,   0 },
     { "unpackdir",  required_argument,  NULL,   'u' },
     { "reinstall",  no_argument,        NULL,   'r' },
-    { "guienabled", no_argument,        NULL,   'g' },
+    { "guidisabled",no_argument,        NULL,   'g' },
     { "profile",    required_argument,  NULL,   'p' },
     { "debug",      required_argument,  NULL,   'd' },
     { "theme",      required_argument,  NULL,   't' },

@@ -27,11 +27,11 @@ stringToUpper (char * s) {
 
 void
 stringTrim (char *s) {
-  size_t      len;
+  ssize_t     len;
 
   len = strlen (s);
   --len;
-  while (len > 0 && (s [len] == '\r' || s [len] == '\n')) {
+  while (len >= 0 && (s [len] == '\r' || s [len] == '\n')) {
     s [len] = '\0';
     --len;
   }

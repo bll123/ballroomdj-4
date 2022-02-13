@@ -14,6 +14,13 @@
 
 #include <gtk/gtk.h>
 
+#if _hdr_winsock2
+# include <winsock2.h>
+#endif
+#if _hdr_windows
+# include <windows.h>
+#endif
+
 #if _lib__execv
 # define execv _execv
 #endif
@@ -58,14 +65,18 @@ typedef struct {
   installstate_t  instState;
   char            *home;
   char            *target;
-  char            *bdj3loc;
   char            hostname [MAXPATHLEN];
   char            locale [40];
   char            rundir [MAXPATHLEN];
   char            datatopdir [MAXPATHLEN];
   char            currdir [MAXPATHLEN];
   char            unpackdir [MAXPATHLEN];
-  FILE            *cvtfh;
+  /* conversion */
+  char            *bdj3loc;
+  char            *tclshloc;
+  slist_t         *convlist;
+  slistidx_t      convidx;
+  /* gtk */
   GtkApplication  *app;
   GtkWidget       *window;
   GtkWidget       *targetEntry;
@@ -77,6 +88,7 @@ typedef struct {
   GtkWidget       *bdj3locEntry;        // bdj3 location
   GtkEntryBuffer  *bdj3locBuffer;
   mstime_t        validateTimer;
+  /* flags */
   bool            newinstall : 1;
   bool            reinstall : 1;
   bool            freetarget : 1;
@@ -120,6 +132,10 @@ static void installerGetBDJ3Fname (installer_t *installer, char *buff, size_t le
 static void installerTemplateCopy (char *from, char *to);
 static void installerSetrundir (installer_t *installer, const char *dir);
 
+#if _lib_CreateProcess
+static int winCreateProcess (char *cmd, char *cmdline);
+#endif
+
 int
 main (int argc, char *argv[])
 {
@@ -135,7 +151,7 @@ main (int argc, char *argv[])
   static struct option bdj_options [] = {
     { "installer",  no_argument,        NULL,   12 },
     { "reinstall",  no_argument,        NULL,   'r' },
-    { "guienabled", no_argument,        NULL,   'g' },
+    { "guidisabled",no_argument,        NULL,   'g' },
     { "unpackdir",  required_argument,  NULL,   'u' },
     { "debug",      required_argument,  NULL,   'd' },
     { "theme",      required_argument,  NULL,   't' },
@@ -159,7 +175,9 @@ main (int argc, char *argv[])
   installer.rundir [0] = '\0';
   installer.locale [0] = '\0';
   installer.bdj3loc = bdj3buff;
-  installer.cvtfh = NULL;
+  installer.convidx = 0;
+  installer.convlist = NULL;
+  installer.tclshloc = NULL;
   installer.app = NULL;
   installer.window = NULL;
   installer.targetEntry = NULL;
@@ -260,13 +278,15 @@ main (int argc, char *argv[])
     pathToWinPath (installer.target, tbuff, sizeof (tbuff));
   }
 
-  uiutilsInitGtkLog ();
-  if (isWindows ()) {
-    char *uifont;
-
+  if (installer.guienabled) {
     gtk_init (&argc, NULL);
-    uifont = "Arial 11";
-    uiutilsSetUIFont (uifont);
+    uiutilsInitGtkLog ();
+    if (isWindows ()) {
+      char *uifont;
+
+      uifont = "Arial 11";
+      uiutilsSetUIFont (uifont);
+    }
   }
 
   if (installer.guienabled) {
@@ -289,6 +309,12 @@ main (int argc, char *argv[])
   }
   if (installer.freebdj3loc && installer.bdj3loc != NULL) {
     free (installer.bdj3loc);
+  }
+  if (installer.convlist != NULL) {
+    slistFree (installer.convlist);
+  }
+  if (installer.tclshloc != NULL) {
+    free (installer.tclshloc);
   }
   installerCleanup (&installer);
   logEnd ();
@@ -497,38 +523,6 @@ installerMainLoop (void *udata)
   if (mstimeCheck (&installer->validateTimer)) {
     installerValidateDir (installer);
     mstimeset (&installer->validateTimer, 3600000);
-  }
-
-  if (installer->cvtfh != NULL) {
-    char    tbuff [MAXPATHLEN];
-    size_t  len;
-
-    if (fgets (tbuff, MAXPATHLEN, installer->cvtfh) != NULL) {
-      if (strncmp (tbuff, "OK", 2) == 0) {
-        logMsg (LOG_INSTALL, LOG_IMPORTANT, "Finished");
-        fclose (installer->cvtfh);
-        installer->cvtfh = NULL;
-        installer->instState = INST_CONVERT_FINISH;
-        return TRUE;
-      } else {
-        stringTrim (tbuff);
-        installerDisplayText (installer, tbuff);
-        stringTrim (tbuff);
-        logMsg (LOG_INSTALL, LOG_IMPORTANT, "%s", tbuff);
-        if (strncmp (tbuff, "ERROR", 5) == 0) {
-          logMsg (LOG_INSTALL, LOG_IMPORTANT, "Stopped due to error");
-          fclose (installer->cvtfh);
-          installer->cvtfh = NULL;
-          installer->instState = INST_CONVERT_FINISH;
-          return TRUE;
-        }
-      }
-    } else {
-      long    pos;
-
-      pos = ftell (installer->cvtfh);
-      fseek (installer->cvtfh, pos, SEEK_SET);
-    }
   }
 
   switch (installer->instState) {
@@ -781,6 +775,12 @@ installerInstInit (installer_t *installer)
     installer->freetarget = true;
     installer->reinstall = gtk_toggle_button_get_active (
         GTK_TOGGLE_BUTTON (installer->reinstWidget));
+
+    if (installer->bdj3loc != NULL && installer->freebdj3loc) {
+      free (installer->bdj3loc);
+    }
+    installer->bdj3loc = strdup (gtk_entry_buffer_get_text (installer->bdj3locBuffer));
+    installer->freebdj3loc = true;
   }
 
   if (! installer->guienabled) {
@@ -790,9 +790,7 @@ installerInstInit (installer_t *installer)
     printf ("[%s] : ", installer->target);
     fflush (stdout);
     fgets (tbuff, MAXPATHLEN, stdin);
-    if (*tbuff == '\n' || *tbuff == '\r') {
-      tbuff [0] = '\0';
-    }
+    stringTrim (tbuff);
     if (*tbuff != '\0') {
       strlcpy (installer->target, tbuff, MAXPATHLEN);
     }
@@ -816,9 +814,7 @@ installerInstInit (installer_t *installer)
       printf ("[Y] : ");
       fflush (stdout);
       fgets (tbuff, MAXPATHLEN, stdin);
-      if (*tbuff == '\n' || *tbuff == '\r') {
-        tbuff [0] = '\0';
-      }
+      stringTrim (tbuff);
       if (*tbuff != '\0') {
         if (strncmp (tbuff, "Y", 1) != 0 &&
             strncmp (tbuff, "y", 1) != 0) {
@@ -979,6 +975,7 @@ installerCleanOldFiles (installer_t *installer)
   fh = fopen ("install/cleanuplist.txt", "r");
   if (fh != NULL) {
     while (fgets (tbuff, MAXPATHLEN, fh) != NULL) {
+      stringTrim (tbuff);
       if (! fileopExists (tbuff)) {
         continue;
       }
@@ -1136,6 +1133,9 @@ static void
 installerConvertStart (installer_t *installer)
 {
   char  tbuff [MAXPATHLEN];
+  char  buff [MAXPATHLEN];
+  char  *locs [15];
+  int   locidx = 0;
   FILE  *fh;
 
   if (! installer->newinstall && ! installer->reinstall) {
@@ -1143,7 +1143,10 @@ installerConvertStart (installer_t *installer)
     return;
   }
 
-  installerDisplayText (installer, _("-- Starting conversion process."));
+  if (strcmp (installer->bdj3loc, "-") == 0) {
+    installer->instState = INST_CREATE_SHORTCUT;
+    return;
+  }
 
   if (! installer->guienabled) {
     tbuff [0] = '\0';
@@ -1158,18 +1161,81 @@ installerConvertStart (installer_t *installer)
     printf (_("BallroomDJ 3 Folder [%s] : "), installer->bdj3loc);
     fflush (stdout);
     fgets (tbuff, MAXPATHLEN, stdin);
-    if (*tbuff == '\n' || *tbuff == '\r') {
-      tbuff [0] = '\0';
-    }
+    stringTrim (tbuff);
     if (*tbuff != '\0') {
-      strlcpy (installer->bdj3loc, tbuff, MAXPATHLEN);
+      if (installer->bdj3loc != NULL && installer->freebdj3loc) {
+        free (installer->bdj3loc);
+      }
+      installer->bdj3loc = strdup (tbuff);
+      installer->freebdj3loc = true;
     }
   }
+
+  if (strcmp (installer->bdj3loc, "-") == 0) {
+    installer->instState = INST_CREATE_SHORTCUT;
+    return;
+  }
+
+  if (chdir (installer->rundir)) {
+    fprintf (stderr, "Unable to set working dir: %s\n", installer->rundir);
+    installerDisplayText (installer, _("Error: Unable to set working folder."));
+    installerDisplayText (installer, _(" * Stopped"));
+    installer->instState = INST_BEGIN;
+    return;
+  }
+
+  installerDisplayText (installer, _("-- Starting conversion process."));
 
   fh = fopen (tbuff, "w");
   if (fh != NULL) {
     fprintf (fh, "%s\n", installer->bdj3loc);
     fclose (fh);
+  }
+
+  installer->convlist = filemanipBasicDirList ("conv", ".tcl");
+  slistStartIterator (installer->convlist, &installer->convidx);
+
+  locidx = 0;
+  snprintf (tbuff, MAXPATHLEN, "%s/%s/%zd/tcl/bin/tclsh",
+      installer->bdj3loc, sysvarsGetStr (SV_OSNAME), sysvarsGetNum (SVL_OSBITS));
+  locs [locidx++] = strdup (tbuff);
+  snprintf (tbuff, MAXPATHLEN, "%s/Applications/BallroomDJ.app/Contents/%s/%zd/tcl/bin/tclsh",
+      installer->home, sysvarsGetStr (SV_OSNAME), sysvarsGetNum (SVL_OSBITS));
+  locs [locidx++] = strdup (tbuff);
+  snprintf (tbuff, MAXPATHLEN, "%s/local/bin/tclsh", installer->home);
+  locs [locidx++] = strdup (tbuff);
+  snprintf (tbuff, MAXPATHLEN, "%s/bin/tclsh", installer->home);
+  locs [locidx++] = strdup (tbuff);
+  locs [locidx++] = strdup ("/opt/local/bin/tclsh");
+  locs [locidx++] = strdup ("/usr/local/bin/tclsh");
+  locs [locidx++] = strdup ("/usr/bin/tclsh");
+  locs [locidx++] = NULL;
+
+  locidx = 0;
+  while (locs [locidx] != NULL) {
+    strlcpy (tbuff, locs [locidx], MAXPATHLEN);
+    if (isWindows ()) {
+      snprintf (tbuff, MAXPATHLEN, "%s.exe", locs [locidx]);
+    }
+
+    if (installer->tclshloc == NULL && fileopExists (tbuff)) {
+      strlcpy (buff, tbuff, MAXPATHLEN);
+      if (isWindows ()) {
+        pathToWinPath (buff, tbuff, MAXPATHLEN);
+      }
+      installer->tclshloc = strdup (buff);
+      installerDisplayText (installer, _("   Located tclsh."));
+    }
+
+    free (locs [locidx]);
+    ++locidx;
+  }
+
+  if (installer->tclshloc == NULL) {
+    installerDisplayText (installer, _("   Unable to locate tclsh."));
+    installerDisplayText (installer, _("   Skipping conversion."));
+    installer->instState = INST_CREATE_SHORTCUT;
+    return;
   }
 
   installer->instState = INST_CONVERT;
@@ -1178,40 +1244,26 @@ installerConvertStart (installer_t *installer)
 static void
 installerConvert (installer_t *installer)
 {
-  char        bdjpath [MAXPATHLEN];
-  char        tbuff [MAXPATHLEN];
-  char        buff [MAXPATHLEN];
-  char        *cvtscript = "cvtall.sh";
-  int         rc;
-  FILE        *fh;
-  char        *pfx;
-  char        *sfx;
+  char      *fn;
+  char      buff [MAXPATHLEN];
 
-
-  strlcpy (bdjpath, installer->bdj3loc, MAXPATHLEN);
-  pathNormPath (bdjpath, MAXPATHLEN);
-
-  pfx = "";
-  sfx = " 2>&1 &";
-  if (isWindows ()) {
-    cvtscript = "cvtall.bat";
-    pfx = "start";
-    sfx = "";
+  fn = slistIterateKey (installer->convlist, &installer->convidx);
+  if (fn == NULL) {
+    installer->instState = INST_CONVERT_FINISH;
+    return;
   }
 
-  /* truncate and create */
-  installer->cvtfh = fopen (CONV_TEMP_FILE, "w");
-  fclose (installer->cvtfh);
+  snprintf (buff, MAXPATHLEN, _("   Running conversion script: %s."), fn);
+  installerDisplayText (installer, buff);
+  snprintf (buff, MAXPATHLEN, "\"%s\" conv/%s \"%s/data\" \"%s\"",
+      installer->tclshloc, fn, installer->bdj3loc, installer->datatopdir);
+  if (isWindows()) {
+    winCreateProcess (installer->tclshloc, buff);
+  } else {
+    system (buff);
+  }
 
-  snprintf (tbuff, sizeof (tbuff), "%s %s/conv/%s \"%s\" \"%s\" > %s %s",
-      pfx, sysvarsGetStr (SV_BDJ4MAINDIR), cvtscript, bdjpath,
-      installer->datatopdir, CONV_TEMP_FILE, sfx);
-
-  logMsg (LOG_INSTALL, LOG_IMPORTANT, "cmd: %s", tbuff);
-  rc = system (tbuff);
-
-  installer->cvtfh = fopen (CONV_TEMP_FILE, "r");
-  installer->instState = INST_CONVERT_WAIT;
+  installer->instState = INST_CONVERT;
   return;
 }
 
@@ -1267,6 +1319,7 @@ installerCreateShortcut (installer_t *installer)
 static void
 installerCleanup (installer_t *installer)
 {
+  char  tbuff [MAXPATHLEN];
   char  buff [MAXPATHLEN];
   char  *argv [5];
 
@@ -1275,10 +1328,11 @@ installerCleanup (installer_t *installer)
   }
 
   if (isWindows ()) {
-    argv [0] = ".\\install\\install-rminstdir.bat";
-    argv [1] = installer->unpackdir;
-    argv [2] = NULL;
-    execv (argv [0], argv);
+    strlcpy (tbuff, ".\\install\\install-rminstdir.bat", MAXPATHLEN);
+    snprintf (buff, MAXPATHLEN, "%s \"%s\"", tbuff, installer->unpackdir);
+#if _lib_CreateProcess
+    winCreateProcess (tbuff, buff);
+#endif
   } else {
     snprintf (buff, MAXPATHLEN, "rm -rf %s", installer->unpackdir);
     system (buff);
@@ -1359,3 +1413,37 @@ installerSetrundir (installer_t *installer, const char *dir)
     strlcat (installer->rundir, "/Contents/MacOS", MAXPATHLEN);
   }
 }
+
+#if _lib_CreateProcess
+
+static int
+winCreateProcess (char *cmd, char *cmdline)
+{
+  STARTUPINFO         si;
+  PROCESS_INFORMATION pi;
+  int                 val;
+
+  memset (&si, '\0', sizeof (si));
+  si.cb = sizeof(si);
+  memset (&pi, '\0', sizeof (pi));
+
+  val = DETACHED_PROCESS;
+  if (! CreateProcess (
+      cmd,            // module name
+      cmdline,        // command line
+      NULL,           // process handle
+      NULL,           // hread handle
+      FALSE,          // handle inheritance
+      val,            // set to DETACHED_PROCESS
+      NULL,           // parent's environment
+      NULL,           // parent's starting directory
+      &si,            // STARTUPINFO structure
+      &pi )           // PROCESS_INFORMATION structure
+  ) {
+    return -1;
+  }
+
+  return 0;
+}
+
+#endif

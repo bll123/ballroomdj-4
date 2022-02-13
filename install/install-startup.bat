@@ -1,25 +1,40 @@
 @echo off
 
-set tmpdir="%TEMP%"
+set tdir="%TEMP%"
 
-echo -- BallroomDJ 4 Installation Startup
+echo -- BDJ4 Installation Startup
 
-cd %tmpdir%
+set guidisabled=""
+set reinstall=""
+
+:procargs
+if "%1" == "" ( goto endargs )
+if "%1" == "--reinstall" (
+  set reinstall="--reinstall"
+)
+if "%1" == "--cli" (
+  set guidisabled="--guidisabled"
+)
+shift
+goto procargs
+:endargs
+
+cd %tdir%
 
 cd bdj4-install
 
-echo -- Starting graphical installer.
-.\bin\bdj4.exe --installer --unpackdir "%tmpdir%/bdj4-install"
+echo -- Starting installer.
+.\bin\bdj4.exe --installer --unpackdir %tdir%\bdj4-install %reinstall% %guidisabled%
 
 echo -- Cleaning temporary files.
-if exist "%tmpdir%\bdj4-install.zip" (
-  del /q "%tmpdir%\bdj4-install.zip"
+if exist "%tdir%\bdj4-install.zip" (
+  del /q "%tdir%\bdj4-install.zip"
 )
-if exist "%tmpdir%\miniunz.exe" (
-  del /q "%tmpdir%\miniunz.exe"
+if exist "%tdir%\miniunz.exe" (
+  del /q "%tdir%\miniunz.exe"
 )
-if exist "%tmpdir%\bdj4-unzip.log" (
-  del /q "%tmpdir%\bdj4-unzip.log"
+if exist "%tdir%\bdj4-unzip.log" (
+  del /q "%tdir%\bdj4-unzip.log"
 )
 
 exit 0

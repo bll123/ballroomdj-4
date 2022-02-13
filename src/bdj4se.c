@@ -58,7 +58,7 @@ main (int argc, char *argv [])
 
   ifh = fopen (fn, "rb");
   if (ifh == NULL) {
-    fprintf (stderr, "Unable to open input %d %s\n", errno, strerror (errno));
+    fprintf (stderr, "Unable to open input %s %d %s\n", fn, errno, strerror (errno));
     exit (1);
   }
 
@@ -83,7 +83,7 @@ main (int argc, char *argv [])
     snprintf (tbuff, sizeof (tbuff), "%s/%s", tmpdir, "miniunz.exe");
     mufh = fopen (tbuff, "wb");
     if (mufh == NULL) {
-      fprintf (stderr, "Unable to open output %d %s\n", errno, strerror (errno));
+      fprintf (stderr, "Unable to open output %s %d %s\n", tbuff, errno, strerror (errno));
       exit (1);
     }
   }
@@ -91,7 +91,7 @@ main (int argc, char *argv [])
   snprintf (tbuff, sizeof (tbuff), "%s/%s", tmpdir, archivenm);
   zfh = fopen (tbuff, "wb");
   if (zfh == NULL) {
-    fprintf (stderr, "Unable to open output %d %s\n", errno, strerror (errno));
+    fprintf (stderr, "Unable to open output %s %d %s\n", tbuff, errno, strerror (errno));
     exit (1);
   }
 

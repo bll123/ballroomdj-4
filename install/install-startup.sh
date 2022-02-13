@@ -39,7 +39,7 @@ fi
 
 if [[ $1 == "--cli" ]]; then
   echo "-- Starting console installer."
-  ./bin/bdj4 --installer --guienabled F --unpackdir "$unpackdir" $reinstall
+  ./bin/bdj4 --installer --guidisabled --unpackdir "$unpackdir" $reinstall
 else
   echo "-- Starting graphical installer."
   ./bin/bdj4 --installer --unpackdir "$unpackdir" $reinstall > /dev/tty 2>&1
