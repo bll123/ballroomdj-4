@@ -66,8 +66,9 @@ main (int argc, char *argv[])
   mstimeset (&converter.validateTimer, 3600000);
   converter.tfh = NULL;
 
-  /* for convenience in testing; normally will already be there */
   sysvarsInit (argv [0]);
+
+  /* for convenience in testing; normally will already be there */
   if (chdir (sysvarsGetStr (SV_BDJ4DATATOPDIR)) < 0) {
     fprintf (stderr, "Unable to chdir: %s\n", sysvarsGetStr (SV_BDJ4DATATOPDIR));
     exit (1);
@@ -79,6 +80,15 @@ main (int argc, char *argv[])
   /* initial location */
   converter.loc = locatebdj3 ();
   logMsg (LOG_INSTALL, LOG_IMPORTANT, "initial loc: %s", converter.loc);
+
+  uiutilsInitGtkLog ();
+  if (isWindows ()) {
+    char *uifont;
+
+    gtk_init (&argc, NULL);
+    uifont = "Arial 11";
+    uiutilsSetUIFont (uifont);
+  }
 
   g_timeout_add (UI_MAIN_LOOP_TIMER, converterMainLoop, &converter);
   status = converterCreateGui (&converter, 0, NULL);

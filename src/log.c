@@ -293,3 +293,4 @@ logDumpLevel (loglevel_t level)
   }
   rlogVarMsg (LOG_SESS, LOG_IMPORTANT, NULL, 0, tbuff);
 }
+

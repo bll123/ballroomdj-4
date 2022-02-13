@@ -9,7 +9,6 @@
 #include <getopt.h>
 #include <unistd.h>
 #include <math.h>
-#include <ctype.h>
 
 #include <gtk/gtk.h>
 
@@ -84,7 +83,6 @@ static void     pluiSetPlaybackQueue (GtkButton *b, gpointer udata);
 static void     pluiToggleExtraQueues (GtkWidget *mi, gpointer udata);
 static void     pluiSetExtraQueues (playerui_t *plui);
 static void     pluiTogglePlayWhenQueued (GtkWidget *mi, gpointer udata);
-static void     pluiSetUIFont (playerui_t *plui);
 
 
 static int gKillReceived = 0;
@@ -101,6 +99,7 @@ main (int argc, char *argv[])
   loglevel_t      loglevel = LOG_IMPORTANT | LOG_MAIN;
   playerui_t      plui;
   char            tbuff [MAXPATHLEN];
+  char            *uifont;
 
 
   static struct option bdj_options [] = {
@@ -157,9 +156,10 @@ main (int argc, char *argv[])
 
   plui.sockserver = sockhStartServer (listenPort);
 
-  /* must call this to set the ui font */
+  uiutilsInitGtkLog ();
   gtk_init (&argc, NULL);
-  pluiSetUIFont (&plui);
+  uifont = bdjoptGetData (OPT_MP_UIFONT);
+  uiutilsSetUIFont (uifont);
 
   g_timeout_add (UI_MAIN_LOOP_TIMER, pluiMainLoop, &plui);
 
@@ -589,45 +589,6 @@ pluiSetExtraQueues (playerui_t *plui)
     }
   } else {
     gtk_widget_hide (plui->setPlaybackButton);
-  }
-}
-
-static void
-pluiSetUIFont (playerui_t *plui)
-{
-  GtkCssProvider  *tcss;
-  char            *uifont;
-  GdkScreen       *screen;
-  char            tbuff [MAXPATHLEN];
-  char            wbuff [MAXPATHLEN];
-  char            *p;
-  int             sz = 0;
-
-  uifont = bdjoptGetData (OPT_MP_UIFONT);
-  strlcpy (wbuff, uifont, MAXPATHLEN);
-  p = strrchr (wbuff, ' ');
-  if (p != NULL) {
-    ++p;
-    if (isdigit (*p)) {
-      --p;
-      *p = '\0';
-      ++p;
-      sz = atoi (p);
-    }
-  }
-  if (uifont != NULL && *uifont) {
-    tcss = gtk_css_provider_new ();
-    snprintf (tbuff, MAXPATHLEN, "* { font-family: '%s'; }", wbuff);
-    if (sz > 0) {
-      snprintf (wbuff, MAXPATHLEN, " * { font-size: %dpt; }", sz);
-    }
-    strlcat (tbuff, wbuff, MAXPATHLEN);
-    gtk_css_provider_load_from_data (tcss, tbuff, -1, NULL);
-    screen = gdk_screen_get_default ();
-    if (screen != NULL) {
-      gtk_style_context_add_provider_for_screen (screen, GTK_STYLE_PROVIDER (tcss),
-          GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-    }
   }
 }
 

@@ -112,6 +112,7 @@ main (int argc, char *argv[])
   loglevel_t      loglevel = LOG_IMPORTANT | LOG_MAIN;
   marquee_t       marquee;
   char            *tval;
+  char            *uifont;
 
   static struct option bdj_options [] = {
     { "debug",      required_argument,  NULL,   'd' },
@@ -221,6 +222,11 @@ main (int argc, char *argv[])
   marquee.sockserver = sockhStartServer (listenPort);
   g_timeout_add (UI_MAIN_LOOP_TIMER, marqueeMainLoop, &marquee);
 
+  uiutilsInitGtkLog ();
+  gtk_init (&argc, NULL);
+  uifont = bdjoptGetData (OPT_MP_UIFONT);
+  uiutilsSetUIFont (uifont);
+
   status = marqueeCreateGui (&marquee, 0, NULL);
 
   while (progstateShutdownProcess (marquee.progstate) != STATE_CLOSED) {
@@ -295,7 +301,7 @@ marqueeActivate (GApplication *app, gpointer userdata)
 //  window = gtk_application_window_new (GTK_APPLICATION (app));
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   assert (window != NULL);
-  gtk_window_set_application (GTK_WINDOW (window),
+  gtk_window_set_application (GTK_WINDOW (window), GTK_APPLICATION (app));
   g_signal_connect (window, "delete-event", G_CALLBACK (marqueeCloseWin), marquee);
   g_signal_connect (window, "button-press-event", G_CALLBACK (marqueeToggleFullscreen), marquee);
   g_signal_connect (window, "configure-event", G_CALLBACK (marqueeResized), marquee);

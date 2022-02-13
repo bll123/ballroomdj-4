@@ -226,6 +226,15 @@ main (int argc, char *argv[])
     pathToWinPath (installer.target, tbuff, sizeof (tbuff));
   }
 
+  uiutilsInitGtkLog ();
+  if (isWindows ()) {
+    char *uifont;
+
+    gtk_init (&argc, NULL);
+    uifont = "Arial 11";
+    uiutilsSetUIFont (uifont);
+  }
+
   if (installer.guienabled) {
     g_timeout_add (UI_MAIN_LOOP_TIMER, installerMainLoop, &installer);
     status = installerCreateGui (&installer, 0, NULL);
