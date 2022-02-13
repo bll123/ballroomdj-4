@@ -4,7 +4,7 @@
 archivenm=bdj4-install.tar.gz
 unpacktgt=bdj4-install
 
-echo "-- BallroomDJ 4 Installation Startup"
+echo "-- BDJ4 Installation Startup"
 
 unpackdir=$(pwd)
 rundir=$(pwd)
@@ -21,7 +21,7 @@ fi
 echo "-- Cleaning temporary files."
 test -f ../$archivenm && rm -f ../$archivenm
 
-cd $rundir
+cd "$rundir"
 rc=$?
 if [[ $rc -ne 0 ]]; then
   echo "  cd $unpacktgt failed."

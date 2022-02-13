@@ -202,7 +202,7 @@ main (int argc, char *argv[])
   snprintf (tbuff, sizeof (tbuff), "%s/BDJ4", installer.home);
   strlcpy (buff, tbuff, sizeof (buff));
   if (isMacOS ()) {
-    snprintf (buff, sizeof (buff), "%s/Applications/BallroomDJ4.app", installer.home);
+    snprintf (buff, sizeof (buff), "%s/Applications/BDJ4.app", installer.home);
   }
 
   /* the data in sysvars will not be correct.  don't use it.  */
@@ -264,7 +264,7 @@ installerCreateGui (installer_t *installer, int argc, char *argv [])
   int             status;
 
   installer->app = gtk_application_new (
-      "org.ballroomdj.BallroomDJ.installer",
+      "org.bdj4.BDJ4.installer",
       G_APPLICATION_FLAGS_NONE
   );
   g_signal_connect (installer->app, "activate", G_CALLBACK (installerActivate), installer);
@@ -312,7 +312,7 @@ installerActivate (GApplication *app, gpointer udata)
   gtk_widget_set_hexpand (GTK_WIDGET (hbox), TRUE);
   gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (hbox), FALSE, FALSE, 0);
 
-  widget = gtk_label_new (_("Enter the destination folder where BallroomDJ 4 will be installed."));
+  widget = gtk_label_new (_("Enter the destination folder where BDJ4 will be installed."));
   gtk_widget_set_halign (widget, GTK_ALIGN_START);
   gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (widget), FALSE, FALSE, 0);
 
@@ -614,7 +614,6 @@ installerInstInit (installer_t *installer)
     if (*tbuff != '\0') {
       strlcpy (installer->target, tbuff, MAXPATHLEN);
     }
-    installerSetrundir (installer, installer->target);
   }
 
   exists = fileopExists (installer->target);
@@ -663,6 +662,7 @@ installerInstInit (installer_t *installer)
     }
   }
 
+  installerSetrundir (installer, installer->target);
   installer->instState = INST_SAVE;
 }
 

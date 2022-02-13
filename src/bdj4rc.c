@@ -242,11 +242,11 @@ remctrlEventHandler (struct mg_connection *c, int ev,
     }
     if (user [0] == '\0' || pass [0] == '\0') {
       mg_http_reply (c, 401, "Content-type: text/plain; charset=utf-8\r\n"
-          "WWW-Authenticate: Basic realm=BallroomDJ 4 Remote\r\n", "Unauthorized");
+          "WWW-Authenticate: Basic realm=BDJ4 Remote\r\n", "Unauthorized");
     } else if (strcmp (user, remctrlData->user) != 0 ||
         strcmp (pass, remctrlData->pass) != 0) {
       mg_http_reply (c, 401, "Content-type: text/plain; charset=utf-8\r\n"
-          "WWW-Authenticate: Basic realm=BallroomDJ 4 Remote\r\n", "Unauthorized");
+          "WWW-Authenticate: Basic realm=BDJ4 Remote\r\n", "Unauthorized");
     } else if (mg_http_match_uri (hm, "/getstatus")) {
       if (remctrlData->playerStatus == NULL) {
         mg_http_reply (c, 204, "Content-type: text/plain; charset=utf-8\r\n"

@@ -191,10 +191,19 @@ main (int argc, char *argv [])
   if (isWindows) {
     targv [0] = ".\\install\\install-startup.bat";
     targv [1] = NULL;
-    execv (targv[0], targv);
+    rc = execv (targv[0], targv);
+    if (rc != 0) {
+      fprintf (stderr, "Unable to exec %d %s\n", errno, strerror (errno));
+      exit (1);
+    }
   } else {
-    argv [0] = "./install/install-startup.sh";
-    execv (argv [0], argv);
+    targv [0] = "./install/install-startup.sh";
+    targv [1] = NULL;
+    rc = execv (targv [0], targv);
+    if (rc != 0) {
+      fprintf (stderr, "Unable to exec %d %s\n", errno, strerror (errno));
+      exit (1);
+    }
   }
 
   return 0;

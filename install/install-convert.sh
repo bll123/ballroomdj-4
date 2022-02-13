@@ -31,7 +31,7 @@ else
       bdj3path=$(./bin/bdj4locatebdj3)
       echo "Enter the directory where BallroomDJ 3 is installed."
       echo "Press 'Enter' to use the default."
-      echo "If this is a new BallroomDJ 4 installation, enter 'none'."
+      echo "If this is a new BDJ4 installation, enter 'none'."
       echo "BallroomDJ 3 Directory [$bdj3path]"
       echo -n ": "
       read answer

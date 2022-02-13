@@ -15,9 +15,9 @@ fi
 desktop=$(xdg-user-dir DESKTOP)
 for idir in "$desktop" "$HOME/.local/share/applications"; do
   if [ -d "$idir" ]; then
-    cp -f install/bdj4.desktop $idir
+    cp -f install/bdj4.desktop "$idir"
     sed -i -e "s,#INSTALLPATH#,${tgtpath},g" \
-        $idir/bdj4.desktop
+        "$idir/bdj4.desktop"
   fi
 done
 

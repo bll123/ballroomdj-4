@@ -107,7 +107,7 @@ converterCreateGui (converter_t *converter, int argc, char *argv [])
   int             status;
 
   converter->app = gtk_application_new (
-      "org.ballroomdj.BallroomDJ.converter",
+      "org.bdj4.BDJ4.converter",
       G_APPLICATION_FLAGS_NONE
   );
   g_signal_connect (converter->app, "activate", G_CALLBACK (converterActivate), converter);
@@ -155,7 +155,7 @@ converterActivate (GApplication *app, gpointer udata)
   gtk_widget_set_hexpand (GTK_WIDGET (hbox), TRUE);
   gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (hbox), FALSE, FALSE, 0);
 
-  widget = gtk_label_new (_("If this is a new BallroomDJ 4 installation, select 'Exit'."));
+  widget = gtk_label_new (_("If this is a new BDJ4 installation, select 'Exit'."));
   gtk_widget_set_halign (widget, GTK_ALIGN_START);
   gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (widget), FALSE, FALSE, 0);
 

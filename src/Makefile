@@ -29,9 +29,6 @@ build:
 	cmake --build $(BUILDDIR)
 	cmake --install $(BUILDDIR)
 
-# windows
-
-
 # testing
 .PHONY: check
 check:

@@ -5,8 +5,8 @@ set (BDJ4ICON bdj4_icon.ico)
 set (BDJ4INSTICON bdj4_icon_inst.ico)
 
 # avoid msys2/windows issue
-SET (CMAKE_C_COMPILER_WORKS 1)
-SET (CMAKE_CXX_COMPILER_WORKS 1)
+set (CMAKE_C_COMPILER_WORKS 1)
+set (CMAKE_CXX_COMPILER_WORKS 1)
 
 set (default_build_type "Debug")
 
@@ -329,8 +329,6 @@ add_library (libbdj4common SHARED
   sysvars.c
   tmutil.c
 )
-message (NOTICE ${GLIB_INCLUDE_DIRS})
-message (NOTICE ${GLIB_LDFLAGS})
 target_include_directories (libbdj4common
   PUBLIC "${GLIB_INCLUDE_DIRS}"
 )

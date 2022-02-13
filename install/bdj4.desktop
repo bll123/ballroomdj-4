@@ -2,10 +2,11 @@
 Encoding=UTF-8
 Version=1.0
 Name=BDJ4
-GenericName=BallroomDJ 4
+GenericName=BDJ44
 Exec=#INSTALLPATH#/bin/bdj4
 Terminal=false
 Icon=#INSTALLPATH#/img/bdj4_icon.svg
 Type=Application
-Categories=Application;Music Player
+Categories=Audio;Player
 Comment=Ballroom Music Player
+Keywords=Player;Audio
