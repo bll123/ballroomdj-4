@@ -12,13 +12,16 @@ if { ! [file exists $bdj3dir] || ! [file isdirectory $bdj3dir] } {
 }
 set datatopdir [lindex $argv 1]
 
-set flist [glob -directory $bdj3dir *.seq]
+try {
+  set flist [glob -directory $bdj3dir *.seq]
+} on error { err res } {
+  set flist {}
+}
 
-puts "-- Converting: sequences"
 foreach {fn} $flist {
   set ifh [open $fn r]
   set nfn [file join $datatopdir data [file rootname [file tail $fn]].sequence]
-  puts "   - [file tail $fn] : [file rootname [file tail $fn]].sequence"
+#  puts "   - [file tail $fn] : [file rootname [file tail $fn]].sequence"
   set ofh [open $nfn w]
   puts $ofh "# BDJ4 sequence"
   puts $ofh "# Converted from $fn"

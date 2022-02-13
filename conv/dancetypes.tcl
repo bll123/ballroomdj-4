@@ -13,9 +13,13 @@ if { ! [file exists $bdj3dir] || ! [file isdirectory $bdj3dir] } {
 set datatopdir [lindex $argv 1]
 
 set fn dancetypes.tcl
-set nfn [file join $datatopdir data dancetypes.txt]
 set infn [file join $bdj3dir $fn]
-puts "-- Converting: $fn : dancetypes.txt"
+if { ! [file exists $infn] } {
+  puts "   no dance types file"
+  exit 1
+}
+
+set nfn [file join $datatopdir data dancetypes.txt]
 if { [file exists $infn] } {
   source $infn
   set fh [open $nfn w]

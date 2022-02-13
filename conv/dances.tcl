@@ -12,27 +12,29 @@ if { ! [file exists $bdj3dir] || ! [file isdirectory $bdj3dir] } {
 }
 set datatopdir [lindex $argv 1]
 
-set infn [file join $bdj3dir status.tcl]
-set nfn [file join $datatopdir data status.txt]
-puts "-- Converting: status.tcl : status.txt"
+set infn [file join $bdj3dir dancedefaults.tcl]
 if { ! [file exists $infn] } {
-  puts "   no status file"
+  puts "   no dances file"
   exit 1
 }
+
+set nfn [file join $datatopdir data dances.txt]
 source $infn
 set fh [open $nfn w]
-puts $fh "# BDJ4 status"
+puts $fh "# BDJ4 dances"
 puts $fh "# [clock format [clock seconds] -gmt 1]"
 puts $fh version
 puts $fh "..1"
 puts $fh count
-puts $fh "..[expr {[llength $Status]/2}]"
-foreach {key data} $Status {
-  puts $fh "KEY\n..$key"
+puts $fh "..[expr {[llength $Dance]/2}]"
+set ikey 0
+foreach {key data} $Dance {
+  puts $fh "KEY\n..$ikey"
+  incr ikey;
+  puts $fh "DANCE\n..$key"
   foreach {k v} $data {
-    if { $k eq "oktoplay" } { set k playflag }
-    set k [string toupper $k]
-    puts $fh $k
+    if { $k eq "ann" } { set k ANNOUNCE }
+    puts $fh [string toupper $k]
     puts $fh "..$v"
   }
 }

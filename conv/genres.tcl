@@ -12,24 +12,26 @@ if { ! [file exists $bdj3dir] || ! [file isdirectory $bdj3dir] } {
 }
 set datatopdir [lindex $argv 1]
 
-set nfn [file join $datatopdir data dances.txt]
-puts "-- Converting: dancedefaults.tcl : dances.txt"
-source [file join $bdj3dir dancedefaults.tcl]
+set infn [file join $bdj3dir genres.tcl]
+if { ! [file exists $infn] } {
+  puts "   no levels file"
+  exit 1
+}
+
+set nfn [file join $datatopdir data genres.txt]
+source $infn
 set fh [open $nfn w]
-puts $fh "# BDJ4 dances"
+puts $fh "# BDJ4 genres"
 puts $fh "# [clock format [clock seconds] -gmt 1]"
 puts $fh version
 puts $fh "..1"
 puts $fh count
-puts $fh "..[expr {[llength $Dance]/2}]"
-set ikey 0
-foreach {key data} $Dance {
-  puts $fh "KEY\n..$ikey"
-  incr ikey;
-  puts $fh "DANCE\n..$key"
+puts $fh "..[expr {[llength $Genres]/2}]"
+foreach {key data} $Genres {
+  puts $fh "KEY\n..$key"
   foreach {k v} $data {
-    if { $k eq "ann" } { set k ANNOUNCE }
-    puts $fh [string toupper $k]
+    set k [string toupper $k]
+    puts $fh $k
     puts $fh "..$v"
   }
 }

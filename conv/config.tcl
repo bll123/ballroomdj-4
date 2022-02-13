@@ -23,7 +23,6 @@ for { set i 1 } { $i < 20 } { incr i } {
   lappend suffixlist -$i.txt
 }
 
-puts "-- Converting: configuration"
 set cnm bdj_config
 set nnm bdjconfig
 foreach path [list {} profiles $hostname [file join $hostname profiles]] {
@@ -31,7 +30,7 @@ foreach path [list {} profiles $hostname [file join $hostname profiles]] {
     set fn "[file join $bdj3dir $path $cnm]$sfx"
     if { [file exists $fn] } {
       set nfn "[file join $datatopdir data $path $nnm]$sfx"
-      puts "   - [file join $path $cnm]$sfx : [file join $path $nnm]$sfx"
+#      puts "   - [file join $path $cnm]$sfx : [file join $path $nnm]$sfx"
       set ifh [open $fn r]
       file mkdir [file join $datatopdir data $path]
       set ofh [open $nfn w]
@@ -173,8 +172,6 @@ foreach path [list {} profiles $hostname [file join $hostname profiles]] {
       close $ofh
     }
   }
-
-
 }
 
 

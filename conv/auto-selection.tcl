@@ -12,10 +12,15 @@ if { ! [file exists $bdj3dir] || ! [file isdirectory $bdj3dir] } {
 }
 set datatopdir [lindex $argv 1]
 
-set nfn [file join $datatopdir data autoselection.txt]
 set fn autosel.txt
-puts "-- Converting: $fn : autoselection.txt"
-set ifh [open [file join $bdj3dir $fn] r]
+set infn [file join $bdj3dir $fn]
+if { ! [file exists $infn] } {
+  puts "   no auto selection file"
+  exit 1
+}
+
+set nfn [file join $datatopdir data autoselection.txt]
+set ifh [open $infn r]
 set ofh [open $nfn w]
 puts $ofh "# BDJ4 autoselection"
 puts $ofh "# [clock format [clock seconds] -gmt 1]"

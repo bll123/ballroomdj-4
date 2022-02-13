@@ -15,8 +15,13 @@ set datatopdir [lindex $argv 1]
 set hsize 128
 set rsize 2048
 
-puts "-- Converting: musicdb.txt : musicdb.dat"
-set fh [open [file join $bdj3dir musicdb.txt] r]
+set infn [file join $bdj3dir musicdb.txt]
+if { ! [file exists $infn] } {
+  puts "   no database"
+  exit 1
+}
+
+set fh [open $infn r]
 gets $fh line
 gets $fh line
 gets $fh line

@@ -12,9 +12,14 @@ if { ! [file exists $bdj3dir] || ! [file isdirectory $bdj3dir] } {
 }
 set datatopdir [lindex $argv 1]
 
-source [file join $bdj3dir sortopt.tcl]
+set infn [file join $bdj3dir sortopt.tcl]
+if { ! [file exists $infn] } {
+  puts "   no sort options file"
+  exit 1
+}
+
+source $infn
 set nfn [file join $datatopdir data sortopt.txt]
-puts "-- Converting: sortopt.tcl : sortopt.txt"
 
 set fh [open $nfn w]
 puts $fh "# BDJ4 sort options"

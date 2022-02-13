@@ -12,12 +12,15 @@ if { ! [file exists $bdj3dir] || ! [file isdirectory $bdj3dir] } {
 }
 set datatopdir [lindex $argv 1]
 
-set flist [glob -directory $bdj3dir *.playlist]
+try {
+  set flist [glob -directory $bdj3dir *.playlist]
+} on error { err res } {
+  set flist {}
+}
 
-puts "-- Converting: playlists"
 foreach {fn} $flist {
   set nfn [file join $datatopdir data [file rootname [file tail $fn]].pl]
-  puts "   - [file tail $fn] : [file rootname [file tail $fn]].pl"
+#  puts "   - [file tail $fn] : [file rootname [file tail $fn]].pl"
   set ifh [open $fn r]
   set dfn [file join data [file rootname [file tail $fn]].pldances]
   set ofh [open $nfn w]
