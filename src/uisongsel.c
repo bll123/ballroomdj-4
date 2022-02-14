@@ -56,7 +56,7 @@ uisongselActivate (uisongselect_t *uisongselect)
       FALSE, FALSE, 0);
 
   widget = gtk_button_new ();
-  gtk_button_set_label (GTK_BUTTON (widget), "Queue");
+  gtk_button_set_label (GTK_BUTTON (widget), _("Queue"));
   assert (widget != NULL);
   gtk_widget_set_margin_start (GTK_WIDGET (widget), 2);
   gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (widget),

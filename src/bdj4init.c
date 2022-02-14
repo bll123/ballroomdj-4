@@ -52,9 +52,9 @@ bdj4startup (int argc, char *argv[], char *tag, bdjmsgroute_t route)
   };
 
   mstimestart (&mt);
-  localeInit ();
   sRandom ();
   sysvarsInit (argv[0]);
+  localeInit ();
 
   pathbldMakePath (tbuff, sizeof (tbuff), "", sysvarsGetStr (SV_HOSTNAME), "", PATHBLD_MP_NONE);
   if (! fileopExists (tbuff)) {

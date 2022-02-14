@@ -121,8 +121,6 @@ main (int argc, char *argv[])
     { NULL,         0,                  NULL,   0 }
   };
 
-  localeInit ();
-
   marquee.progstate = progstateInit ("marquee");
   progstateSetCallback (marquee.progstate, STATE_CONNECTING,
       marqueeConnectingCallback, &marquee);
@@ -170,6 +168,7 @@ main (int argc, char *argv[])
 #endif
 
   sysvarsInit (argv[0]);
+  localeInit ();
 
   while ((c = getopt_long_only (argc, argv, "p:d:", bdj_options, &option_index)) != -1) {
     switch (c) {

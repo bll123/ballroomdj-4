@@ -125,7 +125,7 @@ static void installerConvert (installer_t *installer);
 static void installerConvertFinish (installer_t *installer);
 static void installerCreateShortcut (installer_t *installer);
 static void installerCleanup (installer_t *installer);
-static void installerDisplayText (installer_t *installer, char *txt);
+static void installerDisplayText (installer_t *installer, char *pfx, char *txt);
 static void installerScrollToEnd (GtkWidget *w, GtkAllocation *retAllocSize, gpointer udata);;
 static void installerGetTargetFname (installer_t *installer, char *buff, size_t len);
 static void installerGetBDJ3Fname (installer_t *installer, char *buff, size_t len);
@@ -157,8 +157,6 @@ main (int argc, char *argv[])
     { NULL,         0,                  NULL,   0 }
   };
 
-
-  localeInit ();
 
   bdj3buff [0] = '\0';
   installer.unpackdir [0] = '\0';
@@ -243,6 +241,7 @@ main (int argc, char *argv[])
   /* the data in sysvars will not be correct.  don't use it.  */
   /* the installer only needs the hostname, os info and locale */
   sysvarsInit (argv[0]);
+  localeInit ();
 
   strlcpy (installer.hostname, sysvarsGetStr (SV_HOSTNAME), MAXPATHLEN);
 
@@ -355,7 +354,7 @@ installerActivate (GApplication *app, gpointer udata)
 
   gtk_window_set_type_hint (GTK_WINDOW (window), GDK_WINDOW_TYPE_HINT_NORMAL);
   gtk_window_set_focus_on_map (GTK_WINDOW (window), FALSE);
-  gtk_window_set_title (GTK_WINDOW (window), _("BDJ4 installer"));
+  gtk_window_set_title (GTK_WINDOW (window), _("BDJ4 Installer"));
   gtk_window_set_default_icon_from_file ("img/bdj4_icon.svg", &gerr);
   gtk_window_set_default_size (GTK_WINDOW (window), 1000, 600);
   installer->window = window;
@@ -396,7 +395,7 @@ installerActivate (GApplication *app, gpointer udata)
   gtk_widget_set_hexpand (GTK_WIDGET (hbox), TRUE);
   gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (hbox), FALSE, FALSE, 0);
 
-  installer->reinstWidget = gtk_check_button_new_with_label (_("Re-install"));
+  installer->reinstWidget = gtk_check_button_new_with_label (_("Overwrite"));
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (installer->reinstWidget),
       installer->reinstall);
   gtk_box_pack_start (GTK_BOX (hbox), installer->reinstWidget, FALSE, FALSE, 0);
@@ -422,7 +421,7 @@ installerActivate (GApplication *app, gpointer udata)
   gtk_widget_set_hexpand (GTK_WIDGET (hbox), TRUE);
   gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (hbox), FALSE, FALSE, 0);
 
-  widget = gtk_label_new (_("The conversion process will only run for new installations and for re-installs."));
+  widget = gtk_label_new (_("The conversion process will only run for new installations and for re-installations."));
   gtk_widget_set_halign (widget, GTK_ALIGN_START);
   gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (widget), FALSE, FALSE, 0);
 
@@ -589,7 +588,7 @@ installerMainLoop (void *udata)
       break;
     }
     case INST_FINISH: {
-      installerDisplayText (installer, _("## Installation complete."));
+      installerDisplayText (installer, "## ",  _("Installation complete."));
       installer->instState = INST_BEGIN;
       break;
     }
@@ -642,7 +641,7 @@ installerValidateDir (installer_t *installer)
         gtk_label_set_text (GTK_LABEL (installer->feedbackMsg), _("Updating existing BDJ4 installation."));
       }
     } else {
-      gtk_label_set_text (GTK_LABEL (installer->feedbackMsg), _("Error: Existing folder."));
+      gtk_label_set_text (GTK_LABEL (installer->feedbackMsg), _("Error: Folder already exists."));
     }
   } else {
     gtk_label_set_text (GTK_LABEL (installer->feedbackMsg), "");
@@ -783,8 +782,10 @@ installerInstInit (installer_t *installer)
 
   if (! installer->guienabled) {
     tbuff [0] = '\0';
-    printf (_("Enter the destination folder.\n"));
-    printf (_("Press 'Enter' to select the default.\n"));
+    printf (_("Enter the destination folder."));
+    printf ("\n");
+    printf (_("Press 'Enter' to select the default."));
+    printf ("\n");
     printf ("[%s] : ", installer->target);
     fflush (stdout);
     fgets (tbuff, MAXPATHLEN, stdin);
@@ -808,7 +809,8 @@ installerInstInit (installer_t *installer)
       printf ("\n");
       fflush (stdout);
 
-      printf (_("Proceed with installation?\n"));
+      printf (_("Proceed with installation?"));
+      printf ("\n");
       printf ("[Y] : ");
       fflush (stdout);
       fgets (tbuff, MAXPATHLEN, stdin);
@@ -816,7 +818,8 @@ installerInstInit (installer_t *installer)
       if (*tbuff != '\0') {
         if (strncmp (tbuff, "Y", 1) != 0 &&
             strncmp (tbuff, "y", 1) != 0) {
-          printf (_(" * Installation aborted.\n"));
+          printf (_(" * Installation aborted."));
+          printf ("\n");
           fflush (stdout);
           installer->instState = INST_BEGIN;
           return;
@@ -832,8 +835,8 @@ installerInstInit (installer_t *installer)
 
       snprintf (tbuff, sizeof (tbuff), _("Error: Folder %s already exists."),
           installer->target);
-      installerDisplayText (installer, tbuff);
-      installerDisplayText (installer, _(" * Stopped"));
+      installerDisplayText (installer, "", tbuff);
+      installerDisplayText (installer, " * ", _("Installation aborted."));
       installer->instState = INST_BEGIN;
       return;
     }
@@ -849,7 +852,7 @@ installerSaveTargetDir (installer_t *installer)
   char  tbuff [MAXPATHLEN];
   FILE  *fh;
 
-  installerDisplayText (installer, _("-- Saving install location."));
+  installerDisplayText (installer, "-- ", _("Saving install location."));
 
   if (isWindows ()) {
     snprintf (tbuff, MAXPATHLEN, "%s/AppData/Roaming/BDJ4", installer->home);
@@ -881,14 +884,14 @@ installerMakeTarget (installer_t *installer)
 static void
 installerCopyStart (installer_t *installer)
 {
-  installerDisplayText (installer, _("-- Copying files."));
+  installerDisplayText (installer, "-- ", _("Copying files."));
 
   /* the unpackdir is not necessarily the same as the current dir */
   /* on mac os, they are different */
   if (chdir (installer->unpackdir) < 0) {
     fprintf (stderr, "Unable to set working dir: %s\n", installer->unpackdir);
-    installerDisplayText (installer, _("Error: Unable to set working folder."));
-    installerDisplayText (installer, _(" * Stopped"));
+    installerDisplayText (installer, "", _("Error: Unable to set working folder."));
+    installerDisplayText (installer, " * ", _("Installation aborted."));
     installer->instState = INST_BEGIN;
     return;
   }
@@ -912,7 +915,7 @@ installerCopyFiles (installer_t *installer)
         installer->rundir);
     system (tbuff);
   }
-  installerDisplayText (installer, _("   Copy finished."));
+  installerDisplayText (installer, "   ", _("Copy finished."));
   installer->instState = INST_CHDIR;
 }
 
@@ -930,8 +933,8 @@ installerChangeDir (installer_t *installer)
 
   if (chdir (installer->datatopdir)) {
     fprintf (stderr, "Unable to set working dir: %s\n", installer->datatopdir);
-    installerDisplayText (installer, _("Error: Unable to set working folder."));
-    installerDisplayText (installer, _(" * Stopped"));
+    installerDisplayText (installer, "", _("Error: Unable to set working folder."));
+    installerDisplayText (installer, " * ", _("Installation aborted."));
     installer->instState = INST_BEGIN;
     return;
   }
@@ -942,7 +945,7 @@ installerChangeDir (installer_t *installer)
 static void
 installerCreateDirs (installer_t *installer)
 {
-  installerDisplayText (installer, _("-- Creating folder structure."));
+  installerDisplayText (installer, "-- ", _("Creating folder structure."));
 
   /* create the directories that are not included in the distribution */
   fileopMakeDir ("data");
@@ -960,12 +963,12 @@ installerCleanOldFiles (installer_t *installer)
   FILE  *fh;
   char  tbuff [MAXPATHLEN];
 
-  installerDisplayText (installer, _("-- Cleaning old files."));
+  installerDisplayText (installer, "-- ", _("Cleaning old files."));
 
   if (chdir (installer->rundir)) {
     fprintf (stderr, "Unable to set working dir: %s\n", installer->rundir);
-    installerDisplayText (installer, _("Error: Unable to set working folder."));
-    installerDisplayText (installer, _(" * Stopped"));
+    installerDisplayText (installer, "", _("Error: Unable to set working folder."));
+    installerDisplayText (installer, " * ", _("Installation aborted."));
     installer->instState = INST_BEGIN;
     return;
   }
@@ -1007,12 +1010,12 @@ installerCopyTemplates (installer_t *installer)
     return;
   }
 
-  installerDisplayText (installer, _("-- Copying template files."));
+  installerDisplayText (installer, "-- ", _("Copying template files."));
 
   if (chdir (installer->datatopdir)) {
     fprintf (stderr, "Unable to set working dir: %s\n", installer->datatopdir);
-    installerDisplayText (installer, _("Error: Unable to set working folder."));
-    installerDisplayText (installer, _(" * Stopped"));
+    installerDisplayText (installer, "", _("Error: Unable to set working folder."));
+    installerDisplayText (installer, " * ", _("Installation aborted."));
     installer->instState = INST_BEGIN;
     return;
   }
@@ -1152,7 +1155,7 @@ installerConvertStart (installer_t *installer)
     printf ("\n");
     printf (_("The conversion process will only run for new installations and for re-installs."));
     printf ("\n");
-    printf (_("Press 'Enter' to select the default.\n"));
+    printf (_("Press 'Enter' to select the default."));
     printf ("\n");
     printf (_("If there is no BallroomDJ 3 installation, enter a single '-'."));
     printf ("\n");
@@ -1176,13 +1179,13 @@ installerConvertStart (installer_t *installer)
 
   if (chdir (installer->rundir)) {
     fprintf (stderr, "Unable to set working dir: %s\n", installer->rundir);
-    installerDisplayText (installer, _("Error: Unable to set working folder."));
-    installerDisplayText (installer, _(" * Stopped"));
+    installerDisplayText (installer, "", _("Error: Unable to set working folder."));
+    installerDisplayText (installer, " * ", _("Installation aborted."));
     installer->instState = INST_BEGIN;
     return;
   }
 
-  installerDisplayText (installer, _("-- Starting conversion process."));
+  installerDisplayText (installer, "-- ", _("Starting conversion process."));
 
   fh = fopen (tbuff, "w");
   if (fh != NULL) {
@@ -1222,7 +1225,7 @@ installerConvertStart (installer_t *installer)
         pathToWinPath (buff, tbuff, MAXPATHLEN);
       }
       installer->tclshloc = strdup (buff);
-      installerDisplayText (installer, _("   Located tclsh."));
+      installerDisplayText (installer, "   ", _("Located 'tclsh'."));
     }
 
     free (locs [locidx]);
@@ -1230,8 +1233,8 @@ installerConvertStart (installer_t *installer)
   }
 
   if (installer->tclshloc == NULL) {
-    installerDisplayText (installer, _("   Unable to locate tclsh."));
-    installerDisplayText (installer, _("   Skipping conversion."));
+    installerDisplayText (installer, "   ", _("Unable to locate 'tclsh'."));
+    installerDisplayText (installer, "   ", _("Skipping conversion."));
     installer->instState = INST_CREATE_SHORTCUT;
     return;
   }
@@ -1251,8 +1254,8 @@ installerConvert (installer_t *installer)
     return;
   }
 
-  snprintf (buff, MAXPATHLEN, _("   Running conversion script: %s."), fn);
-  installerDisplayText (installer, buff);
+  snprintf (buff, MAXPATHLEN, _("Running conversion script: %s."), fn);
+  installerDisplayText (installer, "   ", buff);
   snprintf (buff, MAXPATHLEN, "\"%s\" conv/%s \"%s/data\" \"%s\"",
       installer->tclshloc, fn, installer->bdj3loc, installer->datatopdir);
   if (isWindows()) {
@@ -1268,7 +1271,7 @@ installerConvert (installer_t *installer)
 static void
 installerConvertFinish (installer_t *installer)
 {
-  installerDisplayText (installer, _("   Conversion complete."));
+  installerDisplayText (installer, "   ", _("Conversion complete."));
   installer->instState = INST_CREATE_SHORTCUT;
 }
 
@@ -1279,13 +1282,13 @@ installerCreateShortcut (installer_t *installer)
 
   if (chdir (installer->rundir)) {
     fprintf (stderr, "Unable to set working dir: %s\n", installer->rundir);
-    installerDisplayText (installer, _("Error: Unable to set working folder."));
-    installerDisplayText (installer, _(" * Stopped"));
+    installerDisplayText (installer, "", _("Error: Unable to set working folder."));
+    installerDisplayText (installer, " * ", _("Installation aborted."));
     installer->instState = INST_BEGIN;
     return;
   }
 
-  installerDisplayText (installer, _("-- Creating shortcut."));
+  installerDisplayText (installer, "-- ", _("Creating shortcut."));
   if (isWindows ()) {
     if (! chdir ("install")) {
       snprintf (buff, MAXPATHLEN, ".\\makeshortcut.bat \"%s\"",
@@ -1336,17 +1339,19 @@ installerCleanup (installer_t *installer)
 }
 
 static void
-installerDisplayText (installer_t *installer, char *txt)
+installerDisplayText (installer_t *installer, char *pfx, char *txt)
 {
   GtkTextIter iter;
 
   if (installer->guienabled) {
     gtk_text_buffer_get_end_iter (installer->dispBuffer, &iter);
+    gtk_text_buffer_insert (installer->dispBuffer, &iter, pfx, -1);
+    gtk_text_buffer_get_end_iter (installer->dispBuffer, &iter);
     gtk_text_buffer_insert (installer->dispBuffer, &iter, txt, -1);
     gtk_text_buffer_get_end_iter (installer->dispBuffer, &iter);
     gtk_text_buffer_insert (installer->dispBuffer, &iter, "\n", -1);
   } else {
-    printf ("%s\n", txt);
+    printf ("%s%s\n", pfx, txt);
     fflush (stdout);
   }
 }

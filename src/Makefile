@@ -121,7 +121,7 @@ tclean:
 	@-$(RM) -f *~ w ww *.orig
 	@-$(RM) -f ../conv/*~ ./locale/*~ ../locale/*~ ../*~ ../img/*~
 	@-$(RM) -f ../install/*~ ../pkg/*~ utils/*~ ../data/*~
-	@-$(RM) -f ../web/*~ ../http/*~ ../resources/*~
+	@-$(RM) -f ../web/*~ ../http/*~ ../resources/*~ po/*~
 	@-$(RM) -f ../pkg/macos/*~ ../templates/*~  ../wiki/*~
 	@-$(RM) -f ../vlc-log.txt vlc-log.txt
 	@-$(RM) -f ../vgcore.* ../core

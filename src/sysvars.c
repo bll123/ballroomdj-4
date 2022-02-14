@@ -162,6 +162,11 @@ sysvarsInit (const char *argv0)
 
   strlcpy (sysvars [SV_BDJ4IMGDIR], sysvars [SV_BDJ4MAINDIR], MAXPATHLEN);
   strlcat (sysvars [SV_BDJ4IMGDIR], "/img", MAXPATHLEN);
+fprintf (stderr, "sv: imgdir: %s\n", sysvars [SV_BDJ4IMGDIR]);
+
+  strlcpy (sysvars [SV_BDJ4LOCALEDIR], sysvars [SV_BDJ4MAINDIR], MAXPATHLEN);
+  strlcat (sysvars [SV_BDJ4LOCALEDIR], "/locale", MAXPATHLEN);
+fprintf (stderr, "sv: localedir: %s\n", sysvars [SV_BDJ4LOCALEDIR]);
 
   strlcpy (sysvars [SV_BDJ4TEMPLATEDIR], sysvars [SV_BDJ4MAINDIR], MAXPATHLEN);
   strlcat (sysvars [SV_BDJ4TEMPLATEDIR], "/templates", MAXPATHLEN);

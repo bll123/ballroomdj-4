@@ -10,6 +10,7 @@ syntax: regexp
 ^packages/
 ^plocal/
 ^src/build/
+^src/po/.*\.bak$
 ^src/w$
 ^test.dir/test.files/
 ^tmp/

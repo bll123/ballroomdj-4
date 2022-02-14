@@ -109,8 +109,6 @@ main (int argc, char *argv[])
     { NULL,         0,                  NULL,   0 }
   };
 
-  localeInit ();
-
   plui.notebook = NULL;
   plui.progstate = progstateInit ("playerui");
   progstateSetCallback (plui.progstate, STATE_LISTENING,
@@ -145,6 +143,7 @@ main (int argc, char *argv[])
 #endif
 
   bdj4startup (argc, argv, "pu", ROUTE_PLAYERUI);
+  localeInit ();
   logProcBegin (LOG_PROC, "playerui");
 
   listenPort = bdjvarsGetNum (BDJVL_PLAYERUI_PORT);

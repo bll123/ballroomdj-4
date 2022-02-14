@@ -81,6 +81,7 @@ for pofile in *.po; do
     esac
 
   done < $pofile > $pofile.n
+  cp -f $pofile $pofile.bak
   mv -f $pofile.n $pofile
 
 done

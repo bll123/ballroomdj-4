@@ -15,6 +15,7 @@ typedef enum {
   SV_BDJ4TMPDIR,      // tmp
   SV_BDJ4EXECDIR,     // main + /bin
   SV_BDJ4IMGDIR,      // main + /img
+  SV_BDJ4LOCALEDIR,   // main + /locale
   SV_BDJ4TEMPLATEDIR, // main + /templates
   SV_BDJ4HTTPDIR,     // http
   SV_SHLIB_EXT,

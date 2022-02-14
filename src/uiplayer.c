@@ -293,7 +293,7 @@ uiplayerActivate (uiplayer_t *uiplayer)
 
   widget = gtk_button_new ();
   assert (widget != NULL);
-  gtk_button_set_label (GTK_BUTTON (widget), "Fade");
+  gtk_button_set_label (GTK_BUTTON (widget), _("Fade"));
   gtk_widget_set_margin_start (GTK_WIDGET (widget), 2);
   gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (widget),
       FALSE, FALSE, 0);
@@ -307,7 +307,7 @@ uiplayerActivate (uiplayer_t *uiplayer)
       PATHBLD_MP_IMGDIR);
   image = gtk_image_new_from_file (tbuff);
   gtk_button_set_image (GTK_BUTTON (widget), image);
-  gtk_widget_set_tooltip_text (widget, "Play / Pause");
+  gtk_widget_set_tooltip_text (widget, _("Play / Pause"));
   gtk_widget_set_margin_start (GTK_WIDGET (widget), 2);
   g_signal_connect (widget, "clicked", G_CALLBACK (uiplayerPlayPauseProcess), uiplayer);
 
@@ -317,7 +317,7 @@ uiplayerActivate (uiplayer_t *uiplayer)
       PATHBLD_MP_IMGDIR);
   image = gtk_image_new_from_file (tbuff);
   gtk_button_set_image (GTK_BUTTON (uiplayer->repeatButton), image);
-  gtk_widget_set_tooltip_text (uiplayer->repeatButton, "Toggle Repeat");
+  gtk_widget_set_tooltip_text (uiplayer->repeatButton, _("Toggle Repeat"));
   gtk_widget_set_margin_start (GTK_WIDGET (uiplayer->repeatButton), 2);
   gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (uiplayer->repeatButton),
       FALSE, FALSE, 0);
@@ -329,7 +329,7 @@ uiplayerActivate (uiplayer_t *uiplayer)
       PATHBLD_MP_IMGDIR);
   image = gtk_image_new_from_file (tbuff);
   gtk_button_set_image (GTK_BUTTON (widget), image);
-  gtk_widget_set_tooltip_text (widget, "Return to beginning of song");
+  gtk_widget_set_tooltip_text (widget, _("Return to beginning of song"));
   gtk_widget_set_margin_start (GTK_WIDGET (widget), 2);
   gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (widget), FALSE, FALSE, 0);
   g_signal_connect (widget, "clicked", G_CALLBACK (uiplayerSongBeginProcess), uiplayer);
@@ -340,13 +340,13 @@ uiplayerActivate (uiplayer_t *uiplayer)
       PATHBLD_MP_IMGDIR);
   image = gtk_image_new_from_file (tbuff);
   gtk_button_set_image (GTK_BUTTON (widget), image);
-  gtk_widget_set_tooltip_text (widget, "Next Song");
+  gtk_widget_set_tooltip_text (widget, _("Next Song"));
   gtk_widget_set_margin_start (GTK_WIDGET (widget), 2);
   gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (widget), FALSE, FALSE, 0);
   g_signal_connect (widget, "clicked", G_CALLBACK (uiplayerNextSongProcess), uiplayer);
 
   uiplayer->pauseatendButton = gtk_toggle_button_new ();
-  gtk_button_set_label (GTK_BUTTON (uiplayer->pauseatendButton), "Pause At End");
+  gtk_button_set_label (GTK_BUTTON (uiplayer->pauseatendButton), _("Pause At End"));
   assert (uiplayer->pauseatendButton != NULL);
 
   pathbldMakePath (tbuff, sizeof (tbuff), "", "led_off", ".svg",

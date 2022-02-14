@@ -165,7 +165,7 @@ uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
       PATHBLD_MP_IMGDIR);
   image = gtk_image_new_from_file (tbuff);
   gtk_button_set_image (GTK_BUTTON (widget), image);
-  gtk_widget_set_tooltip_text (widget, "Move to Top");
+  gtk_widget_set_tooltip_text (widget, _("Move to Top"));
   gtk_button_set_always_show_image (GTK_BUTTON (widget), TRUE);
   gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (widget),
       FALSE, FALSE, 0);
@@ -180,7 +180,7 @@ uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
       PATHBLD_MP_IMGDIR);
   image = gtk_image_new_from_file (tbuff);
   gtk_button_set_image (GTK_BUTTON (widget), image);
-  gtk_widget_set_tooltip_text (widget, "Move Up");
+  gtk_widget_set_tooltip_text (widget, _("Move Up"));
   gtk_button_set_always_show_image (GTK_BUTTON (widget), TRUE);
   gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (widget),
       FALSE, FALSE, 0);
@@ -197,7 +197,7 @@ uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
       PATHBLD_MP_IMGDIR);
   image = gtk_image_new_from_file (tbuff);
   gtk_button_set_image (GTK_BUTTON (widget), image);
-  gtk_widget_set_tooltip_text (widget, "Move Down");
+  gtk_widget_set_tooltip_text (widget, _("Move Down"));
   gtk_button_set_always_show_image (GTK_BUTTON (widget), TRUE);
   gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (widget),
       FALSE, FALSE, 0);
@@ -215,7 +215,7 @@ uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
   image = gtk_image_new_from_file (tbuff);
   uimusicq->pauseImg = gtk_image_get_pixbuf (GTK_IMAGE (image));
   gtk_button_set_image (GTK_BUTTON (widget), image);
-  gtk_widget_set_tooltip_text (widget, "Toggle Pause");
+  gtk_widget_set_tooltip_text (widget, _("Toggle Pause"));
   gtk_button_set_always_show_image (GTK_BUTTON (widget), TRUE); // macos
   gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (widget),
       FALSE, FALSE, 0);
@@ -230,7 +230,7 @@ uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
       PATHBLD_MP_IMGDIR);
   image = gtk_image_new_from_file (tbuff);
   gtk_button_set_image (GTK_BUTTON (widget), image);
-  gtk_widget_set_tooltip_text (widget, "Remove from queue");
+  gtk_widget_set_tooltip_text (widget, _("Remove from queue"));
   gtk_button_set_always_show_image (GTK_BUTTON (widget), TRUE); // macos
   gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (widget),
       FALSE, FALSE, 0);
@@ -239,7 +239,7 @@ uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
 
   widget = gtk_button_new ();
   assert (widget != NULL);
-  gtk_button_set_label (GTK_BUTTON (widget), "Request External");
+  gtk_button_set_label (GTK_BUTTON (widget), _("Request External"));
   gtk_widget_set_margin_start (GTK_WIDGET (widget), 2);
   gtk_box_pack_end (GTK_BOX (hbox), GTK_WIDGET (widget),
       FALSE, FALSE, 0);
@@ -247,7 +247,7 @@ uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
   widget = gtk_button_new ();
   assert (widget != NULL);
   uimusicq->ui [ci].playlistSelectButton = widget;
-  gtk_button_set_label (GTK_BUTTON (widget), "Queue Playlist");
+  gtk_button_set_label (GTK_BUTTON (widget), _("Queue Playlist"));
   gtk_widget_set_margin_start (GTK_WIDGET (widget), 2);
   pathbldMakePath (tbuff, sizeof (tbuff), "", "button_down_small", ".svg",
       PATHBLD_MP_IMGDIR);
@@ -298,7 +298,7 @@ uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
   widget = gtk_button_new ();
   assert (widget != NULL);
   uimusicq->ui [ci].danceSelectButton = widget;
-  gtk_button_set_label (GTK_BUTTON (widget), "Queue Dance");
+  gtk_button_set_label (GTK_BUTTON (widget), _("Queue Dance"));
   gtk_widget_set_margin_start (GTK_WIDGET (widget), 2);
   pathbldMakePath (tbuff, sizeof (tbuff), "", "button_down_small", ".svg",
       PATHBLD_MP_IMGDIR);
@@ -348,7 +348,7 @@ uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
 
   widget = gtk_button_new ();
   assert (widget != NULL);
-  gtk_button_set_label (GTK_BUTTON (widget), "Clear Queue");
+  gtk_button_set_label (GTK_BUTTON (widget), _("Clear Queue"));
   gtk_widget_set_margin_start (GTK_WIDGET (widget), 2);
   gtk_box_pack_end (GTK_BOX (hbox), GTK_WIDGET (widget),
       FALSE, FALSE, 0);

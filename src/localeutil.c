@@ -23,7 +23,7 @@ localeInit (void)
   char    tpath [MAXPATHLEN];
 
   setlocale (LC_ALL, "");
-  pathbldMakePath (tpath, sizeof (tpath), "locale", "", "", PATHBLD_MP_MAINDIR);
+  pathbldMakePath (tpath, sizeof (tpath), "", "", "", PATHBLD_MP_LOCALEDIR);
   bindtextdomain ("bdj4", tpath);
 #if _lib_bind_textdomain_codeset
   bind_textdomain_codeset ("bdj4", "UTF-8");
