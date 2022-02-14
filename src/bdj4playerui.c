@@ -61,7 +61,9 @@ typedef struct {
   uimusicq_t      *uimusicq;
   uisongselect_t  *uisongselect;
   /* options */
-  bool            showExtraQueues;
+  bool            playWhenQueued : 1;
+  bool            showExtraQueues : 1;
+  bool            switchQueueWhenEmpty : 1;
 } playerui_t;
 
 #define PLUI_EXIT_WAIT_COUNT      20
@@ -78,11 +80,18 @@ static int      pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
                     bdjmsgmsg_t msg, char *args, void *udata);
 static gboolean pluiCloseWin (GtkWidget *window, GdkEvent *event, gpointer userdata);
 static void     pluiSigHandler (int sig);
+/* queue selection handlers */
 static void     pluiSwitchPage (GtkNotebook *nb, GtkWidget *page, guint pagenum, gpointer udata);
-static void     pluiSetPlaybackQueue (GtkButton *b, gpointer udata);
+static void     pluiSetSwitchPage (playerui_t *plui, int pagenum);
+static void     pluiProcessSetPlaybackQueue (GtkButton *b, gpointer udata);
+static void     pluiSetPlaybackQueue (playerui_t *plui);
+/* option handlers */
+static void     pluiTogglePlayWhenQueued (GtkWidget *mi, gpointer udata);
+static void     pluiSetPlayWhenQueued (playerui_t *plui);
 static void     pluiToggleExtraQueues (GtkWidget *mi, gpointer udata);
 static void     pluiSetExtraQueues (playerui_t *plui);
-static void     pluiTogglePlayWhenQueued (GtkWidget *mi, gpointer udata);
+static void     pluiToggleSwitchQueue (GtkWidget *mi, gpointer udata);
+static void     pluiSetSwitchQueue (playerui_t *plui);
 
 
 static int gKillReceived = 0;
@@ -129,7 +138,10 @@ main (int argc, char *argv[])
   plui.uisongselect = NULL;
   plui.musicqPlayIdx = MUSICQ_A;
   plui.musicqManageIdx = MUSICQ_A;
+  plui.playWhenQueued = true;
   plui.showExtraQueues = true;
+  plui.switchQueueWhenEmpty = true;
+
   for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
     plui.processes [i] = NULL;
   }
@@ -160,6 +172,12 @@ main (int argc, char *argv[])
   gtk_init (&argc, NULL);
   uifont = bdjoptGetData (OPT_MP_UIFONT);
   uiutilsSetUIFont (uifont);
+
+  /* read in the playerui options */
+  /* setextraqueues is called in the gui activation */
+  // ### TODO read in playerui options
+  pluiSetPlayWhenQueued (&plui);
+  pluiSetSwitchQueue (&plui);
 
   g_timeout_add (UI_MAIN_LOOP_TIMER, pluiMainLoop, &plui);
 
@@ -195,6 +213,8 @@ static bool
 pluiClosingCallback (void *udata, programstate_t programState)
 {
   playerui_t   *plui = udata;
+
+  // ### TODO save playerui options
 
   g_object_unref (plui->ledonImg);
   g_object_unref (plui->ledoffImg);
@@ -293,17 +313,23 @@ pluiActivate (GApplication *app, gpointer userdata)
   menu = gtk_menu_new ();
   gtk_menu_item_set_submenu (GTK_MENU_ITEM (menuitem), menu);
 
+  menuitem = gtk_check_menu_item_new_with_label (_("Play When Queued"));
+  gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (menuitem), TRUE);
+  gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
+  g_signal_connect (menuitem, "toggled",
+      G_CALLBACK (pluiTogglePlayWhenQueued), plui);
+
   menuitem = gtk_check_menu_item_new_with_label (_("Show Extra Queues"));
   gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (menuitem), TRUE);
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
   g_signal_connect (menuitem, "toggled",
       G_CALLBACK (pluiToggleExtraQueues), plui);
 
-  menuitem = gtk_check_menu_item_new_with_label (_("Play When Queued"));
+  menuitem = gtk_check_menu_item_new_with_label (_("Switch Queue When Empty"));
   gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (menuitem), TRUE);
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
   g_signal_connect (menuitem, "toggled",
-      G_CALLBACK (pluiTogglePlayWhenQueued), plui);
+      G_CALLBACK (pluiToggleSwitchQueue), plui);
 
   /* player */
   widget = uiplayerActivate (plui->uiplayer);
@@ -331,7 +357,7 @@ pluiActivate (GApplication *app, gpointer userdata)
   gtk_widget_set_margin_start (GTK_WIDGET (widget), 2);
   gtk_notebook_set_action_widget (GTK_NOTEBOOK (plui->notebook), widget, GTK_PACK_END);
   gtk_widget_show_all (GTK_WIDGET (widget));
-  g_signal_connect (widget, "clicked", G_CALLBACK (pluiSetPlaybackQueue), plui);
+  g_signal_connect (widget, "clicked", G_CALLBACK (pluiProcessSetPlaybackQueue), plui);
   plui->setPlaybackButton = widget;
 
   /* music queue tab */
@@ -366,6 +392,9 @@ pluiActivate (GApplication *app, gpointer userdata)
   gtk_notebook_append_page (GTK_NOTEBOOK (plui->notebook), widget, tabLabel);
 
   gtk_window_set_default_size (GTK_WINDOW (plui->window), 1000, 600);
+
+  gtk_widget_show_all (GTK_WIDGET (plui->window));
+  pluiSetExtraQueues (plui);
 }
 
 gboolean
@@ -445,7 +474,6 @@ pluiHandshakeCallback (void *udata, programstate_t programState)
 
   if (connHaveHandshake (plui->conn, ROUTE_MAIN) &&
       connHaveHandshake (plui->conn, ROUTE_PLAYER)) {
-    gtk_widget_show_all (GTK_WIDGET (plui->window));
     progstateLogTime (plui->progstate, "time-to-start-gui");
     rc = true;
   }
@@ -483,6 +511,11 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           progstateShutdownProcess (plui->progstate);
           logProcEnd (LOG_PROC, "pluiProcessMsg", "req-exit");
           return 1;
+        }
+        case MSG_QUEUE_SWITCH: {
+          plui->musicqPlayIdx = atoi (args);
+          pluiSetPlaybackQueue (plui);
+          break;
         }
         default: {
           break;
@@ -529,6 +562,12 @@ pluiSwitchPage (GtkNotebook *nb, GtkWidget *page, guint pagenum, gpointer udata)
 {
   playerui_t  *plui = udata;
 
+  pluiSetSwitchPage (plui, pagenum);
+}
+
+static void
+pluiSetSwitchPage (playerui_t *plui, int pagenum)
+{
   /* note that the design requires that the music queues be the first */
   /* tabs in the notebook */
   if (pagenum < MUSICQ_MAX && plui->showExtraQueues) {
@@ -542,13 +581,20 @@ pluiSwitchPage (GtkNotebook *nb, GtkWidget *page, guint pagenum, gpointer udata)
 }
 
 static void
-pluiSetPlaybackQueue (GtkButton *b, gpointer udata)
+pluiProcessSetPlaybackQueue (GtkButton *b, gpointer udata)
 {
   playerui_t      *plui = udata;
-  char            tbuff [40];
 
   plui->musicqPlayIdx = plui->musicqManageIdx;
-  if (plui->musicqPlayIdx == 0) {
+  pluiSetPlaybackQueue (plui);
+}
+
+static void
+pluiSetPlaybackQueue (playerui_t  *plui)
+{
+  char            tbuff [40];
+
+  if (plui->musicqPlayIdx == MUSICQ_A) {
     gtk_image_set_from_pixbuf (GTK_IMAGE (plui->musicqImage [MUSICQ_A]), plui->ledonImg);
     gtk_image_set_from_pixbuf (GTK_IMAGE (plui->musicqImage [MUSICQ_B]), plui->ledoffImg);
   } else {
@@ -559,10 +605,27 @@ pluiSetPlaybackQueue (GtkButton *b, gpointer udata)
   connSendMessage (plui->conn, ROUTE_MAIN, MSG_MUSICQ_SET_PLAYBACK, tbuff);
 }
 
+
+
+
 static void
 pluiTogglePlayWhenQueued (GtkWidget *mi, gpointer udata)
 {
+  playerui_t      *plui = udata;
+
+  plui->playWhenQueued = ! plui->playWhenQueued;
+  pluiSetPlayWhenQueued (plui);
 }
+
+static void
+pluiSetPlayWhenQueued (playerui_t *plui)
+{
+  char  tbuff [40];
+
+  snprintf (tbuff, sizeof (tbuff), "%d", plui->playWhenQueued);
+  connSendMessage (plui->conn, ROUTE_MAIN, MSG_QUEUE_PLAY_ON_ADD, tbuff);
+}
+
 
 static void
 pluiToggleExtraQueues (GtkWidget *mi, gpointer udata)
@@ -580,6 +643,11 @@ pluiSetExtraQueues (playerui_t *plui)
   GtkWidget       *page;
   int             pagenum;
 
+  if (plui->notebook == NULL ||
+      plui->setPlaybackButton == NULL) {
+    return;
+  }
+
   page = gtk_notebook_get_nth_page (GTK_NOTEBOOK (plui->notebook), MUSICQ_B);
   gtk_widget_set_visible (page, plui->showExtraQueues);
   if (plui->showExtraQueues) {
@@ -591,5 +659,23 @@ pluiSetExtraQueues (playerui_t *plui)
   } else {
     gtk_widget_hide (plui->setPlaybackButton);
   }
+}
+
+static void
+pluiToggleSwitchQueue (GtkWidget *mi, gpointer udata)
+{
+  playerui_t      *plui = udata;
+
+  plui->switchQueueWhenEmpty = ! plui->switchQueueWhenEmpty;
+  pluiSetSwitchQueue (plui);
+}
+
+static void
+pluiSetSwitchQueue (playerui_t *plui)
+{
+  char  tbuff [40];
+
+  snprintf (tbuff, sizeof (tbuff), "%d", plui->switchQueueWhenEmpty);
+  connSendMessage (plui->conn, ROUTE_MAIN, MSG_QUEUE_SWITCH_EMPTY, tbuff);
 }
 

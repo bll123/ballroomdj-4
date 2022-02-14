@@ -64,5 +64,6 @@ void        musicqRemove (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx);
 ssize_t     musicqGetLen (musicq_t *musicq, musicqidx_t musicqidx);
 char *      musicqGetDance (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx);
 char *      musicqGetData (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx, tagdefkey_t tagidx);
+musicqidx_t musicqNextQueue (musicqidx_t musicqidx);
 
 #endif /* INC_MUSICQ_H */

@@ -21,7 +21,8 @@ typedef enum {
   MSG_EXIT_REQUEST,         // standard shutdown
   MSG_HANDSHAKE,
   MSG_SOCKET_CLOSE,
-    /* to main */
+
+  /* to main */
   MSG_GET_STATUS,           // get main/player status
   MSG_MUSICQ_INSERT,        // args: music-q-idx, idx, song name
   MSG_MUSICQ_MOVE_DOWN,     // args: music-q-idx, idx
@@ -39,7 +40,10 @@ typedef enum {
   MSG_QUEUE_DANCE_5,        // args: music-q-idx, dance idx
   MSG_QUEUE_DANCE,          // args: music-q-idx, dance idx
   MSG_QUEUE_PLAYLIST,       // args: music-q-idx, playlist name
-    /* to player */
+  MSG_QUEUE_PLAY_ON_ADD,    // args: true/false
+  MSG_QUEUE_SWITCH_EMPTY,   // args: true/false
+
+  /* to player */
   MSG_PLAYER_VOL_MUTE,      // to player. toggle.
   MSG_PLAYER_VOLSINK_SET,   // to player: set volume sink
   MSG_PLAYER_VOLUME,        // to player. args: volume as percentage.
@@ -55,7 +59,8 @@ typedef enum {
   MSG_SONG_PLAY,            // args: song fname
   MSG_SONG_PREP,            // args: song fname, duration, song-start
                             //    song-end, volume-adjustment-perc, gap
-    /* from player */
+
+  /* from player */
   MSG_PLAY_PAUSEATEND_STATE,// args: 0/1
   MSG_PLAYBACK_BEGIN,       // to main: player has started playing the
                             //    song.  This message is sent after the
@@ -66,16 +71,20 @@ typedef enum {
                             //    args: song fname
   MSG_PLAYER_STATE,         // args: player state
   MSG_PLAYER_STATUS_DATA,   // response to get_status; to main
-    /* to/from ui */
+
+  /* to/from ui */
   MSG_MUSIC_QUEUE_DATA,
-    /* to/from web servers */
+  MSG_QUEUE_SWITCH,         // args: queue number
+
+  /* to/from web servers */
   MSG_DANCE_LIST_DATA,      // args: html option list
   MSG_GET_DANCE_LIST,
   MSG_GET_PLAYLIST_LIST,    //
   MSG_MARQUEE_DATA,         // args: mq json data ; also for msg to marquee
   MSG_MUSICQ_STATUS_DATA,   // main response to remote control
   MSG_PLAYLIST_LIST_DATA,   // args: html option list
-    /* to marquee */
+
+  /* to marquee */
   MSG_MARQUEE_SHOW,
   MSG_MARQUEE_TIMER,        // args: played time, duration
   MSG_MAX,

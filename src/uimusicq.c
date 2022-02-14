@@ -745,6 +745,11 @@ uimusicqProcessMusicQueueDataUpdate (uimusicq_t *uimusicq, char * args)
   ci = uimusicqMusicQueueDataParse (uimusicq, args);
 
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree));
+
+  if (model == NULL) {
+    return;
+  }
+
   gtk_tree_model_foreach (model,
       uimusicqMusicQueueDataFindRemovals, uimusicq);
 

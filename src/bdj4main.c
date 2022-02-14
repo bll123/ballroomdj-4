@@ -72,6 +72,8 @@ typedef struct {
   char              *mobmqUserkey;
   bool              musicqChanged [MUSICQ_MAX];
   bool              marqueeChanged [MUSICQ_MAX];
+  bool              playWhenQueued : 1;
+  bool              switchQueueWhenEmpty : 1;
 } maindata_t;
 
 static int      mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
@@ -101,7 +103,7 @@ static void     mainMusicqClear (maindata_t *mainData, char *args);
 static void     mainMusicqRemove (maindata_t *mainData, char *args);
 static void     mainMusicqInsert (maindata_t *mainData, char *args);
 static void     mainMusicqSetPlayback (maindata_t *mainData, char *args);
-static void     mainMusicqSwitch (maindata_t *mainData);
+static void     mainMusicqSwitch (maindata_t *mainData, musicqidx_t newidx);
 static void     mainPlaybackBegin (maindata_t *mainData);
 static void     mainMusicQueuePlay (maindata_t *mainData);
 static void     mainMusicQueueFinish (maindata_t *mainData);
@@ -146,6 +148,8 @@ main (int argc, char *argv[])
   mainData.playerState = PL_STATE_STOPPED;
   mainData.webclient = NULL;
   mainData.mobmqUserkey = NULL;
+  mainData.playWhenQueued = true;
+  mainData.switchQueueWhenEmpty = true;
   for (int i = 0; i < MUSICQ_MAX; ++i) {
     mainData.playlistQueue [i] = NULL;
     mainData.musicqChanged [i] = false;
@@ -285,18 +289,18 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           logProcEnd (LOG_PROC, "mainProcessMsg", "req-exit");
           return 1;
         }
-        case MSG_QUEUE_CLEAR: {
-          /* clears both the playlist queue and the music queue */
-          logMsg (LOG_DBG, LOG_MSGS, "got: queue-clear");
-          mainQueueClear (mainData, args);
-          break;
-        }
         case MSG_PLAYLIST_CLEARPLAY: {
           mainQueueClear (mainData, args);
           /* clear out any playing song */
           connSendMessage (mainData->conn, ROUTE_PLAYER,
               MSG_PLAY_NEXTSONG, NULL);
           mainQueuePlaylist (mainData, args);
+          break;
+        }
+        case MSG_QUEUE_CLEAR: {
+          /* clears both the playlist queue and the music queue */
+          logMsg (LOG_DBG, LOG_MSGS, "got: queue-clear");
+          mainQueueClear (mainData, args);
           break;
         }
         case MSG_QUEUE_PLAYLIST: {
@@ -310,6 +314,14 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_QUEUE_DANCE_5: {
           mainQueueDance (mainData, args, 5);
+          break;
+        }
+        case MSG_QUEUE_PLAY_ON_ADD: {
+          mainData->playWhenQueued = atoi (args);
+          break;
+        }
+        case MSG_QUEUE_SWITCH_EMPTY: {
+          mainData->switchQueueWhenEmpty = atoi (args);
           break;
         }
         case MSG_PLAY_PLAY: {
@@ -805,11 +817,10 @@ mainQueueDance (maindata_t *mainData, char *args, ssize_t count)
   mainData->marqueeChanged [mi] = true;
   mainData->musicqChanged [mi] = true;
   mainSendMusicqStatus (mainData, NULL, 0);
-#if 0 // make this an option probably
-  if (mainData->musicqPlayIdx == (musicqidx_t) mi) {
+  if (mainData->playWhenQueued &&
+      mainData->musicqPlayIdx == (musicqidx_t) mi) {
     mainMusicQueuePlay (mainData);
   }
-#endif
 }
 
 static void
@@ -836,11 +847,10 @@ mainQueuePlaylist (maindata_t *mainData, char *args)
     mainData->musicqChanged [mi] = true;
 
     mainSendMusicqStatus (mainData, NULL, 0);
-#if 0 // make this an option probably
-    if (mainData->musicqPlayIdx == (musicqidx_t) mi) {
+    if (mainData->playWhenQueued &&
+        mainData->musicqPlayIdx == (musicqidx_t) mi) {
       mainMusicQueuePlay (mainData);
     }
-#endif
   } else {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Queue Playlist failed: %s", plname);
   }
@@ -875,6 +885,9 @@ mainMusicQueueFill (maindata_t *mainData)
   /* an empty musicq item on to the head of the queue.          */
   /* this allows the display to work properly for the user      */
   /* when multiple queues are in use.                           */
+
+fprintf (stderr, "push head?: currlen: %zd playidx:%d != manageidx: %d\n",
+currlen,  mainData->musicqPlayIdx, mainData->musicqManageIdx);
   if (currlen == 0 &&
       mainData->musicqPlayIdx != mainData->musicqManageIdx) {
     musicqPushHeadEmpty (mainData->musicQueue, mainData->musicqManageIdx);
@@ -1256,34 +1269,50 @@ mainMusicqSetPlayback (maindata_t *mainData, char *args)
 
   if ((musicqidx_t) qidx == mainData->musicqPlayIdx) {
     mainData->musicqDeferredPlayIdx = MAIN_NOT_SET;
-  } else {
+  } else if (mainData->playerState != PL_STATE_STOPPED) {
+    /* if the player is playing something, the musicq index cannot */
+    /* be changed as yet */
+fprintf (stderr, "set deferred play-idx: %d\n", qidx);
     mainData->musicqDeferredPlayIdx = qidx;
+  } else {
+fprintf (stderr, "set main play-idx: %d\n", qidx);
+    mainMusicqSwitch (mainData, qidx);
   }
 }
 
 static void
-mainMusicqSwitch (maindata_t *mainData)
+mainMusicqSwitch (maindata_t *mainData, musicqidx_t newMusicqIdx)
 {
   song_t        *song;
+  musicqidx_t   playidx;
 
-  if (mainData->musicqDeferredPlayIdx == MAIN_NOT_SET ||
-      (musicqidx_t) mainData->musicqDeferredPlayIdx == mainData->musicqPlayIdx) {
-    mainData->musicqDeferredPlayIdx = MAIN_NOT_SET;
-  }
-
+fprintf (stderr, "switch queue: old play-idx: %d old-manage-idx: %d\n",
+mainData->musicqPlayIdx, mainData->musicqManageIdx);
   mainData->musicqManageIdx = mainData->musicqPlayIdx;
-  mainData->musicqPlayIdx = mainData->musicqDeferredPlayIdx;
+  mainData->musicqPlayIdx = newMusicqIdx;
+fprintf (stderr, "switch queue B: play-idx (new): %d manage-idx: %d\n",
+mainData->musicqPlayIdx, mainData->musicqManageIdx);
   /* manage idx is pointing to the previous musicq play idx */
+fprintf (stderr, "push head: switch queue\n");
   musicqPushHeadEmpty (mainData->musicQueue, mainData->musicqManageIdx);
+
+  /* the prior musicq has changed */
+  mainData->musicqChanged [mainData->musicqManageIdx] = true;
+
   mainData->musicqManageIdx = mainData->musicqPlayIdx;
   mainData->musicqDeferredPlayIdx = MAIN_NOT_SET;
+fprintf (stderr, "switch queue C: play-idx (new): %d manage-idx (new): %d\n",
+mainData->musicqPlayIdx, mainData->musicqManageIdx);
 
   song = musicqGetCurrent (mainData->musicQueue, mainData->musicqPlayIdx);
   if (song == NULL) {
     musicqPop (mainData->musicQueue, mainData->musicqPlayIdx);
-    mainData->musicqChanged [mainData->musicqPlayIdx] = true;
-    mainData->marqueeChanged [mainData->musicqPlayIdx] = true;
   }
+
+  /* and the new musicq has changed */
+  mainSendMusicqStatus (mainData, NULL, 0);
+  mainData->musicqChanged [mainData->musicqPlayIdx] = true;
+  mainData->marqueeChanged [mainData->musicqPlayIdx] = true;
 }
 
 static void
@@ -1306,9 +1335,11 @@ mainMusicQueuePlay (maindata_t *mainData)
   musicqflag_t      flags;
   char              *sfname;
   song_t            *song;
+  ssize_t           currlen;
 
   if (mainData->musicqDeferredPlayIdx != MAIN_NOT_SET) {
-    mainMusicqSwitch (mainData);
+    mainMusicqSwitch (mainData, mainData->musicqDeferredPlayIdx);
+    mainData->musicqDeferredPlayIdx = MAIN_NOT_SET;
   }
 
   mainData->musicqManageIdx = mainData->musicqPlayIdx;
@@ -1316,7 +1347,7 @@ mainMusicQueuePlay (maindata_t *mainData)
   logProcBegin (LOG_PROC, "mainMusicQueuePlay");
   logMsg (LOG_DBG, LOG_BASIC, "playerState: %d", mainData->playerState);
   if (mainData->playerState == PL_STATE_STOPPED) {
-      /* grab a song out of the music queue and start playing */
+    /* grab a song out of the music queue and start playing */
     logMsg (LOG_DBG, LOG_MAIN, "player is stopped, get song, start");
     song = musicqGetCurrent (mainData->musicQueue, mainData->musicqPlayIdx);
     if (song != NULL) {
@@ -1333,6 +1364,25 @@ mainMusicQueuePlay (maindata_t *mainData)
       sfname = songGetData (song, TAG_FILE);
       connSendMessage (mainData->conn, ROUTE_PLAYER,
           MSG_SONG_PLAY, sfname);
+    }
+
+    currlen = musicqGetLen (mainData->musicQueue, mainData->musicqPlayIdx);
+    if (song == NULL && currlen == 0) {
+      if (mainData->switchQueueWhenEmpty) {
+        char    tmp [40];
+
+        mainData->musicqPlayIdx = musicqNextQueue (mainData->musicqPlayIdx);
+        mainData->musicqManageIdx = mainData->musicqPlayIdx;
+        /* only process this flag once */
+        /* do not want this program to bounce back and forth between queues */
+        mainData->switchQueueWhenEmpty = false;
+        snprintf (tmp, sizeof (tmp), "%d", mainData->musicqPlayIdx);
+        connSendMessage (mainData->conn, ROUTE_PLAYERUI, MSG_QUEUE_SWITCH, tmp);
+        /* and start up playback for the new queue */
+        mainMusicQueueNext (mainData);
+        /* since the player state is stopped, must re-start playback */
+        mainMusicQueuePlay (mainData);
+      }
     }
   }
   if (mainData->playerState == PL_STATE_IN_GAP ||
@@ -1680,3 +1730,6 @@ mainParseIntStr (char *args, int *a, char **b)
   *b = p;
 }
 
+
+#if 0
+#endif

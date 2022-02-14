@@ -397,6 +397,19 @@ musicqGetDance (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx)
   return danceStr;
 }
 
+musicqidx_t
+musicqNextQueue (musicqidx_t musicqidx)
+{
+  ++musicqidx;
+  if (musicqidx >= MUSICQ_MAX) {
+    musicqidx = MUSICQ_A;
+  }
+
+  return musicqidx;
+}
+
+/* internal routines */
+
 static void
 musicqQueueItemFree (void *titem)
 {
@@ -441,3 +454,4 @@ musicqRenumber (musicq_t *musicq, musicqidx_t musicqidx, int olddispidx)
     ++dispidx;
   }
 }
+
