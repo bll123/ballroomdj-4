@@ -39,6 +39,7 @@ if [[ $TCLSH != "" ]]; then
   tclsh=$TCLSH
 else
   for f in \
+      "$bdj3dir/$systype/64/tcl/bin/tclsh" \
       "$bdj3dir/../$systype/64/tcl/bin/tclsh" \
       "$bdj3dir/../../$systype/64/tcl/bin/tclsh" \
       "$HOME/Applications/BallroomDJ.app/Contents/MacOS/$systype/64/tcl/bin/tclsh" \
@@ -70,19 +71,19 @@ if [[ ! -d conv ]]; then
   exit 1
 fi
 
-"$tclsh" ./conv/configconv.tcl "$bdj3dir" "$datatopdir"
-"$tclsh" ./conv/danceconv.tcl "$bdj3dir" "$datatopdir"
-"$tclsh" ./conv/dbconv.tcl "$bdj3dir" "$datatopdir"
-"$tclsh" ./conv/genreconv.tcl "$bdj3dir" "$datatopdir"
-"$tclsh" ./conv/levelsconv.tcl "$bdj3dir" "$datatopdir"
-"$tclsh" ./conv/mlistconv.tcl "$bdj3dir" "$datatopdir"
-"$tclsh" ./conv/playlistconv.tcl "$bdj3dir" "$datatopdir"
-"$tclsh" ./conv/ratingconv.tcl "$bdj3dir" "$datatopdir"
-"$tclsh" ./conv/seqconv.tcl "$bdj3dir" "$datatopdir"
-"$tclsh" ./conv/sortoptconv.tcl "$bdj3dir" "$datatopdir"
-"$tclsh" ./conv/autoselconv.tcl "$bdj3dir" "$datatopdir"
-"$tclsh" ./conv/typeconv.tcl "$bdj3dir" "$datatopdir"
-"$tclsh" ./conv/statusconv.tcl "$bdj3dir" "$datatopdir"
+"$tclsh" conv/auto-selection.tcl "$bdj3dir" "$datatopdir"
+"$tclsh" conv/config.tcl "$bdj3dir" "$datatopdir"
+"$tclsh" conv/dances.tcl "$bdj3dir" "$datatopdir"
+"$tclsh" conv/dancetypes.tcl "$bdj3dir" "$datatopdir"
+"$tclsh" conv/dbconv.tcl "$bdj3dir" "$datatopdir"
+"$tclsh" conv/genres.tcl "$bdj3dir" "$datatopdir"
+"$tclsh" conv/levels.tcl "$bdj3dir" "$datatopdir"
+"$tclsh" conv/playlists.tcl "$bdj3dir" "$datatopdir"
+"$tclsh" conv/ratings.tcl "$bdj3dir" "$datatopdir"
+"$tclsh" conv/sequences.tcl "$bdj3dir" "$datatopdir"
+"$tclsh" conv/songlists.tcl "$bdj3dir" "$datatopdir"
+"$tclsh" conv/sort-options.tcl "$bdj3dir" "$datatopdir"
+"$tclsh" conv/status.tcl "$bdj3dir" "$datatopdir"
 echo "OK"
 
 exit 0

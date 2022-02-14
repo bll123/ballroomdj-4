@@ -24,6 +24,8 @@ typedef struct {
   bool            danceSelectOpen;
   /* tree views */
   GtkWidget       *musicqTree;
+  char            *selPathStr;
+  mstime_t        rowChangeTimer;
 } uimusicqui_t;
 
 typedef struct {

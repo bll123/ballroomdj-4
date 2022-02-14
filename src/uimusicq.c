@@ -89,7 +89,6 @@ static void   uimusicqRemoveProcess (GtkButton *b, gpointer udata);
 static ssize_t uimusicqGetSelection (uimusicq_t *uimusicq);
 static void   uimusicqMusicQueueSetSelected (uimusicq_t *uimusicq, int ci, int which);
 
-
 uimusicq_t *
 uimusicqInit (progstate_t *progstate, conn_t *conn)
 {
@@ -105,6 +104,8 @@ uimusicqInit (progstate_t *progstate, conn_t *conn)
   for (int i = 0; i < MUSICQ_MAX; ++i) {
     uimusicq->ui [i].playlistSelectOpen = false;
     uimusicq->ui [i].danceSelectOpen = false;
+    uimusicq->ui [i].selPathStr = NULL;
+    mstimeset (&uimusicq->ui [i].rowChangeTimer, 3600000);
   }
   uimusicq->musicqManageIdx = MUSICQ_A;
 
@@ -116,6 +117,11 @@ uimusicqFree (uimusicq_t *uimusicq)
 {
   if (uimusicq != NULL) {
     free (uimusicq);
+    for (int i = 0; i < MUSICQ_MAX; ++i) {
+      if (uimusicq->ui [i].selPathStr != NULL) {
+        free (uimusicq->ui [i].selPathStr);
+      }
+    }
   }
 }
 
@@ -129,8 +135,9 @@ uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
   GtkWidget         *hbox = NULL;
   GtkCellRenderer   *renderer = NULL;
   GtkTreeViewColumn *column = NULL;
-  GtkTreeSelection  *sel;
+  GtkTreeSelection  *sel = NULL;
   GValue            gvalue = G_VALUE_INIT;
+  GtkTreeModel      *model = NULL;
 
   /* temporary */
   tci = uimusicq->musicqManageIdx;
@@ -433,6 +440,30 @@ uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
 inline void
 uimusicqMainLoop (uimusicq_t *uimusicq)
 {
+  int           ci;
+
+  ci = uimusicq->musicqManageIdx;
+
+  /* macos loses the selection after it is moved.  reset it. */
+  /* fortunately, it seems to only need to be reset once. */
+  if (mstimeCheck (&uimusicq->ui [ci].rowChangeTimer)) {
+    GtkTreeModel      *model;
+    GtkTreePath       *path;
+    GtkTreeSelection  *sel = NULL;
+
+    if (uimusicq->ui [ci].selPathStr != NULL) {
+      path = gtk_tree_path_new_from_string (uimusicq->ui [ci].selPathStr);
+      if (path != NULL) {
+        gtk_tree_view_set_cursor (GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree),
+            path, NULL, FALSE);
+        gtk_tree_view_scroll_to_cell (GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree),
+            path, NULL, FALSE, 0.0, 0.0);
+        gtk_tree_path_free (path);
+      }
+    }
+    mstimeset (&uimusicq->ui [ci].rowChangeTimer, 3600000);
+  }
+
   return;
 }
 
@@ -1125,9 +1156,14 @@ uimusicqMusicQueueSetSelected (uimusicq_t *uimusicq, int ci, int which)
 
     gtk_tree_selection_select_iter (sel, &iter);
     path = gtk_tree_model_get_path (model, &iter);
+    uimusicq->ui [ci].selPathStr = gtk_tree_path_to_string (path);
+    /* macos loses the selection */
+    /* set a timer to re-select it */
+    mstimeset (&uimusicq->ui [ci].rowChangeTimer, 50);
     gtk_tree_view_scroll_to_cell (GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree),
         path, NULL, FALSE, 0.0, 0.0);
     gtk_tree_path_free (path);
   }
 }
+
 

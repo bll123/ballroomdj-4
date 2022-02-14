@@ -43,7 +43,7 @@ main (int argc, char *argv [])
   char        *archivenm = "bdj4-install.tar.gz";
 
 
-#if _lib_CreateFile  /* check if it is windows */
+#if __WINNT__
   isWindows = true;
   archivenm = "bdj4-install.zip";
 #endif

@@ -132,9 +132,7 @@ static void installerGetBDJ3Fname (installer_t *installer, char *buff, size_t le
 static void installerTemplateCopy (char *from, char *to);
 static void installerSetrundir (installer_t *installer, const char *dir);
 
-#if _lib_CreateProcess
 static int winCreateProcess (char *cmd, char *cmdline);
-#endif
 
 int
 main (int argc, char *argv[])
@@ -1330,9 +1328,7 @@ installerCleanup (installer_t *installer)
   if (isWindows ()) {
     strlcpy (tbuff, ".\\install\\install-rminstdir.bat", MAXPATHLEN);
     snprintf (buff, MAXPATHLEN, "%s \"%s\"", tbuff, installer->unpackdir);
-#if _lib_CreateProcess
     winCreateProcess (tbuff, buff);
-#endif
   } else {
     snprintf (buff, MAXPATHLEN, "rm -rf %s", installer->unpackdir);
     system (buff);
@@ -1414,11 +1410,11 @@ installerSetrundir (installer_t *installer, const char *dir)
   }
 }
 
-#if _lib_CreateProcess
 
 static int
 winCreateProcess (char *cmd, char *cmdline)
 {
+#if _lib_CreateProcess
   STARTUPINFO         si;
   PROCESS_INFORMATION pi;
   int                 val;
@@ -1443,7 +1439,7 @@ winCreateProcess (char *cmd, char *cmdline)
     return -1;
   }
 
+#endif
   return 0;
 }
 
-#endif

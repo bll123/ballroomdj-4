@@ -370,6 +370,11 @@ target_link_libraries (libbdj4
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   m
 )
+if (APPLE)
+  target_link_libraries (libbdj4
+    "-framework Cocoa"
+  )
+endif()
 addIntlLibrary (libbdj4)
 addWinSockLibrary (libbdj4)
 
@@ -428,7 +433,7 @@ if (ALSA_FOUND)
 endif ()
 
 add_library (libvolmac SHARED volmac.m)
-if (_hdr_MacTypes)
+if (APPLE)
   target_link_libraries (libvolmac
     PUBLIC "-framework Cocoa" "-framework CoreAudio"
   )
