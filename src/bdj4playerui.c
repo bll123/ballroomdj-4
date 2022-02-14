@@ -250,9 +250,11 @@ pluiActivate (GApplication *app, gpointer userdata)
   GtkWidget           *menu;
   GtkWidget           *menuitem;
   char                *str;
+  char                imgbuff [MAXPATHLEN];
   char                tbuff [MAXPATHLEN];
 
-
+  pathbldMakePath (imgbuff, sizeof (imgbuff), "",
+      "bdj4_icon", ".svg", PATHBLD_MP_IMGDIR);
   pathbldMakePath (tbuff, sizeof (tbuff), "", "led_off", ".svg",
       PATHBLD_MP_IMGDIR);
   image = gtk_image_new_from_file (tbuff);
@@ -268,7 +270,7 @@ pluiActivate (GApplication *app, gpointer userdata)
   assert (plui->window != NULL);
   gtk_window_set_application (GTK_WINDOW (plui->window), GTK_APPLICATION (app));
   gtk_window_set_application (GTK_WINDOW (plui->window), plui->app);
-  gtk_window_set_default_icon_from_file ("img/bdj4_icon.svg", &gerr);
+  gtk_window_set_default_icon_from_file (imgbuff, &gerr);
   g_signal_connect (plui->window, "delete-event", G_CALLBACK (pluiCloseWin), plui);
   gtk_window_set_title (GTK_WINDOW (plui->window), bdjoptGetData (OPT_P_PROFILENAME));
 

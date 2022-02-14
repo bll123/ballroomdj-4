@@ -294,12 +294,15 @@ marqueeCreateGui (marquee_t *marquee, int argc, char *argv [])
 static void
 marqueeActivate (GApplication *app, gpointer userdata)
 {
-  char      tbuff [MAXPATHLEN];
+  char      imgbuff [MAXPATHLEN];
   marquee_t *marquee = userdata;
   GtkWidget *window;
   GtkWidget *hbox;
   GtkWidget *vbox;
   GError    *gerr;
+
+  pathbldMakePath (imgbuff, sizeof (imgbuff), "",
+      "bdj4_icon_marquee", ".svg", PATHBLD_MP_IMGDIR);
 
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   assert (window != NULL);
@@ -314,7 +317,7 @@ marqueeActivate (GApplication *app, gpointer userdata)
   gtk_window_set_type_hint (GTK_WINDOW (window), GDK_WINDOW_TYPE_HINT_NORMAL);
   gtk_window_set_focus_on_map (GTK_WINDOW (window), FALSE);
   gtk_window_set_title (GTK_WINDOW (window), _("Marquee"));
-  gtk_window_set_default_icon_from_file ("img/bdj4_icon.svg", &gerr);
+  gtk_window_set_default_icon_from_file (imgbuff, &gerr);
   gtk_window_set_default_size (GTK_WINDOW (window), 600, 600);
   marquee->window = window;
 
@@ -433,9 +436,9 @@ marqueeActivate (GApplication *app, gpointer userdata)
   marqueeAdjustFontSizes (marquee, 0);
   progstateLogTime (marquee->progstate, "time-to-start-gui");
 
-  pathbldMakePath (tbuff, sizeof (tbuff), "",
+  pathbldMakePath (imgbuff, sizeof (imgbuff), "",
       "bdj4_icon_marquee", ".png", PATHBLD_MP_IMGDIR);
-  osuiSetIcon (tbuff);
+  osuiSetIcon (imgbuff);
 }
 
 gboolean
