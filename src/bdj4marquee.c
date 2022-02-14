@@ -434,7 +434,7 @@ marqueeActivate (GApplication *app, gpointer userdata)
   progstateLogTime (marquee->progstate, "time-to-start-gui");
 
   pathbldMakePath (tbuff, sizeof (tbuff), "",
-      "bdj4_icon", ".png", PATHBLD_MP_IMGDIR);
+      "bdj4_icon_marquee", ".png", PATHBLD_MP_IMGDIR);
   osuiSetIcon (tbuff);
 }
 
