@@ -4,12 +4,11 @@
 archivenm=bdj4-install.tar.gz
 unpacktgt=bdj4-install
 
-echo "-- BDJ4 Installation Startup"
-
-unpackdir=$(pwd)
 rundir=$(pwd)
-if [[ -d "$rundir/Contents" ]]; then
-  rundir="$rundir/Contents/MacOS"
+unpackdir=$(pwd)
+if [[ -d "$unpackdir/../MacOS" ]]; then
+  cd ../..
+  unpackdir=$(pwd)
 fi
 if [[ ! -d "$rundir/install" ]]; then
   echo "  Unable to locate installer."
@@ -18,7 +17,6 @@ if [[ ! -d "$rundir/install" ]]; then
   exit 1
 fi
 
-echo "-- Cleaning temporary files."
 test -f ../$archivenm && rm -f ../$archivenm
 
 cd "$rundir"

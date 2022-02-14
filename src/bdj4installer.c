@@ -182,12 +182,13 @@ main (int argc, char *argv[])
   installer.targetBuffer = NULL;
   installer.dispBuffer = NULL;
   installer.dispTextView = NULL;
-  getcwd (installer.currdir, MAXPATHLEN);
+  installer.currdir [0] = '\0';
   installer.newinstall = true;
   installer.reinstall = false;
   installer.freetarget = false;
   installer.freebdj3loc = false;
   installer.guienabled = true;
+  getcwd (installer.currdir, MAXPATHLEN);
   mstimeset (&installer.validateTimer, 3600000);
 
   while ((c = getopt_long_only (argc, argv, "p:d:t:", bdj_options, &option_index)) != -1) {
@@ -912,7 +913,7 @@ installerCopyFiles (installer_t *installer)
   } else {
     snprintf (tbuff, MAXPATHLEN,
         "tar -c -f - . | (cd '%s'; tar -x -f -)",
-        installer->rundir);
+        installer->target);
     system (tbuff);
   }
   installerDisplayText (installer, "   ", _("Copy finished."));
@@ -1299,8 +1300,10 @@ installerCreateShortcut (installer_t *installer)
   }
   if (isMacOS ()) {
 #if _lib_symlink
+    /* on macos, the startup program must be a gui program, otherwise */
+    /* the dock icon is not correct */
     /* this must exist and match the name of the app */
-    symlink ("bin/bdj4", "BDJ4");
+    symlink ("bin/bdj4g", "BDJ4");
     /* desktop shortcut */
     snprintf (buff, MAXPATHLEN, "%s/Desktop/BDJ4.app", installer->home);
     symlink (installer->target, buff);

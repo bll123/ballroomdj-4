@@ -82,6 +82,7 @@ main (int argc, char *argv[])
   uint16_t        listenPort;
 
   static struct option bdj_options [] = {
+    { "bdj4rc",     no_argument,        NULL,   0 },
     { "debug",      required_argument,  NULL,   'd' },
     { "profile",    required_argument,  NULL,   'p' },
     { NULL,         0,                  NULL,   0 }

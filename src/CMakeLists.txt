@@ -389,6 +389,9 @@ target_link_libraries (libbdj4player
 )
 
 add_library (libbdj4ui SHARED
+  osuilinuxutils.c
+  osuimacutils.m
+  osuiwinutils.c
   uimusicq.c
   uiplayer.c
   uisongsel.c
@@ -463,6 +466,11 @@ target_include_directories (libwebsrv
 )
 add_library (liblocatebdj3 STATIC locatebdj3.c strlcpy.c strlcat.c)
 
+add_library (libbdj4launcher STATIC
+  bdjstring.c filedata.c fileop.c pathbld.c
+  pathutil.c portability.c sysvars.c strlcat.c strlcpy.c
+)
+
 if (WIN32)
   # the bdj4 executable
   # for cmake, must use the .o file extension, not .res
@@ -477,14 +485,26 @@ if (WIN32)
   )
 endif()
 
-add_executable (bdj4 bdj4.c
-  bdjstring.c filedata.c fileop.c pathbld.c
-  pathutil.c portability.c sysvars.c strlcat.c strlcpy.c
+add_executable (bdj4 bdj4.c)
+target_link_libraries (bdj4
+  libbdj4launcher
 )
 if (WIN32)
   target_sources (bdj4 PRIVATE launcher.o)
 endif()
 # for gethostname
+addWinSockLibrary (bdj4)
+
+# this is only used on macos
+add_executable (bdj4g bdj4.c)
+target_include_directories (bdj4g
+  PUBLIC ${GTK_INCLUDE_DIRS}
+)
+target_compile_options (bdj4g PRIVATE -DBDJ4_GUI_LAUNCHER=1)
+target_link_libraries (bdj4g
+  libbdj4launcher
+  ${GTK_LDFLAGS}
+)
 addWinSockLibrary (bdj4)
 
 add_executable (bdj4cli bdj4cli.c)
@@ -630,7 +650,7 @@ install (TARGETS
   libbdj4common libbdj4 libbdj4player libbdj4ui
   libplinull libplivlc
   libvolalsa libvolmac libvolnull libvolpa libvolwin
-  bdj4 bdj4cli
+  bdj4 bdj4g bdj4cli
   bdj4installer bdj4locale bdj4locatebdj3 bdj4se
   bdj4main bdj4player bdj4mobmq bdj4rc bdj4marquee
   bdj4playerui
@@ -667,6 +687,7 @@ endmacro()
 
 if (APPLE)
   macUpdateRPath (bdj4)
+  macUpdateRPath (bdj4g)
   macUpdateRPath (bdj4main)
   macUpdateRPath (bdj4marquee)
   macUpdateRPath (bdj4mobmq)

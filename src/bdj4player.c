@@ -157,6 +157,7 @@ main (int argc, char *argv[])
   static struct option bdj_options [] = {
     { "debug",      required_argument,  NULL,   'd' },
     { "profile",    required_argument,  NULL,   'p' },
+    { "bdj4player", no_argument,        NULL,   0 },
     { "player",     no_argument,        NULL,   0 },
     { NULL,         0,                  NULL,   0 }
   };

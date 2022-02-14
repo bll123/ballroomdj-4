@@ -77,9 +77,13 @@ procutilExists (procutil_t *process)
 procutil_t *
 procutilStart (const char *fn, ssize_t profile, ssize_t loglvl)
 {
-  procutil_t   *process;
-  char        tmp [100];
-  char        tmp2 [40];
+  procutil_t  * process;
+  char        tbuff [MAXPATHLEN];
+  char        tmp [50];
+  char        sprof [40];
+  char        sloglvl [40];
+  char        * targv [15];
+  int         idx;
 
 
   process = malloc (sizeof (procutil_t));
@@ -89,11 +93,18 @@ procutilStart (const char *fn, ssize_t profile, ssize_t loglvl)
   process->started = false;
 
   logProcBegin (LOG_PROC, "procutilStart");
-  snprintf (tmp, sizeof (tmp), "%zd", profile);
-  snprintf (tmp2, sizeof (tmp2), "%zd", loglvl);
+  snprintf (sprof, sizeof (sprof), "%zd", profile);
+  snprintf (sloglvl, sizeof (sloglvl), "%zd", loglvl);
 
 #if _lib_fork
   pid_t       tpid;
+  int         rc;
+  char        *extension;
+
+  extension = "";
+  if (isWindows ()) {
+    extension = ".exe";
+  }
 
   /* this may be slower, but it works; speed is not a major issue */
   tpid = fork ();
@@ -112,9 +123,16 @@ procutilStart (const char *fn, ssize_t profile, ssize_t loglvl)
       close (i);
     }
     logEnd ();
-    int rc = execl (fn, fn, "--profile", tmp, "--debug", tmp2, NULL);
+    idx = 0;
+    targv [idx++] = (char *) fn;
+    targv [idx++] = "--profile";
+    targv [idx++] = sprof;
+    targv [idx++] = "--debug";
+    targv [idx++] = sloglvl;
+    targv [idx++] = NULL;
+    rc = execv (targv [0], targv);
     if (rc < 0) {
-      logError ("execl");
+      logError ("execv");
       exit (1);
     }
     exit (0);
@@ -291,7 +309,7 @@ procutilStartProcess (bdjmsgroute_t route, char *fname)
   pathbldMakePath (tbuff, sizeof (tbuff), "",
       fname, extension, PATHBLD_MP_EXECDIR);
   process = procutilStart (tbuff, sysvarsGetNum (SVL_BDJIDX),
-      bdjoptGetNum (OPT_G_DEBUGLVL));
+      bdjoptGetNum (OPT_G_DEBUGLVL), uselauncher);
   if (process == NULL) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "%s %s failed to start", fname, tbuff);
   } else {

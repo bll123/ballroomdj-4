@@ -23,6 +23,7 @@
 #include "localeutil.h"
 #include "lock.h"
 #include "log.h"
+#include "osuiutils.h"
 #include "pathbld.h"
 #include "procutil.h"
 #include "progstate.h"
@@ -117,6 +118,7 @@ main (int argc, char *argv[])
   static struct option bdj_options [] = {
     { "debug",      required_argument,  NULL,   'd' },
     { "profile",    required_argument,  NULL,   'p' },
+    { "bdj4marquee",no_argument,        NULL,   0 },
     { "marquee",    no_argument,        NULL,   0 },
     { NULL,         0,                  NULL,   0 }
   };
@@ -226,6 +228,8 @@ main (int argc, char *argv[])
   uifont = bdjoptGetData (OPT_MP_UIFONT);
   uiutilsSetUIFont (uifont);
 
+  osuiSetWindowAsAccessory ();
+
   status = marqueeCreateGui (&marquee, 0, NULL);
 
   while (progstateShutdownProcess (marquee.progstate) != STATE_CLOSED) {
@@ -290,14 +294,13 @@ marqueeCreateGui (marquee_t *marquee, int argc, char *argv [])
 static void
 marqueeActivate (GApplication *app, gpointer userdata)
 {
-  marquee_t             *marquee = userdata;
-  GtkWidget             *window;
-  GtkWidget             *hbox;
-  GtkWidget             *vbox;
-  GError                *gerr;
+  char      tbuff [MAXPATHLEN];
+  marquee_t *marquee = userdata;
+  GtkWidget *window;
+  GtkWidget *hbox;
+  GtkWidget *vbox;
+  GError    *gerr;
 
-
-//  window = gtk_application_window_new (GTK_APPLICATION (app));
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   assert (window != NULL);
   gtk_window_set_application (GTK_WINDOW (window), GTK_APPLICATION (app));
@@ -429,6 +432,10 @@ marqueeActivate (GApplication *app, gpointer userdata)
 
   marqueeAdjustFontSizes (marquee, 0);
   progstateLogTime (marquee->progstate, "time-to-start-gui");
+
+  pathbldMakePath (tbuff, sizeof (tbuff), "",
+      "bdj4_icon", ".png", PATHBLD_MP_IMGDIR);
+  osuiSetIcon (tbuff);
 }
 
 gboolean

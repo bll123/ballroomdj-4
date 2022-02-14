@@ -9,6 +9,10 @@
 #include <getopt.h>
 #include <unistd.h>
 
+#if BDJ4_GUI_LAUNCHER
+# include <gtk/gtk.h>
+#endif
+
 #if _hdr_windows
 # include <windows.h>
 #endif
@@ -39,29 +43,40 @@ main (int argc, char * argv[])
   bool      isinstaller = false;
 
   static struct option bdj_options [] = {
-    { "check_all",  no_argument,        NULL,   1 },
-    { "cli",        no_argument,        NULL,   2 },
-    { "configui",   no_argument,        NULL,   3 },
-    { "converter",  no_argument,        NULL,   4 },
-    { "main",       no_argument,        NULL,   5 },
-    { "manageui",   no_argument,        NULL,   6 },
-    { "marquee",    no_argument,        NULL,   7 },
-    { "mobilemq",   no_argument,        NULL,   8 },
-    { "player",     no_argument,        NULL,   9 },
-    { "playerui",   no_argument,        NULL,   10 },
-    { "remctrl",    no_argument,        NULL,   11 },
-    { "installer",  no_argument,        NULL,   12 },
-    { "locale",     no_argument,        NULL,   13 },
-    { "forcestop",  no_argument,        NULL,   0 },
-    { "unpackdir",  required_argument,  NULL,   'u' },
-    { "reinstall",  no_argument,        NULL,   'r' },
-    { "guidisabled",no_argument,        NULL,   'g' },
-    { "profile",    required_argument,  NULL,   'p' },
-    { "debug",      required_argument,  NULL,   'd' },
-    { "theme",      required_argument,  NULL,   't' },
-    { "debugself",  no_argument,        NULL,   'D' },
-    { NULL,         0,                  NULL,   0 }
+    { "check_all",      no_argument,        NULL,   1 },
+    { "bdj4cli",        no_argument,        NULL,   2 },
+    { "cli",            no_argument,        NULL,   2 },
+    { "bdj4configui",   no_argument,        NULL,   3 },
+    { "bdj4converter",  no_argument,        NULL,   4 },
+    { "bdj4main",       no_argument,        NULL,   5 },
+    { "main",           no_argument,        NULL,   5 },
+    { "bdj4manageui",   no_argument,        NULL,   6 },
+    { "bdj4marquee",    no_argument,        NULL,   7 },
+    { "bdj4mobilemq",   no_argument,        NULL,   8 },
+    { "bdj4player",     no_argument,        NULL,   9 },
+    { "bdj4playerui",   no_argument,        NULL,   10 },
+    { "playerui",       no_argument,        NULL,   10 },
+    { "bdj4remctrl",    no_argument,        NULL,   11 },
+    { "bdj4installer",  no_argument,        NULL,   12 },
+    { "installer",      no_argument,        NULL,   12 },
+    { "locale",         no_argument,        NULL,   13 },
+    { "forcestop",      no_argument,        NULL,   0 },
+    /* used by installer */
+    { "unpackdir",      required_argument,  NULL,   'u' },
+    { "reinstall",      no_argument,        NULL,   'r' },
+    { "guidisabled",no_argument,            NULL,   'g' },
+    /* standard stuff */
+    { "profile",        required_argument,  NULL,   'p' },
+    { "debug",          required_argument,  NULL,   'd' },
+    { "theme",          required_argument,  NULL,   't' },
+    /* this process */
+    { "debugself",      no_argument,        NULL,   'D' },
+    { NULL,             0,                  NULL,   0 }
   };
+
+#if BDJ4_GUI_LAUNCHER
+  gtk_init (&argc, NULL);
+#endif
 
   prog = "bdj4playerui";
 
@@ -174,8 +189,8 @@ main (int argc, char * argv[])
     exit (1);
   }
 
-  if (chdir (sysvarsGetStr (SV_BDJ4DATATOPDIR)) < 0) {
-    if (! isinstaller) {
+  if (! isinstaller) {
+    if (chdir (sysvarsGetStr (SV_BDJ4DATATOPDIR)) < 0) {
       fprintf (stderr, "Unable to set working dir: %s\n", sysvarsGetStr (SV_BDJ4DATATOPDIR));
       exit (1);
     }

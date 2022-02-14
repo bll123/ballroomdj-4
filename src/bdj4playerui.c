@@ -105,6 +105,7 @@ main (int argc, char *argv[])
   static struct option bdj_options [] = {
     { "debug",      required_argument,  NULL,   'd' },
     { "profile",    required_argument,  NULL,   'p' },
+    { "bdj4playerui", no_argument,      NULL,   0 },
     { "playerui",   no_argument,        NULL,   0 },
     { NULL,         0,                  NULL,   0 }
   };
@@ -263,7 +264,6 @@ pluiActivate (GApplication *app, gpointer userdata)
   plui->ledonImg = gtk_image_get_pixbuf (GTK_IMAGE (image));
   g_object_ref (G_OBJECT (plui->ledonImg));
 
-//  plui->window = gtk_application_window_new (GTK_APPLICATION (app));
   plui->window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   assert (plui->window != NULL);
   gtk_window_set_application (GTK_WINDOW (plui->window), GTK_APPLICATION (app));

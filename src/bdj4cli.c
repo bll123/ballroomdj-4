@@ -49,7 +49,8 @@ main (int argc, char *argv[])
     { "msg",        required_argument,  NULL,   'm' },
     { "forceexit",  no_argument,        NULL,   'f' },
     { "forcestop",  no_argument,        NULL,   'f' },
-    { "clicomm",    no_argument,        NULL,   0 },
+    { "cli",        no_argument,        NULL,   0 },
+    { "bdj4cli",    no_argument,        NULL,   0 },
     { "debug",      required_argument,  NULL,   'd' },
     { "profile",    required_argument,  NULL,   'p' },
     { NULL,         0,                  NULL,   0 }

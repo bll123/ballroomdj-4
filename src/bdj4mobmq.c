@@ -75,6 +75,7 @@ main (int argc, char *argv[])
   char            *tval;
 
   static struct option bdj_options [] = {
+    { "bdj4mobilemq", no_argument,      NULL,   0 },
     { "mobilemq",   no_argument,        NULL,   0 },
     { "debug",      required_argument,  NULL,   'd' },
     { "profile",    required_argument,  NULL,   'p' },

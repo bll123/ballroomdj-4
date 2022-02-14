@@ -42,10 +42,12 @@ bdj4startup (int argc, char *argv[], char *tag, bdjmsgroute_t route)
   char        *locknm = lockName (route);
 
   static struct option bdj_options [] = {
+    { "bdj4main",   no_argument,        NULL,   1 },
     { "main",       no_argument,        NULL,   1 },
+    { "bdj4playerui", no_argument,      NULL,   2 },
     { "playerui",   no_argument,        NULL,   2 },
-    { "configui",   no_argument,        NULL,   3 },
-    { "manageui",   no_argument,        NULL,   4 },
+    { "bdj4configui", no_argument,      NULL,   3 },
+    { "bdj4manageui", no_argument,      NULL,   4 },
     { "profile",    required_argument,  NULL,   'p' },
     { "debug",      required_argument,  NULL,   'd' },
     { NULL,         0,                  NULL,   0 }
