@@ -886,8 +886,6 @@ mainMusicQueueFill (maindata_t *mainData)
   /* this allows the display to work properly for the user      */
   /* when multiple queues are in use.                           */
 
-fprintf (stderr, "push head?: currlen: %zd playidx:%d != manageidx: %d\n",
-currlen,  mainData->musicqPlayIdx, mainData->musicqManageIdx);
   if (currlen == 0 &&
       mainData->musicqPlayIdx != mainData->musicqManageIdx) {
     musicqPushHeadEmpty (mainData->musicQueue, mainData->musicqManageIdx);
@@ -1272,10 +1270,8 @@ mainMusicqSetPlayback (maindata_t *mainData, char *args)
   } else if (mainData->playerState != PL_STATE_STOPPED) {
     /* if the player is playing something, the musicq index cannot */
     /* be changed as yet */
-fprintf (stderr, "set deferred play-idx: %d\n", qidx);
     mainData->musicqDeferredPlayIdx = qidx;
   } else {
-fprintf (stderr, "set main play-idx: %d\n", qidx);
     mainMusicqSwitch (mainData, qidx);
   }
 }
@@ -1286,23 +1282,15 @@ mainMusicqSwitch (maindata_t *mainData, musicqidx_t newMusicqIdx)
   song_t        *song;
   musicqidx_t   playidx;
 
-fprintf (stderr, "switch queue: old play-idx: %d old-manage-idx: %d\n",
-mainData->musicqPlayIdx, mainData->musicqManageIdx);
   mainData->musicqManageIdx = mainData->musicqPlayIdx;
   mainData->musicqPlayIdx = newMusicqIdx;
-fprintf (stderr, "switch queue B: play-idx (new): %d manage-idx: %d\n",
-mainData->musicqPlayIdx, mainData->musicqManageIdx);
   /* manage idx is pointing to the previous musicq play idx */
-fprintf (stderr, "push head: switch queue\n");
   musicqPushHeadEmpty (mainData->musicQueue, mainData->musicqManageIdx);
-
   /* the prior musicq has changed */
   mainData->musicqChanged [mainData->musicqManageIdx] = true;
 
   mainData->musicqManageIdx = mainData->musicqPlayIdx;
   mainData->musicqDeferredPlayIdx = MAIN_NOT_SET;
-fprintf (stderr, "switch queue C: play-idx (new): %d manage-idx (new): %d\n",
-mainData->musicqPlayIdx, mainData->musicqManageIdx);
 
   song = musicqGetCurrent (mainData->musicQueue, mainData->musicqPlayIdx);
   if (song == NULL) {

@@ -1,5 +1,5 @@
 /*
- * bdj4play
+ * bdj4player
  *  Does the actual playback of the music.
  *  Handles volume changes, fades.
  */
@@ -1005,16 +1005,29 @@ playerNextSong (playerdata_t *playerData)
   if (playerData->playerState == PL_STATE_LOADING ||
       playerData->playerState == PL_STATE_PLAYING ||
       playerData->playerState == PL_STATE_IN_FADEOUT) {
+    /* the sone will stop playing, and the normal logic will move */
+    /* to the next song and continue playing */
     playerData->stopPlaying = true;
   } else {
     if (playerData->playerState == PL_STATE_PAUSED) {
-      playerData->stopPlaying = true;
+      char  *request;
+
+      /* this song's play request must be removed from the play request q */
+      request = queuePop (playerData->playRequest);
+      free (request);
+
+      /* tell vlc to stop */
+      pliStop (playerData->pli);
       playerSetPlayerState (playerData, PL_STATE_STOPPED);
       logMsg (LOG_DBG, LOG_BASIC, "pl state: stopped (was paused; next-song)");
+      /* and have main advance to the next song */
+      connSendMessage (playerData->conn, ROUTE_MAIN,
+          MSG_PLAYBACK_STOP, NULL);
+    } else {
+      /* tell main to go to the next song */
+      connSendMessage (playerData->conn, ROUTE_MAIN,
+          MSG_PLAYBACK_FINISH, NULL);
     }
-    /* tell main to go to the next song */
-    connSendMessage (playerData->conn, ROUTE_MAIN,
-        MSG_PLAYBACK_FINISH, NULL);
   }
 }
 
