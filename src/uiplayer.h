@@ -29,7 +29,8 @@ typedef struct {
   GtkWidget       *countdownTimerLab;
   GtkWidget       *durationLab;
   GtkWidget       *seekScale;
-  double          lastdur;
+  GtkWidget       *seekDisplayLab;
+  ssize_t         lastdur;
   bool            seekLock;
   mstime_t        seekLockTimeout;
   mstime_t        seekLockSend;

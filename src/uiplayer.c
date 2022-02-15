@@ -252,9 +252,13 @@ uiplayerActivate (uiplayer_t *uiplayer)
   gtk_size_group_add_widget (sgA, GTK_WIDGET (widget));
 
   /* size group B */
-  widget = gtk_label_new ("");
-  gtk_box_pack_end (GTK_BOX (hbox), GTK_WIDGET (widget), FALSE, FALSE, 0);
-  gtk_size_group_add_widget (sgB, GTK_WIDGET (widget));
+  uiplayer->seekDisplayLab = gtk_label_new ("3:00");
+  assert (uiplayer->seekDisplayLab != NULL);
+  gtk_widget_set_size_request (GTK_WIDGET (uiplayer->seekDisplayLab), 40, -1);
+  gtk_widget_set_halign (GTK_WIDGET (uiplayer->seekDisplayLab), GTK_ALIGN_END);
+  gtk_size_group_add_widget (sgB, GTK_WIDGET (uiplayer->seekDisplayLab));
+  gtk_box_pack_end (GTK_BOX (hbox), GTK_WIDGET (uiplayer->seekDisplayLab),
+      FALSE, FALSE, 0);
 
   /* size group C */
   adjustment = gtk_adjustment_new (0.0, 0.0, 180000.0, 100.0, 1000.0, 0.0);
@@ -520,7 +524,7 @@ uiplayerInitCallback (void *udata, programstate_t programState)
 
   uiplayer->repeatLock = false;
   uiplayer->pauseatendLock = false;
-  uiplayer->lastdur = 180000.0;
+  uiplayer->lastdur = 180000;
   uiplayer->speedLock = false;
   mstimeset (&uiplayer->speedLockTimeout, 3600000);
   mstimeset (&uiplayer->speedLockSend, 3600000);
@@ -621,6 +625,10 @@ uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args)
   double        dval;
   double        ddur;
   GtkAdjustment *adjustment;
+  ssize_t       timeleft;
+  ssize_t       position;
+  ssize_t       dur;
+
 
   /* player state */
   p = strtok_r (args, MSG_ARGS_RS_STR, &tokstr);
@@ -668,22 +676,30 @@ uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args)
   /* playedtime */
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   if (! uiplayer->seekLock) {
-    tmutilToMSD (atol (p), tbuff, sizeof (tbuff));
-    gtk_label_set_label (GTK_LABEL (uiplayer->countdownTimerLab), tbuff);
+    position = atol (p);
     dval = atof (p);    // used below
   }
 
   /* duration */
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   ddur = atof (p);
-  if (ddur > 0.0 && ddur != uiplayer->lastdur) {
-    tmutilToMS (atol (p), tbuff, sizeof (tbuff));
+  dur = atol (p);
+  if (ddur > 0.0 && dur != uiplayer->lastdur) {
+    tmutilToMS (dur, tbuff, sizeof (tbuff));
     gtk_label_set_label (GTK_LABEL (uiplayer->durationLab), tbuff);
     adjustment = gtk_adjustment_new (0.0, 0.0, ddur, 100.0, 1000.0, 0.0);
     gtk_range_set_adjustment (GTK_RANGE (uiplayer->seekScale), adjustment);
-    uiplayer->lastdur = ddur;
+    uiplayer->lastdur = dur;
   }
+
   if (! uiplayer->seekLock) {
+    tmutilToMS (position, tbuff, sizeof (tbuff));
+    gtk_label_set_label (GTK_LABEL (uiplayer->seekDisplayLab), tbuff);
+
+    timeleft = dur - position;
+    tmutilToMSD (timeleft, tbuff, sizeof (tbuff));
+    gtk_label_set_label (GTK_LABEL (uiplayer->countdownTimerLab), tbuff);
+
     if (ddur == 0.0) {
       gtk_range_set_value (GTK_RANGE (uiplayer->seekScale), 0.0);
     } else {
@@ -812,6 +828,7 @@ uiplayerSeekProcess (GtkRange *range, GtkScrollType *scroll, gdouble value, gpoi
   uiplayer_t    *uiplayer = udata;
   char          tbuff [40];
   ssize_t       position;
+  ssize_t       timeleft;
 
   if (! uiplayer->seekLock) {
     mstimeset (&uiplayer->seekLockSend, UIPLAYER_LOCK_TIME_SEND);
@@ -819,7 +836,12 @@ uiplayerSeekProcess (GtkRange *range, GtkScrollType *scroll, gdouble value, gpoi
   uiplayer->seekLock = true;
   mstimeset (&uiplayer->seekLockTimeout, UIPLAYER_LOCK_TIME_WAIT);
   position = (ssize_t) round (value);
-  tmutilToMSD (position, tbuff, sizeof (tbuff));
+
+  tmutilToMS (position, tbuff, sizeof (tbuff));
+  gtk_label_set_label (GTK_LABEL (uiplayer->seekDisplayLab), tbuff);
+
+  timeleft = uiplayer->lastdur - position;
+  tmutilToMSD (timeleft, tbuff, sizeof (tbuff));
   gtk_label_set_label (GTK_LABEL (uiplayer->countdownTimerLab), tbuff);
   return FALSE;
 }

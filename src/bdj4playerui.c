@@ -139,8 +139,8 @@ main (int argc, char *argv[])
   plui.musicqPlayIdx = MUSICQ_A;
   plui.musicqManageIdx = MUSICQ_A;
   plui.playWhenQueued = true;
-  plui.showExtraQueues = true;
-  plui.switchQueueWhenEmpty = true;
+  plui.showExtraQueues = false;
+  plui.switchQueueWhenEmpty = false;
 
   for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
     plui.processes [i] = NULL;
@@ -314,19 +314,22 @@ pluiActivate (GApplication *app, gpointer userdata)
   gtk_menu_item_set_submenu (GTK_MENU_ITEM (menuitem), menu);
 
   menuitem = gtk_check_menu_item_new_with_label (_("Play When Queued"));
-  gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (menuitem), TRUE);
+  gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (menuitem),
+      plui->playWhenQueued);
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
   g_signal_connect (menuitem, "toggled",
       G_CALLBACK (pluiTogglePlayWhenQueued), plui);
 
   menuitem = gtk_check_menu_item_new_with_label (_("Show Extra Queues"));
-  gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (menuitem), TRUE);
+  gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (menuitem),
+      plui->showExtraQueues);
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
   g_signal_connect (menuitem, "toggled",
       G_CALLBACK (pluiToggleExtraQueues), plui);
 
   menuitem = gtk_check_menu_item_new_with_label (_("Switch Queue When Empty"));
-  gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (menuitem), TRUE);
+  gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (menuitem),
+      plui->switchQueueWhenEmpty);
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
   g_signal_connect (menuitem, "toggled",
       G_CALLBACK (pluiToggleSwitchQueue), plui);
