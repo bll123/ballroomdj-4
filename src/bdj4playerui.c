@@ -604,6 +604,7 @@ pluiSetPlaybackQueue (playerui_t  *plui, musicqidx_t newQueue)
   }
   /* if showextraqueues is off, reject any attempt to switch playback. */
   /* let main know what queue is being used */
+  uimusicqSetPlayIdx (plui->uimusicq, plui->musicqPlayIdx);
   snprintf (tbuff, sizeof (tbuff), "%d", plui->musicqPlayIdx);
   connSendMessage (plui->conn, ROUTE_MAIN, MSG_MUSICQ_SET_PLAYBACK, tbuff);
 }

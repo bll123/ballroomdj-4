@@ -29,6 +29,7 @@ typedef struct {
 } uimusicqui_t;
 
 typedef struct {
+  int             musicqPlayIdx;    // needed for clear queue
   int             musicqManageIdx;
   progstate_t     *progstate;
   conn_t          *conn;
@@ -47,6 +48,7 @@ GtkWidget   * uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int 
 void        uimusicqMainLoop (uimusicq_t *uimuiscq);
 int         uimusicqProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
                 bdjmsgmsg_t msg, char *args, void *udata);
+void        uimusicqSetPlayIdx (uimusicq_t *uimusicq, int playIdx);
 void        uimusicqSetManageIdx (uimusicq_t *uimusicq, int manageIdx);
 
 #endif /* INC_UIMUSICQ_H */

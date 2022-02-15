@@ -775,16 +775,22 @@ mainMobilePostCallback (void *userdata, char *resp, size_t len)
 static void
 mainQueueClear (maindata_t *mainData, char *args)
 {
-  int   startIdx;
   int   mi;
+  int   startpos = 0;
+  char  *p;
+  char  *tokstr = NULL;
 
-  mi = atoi (args);
+
+  p = strtok_r (args, MSG_ARGS_RS_STR, &tokstr);
+  mi = atoi (p);
+  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
+  startpos = atoi (p);
+
   mainData->musicqManageIdx = mi;
 
   logMsg (LOG_DBG, LOG_BASIC, "clear music queue");
   queueClear (mainData->playlistQueue [mi], 0);
-  startIdx = mainData->musicqPlayIdx == (musicqidx_t) mi ? 1 : 0;
-  musicqClear (mainData->musicQueue, mi, startIdx);
+  musicqClear (mainData->musicQueue, mi, startpos);
   mainData->musicqChanged [mi] = true;
   mainData->marqueeChanged [mi] = true;
 }

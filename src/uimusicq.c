@@ -108,6 +108,7 @@ uimusicqInit (progstate_t *progstate, conn_t *conn)
     mstimeset (&uimusicq->ui [i].rowChangeTimer, 3600000);
   }
   uimusicq->musicqManageIdx = MUSICQ_A;
+  uimusicq->musicqPlayIdx = MUSICQ_A;
 
   return uimusicq;
 }
@@ -496,6 +497,12 @@ uimusicqProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 }
 
 void
+uimusicqSetPlayIdx (uimusicq_t *uimusicq, int playIdx)
+{
+  uimusicq->musicqPlayIdx = playIdx;
+}
+
+void
 uimusicqSetManageIdx (uimusicq_t *uimusicq, int manageIdx)
 {
   uimusicq->musicqManageIdx = manageIdx;
@@ -596,12 +603,22 @@ static void
 uimusicqClearQueueProcess (GtkButton *b, gpointer udata)
 {
   int           ci;
+  int           idx;
   uimusicq_t    *uimusicq = udata;
   char          tbuff [20];
 
   ci = uimusicq->musicqManageIdx;
 
-  snprintf (tbuff, sizeof (tbuff), "%d", ci);
+  idx = uimusicqGetSelection (uimusicq);
+  if (idx < 0) {
+    /* if nothing is selected, clear everything */
+    idx = 0;
+    if (uimusicq->musicqManageIdx == uimusicq->musicqPlayIdx) {
+      idx = 1;
+    }
+  }
+
+  snprintf (tbuff, sizeof (tbuff), "%d%c%d", ci, MSG_ARGS_RS, idx);
   connSendMessage (uimusicq->conn, ROUTE_MAIN, MSG_QUEUE_CLEAR, tbuff);
 }
 
