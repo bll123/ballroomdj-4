@@ -1099,24 +1099,28 @@ playerSeek (playerdata_t *playerData, ssize_t reqpos)
   double        drate;
   double        dpos;
   ssize_t       nreqpos;
+  ssize_t       seekpos;
   ssize_t       newpos;
   prepqueue_t   *pq = playerData->currentSong;
 
   /* if duration is adjusted for speed, so is reqpos                */
   /* need to change it back to something the player will understand */
+  /* the 'playTimeStart' position is already relative to songstart  */
   nreqpos = reqpos;
+  seekpos = reqpos + pq->songstart;
   if (pq->speed != 100) {
     drate = (double) pq->speed / 100.0;
-    dpos = (double) reqpos * drate;
+    dpos = (double) seekpos * drate;
+    seekpos = (ssize_t) dpos;
+  }
+  newpos = pliSeek (playerData->pli, seekpos);
+  /* newpos is from vlc; don't use it */
+  if (pq->speed != 100) {
+    drate = (double) pq->speed / 100.0;
+    dpos = (double) nreqpos * drate;
     nreqpos = (ssize_t) dpos;
   }
-  newpos = pliSeek (playerData->pli, nreqpos);
-  if (pq->speed != 100) {
-    drate = (double) pq->speed / 100.0;
-    dpos = (double) newpos * drate;
-    newpos = (ssize_t) dpos;
-  }
-  playerData->playTimePlayed = newpos;
+  playerData->playTimePlayed = nreqpos;
   playerSetCheckTimes (playerData, pq);
 }
 
@@ -1323,7 +1327,6 @@ playerSetCheckTimes (playerdata_t *playerData, prepqueue_t *pq)
 
   /* pq->dur is adjusted for speed.  */
   /* plitm is not; it cannot be combined with pq->dur */
-  newdur = pq->dur;
   newdur = pq->dur - playerData->playTimePlayed;
   /* want to start check for real finish 500 ms before end */
   mstimestart (&playerData->playTimeStart);

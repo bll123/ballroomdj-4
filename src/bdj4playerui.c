@@ -84,7 +84,7 @@ static void     pluiSigHandler (int sig);
 static void     pluiSwitchPage (GtkNotebook *nb, GtkWidget *page, guint pagenum, gpointer udata);
 static void     pluiSetSwitchPage (playerui_t *plui, int pagenum);
 static void     pluiProcessSetPlaybackQueue (GtkButton *b, gpointer udata);
-static void     pluiSetPlaybackQueue (playerui_t *plui);
+static void     pluiSetPlaybackQueue (playerui_t *plui, musicqidx_t newqueue);
 /* option handlers */
 static void     pluiTogglePlayWhenQueued (GtkWidget *mi, gpointer udata);
 static void     pluiSetPlayWhenQueued (playerui_t *plui);
@@ -513,8 +513,7 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           return 1;
         }
         case MSG_QUEUE_SWITCH: {
-          plui->musicqPlayIdx = atoi (args);
-          pluiSetPlaybackQueue (plui);
+          pluiSetPlaybackQueue (plui, atoi (args));
           break;
         }
         default: {
@@ -585,22 +584,26 @@ pluiProcessSetPlaybackQueue (GtkButton *b, gpointer udata)
 {
   playerui_t      *plui = udata;
 
-  plui->musicqPlayIdx = plui->musicqManageIdx;
-  pluiSetPlaybackQueue (plui);
+  pluiSetPlaybackQueue (plui, plui->musicqManageIdx);
 }
 
 static void
-pluiSetPlaybackQueue (playerui_t  *plui)
+pluiSetPlaybackQueue (playerui_t  *plui, musicqidx_t newQueue)
 {
   char            tbuff [40];
 
-  if (plui->musicqPlayIdx == MUSICQ_A) {
-    gtk_image_set_from_pixbuf (GTK_IMAGE (plui->musicqImage [MUSICQ_A]), plui->ledonImg);
-    gtk_image_set_from_pixbuf (GTK_IMAGE (plui->musicqImage [MUSICQ_B]), plui->ledoffImg);
-  } else {
-    gtk_image_set_from_pixbuf (GTK_IMAGE (plui->musicqImage [MUSICQ_A]), plui->ledoffImg);
-    gtk_image_set_from_pixbuf (GTK_IMAGE (plui->musicqImage [MUSICQ_B]), plui->ledonImg);
+  if (plui->showExtraQueues) {
+    plui->musicqPlayIdx = newQueue;
+    if (plui->musicqPlayIdx == MUSICQ_A) {
+      gtk_image_set_from_pixbuf (GTK_IMAGE (plui->musicqImage [MUSICQ_A]), plui->ledonImg);
+      gtk_image_set_from_pixbuf (GTK_IMAGE (plui->musicqImage [MUSICQ_B]), plui->ledoffImg);
+    } else {
+      gtk_image_set_from_pixbuf (GTK_IMAGE (plui->musicqImage [MUSICQ_A]), plui->ledoffImg);
+      gtk_image_set_from_pixbuf (GTK_IMAGE (plui->musicqImage [MUSICQ_B]), plui->ledonImg);
+    }
   }
+  /* if showextraqueues is off, reject any attempt to switch playback. */
+  /* let main know what queue is being used */
   snprintf (tbuff, sizeof (tbuff), "%d", plui->musicqPlayIdx);
   connSendMessage (plui->conn, ROUTE_MAIN, MSG_MUSICQ_SET_PLAYBACK, tbuff);
 }
