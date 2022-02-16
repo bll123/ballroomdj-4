@@ -44,8 +44,8 @@ enum {
   MUSICQ_COL_DBIDX,
   MUSICQ_COL_PAUSEIND,
   MUSICQ_COL_DANCE,
-  MUSICQ_COL_ARTIST,
   MUSICQ_COL_TITLE,
+  MUSICQ_COL_ARTIST,
   MUSICQ_COL_MAX,
 };
 
@@ -139,6 +139,9 @@ uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
   GtkTreeSelection  *sel = NULL;
   GValue            gvalue = G_VALUE_INIT;
   GtkTreeModel      *model = NULL;
+
+  g_value_init (&gvalue, G_TYPE_INT);
+  g_value_set_int (&gvalue, PANGO_ELLIPSIZE_END);
 
   /* temporary */
   tci = uimusicq->musicqManageIdx;
@@ -412,20 +415,18 @@ uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
 
   renderer = gtk_cell_renderer_text_new ();
   column = gtk_tree_view_column_new_with_attributes ("",
-      renderer, "text", MUSICQ_COL_ARTIST, NULL);
+      renderer, "text", MUSICQ_COL_TITLE, NULL);
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
   gtk_tree_view_column_set_fixed_width (column, 400);
   gtk_tree_view_column_set_expand (column, TRUE);
-  g_value_init (&gvalue, G_TYPE_INT);
-  g_value_set_int (&gvalue, PANGO_ELLIPSIZE_END);
   g_object_set_property (G_OBJECT (renderer), "ellipsize", &gvalue);
   gtk_tree_view_append_column (GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree), column);
 
   renderer = gtk_cell_renderer_text_new ();
   column = gtk_tree_view_column_new_with_attributes ("",
-      renderer, "text", MUSICQ_COL_TITLE, NULL);
+      renderer, "text", MUSICQ_COL_ARTIST, NULL);
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
-  gtk_tree_view_column_set_fixed_width (column, 400);
+  gtk_tree_view_column_set_fixed_width (column, 250);
   gtk_tree_view_column_set_expand (column, TRUE);
   g_object_set_property (G_OBJECT (renderer), "ellipsize", &gvalue);
   gtk_tree_view_append_column (GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree), column);
@@ -438,7 +439,7 @@ uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
   return uimusicq->ui [ci].box;
 }
 
-inline void
+void
 uimusicqMainLoop (uimusicq_t *uimusicq)
 {
   int           ci;
@@ -1153,9 +1154,15 @@ uimusicqMusicQueueSetSelected (uimusicq_t *uimusicq, int ci, int which)
   gboolean          valid;
   GtkTreeSelection  *sel;
   GtkTreeIter       iter;
+  gint              count;
+
 
   sel = gtk_tree_view_get_selection (
       GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree));
+  count = gtk_tree_selection_count_selected_rows (sel);
+  if (count != 1) {
+    return;
+  }
   gtk_tree_selection_get_selected (sel, &model, &iter);
 
   switch (which) {

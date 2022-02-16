@@ -624,7 +624,6 @@ uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args)
   char          tbuff [100];
   double        dval;
   double        ddur;
-  GtkAdjustment *adjustment;
   ssize_t       timeleft;
   ssize_t       position;
   ssize_t       dur;
@@ -687,8 +686,7 @@ uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args)
   if (ddur > 0.0 && dur != uiplayer->lastdur) {
     tmutilToMS (dur, tbuff, sizeof (tbuff));
     gtk_label_set_label (GTK_LABEL (uiplayer->durationLab), tbuff);
-    adjustment = gtk_adjustment_new (0.0, 0.0, ddur, 100.0, 1000.0, 0.0);
-    gtk_range_set_adjustment (GTK_RANGE (uiplayer->seekScale), adjustment);
+    gtk_range_set_range (GTK_RANGE (uiplayer->seekScale), 0.0, ddur);
     uiplayer->lastdur = dur;
   }
 

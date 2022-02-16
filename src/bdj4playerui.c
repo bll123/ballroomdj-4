@@ -24,7 +24,6 @@
 #include "localeutil.h"
 #include "lock.h"
 #include "log.h"
-#include "musicdb.h"
 #include "musicq.h"
 #include "pathbld.h"
 #include "procutil.h"
@@ -59,7 +58,7 @@ typedef struct {
   /* ui major elements */
   uiplayer_t      *uiplayer;
   uimusicq_t      *uimusicq;
-  uisongselect_t  *uisongselect;
+  uisongsel_t     *uisongsel;
   /* options */
   bool            playWhenQueued : 1;
   bool            showExtraQueues : 1;
@@ -135,7 +134,7 @@ main (int argc, char *argv[])
   plui.window = NULL;
   plui.uiplayer = NULL;
   plui.uimusicq = NULL;
-  plui.uisongselect = NULL;
+  plui.uisongsel = NULL;
   plui.musicqPlayIdx = MUSICQ_A;
   plui.musicqManageIdx = MUSICQ_A;
   plui.playWhenQueued = true;
@@ -164,7 +163,7 @@ main (int argc, char *argv[])
 
   plui.uiplayer = uiplayerInit (plui.progstate, plui.conn);
   plui.uimusicq = uimusicqInit (plui.progstate, plui.conn);
-  plui.uisongselect = uisongselInit (plui.progstate, plui.conn);
+  plui.uisongsel = uisongselInit (plui.progstate, plui.conn);
 
   plui.sockserver = sockhStartServer (listenPort);
 
@@ -226,7 +225,7 @@ pluiClosingCallback (void *udata, programstate_t programState)
 
   uiplayerFree (plui->uiplayer);
   uimusicqFree (plui->uimusicq);
-  uisongselFree (plui->uisongselect);
+  uisongselFree (plui->uisongsel);
 
   /* give the other processes some time to shut down */
   mssleep (200);
@@ -390,7 +389,7 @@ pluiActivate (GApplication *app, gpointer userdata)
   gtk_widget_show_all (GTK_WIDGET (hbox));
 
   /* song selection tab */
-  widget = uisongselActivate (plui->uisongselect);
+  widget = uisongselActivate (plui->uisongsel);
   tabLabel = gtk_label_new ("Song Selection");
   gtk_notebook_append_page (GTK_NOTEBOOK (plui->notebook), widget, tabLabel);
 
@@ -427,6 +426,7 @@ pluiMainLoop (void *tplui)
 
   uiplayerMainLoop (plui->uiplayer);
   uimusicqMainLoop (plui->uimusicq);
+  uisongselMainLoop (plui->uisongsel);
 
   if (gKillReceived) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");

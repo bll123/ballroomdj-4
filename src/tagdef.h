@@ -66,6 +66,7 @@ typedef enum {
   TAG_DISCTOTAL,
   TAG_DISPLAYIMG,
   TAG_DURATION,               //
+  TAG_FAVORITE,
   TAG_FILE,                   //
   TAG_GENRE,
   TAG_KEYWORD,                //

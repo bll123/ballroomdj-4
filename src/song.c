@@ -1,6 +1,5 @@
 #include "config.h"
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -22,6 +21,8 @@
 #include "status.h"
 #include "tagdef.h"
 
+static void songConvFavorite (char *keydata, datafileret_t *ret);
+
   /* must be sorted in ascii order */
 static datafilekey_t songdfkeys[] = {
   { "ADJUSTFLAGS",          TAG_ADJUSTFLAGS,          VALUE_DATA, NULL, -1 },
@@ -42,6 +43,7 @@ static datafilekey_t songdfkeys[] = {
   { "DISCTOTAL",            TAG_DISCTOTAL,            VALUE_NUM, NULL, -1 },
   { "DISPLAYIMG",           TAG_DISPLAYIMG,           VALUE_DATA, NULL, -1 },
   { "DURATION",             TAG_DURATION,             VALUE_NUM, NULL, -1 },
+  { "FAVORITE",             TAG_FAVORITE,             VALUE_NUM, songConvFavorite, -1 },
   { "FILE",                 TAG_FILE,                 VALUE_DATA, NULL, -1 },
   { "GENRE",                TAG_GENRE,                VALUE_DATA, genreConv, -1 },
   { "KEYWORD",              TAG_KEYWORD,              VALUE_DATA, NULL, -1 },
@@ -66,6 +68,24 @@ static datafilekey_t songdfkeys[] = {
   { "WRITETIME",            TAG_WRITETIME,            VALUE_NUM, NULL, -1 },
 };
 #define SONG_DFKEY_COUNT (sizeof (songdfkeys) / sizeof (datafilekey_t))
+
+static datafilekey_t favoritedfkeys [SONG_FAVORITE_MAX] = {
+  { "bluestar",   SONG_FAVORITE_BLUE,     VALUE_DATA, NULL, -1 },
+  { "greenstar",  SONG_FAVORITE_GREEN,    VALUE_DATA, NULL, -1 },
+  { "none",       SONG_FAVORITE_NONE,     VALUE_DATA, NULL, -1 },
+  { "orangestar", SONG_FAVORITE_ORANGE,   VALUE_DATA, NULL, -1 },
+  { "purplestar", SONG_FAVORITE_PURPLE,   VALUE_DATA, NULL, -1 },
+  { "redstar",    SONG_FAVORITE_RED,      VALUE_DATA, NULL, -1 },
+};
+
+static songfavoriteinfo_t songfavoriteinfo [SONG_FAVORITE_MAX] = {
+  { SONG_FAVORITE_NONE, "\xE2\x98\x86", "" },
+  { SONG_FAVORITE_RED, "\xE2\x98\x85", "#9b3128" },
+  { SONG_FAVORITE_ORANGE, "\xE2\x98\x85", "#c26a1a" },
+  { SONG_FAVORITE_GREEN, "\xE2\x98\x85", "#00b25d", },
+  { SONG_FAVORITE_BLUE, "\xE2\x98\x85", "#2f2ad7" },
+  { SONG_FAVORITE_PURPLE, "\xE2\x98\x85", "#901ba3" },
+};
 
 song_t *
 songAlloc (void)
@@ -137,6 +157,22 @@ songGetDouble (song_t *song, nlistidx_t idx)
   return value;
 }
 
+songfavoriteinfo_t *
+songGetFavoriteData (song_t *song)
+{
+  ssize_t       value;
+
+  if (song == NULL || song->songInfo == NULL) {
+    return &songfavoriteinfo [SONG_FAVORITE_NONE];
+  }
+
+  value = nlistGetNum (song->songInfo, TAG_FAVORITE);
+  if (value == LIST_VALUE_INVALID) {
+    return &songfavoriteinfo [SONG_FAVORITE_NONE];
+  }
+  return &songfavoriteinfo [value];
+}
+
 void
 songSetNum (song_t *song, nlistidx_t tagidx, ssize_t value)
 {
@@ -157,6 +193,26 @@ songSetData (song_t *song, nlistidx_t tagidx, char *str)
   nlistSetData (song->songInfo, tagidx, str);
 }
 
+void
+songChangeFavorite (song_t *song)
+{
+  ssize_t fav = SONG_FAVORITE_NONE;
+
+  if (song == NULL || song->songInfo == NULL) {
+    return;
+  }
+
+  fav = nlistGetNum (song->songInfo, TAG_FAVORITE);
+  if (fav == LIST_VALUE_INVALID) {
+    fav = SONG_FAVORITE_NONE;
+  }
+  ++fav;
+  if (fav >= SONG_FAVORITE_MAX) {
+    fav = SONG_FAVORITE_NONE;
+  }
+  nlistSetNum (song->songInfo, TAG_FAVORITE, fav);
+}
+
 bool
 songAudioFileExists (song_t *song)
 {
@@ -171,5 +227,24 @@ songAudioFileExists (song_t *song)
         (char *) bdjoptGetData (OPT_M_DIR_MUSIC), sfname);
   }
   return fileopExists (tbuff);
+}
+
+/* internal routines */
+
+static void
+songConvFavorite (char *keydata, datafileret_t *ret)
+{
+  nlistidx_t       idx;
+
+  ret->valuetype = VALUE_NUM;
+  if (keydata == NULL || strcmp (keydata, "") == 0) {
+    ret->u.num = SONG_FAVORITE_NONE;
+    return;
+  }
+  idx = dfkeyBinarySearch (favoritedfkeys, SONG_FAVORITE_MAX, keydata);
+  if (idx < 0) {
+    ret->u.num = SONG_FAVORITE_NONE;
+  }
+  ret->u.num = favoritedfkeys [idx].itemkey;
 }
 

@@ -5,20 +5,31 @@
 #include <gtk/gtk.h>
 
 #include "conn.h"
+#include "musicdb.h"
 #include "progstate.h"
 
 typedef struct {
   progstate_t     *progstate;
   conn_t          *conn;
+  int             maxRows;
+  ssize_t         idxStart;
+  int             treeSize;
+  int             boxSize;
+  double          ddbcount;
   /* song selection tab */
-  GtkWidget       *box;
-  GtkWidget       *queueButton;
+  GtkWidget       *vbox;
   GtkWidget       *songselTree;
-} uisongselect_t;
+  GtkWidget       *songselScrollbar;
+  GtkTreeViewColumn * favColumn;
+  /* internal flags */
+  bool            createRowProcessFlag : 1;
+  bool            createRowFlag : 1;
+} uisongsel_t;
 
-uisongselect_t  * uisongselInit (progstate_t *progstate, conn_t *conn);
-void            uisongselFree (uisongselect_t *uisongselect);
-GtkWidget       * uisongselActivate (uisongselect_t *uisongselect);
+uisongsel_t * uisongselInit (progstate_t *progstate, conn_t *conn);
+void        uisongselFree (uisongsel_t *uisongsel);
+GtkWidget   * uisongselActivate (uisongsel_t *uisongsel);
+void        uisongselMainLoop (uisongsel_t *uisongsel);
 
 #endif /* INC_UISONGSEL_H */
 

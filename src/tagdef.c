@@ -370,6 +370,25 @@ tagdef_t tagdefs[MAX_TAG_KEY] = {
     0,                            /* song list display    */
     1                             /* text search          */
   },
+  [TAG_FAVORITE] =
+  { 0,                            /* default edit order   */
+    0,                            /* edit index           */
+    0,                            /* edit width           */
+    ANCHOR_WEST,                  /* listing anchor       */
+    0,                            /* listing weight       */
+    ANCHOR_WEST,                  /* song list anchor     */
+    0,                            /* song list weight     */
+    AIDD_NO,                      /* audio id disp        */
+    ET_NA,                        /* edit type            */
+    1,                            /* is bdj tag           */
+    0,                            /* is norm tag          */
+    0,                            /* album edit           */
+    0,                            /* all edit             */
+    1,                            /* editable             */
+    1,                            /* listing display      */
+    1,                            /* song list display    */
+    0                             /* text search          */
+  },
   [TAG_GENRE] =
   { 1,                            /* default edit order   */
     1,                            /* edit index           */
