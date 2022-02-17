@@ -254,20 +254,26 @@ main (int argc, char * argv[])
     while (p != NULL) {
       snprintf (tmp, sz, "%s\\libgtk-3-0.dll", p);
       if (! fileopExists (tmp)) {
+        if (debugself) {
+          fprintf (stderr, "path ok: %s\n", p);
+        }
         strlcat (path, p, sz);
         strlcat (path, ";", sz);
       } else {
-        fprintf (stderr, "found dir with libgtk: %s\n", p);
+        if (debugself) {
+          fprintf (stderr, "found dir with libgtk: %s\n", p);
+        }
       }
       p = strtok_r (NULL, ";", &tokstr);
     }
 
     pathToWinPath (pbuff, sysvarsGetStr (SV_BDJ4EXECDIR), sz);
+    strlcat (path, pbuff, sz);
+
     if (debugself) {
       fprintf (stderr, "execdir: %s\n", pbuff);
+      fprintf (stderr, "path: %s\n", path);
     }
-    strlcpy (path, "PATH=", sz);
-    strlcat (path, pbuff, sz);
 
     strlcat (path, ";", sz);
     snprintf (pbuff, sz, "%s\\..\\plocal\\bin", sysvarsGetStr (SV_BDJ4EXECDIR));
@@ -280,7 +286,7 @@ main (int argc, char * argv[])
     putenv (path);
 
     if (debugself) {
-      fprintf (stderr, "PATH=%s\n", getenv ("PATH"));
+      fprintf (stderr, "final PATH=%s\n", getenv ("PATH"));
     }
 
     free (pbuff);

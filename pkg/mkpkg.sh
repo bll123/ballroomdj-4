@@ -294,7 +294,12 @@ tmpzip=tmp/tfile.zip
 tmpsep=tmp/sep.txt
 tmpmac=tmp/macos
 
-nm=${spkgnm}-${VERSION}-installer-${tag}${rlstag}${sfx}
+datetag=""
+if [[ $rlstag != "" ]]; then
+  datetag="-$(date '+%Y%m%d')"
+fi
+
+nm=${spkgnm}-${VERSION}-installer-${tag}${datetag}${rlstag}${sfx}
 
 test -d ${stagedir} && rm -rf ${stagedir}
 mkdir ${stagedir}
