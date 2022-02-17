@@ -20,6 +20,7 @@
 #include "progstate.h"
 #include "tagdef.h"
 #include "uisongsel.h"
+#include "uiutils.h"
 
 enum {
   SONGSEL_COL_IDX,
@@ -35,14 +36,14 @@ enum {
 static void uisongselInitializeStore (uisongsel_t *uisongsel);
 static void uisongselCreateRows (uisongsel_t *uisongsel);
 static void uisongselPopulateData (uisongsel_t *uisongsel);
-static void uisongselProcessBoxSize (GtkWidget* w, GtkAllocation* allocation,
-    gpointer user_data);
 static void uisongselProcessTreeSize (GtkWidget* w, GtkAllocation* allocation,
     gpointer user_data);
-static gboolean uisongselScroll (GtkRange* range, GtkScrollType* scroll,
+static gboolean uisongselScroll (GtkRange *range, GtkScrollType scrolltype,
     gdouble value, gpointer udata);
 static void uisongselRowSelected (GtkTreeView* tv, GtkTreePath* path,
     GtkTreeViewColumn* column, gpointer udata);
+static gboolean uisongselScrollEvent (GtkWidget* tv, GdkEventScroll *event,
+    gpointer udata);
 
 uisongsel_t *
 uisongselInit (progstate_t *progstate, conn_t *conn)
@@ -55,11 +56,10 @@ uisongselInit (progstate_t *progstate, conn_t *conn)
   uisongsel->conn = conn;
   uisongsel->maxRows = 0;
   uisongsel->idxStart = 0;
-  uisongsel->treeSize = 0;
-  uisongsel->boxSize = 0;
   uisongsel->createRowProcessFlag = false;
   uisongsel->createRowFlag = false;
   uisongsel->ddbcount = (double) dbCount ();
+  uisongsel->lastTreeSize = 0;
 
   return uisongsel;
 }
@@ -78,6 +78,7 @@ uisongselActivate (uisongsel_t *uisongsel)
   GtkWidget         *hbox;
   GtkWidget         *vbox;
   GtkWidget         *widget;
+  GtkWidget         *twidget;
   GtkTreeSelection  *sel;
   GtkCellRenderer   *renderer = NULL;
   GtkTreeViewColumn *column = NULL;
@@ -112,10 +113,12 @@ uisongselActivate (uisongsel_t *uisongsel)
   gtk_box_pack_start (GTK_BOX (uisongsel->vbox), GTK_WIDGET (hbox),
       TRUE, TRUE, 0);
 
-  adjustment = gtk_adjustment_new (0.0, 0.0, uisongsel->ddbcount, 1, 10.0, 0.0);
+  adjustment = gtk_adjustment_new (0.0, 0.0, uisongsel->ddbcount, 1.0, 10.0, 10.0);
   uisongsel->songselScrollbar = gtk_scrollbar_new (GTK_ORIENTATION_VERTICAL, adjustment);
   assert (uisongsel->songselScrollbar != NULL);
   gtk_widget_set_vexpand (uisongsel->songselScrollbar, TRUE);
+  uiutilsSetCss (uisongsel->songselScrollbar,
+      "scrollbar, scrollbar slider { min-width: 8px; } ");
   gtk_box_pack_end (GTK_BOX (hbox), uisongsel->songselScrollbar,
       FALSE, FALSE, 0);
   g_signal_connect (uisongsel->songselScrollbar, "change-value",
@@ -123,11 +126,19 @@ uisongselActivate (uisongsel_t *uisongsel)
 
   vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   assert (vbox != NULL);
-  gtk_widget_set_vexpand (vbox, TRUE);
-  gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (vbox),
-      TRUE, TRUE, 0);
-  g_signal_connect (vbox, "size-allocate",
-      G_CALLBACK (uisongselProcessBoxSize), uisongsel);
+  gtk_widget_set_vexpand (hbox, TRUE);
+  gtk_box_pack_start (GTK_BOX (hbox), vbox, TRUE, TRUE, 0);
+
+  widget = gtk_scrolled_window_new (NULL, NULL);
+  g_object_set (widget, "overlay-scrolling", FALSE, NULL);
+  gtk_scrolled_window_set_overlay_scrolling (GTK_SCROLLED_WINDOW (widget), FALSE);
+  gtk_scrolled_window_set_propagate_natural_width (GTK_SCROLLED_WINDOW (widget), TRUE);
+  gtk_scrolled_window_set_propagate_natural_height (GTK_SCROLLED_WINDOW (widget), TRUE);
+  gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (widget), GTK_POLICY_NEVER, GTK_POLICY_EXTERNAL);
+  gtk_widget_set_hexpand (widget, TRUE);
+  gtk_widget_set_vexpand (widget, TRUE);
+  gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (widget),
+      FALSE, FALSE, 0);
 
   uisongsel->songselTree = gtk_tree_view_new ();
   assert (uisongsel->songselTree != NULL);
@@ -141,21 +152,32 @@ uisongselActivate (uisongsel_t *uisongsel)
   gtk_widget_set_margin_top (uisongsel->songselTree, 2);
   gtk_widget_set_margin_bottom (uisongsel->songselTree, 4);
   gtk_widget_set_hexpand (uisongsel->songselTree, TRUE);
-  gtk_widget_set_vexpand (uisongsel->songselTree, TRUE);
-  gtk_box_pack_start (GTK_BOX (vbox), uisongsel->songselTree,
-      FALSE, FALSE, 0);
+  gtk_widget_set_vexpand (uisongsel->songselTree, FALSE);
+  adjustment = gtk_scrollable_get_vadjustment (GTK_SCROLLABLE (uisongsel->songselTree));
+  gtk_adjustment_set_upper (adjustment, uisongsel->ddbcount);
+  uisongsel->scrollController =
+      gtk_event_controller_scroll_new (uisongsel->songselTree,
+      GTK_EVENT_CONTROLLER_SCROLL_VERTICAL |
+      GTK_EVENT_CONTROLLER_SCROLL_DISCRETE);
+//  gtk_widget_add_events (uisongsel->songselTree, GDK_SCROLL_MASK);
+  gtk_container_add (GTK_CONTAINER (widget), uisongsel->songselTree);
   g_signal_connect (uisongsel->songselTree, "size-allocate",
       G_CALLBACK (uisongselProcessTreeSize), uisongsel);
   g_signal_connect (uisongsel->songselTree, "row-activated",
       G_CALLBACK (uisongselRowSelected), uisongsel);
+  g_signal_connect (uisongsel->songselTree, "scroll-event",
+      G_CALLBACK (uisongselScrollEvent), uisongsel);
 
   /* this box pushes the tree view up to the top */
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   assert (hbox != NULL);
-  gtk_widget_set_hexpand (GTK_WIDGET (hbox), TRUE);
-  gtk_widget_set_vexpand (GTK_WIDGET (hbox), TRUE);
+  gtk_widget_set_hexpand (hbox, TRUE);
+  gtk_widget_set_vexpand (hbox, TRUE);
   gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (hbox),
       TRUE, TRUE, 0);
+
+  gtk_event_controller_scroll_new (uisongsel->songselTree,
+      GTK_EVENT_CONTROLLER_SCROLL_VERTICAL);
 
   renderer = gtk_cell_renderer_text_new ();
   column = gtk_tree_view_column_new_with_attributes ("",
@@ -194,6 +216,10 @@ uisongselActivate (uisongsel_t *uisongsel)
   uisongsel->favColumn = column;
 
   uisongselInitializeStore (uisongsel);
+  uisongselCreateRows (uisongsel);
+
+//  g_object_set (gtk_widget_get_settings (uisongsel->songselTree),
+//      "gtk-enable-animations", FALSE, NULL);
 
   return uisongsel->vbox;
 }
@@ -201,10 +227,6 @@ uisongselActivate (uisongsel_t *uisongsel)
 void
 uisongselMainLoop (uisongsel_t *uisongsel)
 {
-  if (uisongsel->createRowProcessFlag && uisongsel->createRowFlag) {
-    uisongselCreateRows (uisongsel);
-  }
-
   return;
 }
 
@@ -230,22 +252,21 @@ uisongselInitializeStore (uisongsel_t *uisongsel)
 static void
 uisongselCreateRows (uisongsel_t *uisongsel)
 {
+  GtkAdjustment     *adjustment = NULL;
   GtkTreeModel      *model = NULL;
   GtkTreeIter       iter;
   int               start;
   int               end;
   char              tbuff [40];
+  double            ps, si;
 
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (uisongsel->songselTree));
-  if (uisongsel->treeSize + 20 < uisongsel->boxSize) {
-    /* add rows until the tree size is close to the box size*/
+  /* for now, some number that should be large enough */
+  for (int i = 0; i < 50; ++i) {
     gtk_list_store_append (GTK_LIST_STORE (model), &iter);
-    ++uisongsel->maxRows;
-  } else {
-    uisongselPopulateData (uisongsel);
-    uisongsel->createRowProcessFlag = false;
   }
-  uisongsel->createRowFlag = false;
+
+  uisongselPopulateData (uisongsel);
 }
 
 static void
@@ -311,31 +332,48 @@ uisongselPopulateData (uisongsel_t *uisongsel)
 }
 
 static void
-uisongselProcessBoxSize (GtkWidget* w, GtkAllocation* allocation,
-    gpointer udata)
-{
-  uisongsel_t *uisongsel = udata;
-
-  uisongsel->boxSize = allocation->height;
-}
-
-static void
 uisongselProcessTreeSize (GtkWidget* w, GtkAllocation* allocation,
     gpointer udata)
 {
-  uisongsel_t *uisongsel = udata;
+  uisongsel_t   *uisongsel = udata;
+  GtkAdjustment *adjustment;
+  double        ps, si;
 
-  uisongsel->treeSize = allocation->height;
-  uisongsel->createRowFlag = true;
+
+  if (allocation->height != uisongsel->lastTreeSize) {
+    /* get the page size and the step increment from the scrolled window */
+    /* scrollbar; this will allow us to determine how many rows are displayed */
+    adjustment = gtk_scrollable_get_vadjustment (GTK_SCROLLABLE (uisongsel->songselTree));
+    ps = gtk_adjustment_get_page_size (adjustment);
+    si = gtk_adjustment_get_step_increment (adjustment);
+    uisongsel->maxRows = (int) (ps / si);
+
+    if (allocation->height > 200) {
+      gtk_adjustment_set_value (adjustment, 0.0);
+      g_signal_emit_by_name (GTK_RANGE (uisongsel->songselScrollbar),
+          "change-value", NULL, 0.0, uisongsel, NULL);
+    }
+
+    adjustment = gtk_range_get_adjustment (GTK_RANGE (uisongsel->songselScrollbar));
+    /* the step increment does not work correctly */
+    gtk_adjustment_set_step_increment (adjustment, 4.0);
+    gtk_adjustment_set_page_increment (adjustment, (double) uisongsel->maxRows);
+    gtk_adjustment_set_page_size (adjustment, (double) uisongsel->maxRows);
+
+    uisongsel->lastTreeSize = allocation->height;
+  }
 }
 
 static gboolean
-uisongselScroll (GtkRange* range, GtkScrollType* scroll,
+uisongselScroll (GtkRange *range, GtkScrollType scrolltype,
     gdouble value, gpointer udata)
 {
-  uisongsel_t *uisongsel = udata;
-  double      start;
+  uisongsel_t   *uisongsel = udata;
+  double        start;
 
+  if (value < 0 || value > uisongsel->ddbcount) {
+    return TRUE;
+  }
 
   start = floor (value);
   if (start > uisongsel->ddbcount - uisongsel->maxRows) {
@@ -344,6 +382,7 @@ uisongselScroll (GtkRange* range, GtkScrollType* scroll,
   uisongsel->idxStart = (ssize_t) start;
 
   uisongselPopulateData (uisongsel);
+  return FALSE;
 }
 
 static void
@@ -373,4 +412,32 @@ uisongselRowSelected (GtkTreeView* tv, GtkTreePath* path,
   songChangeFavorite (song);
   // ## TODO song data must be saved to the database.
   uisongselPopulateData (uisongsel);
+}
+
+static gboolean
+uisongselScrollEvent (GtkWidget* tv, GdkEventScroll *event, gpointer udata)
+{
+  uisongsel_t   *uisongsel = udata;
+
+  if (event->direction == GDK_SCROLL_SMOOTH) {
+    double dx, dy;
+
+    gdk_event_get_scroll_deltas ((GdkEvent *) event, &dx, &dy);
+    if (dy < 0.0) {
+      --uisongsel->idxStart;
+    }
+    if (dy > 0.0) {
+      ++uisongsel->idxStart;
+    }
+  }
+  if (event->direction == GDK_SCROLL_DOWN) {
+    ++uisongsel->idxStart;
+  }
+  if (event->direction == GDK_SCROLL_UP) {
+    --uisongsel->idxStart;
+  }
+  g_signal_emit_by_name (GTK_RANGE (uisongsel->songselScrollbar),
+      "change-value", NULL, (double) uisongsel->idxStart, uisongsel, NULL);
+
+  return TRUE;
 }

@@ -12,14 +12,14 @@ typedef struct {
   progstate_t     *progstate;
   conn_t          *conn;
   int             maxRows;
+  int             lastTreeSize;
   ssize_t         idxStart;
-  int             treeSize;
-  int             boxSize;
   double          ddbcount;
   /* song selection tab */
   GtkWidget       *vbox;
   GtkWidget       *songselTree;
   GtkWidget       *songselScrollbar;
+  GtkEventController  *scrollController;
   GtkTreeViewColumn * favColumn;
   /* internal flags */
   bool            createRowProcessFlag : 1;
