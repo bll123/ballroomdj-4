@@ -7,6 +7,7 @@
 #include <string.h>
 #include <assert.h>
 
+#include "bdj4.h"
 #include "bdjstring.h"
 #include "datafile.h"
 #include "filedata.h"
@@ -15,7 +16,6 @@
 #include "ilist.h"
 #include "log.h"
 #include "nlist.h"
-#include "portability.h"
 #include "slist.h"
 #include "tmutil.h"
 

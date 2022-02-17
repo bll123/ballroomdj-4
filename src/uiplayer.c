@@ -10,6 +10,7 @@
 #include <assert.h>
 #include <math.h>
 
+#include "bdj4.h"
 #include "bdj4intl.h"
 #include "bdjvarsdf.h"
 #include "conn.h"
@@ -17,7 +18,6 @@
 #include "ilist.h"
 #include "musicdb.h"
 #include "pathbld.h"
-#include "portability.h"
 #include "progstate.h"
 #include "song.h"
 #include "tagdef.h"

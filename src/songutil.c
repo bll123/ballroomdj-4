@@ -9,10 +9,10 @@
 #include <errno.h>
 #include <assert.h>
 
+#include "bdj4.h"
 #include "bdjopt.h"
 #include "bdjstring.h"
 #include "songutil.h"
-#include "portability.h"
 
 char *
 songFullFileName (char *sfname)

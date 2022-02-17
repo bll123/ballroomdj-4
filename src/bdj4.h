@@ -11,4 +11,8 @@ typedef enum {
   PL_STATE_IN_GAP,
 } playerstate_t;
 
+#if ! defined (MAXPATHLEN)
+# define MAXPATHLEN         512
+#endif
+
 #endif /* INC_BDJ4_H */

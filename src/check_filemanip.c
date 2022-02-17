@@ -12,7 +12,6 @@
 #include "filemanip.h"
 #include "fileop.h"
 #include "check_bdj.h"
-#include "portability.h"
 
 START_TEST(filemanip_copy)
 {

@@ -9,9 +9,9 @@
 #include <unistd.h>
 #include <signal.h>
 
+#include "bdj4.h"
 #include "check_bdj.h"
 #include "pathbld.h"
-#include "portability.h"
 #include "procutil.h"
 #include "sysvars.h"
 #include "tmutil.h"

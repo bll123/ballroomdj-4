@@ -1,7 +1,6 @@
 #ifndef INC_SYSVARS_H
 #define INC_SYSVARS_H
 
-#include "portability.h"
 
 typedef enum {
   SV_OSNAME,

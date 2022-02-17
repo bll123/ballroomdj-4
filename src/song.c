@@ -6,6 +6,7 @@
 #include <string.h>
 #include <assert.h>
 
+#include "bdj4.h"
 #include "bdjopt.h"
 #include "bdjstring.h"
 #include "dance.h"
@@ -15,7 +16,6 @@
 #include "level.h"
 #include "nlist.h"
 #include "log.h"
-#include "portability.h"
 #include "rating.h"
 #include "song.h"
 #include "status.h"

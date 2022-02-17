@@ -2,7 +2,6 @@
 #define INC_PLI_H
 
 #include "dylib.h"
-#include "portability.h"
 #include "tmutil.h"
 
 typedef enum {

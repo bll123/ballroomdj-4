@@ -6,7 +6,6 @@ extern "C" {
 #endif
 
 #include "dylib.h"
-#include "portability.h"
 
 typedef enum {
   VOL_GET,

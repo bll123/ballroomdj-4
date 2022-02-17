@@ -8,10 +8,10 @@
 #include <errno.h>
 #include <assert.h>
 
+#include "bdj4.h"
 #include "bdjopt.h"
 #include "pathbld.h"
 #include "dylib.h"
-#include "portability.h"
 #include "sysvars.h"
 #include "volume.h"
 

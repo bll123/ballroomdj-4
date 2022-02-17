@@ -10,6 +10,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include "bdj4.h"
 #include "bdj4init.h"
 #include "bdjmsg.h"
 #include "bdjopt.h"
@@ -23,7 +24,7 @@
 #include "log.h"
 #include "musicdb.h"
 #include "pathbld.h"
-#include "portability.h"
+#include "osutils.h"
 #include "sysvars.h"
 #include "tagdef.h"
 #include "tmutil.h"

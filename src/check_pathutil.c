@@ -9,9 +9,9 @@
 #include <time.h>
 #include <unistd.h>
 
+#include "bdj4.h"
 #include "pathutil.h"
 #include "check_bdj.h"
-#include "portability.h"
 
 typedef struct {
   char    *path;

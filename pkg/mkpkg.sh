@@ -183,7 +183,10 @@ if [[ $platform == windows ]]; then
       sed -e 's,.*=> ,,' -e 's,\.dll .*,.dll,' >> $dlllistfn
   done
   for fn in $(sort -u $dlllistfn); do
-    cp -pf $fn plocal/bin
+    bfn=$(basename $fn)
+    if [[ $fn -nt $bfn ]]; then
+      cp -pf $fn plocal/bin
+    fi
   done
   rm -f $dlllistfn
 

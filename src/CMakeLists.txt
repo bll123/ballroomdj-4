@@ -314,9 +314,10 @@ add_library (libbdj4common SHARED
   lock.c
   log.c
   nlist.c
+  osnetutils.c
+  osutils.c
   pathbld.c
   pathutil.c
-  portability.c
   procutil.c
   progstate.c
   queue.c
@@ -464,11 +465,14 @@ add_library (libwebsrv STATIC websrv.c)
 target_include_directories (libwebsrv
   PRIVATE "${MONGOOSE_INC_DIR}"
 )
-add_library (liblocatebdj3 STATIC locatebdj3.c strlcpy.c strlcat.c)
+add_library (liblocatebdj3 STATIC locatebdj3.c)
+
+add_library (libbdj4basic STATIC
+  bdjstring.c osutils.c strlcat.c strlcpy.c
+)
 
 add_library (libbdj4launcher STATIC
-  bdjstring.c filedata.c fileop.c pathbld.c
-  pathutil.c portability.c sysvars.c strlcat.c strlcpy.c
+  filedata.c fileop.c osnetutils.c pathbld.c pathutil.c sysvars.c
 )
 
 if (WIN32)
@@ -488,6 +492,7 @@ endif()
 add_executable (bdj4 bdj4.c)
 target_link_libraries (bdj4
   libbdj4launcher
+  libbdj4basic
 )
 if (WIN32)
   target_sources (bdj4 PRIVATE launcher.o)
@@ -503,9 +508,10 @@ target_include_directories (bdj4g
 target_compile_options (bdj4g PRIVATE -DBDJ4_GUI_LAUNCHER=1)
 target_link_libraries (bdj4g
   libbdj4launcher
+  libbdj4basic
   ${GTK_LDFLAGS}
 )
-addWinSockLibrary (bdj4)
+addWinSockLibrary (bdj4g)
 
 add_executable (bdj4cli bdj4cli.c)
 target_link_libraries (bdj4cli
@@ -581,6 +587,7 @@ addIntlLibrary (bdj4installer)
 add_executable (bdj4locatebdj3 bdj4locatebdj3.c)
 target_link_libraries (bdj4locatebdj3
   liblocatebdj3
+  libbdj4basic
 )
 
 add_executable (bdj4locale bdj4locale.c)
@@ -601,6 +608,9 @@ if (WIN32)
 endif()
 
 add_executable (bdj4se bdj4se.c)
+target_link_libraries (bdj4se
+  libbdj4basic
+)
 if (WIN32)
   target_sources (bdj4se PRIVATE selauncher.o)
 endif()

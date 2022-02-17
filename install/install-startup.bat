@@ -9,10 +9,10 @@ set reinstall=""
 
 :procargs
 if "%1" == "" ( goto endargs )
-if "%1" == "--reinstall" (
+if %1 == "--reinstall" (
   set reinstall="--reinstall"
 )
-if "%1" == "--cli" (
+if %1 == "--cli" (
   set guidisabled="--guidisabled"
 )
 shift

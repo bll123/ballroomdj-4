@@ -17,9 +17,9 @@
 # include <windows.h>
 #endif
 
+#include "bdj4.h"
 #include "dylib.h"
 #include "pathutil.h"
-#include "portability.h"
 
 dlhandle_t *
 dylibLoad (char *path)

@@ -10,9 +10,9 @@
 
 #include <gtk/gtk.h>
 
+#include "bdj4.h"
 #include "bdjstring.h"
 #include "log.h"
-#include "portability.h"
 #include "sysvars.h"
 #include "uiutils.h"
 

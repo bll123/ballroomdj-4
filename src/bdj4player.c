@@ -34,7 +34,6 @@
 #include "log.h"
 #include "pathutil.h"
 #include "pli.h"
-#include "portability.h"
 #include "procutil.h"
 #include "queue.h"
 #include "sock.h"

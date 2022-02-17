@@ -17,13 +17,14 @@
 # include <windows.h>
 #endif
 
+#include "bdj4.h"
 #include "bdjmsg.h"
 #include "bdjopt.h"
 #include "bdjstring.h"
 #include "conn.h"
 #include "log.h"
+#include "osutils.h"
 #include "pathbld.h"
-#include "portability.h"
 #include "procutil.h"
 #include "sysvars.h"
 #include "tmutil.h"
@@ -69,11 +70,6 @@ procutilExists (procutil_t *process)
 #endif
 }
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeclaration-after-statement"
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeclaration-after-statement"
-
 procutil_t *
 procutilStart (const char *fn, ssize_t profile, ssize_t loglvl)
 {
@@ -96,87 +92,20 @@ procutilStart (const char *fn, ssize_t profile, ssize_t loglvl)
   snprintf (sprof, sizeof (sprof), "%zd", profile);
   snprintf (sloglvl, sizeof (sloglvl), "%zd", loglvl);
 
-#if _lib_fork
-  pid_t       tpid;
-  int         rc;
-  char        *extension;
+  idx = 0;
+  targv [idx++] = (char *) fn;
+  targv [idx++] = "--profile";
+  targv [idx++] = sprof;
+  targv [idx++] = "--debug";
+  targv [idx++] = sloglvl;
+  targv [idx++] = NULL;
 
-  extension = "";
-  if (isWindows ()) {
-    extension = ".exe";
+  process->processHandle = NULL;
+  process->pid = osProcessStart (targv, OS_PROC_DETACH, &process->processHandle);
+  if (process->processHandle != NULL) {
+    process->hasHandle = true;
   }
 
-  /* this may be slower, but it works; speed is not a major issue */
-  tpid = fork ();
-  if (tpid < 0) {
-    logError ("fork");
-    logProcEnd (LOG_PROC, "procutilStart", "fork-fail");
-    return NULL;
-  }
-  if (tpid == 0) {
-    /* child */
-//    if (setsid () < 0) {
-//      logError ("setsid");
-//    }
-    /* close any open file descriptors */
-    for (int i = 3; i < 30; ++i) {
-      close (i);
-    }
-    logEnd ();
-    idx = 0;
-    targv [idx++] = (char *) fn;
-    targv [idx++] = "--profile";
-    targv [idx++] = sprof;
-    targv [idx++] = "--debug";
-    targv [idx++] = sloglvl;
-    targv [idx++] = NULL;
-    rc = execv (targv [0], targv);
-    if (rc < 0) {
-      logError ("execv");
-      exit (1);
-    }
-    exit (0);
-  }
-  process->pid = tpid;
-#endif
-
-#if _lib_CreateProcess
-  STARTUPINFO         si;
-  PROCESS_INFORMATION pi;
-
-  process->processHandle = 0;
-  memset (&si, '\0', sizeof (si));
-  si.cb = sizeof(si);
-  memset (&pi, '\0', sizeof (pi));
-
-  snprintf (tmp, sizeof (tmp), "%s --profile %zd --debug %zd", fn, profile, loglvl);
-
-  // Start the child process.
-  if (! CreateProcess (
-      fn,             // module name
-      tmp,            // command line
-      NULL,           // process handle
-      NULL,           // hread handle
-      FALSE,          // handle inheritance
-      0,              // set to DETACHED_PROCESS
-      NULL,           // parent's environment
-      NULL,           // parent's starting directory
-      &si,            // STARTUPINFO structure
-      &pi )           // PROCESS_INFORMATION structure
-  ) {
-    logError ("CreateProcess");
-    int err = GetLastError ();
-    fprintf (stderr, "getlasterr: %d\n", err);
-    return NULL;
-  }
-
-  process->pid = pi.dwProcessId;
-  process->processHandle = pi.hProcess;
-  process->hasHandle = true;
-
-  CloseHandle (pi.hThread);
-
-#endif
   logProcEnd (LOG_PROC, "procutilStart", "");
   process->started = true;
   return process;
@@ -390,4 +319,5 @@ procutilGetProcessHandle (pid_t pid, DWORD procaccess)
 }
 
 #endif /* _typ_HANDLE */
+
 

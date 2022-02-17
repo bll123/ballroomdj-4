@@ -7,6 +7,7 @@
 #include <string.h>
 #include <assert.h>
 
+#include "bdj4.h"
 #include "bdjvarsdf.h"
 #include "dance.h"
 #include "datafile.h"
@@ -20,7 +21,6 @@
 #include "musicdb.h"
 #include "pathutil.h"
 #include "playlist.h"
-#include "portability.h"
 #include "rating.h"
 #include "sequence.h"
 #include "slist.h"

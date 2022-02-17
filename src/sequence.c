@@ -7,13 +7,13 @@
 #include <string.h>
 #include <assert.h>
 
+#include "bdj4.h"
 #include "dance.h"
 #include "datafile.h"
 #include "pathbld.h"
 #include "fileop.h"
 #include "log.h"
 #include "nlist.h"
-#include "portability.h"
 #include "sequence.h"
 #include "slist.h"
 

@@ -13,9 +13,9 @@
 # include <libintl.h>
 #endif
 
+#include "bdj4.h"
 #include "localeutil.h"
 #include "pathbld.h"
-#include "portability.h"
 
 void
 localeInit (void)

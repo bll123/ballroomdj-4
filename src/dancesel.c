@@ -16,8 +16,8 @@
 #include "ilist.h"
 #include "log.h"
 #include "nlist.h"
+#include "osutils.h"
 #include "playlist.h"
-#include "portability.h"
 #include "queue.h"
 #include "slist.h"
 

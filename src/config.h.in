@@ -47,7 +47,6 @@
 #cmakedefine01 _lib_OpenProcess
 #cmakedefine01 _lib_TerminateProcess
 #cmakedefine01 _lib_WriteFile
-#cmakedefine01 _lib__execv
 
 /* uses windows winsock2 library */
 #cmakedefine01 _lib_ioctlsocket

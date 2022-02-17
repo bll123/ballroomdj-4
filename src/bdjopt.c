@@ -8,13 +8,13 @@
 #include <string.h>
 #include <assert.h>
 
+#include "bdj4.h"
 #include "bdjopt.h"
 #include "datafile.h"
 #include "pathbld.h"
 #include "filemanip.h"
 #include "fileop.h"
 #include "nlist.h"
-#include "portability.h"
 #include "sysvars.h"
 
 static void bdjoptConvFadeType (char *, datafileret_t *);

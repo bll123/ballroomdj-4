@@ -25,7 +25,6 @@
 
 #include "fileutil.h"
 #include "bdjstring.h"
-#include "portability.h"
 
 int
 fileOpenShared (const char *fname, int truncflag, filehandle_t *fhandle)

@@ -32,7 +32,6 @@
 #include "musicq.h"
 #include "pathbld.h"
 #include "playlist.h"
-#include "portability.h"
 #include "procutil.h"
 #include "progstate.h"
 #include "queue.h"

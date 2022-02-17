@@ -23,11 +23,12 @@
 # include <windows.h>
 #endif
 
+#include "bdj4.h"
 #include "sysvars.h"
 #include "bdjstring.h"
 #include "filedata.h"
 #include "fileop.h"
-#include "portability.h"
+#include "osnetutils.h"
 #include "pathutil.h"
 
 static char        sysvars [SV_MAX][MAXPATHLEN];

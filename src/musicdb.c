@@ -15,7 +15,6 @@
 #include "lock.h"
 #include "log.h"
 #include "musicdb.h"
-#include "portability.h"
 #include "rafile.h"
 #include "song.h"
 #include "songutil.h"

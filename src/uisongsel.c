@@ -16,7 +16,6 @@
 #include "dance.h"
 #include "musicdb.h"
 #include "pathbld.h"
-#include "portability.h"
 #include "progstate.h"
 #include "tagdef.h"
 #include "uisongsel.h"

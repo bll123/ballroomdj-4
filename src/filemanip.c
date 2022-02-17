@@ -15,12 +15,12 @@
 
 #include <glib.h>
 
+#include "bdj4.h"
 #include "bdjstring.h"
 #include "filemanip.h"
 #include "fileop.h"
 #include "slist.h"
 #include "pathutil.h"
-#include "portability.h"
 #include "sysvars.h"
 
 #if _hdr_windows

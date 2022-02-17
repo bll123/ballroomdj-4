@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <assert.h>
 
+#include "bdj4.h"
 #include "bdj4intl.h"
 #include "bdjstring.h"
 #include "bdjvarsdf.h"
@@ -18,7 +19,6 @@
 #include "nlist.h"
 #include "pathbld.h"
 #include "playlist.h"
-#include "portability.h"
 #include "progstate.h"
 #include "slist.h"
 #include "song.h"

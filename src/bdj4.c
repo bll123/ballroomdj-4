@@ -17,16 +17,13 @@
 # include <windows.h>
 #endif
 
+#include "bdj4.h"
 #include "bdjstring.h"
 #include "fileop.h"
+#include "osutils.h"
 #include "pathbld.h"
 #include "pathutil.h"
-#include "portability.h"
 #include "sysvars.h"
-
-#if _lib_CreateProcess
-static void winCreateProcess (char *cmd, char *argv [], bool isinstaller);
-#endif
 
 int
 main (int argc, char * argv[])
@@ -41,6 +38,7 @@ main (int argc, char * argv[])
   bool      debugself = false;
   bool      havetheme = false;
   bool      isinstaller = false;
+  int       flags;
 
   static struct option bdj_options [] = {
     { "check_all",      no_argument,        NULL,   1 },
@@ -288,54 +286,11 @@ main (int argc, char * argv[])
     fprintf (stderr, "cmd: %s\n", buff);
   }
 
-#if _lib_CreateProcess
-  winCreateProcess (buff, argv, isinstaller);
-#else
-  if (execv (buff, argv) < 0) {
-    fprintf (stderr, "Unable to start %s %d %s\n", buff, errno, strerror (errno));
+  flags = OS_PROC_DETACH;
+  if (isinstaller) {
+    flags = OS_PROC_NONE;
   }
-#endif
+  osProcessStart (argv, flags, NULL);
   return 0;
 }
 
-#if _lib_CreateProcess
-
-static void
-winCreateProcess (char *cmd, char *argv [], bool isinstaller)
-{
-  STARTUPINFO         si;
-  PROCESS_INFORMATION pi;
-  char                tmp [MAXPATHLEN];
-  int                 i;
-  int                 val;
-
-  memset (&si, '\0', sizeof (si));
-  si.cb = sizeof(si);
-  memset (&pi, '\0', sizeof (pi));
-
-  tmp [0] = '\0';
-  i = 0;
-  while (argv [i] != NULL) {
-    strlcat (tmp, argv [i], MAXPATHLEN);
-    strlcat (tmp, " ", MAXPATHLEN);
-    ++i;
-  }
-
-  val = DETACHED_PROCESS;
-  if (isinstaller) {
-    val = 0;
-  }
-  CreateProcess (
-      cmd,            // module name
-      tmp,            // command line
-      NULL,           // process handle
-      NULL,           // hread handle
-      FALSE,          // handle inheritance
-      val,            // set to DETACHED_PROCESS
-      NULL,           // parent's environment
-      NULL,           // parent's starting directory
-      &si,            // STARTUPINFO structure
-      &pi );          // PROCESS_INFORMATION structure
-}
-
-#endif

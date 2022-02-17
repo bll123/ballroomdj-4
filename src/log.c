@@ -13,12 +13,12 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+#include "bdj4.h"
 #include "log.h"
 #include "tmutil.h"
 #include "fileutil.h"
 #include "pathbld.h"
 #include "bdjstring.h"
-#include "portability.h"
 
 static void         rlogStart (const char *processnm,
                         const char *processtag, int truncflag,

@@ -6,20 +6,11 @@
 #include <stdbool.h>
 #include <sys/types.h>
 
-#if _hdr_winsock2
-# include <winsock2.h>
-#endif
-#if _hdr_windows
-# include <windows.h>
-#endif
-
 #include "bdjmsg.h"
 #include "conn.h"
 
 typedef struct {
-#if _typ_HANDLE
-  HANDLE    processHandle;
-#endif
+  void      *processHandle;
   pid_t     pid;
   bool      started : 1;
   bool      hasHandle : 1;

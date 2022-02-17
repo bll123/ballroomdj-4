@@ -22,9 +22,9 @@
 # include <windows.h>
 #endif
 
+#include "bdj4.h"
 #include "bdjstring.h"
 #include "fileop.h"
-#include "portability.h"
 
 static int fileopMakeRecursiveDir (const char *dirname);
 static int fileopMkdir (const char *dirname);

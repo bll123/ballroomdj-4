@@ -15,9 +15,9 @@
 # include <windows.h>
 #endif
 
+#include "bdj4.h"
 #include "bdjstring.h"
 #include "pathutil.h"
-#include "portability.h"
 
 pathinfo_t *
 pathInfo (const char *path)

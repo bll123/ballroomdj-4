@@ -9,9 +9,9 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
+#include "bdj4.h"
 #include "bdjstring.h"
 #include "locatebdj3.h"
-#include "portability.h"
 
 char *
 locatebdj3 (void)

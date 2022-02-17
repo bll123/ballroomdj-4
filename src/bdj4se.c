@@ -10,14 +10,12 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include "osutils.h"
+
 #define BUFFSZ  (10 * 1024 * 1024)
 #define TAGSTRPFX  "!~~"
 #define TAGSTR     "BDJ4"
 #define TAGSTRSFX  "~~!"
-
-#if _lib__execv
-# define execv _execv
-#endif
 
 static char * memsrch (char *buff, size_t bsz, char *srch, size_t ssz);
 
@@ -68,6 +66,18 @@ main (int argc, char *argv [])
   }
   if (tmpdir == NULL) {
     tmpdir = getenv ("TMP");
+  }
+  if (tmpdir == NULL) {
+    rc = stat ("/var/tmp", &statbuf);
+    if (rc == 0) {
+      tmpdir = "/var/tmp";
+    }
+  }
+  if (tmpdir == NULL) {
+    rc = stat ("/tmp", &statbuf);
+    if (rc == 0) {
+      tmpdir = "/tmp";
+    }
   }
   if (tmpdir == NULL) {
 #if _args_mkdir == 2 && _define_S_IRWXU
@@ -189,19 +199,10 @@ main (int argc, char *argv [])
   fflush (stdout);
   if (isWindows) {
     argv [0] = ".\\install\\install-startup.bat";
-    rc = execv (argv[0], argv);
-    if (rc != 0) {
-      fprintf (stderr, "Unable to exec %d %s\n", errno, strerror (errno));
-      exit (1);
-    }
   } else {
     argv [0] = "./install/install-startup.sh";
-    rc = execv (argv [0], argv);
-    if (rc != 0) {
-      fprintf (stderr, "Unable to exec %d %s\n", errno, strerror (errno));
-      exit (1);
-    }
   }
+  osProcessStart (argv, OS_PROC_NONE, NULL);
 
   return 0;
 }

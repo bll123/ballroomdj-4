@@ -11,7 +11,6 @@
 
 #include "queue.h"
 #include "check_bdj.h"
-#include "portability.h"
 #include "log.h"
 
 START_TEST(queue_alloc_free)

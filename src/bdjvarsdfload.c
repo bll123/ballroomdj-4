@@ -7,6 +7,7 @@
 #include <stdbool.h>
 #include <string.h>
 
+#include "bdj4.h"
 #include "autosel.h"
 #include "bdjvarsdf.h"
 #include "bdjvarsdfload.h"
@@ -17,7 +18,6 @@
 #include "dnctypes.h"
 #include "genre.h"
 #include "level.h"
-#include "portability.h"
 #include "rating.h"
 #include "sortopt.h"
 #include "status.h"

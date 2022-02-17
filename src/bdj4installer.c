@@ -21,10 +21,7 @@
 # include <windows.h>
 #endif
 
-#if _lib__execv
-# define execv _execv
-#endif
-
+#include "bdj4.h"
 #include "bdj4intl.h"
 #include "bdjopt.h"
 #include "bdjstring.h"
@@ -35,8 +32,8 @@
 #include "localeutil.h"
 #include "locatebdj3.h"
 #include "log.h"
+#include "osutils.h"
 #include "pathutil.h"
-#include "portability.h"
 #include "slist.h"
 #include "sysvars.h"
 #include "tmutil.h"
@@ -131,8 +128,6 @@ static void installerGetTargetFname (installer_t *installer, char *buff, size_t 
 static void installerGetBDJ3Fname (installer_t *installer, char *buff, size_t len);
 static void installerTemplateCopy (char *from, char *to);
 static void installerSetrundir (installer_t *installer, const char *dir);
-
-static int winCreateProcess (char *cmd, char *cmdline);
 
 int
 main (int argc, char *argv[])
@@ -645,7 +640,7 @@ installerValidateDir (installer_t *installer)
       gtk_label_set_text (GTK_LABEL (installer->feedbackMsg), _("Error: Folder already exists."));
     }
   } else {
-    gtk_label_set_text (GTK_LABEL (installer->feedbackMsg), "");
+    gtk_label_set_text (GTK_LABEL (installer->feedbackMsg), _("New BDJ4 installation."));
   }
 
   /* bdj3 location validation */
@@ -829,6 +824,8 @@ installerInstInit (installer_t *installer)
     }
 
     if (! exists) {
+      printf (_("New BDJ4 installation."));
+
       /* do not allow an overwrite of an existing directory that is not bdj4 */
       if (installer->guienabled) {
         gtk_label_set_text (GTK_LABEL (installer->feedbackMsg), _("Folder already exists."));
@@ -1247,7 +1244,9 @@ static void
 installerConvert (installer_t *installer)
 {
   char      *fn;
-  char      buff [MAXPATHLEN];
+  char      buffa [MAXPATHLEN];
+  char      buffb [MAXPATHLEN];
+  char      *targv [15];
 
   fn = slistIterateKey (installer->convlist, &installer->convidx);
   if (fn == NULL) {
@@ -1255,15 +1254,20 @@ installerConvert (installer_t *installer)
     return;
   }
 
-  snprintf (buff, MAXPATHLEN, _("Running conversion script: %s."), fn);
-  installerDisplayText (installer, "   ", buff);
-  snprintf (buff, MAXPATHLEN, "\"%s\" conv/%s \"%s/data\" \"%s\"",
-      installer->tclshloc, fn, installer->bdj3loc, installer->datatopdir);
-  if (isWindows()) {
-    winCreateProcess (installer->tclshloc, buff);
-  } else {
-    system (buff);
-  }
+  snprintf (buffa, MAXPATHLEN, _("Running conversion script: %s."), fn);
+  installerDisplayText (installer, "   ", buffa);
+
+  targv [0] = installer->tclshloc;
+  snprintf (buffa, sizeof (buffa), "conv/%s", fn);
+  targv [1] = buffa;
+  snprintf (buffb, sizeof (buffb), "%s/data", installer->bdj3loc);
+  targv [2] = buffb;
+  targv [3] = installer->datatopdir;
+  targv [4] = NULL;
+//  snprintf (buff, MAXPATHLEN, "\"%s\" conv/%s \"%s/data\" \"%s\"",
+//      installer->tclshloc, fn, installer->bdj3loc, installer->datatopdir);
+
+  osProcessStart (targv, OS_PROC_DETACH, NULL);
 
   installer->instState = INST_CONVERT;
   return;
@@ -1325,18 +1329,20 @@ installerCleanup (installer_t *installer)
 {
   char  tbuff [MAXPATHLEN];
   char  buff [MAXPATHLEN];
-  char  *argv [5];
+  char  *targv [10];
 
   if (! fileopExists (installer->unpackdir)) {
     return;
   }
 
   if (isWindows ()) {
-    strlcpy (tbuff, ".\\install\\install-rminstdir.bat", MAXPATHLEN);
-    snprintf (buff, MAXPATHLEN, "%s \"%s\"", tbuff, installer->unpackdir);
-    winCreateProcess (tbuff, buff);
+    targv [0] = ".\\install\\install-rminstdir.bat";
+    snprintf (buff, MAXPATHLEN, "\"%s\"", installer->unpackdir);
+    targv [1] = buff;
+    targv [2] = NULL;
+    osProcessStart (targv, OS_PROC_DETACH, NULL);
   } else {
-    snprintf (buff, MAXPATHLEN, "rm -rf %s", installer->unpackdir);
+    snprintf (buff, sizeof(buff), "rm -rf %s", installer->unpackdir);
     system (buff);
   }
 }
@@ -1417,37 +1423,3 @@ installerSetrundir (installer_t *installer, const char *dir)
     strlcat (installer->rundir, "/Contents/MacOS", MAXPATHLEN);
   }
 }
-
-
-static int
-winCreateProcess (char *cmd, char *cmdline)
-{
-#if _lib_CreateProcess
-  STARTUPINFO         si;
-  PROCESS_INFORMATION pi;
-  int                 val;
-
-  memset (&si, '\0', sizeof (si));
-  si.cb = sizeof(si);
-  memset (&pi, '\0', sizeof (pi));
-
-  val = DETACHED_PROCESS;
-  if (! CreateProcess (
-      cmd,            // module name
-      cmdline,        // command line
-      NULL,           // process handle
-      NULL,           // hread handle
-      FALSE,          // handle inheritance
-      val,            // set to DETACHED_PROCESS
-      NULL,           // parent's environment
-      NULL,           // parent's starting directory
-      &si,            // STARTUPINFO structure
-      &pi )           // PROCESS_INFORMATION structure
-  ) {
-    return -1;
-  }
-
-#endif
-  return 0;
-}
-
