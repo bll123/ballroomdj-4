@@ -1391,12 +1391,15 @@ installerGetTargetFname (installer_t *installer, char *buff, size_t sz)
 static void
 installerGetBDJ3Fname (installer_t *installer, char *buff, size_t sz)
 {
-  if (isMacOS ()) {
-    snprintf (buff, sz, "%s/Contents/MacOS/intall/%s",
-        installer->target, BDJ3_LOC_FILE);
-  } else {
-    snprintf (buff, sz, "%s/install/%s",
-        installer->target, BDJ3_LOC_FILE);
+  *buff = '\0';
+  if (*installer->target) {
+    if (isMacOS ()) {
+      snprintf (buff, sz, "%s/Contents/MacOS/install/%s",
+          installer->target, BDJ3_LOC_FILE);
+    } else {
+      snprintf (buff, sz, "%s/install/%s",
+          installer->target, BDJ3_LOC_FILE);
+    }
   }
 }
 
@@ -1418,8 +1421,11 @@ installerTemplateCopy (char *from, char *to)
 static void
 installerSetrundir (installer_t *installer, const char *dir)
 {
-  strlcpy (installer->rundir, dir, MAXPATHLEN);
-  if (isMacOS ()) {
-    strlcat (installer->rundir, "/Contents/MacOS", MAXPATHLEN);
+  installer->rundir [0] = '\0';
+  if (*dir) {
+    strlcpy (installer->rundir, dir, MAXPATHLEN);
+    if (isMacOS ()) {
+      strlcat (installer->rundir, "/Contents/MacOS", MAXPATHLEN);
+    }
   }
 }

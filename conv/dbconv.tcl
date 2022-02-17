@@ -30,8 +30,27 @@ regexp {^#RAMAX=(\d+)$} $line all racount
 close $fh
 
 set fh [open [file join $datatopdir data musicdb.dat] w]
+set dbfn [file join $bdj3dir musicdb.txt]
 
-source [file join $bdj3dir musicdb.txt]
+set fh [open $dbfn r]
+gets $fh line
+if { [regexp {^# ?VERSION=(\d+)\s*$} $line all vers] } {
+  if { vers < 6 } {
+    puts "Database version is too old to convert."
+    exit 1
+  }
+} else {
+  puts "Unable to locate database version"
+  exit 1
+}
+close $fh
+
+source $dbfn
+if { [info exists masterList] } {
+  # handle older database versions
+  set musicdbList $masterList
+  unset masterList
+}
 
 set c 0
 dict for {fn data} $musicdbList {
