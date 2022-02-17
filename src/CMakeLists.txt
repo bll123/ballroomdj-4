@@ -615,6 +615,16 @@ if (WIN32)
   target_sources (bdj4se PRIVATE selauncher.o)
 endif()
 
+add_executable (bdj4starterui bdj4starterui.c)
+target_link_libraries (bdj4starterui
+  libbdj4 libbdj4common libbdj4ui
+  ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
+  ${GTK_LDFLAGS}
+  m
+)
+addIntlLibrary (bdj4starterui)
+addWinSockLibrary (bdj4starterui)
+
 add_executable (bdj4playerui bdj4playerui.c)
 target_link_libraries (bdj4playerui
   libbdj4 libbdj4common libbdj4ui
@@ -663,7 +673,7 @@ install (TARGETS
   bdj4 bdj4g bdj4cli
   bdj4installer bdj4locale bdj4locatebdj3 bdj4se
   bdj4main bdj4player bdj4mobmq bdj4rc bdj4marquee
-  bdj4playerui
+  bdj4starterui bdj4playerui
   check_all chkprocess
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )

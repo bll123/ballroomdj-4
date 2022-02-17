@@ -19,3 +19,8 @@ Permission is granted to anyone to use this software for any purpose,
 
 3. This notice may not be removed or altered from any source
    distribution.
+
+The program used to edit the .svg files may automatically add a
+license to the existing .svg files or new .svg files.  This license
+overrides any license specified within the img/*.svg files.
+

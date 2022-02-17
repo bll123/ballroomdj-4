@@ -55,6 +55,7 @@ main (int argc, char * argv[])
     { "bdj4playerui",   no_argument,        NULL,   10 },
     { "playerui",       no_argument,        NULL,   10 },
     { "bdj4remctrl",    no_argument,        NULL,   11 },
+    { "bdj4starterui",  no_argument,        NULL,   14 },
     { "bdj4installer",  no_argument,        NULL,   12 },
     { "installer",      no_argument,        NULL,   12 },
     { "locale",         no_argument,        NULL,   13 },
@@ -73,10 +74,12 @@ main (int argc, char * argv[])
   };
 
 #if BDJ4_GUI_LAUNCHER
+  /* for macos; turns the launcher into a gui program, then the icon */
+  /* shows up in the dock */
   gtk_init (&argc, NULL);
 #endif
 
-  prog = "bdj4playerui";
+  prog = "bdj4starterui";  // default
 
   sysvarsInit (argv [0]);
 
@@ -145,6 +148,11 @@ main (int argc, char * argv[])
       }
       case 13: {
         prog = "bdj4locale";
+        ++validargs;
+        break;
+      }
+      case 14: {
+        prog = "bdj4starterui";
         ++validargs;
         break;
       }
@@ -223,25 +231,42 @@ main (int argc, char * argv[])
   }
 
   if (isWindows ()) {
-    char *    pbuff;
-    char *    tbuff;
-    char *    path;
+    char      * pbuff;
+    char      * tbuff;
+    char      * tmp;
+    char      * path;
+    char      * p;
+    char      * tokstr;
     size_t    sz = 4096;
 
     pbuff = malloc (sz);
     assert (pbuff != NULL);
     tbuff = malloc (sz);
     assert (tbuff != NULL);
+    tmp = malloc (sz);
+    assert (tmp != NULL);
     path = malloc (sz);
     assert (path != NULL);
+
+    strlcpy (tbuff, getenv ("PATH"), sz);
+    p = strtok_r (tbuff, ";", &tokstr);
+    strlcpy (path, "PATH=", sz);
+    while (p != NULL) {
+      snprintf (tmp, sz, "%s\\libgtk-3-0.dll", p);
+      if (! fileopExists (tmp)) {
+        strlcat (path, p, sz);
+        strlcat (path, ";", sz);
+      } else {
+        fprintf (stderr, "found dir with libgtk: %s\n", p);
+      }
+      p = strtok_r (NULL, ";", &tokstr);
+    }
 
     pathToWinPath (pbuff, sysvarsGetStr (SV_BDJ4EXECDIR), sz);
     if (debugself) {
       fprintf (stderr, "execdir: %s\n", pbuff);
     }
     strlcpy (path, "PATH=", sz);
-    strlcat (path, getenv ("PATH"), sz);
-    strlcat (path, ";", sz);
     strlcat (path, pbuff, sz);
 
     strlcat (path, ";", sz);

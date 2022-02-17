@@ -115,7 +115,13 @@ bdj4startup (int argc, char *argv[], char *tag, bdjmsgroute_t route)
   }
   logMsg (LOG_SESS, LOG_IMPORTANT, "Using profile %ld", sysvarsGetNum (SVL_BDJIDX));
 
-  bdjvarsdfloadInit ();
+  rc = bdjvarsdfloadInit ();
+  if (rc < 0) {
+    logMsg (LOG_SESS, LOG_IMPORTANT, "Unable to load all data files");
+    fprintf (stderr, "Unable to load all data files");
+    exit (1);
+  }
+
   bdjoptInit ();
 
   bdjoptSetNum (OPT_G_DEBUGLVL, loglevel);

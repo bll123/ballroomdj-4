@@ -1238,24 +1238,26 @@ mainMusicqInsert (maindata_t *mainData, char *args)
   int       mi;
   char      *tokstr = NULL;
   char      *p = NULL;
-  char      *sfname = NULL;
   ssize_t   idx;
+  dbidx_t   dbidx;
   song_t    *song = NULL;
 
   p = strtok_r (args, MSG_ARGS_RS_STR, &tokstr);
   mi = atoi (p);
-  mainData->musicqManageIdx = mi;
+  if (mi != MUSICQ_CURRENT) {
+    mainData->musicqManageIdx = mi;
+  }
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   idx = atol (p);
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
-  sfname = p;
+  dbidx = atol (p);
 
-  song = dbGetByName (sfname);
+  song = dbGetByIdx (dbidx);
 
   if (song != NULL) {
     musicqInsert (mainData->musicQueue, mainData->musicqManageIdx, idx, song);
-    mainData->musicqChanged [mi] = true;
-    mainData->marqueeChanged [mi] = true;
+    mainData->musicqChanged [mainData->musicqManageIdx] = true;
+    mainData->marqueeChanged [mainData->musicqManageIdx] = true;
     mainMusicQueuePrep (mainData);
   }
 }

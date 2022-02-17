@@ -1107,8 +1107,8 @@ installerCopyTemplates (installer_t *installer)
   snprintf (to, MAXPATHLEN, "http/led_off.svg");
   installerTemplateCopy (from, to);
 
-  snprintf (from, MAXPATHLEN, "%s/img/ballroomdj.svg", installer->rundir);
-  snprintf (to, MAXPATHLEN, "http/ballroomdj.svg");
+  snprintf (from, MAXPATHLEN, "%s/img/ballroomdj4.svg", installer->rundir);
+  snprintf (to, MAXPATHLEN, "http/ballroomdj4.svg");
   installerTemplateCopy (from, to);
 
   snprintf (from, MAXPATHLEN, "%s/img/mrc", installer->rundir);

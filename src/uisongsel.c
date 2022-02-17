@@ -10,11 +10,13 @@
 #include <assert.h>
 #include <math.h>
 
+#include "bdj4.h"
 #include "bdj4intl.h"
 #include "bdjvarsdf.h"
 #include "conn.h"
 #include "dance.h"
 #include "musicdb.h"
+#include "musicq.h"
 #include "pathbld.h"
 #include "progstate.h"
 #include "tagdef.h"
@@ -43,6 +45,7 @@ static void uisongselRowSelected (GtkTreeView* tv, GtkTreePath* path,
     GtkTreeViewColumn* column, gpointer udata);
 static gboolean uisongselScrollEvent (GtkWidget* tv, GdkEventScroll *event,
     gpointer udata);
+static void uisongselQueueProcess (GtkButton *b, gpointer udata);
 
 uisongsel_t *
 uisongselInit (progstate_t *progstate, conn_t *conn)
@@ -102,9 +105,11 @@ uisongselActivate (uisongsel_t *uisongsel)
   widget = gtk_button_new ();
   gtk_button_set_label (GTK_BUTTON (widget), _("Queue"));
   assert (widget != NULL);
-  gtk_widget_set_margin_start (GTK_WIDGET (widget), 2);
-  gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (widget),
+  gtk_widget_set_margin_start (widget, 2);
+  gtk_box_pack_start (GTK_BOX (hbox), widget,
       FALSE, FALSE, 0);
+  g_signal_connect (widget, "clicked",
+      G_CALLBACK (uisongselQueueProcess), uisongsel);
 
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   assert (hbox != NULL);
@@ -439,4 +444,32 @@ uisongselScrollEvent (GtkWidget* tv, GdkEventScroll *event, gpointer udata)
       "change-value", NULL, (double) uisongsel->idxStart, uisongsel, NULL);
 
   return TRUE;
+}
+
+static void
+uisongselQueueProcess (GtkButton *b, gpointer udata)
+{
+  uisongsel_t       * uisongsel = udata;
+  GtkTreeSelection  * sel;
+  GtkTreeModel      * model = NULL;
+  GtkTreeIter       iter;
+  int               count;
+  gulong            dbidx;
+  char              tbuff [MAXPATHLEN];
+
+  sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (uisongsel->songselTree));
+  count = gtk_tree_selection_count_selected_rows (sel);
+  if (count != 1) {
+    return;
+  }
+  gtk_tree_selection_get_selected (sel, &model, &iter);
+  gtk_tree_model_get (model, &iter, SONGSEL_COL_DBIDX, &dbidx, -1);
+
+  /* for the moment, this is hard-coded at position 4 */
+  snprintf (tbuff, sizeof (tbuff), "%d%c%d%c%ld", MUSICQ_CURRENT,
+      MSG_ARGS_RS, 4, MSG_ARGS_RS, dbidx);
+  connSendMessage (uisongsel->conn, ROUTE_MAIN,
+      MSG_MUSICQ_INSERT, tbuff);
+
+  return;
 }

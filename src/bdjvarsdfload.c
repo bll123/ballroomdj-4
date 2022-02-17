@@ -22,10 +22,11 @@
 #include "sortopt.h"
 #include "status.h"
 
-void
+int
 bdjvarsdfloadInit (void)
 {
-  char      fn [MAXPATHLEN];
+  char  fn [MAXPATHLEN];
+  int   rc;
 
     /* dance types must be loaded before dance */
   pathbldMakePath (fn, sizeof (fn), "", "dancetypes", ".txt", PATHBLD_MP_NONE);
@@ -55,6 +56,16 @@ bdjvarsdfloadInit (void)
   bdjvarsdfSet (BDJVDF_SORT_OPT, sortoptAlloc (fn));
   pathbldMakePath (fn, sizeof (fn), "", "autoselection", ".txt", PATHBLD_MP_NONE);
   bdjvarsdfSet (BDJVDF_AUTO_SEL, autoselAlloc (fn));
+
+  rc = 0;
+  for (int i = BDJVDF_AUTO_SEL; i < BDJVDF_MAX; ++i) {
+    if (bdjvarsdfGet (i) == NULL) {
+      rc = -1;
+      break;
+    }
+  }
+
+  return rc;
 }
 
 void

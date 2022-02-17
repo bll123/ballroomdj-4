@@ -39,7 +39,7 @@ connInit (bdjmsgroute_t routefrom)
   connports [ROUTE_MOBILEMQ] = bdjvarsGetNum (BDJVL_MOBILEMQ_PORT);
   connports [ROUTE_REMCTRL] = bdjvarsGetNum (BDJVL_REMCTRL_PORT);
   connports [ROUTE_MARQUEE] = bdjvarsGetNum (BDJVL_MARQUEE_PORT);
-  connports [ROUTE_STARTER] = bdjvarsGetNum (BDJVL_STARTER_PORT);
+  connports [ROUTE_STARTERUI] = bdjvarsGetNum (BDJVL_STARTERUI_PORT);
 
   for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
     conn [i].sock = INVALID_SOCKET;

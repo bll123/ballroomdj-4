@@ -308,8 +308,8 @@ http://danielstern.ca/range.css/#/
     <table class="table">
       <tr>
         <td class="txtleft">
-          <img class="vcenter" src="ballroomdj.svg"
-            width="200" alt="BallroomDJ">
+          <img class="vcenter" src="ballroomdj4.svg"
+            width="200" alt="BDJ4">
         </td>
         <td class="vcenter txtcenter tdnopad">
             <img id="nextpagei" onclick="javascript:bdj.nextPage();"

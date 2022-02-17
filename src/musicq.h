@@ -9,6 +9,7 @@ typedef enum {
   MUSICQ_A,
   MUSICQ_B,
   MUSICQ_MAX,
+  MUSICQ_CURRENT,
 } musicqidx_t;
 
 typedef enum {

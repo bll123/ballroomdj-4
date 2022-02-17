@@ -171,9 +171,9 @@ init_context (void) {
   pa_threaded_mainloop_lock (gstate.pamainloop);
   paapi = pa_threaded_mainloop_get_api (gstate.pamainloop);
   paprop = pa_proplist_new();
-  pa_proplist_sets (paprop, PA_PROP_APPLICATION_NAME, "ballroomdj4");
+  pa_proplist_sets (paprop, PA_PROP_APPLICATION_NAME, "bdj4");
   pa_proplist_sets (paprop, PA_PROP_MEDIA_ROLE, "music");
-  gstate.pacontext = pa_context_new_with_proplist (paapi, "ballroomdj4", paprop);
+  gstate.pacontext = pa_context_new_with_proplist (paapi, "bdj4", paprop);
   pa_proplist_free (paprop);
   if (gstate.pacontext == NULL) {
     pa_threaded_mainloop_unlock (gstate.pamainloop);

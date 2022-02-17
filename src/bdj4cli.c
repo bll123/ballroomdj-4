@@ -281,7 +281,7 @@ exitAll (conn_t *conn)
 
   /* send the standard exit request to the controlling processes first */
   fprintf (stderr, "sending exit to starter\n");
-  sendMsg (conn, ROUTE_STARTER, MSG_EXIT_REQUEST, NULL);
+  sendMsg (conn, ROUTE_STARTERUI, MSG_EXIT_REQUEST, NULL);
   fprintf (stderr, "sending exit to playerui\n");
   sendMsg (conn, ROUTE_PLAYERUI, MSG_EXIT_REQUEST, NULL);
   fprintf (stderr, "sending exit to main\n");

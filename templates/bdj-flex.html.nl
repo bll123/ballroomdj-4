@@ -324,7 +324,7 @@ http://danielstern.ca/range.css/#/
       <div id="top" class="dispbox">
         <div class="linebox expand">
           <p><img
-            src="ballroomdj.svg" width="200" alt="BallroomDJ"></p>
+            src="ballroomdj4.svg" width="200" alt="BDJ4"></p>
           <img id="nextpagei" onclick="javascript:bdj.nextPage();"
             src="mrc/light/nextpage.svg" alt="next page">
         </div>

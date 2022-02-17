@@ -34,7 +34,7 @@ bdjvarsInit (void)
     bdjvarsl [BDJVL_MOBILEMQ_PORT] = port++;
     bdjvarsl [BDJVL_REMCTRL_PORT] = port++;
     bdjvarsl [BDJVL_MARQUEE_PORT] = port++;
-    bdjvarsl [BDJVL_STARTER_PORT] = port++;
+    bdjvarsl [BDJVL_STARTERUI_PORT] = port++;
     bdjvarsl [BDJVL_NUM_PORTS] = BDJVL_NUM_PORTS;
 
     bdjvarsAdjustPorts ();
@@ -87,7 +87,7 @@ bdjvarsAdjustPorts (void)
   bdjvarsl [BDJVL_MOBILEMQ_PORT] = port++;
   bdjvarsl [BDJVL_REMCTRL_PORT] = port++;
   bdjvarsl [BDJVL_MARQUEE_PORT] = port++;
-  bdjvarsl [BDJVL_STARTER_PORT] = port++;
+  bdjvarsl [BDJVL_STARTERUI_PORT] = port++;
 }
 
 inline bool
