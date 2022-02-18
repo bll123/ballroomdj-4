@@ -9,6 +9,7 @@
 
 #include "bdjstring.h"
 
+/* not for use on localized strings */
 char *
 stringToLower (char * s) {
   for (char *p = s; *p; p++) {
@@ -17,6 +18,7 @@ stringToLower (char * s) {
   return s;
 }
 
+/* not for use on localized strings */
 char *
 stringToUpper (char * s) {
   for (char *p = s; *p; p++) {

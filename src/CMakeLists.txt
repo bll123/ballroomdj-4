@@ -298,36 +298,26 @@ set (CMAKE_EXTRA_INCLUDE_FILES "")
 
 configure_file (config.h.in config.h)
 
+# this library should not include anything bdj4 specific */
 add_library (libbdj4common SHARED
-  bdjmsg.c
-  bdjopt.c
   bdjstring.c
-  bdjvars.c
-  conn.c
-  datafile.c
   filedata.c
   filemanip.c
   fileop.c
   fileutil.c
   ilist.c
   list.c
-  lock.c
-  log.c
   nlist.c
   osnetutils.c
   osutils.c
-  pathbld.c
   pathutil.c
   procutil.c
   progstate.c
   queue.c
   slist.c
   sock.c
-  sockh.c
-  songutil.c
   strlcat.c
   strlcpy.c
-  sysvars.c
   tmutil.c
 )
 target_include_directories (libbdj4common
@@ -341,25 +331,37 @@ addWinSockLibrary (libbdj4common)
 add_library (libbdj4 SHARED
   autosel.c
   bdj4init.c
+  bdjmsg.c
+  bdjopt.c
+  bdjvars.c
   bdjvarsdf.c
   bdjvarsdfload.c
+  conn.c
   dance.c
   dancesel.c
+  datafile.c
   dnctypes.c
   genre.c
-  localeutil.c
   level.c
+  localeutil.c
+  lock.c
+  log.c
   musicdb.c
   musicq.c
+  pathbld.c
   playlist.c
   rafile.c
   rating.c
   sequence.c
+  sockh.c
   song.c
+  songfilter.c
   songlist.c
   songsel.c
+  songutil.c
   sortopt.c
   status.c
+  sysvars.c
   tagdef.c
   webclient.c
 )
@@ -467,13 +469,47 @@ target_include_directories (libwebsrv
 )
 add_library (liblocatebdj3 STATIC locatebdj3.c)
 
-add_library (libbdj4basic STATIC
-  bdjstring.c osutils.c strlcat.c strlcpy.c
+add_library (libbdj4osutils STATIC
+  osutils.c
+)
+add_library (libbdj4string STATIC
+  bdjstring.c strlcat.c strlcpy.c
 )
 
 add_library (libbdj4launcher STATIC
   filedata.c fileop.c osnetutils.c pathbld.c pathutil.c sysvars.c
 )
+
+add_executable (bdj4locatebdj3 bdj4locatebdj3.c)
+target_link_libraries (bdj4locatebdj3
+  liblocatebdj3
+  libbdj4string
+)
+
+add_executable (bdj4locale bdj4locale.c)
+addIntlLibrary (bdj4locale)
+
+if (WIN32)
+  # the bdj4se executable
+  # for cmake, must use the .o file extension, not .res
+  add_custom_command (
+    OUTPUT selauncher.o
+    COMMAND cp -f ${PROJECT_SOURCE_DIR}/../img/${BDJ4INSTICON} .
+    COMMAND echo "id ICON ${BDJ4INSTICON}" > selauncher.rc
+    COMMAND windres selauncher.rc -O coff -o selauncher.o
+    MAIN_DEPENDENCY ${PROJECT_SOURCE_DIR}/../img/${BDJ4INSTICON}
+    BYPRODUCTS selauncher.rc ${BDJ4INSTICON}
+    VERBATIM
+  )
+endif()
+
+add_executable (bdj4se bdj4se.c)
+target_link_libraries (bdj4se
+  libbdj4osutils libbdj4string
+)
+if (WIN32)
+  target_sources (bdj4se PRIVATE selauncher.o)
+endif()
 
 if (WIN32)
   # the bdj4 executable
@@ -492,7 +528,7 @@ endif()
 add_executable (bdj4 bdj4.c)
 target_link_libraries (bdj4
   libbdj4launcher
-  libbdj4basic
+  libbdj4osutils libbdj4string
 )
 if (WIN32)
   target_sources (bdj4 PRIVATE launcher.o)
@@ -508,7 +544,7 @@ target_include_directories (bdj4g
 target_compile_options (bdj4g PRIVATE -DBDJ4_GUI_LAUNCHER=1)
 target_link_libraries (bdj4g
   libbdj4launcher
-  libbdj4basic
+  libbdj4osutils libbdj4string
   ${GTK_LDFLAGS}
 )
 addWinSockLibrary (bdj4g)
@@ -532,7 +568,7 @@ addWinSockLibrary (bdj4main)
 
 add_executable (bdj4player bdj4player.c)
 target_link_libraries (bdj4player
-  libbdj4 libbdj4common libbdj4player
+  libbdj4player libbdj4 libbdj4common
   ${CMAKE_DL_LIBS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   m
@@ -566,7 +602,7 @@ addWinSockLibrary (bdj4rc)
 
 add_executable (bdj4marquee bdj4marquee.c)
 target_link_libraries (bdj4marquee
-  libbdj4 libbdj4common libbdj4ui
+  libbdj4ui libbdj4 libbdj4common
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}
   m
@@ -584,40 +620,9 @@ target_link_libraries (bdj4installer
 )
 addIntlLibrary (bdj4installer)
 
-add_executable (bdj4locatebdj3 bdj4locatebdj3.c)
-target_link_libraries (bdj4locatebdj3
-  liblocatebdj3
-  libbdj4basic
-)
-
-add_executable (bdj4locale bdj4locale.c)
-addIntlLibrary (bdj4locale)
-
-if (WIN32)
-  # the bdj4se executable
-  # for cmake, must use the .o file extension, not .res
-  add_custom_command (
-    OUTPUT selauncher.o
-    COMMAND cp -f ${PROJECT_SOURCE_DIR}/../img/${BDJ4INSTICON} .
-    COMMAND echo "id ICON ${BDJ4INSTICON}" > selauncher.rc
-    COMMAND windres selauncher.rc -O coff -o selauncher.o
-    MAIN_DEPENDENCY ${PROJECT_SOURCE_DIR}/../img/${BDJ4INSTICON}
-    BYPRODUCTS selauncher.rc ${BDJ4INSTICON}
-    VERBATIM
-  )
-endif()
-
-add_executable (bdj4se bdj4se.c)
-target_link_libraries (bdj4se
-  libbdj4basic
-)
-if (WIN32)
-  target_sources (bdj4se PRIVATE selauncher.o)
-endif()
-
 add_executable (bdj4starterui bdj4starterui.c)
 target_link_libraries (bdj4starterui
-  libbdj4 libbdj4common libbdj4ui
+  libbdj4ui libbdj4 libbdj4common
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}
   m
@@ -627,7 +632,7 @@ addWinSockLibrary (bdj4starterui)
 
 add_executable (bdj4playerui bdj4playerui.c)
 target_link_libraries (bdj4playerui
-  libbdj4 libbdj4common libbdj4ui
+  libbdj4ui libbdj4 libbdj4common
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}
   m
