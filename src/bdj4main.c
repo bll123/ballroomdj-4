@@ -586,7 +586,6 @@ mainSendMarqueeData (maindata_t *mainData)
   char        tbuff [200];
   char        sbuff [3096];
   char        *dstr;
-  char        *data;
   char        *tstr;
   ssize_t     mqLen;
   ssize_t     musicqLen;
@@ -1287,7 +1286,7 @@ static void
 mainMusicqSwitch (maindata_t *mainData, musicqidx_t newMusicqIdx)
 {
   song_t        *song;
-  musicqidx_t   playidx;
+
 
   mainData->musicqManageIdx = mainData->musicqPlayIdx;
   mainData->musicqPlayIdx = newMusicqIdx;

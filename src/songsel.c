@@ -17,6 +17,7 @@
 #include "queue.h"
 #include "rating.h"
 #include "song.h"
+#include "songfilter.h"
 #include "songsel.h"
 #include "tagdef.h"
 
@@ -66,7 +67,7 @@ static void   calcAttributePerc (songsel_t *songsel,
  */
 
 songsel_t *
-songselAlloc (list_t *dancelist, songselFilter_t filterProc, void *userdata)
+songselAlloc (list_t *dancelist, songfilter_t *songfilter)
 {
   songsel_t       *songsel;
   nlistidx_t      danceIdx;
@@ -122,14 +123,13 @@ songselAlloc (list_t *dancelist, songselFilter_t filterProc, void *userdata)
     songselsongdata_t *songdata = NULL;
     nlistidx_t        rating = 0;
     nlistidx_t        level = 0;
-    nlistidx_t        ratingIdx = 0;
-    nlistidx_t        levelIdx = 0;
     ssize_t           weight = 0;
 
 
     danceIdx = songGetNum (song, TAG_DANCE);
     songseldance = nlistGetData (songsel->danceSelList, danceIdx);
     if (songseldance == NULL) {
+      logMsg (LOG_DBG, LOG_SONGSEL, "song %zd reject: dance %zd", dbidx, danceIdx);
       continue;
     }
 
@@ -154,7 +154,7 @@ songselAlloc (list_t *dancelist, songselFilter_t filterProc, void *userdata)
       continue;
     }
 
-    if (! filterProc (dbidx, song, userdata)) {
+    if (! songfilterFilterSong (songfilter, song)) {
       continue;
     }
 

@@ -38,7 +38,6 @@ main (int argc, char *argv[])
   int             argcount = 0;
   int             c = 0;
   int             option_index = 0;
-  uint16_t        port;
   char            buff [1024];
   bool            forceexit = false;
   int             loglevel = LOG_IMPORTANT | LOG_BASIC | LOG_MAIN;

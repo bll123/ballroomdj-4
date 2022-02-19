@@ -41,8 +41,12 @@ songfilter_t  * songfilterAlloc (songfilterpb_t pbflag);
 void          songfilterFree (songfilter_t *sf);
 void          songfilterReset (songfilter_t *sf);
 void          songfilterSetSort (songfilter_t *sf, char *sortselection);
-void          songfilterSet (songfilter_t *sf, int filterType, void *value);
+void          songfilterSetData (songfilter_t *sf, int filterType, void *value);
+void          songfilterSetNum (songfilter_t *sf, int filterType, ssize_t value);
+void          songfilterDanceSet (songfilter_t *sf, ilistidx_t danceIdx,
+                  int filterType, ssize_t value);
 void          songfilterProcess (songfilter_t *sf);
+bool          songfilterFilterSong (songfilter_t *sf, song_t *song);
 dbidx_t       songfilterGetByIdx (songfilter_t *sf, nlistidx_t idx);
 
 #endif /* INC_SONGFILTER_H */

@@ -86,6 +86,7 @@ pkg_check_modules (GLIB glib-2.0)
 pkg_check_modules (CHECK check)
 pkg_check_modules (PA libpulse)
 
+add_compile_options (-Wall)
 add_compile_options (-Wextra)
 add_compile_options (-Wno-unused-parameter)
 add_compile_options (-Wno-unknown-pragmas)

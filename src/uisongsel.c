@@ -80,13 +80,11 @@ uisongselActivate (uisongsel_t *uisongsel)
   GtkWidget         *hbox;
   GtkWidget         *vbox;
   GtkWidget         *widget;
-  GtkWidget         *twidget;
   GtkTreeSelection  *sel;
   GtkCellRenderer   *renderer = NULL;
   GtkTreeViewColumn *column = NULL;
   GtkAdjustment     *adjustment;
   GValue            gvalue = G_VALUE_INIT;
-  double            dval;
 
   g_value_init (&gvalue, G_TYPE_INT);
   g_value_set_int (&gvalue, PANGO_ELLIPSIZE_END);
@@ -239,7 +237,6 @@ uisongselMainLoop (uisongsel_t *uisongsel)
 static void
 uisongselInitializeStore (uisongsel_t *uisongsel)
 {
-  GtkTreeIter       iter;
   GtkListStore      *store = NULL;
 
   store = gtk_list_store_new (SONGSEL_COL_MAX,
@@ -256,13 +253,8 @@ uisongselInitializeStore (uisongsel_t *uisongsel)
 static void
 uisongselCreateRows (uisongsel_t *uisongsel)
 {
-  GtkAdjustment     *adjustment = NULL;
   GtkTreeModel      *model = NULL;
   GtkTreeIter       iter;
-  int               start;
-  int               end;
-  char              tbuff [40];
-  double            ps, si;
 
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (uisongsel->songselTree));
   /* for now, some number that should be large enough */

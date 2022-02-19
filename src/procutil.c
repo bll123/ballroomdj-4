@@ -74,8 +74,6 @@ procutil_t *
 procutilStart (const char *fn, ssize_t profile, ssize_t loglvl)
 {
   procutil_t  * process;
-  char        tbuff [MAXPATHLEN];
-  char        tmp [50];
   char        sprof [40];
   char        sloglvl [40];
   char        * targv [15];

@@ -140,6 +140,22 @@ ilistSetDouble (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx, double data)
   return;
 }
 
+bool
+ilistExists (list_t *list, ilistidx_t ikey)
+{
+  ilist_t   *datalist = NULL;
+
+  if (list == NULL) {
+    return false;
+  }
+  datalist = nlistGetList (list, ikey);
+  if (datalist == NULL) {
+    return false;
+  }
+
+  return true;
+}
+
 void *
 ilistGetData (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx)
 {

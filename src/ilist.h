@@ -22,6 +22,7 @@ void      ilistSetNum (list_t *, ilistidx_t ikey, ilistidx_t lidx, ssize_t value
 void      ilistSetDouble (list_t *, ilistidx_t ikey, ilistidx_t lidx, double value);
 void      ilistSetList (list_t *, ilistidx_t ikey, ilistidx_t lidx, slist_t *slist);
   /* get routines */
+bool      ilistExists (list_t *, ilistidx_t ikey);
 void      *ilistGetData (list_t *, ilistidx_t ikey, ilistidx_t lidx);
 char      *ilistGetStr (list_t *, ilistidx_t ikey, ilistidx_t lidx);
 ssize_t   ilistGetNum (list_t *, ilistidx_t ikey, ilistidx_t lidx);

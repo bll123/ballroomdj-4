@@ -301,8 +301,6 @@ bdjoptCreateNewConfigs (void)
 static void
 bdjoptCreateDefaultFiles (void)
 {
-  char      path [MAXPATHLEN];
-
   bdjoptCreateDirectories ();
 }
 

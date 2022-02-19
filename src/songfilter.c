@@ -23,7 +23,8 @@
 
 enum {
   SONG_FILTER_STR,
-  SONG_FILTER_LIST,
+  SONG_FILTER_ILIST,
+  SONG_FILTER_SLIST,
   SONG_FILTER_NUM,
 };
 
@@ -36,8 +37,8 @@ typedef struct {
 songfilteridx_t valueTypeLookup [SONG_FILTER_MAX] = {
   { SONG_FILTER_BPM_LOW,    SONG_FILTER_NUM },
   { SONG_FILTER_BPM_HIGH,   SONG_FILTER_NUM },
-  { SONG_FILTER_DANCE,      SONG_FILTER_NUM },
-  { SONG_FILTER_KEYWORD,    SONG_FILTER_LIST },
+  { SONG_FILTER_DANCE,      SONG_FILTER_ILIST },
+  { SONG_FILTER_KEYWORD,    SONG_FILTER_SLIST },
   { SONG_FILTER_LEVEL_HIGH, SONG_FILTER_NUM },
   { SONG_FILTER_LEVEL_LOW,  SONG_FILTER_NUM },
   { SONG_FILTER_RATING,     SONG_FILTER_NUM },
@@ -47,7 +48,6 @@ songfilteridx_t valueTypeLookup [SONG_FILTER_MAX] = {
 
 #define SONG_FILTER_SORT_UNSORTED "UNSORTED"
 
-static bool songfilterFilterSong (songfilter_t *sf, song_t *song);
 static bool songfilterCheckStr (char *str, char *searchstr);
 
 songfilter_t *
@@ -59,18 +59,16 @@ songfilterAlloc (songfilterpb_t pbflag)
   assert (sf != NULL);
 
   sf->sortselection = SONG_FILTER_SORT_UNSORTED;
-  for (int i = 0; i < SONG_FILTER_MAX_DATA; ++i) {
-    sf->datafilter [i] = NULL;
-  }
-  for (int i = 0; i < SONG_FILTER_MAX_NUM; ++i) {
-    sf->numfilter [i] = 0;
-  }
   for (int i = 0; i < SONG_FILTER_MAX; ++i) {
+    sf->datafilter [i] = NULL;
+    sf->numfilter [i] = 0;
     sf->inuse [i] = false;
   }
   sf->indexList = slistAlloc ("songfilter-idx", LIST_UNORDERED, free, NULL);
   sf->forplayback = pbflag;
   songfilterReset (sf);
+
+  return sf;
 }
 
 void
@@ -94,13 +92,17 @@ songfilterSetSort (songfilter_t *sf, char *sortselection)
 void
 songfilterReset (songfilter_t *sf)
 {
+  logMsg (LOG_DBG, LOG_SONGSEL, "songfilter: reset filters");
   for (int i = 0; i < SONG_FILTER_MAX_DATA; ++i) {
     if (sf->datafilter [i] != NULL) {
       if (valueTypeLookup [i].valueType == SONG_FILTER_STR) {
         free (sf->datafilter);
       }
-      if (valueTypeLookup [i].valueType == SONG_FILTER_LIST) {
+      if (valueTypeLookup [i].valueType == SONG_FILTER_SLIST) {
         slistFree (sf->datafilter);
+      }
+      if (valueTypeLookup [i].valueType == SONG_FILTER_ILIST) {
+        ilistFree (sf->datafilter);
       }
     }
     sf->datafilter [i] = NULL;
@@ -111,19 +113,40 @@ songfilterReset (songfilter_t *sf)
 }
 
 void
-songfilterSet (songfilter_t *sf, int filterType, void *value)
+songfilterSetData (songfilter_t *sf, int filterType, void *value)
 {
   int     valueType;
 
+  if (sf == NULL) {
+    return;
+  }
+
   valueType = valueTypeLookup [filterType].valueType;
 
-  if (valueType == SONG_FILTER_LIST) {
+  if (valueType == SONG_FILTER_SLIST ||
+      valueType == SONG_FILTER_ILIST) {
     sf->datafilter [filterType] = value;
   }
   if (valueType == SONG_FILTER_STR) {
     sf->datafilter [filterType] = value;
-    stringToLower ((char *) sf->datafilter [filterType]);
+    if (filterType == SONG_FILTER_SEARCH) {
+      stringToLower ((char *) sf->datafilter [filterType]);
+    }
   }
+  sf->inuse [filterType] = true;
+}
+
+void
+songfilterSetNum (songfilter_t *sf, int filterType, ssize_t value)
+{
+  int     valueType;
+
+  if (sf == NULL) {
+    return;
+  }
+
+  valueType = valueTypeLookup [filterType].valueType;
+
   if (valueType == SONG_FILTER_NUM) {
     sf->numfilter [filterType] = (nlistidx_t) value;
   }
@@ -131,30 +154,59 @@ songfilterSet (songfilter_t *sf, int filterType, void *value)
 }
 
 void
+songfilterDanceSet (songfilter_t *sf, ilistidx_t danceIdx,
+    int filterType, ssize_t value)
+{
+  int         valueType;
+  ilist_t     *danceList;
+
+  if (sf == NULL) {
+    return;
+  }
+
+  valueType = valueTypeLookup [filterType].valueType;
+  danceList = sf->datafilter [SONG_FILTER_DANCE];
+  if (danceList == NULL) {
+    return;
+  }
+  if (! ilistExists (danceList, danceIdx)) {
+    return;
+  }
+
+  if (valueType == SONG_FILTER_NUM) {
+    ilistSetNum (danceList, danceIdx, filterType, (ssize_t) value);
+  }
+  sf->inuse [filterType] = true;
+}
+
+void
 songfilterProcess (songfilter_t *sf)
 {
+  if (sf == NULL) {
+    return;
+  }
+
 }
 
-dbidx_t
-songfilterGetByIdx (songfilter_t *sf, nlistidx_t idx)
-{
-}
-
-/* internal routines */
-
-static bool
+bool
 songfilterFilterSong (songfilter_t *sf, song_t *song)
 {
   dbidx_t       dbidx;
+
+  if (sf == NULL) {
+    return false;
+  }
 
   dbidx = songGetNum (song, TAG_DBIDX);
 
   if (sf->inuse [SONG_FILTER_DANCE]) {
     ilistidx_t    danceIdx;
+    ilist_t       *danceList;
 
     danceIdx = songGetNum (song, TAG_DANCE);
-    if (danceIdx != sf->numfilter [SONG_FILTER_DANCE]) {
-      logMsg (LOG_DBG, LOG_SONGSEL, "reject: %zd dance %ld != %ld", dbidx, danceIdx, sf->numfilter [SONG_FILTER_DANCE]);
+    danceList = sf->datafilter [SONG_FILTER_DANCE];
+    if (danceList != NULL && ! ilistExists (danceList, danceIdx)) {
+      logMsg (LOG_DBG, LOG_SONGSEL, "reject: %zd dance %ld", dbidx, danceIdx);
       return false;
     }
   }
@@ -213,18 +265,21 @@ songfilterFilterSong (songfilter_t *sf, song_t *song)
     ilistidx_t    danceIdx;
     ssize_t       bpmlow;
     ssize_t       bpmhigh;
+    ilist_t       *danceList;
 
 
     danceIdx = songGetNum (song, TAG_DANCE);
-    bpmlow = sf->numfilter [SONG_FILTER_BPM_LOW];
-    bpmhigh = sf->numfilter [SONG_FILTER_BPM_HIGH];
+    danceList = sf->datafilter [SONG_FILTER_DANCE];
+
+    bpmlow = ilistGetNum (danceList, danceIdx, SONG_FILTER_BPM_LOW);
+    bpmhigh = ilistGetNum (danceList, danceIdx, SONG_FILTER_BPM_HIGH);
 
     if (bpmlow > 0 && bpmhigh > 0) {
       ssize_t     bpm;
 
       bpm = songGetNum (song, TAG_BPM);
       if (bpm < 0 || bpm < bpmlow || bpm > bpmhigh) {
-        logMsg (LOG_DBG, LOG_SONGSEL, "reject %zd bpm %zd [%zd,%zd]", dbidx, bpm, bpmlow, bpmhigh);
+        logMsg (LOG_DBG, LOG_SONGSEL, "reject %zd dance %zd bpm %zd [%zd,%zd]", dbidx, danceIdx, bpm, bpmlow, bpmhigh);
         return false;
       }
     }
@@ -242,7 +297,7 @@ songfilterFilterSong (songfilter_t *sf, song_t *song)
       slist_t        *keywordList;
       slistidx_t     idx;
 
-      keywordList = (slist_t *) sf->datafilter [SONG_FILTER_KEYWORD];
+      keywordList = sf->datafilter [SONG_FILTER_KEYWORD];
 
       idx = slistGetIdx (keywordList, keyword);
       if (slistGetCount (keywordList) > 0 && idx < 0) {
@@ -294,6 +349,14 @@ songfilterFilterSong (songfilter_t *sf, song_t *song)
 
   return true;
 }
+
+dbidx_t
+songfilterGetByIdx (songfilter_t *sf, nlistidx_t idx)
+{
+  return 0;
+}
+
+/* internal routines */
 
 static bool
 songfilterCheckStr (char *str, char *searchstr)

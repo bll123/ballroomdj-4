@@ -604,8 +604,6 @@ installerCheckDir (GtkButton *b, gpointer udata)
 static void
 installerValidateDir (installer_t *installer)
 {
-  struct stat   statbuf;
-  int           rc;
   bool          locok = false;
   const char    *dir;
   bool          exists = false;
@@ -736,7 +734,6 @@ installerCheckTarget (installer_t *installer, const char *dir)
 {
   char        tbuff [MAXPATHLEN];
   bool        exists;
-  const char  *fn;
 
   installerSetrundir (installer, dir);
 
@@ -1327,7 +1324,6 @@ installerCreateShortcut (installer_t *installer)
 static void
 installerCleanup (installer_t *installer)
 {
-  char  tbuff [MAXPATHLEN];
   char  buff [MAXPATHLEN];
   char  *targv [10];
 

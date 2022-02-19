@@ -13,7 +13,6 @@ int
 main (int argc, char *argv [])
 {
   char      *dir = NULL;
-  FILE      *fh = NULL;
 
   dir = locatebdj3 ();
   if (dir != NULL && *dir) {

@@ -18,10 +18,7 @@ locatebdj3 (void)
 {
   char          *loc;
   char          *home;
-  struct stat   statbuf;
   char          tbuff [MAXPATHLEN];
-  int           grc;
-  int           rc;
   bool          iswin = false;
 
 

@@ -72,7 +72,6 @@ filemanipCopy (char *fname, char *nfn)
 int
 filemanipLinkCopy (char *fname, char *nfn)
 {
-  char      cmd [MAXPATHLEN];
   char      tfname [MAXPATHLEN];
   char      tnfn [MAXPATHLEN];
   int       rc = -1;

@@ -106,7 +106,6 @@ main (int argc, char *argv[])
   uint16_t        listenPort;
   loglevel_t      loglevel = LOG_IMPORTANT | LOG_MAIN;
   playerui_t      plui;
-  char            tbuff [MAXPATHLEN];
   char            *uifont;
 
 

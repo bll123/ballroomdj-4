@@ -11,6 +11,7 @@
 #include "sequence.h"
 #include "slist.h"
 #include "song.h"
+#include "songfilter.h"
 #include "songlist.h"
 #include "songsel.h"
 
@@ -54,6 +55,7 @@ typedef struct {
   datafile_t    *plinfodf;
   datafile_t    *pldancesdf;
   songlist_t    *songlist;
+  songfilter_t  *songfilter;
   sequence_t    *sequence;
   songsel_t     *songsel;
   dancesel_t    *dancesel;

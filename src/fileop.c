@@ -41,10 +41,11 @@ fileopExists (const char *fname)
 inline bool
 fileopIsDirectory (const char *fname)
 {
-  struct stat   statbuf;
+  struct stat statbuf;
+  int         rc;
 
-  int rc = stat (fname, &statbuf);
-  return ((statbuf.st_mode & S_IFDIR) == S_IFDIR);
+  rc = stat (fname, &statbuf);
+  return (rc == 0 && (statbuf.st_mode & S_IFDIR) == S_IFDIR);
 }
 
 inline int

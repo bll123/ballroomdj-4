@@ -81,7 +81,6 @@ START_TEST(lock_unlock_fail)
 {
   int           rc;
   pid_t         pid;
-  FILE          *fh;
 
   pid = getpid ();
   unlink (FULL_LOCK_FN);

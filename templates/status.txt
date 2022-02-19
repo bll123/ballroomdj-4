@@ -8,7 +8,7 @@ KEY
 STATUS
 ..New
 PLAYFLAG
-..0
+..1
 KEY
 ..1
 STATUS

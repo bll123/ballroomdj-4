@@ -68,8 +68,7 @@ main (int argc, char *argv[])
   int             option_index = 0;
   uint16_t        listenPort;
   loglevel_t      loglevel = LOG_IMPORTANT | LOG_MAIN;
-  startui_t      starter;
-  char            tbuff [MAXPATHLEN];
+  startui_t       starter;
   char            *uifont;
 
 
@@ -193,7 +192,6 @@ starterActivate (GApplication *app, gpointer userdata)
   GError              *gerr = NULL;
   GtkWidget           *widget;
   GtkWidget           *vbox;
-  char                *str;
   char                imgbuff [MAXPATHLEN];
   char                tbuff [MAXPATHLEN];
 
@@ -381,7 +379,7 @@ starterStartPlayer (GtkButton *b, gpointer udata)
 static void
 starterStartManage (GtkButton *b, gpointer udata)
 {
-  startui_t      *starter = udata;
+//  startui_t      *starter = udata;
 
 //  starter->processes [ROUTE_MANAGEUI] = procutilStartProcess (
 //      ROUTE_MANAGEUI, "bdj4manageui");
@@ -390,7 +388,7 @@ starterStartManage (GtkButton *b, gpointer udata)
 static void
 starterStartConfig (GtkButton *b, gpointer udata)
 {
-  startui_t      *starter = udata;
+//  startui_t      *starter = udata;
 
 //  starter->processes [ROUTE_CONFIGUI] = procutilStartProcess (
 //      ROUTE_CONFIGUI, "bdj4configui");
@@ -400,8 +398,6 @@ starterStartConfig (GtkButton *b, gpointer udata)
 static void
 starterProcessExit (GtkButton *b, gpointer udata)
 {
-  startui_t      *starter = udata;
-
   gdone = 1;
 }
 

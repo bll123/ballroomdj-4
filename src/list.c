@@ -268,6 +268,10 @@ listGetIdx (list_t *list, listkey_t *key)
   listidx_t   ridx;
   int         rc;
 
+  if (list == NULL) {
+    return LIST_LOC_INVALID;
+  }
+
     /* check the cache */
   if (list->locCache >= 0L) {
     if ((list->keytype == LIST_KEY_STR &&

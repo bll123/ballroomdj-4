@@ -140,7 +140,7 @@ uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
   GtkTreeViewColumn *column = NULL;
   GtkTreeSelection  *sel = NULL;
   GValue            gvalue = G_VALUE_INIT;
-  GtkTreeModel      *model = NULL;
+
 
   g_value_init (&gvalue, G_TYPE_INT);
   g_value_set_int (&gvalue, PANGO_ELLIPSIZE_END);
@@ -463,9 +463,7 @@ uimusicqMainLoop (uimusicq_t *uimusicq)
   /* macos loses the selection after it is moved.  reset it. */
   /* fortunately, it seems to only need to be reset once. */
   if (mstimeCheck (&uimusicq->ui [ci].rowChangeTimer)) {
-    GtkTreeModel      *model;
     GtkTreePath       *path;
-    GtkTreeSelection  *sel = NULL;
 
     if (uimusicq->ui [ci].selPathStr != NULL) {
       path = gtk_tree_path_new_from_string (uimusicq->ui [ci].selPathStr);
@@ -990,11 +988,7 @@ uimusicqMoveTopProcess (GtkButton *b, gpointer udata)
   uimusicq_t        *uimusicq = udata;
   ssize_t           idx;
   char              tbuff [20];
-  GtkTreeSelection  *sel;
-  GtkTreeModel      *model;
-  GtkTreeIter       iter;
-  GtkTreePath       *path;
-  gboolean          valid;
+
 
   ci = uimusicq->musicqManageIdx;
 
@@ -1073,10 +1067,6 @@ uimusicqMoveDownProcess (GtkButton *b, gpointer udata)
   uimusicq_t        *uimusicq = udata;
   ssize_t           idx;
   char              tbuff [20];
-  GtkTreeSelection  *sel;
-  GtkTreeModel      *model;
-  GtkTreeIter       iter;
-  gboolean          valid;
 
   ci = uimusicq->musicqManageIdx;
 

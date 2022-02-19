@@ -1,10 +1,11 @@
 #ifndef INC_SONGSEL_H
 #define INC_SONGSEL_H
 
-#include "song.h"
-#include "nlist.h"
 #include "musicdb.h"
+#include "nlist.h"
 #include "queue.h"
+#include "song.h"
+#include "songfilter.h"
 
 typedef enum {
   SONGSEL_ATTR_RATING,
@@ -47,10 +48,7 @@ typedef struct {
   songselsongdata_t   *lastSelection;
 } songsel_t;
 
-typedef bool (*songselFilter_t)(dbidx_t, song_t *, void *);
-
-songsel_t * songselAlloc (nlist_t *dancelist,
-              songselFilter_t filterProc, void *userdata);
+songsel_t * songselAlloc (nlist_t *dancelist, songfilter_t *songfilter);
 void      songselFree (songsel_t *songsel);
 song_t    * songselSelect (songsel_t *songsel, listidx_t danceIdx);
 void      songselSelectFinalize (songsel_t *songsel, listidx_t danceIdx);

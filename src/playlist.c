@@ -1,6 +1,5 @@
 #include "config.h"
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -25,6 +24,7 @@
 #include "sequence.h"
 #include "slist.h"
 #include "song.h"
+#include "songfilter.h"
 #include "songlist.h"
 #include "songsel.h"
 #include "status.h"
@@ -32,7 +32,7 @@
 
 static void     plConvType (char *, datafileret_t *ret);
 
-  /* must be sorted in ascii order */
+/* must be sorted in ascii order */
 static datafilekey_t playlistdfkeys[] = {
   { "ALLOWEDKEYWORDS",  PLAYLIST_ALLOWED_KEYWORDS,
       VALUE_DATA, parseConvTextList, -1 },
@@ -67,7 +67,7 @@ static datafilekey_t playlistdfkeys[] = {
 };
 #define PLAYLIST_DFKEY_COUNT (sizeof (playlistdfkeys) / sizeof (datafilekey_t))
 
-  /* must be sorted in ascii order */
+/* must be sorted in ascii order */
 static datafilekey_t playlistdancedfkeys[] = {
   { "BPMHIGH",        PLDANCE_BPM_HIGH,     VALUE_NUM, NULL, -1 },
   { "BPMLOW",         PLDANCE_BPM_LOW,      VALUE_NUM, NULL, -1 },
@@ -78,6 +78,7 @@ static datafilekey_t playlistdancedfkeys[] = {
 };
 #define PLAYLIST_DANCE_DFKEY_COUNT (sizeof (playlistdancedfkeys) / sizeof (datafilekey_t))
 
+static void playlistSetSongFilter (playlist_t *pl);
 static void playlistCountList (playlist_t *pl);
 
 playlist_t *
@@ -261,6 +262,7 @@ playlistAlloc (char *fname)
   pl->plinfodf = NULL;
   pl->pldancesdf = NULL;
   pl->songlist = NULL;
+  pl->songfilter = NULL;
   pl->sequence = NULL;
   pl->songsel = NULL;
   pl->dancesel = NULL;
@@ -290,6 +292,9 @@ playlistFree (void *tpl)
     }
     if (pl->songlist != NULL) {
       songlistFree (pl->songlist);
+    }
+    if (pl->songfilter != NULL) {
+      songfilterFree (pl->songfilter);
     }
     if (pl->sequence != NULL) {
       sequenceFree (pl->sequence);
@@ -407,14 +412,15 @@ playlistGetNextSong (playlist_t *pl, nlist_t *danceCounts,
           priorCount, historyProc, userdata);
       logMsg (LOG_DBG, LOG_BASIC, "automatic: dance: %zd", danceIdx);
       if (pl->songsel == NULL) {
-        pl->songsel = songselAlloc (pl->countList,
-            playlistFilterSong, pl);
+        playlistSetSongFilter (pl);
+        pl->songsel = songselAlloc (pl->countList, pl->songfilter);
       }
     }
     if (type == PLTYPE_SEQ) {
       if (pl->songsel == NULL) {
+        playlistSetSongFilter (pl);
         pl->songsel = songselAlloc (sequenceGetDanceList (pl->sequence),
-            playlistFilterSong, pl);
+            pl->songfilter);
       }
       danceIdx = sequenceIterate (pl->sequence, &pl->seqiteridx);
       logMsg (LOG_DBG, LOG_BASIC, "sequence: dance: %zd", danceIdx);
@@ -476,77 +482,6 @@ playlistGetNextSong (playlist_t *pl, nlist_t *danceCounts,
   return song;
 }
 
-bool
-playlistFilterSong (dbidx_t dbidx, song_t *song, void *tplaylist)
-{
-  playlist_t    *pl = tplaylist;
-  ilistidx_t    rating;
-  nlistidx_t    plRating;
-  nlistidx_t    plLevelLow;
-  nlistidx_t    plLevelHigh;
-  ilistidx_t    level;
-  ilistidx_t    danceIdx;
-  char          *keyword;
-  nlistidx_t    idx;
-  ssize_t       plbpmhigh;
-  ssize_t       plbpmlow;
-
-
-  plRating = nlistGetNum (pl->plinfo, PLAYLIST_RATING);
-  rating = songGetNum (song, TAG_DANCERATING);
-  if (rating < plRating) {
-    logMsg (LOG_DBG, LOG_SONGSEL, "reject: %zd rating %ld < %ld", dbidx, rating, plRating);
-    return false;
-  }
-
-  plLevelLow = nlistGetNum (pl->plinfo, PLAYLIST_LEVEL_LOW);
-  plLevelHigh = nlistGetNum (pl->plinfo, PLAYLIST_LEVEL_HIGH);
-  level = songGetNum (song, TAG_DANCELEVEL);
-  if (level < plLevelLow || level > plLevelHigh) {
-    logMsg (LOG_DBG, LOG_SONGSEL, "reject: %zd level %ld < %ld / > %ld", dbidx, level, plLevelLow, plLevelHigh);
-    return false;
-  }
-
-  keyword = songGetData (song, TAG_KEYWORD);
-  if (keyword != NULL) {
-    slist_t        *kwList;
-
-    kwList = nlistGetList (pl->plinfo, PLAYLIST_ALLOWED_KEYWORDS);
-    idx = slistGetIdx (kwList, keyword);
-    if (slistGetCount (kwList) > 0 && idx < 0) {
-      logMsg (LOG_DBG, LOG_SONGSEL, "reject: %zd keyword %s not in allowed", dbidx, keyword);
-      return false;
-    }
-  }
-
-  if (nlistGetNum (pl->plinfo, PLAYLIST_USE_STATUS)) {
-    status_t      *status;
-    listidx_t     sstatus;
-
-    sstatus = songGetNum (song, TAG_STATUS);
-    status = bdjvarsdfGet (BDJVDF_STATUS);
-    if (status != NULL && ! statusPlayCheck (status, sstatus)) {
-      logMsg (LOG_DBG, LOG_SONGSEL, "reject %zd status not playable", dbidx);
-      return false;
-    }
-  }
-
-  danceIdx = songGetNum (song, TAG_DANCE);
-  plbpmlow = ilistGetNum (pl->pldances, danceIdx, PLDANCE_BPM_LOW);
-  plbpmhigh = ilistGetNum (pl->pldances, danceIdx, PLDANCE_BPM_HIGH);
-  if (plbpmlow > 0 && plbpmhigh > 0) {
-    ssize_t     bpm;
-
-    bpm = songGetNum (song, TAG_BPM);
-    if (bpm < 0 || bpm < plbpmlow || bpm > plbpmhigh) {
-      logMsg (LOG_DBG, LOG_SONGSEL, "reject %zd bpm %zd [%zd,%zd]", dbidx, bpm, plbpmlow, plbpmhigh);
-      return false;
-    }
-  }
-
-  return true;
-}
-
 slist_t *
 playlistGetPlaylistList (void)
 {
@@ -584,6 +519,79 @@ playlistGetPlaylistList (void)
 
 
 /* internal routines */
+
+static void
+playlistSetSongFilter (playlist_t *pl)
+{
+  nlistidx_t    plRating;
+  nlistidx_t    plLevelLow;
+  nlistidx_t    plLevelHigh;
+  ilistidx_t    danceIdx;
+  slist_t       *kwList;
+  ssize_t       plbpmhigh;
+  ssize_t       plbpmlow;
+  ilist_t       *danceList;
+  ilistidx_t    iteridx;
+
+
+
+  logMsg (LOG_DBG, LOG_SONGSEL, "initializing song filter");
+  pl->songfilter = songfilterAlloc (SONG_FILTER_FOR_PLAYBACK);
+  assert (pl->songfilter != NULL);
+
+  plRating = nlistGetNum (pl->plinfo, PLAYLIST_RATING);
+  if (plRating != LIST_VALUE_INVALID) {
+    songfilterSetNum (pl->songfilter, SONG_FILTER_RATING, plRating);
+  }
+
+  plLevelLow = nlistGetNum (pl->plinfo, PLAYLIST_LEVEL_LOW);
+  plLevelHigh = nlistGetNum (pl->plinfo, PLAYLIST_LEVEL_HIGH);
+  if (plLevelLow != LIST_VALUE_INVALID && plLevelHigh != LIST_VALUE_INVALID) {
+    songfilterSetNum (pl->songfilter, SONG_FILTER_LEVEL_LOW, plLevelLow);
+    songfilterSetNum (pl->songfilter, SONG_FILTER_LEVEL_HIGH, plLevelHigh);
+  }
+
+  kwList = nlistGetList (pl->plinfo, PLAYLIST_ALLOWED_KEYWORDS);
+  if (slistGetCount (kwList) > 0) {
+    songfilterSetData (pl->songfilter, SONG_FILTER_KEYWORD, kwList);
+  }
+
+  danceList = ilistAlloc ("pl-dance-filter", LIST_ORDERED, NULL);
+  ilistStartIterator (pl->pldances, &iteridx);
+  while ((danceIdx = ilistIterateKey (pl->pldances, &iteridx)) >= 0) {
+    ssize_t       sel;
+
+    sel = ilistGetNum (pl->pldances, danceIdx, PLDANCE_SELECTED);
+    if (sel == 1) {
+      /* any value will work; the danceIdx just needs to exist in the list */
+      ilistSetNum (danceList, danceIdx, SONG_FILTER_BPM_LOW, 0);
+
+      plbpmlow = ilistGetNum (pl->pldances, danceIdx, PLDANCE_BPM_LOW);
+      plbpmhigh = ilistGetNum (pl->pldances, danceIdx, PLDANCE_BPM_HIGH);
+      if (plbpmlow > 0 && plbpmhigh > 0) {
+        songfilterDanceSet (pl->songfilter, danceIdx, SONG_FILTER_BPM_LOW, plbpmlow);
+        songfilterDanceSet (pl->songfilter, danceIdx, SONG_FILTER_BPM_HIGH, plbpmhigh);
+      }
+    }
+  }
+  songfilterSetData (pl->songfilter, SONG_FILTER_DANCE, danceList);
+
+  /* and loop again to do the BPM lookups */
+  ilistStartIterator (pl->pldances, &iteridx);
+  while ((danceIdx = ilistIterateKey (pl->pldances, &iteridx)) >= 0) {
+    ssize_t       sel;
+
+    sel = ilistGetNum (pl->pldances, danceIdx, PLDANCE_SELECTED);
+    if (sel == 1) {
+      plbpmlow = ilistGetNum (pl->pldances, danceIdx, PLDANCE_BPM_LOW);
+      plbpmhigh = ilistGetNum (pl->pldances, danceIdx, PLDANCE_BPM_HIGH);
+      if (plbpmlow > 0 && plbpmhigh > 0) {
+        songfilterDanceSet (pl->songfilter, danceIdx, SONG_FILTER_BPM_LOW, plbpmlow);
+        songfilterDanceSet (pl->songfilter, danceIdx, SONG_FILTER_BPM_HIGH, plbpmhigh);
+      }
+    }
+  }
+}
 
 static void
 plConvType (char *data, datafileret_t *ret)

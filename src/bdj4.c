@@ -29,7 +29,6 @@ int
 main (int argc, char * argv[])
 {
   char      buff [MAXPATHLEN];
-  char      unpackdir [MAXPATHLEN];
   int       validargs = 0;
   int       c = 0;
   int       option_index = 0;

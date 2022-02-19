@@ -830,11 +830,6 @@ static void
 marqueeAdjustFontCallback (GtkWidget *w, GtkAllocation *retAllocSize, gpointer userdata)
 {
   int             newsz;
-  gint            width;
-  gint            height;
-  int             pbarHeight;
-  int             sepHeight;
-  GtkAllocation   allocSize;
   marquee_t       *marquee = userdata;
   double          dnewsz;
   double          dheight;
