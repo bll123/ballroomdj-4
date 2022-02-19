@@ -19,12 +19,14 @@
 #include "musicq.h"
 #include "pathbld.h"
 #include "progstate.h"
+#include "songfilter.h"
 #include "tagdef.h"
 #include "uisongsel.h"
 #include "uiutils.h"
 
 enum {
   SONGSEL_COL_IDX,
+  SONGSEL_COL_SORTIDX,
   SONGSEL_COL_DBIDX,
   SONGSEL_COL_DANCE,
   SONGSEL_COL_TITLE,
@@ -120,7 +122,7 @@ uisongselActivate (uisongsel_t *uisongsel)
   assert (uisongsel->songselScrollbar != NULL);
   gtk_widget_set_vexpand (uisongsel->songselScrollbar, TRUE);
   uiutilsSetCss (uisongsel->songselScrollbar,
-      "scrollbar, scrollbar slider { min-width: 8px; } ");
+      "scrollbar, scrollbar slider { min-width: 9px; } ");
   gtk_box_pack_end (GTK_BOX (hbox), uisongsel->songselScrollbar,
       FALSE, FALSE, 0);
   g_signal_connect (uisongsel->songselScrollbar, "change-value",
@@ -240,7 +242,7 @@ uisongselInitializeStore (uisongsel_t *uisongsel)
   GtkListStore      *store = NULL;
 
   store = gtk_list_store_new (SONGSEL_COL_MAX,
-      G_TYPE_ULONG, G_TYPE_ULONG,
+      G_TYPE_ULONG, G_TYPE_ULONG, G_TYPE_ULONG,
       G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING,
       G_TYPE_STRING, G_TYPE_STRING);
   assert (store != NULL);
@@ -280,16 +282,24 @@ uisongselPopulateData (uisongsel_t *uisongsel)
   char                * color;
   char                tmp [40];
   char                tbuff [100];
+  songfilter_t        * sf;
+  dbidx_t             dbidx;
+
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (uisongsel->songselTree));
+
+  sf = songfilterAlloc (SONG_FILTER_FOR_PLAYBACK);
+  songfilterSetSort (sf, "TITLE"); // ### fix later
+  songfilterProcess (sf);
 
   count = 0;
   idx = uisongsel->idxStart;
   while (count < uisongsel->maxRows) {
     snprintf (tbuff, sizeof (tbuff), "%d", count);
     if (gtk_tree_model_get_iter_from_string (model, &iter, tbuff)) {
-      song = dbGetByIdx (idx);
+      dbidx = songfilterGetByIdx (sf, idx);
+      song = dbGetByIdx (dbidx);
       if (song != NULL) {
         danceIdx = songGetNum (song, TAG_DANCE);
         danceStr = danceGetData (dances, danceIdx, DANCE_DANCE);
@@ -312,7 +322,8 @@ uisongselPopulateData (uisongsel_t *uisongsel)
             color, favorite->dispStr);
         gtk_list_store_set (GTK_LIST_STORE (model), &iter,
             SONGSEL_COL_IDX, idx,
-            SONGSEL_COL_DBIDX, idx,
+            SONGSEL_COL_SORTIDX, idx,
+            SONGSEL_COL_DBIDX, dbidx,
             SONGSEL_COL_DANCE, danceStr,
             SONGSEL_COL_ARTIST, songGetData (song, TAG_ARTIST),
             SONGSEL_COL_TITLE, songGetData (song, TAG_TITLE),

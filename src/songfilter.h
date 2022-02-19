@@ -5,7 +5,6 @@
 
 #include "musicdb.h"
 #include "nlist.h"
-#include "slist.h"
 
 enum {
   SONG_FILTER_BPM_LOW,
@@ -34,7 +33,10 @@ typedef struct {
   nlistidx_t  numfilter [SONG_FILTER_MAX];
   bool        forplayback;
   bool        inuse [SONG_FILTER_MAX];
-  slist_t     *indexList;
+  /* indexed by the sort string; points to the internal index */
+  slist_t     *sortList;
+  /* indexed by the internal index; points to the database index */
+  nlist_t     *indexList;
 } songfilter_t;
 
 songfilter_t  * songfilterAlloc (songfilterpb_t pbflag);
@@ -47,6 +49,6 @@ void          songfilterDanceSet (songfilter_t *sf, ilistidx_t danceIdx,
                   int filterType, ssize_t value);
 void          songfilterProcess (songfilter_t *sf);
 bool          songfilterFilterSong (songfilter_t *sf, song_t *song);
-dbidx_t       songfilterGetByIdx (songfilter_t *sf, nlistidx_t idx);
+dbidx_t       songfilterGetByIdx (songfilter_t *sf, nlistidx_t lookupIdx);
 
 #endif /* INC_SONGFILTER_H */

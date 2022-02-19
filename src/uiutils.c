@@ -13,6 +13,7 @@
 #include "bdj4.h"
 #include "bdjstring.h"
 #include "log.h"
+#include "pathbld.h"
 #include "sysvars.h"
 #include "uiutils.h"
 
@@ -75,6 +76,112 @@ uiutilsInitGtkLog (void)
 {
   g_log_set_writer_func (uiutilsGtkLogger, NULL, NULL);
 }
+
+GtkWidget *
+uiutilsCreateButton (char *title, char *imagenm,
+    void *clickCallback, void *udata)
+{
+  GtkWidget   *widget;
+
+  widget = gtk_button_new ();
+  assert (widget != NULL);
+  gtk_widget_set_margin_start (GTK_WIDGET (widget), 2);
+  if (imagenm != NULL) {
+    GtkWidget   *image;
+    char        tbuff [MAXPATHLEN];
+
+    gtk_button_set_label (GTK_BUTTON (widget), "");
+    pathbldMakePath (tbuff, sizeof (tbuff), "", imagenm, ".svg",
+        PATHBLD_MP_IMGDIR);
+    image = gtk_image_new_from_file (tbuff);
+    gtk_button_set_image (GTK_BUTTON (widget), image);
+    gtk_button_set_always_show_image (GTK_BUTTON (widget), TRUE); // macos
+    gtk_widget_set_tooltip_text (widget, title);
+  } else {
+    gtk_button_set_label (GTK_BUTTON (widget), title);
+  }
+  if (clickCallback != NULL) {
+    g_signal_connect (widget, "clicked", G_CALLBACK (clickCallback), udata);
+  }
+
+  return widget;
+}
+
+
+GtkWidget *
+uiutilsCreateDropDownButton (char *title, void *clickCallback, void *udata)
+{
+  GtkWidget   *widget;
+  GtkWidget   *image;
+  char        tbuff [MAXPATHLEN];
+
+  widget = gtk_button_new ();
+  assert (widget != NULL);
+  gtk_button_set_label (GTK_BUTTON (widget), title);
+  gtk_widget_set_margin_start (GTK_WIDGET (widget), 2);
+  pathbldMakePath (tbuff, sizeof (tbuff), "", "button_down_small", ".svg",
+      PATHBLD_MP_IMGDIR);
+  image = gtk_image_new_from_file (tbuff);
+  gtk_button_set_image (GTK_BUTTON (widget), image);
+  gtk_button_set_image_position (GTK_BUTTON (widget), GTK_POS_RIGHT);
+  g_signal_connect (widget, "clicked", G_CALLBACK (clickCallback), udata);
+
+  return widget;
+}
+
+void
+uiutilsCreateDropDown (GtkWidget *parentwin, GtkWidget *parentwidget,
+    void *closeCallback, void *processSelectionCallback,
+    GtkWidget **win, GtkWidget **treeview, void *udata)
+{
+  GtkWidget         *scwin;
+  GtkWidget         *twidget;
+  GtkTreeSelection  *sel;
+
+
+  *win = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+  gtk_window_set_attached_to (GTK_WINDOW (*win), parentwidget);
+  gtk_window_set_transient_for (GTK_WINDOW (*win),
+      GTK_WINDOW (parentwin));
+  gtk_window_set_decorated (GTK_WINDOW (*win), FALSE);
+  gtk_window_set_deletable (GTK_WINDOW (*win), FALSE);
+  gtk_window_set_type_hint (GTK_WINDOW (*win), GDK_WINDOW_TYPE_HINT_POPUP_MENU);
+  gtk_window_set_skip_taskbar_hint (GTK_WINDOW (*win), TRUE);
+  gtk_window_set_skip_pager_hint (GTK_WINDOW (*win), TRUE);
+  gtk_container_set_border_width (GTK_CONTAINER (*win), 4);
+  gtk_widget_hide (GTK_WIDGET (*win));
+  gtk_widget_set_events (GTK_WIDGET (*win), GDK_FOCUS_CHANGE_MASK);
+  g_signal_connect (G_OBJECT (*win),
+      "focus-out-event", G_CALLBACK (closeCallback), udata);
+
+  scwin = gtk_scrolled_window_new (NULL, NULL);
+  gtk_scrolled_window_set_overlay_scrolling (GTK_SCROLLED_WINDOW (scwin), FALSE);
+  gtk_scrolled_window_set_propagate_natural_width (GTK_SCROLLED_WINDOW (scwin), TRUE);
+  gtk_scrolled_window_set_propagate_natural_height (GTK_SCROLLED_WINDOW (scwin), TRUE);
+  gtk_scrolled_window_set_min_content_height (GTK_SCROLLED_WINDOW (scwin), 300);
+  gtk_scrolled_window_set_max_content_height (GTK_SCROLLED_WINDOW (scwin), 400);
+  gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scwin), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+  gtk_widget_set_hexpand (scwin, TRUE);
+  gtk_widget_set_vexpand (scwin, TRUE);
+  twidget = gtk_scrolled_window_get_vscrollbar (GTK_SCROLLED_WINDOW (scwin));
+  uiutilsSetCss (twidget,
+      "scrollbar, scrollbar slider { min-width: 9px; } ");
+  gtk_container_add (GTK_CONTAINER (*win), scwin);
+
+  *treeview = gtk_tree_view_new ();
+  assert (*treeview != NULL);
+  g_object_ref_sink (G_OBJECT (*treeview));
+  gtk_tree_view_set_activate_on_single_click (GTK_TREE_VIEW (*treeview), TRUE);
+  gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (*treeview), FALSE);
+  sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (*treeview));
+  gtk_tree_selection_set_mode (sel, GTK_SELECTION_SINGLE);
+  gtk_widget_set_hexpand (*treeview, TRUE);
+  gtk_widget_set_vexpand (*treeview, TRUE);
+  gtk_container_add (GTK_CONTAINER (scwin), *treeview);
+  g_signal_connect (*treeview, "row-activated",
+      G_CALLBACK (processSelectionCallback), udata);
+}
+
 
 /* internal routines */
 

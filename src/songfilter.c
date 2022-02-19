@@ -49,6 +49,8 @@ songfilteridx_t valueTypeLookup [SONG_FILTER_MAX] = {
 #define SONG_FILTER_SORT_UNSORTED "UNSORTED"
 
 static bool songfilterCheckStr (char *str, char *searchstr);
+static void songfilterMakeSortKey (songfilter_t *sf, song_t *song,
+    char *sortkey, ssize_t sz);
 
 songfilter_t *
 songfilterAlloc (songfilterpb_t pbflag)
@@ -64,7 +66,8 @@ songfilterAlloc (songfilterpb_t pbflag)
     sf->numfilter [i] = 0;
     sf->inuse [i] = false;
   }
-  sf->indexList = slistAlloc ("songfilter-idx", LIST_UNORDERED, free, NULL);
+  sf->indexList = NULL;
+  sf->sortList = NULL;
   sf->forplayback = pbflag;
   songfilterReset (sf);
 
@@ -182,10 +185,50 @@ songfilterDanceSet (songfilter_t *sf, ilistidx_t danceIdx,
 void
 songfilterProcess (songfilter_t *sf)
 {
+  dbidx_t     dbidx;
+  dbidx_t     dbiteridx;
+  nlistidx_t  idx;
+  char        sortkey [MAXPATHLEN];
+  song_t      *song;
+
+
   if (sf == NULL) {
     return;
   }
 
+  if (sf->sortList != NULL) {
+    slistFree (sf->sortList);
+    sf->sortList = NULL;
+  }
+  if (sf->indexList != NULL) {
+    nlistFree (sf->indexList);
+    sf->indexList = NULL;
+  }
+
+  idx = 0;
+  if (strcmp (sf->sortselection, SONG_FILTER_SORT_UNSORTED) != 0) {
+    sf->sortList = slistAlloc ("songfilter-sort-idx", LIST_UNORDERED, free, NULL);
+  }
+  sf->indexList = nlistAlloc ("songfilter-num-idx", LIST_UNORDERED, NULL);
+  dbStartIterator (&dbiteridx);
+  while ((song = dbIterate (&dbidx, &dbiteridx)) != NULL) {
+    if (! songfilterFilterSong (sf, song)) {
+      continue;
+    }
+
+    dbidx = songGetNum (song, TAG_DBIDX);
+    if (strcmp (sf->sortselection, SONG_FILTER_SORT_UNSORTED) != 0) {
+      songfilterMakeSortKey (sf, song, sortkey, MAXPATHLEN);
+      slistSetNum (sf->sortList, sortkey, dbidx);
+    }
+    nlistSetNum (sf->indexList, idx, dbidx);
+    ++idx;
+  }
+
+  if (strcmp (sf->sortselection, SONG_FILTER_SORT_UNSORTED) != 0) {
+    slistSort (sf->sortList);
+  }
+  nlistSort (sf->indexList);
 }
 
 bool
@@ -351,9 +394,17 @@ songfilterFilterSong (songfilter_t *sf, song_t *song)
 }
 
 dbidx_t
-songfilterGetByIdx (songfilter_t *sf, nlistidx_t idx)
+songfilterGetByIdx (songfilter_t *sf, nlistidx_t lookupIdx)
 {
-  return 0;
+  nlistidx_t      internalIdx;
+  dbidx_t         dbidx;
+
+  if (sf->sortList != NULL) {
+    internalIdx = slistGetNumByIdx (sf->sortList, lookupIdx);
+  } else {
+    internalIdx = nlistGetNumByIdx (sf->indexList, lookupIdx);
+  }
+  dbidx = nlistGetNum (sf->indexList, internalIdx);
 }
 
 /* internal routines */
@@ -369,4 +420,110 @@ songfilterCheckStr (char *str, char *searchstr)
   }
 
   return found;
+}
+
+static void
+songfilterMakeSortKey (songfilter_t *sf, song_t *song,
+    char *sortkey, ssize_t sz)
+{
+  char      *p;
+  char      *tokstr;
+  char      tbuff [100];
+  dance_t   *dances;
+
+  dances = bdjvarsdfGet (BDJVDF_DANCES);
+
+  sortkey [0] = '\0';
+
+  p = strtok_r (sf->sortselection, " ", &tokstr);
+  while (p != NULL) {
+    if (strcmp (p, "TITLE") == 0) {
+      snprintf (tbuff, sizeof (tbuff), "/%s",
+          songGetData (song, TAG_TITLE));
+      strlcat (sortkey, tbuff, sz);
+    } else if (strcmp (p, "DANCE") == 0) {
+      ilistidx_t  danceIdx;
+      char        *danceStr = NULL;
+
+      danceIdx = songGetNum (song, TAG_DANCE);
+      danceStr = danceGetData (dances, danceIdx, DANCE_DANCE);
+      snprintf (tbuff, sizeof (tbuff), "/%s", danceStr);
+    } else if (strcmp (p, "DANCELEVEL") == 0) {
+      snprintf (tbuff, sizeof (tbuff), "/%02zd",
+          songGetNum (song, TAG_DANCELEVEL));
+      strlcat (sortkey, tbuff, sz);
+    } else if (strcmp (p, "DANCERATING") == 0) {
+      snprintf (tbuff, sizeof (tbuff), "/%02zd",
+          songGetNum (song, TAG_DANCERATING));
+      strlcat (sortkey, tbuff, sz);
+    } else if (strcmp (p, "DATEADDED") == 0) {
+      size_t    tval;
+
+      tval = songGetNum (song, TAG_DBADDDATE);
+      /* the newest will be the largest number */
+      /* reverse sort */
+      tval = ~tval;
+      snprintf (tbuff, sizeof (tbuff), "/%10zx", tval);
+      strlcat (sortkey, tbuff, sz);
+    } else if (strcmp (p, "UPDATETIME") == 0) {
+      size_t    tval;
+
+      tval = songGetNum (song, TAG_DBADDDATE);
+      /* the newest will be the largest number */
+      /* reverse sort */
+      tval = ~tval;
+      snprintf (tbuff, sizeof (tbuff), "/%10zx", tval);
+      strlcat (sortkey, tbuff, sz);
+    } else if (strcmp (p, "GENRE") == 0) {
+      snprintf (tbuff, sizeof (tbuff), "/%s",
+          songGetData (song, TAG_GENRE));
+      strlcat (sortkey, tbuff, sz);
+    } else if (strcmp (p, "ARTIST") == 0) {
+      ssize_t   tval;
+
+      tval = songGetNum (song, TAG_VARIOUSARTISTS);
+      if (tval > 0 && tval) {
+        snprintf (tbuff, sizeof (tbuff), "/Various");
+      } else {
+        snprintf (tbuff, sizeof (tbuff), "/%s",
+            songGetData (song, TAG_ARTIST));
+      }
+      strlcat (sortkey, tbuff, sz);
+    } else if (strcmp (p, "TRACK") == 0) {
+      ssize_t   tval;
+
+      tval = songGetNum (song, TAG_DISCNUMBER);
+      if (tval == LIST_VALUE_INVALID) {
+        tval = 0;
+      }
+      snprintf (tbuff, sizeof (tbuff), "/%03zd", tval);
+      strlcat (sortkey, tbuff, sz);
+
+      tval = songGetNum (song, TAG_TRACKNUMBER);
+      if (tval == LIST_VALUE_INVALID) {
+        tval = 0;
+      }
+      snprintf (tbuff, sizeof (tbuff), "/%04zd", tval);
+      strlcat (sortkey, tbuff, sz);
+    } else if (strcmp (p, "ALBUMARTIST") == 0) {
+      snprintf (tbuff, sizeof (tbuff), "/%s",
+          songGetData (song, TAG_ALBUMARTIST));
+      strlcat (sortkey, tbuff, sz);
+    } else if (strcmp (p, "ALBUM") == 0) {
+      ssize_t     tval;
+
+      snprintf (tbuff, sizeof (tbuff), "/%s",
+          songGetData (song, TAG_ALBUM));
+      strlcat (sortkey, tbuff, sz);
+
+      tval = songGetNum (song, TAG_DISCNUMBER);
+      if (tval == LIST_VALUE_INVALID) {
+        tval = 0;
+      }
+      snprintf (tbuff, sizeof (tbuff), "/%03zd", tval);
+      strlcat (sortkey, tbuff, sz);
+    }
+
+    p = strtok_r (NULL, " ", &tokstr);
+  }
 }

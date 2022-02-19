@@ -151,6 +151,12 @@ uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
 
   uimusicq->parentwin = parentwin;
 
+  /* want a copy of the pixbuf for this image */
+  pathbldMakePath (tbuff, sizeof (tbuff), "", "button_pause", ".svg",
+      PATHBLD_MP_IMGDIR);
+  image = gtk_image_new_from_file (tbuff);
+  uimusicq->pauseImg = gtk_image_get_pixbuf (GTK_IMAGE (image));
+
   uimusicq->ui [ci].box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   assert (uimusicq->ui [ci].box != NULL);
   gtk_widget_set_hexpand (GTK_WIDGET (uimusicq->ui [ci].box), TRUE);
@@ -158,214 +164,80 @@ uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
 
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   assert (hbox != NULL);
-  gtk_widget_set_margin_top (GTK_WIDGET (hbox), 1);
+  gtk_widget_set_margin_top (GTK_WIDGET (hbox), 2);
   gtk_widget_set_hexpand (GTK_WIDGET (hbox), TRUE);
   gtk_box_pack_start (GTK_BOX (uimusicq->ui [ci].box), GTK_WIDGET (hbox),
       FALSE, FALSE, 0);
 
-  widget = gtk_button_new ();
-  gtk_button_set_label (GTK_BUTTON (widget), "");
-  assert (widget != NULL);
-  gtk_widget_set_margin_start (GTK_WIDGET (widget), 2);
-  pathbldMakePath (tbuff, sizeof (tbuff), "", "button_movetop", ".svg",
-      PATHBLD_MP_IMGDIR);
-  image = gtk_image_new_from_file (tbuff);
-  gtk_button_set_image (GTK_BUTTON (widget), image);
-  gtk_widget_set_tooltip_text (widget, _("Move to Top"));
-  gtk_button_set_always_show_image (GTK_BUTTON (widget), TRUE);
+  widget = uiutilsCreateButton (_("Move to Top"), "button_movetop",
+      uimusicqMoveTopProcess, uimusicq);
   gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (widget),
       FALSE, FALSE, 0);
-  g_signal_connect (widget, "clicked",
-      G_CALLBACK (uimusicqMoveTopProcess), uimusicq);
 
-  widget = gtk_button_new ();
-  gtk_button_set_label (GTK_BUTTON (widget), "");
-  assert (widget != NULL);
-  gtk_widget_set_margin_start (GTK_WIDGET (widget), 2);
-  pathbldMakePath (tbuff, sizeof (tbuff), "", "button_up", ".svg",
-      PATHBLD_MP_IMGDIR);
-  image = gtk_image_new_from_file (tbuff);
-  gtk_button_set_image (GTK_BUTTON (widget), image);
-  gtk_widget_set_tooltip_text (widget, _("Move Up"));
-  gtk_button_set_always_show_image (GTK_BUTTON (widget), TRUE);
-  gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (widget),
-      FALSE, FALSE, 0);
+  widget = uiutilsCreateButton (_("Move Up"), "button_up",
+      NULL, uimusicq);
   g_signal_connect (widget, "pressed",
       G_CALLBACK (uimusicqMoveUpProcess), uimusicq);
   g_signal_connect (widget, "released",
       G_CALLBACK (uimusicqStopRepeat), uimusicq);
-
-  widget = gtk_button_new ();
-  assert (widget != NULL);
-  gtk_button_set_label (GTK_BUTTON (widget), "");
-  gtk_widget_set_margin_start (GTK_WIDGET (widget), 2);
-  pathbldMakePath (tbuff, sizeof (tbuff), "", "button_down", ".svg",
-      PATHBLD_MP_IMGDIR);
-  image = gtk_image_new_from_file (tbuff);
-  gtk_button_set_image (GTK_BUTTON (widget), image);
-  gtk_widget_set_tooltip_text (widget, _("Move Down"));
-  gtk_button_set_always_show_image (GTK_BUTTON (widget), TRUE);
   gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (widget),
       FALSE, FALSE, 0);
+
+  widget = uiutilsCreateButton (_("Move Down"), "button_down",
+      NULL, uimusicq);
   g_signal_connect (widget, "pressed",
       G_CALLBACK (uimusicqMoveDownProcess), uimusicq);
   g_signal_connect (widget, "released",
       G_CALLBACK (uimusicqStopRepeat), uimusicq);
-
-  widget = gtk_button_new ();
-  assert (widget != NULL);
-  gtk_button_set_label (GTK_BUTTON (widget), "");
-  gtk_widget_set_margin_start (GTK_WIDGET (widget), 2);
-  pathbldMakePath (tbuff, sizeof (tbuff), "", "button_pause", ".svg",
-      PATHBLD_MP_IMGDIR);
-  image = gtk_image_new_from_file (tbuff);
-  uimusicq->pauseImg = gtk_image_get_pixbuf (GTK_IMAGE (image));
-  gtk_button_set_image (GTK_BUTTON (widget), image);
-  gtk_widget_set_tooltip_text (widget, _("Toggle Pause"));
-  gtk_button_set_always_show_image (GTK_BUTTON (widget), TRUE); // macos
   gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (widget),
       FALSE, FALSE, 0);
-  g_signal_connect (widget, "clicked",
-      G_CALLBACK (uimusicqTogglePauseProcess), uimusicq);
 
-  widget = gtk_button_new ();
-  assert (widget != NULL);
-  gtk_button_set_label (GTK_BUTTON (widget), "");
-  gtk_widget_set_margin_start (GTK_WIDGET (widget), 8);
-  pathbldMakePath (tbuff, sizeof (tbuff), "", "button_audioremove", ".svg",
-      PATHBLD_MP_IMGDIR);
-  image = gtk_image_new_from_file (tbuff);
-  gtk_button_set_image (GTK_BUTTON (widget), image);
-  gtk_widget_set_tooltip_text (widget, _("Remove from queue"));
-  gtk_button_set_always_show_image (GTK_BUTTON (widget), TRUE); // macos
+  widget = uiutilsCreateButton (_("Toggle Pause"), "button_pause",
+      uimusicqTogglePauseProcess, uimusicq);
   gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (widget),
       FALSE, FALSE, 0);
-  g_signal_connect (widget, "clicked",
-      G_CALLBACK (uimusicqRemoveProcess), uimusicq);
 
-  widget = gtk_button_new ();
-  assert (widget != NULL);
-  gtk_button_set_label (GTK_BUTTON (widget), _("Request External"));
-  gtk_widget_set_margin_start (GTK_WIDGET (widget), 2);
+  widget = uiutilsCreateButton (_("Remove from queue"), "button_audioremove",
+      uimusicqRemoveProcess, uimusicq);
+  gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (widget),
+      FALSE, FALSE, 0);
+
+  // ### TODO create code to handle this.
+  widget = uiutilsCreateButton (_("Request External"), NULL,
+      NULL, uimusicq);
   gtk_box_pack_end (GTK_BOX (hbox), GTK_WIDGET (widget),
       FALSE, FALSE, 0);
 
-  widget = gtk_button_new ();
-  assert (widget != NULL);
+  widget = uiutilsCreateDropDownButton (_("Queue Playlist"),
+      uimusicqShowPlaylistWindow, uimusicq);
   uimusicq->ui [ci].playlistSelectButton = widget;
-  gtk_button_set_label (GTK_BUTTON (widget), _("Queue Playlist"));
-  gtk_widget_set_margin_start (GTK_WIDGET (widget), 2);
-  pathbldMakePath (tbuff, sizeof (tbuff), "", "button_down_small", ".svg",
-      PATHBLD_MP_IMGDIR);
-  image = gtk_image_new_from_file (tbuff);
-  gtk_button_set_image (GTK_BUTTON (widget), image);
-  gtk_button_set_image_position (GTK_BUTTON (widget), GTK_POS_RIGHT);
   gtk_box_pack_end (GTK_BOX (hbox), GTK_WIDGET (widget),
       FALSE, FALSE, 0);
-  g_signal_connect (widget, "clicked", G_CALLBACK
-      (uimusicqShowPlaylistWindow), uimusicq);
 
-  uimusicq->ui [ci].playlistSelectWin = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-  gtk_window_set_attached_to (GTK_WINDOW (uimusicq->ui [ci].playlistSelectWin), widget);
-  gtk_window_set_transient_for (GTK_WINDOW (uimusicq->ui [ci].playlistSelectWin),
-      GTK_WINDOW (parentwin));
-  gtk_window_set_decorated (GTK_WINDOW (uimusicq->ui [ci].playlistSelectWin), FALSE);
-  gtk_window_set_deletable (GTK_WINDOW (uimusicq->ui [ci].playlistSelectWin), FALSE);
-  gtk_window_set_type_hint (GTK_WINDOW (uimusicq->ui [ci].playlistSelectWin), GDK_WINDOW_TYPE_HINT_POPUP_MENU);
-  gtk_window_set_skip_taskbar_hint (GTK_WINDOW (uimusicq->ui [ci].playlistSelectWin), TRUE);
-  gtk_window_set_skip_pager_hint (GTK_WINDOW (uimusicq->ui [ci].playlistSelectWin), TRUE);
-  gtk_container_set_border_width (GTK_CONTAINER (uimusicq->ui [ci].playlistSelectWin), 1);
-  gtk_widget_hide (GTK_WIDGET (uimusicq->ui [ci].playlistSelectWin));
-  gtk_widget_set_events (GTK_WIDGET (uimusicq->ui [ci].playlistSelectWin), GDK_FOCUS_CHANGE_MASK);
-  g_signal_connect (G_OBJECT (uimusicq->ui [ci].playlistSelectWin),
-      "focus-out-event", G_CALLBACK (uimusicqCloseMenus), uimusicq);
-
-  widget = gtk_scrolled_window_new (NULL, NULL);
-  gtk_scrolled_window_set_overlay_scrolling (GTK_SCROLLED_WINDOW (widget), FALSE);
-  gtk_scrolled_window_set_propagate_natural_width (GTK_SCROLLED_WINDOW (widget), TRUE);
-  gtk_scrolled_window_set_propagate_natural_height (GTK_SCROLLED_WINDOW (widget), TRUE);
-  gtk_scrolled_window_set_min_content_height (GTK_SCROLLED_WINDOW (widget), 200);
-  gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (widget), GTK_POLICY_NEVER, GTK_POLICY_ALWAYS);
-  twidget = gtk_scrolled_window_get_vscrollbar (GTK_SCROLLED_WINDOW (widget));
-  uiutilsSetCss (twidget,
-      "scrollbar, scrollbar slider { min-width: 8px; } ");
-  gtk_container_add (GTK_CONTAINER (uimusicq->ui [ci].playlistSelectWin), widget);
-
-  uimusicq->ui [ci].playlistSelect = gtk_tree_view_new ();
-  g_object_ref_sink (G_OBJECT (uimusicq->ui [ci].playlistSelect));
-  assert (uimusicq->ui [ci].playlistSelect != NULL);
-  gtk_tree_view_set_activate_on_single_click (GTK_TREE_VIEW (uimusicq->ui [ci].playlistSelect), TRUE);
-  gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (uimusicq->ui [ci].playlistSelect), FALSE);
-  sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (uimusicq->ui [ci].playlistSelect));
-  gtk_tree_selection_set_mode (sel, GTK_SELECTION_SINGLE);
-  gtk_widget_set_hexpand (GTK_WIDGET (uimusicq->ui [ci].playlistSelect), TRUE);
-  gtk_container_add (GTK_CONTAINER (widget), uimusicq->ui [ci].playlistSelect);
+  uiutilsCreateDropDown (parentwin, widget,
+      uimusicqCloseMenus, uimusicqQueuePlaylistProcess,
+      &uimusicq->ui [ci].playlistSelectWin, &uimusicq->ui [ci].playlistSelect,
+      uimusicq);
   uimusicqCreatePlaylistList (uimusicq);
-  g_signal_connect (uimusicq->ui [ci].playlistSelect, "row-activated",
-      G_CALLBACK (uimusicqQueuePlaylistProcess), uimusicq);
 
-  widget = gtk_button_new ();
-  assert (widget != NULL);
+  widget = uiutilsCreateDropDownButton (_("Queue Dance"),
+      uimusicqShowDanceWindow, uimusicq);
   uimusicq->ui [ci].danceSelectButton = widget;
-  gtk_button_set_label (GTK_BUTTON (widget), _("Queue Dance"));
-  gtk_widget_set_margin_start (GTK_WIDGET (widget), 2);
-  pathbldMakePath (tbuff, sizeof (tbuff), "", "button_down_small", ".svg",
-      PATHBLD_MP_IMGDIR);
-  image = gtk_image_new_from_file (tbuff);
-  gtk_button_set_image (GTK_BUTTON (widget), image);
-  gtk_button_set_image_position (GTK_BUTTON (widget), GTK_POS_RIGHT);
   gtk_box_pack_end (GTK_BOX (hbox), GTK_WIDGET (widget),
       FALSE, FALSE, 0);
-  g_signal_connect (widget, "clicked",
-      G_CALLBACK (uimusicqShowDanceWindow), uimusicq);
 
-  uimusicq->ui [ci].danceSelectWin = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-  gtk_window_set_attached_to (GTK_WINDOW (uimusicq->ui [ci].danceSelectWin), widget);
-  gtk_window_set_transient_for (GTK_WINDOW (uimusicq->ui [ci].danceSelectWin),
-      GTK_WINDOW (parentwin));
-  gtk_window_set_decorated (GTK_WINDOW (uimusicq->ui [ci].danceSelectWin), FALSE);
-  gtk_window_set_deletable (GTK_WINDOW (uimusicq->ui [ci].danceSelectWin), FALSE);
-  gtk_window_set_type_hint (GTK_WINDOW (uimusicq->ui [ci].danceSelectWin), GDK_WINDOW_TYPE_HINT_POPUP_MENU);
-  gtk_window_set_skip_taskbar_hint (GTK_WINDOW (uimusicq->ui [ci].danceSelectWin), TRUE);
-  gtk_window_set_skip_pager_hint (GTK_WINDOW (uimusicq->ui [ci].danceSelectWin), TRUE);
-  gtk_container_set_border_width (GTK_CONTAINER (uimusicq->ui [ci].danceSelectWin), 1);
-  gtk_widget_hide (GTK_WIDGET (uimusicq->ui [ci].danceSelectWin));
-  gtk_widget_set_events (GTK_WIDGET (uimusicq->ui [ci].danceSelectWin), GDK_FOCUS_CHANGE_MASK);
-  g_signal_connect (G_OBJECT (uimusicq->ui [ci].danceSelectWin),
-      "focus-out-event", G_CALLBACK (uimusicqCloseMenus), uimusicq);
-
-  widget = gtk_scrolled_window_new (NULL, NULL);
-  gtk_scrolled_window_set_overlay_scrolling (GTK_SCROLLED_WINDOW (widget), FALSE);
-  gtk_scrolled_window_set_propagate_natural_width (GTK_SCROLLED_WINDOW (widget), TRUE);
-  gtk_scrolled_window_set_propagate_natural_height (GTK_SCROLLED_WINDOW (widget), TRUE);
-  gtk_scrolled_window_set_min_content_height (GTK_SCROLLED_WINDOW (widget), 200);
-  gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (widget), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
-  twidget = gtk_scrolled_window_get_vscrollbar (GTK_SCROLLED_WINDOW (widget));
-  uiutilsSetCss (twidget,
-      "scrollbar, scrollbar slider { min-width: 8px; } ");
-  gtk_container_add (GTK_CONTAINER (uimusicq->ui [ci].danceSelectWin), widget);
-
-  uimusicq->ui [ci].danceSelect = gtk_tree_view_new ();
-  assert (uimusicq->ui [ci].danceSelect != NULL);
-  g_object_ref_sink (G_OBJECT (uimusicq->ui [ci].danceSelect));
-  gtk_tree_view_set_activate_on_single_click (GTK_TREE_VIEW (uimusicq->ui [ci].danceSelect), TRUE);
-  gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (uimusicq->ui [ci].danceSelect), FALSE);
-  sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (uimusicq->ui [ci].danceSelect));
-  gtk_tree_selection_set_mode (sel, GTK_SELECTION_SINGLE);
-  gtk_widget_set_hexpand (GTK_WIDGET (uimusicq->ui [ci].danceSelect), TRUE);
-  gtk_container_add (GTK_CONTAINER (widget), uimusicq->ui [ci].danceSelect);
+  uiutilsCreateDropDown (parentwin, widget,
+      uimusicqCloseMenus, uimusicqQueueDanceProcess,
+      &uimusicq->ui [ci].danceSelectWin, &uimusicq->ui [ci].danceSelect,
+      uimusicq);
   uimusicqCreateDanceList (uimusicq);
-  g_signal_connect (uimusicq->ui [ci].danceSelect, "row-activated",
-      G_CALLBACK (uimusicqQueueDanceProcess), uimusicq);
 
-  widget = gtk_button_new ();
-  assert (widget != NULL);
-  gtk_button_set_label (GTK_BUTTON (widget), _("Clear Queue"));
-  gtk_widget_set_margin_start (GTK_WIDGET (widget), 2);
-  gtk_box_pack_end (GTK_BOX (hbox), GTK_WIDGET (widget),
-      FALSE, FALSE, 0);
+  widget = uiutilsCreateButton (_("Clear Queue"), NULL,
+      uimusicqClearQueueProcess, uimusicq);
   g_signal_connect (widget, "clicked",
       G_CALLBACK (uimusicqClearQueueProcess), uimusicq);
+  gtk_box_pack_end (GTK_BOX (hbox), GTK_WIDGET (widget),
+      FALSE, FALSE, 0);
 
   /* musicq tree view */
 
@@ -379,7 +251,7 @@ uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
   gtk_widget_set_vexpand (GTK_WIDGET (widget), FALSE);
   twidget = gtk_scrolled_window_get_vscrollbar (GTK_SCROLLED_WINDOW (widget));
   uiutilsSetCss (twidget,
-      "scrollbar, scrollbar slider { min-width: 8px; } ");
+      "scrollbar, scrollbar slider { min-width: 9px; } ");
   gtk_box_pack_start (GTK_BOX (uimusicq->ui [ci].box), GTK_WIDGET (widget),
       FALSE, FALSE, 0);
 
@@ -939,7 +811,7 @@ uimusicqShowDanceWindow (GtkButton *b, gpointer udata)
   gtk_window_get_position (GTK_WINDOW (uimusicq->parentwin), &x, &y);
   gtk_widget_get_allocation (GTK_WIDGET (uimusicq->ui [ci].danceSelectButton), &alloc);
   gtk_widget_show_all (GTK_WIDGET (uimusicq->ui [ci].danceSelectWin));
-  gtk_window_move (GTK_WINDOW (uimusicq->ui [ci].danceSelectWin), alloc.x + x + 4, alloc.y + y + 30);
+  gtk_window_move (GTK_WINDOW (uimusicq->ui [ci].danceSelectWin), alloc.x + x + 4, alloc.y + y + 4 + 30);
   uimusicq->ui [ci].danceSelectOpen = true;
 }
 
@@ -956,7 +828,7 @@ uimusicqShowPlaylistWindow (GtkButton *b, gpointer udata)
   gtk_window_get_position (GTK_WINDOW (uimusicq->parentwin), &x, &y);
   gtk_widget_get_allocation (GTK_WIDGET (uimusicq->ui [ci].playlistSelectButton), &alloc);
   gtk_widget_show_all (GTK_WIDGET (uimusicq->ui [ci].playlistSelectWin));
-  gtk_window_move (GTK_WINDOW (uimusicq->ui [ci].playlistSelectWin), alloc.x + x + 4, alloc.y + y + 30);
+  gtk_window_move (GTK_WINDOW (uimusicq->ui [ci].playlistSelectWin), alloc.x + x + 4, alloc.y + y + 4 + 30);
   uimusicq->ui [ci].playlistSelectOpen = true;
 }
 
