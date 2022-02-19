@@ -7,25 +7,23 @@
 #include "conn.h"
 #include "musicq.h"
 #include "progstate.h"
+#include "uiutils.h"
 
 #define UIMUSICQ_REPEAT_TIME 250
 
 typedef struct {
-  guint           repeatTimer;
+  guint             repeatTimer;
   /* music queue tab */
-  GtkWidget       *box;
-  GtkWidget       *playlistSelectButton;
-  GtkWidget       *playlistSelectWin;
-  GtkWidget       *playlistSelect;
-  bool            playlistSelectOpen;
-  GtkWidget       *danceSelectButton;
-  GtkWidget       *danceSelectWin;
-  GtkWidget       *danceSelect;
-  bool            danceSelectOpen;
+  GtkWidget         *box;
+  GtkWidget         *playlistSelectButton;
+  GtkWidget         *playlistSelectWin;
+  GtkWidget         *playlistSelect;
+  bool              playlistSelectOpen;
+  uiutilsdancesel_t dancesel;
   /* tree views */
-  GtkWidget       *musicqTree;
-  char            *selPathStr;
-  mstime_t        rowChangeTimer;
+  GtkWidget         *musicqTree;
+  char              *selPathStr;
+  mstime_t          rowChangeTimer;
 } uimusicqui_t;
 
 typedef struct {

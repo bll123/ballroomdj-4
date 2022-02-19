@@ -12,6 +12,9 @@
 
 #include "bdj4.h"
 #include "bdjstring.h"
+#include "bdjvarsdf.h"
+#include "dance.h"
+#include "ilist.h"
 #include "log.h"
 #include "pathbld.h"
 #include "sysvars.h"
@@ -19,6 +22,8 @@
 
 static GLogWriterOutput uiutilsGtkLogger (GLogLevelFlags logLevel,
     const GLogField* fields, gsize n_fields, gpointer udata);
+static gboolean uiutilsCloseDanceSel (GtkWidget *w,
+    GdkEventFocus *event, gpointer udata);
 
 void
 uiutilsSetCss (GtkWidget *w, char *style)
@@ -132,7 +137,7 @@ uiutilsCreateDropDownButton (char *title, void *clickCallback, void *udata)
 void
 uiutilsCreateDropDown (GtkWidget *parentwin, GtkWidget *parentwidget,
     void *closeCallback, void *processSelectionCallback,
-    GtkWidget **win, GtkWidget **treeview, void *udata)
+    GtkWidget **win, GtkWidget **treeview, void *closeudata, void *udata)
 {
   GtkWidget         *scwin;
   GtkWidget         *twidget;
@@ -152,7 +157,7 @@ uiutilsCreateDropDown (GtkWidget *parentwin, GtkWidget *parentwidget,
   gtk_widget_hide (GTK_WIDGET (*win));
   gtk_widget_set_events (GTK_WIDGET (*win), GDK_FOCUS_CHANGE_MASK);
   g_signal_connect (G_OBJECT (*win),
-      "focus-out-event", G_CALLBACK (closeCallback), udata);
+      "focus-out-event", G_CALLBACK (closeCallback), closeudata);
 
   scwin = gtk_scrolled_window_new (NULL, NULL);
   gtk_scrolled_window_set_overlay_scrolling (GTK_SCROLLED_WINDOW (scwin), FALSE);
@@ -182,6 +187,94 @@ uiutilsCreateDropDown (GtkWidget *parentwin, GtkWidget *parentwidget,
       G_CALLBACK (processSelectionCallback), udata);
 }
 
+void
+uiutilsCreateDanceSelect (GtkWidget *parentwin,
+    char *label, uiutilsdancesel_t *dancesel,
+    void *processSelectionCallback, void *udata)
+{
+  dancesel->danceSelectButton = uiutilsCreateDropDownButton (label,
+      uiutilsShowDanceWindow, dancesel);
+  uiutilsCreateDropDown (parentwin, dancesel->danceSelectButton,
+      uiutilsCloseDanceSel, processSelectionCallback,
+      &dancesel->danceSelectWin, &dancesel->danceSelect,
+      dancesel, udata);
+  dancesel->parentwin = parentwin;
+  uiutilsCreateDanceList (dancesel);
+}
+
+void
+uiutilsShowDanceWindow (GtkButton *b, gpointer udata)
+{
+  uiutilsdancesel_t *dancesel = udata;
+  GtkAllocation     alloc;
+  gint              x, y;
+
+  gtk_window_get_position (GTK_WINDOW (dancesel->parentwin), &x, &y);
+  gtk_widget_get_allocation (GTK_WIDGET (dancesel->danceSelectButton), &alloc);
+  gtk_widget_show_all (dancesel->danceSelectWin);
+  gtk_window_move (GTK_WINDOW (dancesel->danceSelectWin), alloc.x + x + 4, alloc.y + y + 4 + 30);
+  dancesel->danceSelectOpen = true;
+}
+
+void
+uiutilsCreateDanceList (uiutilsdancesel_t *dancesel)
+{
+  char              *dancenm;
+  GtkTreeIter       iter;
+  GtkListStore      *store = NULL;
+  GtkCellRenderer   *renderer = NULL;
+  GtkTreeViewColumn *column = NULL;
+  char              tbuff [200];
+  dance_t           *dances;
+  ilist_t           *danceList;
+  ilistidx_t        iteridx;
+  ilistidx_t        idx;
+
+  store = gtk_list_store_new (UIUTILS_DANCE_COL_MAX, G_TYPE_ULONG, G_TYPE_STRING);
+
+  dances = bdjvarsdfGet (BDJVDF_DANCES);
+  danceList = danceGetDanceList (dances);
+
+  slistStartIterator (danceList, &iteridx);
+  while ((dancenm = slistIterateKey (danceList, &iteridx)) != NULL) {
+    idx = slistGetNum (danceList, dancenm);
+
+    gtk_list_store_append (store, &iter);
+    snprintf (tbuff, sizeof (tbuff), "%s    ", dancenm);
+    gtk_list_store_set (store, &iter,
+        UIUTILS_DANCE_COL_IDX, idx,
+        UIUTILS_DANCE_COL_NAME, tbuff, -1);
+  }
+
+  renderer = gtk_cell_renderer_text_new ();
+  column = gtk_tree_view_column_new_with_attributes ("",
+      renderer, "text", UIUTILS_DANCE_COL_NAME, NULL);
+  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_FIXED);
+  gtk_tree_view_append_column (GTK_TREE_VIEW (dancesel->danceSelect), column);
+  gtk_tree_view_set_model (GTK_TREE_VIEW (dancesel->danceSelect),
+      GTK_TREE_MODEL (store));
+  g_object_unref (store);
+}
+
+ssize_t
+uiutilsGetDanceSelection (uiutilsdancesel_t *dancesel, GtkTreePath *path)
+{
+  GtkTreeIter   iter;
+  GtkTreeModel  *model = NULL;
+  unsigned long idx = 0;
+
+  model = gtk_tree_view_get_model (GTK_TREE_VIEW (dancesel->danceSelect));
+  if (gtk_tree_model_get_iter (model, &iter, path)) {
+    gtk_tree_model_get (model, &iter, UIUTILS_DANCE_COL_IDX, &idx, -1);
+    gtk_widget_hide (dancesel->danceSelectWin);
+    dancesel->danceSelectOpen = false;
+  } else {
+    return -1;
+  }
+
+  return idx;
+}
+
 
 /* internal routines */
 
@@ -202,5 +295,19 @@ uiutilsGtkLogger (GLogLevelFlags logLevel,
   }
 
   return G_LOG_WRITER_HANDLED;
+}
+
+static gboolean
+uiutilsCloseDanceSel (GtkWidget *w, GdkEventFocus *event, gpointer udata)
+{
+  uiutilsdancesel_t *dancesel = udata;
+
+  if (dancesel->danceSelectOpen) {
+    gtk_widget_hide (GTK_WIDGET (dancesel->danceSelectWin));
+    dancesel->danceSelectOpen = false;
+  }
+  gtk_window_present (GTK_WINDOW (dancesel->parentwin));
+
+  return FALSE;
 }
 

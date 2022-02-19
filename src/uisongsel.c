@@ -48,6 +48,8 @@ static void uisongselRowSelected (GtkTreeView* tv, GtkTreePath* path,
 static gboolean uisongselScrollEvent (GtkWidget* tv, GdkEventScroll *event,
     gpointer udata);
 static void uisongselQueueProcess (GtkButton *b, gpointer udata);
+static void uisongselFilterDanceProcess (GtkTreeView *tv, GtkTreePath *path,
+    GtkTreeViewColumn *column, gpointer udata);
 
 uisongsel_t *
 uisongselInit (progstate_t *progstate, conn_t *conn)
@@ -64,6 +66,9 @@ uisongselInit (progstate_t *progstate, conn_t *conn)
   uisongsel->createRowFlag = false;
   uisongsel->ddbcount = (double) dbCount ();
   uisongsel->lastTreeSize = 0;
+  uisongsel->dancesel.danceSelectOpen = false;
+  uisongsel->songfilter = songfilterAlloc (SONG_FILTER_FOR_PLAYBACK);
+  songfilterSetSort (uisongsel->songfilter, "TITLE"); // ### fix later
 
   return uisongsel;
 }
@@ -72,12 +77,15 @@ void
 uisongselFree (uisongsel_t *uisongsel)
 {
   if (uisongsel != NULL) {
+    if (uisongsel->songfilter != NULL) {
+      songfilterFree (uisongsel->songfilter);
+    }
     free (uisongsel);
   }
 }
 
 GtkWidget *
-uisongselActivate (uisongsel_t *uisongsel)
+uisongselActivate (uisongsel_t *uisongsel, GtkWidget *parentwin)
 {
   GtkWidget         *hbox;
   GtkWidget         *vbox;
@@ -102,14 +110,17 @@ uisongselActivate (uisongsel_t *uisongsel)
   gtk_box_pack_start (GTK_BOX (uisongsel->vbox), GTK_WIDGET (hbox),
       FALSE, FALSE, 0);
 
-  widget = gtk_button_new ();
-  gtk_button_set_label (GTK_BUTTON (widget), _("Queue"));
-  assert (widget != NULL);
-  gtk_widget_set_margin_start (widget, 2);
+  widget = uiutilsCreateButton (_("Queue"), NULL,
+      uisongselQueueProcess, uisongsel);
   gtk_box_pack_start (GTK_BOX (hbox), widget,
       FALSE, FALSE, 0);
-  g_signal_connect (widget, "clicked",
-      G_CALLBACK (uisongselQueueProcess), uisongsel);
+
+  uiutilsCreateDanceSelect (parentwin,
+      _("Filter by Dance"), &uisongsel->dancesel,
+      uisongselFilterDanceProcess, uisongsel);
+  gtk_box_pack_end (GTK_BOX (hbox),
+      uisongsel->dancesel.danceSelectButton,
+      FALSE, FALSE, 0);
 
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   assert (hbox != NULL);
@@ -264,6 +275,8 @@ uisongselCreateRows (uisongsel_t *uisongsel)
     gtk_list_store_append (GTK_LIST_STORE (model), &iter);
   }
 
+  /* initial song filter process */
+  songfilterProcess (uisongsel->songfilter);
   uisongselPopulateData (uisongsel);
 }
 
@@ -282,23 +295,18 @@ uisongselPopulateData (uisongsel_t *uisongsel)
   char                * color;
   char                tmp [40];
   char                tbuff [100];
-  songfilter_t        * sf;
   dbidx_t             dbidx;
 
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (uisongsel->songselTree));
 
-  sf = songfilterAlloc (SONG_FILTER_FOR_PLAYBACK);
-  songfilterSetSort (sf, "TITLE"); // ### fix later
-  songfilterProcess (sf);
-
   count = 0;
   idx = uisongsel->idxStart;
   while (count < uisongsel->maxRows) {
     snprintf (tbuff, sizeof (tbuff), "%d", count);
     if (gtk_tree_model_get_iter_from_string (model, &iter, tbuff)) {
-      dbidx = songfilterGetByIdx (sf, idx);
+      dbidx = songfilterGetByIdx (uisongsel->songfilter, idx);
       song = dbGetByIdx (dbidx);
       if (song != NULL) {
         danceIdx = songGetNum (song, TAG_DANCE);
@@ -474,5 +482,21 @@ uisongselQueueProcess (GtkButton *b, gpointer udata)
   connSendMessage (uisongsel->conn, ROUTE_MAIN,
       MSG_MUSICQ_INSERT, tbuff);
 
+  return;
+}
+
+static void
+uisongselFilterDanceProcess (GtkTreeView *tv, GtkTreePath *path,
+    GtkTreeViewColumn *column, gpointer udata)
+{
+  uisongsel_t *uisongsel = udata;
+  ssize_t     idx;
+
+  idx = uiutilsGetDanceSelection (&uisongsel->dancesel, path);
+  if (idx >= 0) {
+    songfilterSetNum (uisongsel->songfilter, SONG_FILTER_DANCE, idx);
+  }
+  songfilterProcess (uisongsel->songfilter);
+  uisongselPopulateData (uisongsel);
   return;
 }

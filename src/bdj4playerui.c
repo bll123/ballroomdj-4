@@ -100,22 +100,10 @@ int
 main (int argc, char *argv[])
 {
   int             status = 0;
-  int             c = 0;
-  int             rc = 0;
-  int             option_index = 0;
   uint16_t        listenPort;
-  loglevel_t      loglevel = LOG_IMPORTANT | LOG_MAIN;
   playerui_t      plui;
   char            *uifont;
 
-
-  static struct option bdj_options [] = {
-    { "debug",      required_argument,  NULL,   'd' },
-    { "profile",    required_argument,  NULL,   'p' },
-    { "bdj4playerui", no_argument,      NULL,   0 },
-    { "playerui",   no_argument,        NULL,   0 },
-    { NULL,         0,                  NULL,   0 }
-  };
 
   plui.notebook = NULL;
   plui.progstate = progstateInit ("playerui");
@@ -388,7 +376,7 @@ pluiActivate (GApplication *app, gpointer userdata)
   gtk_widget_show_all (GTK_WIDGET (hbox));
 
   /* song selection tab */
-  widget = uisongselActivate (plui->uisongsel);
+  widget = uisongselActivate (plui->uisongsel, plui->window);
   tabLabel = gtk_label_new ("Song Selection");
   gtk_notebook_append_page (GTK_NOTEBOOK (plui->notebook), widget, tabLabel);
 
@@ -438,7 +426,6 @@ static bool
 pluiListeningCallback (void *udata, programstate_t programState)
 {
   playerui_t   *plui = udata;
-  bool          rc = false;
 
   plui->processes [ROUTE_MAIN] = procutilStartProcess (
       ROUTE_MAIN, "bdj4main");

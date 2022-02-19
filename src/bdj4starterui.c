@@ -63,22 +63,9 @@ int
 main (int argc, char *argv[])
 {
   int             status = 0;
-  int             c = 0;
-  int             rc = 0;
-  int             option_index = 0;
   uint16_t        listenPort;
-  loglevel_t      loglevel = LOG_IMPORTANT | LOG_MAIN;
   startui_t       starter;
   char            *uifont;
-
-
-  static struct option bdj_options [] = {
-    { "debug",      required_argument,  NULL,   'd' },
-    { "profile",    required_argument,  NULL,   'p' },
-    { "bdj4playerui", no_argument,      NULL,   0 },
-    { "playerui",   no_argument,        NULL,   0 },
-    { NULL,         0,                  NULL,   0 }
-  };
 
 
   starter.progstate = progstateInit ("starterui");
