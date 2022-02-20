@@ -126,7 +126,6 @@ uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
   char              tbuff [MAXPATHLEN];
   GtkWidget         *image = NULL;
   GtkWidget         *widget = NULL;
-  GtkWidget         *twidget = NULL;
   GtkWidget         *hbox = NULL;
   GtkCellRenderer   *renderer = NULL;
   GtkTreeViewColumn *column = NULL;
@@ -228,17 +227,7 @@ uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
 
   /* musicq tree view */
 
-  widget = gtk_scrolled_window_new (NULL, NULL);
-  gtk_scrolled_window_set_overlay_scrolling (GTK_SCROLLED_WINDOW (widget), FALSE);
-  gtk_scrolled_window_set_propagate_natural_width (GTK_SCROLLED_WINDOW (widget), TRUE);
-  gtk_scrolled_window_set_propagate_natural_height (GTK_SCROLLED_WINDOW (widget), TRUE);
-  gtk_scrolled_window_set_min_content_height (GTK_SCROLLED_WINDOW (widget), 400);
-  gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (widget), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
-  gtk_widget_set_hexpand (GTK_WIDGET (widget), TRUE);
-  gtk_widget_set_vexpand (GTK_WIDGET (widget), FALSE);
-  twidget = gtk_scrolled_window_get_vscrollbar (GTK_SCROLLED_WINDOW (widget));
-  uiutilsSetCss (twidget,
-      "scrollbar, scrollbar slider { min-width: 9px; } ");
+  widget = uiutilsCreateScrolledWindow ();
   gtk_box_pack_start (GTK_BOX (uimusicq->ui [ci].box), GTK_WIDGET (widget),
       FALSE, FALSE, 0);
 
@@ -256,16 +245,6 @@ uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
   gtk_widget_set_hexpand (GTK_WIDGET (uimusicq->ui [ci].musicqTree), TRUE);
   gtk_widget_set_vexpand (GTK_WIDGET (uimusicq->ui [ci].musicqTree), TRUE);
   gtk_container_add (GTK_CONTAINER (widget), GTK_WIDGET (uimusicq->ui [ci].musicqTree));
-
-#if 0
-  /* this box pushes the tree view up to the top */
-  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
-  assert (hbox != NULL);
-  gtk_widget_set_hexpand (GTK_WIDGET (hbox), TRUE);
-  gtk_widget_set_vexpand (GTK_WIDGET (hbox), TRUE);
-  gtk_box_pack_start (GTK_BOX (uimusicq->ui [ci].box), GTK_WIDGET (hbox),
-      TRUE, TRUE, 0);
-#endif
 
   renderer = gtk_cell_renderer_text_new ();
   gtk_cell_renderer_set_alignment (renderer, 1.0, 0.5);

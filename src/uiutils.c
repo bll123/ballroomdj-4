@@ -112,6 +112,27 @@ uiutilsCreateButton (char *title, char *imagenm,
   return widget;
 }
 
+GtkWidget *
+uiutilsCreateScrolledWindow (void)
+{
+  GtkWidget   *widget;
+  GtkWidget   *twidget;
+
+  widget = gtk_scrolled_window_new (NULL, NULL);
+  gtk_scrolled_window_set_overlay_scrolling (GTK_SCROLLED_WINDOW (widget), FALSE);
+  gtk_scrolled_window_set_kinetic_scrolling (GTK_SCROLLED_WINDOW (widget), FALSE);
+  gtk_scrolled_window_set_propagate_natural_width (GTK_SCROLLED_WINDOW (widget), TRUE);
+  gtk_scrolled_window_set_propagate_natural_height (GTK_SCROLLED_WINDOW (widget), TRUE);
+  gtk_scrolled_window_set_min_content_height (GTK_SCROLLED_WINDOW (widget), 400);
+  gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (widget), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+  gtk_widget_set_hexpand (widget, TRUE);
+  gtk_widget_set_vexpand (widget, FALSE);
+  twidget = gtk_scrolled_window_get_vscrollbar (GTK_SCROLLED_WINDOW (widget));
+  uiutilsSetCss (twidget,
+      "scrollbar, scrollbar slider { min-width: 9px; } ");
+
+  return widget;
+}
 
 GtkWidget *
 uiutilsCreateDropDownButton (char *title, void *clickCallback, void *udata)
@@ -159,15 +180,11 @@ uiutilsCreateDropDown (GtkWidget *parentwin, GtkWidget *parentwidget,
   g_signal_connect (G_OBJECT (*win),
       "focus-out-event", G_CALLBACK (closeCallback), closeudata);
 
-  scwin = gtk_scrolled_window_new (NULL, NULL);
-  gtk_scrolled_window_set_overlay_scrolling (GTK_SCROLLED_WINDOW (scwin), FALSE);
-  gtk_scrolled_window_set_propagate_natural_width (GTK_SCROLLED_WINDOW (scwin), TRUE);
-  gtk_scrolled_window_set_propagate_natural_height (GTK_SCROLLED_WINDOW (scwin), TRUE);
+  scwin = uiutilsCreateScrolledWindow ();
   gtk_scrolled_window_set_min_content_height (GTK_SCROLLED_WINDOW (scwin), 300);
   gtk_scrolled_window_set_max_content_height (GTK_SCROLLED_WINDOW (scwin), 400);
-  gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scwin), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
   gtk_widget_set_hexpand (scwin, TRUE);
-  gtk_widget_set_vexpand (scwin, TRUE);
+//  gtk_widget_set_vexpand (scwin, TRUE);
   twidget = gtk_scrolled_window_get_vscrollbar (GTK_SCROLLED_WINDOW (scwin));
   uiutilsSetCss (twidget,
       "scrollbar, scrollbar slider { min-width: 9px; } ");

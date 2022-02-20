@@ -15,8 +15,9 @@ typedef struct {
   conn_t            *conn;
   int               maxRows;
   int               lastTreeSize;
+  double            lastStepIncrement;
   ssize_t           idxStart;
-  double            ddbcount;
+  double            dfilterCount;
   songfilter_t      *songfilter;
   /* song selection tab */
   uiutilsdancesel_t dancesel;

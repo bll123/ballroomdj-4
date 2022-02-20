@@ -23,6 +23,7 @@ void uiutilsSetUIFont (char *uifont);
 void uiutilsInitGtkLog (void);
 GtkWidget * uiutilsCreateButton (char *title, char *imagenm,
     void *clickCallback, void *udata);
+GtkWidget * uiutilsCreateScrolledWindow (void);
 GtkWidget * uiutilsCreateDropDownButton (char *title, void *clickCallback,
     void *udata);
 void uiutilsCreateDropDown (GtkWidget *parentwin, GtkWidget *parentwidget,

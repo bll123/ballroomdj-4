@@ -182,7 +182,7 @@ songfilterDanceSet (songfilter_t *sf, ilistidx_t danceIdx,
   sf->inuse [filterType] = true;
 }
 
-void
+ssize_t
 songfilterProcess (songfilter_t *sf)
 {
   dbidx_t     dbidx;
@@ -193,7 +193,7 @@ songfilterProcess (songfilter_t *sf)
 
 
   if (sf == NULL) {
-    return;
+    return 0;
   }
 
   if (sf->sortList != NULL) {
@@ -219,16 +219,22 @@ songfilterProcess (songfilter_t *sf)
     dbidx = songGetNum (song, TAG_DBIDX);
     if (strcmp (sf->sortselection, SONG_FILTER_SORT_UNSORTED) != 0) {
       songfilterMakeSortKey (sf, song, sortkey, MAXPATHLEN);
-      slistSetNum (sf->sortList, sortkey, dbidx);
+      slistSetNum (sf->sortList, sortkey, idx);
     }
     nlistSetNum (sf->indexList, idx, dbidx);
     ++idx;
   }
+  if (strcmp (sf->sortselection, SONG_FILTER_SORT_UNSORTED) != 0) {
+    assert (nlistGetCount (sf->indexList) == slistGetCount (sf->sortList));
+  }
+  logMsg (LOG_DBG, LOG_SONGSEL, "selected: %zd songs from db", nlistGetCount (sf->indexList));
 
   if (strcmp (sf->sortselection, SONG_FILTER_SORT_UNSORTED) != 0) {
     slistSort (sf->sortList);
   }
   nlistSort (sf->indexList);
+
+  return nlistGetCount (sf->indexList);
 }
 
 bool
@@ -405,6 +411,7 @@ songfilterGetByIdx (songfilter_t *sf, nlistidx_t lookupIdx)
     internalIdx = nlistGetNumByIdx (sf->indexList, lookupIdx);
   }
   dbidx = nlistGetNum (sf->indexList, internalIdx);
+  return dbidx;
 }
 
 /* internal routines */
