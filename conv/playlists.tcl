@@ -46,8 +46,11 @@ foreach {fn} $flist {
     if { $tkey eq "STOPAFTERWAIT" } { continue }
     if { $tkey eq "STOPTYPE" } { continue }
     if { $tkey eq "RESUME" } { continue }
+    if { $tkey eq "STATUSOK" } {
+      # USESTATUS
+      continue
+    }
 
-    if { $tkey eq "STATUSOK" } { set key USESTATUS }
     if { $tkey eq "UNRATEDOK" } { set key USEUNRATED }
     if { $tkey eq "HIGHDANCELEVEL" } { set key DANCELEVELHIGH }
     if { $tkey eq "LOWDANCELEVEL" } { set key DANCELEVELLOW }

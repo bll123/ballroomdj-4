@@ -27,12 +27,6 @@
 #include "uiutils.h"
 
 enum {
-  PLAYLIST_COL_FNAME,
-  PLAYLIST_COL_NAME,
-  PLAYLIST_COL_MAX,
-};
-
-enum {
   MUSICQ_COL_IDX,
   MUSICQ_COL_DISP_IDX,
   MUSICQ_COL_UNIQUE_IDX,
@@ -69,8 +63,6 @@ static void   uimusicqProcessMusicQueueDataUpdate (uimusicq_t *uimusicq, char * 
 static int    uimusicqMusicQueueDataFindRemovals (GtkTreeModel *model,
                 GtkTreePath *path, GtkTreeIter *iter, gpointer udata);
 static int    uimusicqMusicQueueDataParse (uimusicq_t *uimusicq, char * args);
-static void   uimusicqShowPlaylistWindow (GtkButton *b, gpointer udata);
-static gboolean uimusicqCloseMenus (GtkWidget *w, GdkEventFocus *event, gpointer udata);
 static void   uimusicqMoveTopProcess (GtkButton *b, gpointer udata);
 static void   uimusicqStopRepeat (GtkButton *b, gpointer udata);
 static gboolean uimusicqMoveUpRepeat (void *udata);
@@ -95,8 +87,8 @@ uimusicqInit (progstate_t *progstate, conn_t *conn)
   uimusicq->dispList = NULL;
   uimusicq->workList = NULL;
   for (int i = 0; i < MUSICQ_MAX; ++i) {
-    uimusicq->ui [i].playlistSelectOpen = false;
-    uimusicq->ui [i].dancesel.danceSelectOpen = false;
+    uiutilsDropDownInit (&uimusicq->ui [i].playlistsel);
+    uiutilsDropDownInit (&uimusicq->ui [i].dancesel);
     uimusicq->ui [i].selPathStr = NULL;
     mstimeset (&uimusicq->ui [i].rowChangeTimer, 3600000);
   }
@@ -115,6 +107,8 @@ uimusicqFree (uimusicq_t *uimusicq)
       if (uimusicq->ui [i].selPathStr != NULL) {
         free (uimusicq->ui [i].selPathStr);
       }
+      uiutilsDropDownFree (&uimusicq->ui [i].playlistsel);
+      uiutilsDropDownFree (&uimusicq->ui [i].dancesel);
     }
   }
 }
@@ -199,24 +193,17 @@ uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
   gtk_box_pack_end (GTK_BOX (hbox), GTK_WIDGET (widget),
       FALSE, FALSE, 0);
 
-  widget = uiutilsCreateDropDownButton (_("Queue Playlist"),
-      uimusicqShowPlaylistWindow, uimusicq);
-  uimusicq->ui [ci].playlistSelectButton = widget;
-  gtk_box_pack_end (GTK_BOX (hbox), GTK_WIDGET (widget),
-      FALSE, FALSE, 0);
-
-  uiutilsCreateDropDown (parentwin, widget,
-      uimusicqCloseMenus, uimusicqQueuePlaylistProcess,
-      &uimusicq->ui [ci].playlistSelectWin, &uimusicq->ui [ci].playlistSelect,
-      uimusicq, uimusicq);
+  widget = uiutilsDropDownCreate (parentwin,
+      _("Queue Playlist"), uimusicqQueuePlaylistProcess,
+      &uimusicq->ui [ci].playlistsel, uimusicq);
+  gtk_box_pack_end (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
   uimusicqCreatePlaylistList (uimusicq);
 
-  uiutilsCreateDanceSelect (parentwin,
-      _("Queue Dance"), &uimusicq->ui [ci].dancesel,
-      uimusicqQueueDanceProcess, uimusicq);
-  gtk_box_pack_end (GTK_BOX (hbox),
-      uimusicq->ui [ci].dancesel.danceSelectButton,
-      FALSE, FALSE, 0);
+  widget = uiutilsDropDownCreate (parentwin,
+      _("Queue Dance"), uimusicqQueueDanceProcess,
+      &uimusicq->ui [ci].dancesel, uimusicq);
+  uiutilsCreateDanceList (&uimusicq->ui [ci].dancesel);
+  gtk_box_pack_end (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 
   widget = uiutilsCreateButton (_("Clear Queue"), NULL,
       uimusicqClearQueueProcess, uimusicq);
@@ -365,45 +352,12 @@ static void
 uimusicqCreatePlaylistList (uimusicq_t *uimusicq)
 {
   int               ci;
-  char              *plfnm;
-  char              *plnm;
-  GtkTreeIter       iter;
-  GtkListStore      *store = NULL;
-  GtkCellRenderer   *renderer = NULL;
-  GtkTreeViewColumn *column = NULL;
-  char              tbuff [200];
-  ilistidx_t        iteridx;
   slist_t           *plList;
 
   ci = uimusicq->musicqManageIdx;
 
-  store = gtk_list_store_new (PLAYLIST_COL_MAX, G_TYPE_STRING, G_TYPE_STRING);
-
   plList = playlistGetPlaylistList ();
-
-  slistStartIterator (plList, &iteridx);
-
-  while ((plnm = slistIterateKey (plList, &iteridx)) != NULL) {
-    plfnm = listGetData (plList, plnm);
-
-    gtk_list_store_append (store, &iter);
-    snprintf (tbuff, sizeof (tbuff), "%s    ", plnm);
-    gtk_list_store_set (store, &iter,
-        PLAYLIST_COL_FNAME, plfnm,
-        PLAYLIST_COL_NAME, tbuff, -1);
-  }
-
-  slistFree (plList);
-
-  renderer = gtk_cell_renderer_text_new ();
-  column = gtk_tree_view_column_new_with_attributes ("",
-      renderer, "text", PLAYLIST_COL_NAME, NULL);
-  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
-  gtk_tree_view_append_column (GTK_TREE_VIEW (uimusicq->ui [ci].playlistSelect), column);
-
-  gtk_tree_view_set_model (GTK_TREE_VIEW (uimusicq->ui [ci].playlistSelect),
-      GTK_TREE_MODEL (store));
-  g_object_unref (store);
+  uiutilsDropDownSetList (&uimusicq->ui [ci].playlistsel, plList);
 }
 
 static void
@@ -440,7 +394,7 @@ uimusicqQueueDanceProcess (GtkTreeView *tv, GtkTreePath *path,
 
   ci = uimusicq->musicqManageIdx;
 
-  idx = uiutilsGetDanceSelection (&uimusicq->ui [ci].dancesel, path);
+  idx = uiutilsDropDownSelectionGet (&uimusicq->ui [ci].dancesel, path);
   if (idx >= 0) {
     snprintf (tbuff, sizeof (tbuff), "%d%c%lu", ci, MSG_ARGS_RS, idx);
     connSendMessage (uimusicq->conn, ROUTE_MAIN, MSG_QUEUE_DANCE, tbuff);
@@ -453,22 +407,18 @@ uimusicqQueuePlaylistProcess (GtkTreeView *tv, GtkTreePath *path,
 {
   int           ci;
   uimusicq_t    *uimusicq = udata;
-  GtkTreeIter   iter;
-  GtkTreeModel  *model;
+  ssize_t       idx;
+  char          tbuff [100];
 
   ci = uimusicq->musicqManageIdx;
 
-  model = gtk_tree_view_get_model (GTK_TREE_VIEW (uimusicq->ui [ci].playlistSelect));
-  if (gtk_tree_model_get_iter (model, &iter, path)) {
-    char    *plfname;
-    char    tbuff [200];
-
-    gtk_tree_model_get (model, &iter, PLAYLIST_COL_FNAME, &plfname, -1);
-    snprintf (tbuff, sizeof (tbuff), "%d%c%s", ci, MSG_ARGS_RS, plfname);
+  idx = uiutilsDropDownSelectionGet (&uimusicq->ui [ci].playlistsel, path);
+fprintf (stderr, "pl-sel: %zd %s\n", idx,
+uimusicq->ui [ci].playlistsel.strSelection);
+  if (idx >= 0) {
+    snprintf (tbuff, sizeof (tbuff), "%d%c%s", ci, MSG_ARGS_RS,
+        uimusicq->ui [ci].playlistsel.strSelection);
     connSendMessage (uimusicq->conn, ROUTE_MAIN, MSG_QUEUE_PLAYLIST, tbuff);
-    free (plfname);
-    gtk_widget_hide (GTK_WIDGET (uimusicq->ui [ci].playlistSelectWin));
-    uimusicq->ui [ci].playlistSelectOpen = false;
   }
 }
 
@@ -715,40 +665,6 @@ uimusicqMusicQueueDataParse (uimusicq_t *uimusicq, char *args)
   return ci;
 }
 
-
-static void
-uimusicqShowPlaylistWindow (GtkButton *b, gpointer udata)
-{
-  int           ci;
-  uimusicq_t    *uimusicq = udata;
-  GtkAllocation alloc;
-  gint          x, y;
-
-  ci = uimusicq->musicqManageIdx;
-
-  gtk_window_get_position (GTK_WINDOW (uimusicq->parentwin), &x, &y);
-  gtk_widget_get_allocation (GTK_WIDGET (uimusicq->ui [ci].playlistSelectButton), &alloc);
-  gtk_widget_show_all (GTK_WIDGET (uimusicq->ui [ci].playlistSelectWin));
-  gtk_window_move (GTK_WINDOW (uimusicq->ui [ci].playlistSelectWin), alloc.x + x + 4, alloc.y + y + 4 + 30);
-  uimusicq->ui [ci].playlistSelectOpen = true;
-}
-
-static gboolean
-uimusicqCloseMenus (GtkWidget *w, GdkEventFocus *event, gpointer udata)
-{
-  int           ci;
-  uimusicq_t    *uimusicq = udata;
-
-  ci = uimusicq->musicqManageIdx;
-
-  if (uimusicq->ui [ci].playlistSelectOpen) {
-    gtk_widget_hide (GTK_WIDGET (uimusicq->ui [ci].playlistSelectWin));
-    uimusicq->ui [ci].playlistSelectOpen = false;
-  }
-  gtk_window_present (GTK_WINDOW (uimusicq->parentwin));
-
-  return FALSE;
-}
 
 static void
 uimusicqMoveTopProcess (GtkButton *b, gpointer udata)

@@ -19,13 +19,23 @@ typedef struct {
   ssize_t           idxStart;
   double            dfilterCount;
   songfilter_t      *songfilter;
+  /* filter data */
+  char              search [110];
+  uiutilsdropdown_t sortbysel;
+  uiutilsdropdown_t filterdancesel;
+  uiutilsdropdown_t filtergenresel;
+  uiutilsentry_t    searchentry;
   /* song selection tab */
-  uiutilsdancesel_t dancesel;
+  uiutilsdropdown_t dancesel;
+  GtkWidget         *parentwin;
   GtkWidget         *vbox;
   GtkWidget         *songselTree;
   GtkWidget         *songselScrollbar;
   GtkEventController  *scrollController;
   GtkTreeViewColumn   * favColumn;
+  GtkWidget         *filterDialog;
+  GtkEntryBuffer    *searchBuffer;
+  GtkWidget         *searchEntry;
   /* internal flags */
   bool              createRowProcessFlag : 1;
   bool              createRowFlag : 1;

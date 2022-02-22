@@ -15,14 +15,22 @@
 #include "bdjvarsdf.h"
 #include "conn.h"
 #include "dance.h"
+#include "genre.h"
 #include "musicdb.h"
 #include "musicq.h"
 #include "pathbld.h"
 #include "progstate.h"
+#include "rating.h"
 #include "songfilter.h"
+#include "sortopt.h"
 #include "tagdef.h"
 #include "uisongsel.h"
 #include "uiutils.h"
+
+enum {
+  RESPONSE_NONE,
+  RESPONSE_RESET,
+};
 
 enum {
   SONGSEL_COL_IDX,
@@ -51,6 +59,13 @@ static gboolean uisongselScrollEvent (GtkWidget* tv, GdkEventScroll *event,
 static void uisongselQueueProcess (GtkButton *b, gpointer udata);
 static void uisongselFilterDanceProcess (GtkTreeView *tv, GtkTreePath *path,
     GtkTreeViewColumn *column, gpointer udata);
+static void uisongselFilterDialog (GtkButton *b, gpointer udata);
+static void uisongselSortBySelect (GtkTreeView *tv, GtkTreePath *path,
+    GtkTreeViewColumn *column, gpointer udata);
+static void uisongselCreateSortByList (uisongsel_t *uisongsel);
+static void uisongselGenreSelect (GtkTreeView *tv, GtkTreePath *path,
+    GtkTreeViewColumn *column, gpointer udata);
+static void uisongselCreateGenreList (uisongsel_t *uisongsel);
 
 uisongsel_t *
 uisongselInit (progstate_t *progstate, conn_t *conn)
@@ -68,9 +83,16 @@ uisongselInit (progstate_t *progstate, conn_t *conn)
   uisongsel->dfilterCount = (double) dbCount ();
   uisongsel->lastTreeSize = 0;
   uisongsel->lastStepIncrement = 0.0;
-  uisongsel->dancesel.danceSelectOpen = false;
+  uiutilsDropDownInit (&uisongsel->dancesel);
+  uiutilsDropDownInit (&uisongsel->sortbysel);
+  uiutilsDropDownInit (&uisongsel->filterdancesel);
+  uiutilsDropDownInit (&uisongsel->filtergenresel);
+  uiutilsEntryInit (&uisongsel->searchentry, 30, 100);
   uisongsel->songfilter = songfilterAlloc (SONG_FILTER_FOR_PLAYBACK);
+  uisongsel->search [0] = '\0';
   songfilterSetSort (uisongsel->songfilter, "TITLE"); // ### fix later
+
+  uisongsel->filterDialog = NULL;
 
   return uisongsel;
 }
@@ -82,6 +104,10 @@ uisongselFree (uisongsel_t *uisongsel)
     if (uisongsel->songfilter != NULL) {
       songfilterFree (uisongsel->songfilter);
     }
+    uiutilsDropDownFree (&uisongsel->dancesel);
+    uiutilsDropDownFree (&uisongsel->sortbysel);
+    uiutilsDropDownFree (&uisongsel->filterdancesel);
+    uiutilsDropDownFree (&uisongsel->filtergenresel);
     free (uisongsel);
   }
 }
@@ -101,6 +127,8 @@ uisongselActivate (uisongsel_t *uisongsel, GtkWidget *parentwin)
   g_value_init (&gvalue, G_TYPE_INT);
   g_value_set_int (&gvalue, PANGO_ELLIPSIZE_END);
 
+  uisongsel->parentwin = parentwin;
+
   uisongsel->vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   assert (uisongsel->vbox != NULL);
   gtk_widget_set_hexpand (GTK_WIDGET (uisongsel->vbox), TRUE);
@@ -117,11 +145,15 @@ uisongselActivate (uisongsel_t *uisongsel, GtkWidget *parentwin)
   gtk_box_pack_start (GTK_BOX (hbox), widget,
       FALSE, FALSE, 0);
 
-  uiutilsCreateDanceSelect (parentwin,
-      _("Filter by Dance"), &uisongsel->dancesel,
-      uisongselFilterDanceProcess, uisongsel);
-  gtk_box_pack_end (GTK_BOX (hbox),
-      uisongsel->dancesel.danceSelectButton,
+  widget = uiutilsDropDownCreate (parentwin,
+      _("Filter by Dance"), uisongselFilterDanceProcess,
+      &uisongsel->dancesel, uisongsel);
+  uiutilsCreateDanceList (&uisongsel->dancesel);
+  gtk_box_pack_end (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+
+  widget = uiutilsCreateButton (_("Filters"), NULL,
+      uisongselFilterDialog, uisongsel);
+  gtk_box_pack_end (GTK_BOX (hbox), widget,
       FALSE, FALSE, 0);
 
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
@@ -178,16 +210,6 @@ uisongselActivate (uisongsel_t *uisongsel, GtkWidget *parentwin)
       G_CALLBACK (uisongselRowSelected), uisongsel);
   g_signal_connect (uisongsel->songselTree, "scroll-event",
       G_CALLBACK (uisongselScrollEvent), uisongsel);
-
-#if 0
-  /* this box pushes the tree view up to the top */
-  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
-  assert (hbox != NULL);
-  gtk_widget_set_hexpand (hbox, TRUE);
-  gtk_widget_set_vexpand (hbox, TRUE);
-  gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (hbox),
-      TRUE, TRUE, 0);
-#endif
 
   gtk_event_controller_scroll_new (uisongsel->songselTree,
       GTK_EVENT_CONTROLLER_SCROLL_VERTICAL);
@@ -527,7 +549,7 @@ uisongselFilterDanceProcess (GtkTreeView *tv, GtkTreePath *path,
   ssize_t     idx;
   ilist_t     *danceList;
 
-  idx = uiutilsGetDanceSelection (&uisongsel->dancesel, path);
+  idx = uiutilsDropDownSelectionGet (&uisongsel->dancesel, path);
   if (idx >= 0) {
     danceList = ilistAlloc ("songsel-filter-dance", LIST_ORDERED, NULL);
     /* any value will do; only interested in the dance index at this point */
@@ -540,3 +562,175 @@ uisongselFilterDanceProcess (GtkTreeView *tv, GtkTreePath *path,
   uisongselPopulateData (uisongsel);
   return;
 }
+
+static void
+uisongselFilterDialog (GtkButton *b, gpointer udata)
+{
+  uisongsel_t       * uisongsel = udata;
+
+  if (uisongsel->filterDialog == NULL) {
+    GtkWidget *content;
+    GtkWidget *vbox;
+    GtkWidget *hbox;
+    GtkWidget *widget;
+    GtkSizeGroup    *sgA;
+    GtkSizeGroup    *sgB;
+
+
+    sgA = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+    sgB = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+
+    uisongsel->filterDialog = gtk_dialog_new_with_buttons (
+        _("Filter Songs"),
+        GTK_WINDOW (uisongsel->parentwin),
+        GTK_DIALOG_DESTROY_WITH_PARENT,
+        _("Close"),
+        GTK_RESPONSE_CLOSE,
+        _("Reset"),
+        RESPONSE_RESET,
+        _("Apply"),
+        GTK_RESPONSE_APPLY,
+        NULL
+        );
+
+    content = gtk_dialog_get_content_area (GTK_DIALOG (uisongsel->filterDialog));
+
+    vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+    assert (vbox != NULL);
+    gtk_widget_set_hexpand (vbox, FALSE);
+    gtk_widget_set_vexpand (vbox, FALSE);
+    gtk_container_add (GTK_CONTAINER (content), vbox);
+
+    hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+    assert (hbox != NULL);
+    gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+
+    widget = uiutilsCreateColonLabel (_("Sort by"));
+    gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
+    gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+    gtk_size_group_add_widget (sgA, GTK_WIDGET (widget));
+
+// need to initialize the button/drop-down to the current selection
+    widget = uiutilsComboboxCreate (uisongsel->filterDialog,
+        "", uisongselSortBySelect, &uisongsel->sortbysel, uisongsel);
+    uisongselCreateSortByList (uisongsel);
+    gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+
+    hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+    assert (hbox != NULL);
+    gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+
+    widget = uiutilsCreateColonLabel (_("Search"));
+    gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
+    gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+    gtk_size_group_add_widget (sgA, widget);
+
+    widget = uiutilsEntryCreate (&uisongsel->searchentry);
+    gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+    gtk_size_group_add_widget (sgB, widget);
+
+    hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+    assert (hbox != NULL);
+    gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+
+    widget = uiutilsCreateColonLabel (_("Genre"));
+    gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
+    gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+    gtk_size_group_add_widget (sgA, widget);
+
+/* ### fix callback */
+    widget = uiutilsComboboxCreate (uisongsel->filterDialog,
+        _("Select Genre"), uisongselGenreSelect, &uisongsel->filtergenresel,
+        uisongsel);
+    uisongselCreateGenreList (uisongsel);
+    gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+
+    hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+    assert (hbox != NULL);
+    gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+
+    widget = uiutilsCreateColonLabel (_("Dance"));
+    gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
+    gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+    gtk_size_group_add_widget (sgA, widget);
+
+/* ### fix callback */
+    widget = uiutilsComboboxCreate (uisongsel->filterDialog,
+        _("Select Dance"), NULL,
+        &uisongsel->filterdancesel, uisongsel);
+    uiutilsCreateDanceList (&uisongsel->filterdancesel);
+    gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+    gtk_size_group_add_widget (sgB, widget);
+
+    hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+    assert (hbox != NULL);
+    gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+
+    widget = uiutilsCreateColonLabel (_("Dance Rating"));
+    gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
+    gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+    gtk_size_group_add_widget (sgA, widget);
+
+//    widget = uiutilsSpinboxCreate (uisongsel->filterDialog,
+//        "", NULL,
+//        &uisongsel->filterrating, uisongsel);
+//    uisongselCreateRatingList (&uisongsel->filterrating);
+//    gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+//    gtk_size_group_add_widget (sgB, widget);
+
+    hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+    assert (hbox != NULL);
+    gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+
+    widget = uiutilsCreateColonLabel (_("Dance Level"));
+    gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
+    gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+    gtk_size_group_add_widget (sgA, widget);
+
+    hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+    assert (hbox != NULL);
+    gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+
+    widget = uiutilsCreateColonLabel (_("Status"));
+    gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
+    gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+    gtk_size_group_add_widget (sgA, widget);
+  }
+
+  gtk_widget_show_all (uisongsel->filterDialog);
+}
+
+static void
+uisongselSortBySelect (GtkTreeView *tv, GtkTreePath *path,
+    GtkTreeViewColumn *column, gpointer udata)
+{
+}
+
+static void
+uisongselCreateSortByList (uisongsel_t *uisongsel)
+{
+  slist_t           *sortoptlist;
+  sortopt_t         *sortopt;
+
+  sortopt = bdjvarsdfGet (BDJVDF_SORT_OPT);
+  sortoptlist = sortoptGetList (sortopt);
+  uiutilsDropDownSetList (&uisongsel->sortbysel, sortoptlist);
+}
+
+static void
+uisongselGenreSelect (GtkTreeView *tv, GtkTreePath *path,
+    GtkTreeViewColumn *column, gpointer udata)
+{
+}
+
+static void
+uisongselCreateGenreList (uisongsel_t *uisongsel)
+{
+  slist_t   *genrelist;
+  genre_t   *genre;
+
+  genre = bdjvarsdfGet (BDJVDF_GENRES);
+  genrelist = genreGetList (genre);
+  uiutilsDropDownSetNumList (&uisongsel->filtergenresel, genrelist);
+}
+

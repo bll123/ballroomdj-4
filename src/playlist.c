@@ -62,8 +62,6 @@ static datafilekey_t playlistdfkeys[] = {
       VALUE_NUM, NULL, -1 },
   { "TYPE",             PLAYLIST_TYPE,
       VALUE_NUM, plConvType, -1 },
-  { "USESTATUS",        PLAYLIST_USE_STATUS,
-      VALUE_NUM, parseConvBoolean, -1 },
 };
 #define PLAYLIST_DFKEY_COUNT (sizeof (playlistdfkeys) / sizeof (datafilekey_t))
 

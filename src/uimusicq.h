@@ -15,11 +15,8 @@ typedef struct {
   guint             repeatTimer;
   /* music queue tab */
   GtkWidget         *box;
-  GtkWidget         *playlistSelectButton;
-  GtkWidget         *playlistSelectWin;
-  GtkWidget         *playlistSelect;
-  bool              playlistSelectOpen;
-  uiutilsdancesel_t dancesel;
+  uiutilsdropdown_t dancesel;
+  uiutilsdropdown_t playlistsel;
   /* tree views */
   GtkWidget         *musicqTree;
   char              *selPathStr;

@@ -26,6 +26,9 @@ genre_t *
 genreAlloc (char *fname)
 {
   genre_t       *genre;
+  slist_t       *dflist;
+  ilistidx_t    gkey;
+  ilistidx_t    iteridx;
 
   if (! fileopExists (fname)) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: genre: missing %s", fname);
@@ -38,6 +41,16 @@ genreAlloc (char *fname)
   genre->df = datafileAllocParse ("genre", DFTYPE_INDIRECT, fname,
       genredfkeys, GENRE_DFKEY_COUNT, GENRE_GENRE);
   ilistDumpInfo (datafileGetList (genre->df));
+
+  dflist = datafileGetList (genre->df);
+  genre->genreList = slistAlloc ("sortopt-disp", LIST_UNORDERED, free, NULL);
+  ilistStartIterator (dflist, &iteridx);
+  while ((gkey = ilistIterateKey (dflist, &iteridx)) >= 0) {
+    slistSetNum (genre->genreList,
+        ilistGetData (dflist, gkey, GENRE_GENRE), gkey);
+  }
+  slistSort (genre->genreList);
+
   return genre;
 }
 
@@ -47,6 +60,9 @@ genreFree (genre_t *genre)
   if (genre != NULL) {
     if (genre->df != NULL) {
       datafileFree (genre->df);
+    }
+    if (genre->genreList != NULL) {
+      slistFree (genre->genreList);
     }
     free (genre);
   }
@@ -64,3 +80,12 @@ genreConv (char *keydata, datafileret_t *ret)
   ret->u.num = slistGetNum (lookup, keydata);
 }
 
+slist_t *
+genreGetList (genre_t *genre)
+{
+  if (genre == NULL) {
+    return NULL;
+  }
+
+  return genre->genreList;
+}
