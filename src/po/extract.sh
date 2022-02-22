@@ -12,6 +12,8 @@ case ${cwd} in
     ;;
 esac
 
+rm -f po/*~ po/old/*~ > /dev/null 2>&1
+
 . ../VERSION.txt
 export VERSION
 dt=$(date '+%F %R')

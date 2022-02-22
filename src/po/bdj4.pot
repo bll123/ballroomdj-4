@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-02-22 12:18-0800\n"
+"POT-Creation-Date: 2022-02-22 12:50-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,6 +21,14 @@ msgstr ""
 msgid "Advanced"
 msgstr ""
 
+#: sortopt.c:55
+msgid "Album"
+msgstr ""
+
+#: sortopt.c:58
+msgid "Album Artist"
+msgstr ""
+
 #: uisongsel.c:582
 msgid "Apply"
 msgstr ""
@@ -29,7 +37,7 @@ msgstr ""
 msgid "Argentine Tango"
 msgstr ""
 
-#: uisongsel.c:232
+#: sortopt.c:61 uisongsel.c:232
 msgid "Artist"
 msgstr ""
 
@@ -114,16 +122,20 @@ msgstr ""
 msgid "Creating shortcut."
 msgstr ""
 
-#: uisongsel.c:212 uisongsel.c:636
+#: sortopt.c:64 uisongsel.c:212 uisongsel.c:636
 msgid "Dance"
 msgstr ""
 
-#: uisongsel.c:663
+#: sortopt.c:67 uisongsel.c:663
 msgid "Dance Level"
 msgstr ""
 
-#: uisongsel.c:654
+#: sortopt.c:70 uisongsel.c:654
 msgid "Dance Rating"
+msgstr ""
+
+#: sortopt.c:73
+msgid "Date Added"
 msgstr ""
 
 #: templates.c:29
@@ -186,7 +198,7 @@ msgstr ""
 msgid "Foxtrot"
 msgstr ""
 
-#: uisongsel.c:627
+#: sortopt.c:76 uisongsel.c:627
 msgid "Genre"
 msgstr ""
 
@@ -223,6 +235,10 @@ msgstr ""
 
 #: templates.c:9
 msgid "Jive"
+msgstr ""
+
+#: sortopt.c:85
+msgid "Last Updated"
 msgstr ""
 
 #: bdj4installer.c:1217
@@ -460,7 +476,7 @@ msgid ""
 "installs."
 msgstr ""
 
-#: uisongsel.c:223
+#: sortopt.c:79 uisongsel.c:223
 msgid "Title"
 msgstr ""
 
@@ -470,6 +486,10 @@ msgstr ""
 
 #: uiplayer.c:313
 msgid "Toggle Repeat"
+msgstr ""
+
+#: sortopt.c:82
+msgid "Track"
 msgstr ""
 
 #: bdj4installer.c:1225

@@ -1,5 +1,12 @@
 #!/bin/bash
 
+cwd=$(pwd)
+case ${cwd} in
+  */src)
+    cd po
+    ;;
+esac
+
 rm -rf ../../locale
 
 echo "-- Creating .mo files"

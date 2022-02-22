@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: BDJ4 4.0.0\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
-"POT-Creation-Date: 2022-02-22 12:18-0800\n"
-"PO-Revision-Date: 2022-02-22 12:18\n"
+"POT-Creation-Date: 2022-02-22 12:50-0800\n"
+"PO-Revision-Date: 2022-02-22 12:50\n"
 "Last-Translator: marimo\n"
 "Language-Team: dutchLANGUAGE <LL@li.org>\n"
 "Language: nl\n"
@@ -17,6 +17,14 @@ msgstr ""
 msgid "Advanced"
 msgstr "Geavanceerd"
 
+#: sortopt.c:55
+msgid "Album"
+msgstr "Album"
+
+#: sortopt.c:58
+msgid "Album Artist"
+msgstr "Album Artiest"
+
 #: uisongsel.c:582
 msgid "Apply"
 msgstr ""
@@ -25,7 +33,7 @@ msgstr ""
 msgid "Argentine Tango"
 msgstr "Argentijnse Tango"
 
-#: uisongsel.c:232
+#: sortopt.c:61 uisongsel.c:232
 msgid "Artist"
 msgstr "Artiest"
 
@@ -110,17 +118,21 @@ msgstr ""
 msgid "Creating shortcut."
 msgstr ""
 
-#: uisongsel.c:212 uisongsel.c:636
+#: sortopt.c:64 uisongsel.c:212 uisongsel.c:636
 msgid "Dance"
 msgstr "Dans"
 
-#: uisongsel.c:663
+#: sortopt.c:67 uisongsel.c:663
 msgid "Dance Level"
 msgstr ""
 
-#: uisongsel.c:654
+#: sortopt.c:70 uisongsel.c:654
 msgid "Dance Rating"
 msgstr "Dans beoordeling"
+
+#: sortopt.c:73
+msgid "Date Added"
+msgstr "Datum toegevoegd"
 
 #: templates.c:29
 msgid "Easy"
@@ -182,7 +194,7 @@ msgstr ""
 msgid "Foxtrot"
 msgstr "Foxtrot"
 
-#: uisongsel.c:627
+#: sortopt.c:76 uisongsel.c:627
 msgid "Genre"
 msgstr "Genre"
 
@@ -220,6 +232,10 @@ msgstr "Jazz"
 #: templates.c:9
 msgid "Jive"
 msgstr "Jive"
+
+#: sortopt.c:85
+msgid "Last Updated"
+msgstr "Laatst bijgewerkt"
 
 #: bdj4installer.c:1217
 msgid "Located 'tclsh'."
@@ -456,7 +472,7 @@ msgid ""
 "installs."
 msgstr ""
 
-#: uisongsel.c:223
+#: sortopt.c:79 uisongsel.c:223
 msgid "Title"
 msgstr "Titel"
 
@@ -467,6 +483,10 @@ msgstr "Pauze omschakelen"
 #: uiplayer.c:313
 msgid "Toggle Repeat"
 msgstr ""
+
+#: sortopt.c:82
+msgid "Track"
+msgstr "Track"
 
 #: bdj4installer.c:1225
 msgid "Unable to locate 'tclsh'."
