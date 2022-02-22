@@ -3087,3 +3087,6 @@ msgstr "Simpel"
 msgid "Virus"
 msgstr "Virus"
 
+msgid "standard"
+msgstr "standaard"
+

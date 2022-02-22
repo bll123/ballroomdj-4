@@ -1,13 +1,12 @@
 #!/bin/bash
 
-
 export olddata
 
 function readolddata {
   pof=$1
 
   start=F
-  while read line; do
+  while read -r line; do
     case $line in
       "")
         start=T
@@ -20,10 +19,10 @@ function readolddata {
 
     case $line in
       msgid*)
-        omid=$line
+        omid="$line"
         ;;
       msgstr*)
-        olddata[$omid]=$line
+        olddata[$omid]="$line"
         ;;
       *)
         ;;
@@ -33,6 +32,7 @@ function readolddata {
 }
 
 for pofile in *.po; do
+  set +o noglob
   if [[ $pofile == "en.po" ]]; then
     continue
   fi
@@ -51,8 +51,9 @@ for pofile in *.po; do
 
   echo "processing $pofile : $oldpo"
 
+  set -o noglob
   start=F
-  while read line; do
+  while read -r line; do
     case $line in
       "")
         start=T
@@ -79,9 +80,7 @@ for pofile in *.po; do
         echo $line
         ;;
     esac
-
   done < $pofile > $pofile.n
-  cp -f $pofile $pofile.bak
-  mv -f $pofile.n $pofile
 
+  mv -f $pofile.n $pofile
 done
