@@ -72,5 +72,5 @@ rm -f $TMP
 
 mkpo en en.po "Automatically generated" English english
 mkpo nl nl.po "marimo" Nederlands dutch
-mkpo de de_DE.po "various" Deutsch german
+#mkpo de de_DE.po "various" Deutsch german
 ./lang-lookup.sh

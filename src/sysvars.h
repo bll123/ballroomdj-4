@@ -20,6 +20,7 @@ typedef enum {
   SV_SHLIB_EXT,
   SV_MOBMQ_HOST,
   SV_LOCALE,
+  SV_SHORT_LOCALE,
   SV_CA_FILE,
   SV_BDJ4_VERSION,
   SV_BDJ4_BUILD,
@@ -37,7 +38,8 @@ typedef enum {
 void    sysvarsInit (const char *);
 char    * sysvarsGetStr (sysvarkey_t idx);
 ssize_t sysvarsGetNum (sysvarlkey_t idx);
-void    sysvarSetNum (sysvarlkey_t, ssize_t);
+void    sysvarsSetStr (sysvarkey_t, char *value);
+void    sysvarsSetNum (sysvarlkey_t, ssize_t);
 bool    isMacOS (void);
 bool    isWindows (void);
 bool    isLinux (void);

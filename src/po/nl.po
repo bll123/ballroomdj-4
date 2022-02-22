@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: BDJ4 4.0.0\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
-"POT-Creation-Date: 2022-02-22 11:28-0800\n"
-"PO-Revision-Date: 2022-02-22 11:28\n"
+"POT-Creation-Date: 2022-02-22 12:18-0800\n"
+"PO-Revision-Date: 2022-02-22 12:18\n"
 "Last-Translator: marimo\n"
 "Language-Team: dutchLANGUAGE <LL@li.org>\n"
 "Language: nl\n"
@@ -291,11 +291,7 @@ msgstr ""
 msgid "Paso Doble"
 msgstr "Paso Doble"
 
-#: uiplayer.c:328
-msgid "Pause At End"
-msgstr ""
-
-#: templates.c:37 templates.c:47 templates.c:57
+#: uiplayer.c:328 templates.c:37 templates.c:47 templates.c:57
 msgid "Pause at End"
 msgstr "Pauzeer aan einde"
 
@@ -429,7 +425,7 @@ msgstr ""
 
 #: uiplayer.c:208
 msgid "Speed"
-msgstr ""
+msgstr "Tempo"
 
 #: bdj4installer.c:1177
 msgid "Starting conversion process."
@@ -491,7 +487,7 @@ msgstr "Weense wals"
 
 #: uiplayer.c:383
 msgid "Volume"
-msgstr ""
+msgstr "Volume"
 
 #: templates.c:18
 msgid "Waltz"

@@ -1,4 +1,4 @@
-<!-- English Flex -->
+<!-- Nederlands Flex -->
 <!DOCTYPE html>
 <!--
 http://danielstern.ca/range.css/#/

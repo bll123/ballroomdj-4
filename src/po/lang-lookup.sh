@@ -73,6 +73,12 @@ for pofile in *.po; do
       'msgstr ""')
         if [[ ${olddata[$nmid]} != "" ]]; then
           line=${olddata[$nmid]}
+        else
+          tnmid=$(echo $nmid | sed 's,"$,:",')
+          if [[ ${olddata[${tnmid}]} != "" ]]; then
+            line=${olddata[${tnmid}]}
+            line=$(echo $line | sed -e 's,:"$,",')
+          fi
         fi
         echo $line
         ;;

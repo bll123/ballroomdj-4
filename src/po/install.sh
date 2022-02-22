@@ -152,6 +152,15 @@ for pofile in $(cat complete.txt); do
     mv -f $TMP Standaardrondes.pl.nl
     mv -f standardrounds.pldances.nl Standaardrondes.pldances.nl
     mv -f standardrounds.sequence.nl Standaardrondes.sequence.nl
+    for fn in *.html.nl; do
+      case $fn in
+        mobilemq.html|qrcode.html)
+          continue
+          ;;
+      esac
+      sed -e 's/English/Nederlands/' $fn > $fn.n
+      mv -f $fn.n $fn
+    done
     cd $cwd
   fi
 done

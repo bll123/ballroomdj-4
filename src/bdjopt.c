@@ -255,7 +255,7 @@ bdjoptCreateNewConfigs (void)
   char      tpath [MAXPATHLEN];
 
     /* see if profile 0 exists */
-  sysvarSetNum (SVL_BDJIDX, 0);
+  sysvarsSetNum (SVL_BDJIDX, 0);
   pathbldMakePath (path, MAXPATHLEN, "", BDJ_CONFIG_BASEFN,
       BDJ_CONFIG_EXT, PATHBLD_MP_USEIDX);
   if (! fileopExists (path)) {
@@ -263,39 +263,39 @@ bdjoptCreateNewConfigs (void)
   }
 
     /* global */
-  sysvarSetNum (SVL_BDJIDX, currProfile);
+  sysvarsSetNum (SVL_BDJIDX, currProfile);
   pathbldMakePath (tpath, MAXPATHLEN, "", BDJ_CONFIG_BASEFN,
       BDJ_CONFIG_EXT, PATHBLD_MP_USEIDX);
   filemanipCopy (path, tpath);
 
     /* profile */
-  sysvarSetNum (SVL_BDJIDX, 0);
+  sysvarsSetNum (SVL_BDJIDX, 0);
   pathbldMakePath (path, MAXPATHLEN, "profiles", BDJ_CONFIG_BASEFN,
       BDJ_CONFIG_EXT, PATHBLD_MP_USEIDX);
-  sysvarSetNum (SVL_BDJIDX, currProfile);
+  sysvarsSetNum (SVL_BDJIDX, currProfile);
   pathbldMakePath (tpath, MAXPATHLEN, "profiles", BDJ_CONFIG_BASEFN,
       BDJ_CONFIG_EXT, PATHBLD_MP_USEIDX);
   filemanipCopy (path, tpath);
 
     /* per machine */
-  sysvarSetNum (SVL_BDJIDX, 0);
+  sysvarsSetNum (SVL_BDJIDX, 0);
   pathbldMakePath (path, MAXPATHLEN, "", BDJ_CONFIG_BASEFN,
       BDJ_CONFIG_EXT, PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
-  sysvarSetNum (SVL_BDJIDX, currProfile);
+  sysvarsSetNum (SVL_BDJIDX, currProfile);
   pathbldMakePath (tpath, MAXPATHLEN, "", BDJ_CONFIG_BASEFN,
       BDJ_CONFIG_EXT, PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
   filemanipCopy (path, tpath);
 
     /* per machine per profile */
-  sysvarSetNum (SVL_BDJIDX, 0);
+  sysvarsSetNum (SVL_BDJIDX, 0);
   pathbldMakePath (path, MAXPATHLEN, "profiles", BDJ_CONFIG_BASEFN,
       BDJ_CONFIG_EXT, PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
-  sysvarSetNum (SVL_BDJIDX, currProfile);
+  sysvarsSetNum (SVL_BDJIDX, currProfile);
   pathbldMakePath (tpath, MAXPATHLEN, "profiles", BDJ_CONFIG_BASEFN,
       BDJ_CONFIG_EXT, PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
   filemanipCopy (path, tpath);
 
-  sysvarSetNum (SVL_BDJIDX, currProfile);
+  sysvarsSetNum (SVL_BDJIDX, currProfile);
 }
 
 static void

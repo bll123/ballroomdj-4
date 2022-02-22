@@ -15,6 +15,7 @@
 #include "bdjvars.h"
 #include "conn.h"
 #include "fileop.h"
+#include "localeutil.h"
 #include "lock.h"
 #include "log.h"
 #include "pathbld.h"
@@ -56,6 +57,7 @@ main (int argc, char *argv[])
   };
 
   sysvarsInit (argv [0]);
+  localeInit ();
 
   while ((c = getopt_long_only (argc, argv, "p:d:r:m:", bdj_options, &option_index)) != -1) {
     switch (c) {
@@ -67,7 +69,7 @@ main (int argc, char *argv[])
       }
       case 'p': {
         if (optarg) {
-          sysvarSetNum (SVL_BDJIDX, atol (optarg));
+          sysvarsSetNum (SVL_BDJIDX, atol (optarg));
         }
         break;
       }

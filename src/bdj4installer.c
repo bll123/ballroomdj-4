@@ -476,14 +476,8 @@ installerActivate (GApplication *app, gpointer udata)
       FALSE, FALSE, 0);
   g_signal_connect (widget, "clicked", G_CALLBACK (installerInstall), installer);
 
-  scwidget = gtk_scrolled_window_new (NULL, NULL);
-  gtk_scrolled_window_set_overlay_scrolling (GTK_SCROLLED_WINDOW (scwidget), FALSE);
-  gtk_scrolled_window_set_propagate_natural_width (GTK_SCROLLED_WINDOW (scwidget), TRUE);
-  gtk_scrolled_window_set_propagate_natural_height (GTK_SCROLLED_WINDOW (scwidget), TRUE);
+  scwidget = uiutilsCreateScrolledWindow ();
   gtk_scrolled_window_set_min_content_height (GTK_SCROLLED_WINDOW (scwidget), 500);
-  gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scwidget), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
-  gtk_widget_set_hexpand (GTK_WIDGET (scwidget), TRUE);
-  gtk_widget_set_vexpand (GTK_WIDGET (scwidget), FALSE);
   gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (scwidget),
       FALSE, FALSE, 0);
 
@@ -811,7 +805,7 @@ installerInstInit (installer_t *installer)
       if (*tbuff != '\0') {
         if (strncmp (tbuff, "Y", 1) != 0 &&
             strncmp (tbuff, "y", 1) != 0) {
-          printf (_(" * Installation aborted."));
+          printf (" * %s", _("Installation aborted."));
           printf ("\n");
           fflush (stdout);
           installer->instState = INST_BEGIN;
@@ -1410,6 +1404,13 @@ installerTemplateCopy (char *from, char *to)
   strlcat (tbuff, localesfx, MAXPATHLEN);
   if (fileopExists (tbuff)) {
     from = tbuff;
+  } else {
+    snprintf (localesfx, sizeof (localesfx), ".%s", sysvarsGetStr (SV_SHORT_LOCALE));
+    strlcpy (tbuff, from, MAXPATHLEN);
+    strlcat (tbuff, localesfx, MAXPATHLEN);
+    if (fileopExists (tbuff)) {
+      from = tbuff;
+    }
   }
   filemanipCopy (from, to);
 }

@@ -1,4 +1,4 @@
-<!-- English HTML 5 -->
+<!-- Nederlands HTML 5 -->
 <!DOCTYPE html>
 <!--
 http://danielstern.ca/range.css/#/

@@ -21,6 +21,11 @@ main (int argc, char *argv [])
   locale = setlocale (LC_ALL, NULL);
   if (locale != NULL) {
     printf ("%2.2s ", locale);
+    if (locale [2] == '_') {
+      printf ("%5.5s ", locale);
+    } else {
+      printf ("''");
+    }
     printf ("'%s'\n", locale);
   }
 }

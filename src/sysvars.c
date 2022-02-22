@@ -185,8 +185,12 @@ sysvarsInit (const char *argv0)
     }
   }
 
-  strlcpy (sysvars [SV_LOCALE], setlocale (LC_ALL, NULL), MAXPATHLEN);
-  stringToLower (sysvars [SV_LOCALE]);
+  setlocale (LC_ALL, "");
+
+  snprintf (tbuf, sizeof (tbuf), "%-.5s", setlocale (LC_ALL, NULL));
+  strlcpy (sysvars [SV_LOCALE], tbuf, MAXPATHLEN);
+  snprintf (tbuf, sizeof (tbuf), "%-.2s", sysvars [SV_LOCALE]);
+  strlcpy (sysvars [SV_SHORT_LOCALE], tbuf, MAXPATHLEN);
 
   strlcpy (sysvars [SV_BDJ4_VERSION], "unknown", MAXPATHLEN);
   if (fileopExists ("VERSION.txt")) {
@@ -245,7 +249,17 @@ sysvarsGetNum (sysvarlkey_t idx)
 
 
 inline void
-sysvarSetNum (sysvarlkey_t idx, ssize_t value)
+sysvarsSetStr (sysvarkey_t idx, char *value)
+{
+  if (idx >= SV_MAX) {
+    return;
+  }
+
+  strlcpy (sysvars [idx], value, MAXPATHLEN);
+}
+
+inline void
+sysvarsSetNum (sysvarlkey_t idx, ssize_t value)
 {
   if (idx >= SVL_MAX) {
     return;

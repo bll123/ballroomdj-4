@@ -1,4 +1,4 @@
-<!-- English Flex Dark -->
+<!-- Nederlands Flex Dark -->
 <!DOCTYPE html>
 <!--
 http://danielstern.ca/range.css/#/

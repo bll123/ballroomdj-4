@@ -74,7 +74,7 @@ bdj4startup (int argc, char *argv[], char *tag, bdjmsgroute_t route)
       }
       case 'p': {
         if (optarg) {
-          sysvarSetNum (SVL_BDJIDX, atol (optarg));
+          sysvarsSetNum (SVL_BDJIDX, atol (optarg));
         }
         break;
       }
@@ -90,7 +90,7 @@ bdj4startup (int argc, char *argv[], char *tag, bdjmsgroute_t route)
       /* try for the next free profile */
     ssize_t profile = sysvarsGetNum (SVL_BDJIDX);
     ++profile;
-    sysvarSetNum (SVL_BDJIDX, profile);
+    sysvarsSetNum (SVL_BDJIDX, profile);
     ++count;
     if (count > 20) {
       bdj4shutdown (route);

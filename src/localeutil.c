@@ -16,18 +16,25 @@
 #include "bdj4.h"
 #include "localeutil.h"
 #include "pathbld.h"
+#include "sysvars.h"
 
 void
 localeInit (void)
 {
-  char    tpath [MAXPATHLEN];
+  char    tbuff [MAXPATHLEN];
 
-  setlocale (LC_ALL, "");
-  pathbldMakePath (tpath, sizeof (tpath), "", "", "", PATHBLD_MP_LOCALEDIR);
-  bindtextdomain ("bdj4", tpath);
+  pathbldMakePath (tbuff, sizeof (tbuff), "", "", "", PATHBLD_MP_LOCALEDIR);
+  bindtextdomain ("bdj4", tbuff);
 #if _lib_bind_textdomain_codeset
   bind_textdomain_codeset ("bdj4", "UTF-8");
 #endif
   textdomain ("bdj4");
+
+  /* the sysvars variables must be reset */
+  snprintf (tbuff, sizeof (tbuff), "%-.5s", setlocale (LC_ALL, NULL));
+  sysvarsSetStr (SV_LOCALE, tbuff);
+  snprintf (tbuff, sizeof (tbuff), "%-.2s", setlocale (LC_ALL, NULL));
+  sysvarsSetStr (SV_SHORT_LOCALE, tbuff);
+
   return;
 }

@@ -205,10 +205,10 @@ uiplayerActivate (uiplayer_t *uiplayer)
   g_signal_connect (uiplayer->speedScale, "change-value", G_CALLBACK (uiplayerSpeedProcess), uiplayer);
 
   /* size group D */
-  widget = gtk_label_new ("Speed:");
-  gtk_box_pack_end (GTK_BOX (hbox), GTK_WIDGET (widget), FALSE, FALSE, 0);
-  gtk_widget_set_halign (GTK_WIDGET (widget), GTK_ALIGN_END);
+  widget = uiutilsCreateColonLabel (_("Speed"));
+  gtk_widget_set_halign (widget, GTK_ALIGN_END);
   gtk_label_set_xalign (GTK_LABEL (widget), 1.0);
+  gtk_box_pack_end (GTK_BOX (hbox), GTK_WIDGET (widget), FALSE, FALSE, 0);
   gtk_size_group_add_widget (sgD, GTK_WIDGET (widget));
 
   /* position controls / display */
@@ -275,7 +275,7 @@ uiplayerActivate (uiplayer_t *uiplayer)
   g_signal_connect (uiplayer->seekScale, "change-value", G_CALLBACK (uiplayerSeekProcess), uiplayer);
 
   /* size group D */
-  widget = gtk_label_new ("Position:");
+  widget = uiutilsCreateColonLabel (_("Position"));
   gtk_box_pack_end (GTK_BOX (hbox), GTK_WIDGET (widget), FALSE, FALSE, 0);
   gtk_widget_set_halign (GTK_WIDGET (widget), GTK_ALIGN_END);
   gtk_label_set_xalign (GTK_LABEL (widget), 1.0);
@@ -325,7 +325,7 @@ uiplayerActivate (uiplayer_t *uiplayer)
   gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (widget), FALSE, FALSE, 0);
 
   uiplayer->pauseatendButton = gtk_toggle_button_new ();
-  gtk_button_set_label (GTK_BUTTON (uiplayer->pauseatendButton), _("Pause At End"));
+  gtk_button_set_label (GTK_BUTTON (uiplayer->pauseatendButton), _("Pause at End"));
   assert (uiplayer->pauseatendButton != NULL);
 
   pathbldMakePath (tbuff, sizeof (tbuff), "", "led_off", ".svg",
@@ -380,7 +380,7 @@ uiplayerActivate (uiplayer_t *uiplayer)
   g_signal_connect (uiplayer->volumeScale, "change-value", G_CALLBACK (uiplayerVolumeProcess), uiplayer);
 
   /* size group D */
-  widget = gtk_label_new ("Volume:");
+  widget = uiutilsCreateColonLabel (_("Volume"));
   gtk_box_pack_end (GTK_BOX (hbox), GTK_WIDGET (widget), FALSE, FALSE, 0);
   gtk_widget_set_halign (GTK_WIDGET (widget), GTK_ALIGN_END);
   gtk_label_set_xalign (GTK_LABEL (widget), 1.0);

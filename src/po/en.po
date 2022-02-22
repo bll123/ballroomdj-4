@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: BDJ4 4.0.0\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
-"POT-Creation-Date: 2022-02-22 11:28-0800\n"
-"PO-Revision-Date: 2022-02-22 11:28\n"
+"POT-Creation-Date: 2022-02-22 12:18-0800\n"
+"PO-Revision-Date: 2022-02-22 12:18\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: englishLANGUAGE <LL@li.org>\n"
 "Language: en\n"
@@ -291,11 +291,7 @@ msgstr ""
 msgid "Paso Doble"
 msgstr ""
 
-#: uiplayer.c:328
-msgid "Pause At End"
-msgstr ""
-
-#: templates.c:37 templates.c:47 templates.c:57
+#: uiplayer.c:328 templates.c:37 templates.c:47 templates.c:57
 msgid "Pause at End"
 msgstr ""
 
