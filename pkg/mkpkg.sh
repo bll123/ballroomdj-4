@@ -146,14 +146,15 @@ fi
 
 # create manifests
 
-# case $systype in
-#   Linux)
-#       echo "-- creating source manifest"
-#       (cd src; make distclean > /dev/null 2>&1)
-#     ;;
-# esac
+case $systype in
+  Linux)
+      echo "-- creating source manifest"
+      (cd src; make distclean > /dev/null 2>&1)
+    ;;
+esac
 
-#echo "-- building software"
+echo "-- building software"
+echo "==== currently off ===="
 #(
 #  cd src
 #  make distclean
@@ -162,6 +163,9 @@ fi
 #)
 
 (cd src; make tclean > /dev/null 2>&1)
+
+(cd src/po; ./extract.sh)
+(cd src/po; ./install.sh)
 
 # on windows, copy all of the required .dll files to plocal/bin
 # this must be done after the build and before the manifest is created.
