@@ -1,4 +1,4 @@
-<!-- Nederlands HTML 5 -->
+<!-- English HTML 5 -->
 <!DOCTYPE html>
 <!--
 http://danielstern.ca/range.css/#/
@@ -6,7 +6,7 @@ http://danielstern.ca/range.css/#/
 <!-- VERSION 2022-1-17 -->
 <html>
 <head>
-  <title>BallroomDJ</title>
+  <title>BDJ4</title>
   <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="Description" content="BallroomDJ Web Interface">
@@ -344,7 +344,7 @@ http://danielstern.ca/range.css/#/
         <td colspan="4">
           <input class="wb" type="submit"
             onclick="javascript:bdj.sendCmd('play');"
-            name="playpause" value="Afspelen/Pauseren">
+            name="playpause" value="Afspelen / Pauseren">
         </td>
         <td class="vcenter">
           <img class="vcenter" id="playstatusi"
@@ -441,12 +441,12 @@ http://danielstern.ca/range.css/#/
     <select id="dancelist" name="dancelist"></select>
     <input class="wb" type="submit"
       onclick="javascript:bdj.sendDanceCmd('queue');"
-      name="queue" value="Wachtrij">
+      name="queue" value="Wachtrij" msgstr "" msgstr "" msgstr "">
     <input class="wb" type="submit"
       onclick="javascript:bdj.sendDanceCmd('queue5');"
       name="queue5" value="Queue 5">
     <input class="wb" type="submit"
-      onclick="javascript:bdj.sendCmd('clear');"
+      onclick="javascript:bdj.sendDanceCmd('clear');"
       name="clear" value="Clear Queue">
     <hr>
     <select id="playlistsel" name="playlistsel"></select>
@@ -455,7 +455,7 @@ http://danielstern.ca/range.css/#/
       name="plclearplay" value="Clear & Play">
     <input class="wb" type="submit"
       onclick="javascript:bdj.sendPLCmd('playlistqueue');"
-      name="plqueue" value="Queue">
+      name="plqueue" value="Wachtrij" msgstr "" msgstr "" msgstr "">
   </div>
   <script type="text/javascript">
 var bdj = {};
@@ -593,7 +593,7 @@ bdj.updateData = function (data) {
 
   o = document.getElementById("repeatstatusd");
   var ob = document.getElementById("repeatblankd");
-  if (jd.repeat == "1") {
+  if (jd.repeat == 1) {
     o.className = "divinline";
     ob.className = "divnone";
   } else {
@@ -603,7 +603,7 @@ bdj.updateData = function (data) {
 
   o = document.getElementById("pauseatendi");
   o.src = "led_off.svg";
-  if (jd.pauseatend == "1") {
+  if (jd.pauseatend == 1) {
     o.src = "led_on.svg";
   }
 

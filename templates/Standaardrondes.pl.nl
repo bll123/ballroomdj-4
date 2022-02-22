@@ -2,9 +2,9 @@
 ALLOWEDKEYWORDS
 ..
 DANCERATING
-..Good
+..Goed
 GAP
-..
+..3000
 MANUALLIST
 ..
 MAXPLAYTIME
@@ -14,9 +14,9 @@ MQMESSAGE
 PAUSEEACHSONG
 ..no
 PLAYANNOUNCE
-..no
+..yes
 SEQUENCE
-..
+..Standaardrondes
 STOPAFTER
 ..0
 STOPTIME
@@ -24,8 +24,8 @@ STOPTIME
 USEUNRATED
 ..no
 DANCELEVELLOW
-..Easy
+..Gemakkelijk
 DANCELEVELHIGH
-..Advanced
+..Geavanceerd
 TYPE
-..Automatic
+..Sequence

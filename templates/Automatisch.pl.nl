@@ -2,7 +2,7 @@
 ALLOWEDKEYWORDS
 ..
 DANCERATING
-..Good
+..Goed
 GAP
 ..
 MANUALLIST
@@ -24,8 +24,8 @@ STOPTIME
 USEUNRATED
 ..no
 DANCELEVELLOW
-..Easy
+..Gemakkelijk
 DANCELEVELHIGH
-..Advanced
+..Geavanceerd
 TYPE
 ..Automatic

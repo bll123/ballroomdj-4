@@ -1,4 +1,4 @@
-<!-- Nederlands Flex -->
+<!-- English Flex -->
 <!DOCTYPE html>
 <!--
 http://danielstern.ca/range.css/#/
@@ -6,7 +6,7 @@ http://danielstern.ca/range.css/#/
 <!-- VERSION 2022-1-17 -->
 <html>
 <head>
-  <title>BallroomDJ</title>
+  <title>BDJ4</title>
   <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="Description" content="BallroomDJ Web Interface">
@@ -134,7 +134,7 @@ http://danielstern.ca/range.css/#/
       -webkit-appearance: none;
     }
     .muteb {
-      padding: 0px;
+      padding: 0;
     }
     .divshown {
       display: -webkit-flex;
@@ -350,7 +350,7 @@ http://danielstern.ca/range.css/#/
         <div class="linebox">
           <input class="button stretch grow wb" type="submit"
               onclick="javascript:bdj.sendCmd('play');"
-              name="playpause" value="Afspelen/Pauseren">
+              name="playpause" value="Afspelen / Pauseren">
           <div class="rightbox vcenter">
             <img class="mpad" id="playstatusi"
                   src="mrc/light/stop.svg" alt="stop">
@@ -406,8 +406,6 @@ http://danielstern.ca/range.css/#/
           </div>
         </div>
         <div class="linebox">
-        </div>
-        <div class="linebox">
           <p class="vcenter stretch grow padlr"><span
           class="pbold" id="dance"></span>
           <span class="pbold fright"><span
@@ -435,7 +433,7 @@ http://danielstern.ca/range.css/#/
         <div class="linebox">
           <input class="stretch grow wb" type="submit"
               onclick="javascript:bdj.sendDanceCmd('queue');"
-              name="queue" value="Wachtrij">
+              name="queue" value="Wachtrij" msgstr "" msgstr "" msgstr "">
         </div>
         <div class="linebox">
           <input class="stretch grow wb" type="submit"
@@ -459,7 +457,7 @@ http://danielstern.ca/range.css/#/
             name="plclearplay" value="Clear & Play">
           <input class="stretch grow wb" type="submit"
             onclick="javascript:bdj.sendPLCmd('playlistqueue');"
-            name="plqueue" value="Queue">
+            name="plqueue" value="Wachtrij" msgstr "" msgstr "" msgstr "">
         </div>
     </div>
   </div>

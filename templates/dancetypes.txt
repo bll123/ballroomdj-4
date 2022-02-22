@@ -1,5 +1,5 @@
 # BDJ4 dance types
 # version 1
-smooth
-rhythm
+standard
+latin
 club

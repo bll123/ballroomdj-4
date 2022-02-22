@@ -1,4 +1,4 @@
-<!-- Nederlands Flex Dark -->
+<!-- English Flex Dark -->
 <!DOCTYPE html>
 <!--
 http://danielstern.ca/range.css/#/
@@ -6,7 +6,7 @@ http://danielstern.ca/range.css/#/
 <!-- VERSION 2022-1-17 -->
 <html>
 <head>
-  <title>BallroomDJ</title>
+  <title>BDJ4</title>
   <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="Description" content="BallroomDJ Web Interface">
@@ -279,7 +279,7 @@ http://danielstern.ca/range.css/#/
         <div class="linebox">
           <input class="stretch grow wb" type="submit"
               onclick="javascript:bdj.sendCmd('play');"
-              name="playpause" value="Afspelen/Pauseren">
+              name="playpause" value="Afspelen / Pauseren">
           <div class="rightbox vcenter">
             <img class="mpad" id="playstatusi"
                   src="mrc/dark/stop.svg" alt="stop">
@@ -362,7 +362,7 @@ http://danielstern.ca/range.css/#/
         <div class="linebox">
           <input class="stretch grow wb" type="submit"
               onclick="javascript:bdj.sendDanceCmd('queue');"
-              name="queue" value="Wachtrij">
+              name="queue" value="Wachtrij" msgstr "" msgstr "" msgstr "">
         </div>
         <div class="linebox">
           <input class="stretch grow wb" type="submit"
@@ -386,7 +386,7 @@ http://danielstern.ca/range.css/#/
             name="plclearplay" value="Clear & Play">
           <input class="stretch grow wb" type="submit"
             onclick="javascript:bdj.sendPLCmd('playlistqueue');"
-            name="plqueue" value="Queue">
+            name="plqueue" value="Wachtrij" msgstr "" msgstr "" msgstr "">
         </div>
     </div>
   </div>
