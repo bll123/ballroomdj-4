@@ -25,6 +25,7 @@
 #include "bdj4intl.h"
 #include "bdjopt.h"
 #include "bdjstring.h"
+#include "datafile.h"
 #include "filedata.h"
 #include "fileop.h"
 #include "filemanip.h"
@@ -992,7 +993,14 @@ installerCopyTemplates (installer_t *installer)
   slist_t         *dirlist;
   slistidx_t      iteridx;
   pathinfo_t      *pi;
+  datafile_t      *srdf;
+  datafile_t      *autodf;
+  char            localesfx [20];
+  slist_t         *renamelist;
 
+
+  snprintf (localesfx, sizeof (localesfx), ".%s", sysvarsGetStr (SV_SHORT_LOCALE));
+  renamelist = NULL;
 
   if (! installer->newinstall && ! installer->reinstall) {
     installer->instState = INST_CONVERT_START;
@@ -1009,6 +1017,13 @@ installerCopyTemplates (installer_t *installer)
     return;
   }
 
+  snprintf (tbuff, MAXPATHLEN, "%s/templates/%s", installer->rundir,
+      "localized-sr.txt");
+  srdf = datafileAllocParse ("loc-sr", DFTYPE_KEY_VAL, tbuff, NULL, 0, 0);
+  snprintf (tbuff, MAXPATHLEN, "%s/templates/%s", installer->rundir,
+      "localized-auto.txt");
+  autodf = datafileAllocParse ("loc-sr", DFTYPE_KEY_VAL, tbuff, NULL, 0, 0);
+
   snprintf (tbuff, MAXPATHLEN, "%s/templates", installer->rundir);
   dirlist = filemanipBasicDirList (tbuff, NULL);
   slistStartIterator (dirlist, &iteridx);
@@ -1020,6 +1035,12 @@ installerCopyTemplates (installer_t *installer)
       continue;
     }
     if (strcmp (fname, "html-list.txt") == 0) {
+      continue;
+    }
+    if (strcmp (fname, "localized-sr.txt") == 0) {
+      continue;
+    }
+    if (strcmp (fname, "localized-auto.txt") == 0) {
       continue;
     }
 
@@ -1075,9 +1096,31 @@ installerCopyTemplates (installer_t *installer)
         pathInfoExtCheck (pi, ".sequence") ||
         pathInfoExtCheck (pi, ".pldances") ||
         pathInfoExtCheck (pi, ".pl") ) {
+
+      renamelist = NULL;
+      if (strncmp (pi->basename, "automatic", pi->blen) == 0) {
+        renamelist = datafileGetList (autodf);
+      }
+      if (strncmp (pi->basename, "standardrounds", pi->blen) == 0) {
+        renamelist = datafileGetList (srdf);
+      }
+
+      strlcpy (tbuff, fname, sizeof (tbuff));
+fprintf (stderr, "A: %s\n", fname);
+      if (renamelist != NULL) {
+        char    *tval;
+
+        tval = slistGetData (renamelist, sysvarsGetStr (SV_SHORT_LOCALE));
+        if (tval != NULL) {
+          snprintf (tbuff, sizeof (tbuff), "%s%*s", tval, (int) pi->elen,
+              pi->extension);
+        }
+      }
+fprintf (stderr, "B: %s\n", tbuff);
+
       snprintf (from, MAXPATHLEN, "%s/templates/%s",
-          installer->rundir, fname);
-      snprintf (to, MAXPATHLEN, "data/%s", fname);
+          installer->rundir, tbuff);
+      snprintf (to, MAXPATHLEN, "data/%s", tbuff);
     }
 
     installerTemplateCopy (from, to);
@@ -1113,6 +1156,9 @@ installerCopyTemplates (installer_t *installer)
     snprintf (tbuff, MAXPATHLEN, "cp -r '%s' '%s'", from, "http");
     system (tbuff);
   }
+
+  datafileFree (srdf);
+  datafileFree (autodf);
 
   installer->instState = INST_CONVERT_START;
 }

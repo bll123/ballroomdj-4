@@ -146,21 +146,14 @@ fi
 
 # create manifests
 
-case $systype in
-  Linux)
-      echo "-- creating source manifest"
-      (cd src; make distclean > /dev/null 2>&1)
-    ;;
-esac
-
 echo "-- building software"
-echo "==== currently off ===="
-#(
-#  cd src
-#  make distclean
-#  make > ../tmp/pkg-build.log 2>&1
-#  make tclean > /dev/null 2>&1
-#)
+echo "=== currently off ==="
+# (
+#   cd src
+#   make distclean
+#   make > ../tmp/pkg-build.log 2>&1
+#   make tclean > /dev/null 2>&1
+# )
 
 (cd src; make tclean > /dev/null 2>&1)
 

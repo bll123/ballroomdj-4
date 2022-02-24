@@ -621,6 +621,7 @@ songfilterParseSortKey (songfilter_t *sf)
     slistSetNum (parsed, p, 0);
     p = strtok_r (NULL, " ", &tokstr);
   }
+  free (sortsel);
 
   return parsed;
 }

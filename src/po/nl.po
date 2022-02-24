@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: BDJ4 4.0.0\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
-"POT-Creation-Date: 2022-02-22 12:50-0800\n"
-"PO-Revision-Date: 2022-02-22 12:50\n"
+"POT-Creation-Date: 2022-02-24 13:03-0800\n"
+"PO-Revision-Date: 2022-02-24 13:03\n"
 "Last-Translator: marimo\n"
 "Language-Team: dutchLANGUAGE <LL@li.org>\n"
 "Language: nl\n"
@@ -25,7 +25,15 @@ msgstr "Album"
 msgid "Album Artist"
 msgstr "Album Artiest"
 
-#: uisongsel.c:582
+#: uisongsel.c:162 uisongsel.c:671
+msgid "All Dances"
+msgstr ""
+
+#: uisongsel.c:759
+msgid "All Genres"
+msgstr ""
+
+#: uisongsel.c:603
 msgid "Apply"
 msgstr ""
 
@@ -33,11 +41,11 @@ msgstr ""
 msgid "Argentine Tango"
 msgstr "Argentijnse Tango"
 
-#: sortopt.c:61 uisongsel.c:232
+#: sortopt.c:61 uisongsel.c:252
 msgid "Artist"
 msgstr "Artiest"
 
-#: bdj4installer.c:353
+#: bdj4installer.c:354
 msgid "BDJ4 Installer"
 msgstr ""
 
@@ -49,12 +57,12 @@ msgstr "Bachata"
 msgid "Ballroom Dance"
 msgstr "Ballroom dans"
 
-#: bdj4installer.c:1151
+#: bdj4installer.c:1197
 #, c-format
 msgid "BallroomDJ 3 Folder [%s] : "
 msgstr ""
 
-#: bdj4installer.c:436
+#: bdj4installer.c:437
 msgid "BallroomDJ 3 Location:"
 msgstr ""
 
@@ -70,7 +78,7 @@ msgstr "Cha Cha"
 msgid "Classical"
 msgstr "Klassiek"
 
-#: bdj4installer.c:955
+#: bdj4installer.c:956
 msgid "Cleaning old files."
 msgstr ""
 
@@ -82,7 +90,7 @@ msgstr ""
 msgid "Clear Queue"
 msgstr ""
 
-#: bdj4installer.c:687 uisongsel.c:578
+#: bdj4installer.c:688 uisongsel.c:599
 msgid "Close"
 msgstr "Sluiten"
 
@@ -94,39 +102,39 @@ msgstr "Voltooien"
 msgid "Configure"
 msgstr ""
 
-#: bdj4installer.c:1270
+#: bdj4installer.c:1316
 msgid "Conversion complete."
 msgstr ""
 
-#: bdj4installer.c:907
+#: bdj4installer.c:908
 msgid "Copy finished."
 msgstr ""
 
-#: bdj4installer.c:876
+#: bdj4installer.c:877
 msgid "Copying files."
 msgstr ""
 
-#: bdj4installer.c:1002
+#: bdj4installer.c:1010
 msgid "Copying template files."
 msgstr ""
 
-#: bdj4installer.c:937
+#: bdj4installer.c:938
 msgid "Creating folder structure."
 msgstr ""
 
-#: bdj4installer.c:1287
+#: bdj4installer.c:1333
 msgid "Creating shortcut."
 msgstr ""
 
-#: sortopt.c:64 uisongsel.c:212 uisongsel.c:636
+#: sortopt.c:64 uisongsel.c:232 uisongsel.c:663
 msgid "Dance"
 msgstr "Dans"
 
-#: sortopt.c:67 uisongsel.c:663
+#: sortopt.c:67 uisongsel.c:694
 msgid "Dance Level"
 msgstr ""
 
-#: sortopt.c:70 uisongsel.c:654
+#: sortopt.c:70 uisongsel.c:678
 msgid "Dance Rating"
 msgstr "Dans beoordeling"
 
@@ -138,35 +146,35 @@ msgstr "Datum toegevoegd"
 msgid "Easy"
 msgstr "Gemakkelijk"
 
-#: bdj4installer.c:371
+#: bdj4installer.c:372
 msgid "Enter the destination folder where BDJ4 will be installed."
 msgstr ""
 
-#: bdj4installer.c:772
+#: bdj4installer.c:773
 #, c-format
 msgid "Enter the destination folder."
 msgstr ""
 
-#: bdj4installer.c:412 bdj4installer.c:1143
+#: bdj4installer.c:413 bdj4installer.c:1189
 #, c-format
 msgid "Enter the folder where BallroomDJ 3 is installed."
 msgstr ""
 
-#: bdj4installer.c:825
+#: bdj4installer.c:826
 #, c-format
 msgid "Error: Folder %s already exists."
 msgstr ""
 
-#: bdj4installer.c:632
+#: bdj4installer.c:633
 msgid "Error: Folder already exists."
 msgstr ""
 
-#: bdj4installer.c:882 bdj4installer.c:925 bdj4installer.c:959
-#: bdj4installer.c:1006 bdj4installer.c:1171 bdj4installer.c:1281
+#: bdj4installer.c:883 bdj4installer.c:926 bdj4installer.c:960
+#: bdj4installer.c:1014 bdj4installer.c:1217 bdj4installer.c:1327
 msgid "Error: Unable to set working folder."
 msgstr ""
 
-#: bdj4installer.c:466 bdj4starterui.c:237
+#: bdj4installer.c:467 bdj4starterui.c:237
 msgid "Exit"
 msgstr "Afsluiten"
 
@@ -174,19 +182,15 @@ msgstr "Afsluiten"
 msgid "Fade"
 msgstr "Fade"
 
-#: uisongsel.c:575
+#: uisongsel.c:596
 msgid "Filter Songs"
 msgstr ""
 
-#: uisongsel.c:140
-msgid "Filter by Dance"
-msgstr ""
-
-#: uisongsel.c:145
+#: uisongsel.c:165
 msgid "Filters"
 msgstr ""
 
-#: bdj4installer.c:822
+#: bdj4installer.c:823
 msgid "Folder already exists."
 msgstr ""
 
@@ -194,7 +198,7 @@ msgstr ""
 msgid "Foxtrot"
 msgstr "Foxtrot"
 
-#: sortopt.c:76 uisongsel.c:627
+#: sortopt.c:76 uisongsel.c:648
 msgid "Genre"
 msgstr "Genre"
 
@@ -206,22 +210,22 @@ msgstr "Goed"
 msgid "Great"
 msgstr "Uitstekend"
 
-#: bdj4installer.c:428 bdj4installer.c:1149
+#: bdj4installer.c:429 bdj4installer.c:1195
 #, c-format
 msgid "If there is no BallroomDJ 3 installation, enter a single '-'."
 msgstr ""
 
-#: bdj4installer.c:473
+#: bdj4installer.c:474
 msgid "Install"
 msgstr "Installeren"
 
-#: bdj4installer.c:808 bdj4installer.c:828 bdj4installer.c:883
-#: bdj4installer.c:926 bdj4installer.c:960 bdj4installer.c:1007
-#: bdj4installer.c:1172 bdj4installer.c:1282
+#: bdj4installer.c:809 bdj4installer.c:829 bdj4installer.c:884
+#: bdj4installer.c:927 bdj4installer.c:961 bdj4installer.c:1015
+#: bdj4installer.c:1218 bdj4installer.c:1328
 msgid "Installation aborted."
 msgstr ""
 
-#: bdj4installer.c:581
+#: bdj4installer.c:582
 msgid "Installation complete."
 msgstr ""
 
@@ -237,7 +241,7 @@ msgstr "Jive"
 msgid "Last Updated"
 msgstr "Laatst bijgewerkt"
 
-#: bdj4installer.c:1217
+#: bdj4installer.c:1263
 msgid "Located 'tclsh'."
 msgstr ""
 
@@ -269,12 +273,12 @@ msgstr "Night Club Two Step"
 msgid "New"
 msgstr "Nieuw"
 
-#: bdj4installer.c:635 bdj4installer.c:818
+#: bdj4installer.c:636 bdj4installer.c:819
 #, c-format
 msgid "New BDJ4 installation."
 msgstr ""
 
-#: uiplayer.c:323 templates.c:38 templates.c:48 templates.c:58
+#: uiplayer.c:324 templates.c:38 templates.c:48 templates.c:58
 msgid "Next Song"
 msgstr "Volgende nummer"
 
@@ -294,11 +298,11 @@ msgstr ""
 msgid "Options"
 msgstr "Opties"
 
-#: bdj4installer.c:394
+#: bdj4installer.c:395
 msgid "Overwrite"
 msgstr ""
 
-#: bdj4installer.c:627 bdj4installer.c:792
+#: bdj4installer.c:628 bdj4installer.c:793
 #, c-format
 msgid "Overwriting existing BDJ4 installation."
 msgstr ""
@@ -307,13 +311,17 @@ msgstr ""
 msgid "Paso Doble"
 msgstr "Paso Doble"
 
-#: uiplayer.c:328 templates.c:37 templates.c:47 templates.c:57
+#: uiplayer.c:302
+msgid "Pause"
+msgstr "Pauseren"
+
+#: uiplayer.c:329 templates.c:37 templates.c:47 templates.c:57
 msgid "Pause at End"
 msgstr "Pauzeer aan einde"
 
 #: uiplayer.c:302
-msgid "Play / Pause"
-msgstr ""
+msgid "Play"
+msgstr "Afspelen"
 
 #: bdj4playerui.c:302
 msgid "Play When Queued"
@@ -335,17 +343,17 @@ msgstr "Slecht"
 msgid "Position"
 msgstr ""
 
-#: bdj4installer.c:774 bdj4installer.c:1147
+#: bdj4installer.c:775 bdj4installer.c:1193
 #, c-format
 msgid "Press 'Enter' to select the default."
 msgstr ""
 
-#: bdj4installer.c:799
+#: bdj4installer.c:800
 #, c-format
 msgid "Proceed with installation?"
 msgstr ""
 
-#: uisongsel.c:134 templates.c:39 templates.c:43 templates.c:49 templates.c:53
+#: uisongsel.c:154 templates.c:39 templates.c:43 templates.c:49 templates.c:53
 #: templates.c:59 templates.c:63
 msgid "Queue"
 msgstr "Wachtrij"
@@ -378,11 +386,11 @@ msgstr "Herhalen"
 msgid "Request External"
 msgstr "Externe Aanvraag"
 
-#: uisongsel.c:580
+#: uisongsel.c:601
 msgid "Reset"
 msgstr "Resetten"
 
-#: uiplayer.c:319
+#: uiplayer.c:320
 msgid "Return to beginning of song"
 msgstr ""
 
@@ -394,7 +402,7 @@ msgstr "Rock"
 msgid "Rumba"
 msgstr "Rumba"
 
-#: bdj4installer.c:1248
+#: bdj4installer.c:1294
 #, c-format
 msgid "Running conversion script: %s."
 msgstr ""
@@ -407,35 +415,31 @@ msgstr "Salsa"
 msgid "Samba"
 msgstr "Samba"
 
-#: bdj4installer.c:844
+#: bdj4installer.c:845
 msgid "Saving install location."
 msgstr ""
 
-#: uisongsel.c:614
+#: uisongsel.c:634
 msgid "Search"
 msgstr "Zoeken"
 
-#: bdj4installer.c:687
+#: bdj4installer.c:688
 msgid "Select"
 msgstr "Selecteer"
 
-#: bdj4installer.c:684
+#: bdj4installer.c:685
 msgid "Select BallroomDJ 3 Location"
-msgstr ""
-
-#: uisongsel.c:643
-msgid "Select Dance"
 msgstr ""
 
 #: bdj4playerui.c:309
 msgid "Show Extra Queues"
 msgstr ""
 
-#: bdj4installer.c:1226
+#: bdj4installer.c:1272
 msgid "Skipping conversion."
 msgstr ""
 
-#: uisongsel.c:599
+#: uisongsel.c:620
 msgid "Sort by"
 msgstr ""
 
@@ -443,11 +447,11 @@ msgstr ""
 msgid "Speed"
 msgstr "Tempo"
 
-#: bdj4installer.c:1177
+#: bdj4installer.c:1223
 msgid "Starting conversion process."
 msgstr ""
 
-#: uisongsel.c:672
+#: uisongsel.c:703
 msgid "Status"
 msgstr "Status"
 
@@ -459,20 +463,20 @@ msgstr ""
 msgid "Tango"
 msgstr "Tango"
 
-#: bdj4installer.c:420
+#: bdj4installer.c:421
 msgid ""
 "The conversion process will only run for new installations and for re-"
 "installations."
 msgstr ""
 
-#: bdj4installer.c:1145
+#: bdj4installer.c:1191
 #, c-format
 msgid ""
 "The conversion process will only run for new installations and for re-"
 "installs."
 msgstr ""
 
-#: sortopt.c:79 uisongsel.c:223
+#: sortopt.c:79 uisongsel.c:243
 msgid "Title"
 msgstr "Titel"
 
@@ -480,7 +484,7 @@ msgstr "Titel"
 msgid "Toggle Pause"
 msgstr "Pauze omschakelen"
 
-#: uiplayer.c:313
+#: uiplayer.c:314
 msgid "Toggle Repeat"
 msgstr ""
 
@@ -488,7 +492,7 @@ msgstr ""
 msgid "Track"
 msgstr "Track"
 
-#: bdj4installer.c:1225
+#: bdj4installer.c:1271
 msgid "Unable to locate 'tclsh'."
 msgstr ""
 
@@ -496,7 +500,7 @@ msgstr ""
 msgid "Unrated"
 msgstr "Onbeoordeeld"
 
-#: bdj4installer.c:629 bdj4installer.c:794
+#: bdj4installer.c:630 bdj4installer.c:795
 #, c-format
 msgid "Updating existing BDJ4 installation."
 msgstr ""
@@ -505,7 +509,7 @@ msgstr ""
 msgid "Viennese Waltz"
 msgstr "Weense wals"
 
-#: uiplayer.c:383
+#: uiplayer.c:384
 msgid "Volume"
 msgstr "Volume"
 
