@@ -1,12 +1,12 @@
 #include "config.h"
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
 #include <assert.h>
 
+#include "bdjstring.h"
 #include "list.h"
 #include "log.h"
 #include "slist.h"
@@ -56,12 +56,38 @@ slistSetData (slist_t *list, char *sidx, void *data)
   slistSetKey (list, &item.key, sidx);
   item.valuetype = VALUE_DATA;
   item.value.data = data;
+
+  if (sidx != NULL) {
+    ssize_t       len;
+
+    len = istrlen (sidx);
+    if (len > list->maxKeyWidth) {
+      list->maxKeyWidth = len;
+    }
+  }
+
   listSet (list, &item);
 }
 
 void
 slistSetStr (slist_t *list, char *sidx, char *data)
 {
+  if (sidx != NULL) {
+    ssize_t       len;
+
+    len = istrlen (sidx);
+    if (len > list->maxKeyWidth) {
+      list->maxKeyWidth = len;
+    }
+  }
+  if (data != NULL) {
+    ssize_t       len;
+
+    len = istrlen (data);
+    if (len > list->maxDataWidth) {
+      list->maxDataWidth = len;
+    }
+  }
   slistSetData (list, sidx, data);
 }
 
@@ -73,6 +99,16 @@ slistSetNum (slist_t *list, char *sidx, ssize_t data)
   slistSetKey (list, &item.key, sidx);
   item.valuetype = VALUE_NUM;
   item.value.num = data;
+
+  if (sidx != NULL) {
+    ssize_t       len;
+
+    len = istrlen (sidx);
+    if (len > list->maxKeyWidth) {
+      list->maxKeyWidth = len;
+    }
+  }
+
   listSet (list, &item);
 }
 
@@ -171,6 +207,26 @@ slistGetDouble (slist_t *list, char *sidx)
   }
   logMsg (LOG_DBG, LOG_LIST, "list:%s key:%s idx:%ld value:%8.2g", list->name, sidx, idx, value);
   return value;
+}
+
+int
+slistGetMaxKeyWidth (slist_t *list)
+{
+  if (list == NULL) {
+    return 0;
+  }
+
+  return list->maxKeyWidth;
+}
+
+int
+slistGetMaxDataWidth (slist_t *list)
+{
+  if (list == NULL) {
+    return 0;
+  }
+
+  return list->maxDataWidth;
 }
 
 slistidx_t

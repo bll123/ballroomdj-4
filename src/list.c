@@ -38,6 +38,8 @@ listAlloc (char *name, listorder_t ordered,
   list->version = 1;
   list->count = 0;
   list->allocCount = 0;
+  list->maxKeyWidth = 0;
+  list->maxDataWidth = 0;
   list->replace = false;
   list->keytype = LIST_KEY_STR;
   list->ordered = ordered;

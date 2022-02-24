@@ -356,25 +356,25 @@ installerActivate (GApplication *app, gpointer udata)
   installer->window = window;
 
   vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 2);
-  gtk_widget_set_margin_top (GTK_WIDGET (vbox), 20);
-  gtk_widget_set_margin_bottom (GTK_WIDGET (vbox), 10);
-  gtk_widget_set_margin_start (GTK_WIDGET (vbox), 10);
-  gtk_widget_set_margin_end (GTK_WIDGET (vbox), 10);
-  gtk_widget_set_hexpand (GTK_WIDGET (vbox), TRUE);
-  gtk_widget_set_vexpand (GTK_WIDGET (vbox), TRUE);
+  gtk_widget_set_margin_top (vbox, 20);
+  gtk_widget_set_margin_bottom (vbox, 10);
+  gtk_widget_set_margin_start (vbox, 10);
+  gtk_widget_set_margin_end (vbox, 10);
+  gtk_widget_set_hexpand (vbox, TRUE);
+  gtk_widget_set_vexpand (vbox, TRUE);
   gtk_container_add (GTK_CONTAINER (window), vbox);
 
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
-  gtk_widget_set_hexpand (GTK_WIDGET (hbox), TRUE);
-  gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (hbox), FALSE, FALSE, 0);
+  gtk_widget_set_hexpand (hbox, TRUE);
+  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
 
   widget = gtk_label_new (_("Enter the destination folder where BDJ4 will be installed."));
   gtk_widget_set_halign (widget, GTK_ALIGN_START);
-  gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (widget), FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
-  gtk_widget_set_hexpand (GTK_WIDGET (hbox), TRUE);
-  gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (hbox), FALSE, FALSE, 0);
+  gtk_widget_set_hexpand (hbox, TRUE);
+  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
 
   installer->targetBuffer = gtk_entry_buffer_new (installer->target, -1);
   installer->targetEntry = gtk_entry_new_with_buffer (installer->targetBuffer);
@@ -382,14 +382,14 @@ installerActivate (GApplication *app, gpointer udata)
   gtk_entry_set_max_length (GTK_ENTRY (installer->targetEntry), MAXPATHLEN);
   gtk_entry_set_input_purpose (GTK_ENTRY (installer->targetEntry), GTK_INPUT_PURPOSE_FREE_FORM);
   gtk_widget_set_halign (installer->targetEntry, GTK_ALIGN_FILL);
-  gtk_widget_set_hexpand (GTK_WIDGET (installer->targetEntry), TRUE);
-  gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (installer->targetEntry),
+  gtk_widget_set_hexpand (installer->targetEntry, TRUE);
+  gtk_box_pack_start (GTK_BOX (hbox), installer->targetEntry,
       TRUE, TRUE, 0);
   g_signal_connect (installer->targetEntry, "changed", G_CALLBACK (installerValidateStart), installer);
 
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
-  gtk_widget_set_hexpand (GTK_WIDGET (hbox), TRUE);
-  gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (hbox), FALSE, FALSE, 0);
+  gtk_widget_set_hexpand (hbox, TRUE);
+  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
 
   installer->reinstWidget = gtk_check_button_new_with_label (_("Overwrite"));
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (installer->reinstWidget),
@@ -399,43 +399,43 @@ installerActivate (GApplication *app, gpointer udata)
       G_CALLBACK (installerCheckDir), installer);
 
   installer->feedbackMsg = gtk_label_new ("");
-  uiutilsSetCss (GTK_WIDGET (installer->feedbackMsg),
+  uiutilsSetCss (installer->feedbackMsg,
       "label { color: #ffa600; }");
   gtk_widget_set_halign (installer->feedbackMsg, GTK_ALIGN_END);
   gtk_box_pack_end (GTK_BOX (hbox), installer->feedbackMsg, FALSE, FALSE, 0);
 
   /* conversion process */
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
-  gtk_widget_set_hexpand (GTK_WIDGET (hbox), TRUE);
-  gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (hbox), FALSE, FALSE, 0);
+  gtk_widget_set_hexpand (hbox, TRUE);
+  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
 
   widget = gtk_label_new (_("Enter the folder where BallroomDJ 3 is installed."));
   gtk_widget_set_halign (widget, GTK_ALIGN_START);
-  gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (widget), FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
-  gtk_widget_set_hexpand (GTK_WIDGET (hbox), TRUE);
-  gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (hbox), FALSE, FALSE, 0);
+  gtk_widget_set_hexpand (hbox, TRUE);
+  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
 
   widget = gtk_label_new (_("The conversion process will only run for new installations and for re-installations."));
   gtk_widget_set_halign (widget, GTK_ALIGN_START);
-  gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (widget), FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
-  gtk_widget_set_hexpand (GTK_WIDGET (hbox), TRUE);
-  gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (hbox), FALSE, FALSE, 0);
+  gtk_widget_set_hexpand (hbox, TRUE);
+  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
 
   widget = gtk_label_new (_("If there is no BallroomDJ 3 installation, enter a single '-'."));
   gtk_widget_set_halign (widget, GTK_ALIGN_START);
-  gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (widget), FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
-  gtk_widget_set_hexpand (GTK_WIDGET (hbox), TRUE);
-  gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (hbox), FALSE, FALSE, 0);
+  gtk_widget_set_hexpand (hbox, TRUE);
+  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
 
   widget = gtk_label_new (_("BallroomDJ 3 Location:"));
   gtk_widget_set_halign (widget, GTK_ALIGN_START);
-  gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (widget), FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 
   installer->bdj3locBuffer = gtk_entry_buffer_new (installer->bdj3loc, -1);
   installer->bdj3locEntry = gtk_entry_new_with_buffer (installer->bdj3locBuffer);
@@ -443,8 +443,8 @@ installerActivate (GApplication *app, gpointer udata)
   gtk_entry_set_max_length (GTK_ENTRY (installer->bdj3locEntry), MAXPATHLEN);
   gtk_entry_set_input_purpose (GTK_ENTRY (installer->bdj3locEntry), GTK_INPUT_PURPOSE_FREE_FORM);
   gtk_widget_set_halign (installer->bdj3locEntry, GTK_ALIGN_FILL);
-  gtk_widget_set_hexpand (GTK_WIDGET (installer->bdj3locEntry), TRUE);
-  gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (installer->bdj3locEntry),
+  gtk_widget_set_hexpand (installer->bdj3locEntry, TRUE);
+  gtk_box_pack_start (GTK_BOX (hbox), installer->bdj3locEntry,
       TRUE, TRUE, 0);
   g_signal_connect (installer->bdj3locEntry, "changed", G_CALLBACK (installerValidateStart), installer);
 
@@ -452,33 +452,33 @@ installerActivate (GApplication *app, gpointer udata)
   image = gtk_image_new_from_icon_name ("folder", GTK_ICON_SIZE_BUTTON);
   gtk_button_set_image (GTK_BUTTON (widget), image);
   gtk_widget_set_halign (installer->bdj3locEntry, GTK_ALIGN_START);
-  gtk_widget_set_margin_start (GTK_WIDGET (widget), 0);
-  gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (widget), FALSE, FALSE, 0);
+  gtk_widget_set_margin_start (widget, 0);
+  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
   g_signal_connect (widget, "clicked", G_CALLBACK (installerSelectDirDialog), installer);
 
   /* button box */
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
-  gtk_widget_set_hexpand (GTK_WIDGET (hbox), TRUE);
-  gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (hbox), FALSE, FALSE, 0);
+  gtk_widget_set_hexpand (hbox, TRUE);
+  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
 
   widget = gtk_button_new ();
   assert (widget != NULL);
   gtk_button_set_label (GTK_BUTTON (widget), _("Exit"));
-  gtk_widget_set_margin_start (GTK_WIDGET (widget), 2);
-  gtk_box_pack_end (GTK_BOX (hbox), GTK_WIDGET (widget), FALSE, FALSE, 0);
+  gtk_widget_set_margin_start (widget, 2);
+  gtk_box_pack_end (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
   g_signal_connect (widget, "clicked", G_CALLBACK (installerExit), installer);
 
   widget = gtk_button_new ();
   assert (widget != NULL);
   gtk_button_set_label (GTK_BUTTON (widget), _("Install"));
-  gtk_widget_set_margin_start (GTK_WIDGET (widget), 2);
-  gtk_box_pack_end (GTK_BOX (hbox), GTK_WIDGET (widget),
+  gtk_widget_set_margin_start (widget, 2);
+  gtk_box_pack_end (GTK_BOX (hbox), widget,
       FALSE, FALSE, 0);
   g_signal_connect (widget, "clicked", G_CALLBACK (installerInstall), installer);
 
   scwidget = uiutilsCreateScrolledWindow ();
   gtk_scrolled_window_set_min_content_height (GTK_SCROLLED_WINDOW (scwidget), 500);
-  gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (scwidget),
+  gtk_box_pack_start (GTK_BOX (vbox), scwidget,
       FALSE, FALSE, 0);
 
   installer->dispBuffer = gtk_text_buffer_new (NULL);
@@ -489,17 +489,17 @@ installerActivate (GApplication *app, gpointer udata)
   gtk_widget_set_valign (installer->dispTextView, GTK_ALIGN_START);
   gtk_widget_set_hexpand (installer->dispTextView, TRUE);
   gtk_widget_set_vexpand (installer->dispTextView, TRUE);
-  gtk_container_add (GTK_CONTAINER (scwidget), GTK_WIDGET (installer->dispTextView));
+  gtk_container_add (GTK_CONTAINER (scwidget), installer->dispTextView);
   g_signal_connect (installer->dispTextView,
       "size-allocate", G_CALLBACK (installerScrollToEnd), installer);
 
   /* push the text view to the top */
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   assert (hbox != NULL);
-  gtk_widget_set_vexpand (GTK_WIDGET (hbox), TRUE);
-  gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (hbox), TRUE, TRUE, 0);
+  gtk_widget_set_vexpand (hbox, TRUE);
+  gtk_box_pack_start (GTK_BOX (vbox), hbox, TRUE, TRUE, 0);
 
-  gtk_widget_show_all (GTK_WIDGET (window));
+  gtk_widget_show_all (window);
 }
 
 static int

@@ -282,15 +282,15 @@ pluiActivate (GApplication *app, gpointer userdata)
 
   plui->vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   gtk_container_add (GTK_CONTAINER (plui->window), plui->vbox);
-  gtk_widget_set_margin_top (GTK_WIDGET (plui->vbox), 4);
-  gtk_widget_set_margin_bottom (GTK_WIDGET (plui->vbox), 4);
-  gtk_widget_set_margin_start (GTK_WIDGET (plui->vbox), 4);
-  gtk_widget_set_margin_end (GTK_WIDGET (plui->vbox), 4);
+  gtk_widget_set_margin_top (plui->vbox, 4);
+  gtk_widget_set_margin_bottom (plui->vbox, 4);
+  gtk_widget_set_margin_start (plui->vbox, 4);
+  gtk_widget_set_margin_end (plui->vbox, 4);
 
   /* menu */
   menubar = gtk_menu_bar_new ();
-  gtk_widget_set_hexpand (GTK_WIDGET (menubar), TRUE);
-  gtk_box_pack_start (GTK_BOX (plui->vbox), GTK_WIDGET (menubar),
+  gtk_widget_set_hexpand (menubar, TRUE);
+  gtk_box_pack_start (GTK_BOX (plui->vbox), menubar,
       FALSE, FALSE, 0);
 
   menuitem = gtk_menu_item_new_with_label (_("Options"));
@@ -322,8 +322,8 @@ pluiActivate (GApplication *app, gpointer userdata)
 
   /* player */
   widget = uiplayerActivate (plui->uiplayer);
-  gtk_widget_set_hexpand (GTK_WIDGET (widget), TRUE);
-  gtk_box_pack_start (GTK_BOX (plui->vbox), GTK_WIDGET (widget),
+  gtk_widget_set_hexpand (widget, TRUE);
+  gtk_box_pack_start (GTK_BOX (plui->vbox), widget,
       FALSE, FALSE, 0);
 
   /* there doesn't seem to be any other good method to identify which */
@@ -332,9 +332,9 @@ pluiActivate (GApplication *app, gpointer userdata)
   plui->notebook = gtk_notebook_new ();
   assert (plui->notebook != NULL);
   gtk_notebook_set_show_border (GTK_NOTEBOOK (plui->notebook), TRUE);
-  gtk_widget_set_margin_top (GTK_WIDGET (plui->notebook), 4);
-  gtk_widget_set_hexpand (GTK_WIDGET (plui->notebook), TRUE);
-  gtk_widget_set_vexpand (GTK_WIDGET (plui->notebook), FALSE);
+  gtk_widget_set_margin_top (plui->notebook, 4);
+  gtk_widget_set_hexpand (plui->notebook, TRUE);
+  gtk_widget_set_vexpand (plui->notebook, FALSE);
   gtk_box_pack_start (GTK_BOX (plui->vbox), plui->notebook,
       TRUE, TRUE, 0);
 
@@ -343,9 +343,9 @@ pluiActivate (GApplication *app, gpointer userdata)
   widget = gtk_button_new ();
   assert (widget != NULL);
   gtk_button_set_label (GTK_BUTTON (widget), "Set Queue for Playback");
-  gtk_widget_set_margin_start (GTK_WIDGET (widget), 2);
+  gtk_widget_set_margin_start (widget, 2);
   gtk_notebook_set_action_widget (GTK_NOTEBOOK (plui->notebook), widget, GTK_PACK_END);
-  gtk_widget_show_all (GTK_WIDGET (widget));
+  gtk_widget_show_all (widget);
   g_signal_connect (widget, "clicked", G_CALLBACK (pluiProcessSetPlaybackQueue), plui);
   plui->setPlaybackButton = widget;
 
@@ -357,10 +357,10 @@ pluiActivate (GApplication *app, gpointer userdata)
   gtk_box_pack_start (GTK_BOX (hbox), tabLabel, FALSE, FALSE, 1);
   plui->musicqImage [MUSICQ_A] = gtk_image_new ();
   gtk_image_set_from_pixbuf (GTK_IMAGE (plui->musicqImage [MUSICQ_A]), plui->ledonImg);
-  gtk_widget_set_margin_start (GTK_WIDGET (plui->musicqImage [MUSICQ_A]), 2);
+  gtk_widget_set_margin_start (plui->musicqImage [MUSICQ_A], 2);
   gtk_box_pack_start (GTK_BOX (hbox), plui->musicqImage [MUSICQ_A], FALSE, FALSE, 0);
   gtk_notebook_append_page (GTK_NOTEBOOK (plui->notebook), widget, hbox);
-  gtk_widget_show_all (GTK_WIDGET (hbox));
+  gtk_widget_show_all (hbox);
 
   /* queue B tab */
   widget = uimusicqActivate (plui->uimusicq, plui->window, 1);
@@ -370,10 +370,10 @@ pluiActivate (GApplication *app, gpointer userdata)
   gtk_box_pack_start (GTK_BOX (hbox), tabLabel, FALSE, FALSE, 1);
   plui->musicqImage [MUSICQ_B] = gtk_image_new ();
   gtk_image_set_from_pixbuf (GTK_IMAGE (plui->musicqImage [MUSICQ_B]), plui->ledoffImg);
-  gtk_widget_set_margin_start (GTK_WIDGET (plui->musicqImage [MUSICQ_B]), 2);
+  gtk_widget_set_margin_start (plui->musicqImage [MUSICQ_B], 2);
   gtk_box_pack_start (GTK_BOX (hbox), plui->musicqImage [MUSICQ_B], FALSE, FALSE, 0);
   gtk_notebook_append_page (GTK_NOTEBOOK (plui->notebook), widget, hbox);
-  gtk_widget_show_all (GTK_WIDGET (hbox));
+  gtk_widget_show_all (hbox);
 
   /* song selection tab */
   widget = uisongselActivate (plui->uisongsel, plui->window);
@@ -382,7 +382,7 @@ pluiActivate (GApplication *app, gpointer userdata)
 
   gtk_window_set_default_size (GTK_WINDOW (plui->window), 1000, 600);
 
-  gtk_widget_show_all (GTK_WIDGET (plui->window));
+  gtk_widget_show_all (plui->window);
   pluiSetExtraQueues (plui);
 }
 
@@ -561,9 +561,9 @@ pluiSetSwitchPage (playerui_t *plui, int pagenum)
   if (pagenum < MUSICQ_MAX && plui->showExtraQueues) {
     plui->musicqManageIdx = pagenum;
     uimusicqSetManageIdx (plui->uimusicq, pagenum);
-    gtk_widget_show (GTK_WIDGET (plui->setPlaybackButton));
+    gtk_widget_show (plui->setPlaybackButton);
   } else {
-    gtk_widget_hide (GTK_WIDGET (plui->setPlaybackButton));
+    gtk_widget_hide (plui->setPlaybackButton);
   }
   return;
 }

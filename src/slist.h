@@ -28,6 +28,8 @@ void      *slistGetDataByIdx (slist_t *, slistidx_t idx);
 ssize_t   slistGetNumByIdx (slist_t *list, slistidx_t idx);
 ssize_t   slistGetNum (slist_t *, char *sidx);
 double    slistGetDouble (slist_t *, char *sidx);
+int       slistGetMaxKeyWidth (slist_t *);
+int       slistGetMaxDataWidth (slist_t *);
 slist_t   *slistGetList (slist_t *, char *sidx);
   /* iterators */
 void      slistStartIterator (slist_t *list, slistidx_t *idx);

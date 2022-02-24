@@ -192,24 +192,24 @@ starterActivate (GApplication *app, gpointer userdata)
 
   vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   gtk_container_add (GTK_CONTAINER (starter->window), vbox);
-  gtk_widget_set_margin_top (GTK_WIDGET (vbox), 4);
-  gtk_widget_set_margin_bottom (GTK_WIDGET (vbox), 4);
-  gtk_widget_set_margin_start (GTK_WIDGET (vbox), 4);
-  gtk_widget_set_margin_end (GTK_WIDGET (vbox), 4);
+  gtk_widget_set_margin_top (vbox, 4);
+  gtk_widget_set_margin_bottom (vbox, 4);
+  gtk_widget_set_margin_start (vbox, 4);
+  gtk_widget_set_margin_end (vbox, 4);
 
   pathbldMakePath (tbuff, sizeof (tbuff), "", "ballroomdj4", ".svg",
       PATHBLD_MP_IMGDIR);
   widget = gtk_image_new_from_file (tbuff);
   assert (widget != NULL);
-  gtk_widget_set_margin_start (GTK_WIDGET (widget), 2);
-  gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (widget),
+  gtk_widget_set_margin_start (widget, 2);
+  gtk_box_pack_start (GTK_BOX (vbox), widget,
       FALSE, FALSE, 0);
 
   widget = gtk_button_new ();
   assert (widget != NULL);
   gtk_button_set_label (GTK_BUTTON (widget), _("Player"));
-  gtk_widget_set_margin_start (GTK_WIDGET (widget), 2);
-  gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (widget),
+  gtk_widget_set_margin_start (widget, 2);
+  gtk_box_pack_start (GTK_BOX (vbox), widget,
       FALSE, FALSE, 0);
   g_signal_connect (widget, "clicked",
       G_CALLBACK (starterStartPlayer), starter);
@@ -217,8 +217,8 @@ starterActivate (GApplication *app, gpointer userdata)
   widget = gtk_button_new ();
   assert (widget != NULL);
   gtk_button_set_label (GTK_BUTTON (widget), _("Manage"));
-  gtk_widget_set_margin_start (GTK_WIDGET (widget), 2);
-  gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (widget),
+  gtk_widget_set_margin_start (widget, 2);
+  gtk_box_pack_start (GTK_BOX (vbox), widget,
       FALSE, FALSE, 0);
   g_signal_connect (widget, "clicked",
       G_CALLBACK (starterStartManage), starter);
@@ -226,8 +226,8 @@ starterActivate (GApplication *app, gpointer userdata)
   widget = gtk_button_new ();
   assert (widget != NULL);
   gtk_button_set_label (GTK_BUTTON (widget), _("Configure"));
-  gtk_widget_set_margin_start (GTK_WIDGET (widget), 2);
-  gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (widget),
+  gtk_widget_set_margin_start (widget, 2);
+  gtk_box_pack_start (GTK_BOX (vbox), widget,
       FALSE, FALSE, 0);
   g_signal_connect (widget, "clicked",
       G_CALLBACK (starterStartConfig), starter);
@@ -235,13 +235,13 @@ starterActivate (GApplication *app, gpointer userdata)
   widget = gtk_button_new ();
   assert (widget != NULL);
   gtk_button_set_label (GTK_BUTTON (widget), _("Exit"));
-  gtk_widget_set_margin_start (GTK_WIDGET (widget), 2);
-  gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (widget),
+  gtk_widget_set_margin_start (widget, 2);
+  gtk_box_pack_start (GTK_BOX (vbox), widget,
       FALSE, FALSE, 0);
   g_signal_connect (widget, "clicked",
       G_CALLBACK (starterProcessExit), starter);
 
-  gtk_widget_show_all (GTK_WIDGET (starter->window));
+  gtk_widget_show_all (starter->window);
 }
 
 gboolean

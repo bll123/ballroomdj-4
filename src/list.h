@@ -53,6 +53,8 @@ typedef struct {
   ssize_t         version;
   ssize_t         count;
   ssize_t         allocCount;
+  int             maxKeyWidth;
+  int             maxDataWidth;
   keytype_t       keytype;
   listorder_t     ordered;
   listitem_t      *data;        /* array */

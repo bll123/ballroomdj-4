@@ -322,115 +322,115 @@ marqueeActivate (GApplication *app, gpointer userdata)
   marquee->window = window;
 
   marquee->vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 5);
-  gtk_widget_set_margin_top (GTK_WIDGET (marquee->vbox), 10);
-  gtk_widget_set_margin_bottom (GTK_WIDGET (marquee->vbox), 10);
+  gtk_widget_set_margin_top (marquee->vbox, 10);
+  gtk_widget_set_margin_bottom (marquee->vbox, 10);
   gtk_container_add (GTK_CONTAINER (window), marquee->vbox);
-  gtk_widget_set_hexpand (GTK_WIDGET (marquee->vbox), TRUE);
-  gtk_widget_set_vexpand (GTK_WIDGET (marquee->vbox), TRUE);
+  gtk_widget_set_hexpand (marquee->vbox, TRUE);
+  gtk_widget_set_vexpand (marquee->vbox, TRUE);
   marquee->marginTotal = 20;
 
   marquee->pbar = gtk_progress_bar_new ();
-  gtk_widget_set_halign (GTK_WIDGET (marquee->pbar), GTK_ALIGN_FILL);
-  gtk_widget_set_hexpand (GTK_WIDGET (marquee->pbar), TRUE);
-  uiutilsSetCss (GTK_WIDGET (marquee->pbar),
+  gtk_widget_set_halign (marquee->pbar, GTK_ALIGN_FILL);
+  gtk_widget_set_hexpand (marquee->pbar, TRUE);
+  uiutilsSetCss (marquee->pbar,
       "progress, trough { min-height: 25px; } progressbar > trough > progress { background-color: #ffa600; }");
-  gtk_box_pack_start (GTK_BOX (marquee->vbox), GTK_WIDGET (marquee->pbar),
+  gtk_box_pack_start (GTK_BOX (marquee->vbox), marquee->pbar,
       FALSE, FALSE, 0);
 
   vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 5);
-  gtk_widget_set_margin_start (GTK_WIDGET (marquee->vbox), 10);
-  gtk_widget_set_margin_end (GTK_WIDGET (marquee->vbox), 10);
-  gtk_widget_set_hexpand (GTK_WIDGET (marquee->vbox), TRUE);
-  gtk_box_pack_start (GTK_BOX (marquee->vbox), GTK_WIDGET (vbox),
+  gtk_widget_set_margin_start (marquee->vbox, 10);
+  gtk_widget_set_margin_end (marquee->vbox, 10);
+  gtk_widget_set_hexpand (marquee->vbox, TRUE);
+  gtk_box_pack_start (GTK_BOX (marquee->vbox), vbox,
       FALSE, FALSE, 0);
 
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 5);
-  gtk_widget_set_halign (GTK_WIDGET (hbox), GTK_ALIGN_FILL);
-  gtk_widget_set_hexpand (GTK_WIDGET (hbox), TRUE);
-  gtk_widget_set_margin_end (GTK_WIDGET (hbox), 0);
-  gtk_widget_set_margin_start (GTK_WIDGET (hbox), 0);
-  gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (hbox),
+  gtk_widget_set_halign (hbox, GTK_ALIGN_FILL);
+  gtk_widget_set_hexpand (hbox, TRUE);
+  gtk_widget_set_margin_end (hbox, 0);
+  gtk_widget_set_margin_start (hbox, 0);
+  gtk_box_pack_start (GTK_BOX (vbox), hbox,
       FALSE, FALSE, 0);
 
   marquee->danceLab = gtk_label_new (_("Not Playing"));
-  gtk_widget_set_margin_top (GTK_WIDGET (marquee->danceLab), 2);
-  gtk_widget_set_halign (GTK_WIDGET (marquee->danceLab), GTK_ALIGN_START);
-  gtk_widget_set_hexpand (GTK_WIDGET (marquee->danceLab), TRUE);
-  gtk_widget_set_can_focus (GTK_WIDGET (marquee->danceLab), FALSE);
-  uiutilsSetCss (GTK_WIDGET (marquee->danceLab),
+  gtk_widget_set_margin_top (marquee->danceLab, 2);
+  gtk_widget_set_halign (marquee->danceLab, GTK_ALIGN_START);
+  gtk_widget_set_hexpand (marquee->danceLab, TRUE);
+  gtk_widget_set_can_focus (marquee->danceLab, FALSE);
+  uiutilsSetCss (marquee->danceLab,
       "label { color: #ffa600; }");
-  gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (marquee->danceLab),
+  gtk_box_pack_start (GTK_BOX (hbox), marquee->danceLab,
       TRUE, TRUE, 0);
 
   marquee->countdownTimerLab = gtk_label_new ("0:00");
-  gtk_widget_set_margin_top (GTK_WIDGET (marquee->countdownTimerLab), 2);
+  gtk_widget_set_margin_top (marquee->countdownTimerLab, 2);
   gtk_label_set_max_width_chars (GTK_LABEL (marquee->countdownTimerLab), 6);
-  gtk_widget_set_halign (GTK_WIDGET (marquee->countdownTimerLab), GTK_ALIGN_END);
-  gtk_widget_set_can_focus (GTK_WIDGET (marquee->countdownTimerLab), FALSE);
-  uiutilsSetCss (GTK_WIDGET (marquee->countdownTimerLab),
+  gtk_widget_set_halign (marquee->countdownTimerLab, GTK_ALIGN_END);
+  gtk_widget_set_can_focus (marquee->countdownTimerLab, FALSE);
+  uiutilsSetCss (marquee->countdownTimerLab,
       "label { color: #ffa600; }");
-  gtk_box_pack_end (GTK_BOX (hbox), GTK_WIDGET (marquee->countdownTimerLab),
+  gtk_box_pack_end (GTK_BOX (hbox), marquee->countdownTimerLab,
       FALSE, FALSE, 0);
 
   if (marquee->mqShowInfo) {
     hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 5);
-    gtk_widget_set_halign (GTK_WIDGET (hbox), GTK_ALIGN_FILL);
-    gtk_widget_set_hexpand (GTK_WIDGET (hbox), TRUE);
-    gtk_widget_set_margin_end (GTK_WIDGET (hbox), 0);
-    gtk_widget_set_margin_start (GTK_WIDGET (hbox), 0);
-    gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (hbox),
+    gtk_widget_set_halign (hbox, GTK_ALIGN_FILL);
+    gtk_widget_set_hexpand (hbox, TRUE);
+    gtk_widget_set_margin_end (hbox, 0);
+    gtk_widget_set_margin_start (hbox, 0);
+    gtk_box_pack_start (GTK_BOX (vbox), hbox,
         FALSE, FALSE, 0);
 
     marquee->infoArtistLab = gtk_label_new ("");
-    gtk_widget_set_margin_top (GTK_WIDGET (marquee->infoArtistLab), 2);
-    gtk_widget_set_halign (GTK_WIDGET (marquee->infoArtistLab), GTK_ALIGN_START);
-    gtk_widget_set_hexpand (GTK_WIDGET (hbox), TRUE);
-    gtk_widget_set_can_focus (GTK_WIDGET (marquee->infoArtistLab), FALSE);
+    gtk_widget_set_margin_top (marquee->infoArtistLab, 2);
+    gtk_widget_set_halign (marquee->infoArtistLab, GTK_ALIGN_START);
+    gtk_widget_set_hexpand (hbox, TRUE);
+    gtk_widget_set_can_focus (marquee->infoArtistLab, FALSE);
     gtk_label_set_ellipsize (GTK_LABEL (marquee->infoArtistLab), PANGO_ELLIPSIZE_END);
-    gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (marquee->infoArtistLab),
+    gtk_box_pack_start (GTK_BOX (hbox), marquee->infoArtistLab,
         FALSE, FALSE, 0);
 
     marquee->infoSepLab = gtk_label_new ("");
-    gtk_widget_set_margin_top (GTK_WIDGET (marquee->infoSepLab), 2);
-    gtk_widget_set_halign (GTK_WIDGET (marquee->infoSepLab), GTK_ALIGN_START);
-    gtk_widget_set_hexpand (GTK_WIDGET (hbox), FALSE);
-    gtk_widget_set_can_focus (GTK_WIDGET (marquee->infoSepLab), FALSE);
-    gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (marquee->infoSepLab),
+    gtk_widget_set_margin_top (marquee->infoSepLab, 2);
+    gtk_widget_set_halign (marquee->infoSepLab, GTK_ALIGN_START);
+    gtk_widget_set_hexpand (hbox, FALSE);
+    gtk_widget_set_can_focus (marquee->infoSepLab, FALSE);
+    gtk_box_pack_start (GTK_BOX (hbox), marquee->infoSepLab,
         FALSE, FALSE, 0);
 
     marquee->infoTitleLab = gtk_label_new ("");
-    gtk_widget_set_margin_top (GTK_WIDGET (marquee->infoTitleLab), 2);
-    gtk_widget_set_halign (GTK_WIDGET (marquee->infoTitleLab), GTK_ALIGN_START);
-    gtk_widget_set_hexpand (GTK_WIDGET (hbox), TRUE);
-    gtk_widget_set_can_focus (GTK_WIDGET (marquee->infoTitleLab), FALSE);
+    gtk_widget_set_margin_top (marquee->infoTitleLab, 2);
+    gtk_widget_set_halign (marquee->infoTitleLab, GTK_ALIGN_START);
+    gtk_widget_set_hexpand (hbox, TRUE);
+    gtk_widget_set_can_focus (marquee->infoTitleLab, FALSE);
     gtk_label_set_ellipsize (GTK_LABEL (marquee->infoArtistLab), PANGO_ELLIPSIZE_END);
-    gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (marquee->infoTitleLab),
+    gtk_box_pack_start (GTK_BOX (hbox), marquee->infoTitleLab,
         FALSE, FALSE, 0);
   }
 
   marquee->sep = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
-  gtk_widget_set_margin_top (GTK_WIDGET (marquee->sep), 2);
-  uiutilsSetCss (GTK_WIDGET (marquee->sep),
+  gtk_widget_set_margin_top (marquee->sep, 2);
+  uiutilsSetCss (marquee->sep,
       "separator { min-height: 4px; background-color: #ffa600; }");
-  gtk_box_pack_end (GTK_BOX (vbox), GTK_WIDGET (marquee->sep),
+  gtk_box_pack_end (GTK_BOX (vbox), marquee->sep,
       TRUE, TRUE, 0);
 
   marquee->marqueeLabs = malloc (sizeof (GtkWidget *) * marquee->mqLen);
 
   for (int i = 0; i < marquee->mqLen; ++i) {
     marquee->marqueeLabs [i] = gtk_label_new ("");
-    gtk_widget_set_halign (GTK_WIDGET (marquee->marqueeLabs [i]), GTK_ALIGN_START);
-    gtk_widget_set_hexpand (GTK_WIDGET (marquee->marqueeLabs [i]), TRUE);
-    gtk_widget_set_margin_top (GTK_WIDGET (marquee->marqueeLabs [i]), 2);
-    gtk_widget_set_margin_start (GTK_WIDGET (marquee->marqueeLabs [i]), 10);
-    gtk_widget_set_margin_end (GTK_WIDGET (marquee->marqueeLabs [i]), 10);
-    gtk_widget_set_can_focus (GTK_WIDGET (marquee->marqueeLabs [i]), FALSE);
+    gtk_widget_set_halign (marquee->marqueeLabs [i], GTK_ALIGN_START);
+    gtk_widget_set_hexpand (marquee->marqueeLabs [i], TRUE);
+    gtk_widget_set_margin_top (marquee->marqueeLabs [i], 2);
+    gtk_widget_set_margin_start (marquee->marqueeLabs [i], 10);
+    gtk_widget_set_margin_end (marquee->marqueeLabs [i], 10);
+    gtk_widget_set_can_focus (marquee->marqueeLabs [i], FALSE);
     gtk_box_pack_start (GTK_BOX (marquee->vbox),
-        GTK_WIDGET (marquee->marqueeLabs [i]), FALSE, FALSE, 0);
+        marquee->marqueeLabs [i], FALSE, FALSE, 0);
   }
 
   marquee->inResize = true;
-  gtk_widget_show_all (GTK_WIDGET (window));
+  gtk_widget_show_all (window);
   marquee->inResize = false;
 
   marqueeAdjustFontSizes (marquee, 0);
@@ -556,7 +556,7 @@ marqueeProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_MARQUEE_SHOW: {
           if (marquee->isIconified) {
-            gtk_widget_show (GTK_WIDGET (marquee->window));
+            gtk_widget_show (marquee->window);
             marquee->mqIconifyAction = true;
             marquee->isIconified = false;
           }
@@ -712,7 +712,7 @@ static void
 marqueeStateChg (GtkWidget *window, GtkStateType flags, gpointer userdata)
 {
   /* the marquee is never in a backdrop state */
-  gtk_widget_unset_state_flags (GTK_WIDGET (window), GTK_STATE_FLAG_BACKDROP);
+  gtk_widget_unset_state_flags (window, GTK_STATE_FLAG_BACKDROP);
 }
 
 static void
@@ -764,15 +764,15 @@ marqueeCalcFontSizes (marquee_t *marquee, int sz)
     return 0;
   }
 
-  gtk_widget_get_allocation (GTK_WIDGET (marquee->pbar), &allocSize);
+  gtk_widget_get_allocation (marquee->pbar, &allocSize);
   pbarHeight = allocSize.height;
-  gtk_widget_get_allocation (GTK_WIDGET (marquee->sep), &allocSize);
+  gtk_widget_get_allocation (marquee->sep, &allocSize);
   sepHeight = allocSize.height;
   if (marquee->mqShowInfo) {
-    gtk_widget_get_allocation (GTK_WIDGET (marquee->infoArtistLab), &allocSize);
+    gtk_widget_get_allocation (marquee->infoArtistLab, &allocSize);
     infoHeight = allocSize.height;
   }
-  margin = gtk_widget_get_margin_top (GTK_WIDGET (marquee->danceLab));
+  margin = gtk_widget_get_margin_top (marquee->danceLab);
   margin += gtk_box_get_spacing (GTK_BOX (marquee->vbox));
 
   marquee->newFontSize = sz;
@@ -843,7 +843,7 @@ marqueeAdjustFontCallback (GtkWidget *w, GtkAllocation *retAllocSize, gpointer u
   }
 
   marquee->inResize = true;
-  g_signal_handler_disconnect (GTK_WIDGET (w), marquee->sizeSignal);
+  g_signal_handler_disconnect (w, marquee->sizeSignal);
   marquee->sizeSignal = 0;
 
   newsz = marqueeCalcFontSizes (marquee, marquee->newFontSize);
@@ -967,7 +967,7 @@ marqueeUnmaxCallback (GtkWidget *w, GtkAllocation *retAllocSize, gpointer userda
   }
 
   marquee->unMaximize = false;
-  g_signal_handler_disconnect (GTK_WIDGET (w), marquee->unmaxSignal);
+  g_signal_handler_disconnect (w, marquee->unmaxSignal);
   marquee->unmaxSignal = 0;
   gtk_window_unmaximize (GTK_WINDOW (marquee->window));
 }

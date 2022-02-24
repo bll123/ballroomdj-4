@@ -77,4 +77,8 @@ levelConv (char *keydata, datafileret_t *ret)
   level = bdjvarsdfGet (BDJVDF_LEVELS);
   lookup = datafileGetLookup (level->df);
   ret->u.num = slistGetNum (lookup, keydata);
+  if (ret->u.num == LIST_VALUE_INVALID) {
+    /* unknown levels are dumped into bucket 1 */
+    ret->u.num = 1;
+  }
 }

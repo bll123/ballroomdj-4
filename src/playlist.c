@@ -562,7 +562,7 @@ playlistSetSongFilter (playlist_t *pl)
     sel = ilistGetNum (pl->pldances, danceIdx, PLDANCE_SELECTED);
     if (sel == 1) {
       /* any value will work; the danceIdx just needs to exist in the list */
-      ilistSetNum (danceList, danceIdx, SONG_FILTER_BPM_LOW, 0);
+      ilistSetNum (danceList, danceIdx, 0, 0);
 
       plbpmlow = ilistGetNum (pl->pldances, danceIdx, PLDANCE_BPM_LOW);
       plbpmhigh = ilistGetNum (pl->pldances, danceIdx, PLDANCE_BPM_HIGH);
@@ -572,23 +572,8 @@ playlistSetSongFilter (playlist_t *pl)
       }
     }
   }
+
   songfilterSetData (pl->songfilter, SONG_FILTER_DANCE, danceList);
-
-  /* and loop again to do the BPM lookups */
-  ilistStartIterator (pl->pldances, &iteridx);
-  while ((danceIdx = ilistIterateKey (pl->pldances, &iteridx)) >= 0) {
-    ssize_t       sel;
-
-    sel = ilistGetNum (pl->pldances, danceIdx, PLDANCE_SELECTED);
-    if (sel == 1) {
-      plbpmlow = ilistGetNum (pl->pldances, danceIdx, PLDANCE_BPM_LOW);
-      plbpmhigh = ilistGetNum (pl->pldances, danceIdx, PLDANCE_BPM_HIGH);
-      if (plbpmlow > 0 && plbpmhigh > 0) {
-        songfilterDanceSet (pl->songfilter, danceIdx, SONG_FILTER_BPM_LOW, plbpmlow);
-        songfilterDanceSet (pl->songfilter, danceIdx, SONG_FILTER_BPM_HIGH, plbpmhigh);
-      }
-    }
-  }
 }
 
 static void

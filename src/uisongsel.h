@@ -17,6 +17,7 @@ typedef struct {
   int               lastTreeSize;
   double            lastStepIncrement;
   ssize_t           idxStart;
+  ilistidx_t        danceIdx;
   double            dfilterCount;
   songfilter_t      *songfilter;
   /* filter data */

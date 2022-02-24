@@ -1,6 +1,9 @@
 #ifndef INC_UIUTILS_H
 #define INC_UIUTILS_H
 
+#include "nlist.h"
+#include "slist.h"
+
 enum {
   UIUTILS_DROPDOWN_COL_IDX,
   UIUTILS_DROPDOWN_COL_STR,
@@ -13,6 +16,8 @@ typedef struct {
   GtkWidget     *button;
   GtkWidget     *window;
   GtkWidget     *tree;
+  nlist_t       *numIndexMap;
+  slist_t       *strIndexMap;
   gulong        closeHandlerId;
   char          *strSelection;
   bool          open : 1;
@@ -51,8 +56,12 @@ GtkWidget * uiutilsComboboxCreate (GtkWidget *parentwin,
     uiutilsdropdown_t *dropdown, void *udata);
 ssize_t uiutilsDropDownSelectionGet (uiutilsdropdown_t *dropdown,
     GtkTreePath *path);
-void uiutilsDropDownSetList (uiutilsdropdown_t *dropdown, slist_t *list);
-void uiutilsDropDownSetNumList (uiutilsdropdown_t *dropdown, slist_t *list);
+void uiutilsDropDownSetList (uiutilsdropdown_t *dropdown, slist_t *list,
+    char *selectLabel);
+void uiutilsDropDownSetNumList (uiutilsdropdown_t *dropdown, slist_t *list,
+    char *selectLabel);
+void uiutilsDropDownSelectionSetNum (uiutilsdropdown_t *dropdown, nlistidx_t idx);
+void uiutilsDropDownSelectionSetStr (uiutilsdropdown_t *dropdown, char *stridx);
 
 void uiutilsEntryInit (uiutilsentry_t *entry, int entrySize, int maxSize);
 void uiutilsEntryFree (uiutilsentry_t *entry);
@@ -62,8 +71,9 @@ void uiutilsEntrySetValue (uiutilsentry_t *entry, char *value);
 
 void uiutilsSpinboxInit (uiutilsspinbox_t *spinbox);
 void uiutilsSpinboxFree (uiutilsspinbox_t *spinbox);
-GtkWidget * uiutilsSpinboxCreate (uiutilsspinbox_t *spinbox);
+GtkWidget * uiutilsSpinboxTextCreate (uiutilsspinbox_t *spinbox,
+    ssize_t min, ssize_t max, void *displayCallback, void *udata);
 
-void uiutilsCreateDanceList (uiutilsdropdown_t *dancesel);
+void uiutilsCreateDanceList (uiutilsdropdown_t *dancesel, char *selectLabel);
 
 #endif /* INC_UIUTILS_H */

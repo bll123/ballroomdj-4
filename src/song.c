@@ -45,7 +45,7 @@ static datafilekey_t songdfkeys[] = {
   { "DURATION",             TAG_DURATION,             VALUE_NUM, NULL, -1 },
   { "FAVORITE",             TAG_FAVORITE,             VALUE_NUM, songConvFavorite, -1 },
   { "FILE",                 TAG_FILE,                 VALUE_DATA, NULL, -1 },
-  { "GENRE",                TAG_GENRE,                VALUE_DATA, genreConv, -1 },
+  { "GENRE",                TAG_GENRE,                VALUE_NUM, genreConv, -1 },
   { "KEYWORD",              TAG_KEYWORD,              VALUE_DATA, NULL, -1 },
   { "MQDISPLAY",            TAG_MQDISPLAY,            VALUE_DATA, NULL, -1 },
   { "MUSICBRAINZ_TRACKID",  TAG_MUSICBRAINZ_TRACKID,  VALUE_DATA, NULL, -1 },

@@ -10,6 +10,7 @@ enum {
   SONG_FILTER_BPM_LOW,
   SONG_FILTER_BPM_HIGH,
   SONG_FILTER_DANCE,
+  SONG_FILTER_GENRE,
   SONG_FILTER_KEYWORD,
   SONG_FILTER_LEVEL_HIGH,
   SONG_FILTER_LEVEL_LOW,
@@ -19,8 +20,6 @@ enum {
   SONG_FILTER_STATUS_PLAYABLE,
   SONG_FILTER_MAX,
 };
-#define SONG_FILTER_MAX_DATA 2
-#define SONG_FILTER_MAX_NUM 4
 
 typedef enum {
   SONG_FILTER_FOR_PLAYBACK,
@@ -43,6 +42,7 @@ songfilter_t  * songfilterAlloc (songfilterpb_t pbflag);
 void          songfilterFree (songfilter_t *sf);
 void          songfilterReset (songfilter_t *sf);
 void          songfilterSetSort (songfilter_t *sf, char *sortselection);
+void          songfilterClear (songfilter_t *sf, int filterType);
 void          songfilterSetData (songfilter_t *sf, int filterType, void *value);
 void          songfilterSetNum (songfilter_t *sf, int filterType, ssize_t value);
 void          songfilterDanceSet (songfilter_t *sf, ilistidx_t danceIdx,
@@ -50,5 +50,7 @@ void          songfilterDanceSet (songfilter_t *sf, ilistidx_t danceIdx,
 ssize_t       songfilterProcess (songfilter_t *sf);
 bool          songfilterFilterSong (songfilter_t *sf, song_t *song);
 dbidx_t       songfilterGetByIdx (songfilter_t *sf, nlistidx_t lookupIdx);
+char *        songfilterGetSort (songfilter_t *sf);
+ssize_t       songfilterGetNum (songfilter_t *sf, int filterType);
 
 #endif /* INC_SONGFILTER_H */
