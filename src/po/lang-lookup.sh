@@ -33,7 +33,7 @@ function readolddata {
 
 for pofile in *.po; do
   set +o noglob
-  if [[ $pofile == "en.po" ]]; then
+  if [[ $pofile == "en_US.po" ]]; then
     continue
   fi
 

@@ -1,6 +1,5 @@
 #include "config.h"
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -28,6 +27,7 @@ musicqAlloc (void)
     musicq->q [i] = queueAlloc (musicqQueueItemFree);
     musicq->uniqueidx [i] = 0;
     musicq->dispidx [i] = 1;
+    musicq->duration [i] = 0;
   }
   return musicq;
 }
@@ -50,6 +50,7 @@ void
 musicqPush (musicq_t *musicq, musicqidx_t musicqidx, song_t *song, char *plname)
 {
   musicqitem_t      *musicqitem;
+  ssize_t           dur;
 
   if (musicq == NULL || musicq->q [musicqidx] == NULL || song == NULL) {
     return;
@@ -65,6 +66,8 @@ musicqPush (musicq_t *musicq, musicqidx_t musicqidx, song_t *song, char *plname)
   musicqitem->playlistName = strdup (plname);
   musicqitem->announce = NULL;
   musicqitem->flags = MUSICQ_FLAG_NONE;
+  dur = songGetNum (song, TAG_DURATION);
+  musicq->duration [musicqidx] += dur;
   queuePush (musicq->q [musicqidx], musicqitem);
 }
 
@@ -106,6 +109,7 @@ musicqInsert (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx, song_t *song
 {
   int           olddispidx;
   musicqitem_t  *musicqitem;
+  ssize_t       dur;
 
   if (musicq == NULL || musicq->q [musicqidx] == NULL || song == NULL) {
     return;
@@ -124,6 +128,8 @@ musicqInsert (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx, song_t *song
   musicqitem->flags = MUSICQ_FLAG_REQUEST;
   musicqitem->uniqueidx = musicq->uniqueidx [musicqidx];
   ++musicq->uniqueidx [musicqidx];
+  dur = songGetNum (song, TAG_DURATION);
+  musicq->duration [musicqidx] += dur;
 
   queueInsert (musicq->q [musicqidx], idx, musicqitem);
   musicqRenumber (musicq, musicqidx, olddispidx);
@@ -140,6 +146,9 @@ musicqGetCurrent (musicq_t *musicq, musicqidx_t musicqidx)
 
   musicqitem = queueGetCurrent (musicq->q [musicqidx]);
   if (musicqitem == NULL) {
+    return NULL;
+  }
+  if ((musicqitem->flags & MUSICQ_FLAG_EMPTY) == MUSICQ_FLAG_EMPTY) {
     return NULL;
   }
   return musicqitem->song;
@@ -296,13 +305,18 @@ musicqGetPlaylistName (musicq_t *musicq, musicqidx_t musicqidx, ssize_t qkey)
 void
 musicqPop (musicq_t *musicq, musicqidx_t musicqidx)
 {
-  musicqitem_t      *musicqitem;
+  musicqitem_t  *musicqitem;
+  ssize_t       dur;
+  song_t        *song;
 
   if (musicq == NULL || musicq->q [musicqidx] == NULL) {
     return;
   }
 
   musicqitem = queuePop (musicq->q [musicqidx]);
+  song = musicqitem->song;
+  dur = songGetNum (song, TAG_DURATION);
+  musicq->duration [musicqidx] -= dur;
   musicqQueueItemFree (musicqitem);
 }
 
@@ -310,7 +324,11 @@ musicqPop (musicq_t *musicq, musicqidx_t musicqidx)
 void
 musicqClear (musicq_t *musicq, musicqidx_t musicqidx, ssize_t startIdx)
 {
-  int       olddispidx;
+  int           olddispidx;
+  ssize_t       iteridx;
+  musicqitem_t  *musicqitem;
+  song_t        *song;
+  ssize_t       dur;
 
   if (startIdx < 1 || startIdx >= queueGetCount (musicq->q [musicqidx])) {
     return;
@@ -318,20 +336,40 @@ musicqClear (musicq_t *musicq, musicqidx_t musicqidx, ssize_t startIdx)
 
   olddispidx = musicqRenumberStart (musicq, musicqidx);
   queueClear (musicq->q [musicqidx], startIdx);
+
+  queueStartIterator (musicq->q [musicqidx], &iteridx);
+  musicq->duration [musicqidx] = 0;
+  while ((musicqitem = queueIterateData (musicq->q [musicqidx], &iteridx)) != NULL) {
+    song = musicqitem->song;
+    dur = songGetNum (song, TAG_DURATION);
+    musicq->duration [musicqidx] += dur;
+  }
+
   musicq->dispidx [musicqidx] = olddispidx + queueGetCount (musicq->q [musicqidx]);
 }
 
 void
 musicqRemove (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx)
 {
-  int       olddispidx;
+  int           olddispidx;
+  musicqitem_t  *musicqitem;
+  song_t        *song;
+  ssize_t       dur;
+
 
   if (idx < 1 || idx >= queueGetCount (musicq->q [musicqidx])) {
     return;
   }
 
+
+  musicqitem = queueGetByIdx (musicq->q [musicqidx], idx);
+  song = musicqitem->song;
+  dur = songGetNum (song, TAG_DURATION);
+  musicq->duration [musicqidx] -= dur;
+
   olddispidx = musicqRenumberStart (musicq, musicqidx);
   queueRemoveByIdx (musicq->q [musicqidx], idx);
+
   musicqRenumber (musicq, musicqidx, olddispidx);
   --musicq->dispidx [musicqidx];
 }
@@ -344,6 +382,17 @@ musicqGetLen (musicq_t *musicq, musicqidx_t musicqidx)
   }
 
   return queueGetCount (musicq->q [musicqidx]);
+}
+
+
+ssize_t
+musicqGetDuration (musicq_t *musicq, musicqidx_t musicqidx)
+{
+  if (musicq == NULL || musicq->q [musicqidx] == NULL) {
+    return 0;
+  }
+
+  return musicq->duration [musicqidx];
 }
 
 

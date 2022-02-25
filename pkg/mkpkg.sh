@@ -13,9 +13,7 @@ function copysrcfiles {
 
   filelist="LICENSE.txt README.txt VERSION.txt
       packages/mongoose/mongoose.[ch]"
-  # the http directory will be created
-  dirlist="src conv img install licenses locale pkg templates web wiki \
-      conv img install licenses locale templates"
+  dirlist="src conv img install licenses locale pkg templates web wiki"
 
   echo "-- copying files to $stage"
   for f in $filelist; do
@@ -242,7 +240,7 @@ echo "-- updating build number"
 
 . ./VERSION.txt
 BUILD=$(($BUILD+1))
-BUILDDATE=$(date '+%Y%m%d')"
+BUILDDATE=$(date '+%Y%m%d')
 cat > VERSION.txt << _HERE_
 VERSION=$VERSION
 BUILD=$BUILD
@@ -295,7 +293,7 @@ tmpmac=tmp/macos
 
 datetag=""
 if [[ $rlstag != "" ]]; then
-  datetag=$BUILDDATE
+  datetag=-$BUILDDATE
 fi
 
 nm=${spkgnm}-${VERSION}-installer-${tag}${datetag}${rlstag}${sfx}

@@ -873,9 +873,9 @@ mainMusicQueueFill (maindata_t *mainData)
 {
   ssize_t     mqLen;
   ssize_t     currlen;
-  song_t      *song = NULL;
   playlist_t  *playlist = NULL;
   pltype_t    pltype;
+  bool        stopatflag = false;
 
 
   logProcBegin (LOG_PROC, "mainMusicQueueFill");
@@ -897,8 +897,12 @@ mainMusicQueueFill (maindata_t *mainData)
   }
 
   logMsg (LOG_DBG, LOG_BASIC, "fill: %ld < %ld", currlen, mqLen);
+
   /* want current + mqLen songs */
-  while (playlist != NULL && currlen <= mqLen) {
+  while (playlist != NULL && currlen <= mqLen && stopatflag == false) {
+    ssize_t   stopTime;
+    song_t    *song = NULL;
+
     song = playlistGetNextSong (playlist, mainData->danceCounts,
         currlen, mainCheckMusicQueue, mainMusicQueueHistory, mainData);
     if (song == NULL) {
@@ -915,6 +919,26 @@ mainMusicQueueFill (maindata_t *mainData)
       playlist = queueGetCurrent (mainData->playlistQueue [mainData->musicqManageIdx]);
       if (playlist != NULL && song != NULL) {
         playlistAddCount (playlist, song);
+      }
+    }
+
+    stopTime = playlistGetConfigNum (playlist, PLAYLIST_STOP_TIME);
+    if (stopTime > 0) {
+      ssize_t       currTime;
+      ssize_t       qDuration;
+      ssize_t       nStopTime;
+
+      currTime = mstime ();
+      /* stop time is in hours+minutes; need to convert it to real time */
+      nStopTime = mstimestartofday ();
+      nStopTime += stopTime;
+      if (nStopTime < currTime) {
+        nStopTime += (24 * 3600 * 1000);
+      }
+
+      qDuration = musicqGetDuration (mainData->musicQueue, mainData->musicqManageIdx);
+      if (currTime + qDuration > nStopTime) {
+        stopatflag = true;
       }
     }
   }
@@ -1376,9 +1400,10 @@ mainMusicQueuePlay (maindata_t *mainData)
         mainMusicQueueNext (mainData);
         /* since the player state is stopped, must re-start playback */
         mainMusicQueuePlay (mainData);
-      }
-    }
-  }
+      } /* switch on empty? */
+    } /* if the song was null and the queue is empty */
+  } /* if the player state is stopped */
+
   if (mainData->playerState == PL_STATE_IN_GAP ||
       mainData->playerState == PL_STATE_PAUSED) {
     logMsg (LOG_DBG, LOG_MAIN, "player is paused/in gap, send play msg");
@@ -1723,7 +1748,3 @@ mainParseIntStr (char *args, int *a, char **b)
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   *b = p;
 }
-
-
-#if 0
-#endif

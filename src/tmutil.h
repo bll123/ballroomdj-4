@@ -16,6 +16,7 @@ typedef struct {
 
 void      mssleep (size_t);
 time_t    mstime (void);
+time_t    mstimestartofday (void);
 void      mstimestart (mstime_t *tm);
 time_t    mstimeend (mstime_t *tm);
 void      mstimeset (mstime_t *tm, ssize_t addTime);

@@ -12,6 +12,12 @@ for i in *.po; do
   j=$(echo $i | sed 's,.po$,,')
   mkdir -p ../../locale/$j/LC_MESSAGES
   msgfmt -c -o ../../locale/$j/LC_MESSAGES/bdj4.mo $i
+  # for the time being, there is no en_GB.po yet.
+  if [[ $i == en_US.po ]]; then
+    j=en
+    mkdir -p ../../locale/$j/LC_MESSAGES
+    msgfmt -c -o ../../locale/$j/LC_MESSAGES/bdj4.mo $i
+  fi
 done
 
 function mksub {

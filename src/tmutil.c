@@ -34,6 +34,32 @@ mstime (void)
   return tot;
 }
 
+time_t
+mstimestartofday (void)
+{
+  struct timeval    curr;
+  time_t            s, m, h, tot;
+  struct tm         *tp;
+#if _lib_localtime_r
+  struct tm         t;
+#endif
+
+  gettimeofday (&curr, NULL);
+  s = curr.tv_sec;
+
+#if _lib_localtime_r
+  localtime_r (&s, &t);
+  tp = &t;
+#else
+  tp = localtime (&s);
+#endif
+
+  m = tp->tm_min * 60;
+  h = tp->tm_hour * 3600;
+  tot = (s - h - m) * 1000;
+  return tot;
+}
+
 void
 mstimestart (mstime_t *mt)
 {

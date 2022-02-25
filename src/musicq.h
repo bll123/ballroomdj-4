@@ -34,6 +34,7 @@ typedef struct {
   queue_t         *q [MUSICQ_MAX];
   int             dispidx [MUSICQ_MAX];
   int             uniqueidx [MUSICQ_MAX];
+  ssize_t         duration [MUSICQ_MAX];
 } musicq_t;
 
 musicq_t *  musicqAlloc (void);
@@ -63,6 +64,7 @@ void        musicqPop (musicq_t *musicq, musicqidx_t musicqidx);
 void        musicqClear (musicq_t *musicq, musicqidx_t musicqidx, ssize_t startIdx);
 void        musicqRemove (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx);
 ssize_t     musicqGetLen (musicq_t *musicq, musicqidx_t musicqidx);
+ssize_t     musicqGetDuration (musicq_t *musicq, musicqidx_t musicqidx);
 char *      musicqGetDance (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx);
 char *      musicqGetData (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx, tagdefkey_t tagidx);
 musicqidx_t musicqNextQueue (musicqidx_t musicqidx);

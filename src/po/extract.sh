@@ -36,7 +36,7 @@ function mkpo {
       -e "s/FULL NAME.*ADDRESS./${xlator}/" \
       -e "s/Bugs-To: /Bugs-To: brad.lanam.comp@gmail.com/" \
       -e "s/Language: /Language: ${lang}/" \
-      -e "s/Language-Team: /Language-Team: $elang/" \
+      -e "s/Language-Team:.*>/Language-Team: $elang/" \
       -e "s/CHARSET/utf-8/" \
       bdj4.pot >> ${out}
 }
@@ -72,7 +72,7 @@ xgettext -s -j -d bdj4 \
     -o bdj4.pot
 rm -f $TMP
 
-mkpo en en.po "Automatically generated" English english
+mkpo en en_US.po "Automatically generated" "English (US)" english
 mkpo nl nl.po "marimo" Nederlands dutch
 #mkpo de de_DE.po "various" Deutsch german
 ./lang-lookup.sh

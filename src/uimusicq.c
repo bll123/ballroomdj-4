@@ -87,6 +87,7 @@ uimusicqInit (progstate_t *progstate, conn_t *conn)
   uimusicq->dispList = NULL;
   uimusicq->workList = NULL;
   for (int i = 0; i < MUSICQ_MAX; ++i) {
+    uimusicq->ui [i].repeatTimer = 0;
     uiutilsDropDownInit (&uimusicq->ui [i].playlistsel);
     uiutilsDropDownInit (&uimusicq->ui [i].dancesel);
     uimusicq->ui [i].selPathStr = NULL;
