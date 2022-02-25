@@ -7,8 +7,6 @@ case ${cwd} in
     ;;
 esac
 
-rm -rf ../../locale
-
 echo "-- Creating .mo files"
 for i in *.po; do
   j=$(echo $i | sed 's,.po$,,')

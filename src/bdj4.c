@@ -35,8 +35,7 @@ main (int argc, char * argv[])
   char      *prog;
   char      *extension;
   bool      debugself = false;
-  bool      havetheme = false;
-  bool      isinstaller = false;
+  bool      nodetach = false;
   int       flags;
 
   static struct option bdj_options [] = {
@@ -141,12 +140,13 @@ main (int argc, char * argv[])
       }
       case 12: {
         prog = "bdj4installer";
-        isinstaller = true;
+        nodetach = true;
         ++validargs;
         break;
       }
       case 13: {
         prog = "bdj4locale";
+        nodetach = true;
         ++validargs;
         break;
       }
@@ -171,7 +171,6 @@ main (int argc, char * argv[])
       case 't': {
         snprintf (buff, sizeof (buff), "GTK_THEME=%s", optarg);
         putenv (buff);
-        havetheme = true;
         break;
       }
       case 'r': {
@@ -194,7 +193,7 @@ main (int argc, char * argv[])
     exit (1);
   }
 
-  if (! isinstaller) {
+  if (! nodetach) {
     if (chdir (sysvarsGetStr (SV_BDJ4DATATOPDIR)) < 0) {
       fprintf (stderr, "Unable to set working dir: %s\n", sysvarsGetStr (SV_BDJ4DATATOPDIR));
       exit (1);
@@ -317,7 +316,7 @@ main (int argc, char * argv[])
   }
 
   flags = OS_PROC_DETACH;
-  if (isinstaller) {
+  if (nodetach) {
     flags = OS_PROC_NONE;
   }
   osProcessStart (argv, flags, NULL);

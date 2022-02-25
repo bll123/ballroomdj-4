@@ -487,6 +487,9 @@ target_link_libraries (bdj4locatebdj3
 )
 
 add_executable (bdj4locale bdj4locale.c)
+target_link_libraries (bdj4locale
+  libbdj4common
+)
 addIntlLibrary (bdj4locale)
 
 if (WIN32)

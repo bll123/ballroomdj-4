@@ -242,9 +242,11 @@ echo "-- updating build number"
 
 . ./VERSION.txt
 BUILD=$(($BUILD+1))
+BUILDDATE=$(date '+%Y%m%d')"
 cat > VERSION.txt << _HERE_
 VERSION=$VERSION
 BUILD=$BUILD
+BUILDDATE=$BUILDDATE
 RELEASELEVEL=$RELEASELEVEL
 _HERE_
 
@@ -293,7 +295,7 @@ tmpmac=tmp/macos
 
 datetag=""
 if [[ $rlstag != "" ]]; then
-  datetag="-$(date '+%Y%m%d')"
+  datetag=$BUILDDATE
 fi
 
 nm=${spkgnm}-${VERSION}-installer-${tag}${datetag}${rlstag}${sfx}

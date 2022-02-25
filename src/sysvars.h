@@ -8,15 +8,15 @@ typedef enum {
   SV_OSBUILD,
   SV_OSDISP,
   SV_HOSTNAME,
-  SV_BDJ4DATATOPDIR,  // path to the directory above data/ and tmp/ and http/
-  SV_BDJ4MAINDIR,     // path to the main directory above bin/, etc.
   SV_BDJ4DATADIR,     // data
-  SV_BDJ4TMPDIR,      // tmp
+  SV_BDJ4DATATOPDIR,  // path to the directory above data/ and tmp/ and http/
   SV_BDJ4EXECDIR,     // main + /bin
+  SV_BDJ4HTTPDIR,     // http
   SV_BDJ4IMGDIR,      // main + /img
   SV_BDJ4LOCALEDIR,   // main + /locale
+  SV_BDJ4MAINDIR,     // path to the main directory above bin/, etc.
   SV_BDJ4TEMPLATEDIR, // main + /templates
-  SV_BDJ4HTTPDIR,     // http
+  SV_BDJ4TMPDIR,      // tmp
   SV_SHLIB_EXT,
   SV_MOBMQ_HOST,
   SV_LOCALE,
@@ -24,6 +24,7 @@ typedef enum {
   SV_CA_FILE,
   SV_BDJ4_VERSION,
   SV_BDJ4_BUILD,
+  SV_BDJ4_BUILDDATE,
   SV_BDJ4_RELEASELEVEL,
   SV_MAX
 } sysvarkey_t;

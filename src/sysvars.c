@@ -187,6 +187,7 @@ sysvarsInit (const char *argv0)
 
   setlocale (LC_ALL, "");
 
+// ### FIX
   snprintf (tbuf, sizeof (tbuf), "%-.5s", setlocale (LC_ALL, NULL));
   strlcpy (sysvars [SV_LOCALE], tbuf, MAXPATHLEN);
   snprintf (tbuf, sizeof (tbuf), "%-.2s", sysvars [SV_LOCALE]);
@@ -198,20 +199,24 @@ sysvarsInit (const char *argv0)
     char    *tokptr;
     char    *tokptrb;
     char    *tp;
+    char    *vnm;
     char    *p;
 
     data = filedataReadAll ("VERSION.txt");
     tp = strtok_r (data, "\r\n", &tokptr);
     while (tp != NULL) {
-      p = strtok_r (tp, "=", &tokptrb);
+      vnm = strtok_r (tp, "=", &tokptrb);
       p = strtok_r (NULL, "=", &tokptrb);
-      if (*tp == 'V') {
+      if (strcmp (vnm, "VERSION") == 0) {
         strlcpy (sysvars [SV_BDJ4_VERSION], p, MAXPATHLEN);
       }
-      if (*tp == 'B') {
+      if (strcmp (vnm, "BUILD") == 0) {
         strlcpy (sysvars [SV_BDJ4_BUILD], p, MAXPATHLEN);
       }
-      if (*tp == 'R') {
+      if (strcmp (vnm, "BUILDDATE") == 0) {
+        strlcpy (sysvars [SV_BDJ4_BUILDDATE], p, MAXPATHLEN);
+      }
+      if (strcmp (vnm, "RELEASELEVEL") == 0) {
         strlcpy (sysvars [SV_BDJ4_RELEASELEVEL], p, MAXPATHLEN);
       }
       tp = strtok_r (NULL, "\r\n", &tokptr);

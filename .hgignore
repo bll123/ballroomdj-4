@@ -6,7 +6,9 @@ syntax: regexp
 ^dev/
 ^http/
 ^licenses/
-^locale/
+^locale/en/
+^locale/nl/
+^locale/de/
 ^packages/
 ^plocal/
 ^src/build/

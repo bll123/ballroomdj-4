@@ -64,6 +64,8 @@ typedef enum {
   INST_PYTHON_CHECK,
   INST_PYTHON_DOWNLOAD,
   INST_PYTHON_INSTALL,
+  INST_MUTAGEN_CHECK,
+  INST_MUTAGEN_INSTALL,
   INST_FINISH,
 } installstate_t;
 
@@ -147,6 +149,8 @@ static void installerVLCInstall (installer_t *installer);
 static void installerPythonCheck (installer_t *installer);
 static void installerPythonDownload (installer_t *installer);
 static void installerPythonInstall (installer_t *installer);
+static void installerMutagenCheck (installer_t *installer);
+static void installerMutagenInstall (installer_t *installer);
 
 static void installerCleanup (installer_t *installer);
 static void installerDisplayText (installer_t *installer, char *pfx, char *txt);
@@ -648,6 +652,14 @@ installerMainLoop (void *udata)
       installerPythonInstall (installer);
       break;
     }
+    case INST_MUTAGEN_CHECK: {
+      installerMutagenCheck (installer);
+      break;
+    }
+    case INST_MUTAGEN_INSTALL: {
+      installerMutagenInstall (installer);
+      break;
+    }
     case INST_FINISH: {
       installerDisplayText (installer, "## ",  _("Installation complete."));
       installer->instState = INST_BEGIN;
@@ -1147,12 +1159,14 @@ installerCopyTemplates (installer_t *installer)
     return;
   }
 
-  snprintf (tbuff, MAXPATHLEN, "%s/templates/%s", installer->rundir,
+  snprintf (tbuff, MAXPATHLEN, "%s/install/%s", installer->rundir,
       "localized-sr.txt");
-  srdf = datafileAllocParse ("loc-sr", DFTYPE_KEY_VAL, tbuff, NULL, 0, 0);
-  snprintf (tbuff, MAXPATHLEN, "%s/templates/%s", installer->rundir,
+  srdf = datafileAllocParse ("loc-sr", DFTYPE_KEY_VAL,
+      tbuff, NULL, 0, DATAFILE_NO_LOOKUP);
+  snprintf (tbuff, MAXPATHLEN, "%s/install/%s", installer->rundir,
       "localized-auto.txt");
-  autodf = datafileAllocParse ("loc-sr", DFTYPE_KEY_VAL, tbuff, NULL, 0, 0);
+  autodf = datafileAllocParse ("loc-sr", DFTYPE_KEY_VAL,
+      tbuff, NULL, 0, DATAFILE_NO_LOOKUP);
 
   snprintf (tbuff, MAXPATHLEN, "%s/templates", installer->rundir);
   dirlist = filemanipBasicDirList (tbuff, NULL);
@@ -1165,12 +1179,6 @@ installerCopyTemplates (installer_t *installer)
       continue;
     }
     if (strcmp (fname, "html-list.txt") == 0) {
-      continue;
-    }
-    if (strcmp (fname, "localized-sr.txt") == 0) {
-      continue;
-    }
-    if (strcmp (fname, "localized-auto.txt") == 0) {
       continue;
     }
 
@@ -1590,7 +1598,7 @@ installerPythonCheck (installer_t *installer)
   char  tbuff [MAXPATHLEN];
 
   if (installer->pythoninstalled) {
-    installer->instState = INST_FINISH;
+    installer->instState = INST_MUTAGEN_CHECK;
     return;
   }
 
@@ -1614,7 +1622,7 @@ installerPythonCheck (installer_t *installer)
     snprintf (tbuff, sizeof (tbuff),
         _("Unable to determine %s version."), "Python");
     installerDisplayText (installer, "-- ", tbuff);
-    installer->instState = INST_FINISH;
+    installer->instState = INST_MUTAGEN_CHECK;
   }
 }
 
@@ -1657,7 +1665,7 @@ installerPythonDownload (installer_t *installer)
   } else {
     snprintf (tbuff, sizeof (tbuff), _("Download of %s failed."), "Python");
     installerDisplayText (installer, "-- ", tbuff);
-    installer->instState = INST_FINISH;
+    installer->instState = INST_MUTAGEN_CHECK;
   }
 }
 
@@ -1676,6 +1684,37 @@ installerPythonInstall (installer_t *installer)
     installerDisplayText (installer, "-- ", tbuff);
   }
   fileopDelete (installer->dlfname);
+  installer->instState = INST_MUTAGEN_CHECK;
+}
+
+static void
+installerMutagenCheck (installer_t *installer)
+{
+  char  tbuff [MAXPATHLEN];
+
+  if (chdir (installer->datatopdir)) {
+    fprintf (stderr, "Unable to set working dir: %s\n", installer->datatopdir);
+    installerDisplayText (installer, "", _("Error: Unable to set working folder."));
+    installerDisplayText (installer, " * ", _("Installation aborted."));
+    installer->instState = INST_BEGIN;
+    return;
+  }
+
+  snprintf (tbuff, sizeof (tbuff), _("Installing %s."), "Mutagen");
+  installerDisplayText (installer, "-- ", tbuff);
+  installer->delayCount = 0;
+  installer->delayState = INST_MUTAGEN_INSTALL;
+  installer->instState = INST_DELAY;
+}
+
+static void
+installerMutagenInstall (installer_t *installer)
+{
+  char      tbuff [MAXPATHLEN];
+
+  strlcpy (tbuff, "pip install --no-cache-dir --user --upgrade mutagen", sizeof (tbuff));
+  system (tbuff);
+  snprintf (tbuff, sizeof (tbuff), _("%s installed."), "Mutagen");
   installer->instState = INST_FINISH;
 }
 

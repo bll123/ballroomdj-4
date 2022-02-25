@@ -12,6 +12,9 @@
 # include <libintl.h>
 #endif
 
+#include "localeutil.h"
+#include "sysvars.h"
+
 int
 main (int argc, char *argv [])
 {
@@ -19,6 +22,8 @@ main (int argc, char *argv [])
 
   setlocale (LC_ALL, "");
   locale = setlocale (LC_ALL, NULL);
+  printf ("all: %s\n", locale);
+  locale = setlocale (LC_CTYPE, NULL);
   if (locale != NULL) {
     printf ("%2.2s ", locale);
     if (locale [2] == '_') {
@@ -28,4 +33,11 @@ main (int argc, char *argv [])
     }
     printf ("'%s'\n", locale);
   }
+
+  sysvarsInit (argv [0]);
+  localeInit ();
+
+  printf ("locale: %s\n", sysvarsGetStr (SV_LOCALE));
+  printf ("short locale: %s\n", sysvarsGetStr (SV_SHORT_LOCALE));
+  fflush (stdout);
 }

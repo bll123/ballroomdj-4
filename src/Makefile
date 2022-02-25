@@ -118,11 +118,9 @@ eclean:
 
 .PHONY: tclean
 tclean:
-	@-$(RM) -f *~ w ww *.orig
-	@-$(RM) -f ../conv/*~ ./locale/*~ ../locale/*~ ../*~ ../img/*~
-	@-$(RM) -f ../install/*~ ../pkg/*~ utils/*~ ../data/*~
-	@-$(RM) -f ../web/*~ ../http/*~ ../resources/*~ po/*~
-	@-$(RM) -f ../pkg/macos/*~ ../templates/*~  ../wiki/*~
+	@find .. -name '*~' -print0 | xargs -0 rm -f
+	@find .. -name '*.orig' -print0 | xargs -0 rm -f
+	@-$(RM) -f w ww
 	@-$(RM) -f ../vlc-log.txt vlc-log.txt
 	@-$(RM) -f ../vgcore.* ../core
 	@-$(RM) -f launcher.rc bdj4_icon.ico

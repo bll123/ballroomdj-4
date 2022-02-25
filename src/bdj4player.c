@@ -1099,7 +1099,6 @@ playerSeek (playerdata_t *playerData, ssize_t reqpos)
   double        dpos;
   ssize_t       nreqpos;
   ssize_t       seekpos;
-  ssize_t       newpos;
   prepqueue_t   *pq = playerData->currentSong;
 
   /* if duration is adjusted for speed, so is reqpos                */
@@ -1112,7 +1111,7 @@ playerSeek (playerdata_t *playerData, ssize_t reqpos)
     dpos = (double) seekpos * drate;
     seekpos = (ssize_t) dpos;
   }
-  newpos = pliSeek (playerData->pli, seekpos);
+  pliSeek (playerData->pli, seekpos);
   /* newpos is from vlc; don't use it */
   if (pq->speed != 100) {
     drate = (double) pq->speed / 100.0;
