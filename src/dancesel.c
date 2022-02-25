@@ -119,15 +119,12 @@ danceselFree (dancesel_t *dancesel)
 void
 danceselAddCount (dancesel_t *dancesel, ilistidx_t danceIdx)
 {
-  double        count;
-
   if (dancesel == NULL || dancesel->playedDances == NULL) {
     return;
   }
 
   logProcBegin (LOG_PROC, "danceselAddCount");
 
-  count = nlistGetDouble (dancesel->selectedCounts, danceIdx);
   nlistIncrement (dancesel->selectedCounts, danceIdx);
   ++dancesel->totalSelCount;
 }

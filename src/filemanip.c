@@ -97,11 +97,7 @@ filemanipBasicDirList (char *dirname, char *extension)
   struct dirent *dirent;
   slist_t       *fileList;
   pathinfo_t    *pi;
-  size_t        elen = 0;
 
-  if (extension != NULL) {
-    elen = strlen (extension);
-  }
 
   fileList = slistAlloc (dirname, LIST_UNORDERED, free, NULL);
   dh = opendir (dirname);

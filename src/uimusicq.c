@@ -498,7 +498,6 @@ uimusicqProcessMusicQueueDataUpdate (uimusicq_t *uimusicq, char * args)
 {
   int               ci;
   unsigned long     tlong;
-  int               uniqueidx;
   dance_t           *dances;
   GtkTreeModel      *model;
   GtkTreeIter       iter;
@@ -556,7 +555,7 @@ uimusicqProcessMusicQueueDataUpdate (uimusicq_t *uimusicq, char * args)
 
     if (valid) {
       gtk_tree_model_get (model, &iter, MUSICQ_COL_UNIQUE_IDX, &tlong, -1);
-      uniqueidx = tlong;
+      musicqupdate->uniqueidx = tlong;
     }
 
     song = dbGetByIdx (musicqupdate->dbidx);

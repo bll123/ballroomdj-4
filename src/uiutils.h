@@ -41,6 +41,7 @@ typedef struct {
 void uiutilsSetCss (GtkWidget *w, char *style);
 void uiutilsSetUIFont (char *uifont);
 void uiutilsInitGtkLog (void);
+GtkWidget * uiutilsCreateLabel (char *label);
 GtkWidget * uiutilsCreateColonLabel (char *label);
 GtkWidget * uiutilsCreateButton (char *title, char *imagenm,
     void *clickCallback, void *udata);

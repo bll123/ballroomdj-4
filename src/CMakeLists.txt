@@ -299,26 +299,37 @@ set (CMAKE_EXTRA_INCLUDE_FILES "")
 
 configure_file (config.h.in config.h)
 
-# this library should not include anything bdj4 specific */
 add_library (libbdj4common SHARED
+  bdjmsg.c
+  bdjopt.c
   bdjstring.c
+  bdjvars.c
+  conn.c
+  datafile.c
   filedata.c
   filemanip.c
   fileop.c
   fileutil.c
   ilist.c
   list.c
+  localeutil.c
+  lock.c
+  log.c
   nlist.c
   osnetutils.c
   osutils.c
+  pathbld.c
   pathutil.c
   procutil.c
   progstate.c
   queue.c
+  rafile.c
   slist.c
   sock.c
+  sockh.c
   strlcat.c
   strlcpy.c
+  sysvars.c
   tmutil.c
 )
 target_include_directories (libbdj4common
@@ -332,29 +343,18 @@ addWinSockLibrary (libbdj4common)
 add_library (libbdj4 SHARED
   autosel.c
   bdj4init.c
-  bdjmsg.c
-  bdjopt.c
-  bdjvars.c
   bdjvarsdf.c
   bdjvarsdfload.c
-  conn.c
   dance.c
   dancesel.c
-  datafile.c
   dnctypes.c
   genre.c
   level.c
-  localeutil.c
-  lock.c
-  log.c
   musicdb.c
   musicq.c
-  pathbld.c
   playlist.c
-  rafile.c
   rating.c
   sequence.c
-  sockh.c
   song.c
   songfilter.c
   songlist.c
@@ -362,7 +362,6 @@ add_library (libbdj4 SHARED
   songutil.c
   sortopt.c
   status.c
-  sysvars.c
   tagdef.c
   webclient.c
 )

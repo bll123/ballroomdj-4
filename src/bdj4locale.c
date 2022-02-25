@@ -24,7 +24,7 @@ main (int argc, char *argv [])
     if (locale [2] == '_') {
       printf ("%5.5s ", locale);
     } else {
-      printf ("''");
+      printf ("'' ");
     }
     printf ("'%s'\n", locale);
   }

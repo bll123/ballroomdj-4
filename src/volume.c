@@ -64,10 +64,9 @@ int
 volumeGet (volume_t *volume, char *sinkname)
 {
   int               vol;
-  int               rc;
 
   vol = 0;
-  rc = volume->volumeProcess (VOL_GET, sinkname, &vol, NULL);
+  volume->volumeProcess (VOL_GET, sinkname, &vol, NULL);
   volume->volumeDisconnect ();
   return vol;
 }
@@ -75,9 +74,7 @@ volumeGet (volume_t *volume, char *sinkname)
 int
 volumeSet (volume_t *volume, char *sinkname, int vol)
 {
-  int               rc;
-
-  rc = volume->volumeProcess (VOL_SET, sinkname, &vol, NULL);
+  volume->volumeProcess (VOL_SET, sinkname, &vol, NULL);
   volume->volumeDisconnect ();
   return vol;
 }
@@ -86,11 +83,10 @@ volumeSet (volume_t *volume, char *sinkname, int vol)
 int
 volumeGetSinkList (volume_t *volume, char *sinkname, volsinklist_t *sinklist)
 {
-  int               rc;
   int               vol;
 
   vol = 0;
-  rc = volume->volumeProcess (VOL_GETSINKLIST, sinkname, &vol, sinklist);
+  volume->volumeProcess (VOL_GETSINKLIST, sinkname, &vol, sinklist);
   volume->volumeDisconnect ();
   return vol;
 }

@@ -40,8 +40,10 @@
 #include "tmutil.h"
 #include "uiutils.h"
 
+/* installation states */
 typedef enum {
   INST_BEGIN,
+  INST_DELAY,
   INST_INIT,
   INST_SAVE,
   INST_MAKE_TARGET,
@@ -56,6 +58,12 @@ typedef enum {
   INST_CONVERT_WAIT,
   INST_CONVERT_FINISH,
   INST_CREATE_SHORTCUT,
+  INST_VLC_CHECK,
+  INST_VLC_DOWNLOAD,
+  INST_VLC_INSTALL,
+  INST_PYTHON_CHECK,
+  INST_PYTHON_DOWNLOAD,
+  INST_PYTHON_INSTALL,
   INST_FINISH,
 } installstate_t;
 
@@ -69,6 +77,11 @@ typedef struct {
   char            datatopdir [MAXPATHLEN];
   char            currdir [MAXPATHLEN];
   char            unpackdir [MAXPATHLEN];
+  char            vlcversion [40];
+  char            pyversion [40];
+  char            dlfname [MAXPATHLEN];
+  int             delayCount;
+  installstate_t  delayState;
   /* conversion */
   char            *bdj3loc;
   char            *tclshloc;
@@ -80,6 +93,8 @@ typedef struct {
   GtkWidget       *targetEntry;
   GtkWidget       *reinstWidget;
   GtkWidget       *feedbackMsg;
+  GtkWidget       *vlcMsg;
+  GtkWidget       *pythonMsg;
   GtkEntryBuffer  *targetBuffer;
   GtkTextBuffer   *dispBuffer;
   GtkWidget       *dispTextView;
@@ -92,6 +107,8 @@ typedef struct {
   bool            freetarget : 1;
   bool            freebdj3loc : 1;
   bool            guienabled : 1;
+  bool            vlcinstalled : 1;
+  bool            pythoninstalled : 1;
 } installer_t;
 
 #define INST_TEMP_FILE  "tmp/bdj4instout.txt"
@@ -109,6 +126,8 @@ static void installerValidateDir (installer_t *installer);
 static void installerValidateStart (GtkEditable *e, gpointer udata);
 static void installerInstall (GtkButton *b, gpointer udata);
 static bool installerCheckTarget (installer_t *installer, const char *dir);
+
+static void installerDelay (installer_t *installer);
 static void installerInstInit (installer_t *installer);
 static void installerSaveTargetDir (installer_t *installer);
 static void installerMakeTarget (installer_t *installer);
@@ -122,6 +141,13 @@ static void installerConvertStart (installer_t *installer);
 static void installerConvert (installer_t *installer);
 static void installerConvertFinish (installer_t *installer);
 static void installerCreateShortcut (installer_t *installer);
+static void installerVLCCheck (installer_t *installer);
+static void installerVLCDownload (installer_t *installer);
+static void installerVLCInstall (installer_t *installer);
+static void installerPythonCheck (installer_t *installer);
+static void installerPythonDownload (installer_t *installer);
+static void installerPythonInstall (installer_t *installer);
+
 static void installerCleanup (installer_t *installer);
 static void installerDisplayText (installer_t *installer, char *pfx, char *txt);
 static void installerScrollToEnd (GtkWidget *w, GtkAllocation *retAllocSize, gpointer udata);;
@@ -129,6 +155,8 @@ static void installerGetTargetFname (installer_t *installer, char *buff, size_t 
 static void installerGetBDJ3Fname (installer_t *installer, char *buff, size_t len);
 static void installerTemplateCopy (char *from, char *to);
 static void installerSetrundir (installer_t *installer, const char *dir);
+static void installerVLCGetVersion (installer_t *installer);
+static void installerPythonGetVersion (installer_t *installer);
 
 int
 main (int argc, char *argv[])
@@ -284,7 +312,7 @@ main (int argc, char *argv[])
   }
 
   if (installer.guienabled) {
-    g_timeout_add (UI_MAIN_LOOP_TIMER, installerMainLoop, &installer);
+    g_timeout_add (UI_MAIN_LOOP_TIMER * 5, installerMainLoop, &installer);
     status = installerCreateGui (&installer, 0, NULL);
   } else {
     installer.instState = INST_INIT;
@@ -369,8 +397,8 @@ installerActivate (GApplication *app, gpointer udata)
   gtk_widget_set_hexpand (hbox, TRUE);
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
 
-  widget = gtk_label_new (_("Enter the destination folder where BDJ4 will be installed."));
-  gtk_widget_set_halign (widget, GTK_ALIGN_START);
+  widget = uiutilsCreateLabel (
+      _("Enter the destination folder where BDJ4 will be installed."));
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
@@ -399,43 +427,41 @@ installerActivate (GApplication *app, gpointer udata)
   g_signal_connect (installer->reinstWidget, "toggled",
       G_CALLBACK (installerCheckDir), installer);
 
-  installer->feedbackMsg = gtk_label_new ("");
+  installer->feedbackMsg = uiutilsCreateLabel ("");
   uiutilsSetCss (installer->feedbackMsg,
       "label { color: #ffa600; }");
-  gtk_widget_set_halign (installer->feedbackMsg, GTK_ALIGN_END);
-  gtk_box_pack_end (GTK_BOX (hbox), installer->feedbackMsg, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (hbox), installer->feedbackMsg, FALSE, FALSE, 0);
 
   /* conversion process */
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
   gtk_widget_set_hexpand (hbox, TRUE);
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
 
-  widget = gtk_label_new (_("Enter the folder where BallroomDJ 3 is installed."));
-  gtk_widget_set_halign (widget, GTK_ALIGN_START);
+  widget = uiutilsCreateLabel (
+      _("Enter the folder where BallroomDJ 3 is installed."));
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
   gtk_widget_set_hexpand (hbox, TRUE);
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
 
-  widget = gtk_label_new (_("The conversion process will only run for new installations and for re-installations."));
-  gtk_widget_set_halign (widget, GTK_ALIGN_START);
+  widget = uiutilsCreateLabel (
+      _("The conversion process will only run for new installations and for re-installations."));
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
   gtk_widget_set_hexpand (hbox, TRUE);
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
 
-  widget = gtk_label_new (_("If there is no BallroomDJ 3 installation, enter a single '-'."));
-  gtk_widget_set_halign (widget, GTK_ALIGN_START);
+  widget = uiutilsCreateLabel (
+      _("If there is no BallroomDJ 3 installation, enter a single '-'."));
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
   gtk_widget_set_hexpand (hbox, TRUE);
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
 
-  widget = gtk_label_new (_("BallroomDJ 3 Location:"));
-  gtk_widget_set_halign (widget, GTK_ALIGN_START);
+  widget = uiutilsCreateColonLabel (_("BallroomDJ 3 Location"));
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 
   installer->bdj3locBuffer = gtk_entry_buffer_new (installer->bdj3loc, -1);
@@ -449,36 +475,52 @@ installerActivate (GApplication *app, gpointer udata)
       TRUE, TRUE, 0);
   g_signal_connect (installer->bdj3locEntry, "changed", G_CALLBACK (installerValidateStart), installer);
 
-  widget = gtk_button_new ();
+  widget = uiutilsCreateButton ("", NULL, installerSelectDirDialog, installer);
   image = gtk_image_new_from_icon_name ("folder", GTK_ICON_SIZE_BUTTON);
   gtk_button_set_image (GTK_BUTTON (widget), image);
-  gtk_widget_set_halign (installer->bdj3locEntry, GTK_ALIGN_START);
   gtk_widget_set_margin_start (widget, 0);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
-  g_signal_connect (widget, "clicked", G_CALLBACK (installerSelectDirDialog), installer);
+
+  /* VLC status */
+  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
+  gtk_widget_set_hexpand (hbox, TRUE);
+  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+
+  widget = uiutilsCreateColonLabel ("VLC");
+  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+
+  installer->vlcMsg = uiutilsCreateLabel ("");
+  uiutilsSetCss (installer->vlcMsg,
+      "label { color: #ffa600; }");
+  gtk_box_pack_start (GTK_BOX (hbox), installer->vlcMsg, FALSE, FALSE, 0);
+
+  /* python status */
+  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
+  gtk_widget_set_hexpand (hbox, TRUE);
+  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+
+  widget = uiutilsCreateColonLabel ("Python");
+  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+
+  installer->pythonMsg = uiutilsCreateLabel ("");
+  uiutilsSetCss (installer->pythonMsg,
+      "label { color: #ffa600; }");
+  gtk_box_pack_start (GTK_BOX (hbox), installer->pythonMsg, FALSE, FALSE, 0);
 
   /* button box */
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
   gtk_widget_set_hexpand (hbox, TRUE);
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
 
-  widget = gtk_button_new ();
-  assert (widget != NULL);
-  gtk_button_set_label (GTK_BUTTON (widget), _("Exit"));
-  gtk_widget_set_margin_start (widget, 2);
+  widget = uiutilsCreateButton (_("Exit"), NULL, installerExit, installer);
   gtk_box_pack_end (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
-  g_signal_connect (widget, "clicked", G_CALLBACK (installerExit), installer);
 
-  widget = gtk_button_new ();
-  assert (widget != NULL);
-  gtk_button_set_label (GTK_BUTTON (widget), _("Install"));
-  gtk_widget_set_margin_start (widget, 2);
+  widget = uiutilsCreateButton (_("Install"), NULL, installerInstall, installer);
   gtk_box_pack_end (GTK_BOX (hbox), widget,
       FALSE, FALSE, 0);
-  g_signal_connect (widget, "clicked", G_CALLBACK (installerInstall), installer);
 
   scwidget = uiutilsCreateScrolledWindow ();
-  gtk_scrolled_window_set_min_content_height (GTK_SCROLLED_WINDOW (scwidget), 500);
+  gtk_scrolled_window_set_min_content_height (GTK_SCROLLED_WINDOW (scwidget), 150);
   gtk_box_pack_start (GTK_BOX (vbox), scwidget,
       FALSE, FALSE, 0);
 
@@ -516,6 +558,10 @@ installerMainLoop (void *udata)
   switch (installer->instState) {
     case INST_BEGIN: {
       /* do nothing */
+      break;
+    }
+    case INST_DELAY: {
+      installerDelay (installer);
       break;
     }
     case INST_INIT: {
@@ -578,6 +624,30 @@ installerMainLoop (void *udata)
       installerCreateShortcut (installer);
       break;
     }
+    case INST_VLC_CHECK: {
+      installerVLCCheck (installer);
+      break;
+    }
+    case INST_VLC_DOWNLOAD: {
+      installerVLCDownload (installer);
+      break;
+    }
+    case INST_VLC_INSTALL: {
+      installerVLCInstall (installer);
+      break;
+    }
+    case INST_PYTHON_CHECK: {
+      installerPythonCheck (installer);
+      break;
+    }
+    case INST_PYTHON_DOWNLOAD: {
+      installerPythonDownload (installer);
+      break;
+    }
+    case INST_PYTHON_INSTALL: {
+      installerPythonInstall (installer);
+      break;
+    }
     case INST_FINISH: {
       installerDisplayText (installer, "## ",  _("Installation complete."));
       installer->instState = INST_BEGIN;
@@ -603,6 +673,7 @@ installerValidateDir (installer_t *installer)
   const char    *dir;
   bool          exists = false;
   const char    *fn;
+  char          tbuff [MAXPATHLEN];
 
   if (! installer->guienabled) {
     return;
@@ -610,7 +681,9 @@ installerValidateDir (installer_t *installer)
 
   if (installer->feedbackMsg == NULL ||
       installer->targetBuffer == NULL ||
-      installer->reinstWidget == NULL) {
+      installer->reinstWidget == NULL ||
+      installer->vlcMsg == NULL ||
+      installer->pythonMsg == NULL) {
     mstimeset (&installer->validateTimer, 500);
     return;
   }
@@ -654,6 +727,53 @@ installerValidateDir (installer_t *installer)
   } else {
     gtk_entry_set_icon_from_icon_name (GTK_ENTRY (installer->bdj3locEntry),
         GTK_ENTRY_ICON_SECONDARY, NULL);
+  }
+
+  *tbuff = '\0';
+  if (isWindows ()) {
+    strlcpy (tbuff, "C:/Program Files/VideoLAN/VLC", sizeof (tbuff));
+  }
+  if (isMacOS ()) {
+    strlcpy (tbuff, "/Applications/VLC.app/Contents/MacOS/lib/", sizeof (tbuff));
+  }
+  if (isLinux ()) {
+    strlcpy (tbuff, "/usr/bin/vlc", sizeof (tbuff));
+  }
+
+  if (*tbuff) {
+    if (fileopExists (tbuff)) {
+      snprintf (tbuff, sizeof (tbuff), _("%s is installed"), "VLC");
+      gtk_label_set_text (GTK_LABEL (installer->vlcMsg), tbuff);
+      installer->vlcinstalled = true;
+    } else {
+      snprintf (tbuff, sizeof (tbuff), _("%s is not installed"), "VLC");
+      gtk_label_set_text (GTK_LABEL (installer->vlcMsg), tbuff);
+      installer->vlcinstalled = false;
+    }
+  }
+
+  *tbuff = '\0';
+  if (isWindows ()) {
+    snprintf (tbuff, sizeof (tbuff),
+        "%s/AppData/Local/Programs/Python", installer->home);
+  }
+  if (isMacOS ()) {
+    strlcpy (tbuff, "/opt/local/bin/python3", sizeof (tbuff));
+  }
+  if (isLinux ()) {
+    strlcpy (tbuff, "/usr/bin/python3", sizeof (tbuff));
+  }
+
+  if (*tbuff) {
+    if (fileopExists (tbuff)) {
+      snprintf (tbuff, sizeof (tbuff), _("%s is installed"), "Python");
+      gtk_label_set_text (GTK_LABEL (installer->pythonMsg), tbuff);
+      installer->pythoninstalled = true;
+    } else {
+      snprintf (tbuff, sizeof (tbuff), _("%s is not installed"), "Python");
+      gtk_label_set_text (GTK_LABEL (installer->pythonMsg), tbuff);
+      installer->pythoninstalled = false;
+    }
   }
 }
 
@@ -748,6 +868,16 @@ installerCheckTarget (installer_t *installer, const char *dir)
 }
 
 /* installation routines */
+
+static void
+installerDelay (installer_t *installer)
+{
+  installer->instState = INST_DELAY;
+  ++installer->delayCount;
+  if (installer->delayCount > 50) {
+    installer->instState = installer->delayState;
+  }
+}
 
 static void
 installerInstInit (installer_t *installer)
@@ -1106,7 +1236,6 @@ installerCopyTemplates (installer_t *installer)
       }
 
       strlcpy (tbuff, fname, sizeof (tbuff));
-fprintf (stderr, "A: %s\n", fname);
       if (renamelist != NULL) {
         char    *tval;
 
@@ -1116,7 +1245,6 @@ fprintf (stderr, "A: %s\n", fname);
               pi->extension);
         }
       }
-fprintf (stderr, "B: %s\n", tbuff);
 
       snprintf (from, MAXPATHLEN, "%s/templates/%s",
           installer->rundir, tbuff);
@@ -1356,6 +1484,198 @@ installerCreateShortcut (installer_t *installer)
     system (buff);
   }
 
+  installer->instState = INST_VLC_CHECK;
+}
+
+static void
+installerVLCCheck (installer_t *installer)
+{
+  char    tbuff [MAXPATHLEN];
+
+  if (installer->vlcinstalled) {
+    installer->instState = INST_PYTHON_CHECK;
+    return;
+  }
+
+  if (chdir (installer->datatopdir)) {
+    fprintf (stderr, "Unable to set working dir: %s\n", installer->datatopdir);
+    installerDisplayText (installer, "", _("Error: Unable to set working folder."));
+    installerDisplayText (installer, " * ", _("Installation aborted."));
+    installer->instState = INST_BEGIN;
+    return;
+  }
+
+  installerVLCGetVersion (installer);
+  if (*installer->vlcversion) {
+    snprintf (tbuff, sizeof (tbuff), _("Downloading %s."), "VLC");
+    installerDisplayText (installer, "-- ", tbuff);
+    installer->delayCount = 0;
+    installer->delayState = INST_VLC_DOWNLOAD;
+    installer->instState = INST_DELAY;
+  } else {
+    snprintf (tbuff, sizeof (tbuff),
+        _("Unable to determine %s version."), "VLC");
+    installerDisplayText (installer, "-- ", tbuff);
+    installer->instState = INST_PYTHON_CHECK;
+  }
+}
+
+static void
+installerVLCDownload (installer_t *installer)
+{
+  char  url [MAXPATHLEN];
+  char  tbuff [MAXPATHLEN];
+
+  *url = '\0';
+  *installer->dlfname = '\0';
+  if (isWindows ()) {
+    snprintf (installer->dlfname, sizeof (installer->dlfname),
+        "vlc-%s-win%zd.exe",
+        installer->vlcversion, sysvarsGetNum (SVL_OSBITS));
+    snprintf (url, sizeof (url),
+        "https://get.videolan.org/vlc/last/win%zd/%s",
+        sysvarsGetNum (SVL_OSBITS), installer->dlfname);
+  }
+  if (isMacOS ()) {
+    snprintf (installer->dlfname, sizeof (installer->dlfname),
+        "vlc-%s-intel64.dmg",
+        installer->vlcversion);
+    snprintf (url, sizeof (url),
+        "https://get.videolan.org/vlc/last/macosx/%s",
+        installer->dlfname);
+  }
+  if (*url) {
+    snprintf (tbuff, sizeof (tbuff), "curl --location --remote-name "
+        "--silent --user-agent BDJ4 %s", url);
+    system (tbuff);
+  }
+
+  if (fileopExists (installer->dlfname)) {
+    snprintf (tbuff, sizeof (tbuff), _("Installing %s."), "VLC");
+    installerDisplayText (installer, "-- ", tbuff);
+    installer->delayCount = 0;
+    installer->delayState = INST_VLC_INSTALL;
+    installer->instState = INST_DELAY;
+  } else {
+    snprintf (tbuff, sizeof (tbuff), _("Download of %s failed."), "VLC");
+    installerDisplayText (installer, "-- ", tbuff);
+    installer->instState = INST_PYTHON_CHECK;
+  }
+}
+
+static void
+installerVLCInstall (installer_t *installer)
+{
+  char    tbuff [MAXPATHLEN];
+
+  if (fileopExists (installer->dlfname)) {
+    if (isWindows ()) {
+      snprintf (tbuff, sizeof (tbuff), ".\\%s", installer->dlfname);
+    }
+    if (isMacOS ()) {
+      snprintf (tbuff, sizeof (tbuff), "./%s", installer->dlfname);
+    }
+    system (tbuff);
+    installerValidateDir (installer);
+    snprintf (tbuff, sizeof (tbuff), _("%s installed."), "VLC");
+    installerDisplayText (installer, "-- ", tbuff);
+  }
+  fileopDelete (installer->dlfname);
+  installer->instState = INST_PYTHON_CHECK;
+}
+
+static void
+installerPythonCheck (installer_t *installer)
+{
+  char  tbuff [MAXPATHLEN];
+
+  if (installer->pythoninstalled) {
+    installer->instState = INST_FINISH;
+    return;
+  }
+
+  if (chdir (installer->datatopdir)) {
+    fprintf (stderr, "Unable to set working dir: %s\n", installer->datatopdir);
+    installerDisplayText (installer, "", _("Error: Unable to set working folder."));
+    installerDisplayText (installer, " * ", _("Installation aborted."));
+    installer->instState = INST_BEGIN;
+    return;
+  }
+
+  installerPythonGetVersion (installer);
+
+  if (*installer->pyversion) {
+    snprintf (tbuff, sizeof (tbuff), _("Downloading %s."), "Python");
+    installerDisplayText (installer, "-- ", tbuff);
+    installer->delayCount = 0;
+    installer->delayState = INST_PYTHON_DOWNLOAD;
+    installer->instState = INST_DELAY;
+  } else {
+    snprintf (tbuff, sizeof (tbuff),
+        _("Unable to determine %s version."), "Python");
+    installerDisplayText (installer, "-- ", tbuff);
+    installer->instState = INST_FINISH;
+  }
+}
+
+static void
+installerPythonDownload (installer_t *installer)
+{
+  char  url [MAXPATHLEN];
+  char  tbuff [MAXPATHLEN];
+
+  *url = '\0';
+  *installer->dlfname = '\0';
+  if (isWindows ()) {
+    char  *tag;
+
+    /* https://www.python.org/ftp/python/3.10.2/python-3.10.2.exe */
+    /* https://www.python.org/ftp/python/3.10.2/python-3.10.2-amd64.exe */
+    tag = "";
+    if (sysvarsGetNum (SVL_OSBITS) == 64) {
+      tag = "-amd64";
+    }
+    snprintf (installer->dlfname, sizeof (installer->dlfname),
+        "python-%s%s.exe",
+        installer->pyversion, tag);
+    snprintf (url, sizeof (url),
+        "https://www.python.org/ftp/python/%s/%s",
+        installer->pyversion, installer->dlfname);
+  }
+  if (*url) {
+    snprintf (tbuff, sizeof (tbuff), "curl --location --remote-name "
+        "--silent --user-agent BDJ4 %s", url);
+    system (tbuff);
+  }
+
+  if (fileopExists (installer->dlfname)) {
+    snprintf (tbuff, sizeof (tbuff), _("Installing %s."), "Python");
+    installerDisplayText (installer, "-- ", tbuff);
+    installer->delayCount = 0;
+    installer->delayState = INST_PYTHON_INSTALL;
+    installer->instState = INST_DELAY;
+  } else {
+    snprintf (tbuff, sizeof (tbuff), _("Download of %s failed."), "Python");
+    installerDisplayText (installer, "-- ", tbuff);
+    installer->instState = INST_FINISH;
+  }
+}
+
+static void
+installerPythonInstall (installer_t *installer)
+{
+  char    tbuff [MAXPATHLEN];
+
+  if (fileopExists (installer->dlfname)) {
+    if (isWindows ()) {
+      snprintf (tbuff, sizeof (tbuff), ".\\%s", installer->dlfname);
+    }
+    system (tbuff);
+    installerValidateDir (installer);
+    snprintf (tbuff, sizeof (tbuff), _("%s installed."), "Python");
+    installerDisplayText (installer, "-- ", tbuff);
+  }
+  fileopDelete (installer->dlfname);
   installer->instState = INST_FINISH;
 }
 
@@ -1470,5 +1790,54 @@ installerSetrundir (installer_t *installer, const char *dir)
     if (isMacOS ()) {
       strlcat (installer->rundir, "/Contents/MacOS", MAXPATHLEN);
     }
+  }
+}
+
+static void
+installerVLCGetVersion (installer_t *installer)
+{
+  char      *data;
+  char      *p;
+  char      *e;
+  char      *tmpfile = "tmp/vlcvers.txt";
+  char      tbuff [MAXPATHLEN];
+
+  *installer->vlcversion = '\0';
+  snprintf (tbuff, sizeof (tbuff),
+      "curl --silent --user-agent BDJ4 -o %s "
+      "http://get.videolan.org/vlc/last/macosx/", tmpfile);
+  system (tbuff);
+  if (fileopExists (tmpfile)) {
+    data = filedataReadAll (tmpfile);
+
+    /* vlc-3.0.16-intel64.dmg */
+    p = strstr (data, "vlc-");
+    p += 4;
+    e = strstr (p, "-");
+    strlcpy (installer->vlcversion, p, e - p + 1);
+  }
+}
+
+static void
+installerPythonGetVersion (installer_t *installer)
+{
+  char      *data;
+  char      *p;
+  char      *e;
+  char      *tmpfile = "tmp/pyvers.txt";
+  char      tbuff [MAXPATHLEN];
+
+  *installer->pyversion = '\0';
+  snprintf (tbuff, sizeof (tbuff),
+      "curl --silent --user-agent BDJ4 -o %s "
+      "https://www.python.org/downloads/windows/", tmpfile);
+  system (tbuff);
+  if (fileopExists (tmpfile)) {
+    data = filedataReadAll (tmpfile);
+
+    p = strstr (data, "Release - Python ");
+    p += 17;
+    e = strstr (p, "<");
+    strlcpy (installer->pyversion, p, e - p + 1);
   }
 }

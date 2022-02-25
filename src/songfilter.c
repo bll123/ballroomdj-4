@@ -386,6 +386,7 @@ songfilterFilterSong (songfilter_t *sf, song_t *song)
       slist_t   *tagList;
 
       tagList = (slist_t *) songGetData (song, TAG_TAGS);
+// ### FIX
     }
     if (! found) {
       strlcpy (str, songGetData (song, TAG_TITLE), MAXPATHLEN);

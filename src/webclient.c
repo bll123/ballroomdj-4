@@ -21,10 +21,6 @@ webclient_t *
 webclientPost (webclient_t *webclient, char *uri, char *query,
     void *userdata, webclientcb_t callback)
 {
-  CURLcode        res;
-  int             rc;
-
-
   if (webclient == NULL) {
     char    tbuff [200];
 
@@ -52,10 +48,7 @@ webclientPost (webclient_t *webclient, char *uri, char *query,
 
   curl_easy_setopt (webclient->curl, CURLOPT_URL, uri);
   curl_easy_setopt (webclient->curl, CURLOPT_POSTFIELDS, query);
-  res = curl_easy_perform (webclient->curl);
-  if (res == CURLE_OK) {
-    rc = 0;
-  }
+  curl_easy_perform (webclient->curl);
   return webclient;
 }
 

@@ -217,7 +217,6 @@ datafileParseMerge (list_t *datalist, char *data, char *name,
   nlist_t       *itemList = NULL;
   valuetype_t   vt = 0;
   size_t        inc = 2;
-  int           first = 1;
   nlistidx_t    ikey = 0;
   ssize_t       lval = 0;
   double        dval = 0.0;
@@ -434,8 +433,6 @@ datafileParseMerge (list_t *datalist, char *data, char *name,
       slistSetData (datalist, tkeystr, strdup (tvalstr));
       key = -1L;
     }
-
-    first = 0;
   }
 
   if (dftype == DFTYPE_INDIRECT && key >= 0) {

@@ -89,13 +89,14 @@ vlcGetTime (vlcData_t *vlcData)
 int
 vlcIsPlaying (vlcData_t *vlcData)
 {
-  int       rval;
+  int     rval;
+
+  rval = 0;
 
   if (vlcData == NULL || vlcData->inst == NULL || vlcData->mp == NULL) {
     return -1;
   }
 
-  rval = 0;
   /*
    * VLC's internal isplaying command returns true if the player is paused.
    * Our implementation is different.
@@ -105,7 +106,7 @@ vlcIsPlaying (vlcData_t *vlcData)
       vlcData->state == libvlc_Playing) {
     rval = 1;
   }
-  return 0;
+  return rval;
 }
 
 int
@@ -359,10 +360,7 @@ vlcInit (int vlcargc, char *vlcargv [])
   vlcData_t *   vlcData;
   char *        tptr;
   char *        nptr;
-  int           rc;
   int           i;
-
-  rc = 1;
 
   vlcData = (vlcData_t *) malloc (sizeof (vlcData_t));
   assert (vlcData != NULL);
@@ -410,7 +408,6 @@ vlcInit (int vlcargc, char *vlcargv [])
       LIBVLC_VERSION_INT >= LIBVLC_VERSION(3,0,0,0)
     libvlc_media_player_set_role (vlcData->mp, libvlc_role_Music);
 #endif
-    rc = 0;
   }
 
   return vlcData;

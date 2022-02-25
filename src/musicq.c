@@ -442,12 +442,10 @@ musicqRenumberStart (musicq_t *musicq, musicqidx_t musicqidx)
 static void
 musicqRenumber (musicq_t *musicq, musicqidx_t musicqidx, int olddispidx)
 {
-  ssize_t       count;
   int           dispidx = olddispidx;
   ssize_t       iteridx;
   musicqitem_t  *musicqitem;
 
-  count = queueGetCount (musicq->q [musicqidx]);
   queueStartIterator (musicq->q [musicqidx], &iteridx);
   while ((musicqitem = queueIterateData (musicq->q [musicqidx], &iteridx)) != NULL) {
     musicqitem->dispidx = dispidx;
