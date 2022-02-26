@@ -25,7 +25,6 @@ typedef struct {
 } uiutilsdropdown_t;
 
 typedef struct {
-  char            *data;
   GtkEntryBuffer  *buffer;
   GtkWidget       *entry;
   int             entrySize;

@@ -228,7 +228,7 @@ void
 uiutilsCreateDanceList (uiutilsdropdown_t *dropdown, char *selectLabel)
 {
   dance_t           *dances;
-  ilist_t           *danceList;
+  slist_t           *danceList;
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
   danceList = danceGetDanceList (dances);
@@ -423,7 +423,6 @@ uiutilsEntryInit (uiutilsentry_t *entry, int entrySize, int maxSize)
 {
   entry->entrySize = entrySize;
   entry->maxSize = maxSize;
-  entry->data = NULL;
   entry->buffer = NULL;
   entry->entry = NULL;
 }
@@ -431,18 +430,13 @@ uiutilsEntryInit (uiutilsentry_t *entry, int entrySize, int maxSize)
 void
 uiutilsEntryFree (uiutilsentry_t *entry)
 {
-  if (entry->data != NULL) {
-    free (entry->data);
-  }
+  ;
 }
 
 GtkWidget *
 uiutilsEntryCreate (uiutilsentry_t *entry)
 {
-  entry->data = malloc (entry->maxSize + 1);
-  *(entry->data) = '\0';
-
-  entry->buffer = gtk_entry_buffer_new (entry->data, -1);
+  entry->buffer = gtk_entry_buffer_new (NULL, -1);
   entry->entry = gtk_entry_new_with_buffer (entry->buffer);
   gtk_entry_set_width_chars (GTK_ENTRY (entry->entry), entry->entrySize);
   gtk_entry_set_max_length (GTK_ENTRY (entry->entry), entry->maxSize);

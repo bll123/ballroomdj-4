@@ -138,7 +138,7 @@ listGetDataByIdx (list_t *list, listidx_t idx)
   if (list == NULL) {
     return NULL;
   }
-  if (idx >= list->count) {
+  if (idx < 0 || idx >= list->count) {
     return NULL;
   }
   value = list->data [idx].value.data;
@@ -155,7 +155,7 @@ listGetNumByIdx (list_t *list, listidx_t idx)
   if (list == NULL) {
     return LIST_VALUE_INVALID;
   }
-  if (idx >= list->count) {
+  if (idx < 0 || idx >= list->count) {
     return LIST_VALUE_INVALID;
   }
   value = list->data [idx].value.num;

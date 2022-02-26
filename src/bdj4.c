@@ -86,11 +86,13 @@ main (int argc, char * argv[])
       case 1: {
         prog = "check_all";
         ++validargs;
+        nodetach = true;
         break;
       }
       case 2: {
         prog = "bdj4cli";
         ++validargs;
+        nodetach = true;
         break;
       }
       case 3: {

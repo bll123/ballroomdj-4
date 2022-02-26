@@ -35,8 +35,6 @@ typedef struct {
   GtkEventController  *scrollController;
   GtkTreeViewColumn   * favColumn;
   GtkWidget         *filterDialog;
-  GtkEntryBuffer    *searchBuffer;
-  GtkWidget         *searchEntry;
   /* internal flags */
   bool              createRowProcessFlag : 1;
   bool              createRowFlag : 1;

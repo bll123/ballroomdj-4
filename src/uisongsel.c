@@ -17,6 +17,7 @@
 #include "dance.h"
 #include "genre.h"
 #include "ilist.h"
+#include "log.h"
 #include "musicdb.h"
 #include "musicq.h"
 #include "pathbld.h"
@@ -264,6 +265,8 @@ uisongselActivate (uisongsel_t *uisongsel, GtkWidget *parentwin)
 
   uisongselInitializeStore (uisongsel);
   uisongselCreateRows (uisongsel);
+  logMsg (LOG_DBG, LOG_SONGSEL, "populate: initial");
+  uisongselPopulateData (uisongsel);
 
   uiutilsDropDownSelectionSetNum (&uisongsel->dancesel, -1);
 
@@ -308,7 +311,6 @@ uisongselCreateRows (uisongsel_t *uisongsel)
 
   /* initial song filter process */
   uisongsel->dfilterCount = (double) songfilterProcess (uisongsel->songfilter);
-  uisongselPopulateData (uisongsel);
 }
 
 static void
@@ -437,6 +439,7 @@ uisongselProcessTreeSize (GtkWidget* w, GtkAllocation* allocation,
 
     uisongsel->lastTreeSize = allocation->height;
 
+    logMsg (LOG_DBG, LOG_SONGSEL, "populate: tree size change");
     uisongselPopulateData (uisongsel);
 
     g_signal_emit_by_name (GTK_RANGE (uisongsel->songselScrollbar),
@@ -461,6 +464,7 @@ uisongselScroll (GtkRange *range, GtkScrollType scrolltype,
   }
   uisongsel->idxStart = (ssize_t) start;
 
+  logMsg (LOG_DBG, LOG_SONGSEL, "populate: scroll");
   uisongselPopulateData (uisongsel);
   return FALSE;
 }
@@ -491,6 +495,7 @@ uisongselRowSelected (GtkTreeView* tv, GtkTreePath* path,
   song = dbGetByIdx ((ssize_t) dbidx);
   songChangeFavorite (song);
   // ## TODO song data must be saved to the database.
+  logMsg (LOG_DBG, LOG_SONGSEL, "populate: favorite changed");
   uisongselPopulateData (uisongsel);
 }
 
@@ -563,6 +568,7 @@ uisongselFilterDanceProcess (GtkTreeView *tv, GtkTreePath *path,
   uisongsel->dfilterCount = (double) songfilterProcess (uisongsel->songfilter);
   uisongsel->idxStart = 0;
   uisongselClearData (uisongsel);
+  logMsg (LOG_DBG, LOG_SONGSEL, "populate: filter by dance");
   uisongselPopulateData (uisongsel);
   return;
 }
@@ -744,6 +750,8 @@ uisongselGenreSelect (GtkTreeView *tv, GtkTreePath *path,
   idx = uiutilsDropDownSelectionGet (&uisongsel->filtergenresel, path);
   if (idx >= 0) {
     songfilterSetNum (uisongsel->songfilter, SONG_FILTER_GENRE, idx);
+  } else {
+    songfilterClear (uisongsel->songfilter, SONG_FILTER_GENRE);
   }
 }
 
@@ -791,6 +799,7 @@ static void
 uisongselFilterResponseHandler (GtkDialog *d, gint responseid, gpointer udata)
 {
   uisongsel_t   *uisongsel = udata;
+  const char    *searchstr;
 
   switch (responseid) {
     case GTK_RESPONSE_DELETE_EVENT: {
@@ -813,10 +822,18 @@ uisongselFilterResponseHandler (GtkDialog *d, gint responseid, gpointer udata)
     }
   }
 
+  searchstr = uiutilsEntryGetValue (&uisongsel->searchentry);
+  if (searchstr != NULL && strlen (searchstr) > 0) {
+    songfilterSetData (uisongsel->songfilter, SONG_FILTER_SEARCH, (void *) searchstr);
+  } else {
+    songfilterClear (uisongsel->songfilter, SONG_FILTER_SEARCH);
+  }
+
   uisongselInitFilterDisplay (uisongsel);
   uisongsel->dfilterCount = (double) songfilterProcess (uisongsel->songfilter);
   uisongsel->idxStart = 0;
   uisongselClearData (uisongsel);
+  logMsg (LOG_DBG, LOG_SONGSEL, "populate: response handler");
   uisongselPopulateData (uisongsel);
 }
 

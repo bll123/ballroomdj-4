@@ -38,6 +38,7 @@ songfilteridx_t valueTypeLookup [SONG_FILTER_MAX] = {
   { SONG_FILTER_BPM_LOW,    SONG_FILTER_NUM },
   { SONG_FILTER_BPM_HIGH,   SONG_FILTER_NUM },
   { SONG_FILTER_DANCE,      SONG_FILTER_ILIST },
+  { SONG_FILTER_GENRE,      SONG_FILTER_NUM },
   { SONG_FILTER_KEYWORD,    SONG_FILTER_SLIST },
   { SONG_FILTER_LEVEL_HIGH, SONG_FILTER_NUM },
   { SONG_FILTER_LEVEL_LOW,  SONG_FILTER_NUM },
@@ -134,7 +135,7 @@ songfilterSetData (songfilter_t *sf, int filterType, void *value)
     sf->datafilter [filterType] = value;
   }
   if (valueType == SONG_FILTER_STR) {
-    sf->datafilter [filterType] = value;
+    sf->datafilter [filterType] = strdup (value);
     if (filterType == SONG_FILTER_SEARCH) {
       stringToLower ((char *) sf->datafilter [filterType]);
     }
@@ -355,7 +356,6 @@ songfilterFilterSong (songfilter_t *sf, song_t *song)
   if (sf->inuse [SONG_FILTER_KEYWORD]) {
     char    *keyword;
 
-
     keyword = songGetData (song, TAG_KEYWORD);
 
     if (keyword != NULL && *keyword) {
@@ -373,46 +373,58 @@ songfilterFilterSong (songfilter_t *sf, song_t *song)
   }
 
   if (sf->inuse [SONG_FILTER_SEARCH]) {
-    char      str [MAXPATHLEN];
     char      *searchstr;
     bool      found;
+    dance_t   *dances;
+
+    dances = bdjvarsdfGet (BDJVDF_DANCES);
 
     found = false;
     searchstr = (char *) sf->datafilter [SONG_FILTER_SEARCH];
 
-    strlcpy (str, songGetData (song, TAG_KEYWORD), MAXPATHLEN);
-    found = songfilterCheckStr (str, searchstr);
     if (! found) {
-      slist_t   *tagList;
+      found = songfilterCheckStr (songGetData (song, TAG_TITLE), searchstr);
+    }
+    if (! found) {
+      found = songfilterCheckStr (songGetData (song, TAG_ARTIST), searchstr);
+    }
+    if (! found) {
+      found = songfilterCheckStr (songGetData (song, TAG_ALBUMARTIST), searchstr);
+    }
+    if (! found) {
+      char        *dancestr;
+      ilistidx_t  idx;
+
+      idx = songGetNum (song, TAG_DANCE);
+      dancestr = danceGetData (dances, idx, DANCE_DANCE);
+      found = songfilterCheckStr (dancestr, searchstr);
+    }
+    if (! found) {
+      found = songfilterCheckStr (songGetData (song, TAG_KEYWORD), searchstr);
+    }
+    if (! found) {
+      slist_t     *tagList;
+      slistidx_t  iteridx;
+      char        *tag;
 
       tagList = (slist_t *) songGetData (song, TAG_TAGS);
-// ### FIX
+      slistStartIterator (tagList, &iteridx);
+      while (! found && (tag = slistIterateKey (tagList, &iteridx)) != NULL) {
+        found = songfilterCheckStr (tag, searchstr);
+      }
     }
     if (! found) {
-      strlcpy (str, songGetData (song, TAG_TITLE), MAXPATHLEN);
-      found = songfilterCheckStr (str, searchstr);
+      found = songfilterCheckStr (songGetData (song, TAG_NOTES), searchstr);
     }
     if (! found) {
-      strlcpy (str, songGetData (song, TAG_NOTES), MAXPATHLEN);
-      found = songfilterCheckStr (str, searchstr);
-    }
-    if (! found) {
-      strlcpy (str, songGetData (song, TAG_ARTIST), MAXPATHLEN);
-      found = songfilterCheckStr (str, searchstr);
-    }
-    if (! found) {
-      strlcpy (str, songGetData (song, TAG_ALBUMARTIST), MAXPATHLEN);
-      found = songfilterCheckStr (str, searchstr);
-    }
-    if (! found) {
-      strlcpy (str, songGetData (song, TAG_ALBUM), MAXPATHLEN);
-      found = songfilterCheckStr (str, searchstr);
+      found = songfilterCheckStr (songGetData (song, TAG_ALBUM), searchstr);
     }
     if (! found) {
       return false;
     }
   }
 
+  logMsg (LOG_DBG, LOG_SONGSEL, "ok: %zd %s", dbidx, (char *) songGetData (song, TAG_TITLE));
   return true;
 }
 
@@ -450,6 +462,9 @@ songfilterGetByIdx (songfilter_t *sf, nlistidx_t lookupIdx)
   if (sf == NULL) {
     return -1;
   }
+  if (lookupIdx < 0 || lookupIdx >= nlistGetCount (sf->indexList)) {
+    return -1;
+  }
 
   if (sf->sortList != NULL) {
     internalIdx = slistGetNumByIdx (sf->sortList, lookupIdx);
@@ -482,10 +497,16 @@ songfilterFreeData (songfilter_t *sf, int i)
 static bool
 songfilterCheckStr (char *str, char *searchstr)
 {
-  bool found = false;
+  bool  found = false;
+  char  tbuff [MAXPATHLEN];
 
-  stringToLower (str);
-  if (strstr (str, searchstr) != NULL) {
+  if (str == NULL) {
+    return found;
+  }
+
+  strlcpy (tbuff, str, sizeof (tbuff));
+  stringToLower (tbuff);
+  if (strstr (tbuff, searchstr) != NULL) {
     found = true;
   }
 
