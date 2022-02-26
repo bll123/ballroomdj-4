@@ -168,8 +168,14 @@ songGetFavoriteData (song_t *song)
 
   value = nlistGetNum (song->songInfo, TAG_FAVORITE);
   if (value == LIST_VALUE_INVALID) {
-    return &songfavoriteinfo [SONG_FAVORITE_NONE];
+    value = SONG_FAVORITE_NONE;
   }
+  return songGetFavorite (value);
+}
+
+songfavoriteinfo_t *
+songGetFavorite (int value)
+{
   return &songfavoriteinfo [value];
 }
 

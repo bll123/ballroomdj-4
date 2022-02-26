@@ -35,6 +35,9 @@ static void uiutilsDropDownWindowCreate (uiutilsdropdown_t *dropdown,
 static void uiutilsDropDownSelectionSet (uiutilsdropdown_t *dropdown,
     gulong internalidx);
 
+static gint uiutilsSpinboxInput (GtkSpinButton *sb, gdouble *newval, gpointer udata);
+static gboolean uiutilsSpinboxDisplay (GtkSpinButton *sb, gpointer udata);
+
 void
 uiutilsSetCss (GtkWidget *w, char *style)
 {
@@ -468,6 +471,11 @@ void
 uiutilsSpinboxInit (uiutilsspinbox_t *spinbox)
 {
   spinbox->spinbox = NULL;
+  spinbox->curridx = 0;
+  spinbox->textGetProc = NULL;
+  spinbox->udata = NULL;
+  spinbox->indisp = false;
+  spinbox->maxWidth = 0;
 }
 
 void
@@ -477,18 +485,95 @@ uiutilsSpinboxFree (uiutilsspinbox_t *spinbox)
 }
 
 GtkWidget *
-uiutilsSpinboxTextCreate (uiutilsspinbox_t *spinbox,
-    ssize_t min, ssize_t max, void *displayCallback, void *udata)
+uiutilsSpinboxTextCreate (uiutilsspinbox_t *spinbox, void *udata)
 {
-  GtkWidget   *widget;
-
-  widget = gtk_spin_button_new (NULL, 0.0, 0);
-  gtk_spin_button_set_range (GTK_SPIN_BUTTON (spinbox), min, max);
-  g_signal_connect (widget, "input", G_CALLBACK (displayCallback), udata);
-
-  return widget;
+  spinbox->spinbox = gtk_spin_button_new (NULL, 0.0, 0);
+  gtk_spin_button_set_increments (GTK_SPIN_BUTTON (spinbox->spinbox), 1.0, 1.0);
+  gtk_spin_button_set_wrap (GTK_SPIN_BUTTON (spinbox->spinbox), TRUE);
+  gtk_widget_set_margin_top (spinbox->spinbox, 2);
+  gtk_widget_set_margin_start (spinbox->spinbox, 2);
+  g_signal_connect (spinbox->spinbox, "output",
+      G_CALLBACK (uiutilsSpinboxDisplay), spinbox);
+  g_signal_connect (spinbox->spinbox, "input",
+      G_CALLBACK (uiutilsSpinboxInput), spinbox);
+  spinbox->udata = udata;
+  return spinbox->spinbox;
 }
 
+void
+uiutilsSpinboxSet (uiutilsspinbox_t *spinbox, int min, int count,
+    int maxWidth, uiutilsspinboxdisp_t textGetProc)
+{
+  gtk_spin_button_set_range (GTK_SPIN_BUTTON (spinbox->spinbox),
+      (double) min, (double) count - 1);
+  /* will width in characters be enough for some glyphs? */
+  /* certainly not if languages are mixed */
+  spinbox->maxWidth = maxWidth;
+  gtk_entry_set_width_chars (GTK_ENTRY (spinbox->spinbox), spinbox->maxWidth);
+  gtk_spin_button_set_value (GTK_SPIN_BUTTON (spinbox->spinbox), (double) min);
+  spinbox->textGetProc = textGetProc;
+}
+
+int
+uiutilsSpinboxGetValue (uiutilsspinbox_t *spinbox)
+{
+  GtkAdjustment     *adjustment;
+  gdouble           value;
+
+  if (spinbox == NULL) {
+    return -1;
+  }
+  if (spinbox->spinbox == NULL) {
+    return -1;
+  }
+
+  adjustment = gtk_spin_button_get_adjustment (GTK_SPIN_BUTTON (spinbox->spinbox));
+  value = gtk_adjustment_get_value (adjustment);
+  return (int) value;
+}
+
+/* gtk spinboxes are a bit bizarre */
+static gint
+uiutilsSpinboxInput (GtkSpinButton *sb, gdouble *newval, gpointer udata)
+{
+  uiutilsspinbox_t  *spinbox = udata;
+  GtkAdjustment     *adjustment;
+  gdouble           value;
+
+  adjustment = gtk_spin_button_get_adjustment (GTK_SPIN_BUTTON (spinbox->spinbox));
+  value = gtk_adjustment_get_value (adjustment);
+  *newval = value;
+  return TRUE;
+}
+
+static gboolean
+uiutilsSpinboxDisplay (GtkSpinButton *sb, gpointer udata)
+{
+  uiutilsspinbox_t  *spinbox = udata;
+  GtkAdjustment     *adjustment;
+  char              *disp;
+  double            value;
+  char              tbuff [100];
+
+  if (spinbox->indisp) {
+    return FALSE;
+  }
+  spinbox->indisp = true;
+
+  *tbuff = '\0';
+  adjustment = gtk_spin_button_get_adjustment (GTK_SPIN_BUTTON (spinbox->spinbox));
+  value = gtk_adjustment_get_value (adjustment);
+  gtk_spin_button_set_value (GTK_SPIN_BUTTON (spinbox->spinbox), value);
+  spinbox->curridx = (int) value;
+  disp = "";
+  if (spinbox->textGetProc != NULL) {
+    disp = spinbox->textGetProc (spinbox->udata, spinbox->curridx);
+  }
+  snprintf (tbuff, sizeof (tbuff), "%-*s", spinbox->maxWidth, disp);
+  gtk_entry_set_text (GTK_ENTRY (spinbox->spinbox), tbuff);
+  spinbox->indisp = false;
+  return TRUE;
+}
 
 /* internal routines */
 

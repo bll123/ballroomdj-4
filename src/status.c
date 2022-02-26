@@ -1,12 +1,12 @@
 #include "config.h"
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
 #include <assert.h>
 
+#include "bdjstring.h"
 #include "bdjvarsdf.h"
 #include "datafile.h"
 #include "fileop.h"
@@ -26,6 +26,9 @@ status_t *
 statusAlloc (char *fname)
 {
   status_t    *status;
+  ilistidx_t  key;
+  ilistidx_t  iteridx;
+
 
   if (! fileopExists (fname)) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: status: missing %s", fname);
@@ -39,6 +42,20 @@ statusAlloc (char *fname)
       statusdfkeys, STATUS_DFKEY_COUNT, STATUS_STATUS);
   status->status = datafileGetList (status->df);
   ilistDumpInfo (status->status);
+
+  status->maxWidth = 0;
+  ilistStartIterator (status->status, &iteridx);
+  while ((key = ilistIterateKey (status->status, &iteridx)) >= 0) {
+    char    *val;
+    int     len;
+
+    val = ilistGetData (status->status, key, STATUS_STATUS);
+    len = istrlen (val);
+    if (len > status->maxWidth) {
+      status->maxWidth = len;
+    }
+  }
+
   return status;
 }
 
@@ -51,6 +68,24 @@ statusFree (status_t *status)
     }
     free (status);
   }
+}
+
+ssize_t
+statusGetCount (status_t *status)
+{
+  return ilistGetCount (status->status);
+}
+
+int
+statusGetMaxWidth (status_t *status)
+{
+  return status->maxWidth;
+}
+
+char *
+statusGetStatus (status_t *status, ilistidx_t idx)
+{
+  return ilistGetData (status->status, idx, STATUS_STATUS);
 }
 
 bool

@@ -7,6 +7,7 @@
 #include <string.h>
 #include <assert.h>
 
+#include "bdjstring.h"
 #include "bdjvarsdf.h"
 #include "datafile.h"
 #include "fileop.h"
@@ -26,6 +27,8 @@ rating_t *
 ratingAlloc (char *fname)
 {
   rating_t        *rating;
+  ilistidx_t      key;
+  ilistidx_t      iteridx;
 
   if (! fileopExists (fname)) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: rating: missing %s", fname);
@@ -39,6 +42,20 @@ ratingAlloc (char *fname)
       ratingdfkeys, RATING_DFKEY_COUNT, RATING_RATING);
   rating->rating = datafileGetList (rating->df);
   ilistDumpInfo (rating->rating);
+
+  rating->maxWidth = 0;
+  ilistStartIterator (rating->rating, &iteridx);
+  while ((key = ilistIterateKey (rating->rating, &iteridx)) >= 0) {
+    char    *val;
+    int     len;
+
+    val = ilistGetData (rating->rating, key, RATING_RATING);
+    len = istrlen (val);
+    if (len > rating->maxWidth) {
+      rating->maxWidth = len;
+    }
+  }
+
   return rating;
 }
 
@@ -51,6 +68,24 @@ ratingFree (rating_t *rating)
     }
     free (rating);
   }
+}
+
+ssize_t
+ratingGetCount (rating_t *rating)
+{
+  return ilistGetCount (rating->rating);
+}
+
+int
+ratingGetMaxWidth (rating_t *rating)
+{
+  return rating->maxWidth;
+}
+
+char *
+ratingGetRating (rating_t *rating, ilistidx_t ikey)
+{
+  return ilistGetData (rating->rating, ikey, RATING_RATING);
 }
 
 ssize_t

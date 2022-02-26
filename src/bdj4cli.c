@@ -287,10 +287,10 @@ exitAll (conn_t *conn)
   sendMsg (conn, ROUTE_PLAYERUI, MSG_EXIT_REQUEST, NULL);
   fprintf (stderr, "sending exit to main\n");
   sendMsg (conn, ROUTE_PLAYERUI, MSG_EXIT_REQUEST, NULL);
-  mssleep (500);
+  mssleep (1000);
   if (isWindows ()) {
     /* windows is slow */
-    mssleep (500);
+    mssleep (1000);
   }
 
   /* see which lock files exist, and send exit requests to them */

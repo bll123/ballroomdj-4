@@ -7,6 +7,7 @@
 #include <string.h>
 #include <assert.h>
 
+#include "bdjstring.h"
 #include "bdjvarsdf.h"
 #include "datafile.h"
 #include "fileop.h"
@@ -26,7 +27,10 @@ static datafilekey_t leveldfkeys[] = {
 level_t *
 levelAlloc (char *fname)
 {
-  level_t    *level;
+  level_t     *level;
+  ilistidx_t  key;
+  ilistidx_t  iteridx;
+
 
   if (! fileopExists (fname)) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: level: missing %s", fname);
@@ -40,6 +44,20 @@ levelAlloc (char *fname)
       leveldfkeys, LEVEL_DFKEY_COUNT, LEVEL_LEVEL);
   level->level = datafileGetList (level->df);
   ilistDumpInfo (level->level);
+
+  level->maxWidth = 0;
+  ilistStartIterator (level->level, &iteridx);
+  while ((key = ilistIterateKey (level->level, &iteridx)) >= 0) {
+    char    *val;
+    int     len;
+
+    val = ilistGetData (level->level, key, LEVEL_LEVEL);
+    len = istrlen (val);
+    if (len > level->maxWidth) {
+      level->maxWidth = len;
+    }
+  }
+
   return level;
 }
 
@@ -52,6 +70,24 @@ levelFree (level_t *level)
     }
     free (level);
   }
+}
+
+ssize_t
+levelGetCount (level_t *level)
+{
+  return ilistGetCount (level->level);
+}
+
+int
+levelGetMaxWidth (level_t *level)
+{
+  return level->maxWidth;
+}
+
+char *
+levelGetLevel (level_t *level, ilistidx_t ikey)
+{
+  return ilistGetData (level->level, ikey, LEVEL_LEVEL);
 }
 
 ssize_t

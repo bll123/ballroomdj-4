@@ -5,9 +5,12 @@
 #include <gtk/gtk.h>
 
 #include "conn.h"
+#include "level.h"
 #include "musicdb.h"
 #include "progstate.h"
+#include "rating.h"
 #include "songfilter.h"
+#include "status.h"
 #include "uiutils.h"
 
 typedef struct {
@@ -20,12 +23,19 @@ typedef struct {
   ilistidx_t        danceIdx;
   double            dfilterCount;
   songfilter_t      *songfilter;
+  rating_t          *ratings;
+  level_t           *levels;
+  status_t          *status;
   /* filter data */
   char              search [110];
   uiutilsdropdown_t sortbysel;
   uiutilsdropdown_t filterdancesel;
   uiutilsdropdown_t filtergenresel;
   uiutilsentry_t    searchentry;
+  uiutilsspinbox_t  filterratingsel;
+  uiutilsspinbox_t  filterlevelsel;
+  uiutilsspinbox_t  filterstatussel;
+  uiutilsspinbox_t  filterfavoritesel;
   /* song selection tab */
   uiutilsdropdown_t dancesel;
   GtkWidget         *parentwin;

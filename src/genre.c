@@ -43,7 +43,7 @@ genreAlloc (char *fname)
   ilistDumpInfo (datafileGetList (genre->df));
 
   dflist = datafileGetList (genre->df);
-  genre->genreList = slistAlloc ("sortopt-disp", LIST_UNORDERED, free, NULL);
+  genre->genreList = slistAlloc ("genre-disp", LIST_UNORDERED, free, NULL);
   ilistStartIterator (dflist, &iteridx);
   while ((gkey = ilistIterateKey (dflist, &iteridx)) >= 0) {
     slistSetNum (genre->genreList,

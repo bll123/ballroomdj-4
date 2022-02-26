@@ -1,6 +1,8 @@
 #ifndef INC_UIUTILS_H
 #define INC_UIUTILS_H
 
+#include <stdbool.h>
+
 #include "nlist.h"
 #include "slist.h"
 
@@ -10,6 +12,8 @@ enum {
   UIUTILS_DROPDOWN_COL_DISP,
   UIUTILS_DROPDOWN_COL_MAX,
 };
+
+typedef char * (*uiutilsspinboxdisp_t)(void *, int);
 
 typedef struct {
   GtkWidget     *parentwin;
@@ -32,7 +36,12 @@ typedef struct {
 } uiutilsentry_t;
 
 typedef struct {
-  GtkWidget       *spinbox;
+  GtkWidget             *spinbox;
+  int                   curridx;
+  uiutilsspinboxdisp_t  textGetProc;
+  void                  *udata;
+  int                   maxWidth;
+  bool                  indisp;
 } uiutilsspinbox_t;
 
 #define UI_MAIN_LOOP_TIMER 20
@@ -71,8 +80,10 @@ void uiutilsEntrySetValue (uiutilsentry_t *entry, char *value);
 
 void uiutilsSpinboxInit (uiutilsspinbox_t *spinbox);
 void uiutilsSpinboxFree (uiutilsspinbox_t *spinbox);
-GtkWidget * uiutilsSpinboxTextCreate (uiutilsspinbox_t *spinbox,
-    ssize_t min, ssize_t max, void *displayCallback, void *udata);
+GtkWidget * uiutilsSpinboxTextCreate (uiutilsspinbox_t *spinbox, void *udata);
+void uiutilsSpinboxSet (uiutilsspinbox_t *spinbox, int min, int count,
+    int maxWidth, uiutilsspinboxdisp_t textGetProc);
+int uiutilsSpinboxGetValue (uiutilsspinbox_t *spinbox);
 
 void uiutilsCreateDanceList (uiutilsdropdown_t *dancesel, char *selectLabel);
 

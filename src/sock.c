@@ -218,7 +218,7 @@ sockCheck (sockinfo_t *sockinfo)
 
   FD_ZERO (&(sockinfo->readfds));
   for (size_t i = 0; i < (size_t) sockinfo->count; ++i) {
-    Sock_t tsock = sockinfo->socklist[i];
+    Sock_t tsock = sockinfo->socklist [i];
     if (socketInvalid (tsock)) {
       continue;
     }

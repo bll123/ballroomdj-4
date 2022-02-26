@@ -35,9 +35,10 @@ typedef struct {
 
 /* must be in the same order as defined in songfilter.h */
 songfilteridx_t valueTypeLookup [SONG_FILTER_MAX] = {
-  { SONG_FILTER_BPM_LOW,    SONG_FILTER_NUM },
   { SONG_FILTER_BPM_HIGH,   SONG_FILTER_NUM },
+  { SONG_FILTER_BPM_LOW,    SONG_FILTER_NUM },
   { SONG_FILTER_DANCE,      SONG_FILTER_ILIST },
+  { SONG_FILTER_FAVORITE,   SONG_FILTER_NUM },
   { SONG_FILTER_GENRE,      SONG_FILTER_NUM },
   { SONG_FILTER_KEYWORD,    SONG_FILTER_SLIST },
   { SONG_FILTER_LEVEL_HIGH, SONG_FILTER_NUM },

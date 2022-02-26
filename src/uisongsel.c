@@ -17,6 +17,7 @@
 #include "dance.h"
 #include "genre.h"
 #include "ilist.h"
+#include "level.h"
 #include "log.h"
 #include "musicdb.h"
 #include "musicq.h"
@@ -25,6 +26,7 @@
 #include "rating.h"
 #include "songfilter.h"
 #include "sortopt.h"
+#include "status.h"
 #include "tagdef.h"
 #include "uisongsel.h"
 #include "uiutils.h"
@@ -63,15 +65,24 @@ static void uisongselFilterDanceProcess (GtkTreeView *tv, GtkTreePath *path,
     GtkTreeViewColumn *column, gpointer udata);
 static void uisongselFilterDialog (GtkButton *b, gpointer udata);
 static void uisongselCreateFilterDialog (uisongsel_t *uisongsel);
+
 static void uisongselSortBySelect (GtkTreeView *tv, GtkTreePath *path,
     GtkTreeViewColumn *column, gpointer udata);
 static void uisongselCreateSortByList (uisongsel_t *uisongsel);
+
 static void uisongselGenreSelect (GtkTreeView *tv, GtkTreePath *path,
     GtkTreeViewColumn *column, gpointer udata);
 static void uisongselCreateGenreList (uisongsel_t *uisongsel);
+
 static void uisongselDanceSelect (GtkTreeView *tv, GtkTreePath *path,
     GtkTreeViewColumn *column, gpointer udata);
 static void uisongselSongfilterSetDance (uisongsel_t *uisongsel, ssize_t idx);
+
+static char * uisongselRatingGet (void *udata, int idx);
+static char * uisongselLevelGet (void *udata, int idx);
+static char * uisongselStatusGet (void *udata, int idx);
+static char * uisongselFavoriteGet (void *udata, int idx);
+
 static void uisongselFilterResponseHandler (GtkDialog *d, gint responseid,
     gpointer udata);
 static void uisongselInitFilterDisplay (uisongsel_t *uisongsel);
@@ -83,6 +94,9 @@ uisongselInit (progstate_t *progstate, conn_t *conn)
 
   uisongsel = malloc (sizeof (uisongsel_t));
   assert (uisongsel != NULL);
+  uisongsel->ratings = bdjvarsdfGet (BDJVDF_RATINGS);
+  uisongsel->levels = bdjvarsdfGet (BDJVDF_LEVELS);
+  uisongsel->status = bdjvarsdfGet (BDJVDF_STATUS);
   uisongsel->progstate = progstate;
   uisongsel->conn = conn;
   uisongsel->maxRows = 0;
@@ -95,12 +109,16 @@ uisongselInit (progstate_t *progstate, conn_t *conn)
   uisongsel->danceIdx = -1;
   uiutilsDropDownInit (&uisongsel->dancesel);
   uiutilsDropDownInit (&uisongsel->sortbysel);
-  uiutilsDropDownInit (&uisongsel->filterdancesel);
-  uiutilsDropDownInit (&uisongsel->filtergenresel);
   uiutilsEntryInit (&uisongsel->searchentry, 30, 100);
+  uiutilsDropDownInit (&uisongsel->filtergenresel);
+  uiutilsDropDownInit (&uisongsel->filterdancesel);
+  uiutilsSpinboxInit (&uisongsel->filterratingsel);
+  uiutilsSpinboxInit (&uisongsel->filterlevelsel);
+  uiutilsSpinboxInit (&uisongsel->filterstatussel);
+  uiutilsSpinboxInit (&uisongsel->filterfavoritesel);
   uisongsel->songfilter = songfilterAlloc (SONG_FILTER_FOR_PLAYBACK);
   uisongsel->search [0] = '\0';
-  songfilterSetSort (uisongsel->songfilter, "TITLE"); // ### fix later
+  songfilterSetSort (uisongsel->songfilter, "TITLE"); // ok as default
 
   // ### FIX load last option/etc settings from datafile.
 
@@ -118,8 +136,13 @@ uisongselFree (uisongsel_t *uisongsel)
     }
     uiutilsDropDownFree (&uisongsel->dancesel);
     uiutilsDropDownFree (&uisongsel->sortbysel);
+    uiutilsEntryFree (&uisongsel->searchentry);
     uiutilsDropDownFree (&uisongsel->filterdancesel);
     uiutilsDropDownFree (&uisongsel->filtergenresel);
+    uiutilsSpinboxFree (&uisongsel->filterratingsel);
+    uiutilsSpinboxFree (&uisongsel->filterlevelsel);
+    uiutilsSpinboxFree (&uisongsel->filterstatussel);
+    uiutilsSpinboxFree (&uisongsel->filterfavoritesel);
     free (uisongsel);
   }
 }
@@ -594,6 +617,8 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
   GtkWidget     *hbox;
   GtkWidget     *widget;
   GtkSizeGroup  *sgA;
+  int           max;
+  int           len;
 
 
   sgA = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
@@ -619,6 +644,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
   gtk_widget_set_vexpand (vbox, FALSE);
   gtk_container_add (GTK_CONTAINER (content), vbox);
 
+  /* sort-by */
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   assert (hbox != NULL);
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
@@ -633,6 +659,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
   uisongselCreateSortByList (uisongsel);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 
+  /* search */
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   assert (hbox != NULL);
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
@@ -662,6 +689,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
   uisongselCreateGenreList (uisongsel);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 
+  /* dance */
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   assert (hbox != NULL);
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
@@ -677,6 +705,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
   uiutilsCreateDanceList (&uisongsel->filterdancesel, _("All Dances"));
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 
+  /* rating */
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   assert (hbox != NULL);
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
@@ -686,13 +715,18 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
   gtk_size_group_add_widget (sgA, widget);
 
-//    widget = uiutilsSpinboxCreate (uisongsel->filterDialog,
-//        "", NULL,
-//        &uisongsel->filterrating, uisongsel);
-//    uisongselCreateRatingList (&uisongsel->filterrating);
-//    gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
-//    gtk_size_group_add_widget (sgB, widget);
+  widget = uiutilsSpinboxTextCreate (&uisongsel->filterratingsel, uisongsel);
+  max = ratingGetMaxWidth (uisongsel->ratings);
+  len = istrlen (_("All Ratings"));
+  if (len > max) {
+    max = len;
+  }
+  uiutilsSpinboxSet (&uisongsel->filterratingsel, -1,
+      ratingGetCount (uisongsel->ratings),
+      max, uisongselRatingGet);
+  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 
+  /* level */
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   assert (hbox != NULL);
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
@@ -702,6 +736,18 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
   gtk_size_group_add_widget (sgA, widget);
 
+  widget = uiutilsSpinboxTextCreate (&uisongsel->filterlevelsel, uisongsel);
+  max = levelGetMaxWidth (uisongsel->levels);
+  len = istrlen (_("All Levels"));
+  if (len > max) {
+    max = len;
+  }
+  uiutilsSpinboxSet (&uisongsel->filterlevelsel, -1,
+      levelGetCount (uisongsel->levels),
+      max, uisongselLevelGet);
+  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+
+  /* status */
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   assert (hbox != NULL);
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
@@ -710,6 +756,40 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
   gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
   gtk_size_group_add_widget (sgA, widget);
+
+  widget = uiutilsSpinboxTextCreate (&uisongsel->filterstatussel, uisongsel);
+  max = statusGetMaxWidth (uisongsel->status);
+  len = istrlen (_("Any Status"));
+  if (len > max) {
+    max = len;
+  }
+  uiutilsSpinboxSet (&uisongsel->filterstatussel, -1,
+      statusGetCount (uisongsel->status),
+      max, uisongselStatusGet);
+  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+
+  /* favorite */
+  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+  assert (hbox != NULL);
+  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+
+  widget = uiutilsCreateColonLabel (_("Favorite"));
+  gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
+  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+  gtk_size_group_add_widget (sgA, widget);
+
+  widget = uiutilsSpinboxTextCreate (&uisongsel->filterfavoritesel, uisongsel);
+  uiutilsSpinboxSet (&uisongsel->filterfavoritesel, 0,
+      SONG_FAVORITE_MAX, 1, uisongselFavoriteGet);
+  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+
+  /* the dialog doesn't have any space above the buttons */
+  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+  assert (hbox != NULL);
+  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+
+  widget = uiutilsCreateLabel ("");
+  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 
   g_signal_connect (uisongsel->filterDialog, "response",
       G_CALLBACK (uisongselFilterResponseHandler), uisongsel);
@@ -795,11 +875,68 @@ uisongselSongfilterSetDance (uisongsel_t *uisongsel, ssize_t idx)
   }
 }
 
+static char *
+uisongselRatingGet (void *udata, int idx)
+{
+  uisongsel_t *uisongsel = udata;
+
+  if (idx == -1) {
+    return _("All Ratings");
+  }
+  return ratingGetRating (uisongsel->ratings, idx);
+}
+
+static char *
+uisongselLevelGet (void *udata, int idx)
+{
+  uisongsel_t *uisongsel = udata;
+
+  if (idx == -1) {
+    return _("All Levels");
+  }
+  return levelGetLevel (uisongsel->levels, idx);
+}
+
+static char *
+uisongselStatusGet (void *udata, int idx)
+{
+  uisongsel_t *uisongsel = udata;
+
+  if (idx == -1) {
+    return _("Any Status");
+  }
+  return statusGetStatus (uisongsel->status, idx);
+}
+
+static char *
+uisongselFavoriteGet (void *udata, int idx)
+{
+  uisongsel_t         *uisongsel = udata;
+  char                tbuff [100];
+  songfavoriteinfo_t  *favorite;
+
+  favorite = songGetFavorite (idx);
+  if (strcmp (favorite->color, "") != 0) {
+    snprintf (tbuff, sizeof (tbuff),
+        "spinbutton { color: %s; } ", favorite->color);
+    uiutilsSetCss (uisongsel->filterfavoritesel.spinbox, tbuff);
+  } else {
+    /* how to remove css??? */
+    /* this will not work for light colored themes */
+    snprintf (tbuff, sizeof (tbuff),
+        "spinbutton { color: white; } ");
+    uiutilsSetCss (uisongsel->filterfavoritesel.spinbox, tbuff);
+  }
+  return favorite->dispStr;
+}
+
+
 static void
 uisongselFilterResponseHandler (GtkDialog *d, gint responseid, gpointer udata)
 {
   uisongsel_t   *uisongsel = udata;
   const char    *searchstr;
+  int           idx;
 
   switch (responseid) {
     case GTK_RESPONSE_DELETE_EVENT: {
@@ -829,7 +966,36 @@ uisongselFilterResponseHandler (GtkDialog *d, gint responseid, gpointer udata)
     songfilterClear (uisongsel->songfilter, SONG_FILTER_SEARCH);
   }
 
-  uisongselInitFilterDisplay (uisongsel);
+  idx = uiutilsSpinboxGetValue (&uisongsel->filterratingsel);
+  if (idx >= 0) {
+    songfilterSetNum (uisongsel->songfilter, SONG_FILTER_RATING, idx);
+  } else {
+    songfilterClear (uisongsel->songfilter, SONG_FILTER_RATING);
+  }
+
+  idx = uiutilsSpinboxGetValue (&uisongsel->filterlevelsel);
+  if (idx >= 0) {
+    songfilterSetNum (uisongsel->songfilter, SONG_FILTER_LEVEL_LOW, idx);
+    songfilterSetNum (uisongsel->songfilter, SONG_FILTER_LEVEL_HIGH, idx);
+  } else {
+    songfilterClear (uisongsel->songfilter, SONG_FILTER_LEVEL_LOW);
+    songfilterClear (uisongsel->songfilter, SONG_FILTER_LEVEL_HIGH);
+  }
+
+  idx = uiutilsSpinboxGetValue (&uisongsel->filterstatussel);
+  if (idx >= 0) {
+    songfilterSetNum (uisongsel->songfilter, SONG_FILTER_STATUS, idx);
+  } else {
+    songfilterClear (uisongsel->songfilter, SONG_FILTER_STATUS);
+  }
+
+  idx = uiutilsSpinboxGetValue (&uisongsel->filterfavoritesel);
+  if (idx >= 0) {
+    songfilterSetNum (uisongsel->songfilter, SONG_FILTER_FAVORITE, idx);
+  } else {
+    songfilterClear (uisongsel->songfilter, SONG_FILTER_FAVORITE);
+  }
+
   uisongsel->dfilterCount = (double) songfilterProcess (uisongsel->songfilter);
   uisongsel->idxStart = 0;
   uisongselClearData (uisongsel);
@@ -843,12 +1009,14 @@ uisongselInitFilterDisplay (uisongsel_t *uisongsel)
   nlistidx_t  idx;
   char        *sortby;
 
+  /* only sort-by and dance need to be set */
+  /* everything else defaults */
+
   sortby = songfilterGetSort (uisongsel->songfilter);
   uiutilsDropDownSelectionSetStr (&uisongsel->sortbysel, sortby);
 
   idx = uisongsel->danceIdx;
   uiutilsDropDownSelectionSetNum (&uisongsel->filterdancesel, idx);
 
-  idx = songfilterGetNum (uisongsel->songfilter, SONG_FILTER_GENRE);
-  uiutilsDropDownSelectionSetNum (&uisongsel->filtergenresel, idx);
+  uiutilsDropDownSelectionSetNum (&uisongsel->filtergenresel, -1);
 }
