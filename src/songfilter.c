@@ -197,7 +197,6 @@ songfilterProcess (songfilter_t *sf)
   song_t      *song;
   slist_t     *sortselParsed;
 
-
   if (sf == NULL) {
     return 0;
   }
@@ -307,8 +306,18 @@ songfilterFilterSong (songfilter_t *sf, song_t *song)
     nlistidx_t      sstatus;
 
     sstatus = songGetNum (song, TAG_STATUS);
-    if (sstatus == sf->numfilter [SONG_FILTER_STATUS]) {
+    if (sstatus != sf->numfilter [SONG_FILTER_STATUS]) {
       logMsg (LOG_DBG, LOG_SONGSEL, "reject: %zd status %ld != %ld", dbidx, sstatus, sf->numfilter [SONG_FILTER_STATUS]);
+      return false;
+    }
+  }
+
+  if (sf->inuse [SONG_FILTER_FAVORITE]) {
+    nlistidx_t      fav;
+
+    fav = songGetNum (song, TAG_FAVORITE);
+    if (fav != sf->numfilter [SONG_FILTER_FAVORITE]) {
+      logMsg (LOG_DBG, LOG_SONGSEL, "reject: %zd favorite %ld != %ld", dbidx, fav, sf->numfilter [SONG_FILTER_FAVORITE]);
       return false;
     }
   }

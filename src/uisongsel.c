@@ -990,7 +990,7 @@ uisongselFilterResponseHandler (GtkDialog *d, gint responseid, gpointer udata)
   }
 
   idx = uiutilsSpinboxGetValue (&uisongsel->filterfavoritesel);
-  if (idx >= 0) {
+  if (idx != SONG_FAVORITE_NONE) {
     songfilterSetNum (uisongsel->songfilter, SONG_FILTER_FAVORITE, idx);
   } else {
     songfilterClear (uisongsel->songfilter, SONG_FILTER_FAVORITE);
