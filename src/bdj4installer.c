@@ -1611,6 +1611,10 @@ installerPythonCheck (installer_t *installer)
   }
 
   installerPythonGetVersion (installer);
+  /* windows 7 must have an earlier versoin */
+  if (strcmp (sysvarsGetStr [SV_OSVERS], "6.1") == 0) {
+    strlcpy (installer->pyversion, "3.8.12", sizeof (installer->pyversion));
+  }
 
   if (*installer->pyversion) {
     snprintf (tbuff, sizeof (tbuff), _("Downloading %s."), "Python");

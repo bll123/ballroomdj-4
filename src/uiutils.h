@@ -84,6 +84,7 @@ GtkWidget * uiutilsSpinboxTextCreate (uiutilsspinbox_t *spinbox, void *udata);
 void uiutilsSpinboxSet (uiutilsspinbox_t *spinbox, int min, int count,
     int maxWidth, uiutilsspinboxdisp_t textGetProc);
 int uiutilsSpinboxGetValue (uiutilsspinbox_t *spinbox);
+void uiutilsSpinboxSetValue (uiutilsspinbox_t *spinbox, int ivalue);
 
 void uiutilsCreateDanceList (uiutilsdropdown_t *dancesel, char *selectLabel);
 

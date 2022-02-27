@@ -27,7 +27,6 @@ typedef struct {
   level_t           *levels;
   status_t          *status;
   /* filter data */
-  char              search [110];
   uiutilsdropdown_t sortbysel;
   uiutilsdropdown_t filterdancesel;
   uiutilsdropdown_t filtergenresel;

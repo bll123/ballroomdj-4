@@ -532,6 +532,22 @@ uiutilsSpinboxGetValue (uiutilsspinbox_t *spinbox)
   return (int) value;
 }
 
+void
+uiutilsSpinboxSetValue (uiutilsspinbox_t *spinbox, int value)
+{
+  GtkAdjustment     *adjustment;
+
+  if (spinbox == NULL) {
+    return;
+  }
+  if (spinbox->spinbox == NULL) {
+    return;
+  }
+
+  adjustment = gtk_spin_button_get_adjustment (GTK_SPIN_BUTTON (spinbox->spinbox));
+  gtk_adjustment_set_value (adjustment, (double) value);
+}
+
 /* gtk spinboxes are a bit bizarre */
 static gint
 uiutilsSpinboxInput (GtkSpinButton *sb, gdouble *newval, gpointer udata)
@@ -708,6 +724,10 @@ uiutilsDropDownSelectionSet (uiutilsdropdown_t *dropdown, gulong internalidx)
   char          tbuff [40];
   char          *p;
 
+
+  if (dropdown->tree == NULL) {
+    return;
+  }
 
   snprintf (tbuff, sizeof (tbuff), "%zd", internalidx);
   path = gtk_tree_path_new_from_string (tbuff);

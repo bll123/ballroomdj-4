@@ -117,7 +117,6 @@ uisongselInit (progstate_t *progstate, conn_t *conn)
   uiutilsSpinboxInit (&uisongsel->filterstatussel);
   uiutilsSpinboxInit (&uisongsel->filterfavoritesel);
   uisongsel->songfilter = songfilterAlloc (SONG_FILTER_FOR_PLAYBACK);
-  uisongsel->search [0] = '\0';
   songfilterSetSort (uisongsel->songfilter, "TITLE"); // ok as default
 
   // ### FIX load last option/etc settings from datafile.
@@ -588,6 +587,7 @@ uisongselFilterDanceProcess (GtkTreeView *tv, GtkTreePath *path,
 
   idx = uiutilsDropDownSelectionGet (&uisongsel->dancesel, path);
   uisongselSongfilterSetDance (uisongsel, idx);
+  uiutilsDropDownSelectionSetNum (&uisongsel->filterdancesel, idx);
   uisongsel->dfilterCount = (double) songfilterProcess (uisongsel->songfilter);
   uisongsel->idxStart = 0;
   uisongselClearData (uisongsel);
@@ -856,6 +856,7 @@ uisongselDanceSelect (GtkTreeView *tv, GtkTreePath *path,
   ssize_t     idx;
 
   idx = uiutilsDropDownSelectionGet (&uisongsel->filterdancesel, path);
+  uisongsel->danceIdx = idx;
   uisongselSongfilterSetDance (uisongsel, idx);
 }
 
@@ -950,11 +951,14 @@ uisongselFilterResponseHandler (GtkDialog *d, gint responseid, gpointer udata)
       break;
     }
     case GTK_RESPONSE_APPLY: {
+      uiutilsDropDownSelectionSetNum (&uisongsel->dancesel, uisongsel->danceIdx);
       break;
     }
     case RESPONSE_RESET: {
       songfilterReset (uisongsel->songfilter);
       uisongsel->danceIdx = -1;
+      uiutilsDropDownSelectionSetNum (&uisongsel->dancesel, -1);
+      uisongselInitFilterDisplay (uisongsel);
       break;
     }
   }
@@ -1009,8 +1013,10 @@ uisongselInitFilterDisplay (uisongsel_t *uisongsel)
   nlistidx_t  idx;
   char        *sortby;
 
-  /* only sort-by and dance need to be set */
-  /* everything else defaults */
+  /* this is run when the filter dialog is first started, */
+  /* and after a reset */
+  /* all items need to be set, as after a reset, they need to be updated */
+  /* sort-by and dance are important, the others can be reset */
 
   sortby = songfilterGetSort (uisongsel->songfilter);
   uiutilsDropDownSelectionSetStr (&uisongsel->sortbysel, sortby);
@@ -1019,4 +1025,9 @@ uisongselInitFilterDisplay (uisongsel_t *uisongsel)
   uiutilsDropDownSelectionSetNum (&uisongsel->filterdancesel, idx);
 
   uiutilsDropDownSelectionSetNum (&uisongsel->filtergenresel, -1);
+  uiutilsEntrySetValue (&uisongsel->searchentry, "");
+  uiutilsSpinboxSetValue (&uisongsel->filterratingsel, -1);
+  uiutilsSpinboxSetValue (&uisongsel->filterlevelsel, -1);
+  uiutilsSpinboxSetValue (&uisongsel->filterstatussel, -1);
+  uiutilsSpinboxSetValue (&uisongsel->filterfavoritesel, 0);
 }
