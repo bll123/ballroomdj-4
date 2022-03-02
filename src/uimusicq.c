@@ -57,6 +57,7 @@ static void   uimusicqCreatePlaylistList (uimusicq_t *uimusicq);
 static void   uimusicqClearQueueProcess (GtkButton *b, gpointer udata);
 static void   uimusicqQueueDanceProcess (GtkTreeView *tv, GtkTreePath *path, GtkTreeViewColumn *column, gpointer udata);
 static void   uimusicqQueuePlaylistProcess (GtkTreeView *tv, GtkTreePath *path, GtkTreeViewColumn *column, gpointer udata);
+static void   uimusicqProcessSongSelect (uimusicq_t *uimusicq, char * args);
 static void   uimusicqProcessMusicQueueData (uimusicq_t *uimusicq, char * args);
 static void   uimusicqProcessMusicQueueDataNew (uimusicq_t *uimusicq, char * args);
 static void   uimusicqProcessMusicQueueDataUpdate (uimusicq_t *uimusicq, char * args);
@@ -71,6 +72,7 @@ static gboolean uimusicqMoveDownRepeat (void *udata);
 static void   uimusicqMoveDownProcess (GtkButton *b, gpointer udata);
 static void   uimusicqTogglePauseProcess (GtkButton *b, gpointer udata);
 static void   uimusicqRemoveProcess (GtkButton *b, gpointer udata);
+static void   uimusicqSetSelection (uimusicq_t *uimusicq, char *pathstr);
 static ssize_t uimusicqGetSelection (uimusicq_t *uimusicq);
 static void   uimusicqMusicQueueSetSelected (uimusicq_t *uimusicq, int ci, int which);
 
@@ -289,17 +291,8 @@ uimusicqMainLoop (uimusicq_t *uimusicq)
   /* macos loses the selection after it is moved.  reset it. */
   /* fortunately, it seems to only need to be reset once. */
   if (mstimeCheck (&uimusicq->ui [ci].rowChangeTimer)) {
-    GtkTreePath       *path;
-
     if (uimusicq->ui [ci].selPathStr != NULL) {
-      path = gtk_tree_path_new_from_string (uimusicq->ui [ci].selPathStr);
-      if (path != NULL) {
-        gtk_tree_view_set_cursor (GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree),
-            path, NULL, FALSE);
-        gtk_tree_view_scroll_to_cell (GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree),
-            path, NULL, FALSE, 0.0, 0.0);
-        gtk_tree_path_free (path);
-      }
+      uimusicqSetSelection (uimusicq, uimusicq->ui [ci].selPathStr);
     }
     mstimeset (&uimusicq->ui [ci].rowChangeTimer, 3600000);
   }
@@ -319,6 +312,10 @@ uimusicqProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
       switch (msg) {
         case MSG_MUSIC_QUEUE_DATA: {
           uimusicqProcessMusicQueueData (uimusicq, args);
+          break;
+        }
+        case MSG_SONG_SELECT: {
+          uimusicqProcessSongSelect (uimusicq, args);
           break;
         }
         default: {
@@ -419,6 +416,12 @@ uimusicqQueuePlaylistProcess (GtkTreeView *tv, GtkTreePath *path,
         uimusicq->ui [ci].playlistsel.strSelection);
     connSendMessage (uimusicq->conn, ROUTE_MAIN, MSG_QUEUE_PLAYLIST, tbuff);
   }
+}
+
+static void
+uimusicqProcessSongSelect (uimusicq_t *uimusicq, char * args)
+{
+  uimusicqSetSelection (uimusicq, args);
 }
 
 static void
@@ -806,6 +809,24 @@ uimusicqRemoveProcess (GtkButton *b, gpointer udata)
   snprintf (tbuff, sizeof (tbuff), "%d%c%lu", ci, MSG_ARGS_RS, idx);
   connSendMessage (uimusicq->conn, ROUTE_MAIN,
       MSG_MUSICQ_REMOVE, tbuff);
+}
+
+static void
+uimusicqSetSelection (uimusicq_t *uimusicq, char *pathstr)
+{
+  int               ci;
+  GtkTreePath       *path;
+
+  ci = uimusicq->musicqManageIdx;
+
+  path = gtk_tree_path_new_from_string (pathstr);
+  if (path != NULL) {
+    gtk_tree_view_set_cursor (GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree),
+        path, NULL, FALSE);
+    gtk_tree_view_scroll_to_cell (GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree),
+        path, NULL, FALSE, 0.0, 0.0);
+    gtk_tree_path_free (path);
+  }
 }
 
 static ssize_t

@@ -107,7 +107,7 @@ musicqMove (musicq_t *musicq, musicqidx_t musicqidx,
   musicqRenumber (musicq, musicqidx, olddispidx);
 }
 
-void
+int
 musicqInsert (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx, song_t *song)
 {
   int           olddispidx;
@@ -115,14 +115,14 @@ musicqInsert (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx, song_t *song
   ssize_t       dur;
 
   if (musicq == NULL || musicq->q [musicqidx] == NULL || song == NULL) {
-    return;
+    return -1;
   }
   if (idx < 1) {
-    return;
+    return -1;
   }
   if (idx >= queueGetCount (musicq->q [musicqidx])) {
     musicqPush (musicq, musicqidx, song, NULL);
-    return;
+    return (queueGetCount (musicq->q [musicqidx]) - 1);
   }
 
   olddispidx = musicqRenumberStart (musicq, musicqidx);
@@ -140,6 +140,7 @@ musicqInsert (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx, song_t *song
 
   queueInsert (musicq->q [musicqidx], idx, musicqitem);
   musicqRenumber (musicq, musicqidx, olddispidx);
+  return (idx - 1);
 }
 
 song_t *

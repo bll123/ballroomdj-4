@@ -75,7 +75,7 @@ typedef enum {
   /* to/from ui */
   MSG_MUSIC_QUEUE_DATA,
   MSG_QUEUE_SWITCH,         // args: queue number
-  MSG_QUEUE_SELECT,         // args: queue number, position
+  MSG_SONG_SELECT,          // args: queue number, position
 
   /* to/from web servers */
   MSG_DANCE_LIST_DATA,      // args: html option list

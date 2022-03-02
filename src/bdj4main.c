@@ -1263,8 +1263,10 @@ mainMusicqInsert (maindata_t *mainData, char *args)
   char      *tokstr = NULL;
   char      *p = NULL;
   ssize_t   idx;
+  ssize_t   loc;
   dbidx_t   dbidx;
   song_t    *song = NULL;
+  char      tbuff [40];
 
   p = strtok_r (args, MSG_ARGS_RS_STR, &tokstr);
   mi = atoi (p);
@@ -1279,7 +1281,7 @@ mainMusicqInsert (maindata_t *mainData, char *args)
   song = dbGetByIdx (dbidx);
 
   if (song != NULL) {
-    musicqInsert (mainData->musicQueue, mainData->musicqManageIdx, idx, song);
+    loc = musicqInsert (mainData->musicQueue, mainData->musicqManageIdx, idx, song);
     mainData->musicqChanged [mainData->musicqManageIdx] = true;
     mainData->marqueeChanged [mainData->musicqManageIdx] = true;
     mainMusicQueuePrep (mainData);
@@ -1287,6 +1289,11 @@ mainMusicqInsert (maindata_t *mainData, char *args)
     if (mainData->playWhenQueued &&
         mainData->musicqPlayIdx == (musicqidx_t) mainData->musicqManageIdx) {
       mainMusicQueuePlay (mainData);
+    }
+    if (loc > 0) {
+      snprintf (tbuff, sizeof (tbuff), "%zd", loc);
+      connSendMessage (mainData->conn, ROUTE_PLAYERUI,
+          MSG_SONG_SELECT, tbuff);
     }
   }
 }

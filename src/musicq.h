@@ -44,7 +44,7 @@ void        musicqPush (musicq_t *musicq, musicqidx_t idx,
 void        musicqPushHeadEmpty (musicq_t *musicq, musicqidx_t idx);
 void        musicqMove (musicq_t *musicq, musicqidx_t musicqidx,
                 ssize_t fromidx, ssize_t toidx);
-void        musicqInsert (musicq_t *musicq, musicqidx_t musicqidx,
+int         musicqInsert (musicq_t *musicq, musicqidx_t musicqidx,
                 ssize_t idx, song_t *song);
 song_t      *musicqGetCurrent (musicq_t *musicq, musicqidx_t musicqidx);
 musicqflag_t musicqGetFlags (musicq_t *musicq, musicqidx_t musicqidx, ssize_t qkey);
