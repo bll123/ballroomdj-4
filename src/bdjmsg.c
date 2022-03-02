@@ -12,6 +12,80 @@
 #define LSZ         4
 #define MSG_RS      '~'
 
+typedef struct {
+  char            *text;
+} bdjmsgtxt_t;
+
+static bdjmsgtxt_t routetxt [] = {
+  [ROUTE_NONE] = { "NONE" },
+  [ROUTE_CLICOMM] = { "CLICOMM" },
+  [ROUTE_CONFIGUI] = { "CONFIGUI" },
+  [ROUTE_MAIN] = { "MAIN" },
+  [ROUTE_MANAGEUI] = { "MANAGEUI" },
+  [ROUTE_MARQUEE] = { "MARQUEE" },
+  [ROUTE_MOBILEMQ] = { "MOBILEMQ" },
+  [ROUTE_PLAYER] = { "PLAYER" },
+  [ROUTE_PLAYERUI] = { "PLAYERUI" },
+  [ROUTE_REMCTRL] = { "REMCTRL" },
+  [ROUTE_STARTERUI] = { "STARTERUI" },
+};
+
+static bdjmsgtxt_t msgtxt [] = {
+  [MSG_NULL] = { "NULL" },
+  [MSG_EXIT_REQUEST] = { "EXIT_REQUEST" },
+  [MSG_HANDSHAKE] = { "HANDSHAKE" },
+  [MSG_SOCKET_CLOSE] = { "SOCKET_CLOSE" },
+  [MSG_GET_STATUS] = { "GET_STATUS" },
+  [MSG_MUSICQ_INSERT] = { "MUSICQ_INSERT" },
+  [MSG_MUSICQ_MOVE_DOWN] = { "MUSICQ_MOVE_DOWN" },
+  [MSG_MUSICQ_MOVE_TOP] = { "MUSICQ_MOVE_TOP" },
+  [MSG_MUSICQ_MOVE_UP] = { "MUSICQ_MOVE_UP" },
+  [MSG_MUSICQ_REMOVE] = { "MUSICQ_REMOVE" },
+  [MSG_MUSICQ_SET_PLAYBACK] = { "MUSICQ_SET_PLAYBACK" },
+  [MSG_MUSICQ_TOGGLE_PAUSE] = { "MUSICQ_TOGGLE_PAUSE" },
+  [MSG_MUSICQ_TRUNCATE] = { "MUSICQ_TRUNCATE" },
+  [MSG_PLAYLIST_CLEARPLAY] = { "PLAYLIST_CLEARPLAY" },
+  [MSG_PLAY_PLAY] = { "PLAY_PLAY" },
+  [MSG_PLAY_PLAYPAUSE] = { "PLAY_PLAYPAUSE" },
+  [MSG_QUEUE_CLEAR] = { "QUEUE_CLEAR" },
+  [MSG_QUEUE_DANCE_5] = { "QUEUE_DANCE_5" },
+  [MSG_QUEUE_DANCE] = { "QUEUE_DANCE" },
+  [MSG_QUEUE_PLAYLIST] = { "QUEUE_PLAYLIST" },
+  [MSG_QUEUE_PLAY_ON_ADD] = { "QUEUE_PLAY_ON_ADD" },
+  [MSG_QUEUE_SWITCH_EMPTY] = { "QUEUE_SWITCH_EMPTY" },
+  [MSG_PLAYER_VOL_MUTE] = { "PLAYER_VOL_MUTE" },
+  [MSG_PLAYER_VOLSINK_SET] = { "PLAYER_VOLSINK_SET" },
+  [MSG_PLAYER_VOLUME] = { "PLAYER_VOLUME" },
+  [MSG_PLAY_FADE] = { "PLAY_FADE" },
+  [MSG_PLAY_NEXTSONG] = { "PLAY_NEXTSONG" },
+  [MSG_PLAY_PAUSEATEND] = { "PLAY_PAUSEATEND" },
+  [MSG_PLAY_PAUSE] = { "PLAY_PAUSE" },
+  [MSG_PLAY_REPEAT] = { "PLAY_REPEAT" },
+  [MSG_PLAY_SEEK] = { "PLAY_SEEK" },
+  [MSG_PLAY_SONG_BEGIN] = { "PLAY_SONG_BEGIN" },
+  [MSG_PLAY_SPEED] = { "PLAY_SPEED" },
+  [MSG_PLAY_STOP] = { "PLAY_STOP" },
+  [MSG_SONG_PLAY] = { "SONG_PLAY" },
+  [MSG_SONG_PREP] = { "SONG_PREP" },
+  [MSG_PLAY_PAUSEATEND_STATE] = { "PLAY_PAUSEATEND_STATE" },
+  [MSG_PLAYBACK_BEGIN] = { "PLAYBACK_BEGIN" },
+  [MSG_PLAYBACK_STOP] = { "PLAYBACK_STOP" },
+  [MSG_PLAYBACK_FINISH] = { "PLAYBACK_FINISH" },
+  [MSG_PLAYER_STATE] = { "PLAYER_STATE" },
+  [MSG_PLAYER_STATUS_DATA] = { "PLAYER_STATUS_DATA" },
+  [MSG_MUSIC_QUEUE_DATA] = { "MUSIC_QUEUE_DATA" },
+  [MSG_QUEUE_SWITCH] = { "QUEUE_SWITCH" },
+  [MSG_QUEUE_SELECT] = { "QUEUE_SELECT" },
+  [MSG_DANCE_LIST_DATA] = { "DANCE_LIST_DATA" },
+  [MSG_GET_DANCE_LIST] = { "GET_DANCE_LIST" },
+  [MSG_GET_PLAYLIST_LIST] = { "GET_PLAYLIST_LIST" },
+  [MSG_MARQUEE_DATA] = { "MARQUEE_DATA" },
+  [MSG_MUSICQ_STATUS_DATA] = { "MUSICQ_STATUS_DATA" },
+  [MSG_PLAYLIST_LIST_DATA] = { "PLAYLIST_LIST_DATA" },
+  [MSG_MARQUEE_SHOW] = { "MARQUEE_SHOW" },
+  [MSG_MARQUEE_TIMER] = { "MARQUEE_TIMER" },
+};
+
 size_t
 msgEncode (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     bdjmsgmsg_t msg, char *args, char *msgbuff, size_t mlen)
@@ -45,4 +119,16 @@ msgDecode (char *msgbuff, bdjmsgroute_t *routefrom, bdjmsgroute_t *route,
     *args = '\0';
     strlcpy (args, p, alen);
   }
+}
+
+inline char *
+msgDebugText (bdjmsgmsg_t msg)
+{
+  return msgtxt [msg].text;
+}
+
+inline char *
+msgRouteDebugText (bdjmsgroute_t route)
+{
+  return routetxt [route].text;
 }

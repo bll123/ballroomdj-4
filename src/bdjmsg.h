@@ -75,6 +75,7 @@ typedef enum {
   /* to/from ui */
   MSG_MUSIC_QUEUE_DATA,
   MSG_QUEUE_SWITCH,         // args: queue number
+  MSG_QUEUE_SELECT,         // args: queue number, position
 
   /* to/from web servers */
   MSG_DANCE_LIST_DATA,      // args: html option list
@@ -95,7 +96,7 @@ typedef enum {
   PREP_ANNOUNCE,
 } bdjmsgprep_t;
 
-#define BDJMSG_MAX_ARGS     1024
+#define BDJMSG_MAX_ARGS     4096
 #define BDJMSG_MAX          (8 * 2 + 3 + BDJMSG_MAX_ARGS)
 
 #define MSG_ARGS_RS         0x1E      // RS
@@ -107,5 +108,7 @@ size_t    msgEncode (bdjmsgroute_t routefrom, bdjmsgroute_t route,
               bdjmsgmsg_t msg, char *args, char *msgbuff, size_t mlen);
 void      msgDecode (char *msgbuff, bdjmsgroute_t *routefrom,
               bdjmsgroute_t *route, bdjmsgmsg_t *msg, char *args, size_t alen);
+char *    msgDebugText (bdjmsgmsg_t msg);
+char *    msgRouteDebugText (bdjmsgroute_t route);
 
 #endif /* INC_BDJMSG_H */

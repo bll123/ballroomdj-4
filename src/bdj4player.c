@@ -346,8 +346,9 @@ playerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
   logProcBegin (LOG_PROC, "playerProcessMsg");
   playerData = (playerdata_t *) udata;
 
-  logMsg (LOG_DBG, LOG_MSGS, "got: from %d route: %d msg:%d args:%s",
-      routefrom, route, msg, args);
+  logMsg (LOG_DBG, LOG_MSGS, "got: from:%ld/%s route:%ld/%s msg:%ld/%s args:%s",
+      routefrom, msgRouteDebugText (routefrom),
+      route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
 
   switch (route) {
     case ROUTE_NONE:

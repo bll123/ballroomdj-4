@@ -534,8 +534,9 @@ marqueeProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 
   logProcBegin (LOG_PROC, "marqueeProcessMsg");
 
-  logMsg (LOG_DBG, LOG_MSGS, "got: from %d route: %d msg:%d args:%s",
-      routefrom, route, msg, args);
+  logMsg (LOG_DBG, LOG_MSGS, "got: from:%ld/%s route:%ld/%s msg:%ld/%s args:%s",
+      routefrom, msgRouteDebugText (routefrom),
+      route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
 
   switch (route) {
     case ROUTE_NONE:

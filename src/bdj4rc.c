@@ -47,8 +47,9 @@ typedef struct {
   uint16_t        port;
   char            *user;
   char            *pass;
-  int             haveData;
+  mstime_t        danceListTimer;
   char            *danceList;
+  mstime_t        playlistListTimer;
   char            *playlistList;
   char            *playerStatus;
   websrv_t        *websrv;
@@ -138,10 +139,11 @@ main (int argc, char *argv[])
   }
 
   remctrlData.danceList = "";
-  remctrlData.haveData = 0;
+  mstimeset (&remctrlData.danceListTimer, 0);
   remctrlData.pass = strdup (bdjoptGetData (OPT_P_REMCONTROLPASS));
   remctrlData.playerStatus = NULL;
   remctrlData.playlistList = "";
+  mstimeset (&remctrlData.playlistListTimer, 0);
   remctrlData.port = bdjoptGetNum (OPT_P_REMCONTROLPORT);
   remctrlData.progstate = progstateInit ("remctrl");
   progstateSetCallback (remctrlData.progstate, STATE_CONNECTING,
@@ -334,8 +336,9 @@ remctrlProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 
   /* this just reduces the amount of stuff in the log */
   if (msg != MSG_PLAYER_STATUS_DATA) {
-    logMsg (LOG_DBG, LOG_MSGS, "got: from: %ld route: %ld msg:%ld args:%s",
-        routefrom, route, msg, args);
+    logMsg (LOG_DBG, LOG_MSGS, "got: from:%ld/%s route:%ld/%s msg:%ld/%s args:%s",
+        routefrom, msgRouteDebugText (routefrom),
+        route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
   }
 
   switch (route) {
@@ -354,12 +357,10 @@ remctrlProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           return 1;
         }
         case MSG_DANCE_LIST_DATA: {
-          remctrlData->haveData++;
           remctrlProcessDanceList (remctrlData, args);
           break;
         }
         case MSG_PLAYLIST_LIST_DATA: {
-          remctrlData->haveData++;
           remctrlProcessPlaylistList (remctrlData, args);
           break;
         }
@@ -437,10 +438,6 @@ remctrlHandshakeCallback (void *udata, programstate_t programState)
 
   if (connHaveHandshake (remctrlData->conn, ROUTE_MAIN) &&
       connHaveHandshake (remctrlData->conn, ROUTE_PLAYER)) {
-    connSendMessage (remctrlData->conn, ROUTE_MAIN,
-        MSG_GET_DANCE_LIST, NULL);
-    connSendMessage (remctrlData->conn, ROUTE_MAIN,
-        MSG_GET_PLAYLIST_LIST, NULL);
     rc = true;
   }
 
@@ -454,7 +451,21 @@ remctrlInitDataCallback (void *udata, programstate_t programState)
   remctrldata_t   *remctrlData = udata;
   bool            rc = false;
 
-  if (remctrlData->haveData == 2) {
+  if (connHaveHandshake (remctrlData->conn, ROUTE_MAIN)) {
+    if (*remctrlData->danceList == '\0' &&
+        mstimeCheck (&remctrlData->danceListTimer)) {
+      connSendMessage (remctrlData->conn, ROUTE_MAIN,
+          MSG_GET_DANCE_LIST, NULL);
+      mstimeset (&remctrlData->danceListTimer, 500);
+    }
+    if (*remctrlData->playlistList == '\0' &&
+        mstimeCheck (&remctrlData->playlistListTimer)) {
+      connSendMessage (remctrlData->conn, ROUTE_MAIN,
+          MSG_GET_PLAYLIST_LIST, NULL);
+      mstimeset (&remctrlData->playlistListTimer, 500);
+    }
+  }
+  if (*remctrlData->danceList && *remctrlData->playlistList) {
     rc = true;
   }
 

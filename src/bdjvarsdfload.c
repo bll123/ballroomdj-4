@@ -37,18 +37,18 @@ bdjvarsdfloadInit (void)
   pathbldMakePath (fn, sizeof (fn), "", "dances", ".txt", PATHBLD_MP_NONE);
   bdjvarsdfSet (BDJVDF_DANCES, danceAlloc (fn));
 
-  /* the database load depends on ratings and levels */
-  /* playlist loads depend on ratings and levels */
+  /* the database load depends on ratings, levels and status*/
+  /* playlist loads depend on ratings, levels and status */
   pathbldMakePath (fn, sizeof (fn), "", "ratings", ".txt", PATHBLD_MP_NONE);
   bdjvarsdfSet (BDJVDF_RATINGS, ratingAlloc (fn));
   pathbldMakePath (fn, sizeof (fn), "", "levels", ".txt", PATHBLD_MP_NONE);
   bdjvarsdfSet (BDJVDF_LEVELS, levelAlloc (fn));
-
-  /* the database load depends on genres and status */
-  pathbldMakePath (fn, sizeof (fn), "", "genres", ".txt", PATHBLD_MP_NONE);
-  bdjvarsdfSet (BDJVDF_GENRES, genreAlloc (fn));
   pathbldMakePath (fn, sizeof (fn), "", "status", ".txt", PATHBLD_MP_NONE);
   bdjvarsdfSet (BDJVDF_STATUS, statusAlloc (fn));
+
+  /* the database load depends on genres */
+  pathbldMakePath (fn, sizeof (fn), "", "genres", ".txt", PATHBLD_MP_NONE);
+  bdjvarsdfSet (BDJVDF_GENRES, genreAlloc (fn));
 
   pathbldMakePath (fn, sizeof (fn), "", "sortopt", ".txt", PATHBLD_MP_NONE);
   bdjvarsdfSet (BDJVDF_SORT_OPT, sortoptAlloc (fn));

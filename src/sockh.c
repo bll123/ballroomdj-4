@@ -81,7 +81,7 @@ sockhProcessMain (sockserver_t *sockserver, sockProcessMsg_t msgProc,
     void *userData)
 {
   Sock_t      msgsock = INVALID_SOCKET;
-  char        msgbuff [1024];
+  char        msgbuff [BDJMSG_MAX];
   size_t      len = 0;
   bdjmsgroute_t routefrom = ROUTE_NONE;
   bdjmsgroute_t route = ROUTE_NONE;
@@ -111,6 +111,7 @@ sockhProcessMain (sockserver_t *sockserver, sockProcessMsg_t msgProc,
 
       if (rval == NULL) {
         /* either an indicator that the code is mucked up,
+         * the message buffer is too short,
          * or that the socket has been closed.
          */
         logMsg (LOG_DBG, LOG_SOCKET, "remove sock %zd", (size_t) msgsock);
@@ -121,7 +122,8 @@ sockhProcessMain (sockserver_t *sockserver, sockProcessMsg_t msgProc,
       logMsg (LOG_DBG, LOG_SOCKET, "got message: %s", rval);
 
       msgDecode (msgbuff, &routefrom, &route, &msg, args, sizeof (args));
-      logMsg (LOG_DBG, LOG_SOCKET, "got: route: %ld msg:%ld args:%s", route, msg, args);
+      logMsg (LOG_DBG, LOG_SOCKET, "got: route:%ld/%s msg:%ld/%s args:%s",
+          route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
       switch (msg) {
         case MSG_NULL: {
           break;
@@ -158,10 +160,13 @@ sockhSendMessage (Sock_t sock, bdjmsgroute_t routefrom,
 
   /* this is only to keep the log clean */
   if (msg != MSG_MUSICQ_STATUS_DATA && msg != MSG_PLAYER_STATUS_DATA) {
-    logMsg (LOG_DBG, LOG_SOCKET, "route:%d msg:%d args:%s", route, msg, args);
+    logMsg (LOG_DBG, LOG_SOCKET, "route:%d/%s msg:%d/%s args:%s",
+        route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
   }
   len = msgEncode (routefrom, route, msg, args, msgbuff, sizeof (msgbuff));
   rc = sockWriteBinary (sock, msgbuff, len);
+  logMsg (LOG_DBG, LOG_SOCKET, "sent: msg:%d/%s to %d/%s len:%zd rc:%d",
+      msg, msgDebugText (msg), route, msgRouteDebugText (route), len, rc);
   return rc;
 }
 

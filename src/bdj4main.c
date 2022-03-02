@@ -85,6 +85,7 @@ static bool     mainStoppingCallback (void *tmaindata, programstate_t programSta
 static bool     mainClosingCallback (void *tmaindata, programstate_t programState);
 static void     mainSendMusicQueueData (maindata_t *mainData, int musicqidx);
 static void     mainSendMarqueeData (maindata_t *mainData);
+static char     * mainSongGetDanceDisplay (maindata_t *mainData, ssize_t idx);
 static void     mainSendMobileMarqueeData (maindata_t *mainData);
 static void     mainMobilePostCallback (void *userdata, char *resp, size_t len);
 static void     mainQueueClear (maindata_t *mainData, char *args);
@@ -264,8 +265,9 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 
   /* this just reduces the amount of stuff in the log */
   if (msg != MSG_MUSICQ_STATUS_DATA && msg != MSG_PLAYER_STATUS_DATA) {
-    logMsg (LOG_DBG, LOG_MSGS, "got: from: %ld route: %ld msg:%ld args:%s",
-        routefrom, route, msg, args);
+    logMsg (LOG_DBG, LOG_MSGS, "got: from:%ld/%s route:%ld/%s msg:%ld/%s args:%s",
+        routefrom, msgRouteDebugText (routefrom),
+        route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
   }
 
   switch (route) {
@@ -589,7 +591,6 @@ mainSendMarqueeData (maindata_t *mainData)
   char        *tstr;
   ssize_t     mqLen;
   ssize_t     musicqLen;
-  song_t      *song;
 
 
   mqLen = bdjoptGetNum (OPT_P_MQQLEN);
@@ -614,21 +615,7 @@ mainSendMarqueeData (maindata_t *mainData)
       } else if (i > musicqLen) {
         dstr = MSG_ARGS_EMPTY_STR;
       } else {
-        tstr = NULL;
-        song = musicqGetByIdx (mainData->musicQueue, mainData->musicqPlayIdx, i);
-        if (song != NULL) {
-          /* if the song has an unknown dance, the marquee display */
-          /* will be filled in with the dance name. */
-          tstr = songGetData (song, TAG_MQDISPLAY);
-        }
-        if (tstr != NULL && *tstr) {
-          dstr = tstr;
-        } else {
-          dstr = musicqGetDance (mainData->musicQueue, mainData->musicqPlayIdx, i);
-        }
-        if (dstr == NULL) {
-          dstr = MSG_ARGS_EMPTY_STR;
-        }
+        dstr = mainSongGetDanceDisplay (mainData, i);
       }
 
       snprintf (tbuff, sizeof (tbuff), "%s%c", dstr, MSG_ARGS_RS);
@@ -640,6 +627,33 @@ mainSendMarqueeData (maindata_t *mainData)
       MSG_MARQUEE_DATA, sbuff);
 }
 
+static char *
+mainSongGetDanceDisplay (maindata_t *mainData, ssize_t idx)
+{
+  char      *tstr;
+  char      *dstr;
+  song_t    *song;
+
+  tstr = NULL;
+  song = musicqGetByIdx (mainData->musicQueue, mainData->musicqPlayIdx, idx);
+  if (song != NULL) {
+    /* if the song has an unknown dance, the marquee display */
+    /* will be filled in with the dance name. */
+    tstr = songGetData (song, TAG_MQDISPLAY);
+  }
+  if (tstr != NULL && *tstr) {
+    dstr = tstr;
+  } else {
+    dstr = musicqGetDance (mainData->musicQueue, mainData->musicqPlayIdx, idx);
+  }
+  if (dstr == NULL) {
+    dstr = MSG_ARGS_EMPTY_STR;
+  }
+
+  return dstr;
+}
+
+
 static void
 mainSendMobileMarqueeData (maindata_t *mainData)
 {
@@ -649,11 +663,9 @@ mainSendMobileMarqueeData (maindata_t *mainData)
   char        jbuff [2048];
   char        *title;
   char        *dstr;
-  char        *tstr;
   char        *tag;
   ssize_t     mqLen;
   ssize_t     musicqLen;
-  song_t      *song;
 
 
   if (bdjoptGetNum (OPT_P_MOBILEMARQUEE) == MOBILEMQ_OFF) {
@@ -682,18 +694,7 @@ mainSendMobileMarqueeData (maindata_t *mainData)
       } else if (i > musicqLen) {
         dstr = "";
       } else {
-        tstr = NULL;
-        song = musicqGetByIdx (mainData->musicQueue, mainData->musicqPlayIdx, i);
-        if (song != NULL) {
-          /* if the song has an unknown dance, the marquee display */
-          /* will be filled in with the dance name. */
-          tstr = songGetData (song, TAG_MQDISPLAY);
-        }
-        if (tstr != NULL) {
-          dstr = tstr;
-        } else {
-          dstr = musicqGetDance (mainData->musicQueue, mainData->musicqPlayIdx, i);
-        }
+        dstr = mainSongGetDanceDisplay (mainData, i);
         if (dstr == NULL) {
           dstr = "";
         }
