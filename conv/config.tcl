@@ -74,6 +74,14 @@ foreach path [list {} profiles $hostname [file join $hostname profiles]] {
         if { $key eq "REMCONTROLSHOWSONG" } { continue }
         if { $key eq "UIFIXEDFONT" } { continue }
         if { $key eq "STARTMAXIMIZED" } { continue }
+        if { $key eq "QUICKPLAYENABLED" } { continue }
+        if { $key eq "QUICKPLAYSHOW" } { continue }
+        if { $key eq "SERVERNAME" } { continue }
+        if { $key eq "SERVERPASS" } { continue }
+        if { $key eq "SERVERPORT" } { continue }
+        if { $key eq "SERVERTYPE" } { continue }
+        if { $key eq "SERVERUSER" } { continue }
+
 
         if { $key eq "UITHEME" } { set value {} }
         if { $key eq "version" } { set value 1 }
@@ -167,6 +175,10 @@ foreach path [list {} profiles $hostname [file join $hostname profiles]] {
         if { $::tcl_platform(platform) eq "windows" } { set value libvolwin }
         if { $::tcl_platform(os) eq "Darwin" } { set value libvolmac }
         puts $ofh "..$value"
+      }
+      if { $path eq "profiles" } {
+        puts $ofh INSERT_LOC
+        puts $ofh "..6"
       }
       close $ifh
       close $ofh

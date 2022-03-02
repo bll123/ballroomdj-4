@@ -284,7 +284,6 @@ songfilterFilterSong (songfilter_t *sf, song_t *song)
     nlistidx_t    rating;
 
     rating = songGetNum (song, TAG_DANCERATING);
-fprintf (stderr, "song-rating: %zd < filter-rating: %zd\n", rating, sf->numfilter [SONG_FILTER_RATING]);
     if (rating < sf->numfilter [SONG_FILTER_RATING]) {
       logMsg (LOG_DBG, LOG_SONGSEL, "reject: %zd rating %ld < %ld", dbidx, rating, sf->numfilter [SONG_FILTER_RATING]);
       return false;

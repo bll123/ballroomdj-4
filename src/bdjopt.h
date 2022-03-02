@@ -63,6 +63,7 @@ typedef enum {
   OPT_P_FADEOUTTIME,                //
   OPT_P_FADETYPE,                   //
   OPT_P_GAP,                        //
+  OPT_P_INSERT_LOCATION,            //
   OPT_P_MAXPLAYTIME,                //
   OPT_P_MOBILEMARQUEE,              //
   OPT_P_MOBILEMQPORT,               //
@@ -71,20 +72,13 @@ typedef enum {
   OPT_P_MQQLEN,                     //
   OPT_P_MQ_SHOW_INFO,               //
   OPT_P_PAUSEMSG,
-  OPT_P_PROFILENAME,
+  OPT_P_PROFILENAME,                //
   OPT_P_QUEUE_NAME_A,               //
   OPT_P_QUEUE_NAME_B,               //
-  OPT_P_QUICKPLAYENABLED,
-  OPT_P_QUICKPLAYSHOW,
   OPT_P_REMCONTROLPASS,             //
   OPT_P_REMCONTROLPORT,             //
   OPT_P_REMCONTROLUSER,             //
   OPT_P_REMOTECONTROL,              //
-  OPT_P_SERVERNAME,
-  OPT_P_SERVERPASS,
-  OPT_P_SERVERPORT,
-  OPT_P_SERVERTYPE,
-  OPT_P_SERVERUSER,
   OPT_P_UIACCENTCOLOR,
   OPT_P_UITHEME,
 } bdjoptkey_t;

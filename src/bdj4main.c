@@ -797,7 +797,7 @@ static void
 mainQueueDance (maindata_t *mainData, char *args, ssize_t count)
 {
   playlist_t      *playlist;
-  char            plname [40];
+  char            plname [60];
   int             mi;
   ssize_t         danceIdx;
 
@@ -1282,6 +1282,11 @@ mainMusicqInsert (maindata_t *mainData, char *args)
     mainData->musicqChanged [mainData->musicqManageIdx] = true;
     mainData->marqueeChanged [mainData->musicqManageIdx] = true;
     mainMusicQueuePrep (mainData);
+    mainSendMusicqStatus (mainData, NULL, 0);
+    if (mainData->playWhenQueued &&
+        mainData->musicqPlayIdx == (musicqidx_t) mainData->musicqManageIdx) {
+      mainMusicQueuePlay (mainData);
+    }
   }
 }
 

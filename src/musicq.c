@@ -63,7 +63,10 @@ musicqPush (musicq_t *musicq, musicqidx_t musicqidx, song_t *song, char *plname)
   musicqitem->uniqueidx = musicq->uniqueidx [musicqidx];
   ++(musicq->uniqueidx [musicqidx]);
   musicqitem->song = song;
-  musicqitem->playlistName = strdup (plname);
+  musicqitem->playlistName = NULL;
+  if (plname != NULL) {
+    musicqitem->playlistName = strdup (plname);
+  }
   musicqitem->announce = NULL;
   musicqitem->flags = MUSICQ_FLAG_NONE;
   dur = songGetNum (song, TAG_DURATION);
@@ -114,7 +117,11 @@ musicqInsert (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx, song_t *song
   if (musicq == NULL || musicq->q [musicqidx] == NULL || song == NULL) {
     return;
   }
-  if (idx < 1 || idx >= queueGetCount (musicq->q [musicqidx])) {
+  if (idx < 1) {
+    return;
+  }
+  if (idx >= queueGetCount (musicq->q [musicqidx])) {
+    musicqPush (musicq, musicqidx, song, NULL);
     return;
   }
 

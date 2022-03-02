@@ -40,7 +40,6 @@ bdj4startup (int argc, char *argv[], char *tag, bdjmsgroute_t route)
   int         option_index = 0;
   char        tbuff [MAXPATHLEN];
   loglevel_t  loglevel = LOG_IMPORTANT | LOG_MAIN;
-  char        *locknm = lockName (route);
 
   static struct option bdj_options [] = {
     { "bdj4main",   no_argument,        NULL,   1 },
@@ -96,7 +95,7 @@ bdj4startup (int argc, char *argv[], char *tag, bdjmsgroute_t route)
       bdj4shutdown (route);
       exit (1);
     }
-    rc = lockAcquire (locknm, PATHBLD_MP_USEIDX);
+    rc = lockAcquire (lockName (route), PATHBLD_MP_USEIDX);
   }
 
   if (chdir (sysvarsGetStr (SV_BDJ4DATATOPDIR)) < 0) {
@@ -109,16 +108,16 @@ bdj4startup (int argc, char *argv[], char *tag, bdjmsgroute_t route)
   /* this will change in the future */
   /* re-use the lock name as the program name */
   if (route == ROUTE_MAIN) {
-    logStart (locknm, tag, loglevel);
+    logStart (lockName (route), tag, loglevel);
   } else {
-    logStartAppend (locknm, tag, loglevel);
+    logStartAppend (lockName (route), tag, loglevel);
   }
   logMsg (LOG_SESS, LOG_IMPORTANT, "Using profile %ld", sysvarsGetNum (SVL_BDJIDX));
 
   rc = bdjvarsdfloadInit ();
   if (rc < 0) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "Unable to load all data files");
-    fprintf (stderr, "Unable to load all data files");
+    fprintf (stderr, "Unable to load all data files\n");
     exit (1);
   }
 

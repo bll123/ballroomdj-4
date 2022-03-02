@@ -12,6 +12,7 @@
 
 #include "bdj4.h"
 #include "bdj4intl.h"
+#include "bdjopt.h"
 #include "bdjvarsdf.h"
 #include "conn.h"
 #include "dance.h"
@@ -560,6 +561,7 @@ uisongselQueueProcess (GtkButton *b, gpointer udata)
   int               count;
   gulong            dbidx;
   char              tbuff [MAXPATHLEN];
+  ssize_t           insloc;
 
   sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (uisongsel->songselTree));
   count = gtk_tree_selection_count_selected_rows (sel);
@@ -569,9 +571,9 @@ uisongselQueueProcess (GtkButton *b, gpointer udata)
   gtk_tree_selection_get_selected (sel, &model, &iter);
   gtk_tree_model_get (model, &iter, SONGSEL_COL_DBIDX, &dbidx, -1);
 
-  /* for the moment, this is hard-coded at position 4 */
-  snprintf (tbuff, sizeof (tbuff), "%d%c%d%c%ld", MUSICQ_CURRENT,
-      MSG_ARGS_RS, 4, MSG_ARGS_RS, dbidx);
+  insloc = bdjoptGetNum (OPT_P_INSERT_LOCATION);
+  snprintf (tbuff, sizeof (tbuff), "%d%c%zd%c%ld", MUSICQ_CURRENT,
+      MSG_ARGS_RS, insloc, MSG_ARGS_RS, dbidx);
   connSendMessage (uisongsel->conn, ROUTE_MAIN,
       MSG_MUSICQ_INSERT, tbuff);
 

@@ -1,6 +1,5 @@
 #include "config.h"
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -28,27 +27,26 @@ bdjvarsdfloadInit (void)
   char  fn [MAXPATHLEN];
   int   rc;
 
-    /* dance types must be loaded before dance */
+  /* dance types must be loaded before dance */
   pathbldMakePath (fn, sizeof (fn), "", "dancetypes", ".txt", PATHBLD_MP_NONE);
   bdjvarsdfSet (BDJVDF_DANCE_TYPES, dnctypesAlloc (fn));
 
-    /* the database load depends on dances */
-    /* playlist loads depend on dances */
-    /* sequence loads depend on dances */
+  /* the database load depends on dances */
+  /* playlist loads depend on dances */
+  /* sequence loads depend on dances */
   pathbldMakePath (fn, sizeof (fn), "", "dances", ".txt", PATHBLD_MP_NONE);
   bdjvarsdfSet (BDJVDF_DANCES, danceAlloc (fn));
 
-    /* the database load depends on ratings, levels, genres and status */
-    /* playlist loads depend on ratings and levels */
+  /* the database load depends on ratings and levels */
+  /* playlist loads depend on ratings and levels */
   pathbldMakePath (fn, sizeof (fn), "", "ratings", ".txt", PATHBLD_MP_NONE);
   bdjvarsdfSet (BDJVDF_RATINGS, ratingAlloc (fn));
-  pathbldMakePath (fn, sizeof (fn), "", "genres", ".txt", PATHBLD_MP_NONE);
-  bdjvarsdfSet (BDJVDF_GENRES, genreAlloc (fn));
   pathbldMakePath (fn, sizeof (fn), "", "levels", ".txt", PATHBLD_MP_NONE);
   bdjvarsdfSet (BDJVDF_LEVELS, levelAlloc (fn));
 
-    /* status is an optional configuration file   */
-    /* the database load depends on it if present */
+  /* the database load depends on genres and status */
+  pathbldMakePath (fn, sizeof (fn), "", "genres", ".txt", PATHBLD_MP_NONE);
+  bdjvarsdfSet (BDJVDF_GENRES, genreAlloc (fn));
   pathbldMakePath (fn, sizeof (fn), "", "status", ".txt", PATHBLD_MP_NONE);
   bdjvarsdfSet (BDJVDF_STATUS, statusAlloc (fn));
 
