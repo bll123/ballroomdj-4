@@ -19,6 +19,7 @@
 #include "bdjopt.h"
 #include "bdjstring.h"
 #include "bdjvars.h"
+#include "datafile.h"
 #include "conn.h"
 #include "localeutil.h"
 #include "lock.h"
@@ -33,6 +34,21 @@
 #include "tmutil.h"
 #include "uiutils.h"
 
+enum {
+  MQ_POSITION_X,
+  MQ_POSITION_Y,
+  MQ_SIZE_X,
+  MQ_SIZE_Y,
+};
+
+static datafilekey_t mqdfkeys[] = {
+  { "MQ_POS_X",     MQ_POSITION_X,    VALUE_NUM, NULL, -1 },
+  { "MQ_POS_Y",     MQ_POSITION_Y,    VALUE_NUM, NULL, -1 },
+  { "MQ_SIZE_X",    MQ_SIZE_X,        VALUE_NUM, NULL, -1 },
+  { "MQ_SIZE_Y",    MQ_SIZE_Y,        VALUE_NUM, NULL, -1 },
+};
+#define MARQUEE_DFKEY_COUNT (sizeof (mqdfkeys) / sizeof (datafilekey_t))
+
 typedef struct {
   GtkApplication  *app;
   progstate_t     *progstate;
@@ -40,6 +56,8 @@ typedef struct {
   conn_t          *conn;
   sockserver_t    *sockserver;
   char            *mqfont;
+  datafile_t      *optiondf;
+  nlist_t         *options;
   GtkWidget       *window;
   GtkWidget       *vbox;
   GtkWidget       *pbar;
@@ -114,6 +132,8 @@ main (int argc, char *argv[])
   marquee_t       marquee;
   char            *tval;
   char            *uifont;
+  char            tbuff [MAXPATHLEN];
+
 
   static struct option bdj_options [] = {
     { "debug",      required_argument,  NULL,   'd' },
@@ -212,6 +232,20 @@ main (int argc, char *argv[])
   marquee.mqShowInfo = bdjoptGetNum (OPT_P_MQ_SHOW_INFO);
   marquee.conn = connInit (ROUTE_MARQUEE);
 
+  pathbldMakePath (tbuff, sizeof (tbuff), "",
+      "marquee", ".txt", PATHBLD_MP_USEIDX);
+  marquee.optiondf = datafileAllocParse ("marquee-opt", DFTYPE_KEY_VAL, tbuff,
+      mqdfkeys, MARQUEE_DFKEY_COUNT, DATAFILE_NO_LOOKUP);
+  marquee.options = datafileGetList (marquee.optiondf);
+  if (marquee.options == NULL) {
+    marquee.options = nlistAlloc ("marquee-opt", LIST_ORDERED, free);
+
+    nlistSetNum (marquee.options, MQ_POSITION_X, -1);
+    nlistSetNum (marquee.options, MQ_POSITION_Y, -1);
+    nlistSetNum (marquee.options, MQ_SIZE_X, 600);
+    nlistSetNum (marquee.options, MQ_SIZE_Y, 600);
+  }
+
   tval = bdjoptGetData (OPT_MP_MQFONT);
   if (tval != NULL) {
     marquee.mqfont = strdup (tval);
@@ -246,6 +280,14 @@ static bool
 marqueeStoppingCallback (void *udata, programstate_t programState)
 {
   marquee_t   *marquee = udata;
+  gint        x, y;
+
+  gtk_window_get_size (GTK_WINDOW (marquee->window), &x, &y);
+  nlistSetNum (marquee->options, MQ_SIZE_X, x);
+  nlistSetNum (marquee->options, MQ_SIZE_Y, y);
+  gtk_window_get_position (GTK_WINDOW (marquee->window), &x, &y);
+  nlistSetNum (marquee->options, MQ_POSITION_X, x);
+  nlistSetNum (marquee->options, MQ_POSITION_Y, y);
 
   connDisconnectAll (marquee->conn);
   return true;
@@ -255,12 +297,18 @@ static bool
 marqueeClosingCallback (void *udata, programstate_t programState)
 {
   marquee_t   *marquee = udata;
+  char        fn [MAXPATHLEN];
+
+  pathbldMakePath (fn, sizeof (fn), "",
+      "marquee", ".txt", PATHBLD_MP_USEIDX);
+  datafileSaveKeyVal (fn, mqdfkeys, MARQUEE_DFKEY_COUNT, marquee->options);
 
   connFree (marquee->conn);
 
   sockhCloseServer (marquee->sockserver);
   bdjoptFree ();
   bdjvarsCleanup ();
+  datafileFree (marquee->optiondf);
 
   lockRelease (marquee->locknm, PATHBLD_MP_USEIDX);
 
@@ -295,6 +343,7 @@ static void
 marqueeActivate (GApplication *app, gpointer userdata)
 {
   char      imgbuff [MAXPATHLEN];
+  char      tbuff [MAXPATHLEN];
   marquee_t *marquee = userdata;
   GtkWidget *window;
   GtkWidget *hbox;
@@ -318,7 +367,9 @@ marqueeActivate (GApplication *app, gpointer userdata)
   gtk_window_set_focus_on_map (GTK_WINDOW (window), FALSE);
   gtk_window_set_title (GTK_WINDOW (window), _("Marquee"));
   gtk_window_set_default_icon_from_file (imgbuff, &gerr);
-  gtk_window_set_default_size (GTK_WINDOW (window), 600, 600);
+  gtk_window_set_default_size (GTK_WINDOW (window),
+      nlistGetNum (marquee->options, MQ_SIZE_X),
+      nlistGetNum (marquee->options, MQ_SIZE_Y));
   marquee->window = window;
 
   marquee->vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 5);
@@ -332,8 +383,10 @@ marqueeActivate (GApplication *app, gpointer userdata)
   marquee->pbar = gtk_progress_bar_new ();
   gtk_widget_set_halign (marquee->pbar, GTK_ALIGN_FILL);
   gtk_widget_set_hexpand (marquee->pbar, TRUE);
-  uiutilsSetCss (marquee->pbar,
-      "progress, trough { min-height: 25px; } progressbar > trough > progress { background-color: #ffa600; }");
+  snprintf (tbuff, sizeof (tbuff),
+      "progress, trough { min-height: 25px; } progressbar > trough > progress { background-color: %s; }",
+      (char *) bdjoptGetData (OPT_MP_MQ_ACCENT_COL));
+  uiutilsSetCss (marquee->pbar, tbuff);
   gtk_box_pack_start (GTK_BOX (marquee->vbox), marquee->pbar,
       FALSE, FALSE, 0);
 
@@ -357,8 +410,10 @@ marqueeActivate (GApplication *app, gpointer userdata)
   gtk_widget_set_halign (marquee->danceLab, GTK_ALIGN_START);
   gtk_widget_set_hexpand (marquee->danceLab, TRUE);
   gtk_widget_set_can_focus (marquee->danceLab, FALSE);
-  uiutilsSetCss (marquee->danceLab,
-      "label { color: #ffa600; }");
+  snprintf (tbuff, sizeof (tbuff),
+      "label { color: %s; }",
+      (char *) bdjoptGetData (OPT_MP_MQ_ACCENT_COL));
+  uiutilsSetCss (marquee->danceLab, tbuff);
   gtk_box_pack_start (GTK_BOX (hbox), marquee->danceLab,
       TRUE, TRUE, 0);
 
@@ -367,8 +422,10 @@ marqueeActivate (GApplication *app, gpointer userdata)
   gtk_label_set_max_width_chars (GTK_LABEL (marquee->countdownTimerLab), 6);
   gtk_widget_set_halign (marquee->countdownTimerLab, GTK_ALIGN_END);
   gtk_widget_set_can_focus (marquee->countdownTimerLab, FALSE);
-  uiutilsSetCss (marquee->countdownTimerLab,
-      "label { color: #ffa600; }");
+  snprintf (tbuff, sizeof (tbuff),
+      "label { color: %s; }",
+      (char *) bdjoptGetData (OPT_MP_MQ_ACCENT_COL));
+  uiutilsSetCss (marquee->countdownTimerLab, tbuff);
   gtk_box_pack_end (GTK_BOX (hbox), marquee->countdownTimerLab,
       FALSE, FALSE, 0);
 
@@ -410,8 +467,10 @@ marqueeActivate (GApplication *app, gpointer userdata)
 
   marquee->sep = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
   gtk_widget_set_margin_top (marquee->sep, 2);
-  uiutilsSetCss (marquee->sep,
-      "separator { min-height: 4px; background-color: #ffa600; }");
+  snprintf (tbuff, sizeof (tbuff),
+      "separator { min-height: 4px; background-color: %s; }",
+      (char *) bdjoptGetData (OPT_MP_MQ_ACCENT_COL));
+  uiutilsSetCss (marquee->sep, tbuff);
   gtk_box_pack_end (GTK_BOX (vbox), marquee->sep,
       TRUE, TRUE, 0);
 
@@ -431,6 +490,13 @@ marqueeActivate (GApplication *app, gpointer userdata)
 
   marquee->inResize = true;
   gtk_widget_show_all (window);
+
+  if (nlistGetNum (marquee->options, MQ_POSITION_X) != -1) {
+    gtk_window_move (GTK_WINDOW (window),
+        nlistGetNum (marquee->options, MQ_POSITION_X),
+        nlistGetNum (marquee->options, MQ_POSITION_Y));
+  }
+
   marquee->inResize = false;
 
   marqueeAdjustFontSizes (marquee, 0);

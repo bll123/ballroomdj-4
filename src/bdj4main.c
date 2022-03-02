@@ -457,6 +457,7 @@ static bool
 mainListeningCallback (void *tmaindata, programstate_t programState)
 {
   maindata_t    *mainData = tmaindata;
+  char          buff [100];
 
   mainData->processes [ROUTE_PLAYER] = procutilStartProcess (
       ROUTE_PLAYER, "bdj4player");
@@ -468,8 +469,16 @@ mainListeningCallback (void *tmaindata, programstate_t programState)
     mainData->processes [ROUTE_REMCTRL] = procutilStartProcess (
         ROUTE_REMCTRL, "bdj4rc");
   }
+
+  snprintf (buff, sizeof (buff), "GTK_THEME=%s", "Adwaita");
+  putenv (buff);
+
   mainData->processes [ROUTE_MARQUEE] = procutilStartProcess (
       ROUTE_MARQUEE, "bdj4marquee");
+
+  snprintf (buff, sizeof (buff), "GTK_THEME=%s", "Adwaita-Dark");
+  putenv (buff);
+
   return true;
 }
 

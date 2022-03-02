@@ -25,7 +25,8 @@ for { set i 1 } { $i < 20 } { incr i } {
 
 set cnm bdj_config
 set nnm bdjconfig
-foreach path [list {} profiles $hostname [file join $hostname profiles]] {
+set mppath [file join $hostname profiles]
+foreach path [list {} profiles $hostname $mppath] {
   foreach sfx $suffixlist {
     set fn "[file join $bdj3dir $path $cnm]$sfx"
     if { [file exists $fn] } {
@@ -179,6 +180,24 @@ foreach path [list {} profiles $hostname [file join $hostname profiles]] {
       if { $path eq "profiles" } {
         puts $ofh INSERT_LOC
         puts $ofh "..6"
+      }
+      if { $path eq $mppath } {
+        puts $ofh MQ_ACCENT_COL
+        puts $ofh "..#030e80"
+        puts $ofh UI_ACCENT_COL
+        puts $ofh "..#ffa600"
+        puts $ofh MQ_THEME
+        set value Adwaita
+        if { $::tcl_platform(os) eq "Linux" } { set value Adwaita }
+        if { $::tcl_platform(platform) eq "windows" } { set value Windows-10 }
+        if { $::tcl_platform(os) eq "Darwin" } { set value MacOS }
+        puts $ofh "..${value}"
+        puts $ofh UI_THEME
+        set value Adwaita-Dark
+        if { $::tcl_platform(os) eq "Linux" } { set value Adwaita-Dark }
+        if { $::tcl_platform(platform) eq "windows" } { set value Windows-10-Dark }
+        if { $::tcl_platform(os) eq "Darwin" } { set value MacOS-Dark }
+        puts $ofh "..${value}"
       }
       close $ifh
       close $ofh

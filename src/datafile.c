@@ -461,6 +461,34 @@ datafileParseMerge (list_t *datalist, char *data, char *name,
   return datalist;
 }
 
+void
+datafileSaveKeyVal (char *fn, datafilekey_t *dfkeys,
+    ssize_t dfkeycount, nlist_t *list)
+{
+  FILE      *fh;
+  char      tbuff [100];
+
+  datafileBackup (fn, 1);
+  fh = fopen (fn, "w");
+  fprintf (fh, "# %s\n", tmutilDstamp (tbuff, sizeof (tbuff)));
+  for (ssize_t i = 0; i < dfkeycount; ++i) {
+    fprintf (fh, "%s\n", dfkeys [i].name);
+    if (dfkeys [i].valuetype == VALUE_NUM) {
+      ssize_t   val;
+
+      val = nlistGetNum (list, dfkeys [i].itemkey);
+      fprintf (fh, "..%zd\n", val);
+    }
+    if (dfkeys [i].valuetype == VALUE_DATA) {
+      char    *val;
+
+      val = nlistGetStr (list, dfkeys [i].itemkey);
+      fprintf (fh, "..%s\n", val);
+    }
+  }
+  fclose (fh);
+}
+
 listidx_t
 dfkeyBinarySearch (const datafilekey_t *dfkeys, ssize_t count, char *key)
 {
@@ -513,14 +541,6 @@ datafileSetData (datafile_t *df, void *data)
   }
   df->data = data;
   return;
-}
-
-int
-datafileSave (datafilekey_t *dfkeys, ssize_t dfkeycount, datafile_t *data)
-{
-/* ### FIX : TODO */
-  datafileBackup (data->fname, 2);
-  return 0;
 }
 
 void

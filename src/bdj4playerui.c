@@ -15,12 +15,14 @@
 #include "bdj4.h"
 #include "bdj4init.h"
 #include "bdj4intl.h"
+#include "bdj4playerui.h"
 #include "bdjmsg.h"
 #include "bdjopt.h"
 #include "bdjstring.h"
 #include "bdjvars.h"
 #include "bdjvarsdfload.h"
 #include "conn.h"
+#include "datafile.h"
 #include "localeutil.h"
 #include "lock.h"
 #include "log.h"
@@ -60,10 +62,23 @@ typedef struct {
   uimusicq_t      *uimusicq;
   uisongsel_t     *uisongsel;
   /* options */
-  bool            playWhenQueued : 1;
-  bool            showExtraQueues : 1;
-  bool            switchQueueWhenEmpty : 1;
+  datafile_t      *optiondf;
+  nlist_t         *options;
 } playerui_t;
+
+static datafilekey_t playeruidfkeys[] = {
+  { "FILTER_POS_X",             SONGSEL_FILTER_POSITION_X,    VALUE_NUM, NULL, -1 },
+  { "FILTER_POS_Y",             SONGSEL_FILTER_POSITION_Y,    VALUE_NUM, NULL, -1 },
+  { "PLAY_WHEN_QUEUED",         PLUI_PLAY_WHEN_QUEUED,        VALUE_NUM, NULL, -1 },
+  { "PLUI_POS_X",               PLUI_POSITION_X,              VALUE_NUM, NULL, -1 },
+  { "PLUI_POS_Y",               PLUI_POSITION_Y,              VALUE_NUM, NULL, -1 },
+  { "PLUI_SIZE_X",              PLUI_SIZE_X,                  VALUE_NUM, NULL, -1 },
+  { "PLUI_SIZE_Y",              PLUI_SIZE_Y,                  VALUE_NUM, NULL, -1 },
+  { "SHOW_EXTRA_QUEUES",        PLUI_SHOW_EXTRA_QUEUES,       VALUE_NUM, NULL, -1 },
+  { "SORT_BY",                  SONGSEL_SORT_BY,              VALUE_DATA, NULL, -1 },
+  { "SWITCH_QUEUE_WHEN_EMPTY",  PLUI_SWITCH_QUEUE_WHEN_EMPTY, VALUE_NUM, NULL, -1 },
+};
+#define PLAYERUI_DFKEY_COUNT (sizeof (playeruidfkeys) / sizeof (datafilekey_t))
 
 #define PLUI_EXIT_WAIT_COUNT      20
 
@@ -103,6 +118,7 @@ main (int argc, char *argv[])
   uint16_t        listenPort;
   playerui_t      plui;
   char            *uifont;
+  char            tbuff [MAXPATHLEN];
 
 
   plui.notebook = NULL;
@@ -124,9 +140,6 @@ main (int argc, char *argv[])
   plui.uisongsel = NULL;
   plui.musicqPlayIdx = MUSICQ_A;
   plui.musicqManageIdx = MUSICQ_A;
-  plui.playWhenQueued = true;
-  plui.showExtraQueues = false;
-  plui.switchQueueWhenEmpty = false;
 
   for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
     plui.processes [i] = NULL;
@@ -148,9 +161,29 @@ main (int argc, char *argv[])
   listenPort = bdjvarsGetNum (BDJVL_PLAYERUI_PORT);
   plui.conn = connInit (ROUTE_PLAYERUI);
 
+  pathbldMakePath (tbuff, sizeof (tbuff), "",
+      "playerui", ".txt", PATHBLD_MP_USEIDX);
+  plui.optiondf = datafileAllocParse ("playerui-opt", DFTYPE_KEY_VAL, tbuff,
+      playeruidfkeys, PLAYERUI_DFKEY_COUNT, DATAFILE_NO_LOOKUP);
+  plui.options = datafileGetList (plui.optiondf);
+  if (plui.options == NULL) {
+    plui.options = nlistAlloc ("playerui-opt", LIST_ORDERED, free);
+
+    nlistSetNum (plui.options, PLUI_PLAY_WHEN_QUEUED, true);
+    nlistSetNum (plui.options, PLUI_SHOW_EXTRA_QUEUES, false);
+    nlistSetNum (plui.options, PLUI_SWITCH_QUEUE_WHEN_EMPTY, false);
+    nlistSetNum (plui.options, SONGSEL_FILTER_POSITION_X, -1);
+    nlistSetNum (plui.options, SONGSEL_FILTER_POSITION_Y, -1);
+    nlistSetNum (plui.options, PLUI_POSITION_X, -1);
+    nlistSetNum (plui.options, PLUI_POSITION_Y, -1);
+    nlistSetNum (plui.options, PLUI_SIZE_X, 1000);
+    nlistSetNum (plui.options, PLUI_SIZE_Y, 600);
+    nlistSetStr (plui.options, SONGSEL_SORT_BY, "TITLE");
+  }
+
   plui.uiplayer = uiplayerInit (plui.progstate, plui.conn);
   plui.uimusicq = uimusicqInit (plui.progstate, plui.conn);
-  plui.uisongsel = uisongselInit (plui.progstate, plui.conn);
+  plui.uisongsel = uisongselInit (plui.progstate, plui.conn, plui.options);
 
   plui.sockserver = sockhStartServer (listenPort);
 
@@ -159,9 +192,6 @@ main (int argc, char *argv[])
   uifont = bdjoptGetData (OPT_MP_UIFONT);
   uiutilsSetUIFont (uifont);
 
-  /* read in the playerui options */
-  /* setextraqueues is called in the gui activation */
-  // ### TODO read in playerui options
   pluiSetPlayWhenQueued (&plui);
   pluiSetSwitchQueue (&plui);
 
@@ -182,7 +212,15 @@ main (int argc, char *argv[])
 static bool
 pluiStoppingCallback (void *udata, programstate_t programState)
 {
-  playerui_t   *plui = udata;
+  playerui_t    * plui = udata;
+  gint          x, y;
+
+  gtk_window_get_size (GTK_WINDOW (plui->window), &x, &y);
+  nlistSetNum (plui->options, PLUI_SIZE_X, x);
+  nlistSetNum (plui->options, PLUI_SIZE_Y, y);
+  gtk_window_get_position (GTK_WINDOW (plui->window), &x, &y);
+  nlistSetNum (plui->options, PLUI_POSITION_X, x);
+  nlistSetNum (plui->options, PLUI_POSITION_Y, y);
 
   for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
     if (plui->processes [i] != NULL) {
@@ -198,9 +236,12 @@ pluiStoppingCallback (void *udata, programstate_t programState)
 static bool
 pluiClosingCallback (void *udata, programstate_t programState)
 {
-  playerui_t   *plui = udata;
+  playerui_t    *plui = udata;
+  char          fn [MAXPATHLEN];
 
-  // ### TODO save playerui options
+  pathbldMakePath (fn, sizeof (fn), "",
+      "playerui", ".txt", PATHBLD_MP_USEIDX);
+  datafileSaveKeyVal (fn, playeruidfkeys, PLAYERUI_DFKEY_COUNT, plui->options);
 
   g_object_unref (plui->ledonImg);
   g_object_unref (plui->ledoffImg);
@@ -213,6 +254,7 @@ pluiClosingCallback (void *udata, programstate_t programState)
   uiplayerFree (plui->uiplayer);
   uimusicqFree (plui->uimusicq);
   uisongselFree (plui->uisongsel);
+  datafileFree (plui->optiondf);
 
   /* give the other processes some time to shut down */
   mssleep (200);
@@ -301,21 +343,21 @@ pluiActivate (GApplication *app, gpointer userdata)
 
   menuitem = gtk_check_menu_item_new_with_label (_("Play When Queued"));
   gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (menuitem),
-      plui->playWhenQueued);
+      nlistGetNum (plui->options, PLUI_PLAY_WHEN_QUEUED));
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
   g_signal_connect (menuitem, "toggled",
       G_CALLBACK (pluiTogglePlayWhenQueued), plui);
 
   menuitem = gtk_check_menu_item_new_with_label (_("Show Extra Queues"));
   gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (menuitem),
-      plui->showExtraQueues);
+      nlistGetNum (plui->options, PLUI_SHOW_EXTRA_QUEUES));
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
   g_signal_connect (menuitem, "toggled",
       G_CALLBACK (pluiToggleExtraQueues), plui);
 
   menuitem = gtk_check_menu_item_new_with_label (_("Switch Queue When Empty"));
   gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (menuitem),
-      plui->switchQueueWhenEmpty);
+      nlistGetNum (plui->options, PLUI_SWITCH_QUEUE_WHEN_EMPTY));
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
   g_signal_connect (menuitem, "toggled",
       G_CALLBACK (pluiToggleSwitchQueue), plui);
@@ -380,9 +422,18 @@ pluiActivate (GApplication *app, gpointer userdata)
   tabLabel = gtk_label_new ("Song Selection");
   gtk_notebook_append_page (GTK_NOTEBOOK (plui->notebook), widget, tabLabel);
 
-  gtk_window_set_default_size (GTK_WINDOW (plui->window), 1000, 600);
+  gtk_window_set_default_size (GTK_WINDOW (plui->window),
+      nlistGetNum (plui->options, PLUI_SIZE_X),
+      nlistGetNum (plui->options, PLUI_SIZE_Y));
 
   gtk_widget_show_all (plui->window);
+
+  if (nlistGetNum (plui->options, PLUI_POSITION_X) != -1) {
+    gtk_window_move (GTK_WINDOW (plui->window),
+        nlistGetNum (plui->options, PLUI_POSITION_X),
+        nlistGetNum (plui->options, PLUI_POSITION_Y));
+  }
+
   pluiSetExtraQueues (plui);
 }
 
@@ -559,7 +610,8 @@ pluiSetSwitchPage (playerui_t *plui, int pagenum)
 {
   /* note that the design requires that the music queues be the first */
   /* tabs in the notebook */
-  if (pagenum < MUSICQ_MAX && plui->showExtraQueues) {
+  if (pagenum < MUSICQ_MAX &&
+      nlistGetNum (plui->options, PLUI_SHOW_EXTRA_QUEUES)) {
     plui->musicqManageIdx = pagenum;
     uimusicqSetManageIdx (plui->uimusicq, pagenum);
     gtk_widget_show (plui->setPlaybackButton);
@@ -582,7 +634,7 @@ pluiSetPlaybackQueue (playerui_t  *plui, musicqidx_t newQueue)
 {
   char            tbuff [40];
 
-  if (plui->showExtraQueues) {
+  if (nlistGetNum (plui->options, PLUI_SHOW_EXTRA_QUEUES)) {
     plui->musicqPlayIdx = newQueue;
     if (plui->musicqPlayIdx == MUSICQ_A) {
       gtk_image_set_from_pixbuf (GTK_IMAGE (plui->musicqImage [MUSICQ_A]), plui->ledonImg);
@@ -606,8 +658,11 @@ static void
 pluiTogglePlayWhenQueued (GtkWidget *mi, gpointer udata)
 {
   playerui_t      *plui = udata;
+  ssize_t         val;
 
-  plui->playWhenQueued = ! plui->playWhenQueued;
+  val = nlistGetNum (plui->options, PLUI_PLAY_WHEN_QUEUED);
+  val = ! val;
+  nlistSetNum (plui->options, PLUI_PLAY_WHEN_QUEUED, val);
   pluiSetPlayWhenQueued (plui);
 }
 
@@ -616,7 +671,8 @@ pluiSetPlayWhenQueued (playerui_t *plui)
 {
   char  tbuff [40];
 
-  snprintf (tbuff, sizeof (tbuff), "%d", plui->playWhenQueued);
+  snprintf (tbuff, sizeof (tbuff), "%zd",
+      nlistGetNum (plui->options, PLUI_PLAY_WHEN_QUEUED));
   connSendMessage (plui->conn, ROUTE_MAIN, MSG_QUEUE_PLAY_ON_ADD, tbuff);
 }
 
@@ -625,9 +681,11 @@ static void
 pluiToggleExtraQueues (GtkWidget *mi, gpointer udata)
 {
   playerui_t      *plui = udata;
+  ssize_t         val;
 
-  plui->showExtraQueues = ! plui->showExtraQueues;
-
+  val = nlistGetNum (plui->options, PLUI_SHOW_EXTRA_QUEUES);
+  val = ! val;
+  nlistSetNum (plui->options, PLUI_SHOW_EXTRA_QUEUES, val);
   pluiSetExtraQueues (plui);
 }
 
@@ -643,8 +701,9 @@ pluiSetExtraQueues (playerui_t *plui)
   }
 
   page = gtk_notebook_get_nth_page (GTK_NOTEBOOK (plui->notebook), MUSICQ_B);
-  gtk_widget_set_visible (page, plui->showExtraQueues);
-  if (plui->showExtraQueues) {
+  gtk_widget_set_visible (page,
+      nlistGetNum (plui->options, PLUI_SHOW_EXTRA_QUEUES));
+  if (nlistGetNum (plui->options, PLUI_SHOW_EXTRA_QUEUES)) {
     pagenum = gtk_notebook_get_current_page (GTK_NOTEBOOK (plui->notebook));
     /* I wish there was a way to identify the notebook tab */
     if (pagenum == 0) {
@@ -659,8 +718,11 @@ static void
 pluiToggleSwitchQueue (GtkWidget *mi, gpointer udata)
 {
   playerui_t      *plui = udata;
+  ssize_t         val;
 
-  plui->switchQueueWhenEmpty = ! plui->switchQueueWhenEmpty;
+  val = nlistGetNum (plui->options, PLUI_SWITCH_QUEUE_WHEN_EMPTY);
+  val = ! val;
+  nlistSetNum (plui->options, PLUI_SWITCH_QUEUE_WHEN_EMPTY, val);
   pluiSetSwitchQueue (plui);
 }
 
@@ -669,7 +731,8 @@ pluiSetSwitchQueue (playerui_t *plui)
 {
   char  tbuff [40];
 
-  snprintf (tbuff, sizeof (tbuff), "%d", plui->switchQueueWhenEmpty);
+  snprintf (tbuff, sizeof (tbuff), "%zd",
+      nlistGetNum (plui->options, PLUI_SWITCH_QUEUE_WHEN_EMPTY));
   connSendMessage (plui->conn, ROUTE_MAIN, MSG_QUEUE_SWITCH_EMPTY, tbuff);
 }
 

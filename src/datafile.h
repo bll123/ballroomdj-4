@@ -94,5 +94,6 @@ list_t *      datafileGetLookup (datafile_t *);
 void          datafileSetData (datafile_t *df, void *data);
 int           datafileSave (datafilekey_t *, ssize_t dfkeycount, datafile_t *);
 void          datafileBackup (char *fname, int count);
+void          datafileSaveKeyVal (char *fn, datafilekey_t *dfkeys, ssize_t count, nlist_t *list);
 
 #endif /* INC_DATAFILE_H */

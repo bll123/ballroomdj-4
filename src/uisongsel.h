@@ -7,6 +7,7 @@
 #include "conn.h"
 #include "level.h"
 #include "musicdb.h"
+#include "nlist.h"
 #include "progstate.h"
 #include "rating.h"
 #include "songfilter.h"
@@ -26,6 +27,7 @@ typedef struct {
   rating_t          *ratings;
   level_t           *levels;
   status_t          *status;
+  nlist_t           *options;
   /* filter data */
   uiutilsdropdown_t sortbysel;
   uiutilsdropdown_t filterdancesel;
@@ -49,7 +51,7 @@ typedef struct {
   bool              createRowFlag : 1;
 } uisongsel_t;
 
-uisongsel_t * uisongselInit (progstate_t *progstate, conn_t *conn);
+uisongsel_t * uisongselInit (progstate_t *progstate, conn_t *conn, nlist_t *opts);
 void        uisongselFree (uisongsel_t *uisongsel);
 GtkWidget   * uisongselActivate (uisongsel_t *uisongsel, GtkWidget *parentwin);
 void        uisongselMainLoop (uisongsel_t *uisongsel);

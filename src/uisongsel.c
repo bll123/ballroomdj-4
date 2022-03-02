@@ -12,6 +12,7 @@
 
 #include "bdj4.h"
 #include "bdj4intl.h"
+#include "bdj4playerui.h"
 #include "bdjopt.h"
 #include "bdjvarsdf.h"
 #include "conn.h"
@@ -89,7 +90,7 @@ static void uisongselFilterResponseHandler (GtkDialog *d, gint responseid,
 static void uisongselInitFilterDisplay (uisongsel_t *uisongsel);
 
 uisongsel_t *
-uisongselInit (progstate_t *progstate, conn_t *conn)
+uisongselInit (progstate_t *progstate, conn_t *conn, nlist_t *options)
 {
   uisongsel_t    *uisongsel;
 
@@ -108,6 +109,7 @@ uisongselInit (progstate_t *progstate, conn_t *conn)
   uisongsel->lastTreeSize = 0;
   uisongsel->lastStepIncrement = 0.0;
   uisongsel->danceIdx = -1;
+  uisongsel->options = options;
   uiutilsDropDownInit (&uisongsel->dancesel);
   uiutilsDropDownInit (&uisongsel->sortbysel);
   uiutilsEntryInit (&uisongsel->searchentry, 30, 100);
@@ -118,7 +120,8 @@ uisongselInit (progstate_t *progstate, conn_t *conn)
   uiutilsSpinboxInit (&uisongsel->filterstatussel);
   uiutilsSpinboxInit (&uisongsel->filterfavoritesel);
   uisongsel->songfilter = songfilterAlloc (SONG_FILTER_FOR_PLAYBACK);
-  songfilterSetSort (uisongsel->songfilter, "TITLE"); // ok as default
+  songfilterSetSort (uisongsel->songfilter,
+      nlistGetStr (options, SONGSEL_SORT_BY));
 
   // ### FIX load last option/etc settings from datafile.
 
@@ -609,6 +612,12 @@ uisongselFilterDialog (GtkButton *b, gpointer udata)
 
   uisongselInitFilterDisplay (uisongsel);
   gtk_widget_show_all (uisongsel->filterDialog);
+
+  if (nlistGetNum (uisongsel->options, SONGSEL_FILTER_POSITION_X) != -1) {
+    gtk_window_move (GTK_WINDOW (uisongsel->filterDialog),
+        nlistGetNum (uisongsel->options, SONGSEL_FILTER_POSITION_X),
+        nlistGetNum (uisongsel->options, SONGSEL_FILTER_POSITION_Y));
+  }
 }
 
 static void
@@ -808,6 +817,8 @@ uisongselSortBySelect (GtkTreeView *tv, GtkTreePath *path,
   if (idx >= 0) {
     songfilterSetSort (uisongsel->songfilter,
         uisongsel->sortbysel.strSelection);
+    nlistSetStr (uisongsel->options, SONGSEL_SORT_BY,
+        uisongsel->sortbysel.strSelection);
   }
 }
 
@@ -940,14 +951,23 @@ uisongselFilterResponseHandler (GtkDialog *d, gint responseid, gpointer udata)
   uisongsel_t   *uisongsel = udata;
   const char    *searchstr;
   int           idx;
+  gint          x, y;
 
   switch (responseid) {
     case GTK_RESPONSE_DELETE_EVENT: {
+      gtk_window_get_position (GTK_WINDOW (uisongsel->filterDialog), &x, &y);
+      nlistSetNum (uisongsel->options, SONGSEL_FILTER_POSITION_X, x);
+      nlistSetNum (uisongsel->options, SONGSEL_FILTER_POSITION_Y, y);
+
       songfilterReset (uisongsel->songfilter);
       uisongsel->filterDialog = NULL;
       break;
     }
     case GTK_RESPONSE_CLOSE: {
+      gtk_window_get_position (GTK_WINDOW (uisongsel->filterDialog), &x, &y);
+      nlistSetNum (uisongsel->options, SONGSEL_FILTER_POSITION_X, x);
+      nlistSetNum (uisongsel->options, SONGSEL_FILTER_POSITION_Y, y);
+
       songfilterReset (uisongsel->songfilter);
       gtk_widget_hide (uisongsel->filterDialog);
       break;
