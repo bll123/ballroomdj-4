@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-02-25 11:45-0800\n"
+"POT-Creation-Date: 2022-03-03 10:24-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: bdj4installer.c:1588 bdj4installer.c:1683 bdj4installer.c:1717
+#: bdj4installer.c:1588 bdj4installer.c:1687 bdj4installer.c:1721
 #, c-format
 msgid "%s installed."
 msgstr ""
@@ -44,15 +44,27 @@ msgstr ""
 msgid "Album Artist"
 msgstr ""
 
-#: uisongsel.c:162 uisongsel.c:671
+#: uisongsel.c:189 uisongsel.c:716
 msgid "All Dances"
 msgstr ""
 
-#: uisongsel.c:759
+#: uisongsel.c:860
 msgid "All Genres"
 msgstr ""
 
-#: uisongsel.c:603
+#: uisongsel.c:752 uisongsel.c:909
+msgid "All Levels"
+msgstr ""
+
+#: uisongsel.c:731 uisongsel.c:898
+msgid "All Ratings"
+msgstr ""
+
+#: uisongsel.c:773 uisongsel.c:920
+msgid "Any Status"
+msgstr ""
+
+#: uisongsel.c:645
 msgid "Apply"
 msgstr ""
 
@@ -60,7 +72,7 @@ msgstr ""
 msgid "Argentine Tango"
 msgstr ""
 
-#: sortopt.c:61 uisongsel.c:252
+#: sortopt.c:61 uisongsel.c:279
 msgid "Artist"
 msgstr ""
 
@@ -105,11 +117,11 @@ msgstr ""
 msgid "Clear & Play"
 msgstr ""
 
-#: uimusicq.c:209 templates.c:41 templates.c:51 templates.c:61
+#: uimusicq.c:211 templates.c:41 templates.c:51 templates.c:61
 msgid "Clear Queue"
 msgstr ""
 
-#: bdj4installer.c:820 uisongsel.c:599
+#: bdj4installer.c:820 uisongsel.c:641
 msgid "Close"
 msgstr ""
 
@@ -145,15 +157,15 @@ msgstr ""
 msgid "Creating shortcut."
 msgstr ""
 
-#: sortopt.c:64 uisongsel.c:232 uisongsel.c:663
+#: sortopt.c:64 uisongsel.c:259 uisongsel.c:708
 msgid "Dance"
 msgstr ""
 
-#: sortopt.c:67 uisongsel.c:694
+#: sortopt.c:67 uisongsel.c:745
 msgid "Dance Level"
 msgstr ""
 
-#: sortopt.c:70 uisongsel.c:678
+#: sortopt.c:70 uisongsel.c:724
 msgid "Dance Rating"
 msgstr ""
 
@@ -161,12 +173,12 @@ msgstr ""
 msgid "Date Added"
 msgstr ""
 
-#: bdj4installer.c:1568 bdj4installer.c:1666
+#: bdj4installer.c:1568 bdj4installer.c:1670
 #, c-format
 msgid "Download of %s failed."
 msgstr ""
 
-#: bdj4installer.c:1518 bdj4installer.c:1616
+#: bdj4installer.c:1518 bdj4installer.c:1620
 #, c-format
 msgid "Downloading %s."
 msgstr ""
@@ -200,7 +212,7 @@ msgstr ""
 
 #: bdj4installer.c:1025 bdj4installer.c:1068 bdj4installer.c:1102
 #: bdj4installer.c:1156 bdj4installer.c:1353 bdj4installer.c:1463
-#: bdj4installer.c:1510 bdj4installer.c:1607 bdj4installer.c:1697
+#: bdj4installer.c:1510 bdj4installer.c:1607 bdj4installer.c:1701
 msgid "Error: Unable to set working folder."
 msgstr ""
 
@@ -212,11 +224,15 @@ msgstr ""
 msgid "Fade"
 msgstr ""
 
-#: uisongsel.c:596
+#: uisongsel.c:787
+msgid "Favorite"
+msgstr ""
+
+#: uisongsel.c:638
 msgid "Filter Songs"
 msgstr ""
 
-#: uisongsel.c:165
+#: uisongsel.c:192
 msgid "Filters"
 msgstr ""
 
@@ -228,7 +244,7 @@ msgstr ""
 msgid "Foxtrot"
 msgstr ""
 
-#: sortopt.c:76 uisongsel.c:648
+#: sortopt.c:76 uisongsel.c:692
 msgid "Genre"
 msgstr ""
 
@@ -252,7 +268,7 @@ msgstr ""
 #: bdj4installer.c:951 bdj4installer.c:971 bdj4installer.c:1026
 #: bdj4installer.c:1069 bdj4installer.c:1103 bdj4installer.c:1157
 #: bdj4installer.c:1354 bdj4installer.c:1464 bdj4installer.c:1511
-#: bdj4installer.c:1608 bdj4installer.c:1698
+#: bdj4installer.c:1608 bdj4installer.c:1702
 msgid "Installation aborted."
 msgstr ""
 
@@ -260,7 +276,7 @@ msgstr ""
 msgid "Installation complete."
 msgstr ""
 
-#: bdj4installer.c:1562 bdj4installer.c:1660 bdj4installer.c:1703
+#: bdj4installer.c:1562 bdj4installer.c:1664 bdj4installer.c:1707
 #, c-format
 msgid "Installing %s."
 msgstr ""
@@ -285,19 +301,19 @@ msgstr ""
 msgid "Manage"
 msgstr ""
 
-#: bdj4marquee.c:319
+#: bdj4marquee.c:382
 msgid "Marquee"
 msgstr ""
 
-#: uimusicq.c:172
+#: uimusicq.c:174
 msgid "Move Down"
 msgstr ""
 
-#: uimusicq.c:163
+#: uimusicq.c:165
 msgid "Move Up"
 msgstr ""
 
-#: uimusicq.c:158
+#: uimusicq.c:160
 msgid "Move to Top"
 msgstr ""
 
@@ -326,11 +342,11 @@ msgstr ""
 msgid "Normal"
 msgstr ""
 
-#: bdj4marquee.c:355
+#: bdj4marquee.c:422
 msgid "Not Playing"
 msgstr ""
 
-#: bdj4playerui.c:296
+#: bdj4playerui.c:338
 msgid "Options"
 msgstr ""
 
@@ -359,7 +375,7 @@ msgstr ""
 msgid "Play"
 msgstr ""
 
-#: bdj4playerui.c:302
+#: bdj4playerui.c:344
 msgid "Play When Queued"
 msgstr ""
 
@@ -389,7 +405,7 @@ msgstr ""
 msgid "Proceed with installation?"
 msgstr ""
 
-#: uisongsel.c:154 templates.c:39 templates.c:43 templates.c:49 templates.c:53
+#: uisongsel.c:181 templates.c:39 templates.c:43 templates.c:49 templates.c:53
 #: templates.c:59 templates.c:63
 msgid "Queue"
 msgstr ""
@@ -398,11 +414,11 @@ msgstr ""
 msgid "Queue 5"
 msgstr ""
 
-#: uimusicq.c:204
+#: uimusicq.c:206
 msgid "Queue Dance"
 msgstr ""
 
-#: uimusicq.c:198
+#: uimusicq.c:200
 msgid "Queue Playlist"
 msgstr ""
 
@@ -410,7 +426,7 @@ msgstr ""
 msgid "Quickstep"
 msgstr ""
 
-#: uimusicq.c:186
+#: uimusicq.c:188
 msgid "Remove from queue"
 msgstr ""
 
@@ -418,11 +434,11 @@ msgstr ""
 msgid "Repeat"
 msgstr ""
 
-#: uimusicq.c:192
+#: uimusicq.c:194
 msgid "Request External"
 msgstr ""
 
-#: uisongsel.c:601
+#: uisongsel.c:643
 msgid "Reset"
 msgstr ""
 
@@ -455,7 +471,7 @@ msgstr ""
 msgid "Saving install location."
 msgstr ""
 
-#: uisongsel.c:634
+#: uisongsel.c:678
 msgid "Search"
 msgstr ""
 
@@ -467,7 +483,7 @@ msgstr ""
 msgid "Select BallroomDJ 3 Location"
 msgstr ""
 
-#: bdj4playerui.c:309
+#: bdj4playerui.c:351
 msgid "Show Extra Queues"
 msgstr ""
 
@@ -475,7 +491,7 @@ msgstr ""
 msgid "Skipping conversion."
 msgstr ""
 
-#: uisongsel.c:620
+#: uisongsel.c:663
 msgid "Sort by"
 msgstr ""
 
@@ -487,11 +503,11 @@ msgstr ""
 msgid "Starting conversion process."
 msgstr ""
 
-#: uisongsel.c:703
+#: uisongsel.c:766
 msgid "Status"
 msgstr ""
 
-#: bdj4playerui.c:316
+#: bdj4playerui.c:358
 msgid "Switch Queue When Empty"
 msgstr ""
 
@@ -512,11 +528,11 @@ msgid ""
 "installs."
 msgstr ""
 
-#: sortopt.c:79 uisongsel.c:243
+#: sortopt.c:79 uisongsel.c:270
 msgid "Title"
 msgstr ""
 
-#: uimusicq.c:181
+#: uimusicq.c:183
 msgid "Toggle Pause"
 msgstr ""
 
@@ -528,7 +544,7 @@ msgstr ""
 msgid "Track"
 msgstr ""
 
-#: bdj4installer.c:1525 bdj4installer.c:1623
+#: bdj4installer.c:1525 bdj4installer.c:1627
 #, c-format
 msgid "Unable to determine %s version."
 msgstr ""
