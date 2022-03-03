@@ -1,6 +1,5 @@
 #include "config.h"
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -103,6 +102,7 @@ static int      marqueeProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 static gboolean marqueeCloseWin (GtkWidget *window, GdkEvent *event, gpointer userdata);
 static gboolean marqueeToggleFullscreen (GtkWidget *window,
                     GdkEventButton *event, gpointer userdata);
+static void     marqueeSetNotMaximized (marquee_t *marquee);
 static gboolean marqueeResized (GtkWidget *window, GdkEventConfigure *event,
                     gpointer userdata);
 static gboolean marqueeWinState (GtkWidget *window, GdkEventWindowState *event,
@@ -267,7 +267,7 @@ main (int argc, char *argv[])
   status = marqueeCreateGui (&marquee, 0, NULL);
 
   while (progstateShutdownProcess (marquee.progstate) != STATE_CLOSED) {
-    ;
+    mssleep (10);
   }
   progstateFree (marquee.progstate);
   logEnd ();
@@ -279,8 +279,17 @@ main (int argc, char *argv[])
 static bool
 marqueeStoppingCallback (void *udata, programstate_t programState)
 {
-  marquee_t   *marquee = udata;
-  gint        x, y;
+  marquee_t     *marquee = udata;
+  gint          x, y;
+
+  if (marquee->isMaximized) {
+    marqueeSetNotMaximized (marquee);
+    return false;
+  }
+
+  if (gtk_window_is_maximized (GTK_WINDOW (marquee->window))) {
+    return false;
+  }
 
   gtk_window_get_size (GTK_WINDOW (marquee->window), &x, &y);
   nlistSetNum (marquee->options, MQ_SIZE_X, x);
@@ -298,6 +307,11 @@ marqueeClosingCallback (void *udata, programstate_t programState)
 {
   marquee_t   *marquee = udata;
   char        fn [MAXPATHLEN];
+
+  /* these are moved here so that the window can be un-maximized and */
+  /* the size/position saved */
+  gtk_widget_destroy (marquee->window);
+  g_object_unref (marquee->app);
 
   pathbldMakePath (fn, sizeof (fn), "",
       "marquee", ".txt", PATHBLD_MP_USEIDX);
@@ -334,8 +348,7 @@ marqueeCreateGui (marquee_t *marquee, int argc, char *argv [])
   g_signal_connect (marquee->app, "activate", G_CALLBACK (marqueeActivate), marquee);
 
   status = g_application_run (G_APPLICATION (marquee->app), argc, argv);
-  gtk_widget_destroy (marquee->window);
-  g_object_unref (marquee->app);
+
   return status;
 }
 
@@ -362,6 +375,7 @@ marqueeActivate (GApplication *app, gpointer userdata)
   g_signal_connect (window, "window-state-event", G_CALLBACK (marqueeWinState), marquee);
   /* the backdrop window state must be intercepted */
   g_signal_connect (window, "state-flags-changed", G_CALLBACK (marqueeStateChg), marquee);
+  marquee->window = window;
 
   gtk_window_set_type_hint (GTK_WINDOW (window), GDK_WINDOW_TYPE_HINT_NORMAL);
   gtk_window_set_focus_on_map (GTK_WINDOW (window), FALSE);
@@ -683,14 +697,7 @@ marqueeToggleFullscreen (GtkWidget *window, GdkEventButton *event, gpointer user
 
   marquee->userDoubleClicked = true;
   if (marquee->isMaximized) {
-    marquee->inMax = true;
-    marquee->isMaximized = false;
-    marqueeAdjustFontSizes (marquee, marquee->priorSize);
-    marquee->setPrior = true;
-    gtk_window_unmaximize (GTK_WINDOW (window));
-    marquee->unMaximize = true;
-    marquee->inMax = false;
-    gtk_window_set_decorated (GTK_WINDOW (window), TRUE);
+    marqueeSetNotMaximized (marquee);
   } else {
     marquee->inMax = true;
     marquee->isMaximized = true;
@@ -700,6 +707,21 @@ marqueeToggleFullscreen (GtkWidget *window, GdkEventButton *event, gpointer user
   }
 
   return FALSE;
+}
+
+static void
+marqueeSetNotMaximized (marquee_t *marquee)
+{
+  if (marquee->isMaximized) {
+    marquee->inMax = true;
+    marquee->isMaximized = false;
+    marqueeAdjustFontSizes (marquee, marquee->priorSize);
+    marquee->setPrior = true;
+    gtk_window_unmaximize (GTK_WINDOW (marquee->window));
+    marquee->unMaximize = true;
+    marquee->inMax = false;
+    gtk_window_set_decorated (GTK_WINDOW (marquee->window), TRUE);
+  }
 }
 
 /* resize gets called multiple times; it's difficult to get the font      */
