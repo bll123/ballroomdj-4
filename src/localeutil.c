@@ -26,9 +26,6 @@ localeInit (void)
 {
   char        lbuff [MAXPATHLEN];
   char        tbuff [MAXPATHLEN];
-  char        *val;
-  datafile_t  *df;
-  slist_t     *list;
 
   pathbldMakePath (tbuff, sizeof (tbuff), "", "", "", PATHBLD_MP_LOCALEDIR);
   bindtextdomain ("bdj4", tbuff);
@@ -37,9 +34,14 @@ localeInit (void)
 #endif
   textdomain ("bdj4");
 
-  if (1 || isWindows ()) {
+  strlcpy (lbuff, setlocale (LC_CTYPE, NULL), sizeof (lbuff));
+
+  if (isWindows ()) {
+    datafile_t  *df;
+    slist_t     *list;
+    char        *val;
+
     /* windows has non-standard names; convert them */
-    strlcpy (lbuff, setlocale (LC_CTYPE, NULL), sizeof (lbuff));
     pathbldMakePath (tbuff, sizeof (tbuff), "",
         "locale-win", ".txt", PATHBLD_MP_LOCALEDIR);
     df = datafileAllocParse ("locale-win", DFTYPE_KEY_VAL, tbuff,

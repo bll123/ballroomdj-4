@@ -57,7 +57,7 @@ typedef struct {
   progstate_t       *progstate;
   procutil_t        *processes [ROUTE_MAX];
   conn_t            *conn;
-  bool              nostart;
+  int               dbgflags;
   slist_t           *playlistCache;
   queue_t           *playlistQueue [MUSICQ_MAX];
   musicq_t          *musicQueue;
@@ -169,7 +169,7 @@ main (int argc, char *argv[])
   procutilIgnoreSignal (SIGCHLD);
 #endif
 
-  mainData.nostart = bdj4startup (argc, argv, "m", ROUTE_MAIN, BDJ4_INIT_NONE);
+  mainData.dbgflags = bdj4startup (argc, argv, "m", ROUTE_MAIN, BDJ4_INIT_NONE);
   logProcBegin (LOG_PROC, "main");
 
   mainData.conn = connInit (ROUTE_MAIN);
@@ -465,19 +465,25 @@ mainListeningCallback (void *tmaindata, programstate_t programState)
   maindata_t    *mainData = tmaindata;
   char          buff [100];
   char          *theme;
+  int           flags;
 
   logProcBegin (LOG_PROC, "mainListeningCallback");
 
-  if (mainData->nostart == false) {
+  flags = PROCUTIL_DETACH;
+  if ((mainData->dbgflags & BDJ4_INIT_NO_DETACH) == BDJ4_INIT_NO_DETACH) {
+    flags = PROCUTIL_NO_DETACH;
+  }
+
+  if ((mainData->dbgflags & BDJ4_INIT_NO_START) != BDJ4_INIT_NO_START) {
     mainData->processes [ROUTE_PLAYER] = procutilStartProcess (
-        ROUTE_PLAYER, "bdj4player");
+        ROUTE_PLAYER, "bdj4player", flags);
     if (bdjoptGetNum (OPT_P_MOBILEMARQUEE) != MOBILEMQ_OFF) {
       mainData->processes [ROUTE_MOBILEMQ] = procutilStartProcess (
-          ROUTE_MOBILEMQ, "bdj4mobmq");
+          ROUTE_MOBILEMQ, "bdj4mobmq", flags);
     }
     if (bdjoptGetNum (OPT_P_REMOTECONTROL)) {
       mainData->processes [ROUTE_REMCTRL] = procutilStartProcess (
-          ROUTE_REMCTRL, "bdj4rc");
+          ROUTE_REMCTRL, "bdj4rc", flags);
     }
   }
 
@@ -485,9 +491,10 @@ mainListeningCallback (void *tmaindata, programstate_t programState)
   snprintf (buff, sizeof (buff), "GTK_THEME=%s", theme);
   putenv (buff);
 
-  if (mainData->nostart == false) {
+  if ((mainData->dbgflags & BDJ4_INIT_NO_START) != BDJ4_INIT_NO_START &&
+      (mainData->dbgflags & BDJ4_INIT_NO_MARQUEE) != BDJ4_INIT_NO_MARQUEE) {
     mainData->processes [ROUTE_MARQUEE] = procutilStartProcess (
-        ROUTE_MARQUEE, "bdj4marquee");
+        ROUTE_MARQUEE, "bdj4marquee", flags);
   }
 
   theme = bdjoptGetStr (OPT_MP_UI_THEME);
@@ -508,7 +515,7 @@ mainConnectingCallback (void *tmaindata, programstate_t programState)
 
   logProcBegin (LOG_PROC, "mainConnectingCallback");
 
-  if (mainData->nostart == false) {
+  if ((mainData->dbgflags & BDJ4_INIT_NO_START) != BDJ4_INIT_NO_START) {
     if (! connIsConnected (mainData->conn, ROUTE_PLAYER)) {
       connConnect (mainData->conn, ROUTE_PLAYER);
     }
@@ -522,8 +529,10 @@ mainConnectingCallback (void *tmaindata, programstate_t programState)
         connConnect (mainData->conn, ROUTE_REMCTRL);
       }
     }
-    if (! connIsConnected (mainData->conn, ROUTE_MARQUEE)) {
-      connConnect (mainData->conn, ROUTE_MARQUEE);
+    if ((mainData->dbgflags & BDJ4_INIT_NO_MARQUEE) != BDJ4_INIT_NO_MARQUEE) {
+      if (! connIsConnected (mainData->conn, ROUTE_MARQUEE)) {
+        connConnect (mainData->conn, ROUTE_MARQUEE);
+      }
     }
   }
 

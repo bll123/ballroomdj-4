@@ -9,6 +9,11 @@
 #include "bdjmsg.h"
 #include "conn.h"
 
+enum {
+  PROCUTIL_NO_DETACH,
+  PROCUTIL_DETACH,
+};
+
 typedef struct {
   void      *processHandle;
   pid_t     pid;
@@ -17,14 +22,15 @@ typedef struct {
 } procutil_t;
 
 int         procutilExists (procutil_t *process);
-procutil_t  * procutilStart (const char *fn, ssize_t profile, ssize_t loglvl);
+procutil_t  * procutilStart (const char *fn, ssize_t profile, ssize_t loglvl,
+                int detachflag);
 int         procutilKill (procutil_t *process, bool force);
 void        procutilTerminate (pid_t pid, bool force);
 void        procutilFree (procutil_t *process);
 void        procutilCatchSignal (void (*sigHandler)(int), int signal);
 void        procutilIgnoreSignal (int signal);
 void        procutilDefaultSignal (int signal);
-procutil_t  * procutilStartProcess (bdjmsgroute_t route, char *fname);
+procutil_t  * procutilStartProcess (bdjmsgroute_t route, char *fname, int detachflag);
 void        procutilStopProcess (procutil_t *process, conn_t *conn,
                 bdjmsgroute_t route, bool force);
 void        procutilForceStop (procutil_t *process, int flags,

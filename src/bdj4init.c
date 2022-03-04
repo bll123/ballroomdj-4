@@ -41,7 +41,6 @@ bdj4startup (int argc, char *argv[], char *tag, bdjmsgroute_t route, int flags)
   char        tbuff [MAXPATHLEN];
   loglevel_t  loglevel = LOG_IMPORTANT | LOG_MAIN;
   bool        startlog = false;
-  bool        nostart = false;
 
   static struct option bdj_options [] = {
     { "bdj4main",   no_argument,        NULL,   0 },
@@ -53,13 +52,15 @@ bdj4startup (int argc, char *argv[], char *tag, bdjmsgroute_t route, int flags)
     { "bdj4starterui", no_argument,     NULL,   0 },
     /* bdj4 loader options to ignore */
     { "debugself",  no_argument,        NULL,   0 },
-    { "nodetach",   no_argument,        NULL,   0 },
     { "msys",       no_argument,        NULL,   0 },
     /* normal options */
     { "profile",    required_argument,  NULL,   'p' },
     { "debug",      required_argument,  NULL,   'd' },
     { "startlog",   no_argument,        NULL,   's' },
+    /* debug options */
     { "nostart",    no_argument,        NULL,   'n' },
+    { "nomarquee",  no_argument,        NULL,   'm' },
+    { "nodetach",   no_argument,        NULL,   'N' },
     { NULL,         0,                  NULL,   0 }
   };
 
@@ -91,8 +92,16 @@ bdj4startup (int argc, char *argv[], char *tag, bdjmsgroute_t route, int flags)
         startlog = true;
         break;
       }
+      case 'm': {
+        flags |= BDJ4_INIT_NO_MARQUEE;
+        break;
+      }
       case 'n': {
-        nostart = true;
+        flags |= BDJ4_INIT_NO_START;
+        break;
+      }
+      case 'N': {
+        flags |= BDJ4_INIT_NO_DETACH;
         break;
       }
       default: {
@@ -153,7 +162,7 @@ bdj4startup (int argc, char *argv[], char *tag, bdjmsgroute_t route, int flags)
   logMsg (LOG_SESS, LOG_IMPORTANT, "Total init time: %ld ms", mstimeend (&mt));
 
   logProcEnd (LOG_PROC, "bdj4startup", "");
-  return nostart;
+  return flags;
 }
 
 void

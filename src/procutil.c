@@ -71,7 +71,7 @@ procutilExists (procutil_t *process)
 }
 
 procutil_t *
-procutilStart (const char *fn, ssize_t profile, ssize_t loglvl)
+procutilStart (const char *fn, ssize_t profile, ssize_t loglvl, int detachflag)
 {
   procutil_t  * process;
   char        sprof [40];
@@ -101,6 +101,9 @@ procutilStart (const char *fn, ssize_t profile, ssize_t loglvl)
 
   process->processHandle = NULL;
   flags = OS_PROC_DETACH;
+  if (detachflag == PROCUTIL_NO_DETACH) {
+    flags = OS_PROC_NONE;
+  }
   process->pid = osProcessStart (targv, flags, &process->processHandle);
   if (process->processHandle != NULL) {
     process->hasHandle = true;
@@ -222,7 +225,7 @@ procutilDefaultSignal (int sig)
 /* these next three routines are for management of processes */
 
 procutil_t *
-procutilStartProcess (bdjmsgroute_t route, char *fname)
+procutilStartProcess (bdjmsgroute_t route, char *fname, int detachflag)
 {
   char      tbuff [MAXPATHLEN];
   char      *extension = NULL;
@@ -238,7 +241,7 @@ procutilStartProcess (bdjmsgroute_t route, char *fname)
   pathbldMakePath (tbuff, sizeof (tbuff), "",
       fname, extension, PATHBLD_MP_EXECDIR);
   process = procutilStart (tbuff, sysvarsGetNum (SVL_BDJIDX),
-      bdjoptGetNum (OPT_G_DEBUGLVL));
+      bdjoptGetNum (OPT_G_DEBUGLVL), detachflag);
   if (isWindows ()) {
     logMsg (LOG_DBG, LOG_BASIC, "PATH=%s\n", getenv ("PATH"));
   }

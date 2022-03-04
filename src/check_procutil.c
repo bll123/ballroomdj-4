@@ -56,7 +56,7 @@ START_TEST(procutil_start)
   procutilIgnoreSignal (SIGCHLD);
 #endif
   /* abuse the --profile argument to pass the seconds to sleep */
-  process = procutilStart (tbuff, 5, 0);
+  process = procutilStart (tbuff, 5, 0, PROCUTIL_NO_DETACH);
   ck_assert_ptr_nonnull (process);
   ck_assert_int_ne (ppid, process->pid);
   rc = procutilExists (process);
@@ -90,7 +90,7 @@ START_TEST(procutil_kill)
   procutilIgnoreSignal (SIGCHLD);
 #endif
   /* abuse the --profile argument to pass the seconds to sleep */
-  process = procutilStart (tbuff, 60, 0);
+  process = procutilStart (tbuff, 60, 0, PROCUTIL_NO_DETACH);
   ck_assert_ptr_nonnull (process);
   ck_assert_int_ne (ppid, process->pid);
 

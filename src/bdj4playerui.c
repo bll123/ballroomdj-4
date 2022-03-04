@@ -48,7 +48,7 @@ typedef struct {
   sockserver_t    *sockserver;
   musicqidx_t     musicqPlayIdx;
   musicqidx_t     musicqManageIdx;
-  bool            nostart;
+  int             dbgflags;
   /* gtk stuff */
   GtkApplication  *app;
   GtkWidget       *window;
@@ -155,7 +155,7 @@ main (int argc, char *argv[])
   procutilDefaultSignal (SIGCHLD);
 #endif
 
-  plui.nostart = bdj4startup (argc, argv, "pu", ROUTE_PLAYERUI, BDJ4_INIT_NONE);
+  plui.dbgflags = bdj4startup (argc, argv, "pu", ROUTE_PLAYERUI, BDJ4_INIT_NONE);
   localeInit ();
   logProcBegin (LOG_PROC, "playerui");
 
@@ -495,11 +495,16 @@ pluiMainLoop (void *tplui)
 static bool
 pluiListeningCallback (void *udata, programstate_t programState)
 {
-  playerui_t   *plui = udata;
+  playerui_t    *plui = udata;
+  int           flags;
 
   logProcBegin (LOG_PROC, "pluiListeningCallback");
+  flags = PROCUTIL_DETACH;
+  if ((plui->dbgflags & BDJ4_INIT_NO_DETACH) == BDJ4_INIT_NO_DETACH) {
+    flags = PROCUTIL_NO_DETACH;
+  }
   plui->processes [ROUTE_MAIN] = procutilStartProcess (
-      ROUTE_MAIN, "bdj4main");
+      ROUTE_MAIN, "bdj4main", flags);
   logProcEnd (LOG_PROC, "pluiListeningCallback", "");
   return true;
 }

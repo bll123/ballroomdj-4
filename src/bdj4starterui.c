@@ -339,7 +339,7 @@ starterStartPlayer (GtkButton *b, gpointer udata)
   startui_t      *starter = udata;
 
   starter->processes [ROUTE_PLAYERUI] = procutilStartProcess (
-      ROUTE_PLAYERUI, "bdj4playerui");
+      ROUTE_PLAYERUI, "bdj4playerui", PROCUTIL_DETACH);
 }
 
 static void
