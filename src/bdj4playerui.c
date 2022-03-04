@@ -154,7 +154,7 @@ main (int argc, char *argv[])
   procutilDefaultSignal (SIGCHLD);
 #endif
 
-  bdj4startup (argc, argv, "pu", ROUTE_PLAYERUI);
+  bdj4startup (argc, argv, "pu", ROUTE_PLAYERUI, BDJ4_INIT_NONE);
   localeInit ();
   logProcBegin (LOG_PROC, "playerui");
 

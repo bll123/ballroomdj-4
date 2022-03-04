@@ -206,7 +206,6 @@ main (int argc, char * argv[])
 
   fileopMakeDir ("tmp");
 
-  putenv ("GTK_OVERLAY_SCROLLING=0");
   putenv ("GTK_CSD=0");
 
   if (isMacOS()) {
@@ -301,7 +300,6 @@ main (int argc, char * argv[])
   if (debugself) {
     fprintf (stderr, "GTK_THEME=%s\n", getenv ("GTK_THEME"));
     fprintf (stderr, "GTK_CSD=%s\n", getenv ("GTK_CSD"));
-    fprintf (stderr, "GTK_OVERLAY_SCROLLING=%s\n", getenv ("GTK_OVERLAY_SCROLLING"));
   }
 
   extension = "";

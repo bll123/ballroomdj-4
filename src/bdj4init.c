@@ -30,7 +30,7 @@
 #include "tmutil.h"
 
 int
-bdj4startup (int argc, char *argv[], char *tag, bdjmsgroute_t route)
+bdj4startup (int argc, char *argv[], char *tag, bdjmsgroute_t route, int flags)
 {
   mstime_t    mt;
   mstime_t    dbmt;
@@ -42,12 +42,13 @@ bdj4startup (int argc, char *argv[], char *tag, bdjmsgroute_t route)
   loglevel_t  loglevel = LOG_IMPORTANT | LOG_MAIN;
 
   static struct option bdj_options [] = {
-    { "bdj4main",   no_argument,        NULL,   1 },
-    { "main",       no_argument,        NULL,   1 },
-    { "bdj4playerui", no_argument,      NULL,   2 },
-    { "playerui",   no_argument,        NULL,   2 },
-    { "bdj4configui", no_argument,      NULL,   3 },
-    { "bdj4manageui", no_argument,      NULL,   4 },
+    { "bdj4main",   no_argument,        NULL,   0 },
+    { "main",       no_argument,        NULL,   0 },
+    { "bdj4playerui", no_argument,      NULL,   0 },
+    { "playerui",   no_argument,        NULL,   0 },
+    { "bdj4configui", no_argument,      NULL,   0 },
+    { "bdj4manageui", no_argument,      NULL,   0 },
+    { "bdj4starterui", no_argument,     NULL,   0 },
     { "profile",    required_argument,  NULL,   'p' },
     { "debug",      required_argument,  NULL,   'd' },
     { NULL,         0,                  NULL,   0 }
@@ -125,11 +126,13 @@ bdj4startup (int argc, char *argv[], char *tag, bdjmsgroute_t route)
 
   bdjoptSetNum (OPT_G_DEBUGLVL, loglevel);
 
-  mstimestart (&dbmt);
-  pathbldMakePath (tbuff, MAXPATHLEN, "",
-      MUSICDB_FNAME, MUSICDB_EXT, PATHBLD_MP_NONE);
-  dbOpen (tbuff);
-  logMsg (LOG_SESS, LOG_IMPORTANT, "Database read: %ld items in %ld ms", dbCount(), mstimeend (&dbmt));
+  if ((flags & BDJ4_INIT_NO_DB_LOAD) != BDJ4_INIT_NO_DB_LOAD) {
+    mstimestart (&dbmt);
+    pathbldMakePath (tbuff, MAXPATHLEN, "",
+        MUSICDB_FNAME, MUSICDB_EXT, PATHBLD_MP_NONE);
+    dbOpen (tbuff);
+    logMsg (LOG_SESS, LOG_IMPORTANT, "Database read: %ld items in %ld ms", dbCount(), mstimeend (&dbmt));
+  }
   logMsg (LOG_SESS, LOG_IMPORTANT, "Total init time: %ld ms", mstimeend (&mt));
 
   return 0;

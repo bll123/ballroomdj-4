@@ -168,7 +168,7 @@ main (int argc, char *argv[])
   procutilIgnoreSignal (SIGCHLD);
 #endif
 
-  bdj4startup (argc, argv, "m", ROUTE_MAIN);
+  bdj4startup (argc, argv, "m", ROUTE_MAIN, BDJ4_INIT_NONE);
   logProcBegin (LOG_PROC, "main");
 
   mainData.conn = connInit (ROUTE_MAIN);

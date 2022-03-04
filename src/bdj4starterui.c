@@ -89,7 +89,7 @@ main (int argc, char *argv[])
   procutilDefaultSignal (SIGCHLD);
 #endif
 
-  bdj4startup (argc, argv, "st", ROUTE_STARTERUI);
+  bdj4startup (argc, argv, "st", ROUTE_STARTERUI, BDJ4_INIT_NO_DB_LOAD);
   localeInit ();
   logProcBegin (LOG_PROC, "starterui");
 
@@ -245,13 +245,16 @@ starterMainLoop (void *tstarter)
     return cont;
   }
 
-  if (! connIsConnected (starter->conn, ROUTE_PLAYERUI)) {
+  if (starter->processes [ROUTE_PLAYERUI] != NULL &&
+      ! connIsConnected (starter->conn, ROUTE_PLAYERUI)) {
     connConnect (starter->conn, ROUTE_PLAYERUI);
   }
-  if (! connIsConnected (starter->conn, ROUTE_MANAGEUI)) {
+  if (starter->processes [ROUTE_MANAGEUI] != NULL &&
+      ! connIsConnected (starter->conn, ROUTE_MANAGEUI)) {
     connConnect (starter->conn, ROUTE_MANAGEUI);
   }
-  if (! connIsConnected (starter->conn, ROUTE_CONFIGUI)) {
+  if (starter->processes [ROUTE_CONFIGUI] != NULL &&
+      ! connIsConnected (starter->conn, ROUTE_CONFIGUI)) {
     connConnect (starter->conn, ROUTE_CONFIGUI);
   }
 

@@ -30,6 +30,7 @@ static char *locknames [ROUTE_MAX] = {
   [ROUTE_CLICOMM] = "cli",
   [ROUTE_MOBILEMQ] = "mobilemq",
   [ROUTE_REMCTRL] = "remctrl",
+  [ROUTE_STARTERUI] = "starterui",
   [ROUTE_MARQUEE] = "marquee",
 };
 
