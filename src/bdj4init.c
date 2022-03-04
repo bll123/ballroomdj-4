@@ -41,6 +41,7 @@ bdj4startup (int argc, char *argv[], char *tag, bdjmsgroute_t route, int flags)
   char        tbuff [MAXPATHLEN];
   loglevel_t  loglevel = LOG_IMPORTANT | LOG_MAIN;
   bool        startlog = false;
+  bool        nostart = false;
 
   static struct option bdj_options [] = {
     { "bdj4main",   no_argument,        NULL,   0 },
@@ -58,6 +59,7 @@ bdj4startup (int argc, char *argv[], char *tag, bdjmsgroute_t route, int flags)
     { "profile",    required_argument,  NULL,   'p' },
     { "debug",      required_argument,  NULL,   'd' },
     { "startlog",   no_argument,        NULL,   's' },
+    { "nostart",    no_argument,        NULL,   'n' },
     { NULL,         0,                  NULL,   0 }
   };
 
@@ -87,6 +89,10 @@ bdj4startup (int argc, char *argv[], char *tag, bdjmsgroute_t route, int flags)
       }
       case 's': {
         startlog = true;
+        break;
+      }
+      case 'n': {
+        nostart = true;
         break;
       }
       default: {
@@ -147,7 +153,7 @@ bdj4startup (int argc, char *argv[], char *tag, bdjmsgroute_t route, int flags)
   logMsg (LOG_SESS, LOG_IMPORTANT, "Total init time: %ld ms", mstimeend (&mt));
 
   logProcEnd (LOG_PROC, "bdj4startup", "");
-  return 0;
+  return nostart;
 }
 
 void

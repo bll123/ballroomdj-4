@@ -329,12 +329,12 @@ marqueeClosingCallback (void *udata, programstate_t programState)
       "marquee", ".txt", PATHBLD_MP_USEIDX);
   datafileSaveKeyVal (fn, mqdfkeys, MARQUEE_DFKEY_COUNT, marquee->options);
 
+  sockhCloseServer (marquee->sockserver);
+
   connFree (marquee->conn);
 
-  sockhCloseServer (marquee->sockserver);
   bdjoptFree ();
   bdjvarsCleanup ();
-  datafileFree (marquee->optiondf);
 
   lockRelease (marquee->locknm, PATHBLD_MP_USEIDX);
 
@@ -344,6 +344,12 @@ marqueeClosingCallback (void *udata, programstate_t programState)
   if (marquee->marqueeLabs != NULL) {
     free (marquee->marqueeLabs);
   }
+  if (marquee->options != NULL) {
+    if (marquee->options != datafileGetList (marquee->optiondf)) {
+      nlistFree (marquee->options);
+    }
+  }
+  datafileFree (marquee->optiondf);
 
   return true;
 }

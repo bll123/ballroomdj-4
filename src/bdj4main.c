@@ -55,8 +55,9 @@ typedef enum {
 /* so that playlist lookups can be processed */
 typedef struct {
   progstate_t       *progstate;
-  procutil_t         *processes [ROUTE_MAX];
+  procutil_t        *processes [ROUTE_MAX];
   conn_t            *conn;
+  bool              nostart;
   slist_t           *playlistCache;
   queue_t           *playlistQueue [MUSICQ_MAX];
   musicq_t          *musicQueue;
@@ -168,7 +169,7 @@ main (int argc, char *argv[])
   procutilIgnoreSignal (SIGCHLD);
 #endif
 
-  bdj4startup (argc, argv, "m", ROUTE_MAIN, BDJ4_INIT_NONE);
+  mainData.nostart = bdj4startup (argc, argv, "m", ROUTE_MAIN, BDJ4_INIT_NONE);
   logProcBegin (LOG_PROC, "main");
 
   mainData.conn = connInit (ROUTE_MAIN);
@@ -222,8 +223,6 @@ mainClosingCallback (void *tmaindata, programstate_t programState)
 
   logProcBegin (LOG_PROC, "mainClosingCallback");
 
-  connFree (mainData->conn);
-
   if (mainData->playlistCache != NULL) {
     slistFree (mainData->playlistCache);
   }
@@ -257,6 +256,9 @@ mainClosingCallback (void *tmaindata, programstate_t programState)
       procutilFree (mainData->processes [i]);
     }
   }
+
+  connFree (mainData->conn);
+
   logProcEnd (LOG_PROC, "mainClosingCallback", "");
   return true;
 }
@@ -462,27 +464,34 @@ mainListeningCallback (void *tmaindata, programstate_t programState)
 {
   maindata_t    *mainData = tmaindata;
   char          buff [100];
+  char          *theme;
 
   logProcBegin (LOG_PROC, "mainListeningCallback");
 
-  mainData->processes [ROUTE_PLAYER] = procutilStartProcess (
-      ROUTE_PLAYER, "bdj4player");
-  if (bdjoptGetNum (OPT_P_MOBILEMARQUEE) != MOBILEMQ_OFF) {
-    mainData->processes [ROUTE_MOBILEMQ] = procutilStartProcess (
-        ROUTE_MOBILEMQ, "bdj4mobmq");
-  }
-  if (bdjoptGetNum (OPT_P_REMOTECONTROL)) {
-    mainData->processes [ROUTE_REMCTRL] = procutilStartProcess (
-        ROUTE_REMCTRL, "bdj4rc");
+  if (mainData->nostart == false) {
+    mainData->processes [ROUTE_PLAYER] = procutilStartProcess (
+        ROUTE_PLAYER, "bdj4player");
+    if (bdjoptGetNum (OPT_P_MOBILEMARQUEE) != MOBILEMQ_OFF) {
+      mainData->processes [ROUTE_MOBILEMQ] = procutilStartProcess (
+          ROUTE_MOBILEMQ, "bdj4mobmq");
+    }
+    if (bdjoptGetNum (OPT_P_REMOTECONTROL)) {
+      mainData->processes [ROUTE_REMCTRL] = procutilStartProcess (
+          ROUTE_REMCTRL, "bdj4rc");
+    }
   }
 
-  snprintf (buff, sizeof (buff), "GTK_THEME=%s", "Adwaita");
+  theme = bdjoptGetStr (OPT_MP_MQ_THEME);
+  snprintf (buff, sizeof (buff), "GTK_THEME=%s", theme);
   putenv (buff);
 
-  mainData->processes [ROUTE_MARQUEE] = procutilStartProcess (
-      ROUTE_MARQUEE, "bdj4marquee");
+  if (mainData->nostart == false) {
+    mainData->processes [ROUTE_MARQUEE] = procutilStartProcess (
+        ROUTE_MARQUEE, "bdj4marquee");
+  }
 
-  snprintf (buff, sizeof (buff), "GTK_THEME=%s", "Adwaita-Dark");
+  theme = bdjoptGetStr (OPT_MP_UI_THEME);
+  snprintf (buff, sizeof (buff), "GTK_THEME=%s", theme);
   putenv (buff);
 
   logProcEnd (LOG_PROC, "mainListeningCallback", "");
@@ -499,21 +508,23 @@ mainConnectingCallback (void *tmaindata, programstate_t programState)
 
   logProcBegin (LOG_PROC, "mainConnectingCallback");
 
-  if (! connIsConnected (mainData->conn, ROUTE_PLAYER)) {
-    connConnect (mainData->conn, ROUTE_PLAYER);
-  }
-  if (bdjoptGetNum (OPT_P_MOBILEMARQUEE) != MOBILEMQ_OFF) {
-    if (! connIsConnected (mainData->conn, ROUTE_MOBILEMQ)) {
-      connConnect (mainData->conn, ROUTE_MOBILEMQ);
+  if (mainData->nostart == false) {
+    if (! connIsConnected (mainData->conn, ROUTE_PLAYER)) {
+      connConnect (mainData->conn, ROUTE_PLAYER);
     }
-  }
-  if (bdjoptGetNum (OPT_P_REMOTECONTROL)) {
-    if (! connIsConnected (mainData->conn, ROUTE_REMCTRL)) {
-      connConnect (mainData->conn, ROUTE_REMCTRL);
+    if (bdjoptGetNum (OPT_P_MOBILEMARQUEE) != MOBILEMQ_OFF) {
+      if (! connIsConnected (mainData->conn, ROUTE_MOBILEMQ)) {
+        connConnect (mainData->conn, ROUTE_MOBILEMQ);
+      }
     }
-  }
-  if (! connIsConnected (mainData->conn, ROUTE_MARQUEE)) {
-    connConnect (mainData->conn, ROUTE_MARQUEE);
+    if (bdjoptGetNum (OPT_P_REMOTECONTROL)) {
+      if (! connIsConnected (mainData->conn, ROUTE_REMCTRL)) {
+        connConnect (mainData->conn, ROUTE_REMCTRL);
+      }
+    }
+    if (! connIsConnected (mainData->conn, ROUTE_MARQUEE)) {
+      connConnect (mainData->conn, ROUTE_MARQUEE);
+    }
   }
 
   ++connMax;

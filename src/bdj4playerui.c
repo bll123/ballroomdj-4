@@ -48,6 +48,7 @@ typedef struct {
   sockserver_t    *sockserver;
   musicqidx_t     musicqPlayIdx;
   musicqidx_t     musicqManageIdx;
+  bool            nostart;
   /* gtk stuff */
   GtkApplication  *app;
   GtkWidget       *window;
@@ -154,7 +155,7 @@ main (int argc, char *argv[])
   procutilDefaultSignal (SIGCHLD);
 #endif
 
-  bdj4startup (argc, argv, "pu", ROUTE_PLAYERUI, BDJ4_INIT_NONE);
+  plui.nostart = bdj4startup (argc, argv, "pu", ROUTE_PLAYERUI, BDJ4_INIT_NONE);
   localeInit ();
   logProcBegin (LOG_PROC, "playerui");
 
@@ -251,7 +252,6 @@ pluiClosingCallback (void *udata, programstate_t programState)
   g_object_unref (plui->ledonImg);
   g_object_unref (plui->ledoffImg);
 
-  connFree (plui->conn);
   sockhCloseServer (plui->sockserver);
 
   bdj4shutdown (ROUTE_PLAYERUI);
@@ -259,6 +259,9 @@ pluiClosingCallback (void *udata, programstate_t programState)
   uiplayerFree (plui->uiplayer);
   uimusicqFree (plui->uimusicq);
   uisongselFree (plui->uisongsel);
+  if (plui->options != datafileGetList (plui->optiondf)) {
+    nlistFree (plui->options);
+  }
   datafileFree (plui->optiondf);
 
   /* give the other processes some time to shut down */
@@ -269,6 +272,8 @@ pluiClosingCallback (void *udata, programstate_t programState)
       procutilFree (plui->processes [i]);
     }
   }
+
+  connFree (plui->conn);
 
   logProcEnd (LOG_PROC, "pluiClosingCallback", "");
   return true;

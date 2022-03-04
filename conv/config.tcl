@@ -25,8 +25,9 @@ for { set i 1 } { $i < 20 } { incr i } {
 
 set cnm bdj_config
 set nnm bdjconfig
+set mpath $hostname
 set mppath [file join $hostname profiles]
-foreach path [list {} profiles $hostname $mppath] {
+foreach path [list {} profiles $mpath $mppath] {
   foreach sfx $suffixlist {
     set fn "[file join $bdj3dir $path $cnm]$sfx"
     if { [file exists $fn] } {
@@ -82,9 +83,11 @@ foreach path [list {} profiles $hostname $mppath] {
         if { $key eq "SERVERPORT" } { continue }
         if { $key eq "SERVERTYPE" } { continue }
         if { $key eq "SERVERUSER" } { continue }
+        /* renamed; moved to MP */
+        if { $key eq "UITHEME" } { continue }
+        /* moved to M */
+        if { $key eq "PLAYER" } { continue }
 
-
-        if { $key eq "UITHEME" } { set value {} }
         if { $key eq "version" } { set value 1 }
 
         if { $key eq "PLAYERQLEN0" } { set key "PLAYERQLEN" }
@@ -163,23 +166,23 @@ foreach path [list {} profiles $hostname $mppath] {
             set value 360000
           }
         }
-        if { $key eq "PLAYER" } {
-          set value libplivlc
-        }
         puts $ofh $key
         puts $ofh "..$value"
       }
 
-      if { $path eq "" } {
+      if { $path eq "profiles" } {
+        puts $ofh INSERT_LOC
+        puts $ofh "..6"
+      }
+      if { $path eq $mpath } {
         puts $ofh VOLUME
         if { $::tcl_platform(os) eq "Linux" } { set value libvolpa }
         if { $::tcl_platform(platform) eq "windows" } { set value libvolwin }
         if { $::tcl_platform(os) eq "Darwin" } { set value libvolmac }
         puts $ofh "..$value"
-      }
-      if { $path eq "profiles" } {
-        puts $ofh INSERT_LOC
-        puts $ofh "..6"
+        puts $ofh PLAYER
+        set value libplivlc
+        puts $ofh "..$value"
       }
       if { $path eq $mppath } {
         puts $ofh MQ_ACCENT_COL

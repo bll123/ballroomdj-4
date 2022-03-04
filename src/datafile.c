@@ -258,7 +258,7 @@ datafileParseMerge (list_t *datalist, char *data, char *name,
       inc = 2;
       if (dfkeys == NULL) {
         if (datalist == NULL) {
-          datalist = slistAlloc (name, LIST_UNORDERED, free, NULL);
+          datalist = slistAlloc (name, LIST_UNORDERED, free, free);
           slistSetSize (datalist, dataCount / 2);
         } else {
           slistSetSize (datalist, dataCount / 2 + slistGetCount (datalist));
@@ -297,7 +297,7 @@ datafileParseMerge (list_t *datalist, char *data, char *name,
     tkeystr = strdata [i];
     tvalstr = strdata [i + 1];
 
-    if (inc == 2 && strcmp (strdata [i], "version") == 0) {
+    if (inc == 2 && strcmp (tkeystr, "version") == 0) {
       ssize_t version = atol (tvalstr);
       listSetVersion (datalist, version);
       continue;

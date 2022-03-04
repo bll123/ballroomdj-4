@@ -37,16 +37,19 @@ localeInit (void)
 #endif
   textdomain ("bdj4");
 
-  /* windows has non-standard names; convert them */
-  strlcpy (lbuff, setlocale (LC_CTYPE, NULL), sizeof (lbuff));
-  pathbldMakePath (tbuff, sizeof (tbuff), "",
-      "locale-win", ".txt", PATHBLD_MP_LOCALEDIR);
-  df = datafileAllocParse ("locale-win", DFTYPE_KEY_VAL, tbuff,
-      NULL, 0, DATAFILE_NO_LOOKUP);
-  list = datafileGetList (df);
-  val = slistGetData (list, lbuff);
-  if (val != NULL) {
-    strlcpy (lbuff, val, sizeof (lbuff));
+  if (1 || isWindows ()) {
+    /* windows has non-standard names; convert them */
+    strlcpy (lbuff, setlocale (LC_CTYPE, NULL), sizeof (lbuff));
+    pathbldMakePath (tbuff, sizeof (tbuff), "",
+        "locale-win", ".txt", PATHBLD_MP_LOCALEDIR);
+    df = datafileAllocParse ("locale-win", DFTYPE_KEY_VAL, tbuff,
+        NULL, 0, DATAFILE_NO_LOOKUP);
+    list = datafileGetList (df);
+    val = slistGetData (list, lbuff);
+    if (val != NULL) {
+      strlcpy (lbuff, val, sizeof (lbuff));
+    }
+    datafileFree (df);
   }
 
   /* the sysvars variables must be reset */
@@ -56,8 +59,6 @@ localeInit (void)
 
   snprintf (tbuff, sizeof (tbuff), "%-.2s", lbuff);
   sysvarsSetStr (SV_SHORT_LOCALE, tbuff);
-
-  datafileFree (df);
 
   return;
 }

@@ -27,7 +27,6 @@ typedef enum {
   OPT_G_PATHFMT_CL,
   OPT_G_PATHFMT_CLVA,
   OPT_G_PATHFMT_VA,
-  OPT_G_PLAYER_INTFC,             //
   OPT_G_PLAYERQLEN,               //
   OPT_G_REMCONTROLHTML,
   OPT_G_SHOWALBUM,
@@ -36,7 +35,6 @@ typedef enum {
   OPT_G_SHOWSTATUS,
   OPT_G_SLOWDEVICE,
   OPT_G_VARIOUS,
-  OPT_G_VOLUME_INTFC,             //
   OPT_G_WRITETAGS,
   OPT_M_AUDIOSINK,                //
   OPT_M_DIR_ARCHIVE,
@@ -46,8 +44,10 @@ typedef enum {
   OPT_M_DIR_MUSICTMP,
   OPT_M_DIR_ORIGINAL,
   OPT_M_HOST,
+  OPT_M_PLAYER_INTFC,             //
   OPT_M_SHUTDOWNSCRIPT,
   OPT_M_STARTUPSCRIPT,
+  OPT_M_VOLUME_INTFC,             //
   OPT_MP_FONTSIZE,
   OPT_MP_LISTING_FONT,
   OPT_MP_MQ_ACCENT_COL,             //
@@ -58,7 +58,7 @@ typedef enum {
   OPT_MP_PLAYERSTARTSCRIPT,
   OPT_MP_UI_ACCENT_COL,
   OPT_MP_UIFONT,                    //
-  OPT_MP_UI_THEME,
+  OPT_MP_UI_THEME,                  //
   OPT_P_ALLOWEDIT,
   OPT_P_AUTOSTARTUP,
   OPT_P_DEFAULTVOLUME,              //
@@ -84,7 +84,6 @@ typedef enum {
   OPT_P_REMCONTROLUSER,             //
   OPT_P_REMOTECONTROL,              //
   OPT_P_UIACCENTCOLOR,
-  OPT_P_UITHEME,
 } bdjoptkey_t;
 
 typedef enum {

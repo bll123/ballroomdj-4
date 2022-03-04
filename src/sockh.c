@@ -70,8 +70,8 @@ sockhCloseServer (sockserver_t *sockserver)
 {
   if (sockserver != NULL) {
     sockhCloseClients (sockserver->si);
-    sockFreeCheck (sockserver->si);
     sockClose (sockserver->listenSock);
+    sockFreeCheck (sockserver->si);
     free (sockserver);
   }
 }

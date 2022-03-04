@@ -190,8 +190,6 @@ remctrlClosingCallback (void *udata, programstate_t programState)
 {
   remctrldata_t   *remctrlData = udata;
 
-  connFree (remctrlData->conn);
-
   websrvFree (remctrlData->websrv);
   if (remctrlData->user != NULL) {
     free (remctrlData->user);
@@ -208,6 +206,9 @@ remctrlClosingCallback (void *udata, programstate_t programState)
   if (*remctrlData->playlistList) {
     free (remctrlData->playlistList);
   }
+
+  connFree (remctrlData->conn);
+
   bdjoptFree ();
   bdjvarsCleanup ();
   lockRelease (remctrlData->locknm, PATHBLD_MP_USEIDX);

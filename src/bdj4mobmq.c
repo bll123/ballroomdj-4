@@ -184,8 +184,6 @@ mobmqClosingCallback (void *tmmdata, programstate_t programState)
 {
   mobmqdata_t   *mobmqData = tmmdata;
 
-  connFree (mobmqData->conn);
-
   websrvFree (mobmqData->websrv);
   if (mobmqData->name != NULL) {
     free (mobmqData->name);
@@ -196,6 +194,9 @@ mobmqClosingCallback (void *tmmdata, programstate_t programState)
   if (mobmqData->marqueeData != NULL) {
     free (mobmqData->marqueeData);
   }
+
+  connFree (mobmqData->conn);
+
   bdjoptFree ();
   bdjvarsCleanup ();
   lockRelease (mobmqData->locknm, PATHBLD_MP_USEIDX);

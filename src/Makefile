@@ -36,33 +36,26 @@ check:
 
 # recommended to change PLAYER and VOLUME in data/bdjconfig.txt to
 # be the null libraries.
-.PHONY: mcheck mchecksupp mcheckcli
-mcheck: $(MKC_ENV_SHR)
-	. ./$(MKC_ENV_SHR); \
-	$(MAKE) -e rall
+.PHONY: mcheck mcheckmain mchecksupp
+mcheck:
 	(cd ..;valgrind --tool=memcheck \
 		--leak-check=full \
 		--read-inline-info=yes \
 		--trace-children=yes \
 		--track-origins=yes \
 		--show-leak-kinds=all \
-		./bin/bdj4 --main --debug 11)
+		./bin/bdj4 --playerui --debug 15)
 
-mchecksupp: $(MKC_ENV_SHR)
-	. ./$(MKC_ENV_SHR); \
-	$(MAKE) -e rall
+mcheckmain:
 	(cd ..;valgrind --tool=memcheck \
 		--leak-check=full \
 		--read-inline-info=yes \
 		--trace-children=yes \
 		--track-origins=yes \
 		--show-leak-kinds=all \
-		--suppressions=src/utils/valgrind-suppression.txt \
-		./bin/bdj4 --main --debug 11)
+		./bin/bdj4 --main --debug 15)
 
-mcheckpluisupp: $(MKC_ENV_SHR)
-	. ./$(MKC_ENV_SHR); \
-	$(MAKE) -e rall
+mchecksupp:
 	(cd ..;valgrind --tool=memcheck \
 		--leak-check=full \
 		--read-inline-info=yes \
@@ -70,21 +63,9 @@ mcheckpluisupp: $(MKC_ENV_SHR)
 		--track-origins=yes \
 		--show-leak-kinds=all \
 		--suppressions=src/utils/valgrind-suppression.txt \
-		./bin/bdj4 --playerui --debug 11)
+		./bin/bdj4 --playerui --debug 15)
 
-mcheckcli: $(MKC_ENV_SHR)
-	. ./$(MKC_ENV_SHR); $(MAKE) -e rall
-	(cd ..;valgrind --tool=memcheck \
-		--leak-check=full \
-		--read-inline-info=yes \
-		--trace-children=yes \
-		--track-origins=yes \
-		--show-leak-kinds=all \
-		--suppressions=src/utils/valgrind-suppression.txt \
-		./bin/bdj4 --bdj4cli)
-
-mcheckcheck: $(MKC_ENV_SHR)
-	. ./$(MKC_ENV_SHR); $(MAKE) -e rall
+mcheckcheck:
 	(cd ..;valgrind --tool=memcheck \
 		--leak-check=full \
 		--read-inline-info=yes \

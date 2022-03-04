@@ -25,8 +25,8 @@ static datafilekey_t genredfkeys[] = {
 genre_t *
 genreAlloc (char *fname)
 {
-  genre_t       *genre;
-  slist_t       *dflist;
+  genre_t       *genre = NULL;
+  slist_t       *dflist = NULL;
   ilistidx_t    gkey;
   ilistidx_t    iteridx;
 
@@ -35,8 +35,11 @@ genreAlloc (char *fname)
     return NULL;
   }
 
-  genre = malloc (sizeof (genre));
+  genre = malloc (sizeof (genre_t));
   assert (genre != NULL);
+
+  genre->df = NULL;
+  genre->genreList = NULL;
 
   genre->df = datafileAllocParse ("genre", DFTYPE_INDIRECT, fname,
       genredfkeys, GENRE_DFKEY_COUNT, GENRE_GENRE);

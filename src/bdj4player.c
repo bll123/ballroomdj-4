@@ -306,8 +306,6 @@ playerClosingCallback (void *tpdata, programstate_t programState)
 {
   playerdata_t    *playerData = tpdata;
 
-  connFree (playerData->conn);
-
   if (playerData->pli != NULL) {
     pliStop (playerData->pli);
     pliClose (playerData->pli);
@@ -330,6 +328,9 @@ playerClosingCallback (void *tpdata, programstate_t programState)
   if (playerData->playRequest != NULL) {
     queueFree (playerData->playRequest);
   }
+
+  connFree (playerData->conn);
+
   bdjoptFree ();
   bdjvarsCleanup ();
   lockRelease (playerData->locknm, PATHBLD_MP_USEIDX);

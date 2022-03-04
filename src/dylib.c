@@ -42,6 +42,7 @@ dylibLoad (char *path)
   } else {
 //    fprintf (stderr, "dylib open %s OK\n", path);
   }
+
   return handle;
 }
 

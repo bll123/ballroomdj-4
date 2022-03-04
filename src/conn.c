@@ -56,6 +56,12 @@ void
 connFree (conn_t *conn)
 {
   if (conn != NULL) {
+    for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
+      conn [i].sock = INVALID_SOCKET;
+      conn [i].port = 0;
+      conn [i].connected = false;
+      conn [i].handshake = false;
+    }
     free (conn);
   }
 }

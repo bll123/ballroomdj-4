@@ -187,8 +187,8 @@ sockRemoveCheck (sockinfo_t *sockinfo, Sock_t sock)
   }
 
   for (size_t i = 0; i < (size_t) sockinfo->count; ++i) {
-    if (sockinfo->socklist[i] == sock) {
-      sockinfo->socklist[i] = INVALID_SOCKET;
+    if (sockinfo->socklist [i] == sock) {
+      sockinfo->socklist [i] = INVALID_SOCKET;
       break;
     }
   }

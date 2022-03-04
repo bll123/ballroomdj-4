@@ -36,7 +36,6 @@ static datafilekey_t bdjoptglobaldfkeys[] = {
   { "PATHFMT_CL",         OPT_G_PATHFMT_CL,         VALUE_DATA, NULL, -1 },
   { "PATHFMT_CLVA",       OPT_G_PATHFMT_CLVA,       VALUE_DATA, NULL, -1 },
   { "PATHFMT_VA",         OPT_G_PATHFMT_VA,         VALUE_DATA, NULL, -1 },
-  { "PLAYER",             OPT_G_PLAYER_INTFC,       VALUE_DATA, NULL, -1 },
   { "PLAYERQLEN",         OPT_G_PLAYERQLEN,         VALUE_NUM, NULL, -1 },
   { "REMCONTROLHTML",     OPT_G_REMCONTROLHTML,     VALUE_DATA, NULL, -1 },
   { "SHOWALBUM",          OPT_G_SHOWALBUM,          VALUE_NUM, parseConvBoolean, -1 },
@@ -45,7 +44,6 @@ static datafilekey_t bdjoptglobaldfkeys[] = {
   { "SHOWSTATUS",         OPT_G_SHOWSTATUS,         VALUE_NUM, parseConvBoolean, -1 },
   { "SLOWDEVICE",         OPT_G_SLOWDEVICE,         VALUE_NUM, parseConvBoolean, -1 },
   { "VARIOUS",            OPT_G_VARIOUS,            VALUE_DATA, NULL, -1 },
-  { "VOLUME",             OPT_G_VOLUME_INTFC,       VALUE_DATA, NULL, -1 },
   { "WRITETAGS",          OPT_G_WRITETAGS,          VALUE_DATA, NULL, -1 },
 };
 #define BDJOPT_GLOBAL_DFKEY_COUNT (sizeof (bdjoptglobaldfkeys) / sizeof (datafilekey_t))
@@ -76,7 +74,6 @@ static datafilekey_t bdjoptprofiledfkeys[] = {
   { "REMCONTROLUSER",       OPT_P_REMCONTROLUSER,       VALUE_DATA, NULL, -1 },
   { "REMOTECONTROL",        OPT_P_REMOTECONTROL,        VALUE_NUM, parseConvBoolean, -1 },
   { "UIACCENTCOLOR",        OPT_P_UIACCENTCOLOR,        VALUE_DATA, NULL, -1 },
-  { "UITHEME",              OPT_P_UITHEME,              VALUE_DATA, NULL, -1 },
 };
 #define BDJOPT_PROFILE_DFKEY_COUNT (sizeof (bdjoptprofiledfkeys) / sizeof (datafilekey_t))
 
@@ -89,8 +86,10 @@ static datafilekey_t bdjoptmachdfkeys[] = {
   { "DIRMUSICTMP",    OPT_M_DIR_MUSICTMP,   VALUE_DATA, NULL, -1 },
   { "DIRORIGINAL",    OPT_M_DIR_ORIGINAL,   VALUE_DATA, NULL, -1 },
   { "HOST",           OPT_M_HOST,           VALUE_DATA, NULL, -1 },
+  { "PLAYER",         OPT_M_PLAYER_INTFC,   VALUE_DATA, NULL, -1 },
   { "SHUTDOWNSCRIPT", OPT_M_SHUTDOWNSCRIPT, VALUE_DATA, NULL, -1 },
   { "STARTUPSCRIPT",  OPT_M_STARTUPSCRIPT,  VALUE_DATA, NULL, -1 },
+  { "VOLUME",         OPT_M_VOLUME_INTFC,   VALUE_DATA, NULL, -1 },
 };
 #define BDJOPT_MACHINE_DFKEY_COUNT (sizeof (bdjoptmachdfkeys) / sizeof (datafilekey_t))
 
