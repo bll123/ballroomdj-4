@@ -233,7 +233,7 @@ songAudioFileExists (song_t *song)
     strlcpy (tbuff, sfname, MAXPATHLEN);
   } else {
     snprintf (tbuff, MAXPATHLEN, "%s/%s",
-        (char *) bdjoptGetData (OPT_M_DIR_MUSIC), sfname);
+        (char *) bdjoptGetStr (OPT_M_DIR_MUSIC), sfname);
   }
   return fileopFileExists (tbuff);
 }

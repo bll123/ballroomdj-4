@@ -719,7 +719,7 @@ mainSendMobileMarqueeData (maindata_t *mainData)
 
   mqLen = bdjoptGetNum (OPT_P_MQQLEN);
   musicqLen = musicqGetLen (mainData->musicQueue, mainData->musicqPlayIdx);
-  title = bdjoptGetData (OPT_P_MOBILEMQTITLE);
+  title = bdjoptGetStr (OPT_P_MOBILEMQTITLE);
   if (title == NULL) {
     title = "";
   }
@@ -769,7 +769,7 @@ mainSendMobileMarqueeData (maindata_t *mainData)
 
   /* internet mode from here on */
 
-  tag = bdjoptGetData (OPT_P_MOBILEMQTAG);
+  tag = bdjoptGetStr (OPT_P_MOBILEMQTAG);
   if (tag != NULL) {
     if (mainData->mobmqUserkey == NULL) {
       pathbldMakePath (tbuff, sizeof (tbuff), "",

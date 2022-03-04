@@ -140,7 +140,7 @@ main (int argc, char *argv[])
 
   remctrlData.danceList = "";
   mstimeset (&remctrlData.danceListTimer, 0);
-  remctrlData.pass = strdup (bdjoptGetData (OPT_P_REMCONTROLPASS));
+  remctrlData.pass = strdup (bdjoptGetStr (OPT_P_REMCONTROLPASS));
   remctrlData.playerStatus = NULL;
   remctrlData.playlistList = "";
   mstimeset (&remctrlData.playlistListTimer, 0);
@@ -156,7 +156,7 @@ main (int argc, char *argv[])
       remctrlStoppingCallback, &remctrlData);
   progstateSetCallback (remctrlData.progstate, STATE_CLOSING,
       remctrlClosingCallback, &remctrlData);
-  remctrlData.user = strdup (bdjoptGetData (OPT_P_REMCONTROLUSER));
+  remctrlData.user = strdup (bdjoptGetStr (OPT_P_REMCONTROLUSER));
   remctrlData.websrv = NULL;
   remctrlData.conn = connInit (ROUTE_REMCTRL);
 

@@ -26,7 +26,7 @@ pliInit (void)
   pli->pliData = NULL;
 
   pathbldMakePath (dlpath, sizeof (dlpath), "",
-      bdjoptGetData (OPT_M_PLAYER_INTFC),
+      bdjoptGetStr (OPT_M_PLAYER_INTFC),
       sysvarsGetStr (SV_SHLIB_EXT), PATHBLD_MP_EXECDIR);
   pli->dlHandle = dylibLoad (dlpath);
   if (pli->dlHandle == NULL) {

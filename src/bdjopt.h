@@ -98,7 +98,7 @@ typedef enum {
 
 void    bdjoptInit (void);
 void    bdjoptFree (void);
-void    *bdjoptGetData (ssize_t idx);
+void    *bdjoptGetStr (ssize_t idx);
 ssize_t bdjoptGetNum (ssize_t idx);
 void    bdjoptSetNum (ssize_t idx, ssize_t value);
 void    bdjoptCreateDirectories (void);

@@ -190,7 +190,7 @@ main (int argc, char *argv[])
 
   uiutilsInitGtkLog ();
   gtk_init (&argc, NULL);
-  uifont = bdjoptGetData (OPT_MP_UIFONT);
+  uifont = bdjoptGetStr (OPT_MP_UIFONT);
   uiutilsSetUIFont (uifont);
 
   pluiSetPlayWhenQueued (&plui);
@@ -338,7 +338,7 @@ pluiActivate (GApplication *app, gpointer userdata)
   gtk_window_set_application (GTK_WINDOW (plui->window), plui->app);
   gtk_window_set_default_icon_from_file (imgbuff, &gerr);
   g_signal_connect (plui->window, "delete-event", G_CALLBACK (pluiCloseWin), plui);
-  gtk_window_set_title (GTK_WINDOW (plui->window), bdjoptGetData (OPT_P_PROFILENAME));
+  gtk_window_set_title (GTK_WINDOW (plui->window), bdjoptGetStr (OPT_P_PROFILENAME));
 
   plui->vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   gtk_container_add (GTK_CONTAINER (plui->window), plui->vbox);
@@ -412,7 +412,7 @@ pluiActivate (GApplication *app, gpointer userdata)
   /* music queue tab */
   widget = uimusicqActivate (plui->uimusicq, plui->window, 0);
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
-  str = bdjoptGetData (OPT_P_QUEUE_NAME_A);
+  str = bdjoptGetStr (OPT_P_QUEUE_NAME_A);
   tabLabel = gtk_label_new (str);
   gtk_box_pack_start (GTK_BOX (hbox), tabLabel, FALSE, FALSE, 1);
   plui->musicqImage [MUSICQ_A] = gtk_image_new ();
@@ -425,7 +425,7 @@ pluiActivate (GApplication *app, gpointer userdata)
   /* queue B tab */
   widget = uimusicqActivate (plui->uimusicq, plui->window, 1);
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
-  str = bdjoptGetData (OPT_P_QUEUE_NAME_B);
+  str = bdjoptGetStr (OPT_P_QUEUE_NAME_B);
   tabLabel = gtk_label_new (str);
   gtk_box_pack_start (GTK_BOX (hbox), tabLabel, FALSE, FALSE, 1);
   plui->musicqImage [MUSICQ_B] = gtk_image_new ();

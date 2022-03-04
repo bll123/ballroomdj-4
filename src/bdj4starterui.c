@@ -100,7 +100,7 @@ main (int argc, char *argv[])
 
   uiutilsInitGtkLog ();
   gtk_init (&argc, NULL);
-  uifont = bdjoptGetData (OPT_MP_UIFONT);
+  uifont = bdjoptGetStr (OPT_MP_UIFONT);
   uiutilsSetUIFont (uifont);
 
   g_timeout_add (UI_MAIN_LOOP_TIMER, starterMainLoop, &starter);
@@ -188,7 +188,7 @@ starterActivate (GApplication *app, gpointer userdata)
   gtk_window_set_application (GTK_WINDOW (starter->window), starter->app);
   gtk_window_set_default_icon_from_file (imgbuff, &gerr);
   g_signal_connect (starter->window, "delete-event", G_CALLBACK (starterCloseWin), starter);
-  gtk_window_set_title (GTK_WINDOW (starter->window), bdjoptGetData (OPT_P_PROFILENAME));
+  gtk_window_set_title (GTK_WINDOW (starter->window), bdjoptGetStr (OPT_P_PROFILENAME));
 
   vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   gtk_container_add (GTK_CONTAINER (starter->window), vbox);

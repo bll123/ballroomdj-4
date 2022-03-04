@@ -143,11 +143,11 @@ main (int argc, char *argv[])
       mobmqClosingCallback, &mobmqData);
   mobmqData.port = bdjoptGetNum (OPT_P_MOBILEMQPORT);
   mobmqData.name = NULL;
-  tval = bdjoptGetData (OPT_P_MOBILEMQTAG);
+  tval = bdjoptGetStr (OPT_P_MOBILEMQTAG);
   if (tval != NULL) {
     mobmqData.name = strdup (tval);
   }
-  tval = bdjoptGetData (OPT_P_MOBILEMQTITLE);
+  tval = bdjoptGetStr (OPT_P_MOBILEMQTITLE);
   mobmqData.title = NULL;
   if (tval != NULL) {
     mobmqData.title = strdup (tval);

@@ -172,7 +172,7 @@ bdjoptFree (void)
 
 
 void *
-bdjoptGetData (ssize_t idx)
+bdjoptGetStr (ssize_t idx)
 {
   void      *value = NULL;
 

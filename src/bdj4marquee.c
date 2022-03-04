@@ -258,7 +258,7 @@ main (int argc, char *argv[])
     nlistSetNum (marquee.options, MQ_SIZE_Y, 600);
   }
 
-  tval = bdjoptGetData (OPT_MP_MQFONT);
+  tval = bdjoptGetStr (OPT_MP_MQFONT);
   if (tval != NULL) {
     marquee.mqfont = strdup (tval);
   }
@@ -271,7 +271,7 @@ main (int argc, char *argv[])
 
   uiutilsInitGtkLog ();
   gtk_init (&argc, NULL);
-  uifont = bdjoptGetData (OPT_MP_UIFONT);
+  uifont = bdjoptGetStr (OPT_MP_UIFONT);
   uiutilsSetUIFont (uifont);
 
   osuiSetWindowAsAccessory ();
@@ -417,7 +417,7 @@ marqueeActivate (GApplication *app, gpointer userdata)
   gtk_widget_set_hexpand (marquee->pbar, TRUE);
   snprintf (tbuff, sizeof (tbuff),
       "progress, trough { min-height: 25px; } progressbar > trough > progress { background-color: %s; }",
-      (char *) bdjoptGetData (OPT_MP_MQ_ACCENT_COL));
+      (char *) bdjoptGetStr (OPT_MP_MQ_ACCENT_COL));
   uiutilsSetCss (marquee->pbar, tbuff);
   gtk_box_pack_start (GTK_BOX (marquee->vbox), marquee->pbar,
       FALSE, FALSE, 0);
@@ -444,7 +444,7 @@ marqueeActivate (GApplication *app, gpointer userdata)
   gtk_widget_set_can_focus (marquee->danceLab, FALSE);
   snprintf (tbuff, sizeof (tbuff),
       "label { color: %s; }",
-      (char *) bdjoptGetData (OPT_MP_MQ_ACCENT_COL));
+      (char *) bdjoptGetStr (OPT_MP_MQ_ACCENT_COL));
   uiutilsSetCss (marquee->danceLab, tbuff);
   gtk_box_pack_start (GTK_BOX (hbox), marquee->danceLab,
       TRUE, TRUE, 0);
@@ -456,7 +456,7 @@ marqueeActivate (GApplication *app, gpointer userdata)
   gtk_widget_set_can_focus (marquee->countdownTimerLab, FALSE);
   snprintf (tbuff, sizeof (tbuff),
       "label { color: %s; }",
-      (char *) bdjoptGetData (OPT_MP_MQ_ACCENT_COL));
+      (char *) bdjoptGetStr (OPT_MP_MQ_ACCENT_COL));
   uiutilsSetCss (marquee->countdownTimerLab, tbuff);
   gtk_box_pack_end (GTK_BOX (hbox), marquee->countdownTimerLab,
       FALSE, FALSE, 0);
@@ -501,7 +501,7 @@ marqueeActivate (GApplication *app, gpointer userdata)
   gtk_widget_set_margin_top (marquee->sep, 2);
   snprintf (tbuff, sizeof (tbuff),
       "separator { min-height: 4px; background-color: %s; }",
-      (char *) bdjoptGetData (OPT_MP_MQ_ACCENT_COL));
+      (char *) bdjoptGetStr (OPT_MP_MQ_ACCENT_COL));
   uiutilsSetCss (marquee->sep, tbuff);
   gtk_box_pack_end (GTK_BOX (vbox), marquee->sep,
       TRUE, TRUE, 0);

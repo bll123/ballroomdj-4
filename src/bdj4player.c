@@ -257,7 +257,7 @@ main (int argc, char *argv[])
 
   playerInitSinklist (&playerData);
     /* sets the current sink */
-  playerSetAudioSink (&playerData, bdjoptGetData (OPT_M_AUDIOSINK));
+  playerSetAudioSink (&playerData, bdjoptGetStr (OPT_M_AUDIOSINK));
 
   playerData.originalSystemVolume =
       volumeGet (playerData.volume, playerData.currentSink);
