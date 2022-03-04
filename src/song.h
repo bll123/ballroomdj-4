@@ -32,7 +32,7 @@ typedef struct {
 
 song_t *  songAlloc (void);
 void      songFree (void *);
-void      songParse (song_t *song, char *data);
+void      songParse (song_t *song, char *data, ssize_t didx);
 char *    songGetData (song_t *, nlistidx_t);
 ssize_t   songGetNum (song_t *, nlistidx_t);
 songfavoriteinfo_t  * songGetFavoriteData (song_t *);

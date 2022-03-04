@@ -110,9 +110,12 @@ songFree (void *tsong)
 }
 
 void
-songParse (song_t *song, char *data)
+songParse (song_t *song, char *data, ssize_t didx)
 {
-  song->songInfo = datafileParse (data, "song", DFTYPE_KEY_VAL,
+  char  tbuff [100];
+
+  snprintf (tbuff, sizeof (tbuff), "song-%zd", didx);
+  song->songInfo = datafileParse (data, tbuff, DFTYPE_KEY_VAL,
       songdfkeys, SONG_DFKEY_COUNT, DATAFILE_NO_LOOKUP, NULL);
   nlistSort (song->songInfo);
 }

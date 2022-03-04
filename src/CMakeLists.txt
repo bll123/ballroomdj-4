@@ -616,7 +616,7 @@ addWinSockLibrary (bdj4marquee)
 add_executable (bdj4installer bdj4installer.c)
 target_link_libraries (bdj4installer
   liblocatebdj3
-  libbdj4 libbdj4common libbdj4ui
+  libbdj4ui libbdj4 libbdj4common
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}
   m

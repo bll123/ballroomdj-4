@@ -36,7 +36,9 @@ main (int argc, char * argv[])
   char      *extension;
   bool      debugself = false;
   bool      nodetach = false;
+  bool      forcenodetach = false;
   bool      isinstaller = false;
+  bool      usemsys = false;
   int       flags;
 
   static struct option bdj_options [] = {
@@ -58,6 +60,7 @@ main (int argc, char * argv[])
     { "bdj4installer",  no_argument,        NULL,   12 },
     { "installer",      no_argument,        NULL,   12 },
     { "locale",         no_argument,        NULL,   13 },
+    /* cli */
     { "forcestop",      no_argument,        NULL,   0 },
     /* used by installer */
     { "unpackdir",      required_argument,  NULL,   'u' },
@@ -67,8 +70,12 @@ main (int argc, char * argv[])
     { "profile",        required_argument,  NULL,   'p' },
     { "debug",          required_argument,  NULL,   'd' },
     { "theme",          required_argument,  NULL,   't' },
+    { "ignorelock",     no_argument,        NULL,   0 },
+    { "startlog",       no_argument,        NULL,   0 },
     /* this process */
     { "debugself",      no_argument,        NULL,   'D' },
+    { "nodetach",       no_argument,        NULL,   'N' },
+    { "msys",           no_argument,        NULL,   'M' },
     { NULL,             0,                  NULL,   0 }
   };
 
@@ -166,6 +173,14 @@ main (int argc, char * argv[])
         debugself = true;
         break;
       }
+      case 'N': {
+        forcenodetach = true;
+        break;
+      }
+      case 'M': {
+        usemsys = true;
+        break;
+      }
       case 'p': {
         if (optarg) {
           sysvarsSetNum (SVL_BDJIDX, atol (optarg));
@@ -254,7 +269,7 @@ main (int argc, char * argv[])
     strlcpy (path, "PATH=", sz);
     while (p != NULL) {
       snprintf (tmp, sz, "%s\\libgtk-3-0.dll", p);
-      if (! fileopFileExists (tmp)) {
+      if (usemsys || ! fileopFileExists (tmp)) {
         if (debugself) {
           fprintf (stderr, "path ok: %s\n", p);
         }
@@ -318,7 +333,7 @@ main (int argc, char * argv[])
   }
 
   flags = OS_PROC_DETACH;
-  if (nodetach) {
+  if (forcenodetach || nodetach) {
     flags = OS_PROC_NONE;
   }
   osProcessStart (argv, flags, NULL);

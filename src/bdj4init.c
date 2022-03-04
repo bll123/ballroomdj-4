@@ -40,6 +40,7 @@ bdj4startup (int argc, char *argv[], char *tag, bdjmsgroute_t route, int flags)
   int         option_index = 0;
   char        tbuff [MAXPATHLEN];
   loglevel_t  loglevel = LOG_IMPORTANT | LOG_MAIN;
+  bool        startlog = false;
 
   static struct option bdj_options [] = {
     { "bdj4main",   no_argument,        NULL,   0 },
@@ -49,8 +50,14 @@ bdj4startup (int argc, char *argv[], char *tag, bdjmsgroute_t route, int flags)
     { "bdj4configui", no_argument,      NULL,   0 },
     { "bdj4manageui", no_argument,      NULL,   0 },
     { "bdj4starterui", no_argument,     NULL,   0 },
+    /* bdj4 loader options to ignore */
+    { "debugself",  no_argument,        NULL,   0 },
+    { "nodetach",   no_argument,        NULL,   0 },
+    { "msys",       no_argument,        NULL,   0 },
+    /* normal options */
     { "profile",    required_argument,  NULL,   'p' },
     { "debug",      required_argument,  NULL,   'd' },
+    { "startlog",   no_argument,        NULL,   's' },
     { NULL,         0,                  NULL,   0 }
   };
 
@@ -76,6 +83,10 @@ bdj4startup (int argc, char *argv[], char *tag, bdjmsgroute_t route, int flags)
         if (optarg) {
           sysvarsSetNum (SVL_BDJIDX, atol (optarg));
         }
+        break;
+      }
+      case 's': {
+        startlog = true;
         break;
       }
       default: {
@@ -105,14 +116,13 @@ bdj4startup (int argc, char *argv[], char *tag, bdjmsgroute_t route, int flags)
   }
   bdjvarsInit ();
 
-  /* for the time being, leave this as route_main */
-  /* this will change in the future */
   /* re-use the lock name as the program name */
-  if (route == ROUTE_MAIN) {
+  if (startlog || route == ROUTE_PLAYERUI) {
     logStart (lockName (route), tag, loglevel);
   } else {
     logStartAppend (lockName (route), tag, loglevel);
   }
+  logProcBegin (LOG_PROC, "bdj4startup");
   logMsg (LOG_SESS, LOG_IMPORTANT, "Using profile %ld", sysvarsGetNum (SVL_BDJIDX));
 
   rc = bdjvarsdfloadInit ();
@@ -128,6 +138,7 @@ bdj4startup (int argc, char *argv[], char *tag, bdjmsgroute_t route, int flags)
 
   if ((flags & BDJ4_INIT_NO_DB_LOAD) != BDJ4_INIT_NO_DB_LOAD) {
     mstimestart (&dbmt);
+    logMsg (LOG_SESS, LOG_IMPORTANT, "Database read: started");
     pathbldMakePath (tbuff, MAXPATHLEN, "",
         MUSICDB_FNAME, MUSICDB_EXT, PATHBLD_MP_NONE);
     dbOpen (tbuff);
@@ -135,6 +146,7 @@ bdj4startup (int argc, char *argv[], char *tag, bdjmsgroute_t route, int flags)
   }
   logMsg (LOG_SESS, LOG_IMPORTANT, "Total init time: %ld ms", mstimeend (&mt));
 
+  logProcEnd (LOG_PROC, "bdj4startup", "");
   return 0;
 }
 
@@ -143,6 +155,7 @@ bdj4shutdown (bdjmsgroute_t route)
 {
   mstime_t       mt;
 
+  logProcBegin (LOG_PROC, "bdj4shutdown");
   mstimestart (&mt);
   bdjoptFree ();
   dbClose ();
@@ -150,4 +163,5 @@ bdj4shutdown (bdjmsgroute_t route)
   bdjvarsCleanup ();
   logMsg (LOG_SESS, LOG_IMPORTANT, "init cleanup time: %ld ms", mstimeend (&mt));
   lockRelease (lockName (route), PATHBLD_MP_USEIDX);
+  logProcEnd (LOG_PROC, "bdj4shutdown", "");
 }

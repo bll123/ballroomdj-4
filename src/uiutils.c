@@ -33,7 +33,7 @@ static GtkWidget * uiutilsDropDownButtonCreate (char *title,
 static void uiutilsDropDownWindowCreate (uiutilsdropdown_t *dropdown,
     void *processSelectionCallback, void *udata);
 static void uiutilsDropDownSelectionSet (uiutilsdropdown_t *dropdown,
-    gulong internalidx);
+    ssize_t internalidx);
 
 static gint uiutilsSpinboxInput (GtkSpinButton *sb, gdouble *newval, gpointer udata);
 static gboolean uiutilsSpinboxDisplay (GtkSpinButton *sb, gpointer udata);
@@ -43,12 +43,15 @@ uiutilsSetCss (GtkWidget *w, char *style)
 {
   GtkCssProvider        *tcss;
 
+  logProcBegin (LOG_PROC, "uiutilsSetCss");
+
   tcss = gtk_css_provider_new ();
   gtk_css_provider_load_from_data (tcss, style, -1, NULL);
   gtk_style_context_add_provider (
       gtk_widget_get_style_context (w),
       GTK_STYLE_PROVIDER (tcss),
       GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+  logProcEnd (LOG_PROC, "uiutilsSetCss", "");
 }
 
 void
@@ -60,6 +63,8 @@ uiutilsSetUIFont (char *uifont)
   char            wbuff [MAXPATHLEN];
   char            *p;
   int             sz = 0;
+
+  logProcBegin (LOG_PROC, "uiutilsSetUIFont");
 
   strlcpy (wbuff, uifont, MAXPATHLEN);
   if (uifont != NULL && *uifont) {
@@ -87,6 +92,7 @@ uiutilsSetUIFont (char *uifont)
           GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
     }
   }
+  logProcEnd (LOG_PROC, "uiutilsSetUIFont", "");
 }
 
 void
@@ -100,10 +106,13 @@ uiutilsCreateLabel (char *label)
 {
   GtkWidget *widget;
 
+  logProcBegin (LOG_PROC, "uiutilsCreateLabel");
+
   widget = gtk_label_new (label);
   assert (widget != NULL);
   gtk_widget_set_margin_top (widget, 2);
   gtk_widget_set_margin_start (widget, 2);
+  logProcEnd (LOG_PROC, "uiutilsCreateLabel", "");
   return widget;
 }
 
@@ -113,11 +122,14 @@ uiutilsCreateColonLabel (char *label)
   GtkWidget *widget;
   char      tbuff [100];
 
+  logProcBegin (LOG_PROC, "uiutilsCreateColonLabel");
+
   snprintf (tbuff, sizeof (tbuff), "%s:", label);
   widget = gtk_label_new (tbuff);
   assert (widget != NULL);
   gtk_widget_set_margin_top (widget, 2);
   gtk_widget_set_margin_start (widget, 2);
+  logProcEnd (LOG_PROC, "uiutilsCreateColonLabel", "");
   return widget;
 }
 
@@ -126,6 +138,8 @@ uiutilsCreateButton (char *title, char *imagenm,
     void *clickCallback, void *udata)
 {
   GtkWidget   *widget;
+
+  logProcBegin (LOG_PROC, "uiutilsCreateButton");
 
   widget = gtk_button_new ();
   assert (widget != NULL);
@@ -149,6 +163,7 @@ uiutilsCreateButton (char *title, char *imagenm,
     g_signal_connect (widget, "clicked", G_CALLBACK (clickCallback), udata);
   }
 
+  logProcEnd (LOG_PROC, "uiutilsCreateButton", "");
   return widget;
 }
 
@@ -157,6 +172,8 @@ uiutilsCreateScrolledWindow (void)
 {
   GtkWidget   *widget;
   GtkWidget   *twidget;
+
+  logProcBegin (LOG_PROC, "uiutilsCreateScrolledWindow");
 
   widget = gtk_scrolled_window_new (NULL, NULL);
   gtk_scrolled_window_set_overlay_scrolling (GTK_SCROLLED_WINDOW (widget), FALSE);
@@ -171,12 +188,14 @@ uiutilsCreateScrolledWindow (void)
   uiutilsSetCss (twidget,
       "scrollbar, scrollbar slider { min-width: 9px; } ");
 
+  logProcEnd (LOG_PROC, "uiutilsCreateScrolledWindow", "");
   return widget;
 }
 
 void
 uiutilsDropDownInit (uiutilsdropdown_t *dropdown)
 {
+  logProcBegin (LOG_PROC, "uiutilsDropDownInit");
   dropdown->parentwin = NULL;
   dropdown->button = NULL;
   dropdown->window = NULL;
@@ -187,11 +206,14 @@ uiutilsDropDownInit (uiutilsdropdown_t *dropdown)
   dropdown->numIndexMap = NULL;
   dropdown->open = false;
   dropdown->iscombobox = false;
+  logProcEnd (LOG_PROC, "uiutilsDropDownInit", "");
 }
+
 
 void
 uiutilsDropDownFree (uiutilsdropdown_t *dropdown)
 {
+  logProcBegin (LOG_PROC, "uiutilsDropDownFree");
   if (dropdown != NULL) {
     if (dropdown->strSelection != NULL) {
       free (dropdown->strSelection);
@@ -203,6 +225,7 @@ uiutilsDropDownFree (uiutilsdropdown_t *dropdown)
       nlistFree (dropdown->numIndexMap);
     }
   }
+  logProcEnd (LOG_PROC, "uiutilsDropDownFree", "");
 }
 
 GtkWidget *
@@ -210,9 +233,11 @@ uiutilsDropDownCreate (GtkWidget *parentwin,
     char *title, void *processSelectionCallback,
     uiutilsdropdown_t *dropdown, void *udata)
 {
+  logProcBegin (LOG_PROC, "uiutilsDropDownCreate");
   dropdown->parentwin = parentwin;
   dropdown->button = uiutilsDropDownButtonCreate (title, dropdown);
   uiutilsDropDownWindowCreate (dropdown, processSelectionCallback, udata);
+  logProcEnd (LOG_PROC, "uiutilsDropDownCreate", "");
   return dropdown->button;
 }
 
@@ -233,10 +258,13 @@ uiutilsCreateDanceList (uiutilsdropdown_t *dropdown, char *selectLabel)
   dance_t           *dances;
   slist_t           *danceList;
 
+  logProcBegin (LOG_PROC, "uiutilsCreateDanceList");
+
   dances = bdjvarsdfGet (BDJVDF_DANCES);
   danceList = danceGetDanceList (dances);
 
   uiutilsDropDownSetNumList (dropdown, danceList, selectLabel);
+  logProcEnd (LOG_PROC, "uiutilsCreateDanceList", "");
 }
 
 ssize_t
@@ -246,6 +274,8 @@ uiutilsDropDownSelectionGet (uiutilsdropdown_t *dropdown, GtkTreePath *path)
   GtkTreeModel  *model = NULL;
   unsigned long idx = 0;
   int32_t       idx32;
+
+  logProcBegin (LOG_PROC, "uiutilsDropDownSelectionGet");
 
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (dropdown->tree));
   if (gtk_tree_model_get_iter (model, &iter, path)) {
@@ -269,9 +299,11 @@ uiutilsDropDownSelectionGet (uiutilsdropdown_t *dropdown, GtkTreePath *path)
     gtk_widget_hide (dropdown->window);
     dropdown->open = false;
   } else {
+    logProcEnd (LOG_PROC, "uiutilsDropDownSelectionGet", "no-iter");
     return -1;
   }
 
+  logProcEnd (LOG_PROC, "uiutilsDropDownSelectionGet", "");
   return (ssize_t) idx32;
 }
 
@@ -287,7 +319,9 @@ uiutilsDropDownSetList (uiutilsdropdown_t *dropdown, slist_t *list,
   GtkTreeViewColumn *column = NULL;
   char              tbuff [200];
   ilistidx_t        iteridx;
-  gulong            internalidx;
+  ssize_t            internalidx;
+
+  logProcBegin (LOG_PROC, "uiutilsDropDownSetList");
 
   store = gtk_list_store_new (UIUTILS_DROPDOWN_COL_MAX,
       G_TYPE_ULONG, G_TYPE_STRING, G_TYPE_STRING);
@@ -333,6 +367,7 @@ uiutilsDropDownSetList (uiutilsdropdown_t *dropdown, slist_t *list,
   gtk_tree_view_set_model (GTK_TREE_VIEW (dropdown->tree),
       GTK_TREE_MODEL (store));
   g_object_unref (store);
+  logProcEnd (LOG_PROC, "uiutilsDropDownSetList", "");
 }
 
 void
@@ -346,8 +381,10 @@ uiutilsDropDownSetNumList (uiutilsdropdown_t *dropdown, slist_t *list,
   GtkTreeViewColumn *column = NULL;
   char              tbuff [200];
   ilistidx_t        iteridx;
-  gulong            internalidx;
+  ssize_t            internalidx;
   nlistidx_t        idx;
+
+  logProcBegin (LOG_PROC, "uiutilsDropDownSetNumList");
 
   store = gtk_list_store_new (UIUTILS_DROPDOWN_COL_MAX,
       G_TYPE_ULONG, G_TYPE_STRING, G_TYPE_STRING);
@@ -393,12 +430,20 @@ uiutilsDropDownSetNumList (uiutilsdropdown_t *dropdown, slist_t *list,
   gtk_tree_view_set_model (GTK_TREE_VIEW (dropdown->tree),
       GTK_TREE_MODEL (store));
   g_object_unref (store);
+  logProcEnd (LOG_PROC, "uiutilsDropDownSetNumList", "");
 }
 
 void
 uiutilsDropDownSelectionSetNum (uiutilsdropdown_t *dropdown, ssize_t idx)
 {
-  gulong        internalidx;
+  ssize_t        internalidx;
+
+  logProcBegin (LOG_PROC, "uiutilsDropDownSelectionSetNum");
+
+  if (dropdown == NULL) {
+    logProcEnd (LOG_PROC, "uiutilsDropDownSelectionSetNum", "null-dropdown");
+    return;
+  }
 
   if (dropdown->numIndexMap == NULL) {
     internalidx = 0;
@@ -406,12 +451,20 @@ uiutilsDropDownSelectionSetNum (uiutilsdropdown_t *dropdown, ssize_t idx)
     internalidx = nlistGetNum (dropdown->numIndexMap, idx);
   }
   uiutilsDropDownSelectionSet (dropdown, internalidx);
+  logProcEnd (LOG_PROC, "uiutilsDropDownSelectionSetNum", "");
 }
 
 void
 uiutilsDropDownSelectionSetStr (uiutilsdropdown_t *dropdown, char *stridx)
 {
-  gulong        internalidx;
+  ssize_t        internalidx;
+
+  logProcBegin (LOG_PROC, "uiutilsDropDownSelectionSetStr");
+
+  if (dropdown == NULL) {
+    logProcEnd (LOG_PROC, "uiutilsDropDownSelectionSetStr", "null-dropdown");
+    return;
+  }
 
   if (dropdown->strIndexMap == NULL) {
     internalidx = 0;
@@ -419,16 +472,20 @@ uiutilsDropDownSelectionSetStr (uiutilsdropdown_t *dropdown, char *stridx)
     internalidx = slistGetNum (dropdown->strIndexMap, stridx);
   }
   uiutilsDropDownSelectionSet (dropdown, internalidx);
+  logProcEnd (LOG_PROC, "uiutilsDropDownSelectionSetStr", "");
 }
 
 void
 uiutilsEntryInit (uiutilsentry_t *entry, int entrySize, int maxSize)
 {
+  logProcBegin (LOG_PROC, "uiutilsEntryInit");
   entry->entrySize = entrySize;
   entry->maxSize = maxSize;
   entry->buffer = NULL;
   entry->entry = NULL;
+  logProcEnd (LOG_PROC, "uiutilsEntryInit", "");
 }
+
 
 void
 uiutilsEntryFree (uiutilsentry_t *entry)
@@ -439,6 +496,7 @@ uiutilsEntryFree (uiutilsentry_t *entry)
 GtkWidget *
 uiutilsEntryCreate (uiutilsentry_t *entry)
 {
+  logProcBegin (LOG_PROC, "uiutilsEntryCreate");
   entry->buffer = gtk_entry_buffer_new (NULL, -1);
   entry->entry = gtk_entry_new_with_buffer (entry->buffer);
   gtk_entry_set_width_chars (GTK_ENTRY (entry->entry), entry->entrySize);
@@ -449,6 +507,7 @@ uiutilsEntryCreate (uiutilsentry_t *entry)
   gtk_widget_set_halign (entry->entry, GTK_ALIGN_FILL);
   gtk_widget_set_hexpand (entry->entry, TRUE);
 
+  logProcEnd (LOG_PROC, "uiutilsEntryCreate", "");
   return entry->entry;
 }
 
@@ -470,13 +529,16 @@ uiutilsEntrySetValue (uiutilsentry_t *entry, char *value)
 void
 uiutilsSpinboxInit (uiutilsspinbox_t *spinbox)
 {
+  logProcBegin (LOG_PROC, "uiutilsSpinboxInit");
   spinbox->spinbox = NULL;
   spinbox->curridx = 0;
   spinbox->textGetProc = NULL;
   spinbox->udata = NULL;
   spinbox->indisp = false;
   spinbox->maxWidth = 0;
+  logProcEnd (LOG_PROC, "uiutilsSpinboxInit", "");
 }
+
 
 void
 uiutilsSpinboxFree (uiutilsspinbox_t *spinbox)
@@ -484,9 +546,11 @@ uiutilsSpinboxFree (uiutilsspinbox_t *spinbox)
   ;
 }
 
+
 GtkWidget *
 uiutilsSpinboxTextCreate (uiutilsspinbox_t *spinbox, void *udata)
 {
+  logProcBegin (LOG_PROC, "uiutilsSpinboxTextCreate");
   spinbox->spinbox = gtk_spin_button_new (NULL, 0.0, 0);
   gtk_spin_button_set_increments (GTK_SPIN_BUTTON (spinbox->spinbox), 1.0, 1.0);
   gtk_spin_button_set_wrap (GTK_SPIN_BUTTON (spinbox->spinbox), TRUE);
@@ -497,13 +561,16 @@ uiutilsSpinboxTextCreate (uiutilsspinbox_t *spinbox, void *udata)
   g_signal_connect (spinbox->spinbox, "input",
       G_CALLBACK (uiutilsSpinboxInput), spinbox);
   spinbox->udata = udata;
+  logProcEnd (LOG_PROC, "uiutilsSpinboxTextCreate", "");
   return spinbox->spinbox;
 }
+
 
 void
 uiutilsSpinboxSet (uiutilsspinbox_t *spinbox, int min, int count,
     int maxWidth, uiutilsspinboxdisp_t textGetProc)
 {
+  logProcBegin (LOG_PROC, "uiutilsSpinboxSet");
   gtk_spin_button_set_range (GTK_SPIN_BUTTON (spinbox->spinbox),
       (double) min, (double) count - 1);
   /* will width in characters be enough for some glyphs? */
@@ -512,7 +579,9 @@ uiutilsSpinboxSet (uiutilsspinbox_t *spinbox, int min, int count,
   gtk_entry_set_width_chars (GTK_ENTRY (spinbox->spinbox), spinbox->maxWidth);
   gtk_spin_button_set_value (GTK_SPIN_BUTTON (spinbox->spinbox), (double) min);
   spinbox->textGetProc = textGetProc;
+  logProcEnd (LOG_PROC, "uiutilsSpinboxSet", "");
 }
+
 
 int
 uiutilsSpinboxGetValue (uiutilsspinbox_t *spinbox)
@@ -520,15 +589,20 @@ uiutilsSpinboxGetValue (uiutilsspinbox_t *spinbox)
   GtkAdjustment     *adjustment;
   gdouble           value;
 
+  logProcBegin (LOG_PROC, "uiutilsSpinboxGetValue");
+
   if (spinbox == NULL) {
+    logProcEnd (LOG_PROC, "uiutilsSpinboxGetValue", "spinbox-null");
     return -1;
   }
   if (spinbox->spinbox == NULL) {
+    logProcEnd (LOG_PROC, "uiutilsSpinboxGetValue", "spinbox-widget-null");
     return -1;
   }
 
   adjustment = gtk_spin_button_get_adjustment (GTK_SPIN_BUTTON (spinbox->spinbox));
   value = gtk_adjustment_get_value (adjustment);
+  logProcEnd (LOG_PROC, "uiutilsSpinboxGetValue", "");
   return (int) value;
 }
 
@@ -537,15 +611,20 @@ uiutilsSpinboxSetValue (uiutilsspinbox_t *spinbox, int value)
 {
   GtkAdjustment     *adjustment;
 
+  logProcBegin (LOG_PROC, "uiutilsSpinboxSetValue");
+
   if (spinbox == NULL) {
+    logProcEnd (LOG_PROC, "uiutilsSpinboxSetValue", "spinbox-null");
     return;
   }
   if (spinbox->spinbox == NULL) {
+    logProcEnd (LOG_PROC, "uiutilsSpinboxSetValue", "spinbox-widget-null");
     return;
   }
 
   adjustment = gtk_spin_button_get_adjustment (GTK_SPIN_BUTTON (spinbox->spinbox));
   gtk_adjustment_set_value (adjustment, (double) value);
+  logProcEnd (LOG_PROC, "uiutilsSpinboxSetValue", "");
 }
 
 /* gtk spinboxes are a bit bizarre */
@@ -556,9 +635,12 @@ uiutilsSpinboxInput (GtkSpinButton *sb, gdouble *newval, gpointer udata)
   GtkAdjustment     *adjustment;
   gdouble           value;
 
+  logProcBegin (LOG_PROC, "uiutilsSpinboxInput");
+
   adjustment = gtk_spin_button_get_adjustment (GTK_SPIN_BUTTON (spinbox->spinbox));
   value = gtk_adjustment_get_value (adjustment);
   *newval = value;
+  logProcEnd (LOG_PROC, "uiutilsSpinboxInput", "");
   return TRUE;
 }
 
@@ -571,7 +653,10 @@ uiutilsSpinboxDisplay (GtkSpinButton *sb, gpointer udata)
   double            value;
   char              tbuff [100];
 
+  logProcBegin (LOG_PROC, "uiutilsSpinboxDisplay");
+
   if (spinbox->indisp) {
+    logProcEnd (LOG_PROC, "uiutilsSpinboxDisplay", "lock-in-disp");
     return FALSE;
   }
   spinbox->indisp = true;
@@ -588,6 +673,7 @@ uiutilsSpinboxDisplay (GtkSpinButton *sb, gpointer udata)
   snprintf (tbuff, sizeof (tbuff), "%-*s", spinbox->maxWidth, disp);
   gtk_entry_set_text (GTK_ENTRY (spinbox->spinbox), tbuff);
   spinbox->indisp = false;
+  logProcEnd (LOG_PROC, "uiutilsSpinboxDisplay", "");
   return TRUE;
 }
 
@@ -619,11 +705,14 @@ uiutilsDropDownWindowShow (GtkButton *b, gpointer udata)
   GtkAllocation     alloc;
   gint              x, y;
 
+  logProcBegin (LOG_PROC, "uiutilsDropDownWindowShow");
+
   gtk_window_get_position (GTK_WINDOW (dropdown->parentwin), &x, &y);
   gtk_widget_get_allocation (dropdown->button, &alloc);
   gtk_widget_show_all (dropdown->window);
   gtk_window_move (GTK_WINDOW (dropdown->window), alloc.x + x + 4, alloc.y + y + 4 + 30);
   dropdown->open = true;
+  logProcEnd (LOG_PROC, "uiutilsDropDownWindowShow", "");
 }
 
 static gboolean
@@ -631,12 +720,15 @@ uiutilsDropDownClose (GtkWidget *w, GdkEventFocus *event, gpointer udata)
 {
   uiutilsdropdown_t *dropdown = udata;
 
+  logProcBegin (LOG_PROC, "uiutilsDropDownClose");
+
   if (dropdown->open) {
     gtk_widget_hide (dropdown->window);
     dropdown->open = false;
   }
   gtk_window_present (GTK_WINDOW (dropdown->parentwin));
 
+  logProcEnd (LOG_PROC, "uiutilsDropDownClose", "");
   return FALSE;
 }
 
@@ -646,6 +738,8 @@ uiutilsDropDownButtonCreate (char *title, uiutilsdropdown_t *dropdown)
   GtkWidget   *widget;
   GtkWidget   *image;
   char        tbuff [MAXPATHLEN];
+
+  logProcBegin (LOG_PROC, "uiutilsDropDownButtonCreate");
 
   widget = gtk_button_new ();
   assert (widget != NULL);
@@ -664,6 +758,7 @@ uiutilsDropDownButtonCreate (char *title, uiutilsdropdown_t *dropdown)
   g_signal_connect (widget, "clicked",
       G_CALLBACK (uiutilsDropDownWindowShow), dropdown);
 
+  logProcEnd (LOG_PROC, "uiutilsDropDownButtonCreate", "");
   return widget;
 }
 
@@ -675,6 +770,8 @@ uiutilsDropDownWindowCreate (uiutilsdropdown_t *dropdown,
   GtkWidget         *scwin;
   GtkWidget         *twidget;
   GtkTreeSelection  *sel;
+
+  logProcBegin (LOG_PROC, "uiutilsDropDownWindowCreate");
 
   dropdown->window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_attached_to (GTK_WINDOW (dropdown->window), dropdown->button);
@@ -713,10 +810,11 @@ uiutilsDropDownWindowCreate (uiutilsdropdown_t *dropdown,
   gtk_container_add (GTK_CONTAINER (scwin), dropdown->tree);
   g_signal_connect (dropdown->tree, "row-activated",
       G_CALLBACK (processSelectionCallback), udata);
+  logProcEnd (LOG_PROC, "uiutilsDropDownWindowCreate", "");
 }
 
 static void
-uiutilsDropDownSelectionSet (uiutilsdropdown_t *dropdown, gulong internalidx)
+uiutilsDropDownSelectionSet (uiutilsdropdown_t *dropdown, ssize_t internalidx)
 {
   GtkTreePath   *path;
   GtkTreeModel  *model;
@@ -724,17 +822,30 @@ uiutilsDropDownSelectionSet (uiutilsdropdown_t *dropdown, gulong internalidx)
   char          tbuff [40];
   char          *p;
 
+  logProcBegin (LOG_PROC, "uiutilsDropDownSelectionSet");
 
+  if (dropdown == NULL) {
+    logProcEnd (LOG_PROC, "uiutilsDropDownSelectionSet", "null-dropdown");
+    return;
+  }
   if (dropdown->tree == NULL) {
+    logProcEnd (LOG_PROC, "uiutilsDropDownSelectionSet", "null-tree");
     return;
   }
 
   snprintf (tbuff, sizeof (tbuff), "%zd", internalidx);
   path = gtk_tree_path_new_from_string (tbuff);
-  gtk_tree_view_set_cursor (GTK_TREE_VIEW (dropdown->tree), path, NULL, FALSE);
-  model = gtk_tree_view_get_model (GTK_TREE_VIEW (dropdown->tree));
-  gtk_tree_model_get_iter (model, &iter, path);
-  gtk_tree_model_get (model, &iter, UIUTILS_DROPDOWN_COL_DISP, &p, -1);
-  gtk_button_set_label (GTK_BUTTON (dropdown->button), p);
+  if (path != NULL) {
+    gtk_tree_view_set_cursor (GTK_TREE_VIEW (dropdown->tree), path, NULL, FALSE);
+    model = gtk_tree_view_get_model (GTK_TREE_VIEW (dropdown->tree));
+    if (model != NULL) {
+      gtk_tree_model_get_iter (model, &iter, path);
+      gtk_tree_model_get (model, &iter, UIUTILS_DROPDOWN_COL_DISP, &p, -1);
+      if (p != NULL) {
+        gtk_button_set_label (GTK_BUTTON (dropdown->button), p);
+      }
+    }
+  }
+  logProcEnd (LOG_PROC, "uiutilsDropDownSelectionSet", "");
 }
 

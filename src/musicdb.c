@@ -106,7 +106,7 @@ dbLoad (db_t *db, char *fn)
     }
 
     song = songAlloc ();
-    songParse (song, data);
+    songParse (song, data, i);
     fstr = songGetData (song, TAG_FILE);
     ffn = songFullFileName (fstr);
     ok = false;

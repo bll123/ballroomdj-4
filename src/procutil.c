@@ -78,6 +78,7 @@ procutilStart (const char *fn, ssize_t profile, ssize_t loglvl)
   char        sloglvl [40];
   char        * targv [15];
   int         idx;
+  int         flags;
 
 
   process = malloc (sizeof (procutil_t));
@@ -99,7 +100,8 @@ procutilStart (const char *fn, ssize_t profile, ssize_t loglvl)
   targv [idx++] = NULL;
 
   process->processHandle = NULL;
-  process->pid = osProcessStart (targv, OS_PROC_DETACH, &process->processHandle);
+  flags = OS_PROC_DETACH;
+  process->pid = osProcessStart (targv, flags, &process->processHandle);
   if (process->processHandle != NULL) {
     process->hasHandle = true;
   }
@@ -237,6 +239,9 @@ procutilStartProcess (bdjmsgroute_t route, char *fname)
       fname, extension, PATHBLD_MP_EXECDIR);
   process = procutilStart (tbuff, sysvarsGetNum (SVL_BDJIDX),
       bdjoptGetNum (OPT_G_DEBUGLVL));
+  if (isWindows ()) {
+    logMsg (LOG_DBG, LOG_BASIC, "PATH=%s\n", getenv ("PATH"));
+  }
   if (process == NULL) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "%s %s failed to start", fname, tbuff);
   } else {

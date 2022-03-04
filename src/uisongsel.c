@@ -94,6 +94,8 @@ uisongselInit (progstate_t *progstate, conn_t *conn, nlist_t *options)
 {
   uisongsel_t    *uisongsel;
 
+  logProcBegin (LOG_PROC, "uisongselInit");
+
   uisongsel = malloc (sizeof (uisongsel_t));
   assert (uisongsel != NULL);
   uisongsel->ratings = bdjvarsdfGet (BDJVDF_RATINGS);
@@ -127,12 +129,16 @@ uisongselInit (progstate_t *progstate, conn_t *conn, nlist_t *options)
 
   uisongsel->filterDialog = NULL;
 
+  logProcEnd (LOG_PROC, "uisongselInit", "");
   return uisongsel;
 }
 
 void
 uisongselFree (uisongsel_t *uisongsel)
 {
+
+  logProcBegin (LOG_PROC, "uisongselFree");
+
   if (uisongsel != NULL) {
     if (uisongsel->songfilter != NULL) {
       songfilterFree (uisongsel->songfilter);
@@ -148,6 +154,7 @@ uisongselFree (uisongsel_t *uisongsel)
     uiutilsSpinboxFree (&uisongsel->filterfavoritesel);
     free (uisongsel);
   }
+  logProcEnd (LOG_PROC, "uisongselFree", "");
 }
 
 GtkWidget *
@@ -161,6 +168,8 @@ uisongselActivate (uisongsel_t *uisongsel, GtkWidget *parentwin)
   GtkTreeViewColumn *column = NULL;
   GtkAdjustment     *adjustment;
   GValue            gvalue = G_VALUE_INIT;
+
+  logProcBegin (LOG_PROC, "uisongselActivate");
 
   g_value_init (&gvalue, G_TYPE_INT);
   g_value_set_int (&gvalue, PANGO_ELLIPSIZE_END);
@@ -296,6 +305,7 @@ uisongselActivate (uisongsel_t *uisongsel, GtkWidget *parentwin)
 
   uiutilsDropDownSelectionSetNum (&uisongsel->dancesel, -1);
 
+  logProcEnd (LOG_PROC, "uisongselActivate", "");
   return uisongsel->vbox;
 }
 
@@ -312,6 +322,8 @@ uisongselInitializeStore (uisongsel_t *uisongsel)
 {
   GtkListStore      *store = NULL;
 
+  logProcBegin (LOG_PROC, "uisongselInitializeStore");
+
   store = gtk_list_store_new (SONGSEL_COL_MAX,
       G_TYPE_ULONG, G_TYPE_ULONG, G_TYPE_ULONG,
       G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING,
@@ -321,6 +333,7 @@ uisongselInitializeStore (uisongsel_t *uisongsel)
   gtk_tree_view_set_model (GTK_TREE_VIEW (uisongsel->songselTree), GTK_TREE_MODEL (store));
   uisongsel->createRowProcessFlag = true;
   uisongsel->createRowFlag = true;
+  logProcEnd (LOG_PROC, "uisongselInitializeStore", "");
 }
 
 static void
@@ -328,6 +341,8 @@ uisongselCreateRows (uisongsel_t *uisongsel)
 {
   GtkTreeModel      *model = NULL;
   GtkTreeIter       iter;
+
+  logProcBegin (LOG_PROC, "uisongselCreateRows");
 
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (uisongsel->songselTree));
   /* for now, some number that should be large enough */
@@ -337,6 +352,7 @@ uisongselCreateRows (uisongsel_t *uisongsel)
 
   /* initial song filter process */
   uisongsel->dfilterCount = (double) songfilterProcess (uisongsel->songfilter);
+  logProcEnd (LOG_PROC, "uisongselCreateRows", "");
 }
 
 static void
@@ -344,10 +360,13 @@ uisongselClearData (uisongsel_t *uisongsel)
 {
   GtkTreeModel        * model = NULL;
 
+  logProcBegin (LOG_PROC, "uisongselClearData");
+
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (uisongsel->songselTree));
   gtk_list_store_clear (GTK_LIST_STORE (model));
   /* having cleared the list, the rows must be re-created */
   uisongselCreateRows (uisongsel);
+  logProcEnd (LOG_PROC, "uisongselClearData", "");
 }
 
 static void
@@ -367,6 +386,8 @@ uisongselPopulateData (uisongsel_t *uisongsel)
   char                tmp [40];
   char                tbuff [100];
   dbidx_t             dbidx;
+
+  logProcBegin (LOG_PROC, "uisongselPopulateData");
 
 
   adjustment = gtk_range_get_adjustment (GTK_RANGE (uisongsel->songselScrollbar));
@@ -418,6 +439,7 @@ uisongselPopulateData (uisongsel_t *uisongsel)
     ++idx;
     ++count;
   }
+  logProcEnd (LOG_PROC, "uisongselPopulateData", "");
 }
 
 static void
@@ -428,9 +450,11 @@ uisongselProcessTreeSize (GtkWidget* w, GtkAllocation* allocation,
   GtkAdjustment *adjustment;
   double        ps, si;
 
+  logProcBegin (LOG_PROC, "uisongselProcessTreeSize");
 
   if (allocation->height != uisongsel->lastTreeSize) {
     if (allocation->height < 200) {
+      logProcEnd (LOG_PROC, "uisongselProcessTreeSize", "small-alloc-height");
       return;
     }
 
@@ -441,6 +465,7 @@ uisongselProcessTreeSize (GtkWidget* w, GtkAllocation* allocation,
     ps = gtk_adjustment_get_page_size (adjustment);
     si = gtk_adjustment_get_step_increment (adjustment);
     if (si <= 0.05) {
+      logProcEnd (LOG_PROC, "uisongselProcessTreeSize", "small-adjust");
       return;
     }
     if (uisongsel->lastStepIncrement == 0.0) {
@@ -471,6 +496,7 @@ uisongselProcessTreeSize (GtkWidget* w, GtkAllocation* allocation,
     g_signal_emit_by_name (GTK_RANGE (uisongsel->songselScrollbar),
         "change-value", NULL, (double) uisongsel->idxStart, uisongsel, NULL);
   }
+  logProcEnd (LOG_PROC, "uisongselProcessTreeSize", "");
 }
 
 static gboolean
@@ -480,7 +506,10 @@ uisongselScroll (GtkRange *range, GtkScrollType scrolltype,
   uisongsel_t   *uisongsel = udata;
   double        start;
 
+  logProcBegin (LOG_PROC, "uisongselScroll");
+
   if (value < 0 || value > uisongsel->dfilterCount) {
+    logProcEnd (LOG_PROC, "uisongselScroll", "bad-value");
     return TRUE;
   }
 
@@ -492,6 +521,7 @@ uisongselScroll (GtkRange *range, GtkScrollType scrolltype,
 
   logMsg (LOG_DBG, LOG_SONGSEL, "populate: scroll");
   uisongselPopulateData (uisongsel);
+  logProcEnd (LOG_PROC, "uisongselScroll", "");
   return FALSE;
 }
 
@@ -507,13 +537,17 @@ uisongselRowSelected (GtkTreeView* tv, GtkTreePath* path,
   gulong            dbidx;
   song_t            * song;
 
+  logProcBegin (LOG_PROC, "uisongselRowSelected");
+
   if (column != uisongsel->favColumn) {
+    logProcEnd (LOG_PROC, "uisongselRowSelected", "not-fav-col");
     return;
   }
 
   sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (uisongsel->songselTree));
   count = gtk_tree_selection_count_selected_rows (sel);
   if (count != 1) {
+    logProcEnd (LOG_PROC, "uisongselRowSelected", "count != 1");
     return;
   }
   gtk_tree_selection_get_selected (sel, &model, &iter);
@@ -523,12 +557,15 @@ uisongselRowSelected (GtkTreeView* tv, GtkTreePath* path,
   // ## TODO song data must be saved to the database.
   logMsg (LOG_DBG, LOG_SONGSEL, "populate: favorite changed");
   uisongselPopulateData (uisongsel);
+  logProcEnd (LOG_PROC, "uisongselRowSelected", "");
 }
 
 static gboolean
 uisongselScrollEvent (GtkWidget* tv, GdkEventScroll *event, gpointer udata)
 {
   uisongsel_t   *uisongsel = udata;
+
+  logProcBegin (LOG_PROC, "uisongselScrollEvent");
 
   /* i'd like to have a way to turn off smooth scrolling for the application */
   if (event->direction == GDK_SCROLL_SMOOTH) {
@@ -551,6 +588,7 @@ uisongselScrollEvent (GtkWidget* tv, GdkEventScroll *event, gpointer udata)
   g_signal_emit_by_name (GTK_RANGE (uisongsel->songselScrollbar),
       "change-value", NULL, (double) uisongsel->idxStart, uisongsel, NULL);
 
+  logProcEnd (LOG_PROC, "uisongselScrollEvent", "");
   return TRUE;
 }
 
@@ -566,9 +604,12 @@ uisongselQueueProcess (GtkButton *b, gpointer udata)
   char              tbuff [MAXPATHLEN];
   ssize_t           insloc;
 
+  logProcBegin (LOG_PROC, "uisongselQueueProcess");
+
   sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (uisongsel->songselTree));
   count = gtk_tree_selection_count_selected_rows (sel);
   if (count != 1) {
+    logProcEnd (LOG_PROC, "uisongselQueueProcess", "count != 1");
     return;
   }
   gtk_tree_selection_get_selected (sel, &model, &iter);
@@ -580,6 +621,7 @@ uisongselQueueProcess (GtkButton *b, gpointer udata)
   connSendMessage (uisongsel->conn, ROUTE_MAIN,
       MSG_MUSICQ_INSERT, tbuff);
 
+  logProcEnd (LOG_PROC, "uisongselQueueProcess", "");
   return;
 }
 
@@ -590,6 +632,8 @@ uisongselFilterDanceProcess (GtkTreeView *tv, GtkTreePath *path,
   uisongsel_t *uisongsel = udata;
   ssize_t     idx;
 
+  logProcBegin (LOG_PROC, "uisongselFilterDanceProcess");
+
   idx = uiutilsDropDownSelectionGet (&uisongsel->dancesel, path);
   uisongselSongfilterSetDance (uisongsel, idx);
   uiutilsDropDownSelectionSetNum (&uisongsel->filterdancesel, idx);
@@ -598,6 +642,7 @@ uisongselFilterDanceProcess (GtkTreeView *tv, GtkTreePath *path,
   uisongselClearData (uisongsel);
   logMsg (LOG_DBG, LOG_SONGSEL, "populate: filter by dance");
   uisongselPopulateData (uisongsel);
+  logProcEnd (LOG_PROC, "uisongselFilterDanceProcess", "");
   return;
 }
 
@@ -605,6 +650,8 @@ static void
 uisongselFilterDialog (GtkButton *b, gpointer udata)
 {
   uisongsel_t * uisongsel = udata;
+
+  logProcBegin (LOG_PROC, "uisongselFilterDialog");
 
   if (uisongsel->filterDialog == NULL) {
     uisongselCreateFilterDialog (uisongsel);
@@ -618,6 +665,7 @@ uisongselFilterDialog (GtkButton *b, gpointer udata)
         nlistGetNum (uisongsel->options, SONGSEL_FILTER_POSITION_X),
         nlistGetNum (uisongsel->options, SONGSEL_FILTER_POSITION_Y));
   }
+  logProcEnd (LOG_PROC, "uisongselFilterDialog", "");
 }
 
 static void
@@ -630,6 +678,8 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
   GtkSizeGroup  *sgA;
   int           max;
   int           len;
+
+  logProcBegin (LOG_PROC, "uisongselCreateFilterDialog");
 
 
   sgA = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
@@ -804,6 +854,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
 
   g_signal_connect (uisongsel->filterDialog, "response",
       G_CALLBACK (uisongselFilterResponseHandler), uisongsel);
+  logProcEnd (LOG_PROC, "uisongselCreateFilterDialog", "");
 }
 
 static void
@@ -813,6 +864,8 @@ uisongselSortBySelect (GtkTreeView *tv, GtkTreePath *path,
   uisongsel_t *uisongsel = udata;
   ssize_t     idx;
 
+  logProcBegin (LOG_PROC, "uisongselSortBySelect");
+
   idx = uiutilsDropDownSelectionGet (&uisongsel->sortbysel, path);
   if (idx >= 0) {
     songfilterSetSort (uisongsel->songfilter,
@@ -820,6 +873,7 @@ uisongselSortBySelect (GtkTreeView *tv, GtkTreePath *path,
     nlistSetStr (uisongsel->options, SONGSEL_SORT_BY,
         uisongsel->sortbysel.strSelection);
   }
+  logProcEnd (LOG_PROC, "uisongselSortBySelect", "");
 }
 
 static void
@@ -828,9 +882,12 @@ uisongselCreateSortByList (uisongsel_t *uisongsel)
   slist_t           *sortoptlist;
   sortopt_t         *sortopt;
 
+  logProcBegin (LOG_PROC, "uisongselCreateSortByList");
+
   sortopt = bdjvarsdfGet (BDJVDF_SORT_OPT);
   sortoptlist = sortoptGetList (sortopt);
   uiutilsDropDownSetList (&uisongsel->sortbysel, sortoptlist, NULL);
+  logProcEnd (LOG_PROC, "uisongselCreateSortByList", "");
 }
 
 static void
@@ -840,12 +897,15 @@ uisongselGenreSelect (GtkTreeView *tv, GtkTreePath *path,
   uisongsel_t *uisongsel = udata;
   ssize_t     idx;
 
+  logProcBegin (LOG_PROC, "uisongselGenreSelect");
+
   idx = uiutilsDropDownSelectionGet (&uisongsel->filtergenresel, path);
   if (idx >= 0) {
     songfilterSetNum (uisongsel->songfilter, SONG_FILTER_GENRE, idx);
   } else {
     songfilterClear (uisongsel->songfilter, SONG_FILTER_GENRE);
   }
+  logProcEnd (LOG_PROC, "uisongselGenreSelect", "");
 }
 
 static void
@@ -854,10 +914,13 @@ uisongselCreateGenreList (uisongsel_t *uisongsel)
   slist_t   *genrelist;
   genre_t   *genre;
 
+  logProcBegin (LOG_PROC, "uisongselCreateGenreList");
+
   genre = bdjvarsdfGet (BDJVDF_GENRES);
   genrelist = genreGetList (genre);
   uiutilsDropDownSetNumList (&uisongsel->filtergenresel, genrelist,
       _("All Genres"));
+  logProcEnd (LOG_PROC, "uisongselCreateGenreList", "");
 }
 
 
@@ -868,9 +931,12 @@ uisongselDanceSelect (GtkTreeView *tv, GtkTreePath *path,
   uisongsel_t *uisongsel = udata;
   ssize_t     idx;
 
+  logProcBegin (LOG_PROC, "uisongselDanceSelect");
+
   idx = uiutilsDropDownSelectionGet (&uisongsel->filterdancesel, path);
   uisongsel->danceIdx = idx;
   uisongselSongfilterSetDance (uisongsel, idx);
+  logProcEnd (LOG_PROC, "uisongselDanceSelect", "");
 }
 
 static void
@@ -880,6 +946,8 @@ uisongselSongfilterSetDance (uisongsel_t *uisongsel, ssize_t idx)
   if (idx >= 0) {
     ilist_t   *danceList;
 
+  logProcBegin (LOG_PROC, "uisongselSongfilterSetDance");
+
     danceList = ilistAlloc ("songsel-filter-dance", LIST_ORDERED, NULL);
     /* any value will do; only interested in the dance index at this point */
     ilistSetNum (danceList, idx, 0, 0);
@@ -887,6 +955,7 @@ uisongselSongfilterSetDance (uisongsel_t *uisongsel, ssize_t idx)
   } else {
     songfilterClear (uisongsel->songfilter, SONG_FILTER_DANCE);
   }
+  logProcEnd (LOG_PROC, "uisongselSongfilterSetDance", "");
 }
 
 static char *
@@ -894,9 +963,13 @@ uisongselRatingGet (void *udata, int idx)
 {
   uisongsel_t *uisongsel = udata;
 
+  logProcBegin (LOG_PROC, "uisongselRatingGet");
+
   if (idx == -1) {
+    logProcEnd (LOG_PROC, "uisongselRatingGet", "all");
     return _("All Ratings");
   }
+  logProcEnd (LOG_PROC, "uisongselRatingGet", "");
   return ratingGetRating (uisongsel->ratings, idx);
 }
 
@@ -905,9 +978,13 @@ uisongselLevelGet (void *udata, int idx)
 {
   uisongsel_t *uisongsel = udata;
 
+  logProcBegin (LOG_PROC, "uisongselLevelGet");
+
   if (idx == -1) {
+    logProcEnd (LOG_PROC, "uisongselLevelGet", "all");
     return _("All Levels");
   }
+  logProcEnd (LOG_PROC, "uisongselLevelGet", "");
   return levelGetLevel (uisongsel->levels, idx);
 }
 
@@ -916,9 +993,13 @@ uisongselStatusGet (void *udata, int idx)
 {
   uisongsel_t *uisongsel = udata;
 
+  logProcBegin (LOG_PROC, "uisongselStatusGet");
+
   if (idx == -1) {
+    logProcEnd (LOG_PROC, "uisongselStatusGet", "any");
     return _("Any Status");
   }
+  logProcEnd (LOG_PROC, "uisongselStatusGet", "");
   return statusGetStatus (uisongsel->status, idx);
 }
 
@@ -928,6 +1009,8 @@ uisongselFavoriteGet (void *udata, int idx)
   uisongsel_t         *uisongsel = udata;
   char                tbuff [100];
   songfavoriteinfo_t  *favorite;
+
+  logProcBegin (LOG_PROC, "uisongselFavoriteGet");
 
   favorite = songGetFavorite (idx);
   if (strcmp (favorite->color, "") != 0) {
@@ -941,6 +1024,7 @@ uisongselFavoriteGet (void *udata, int idx)
         "spinbutton { color: white; } ");
     uiutilsSetCss (uisongsel->filterfavoritesel.spinbox, tbuff);
   }
+  logProcEnd (LOG_PROC, "uisongselFavoriteGet", "");
   return favorite->dispStr;
 }
 
@@ -952,6 +1036,8 @@ uisongselFilterResponseHandler (GtkDialog *d, gint responseid, gpointer udata)
   const char    *searchstr;
   int           idx;
   gint          x, y;
+
+  logProcBegin (LOG_PROC, "uisongselFilterResponseHandler");
 
   switch (responseid) {
     case GTK_RESPONSE_DELETE_EVENT: {
@@ -1027,6 +1113,7 @@ uisongselFilterResponseHandler (GtkDialog *d, gint responseid, gpointer udata)
   uisongselClearData (uisongsel);
   logMsg (LOG_DBG, LOG_SONGSEL, "populate: response handler");
   uisongselPopulateData (uisongsel);
+  logProcEnd (LOG_PROC, "uisongselFilterResponseHandler", "");
 }
 
 static void
@@ -1034,6 +1121,8 @@ uisongselInitFilterDisplay (uisongsel_t *uisongsel)
 {
   nlistidx_t  idx;
   char        *sortby;
+
+  logProcBegin (LOG_PROC, "uisongselInitFilterDisplay");
 
   /* this is run when the filter dialog is first started, */
   /* and after a reset */
@@ -1052,4 +1141,5 @@ uisongselInitFilterDisplay (uisongsel_t *uisongsel)
   uiutilsSpinboxSetValue (&uisongsel->filterlevelsel, -1);
   uiutilsSpinboxSetValue (&uisongsel->filterstatussel, -1);
   uiutilsSpinboxSetValue (&uisongsel->filterfavoritesel, 0);
+  logProcEnd (LOG_PROC, "uisongselInitFilterDisplay", "");
 }

@@ -67,23 +67,18 @@ parseGetData (parseinfo_t *pi)
 ssize_t
 parseSimple (parseinfo_t *pi, char *data)
 {
-  logProcBegin (LOG_PROC, "parseSimple");
-  logProcEnd (LOG_PROC, "parseSimple", "");
   return parse (pi, data, PARSE_SIMPLE);
 }
 
 ssize_t
 parseKeyValue (parseinfo_t *pi, char *data)
 {
-  logProcBegin (LOG_PROC, "parseKeyValue");
-  logProcEnd (LOG_PROC, "parseKeyValue", "");
   return parse (pi, data, PARSE_KEYVALUE);
 }
 
 void
 parseConvBoolean (char *data, datafileret_t *ret)
 {
-  logProcBegin (LOG_PROC, "parseConvBoolean");
   ret->valuetype = VALUE_NUM;
   ret->u.num = 0;
   if (strcmp (data, "on") == 0 ||
@@ -91,7 +86,6 @@ parseConvBoolean (char *data, datafileret_t *ret)
       strcmp (data, "1") == 0) {
     ret->u.num = 1;
   }
-  logProcEnd (LOG_PROC, "parseConvBoolean", "");
 }
 
 void
@@ -141,7 +135,7 @@ datafileAllocParse (char *name, datafiletype_t dftype, char *fname,
 
 
   logProcBegin (LOG_PROC, "datafileAllocParse");
-  logMsg (LOG_DBG, LOG_DATAFILE, "alloc/parse %s", fname);
+  logMsg (LOG_DBG, LOG_BASIC, "datafile alloc/parse %s", fname);
   df = datafileAlloc (name);
   if (df != NULL) {
     char *ddata = datafileLoad (df, dftype, fname);
@@ -181,7 +175,7 @@ datafileLoad (datafile_t *df, datafiletype_t dftype, char *fname)
   char    *data;
 
   logProcBegin (LOG_PROC, "datafileLoad");
-  logMsg (LOG_DBG, LOG_DATAFILE, "load %s", fname);
+  logMsg (LOG_DBG, LOG_BASIC, "datafile load %s", fname);
   df->dftype = dftype;
   if (df->fname == NULL) {
     df->fname = strdup (fname);
@@ -227,7 +221,7 @@ datafileParseMerge (list_t *datalist, char *data, char *name,
 
 
   logProcBegin (LOG_PROC, "datafileParseMerge");
-  logMsg (LOG_DBG, LOG_DATAFILE, "begin parse %s", name);
+  logMsg (LOG_DBG, LOG_BASIC, "begin parse %s", name);
 
   if (dfkeys != NULL) {
     assert (datafileCheckDfkeys (name, dfkeys, dfkeycount));

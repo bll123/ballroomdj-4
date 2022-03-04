@@ -133,6 +133,7 @@ main (int argc, char *argv[])
   char            *tval;
   char            *uifont;
   char            tbuff [MAXPATHLEN];
+  bool            ignorelock = false;
 
 
   static struct option bdj_options [] = {
@@ -140,6 +141,8 @@ main (int argc, char *argv[])
     { "profile",    required_argument,  NULL,   'p' },
     { "bdj4marquee",no_argument,        NULL,   0 },
     { "marquee",    no_argument,        NULL,   0 },
+    { "nodetach",   no_argument,        NULL,   0 },
+    { "ignorelock", no_argument,        NULL,   'i' },
     { NULL,         0,                  NULL,   0 }
   };
 
@@ -206,6 +209,10 @@ main (int argc, char *argv[])
         }
         break;
       }
+      case 'i': {
+        ignorelock = true;
+        break;
+      }
       default: {
         break;
       }
@@ -220,8 +227,13 @@ main (int argc, char *argv[])
   if (rc < 0) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: marquee: unable to acquire lock: profile: %zd", sysvarsGetNum (SVL_BDJIDX));
     logMsg (LOG_SESS, LOG_IMPORTANT, "ERR: marquee: unable to acquire lock: profile: %zd", sysvarsGetNum (SVL_BDJIDX));
-    logEnd ();
-    exit (0);
+    if (ignorelock == false) {
+      logEnd ();
+      exit (0);
+    } else {
+      logMsg (LOG_DBG, LOG_IMPORTANT, "marquee: lock ignored: profile: %zd", sysvarsGetNum (SVL_BDJIDX));
+      logMsg (LOG_SESS, LOG_IMPORTANT, "marquee: lock ignored: profile: %zd", sysvarsGetNum (SVL_BDJIDX));
+    }
   }
 
   bdjvarsInit ();

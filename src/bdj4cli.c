@@ -51,8 +51,11 @@ main (int argc, char *argv[])
     { "forcestop",  no_argument,        NULL,   'f' },
     { "cli",        no_argument,        NULL,   0 },
     { "bdj4cli",    no_argument,        NULL,   0 },
+    /* normal stuff */
     { "debug",      required_argument,  NULL,   'd' },
     { "profile",    required_argument,  NULL,   'p' },
+    /* bdj4 ignored options */
+    { "nodetach",   required_argument,  NULL,   0 },
     { NULL,         0,                  NULL,   0 }
   };
 

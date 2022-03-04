@@ -203,6 +203,8 @@ main (int argc, char *argv[])
     ;
   }
   progstateFree (plui.progstate);
+
+  logProcEnd (LOG_PROC, "playerui", "");
   logEnd ();
   return status;
 }
@@ -215,6 +217,7 @@ pluiStoppingCallback (void *udata, programstate_t programState)
   playerui_t    * plui = udata;
   gint          x, y;
 
+  logProcBegin (LOG_PROC, "pluiStoppingCallback");
   gtk_window_get_size (GTK_WINDOW (plui->window), &x, &y);
   nlistSetNum (plui->options, PLUI_SIZE_X, x);
   nlistSetNum (plui->options, PLUI_SIZE_Y, y);
@@ -230,6 +233,7 @@ pluiStoppingCallback (void *udata, programstate_t programState)
 
   gdone = 1;
   connDisconnectAll (plui->conn);
+  logProcEnd (LOG_PROC, "pluiStoppingCallback", "");
   return true;
 }
 
@@ -239,6 +243,7 @@ pluiClosingCallback (void *udata, programstate_t programState)
   playerui_t    *plui = udata;
   char          fn [MAXPATHLEN];
 
+  logProcBegin (LOG_PROC, "pluiClosingCallback");
   pathbldMakePath (fn, sizeof (fn), "",
       "playerui", ".txt", PATHBLD_MP_USEIDX);
   datafileSaveKeyVal (fn, playeruidfkeys, PLAYERUI_DFKEY_COUNT, plui->options);
@@ -264,6 +269,8 @@ pluiClosingCallback (void *udata, programstate_t programState)
       procutilFree (plui->processes [i]);
     }
   }
+
+  logProcEnd (LOG_PROC, "pluiClosingCallback", "");
   return true;
 }
 
@@ -271,6 +278,8 @@ static int
 pluiCreateGui (playerui_t *plui, int argc, char *argv [])
 {
   int           status;
+
+  logProcBegin (LOG_PROC, "pluiCreateGui");
 
   plui->app = gtk_application_new (
       "org.bdj4.BDJ4.playerui",
@@ -282,6 +291,8 @@ pluiCreateGui (playerui_t *plui, int argc, char *argv [])
   status = g_application_run (G_APPLICATION (plui->app), argc, argv);
   gtk_widget_destroy (plui->window);
   g_object_unref (plui->app);
+
+  logProcEnd (LOG_PROC, "pluiCreateGui", "");
   return status;
 }
 
@@ -300,6 +311,8 @@ pluiActivate (GApplication *app, gpointer userdata)
   char                *str;
   char                imgbuff [MAXPATHLEN];
   char                tbuff [MAXPATHLEN];
+
+  logProcBegin (LOG_PROC, "pluiActivate");
 
   pathbldMakePath (imgbuff, sizeof (imgbuff), "",
       "bdj4_icon", ".svg", PATHBLD_MP_IMGDIR);
@@ -435,6 +448,7 @@ pluiActivate (GApplication *app, gpointer userdata)
   }
 
   pluiSetExtraQueues (plui);
+  logProcEnd (LOG_PROC, "pluiActivate", "");
 }
 
 gboolean
@@ -478,8 +492,10 @@ pluiListeningCallback (void *udata, programstate_t programState)
 {
   playerui_t   *plui = udata;
 
+  logProcBegin (LOG_PROC, "pluiListeningCallback");
   plui->processes [ROUTE_MAIN] = procutilStartProcess (
       ROUTE_MAIN, "bdj4main");
+  logProcEnd (LOG_PROC, "pluiListeningCallback", "");
   return true;
 }
 
@@ -489,6 +505,7 @@ pluiConnectingCallback (void *udata, programstate_t programState)
   playerui_t   *plui = udata;
   bool        rc = false;
 
+  logProcBegin (LOG_PROC, "pluiConnectingCallback");
 
   if (! connIsConnected (plui->conn, ROUTE_MAIN)) {
     connConnect (plui->conn, ROUTE_MAIN);
@@ -502,6 +519,7 @@ pluiConnectingCallback (void *udata, programstate_t programState)
     rc = true;
   }
 
+  logProcEnd (LOG_PROC, "pluiConnectingCallback", "");
   return rc;
 }
 
@@ -511,6 +529,7 @@ pluiHandshakeCallback (void *udata, programstate_t programState)
   playerui_t   *plui = udata;
   bool          rc = false;
 
+  logProcBegin (LOG_PROC, "pluiHandshakeCallback");
 
   if (connHaveHandshake (plui->conn, ROUTE_MAIN) &&
       connHaveHandshake (plui->conn, ROUTE_PLAYER)) {
@@ -518,6 +537,7 @@ pluiHandshakeCallback (void *udata, programstate_t programState)
     rc = true;
   }
 
+  logProcEnd (LOG_PROC, "pluiHandshakeCallback", "");
   return rc;
 }
 
@@ -568,11 +588,10 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     }
   }
 
-  logProcEnd (LOG_PROC, "pluiProcessMsg", "");
-
   if (gKillReceived) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
   }
+  logProcEnd (LOG_PROC, "pluiProcessMsg", "");
   return gKillReceived;
 }
 
@@ -582,12 +601,15 @@ pluiCloseWin (GtkWidget *window, GdkEvent *event, gpointer userdata)
 {
   playerui_t   *plui = userdata;
 
+  logProcBegin (LOG_PROC, "pluiCloseWin");
   if (! gdone) {
     progstateShutdownProcess (plui->progstate);
     logMsg (LOG_DBG, LOG_MSGS, "got: close win request");
+    logProcEnd (LOG_PROC, "pluiCloseWin", "not-done");
     return TRUE;
   }
 
+  logProcEnd (LOG_PROC, "pluiCloseWin", "");
   return FALSE;
 }
 
@@ -602,12 +624,15 @@ pluiSwitchPage (GtkNotebook *nb, GtkWidget *page, guint pagenum, gpointer udata)
 {
   playerui_t  *plui = udata;
 
+  logProcBegin (LOG_PROC, "pluiSwitchPage");
   pluiSetSwitchPage (plui, pagenum);
+  logProcEnd (LOG_PROC, "pluiSwitchPage", "");
 }
 
 static void
 pluiSetSwitchPage (playerui_t *plui, int pagenum)
 {
+  logProcBegin (LOG_PROC, "pluiSetSwitchPage");
   /* note that the design requires that the music queues be the first */
   /* tabs in the notebook */
   if (pagenum < MUSICQ_MAX &&
@@ -618,6 +643,7 @@ pluiSetSwitchPage (playerui_t *plui, int pagenum)
   } else {
     gtk_widget_hide (plui->setPlaybackButton);
   }
+  logProcEnd (LOG_PROC, "pluiSetSwitchPage", "");
   return;
 }
 
@@ -626,7 +652,9 @@ pluiProcessSetPlaybackQueue (GtkButton *b, gpointer udata)
 {
   playerui_t      *plui = udata;
 
+  logProcBegin (LOG_PROC, "pluiProcessSetPlaybackQueue");
   pluiSetPlaybackQueue (plui, plui->musicqManageIdx);
+  logProcEnd (LOG_PROC, "pluiProcessSetPlaybackQueue", "");
 }
 
 static void
@@ -634,6 +662,7 @@ pluiSetPlaybackQueue (playerui_t  *plui, musicqidx_t newQueue)
 {
   char            tbuff [40];
 
+  logProcBegin (LOG_PROC, "pluiSetPlaybackQueue");
   if (nlistGetNum (plui->options, PLUI_SHOW_EXTRA_QUEUES)) {
     plui->musicqPlayIdx = newQueue;
     if (plui->musicqPlayIdx == MUSICQ_A) {
@@ -649,10 +678,8 @@ pluiSetPlaybackQueue (playerui_t  *plui, musicqidx_t newQueue)
   uimusicqSetPlayIdx (plui->uimusicq, plui->musicqPlayIdx);
   snprintf (tbuff, sizeof (tbuff), "%d", plui->musicqPlayIdx);
   connSendMessage (plui->conn, ROUTE_MAIN, MSG_MUSICQ_SET_PLAYBACK, tbuff);
+  logProcEnd (LOG_PROC, "pluiSetPlaybackQueue", "");
 }
-
-
-
 
 static void
 pluiTogglePlayWhenQueued (GtkWidget *mi, gpointer udata)
@@ -660,10 +687,12 @@ pluiTogglePlayWhenQueued (GtkWidget *mi, gpointer udata)
   playerui_t      *plui = udata;
   ssize_t         val;
 
+  logProcBegin (LOG_PROC, "pluiTogglePlayWhenQueued");
   val = nlistGetNum (plui->options, PLUI_PLAY_WHEN_QUEUED);
   val = ! val;
   nlistSetNum (plui->options, PLUI_PLAY_WHEN_QUEUED, val);
   pluiSetPlayWhenQueued (plui);
+  logProcEnd (LOG_PROC, "pluiTogglePlayWhenQueued", "");
 }
 
 static void
@@ -671,9 +700,11 @@ pluiSetPlayWhenQueued (playerui_t *plui)
 {
   char  tbuff [40];
 
+  logProcBegin (LOG_PROC, "pluiSetPlayWhenQueued");
   snprintf (tbuff, sizeof (tbuff), "%zd",
       nlistGetNum (plui->options, PLUI_PLAY_WHEN_QUEUED));
   connSendMessage (plui->conn, ROUTE_MAIN, MSG_QUEUE_PLAY_ON_ADD, tbuff);
+  logProcEnd (LOG_PROC, "pluiSetPlayWhenQueued", "");
 }
 
 
@@ -683,10 +714,12 @@ pluiToggleExtraQueues (GtkWidget *mi, gpointer udata)
   playerui_t      *plui = udata;
   ssize_t         val;
 
+  logProcBegin (LOG_PROC, "pluiToggleExtraQueues");
   val = nlistGetNum (plui->options, PLUI_SHOW_EXTRA_QUEUES);
   val = ! val;
   nlistSetNum (plui->options, PLUI_SHOW_EXTRA_QUEUES, val);
   pluiSetExtraQueues (plui);
+  logProcEnd (LOG_PROC, "pluiToggleExtraQueues", "");
 }
 
 static void
@@ -695,8 +728,10 @@ pluiSetExtraQueues (playerui_t *plui)
   GtkWidget       *page;
   int             pagenum;
 
+  logProcBegin (LOG_PROC, "pluiSetExtraQueues");
   if (plui->notebook == NULL ||
       plui->setPlaybackButton == NULL) {
+    logProcEnd (LOG_PROC, "pluiSetExtraQueues", "no-notebook");
     return;
   }
 
@@ -712,6 +747,7 @@ pluiSetExtraQueues (playerui_t *plui)
   } else {
     gtk_widget_hide (plui->setPlaybackButton);
   }
+  logProcEnd (LOG_PROC, "pluiSetExtraQueues", "");
 }
 
 static void
@@ -720,10 +756,12 @@ pluiToggleSwitchQueue (GtkWidget *mi, gpointer udata)
   playerui_t      *plui = udata;
   ssize_t         val;
 
+  logProcBegin (LOG_PROC, "pluiToggleSwitchQueue");
   val = nlistGetNum (plui->options, PLUI_SWITCH_QUEUE_WHEN_EMPTY);
   val = ! val;
   nlistSetNum (plui->options, PLUI_SWITCH_QUEUE_WHEN_EMPTY, val);
   pluiSetSwitchQueue (plui);
+  logProcEnd (LOG_PROC, "pluiToggleSwitchQueue", "");
 }
 
 static void
@@ -731,8 +769,10 @@ pluiSetSwitchQueue (playerui_t *plui)
 {
   char  tbuff [40];
 
+  logProcBegin (LOG_PROC, "pluiSetSwitchQueue");
   snprintf (tbuff, sizeof (tbuff), "%zd",
       nlistGetNum (plui->options, PLUI_SWITCH_QUEUE_WHEN_EMPTY));
   connSendMessage (plui->conn, ROUTE_MAIN, MSG_QUEUE_SWITCH_EMPTY, tbuff);
+  logProcEnd (LOG_PROC, "pluiSetSwitchQueue", "");
 }
 

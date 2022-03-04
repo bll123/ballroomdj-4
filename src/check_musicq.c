@@ -39,7 +39,7 @@ START_TEST(musicq_push)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== musicq_push");
   gtmp = strdup (gsongdata);
-  songParse (song, gtmp);
+  songParse (song, gtmp, 1);
   free (gtmp);
   q = musicqAlloc ();
   musicqPush (q, 0, song, plname);
@@ -80,7 +80,7 @@ START_TEST(musicq_push_pop)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== musicq_push_pop");
   gtmp = strdup (gsongdata);
-  songParse (song, gtmp);
+  songParse (song, gtmp, 2);
   free (gtmp);
   q = musicqAlloc ();
   musicqPush (q, 0, song, plname);
@@ -127,7 +127,7 @@ START_TEST(musicq_remove)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== musicq_remove");
   gtmp = strdup (gsongdata);
-  songParse (song, gtmp);
+  songParse (song, gtmp, 3);
   free (gtmp);
   q = musicqAlloc ();
   musicqPush (q, 0, song, plname);
@@ -242,7 +242,7 @@ START_TEST(musicq_clear)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== musicq_clear");
   gtmp = strdup (gsongdata);
-  songParse (song, gtmp);
+  songParse (song, gtmp, 4);
   free (gtmp);
   q = musicqAlloc ();
   musicqPush (q, 0, song, plname);
@@ -306,7 +306,7 @@ START_TEST(musicq_insert)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== musicq_insert");
   gtmp = strdup (gsongdata);
-  songParse (song, gtmp);
+  songParse (song, gtmp, 5);
   free (gtmp);
   q = musicqAlloc ();
   musicqPush (q, 0, song, plname);
@@ -371,7 +371,7 @@ START_TEST(musicq_move)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== musicq_move");
   gtmp = strdup (gsongdata);
-  songParse (song, gtmp);
+  songParse (song, gtmp, 6);
   free (gtmp);
   q = musicqAlloc ();
   musicqPush (q, 0, song, plname);
