@@ -155,8 +155,13 @@ echo "=== currently off ==="
 
 (cd src; make tclean > /dev/null 2>&1)
 
-(cd src/po; ./extract.sh)
-(cd src/po; ./install.sh)
+# the .po files will be built on linux; the sync to the other
+# platforms must be performed afterwards.
+# (the extraction script is using gnu-sed features)
+if [[ $platform == linux ]]; then
+  (cd src/po; ./extract.sh)
+  (cd src/po; ./install.sh)
+fi
 
 # on windows, copy all of the required .dll files to plocal/bin
 # this must be done after the build and before the manifest is created.

@@ -33,7 +33,7 @@ songlistAlloc (char *fname)
   sl->df = NULL;
   sl->songlist = NULL;
 
-  if (! fileopExists (fname)) {
+  if (! fileopFileExists (fname)) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: songlist: missing %s", fname);
     return NULL;
   }

@@ -840,7 +840,7 @@ playerProcessPrepRequest (playerdata_t *playerData)
    */
   fileopDelete (npq->tempname);
   filemanipLinkCopy (npq->songfullpath, npq->tempname);
-  if (! fileopExists (npq->tempname)) {
+  if (! fileopFileExists (npq->tempname)) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: file copy failed: %s", npq->tempname);
     logProcEnd (LOG_PROC, "playerSongPrep", "copy-failed");
     playerPrepQueueFree (npq);
@@ -869,7 +869,7 @@ playerSongPlay (playerdata_t *playerData, char *sfname)
     logProcEnd (LOG_PROC, "playerSongPlay", "not-prepped");
     return;
   }
-  if (! fileopExists (pq->tempname)) {
+  if (! fileopFileExists (pq->tempname)) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: no file: %s", pq->tempname);
     logProcEnd (LOG_PROC, "playerSongPlay", "no-file");
     return;

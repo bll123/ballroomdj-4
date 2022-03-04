@@ -29,7 +29,7 @@ sortoptAlloc (char *fname)
   char          *tokstr;
   char          dispstr [MAXPATHLEN];
 
-  if (! fileopExists (fname)) {
+  if (! fileopFileExists (fname)) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: sortopt: missing %s", fname);
     return NULL;
   }

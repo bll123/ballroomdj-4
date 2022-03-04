@@ -319,6 +319,7 @@ main (int argc, char *argv[])
     g_timeout_add (UI_MAIN_LOOP_TIMER * 5, installerMainLoop, &installer);
     status = installerCreateGui (&installer, 0, NULL);
   } else {
+    status = 0;
     installer.instState = INST_INIT;
     while (installer.instState != INST_FINISH) {
       installerMainLoop (&installer);
@@ -705,7 +706,7 @@ installerValidateDir (installer_t *installer)
       GTK_TOGGLE_BUTTON (installer->reinstWidget));
   gtk_label_set_text (GTK_LABEL (installer->feedbackMsg), "");
 
-  exists = fileopExists (dir);
+  exists = fileopIsDirectory (dir);
   if (exists) {
     exists = installerCheckTarget (installer, dir);
     if (exists) {
@@ -748,12 +749,9 @@ installerValidateDir (installer_t *installer)
   if (isMacOS ()) {
     strlcpy (tbuff, "/Applications/VLC.app/Contents/MacOS/lib/", sizeof (tbuff));
   }
-  if (isLinux ()) {
-    strlcpy (tbuff, "/usr/bin/vlc", sizeof (tbuff));
-  }
 
   if (*tbuff) {
-    if (fileopExists (tbuff)) {
+    if (fileopIsDirectory (tbuff) || fileopFileExists (tbuff)) {
       snprintf (tbuff, sizeof (tbuff), _("%s is installed"), "VLC");
       gtk_label_set_text (GTK_LABEL (installer->vlcMsg), tbuff);
       installer->vlcinstalled = true;
@@ -777,7 +775,7 @@ installerValidateDir (installer_t *installer)
   }
 
   if (*tbuff) {
-    if (fileopExists (tbuff)) {
+    if (fileopFileExists (tbuff)) {
       snprintf (tbuff, sizeof (tbuff), _("%s is installed"), "Python");
       gtk_label_set_text (GTK_LABEL (installer->pythonMsg), tbuff);
       installer->pythoninstalled = true;
@@ -869,7 +867,7 @@ installerCheckTarget (installer_t *installer, const char *dir)
   } else {
     snprintf (tbuff, sizeof (tbuff), "%s/bin/bdj4", installer->rundir);
   }
-  exists = fileopExists (tbuff);
+  exists = fileopFileExists (tbuff);
   if (exists) {
     installer->newinstall = false;
   } else {
@@ -925,7 +923,7 @@ installerInstInit (installer_t *installer)
     }
   }
 
-  exists = fileopExists (installer->target);
+  exists = fileopIsDirectory (installer->target);
   if (exists) {
     exists = installerCheckTarget (installer, installer->target);
 
@@ -1109,7 +1107,7 @@ installerCleanOldFiles (installer_t *installer)
   if (fh != NULL) {
     while (fgets (tbuff, MAXPATHLEN, fh) != NULL) {
       stringTrim (tbuff);
-      if (! fileopExists (tbuff)) {
+      if (! fileopFileExists (tbuff)) {
         continue;
       }
 
@@ -1390,7 +1388,7 @@ installerConvertStart (installer_t *installer)
       snprintf (tbuff, MAXPATHLEN, "%s.exe", locs [locidx]);
     }
 
-    if (installer->tclshloc == NULL && fileopExists (tbuff)) {
+    if (installer->tclshloc == NULL && fileopFileExists (tbuff)) {
       strlcpy (buff, tbuff, MAXPATHLEN);
       if (isWindows ()) {
         pathToWinPath (buff, tbuff, MAXPATHLEN);
@@ -1558,7 +1556,7 @@ installerVLCDownload (installer_t *installer)
     system (tbuff);
   }
 
-  if (fileopExists (installer->dlfname)) {
+  if (fileopFileExists (installer->dlfname)) {
     snprintf (tbuff, sizeof (tbuff), _("Installing %s."), "VLC");
     installerDisplayText (installer, "-- ", tbuff);
     installer->delayCount = 0;
@@ -1576,7 +1574,7 @@ installerVLCInstall (installer_t *installer)
 {
   char    tbuff [MAXPATHLEN];
 
-  if (fileopExists (installer->dlfname)) {
+  if (fileopFileExists (installer->dlfname)) {
     if (isWindows ()) {
       snprintf (tbuff, sizeof (tbuff), ".\\%s", installer->dlfname);
     }
@@ -1660,7 +1658,7 @@ installerPythonDownload (installer_t *installer)
     system (tbuff);
   }
 
-  if (fileopExists (installer->dlfname)) {
+  if (fileopFileExists (installer->dlfname)) {
     snprintf (tbuff, sizeof (tbuff), _("Installing %s."), "Python");
     installerDisplayText (installer, "-- ", tbuff);
     installer->delayCount = 0;
@@ -1678,7 +1676,7 @@ installerPythonInstall (installer_t *installer)
 {
   char    tbuff [MAXPATHLEN];
 
-  if (fileopExists (installer->dlfname)) {
+  if (fileopFileExists (installer->dlfname)) {
     if (isWindows ()) {
       snprintf (tbuff, sizeof (tbuff), ".\\%s", installer->dlfname);
     }
@@ -1730,7 +1728,7 @@ installerCleanup (installer_t *installer)
   char  buff [MAXPATHLEN];
   char  *targv [10];
 
-  if (! fileopExists (installer->unpackdir)) {
+  if (! fileopIsDirectory (installer->unpackdir)) {
     return;
   }
 
@@ -1811,13 +1809,13 @@ installerTemplateCopy (char *from, char *to)
   snprintf (localesfx, sizeof (localesfx), ".%s", sysvarsGetStr (SV_LOCALE));
   strlcpy (tbuff, from, MAXPATHLEN);
   strlcat (tbuff, localesfx, MAXPATHLEN);
-  if (fileopExists (tbuff)) {
+  if (fileopFileExists (tbuff)) {
     from = tbuff;
   } else {
     snprintf (localesfx, sizeof (localesfx), ".%s", sysvarsGetStr (SV_SHORT_LOCALE));
     strlcpy (tbuff, from, MAXPATHLEN);
     strlcat (tbuff, localesfx, MAXPATHLEN);
-    if (fileopExists (tbuff)) {
+    if (fileopFileExists (tbuff)) {
       from = tbuff;
     }
   }
@@ -1850,7 +1848,7 @@ installerVLCGetVersion (installer_t *installer)
       "curl --silent --user-agent BDJ4 -o %s "
       "http://get.videolan.org/vlc/last/macosx/", tmpfile);
   system (tbuff);
-  if (fileopExists (tmpfile)) {
+  if (fileopFileExists (tmpfile)) {
     data = filedataReadAll (tmpfile);
 
     /* vlc-3.0.16-intel64.dmg */
@@ -1875,7 +1873,7 @@ installerPythonGetVersion (installer_t *installer)
       "curl --silent --user-agent BDJ4 -o %s "
       "https://www.python.org/downloads/windows/", tmpfile);
   system (tbuff);
-  if (fileopExists (tmpfile)) {
+  if (fileopFileExists (tmpfile)) {
     data = filedataReadAll (tmpfile);
 
     p = strstr (data, "Release - Python ");

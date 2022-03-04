@@ -30,7 +30,7 @@ statusAlloc (char *fname)
   ilistidx_t  iteridx;
 
 
-  if (! fileopExists (fname)) {
+  if (! fileopFileExists (fname)) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: status: missing %s", fname);
     return NULL;
   }

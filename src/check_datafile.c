@@ -540,32 +540,32 @@ START_TEST(datafile_backup)
   fprintf (fh, "1\n");
   fclose (fh);
 
-  rc = fileopExists (ofn);
+  rc = fileopFileExists (ofn);
   ck_assert_int_ne (rc, 0);
-  rc = fileopExists (ofn0a);
+  rc = fileopFileExists (ofn0a);
   ck_assert_int_eq (rc, 0);
-  rc = fileopExists (ofn0);
+  rc = fileopFileExists (ofn0);
   ck_assert_int_eq (rc, 0);
-  rc = fileopExists (ofn1);
+  rc = fileopFileExists (ofn1);
   ck_assert_int_eq (rc, 0);
-  rc = fileopExists (ofn2);
+  rc = fileopFileExists (ofn2);
   ck_assert_int_eq (rc, 0);
-  rc = fileopExists (ofn3);
+  rc = fileopFileExists (ofn3);
   ck_assert_int_eq (rc, 0);
 
   datafileBackup (ofn, 2);
 
-  rc = fileopExists (ofn);
+  rc = fileopFileExists (ofn);
   ck_assert_int_ne (rc, 0);
-  rc = fileopExists (ofn0a);
+  rc = fileopFileExists (ofn0a);
   ck_assert_int_eq (rc, 0);
-  rc = fileopExists (ofn0);
+  rc = fileopFileExists (ofn0);
   ck_assert_int_eq (rc, 0);
-  rc = fileopExists (ofn1);
+  rc = fileopFileExists (ofn1);
   ck_assert_int_ne (rc, 0);
-  rc = fileopExists (ofn2);
+  rc = fileopFileExists (ofn2);
   ck_assert_int_eq (rc, 0);
-  rc = fileopExists (ofn3);
+  rc = fileopFileExists (ofn3);
   ck_assert_int_eq (rc, 0);
 
   fh = fopen (ofn, "r");
@@ -587,17 +587,17 @@ START_TEST(datafile_backup)
 
   datafileBackup (ofn, 2);
 
-  rc = fileopExists (ofn);
+  rc = fileopFileExists (ofn);
   ck_assert_int_ne (rc, 0);
-  rc = fileopExists (ofn0a);
+  rc = fileopFileExists (ofn0a);
   ck_assert_int_eq (rc, 0);
-  rc = fileopExists (ofn0);
+  rc = fileopFileExists (ofn0);
   ck_assert_int_eq (rc, 0);
-  rc = fileopExists (ofn1);
+  rc = fileopFileExists (ofn1);
   ck_assert_int_ne (rc, 0);
-  rc = fileopExists (ofn2);
+  rc = fileopFileExists (ofn2);
   ck_assert_int_ne (rc, 0);
-  rc = fileopExists (ofn3);
+  rc = fileopFileExists (ofn3);
   ck_assert_int_eq (rc, 0);
 
   fh = fopen (ofn, "r");
@@ -625,17 +625,17 @@ START_TEST(datafile_backup)
 
   datafileBackup (ofn, 2);
 
-  rc = fileopExists (ofn);
+  rc = fileopFileExists (ofn);
   ck_assert_int_ne (rc, 0);
-  rc = fileopExists (ofn0a);
+  rc = fileopFileExists (ofn0a);
   ck_assert_int_eq (rc, 0);
-  rc = fileopExists (ofn0);
+  rc = fileopFileExists (ofn0);
   ck_assert_int_eq (rc, 0);
-  rc = fileopExists (ofn1);
+  rc = fileopFileExists (ofn1);
   ck_assert_int_ne (rc, 0);
-  rc = fileopExists (ofn2);
+  rc = fileopFileExists (ofn2);
   ck_assert_int_ne (rc, 0);
-  rc = fileopExists (ofn3);
+  rc = fileopFileExists (ofn3);
   ck_assert_int_eq (rc, 0);
 
   fh = fopen (ofn, "r");

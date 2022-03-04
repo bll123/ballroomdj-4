@@ -480,7 +480,7 @@ add_library (libbdj4launcher STATIC
   filedata.c fileop.c osnetutils.c pathbld.c pathutil.c sysvars.c
 )
 
-add_executable (bdj4locatebdj3 bdj4locatebdj3.c)
+add_executable (bdj4locatebdj3 bdj4locatebdj3.c fileop.c)
 target_link_libraries (bdj4locatebdj3
   liblocatebdj3
   libbdj4string

@@ -46,7 +46,7 @@ danceAlloc (char *fname)
 {
   dance_t           *dance;
 
-  if (! fileopExists (fname)) {
+  if (! fileopFileExists (fname)) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "dance: missing: %s", fname);
     return NULL;
   }

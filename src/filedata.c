@@ -11,25 +11,24 @@
 #include <sys/stat.h>
 
 #include "filedata.h"
+#include "fileop.h"
 
 char *
 filedataReadAll (char *fname)
 {
   FILE        *fh;
-  struct stat statbuf;
-  int         rc;
-  size_t      len;
+  ssize_t     len;
   char        *data;
 
-  rc = stat (fname, &statbuf);
-  if (rc != 0) {
+  len = fileopSize (fname);
+  if (len < 0) {
     return NULL;
   }
   fh = fopen (fname, "r");
-  data = malloc ((size_t) statbuf.st_size + 1);
+  data = malloc (len + 1);
   assert (data != NULL);
-  len = fread (data, 1, (size_t) statbuf.st_size, fh);
-  assert ((statbuf.st_size == 0 && len == 0) || len > 0);
+  len = fread (data, 1, len, fh);
+  assert (len > 0);
   data [len] = '\0';
   fclose (fh);
 

@@ -140,7 +140,7 @@ sysvarsInit (const char *argv0)
   *p = '\0';
   strlcpy (sysvars [SV_BDJ4MAINDIR], buff, MAXPATHLEN);
 
-  if (fileopExists ("data")) {
+  if (fileopIsDirectory ("data")) {
     /* if there is a data directory in the current working directory  */
     /* a change of directories is contra-indicated.                   */
 
@@ -179,7 +179,7 @@ sysvarsInit (const char *argv0)
   strlcpy (sysvars [SV_MOBMQ_HOST], "ballroomdj.org", MAXPATHLEN);
 
   for (size_t i = 0; i < CACERT_FILE_COUNT; ++i) {
-    if (fileopExists (cacertFiles [i])) {
+    if (fileopFileExists (cacertFiles [i])) {
       strlcpy (sysvars [SV_CA_FILE], cacertFiles [i], MAXPATHLEN);
       break;
     }
@@ -194,7 +194,7 @@ sysvarsInit (const char *argv0)
   strlcpy (sysvars [SV_SHORT_LOCALE], tbuf, MAXPATHLEN);
 
   strlcpy (sysvars [SV_BDJ4_VERSION], "unknown", MAXPATHLEN);
-  if (fileopExists ("VERSION.txt")) {
+  if (fileopFileExists ("VERSION.txt")) {
     char    *data;
     char    *tokptr;
     char    *tokptrb;

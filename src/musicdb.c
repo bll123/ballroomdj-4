@@ -110,7 +110,7 @@ dbLoad (db_t *db, char *fn)
     fstr = songGetData (song, TAG_FILE);
     ffn = songFullFileName (fstr);
     ok = false;
-    if (fileopExists (ffn)) {
+    if (fileopFileExists (ffn)) {
       ok = true;
     }
     free (ffn);

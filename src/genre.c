@@ -30,7 +30,7 @@ genreAlloc (char *fname)
   ilistidx_t    gkey;
   ilistidx_t    iteridx;
 
-  if (! fileopExists (fname)) {
+  if (! fileopFileExists (fname)) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: genre: missing %s", fname);
     return NULL;
   }

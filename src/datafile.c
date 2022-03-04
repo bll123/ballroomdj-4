@@ -26,7 +26,7 @@ typedef enum {
 
 static ssize_t  parse (parseinfo_t *pi, char *data, parsetype_t parsetype);
 static void     datafileFreeInternal (datafile_t *df);
-static void     datafileCheckDfkeys (char *name, datafilekey_t *dfkeys, ssize_t dfkeycount);
+static bool     datafileCheckDfkeys (char *name, datafilekey_t *dfkeys, ssize_t dfkeycount);
 
 /* parsing routines */
 
@@ -230,7 +230,7 @@ datafileParseMerge (list_t *datalist, char *data, char *name,
   logMsg (LOG_DBG, LOG_DATAFILE, "begin parse %s", name);
 
   if (dfkeys != NULL) {
-    datafileCheckDfkeys (name, dfkeys, dfkeycount);
+    assert (datafileCheckDfkeys (name, dfkeys, dfkeycount));
   }
 
   pi = parseInit ();
@@ -555,7 +555,7 @@ datafileBackup (char *fname, int count)
     if (i - 1 == 0) {
       strlcpy (ofn, fname, MAXPATHLEN);
     }
-    if (fileopExists (ofn)) {
+    if (fileopFileExists (ofn)) {
       if ((i - 1) != 0) {
         filemanipMove (ofn, nfn);
       } else {
@@ -662,16 +662,19 @@ datafileFreeInternal (datafile_t *df)
   logProcEnd (LOG_PROC, "datafileFreeInternal", "");
 }
 
-static void
+static bool
 datafileCheckDfkeys (char *name, datafilekey_t *dfkeys, ssize_t dfkeycount)
 {
-  char          *last = "";
+  char  *last = "";
+  bool  ok = true;
 
   for (ssize_t i = 0; i < dfkeycount; ++i) {
     if (strcmp (dfkeys [i].name, last) <= 0) {
       fprintf (stderr, "datafile: %s dfkey out of order: %s\n", name, dfkeys [i].name);
       logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: datafile: %s dfkey out of order: %s", name, dfkeys [i].name);
+      ok = false;
     }
     last = dfkeys [i].name;
   }
+  return ok;
 }

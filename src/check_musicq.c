@@ -13,6 +13,9 @@
 #include "check_bdj.h"
 #include "log.h"
 
+static char *gsongdata = "FILE\n..testsong.mp3\n";
+static char *gtmp;
+
 START_TEST(musicq_alloc_free)
 {
   ssize_t       count;
@@ -31,10 +34,13 @@ START_TEST(musicq_push)
 {
   ssize_t       count;
   musicq_t      *q;
-  song_t        *song = (song_t *) &song;
+  song_t        *song = songAlloc ();
   char          *plname = "none";
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== musicq_push");
+  gtmp = strdup (gsongdata);
+  songParse (song, gtmp);
+  free (gtmp);
   q = musicqAlloc ();
   musicqPush (q, 0, song, plname);
   count = musicqGetLen (q, 0);
@@ -60,6 +66,7 @@ START_TEST(musicq_push)
   }
 
   musicqFree (q);
+  songFree (song);
 }
 END_TEST
 
@@ -67,11 +74,14 @@ START_TEST(musicq_push_pop)
 {
   ssize_t       count;
   musicq_t      *q;
-  song_t        *song = (song_t *) &song;
+  song_t        *song = songAlloc ();
   char          *plname = "none";
 
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== musicq_push_pop");
+  gtmp = strdup (gsongdata);
+  songParse (song, gtmp);
+  free (gtmp);
   q = musicqAlloc ();
   musicqPush (q, 0, song, plname);
   musicqPush (q, 0, song, plname);
@@ -102,6 +112,7 @@ START_TEST(musicq_push_pop)
   }
 
   musicqFree (q);
+  songFree (song);
 }
 END_TEST
 
@@ -109,12 +120,15 @@ START_TEST(musicq_remove)
 {
   ssize_t       count;
   musicq_t      *q;
-  song_t        *song = (song_t *) &song;
+  song_t        *song = songAlloc ();
   char          *plname = "none";
   int           bump = 0;
 
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== musicq_remove");
+  gtmp = strdup (gsongdata);
+  songParse (song, gtmp);
+  free (gtmp);
   q = musicqAlloc ();
   musicqPush (q, 0, song, plname);
   musicqPush (q, 0, song, plname);
@@ -213,6 +227,7 @@ START_TEST(musicq_remove)
   }
 
   musicqFree (q);
+  songFree (song);
 }
 END_TEST
 
@@ -220,12 +235,15 @@ START_TEST(musicq_clear)
 {
   ssize_t       count;
   musicq_t      *q;
-  song_t        *song = (song_t *) &song;
+  song_t        *song = songAlloc ();
   char          *plname = "none";
   int           bump = 0;
 
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== musicq_clear");
+  gtmp = strdup (gsongdata);
+  songParse (song, gtmp);
+  free (gtmp);
   q = musicqAlloc ();
   musicqPush (q, 0, song, plname);
   musicqPush (q, 0, song, plname);
@@ -273,6 +291,7 @@ START_TEST(musicq_clear)
   }
 
   musicqFree (q);
+  songFree (song);
 }
 END_TEST
 
@@ -280,12 +299,15 @@ START_TEST(musicq_insert)
 {
   ssize_t       count;
   musicq_t      *q;
-  song_t        *song = (song_t *) &song;
+  song_t        *song = songAlloc ();
   char          *plname = "none";
   ssize_t       vals [20];
 
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== musicq_insert");
+  gtmp = strdup (gsongdata);
+  songParse (song, gtmp);
+  free (gtmp);
   q = musicqAlloc ();
   musicqPush (q, 0, song, plname);
   musicqPush (q, 0, song, plname);
@@ -334,6 +356,7 @@ START_TEST(musicq_insert)
   }
 
   musicqFree (q);
+  songFree (song);
 }
 END_TEST
 
@@ -341,12 +364,15 @@ START_TEST(musicq_move)
 {
   ssize_t       count;
   musicq_t      *q;
-  song_t        *song = (song_t *) &song;
+  song_t        *song = songAlloc ();
   char          *plname = "none";
   int           vals [20];
 
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== musicq_move");
+  gtmp = strdup (gsongdata);
+  songParse (song, gtmp);
+  free (gtmp);
   q = musicqAlloc ();
   musicqPush (q, 0, song, plname);
   musicqPush (q, 0, song, plname);
@@ -387,6 +413,7 @@ START_TEST(musicq_move)
   }
 
   musicqFree (q);
+  songFree (song);
 }
 END_TEST
 
@@ -396,7 +423,7 @@ musicq_suite (void)
   Suite     *s;
   TCase     *tc;
 
-  s = suite_create ("Queue Suite");
+  s = suite_create ("Music Queue Suite");
   tc = tcase_create ("Queue Op");
   tcase_add_test (tc, musicq_alloc_free);
   tcase_add_test (tc, musicq_push);

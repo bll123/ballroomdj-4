@@ -59,7 +59,7 @@ bdj4startup (int argc, char *argv[], char *tag, bdjmsgroute_t route)
   localeInit ();
 
   pathbldMakePath (tbuff, sizeof (tbuff), "", sysvarsGetStr (SV_HOSTNAME), "", PATHBLD_MP_NONE);
-  if (! fileopExists (tbuff)) {
+  if (! fileopIsDirectory (tbuff)) {
     fileopMakeDir (tbuff);
   }
 

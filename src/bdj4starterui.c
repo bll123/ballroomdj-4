@@ -201,45 +201,21 @@ starterActivate (GApplication *app, gpointer userdata)
       PATHBLD_MP_IMGDIR);
   widget = gtk_image_new_from_file (tbuff);
   assert (widget != NULL);
+  gtk_widget_set_margin_top (widget, 2);
   gtk_widget_set_margin_start (widget, 2);
-  gtk_box_pack_start (GTK_BOX (vbox), widget,
-      FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
 
-  widget = gtk_button_new ();
-  assert (widget != NULL);
-  gtk_button_set_label (GTK_BUTTON (widget), _("Player"));
-  gtk_widget_set_margin_start (widget, 2);
-  gtk_box_pack_start (GTK_BOX (vbox), widget,
-      FALSE, FALSE, 0);
-  g_signal_connect (widget, "clicked",
-      G_CALLBACK (starterStartPlayer), starter);
+  widget = uiutilsCreateButton (_("Player"), NULL, starterStartPlayer, starter);
+  gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
 
-  widget = gtk_button_new ();
-  assert (widget != NULL);
-  gtk_button_set_label (GTK_BUTTON (widget), _("Manage"));
-  gtk_widget_set_margin_start (widget, 2);
-  gtk_box_pack_start (GTK_BOX (vbox), widget,
-      FALSE, FALSE, 0);
-  g_signal_connect (widget, "clicked",
-      G_CALLBACK (starterStartManage), starter);
+  widget = uiutilsCreateButton (_("Manage"), NULL, starterStartManage, starter);
+  gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
 
-  widget = gtk_button_new ();
-  assert (widget != NULL);
-  gtk_button_set_label (GTK_BUTTON (widget), _("Configure"));
-  gtk_widget_set_margin_start (widget, 2);
-  gtk_box_pack_start (GTK_BOX (vbox), widget,
-      FALSE, FALSE, 0);
-  g_signal_connect (widget, "clicked",
-      G_CALLBACK (starterStartConfig), starter);
+  widget = uiutilsCreateButton (_("Configure"), NULL, starterStartConfig, starter);
+  gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
 
-  widget = gtk_button_new ();
-  assert (widget != NULL);
-  gtk_button_set_label (GTK_BUTTON (widget), _("Exit"));
-  gtk_widget_set_margin_start (widget, 2);
-  gtk_box_pack_start (GTK_BOX (vbox), widget,
-      FALSE, FALSE, 0);
-  g_signal_connect (widget, "clicked",
-      G_CALLBACK (starterProcessExit), starter);
+  widget = uiutilsCreateButton (_("Exit"), NULL, starterProcessExit, starter);
+  gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
 
   gtk_widget_show_all (starter->window);
 }

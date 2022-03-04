@@ -135,7 +135,7 @@ filemanipDeleteDir (const char *dir)
   char      cmd [MAXPATHLEN];
   char      tdir [MAXPATHLEN];
 
-  if (! fileopExists (dir) || ! fileopIsDirectory (dir)) {
+  if (! fileopIsDirectory (dir)) {
     return;
   }
 

@@ -8,6 +8,7 @@
 #include <errno.h>
 #include <assert.h>
 
+#include "log.h"
 #include "queue.h"
 
 static void * queueRemove (queue_t *q, queuenode_t *node);
@@ -17,6 +18,7 @@ queueAlloc (queueFree_t freeHook)
 {
   queue_t     *q;
 
+  logProcBegin (LOG_PROC, "queueAlloc");
   q = malloc (sizeof (queue_t));
   assert (q != NULL);
   q->count = 0;
@@ -25,6 +27,7 @@ queueAlloc (queueFree_t freeHook)
   q->head = NULL;
   q->tail = NULL;
   q->freeHook = freeHook;
+  logProcEnd (LOG_PROC, "queueAlloc", "");
   return q;
 }
 
@@ -34,6 +37,7 @@ queueFree (queue_t *q)
   queuenode_t     *node;
   queuenode_t     *tnode;
 
+  logProcBegin (LOG_PROC, "queueFree");
   if (q != NULL) {
     node = q->head;
     tnode = node;
@@ -55,6 +59,7 @@ queueFree (queue_t *q)
     }
     free (q);
   }
+  logProcEnd (LOG_PROC, "queueFree", "");
 }
 
 void
@@ -62,7 +67,9 @@ queuePush (queue_t *q, void *data)
 {
   queuenode_t     *node;
 
+  logProcBegin (LOG_PROC, "queuePush");
   if (q == NULL) {
+    logProcEnd (LOG_PROC, "queuePush", "bad-ptr");
     return;
   }
 
@@ -80,6 +87,7 @@ queuePush (queue_t *q, void *data)
   }
   q->tail = node;
   q->count++;
+  logProcEnd (LOG_PROC, "queuePush", "");
 }
 
 void
@@ -87,7 +95,9 @@ queuePushHead (queue_t *q, void *data)
 {
   queuenode_t     *node;
 
+  logProcBegin (LOG_PROC, "queuePushHead");
   if (q == NULL) {
+    logProcEnd (LOG_PROC, "queuePushHead", "bad-ptr");
     return;
   }
 
@@ -105,6 +115,7 @@ queuePushHead (queue_t *q, void *data)
   }
   q->head = node;
   q->count++;
+  logProcEnd (LOG_PROC, "queuePushHead", "");
 }
 
 void *
@@ -113,7 +124,9 @@ queueGetCurrent (queue_t *q)
   void          *data = NULL;
   queuenode_t   *node;
 
+  logProcBegin (LOG_PROC, "queueGetCurrent");
   if (q == NULL) {
+    logProcEnd (LOG_PROC, "queueGetCurrent", "bad-ptr");
     return NULL;
   }
   node = q->head;
@@ -121,6 +134,7 @@ queueGetCurrent (queue_t *q)
   if (node != NULL) {
     data = node->data;
   }
+  logProcEnd (LOG_PROC, "queueGetCurrent", "");
   return data;
 }
 
@@ -131,10 +145,13 @@ queueGetByIdx (queue_t *q, ssize_t idx)
   queuenode_t       *node = NULL;
   void              *data = NULL;
 
+  logProcBegin (LOG_PROC, "queueGetByIdx");
   if (q == NULL) {
+    logProcEnd (LOG_PROC, "queueGetByIdx", "bad-ptr");
     return NULL;
   }
   if (idx >= q->count) {
+    logProcEnd (LOG_PROC, "queueGetByIdx", "bad-idx");
     return NULL;
   }
   node = q->head;
@@ -145,6 +162,7 @@ queueGetByIdx (queue_t *q, ssize_t idx)
   if (node != NULL) {
     data = node->data;
   }
+  logProcEnd (LOG_PROC, "queueGetByIdx", "");
   return data;
 }
 
@@ -155,12 +173,15 @@ queuePop (queue_t *q)
   void          *data;
   queuenode_t   *node;
 
+  logProcBegin (LOG_PROC, "queuePop");
   if (q == NULL) {
+    logProcEnd (LOG_PROC, "queuePop", "bad-ptr");
     return NULL;
   }
   node = q->head;
 
   data = queueRemove (q, node);
+  logProcEnd (LOG_PROC, "queuePop", "");
   return data;
 }
 
@@ -170,7 +191,9 @@ queueClear (queue_t *q, ssize_t startIdx)
   queuenode_t   *node;
   queuenode_t   *tnode;
 
+  logProcBegin (LOG_PROC, "queueClear");
   if (q == NULL) {
+    logProcEnd (LOG_PROC, "queueClear", "bad-ptr");
     return;
   }
   node = q->tail;
@@ -183,6 +206,7 @@ queueClear (queue_t *q, ssize_t startIdx)
     }
     queueRemove (q, tnode);
   }
+  logProcEnd (LOG_PROC, "queueClear", "");
   return;
 }
 
@@ -195,10 +219,13 @@ queueMove (queue_t *q, ssize_t fromidx, ssize_t toidx)
   void          *tdata = NULL;
   ssize_t       count;
 
+  logProcBegin (LOG_PROC, "queueMove");
   if (q == NULL) {
+    logProcEnd (LOG_PROC, "queueMove", "bad-ptr");
     return;
   }
   if (fromidx < 0 || fromidx >= q->count || toidx < 0 || toidx >= q->count) {
+    logProcEnd (LOG_PROC, "queueMove", "bad-idx");
     return;
   }
   node = q->head;
@@ -222,6 +249,7 @@ queueMove (queue_t *q, ssize_t fromidx, ssize_t toidx)
     tonode->data = tdata;
   }
 
+  logProcEnd (LOG_PROC, "queueMove", "");
   return;
 }
 
@@ -232,10 +260,13 @@ queueInsert (queue_t *q, ssize_t idx, void *data)
   queuenode_t   *tnode = NULL;
   ssize_t       count;
 
+  logProcBegin (LOG_PROC, "queueInsert");
   if (q == NULL) {
+    logProcEnd (LOG_PROC, "queueInsert", "bad-ptr");
     return;
   }
   if (idx < 0 || idx >= q->count) {
+    logProcEnd (LOG_PROC, "queueInsert", "bad-idx");
     return;
   }
 
@@ -268,6 +299,7 @@ queueInsert (queue_t *q, ssize_t idx, void *data)
   }
   ++q->count;
 
+  logProcEnd (LOG_PROC, "queueInsert", "");
   return;
 }
 
@@ -278,10 +310,13 @@ queueRemoveByIdx (queue_t *q, ssize_t idx)
   queuenode_t       *node = NULL;
   void              *data = NULL;
 
+  logProcBegin (LOG_PROC, "queueRemoveByIdx");
   if (q == NULL) {
+    logProcEnd (LOG_PROC, "queueRemoveByIdx", "bad-ptr");
     return NULL;
   }
   if (idx < 0 || idx >= q->count) {
+    logProcEnd (LOG_PROC, "queueRemoveByIdx", "bad-idx");
     return NULL;
   }
   node = q->head;
@@ -292,6 +327,7 @@ queueRemoveByIdx (queue_t *q, ssize_t idx)
   if (node != NULL) {
     data = queueRemove (q, node);
   }
+  logProcEnd (LOG_PROC, "queueRemoveByIdx", "");
   return data;
 }
 

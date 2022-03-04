@@ -30,7 +30,7 @@ ratingAlloc (char *fname)
   ilistidx_t      key;
   ilistidx_t      iteridx;
 
-  if (! fileopExists (fname)) {
+  if (! fileopFileExists (fname)) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: rating: missing %s", fname);
     return NULL;
   }

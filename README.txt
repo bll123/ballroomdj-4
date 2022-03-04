@@ -2,25 +2,31 @@ BDJ4 4.0.0
 
 BallroomDJ 4 is currently under development.
 
-Alpha Release: 20220217
+Alpha Release: 20220303
 
-  Alpha releases are mostly untested works in progress.
+This release represents a working player user interface.
+It should be usable with a BallroomDJ 3 installation.
 
-  This alpha release will not work without a BallroomDJ 3 installation.
+The song selection filter dialog will change in the future.
+Several of the currently displayed selections will be hidden by default.
 
-  It contains only the player interface.
-  No music or playlist management is present.
-  No configuration is present.
+Alpha releases are mostly untested works in progress.
 
-  Alpha releases may not reflect what the final product will look like,
-  and may not reflect what features will be present in the final product.
+This alpha release will not work without a BallroomDJ 3 installation.
 
-  Anything can and will change.
+It contains only the player interface.
+No music or playlist management is present.
+No configuration is present.
 
-  There are no instructions yet.  If you want to try this, ask on the
-  forum for help.
+Alpha releases may not reflect what the final product will look like,
+and may not reflect what features will be present in the final product.
 
-  Leave your feedback, thoughts and ruminations at :
+Anything can and will change.
+
+There are no instructions yet.  If you want to try this, ask on the
+forum for help.
+
+Leave your feedback, thoughts and ruminations at :
       https://ballroomdj.org/forum/viewforum.php?f=26
 
 LICENSES
@@ -32,7 +38,6 @@ LICENSES
       libmad     : GPL License
       libmp3lame : LGPL https://lame.sourceforge.net/
       ffmpeg     : windows/*/ffmpeg/LICENSE.txt
-      sox        : windows/SoX/LICENSE.GPL.txt
       curl       : MIT License
       c-ares     : MIT License
       nghttp2    : MIT License

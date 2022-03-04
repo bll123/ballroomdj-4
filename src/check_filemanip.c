@@ -27,9 +27,9 @@ START_TEST(filemanip_copy)
   fclose (fh);
   rc = filemanipCopy (ofn, nfn);
   ck_assert_int_eq (rc, 0);
-  rc = fileopExists (ofn);
+  rc = fileopFileExists (ofn);
   ck_assert_int_eq (rc, 1);
-  rc = fileopExists (nfn);
+  rc = fileopFileExists (nfn);
   ck_assert_int_eq (rc, 1);
   unlink (ofn);
   unlink (nfn);
@@ -50,9 +50,9 @@ START_TEST(filemanip_move)
   fclose (fh);
   rc = filemanipMove (ofn, nfn);
   ck_assert_int_eq (rc, 0);
-  rc = fileopExists (ofn);
+  rc = fileopFileExists (ofn);
   ck_assert_int_eq (rc, 0);
-  rc = fileopExists (nfn);
+  rc = fileopFileExists (nfn);
   ck_assert_int_eq (rc, 1);
   unlink (ofn);
   unlink (nfn);
@@ -69,27 +69,26 @@ START_TEST(filemanip_del_dir)
   char *dfn = "tmp/abc";
   char *ofn = "tmp/abc/def";
   char *nfn = "tmp/abc/def/xyz.txt";
-  fileopMakeDir (dfn);
-  fileopMakeDir (ofn);
+  rc = fileopMakeDir (dfn);
+  ck_assert_int_eq (rc, 0);
+  rc = fileopMakeDir (ofn);
+  ck_assert_int_eq (rc, 0);
   fh = fopen (nfn, "w");
   ck_assert_ptr_nonnull (fh);
   fclose (fh);
-  rc = fileopExists (dfn);
-  ck_assert_int_eq (rc, 1);
   rc = fileopIsDirectory (dfn);
-  ck_assert_int_eq (rc, 1);
-  rc = fileopExists (dfn);
   ck_assert_int_eq (rc, 1);
   rc = fileopIsDirectory (ofn);
   ck_assert_int_eq (rc, 1);
-  rc = fileopExists (nfn);
+  rc = fileopFileExists (nfn);
   ck_assert_int_eq (rc, 1);
+
   filemanipDeleteDir (dfn);
-  rc = fileopExists (nfn);
+  rc = fileopFileExists (nfn);
   ck_assert_int_eq (rc, 0);
-  rc = fileopExists (ofn);
+  rc = fileopIsDirectory (ofn);
   ck_assert_int_eq (rc, 0);
-  rc = fileopExists (dfn);
+  rc = fileopIsDirectory (dfn);
   ck_assert_int_eq (rc, 0);
 }
 END_TEST

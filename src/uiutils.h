@@ -44,7 +44,8 @@ typedef struct {
   bool                  indisp;
 } uiutilsspinbox_t;
 
-#define UI_MAIN_LOOP_TIMER 20
+/* windows requires a longer timer */
+#define UI_MAIN_LOOP_TIMER 30
 
 void uiutilsSetCss (GtkWidget *w, char *style);
 void uiutilsSetUIFont (char *uifont);

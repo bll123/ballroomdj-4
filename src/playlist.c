@@ -92,7 +92,7 @@ playlistLoad (char *fname)
 
 
   pathbldMakePath (tfn, sizeof (tfn), "", fname, ".pl", PATHBLD_MP_NONE);
-  if (! fileopExists (tfn)) {
+  if (! fileopFileExists (tfn)) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Missing playlist-pl %s", tfn);
     return NULL;
   }
@@ -101,7 +101,7 @@ playlistLoad (char *fname)
 
   pl->plinfodf = datafileAllocParse ("playlist-pl", DFTYPE_KEY_VAL, tfn,
       playlistdfkeys, PLAYLIST_DFKEY_COUNT, DATAFILE_NO_LOOKUP);
-  if (! fileopExists (tfn)) {
+  if (! fileopFileExists (tfn)) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Bad playlist-pl %s", tfn);
     playlistFree (pl);
     return NULL;
@@ -110,7 +110,7 @@ playlistLoad (char *fname)
   nlistDumpInfo (pl->plinfo);
 
   pathbldMakePath (tfn, sizeof (tfn), "", fname, ".pldances", PATHBLD_MP_NONE);
-  if (! fileopExists (tfn)) {
+  if (! fileopFileExists (tfn)) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Missing playlist-dance %s", tfn);
     playlistFree (pl);
     return NULL;
@@ -152,7 +152,7 @@ playlistLoad (char *fname)
   if (type == PLTYPE_MANUAL) {
     char *slfname = nlistGetStr (pl->plinfo, PLAYLIST_MANUAL_LIST_NAME);
     pathbldMakePath (tfn, sizeof (tfn), "", slfname, ".songlist", PATHBLD_MP_NONE);
-    if (! fileopExists (tfn)) {
+    if (! fileopFileExists (tfn)) {
       logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Missing songlist %s", tfn);
       playlistFree (pl);
       return NULL;
@@ -168,7 +168,7 @@ playlistLoad (char *fname)
   if (type == PLTYPE_SEQ) {
     char *seqfname = nlistGetStr (pl->plinfo, PLAYLIST_SEQ_NAME);
     pathbldMakePath (tfn, sizeof (tfn), "", seqfname, ".sequence", PATHBLD_MP_NONE);
-    if (! fileopExists (tfn)) {
+    if (! fileopFileExists (tfn)) {
       logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Missing sequence %s", tfn);
       playlistFree (pl);
       return NULL;

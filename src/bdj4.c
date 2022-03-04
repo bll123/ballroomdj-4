@@ -36,6 +36,7 @@ main (int argc, char * argv[])
   char      *extension;
   bool      debugself = false;
   bool      nodetach = false;
+  bool      isinstaller = false;
   int       flags;
 
   static struct option bdj_options [] = {
@@ -143,6 +144,7 @@ main (int argc, char * argv[])
       case 12: {
         prog = "bdj4installer";
         nodetach = true;
+        isinstaller = true;
         ++validargs;
         break;
       }
@@ -195,7 +197,7 @@ main (int argc, char * argv[])
     exit (1);
   }
 
-  if (! nodetach) {
+  if (isinstaller == false) {
     if (chdir (sysvarsGetStr (SV_BDJ4DATATOPDIR)) < 0) {
       fprintf (stderr, "Unable to set working dir: %s\n", sysvarsGetStr (SV_BDJ4DATATOPDIR));
       exit (1);
@@ -253,7 +255,7 @@ main (int argc, char * argv[])
     strlcpy (path, "PATH=", sz);
     while (p != NULL) {
       snprintf (tmp, sz, "%s\\libgtk-3-0.dll", p);
-      if (! fileopExists (tmp)) {
+      if (! fileopFileExists (tmp)) {
         if (debugself) {
           fprintf (stderr, "path ok: %s\n", p);
         }

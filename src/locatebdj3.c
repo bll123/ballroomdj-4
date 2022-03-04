@@ -11,6 +11,7 @@
 
 #include "bdj4.h"
 #include "bdjstring.h"
+#include "fileop.h"
 #include "locatebdj3.h"
 
 char *
@@ -98,7 +99,6 @@ bool
 locationcheck (const char *dir)
 {
   char          tbuff [MAXPATHLEN];
-  struct stat   statbuf;
   int           rc;
 
   if (dir == NULL) {
@@ -107,10 +107,10 @@ locationcheck (const char *dir)
 
   strlcpy (tbuff, dir, MAXPATHLEN);
 
-  rc = stat (tbuff, &statbuf);
+  rc = fileopFileExists (tbuff);
   //logMsg (LOG_INSTALL, LOG_IMPORTANT, "try: %d %s", rc, tbuff);
   if (rc == 0) {
-    if ((statbuf.st_mode & S_IFDIR) == S_IFDIR) {
+    if (fileopIsDirectory (tbuff)) {
       if (locatedb (tbuff)) {
         return true;
       }
@@ -125,31 +125,30 @@ bool
 locatedb (const char *dir)
 {
   char          tbuff [MAXPATHLEN];
-  struct stat   statbuf;
   int           rc;
 
   strlcpy (tbuff, dir, MAXPATHLEN);
   strlcat (tbuff, "/", MAXPATHLEN);
   strlcat (tbuff, "data", MAXPATHLEN);
 
-  rc = stat (tbuff, &statbuf);
+  rc = fileopFileExists (tbuff);
   //logMsg (LOG_INSTALL, LOG_IMPORTANT, "try: %d %s", rc, tbuff);
   if (rc != 0) {
     return false;
   }
-  if ((statbuf.st_mode & S_IFDIR) != S_IFDIR) {
+  if (! fileopIsDirectory (tbuff)) {
     return false;
   }
 
   strlcat (tbuff, "/", MAXPATHLEN);
   strlcat (tbuff, "musicdb.txt", MAXPATHLEN);
 
-  rc = stat (tbuff, &statbuf);
+  rc = fileopFileExists (tbuff);
   //logMsg (LOG_INSTALL, LOG_IMPORTANT, "try: %d %s", rc, tbuff);
   if (rc != 0) {
     return false;
   }
-  if ((statbuf.st_mode & S_IFREG) != S_IFREG) {
+  if (fileopIsDirectory (tbuff)) {
     return false;
   }
 

@@ -120,7 +120,7 @@ bdjoptInit (void)
   /* global */
   pathbldMakePath (path, MAXPATHLEN, "", BDJ_CONFIG_BASEFN,
       BDJ_CONFIG_EXT, PATHBLD_MP_USEIDX);
-  if (! fileopExists (path)) {
+  if (! fileopFileExists (path)) {
     bdjoptCreateNewConfigs ();
   }
   df = datafileAllocParse ("bdjopt-g", DFTYPE_KEY_VAL, path,
@@ -257,7 +257,7 @@ bdjoptCreateNewConfigs (void)
   sysvarsSetNum (SVL_BDJIDX, 0);
   pathbldMakePath (path, MAXPATHLEN, "", BDJ_CONFIG_BASEFN,
       BDJ_CONFIG_EXT, PATHBLD_MP_USEIDX);
-  if (! fileopExists (path)) {
+  if (! fileopFileExists (path)) {
     bdjoptCreateDefaultFiles ();
   }
 
