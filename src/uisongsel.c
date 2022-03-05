@@ -251,8 +251,6 @@ uisongselActivate (uisongsel_t *uisongsel, GtkWidget *parentwin)
       GTK_EVENT_CONTROLLER_SCROLL_DISCRETE);
   gtk_widget_add_events (uisongsel->songselTree, GDK_SCROLL_MASK);
   gtk_container_add (GTK_CONTAINER (widget), uisongsel->songselTree);
-  g_signal_connect (uisongsel->songselTree, "size-allocate",
-      G_CALLBACK (uisongselProcessTreeSize), uisongsel);
   g_signal_connect (uisongsel->songselTree, "row-activated",
       G_CALLBACK (uisongselRowSelected), uisongsel);
   g_signal_connect (uisongsel->songselTree, "scroll-event",
@@ -304,6 +302,9 @@ uisongselActivate (uisongsel_t *uisongsel, GtkWidget *parentwin)
   uisongselPopulateData (uisongsel);
 
   uiutilsDropDownSelectionSetNum (&uisongsel->dancesel, -1);
+
+  g_signal_connect (uisongsel->songselTree, "size-allocate",
+      G_CALLBACK (uisongselProcessTreeSize), uisongsel);
 
   logProcEnd (LOG_PROC, "uisongselActivate", "");
   return uisongsel->vbox;
@@ -650,6 +651,7 @@ static void
 uisongselFilterDialog (GtkButton *b, gpointer udata)
 {
   uisongsel_t * uisongsel = udata;
+  gint        x, y;
 
   logProcBegin (LOG_PROC, "uisongselFilterDialog");
 
@@ -660,10 +662,10 @@ uisongselFilterDialog (GtkButton *b, gpointer udata)
   uisongselInitFilterDisplay (uisongsel);
   gtk_widget_show_all (uisongsel->filterDialog);
 
-  if (nlistGetNum (uisongsel->options, SONGSEL_FILTER_POSITION_X) != -1) {
-    gtk_window_move (GTK_WINDOW (uisongsel->filterDialog),
-        nlistGetNum (uisongsel->options, SONGSEL_FILTER_POSITION_X),
-        nlistGetNum (uisongsel->options, SONGSEL_FILTER_POSITION_Y));
+  x = nlistGetNum (uisongsel->options, SONGSEL_FILTER_POSITION_X);
+  y = nlistGetNum (uisongsel->options, SONGSEL_FILTER_POSITION_Y);
+  if (x != -1 && y != -1) {
+    gtk_window_move (GTK_WINDOW (uisongsel->filterDialog), x, y);
   }
   logProcEnd (LOG_PROC, "uisongselFilterDialog", "");
 }

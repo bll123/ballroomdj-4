@@ -306,9 +306,11 @@ marqueeStoppingCallback (void *udata, programstate_t programState)
   gtk_window_get_size (GTK_WINDOW (marquee->window), &x, &y);
   nlistSetNum (marquee->options, MQ_SIZE_X, x);
   nlistSetNum (marquee->options, MQ_SIZE_Y, y);
-  gtk_window_get_position (GTK_WINDOW (marquee->window), &x, &y);
-  nlistSetNum (marquee->options, MQ_POSITION_X, x);
-  nlistSetNum (marquee->options, MQ_POSITION_Y, y);
+  if (! marquee->isIconified) {
+    gtk_window_get_position (GTK_WINDOW (marquee->window), &x, &y);
+    nlistSetNum (marquee->options, MQ_POSITION_X, x);
+    nlistSetNum (marquee->options, MQ_POSITION_Y, y);
+  }
 
   connDisconnectAll (marquee->conn);
   return true;
@@ -380,6 +382,9 @@ marqueeActivate (GApplication *app, gpointer userdata)
   GtkWidget *hbox;
   GtkWidget *vbox;
   GError    *gerr;
+  gint      x, y;
+
+  marquee->inResize = true;
 
   pathbldMakePath (imgbuff, sizeof (imgbuff), "",
       "bdj4_icon_marquee", ".svg", PATHBLD_MP_IMGDIR);
@@ -399,9 +404,11 @@ marqueeActivate (GApplication *app, gpointer userdata)
   gtk_window_set_focus_on_map (GTK_WINDOW (window), FALSE);
   gtk_window_set_title (GTK_WINDOW (window), _("Marquee"));
   gtk_window_set_default_icon_from_file (imgbuff, &gerr);
-  gtk_window_set_default_size (GTK_WINDOW (window),
-      nlistGetNum (marquee->options, MQ_SIZE_X),
-      nlistGetNum (marquee->options, MQ_SIZE_Y));
+
+  x = nlistGetNum (marquee->options, MQ_SIZE_X);
+  y = nlistGetNum (marquee->options, MQ_SIZE_Y);
+  gtk_window_set_default_size (GTK_WINDOW (window), x, y);
+
   marquee->window = window;
 
   marquee->vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 5);
@@ -520,13 +527,12 @@ marqueeActivate (GApplication *app, gpointer userdata)
         marquee->marqueeLabs [i], FALSE, FALSE, 0);
   }
 
-  marquee->inResize = true;
   gtk_widget_show_all (window);
 
-  if (nlistGetNum (marquee->options, MQ_POSITION_X) != -1) {
-    gtk_window_move (GTK_WINDOW (window),
-        nlistGetNum (marquee->options, MQ_POSITION_X),
-        nlistGetNum (marquee->options, MQ_POSITION_Y));
+  x = nlistGetNum (marquee->options, MQ_POSITION_X);
+  y = nlistGetNum (marquee->options, MQ_POSITION_Y);
+  if (x != -1 && y != -1) {
+    gtk_window_move (GTK_WINDOW (window), x, y);
   }
 
   marquee->inResize = false;
@@ -695,6 +701,12 @@ marqueeCloseWin (GtkWidget *window, GdkEvent *event, gpointer userdata)
   marquee_t   *marquee = userdata;
 
   if (! gdone) {
+    gint        x, y;
+
+    gtk_window_get_position (GTK_WINDOW (window), &x, &y);
+    nlistSetNum (marquee->options, MQ_POSITION_X, x);
+    nlistSetNum (marquee->options, MQ_POSITION_Y, y);
+
     gtk_window_iconify (GTK_WINDOW (window));
     marquee->mqIconifyAction = true;
     marquee->isIconified = true;

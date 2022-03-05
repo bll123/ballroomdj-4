@@ -54,8 +54,8 @@ main (int argc, char *argv[])
     /* normal stuff */
     { "debug",      required_argument,  NULL,   'd' },
     { "profile",    required_argument,  NULL,   'p' },
-    /* bdj4 ignored options */
-    { "nodetach",   required_argument,  NULL,   0 },
+    /* debug options */
+    { "nodetach",   no_argument,        NULL,   0 },
     { NULL,         0,                  NULL,   0 }
   };
 
@@ -285,15 +285,18 @@ exitAll (conn_t *conn)
 
   /* send the standard exit request to the controlling processes first */
   fprintf (stderr, "sending exit to starter\n");
+  fflush (stderr);
   sendMsg (conn, ROUTE_STARTERUI, MSG_EXIT_REQUEST, NULL);
   fprintf (stderr, "sending exit to playerui\n");
+  fflush (stderr);
   sendMsg (conn, ROUTE_PLAYERUI, MSG_EXIT_REQUEST, NULL);
   fprintf (stderr, "sending exit to main\n");
+  fflush (stderr);
   sendMsg (conn, ROUTE_PLAYERUI, MSG_EXIT_REQUEST, NULL);
   mssleep (1000);
   if (isWindows ()) {
     /* windows is slow */
-    mssleep (1000);
+    mssleep (1500);
   }
 
   /* see which lock files exist, and send exit requests to them */
@@ -302,10 +305,11 @@ exitAll (conn_t *conn)
     pid = lockExists (locknm, PATHBLD_MP_USEIDX);
     if (pid > 0) {
       fprintf (stderr, "sending exit to %d\n", route);
+      fflush (stderr);
       sendMsg (conn, route, MSG_EXIT_REQUEST, NULL);
     }
   }
-  mssleep (800);
+  mssleep (1000);
 
   /* see which lock files still exist and kill the processes */
   for (route = ROUTE_MAIN; route < ROUTE_MAX; ++route) {
@@ -313,6 +317,7 @@ exitAll (conn_t *conn)
     pid = lockExists (locknm, PATHBLD_MP_USEIDX);
     if (pid > 0) {
       fprintf (stderr, "terminate %d\n", route);
+      fflush (stderr);
       procutilTerminate (pid, false);
     }
   }
@@ -324,12 +329,14 @@ exitAll (conn_t *conn)
     pid = lockExists (locknm, PATHBLD_MP_USEIDX);
     if (pid > 0) {
       fprintf (stderr, "terminate-force %d\n", route);
+      fflush (stderr);
       procutilTerminate (pid, true);
     }
     mssleep (100);
     pid = lockExists (locknm, PATHBLD_MP_USEIDX);
     if (pid > 0) {
       fprintf (stderr, "still-exists %d\n", route);
+      fflush (stderr);
       fileopDelete (locknm);
     }
   }

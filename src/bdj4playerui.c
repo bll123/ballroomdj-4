@@ -316,6 +316,7 @@ pluiActivate (GApplication *app, gpointer userdata)
   char                *str;
   char                imgbuff [MAXPATHLEN];
   char                tbuff [MAXPATHLEN];
+  gint                x, y;
 
   logProcBegin (LOG_PROC, "pluiActivate");
 
@@ -440,16 +441,16 @@ pluiActivate (GApplication *app, gpointer userdata)
   tabLabel = gtk_label_new ("Song Selection");
   gtk_notebook_append_page (GTK_NOTEBOOK (plui->notebook), widget, tabLabel);
 
-  gtk_window_set_default_size (GTK_WINDOW (plui->window),
-      nlistGetNum (plui->options, PLUI_SIZE_X),
-      nlistGetNum (plui->options, PLUI_SIZE_Y));
+  x = nlistGetNum (plui->options, PLUI_SIZE_X);
+  y = nlistGetNum (plui->options, PLUI_SIZE_Y);
+  gtk_window_set_default_size (GTK_WINDOW (plui->window), x, y);
 
   gtk_widget_show_all (plui->window);
 
-  if (nlistGetNum (plui->options, PLUI_POSITION_X) != -1) {
-    gtk_window_move (GTK_WINDOW (plui->window),
-        nlistGetNum (plui->options, PLUI_POSITION_X),
-        nlistGetNum (plui->options, PLUI_POSITION_Y));
+  x = nlistGetNum (plui->options, PLUI_POSITION_X);
+  y = nlistGetNum (plui->options, PLUI_POSITION_Y);
+  if (x != -1 && y != -1) {
+    gtk_window_move (GTK_WINDOW (plui->window), x, y);
   }
 
   pluiSetExtraQueues (plui);

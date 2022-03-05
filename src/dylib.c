@@ -26,7 +26,6 @@ dylibLoad (char *path)
   void      *handle = NULL;
 
 #if _lib_dlopen
-fprintf (stderr, "path=%s\n", path);
   handle = dlopen (path, RTLD_LAZY);
 #endif
 #if _lib_LoadLibrary
