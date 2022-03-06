@@ -38,15 +38,15 @@ enum {
   MQ_POSITION_Y,
   MQ_SIZE_X,
   MQ_SIZE_Y,
+  MQ_KEY_MAX,
 };
 
-static datafilekey_t mqdfkeys[] = {
+static datafilekey_t mqdfkeys [MQ_KEY_MAX] = {
   { "MQ_POS_X",     MQ_POSITION_X,    VALUE_NUM, NULL, -1 },
   { "MQ_POS_Y",     MQ_POSITION_Y,    VALUE_NUM, NULL, -1 },
   { "MQ_SIZE_X",    MQ_SIZE_X,        VALUE_NUM, NULL, -1 },
   { "MQ_SIZE_Y",    MQ_SIZE_Y,        VALUE_NUM, NULL, -1 },
 };
-#define MARQUEE_DFKEY_COUNT (sizeof (mqdfkeys) / sizeof (datafilekey_t))
 
 typedef struct {
   GtkApplication  *app;
@@ -247,7 +247,7 @@ main (int argc, char *argv[])
   pathbldMakePath (tbuff, sizeof (tbuff), "",
       "marquee", ".txt", PATHBLD_MP_USEIDX);
   marquee.optiondf = datafileAllocParse ("marquee-opt", DFTYPE_KEY_VAL, tbuff,
-      mqdfkeys, MARQUEE_DFKEY_COUNT, DATAFILE_NO_LOOKUP);
+      mqdfkeys, MQ_KEY_MAX, DATAFILE_NO_LOOKUP);
   marquee.options = datafileGetList (marquee.optiondf);
   if (marquee.options == NULL) {
     marquee.options = nlistAlloc ("marquee-opt", LIST_ORDERED, free);
@@ -329,7 +329,7 @@ marqueeClosingCallback (void *udata, programstate_t programState)
 
   pathbldMakePath (fn, sizeof (fn), "",
       "marquee", ".txt", PATHBLD_MP_USEIDX);
-  datafileSaveKeyVal (fn, mqdfkeys, MARQUEE_DFKEY_COUNT, marquee->options);
+  datafileSaveKeyVal (fn, mqdfkeys, MQ_KEY_MAX, marquee->options);
 
   sockhCloseServer (marquee->sockserver);
 

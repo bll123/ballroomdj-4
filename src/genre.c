@@ -16,11 +16,10 @@
 #include "slist.h"
 
   /* must be sorted in ascii order */
-static datafilekey_t genredfkeys[] = {
+static datafilekey_t genredfkeys [GENRE_KEY_MAX] = {
   { "CLASSICAL",  GENRE_CLASSICAL_FLAG, VALUE_NUM, parseConvBoolean, -1 },
   { "GENRE",      GENRE_GENRE,          VALUE_DATA, NULL, -1 },
 };
-#define GENRE_DFKEY_COUNT (sizeof (genredfkeys) / sizeof (datafilekey_t))
 
 genre_t *
 genreAlloc (char *fname)
@@ -42,7 +41,7 @@ genreAlloc (char *fname)
   genre->genreList = NULL;
 
   genre->df = datafileAllocParse ("genre", DFTYPE_INDIRECT, fname,
-      genredfkeys, GENRE_DFKEY_COUNT, GENRE_GENRE);
+      genredfkeys, GENRE_KEY_MAX, GENRE_GENRE);
   ilistDumpInfo (datafileGetList (genre->df));
 
   dflist = datafileGetList (genre->df);

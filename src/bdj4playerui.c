@@ -67,7 +67,7 @@ typedef struct {
   nlist_t         *options;
 } playerui_t;
 
-static datafilekey_t playeruidfkeys[] = {
+static datafilekey_t playeruidfkeys [] = {
   { "FILTER_POS_X",             SONGSEL_FILTER_POSITION_X,    VALUE_NUM, NULL, -1 },
   { "FILTER_POS_Y",             SONGSEL_FILTER_POSITION_Y,    VALUE_NUM, NULL, -1 },
   { "PLAY_WHEN_QUEUED",         PLUI_PLAY_WHEN_QUEUED,        VALUE_NUM, NULL, -1 },

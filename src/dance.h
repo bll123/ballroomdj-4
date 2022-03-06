@@ -23,6 +23,7 @@ typedef enum {
   DANCE_SPEED_SLOW,
   DANCE_SPEED_NORMAL,
   DANCE_SPEED_FAST,
+  DANCE_SPEED_MAX,
 } dancespeed_t;
 
 typedef struct {

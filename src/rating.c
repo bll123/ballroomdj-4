@@ -17,11 +17,10 @@
 #include "slist.h"
 
   /* must be sorted in ascii order */
-static datafilekey_t ratingdfkeys[] = {
+static datafilekey_t ratingdfkeys [RATING_KEY_MAX] = {
   { "RATING", RATING_RATING, VALUE_DATA, NULL, -1 },
   { "WEIGHT", RATING_WEIGHT, VALUE_NUM, NULL, -1 },
 };
-#define RATING_DFKEY_COUNT (sizeof (ratingdfkeys) / sizeof (datafilekey_t))
 
 rating_t *
 ratingAlloc (char *fname)
@@ -39,7 +38,7 @@ ratingAlloc (char *fname)
   assert (rating != NULL);
 
   rating->df = datafileAllocParse ("rating", DFTYPE_INDIRECT, fname,
-      ratingdfkeys, RATING_DFKEY_COUNT, RATING_RATING);
+      ratingdfkeys, RATING_KEY_MAX, RATING_RATING);
   rating->rating = datafileGetList (rating->df);
   ilistDumpInfo (rating->rating);
 

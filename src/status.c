@@ -16,11 +16,10 @@
 #include "status.h"
 
   /* must be sorted in ascii order */
-static datafilekey_t statusdfkeys[] = {
+static datafilekey_t statusdfkeys [STATUS_KEY_MAX] = {
   { "PLAYFLAG",   STATUS_PLAY_FLAG,   VALUE_NUM, parseConvBoolean, -1 },
   { "STATUS",     STATUS_STATUS,      VALUE_DATA, NULL, -1 },
 };
-#define STATUS_DFKEY_COUNT (sizeof (statusdfkeys) / sizeof (datafilekey_t))
 
 status_t *
 statusAlloc (char *fname)
@@ -39,7 +38,7 @@ statusAlloc (char *fname)
   assert (status != NULL);
 
   status->df = datafileAllocParse ("status", DFTYPE_INDIRECT, fname,
-      statusdfkeys, STATUS_DFKEY_COUNT, STATUS_STATUS);
+      statusdfkeys, STATUS_KEY_MAX, STATUS_STATUS);
   status->status = datafileGetList (status->df);
   ilistDumpInfo (status->status);
 

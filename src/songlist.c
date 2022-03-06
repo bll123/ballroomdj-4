@@ -15,13 +15,12 @@
 #include "songlist.h"
 
   /* must be sorted in ascii order */
-static datafilekey_t songlistdfkeys[] = {
+static datafilekey_t songlistdfkeys [SONGLIST_KEY_MAX] = {
   { "DANCE",    SONGLIST_DANCE,     VALUE_NUM, danceConvDance, SONGLIST_DANCESTR },
   { "DANCESTR", SONGLIST_DANCESTR,  VALUE_DATA, NULL, -1 },
   { "FILE",     SONGLIST_FILE,      VALUE_DATA, NULL, -1 },
   { "TITLE",    SONGLIST_TITLE,     VALUE_DATA, NULL, -1 },
 };
-#define SONGLIST_DFKEY_COUNT (sizeof (songlistdfkeys) / sizeof (datafilekey_t))
 
 songlist_t *
 songlistAlloc (char *fname)
@@ -38,7 +37,7 @@ songlistAlloc (char *fname)
     return NULL;
   }
   sl->df = datafileAllocParse ("songlist", DFTYPE_INDIRECT, fname,
-      songlistdfkeys, SONGLIST_DFKEY_COUNT, DATAFILE_NO_LOOKUP);
+      songlistdfkeys, SONGLIST_KEY_MAX, DATAFILE_NO_LOOKUP);
   if (sl->df == NULL) {
     songlistFree (sl);
     return NULL;

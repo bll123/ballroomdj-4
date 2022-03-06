@@ -20,7 +20,7 @@
 static void danceConvSpeed (char *keydata, datafileret_t *ret);
 
   /* must be sorted in ascii order */
-static datafilekey_t dancedfkeys[] = {
+static datafilekey_t dancedfkeys [DANCE_KEY_MAX] = {
   { "ANNOUNCE",   DANCE_ANNOUNCE, VALUE_DATA, NULL, -1 },
   { "COUNT",      DANCE_COUNT, VALUE_NUM, NULL, -1 },
   { "DANCE",      DANCE_DANCE, VALUE_DATA, NULL, -1 },
@@ -32,14 +32,12 @@ static datafilekey_t dancedfkeys[] = {
   { "TIMESIG",    DANCE_TIMESIG, VALUE_DATA, NULL, -1 },
   { "TYPE",       DANCE_TYPE, VALUE_DATA, dnctypesConv, -1 },
 };
-#define DANCE_DFKEY_COUNT (sizeof (dancedfkeys) / sizeof (datafilekey_t))
 
-static datafilekey_t dancespeeddfkeys[] = {
+static datafilekey_t dancespeeddfkeys [DANCE_SPEED_MAX] = {
   { "fast",       DANCE_SPEED_FAST,   VALUE_DATA, NULL, -1 },
   { "normal",     DANCE_SPEED_NORMAL, VALUE_DATA, NULL, -1 },
   { "slow",       DANCE_SPEED_SLOW,   VALUE_DATA, NULL, -1 },
 };
-#define DANCE_SPEED_DFKEY_COUNT (sizeof (dancespeeddfkeys) / sizeof (datafilekey_t))
 
 dance_t *
 danceAlloc (char *fname)
@@ -56,7 +54,7 @@ danceAlloc (char *fname)
   dance->danceList = NULL;
 
   dance->df = datafileAllocParse ("dance", DFTYPE_INDIRECT, fname,
-      dancedfkeys, DANCE_DFKEY_COUNT, DANCE_DANCE);
+      dancedfkeys, DANCE_KEY_MAX, DANCE_DANCE);
   dance->dances = datafileGetList (dance->df);
   return dance;
 }
@@ -178,7 +176,7 @@ danceConvSpeed (char *keydata, datafileret_t *ret)
   nlistidx_t       idx;
 
   ret->valuetype = VALUE_NUM;
-  idx = dfkeyBinarySearch (dancespeeddfkeys, DANCE_SPEED_DFKEY_COUNT, keydata);
+  idx = dfkeyBinarySearch (dancespeeddfkeys, DANCE_SPEED_MAX, keydata);
   ret->u.num = dancespeeddfkeys [idx].itemkey;
 }
 

@@ -33,7 +33,7 @@
 static void     plConvType (char *, datafileret_t *ret);
 
 /* must be sorted in ascii order */
-static datafilekey_t playlistdfkeys[] = {
+static datafilekey_t playlistdfkeys [PLAYLIST_KEY_MAX] = {
   { "ALLOWEDKEYWORDS",  PLAYLIST_ALLOWED_KEYWORDS,
       VALUE_DATA, parseConvTextList, -1 },
   { "DANCELEVELHIGH",   PLAYLIST_LEVEL_HIGH,
@@ -63,10 +63,9 @@ static datafilekey_t playlistdfkeys[] = {
   { "TYPE",             PLAYLIST_TYPE,
       VALUE_NUM, plConvType, -1 },
 };
-#define PLAYLIST_DFKEY_COUNT (sizeof (playlistdfkeys) / sizeof (datafilekey_t))
 
 /* must be sorted in ascii order */
-static datafilekey_t playlistdancedfkeys[] = {
+static datafilekey_t playlistdancedfkeys [PLDANCE_KEY_MAX] = {
   { "BPMHIGH",        PLDANCE_BPM_HIGH,     VALUE_NUM, NULL, -1 },
   { "BPMLOW",         PLDANCE_BPM_LOW,      VALUE_NUM, NULL, -1 },
   { "COUNT",          PLDANCE_COUNT,        VALUE_NUM, NULL, -1 },
@@ -74,7 +73,6 @@ static datafilekey_t playlistdancedfkeys[] = {
   { "MAXPLAYTIME",    PLDANCE_MAXPLAYTIME,  VALUE_NUM, NULL, -1 },
   { "SELECTED",       PLDANCE_SELECTED,     VALUE_NUM, parseConvBoolean, -1 },
 };
-#define PLAYLIST_DANCE_DFKEY_COUNT (sizeof (playlistdancedfkeys) / sizeof (datafilekey_t))
 
 static void playlistSetSongFilter (playlist_t *pl);
 static void playlistCountList (playlist_t *pl);
@@ -101,7 +99,7 @@ playlistLoad (char *fname)
   assert (pl != NULL);
 
   pl->plinfodf = datafileAllocParse ("playlist-pl", DFTYPE_KEY_VAL, tfn,
-      playlistdfkeys, PLAYLIST_DFKEY_COUNT, DATAFILE_NO_LOOKUP);
+      playlistdfkeys, PLAYLIST_KEY_MAX, DATAFILE_NO_LOOKUP);
   if (! fileopFileExists (tfn)) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Bad playlist-pl %s", tfn);
     playlistFree (pl);
@@ -118,7 +116,7 @@ playlistLoad (char *fname)
   }
 
   pl->pldancesdf = datafileAllocParse ("playlist-dances", DFTYPE_INDIRECT, tfn,
-      playlistdancedfkeys, PLAYLIST_DANCE_DFKEY_COUNT, DATAFILE_NO_LOOKUP);
+      playlistdancedfkeys, PLDANCE_KEY_MAX, DATAFILE_NO_LOOKUP);
   if (pl->pldancesdf == NULL) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Bad playlist-dance %s", tfn);
     playlistFree (pl);
@@ -135,7 +133,7 @@ playlistLoad (char *fname)
     while ((tidx = ilistIterateKey (tpldances, &iteridx)) >= 0) {
       /* have to make a clone of the data */
       didx = ilistGetNum (tpldances, tidx, PLDANCE_DANCE);
-      for (size_t i = 0; i < PLAYLIST_DANCE_DFKEY_COUNT; ++i) {
+      for (size_t i = 0; i < PLDANCE_KEY_MAX; ++i) {
         ilistSetNum (pl->pldances, didx, playlistdancedfkeys [i].itemkey,
             ilistGetNum (tpldances, tidx, playlistdancedfkeys [i].itemkey));
       }

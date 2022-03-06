@@ -17,12 +17,11 @@
 #include "slist.h"
 
   /* must be sorted in ascii order */
-static datafilekey_t leveldfkeys[] = {
+static datafilekey_t leveldfkeys [LEVEL_KEY_MAX] = {
   { "DEFAULT",  LEVEL_DEFAULT_FLAG, VALUE_NUM, parseConvBoolean, -1 },
   { "LEVEL",    LEVEL_LEVEL,        VALUE_DATA, NULL, -1 },
   { "WEIGHT",   LEVEL_WEIGHT,       VALUE_NUM, NULL, -1 },
 };
-#define LEVEL_DFKEY_COUNT (sizeof (leveldfkeys) / sizeof (datafilekey_t))
 
 level_t *
 levelAlloc (char *fname)
@@ -41,7 +40,7 @@ levelAlloc (char *fname)
   assert (level != NULL);
 
   level->df = datafileAllocParse ("level", DFTYPE_INDIRECT, fname,
-      leveldfkeys, LEVEL_DFKEY_COUNT, LEVEL_LEVEL);
+      leveldfkeys, LEVEL_KEY_MAX, LEVEL_LEVEL);
   level->level = datafileGetList (level->df);
   ilistDumpInfo (level->level);
 

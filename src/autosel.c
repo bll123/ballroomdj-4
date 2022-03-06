@@ -13,7 +13,7 @@
 #include "log.h"
 #include "nlist.h"
 
-static datafilekey_t autoseldfkeys[] = {
+static datafilekey_t autoseldfkeys [AUTOSEL_KEY_MAX] = {
   { "begincount",     AUTOSEL_BEG_COUNT,        VALUE_NUM,    NULL, -1 },
   { "beginfast",      AUTOSEL_BEG_FAST,         VALUE_DOUBLE, NULL, -1 },
   { "bothfast",       AUTOSEL_BOTHFAST,         VALUE_DOUBLE, NULL, -1 },
@@ -27,7 +27,6 @@ static datafilekey_t autoseldfkeys[] = {
   { "tagmatch",       AUTOSEL_TAGMATCH,         VALUE_DOUBLE, NULL, -1 },
   { "typematch",      AUTOSEL_TYPE_MATCH,       VALUE_DOUBLE, NULL, -1 },
 };
-#define AUTOSEL_DFKEY_COUNT (sizeof (autoseldfkeys) / sizeof (datafilekey_t))
 
 autosel_t *
 autoselAlloc (char *fname)
@@ -43,7 +42,7 @@ autoselAlloc (char *fname)
   assert (autosel != NULL);
 
   autosel->df = datafileAllocParse ("autosel", DFTYPE_KEY_VAL, fname,
-      autoseldfkeys, AUTOSEL_DFKEY_COUNT, DATAFILE_NO_LOOKUP);
+      autoseldfkeys, AUTOSEL_KEY_MAX, DATAFILE_NO_LOOKUP);
   autosel->autosel = datafileGetList (autosel->df);
   return autosel;
 }

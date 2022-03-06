@@ -25,7 +25,7 @@
 static void songConvFavorite (char *keydata, datafileret_t *ret);
 
   /* must be sorted in ascii order */
-static datafilekey_t songdfkeys[] = {
+static datafilekey_t songdfkeys [MAX_TAG_KEY] = {
   { "ADJUSTFLAGS",          TAG_ADJUSTFLAGS,          VALUE_DATA, NULL, -1 },
   { "AFMODTIME",            TAG_AFMODTIME,            VALUE_NUM, NULL, -1 },
   { "ALBUM",                TAG_ALBUM,                VALUE_DATA, NULL, -1 },
@@ -68,7 +68,6 @@ static datafilekey_t songdfkeys[] = {
   { "VOLUMEADJUSTPERC",     TAG_VOLUMEADJUSTPERC,     VALUE_DOUBLE, NULL, -1 },
   { "WRITETIME",            TAG_WRITETIME,            VALUE_NUM, NULL, -1 },
 };
-#define SONG_DFKEY_COUNT (sizeof (songdfkeys) / sizeof (datafilekey_t))
 
 static datafilekey_t favoritedfkeys [SONG_FAVORITE_MAX] = {
   { "bluestar",   SONG_FAVORITE_BLUE,     VALUE_DATA, NULL, -1 },
@@ -130,7 +129,7 @@ songParse (song_t *song, char *data, ssize_t didx)
 
   snprintf (tbuff, sizeof (tbuff), "song-%zd", didx);
   song->songInfo = datafileParse (data, tbuff, DFTYPE_KEY_VAL,
-      songdfkeys, SONG_DFKEY_COUNT, DATAFILE_NO_LOOKUP, NULL);
+      songdfkeys, MAX_TAG_KEY, DATAFILE_NO_LOOKUP, NULL);
   nlistSort (song->songInfo);
 }
 
