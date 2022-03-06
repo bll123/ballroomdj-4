@@ -195,6 +195,7 @@ foreach path [list {} profiles $mpath $mppath] {
         if { $::tcl_platform(platform) eq "windows" } { set value Windows-10 }
         if { $::tcl_platform(os) eq "Darwin" } { set value MacOS }
         puts $ofh "..${value}"
+
         puts $ofh UI_THEME
         set value Adwaita-Dark
         if { $::tcl_platform(os) eq "Linux" } { set value Adwaita-Dark }

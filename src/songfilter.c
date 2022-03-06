@@ -137,11 +137,25 @@ songfilterSetData (songfilter_t *sf, int filterType, void *value)
 
   valueType = valueTypeLookup [filterType].valueType;
 
-  if (valueType == SONG_FILTER_SLIST ||
-      valueType == SONG_FILTER_ILIST) {
+  if (valueType == SONG_FILTER_SLIST) {
+    if (sf->datafilter [filterType] != NULL) {
+      slistFree (sf->datafilter [filterType]);
+      sf->datafilter [filterType] = NULL;
+    }
+    sf->datafilter [filterType] = value;
+  }
+  if (valueType == SONG_FILTER_ILIST) {
+    if (sf->datafilter [filterType] != NULL) {
+      ilistFree (sf->datafilter [filterType]);
+      sf->datafilter [filterType] = NULL;
+    }
     sf->datafilter [filterType] = value;
   }
   if (valueType == SONG_FILTER_STR) {
+    if (sf->datafilter [filterType] != NULL) {
+      free (sf->datafilter [filterType]);
+      sf->datafilter [filterType] = NULL;
+    }
     sf->datafilter [filterType] = strdup (value);
     if (filterType == SONG_FILTER_SEARCH) {
       stringToLower ((char *) sf->datafilter [filterType]);

@@ -204,13 +204,6 @@ if [[ $platform == windows ]]; then
   cp -f /mingw64/etc/gtk-3.0/im-multipress.conf plocal/etc/gtk-3.0
 
   # leave this here for the time being until UITHEME is implemented
-  cat > plocal/etc/gtk-3.0/settings.ini <<_HERE_
-[Settings]
-gtk-xft-antialias = 1
-gtk-icon-theme-name = Adwaita
-gtk-theme-name = Windows-10-Dark
-gtk-font-name = Arial 11
-_HERE_
   mkdir -p plocal/etc/fonts
   cp -rf /mingw64/etc/fonts plocal/etc
 

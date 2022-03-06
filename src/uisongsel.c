@@ -942,11 +942,11 @@ uisongselDanceSelect (GtkTreeView *tv, GtkTreePath *path,
 static void
 uisongselSongfilterSetDance (uisongsel_t *uisongsel, ssize_t idx)
 {
+  logProcBegin (LOG_PROC, "uisongselSongfilterSetDance");
+
   uisongsel->danceIdx = idx;
   if (idx >= 0) {
     ilist_t   *danceList;
-
-  logProcBegin (LOG_PROC, "uisongselSongfilterSetDance");
 
     danceList = ilistAlloc ("songsel-filter-dance", LIST_ORDERED);
     /* any value will do; only interested in the dance index at this point */

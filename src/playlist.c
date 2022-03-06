@@ -98,6 +98,7 @@ playlistLoad (char *fname)
   }
 
   pl = playlistAlloc (fname);
+  assert (pl != NULL);
 
   pl->plinfodf = datafileAllocParse ("playlist-pl", DFTYPE_KEY_VAL, tfn,
       playlistdfkeys, PLAYLIST_DFKEY_COUNT, DATAFILE_NO_LOOKUP);
@@ -139,6 +140,10 @@ playlistLoad (char *fname)
             ilistGetNum (tpldances, tidx, playlistdancedfkeys [i].itemkey));
       }
     }
+// ### FIX want to re-save the datafile using the new format.
+// is the new format viable? don't want a hard-coded dance index in
+// the .pldances file.
+// maybe re-work the above so it always does the remap.
     datafileFree (pl->pldancesdf);
     pl->pldancesdf = NULL;
   } else {
@@ -199,6 +204,7 @@ playlistCreate (char *plfname, pltype_t type, char *ofname)
   levels = bdjvarsdfGet (BDJVDF_LEVELS);
 
   pl = playlistAlloc (plfname);
+  assert (pl != NULL);
 
   snprintf (tbuff, sizeof (tbuff), "plinfo-c-%s", plfname);
   pl->plinfo = nlistAlloc (tbuff, LIST_UNORDERED, free);
@@ -280,6 +286,10 @@ playlistFree (void *tpl)
   if (pl != NULL) {
     if (pl->plinfodf != NULL) {
       datafileFree (pl->plinfodf);
+    } else {
+      if (pl->plinfo != NULL) {
+        nlistFree (pl->plinfo);
+      }
     }
     if (pl->pldancesdf != NULL) {
       datafileFree (pl->pldancesdf);
