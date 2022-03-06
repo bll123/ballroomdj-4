@@ -46,6 +46,7 @@ typedef struct {
 
 #define UI_MAIN_LOOP_TIMER 20
 
+void uiutilsCleanup (void);
 void uiutilsSetCss (GtkWidget *w, char *style);
 void uiutilsSetUIFont (char *uifont);
 void uiutilsInitGtkLog (void);

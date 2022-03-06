@@ -13,16 +13,16 @@
 #include "bdjstring.h"
 
 static void   slistSetKey (list_t *list, listkey_t *key, char *keydata);
+static void   slistUpdateMaxKeyWidth (list_t *list, char *keydata);
 
 /* key/value list, keyed by a listidx_t */
 
 slist_t *
-slistAlloc (char *name, listorder_t ordered,
-    slistFree_t keyFreeHook, slistFree_t valueFreeHook)
+slistAlloc (char *name, listorder_t ordered, slistFree_t valueFreeHook)
 {
   slist_t    *list;
 
-  list = listAlloc (name, ordered, keyFreeHook, valueFreeHook);
+  list = listAlloc (name, ordered, valueFreeHook);
   list->keytype = LIST_KEY_STR;
   return list;
 }
@@ -57,14 +57,7 @@ slistSetData (slist_t *list, char *sidx, void *data)
   item.valuetype = VALUE_DATA;
   item.value.data = data;
 
-  if (sidx != NULL) {
-    ssize_t       len;
-
-    len = istrlen (sidx);
-    if (len > list->maxKeyWidth) {
-      list->maxKeyWidth = len;
-    }
-  }
+  slistUpdateMaxKeyWidth (list, sidx);
 
   listSet (list, &item);
 }
@@ -72,23 +65,18 @@ slistSetData (slist_t *list, char *sidx, void *data)
 void
 slistSetStr (slist_t *list, char *sidx, char *data)
 {
-  if (sidx != NULL) {
-    ssize_t       len;
+  listitem_t    item;
 
-    len = istrlen (sidx);
-    if (len > list->maxKeyWidth) {
-      list->maxKeyWidth = len;
-    }
-  }
+  slistSetKey (list, &item.key, sidx);
+  item.valuetype = VALUE_STR;
+  item.value.data = NULL;
   if (data != NULL) {
-    ssize_t       len;
-
-    len = istrlen (data);
-    if (len > list->maxDataWidth) {
-      list->maxDataWidth = len;
-    }
+    item.value.data = strdup (data);
   }
-  slistSetData (list, sidx, data);
+
+  slistUpdateMaxKeyWidth (list, sidx);
+
+  listSet (list, &item);
 }
 
 void
@@ -100,14 +88,7 @@ slistSetNum (slist_t *list, char *sidx, ssize_t data)
   item.valuetype = VALUE_NUM;
   item.value.num = data;
 
-  if (sidx != NULL) {
-    ssize_t       len;
-
-    len = istrlen (sidx);
-    if (len > list->maxKeyWidth) {
-      list->maxKeyWidth = len;
-    }
-  }
+  slistUpdateMaxKeyWidth (list, sidx);
 
   listSet (list, &item);
 }
@@ -120,6 +101,9 @@ slistSetDouble (slist_t *list, char *sidx, double data)
   slistSetKey (list, &item.key, sidx);
   item.valuetype = VALUE_DOUBLE;
   item.value.dval = data;
+
+  slistUpdateMaxKeyWidth (list, sidx);
+
   listSet (list, &item);
 }
 
@@ -131,6 +115,9 @@ slistSetList (slist_t *list, char *sidx, slist_t *data)
   slistSetKey (list, &item.key, sidx);
   item.valuetype = VALUE_LIST;
   item.value.data = data;
+
+  slistUpdateMaxKeyWidth (list, sidx);
+
   listSet (list, &item);
 }
 
@@ -303,9 +290,22 @@ slistDumpInfo (slist_t *list)
 static void
 slistSetKey (list_t *list, listkey_t *key, char *keydata)
 {
-  if (list->keyFreeHook != NULL) {
-    key->strkey = strdup (keydata);
-  } else {
-    key->strkey = keydata;
+  key->strkey = strdup (keydata);
+}
+
+static void
+slistUpdateMaxKeyWidth (list_t *list, char *keydata)
+{
+  if (list == NULL) {
+    return;
+  }
+
+  if (keydata != NULL) {
+    ssize_t       len;
+
+    len = istrlen (keydata);
+    if (len > list->maxKeyWidth) {
+      list->maxKeyWidth = len;
+    }
   }
 }

@@ -35,7 +35,7 @@ progstateInit (char *progtag)
   progstate->programState = STATE_NOT_RUNNING;
   for (programstate_t i = STATE_NOT_RUNNING; i < STATE_MAX; ++i) {
     snprintf (tbuff, sizeof (tbuff), "progstate-cb-%d", i);
-    progstate->callbacks [i] = ilistAlloc (tbuff, LIST_ORDERED, NULL);
+    progstate->callbacks [i] = ilistAlloc (tbuff, LIST_ORDERED);
   }
 
   progstate->progtag = progtag;

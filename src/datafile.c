@@ -97,11 +97,11 @@ parseConvTextList (char *data, datafileret_t *ret)
   logProcBegin (LOG_PROC, "parseConvTextList");
   ret->valuetype = VALUE_LIST;
   ret->u.list = NULL;
-  ret->u.list = slistAlloc ("textlist", LIST_ORDERED, free, NULL);
+  ret->u.list = slistAlloc ("textlist", LIST_ORDERED, NULL);
   if (data != NULL) {
     p = strtok_r (data, " ,", &tokptr);
     while (p != NULL) {
-      slistSetData (ret->u.list, p, NULL);
+      slistSetStr (ret->u.list, p, NULL);
       p = strtok_r (NULL, " ,", &tokptr);
     }
   }
@@ -118,7 +118,7 @@ datafileAlloc (char *name)
   logProcBegin (LOG_PROC, "datafileAlloc");
   df = malloc (sizeof (datafile_t));
   assert (df != NULL);
-  df->name = name;
+  df->name = strdup (name);
   df->fname = NULL;
   df->data = NULL;
   df->lookup = NULL;
@@ -164,6 +164,9 @@ datafileFree (void *tdf)
   logProcBegin (LOG_PROC, "datafileFree");
   if (df != NULL) {
     datafileFreeInternal (df);
+    if (df->name != NULL) {
+      free (df->name);
+    }
     free (df);
   }
   logProcEnd (LOG_PROC, "datafileFree", "");
@@ -240,7 +243,7 @@ datafileParseMerge (list_t *datalist, char *data, char *name,
     case DFTYPE_LIST: {
       inc = 1;
       if (datalist == NULL) {
-        datalist = slistAlloc (name, LIST_UNORDERED, free, NULL);
+        datalist = slistAlloc (name, LIST_UNORDERED, NULL);
         slistSetSize (datalist, dataCount);
       } else {
         slistSetSize (datalist, dataCount + slistGetCount (datalist));
@@ -250,7 +253,7 @@ datafileParseMerge (list_t *datalist, char *data, char *name,
     case DFTYPE_INDIRECT: {
       inc = 2;
       if (datalist == NULL) {
-        datalist = ilistAlloc (name, LIST_UNORDERED, ilistFree);
+        datalist = ilistAlloc (name, LIST_UNORDERED);
       }
       break;
     }
@@ -258,7 +261,7 @@ datafileParseMerge (list_t *datalist, char *data, char *name,
       inc = 2;
       if (dfkeys == NULL) {
         if (datalist == NULL) {
-          datalist = slistAlloc (name, LIST_UNORDERED, free, free);
+          datalist = slistAlloc (name, LIST_UNORDERED, free);
           slistSetSize (datalist, dataCount / 2);
         } else {
           slistSetSize (datalist, dataCount / 2 + slistGetCount (datalist));
@@ -285,7 +288,7 @@ datafileParseMerge (list_t *datalist, char *data, char *name,
 
     logMsg (LOG_DBG, LOG_DATAFILE, "with lookup: key:%ld", lookupKey);
     snprintf (temp, sizeof (temp), "%s-lookup", name);
-    *lookup = slistAlloc (temp, LIST_UNORDERED, free, NULL);
+    *lookup = slistAlloc (temp, LIST_UNORDERED, NULL);
     slistSetSize (*lookup, nlistGetCount (datalist));
   }
 
@@ -351,10 +354,10 @@ datafileParseMerge (list_t *datalist, char *data, char *name,
             if (ret.u.num == LIST_VALUE_INVALID && dfkeys [idx].backupKey != -1) {
               logMsg (LOG_DBG, LOG_DATAFILE, "invalid value; backup key %ld set data to %s", dfkeys [idx].backupKey, tvalstr);
               if (dftype == DFTYPE_INDIRECT) {
-                nlistSetStr (itemList, dfkeys [idx].backupKey, strdup (tvalstr));
+                nlistSetStr (itemList, dfkeys [idx].backupKey, tvalstr);
               }
               if (dftype == DFTYPE_KEY_VAL) {
-                nlistSetStr (datalist, dfkeys [idx].backupKey, strdup (tvalstr));
+                nlistSetStr (datalist, dfkeys [idx].backupKey, tvalstr);
               }
             } else {
               lval = ret.u.num;
@@ -394,7 +397,7 @@ datafileParseMerge (list_t *datalist, char *data, char *name,
         /* dftype_indirect has a key pointing to a key/val list. */
       if (dftype == DFTYPE_INDIRECT) {
         if (vt == VALUE_DATA) {
-          nlistSetStr (itemList, ikey, strdup (tvalstr));
+          nlistSetStr (itemList, ikey, tvalstr);
         }
         if (vt == VALUE_NUM) {
           nlistSetNum (itemList, ikey, lval);
@@ -409,7 +412,7 @@ datafileParseMerge (list_t *datalist, char *data, char *name,
         /* a key/val type has a single list keyed by a long (dfkeys is set) */
       if (dftype == DFTYPE_KEY_VAL) {
         if (vt == VALUE_DATA) {
-          nlistSetStr (datalist, ikey, strdup (tvalstr));
+          nlistSetStr (datalist, ikey, tvalstr);
         }
         if (vt == VALUE_NUM) {
           nlistSetNum (datalist, ikey, lval);
@@ -424,7 +427,7 @@ datafileParseMerge (list_t *datalist, char *data, char *name,
     }
     if (dftype == DFTYPE_KEY_VAL && dfkeys == NULL) {
       logMsg (LOG_DBG, LOG_DATAFILE, "set: key_val");
-      slistSetData (datalist, tkeystr, strdup (tvalstr));
+      slistSetStr (datalist, tkeystr, tvalstr);
       key = -1L;
     }
   }
@@ -544,10 +547,10 @@ datafileBackup (char *fname, int count)
   char      nfn [MAXPATHLEN];
 
   for (int i = count; i >= 1; --i) {
-    snprintf (nfn, MAXPATHLEN, "%s.bak.%d", fname, i);
-    snprintf (ofn, MAXPATHLEN, "%s.bak.%d", fname, i - 1);
+    snprintf (nfn, sizeof (nfn), "%s.bak.%d", fname, i);
+    snprintf (ofn, sizeof (ofn), "%s.bak.%d", fname, i - 1);
     if (i - 1 == 0) {
-      strlcpy (ofn, fname, MAXPATHLEN);
+      strlcpy (ofn, fname, sizeof (ofn));
     }
     if (fileopFileExists (ofn)) {
       if ((i - 1) != 0) {

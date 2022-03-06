@@ -10,3 +10,10 @@
    ...
    obj:*/lib*/lib*.so.*
 }
+{
+  Ignore dlopen bug.
+  Memcheck:Leak
+  ...
+  fun:_dl_open
+  ...
+}

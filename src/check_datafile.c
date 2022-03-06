@@ -520,7 +520,6 @@ START_TEST(datafile_backup)
   FILE      *fh;
   int       rc;
   char      buff [10];
-  char      *r;
 
   char *ofn = "tmp/abc.txt";
   char *ofn0a = "tmp/abc.txt.0";
@@ -570,13 +569,13 @@ START_TEST(datafile_backup)
 
   fh = fopen (ofn, "r");
   ck_assert_ptr_nonnull (fh);
-  r = fgets (buff, 2, fh);
+  fgets (buff, 2, fh);
   fclose (fh);
   ck_assert_str_eq (buff, "1");
 
   fh = fopen (ofn1, "r");
   ck_assert_ptr_nonnull (fh);
-  r = fgets (buff, 2, fh);
+  fgets (buff, 2, fh);
   fclose (fh);
   ck_assert_str_eq (buff, "1");
 
@@ -602,19 +601,19 @@ START_TEST(datafile_backup)
 
   fh = fopen (ofn, "r");
   ck_assert_ptr_nonnull (fh);
-  r = fgets (buff, 2, fh);
+  fgets (buff, 2, fh);
   fclose (fh);
   ck_assert_str_eq (buff, "2");
 
   fh = fopen (ofn1, "r");
   ck_assert_ptr_nonnull (fh);
-  r = fgets (buff, 2, fh);
+  fgets (buff, 2, fh);
   fclose (fh);
   ck_assert_str_eq (buff, "2");
 
   fh = fopen (ofn2, "r");
   ck_assert_ptr_nonnull (fh);
-  r = fgets (buff, 2, fh);
+  fgets (buff, 2, fh);
   fclose (fh);
   ck_assert_str_eq (buff, "1");
 
@@ -640,19 +639,19 @@ START_TEST(datafile_backup)
 
   fh = fopen (ofn, "r");
   ck_assert_ptr_nonnull (fh);
-  r = fgets (buff, 2, fh);
+  fgets (buff, 2, fh);
   fclose (fh);
   ck_assert_str_eq (buff, "3");
 
   fh = fopen (ofn1, "r");
   ck_assert_ptr_nonnull (fh);
-  r = fgets (buff, 2, fh);
+  fgets (buff, 2, fh);
   fclose (fh);
   ck_assert_str_eq (buff, "3");
 
   fh = fopen (ofn2, "r");
   ck_assert_ptr_nonnull (fh);
-  r = fgets (buff, 2, fh);
+  fgets (buff, 2, fh);
   fclose (fh);
   ck_assert_str_eq (buff, "2");
 

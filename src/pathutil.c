@@ -147,13 +147,13 @@ pathNormPath (char *buff, size_t len)
 }
 
 void
-pathRealPath (char *to, const char *from)
+pathRealPath (char *to, const char *from, size_t sz)
 {
 #if _lib_realpath
   (void) ! realpath (from, to);
 #endif
 #if _lib_GetFullPathName
-  (void) ! GetFullPathName (from, MAXPATHLEN, to, NULL);
+  (void) ! GetFullPathName (from, sz, to, NULL);
 #endif
 }
 

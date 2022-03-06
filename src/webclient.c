@@ -33,6 +33,7 @@ webclientPost (webclient_t *webclient, char *uri, char *query,
     webclient->curl = curl_easy_init ();
     assert (webclient->curl != NULL);
 #if 1
+/*### FIX */
     if (logCheck (LOG_DBG, LOG_WEBCLIENT)) {
         /* can use CURLOPT_DEBUGFUNCTION */
       curl_easy_setopt (webclient->curl, CURLOPT_VERBOSE, 1);

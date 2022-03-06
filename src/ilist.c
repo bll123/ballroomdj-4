@@ -14,14 +14,19 @@
 #include "nlist.h"
 #include "slist.h"
 
+static void ilistSetDataValType (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx,
+    void *data, valuetype_t valueType);
+static void ilistSetDataItem (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx,
+    listitem_t *item);
+
 /* key/value list, keyed by a ilistidx_t */
 
 ilist_t *
-ilistAlloc (char *name, ilistorder_t ordered, ilistFree_t valueFreeHook)
+ilistAlloc (char *name, ilistorder_t ordered)
 {
   ilist_t    *list;
 
-  list = listAlloc (name, ordered, listFree, NULL);
+  list = listAlloc (name, ordered, listFree);
   list->keytype = LIST_KEY_NUM;
   return list;
 }
@@ -57,87 +62,55 @@ ilistSetSize (ilist_t *list, ssize_t siz)
 }
 
 void
-ilistSetData (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx, void *data)
+ilistSetStr (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx, char *data)
 {
-  listitem_t    item;
-  nlist_t       *datalist = NULL;
-  char          tbuff [40];
-
-  if (list == NULL) {
-    return;
+  if (data != NULL) {
+    data = strdup (data);
   }
-
-  datalist = nlistGetList (list, ikey);
-  if (datalist == NULL) {
-    snprintf (tbuff, sizeof (tbuff), "%s-item-%zd", list->name, ikey);
-    datalist = nlistAlloc (tbuff, LIST_ORDERED, NULL);
-    nlistSetList (list, ikey, datalist);
-  }
-  if (datalist != NULL) {
-    item.key.idx = lidx;
-    item.valuetype = VALUE_DATA;
-    item.value.data = data;
-    listSet (datalist, &item);
-  }
-  return;
+  ilistSetDataValType (list, ikey, lidx, data, VALUE_STR);
 }
 
 void
-ilistSetStr (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx, char *data)
+ilistSetList (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx, void *data)
 {
-  ilistSetData (list, ikey, lidx, data);
+  ilistSetDataValType (list, ikey, lidx, data, VALUE_LIST);
+}
+
+void
+ilistSetData (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx, void *data)
+{
+  ilistSetDataValType (list, ikey, lidx, data, VALUE_DATA);
 }
 
 void
 ilistSetNum (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx, ssize_t data)
 {
   listitem_t    item;
-  nlist_t       *datalist = NULL;
-  char          tbuff [40];
 
   if (list == NULL) {
     return;
   }
 
-  datalist = nlistGetList (list, ikey);
-  if (datalist == NULL) {
-    snprintf (tbuff, sizeof (tbuff), "%s-item-%zd", list->name, ikey);
-    datalist = nlistAlloc (tbuff, LIST_ORDERED, NULL);
-    nlistSetList (list, ikey, datalist);
-  }
-  if (datalist != NULL) {
-    item.key.idx = lidx;
-    item.valuetype = VALUE_NUM;
-    item.value.num = data;
-    listSet (datalist, &item);
-  }
-  return;
+  item.key.idx = lidx;
+  item.valuetype = VALUE_NUM;
+  item.value.num = data;
+  ilistSetDataItem (list, ikey, lidx, &item);
 }
 
 void
 ilistSetDouble (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx, double data)
 {
   listitem_t    item;
-  nlist_t       *datalist = NULL;
-  char          tbuff [40];
 
   if (list == NULL) {
     return;
   }
 
-  datalist = nlistGetList (list, ikey);
-  if (datalist == NULL) {
-    snprintf (tbuff, sizeof (tbuff), "%s-item-%zd", list->name, ikey);
-    datalist = nlistAlloc (tbuff, LIST_ORDERED, NULL);
-    nlistSetList (list, ikey, datalist);
-  }
-  if (datalist != NULL) {
-    item.key.idx = lidx;
-    item.valuetype = VALUE_DOUBLE;
-    item.value.dval = data;
-    listSet (datalist, &item);
-  }
-  return;
+  item.key.idx = lidx;
+  item.valuetype = VALUE_DOUBLE;
+  item.value.dval = data;
+
+  ilistSetDataItem (list, ikey, lidx, &item);
 }
 
 bool
@@ -148,6 +121,7 @@ ilistExists (list_t *list, ilistidx_t ikey)
   if (list == NULL) {
     return false;
   }
+
   datalist = nlistGetList (list, ikey);
   if (datalist == NULL) {
     return false;
@@ -286,5 +260,45 @@ ilistDumpInfo (ilist_t *list)
   listDumpInfo (list);
 }
 
-/* indirect routines */
+/* internal routines */
+
+static void
+ilistSetDataValType (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx,
+    void *data, valuetype_t valueType)
+{
+  listitem_t    item;
+
+  if (list == NULL) {
+    return;
+  }
+
+  item.key.idx = lidx;
+  item.valuetype = valueType;
+  item.value.data = data;
+  ilistSetDataItem (list, ikey, lidx, &item);
+}
+
+static void
+ilistSetDataItem (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx,
+    listitem_t *item)
+{
+  nlist_t       *datalist = NULL;
+  char          tbuff [40];
+
+  if (list == NULL) {
+    return;
+  }
+
+  datalist = nlistGetList (list, ikey);
+  if (datalist == NULL) {
+    snprintf (tbuff, sizeof (tbuff), "%s-item-%zd", list->name, ikey);
+    datalist = nlistAlloc (tbuff, LIST_ORDERED, NULL);
+    nlistSetList (list, ikey, datalist);
+  }
+  if (datalist != NULL) {
+    listSet (datalist, item);
+  }
+  return;
+}
+
 

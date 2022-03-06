@@ -128,7 +128,7 @@ playlistLoad (char *fname)
   if (ilistGetVersion (tpldances) < 2) {
     /* pldances must be rebuilt to use the dance key as the index   */
     /* all of the old playlists have a generic key value            */
-    pl->pldances = ilistAlloc ("playlist-dances-n", LIST_ORDERED, nlistFree);
+    pl->pldances = ilistAlloc ("playlist-dances-n", LIST_ORDERED);
     ilistSetSize (pl->pldances, ilistGetCount (tpldances));
     ilistStartIterator (tpldances, &iteridx);
     while ((tidx = ilistIterateKey (tpldances, &iteridx)) >= 0) {
@@ -232,7 +232,7 @@ playlistCreate (char *plfname, pltype_t type, char *ofname)
   }
 
   snprintf (tbuff, sizeof (tbuff), "pldance-c-%s", plfname);
-  pl->pldances = ilistAlloc (tbuff, LIST_ORDERED, NULL);
+  pl->pldances = ilistAlloc (tbuff, LIST_ORDERED);
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
   danceStartIterator (dances, &iteridx);
@@ -440,7 +440,7 @@ playlistGetNextSong (playlist_t *pl, nlist_t *danceCounts,
       song = NULL;
     } else {
       songselSelectFinalize (pl->songsel, danceIdx);
-      sfname = songGetData (song, TAG_FILE);
+      sfname = songGetStr (song, TAG_FILE);
       ++pl->count;
       logMsg (LOG_DBG, LOG_BASIC, "sequence: select: %s", sfname);
     }
@@ -457,11 +457,11 @@ playlistGetNextSong (playlist_t *pl, nlist_t *danceCounts,
         /* put something into the marquee display field if possible */
         tval = songGetNum (song, TAG_DANCE);
         if (tval < 0) {
-          tstr = songGetData (song, TAG_MQDISPLAY);
+          tstr = songGetStr (song, TAG_MQDISPLAY);
           if (tstr == NULL) {
             tstr = songlistGetData (pl->songlist, pl->manualIdx, SONGLIST_DANCESTR);
             if (tstr != NULL) {
-              songSetData (song, TAG_MQDISPLAY, strdup (tstr));
+              songSetStr (song, TAG_MQDISPLAY, tstr);
             }
           }
         }
@@ -492,7 +492,7 @@ playlistGetPlaylistList (void)
   slistidx_t  iteridx;
 
 
-  pnlist = slistAlloc ("playlistlist", LIST_ORDERED, free, free);
+  pnlist = slistAlloc ("playlistlist", LIST_ORDERED, free);
 
   pathbldMakePath (tfn, sizeof (tfn), "", "", "", PATHBLD_MP_NONE);
   filelist = filemanipBasicDirList (tfn, ".pl");
@@ -504,7 +504,7 @@ playlistGetPlaylistList (void)
     tfn [pi->blen] = '\0';
     pl = playlistAlloc (tfn);
     if (pl != NULL) {
-      slistSetData (pnlist, pl->name, strdup (tfn));
+      slistSetStr (pnlist, pl->name, tfn);
       playlistFree (pl);
     }
     pathInfoFree (pi);
@@ -554,7 +554,7 @@ playlistSetSongFilter (playlist_t *pl)
     songfilterSetData (pl->songfilter, SONG_FILTER_KEYWORD, kwList);
   }
 
-  danceList = ilistAlloc ("pl-dance-filter", LIST_ORDERED, NULL);
+  danceList = ilistAlloc ("pl-dance-filter", LIST_ORDERED);
   ilistStartIterator (pl->pldances, &iteridx);
   while ((danceIdx = ilistIterateKey (pl->pldances, &iteridx)) >= 0) {
     ssize_t       sel;

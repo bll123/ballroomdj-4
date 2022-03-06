@@ -47,8 +47,9 @@ dRandom (void)
 void
 sRandom (void)
 {
-  pid_t pid = getpid ();
+  long  pid = (long) getpid ();
   long  seed = (ssize_t) time (NULL) ^ (pid + (pid << 15));
+
 #if _lib_srand48
   srand48 (seed);
 #endif

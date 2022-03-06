@@ -60,7 +60,7 @@ filemanipCopy (char *fname, char *nfn)
     rc = (rc == 0);
 #endif
   } else {
-    snprintf (cmd, MAXPATHLEN, "cp -f '%s' '%s' >/dev/null 2>&1", fname, nfn);
+    snprintf (cmd, sizeof (cmd), "cp -f '%s' '%s' >/dev/null 2>&1", fname, nfn);
     rc = system (cmd);
   }
   return rc;
@@ -97,9 +97,15 @@ filemanipBasicDirList (char *dirname, char *extension)
   struct dirent *dirent;
   slist_t       *fileList;
   pathinfo_t    *pi;
+  char          temp [100];
 
 
-  fileList = slistAlloc (dirname, LIST_UNORDERED, free, NULL);
+  snprintf (temp, sizeof (temp), "read-dir-%s", dirname);
+  if (extension != NULL) {
+    strlcat (temp, "-", sizeof (temp));
+    strlcat (temp, extension, sizeof (temp));
+  }
+  fileList = slistAlloc (temp, LIST_UNORDERED, NULL);
   dh = opendir (dirname);
   while ((dirent = readdir (dh)) != NULL) {
     if (strcmp (dirent->d_name, ".") == 0 ||
@@ -140,10 +146,10 @@ filemanipDeleteDir (const char *dir)
   }
 
   if (isWindows ()) {
-    pathToWinPath (tdir, dir, MAXPATHLEN);
-    snprintf (cmd, MAXPATHLEN, "rmdir /s/q \"%s\" >NUL", tdir);
+    pathToWinPath (tdir, dir, sizeof (tdir));
+    snprintf (cmd, sizeof (cmd), "rmdir /s/q \"%s\" >NUL", tdir);
   } else {
-    snprintf (cmd, MAXPATHLEN, "rm -rf '%s' >/dev/null 2>&1", dir);
+    snprintf (cmd, sizeof (cmd), "rm -rf '%s' >/dev/null 2>&1", dir);
   }
   system (cmd);
 }

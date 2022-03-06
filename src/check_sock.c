@@ -199,13 +199,11 @@ connectWriteCloseFail (void *id)
   char          *data = { "aaaabbbbccccddddeeeeffff" };
   char          datab [4096];
   Sock_t        c;
-  int           rc;
 
   memset (datab, 'a', 4096);
   c = connectWait ();
-  rc = sockWriteStr (c, data, strlen (data));
-  rc = sockWriteBinary (c, datab, 4096);
-  /* rc may be 0 or non-zero depending on system */
+  sockWriteStr (c, data, strlen (data));
+  sockWriteBinary (c, datab, 4096);
   sockClose (c);
 #if _lib_pthread_create
   pthread_exit (NULL);

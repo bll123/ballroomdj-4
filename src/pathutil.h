@@ -17,6 +17,6 @@ void          pathInfoFree (pathinfo_t *);
 bool          pathInfoExtCheck (pathinfo_t *, const char *extension);
 void          pathToWinPath (char *to, const char *from, size_t maxlen);
 void          pathNormPath (char *buff, size_t len);
-void          pathRealPath (char *to, const char *from);
+void          pathRealPath (char *to, const char *from, size_t sz);
 
 #endif /* INC_PATHUTIL_H */

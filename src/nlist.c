@@ -19,7 +19,7 @@ nlistAlloc (char *name, nlistorder_t ordered, nlistFree_t valueFreeHook)
 {
   nlist_t    *list;
 
-  list = listAlloc (name, ordered, NULL, valueFreeHook);
+  list = listAlloc (name, ordered, valueFreeHook);
   list->keytype = LIST_KEY_NUM;
   return list;
 }
@@ -69,7 +69,15 @@ nlistSetData (nlist_t *list, nlistidx_t lidx, void *data)
 void
 nlistSetStr (nlist_t *list, nlistidx_t lidx, char *data)
 {
-  return nlistSetData (list, lidx, data);
+  listitem_t    item;
+
+  item.key.idx = lidx;
+  item.valuetype = VALUE_STR;
+  item.value.data = NULL;
+  if (data != NULL) {
+    item.value.data = strdup (data);
+  }
+  listSet (list, &item);
 }
 
 void

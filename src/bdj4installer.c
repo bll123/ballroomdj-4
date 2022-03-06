@@ -216,7 +216,7 @@ main (int argc, char *argv[])
   installer.freetarget = false;
   installer.freebdj3loc = false;
   installer.guienabled = true;
-  getcwd (installer.currdir, MAXPATHLEN);
+  getcwd (installer.currdir, sizeof (installer.currdir));
   mstimeset (&installer.validateTimer, 3600000);
 
   while ((c = getopt_long_only (argc, argv, "p:d:t:", bdj_options, &option_index)) != -1) {
@@ -242,7 +242,7 @@ main (int argc, char *argv[])
         break;
       }
       case 'u': {
-        strlcpy (installer.unpackdir, optarg, MAXPATHLEN);
+        strlcpy (installer.unpackdir, optarg, sizeof (installer.unpackdir));
         break;
       }
       default: {
@@ -272,13 +272,14 @@ main (int argc, char *argv[])
   sysvarsInit (argv[0]);
   localeInit ();
 
-  strlcpy (installer.hostname, sysvarsGetStr (SV_HOSTNAME), MAXPATHLEN);
+  strlcpy (installer.hostname, sysvarsGetStr (SV_HOSTNAME),
+      sizeof (installer.hostname));
 
   installerGetTargetFname (&installer, tbuff, sizeof (tbuff));
   fh = fopen (tbuff, "r");
   if (fh != NULL) {
     /* installer.target is pointing at buff */
-    fgets (buff, MAXPATHLEN, fh);
+    fgets (buff, sizeof (buff), fh);
     stringTrim (buff);
     fclose (fh);
   }
@@ -289,7 +290,7 @@ main (int argc, char *argv[])
   fh = fopen (tbuff, "r");
   if (fh != NULL) {
     /* installer.bdj3loc is pointing at bdj3buff */
-    fgets (bdj3buff, MAXPATHLEN, fh);
+    fgets (bdj3buff, sizeof (bdj3buff), fh);
     stringTrim (bdj3buff);
     fclose (fh);
   } else {
@@ -916,10 +917,10 @@ installerInstInit (installer_t *installer)
     printf ("\n");
     printf ("[%s] : ", installer->target);
     fflush (stdout);
-    fgets (tbuff, MAXPATHLEN, stdin);
+    fgets (tbuff, sizeof (tbuff), stdin);
     stringTrim (tbuff);
     if (*tbuff != '\0') {
-      strlcpy (installer->target, tbuff, MAXPATHLEN);
+      strlcpy (installer->target, tbuff, sizeof (tbuff));
     }
   }
 
@@ -941,7 +942,7 @@ installerInstInit (installer_t *installer)
       printf ("\n");
       printf ("[Y] : ");
       fflush (stdout);
-      fgets (tbuff, MAXPATHLEN, stdin);
+      fgets (tbuff, sizeof (tbuff), stdin);
       stringTrim (tbuff);
       if (*tbuff != '\0') {
         if (strncmp (tbuff, "Y", 1) != 0 &&
@@ -985,13 +986,13 @@ installerSaveTargetDir (installer_t *installer)
   installerDisplayText (installer, "-- ", _("Saving install location."));
 
   if (isWindows ()) {
-    snprintf (tbuff, MAXPATHLEN, "%s/AppData/Roaming/BDJ4", installer->home);
+    snprintf (tbuff, sizeof (tbuff), "%s/AppData/Roaming/BDJ4", installer->home);
   } else {
-    snprintf (tbuff, MAXPATHLEN, "%s/.config/BDJ4", installer->home);
+    snprintf (tbuff, sizeof (tbuff), "%s/.config/BDJ4", installer->home);
   }
   fileopMakeDir (tbuff);
 
-  installerGetTargetFname (installer, tbuff, MAXPATHLEN);
+  installerGetTargetFname (installer, tbuff, sizeof (tbuff));
 
   fh = fopen (tbuff, "w");
   if (fh != NULL) {
@@ -1035,13 +1036,11 @@ installerCopyFiles (installer_t *installer)
   char      tbuff [MAXPATHLEN];
 
   if (isWindows ()) {
-    snprintf (tbuff, MAXPATHLEN,
-        "robocopy /e /j /dcopy:DAT /timfix /njh /njs /np /ndl /nfl . \"%s\"",
+    snprintf (tbuff, sizeof (tbuff), "robocopy /e /j /dcopy:DAT /timfix /njh /njs /np /ndl /nfl . \"%s\"",
         installer->rundir);
     system (tbuff);
   } else {
-    snprintf (tbuff, MAXPATHLEN,
-        "tar -c -f - . | (cd '%s'; tar -x -f -)",
+    snprintf (tbuff, sizeof (tbuff), "tar -c -f - . | (cd '%s'; tar -x -f -)",
         installer->target);
     system (tbuff);
   }
@@ -1105,7 +1104,7 @@ installerCleanOldFiles (installer_t *installer)
 
   fh = fopen ("install/cleanuplist.txt", "r");
   if (fh != NULL) {
-    while (fgets (tbuff, MAXPATHLEN, fh) != NULL) {
+    while (fgets (tbuff, sizeof (tbuff), fh) != NULL) {
       stringTrim (tbuff);
       if (! fileopFileExists (tbuff)) {
         continue;
@@ -1157,16 +1156,16 @@ installerCopyTemplates (installer_t *installer)
     return;
   }
 
-  snprintf (tbuff, MAXPATHLEN, "%s/install/%s", installer->rundir,
+  snprintf (tbuff, sizeof (tbuff), "%s/install/%s", installer->rundir,
       "localized-sr.txt");
   srdf = datafileAllocParse ("loc-sr", DFTYPE_KEY_VAL,
       tbuff, NULL, 0, DATAFILE_NO_LOOKUP);
-  snprintf (tbuff, MAXPATHLEN, "%s/install/%s", installer->rundir,
+  snprintf (tbuff, sizeof (tbuff), "%s/install/%s", installer->rundir,
       "localized-auto.txt");
   autodf = datafileAllocParse ("loc-sr", DFTYPE_KEY_VAL,
       tbuff, NULL, 0, DATAFILE_NO_LOOKUP);
 
-  snprintf (tbuff, MAXPATHLEN, "%s/templates", installer->rundir);
+  snprintf (tbuff, sizeof (tbuff), "%s/templates", installer->rundir);
   dirlist = filemanipBasicDirList (tbuff, NULL);
   slistStartIterator (dirlist, &iteridx);
   while ((fname = slistIterateKey (dirlist, &iteridx)) != NULL) {
@@ -1181,16 +1180,16 @@ installerCopyTemplates (installer_t *installer)
     }
 
     if (strcmp (fname, "bdj-flex-dark.html") == 0) {
-      snprintf (from, MAXPATHLEN, "%s/templates/%s",
+      snprintf (from, sizeof (from), "%s/templates/%s",
           installer->rundir, fname);
-      snprintf (to, MAXPATHLEN, "http/bdj4remote.html");
+      snprintf (to, sizeof (to), "http/bdj4remote.html");
       installerTemplateCopy (from, to);
       continue;
     }
     if (strcmp (fname, "mobilemq.html") == 0) {
-      snprintf (from, MAXPATHLEN, "%s/templates/%s",
+      snprintf (from, sizeof (from), "%s/templates/%s",
           installer->rundir, fname);
-      snprintf (to, MAXPATHLEN, "http/%s", fname);
+      snprintf (to, sizeof (to), "http/%s", fname);
       installerTemplateCopy (from, to);
       continue;
     }
@@ -1206,26 +1205,26 @@ installerCopyTemplates (installer_t *installer)
     }
 
     if (pathInfoExtCheck (pi, ".svg")) {
-      snprintf (from, MAXPATHLEN, "%s/templates/%s",
+      snprintf (from, sizeof (from), "%s/templates/%s",
           installer->rundir, fname);
-      snprintf (to, MAXPATHLEN, "%s/img/%s",
+      snprintf (to, sizeof (to), "%s/img/%s",
           installer->rundir, fname);
     } else if (strncmp (fname, "bdjconfig", 9) == 0) {
-      snprintf (from, MAXPATHLEN, "%s/templates/%s",
+      snprintf (from, sizeof (from), "%s/templates/%s",
           installer->rundir, fname);
 
-      snprintf (tbuff, MAXPATHLEN, "%.*s", (int) pi->blen, pi->basename);
+      snprintf (tbuff, sizeof (tbuff), "%.*s", (int) pi->blen, pi->basename);
       if (pathInfoExtCheck (pi, ".g")) {
-        snprintf (to, MAXPATHLEN, "data/%s", tbuff);
+        snprintf (to, sizeof (to), "data/%s", tbuff);
       }
       if (pathInfoExtCheck (pi, ".p")) {
-        snprintf (to, MAXPATHLEN, "data/profiles/%s", tbuff);
+        snprintf (to, sizeof (to), "data/profiles/%s", tbuff);
       }
       if (pathInfoExtCheck (pi, ".m")) {
-        snprintf (to, MAXPATHLEN, "data/%s/%s", installer->hostname, tbuff);
+        snprintf (to, sizeof (to), "data/%s/%s", installer->hostname, tbuff);
       }
       if (pathInfoExtCheck (pi, ".mp")) {
-        snprintf (to, MAXPATHLEN, "data/%s/profiles/%s",
+        snprintf (to, sizeof (to), "data/%s/profiles/%s",
             installer->hostname, tbuff);
       }
     } else if (pathInfoExtCheck (pi, ".txt") ||
@@ -1252,9 +1251,9 @@ installerCopyTemplates (installer_t *installer)
         }
       }
 
-      snprintf (from, MAXPATHLEN, "%s/templates/%s",
+      snprintf (from, sizeof (from), "%s/templates/%s",
           installer->rundir, tbuff);
-      snprintf (to, MAXPATHLEN, "data/%s", tbuff);
+      snprintf (to, sizeof (to), "data/%s", tbuff);
     }
 
     installerTemplateCopy (from, to);
@@ -1263,31 +1262,30 @@ installerCopyTemplates (installer_t *installer)
   }
   slistFree (dirlist);
 
-  snprintf (from, MAXPATHLEN, "%s/img/favicon.ico", installer->rundir);
-  snprintf (to, MAXPATHLEN, "http/favicon.ico");
+  snprintf (from, sizeof (from), "%s/img/favicon.ico", installer->rundir);
+  snprintf (to, sizeof (to), "http/favicon.ico");
   installerTemplateCopy (from, to);
 
-  snprintf (from, MAXPATHLEN, "%s/img/led_on.svg", installer->rundir);
-  snprintf (to, MAXPATHLEN, "http/led_on.svg");
+  snprintf (from, sizeof (from), "%s/img/led_on.svg", installer->rundir);
+  snprintf (to, sizeof (to), "http/led_on.svg");
   installerTemplateCopy (from, to);
 
-  snprintf (from, MAXPATHLEN, "%s/img/led_off.svg", installer->rundir);
-  snprintf (to, MAXPATHLEN, "http/led_off.svg");
+  snprintf (from, sizeof (from), "%s/img/led_off.svg", installer->rundir);
+  snprintf (to, sizeof (to), "http/led_off.svg");
   installerTemplateCopy (from, to);
 
-  snprintf (from, MAXPATHLEN, "%s/img/ballroomdj4.svg", installer->rundir);
-  snprintf (to, MAXPATHLEN, "http/ballroomdj4.svg");
+  snprintf (from, sizeof (from), "%s/img/ballroomdj4.svg", installer->rundir);
+  snprintf (to, sizeof (to), "http/ballroomdj4.svg");
   installerTemplateCopy (from, to);
 
-  snprintf (from, MAXPATHLEN, "%s/img/mrc", installer->rundir);
-  snprintf (to, MAXPATHLEN, "http/mrc");
+  snprintf (from, sizeof (from), "%s/img/mrc", installer->rundir);
+  snprintf (to, sizeof (to), "http/mrc");
   if (isWindows ()) {
-    snprintf (tbuff, MAXPATHLEN,
-        "robocopy /e /j /dcopy:DAT /timfix /njh /njs /np /ndl /nfl \"%s\" \"%s\"",
+    snprintf (tbuff, sizeof (tbuff), "robocopy /e /j /dcopy:DAT /timfix /njh /njs /np /ndl /nfl \"%s\" \"%s\"",
         from, to);
     system (tbuff);
   } else {
-    snprintf (tbuff, MAXPATHLEN, "cp -r '%s' '%s'", from, "http");
+    snprintf (tbuff, sizeof (tbuff), "cp -r '%s' '%s'", from, "http");
     system (tbuff);
   }
 
@@ -1330,7 +1328,7 @@ installerConvertStart (installer_t *installer)
     printf ("\n");
     printf (_("BallroomDJ 3 Folder [%s] : "), installer->bdj3loc);
     fflush (stdout);
-    fgets (tbuff, MAXPATHLEN, stdin);
+    fgets (tbuff, sizeof (tbuff), stdin);
     stringTrim (tbuff);
     if (*tbuff != '\0') {
       if (installer->bdj3loc != NULL && installer->freebdj3loc) {
@@ -1366,15 +1364,15 @@ installerConvertStart (installer_t *installer)
   slistStartIterator (installer->convlist, &installer->convidx);
 
   locidx = 0;
-  snprintf (tbuff, MAXPATHLEN, "%s/%s/%zd/tcl/bin/tclsh",
+  snprintf (tbuff, sizeof (tbuff), "%s/%s/%zd/tcl/bin/tclsh",
       installer->bdj3loc, sysvarsGetStr (SV_OSNAME), sysvarsGetNum (SVL_OSBITS));
   locs [locidx++] = strdup (tbuff);
-  snprintf (tbuff, MAXPATHLEN, "%s/Applications/BallroomDJ.app/Contents/%s/%zd/tcl/bin/tclsh",
+  snprintf (tbuff, sizeof (tbuff), "%s/Applications/BallroomDJ.app/Contents/%s/%zd/tcl/bin/tclsh",
       installer->home, sysvarsGetStr (SV_OSNAME), sysvarsGetNum (SVL_OSBITS));
   locs [locidx++] = strdup (tbuff);
-  snprintf (tbuff, MAXPATHLEN, "%s/local/bin/tclsh", installer->home);
+  snprintf (tbuff, sizeof (tbuff), "%s/local/bin/tclsh", installer->home);
   locs [locidx++] = strdup (tbuff);
-  snprintf (tbuff, MAXPATHLEN, "%s/bin/tclsh", installer->home);
+  snprintf (tbuff, sizeof (tbuff), "%s/bin/tclsh", installer->home);
   locs [locidx++] = strdup (tbuff);
   locs [locidx++] = strdup ("/opt/local/bin/tclsh");
   locs [locidx++] = strdup ("/usr/local/bin/tclsh");
@@ -1385,7 +1383,7 @@ installerConvertStart (installer_t *installer)
   while (locs [locidx] != NULL) {
     strlcpy (tbuff, locs [locidx], MAXPATHLEN);
     if (isWindows ()) {
-      snprintf (tbuff, MAXPATHLEN, "%s.exe", locs [locidx]);
+      snprintf (tbuff, sizeof (tbuff), "%s.exe", locs [locidx]);
     }
 
     if (installer->tclshloc == NULL && fileopFileExists (tbuff)) {
@@ -1425,7 +1423,7 @@ installerConvert (installer_t *installer)
     return;
   }
 
-  snprintf (buffa, MAXPATHLEN, _("Running conversion script: %s."), fn);
+  snprintf (buffa, sizeof (buffa), _("Running conversion script: %s."), fn);
   installerDisplayText (installer, "   ", buffa);
 
   targv [0] = installer->tclshloc;
@@ -1435,7 +1433,7 @@ installerConvert (installer_t *installer)
   targv [2] = buffb;
   targv [3] = installer->datatopdir;
   targv [4] = NULL;
-//  snprintf (buff, MAXPATHLEN, "\"%s\" conv/%s \"%s/data\" \"%s\"",
+//  snprintf (buff, sizeof (buff), "\"%s\" conv/%s \"%s/data\" \"%s\"",
 //      installer->tclshloc, fn, installer->bdj3loc, installer->datatopdir);
 
   osProcessStart (targv, OS_PROC_DETACH, NULL);
@@ -1467,7 +1465,7 @@ installerCreateShortcut (installer_t *installer)
   installerDisplayText (installer, "-- ", _("Creating shortcut."));
   if (isWindows ()) {
     if (! chdir ("install")) {
-      snprintf (buff, MAXPATHLEN, ".\\makeshortcut.bat \"%s\"",
+      snprintf (buff, sizeof (buff), ".\\makeshortcut.bat \"%s\"",
           installer->rundir);
       system (buff);
       chdir (installer->rundir);
@@ -1480,12 +1478,12 @@ installerCreateShortcut (installer_t *installer)
     /* this must exist and match the name of the app */
     symlink ("bin/bdj4g", "BDJ4");
     /* desktop shortcut */
-    snprintf (buff, MAXPATHLEN, "%s/Desktop/BDJ4.app", installer->home);
+    snprintf (buff, sizeof (buff), "%s/Desktop/BDJ4.app", installer->home);
     symlink (installer->target, buff);
 #endif
   }
   if (isLinux ()) {
-    snprintf (buff, MAXPATHLEN, "./install/linuxshortcut.sh '%s'",
+    snprintf (buff, sizeof (buff), "./install/linuxshortcut.sh '%s'",
         installer->rundir);
     system (buff);
   }
@@ -1734,7 +1732,7 @@ installerCleanup (installer_t *installer)
 
   if (isWindows ()) {
     targv [0] = ".\\install\\install-rminstdir.bat";
-    snprintf (buff, MAXPATHLEN, "\"%s\"", installer->unpackdir);
+    snprintf (buff, sizeof (buff), "\"%s\"", installer->unpackdir);
     targv [1] = buff;
     targv [2] = NULL;
     osProcessStart (targv, OS_PROC_DETACH, NULL);

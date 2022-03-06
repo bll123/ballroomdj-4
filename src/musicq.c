@@ -67,6 +67,7 @@ musicqPush (musicq_t *musicq, musicqidx_t musicqidx, song_t *song, char *plname)
 
   musicqitem = malloc (sizeof (musicqitem_t));
   assert (musicqitem != NULL);
+
   musicqitem->dispidx = musicq->dispidx [musicqidx];
   ++(musicq->dispidx [musicqidx]);
   musicqitem->uniqueidx = musicq->uniqueidx [musicqidx];
@@ -437,6 +438,9 @@ musicqRemove (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx)
 
   musicqRenumber (musicq, musicqidx, olddispidx);
   --musicq->dispidx [musicqidx];
+
+  musicqQueueItemFree (musicqitem);
+
   logProcEnd (LOG_PROC, "musicqRemove", "");
 }
 
@@ -480,7 +484,7 @@ musicqGetData (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx, tagdefkey_t
   if (musicqitem != NULL &&
      (musicqitem->flags & MUSICQ_FLAG_EMPTY) != MUSICQ_FLAG_EMPTY) {
     song = musicqitem->song;
-    data = songGetData (song, tagidx);
+    data = songGetStr (song, tagidx);
   }
   return data;
 }

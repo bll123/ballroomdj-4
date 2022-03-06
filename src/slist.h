@@ -10,7 +10,7 @@ typedef listFree_t  slistFree_t;
 
   /* keyed by a string */
 slist_t   *slistAlloc (char *name, slistorder_t ordered,
-              slistFree_t keyFreeHook, slistFree_t valueFreeHook);
+              slistFree_t valueFreeHook);
 void      slistFree (void * list);
 ssize_t   slistGetCount (slist_t *list);
 void      slistSetSize (slist_t *, ssize_t);

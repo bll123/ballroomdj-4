@@ -50,7 +50,7 @@ sequenceAlloc (char *fname)
   slistStartIterator (tlist, &iteridx);
   while ((seqkey = slistIterateKey (tlist, &iteridx)) != NULL) {
     lkey = slistGetNum (danceLookup, seqkey);
-    nlistSetStr (sequence->sequence, lkey, strdup (seqkey));
+    nlistSetStr (sequence->sequence, lkey, seqkey);
   }
   datafileFree (df);
   nlistDumpInfo (sequence->sequence);

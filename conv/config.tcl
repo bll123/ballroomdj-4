@@ -173,6 +173,10 @@ foreach path [list {} profiles $mpath $mppath] {
       if { $path eq "profiles" } {
         puts $ofh INSERT_LOC
         puts $ofh "..6"
+        puts $ofh MQ_ACCENT_COL
+        puts $ofh "..#030e80"
+        puts $ofh UI_ACCENT_COL
+        puts $ofh "..#ffa600"
       }
       if { $path eq $mpath } {
         puts $ofh VOLUME
@@ -185,10 +189,6 @@ foreach path [list {} profiles $mpath $mppath] {
         puts $ofh "..$value"
       }
       if { $path eq $mppath } {
-        puts $ofh MQ_ACCENT_COL
-        puts $ofh "..#030e80"
-        puts $ofh UI_ACCENT_COL
-        puts $ofh "..#ffa600"
         puts $ofh MQ_THEME
         set value Adwaita
         if { $::tcl_platform(os) eq "Linux" } { set value Adwaita }

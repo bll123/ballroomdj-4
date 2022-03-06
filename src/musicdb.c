@@ -36,7 +36,7 @@ dbOpen (char *fn)
 
     musicdb = malloc (sizeof (db_t));
     assert (musicdb != NULL);
-    musicdb->songs = slistAlloc ("db-songs", LIST_UNORDERED, free, songFree);
+    musicdb->songs = slistAlloc ("db-songs", LIST_UNORDERED, songFree);
     musicdb->danceCounts = nlistAlloc ("db-dance-counts", LIST_ORDERED, NULL);
     nlistSetSize (musicdb->danceCounts, dcount);
     musicdb->danceCount = dcount;
@@ -107,7 +107,7 @@ dbLoad (db_t *db, char *fn)
 
     song = songAlloc ();
     songParse (song, data, i);
-    fstr = songGetData (song, TAG_FILE);
+    fstr = songGetStr (song, TAG_FILE);
     ffn = songFullFileName (fstr);
     ok = false;
     if (fileopFileExists (ffn)) {

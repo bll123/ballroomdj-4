@@ -21,6 +21,9 @@
 #include "sysvars.h"
 #include "uiutils.h"
 
+static char **cssdata = NULL;
+static int  csscount = 0;
+
 static GLogWriterOutput uiutilsGtkLogger (GLogLevelFlags logLevel,
     const GLogField* fields, gsize n_fields, gpointer udata);
 
@@ -39,14 +42,35 @@ static gint uiutilsSpinboxInput (GtkSpinButton *sb, gdouble *newval, gpointer ud
 static gboolean uiutilsSpinboxDisplay (GtkSpinButton *sb, gpointer udata);
 
 void
+uiutilsCleanup (void)
+{
+  if (cssdata != NULL) {
+    for (int i = 0; i < csscount; ++i) {
+      if (cssdata [i] != NULL) {
+        free (cssdata [i]);
+      }
+    }
+    free (cssdata);
+    csscount = 0;
+    cssdata = NULL;
+  }
+}
+
+void
 uiutilsSetCss (GtkWidget *w, char *style)
 {
-  GtkCssProvider        *tcss;
+  GtkCssProvider  *tcss;
+  char            *tstyle;
 
   logProcBegin (LOG_PROC, "uiutilsSetCss");
 
   tcss = gtk_css_provider_new ();
-  gtk_css_provider_load_from_data (tcss, style, -1, NULL);
+  tstyle = strdup (style);
+  ++csscount;
+  cssdata = realloc (cssdata, sizeof (char *) * csscount);
+  cssdata [csscount-1] = tstyle;
+
+  gtk_css_provider_load_from_data (tcss, tstyle, -1, NULL);
   gtk_style_context_add_provider (
       gtk_widget_get_style_context (w),
       GTK_STYLE_PROVIDER (tcss),
@@ -80,9 +104,9 @@ uiutilsSetUIFont (char *uifont)
     }
 
     tcss = gtk_css_provider_new ();
-    snprintf (tbuff, MAXPATHLEN, "* { font-family: '%s'; }", wbuff);
+    snprintf (tbuff, sizeof (tbuff), "* { font-family: '%s'; }", wbuff);
     if (sz > 0) {
-      snprintf (wbuff, MAXPATHLEN, " * { font-size: %dpt; }", sz);
+      snprintf (wbuff, sizeof (wbuff), " * { font-size: %dpt; }", sz);
     }
     strlcat (tbuff, wbuff, MAXPATHLEN);
     gtk_css_provider_load_from_data (tcss, tbuff, -1, NULL);
@@ -325,8 +349,9 @@ uiutilsDropDownSetList (uiutilsdropdown_t *dropdown, slist_t *list,
 
   store = gtk_list_store_new (UIUTILS_DROPDOWN_COL_MAX,
       G_TYPE_ULONG, G_TYPE_STRING, G_TYPE_STRING);
+  assert (store != NULL);
 
-  dropdown->strIndexMap = slistAlloc ("uiutils-str-index", LIST_ORDERED, free, NULL);
+  dropdown->strIndexMap = slistAlloc ("uiutils-str-index", LIST_ORDERED, NULL);
   internalidx = 0;
 
   if (dropdown->iscombobox && selectLabel != NULL) {
@@ -388,6 +413,7 @@ uiutilsDropDownSetNumList (uiutilsdropdown_t *dropdown, slist_t *list,
 
   store = gtk_list_store_new (UIUTILS_DROPDOWN_COL_MAX,
       G_TYPE_ULONG, G_TYPE_STRING, G_TYPE_STRING);
+  assert (store != NULL);
 
   dropdown->numIndexMap = nlistAlloc ("uiutils-num-index", LIST_ORDERED, NULL);
   internalidx = 0;

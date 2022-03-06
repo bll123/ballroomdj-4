@@ -130,10 +130,6 @@ main (int argc, char *argv[])
       pluiConnectingCallback, &plui);
   progstateSetCallback (plui.progstate, STATE_WAIT_HANDSHAKE,
       pluiHandshakeCallback, &plui);
-  progstateSetCallback (plui.progstate, STATE_STOPPING,
-      pluiStoppingCallback, &plui);
-  progstateSetCallback (plui.progstate, STATE_CLOSING,
-      pluiClosingCallback, &plui);
   plui.sockserver = NULL;
   plui.window = NULL;
   plui.uiplayer = NULL;
@@ -185,6 +181,13 @@ main (int argc, char *argv[])
   plui.uiplayer = uiplayerInit (plui.progstate, plui.conn);
   plui.uimusicq = uimusicqInit (plui.progstate, plui.conn);
   plui.uisongsel = uisongselInit (plui.progstate, plui.conn, plui.options);
+
+  /* register these after calling the sub-window initialization */
+  /* then these will be run last, after the other closing callbacks */
+  progstateSetCallback (plui.progstate, STATE_STOPPING,
+      pluiStoppingCallback, &plui);
+  progstateSetCallback (plui.progstate, STATE_CLOSING,
+      pluiClosingCallback, &plui);
 
   plui.sockserver = sockhStartServer (listenPort);
 
@@ -256,9 +259,6 @@ pluiClosingCallback (void *udata, programstate_t programState)
 
   bdj4shutdown (ROUTE_PLAYERUI);
 
-  uiplayerFree (plui->uiplayer);
-  uimusicqFree (plui->uimusicq);
-  uisongselFree (plui->uisongsel);
   if (plui->options != datafileGetList (plui->optiondf)) {
     nlistFree (plui->options);
   }
@@ -274,6 +274,11 @@ pluiClosingCallback (void *udata, programstate_t programState)
   }
 
   connFree (plui->conn);
+
+  uiplayerFree (plui->uiplayer);
+  uimusicqFree (plui->uimusicq);
+  uisongselFree (plui->uisongsel);
+  uiutilsCleanup ();
 
   logProcEnd (LOG_PROC, "pluiClosingCallback", "");
   return true;

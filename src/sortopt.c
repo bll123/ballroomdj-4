@@ -41,10 +41,11 @@ sortoptAlloc (char *fname)
       DATAFILE_NO_LOOKUP);
   dflist = datafileGetList (sortopt->df);
 
-  list = slistAlloc ("sortopt-disp", LIST_UNORDERED, free, free);
+  list = slistAlloc ("sortopt-disp", LIST_UNORDERED, free);
   slistStartIterator (dflist, &dfiteridx);
   while ((value = slistIterateKey (dflist, &dfiteridx)) != NULL) {
     tvalue = strdup (value);
+
     dispstr [0] = '\0';
     p = strtok_r (tvalue, " ", &tokstr);
     while (p != NULL) {
@@ -88,7 +89,7 @@ sortoptAlloc (char *fname)
       p = strtok_r (NULL, " ", &tokstr);
     }
 
-    slistSetStr (list, dispstr, strdup (value));
+    slistSetStr (list, dispstr, value);
     free (tvalue);
   }
   slistSort (list);

@@ -65,6 +65,7 @@ static datafilekey_t bdjoptprofiledfkeys[] = {
   { "MOBILEMQTITLE",        OPT_P_MOBILEMQTITLE,        VALUE_DATA, NULL, -1 },
   { "MQQLEN",               OPT_P_MQQLEN,               VALUE_NUM, NULL, -1 },
   { "MQSHOWINFO",           OPT_P_MQ_SHOW_INFO,         VALUE_NUM, parseConvBoolean, -1 },
+  { "MQ_ACCENT_COL",        OPT_P_MQ_ACCENT_COL,        VALUE_DATA, NULL, -1 },
   { "PAUSEMSG",             OPT_P_PAUSEMSG,             VALUE_DATA, NULL, -1 },
   { "PROFILENAME",          OPT_P_PROFILENAME,          VALUE_DATA, NULL, -1 },
   { "QUEUE_NAME_A",         OPT_P_QUEUE_NAME_A,         VALUE_DATA, NULL, -1 },
@@ -73,7 +74,7 @@ static datafilekey_t bdjoptprofiledfkeys[] = {
   { "REMCONTROLPORT",       OPT_P_REMCONTROLPORT,       VALUE_NUM, NULL, -1 },
   { "REMCONTROLUSER",       OPT_P_REMCONTROLUSER,       VALUE_DATA, NULL, -1 },
   { "REMOTECONTROL",        OPT_P_REMOTECONTROL,        VALUE_NUM, parseConvBoolean, -1 },
-  { "UIACCENTCOLOR",        OPT_P_UIACCENTCOLOR,        VALUE_DATA, NULL, -1 },
+  { "UI_ACCENT_COL",        OPT_P_UI_ACCENT_COL,        VALUE_DATA, NULL, -1 },
 };
 #define BDJOPT_PROFILE_DFKEY_COUNT (sizeof (bdjoptprofiledfkeys) / sizeof (datafilekey_t))
 
@@ -97,13 +98,11 @@ static datafilekey_t bdjoptmachdfkeys[] = {
 static datafilekey_t bdjoptmachprofiledfkeys[] = {
   { "LISTINGFONT",          OPT_MP_LISTING_FONT,          VALUE_DATA, NULL, -1 },
   { "MQFONT",               OPT_MP_MQFONT,                VALUE_DATA, NULL, -1 },
-  { "MQ_ACCENT_COL",        OPT_MP_MQ_ACCENT_COL,         VALUE_DATA, NULL, -1 },
   { "MQ_THEME",             OPT_MP_MQ_THEME,              VALUE_DATA, NULL, -1 },
   { "PLAYEROPTIONS",        OPT_MP_PLAYEROPTIONS,         VALUE_DATA, NULL, -1 },
   { "PLAYERSHUTDOWNSCRIPT", OPT_MP_PLAYERSHUTDOWNSCRIPT,  VALUE_DATA, NULL, -1 },
   { "PLAYERSTARTSCRIPT",    OPT_MP_PLAYERSTARTSCRIPT,     VALUE_DATA, NULL, -1 },
   { "UIFONT",               OPT_MP_UIFONT,                VALUE_DATA, NULL, -1 },
-  { "UI_ACCENT_COL",        OPT_MP_UI_ACCENT_COL,         VALUE_DATA, NULL, -1 },
   { "UI_THEME",             OPT_MP_UI_THEME,              VALUE_DATA, NULL, -1 },
 };
 #define BDJOPT_MACH_PROFILE_DFKEY_COUNT (sizeof (bdjoptmachprofiledfkeys) / sizeof (datafilekey_t))
@@ -117,7 +116,7 @@ bdjoptInit (void)
   nlist_t       *tlist;
 
   /* global */
-  pathbldMakePath (path, MAXPATHLEN, "", BDJ_CONFIG_BASEFN,
+  pathbldMakePath (path, sizeof (path), "", BDJ_CONFIG_BASEFN,
       BDJ_CONFIG_EXT, PATHBLD_MP_USEIDX);
   if (! fileopFileExists (path)) {
     bdjoptCreateNewConfigs ();
@@ -126,7 +125,7 @@ bdjoptInit (void)
       bdjoptglobaldfkeys, BDJOPT_GLOBAL_DFKEY_COUNT, DATAFILE_NO_LOOKUP);
 
   /* profile */
-  pathbldMakePath (path, MAXPATHLEN, "profiles", BDJ_CONFIG_BASEFN,
+  pathbldMakePath (path, sizeof (path), "profiles", BDJ_CONFIG_BASEFN,
       BDJ_CONFIG_EXT, PATHBLD_MP_USEIDX);
   ddata = datafileLoad (df, DFTYPE_KEY_VAL, path);
   tlist = datafileGetList (df);
@@ -137,7 +136,7 @@ bdjoptInit (void)
   free (ddata);
 
   /* per machine */
-  pathbldMakePath (path, MAXPATHLEN, "", BDJ_CONFIG_BASEFN,
+  pathbldMakePath (path, sizeof (path), "", BDJ_CONFIG_BASEFN,
       BDJ_CONFIG_EXT, PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
   ddata = datafileLoad (df, DFTYPE_KEY_VAL, path);
   tlist = datafileGetList (df);
@@ -148,7 +147,7 @@ bdjoptInit (void)
   free (ddata);
 
   /* per machine per profile */
-  pathbldMakePath (path, MAXPATHLEN, "profiles", BDJ_CONFIG_BASEFN,
+  pathbldMakePath (path, sizeof (path), "profiles", BDJ_CONFIG_BASEFN,
       BDJ_CONFIG_EXT, PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
   ddata = datafileLoad (df, DFTYPE_KEY_VAL, path);
   tlist = datafileGetList (df);
@@ -209,14 +208,14 @@ bdjoptCreateDirectories (void)
 {
   char      path [MAXPATHLEN];
 
-  pathbldMakePath (path, MAXPATHLEN, "", "", "", PATHBLD_MP_USEIDX);
+  pathbldMakePath (path, sizeof (path), "", "", "", PATHBLD_MP_USEIDX);
   fileopMakeDir (path);
-  pathbldMakePath (path, MAXPATHLEN, "profiles", "", "", PATHBLD_MP_USEIDX);
+  pathbldMakePath (path, sizeof (path), "profiles", "", "", PATHBLD_MP_USEIDX);
   fileopMakeDir (path);
-  pathbldMakePath (path, MAXPATHLEN, "", "", "",
+  pathbldMakePath (path, sizeof (path), "", "", "",
       PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
   fileopMakeDir (path);
-  pathbldMakePath (path, MAXPATHLEN, "profiles", "", "",
+  pathbldMakePath (path, sizeof (path), "profiles", "", "",
       PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
   fileopMakeDir (path);
 }
@@ -254,7 +253,7 @@ bdjoptCreateNewConfigs (void)
 
     /* see if profile 0 exists */
   sysvarsSetNum (SVL_BDJIDX, 0);
-  pathbldMakePath (path, MAXPATHLEN, "", BDJ_CONFIG_BASEFN,
+  pathbldMakePath (path, sizeof (path), "", BDJ_CONFIG_BASEFN,
       BDJ_CONFIG_EXT, PATHBLD_MP_USEIDX);
   if (! fileopFileExists (path)) {
     bdjoptCreateDefaultFiles ();
@@ -262,34 +261,34 @@ bdjoptCreateNewConfigs (void)
 
     /* global */
   sysvarsSetNum (SVL_BDJIDX, currProfile);
-  pathbldMakePath (tpath, MAXPATHLEN, "", BDJ_CONFIG_BASEFN,
+  pathbldMakePath (tpath, sizeof (tpath), "", BDJ_CONFIG_BASEFN,
       BDJ_CONFIG_EXT, PATHBLD_MP_USEIDX);
   filemanipCopy (path, tpath);
 
     /* profile */
   sysvarsSetNum (SVL_BDJIDX, 0);
-  pathbldMakePath (path, MAXPATHLEN, "profiles", BDJ_CONFIG_BASEFN,
+  pathbldMakePath (path, sizeof (path), "profiles", BDJ_CONFIG_BASEFN,
       BDJ_CONFIG_EXT, PATHBLD_MP_USEIDX);
   sysvarsSetNum (SVL_BDJIDX, currProfile);
-  pathbldMakePath (tpath, MAXPATHLEN, "profiles", BDJ_CONFIG_BASEFN,
+  pathbldMakePath (tpath, sizeof (tpath), "profiles", BDJ_CONFIG_BASEFN,
       BDJ_CONFIG_EXT, PATHBLD_MP_USEIDX);
   filemanipCopy (path, tpath);
 
     /* per machine */
   sysvarsSetNum (SVL_BDJIDX, 0);
-  pathbldMakePath (path, MAXPATHLEN, "", BDJ_CONFIG_BASEFN,
+  pathbldMakePath (path, sizeof (path), "", BDJ_CONFIG_BASEFN,
       BDJ_CONFIG_EXT, PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
   sysvarsSetNum (SVL_BDJIDX, currProfile);
-  pathbldMakePath (tpath, MAXPATHLEN, "", BDJ_CONFIG_BASEFN,
+  pathbldMakePath (tpath, sizeof (tpath), "", BDJ_CONFIG_BASEFN,
       BDJ_CONFIG_EXT, PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
   filemanipCopy (path, tpath);
 
     /* per machine per profile */
   sysvarsSetNum (SVL_BDJIDX, 0);
-  pathbldMakePath (path, MAXPATHLEN, "profiles", BDJ_CONFIG_BASEFN,
+  pathbldMakePath (path, sizeof (path), "profiles", BDJ_CONFIG_BASEFN,
       BDJ_CONFIG_EXT, PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
   sysvarsSetNum (SVL_BDJIDX, currProfile);
-  pathbldMakePath (tpath, MAXPATHLEN, "profiles", BDJ_CONFIG_BASEFN,
+  pathbldMakePath (tpath, sizeof (tpath), "profiles", BDJ_CONFIG_BASEFN,
       BDJ_CONFIG_EXT, PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
   filemanipCopy (path, tpath);
 

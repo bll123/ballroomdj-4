@@ -121,7 +121,7 @@ rlogVarMsg (logidx_t idx, loglevel_t level,
     va_end (args);
   }
   if (fn != NULL) {
-    snprintf (tfn, MAXPATHLEN, "(%s: %d)", logTail (fn), line);
+    snprintf (tfn, sizeof (tfn), "(%s: %d)", logTail (fn), line);
   }
   wlen = (size_t) snprintf (wbuff, sizeof (wbuff),
       "%s: %-2s %*s%s %s\n", ttm, l->processTag, l->indent, "", tbuff, tfn);
@@ -189,7 +189,7 @@ rlogStart (const char *processnm, const char *processtag,
   tmutilDstamp (tdt, sizeof (tdt));
 
   for (logidx_t idx = LOG_ERR; idx < LOG_MAX; ++idx) {
-    pathbldMakePath (tnm, MAXPATHLEN, "", logbasenm [idx], LOG_EXTENSION,
+    pathbldMakePath (tnm, sizeof (tnm), "", logbasenm [idx], LOG_EXTENSION,
         PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
     syslogs [idx] = rlogOpen (tnm, processtag, truncflag);
     syslogs [idx]->level = level;

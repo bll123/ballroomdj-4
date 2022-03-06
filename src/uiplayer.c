@@ -121,11 +121,13 @@ uiplayerActivate (uiplayer_t *uiplayer)
 
   uiplayer->statusImg = gtk_image_new ();
   assert (uiplayer->statusImg != NULL);
+
   pathbldMakePath (tbuff, sizeof (tbuff), "", "button_stop", ".svg",
       PATHBLD_MP_IMGDIR);
   image = gtk_image_new_from_file (tbuff);
   uiplayer->stopImg = gtk_image_get_pixbuf (GTK_IMAGE (image));
   g_object_ref_sink (G_OBJECT (uiplayer->stopImg));
+
   gtk_image_set_from_pixbuf (GTK_IMAGE (uiplayer->statusImg), uiplayer->stopImg);
   gtk_widget_set_size_request (uiplayer->statusImg, 18, -1);
   gtk_widget_set_margin_start (uiplayer->statusImg, 2);
@@ -742,13 +744,13 @@ uiplayerProcessMusicqStatusData (uiplayer_t *uiplayer, char *args)
 
   /* artist */
   if (uiplayer->artistLab != NULL) {
-    data = songGetData (song, TAG_ARTIST);
+    data = songGetStr (song, TAG_ARTIST);
     gtk_label_set_label (GTK_LABEL (uiplayer->artistLab), data);
   }
 
   /* title */
   if (uiplayer->titleLab != NULL) {
-    data = songGetData (song, TAG_TITLE);
+    data = songGetStr (song, TAG_TITLE);
     gtk_label_set_label (GTK_LABEL (uiplayer->titleLab), data);
   }
   logProcEnd (LOG_PROC, "uiplayerProcessMusicqStatusData", "");

@@ -154,7 +154,7 @@ bdj4startup (int argc, char *argv[], char *tag, bdjmsgroute_t route, int flags)
   if ((flags & BDJ4_INIT_NO_DB_LOAD) != BDJ4_INIT_NO_DB_LOAD) {
     mstimestart (&dbmt);
     logMsg (LOG_SESS, LOG_IMPORTANT, "Database read: started");
-    pathbldMakePath (tbuff, MAXPATHLEN, "",
+    pathbldMakePath (tbuff, sizeof (tbuff), "",
         MUSICDB_FNAME, MUSICDB_EXT, PATHBLD_MP_NONE);
     dbOpen (tbuff);
     logMsg (LOG_SESS, LOG_IMPORTANT, "Database read: %ld items in %ld ms", dbCount(), mstimeend (&dbmt));
@@ -175,8 +175,8 @@ bdj4shutdown (bdjmsgroute_t route)
   bdjoptFree ();
   dbClose ();
   bdjvarsdfloadCleanup ();
-  bdjvarsCleanup ();
   logMsg (LOG_SESS, LOG_IMPORTANT, "init cleanup time: %ld ms", mstimeend (&mt));
+  bdjvarsCleanup ();
   lockRelease (lockName (route), PATHBLD_MP_USEIDX);
   logProcEnd (LOG_PROC, "bdj4shutdown", "");
 }

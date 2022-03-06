@@ -16,8 +16,7 @@ START_TEST(ilist_create_free)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "==== ilist_create_free");
 
-
-  list = ilistAlloc ("chk-a", LIST_ORDERED, NULL);
+  list = ilistAlloc ("chk-a", LIST_ORDERED);
   ck_assert_ptr_nonnull (list);
   ck_assert_int_eq (list->count, 0);
   ck_assert_int_eq (list->allocCount, 0);
@@ -34,8 +33,7 @@ START_TEST(ilist_get_data_str)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "==== ilist_get_data_str");
 
-
-  list = ilistAlloc ("chk-b", LIST_UNORDERED, NULL);
+  list = ilistAlloc ("chk-b", LIST_ORDERED);
   ilistSetSize (list, 7);
   ck_assert_int_eq (list->count, 0);
   ck_assert_int_eq (list->allocCount, 7);
@@ -46,8 +44,6 @@ START_TEST(ilist_get_data_str)
   ilistSetStr (list, 3, 0, "4L");
   ilistSetStr (list, 1, 0, "5L");
   ilistSetStr (list, 2, 0, "6L");
-  ck_assert_int_eq (list->count, 7);
-  ilistSort (list);
   ck_assert_int_eq (list->count, 7);
   value = ilistGetStr (list, 3, 0);
   ck_assert_ptr_nonnull (value);
@@ -61,9 +57,9 @@ START_TEST(ilist_get_data_str_sub)
   ilist_t        *list;
   char          *value;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "==== ilist_get_data_str");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "==== ilist_get_data_str_sub");
 
-  list = ilistAlloc ("chk-b", LIST_ORDERED, NULL);
+  list = ilistAlloc ("chk-c", LIST_ORDERED);
   ilistSetSize (list, 7);
   ck_assert_int_eq (list->count, 0);
   ck_assert_int_eq (list->allocCount, 7);
@@ -81,7 +77,6 @@ START_TEST(ilist_get_data_str_sub)
   ilistSetStr (list, 1, 1, "13L");
   ilistSetStr (list, 2, 0, "6L");
   ilistSetStr (list, 2, 1, "14L");
-  ck_assert_int_eq (list->count, 7);
   ck_assert_int_eq (list->count, 7);
   value = ilistGetStr (list, 3, 0);
   ck_assert_ptr_nonnull (value);
@@ -102,8 +97,7 @@ START_TEST(ilist_add_str_iterate)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "==== ilist_add_str_iterate");
 
-
-  list = ilistAlloc ("chk-c", LIST_ORDERED, NULL);
+  list = ilistAlloc ("chk-d", LIST_ORDERED);
   ck_assert_ptr_nonnull (list);
   ilistSetStr (list, 6, 0, "555");
   ilistSetStr (list, 3, 0, "222");
@@ -155,8 +149,7 @@ START_TEST(ilist_add_sort_str)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "==== ilist_add_sort_str");
 
-
-  list = ilistAlloc ("chk-d", LIST_UNORDERED, NULL);
+  list = ilistAlloc ("chk-e", LIST_UNORDERED);
   ck_assert_ptr_nonnull (list);
   ilistSetNum (list, 6, 1, 0);
   ilistSetNum (list, 26, 1, 1);
@@ -204,8 +197,7 @@ START_TEST(ilist_replace_str)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "==== ilist_replace_str");
 
-
-  list = ilistAlloc ("chk-e", LIST_ORDERED, NULL);
+  list = ilistAlloc ("chk-f", LIST_ORDERED);
   ck_assert_ptr_nonnull (list);
 
   ilistSetStr (list, 1, 0, "000");
@@ -303,16 +295,16 @@ START_TEST(ilist_free_str)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "==== ilist_free_str");
 
-
-  list = ilistAlloc ("chk-f", LIST_UNORDERED, free);
+  list = ilistAlloc ("chk-g", LIST_ORDERED);
   ck_assert_ptr_nonnull (list);
-  ilistSetStr (list, 6, 2, strdup("0L"));
-  ilistSetStr (list, 26, 2, strdup("1L"));
-  ilistSetStr (list, 18, 2, strdup("2L"));
-  ilistSetStr (list, 11, 2, strdup("3L"));
-  ilistSetStr (list, 3, 2, strdup("4L"));
-  ilistSetStr (list, 1, 2, strdup("5L"));
-  ilistSetStr (list, 2, 2, strdup("6L"));
+  ilistSetStr (list, 6, 2, "0-2L");
+  ilistSetStr (list, 6, 3, "0-3L");
+  ilistSetStr (list, 26, 2, "1L");
+  ilistSetStr (list, 18, 2, "2L");
+  ilistSetStr (list, 11, 2, "3L");
+  ilistSetStr (list, 3, 2, "4L");
+  ilistSetStr (list, 1, 2, "5L");
+  ilistSetStr (list, 2, 2, "6L");
   ck_assert_int_eq (list->count, 7);
   ilistFree (list);
 }

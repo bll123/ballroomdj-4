@@ -85,7 +85,7 @@ uimusicqInit (progstate_t *progstate, conn_t *conn)
 
   logProcBegin (LOG_PROC, "uimusicqInit");
 
-  uimusicq = malloc (sizeof (uimusicq_t) * MUSICQ_MAX);
+  uimusicq = malloc (sizeof (uimusicq_t));
   assert (uimusicq != NULL);
   uimusicq->progstate = progstate;
   uimusicq->conn = conn;
@@ -111,7 +111,6 @@ uimusicqFree (uimusicq_t *uimusicq)
 {
   logProcBegin (LOG_PROC, "uimusicqFree");
   if (uimusicq != NULL) {
-    free (uimusicq);
     for (int i = 0; i < MUSICQ_MAX; ++i) {
       if (uimusicq->ui [i].selPathStr != NULL) {
         free (uimusicq->ui [i].selPathStr);
@@ -119,6 +118,7 @@ uimusicqFree (uimusicq_t *uimusicq)
       uiutilsDropDownFree (&uimusicq->ui [i].playlistsel);
       uiutilsDropDownFree (&uimusicq->ui [i].dancesel);
     }
+    free (uimusicq);
   }
   logProcEnd (LOG_PROC, "uimusicqFree", "");
 }
@@ -371,6 +371,7 @@ uimusicqCreatePlaylistList (uimusicq_t *uimusicq)
 
   plList = playlistGetPlaylistList ();
   uiutilsDropDownSetList (&uimusicq->ui [ci].playlistsel, plList, NULL);
+  slistFree (plList);
   logProcEnd (LOG_PROC, "uimusicqCreatePlaylistList", "");
 }
 
@@ -517,8 +518,8 @@ uimusicqProcessMusicQueueDataNew (uimusicq_t *uimusicq, char * args)
         MUSICQ_COL_DBIDX, musicqupdate->dbidx,
         MUSICQ_COL_PAUSEIND, pixbuf,
         MUSICQ_COL_DANCE, danceStr,
-        MUSICQ_COL_ARTIST, songGetData (song, TAG_ARTIST),
-        MUSICQ_COL_TITLE, songGetData (song, TAG_TITLE),
+        MUSICQ_COL_ARTIST, songGetStr (song, TAG_ARTIST),
+        MUSICQ_COL_TITLE, songGetStr (song, TAG_TITLE),
         -1);
   }
 
@@ -618,8 +619,8 @@ uimusicqProcessMusicQueueDataUpdate (uimusicq_t *uimusicq, char * args)
           MUSICQ_COL_DBIDX, musicqupdate->dbidx,
           MUSICQ_COL_PAUSEIND, pixbuf,
           MUSICQ_COL_DANCE, danceStr,
-          MUSICQ_COL_ARTIST, songGetData (song, TAG_ARTIST),
-          MUSICQ_COL_TITLE, songGetData (song, TAG_TITLE),
+          MUSICQ_COL_ARTIST, songGetStr (song, TAG_ARTIST),
+          MUSICQ_COL_TITLE, songGetStr (song, TAG_TITLE),
           -1);
     } else {
       /* all data must be updated */
@@ -630,8 +631,8 @@ uimusicqProcessMusicQueueDataUpdate (uimusicq_t *uimusicq, char * args)
           MUSICQ_COL_DBIDX, musicqupdate->dbidx,
           MUSICQ_COL_PAUSEIND, pixbuf,
           MUSICQ_COL_DANCE, danceStr,
-          MUSICQ_COL_ARTIST, songGetData (song, TAG_ARTIST),
-          MUSICQ_COL_TITLE, songGetData (song, TAG_TITLE),
+          MUSICQ_COL_ARTIST, songGetStr (song, TAG_ARTIST),
+          MUSICQ_COL_TITLE, songGetStr (song, TAG_TITLE),
           -1);
     }
 

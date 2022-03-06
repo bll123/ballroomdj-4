@@ -23,8 +23,7 @@ static void     merge (list_t *, ssize_t, ssize_t, ssize_t);
 static void     mergeSort (list_t *, ssize_t, ssize_t);
 
 list_t *
-listAlloc (char *name, listorder_t ordered,
-    listFree_t keyFreeHook, listFree_t valueFreeHook)
+listAlloc (char *name, listorder_t ordered, listFree_t valueFreeHook)
 {
   list_t    *list;
 
@@ -47,7 +46,6 @@ listAlloc (char *name, listorder_t ordered,
   list->locCache = LIST_LOC_INVALID;
   list->readCacheHits = 0;
   list->writeCacheHits = 0;
-  list->keyFreeHook = keyFreeHook;
   list->valueFreeHook = valueFreeHook;
   logMsg (LOG_DBG, LOG_LIST, "alloc %s", name);
   logProcEnd (LOG_PROC, "listAlloc", "");
@@ -71,6 +69,7 @@ listFree (void *tlist)
       free (list->data);
       list->data = NULL;
     } /* data is not null */
+
     list->count = 0;
     list->allocCount = 0;
     if (list->keytype == LIST_KEY_STR &&
@@ -391,9 +390,12 @@ listFreeItem (list_t *list, ssize_t idx)
 
   if (dp != NULL) {
     if (list->keytype == LIST_KEY_STR &&
-        dp->key.strkey != NULL &&
-        list->keyFreeHook != NULL) {
-      list->keyFreeHook (dp->key.strkey);
+        dp->key.strkey != NULL) {
+      free (dp->key.strkey);
+    }
+    if (dp->valuetype == VALUE_STR &&
+        dp->value.data != NULL) {
+      free (dp->value.data);
     }
     if (dp->valuetype == VALUE_DATA &&
         dp->value.data != NULL &&
@@ -426,8 +428,9 @@ listInsert (list_t *list, ssize_t loc, listitem_t *item)
 
   copycount = list->count - (loc + 1);
   if (copycount > 0) {
-    memcpy (list->data + loc + 1, list->data + loc,
-        (size_t) copycount * sizeof (listitem_t));
+    for (int i = copycount - 1; i >= 0; --i) {
+       memcpy (list->data + loc + 1 + i, list->data + loc + i, sizeof (listitem_t));
+    }
   }
   memcpy (&list->data [loc], item, sizeof (listitem_t));
 }

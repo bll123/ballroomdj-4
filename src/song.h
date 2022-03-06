@@ -2,6 +2,7 @@
 #define INC_SONG
 
 #include "nlist.h"
+#include "slist.h"
 
 typedef enum {
   SONG_FAVORITE_NONE,
@@ -17,6 +18,7 @@ typedef struct {
   songfavorite_t      idx;
   char                *dispStr;
   char                *color;
+  char                *spanStr;
 } songfavoriteinfo_t;
 
 typedef enum {
@@ -33,13 +35,14 @@ typedef struct {
 song_t *  songAlloc (void);
 void      songFree (void *);
 void      songParse (song_t *song, char *data, ssize_t didx);
-char *    songGetData (song_t *, nlistidx_t);
+char *    songGetStr (song_t *, nlistidx_t);
 ssize_t   songGetNum (song_t *, nlistidx_t);
 songfavoriteinfo_t  * songGetFavoriteData (song_t *);
 songfavoriteinfo_t  * songGetFavorite (int value);
 double    songGetDouble (song_t *, nlistidx_t);
+slist_t * songGetList (song_t *song, nlistidx_t idx);
 void      songSetNum (song_t *, nlistidx_t, ssize_t);
-void      songSetData (song_t *song, nlistidx_t tagidx, char *str);
+void      songSetStr (song_t *song, nlistidx_t tagidx, char *str);
 void      songChangeFavorite (song_t *song);
 bool      songAudioFileExists (song_t *song);
 

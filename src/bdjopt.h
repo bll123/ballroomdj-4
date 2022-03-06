@@ -50,13 +50,11 @@ typedef enum {
   OPT_M_VOLUME_INTFC,             //
   OPT_MP_FONTSIZE,
   OPT_MP_LISTING_FONT,
-  OPT_MP_MQ_ACCENT_COL,             //
   OPT_MP_MQFONT,                    //
   OPT_MP_MQ_THEME,                  //
   OPT_MP_PLAYEROPTIONS,
   OPT_MP_PLAYERSHUTDOWNSCRIPT,
   OPT_MP_PLAYERSTARTSCRIPT,
-  OPT_MP_UI_ACCENT_COL,
   OPT_MP_UIFONT,                    //
   OPT_MP_UI_THEME,                  //
   OPT_P_ALLOWEDIT,
@@ -73,6 +71,7 @@ typedef enum {
   OPT_P_MOBILEMQPORT,               //
   OPT_P_MOBILEMQTAG,                //
   OPT_P_MOBILEMQTITLE,              //
+  OPT_P_MQ_ACCENT_COL,              //
   OPT_P_MQQLEN,                     //
   OPT_P_MQ_SHOW_INFO,               //
   OPT_P_PAUSEMSG,
@@ -83,7 +82,7 @@ typedef enum {
   OPT_P_REMCONTROLPORT,             //
   OPT_P_REMCONTROLUSER,             //
   OPT_P_REMOTECONTROL,              //
-  OPT_P_UIACCENTCOLOR,
+  OPT_P_UI_ACCENT_COL,
 } bdjoptkey_t;
 
 typedef enum {

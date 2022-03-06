@@ -422,17 +422,15 @@ uisongselPopulateData (uisongsel_t *uisongsel)
               (int) round (gcolor.blue * 255.0));
           color = tmp;
         }
-        snprintf (tbuff, sizeof (tbuff), "<span color=\"%s\">%s</span>",
-            color, favorite->dispStr);
         gtk_list_store_set (GTK_LIST_STORE (model), &iter,
             SONGSEL_COL_IDX, idx,
             SONGSEL_COL_SORTIDX, idx,
             SONGSEL_COL_DBIDX, dbidx,
             SONGSEL_COL_DANCE, danceStr,
-            SONGSEL_COL_ARTIST, songGetData (song, TAG_ARTIST),
-            SONGSEL_COL_TITLE, songGetData (song, TAG_TITLE),
+            SONGSEL_COL_ARTIST, songGetStr (song, TAG_ARTIST),
+            SONGSEL_COL_TITLE, songGetStr (song, TAG_TITLE),
             SONGSEL_COL_FAV_COLOR, color,
-            SONGSEL_COL_FAVORITE, tbuff,
+            SONGSEL_COL_FAVORITE, favorite->spanStr,
             -1);
       }
     }
@@ -950,7 +948,7 @@ uisongselSongfilterSetDance (uisongsel_t *uisongsel, ssize_t idx)
 
   logProcBegin (LOG_PROC, "uisongselSongfilterSetDance");
 
-    danceList = ilistAlloc ("songsel-filter-dance", LIST_ORDERED, NULL);
+    danceList = ilistAlloc ("songsel-filter-dance", LIST_ORDERED);
     /* any value will do; only interested in the dance index at this point */
     ilistSetNum (danceList, idx, 0, 0);
     songfilterSetData (uisongsel->songfilter, SONG_FILTER_DANCE, danceList);

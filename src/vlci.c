@@ -256,7 +256,7 @@ vlcAudioDevList (vlcData_t *vlcData)
     return NULL;
   }
 
-  devlist = slistAlloc ("vlci-devs", LIST_UNORDERED, free, free);
+  devlist = slistAlloc ("vlci-devs", LIST_UNORDERED, free);
 
   adevlist = libvlc_audio_output_device_enum (vlcData->mp);
   adevlistptr = adevlist;

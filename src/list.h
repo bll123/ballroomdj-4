@@ -25,6 +25,7 @@ typedef enum {
   VALUE_NONE,
   VALUE_DOUBLE,
   VALUE_DATA,
+  VALUE_STR,
   VALUE_NUM,
   VALUE_LIST,
 } valuetype_t;
@@ -62,7 +63,6 @@ typedef struct {
   listidx_t       locCache;
   long            readCacheHits;
   long            writeCacheHits;
-  listFree_t      keyFreeHook;
   listFree_t      valueFreeHook;
   bool            replace : 1;
 } list_t;
@@ -75,7 +75,7 @@ typedef struct {
    * simple lists only store a list of data.
    */
 list_t      *listAlloc (char *name, listorder_t ordered,
-                listFree_t keyFreeHook, listFree_t valueFreeHook);
+                listFree_t valueFreeHook);
 void        listFree (void *list);
 ssize_t     listGetVersion (list_t *list);
 ssize_t     listGetCount (list_t *list);

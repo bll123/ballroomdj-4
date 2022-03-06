@@ -142,7 +142,7 @@ danceGetDanceList (dance_t *dance)
     return dance->danceList;
   }
 
-  dl = slistAlloc ("dancelist", LIST_UNORDERED, free, NULL);
+  dl = slistAlloc ("dancelist", LIST_UNORDERED, NULL);
   slistSetSize (dl, ilistGetCount (dance->dances));
   ilistStartIterator (dance->dances, &iteridx);
   while ((key = ilistIterateKey (dance->dances, &iteridx)) >= 0) {

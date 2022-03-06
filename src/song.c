@@ -18,6 +18,7 @@
 #include "log.h"
 #include "rating.h"
 #include "song.h"
+#include "slist.h"
 #include "status.h"
 #include "tagdef.h"
 
@@ -79,21 +80,30 @@ static datafilekey_t favoritedfkeys [SONG_FAVORITE_MAX] = {
 };
 
 static songfavoriteinfo_t songfavoriteinfo [SONG_FAVORITE_MAX] = {
-  { SONG_FAVORITE_NONE, "\xE2\x98\x86", "" },
-  { SONG_FAVORITE_RED, "\xE2\x98\x85", "#9b3128" },
-  { SONG_FAVORITE_ORANGE, "\xE2\x98\x85", "#c26a1a" },
-  { SONG_FAVORITE_GREEN, "\xE2\x98\x85", "#00b25d", },
-  { SONG_FAVORITE_BLUE, "\xE2\x98\x85", "#2f2ad7" },
-  { SONG_FAVORITE_PURPLE, "\xE2\x98\x85", "#901ba3" },
+  { SONG_FAVORITE_NONE, "\xE2\x98\x86", "", NULL },
+  { SONG_FAVORITE_RED, "\xE2\x98\x85", "#9b3128", NULL },
+  { SONG_FAVORITE_ORANGE, "\xE2\x98\x85", "#c26a1a", NULL },
+  { SONG_FAVORITE_GREEN, "\xE2\x98\x85", "#00b25d", NULL },
+  { SONG_FAVORITE_BLUE, "\xE2\x98\x85", "#2f2ad7", NULL },
+  { SONG_FAVORITE_PURPLE, "\xE2\x98\x85", "#901ba3", NULL },
 };
+
+static bool gsonginit = false;
+static size_t gsongcount = 0;
+
+static void songInit (void);
+static void songCleanup (void);
 
 song_t *
 songAlloc (void)
 {
   song_t    *song;
 
+  songInit ();
+
   song = malloc (sizeof (song_t));
   assert (song != NULL);
+  ++gsongcount;
   return song;
 }
 
@@ -106,6 +116,10 @@ songFree (void *tsong)
       nlistFree (song->songInfo);
     }
     free (song);
+    --gsongcount;
+    if (gsongcount <= 0) {
+      songCleanup ();
+    }
   }
 }
 
@@ -121,7 +135,7 @@ songParse (song_t *song, char *data, ssize_t didx)
 }
 
 char *
-songGetData (song_t *song, nlistidx_t idx)
+songGetStr (song_t *song, nlistidx_t idx)
 {
   char    *value;
 
@@ -160,6 +174,19 @@ songGetDouble (song_t *song, nlistidx_t idx)
   return value;
 }
 
+slist_t *
+songGetList (song_t *song, nlistidx_t idx)
+{
+  slist_t   *value;
+
+  if (song == NULL || song->songInfo == NULL) {
+    return NULL;
+  }
+
+  value = nlistGetList (song->songInfo, idx);
+  return value;
+}
+
 songfavoriteinfo_t *
 songGetFavoriteData (song_t *song)
 {
@@ -193,13 +220,13 @@ songSetNum (song_t *song, nlistidx_t tagidx, ssize_t value)
 }
 
 void
-songSetData (song_t *song, nlistidx_t tagidx, char *str)
+songSetStr (song_t *song, nlistidx_t tagidx, char *str)
 {
   if (song == NULL || song->songInfo == NULL) {
     return;
   }
 
-  nlistSetData (song->songInfo, tagidx, str);
+  nlistSetStr (song->songInfo, tagidx, str);
 }
 
 void
@@ -228,11 +255,11 @@ songAudioFileExists (song_t *song)
   char      tbuff [MAXPATHLEN];
   char      *sfname;
 
-  sfname = songGetData (song, TAG_FILE);
+  sfname = songGetStr (song, TAG_FILE);
   if (sfname [0] == '/' || (sfname [1] == ':' && sfname [2] == '/')) {
     strlcpy (tbuff, sfname, MAXPATHLEN);
   } else {
-    snprintf (tbuff, MAXPATHLEN, "%s/%s",
+    snprintf (tbuff, sizeof (tbuff), "%s/%s",
         (char *) bdjoptGetStr (OPT_M_DIR_MUSIC), sfname);
   }
   return fileopFileExists (tbuff);
@@ -257,3 +284,44 @@ songConvFavorite (char *keydata, datafileret_t *ret)
   ret->u.num = favoritedfkeys [idx].itemkey;
 }
 
+static void
+songInit (void)
+{
+  char  *col;
+  char  tbuff [100];
+
+  if (gsonginit) {
+    return;
+  }
+
+  for (int i = 0; i < SONG_FAVORITE_MAX; ++i) {
+    if (i == 0) {
+      col = "#ffffff";
+    } else {
+      col = songfavoriteinfo [i].color;
+    }
+    snprintf (tbuff, sizeof (tbuff), "<span color=\"%s\">%s</span>",
+        col, songfavoriteinfo [i].dispStr);
+    songfavoriteinfo [i].spanStr = strdup (tbuff);
+  }
+
+  gsonginit = true;
+  gsongcount = 0;
+}
+
+static void
+songCleanup (void)
+{
+  if (! gsonginit) {
+    return;
+  }
+
+  for (int i = 0; i < SONG_FAVORITE_MAX; ++i) {
+    if (songfavoriteinfo [i].spanStr != NULL) {
+      free (songfavoriteinfo [i].spanStr);
+      songfavoriteinfo [i].spanStr = NULL;
+    }
+  }
+
+  gsonginit = false;
+}

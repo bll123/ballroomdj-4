@@ -7,20 +7,19 @@
 typedef list_t      ilist_t;
 typedef listidx_t   ilistidx_t;
 typedef listorder_t ilistorder_t;
-typedef listFree_t  ilistFree_t;
 
   /* keyed by a ilistidx_t */
-ilist_t   *ilistAlloc (char *name, ilistorder_t, ilistFree_t valueFreeHook);
+ilist_t   *ilistAlloc (char *name, ilistorder_t);
 void      ilistFree (void * list);
 ssize_t   ilistGetVersion (ilist_t *list);
 ssize_t   ilistGetCount (ilist_t *list);
 void      ilistSetSize (ilist_t *, ssize_t);
   /* set routines */
-void      ilistSetData (list_t *, ilistidx_t ikey, ilistidx_t lidx, void *value);
 void      ilistSetStr (list_t *, ilistidx_t ikey, ilistidx_t lidx, char *value);
+void      ilistSetList (list_t *, ilistidx_t ikey, ilistidx_t lidx, void *value);
+void      ilistSetData (list_t *, ilistidx_t ikey, ilistidx_t lidx, void *value);
 void      ilistSetNum (list_t *, ilistidx_t ikey, ilistidx_t lidx, ssize_t value);
 void      ilistSetDouble (list_t *, ilistidx_t ikey, ilistidx_t lidx, double value);
-void      ilistSetList (list_t *, ilistidx_t ikey, ilistidx_t lidx, slist_t *slist);
   /* get routines */
 bool      ilistExists (list_t *, ilistidx_t ikey);
 void      *ilistGetData (list_t *, ilistidx_t ikey, ilistidx_t lidx);

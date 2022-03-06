@@ -294,7 +294,7 @@ main (int argc, char * argv[])
 
     strlcat (path, ";", sz);
     snprintf (pbuff, sz, "%s\\..\\plocal\\bin", sysvarsGetStr (SV_BDJ4EXECDIR));
-    pathRealPath (tbuff, pbuff);
+    pathRealPath (tbuff, pbuff, sizeof (tbuff));
     strlcat (path, tbuff, sz);
 
     strlcat (path, ";", sz);

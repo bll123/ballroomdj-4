@@ -6,10 +6,22 @@ MAKEFLAGS += --no-print-directory
 BINDIR = ../bin
 BUILDDIR = build
 
-.PHONY: all build install
-all:
-	$(MAKE) cmake
-	$(MAKE) build
+.PHONY: build install debug release sanitizeaddress sanitizeleak
+
+debug:
+	BDJ4_BUILD=Debug $(MAKE) cmake
+
+release:
+	BDJ4_BUILD=Release $(MAKE) cmake
+
+sanitizeaddress:
+	BDJ4_BUILD=SanitizeAddress $(MAKE) cmake
+
+sanitizeleak:
+	BDJ4_BUILD=SanitizeLeak $(MAKE) cmake
+
+sanitizeundef:
+	BDJ4_BUILD=SanitizeUndef $(MAKE) cmake
 
 cmake:
 	if test \( $$(uname -s) = Linux \) -o \
@@ -18,12 +30,16 @@ cmake:
 	else \
 	  $(MAKE) cmake-windows; \
 	fi
+	$(MAKE) build
 
 cmake-unix:
-	cmake -S . -B $(BUILDDIR) -Werror=deprecated
+	cmake -DBDJ4_BUILD:STATIC=$(BDJ4_BUILD) \
+		-S . -B $(BUILDDIR) -Werror=deprecated
 
 cmake-windows:
-	cmake -G "MSYS Makefiles" -S . -B $(BUILDDIR) -Werror=deprecated
+	cmake -DBDJ4_BUILD:STATIC=$(BDJ4_BUILD) \
+		-G "MSYS Makefiles" \
+		-S . -B $(BUILDDIR) -Werror=deprecated
 
 build:
 	cmake --build $(BUILDDIR)
@@ -44,6 +60,7 @@ mcheck:
 		--trace-children=yes \
 		--track-origins=yes \
 		--show-leak-kinds=all \
+		$(VALGRIND_OPTS) \
 		./bin/bdj4 --playerui --debug 15)
 
 mcheckmain:
@@ -53,6 +70,7 @@ mcheckmain:
 		--trace-children=yes \
 		--track-origins=yes \
 		--show-leak-kinds=all \
+		$(VALGRIND_OPTS) \
 		./bin/bdj4 --main --debug 15)
 
 mchecksupp:
@@ -63,6 +81,7 @@ mchecksupp:
 		--track-origins=yes \
 		--show-leak-kinds=all \
 		--suppressions=src/utils/valgrind-suppression.txt \
+		$(VALGRIND_OPTS) \
 		./bin/bdj4 --playerui --debug 15)
 
 mcheckcheck:
@@ -73,6 +92,7 @@ mcheckcheck:
 		--track-origins=yes \
 		--show-leak-kinds=all \
 		--suppressions=src/utils/valgrind-suppression.txt \
+		$(VALGRIND_OPTS) \
 		./bin/check_all)
 
 # cleaning

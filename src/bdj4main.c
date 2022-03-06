@@ -175,13 +175,12 @@ main (int argc, char *argv[])
   mainData.conn = connInit (ROUTE_MAIN);
   mainData.gap = bdjoptGetNum (OPT_P_GAP);
   mainData.playlistCache = slistAlloc ("playlist-list", LIST_ORDERED,
-      free, playlistFree);
+      playlistFree);
   mainData.playlistQueue [MUSICQ_A] = queueAlloc (NULL);
   mainData.playlistQueue [MUSICQ_B] = queueAlloc (NULL);
   mainData.musicQueue = musicqAlloc ();
   mainDanceCountsInit (&mainData);
-  mainData.announceList = slistAlloc ("announcements", LIST_ORDERED,
-      free, NULL);
+  mainData.announceList = slistAlloc ("announcements", LIST_ORDERED, NULL);
 
   listenPort = bdjvarsGetNum (BDJVL_MAIN_PORT);
   sockhMainLoop (listenPort, mainProcessMsg, mainProcessing, &mainData);
@@ -689,7 +688,7 @@ mainSongGetDanceDisplay (maindata_t *mainData, ssize_t idx)
   if (song != NULL) {
     /* if the song has an unknown dance, the marquee display */
     /* will be filled in with the dance name. */
-    tstr = songGetData (song, TAG_MQDISPLAY);
+    tstr = songGetStr (song, TAG_MQDISPLAY);
   }
   if (tstr != NULL && *tstr) {
     dstr = tstr;
@@ -710,13 +709,13 @@ mainSendMobileMarqueeData (maindata_t *mainData)
 {
   char        tbuff [200];
   char        tbuffb [200];
-  char        qbuff [2048];
-  char        jbuff [2048];
-  char        *title;
-  char        *dstr;
-  char        *tag;
-  ssize_t     mqLen;
-  ssize_t     musicqLen;
+  char        qbuff [4096];
+  char        jbuff [4096];
+  char        *title = NULL;
+  char        *dstr = NULL;
+  char        *tag = NULL;
+  ssize_t     mqLen = 0;
+  ssize_t     musicqLen = 0;
 
   logProcBegin (LOG_PROC, "mainSendMobileMarqueeData");
 
@@ -779,7 +778,7 @@ mainSendMobileMarqueeData (maindata_t *mainData)
   /* internet mode from here on */
 
   tag = bdjoptGetStr (OPT_P_MOBILEMQTAG);
-  if (tag != NULL) {
+  if (tag != NULL && *tag != '\0') {
     if (mainData->mobmqUserkey == NULL) {
       pathbldMakePath (tbuff, sizeof (tbuff), "",
           "mmq", ".key", PATHBLD_MP_USEIDX);
@@ -792,7 +791,7 @@ mainSendMobileMarqueeData (maindata_t *mainData)
         jbuff, "93457645", tag);
     if (mainData->mobmqUserkey != NULL) {
       snprintf (tbuffb, sizeof (tbuffb), "&userkey=%s", mainData->mobmqUserkey);
-      strlcat (qbuff, tbuffb, MAXPATHLEN);
+      strlcat (qbuff, tbuffb, sizeof (qbuff));
     }
     mainData->webclient = webclientPost (mainData->webclient,
         tbuff, qbuff, mainData, mainMobilePostCallback);
@@ -1079,7 +1078,7 @@ mainPrepSong (maindata_t *mainData, song_t *song,
 
   logProcBegin (LOG_PROC, "mainPrepSong");
 
-  sfname = songGetData (song, TAG_FILE);
+  sfname = songGetStr (song, TAG_FILE);
   dur = songGetNum (song, TAG_DURATION);
   voladjperc = songGetDouble (song, TAG_VOLUMEADJUSTPERC);
   if (voladjperc < 0.0) {
@@ -1187,7 +1186,7 @@ mainPrepSong (maindata_t *mainData, song_t *song,
     } /* announcements are on in the playlist */
   } /* if this is a normal song */
 
-  snprintf (tbuff, MAXPATHLEN, "%s%c%zd%c%zd%c%zd%c%.1f%c%zd%c%d", sfname,
+  snprintf (tbuff, sizeof (tbuff), "%s%c%zd%c%zd%c%zd%c%.1f%c%zd%c%d", sfname,
       MSG_ARGS_RS, dur, MSG_ARGS_RS, songstart, MSG_ARGS_RS, speed,
       MSG_ARGS_RS, voladjperc, MSG_ARGS_RS, gap, MSG_ARGS_RS, flag);
 
@@ -1492,7 +1491,7 @@ mainMusicQueuePlay (maindata_t *mainData)
               MSG_SONG_PLAY, annfname);
         }
       }
-      sfname = songGetData (song, TAG_FILE);
+      sfname = songGetStr (song, TAG_FILE);
       connSendMessage (mainData->conn, ROUTE_PLAYER,
           MSG_SONG_PLAY, sfname);
     }
@@ -1806,7 +1805,7 @@ mainSendMusicqStatus (maindata_t *mainData, char *rbuff, size_t siz)
   }
 
   /* artist */
-  data = songGetData (song, TAG_ARTIST);
+  data = songGetStr (song, TAG_ARTIST);
   if (data == NULL) { data = ""; }
   snprintf (tbuff, sizeof (tbuff),
       "\"artist\" : \"%s\"", data);
@@ -1816,7 +1815,7 @@ mainSendMusicqStatus (maindata_t *mainData, char *rbuff, size_t siz)
   }
 
   /* title */
-  data = songGetData (song, TAG_TITLE);
+  data = songGetStr (song, TAG_TITLE);
   if (data == NULL) { data = ""; }
   snprintf (tbuff, sizeof (tbuff),
       "\"title\" : \"%s\"", data);
