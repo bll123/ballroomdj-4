@@ -107,6 +107,8 @@ static gboolean marqueeResized (GtkWidget *window, GdkEventConfigure *event,
                     gpointer userdata);
 static gboolean marqueeWinState (GtkWidget *window, GdkEventWindowState *event,
                     gpointer userdata);
+static gboolean marqueeWinMapped (GtkWidget *window, GdkEventAny *event,
+                    gpointer userdata);
 static void marqueeStateChg (GtkWidget *w, GtkStateType flags, gpointer userdata);
 static void marqueeSigHandler (int sig);
 static void marqueeSetFontSize (marquee_t *marquee, GtkWidget *lab, char *style, int sz);
@@ -131,7 +133,7 @@ main (int argc, char *argv[])
   loglevel_t      loglevel = LOG_IMPORTANT | LOG_MAIN;
   marquee_t       marquee;
   char            *tval;
-  char            *uifont;
+  char            *mqfont;
   char            tbuff [MAXPATHLEN];
   bool            ignorelock = false;
 
@@ -271,10 +273,8 @@ main (int argc, char *argv[])
 
   uiutilsInitGtkLog ();
   gtk_init (&argc, NULL);
-  uifont = bdjoptGetStr (OPT_MP_UIFONT);
-  uiutilsSetUIFont (uifont);
-
-  osuiSetWindowAsAccessory ();
+  mqfont = bdjoptGetStr (OPT_MP_MQFONT);
+  uiutilsSetmqfont (mqfont);
 
   status = marqueeCreateGui (&marquee, 0, NULL);
 
@@ -294,12 +294,16 @@ marqueeStoppingCallback (void *udata, programstate_t programState)
   marquee_t     *marquee = udata;
   gint          x, y;
 
+  logProcBegin (LOG_PROC, "marqueeStoppingCallback");
+
   if (marquee->isMaximized) {
     marqueeSetNotMaximized (marquee);
+    logProcEnd (LOG_PROC, "marqueeStoppingCallback", "is-maximized-a");
     return false;
   }
 
   if (gtk_window_is_maximized (GTK_WINDOW (marquee->window))) {
+    logProcEnd (LOG_PROC, "marqueeStoppingCallback", "is-maximized-b");
     return false;
   }
 
@@ -313,6 +317,7 @@ marqueeStoppingCallback (void *udata, programstate_t programState)
   }
 
   connDisconnectAll (marquee->conn);
+  logProcEnd (LOG_PROC, "marqueeStoppingCallback", "");
   return true;
 }
 
@@ -321,6 +326,8 @@ marqueeClosingCallback (void *udata, programstate_t programState)
 {
   marquee_t   *marquee = udata;
   char        fn [MAXPATHLEN];
+
+  logProcBegin (LOG_PROC, "marqueeClosingCallback");
 
   /* these are moved here so that the window can be un-maximized and */
   /* the size/position saved */
@@ -353,6 +360,7 @@ marqueeClosingCallback (void *udata, programstate_t programState)
   }
   datafileFree (marquee->optiondf);
 
+  logProcEnd (LOG_PROC, "marqueeClosingCallback", "");
   return true;
 }
 
@@ -360,6 +368,8 @@ static int
 marqueeCreateGui (marquee_t *marquee, int argc, char *argv [])
 {
   int             status;
+
+  logProcBegin (LOG_PROC, "marqueeCreateGui");
 
   marquee->app = gtk_application_new (
       "org.bdj4.BDJ4.marquee",
@@ -369,6 +379,7 @@ marqueeCreateGui (marquee_t *marquee, int argc, char *argv [])
 
   status = g_application_run (G_APPLICATION (marquee->app), argc, argv);
 
+  logProcEnd (LOG_PROC, "marqueeCreateGui", "");
   return status;
 }
 
@@ -384,6 +395,8 @@ marqueeActivate (GApplication *app, gpointer userdata)
   GError    *gerr;
   gint      x, y;
 
+  logProcBegin (LOG_PROC, "marqueeActivate");
+
   marquee->inResize = true;
 
   pathbldMakePath (imgbuff, sizeof (imgbuff), "",
@@ -396,6 +409,7 @@ marqueeActivate (GApplication *app, gpointer userdata)
   g_signal_connect (window, "button-press-event", G_CALLBACK (marqueeToggleFullscreen), marquee);
   g_signal_connect (window, "configure-event", G_CALLBACK (marqueeResized), marquee);
   g_signal_connect (window, "window-state-event", G_CALLBACK (marqueeWinState), marquee);
+  g_signal_connect (window, "map-event", G_CALLBACK (marqueeWinMapped), marquee);
   /* the backdrop window state must be intercepted */
   g_signal_connect (window, "state-flags-changed", G_CALLBACK (marqueeStateChg), marquee);
   marquee->window = window;
@@ -444,8 +458,7 @@ marqueeActivate (GApplication *app, gpointer userdata)
   gtk_box_pack_start (GTK_BOX (vbox), hbox,
       FALSE, FALSE, 0);
 
-  marquee->danceLab = gtk_label_new (_("Not Playing"));
-  gtk_widget_set_margin_top (marquee->danceLab, 2);
+  marquee->danceLab = uiutilsCreateLabel (_("Not Playing"));
   gtk_widget_set_halign (marquee->danceLab, GTK_ALIGN_START);
   gtk_widget_set_hexpand (marquee->danceLab, TRUE);
   gtk_widget_set_can_focus (marquee->danceLab, FALSE);
@@ -456,8 +469,7 @@ marqueeActivate (GApplication *app, gpointer userdata)
   gtk_box_pack_start (GTK_BOX (hbox), marquee->danceLab,
       TRUE, TRUE, 0);
 
-  marquee->countdownTimerLab = gtk_label_new ("0:00");
-  gtk_widget_set_margin_top (marquee->countdownTimerLab, 2);
+  marquee->countdownTimerLab = uiutilsCreateLabel ("0:00");
   gtk_label_set_max_width_chars (GTK_LABEL (marquee->countdownTimerLab), 6);
   gtk_widget_set_halign (marquee->countdownTimerLab, GTK_ALIGN_END);
   gtk_widget_set_can_focus (marquee->countdownTimerLab, FALSE);
@@ -477,8 +489,7 @@ marqueeActivate (GApplication *app, gpointer userdata)
     gtk_box_pack_start (GTK_BOX (vbox), hbox,
         FALSE, FALSE, 0);
 
-    marquee->infoArtistLab = gtk_label_new ("");
-    gtk_widget_set_margin_top (marquee->infoArtistLab, 2);
+    marquee->infoArtistLab = uiutilsCreateLabel ("");
     gtk_widget_set_halign (marquee->infoArtistLab, GTK_ALIGN_START);
     gtk_widget_set_hexpand (hbox, TRUE);
     gtk_widget_set_can_focus (marquee->infoArtistLab, FALSE);
@@ -486,16 +497,14 @@ marqueeActivate (GApplication *app, gpointer userdata)
     gtk_box_pack_start (GTK_BOX (hbox), marquee->infoArtistLab,
         FALSE, FALSE, 0);
 
-    marquee->infoSepLab = gtk_label_new ("");
-    gtk_widget_set_margin_top (marquee->infoSepLab, 2);
+    marquee->infoSepLab = uiutilsCreateLabel ("");
     gtk_widget_set_halign (marquee->infoSepLab, GTK_ALIGN_START);
     gtk_widget_set_hexpand (hbox, FALSE);
     gtk_widget_set_can_focus (marquee->infoSepLab, FALSE);
     gtk_box_pack_start (GTK_BOX (hbox), marquee->infoSepLab,
         FALSE, FALSE, 0);
 
-    marquee->infoTitleLab = gtk_label_new ("");
-    gtk_widget_set_margin_top (marquee->infoTitleLab, 2);
+    marquee->infoTitleLab = uiutilsCreateLabel ("");
     gtk_widget_set_halign (marquee->infoTitleLab, GTK_ALIGN_START);
     gtk_widget_set_hexpand (hbox, TRUE);
     gtk_widget_set_can_focus (marquee->infoTitleLab, FALSE);
@@ -516,24 +525,22 @@ marqueeActivate (GApplication *app, gpointer userdata)
   marquee->marqueeLabs = malloc (sizeof (GtkWidget *) * marquee->mqLen);
 
   for (int i = 0; i < marquee->mqLen; ++i) {
-    marquee->marqueeLabs [i] = gtk_label_new ("");
+    marquee->marqueeLabs [i] = uiutilsCreateLabel ("");
     gtk_widget_set_halign (marquee->marqueeLabs [i], GTK_ALIGN_START);
     gtk_widget_set_hexpand (marquee->marqueeLabs [i], TRUE);
-    gtk_widget_set_margin_top (marquee->marqueeLabs [i], 2);
-    gtk_widget_set_margin_start (marquee->marqueeLabs [i], 10);
     gtk_widget_set_margin_end (marquee->marqueeLabs [i], 10);
     gtk_widget_set_can_focus (marquee->marqueeLabs [i], FALSE);
     gtk_box_pack_start (GTK_BOX (marquee->vbox),
         marquee->marqueeLabs [i], FALSE, FALSE, 0);
   }
 
-  gtk_widget_show_all (window);
-
-  x = nlistGetNum (marquee->options, MQ_POSITION_X);
-  y = nlistGetNum (marquee->options, MQ_POSITION_Y);
-  if (x != -1 && y != -1) {
-    gtk_window_move (GTK_WINDOW (window), x, y);
+  if (bdjoptGetNum (OPT_P_HIDE_MARQUEE_ON_START)) {
+    gtk_window_iconify (GTK_WINDOW (window));
+    marquee->mqIconifyAction = true;
+    marquee->isIconified = true;
   }
+
+  gtk_widget_show_all (window);
 
   marquee->inResize = false;
 
@@ -543,6 +550,8 @@ marqueeActivate (GApplication *app, gpointer userdata)
   pathbldMakePath (imgbuff, sizeof (imgbuff), "",
       "bdj4_icon_marquee", ".png", PATHBLD_MP_IMGDIR);
   osuiSetIcon (imgbuff);
+
+  logProcEnd (LOG_PROC, "marqueeActivate", "");
 }
 
 gboolean
@@ -605,6 +614,8 @@ marqueeConnectingCallback (void *udata, programstate_t programState)
   marquee_t   *marquee = udata;
   bool        rc = false;
 
+  logProcBegin (LOG_PROC, "marqueeConnectingCallback");
+
   if (! connIsConnected (marquee->conn, ROUTE_MAIN)) {
     connConnect (marquee->conn, ROUTE_MAIN);
   }
@@ -613,6 +624,7 @@ marqueeConnectingCallback (void *udata, programstate_t programState)
     rc = true;
   }
 
+  logProcEnd (LOG_PROC, "marqueeConnectingCallback", "");
   return rc;
 }
 
@@ -622,11 +634,13 @@ marqueeHandshakeCallback (void *udata, programstate_t programState)
   marquee_t   *marquee = udata;
   bool        rc = false;
 
+  logProcBegin (LOG_PROC, "marqueeHandshakeCallback");
 
   if (connHaveHandshake (marquee->conn, ROUTE_MAIN)) {
     rc = true;
   }
 
+  logProcEnd (LOG_PROC, "marqueeHandshakeCallback", "");
   return rc;
 }
 
@@ -661,7 +675,7 @@ marqueeProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_MARQUEE_SHOW: {
           if (marquee->isIconified) {
-            gtk_widget_show (marquee->window);
+            gtk_window_deiconify (GTK_WINDOW (marquee->window));
             marquee->mqIconifyAction = true;
             marquee->isIconified = false;
           }
@@ -691,6 +705,7 @@ marqueeProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
   if (gKillReceived) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
   }
+  logProcEnd (LOG_PROC, "marqueeProcessMsg", "");
   return gKillReceived;
 }
 
@@ -699,6 +714,8 @@ static gboolean
 marqueeCloseWin (GtkWidget *window, GdkEvent *event, gpointer userdata)
 {
   marquee_t   *marquee = userdata;
+
+  logProcBegin (LOG_PROC, "marqueeCloseWin");
 
   if (! gdone) {
     gint        x, y;
@@ -710,9 +727,11 @@ marqueeCloseWin (GtkWidget *window, GdkEvent *event, gpointer userdata)
     gtk_window_iconify (GTK_WINDOW (window));
     marquee->mqIconifyAction = true;
     marquee->isIconified = true;
+    logProcEnd (LOG_PROC, "marqueeCloseWin", "user-close-win");
     return TRUE;
   }
 
+  logProcEnd (LOG_PROC, "marqueeCloseWin", "");
   return FALSE;
 }
 
@@ -721,7 +740,10 @@ marqueeToggleFullscreen (GtkWidget *window, GdkEventButton *event, gpointer user
 {
   marquee_t   *marquee = userdata;
 
+  logProcBegin (LOG_PROC, "marqueeToggleFullscreen");
+
   if (gdk_event_get_event_type ((GdkEvent *) event) != GDK_DOUBLE_BUTTON_PRESS) {
+    logProcEnd (LOG_PROC, "marqueeToggleFullscreen", "no-button-press");
     return FALSE;
   }
 
@@ -736,12 +758,16 @@ marqueeToggleFullscreen (GtkWidget *window, GdkEventButton *event, gpointer user
     gtk_window_maximize (GTK_WINDOW (window));
   }
 
+  logProcEnd (LOG_PROC, "marqueeToggleFullscreen", "");
   return FALSE;
 }
 
 static void
 marqueeSetNotMaximized (marquee_t *marquee)
 {
+
+  logProcBegin (LOG_PROC, "marqueeSetNotMaximized");
+
   if (marquee->isMaximized) {
     marquee->inMax = true;
     marquee->isMaximized = false;
@@ -752,6 +778,7 @@ marqueeSetNotMaximized (marquee_t *marquee)
     marquee->inMax = false;
     gtk_window_set_decorated (GTK_WINDOW (marquee->window), TRUE);
   }
+  logProcEnd (LOG_PROC, "marqueeSetNotMaximized", "");
 }
 
 /* resize gets called multiple times; it's difficult to get the font      */
@@ -764,15 +791,20 @@ marqueeResized (GtkWidget *window, GdkEventConfigure *event, gpointer userdata)
   int         sz = 0;
   gint        eheight;
 
+  logProcBegin (LOG_PROC, "marqueeResized");
+
   if (marquee->inMax) {
+    logProcEnd (LOG_PROC, "marqueeResized", "in-max");
     return FALSE;
   }
   if (marquee->inResize) {
+    logProcEnd (LOG_PROC, "marqueeResized", "in-resize");
     return FALSE;
   }
 
   eheight = event->height;
   if (eheight == marquee->lastHeight) {
+    logProcEnd (LOG_PROC, "marqueeResized", "same-height");
     return FALSE;
   }
 
@@ -783,6 +815,7 @@ marqueeResized (GtkWidget *window, GdkEventConfigure *event, gpointer userdata)
   marqueeAdjustFontSizes (marquee, sz);
   marquee->lastHeight = eheight;
 
+  logProcEnd (LOG_PROC, "marqueeResized", "");
   return FALSE;
 }
 
@@ -791,24 +824,31 @@ marqueeWinState (GtkWidget *window, GdkEventWindowState *event, gpointer userdat
 {
   marquee_t         *marquee = userdata;
 
+  logProcBegin (LOG_PROC, "marqueeWinState");
+
 
   if (event->changed_mask == GDK_WINDOW_STATE_ICONIFIED) {
     if (marquee->mqIconifyAction) {
       marquee->mqIconifyAction = false;
+      logProcEnd (LOG_PROC, "marqueeWinState", "close-button");
       return FALSE;
     }
 
     if ((event->new_window_state & GDK_WINDOW_STATE_ICONIFIED) !=
         GDK_WINDOW_STATE_ICONIFIED) {
       marquee->isIconified = false;
-      return FALSE;
+    } else {
+      marquee->isIconified = true;
     }
+    logProcEnd (LOG_PROC, "marqueeWinState", "iconified/deiconified");
+    return FALSE;
   }
   if (event->changed_mask == GDK_WINDOW_STATE_MAXIMIZED) {
     /* if the user double-clicked, this is a know maximize change and */
     /* no processing needs to be done here */
     if (marquee->userDoubleClicked) {
       marquee->userDoubleClicked = false;
+      logProcEnd (LOG_PROC, "marqueeWinState", "user-double-clicked");
       return FALSE;
     }
 
@@ -824,14 +864,41 @@ marqueeWinState (GtkWidget *window, GdkEventWindowState *event, gpointer userdat
     }
   }
 
+  logProcEnd (LOG_PROC, "marqueeWinState", "");
   return FALSE;
+}
+
+static gboolean
+marqueeWinMapped (GtkWidget *window, GdkEventAny *event, gpointer userdata)
+{
+  marquee_t         *marquee = userdata;
+  gint              x, y;
+
+  logProcBegin (LOG_PROC, "marqueeWinMapped");
+
+  if (marquee->isMaximized) {
+    gtk_window_set_decorated (GTK_WINDOW (window), FALSE);
+  } else {
+    x = nlistGetNum (marquee->options, MQ_POSITION_X);
+    y = nlistGetNum (marquee->options, MQ_POSITION_Y);
+    if (x != -1 && y != -1) {
+      gtk_window_move (GTK_WINDOW (window), x, y);
+    }
+
+    gtk_window_set_decorated (GTK_WINDOW (window), TRUE);
+  }
+
+  logProcEnd (LOG_PROC, "marqueeWinMapped", "");
+  return TRUE;
 }
 
 static void
 marqueeStateChg (GtkWidget *window, GtkStateType flags, gpointer userdata)
 {
+  logProcBegin (LOG_PROC, "marqueeStateChg");
   /* the marquee is never in a backdrop state */
   gtk_widget_unset_state_flags (window, GTK_STATE_FLAG_BACKDROP);
+  logProcEnd (LOG_PROC, "marqueeStateChg", "");
 }
 
 static void
@@ -848,8 +915,11 @@ marqueeSetFontSize (marquee_t *marquee, GtkWidget *lab, char *style, int sz)
   PangoAttrList         *attrlist;
   char                  tbuff [200];
 
+  logProcBegin (LOG_PROC, "marqueeSetFontSize");
+
 
   if (lab == NULL) {
+    logProcEnd (LOG_PROC, "marqueeSetFontSize", "no-lab");
     return;
   }
 
@@ -860,6 +930,7 @@ marqueeSetFontSize (marquee_t *marquee, GtkWidget *lab, char *style, int sz)
   attr = pango_attr_font_desc_new (font_desc);
   pango_attr_list_insert (attrlist, attr);
   gtk_label_set_attributes (GTK_LABEL (lab), attrlist);
+  logProcEnd (LOG_PROC, "marqueeSetFontSize", "");
 }
 
 /* getting this to work correctly is a pain */
@@ -876,10 +947,13 @@ marqueeCalcFontSizes (marquee_t *marquee, int sz)
   GtkAllocation   allocSize;
   int             newsz;
 
+  logProcBegin (LOG_PROC, "marqueeCalcFontSizes");
+
 
   gtk_window_get_size (GTK_WINDOW (marquee->window), &width, &height);
 
   if (marquee->pbar == NULL || marquee->danceLab == NULL) {
+    logProcEnd (LOG_PROC, "marqueeCalcFontSizes", "no-dance-lab");
     return 0;
   }
 
@@ -919,6 +993,7 @@ marqueeCalcFontSizes (marquee_t *marquee, int sz)
     newsz = sz;
   }
 
+  logProcEnd (LOG_PROC, "marqueeCalcFontSizes", "");
   return newsz;
 }
 
@@ -927,7 +1002,10 @@ marqueeAdjustFontSizes (marquee_t *marquee, int sz)
 {
   int   newsz = 0;
 
+  logProcBegin (LOG_PROC, "marqueeAdjustFontSizes");
+
   if (marquee->inResize) {
+    logProcEnd (LOG_PROC, "marqueeAdjustFontSizes", "in-resize");
     return;
   }
 
@@ -943,6 +1021,7 @@ marqueeAdjustFontSizes (marquee_t *marquee, int sz)
   marquee->sizeSignal = g_signal_connect (marquee->danceLab, "size-allocate",
       G_CALLBACK (marqueeAdjustFontCallback), marquee);
   marquee->inResize = false;
+  logProcEnd (LOG_PROC, "marqueeAdjustFontSizes", "");
 }
 
 static void
@@ -953,11 +1032,15 @@ marqueeAdjustFontCallback (GtkWidget *w, GtkAllocation *retAllocSize, gpointer u
   double          dnewsz;
   double          dheight;
 
+  logProcBegin (LOG_PROC, "marqueeAdjustFontCallback");
+
   if (marquee->inResize) {
+    logProcEnd (LOG_PROC, "marqueeAdjustFontCallback", "in-resize");
     return;
   }
   if (marquee->sizeSignal == 0) {
     /* this trap is necessary */
+    logProcEnd (LOG_PROC, "marqueeAdjustFontCallback", "in-size-signal");
     return;
   }
 
@@ -984,6 +1067,7 @@ marqueeAdjustFontCallback (GtkWidget *w, GtkAllocation *retAllocSize, gpointer u
   }
 
   marquee->inResize = false;
+  logProcEnd (LOG_PROC, "marqueeAdjustFontCallback", "");
 }
 
 static void
@@ -992,6 +1076,8 @@ marqueePopulate (marquee_t *marquee, char *args)
   char      *p;
   char      *tokptr;
   int       showsep = 0;
+
+  logProcBegin (LOG_PROC, "marqueePopulate");
 
   p = strtok_r (args, MSG_ARGS_RS_STR, &tokptr);
   if (marquee->infoArtistLab != NULL) {
@@ -1038,6 +1124,7 @@ marqueePopulate (marquee_t *marquee, char *args)
       gtk_label_set_label (GTK_LABEL (marquee->marqueeLabs [i]), "");
     }
   }
+  logProcEnd (LOG_PROC, "marqueePopulate", "");
 }
 
 static void
@@ -1052,6 +1139,8 @@ marqueeSetTimer (marquee_t *marquee, char *args)
   char        *p = NULL;
   char        *tokptr = NULL;
   char        tbuff [40];
+
+  logProcBegin (LOG_PROC, "marqueeSetTimer");
 
 
   p = strtok_r (args, MSG_ARGS_RS_STR, &tokptr);
@@ -1071,6 +1160,7 @@ marqueeSetTimer (marquee_t *marquee, char *args)
     dratio = 0.0;
   }
   gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (marquee->pbar), dratio);
+  logProcEnd (LOG_PROC, "marqueeSetTimer", "");
 }
 
 static void
@@ -1078,10 +1168,14 @@ marqueeUnmaxCallback (GtkWidget *w, GtkAllocation *retAllocSize, gpointer userda
 {
   marquee_t   *marquee = userdata;
 
+  logProcBegin (LOG_PROC, "marqueeUnmaxCallback");
+
   if (! marquee->unMaximize) {
+    logProcEnd (LOG_PROC, "marqueeUnmaxCallback", "no-sig-conn");
     return;
   }
   if (marquee->unmaxSignal == 0) {
+    logProcEnd (LOG_PROC, "marqueeUnmaxCallback", "no-sig-handler");
     return;
   }
 
@@ -1089,5 +1183,6 @@ marqueeUnmaxCallback (GtkWidget *w, GtkAllocation *retAllocSize, gpointer userda
   g_signal_handler_disconnect (w, marquee->unmaxSignal);
   marquee->unmaxSignal = 0;
   gtk_window_unmaximize (GTK_WINDOW (marquee->window));
+  logProcEnd (LOG_PROC, "marqueeUnmaxCallback", "");
 }
 

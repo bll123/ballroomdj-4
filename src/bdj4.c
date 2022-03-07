@@ -293,8 +293,8 @@ main (int argc, char * argv[])
     }
 
     strlcat (path, ";", sz);
-    snprintf (pbuff, sz, "%s\\..\\plocal\\bin", sysvarsGetStr (SV_BDJ4EXECDIR));
-    pathRealPath (tbuff, pbuff, sizeof (tbuff));
+    snprintf (pbuff, sz, "%s/../plocal/bin", sysvarsGetStr (SV_BDJ4EXECDIR));
+    pathRealPath (tbuff, pbuff, sz);
     strlcat (path, tbuff, sz);
 
     strlcat (path, ";", sz);
@@ -306,6 +306,8 @@ main (int argc, char * argv[])
       fprintf (stderr, "final PATH=%s\n", getenv ("PATH"));
     }
 
+    putenv ("PANGOCAIRO_BACKEND=fc");
+
     free (pbuff);
     free (tbuff);
     free (path);
@@ -316,6 +318,7 @@ main (int argc, char * argv[])
   if (debugself) {
     fprintf (stderr, "GTK_THEME=%s\n", getenv ("GTK_THEME"));
     fprintf (stderr, "GTK_CSD=%s\n", getenv ("GTK_CSD"));
+    fprintf (stderr, "PANGOCAIRO_BACKEND=%s\n", getenv ("PANGOCAIRO_BACKEND"));
   }
 
   extension = "";

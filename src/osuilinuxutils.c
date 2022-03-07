@@ -17,10 +17,4 @@ osuiSetIcon (char *fname)
 
 }
 
-inline void
-osuiSetWindowAsAccessory (void)
-{
-
-}
-
 #endif

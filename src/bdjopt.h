@@ -65,6 +65,7 @@ typedef enum {
   OPT_P_FADEOUTTIME,                //
   OPT_P_FADETYPE,                   //
   OPT_P_GAP,                        //
+  OPT_P_HIDE_MARQUEE_ON_START,
   OPT_P_INSERT_LOCATION,            //
   OPT_P_MAXPLAYTIME,                //
   OPT_P_MOBILEMARQUEE,              //

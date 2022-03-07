@@ -27,6 +27,7 @@
 #include "lock.h"
 #include "log.h"
 #include "musicq.h"
+#include "osuiutils.h"
 #include "pathbld.h"
 #include "procutil.h"
 #include "progstate.h"
@@ -458,7 +459,12 @@ pluiActivate (GApplication *app, gpointer userdata)
     gtk_window_move (GTK_WINDOW (plui->window), x, y);
   }
 
+  pathbldMakePath (imgbuff, sizeof (imgbuff), "",
+      "bdj4_icon", ".png", PATHBLD_MP_IMGDIR);
+  osuiSetIcon (imgbuff);
+
   pluiSetExtraQueues (plui);
+
   logProcEnd (LOG_PROC, "pluiActivate", "");
 }
 

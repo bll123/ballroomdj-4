@@ -920,7 +920,10 @@ installerInstInit (installer_t *installer)
     fgets (tbuff, sizeof (tbuff), stdin);
     stringTrim (tbuff);
     if (*tbuff != '\0') {
-      strlcpy (installer->target, tbuff, sizeof (tbuff));
+      if (installer->target != NULL && *installer->target) {
+        free (installer->target);
+      }
+      installer->target = strdup (tbuff);
     }
   }
 

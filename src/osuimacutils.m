@@ -26,11 +26,4 @@ osuiSetIcon (char *fname)
   [image release];
 }
 
-void
-osuiSetWindowAsAccessory (void)
-{
-  [[NSApplication sharedApplication]
-      setActivationPolicy: NSApplicationActivationPolicyAccessory];
-}
-
 #endif /* __APPLE__ */

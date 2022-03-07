@@ -146,6 +146,11 @@ foreach path [list {} profiles $mpath $mppath] {
             set value "Arial 11"
           }
         }
+        if { $key eq "MQFONT" && $value eq {} } {
+          if { $::tcl_platform(platform) eq "windows" } {
+            set value "Arial 11"
+          }
+        }
         if { $key eq "GAP" && $value eq {} } {
           set value 0
         }
@@ -177,6 +182,8 @@ foreach path [list {} profiles $mpath $mppath] {
         puts $ofh "..#030e80"
         puts $ofh UI_ACCENT_COL
         puts $ofh "..#ffa600"
+        puts $ofh HIDEMARQUEEONSTART
+        puts $ofh "..1"
       }
       if { $path eq $mpath } {
         puts $ofh VOLUME

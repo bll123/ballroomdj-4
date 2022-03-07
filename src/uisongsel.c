@@ -463,6 +463,7 @@ uisongselProcessTreeSize (GtkWidget* w, GtkAllocation* allocation,
     adjustment = gtk_scrollable_get_vadjustment (GTK_SCROLLABLE (uisongsel->songselTree));
     ps = gtk_adjustment_get_page_size (adjustment);
     si = gtk_adjustment_get_step_increment (adjustment);
+logMsg (LOG_DBG, LOG_IMPORTANT, "ps:%.2f si:%.2f", ps, si);
     if (si <= 0.05) {
       logProcEnd (LOG_PROC, "uisongselProcessTreeSize", "small-adjust");
       return;
@@ -472,14 +473,17 @@ uisongselProcessTreeSize (GtkWidget* w, GtkAllocation* allocation,
       /* the current step increment has been adjusted for the current */
       /* number of rows that are displayed */
       uisongsel->lastStepIncrement = si;
+logMsg (LOG_DBG, LOG_IMPORTANT, "save last-step-inc");
     }
 
     uisongsel->maxRows = (int) (ps / uisongsel->lastStepIncrement);
+logMsg (LOG_DBG, LOG_IMPORTANT, "max-rows:%d", uisongsel->maxRows);
 
     /* force a redraw */
     gtk_adjustment_set_value (adjustment, 0.0);
     g_signal_emit_by_name (GTK_RANGE (uisongsel->songselScrollbar),
         "change-value", NULL, 0.0, uisongsel, NULL);
+logMsg (LOG_DBG, LOG_IMPORTANT, "after-emit");
 
     adjustment = gtk_range_get_adjustment (GTK_RANGE (uisongsel->songselScrollbar));
     /* the step increment does not work correctly with smooth scrolling */
@@ -488,12 +492,14 @@ uisongselProcessTreeSize (GtkWidget* w, GtkAllocation* allocation,
     gtk_adjustment_set_page_size (adjustment, (double) uisongsel->maxRows);
 
     uisongsel->lastTreeSize = allocation->height;
+logMsg (LOG_DBG, LOG_IMPORTANT, "last-tree-size:%d", uisongsel->lastTreeSize);
 
     logMsg (LOG_DBG, LOG_SONGSEL, "populate: tree size change");
     uisongselPopulateData (uisongsel);
 
     g_signal_emit_by_name (GTK_RANGE (uisongsel->songselScrollbar),
         "change-value", NULL, (double) uisongsel->idxStart, uisongsel, NULL);
+logMsg (LOG_DBG, LOG_IMPORTANT, "after-emit");
   }
   logProcEnd (LOG_PROC, "uisongselProcessTreeSize", "");
 }

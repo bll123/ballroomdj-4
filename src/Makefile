@@ -5,8 +5,15 @@ MAKEFLAGS += --no-print-directory
 
 BINDIR = ../bin
 BUILDDIR = build
+CLANG = clang
+GCC = gcc
+CLANGB = "/c/Program Files/LLVM/bin/clang.exe"
+GXX = g++
+CLANGXX = clang++
+CLANGBXX = "/c/Program Files/LLVM/bin/clang++.exe"
 
-.PHONY: build install debug release sanitizeaddress sanitizeleak
+.PHONY: build install debug release
+.PHONY: sanitizeaddress sanitizeleak sanitizeundef
 
 debug:
 	BDJ4_BUILD=Debug $(MAKE) cmake
@@ -24,20 +31,27 @@ sanitizeundef:
 	BDJ4_BUILD=SanitizeUndef $(MAKE) cmake
 
 cmake:
-	if test \( $$(uname -s) = Linux \) -o \
-		\( $$(uname -s) = Darwin \) ; then \
-	  $(MAKE) cmake-unix; \
+	if test $$(uname -s) = Linux; then \
+	  COMP=$(GCC) COMPXX=$(GXX) $(MAKE) cmake-unix; \
+	elif test $$(uname -s) = Darwin; then \
+	  COMP=$(CLANG) COMPXX=$(CLANGXX) $(MAKE) cmake-unix; \
 	else \
-	  $(MAKE) cmake-windows; \
+	  COMP=$(WINCLANG) COMPXX=$(WINCLANGXX) $(MAKE) cmake-windows; \
 	fi
 	$(MAKE) build
 
 cmake-unix:
-	cmake -DBDJ4_BUILD:STATIC=$(BDJ4_BUILD) \
+	cmake \
+		-DCMAKE_C_COMPILER=$(COMP) \
+		-DCMAKE_CXX_COMPILER=$(COMPXX) \
+		-DBDJ4_BUILD:STATIC=$(BDJ4_BUILD) \
 		-S . -B $(BUILDDIR) -Werror=deprecated
 
 cmake-windows:
-	cmake -DBDJ4_BUILD:STATIC=$(BDJ4_BUILD) \
+	cmake \
+		-DCMAKE_C_COMPILER="$(COMP)" \
+		-DCMAKE_CXX_COMPILER="$(COMPXX)" \
+		-DBDJ4_BUILD:STATIC=$(BDJ4_BUILD) \
 		-G "MSYS Makefiles" \
 		-S . -B $(BUILDDIR) -Werror=deprecated
 
@@ -121,7 +135,7 @@ eclean:
 tclean:
 	@find .. -name '*~' -print0 | xargs -0 rm -f
 	@find .. -name '*.orig' -print0 | xargs -0 rm -f
-	@-$(RM) -f w ww
+	@-$(RM) -f w ww ../w ../ww ../asan.* ./asan.*
 	@-$(RM) -f ../vlc-log.txt vlc-log.txt
 	@-$(RM) -f ../vgcore.* ../core
 	@-$(RM) -f launcher.rc bdj4_icon.ico
