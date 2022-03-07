@@ -76,7 +76,7 @@ static datafilekey_t playeruidfkeys [] = {
   { "PLUI_SIZE_X",              PLUI_SIZE_X,                  VALUE_NUM, NULL, -1 },
   { "PLUI_SIZE_Y",              PLUI_SIZE_Y,                  VALUE_NUM, NULL, -1 },
   { "SHOW_EXTRA_QUEUES",        PLUI_SHOW_EXTRA_QUEUES,       VALUE_NUM, NULL, -1 },
-  { "SORT_BY",                  SONGSEL_SORT_BY,              VALUE_DATA, NULL, -1 },
+  { "SORT_BY",                  SONGSEL_SORT_BY,              VALUE_STR, NULL, -1 },
   { "SWITCH_QUEUE_WHEN_EMPTY",  PLUI_SWITCH_QUEUE_WHEN_EMPTY, VALUE_NUM, NULL, -1 },
 };
 #define PLAYERUI_DFKEY_COUNT (sizeof (playeruidfkeys) / sizeof (datafilekey_t))

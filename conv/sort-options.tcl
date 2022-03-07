@@ -1,11 +1,6 @@
 #!/usr/bin/tclsh
 
-if { [lindex $argv 0] != "--force" } {
-  puts "skipping sort option conversion"
-  exit 0
-}
-
-if { $argc != 3 } {
+if { $argc != 2 } {
   puts "usage: $argv0 <bdj3dir> <datatopdir>"
   exit 1
 }
@@ -17,6 +12,16 @@ if { ! [file exists $bdj3dir] || ! [file isdirectory $bdj3dir] } {
 }
 set datatopdir [lindex $argv 2]
 
+set nfn [file join $datatopdir data sortopt.txt]
+if { ! [file exists $nfn] } {
+  file copy -force templates/sortopt.txt $nfn
+}
+
+if { [lindex $argv 0] != "--force" } {
+  puts "skipping sort option conversion"
+  exit 0
+}
+
 set infn [file join $bdj3dir sortopt.tcl]
 if { ! [file exists $infn] } {
   puts "   no sort options file"
@@ -24,7 +29,6 @@ if { ! [file exists $infn] } {
 }
 
 source $infn
-set nfn [file join $datatopdir data sortopt.txt]
 
 set fh [open $nfn w]
 puts $fh "# BDJ4 sort options"

@@ -17,9 +17,9 @@
   /* must be sorted in ascii order */
 static datafilekey_t songlistdfkeys [SONGLIST_KEY_MAX] = {
   { "DANCE",    SONGLIST_DANCE,     VALUE_NUM, danceConvDance, SONGLIST_DANCESTR },
-  { "DANCESTR", SONGLIST_DANCESTR,  VALUE_DATA, NULL, -1 },
-  { "FILE",     SONGLIST_FILE,      VALUE_DATA, NULL, -1 },
-  { "TITLE",    SONGLIST_TITLE,     VALUE_DATA, NULL, -1 },
+  { "DANCESTR", SONGLIST_DANCESTR,  VALUE_STR, NULL, -1 },
+  { "FILE",     SONGLIST_FILE,      VALUE_STR, NULL, -1 },
+  { "TITLE",    SONGLIST_TITLE,     VALUE_STR, NULL, -1 },
 };
 
 songlist_t *
@@ -64,12 +64,12 @@ songlistFree (songlist_t *sl)
 }
 
 char *
-songlistGetData (songlist_t *sl, ilistidx_t ikey, ilistidx_t lidx)
+songlistGetNext (songlist_t *sl, ilistidx_t ikey, ilistidx_t lidx)
 {
   if (ikey >= nlistGetCount (sl->songlist)) {
     logMsg (LOG_DBG, LOG_BASIC, "end of songlist %s reached", sl->fname);
     return NULL;
   }
 
-  return ilistGetData (sl->songlist, ikey, lidx);
+  return ilistGetStr (sl->songlist, ikey, lidx);
 }

@@ -18,7 +18,7 @@
   /* must be sorted in ascii order */
 static datafilekey_t genredfkeys [GENRE_KEY_MAX] = {
   { "CLASSICAL",  GENRE_CLASSICAL_FLAG, VALUE_NUM, parseConvBoolean, -1 },
-  { "GENRE",      GENRE_GENRE,          VALUE_DATA, NULL, -1 },
+  { "GENRE",      GENRE_GENRE,          VALUE_STR, NULL, -1 },
 };
 
 genre_t *
@@ -49,7 +49,7 @@ genreAlloc (char *fname)
   ilistStartIterator (dflist, &iteridx);
   while ((gkey = ilistIterateKey (dflist, &iteridx)) >= 0) {
     slistSetNum (genre->genreList,
-        ilistGetData (dflist, gkey, GENRE_GENRE), gkey);
+        ilistGetStr (dflist, gkey, GENRE_GENRE), gkey);
   }
   slistSort (genre->genreList);
 

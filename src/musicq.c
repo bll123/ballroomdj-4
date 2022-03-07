@@ -374,9 +374,14 @@ musicqPop (musicq_t *musicq, musicqidx_t musicqidx)
   }
 
   musicqitem = queuePop (musicq->q [musicqidx]);
-  song = musicqitem->song;
-  dur = songGetNum (song, TAG_DURATION);
-  musicq->duration [musicqidx] -= dur;
+  if (musicqitem == NULL) {
+    return;
+  }
+  if ((musicqitem->flags & MUSICQ_FLAG_EMPTY) != MUSICQ_FLAG_EMPTY) {
+    song = musicqitem->song;
+    dur = songGetNum (song, TAG_DURATION);
+    musicq->duration [musicqidx] -= dur;
+  }
   musicqQueueItemFree (musicqitem);
   logProcEnd (LOG_PROC, "musicqPop", "");
 }
@@ -511,7 +516,7 @@ musicqGetDance (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx)
     song = musicqitem->song;
     danceIdx = songGetNum (song, TAG_DANCE);
     dances = bdjvarsdfGet (BDJVDF_DANCES);
-    danceStr = danceGetData (dances, danceIdx, DANCE_DANCE);
+    danceStr = danceGetStr (dances, danceIdx, DANCE_DANCE);
   }
   return danceStr;
 }

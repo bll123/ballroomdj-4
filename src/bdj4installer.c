@@ -1244,7 +1244,7 @@ installerCopyTemplates (installer_t *installer)
       if (renamelist != NULL) {
         char    *tval;
 
-        tval = slistGetData (renamelist, sysvarsGetStr (SV_SHORT_LOCALE));
+        tval = slistGetStr (renamelist, sysvarsGetStr (SV_SHORT_LOCALE));
         if (tval != NULL) {
           snprintf (tbuff, sizeof (tbuff), "%s%*s", tval, (int) pi->elen,
               pi->extension);

@@ -427,7 +427,7 @@ songfilterFilterSong (songfilter_t *sf, song_t *song)
       ilistidx_t  idx;
 
       idx = songGetNum (song, TAG_DANCE);
-      dancestr = danceGetData (dances, idx, DANCE_DANCE);
+      dancestr = danceGetStr (dances, idx, DANCE_DANCE);
       found = songfilterCheckStr (dancestr, searchstr);
     }
     if (! found) {
@@ -569,7 +569,7 @@ songfilterMakeSortKey (songfilter_t *sf, slist_t *sortselParsed,
 
       danceIdx = songGetNum (song, TAG_DANCE);
       if (danceIdx >= 0) {
-        danceStr = danceGetData (dances, danceIdx, DANCE_DANCE);
+        danceStr = danceGetStr (dances, danceIdx, DANCE_DANCE);
       } else {
         danceStr = "";
       }

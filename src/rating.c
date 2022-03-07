@@ -18,7 +18,7 @@
 
   /* must be sorted in ascii order */
 static datafilekey_t ratingdfkeys [RATING_KEY_MAX] = {
-  { "RATING", RATING_RATING, VALUE_DATA, NULL, -1 },
+  { "RATING", RATING_RATING, VALUE_STR, NULL, -1 },
   { "WEIGHT", RATING_WEIGHT, VALUE_NUM, NULL, -1 },
 };
 
@@ -48,7 +48,7 @@ ratingAlloc (char *fname)
     char    *val;
     int     len;
 
-    val = ilistGetData (rating->rating, key, RATING_RATING);
+    val = ilistGetStr (rating->rating, key, RATING_RATING);
     len = istrlen (val);
     if (len > rating->maxWidth) {
       rating->maxWidth = len;
@@ -84,7 +84,7 @@ ratingGetMaxWidth (rating_t *rating)
 char *
 ratingGetRating (rating_t *rating, ilistidx_t ikey)
 {
-  return ilistGetData (rating->rating, ikey, RATING_RATING);
+  return ilistGetStr (rating->rating, ikey, RATING_RATING);
 }
 
 ssize_t

@@ -20,6 +20,6 @@ typedef struct {
 
 songlist_t *  songlistAlloc (char *);
 void          songlistFree (songlist_t *);
-char          *songlistGetData (songlist_t *, ilistidx_t idx, ilistidx_t key);
+char          *songlistGetNext (songlist_t *, ilistidx_t idx, ilistidx_t key);
 
 #endif /* INC_SONGLIST_H */

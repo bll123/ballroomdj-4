@@ -33,36 +33,23 @@
 static void     plConvType (char *, datafileret_t *ret);
 
 /* must be sorted in ascii order */
-static datafilekey_t playlistdfkeys [PLAYLIST_KEY_MAX] = {
-  { "ALLOWEDKEYWORDS",  PLAYLIST_ALLOWED_KEYWORDS,
-      VALUE_DATA, parseConvTextList, -1 },
-  { "DANCELEVELHIGH",   PLAYLIST_LEVEL_HIGH,
-      VALUE_NUM, levelConv, -1 },
-  { "DANCELEVELLOW",    PLAYLIST_LEVEL_LOW,
-      VALUE_NUM, levelConv, -1 },
-  { "DANCERATING",      PLAYLIST_RATING,
-      VALUE_NUM, ratingConv, -1 },
-  { "GAP",              PLAYLIST_GAP,
-      VALUE_NUM, NULL, -1 },
-  { "MANUALLIST",       PLAYLIST_MANUAL_LIST_NAME,
-      VALUE_DATA, NULL, -1 },
-  { "MAXPLAYTIME",      PLAYLIST_MAX_PLAY_TIME,
-      VALUE_NUM, NULL, -1 },
-  { "MQMESSAGE",        PLAYLIST_MQ_MESSAGE,
-      VALUE_DATA, NULL, -1 },
-  { "PAUSEEACHSONG",    PLAYLIST_PAUSE_EACH_SONG,
-      VALUE_NUM, parseConvBoolean, -1 },
-  { "PLAYANNOUNCE",     PLAYLIST_ANNOUNCE,
-      VALUE_NUM, parseConvBoolean, -1 },
-  { "SEQUENCE",         PLAYLIST_SEQ_NAME,
-      VALUE_DATA, NULL, -1 },
-  { "STOPAFTER",        PLAYLIST_STOP_AFTER,
-      VALUE_NUM, NULL, -1 },
-  { "STOPTIME",         PLAYLIST_STOP_TIME,
-      VALUE_NUM, NULL, -1 },
-  { "TYPE",             PLAYLIST_TYPE,
-      VALUE_NUM, plConvType, -1 },
+static datafilekey_t playlistdfkeys [] = {
+  { "ALLOWEDKEYWORDS",PLAYLIST_ALLOWED_KEYWORDS, VALUE_LIST, parseConvTextList, -1 },
+  { "DANCELEVELHIGH", PLAYLIST_LEVEL_HIGH, VALUE_NUM, levelConv, -1 },
+  { "DANCELEVELLOW",  PLAYLIST_LEVEL_LOW, VALUE_NUM, levelConv, -1 },
+  { "DANCERATING",    PLAYLIST_RATING, VALUE_NUM, ratingConv, -1 },
+  { "GAP",            PLAYLIST_GAP, VALUE_NUM, NULL, -1 },
+  { "MANUALLIST",     PLAYLIST_MANUAL_LIST_NAME, VALUE_STR, NULL, -1 },
+  { "MAXPLAYTIME",    PLAYLIST_MAX_PLAY_TIME, VALUE_NUM, NULL, -1 },
+  { "MQMESSAGE",      PLAYLIST_MQ_MESSAGE, VALUE_STR, NULL, -1 },
+  { "PAUSEEACHSONG",  PLAYLIST_PAUSE_EACH_SONG, VALUE_NUM, parseConvBoolean, -1 },
+  { "PLAYANNOUNCE",   PLAYLIST_ANNOUNCE, VALUE_NUM, parseConvBoolean, -1 },
+  { "SEQUENCE",       PLAYLIST_SEQ_NAME, VALUE_STR, NULL, -1 },
+  { "STOPAFTER",      PLAYLIST_STOP_AFTER, VALUE_NUM, NULL, -1 },
+  { "STOPTIME",       PLAYLIST_STOP_TIME, VALUE_NUM, NULL, -1 },
+  { "TYPE",           PLAYLIST_TYPE, VALUE_NUM, plConvType, -1 },
 };
+#define PL_DFKEY_COUNT (sizeof (playlistdfkeys) / sizeof (datafilekey_t))
 
 /* must be sorted in ascii order */
 static datafilekey_t playlistdancedfkeys [PLDANCE_KEY_MAX] = {
@@ -99,7 +86,7 @@ playlistLoad (char *fname)
   assert (pl != NULL);
 
   pl->plinfodf = datafileAllocParse ("playlist-pl", DFTYPE_KEY_VAL, tfn,
-      playlistdfkeys, PLAYLIST_KEY_MAX, DATAFILE_NO_LOOKUP);
+      playlistdfkeys, PL_DFKEY_COUNT, DATAFILE_NO_LOOKUP);
   if (! fileopFileExists (tfn)) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Bad playlist-pl %s", tfn);
     playlistFree (pl);
@@ -124,29 +111,22 @@ playlistLoad (char *fname)
   }
   tpldances = datafileGetList (pl->pldancesdf);
 
-  if (ilistGetVersion (tpldances) < 2) {
-    /* pldances must be rebuilt to use the dance key as the index   */
-    /* all of the old playlists have a generic key value            */
-    pl->pldances = ilistAlloc ("playlist-dances-n", LIST_ORDERED);
-    ilistSetSize (pl->pldances, ilistGetCount (tpldances));
-    ilistStartIterator (tpldances, &iteridx);
-    while ((tidx = ilistIterateKey (tpldances, &iteridx)) >= 0) {
-      /* have to make a clone of the data */
-      didx = ilistGetNum (tpldances, tidx, PLDANCE_DANCE);
-      for (size_t i = 0; i < PLDANCE_KEY_MAX; ++i) {
-        ilistSetNum (pl->pldances, didx, playlistdancedfkeys [i].itemkey,
-            ilistGetNum (tpldances, tidx, playlistdancedfkeys [i].itemkey));
-      }
+  /* pldances must be rebuilt to use the dance key as the index   */
+  /* the playlist datafiles have a generic key value */
+  logMsg (LOG_DBG, LOG_IMPORTANT, "rebuilding playlist");
+  pl->pldances = ilistAlloc ("playlist-dances-n", LIST_ORDERED);
+  ilistSetSize (pl->pldances, ilistGetCount (tpldances));
+  ilistStartIterator (tpldances, &iteridx);
+  while ((tidx = ilistIterateKey (tpldances, &iteridx)) >= 0) {
+    /* have to make a clone of the data */
+    didx = ilistGetNum (tpldances, tidx, PLDANCE_DANCE);
+    for (size_t i = 0; i < PLDANCE_KEY_MAX; ++i) {
+      ilistSetNum (pl->pldances, didx, playlistdancedfkeys [i].itemkey,
+          ilistGetNum (tpldances, tidx, playlistdancedfkeys [i].itemkey));
     }
-// ### FIX want to re-save the datafile using the new format.
-// is the new format viable? don't want a hard-coded dance index in
-// the .pldances file.
-// maybe re-work the above so it always does the remap.
-    datafileFree (pl->pldancesdf);
-    pl->pldancesdf = NULL;
-  } else {
-    pl->pldances = tpldances;
   }
+  datafileFree (pl->pldancesdf);
+  pl->pldancesdf = NULL;
 
   ilistDumpInfo (pl->pldances);
 
@@ -154,6 +134,7 @@ playlistLoad (char *fname)
 
   if (type == PLTYPE_MANUAL) {
     char *slfname = nlistGetStr (pl->plinfo, PLAYLIST_MANUAL_LIST_NAME);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "manual: load songlist %s", slfname);
     pathbldMakePath (tfn, sizeof (tfn), "", slfname, ".songlist", PATHBLD_MP_NONE);
     if (! fileopFileExists (tfn)) {
       logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Missing songlist %s", tfn);
@@ -170,6 +151,7 @@ playlistLoad (char *fname)
 
   if (type == PLTYPE_SEQ) {
     char *seqfname = nlistGetStr (pl->plinfo, PLAYLIST_SEQ_NAME);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "sequence: load sequence %s", seqfname);
     pathbldMakePath (tfn, sizeof (tfn), "", seqfname, ".sequence", PATHBLD_MP_NONE);
     if (! fileopFileExists (tfn)) {
       logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Missing sequence %s", tfn);
@@ -454,7 +436,7 @@ playlistGetNextSong (playlist_t *pl, nlist_t *danceCounts,
     }
   }
   if (type == PLTYPE_MANUAL) {
-    sfname = songlistGetData (pl->songlist, pl->manualIdx, SONGLIST_FILE);
+    sfname = songlistGetNext (pl->songlist, pl->manualIdx, SONGLIST_FILE);
     while (sfname != NULL) {
       song = dbGetByName (sfname);
       if (song != NULL && songAudioFileExists (song)) {
@@ -467,7 +449,7 @@ playlistGetNextSong (playlist_t *pl, nlist_t *danceCounts,
         if (tval < 0) {
           tstr = songGetStr (song, TAG_MQDISPLAY);
           if (tstr == NULL) {
-            tstr = songlistGetData (pl->songlist, pl->manualIdx, SONGLIST_DANCESTR);
+            tstr = songlistGetNext (pl->songlist, pl->manualIdx, SONGLIST_DANCESTR);
             if (tstr != NULL) {
               songSetStr (song, TAG_MQDISPLAY, tstr);
             }
@@ -478,7 +460,7 @@ playlistGetNextSong (playlist_t *pl, nlist_t *danceCounts,
       song = NULL;
       logMsg (LOG_DBG, LOG_IMPORTANT, "manual: missing: %s", sfname);
       ++pl->manualIdx;
-      sfname = songlistGetData (pl->songlist, pl->manualIdx, SONGLIST_FILE);
+      sfname = songlistGetNext (pl->songlist, pl->manualIdx, SONGLIST_FILE);
     }
     ++pl->manualIdx;
     ++pl->count;

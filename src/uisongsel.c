@@ -406,7 +406,7 @@ uisongselPopulateData (uisongsel_t *uisongsel)
       song = dbGetByIdx (dbidx);
       if (song != NULL) {
         danceIdx = songGetNum (song, TAG_DANCE);
-        danceStr = danceGetData (dances, danceIdx, DANCE_DANCE);
+        danceStr = danceGetStr (dances, danceIdx, DANCE_DANCE);
         favorite = songGetFavoriteData (song);
         color = favorite->color;
         if (strcmp (color, "") == 0) {

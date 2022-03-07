@@ -18,7 +18,7 @@
   /* must be sorted in ascii order */
 static datafilekey_t statusdfkeys [STATUS_KEY_MAX] = {
   { "PLAYFLAG",   STATUS_PLAY_FLAG,   VALUE_NUM, parseConvBoolean, -1 },
-  { "STATUS",     STATUS_STATUS,      VALUE_DATA, NULL, -1 },
+  { "STATUS",     STATUS_STATUS,      VALUE_STR, NULL, -1 },
 };
 
 status_t *
@@ -48,7 +48,7 @@ statusAlloc (char *fname)
     char    *val;
     int     len;
 
-    val = ilistGetData (status->status, key, STATUS_STATUS);
+    val = ilistGetStr (status->status, key, STATUS_STATUS);
     len = istrlen (val);
     if (len > status->maxWidth) {
       status->maxWidth = len;
@@ -84,7 +84,7 @@ statusGetMaxWidth (status_t *status)
 char *
 statusGetStatus (status_t *status, ilistidx_t idx)
 {
-  return ilistGetData (status->status, idx, STATUS_STATUS);
+  return ilistGetStr (status->status, idx, STATUS_STATUS);
 }
 
 bool

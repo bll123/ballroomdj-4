@@ -28,7 +28,7 @@ typedef enum {
   PLAYLIST_RATING,                //
   PLAYLIST_SEQ_NAME,              //
   PLAYLIST_STOP_AFTER,            //
-  PLAYLIST_STOP_TIME,
+  PLAYLIST_STOP_TIME,             //
   PLAYLIST_TYPE,                  //
   PLAYLIST_USE_STATUS,            //
   PLAYLIST_KEY_MAX,

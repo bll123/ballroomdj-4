@@ -21,22 +21,22 @@ static void danceConvSpeed (char *keydata, datafileret_t *ret);
 
   /* must be sorted in ascii order */
 static datafilekey_t dancedfkeys [DANCE_KEY_MAX] = {
-  { "ANNOUNCE",   DANCE_ANNOUNCE, VALUE_DATA, NULL, -1 },
-  { "COUNT",      DANCE_COUNT, VALUE_NUM, NULL, -1 },
-  { "DANCE",      DANCE_DANCE, VALUE_DATA, NULL, -1 },
+  { "ANNOUNCE",   DANCE_ANNOUNCE, VALUE_STR, NULL, -1 },
+  { "COUNT",      DANCE_COUNT,    VALUE_NUM, NULL, -1 },
+  { "DANCE",      DANCE_DANCE,    VALUE_STR, NULL, -1 },
   { "HIGHBPM",    DANCE_HIGH_BPM, VALUE_NUM, NULL, -1 },
-  { "LOWBPM",     DANCE_LOW_BPM, VALUE_NUM, NULL, -1 },
-  { "SELECT",     DANCE_SELECT, VALUE_NUM, NULL, -1 },
-  { "SPEED",      DANCE_SPEED, VALUE_LIST, danceConvSpeed, -1 },
-  { "TAGS",       DANCE_TAGS, VALUE_LIST, parseConvTextList, -1 },
-  { "TIMESIG",    DANCE_TIMESIG, VALUE_DATA, NULL, -1 },
-  { "TYPE",       DANCE_TYPE, VALUE_DATA, dnctypesConv, -1 },
+  { "LOWBPM",     DANCE_LOW_BPM,  VALUE_NUM, NULL, -1 },
+  { "SELECT",     DANCE_SELECT,   VALUE_NUM, NULL, -1 },
+  { "SPEED",      DANCE_SPEED,    VALUE_LIST, danceConvSpeed, -1 },
+  { "TAGS",       DANCE_TAGS,     VALUE_LIST, parseConvTextList, -1 },
+  { "TIMESIG",    DANCE_TIMESIG,  VALUE_STR, NULL, -1 },
+  { "TYPE",       DANCE_TYPE,     VALUE_NUM, dnctypesConv, -1 },
 };
 
 static datafilekey_t dancespeeddfkeys [DANCE_SPEED_MAX] = {
-  { "fast",       DANCE_SPEED_FAST,   VALUE_DATA, NULL, -1 },
-  { "normal",     DANCE_SPEED_NORMAL, VALUE_DATA, NULL, -1 },
-  { "slow",       DANCE_SPEED_SLOW,   VALUE_DATA, NULL, -1 },
+  { "fast",       DANCE_SPEED_FAST,   VALUE_NUM, NULL, -1 },
+  { "normal",     DANCE_SPEED_NORMAL, VALUE_NUM, NULL, -1 },
+  { "slow",       DANCE_SPEED_SLOW,   VALUE_NUM, NULL, -1 },
 };
 
 dance_t *
@@ -111,9 +111,9 @@ danceGetCount (dance_t *dance)
 }
 
 char *
-danceGetData (dance_t *dance, ilistidx_t dkey, ilistidx_t idx)
+danceGetStr (dance_t *dance, ilistidx_t dkey, ilistidx_t idx)
 {
-  return ilistGetData (dance->dances, dkey, idx);
+  return ilistGetStr (dance->dances, dkey, idx);
 }
 
 slist_t *
@@ -144,7 +144,7 @@ danceGetDanceList (dance_t *dance)
   slistSetSize (dl, ilistGetCount (dance->dances));
   ilistStartIterator (dance->dances, &iteridx);
   while ((key = ilistIterateKey (dance->dances, &iteridx)) >= 0) {
-    nm = ilistGetData (dance->dances, key, DANCE_DANCE);
+    nm = ilistGetStr (dance->dances, key, DANCE_DANCE);
     slistSetNum (dl, nm, key);
   }
   slistSort (dl);

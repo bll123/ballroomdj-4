@@ -49,18 +49,18 @@ typedef struct {
 typedef enum {
   TAG_ADJUSTFLAGS,
   TAG_AFMODTIME,
-  TAG_ALBUM,
-  TAG_ALBUMARTIST,
-  TAG_ARTIST,
+  TAG_ALBUM,                  //
+  TAG_ALBUMARTIST,            //
+  TAG_ARTIST,                 //
   TAG_AUTOORGFLAG,
-  TAG_BPM,
+  TAG_BPM,                    //
   TAG_COMPOSER,
   TAG_CONDUCTOR,
-  TAG_DANCE,
+  TAG_DANCE,                  //
   TAG_DANCELEVEL,             //
   TAG_DANCERATING,            //
   TAG_DATE,
-  TAG_DBADDDATE,
+  TAG_DBADDDATE,              //
   TAG_DBIDX,                  // not saved
   TAG_DISCNUMBER,
   TAG_DISCTOTAL,

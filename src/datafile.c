@@ -1,6 +1,5 @@
 #include "config.h"
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -212,6 +211,7 @@ datafileParseMerge (list_t *datalist, char *data, char *name,
   listidx_t     key = -1L;
   ssize_t       dataCount;
   nlist_t       *itemList = NULL;
+  nlist_t       *setlist = NULL;
   valuetype_t   vt = 0;
   size_t        inc = 2;
   nlistidx_t    ikey = 0;
@@ -224,7 +224,7 @@ datafileParseMerge (list_t *datalist, char *data, char *name,
 
 
   logProcBegin (LOG_PROC, "datafileParseMerge");
-  logMsg (LOG_DBG, LOG_BASIC, "begin parse %s", name);
+  logMsg (LOG_DBG, LOG_DATAFILE, "begin parse %s", name);
 
   if (dfkeys != NULL) {
     assert (datafileCheckDfkeys (name, dfkeys, dfkeycount));
@@ -298,18 +298,22 @@ datafileParseMerge (list_t *datalist, char *data, char *name,
 
   for (ssize_t i = 0; i < dataCount; i += inc) {
     tkeystr = strdata [i];
-    tvalstr = strdata [i + 1];
+    if (inc > 1) {
+      tvalstr = strdata [i + 1];
+    }
 
     if (inc == 2 && strcmp (tkeystr, "version") == 0) {
       ssize_t version = atol (tvalstr);
       listSetVersion (datalist, version);
       continue;
     }
-    if (strcmp (strdata [i], "count") == 0) {
+    if (strcmp (tkeystr, "count") == 0) {
       if (dftype == DFTYPE_INDIRECT) {
         nlistSetSize (datalist, atol (tvalstr));
       }
-      slistSetSize (*lookup, slistGetCount (datalist));
+      if (lookup != NULL) {
+        slistSetSize (*lookup, slistGetCount (datalist));
+      }
       continue;
     }
 
@@ -394,37 +398,32 @@ datafileParseMerge (list_t *datalist, char *data, char *name,
 
       logMsg (LOG_DBG, LOG_DATAFILE, "set: dftype:%ld vt:%d", dftype, vt);
 
-        /* dftype_indirect has a key pointing to a key/val list. */
       if (dftype == DFTYPE_INDIRECT) {
-        if (vt == VALUE_DATA) {
-          nlistSetStr (itemList, ikey, tvalstr);
-        }
-        if (vt == VALUE_NUM) {
-          nlistSetNum (itemList, ikey, lval);
-        }
-        if (vt == VALUE_DOUBLE) {
-          nlistSetDouble (itemList, ikey, dval);
-        }
-        if (vt == VALUE_LIST) {
-          nlistSetList (itemList, ikey, ret.u.list);
-        }
+        setlist = itemList;
       }
-        /* a key/val type has a single list keyed by a long (dfkeys is set) */
       if (dftype == DFTYPE_KEY_VAL) {
-        if (vt == VALUE_DATA) {
-          nlistSetStr (datalist, ikey, tvalstr);
-        }
-        if (vt == VALUE_NUM) {
-          nlistSetNum (datalist, ikey, lval);
-        }
-        if (vt == VALUE_DOUBLE) {
-          nlistSetDouble (datalist, ikey, dval);
-        }
-        if (vt == VALUE_LIST) {
-          nlistSetList (datalist, ikey, ret.u.list);
-        }
+        setlist = datalist;
       }
+
+      /* use the 'setlist' temporary variable to hold the correct list var */
+      if (vt == VALUE_STR) {
+        nlistSetStr (setlist, ikey, tvalstr);
+      }
+      if (vt == VALUE_DATA) {
+        nlistSetData (setlist, ikey, tvalstr);
+      }
+      if (vt == VALUE_NUM) {
+        nlistSetNum (setlist, ikey, lval);
+      }
+      if (vt == VALUE_DOUBLE) {
+        nlistSetDouble (setlist, ikey, dval);
+      }
+      if (vt == VALUE_LIST) {
+        nlistSetList (setlist, ikey, ret.u.list);
+      }
+
     }
+
     if (dftype == DFTYPE_KEY_VAL && dfkeys == NULL) {
       logMsg (LOG_DBG, LOG_DATAFILE, "set: key_val");
       slistSetStr (datalist, tkeystr, tvalstr);
@@ -476,7 +475,7 @@ datafileSaveKeyVal (char *fn, datafilekey_t *dfkeys,
       val = nlistGetNum (list, dfkeys [i].itemkey);
       fprintf (fh, "..%zd\n", val);
     }
-    if (dfkeys [i].valuetype == VALUE_DATA) {
+    if (dfkeys [i].valuetype == VALUE_STR) {
       char    *val;
 
       val = nlistGetStr (list, dfkeys [i].itemkey);

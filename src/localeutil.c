@@ -47,7 +47,7 @@ localeInit (void)
     df = datafileAllocParse ("locale-win", DFTYPE_KEY_VAL, tbuff,
         NULL, 0, DATAFILE_NO_LOOKUP);
     list = datafileGetList (df);
-    val = slistGetData (list, lbuff);
+    val = slistGetStr (list, lbuff);
     if (val != NULL) {
       strlcpy (lbuff, val, sizeof (lbuff));
     }

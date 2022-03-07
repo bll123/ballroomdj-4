@@ -19,7 +19,7 @@
   /* must be sorted in ascii order */
 static datafilekey_t leveldfkeys [LEVEL_KEY_MAX] = {
   { "DEFAULT",  LEVEL_DEFAULT_FLAG, VALUE_NUM, parseConvBoolean, -1 },
-  { "LEVEL",    LEVEL_LEVEL,        VALUE_DATA, NULL, -1 },
+  { "LEVEL",    LEVEL_LEVEL,        VALUE_STR, NULL, -1 },
   { "WEIGHT",   LEVEL_WEIGHT,       VALUE_NUM, NULL, -1 },
 };
 
@@ -50,7 +50,7 @@ levelAlloc (char *fname)
     char    *val;
     int     len;
 
-    val = ilistGetData (level->level, key, LEVEL_LEVEL);
+    val = ilistGetStr (level->level, key, LEVEL_LEVEL);
     len = istrlen (val);
     if (len > level->maxWidth) {
       level->maxWidth = len;
@@ -86,7 +86,7 @@ levelGetMaxWidth (level_t *level)
 char *
 levelGetLevel (level_t *level, ilistidx_t ikey)
 {
-  return ilistGetData (level->level, ikey, LEVEL_LEVEL);
+  return ilistGetStr (level->level, ikey, LEVEL_LEVEL);
 }
 
 ssize_t

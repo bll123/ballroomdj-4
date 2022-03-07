@@ -738,7 +738,7 @@ uiplayerProcessMusicqStatusData (uiplayer_t *uiplayer, char *args)
 
   if (uiplayer->danceLab != NULL) {
     danceIdx = songGetNum (song, TAG_DANCE);
-    data = danceGetData (dances, danceIdx, DANCE_DANCE);
+    data = danceGetStr (dances, danceIdx, DANCE_DANCE);
     gtk_label_set_label (GTK_LABEL (uiplayer->danceLab), data);
   }
 

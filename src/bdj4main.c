@@ -150,7 +150,7 @@ main (int argc, char *argv[])
   mainData.webclient = NULL;
   mainData.mobmqUserkey = NULL;
   mainData.playWhenQueued = true;
-  mainData.switchQueueWhenEmpty = true;
+  mainData.switchQueueWhenEmpty = false;
   for (int i = 0; i < MUSICQ_MAX; ++i) {
     mainData.playlistQueue [i] = NULL;
     mainData.musicqChanged [i] = false;
@@ -970,10 +970,12 @@ mainMusicQueueFill (maindata_t *mainData)
     song = playlistGetNextSong (playlist, mainData->danceCounts,
         currlen, mainCheckMusicQueue, mainMusicQueueHistory, mainData);
     if (song == NULL) {
+      logMsg (LOG_DBG, LOG_MAIN, "song is null");
       queuePop (mainData->playlistQueue [mainData->musicqManageIdx]);
       playlist = queueGetCurrent (mainData->playlistQueue [mainData->musicqManageIdx]);
       continue;
     }
+    logMsg (LOG_DBG, LOG_MAIN, "push song to musicq");
     musicqPush (mainData->musicQueue, mainData->musicqManageIdx, song, playlistGetName (playlist));
     mainData->musicqChanged [mainData->musicqManageIdx] = true;
     mainData->marqueeChanged [mainData->musicqManageIdx] = true;
@@ -1167,7 +1169,7 @@ mainPrepSong (maindata_t *mainData, song_t *song,
 
       danceidx = songGetNum (song, TAG_DANCE);
       dances = bdjvarsdfGet (BDJVDF_DANCES);
-      annfname = danceGetData (dances, danceidx, DANCE_ANNOUNCE);
+      annfname = danceGetStr (dances, danceidx, DANCE_ANNOUNCE);
       if (annfname != NULL) {
         ssize_t   tval;
 
@@ -1656,7 +1658,7 @@ mainSendPlaylistList (maindata_t *mainData, bdjmsgroute_t route)
   rbuff [0] = '\0';
   slistStartIterator (plList, &iteridx);
   while ((plnm = slistIterateKey (plList, &iteridx)) != NULL) {
-    plfnm = listGetData (plList, plnm);
+    plfnm = slistGetStr (plList, plnm);
     snprintf (tbuff, sizeof (tbuff), "%s%c%s%c",
         plfnm, MSG_ARGS_RS, plnm, MSG_ARGS_RS);
     strlcat (rbuff, tbuff, sizeof (rbuff));

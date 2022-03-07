@@ -37,7 +37,7 @@ void          danceFree (dance_t *);
 void          danceStartIterator (dance_t *, ilistidx_t *idx);
 ilistidx_t    danceIterateKey (dance_t *, ilistidx_t *idx);
 ssize_t       danceGetCount (dance_t *);
-char *        danceGetData (dance_t *, ilistidx_t dkey, ilistidx_t idx);
+char *        danceGetStr (dance_t *, ilistidx_t dkey, ilistidx_t idx);
 ssize_t       danceGetNum (dance_t *, ilistidx_t dkey, ilistidx_t idx);
 slist_t       *danceGetList (dance_t *, ilistidx_t dkey, ilistidx_t idx);
 slist_t       *danceGetDanceList (dance_t *);

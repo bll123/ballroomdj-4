@@ -368,7 +368,7 @@ uiutilsDropDownSetList (uiutilsdropdown_t *dropdown, slist_t *list,
   slistStartIterator (list, &iteridx);
 
   while ((dispval = slistIterateKey (list, &iteridx)) != NULL) {
-    strval = slistGetData (list, dispval);
+    strval = slistGetStr (list, dispval);
     slistSetNum (dropdown->strIndexMap, strval, internalidx);
 
     gtk_list_store_append (store, &iter);

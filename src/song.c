@@ -25,41 +25,41 @@
 static void songConvFavorite (char *keydata, datafileret_t *ret);
 
   /* must be sorted in ascii order */
-static datafilekey_t songdfkeys [MAX_TAG_KEY] = {
-  { "ADJUSTFLAGS",          TAG_ADJUSTFLAGS,          VALUE_DATA, NULL, -1 },
+static datafilekey_t songdfkeys [] = {
+  { "ADJUSTFLAGS",          TAG_ADJUSTFLAGS,          VALUE_STR, NULL, -1 },
   { "AFMODTIME",            TAG_AFMODTIME,            VALUE_NUM, NULL, -1 },
-  { "ALBUM",                TAG_ALBUM,                VALUE_DATA, NULL, -1 },
-  { "ALBUMARTIST",          TAG_ALBUMARTIST,          VALUE_DATA, NULL, -1 },
-  { "ARTIST",               TAG_ARTIST,               VALUE_DATA, NULL, -1 },
+  { "ALBUM",                TAG_ALBUM,                VALUE_STR, NULL, -1 },
+  { "ALBUMARTIST",          TAG_ALBUMARTIST,          VALUE_STR, NULL, -1 },
+  { "ARTIST",               TAG_ARTIST,               VALUE_STR, NULL, -1 },
   { "AUTOORGFLAG",          TAG_AUTOORGFLAG,          VALUE_NUM, NULL, -1 },
   { "BPM",                  TAG_BPM,                  VALUE_NUM, NULL, -1 },
-  { "COMPOSER",             TAG_COMPOSER,             VALUE_DATA, NULL, -1 },
-  { "CONDUCTOR",            TAG_CONDUCTOR,            VALUE_DATA, NULL, -1 },
+  { "COMPOSER",             TAG_COMPOSER,             VALUE_STR, NULL, -1 },
+  { "CONDUCTOR",            TAG_CONDUCTOR,            VALUE_STR, NULL, -1 },
   { "DANCE",                TAG_DANCE,                VALUE_NUM, danceConvDance, -1 },
-  { "DANCELEVEL",           TAG_DANCELEVEL,           VALUE_DATA, levelConv, -1 },
-  { "DANCERATING",          TAG_DANCERATING,          VALUE_DATA, ratingConv, -1 },
-  { "DATE",                 TAG_DATE,                 VALUE_DATA, NULL, -1 },
-  { "DBADDDATE",            TAG_DBADDDATE,            VALUE_DATA, NULL, -1 },
+  { "DANCELEVEL",           TAG_DANCELEVEL,           VALUE_STR, levelConv, -1 },
+  { "DANCERATING",          TAG_DANCERATING,          VALUE_STR, ratingConv, -1 },
+  { "DATE",                 TAG_DATE,                 VALUE_STR, NULL, -1 },
+  { "DBADDDATE",            TAG_DBADDDATE,            VALUE_STR, NULL, -1 },
   { "DISCNUMBER",           TAG_DISCNUMBER,           VALUE_NUM, NULL, -1 },
   { "DISCTOTAL",            TAG_DISCTOTAL,            VALUE_NUM, NULL, -1 },
-  { "DISPLAYIMG",           TAG_DISPLAYIMG,           VALUE_DATA, NULL, -1 },
+  { "DISPLAYIMG",           TAG_DISPLAYIMG,           VALUE_STR, NULL, -1 },
   { "DURATION",             TAG_DURATION,             VALUE_NUM, NULL, -1 },
   { "FAVORITE",             TAG_FAVORITE,             VALUE_NUM, songConvFavorite, -1 },
-  { "FILE",                 TAG_FILE,                 VALUE_DATA, NULL, -1 },
+  { "FILE",                 TAG_FILE,                 VALUE_STR, NULL, -1 },
   { "GENRE",                TAG_GENRE,                VALUE_NUM, genreConv, -1 },
-  { "KEYWORD",              TAG_KEYWORD,              VALUE_DATA, NULL, -1 },
-  { "MQDISPLAY",            TAG_MQDISPLAY,            VALUE_DATA, NULL, -1 },
-  { "MUSICBRAINZ_TRACKID",  TAG_MUSICBRAINZ_TRACKID,  VALUE_DATA, NULL, -1 },
+  { "KEYWORD",              TAG_KEYWORD,              VALUE_STR, NULL, -1 },
+  { "MQDISPLAY",            TAG_MQDISPLAY,            VALUE_STR, NULL, -1 },
+  { "MUSICBRAINZ_TRACKID",  TAG_MUSICBRAINZ_TRACKID,  VALUE_STR, NULL, -1 },
   { "NOMAXPLAYTIME",        TAG_NOMAXPLAYTIME,        VALUE_NUM, parseConvBoolean, -1 },
-  { "NOTES",                TAG_NOTES,                VALUE_DATA, NULL, -1 },
+  { "NOTES",                TAG_NOTES,                VALUE_STR, NULL, -1 },
   { "RRN",                  TAG_RRN,                  VALUE_NUM, NULL, -1 },
-  { "SAMESONG",             TAG_SAMESONG,             VALUE_DATA, NULL, -1 },
+  { "SAMESONG",             TAG_SAMESONG,             VALUE_STR, NULL, -1 },
   { "SONGEND",              TAG_SONGEND,              VALUE_NUM, NULL, -1 },
   { "SONGSTART",            TAG_SONGSTART,            VALUE_NUM, NULL, -1 },
   { "SPEEDADJUSTMENT",      TAG_SPEEDADJUSTMENT,      VALUE_NUM, NULL, -1 },
   { "STATUS",               TAG_STATUS,               VALUE_NUM, statusConv, -1 },
   { "TAGS",                 TAG_TAGS,                 VALUE_LIST, parseConvTextList, -1 },
-  { "TITLE",                TAG_TITLE,                VALUE_DATA, NULL, -1 },
+  { "TITLE",                TAG_TITLE,                VALUE_STR, NULL, -1 },
   { "TRACKNUMBER",          TAG_TRACKNUMBER,          VALUE_NUM, NULL, -1 },
   { "TRACKTOTAL",           TAG_TRACKTOTAL,           VALUE_NUM, NULL, -1 },
   { "UPDATEFLAG",           TAG_UPDATEFLAG,           VALUE_NUM, NULL, -1 },
@@ -68,14 +68,15 @@ static datafilekey_t songdfkeys [MAX_TAG_KEY] = {
   { "VOLUMEADJUSTPERC",     TAG_VOLUMEADJUSTPERC,     VALUE_DOUBLE, NULL, -1 },
   { "WRITETIME",            TAG_WRITETIME,            VALUE_NUM, NULL, -1 },
 };
+#define SONG_DFKEY_COUNT (sizeof (songdfkeys) / sizeof (datafilekey_t))
 
 static datafilekey_t favoritedfkeys [SONG_FAVORITE_MAX] = {
-  { "bluestar",   SONG_FAVORITE_BLUE,     VALUE_DATA, NULL, -1 },
-  { "greenstar",  SONG_FAVORITE_GREEN,    VALUE_DATA, NULL, -1 },
-  { "none",       SONG_FAVORITE_NONE,     VALUE_DATA, NULL, -1 },
-  { "orangestar", SONG_FAVORITE_ORANGE,   VALUE_DATA, NULL, -1 },
-  { "purplestar", SONG_FAVORITE_PURPLE,   VALUE_DATA, NULL, -1 },
-  { "redstar",    SONG_FAVORITE_RED,      VALUE_DATA, NULL, -1 },
+  { "bluestar",   SONG_FAVORITE_BLUE,     VALUE_STR, NULL, -1 },
+  { "greenstar",  SONG_FAVORITE_GREEN,    VALUE_STR, NULL, -1 },
+  { "none",       SONG_FAVORITE_NONE,     VALUE_STR, NULL, -1 },
+  { "orangestar", SONG_FAVORITE_ORANGE,   VALUE_STR, NULL, -1 },
+  { "purplestar", SONG_FAVORITE_PURPLE,   VALUE_STR, NULL, -1 },
+  { "redstar",    SONG_FAVORITE_RED,      VALUE_STR, NULL, -1 },
 };
 
 static songfavoriteinfo_t songfavoriteinfo [SONG_FAVORITE_MAX] = {
@@ -129,7 +130,7 @@ songParse (song_t *song, char *data, ssize_t didx)
 
   snprintf (tbuff, sizeof (tbuff), "song-%zd", didx);
   song->songInfo = datafileParse (data, tbuff, DFTYPE_KEY_VAL,
-      songdfkeys, MAX_TAG_KEY, DATAFILE_NO_LOOKUP, NULL);
+      songdfkeys, SONG_DFKEY_COUNT, DATAFILE_NO_LOOKUP, NULL);
   nlistSort (song->songInfo);
 }
 
