@@ -107,9 +107,15 @@ uiutilsSetUIFont (char *uifont)
     snprintf (tbuff, sizeof (tbuff), "* { font-family: '%s'; }", wbuff);
     if (sz > 0) {
       snprintf (wbuff, sizeof (wbuff), " * { font-size: %dpt; }", sz);
+      strlcat (tbuff, wbuff, MAXPATHLEN);
     }
-    strlcat (tbuff, wbuff, MAXPATHLEN);
-    gtk_css_provider_load_from_data (tcss, tbuff, -1, NULL);
+
+    p = strdup (tbuff);
+    ++csscount;
+    cssdata = realloc (cssdata, sizeof (char *) * csscount);
+    cssdata [csscount-1] = p;
+
+    gtk_css_provider_load_from_data (tcss, p, -1, NULL);
     screen = gdk_screen_get_default ();
     if (screen != NULL) {
       gtk_style_context_add_provider_for_screen (screen, GTK_STYLE_PROVIDER (tcss),
@@ -776,11 +782,14 @@ uiutilsDropDownButtonCreate (char *title, uiutilsdropdown_t *dropdown)
   gtk_button_set_label (GTK_BUTTON (widget), tbuff);
   gtk_widget_set_margin_top (widget, 2);
   gtk_widget_set_margin_start (widget, 2);
+
   pathbldMakePath (tbuff, sizeof (tbuff), "", "button_down_small", ".svg",
       PATHBLD_MP_IMGDIR);
   image = gtk_image_new_from_file (tbuff);
   gtk_button_set_image (GTK_BUTTON (widget), image);
   gtk_button_set_image_position (GTK_BUTTON (widget), GTK_POS_RIGHT);
+  gtk_button_set_always_show_image (GTK_BUTTON (widget), TRUE);
+
   g_signal_connect (widget, "clicked",
       G_CALLBACK (uiutilsDropDownWindowShow), dropdown);
 

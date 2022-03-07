@@ -274,7 +274,7 @@ main (int argc, char *argv[])
   uiutilsInitGtkLog ();
   gtk_init (&argc, NULL);
   mqfont = bdjoptGetStr (OPT_MP_MQFONT);
-  uiutilsSetmqfont (mqfont);
+  uiutilsSetUIFont (mqfont);
 
   status = marqueeCreateGui (&marquee, 0, NULL);
 

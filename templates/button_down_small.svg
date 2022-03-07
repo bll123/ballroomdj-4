@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg
    enable-background="new 0 0 128 128"
-   viewBox="0 0 13 12"
+   viewBox="0 0 13 18"
    version="1.1"
    id="svg29"
    sodipodi:docname="button_down_small.svg"
    width="13"
-   height="12"
+   height="18"
    inkscape:version="1.1.1 (3bf5ae0d25, 2021-09-20)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
@@ -41,9 +41,9 @@
      inkscape:window-height="957"
      id="namedview31"
      showgrid="false"
-     inkscape:zoom="33.166667"
-     inkscape:cx="6.0452261"
-     inkscape:cy="5.3819095"
+     inkscape:zoom="38.833333"
+     inkscape:cx="6.5021459"
+     inkscape:cy="9"
      inkscape:window-x="51"
      inkscape:window-y="0"
      inkscape:window-maximized="0"
@@ -75,5 +75,5 @@
      style="fill:#ffa600;fill-opacity:1;stroke-width:0.219602"
      inkscape:connector-curvature="0"
      id="path25"
-     d="m 6.9627819,0.63306013 h 5.5333921 c 0.386001,0 0.62752,0.42266857 0.437755,0.76035577 L 7.4005357,11.110319 c -0.1940786,0.342161 -0.6814312,0.342161 -0.8733523,0 L 0.99163482,1.3934159 C 0.79971312,1.0534924 1.0412294,0.63306013 1.42939,0.63306013 Z" />
+     d="m 6.9627817,0 h 5.5333923 c 0.386001,0 0.62752,0.422669 0.437755,0.760356 l -5.5333935,9.716903 c -0.1940786,0.342161 -0.6814312,0.342161 -0.8733523,0 L 0.99163471,0.760356 C 0.79971301,0.4204319 1.0412293,0 1.4293899,0 Z" />
 </svg>

@@ -315,12 +315,14 @@ uiplayerActivate (uiplayer_t *uiplayer)
 
   uiplayer->repeatButton = gtk_toggle_button_new ();
   assert (uiplayer->repeatButton != NULL);
+  gtk_widget_set_margin_top (uiplayer->repeatButton, 2);
+  gtk_widget_set_margin_start (uiplayer->repeatButton, 2);
+
   pathbldMakePath (tbuff, sizeof (tbuff), "", "button_repeat", ".svg",
       PATHBLD_MP_IMGDIR);
   image = gtk_image_new_from_file (tbuff);
   gtk_button_set_image (GTK_BUTTON (uiplayer->repeatButton), image);
   gtk_widget_set_tooltip_text (uiplayer->repeatButton, _("Toggle Repeat"));
-  gtk_widget_set_margin_start (uiplayer->repeatButton, 2);
   gtk_box_pack_start (GTK_BOX (hbox), uiplayer->repeatButton,
       FALSE, FALSE, 0);
   g_signal_connect (uiplayer->repeatButton, "toggled", G_CALLBACK (uiplayerRepeatProcess), uiplayer);
@@ -334,8 +336,10 @@ uiplayerActivate (uiplayer_t *uiplayer)
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 
   uiplayer->pauseatendButton = gtk_toggle_button_new ();
-  gtk_button_set_label (GTK_BUTTON (uiplayer->pauseatendButton), _("Pause at End"));
   assert (uiplayer->pauseatendButton != NULL);
+  gtk_button_set_label (GTK_BUTTON (uiplayer->pauseatendButton), _("Pause at End"));
+  gtk_widget_set_margin_top (uiplayer->pauseatendButton, 2);
+  gtk_widget_set_margin_start (uiplayer->pauseatendButton, 2);
 
   pathbldMakePath (tbuff, sizeof (tbuff), "", "led_off", ".svg",
       PATHBLD_MP_IMGDIR);
@@ -350,7 +354,6 @@ uiplayerActivate (uiplayer_t *uiplayer)
   gtk_button_set_image (GTK_BUTTON (uiplayer->pauseatendButton), uiplayer->ledoffImg);
   gtk_button_set_image_position (GTK_BUTTON (uiplayer->pauseatendButton), GTK_POS_RIGHT);
   gtk_button_set_always_show_image (GTK_BUTTON (uiplayer->pauseatendButton), TRUE);
-  gtk_widget_set_margin_start (uiplayer->pauseatendButton, 2);
   gtk_box_pack_start (GTK_BOX (hbox), uiplayer->pauseatendButton,
       FALSE, FALSE, 0);
   g_signal_connect (uiplayer->pauseatendButton, "toggled", G_CALLBACK (uiplayerPauseatendProcess), uiplayer);

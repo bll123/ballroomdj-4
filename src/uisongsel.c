@@ -473,7 +473,7 @@ logMsg (LOG_DBG, LOG_IMPORTANT, "ps:%.2f si:%.2f", ps, si);
       /* the current step increment has been adjusted for the current */
       /* number of rows that are displayed */
       uisongsel->lastStepIncrement = si;
-logMsg (LOG_DBG, LOG_IMPORTANT, "save last-step-inc");
+logMsg (LOG_DBG, LOG_IMPORTANT, "save last-step-inc: %.2f", si);
     }
 
     uisongsel->maxRows = (int) (ps / uisongsel->lastStepIncrement);
@@ -487,6 +487,7 @@ logMsg (LOG_DBG, LOG_IMPORTANT, "after-emit");
 
     adjustment = gtk_range_get_adjustment (GTK_RANGE (uisongsel->songselScrollbar));
     /* the step increment does not work correctly with smooth scrolling */
+    /* and it appears there's no easy way to turn smooth scrolling off */
     gtk_adjustment_set_step_increment (adjustment, 4.0);
     gtk_adjustment_set_page_increment (adjustment, (double) uisongsel->maxRows);
     gtk_adjustment_set_page_size (adjustment, (double) uisongsel->maxRows);
