@@ -48,8 +48,7 @@ typedef enum {
   OPT_M_SHUTDOWNSCRIPT,
   OPT_M_STARTUPSCRIPT,
   OPT_M_VOLUME_INTFC,             //
-  OPT_MP_FONTSIZE,
-  OPT_MP_LISTING_FONT,
+  OPT_MP_LISTING_FONT,            //
   OPT_MP_MQFONT,                    //
   OPT_MP_MQ_THEME,                  //
   OPT_MP_PLAYEROPTIONS,

@@ -83,6 +83,7 @@ foreach path [list {} profiles $mpath $mppath] {
         if { $key eq "SERVERPORT" } { continue }
         if { $key eq "SERVERTYPE" } { continue }
         if { $key eq "SERVERUSER" } { continue }
+        if { $key eq "FONTSIZE" } { continue }
         # renamed; moved to MP
         if { $key eq "UITHEME" } { continue }
         # moved to M

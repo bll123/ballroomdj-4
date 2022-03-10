@@ -9,6 +9,7 @@
 
 #include "bdj4.h"
 #include "bdj4intl.h"
+#include "bdjopt.h"
 #include "bdjstring.h"
 #include "bdjvarsdf.h"
 #include "conn.h"
@@ -28,10 +29,14 @@
 #include "uiutils.h"
 
 enum {
+  MUSICQ_COL_ELLIPSIZE,
+//  MUSICQ_COL_SIZE,
+//  MUSICQ_COL_SIZE_POINTS,
+  MUSICQ_COL_FONT,
   MUSICQ_COL_IDX,
-  MUSICQ_COL_DISP_IDX,
   MUSICQ_COL_UNIQUE_IDX,
   MUSICQ_COL_DBIDX,
+  MUSICQ_COL_DISP_IDX,
   MUSICQ_COL_PAUSEIND,
   MUSICQ_COL_DANCE,
   MUSICQ_COL_TITLE,
@@ -126,21 +131,17 @@ uimusicqFree (uimusicq_t *uimusicq)
 GtkWidget *
 uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
 {
-  int               tci;
-  char              tbuff [MAXPATHLEN];
-  GtkWidget         *image = NULL;
-  GtkWidget         *widget = NULL;
-  GtkWidget         *hbox = NULL;
-  GtkCellRenderer   *renderer = NULL;
-  GtkTreeViewColumn *column = NULL;
-  GtkTreeSelection  *sel = NULL;
-  GValue            gvalue = G_VALUE_INIT;
+  int                   tci;
+  char                  tbuff [MAXPATHLEN];
+  GtkWidget             *image = NULL;
+  GtkWidget             *widget = NULL;
+  GtkWidget             *hbox = NULL;
+  GtkCellRenderer       *renderer = NULL;
+  GtkTreeViewColumn     *column = NULL;
+  GtkTreeSelection      *sel = NULL;
 
 
   logProcBegin (LOG_PROC, "uimusicqActivate");
-
-  g_value_init (&gvalue, G_TYPE_INT);
-  g_value_set_int (&gvalue, PANGO_ELLIPSIZE_END);
 
   /* temporary */
   tci = uimusicq->musicqManageIdx;
@@ -248,7 +249,9 @@ uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
   renderer = gtk_cell_renderer_text_new ();
   gtk_cell_renderer_set_alignment (renderer, 1.0, 0.5);
   column = gtk_tree_view_column_new_with_attributes ("",
-      renderer, "text", MUSICQ_COL_DISP_IDX, NULL);
+      renderer, "text", MUSICQ_COL_DISP_IDX,
+      "font", MUSICQ_COL_FONT,
+      NULL);
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
   gtk_tree_view_append_column (GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree), column);
 
@@ -260,31 +263,35 @@ uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
 
   renderer = gtk_cell_renderer_text_new ();
   column = gtk_tree_view_column_new_with_attributes ("",
-      renderer, "text", MUSICQ_COL_DANCE, NULL);
+      renderer, "text", MUSICQ_COL_DANCE,
+      "font", MUSICQ_COL_FONT,
+      NULL);
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
   gtk_tree_view_append_column (GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree), column);
 
   renderer = gtk_cell_renderer_text_new ();
   column = gtk_tree_view_column_new_with_attributes ("",
-      renderer, "text", MUSICQ_COL_TITLE, NULL);
+      renderer, "text", MUSICQ_COL_TITLE,
+      "font", MUSICQ_COL_FONT,
+      "ellipsize", MUSICQ_COL_ELLIPSIZE,
+      NULL);
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
   gtk_tree_view_column_set_fixed_width (column, 400);
   gtk_tree_view_column_set_expand (column, TRUE);
-  g_object_set_property (G_OBJECT (renderer), "ellipsize", &gvalue);
   gtk_tree_view_append_column (GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree), column);
 
   renderer = gtk_cell_renderer_text_new ();
   column = gtk_tree_view_column_new_with_attributes ("",
-      renderer, "text", MUSICQ_COL_ARTIST, NULL);
+      renderer, "text", MUSICQ_COL_ARTIST,
+      "font", MUSICQ_COL_FONT,
+      "ellipsize", MUSICQ_COL_ELLIPSIZE,
+      NULL);
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
   gtk_tree_view_column_set_fixed_width (column, 250);
   gtk_tree_view_column_set_expand (column, TRUE);
-  g_object_set_property (G_OBJECT (renderer), "ellipsize", &gvalue);
   gtk_tree_view_append_column (GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree), column);
 
   gtk_tree_view_set_model (GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree), NULL);
-
-  g_value_unset (&gvalue);
 
   uimusicq->musicqManageIdx = tci;
 
@@ -486,14 +493,21 @@ uimusicqProcessMusicQueueDataNew (uimusicq_t *uimusicq, char * args)
   GdkPixbuf         *pixbuf = NULL;
   nlistidx_t        iteridx;
   musicqupdate_t    *musicqupdate = NULL;
-
+  char              *listingFont;
 
   logProcBegin (LOG_PROC, "uimusicqProcessMusicQueueDataNew");
+  listingFont = bdjoptGetStr (OPT_MP_LISTING_FONT);
+
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
 
   store = gtk_list_store_new (MUSICQ_COL_MAX,
-      G_TYPE_ULONG, G_TYPE_ULONG, G_TYPE_ULONG, G_TYPE_ULONG,
+      /* attributes */
+      G_TYPE_INT, G_TYPE_STRING,
+      /* internal */
+      G_TYPE_ULONG, G_TYPE_ULONG, G_TYPE_ULONG,
+      /* display */
+      G_TYPE_ULONG,
       GDK_TYPE_PIXBUF, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
   assert (store != NULL);
 
@@ -512,10 +526,14 @@ uimusicqProcessMusicQueueDataNew (uimusicq_t *uimusicq, char * args)
 
     gtk_list_store_append (store, &iter);
     gtk_list_store_set (store, &iter,
+        MUSICQ_COL_ELLIPSIZE, 1,
+//        MUSICQ_COL_SIZE, 8,
+//        MUSICQ_COL_SIZE_POINTS, 8.0,
+        MUSICQ_COL_FONT, listingFont,
         MUSICQ_COL_IDX, musicqupdate->idx,
-        MUSICQ_COL_DISP_IDX, musicqupdate->dispidx,
         MUSICQ_COL_UNIQUE_IDX, musicqupdate->uniqueidx,
         MUSICQ_COL_DBIDX, musicqupdate->dbidx,
+        MUSICQ_COL_DISP_IDX, musicqupdate->dispidx,
         MUSICQ_COL_PAUSEIND, pixbuf,
         MUSICQ_COL_DANCE, danceStr,
         MUSICQ_COL_ARTIST, songGetStr (song, TAG_ARTIST),
@@ -546,9 +564,11 @@ uimusicqProcessMusicQueueDataUpdate (uimusicq_t *uimusicq, char * args)
   musicqupdate_t    *musicqupdate;
   nlistidx_t        iteridx;
   gboolean          valid;
+  char              *listingFont;
 
 
   logProcBegin (LOG_PROC, "uimusicqProcessMusicQueueDataUpdate");
+  listingFont = bdjoptGetStr (OPT_MP_LISTING_FONT);
 
   uimusicq->workList = nlistAlloc ("temp-musicq-work", LIST_UNORDERED, NULL);
 
@@ -613,6 +633,8 @@ uimusicqProcessMusicQueueDataUpdate (uimusicq_t *uimusicq, char * args)
     if (! valid) {
       gtk_list_store_append (GTK_LIST_STORE (model), &iter);
       gtk_list_store_set (GTK_LIST_STORE (model), &iter,
+          MUSICQ_COL_ELLIPSIZE, 1,
+          MUSICQ_COL_FONT, listingFont,
           MUSICQ_COL_IDX, musicqupdate->idx,
           MUSICQ_COL_DISP_IDX, musicqupdate->dispidx,
           MUSICQ_COL_UNIQUE_IDX, musicqupdate->uniqueidx,

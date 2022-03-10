@@ -19,7 +19,7 @@ typedef struct {
   conn_t            *conn;
   int               maxRows;
   int               lastTreeSize;
-  double            lastStepIncrement;
+  double            lastRowHeight;
   ssize_t           idxStart;
   ilistidx_t        danceIdx;
   double            dfilterCount;

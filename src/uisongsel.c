@@ -39,6 +39,8 @@ enum {
 };
 
 enum {
+  SONGSEL_COL_ELLIPSIZE,
+  SONGSEL_COL_FONT,
   SONGSEL_COL_IDX,
   SONGSEL_COL_SORTIDX,
   SONGSEL_COL_DBIDX,
@@ -49,6 +51,8 @@ enum {
   SONGSEL_COL_FAVORITE,
   SONGSEL_COL_MAX,
 };
+
+#define STORE_ROWS     60
 
 static void uisongselInitializeStore (uisongsel_t *uisongsel);
 static void uisongselCreateRows (uisongsel_t *uisongsel);
@@ -109,7 +113,7 @@ uisongselInit (progstate_t *progstate, conn_t *conn, nlist_t *options)
   uisongsel->createRowFlag = false;
   uisongsel->dfilterCount = (double) dbCount ();
   uisongsel->lastTreeSize = 0;
-  uisongsel->lastStepIncrement = 0.0;
+  uisongsel->lastRowHeight = 0.0;
   uisongsel->danceIdx = -1;
   uisongsel->options = options;
   uiutilsDropDownInit (&uisongsel->dancesel);
@@ -167,12 +171,8 @@ uisongselActivate (uisongsel_t *uisongsel, GtkWidget *parentwin)
   GtkCellRenderer   *renderer = NULL;
   GtkTreeViewColumn *column = NULL;
   GtkAdjustment     *adjustment;
-  GValue            gvalue = G_VALUE_INIT;
 
   logProcBegin (LOG_PROC, "uisongselActivate");
-
-  g_value_init (&gvalue, G_TYPE_INT);
-  g_value_set_int (&gvalue, PANGO_ELLIPSIZE_END);
 
   uisongsel->parentwin = parentwin;
 
@@ -261,42 +261,55 @@ uisongselActivate (uisongsel_t *uisongsel, GtkWidget *parentwin)
 
   renderer = gtk_cell_renderer_text_new ();
   column = gtk_tree_view_column_new_with_attributes ("",
-      renderer, "text", SONGSEL_COL_DANCE, NULL);
+      renderer, "text", SONGSEL_COL_DANCE,
+      "font", SONGSEL_COL_FONT,
+      NULL);
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
   gtk_tree_view_column_set_title (column, _("Dance"));
   gtk_tree_view_append_column (GTK_TREE_VIEW (uisongsel->songselTree), column);
 
   renderer = gtk_cell_renderer_text_new ();
   column = gtk_tree_view_column_new_with_attributes ("",
-      renderer, "text", SONGSEL_COL_TITLE, NULL);
+      renderer, "text", SONGSEL_COL_TITLE,
+      "font", SONGSEL_COL_FONT,
+      "ellipsize", SONGSEL_COL_ELLIPSIZE,
+      NULL);
   /* if set to autosize, the column disappears on a resize */
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
   gtk_tree_view_column_set_fixed_width (column, 400);
   gtk_tree_view_column_set_expand (column, TRUE);
-  g_object_set_property (G_OBJECT (renderer), "ellipsize", &gvalue);
   gtk_tree_view_column_set_title (column, _("Title"));
   gtk_tree_view_append_column (GTK_TREE_VIEW (uisongsel->songselTree), column);
 
   renderer = gtk_cell_renderer_text_new ();
   column = gtk_tree_view_column_new_with_attributes ("",
-      renderer, "text", SONGSEL_COL_ARTIST, NULL);
+      renderer, "text", SONGSEL_COL_ARTIST,
+      "font", SONGSEL_COL_FONT,
+      "ellipsize", SONGSEL_COL_ELLIPSIZE,
+      NULL);
   gtk_tree_view_column_set_fixed_width (column, 250);
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_FIXED);
-  g_object_set_property (G_OBJECT (renderer), "ellipsize", &gvalue);
   gtk_tree_view_column_set_title (column, _("Artist"));
   gtk_tree_view_append_column (GTK_TREE_VIEW (uisongsel->songselTree), column);
 
   renderer = gtk_cell_renderer_text_new ();
   gtk_cell_renderer_set_alignment (renderer, 0.5, 0.5);
   column = gtk_tree_view_column_new_with_attributes ("",
-      renderer, "markup", SONGSEL_COL_FAVORITE,
-      "foreground", SONGSEL_COL_FAV_COLOR, NULL);
+      renderer,
+      "markup", SONGSEL_COL_FAVORITE,
+      "font", SONGSEL_COL_FONT,
+      "foreground", SONGSEL_COL_FAV_COLOR,
+      NULL);
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
   gtk_tree_view_column_set_title (column, "\xE2\x98\x85");
   gtk_tree_view_append_column (GTK_TREE_VIEW (uisongsel->songselTree), column);
   uisongsel->favColumn = column;
 
   uisongselInitializeStore (uisongsel);
+  /* pre-populate so that the number of displable rows can be calculated */
+  uisongsel->maxRows = STORE_ROWS;
+  uisongselPopulateData (uisongsel);
+
   uisongselCreateRows (uisongsel);
   logMsg (LOG_DBG, LOG_SONGSEL, "populate: initial");
   uisongselPopulateData (uisongsel);
@@ -326,7 +339,11 @@ uisongselInitializeStore (uisongsel_t *uisongsel)
   logProcBegin (LOG_PROC, "uisongselInitializeStore");
 
   store = gtk_list_store_new (SONGSEL_COL_MAX,
+      /* attributes */
+      G_TYPE_INT, G_TYPE_STRING,
+      /* internal */
       G_TYPE_ULONG, G_TYPE_ULONG, G_TYPE_ULONG,
+      /* display */
       G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING,
       G_TYPE_STRING, G_TYPE_STRING);
   assert (store != NULL);
@@ -346,8 +363,10 @@ uisongselCreateRows (uisongsel_t *uisongsel)
   logProcBegin (LOG_PROC, "uisongselCreateRows");
 
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (uisongsel->songselTree));
-  /* for now, some number that should be large enough */
-  for (int i = 0; i < 50; ++i) {
+  /* enough pre-allocated rows are needed so that if the windows is */
+  /* maximized and the font size is not large, enough rows are available */
+  /* to be displayed */
+  for (int i = 0; i < STORE_ROWS; ++i) {
     gtk_list_store_append (GTK_LIST_STORE (model), &iter);
   }
 
@@ -387,9 +406,10 @@ uisongselPopulateData (uisongsel_t *uisongsel)
   char                tmp [40];
   char                tbuff [100];
   dbidx_t             dbidx;
+  char                * listingFont;
 
   logProcBegin (LOG_PROC, "uisongselPopulateData");
-
+  listingFont = bdjoptGetStr (OPT_MP_LISTING_FONT);
 
   adjustment = gtk_range_get_adjustment (GTK_RANGE (uisongsel->songselScrollbar));
   gtk_adjustment_set_upper (adjustment, uisongsel->dfilterCount);
@@ -423,6 +443,8 @@ uisongselPopulateData (uisongsel_t *uisongsel)
           color = tmp;
         }
         gtk_list_store_set (GTK_LIST_STORE (model), &iter,
+            SONGSEL_COL_ELLIPSIZE, 1,
+            SONGSEL_COL_FONT, listingFont,
             SONGSEL_COL_IDX, idx,
             SONGSEL_COL_SORTIDX, idx,
             SONGSEL_COL_DBIDX, dbidx,
@@ -447,7 +469,8 @@ uisongselProcessTreeSize (GtkWidget* w, GtkAllocation* allocation,
 {
   uisongsel_t   *uisongsel = udata;
   GtkAdjustment *adjustment;
-  double        ps, si;
+  double        ps;
+double t;
 
   logProcBegin (LOG_PROC, "uisongselProcessTreeSize");
 
@@ -457,33 +480,32 @@ uisongselProcessTreeSize (GtkWidget* w, GtkAllocation* allocation,
       return;
     }
 
-    /* get the page size and the step increment from the scrolled window */
-    /* scrollbar; this will allow us to determine how many rows are */
-    /* currently displayed */
+    /* the step increment is useless */
+    /* the page-size and upper can be used to determine */
+    /* how many rows can be displayed */
     adjustment = gtk_scrollable_get_vadjustment (GTK_SCROLLABLE (uisongsel->songselTree));
     ps = gtk_adjustment_get_page_size (adjustment);
-    si = gtk_adjustment_get_step_increment (adjustment);
-logMsg (LOG_DBG, LOG_IMPORTANT, "ps:%.2f si:%.2f", ps, si);
-    if (si <= 0.05) {
-      logProcEnd (LOG_PROC, "uisongselProcessTreeSize", "small-adjust");
-      return;
-    }
-    if (uisongsel->lastStepIncrement == 0.0) {
+
+
+    if (uisongsel->lastRowHeight == 0.0) {
+      double      u, hpr;
+
+      u = gtk_adjustment_get_upper (adjustment);
+      hpr = u / STORE_ROWS;
       /* save the original step increment for use in calculations later */
       /* the current step increment has been adjusted for the current */
       /* number of rows that are displayed */
-      uisongsel->lastStepIncrement = si;
-logMsg (LOG_DBG, LOG_IMPORTANT, "save last-step-inc: %.2f", si);
+      uisongsel->lastRowHeight = hpr;
     }
 
-    uisongsel->maxRows = (int) (ps / uisongsel->lastStepIncrement);
-logMsg (LOG_DBG, LOG_IMPORTANT, "max-rows:%d", uisongsel->maxRows);
+    uisongsel->maxRows = (int) (ps / uisongsel->lastRowHeight);
+    ++uisongsel->maxRows;
+    logMsg (LOG_DBG, LOG_IMPORTANT, "max-rows:%d", uisongsel->maxRows);
 
     /* force a redraw */
     gtk_adjustment_set_value (adjustment, 0.0);
     g_signal_emit_by_name (GTK_RANGE (uisongsel->songselScrollbar),
         "change-value", NULL, 0.0, uisongsel, NULL);
-logMsg (LOG_DBG, LOG_IMPORTANT, "after-emit");
 
     adjustment = gtk_range_get_adjustment (GTK_RANGE (uisongsel->songselScrollbar));
     /* the step increment does not work correctly with smooth scrolling */
@@ -493,14 +515,12 @@ logMsg (LOG_DBG, LOG_IMPORTANT, "after-emit");
     gtk_adjustment_set_page_size (adjustment, (double) uisongsel->maxRows);
 
     uisongsel->lastTreeSize = allocation->height;
-logMsg (LOG_DBG, LOG_IMPORTANT, "last-tree-size:%d", uisongsel->lastTreeSize);
 
     logMsg (LOG_DBG, LOG_SONGSEL, "populate: tree size change");
     uisongselPopulateData (uisongsel);
 
     g_signal_emit_by_name (GTK_RANGE (uisongsel->songselScrollbar),
         "change-value", NULL, (double) uisongsel->idxStart, uisongsel, NULL);
-logMsg (LOG_DBG, LOG_IMPORTANT, "after-emit");
   }
   logProcEnd (LOG_PROC, "uisongselProcessTreeSize", "");
 }
