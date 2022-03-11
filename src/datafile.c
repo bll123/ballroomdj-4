@@ -465,7 +465,7 @@ datafileSaveKeyVal (char *fn, datafilekey_t *dfkeys,
   char      tbuff [100];
 
   datafileBackup (fn, 1);
-  fh = fopen (fn, "w");
+  fh = fileopOpen (fn, "w");
   fprintf (fh, "# %s\n", tmutilDstamp (tbuff, sizeof (tbuff)));
   for (ssize_t i = 0; i < dfkeycount; ++i) {
     fprintf (fh, "%s\n", dfkeys [i].name);

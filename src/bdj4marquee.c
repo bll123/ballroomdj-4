@@ -109,6 +109,8 @@ static gboolean marqueeWinState (GtkWidget *window, GdkEventWindowState *event,
                     gpointer userdata);
 static gboolean marqueeWinMapped (GtkWidget *window, GdkEventAny *event,
                     gpointer userdata);
+static void marqueeSaveWindowPosition (marquee_t *);
+static void marqueeMoveWindow (marquee_t *);
 static void marqueeStateChg (GtkWidget *w, GtkStateType flags, gpointer userdata);
 static void marqueeSigHandler (int sig);
 static void marqueeSetFontSize (marquee_t *marquee, GtkWidget *lab, char *style, int sz);
@@ -311,9 +313,7 @@ marqueeStoppingCallback (void *udata, programstate_t programState)
   nlistSetNum (marquee->options, MQ_SIZE_X, x);
   nlistSetNum (marquee->options, MQ_SIZE_Y, y);
   if (! marquee->isIconified) {
-    gtk_window_get_position (GTK_WINDOW (marquee->window), &x, &y);
-    nlistSetNum (marquee->options, MQ_POSITION_X, x);
-    nlistSetNum (marquee->options, MQ_POSITION_Y, y);
+    marqueeSaveWindowPosition (marquee);
   }
 
   connDisconnectAll (marquee->conn);
@@ -536,11 +536,11 @@ marqueeActivate (GApplication *app, gpointer userdata)
 
   if (bdjoptGetNum (OPT_P_HIDE_MARQUEE_ON_START)) {
     gtk_window_iconify (GTK_WINDOW (window));
-    marquee->mqIconifyAction = true;
     marquee->isIconified = true;
   }
 
   gtk_widget_show_all (window);
+  marqueeMoveWindow (marquee);
 
   marquee->inResize = false;
 
@@ -673,14 +673,6 @@ marqueeProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           logProcEnd (LOG_PROC, "marqueeProcessMsg", "req-exit");
           return 1;
         }
-        case MSG_MARQUEE_SHOW: {
-          if (marquee->isIconified) {
-            gtk_window_deiconify (GTK_WINDOW (marquee->window));
-            marquee->mqIconifyAction = true;
-            marquee->isIconified = false;
-          }
-          break;
-        }
         case MSG_MARQUEE_DATA: {
           marqueePopulate (marquee, args);
           break;
@@ -718,11 +710,7 @@ marqueeCloseWin (GtkWidget *window, GdkEvent *event, gpointer userdata)
   logProcBegin (LOG_PROC, "marqueeCloseWin");
 
   if (! gdone) {
-    gint        x, y;
-
-    gtk_window_get_position (GTK_WINDOW (window), &x, &y);
-    nlistSetNum (marquee->options, MQ_POSITION_X, x);
-    nlistSetNum (marquee->options, MQ_POSITION_Y, y);
+    marqueeSaveWindowPosition (marquee);
 
     gtk_window_iconify (GTK_WINDOW (window));
     marquee->mqIconifyAction = true;
@@ -753,7 +741,9 @@ marqueeToggleFullscreen (GtkWidget *window, GdkEventButton *event, gpointer user
   } else {
     marquee->inMax = true;
     marquee->isMaximized = true;
-    gtk_window_set_decorated (GTK_WINDOW (window), FALSE);
+    if (! isWindows()) {
+      gtk_window_set_decorated (GTK_WINDOW (window), FALSE);
+    }
     marquee->inMax = false;
     gtk_window_maximize (GTK_WINDOW (window));
   }
@@ -771,19 +761,21 @@ marqueeSetNotMaximized (marquee_t *marquee)
   if (marquee->isMaximized) {
     marquee->inMax = true;
     marquee->isMaximized = false;
-    marqueeAdjustFontSizes (marquee, marquee->priorSize);
     marquee->setPrior = true;
     gtk_window_unmaximize (GTK_WINDOW (marquee->window));
     marquee->unMaximize = true;
     marquee->inMax = false;
-    gtk_window_set_decorated (GTK_WINDOW (marquee->window), TRUE);
+    if (! isWindows()) {
+      gtk_window_set_decorated (GTK_WINDOW (marquee->window), TRUE);
+    }
+    marqueeAdjustFontSizes (marquee, marquee->priorSize);
   }
   logProcEnd (LOG_PROC, "marqueeSetNotMaximized", "");
 }
 
 /* resize gets called multiple times; it's difficult to get the font      */
 /* size reset back to the normal.  there are all sorts of little glitches */
-/* and race conditions that are possible.  this code will very fragile    */
+/* and race conditions that are possible.  this code is very fragile      */
 static gboolean
 marqueeResized (GtkWidget *window, GdkEventConfigure *event, gpointer userdata)
 {
@@ -837,7 +829,9 @@ marqueeWinState (GtkWidget *window, GdkEventWindowState *event, gpointer userdat
     if ((event->new_window_state & GDK_WINDOW_STATE_ICONIFIED) !=
         GDK_WINDOW_STATE_ICONIFIED) {
       marquee->isIconified = false;
+      marqueeMoveWindow (marquee);
     } else {
+      marqueeSaveWindowPosition (marquee);
       marquee->isIconified = true;
     }
     logProcEnd (LOG_PROC, "marqueeWinState", "iconified/deiconified");
@@ -857,7 +851,9 @@ marqueeWinState (GtkWidget *window, GdkEventWindowState *event, gpointer userdat
         GDK_WINDOW_STATE_MAXIMIZED) {
       marquee->isMaximized = true;
       marquee->inMax = true;
-      gtk_window_set_decorated (GTK_WINDOW (window), FALSE);
+      if (! isWindows()) {
+        gtk_window_set_decorated (GTK_WINDOW (window), FALSE);
+      }
       marquee->inMax = false;
       /* I don't know why this is necessary; did the event propogation stop? */
       gtk_window_maximize (GTK_WINDOW (window));
@@ -872,24 +868,37 @@ static gboolean
 marqueeWinMapped (GtkWidget *window, GdkEventAny *event, gpointer userdata)
 {
   marquee_t         *marquee = userdata;
-  gint              x, y;
 
   logProcBegin (LOG_PROC, "marqueeWinMapped");
 
-  if (marquee->isMaximized) {
-    gtk_window_set_decorated (GTK_WINDOW (window), FALSE);
-  } else {
-    x = nlistGetNum (marquee->options, MQ_POSITION_X);
-    y = nlistGetNum (marquee->options, MQ_POSITION_Y);
-    if (x != -1 && y != -1) {
-      gtk_window_move (GTK_WINDOW (window), x, y);
-    }
-
-    gtk_window_set_decorated (GTK_WINDOW (window), TRUE);
+  if (! marquee->isMaximized && ! marquee->isIconified) {
+    marqueeMoveWindow (marquee);
   }
 
   logProcEnd (LOG_PROC, "marqueeWinMapped", "");
   return TRUE;
+}
+
+static void
+marqueeSaveWindowPosition (marquee_t *marquee)
+{
+  gint  x, y;
+
+  gtk_window_get_position (GTK_WINDOW (marquee->window), &x, &y);
+  nlistSetNum (marquee->options, MQ_POSITION_X, x);
+  nlistSetNum (marquee->options, MQ_POSITION_Y, y);
+}
+
+static void
+marqueeMoveWindow (marquee_t *marquee)
+{
+  gint  x, y;
+
+  x = nlistGetNum (marquee->options, MQ_POSITION_X);
+  y = nlistGetNum (marquee->options, MQ_POSITION_Y);
+  if (x != -1 && y != -1) {
+    gtk_window_move (GTK_WINDOW (marquee->window), x, y);
+  }
 }
 
 static void
@@ -966,7 +975,6 @@ marqueeCalcFontSizes (marquee_t *marquee, int sz)
     infoHeight = allocSize.height;
   }
   margin = gtk_widget_get_margin_top (marquee->danceLab);
-  margin += gtk_box_get_spacing (GTK_BOX (marquee->vbox));
 
   marquee->newFontSize = sz;
 
@@ -975,15 +983,16 @@ marqueeCalcFontSizes (marquee_t *marquee, int sz)
     int     numtextitems;
 
     /* pbar, dance, info, sep, mqlen */
-    numitems = 3 + marquee->mqShowInfo + marquee->mqLen + 2;
+    numitems = 3 + marquee->mqShowInfo + marquee->mqLen;
     /* dance, mqlen */
+    /* info height is added separately */
     numtextitems = 1 + marquee->mqLen;
 
-    /* 40 is extra space needed so the marquee can be shrunk */
-    newsza = (height - 40 - marquee->marginTotal - pbarHeight - sepHeight -
+    /* 80 is extra space needed so the marquee can be shrunk */
+    newsza = (height - 80 - marquee->marginTotal - pbarHeight - sepHeight -
         infoHeight - (margin * numitems)) / numtextitems;
     infoHeight = (int) (newsza * INFO_LAB_HEIGHT_ADJUST);
-    newsz = (height - 40 - marquee->marginTotal - pbarHeight - sepHeight -
+    newsz = (height - 80 - marquee->marginTotal - pbarHeight - sepHeight -
         infoHeight - (margin * numitems)) / numtextitems;
     if (newsz > newsza) {
       newsz = newsza;
@@ -1012,14 +1021,19 @@ marqueeAdjustFontSizes (marquee_t *marquee, int sz)
   marquee->inResize = true;
 
   newsz = marqueeCalcFontSizes (marquee, sz);
+  if (newsz < 0) {
+    marquee->inResize = false;
+    return;
+  }
+
+  marquee->sizeSignal = g_signal_connect (marquee->danceLab, "size-allocate",
+      G_CALLBACK (marqueeAdjustFontCallback), marquee);
 
   /* only set the size of the dance label and the info label */
   /* the callback will determine the true size, and make adjustments */
   marqueeSetFontSize (marquee, marquee->danceLab, "bold", newsz);
   marqueeSetFontSize (marquee, marquee->infoArtistLab, "", (int) (newsz * INFO_LAB_HEIGHT_ADJUST));
 
-  marquee->sizeSignal = g_signal_connect (marquee->danceLab, "size-allocate",
-      G_CALLBACK (marqueeAdjustFontCallback), marquee);
   marquee->inResize = false;
   logProcEnd (LOG_PROC, "marqueeAdjustFontSizes", "");
 }
@@ -1040,15 +1054,20 @@ marqueeAdjustFontCallback (GtkWidget *w, GtkAllocation *retAllocSize, gpointer u
   }
   if (marquee->sizeSignal == 0) {
     /* this trap is necessary */
-    logProcEnd (LOG_PROC, "marqueeAdjustFontCallback", "in-size-signal");
+    logProcEnd (LOG_PROC, "marqueeAdjustFontCallback", "no-size-handle");
     return;
   }
 
   marquee->inResize = true;
-  g_signal_handler_disconnect (w, marquee->sizeSignal);
-  marquee->sizeSignal = 0;
 
   newsz = marqueeCalcFontSizes (marquee, marquee->newFontSize);
+  if (newsz < 0) {
+    marquee->inResize = false;
+    return;
+  }
+
+  g_signal_handler_disconnect (w, marquee->sizeSignal);
+  marquee->sizeSignal = 0;
 
   /* newsz is the maximum height available */
   /* given the allocation size, determine the actual size available */

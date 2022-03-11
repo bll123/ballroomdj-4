@@ -86,7 +86,6 @@ typedef enum {
   MSG_PLAYLIST_LIST_DATA,   // args: html option list
 
   /* to marquee */
-  MSG_MARQUEE_SHOW,
   MSG_MARQUEE_TIMER,        // args: played time, duration
   MSG_MAX,
 } bdjmsgmsg_t;

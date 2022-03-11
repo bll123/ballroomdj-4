@@ -276,7 +276,7 @@ main (int argc, char *argv[])
       sizeof (installer.hostname));
 
   installerGetTargetFname (&installer, tbuff, sizeof (tbuff));
-  fh = fopen (tbuff, "r");
+  fh = fileopOpen (tbuff, "r");
   if (fh != NULL) {
     /* installer.target is pointing at buff */
     fgets (buff, sizeof (buff), fh);
@@ -287,7 +287,7 @@ main (int argc, char *argv[])
   /* this only works if the installer.target is pointing at an existing */
   /* install of BDJ4 */
   installerGetBDJ3Fname (&installer, tbuff, sizeof (tbuff));
-  fh = fopen (tbuff, "r");
+  fh = fileopOpen (tbuff, "r");
   if (fh != NULL) {
     /* installer.bdj3loc is pointing at bdj3buff */
     fgets (bdj3buff, sizeof (bdj3buff), fh);
@@ -997,7 +997,7 @@ installerSaveTargetDir (installer_t *installer)
 
   installerGetTargetFname (installer, tbuff, sizeof (tbuff));
 
-  fh = fopen (tbuff, "w");
+  fh = fileopOpen (tbuff, "w");
   if (fh != NULL) {
     fprintf (fh, "%s\n", installer->target);
     fclose (fh);
@@ -1105,7 +1105,7 @@ installerCleanOldFiles (installer_t *installer)
     return;
   }
 
-  fh = fopen ("install/cleanuplist.txt", "r");
+  fh = fileopOpen ("install/cleanuplist.txt", "r");
   if (fh != NULL) {
     while (fgets (tbuff, sizeof (tbuff), fh) != NULL) {
       stringTrim (tbuff);
@@ -1357,7 +1357,7 @@ installerConvertStart (installer_t *installer)
 
   installerDisplayText (installer, "-- ", _("Starting conversion process."));
 
-  fh = fopen (tbuff, "w");
+  fh = fileopOpen (tbuff, "w");
   if (fh != NULL) {
     fprintf (fh, "%s\n", installer->bdj3loc);
     fclose (fh);

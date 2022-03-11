@@ -36,28 +36,22 @@ fileopFileExists (const char *fname)
 {
   int           rc;
 
-  /* stat() on windows does some sort of filename conversion. */
-  /* this is not wanted */
-#if _lib_CreateFile
-  HANDLE    handle;
+#if _lib_MultiByteToWideChar
+  {
+    struct _stat  statbuf;
+    wchar_t       *tfname = NULL;
 
-  handle = CreateFile (fname,
-      GENERIC_READ,
-      FILE_SHARE_DELETE | FILE_SHARE_READ | FILE_SHARE_WRITE,
-      NULL,
-      OPEN_EXISTING,
-      0,      // FILE_FLAG_BACKUP_SEMANTICS is not specified, dirs will fail.
-      NULL);
-  rc = -1;
-  if (handle != INVALID_HANDLE_VALUE) {
-    CloseHandle (handle);
-    rc = 0;
+    tfname = fileopToWideString (fname);
+    rc = _wstat (tfname, &statbuf);
+    if (rc == 0 && (statbuf.st_mode & S_IFDIR) == S_IFDIR) {
+      rc = -1;
+    }
+    free (tfname);
   }
 #else
   {
     struct stat   statbuf;
     rc = stat (fname, &statbuf);
-    /* match how the windows code works */
     if (rc == 0 && (statbuf.st_mode & S_IFDIR) == S_IFDIR) {
       rc = -1;
     }
@@ -71,23 +65,18 @@ fileopSize (const char *fname)
 {
   ssize_t       sz = -1;
 
-  /* stat() on windows does some sort of filename conversion. */
-  /* this is not wanted */
-#if _lib_CreateFile
-  HANDLE    handle;
-  LARGE_INTEGER lisz;
+#if _lib_MultiByteToWideChar
+  {
+    struct _stat  statbuf;
+    wchar_t       *tfname = NULL;
+    int           rc;
 
-  handle = CreateFile (fname,
-      GENERIC_READ,
-      FILE_SHARE_DELETE | FILE_SHARE_READ | FILE_SHARE_WRITE,
-      NULL,
-      OPEN_EXISTING,
-      0,
-      NULL);
-  if (handle != INVALID_HANDLE_VALUE) {
-    GetFileSizeEx (handle, &lisz);
-    sz = lisz.QuadPart;
-    CloseHandle (handle);
+    tfname = fileopToWideString (fname);
+    rc = _wstat (tfname, &statbuf);
+    if (rc == 0) {
+      sz = statbuf.st_size;
+    }
+    free (tfname);
   }
 #else
   {
@@ -108,28 +97,17 @@ fileopIsDirectory (const char *fname)
 {
   int         rc;
 
-  /* stat() on windows does some sort of filename conversion. */
-  /* this is not wanted */
-#if _lib_CreateFile
-  HANDLE    handle;
-  FILE_BASIC_INFO basicInfo;
+#if _lib_MultiByteToWideChar
+  {
+    struct _stat  statbuf;
+    wchar_t       *tfname = NULL;
 
-  handle = CreateFile (fname,
-      GENERIC_READ,
-      FILE_SHARE_DELETE | FILE_SHARE_READ | FILE_SHARE_WRITE,
-      NULL,
-      OPEN_EXISTING,
-      FILE_FLAG_BACKUP_SEMANTICS,
-      NULL);
-  rc = -1;
-  if (handle != INVALID_HANDLE_VALUE) {
-    GetFileInformationByHandleEx (handle,
-        FileBasicInfo, &basicInfo, sizeof (basicInfo));
-    if ((basicInfo.FileAttributes & FILE_ATTRIBUTE_DIRECTORY) ==
-        FILE_ATTRIBUTE_DIRECTORY) {
-      rc = 0;
+    tfname = fileopToWideString (fname);
+    rc = _wstat (tfname, &statbuf);
+    if (rc == 0 && (statbuf.st_mode & S_IFDIR) != S_IFDIR) {
+      rc = -1;
     }
-    CloseHandle (handle);
+    free (tfname);
   }
 #else
   {
@@ -157,6 +135,51 @@ fileopMakeDir (const char *dirname)
   rc = fileopMakeRecursiveDir (dirname);
   return rc;
 }
+
+FILE *
+fileopOpen (const char *fname, const char *mode)
+{
+  FILE          *fh;
+
+#if _lib_MultiByteToWideChar
+  {
+    wchar_t       *tfname = NULL;
+    wchar_t       *tmode = NULL;
+
+    tfname = fileopToWideString (fname);
+    tmode = fileopToWideString (mode);
+    fh = _wfopen (tfname, tmode);
+    free (tfname);
+    free (tmode);
+  }
+#else
+  {
+    fh = fopen (fname, mode);
+  }
+#endif
+  return fh;
+}
+
+#if _lib_MultiByteToWideChar
+
+wchar_t *
+fileopToWideString (const char *fname)
+{
+  size_t      len;
+  wchar_t     *tfname = NULL;
+
+  /* the documentation lies; len does not include room for the null byte */
+  len = MultiByteToWideChar (CP_UTF8, 0, fname, strlen (fname), NULL, 0);
+  tfname = malloc ((len + 1) * sizeof (wchar_t));
+  assert (tfname != NULL);
+  MultiByteToWideChar (CP_UTF8, 0, fname, strlen (fname), tfname, len);
+  tfname [len] = L'\0';
+  return tfname;
+}
+
+#endif
+
+/* internal routines */
 
 static int
 fileopMakeRecursiveDir (const char *dirname)
@@ -186,11 +209,17 @@ static int
 fileopMkdir (const char *dirname)
 {
   int   rc;
+
+#if _args_mkdir == 1      // windows
+  wchar_t   *tdirname = NULL;
+
+  tdirname = fileopToWideString (dirname);
+  rc = _wmkdir (tdirname);
+  free (tdirname);
+#endif
 #if _args_mkdir == 2 && _define_S_IRWXU
   rc = mkdir (dirname, S_IRWXU);
 #endif
-#if _args_mkdir == 1
-  rc = mkdir (dirname);
-#endif
   return rc;
 }
+

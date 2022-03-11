@@ -55,9 +55,18 @@ filemanipCopy (char *fname, char *nfn)
   if (isWindows ()) {
     pathToWinPath (tfname, fname, MAXPATHLEN);
     pathToWinPath (tnfn, nfn, MAXPATHLEN);
-#if _lib_CopyFile
-    rc = CopyFile (tfname, tnfn, 0);
-    rc = (rc == 0);
+#if _lib_CopyFileW
+    {
+      wchar_t   *wtfname;
+      wchar_t   *wtnfn;
+      wtfname = fileopToWideString (tfname);
+      wtnfn = fileopToWideString (tnfn);
+
+      rc = CopyFileW (wtfname, wtnfn, 0);
+      rc = (rc == 0);
+      free (wtfname);
+      free (wtnfn);
+    }
 #endif
   } else {
     snprintf (cmd, sizeof (cmd), "cp -f '%s' '%s' >/dev/null 2>&1", fname, nfn);
@@ -72,16 +81,10 @@ filemanipCopy (char *fname, char *nfn)
 int
 filemanipLinkCopy (char *fname, char *nfn)
 {
-  char      tfname [MAXPATHLEN];
-  char      tnfn [MAXPATHLEN];
   int       rc = -1;
 
   if (isWindows ()) {
-    pathToWinPath (tfname, fname, MAXPATHLEN);
-    pathToWinPath (tnfn, nfn, MAXPATHLEN);
-#if _lib_CopyFile
-    CopyFile (tfname, tnfn, 0);
-#endif
+    rc = filemanipCopy (fname, nfn);
   } else {
 #if _lib_symlink
     rc = symlink (fname, nfn);

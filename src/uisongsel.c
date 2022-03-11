@@ -306,7 +306,7 @@ uisongselActivate (uisongsel_t *uisongsel, GtkWidget *parentwin)
   uisongsel->favColumn = column;
 
   uisongselInitializeStore (uisongsel);
-  /* pre-populate so that the number of displable rows can be calculated */
+  /* pre-populate so that the number of displayable rows can be calculated */
   uisongsel->maxRows = STORE_ROWS;
   uisongselPopulateData (uisongsel);
 
@@ -470,7 +470,6 @@ uisongselProcessTreeSize (GtkWidget* w, GtkAllocation* allocation,
   uisongsel_t   *uisongsel = udata;
   GtkAdjustment *adjustment;
   double        ps;
-double t;
 
   logProcBegin (LOG_PROC, "uisongselProcessTreeSize");
 
@@ -868,7 +867,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
 
   widget = uiutilsSpinboxTextCreate (&uisongsel->filterfavoritesel, uisongsel);
   uiutilsSpinboxSet (&uisongsel->filterfavoritesel, 0,
-      SONG_FAVORITE_MAX, 1, uisongselFavoriteGet);
+      SONG_FAVORITE_MAX, 3, uisongselFavoriteGet);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 
   /* the dialog doesn't have any space above the buttons */

@@ -24,7 +24,7 @@ filedataReadAll (char *fname)
   if (len < 0) {
     return NULL;
   }
-  fh = fopen (fname, "r");
+  fh = fileopOpen (fname, "r");
   data = malloc (len + 1);
   assert (data != NULL);
   len = fread (data, 1, len, fh);

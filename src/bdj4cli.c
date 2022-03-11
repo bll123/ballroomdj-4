@@ -242,9 +242,6 @@ cvtMsg (char *msgname, int *argcount)
     msg = MSG_QUEUE_PLAYLIST;
     *argcount = 2;
   }
-  if (strcmp (msgname, "mqshow") == 0) {
-    msg = MSG_MARQUEE_SHOW;
-  }
   if (strcmp (msgname, "exit") == 0) {
     msg = MSG_EXIT_REQUEST;
   }
