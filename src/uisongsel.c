@@ -94,7 +94,8 @@ static void uisongselFilterResponseHandler (GtkDialog *d, gint responseid,
 static void uisongselInitFilterDisplay (uisongsel_t *uisongsel);
 
 uisongsel_t *
-uisongselInit (progstate_t *progstate, conn_t *conn, nlist_t *options)
+uisongselInit (progstate_t *progstate, conn_t *conn, nlist_t *options,
+    songfilterpb_t filterFlags)
 {
   uisongsel_t    *uisongsel;
 
@@ -125,7 +126,7 @@ uisongselInit (progstate_t *progstate, conn_t *conn, nlist_t *options)
   uiutilsSpinboxInit (&uisongsel->filterlevelsel);
   uiutilsSpinboxInit (&uisongsel->filterstatussel);
   uiutilsSpinboxInit (&uisongsel->filterfavoritesel);
-  uisongsel->songfilter = songfilterAlloc (SONG_FILTER_FOR_SELECTION);
+  uisongsel->songfilter = songfilterAlloc (filterFlags);
   songfilterSetSort (uisongsel->songfilter,
       nlistGetStr (options, SONGSEL_SORT_BY));
 

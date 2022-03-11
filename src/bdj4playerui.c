@@ -181,7 +181,8 @@ main (int argc, char *argv[])
 
   plui.uiplayer = uiplayerInit (plui.progstate, plui.conn);
   plui.uimusicq = uimusicqInit (plui.progstate, plui.conn);
-  plui.uisongsel = uisongselInit (plui.progstate, plui.conn, plui.options);
+  plui.uisongsel = uisongselInit (plui.progstate, plui.conn, plui.options,
+      SONG_FILTER_FOR_PLAYBACK);
 
   /* register these after calling the sub-window initialization */
   /* then these will be run last, after the other closing callbacks */

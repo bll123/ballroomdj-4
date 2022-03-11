@@ -51,7 +51,8 @@ typedef struct {
   bool              createRowFlag : 1;
 } uisongsel_t;
 
-uisongsel_t * uisongselInit (progstate_t *progstate, conn_t *conn, nlist_t *opts);
+uisongsel_t * uisongselInit (progstate_t *progstate, conn_t *conn,
+                nlist_t *opts, songfilterpb_t filterFlags);
 void        uisongselFree (uisongsel_t *uisongsel);
 GtkWidget   * uisongselActivate (uisongsel_t *uisongsel, GtkWidget *parentwin);
 void        uisongselMainLoop (uisongsel_t *uisongsel);
