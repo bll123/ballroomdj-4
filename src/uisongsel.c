@@ -125,7 +125,7 @@ uisongselInit (progstate_t *progstate, conn_t *conn, nlist_t *options)
   uiutilsSpinboxInit (&uisongsel->filterlevelsel);
   uiutilsSpinboxInit (&uisongsel->filterstatussel);
   uiutilsSpinboxInit (&uisongsel->filterfavoritesel);
-  uisongsel->songfilter = songfilterAlloc (SONG_FILTER_FOR_PLAYBACK);
+  uisongsel->songfilter = songfilterAlloc (SONG_FILTER_FOR_SELECTION);
   songfilterSetSort (uisongsel->songfilter,
       nlistGetStr (options, SONGSEL_SORT_BY));
 

@@ -101,7 +101,10 @@ foreach path [list {} profiles $mpath $mppath] {
         if { $key eq "MTMPDIR" } { set key DIRMUSICTMP }
         if { $key eq "IMAGEDIR" } { set key DIRIMAGE }
         if { $key eq "ARCHIVEDIR" } { set key DIRARCHIVE }
-        if { $key eq "LISTINGFONTSIZE" } { set key LISTINGFONT }
+        if { $key eq "LISTINGFONTSIZE" } {
+          set key LISTINGFONT
+          set value {}
+        }
 
         if { $key eq "MQSHOWARTIST" } {
           set key MQSHOWINFO
