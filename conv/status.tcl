@@ -25,12 +25,22 @@ puts $fh "# [clock format [clock seconds] -gmt 1]"
 puts $fh version
 puts $fh "..1"
 puts $fh count
-puts $fh "..[expr {[llength $Status]/2}]"
+set count [expr {[llength $Status]/2}]
+puts $fh ..${count}
 foreach {key data} $Status {
   puts $fh "KEY\n..$key"
+  set nplayflag 0
   foreach {k v} $data {
     if { $k eq "oktoplay" } { set k playflag }
     set k [string toupper $k]
+    if { $k eq "STATUS" && $v eq "New" && $count == 2 } {
+      set nplayflag 1
+    }
+    if { $k eq "PLAYFLAG" && $nplayflag == 1 } {
+      # want all statuses to be playable by default; the user
+      # can change them.
+      set v 1
+    }
     puts $fh $k
     puts $fh "..$v"
   }
