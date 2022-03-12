@@ -26,7 +26,6 @@ locatebdj3 (void)
   /* make it possible to specify a location via the environment */
   loc = getenv ("BDJ3_LOCATION");
   if (loc != NULL) {
-    //logMsg (LOG_INSTALL, LOG_IMPORTANT, "from-env: %s", loc);
     if (locationcheck (loc)) {
       return strdup (loc);
     }
@@ -38,10 +37,8 @@ locatebdj3 (void)
     iswin = true;
     home = getenv ("USERPROFILE");
   }
-  //logMsg (LOG_INSTALL, LOG_IMPORTANT, "home: %s", loc);
 
   if (home == NULL) {
-    //logMsg (LOG_INSTALL, LOG_IMPORTANT, "err: no home env", loc);
     return strdup ("");
   }
 
@@ -99,7 +96,6 @@ bool
 locationcheck (const char *dir)
 {
   char          tbuff [MAXPATHLEN];
-  int           rc;
 
   if (dir == NULL) {
     return false;
@@ -107,13 +103,9 @@ locationcheck (const char *dir)
 
   strlcpy (tbuff, dir, MAXPATHLEN);
 
-  rc = fileopFileExists (tbuff);
-  //logMsg (LOG_INSTALL, LOG_IMPORTANT, "try: %d %s", rc, tbuff);
-  if (rc == 0) {
-    if (fileopIsDirectory (tbuff)) {
-      if (locatedb (tbuff)) {
-        return true;
-      }
+  if (fileopIsDirectory (tbuff)) {
+    if (locatedb (tbuff)) {
+      return true;
     }
   }
 
@@ -125,17 +117,12 @@ bool
 locatedb (const char *dir)
 {
   char          tbuff [MAXPATHLEN];
-  int           rc;
+
 
   strlcpy (tbuff, dir, MAXPATHLEN);
   strlcat (tbuff, "/", MAXPATHLEN);
   strlcat (tbuff, "data", MAXPATHLEN);
 
-  rc = fileopFileExists (tbuff);
-  //logMsg (LOG_INSTALL, LOG_IMPORTANT, "try: %d %s", rc, tbuff);
-  if (rc != 0) {
-    return false;
-  }
   if (! fileopIsDirectory (tbuff)) {
     return false;
   }
@@ -143,12 +130,7 @@ locatedb (const char *dir)
   strlcat (tbuff, "/", MAXPATHLEN);
   strlcat (tbuff, "musicdb.txt", MAXPATHLEN);
 
-  rc = fileopFileExists (tbuff);
-  //logMsg (LOG_INSTALL, LOG_IMPORTANT, "try: %d %s", rc, tbuff);
-  if (rc != 0) {
-    return false;
-  }
-  if (fileopIsDirectory (tbuff)) {
+  if (! fileopFileExists (tbuff)) {
     return false;
   }
 

@@ -655,7 +655,6 @@ playerProcessing (void *udata)
           } else {
             if (! playerData->repeat) {
               /* done, go on to next song */
-fprintf (stderr, "player: done; next song\n");
               connSendMessage (playerData->conn, ROUTE_MAIN,
                   MSG_PLAYBACK_FINISH, NULL);
             }
@@ -1027,7 +1026,6 @@ playerNextSong (playerdata_t *playerData)
           MSG_PLAYBACK_STOP, NULL);
     } else {
       /* tell main to go to the next song */
-fprintf (stderr, "player: player-next-song\n");
       connSendMessage (playerData->conn, ROUTE_MAIN,
           MSG_PLAYBACK_FINISH, NULL);
     }

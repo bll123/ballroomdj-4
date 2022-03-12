@@ -750,6 +750,9 @@ installerValidateDir (installer_t *installer)
   if (isMacOS ()) {
     strlcpy (tbuff, "/Applications/VLC.app/Contents/MacOS/lib/", sizeof (tbuff));
   }
+  if (isLinux ()) {
+    strlcpy (tbuff, "/usr/lib/x86_64-linux-gnu/libvlc.so.5", sizeof (tbuff));
+  }
 
   if (*tbuff) {
     if (fileopIsDirectory (tbuff) || fileopFileExists (tbuff)) {

@@ -11,6 +11,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <wchar.h>
 
 #if _hdr_io
 # include <io.h>
@@ -25,6 +26,7 @@
 #include "bdj4.h"
 #include "bdjstring.h"
 #include "fileop.h"
+#include "osutils.h"
 
 static int fileopMakeRecursiveDir (const char *dirname);
 static int fileopMkdir (const char *dirname);
@@ -41,7 +43,7 @@ fileopFileExists (const char *fname)
     struct _stat  statbuf;
     wchar_t       *tfname = NULL;
 
-    tfname = fileopToWideString (fname);
+    tfname = osToWideString (fname);
     rc = _wstat (tfname, &statbuf);
     if (rc == 0 && (statbuf.st_mode & S_IFDIR) == S_IFDIR) {
       rc = -1;
@@ -71,7 +73,7 @@ fileopSize (const char *fname)
     wchar_t       *tfname = NULL;
     int           rc;
 
-    tfname = fileopToWideString (fname);
+    tfname = osToWideString (fname);
     rc = _wstat (tfname, &statbuf);
     if (rc == 0) {
       sz = statbuf.st_size;
@@ -102,7 +104,7 @@ fileopIsDirectory (const char *fname)
     struct _stat  statbuf;
     wchar_t       *tfname = NULL;
 
-    tfname = fileopToWideString (fname);
+    tfname = osToWideString (fname);
     rc = _wstat (tfname, &statbuf);
     if (rc == 0 && (statbuf.st_mode & S_IFDIR) != S_IFDIR) {
       rc = -1;
@@ -146,8 +148,8 @@ fileopOpen (const char *fname, const char *mode)
     wchar_t       *tfname = NULL;
     wchar_t       *tmode = NULL;
 
-    tfname = fileopToWideString (fname);
-    tmode = fileopToWideString (mode);
+    tfname = osToWideString (fname);
+    tmode = osToWideString (mode);
     fh = _wfopen (tfname, tmode);
     free (tfname);
     free (tmode);
@@ -159,25 +161,6 @@ fileopOpen (const char *fname, const char *mode)
 #endif
   return fh;
 }
-
-#if _lib_MultiByteToWideChar
-
-wchar_t *
-fileopToWideString (const char *fname)
-{
-  size_t      len;
-  wchar_t     *tfname = NULL;
-
-  /* the documentation lies; len does not include room for the null byte */
-  len = MultiByteToWideChar (CP_UTF8, 0, fname, strlen (fname), NULL, 0);
-  tfname = malloc ((len + 1) * sizeof (wchar_t));
-  assert (tfname != NULL);
-  MultiByteToWideChar (CP_UTF8, 0, fname, strlen (fname), tfname, len);
-  tfname [len] = L'\0';
-  return tfname;
-}
-
-#endif
 
 /* internal routines */
 
@@ -213,7 +196,7 @@ fileopMkdir (const char *dirname)
 #if _args_mkdir == 1      // windows
   wchar_t   *tdirname = NULL;
 
-  tdirname = fileopToWideString (dirname);
+  tdirname = osToWideString (dirname);
   rc = _wmkdir (tdirname);
   free (tdirname);
 #endif

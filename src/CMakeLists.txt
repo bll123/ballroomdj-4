@@ -265,6 +265,7 @@ check_function_exists (CloseHandle _lib_CloseHandle)
 check_function_exists (CopyFileW _lib_CopyFileW)
 check_function_exists (CreateFile _lib_CreateFile)
 check_function_exists (CreateProcess _lib_CreateProcess)
+check_function_exists (FindFirstFileW _lib_FindFirstFileW)
 check_function_exists (GetFullPathName _lib_GetFullPathName)
 check_function_exists (GetVersionEx _lib_GetVersionEx)
 check_function_exists (LoadLibrary _lib_LoadLibrary)
@@ -278,7 +279,6 @@ set (CMAKE_REQUIRED_INCLUDES "")
 # cmake weirdness
 # these do exist
 if (WIN32)
-  set (_lib_CopyFile 1)
   set (_lib_CreateFile 1)
   set (_lib_CreateProcess 1)
   set (_lib_GetFullPathName 1)
@@ -546,20 +546,21 @@ target_include_directories (libwebsrv
 )
 add_library (liblocatebdj3 STATIC locatebdj3.c)
 
-add_library (libbdj4osutils STATIC
-  osutils.c
+add_library (libbdj4fileop STATIC
+  fileop.c osutils.c
 )
 add_library (libbdj4string STATIC
   bdjstring.c strlcat.c strlcpy.c
 )
 
 add_library (libbdj4launcher STATIC
-  filedata.c fileop.c osnetutils.c pathbld.c pathutil.c sysvars.c
+  filedata.c osnetutils.c pathbld.c pathutil.c sysvars.c
 )
 
-add_executable (bdj4locatebdj3 bdj4locatebdj3.c fileop.c)
+add_executable (bdj4locatebdj3 bdj4locatebdj3.c)
 target_link_libraries (bdj4locatebdj3
   liblocatebdj3
+  libbdj4fileop
   libbdj4string
 )
 
@@ -585,7 +586,8 @@ endif()
 
 add_executable (bdj4se bdj4se.c)
 target_link_libraries (bdj4se
-  libbdj4osutils libbdj4string
+  libbdj4fileop
+  libbdj4string
 )
 if (WIN32)
   target_sources (bdj4se PRIVATE selauncher.o)
@@ -608,7 +610,8 @@ endif()
 add_executable (bdj4 bdj4.c)
 target_link_libraries (bdj4
   libbdj4launcher
-  libbdj4osutils libbdj4string
+  libbdj4fileop
+  libbdj4string
 )
 if (WIN32)
   target_sources (bdj4 PRIVATE launcher.o)
@@ -624,7 +627,8 @@ target_include_directories (bdj4g
 target_compile_options (bdj4g PRIVATE -DBDJ4_GUI_LAUNCHER=1)
 target_link_libraries (bdj4g
   libbdj4launcher
-  libbdj4osutils libbdj4string
+  libbdj4fileop
+  libbdj4string
   ${GTK_LDFLAGS}
 )
 addWinSockLibrary (bdj4g)

@@ -9,7 +9,6 @@
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <dirent.h>
 #include <fcntl.h>
 #include <unistd.h>
 
@@ -20,6 +19,7 @@
 #include "filemanip.h"
 #include "fileop.h"
 #include "slist.h"
+#include "osutils.h"
 #include "pathutil.h"
 #include "sysvars.h"
 
@@ -59,8 +59,8 @@ filemanipCopy (char *fname, char *nfn)
     {
       wchar_t   *wtfname;
       wchar_t   *wtnfn;
-      wtfname = fileopToWideString (tfname);
-      wtnfn = fileopToWideString (tnfn);
+      wtfname = osToWideString (tfname);
+      wtnfn = osToWideString (tnfn);
 
       rc = CopyFileW (wtfname, wtnfn, 0);
       rc = (rc == 0);
@@ -96,11 +96,14 @@ filemanipLinkCopy (char *fname, char *nfn)
 slist_t *
 filemanipBasicDirList (char *dirname, char *extension)
 {
-  DIR           *dh;
-  struct dirent *dirent;
+  dirhandle_t   *dh;
+  char          *fname;
   slist_t       *fileList;
   pathinfo_t    *pi;
   char          temp [100];
+  char          *cvtname;
+  gsize         bread, bwrite;
+  GError        *gerr;
 
 
   snprintf (temp, sizeof (temp), "read-dir-%s", dirname);
@@ -109,32 +112,33 @@ filemanipBasicDirList (char *dirname, char *extension)
     strlcat (temp, extension, sizeof (temp));
   }
   fileList = slistAlloc (temp, LIST_UNORDERED, NULL);
-  dh = opendir (dirname);
-  while ((dirent = readdir (dh)) != NULL) {
-    if (strcmp (dirent->d_name, ".") == 0 ||
-        strcmp (dirent->d_name, "..") == 0) {
+  dh = osDirOpen (dirname);
+  while ((fname = osDirIterate (dh)) != NULL) {
+    if (strcmp (fname, ".") == 0 ||
+        strcmp (fname, "..") == 0) {
+      free (fname);
       continue;
     }
     if (extension != NULL) {
-      pi = pathInfo (dirent->d_name);
-      if (pathInfoExtCheck (pi, extension)) {
-        slistSetStr (fileList, dirent->d_name, NULL);
+      pi = pathInfo (fname);
+      if (pathInfoExtCheck (pi, extension) == false) {
+        pathInfoFree (pi);
+        free (fname);
+        continue;
       }
       pathInfoFree (pi);
-    } else {
-      char    *cvtname;
-      gsize   bread, bwrite;
-      GError  *gerr;
-
-      cvtname = g_filename_to_utf8 (dirent->d_name, strlen (dirent->d_name),
-          &bread, &bwrite, &gerr);
-      if (cvtname != NULL) {
-        slistSetStr (fileList, cvtname, NULL);
-      }
-      free (cvtname);
     }
+
+    cvtname = g_filename_to_utf8 (fname, strlen (fname),
+        &bread, &bwrite, &gerr);
+    if (cvtname != NULL) {
+      slistSetStr (fileList, cvtname, NULL);
+    }
+    free (cvtname);
+    free (fname);
   }
-  closedir (dh);
+  osDirClose (dh);
+
   return fileList;
 }
 

@@ -157,3 +157,122 @@ osProcessStart (char *targv[], int flags, void **handle)
 
 #pragma GCC diagnostic pop
 #pragma clang diagnostic pop
+
+#if _lib_MultiByteToWideChar
+
+wchar_t *
+osToWideString (const char *fname)
+{
+  size_t      len;
+  wchar_t     *tfname = NULL;
+
+  /* the documentation lies; len does not include room for the null byte */
+  len = MultiByteToWideChar (CP_UTF8, 0, fname, strlen (fname), NULL, 0);
+  tfname = malloc ((len + 1) * sizeof (wchar_t));
+  assert (tfname != NULL);
+  MultiByteToWideChar (CP_UTF8, 0, fname, strlen (fname), tfname, len);
+  tfname [len] = L'\0';
+  return tfname;
+}
+
+char *
+osToUTF8String (const wchar_t *fname)
+{
+  size_t      len;
+  char        *tfname = NULL;
+  char        *defChar = "?";
+  BOOL        used;
+
+  /* the documentation lies; len does not include room for the null byte */
+  len = WideCharToMultiByte (CP_UTF8, 0, fname, -1, NULL, 0, defChar, &used);
+  tfname = malloc ((len + 1) * sizeof (wchar_t));
+  assert (tfname != NULL);
+  WideCharToMultiByte (CP_UTF8, 0, fname, -1, tfname, len, defChar, &used);
+  tfname [len] = '\0';
+  return tfname;
+}
+
+#endif
+
+
+dirhandle_t *
+osDirOpen (const char *dirname)
+{
+  dirhandle_t   *dirh;
+  size_t        len;
+
+  dirh = malloc (sizeof (dirhandle_t));
+  assert (dirh != NULL);
+  dirh->dirname = NULL;
+  dirh->dh = NULL;
+
+#if _lib_FindFirstFileW
+  dirh->dhandle = INVALID_HANDLE_VALUE;
+  len = strlen (dirname) + 3;
+  dirh->dirname = malloc (len);
+  strlcpy (dirh->dirname, dirname, len);
+  strlcat (dirh->dirname, "\\*", len);
+#else
+  dirh->dh = opendir (dirname);
+#endif
+
+  return dirh;
+}
+
+char *
+osDirIterate (dirhandle_t *dirh)
+{
+  char      *fname;
+
+#if _lib_FindFirstFileW
+  WIN32_FIND_DATAW filedata;
+  BOOL             rc;
+
+  if (dirh->dhandle == INVALID_HANDLE_VALUE) {
+    wchar_t         *wdirname;
+
+    wdirname = osToWideString (dirh->dirname);
+    dirh->dhandle = FindFirstFileW (wdirname, &filedata);
+    rc = 0;
+    if (dirh->dhandle != INVALID_HANDLE_VALUE) {
+      rc = 1;
+    }
+    free (wdirname);
+  } else {
+    rc = FindNextFileW (dirh->dhandle, &filedata);
+  }
+
+  fname = NULL;
+  if (rc != 0) {
+    fname = osToUTF8String (filedata.cFileName);
+  }
+#else
+  struct dirent   *dirent;
+
+  dirent = readdir (dirh->dh);
+  fname = NULL;
+  if (dirent != NULL) {
+    fname = strdup (dirent->d_name);
+  }
+#endif
+
+  return fname;
+}
+
+
+void
+osDirClose (dirhandle_t *dirh)
+{
+#if _lib_FindFirstFileW
+  if (dirh->dhandle != INVALID_HANDLE_VALUE) {
+    FindClose (dirh->dhandle);
+  }
+#else
+  closedir (dirh->dh);
+#endif
+  if (dirh->dirname != NULL) {
+    free (dirh->dirname);
+    dirh->dirname = NULL;
+  }
+  free (dirh);
+}

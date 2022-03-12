@@ -10,8 +10,5 @@ bool  fileopIsDirectory (const char *fname);
 int   fileopDelete (const char *fname);
 int   fileopMakeDir (const char *dirname);
 FILE  * fileopOpen (const char *fname, const char *mode);
-#if _lib_MultiByteToWideChar
- wchar_t * fileopToWideString (const char *fname);
-#endif
 
 #endif /* INC_FILEOP_H */

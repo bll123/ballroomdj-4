@@ -13,7 +13,7 @@ function copysrcfiles {
 
   filelist="LICENSE.txt README.txt VERSION.txt
       packages/mongoose/mongoose.[ch]"
-  dirlist="src conv img install licenses locale pkg templates web wiki"
+  dirlist="src conv img install licenses linux locale pkg templates web wiki"
 
   echo "-- copying files to $stage"
   for f in $filelist; do
@@ -36,7 +36,7 @@ function copyreleasefiles {
   stage=$2
 
   filelist="LICENSE.txt README.txt VERSION.txt"
-  dirlist="bin conv img install licenses locale templates"
+  dirlist="bin conv img install licenses linux locale templates"
 
   case ${systype} in
     Darwin)
@@ -207,6 +207,7 @@ if [[ $platform == windows ]]; then
   cat > plocal/etc/gtk-3.0/settings.ini <<_HERE_
 [Settings]
 gtk-xft-antialias = 1
+gtk-enable-animations = 0
 gtk-icon-theme-name = Adwaita
 gtk-theme-name = Windows-10-Dark
 _HERE_
