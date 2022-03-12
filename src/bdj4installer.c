@@ -484,6 +484,7 @@ installerActivate (GApplication *app, gpointer udata)
   widget = uiutilsCreateButton ("", NULL, installerSelectDirDialog, installer);
   image = gtk_image_new_from_icon_name ("folder", GTK_ICON_SIZE_BUTTON);
   gtk_button_set_image (GTK_BUTTON (widget), image);
+  gtk_button_set_always_show_image (GTK_BUTTON (widget), TRUE);
   gtk_widget_set_margin_start (widget, 0);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 
@@ -779,7 +780,7 @@ installerValidateDir (installer_t *installer)
   }
 
   if (*tbuff) {
-    if (fileopFileExists (tbuff)) {
+    if (fileopIsDirectory (tbuff) || fileopFileExists (tbuff)) {
       snprintf (tbuff, sizeof (tbuff), _("%s is installed"), "Python");
       gtk_label_set_text (GTK_LABEL (installer->pythonMsg), tbuff);
       installer->pythoninstalled = true;

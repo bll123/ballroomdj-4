@@ -145,7 +145,7 @@ fi
 # create manifests
 
 echo "-- building software"
-echo "=== currently off ==="
+echo "   === currently off ==="
 # (
 #   cd src
 #   make distclean
@@ -245,14 +245,18 @@ fi
 echo "-- updating build number"
 
 . ./VERSION.txt
-BUILD=$(($BUILD+1))
-BUILDDATE=$(date '+%Y%m%d')
-cat > VERSION.txt << _HERE_
+
+# only rebuild the version.txt file on linux.
+if [[ $tag == linux ]]; then
+  BUILD=$(($BUILD+1))
+  BUILDDATE=$(date '+%Y%m%d')
+  cat > VERSION.txt << _HERE_
 VERSION=$VERSION
 BUILD=$BUILD
 BUILDDATE=$BUILDDATE
 RELEASELEVEL=$RELEASELEVEL
 _HERE_
+fi
 
 case $RELEASELEVEL in
   alpha|beta)

@@ -16,7 +16,7 @@ rm -f po/*~ po/old/*~ > /dev/null 2>&1
 
 . ../VERSION.txt
 export VERSION
-dt=$(date '+%F %R')
+dt=$(date '+%F')
 export dt
 
 function mkpo {
@@ -31,6 +31,7 @@ function mkpo {
   echo "# -- $elang" >> ${out}
   sed -e '1,6 d' \
       -e "s/YEAR-MO-DA.*ZONE/${dt}/" \
+      -e "s/: [0-9 :-]*/: ${dt}/" \
       -e "s/PACKAGE/BDJ4/" \
       -e "s/VERSION/${VERSION}/" \
       -e "s/FULL NAME.*ADDRESS./${xlator}/" \
@@ -41,8 +42,12 @@ function mkpo {
       bdj4.pot >> ${out}
 }
 
-xgettext -s -d bdj4 -C --add-comments=CONTEXT: \
-    --keyword=_ --flag=_:1:pass-c-format *.c *.cpp *.m \
+xgettext -s -d bdj4 \
+    -C --add-comments=CONTEXT: \
+    --no-location \
+    --keyword=_ \
+    --flag=_:1:pass-c-format \
+    *.c *.cpp *.m \
     -p po -o bdj4.pot
 cd po
 
@@ -68,7 +73,10 @@ sed -e 's,^\.\.,,' -e 's,^,_(",' -e 's,$,"),' $TMP > $TMP.n
 mv -f $TMP.n $TMP
 
 xgettext -s -j -d bdj4 \
-    --keyword=_ --flag=_:1:pass-c-format $TMP \
+    --no-location \
+    --keyword=_ \
+    --flag=_:1:pass-c-format \
+    $TMP \
     -o bdj4.pot
 rm -f $TMP
 
