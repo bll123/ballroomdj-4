@@ -158,7 +158,7 @@ echo "=== currently off ==="
 # the .po files will be built on linux; the sync to the other
 # platforms must be performed afterwards.
 # (the extraction script is using gnu-sed features)
-if [[ $platform == linux ]]; then
+if [[ $tag == linux ]]; then
   (cd src/po; ./extract.sh)
   (cd src/po; ./install.sh)
 fi
