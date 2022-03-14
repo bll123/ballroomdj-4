@@ -26,15 +26,9 @@ bdjvarsInit (void)
   if (! initialized) {
     uint16_t        port = sysvarsGetNum (SVL_BASEPORT);
 
-    bdjvarsl [BDJVL_MAIN_PORT] = port++;
-    bdjvarsl [BDJVL_PLAYER_PORT] = port++;
-    bdjvarsl [BDJVL_PLAYERUI_PORT] = port++;
-    bdjvarsl [BDJVL_CONFIGUI_PORT] = port++;
-    bdjvarsl [BDJVL_MANAGEUI_PORT] = port++;
-    bdjvarsl [BDJVL_MOBILEMQ_PORT] = port++;
-    bdjvarsl [BDJVL_REMCTRL_PORT] = port++;
-    bdjvarsl [BDJVL_MARQUEE_PORT] = port++;
-    bdjvarsl [BDJVL_STARTERUI_PORT] = port++;
+    for (int i = BDJVL_MAIN_PORT; i < BDJVL_NUM_PORTS; ++i) {
+      bdjvarsl [i] = port++;
+    }
     bdjvarsl [BDJVL_NUM_PORTS] = BDJVL_NUM_PORTS;
 
     bdjvarsAdjustPorts ();
@@ -78,16 +72,10 @@ bdjvarsAdjustPorts (void)
   uint16_t    port;
 
   port = sysvarsGetNum (SVL_BASEPORT) +
-      sysvarsGetNum (bdjvarsl [BDJVL_NUM_PORTS]) * idx;
-  bdjvarsl [BDJVL_MAIN_PORT] = port++;
-  bdjvarsl [BDJVL_PLAYER_PORT] = port++;
-  bdjvarsl [BDJVL_PLAYERUI_PORT] = port++;
-  bdjvarsl [BDJVL_CONFIGUI_PORT] = port++;
-  bdjvarsl [BDJVL_MANAGEUI_PORT] = port++;
-  bdjvarsl [BDJVL_MOBILEMQ_PORT] = port++;
-  bdjvarsl [BDJVL_REMCTRL_PORT] = port++;
-  bdjvarsl [BDJVL_MARQUEE_PORT] = port++;
-  bdjvarsl [BDJVL_STARTERUI_PORT] = port++;
+      bdjvarsGetNum (BDJVL_NUM_PORTS) * idx;
+  for (int i = BDJVL_MAIN_PORT; i < BDJVL_NUM_PORTS; ++i) {
+    bdjvarsl [i] = port++;
+  }
 }
 
 inline bool

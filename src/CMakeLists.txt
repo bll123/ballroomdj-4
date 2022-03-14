@@ -641,6 +641,24 @@ target_link_libraries (bdj4cli
 )
 addWinSockLibrary (bdj4cli)
 
+add_executable (bdj4dbupdate bdj4dbupdate.c)
+target_link_libraries (bdj4dbupdate
+  libbdj4 libbdj4common
+  m
+)
+addIntlLibrary (bdj4dbupdate)
+addWinSockLibrary (bdj4dbupdate)
+
+add_executable (bdj4dbtag bdj4dbtag.c)
+target_link_libraries (bdj4dbtag
+  libbdj4 libbdj4common
+  m
+)
+target_compile_options (bdj4dbtag PRIVATE -pthread)
+target_link_options (bdj4dbtag PRIVATE -pthread)
+addIntlLibrary (bdj4dbtag)
+addWinSockLibrary (bdj4dbtag)
+
 add_executable (bdj4main bdj4main.c)
 target_link_libraries (bdj4main
   libbdj4 libbdj4common
@@ -761,6 +779,7 @@ install (TARGETS
   libvolalsa libvolmac libvolnull libvolpa libvolwin
   bdj4 bdj4g bdj4cli
   bdj4installer bdj4locale bdj4locatebdj3 bdj4se
+  bdj4dbupdate bdj4dbtag
   bdj4main bdj4player bdj4mobmq bdj4rc bdj4marquee
   bdj4starterui bdj4playerui
   check_all chkprocess
@@ -797,6 +816,7 @@ endmacro()
 if (APPLE)
   macUpdateRPath (bdj4)
   macUpdateRPath (bdj4g)
+  macUpdateRPath (bdj4dbupdate)
   macUpdateRPath (bdj4main)
   macUpdateRPath (bdj4marquee)
   macUpdateRPath (bdj4mobmq)

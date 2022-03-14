@@ -37,12 +37,8 @@ typedef enum {
   OPT_G_VARIOUS,
   OPT_G_WRITETAGS,
   OPT_M_AUDIOSINK,                //
-  OPT_M_DIR_ARCHIVE,
-  OPT_M_DIR_DELETE,
-  OPT_M_DIR_IMAGE,
   OPT_M_DIR_MUSIC,                //
   OPT_M_DIR_MUSICTMP,
-  OPT_M_DIR_ORIGINAL,
   OPT_M_HOST,
   OPT_M_PLAYER_INTFC,             //
   OPT_M_SHUTDOWNSCRIPT,

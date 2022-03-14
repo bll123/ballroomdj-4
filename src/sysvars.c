@@ -52,6 +52,9 @@ sysvarsInit (const char *argv0)
   char          tbuf [SV_MAX_SZ+1];
   char          tcwd [SV_MAX_SZ+1];
   char          buff [SV_MAX_SZ+1];
+  char          *tptr;
+  char          *tsep;
+  char          *tokstr;
   char          *p;
 #if _lib_uname
   int             rc;
@@ -118,6 +121,12 @@ sysvarsInit (const char *argv0)
 
   getHostname (sysvars [SV_HOSTNAME], SV_MAX_SZ);
 
+  if (isWindows ()) {
+    strlcpy (sysvars [SV_HOME], getenv ("USERPROFILE"), SV_MAX_SZ);
+  } else {
+    strlcpy (sysvars [SV_HOME], getenv ("HOME"), SV_MAX_SZ);
+  }
+
   (void) ! getcwd (tcwd, sizeof (tcwd));
 
   strlcpy (tbuf, argv0, sizeof (tbuf));
@@ -150,7 +159,7 @@ sysvarsInit (const char *argv0)
     strlcpy (sysvars [SV_BDJ4DATATOPDIR], tcwd, SV_MAX_SZ);
   } else {
     if (isMacOS ()) {
-      strlcpy (buff, getenv ("HOME"), SV_MAX_SZ);
+      strlcpy (buff, sysvars [SV_HOME], SV_MAX_SZ);
       strlcat (buff, "/Library/Application Support/BDJ4", SV_MAX_SZ);
       strlcpy (sysvars [SV_BDJ4DATATOPDIR], buff, SV_MAX_SZ);
     } else {
@@ -173,7 +182,6 @@ sysvarsInit (const char *argv0)
   strlcat (sysvars [SV_BDJ4TEMPLATEDIR], "/templates", SV_MAX_SZ);
 
   strlcpy (sysvars [SV_BDJ4HTTPDIR], "http", SV_MAX_SZ);
-
   strlcpy (sysvars [SV_BDJ4TMPDIR], "tmp", SV_MAX_SZ);
 
   strlcpy (sysvars [SV_SHLIB_EXT], SHLIB_EXT, SV_MAX_SZ);
@@ -189,7 +197,7 @@ sysvarsInit (const char *argv0)
 
   setlocale (LC_ALL, "");
 
-// ### FIX
+  /* the locale is reset by localeinit */
   snprintf (tbuf, sizeof (tbuf), "%-.5s", setlocale (LC_ALL, NULL));
   strlcpy (sysvars [SV_LOCALE], tbuf, SV_MAX_SZ);
   snprintf (tbuf, sizeof (tbuf), "%-.2s", sysvars [SV_LOCALE]);
@@ -226,12 +234,101 @@ sysvarsInit (const char *argv0)
     free (data);
   }
 
+  strlcpy (sysvars [SV_PYTHON_PATH], "", SV_MAX_SZ);
+  tptr = strdup (getenv ("PATH"));
+  tsep = ":";
+  if (isWindows ()) {
+    tsep = ";";
+  }
+  p = strtok_r (tptr, tsep, &tokstr);
+  while (p != NULL) {
+    strlcpy (tbuf, p, sizeof (tbuf));
+    pathNormPath (tbuf, sizeof (tbuf));
+
+    /* python checks */
+    snprintf (buff, sizeof (buff), "%s/%s", tbuf, "python3.exe");
+    if (fileopFileExists (buff)) {
+      strlcpy (sysvars [SV_PYTHON_PATH], buff, SV_MAX_SZ);
+      break;
+    }
+    snprintf (buff, sizeof (buff), "%s/%s", tbuf, "python.exe");
+    if (fileopFileExists (buff)) {
+      strlcpy (sysvars [SV_PYTHON_PATH], buff, SV_MAX_SZ);
+      break;
+    }
+    snprintf (buff, sizeof (buff), "%s/%s", tbuf, "python3");
+    if (fileopFileExists (buff)) {
+      strlcpy (sysvars [SV_PYTHON_PATH], buff, SV_MAX_SZ);
+      break;
+    }
+    snprintf (buff, sizeof (buff), "%s/%s", tbuf, "python");
+    if (fileopFileExists (buff)) {
+      strlcpy (sysvars [SV_PYTHON_PATH], buff, SV_MAX_SZ);
+      break;
+    }
+    p = strtok_r (NULL, tsep, &tokstr);
+  }
+  free (tptr);
+
+  if (*sysvars [SV_PYTHON_PATH]) {
+    char    *data;
+    int     j;
+
+    snprintf (buff, sizeof (buff), "%s --version > %s",
+        sysvars [SV_PYTHON_PATH], SV_TMP_FILE);
+    system (buff);
+    data = filedataReadAll (SV_TMP_FILE);
+    p = index (data, '3');
+    if (p != NULL) {
+      strlcpy (buff, p, sizeof (buff));
+      p = index (buff, '.');
+      if (p != NULL) {
+        p = index (p + 1, '.');
+        if (p != NULL) {
+          *p = '\0';
+          strlcpy (sysvars [SV_PYTHON_DOT_VERSION], buff, SV_MAX_SZ);
+          j = 0;
+          for (size_t i = 0; i < strlen (buff); ++i) {
+            if (buff [i] != '.') {
+              sysvars [SV_PYTHON_VERSION][j++] = buff [i];
+            }
+          }
+          sysvars [SV_PYTHON_VERSION][j] = '\0';
+        }
+      } /* found the first '.' */
+    } /* found the '3' starting the python version */
+  } /* if python was found */
+
+  // $HOME/.local/bin/mutagen-inspect
+  // %USERPROFILE%/AppData/Local/Programs/Python/Python<pyver>/Scripts/mutagen-inspect-script.py
+  // $HOME/Library/Python/<pyver>/lib/python/site-packages
+
+  if (isWindows ()) {
+    snprintf (buff, sizeof (buff),
+        "%s/AppData/Local/Program/Python/Python%s/Scripts/%s",
+        sysvars [SV_HOME], sysvars [SV_PYTHON_VERSION], "mutagen-inspect-script.py");
+  }
+  if (isMacOS ()) {
+    snprintf (buff, sizeof (buff),
+        "%s/Library/Python/%s/lib/python/site-packages/%s",
+        sysvars [SV_HOME], sysvars [SV_PYTHON_DOT_VERSION], "mutagen-inspect");
+  }
+  if (isLinux ()) {
+    snprintf (buff, sizeof (buff),
+        "%s/.local/bin/%s", sysvars [SV_HOME], "mutagen-inspect");
+  }
+  if (fileopFileExists (buff)) {
+    strlcpy (sysvars [SV_PYTHON_MUTAGEN], buff, SV_MAX_SZ);
+  }
+
   lsysvars [SVL_BDJIDX] = 0;
   lsysvars [SVL_BASEPORT] = 35548;
 
   if (strcmp (sysvars [SV_BDJ4_RELEASELEVEL], "alpha") == 0) {
     enable_core_dump ();
   }
+
+  fileopDelete (SV_TMP_FILE);
 }
 
 inline char *

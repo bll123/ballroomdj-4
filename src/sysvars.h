@@ -21,6 +21,11 @@ typedef enum {
   SV_MOBMQ_HOST,
   SV_LOCALE,
   SV_SHORT_LOCALE,
+  SV_PYTHON_PATH,
+  SV_PYTHON_VERSION,      // 3.10.2 => 310
+  SV_PYTHON_DOT_VERSION,  // 3.10.2 => 3.10
+  SV_PYTHON_MUTAGEN,
+  SV_HOME,
   SV_CA_FILE,
   SV_BDJ4_VERSION,
   SV_BDJ4_BUILD,
@@ -35,6 +40,8 @@ typedef enum {
   SVL_OSBITS,
   SVL_MAX
 } sysvarlkey_t;
+
+#define SV_TMP_FILE "tmp/sysvars.txt"
 
 void    sysvarsInit (const char *);
 char    * sysvarsGetStr (sysvarkey_t idx);

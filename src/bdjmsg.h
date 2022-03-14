@@ -1,10 +1,15 @@
 #ifndef INC_BDJMSG_H
 #define INC_BDJMSG_H
 
+/* when a new route is added, update: */
+/* conn.c : needs to know the port for each route */
+/* bdjmsg.c: debugging information for the route */
 typedef enum {
   ROUTE_NONE,       // anonymous
   ROUTE_CLICOMM,
   ROUTE_CONFIGUI,
+  ROUTE_DBUPDATE,   // the main db update process
+  ROUTE_DBTAG,      // the db tag reader process
   ROUTE_MAIN,
   ROUTE_MANAGEUI,
   ROUTE_MARQUEE,
@@ -87,6 +92,15 @@ typedef enum {
 
   /* to marquee */
   MSG_MARQUEE_TIMER,        // args: played time, duration
+
+  /* to/from dbudpate */
+  MSG_DB_FILE_TAGS,         // args: filename, tag data
+  MSG_DB_STATUS,            // args: status / percentage
+  /* to dbtag */
+  MSG_DB_FILE_CHK,          // args: filename to check
+
+  /* when a new message is added, update: */
+  /* bdjmsg.c: debugging information for the msg */
   MSG_MAX,
 } bdjmsgmsg_t;
 

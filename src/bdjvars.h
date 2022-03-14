@@ -7,6 +7,7 @@ typedef enum {
 } bdjvarkey_t;
 
 typedef enum {
+  /* the ports must precede any other bdjvars keys */
   BDJVL_MAIN_PORT,
   BDJVL_PLAYER_PORT,
   BDJVL_PLAYERUI_PORT,
@@ -16,7 +17,10 @@ typedef enum {
   BDJVL_REMCTRL_PORT,
   BDJVL_MARQUEE_PORT,
   BDJVL_STARTERUI_PORT,
+  BDJVL_DBUPDATE_PORT,
+  BDJVL_DBTAG_PORT,
   BDJVL_NUM_PORTS,
+  /* insert non-port keys here */
   BDJVL_MAX,
 } bdjvarkeyl_t;
 

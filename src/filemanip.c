@@ -21,6 +21,7 @@
 #include "slist.h"
 #include "osutils.h"
 #include "pathutil.h"
+#include "queue.h"
 #include "sysvars.h"
 
 #if _hdr_windows
@@ -100,7 +101,7 @@ filemanipBasicDirList (char *dirname, char *extension)
   char          *fname;
   slist_t       *fileList;
   pathinfo_t    *pi;
-  char          temp [100];
+  char          temp [MAXPATHLEN];
   char          *cvtname;
   gsize         bread, bwrite;
   GError        *gerr;
@@ -114,11 +115,12 @@ filemanipBasicDirList (char *dirname, char *extension)
   fileList = slistAlloc (temp, LIST_UNORDERED, NULL);
   dh = osDirOpen (dirname);
   while ((fname = osDirIterate (dh)) != NULL) {
-    if (strcmp (fname, ".") == 0 ||
-        strcmp (fname, "..") == 0) {
+    snprintf (temp, sizeof (temp), "%s/%s", dirname, fname);
+    if (fileopIsDirectory (temp)) {
       free (fname);
       continue;
     }
+
     if (extension != NULL) {
       pi = pathInfo (fname);
       if (pathInfoExtCheck (pi, extension) == false) {
@@ -138,6 +140,57 @@ filemanipBasicDirList (char *dirname, char *extension)
     free (fname);
   }
   osDirClose (dh);
+
+  return fileList;
+}
+
+slist_t *
+filemanipRecursiveDirList (char *dirname)
+{
+  dirhandle_t   *dh;
+  char          *fname;
+  slist_t       *fileList;
+  queue_t       *dirQueue;
+  char          temp [MAXPATHLEN];
+  char          *cvtname;
+  gsize         bread, bwrite;
+  GError        *gerr;
+
+  snprintf (temp, sizeof (temp), "read-dir-%s", dirname);
+  fileList = slistAlloc (temp, LIST_UNORDERED, NULL);
+  dirQueue = queueAlloc (free);
+
+  queuePush (dirQueue, strdup (dirname));
+  while (queueGetCount (dirQueue) > 0) {
+    char  *dir;
+
+    dir = queuePop (dirQueue);
+
+    dh = osDirOpen (dir);
+    while ((fname = osDirIterate (dh)) != NULL) {
+      if (strcmp (fname, ".") == 0 ||
+          strcmp (fname, "..") == 0) {
+        free (fname);
+        continue;
+      }
+
+      cvtname = g_filename_to_utf8 (fname, strlen (fname),
+          &bread, &bwrite, &gerr);
+      snprintf (temp, sizeof (temp), "%s/%s", dir, cvtname);
+      if (cvtname != NULL) {
+        if (fileopIsDirectory (temp)) {
+          queuePush (dirQueue, strdup (temp));
+        } else {
+          slistSetStr (fileList, temp, NULL);
+        }
+      }
+      free (cvtname);
+      free (fname);
+    }
+
+    osDirClose (dh);
+    free (dir);
+  }
 
   return fileList;
 }

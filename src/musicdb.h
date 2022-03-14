@@ -13,8 +13,9 @@ typedef struct {
   ssize_t       danceCount;
 } db_t;
 
-#define MUSICDB_FNAME   "musicdb"
-#define MUSICDB_EXT     ".dat"
+#define MUSICDB_FNAME     "musicdb"
+#define MUSICDB_TMP_FNAME "musicdb-tmp"
+#define MUSICDB_EXT       ".dat"
 
 void    dbOpen (char *);
 void    dbClose (void);

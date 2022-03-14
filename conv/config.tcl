@@ -88,6 +88,10 @@ foreach path [list {} profiles $mpath $mppath] {
         if { $key eq "UITHEME" } { continue }
         # moved to M
         if { $key eq "PLAYER" } { continue }
+        if { $key eq "ORIGINALDIR" } { continue }
+        if { $key eq "DELETEDIR" } { continue }
+        if { $key eq "IMAGEDIR" } { continue }
+        if { $key eq "ARCHIVEDIR" } { continue }
 
         if { $key eq "version" } { set value 1 }
 
@@ -96,11 +100,7 @@ foreach path [list {} profiles $mpath $mppath] {
         if { $key eq "CLVAPATHFMT" } { set key PATHFMT_CLVA }
         if { $key eq "VAPATHFMT" } { set key PATHFMT_VA }
         if { $key eq "MUSICDIR" } { set key DIRMUSIC }
-        if { $key eq "ORIGINALDIR" } { set key DIRORIGINAL }
-        if { $key eq "DELETEDIR" } { set key DIRDELETE }
         if { $key eq "MTMPDIR" } { set key DIRMUSICTMP }
-        if { $key eq "IMAGEDIR" } { set key DIRIMAGE }
-        if { $key eq "ARCHIVEDIR" } { set key DIRARCHIVE }
         if { $key eq "LISTINGFONTSIZE" } {
           set key LISTINGFONT
           set value {}

@@ -9,6 +9,8 @@ enum {
   BDJ4_INIT_NO_DETACH   = 0x02,
   BDJ4_INIT_NO_START    = 0x04,
   BDJ4_INIT_NO_MARQUEE  = 0x08,
+  BDJ4_DB_REBUILD       = 0x10,
+  BDJ4_DB_CHECK_NEW     = 0x20,
 };
 
 int bdj4startup (int argc, char *argv[], char *tag, bdjmsgroute_t route,

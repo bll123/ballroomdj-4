@@ -43,25 +43,28 @@ bdj4startup (int argc, char *argv[], char *tag, bdjmsgroute_t route, int flags)
   bool        startlog = false;
 
   static struct option bdj_options [] = {
-    { "bdj4main",   no_argument,        NULL,   0 },
-    { "main",       no_argument,        NULL,   0 },
+    { "bdj4main",     no_argument,      NULL,   0 },
+    { "main",         no_argument,      NULL,   0 },
     { "bdj4playerui", no_argument,      NULL,   0 },
-    { "playerui",   no_argument,        NULL,   0 },
+    { "playerui",     no_argument,      NULL,   0 },
     { "bdj4configui", no_argument,      NULL,   0 },
     { "bdj4manageui", no_argument,      NULL,   0 },
     { "bdj4starterui", no_argument,     NULL,   0 },
     /* bdj4 loader options to ignore */
-    { "debugself",  no_argument,        NULL,   0 },
-    { "msys",       no_argument,        NULL,   0 },
+    { "debugself",    no_argument,      NULL,   0 },
+    { "msys",         no_argument,      NULL,   0 },
     /* normal options */
-    { "profile",    required_argument,  NULL,   'p' },
-    { "debug",      required_argument,  NULL,   'd' },
-    { "startlog",   no_argument,        NULL,   's' },
+    { "profile",      required_argument,NULL,   'p' },
+    { "debug",        required_argument,NULL,   'd' },
+    { "startlog",     no_argument,      NULL,   's' },
     /* debug options */
-    { "nostart",    no_argument,        NULL,   'n' },
-    { "nomarquee",  no_argument,        NULL,   'm' },
-    { "nodetach",   no_argument,        NULL,   'N' },
-    { NULL,         0,                  NULL,   0 }
+    { "nostart",      no_argument,      NULL,   'n' },
+    { "nomarquee",    no_argument,      NULL,   'm' },
+    { "nodetach",     no_argument,      NULL,   'N' },
+    /* dbupdate options */
+    { "rebuild",      no_argument,      NULL,   'R' },
+    { "checknew",     no_argument,      NULL,   'C' },
+    { NULL,           0,                NULL,   0 }
   };
 
   mstimestart (&mt);
@@ -76,6 +79,10 @@ bdj4startup (int argc, char *argv[], char *tag, bdjmsgroute_t route, int flags)
 
   while ((c = getopt_long_only (argc, argv, "p:d:", bdj_options, &option_index)) != -1) {
     switch (c) {
+      case 'C': {
+        flags |= BDJ4_DB_CHECK_NEW;
+        break;
+      }
       case 'd': {
         if (optarg) {
           loglevel = (loglevel_t) atoi (optarg);
@@ -88,10 +95,6 @@ bdj4startup (int argc, char *argv[], char *tag, bdjmsgroute_t route, int flags)
         }
         break;
       }
-      case 's': {
-        startlog = true;
-        break;
-      }
       case 'm': {
         flags |= BDJ4_INIT_NO_MARQUEE;
         break;
@@ -102,6 +105,14 @@ bdj4startup (int argc, char *argv[], char *tag, bdjmsgroute_t route, int flags)
       }
       case 'N': {
         flags |= BDJ4_INIT_NO_DETACH;
+        break;
+      }
+      case 'R': {
+        flags |= BDJ4_DB_REBUILD;
+        break;
+      }
+      case 's': {
+        startlog = true;
         break;
       }
       default: {
