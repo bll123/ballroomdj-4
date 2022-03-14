@@ -11,7 +11,8 @@
 
 /* not for use on localized strings */
 char *
-stringToLower (char * s) {
+stringToLower (char * s)
+{
   for (char *p = s; *p; p++) {
     *p = tolower (*p);
   }
@@ -20,7 +21,8 @@ stringToLower (char * s) {
 
 /* not for use on localized strings */
 char *
-stringToUpper (char * s) {
+stringToUpper (char * s)
+{
   for (char *p = s; *p; p++) {
     *p = toupper (*p);
   }
@@ -28,12 +30,28 @@ stringToUpper (char * s) {
 }
 
 void
-stringTrim (char *s) {
+stringTrim (char *s)
+{
   ssize_t     len;
 
   len = strlen (s);
   --len;
   while (len >= 0 && (s [len] == '\r' || s [len] == '\n')) {
+    s [len] = '\0';
+    --len;
+  }
+
+  return;
+}
+
+void
+stringTrimChar (char *s, unsigned char c)
+{
+  ssize_t     len;
+
+  len = strlen (s);
+  --len;
+  while (len >= 0 && s [len] == c) {
     s [len] = '\0';
     --len;
   }

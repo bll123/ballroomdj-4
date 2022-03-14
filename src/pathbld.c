@@ -6,6 +6,7 @@
 #include <stdbool.h>
 #include <string.h>
 
+#include "bdjstring.h"
 #include "pathbld.h"
 #include "sysvars.h"
 
@@ -64,9 +65,7 @@ pathbldMakePath (char *buff, size_t buffsz, const char *subpath,
     len = snprintf (buff, buffsz, "%s/%s%s%s%s%s", dirprefix,
         subpath, subpathsep, base, suffix, extension);
   }
-  if (len > 1 && buff [len - 1] == '/') {
-    buff [len - 1] = '\0';
-  }
+  stringTrimChar (buff, '/');
 
   return buff;
 }

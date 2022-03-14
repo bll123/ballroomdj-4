@@ -109,7 +109,7 @@ typedef enum {
   PREP_ANNOUNCE,
 } bdjmsgprep_t;
 
-#define BDJMSG_MAX_ARGS     4096
+#define BDJMSG_MAX_ARGS     8192
 #define BDJMSG_MAX          (8 * 2 + 3 + BDJMSG_MAX_ARGS)
 
 #define MSG_ARGS_RS         0x1E      // RS

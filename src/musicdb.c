@@ -29,7 +29,7 @@ dbOpen (char *fn)
 {
   if (! initialized) {
     dance_t       *dances;
-    ssize_t       dcount;
+    int32_t       dcount;
 
     dances = bdjvarsdfGet (BDJVDF_DANCES);
     dcount = danceGetCount (dances);
@@ -63,10 +63,10 @@ dbClose (void)
   musicdb = NULL;
 }
 
-ssize_t
+dbidx_t
 dbCount (void)
 {
-  ssize_t tcount = 0L;
+  dbidx_t tcount = 0L;
   if (musicdb != NULL) {
     tcount = musicdb->count;
   }
@@ -145,9 +145,9 @@ dbLoad (db_t *db, char *fn)
 
   nlistStartIterator (db->danceCounts, &iteridx);
   while ((dkey = nlistIterateKey (db->danceCounts, &iteridx)) >= 0) {
-    ssize_t count = nlistGetNum (db->danceCounts, dkey);
+    dbidx_t count = nlistGetNum (db->danceCounts, dkey);
     if (count > 0) {
-      logMsg (LOG_DBG, LOG_BASIC, "db-load: dance: %zd count: %zd", dkey, count);
+      logMsg (LOG_DBG, LOG_BASIC, "db-load: dance: %zd count: %ld", dkey, count);
     }
   }
 

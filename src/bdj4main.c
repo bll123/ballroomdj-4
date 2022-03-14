@@ -1827,7 +1827,7 @@ mainSendMusicqStatus (maindata_t *mainData, char *rbuff, size_t siz)
   }
 
   dbidx = songGetNum (song, TAG_DBIDX);
-  snprintf (tbuff, sizeof (tbuff), "%zd%c", dbidx, MSG_ARGS_RS);
+  snprintf (tbuff, sizeof (tbuff), "%d%c", dbidx, MSG_ARGS_RS);
   strlcpy (statusbuff, tbuff, sizeof (statusbuff));
 
   connSendMessage (mainData->conn, ROUTE_PLAYERUI, MSG_MUSICQ_STATUS_DATA, statusbuff);

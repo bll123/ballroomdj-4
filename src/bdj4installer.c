@@ -378,7 +378,7 @@ installerActivate (GApplication *app, gpointer udata)
   GtkWidget             *widget;
   GtkWidget             *scwidget;
   GtkWidget             *image;
-  GError                *gerr;
+  GError                *gerr = NULL;
 
 
   window = gtk_application_window_new (GTK_APPLICATION (app));

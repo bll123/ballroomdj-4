@@ -392,7 +392,7 @@ marqueeActivate (GApplication *app, gpointer userdata)
   GtkWidget *window;
   GtkWidget *hbox;
   GtkWidget *vbox;
-  GError    *gerr;
+  GError    *gerr = NULL;
   gint      x, y;
 
   logProcBegin (LOG_PROC, "marqueeActivate");

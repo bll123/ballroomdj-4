@@ -9,6 +9,7 @@ size_t    istrlen (const char *);
 char *    stringToLower (char *s);
 char *    stringToUpper (char *s);
 void      stringTrim (char *s);
+void      stringTrimChar (char *s, unsigned char c);
 
 #if ! _lib_strlcat
 size_t strlcat(char *dst, const char *src, size_t siz);

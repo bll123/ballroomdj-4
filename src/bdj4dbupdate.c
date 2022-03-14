@@ -19,6 +19,7 @@
 #include <errno.h>
 #include <signal.h>
 
+#include "audiotag.h"
 #include "bdj4.h"
 #include "bdj4init.h"
 #include "bdjmsg.h"
@@ -200,7 +201,6 @@ dbupdateProcessing (void *udata)
       dbClose ();
       pathbldMakePath (tbuff, sizeof (tbuff), "",
           MUSICDB_TMP_FNAME, MUSICDB_EXT, PATHBLD_MP_NONE);
-fprintf (stderr, "is rebuild %s\n", tbuff);
       dbOpen (tbuff);
     }
 
@@ -214,7 +214,6 @@ fprintf (stderr, "is rebuild %s\n", tbuff);
     /* reading the filesystem */
 // ###
 
-fprintf (stderr, "starting prep\n");
     musicdir = bdjoptGetStr (OPT_M_DIR_MUSIC);
     dbupdate->fileList = filemanipRecursiveDirList (musicdir);
     dbupdate->fileCount = slistGetCount (dbupdate->fileList);
@@ -227,11 +226,13 @@ fprintf (stderr, "starting prep\n");
     char    *fn;
 
     while ((fn =
-        slistIterateKey (dbupdate->fileList, &dbupdate->flIterIdx)) != NULL &&
-        count < 10) {
+        slistIterateKey (dbupdate->fileList, &dbupdate->flIterIdx)) != NULL) {
       connSendMessage (dbupdate->conn, ROUTE_DBTAG, MSG_DB_FILE_CHK, fn);
       ++dbupdate->fileCountB;
       ++count;
+      if (count > 10) {
+        break;
+      }
     }
 
     if (fn == NULL) {
@@ -251,6 +252,7 @@ fprintf (stderr, "starting prep\n");
       dbClose ();
 
     }
+    return 1;
   }
 
   if (gKillReceived) {
@@ -363,10 +365,22 @@ dbupdateClosingCallback (void *tdbupdate, programstate_t programState)
 static void
 dbupdateProcessTagData (dbupdate_t *dbupdate, char *args)
 {
-fprintf (stderr, "process-tag: %s\n", args);
+  slist_t   *tagdata;
+  char      *ffn;
+  char      *data;
+  char      *tokstr;
+
+
+fprintf (stderr, "process-tag:\n");
+  ffn = strtok_r (args, MSG_ARGS_RS_STR, &tokstr);
+fprintf (stderr, "   %s\n", ffn);
+  data = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
+fprintf (stderr, "%s\n", data);
+
+  tagdata = audiotagParseData (ffn, data);
   ++dbupdate->filesProcessed;
-fprintf (stderr, "count: %ld / %ld  processed: %ld\n",
-dbupdate->fileCount,  dbupdate->fileCountB, dbupdate->filesProcessed);
+fprintf (stderr, "count: %d / %d  processed: %d\n",
+dbupdate->fileCount, dbupdate->fileCountB, dbupdate->filesProcessed);
 }
 
 static void

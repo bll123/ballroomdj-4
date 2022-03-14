@@ -16,6 +16,7 @@
 #include <getopt.h>
 #include <pthread.h>
 
+#include "audiotag.h"
 #include "bdj4.h"
 #include "bdjmsg.h"
 #include "bdjopt.h"
@@ -23,17 +24,18 @@
 #include "bdjvarsdf.h"
 #include "bdjvars.h"
 #include "conn.h"
-#include "filedata.h"
 #include "lock.h"
 #include "log.h"
 #include "pathbld.h"
 #include "progstate.h"
 #include "procutil.h"
 #include "queue.h"
+#include "slist.h"
 #include "sockh.h"
 #include "sysvars.h"
 
-#define DBTAG_MAX_THREADS   6
+//#define DBTAG_MAX_THREADS   6
+#define DBTAG_MAX_THREADS   1   // debugging
 #define DBTAG_TMP_FN        "dbtag"
 
 enum {
@@ -43,15 +45,11 @@ enum {
 };
 
 typedef struct {
-} dbtagdata_t;
-
-typedef struct {
   pthread_t   thread;
   int         state;
   int         idx;
   char        *fn;
-  char        tmpfn [40];
-  char        *tagdata;
+  char        * data;
 } dbthread_t;
 
 typedef struct {
@@ -61,7 +59,7 @@ typedef struct {
   char              *locknm;
   int               numActiveThreads;
   queue_t           *fileQueue;
-  dbthread_t     threads [DBTAG_MAX_THREADS];
+  dbthread_t        threads [DBTAG_MAX_THREADS];
 } dbtag_t;
 
 static int      dbtagProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
@@ -139,18 +137,11 @@ main (int argc, char *argv[])
   dbtag.numActiveThreads = 0;
   dbtag.progstate = progstateInit ("dbtag");
   for (int i = 0; i < DBTAG_MAX_THREADS; ++i) {
-    char tbuff [40];
-    char buff [10];
-
     dbtag.threads [i].state = DBTAG_T_STATE_INIT;
     dbtag.threads [i].idx = i;
     dbtag.threads [i].thread = -1;
     dbtag.threads [i].fn = NULL;
-    snprintf (buff, sizeof (buff), "%s-%d", DBTAG_TMP_FN, i);
-    pathbldMakePath (tbuff, sizeof (tbuff), "",
-        buff, ".txt", PATHBLD_MP_TMPDIR);
-    strlcpy (dbtag.threads [i].tmpfn, tbuff, sizeof (dbtag.threads [i].tmpfn));
-    dbtag.threads [i].tagdata = NULL;
+    dbtag.threads [i].data = NULL;
   }
   dbtag.fileQueue = queueAlloc (free);
 
@@ -236,7 +227,8 @@ dbtagProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 static int
 dbtagProcessing (void *udata)
 {
-  dbtag_t      *dbtag = NULL;
+  dbtag_t       * dbtag = NULL;
+  char          sbuff [BDJMSG_MAX_ARGS];
 
   dbtag = (dbtag_t *) udata;
 
@@ -250,15 +242,13 @@ dbtagProcessing (void *udata)
 
   for (int i = 0; i < DBTAG_MAX_THREADS; ++i) {
     if (dbtag->threads [i].state == DBTAG_T_STATE_HAVE_DATA) {
-fprintf (stderr, "got data: %s\n", dbtag->threads [i].tagdata);
-      // ### process the returned data, and send it back to
-      // the dbupdate process.
-      connSendMessage (dbtag->conn, ROUTE_DBUPDATE, MSG_DB_FILE_TAGS,
-          dbtag->threads [i].fn);
+      snprintf (sbuff, sizeof (sbuff), "%s%c%s",
+          dbtag->threads[i].fn, MSG_ARGS_RS, dbtag->threads [i].data);
+      connSendMessage (dbtag->conn, ROUTE_DBUPDATE, MSG_DB_FILE_TAGS, sbuff);
       free (dbtag->threads [i].fn);
       dbtag->threads [i].fn = NULL;
-      free (dbtag->threads [i].tagdata);
-      dbtag->threads [i].tagdata = NULL;
+      free (dbtag->threads [i].data);
+      dbtag->threads [i].data = NULL;
       dbtag->threads [i].state = DBTAG_T_STATE_INIT;
       --dbtag->numActiveThreads;
     }
@@ -357,24 +347,15 @@ static void
 dbtagProcessFileMsg (dbtag_t *dbtag, char *args)
 {
   queuePush (dbtag->fileQueue, args);
-fprintf (stderr, "push: %s\n", args);
 }
 
 static void *
 dbtagProcessFile (void *tdbthread)
 {
   dbthread_t    * dbthread = tdbthread;
-  char          cmd [MAXPATHLEN];
-  char          *data;
 
-  snprintf (cmd, sizeof (cmd), "%s %s \"%s\" > %s",
-      sysvarsGetStr (SV_PYTHON_PATH), sysvarsGetStr (SV_PYTHON_MUTAGEN),
-      dbthread->fn, dbthread->tmpfn);
-fprintf (stderr, "cmd: %s\n", cmd);
-  system (cmd);
-  data = filedataReadAll (dbthread->tmpfn);
-fprintf (stderr, "data: %s\n", cmd);
-  dbthread->tagdata = data;
+
+  dbthread->data = audiotagReadTags (dbthread->fn);
   dbthread->state = DBTAG_T_STATE_HAVE_DATA;
   return NULL;
 }

@@ -418,6 +418,7 @@ target_link_libraries (libbdj4common
 addWinSockLibrary (libbdj4common)
 
 add_library (libbdj4 SHARED
+  audiotag.c
   autosel.c
   bdj4init.c
   bdjvarsdf.c

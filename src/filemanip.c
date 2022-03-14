@@ -104,10 +104,10 @@ filemanipBasicDirList (char *dirname, char *extension)
   char          temp [MAXPATHLEN];
   char          *cvtname;
   gsize         bread, bwrite;
-  GError        *gerr;
+  GError        *gerr = NULL;
 
 
-  snprintf (temp, sizeof (temp), "read-dir-%s", dirname);
+  snprintf (temp, sizeof (temp), "basic-dir-%s", dirname);
   if (extension != NULL) {
     strlcat (temp, "-", sizeof (temp));
     strlcat (temp, extension, sizeof (temp));
@@ -131,6 +131,7 @@ filemanipBasicDirList (char *dirname, char *extension)
       pathInfoFree (pi);
     }
 
+    gerr = NULL;
     cvtname = g_filename_to_utf8 (fname, strlen (fname),
         &bread, &bwrite, &gerr);
     if (cvtname != NULL) {
@@ -154,9 +155,9 @@ filemanipRecursiveDirList (char *dirname)
   char          temp [MAXPATHLEN];
   char          *cvtname;
   gsize         bread, bwrite;
-  GError        *gerr;
+  GError        *gerr = NULL;
 
-  snprintf (temp, sizeof (temp), "read-dir-%s", dirname);
+  snprintf (temp, sizeof (temp), "rec-dir-%s", dirname);
   fileList = slistAlloc (temp, LIST_UNORDERED, NULL);
   dirQueue = queueAlloc (free);
 
@@ -174,6 +175,7 @@ filemanipRecursiveDirList (char *dirname)
         continue;
       }
 
+      gerr = NULL;
       cvtname = g_filename_to_utf8 (fname, strlen (fname),
           &bread, &bwrite, &gerr);
       snprintf (temp, sizeof (temp), "%s/%s", dir, cvtname);

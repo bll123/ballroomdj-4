@@ -169,13 +169,9 @@ fileopMakeRecursiveDir (const char *dirname)
 {
   char    tbuff [MAXPATHLEN];
   char    *p = NULL;
-  size_t  len;
 
   strlcpy (tbuff, dirname, MAXPATHLEN);
-  len = strlen (tbuff);
-  if (tbuff [len - 1] == '/') {
-    tbuff [len - 1] = '\0';
-  }
+  stringTrimChar (tbuff, '/');
 
   for (p = tbuff + 1; *p; p++) {
     if (*p == '/') {

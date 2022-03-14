@@ -9,7 +9,7 @@ for fn in *.c *.h build/config.h; do
   sed -n -e '/^#include "/p' $fn |
       sed -e 's,^#include ",,' -e 's,"$,,' -e "s,^,$fn ," >> $TIN
 done
-tsort < $TIN | egrep -v '(config.h|check.h)' > $TSORT
+tsort < $TIN > $TSORT
 rc=$?
 
 rm -f $TIN $TSORT > /dev/null 2>&1

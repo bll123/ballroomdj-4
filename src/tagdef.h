@@ -26,7 +26,16 @@ typedef enum {
   ANCHOR_BOTH
 } anchor_t;
 
+enum {
+  TAG_TYPE_M4A,
+  TAG_TYPE_MP3,
+  TAG_TYPE_WMA,
+  TAG_TYPE_MAX,
+};
+
 typedef struct {
+  char                *tag;
+  char                *audiotags [TAG_TYPE_MAX];
   unsigned int        defaultEditOrder;
   unsigned int        editIndex;
   unsigned int        editWidth;

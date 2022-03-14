@@ -211,7 +211,7 @@ ssize_t
 songfilterProcess (songfilter_t *sf)
 {
   dbidx_t     dbidx;
-  dbidx_t     dbiteridx;
+  slistidx_t  dbiteridx;
   nlistidx_t  idx;
   char        sortkey [MAXPATHLEN];
   song_t      *song;

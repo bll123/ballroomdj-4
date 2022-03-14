@@ -199,7 +199,6 @@ dirhandle_t *
 osDirOpen (const char *dirname)
 {
   dirhandle_t   *dirh;
-  size_t        len;
 
   dirh = malloc (sizeof (dirhandle_t));
   assert (dirh != NULL);

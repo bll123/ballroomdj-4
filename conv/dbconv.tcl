@@ -68,20 +68,14 @@ dict for {fn data} $musicdbList {
 
   # sort it now, make it easier
   foreach {tag} [lsort [dict keys $data]] {
-    if { $tag eq "BDJSYNCID" } {
-      # not wanted
-      continue
-    }
-    if { $tag eq "ALBART" } {
-      # not wanted - old, leftover
-      continue
-    }
+    if { $tag eq "BDJSYNCID" } { continue }
+    if { $tag eq "ALBART" } { continue }
     if { $tag eq "DURATION_HMS" } { continue }
     if { $tag eq "DURATION_STR" } { continue }
-    if { $tag eq "FILE" } {
-      # already
-      continue
-    }
+    if { $tag eq "DISPLAYIMG" } { continue }
+    # FILE is already handled
+    if { $tag eq "FILE" } { continue }
+
     if { $tag eq "rrn" } {
       # make sure rrn is correct
       set value $newrrn
