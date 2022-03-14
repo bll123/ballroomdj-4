@@ -297,6 +297,7 @@ sysvarsInit (const char *argv0)
         }
       } /* found the first '.' */
     } /* found the '3' starting the python version */
+    free (data);
   } /* if python was found */
 
   // $HOME/.local/bin/mutagen-inspect

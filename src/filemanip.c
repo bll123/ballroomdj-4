@@ -193,6 +193,7 @@ filemanipRecursiveDirList (char *dirname)
     osDirClose (dh);
     free (dir);
   }
+  queueFree (dirQueue);
 
   return fileList;
 }

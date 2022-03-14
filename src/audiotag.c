@@ -44,9 +44,11 @@ audiotagReadTags (char *ffn)
   pathbldMakePath (tmpfn, sizeof (tmpfn), "",
       buff, ".txt", PATHBLD_MP_TMPDIR);
 
-  snprintf (cmd, sizeof (cmd), "%s %s \"%s\" > %s",
+
+  snprintf (cmd, sizeof (cmd), "\"%s\" \"%s\" \"%s\" > %s",
       sysvarsGetStr (SV_PYTHON_PATH), sysvarsGetStr (SV_PYTHON_MUTAGEN),
       ffn, tmpfn);
+fprintf (stderr, "cmd: %s\n", cmd);
   system (cmd);
   data = filedataReadAll (tmpfn);
   fileopDelete (tmpfn);
@@ -65,16 +67,16 @@ audiotagParseData (char *ffn, char *data)
   pi = pathInfo (ffn);
 
   tagtype = TAG_TYPE_MP3;
-  if (pathInfoExtCheck (pi, ".mp3") == 0 ||
-      pathInfoExtCheck (pi, ".MP3") == 0) {
+  if (pathInfoExtCheck (pi, ".mp3") ||
+      pathInfoExtCheck (pi, ".MP3")) {
     tagtype = TAG_TYPE_MP3;
   }
-  if (pathInfoExtCheck (pi, ".m4a") == 0 ||
-      pathInfoExtCheck (pi, ".M4A") == 0) {
+  if (pathInfoExtCheck (pi, ".m4a") ||
+      pathInfoExtCheck (pi, ".M4A")) {
     tagtype = TAG_TYPE_M4A;
   }
-  if (pathInfoExtCheck (pi, ".wma") == 0 ||
-      pathInfoExtCheck (pi, ".WMA") == 0) {
+  if (pathInfoExtCheck (pi, ".wma") ||
+      pathInfoExtCheck (pi, ".WMA")) {
     tagtype = TAG_TYPE_WMA;
   }
   audiotagParseTags (tagdata, data, tagtype);
@@ -122,7 +124,6 @@ audiotagParseTags (slist_t *tagdata, char *data, int tagtype)
   haveduration = false;
   rewrite = false;
   while (tstr != NULL) {
-fprintf (stderr, "parse: %s\n", tstr);
     skip = false;
     if (count == 1) {
       p = strstr (tstr, "seconds");
@@ -136,9 +137,8 @@ fprintf (stderr, "parse: %s\n", tstr);
         ++p;
         tm = atof (p);
         tm *= 1000.0;
-        snprintf (pbuff, sizeof (pbuff), "%.0f", tm);
+        snprintf (duration, sizeof (duration), "%.0f", tm);
         slistSetStr (tagdata, "DURATION", duration);
-fprintf (stderr, "  duration: %s\n", duration);
         haveduration = true;
       }
     }
@@ -179,7 +179,6 @@ fprintf (stderr, "  duration: %s\n", duration);
 
           snprintf (pbuff, sizeof (pbuff), "%d", ttot);
           slistSetStr (tagdata, "TRACKTOTAL", pbuff);
-fprintf (stderr, "  tracktotal: %s\n", pbuff);
           snprintf (pbuff, sizeof (pbuff), "%d", tnum);
           p = pbuff;
         }
@@ -191,7 +190,6 @@ fprintf (stderr, "  tracktotal: %s\n", pbuff);
 
           snprintf (pbuff, sizeof (pbuff), "%d", dtot);
           slistSetStr (tagdata, "DISCTOTAL", pbuff);
-fprintf (stderr, "  disctotal: %s\n", pbuff);
           snprintf (pbuff, sizeof (pbuff), "%d", dnum);
           p = pbuff;
         }
@@ -235,8 +233,7 @@ fprintf (stderr, "  disctotal: %s\n", pbuff);
           }
         }
 
-        if (! skip) {
-fprintf (stderr, "  tag: %s p-data: %s\n", tagname, p);
+        if (! skip && *p != '\0') {
           slistSetStr (tagdata, tagname, p);
         }
       } /* have a tag name */

@@ -356,6 +356,7 @@ dbupdateClosingCallback (void *tdbupdate, programstate_t programState)
     }
   }
 
+  slistFree (dbupdate->fileList);
   connFree (dbupdate->conn);
 
   logProcEnd (LOG_PROC, "dbupdateClosingCallback", "");
@@ -371,16 +372,13 @@ dbupdateProcessTagData (dbupdate_t *dbupdate, char *args)
   char      *tokstr;
 
 
-fprintf (stderr, "process-tag:\n");
   ffn = strtok_r (args, MSG_ARGS_RS_STR, &tokstr);
-fprintf (stderr, "   %s\n", ffn);
   data = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
-fprintf (stderr, "%s\n", data);
 
   tagdata = audiotagParseData (ffn, data);
+  // ### do something with it.
+  slistFree (tagdata);
   ++dbupdate->filesProcessed;
-fprintf (stderr, "count: %d / %d  processed: %d\n",
-dbupdate->fileCount, dbupdate->fileCountB, dbupdate->filesProcessed);
 }
 
 static void
@@ -388,6 +386,3 @@ dbupdateSigHandler (int sig)
 {
   gKillReceived = 1;
 }
-
-
-

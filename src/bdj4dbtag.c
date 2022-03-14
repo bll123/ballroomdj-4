@@ -34,8 +34,7 @@
 #include "sockh.h"
 #include "sysvars.h"
 
-//#define DBTAG_MAX_THREADS   6
-#define DBTAG_MAX_THREADS   1   // debugging
+#define DBTAG_MAX_THREADS   6
 #define DBTAG_TMP_FN        "dbtag"
 
 enum {
@@ -243,7 +242,7 @@ dbtagProcessing (void *udata)
   for (int i = 0; i < DBTAG_MAX_THREADS; ++i) {
     if (dbtag->threads [i].state == DBTAG_T_STATE_HAVE_DATA) {
       snprintf (sbuff, sizeof (sbuff), "%s%c%s",
-          dbtag->threads[i].fn, MSG_ARGS_RS, dbtag->threads [i].data);
+          dbtag->threads [i].fn, MSG_ARGS_RS, dbtag->threads [i].data);
       connSendMessage (dbtag->conn, ROUTE_DBUPDATE, MSG_DB_FILE_TAGS, sbuff);
       free (dbtag->threads [i].fn);
       dbtag->threads [i].fn = NULL;
@@ -271,7 +270,8 @@ dbtagProcessing (void *udata)
           free (dbtag->threads [i].fn);
           dbtag->threads [i].fn = NULL;
         }
-        dbtag->threads [i].fn = strdup (fn);
+        /* fn is already allocated */
+        dbtag->threads [i].fn = fn;
         pthread_create (&dbtag->threads [i].thread, NULL, dbtagProcessFile, &dbtag->threads [i]);
       }
     }
@@ -336,6 +336,7 @@ dbtagClosingCallback (void *tdbtag, programstate_t programState)
 
   logProcBegin (LOG_PROC, "dbtagClosingCallback");
 
+  queueFree (dbtag->fileQueue);
   connFree (dbtag->conn);
   lockRelease (dbtag->locknm, PATHBLD_MP_USEIDX);
 
@@ -346,7 +347,7 @@ dbtagClosingCallback (void *tdbtag, programstate_t programState)
 static void
 dbtagProcessFileMsg (dbtag_t *dbtag, char *args)
 {
-  queuePush (dbtag->fileQueue, args);
+  queuePush (dbtag->fileQueue, strdup (args));
 }
 
 static void *
