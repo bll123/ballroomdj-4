@@ -151,7 +151,7 @@ osProcessStart (char *targv[], int flags, void **handle, char *outfname)
 
     fh = fopen (outfname, "w");
     fd = _fileno (fh);
-    outhandle = _get_osfhandle (fd);
+    outhandle = (HANDLE) _get_osfhandle (fd);
     si.hStdOutput = outhandle;
     si.hStdError = outhandle;
   }
@@ -167,7 +167,10 @@ osProcessStart (char *targv[], int flags, void **handle, char *outfname)
 
   val = 0;
   if ((flags & OS_PROC_DETACH) == OS_PROC_DETACH) {
-    val = DETACHED_PROCESS;
+    val |= DETACHED_PROCESS;
+  }
+  if ((flags & OS_PROC_NO_WIN) == OS_PROC_NO_WIN) {
+    val |= CREATE_NO_WINDOW;
   }
 
   /* windows and its stupid space-in-name and quoting issues */
@@ -252,6 +255,7 @@ dirhandle_t *
 osDirOpen (const char *dirname)
 {
   dirhandle_t   *dirh;
+  size_t        len = 0;
 
   dirh = malloc (sizeof (dirhandle_t));
   assert (dirh != NULL);

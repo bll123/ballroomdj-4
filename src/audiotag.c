@@ -52,7 +52,7 @@ audiotagReadTags (char *ffn)
   targv [2] = ffn;
   targv [3] = NULL;
 
-  osProcessStart (targv, OS_PROC_WAIT, NULL, tmpfn);
+  osProcessStart (targv, OS_PROC_WAIT | OS_PROC_NO_WIN, NULL, tmpfn);
   data = filedataReadAll (tmpfn);
   fileopDelete (tmpfn);
   return data;
@@ -290,13 +290,13 @@ audiotagParseNumberPair (char *data, int *a, int *b)
     p = data;
     ++p;
     *a = atoi (p);
-    p = index (p, ' ');
+    p = strstr (p, " ");
     if (p != NULL) {
       ++p;
       *b = atoi (p);
     }
   }
-  p = index (data, '/');
+  p = strstr (data, "/");
   if (p != NULL) {
     *a = atoi (data);
     ++p;

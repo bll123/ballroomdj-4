@@ -278,12 +278,12 @@ sysvarsInit (const char *argv0)
         sysvars [SV_PYTHON_PATH], SV_TMP_FILE);
     system (buff);
     data = filedataReadAll (SV_TMP_FILE);
-    p = index (data, '3');
+    p = strstr (data, "3");
     if (p != NULL) {
       strlcpy (buff, p, sizeof (buff));
-      p = index (buff, '.');
+      p = strstr (buff, ".");
       if (p != NULL) {
-        p = index (p + 1, '.');
+        p = strstr (p + 1, ".");
         if (p != NULL) {
           *p = '\0';
           strlcpy (sysvars [SV_PYTHON_DOT_VERSION], buff, SV_MAX_SZ);
@@ -324,6 +324,23 @@ sysvarsInit (const char *argv0)
 
   lsysvars [SVL_BDJIDX] = 0;
   lsysvars [SVL_BASEPORT] = 35548;
+
+  lsysvars [SVL_NUM_PROC] = 2;
+  if (isWindows ()) {
+    tptr = getenv ("NUMBER_OF_PROCESSORS");
+    if (tptr != NULL) {
+      lsysvars [SVL_NUM_PROC] = atoi (tptr);
+    }
+  } else {
+    snprintf (buff, sizeof (buff), "getconf _NPROCESSORS_ONLN> %s", SV_TMP_FILE);
+    system (buff);
+    tptr = filedataReadAll (SV_TMP_FILE);
+    if (tptr != NULL) {
+      lsysvars [SVL_NUM_PROC] = atoi (tptr);
+    }
+    free (tptr);
+  }
+  lsysvars [SVL_NUM_PROC] -= 1;  // leave one process free
 
   if (strcmp (sysvars [SV_BDJ4_RELEASELEVEL], "alpha") == 0) {
     enable_core_dump ();

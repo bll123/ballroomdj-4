@@ -17,7 +17,7 @@ pathbldMakePath (char *buff, size_t buffsz, const char *subpath,
   char      suffix [30];
   char      *subpathsep;
   char      *dirprefix;
-  size_t    len;
+
 
   *suffix = '\0';
   subpathsep = "";
@@ -58,11 +58,11 @@ pathbldMakePath (char *buff, size_t buffsz, const char *subpath,
     }
   }
   if ((flags & PATHBLD_MP_HOSTNAME) == PATHBLD_MP_HOSTNAME) {
-    len = snprintf (buff, buffsz, "%s/%s/%s%s%s%s%s", dirprefix,
+    snprintf (buff, buffsz, "%s/%s/%s%s%s%s%s", dirprefix,
         sysvarsGetStr (SV_HOSTNAME), subpath, subpathsep, base, suffix, extension);
   }
   if ((flags & PATHBLD_MP_HOSTNAME) != PATHBLD_MP_HOSTNAME) {
-    len = snprintf (buff, buffsz, "%s/%s%s%s%s%s", dirprefix,
+    snprintf (buff, buffsz, "%s/%s%s%s%s%s", dirprefix,
         subpath, subpathsep, base, suffix, extension);
   }
   stringTrimChar (buff, '/');

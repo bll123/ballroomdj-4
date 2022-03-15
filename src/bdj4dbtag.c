@@ -35,7 +35,6 @@
 #include "sysvars.h"
 #include "tmutil.h"
 
-#define DBTAG_MAX_THREADS   6
 #define DBTAG_TMP_FN        "dbtag"
 
 enum {
@@ -59,7 +58,8 @@ typedef struct {
   char              *locknm;
   int               numActiveThreads;
   queue_t           *fileQueue;
-  dbthread_t        threads [DBTAG_MAX_THREADS];
+  int               maxThreads;
+  dbthread_t        *threads;
   mstime_t          starttm;
   bool              started : 1;
 } dbtag_t;
@@ -136,10 +136,12 @@ main (int argc, char *argv[])
     exit (0);
   }
 
+  dbtag.maxThreads = sysvarsGetNum (SVL_NUM_PROC);
+  dbtag.threads = malloc (sizeof (dbthread_t) * dbtag.maxThreads);
   dbtag.started = false;
   dbtag.numActiveThreads = 0;
   dbtag.progstate = progstateInit ("dbtag");
-  for (int i = 0; i < DBTAG_MAX_THREADS; ++i) {
+  for (int i = 0; i < dbtag.maxThreads; ++i) {
     dbtag.threads [i].state = DBTAG_T_STATE_INIT;
     dbtag.threads [i].idx = i;
     dbtag.threads [i].thread = -1;
@@ -243,7 +245,7 @@ dbtagProcessing (void *udata)
     return gKillReceived;
   }
 
-  for (int i = 0; i < DBTAG_MAX_THREADS; ++i) {
+  for (int i = 0; i < dbtag->maxThreads; ++i) {
     if (dbtag->threads [i].state == DBTAG_T_STATE_HAVE_DATA) {
       snprintf (sbuff, sizeof (sbuff), "%s%c%s",
           dbtag->threads [i].fn, MSG_ARGS_RS, dbtag->threads [i].data);
@@ -262,8 +264,8 @@ dbtagProcessing (void *udata)
   }
 
   while (queueGetCount (dbtag->fileQueue) > 0 &&
-      dbtag->numActiveThreads < DBTAG_MAX_THREADS) {
-    for (int i = 0; i < DBTAG_MAX_THREADS; ++i) {
+      dbtag->numActiveThreads < dbtag->maxThreads) {
+    for (int i = 0; i < dbtag->maxThreads; ++i) {
       if (dbtag->threads [i].state == DBTAG_T_STATE_INIT) {
         char    *fn;
 
@@ -350,6 +352,7 @@ dbtagClosingCallback (void *tdbtag, programstate_t programState)
 
   logProcBegin (LOG_PROC, "dbtagClosingCallback");
 
+  free (dbtag->threads);
   queueFree (dbtag->fileQueue);
   connFree (dbtag->conn);
   lockRelease (dbtag->locknm, PATHBLD_MP_USEIDX);
