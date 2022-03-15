@@ -9,6 +9,12 @@
 #include <time.h>
 #include <sys/types.h>
 #include <unistd.h>
+#if _hdr_fcntl
+# include <fcntl.h>
+#endif
+#if _sys_wait
+# include <sys/wait.h>
+#endif
 
 #if _hdr_winsock2
 # include <winsock2.h>
@@ -67,19 +73,22 @@ sRandom (void)
 #pragma clang diagnostic ignored "-Wdeclaration-after-statement"
 
 pid_t
-osProcessStart (char *targv[], int flags, void **handle)
+osProcessStart (char *targv[], int flags, void **handle, char *outfname)
 {
   pid_t       pid;
 
 #if _lib_fork
   pid_t       tpid;
   int         rc;
+  int         ostdout;
+  int         ostderr;
 
   /* this may be slower, but it works; speed is not a major issue */
   tpid = fork ();
   if (tpid < 0) {
     return tpid;
   }
+
   if (tpid == 0) {
     /* child */
     if ((flags & OS_PROC_DETACH) == OS_PROC_DETACH) {
@@ -89,14 +98,38 @@ osProcessStart (char *targv[], int flags, void **handle)
     for (int i = 3; i < 30; ++i) {
       close (i);
     }
+
+    if (outfname != NULL) {
+      int fd = open (outfname, O_CREAT | O_WRONLY | O_TRUNC);
+      ostdout = dup (STDOUT_FILENO);
+      ostderr = dup (STDERR_FILENO);
+      dup2 (fd, STDOUT_FILENO);
+      dup2 (fd, STDERR_FILENO);
+      close (fd);
+    }
+
     rc = execv (targv [0], targv);
     if (rc < 0) {
       fprintf (stderr, "unable to execute %s %d %s\n", targv [0], errno, strerror (errno));
       exit (1);
     }
+    if (outfname != NULL) {
+      close (STDOUT_FILENO);
+      close (STDERR_FILENO);
+      dup2 (ostdout, STDOUT_FILENO);
+      dup2 (ostderr, STDERR_FILENO);
+      close (ostdout);
+      close (ostderr);
+    }
+
     exit (0);
   }
+
   pid = tpid;
+  if ((flags & OS_PROC_WAIT) == OS_PROC_WAIT) {
+    waitpid (pid, NULL, 0);
+  }
+
 #endif
 
 #if _lib_CreateProcess
@@ -106,10 +139,22 @@ osProcessStart (char *targv[], int flags, void **handle)
   char                buff [MAXPATHLEN];
   int                 idx;
   int                 val;
+  FILE                *fh;
+  HANDLE              outhandle = INVALID_HANDLE_VALUE;
 
   memset (&si, '\0', sizeof (si));
-  si.cb = sizeof(si);
+  si.cb = sizeof (si);
   memset (&pi, '\0', sizeof (pi));
+
+  if (outfname != NULL) {
+    int fd;
+
+    fh = fopen (outfname, "w");
+    fd = _fileno (fh);
+    outhandle = _get_osfhandle (fd);
+    si.hStdOutput = outhandle;
+    si.hStdError = outhandle;
+  }
 
   buff [0] = '\0';
   idx = 0;
@@ -150,6 +195,14 @@ osProcessStart (char *targv[], int flags, void **handle)
     *handle = pi.hProcess;
   }
   CloseHandle (pi.hThread);
+
+  if ((flags & OS_PROC_WAIT) == OS_PROC_WAIT) {
+    WaitForSingleObject (pi.hProcess, INFINITE);
+  }
+
+  if (outfname != NULL) {
+    fclose (fh);
+  }
 
 #endif
   return pid;

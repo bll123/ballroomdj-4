@@ -16,6 +16,7 @@
 enum {
   OS_PROC_NONE    = 0x0000,
   OS_PROC_DETACH  = 0x0001,
+  OS_PROC_WAIT    = 0x0002,
 };
 
 typedef struct {
@@ -28,7 +29,8 @@ typedef struct {
 
 double        dRandom (void);
 void          sRandom (void);
-pid_t         osProcessStart (char *targv[], int flags, void **handle);
+pid_t         osProcessStart (char *targv[], int flags,
+                void **handle, char *outfname);
 #if _lib_MultiByteToWideChar
  wchar_t * osToWideString (const char *fname);
  char * osToUTF8String (const wchar_t *fname);

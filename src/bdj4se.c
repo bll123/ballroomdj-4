@@ -202,7 +202,7 @@ main (int argc, char *argv [])
   } else {
     argv [0] = "./install/install-startup.sh";
   }
-  osProcessStart (argv, OS_PROC_NONE, NULL);
+  osProcessStart (argv, OS_PROC_NONE, NULL, NULL);
 
   return 0;
 }

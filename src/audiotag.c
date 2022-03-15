@@ -12,6 +12,8 @@
 #include "bdjstring.h"
 #include "filedata.h"
 #include "fileop.h"
+#include "log.h"
+#include "osutils.h"
 #include "pathutil.h"
 #include "pathbld.h"
 #include "slist.h"
@@ -35,21 +37,22 @@ static slist_t    * tagLookup [TAG_TYPE_MAX] = { NULL, NULL, NULL };
 char *
 audiotagReadTags (char *ffn)
 {
-  char        cmd [MAXPATHLEN];
   char        tmpfn [MAXPATHLEN];
   char        buff [40];
   char        *data;
+  char        * targv [5];
 
   snprintf (buff, sizeof (buff), "%s-%d", AUDIOTAG_TMP_FILE, gcount++);
   pathbldMakePath (tmpfn, sizeof (tmpfn), "",
       buff, ".txt", PATHBLD_MP_TMPDIR);
 
 
-  snprintf (cmd, sizeof (cmd), "\"%s\" \"%s\" \"%s\" > %s",
-      sysvarsGetStr (SV_PYTHON_PATH), sysvarsGetStr (SV_PYTHON_MUTAGEN),
-      ffn, tmpfn);
-fprintf (stderr, "cmd: %s\n", cmd);
-  system (cmd);
+  targv [0] = sysvarsGetStr (SV_PYTHON_PATH);
+  targv [1] = sysvarsGetStr (SV_PYTHON_MUTAGEN);
+  targv [2] = ffn;
+  targv [3] = NULL;
+
+  osProcessStart (targv, OS_PROC_WAIT, NULL, tmpfn);
   data = filedataReadAll (tmpfn);
   fileopDelete (tmpfn);
   return data;
@@ -124,6 +127,7 @@ audiotagParseTags (slist_t *tagdata, char *data, int tagtype)
   haveduration = false;
   rewrite = false;
   while (tstr != NULL) {
+    logMsg (LOG_DBG, LOG_DBUPDATE, "%s", tstr);
     skip = false;
     if (count == 1) {
       p = strstr (tstr, "seconds");
@@ -140,8 +144,11 @@ audiotagParseTags (slist_t *tagdata, char *data, int tagtype)
         snprintf (duration, sizeof (duration), "%.0f", tm);
         slistSetStr (tagdata, "DURATION", duration);
         haveduration = true;
+      } else {
+        logMsg (LOG_DBG, LOG_DBUPDATE, "no 'seconds' found");
       }
     }
+
     if (count > 1) {
       p = strtok_r (tstr, "=", &tokstrB);
       if (p == NULL) {
@@ -155,6 +162,7 @@ audiotagParseTags (slist_t *tagdata, char *data, int tagtype)
 
       /* p is pointing to the tag name */
       tagname = slistGetStr (tagLookup [tagtype], p);
+      logMsg (LOG_DBG, LOG_DBUPDATE, "tag: %s raw-tag: %s", tagname, p);
 
       if (tagname != NULL && *tagname != '\0') {
         p = strtok_r (NULL, "=", &tokstrB);
@@ -233,7 +241,7 @@ audiotagParseTags (slist_t *tagdata, char *data, int tagtype)
           }
         }
 
-        if (! skip && *p != '\0') {
+        if (! skip && p != NULL && *p != '\0') {
           slistSetStr (tagdata, tagname, p);
         }
       } /* have a tag name */

@@ -1440,10 +1440,8 @@ installerConvert (installer_t *installer)
   targv [2] = buffb;
   targv [3] = installer->datatopdir;
   targv [4] = NULL;
-//  snprintf (buff, sizeof (buff), "\"%s\" conv/%s \"%s/data\" \"%s\"",
-//      installer->tclshloc, fn, installer->bdj3loc, installer->datatopdir);
 
-  osProcessStart (targv, OS_PROC_DETACH, NULL);
+  osProcessStart (targv, OS_PROC_DETACH, NULL, NULL);
 
   installer->instState = INST_CONVERT;
   return;
@@ -1742,7 +1740,7 @@ installerCleanup (installer_t *installer)
     snprintf (buff, sizeof (buff), "\"%s\"", installer->unpackdir);
     targv [1] = buff;
     targv [2] = NULL;
-    osProcessStart (targv, OS_PROC_DETACH, NULL);
+    osProcessStart (targv, OS_PROC_DETACH, NULL, NULL);
   } else {
     snprintf (buff, sizeof(buff), "rm -rf %s", installer->unpackdir);
     system (buff);

@@ -259,6 +259,7 @@ check_include_file (sys/socket.h _sys_socket)
 check_include_file (sys/stat.h _sys_stat)
 check_include_file (sys/time.h _sys_time)
 check_include_file (sys/utsname.h _sys_utsname)
+check_include_file (sys/wait.h _sys_wait)
 
 set (CMAKE_REQUIRED_INCLUDES windows.h)
 check_function_exists (CloseHandle _lib_CloseHandle)

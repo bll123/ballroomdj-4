@@ -343,7 +343,7 @@ main (int argc, char * argv[])
   if (forcenodetach || nodetach) {
     flags = OS_PROC_NONE;
   }
-  osProcessStart (argv, flags, NULL);
+  osProcessStart (argv, flags, NULL, NULL);
   return 0;
 }
 

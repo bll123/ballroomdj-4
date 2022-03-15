@@ -18,19 +18,20 @@ filedataReadAll (char *fname)
 {
   FILE        *fh;
   ssize_t     len;
-  char        *data;
+  char        *data = NULL;
 
   len = fileopSize (fname);
-  if (len < 0) {
+  if (len <= 0) {
     return NULL;
   }
   fh = fileopOpen (fname, "r");
-  data = malloc (len + 1);
-  assert (data != NULL);
-  len = fread (data, 1, len, fh);
-  assert (len > 0);
-  data [len] = '\0';
-  fclose (fh);
+  if (fh != NULL) {
+    data = malloc (len + 1);
+    assert (data != NULL);
+    len = fread (data, 1, len, fh);
+    data [len] = '\0';
+    fclose (fh);
+  }
 
   return data;
 }

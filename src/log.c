@@ -166,7 +166,7 @@ logCheck (logidx_t idx, loglevel_t level)
 {
   bdjlog_t      *l;
 
-  l = syslogs [LOG_DBG];
+  l = syslogs [idx];
   if (l == NULL || ! l->opened) {
     return false;
   }

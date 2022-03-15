@@ -36,6 +36,7 @@
 #include "procutil.h"
 #include "slist.h"
 #include "sockh.h"
+#include "tmutil.h"
 
 enum {
   DB_UPD_INIT,
@@ -56,6 +57,7 @@ typedef struct {
   dbidx_t           fileCount;
   dbidx_t           fileCountB;
   dbidx_t           filesProcessed;
+  mstime_t          starttm;
 } dbupdate_t;
 
 static int      dbupdateProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
@@ -210,6 +212,7 @@ dbupdateProcessing (void *udata)
   if (dbupdate->state == DB_UPD_PREP) {
     char    *musicdir;
 
+    mstimestart (&dbupdate->starttm);
     /* send status message first, as this process will be locked up */
     /* reading the filesystem */
 // ###
@@ -217,6 +220,9 @@ dbupdateProcessing (void *udata)
     musicdir = bdjoptGetStr (OPT_M_DIR_MUSIC);
     dbupdate->fileList = filemanipRecursiveDirList (musicdir);
     dbupdate->fileCount = slistGetCount (dbupdate->fileList);
+    mstimeend (&dbupdate->starttm);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "read directory %s: %ld ms", musicdir,
+        mstimeend (&dbupdate->starttm));
     slistStartIterator (dbupdate->fileList, &dbupdate->flIterIdx);
     dbupdate->state = DB_UPD_SEND;
   }
@@ -236,6 +242,8 @@ dbupdateProcessing (void *udata)
     }
 
     if (fn == NULL) {
+      logMsg (LOG_DBG, LOG_IMPORTANT, "all filenames sent: %ld ms",
+          mstimeend (&dbupdate->starttm));
       dbupdate->state = DB_UPD_PROCESS;
     }
   }
@@ -252,6 +260,8 @@ dbupdateProcessing (void *udata)
       dbClose ();
 
     }
+    logMsg (LOG_DBG, LOG_IMPORTANT, "finish: %ld ms",
+        mstimeend (&dbupdate->starttm));
     return 1;
   }
 
@@ -376,6 +386,16 @@ dbupdateProcessTagData (dbupdate_t *dbupdate, char *args)
   data = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
 
   tagdata = audiotagParseData (ffn, data);
+  if (logCheck (LOG_DBG, LOG_DBUPDATE)) {
+    slistidx_t  iteridx;
+    char        *tag, *data;
+
+    slistStartIterator (tagdata, &iteridx);
+    while ((tag = slistIterateKey (tagdata, &iteridx)) != NULL) {
+      data = slistGetStr (tagdata, tag);
+      logMsg (LOG_DBG, LOG_DBUPDATE, "  %s : %s", tag, data);
+    }
+  }
   // ### do something with it.
   slistFree (tagdata);
   ++dbupdate->filesProcessed;

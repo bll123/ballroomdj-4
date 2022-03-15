@@ -33,6 +33,7 @@
 #include "slist.h"
 #include "sockh.h"
 #include "sysvars.h"
+#include "tmutil.h"
 
 #define DBTAG_MAX_THREADS   6
 #define DBTAG_TMP_FN        "dbtag"
@@ -59,6 +60,8 @@ typedef struct {
   int               numActiveThreads;
   queue_t           *fileQueue;
   dbthread_t        threads [DBTAG_MAX_THREADS];
+  mstime_t          starttm;
+  bool              started : 1;
 } dbtag_t;
 
 static int      dbtagProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
@@ -133,6 +136,7 @@ main (int argc, char *argv[])
     exit (0);
   }
 
+  dbtag.started = false;
   dbtag.numActiveThreads = 0;
   dbtag.progstate = progstateInit ("dbtag");
   for (int i = 0; i < DBTAG_MAX_THREADS; ++i) {
@@ -244,9 +248,13 @@ dbtagProcessing (void *udata)
       snprintf (sbuff, sizeof (sbuff), "%s%c%s",
           dbtag->threads [i].fn, MSG_ARGS_RS, dbtag->threads [i].data);
       connSendMessage (dbtag->conn, ROUTE_DBUPDATE, MSG_DB_FILE_TAGS, sbuff);
-      free (dbtag->threads [i].fn);
+      if (dbtag->threads [i].fn != NULL) {
+        free (dbtag->threads [i].fn);
+      }
       dbtag->threads [i].fn = NULL;
-      free (dbtag->threads [i].data);
+      if (dbtag->threads [i].data != NULL) {
+        free (dbtag->threads [i].data);
+      }
       dbtag->threads [i].data = NULL;
       dbtag->threads [i].state = DBTAG_T_STATE_INIT;
       --dbtag->numActiveThreads;
@@ -275,6 +283,12 @@ dbtagProcessing (void *udata)
         pthread_create (&dbtag->threads [i].thread, NULL, dbtagProcessFile, &dbtag->threads [i]);
       }
     }
+  }
+
+  if (dbtag->started &&
+      queueGetCount (dbtag->fileQueue) == 0 &&
+      dbtag->numActiveThreads == 0) {
+    logMsg (LOG_DBG, LOG_IMPORTANT, "queue empty: %ld ms", mstimeend (&dbtag->starttm));
   }
 
   if (gKillReceived) {
@@ -347,6 +361,10 @@ dbtagClosingCallback (void *tdbtag, programstate_t programState)
 static void
 dbtagProcessFileMsg (dbtag_t *dbtag, char *args)
 {
+  if (! dbtag->started) {
+    dbtag->started = true;
+    mstimestart (&dbtag->starttm);
+  }
   queuePush (dbtag->fileQueue, strdup (args));
 }
 
