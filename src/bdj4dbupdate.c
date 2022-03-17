@@ -223,6 +223,7 @@ dbupdateProcessing (void *udata)
     mstimeend (&dbupdate->starttm);
     logMsg (LOG_DBG, LOG_IMPORTANT, "read directory %s: %ld ms", musicdir,
         mstimeend (&dbupdate->starttm));
+    logMsg (LOG_DBG, LOG_IMPORTANT, "  %ld files found", dbupdate->fileCount);
     slistStartIterator (dbupdate->fileList, &dbupdate->flIterIdx);
     dbupdate->state = DB_UPD_SEND;
   }

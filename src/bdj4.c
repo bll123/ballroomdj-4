@@ -63,6 +63,7 @@ main (int argc, char * argv[])
     { "bdj4installer",  no_argument,        NULL,   12 },
     { "installer",      no_argument,        NULL,   12 },
     { "locale",         no_argument,        NULL,   13 },
+    { "bdj4dbupdate",   no_argument,        NULL,   15 },
     /* cli */
     { "forcestop",      no_argument,        NULL,   0 },
     /* used by installer */
@@ -80,6 +81,9 @@ main (int argc, char * argv[])
     { "debugself",      no_argument,        NULL,   'D' },
     { "nodetach",       no_argument,        NULL,   'N' },
     { "msys",           no_argument,        NULL,   'M' },
+    /* dbupdate options */
+    { "rebuild",        no_argument,        NULL,   0 },
+    { "checknew",       no_argument,        NULL,   0 },
     { NULL,             0,                  NULL,   0 }
   };
 
@@ -170,6 +174,11 @@ main (int argc, char * argv[])
         ++validargs;
         break;
       }
+      case 15: {
+        prog = "bdj4dbupdate";
+        ++validargs;
+        break;
+      }
       case 'd': {
         break;
       }
@@ -224,8 +233,8 @@ main (int argc, char * argv[])
   }
 
   fileopMakeDir ("tmp");
-
   putenv ("GTK_CSD=0");
+  putenv ("PYTHONIOENCODING=utf-8");
 
   if (isMacOS()) {
     char      *path = NULL;

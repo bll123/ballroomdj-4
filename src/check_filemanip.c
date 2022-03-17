@@ -97,7 +97,6 @@ END_TEST
 START_TEST(filemanip_basic_dirlist)
 {
   FILE      *fh;
-  int       rc;
   slist_t   *slist;
   slistidx_t  iteridx;
   char      *fn;
@@ -108,8 +107,8 @@ START_TEST(filemanip_basic_dirlist)
   char *fbfn = "tmp/abc/def/def.txt";
   char *dcfn = "tmp/abc/ghi";
   char *fcfn = "tmp/abc/ghi/ghi.txt";
-  rc = fileopMakeDir (dbfn);
-  rc = fileopMakeDir (dcfn);
+  fileopMakeDir (dbfn);
+  fileopMakeDir (dcfn);
   fh = fopen (fafn, "w");
   fclose (fh);
   fh = fopen (fbfn, "w");
@@ -140,7 +139,6 @@ END_TEST
 START_TEST(filemanip_recursive_dirlist)
 {
   FILE      *fh;
-  int       rc;
   slist_t   *slist;
   slistidx_t  iteridx;
   char      *fn;
@@ -151,8 +149,8 @@ START_TEST(filemanip_recursive_dirlist)
   char *fbfn = "tmp/abc/def/def.txt";
   char *dcfn = "tmp/abc/ghi";
   char *fcfn = "tmp/abc/ghi/ghi.txt";
-  rc = fileopMakeDir (dbfn);
-  rc = fileopMakeDir (dcfn);
+  fileopMakeDir (dbfn);
+  fileopMakeDir (dcfn);
   fh = fopen (fafn, "w");
   fclose (fh);
   fh = fopen (fbfn, "w");

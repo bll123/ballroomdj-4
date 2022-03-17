@@ -123,6 +123,7 @@ sysvarsInit (const char *argv0)
 
   if (isWindows ()) {
     strlcpy (sysvars [SV_HOME], getenv ("USERPROFILE"), SV_MAX_SZ);
+    pathNormPath (sysvars [SV_HOME], SV_MAX_SZ);
   } else {
     strlcpy (sysvars [SV_HOME], getenv ("HOME"), SV_MAX_SZ);
   }
@@ -270,7 +271,10 @@ sysvarsInit (const char *argv0)
   }
   free (tptr);
 
-  if (*sysvars [SV_PYTHON_PATH]) {
+  /* the launcher is not in the right directory. */
+  /* don't bother with this if tmp is not there */
+  if (fileopIsDirectory ("tmp") &&
+      *sysvars [SV_PYTHON_PATH]) {
     char    *data;
     int     j;
 
@@ -306,7 +310,7 @@ sysvarsInit (const char *argv0)
 
   if (isWindows ()) {
     snprintf (buff, sizeof (buff),
-        "%s/AppData/Local/Program/Python/Python%s/Scripts/%s",
+        "%s/AppData/Local/Programs/Python/Python%s/Scripts/%s",
         sysvars [SV_HOME], sysvars [SV_PYTHON_VERSION], "mutagen-inspect-script.py");
   }
   if (isMacOS ()) {
@@ -331,7 +335,8 @@ sysvarsInit (const char *argv0)
     if (tptr != NULL) {
       lsysvars [SVL_NUM_PROC] = atoi (tptr);
     }
-  } else {
+  } else if (fileopIsDirectory ("tmp")) {
+    /* don't bother with this if tmp is not there */
     snprintf (buff, sizeof (buff), "getconf _NPROCESSORS_ONLN> %s", SV_TMP_FILE);
     system (buff);
     tptr = filedataReadAll (SV_TMP_FILE);

@@ -50,6 +50,7 @@ bdj4startup (int argc, char *argv[], char *tag, bdjmsgroute_t route, int flags)
     { "bdj4configui", no_argument,      NULL,   0 },
     { "bdj4manageui", no_argument,      NULL,   0 },
     { "bdj4starterui", no_argument,     NULL,   0 },
+    { "bdj4dbupdate", no_argument,      NULL,   0 },
     /* bdj4 loader options to ignore */
     { "debugself",    no_argument,      NULL,   0 },
     { "msys",         no_argument,      NULL,   0 },

@@ -17,7 +17,6 @@ enum {
   OS_PROC_NONE    = 0x0000,
   OS_PROC_DETACH  = 0x0001,
   OS_PROC_WAIT    = 0x0002,
-  OS_PROC_NO_WIN  = 0x0004,
 };
 
 typedef struct {

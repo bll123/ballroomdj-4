@@ -38,7 +38,6 @@ typedef enum {
   OPT_G_WRITETAGS,
   OPT_M_AUDIOSINK,                //
   OPT_M_DIR_MUSIC,                //
-  OPT_M_DIR_MUSICTMP,
   OPT_M_HOST,
   OPT_M_PLAYER_INTFC,             //
   OPT_M_SHUTDOWNSCRIPT,

@@ -282,6 +282,7 @@ dbtagProcessing (void *udata)
         }
         /* fn is already allocated */
         dbtag->threads [i].fn = fn;
+        logMsg (LOG_DBG, LOG_DBUPDATE, "process: %s", fn);
         pthread_create (&dbtag->threads [i].thread, NULL, dbtagProcessFile, &dbtag->threads [i]);
       }
     }

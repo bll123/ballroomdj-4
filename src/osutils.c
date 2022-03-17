@@ -133,12 +133,14 @@ osProcessStart (char *targv[], int flags, void **handle, char *outfname)
 #endif
 
 #if _lib_CreateProcess
-  STARTUPINFO         si;
+  STARTUPINFOW        si;
   PROCESS_INFORMATION pi;
   char                tbuff [MAXPATHLEN];
   char                buff [MAXPATHLEN];
   int                 idx;
   int                 val;
+  int                 inherit = FALSE;
+  wchar_t             *wbuff;
   FILE                *fh;
   HANDLE              outhandle = INVALID_HANDLE_VALUE;
 
@@ -147,13 +149,24 @@ osProcessStart (char *targv[], int flags, void **handle, char *outfname)
   memset (&pi, '\0', sizeof (pi));
 
   if (outfname != NULL) {
-    int fd;
+    SECURITY_ATTRIBUTES sao;
 
-    fh = fopen (outfname, "w");
-    fd = _fileno (fh);
-    outhandle = (HANDLE) _get_osfhandle (fd);
+    sao.nLength = sizeof (SECURITY_ATTRIBUTES);
+    sao.lpSecurityDescriptor = NULL;
+    sao.bInheritHandle = 1;
+
+    outhandle = CreateFile (outfname,
+      GENERIC_WRITE,
+      FILE_SHARE_READ | FILE_SHARE_WRITE,
+      &sao,
+      CREATE_ALWAYS,
+      FILE_ATTRIBUTE_NORMAL,
+      NULL);
     si.hStdOutput = outhandle;
     si.hStdError = outhandle;
+    si.hStdInput = GetStdHandle (STD_INPUT_HANDLE);
+    si.dwFlags |= STARTF_USESTDHANDLES;
+    inherit = TRUE;
   }
 
   buff [0] = '\0';
@@ -164,24 +177,23 @@ osProcessStart (char *targv[], int flags, void **handle, char *outfname)
     strlcat (buff, tbuff, MAXPATHLEN);
     strlcat (buff, " ", MAXPATHLEN);
   }
+  wbuff = osToWideString (buff);
 
   val = 0;
   if ((flags & OS_PROC_DETACH) == OS_PROC_DETACH) {
     val |= DETACHED_PROCESS;
   }
-  if ((flags & OS_PROC_NO_WIN) == OS_PROC_NO_WIN) {
-    val |= CREATE_NO_WINDOW;
-  }
+  val |= CREATE_NO_WINDOW;
 
   /* windows and its stupid space-in-name and quoting issues */
   /* leave the module name as null, as otherwise it would have to be */
   /* a non-quoted version.  the command in the command line must be quoted */
-  if (! CreateProcess (
+  if (! CreateProcessW (
       NULL,           // module name
-      buff,           // command line
+      wbuff,           // command line
       NULL,           // process handle
       NULL,           // hread handle
-      FALSE,          // handle inheritance
+      inherit,        // handle inheritance
       val,            // set to DETACHED_PROCESS
       NULL,           // parent's environment
       NULL,           // parent's starting directory
@@ -204,7 +216,7 @@ osProcessStart (char *targv[], int flags, void **handle, char *outfname)
   }
 
   if (outfname != NULL) {
-    fclose (fh);
+    CloseHandle (outhandle);
   }
 
 #endif

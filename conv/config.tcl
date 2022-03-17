@@ -92,6 +92,7 @@ foreach path [list {} profiles $mpath $mppath] {
         if { $key eq "DELETEDIR" } { continue }
         if { $key eq "IMAGEDIR" } { continue }
         if { $key eq "ARCHIVEDIR" } { continue }
+        if { $key eq "MTMPDIR" } { continue }
 
         if { $key eq "version" } { set value 1 }
 
@@ -100,7 +101,6 @@ foreach path [list {} profiles $mpath $mppath] {
         if { $key eq "CLVAPATHFMT" } { set key PATHFMT_CLVA }
         if { $key eq "VAPATHFMT" } { set key PATHFMT_VA }
         if { $key eq "MUSICDIR" } { set key DIRMUSIC }
-        if { $key eq "MTMPDIR" } { set key DIRMUSICTMP }
         if { $key eq "LISTINGFONTSIZE" } {
           set key LISTINGFONT
           set value {}
