@@ -60,6 +60,8 @@ typedef struct {
   mstime_t          starttm;
 } dbupdate_t;
 
+#define FNAMES_SENT_PER_ITER  30
+
 static int      dbupdateProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
                     bdjmsgmsg_t msg, char *args, void *udata);
 static int      dbupdateProcessing (void *udata);
@@ -237,7 +239,7 @@ dbupdateProcessing (void *udata)
       connSendMessage (dbupdate->conn, ROUTE_DBTAG, MSG_DB_FILE_CHK, fn);
       ++dbupdate->fileCountB;
       ++count;
-      if (count > 10) {
+      if (count > FNAMES_SENT_PER_ITER) {
         break;
       }
     }

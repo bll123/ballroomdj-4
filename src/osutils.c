@@ -218,6 +218,7 @@ osProcessStart (char *targv[], int flags, void **handle, char *outfname)
   if (outfname != NULL) {
     CloseHandle (outhandle);
   }
+  free (wbuff);
 
 #endif
   return pid;
