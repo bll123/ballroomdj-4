@@ -154,9 +154,12 @@ filemanipRecursiveDirList (char *dirname)
   queue_t       *dirQueue;
   char          temp [MAXPATHLEN];
   char          *cvtname;
+  char          *p;
+  size_t        dirnamelen;
   gsize         bread, bwrite;
   GError        *gerr = NULL;
 
+  dirnamelen = strlen (dirname);
   snprintf (temp, sizeof (temp), "rec-dir-%s", dirname);
   fileList = slistAlloc (temp, LIST_UNORDERED, NULL);
   dirQueue = queueAlloc (free);
@@ -183,7 +186,8 @@ filemanipRecursiveDirList (char *dirname)
         if (fileopIsDirectory (temp)) {
           queuePush (dirQueue, strdup (temp));
         } else {
-          slistSetStr (fileList, temp, NULL);
+          p = temp + dirnamelen + 1;
+          slistSetStr (fileList, temp, p);
         }
       }
       free (cvtname);
@@ -195,6 +199,8 @@ filemanipRecursiveDirList (char *dirname)
   }
   queueFree (dirQueue);
 
+  /* need it sorted so that the relative filename can be retrieved */
+  slistSort (fileList);
   return fileList;
 }
 

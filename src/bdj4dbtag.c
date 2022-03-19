@@ -61,6 +61,8 @@ typedef struct {
   int               maxThreads;
   dbthread_t        *threads;
   mstime_t          starttm;
+  int               iterations;
+  int               threadActiveSum;
   bool              started : 1;
 } dbtag_t;
 
@@ -140,6 +142,8 @@ main (int argc, char *argv[])
   dbtag.threads = malloc (sizeof (dbthread_t) * dbtag.maxThreads);
   dbtag.started = false;
   dbtag.numActiveThreads = 0;
+  dbtag.iterations = 0;
+  dbtag.threadActiveSum = 0;
   dbtag.progstate = progstateInit ("dbtag");
   for (int i = 0; i < dbtag.maxThreads; ++i) {
     dbtag.threads [i].state = DBTAG_T_STATE_INIT;
@@ -265,6 +269,10 @@ dbtagProcessing (void *udata)
 
   while (queueGetCount (dbtag->fileQueue) > 0 &&
       dbtag->numActiveThreads < dbtag->maxThreads) {
+    ++dbtag->iterations;
+    if (dbtag->iterations > dbtag->maxThreads) {
+      dbtag->threadActiveSum += dbtag->numActiveThreads;
+    }
     for (int i = 0; i < dbtag->maxThreads; ++i) {
       if (dbtag->threads [i].state == DBTAG_T_STATE_INIT) {
         char    *fn;
@@ -292,6 +300,9 @@ dbtagProcessing (void *udata)
       queueGetCount (dbtag->fileQueue) == 0 &&
       dbtag->numActiveThreads == 0) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "queue empty: %ld ms", mstimeend (&dbtag->starttm));
+    logMsg (LOG_DBG, LOG_IMPORTANT, "average num threads active: %.2f",
+        (double) dbtag->threadActiveSum /
+        (double) (dbtag->iterations - dbtag->maxThreads));
   }
 
   if (gKillReceived) {

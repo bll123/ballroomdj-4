@@ -345,7 +345,9 @@ sysvarsInit (const char *argv0)
     }
     free (tptr);
   }
-  lsysvars [SVL_NUM_PROC] -= 1;  // leave one process free
+  if (lsysvars [SVL_NUM_PROC] > 1) {
+    lsysvars [SVL_NUM_PROC] -= 1;  // leave one process free
+  }
 
   if (strcmp (sysvars [SV_BDJ4_RELEASELEVEL], "alpha") == 0) {
     enable_core_dump ();

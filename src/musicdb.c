@@ -1,6 +1,5 @@
 #include "config.h"
 
-
 #include <stdlib.h>
 #include <stdbool.h>
 #include <assert.h>
@@ -36,12 +35,15 @@ dbOpen (char *fn)
 
     musicdb = malloc (sizeof (db_t));
     assert (musicdb != NULL);
+
     musicdb->songs = slistAlloc ("db-songs", LIST_UNORDERED, songFree);
     musicdb->danceCounts = nlistAlloc ("db-dance-counts", LIST_ORDERED, NULL);
     nlistSetSize (musicdb->danceCounts, dcount);
     musicdb->danceCount = dcount;
     musicdb->count = 0L;
-    dbLoad (musicdb, fn);
+    musicdb->radb = NULL;
+    musicdb->fn = strdup (fn);
+    dbLoad (musicdb);
     initialized = 1;
   }
 }
@@ -56,6 +58,12 @@ dbClose (void)
     }
     if (musicdb->danceCounts != NULL) {
       nlistFree (musicdb->danceCounts);
+    }
+    if (musicdb->fn != NULL) {
+      free (musicdb->fn);
+    }
+    if (musicdb->radb != NULL) {
+      raClose (musicdb->radb);
     }
     free (musicdb);
   }
@@ -74,13 +82,12 @@ dbCount (void)
 }
 
 int
-dbLoad (db_t *db, char *fn)
+dbLoad (db_t *db)
 {
   char        data [RAFILE_REC_SIZE];
   char        *fstr;
   char        *ffn;
   song_t      *song;
-  rafile_t    *radb;
   rafileidx_t srrn;
   rafileidx_t rc;
   nlistidx_t  dkey;
@@ -91,13 +98,13 @@ dbLoad (db_t *db, char *fn)
 
 
   fstr = "";
-  radb = raOpen (fn, 10);
-  slistSetSize (db->songs, raGetCount (radb));
+  musicdb->radb = raOpen (db->fn, MUSICDB_VERSION);
+  slistSetSize (db->songs, raGetCount (musicdb->radb));
 
-  raStartBatch (radb);
+  raStartBatch (musicdb->radb);
 
-  for (rafileidx_t i = 1L; i <= raGetCount (radb); ++i) {
-    rc = raRead (radb, i, data);
+  for (rafileidx_t i = 1L; i <= raGetCount (musicdb->radb); ++i) {
+    rc = raRead (musicdb->radb, i, data);
     if (rc != 1) {
       logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Unable to access rrn %zd", i);
     }
@@ -151,9 +158,29 @@ dbLoad (db_t *db, char *fn)
     }
   }
 
-  raEndBatch (radb);
-  raClose (radb);
+  raEndBatch (musicdb->radb);
+  raClose (musicdb->radb);
+  musicdb->radb = NULL;
   return 0;
+}
+
+void
+dbStartBatch (void)
+{
+  if (musicdb->radb == NULL) {
+    musicdb->radb = raOpen (musicdb->fn, MUSICDB_VERSION);
+    raStartBatch (musicdb->radb);
+  }
+}
+
+void
+dbEndBatch (void)
+{
+  if (musicdb->radb != NULL) {
+    raEndBatch (musicdb->radb);
+    raClose (musicdb->radb);
+  }
+  musicdb->radb = NULL;
 }
 
 song_t *
@@ -174,6 +201,43 @@ dbGetByIdx (dbidx_t idx)
 
   song = slistGetDataByIdx (musicdb->songs, idx);
   return song;
+}
+
+void
+dbWrite (char *fn, slist_t *tagList)
+{
+  slistidx_t    iteridx;
+  char          *tag;
+  char          *data;
+  char          tbuff [RAFILE_REC_SIZE];
+  char          tmp [40];
+  dbidx_t       rrn;
+
+  if (musicdb->radb == NULL) {
+    return;
+  }
+
+  snprintf (tbuff, sizeof (tbuff), "FILE\n..%s\n", fn);
+  rrn = raGetNextRRN (musicdb->radb);
+  slistStartIterator (tagList, &iteridx);
+  while ((tag = slistIterateKey (tagList, &iteridx)) != NULL) {
+    if (strcmp (tag, "FILE") == 0) {
+      return;
+    }
+    data = slistGetStr (tagList, tag);
+    strlcat (tbuff, tag, sizeof (tbuff));
+    strlcat (tbuff, "\n", sizeof (tbuff));
+    strlcat (tbuff, "..", sizeof (tbuff));
+    strlcat (tbuff, data, sizeof (tbuff));
+    strlcat (tbuff, "\n", sizeof (tbuff));
+  }
+  strlcat (tbuff, "RRN", sizeof (tbuff));
+  strlcat (tbuff, "\n", sizeof (tbuff));
+  strlcat (tbuff, "..", sizeof (tbuff));
+  snprintf (tmp, sizeof (tmp), "%d", rrn);
+  strlcat (tbuff, tmp, sizeof (tbuff));
+  strlcat (tbuff, "\n", sizeof (tbuff));
+  raWrite (musicdb->radb, RAFILE_NEW, tbuff);
 }
 
 void
