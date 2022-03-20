@@ -5,6 +5,7 @@
 
 #include <sys/types.h>
 #include <dirent.h>
+#include <wchar.h>
 
 #if _hdr_winsock2
 # include <winsock2.h>
@@ -27,14 +28,19 @@ typedef struct {
 #endif
 } dirhandle_t;
 
+#if _lib_MultiByteToWideChar
+# define OS_FS_CHAR_TYPE wchar_t
+#else
+# define OS_FS_CHAR_TYPE char
+#endif
+#define OS_FS_CHAR_SIZE sizeof (OS_FS_CHAR_TYPE)
+
 double        dRandom (void);
 void          sRandom (void);
 pid_t         osProcessStart (char *targv[], int flags,
                 void **handle, char *outfname);
-#if _lib_MultiByteToWideChar
- wchar_t * osToWideString (const char *fname);
- char * osToUTF8String (const wchar_t *fname);
-#endif
+void          * osToFSFilename (const char *fname);
+char          * osFromFSFilename (const void *fname);
 dirhandle_t   * osDirOpen (const char *dir);
 char *        osDirIterate (dirhandle_t *dirh);
 void          osDirClose (dirhandle_t *dirh);

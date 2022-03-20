@@ -127,9 +127,6 @@ procutilFree (procutil_t *process)
   }
 }
 
-#pragma GCC diagnostic pop
-#pragma clang diagnostic pop
-
 int
 procutilKill (procutil_t *process, bool force)
 {

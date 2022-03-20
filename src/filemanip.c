@@ -11,6 +11,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <wchar.h>
 
 #include <glib.h>
 
@@ -59,8 +60,8 @@ filemanipCopy (char *fname, char *nfn)
     {
       wchar_t   *wtfname;
       wchar_t   *wtnfn;
-      wtfname = osToWideString (tfname);
-      wtnfn = osToWideString (tnfn);
+      wtfname = osToFSFilename (tfname);
+      wtnfn = osToFSFilename (tnfn);
 
       rc = CopyFileW (wtfname, wtnfn, 0);
       rc = (rc == 0);
@@ -212,28 +213,48 @@ filemanipRecursiveDirList (char *dirname)
 }
 
 void
-filemanipDeleteDir (const char *dir)
+filemanipDeleteDir (const char *dirname)
 {
-  char    cmd [MAXPATHLEN];
-  char    tdir [MAXPATHLEN];
+  dirhandle_t   *dh;
+  char          *fname;
+  char          temp [MAXPATHLEN];
 
-  if (! fileopIsDirectory (dir)) {
+
+  if (! fileopIsDirectory (dirname)) {
     return;
   }
 
-  if (isWindows ()) {
-    pathToWinPath (tdir, dir, sizeof (tdir));
-    snprintf (cmd, sizeof (cmd), "rmdir /s/q \"%s\" >NUL", tdir);
-    /* rmdir is a cmd.exe built-in */
-    system (cmd);
-  } else {
-    char    *targv [4];
+  dh = osDirOpen (dirname);
+  while ((fname = osDirIterate (dh)) != NULL) {
+    if (strcmp (fname, ".") == 0 ||
+        strcmp (fname, "..") == 0) {
+      free (fname);
+      continue;
+    }
 
-    targv [0] = sysvarsGetStr (SV_RM_PATH);
-    targv [1] = "-rf";
-    targv [2] = (char *) dir;
-    targv [3] = NULL;
-    osProcessStart (targv, OS_PROC_WAIT, NULL, NULL);
+    snprintf (temp, sizeof (temp), "%s/%s", dirname, fname);
+    if (fname != NULL) {
+      if (fileopIsDirectory (temp)) {
+        filemanipDeleteDir (temp);
+      } else {
+        fileopDelete (temp);
+      }
+    }
+    free (fname);
   }
+
+  osDirClose (dh);
+
+#if _lib_RemoveDirectoryW
+  {
+    wchar_t       * tdirname;
+
+    tdirname = osToFSFilename (dirname);
+    RemoveDirectoryW (tdirname);
+    free (tdirname);
+  }
+#else
+  rmdir (dirname);
+#endif
 }
 

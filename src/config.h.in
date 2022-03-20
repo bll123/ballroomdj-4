@@ -49,7 +49,11 @@
 #cmakedefine01 _lib_MultiByteToWideChar
 #cmakedefine01 _lib_OpenProcess
 #cmakedefine01 _lib_TerminateProcess
+#cmakedefine01 _lib_WideCharToMultiByte
 #cmakedefine01 _lib_WriteFile
+#cmakedefine01 _lib__wfopen
+#cmakedefine01 _lib__wstat
+#cmakedefine01 _lib__wunlink
 
 /* uses windows winsock2 library */
 #cmakedefine01 _lib_ioctlsocket

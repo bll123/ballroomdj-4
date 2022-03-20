@@ -273,8 +273,11 @@ check_function_exists (LoadLibrary _lib_LoadLibrary)
 check_function_exists (MultiByteToWideChar _lib_MultiByteToWideChar)
 check_function_exists (OpenProcess _lib_OpenProcess)
 check_function_exists (TerminateProcess _lib_TerminateProcess)
+check_function_exists (WideCharToMultiByte _lib_WideCharToMultiByte)
 check_function_exists (WriteFile _lib_WriteFile)
-check_function_exists (_execv _lib__execv)
+check_function_exists (_wfopen _lib__wfopen)
+check_function_exists (_wstat _lib__wstat)
+check_function_exists (_wunlink _lib__wunlink)
 set (CMAKE_REQUIRED_INCLUDES "")
 
 # cmake weirdness
@@ -541,19 +544,19 @@ add_library (libvolwin SHARED volwin.cpp)
 target_compile_options (libvolwin PRIVATE -static-libstdc++)
 
 # reusable objects; there's no need to compile these twice
-add_library (libmongoose STATIC ${MONGOOSE_SRC})
-add_library (libwebsrv STATIC websrv.c)
-target_include_directories (libwebsrv
-  PRIVATE "${MONGOOSE_INC_DIR}"
-)
-add_library (liblocatebdj3 STATIC locatebdj3.c)
-
 add_library (libbdj4fileop STATIC
   fileop.c osutils.c tmutil.c
 )
 add_library (libbdj4string STATIC
   bdjstring.c strlcat.c strlcpy.c
 )
+
+add_library (libmongoose STATIC ${MONGOOSE_SRC})
+add_library (libwebsrv STATIC websrv.c)
+target_include_directories (libwebsrv
+  PRIVATE "${MONGOOSE_INC_DIR}"
+)
+add_library (liblocatebdj3 STATIC locatebdj3.c)
 
 add_library (libbdj4launcher STATIC
   filedata.c osnetutils.c pathbld.c pathutil.c sysvars.c

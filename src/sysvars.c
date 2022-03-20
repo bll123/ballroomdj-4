@@ -238,7 +238,6 @@ sysvarsInit (const char *argv0)
 
   strlcpy (sysvars [SV_PYTHON_PATH], "", SV_MAX_SZ);
   strlcpy (sysvars [SV_CP_PATH], "", SV_MAX_SZ);
-  strlcpy (sysvars [SV_RM_PATH], "", SV_MAX_SZ);
 
   tptr = strdup (getenv ("PATH"));
   tsep = ":";
@@ -276,14 +275,6 @@ sysvarsInit (const char *argv0)
       snprintf (buff, sizeof (buff), "%s/%s", tbuf, "cp");
       if (fileopFileExists (buff)) {
         strlcpy (sysvars [SV_CP_PATH], buff, SV_MAX_SZ);
-      }
-    }
-
-    if (*sysvars [SV_RM_PATH] == '\0') {
-      /* 'rm' checks */
-      snprintf (buff, sizeof (buff), "%s/%s", tbuf, "rm");
-      if (fileopFileExists (buff)) {
-        strlcpy (sysvars [SV_RM_PATH], buff, SV_MAX_SZ);
       }
     }
 

@@ -38,12 +38,12 @@ fileopFileExists (const char *fname)
 {
   int           rc;
 
-#if _lib_MultiByteToWideChar
+#if _lib__wstat
   {
     struct _stat  statbuf;
     wchar_t       *tfname = NULL;
 
-    tfname = osToWideString (fname);
+    tfname = osToFSFilename (fname);
     rc = _wstat (tfname, &statbuf);
     if (rc == 0 && (statbuf.st_mode & S_IFDIR) == S_IFDIR) {
       rc = -1;
@@ -67,13 +67,13 @@ fileopSize (const char *fname)
 {
   ssize_t       sz = -1;
 
-#if _lib_MultiByteToWideChar
+#if _lib__wstat
   {
     struct _stat  statbuf;
     wchar_t       *tfname = NULL;
     int           rc;
 
-    tfname = osToWideString (fname);
+    tfname = osToFSFilename (fname);
     rc = _wstat (tfname, &statbuf);
     if (rc == 0) {
       sz = statbuf.st_size;
@@ -99,12 +99,12 @@ fileopIsDirectory (const char *fname)
 {
   int         rc;
 
-#if _lib_MultiByteToWideChar
+#if _lib__wstat
   {
     struct _stat  statbuf;
     wchar_t       *tfname = NULL;
 
-    tfname = osToWideString (fname);
+    tfname = osToFSFilename (fname);
     rc = _wstat (tfname, &statbuf);
     if (rc == 0 && (statbuf.st_mode & S_IFDIR) != S_IFDIR) {
       rc = -1;
@@ -126,7 +126,16 @@ fileopIsDirectory (const char *fname)
 inline int
 fileopDelete (const char *fname)
 {
-  int rc = unlink (fname);
+  int     rc;
+
+#if _lib__wunlink
+  wchar_t *tname;
+  tname = osToFSFilename (fname);
+  rc = _wunlink (tname);
+  free (tname);
+#else
+  rc = unlink (fname);
+#endif
   return rc;
 }
 
@@ -143,13 +152,13 @@ fileopOpen (const char *fname, const char *mode)
 {
   FILE          *fh;
 
-#if _lib_MultiByteToWideChar
+#if _lib__wfopen
   {
     wchar_t       *tfname = NULL;
     wchar_t       *tmode = NULL;
 
-    tfname = osToWideString (fname);
-    tmode = osToWideString (mode);
+    tfname = osToFSFilename (fname);
+    tmode = osToFSFilename (mode);
     fh = _wfopen (tfname, tmode);
     free (tfname);
     free (tmode);
@@ -192,7 +201,7 @@ fileopMkdir (const char *dirname)
 #if _args_mkdir == 1      // windows
   wchar_t   *tdirname = NULL;
 
-  tdirname = osToWideString (dirname);
+  tdirname = osToFSFilename (dirname);
   rc = _wmkdir (tdirname);
   free (tdirname);
 #endif
