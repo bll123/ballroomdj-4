@@ -8,7 +8,9 @@
 #include <assert.h>
 #include <time.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <unistd.h>
+
 #if _hdr_fcntl
 # include <fcntl.h>
 #endif
@@ -26,6 +28,7 @@
 #include "bdj4.h"
 #include "bdjstring.h"
 #include "osutils.h"
+#include "tmutil.h"
 
 double
 dRandom (void)
@@ -216,7 +219,20 @@ osProcessStart (char *targv[], int flags, void **handle, char *outfname)
   }
 
   if (outfname != NULL) {
+    int         rc;
+    int         count;
+    struct stat statbuf;
+
     CloseHandle (outhandle);
+    rc = stat (outfname, &statbuf);
+
+    /* windows is mucked up */
+    count = 0;
+    while (rc == 0 && statbuf.st_size == 0 && count < 20) {
+      mssleep (5);
+      rc = stat (outfname, &statbuf);
+      ++count;
+    }
   }
   free (wbuff);
 

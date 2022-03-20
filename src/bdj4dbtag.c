@@ -47,6 +47,7 @@ typedef struct {
   pthread_t   thread;
   int         state;
   int         idx;
+  long        count;
   char        *fn;
   char        * data;
 } dbthread_t;
@@ -63,7 +64,7 @@ typedef struct {
   mstime_t          starttm;
   int               iterations;
   int               threadActiveSum;
-  bool              started : 1;
+  bool              running : 1;
 } dbtag_t;
 
 static int      dbtagProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
@@ -78,6 +79,7 @@ static void     * dbtagProcessFile (void *tdbthread);
 static void     dbtagSigHandler (int sig);
 
 static int  gKillReceived = 0;
+static int  gcount = 0;
 
 int
 main (int argc, char *argv[])
@@ -140,7 +142,7 @@ main (int argc, char *argv[])
 
   dbtag.maxThreads = sysvarsGetNum (SVL_NUM_PROC);
   dbtag.threads = malloc (sizeof (dbthread_t) * dbtag.maxThreads);
-  dbtag.started = false;
+  dbtag.running = false;
   dbtag.numActiveThreads = 0;
   dbtag.iterations = 0;
   dbtag.threadActiveSum = 0;
@@ -149,6 +151,7 @@ main (int argc, char *argv[])
     dbtag.threads [i].state = DBTAG_T_STATE_INIT;
     dbtag.threads [i].idx = i;
     dbtag.threads [i].thread = -1;
+    dbtag.threads [i].count = 0;
     dbtag.threads [i].fn = NULL;
     dbtag.threads [i].data = NULL;
   }
@@ -251,6 +254,7 @@ dbtagProcessing (void *udata)
 
   for (int i = 0; i < dbtag->maxThreads; ++i) {
     if (dbtag->threads [i].state == DBTAG_T_STATE_HAVE_DATA) {
+      pthread_join (dbtag->threads [i].thread, NULL);
       snprintf (sbuff, sizeof (sbuff), "%s%c%s",
           dbtag->threads [i].fn, MSG_ARGS_RS, dbtag->threads [i].data);
       connSendMessage (dbtag->conn, ROUTE_DBUPDATE, MSG_DB_FILE_TAGS, sbuff);
@@ -291,18 +295,21 @@ dbtagProcessing (void *udata)
         /* fn is already allocated */
         dbtag->threads [i].fn = fn;
         logMsg (LOG_DBG, LOG_DBUPDATE, "process: %s", fn);
+        ++gcount;
+        dbtag->threads [i].count = gcount;
         pthread_create (&dbtag->threads [i].thread, NULL, dbtagProcessFile, &dbtag->threads [i]);
       }
     }
   }
 
-  if (dbtag->started &&
+  if (dbtag->running &&
       queueGetCount (dbtag->fileQueue) == 0 &&
       dbtag->numActiveThreads == 0) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "queue empty: %ld ms", mstimeend (&dbtag->starttm));
     logMsg (LOG_DBG, LOG_IMPORTANT, "average num threads active: %.2f",
         (double) dbtag->threadActiveSum /
         (double) (dbtag->iterations - dbtag->maxThreads));
+    dbtag->running = false;
   }
 
   if (gKillReceived) {
@@ -376,8 +383,8 @@ dbtagClosingCallback (void *tdbtag, programstate_t programState)
 static void
 dbtagProcessFileMsg (dbtag_t *dbtag, char *args)
 {
-  if (! dbtag->started) {
-    dbtag->started = true;
+  if (! dbtag->running) {
+    dbtag->running = true;
     mstimestart (&dbtag->starttm);
   }
   queuePush (dbtag->fileQueue, strdup (args));
@@ -389,9 +396,9 @@ dbtagProcessFile (void *tdbthread)
   dbthread_t    * dbthread = tdbthread;
 
 
-  dbthread->data = audiotagReadTags (dbthread->fn);
+  dbthread->data = audiotagReadTags (dbthread->fn, dbthread->count);
   dbthread->state = DBTAG_T_STATE_HAVE_DATA;
-  return NULL;
+  pthread_exit (NULL);
 }
 
 static void

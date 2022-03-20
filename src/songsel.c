@@ -465,7 +465,6 @@ calcAttributePerc (songsel_t *songsel, songseldance_t *songseldance,
     } else {
       perc->calcperc = (double) perc->weight / tot /
           (double) perc->count * songsel->autoselWeight [attridx];
-logMsg (LOG_DBG, LOG_SONGSEL, "weight: %zd tot: %.0f count: %zd autoselw: %.2f\n", perc->weight, tot, perc->count, songsel->autoselWeight [attridx]);
     }
     logMsg (LOG_DBG, LOG_SONGSEL, "calcperc: %.6f", perc->calcperc);
   }

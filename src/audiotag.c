@@ -24,7 +24,6 @@ static void audiotagParseTags (slist_t *tagdata, char *data, int tagtype);
 static void audiotagCreateLookupTable (int tagtype);
 static void audiotagParseNumberPair (char *data, int *a, int *b);
 
-static uint32_t   gcount = 0;
 static slist_t    * tagLookup [TAG_TYPE_MAX] = { NULL, NULL, NULL };
 
 /*
@@ -35,14 +34,14 @@ static slist_t    * tagLookup [TAG_TYPE_MAX] = { NULL, NULL, NULL };
  */
 
 char *
-audiotagReadTags (char *ffn)
+audiotagReadTags (char *ffn, long count)
 {
   char        tmpfn [MAXPATHLEN];
   char        buff [40];
   char        *data;
   char        * targv [5];
 
-  snprintf (buff, sizeof (buff), "%s-%d", AUDIOTAG_TMP_FILE, gcount++);
+  snprintf (buff, sizeof (buff), "%s-%d", AUDIOTAG_TMP_FILE, count);
   pathbldMakePath (tmpfn, sizeof (tmpfn), "",
       buff, ".txt", PATHBLD_MP_TMPDIR);
 

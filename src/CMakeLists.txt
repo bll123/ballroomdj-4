@@ -549,7 +549,7 @@ target_include_directories (libwebsrv
 add_library (liblocatebdj3 STATIC locatebdj3.c)
 
 add_library (libbdj4fileop STATIC
-  fileop.c osutils.c
+  fileop.c osutils.c tmutil.c
 )
 add_library (libbdj4string STATIC
   bdjstring.c strlcat.c strlcpy.c
@@ -648,6 +648,9 @@ target_link_libraries (bdj4dbupdate
   libbdj4 libbdj4common
   m
 )
+if (WIN32)
+  target_link_libraries (bdj4dbupdate -lregex)
+endif()
 addIntlLibrary (bdj4dbupdate)
 addWinSockLibrary (bdj4dbupdate)
 

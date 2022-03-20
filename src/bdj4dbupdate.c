@@ -39,6 +39,7 @@
 #include "rafile.h"
 #include "slist.h"
 #include "sockh.h"
+#include "sysvars.h"
 #include "tmutil.h"
 
 enum {
@@ -67,6 +68,7 @@ typedef struct {
   dbidx_t           countBad;
   dbidx_t           countNew;
   dbidx_t           countNullData;
+  dbidx_t           countNoTags;
   dbidx_t           countSaved;
   mstime_t          starttm;
   bool              rebuild : 1;
@@ -95,6 +97,7 @@ main (int argc, char *argv[])
   uint16_t      listenPort;
   int           flags;
   int           rc;
+  char          *p;
 
 
   dbupdate.state = DB_UPD_INIT;
@@ -105,16 +108,10 @@ main (int argc, char *argv[])
   dbupdate.countBad = 0;
   dbupdate.countNew = 0;
   dbupdate.countNullData = 0;
+  dbupdate.countNoTags = 0;
   dbupdate.countSaved = 0;
   dbupdate.rebuild = false;
   dbupdate.checknew = false;
-  rc = regcomp (&dbupdate.fnregex, "[\":]", REG_NOSUB);
-  if (rc != 0) {
-    char    ebuff [200];
-
-    regerror (rc, &dbupdate.fnregex, ebuff, sizeof (ebuff));
-    logMsg (LOG_DBG, LOG_IMPORTANT, "regcomp failed: %d %s", rc, ebuff);
-  }
 
   dbupdate.progstate = progstateInit ("dbupdate");
   progstateSetCallback (dbupdate.progstate, STATE_LISTENING,
@@ -144,6 +141,18 @@ main (int argc, char *argv[])
   flags = BDJ4_INIT_NO_DB_LOAD;
   dbupdate.dbgflags = bdj4startup (argc, argv, "db", ROUTE_DBUPDATE, flags);
   logProcBegin (LOG_PROC, "dbupdate");
+
+  p = "[\"\\:]";
+  if (isWindows ()) {
+    p = "[\"]";
+  }
+  rc = regcomp (&dbupdate.fnregex, p, REG_NOSUB);
+  if (rc != 0) {
+    char    ebuff [200];
+
+    regerror (rc, &dbupdate.fnregex, ebuff, sizeof (ebuff));
+    logMsg (LOG_DBG, LOG_IMPORTANT, "regcomp failed: %d %s", rc, ebuff);
+  }
 
   if ((dbupdate.dbgflags & BDJ4_DB_CHECK_NEW) == BDJ4_DB_CHECK_NEW) {
     dbupdate.checknew = true;
@@ -303,7 +312,8 @@ dbupdateProcessing (void *udata)
     }
   }
 
-  if (dbupdate->state == DB_UPD_PROCESS) {
+  if (dbupdate->state == DB_UPD_SEND ||
+      dbupdate->state == DB_UPD_PROCESS) {
     if (dbupdate->filesProcessed >= dbupdate->fileCountSent) {
       dbupdate->state = DB_UPD_FINISH;
     }
@@ -321,6 +331,7 @@ dbupdateProcessing (void *udata)
     logMsg (LOG_DBG, LOG_IMPORTANT, "      bad: %lu", dbupdate->countBad);
     logMsg (LOG_DBG, LOG_IMPORTANT, "      new: %lu", dbupdate->countNew);
     logMsg (LOG_DBG, LOG_IMPORTANT, "     null: %lu", dbupdate->countNullData);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "  no tags: %lu", dbupdate->countNoTags);
     logMsg (LOG_DBG, LOG_IMPORTANT, "    saved: %lu", dbupdate->countSaved);
     return 1;
   }
@@ -447,11 +458,20 @@ dbupdateProcessTagData (dbupdate_t *dbupdate, char *args)
   ffn = strtok_r (args, MSG_ARGS_RS_STR, &tokstr);
   data = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   if (data == NULL) {
+//### fix : need to get what is possible from the pathname
     ++dbupdate->countNullData;
+    ++dbupdate->filesProcessed;
     return;
   }
 
   tagdata = audiotagParseData (ffn, data);
+  if (slistGetCount (tagdata) == 0) {
+//### fix : need to get what is possible from the pathname
+    ++dbupdate->countNoTags;
+    ++dbupdate->filesProcessed;
+    return;
+  }
+
   if (logCheck (LOG_DBG, LOG_DBUPDATE)) {
     slistidx_t  iteridx;
     char        *tag, *data;
