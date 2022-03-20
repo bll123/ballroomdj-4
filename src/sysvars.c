@@ -29,6 +29,7 @@
 #include "filedata.h"
 #include "fileop.h"
 #include "osnetutils.h"
+#include "osutils.h"
 #include "pathutil.h"
 
 #define SV_MAX_SZ   512
@@ -236,6 +237,9 @@ sysvarsInit (const char *argv0)
   }
 
   strlcpy (sysvars [SV_PYTHON_PATH], "", SV_MAX_SZ);
+  strlcpy (sysvars [SV_CP_PATH], "", SV_MAX_SZ);
+  strlcpy (sysvars [SV_RM_PATH], "", SV_MAX_SZ);
+
   tptr = strdup (getenv ("PATH"));
   tsep = ":";
   if (isWindows ()) {
@@ -246,27 +250,43 @@ sysvarsInit (const char *argv0)
     strlcpy (tbuf, p, sizeof (tbuf));
     pathNormPath (tbuf, sizeof (tbuf));
 
-    /* python checks */
-    snprintf (buff, sizeof (buff), "%s/%s", tbuf, "python3.exe");
-    if (fileopFileExists (buff)) {
-      strlcpy (sysvars [SV_PYTHON_PATH], buff, SV_MAX_SZ);
-      break;
+    if (*sysvars [SV_PYTHON_PATH] == '\0') {
+      /* 'python' checks */
+      /* 'python3' is preferred */
+      snprintf (buff, sizeof (buff), "%s/%s", tbuf, "python3.exe");
+      if (fileopFileExists (buff)) {
+        strlcpy (sysvars [SV_PYTHON_PATH], buff, SV_MAX_SZ);
+      }
+      snprintf (buff, sizeof (buff), "%s/%s", tbuf, "python.exe");
+      if (fileopFileExists (buff)) {
+        strlcpy (sysvars [SV_PYTHON_PATH], buff, SV_MAX_SZ);
+      }
+      snprintf (buff, sizeof (buff), "%s/%s", tbuf, "python3");
+      if (fileopFileExists (buff)) {
+        strlcpy (sysvars [SV_PYTHON_PATH], buff, SV_MAX_SZ);
+      }
+      snprintf (buff, sizeof (buff), "%s/%s", tbuf, "python");
+      if (fileopFileExists (buff)) {
+        strlcpy (sysvars [SV_PYTHON_PATH], buff, SV_MAX_SZ);
+      }
     }
-    snprintf (buff, sizeof (buff), "%s/%s", tbuf, "python.exe");
-    if (fileopFileExists (buff)) {
-      strlcpy (sysvars [SV_PYTHON_PATH], buff, SV_MAX_SZ);
-      break;
+
+    if (*sysvars [SV_CP_PATH] == '\0') {
+      /* 'cp' checks */
+      snprintf (buff, sizeof (buff), "%s/%s", tbuf, "cp");
+      if (fileopFileExists (buff)) {
+        strlcpy (sysvars [SV_CP_PATH], buff, SV_MAX_SZ);
+      }
     }
-    snprintf (buff, sizeof (buff), "%s/%s", tbuf, "python3");
-    if (fileopFileExists (buff)) {
-      strlcpy (sysvars [SV_PYTHON_PATH], buff, SV_MAX_SZ);
-      break;
+
+    if (*sysvars [SV_RM_PATH] == '\0') {
+      /* 'rm' checks */
+      snprintf (buff, sizeof (buff), "%s/%s", tbuf, "rm");
+      if (fileopFileExists (buff)) {
+        strlcpy (sysvars [SV_RM_PATH], buff, SV_MAX_SZ);
+      }
     }
-    snprintf (buff, sizeof (buff), "%s/%s", tbuf, "python");
-    if (fileopFileExists (buff)) {
-      strlcpy (sysvars [SV_PYTHON_PATH], buff, SV_MAX_SZ);
-      break;
-    }
+
     p = strtok_r (NULL, tsep, &tokstr);
   }
   free (tptr);
@@ -276,13 +296,16 @@ sysvarsInit (const char *argv0)
   if (fileopIsDirectory ("tmp") &&
       *sysvars [SV_PYTHON_PATH]) {
     char    *data;
+    char    *targv [3];
     int     j;
 
-    snprintf (buff, sizeof (buff), "%s --version > %s",
-        sysvars [SV_PYTHON_PATH], SV_TMP_FILE);
-    system (buff);
+    targv [0] = sysvars [SV_PYTHON_PATH];
+    targv [1] = "--version";
+    targv [2] = NULL;
+    osProcessStart (targv, OS_PROC_WAIT, NULL, SV_TMP_FILE);
     data = filedataReadAll (SV_TMP_FILE);
     p = strstr (data, "3");
+
     if (p != NULL) {
       strlcpy (buff, p, sizeof (buff));
       p = strstr (buff, ".");
@@ -308,6 +331,10 @@ sysvarsInit (const char *argv0)
   // %USERPROFILE%/AppData/Local/Programs/Python/Python<pyver>/Scripts/mutagen-inspect-script.py
   // $HOME/Library/Python/<pyver>/lib/python/site-packages
 
+  if (isLinux ()) {
+    snprintf (buff, sizeof (buff),
+        "%s/.local/bin/%s", sysvars [SV_HOME], "mutagen-inspect");
+  }
   if (isWindows ()) {
     snprintf (buff, sizeof (buff),
         "%s/AppData/Local/Programs/Python/Python%s/Scripts/%s",
@@ -317,10 +344,6 @@ sysvarsInit (const char *argv0)
     snprintf (buff, sizeof (buff),
         "%s/Library/Python/%s/lib/python/site-packages/%s",
         sysvars [SV_HOME], sysvars [SV_PYTHON_DOT_VERSION], "mutagen-inspect");
-  }
-  if (isLinux ()) {
-    snprintf (buff, sizeof (buff),
-        "%s/.local/bin/%s", sysvars [SV_HOME], "mutagen-inspect");
   }
   if (fileopFileExists (buff)) {
     strlcpy (sysvars [SV_PYTHON_MUTAGEN], buff, SV_MAX_SZ);
@@ -336,9 +359,13 @@ sysvarsInit (const char *argv0)
       lsysvars [SVL_NUM_PROC] = atoi (tptr);
     }
   } else if (fileopIsDirectory ("tmp")) {
+    char  *targv [3];
+
     /* don't bother with this if tmp is not there */
-    snprintf (buff, sizeof (buff), "getconf _NPROCESSORS_ONLN> %s", SV_TMP_FILE);
-    system (buff);
+    targv [0] = "getconf";
+    targv [1] = "_NPROCESSORS_ONLN";
+    targv [2] = NULL;
+    osProcessStart (targv, OS_PROC_WAIT, NULL, SV_TMP_FILE);
     tptr = filedataReadAll (SV_TMP_FILE);
     if (tptr != NULL) {
       lsysvars [SVL_NUM_PROC] = atoi (tptr);

@@ -47,7 +47,6 @@ filemanipMove (char *fname, char *nfn)
 int
 filemanipCopy (char *fname, char *nfn)
 {
-  char      cmd [MAXPATHLEN];
   char      tfname [MAXPATHLEN];
   char      tnfn [MAXPATHLEN];
   int       rc = -1;
@@ -70,8 +69,16 @@ filemanipCopy (char *fname, char *nfn)
     }
 #endif
   } else {
-    snprintf (cmd, sizeof (cmd), "cp -f '%s' '%s' >/dev/null 2>&1", fname, nfn);
-    rc = system (cmd);
+    char  *targv [5];
+    pid_t tpid;
+
+    targv [0] = sysvarsGetStr (SV_CP_PATH);
+    targv [1] = "-f";
+    targv [2] = fname;
+    targv [3] = nfn;
+    targv [4] = NULL;
+    tpid = osProcessStart (targv, OS_PROC_WAIT, NULL, NULL);
+    rc = (tpid <= 0);
   }
   return rc;
 }
@@ -207,8 +214,8 @@ filemanipRecursiveDirList (char *dirname)
 void
 filemanipDeleteDir (const char *dir)
 {
-  char      cmd [MAXPATHLEN];
-  char      tdir [MAXPATHLEN];
+  char    cmd [MAXPATHLEN];
+  char    tdir [MAXPATHLEN];
 
   if (! fileopIsDirectory (dir)) {
     return;
@@ -217,9 +224,16 @@ filemanipDeleteDir (const char *dir)
   if (isWindows ()) {
     pathToWinPath (tdir, dir, sizeof (tdir));
     snprintf (cmd, sizeof (cmd), "rmdir /s/q \"%s\" >NUL", tdir);
+    /* rmdir is a cmd.exe built-in */
+    system (cmd);
   } else {
-    snprintf (cmd, sizeof (cmd), "rm -rf '%s' >/dev/null 2>&1", dir);
+    char    *targv [4];
+
+    targv [0] = sysvarsGetStr (SV_RM_PATH);
+    targv [1] = "-rf";
+    targv [2] = (char *) dir;
+    targv [3] = NULL;
+    osProcessStart (targv, OS_PROC_WAIT, NULL, NULL);
   }
-  system (cmd);
 }
 

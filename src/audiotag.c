@@ -41,7 +41,7 @@ audiotagReadTags (char *ffn, long count)
   char        *data;
   char        * targv [5];
 
-  snprintf (buff, sizeof (buff), "%s-%d", AUDIOTAG_TMP_FILE, count);
+  snprintf (buff, sizeof (buff), "%s-%ld", AUDIOTAG_TMP_FILE, count);
   pathbldMakePath (tmpfn, sizeof (tmpfn), "",
       buff, ".txt", PATHBLD_MP_TMPDIR);
 

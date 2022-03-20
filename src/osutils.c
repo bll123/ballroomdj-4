@@ -226,9 +226,9 @@ osProcessStart (char *targv[], int flags, void **handle, char *outfname)
     CloseHandle (outhandle);
     rc = stat (outfname, &statbuf);
 
-    /* windows is mucked up */
+    /* windows is mucked up; wait for the redirected output to appear */
     count = 0;
-    while (rc == 0 && statbuf.st_size == 0 && count < 20) {
+    while (rc == 0 && statbuf.st_size == 0 && count < 60) {
       mssleep (5);
       rc = stat (outfname, &statbuf);
       ++count;
