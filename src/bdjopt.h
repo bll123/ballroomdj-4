@@ -1,6 +1,8 @@
 #ifndef INC_BDJOPT_H
 #define INC_BDJOPT_H
 
+#include "datafile.h"
+
 typedef enum {
   FADETYPE_TRIANGLE,
   FADETYPE_QUARTER_SINE,
@@ -89,6 +91,9 @@ typedef enum {
 
 #define BDJ_CONFIG_BASEFN   "bdjconfig"
 #define BDJ_CONFIG_EXT      ".txt"
+
+extern datafilekey_t  bdjoptprofiledfkeys[];
+extern int            bdjoptprofiledfcount;
 
 void    bdjoptInit (void);
 void    bdjoptFree (void);

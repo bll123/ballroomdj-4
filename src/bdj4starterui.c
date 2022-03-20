@@ -19,12 +19,15 @@
 #include "bdjopt.h"
 #include "bdjvars.h"
 #include "conn.h"
+#include "fileop.h"
 #include "localeutil.h"
 #include "log.h"
+#include "nlist.h"
 #include "pathbld.h"
 #include "procutil.h"
 #include "progstate.h"
 #include "sockh.h"
+#include "sysvars.h"
 #include "uiutils.h"
 
 typedef struct {
@@ -33,7 +36,12 @@ typedef struct {
   procutil_t      *processes [ROUTE_MAX];
   conn_t          *conn;
   sockserver_t    *sockserver;
+  nlist_t         *dispProfileList;
+  nlist_t         *profileIdxMap;
+  ssize_t         currprofile;
+  int             maxProfileWidth;
   /* gtk stuff */
+  uiutilsspinbox_t  profilesel;
   GtkApplication  *app;
   GtkWidget       *window;
 } startui_t;
@@ -55,6 +63,9 @@ static void     starterStartManage (GtkButton *b, gpointer udata);
 static void     starterStartConfig (GtkButton *b, gpointer udata);
 static void     starterProcessExit (GtkButton *b, gpointer udata);
 
+static void     starterGetProfiles (startui_t *starter);
+static char *   starterProfileGet (void *udata, int idx);
+
 
 static int gKillReceived = 0;
 static int gdone = 0;
@@ -75,6 +86,9 @@ main (int argc, char *argv[])
       starterClosingCallback, &starter);
   starter.sockserver = NULL;
   starter.window = NULL;
+  starter.maxProfileWidth = 0;
+  starter.dispProfileList = NULL;
+  starter.profileIdxMap = NULL;
 
   for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
     starter.processes [i] = NULL;
@@ -93,6 +107,10 @@ main (int argc, char *argv[])
   localeInit ();
   logProcBegin (LOG_PROC, "starterui");
 
+  /* get the profile list after bdjopt has been initialized */
+  starterGetProfiles (&starter);
+  uiutilsSpinboxInit (&starter.profilesel);
+
   listenPort = bdjvarsGetNum (BDJVL_STARTERUI_PORT);
   starter.conn = connInit (ROUTE_STARTERUI);
 
@@ -110,6 +128,7 @@ main (int argc, char *argv[])
   while (progstateShutdownProcess (starter.progstate) != STATE_CLOSED) {
     ;
   }
+  uiutilsSpinboxFree (&starter.profilesel);
   progstateFree (starter.progstate);
   logEnd ();
   return status;
@@ -140,6 +159,8 @@ starterClosingCallback (void *udata, programstate_t programState)
 
   connFree (starter->conn);
   sockhCloseServer (starter->sockserver);
+  nlistFree (starter->dispProfileList);
+  nlistFree (starter->profileIdxMap);
 
   bdj4shutdown (ROUTE_STARTERUI);
 
@@ -179,6 +200,7 @@ starterActivate (GApplication *app, gpointer userdata)
   GError              *gerr = NULL;
   GtkWidget           *widget;
   GtkWidget           *vbox;
+  GtkWidget           *hbox;
   char                imgbuff [MAXPATHLEN];
   char                tbuff [MAXPATHLEN];
 
@@ -205,6 +227,21 @@ starterActivate (GApplication *app, gpointer userdata)
   gtk_widget_set_margin_start (widget, 2);
   gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
 
+  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+
+  widget = uiutilsCreateColonLabel (_("Profile"));
+  gtk_widget_set_margin_end (widget, 4);
+  gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
+  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+
+  widget = uiutilsSpinboxTextCreate (&starter->profilesel, starter);
+  uiutilsSpinboxSet (&starter->profilesel, starter->currprofile,
+      nlistGetCount (starter->dispProfileList),
+      starter->maxProfileWidth, starterProfileGet);
+  gtk_widget_set_halign (widget, GTK_ALIGN_FILL);
+  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+
   widget = uiutilsCreateButton (_("Player"), NULL, starterStartPlayer, starter);
   gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
 
@@ -226,6 +263,8 @@ starterMainLoop (void *tstarter)
   startui_t   *starter = tstarter;
   int         tdone = 0;
   gboolean    cont = TRUE;
+  int         idx;
+  int         profidx;
 
   tdone = sockhProcessMain (starter->sockserver, starterProcessMsg, starter);
   if (tdone || gdone) {
@@ -244,6 +283,10 @@ starterMainLoop (void *tstarter)
     }
     return cont;
   }
+
+  idx = uiutilsSpinboxGetValue (&starter->profilesel);
+  profidx = nlistGetNum (starter->profileIdxMap, idx);
+  sysvarsSetNum (SVL_BDJIDX, profidx);
 
   if (starter->processes [ROUTE_PLAYERUI] != NULL &&
       ! connIsConnected (starter->conn, ROUTE_PLAYERUI)) {
@@ -365,5 +408,59 @@ static void
 starterProcessExit (GtkButton *b, gpointer udata)
 {
   gdone = 1;
+}
+
+static void
+starterGetProfiles (startui_t *starter)
+{
+  char        tbuff [MAXPATHLEN];
+  datafile_t  *df;
+  int         count;
+  size_t      max;
+  size_t      len;
+  nlist_t     *dflist;
+  char        *pname;
+
+  starter->currprofile = sysvarsGetNum (SVL_BDJIDX);
+
+  starter->dispProfileList = nlistAlloc ("profile-list", LIST_ORDERED, free);
+  starter->profileIdxMap = nlistAlloc ("profile-map", LIST_ORDERED, NULL);
+  max = 0;
+
+  count = 0;
+  for (int i = 0; i < 20; ++i) {
+    sysvarsSetNum (SVL_BDJIDX, i);
+    pathbldMakePath (tbuff, sizeof (tbuff), "profiles",
+        BDJ_CONFIG_BASEFN, BDJ_CONFIG_EXT, PATHBLD_MP_USEIDX);
+    if (fileopFileExists (tbuff)) {
+      if (i == starter->currprofile) {
+        pname = bdjoptGetStr (OPT_P_PROFILENAME);
+      } else {
+        df = datafileAllocParse ("bdjopt-prof", DFTYPE_KEY_VAL, tbuff,
+            bdjoptprofiledfkeys, bdjoptprofiledfcount, DATAFILE_NO_LOOKUP);
+        dflist = datafileGetList (df);
+        pname = nlistGetStr (dflist, OPT_P_PROFILENAME);
+      }
+      len = strlen (pname);
+      max = len > max ? len : max;
+      nlistSetStr (starter->dispProfileList, count, pname);
+      nlistSetNum (starter->profileIdxMap, count, i);
+      if (i != starter->currprofile) {
+        datafileFree (df);
+      }
+      ++count;
+    }
+  }
+
+  starter->maxProfileWidth = (int) max;
+  sysvarsSetNum (SVL_BDJIDX, starter->currprofile);
+}
+
+static char *
+starterProfileGet (void *udata, int idx)
+{
+  startui_t *starter = udata;
+
+  return nlistGetDataByIdx (starter->dispProfileList, idx);
 }
 

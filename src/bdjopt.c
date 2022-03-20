@@ -48,7 +48,7 @@ static datafilekey_t bdjoptglobaldfkeys[] = {
 };
 #define BDJOPT_GLOBAL_DFKEY_COUNT (sizeof (bdjoptglobaldfkeys) / sizeof (datafilekey_t))
 
-static datafilekey_t bdjoptprofiledfkeys[] = {
+datafilekey_t bdjoptprofiledfkeys[] = {
   { "ALLOWEDIT",            OPT_P_ALLOWEDIT,            VALUE_NUM, parseConvBoolean, -1 },
   { "AUTOSTARTUP",          OPT_P_AUTOSTARTUP,          VALUE_STR, NULL, -1 },
   { "DEFAULTVOLUME",        OPT_P_DEFAULTVOLUME,        VALUE_NUM, NULL, -1 },
@@ -77,6 +77,7 @@ static datafilekey_t bdjoptprofiledfkeys[] = {
   { "REMOTECONTROL",        OPT_P_REMOTECONTROL,        VALUE_NUM, parseConvBoolean, -1 },
   { "UI_ACCENT_COL",        OPT_P_UI_ACCENT_COL,        VALUE_STR, NULL, -1 },
 };
+int            bdjoptprofiledfcount;
 #define BDJOPT_PROFILE_DFKEY_COUNT (sizeof (bdjoptprofiledfkeys) / sizeof (datafilekey_t))
 
 static datafilekey_t bdjoptmachdfkeys[] = {
@@ -110,6 +111,8 @@ bdjoptInit (void)
   char          path [MAXPATHLEN];
   char          *ddata;
   nlist_t       *tlist;
+
+  bdjoptprofiledfcount = BDJOPT_PROFILE_DFKEY_COUNT;
 
   /* global */
   pathbldMakePath (path, sizeof (path), "", BDJ_CONFIG_BASEFN,

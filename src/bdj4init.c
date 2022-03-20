@@ -125,12 +125,8 @@ bdj4startup (int argc, char *argv[], char *tag, bdjmsgroute_t route, int flags)
   rc = lockAcquire (lockName (route), PATHBLD_MP_USEIDX);
   count = 0;
   while (rc < 0) {
-      /* try for the next free profile */
-    ssize_t profile = sysvarsGetNum (SVL_BDJIDX);
-    ++profile;
-    sysvarsSetNum (SVL_BDJIDX, profile);
     ++count;
-    if (count > 20) {
+    if (count > 10) {
       bdj4shutdown (route);
       exit (1);
     }
