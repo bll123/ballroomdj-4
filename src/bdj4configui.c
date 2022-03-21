@@ -1,0 +1,776 @@
+#include "config.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <string.h>
+#include <errno.h>
+#include <assert.h>
+#include <getopt.h>
+#include <unistd.h>
+#include <math.h>
+
+#include <gtk/gtk.h>
+
+#include "bdj4.h"
+#include "bdj4init.h"
+#include "bdj4intl.h"
+#include "bdjmsg.h"
+#include "bdjopt.h"
+#include "bdjstring.h"
+#include "bdjvars.h"
+#include "bdjvarsdfload.h"
+#include "conn.h"
+#include "datafile.h"
+#include "localeutil.h"
+#include "lock.h"
+#include "log.h"
+#include "osuiutils.h"
+#include "pathbld.h"
+#include "procutil.h"
+#include "progstate.h"
+#include "slist.h"
+#include "sock.h"
+#include "sockh.h"
+#include "sysvars.h"
+#include "tmutil.h"
+#include "uiutils.h"
+
+enum {
+  CONFUI_ENTRY_MUSIC_DIR,
+  CONFUI_ENTRY_PROFILE_NAME,
+  CONFUI_ENTRY_STARTUP,
+  CONFUI_ENTRY_SHUTDOWN,
+  CONFUI_ENTRY_QUEUE_NM_A,
+  CONFUI_ENTRY_QUEUE_NM_B,
+  CONFUI_ENTRY_RC_USER_ID,
+  CONFUI_ENTRY_RC_PASS,
+  CONFUI_ENTRY_RC_PORT,
+  CONFUI_ENTRY_MM_PORT,
+  CONFUI_ENTRY_MM_NAME,
+  CONFUI_ENTRY_MM_TITLE,
+  CONFUI_ENTRY_MAX,
+};
+
+typedef struct {
+  progstate_t     *progstate;
+  char            *locknm;
+  procutil_t      *processes [ROUTE_MAX];
+  conn_t          *conn;
+  sockserver_t    *sockserver;
+  int             dbgflags;
+  uiutilsentry_t  uientry [CONFUI_ENTRY_MAX];
+  /* gtk stuff */
+  GtkApplication  *app;
+  GtkWidget       *window;
+  GtkWidget       *vbox;
+  GtkWidget       *notebook;
+  /* options */
+  datafile_t      *optiondf;
+  nlist_t         *options;
+} configui_t;
+
+enum {
+  CONFUI_POSITION_X,
+  CONFUI_POSITION_Y,
+  CONFUI_SIZE_X,
+  CONFUI_SIZE_Y,
+  CONFUI_KEY_MAX,
+};
+
+static datafilekey_t configuidfkeys [CONFUI_KEY_MAX] = {
+  { "CONFUI_POS_X",     CONFUI_POSITION_X,    VALUE_NUM, NULL, -1 },
+  { "CONFUI_POS_Y",     CONFUI_POSITION_Y,    VALUE_NUM, NULL, -1 },
+  { "CONFUI_SIZE_X",    CONFUI_SIZE_X,        VALUE_NUM, NULL, -1 },
+  { "CONFUI_SIZE_Y",    CONFUI_SIZE_Y,        VALUE_NUM, NULL, -1 },
+};
+
+#define CONFUI_EXIT_WAIT_COUNT      20
+
+static bool     confuiListeningCallback (void *udata, programstate_t programState);
+static bool     confuiConnectingCallback (void *udata, programstate_t programState);
+static bool     confuiHandshakeCallback (void *udata, programstate_t programState);
+static bool     confuiStoppingCallback (void *udata, programstate_t programState);
+static bool     confuiClosingCallback (void *udata, programstate_t programState);
+static int      confuiCreateGui (configui_t *confui, int argc, char *argv []);
+static void     confuiActivate (GApplication *app, gpointer userdata);
+gboolean        confuiMainLoop  (void *tconfui);
+static int      confuiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
+                    bdjmsgmsg_t msg, char *args, void *udata);
+static gboolean confuiCloseWin (GtkWidget *window, GdkEvent *event, gpointer userdata);
+static void     confuiSigHandler (int sig);
+
+static GtkWidget * confuiMakeNotebookTab (GtkWidget *notebook, char *txt);
+// confuiMakeItem is temporary until all items have a proc
+static GtkWidget * confuiMakeItem (GtkWidget *vbox, GtkSizeGroup *sg, char *txt);
+static GtkWidget * confuiMakeItemEntry (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, char *txt, int entryIdx, char *disp);
+static GtkWidget * confuiMakeItemFontButton (GtkWidget *vbox, GtkSizeGroup *sg, char *txt, char *fontname);
+static GtkWidget * confuiMakeItemColorButton (GtkWidget *vbox, GtkSizeGroup *sg, char *txt, char *color);
+static GtkWidget * confuiMakeItemSpinboxInt (GtkWidget *vbox, GtkSizeGroup *sg, char *txt, int min, int max, int value);
+static GtkWidget * confuiMakeItemSpinboxDouble (GtkWidget *vbox, GtkSizeGroup *sg, char *txt, double min, double max, double value);
+static GtkWidget * confuiMakeItemSwitch (GtkWidget *vbox, GtkSizeGroup *sg, char *txt, int value);
+static GtkWidget * confuiMakeItemLabel (GtkWidget *vbox, GtkSizeGroup *sg, char *txt);
+
+
+static int gKillReceived = 0;
+static int gdone = 0;
+
+int
+main (int argc, char *argv[])
+{
+  int             status = 0;
+  uint16_t        listenPort;
+  configui_t      confui;
+  char            *uifont;
+  char            tbuff [MAXPATHLEN];
+
+
+  confui.notebook = NULL;
+  confui.progstate = progstateInit ("configui");
+  progstateSetCallback (confui.progstate, STATE_LISTENING,
+      confuiListeningCallback, &confui);
+  progstateSetCallback (confui.progstate, STATE_CONNECTING,
+      confuiConnectingCallback, &confui);
+  progstateSetCallback (confui.progstate, STATE_WAIT_HANDSHAKE,
+      confuiHandshakeCallback, &confui);
+  confui.sockserver = NULL;
+  confui.window = NULL;
+
+  for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
+    confui.processes [i] = NULL;
+  }
+
+  uiutilsEntryInit (&confui.uientry [CONFUI_ENTRY_MUSIC_DIR], 50, 100);
+  uiutilsEntryInit (&confui.uientry [CONFUI_ENTRY_PROFILE_NAME], 20, 30);
+  uiutilsEntryInit (&confui.uientry [CONFUI_ENTRY_STARTUP], 50, 100);
+  uiutilsEntryInit (&confui.uientry [CONFUI_ENTRY_SHUTDOWN], 50, 100);
+  uiutilsEntryInit (&confui.uientry [CONFUI_ENTRY_QUEUE_NM_A], 20, 30);
+  uiutilsEntryInit (&confui.uientry [CONFUI_ENTRY_QUEUE_NM_B], 20, 30);
+  uiutilsEntryInit (&confui.uientry [CONFUI_ENTRY_RC_USER_ID], 10, 30);
+  uiutilsEntryInit (&confui.uientry [CONFUI_ENTRY_RC_PASS], 10, 20);
+  uiutilsEntryInit (&confui.uientry [CONFUI_ENTRY_RC_PORT], 10, 10);
+  uiutilsEntryInit (&confui.uientry [CONFUI_ENTRY_MM_PORT], 10, 10);
+  uiutilsEntryInit (&confui.uientry [CONFUI_ENTRY_MM_NAME], 10, 40);
+  uiutilsEntryInit (&confui.uientry [CONFUI_ENTRY_MM_TITLE], 20, 100);
+
+#if _define_SIGHUP
+  procutilCatchSignal (confuiSigHandler, SIGHUP);
+#endif
+  procutilCatchSignal (confuiSigHandler, SIGINT);
+  procutilDefaultSignal (SIGTERM);
+#if _define_SIGCHLD
+  procutilDefaultSignal (SIGCHLD);
+#endif
+
+  confui.dbgflags = bdj4startup (argc, argv, "cu", ROUTE_CONFIGUI, BDJ4_INIT_NONE);
+  localeInit ();
+  logProcBegin (LOG_PROC, "configui");
+
+  listenPort = bdjvarsGetNum (BDJVL_CONFIGUI_PORT);
+  confui.conn = connInit (ROUTE_CONFIGUI);
+
+  pathbldMakePath (tbuff, sizeof (tbuff), "",
+      "configui", ".txt", PATHBLD_MP_USEIDX);
+  confui.optiondf = datafileAllocParse ("configui-opt", DFTYPE_KEY_VAL, tbuff,
+      configuidfkeys, CONFUI_KEY_MAX, DATAFILE_NO_LOOKUP);
+  confui.options = datafileGetList (confui.optiondf);
+  if (confui.options == NULL) {
+    confui.options = nlistAlloc ("configui-opt", LIST_ORDERED, free);
+
+    nlistSetNum (confui.options, CONFUI_POSITION_X, -1);
+    nlistSetNum (confui.options, CONFUI_POSITION_Y, -1);
+    nlistSetNum (confui.options, CONFUI_SIZE_X, 1200);
+    nlistSetNum (confui.options, CONFUI_SIZE_Y, 800);
+  }
+
+  /* register these after calling the sub-window initialization */
+  /* then these will be run last, after the other closing callbacks */
+  progstateSetCallback (confui.progstate, STATE_STOPPING,
+      confuiStoppingCallback, &confui);
+  progstateSetCallback (confui.progstate, STATE_CLOSING,
+      confuiClosingCallback, &confui);
+
+  confui.sockserver = sockhStartServer (listenPort);
+
+  uiutilsInitGtkLog ();
+  gtk_init (&argc, NULL);
+  uifont = bdjoptGetStr (OPT_MP_UIFONT);
+  uiutilsSetUIFont (uifont);
+
+  g_timeout_add (UI_MAIN_LOOP_TIMER, confuiMainLoop, &confui);
+
+  status = confuiCreateGui (&confui, 0, NULL);
+
+  while (progstateShutdownProcess (confui.progstate) != STATE_CLOSED) {
+    ;
+  }
+  progstateFree (confui.progstate);
+
+  logProcEnd (LOG_PROC, "configui", "");
+  logEnd ();
+  return status;
+}
+
+/* internal routines */
+
+static bool
+confuiStoppingCallback (void *udata, programstate_t programState)
+{
+  configui_t    * confui = udata;
+  gint          x, y;
+
+  logProcBegin (LOG_PROC, "confuiStoppingCallback");
+  gtk_window_get_size (GTK_WINDOW (confui->window), &x, &y);
+  nlistSetNum (confui->options, CONFUI_SIZE_X, x);
+  nlistSetNum (confui->options, CONFUI_SIZE_Y, y);
+  gtk_window_get_position (GTK_WINDOW (confui->window), &x, &y);
+  nlistSetNum (confui->options, CONFUI_POSITION_X, x);
+  nlistSetNum (confui->options, CONFUI_POSITION_Y, y);
+
+  for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
+    if (confui->processes [i] != NULL) {
+      procutilStopProcess (confui->processes [i], confui->conn, i, false);
+    }
+  }
+
+  gdone = 1;
+  connDisconnectAll (confui->conn);
+  logProcEnd (LOG_PROC, "confuiStoppingCallback", "");
+  return true;
+}
+
+static bool
+confuiClosingCallback (void *udata, programstate_t programState)
+{
+  configui_t    *confui = udata;
+  char          fn [MAXPATHLEN];
+
+  logProcBegin (LOG_PROC, "confuiClosingCallback");
+  pathbldMakePath (fn, sizeof (fn), "",
+      "configui", ".txt", PATHBLD_MP_USEIDX);
+  datafileSaveKeyVal (fn, configuidfkeys, CONFUI_KEY_MAX, confui->options);
+
+  sockhCloseServer (confui->sockserver);
+
+  bdj4shutdown (ROUTE_CONFIGUI);
+
+  for (int i = 0; i < CONFUI_ENTRY_MAX; ++i) {
+    uiutilsEntryFree (&confui->uientry [i]);
+  }
+
+  if (confui->options != datafileGetList (confui->optiondf)) {
+    nlistFree (confui->options);
+  }
+  datafileFree (confui->optiondf);
+
+  /* give the other processes some time to shut down */
+  mssleep (200);
+  for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
+    if (confui->processes [i] != NULL) {
+      procutilStopProcess (confui->processes [i], confui->conn, i, true);
+      procutilFree (confui->processes [i]);
+    }
+  }
+
+  connFree (confui->conn);
+
+  uiutilsCleanup ();
+
+  logProcEnd (LOG_PROC, "confuiClosingCallback", "");
+  return true;
+}
+
+static int
+confuiCreateGui (configui_t *confui, int argc, char *argv [])
+{
+  int           status;
+
+  logProcBegin (LOG_PROC, "confuiCreateGui");
+
+  confui->app = gtk_application_new (
+      "org.bdj4.BDJ4.configui",
+      G_APPLICATION_NON_UNIQUE
+  );
+
+  g_signal_connect (confui->app, "activate", G_CALLBACK (confuiActivate), confui);
+
+  status = g_application_run (G_APPLICATION (confui->app), argc, argv);
+  gtk_widget_destroy (confui->window);
+  g_object_unref (confui->app);
+
+  logProcEnd (LOG_PROC, "confuiCreateGui", "");
+  return status;
+}
+
+static void
+confuiActivate (GApplication *app, gpointer userdata)
+{
+  configui_t    *confui = userdata;
+  GError        *gerr = NULL;
+  GtkWidget     *vbox;
+  GtkSizeGroup  *sg;
+  char          imgbuff [MAXPATHLEN];
+  char          tbuff [40];
+  gint          x, y;
+
+  logProcBegin (LOG_PROC, "confuiActivate");
+
+  pathbldMakePath (imgbuff, sizeof (imgbuff), "",
+      "bdj4_icon_config", ".svg", PATHBLD_MP_IMGDIR);
+
+  confui->window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+  assert (confui->window != NULL);
+  gtk_window_set_application (GTK_WINDOW (confui->window), GTK_APPLICATION (app));
+  gtk_window_set_application (GTK_WINDOW (confui->window), confui->app);
+  gtk_window_set_default_icon_from_file (imgbuff, &gerr);
+  g_signal_connect (confui->window, "delete-event", G_CALLBACK (confuiCloseWin), confui);
+  gtk_window_set_title (GTK_WINDOW (confui->window), bdjoptGetStr (OPT_P_PROFILENAME));
+
+  confui->vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+  gtk_container_add (GTK_CONTAINER (confui->window), confui->vbox);
+  gtk_widget_set_margin_top (confui->vbox, 4);
+  gtk_widget_set_margin_bottom (confui->vbox, 4);
+  gtk_widget_set_margin_start (confui->vbox, 4);
+  gtk_widget_set_margin_end (confui->vbox, 4);
+
+  confui->notebook = gtk_notebook_new ();
+  assert (confui->notebook != NULL);
+  gtk_notebook_set_show_border (GTK_NOTEBOOK (confui->notebook), TRUE);
+  gtk_widget_set_margin_top (confui->notebook, 4);
+  gtk_widget_set_hexpand (confui->notebook, TRUE);
+  gtk_widget_set_vexpand (confui->notebook, FALSE);
+  gtk_notebook_set_tab_pos (GTK_NOTEBOOK (confui->notebook), GTK_POS_LEFT);
+  gtk_box_pack_start (GTK_BOX (confui->vbox), confui->notebook,
+      TRUE, TRUE, 0);
+
+  vbox = confuiMakeNotebookTab (confui->notebook, _("General Options"));
+  sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+
+  /* general options */
+  confuiMakeItemEntry (confui, vbox, sg, _("Music Directory"), CONFUI_ENTRY_MUSIC_DIR,
+      bdjoptGetStr (OPT_M_DIR_MUSIC));
+  confuiMakeItemEntry (confui, vbox, sg, _("Profile Name"), CONFUI_ENTRY_PROFILE_NAME,
+      bdjoptGetStr (OPT_P_PROFILENAME));
+
+  /* database */
+  confuiMakeItem (vbox, sg, _("Write Audio File Tags"));
+  confuiMakeItemSwitch (vbox, sg, _("Database Loads Dance From Genre"),
+      bdjoptGetNum (OPT_G_LOADDANCEFROMGENRE));
+  confuiMakeItemSwitch (vbox, sg, _("Enable iTunes Support"),
+      bdjoptGetNum (OPT_G_ITUNESSUPPORT));
+
+  /* bdj4 */
+  confuiMakeItem (vbox, sg, _("Locale"));
+  confuiMakeItemEntry (confui, vbox, sg, _("Startup Script"), CONFUI_ENTRY_STARTUP,
+      bdjoptGetStr (OPT_M_STARTUPSCRIPT));
+  confuiMakeItemEntry (confui, vbox, sg, _("Shutdown Script"), CONFUI_ENTRY_SHUTDOWN,
+      bdjoptGetStr (OPT_M_SHUTDOWNSCRIPT));
+
+  vbox = confuiMakeNotebookTab (confui->notebook, _("Player Options"));
+  sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+
+  /* player options */
+  confuiMakeItem (vbox, sg, _("Player"));
+  confuiMakeItem (vbox, sg, _("Audio Output"));
+  confuiMakeItemSpinboxInt (vbox, sg, _("Default Volume"), 10, 100,
+      bdjoptGetNum (OPT_P_DEFAULTVOLUME));
+  confuiMakeItemSpinboxDouble (vbox, sg, _("Fade In Time"), 0.0, 2.0,
+      (double) bdjoptGetNum (OPT_P_FADEINTIME) / 1000.0);
+  confuiMakeItemSpinboxDouble (vbox, sg, _("Fade Out Time"), 0.0, 10.0,
+      (double) bdjoptGetNum (OPT_P_FADEOUTTIME) / 1000.0);
+  confuiMakeItem (vbox, sg, _("Fade Type"));
+  confuiMakeItemSpinboxDouble (vbox, sg, _("Gap Between Songs"), 0.0, 60.0,
+      (double) bdjoptGetNum (OPT_P_GAP) / 1000.0);
+// ### as a spin box? gtk has examples.
+  confuiMakeItem (vbox, sg, _("Maximum Play Time"));
+  confuiMakeItemSpinboxInt (vbox, sg, _("Queue Length"), 20, 400,
+      bdjoptGetNum (OPT_G_PLAYERQLEN));
+
+  confuiMakeItemEntry (confui, vbox, sg, _("Queue A Name"), CONFUI_ENTRY_QUEUE_NM_A,
+      bdjoptGetStr (OPT_P_QUEUE_NAME_A));
+  confuiMakeItemEntry (confui, vbox, sg, _("Queue B Name"), CONFUI_ENTRY_QUEUE_NM_B,
+      bdjoptGetStr (OPT_P_QUEUE_NAME_B));
+
+  vbox = confuiMakeNotebookTab (confui->notebook, _("Marquee Options"));
+  sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+
+  /* marquee options */
+  confuiMakeItem (vbox, sg, _("Marquee Theme"));
+  confuiMakeItemFontButton (vbox, sg, _("Marquee Font"),
+      bdjoptGetStr (OPT_MP_MQFONT));
+  confuiMakeItemSpinboxInt (vbox, sg, _("Queue Length"), 1, 20,
+      bdjoptGetNum (OPT_P_MQQLEN));
+  confuiMakeItemSwitch (vbox, sg, _("Show Song Information"),
+      bdjoptGetNum (OPT_P_MQ_SHOW_INFO));
+
+  vbox = confuiMakeNotebookTab (confui->notebook, _("User Interface"));
+  sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+
+  /* user infterface */
+  confuiMakeItem (vbox, sg, _("Theme"));
+  confuiMakeItemFontButton (vbox, sg, _("Font"),
+      bdjoptGetStr (OPT_MP_UIFONT));
+  confuiMakeItemFontButton (vbox, sg, _("Listing Font"),
+      bdjoptGetStr (OPT_MP_LISTING_FONT));
+  confuiMakeItemColorButton (vbox, sg, _("Accent Color"),
+      bdjoptGetStr (OPT_P_UI_ACCENT_COL));
+
+  vbox = confuiMakeNotebookTab (confui->notebook, _("Organization"));
+  sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+
+  vbox = confuiMakeNotebookTab (confui->notebook, _("Edit Dances"));
+  sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+
+  vbox = confuiMakeNotebookTab (confui->notebook, _("Edit Genres"));
+  sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+
+  vbox = confuiMakeNotebookTab (confui->notebook, _("Edit Levels"));
+  sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+
+  vbox = confuiMakeNotebookTab (confui->notebook, _("Edit Ratings"));
+  sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+
+  vbox = confuiMakeNotebookTab (confui->notebook, _("Edit Status"));
+  sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+
+  vbox = confuiMakeNotebookTab (confui->notebook, _("Mobile Remote Control"));
+  sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+
+  /* mobile remote control */
+  confuiMakeItemSwitch (vbox, sg, _("Enable Remote Control"),
+      bdjoptGetNum (OPT_P_REMOTECONTROL));
+  confuiMakeItem (vbox, sg, _("HTML Template"));
+  confuiMakeItemEntry (confui, vbox, sg, _("User ID"), CONFUI_ENTRY_RC_USER_ID,
+      bdjoptGetStr (OPT_P_REMCONTROLUSER));
+  confuiMakeItemEntry (confui, vbox, sg, _("Password"), CONFUI_ENTRY_RC_PASS,
+      bdjoptGetStr (OPT_P_REMCONTROLPASS));
+  snprintf (tbuff, sizeof (tbuff), "%zd", bdjoptGetNum (OPT_P_REMCONTROLPORT));
+  confuiMakeItemEntry (confui, vbox, sg, _("Port Number"), CONFUI_ENTRY_RC_PORT,
+      tbuff);
+  confuiMakeItem (vbox, sg, _("QR Code"));
+
+  vbox = confuiMakeNotebookTab (confui->notebook, _("Mobile Marquee"));
+  sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+
+  /* mobile marquee */
+  confuiMakeItemSwitch (vbox, sg, _("Mobile Marquee"),
+      bdjoptGetNum (OPT_P_MOBILEMARQUEE));
+  snprintf (tbuff, sizeof (tbuff), "%zd", bdjoptGetNum (OPT_P_MOBILEMQPORT));
+  confuiMakeItemEntry (confui, vbox, sg, _("Port"), CONFUI_ENTRY_MM_PORT,
+      tbuff);
+  confuiMakeItemEntry (confui, vbox, sg, _("Name"), CONFUI_ENTRY_MM_NAME,
+      bdjoptGetStr (OPT_P_MOBILEMQTAG));
+  confuiMakeItemEntry (confui, vbox, sg, _("Title"), CONFUI_ENTRY_MM_TITLE,
+      bdjoptGetStr (OPT_P_MOBILEMQTITLE));
+  confuiMakeItemColorButton (vbox, sg, _("Accent Color"),
+      bdjoptGetStr (OPT_P_MQ_ACCENT_COL));
+  confuiMakeItem (vbox, sg, _("QR Code"));
+
+  x = nlistGetNum (confui->options, CONFUI_SIZE_X);
+  y = nlistGetNum (confui->options, CONFUI_SIZE_Y);
+  gtk_window_set_default_size (GTK_WINDOW (confui->window), x, y);
+
+  gtk_widget_show_all (confui->window);
+
+  x = nlistGetNum (confui->options, CONFUI_POSITION_X);
+  y = nlistGetNum (confui->options, CONFUI_POSITION_Y);
+  if (x != -1 && y != -1) {
+    gtk_window_move (GTK_WINDOW (confui->window), x, y);
+  }
+
+  pathbldMakePath (imgbuff, sizeof (imgbuff), "",
+      "bdj4_icon", ".png", PATHBLD_MP_IMGDIR);
+  osuiSetIcon (imgbuff);
+
+  logProcEnd (LOG_PROC, "confuiActivate", "");
+}
+
+gboolean
+confuiMainLoop (void *tconfui)
+{
+  configui_t   *confui = tconfui;
+  int         tdone = 0;
+  gboolean    cont = TRUE;
+
+  tdone = sockhProcessMain (confui->sockserver, confuiProcessMsg, confui);
+  if (tdone || gdone) {
+    ++gdone;
+  }
+  if (gdone > CONFUI_EXIT_WAIT_COUNT) {
+    g_application_quit (G_APPLICATION (confui->app));
+    cont = FALSE;
+  }
+
+  if (! progstateIsRunning (confui->progstate)) {
+    progstateProcess (confui->progstate);
+    if (gKillReceived) {
+      logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
+      progstateShutdownProcess (confui->progstate);
+    }
+    return cont;
+  }
+
+  if (gKillReceived) {
+    logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
+    progstateShutdownProcess (confui->progstate);
+  }
+  return cont;
+}
+
+static bool
+confuiListeningCallback (void *udata, programstate_t programState)
+{
+  configui_t    *confui = udata;
+
+  return true;
+}
+
+static bool
+confuiConnectingCallback (void *udata, programstate_t programState)
+{
+  configui_t   *confui = udata;
+
+  return true;
+}
+
+static bool
+confuiHandshakeCallback (void *udata, programstate_t programState)
+{
+  configui_t   *confui = udata;
+
+  progstateLogTime (confui->progstate, "time-to-start-gui");
+  return true;
+}
+
+static int
+confuiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
+    bdjmsgmsg_t msg, char *args, void *udata)
+{
+  configui_t       *confui = udata;
+
+  logProcBegin (LOG_PROC, "confuiProcessMsg");
+
+  logMsg (LOG_DBG, LOG_MSGS, "got: from:%ld/%s route:%ld/%s msg:%ld/%s args:%s",
+      routefrom, msgRouteDebugText (routefrom),
+      route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
+
+  switch (route) {
+    case ROUTE_NONE:
+    case ROUTE_CONFIGUI: {
+      switch (msg) {
+        case MSG_HANDSHAKE: {
+          connProcessHandshake (confui->conn, routefrom);
+          connConnectResponse (confui->conn, routefrom);
+          break;
+        }
+        case MSG_EXIT_REQUEST: {
+          logMsg (LOG_SESS, LOG_IMPORTANT, "got exit request");
+          gKillReceived = 0;
+          logMsg (LOG_DBG, LOG_MSGS, "got: req-exit");
+          progstateShutdownProcess (confui->progstate);
+          logProcEnd (LOG_PROC, "confuiProcessMsg", "req-exit");
+          return 1;
+        }
+        default: {
+          break;
+        }
+      }
+      break;
+    }
+    default: {
+      break;
+    }
+  }
+
+  if (gKillReceived) {
+    logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
+  }
+  logProcEnd (LOG_PROC, "confuiProcessMsg", "");
+  return gKillReceived;
+}
+
+
+static gboolean
+confuiCloseWin (GtkWidget *window, GdkEvent *event, gpointer userdata)
+{
+  configui_t   *confui = userdata;
+
+  logProcBegin (LOG_PROC, "confuiCloseWin");
+  if (! gdone) {
+    progstateShutdownProcess (confui->progstate);
+    logMsg (LOG_DBG, LOG_MSGS, "got: close win request");
+    logProcEnd (LOG_PROC, "confuiCloseWin", "not-done");
+    return TRUE;
+  }
+
+  logProcEnd (LOG_PROC, "confuiCloseWin", "");
+  return FALSE;
+}
+
+static void
+confuiSigHandler (int sig)
+{
+  gKillReceived = 1;
+}
+
+static GtkWidget *
+confuiMakeNotebookTab (GtkWidget *notebook, char *txt)
+{
+  GtkWidget   *tablabel;
+  GtkWidget   *vbox;
+
+  tablabel = uiutilsCreateLabel (txt);
+  gtk_label_set_xalign (GTK_LABEL (tablabel), 0.0);
+  gtk_widget_set_margin_top (tablabel, 0);
+  gtk_widget_set_margin_start (tablabel, 0);
+  vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+  gtk_widget_set_margin_top (vbox, 4);
+  gtk_widget_set_margin_bottom (vbox, 4);
+  gtk_widget_set_margin_start (vbox, 4);
+  gtk_widget_set_margin_end (vbox, 4);
+  gtk_notebook_append_page (GTK_NOTEBOOK (notebook), vbox, tablabel);
+
+  return vbox;
+}
+
+static GtkWidget *
+confuiMakeItem (GtkWidget *vbox, GtkSizeGroup *sg, char *txt)
+{
+  GtkWidget   *hbox;
+
+  hbox = confuiMakeItemLabel (vbox, sg, txt);
+  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+  return hbox;
+}
+
+static GtkWidget *
+confuiMakeItemEntry (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg,
+    char *txt, int entryIdx, char *disp)
+{
+  GtkWidget   *hbox;
+  GtkWidget   *widget;
+
+  hbox = confuiMakeItemLabel (vbox, sg, txt);
+  widget = uiutilsEntryCreate (&confui->uientry [entryIdx]);
+  gtk_widget_set_margin_start (widget, 8);
+  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+  if (disp != NULL) {
+    uiutilsEntrySetValue (&confui->uientry [entryIdx], disp);
+  } else {
+    uiutilsEntrySetValue (&confui->uientry [entryIdx], "");
+  }
+  return hbox;
+}
+
+static GtkWidget *
+confuiMakeItemFontButton (GtkWidget *vbox, GtkSizeGroup *sg,
+    char *txt, char *fontname)
+{
+  GtkWidget   *hbox;
+  GtkWidget   *widget;
+
+  hbox = confuiMakeItemLabel (vbox, sg, txt);
+  if (fontname != NULL && *fontname) {
+    widget = gtk_font_button_new_with_font (fontname);
+  } else {
+    widget = gtk_font_button_new ();
+  }
+  gtk_widget_set_margin_top (widget, 2);
+  gtk_widget_set_margin_start (widget, 8);
+  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+  return hbox;
+}
+
+static GtkWidget *
+confuiMakeItemColorButton (GtkWidget *vbox, GtkSizeGroup *sg,
+    char *txt, char *color)
+{
+  GtkWidget   *hbox;
+  GtkWidget   *widget;
+  GdkRGBA     rgba;
+
+
+  hbox = confuiMakeItemLabel (vbox, sg, txt);
+  if (color != NULL && *color) {
+    gdk_rgba_parse (&rgba, color);
+    widget = gtk_color_button_new_with_rgba (&rgba);
+  } else {
+    widget = gtk_color_button_new ();
+  }
+  gtk_widget_set_margin_top (widget, 2);
+  gtk_widget_set_margin_start (widget, 8);
+  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+  return hbox;
+}
+
+static GtkWidget *
+confuiMakeItemSpinboxInt (GtkWidget *vbox, GtkSizeGroup *sg,
+    char *txt, int min, int max, int value)
+{
+  GtkWidget   *hbox;
+  GtkWidget   *widget;
+
+
+  hbox = confuiMakeItemLabel (vbox, sg, txt);
+  widget = uiutilsSpinboxIntCreate ();
+  uiutilsSpinboxSet (widget, (double) min, (double) max);
+  uiutilsSpinboxSetValue (widget, (double) value);
+  gtk_widget_set_margin_top (widget, 2);
+  gtk_widget_set_margin_start (widget, 8);
+  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+  return hbox;
+}
+
+static GtkWidget *
+confuiMakeItemSpinboxDouble (GtkWidget *vbox, GtkSizeGroup *sg,
+    char *txt, double min, double max, double value)
+{
+  GtkWidget   *hbox;
+  GtkWidget   *widget;
+
+
+  hbox = confuiMakeItemLabel (vbox, sg, txt);
+  widget = uiutilsSpinboxDoubleCreate ();
+  uiutilsSpinboxSet (widget, min, max);
+  uiutilsSpinboxSetValue (widget, value);
+  gtk_widget_set_margin_top (widget, 2);
+  gtk_widget_set_margin_start (widget, 8);
+  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+  return hbox;
+}
+
+static GtkWidget *
+confuiMakeItemSwitch (GtkWidget *vbox, GtkSizeGroup *sg, char *txt, int value)
+{
+  GtkWidget   *hbox;
+  GtkWidget   *widget;
+
+
+  hbox = confuiMakeItemLabel (vbox, sg, txt);
+  widget = uiutilsCreateSwitch (value);
+  gtk_widget_set_margin_top (widget, 2);
+  gtk_widget_set_margin_start (widget, 8);
+  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+  return hbox;
+}
+
+static GtkWidget *
+confuiMakeItemLabel (GtkWidget *vbox, GtkSizeGroup *sg, char *txt)
+{
+  GtkWidget   *hbox;
+  GtkWidget   *widget;
+
+  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+  widget = uiutilsCreateColonLabel (txt);
+  gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
+  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+  gtk_size_group_add_widget (sg, widget);
+  return hbox;
+}
+

@@ -750,6 +750,16 @@ target_link_libraries (bdj4playerui
 addIntlLibrary (bdj4playerui)
 addWinSockLibrary (bdj4playerui)
 
+add_executable (bdj4configui bdj4configui.c)
+target_link_libraries (bdj4configui
+  libbdj4ui libbdj4 libbdj4common
+  ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
+  ${GTK_LDFLAGS}
+  m
+)
+addIntlLibrary (bdj4configui)
+addWinSockLibrary (bdj4configui)
+
 add_executable (check_all
   check_all.c
   check_datafile.c
@@ -789,7 +799,7 @@ install (TARGETS
   bdj4installer bdj4locale bdj4locatebdj3 bdj4se
   bdj4dbupdate bdj4dbtag
   bdj4main bdj4player bdj4mobmq bdj4rc bdj4marquee
-  bdj4starterui bdj4playerui
+  bdj4starterui bdj4playerui bdj4configui
   check_all chkprocess
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )

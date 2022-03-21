@@ -55,6 +55,7 @@ GtkWidget * uiutilsCreateColonLabel (char *label);
 GtkWidget * uiutilsCreateButton (char *title, char *imagenm,
     void *clickCallback, void *udata);
 GtkWidget * uiutilsCreateScrolledWindow (void);
+GtkWidget * uiutilsCreateSwitch (int value);
 
 void uiutilsDropDownInit (uiutilsdropdown_t *dropdown);
 void uiutilsDropDownFree (uiutilsdropdown_t *dropdown);
@@ -79,13 +80,20 @@ GtkWidget * uiutilsEntryCreate (uiutilsentry_t *entry);
 const char * uiutilsEntryGetValue (uiutilsentry_t *entry);
 void uiutilsEntrySetValue (uiutilsentry_t *entry, char *value);
 
-void uiutilsSpinboxInit (uiutilsspinbox_t *spinbox);
-void uiutilsSpinboxFree (uiutilsspinbox_t *spinbox);
+void uiutilsSpinboxTextInit (uiutilsspinbox_t *spinbox);
+void uiutilsSpinboxTextFree (uiutilsspinbox_t *spinbox);
 GtkWidget * uiutilsSpinboxTextCreate (uiutilsspinbox_t *spinbox, void *udata);
-void uiutilsSpinboxSet (uiutilsspinbox_t *spinbox, int min, int count,
+void uiutilsSpinboxTextSet (uiutilsspinbox_t *spinbox, int min, int count,
     int maxWidth, uiutilsspinboxdisp_t textGetProc);
-int uiutilsSpinboxGetValue (uiutilsspinbox_t *spinbox);
-void uiutilsSpinboxSetValue (uiutilsspinbox_t *spinbox, int ivalue);
+int   uiutilsSpinboxTextGetValue (uiutilsspinbox_t *spinbox);
+void  uiutilsSpinboxTextSetValue (uiutilsspinbox_t *spinbox, int ivalue);
+
+GtkWidget * uiutilsSpinboxIntCreate (void);
+GtkWidget * uiutilsSpinboxDoubleCreate (void);
+
+void  uiutilsSpinboxSet (GtkWidget *spinbox, double min, double max);
+int   uiutilsSpinboxGetValue (GtkWidget *spinbox);
+void  uiutilsSpinboxSetValue (GtkWidget *spinbox, double ivalue);
 
 void uiutilsCreateDanceList (uiutilsdropdown_t *dancesel, char *selectLabel);
 

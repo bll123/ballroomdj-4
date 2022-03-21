@@ -122,10 +122,10 @@ uisongselInit (progstate_t *progstate, conn_t *conn, nlist_t *options,
   uiutilsEntryInit (&uisongsel->searchentry, 30, 100);
   uiutilsDropDownInit (&uisongsel->filtergenresel);
   uiutilsDropDownInit (&uisongsel->filterdancesel);
-  uiutilsSpinboxInit (&uisongsel->filterratingsel);
-  uiutilsSpinboxInit (&uisongsel->filterlevelsel);
-  uiutilsSpinboxInit (&uisongsel->filterstatussel);
-  uiutilsSpinboxInit (&uisongsel->filterfavoritesel);
+  uiutilsSpinboxTextInit (&uisongsel->filterratingsel);
+  uiutilsSpinboxTextInit (&uisongsel->filterlevelsel);
+  uiutilsSpinboxTextInit (&uisongsel->filterstatussel);
+  uiutilsSpinboxTextInit (&uisongsel->filterfavoritesel);
   uisongsel->songfilter = songfilterAlloc (filterFlags);
   songfilterSetSort (uisongsel->songfilter,
       nlistGetStr (options, SONGSEL_SORT_BY));
@@ -153,10 +153,10 @@ uisongselFree (uisongsel_t *uisongsel)
     uiutilsEntryFree (&uisongsel->searchentry);
     uiutilsDropDownFree (&uisongsel->filterdancesel);
     uiutilsDropDownFree (&uisongsel->filtergenresel);
-    uiutilsSpinboxFree (&uisongsel->filterratingsel);
-    uiutilsSpinboxFree (&uisongsel->filterlevelsel);
-    uiutilsSpinboxFree (&uisongsel->filterstatussel);
-    uiutilsSpinboxFree (&uisongsel->filterfavoritesel);
+    uiutilsSpinboxTextFree (&uisongsel->filterratingsel);
+    uiutilsSpinboxTextFree (&uisongsel->filterlevelsel);
+    uiutilsSpinboxTextFree (&uisongsel->filterstatussel);
+    uiutilsSpinboxTextFree (&uisongsel->filterfavoritesel);
     free (uisongsel);
   }
   logProcEnd (LOG_PROC, "uisongselFree", "");
@@ -809,7 +809,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
   if (len > max) {
     max = len;
   }
-  uiutilsSpinboxSet (&uisongsel->filterratingsel, -1,
+  uiutilsSpinboxTextSet (&uisongsel->filterratingsel, -1,
       ratingGetCount (uisongsel->ratings),
       max, uisongselRatingGet);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
@@ -830,7 +830,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
   if (len > max) {
     max = len;
   }
-  uiutilsSpinboxSet (&uisongsel->filterlevelsel, -1,
+  uiutilsSpinboxTextSet (&uisongsel->filterlevelsel, -1,
       levelGetCount (uisongsel->levels),
       max, uisongselLevelGet);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
@@ -851,7 +851,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
   if (len > max) {
     max = len;
   }
-  uiutilsSpinboxSet (&uisongsel->filterstatussel, -1,
+  uiutilsSpinboxTextSet (&uisongsel->filterstatussel, -1,
       statusGetCount (uisongsel->status),
       max, uisongselStatusGet);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
@@ -867,7 +867,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
   gtk_size_group_add_widget (sgA, widget);
 
   widget = uiutilsSpinboxTextCreate (&uisongsel->filterfavoritesel, uisongsel);
-  uiutilsSpinboxSet (&uisongsel->filterfavoritesel, 0,
+  uiutilsSpinboxTextSet (&uisongsel->filterfavoritesel, 0,
       SONG_FAVORITE_MAX, 3, uisongselFavoriteGet);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 
@@ -1105,14 +1105,14 @@ uisongselFilterResponseHandler (GtkDialog *d, gint responseid, gpointer udata)
     songfilterClear (uisongsel->songfilter, SONG_FILTER_SEARCH);
   }
 
-  idx = uiutilsSpinboxGetValue (&uisongsel->filterratingsel);
+  idx = uiutilsSpinboxTextGetValue (&uisongsel->filterratingsel);
   if (idx >= 0) {
     songfilterSetNum (uisongsel->songfilter, SONG_FILTER_RATING, idx);
   } else {
     songfilterClear (uisongsel->songfilter, SONG_FILTER_RATING);
   }
 
-  idx = uiutilsSpinboxGetValue (&uisongsel->filterlevelsel);
+  idx = uiutilsSpinboxTextGetValue (&uisongsel->filterlevelsel);
   if (idx >= 0) {
     songfilterSetNum (uisongsel->songfilter, SONG_FILTER_LEVEL_LOW, idx);
     songfilterSetNum (uisongsel->songfilter, SONG_FILTER_LEVEL_HIGH, idx);
@@ -1121,14 +1121,14 @@ uisongselFilterResponseHandler (GtkDialog *d, gint responseid, gpointer udata)
     songfilterClear (uisongsel->songfilter, SONG_FILTER_LEVEL_HIGH);
   }
 
-  idx = uiutilsSpinboxGetValue (&uisongsel->filterstatussel);
+  idx = uiutilsSpinboxTextGetValue (&uisongsel->filterstatussel);
   if (idx >= 0) {
     songfilterSetNum (uisongsel->songfilter, SONG_FILTER_STATUS, idx);
   } else {
     songfilterClear (uisongsel->songfilter, SONG_FILTER_STATUS);
   }
 
-  idx = uiutilsSpinboxGetValue (&uisongsel->filterfavoritesel);
+  idx = uiutilsSpinboxTextGetValue (&uisongsel->filterfavoritesel);
   if (idx != SONG_FAVORITE_NONE) {
     songfilterSetNum (uisongsel->songfilter, SONG_FILTER_FAVORITE, idx);
   } else {
@@ -1164,9 +1164,9 @@ uisongselInitFilterDisplay (uisongsel_t *uisongsel)
 
   uiutilsDropDownSelectionSetNum (&uisongsel->filtergenresel, -1);
   uiutilsEntrySetValue (&uisongsel->searchentry, "");
-  uiutilsSpinboxSetValue (&uisongsel->filterratingsel, -1);
-  uiutilsSpinboxSetValue (&uisongsel->filterlevelsel, -1);
-  uiutilsSpinboxSetValue (&uisongsel->filterstatussel, -1);
-  uiutilsSpinboxSetValue (&uisongsel->filterfavoritesel, 0);
+  uiutilsSpinboxTextSetValue (&uisongsel->filterratingsel, -1);
+  uiutilsSpinboxTextSetValue (&uisongsel->filterlevelsel, -1);
+  uiutilsSpinboxTextSetValue (&uisongsel->filterstatussel, -1);
+  uiutilsSpinboxTextSetValue (&uisongsel->filterfavoritesel, 0);
   logProcEnd (LOG_PROC, "uisongselInitFilterDisplay", "");
 }

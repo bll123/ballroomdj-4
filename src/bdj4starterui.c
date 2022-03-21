@@ -109,7 +109,7 @@ main (int argc, char *argv[])
 
   /* get the profile list after bdjopt has been initialized */
   starterGetProfiles (&starter);
-  uiutilsSpinboxInit (&starter.profilesel);
+  uiutilsSpinboxTextInit (&starter.profilesel);
 
   listenPort = bdjvarsGetNum (BDJVL_STARTERUI_PORT);
   starter.conn = connInit (ROUTE_STARTERUI);
@@ -128,7 +128,7 @@ main (int argc, char *argv[])
   while (progstateShutdownProcess (starter.progstate) != STATE_CLOSED) {
     ;
   }
-  uiutilsSpinboxFree (&starter.profilesel);
+  uiutilsSpinboxTextFree (&starter.profilesel);
   progstateFree (starter.progstate);
   logEnd ();
   return status;
@@ -231,27 +231,31 @@ starterActivate (GApplication *app, gpointer userdata)
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
 
   widget = uiutilsCreateColonLabel (_("Profile"));
-  gtk_widget_set_margin_end (widget, 4);
   gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 
   widget = uiutilsSpinboxTextCreate (&starter->profilesel, starter);
-  uiutilsSpinboxSet (&starter->profilesel, starter->currprofile,
+  uiutilsSpinboxTextSet (&starter->profilesel, starter->currprofile,
       nlistGetCount (starter->dispProfileList),
       starter->maxProfileWidth, starterProfileGet);
+  gtk_widget_set_margin_start (widget, 8);
   gtk_widget_set_halign (widget, GTK_ALIGN_FILL);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 
   widget = uiutilsCreateButton (_("Player"), NULL, starterStartPlayer, starter);
+  gtk_widget_set_margin_top (widget, 4);
   gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
 
   widget = uiutilsCreateButton (_("Manage"), NULL, starterStartManage, starter);
+  gtk_widget_set_margin_top (widget, 4);
   gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
 
   widget = uiutilsCreateButton (_("Configure"), NULL, starterStartConfig, starter);
+  gtk_widget_set_margin_top (widget, 4);
   gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
 
   widget = uiutilsCreateButton (_("Exit"), NULL, starterProcessExit, starter);
+  gtk_widget_set_margin_top (widget, 4);
   gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
 
   gtk_widget_show_all (starter->window);
@@ -284,7 +288,7 @@ starterMainLoop (void *tstarter)
     return cont;
   }
 
-  idx = uiutilsSpinboxGetValue (&starter->profilesel);
+  idx = uiutilsSpinboxTextGetValue (&starter->profilesel);
   profidx = nlistGetNum (starter->profileIdxMap, idx);
   sysvarsSetNum (SVL_BDJIDX, profidx);
 
@@ -397,10 +401,10 @@ starterStartManage (GtkButton *b, gpointer udata)
 static void
 starterStartConfig (GtkButton *b, gpointer udata)
 {
-//  startui_t      *starter = udata;
+  startui_t      *starter = udata;
 
-//  starter->processes [ROUTE_CONFIGUI] = procutilStartProcess (
-//      ROUTE_CONFIGUI, "bdj4configui");
+  starter->processes [ROUTE_CONFIGUI] = procutilStartProcess (
+      ROUTE_CONFIGUI, "bdj4configui", PROCUTIL_DETACH);
 }
 
 

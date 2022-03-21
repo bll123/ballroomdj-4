@@ -49,7 +49,6 @@ main (int argc, char * argv[])
     { "bdj4cli",        no_argument,        NULL,   2 },
     { "cli",            no_argument,        NULL,   2 },
     { "bdj4configui",   no_argument,        NULL,   3 },
-    { "bdj4converter",  no_argument,        NULL,   4 },
     { "bdj4main",       no_argument,        NULL,   5 },
     { "main",           no_argument,        NULL,   5 },
     { "bdj4manageui",   no_argument,        NULL,   6 },

@@ -222,6 +222,23 @@ uiutilsCreateScrolledWindow (void)
   return widget;
 }
 
+GtkWidget *
+uiutilsCreateSwitch (int value)
+{
+  GtkWidget   *widget;
+
+  logProcBegin (LOG_PROC, "uiutilsCreateSwitch");
+
+  widget = gtk_switch_new ();
+  assert (widget != NULL);
+  gtk_switch_set_active (GTK_SWITCH (widget), value);
+  gtk_widget_set_margin_top (widget, 2);
+  gtk_widget_set_margin_start (widget, 2);
+  gtk_widget_set_valign (widget, GTK_ALIGN_CENTER);
+  logProcEnd (LOG_PROC, "uiutilsCreateSwitch", "");
+  return widget;
+}
+
 void
 uiutilsDropDownInit (uiutilsdropdown_t *dropdown)
 {
@@ -536,8 +553,8 @@ uiutilsEntryCreate (uiutilsentry_t *entry)
   gtk_entry_set_input_purpose (GTK_ENTRY (entry->entry), GTK_INPUT_PURPOSE_FREE_FORM);
   gtk_widget_set_margin_top (entry->entry, 2);
   gtk_widget_set_margin_start (entry->entry, 2);
-  gtk_widget_set_halign (entry->entry, GTK_ALIGN_FILL);
-  gtk_widget_set_hexpand (entry->entry, TRUE);
+  gtk_widget_set_halign (entry->entry, GTK_ALIGN_START);
+  gtk_widget_set_hexpand (entry->entry, FALSE);
 
   logProcEnd (LOG_PROC, "uiutilsEntryCreate", "");
   return entry->entry;
@@ -559,21 +576,21 @@ uiutilsEntrySetValue (uiutilsentry_t *entry, char *value)
 }
 
 void
-uiutilsSpinboxInit (uiutilsspinbox_t *spinbox)
+uiutilsSpinboxTextInit (uiutilsspinbox_t *spinbox)
 {
-  logProcBegin (LOG_PROC, "uiutilsSpinboxInit");
+  logProcBegin (LOG_PROC, "uiutilsSpinboxTextInit");
   spinbox->spinbox = NULL;
   spinbox->curridx = 0;
   spinbox->textGetProc = NULL;
   spinbox->udata = NULL;
   spinbox->indisp = false;
   spinbox->maxWidth = 0;
-  logProcEnd (LOG_PROC, "uiutilsSpinboxInit", "");
+  logProcEnd (LOG_PROC, "uiutilsSpinboxTextInit", "");
 }
 
 
 void
-uiutilsSpinboxFree (uiutilsspinbox_t *spinbox)
+uiutilsSpinboxTextFree (uiutilsspinbox_t *spinbox)
 {
   ;
 }
@@ -597,26 +614,75 @@ uiutilsSpinboxTextCreate (uiutilsspinbox_t *spinbox, void *udata)
   return spinbox->spinbox;
 }
 
-
 void
-uiutilsSpinboxSet (uiutilsspinbox_t *spinbox, int min, int count,
+uiutilsSpinboxTextSet (uiutilsspinbox_t *spinbox, int min, int count,
     int maxWidth, uiutilsspinboxdisp_t textGetProc)
 {
-  logProcBegin (LOG_PROC, "uiutilsSpinboxSet");
-  gtk_spin_button_set_range (GTK_SPIN_BUTTON (spinbox->spinbox),
-      (double) min, (double) count - 1);
+  logProcBegin (LOG_PROC, "uiutilsSpinboxTextSet");
+  uiutilsSpinboxSet (spinbox->spinbox, (double) min, (double) (count - 1));
   /* will width in characters be enough for some glyphs? */
   /* certainly not if languages are mixed */
   spinbox->maxWidth = maxWidth;
   gtk_entry_set_width_chars (GTK_ENTRY (spinbox->spinbox), spinbox->maxWidth);
-  gtk_spin_button_set_value (GTK_SPIN_BUTTON (spinbox->spinbox), (double) min);
   spinbox->textGetProc = textGetProc;
+  logProcEnd (LOG_PROC, "uiutilsSpinboxTextSet", "");
+}
+
+int
+uiutilsSpinboxTextGetValue (uiutilsspinbox_t *spinbox)
+{
+  return uiutilsSpinboxGetValue (spinbox->spinbox);
+}
+
+void
+uiutilsSpinboxTextSetValue (uiutilsspinbox_t *spinbox, int value)
+{
+  uiutilsSpinboxSetValue (spinbox->spinbox, (double) value);
+}
+
+
+GtkWidget *
+uiutilsSpinboxIntCreate (void)
+{
+  GtkWidget   *spinbox;
+
+  logProcBegin (LOG_PROC, "uiutilsSpinboxIntCreate");
+  spinbox = gtk_spin_button_new (NULL, 0.0, 0);
+  gtk_spin_button_set_increments (GTK_SPIN_BUTTON (spinbox), 1.0, 5.0);
+  gtk_spin_button_set_wrap (GTK_SPIN_BUTTON (spinbox), FALSE);
+  gtk_widget_set_margin_top (spinbox, 2);
+  gtk_widget_set_margin_start (spinbox, 2);
+  logProcEnd (LOG_PROC, "uiutilsSpinboxIntCreate", "");
+  return spinbox;
+}
+
+GtkWidget *
+uiutilsSpinboxDoubleCreate (void)
+{
+  GtkWidget   *spinbox;
+
+  logProcBegin (LOG_PROC, "uiutilsSpinboxDoubleCreate");
+  spinbox = gtk_spin_button_new (NULL, 0.0, 1);
+  gtk_spin_button_set_increments (GTK_SPIN_BUTTON (spinbox), 0.1, 5.0);
+  gtk_spin_button_set_wrap (GTK_SPIN_BUTTON (spinbox), FALSE);
+  gtk_widget_set_margin_top (spinbox, 2);
+  gtk_widget_set_margin_start (spinbox, 2);
+  logProcEnd (LOG_PROC, "uiutilsSpinboxDoubleCreate", "");
+  return spinbox;
+}
+
+void
+uiutilsSpinboxSet (GtkWidget *spinbox, double min, double max)
+{
+  logProcBegin (LOG_PROC, "uiutilsSpinboxSet");
+  gtk_spin_button_set_range (GTK_SPIN_BUTTON (spinbox), min, max);
+  gtk_spin_button_set_value (GTK_SPIN_BUTTON (spinbox), min);
   logProcEnd (LOG_PROC, "uiutilsSpinboxSet", "");
 }
 
 
 int
-uiutilsSpinboxGetValue (uiutilsspinbox_t *spinbox)
+uiutilsSpinboxGetValue (GtkWidget *spinbox)
 {
   GtkAdjustment     *adjustment;
   gdouble           value;
@@ -627,19 +693,15 @@ uiutilsSpinboxGetValue (uiutilsspinbox_t *spinbox)
     logProcEnd (LOG_PROC, "uiutilsSpinboxGetValue", "spinbox-null");
     return -1;
   }
-  if (spinbox->spinbox == NULL) {
-    logProcEnd (LOG_PROC, "uiutilsSpinboxGetValue", "spinbox-widget-null");
-    return -1;
-  }
 
-  adjustment = gtk_spin_button_get_adjustment (GTK_SPIN_BUTTON (spinbox->spinbox));
+  adjustment = gtk_spin_button_get_adjustment (GTK_SPIN_BUTTON (spinbox));
   value = gtk_adjustment_get_value (adjustment);
   logProcEnd (LOG_PROC, "uiutilsSpinboxGetValue", "");
   return (int) value;
 }
 
 void
-uiutilsSpinboxSetValue (uiutilsspinbox_t *spinbox, int value)
+uiutilsSpinboxSetValue (GtkWidget *spinbox, double value)
 {
   GtkAdjustment     *adjustment;
 
@@ -649,13 +711,9 @@ uiutilsSpinboxSetValue (uiutilsspinbox_t *spinbox, int value)
     logProcEnd (LOG_PROC, "uiutilsSpinboxSetValue", "spinbox-null");
     return;
   }
-  if (spinbox->spinbox == NULL) {
-    logProcEnd (LOG_PROC, "uiutilsSpinboxSetValue", "spinbox-widget-null");
-    return;
-  }
 
-  adjustment = gtk_spin_button_get_adjustment (GTK_SPIN_BUTTON (spinbox->spinbox));
-  gtk_adjustment_set_value (adjustment, (double) value);
+  adjustment = gtk_spin_button_get_adjustment (GTK_SPIN_BUTTON (spinbox));
+  gtk_adjustment_set_value (adjustment, value);
   logProcEnd (LOG_PROC, "uiutilsSpinboxSetValue", "");
 }
 

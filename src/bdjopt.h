@@ -29,7 +29,7 @@ typedef enum {
   OPT_G_PATHFMT_CL,
   OPT_G_PATHFMT_CLVA,
   OPT_G_PATHFMT_VA,
-  OPT_G_PLAYERQLEN,               //
+  OPT_G_PLAYERQLEN,               //+
   OPT_G_REMCONTROLHTML,
   OPT_G_SHOWALBUM,
   OPT_G_SHOWBPM,
@@ -39,28 +39,28 @@ typedef enum {
   OPT_G_VARIOUS,
   OPT_G_WRITETAGS,
   OPT_M_AUDIOSINK,                //
-  OPT_M_DIR_MUSIC,                //
+  OPT_M_DIR_MUSIC,                //+
   OPT_M_HOST,
   OPT_M_PLAYER_INTFC,             //
   OPT_M_SHUTDOWNSCRIPT,
   OPT_M_STARTUPSCRIPT,
   OPT_M_VOLUME_INTFC,             //
-  OPT_MP_LISTING_FONT,            //
-  OPT_MP_MQFONT,                    //
+  OPT_MP_LISTING_FONT,            //+
+  OPT_MP_MQFONT,                    //+
   OPT_MP_MQ_THEME,                  //
   OPT_MP_PLAYEROPTIONS,
   OPT_MP_PLAYERSHUTDOWNSCRIPT,
   OPT_MP_PLAYERSTARTSCRIPT,
-  OPT_MP_UIFONT,                    //
+  OPT_MP_UIFONT,                    //+
   OPT_MP_UI_THEME,                  //
   OPT_P_ALLOWEDIT,
   OPT_P_AUTOSTARTUP,
-  OPT_P_DEFAULTVOLUME,              //
+  OPT_P_DEFAULTVOLUME,              //+
   OPT_P_DONEMSG,
-  OPT_P_FADEINTIME,                 //
-  OPT_P_FADEOUTTIME,                //
+  OPT_P_FADEINTIME,                 //+
+  OPT_P_FADEOUTTIME,                //+
   OPT_P_FADETYPE,                   //
-  OPT_P_GAP,                        //
+  OPT_P_GAP,                        //+
   OPT_P_HIDE_MARQUEE_ON_START,
   OPT_P_INSERT_LOCATION,            //
   OPT_P_MAXPLAYTIME,                //
