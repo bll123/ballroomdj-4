@@ -2,16 +2,16 @@
 # -- dutch
 msgid ""
 msgstr ""
-"Project-Id-Version: 2022-03-12BDJ4 4.0.0\n"
-"Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com2022-03-12\n"
-"POT-Creation-Date: 2022-03-12\n"
-"PO-Revision-Date: 2022-03-12\n"
-"Last-Translator: 2022-03-12marimo\n"
+"Project-Id-Version: BDJ4 4.0.0\n"
+"Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
+"POT-Creation-Date: 2022-03-21\n"
+"PO-Revision-Date: 2022-03-21\n"
+"Last-Translator: marimo\n"
 "Language-Team: dutch\n"
-"Language: nl2022-03-12\n"
-"MIME-Version: 2022-03-12.0\n"
-"Content-Type: 2022-03-12text/plain; charset=utf-8\n"
-"Content-Transfer-Encoding: 2022-03-12bit\n"
+"Language: nl\n"
+"MIME-Version: 2022-03-21.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 2022-03-21bit\n"
 
 #, c-format
 msgid "%s installed."
@@ -23,6 +23,9 @@ msgstr ""
 
 #, c-format
 msgid "%s is not installed"
+msgstr ""
+
+msgid "Accent Color"
 msgstr ""
 
 msgid "Advanced"
@@ -58,6 +61,12 @@ msgstr "Argentijnse Tango"
 msgid "Artist"
 msgstr "Artiest"
 
+msgid "Audio"
+msgstr ""
+
+msgid "Audio Output"
+msgstr "Audio-Output"
+
 msgid "BDJ4 Installer"
 msgstr ""
 
@@ -68,7 +77,7 @@ msgid "Ballroom Dance"
 msgstr "Ballroom dans"
 
 #, c-format
-msgid "BallroomDJ 3 Folder [%s] : 2022-03-12"
+msgid "BallroomDJ 3 Folder [%s] : "
 msgstr ""
 
 msgid "BallroomDJ 3 Location"
@@ -128,8 +137,14 @@ msgstr ""
 msgid "Dance Rating"
 msgstr "Dans beoordeling"
 
+msgid "Database Loads Dance From Genre"
+msgstr "Database laadt dansen voor Genre"
+
 msgid "Date Added"
 msgstr "Datum toegevoegd"
+
+msgid "Default Volume"
+msgstr "Standaard Volume"
 
 #, c-format
 msgid "Download of %s failed."
@@ -141,6 +156,27 @@ msgstr ""
 
 msgid "Easy"
 msgstr "Gemakkelijk"
+
+msgid "Edit Dances"
+msgstr "Bewerk Dansen"
+
+msgid "Edit Genres"
+msgstr "Bewerk Genres"
+
+msgid "Edit Levels"
+msgstr "Bewerk Niveaus"
+
+msgid "Edit Ratings"
+msgstr "Bewerk beoordelingen"
+
+msgid "Edit Status"
+msgstr "Bewerk status"
+
+msgid "Enable Remote Control"
+msgstr ""
+
+msgid "Enable iTunes Support"
+msgstr "iTunes Support inschakelen"
 
 msgid "Enter the destination folder where BDJ4 will be installed."
 msgstr ""
@@ -154,13 +190,13 @@ msgid "Enter the folder where BallroomDJ 3 is installed."
 msgstr ""
 
 #, c-format
-msgid "Error: 2022-03-12Folder %s already exists."
+msgid "Error: Folder %s already exists."
 msgstr ""
 
-msgid "Error: 2022-03-12Folder already exists."
+msgid "Error: Folder already exists."
 msgstr ""
 
-msgid "Error: 2022-03-12Unable to set working folder."
+msgid "Error: Unable to set working folder."
 msgstr ""
 
 msgid "Exit"
@@ -168,6 +204,15 @@ msgstr "Afsluiten"
 
 msgid "Fade"
 msgstr "Fade"
+
+msgid "Fade In Time"
+msgstr "Fade-In tijd"
+
+msgid "Fade Out Time"
+msgstr "Fade-Out tijd"
+
+msgid "Fade Type"
+msgstr "Fade type"
 
 msgid "Favorite"
 msgstr ""
@@ -181,8 +226,17 @@ msgstr ""
 msgid "Folder already exists."
 msgstr ""
 
+msgid "Font"
+msgstr "Lettertype"
+
 msgid "Foxtrot"
 msgstr "Foxtrot"
+
+msgid "Gap Between Songs"
+msgstr "Pauzes tussen nummers"
+
+msgid "General Options"
+msgstr ""
 
 msgid "Genre"
 msgstr "Genre"
@@ -192,6 +246,9 @@ msgstr "Goed"
 
 msgid "Great"
 msgstr "Uitstekend"
+
+msgid "HTML Template"
+msgstr "HTML-sjabloon"
 
 #, c-format
 msgid "If there is no BallroomDJ 3 installation, enter a single '-'."
@@ -219,6 +276,12 @@ msgstr "Jive"
 msgid "Last Updated"
 msgstr "Laatst bijgewerkt"
 
+msgid "Listing Font"
+msgstr ""
+
+msgid "Locale"
+msgstr "Taalregio"
+
 msgid "Located 'tclsh'."
 msgstr ""
 
@@ -227,6 +290,24 @@ msgstr ""
 
 msgid "Marquee"
 msgstr "Marquee"
+
+msgid "Marquee Font"
+msgstr "Marquee lettertype"
+
+msgid "Marquee Options"
+msgstr "Marquee Opties"
+
+msgid "Marquee Theme"
+msgstr ""
+
+msgid "Maximum Play Time"
+msgstr "Maximale afspeeltijd"
+
+msgid "Mobile Marquee"
+msgstr ""
+
+msgid "Mobile Remote Control"
+msgstr ""
 
 msgid "Move Down"
 msgstr "Verplaats Omlaag"
@@ -237,8 +318,14 @@ msgstr "Verplaats Omhoog"
 msgid "Move to Top"
 msgstr ""
 
+msgid "Music Directory"
+msgstr ""
+
 msgid "NC2S"
 msgstr "Night Club Two Step"
+
+msgid "Name"
+msgstr ""
 
 msgid "New"
 msgstr "Nieuw"
@@ -262,6 +349,9 @@ msgstr ""
 msgid "Options"
 msgstr "Opties"
 
+msgid "Organization"
+msgstr "Organisatie"
+
 msgid "Overwrite"
 msgstr ""
 
@@ -271,6 +361,9 @@ msgstr ""
 
 msgid "Paso Doble"
 msgstr "Paso Doble"
+
+msgid "Password"
+msgstr ""
 
 msgid "Pause"
 msgstr "Pauseren"
@@ -290,8 +383,17 @@ msgstr "Afspelen / Pauseren"
 msgid "Player"
 msgstr "Speler"
 
+msgid "Player Options"
+msgstr "Speler Opties"
+
 msgid "Poor"
 msgstr "Slecht"
+
+msgid "Port"
+msgstr ""
+
+msgid "Port Number"
+msgstr ""
 
 msgid "Position"
 msgstr ""
@@ -304,14 +406,32 @@ msgstr ""
 msgid "Proceed with installation?"
 msgstr ""
 
+msgid "Profile"
+msgstr "Profiel"
+
+msgid "Profile Name"
+msgstr "Profielnaam"
+
+msgid "QR Code"
+msgstr ""
+
 msgid "Queue"
 msgstr "Wachtrij"
 
 msgid "Queue 5"
 msgstr ""
 
+msgid "Queue A Name"
+msgstr ""
+
+msgid "Queue B Name"
+msgstr ""
+
 msgid "Queue Dance"
 msgstr ""
+
+msgid "Queue Length"
+msgstr "Wachtrij lengte"
 
 msgid "Queue Playlist"
 msgstr ""
@@ -341,7 +461,7 @@ msgid "Rumba"
 msgstr "Rumba"
 
 #, c-format
-msgid "Running conversion script: 2022-03-12%s."
+msgid "Running conversion script: %s."
 msgstr ""
 
 msgid "Salsa"
@@ -365,6 +485,12 @@ msgstr ""
 msgid "Show Extra Queues"
 msgstr ""
 
+msgid "Show Song Information"
+msgstr ""
+
+msgid "Shutdown Script"
+msgstr "Afsluitscript"
+
 msgid "Skipping conversion."
 msgstr ""
 
@@ -376,6 +502,9 @@ msgstr "Tempo"
 
 msgid "Starting conversion process."
 msgstr ""
+
+msgid "Startup Script"
+msgstr "Opstartscript"
 
 msgid "Status"
 msgstr "Status"
@@ -396,6 +525,9 @@ msgid ""
 "The conversion process will only run for new installations and for re-"
 "installs."
 msgstr ""
+
+msgid "Theme"
+msgstr "Thema"
 
 msgid "Title"
 msgstr "Titel"
@@ -423,6 +555,12 @@ msgstr "Onbeoordeeld"
 msgid "Updating existing BDJ4 installation."
 msgstr ""
 
+msgid "User ID"
+msgstr ""
+
+msgid "User Interface"
+msgstr "Gebruikersinterface"
+
 msgid "Viennese Waltz"
 msgstr "Weense wals"
 
@@ -434,6 +572,9 @@ msgstr "Engelse wals"
 
 msgid "West Coast Swing"
 msgstr "West Coast Swing"
+
+msgid "Write Audio File Tags"
+msgstr "Werk de audio tags bij"
 
 msgid "club"
 msgstr "club"

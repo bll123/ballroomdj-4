@@ -5,6 +5,7 @@ if { $argc != 2 } {
   exit 1
 }
 
+set topdir [pwd]
 set bdj3dir [lindex $argv 0]
 if { ! [file exists $bdj3dir] || ! [file isdirectory $bdj3dir] } {
   puts "Invalid directory $bdj3dir"
@@ -158,6 +159,11 @@ foreach path [list {} profiles $mpath $mppath] {
         if { $key eq "GAP" && $value eq {} } {
           set value 0
         }
+        if { $key eq "SHUTDOWNSCRIPT" || $key eq "STARTUPSCRIPT" } {
+          if { [regexp {linux/bdj(startup|shutdown)\.sh$} $value] } {
+            regsub {.*linux/} $value "${topdir}/scripts/linux/" value
+          }
+        }
         if { $key eq "FADEINTIME" || $key eq "FADEOUTTIME" ||
             $key eq "GAP" } {
           set value [expr {int ($value * 1000)}]
@@ -175,6 +181,7 @@ foreach path [list {} profiles $mpath $mppath] {
             set value 360000
           }
         }
+
         puts $ofh $key
         puts $ofh "..$value"
       }

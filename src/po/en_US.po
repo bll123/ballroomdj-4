@@ -2,16 +2,16 @@
 # -- english
 msgid ""
 msgstr ""
-"Project-Id-Version: 2022-03-12BDJ4 4.0.0\n"
-"Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com2022-03-12\n"
-"POT-Creation-Date: 2022-03-12\n"
-"PO-Revision-Date: 2022-03-12\n"
-"Last-Translator: 2022-03-12Automatically generated\n"
+"Project-Id-Version: BDJ4 4.0.0\n"
+"Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
+"POT-Creation-Date: 2022-03-21\n"
+"PO-Revision-Date: 2022-03-21\n"
+"Last-Translator: Automatically generated\n"
 "Language-Team: english\n"
-"Language: en2022-03-12\n"
-"MIME-Version: 2022-03-12.0\n"
-"Content-Type: 2022-03-12text/plain; charset=utf-8\n"
-"Content-Transfer-Encoding: 2022-03-12bit\n"
+"Language: en\n"
+"MIME-Version: 2022-03-21.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 2022-03-21bit\n"
 
 #, c-format
 msgid "%s installed."
@@ -23,6 +23,9 @@ msgstr ""
 
 #, c-format
 msgid "%s is not installed"
+msgstr ""
+
+msgid "Accent Color"
 msgstr ""
 
 msgid "Advanced"
@@ -58,6 +61,12 @@ msgstr ""
 msgid "Artist"
 msgstr ""
 
+msgid "Audio"
+msgstr ""
+
+msgid "Audio Output"
+msgstr ""
+
 msgid "BDJ4 Installer"
 msgstr ""
 
@@ -68,7 +77,7 @@ msgid "Ballroom Dance"
 msgstr ""
 
 #, c-format
-msgid "BallroomDJ 3 Folder [%s] : 2022-03-12"
+msgid "BallroomDJ 3 Folder [%s] : "
 msgstr ""
 
 msgid "BallroomDJ 3 Location"
@@ -128,7 +137,13 @@ msgstr ""
 msgid "Dance Rating"
 msgstr ""
 
+msgid "Database Loads Dance From Genre"
+msgstr ""
+
 msgid "Date Added"
+msgstr ""
+
+msgid "Default Volume"
 msgstr ""
 
 #, c-format
@@ -140,6 +155,27 @@ msgid "Downloading %s."
 msgstr ""
 
 msgid "Easy"
+msgstr ""
+
+msgid "Edit Dances"
+msgstr ""
+
+msgid "Edit Genres"
+msgstr ""
+
+msgid "Edit Levels"
+msgstr ""
+
+msgid "Edit Ratings"
+msgstr ""
+
+msgid "Edit Status"
+msgstr ""
+
+msgid "Enable Remote Control"
+msgstr ""
+
+msgid "Enable iTunes Support"
 msgstr ""
 
 msgid "Enter the destination folder where BDJ4 will be installed."
@@ -154,19 +190,28 @@ msgid "Enter the folder where BallroomDJ 3 is installed."
 msgstr ""
 
 #, c-format
-msgid "Error: 2022-03-12Folder %s already exists."
+msgid "Error: Folder %s already exists."
 msgstr ""
 
-msgid "Error: 2022-03-12Folder already exists."
+msgid "Error: Folder already exists."
 msgstr ""
 
-msgid "Error: 2022-03-12Unable to set working folder."
+msgid "Error: Unable to set working folder."
 msgstr ""
 
 msgid "Exit"
 msgstr ""
 
 msgid "Fade"
+msgstr ""
+
+msgid "Fade In Time"
+msgstr ""
+
+msgid "Fade Out Time"
+msgstr ""
+
+msgid "Fade Type"
 msgstr ""
 
 msgid "Favorite"
@@ -181,7 +226,16 @@ msgstr ""
 msgid "Folder already exists."
 msgstr ""
 
+msgid "Font"
+msgstr ""
+
 msgid "Foxtrot"
+msgstr ""
+
+msgid "Gap Between Songs"
+msgstr ""
+
+msgid "General Options"
 msgstr ""
 
 msgid "Genre"
@@ -191,6 +245,9 @@ msgid "Good"
 msgstr ""
 
 msgid "Great"
+msgstr ""
+
+msgid "HTML Template"
 msgstr ""
 
 #, c-format
@@ -219,6 +276,12 @@ msgstr ""
 msgid "Last Updated"
 msgstr ""
 
+msgid "Listing Font"
+msgstr ""
+
+msgid "Locale"
+msgstr ""
+
 msgid "Located 'tclsh'."
 msgstr ""
 
@@ -226,6 +289,24 @@ msgid "Manage"
 msgstr ""
 
 msgid "Marquee"
+msgstr ""
+
+msgid "Marquee Font"
+msgstr ""
+
+msgid "Marquee Options"
+msgstr ""
+
+msgid "Marquee Theme"
+msgstr ""
+
+msgid "Maximum Play Time"
+msgstr ""
+
+msgid "Mobile Marquee"
+msgstr ""
+
+msgid "Mobile Remote Control"
 msgstr ""
 
 msgid "Move Down"
@@ -237,7 +318,13 @@ msgstr ""
 msgid "Move to Top"
 msgstr ""
 
+msgid "Music Directory"
+msgstr ""
+
 msgid "NC2S"
+msgstr ""
+
+msgid "Name"
 msgstr ""
 
 msgid "New"
@@ -262,6 +349,9 @@ msgstr ""
 msgid "Options"
 msgstr ""
 
+msgid "Organization"
+msgstr ""
+
 msgid "Overwrite"
 msgstr ""
 
@@ -270,6 +360,9 @@ msgid "Overwriting existing BDJ4 installation."
 msgstr ""
 
 msgid "Paso Doble"
+msgstr ""
+
+msgid "Password"
 msgstr ""
 
 msgid "Pause"
@@ -290,7 +383,16 @@ msgstr ""
 msgid "Player"
 msgstr ""
 
+msgid "Player Options"
+msgstr ""
+
 msgid "Poor"
+msgstr ""
+
+msgid "Port"
+msgstr ""
+
+msgid "Port Number"
 msgstr ""
 
 msgid "Position"
@@ -304,13 +406,31 @@ msgstr ""
 msgid "Proceed with installation?"
 msgstr ""
 
+msgid "Profile"
+msgstr ""
+
+msgid "Profile Name"
+msgstr ""
+
+msgid "QR Code"
+msgstr ""
+
 msgid "Queue"
 msgstr ""
 
 msgid "Queue 5"
 msgstr ""
 
+msgid "Queue A Name"
+msgstr ""
+
+msgid "Queue B Name"
+msgstr ""
+
 msgid "Queue Dance"
+msgstr ""
+
+msgid "Queue Length"
 msgstr ""
 
 msgid "Queue Playlist"
@@ -341,7 +461,7 @@ msgid "Rumba"
 msgstr ""
 
 #, c-format
-msgid "Running conversion script: 2022-03-12%s."
+msgid "Running conversion script: %s."
 msgstr ""
 
 msgid "Salsa"
@@ -365,6 +485,12 @@ msgstr ""
 msgid "Show Extra Queues"
 msgstr ""
 
+msgid "Show Song Information"
+msgstr ""
+
+msgid "Shutdown Script"
+msgstr ""
+
 msgid "Skipping conversion."
 msgstr ""
 
@@ -375,6 +501,9 @@ msgid "Speed"
 msgstr ""
 
 msgid "Starting conversion process."
+msgstr ""
+
+msgid "Startup Script"
 msgstr ""
 
 msgid "Status"
@@ -395,6 +524,9 @@ msgstr ""
 msgid ""
 "The conversion process will only run for new installations and for re-"
 "installs."
+msgstr ""
+
+msgid "Theme"
 msgstr ""
 
 msgid "Title"
@@ -423,6 +555,12 @@ msgstr ""
 msgid "Updating existing BDJ4 installation."
 msgstr ""
 
+msgid "User ID"
+msgstr ""
+
+msgid "User Interface"
+msgstr ""
+
 msgid "Viennese Waltz"
 msgstr ""
 
@@ -433,6 +571,9 @@ msgid "Waltz"
 msgstr ""
 
 msgid "West Coast Swing"
+msgstr ""
+
+msgid "Write Audio File Tags"
 msgstr ""
 
 msgid "club"

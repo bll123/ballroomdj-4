@@ -363,7 +363,7 @@ http://danielstern.ca/range.css/#/
         <div class="linebox">
           <input class="button stretch grow wb" type="submit" id="fadeb"
               onclick="javascript:bdj.sendCmd('fade');"
-              name="fade" value="Fade">
+              name="fade" value="Fade" msgstr "Fade-In tijd" msgstr "Fade-Out tijd" msgstr "Fade type">
           <div class="rightbox vcenter"></div>
         </div>
         <div class="linebox">
@@ -433,7 +433,7 @@ http://danielstern.ca/range.css/#/
         <div class="linebox">
           <input class="stretch grow wb" type="submit"
               onclick="javascript:bdj.sendDanceCmd('queue');"
-              name="queue" value="Wachtrij" msgstr "" msgstr "" msgstr "">
+              name="queue" value="Wachtrij" msgstr "" msgstr "" msgstr "" msgstr "" msgstr "Wachtrij lengte" msgstr "">
         </div>
         <div class="linebox">
           <input class="stretch grow wb" type="submit"
@@ -457,7 +457,7 @@ http://danielstern.ca/range.css/#/
             name="plclearplay" value="Clear & Play">
           <input class="stretch grow wb" type="submit"
             onclick="javascript:bdj.sendPLCmd('playlistqueue');"
-            name="plqueue" value="Wachtrij" msgstr "" msgstr "" msgstr "">
+            name="plqueue" value="Wachtrij" msgstr "" msgstr "" msgstr "" msgstr "" msgstr "Wachtrij lengte" msgstr "">
         </div>
     </div>
   </div>

@@ -364,7 +364,7 @@ http://danielstern.ca/range.css/#/
         <td colspan="4">
           <input class="wb" type="submit" id="fadeb"
             onclick="javascript:bdj.sendCmd('fade');"
-            name="fade" value="Fade">
+            name="fade" value="Fade" msgstr "Fade-In tijd" msgstr "Fade-Out tijd" msgstr "Fade type">
         </td>
         <td colspan="2"></td>
       </tr>
@@ -441,7 +441,7 @@ http://danielstern.ca/range.css/#/
     <select id="dancelist" name="dancelist"></select>
     <input class="wb" type="submit"
       onclick="javascript:bdj.sendDanceCmd('queue');"
-      name="queue" value="Wachtrij" msgstr "" msgstr "" msgstr "">
+      name="queue" value="Wachtrij" msgstr "" msgstr "" msgstr "" msgstr "" msgstr "Wachtrij lengte" msgstr "">
     <input class="wb" type="submit"
       onclick="javascript:bdj.sendDanceCmd('queue5');"
       name="queue5" value="Queue 5">
@@ -455,7 +455,7 @@ http://danielstern.ca/range.css/#/
       name="plclearplay" value="Clear & Play">
     <input class="wb" type="submit"
       onclick="javascript:bdj.sendPLCmd('playlistqueue');"
-      name="plqueue" value="Wachtrij" msgstr "" msgstr "" msgstr "">
+      name="plqueue" value="Wachtrij" msgstr "" msgstr "" msgstr "" msgstr "" msgstr "Wachtrij lengte" msgstr "">
   </div>
   <script type="text/javascript">
 var bdj = {};

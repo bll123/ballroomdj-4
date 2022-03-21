@@ -31,7 +31,7 @@ function mkpo {
   echo "# -- $elang" >> ${out}
   sed -e '1,6 d' \
       -e "s/YEAR-MO-DA.*ZONE/${dt}/" \
-      -e "s/: [0-9 :-]*/: ${dt}/" \
+      -e "s/: [0-9][0-9 :-]*/: ${dt}/" \
       -e "s/PACKAGE/BDJ4/" \
       -e "s/VERSION/${VERSION}/" \
       -e "s/FULL NAME.*ADDRESS./${xlator}/" \

@@ -13,7 +13,7 @@ function copysrcfiles {
 
   filelist="LICENSE.txt README.txt VERSION.txt
       packages/mongoose/mongoose.[ch]"
-  dirlist="src conv img install licenses linux locale pkg templates web wiki"
+  dirlist="src conv img install licenses scripts locale pkg templates web wiki"
 
   echo "-- copying files to $stage"
   for f in $filelist; do
@@ -36,7 +36,7 @@ function copyreleasefiles {
   stage=$2
 
   filelist="LICENSE.txt README.txt VERSION.txt"
-  dirlist="bin conv img install licenses linux locale templates"
+  dirlist="bin conv img install licenses scripts locale templates"
 
   case ${systype} in
     Darwin)

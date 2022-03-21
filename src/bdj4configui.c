@@ -104,6 +104,7 @@ static GtkWidget * confuiMakeNotebookTab (GtkWidget *notebook, char *txt);
 // confuiMakeItem is temporary until all items have a proc
 static GtkWidget * confuiMakeItem (GtkWidget *vbox, GtkSizeGroup *sg, char *txt);
 static GtkWidget * confuiMakeItemEntry (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, char *txt, int entryIdx, char *disp);
+static GtkWidget * confuiMakeItemLink (GtkWidget *vbox, GtkSizeGroup *sg, char *txt, char *disp);
 static GtkWidget * confuiMakeItemFontButton (GtkWidget *vbox, GtkSizeGroup *sg, char *txt, char *fontname);
 static GtkWidget * confuiMakeItemColorButton (GtkWidget *vbox, GtkSizeGroup *sg, char *txt, char *color);
 static GtkWidget * confuiMakeItemSpinboxInt (GtkWidget *vbox, GtkSizeGroup *sg, char *txt, int min, int max, int value);
@@ -308,6 +309,7 @@ confuiActivate (GApplication *app, gpointer userdata)
   configui_t    *confui = userdata;
   GError        *gerr = NULL;
   GtkWidget     *vbox;
+  GtkWidget     *widget;
   GtkSizeGroup  *sg;
   char          imgbuff [MAXPATHLEN];
   char          tbuff [40];
@@ -347,72 +349,73 @@ confuiActivate (GApplication *app, gpointer userdata)
   sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
   /* general options */
-  confuiMakeItemEntry (confui, vbox, sg, _("Music Directory"), CONFUI_ENTRY_MUSIC_DIR,
-      bdjoptGetStr (OPT_M_DIR_MUSIC));
-  confuiMakeItemEntry (confui, vbox, sg, _("Profile Name"), CONFUI_ENTRY_PROFILE_NAME,
-      bdjoptGetStr (OPT_P_PROFILENAME));
+  widget = confuiMakeItemEntry (confui, vbox, sg, _("Music Directory"),
+      CONFUI_ENTRY_MUSIC_DIR, bdjoptGetStr (OPT_M_DIR_MUSIC));
+  widget = confuiMakeItemEntry (confui, vbox, sg, _("Profile Name"),
+      CONFUI_ENTRY_PROFILE_NAME, bdjoptGetStr (OPT_P_PROFILENAME));
 
   /* database */
-  confuiMakeItem (vbox, sg, _("Write Audio File Tags"));
-  confuiMakeItemSwitch (vbox, sg, _("Database Loads Dance From Genre"),
+  widget = confuiMakeItem (vbox, sg, _("Write Audio File Tags"));
+  widget = confuiMakeItemSwitch (vbox, sg, _("Database Loads Dance From Genre"),
       bdjoptGetNum (OPT_G_LOADDANCEFROMGENRE));
-  confuiMakeItemSwitch (vbox, sg, _("Enable iTunes Support"),
+  widget = confuiMakeItemSwitch (vbox, sg, _("Enable iTunes Support"),
       bdjoptGetNum (OPT_G_ITUNESSUPPORT));
 
   /* bdj4 */
-  confuiMakeItem (vbox, sg, _("Locale"));
-  confuiMakeItemEntry (confui, vbox, sg, _("Startup Script"), CONFUI_ENTRY_STARTUP,
-      bdjoptGetStr (OPT_M_STARTUPSCRIPT));
-  confuiMakeItemEntry (confui, vbox, sg, _("Shutdown Script"), CONFUI_ENTRY_SHUTDOWN,
-      bdjoptGetStr (OPT_M_SHUTDOWNSCRIPT));
+  widget = confuiMakeItem (vbox, sg, _("Locale"));
+  widget = confuiMakeItemEntry (confui, vbox, sg, _("Startup Script"),
+      CONFUI_ENTRY_STARTUP, bdjoptGetStr (OPT_M_STARTUPSCRIPT));
+  widget = confuiMakeItemEntry (confui, vbox, sg, _("Shutdown Script"),
+      CONFUI_ENTRY_SHUTDOWN, bdjoptGetStr (OPT_M_SHUTDOWNSCRIPT));
 
   vbox = confuiMakeNotebookTab (confui->notebook, _("Player Options"));
   sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
   /* player options */
-  confuiMakeItem (vbox, sg, _("Player"));
-  confuiMakeItem (vbox, sg, _("Audio Output"));
-  confuiMakeItemSpinboxInt (vbox, sg, _("Default Volume"), 10, 100,
+  widget = confuiMakeItem (vbox, sg, _("Player"));
+  widget = confuiMakeItem (vbox, sg, _("Audio"));
+  widget = confuiMakeItem (vbox, sg, _("Audio Output"));
+  widget = confuiMakeItemSpinboxInt (vbox, sg, _("Default Volume"), 10, 100,
       bdjoptGetNum (OPT_P_DEFAULTVOLUME));
-  confuiMakeItemSpinboxDouble (vbox, sg, _("Fade In Time"), 0.0, 2.0,
+  widget = confuiMakeItemSpinboxDouble (vbox, sg, _("Fade In Time"), 0.0, 2.0,
       (double) bdjoptGetNum (OPT_P_FADEINTIME) / 1000.0);
-  confuiMakeItemSpinboxDouble (vbox, sg, _("Fade Out Time"), 0.0, 10.0,
+  widget = confuiMakeItemSpinboxDouble (vbox, sg, _("Fade Out Time"), 0.0, 10.0,
       (double) bdjoptGetNum (OPT_P_FADEOUTTIME) / 1000.0);
-  confuiMakeItem (vbox, sg, _("Fade Type"));
-  confuiMakeItemSpinboxDouble (vbox, sg, _("Gap Between Songs"), 0.0, 60.0,
+  widget = confuiMakeItem (vbox, sg, _("Fade Type"));
+  widget = confuiMakeItemSpinboxDouble (vbox, sg, _("Gap Between Songs"), 0.0, 60.0,
       (double) bdjoptGetNum (OPT_P_GAP) / 1000.0);
 // ### as a spin box? gtk has examples.
-  confuiMakeItem (vbox, sg, _("Maximum Play Time"));
-  confuiMakeItemSpinboxInt (vbox, sg, _("Queue Length"), 20, 400,
+  widget = confuiMakeItem (vbox, sg, _("Maximum Play Time"));
+  widget = confuiMakeItemSpinboxInt (vbox, sg, _("Queue Length"), 20, 400,
       bdjoptGetNum (OPT_G_PLAYERQLEN));
 
-  confuiMakeItemEntry (confui, vbox, sg, _("Queue A Name"), CONFUI_ENTRY_QUEUE_NM_A,
-      bdjoptGetStr (OPT_P_QUEUE_NAME_A));
-  confuiMakeItemEntry (confui, vbox, sg, _("Queue B Name"), CONFUI_ENTRY_QUEUE_NM_B,
-      bdjoptGetStr (OPT_P_QUEUE_NAME_B));
+  widget = confuiMakeItemEntry (confui, vbox, sg, _("Queue A Name"),
+      CONFUI_ENTRY_QUEUE_NM_A, bdjoptGetStr (OPT_P_QUEUE_NAME_A));
+  widget = confuiMakeItemEntry (confui, vbox, sg, _("Queue B Name"),
+      CONFUI_ENTRY_QUEUE_NM_B, bdjoptGetStr (OPT_P_QUEUE_NAME_B));
 
   vbox = confuiMakeNotebookTab (confui->notebook, _("Marquee Options"));
   sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
   /* marquee options */
-  confuiMakeItem (vbox, sg, _("Marquee Theme"));
-  confuiMakeItemFontButton (vbox, sg, _("Marquee Font"),
+  widget = confuiMakeItem (vbox, sg, _("Marquee Theme"));
+  widget = confuiMakeItemFontButton (vbox, sg, _("Marquee Font"),
       bdjoptGetStr (OPT_MP_MQFONT));
-  confuiMakeItemSpinboxInt (vbox, sg, _("Queue Length"), 1, 20,
+  widget = confuiMakeItemSpinboxInt (vbox, sg, _("Queue Length"), 1, 20,
       bdjoptGetNum (OPT_P_MQQLEN));
-  confuiMakeItemSwitch (vbox, sg, _("Show Song Information"),
+  widget = confuiMakeItemSwitch (vbox, sg, _("Show Song Information"),
       bdjoptGetNum (OPT_P_MQ_SHOW_INFO));
 
   vbox = confuiMakeNotebookTab (confui->notebook, _("User Interface"));
   sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
   /* user infterface */
-  confuiMakeItem (vbox, sg, _("Theme"));
-  confuiMakeItemFontButton (vbox, sg, _("Font"),
+  widget = confuiMakeItem (vbox, sg, _("Theme"));
+  widget = confuiMakeItemFontButton (vbox, sg, _("Font"),
       bdjoptGetStr (OPT_MP_UIFONT));
-  confuiMakeItemFontButton (vbox, sg, _("Listing Font"),
+  widget = confuiMakeItemFontButton (vbox, sg, _("Listing Font"),
       bdjoptGetStr (OPT_MP_LISTING_FONT));
-  confuiMakeItemColorButton (vbox, sg, _("Accent Color"),
+  widget = confuiMakeItemColorButton (vbox, sg, _("Accent Color"),
       bdjoptGetStr (OPT_P_UI_ACCENT_COL));
 
   vbox = confuiMakeNotebookTab (confui->notebook, _("Organization"));
@@ -437,34 +440,38 @@ confuiActivate (GApplication *app, gpointer userdata)
   sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
   /* mobile remote control */
-  confuiMakeItemSwitch (vbox, sg, _("Enable Remote Control"),
+  widget = confuiMakeItemSwitch (vbox, sg, _("Enable Remote Control"),
       bdjoptGetNum (OPT_P_REMOTECONTROL));
-  confuiMakeItem (vbox, sg, _("HTML Template"));
-  confuiMakeItemEntry (confui, vbox, sg, _("User ID"), CONFUI_ENTRY_RC_USER_ID,
-      bdjoptGetStr (OPT_P_REMCONTROLUSER));
-  confuiMakeItemEntry (confui, vbox, sg, _("Password"), CONFUI_ENTRY_RC_PASS,
-      bdjoptGetStr (OPT_P_REMCONTROLPASS));
+  widget = confuiMakeItem (vbox, sg, _("HTML Template"));
+  widget = confuiMakeItemEntry (confui, vbox, sg, _("User ID"),
+      CONFUI_ENTRY_RC_USER_ID, bdjoptGetStr (OPT_P_REMCONTROLUSER));
+  widget = confuiMakeItemEntry (confui, vbox, sg, _("Password"),
+      CONFUI_ENTRY_RC_PASS, bdjoptGetStr (OPT_P_REMCONTROLPASS));
   snprintf (tbuff, sizeof (tbuff), "%zd", bdjoptGetNum (OPT_P_REMCONTROLPORT));
-  confuiMakeItemEntry (confui, vbox, sg, _("Port Number"), CONFUI_ENTRY_RC_PORT,
-      tbuff);
-  confuiMakeItem (vbox, sg, _("QR Code"));
+  widget = confuiMakeItemEntry (confui, vbox, sg, _("Port Number"),
+      CONFUI_ENTRY_RC_PORT, tbuff);
+  snprintf (tbuff, sizeof (tbuff), "http://%s:%zd",
+      "localhost", bdjoptGetNum (OPT_P_REMCONTROLPORT));
+  widget = confuiMakeItemLink (vbox, sg, _("QR Code"), tbuff);
 
   vbox = confuiMakeNotebookTab (confui->notebook, _("Mobile Marquee"));
   sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
   /* mobile marquee */
-  confuiMakeItemSwitch (vbox, sg, _("Mobile Marquee"),
+  widget = confuiMakeItemSwitch (vbox, sg, _("Mobile Marquee"),
       bdjoptGetNum (OPT_P_MOBILEMARQUEE));
   snprintf (tbuff, sizeof (tbuff), "%zd", bdjoptGetNum (OPT_P_MOBILEMQPORT));
-  confuiMakeItemEntry (confui, vbox, sg, _("Port"), CONFUI_ENTRY_MM_PORT,
-      tbuff);
-  confuiMakeItemEntry (confui, vbox, sg, _("Name"), CONFUI_ENTRY_MM_NAME,
-      bdjoptGetStr (OPT_P_MOBILEMQTAG));
-  confuiMakeItemEntry (confui, vbox, sg, _("Title"), CONFUI_ENTRY_MM_TITLE,
-      bdjoptGetStr (OPT_P_MOBILEMQTITLE));
-  confuiMakeItemColorButton (vbox, sg, _("Accent Color"),
+  widget = confuiMakeItemEntry (confui, vbox, sg, _("Port"),
+      CONFUI_ENTRY_MM_PORT, tbuff);
+  widget = confuiMakeItemEntry (confui, vbox, sg, _("Name"),
+      CONFUI_ENTRY_MM_NAME, bdjoptGetStr (OPT_P_MOBILEMQTAG));
+  widget = confuiMakeItemEntry (confui, vbox, sg, _("Title"),
+      CONFUI_ENTRY_MM_TITLE, bdjoptGetStr (OPT_P_MOBILEMQTITLE));
+  widget = confuiMakeItemColorButton (vbox, sg, _("Accent Color"),
       bdjoptGetStr (OPT_P_MQ_ACCENT_COL));
-  confuiMakeItem (vbox, sg, _("QR Code"));
+  snprintf (tbuff, sizeof (tbuff), "http://%s:%zd",
+      "localhost", bdjoptGetNum (OPT_P_MOBILEMQPORT));
+  widget = confuiMakeItemLink (vbox, sg, _("QR Code"), tbuff);
 
   x = nlistGetNum (confui->options, CONFUI_SIZE_X);
   y = nlistGetNum (confui->options, CONFUI_SIZE_Y);
@@ -640,7 +647,7 @@ confuiMakeItem (GtkWidget *vbox, GtkSizeGroup *sg, char *txt)
 
   hbox = confuiMakeItemLabel (vbox, sg, txt);
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
-  return hbox;
+  return NULL;
 }
 
 static GtkWidget *
@@ -660,7 +667,21 @@ confuiMakeItemEntry (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg,
   } else {
     uiutilsEntrySetValue (&confui->uientry [entryIdx], "");
   }
-  return hbox;
+  return widget;
+}
+
+static GtkWidget *
+confuiMakeItemLink (GtkWidget *vbox, GtkSizeGroup *sg, char *txt, char *disp)
+{
+  GtkWidget   *hbox;
+  GtkWidget   *widget;
+
+  hbox = confuiMakeItemLabel (vbox, sg, txt);
+  widget = gtk_link_button_new (disp);
+  gtk_widget_set_margin_start (widget, 8);
+  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+  return widget;
 }
 
 static GtkWidget *
@@ -680,7 +701,7 @@ confuiMakeItemFontButton (GtkWidget *vbox, GtkSizeGroup *sg,
   gtk_widget_set_margin_start (widget, 8);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
-  return hbox;
+  return widget;
 }
 
 static GtkWidget *
@@ -703,7 +724,7 @@ confuiMakeItemColorButton (GtkWidget *vbox, GtkSizeGroup *sg,
   gtk_widget_set_margin_start (widget, 8);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
-  return hbox;
+  return widget;
 }
 
 static GtkWidget *
@@ -722,7 +743,7 @@ confuiMakeItemSpinboxInt (GtkWidget *vbox, GtkSizeGroup *sg,
   gtk_widget_set_margin_start (widget, 8);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
-  return hbox;
+  return widget;
 }
 
 static GtkWidget *
@@ -741,7 +762,7 @@ confuiMakeItemSpinboxDouble (GtkWidget *vbox, GtkSizeGroup *sg,
   gtk_widget_set_margin_start (widget, 8);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
-  return hbox;
+  return widget;
 }
 
 static GtkWidget *
@@ -757,7 +778,7 @@ confuiMakeItemSwitch (GtkWidget *vbox, GtkSizeGroup *sg, char *txt, int value)
   gtk_widget_set_margin_start (widget, 8);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
-  return hbox;
+  return widget;
 }
 
 static GtkWidget *
