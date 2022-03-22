@@ -78,6 +78,7 @@ enum {
   CONFUI_WIDGET_GAP,
   CONFUI_WIDGET_MAX_PLAY_TIME,
   CONFUI_WIDGET_PL_QUEUE_LEN,
+  CONFUI_WIDGET_MQ_ACCENT_COLOR,
   CONFUI_WIDGET_MQ_FONT,
   CONFUI_WIDGET_MQ_QUEUE_LEN,
   CONFUI_WIDGET_MQ_SHOW_SONG_INFO,
@@ -88,7 +89,6 @@ enum {
   CONFUI_WIDGET_RC_ENABLE,
   CONFUI_WIDGET_RC_QR_CODE,
   CONFUI_WIDGET_MMQ_ENABLE,
-  CONFUI_WIDGET_MMQ_ACCENT_COLOR,
   CONFUI_WIDGET_MMQ_QR_CODE,
   CONFUI_WIDGET_MAX,
 };
@@ -533,6 +533,9 @@ confuiActivate (GApplication *app, gpointer userdata)
   confuiMakeItemSwitch (confui, vbox, sg, CONFUI_WIDGET_MQ_SHOW_SONG_INFO,
       _("Show Song Information"),
       bdjoptGetNum (OPT_P_MQ_SHOW_INFO));
+  confuiMakeItemColorButton (confui, vbox, sg, CONFUI_WIDGET_MQ_ACCENT_COLOR,
+      _("Accent Color"),
+      bdjoptGetStr (OPT_P_MQ_ACCENT_COL));
 
   vbox = confuiMakeNotebookTab (confui->notebook, _("User Interface"));
   sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
@@ -606,9 +609,6 @@ confuiActivate (GApplication *app, gpointer userdata)
       CONFUI_ENTRY_MM_NAME, bdjoptGetStr (OPT_P_MOBILEMQTAG));
   confuiMakeItemEntry (confui, vbox, sg, _("Title"),
       CONFUI_ENTRY_MM_TITLE, bdjoptGetStr (OPT_P_MOBILEMQTITLE));
-  confuiMakeItemColorButton (confui, vbox, sg, CONFUI_WIDGET_MMQ_ACCENT_COLOR,
-      _("Accent Color"),
-      bdjoptGetStr (OPT_P_MQ_ACCENT_COL));
   snprintf (tbuff, sizeof (tbuff), "http://%s:%zd",
       "localhost", bdjoptGetNum (OPT_P_MOBILEMQPORT));
   confuiMakeItemLink (confui, vbox, sg, CONFUI_WIDGET_MMQ_QR_CODE,
