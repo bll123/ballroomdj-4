@@ -263,7 +263,7 @@ dbupdateProcessing (void *udata)
 
     dbupdate->musicdir = bdjoptGetStr (OPT_M_DIR_MUSIC);
     dbupdate->musicdirlen = strlen (dbupdate->musicdir);
-    dbupdate->fileList = filemanipRecursiveDirList (dbupdate->musicdir);
+    dbupdate->fileList = filemanipRecursiveDirList (dbupdate->musicdir, FILEMANIP_FILES);
     dbupdate->fileCount = slistGetCount (dbupdate->fileList);
     mstimeend (&dbupdate->starttm);
     logMsg (LOG_DBG, LOG_IMPORTANT, "read directory %s: %ld ms",

@@ -31,7 +31,7 @@ pathInfo (const char *path)
   pi = malloc (sizeof (pathinfo_t));
   assert (pi != NULL);
 
-  pi->dirname = NULL;
+  pi->dirname = path;
   pi->filename = NULL;
   pi->basename = NULL;
   pi->extension = NULL;
@@ -83,14 +83,16 @@ pathInfo (const char *path)
   if (pos <= 1) {
     ++pi->dlen;
   }
-// fprintf (stderr, "%s : last:%ld pos:%ld\n", path, last, pos);
-// fprintf (stderr, "  flen:%ld blen:%ld elen:%ld ts:%d\n", pi->flen, pi->blen, pi->elen, trailingslash);
-// fprintf (stderr, "  dlen:%ld\n", pi->dlen);
-// fprintf (stderr, "  dir:%s\n", pi->dirname);
-// fprintf (stderr, "  file:%s\n", pi->filename);
-// fprintf (stderr, "  base:%s\n", pi->basename);
-// fprintf (stderr, "  ext:%s\n", pi->extension);
-// fflush (stderr);
+#if 0
+ fprintf (stderr, "%s : last:%ld pos:%ld\n", path, last, pos);
+ fprintf (stderr, "  dlen:%ld\n", pi->dlen);
+ fprintf (stderr, "  flen:%ld blen:%ld elen:%ld ts:%d\n", pi->flen, pi->blen, pi->elen, trailingslash);
+ fprintf (stderr, "  dir:%.*s\n", (int) pi->dlen, pi->dirname);
+ fprintf (stderr, "  file:%.*s\n", (int) pi->flen, pi->filename);
+ fprintf (stderr, "  base:%.*s\n", (int) pi->blen, pi->basename);
+ fprintf (stderr, "  ext:%.*s\n", (int) pi->elen, pi->extension);
+ fflush (stderr);
+#endif
 
   return pi;
 }

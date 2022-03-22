@@ -34,6 +34,8 @@ static ftest_t tests [] = {
   { "/home/bll/stuff.x/", 9, 7, 7, 0 },
   { "bdjconfig.txt.g", 0, 15, 13, 2 },
   { "dances.txt.nl", 0, 13, 10, 3 },
+//   1234567890123456789012345678901234567890
+  { "/usr/share/themes/Adwaita-dark/gtk-3.0", 30, 7, 5, 2 },
   { "/", 1, 1, 1, 0 },
 };
 #define TCOUNT (sizeof(tests)/sizeof (ftest_t))
@@ -44,12 +46,28 @@ START_TEST(pathinfo_chk)
 
   for (size_t i = 0; i < TCOUNT; ++i) {
     pi = pathInfo (tests[i].path);
+    if (pi->dlen > 0) {
+      ck_assert_msg (pi->dirname != NULL,
+          "dirname: %s: i:%zd have: %zd want: %zd", "dlen", i, pi->dlen, tests[i].dlen);
+    }
+    if (pi->flen > 0) {
+      ck_assert_msg (pi->filename != NULL,
+          "filename: %s: i:%zd have: %zd want: %zd", "flen", i, pi->flen, tests[i].flen);
+    }
+    if (pi->blen > 0) {
+      ck_assert_msg (pi->basename != NULL,
+          "basename: %s: i:%zd have: %zd want: %zd", "blen", i, pi->blen, tests[i].blen);
+    }
+    if (pi->elen > 0) {
+      ck_assert_msg (pi->extension != NULL,
+          "extension: %s: i:%zd have: %zd want: %zd", "elen", i, pi->elen, tests[i].elen);
+    }
     ck_assert_msg (pi->dlen == tests[i].dlen,
         "dlen: %s: i:%zd have: %zd want: %zd", "dlen", i, pi->dlen, tests[i].dlen);
-    ck_assert_msg (pi->blen == tests[i].blen,
-        "blen: %s: i:%zd have: %zd want: %zd", "blen", i, pi->blen, tests[i].blen);
     ck_assert_msg (pi->flen == tests[i].flen,
         "flen: %s: i:%zd have: %zd want: %zd", "flen", i, pi->flen, tests[i].flen);
+    ck_assert_msg (pi->blen == tests[i].blen,
+        "blen: %s: i:%zd have: %zd want: %zd", "blen", i, pi->blen, tests[i].blen);
     ck_assert_msg (pi->elen == tests[i].elen,
         "elen: %s: i:%zd have: %zd want: %zd", "elen", i, pi->elen, tests[i].elen);
     pathInfoFree (pi);

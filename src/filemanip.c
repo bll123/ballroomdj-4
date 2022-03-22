@@ -115,6 +115,10 @@ filemanipBasicDirList (char *dirname, char *extension)
   GError        *gerr = NULL;
 
 
+  if (! fileopIsDirectory (dirname)) {
+    return NULL;
+  }
+
   snprintf (temp, sizeof (temp), "basic-dir-%s", dirname);
   if (extension != NULL) {
     strlcat (temp, "-", sizeof (temp));
@@ -154,7 +158,7 @@ filemanipBasicDirList (char *dirname, char *extension)
 }
 
 slist_t *
-filemanipRecursiveDirList (char *dirname)
+filemanipRecursiveDirList (char *dirname, int flags)
 {
   dirhandle_t   *dh;
   char          *fname;
@@ -166,6 +170,10 @@ filemanipRecursiveDirList (char *dirname)
   size_t        dirnamelen;
   gsize         bread, bwrite;
   GError        *gerr = NULL;
+
+  if (! fileopIsDirectory (dirname)) {
+    return NULL;
+  }
 
   dirnamelen = strlen (dirname);
   snprintf (temp, sizeof (temp), "rec-dir-%s", dirname);
@@ -193,9 +201,15 @@ filemanipRecursiveDirList (char *dirname)
       if (cvtname != NULL) {
         if (fileopIsDirectory (temp)) {
           queuePush (dirQueue, strdup (temp));
+          if ((flags & FILEMANIP_DIRS) == FILEMANIP_DIRS) {
+            p = temp + dirnamelen + 1;
+            slistSetStr (fileList, temp, p);
+          }
         } else {
-          p = temp + dirnamelen + 1;
-          slistSetStr (fileList, temp, p);
+          if ((flags & FILEMANIP_FILES) == FILEMANIP_FILES) {
+            p = temp + dirnamelen + 1;
+            slistSetStr (fileList, temp, p);
+          }
         }
       }
       free (cvtname);

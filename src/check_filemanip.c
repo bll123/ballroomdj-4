@@ -158,7 +158,7 @@ START_TEST(filemanip_recursive_dirlist)
   fh = fopen (fcfn, "w");
   fclose (fh);
 
-  slist = filemanipRecursiveDirList (dafn);
+  slist = filemanipRecursiveDirList (dafn, FILEMANIP_FILES);
 
   ck_assert_int_eq (slistGetCount (slist), 3);
   /* the list is unordered; for checks, sort it */

@@ -22,14 +22,18 @@
 #include "bdjvarsdfload.h"
 #include "conn.h"
 #include "datafile.h"
+#include "fileop.h"
+#include "filemanip.h"
 #include "localeutil.h"
 #include "lock.h"
 #include "log.h"
 #include "nlist.h"
 #include "osuiutils.h"
 #include "pathbld.h"
+#include "pathutil.h"
 #include "procutil.h"
 #include "progstate.h"
+#include "slist.h"
 #include "sock.h"
 #include "sockh.h"
 #include "sysvars.h"
@@ -80,6 +84,7 @@ enum {
   CONFUI_WIDGET_UI_FONT,
   CONFUI_WIDGET_UI_LISTING_FONT,
   CONFUI_WIDGET_UI_ACCENT_COLOR,
+  CONFUI_WIDGET_UI_BACKGROUND_COLOR,
   CONFUI_WIDGET_RC_ENABLE,
   CONFUI_WIDGET_RC_QR_CODE,
   CONFUI_WIDGET_MMQ_ENABLE,
@@ -148,12 +153,14 @@ static void confuiMakeItemEntry (configui_t *confui, GtkWidget *vbox, GtkSizeGro
 static void confuiMakeItemLink (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, int widx, char *txt, char *disp);
 static void confuiMakeItemFontButton (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, int widx, char *txt, char *fontname);
 static void confuiMakeItemColorButton (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, int widx, char *txt, char *color);
-static void confuiMakeItemSpinboxText (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, int sbidx, char *txt, char *value);
+static void confuiMakeItemSpinboxText (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, int sbidx, char *txt, ssize_t value);
 static void confuiMakeItemSpinboxInt (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, int widx, char *txt, int min, int max, int value);
 static void confuiMakeItemSpinboxDouble (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, int widx, char *txt, double min, double max, double value);
 static void confuiMakeItemSwitch (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, int widx, char *txt, int value);
 static GtkWidget * confuiMakeItemLabel (GtkWidget *vbox, GtkSizeGroup *sg, char *txt);
 
+static nlist_t * confuiGetThemeList (void);
+static nlist_t * confuiGetThemeNames (nlist_t *themelist, slist_t *filelist);
 
 static int gKillReceived = 0;
 static int gdone = 0;
@@ -193,11 +200,23 @@ main (int argc, char *argv[])
     confui.uiwidgets [i] = NULL;
   }
 
-  tlist = nlistAlloc ("cu-aftags", LIST_UNORDERED, free);
+  tlist = nlistAlloc ("cu-writetags", LIST_UNORDERED, free);
   nlistSetStr (tlist, WRITE_TAGS_ALL, _("All Tags"));
   nlistSetStr (tlist, WRITE_TAGS_BDJ_ONLY, _("BDJ Tags Only"));
   nlistSetStr (tlist, WRITE_TAGS_NONE, _("Don't Write"));
   confui.uilists [CONFUI_SPINBOX_WRITE_AUDIO_FILE_TAGS] = tlist;
+
+  tlist = nlistAlloc ("cu-fadetype", LIST_UNORDERED, free);
+  nlistSetStr (tlist, FADETYPE_TRIANGLE, _("Triangle"));
+  nlistSetStr (tlist, FADETYPE_QUARTER_SINE, _("Quarter Sine Wave"));
+  nlistSetStr (tlist, FADETYPE_HALF_SINE, _("Half Sine Wave"));
+  nlistSetStr (tlist, FADETYPE_LOGARITHMIC, _("Logarithmic"));
+  nlistSetStr (tlist, FADETYPE_INVERTED_PARABOLA, _("Inverted Parabola"));
+  confui.uilists [CONFUI_SPINBOX_FADE_TYPE] = tlist;
+
+  tlist = nlistAlloc ("cu-player", LIST_UNORDERED, free);
+  nlistSetStr (tlist, 0, _("Integrated VLC"));
+  confui.uilists [CONFUI_SPINBOX_PLAYER] = tlist;
 
   uiutilsEntryInit (&confui.uientry [CONFUI_ENTRY_MUSIC_DIR], 50, 100);
   uiutilsEntryInit (&confui.uientry [CONFUI_ENTRY_PROFILE_NAME], 20, 30);
@@ -224,6 +243,10 @@ main (int argc, char *argv[])
   confui.dbgflags = bdj4startup (argc, argv, "cu", ROUTE_CONFIGUI, BDJ4_INIT_NONE);
   localeInit ();
   logProcBegin (LOG_PROC, "configui");
+
+  tlist = confuiGetThemeList ();
+  confui.uilists [CONFUI_SPINBOX_UI_THEME] = tlist;
+  confui.uilists [CONFUI_SPINBOX_MQ_THEME] = tlist;
 
   listenPort = bdjvarsGetNum (BDJVL_CONFIGUI_PORT);
   confui.conn = connInit (ROUTE_CONFIGUI);
@@ -422,7 +445,7 @@ confuiActivate (GApplication *app, gpointer userdata)
 
   /* database */
   confuiMakeItemSpinboxText (confui, vbox, sg, CONFUI_SPINBOX_WRITE_AUDIO_FILE_TAGS,
-      _("Write Audio File Tags"), bdjoptGetStr (OPT_G_WRITETAGS));
+      _("Write Audio File Tags"), bdjoptGetNum (OPT_G_WRITETAGS));
   confuiMakeItemSwitch (confui, vbox, sg, CONFUI_WIDGET_DB_LOAD_FROM_GENRE,
       _("Database Loads Dance From Genre"),
       bdjoptGetNum (OPT_G_LOADDANCEFROMGENRE));
@@ -432,7 +455,7 @@ confuiActivate (GApplication *app, gpointer userdata)
 
   /* bdj4 */
   confuiMakeItemSpinboxText (confui, vbox, sg, CONFUI_SPINBOX_LOCALE,
-      _("Locale"), NULL);
+      _("Locale"), 0);
   confuiMakeItemEntry (confui, vbox, sg, _("Startup Script"),
       CONFUI_ENTRY_STARTUP, bdjoptGetStr (OPT_M_STARTUPSCRIPT));
   confuiMakeItemEntry (confui, vbox, sg, _("Shutdown Script"),
@@ -443,11 +466,11 @@ confuiActivate (GApplication *app, gpointer userdata)
 
   /* player options */
   confuiMakeItemSpinboxText (confui, vbox, sg, CONFUI_SPINBOX_PLAYER,
-      _("Player"), NULL);
+      _("Player"), 0);
   confuiMakeItemSpinboxText (confui, vbox, sg, CONFUI_SPINBOX_AUDIO,
-      _("Audio"), NULL);
+      _("Audio"), 0);
   confuiMakeItemSpinboxText (confui, vbox, sg, CONFUI_SPINBOX_AUDIO_OUTPUT,
-      _("Audio Output"), NULL);
+      _("Audio Output"), 0);
   confuiMakeItemSpinboxInt (confui, vbox, sg, CONFUI_WIDGET_DEFAULT_VOL,
       _("Default Volume"), 10, 100,
       bdjoptGetNum (OPT_P_DEFAULTVOLUME));
@@ -458,7 +481,7 @@ confuiActivate (GApplication *app, gpointer userdata)
       _("Fade Out Time"), 0.0, 10.0,
       (double) bdjoptGetNum (OPT_P_FADEOUTTIME) / 1000.0);
   confuiMakeItemSpinboxText (confui, vbox, sg, CONFUI_SPINBOX_FADE_TYPE,
-      _("Fade Type"), NULL);
+      _("Fade Type"), bdjoptGetNum (OPT_P_FADETYPE));
   confuiMakeItemSpinboxDouble (confui, vbox, sg, CONFUI_WIDGET_GAP,
       _("Gap Between Songs"), 0.0, 60.0,
       (double) bdjoptGetNum (OPT_P_GAP) / 1000.0);
@@ -479,7 +502,7 @@ confuiActivate (GApplication *app, gpointer userdata)
 
   /* marquee options */
   confuiMakeItemSpinboxText (confui, vbox, sg, CONFUI_SPINBOX_MQ_THEME,
-      _("Marquee Theme"), NULL);
+      _("Marquee Theme"), 0);
   confuiMakeItemFontButton (confui, vbox, sg, CONFUI_WIDGET_MQ_FONT,
       _("Marquee Font"),
       bdjoptGetStr (OPT_MP_MQFONT));
@@ -495,7 +518,7 @@ confuiActivate (GApplication *app, gpointer userdata)
 
   /* user infterface */
   confuiMakeItemSpinboxText (confui, vbox, sg, CONFUI_SPINBOX_UI_THEME,
-      _("Theme"), NULL);
+      _("Theme"), 0);
   confuiMakeItemFontButton (confui, vbox, sg, CONFUI_WIDGET_UI_FONT,
       _("Font"),
       bdjoptGetStr (OPT_MP_UIFONT));
@@ -505,6 +528,9 @@ confuiActivate (GApplication *app, gpointer userdata)
   confuiMakeItemColorButton (confui, vbox, sg, CONFUI_WIDGET_UI_ACCENT_COLOR,
       _("Accent Color"),
       bdjoptGetStr (OPT_P_UI_ACCENT_COL));
+  confuiMakeItemColorButton (confui, vbox, sg, CONFUI_WIDGET_UI_BACKGROUND_COLOR,
+      _("Background Color"),
+      bdjoptGetStr (OPT_P_UI_BACKGROUND_COL));
 
   vbox = confuiMakeNotebookTab (confui->notebook, _("Organization"));
   sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
@@ -532,7 +558,7 @@ confuiActivate (GApplication *app, gpointer userdata)
       _("Enable Remote Control"),
       bdjoptGetNum (OPT_P_REMOTECONTROL));
   confuiMakeItemSpinboxText (confui, vbox, sg, CONFUI_SPINBOX_RC_HTML_TEMPLATE,
-      _("HTML Template"), NULL);
+      _("HTML Template"), 0);
   confuiMakeItemEntry (confui, vbox, sg, _("User ID"),
       CONFUI_ENTRY_RC_USER_ID, bdjoptGetStr (OPT_P_REMCONTROLUSER));
   confuiMakeItemEntry (confui, vbox, sg, _("Password"),
@@ -824,7 +850,7 @@ confuiMakeItemColorButton (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg
 
 static void
 confuiMakeItemSpinboxText (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg,
-    int sbidx, char *txt, char *value)
+    int sbidx, char *txt, ssize_t value)
 {
   GtkWidget   *hbox;
   GtkWidget   *widget;
@@ -851,8 +877,7 @@ confuiMakeItemSpinboxText (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg
 
   uiutilsSpinboxTextSet (&confui->uispinbox [sbidx], 0,
       nlistGetCount (list), maxWidth, list, NULL);
-// ### fix
-  uiutilsSpinboxTextSetValue (&confui->uispinbox [sbidx], 0);
+  uiutilsSpinboxTextSetValue (&confui->uispinbox [sbidx], value);
   gtk_widget_set_margin_top (widget, 2);
   gtk_widget_set_margin_start (widget, 8);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
@@ -928,3 +953,66 @@ confuiMakeItemLabel (GtkWidget *vbox, GtkSizeGroup *sg, char *txt)
   return hbox;
 }
 
+static nlist_t *
+confuiGetThemeList (void)
+{
+  slist_t     *filelist = NULL;
+  nlist_t     *themelist = NULL;
+  char        tbuff [MAXPATHLEN];
+
+  themelist = nlistAlloc ("cu-themes", LIST_ORDERED, free);
+
+  if (isWindows ()) {
+    snprintf (tbuff, sizeof (tbuff), "%s/plocal/share/themes",
+        sysvarsGetStr (SV_BDJ4MAINDIR));
+    filelist = filemanipRecursiveDirList (tbuff, FILEMANIP_DIRS);
+    confuiGetThemeNames (themelist, filelist);
+    slistFree (filelist);
+  } else {
+    filelist = filemanipRecursiveDirList ("/usr/share/themes", FILEMANIP_DIRS);
+    confuiGetThemeNames (themelist, filelist);
+    slistFree (filelist);
+
+    snprintf (tbuff, sizeof (tbuff), "%s/.themes", sysvarsGetStr (SV_HOME));
+    filelist = filemanipRecursiveDirList (tbuff, FILEMANIP_DIRS);
+    confuiGetThemeNames (themelist, filelist);
+    slistFree (filelist);
+  }
+
+  return themelist;
+}
+
+static nlist_t *
+confuiGetThemeNames (nlist_t *themelist, slist_t *filelist)
+{
+  slistidx_t    iteridx;
+  char          *fn;
+  pathinfo_t    *pi;
+  static char   *srchdir = "gtk-3.0";
+  char          tbuff [MAXPATHLEN];
+  char          tmp [MAXPATHLEN];
+  int           count;
+
+  if (filelist == NULL) {
+    return NULL;
+  }
+
+  count = nlistGetCount (themelist);
+
+  while ((fn = slistIterateKey (filelist, &iteridx)) != NULL) {
+    if (fileopIsDirectory (fn)) {
+      pi = pathInfo (fn);
+      if (pi->flen == strlen (srchdir) &&
+          strncmp (pi->filename, srchdir, strlen (srchdir)) == 0) {
+        strlcpy (tbuff, pi->dirname, pi->dlen + 1);
+        pathInfoFree (pi);
+        pi = pathInfo (tbuff);
+        strlcpy (tmp, pi->filename, pi->flen + 1);
+        nlistSetStr (themelist, count++, tmp);
+      }
+      pathInfoFree (pi);
+    } /* is directory */
+  } /* for each file */
+
+  return themelist;
+}

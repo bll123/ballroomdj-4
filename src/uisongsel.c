@@ -868,7 +868,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
 
   widget = uiutilsSpinboxTextCreate (&uisongsel->filterfavoritesel, uisongsel);
   uiutilsSpinboxTextSet (&uisongsel->filterfavoritesel, 0,
-      SONG_FAVORITE_MAX, 3, NULL, uisongselFavoriteGet);
+      SONG_FAVORITE_MAX, 1, NULL, uisongselFavoriteGet);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 
   /* the dialog doesn't have any space above the buttons */

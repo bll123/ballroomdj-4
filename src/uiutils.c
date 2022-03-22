@@ -626,7 +626,8 @@ uiutilsSpinboxTextSet (uiutilsspinbox_t *spinbox, int min, int count,
   /* will width in characters be enough for some glyphs? */
   /* certainly not if languages are mixed */
   spinbox->maxWidth = maxWidth;
-  gtk_entry_set_width_chars (GTK_ENTRY (spinbox->spinbox), spinbox->maxWidth);
+  gtk_entry_set_width_chars (GTK_ENTRY (spinbox->spinbox), spinbox->maxWidth + 2);
+  gtk_entry_set_max_width_chars (GTK_ENTRY (spinbox->spinbox), spinbox->maxWidth + 2);
   spinbox->list = list;
   spinbox->textGetProc = textGetProc;
   logProcEnd (LOG_PROC, "uiutilsSpinboxTextSet", "");

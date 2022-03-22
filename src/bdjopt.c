@@ -77,6 +77,7 @@ datafilekey_t bdjoptprofiledfkeys[] = {
   { "REMCONTROLUSER",       OPT_P_REMCONTROLUSER,       VALUE_STR, NULL, -1 },
   { "REMOTECONTROL",        OPT_P_REMOTECONTROL,        VALUE_NUM, parseConvBoolean, -1 },
   { "UI_ACCENT_COL",        OPT_P_UI_ACCENT_COL,        VALUE_STR, NULL, -1 },
+  { "UI_BACKGROUND_COL",    OPT_P_UI_BACKGROUND_COL,    VALUE_STR, NULL, -1 },
 };
 int            bdjoptprofiledfcount;
 #define BDJOPT_PROFILE_DFKEY_COUNT (sizeof (bdjoptprofiledfkeys) / sizeof (datafilekey_t))
