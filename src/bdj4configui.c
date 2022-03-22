@@ -105,6 +105,8 @@ typedef struct {
   uiutilsentry_t    uientry [CONFUI_ENTRY_MAX];
   uiutilsspinbox_t  uispinbox [CONFUI_SPINBOX_MAX];
   nlist_t           * uilists [CONFUI_SPINBOX_MAX];
+  int               uithemeidx;
+  int               mqthemeidx;
   /* gtk stuff */
   GtkApplication    *app;
   GtkWidget         *window;
@@ -174,6 +176,9 @@ main (int argc, char *argv[])
   char            *uifont;
   char            tbuff [MAXPATHLEN];
   nlist_t         *tlist;
+  nlistidx_t      iteridx;
+  int             count;
+  char            *p;
 
 
   confui.notebook = NULL;
@@ -186,6 +191,8 @@ main (int argc, char *argv[])
       confuiHandshakeCallback, &confui);
   confui.sockserver = NULL;
   confui.window = NULL;
+  confui.uithemeidx = 0;
+  confui.mqthemeidx = 0;
 
   for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
     confui.processes [i] = NULL;
@@ -216,6 +223,7 @@ main (int argc, char *argv[])
 
   tlist = nlistAlloc ("cu-player", LIST_UNORDERED, free);
   nlistSetStr (tlist, 0, _("Integrated VLC"));
+  nlistSetStr (tlist, 1, _("Null Player"));
   confui.uilists [CONFUI_SPINBOX_PLAYER] = tlist;
 
   uiutilsEntryInit (&confui.uientry [CONFUI_ENTRY_MUSIC_DIR], 50, 100);
@@ -245,6 +253,17 @@ main (int argc, char *argv[])
   logProcBegin (LOG_PROC, "configui");
 
   tlist = confuiGetThemeList ();
+  nlistStartIterator (tlist, &iteridx);
+  count = 0;
+  while ((p = nlistIterateValueData (tlist, &iteridx)) != NULL) {
+    if (strcmp (p, bdjoptGetStr (OPT_MP_MQ_THEME)) == 0) {
+      confui.mqthemeidx = count;
+    }
+    if (strcmp (p, bdjoptGetStr (OPT_MP_UI_THEME)) == 0) {
+      confui.uithemeidx = count;
+    }
+    ++count;
+  }
   confui.uilists [CONFUI_SPINBOX_UI_THEME] = tlist;
   confui.uilists [CONFUI_SPINBOX_MQ_THEME] = tlist;
 
@@ -338,9 +357,11 @@ confuiClosingCallback (void *udata, programstate_t programState)
 
   for (int i = 0; i < CONFUI_SPINBOX_MAX; ++i) {
     uiutilsSpinboxTextFree (&confui->uispinbox [i]);
-    if (confui->uilists [i] != NULL) {
+    /* the mq and ui theme share a list */
+    if (i != CONFUI_SPINBOX_UI_THEME && confui->uilists [i] != NULL) {
       nlistFree (confui->uilists [i]);
     }
+    confui->uilists [i] = NULL;
   }
 
   for (int i = 0; i < CONFUI_ENTRY_MAX; ++i) {
@@ -502,7 +523,7 @@ confuiActivate (GApplication *app, gpointer userdata)
 
   /* marquee options */
   confuiMakeItemSpinboxText (confui, vbox, sg, CONFUI_SPINBOX_MQ_THEME,
-      _("Marquee Theme"), 0);
+      _("Marquee Theme"), confui->mqthemeidx);
   confuiMakeItemFontButton (confui, vbox, sg, CONFUI_WIDGET_MQ_FONT,
       _("Marquee Font"),
       bdjoptGetStr (OPT_MP_MQFONT));
@@ -518,7 +539,7 @@ confuiActivate (GApplication *app, gpointer userdata)
 
   /* user infterface */
   confuiMakeItemSpinboxText (confui, vbox, sg, CONFUI_SPINBOX_UI_THEME,
-      _("Theme"), 0);
+      _("Theme"), confui->uithemeidx);
   confuiMakeItemFontButton (confui, vbox, sg, CONFUI_WIDGET_UI_FONT,
       _("Font"),
       bdjoptGetStr (OPT_MP_UIFONT));
