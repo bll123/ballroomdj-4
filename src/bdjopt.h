@@ -4,9 +4,9 @@
 #include "datafile.h"
 
 typedef enum {
-  WRITE_TAGS_NONE,
-  WRITE_TAGS_BDJ_ONLY,
   WRITE_TAGS_ALL,
+  WRITE_TAGS_BDJ_ONLY,
+  WRITE_TAGS_NONE,
 } bdjwritetags_t;
 
 typedef enum {

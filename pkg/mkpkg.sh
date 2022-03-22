@@ -163,6 +163,8 @@ if [[ $tag == linux ]]; then
   (cd src/po; ./install.sh)
 fi
 
+./utils/makehtmllist.sh
+
 # on windows, copy all of the required .dll files to plocal/bin
 # this must be done after the build and before the manifest is created.
 
@@ -203,11 +205,14 @@ if [[ $platform == windows ]]; then
   mkdir -p plocal/etc/gtk-3.0
   cp -f /mingw64/etc/gtk-3.0/im-multipress.conf plocal/etc/gtk-3.0
 
-  # leave this here for the time being until UITHEME is implemented
   cat > plocal/etc/gtk-3.0/settings.ini <<_HERE_
 [Settings]
-gtk-xft-antialias = 1
+gtk-xft-antialias=1
+gtk-xft-hinting=1
+gtk-xft-hintstyle=hintfull
 gtk-enable-animations = 0
+gtk-dialogs-use-header = 0
+gtk-overlay-scrolling = 0
 gtk-icon-theme-name = Adwaita
 gtk-theme-name = Windows-10-Dark
 _HERE_

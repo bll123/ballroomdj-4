@@ -431,16 +431,7 @@ uisongselPopulateData (uisongsel_t *uisongsel)
         favorite = songGetFavoriteData (song);
         color = favorite->color;
         if (strcmp (color, "") == 0) {
-          GtkStyleContext   * context;
-          GdkRGBA           gcolor;
-
-          context = gtk_widget_get_style_context (uisongsel->songselTree);
-          gtk_style_context_get_color (context, GTK_STATE_FLAG_NORMAL, &gcolor);
-          color = gdk_rgba_to_string (&gcolor);
-          snprintf (tmp, sizeof (tmp), "#%02x%02x%02x",
-              (int) round (gcolor.red * 255.0),
-              (int) round (gcolor.green * 255.0),
-              (int) round (gcolor.blue * 255.0));
+          uiutilsGetForegroundColor (uisongsel->songselTree, tmp, sizeof (tmp));
           color = tmp;
         }
         gtk_list_store_set (GTK_LIST_STORE (model), &iter,
@@ -1035,6 +1026,7 @@ uisongselFavoriteGet (void *udata, int idx)
 {
   uisongsel_t         *uisongsel = udata;
   char                tbuff [100];
+  char                tmp [40];
   songfavoriteinfo_t  *favorite;
 
   logProcBegin (LOG_PROC, "uisongselFavoriteGet");
@@ -1045,10 +1037,9 @@ uisongselFavoriteGet (void *udata, int idx)
         "spinbutton { color: %s; } ", favorite->color);
     uiutilsSetCss (uisongsel->filterfavoritesel.spinbox, tbuff);
   } else {
-    /* how to remove css??? */
-    /* this will not work for light colored themes */
+    uiutilsGetForegroundColor (uisongsel->songselTree, tmp, sizeof (tmp));
     snprintf (tbuff, sizeof (tbuff),
-        "spinbutton { color: white; } ");
+        "spinbutton { color: %s; } ", tmp);
     uiutilsSetCss (uisongsel->filterfavoritesel.spinbox, tbuff);
   }
   logProcEnd (LOG_PROC, "uisongselFavoriteGet", "");

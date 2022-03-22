@@ -89,6 +89,12 @@ void uiutilsSpinboxTextSet (uiutilsspinbox_t *spinbox, int min, int count,
 int   uiutilsSpinboxTextGetValue (uiutilsspinbox_t *spinbox);
 void  uiutilsSpinboxTextSetValue (uiutilsspinbox_t *spinbox, int ivalue);
 
+void  uiutilsSpinboxTimeInit (uiutilsspinbox_t *spinbox);
+void  uiutilsSpinboxTimeFree (uiutilsspinbox_t *spinbox);
+GtkWidget * uiutilsSpinboxTimeCreate (uiutilsspinbox_t *spinbox, void *udata);
+ssize_t uiutilsSpinboxTimeGetValue (uiutilsspinbox_t *spinbox);
+void  uiutilsSpinboxTimeSetValue (uiutilsspinbox_t *spinbox, ssize_t value);
+
 GtkWidget * uiutilsSpinboxIntCreate (void);
 GtkWidget * uiutilsSpinboxDoubleCreate (void);
 
@@ -96,6 +102,7 @@ void  uiutilsSpinboxSet (GtkWidget *spinbox, double min, double max);
 int   uiutilsSpinboxGetValue (GtkWidget *spinbox);
 void  uiutilsSpinboxSetValue (GtkWidget *spinbox, double ivalue);
 
-void uiutilsCreateDanceList (uiutilsdropdown_t *dancesel, char *selectLabel);
+void  uiutilsCreateDanceList (uiutilsdropdown_t *dancesel, char *selectLabel);
+void  uiutilsGetForegroundColor (GtkWidget *widget, char *buff, size_t sz);
 
 #endif /* INC_UIUTILS_H */

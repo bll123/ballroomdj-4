@@ -66,6 +66,7 @@ enum {
   CONFUI_SPINBOX_MQ_THEME,
   CONFUI_SPINBOX_UI_THEME,
   CONFUI_SPINBOX_RC_HTML_TEMPLATE,
+  CONFUI_SPINBOX_MAX_PLAY_TIME,
   CONFUI_SPINBOX_MAX,
 };
 
@@ -76,7 +77,6 @@ enum {
   CONFUI_WIDGET_FADE_IN_TIME,
   CONFUI_WIDGET_FADE_OUT_TIME,
   CONFUI_WIDGET_GAP,
-  CONFUI_WIDGET_MAX_PLAY_TIME,
   CONFUI_WIDGET_PL_QUEUE_LEN,
   CONFUI_WIDGET_MQ_ACCENT_COLOR,
   CONFUI_WIDGET_MQ_FONT,
@@ -85,7 +85,6 @@ enum {
   CONFUI_WIDGET_UI_FONT,
   CONFUI_WIDGET_UI_LISTING_FONT,
   CONFUI_WIDGET_UI_ACCENT_COLOR,
-  CONFUI_WIDGET_UI_BACKGROUND_COLOR,
   CONFUI_WIDGET_RC_ENABLE,
   CONFUI_WIDGET_RC_QR_CODE,
   CONFUI_WIDGET_MMQ_ENABLE,
@@ -105,8 +104,10 @@ typedef struct {
   uiutilsentry_t    uientry [CONFUI_ENTRY_MAX];
   uiutilsspinbox_t  uispinbox [CONFUI_SPINBOX_MAX];
   nlist_t           * uilists [CONFUI_SPINBOX_MAX];
+  nlist_t           * lookuplists [CONFUI_SPINBOX_MAX];
   int               uithemeidx;
   int               mqthemeidx;
+  int               rchtmlidx;
   /* gtk stuff */
   GtkApplication    *app;
   GtkWidget         *window;
@@ -149,13 +150,13 @@ static gboolean confuiCloseWin (GtkWidget *window, GdkEvent *event, gpointer use
 static void     confuiSigHandler (int sig);
 
 static GtkWidget * confuiMakeNotebookTab (GtkWidget *notebook, char *txt);
-// confuiMakeItem is temporary until all items have a proc
-static void confuiMakeItem (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, int widx, char *txt);
-static void confuiMakeItemEntry (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, char *txt, int entryIdx, char *disp);
+static GtkWidget * confuiMakeItemEntry (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, char *txt, int entryIdx, char *disp);
+static void confuiMakeItemEntryChooser (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, char *txt, int entryIdx, char *disp);
 static void confuiMakeItemLink (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, int widx, char *txt, char *disp);
 static void confuiMakeItemFontButton (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, int widx, char *txt, char *fontname);
 static void confuiMakeItemColorButton (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, int widx, char *txt, char *color);
 static void confuiMakeItemSpinboxText (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, int sbidx, char *txt, ssize_t value);
+static void confuiMakeItemSpinboxTime (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, int sbidx, char *txt, ssize_t value);
 static void confuiMakeItemSpinboxInt (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, int widx, char *txt, int min, int max, int value);
 static void confuiMakeItemSpinboxDouble (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, int widx, char *txt, double min, double max, double value);
 static void confuiMakeItemSwitch (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, int widx, char *txt, int value);
@@ -163,6 +164,7 @@ static GtkWidget * confuiMakeItemLabel (GtkWidget *vbox, GtkSizeGroup *sg, char 
 
 static nlist_t * confuiGetThemeList (void);
 static nlist_t * confuiGetThemeNames (nlist_t *themelist, slist_t *filelist);
+static void    confuiLoadHTMLList (configui_t *confui);
 
 static int gKillReceived = 0;
 static int gdone = 0;
@@ -176,6 +178,7 @@ main (int argc, char *argv[])
   char            *uifont;
   char            tbuff [MAXPATHLEN];
   nlist_t         *tlist;
+  nlist_t         *llist;
   nlistidx_t      iteridx;
   int             count;
   char            *p;
@@ -193,6 +196,7 @@ main (int argc, char *argv[])
   confui.window = NULL;
   confui.uithemeidx = 0;
   confui.mqthemeidx = 0;
+  confui.rchtmlidx = 0;
 
   for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
     confui.processes [i] = NULL;
@@ -200,6 +204,7 @@ main (int argc, char *argv[])
 
   for (int i = 0; i < CONFUI_SPINBOX_MAX; ++i) {
     confui.uilists [i] = NULL;
+    confui.lookuplists [i] = NULL;
     uiutilsSpinboxTextInit (&confui.uispinbox [i]);
   }
 
@@ -208,6 +213,7 @@ main (int argc, char *argv[])
   }
 
   tlist = nlistAlloc ("cu-writetags", LIST_UNORDERED, free);
+  llist = nlistAlloc ("cu-writetags-l", LIST_ORDERED, free);
   nlistSetStr (tlist, WRITE_TAGS_ALL, _("All Tags"));
   nlistSetStr (tlist, WRITE_TAGS_BDJ_ONLY, _("BDJ Tags Only"));
   nlistSetStr (tlist, WRITE_TAGS_NONE, _("Don't Write"));
@@ -251,6 +257,35 @@ main (int argc, char *argv[])
   confui.dbgflags = bdj4startup (argc, argv, "cu", ROUTE_CONFIGUI, BDJ4_INIT_NONE);
   localeInit ();
   logProcBegin (LOG_PROC, "configui");
+
+  tlist = nlistAlloc ("cu-audio", LIST_UNORDERED, free);
+  llist = nlistAlloc ("cu-audio-l", LIST_ORDERED, free);
+  count = 0;
+  if (isWindows ()) {
+    nlistSetStr (tlist, count, "Windows");
+    nlistSetStr (llist, count, "volwin");
+    ++count;
+  }
+  if (isMacOS ()) {
+    nlistSetStr (tlist, count, "MacOS");
+    nlistSetStr (llist, count, "volmac");
+    ++count;
+  }
+  if (isLinux ()) {
+    nlistSetStr (tlist, count, "Pulse Audio");
+    nlistSetStr (llist, count, "volpa");
+    ++count;
+    nlistSetStr (tlist, count, "ALSA");
+    nlistSetStr (llist, count, "volalsa");
+    ++count;
+  }
+  nlistSetStr (tlist, count++, _("Null Audio"));
+  nlistSetStr (llist, count, "volnull");
+  ++count;
+  confui.uilists [CONFUI_SPINBOX_AUDIO] = tlist;
+  confui.lookuplists [CONFUI_SPINBOX_AUDIO] = llist;
+
+  confuiLoadHTMLList (&confui);
 
   tlist = confuiGetThemeList ();
   nlistStartIterator (tlist, &iteridx);
@@ -361,6 +396,9 @@ confuiClosingCallback (void *udata, programstate_t programState)
     if (i != CONFUI_SPINBOX_UI_THEME && confui->uilists [i] != NULL) {
       nlistFree (confui->uilists [i]);
     }
+    if (i != CONFUI_SPINBOX_UI_THEME && confui->lookuplists [i] != NULL) {
+      nlistFree (confui->lookuplists [i]);
+    }
     confui->uilists [i] = NULL;
   }
 
@@ -459,7 +497,7 @@ confuiActivate (GApplication *app, gpointer userdata)
   sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
   /* general options */
-  confuiMakeItemEntry (confui, vbox, sg, _("Music Directory"),
+  confuiMakeItemEntryChooser (confui, vbox, sg, _("Music Directory"),
       CONFUI_ENTRY_MUSIC_DIR, bdjoptGetStr (OPT_M_DIR_MUSIC));
   confuiMakeItemEntry (confui, vbox, sg, _("Profile Name"),
       CONFUI_ENTRY_PROFILE_NAME, bdjoptGetStr (OPT_P_PROFILENAME));
@@ -477,9 +515,9 @@ confuiActivate (GApplication *app, gpointer userdata)
   /* bdj4 */
   confuiMakeItemSpinboxText (confui, vbox, sg, CONFUI_SPINBOX_LOCALE,
       _("Locale"), 0);
-  confuiMakeItemEntry (confui, vbox, sg, _("Startup Script"),
+  confuiMakeItemEntryChooser (confui, vbox, sg, _("Startup Script"),
       CONFUI_ENTRY_STARTUP, bdjoptGetStr (OPT_M_STARTUPSCRIPT));
-  confuiMakeItemEntry (confui, vbox, sg, _("Shutdown Script"),
+  confuiMakeItemEntryChooser (confui, vbox, sg, _("Shutdown Script"),
       CONFUI_ENTRY_SHUTDOWN, bdjoptGetStr (OPT_M_SHUTDOWNSCRIPT));
 
   vbox = confuiMakeNotebookTab (confui->notebook, _("Player Options"));
@@ -506,9 +544,8 @@ confuiActivate (GApplication *app, gpointer userdata)
   confuiMakeItemSpinboxDouble (confui, vbox, sg, CONFUI_WIDGET_GAP,
       _("Gap Between Songs"), 0.0, 60.0,
       (double) bdjoptGetNum (OPT_P_GAP) / 1000.0);
-// ### as a spin box? gtk has examples.
-  confuiMakeItem (confui, vbox, sg, CONFUI_WIDGET_MAX_PLAY_TIME,
-      _("Maximum Play Time"));
+  confuiMakeItemSpinboxTime (confui, vbox, sg, CONFUI_SPINBOX_MAX_PLAY_TIME,
+      _("Maximum Play Time"), bdjoptGetNum (OPT_P_MAXPLAYTIME));
   confuiMakeItemSpinboxInt (confui, vbox, sg, CONFUI_WIDGET_PL_QUEUE_LEN,
       _("Queue Length"), 20, 400,
       bdjoptGetNum (OPT_G_PLAYERQLEN));
@@ -552,9 +589,6 @@ confuiActivate (GApplication *app, gpointer userdata)
   confuiMakeItemColorButton (confui, vbox, sg, CONFUI_WIDGET_UI_ACCENT_COLOR,
       _("Accent Color"),
       bdjoptGetStr (OPT_P_UI_ACCENT_COL));
-  confuiMakeItemColorButton (confui, vbox, sg, CONFUI_WIDGET_UI_BACKGROUND_COLOR,
-      _("Background Color"),
-      bdjoptGetStr (OPT_P_UI_BACKGROUND_COL));
 
   vbox = confuiMakeNotebookTab (confui->notebook, _("Organization"));
   sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
@@ -582,7 +616,7 @@ confuiActivate (GApplication *app, gpointer userdata)
       _("Enable Remote Control"),
       bdjoptGetNum (OPT_P_REMOTECONTROL));
   confuiMakeItemSpinboxText (confui, vbox, sg, CONFUI_SPINBOX_RC_HTML_TEMPLATE,
-      _("HTML Template"), 0);
+      _("HTML Template"), confui->rchtmlidx);
   confuiMakeItemEntry (confui, vbox, sg, _("User ID"),
       CONFUI_ENTRY_RC_USER_ID, bdjoptGetStr (OPT_P_REMCONTROLUSER));
   confuiMakeItemEntry (confui, vbox, sg, _("Password"),
@@ -781,18 +815,7 @@ confuiMakeNotebookTab (GtkWidget *notebook, char *txt)
   return vbox;
 }
 
-static void
-confuiMakeItem (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg,
-    int widx, char *txt)
-{
-  GtkWidget   *hbox;
-
-  hbox = confuiMakeItemLabel (vbox, sg, txt);
-  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
-  confui->uiwidgets [widx] = NULL;
-}
-
-static void
+static GtkWidget *
 confuiMakeItemEntry (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg,
     char *txt, int entryIdx, char *disp)
 {
@@ -809,6 +832,25 @@ confuiMakeItemEntry (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg,
   } else {
     uiutilsEntrySetValue (&confui->uientry [entryIdx], "");
   }
+  return hbox;
+}
+
+static void
+confuiMakeItemEntryChooser (configui_t *confui, GtkWidget *vbox,
+    GtkSizeGroup *sg, char *txt, int entryIdx, char *disp)
+{
+  GtkWidget   *hbox;
+  GtkWidget   *widget;
+  GtkWidget   *image;
+
+  hbox = confuiMakeItemEntry (confui, vbox, sg, txt, entryIdx, disp);
+
+  widget = uiutilsCreateButton ("", NULL, NULL, NULL);
+  image = gtk_image_new_from_icon_name ("folder", GTK_ICON_SIZE_BUTTON);
+  gtk_button_set_image (GTK_BUTTON (widget), image);
+  gtk_button_set_always_show_image (GTK_BUTTON (widget), TRUE);
+  gtk_widget_set_margin_start (widget, 0);
+  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 }
 
 static void
@@ -820,7 +862,7 @@ confuiMakeItemLink (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg,
 
   hbox = confuiMakeItemLabel (vbox, sg, txt);
   widget = gtk_link_button_new (disp);
-  gtk_widget_set_margin_start (widget, 8);
+//  gtk_widget_set_margin_start (widget, 8);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
   confui->uiwidgets [widx] = widget;
@@ -839,7 +881,6 @@ confuiMakeItemFontButton (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg,
   } else {
     widget = gtk_font_button_new ();
   }
-  gtk_widget_set_margin_top (widget, 2);
   gtk_widget_set_margin_start (widget, 8);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
@@ -862,7 +903,6 @@ confuiMakeItemColorButton (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg
   } else {
     widget = gtk_color_button_new ();
   }
-  gtk_widget_set_margin_top (widget, 2);
   gtk_widget_set_margin_start (widget, 8);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
@@ -899,7 +939,22 @@ confuiMakeItemSpinboxText (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg
   uiutilsSpinboxTextSet (&confui->uispinbox [sbidx], 0,
       nlistGetCount (list), maxWidth, list, NULL);
   uiutilsSpinboxTextSetValue (&confui->uispinbox [sbidx], value);
-  gtk_widget_set_margin_top (widget, 2);
+  gtk_widget_set_margin_start (widget, 8);
+  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+}
+
+static void
+confuiMakeItemSpinboxTime (configui_t *confui, GtkWidget *vbox,
+    GtkSizeGroup *sg, int sbidx, char *txt, ssize_t value)
+{
+  GtkWidget   *hbox;
+  GtkWidget   *widget;
+
+
+  hbox = confuiMakeItemLabel (vbox, sg, txt);
+  widget = uiutilsSpinboxTimeCreate (&confui->uispinbox [sbidx], confui);
+  uiutilsSpinboxTimeSetValue (&confui->uispinbox [sbidx], value);
   gtk_widget_set_margin_start (widget, 8);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
@@ -917,7 +972,6 @@ confuiMakeItemSpinboxInt (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg,
   widget = uiutilsSpinboxIntCreate ();
   uiutilsSpinboxSet (widget, (double) min, (double) max);
   uiutilsSpinboxSetValue (widget, (double) value);
-  gtk_widget_set_margin_top (widget, 2);
   gtk_widget_set_margin_start (widget, 8);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
@@ -936,7 +990,6 @@ confuiMakeItemSpinboxDouble (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *
   widget = uiutilsSpinboxDoubleCreate ();
   uiutilsSpinboxSet (widget, min, max);
   uiutilsSpinboxSetValue (widget, value);
-  gtk_widget_set_margin_top (widget, 2);
   gtk_widget_set_margin_start (widget, 8);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
@@ -953,7 +1006,6 @@ confuiMakeItemSwitch (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg,
 
   hbox = confuiMakeItemLabel (vbox, sg, txt);
   widget = uiutilsCreateSwitch (value);
-  gtk_widget_set_margin_top (widget, 2);
   gtk_widget_set_margin_start (widget, 8);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
@@ -1020,6 +1072,7 @@ confuiGetThemeNames (nlist_t *themelist, slist_t *filelist)
 
   count = nlistGetCount (themelist);
 
+  /* the key value used here is meaningless */
   while ((fn = slistIterateKey (filelist, &iteridx)) != NULL) {
     if (fileopIsDirectory (fn)) {
       pi = pathInfo (fn);
@@ -1037,3 +1090,43 @@ confuiGetThemeNames (nlist_t *themelist, slist_t *filelist)
 
   return themelist;
 }
+
+static void
+confuiLoadHTMLList (configui_t *confui)
+{
+  char          tbuff [MAXPATHLEN];
+  nlist_t       *tlist = NULL;
+  datafile_t    *df = NULL;
+  slist_t       *list = NULL;
+  slistidx_t    iteridx;
+  char          *key;
+  char          *data;
+  nlist_t       *llist;
+  int           count;
+
+
+  tlist = nlistAlloc ("cu-html-list", LIST_ORDERED, free);
+  llist = nlistAlloc ("cu-html-list-l", LIST_ORDERED, free);
+
+  pathbldMakePath (tbuff, sizeof (tbuff), "",
+      "html-list", ".txt", PATHBLD_MP_TEMPLATEDIR);
+  df = datafileAllocParse ("conf-html-list", DFTYPE_KEY_VAL, tbuff,
+      NULL, 0, DATAFILE_NO_LOOKUP);
+  list = datafileGetList (df);
+
+  slistStartIterator (list, &iteridx);
+  while ((key = slistIterateKey (list, &iteridx)) != NULL) {
+    data = slistGetStr (list, key);
+    if (strcmp (key, bdjoptGetStr (OPT_G_REMCONTROLHTML)) == 0) {
+      confui->rchtmlidx = count;
+    }
+    nlistSetStr (tlist, count, key);
+    nlistSetStr (llist, count, data);
+    ++count;
+  }
+
+  confui->uilists [CONFUI_SPINBOX_RC_HTML_TEMPLATE] = tlist;
+  confui->lookuplists [CONFUI_SPINBOX_RC_HTML_TEMPLATE] = llist;
+}
+
+

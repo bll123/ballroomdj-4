@@ -1,8 +1,12 @@
-set htmllist {
-  {English Flex} bdj-flex.html.dist
-  {English Flex Dark} bdj-flex-dark.html.dist
-  {English HTML 5} bdj.html.dist
-  {Nederlands Flex} bdj-flex.html.dist.nl
-  {Nederlands Flex Dark} bdj-flex-dark.html.dist.nl
-  {Nederlands HTML 5} bdj.html.dist.nl
-}
+English Flex Dark
+..bdj-flex-dark.html
+Nederlands Flex Dark
+..bdj-flex-dark.html.nl
+English Flex
+..bdj-flex.html
+Nederlands Flex
+..bdj-flex.html.nl
+English HTML 5
+..bdj.html
+Nederlands HTML 5
+..bdj.html.nl

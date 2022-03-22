@@ -193,8 +193,6 @@ foreach path [list {} profiles $mpath $mppath] {
         puts $ofh "..#030e80"
         puts $ofh UI_ACCENT_COL
         puts $ofh "..#ffa600"
-        puts $ofh UI_BACKGROUND_COL
-        puts $ofh ".."
         puts $ofh HIDEMARQUEEONSTART
         puts $ofh "..1"
       }
