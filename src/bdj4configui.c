@@ -25,11 +25,11 @@
 #include "localeutil.h"
 #include "lock.h"
 #include "log.h"
+#include "nlist.h"
 #include "osuiutils.h"
 #include "pathbld.h"
 #include "procutil.h"
 #include "progstate.h"
-#include "slist.h"
 #include "sock.h"
 #include "sockh.h"
 #include "sysvars.h"
@@ -99,6 +99,7 @@ typedef struct {
   int               dbgflags;
   uiutilsentry_t    uientry [CONFUI_ENTRY_MAX];
   uiutilsspinbox_t  uispinbox [CONFUI_SPINBOX_MAX];
+  nlist_t           * uilists [CONFUI_SPINBOX_MAX];
   /* gtk stuff */
   GtkApplication    *app;
   GtkWidget         *window;
@@ -147,7 +148,7 @@ static void confuiMakeItemEntry (configui_t *confui, GtkWidget *vbox, GtkSizeGro
 static void confuiMakeItemLink (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, int widx, char *txt, char *disp);
 static void confuiMakeItemFontButton (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, int widx, char *txt, char *fontname);
 static void confuiMakeItemColorButton (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, int widx, char *txt, char *color);
-static void confuiMakeItemSpinboxText (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, int sbidx, char *txt, slist_t *list);
+static void confuiMakeItemSpinboxText (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, int sbidx, char *txt, char *value);
 static void confuiMakeItemSpinboxInt (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, int widx, char *txt, int min, int max, int value);
 static void confuiMakeItemSpinboxDouble (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, int widx, char *txt, double min, double max, double value);
 static void confuiMakeItemSwitch (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, int widx, char *txt, int value);
@@ -165,6 +166,7 @@ main (int argc, char *argv[])
   configui_t      confui;
   char            *uifont;
   char            tbuff [MAXPATHLEN];
+  nlist_t         *tlist;
 
 
   confui.notebook = NULL;
@@ -183,12 +185,19 @@ main (int argc, char *argv[])
   }
 
   for (int i = 0; i < CONFUI_SPINBOX_MAX; ++i) {
+    confui.uilists [i] = NULL;
     uiutilsSpinboxTextInit (&confui.uispinbox [i]);
   }
 
   for (int i = 0; i < CONFUI_WIDGET_MAX; ++i) {
     confui.uiwidgets [i] = NULL;
   }
+
+  tlist = nlistAlloc ("cu-aftags", LIST_UNORDERED, free);
+  nlistSetStr (tlist, WRITE_TAGS_ALL, _("All Tags"));
+  nlistSetStr (tlist, WRITE_TAGS_BDJ_ONLY, _("BDJ Tags Only"));
+  nlistSetStr (tlist, WRITE_TAGS_NONE, _("Don't Write"));
+  confui.uilists [CONFUI_SPINBOX_WRITE_AUDIO_FILE_TAGS] = tlist;
 
   uiutilsEntryInit (&confui.uientry [CONFUI_ENTRY_MUSIC_DIR], 50, 100);
   uiutilsEntryInit (&confui.uientry [CONFUI_ENTRY_PROFILE_NAME], 20, 30);
@@ -306,6 +315,9 @@ confuiClosingCallback (void *udata, programstate_t programState)
 
   for (int i = 0; i < CONFUI_SPINBOX_MAX; ++i) {
     uiutilsSpinboxTextFree (&confui->uispinbox [i]);
+    if (confui->uilists [i] != NULL) {
+      nlistFree (confui->uilists [i]);
+    }
   }
 
   for (int i = 0; i < CONFUI_ENTRY_MAX; ++i) {
@@ -410,7 +422,7 @@ confuiActivate (GApplication *app, gpointer userdata)
 
   /* database */
   confuiMakeItemSpinboxText (confui, vbox, sg, CONFUI_SPINBOX_WRITE_AUDIO_FILE_TAGS,
-      _("Write Audio File Tags"), NULL);
+      _("Write Audio File Tags"), bdjoptGetStr (OPT_G_WRITETAGS));
   confuiMakeItemSwitch (confui, vbox, sg, CONFUI_WIDGET_DB_LOAD_FROM_GENRE,
       _("Database Loads Dance From Genre"),
       bdjoptGetNum (OPT_G_LOADDANCEFROMGENRE));
@@ -812,16 +824,33 @@ confuiMakeItemColorButton (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg
 
 static void
 confuiMakeItemSpinboxText (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg,
-    int sbidx, char *txt, slist_t *list)
+    int sbidx, char *txt, char *value)
 {
   GtkWidget   *hbox;
   GtkWidget   *widget;
+  nlist_t     *list;
+  size_t      maxWidth;
 
 
   hbox = confuiMakeItemLabel (vbox, sg, txt);
   widget = uiutilsSpinboxTextCreate (&confui->uispinbox [sbidx], confui);
+  list = confui->uilists [sbidx];
+  maxWidth = 0;
+  if (list != NULL) {
+    nlistidx_t    iteridx;
+    char          *val;
+
+    nlistStartIterator (list, &iteridx);
+    while ((val = nlistIterateValueData (list, &iteridx)) != NULL) {
+      size_t      len;
+
+      len = strlen (val);
+      maxWidth = len > maxWidth ? len : maxWidth;
+    }
+  }
+
   uiutilsSpinboxTextSet (&confui->uispinbox [sbidx], 0,
-      slistGetCount (list), slistGetMaxKeyWidth (list), list, NULL);
+      nlistGetCount (list), maxWidth, list, NULL);
 // ### fix
   uiutilsSpinboxTextSetValue (&confui->uispinbox [sbidx], 0);
   gtk_widget_set_margin_top (widget, 2);

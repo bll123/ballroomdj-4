@@ -64,7 +64,6 @@ static void     starterStartConfig (GtkButton *b, gpointer udata);
 static void     starterProcessExit (GtkButton *b, gpointer udata);
 
 static void     starterGetProfiles (startui_t *starter);
-static char *   starterProfileGet (void *udata, int idx);
 
 
 static int gKillReceived = 0;

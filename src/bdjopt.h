@@ -4,6 +4,12 @@
 #include "datafile.h"
 
 typedef enum {
+  WRITE_TAGS_NONE,
+  WRITE_TAGS_BDJ_ONLY,
+  WRITE_TAGS_ALL,
+} bdjwritetags_t;
+
+typedef enum {
   FADETYPE_TRIANGLE,
   FADETYPE_QUARTER_SINE,
   FADETYPE_HALF_SINE,

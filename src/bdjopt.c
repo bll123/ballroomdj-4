@@ -18,6 +18,7 @@
 #include "sysvars.h"
 
 static void bdjoptConvFadeType (char *, datafileret_t *);
+static void bdjoptConvWriteTags (char *data, datafileret_t *ret);
 static void bdjoptCreateNewConfigs (void);
 static void bdjoptCreateDefaultFiles (void);
 static void bdjoptConvMobileMq (char *data, datafileret_t *ret);
@@ -44,7 +45,7 @@ static datafilekey_t bdjoptglobaldfkeys[] = {
   { "SHOWSTATUS",         OPT_G_SHOWSTATUS,         VALUE_NUM, parseConvBoolean, -1 },
   { "SLOWDEVICE",         OPT_G_SLOWDEVICE,         VALUE_NUM, parseConvBoolean, -1 },
   { "VARIOUS",            OPT_G_VARIOUS,            VALUE_STR, NULL, -1 },
-  { "WRITETAGS",          OPT_G_WRITETAGS,          VALUE_STR, NULL, -1 },
+  { "WRITETAGS",          OPT_G_WRITETAGS,          VALUE_NUM, bdjoptConvWriteTags, -1 },
 };
 #define BDJOPT_GLOBAL_DFKEY_COUNT (sizeof (bdjoptglobaldfkeys) / sizeof (datafilekey_t))
 
@@ -241,6 +242,25 @@ bdjoptConvFadeType (char *data, datafileret_t *ret)
     fadetype = FADETYPE_INVERTED_PARABOLA;
   }
   ret->u.num = fadetype;
+}
+
+static void
+bdjoptConvWriteTags (char *data, datafileret_t *ret)
+{
+  bdjwritetags_t   wtag = WRITE_TAGS_NONE;
+
+  ret->valuetype = VALUE_NUM;
+
+  if (strcmp (data, "NONE") == 0) {
+    wtag = WRITE_TAGS_NONE;
+  }
+  if (strcmp (data, "ALL") == 0) {
+    wtag = WRITE_TAGS_ALL;
+  }
+  if (strcmp (data, "BDJ") == 0) {
+    wtag = WRITE_TAGS_BDJ_ONLY;
+  }
+  ret->u.num = wtag;
 }
 
 static void
