@@ -811,7 +811,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
   }
   uiutilsSpinboxTextSet (&uisongsel->filterratingsel, -1,
       ratingGetCount (uisongsel->ratings),
-      max, uisongselRatingGet);
+      max, NULL, uisongselRatingGet);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 
   /* level */
@@ -832,7 +832,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
   }
   uiutilsSpinboxTextSet (&uisongsel->filterlevelsel, -1,
       levelGetCount (uisongsel->levels),
-      max, uisongselLevelGet);
+      max, NULL, uisongselLevelGet);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 
   /* status */
@@ -853,7 +853,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
   }
   uiutilsSpinboxTextSet (&uisongsel->filterstatussel, -1,
       statusGetCount (uisongsel->status),
-      max, uisongselStatusGet);
+      max, NULL, uisongselStatusGet);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 
   /* favorite */
@@ -868,7 +868,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
 
   widget = uiutilsSpinboxTextCreate (&uisongsel->filterfavoritesel, uisongsel);
   uiutilsSpinboxTextSet (&uisongsel->filterfavoritesel, 0,
-      SONG_FAVORITE_MAX, 3, uisongselFavoriteGet);
+      SONG_FAVORITE_MAX, 3, NULL, uisongselFavoriteGet);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 
   /* the dialog doesn't have any space above the buttons */

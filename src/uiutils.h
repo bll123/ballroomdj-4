@@ -42,6 +42,7 @@ typedef struct {
   void                  *udata;
   int                   maxWidth;
   bool                  indisp;
+  slist_t               *list;
 } uiutilsspinbox_t;
 
 #define UI_MAIN_LOOP_TIMER 20
@@ -84,7 +85,7 @@ void uiutilsSpinboxTextInit (uiutilsspinbox_t *spinbox);
 void uiutilsSpinboxTextFree (uiutilsspinbox_t *spinbox);
 GtkWidget * uiutilsSpinboxTextCreate (uiutilsspinbox_t *spinbox, void *udata);
 void uiutilsSpinboxTextSet (uiutilsspinbox_t *spinbox, int min, int count,
-    int maxWidth, uiutilsspinboxdisp_t textGetProc);
+    int maxWidth, slist_t *list, uiutilsspinboxdisp_t textGetProc);
 int   uiutilsSpinboxTextGetValue (uiutilsspinbox_t *spinbox);
 void  uiutilsSpinboxTextSetValue (uiutilsspinbox_t *spinbox, int ivalue);
 

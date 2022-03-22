@@ -237,7 +237,7 @@ starterActivate (GApplication *app, gpointer userdata)
   widget = uiutilsSpinboxTextCreate (&starter->profilesel, starter);
   uiutilsSpinboxTextSet (&starter->profilesel, starter->currprofile,
       nlistGetCount (starter->dispProfileList),
-      starter->maxProfileWidth, starterProfileGet);
+      starter->maxProfileWidth, starter->dispProfileList, NULL);
   gtk_widget_set_margin_start (widget, 8);
   gtk_widget_set_halign (widget, GTK_ALIGN_FILL);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
@@ -458,13 +458,5 @@ starterGetProfiles (startui_t *starter)
 
   starter->maxProfileWidth = (int) max;
   sysvarsSetNum (SVL_BDJIDX, starter->currprofile);
-}
-
-static char *
-starterProfileGet (void *udata, int idx)
-{
-  startui_t *starter = udata;
-
-  return nlistGetDataByIdx (starter->dispProfileList, idx);
 }
 

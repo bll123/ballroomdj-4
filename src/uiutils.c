@@ -40,6 +40,8 @@ static void uiutilsDropDownSelectionSet (uiutilsdropdown_t *dropdown,
 
 static gint uiutilsSpinboxInput (GtkSpinButton *sb, gdouble *newval, gpointer udata);
 static gboolean uiutilsSpinboxDisplay (GtkSpinButton *sb, gpointer udata);
+static char * uiutilsSpinboxTextGetDisp (slist_t *list, int idx);
+
 
 void
 uiutilsCleanup (void)
@@ -585,6 +587,7 @@ uiutilsSpinboxTextInit (uiutilsspinbox_t *spinbox)
   spinbox->udata = NULL;
   spinbox->indisp = false;
   spinbox->maxWidth = 0;
+  spinbox->list = NULL;
   logProcEnd (LOG_PROC, "uiutilsSpinboxTextInit", "");
 }
 
@@ -616,7 +619,7 @@ uiutilsSpinboxTextCreate (uiutilsspinbox_t *spinbox, void *udata)
 
 void
 uiutilsSpinboxTextSet (uiutilsspinbox_t *spinbox, int min, int count,
-    int maxWidth, uiutilsspinboxdisp_t textGetProc)
+    int maxWidth, slist_t *list, uiutilsspinboxdisp_t textGetProc)
 {
   logProcBegin (LOG_PROC, "uiutilsSpinboxTextSet");
   uiutilsSpinboxSet (spinbox->spinbox, (double) min, (double) (count - 1));
@@ -624,6 +627,7 @@ uiutilsSpinboxTextSet (uiutilsspinbox_t *spinbox, int min, int count,
   /* certainly not if languages are mixed */
   spinbox->maxWidth = maxWidth;
   gtk_entry_set_width_chars (GTK_ENTRY (spinbox->spinbox), spinbox->maxWidth);
+  spinbox->list = list;
   spinbox->textGetProc = textGetProc;
   logProcEnd (LOG_PROC, "uiutilsSpinboxTextSet", "");
 }
@@ -759,6 +763,8 @@ uiutilsSpinboxDisplay (GtkSpinButton *sb, gpointer udata)
   disp = "";
   if (spinbox->textGetProc != NULL) {
     disp = spinbox->textGetProc (spinbox->udata, spinbox->curridx);
+  } else if (spinbox->list != NULL) {
+    disp = uiutilsSpinboxTextGetDisp (spinbox->list, spinbox->curridx);
   }
   snprintf (tbuff, sizeof (tbuff), "%-*s", spinbox->maxWidth, disp);
   gtk_entry_set_text (GTK_ENTRY (spinbox->spinbox), tbuff);
@@ -940,5 +946,11 @@ uiutilsDropDownSelectionSet (uiutilsdropdown_t *dropdown, ssize_t internalidx)
     }
   }
   logProcEnd (LOG_PROC, "uiutilsDropDownSelectionSet", "");
+}
+
+static char *
+uiutilsSpinboxTextGetDisp (slist_t *list, int idx)
+{
+  return nlistGetDataByIdx (list, idx);
 }
 

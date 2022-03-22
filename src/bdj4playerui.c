@@ -403,6 +403,8 @@ pluiActivate (GApplication *app, gpointer userdata)
   gtk_widget_set_margin_top (plui->notebook, 4);
   gtk_widget_set_hexpand (plui->notebook, TRUE);
   gtk_widget_set_vexpand (plui->notebook, FALSE);
+  uiutilsSetCss (plui->notebook,
+      "notebook tab:checked { background-color: #111111; }");
   gtk_box_pack_start (GTK_BOX (plui->vbox), plui->notebook,
       TRUE, TRUE, 0);
 
