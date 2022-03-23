@@ -18,9 +18,11 @@ typedef enum {
   SV_BDJ4_VERSION,
   SV_CA_FILE,
   SV_CP_PATH,
+  SV_GETCONF_PATH,
   SV_HOME,
   SV_HOSTNAME,
   SV_LOCALE,
+  SV_LOCALE_SHORT,
   SV_MOBMQ_HOST,
   SV_OSBUILD,
   SV_OSDISP,
@@ -31,7 +33,6 @@ typedef enum {
   SV_PYTHON_PATH,
   SV_PYTHON_VERSION,      // 3.10.2 => 310
   SV_SHLIB_EXT,
-  SV_SHORT_LOCALE,
   SV_MAX
 } sysvarkey_t;
 
@@ -40,6 +41,7 @@ typedef enum {
   SVL_BASEPORT,
   SVL_OSBITS,
   SVL_NUM_PROC,
+  SVL_LOCALE_SET,
   SVL_MAX
 } sysvarlkey_t;
 

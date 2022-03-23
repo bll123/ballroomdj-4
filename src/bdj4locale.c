@@ -23,7 +23,8 @@ main (int argc, char *argv [])
   setlocale (LC_ALL, "");
   locale = setlocale (LC_ALL, NULL);
   printf ("all: %s\n", locale);
-  locale = setlocale (LC_CTYPE, NULL);
+  locale = setlocale (LC_MESSAGES, NULL);
+  printf ("msgs: %s\n", locale);
   if (locale != NULL) {
     printf ("%2.2s ", locale);
     if (locale [2] == '_') {
@@ -38,6 +39,6 @@ main (int argc, char *argv [])
   localeInit ();
 
   printf ("locale: %s\n", sysvarsGetStr (SV_LOCALE));
-  printf ("short locale: %s\n", sysvarsGetStr (SV_SHORT_LOCALE));
+  printf ("short locale: %s\n", sysvarsGetStr (SV_LOCALE_SHORT));
   fflush (stdout);
 }

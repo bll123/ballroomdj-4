@@ -153,7 +153,6 @@ main (int argc, char *argv[])
 #endif
 
   plui.dbgflags = bdj4startup (argc, argv, "pu", ROUTE_PLAYERUI, BDJ4_INIT_NONE);
-  localeInit ();
   logProcBegin (LOG_PROC, "playerui");
 
   listenPort = bdjvarsGetNum (BDJVL_PLAYERUI_PORT);
@@ -300,8 +299,13 @@ pluiCreateGui (playerui_t *plui, int argc, char *argv [])
 
   g_signal_connect (plui->app, "activate", G_CALLBACK (pluiActivate), plui);
 
+  /* gtk somehow manages to screw up the localization; re-bind the text domain */
+  localeInit ();
+
   status = g_application_run (G_APPLICATION (plui->app), argc, argv);
-  gtk_widget_destroy (plui->window);
+  if (GTK_IS_WIDGET (plui->window)) {
+    gtk_widget_destroy (plui->window);
+  }
   g_object_unref (plui->app);
 
   logProcEnd (LOG_PROC, "pluiCreateGui", "");

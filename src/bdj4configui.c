@@ -108,6 +108,7 @@ typedef struct {
   int               uithemeidx;
   int               mqthemeidx;
   int               rchtmlidx;
+  int               localeidx;
   /* gtk stuff */
   GtkApplication    *app;
   GtkWidget         *window;
@@ -162,9 +163,10 @@ static void confuiMakeItemSpinboxDouble (configui_t *confui, GtkWidget *vbox, Gt
 static void confuiMakeItemSwitch (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, int widx, char *txt, int value);
 static GtkWidget * confuiMakeItemLabel (GtkWidget *vbox, GtkSizeGroup *sg, char *txt);
 
-static nlist_t * confuiGetThemeList (void);
-static nlist_t * confuiGetThemeNames (nlist_t *themelist, slist_t *filelist);
-static void    confuiLoadHTMLList (configui_t *confui);
+static nlist_t  * confuiGetThemeList (void);
+static nlist_t  * confuiGetThemeNames (nlist_t *themelist, slist_t *filelist);
+static void     confuiLoadHTMLList (configui_t *confui);
+static void     confuiLoadLocaleList (configui_t *confui);
 
 static int gKillReceived = 0;
 static int gdone = 0;
@@ -197,6 +199,7 @@ main (int argc, char *argv[])
   confui.uithemeidx = 0;
   confui.mqthemeidx = 0;
   confui.rchtmlidx = 0;
+  confui.localeidx = 0;
 
   for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
     confui.processes [i] = NULL;
@@ -211,26 +214,6 @@ main (int argc, char *argv[])
   for (int i = 0; i < CONFUI_WIDGET_MAX; ++i) {
     confui.uiwidgets [i] = NULL;
   }
-
-  tlist = nlistAlloc ("cu-writetags", LIST_UNORDERED, free);
-  llist = nlistAlloc ("cu-writetags-l", LIST_ORDERED, free);
-  nlistSetStr (tlist, WRITE_TAGS_ALL, _("All Tags"));
-  nlistSetStr (tlist, WRITE_TAGS_BDJ_ONLY, _("BDJ Tags Only"));
-  nlistSetStr (tlist, WRITE_TAGS_NONE, _("Don't Write"));
-  confui.uilists [CONFUI_SPINBOX_WRITE_AUDIO_FILE_TAGS] = tlist;
-
-  tlist = nlistAlloc ("cu-fadetype", LIST_UNORDERED, free);
-  nlistSetStr (tlist, FADETYPE_TRIANGLE, _("Triangle"));
-  nlistSetStr (tlist, FADETYPE_QUARTER_SINE, _("Quarter Sine Wave"));
-  nlistSetStr (tlist, FADETYPE_HALF_SINE, _("Half Sine Wave"));
-  nlistSetStr (tlist, FADETYPE_LOGARITHMIC, _("Logarithmic"));
-  nlistSetStr (tlist, FADETYPE_INVERTED_PARABOLA, _("Inverted Parabola"));
-  confui.uilists [CONFUI_SPINBOX_FADE_TYPE] = tlist;
-
-  tlist = nlistAlloc ("cu-player", LIST_UNORDERED, free);
-  nlistSetStr (tlist, 0, _("Integrated VLC"));
-  nlistSetStr (tlist, 1, _("Null Player"));
-  confui.uilists [CONFUI_SPINBOX_PLAYER] = tlist;
 
   uiutilsEntryInit (&confui.uientry [CONFUI_ENTRY_MUSIC_DIR], 50, 100);
   uiutilsEntryInit (&confui.uientry [CONFUI_ENTRY_PROFILE_NAME], 20, 30);
@@ -255,8 +238,27 @@ main (int argc, char *argv[])
 #endif
 
   confui.dbgflags = bdj4startup (argc, argv, "cu", ROUTE_CONFIGUI, BDJ4_INIT_NONE);
-  localeInit ();
   logProcBegin (LOG_PROC, "configui");
+
+  tlist = nlistAlloc ("cu-writetags", LIST_UNORDERED, free);
+  llist = nlistAlloc ("cu-writetags-l", LIST_ORDERED, free);
+  nlistSetStr (tlist, WRITE_TAGS_ALL, _("All Tags"));
+  nlistSetStr (tlist, WRITE_TAGS_BDJ_ONLY, _("BDJ Tags Only"));
+  nlistSetStr (tlist, WRITE_TAGS_NONE, _("Don't Write"));
+  confui.uilists [CONFUI_SPINBOX_WRITE_AUDIO_FILE_TAGS] = tlist;
+
+  tlist = nlistAlloc ("cu-fadetype", LIST_UNORDERED, free);
+  nlistSetStr (tlist, FADETYPE_TRIANGLE, _("Triangle"));
+  nlistSetStr (tlist, FADETYPE_QUARTER_SINE, _("Quarter Sine Wave"));
+  nlistSetStr (tlist, FADETYPE_HALF_SINE, _("Half Sine Wave"));
+  nlistSetStr (tlist, FADETYPE_LOGARITHMIC, _("Logarithmic"));
+  nlistSetStr (tlist, FADETYPE_INVERTED_PARABOLA, _("Inverted Parabola"));
+  confui.uilists [CONFUI_SPINBOX_FADE_TYPE] = tlist;
+
+  tlist = nlistAlloc ("cu-player", LIST_UNORDERED, free);
+  nlistSetStr (tlist, 0, _("Integrated VLC"));
+  nlistSetStr (tlist, 1, _("Null Player"));
+  confui.uilists [CONFUI_SPINBOX_PLAYER] = tlist;
 
   tlist = nlistAlloc ("cu-audio", LIST_UNORDERED, free);
   llist = nlistAlloc ("cu-audio-l", LIST_ORDERED, free);
@@ -286,6 +288,7 @@ main (int argc, char *argv[])
   confui.lookuplists [CONFUI_SPINBOX_AUDIO] = llist;
 
   confuiLoadHTMLList (&confui);
+  confuiLoadLocaleList (&confui);
 
   tlist = confuiGetThemeList ();
   nlistStartIterator (tlist, &iteridx);
@@ -442,8 +445,13 @@ confuiCreateGui (configui_t *confui, int argc, char *argv [])
 
   g_signal_connect (confui->app, "activate", G_CALLBACK (confuiActivate), confui);
 
+  /* gtk somehow manages to screw up the localization; re-bind the text domain */
+  localeInit ();
+
   status = g_application_run (G_APPLICATION (confui->app), argc, argv);
-  gtk_widget_destroy (confui->window);
+  if (GTK_IS_WIDGET (confui->window)) {
+    gtk_widget_destroy (confui->window);
+  }
   g_object_unref (confui->app);
 
   logProcEnd (LOG_PROC, "confuiCreateGui", "");
@@ -497,7 +505,7 @@ confuiActivate (GApplication *app, gpointer userdata)
   sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
   /* general options */
-  confuiMakeItemEntryChooser (confui, vbox, sg, _("Music Directory"),
+  confuiMakeItemEntryChooser (confui, vbox, sg, _("Music Folder"),
       CONFUI_ENTRY_MUSIC_DIR, bdjoptGetStr (OPT_M_DIR_MUSIC));
   confuiMakeItemEntry (confui, vbox, sg, _("Profile Name"),
       CONFUI_ENTRY_PROFILE_NAME, bdjoptGetStr (OPT_P_PROFILENAME));
@@ -1115,6 +1123,7 @@ confuiLoadHTMLList (configui_t *confui)
   list = datafileGetList (df);
 
   slistStartIterator (list, &iteridx);
+  count = 0;
   while ((key = slistIterateKey (list, &iteridx)) != NULL) {
     data = slistGetStr (list, key);
     if (strcmp (key, bdjoptGetStr (OPT_G_REMCONTROLHTML)) == 0) {
@@ -1127,6 +1136,45 @@ confuiLoadHTMLList (configui_t *confui)
 
   confui->uilists [CONFUI_SPINBOX_RC_HTML_TEMPLATE] = tlist;
   confui->lookuplists [CONFUI_SPINBOX_RC_HTML_TEMPLATE] = llist;
+}
+
+static void
+confuiLoadLocaleList (configui_t *confui)
+{
+  char          tbuff [MAXPATHLEN];
+  nlist_t       *tlist = NULL;
+  datafile_t    *df = NULL;
+  slist_t       *list = NULL;
+  slistidx_t    iteridx;
+  char          *key;
+  char          *data;
+  nlist_t       *llist;
+  int           count;
+
+
+  tlist = nlistAlloc ("cu-locale-list", LIST_ORDERED, free);
+  llist = nlistAlloc ("cu-locale-list-l", LIST_ORDERED, free);
+
+  pathbldMakePath (tbuff, sizeof (tbuff), "",
+      "locales", ".txt", PATHBLD_MP_LOCALEDIR);
+  df = datafileAllocParse ("conf-locale-list", DFTYPE_KEY_VAL, tbuff,
+      NULL, 0, DATAFILE_NO_LOOKUP);
+  list = datafileGetList (df);
+
+  slistStartIterator (list, &iteridx);
+  count = 0;
+  while ((key = slistIterateKey (list, &iteridx)) != NULL) {
+    data = slistGetStr (list, key);
+    if (strcmp (data, sysvarsGetStr (SV_LOCALE)) == 0) {
+      confui->localeidx = count;
+    }
+    nlistSetStr (tlist, count, key);
+    nlistSetStr (llist, count, data);
+    ++count;
+  }
+
+  confui->uilists [CONFUI_SPINBOX_LOCALE] = tlist;
+  confui->lookuplists [CONFUI_SPINBOX_LOCALE] = llist;
 }
 
 

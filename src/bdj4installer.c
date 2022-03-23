@@ -360,6 +360,9 @@ installerCreateGui (installer_t *installer, int argc, char *argv [])
   );
   g_signal_connect (installer->app, "activate", G_CALLBACK (installerActivate), installer);
 
+  /* gtk somehow manages to screw up the localization; re-bind the text domain */
+  localeInit ();
+
   status = g_application_run (G_APPLICATION (installer->app), argc, argv);
   if (GTK_IS_WIDGET (installer->window)) {
     gtk_widget_destroy (installer->window);
@@ -1145,7 +1148,7 @@ installerCopyTemplates (installer_t *installer)
   slist_t         *renamelist;
 
 
-  snprintf (localesfx, sizeof (localesfx), ".%s", sysvarsGetStr (SV_SHORT_LOCALE));
+  snprintf (localesfx, sizeof (localesfx), ".%s", sysvarsGetStr (SV_LOCALE_SHORT));
   renamelist = NULL;
 
   if (! installer->newinstall && ! installer->reinstall) {
@@ -1251,7 +1254,7 @@ installerCopyTemplates (installer_t *installer)
       if (renamelist != NULL) {
         char    *tval;
 
-        tval = slistGetStr (renamelist, sysvarsGetStr (SV_SHORT_LOCALE));
+        tval = slistGetStr (renamelist, sysvarsGetStr (SV_LOCALE_SHORT));
         if (tval != NULL) {
           snprintf (tbuff, sizeof (tbuff), "%s%*s", tval, (int) pi->elen,
               pi->extension);
@@ -1815,7 +1818,7 @@ installerTemplateCopy (char *from, char *to)
   if (fileopFileExists (tbuff)) {
     from = tbuff;
   } else {
-    snprintf (localesfx, sizeof (localesfx), ".%s", sysvarsGetStr (SV_SHORT_LOCALE));
+    snprintf (localesfx, sizeof (localesfx), ".%s", sysvarsGetStr (SV_LOCALE_SHORT));
     strlcpy (tbuff, from, MAXPATHLEN);
     strlcat (tbuff, localesfx, MAXPATHLEN);
     if (fileopFileExists (tbuff)) {

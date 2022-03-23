@@ -34,7 +34,7 @@ cmake:
 	elif test $$(uname -s) = Darwin; then \
 	  COMP=$(CLANG) COMPXX=$(CLANGXX) $(MAKE) cmake-unix; \
 	else \
-	  COMP=$(CLANG) COMPXX=$(CLANGXX) $(MAKE) cmake-windows; \
+	  COMP=$(GCC) COMPXX=$(GXX) $(MAKE) cmake-windows; \
 	fi
 	$(MAKE) build
 

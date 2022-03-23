@@ -77,6 +77,12 @@ macro (addWinSockLibrary name)
     target_link_libraries (${name} ws2_32)
   endif()
 endmacro()
+# the ntdll library is used for RtlGetVersion()
+macro (addWinNtdllLibrary name)
+  if (WIN32)
+    target_link_libraries (${name} ntdll)
+  endif()
+endmacro()
 
 pkg_check_modules (OPENSSL openssl)
 pkg_check_modules (CURL libcurl)
@@ -268,7 +274,7 @@ check_function_exists (CreateFile _lib_CreateFile)
 check_function_exists (CreateProcess _lib_CreateProcess)
 check_function_exists (FindFirstFileW _lib_FindFirstFileW)
 check_function_exists (GetFullPathName _lib_GetFullPathName)
-check_function_exists (GetVersionEx _lib_GetVersionEx)
+check_function_exists (RtlGetVersion _lib_RtlGetVersion)
 check_function_exists (LoadLibrary _lib_LoadLibrary)
 check_function_exists (MultiByteToWideChar _lib_MultiByteToWideChar)
 check_function_exists (OpenProcess _lib_OpenProcess)
@@ -286,7 +292,7 @@ if (WIN32)
   set (_lib_CreateFile 1)
   set (_lib_CreateProcess 1)
   set (_lib_GetFullPathName 1)
-  set (_lib_GetVersionEx 1)
+  set (_lib_RtlGetVersion 1)
   set (_lib_LoadLibrary 1)
 endif()
 
@@ -420,6 +426,7 @@ target_link_libraries (libbdj4common
   ${GLIB_LDFLAGS}
 )
 addWinSockLibrary (libbdj4common)
+addWinNtdllLibrary (libbdj4common)
 
 add_library (libbdj4 SHARED
   audiotag.c
@@ -623,6 +630,7 @@ if (WIN32)
 endif()
 # for gethostname
 addWinSockLibrary (bdj4)
+addWinNtdllLibrary (bdj4)
 
 # this is only used on macos
 add_executable (bdj4g bdj4.c)
@@ -637,6 +645,7 @@ target_link_libraries (bdj4g
   ${GTK_LDFLAGS}
 )
 addWinSockLibrary (bdj4g)
+addWinNtdllLibrary (bdj4g)
 
 add_executable (bdj4cli bdj4cli.c)
 target_link_libraries (bdj4cli
@@ -778,7 +787,6 @@ add_executable (check_all
   check_sock.c
   check_tmutil.c
 )
-
 target_link_libraries (check_all
   libbdj4 libbdj4common
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}

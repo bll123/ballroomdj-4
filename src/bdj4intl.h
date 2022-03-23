@@ -5,8 +5,7 @@
 # include <libintl.h>
 #endif
 
-#define  _(str) gettext (str)
-#define  N_(str) (str)
-#define  NC_(context,str) (str)
+#define GETTEXT_DOMAIN "bdj4"
+#define _(str) gettext (str)
 
 #endif /* INC_BDJ4INTL_H */

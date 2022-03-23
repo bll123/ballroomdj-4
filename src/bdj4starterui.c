@@ -103,7 +103,6 @@ main (int argc, char *argv[])
 #endif
 
   bdj4startup (argc, argv, "st", ROUTE_STARTERUI, BDJ4_INIT_NO_DB_LOAD);
-  localeInit ();
   logProcBegin (LOG_PROC, "starterui");
 
   /* get the profile list after bdjopt has been initialized */
@@ -186,8 +185,13 @@ starterCreateGui (startui_t *starter, int argc, char *argv [])
 
   g_signal_connect (starter->app, "activate", G_CALLBACK (starterActivate), starter);
 
+  /* gtk somehow manages to screw up the localization; re-bind the text domain */
+  localeInit ();
+
   status = g_application_run (G_APPLICATION (starter->app), argc, argv);
-  gtk_widget_destroy (starter->window);
+  if (GTK_IS_WIDGET (starter->window)) {
+    gtk_widget_destroy (starter->window);
+  }
   g_object_unref (starter->app);
   return status;
 }

@@ -61,8 +61,8 @@ sysvarsInit (const char *argv0)
   int             rc;
   struct utsname  ubuf;
 #endif
-#if _lib_GetVersionEx
-  OSVERSIONINFOA osvi;
+#if _lib_RtlGetVersion
+  OSVERSIONINFOW osvi;
 #endif
 
 
@@ -75,10 +75,11 @@ sysvarsInit (const char *argv0)
   strlcpy (sysvars [SV_OSVERS], ubuf.version, SV_MAX_SZ);
   strlcpy (sysvars [SV_OSBUILD], "", SV_MAX_SZ);
 #endif
-#if _lib_GetVersionEx
-  memset (&osvi, 0, sizeof (OSVERSIONINFOA));
-  osvi.dwOSVersionInfoSize = sizeof (OSVERSIONINFOA);
-  GetVersionEx (&osvi);
+#if _lib_RtlGetVersion
+  NTSTATUS RtlGetVersion (PRTL_OSVERSIONINFOW lpVersionInformation);
+  memset (&osvi, 0, sizeof (OSVERSIONINFOEXW));
+  osvi.dwOSVersionInfoSize = sizeof (OSVERSIONINFOEXW);
+  RtlGetVersion (&osvi);
 
   strlcpy (sysvars [SV_OSNAME], "windows", SV_MAX_SZ);
   strlcpy (sysvars [SV_OSDISP], "Windows ", SV_MAX_SZ);
@@ -200,10 +201,25 @@ sysvarsInit (const char *argv0)
   setlocale (LC_ALL, "");
 
   /* the locale is reset by localeinit */
+  /* localeinit will convert the windows names to something normal */
   snprintf (tbuf, sizeof (tbuf), "%-.5s", setlocale (LC_ALL, NULL));
   strlcpy (sysvars [SV_LOCALE], tbuf, SV_MAX_SZ);
-  snprintf (tbuf, sizeof (tbuf), "%-.2s", sysvars [SV_LOCALE]);
-  strlcpy (sysvars [SV_SHORT_LOCALE], tbuf, SV_MAX_SZ);
+  lsysvars [SVL_LOCALE_SET] = 0;
+
+  snprintf (buff, sizeof (buff), "%s/locale.txt", sysvars [SV_BDJ4DATADIR]);
+  if (fileopFileExists (buff)) {
+    FILE    *fh;
+
+    fh = fopen (buff, "r");
+    fgets (tbuf, sizeof (tbuf), fh);
+    stringTrim (tbuf);
+    fclose (fh);
+    lsysvars [SVL_LOCALE_SET] = 1;
+    strlcpy (sysvars [SV_LOCALE], tbuf, SV_MAX_SZ);
+  }
+
+  snprintf (buff, sizeof (buff), "%-.2s", tbuf);
+  strlcpy (sysvars [SV_LOCALE_SHORT], buff, SV_MAX_SZ);
 
   strlcpy (sysvars [SV_BDJ4_VERSION], "unknown", SV_MAX_SZ);
   if (fileopFileExists ("VERSION.txt")) {
@@ -338,6 +354,15 @@ sysvarsInit (const char *argv0)
   }
   if (fileopFileExists (buff)) {
     strlcpy (sysvars [SV_PYTHON_MUTAGEN], buff, SV_MAX_SZ);
+  } else {
+    if (isWindows ()) {
+      /* for msys2 testing */
+      snprintf (buff, sizeof (buff),
+          "%s/.local/bin/%s", sysvars [SV_HOME], "mutagen-inspect");
+      if (fileopFileExists (buff)) {
+        strlcpy (sysvars [SV_PYTHON_MUTAGEN], buff, SV_MAX_SZ);
+      }
+    }
   }
 
   lsysvars [SVL_BDJIDX] = 0;
