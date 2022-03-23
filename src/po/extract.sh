@@ -31,13 +31,13 @@ function mkpo {
   echo "# -- $elang" >> ${out}
   sed -e '1,6 d' \
       -e "s/YEAR-MO-DA.*ZONE/${dt}/" \
-      -e "s/: [0-9][0-9 :-]*/: ${dt}/" \
+      -e "s/: [0-9][0-9][0-9 :-]*/: ${dt}/" \
       -e "s/PACKAGE/BDJ4/" \
       -e "s/VERSION/${VERSION}/" \
       -e "s/FULL NAME.*ADDRESS./${xlator}/" \
       -e "s/Bugs-To: /Bugs-To: brad.lanam.comp@gmail.com/" \
       -e "s/Language: /Language: ${lang}/" \
-      -e "s/Language-Team:.*>/Language-Team: $elang/" \
+      -e "s,Language-Team:.*>,Language-Team: $elang," \
       -e "s/CHARSET/utf-8/" \
       bdj4.pot >> ${out}
 }
@@ -80,7 +80,10 @@ xgettext -s -j -d bdj4 \
     -o bdj4.pot
 rm -f $TMP
 
-mkpo en en_US.po "Automatically generated" "English (US)" english
+mkpo en en_US.po "Automatically generated" "English (US)" english/us
 mkpo nl nl.po "marimo" Nederlands dutch
 #mkpo de de_DE.po "various" Deutsch german
 ./lang-lookup.sh
+./mken_gb.sh
+
+exit 0

@@ -5,20 +5,10 @@ case ${cwd} in
   */src)
     cd po
     ;;
+  */bdj4)
+    cd src/po
+    ;;
 esac
-
-echo "-- Creating .mo files"
-for i in *.po; do
-  j=$(echo $i | sed 's,.po$,,')
-  mkdir -p ../../locale/$j/LC_MESSAGES
-  msgfmt -c -o ../../locale/$j/LC_MESSAGES/bdj4.mo $i
-  # for the time being, there is no en_GB.po yet.
-  if [[ $i == en_US.po ]]; then
-    j=en
-    mkdir -p ../../locale/$j/LC_MESSAGES
-    msgfmt -c -o ../../locale/$j/LC_MESSAGES/bdj4.mo $i
-  fi
-done
 
 function mksub {
   tmpl=$1
@@ -83,9 +73,37 @@ function mkhtmlsub {
 }
 
 TMP=temp.txt
+CTMP=tempcomp.txt
+
+echo "-- Creating .mo files"
+for i in *.po; do
+  j=$(echo $i | sed 's,.po$,,')
+  mkdir -p ../../locale/$j/LC_MESSAGES
+  msgfmt -c -o ../../locale/$j/LC_MESSAGES/bdj4.mo $i
+  # for the time being, there is no en_GB.po yet.
+  if [[ $i == en_GB.po ]]; then
+    j=en
+    mkdir -p ../../locale/$j/LC_MESSAGES
+    msgfmt -c -o ../../locale/$j/LC_MESSAGES/bdj4.mo $i
+  fi
+done
+
+> $CTMP
 
 for pofile in $(cat complete.txt); do
+
   lang=$(echo $pofile | sed 's,\.po$,,')
+
+  desc=$(sed -n -e '1,1p' $pofile)
+  desc=$(echo $desc | sed -e 's/^# == //')
+  echo $desc >> $CTMP
+  echo "..$lang" >> $CTMP
+
+  case $pofile in
+    en*)
+      continue
+      ;;
+  esac
 
   fn=../../templates/dancetypes.txt
   sed -e '/^#/d' $fn > $TMP
@@ -176,5 +194,8 @@ for pofile in $(cat complete.txt); do
   fi
 done
 
+mv -f $CTMP ../../locale/locales.txt
+
 test -f $TMP && rm -f $TMP
+test -f $CTMP && rm -f $CTMP
 exit 0

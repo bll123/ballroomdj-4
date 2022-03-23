@@ -4,15 +4,20 @@
 
 cwd=$(pwd)
 case ${cwd} in
-  */utils)
+  */bdj4)
+    ;;
+  */src)
     cd ..
+    ;;
+  */utils)
+    cd ../..
     ;;
 esac
 
-OUT=../templates/html-list.txt
+OUT=templates/html-list.txt
 OUTN=${OUT}.n
 
-for fn in $(echo ../templates/*.html*); do
+for fn in $(echo templates/*.html*); do
   case $fn in
     *mobilemq.html|*qrcode.html)
       continue

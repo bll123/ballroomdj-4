@@ -33,9 +33,11 @@ function readolddata {
 
 for pofile in *.po; do
   set +o noglob
-  if [[ $pofile == "en_US.po" ]]; then
-    continue
-  fi
+  case $pofile in
+    en*)
+      continue
+    ;;
+  esac
 
   olpo=""
   if [[ -f old/$pofile ]]; then

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-03-21 16:40-0700\n"
+"POT-Creation-Date: 2022-03-23 07:29-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -53,6 +53,9 @@ msgstr ""
 msgid "All Ratings"
 msgstr ""
 
+msgid "All Tags"
+msgstr ""
+
 msgid "Any Status"
 msgstr ""
 
@@ -69,6 +72,9 @@ msgid "Audio"
 msgstr ""
 
 msgid "Audio Output"
+msgstr ""
+
+msgid "BDJ Tags Only"
 msgstr ""
 
 msgid "BDJ4 Installer"
@@ -148,6 +154,9 @@ msgid "Date Added"
 msgstr ""
 
 msgid "Default Volume"
+msgstr ""
+
+msgid "Don't Write"
 msgstr ""
 
 #, c-format
@@ -254,6 +263,9 @@ msgstr ""
 msgid "HTML Template"
 msgstr ""
 
+msgid "Half Sine Wave"
+msgstr ""
+
 #, c-format
 msgid "If there is no BallroomDJ 3 installation, enter a single '-'."
 msgstr ""
@@ -269,6 +281,12 @@ msgstr ""
 
 #, c-format
 msgid "Installing %s."
+msgstr ""
+
+msgid "Integrated VLC"
+msgstr ""
+
+msgid "Inverted Parabola"
 msgstr ""
 
 msgid "Jazz"
@@ -287,6 +305,9 @@ msgid "Locale"
 msgstr ""
 
 msgid "Located 'tclsh'."
+msgstr ""
+
+msgid "Logarithmic"
 msgstr ""
 
 msgid "Manage"
@@ -348,6 +369,12 @@ msgid "Normal"
 msgstr ""
 
 msgid "Not Playing"
+msgstr ""
+
+msgid "Null Audio"
+msgstr ""
+
+msgid "Null Player"
 msgstr ""
 
 msgid "Options"
@@ -417,6 +444,9 @@ msgid "Profile Name"
 msgstr ""
 
 msgid "QR Code"
+msgstr ""
+
+msgid "Quarter Sine Wave"
 msgstr ""
 
 msgid "Queue"
@@ -543,6 +573,9 @@ msgid "Toggle Repeat"
 msgstr ""
 
 msgid "Track"
+msgstr ""
+
+msgid "Triangle"
 msgstr ""
 
 #, c-format
