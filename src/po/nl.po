@@ -339,7 +339,7 @@ msgstr "Verplaats Omhoog"
 msgid "Move to Top"
 msgstr ""
 
-msgid "Music Directory"
+msgid "Music Folder"
 msgstr ""
 
 msgid "NC2S"
