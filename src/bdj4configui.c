@@ -359,6 +359,9 @@ confuiStoppingCallback (void *udata, programstate_t programState)
   gint          x, y;
 
   logProcBegin (LOG_PROC, "confuiStoppingCallback");
+
+  bdjoptSave ();
+
   gtk_window_get_size (GTK_WINDOW (confui->window), &x, &y);
   nlistSetNum (confui->options, CONFUI_SIZE_X, x);
   nlistSetNum (confui->options, CONFUI_SIZE_Y, y);
@@ -387,7 +390,7 @@ confuiClosingCallback (void *udata, programstate_t programState)
   logProcBegin (LOG_PROC, "confuiClosingCallback");
   pathbldMakePath (fn, sizeof (fn), "",
       "configui", ".txt", PATHBLD_MP_USEIDX);
-  datafileSaveKeyVal (fn, configuidfkeys, CONFUI_KEY_MAX, confui->options);
+  datafileSaveKeyVal ("configui", fn, configuidfkeys, CONFUI_KEY_MAX, confui->options);
 
   sockhCloseServer (confui->sockserver);
 

@@ -498,7 +498,7 @@ datafileParseMerge (list_t *datalist, char *data, char *name,
 }
 
 void
-datafileSaveKeyVal (char *fn, datafilekey_t *dfkeys,
+datafileSaveKeyVal (char *tag, char *fn, datafilekey_t *dfkeys,
     ssize_t dfkeycount, nlist_t *list)
 {
   FILE            *fh;
@@ -508,41 +508,49 @@ datafileSaveKeyVal (char *fn, datafilekey_t *dfkeys,
 
   datafileBackup (fn, 1);
   fh = fileopOpen (fn, "w");
-  fprintf (fh, "# %s\n", tmutilDstamp (tbuff, sizeof (tbuff)));
+fprintf (stderr, "fn: %s %p\n", fn, fh);
+
+  if (fh == NULL) {
+    return;
+  }
+
+  fprintf (fh, "# %s\n", tag);
+  fprintf (fh, "# %s", tmutilDstamp (tbuff, sizeof (tbuff)));
+  fprintf (fh, "%s\n", tmutilTstamp (tbuff, sizeof (tbuff)));
+
   for (ssize_t i = 0; i < dfkeycount; ++i) {
     fprintf (fh, "%s\n", dfkeys [i].name);
 
     vt = dfkeys [i].valuetype;
+    conv.valuetype = vt;
+
     /* load the data value into the conv structure so that retrieval is */
     /* the same for both non-converted and converted values */
+fprintf (stderr, "%s\n", dfkeys [i].name);
     if (vt == VALUE_NUM) {
       conv.u.num = nlistGetNum (list, dfkeys [i].itemkey);
+fprintf (stderr, "  num: %zd\n", conv.u.num);
     }
     if (vt == VALUE_STR) {
       conv.u.str = nlistGetStr (list, dfkeys [i].itemkey);
+fprintf (stderr, "  str: %s\n", conv.u.str);
+    }
+    if (vt == VALUE_LIST) {
+      conv.u.list = nlistGetList (list, dfkeys [i].itemkey);
     }
 
     if (dfkeys [i].convFunc != NULL) {
-      conv.valuetype = vt;
-      if (vt == VALUE_LIST) {
-        conv.u.list = nlistGetList (list, dfkeys [i].itemkey);
-      }
-      if (vt == VALUE_NUM) {
-        ssize_t   val;
-
-        val = nlistGetNum (list, dfkeys [i].itemkey);
-        conv.u.num = val;
-      }
       dfkeys [i].convFunc (&conv);
-
       vt = conv.valuetype;
     }
 
     if (vt == VALUE_NUM) {
       fprintf (fh, "..%zd\n", conv.u.num);
+fprintf (stderr, "  -> %zd\n", conv.u.num);
     }
     if (vt == VALUE_STR) {
       fprintf (fh, "..%s\n", conv.u.str);
+fprintf (stderr, "  -> %s\n", conv.u.str);
     }
   }
   fclose (fh);

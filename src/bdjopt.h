@@ -27,7 +27,6 @@ typedef enum {
   OPT_G_AUTOORGANIZE,
   OPT_G_CHANGESPACE,
   OPT_G_DEBUGLVL,                 //
-  OPT_G_ENABLEIMGPLAYER,
   OPT_G_ITUNESSUPPORT,
   OPT_G_LOADDANCEFROMGENRE,
   OPT_G_MUSICDIRDFLT,
@@ -60,7 +59,6 @@ typedef enum {
   OPT_MP_UIFONT,                    //+
   OPT_MP_UI_THEME,                  //
   OPT_P_ALLOWEDIT,
-  OPT_P_AUTOSTARTUP,
   OPT_P_DEFAULTVOLUME,              //+
   OPT_P_DONEMSG,
   OPT_P_FADEINTIME,                 //+
@@ -86,7 +84,6 @@ typedef enum {
   OPT_P_REMCONTROLUSER,             //
   OPT_P_REMOTECONTROL,              //
   OPT_P_UI_ACCENT_COL,
-  OPT_P_UI_BACKGROUND_COL,
 } bdjoptkey_t;
 
 typedef enum {
@@ -108,5 +105,6 @@ void    *bdjoptGetStr (ssize_t idx);
 ssize_t bdjoptGetNum (ssize_t idx);
 void    bdjoptSetNum (ssize_t idx, ssize_t value);
 void    bdjoptCreateDirectories (void);
+void    bdjoptSave (void);
 
 #endif /* INC_BDJOPT_H */

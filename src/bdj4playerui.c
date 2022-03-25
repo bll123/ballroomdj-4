@@ -251,7 +251,7 @@ pluiClosingCallback (void *udata, programstate_t programState)
   logProcBegin (LOG_PROC, "pluiClosingCallback");
   pathbldMakePath (fn, sizeof (fn), "",
       "playerui", ".txt", PATHBLD_MP_USEIDX);
-  datafileSaveKeyVal (fn, playeruidfkeys, PLAYERUI_DFKEY_COUNT, plui->options);
+  datafileSaveKeyVal ("playerui", fn, playeruidfkeys, PLAYERUI_DFKEY_COUNT, plui->options);
 
   g_object_unref (plui->ledonImg);
   g_object_unref (plui->ledoffImg);

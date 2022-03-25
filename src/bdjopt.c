@@ -29,7 +29,6 @@ static datafilekey_t bdjoptglobaldfkeys[] = {
   { "AUTOORGANIZE",       OPT_G_AUTOORGANIZE,       VALUE_NUM, convBoolean, -1 },
   { "CHANGESPACE",        OPT_G_CHANGESPACE,        VALUE_NUM, convBoolean, -1 },
   { "DEBUGLVL",           OPT_G_DEBUGLVL,           VALUE_NUM, NULL, -1 },
-  { "ENABLEIMGPLAYER",    OPT_G_ENABLEIMGPLAYER,    VALUE_NUM, convBoolean, -1 },
   { "ITUNESSUPPORT",      OPT_G_ITUNESSUPPORT,      VALUE_STR, NULL, -1 },
   { "LOADDANCEFROMGENRE", OPT_G_LOADDANCEFROMGENRE, VALUE_NUM, convBoolean, -1 },
   { "MUSICDIRDFLT",       OPT_G_MUSICDIRDFLT,       VALUE_STR, NULL, -1 },
@@ -51,12 +50,11 @@ static datafilekey_t bdjoptglobaldfkeys[] = {
 
 datafilekey_t bdjoptprofiledfkeys[] = {
   { "ALLOWEDIT",            OPT_P_ALLOWEDIT,            VALUE_NUM, convBoolean, -1 },
-  { "AUTOSTARTUP",          OPT_P_AUTOSTARTUP,          VALUE_STR, NULL, -1 },
   { "DEFAULTVOLUME",        OPT_P_DEFAULTVOLUME,        VALUE_NUM, NULL, -1 },
   { "DONEMSG",              OPT_P_DONEMSG,              VALUE_STR, NULL, -1 },
   { "FADEINTIME",           OPT_P_FADEINTIME,           VALUE_NUM, NULL, -1 },
   { "FADEOUTTIME",          OPT_P_FADEOUTTIME,          VALUE_NUM, NULL, -1 },
-  { "FADETYPE",             OPT_P_FADETYPE,             VALUE_STR, bdjoptConvFadeType, -1 },
+  { "FADETYPE",             OPT_P_FADETYPE,             VALUE_NUM, bdjoptConvFadeType, -1 },
   { "GAP",                  OPT_P_GAP,                  VALUE_NUM, NULL, -1 },
   { "HIDEMARQUEEONSTART",   OPT_P_HIDE_MARQUEE_ON_START,VALUE_NUM, convBoolean, -1 },
   { "INSERT_LOC",           OPT_P_INSERT_LOCATION,      VALUE_NUM, NULL, -1 },
@@ -77,7 +75,6 @@ datafilekey_t bdjoptprofiledfkeys[] = {
   { "REMCONTROLUSER",       OPT_P_REMCONTROLUSER,       VALUE_STR, NULL, -1 },
   { "REMOTECONTROL",        OPT_P_REMOTECONTROL,        VALUE_NUM, convBoolean, -1 },
   { "UI_ACCENT_COL",        OPT_P_UI_ACCENT_COL,        VALUE_STR, NULL, -1 },
-  { "UI_BACKGROUND_COL",    OPT_P_UI_BACKGROUND_COL,    VALUE_STR, NULL, -1 },
 };
 int            bdjoptprofiledfcount;
 #define BDJOPT_PROFILE_DFKEY_COUNT (sizeof (bdjoptprofiledfkeys) / sizeof (datafilekey_t))
@@ -221,6 +218,32 @@ bdjoptCreateDirectories (void)
   fileopMakeDir (path);
 }
 
+void
+bdjoptSave (void)
+{
+  char    path [MAXPATHLEN];
+
+  /* global */
+  pathbldMakePath (path, sizeof (path), "", BDJ_CONFIG_BASEFN,
+      BDJ_CONFIG_EXT, PATHBLD_MP_USEIDX);
+  datafileSaveKeyVal ("config-global", path, bdjoptglobaldfkeys, BDJOPT_GLOBAL_DFKEY_COUNT, bdjopt->data);
+
+  /* profile */
+  pathbldMakePath (path, sizeof (path), "profiles", BDJ_CONFIG_BASEFN,
+      BDJ_CONFIG_EXT, PATHBLD_MP_USEIDX);
+  datafileSaveKeyVal ("config-profile", path, bdjoptprofiledfkeys, BDJOPT_PROFILE_DFKEY_COUNT, bdjopt->data);
+
+  /* machine */
+  pathbldMakePath (path, sizeof (path), "", BDJ_CONFIG_BASEFN,
+      BDJ_CONFIG_EXT, PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
+  datafileSaveKeyVal ("config-machine", path, bdjoptmachdfkeys, BDJOPT_MACHINE_DFKEY_COUNT, bdjopt->data);
+
+  /* machine/profile */
+  pathbldMakePath (path, sizeof (path), "profiles", BDJ_CONFIG_BASEFN,
+      BDJ_CONFIG_EXT, PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
+  datafileSaveKeyVal ("config-machine-profile", path, bdjoptmachprofiledfkeys, BDJOPT_MACH_PROFILE_DFKEY_COUNT, bdjopt->data);
+}
+
 /* internal routines */
 
 static void
@@ -231,6 +254,8 @@ bdjoptConvFadeType (datafileconv_t *conv)
   if (conv->valuetype == VALUE_STR) {
     conv->valuetype = VALUE_NUM;
 
+fprintf (stderr, "conv->u.str: %s\n", conv->u.str);
+fflush (stderr);
     if (strcmp (conv->u.str, "quartersine") == 0) {
       fadetype = FADETYPE_QUARTER_SINE;
     }

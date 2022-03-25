@@ -336,7 +336,7 @@ marqueeClosingCallback (void *udata, programstate_t programState)
 
   pathbldMakePath (fn, sizeof (fn), "",
       "marquee", ".txt", PATHBLD_MP_USEIDX);
-  datafileSaveKeyVal (fn, mqdfkeys, MQ_KEY_MAX, marquee->options);
+  datafileSaveKeyVal ("marquee", fn, mqdfkeys, MQ_KEY_MAX, marquee->options);
 
   sockhCloseServer (marquee->sockserver);
 
