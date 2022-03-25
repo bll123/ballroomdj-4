@@ -24,6 +24,6 @@ int         levelGetMaxWidth (level_t *level);
 char        * levelGetLevel (level_t *level, ilistidx_t idx);
 ssize_t     levelGetWeight (level_t *level, ilistidx_t idx);
 ssize_t     levelGetMax (level_t *level);
-void        levelConv (char *keydata, datafileret_t *ret);
+void        levelConv (datafileconv_t *conv);
 
 #endif /* INC_LEVEL_H */

@@ -17,7 +17,7 @@
 
   /* must be sorted in ascii order */
 static datafilekey_t genredfkeys [GENRE_KEY_MAX] = {
-  { "CLASSICAL",  GENRE_CLASSICAL_FLAG, VALUE_NUM, parseConvBoolean, -1 },
+  { "CLASSICAL",  GENRE_CLASSICAL_FLAG, VALUE_NUM, convBoolean, -1 },
   { "GENRE",      GENRE_GENRE,          VALUE_STR, NULL, -1 },
 };
 
@@ -42,7 +42,8 @@ genreAlloc (char *fname)
 
   genre->df = datafileAllocParse ("genre", DFTYPE_INDIRECT, fname,
       genredfkeys, GENRE_KEY_MAX, GENRE_GENRE);
-  ilistDumpInfo (datafileGetList (genre->df));
+  genre->genre = datafileGetList (genre->df);
+  ilistDumpInfo (genre->genre);
 
   dflist = datafileGetList (genre->df);
   genre->genreList = slistAlloc ("genre-disp", LIST_UNORDERED, NULL);
@@ -71,15 +72,27 @@ genreFree (genre_t *genre)
 }
 
 void
-genreConv (char *keydata, datafileret_t *ret)
+genreConv (datafileconv_t *conv)
 {
   genre_t     *genre;
-  slist_t      *lookup;
+  slist_t     *lookup;
+  ssize_t     num;
 
-  ret->valuetype = VALUE_NUM;
   genre = bdjvarsdfGet (BDJVDF_GENRES);
-  lookup = datafileGetLookup (genre->df);
-  ret->u.num = slistGetNum (lookup, keydata);
+
+  if (conv->valuetype == VALUE_STR) {
+    conv->valuetype = VALUE_NUM;
+    lookup = datafileGetLookup (genre->df);
+    num = slistGetNum (lookup, conv->u.str);
+    conv->u.num = num;
+  } else if (conv->valuetype == VALUE_NUM) {
+    conv->valuetype = VALUE_STR;
+    if (conv->u.num == LIST_VALUE_INVALID) {
+      conv->u.str = "";
+    } else {
+      conv->u.str = ilistGetStr (genre->genre, conv->u.num, GENRE_GENRE);
+    }
+  }
 }
 
 slist_t *

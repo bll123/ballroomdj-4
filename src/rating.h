@@ -24,6 +24,6 @@ ssize_t     ratingGetCount (rating_t *rating);
 int         ratingGetMaxWidth (rating_t *rating);
 char        * ratingGetRating (rating_t *rating, nlistidx_t idx);
 ssize_t     ratingGetWeight (rating_t *rating, nlistidx_t idx);
-void        ratingConv (char *keydata, datafileret_t *ret);
+void        ratingConv (datafileconv_t *conv);
 
 #endif /* INC_RATING_H */

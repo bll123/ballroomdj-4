@@ -94,17 +94,25 @@ ratingGetWeight (rating_t *rating, ilistidx_t ikey)
 }
 
 void
-ratingConv (char *keydata, datafileret_t *ret)
+ratingConv (datafileconv_t *conv)
 {
   rating_t    *rating;
-  slist_t      *lookup;
+  slist_t     *lookup;
+  ssize_t     num;
 
-  ret->valuetype = VALUE_NUM;
   rating = bdjvarsdfGet (BDJVDF_RATINGS);
-  lookup = datafileGetLookup (rating->df);
-  ret->u.num = slistGetNum (lookup, keydata);
-  if (ret->u.num == LIST_VALUE_INVALID) {
-    /* unknown ratings are dumped into the unrated bucket */
-    ret->u.num = RATING_UNRATED_IDX;
+
+  if (conv->valuetype == VALUE_STR) {
+    conv->valuetype = VALUE_NUM;
+    lookup = datafileGetLookup (rating->df);
+    num = slistGetNum (lookup, conv->u.str);
+    if (num == LIST_VALUE_INVALID) {
+      /* unknown ratings are dumped into the unrated bucket */
+      num = RATING_UNRATED_IDX;
+    }
+    conv->u.num = num;
+  } else if (conv->valuetype == VALUE_NUM) {
+    conv->valuetype = VALUE_STR;
+    conv->u.str = ilistGetStr (rating->rating, conv->u.num, RATING_RATING);
   }
 }

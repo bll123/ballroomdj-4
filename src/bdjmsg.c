@@ -17,19 +17,19 @@ typedef struct {
 } bdjmsgtxt_t;
 
 static bdjmsgtxt_t routetxt [ROUTE_MAX] = {
-  [ROUTE_NONE] = { "NONE" },
   [ROUTE_CLICOMM] = { "CLICOMM" },
   [ROUTE_CONFIGUI] = { "CONFIGUI" },
+  [ROUTE_DBTAG] = { "DBTAG" },
+  [ROUTE_DBUPDATE] = { "DBUPDATE" },
   [ROUTE_MAIN] = { "MAIN" },
   [ROUTE_MANAGEUI] = { "MANAGEUI" },
   [ROUTE_MARQUEE] = { "MARQUEE" },
   [ROUTE_MOBILEMQ] = { "MOBILEMQ" },
+  [ROUTE_NONE] = { "NONE" },
   [ROUTE_PLAYER] = { "PLAYER" },
   [ROUTE_PLAYERUI] = { "PLAYERUI" },
   [ROUTE_REMCTRL] = { "REMCTRL" },
   [ROUTE_STARTERUI] = { "STARTERUI" },
-  [ROUTE_DBUPDATE] = { "DBUPDATE" },
-  [ROUTE_DBTAG] = { "DBTAG" },
 };
 
 static bdjmsgtxt_t msgtxt [MSG_MAX] = {

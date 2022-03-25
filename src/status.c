@@ -17,7 +17,7 @@
 
   /* must be sorted in ascii order */
 static datafilekey_t statusdfkeys [STATUS_KEY_MAX] = {
-  { "PLAYFLAG",   STATUS_PLAY_FLAG,   VALUE_NUM, parseConvBoolean, -1 },
+  { "PLAYFLAG",   STATUS_PLAY_FLAG,   VALUE_NUM, convBoolean, -1 },
   { "STATUS",     STATUS_STATUS,      VALUE_STR, NULL, -1 },
 };
 
@@ -94,19 +94,33 @@ statusPlayCheck (status_t *status, ilistidx_t ikey)
 }
 
 void
-statusConv (char *keydata, datafileret_t *ret)
+statusConv (datafileconv_t *conv)
 {
-  status_t     *status;
-  slist_t      *lookup;
-
-  ret->valuetype = VALUE_NUM;
+  status_t      *status;
+  slist_t       *lookup;
+  ssize_t       num;
 
   status = bdjvarsdfGet (BDJVDF_STATUS);
-  if (status == NULL) {
-    ret->u.num = 0;
-    return;
-  }
 
-  lookup = datafileGetLookup (status->df);
-  ret->u.num = slistGetNum (lookup, keydata);
+  if (conv->valuetype == VALUE_STR) {
+    conv->valuetype = VALUE_NUM;
+
+    if (status == NULL) {
+      conv->u.num = 0;
+      return;
+    }
+
+    lookup = datafileGetLookup (status->df);
+    num = slistGetNum (lookup, conv->u.str);
+    conv->u.num = num;
+  } else if (conv->valuetype == VALUE_NUM) {
+    conv->valuetype = VALUE_STR;
+
+    if (status == NULL || conv->u.num == LIST_VALUE_INVALID) {
+      conv->u.str = "New";
+      return;
+    }
+
+    conv->u.str = ilistGetStr (status->status, conv->u.num, STATUS_STATUS);
+  }
 }

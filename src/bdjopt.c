@@ -17,21 +17,21 @@
 #include "nlist.h"
 #include "sysvars.h"
 
-static void bdjoptConvFadeType (char *, datafileret_t *);
-static void bdjoptConvWriteTags (char *data, datafileret_t *ret);
+static void bdjoptConvFadeType (datafileconv_t *conv);
+static void bdjoptConvWriteTags (datafileconv_t *conv);
 static void bdjoptCreateNewConfigs (void);
 static void bdjoptCreateDefaultFiles (void);
-static void bdjoptConvMobileMq (char *data, datafileret_t *ret);
+static void bdjoptConvMobileMq (datafileconv_t *conv);
 
 static datafile_t   *bdjopt = NULL;
 
 static datafilekey_t bdjoptglobaldfkeys[] = {
-  { "AUTOORGANIZE",       OPT_G_AUTOORGANIZE,       VALUE_NUM, parseConvBoolean, -1 },
-  { "CHANGESPACE",        OPT_G_CHANGESPACE,        VALUE_NUM, parseConvBoolean, -1 },
+  { "AUTOORGANIZE",       OPT_G_AUTOORGANIZE,       VALUE_NUM, convBoolean, -1 },
+  { "CHANGESPACE",        OPT_G_CHANGESPACE,        VALUE_NUM, convBoolean, -1 },
   { "DEBUGLVL",           OPT_G_DEBUGLVL,           VALUE_NUM, NULL, -1 },
-  { "ENABLEIMGPLAYER",    OPT_G_ENABLEIMGPLAYER,    VALUE_NUM, parseConvBoolean, -1 },
+  { "ENABLEIMGPLAYER",    OPT_G_ENABLEIMGPLAYER,    VALUE_NUM, convBoolean, -1 },
   { "ITUNESSUPPORT",      OPT_G_ITUNESSUPPORT,      VALUE_STR, NULL, -1 },
-  { "LOADDANCEFROMGENRE", OPT_G_LOADDANCEFROMGENRE, VALUE_NUM, parseConvBoolean, -1 },
+  { "LOADDANCEFROMGENRE", OPT_G_LOADDANCEFROMGENRE, VALUE_NUM, convBoolean, -1 },
   { "MUSICDIRDFLT",       OPT_G_MUSICDIRDFLT,       VALUE_STR, NULL, -1 },
   { "PATHFMT",            OPT_G_PATHFMT,            VALUE_STR, NULL, -1 },
   { "PATHFMT_CL",         OPT_G_PATHFMT_CL,         VALUE_STR, NULL, -1 },
@@ -39,18 +39,18 @@ static datafilekey_t bdjoptglobaldfkeys[] = {
   { "PATHFMT_VA",         OPT_G_PATHFMT_VA,         VALUE_STR, NULL, -1 },
   { "PLAYERQLEN",         OPT_G_PLAYERQLEN,         VALUE_NUM, NULL, -1 },
   { "REMCONTROLHTML",     OPT_G_REMCONTROLHTML,     VALUE_STR, NULL, -1 },
-  { "SHOWALBUM",          OPT_G_SHOWALBUM,          VALUE_NUM, parseConvBoolean, -1 },
-  { "SHOWBPM",            OPT_G_SHOWBPM,            VALUE_NUM, parseConvBoolean, -1 },
-  { "SHOWCLASSICAL",      OPT_G_SHOWCLASSICAL,      VALUE_NUM, parseConvBoolean, -1 },
-  { "SHOWSTATUS",         OPT_G_SHOWSTATUS,         VALUE_NUM, parseConvBoolean, -1 },
-  { "SLOWDEVICE",         OPT_G_SLOWDEVICE,         VALUE_NUM, parseConvBoolean, -1 },
+  { "SHOWALBUM",          OPT_G_SHOWALBUM,          VALUE_NUM, convBoolean, -1 },
+  { "SHOWBPM",            OPT_G_SHOWBPM,            VALUE_NUM, convBoolean, -1 },
+  { "SHOWCLASSICAL",      OPT_G_SHOWCLASSICAL,      VALUE_NUM, convBoolean, -1 },
+  { "SHOWSTATUS",         OPT_G_SHOWSTATUS,         VALUE_NUM, convBoolean, -1 },
+  { "SLOWDEVICE",         OPT_G_SLOWDEVICE,         VALUE_NUM, convBoolean, -1 },
   { "VARIOUS",            OPT_G_VARIOUS,            VALUE_STR, NULL, -1 },
   { "WRITETAGS",          OPT_G_WRITETAGS,          VALUE_NUM, bdjoptConvWriteTags, -1 },
 };
 #define BDJOPT_GLOBAL_DFKEY_COUNT (sizeof (bdjoptglobaldfkeys) / sizeof (datafilekey_t))
 
 datafilekey_t bdjoptprofiledfkeys[] = {
-  { "ALLOWEDIT",            OPT_P_ALLOWEDIT,            VALUE_NUM, parseConvBoolean, -1 },
+  { "ALLOWEDIT",            OPT_P_ALLOWEDIT,            VALUE_NUM, convBoolean, -1 },
   { "AUTOSTARTUP",          OPT_P_AUTOSTARTUP,          VALUE_STR, NULL, -1 },
   { "DEFAULTVOLUME",        OPT_P_DEFAULTVOLUME,        VALUE_NUM, NULL, -1 },
   { "DONEMSG",              OPT_P_DONEMSG,              VALUE_STR, NULL, -1 },
@@ -58,7 +58,7 @@ datafilekey_t bdjoptprofiledfkeys[] = {
   { "FADEOUTTIME",          OPT_P_FADEOUTTIME,          VALUE_NUM, NULL, -1 },
   { "FADETYPE",             OPT_P_FADETYPE,             VALUE_STR, bdjoptConvFadeType, -1 },
   { "GAP",                  OPT_P_GAP,                  VALUE_NUM, NULL, -1 },
-  { "HIDEMARQUEEONSTART",   OPT_P_HIDE_MARQUEE_ON_START,VALUE_NUM, parseConvBoolean, -1 },
+  { "HIDEMARQUEEONSTART",   OPT_P_HIDE_MARQUEE_ON_START,VALUE_NUM, convBoolean, -1 },
   { "INSERT_LOC",           OPT_P_INSERT_LOCATION,      VALUE_NUM, NULL, -1 },
   { "MAXPLAYTIME",          OPT_P_MAXPLAYTIME,          VALUE_NUM, NULL, -1 },
   { "MOBILEMARQUEE",        OPT_P_MOBILEMARQUEE,        VALUE_NUM, bdjoptConvMobileMq, -1 },
@@ -66,7 +66,7 @@ datafilekey_t bdjoptprofiledfkeys[] = {
   { "MOBILEMQTAG",          OPT_P_MOBILEMQTAG,          VALUE_STR, NULL, -1 },
   { "MOBILEMQTITLE",        OPT_P_MOBILEMQTITLE,        VALUE_STR, NULL, -1 },
   { "MQQLEN",               OPT_P_MQQLEN,               VALUE_NUM, NULL, -1 },
-  { "MQSHOWINFO",           OPT_P_MQ_SHOW_INFO,         VALUE_NUM, parseConvBoolean, -1 },
+  { "MQSHOWINFO",           OPT_P_MQ_SHOW_INFO,         VALUE_NUM, convBoolean, -1 },
   { "MQ_ACCENT_COL",        OPT_P_MQ_ACCENT_COL,        VALUE_STR, NULL, -1 },
   { "PAUSEMSG",             OPT_P_PAUSEMSG,             VALUE_STR, NULL, -1 },
   { "PROFILENAME",          OPT_P_PROFILENAME,          VALUE_STR, NULL, -1 },
@@ -75,7 +75,7 @@ datafilekey_t bdjoptprofiledfkeys[] = {
   { "REMCONTROLPASS",       OPT_P_REMCONTROLPASS,       VALUE_STR, NULL, -1 },
   { "REMCONTROLPORT",       OPT_P_REMCONTROLPORT,       VALUE_NUM, NULL, -1 },
   { "REMCONTROLUSER",       OPT_P_REMCONTROLUSER,       VALUE_STR, NULL, -1 },
-  { "REMOTECONTROL",        OPT_P_REMOTECONTROL,        VALUE_NUM, parseConvBoolean, -1 },
+  { "REMOTECONTROL",        OPT_P_REMOTECONTROL,        VALUE_NUM, convBoolean, -1 },
   { "UI_ACCENT_COL",        OPT_P_UI_ACCENT_COL,        VALUE_STR, NULL, -1 },
   { "UI_BACKGROUND_COL",    OPT_P_UI_BACKGROUND_COL,    VALUE_STR, NULL, -1 },
 };
@@ -224,44 +224,64 @@ bdjoptCreateDirectories (void)
 /* internal routines */
 
 static void
-bdjoptConvFadeType (char *data, datafileret_t *ret)
+bdjoptConvFadeType (datafileconv_t *conv)
 {
   bdjfadetype_t   fadetype = FADETYPE_TRIANGLE;
 
-  ret->valuetype = VALUE_NUM;
+  if (conv->valuetype == VALUE_STR) {
+    conv->valuetype = VALUE_NUM;
 
-  if (strcmp (data, "quartersine") == 0) {
-    fadetype = FADETYPE_QUARTER_SINE;
+    if (strcmp (conv->u.str, "quartersine") == 0) {
+      fadetype = FADETYPE_QUARTER_SINE;
+    }
+    if (strcmp (conv->u.str, "halfsine") == 0) {
+      fadetype = FADETYPE_HALF_SINE;;
+    }
+    if (strcmp (conv->u.str, "logarithmic") == 0) {
+      fadetype = FADETYPE_LOGARITHMIC;
+    }
+    if (strcmp (conv->u.str, "invertedparabola") == 0) {
+      fadetype = FADETYPE_INVERTED_PARABOLA;
+    }
+    conv->u.num = fadetype;
+  } else if (conv->valuetype == VALUE_NUM) {
+    conv->valuetype = VALUE_STR;
+    switch (conv->u.num) {
+      case FADETYPE_TRIANGLE: { conv->u.str = "triangle"; break; }
+      case FADETYPE_QUARTER_SINE: { conv->u.str = "quartersine"; break; }
+      case FADETYPE_HALF_SINE: { conv->u.str = "halfsine"; break; }
+      case FADETYPE_LOGARITHMIC: { conv->u.str = "logarithmic"; break; }
+      case FADETYPE_INVERTED_PARABOLA: { conv->u.str = "invertedparabola"; break; }
+    }
   }
-  if (strcmp (data, "halfsine") == 0) {
-    fadetype = FADETYPE_HALF_SINE;;
-  }
-  if (strcmp (data, "logarithmic") == 0) {
-    fadetype = FADETYPE_LOGARITHMIC;
-  }
-  if (strcmp (data, "invertedparabola") == 0) {
-    fadetype = FADETYPE_INVERTED_PARABOLA;
-  }
-  ret->u.num = fadetype;
 }
 
 static void
-bdjoptConvWriteTags (char *data, datafileret_t *ret)
+bdjoptConvWriteTags (datafileconv_t *conv)
 {
   bdjwritetags_t   wtag = WRITE_TAGS_NONE;
 
-  ret->valuetype = VALUE_NUM;
+  if (conv->valuetype == VALUE_STR) {
+    conv->valuetype = VALUE_NUM;
 
-  if (strcmp (data, "NONE") == 0) {
-    wtag = WRITE_TAGS_NONE;
+    if (strcmp (conv->u.str, "NONE") == 0) {
+      wtag = WRITE_TAGS_NONE;
+    }
+    if (strcmp (conv->u.str, "ALL") == 0) {
+      wtag = WRITE_TAGS_ALL;
+    }
+    if (strcmp (conv->u.str, "BDJ") == 0) {
+      wtag = WRITE_TAGS_BDJ_ONLY;
+    }
+    conv->u.num = wtag;
+  } else if (conv->valuetype == VALUE_NUM) {
+    conv->valuetype = VALUE_STR;
+    switch (conv->u.num) {
+      case WRITE_TAGS_ALL: { conv->u.str = "ALL"; break; }
+      case WRITE_TAGS_BDJ_ONLY: { conv->u.str = "BDJ"; break; }
+      case WRITE_TAGS_NONE: { conv->u.str = "NONE"; break; }
+    }
   }
-  if (strcmp (data, "ALL") == 0) {
-    wtag = WRITE_TAGS_ALL;
-  }
-  if (strcmp (data, "BDJ") == 0) {
-    wtag = WRITE_TAGS_BDJ_ONLY;
-  }
-  ret->u.num = wtag;
 }
 
 static void
@@ -322,18 +342,26 @@ bdjoptCreateDefaultFiles (void)
 }
 
 static void
-bdjoptConvMobileMq (char *data, datafileret_t *ret)
+bdjoptConvMobileMq (datafileconv_t *conv)
 {
   bdjmobilemq_t   val = MOBILEMQ_OFF;
 
-  ret->valuetype = VALUE_NUM;
+  if (conv->valuetype == VALUE_STR) {
+    conv->valuetype = VALUE_NUM;
 
-  if (strcmp (data, "internet") == 0) {
-    val = MOBILEMQ_INTERNET;
+    if (strcmp (conv->u.str, "internet") == 0) {
+      val = MOBILEMQ_INTERNET;
+    }
+    if (strcmp (conv->u.str, "local") == 0) {
+      val = MOBILEMQ_LOCAL;
+    }
+    conv->u.num = val;
+  } else if (conv->valuetype == VALUE_NUM) {
+    conv->valuetype = VALUE_STR;
+    switch (conv->u.num) {
+      case MOBILEMQ_INTERNET: { conv->u.str = "internet"; break; }
+      case MOBILEMQ_LOCAL: { conv->u.str = "local"; break; }
+    }
   }
-  if (strcmp (data, "local") == 0) {
-    val = MOBILEMQ_LOCAL;
-  }
-  ret->u.num = val;
 }
 

@@ -204,14 +204,14 @@ END_TEST
     { "A", 14, VALUE_STR, NULL, -1 },
     { "B", 15, VALUE_NUM,  NULL, -1 },
     { "C", 16, VALUE_STR,  NULL, -1 },
-    { "D", 17, VALUE_NUM, parseConvBoolean, -1 },
+    { "D", 17, VALUE_NUM, convBoolean, -1 },
     { "E", 18, VALUE_STR, NULL, -1 },
     { "F", 19, VALUE_STR, NULL, -1 },
     { "G", 20, VALUE_DOUBLE, NULL, -1 },
-    { "H", 21, VALUE_LIST, parseConvTextList, -1 },
-    { "I", 22, VALUE_NUM, parseConvBoolean, -1 },
-    { "J", 23, VALUE_NUM, parseConvBoolean, -1 },
-    { "K", 24, VALUE_NUM, parseConvBoolean, -1 },
+    { "H", 21, VALUE_LIST, convTextList, -1 },
+    { "I", 22, VALUE_NUM, convBoolean, -1 },
+    { "J", 23, VALUE_NUM, convBoolean, -1 },
+    { "K", 24, VALUE_NUM, convBoolean, -1 },
   };
   #define DFKEY_COUNT 11
 

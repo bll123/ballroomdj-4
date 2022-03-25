@@ -1,6 +1,5 @@
 #include "config.h"
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -18,7 +17,7 @@
 
   /* must be sorted in ascii order */
 static datafilekey_t leveldfkeys [LEVEL_KEY_MAX] = {
-  { "DEFAULT",  LEVEL_DEFAULT_FLAG, VALUE_NUM, parseConvBoolean, -1 },
+  { "DEFAULT",  LEVEL_DEFAULT_FLAG, VALUE_NUM, convBoolean, -1 },
   { "LEVEL",    LEVEL_LEVEL,        VALUE_STR, NULL, -1 },
   { "WEIGHT",   LEVEL_WEIGHT,       VALUE_NUM, NULL, -1 },
 };
@@ -102,18 +101,26 @@ levelGetMax (level_t *level)
 }
 
 void
-levelConv (char *keydata, datafileret_t *ret)
+levelConv (datafileconv_t *conv)
 {
   level_t     *level;
-  slist_t      *lookup;
-
-  ret->valuetype = VALUE_NUM;
+  slist_t     *lookup;
+  ssize_t     num;
 
   level = bdjvarsdfGet (BDJVDF_LEVELS);
-  lookup = datafileGetLookup (level->df);
-  ret->u.num = slistGetNum (lookup, keydata);
-  if (ret->u.num == LIST_VALUE_INVALID) {
-    /* unknown levels are dumped into bucket 1 */
-    ret->u.num = 1;
+
+  if (conv->valuetype == VALUE_STR) {
+    conv->valuetype = VALUE_NUM;
+
+    lookup = datafileGetLookup (level->df);
+    num = slistGetNum (lookup, conv->u.str);
+    conv->u.num = num;
+    if (conv->u.num == LIST_VALUE_INVALID) {
+      /* unknown levels are dumped into bucket 1 */
+      conv->u.num = 1;
+    }
+  } else if (conv->valuetype == VALUE_NUM) {
+    conv->valuetype = VALUE_STR;
+    conv->u.str = ilistGetStr (level->level, conv->u.num, LEVEL_LEVEL);
   }
 }

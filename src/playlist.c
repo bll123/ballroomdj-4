@@ -30,11 +30,11 @@
 #include "status.h"
 #include "tagdef.h"
 
-static void     plConvType (char *, datafileret_t *ret);
+static void     plConvType (datafileconv_t *conv);
 
 /* must be sorted in ascii order */
 static datafilekey_t playlistdfkeys [] = {
-  { "ALLOWEDKEYWORDS",PLAYLIST_ALLOWED_KEYWORDS, VALUE_LIST, parseConvTextList, -1 },
+  { "ALLOWEDKEYWORDS",PLAYLIST_ALLOWED_KEYWORDS, VALUE_LIST, convTextList, -1 },
   { "DANCELEVELHIGH", PLAYLIST_LEVEL_HIGH, VALUE_NUM, levelConv, -1 },
   { "DANCELEVELLOW",  PLAYLIST_LEVEL_LOW, VALUE_NUM, levelConv, -1 },
   { "DANCERATING",    PLAYLIST_RATING, VALUE_NUM, ratingConv, -1 },
@@ -42,8 +42,8 @@ static datafilekey_t playlistdfkeys [] = {
   { "MANUALLIST",     PLAYLIST_MANUAL_LIST_NAME, VALUE_STR, NULL, -1 },
   { "MAXPLAYTIME",    PLAYLIST_MAX_PLAY_TIME, VALUE_NUM, NULL, -1 },
   { "MQMESSAGE",      PLAYLIST_MQ_MESSAGE, VALUE_STR, NULL, -1 },
-  { "PAUSEEACHSONG",  PLAYLIST_PAUSE_EACH_SONG, VALUE_NUM, parseConvBoolean, -1 },
-  { "PLAYANNOUNCE",   PLAYLIST_ANNOUNCE, VALUE_NUM, parseConvBoolean, -1 },
+  { "PAUSEEACHSONG",  PLAYLIST_PAUSE_EACH_SONG, VALUE_NUM, convBoolean, -1 },
+  { "PLAYANNOUNCE",   PLAYLIST_ANNOUNCE, VALUE_NUM, convBoolean, -1 },
   { "SEQUENCE",       PLAYLIST_SEQ_NAME, VALUE_STR, NULL, -1 },
   { "STOPAFTER",      PLAYLIST_STOP_AFTER, VALUE_NUM, NULL, -1 },
   { "STOPTIME",       PLAYLIST_STOP_TIME, VALUE_NUM, NULL, -1 },
@@ -58,7 +58,7 @@ static datafilekey_t playlistdancedfkeys [PLDANCE_KEY_MAX] = {
   { "COUNT",          PLDANCE_COUNT,        VALUE_NUM, NULL, -1 },
   { "DANCE",          PLDANCE_DANCE,        VALUE_DATA, danceConvDance, -1 },
   { "MAXPLAYTIME",    PLDANCE_MAXPLAYTIME,  VALUE_NUM, NULL, -1 },
-  { "SELECTED",       PLDANCE_SELECTED,     VALUE_NUM, parseConvBoolean, -1 },
+  { "SELECTED",       PLDANCE_SELECTED,     VALUE_NUM, convBoolean, -1 },
 };
 
 static void playlistSetSongFilter (playlist_t *pl);
@@ -567,15 +567,26 @@ playlistSetSongFilter (playlist_t *pl)
 }
 
 static void
-plConvType (char *data, datafileret_t *ret)
+plConvType (datafileconv_t *conv)
 {
-  ret->valuetype = VALUE_NUM;
-  ret->u.num = PLTYPE_MANUAL;
-  if (strcmp (data, "Automatic") == 0) {
-    ret->u.num = PLTYPE_AUTO;
-  }
-  if (strcmp (data, "Sequence") == 0) {
-    ret->u.num = PLTYPE_SEQ;
+  if (conv->valuetype == VALUE_STR) {
+    ssize_t   num;
+
+    conv->valuetype = VALUE_NUM;
+    num = PLTYPE_MANUAL;
+    if (strcmp (conv->u.str, "Automatic") == 0) {
+      num = PLTYPE_AUTO;
+    }
+    if (strcmp (conv->u.str, "Sequence") == 0) {
+      num = PLTYPE_SEQ;
+    }
+    conv->u.num = num;
+  } else if (conv->valuetype == VALUE_NUM) {
+    switch (conv->u.num) {
+      case PLTYPE_MANUAL: { conv->u.str = "Manual"; break; }
+      case PLTYPE_AUTO: { conv->u.str = "Automatic"; break; }
+      case PLTYPE_SEQ: { conv->u.str = "Sequence"; break; }
+    }
   }
 }
 

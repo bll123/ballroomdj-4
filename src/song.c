@@ -22,7 +22,7 @@
 #include "status.h"
 #include "tagdef.h"
 
-static void songConvFavorite (char *keydata, datafileret_t *ret);
+static void songConvFavorite (datafileconv_t *conv);
 
   /* must be sorted in ascii order */
 static datafilekey_t songdfkeys [] = {
@@ -49,7 +49,7 @@ static datafilekey_t songdfkeys [] = {
   { "KEYWORD",              TAG_KEYWORD,              VALUE_STR, NULL, -1 },
   { "MQDISPLAY",            TAG_MQDISPLAY,            VALUE_STR, NULL, -1 },
   { "MUSICBRAINZ_TRACKID",  TAG_MUSICBRAINZ_TRACKID,  VALUE_STR, NULL, -1 },
-  { "NOMAXPLAYTIME",        TAG_NOMAXPLAYTIME,        VALUE_NUM, parseConvBoolean, -1 },
+  { "NOMAXPLAYTIME",        TAG_NOMAXPLAYTIME,        VALUE_NUM, convBoolean, -1 },
   { "NOTES",                TAG_NOTES,                VALUE_STR, NULL, -1 },
   { "RRN",                  TAG_RRN,                  VALUE_NUM, NULL, -1 },
   { "SAMESONG",             TAG_SAMESONG,             VALUE_STR, NULL, -1 },
@@ -57,7 +57,7 @@ static datafilekey_t songdfkeys [] = {
   { "SONGSTART",            TAG_SONGSTART,            VALUE_NUM, NULL, -1 },
   { "SPEEDADJUSTMENT",      TAG_SPEEDADJUSTMENT,      VALUE_NUM, NULL, -1 },
   { "STATUS",               TAG_STATUS,               VALUE_NUM, statusConv, -1 },
-  { "TAGS",                 TAG_TAGS,                 VALUE_LIST, parseConvTextList, -1 },
+  { "TAGS",                 TAG_TAGS,                 VALUE_LIST, convTextList, -1 },
   { "TITLE",                TAG_TITLE,                VALUE_STR, NULL, -1 },
   { "TRACKNUMBER",          TAG_TRACKNUMBER,          VALUE_NUM, NULL, -1 },
   { "TRACKTOTAL",           TAG_TRACKTOTAL,           VALUE_NUM, NULL, -1 },
@@ -267,20 +267,26 @@ songAudioFileExists (song_t *song)
 /* internal routines */
 
 static void
-songConvFavorite (char *keydata, datafileret_t *ret)
+songConvFavorite (datafileconv_t *conv)
 {
   nlistidx_t       idx;
 
-  ret->valuetype = VALUE_NUM;
-  if (keydata == NULL || strcmp (keydata, "") == 0) {
-    ret->u.num = SONG_FAVORITE_NONE;
-    return;
+  if (conv->valuetype == VALUE_STR) {
+    conv->valuetype = VALUE_NUM;
+    if (conv->u.str == NULL || strcmp (conv->u.str, "") == 0) {
+      conv->u.num = SONG_FAVORITE_NONE;
+      return;
+    }
+    idx = dfkeyBinarySearch (favoritedfkeys, SONG_FAVORITE_MAX, conv->u.str);
+    if (idx < 0) {
+      conv->u.num = SONG_FAVORITE_NONE;
+    } else {
+      conv->u.num = favoritedfkeys [idx].itemkey;
+    }
+  } else if (conv->valuetype == VALUE_NUM) {
+    conv->valuetype = VALUE_STR;
+    conv->u.str = favoritedfkeys [conv->u.num].name;
   }
-  idx = dfkeyBinarySearch (favoritedfkeys, SONG_FAVORITE_MAX, keydata);
-  if (idx < 0) {
-    ret->u.num = SONG_FAVORITE_NONE;
-  }
-  ret->u.num = favoritedfkeys [idx].itemkey;
 }
 
 static void

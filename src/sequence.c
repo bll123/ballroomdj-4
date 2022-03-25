@@ -23,11 +23,11 @@ sequenceAlloc (char *fname)
   sequence_t    *sequence;
   slist_t       *tlist;
   datafile_t    *df;
-  slist_t       *danceLookup;
   char          *seqkey;
   slistidx_t    lkey;
   char          fn [MAXPATHLEN];
   nlistidx_t    iteridx;
+  datafileconv_t  conv;
 
 
   pathbldMakePath (fn, sizeof (fn), "", fname, ".sequence", PATHBLD_MP_NONE);
@@ -43,13 +43,15 @@ sequenceAlloc (char *fname)
       NULL, 0, DATAFILE_NO_LOOKUP);
   tlist = datafileGetList (df);
 
-  danceLookup = danceGetLookup ();
   sequence->sequence = nlistAlloc ("sequence", LIST_UNORDERED, free);
   nlistSetSize (sequence->sequence, slistGetCount (tlist));
 
   slistStartIterator (tlist, &iteridx);
   while ((seqkey = slistIterateKey (tlist, &iteridx)) != NULL) {
-    lkey = slistGetNum (danceLookup, seqkey);
+    conv.valuetype = VALUE_STR;
+    conv.u.str = seqkey;
+    danceConvDance (&conv);
+    lkey = conv.u.num;
     nlistSetStr (sequence->sequence, lkey, seqkey);
   }
   datafileFree (df);

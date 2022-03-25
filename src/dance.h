@@ -41,7 +41,6 @@ char *        danceGetStr (dance_t *, ilistidx_t dkey, ilistidx_t idx);
 ssize_t       danceGetNum (dance_t *, ilistidx_t dkey, ilistidx_t idx);
 slist_t       *danceGetList (dance_t *, ilistidx_t dkey, ilistidx_t idx);
 slist_t       *danceGetDanceList (dance_t *);
-slist_t       *danceGetLookup (void);
-void          danceConvDance (char *keydata, datafileret_t *ret);
+void          danceConvDance (datafileconv_t *conv);
 
 #endif /* INC_DANCE_H */

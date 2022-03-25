@@ -17,7 +17,7 @@
 #include "log.h"
 #include "slist.h"
 
-static void danceConvSpeed (char *keydata, datafileret_t *ret);
+static void danceConvSpeed (datafileconv_t *conv);
 
   /* must be sorted in ascii order */
 static datafilekey_t dancedfkeys [DANCE_KEY_MAX] = {
@@ -28,7 +28,7 @@ static datafilekey_t dancedfkeys [DANCE_KEY_MAX] = {
   { "LOWBPM",     DANCE_LOW_BPM,  VALUE_NUM, NULL, -1 },
   { "SELECT",     DANCE_SELECT,   VALUE_NUM, NULL, -1 },
   { "SPEED",      DANCE_SPEED,    VALUE_LIST, danceConvSpeed, -1 },
-  { "TAGS",       DANCE_TAGS,     VALUE_LIST, parseConvTextList, -1 },
+  { "TAGS",       DANCE_TAGS,     VALUE_LIST, convTextList, -1 },
   { "TIMESIG",    DANCE_TIMESIG,  VALUE_STR, NULL, -1 },
   { "TYPE",       DANCE_TYPE,     VALUE_NUM, dnctypesConv, -1 },
 };
@@ -96,14 +96,6 @@ danceIterateKey (dance_t *dances, ilistidx_t *iteridx)
   return ikey;
 }
 
-slist_t *
-danceGetLookup (void)
-{
-  dance_t *dance = bdjvarsdfGet (BDJVDF_DANCES);
-  slist_t *lookup = datafileGetLookup (dance->df);
-  return lookup;
-}
-
 ssize_t
 danceGetCount (dance_t *dance)
 {
@@ -154,29 +146,42 @@ danceGetDanceList (dance_t *dance)
 }
 
 void
-danceConvDance (char *keydata, datafileret_t *ret)
+danceConvDance (datafileconv_t *conv)
 {
-  dance_t       *dance;
-  slist_t       *lookup;
+  dance_t   *dance;
+  slist_t   *lookup;
+  ssize_t   num;
 
-  ret->valuetype = VALUE_NUM;
-  ret->u.num = -1;
   dance = bdjvarsdfGet (BDJVDF_DANCES);
-  lookup = datafileGetLookup (dance->df);
-  if (lookup != NULL) {
-    ret->u.num = slistGetNum (lookup, keydata);
+
+  if (conv->valuetype == VALUE_STR) {
+    conv->valuetype = VALUE_NUM;
+    num = -1;
+    lookup = datafileGetLookup (dance->df);
+    if (lookup != NULL) {
+      num = slistGetNum (lookup, conv->u.str);
+    }
+    conv->u.num = num;
+  } else if (conv->valuetype == VALUE_NUM) {
+    conv->valuetype = VALUE_STR;
+    conv->u.str = ilistGetStr (dance->dances, conv->u.num, DANCE_DANCE);
   }
 }
 
 /* internal routines */
 
 static void
-danceConvSpeed (char *keydata, datafileret_t *ret)
+danceConvSpeed (datafileconv_t *conv)
 {
   nlistidx_t       idx;
 
-  ret->valuetype = VALUE_NUM;
-  idx = dfkeyBinarySearch (dancespeeddfkeys, DANCE_SPEED_MAX, keydata);
-  ret->u.num = dancespeeddfkeys [idx].itemkey;
+  if (conv->valuetype == VALUE_STR) {
+    conv->valuetype = VALUE_NUM;
+    idx = dfkeyBinarySearch (dancespeeddfkeys, DANCE_SPEED_MAX, conv->u.str);
+    conv->u.num = dancespeeddfkeys [idx].itemkey;
+  } else if (conv->valuetype == VALUE_NUM) {
+    conv->valuetype = VALUE_STR;
+    conv->u.str = dancespeeddfkeys [conv->u.num].name;
+  }
 }
 

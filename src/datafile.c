@@ -76,35 +76,72 @@ parseKeyValue (parseinfo_t *pi, char *data)
 }
 
 void
-parseConvBoolean (char *data, datafileret_t *ret)
+convBoolean (datafileconv_t *conv)
 {
-  ret->valuetype = VALUE_NUM;
-  ret->u.num = 0;
-  if (strcmp (data, "on") == 0 ||
-      strcmp (data, "yes") == 0 ||
-      strcmp (data, "1") == 0) {
-    ret->u.num = 1;
+  ssize_t   num;
+
+  if (conv->valuetype == VALUE_STR) {
+    conv->valuetype = VALUE_NUM;
+    num = 0;
+    if (strcmp (conv->u.str, "on") == 0 ||
+        strcmp (conv->u.str, "yes") == 0 ||
+        strcmp (conv->u.str, "1") == 0) {
+      num = 1;
+    }
+    conv->u.num = num;
+  } else if (conv->valuetype == VALUE_NUM) {
+    conv->valuetype = VALUE_STR;
+
+    num = conv->u.num;
+    conv->u.str = "no";
+    if (num) {
+      conv->u.str = "yes";
+    }
   }
 }
 
 void
-parseConvTextList (char *data, datafileret_t *ret)
+convTextList (datafileconv_t *conv)
 {
-  char          *tokptr;
-  char          *p;
+  char  *p;
 
-  logProcBegin (LOG_PROC, "parseConvTextList");
-  ret->valuetype = VALUE_LIST;
-  ret->u.list = NULL;
-  ret->u.list = slistAlloc ("textlist", LIST_ORDERED, NULL);
-  if (data != NULL) {
-    p = strtok_r (data, " ,", &tokptr);
-    while (p != NULL) {
-      slistSetStr (ret->u.list, p, NULL);
-      p = strtok_r (NULL, " ,", &tokptr);
+  logProcBegin (LOG_PROC, "convTextList");
+  if (conv->valuetype == VALUE_STR) {
+    char  *tokptr;
+    char  *str;
+
+    str = conv->u.str;
+
+    conv->valuetype = VALUE_LIST;
+    conv->u.list = slistAlloc ("textlist", LIST_ORDERED, NULL);
+    assert (conv->u.list != NULL);
+
+    if (conv->u.str != NULL && *conv->u.str) {
+      p = strtok_r (str, " ,;", &tokptr);
+      while (p != NULL) {
+        slistSetStr (conv->u.list, p, NULL);
+        p = strtok_r (NULL, " ,;", &tokptr);
+      }
     }
+  } else if (conv->valuetype == VALUE_LIST) {
+    slist_t     *list;
+    slistidx_t  iteridx;
+    char        tbuff [200];
+
+    conv->valuetype = VALUE_STR;
+    list = conv->u.list;
+
+    *tbuff = '\0';
+    slistStartIterator (list, &iteridx);
+    while ((p = slistIterateKey (list, &iteridx)) != NULL) {
+      strlcat (tbuff, p, sizeof (tbuff));
+      strlcat (tbuff, " ", sizeof (tbuff));
+    }
+    stringTrimChar (tbuff, ' ');
+    conv->u.str = strdup (tbuff);
   }
-  logProcEnd (LOG_PROC, "parseConvTextList", "");
+
+  logProcEnd (LOG_PROC, "convTextList", "");
 }
 
 /* datafile loading routines */
@@ -220,7 +257,7 @@ datafileParseMerge (list_t *datalist, char *data, char *name,
   char          *tkeystr;
   char          *tvalstr;
   char          *tlookupkey = NULL;
-  datafileret_t ret;
+  datafileconv_t conv;
 
 
   logProcBegin (LOG_PROC, "datafileParseMerge");
@@ -350,12 +387,15 @@ datafileParseMerge (list_t *datalist, char *data, char *name,
         vt = dfkeys [idx].valuetype;
         logMsg (LOG_DBG, LOG_DATAFILE, "ikey:%ld vt:%d tvalstr:%s", ikey, vt, tvalstr);
 
-        ret.valuetype = VALUE_NONE;
+        conv.valuetype = VALUE_NONE;
         if (dfkeys [idx].convFunc != NULL) {
-          dfkeys [idx].convFunc (tvalstr, &ret);
-          vt = ret.valuetype;
+          conv.valuetype = VALUE_STR;
+          conv.u.str = tvalstr;
+          dfkeys [idx].convFunc (&conv);
+
+          vt = conv.valuetype;
           if (vt == VALUE_NUM) {
-            if (ret.u.num == LIST_VALUE_INVALID && dfkeys [idx].backupKey != -1) {
+            if (conv.u.num == LIST_VALUE_INVALID && dfkeys [idx].backupKey != -1) {
               logMsg (LOG_DBG, LOG_DATAFILE, "invalid value; backup key %ld set data to %s", dfkeys [idx].backupKey, tvalstr);
               if (dftype == DFTYPE_INDIRECT) {
                 nlistSetStr (itemList, dfkeys [idx].backupKey, tvalstr);
@@ -364,7 +404,7 @@ datafileParseMerge (list_t *datalist, char *data, char *name,
                 nlistSetStr (datalist, dfkeys [idx].backupKey, tvalstr);
               }
             } else {
-              lval = ret.u.num;
+              lval = conv.u.num;
               logMsg (LOG_DBG, LOG_DATAFILE, "converted value: %s to %ld", tvalstr, lval);
             }
           }
@@ -419,7 +459,7 @@ datafileParseMerge (list_t *datalist, char *data, char *name,
         nlistSetDouble (setlist, ikey, dval);
       }
       if (vt == VALUE_LIST) {
-        nlistSetList (setlist, ikey, ret.u.list);
+        nlistSetList (setlist, ikey, conv.u.list);
       }
 
     }
@@ -461,25 +501,48 @@ void
 datafileSaveKeyVal (char *fn, datafilekey_t *dfkeys,
     ssize_t dfkeycount, nlist_t *list)
 {
-  FILE      *fh;
-  char      tbuff [100];
+  FILE            *fh;
+  char            tbuff [100];
+  datafileconv_t  conv;
+  valuetype_t     vt;
 
   datafileBackup (fn, 1);
   fh = fileopOpen (fn, "w");
   fprintf (fh, "# %s\n", tmutilDstamp (tbuff, sizeof (tbuff)));
   for (ssize_t i = 0; i < dfkeycount; ++i) {
     fprintf (fh, "%s\n", dfkeys [i].name);
-    if (dfkeys [i].valuetype == VALUE_NUM) {
-      ssize_t   val;
 
-      val = nlistGetNum (list, dfkeys [i].itemkey);
-      fprintf (fh, "..%zd\n", val);
+    vt = dfkeys [i].valuetype;
+    /* load the data value into the conv structure so that retrieval is */
+    /* the same for both non-converted and converted values */
+    if (vt == VALUE_NUM) {
+      conv.u.num = nlistGetNum (list, dfkeys [i].itemkey);
     }
-    if (dfkeys [i].valuetype == VALUE_STR) {
-      char    *val;
+    if (vt == VALUE_STR) {
+      conv.u.str = nlistGetStr (list, dfkeys [i].itemkey);
+    }
 
-      val = nlistGetStr (list, dfkeys [i].itemkey);
-      fprintf (fh, "..%s\n", val);
+    if (dfkeys [i].convFunc != NULL) {
+      conv.valuetype = vt;
+      if (vt == VALUE_LIST) {
+        conv.u.list = nlistGetList (list, dfkeys [i].itemkey);
+      }
+      if (vt == VALUE_NUM) {
+        ssize_t   val;
+
+        val = nlistGetNum (list, dfkeys [i].itemkey);
+        conv.u.num = val;
+      }
+      dfkeys [i].convFunc (&conv);
+
+      vt = conv.valuetype;
+    }
+
+    if (vt == VALUE_NUM) {
+      fprintf (fh, "..%zd\n", conv.u.num);
+    }
+    if (vt == VALUE_STR) {
+      fprintf (fh, "..%s\n", conv.u.str);
     }
   }
   fclose (fh);

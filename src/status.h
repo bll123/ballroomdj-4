@@ -22,6 +22,6 @@ ssize_t     statusGetCount (status_t *);
 int         statusGetMaxWidth (status_t *);
 char        * statusGetStatus (status_t *, ilistidx_t ikey);
 bool        statusPlayCheck (status_t *status, ilistidx_t ikey);
-void        statusConv (char *keydata, datafileret_t *ret);
+void        statusConv (datafileconv_t *conv);
 
 #endif /* INC_STATUS_H */

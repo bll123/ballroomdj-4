@@ -52,9 +52,9 @@ typedef struct {
     list_t      *list;
     char        *str;
   } u;
-} datafileret_t;
+} datafileconv_t;
 
-typedef void (*dfConvFunc_t)(char *, datafileret_t *);
+typedef void (*dfConvFunc_t)(datafileconv_t *);
 
 typedef struct {
   char            *name;
@@ -71,8 +71,8 @@ void          parseFree (parseinfo_t *);
 char **       parseGetData (parseinfo_t *);
 ssize_t       parseSimple (parseinfo_t *, char *);
 ssize_t       parseKeyValue (parseinfo_t *, char *);
-void          parseConvBoolean (char *, datafileret_t *);
-void          parseConvTextList (char *, datafileret_t *);
+void          convBoolean (datafileconv_t *);
+void          convTextList (datafileconv_t *);
 
 datafile_t *  datafileAlloc (char *name);
 datafile_t *  datafileAllocParse (char *name, datafiletype_t dftype,

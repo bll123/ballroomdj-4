@@ -381,10 +381,6 @@ marqueeCreateGui (marquee_t *marquee, int argc, char *argv [])
   localeInit ();
 
   status = g_application_run (G_APPLICATION (marquee->app), argc, argv);
-  if (GTK_IS_WIDGET (marquee->window)) {
-    gtk_widget_destroy (marquee->window);
-  }
-  g_object_unref (marquee->app);
 
   logProcEnd (LOG_PROC, "marqueeCreateGui", "");
   return status;

@@ -17,44 +17,61 @@
 dnctype_t *
 dnctypesAlloc (char *fname)
 {
-  dnctype_t       *dtype;
-  list_t          *dtyplist;
+  dnctype_t       *dnctypes;
 
   if (! fileopFileExists (fname)) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: dnctypes: missing %s", fname);
     return NULL;
   }
 
-  dtype = malloc (sizeof (dnctype_t));
-  assert (dtype != NULL);
+  dnctypes = malloc (sizeof (dnctype_t));
+  assert (dnctypes != NULL);
 
-  dtype->df = datafileAllocParse ("dance-types", DFTYPE_LIST, fname,
+  dnctypes->df = datafileAllocParse ("dance-types", DFTYPE_LIST, fname,
       NULL, 0, DATAFILE_NO_LOOKUP);
-
-  dtyplist = datafileGetList (dtype->df);
-  listSort (dtyplist);
-  listDumpInfo (dtyplist);
-  return dtype;
+  dnctypes->dnctypes = datafileGetList (dnctypes->df);
+  listSort (dnctypes->dnctypes);
+  listDumpInfo (dnctypes->dnctypes);
+  return dnctypes;
 }
 
 void
-dnctypesFree (dnctype_t *dtype)
+dnctypesFree (dnctype_t *dnctypes)
 {
-  if (dtype != NULL) {
-    if (dtype->df != NULL) {
-      datafileFree (dtype->df);
+  if (dnctypes != NULL) {
+    if (dnctypes->df != NULL) {
+      datafileFree (dnctypes->df);
     }
-    free (dtype);
+    free (dnctypes);
   }
 }
 
 void
-dnctypesConv (char *keydata, datafileret_t *ret)
+dnctypesConv (datafileconv_t *conv)
 {
-  dnctype_t       *dtype;
+  dnctype_t       *dnctypes;
+  ssize_t         num;
 
-  ret->valuetype = VALUE_NUM;
-  dtype = bdjvarsdfGet (BDJVDF_DANCE_TYPES);
-  ret->u.num = slistGetIdx (datafileGetList (dtype->df), keydata);
+  dnctypes = bdjvarsdfGet (BDJVDF_DANCE_TYPES);
+
+  if (conv->valuetype == VALUE_STR) {
+    conv->valuetype = VALUE_NUM;
+    num = slistGetIdx (dnctypes->dnctypes, conv->u.str);
+    conv->u.num = num;
+  } else if (conv->valuetype == VALUE_NUM) {
+    slistidx_t  iteridx;
+    char        *val;
+    int         count;
+
+    conv->valuetype = VALUE_STR;
+    slistStartIterator (dnctypes->dnctypes, &iteridx);
+    count = 0;
+    while ((val = slistIterateKey (dnctypes->dnctypes, &iteridx)) != NULL) {
+      if (count == conv->u.num) {
+        conv->u.str = val;
+        break;
+      }
+      ++count;
+    }
+  }
 }
-
