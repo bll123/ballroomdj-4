@@ -49,6 +49,7 @@ foreach path [list {} profiles $mpath $mppath] {
         regexp {^([^:]*):(.*)$} $line all key value
 
         if { $key eq "ACOUSTID_CLIENT" } { continue }
+        if { $key eq "ALLOWEDIT" } { continue }
         if { $key eq "AUTOSTARTUP" } { continue }
         if { $key eq "CBFONTSIZE" } { continue }
         # debug level should be in the global; so just remove it.

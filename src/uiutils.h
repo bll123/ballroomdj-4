@@ -114,7 +114,7 @@ GtkWidget * uiutilsSpinboxIntCreate (void);
 GtkWidget * uiutilsSpinboxDoubleCreate (void);
 
 void  uiutilsSpinboxSet (GtkWidget *spinbox, double min, double max);
-int   uiutilsSpinboxGetValue (GtkWidget *spinbox);
+double uiutilsSpinboxGetValue (GtkWidget *spinbox);
 void  uiutilsSpinboxSetValue (GtkWidget *spinbox, double ivalue);
 
 void  uiutilsCreateDanceList (uiutilsdropdown_t *dancesel, char *selectLabel);

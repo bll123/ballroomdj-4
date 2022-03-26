@@ -43,20 +43,26 @@
 
 
 /* base type */
-enum {
+typedef enum {
+  CONFUI_NONE,
   CONFUI_ENTRY,
-  CONFUI_SPINBOX,
-  CONFUI_WIDGET,
-};
+  CONFUI_FONT,
+  CONFUI_COLOR,
+  CONFUI_SPINBOX_TEXT,
+  CONFUI_SPINBOX_NUM,
+  CONFUI_SPINBOX_DOUBLE,
+  CONFUI_SPINBOX_TIME,
+  CONFUI_SWITCH,
+} confuibasetype_t;
 
 /* out type */
-enum {
+typedef enum {
+  CONFUI_OUT_NONE,
   CONFUI_STR,
   CONFUI_DOUBLE,
   CONFUI_NUM,
-  CONFUI_TIME,
   CONFUI_BOOL,
-};
+} confuiouttype_t;
 
 enum {
   CONFUI_ENTRY_MUSIC_DIR,
@@ -107,9 +113,9 @@ enum {
 };
 
 typedef struct {
-  int         basetype;
-  int         outtype;
-  int         bdjoptIdx;
+  confuibasetype_t  basetype;
+  confuiouttype_t   outtype;
+  int               bdjoptIdx;
   union {
     uiutilsentry_t    entry;
     uiutilsspinbox_t  spinbox;
@@ -234,18 +240,21 @@ main (int argc, char *argv[])
   for (int i = 0; i < CONFUI_ITEM_MAX; ++i) {
     confui.uiitem [i].sblist = NULL;
     confui.uiitem [i].sblookuplist = NULL;
+    confui.uiitem [i].basetype = CONFUI_NONE;
+    confui.uiitem [i].outtype = CONFUI_OUT_NONE;
     if (i >= 0 && i < CONFUI_ENTRY_MAX) {
       confui.uiitem [i].basetype = CONFUI_ENTRY;
       confui.uiitem [i].outtype = CONFUI_STR;
     }
     if (i > CONFUI_ENTRY_MAX && i < CONFUI_SPINBOX_MAX) {
       uiutilsSpinboxTextInit (&confui.uiitem [i].u.spinbox);
-      confui.uiitem [i].basetype = CONFUI_SPINBOX;
+      confui.uiitem [i].basetype = CONFUI_SPINBOX_TEXT;
       confui.uiitem [i].outtype = CONFUI_STR;
     }
     if (i > CONFUI_SPINBOX_MAX) {
-      confui.uiitem [i].basetype = CONFUI_WIDGET;
-      confui.uiitem [i].outtype = CONFUI_NUM;  // default
+      /* defaults */
+      confui.uiitem [i].basetype = CONFUI_SPINBOX_NUM;
+      confui.uiitem [i].outtype = CONFUI_NUM;
     }
   }
 
@@ -910,38 +919,96 @@ confuiPopulateOptions (configui_t *confui)
   const char  *sval;
   ssize_t     nval;
   double      dval;
+  int         basetype;
   int         outtype;
+  char        tbuff [MAXPATHLEN];
+  GdkRGBA     gcolor;
 
-  /* entries */
-  for (int i = 0; i < CONFUI_ENTRY_MAX; ++i) {
-    sval = uiutilsEntryGetValue (&confui->uiitem [i].u.entry);
-    bdjoptSetStr (confui->uiitem [i].bdjoptIdx, sval);
-  }
-  /* text spinboxes */
-  for (int i = CONFUI_ENTRY_MAX + 1; i < CONFUI_SPINBOX_MAX; ++i) {
-  }
-  /* int/double/time spinboxes; switches */
-  for (int i = CONFUI_SPINBOX_MAX + 1; i < CONFUI_ITEM_MAX; ++i) {
+  for (int i = 0; i < CONFUI_ITEM_MAX; ++i) {
+    sval = "";
+    nval = -1;
+    dval = -1.0;
+
+    basetype = confui->uiitem [i].basetype;
+
+    switch (basetype) {
+      case CONFUI_ENTRY: {
+        sval = uiutilsEntryGetValue (&confui->uiitem [i].u.entry);
+        break;
+      }
+      case CONFUI_SPINBOX_TEXT: {
+        nval = uiutilsSpinboxTextGetValue (&confui->uiitem [i].u.spinbox);
+        sval = nlistGetStr (confui->uiitem [i].sblookuplist, nval);
+        break;
+      }
+      case CONFUI_SPINBOX_NUM: {
+        nval = (ssize_t) uiutilsSpinboxGetValue (confui->uiitem [i].u.widget);
+        break;
+      }
+      case CONFUI_SPINBOX_DOUBLE: {
+        dval = uiutilsSpinboxGetValue (confui->uiitem [i].u.widget);
+        break;
+      }
+      case CONFUI_SPINBOX_TIME: {
+        nval = (ssize_t) uiutilsSpinboxGetValue (confui->uiitem [i].u.widget);
+        tmutilToMS (nval, tbuff, sizeof (tbuff));
+        sval = tbuff;
+        break;
+      }
+      case CONFUI_COLOR: {
+        gtk_color_chooser_get_rgba (
+            GTK_COLOR_CHOOSER (confui->uiitem [i].u.widget), &gcolor);
+        snprintf (tbuff, sizeof (tbuff), "#%02x%02x%02x",
+            (int) round (gcolor.red * 255.0),
+            (int) round (gcolor.green * 255.0),
+            (int) round (gcolor.blue * 255.0));
+        sval = tbuff;
+        break;
+      }
+      case CONFUI_FONT: {
+        sval = gtk_font_chooser_get_font (
+            GTK_FONT_CHOOSER (confui->uiitem [i].u.widget));
+        break;
+      }
+    }
+
     outtype = confui->uiitem [i].outtype;
 
     switch (outtype) {
       case CONFUI_STR: {
+        bdjoptSetStr (confui->uiitem [i].bdjoptIdx, sval);
         break;
       }
       case CONFUI_NUM: {
+        bdjoptSetNum (confui->uiitem [i].bdjoptIdx, nval);
         break;
       }
       case CONFUI_DOUBLE: {
-        break;
-      }
-      case CONFUI_TIME: {
+        bdjoptSetNum (confui->uiitem [i].bdjoptIdx, dval);
         break;
       }
       case CONFUI_BOOL: {
+        bdjoptSetNum (confui->uiitem [i].bdjoptIdx, nval);
         break;
       }
+    } /* out type */
+
+    if (i == CONFUI_ENTRY_MUSIC_DIR) {
     }
-  }
+
+    if (i == CONFUI_SPINBOX_UI_THEME) {
+    }
+
+    if (i == CONFUI_WIDGET_UI_ACCENT_COLOR) {
+    }
+
+    if (i == CONFUI_WIDGET_MQ_ACCENT_COLOR) {
+    }
+
+    if (i == CONFUI_SPINBOX_LOCALE) {
+    }
+
+  } /* for each item */
 }
 
 
@@ -1023,6 +1090,7 @@ confuiMakeItemEntry (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg,
   GtkWidget   *hbox;
   GtkWidget   *widget;
 
+  confui->uiitem [widx].basetype = CONFUI_ENTRY;
   confui->uiitem [widx].outtype = CONFUI_STR;
   hbox = confuiMakeItemLabel (vbox, sg, txt);
   widget = uiutilsEntryCreate (&confui->uiitem [widx].u.entry);
@@ -1079,6 +1147,7 @@ confuiMakeItemFontButton (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg,
   GtkWidget   *hbox;
   GtkWidget   *widget;
 
+  confui->uiitem [widx].basetype = CONFUI_FONT;
   confui->uiitem [widx].outtype = CONFUI_STR;
   hbox = confuiMakeItemLabel (vbox, sg, txt);
   if (fontname != NULL && *fontname) {
@@ -1102,6 +1171,7 @@ confuiMakeItemColorButton (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg
   GdkRGBA     rgba;
 
 
+  confui->uiitem [widx].basetype = CONFUI_COLOR;
   confui->uiitem [widx].outtype = CONFUI_STR;
   hbox = confuiMakeItemLabel (vbox, sg, txt);
   if (color != NULL && *color) {
@@ -1127,6 +1197,7 @@ confuiMakeItemSpinboxText (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg
   size_t      maxWidth;
 
 
+  confui->uiitem [widx].basetype = CONFUI_SPINBOX_TEXT;
   confui->uiitem [widx].outtype = CONFUI_STR;
   hbox = confuiMakeItemLabel (vbox, sg, txt);
   widget = uiutilsSpinboxTextCreate (&confui->uiitem [widx].u.spinbox, confui);
@@ -1164,7 +1235,8 @@ confuiMakeItemSpinboxTime (configui_t *confui, GtkWidget *vbox,
   GtkWidget   *widget;
 
 
-  confui->uiitem [widx].outtype = CONFUI_TIME;
+  confui->uiitem [widx].basetype = CONFUI_SPINBOX_TIME;
+  confui->uiitem [widx].outtype = CONFUI_STR;
   hbox = confuiMakeItemLabel (vbox, sg, txt);
   widget = uiutilsSpinboxTimeCreate (&confui->uiitem [widx].u.spinbox, confui);
   uiutilsSpinboxTimeSetValue (&confui->uiitem [widx].u.spinbox, value);
@@ -1182,6 +1254,7 @@ confuiMakeItemSpinboxInt (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg,
   GtkWidget   *widget;
 
 
+  confui->uiitem [widx].basetype = CONFUI_SPINBOX_NUM;
   confui->uiitem [widx].outtype = CONFUI_NUM;
   hbox = confuiMakeItemLabel (vbox, sg, txt);
   widget = uiutilsSpinboxIntCreate ();
@@ -1202,6 +1275,7 @@ confuiMakeItemSpinboxDouble (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *
   GtkWidget   *widget;
 
 
+  confui->uiitem [widx].basetype = CONFUI_SPINBOX_DOUBLE;
   confui->uiitem [widx].outtype = CONFUI_DOUBLE;
   hbox = confuiMakeItemLabel (vbox, sg, txt);
   widget = uiutilsSpinboxDoubleCreate ();
@@ -1222,6 +1296,7 @@ confuiMakeItemSwitch (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg,
   GtkWidget   *widget;
 
 
+  confui->uiitem [widx].basetype = CONFUI_SWITCH;
   confui->uiitem [widx].outtype = CONFUI_BOOL;
   hbox = confuiMakeItemLabel (vbox, sg, txt);
   widget = uiutilsCreateSwitch (value);

@@ -733,7 +733,10 @@ uiutilsSpinboxTextSet (uiutilsspinbox_t *spinbox, int min, int count,
 int
 uiutilsSpinboxTextGetValue (uiutilsspinbox_t *spinbox)
 {
-  return uiutilsSpinboxGetValue (spinbox->spinbox);
+  int val;
+
+  val = (int) uiutilsSpinboxGetValue (spinbox->spinbox);
+  return val;
 }
 
 void
@@ -829,7 +832,7 @@ uiutilsSpinboxSet (GtkWidget *spinbox, double min, double max)
 }
 
 
-int
+double
 uiutilsSpinboxGetValue (GtkWidget *spinbox)
 {
   GtkAdjustment     *adjustment;
@@ -845,7 +848,7 @@ uiutilsSpinboxGetValue (GtkWidget *spinbox)
   adjustment = gtk_spin_button_get_adjustment (GTK_SPIN_BUTTON (spinbox));
   value = gtk_adjustment_get_value (adjustment);
   logProcEnd (LOG_PROC, "uiutilsSpinboxGetValue", "");
-  return (int) value;
+  return value;
 }
 
 void

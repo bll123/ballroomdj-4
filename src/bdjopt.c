@@ -41,15 +41,12 @@ static datafilekey_t bdjoptglobaldfkeys[] = {
   { "SHOWALBUM",          OPT_G_SHOWALBUM,          VALUE_NUM, convBoolean, -1 },
   { "SHOWBPM",            OPT_G_SHOWBPM,            VALUE_NUM, convBoolean, -1 },
   { "SHOWCLASSICAL",      OPT_G_SHOWCLASSICAL,      VALUE_NUM, convBoolean, -1 },
-  { "SHOWSTATUS",         OPT_G_SHOWSTATUS,         VALUE_NUM, convBoolean, -1 },
-  { "SLOWDEVICE",         OPT_G_SLOWDEVICE,         VALUE_NUM, convBoolean, -1 },
   { "VARIOUS",            OPT_G_VARIOUS,            VALUE_STR, NULL, -1 },
   { "WRITETAGS",          OPT_G_WRITETAGS,          VALUE_NUM, bdjoptConvWriteTags, -1 },
 };
 #define BDJOPT_GLOBAL_DFKEY_COUNT (sizeof (bdjoptglobaldfkeys) / sizeof (datafilekey_t))
 
 datafilekey_t bdjoptprofiledfkeys[] = {
-  { "ALLOWEDIT",            OPT_P_ALLOWEDIT,            VALUE_NUM, convBoolean, -1 },
   { "DEFAULTVOLUME",        OPT_P_DEFAULTVOLUME,        VALUE_NUM, NULL, -1 },
   { "DONEMSG",              OPT_P_DONEMSG,              VALUE_STR, NULL, -1 },
   { "FADEINTIME",           OPT_P_FADEINTIME,           VALUE_NUM, NULL, -1 },
@@ -82,7 +79,6 @@ int            bdjoptprofiledfcount;
 static datafilekey_t bdjoptmachdfkeys[] = {
   { "AUDIOSINK",      OPT_M_AUDIOSINK,      VALUE_STR, NULL, -1 },
   { "DIRMUSIC",       OPT_M_DIR_MUSIC,      VALUE_STR, NULL, -1 },
-  { "HOST",           OPT_M_HOST,           VALUE_STR, NULL, -1 },
   { "PLAYER",         OPT_M_PLAYER_INTFC,   VALUE_STR, NULL, -1 },
   { "SHUTDOWNSCRIPT", OPT_M_SHUTDOWNSCRIPT, VALUE_STR, NULL, -1 },
   { "STARTUPSCRIPT",  OPT_M_STARTUPSCRIPT,  VALUE_STR, NULL, -1 },

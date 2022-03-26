@@ -23,67 +23,69 @@ typedef enum {
   MOBILEMQ_INTERNET,
 } bdjmobilemq_t;
 
+/* development notes
+ * u - in use
+ * d - display working in configui
+ * s - save working in configui
+ */
+
 typedef enum {
   OPT_G_AUTOORGANIZE,
   OPT_G_CHANGESPACE,
-  OPT_G_DEBUGLVL,                 //
-  OPT_G_ITUNESSUPPORT,
-  OPT_G_LOADDANCEFROMGENRE,
+  OPT_G_DEBUGLVL,                 // u
+  OPT_G_ITUNESSUPPORT,            //   d
+  OPT_G_LOADDANCEFROMGENRE,       //   d
   OPT_G_MUSICDIRDFLT,
   OPT_G_PATHFMT,
   OPT_G_PATHFMT_CL,
   OPT_G_PATHFMT_CLVA,
   OPT_G_PATHFMT_VA,
-  OPT_G_PLAYERQLEN,               //+
-  OPT_G_REMCONTROLHTML,
+  OPT_G_PLAYERQLEN,               // u
+  OPT_G_REMCONTROLHTML,           //   d
   OPT_G_SHOWALBUM,
   OPT_G_SHOWBPM,
   OPT_G_SHOWCLASSICAL,
-  OPT_G_SHOWSTATUS,
-  OPT_G_SLOWDEVICE,
   OPT_G_VARIOUS,
-  OPT_G_WRITETAGS,
-  OPT_M_AUDIOSINK,                //
-  OPT_M_DIR_MUSIC,                //+
-  OPT_M_HOST,
-  OPT_M_PLAYER_INTFC,             //
-  OPT_M_SHUTDOWNSCRIPT,
-  OPT_M_STARTUPSCRIPT,
-  OPT_M_VOLUME_INTFC,             //
-  OPT_MP_LISTING_FONT,            //+
-  OPT_MP_MQFONT,                    //+
-  OPT_MP_MQ_THEME,                  //
+  OPT_G_WRITETAGS,                //   d
+  OPT_M_AUDIOSINK,                //   d
+  OPT_M_DIR_MUSIC,                // u d
+  OPT_M_PLAYER_INTFC,             // u d
+  OPT_M_SHUTDOWNSCRIPT,           //   d
+  OPT_M_STARTUPSCRIPT,            //   d
+  OPT_M_VOLUME_INTFC,             // u d
+  OPT_MP_LISTING_FONT,            // u d
+  OPT_MP_MQFONT,                  // u d
+  OPT_MP_MQ_THEME,                // u d
   OPT_MP_PLAYEROPTIONS,
   OPT_MP_PLAYERSHUTDOWNSCRIPT,
   OPT_MP_PLAYERSTARTSCRIPT,
-  OPT_MP_UIFONT,                    //+
-  OPT_MP_UI_THEME,                  //
-  OPT_P_ALLOWEDIT,
-  OPT_P_DEFAULTVOLUME,              //+
+  OPT_MP_UIFONT,                  // u d
+  OPT_MP_UI_THEME,                //
+  OPT_P_DEFAULTVOLUME,            // u d
   OPT_P_DONEMSG,
-  OPT_P_FADEINTIME,                 //+
-  OPT_P_FADEOUTTIME,                //+
-  OPT_P_FADETYPE,                   //
-  OPT_P_GAP,                        //+
-  OPT_P_HIDE_MARQUEE_ON_START,
-  OPT_P_INSERT_LOCATION,            //
-  OPT_P_MAXPLAYTIME,                //
-  OPT_P_MOBILEMARQUEE,              //
-  OPT_P_MOBILEMQPORT,               //
-  OPT_P_MOBILEMQTAG,                //
-  OPT_P_MOBILEMQTITLE,              //
-  OPT_P_MQ_ACCENT_COL,              //
-  OPT_P_MQQLEN,                     //
-  OPT_P_MQ_SHOW_INFO,               //
+  OPT_P_FADEINTIME,               // u d
+  OPT_P_FADEOUTTIME,              // u d
+  OPT_P_FADETYPE,                 // u d
+  OPT_P_GAP,                      // u d
+  OPT_P_HIDE_MARQUEE_ON_START,    // u d
+  OPT_P_INSERT_LOCATION,          // u d
+  OPT_P_MAXPLAYTIME,              // u d
+  OPT_P_MOBILEMARQUEE,            // u d
+  OPT_P_MOBILEMQPORT,             // u d
+  OPT_P_MOBILEMQTAG,              // u d
+  OPT_P_MOBILEMQTITLE,            // u d
+  OPT_P_MQ_ACCENT_COL,            //   d
+  OPT_P_MQQLEN,                   // u d
+  OPT_P_MQ_SHOW_INFO,             // u d
   OPT_P_PAUSEMSG,
-  OPT_P_PROFILENAME,                //
-  OPT_P_QUEUE_NAME_A,               //
-  OPT_P_QUEUE_NAME_B,               //
-  OPT_P_REMCONTROLPASS,             //
-  OPT_P_REMCONTROLPORT,             //
-  OPT_P_REMCONTROLUSER,             //
-  OPT_P_REMOTECONTROL,              //
-  OPT_P_UI_ACCENT_COL,
+  OPT_P_PROFILENAME,              // u d
+  OPT_P_QUEUE_NAME_A,             // u d
+  OPT_P_QUEUE_NAME_B,             // u d
+  OPT_P_REMCONTROLPASS,           // u d
+  OPT_P_REMCONTROLPORT,           // u d
+  OPT_P_REMCONTROLUSER,           // u d
+  OPT_P_REMOTECONTROL,            // u d
+  OPT_P_UI_ACCENT_COL,            //   d
 } bdjoptkey_t;
 
 typedef enum {
