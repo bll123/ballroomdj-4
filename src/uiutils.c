@@ -48,6 +48,7 @@ static gboolean uiutilsSpinboxTimeDisplay (GtkSpinButton *sb, gpointer udata);
 static char * uiutilsSpinboxTextGetDisp (slist_t *list, int idx);
 
 static void uiutilsValidateStart (GtkEditable *e, gpointer udata);
+static gboolean uiuitilsSpinboxTextKeyCallback (GtkWidget *w, GdkEventKey *event, gpointer udata);
 
 void
 uiutilsCleanup (void)
@@ -704,6 +705,11 @@ uiutilsSpinboxTextCreate (uiutilsspinbox_t *spinbox, void *udata)
   g_signal_connect (spinbox->spinbox, "input",
       G_CALLBACK (uiutilsSpinboxInput), spinbox);
   spinbox->udata = udata;
+  uiutilsSetCss (spinbox->spinbox,
+      "spinbutton { caret-color: rgba(255,255,255,0.0); } "
+      "spinbutton selection { background-color: rgba(255,255,255,0.0) }");
+  g_signal_connect (spinbox->spinbox, "key-press-event",
+      G_CALLBACK (uiuitilsSpinboxTextKeyCallback), NULL);
   logProcEnd (LOG_PROC, "uiutilsSpinboxTextCreate", "");
   return spinbox->spinbox;
 }
@@ -1185,4 +1191,20 @@ uiutilsValidateStart (GtkEditable *e, gpointer udata)
   gtk_entry_set_icon_from_icon_name (GTK_ENTRY (entry->entry),
       GTK_ENTRY_ICON_SECONDARY, NULL);
   mstimeset (&entry->validateTimer, 500);
+}
+
+static gboolean
+uiuitilsSpinboxTextKeyCallback (GtkWidget *w, GdkEventKey *event, gpointer udata)
+{
+  guint    keyval;
+
+  gdk_event_get_keyval ((GdkEvent *) event, &keyval);
+  if (keyval == GDK_KEY_Up ||
+      keyval == GDK_KEY_Down ||
+      keyval == GDK_KEY_Page_Up ||
+      keyval == GDK_KEY_Page_Down) {
+    return FALSE;
+  }
+
+  return TRUE;
 }
