@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: BDJ4 4.0.0\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
-"POT-Creation-Date: 2022-03-23\n"
-"PO-Revision-Date: 2022-03-23\n"
+"POT-Creation-Date: 2022-03-26\n"
+"PO-Revision-Date: 2022-03-26\n"
 "Last-Translator: marimo\n"
 "Language-Team: dutch\n"
 "Language: nl\n"
@@ -262,6 +262,9 @@ msgstr "HTML-sjabloon"
 msgid "Half Sine Wave"
 msgstr "Halve sinusgolf"
 
+msgid "Hide Marquee on Start"
+msgstr "Marquee bij Start verbergen"
+
 #, c-format
 msgid "If there is no BallroomDJ 3 installation, enter a single '-'."
 msgstr ""
@@ -478,6 +481,9 @@ msgstr "Herhalen"
 msgid "Request External"
 msgstr "Externe Aanvraag"
 
+msgid "Request Insert Location"
+msgstr ""
+
 msgid "Reset"
 msgstr "Resetten"
 
@@ -510,6 +516,12 @@ msgid "Select"
 msgstr "Selecteer"
 
 msgid "Select BallroomDJ 3 Location"
+msgstr ""
+
+msgid "Select Music Folder Location"
+msgstr ""
+
+msgid "Select file"
 msgstr ""
 
 msgid "Show Extra Queues"

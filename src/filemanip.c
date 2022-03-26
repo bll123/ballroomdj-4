@@ -54,8 +54,10 @@ filemanipCopy (char *fname, char *nfn)
 
 
   if (isWindows ()) {
-    pathToWinPath (tfname, fname, MAXPATHLEN);
-    pathToWinPath (tnfn, nfn, MAXPATHLEN);
+    strlcpy (tfname, fname, sizeof (tfname));
+    pathWinPath (tfname, sizeof (tfname));
+    strlcpy (tnfn, nfn, sizeof (tnfn));
+    pathWinPath (tnfn, sizeof (tnfn));
 #if _lib_CopyFileW
     {
       wchar_t   *wtfname;

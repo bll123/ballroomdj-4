@@ -16,9 +16,11 @@
 #include "bdjstring.h"
 #include "bdjvarsdf.h"
 #include "dance.h"
+#include "fileop.h"
 #include "ilist.h"
 #include "log.h"
 #include "pathbld.h"
+#include "pathutil.h"
 #include "sysvars.h"
 #include "tmutil.h"
 #include "uiutils.h"
@@ -45,6 +47,7 @@ static gboolean uiutilsSpinboxTextDisplay (GtkSpinButton *sb, gpointer udata);
 static gboolean uiutilsSpinboxTimeDisplay (GtkSpinButton *sb, gpointer udata);
 static char * uiutilsSpinboxTextGetDisp (slist_t *list, int idx);
 
+static void uiutilsValidateStart (GtkEditable *e, gpointer udata);
 
 void
 uiutilsCleanup (void)
@@ -537,6 +540,9 @@ uiutilsEntryInit (uiutilsentry_t *entry, int entrySize, int maxSize)
   entry->maxSize = maxSize;
   entry->buffer = NULL;
   entry->entry = NULL;
+  entry->validateFunc = NULL;
+  entry->udata = NULL;
+  mstimeset (&entry->validateTimer, 3600000);
   logProcEnd (LOG_PROC, "uiutilsEntryInit", "");
 }
 
@@ -578,6 +584,88 @@ void
 uiutilsEntrySetValue (uiutilsentry_t *entry, char *value)
 {
   gtk_entry_buffer_set_text (entry->buffer, value, -1);
+}
+
+void
+uiutilsEntrySetValidate (uiutilsentry_t *entry, uiutilsentryval_t valfunc, void *udata)
+{
+  entry->validateFunc = valfunc;
+  entry->udata = udata;
+  g_signal_connect (entry->entry, "changed",
+      G_CALLBACK (uiutilsValidateStart), entry);
+  if (entry->validateFunc != NULL) {
+    mstimeset (&entry->validateTimer, 3600000);
+  }
+}
+
+bool
+uiutilsEntryValidate (uiutilsentry_t *entry)
+{
+  bool  rc;
+
+  if (entry->validateFunc == NULL) {
+    return true;
+  }
+  if (! mstimeCheck (&entry->validateTimer)) {
+    return true;
+  }
+
+  rc = entry->validateFunc (entry, entry->udata);
+  if (! rc) {
+    gtk_entry_set_icon_from_icon_name (GTK_ENTRY (entry->entry),
+        GTK_ENTRY_ICON_SECONDARY, "dialog-error");
+  } else {
+    gtk_entry_set_icon_from_icon_name (GTK_ENTRY (entry->entry),
+        GTK_ENTRY_ICON_SECONDARY, NULL);
+  }
+  mstimeset (&entry->validateTimer, 3600000);
+  return rc;
+}
+
+bool
+uiutilsEntryValidateDir (void *edata, void *udata)
+{
+  uiutilsentry_t    *entry = edata;
+  bool              rc;
+  const char        *dir;
+  char              tbuff [MAXPATHLEN];
+
+  rc = false;
+  if (entry->buffer != NULL) {
+    dir = gtk_entry_buffer_get_text (entry->buffer);
+    if (dir != NULL) {
+      strlcpy (tbuff, dir, sizeof (tbuff));
+      pathNormPath (tbuff, sizeof (tbuff));
+      if (fileopIsDirectory (tbuff)) {
+        rc = true;
+      }
+    }
+  }
+
+  return rc;
+}
+
+bool
+uiutilsEntryValidateFile (void *edata, void *udata)
+{
+  uiutilsentry_t    *entry = edata;
+  bool              rc;
+  const char        *dir;
+  char              tbuff [MAXPATHLEN];
+
+  rc = false;
+  if (entry->buffer != NULL) {
+    dir = gtk_entry_buffer_get_text (entry->buffer);
+    if (dir != NULL) {
+      strlcpy (tbuff, dir, sizeof (tbuff));
+      pathNormPath (tbuff, sizeof (tbuff));
+      if (fileopFileExists (tbuff)) {
+        rc = true;
+      }
+    }
+  }
+
+  return rc;
 }
 
 void
@@ -864,6 +952,50 @@ uiutilsGetForegroundColor (GtkWidget *widget, char *buff, size_t sz)
       (int) round (gcolor.blue * 255.0));
 }
 
+char *
+uiutilsSelectDirDialog (uiutilsselect_t *selectdata)
+{
+  GtkFileChooserNative  *widget = NULL;
+  gint                  res;
+  char                  *fn = NULL;
+
+  widget = gtk_file_chooser_native_new (
+      selectdata->label,
+      GTK_WINDOW (selectdata->window),
+      GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER,
+      _("Select"), _("Close"));
+
+  res = gtk_native_dialog_run (GTK_NATIVE_DIALOG (widget));
+  if (res == GTK_RESPONSE_ACCEPT) {
+    fn = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (widget));
+  }
+
+  g_object_unref (widget);
+  return fn;
+}
+
+char *
+uiutilsSelectFileDialog (uiutilsselect_t *selectdata)
+{
+  GtkFileChooserNative  *widget = NULL;
+  gint                  res;
+  char                  *fn = NULL;
+
+  widget = gtk_file_chooser_native_new (
+      selectdata->label,
+      GTK_WINDOW (selectdata->window),
+      GTK_FILE_CHOOSER_ACTION_OPEN,
+      _("Select"), _("Close"));
+
+  res = gtk_native_dialog_run (GTK_NATIVE_DIALOG (widget));
+  if (res == GTK_RESPONSE_ACCEPT) {
+    fn = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (widget));
+  }
+
+  g_object_unref (widget);
+  return fn;
+}
+
 /* internal routines */
 
 static GLogWriterOutput
@@ -1045,3 +1177,12 @@ uiutilsSpinboxTextGetDisp (slist_t *list, int idx)
   return nlistGetDataByIdx (list, idx);
 }
 
+static void
+uiutilsValidateStart (GtkEditable *e, gpointer udata)
+{
+  uiutilsentry_t  *entry = udata;
+
+  gtk_entry_set_icon_from_icon_name (GTK_ENTRY (entry->entry),
+      GTK_ENTRY_ICON_SECONDARY, NULL);
+  mstimeset (&entry->validateTimer, 500);
+}

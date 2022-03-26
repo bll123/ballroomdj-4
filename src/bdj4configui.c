@@ -39,6 +39,7 @@
 #include "sysvars.h"
 #include "tmutil.h"
 #include "uiutils.h"
+#include "volume.h"
 
 enum {
   CONFUI_ENTRY_MUSIC_DIR,
@@ -77,6 +78,8 @@ enum {
   CONFUI_WIDGET_FADE_IN_TIME,
   CONFUI_WIDGET_FADE_OUT_TIME,
   CONFUI_WIDGET_GAP,
+  CONFUI_WIDGET_HIDE_MARQUEE_ON_START,
+  CONFUI_WIDGET_INSERT_LOC,
   CONFUI_WIDGET_PL_QUEUE_LEN,
   CONFUI_WIDGET_MQ_ACCENT_COLOR,
   CONFUI_WIDGET_MQ_FONT,
@@ -109,6 +112,9 @@ typedef struct {
   int               mqthemeidx;
   int               rchtmlidx;
   int               localeidx;
+  volume_t          *volume;
+  volsinklist_t     sinklist;
+  GtkWidget         *fadetypeImage;
   /* gtk stuff */
   GtkApplication    *app;
   GtkWidget         *window;
@@ -150,13 +156,18 @@ static int      confuiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 static gboolean confuiCloseWin (GtkWidget *window, GdkEvent *event, gpointer userdata);
 static void     confuiSigHandler (int sig);
 
+static void confuiSelectMusicDir (GtkButton *b, gpointer udata);
+static void confuiSelectStartup (GtkButton *b, gpointer udata);
+static void confuiSelectShutdown (GtkButton *b, gpointer udata);
+static void confuiSelectFileDialog (configui_t *confui, int entryIdx);
+
 static GtkWidget * confuiMakeNotebookTab (GtkWidget *notebook, char *txt);
 static GtkWidget * confuiMakeItemEntry (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, char *txt, int entryIdx, char *disp);
-static void confuiMakeItemEntryChooser (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, char *txt, int entryIdx, char *disp);
+static void confuiMakeItemEntryChooser (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, char *txt, int entryIdx, char *disp, void *dialogFunc);
 static void confuiMakeItemLink (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, int widx, char *txt, char *disp);
 static void confuiMakeItemFontButton (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, int widx, char *txt, char *fontname);
 static void confuiMakeItemColorButton (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, int widx, char *txt, char *color);
-static void confuiMakeItemSpinboxText (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, int sbidx, char *txt, ssize_t value);
+static GtkWidget *confuiMakeItemSpinboxText (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, int sbidx, char *txt, ssize_t value);
 static void confuiMakeItemSpinboxTime (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, int sbidx, char *txt, ssize_t value);
 static void confuiMakeItemSpinboxInt (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, int widx, char *txt, int min, int max, int value);
 static void confuiMakeItemSpinboxDouble (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, int widx, char *txt, double min, double max, double value);
@@ -167,6 +178,7 @@ static nlist_t  * confuiGetThemeList (void);
 static nlist_t  * confuiGetThemeNames (nlist_t *themelist, slist_t *filelist);
 static void     confuiLoadHTMLList (configui_t *confui);
 static void     confuiLoadLocaleList (configui_t *confui);
+static gboolean confuiFadeTypeTooltip (GtkWidget *, gint, gint, gboolean, GtkTooltip *, void *);
 
 static int gKillReceived = 0;
 static int gdone = 0;
@@ -239,6 +251,10 @@ main (int argc, char *argv[])
 
   confui.dbgflags = bdj4startup (argc, argv, "cu", ROUTE_CONFIGUI, BDJ4_INIT_NONE);
   logProcBegin (LOG_PROC, "configui");
+
+  confui.volume = volumeInit ();
+  assert (confui.volume != NULL);
+  volumeGetSinkList (confui.volume, "", &confui.sinklist);
 
   tlist = nlistAlloc ("cu-writetags", LIST_UNORDERED, free);
   llist = nlistAlloc ("cu-writetags-l", LIST_ORDERED, free);
@@ -388,6 +404,7 @@ confuiClosingCallback (void *udata, programstate_t programState)
   char          fn [MAXPATHLEN];
 
   logProcBegin (LOG_PROC, "confuiClosingCallback");
+
   pathbldMakePath (fn, sizeof (fn), "",
       "configui", ".txt", PATHBLD_MP_USEIDX);
   datafileSaveKeyVal ("configui", fn, configuidfkeys, CONFUI_KEY_MAX, confui->options);
@@ -416,6 +433,7 @@ confuiClosingCallback (void *udata, programstate_t programState)
     nlistFree (confui->options);
   }
   datafileFree (confui->optiondf);
+  volumeFreeSinkList (&confui->sinklist);
 
   /* give the other processes some time to shut down */
   mssleep (200);
@@ -467,9 +485,11 @@ confuiActivate (GApplication *app, gpointer userdata)
   configui_t    *confui = userdata;
   GError        *gerr = NULL;
   GtkWidget     *vbox;
+  GtkWidget     *widget;
+  GtkWidget     *image;
   GtkSizeGroup  *sg;
   char          imgbuff [MAXPATHLEN];
-  char          tbuff [40];
+  char          tbuff [MAXPATHLEN];
   gint          x, y;
 
   logProcBegin (LOG_PROC, "confuiActivate");
@@ -508,8 +528,14 @@ confuiActivate (GApplication *app, gpointer userdata)
   sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
   /* general options */
+  strlcpy (tbuff, bdjoptGetStr (OPT_M_DIR_MUSIC), sizeof (tbuff));
+  if (isWindows ()) {
+    pathWinPath (tbuff, sizeof (tbuff));
+  }
   confuiMakeItemEntryChooser (confui, vbox, sg, _("Music Folder"),
-      CONFUI_ENTRY_MUSIC_DIR, bdjoptGetStr (OPT_M_DIR_MUSIC));
+      CONFUI_ENTRY_MUSIC_DIR, tbuff, confuiSelectMusicDir);
+  uiutilsEntrySetValidate (&confui->uientry [CONFUI_ENTRY_MUSIC_DIR],
+      uiutilsEntryValidateDir, confui);
   confuiMakeItemEntry (confui, vbox, sg, _("Profile Name"),
       CONFUI_ENTRY_PROFILE_NAME, bdjoptGetStr (OPT_P_PROFILENAME));
 
@@ -527,9 +553,13 @@ confuiActivate (GApplication *app, gpointer userdata)
   confuiMakeItemSpinboxText (confui, vbox, sg, CONFUI_SPINBOX_LOCALE,
       _("Locale"), 0);
   confuiMakeItemEntryChooser (confui, vbox, sg, _("Startup Script"),
-      CONFUI_ENTRY_STARTUP, bdjoptGetStr (OPT_M_STARTUPSCRIPT));
+      CONFUI_ENTRY_STARTUP, bdjoptGetStr (OPT_M_STARTUPSCRIPT), confuiSelectStartup);
+  uiutilsEntrySetValidate (&confui->uientry [CONFUI_ENTRY_STARTUP],
+      uiutilsEntryValidateFile, confui);
   confuiMakeItemEntryChooser (confui, vbox, sg, _("Shutdown Script"),
-      CONFUI_ENTRY_SHUTDOWN, bdjoptGetStr (OPT_M_SHUTDOWNSCRIPT));
+      CONFUI_ENTRY_SHUTDOWN, bdjoptGetStr (OPT_M_SHUTDOWNSCRIPT), confuiSelectShutdown);
+  uiutilsEntrySetValidate (&confui->uientry [CONFUI_ENTRY_SHUTDOWN],
+      uiutilsEntryValidateFile, confui);
 
   vbox = confuiMakeNotebookTab (confui->notebook, _("Player Options"));
   sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
@@ -550,8 +580,21 @@ confuiActivate (GApplication *app, gpointer userdata)
   confuiMakeItemSpinboxDouble (confui, vbox, sg, CONFUI_WIDGET_FADE_OUT_TIME,
       _("Fade Out Time"), 0.0, 10.0,
       (double) bdjoptGetNum (OPT_P_FADEOUTTIME) / 1000.0);
-  confuiMakeItemSpinboxText (confui, vbox, sg, CONFUI_SPINBOX_FADE_TYPE,
+
+  widget = confuiMakeItemSpinboxText (confui, vbox, sg, CONFUI_SPINBOX_FADE_TYPE,
       _("Fade Type"), bdjoptGetNum (OPT_P_FADETYPE));
+  pathbldMakePath (tbuff, sizeof (tbuff), "", "fades", ".svg",
+      PATHBLD_MP_IMGDIR);
+  image = gtk_image_new_from_file (tbuff);
+  gtk_widget_set_margin_top (image, 2);
+  gtk_widget_set_margin_bottom (image, 2);
+  gtk_widget_set_margin_start (image, 2);
+  gtk_widget_set_margin_end (image, 2);
+  gtk_widget_set_size_request (image, 275, -1);
+  confui->fadetypeImage = image;
+  gtk_widget_set_has_tooltip (widget, TRUE);
+  g_signal_connect (widget, "query-tooltip", G_CALLBACK (confuiFadeTypeTooltip), confui);
+
   confuiMakeItemSpinboxDouble (confui, vbox, sg, CONFUI_WIDGET_GAP,
       _("Gap Between Songs"), 0.0, 60.0,
       (double) bdjoptGetNum (OPT_P_GAP) / 1000.0);
@@ -560,6 +603,9 @@ confuiActivate (GApplication *app, gpointer userdata)
   confuiMakeItemSpinboxInt (confui, vbox, sg, CONFUI_WIDGET_PL_QUEUE_LEN,
       _("Queue Length"), 20, 400,
       bdjoptGetNum (OPT_G_PLAYERQLEN));
+  confuiMakeItemSpinboxInt (confui, vbox, sg, CONFUI_WIDGET_INSERT_LOC,
+      _("Request Insert Location"), 1, 10,
+      bdjoptGetNum (OPT_P_INSERT_LOCATION));
 
   confuiMakeItemEntry (confui, vbox, sg, _("Queue A Name"),
       CONFUI_ENTRY_QUEUE_NM_A, bdjoptGetStr (OPT_P_QUEUE_NAME_A));
@@ -584,6 +630,9 @@ confuiActivate (GApplication *app, gpointer userdata)
   confuiMakeItemColorButton (confui, vbox, sg, CONFUI_WIDGET_MQ_ACCENT_COLOR,
       _("Accent Color"),
       bdjoptGetStr (OPT_P_MQ_ACCENT_COL));
+  confuiMakeItemSwitch (confui, vbox, sg, CONFUI_WIDGET_HIDE_MARQUEE_ON_START,
+      _("Hide Marquee on Start"),
+      bdjoptGetNum (OPT_P_HIDE_MARQUEE_ON_START));
 
   vbox = confuiMakeNotebookTab (confui->notebook, _("User Interface"));
   sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
@@ -703,6 +752,10 @@ confuiMainLoop (void *tconfui)
     return cont;
   }
 
+  for (int i = 0; i < CONFUI_ENTRY_MAX; ++i) {
+    uiutilsEntryValidate (&confui->uientry [i]);
+  }
+
   if (gKillReceived) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
     progstateShutdownProcess (confui->progstate);
@@ -806,6 +859,57 @@ confuiSigHandler (int sig)
   gKillReceived = 1;
 }
 
+static void
+confuiSelectMusicDir (GtkButton *b, gpointer udata)
+{
+  configui_t            *confui = udata;
+  char                  *fn = NULL;
+  uiutilsselect_t       selectdata;
+
+  selectdata.label = _("Select Music Folder Location");
+  selectdata.window = confui->window;
+  fn = uiutilsSelectDirDialog (&selectdata);
+  if (fn != NULL) {
+    gtk_entry_buffer_set_text (confui->uientry [CONFUI_ENTRY_MUSIC_DIR].buffer,
+        fn, -1);
+    free (fn);
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected loc: %s", fn);
+  }
+}
+
+static void
+confuiSelectStartup (GtkButton *b, gpointer udata)
+{
+  configui_t            *confui = udata;
+
+  confuiSelectFileDialog (confui, CONFUI_ENTRY_STARTUP);
+}
+
+static void
+confuiSelectShutdown (GtkButton *b, gpointer udata)
+{
+  configui_t            *confui = udata;
+
+  confuiSelectFileDialog (confui, CONFUI_ENTRY_SHUTDOWN);
+}
+
+static void
+confuiSelectFileDialog (configui_t *confui, int entryIdx)
+{
+  char                  *fn = NULL;
+  uiutilsselect_t       selectdata;
+
+  selectdata.label = _("Select file");
+  selectdata.window = confui->window;
+  fn = uiutilsSelectFileDialog (&selectdata);
+  if (fn != NULL) {
+    gtk_entry_buffer_set_text (confui->uientry [entryIdx].buffer,
+        fn, -1);
+    free (fn);
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected loc: %s", fn);
+  }
+}
+
 static GtkWidget *
 confuiMakeNotebookTab (GtkWidget *notebook, char *txt)
 {
@@ -848,7 +952,7 @@ confuiMakeItemEntry (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg,
 
 static void
 confuiMakeItemEntryChooser (configui_t *confui, GtkWidget *vbox,
-    GtkSizeGroup *sg, char *txt, int entryIdx, char *disp)
+    GtkSizeGroup *sg, char *txt, int entryIdx, char *disp, void *dialogFunc)
 {
   GtkWidget   *hbox;
   GtkWidget   *widget;
@@ -856,7 +960,7 @@ confuiMakeItemEntryChooser (configui_t *confui, GtkWidget *vbox,
 
   hbox = confuiMakeItemEntry (confui, vbox, sg, txt, entryIdx, disp);
 
-  widget = uiutilsCreateButton ("", NULL, NULL, NULL);
+  widget = uiutilsCreateButton ("", NULL, dialogFunc, confui);
   image = gtk_image_new_from_icon_name ("folder", GTK_ICON_SIZE_BUTTON);
   gtk_button_set_image (GTK_BUTTON (widget), image);
   gtk_button_set_always_show_image (GTK_BUTTON (widget), TRUE);
@@ -920,7 +1024,7 @@ confuiMakeItemColorButton (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg
   confui->uiwidgets [widx] = widget;
 }
 
-static void
+static GtkWidget *
 confuiMakeItemSpinboxText (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg,
     int sbidx, char *txt, ssize_t value)
 {
@@ -953,6 +1057,8 @@ confuiMakeItemSpinboxText (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg
   gtk_widget_set_margin_start (widget, 8);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+
+  return widget;
 }
 
 static void
@@ -1180,4 +1286,16 @@ confuiLoadLocaleList (configui_t *confui)
   confui->lookuplists [CONFUI_SPINBOX_LOCALE] = llist;
 }
 
+
+static gboolean
+confuiFadeTypeTooltip (GtkWidget *w, gint x, gint y, gboolean kbmode,
+    GtkTooltip *tt, void *udata)
+{
+  configui_t  *confui = udata;
+  GdkPixbuf   *pixbuf;
+
+  pixbuf = gtk_image_get_pixbuf (GTK_IMAGE (confui->fadetypeImage));
+  gtk_tooltip_set_icon (tt, pixbuf);
+  return TRUE;
+}
 

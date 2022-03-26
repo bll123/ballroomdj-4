@@ -295,7 +295,8 @@ main (int argc, char * argv[])
       p = strtok_r (NULL, ";", &tokstr);
     }
 
-    pathToWinPath (pbuff, sysvarsGetStr (SV_BDJ4EXECDIR), sz);
+    strlcpy (pbuff, sysvarsGetStr (SV_BDJ4EXECDIR), sz);
+    pathWinPath (pbuff, sz);
     strlcat (path, pbuff, sz);
 
     if (debugself) {

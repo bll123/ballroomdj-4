@@ -121,15 +121,14 @@ pathInfoExtCheck (pathinfo_t *pi, const char *extension)
 
 
 void
-pathToWinPath (char *to, const char *from, size_t maxlen)
+pathWinPath (char *buff, size_t len)
 {
-  strlcpy (to, from, maxlen);
-  for (size_t i = 0; i < maxlen; ++i) {
-    if (to [i] == '\0') {
+  for (size_t i = 0; i < len; ++i) {
+    if (buff [i] == '\0') {
       break;
     }
-    if (to [i] == '/') {
-      to [i] = '\\';
+    if (buff [i] == '/') {
+      buff [i] = '\\';
     }
   }
 }

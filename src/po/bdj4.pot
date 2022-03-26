@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-03-23 13:58-0700\n"
+"POT-Creation-Date: 2022-03-26 07:45-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -266,6 +266,9 @@ msgstr ""
 msgid "Half Sine Wave"
 msgstr ""
 
+msgid "Hide Marquee on Start"
+msgstr ""
+
 #, c-format
 msgid "If there is no BallroomDJ 3 installation, enter a single '-'."
 msgstr ""
@@ -482,6 +485,9 @@ msgstr ""
 msgid "Request External"
 msgstr ""
 
+msgid "Request Insert Location"
+msgstr ""
+
 msgid "Reset"
 msgstr ""
 
@@ -514,6 +520,12 @@ msgid "Select"
 msgstr ""
 
 msgid "Select BallroomDJ 3 Location"
+msgstr ""
+
+msgid "Select Music Folder Location"
+msgstr ""
+
+msgid "Select file"
 msgstr ""
 
 msgid "Show Extra Queues"

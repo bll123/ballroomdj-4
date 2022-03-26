@@ -10,6 +10,7 @@
 #include <unistd.h>
 
 #include "bdj4.h"
+#include "bdjstring.h"
 #include "pathutil.h"
 #include "check_bdj.h"
 
@@ -77,13 +78,11 @@ END_TEST
 
 START_TEST(path_winpath)
 {
-  char    *from;
   char    to [MAXPATHLEN];
 
-  from = "/tmp/abc.txt";
-  pathToWinPath (to, from, MAXPATHLEN);
+  strlcpy (to, "/tmp/abc.txt", sizeof (to));
+  pathWinPath (to, sizeof (to));
   ck_assert_str_eq (to, "\\tmp\\abc.txt");
-  ck_assert_int_eq (strlen (from), strlen (to));
 }
 END_TEST
 

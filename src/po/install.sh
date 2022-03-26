@@ -51,8 +51,7 @@ function mkhtmlsub {
   echo "-- Processing $tmpl"
   sedcmd=""
   while read -r line; do
-    nl=$(echo $line |
-      sed -e 's,.*value=",,' -e 's,".*,,' -e '/^100$/ d')
+    nl=$line
     case $nl in
       "")
         continue
@@ -66,6 +65,36 @@ function mkhtmlsub {
     esac
     xl=$(echo $xl | sed -e 's,^msgstr ",,' -e 's,"$,,')
     sedcmd+="-e '\~value=\"${nl}\"~ s~value=\"${nl}\"~value=\"${xl}\"~' "
+  done < $tempf
+
+  eval sed ${sedcmd} $tmpl > $tmpl.$lang
+  set +o noglob
+}
+
+function mkimgsub {
+  tmpl=$1
+  tempf=$2
+  lang=$3
+  pofile=$4
+
+  set -o noglob
+  echo "-- Processing $tmpl"
+  sedcmd=""
+  while read -r line; do
+    nl=$line
+    case $nl in
+      "")
+        continue
+        ;;
+    esac
+    xl=$(sed -n "\~msgid .${nl}.~ {n;p}" $pofile)
+    case $xl in
+      ""|msgstr\ \"\")
+        continue
+        ;;
+    esac
+    xl=$(echo $xl | sed -e 's,^msgstr ",,' -e 's,"$,,')
+    sedcmd+="-e '\~aria-label=\"${nl}\"~ s~aria-label=\"${nl}\"~aria-label=\"${xl}\"~' "
   done < $tempf
 
   eval sed ${sedcmd} $tmpl > $tmpl.$lang
@@ -170,6 +199,13 @@ for pofile in $(cat complete.txt); do
     mv -f $TMP.n $TMP
     mkhtmlsub $fn $TMP $lang $pofile
   done
+
+  fn=../../templates/fades.svg
+  egrep 'aria-label=' $fn |
+      sed -e 's,.*aria-label=",,' -e 's,".*,,' > $TMP
+  sort -u $TMP > $TMP.n
+  mv -f $TMP.n $TMP
+  mkimgsub $fn $TMP $lang $pofile
 
   if [[ $lang == nl ]]; then
     cwd=$(pwd)

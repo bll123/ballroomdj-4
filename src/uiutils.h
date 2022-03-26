@@ -28,11 +28,16 @@ typedef struct {
   bool          iscombobox : 1;
 } uiutilsdropdown_t;
 
+typedef bool (*uiutilsentryval_t)(void *entry, void *udata);
+
 typedef struct {
   GtkEntryBuffer  *buffer;
   GtkWidget       *entry;
   int             entrySize;
   int             maxSize;
+  uiutilsentryval_t validateFunc;
+  mstime_t        validateTimer;
+  void            *udata;
 } uiutilsentry_t;
 
 typedef struct {
@@ -44,6 +49,11 @@ typedef struct {
   bool                  indisp;
   slist_t               *list;
 } uiutilsspinbox_t;
+
+typedef struct {
+  char        *label;
+  GtkWidget   *window;
+} uiutilsselect_t;
 
 #define UI_MAIN_LOOP_TIMER 20
 
@@ -80,6 +90,11 @@ void uiutilsEntryFree (uiutilsentry_t *entry);
 GtkWidget * uiutilsEntryCreate (uiutilsentry_t *entry);
 const char * uiutilsEntryGetValue (uiutilsentry_t *entry);
 void uiutilsEntrySetValue (uiutilsentry_t *entry, char *value);
+void uiutilsEntrySetValidate (uiutilsentry_t *entry,
+    uiutilsentryval_t valfunc, void *udata);
+bool uiutilsEntryValidate (uiutilsentry_t *entry);
+bool uiutilsEntryValidateDir (void *edata, void *udata);
+bool uiutilsEntryValidateFile (void *edata, void *udata);
 
 void uiutilsSpinboxTextInit (uiutilsspinbox_t *spinbox);
 void uiutilsSpinboxTextFree (uiutilsspinbox_t *spinbox);
@@ -104,5 +119,8 @@ void  uiutilsSpinboxSetValue (GtkWidget *spinbox, double ivalue);
 
 void  uiutilsCreateDanceList (uiutilsdropdown_t *dancesel, char *selectLabel);
 void  uiutilsGetForegroundColor (GtkWidget *widget, char *buff, size_t sz);
+
+char  *uiutilsSelectDirDialog (uiutilsselect_t *selectdata);
+char  *uiutilsSelectFileDialog (uiutilsselect_t *selectdata);
 
 #endif /* INC_UIUTILS_H */

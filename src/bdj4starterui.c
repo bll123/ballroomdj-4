@@ -44,7 +44,25 @@ typedef struct {
   uiutilsspinbox_t  profilesel;
   GtkApplication  *app;
   GtkWidget       *window;
+  /* options */
+  datafile_t      *optiondf;
+  nlist_t         *options;
 } startui_t;
+
+enum {
+  STARTERUI_POSITION_X,
+  STARTERUI_POSITION_Y,
+  STARTERUI_SIZE_X,
+  STARTERUI_SIZE_Y,
+  STARTERUI_KEY_MAX,
+};
+
+static datafilekey_t starteruidfkeys [STARTERUI_KEY_MAX] = {
+  { "STARTERUI_POS_X",     STARTERUI_POSITION_X,    VALUE_NUM, NULL, -1 },
+  { "STARTERUI_POS_Y",     STARTERUI_POSITION_Y,    VALUE_NUM, NULL, -1 },
+  { "STARTERUI_SIZE_X",    STARTERUI_SIZE_X,        VALUE_NUM, NULL, -1 },
+  { "STARTERUI_SIZE_Y",    STARTERUI_SIZE_Y,        VALUE_NUM, NULL, -1 },
+};
 
 #define STARTER_EXIT_WAIT_COUNT      20
 
@@ -76,6 +94,7 @@ main (int argc, char *argv[])
   uint16_t        listenPort;
   startui_t       starter;
   char            *uifont;
+  char            tbuff [MAXPATHLEN];
 
 
   starter.progstate = progstateInit ("starterui");
@@ -112,6 +131,20 @@ main (int argc, char *argv[])
   listenPort = bdjvarsGetNum (BDJVL_STARTERUI_PORT);
   starter.conn = connInit (ROUTE_STARTERUI);
 
+  pathbldMakePath (tbuff, sizeof (tbuff), "",
+      "starterui", ".txt", PATHBLD_MP_USEIDX);
+  starter.optiondf = datafileAllocParse ("starterui-opt", DFTYPE_KEY_VAL, tbuff,
+      starteruidfkeys, STARTERUI_KEY_MAX, DATAFILE_NO_LOOKUP);
+  starter.options = datafileGetList (starter.optiondf);
+  if (starter.options == NULL) {
+    starter.options = nlistAlloc ("starterui-opt", LIST_ORDERED, free);
+
+    nlistSetNum (starter.options, STARTERUI_POSITION_X, -1);
+    nlistSetNum (starter.options, STARTERUI_POSITION_Y, -1);
+    nlistSetNum (starter.options, STARTERUI_SIZE_X, 1200);
+    nlistSetNum (starter.options, STARTERUI_SIZE_Y, 800);
+  }
+
   starter.sockserver = sockhStartServer (listenPort);
 
   uiutilsInitGtkLog ();
@@ -138,6 +171,14 @@ static bool
 starterStoppingCallback (void *udata, programstate_t programState)
 {
   startui_t   *starter = udata;
+  gint        x, y;
+
+  gtk_window_get_size (GTK_WINDOW (starter->window), &x, &y);
+  nlistSetNum (starter->options, STARTERUI_SIZE_X, x);
+  nlistSetNum (starter->options, STARTERUI_SIZE_Y, y);
+  gtk_window_get_position (GTK_WINDOW (starter->window), &x, &y);
+  nlistSetNum (starter->options, STARTERUI_POSITION_X, x);
+  nlistSetNum (starter->options, STARTERUI_POSITION_Y, y);
 
   for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
     if (starter->processes [i] != NULL) {
@@ -154,6 +195,11 @@ static bool
 starterClosingCallback (void *udata, programstate_t programState)
 {
   startui_t   *starter = udata;
+  char        fn [MAXPATHLEN];
+
+  pathbldMakePath (fn, sizeof (fn), "",
+      "starterui", ".txt", PATHBLD_MP_USEIDX);
+  datafileSaveKeyVal ("starterui", fn, starteruidfkeys, STARTERUI_KEY_MAX, starter->options);
 
   connFree (starter->conn);
   sockhCloseServer (starter->sockserver);

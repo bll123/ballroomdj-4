@@ -301,8 +301,7 @@ main (int argc, char *argv[])
 
   if (isWindows ()) {
     /* installer.target is pointing at buff */
-    strlcpy (tbuff, installer.target, sizeof (tbuff));
-    pathToWinPath (installer.target, tbuff, sizeof (tbuff));
+    pathWinPath (installer.target, sizeof (buff));
   }
 
   if (installer.guienabled) {
@@ -815,19 +814,13 @@ static void
 installerSelectDirDialog (GtkButton *b, gpointer udata)
 {
   installer_t           *installer = udata;
-  GtkFileChooserNative  *widget = NULL;
-  gint                  res;
   char                  *fn = NULL;
+  uiutilsselect_t       selectdata;
 
-  widget = gtk_file_chooser_native_new (
-      _("Select BallroomDJ 3 Location"),
-      GTK_WINDOW (installer->window),
-      GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER,
-      _("Select"), _("Close"));
-
-  res = gtk_native_dialog_run (GTK_NATIVE_DIALOG (widget));
-  if (res == GTK_RESPONSE_ACCEPT) {
-    fn = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (widget));
+  selectdata.label = _("Select BallroomDJ 3 Location");
+  selectdata.window = installer->window;
+  fn = uiutilsSelectDirDialog (&selectdata);
+  if (fn != NULL) {
     if (installer->bdj3loc != NULL && installer->freebdj3loc) {
       free (installer->bdj3loc);
     }
@@ -836,8 +829,6 @@ installerSelectDirDialog (GtkButton *b, gpointer udata)
     gtk_entry_buffer_set_text (installer->bdj3locBuffer, fn, -1);
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected loc: %s", installer->bdj3loc);
   }
-
-  g_object_unref (widget);
 }
 
 static void
@@ -1311,7 +1302,6 @@ static void
 installerConvertStart (installer_t *installer)
 {
   char  tbuff [MAXPATHLEN];
-  char  buff [MAXPATHLEN];
   char  *locs [15];
   int   locidx = 0;
   FILE  *fh;
@@ -1391,17 +1381,16 @@ installerConvertStart (installer_t *installer)
 
   locidx = 0;
   while (locs [locidx] != NULL) {
-    strlcpy (tbuff, locs [locidx], MAXPATHLEN);
+    strlcpy (tbuff, locs [locidx], sizeof (tbuff));
     if (isWindows ()) {
       snprintf (tbuff, sizeof (tbuff), "%s.exe", locs [locidx]);
     }
 
     if (installer->tclshloc == NULL && fileopFileExists (tbuff)) {
-      strlcpy (buff, tbuff, MAXPATHLEN);
       if (isWindows ()) {
-        pathToWinPath (buff, tbuff, MAXPATHLEN);
+        pathWinPath (tbuff, sizeof (tbuff));
       }
-      installer->tclshloc = strdup (buff);
+      installer->tclshloc = strdup (tbuff);
       installerDisplayText (installer, "   ", _("Located 'tclsh'."));
     }
 

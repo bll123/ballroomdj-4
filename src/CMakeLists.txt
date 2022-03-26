@@ -470,12 +470,20 @@ endif()
 addIntlLibrary (libbdj4)
 addWinSockLibrary (libbdj4)
 
-add_library (libbdj4player SHARED
+add_library (libbdj4pli SHARED
   pli.c
+  dylib.c
+)
+target_link_libraries (libbdj4pli
+  libbdj4common
+  m
+)
+
+add_library (libbdj4vol SHARED
   volume.c
   dylib.c
 )
-target_link_libraries (libbdj4player
+target_link_libraries (libbdj4vol
   libbdj4common
   m
 )
@@ -687,7 +695,7 @@ addWinSockLibrary (bdj4main)
 
 add_executable (bdj4player bdj4player.c)
 target_link_libraries (bdj4player
-  libbdj4player libbdj4 libbdj4common
+  libbdj4pli libbdj4vol libbdj4 libbdj4common
   ${CMAKE_DL_LIBS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   m
@@ -761,7 +769,7 @@ addWinSockLibrary (bdj4playerui)
 
 add_executable (bdj4configui bdj4configui.c)
 target_link_libraries (bdj4configui
-  libbdj4ui libbdj4 libbdj4common
+  libbdj4ui libbdj4vol libbdj4 libbdj4common
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}
   m
@@ -800,7 +808,7 @@ addWinSockLibrary (check_all)
 add_executable (chkprocess chkprocess.c)
 
 install (TARGETS
-  libbdj4common libbdj4 libbdj4player libbdj4ui
+  libbdj4common libbdj4 libbdj4pli libbdj4vol libbdj4ui
   libplinull libplivlc
   libvolalsa libvolmac libvolnull libvolpa libvolwin
   bdj4 bdj4g bdj4cli
@@ -827,8 +835,13 @@ macro (macUpdateRPath name)
             $<TARGET_FILE:${name}>
       COMMAND
         ${CMAKE_INSTALL_NAME_TOOL} -change
-            "@rpath/libbdj4player.dylib"
-            "@executable_path/libbdj4player.dylib"
+            "@rpath/libbdj4pli.dylib"
+            "@executable_path/libbdj4pli.dylib"
+            $<TARGET_FILE:${name}>
+      COMMAND
+        ${CMAKE_INSTALL_NAME_TOOL} -change
+            "@rpath/libbdj4vol.dylib"
+            "@executable_path/libbdj4vol.dylib"
             $<TARGET_FILE:${name}>
       COMMAND
         ${CMAKE_INSTALL_NAME_TOOL} -change
