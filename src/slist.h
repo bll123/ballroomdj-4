@@ -16,7 +16,7 @@ ssize_t   slistGetCount (slist_t *list);
 void      slistSetSize (slist_t *, ssize_t);
   /* set routines */
 void      slistSetData (slist_t *, char *sidx, void *data);
-void      slistSetStr (slist_t *, char *sidx, char *data);
+void      slistSetStr (slist_t *, char *sidx, const char *data);
 void      slistSetNum (slist_t *, char *sidx, ssize_t lval);
 void      slistSetDouble (slist_t *, char *sidx, double dval);
 void      slistSetList (slist_t *, char *sidx, slist_t *listval);

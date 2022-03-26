@@ -193,6 +193,15 @@ bdjoptGetNum (ssize_t idx)
 }
 
 void
+bdjoptSetStr (ssize_t idx, const char *value)
+{
+  if (bdjopt == NULL) {
+    return;
+  }
+  nlistSetStr (bdjopt->data, idx, value);
+}
+
+void
 bdjoptSetNum (ssize_t idx, ssize_t value)
 {
   if (bdjopt == NULL) {

@@ -62,12 +62,14 @@ ilistSetSize (ilist_t *list, ssize_t siz)
 }
 
 void
-ilistSetStr (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx, char *data)
+ilistSetStr (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx, const char *data)
 {
+  char *tdata = NULL;
+
   if (data != NULL) {
-    data = strdup (data);
+    tdata = strdup (data);
   }
-  ilistSetDataValType (list, ikey, lidx, data, VALUE_STR);
+  ilistSetDataValType (list, ikey, lidx, tdata, VALUE_STR);
 }
 
 void

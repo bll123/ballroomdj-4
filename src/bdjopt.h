@@ -103,6 +103,7 @@ void    bdjoptInit (void);
 void    bdjoptFree (void);
 void    *bdjoptGetStr (ssize_t idx);
 ssize_t bdjoptGetNum (ssize_t idx);
+void    bdjoptSetStr (ssize_t idx, const char *value);
 void    bdjoptSetNum (ssize_t idx, ssize_t value);
 void    bdjoptCreateDirectories (void);
 void    bdjoptSave (void);

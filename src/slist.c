@@ -63,7 +63,7 @@ slistSetData (slist_t *list, char *sidx, void *data)
 }
 
 void
-slistSetStr (slist_t *list, char *sidx, char *data)
+slistSetStr (slist_t *list, char *sidx, const char *data)
 {
   listitem_t    item;
 

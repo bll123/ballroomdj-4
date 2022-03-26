@@ -16,7 +16,7 @@ void      nlistSetSize (nlist_t *, ssize_t);
 void      nlistSetFreeHook (nlist_t *, nlistFree_t valueFreeHook);
   /* set routines */
 void      nlistSetData (nlist_t *, nlistidx_t idx, void *data);
-void      nlistSetStr (nlist_t *, nlistidx_t idx, char *data);
+void      nlistSetStr (nlist_t *, nlistidx_t idx, const char *data);
 void      nlistSetNum (nlist_t *, nlistidx_t idx, ssize_t lval);
 void      nlistSetDouble (nlist_t *, nlistidx_t idx, double dval);
 void      nlistSetList (nlist_t *list, nlistidx_t lidx, nlist_t *data);

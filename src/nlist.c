@@ -67,7 +67,7 @@ nlistSetData (nlist_t *list, nlistidx_t lidx, void *data)
 }
 
 void
-nlistSetStr (nlist_t *list, nlistidx_t lidx, char *data)
+nlistSetStr (nlist_t *list, nlistidx_t lidx, const char *data)
 {
   listitem_t    item;
 
