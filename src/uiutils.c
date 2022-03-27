@@ -248,6 +248,22 @@ uiutilsCreateSwitch (int value)
   return widget;
 }
 
+GtkWidget *
+uiutilsCreateCheckButton (const char *txt, int value)
+{
+  GtkWidget   *widget;
+
+  logProcBegin (LOG_PROC, "uiutilsCreateCheckButton");
+
+  widget = gtk_check_button_new_with_label (txt);
+  assert (widget != NULL);
+  gtk_widget_set_margin_top (widget, 2);
+  gtk_widget_set_margin_start (widget, 2);
+  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), value);
+  logProcEnd (LOG_PROC, "uiutilsCreateCheckButton", "");
+  return widget;
+}
+
 void
 uiutilsDropDownInit (uiutilsdropdown_t *dropdown)
 {

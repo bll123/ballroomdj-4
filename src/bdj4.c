@@ -47,6 +47,8 @@ main (int argc, char * argv[])
   int       flags;
   char      *targv [BDJ4_LAUNCHER_MAX_ARGS];
   int       targc;
+  bool      havetheme = false;
+  FILE      *fh = NULL;
 
   static struct option bdj_options [] = {
     { "check_all",      no_argument,        NULL,   1 },
@@ -206,6 +208,7 @@ main (int argc, char * argv[])
       case 't': {
         snprintf (buff, sizeof (buff), "GTK_THEME=%s", optarg);
         putenv (buff);
+        havetheme = true;
         break;
       }
       case 'r': {
@@ -326,6 +329,21 @@ main (int argc, char * argv[])
     free (pbuff);
     free (tbuff);
     free (path);
+  }
+
+  if (! havetheme) {
+    pathbldMakePath (buff, sizeof (buff), "",
+        "theme", ".txt", PATHBLD_MP_NONE);
+    if (fileopFileExists (buff)) {
+      char tbuff [MAXPATHLEN];
+
+      fh = fopen (buff, "r");
+      fgets (buff, sizeof (buff), fh);
+      stringTrim (buff);
+      fclose (fh);
+      snprintf (tbuff, sizeof (tbuff), "GTK_THEME=%s", buff);
+      putenv (tbuff);
+    }
   }
 
   /* launch the program */

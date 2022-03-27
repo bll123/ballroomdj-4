@@ -19,6 +19,7 @@
 
 static void bdjoptConvFadeType (datafileconv_t *conv);
 static void bdjoptConvWriteTags (datafileconv_t *conv);
+static void bdjoptConvBPM (datafileconv_t *conv);
 static void bdjoptCreateNewConfigs (void);
 static void bdjoptCreateDefaultFiles (void);
 static void bdjoptConvMobileMq (datafileconv_t *conv);
@@ -27,9 +28,10 @@ static datafile_t   *bdjopt = NULL;
 
 static datafilekey_t bdjoptglobaldfkeys[] = {
   { "AUTOORGANIZE",       OPT_G_AUTOORGANIZE,       VALUE_NUM, convBoolean, -1 },
+  { "BPM",                OPT_G_BPM,                VALUE_NUM, bdjoptConvBPM, -1 },
   { "CHANGESPACE",        OPT_G_CHANGESPACE,        VALUE_NUM, convBoolean, -1 },
   { "DEBUGLVL",           OPT_G_DEBUGLVL,           VALUE_NUM, NULL, -1 },
-  { "ITUNESSUPPORT",      OPT_G_ITUNESSUPPORT,      VALUE_STR, NULL, -1 },
+  { "ITUNESSUPPORT",      OPT_G_ITUNESSUPPORT,      VALUE_NUM, convBoolean, -1 },
   { "LOADDANCEFROMGENRE", OPT_G_LOADDANCEFROMGENRE, VALUE_NUM, convBoolean, -1 },
   { "MUSICDIRDFLT",       OPT_G_MUSICDIRDFLT,       VALUE_STR, NULL, -1 },
   { "PATHFMT",            OPT_G_PATHFMT,            VALUE_STR, NULL, -1 },
@@ -39,7 +41,6 @@ static datafilekey_t bdjoptglobaldfkeys[] = {
   { "PLAYERQLEN",         OPT_G_PLAYERQLEN,         VALUE_NUM, NULL, -1 },
   { "REMCONTROLHTML",     OPT_G_REMCONTROLHTML,     VALUE_STR, NULL, -1 },
   { "SHOWALBUM",          OPT_G_SHOWALBUM,          VALUE_NUM, convBoolean, -1 },
-  { "SHOWBPM",            OPT_G_SHOWBPM,            VALUE_NUM, convBoolean, -1 },
   { "SHOWCLASSICAL",      OPT_G_SHOWCLASSICAL,      VALUE_NUM, convBoolean, -1 },
   { "VARIOUS",            OPT_G_VARIOUS,            VALUE_STR, NULL, -1 },
   { "WRITETAGS",          OPT_G_WRITETAGS,          VALUE_NUM, bdjoptConvWriteTags, -1 },
@@ -259,8 +260,6 @@ bdjoptConvFadeType (datafileconv_t *conv)
   if (conv->valuetype == VALUE_STR) {
     conv->valuetype = VALUE_NUM;
 
-fprintf (stderr, "conv->u.str: %s\n", conv->u.str);
-fflush (stderr);
     if (strcmp (conv->u.str, "quartersine") == 0) {
       fadetype = FADETYPE_QUARTER_SINE;
     }
@@ -310,6 +309,30 @@ bdjoptConvWriteTags (datafileconv_t *conv)
       case WRITE_TAGS_ALL: { conv->u.str = "ALL"; break; }
       case WRITE_TAGS_BDJ_ONLY: { conv->u.str = "BDJ"; break; }
       case WRITE_TAGS_NONE: { conv->u.str = "NONE"; break; }
+    }
+  }
+}
+
+static void
+bdjoptConvBPM (datafileconv_t *conv)
+{
+  bdjbpm_t   sbpm = BPM_BPM;
+
+  if (conv->valuetype == VALUE_STR) {
+    conv->valuetype = VALUE_NUM;
+
+    if (strcmp (conv->u.str, "BPM") == 0) {
+      sbpm = BPM_BPM;
+    }
+    if (strcmp (conv->u.str, "MPM") == 0) {
+      sbpm = BPM_MPM;
+    }
+    conv->u.num = sbpm;
+  } else if (conv->valuetype == VALUE_NUM) {
+    conv->valuetype = VALUE_STR;
+    switch (conv->u.num) {
+      case BPM_BPM: { conv->u.str = "BPM"; break; }
+      case BPM_MPM: { conv->u.str = "MPM"; break; }
     }
   }
 }
@@ -379,18 +402,22 @@ bdjoptConvMobileMq (datafileconv_t *conv)
   if (conv->valuetype == VALUE_STR) {
     conv->valuetype = VALUE_NUM;
 
-    if (strcmp (conv->u.str, "internet") == 0) {
-      val = MOBILEMQ_INTERNET;
+    if (strcmp (conv->u.str, "off") == 0) {
+      val = MOBILEMQ_OFF;
     }
     if (strcmp (conv->u.str, "local") == 0) {
       val = MOBILEMQ_LOCAL;
+    }
+    if (strcmp (conv->u.str, "internet") == 0) {
+      val = MOBILEMQ_INTERNET;
     }
     conv->u.num = val;
   } else if (conv->valuetype == VALUE_NUM) {
     conv->valuetype = VALUE_STR;
     switch (conv->u.num) {
-      case MOBILEMQ_INTERNET: { conv->u.str = "internet"; break; }
+      case MOBILEMQ_OFF: { conv->u.str = "off"; break; }
       case MOBILEMQ_LOCAL: { conv->u.str = "local"; break; }
+      case MOBILEMQ_INTERNET: { conv->u.str = "internet"; break; }
     }
   }
 }

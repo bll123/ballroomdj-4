@@ -4,9 +4,9 @@
 #include "datafile.h"
 
 typedef enum {
-  WRITE_TAGS_ALL,
-  WRITE_TAGS_BDJ_ONLY,
   WRITE_TAGS_NONE,
+  WRITE_TAGS_BDJ_ONLY,
+  WRITE_TAGS_ALL,
 } bdjwritetags_t;
 
 typedef enum {
@@ -23,6 +23,11 @@ typedef enum {
   MOBILEMQ_INTERNET,
 } bdjmobilemq_t;
 
+typedef enum {
+  BPM_BPM,
+  BPM_MPM,
+} bdjbpm_t;
+
 /* development notes
  * u - in use
  * d - display working in configui
@@ -31,6 +36,7 @@ typedef enum {
 
 typedef enum {
   OPT_G_AUTOORGANIZE,
+  OPT_G_BPM,
   OPT_G_CHANGESPACE,
   OPT_G_DEBUGLVL,                 // u
   OPT_G_ITUNESSUPPORT,            //   d
@@ -43,7 +49,6 @@ typedef enum {
   OPT_G_PLAYERQLEN,               // u
   OPT_G_REMCONTROLHTML,           //   d
   OPT_G_SHOWALBUM,
-  OPT_G_SHOWBPM,
   OPT_G_SHOWCLASSICAL,
   OPT_G_VARIOUS,
   OPT_G_WRITETAGS,                //   d

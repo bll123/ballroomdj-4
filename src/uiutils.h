@@ -67,6 +67,7 @@ GtkWidget * uiutilsCreateButton (char *title, char *imagenm,
     void *clickCallback, void *udata);
 GtkWidget * uiutilsCreateScrolledWindow (void);
 GtkWidget * uiutilsCreateSwitch (int value);
+GtkWidget * uiutilsCreateCheckButton (const char *txt, int value);
 
 void uiutilsDropDownInit (uiutilsdropdown_t *dropdown);
 void uiutilsDropDownFree (uiutilsdropdown_t *dropdown);

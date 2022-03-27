@@ -100,6 +100,7 @@ foreach path [list {} profiles $mpath $mppath] {
 
         if { $key eq "version" } { set value 1 }
 
+        if { $key eq "SHOWBPM" } { set key "BPM" }
         if { $key eq "PLAYERQLEN0" } { set key "PLAYERQLEN" }
         if { $key eq "CLPATHFMT" } { set key PATHFMT_CL }
         if { $key eq "CLVAPATHFMT" } { set key PATHFMT_CLVA }
@@ -108,6 +109,13 @@ foreach path [list {} profiles $mpath $mppath] {
         if { $key eq "LISTINGFONTSIZE" } {
           set key LISTINGFONT
           set value {}
+          if { $::tcl_platform(os) eq "Linux" } {
+            set value [exec gsettings get org.gnome.desktop.interface font-name]
+            regsub -all {'} $value {} value
+          }
+          if { $::tcl_platform(platform) eq "windows" } {
+            set value "Arial 11"
+          }
         }
 
         if { $key eq "MQSHOWARTIST" } {
@@ -131,14 +139,16 @@ foreach path [list {} profiles $mpath $mppath] {
             set value {Wachtrij B}
           }
         }
+        if { $key eq "BPM" && $value eq "OFF" } {
+          set value BPM
+        }
         if { $key eq "PLAYERQLEN" } {
           if { $value < 10 } {
             set value 30
           }
         }
         if { $key eq "MQFONT" && $value ne {} } {
-          # drop any size and remove the braces.
-          set value [lindex $value 0]
+          set value [join $value { }]
         }
         if { $key eq "PROFILENAME" && $value eq {BallroomDJ} } {
           set value {BallroomDJ 4}
@@ -150,6 +160,10 @@ foreach path [list {} profiles $mpath $mppath] {
           set value 0
         }
         if { $key eq "UIFONT" && $value eq {} } {
+          if { $::tcl_platform(os) eq "Linux" } {
+            set value [exec gsettings get org.gnome.desktop.interface font-name]
+            regsub -all {'} $value {} value
+          }
           if { $::tcl_platform(platform) eq "windows" } {
             set value "Arial 11"
           }
@@ -218,8 +232,15 @@ foreach path [list {} profiles $mpath $mppath] {
         puts $ofh "..${value}"
 
         puts $ofh UI_THEME
-        set value Adwaita-Dark
-        if { $::tcl_platform(os) eq "Linux" } { set value Adwaita-Dark }
+        set value Adwaita-dark
+        if { $::tcl_platform(os) eq "Linux" } {
+          # have to figure out which systems this works on
+          set value [exec gsettings get org.gnome.desktop.interface gtk-theme]
+          regsub -all {'} $value {} value
+          if { $value eq "" } {
+            set value Adwaita-dark
+          }
+        }
         if { $::tcl_platform(platform) eq "windows" } { set value Windows-10-Dark }
         if { $::tcl_platform(os) eq "Darwin" } { set value MacOS-Dark }
         puts $ofh "..${value}"
