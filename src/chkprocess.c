@@ -16,6 +16,7 @@ main (int argc, char *argv[])
 
   /* abuse processstart and use the --profile arg to pass in the sleep time */
   static struct option bdj_options [] = {
+    { "bdj4",       no_argument,        NULL,   'B' },
     { "profile",    required_argument,  NULL,   'p' },
     { "debug"  ,    required_argument,  NULL,   'd' },
     { NULL,         0,                  NULL,   0 }

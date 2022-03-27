@@ -154,9 +154,13 @@ nlistDecrement (nlist_t *list, nlistidx_t lidx)
 void *
 nlistGetData (nlist_t *list, nlistidx_t lidx)
 {
-  void            *value = NULL;
-  listkey_t       key;
-  nlistidx_t       idx;
+  void        *value = NULL;
+  listkey_t   key;
+  nlistidx_t  idx;
+
+  if (list == NULL) {
+    return NULL;
+  }
 
   key.idx = lidx;
   idx = listGetIdx (list, &key);

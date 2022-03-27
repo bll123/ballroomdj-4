@@ -428,6 +428,7 @@ datafileParseMerge (list_t *datalist, char *data, char *name,
         }
       } else {
         logMsg (LOG_DBG, LOG_DATAFILE, "ERR: Unable to locate key: %s", tkeystr);
+        continue;
       }
 
       if (lookup != NULL &&
