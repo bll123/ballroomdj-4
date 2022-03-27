@@ -97,14 +97,14 @@ foreach path [list {} profiles $mpath $mppath] {
         if { $key eq "IMAGEDIR" } { continue }
         if { $key eq "ARCHIVEDIR" } { continue }
         if { $key eq "MTMPDIR" } { continue }
+        if { $key eq "CLVAPATHFMT" } { continue }
+        if { $key eq "VAPATHFMT" } { continue }
+        if { $key eq "CLPATHFMT" } { continue }
 
         if { $key eq "version" } { set value 1 }
 
         if { $key eq "SHOWBPM" } { set key "BPM" }
         if { $key eq "PLAYERQLEN0" } { set key "PLAYERQLEN" }
-        if { $key eq "CLPATHFMT" } { set key PATHFMT_CL }
-        if { $key eq "CLVAPATHFMT" } { set key PATHFMT_CLVA }
-        if { $key eq "VAPATHFMT" } { set key PATHFMT_VA }
         if { $key eq "MUSICDIR" } { set key DIRMUSIC }
         if { $key eq "LISTINGFONTSIZE" } {
           set key LISTINGFONT
@@ -244,6 +244,9 @@ foreach path [list {} profiles $mpath $mppath] {
         if { $::tcl_platform(platform) eq "windows" } { set value Windows-10-Dark }
         if { $::tcl_platform(os) eq "Darwin" } { set value MacOS-Dark }
         puts $ofh "..${value}"
+        set tfh [open [file join $datatopdir data theme.txt] w]
+        puts $tfh "${value}"
+        close $tfh
       }
       close $ifh
       close $ofh

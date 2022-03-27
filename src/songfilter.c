@@ -628,7 +628,7 @@ songfilterMakeSortKey (songfilter_t *sf, slist_t *sortselParsed,
       if (tval == LIST_VALUE_INVALID) {
         tval = 0;
       }
-      snprintf (tbuff, sizeof (tbuff), "/%03zd", tval);
+      snprintf (tbuff, sizeof (tbuff), "/%02zd", tval);
       strlcat (sortkey, tbuff, sz);
 
       tval = songGetNum (song, TAG_TRACKNUMBER);

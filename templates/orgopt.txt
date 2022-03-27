@@ -1,0 +1,19 @@
+# BDJ4 organization options
+# recognized keywords:
+#   ALBUM ALBUMARTIST ARTIST COMPOSER DANCE DISC GENRE TITLE
+#   TRACKNUM TRACKNUM0
+# {} groups text : if the keyword is empty, the entire group is ignored.
+# version 1
+{%ALBUM%/}{%ALBUMARTIST%/}{%TRACKNUM% - }{%TITLE%}
+{%ALBUM%/}{%ARTIST%/}{%TRACKNUM% - }{%TITLE%}
+{%ALBUMARTIST% - }{%TITLE%}
+{%ALBUMARTIST%/}{%ALBUM%/}{%DISC%-}{%TRACKNUM%.}{%TITLE%}
+{%ALBUMARTIST%/}{%ALBUM%/}{%DISC%-}{%TRACKNUM0%.}{%TITLE%}
+{%ALBUMARTIST%/}{%TITLE%}
+{%ARTIST% - }{%TITLE%}
+{%ARTIST%/}{%TITLE%}
+{%DANCE% - }{%TITLE%}
+{%DANCE%/}{%ARTIST% - }{%TITLE%}
+{%DANCE%/}{%TITLE%}
+{%GENRE%/}{%COMPOSER%/}{%ALBUMARTIST%/}{%ALBUM%/}{%DISC%-}{%TRACKNUM0%.}{%TITLE%}
+{%TITLE%}

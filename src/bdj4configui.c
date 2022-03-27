@@ -28,6 +28,7 @@
 #include "lock.h"
 #include "log.h"
 #include "nlist.h"
+#include "orgutil.h"
 #include "osuiutils.h"
 #include "pathbld.h"
 #include "pathutil.h"
@@ -48,6 +49,7 @@ typedef enum {
   CONFUI_ENTRY,
   CONFUI_FONT,
   CONFUI_COLOR,
+  CONFUI_COMBOBOX,
   CONFUI_SPINBOX_TEXT,
   CONFUI_SPINBOX_NUM,
   CONFUI_SPINBOX_DOUBLE,
@@ -67,69 +69,74 @@ typedef enum {
 } confuiouttype_t;
 
 enum {
-  CONFUI_ENTRY_MUSIC_DIR,
-  CONFUI_ENTRY_PROFILE_NAME,
-  CONFUI_ENTRY_STARTUP,
-  CONFUI_ENTRY_SHUTDOWN,
-  CONFUI_ENTRY_QUEUE_NM_A,
-  CONFUI_ENTRY_QUEUE_NM_B,
-  CONFUI_ENTRY_RC_USER_ID,
-  CONFUI_ENTRY_RC_PASS,
+  CONFUI_BEGIN,
+  CONFUI_COMBOBOX_AO_PATHFMT,
+  CONFUI_COMBOBOX_MAX,
   CONFUI_ENTRY_MM_NAME,
   CONFUI_ENTRY_MM_TITLE,
+  CONFUI_ENTRY_MUSIC_DIR,
+  CONFUI_ENTRY_PROFILE_NAME,
+  CONFUI_ENTRY_QUEUE_NM_A,
+  CONFUI_ENTRY_QUEUE_NM_B,
+  CONFUI_ENTRY_RC_PASS,
+  CONFUI_ENTRY_RC_USER_ID,
+  CONFUI_ENTRY_SHUTDOWN,
+  CONFUI_ENTRY_STARTUP,
   CONFUI_ENTRY_MAX,
-  CONFUI_SPINBOX_WRITE_AUDIO_FILE_TAGS,
-  CONFUI_SPINBOX_LOCALE,
-  CONFUI_SPINBOX_PLAYER,
   CONFUI_SPINBOX_AUDIO,
   CONFUI_SPINBOX_AUDIO_OUTPUT,
+  CONFUI_SPINBOX_BPM,
   CONFUI_SPINBOX_FADE_TYPE,
-  CONFUI_SPINBOX_MQ_THEME,
-  CONFUI_SPINBOX_UI_THEME,
-  CONFUI_SPINBOX_RC_HTML_TEMPLATE,
+  CONFUI_SPINBOX_LOCALE,
   CONFUI_SPINBOX_MAX_PLAY_TIME,
   CONFUI_SPINBOX_MOBILE_MQ,
-  CONFUI_SPINBOX_BPM,
+  CONFUI_SPINBOX_MQ_THEME,
+  CONFUI_SPINBOX_PLAYER,
+  CONFUI_SPINBOX_RC_HTML_TEMPLATE,
+  CONFUI_SPINBOX_UI_THEME,
+  CONFUI_SPINBOX_WRITE_AUDIO_FILE_TAGS,
   CONFUI_SPINBOX_MAX,
+  CONFUI_WIDGET_AO_CHG_SPACE,
+  CONFUI_WIDGET_AUTO_ORGANIZE,
   CONFUI_WIDGET_DB_LOAD_FROM_GENRE,
-  CONFUI_WIDGET_ENABLE_ITUNES,
+  CONFUI_WIDGET_DEBUG_1,
+  CONFUI_WIDGET_DEBUG_1024,
+  CONFUI_WIDGET_DEBUG_128,
+  CONFUI_WIDGET_DEBUG_131072,
+  CONFUI_WIDGET_DEBUG_16,
+  CONFUI_WIDGET_DEBUG_16384,
+  CONFUI_WIDGET_DEBUG_2,
+  CONFUI_WIDGET_DEBUG_2048,
+  CONFUI_WIDGET_DEBUG_256,
+  CONFUI_WIDGET_DEBUG_32,
+  CONFUI_WIDGET_DEBUG_32768,
+  CONFUI_WIDGET_DEBUG_4,
+  CONFUI_WIDGET_DEBUG_4096,
+  CONFUI_WIDGET_DEBUG_512,
+  CONFUI_WIDGET_DEBUG_64,
+  CONFUI_WIDGET_DEBUG_65536,
+  CONFUI_WIDGET_DEBUG_8,
+  CONFUI_WIDGET_DEBUG_8192,
   CONFUI_WIDGET_DEFAULT_VOL,
+  CONFUI_WIDGET_ENABLE_ITUNES,
   CONFUI_WIDGET_FADE_IN_TIME,
   CONFUI_WIDGET_FADE_OUT_TIME,
   CONFUI_WIDGET_GAP,
   CONFUI_WIDGET_HIDE_MARQUEE_ON_START,
   CONFUI_WIDGET_INSERT_LOC,
-  CONFUI_WIDGET_PL_QUEUE_LEN,
+  CONFUI_WIDGET_MMQ_PORT,
+  CONFUI_WIDGET_MMQ_QR_CODE,
   CONFUI_WIDGET_MQ_ACCENT_COLOR,
   CONFUI_WIDGET_MQ_FONT,
   CONFUI_WIDGET_MQ_QUEUE_LEN,
   CONFUI_WIDGET_MQ_SHOW_SONG_INFO,
-  CONFUI_WIDGET_UI_FONT,
-  CONFUI_WIDGET_UI_LISTING_FONT,
-  CONFUI_WIDGET_UI_ACCENT_COLOR,
+  CONFUI_WIDGET_PL_QUEUE_LEN,
   CONFUI_WIDGET_RC_ENABLE,
   CONFUI_WIDGET_RC_PORT,
   CONFUI_WIDGET_RC_QR_CODE,
-  CONFUI_WIDGET_MMQ_PORT,
-  CONFUI_WIDGET_MMQ_QR_CODE,
-  CONFUI_WIDGET_DEBUG_1,
-  CONFUI_WIDGET_DEBUG_2,
-  CONFUI_WIDGET_DEBUG_4,
-  CONFUI_WIDGET_DEBUG_8,
-  CONFUI_WIDGET_DEBUG_16,
-  CONFUI_WIDGET_DEBUG_32,
-  CONFUI_WIDGET_DEBUG_64,
-  CONFUI_WIDGET_DEBUG_128,
-  CONFUI_WIDGET_DEBUG_256,
-  CONFUI_WIDGET_DEBUG_512,
-  CONFUI_WIDGET_DEBUG_1024,
-  CONFUI_WIDGET_DEBUG_2048,
-  CONFUI_WIDGET_DEBUG_4096,
-  CONFUI_WIDGET_DEBUG_8192,
-  CONFUI_WIDGET_DEBUG_16384,
-  CONFUI_WIDGET_DEBUG_32768,
-  CONFUI_WIDGET_DEBUG_65536,
-  CONFUI_WIDGET_DEBUG_131072,
+  CONFUI_WIDGET_UI_ACCENT_COLOR,
+  CONFUI_WIDGET_UI_FONT,
+  CONFUI_WIDGET_UI_LISTING_FONT,
   CONFUI_ITEM_MAX,
 };
 
@@ -138,11 +145,12 @@ typedef struct {
   confuiouttype_t   outtype;
   int               bdjoptIdx;
   union {
+    uiutilsdropdown_t dropdown;
     uiutilsentry_t    entry;
     uiutilsspinbox_t  spinbox;
     GtkWidget         *widget;
   } u;
-  nlist_t             *sblist;
+  nlist_t             *list;
   nlist_t             *sblookuplist;
 } confuiitem_t;
 
@@ -159,6 +167,7 @@ typedef struct {
   int               rchtmlidx;
   int               localeidx;
   int               audiosinkidx;
+  int               orgpathidx;
   volume_t          *volume;
   GtkWidget         *fadetypeImage;
   /* gtk stuff */
@@ -208,6 +217,7 @@ static void confuiSelectFileDialog (configui_t *confui, int widx);
 static GtkWidget * confuiMakeNotebookTab (GtkWidget *notebook, char *txt);
 static GtkWidget * confuiMakeItemEntry (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, char *txt, int widx, int bdjoptIdx, char *disp);
 static void confuiMakeItemEntryChooser (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, char *txt, int widx, int bdjoptIdx, char *disp, void *dialogFunc);
+static GtkWidget * confuiMakeItemCombobox (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, char *txt, int widx, int bdjoptIdx, void *ddcb, ssize_t value);
 static void confuiMakeItemLink (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, char *txt, int widx, char *disp);
 static void confuiMakeItemFontButton (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, char *txt, int widx, int bdjoptIdx, char *fontname);
 static void confuiMakeItemColorButton (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, char *txt, int widx, int bdjoptIdx, char *color);
@@ -224,6 +234,8 @@ static nlist_t  * confuiGetThemeNames (nlist_t *themelist, slist_t *filelist);
 static void     confuiLoadHTMLList (configui_t *confui);
 static void     confuiLoadLocaleList (configui_t *confui);
 static gboolean confuiFadeTypeTooltip (GtkWidget *, gint, gint, gboolean, GtkTooltip *, void *);
+static void     confuiOrgPathSelect (GtkTreeView *tv, GtkTreePath *path,
+    GtkTreeViewColumn *column, gpointer udata);
 
 static int gKillReceived = 0;
 static int gdone = 0;
@@ -242,6 +254,7 @@ main (int argc, char *argv[])
   int             count;
   char            *p;
   volsinklist_t   sinklist;
+  orgopt_t        *orgopt;
 
 
   confui.notebook = NULL;
@@ -260,10 +273,13 @@ main (int argc, char *argv[])
   }
 
   for (int i = 0; i < CONFUI_ITEM_MAX; ++i) {
-    confui.uiitem [i].sblist = NULL;
+    confui.uiitem [i].list = NULL;
     confui.uiitem [i].sblookuplist = NULL;
     confui.uiitem [i].basetype = CONFUI_NONE;
     confui.uiitem [i].outtype = CONFUI_OUT_NONE;
+    if (i > CONFUI_BEGIN && i < CONFUI_COMBOBOX_MAX) {
+      uiutilsDropDownInit (&confui.uiitem [i].u.dropdown);
+    }
     if (i > CONFUI_ENTRY_MAX && i < CONFUI_SPINBOX_MAX) {
       uiutilsSpinboxTextInit (&confui.uiitem [i].u.spinbox);
     }
@@ -292,6 +308,11 @@ main (int argc, char *argv[])
   confui.dbgflags = bdj4startup (argc, argv, "cu", ROUTE_CONFIGUI, BDJ4_INIT_NONE);
   logProcBegin (LOG_PROC, "configui");
 
+  pathbldMakePath (tbuff, sizeof (tbuff), "",
+      "orgopt", ".txt", PATHBLD_MP_NONE);
+  orgopt = orgoptAlloc (tbuff);
+  confui.uiitem [CONFUI_COMBOBOX_AO_PATHFMT].list = orgoptGetList (orgopt);
+
   confui.volume = volumeInit ();
   assert (confui.volume != NULL);
   volumeGetSinkList (confui.volume, "", &sinklist);
@@ -305,7 +326,7 @@ main (int argc, char *argv[])
     nlistSetStr (tlist, i, sinklist.sinklist [i].description);
     nlistSetStr (llist, i, sinklist.sinklist [i].name);
   }
-  confui.uiitem [CONFUI_SPINBOX_AUDIO_OUTPUT].sblist = tlist;
+  confui.uiitem [CONFUI_SPINBOX_AUDIO_OUTPUT].list = tlist;
   confui.uiitem [CONFUI_SPINBOX_AUDIO_OUTPUT].sblookuplist = llist;
   volumeFreeSinkList (&sinklist);
 
@@ -314,13 +335,13 @@ main (int argc, char *argv[])
   nlistSetStr (tlist, WRITE_TAGS_NONE, _("Don't Write"));
   nlistSetStr (tlist, WRITE_TAGS_BDJ_ONLY, _("BDJ Tags Only"));
   nlistSetStr (tlist, WRITE_TAGS_ALL, _("All Tags"));
-  confui.uiitem [CONFUI_SPINBOX_WRITE_AUDIO_FILE_TAGS].sblist = tlist;
+  confui.uiitem [CONFUI_SPINBOX_WRITE_AUDIO_FILE_TAGS].list = tlist;
 
   tlist = nlistAlloc ("cu-bpm", LIST_UNORDERED, free);
   /* order these in the same order as defined in bdjopt.h */
   nlistSetStr (tlist, BPM_BPM, _("BPM"));
   nlistSetStr (tlist, BPM_MPM, _("MPM"));
-  confui.uiitem [CONFUI_SPINBOX_BPM].sblist = tlist;
+  confui.uiitem [CONFUI_SPINBOX_BPM].list = tlist;
 
   tlist = nlistAlloc ("cu-fadetype", LIST_UNORDERED, free);
   /* order these in the same order as defined in bdjopt.h */
@@ -329,7 +350,7 @@ main (int argc, char *argv[])
   nlistSetStr (tlist, FADETYPE_HALF_SINE, _("Half Sine Wave"));
   nlistSetStr (tlist, FADETYPE_LOGARITHMIC, _("Logarithmic"));
   nlistSetStr (tlist, FADETYPE_INVERTED_PARABOLA, _("Inverted Parabola"));
-  confui.uiitem [CONFUI_SPINBOX_FADE_TYPE].sblist = tlist;
+  confui.uiitem [CONFUI_SPINBOX_FADE_TYPE].list = tlist;
 
   tlist = nlistAlloc ("cu-player", LIST_UNORDERED, free);
   llist = nlistAlloc ("cu-player", LIST_ORDERED, free);
@@ -337,7 +358,7 @@ main (int argc, char *argv[])
   nlistSetStr (llist, 0, "libplivlc");
   nlistSetStr (tlist, 1, _("Null Player"));
   nlistSetStr (llist, 1, "libnull");
-  confui.uiitem [CONFUI_SPINBOX_PLAYER].sblist = tlist;
+  confui.uiitem [CONFUI_SPINBOX_PLAYER].list = tlist;
   confui.uiitem [CONFUI_SPINBOX_PLAYER].sblookuplist = llist;
 
   tlist = nlistAlloc ("cu-audio", LIST_UNORDERED, free);
@@ -364,7 +385,7 @@ main (int argc, char *argv[])
   nlistSetStr (tlist, count++, _("Null Audio"));
   nlistSetStr (llist, count, "libvolnull");
   ++count;
-  confui.uiitem [CONFUI_SPINBOX_AUDIO].sblist = tlist;
+  confui.uiitem [CONFUI_SPINBOX_AUDIO].list = tlist;
   confui.uiitem [CONFUI_SPINBOX_AUDIO].sblookuplist = llist;
 
   confuiLoadHTMLList (&confui);
@@ -382,9 +403,9 @@ main (int argc, char *argv[])
     }
     ++count;
   }
-  confui.uiitem [CONFUI_SPINBOX_UI_THEME].sblist = tlist;
+  confui.uiitem [CONFUI_SPINBOX_UI_THEME].list = tlist;
   confui.uiitem [CONFUI_SPINBOX_UI_THEME].sblookuplist = tlist;
-  confui.uiitem [CONFUI_SPINBOX_MQ_THEME].sblist = tlist;
+  confui.uiitem [CONFUI_SPINBOX_MQ_THEME].list = tlist;
   confui.uiitem [CONFUI_SPINBOX_MQ_THEME].sblookuplist = tlist;
 
   tlist = nlistAlloc ("cu-mob-mq", LIST_UNORDERED, free);
@@ -392,7 +413,7 @@ main (int argc, char *argv[])
   nlistSetStr (tlist, MOBILEMQ_OFF, _("Off"));
   nlistSetStr (tlist, MOBILEMQ_LOCAL, _("Local"));
   nlistSetStr (tlist, MOBILEMQ_INTERNET, _("Internet"));
-  confui.uiitem [CONFUI_SPINBOX_MOBILE_MQ].sblist = tlist;
+  confui.uiitem [CONFUI_SPINBOX_MOBILE_MQ].list = tlist;
 
   listenPort = bdjvarsGetNum (BDJVL_CONFIGUI_PORT);
   confui.conn = connInit (ROUTE_CONFIGUI);
@@ -483,24 +504,28 @@ confuiClosingCallback (void *udata, programstate_t programState)
       "configui", ".txt", PATHBLD_MP_USEIDX);
   datafileSaveKeyVal ("configui", fn, configuidfkeys, CONFUI_KEY_MAX, confui->options);
 
-  for (int i = 0; i < CONFUI_ENTRY_MAX; ++i) {
+  for (int i = CONFUI_BEGIN + 1; i < CONFUI_COMBOBOX_MAX; ++i) {
+    uiutilsDropDownFree (&confui->uiitem [i].u.dropdown);
+  }
+
+  for (int i = CONFUI_COMBOBOX_MAX + 1; i < CONFUI_ENTRY_MAX; ++i) {
     uiutilsEntryFree (&confui->uiitem [i].u.entry);
   }
 
   for (int i = CONFUI_ENTRY_MAX + 1; i < CONFUI_SPINBOX_MAX; ++i) {
     uiutilsSpinboxTextFree (&confui->uiitem [i].u.spinbox);
-    /* the mq and ui theme share both sblist and sblookuplist */
+    /* the mq and ui theme share both list and sblookuplist */
     /* ui_theme > mq_theme */
     if (i == CONFUI_SPINBOX_UI_THEME) {
       continue;
     }
-    if (confui->uiitem [i].sblist != NULL) {
-      nlistFree (confui->uiitem [i].sblist);
+    if (confui->uiitem [i].list != NULL) {
+      nlistFree (confui->uiitem [i].list);
     }
     if (i != CONFUI_SPINBOX_MQ_THEME && confui->uiitem [i].sblookuplist != NULL) {
       nlistFree (confui->uiitem [i].sblookuplist);
     }
-    confui->uiitem [i].sblist = NULL;
+    confui->uiitem [i].list = NULL;
   }
 
   if (confui->options != datafileGetList (confui->optiondf)) {
@@ -752,6 +777,16 @@ confuiActivate (GApplication *app, gpointer userdata)
   vbox = confuiMakeNotebookTab (confui->notebook, _("Organization"));
   sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
+  confuiMakeItemCombobox (confui, vbox, sg, _("Organization Path"),
+      CONFUI_COMBOBOX_AO_PATHFMT, OPT_G_AO_PATHFMT,
+      confuiOrgPathSelect, bdjoptGetNum (OPT_G_AO_PATHFMT));
+  confuiMakeItemSwitch (confui, vbox, sg, _("Auto Organize"),
+      CONFUI_WIDGET_AUTO_ORGANIZE, OPT_G_AUTOORGANIZE,
+      bdjoptGetNum (OPT_G_AUTOORGANIZE));
+  confuiMakeItemSwitch (confui, vbox, sg, _("Remove Spaces"),
+      CONFUI_WIDGET_AO_CHG_SPACE, OPT_G_AO_CHANGESPACE,
+      bdjoptGetNum (OPT_G_AO_CHANGESPACE));
+
   vbox = confuiMakeNotebookTab (confui->notebook, _("Edit Dances"));
   sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
@@ -938,7 +973,7 @@ confuiMainLoop (void *tconfui)
     return cont;
   }
 
-  for (int i = 0; i < CONFUI_ENTRY_MAX; ++i) {
+  for (int i = CONFUI_COMBOBOX_MAX + 1; i < CONFUI_ENTRY_MAX; ++i) {
     uiutilsEntryValidate (&confui->uiitem [i].u.entry);
   }
 
@@ -1101,6 +1136,10 @@ confuiPopulateOptions (configui_t *confui)
       case CONFUI_CHECK_BUTTON: {
         nval = gtk_toggle_button_get_active (
             GTK_TOGGLE_BUTTON (confui->uiitem [i].u.widget));
+        break;
+      }
+      case CONFUI_COMBOBOX: {
+// ### TBD
         break;
       }
     }
@@ -1279,6 +1318,27 @@ confuiMakeItemEntryChooser (configui_t *confui, GtkWidget *vbox,
   confui->uiitem [widx].bdjoptIdx = bdjoptIdx;
 }
 
+static GtkWidget *
+confuiMakeItemCombobox (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg,
+    char *txt, int widx, int bdjoptIdx, void *ddcb, ssize_t value)
+{
+  GtkWidget   *hbox;
+  GtkWidget   *widget;
+
+  confui->uiitem [widx].basetype = CONFUI_COMBOBOX;
+  confui->uiitem [widx].outtype = CONFUI_OUT_STR;
+  hbox = confuiMakeItemLabel (vbox, sg, txt);
+  widget = uiutilsComboboxCreate (confui->window, txt,
+      ddcb, &confui->uiitem [widx].u.dropdown, confui);
+  uiutilsDropDownSetList (&confui->uiitem [widx].u.dropdown,
+      confui->uiitem [widx].list, NULL);
+  gtk_widget_set_margin_start (widget, 8);
+  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+  confui->uiitem [widx].bdjoptIdx = bdjoptIdx;
+  return hbox;
+}
+
 static void
 confuiMakeItemLink (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg,
     char *txt, int widx, char *disp)
@@ -1354,7 +1414,7 @@ confuiMakeItemSpinboxText (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg
   confui->uiitem [widx].outtype = CONFUI_OUT_NUM;
   hbox = confuiMakeItemLabel (vbox, sg, txt);
   widget = uiutilsSpinboxTextCreate (&confui->uiitem [widx].u.spinbox, confui);
-  list = confui->uiitem [widx].sblist;
+  list = confui->uiitem [widx].list;
   maxWidth = 0;
   if (list != NULL) {
     nlistidx_t    iteridx;
@@ -1591,7 +1651,7 @@ confuiLoadHTMLList (configui_t *confui)
   }
   datafileFree (df);
 
-  confui->uiitem [CONFUI_SPINBOX_RC_HTML_TEMPLATE].sblist = tlist;
+  confui->uiitem [CONFUI_SPINBOX_RC_HTML_TEMPLATE].list = tlist;
   confui->uiitem [CONFUI_SPINBOX_RC_HTML_TEMPLATE].sblookuplist = llist;
 }
 
@@ -1631,7 +1691,7 @@ confuiLoadLocaleList (configui_t *confui)
   }
   datafileFree (df);
 
-  confui->uiitem [CONFUI_SPINBOX_LOCALE].sblist = tlist;
+  confui->uiitem [CONFUI_SPINBOX_LOCALE].list = tlist;
   confui->uiitem [CONFUI_SPINBOX_LOCALE].sblookuplist = llist;
 }
 
@@ -1646,5 +1706,21 @@ confuiFadeTypeTooltip (GtkWidget *w, gint x, gint y, gboolean kbmode,
   pixbuf = gtk_image_get_pixbuf (GTK_IMAGE (confui->fadetypeImage));
   gtk_tooltip_set_icon (tt, pixbuf);
   return TRUE;
+}
+
+static void
+confuiOrgPathSelect (GtkTreeView *tv, GtkTreePath *path,
+    GtkTreeViewColumn *column, gpointer udata)
+{
+  configui_t        *confui = udata;
+  uiutilsdropdown_t *dd = NULL;
+  ssize_t           idx;
+
+  logProcBegin (LOG_PROC, "confuiOrgPathSelect");
+
+  dd = &confui->uiitem [CONFUI_COMBOBOX_AO_PATHFMT].u.dropdown;
+  idx = uiutilsDropDownSelectionGet (dd, path);
+  confui->orgpathidx = idx;
+  logProcEnd (LOG_PROC, "confuiOrgPathSelect", "");
 }
 
