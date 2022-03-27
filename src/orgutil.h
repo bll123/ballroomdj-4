@@ -1,16 +1,31 @@
 #ifndef INC_ORGUTIL_H
 #define INC_ORGUTIL_H
 
-#include "datafile.h"
 #include "slist.h"
+#include "song.h"
+
+typedef enum {
+  ORG_TEXT,
+  ORG_ALBUM,
+  ORG_ALBUMARTIST,
+  ORG_ARTIST,
+  ORG_COMPOSER,
+  ORG_DANCE,
+  ORG_DISC,
+  ORG_GENRE,
+  ORG_TITLE,
+  ORG_TRACKNUM,
+  ORG_TRACKNUM0,
+  ORG_MAX_KEY,
+} orgkey_t;
 
 typedef struct {
-  datafile_t    *df;
-  slist_t       *orgList;
-} orgopt_t;
+  char          *orgpath;
+  slist_t       *orgparsed;
+} org_t;
 
-orgopt_t  * orgoptAlloc (char *fname);
-void      orgoptFree (orgopt_t *org);
-slist_t   * orgoptGetList (orgopt_t *org);
+org_t   * orgAlloc (char *orgpath);
+void    orgFree (org_t *org);
+char    * orgMakeSongPath (org_t *org, song_t *song);
 
 #endif /* INC_ORGUTIL_H */

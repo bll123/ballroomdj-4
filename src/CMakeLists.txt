@@ -441,6 +441,7 @@ add_library (libbdj4 SHARED
   level.c
   musicdb.c
   musicq.c
+  orgopt.c
   orgutil.c
   playlist.c
   rating.c

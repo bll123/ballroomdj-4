@@ -28,7 +28,7 @@
 #include "lock.h"
 #include "log.h"
 #include "nlist.h"
-#include "orgutil.h"
+#include "orgopt.h"
 #include "osuiutils.h"
 #include "pathbld.h"
 #include "pathutil.h"
