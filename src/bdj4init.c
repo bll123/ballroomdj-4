@@ -41,8 +41,10 @@ bdj4startup (int argc, char *argv[], char *tag, bdjmsgroute_t route, int flags)
   char        tbuff [MAXPATHLEN];
   loglevel_t  loglevel = LOG_IMPORTANT | LOG_MAIN;
   bool        startlog = false;
+  bool        isbdj4 = false;
 
   static struct option bdj_options [] = {
+    { "bdj4",         no_argument,      NULL,   'B' },
     { "bdj4main",     no_argument,      NULL,   0 },
     { "main",         no_argument,      NULL,   0 },
     { "bdj4playerui", no_argument,      NULL,   0 },
@@ -73,13 +75,12 @@ bdj4startup (int argc, char *argv[], char *tag, bdjmsgroute_t route, int flags)
   sysvarsInit (argv[0]);
   localeInit ();
 
-  pathbldMakePath (tbuff, sizeof (tbuff), "", sysvarsGetStr (SV_HOSTNAME), "", PATHBLD_MP_NONE);
-  if (! fileopIsDirectory (tbuff)) {
-    fileopMakeDir (tbuff);
-  }
-
-  while ((c = getopt_long_only (argc, argv, "p:d:", bdj_options, &option_index)) != -1) {
+  while ((c = getopt_long_only (argc, argv, "BCp:d:mnNRs", bdj_options, &option_index)) != -1) {
     switch (c) {
+      case 'B': {
+        isbdj4 = true;
+        break;
+      }
       case 'C': {
         flags |= BDJ4_DB_CHECK_NEW;
         break;
@@ -120,6 +121,11 @@ bdj4startup (int argc, char *argv[], char *tag, bdjmsgroute_t route, int flags)
         break;
       }
     }
+  }
+
+  if (! isbdj4) {
+    fprintf (stderr, "not started with launcher\n");
+    exit (1);
   }
 
   rc = lockAcquire (lockName (route), PATHBLD_MP_USEIDX);

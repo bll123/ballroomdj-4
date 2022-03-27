@@ -28,6 +28,8 @@
 #include "pathutil.h"
 #include "sysvars.h"
 
+#define BDJ4_LAUNCHER_MAX_ARGS 30
+
 int
 main (int argc, char * argv[])
 {
@@ -43,6 +45,8 @@ main (int argc, char * argv[])
   bool      isinstaller = false;
   bool      usemsys = false;
   int       flags;
+  char      *targv [BDJ4_LAUNCHER_MAX_ARGS];
+  int       targc;
 
   static struct option bdj_options [] = {
     { "check_all",      no_argument,        NULL,   1 },
@@ -231,7 +235,6 @@ main (int argc, char * argv[])
     }
   }
 
-  fileopMakeDir ("tmp");
   putenv ("GTK_CSD=0");
   putenv ("PYTHONIOENCODING=utf-8");
 
@@ -337,13 +340,28 @@ main (int argc, char * argv[])
   if (isWindows()) {
     extension = ".exe";
   }
+
+  targc = 0;
+  for (int i = 0; i < argc; ++i) {
+    if (targc >= BDJ4_LAUNCHER_MAX_ARGS) {
+      fprintf (stderr, "too many arguments\n");
+      exit (1);
+    }
+    targv [targc++] = argv [i];
+  }
+  if (targc >= (BDJ4_LAUNCHER_MAX_ARGS - 2)) {
+    fprintf (stderr, "too many arguments\n");
+    exit (1);
+  }
+  targv [targc++] = "--bdj4";
+  targv [targc++] = NULL;
+
   pathbldMakePath (buff, sizeof (buff), "",
       prog, extension, PATHBLD_MP_EXECDIR);
-
   /* this is necessary on mac os, as otherwise it will use the path     */
   /* from the start of this launcher, and the executable path can not   */
   /* be determined, as we've done a chdir().                            */
-  argv [0] = buff;
+  targv [0] = buff;
   if (debugself) {
     fprintf (stderr, "cmd: %s\n", buff);
   }
@@ -352,7 +370,7 @@ main (int argc, char * argv[])
   if (forcenodetach || nodetach) {
     flags = OS_PROC_NONE;
   }
-  osProcessStart (argv, flags, NULL, NULL);
+  osProcessStart (targv, flags, NULL, NULL);
   return 0;
 }
 

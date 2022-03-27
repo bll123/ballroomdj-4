@@ -152,8 +152,10 @@ main (int argc, char *argv[])
   int             option_index = 0;
   loglevel_t      loglevel = LOG_IMPORTANT | LOG_MAIN;
   uint16_t        listenPort;
+  bool            isbdj4 = false;
 
   static struct option bdj_options [] = {
+    { "bdj4",       no_argument,        NULL,   'B' },
     { "debug",      required_argument,  NULL,   'd' },
     { "profile",    required_argument,  NULL,   'p' },
     { "bdj4player", no_argument,        NULL,   0 },
@@ -204,8 +206,12 @@ main (int argc, char *argv[])
 
   sysvarsInit (argv[0]);
 
-  while ((c = getopt_long_only (argc, argv, "p:d:", bdj_options, &option_index)) != -1) {
+  while ((c = getopt_long_only (argc, argv, "Bp:d:", bdj_options, &option_index)) != -1) {
     switch (c) {
+      case 'B': {
+        isbdj4 = true;
+        break;
+      }
       case 'd': {
         if (optarg) {
           loglevel = (loglevel_t) atoi (optarg);
@@ -222,6 +228,11 @@ main (int argc, char *argv[])
         break;
       }
     }
+  }
+
+  if (! isbdj4) {
+    fprintf (stderr, "not started with launcher\n");
+    exit (1);
   }
 
   logStartAppend ("bdj4player", "p", loglevel);

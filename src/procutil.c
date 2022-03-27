@@ -97,6 +97,7 @@ procutilStart (const char *fn, ssize_t profile, ssize_t loglvl, int detachflag)
   targv [idx++] = sprof;
   targv [idx++] = "--debug";
   targv [idx++] = sloglvl;
+  targv [idx++] = "--bdj4";
   targv [idx++] = NULL;
 
   process->processHandle = NULL;

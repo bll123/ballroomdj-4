@@ -52,6 +52,7 @@ main (int argc, char *argv[])
     { "cli",        no_argument,        NULL,   0 },
     { "bdj4cli",    no_argument,        NULL,   0 },
     /* normal stuff */
+    { "bdj4",       no_argument,        NULL,   'B' },
     { "debug",      required_argument,  NULL,   'd' },
     { "profile",    required_argument,  NULL,   'p' },
     /* debug options */
@@ -62,7 +63,7 @@ main (int argc, char *argv[])
   sysvarsInit (argv [0]);
   localeInit ();
 
-  while ((c = getopt_long_only (argc, argv, "p:d:r:m:", bdj_options, &option_index)) != -1) {
+  while ((c = getopt_long_only (argc, argv, "Bp:d:r:m:", bdj_options, &option_index)) != -1) {
     switch (c) {
       case 'd': {
         if (optarg) {
