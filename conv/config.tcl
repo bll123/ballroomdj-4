@@ -198,6 +198,9 @@ foreach path [list {} profiles $mpath $mppath] {
             set value 360000
           }
         }
+        if { $key eq "PATHFMT" } {
+          regsub -all {P([A-Z]*0?)} $value {%\1%} value
+        }
 
         puts $ofh $key
         puts $ofh "..$value"

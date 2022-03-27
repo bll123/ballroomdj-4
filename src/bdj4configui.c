@@ -217,7 +217,7 @@ static void confuiSelectFileDialog (configui_t *confui, int widx);
 static GtkWidget * confuiMakeNotebookTab (GtkWidget *notebook, char *txt);
 static GtkWidget * confuiMakeItemEntry (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, char *txt, int widx, int bdjoptIdx, char *disp);
 static void confuiMakeItemEntryChooser (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, char *txt, int widx, int bdjoptIdx, char *disp, void *dialogFunc);
-static GtkWidget * confuiMakeItemCombobox (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, char *txt, int widx, int bdjoptIdx, void *ddcb, ssize_t value);
+static GtkWidget * confuiMakeItemCombobox (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, char *txt, int widx, int bdjoptIdx, void *ddcb, char *value);
 static void confuiMakeItemLink (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, char *txt, int widx, char *disp);
 static void confuiMakeItemFontButton (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, char *txt, int widx, int bdjoptIdx, char *fontname);
 static void confuiMakeItemColorButton (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, char *txt, int widx, int bdjoptIdx, char *color);
@@ -311,7 +311,16 @@ main (int argc, char *argv[])
   pathbldMakePath (tbuff, sizeof (tbuff), "",
       "orgopt", ".txt", PATHBLD_MP_NONE);
   orgopt = orgoptAlloc (tbuff);
-  confui.uiitem [CONFUI_COMBOBOX_AO_PATHFMT].list = orgoptGetList (orgopt);
+  tlist = orgoptGetList (orgopt);
+  confui.uiitem [CONFUI_COMBOBOX_AO_PATHFMT].list = tlist;
+  slistStartIterator (tlist, &iteridx);
+  count = 0;
+  while ((p = slistIterateValueData (tlist, &iteridx)) != NULL) {
+    if (strcmp (p, bdjoptGetStr (OPT_G_AO_PATHFMT)) == 0) {
+      confui.orgpathidx = count;
+    }
+    ++count;
+  }
 
   confui.volume = volumeInit ();
   assert (confui.volume != NULL);
@@ -779,7 +788,7 @@ confuiActivate (GApplication *app, gpointer userdata)
 
   confuiMakeItemCombobox (confui, vbox, sg, _("Organization Path"),
       CONFUI_COMBOBOX_AO_PATHFMT, OPT_G_AO_PATHFMT,
-      confuiOrgPathSelect, bdjoptGetNum (OPT_G_AO_PATHFMT));
+      confuiOrgPathSelect, bdjoptGetStr (OPT_G_AO_PATHFMT));
   confuiMakeItemSwitch (confui, vbox, sg, _("Auto Organize"),
       CONFUI_WIDGET_AUTO_ORGANIZE, OPT_G_AUTOORGANIZE,
       bdjoptGetNum (OPT_G_AUTOORGANIZE));
@@ -1139,7 +1148,8 @@ confuiPopulateOptions (configui_t *confui)
         break;
       }
       case CONFUI_COMBOBOX: {
-// ### TBD
+        sval = slistGetDataByIdx (confui->uiitem [i].list, confui->orgpathidx);
+        outtype = CONFUI_OUT_STR;
         break;
       }
     }
@@ -1178,6 +1188,9 @@ confuiPopulateOptions (configui_t *confui)
     } /* out type */
 
     if (i == CONFUI_ENTRY_MUSIC_DIR) {
+      strlcpy (tbuff, bdjoptGetStr (confui->uiitem [i].bdjoptIdx), sizeof (tbuff));
+      pathNormPath (tbuff, sizeof (tbuff));
+      bdjoptSetStr (confui->uiitem [i].bdjoptIdx, tbuff);
     }
 
     if (i == CONFUI_SPINBOX_UI_THEME) {
@@ -1320,7 +1333,7 @@ confuiMakeItemEntryChooser (configui_t *confui, GtkWidget *vbox,
 
 static GtkWidget *
 confuiMakeItemCombobox (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg,
-    char *txt, int widx, int bdjoptIdx, void *ddcb, ssize_t value)
+    char *txt, int widx, int bdjoptIdx, void *ddcb, char *value)
 {
   GtkWidget   *hbox;
   GtkWidget   *widget;
@@ -1332,6 +1345,7 @@ confuiMakeItemCombobox (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg,
       ddcb, &confui->uiitem [widx].u.dropdown, confui);
   uiutilsDropDownSetList (&confui->uiitem [widx].u.dropdown,
       confui->uiitem [widx].list, NULL);
+  uiutilsDropDownSelectionSetStr (&confui->uiitem [widx].u.dropdown, value);
   gtk_widget_set_margin_start (widget, 8);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
