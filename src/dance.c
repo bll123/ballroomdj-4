@@ -164,7 +164,8 @@ danceConvDance (datafileconv_t *conv)
     conv->u.num = num;
   } else if (conv->valuetype == VALUE_NUM) {
     conv->valuetype = VALUE_STR;
-    conv->u.str = ilistGetStr (dance->dances, conv->u.num, DANCE_DANCE);
+    num = conv->u.num;
+    conv->u.str = ilistGetStr (dance->dances, num, DANCE_DANCE);
   }
 }
 

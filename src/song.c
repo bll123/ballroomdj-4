@@ -22,6 +22,8 @@
 #include "status.h"
 #include "tagdef.h"
 
+#include "orgutil.h"
+
 static void songConvFavorite (datafileconv_t *conv);
 
   /* must be sorted in ascii order */

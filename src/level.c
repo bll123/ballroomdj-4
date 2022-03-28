@@ -121,6 +121,7 @@ levelConv (datafileconv_t *conv)
     }
   } else if (conv->valuetype == VALUE_NUM) {
     conv->valuetype = VALUE_STR;
-    conv->u.str = ilistGetStr (level->level, conv->u.num, LEVEL_LEVEL);
+    num = conv->u.num;
+    conv->u.str = ilistGetStr (level->level, num, LEVEL_LEVEL);
   }
 }

@@ -121,6 +121,7 @@ statusConv (datafileconv_t *conv)
       return;
     }
 
-    conv->u.str = ilistGetStr (status->status, conv->u.num, STATUS_STATUS);
+    num = conv->u.num;
+    conv->u.str = ilistGetStr (status->status, num, STATUS_STATUS);
   }
 }

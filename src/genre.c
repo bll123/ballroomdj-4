@@ -90,7 +90,8 @@ genreConv (datafileconv_t *conv)
     if (conv->u.num == LIST_VALUE_INVALID) {
       conv->u.str = "";
     } else {
-      conv->u.str = ilistGetStr (genre->genre, conv->u.num, GENRE_GENRE);
+      num = conv->u.num;
+      conv->u.str = ilistGetStr (genre->genre, num, GENRE_GENRE);
     }
   }
 }
