@@ -575,9 +575,6 @@ confuiCreateGui (configui_t *confui, int argc, char *argv [])
 
   g_signal_connect (confui->app, "activate", G_CALLBACK (confuiActivate), confui);
 
-  /* gtk somehow manages to screw up the localization; re-bind the text domain */
-  localeInit ();
-
   status = g_application_run (G_APPLICATION (confui->app), argc, argv);
   if (GTK_IS_WIDGET (confui->window)) {
     gtk_widget_destroy (confui->window);
@@ -756,7 +753,7 @@ confuiActivate (GApplication *app, gpointer userdata)
   confuiMakeItemSwitch (confui, vbox, sg, _("Show Song Information"),
       CONFUI_WIDGET_MQ_SHOW_SONG_INFO, OPT_P_MQ_SHOW_INFO,
       bdjoptGetNum (OPT_P_MQ_SHOW_INFO));
-  confuiMakeItemColorButton (confui, vbox, sg, _("Accent Color"),
+  confuiMakeItemColorButton (confui, vbox, sg, _("Accent Colour"),
       CONFUI_WIDGET_MQ_ACCENT_COLOR, OPT_P_MQ_ACCENT_COL,
       bdjoptGetStr (OPT_P_MQ_ACCENT_COL));
   confuiMakeItemSwitch (confui, vbox, sg, _("Hide Marquee on Start"),
@@ -776,20 +773,20 @@ confuiActivate (GApplication *app, gpointer userdata)
   confuiMakeItemFontButton (confui, vbox, sg, _("Listing Font"),
       CONFUI_WIDGET_UI_LISTING_FONT, OPT_MP_LISTING_FONT,
       bdjoptGetStr (OPT_MP_LISTING_FONT));
-  confuiMakeItemColorButton (confui, vbox, sg, _("Accent Color"),
+  confuiMakeItemColorButton (confui, vbox, sg, _("Accent Colour"),
       CONFUI_WIDGET_UI_ACCENT_COLOR, OPT_P_UI_ACCENT_COL,
       bdjoptGetStr (OPT_P_UI_ACCENT_COL));
 
   vbox = confuiMakeNotebookTab (confui->notebook, _("Display Settings"));
   sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
-  vbox = confuiMakeNotebookTab (confui->notebook, _("Organization"));
+  vbox = confuiMakeNotebookTab (confui->notebook, _("Organisation"));
   sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
-  confuiMakeItemCombobox (confui, vbox, sg, _("Organization Path"),
+  confuiMakeItemCombobox (confui, vbox, sg, _("Organisation Path"),
       CONFUI_COMBOBOX_AO_PATHFMT, OPT_G_AO_PATHFMT,
       confuiOrgPathSelect, bdjoptGetStr (OPT_G_AO_PATHFMT));
-  confuiMakeItemSwitch (confui, vbox, sg, _("Auto Organize"),
+  confuiMakeItemSwitch (confui, vbox, sg, _("Auto Organise"),
       CONFUI_WIDGET_AUTO_ORGANIZE, OPT_G_AUTOORGANIZE,
       bdjoptGetNum (OPT_G_AUTOORGANIZE));
   confuiMakeItemSwitch (confui, vbox, sg, _("Remove Spaces"),
@@ -1681,6 +1678,8 @@ confuiLoadLocaleList (configui_t *confui)
   char          *data;
   nlist_t       *llist;
   int           count;
+  bool          found;
+  int           engbidx;
 
 
   tlist = nlistAlloc ("cu-locale-list", LIST_ORDERED, free);
@@ -1694,14 +1693,22 @@ confuiLoadLocaleList (configui_t *confui)
 
   slistStartIterator (list, &iteridx);
   count = 0;
+  found = false;
   while ((key = slistIterateKey (list, &iteridx)) != NULL) {
     data = slistGetStr (list, key);
+    if (strcmp (data, "en_GB") == 0) {
+      engbidx = count;
+    }
     if (strcmp (data, sysvarsGetStr (SV_LOCALE)) == 0) {
       confui->localeidx = count;
+      found = true;
     }
     nlistSetStr (tlist, count, key);
     nlistSetStr (llist, count, data);
     ++count;
+  }
+  if (! found) {
+    confui->localeidx = engbidx;
   }
   datafileFree (df);
 

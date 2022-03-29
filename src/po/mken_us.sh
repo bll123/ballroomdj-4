@@ -1,9 +1,9 @@
 #!/bin/bash
 
 sed \
-    -e 's,== English .US.*,== English (GB),' \
-    -e 's,-- english/us,-- english/gb,' \
-    en_US.po > en_GB.po
+    -e 's,== English .GB.*,== English (US),' \
+    -e 's,-- english/gb,-- english/us,' \
+    en_GB.po > en_US.po
 
 function modpo {
   pofile=$1
@@ -28,17 +28,12 @@ function modpo {
           ;;
         'msgstr ""')
           nline=$nmid
-          # some of these no longer exist within BDJ4
-          echo $nline | egrep -q '([Cc]olor|[Oo]rganiz|LICENSE)'
-          found=$?
-          if [[ $pofile == en_GB.po ]]; then
-            nline=$(echo $nline | sed \
-                -e 's,\([Cc]\)olor,\1olour,g' \
-                -e 's,\([Oo]\)rganiz,\1rganis,g' \
-                -e 's,LICENSE,LICENCE,g' \
-                )
-          fi
-          if [[ $found -ne 0 ]]; then
+          nline=$(echo $nline | sed \
+              -e 's,\([Cc]\)olour,\1olor,g' \
+              -e 's,\([Oo]\)rganis,\1rganiz,g' \
+              -e 's,LICENCE,LICENSE,g' \
+              )
+          if [[ "$nline" == "$nmid" ]]; then
             echo 'msgstr ""'
           else
             nline=$(echo $nline | sed -e 's/msgid/msgstr/')
@@ -54,9 +49,7 @@ function modpo {
 }
 
 set -o noglob
-modpo en_GB.po
-# since en_GB will be the default, modify the US file to
-# have the specific strings changed.
+# en_GB will be the default
 modpo en_US.po
 
 exit 0

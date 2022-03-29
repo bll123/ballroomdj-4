@@ -26,7 +26,7 @@ function mkpo {
   dlang=$4
   elang=$5
 
-  echo "-- creating $out"
+  echo "-- $(date +%T) creating $out"
   > ${out}
   echo "# == $dlang" >> ${out}
   echo "# -- $elang" >> ${out}
@@ -43,7 +43,7 @@ function mkpo {
       bdj4.pot >> ${out}
 }
 
-echo "-- extracting"
+echo "-- $(date +%T) extracting"
 xgettext -s -d bdj4 \
     --language=C \
     --add-comments=CONTEXT: \
@@ -94,11 +94,12 @@ xgettext -s -j -d bdj4 \
     -o bdj4.pot
 rm -f $TMP
 
-mkpo en en_US.po "Automatically generated" "English (US)" english/us
+mkpo en en_GB.po "Automatically generated" "English (GB)" english/gb
 mkpo nl nl.po "marimo" Nederlands dutch
 #mkpo de de_DE.po "various" Deutsch german
 ./lang-lookup.sh
-echo "-- updating english .po files"
-./mken.sh
+echo "-- $(date +%T) creating english/us .po files"
+./mken_us.sh
+echo "-- $(date +%T) finished"
 
 exit 0

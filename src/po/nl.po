@@ -25,7 +25,7 @@ msgstr ""
 msgid "%s is not installed"
 msgstr ""
 
-msgid "Accent Color"
+msgid "Accent Colour"
 msgstr ""
 
 msgid "Advanced"
@@ -70,7 +70,7 @@ msgstr ""
 msgid "Audio Output"
 msgstr "Audio-Output"
 
-msgid "Auto Organize"
+msgid "Auto Organise"
 msgstr "Automatisch organiseren"
 
 msgid "BDJ Tags Only"
@@ -370,10 +370,10 @@ msgid "Move to Top"
 msgstr ""
 
 msgid "Music Folder"
-msgstr ""
+msgstr "Muziek Map"
 
 msgid "Music Queue"
-msgstr ""
+msgstr "Muziekwachtrij"
 
 msgid "NC2S"
 msgstr "Night Club Two Step"
@@ -412,10 +412,10 @@ msgstr "Uit"
 msgid "Options"
 msgstr "Opties"
 
-msgid "Organization"
+msgid "Organisation"
 msgstr "Organisatie"
 
-msgid "Organization Path"
+msgid "Organisation Path"
 msgstr ""
 
 msgid "Overwrite"

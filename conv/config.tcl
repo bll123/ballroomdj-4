@@ -52,6 +52,7 @@ foreach path [list {} profiles $mpath $mppath] {
         if { $key eq "ALLOWEDIT" } { continue }
         if { $key eq "AUTOSTARTUP" } { continue }
         if { $key eq "CBFONTSIZE" } { continue }
+        if { $key eq "HOST" } { continue }
         # debug level should be in the global; so just remove it.
         if { $key eq "DEBUGLVL" } { continue }
         if { $key eq "DEBUGON" } { continue }

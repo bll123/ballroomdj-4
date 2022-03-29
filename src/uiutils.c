@@ -391,7 +391,7 @@ uiutilsDropDownSetList (uiutilsdropdown_t *dropdown, slist_t *list,
   GtkTreeViewColumn *column = NULL;
   char              tbuff [200];
   ilistidx_t        iteridx;
-  ssize_t            internalidx;
+  ssize_t           internalidx;
 
   logProcBegin (LOG_PROC, "uiutilsDropDownSetList");
 
@@ -544,6 +544,9 @@ uiutilsDropDownSelectionSetStr (uiutilsdropdown_t *dropdown, char *stridx)
     internalidx = 0;
   } else {
     internalidx = slistGetNum (dropdown->strIndexMap, stridx);
+    if (internalidx < 0) {
+      internalidx = 0;
+    }
   }
   uiutilsDropDownSelectionSet (dropdown, internalidx);
   logProcEnd (LOG_PROC, "uiutilsDropDownSelectionSetStr", "");
@@ -1180,6 +1183,9 @@ uiutilsDropDownSelectionSet (uiutilsdropdown_t *dropdown, ssize_t internalidx)
     return;
   }
 
+  if (internalidx < 0) {
+    internalidx = 0;
+  }
   snprintf (tbuff, sizeof (tbuff), "%zd", internalidx);
   path = gtk_tree_path_new_from_string (tbuff);
   if (path != NULL) {

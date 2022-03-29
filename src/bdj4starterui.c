@@ -231,9 +231,6 @@ starterCreateGui (startui_t *starter, int argc, char *argv [])
 
   g_signal_connect (starter->app, "activate", G_CALLBACK (starterActivate), starter);
 
-  /* gtk somehow manages to screw up the localization; re-bind the text domain */
-  localeInit ();
-
   status = g_application_run (G_APPLICATION (starter->app), argc, argv);
   if (GTK_IS_WIDGET (starter->window)) {
     gtk_widget_destroy (starter->window);

@@ -3098,3 +3098,10 @@ msgstr "Standaardrondes"
 
 msgid "Queue B"
 msgstr "Wachtrij B"
+
+msgid "Music Folder"
+msgstr "Muziek Map"
+
+msgid "Music Queue"
+msgstr "Muziekwachtrij"
+

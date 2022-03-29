@@ -36,7 +36,7 @@ PAUSEMSG
 PROFILENAME
 ..BDJ4
 QUEUE_NAME_A
-..Music Queue
+..Muziekwachtrij
 QUEUE_NAME_B
 ..Wachtrij B
 QUICKPLAYENABLED

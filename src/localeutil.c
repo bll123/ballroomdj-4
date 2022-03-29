@@ -74,7 +74,7 @@ localeInit (void)
   }
 
   if (useutf8ext) {
-    snprintf (tbuff, sizeof (tbuff), "%s.UTF-8", sysvarsGetStr (SV_LOCALE));
+    snprintf (tbuff, sizeof (tbuff), "%s.UTF-8", lbuff);
   } else {
     strlcpy (tbuff, lbuff, sizeof (tbuff));
   }
@@ -85,16 +85,16 @@ localeInit (void)
     putenv (tmp);
   }
 
-  if (setlocale (LOC_LC_MESSAGES, tbuff) == NULL) {
-    fprintf (stderr, "set of locale failed; unknown locale %s\n", tbuff);
-  }
-
-  pathbldMakePath (tbuff, sizeof (tbuff), "", "", "", PATHBLD_MP_LOCALEDIR);
-  bindtextdomain (GETTEXT_DOMAIN, tbuff);
+  pathbldMakePath (lbuff, sizeof (lbuff), "", "", "", PATHBLD_MP_LOCALEDIR);
+  bindtextdomain (GETTEXT_DOMAIN, lbuff);
   textdomain (GETTEXT_DOMAIN);
 #if _lib_bind_textdomain_codeset
   bind_textdomain_codeset (GETTEXT_DOMAIN, "UTF-8");
 #endif
+
+  if (setlocale (LOC_LC_MESSAGES, tbuff) == NULL) {
+    fprintf (stderr, "set of locale failed; unknown locale %s\n", tbuff);
+  }
 
   return;
 }

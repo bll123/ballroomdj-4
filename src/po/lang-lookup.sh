@@ -17,6 +17,8 @@ function readolddata {
       continue
     fi
 
+    line=$(echo $line | sed 's/[: ]*"$/"/')
+
     case $line in
       msgid*)
         omid="$line"
@@ -47,11 +49,13 @@ for pofile in *.po; do
     oldpo=$(echo old/$pfx*)
   fi
 
+  echo "   $(date +%T) loading $oldpo"
+
   unset olddata
   declare -A olddata
   readolddata $oldpo
 
-  echo "processing $pofile : $oldpo"
+  echo "   $(date +%T) processing $pofile : $oldpo"
 
   set -o noglob
   start=F
@@ -71,6 +75,11 @@ for pofile in *.po; do
       msgid*)
         nmid=$line
         echo $line
+        # change the new gb default back to american for lookups
+        # within the old bdj3 files.
+        nmid=$(echo $nmid | sed 's/\([Cc]\)olour/\1olor/')
+        nmid=$(echo $nmid | sed 's/\([Oo]\)rganis/\1rganiz/')
+        nmid=$(echo $nmid | sed 's/LICENCE/LICENSE/')
         ;;
       'msgstr ""')
         if [[ ${olddata[$nmid]} != "" ]]; then

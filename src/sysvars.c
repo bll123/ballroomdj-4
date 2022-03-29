@@ -202,7 +202,11 @@ sysvarsInit (const char *argv0)
 
   /* the locale is reset by localeinit */
   /* localeinit will convert the windows names to something normal */
-  snprintf (tbuf, sizeof (tbuf), "%-.5s", setlocale (LC_ALL, NULL));
+  if (! isWindows ()) {
+    snprintf (tbuf, sizeof (tbuf), "%-.5s", setlocale (LC_MESSAGES, NULL));
+  } else {
+    snprintf (tbuf, sizeof (tbuf), "%-.5s", setlocale (LC_ALL, NULL));
+  }
   strlcpy (sysvars [SV_LOCALE], tbuf, SV_MAX_SZ);
   lsysvars [SVL_LOCALE_SET] = 0;
 
@@ -214,8 +218,10 @@ sysvarsInit (const char *argv0)
     fgets (tbuf, sizeof (tbuf), fh);
     stringTrim (tbuf);
     fclose (fh);
-    lsysvars [SVL_LOCALE_SET] = 1;
-    strlcpy (sysvars [SV_LOCALE], tbuf, SV_MAX_SZ);
+    if (*tbuf) {
+      lsysvars [SVL_LOCALE_SET] = 1;
+      strlcpy (sysvars [SV_LOCALE], tbuf, SV_MAX_SZ);
+    }
   }
 
   snprintf (buff, sizeof (buff), "%-.2s", tbuf);
