@@ -1139,9 +1139,6 @@ installerCopyTemplates (installer_t *installer)
   slist_t         *renamelist;
 
 
-  snprintf (localesfx, sizeof (localesfx), ".%s", sysvarsGetStr (SV_LOCALE_SHORT));
-  renamelist = NULL;
-
   if (! installer->newinstall && ! installer->reinstall) {
     installer->instState = INST_CONVERT_START;
     return;
@@ -1156,6 +1153,9 @@ installerCopyTemplates (installer_t *installer)
     installer->instState = INST_BEGIN;
     return;
   }
+
+  snprintf (localesfx, sizeof (localesfx), ".%s", sysvarsGetStr (SV_LOCALE_SHORT));
+  renamelist = NULL;
 
   snprintf (tbuff, sizeof (tbuff), "%s/install/%s", installer->rundir,
       "localized-sr.txt");
@@ -1844,7 +1844,7 @@ installerVLCGetVersion (installer_t *installer)
       "http://get.videolan.org/vlc/last/macosx/", tmpfile);
   system (tbuff);
   if (fileopFileExists (tmpfile)) {
-    data = filedataReadAll (tmpfile);
+    data = filedataReadAll (tmpfile, NULL);
 
     /* vlc-3.0.16-intel64.dmg */
     p = strstr (data, "vlc-");
@@ -1869,7 +1869,7 @@ installerPythonGetVersion (installer_t *installer)
       "https://www.python.org/downloads/windows/", tmpfile);
   system (tbuff);
   if (fileopFileExists (tmpfile)) {
-    data = filedataReadAll (tmpfile);
+    data = filedataReadAll (tmpfile, NULL);
 
     p = strstr (data, "Release - Python ");
     p += 17;

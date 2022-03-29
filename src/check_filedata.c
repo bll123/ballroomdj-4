@@ -22,13 +22,13 @@ START_TEST(file_readall)
   fh = fopen (fn, "w");
   fclose (fh);
   /* empty file */
-  data = filedataReadAll (fn);
+  data = filedataReadAll (fn, NULL);
 
   fh = fopen (fn, "w");
   fprintf (fh, "%s", "a");
   fclose (fh);
   /* one byte file */
-  data = filedataReadAll (fn);
+  data = filedataReadAll (fn, NULL);
   ck_assert_int_eq (strlen (data), 1);
   ck_assert_mem_eq (data, "a", 1);
 
@@ -36,7 +36,7 @@ START_TEST(file_readall)
   fh = fopen (fn, "w");
   fprintf (fh, "%s", tdata);
   fclose (fh);
-  data = filedataReadAll (fn);
+  data = filedataReadAll (fn, NULL);
   ck_assert_int_eq (strlen (data), strlen (tdata));
   ck_assert_mem_eq (data, tdata, strlen (tdata));
 }

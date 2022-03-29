@@ -782,7 +782,7 @@ mainSendMobileMarqueeData (maindata_t *mainData)
     if (mainData->mobmqUserkey == NULL) {
       pathbldMakePath (tbuff, sizeof (tbuff), "",
           "mmq", ".key", PATHBLD_MP_USEIDX);
-      mainData->mobmqUserkey = filedataReadAll (tbuff);
+      mainData->mobmqUserkey = filedataReadAll (tbuff, NULL);
     }
 
     snprintf (tbuff, sizeof (tbuff),

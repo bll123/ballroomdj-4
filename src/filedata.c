@@ -14,7 +14,7 @@
 #include "fileop.h"
 
 char *
-filedataReadAll (char *fname)
+filedataReadAll (const char *fname, size_t *rlen)
 {
   FILE        *fh;
   ssize_t     len;
@@ -22,6 +22,9 @@ filedataReadAll (char *fname)
 
   len = fileopSize (fname);
   if (len <= 0) {
+    if (rlen != NULL) {
+      *rlen = 0;
+    }
     return NULL;
   }
   fh = fileopOpen (fname, "r");
@@ -31,6 +34,9 @@ filedataReadAll (char *fname)
     len = fread (data, 1, len, fh);
     data [len] = '\0';
     fclose (fh);
+    if (rlen != NULL) {
+      *rlen = len;
+    }
   }
 
   return data;

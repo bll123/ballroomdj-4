@@ -142,14 +142,14 @@ while read -r line; do
     continue
   fi
 
-  locale=$(echo $pofile | sed 's,\.po$,,')
+  llocale=$(echo $pofile | sed 's,\.po$,,')
   # want the short locale
-  locale=$(echo $locale | sed 's,\(..\).*,\1,')
+  locale=$(echo $llocale | sed 's,\(..\).*,\1,')
 
   desc=$(sed -n -e '1,1p' $pofile)
   desc=$(echo $desc | sed -e 's/^# == //')
   echo $desc >> $CTMP
-  echo "..$locale" >> $CTMP
+  echo "..$llocale" >> $CTMP
 
   case $pofile in
     en*)

@@ -38,6 +38,7 @@
 #include "sock.h"
 #include "sockh.h"
 #include "sysvars.h"
+#include "templateutil.h"
 #include "tmutil.h"
 #include "uiutils.h"
 #include "volume.h"
@@ -1194,6 +1195,7 @@ confuiPopulateOptions (configui_t *confui)
 
       /* if the set locale does not match the system or default locale */
       /* save it in the locale file */
+fprintf (stderr, "locale: %s %s %s\n", sval, sysvarsGetStr (SV_LOCALE_SYSTEM), sysvarsGetStr (SV_LOCALE));
       if (strcmp (sval, sysvarsGetStr (SV_LOCALE_SYSTEM)) != 0 &&
           strcmp (sval, "en_GB") != 0) {
         FILE    *fh;
@@ -1225,6 +1227,7 @@ confuiPopulateOptions (configui_t *confui)
     }
 
     if (i == CONFUI_WIDGET_UI_ACCENT_COLOR) {
+      templateImageCopy (sval);
     }
 
     if (i == CONFUI_WIDGET_MQ_ACCENT_COLOR) {
@@ -1719,14 +1722,17 @@ confuiLoadLocaleList (configui_t *confui)
   shortidx = -1;
   while ((key = slistIterateKey (list, &iteridx)) != NULL) {
     data = slistGetStr (list, key);
+fprintf (stderr, "chk-locale: %s\n", data);
     if (strcmp (data, "en_GB") == 0) {
       engbidx = count;
     }
     if (strcmp (data, sysvarsGetStr (SV_LOCALE)) == 0) {
+fprintf (stderr, "found-locale: %s %d\n", data, count);
       confui->localeidx = count;
       found = true;
     }
     if (strncmp (data, sysvarsGetStr (SV_LOCALE_SHORT), 2) == 0) {
+fprintf (stderr, "found-short: %s %d\n", data, count);
       shortidx = count;
     }
     nlistSetStr (tlist, count, key);
@@ -1738,6 +1744,7 @@ confuiLoadLocaleList (configui_t *confui)
   } else if (! found) {
     confui->localeidx = engbidx;
   }
+fprintf (stderr, "localeidx: %d\n", confui->localeidx);
   datafileFree (df);
 
   confui->uiitem [CONFUI_SPINBOX_LOCALE].list = tlist;

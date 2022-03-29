@@ -35,6 +35,7 @@ localeInit (void)
   /* if SV_LOCALE_SET is true, the locale was loaded from the */
   /* data/locale.txt file, and there is no need to do the windows processing */
   strlcpy (lbuff, sysvarsGetStr (SV_LOCALE), sizeof (lbuff));
+fprintf (stderr, "loc:l:%s\n", lbuff);
 
   if (isWindows () && sysvarsGetNum (SVL_LOCALE_SET) == 0) {
     datafile_t  *df;
@@ -78,6 +79,7 @@ localeInit (void)
   } else {
     strlcpy (tbuff, lbuff, sizeof (tbuff));
   }
+fprintf (stderr, "loc:t:%s\n", tbuff);
 
   if (isWindows ()) {
     /* windows doesn't work without this */

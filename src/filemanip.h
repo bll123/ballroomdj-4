@@ -8,7 +8,7 @@ enum {
   FILEMANIP_DIRS = 0x02,
 };
 
-int     filemanipCopy (char *from, char *to);
+int     filemanipCopy (const char *from, const char *to);
 int     filemanipLinkCopy (char *from, char *to);
 int     filemanipMove (char *from, char *to);
 void    filemanipDeleteDir (const char *dir);

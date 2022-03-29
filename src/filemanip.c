@@ -17,6 +17,7 @@
 
 #include "bdj4.h"
 #include "bdjstring.h"
+#include "filedata.h"
 #include "filemanip.h"
 #include "fileop.h"
 #include "slist.h"
@@ -46,7 +47,7 @@ filemanipMove (char *fname, char *nfn)
 }
 
 int
-filemanipCopy (char *fname, char *nfn)
+filemanipCopy (const char *fname, const char *nfn)
 {
   char      tfname [MAXPATHLEN];
   char      tnfn [MAXPATHLEN];
@@ -72,16 +73,17 @@ filemanipCopy (char *fname, char *nfn)
     }
 #endif
   } else {
-    char  *targv [5];
-    pid_t tpid;
+    char    *data;
+    FILE    *fh;
+    size_t  len;
+    size_t  trc;
 
-    targv [0] = sysvarsGetStr (SV_CP_PATH);
-    targv [1] = "-f";
-    targv [2] = fname;
-    targv [3] = nfn;
-    targv [4] = NULL;
-    tpid = osProcessStart (targv, OS_PROC_WAIT, NULL, NULL);
-    rc = (tpid <= 0);
+    data = filedataReadAll (fname, &len);
+    fh = fopen (nfn, "w");
+    trc = fwrite (data, len, 1, fh);
+    fclose (fh);
+    free (data);
+    rc = (trc == 1);
   }
   return rc;
 }

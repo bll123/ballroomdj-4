@@ -205,6 +205,7 @@ sysvarsInit (const char *argv0)
   /* localeinit will convert the windows names to something normal */
   snprintf (tbuf, sizeof (tbuf), "%-.5s", setlocale (LOC_LC_MESSAGES, NULL));
   strlcpy (sysvars [SV_LOCALE_SYSTEM], tbuf, SV_MAX_SZ);
+fprintf (stderr, "sv-locale: %s\n", tbuf);
   strlcpy (sysvars [SV_LOCALE], tbuf, SV_MAX_SZ);
   lsysvars [SVL_LOCALE_SET] = 0;
 
@@ -219,11 +220,13 @@ sysvarsInit (const char *argv0)
     if (*tbuf) {
       lsysvars [SVL_LOCALE_SET] = 1;
       strlcpy (sysvars [SV_LOCALE], tbuf, SV_MAX_SZ);
+fprintf (stderr, "set-locale: %s\n", tbuf);
     }
   }
 
   snprintf (buff, sizeof (buff), "%-.2s", tbuf);
   strlcpy (sysvars [SV_LOCALE_SHORT], buff, SV_MAX_SZ);
+fprintf (stderr, "short-locale: %s\n", buff);
 
   strlcpy (sysvars [SV_BDJ4_VERSION], "unknown", SV_MAX_SZ);
   if (fileopFileExists ("VERSION.txt")) {
@@ -234,7 +237,7 @@ sysvarsInit (const char *argv0)
     char    *vnm;
     char    *p;
 
-    data = filedataReadAll ("VERSION.txt");
+    data = filedataReadAll ("VERSION.txt", NULL);
     tp = strtok_r (data, "\r\n", &tokptr);
     while (tp != NULL) {
       vnm = strtok_r (tp, "=", &tokptrb);
@@ -314,7 +317,7 @@ sysvarsInit (const char *argv0)
     targv [1] = "--version";
     targv [2] = NULL;
     osProcessStart (targv, OS_PROC_WAIT, NULL, SV_TMP_FILE);
-    data = filedataReadAll (SV_TMP_FILE);
+    data = filedataReadAll (SV_TMP_FILE, NULL);
     p = strstr (data, "3");
 
     if (p != NULL) {
@@ -386,7 +389,7 @@ sysvarsInit (const char *argv0)
     targv [1] = "_NPROCESSORS_ONLN";
     targv [2] = NULL;
     osProcessStart (targv, OS_PROC_WAIT, NULL, SV_TMP_FILE);
-    tptr = filedataReadAll (SV_TMP_FILE);
+    tptr = filedataReadAll (SV_TMP_FILE, NULL);
     if (tptr != NULL) {
       lsysvars [SVL_NUM_PROC] = atoi (tptr);
     }

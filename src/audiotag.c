@@ -52,7 +52,7 @@ audiotagReadTags (char *ffn, long count)
   targv [3] = NULL;
 
   osProcessStart (targv, OS_PROC_WAIT, NULL, tmpfn);
-  data = filedataReadAll (tmpfn);
+  data = filedataReadAll (tmpfn, NULL);
   fileopDelete (tmpfn);
   return data;
 }

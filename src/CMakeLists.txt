@@ -454,6 +454,7 @@ add_library (libbdj4 SHARED
   sortopt.c
   status.c
   tagdef.c
+  templateutil.c
   webclient.c
 )
 target_include_directories (libbdj4
