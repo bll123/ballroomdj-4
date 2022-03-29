@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: BDJ4 4.0.0\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
-"POT-Creation-Date: 2022-03-26\n"
-"PO-Revision-Date: 2022-03-26\n"
+"POT-Creation-Date: 2022-03-29\n"
+"PO-Revision-Date: 2022-03-29\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/us\n"
 "Language: en\n"
@@ -26,7 +26,7 @@ msgid "%s is not installed"
 msgstr ""
 
 msgid "Accent Color"
-msgstr ""
+msgstr "Accent Color"
 
 msgid "Advanced"
 msgstr ""
@@ -70,10 +70,16 @@ msgstr ""
 msgid "Audio Output"
 msgstr ""
 
+msgid "Auto Organize"
+msgstr "Auto Organize"
+
 msgid "BDJ Tags Only"
 msgstr ""
 
 msgid "BDJ4 Installer"
+msgstr ""
+
+msgid "BPM"
 msgstr ""
 
 msgid "Bachata"
@@ -113,6 +119,9 @@ msgstr ""
 msgid "Complete"
 msgstr ""
 
+msgid "Composer"
+msgstr ""
+
 msgid "Configure"
 msgstr ""
 
@@ -149,7 +158,16 @@ msgstr ""
 msgid "Date Added"
 msgstr ""
 
+msgid "Debug Options"
+msgstr ""
+
 msgid "Default Volume"
+msgstr ""
+
+msgid "Disc"
+msgstr ""
+
+msgid "Display Settings"
 msgstr ""
 
 msgid "Don't Write"
@@ -285,6 +303,9 @@ msgstr ""
 msgid "Integrated VLC"
 msgstr ""
 
+msgid "Internet"
+msgstr ""
+
 msgid "Inverted Parabola"
 msgstr ""
 
@@ -300,6 +321,9 @@ msgstr ""
 msgid "Listing Font"
 msgstr ""
 
+msgid "Local"
+msgstr ""
+
 msgid "Locale"
 msgstr ""
 
@@ -307,6 +331,9 @@ msgid "Located 'tclsh'."
 msgstr ""
 
 msgid "Logarithmic"
+msgstr ""
+
+msgid "MPM"
 msgstr ""
 
 msgid "Manage"
@@ -345,6 +372,9 @@ msgstr ""
 msgid "Music Folder"
 msgstr ""
 
+msgid "Music Queue"
+msgstr ""
+
 msgid "NC2S"
 msgstr ""
 
@@ -376,11 +406,17 @@ msgstr ""
 msgid "Null Player"
 msgstr ""
 
+msgid "Off"
+msgstr ""
+
 msgid "Options"
 msgstr ""
 
 msgid "Organization"
-msgstr ""
+msgstr "Organization"
+
+msgid "Organization Path"
+msgstr "Organization Path"
 
 msgid "Overwrite"
 msgstr ""
@@ -457,6 +493,9 @@ msgstr ""
 msgid "Queue A Name"
 msgstr ""
 
+msgid "Queue B"
+msgstr ""
+
 msgid "Queue B Name"
 msgstr ""
 
@@ -470,6 +509,9 @@ msgid "Queue Playlist"
 msgstr ""
 
 msgid "Quickstep"
+msgstr ""
+
+msgid "Remove Spaces"
 msgstr ""
 
 msgid "Remove from queue"
@@ -583,6 +625,9 @@ msgstr ""
 msgid "Track"
 msgstr ""
 
+msgid "Track Number"
+msgstr ""
+
 msgid "Triangle"
 msgstr ""
 
@@ -621,6 +666,10 @@ msgstr ""
 msgid "Write Audio File Tags"
 msgstr ""
 
+#. CONTEXT: The name of the 'automatic' playlist file
+msgid "automatic"
+msgstr ""
+
 msgid "club"
 msgstr ""
 
@@ -628,4 +677,8 @@ msgid "latin"
 msgstr ""
 
 msgid "standard"
+msgstr ""
+
+#. CONTEXT: The name of the 'standardrounds' playlist file
+msgid "standardrounds"
 msgstr ""

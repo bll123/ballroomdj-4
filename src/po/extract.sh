@@ -26,6 +26,7 @@ function mkpo {
   dlang=$4
   elang=$5
 
+  echo "-- creating $out"
   > ${out}
   echo "# == $dlang" >> ${out}
   echo "# -- $elang" >> ${out}
@@ -42,8 +43,10 @@ function mkpo {
       bdj4.pot >> ${out}
 }
 
+echo "-- extracting"
 xgettext -s -d bdj4 \
-    -C --add-comments=CONTEXT: \
+    --language=C \
+    --add-comments=CONTEXT: \
     --no-location \
     --keyword=_ \
     --flag=_:1:pass-c-format \
@@ -51,28 +54,39 @@ xgettext -s -d bdj4 \
     -p po -o bdj4.pot
 cd po
 
-TMP=templates.c
+TMP=potemplates.c
+
 > $TMP
 fn=../../templates/dancetypes.txt
-sed -e '/^#/d' $fn >> $TMP
+sed -e '/^#/d' -e 's,^,..,' $fn >> $TMP
 fn=../../templates/dances.txt
-sed -n -e '/^DANCE/ {n;p}' $fn >> $TMP
+sed -n -e '/^DANCE/ {n;p}' -e 's,^,..,' $fn >> $TMP
 fn=../../templates/ratings.txt
-sed -n -e '/^RATING/ {n;p}' $fn >> $TMP
+sed -n -e '/^RATING/ {n;p}' -e 's,^,..,' $fn >> $TMP
 fn=../../templates/genres.txt
-sed -n -e '/^GENRE/ {n;p}' $fn >> $TMP
+sed -n -e '/^GENRE/ {n;p}' -e 's,^,..,' $fn >> $TMP
 fn=../../templates/levels.txt
-sed -n -e '/^LABEL/ {n;p}' $fn >> $TMP
+sed -n -e '/^LABEL/ {n;p}' -e 's,^,..,' $fn >> $TMP
 fn=../../templates/status.txt
-sed -n -e '/^STATUS/ {n;p}' $fn >> $TMP
+sed -n -e '/^STATUS/ {n;p}' -e 's,^,..,' $fn >> $TMP
+fn=../../templates/bdjconfig.txt.p
+sed -n -e '/^QUEUE_NAME_[AB]/ {n;p}' -e 's,^,..,' $fn >> $TMP
 
 egrep 'value=' ../../templates/*.html |
-  sed -e 's,.*value=",,' -e 's,".*,,' -e '/^100$/ d' >> $TMP
+  sed -e 's,.*value=",,' -e 's,".*,,' -e '/^100$/ d' -e 's,^,..,' >> $TMP
 
-sed -e 's,^\.\.,,' -e 's,^,_(",' -e 's,$,"),' $TMP > $TMP.n
+# names of playlist files
+echo "// CONTEXT: The name of the 'automatic' playlist file" >> $TMP
+echo "..automatic" >> $TMP
+echo "// CONTEXT: The name of the 'standardrounds' playlist file" >> $TMP
+echo "..standardrounds" >> $TMP
+
+sed -e '/^\.\./ {s,^\.\.,, ; s,^,_(", ; s,$,"),}' $TMP > $TMP.n
 mv -f $TMP.n $TMP
 
 xgettext -s -j -d bdj4 \
+    --language=C \
+    --add-comments=CONTEXT: \
     --no-location \
     --keyword=_ \
     --flag=_:1:pass-c-format \
@@ -84,6 +98,7 @@ mkpo en en_US.po "Automatically generated" "English (US)" english/us
 mkpo nl nl.po "marimo" Nederlands dutch
 #mkpo de de_DE.po "various" Deutsch german
 ./lang-lookup.sh
-./mken_gb.sh
+echo "-- updating english .po files"
+./mken.sh
 
 exit 0

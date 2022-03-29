@@ -3090,3 +3090,11 @@ msgstr "Virus"
 msgid "standard"
 msgstr "standaard"
 
+msgid "automatic"
+msgstr "Automatisch"
+
+msgid "standardrounds"
+msgstr "Standaardrondes"
+
+msgid "Queue B"
+msgstr "Wachtrij B"

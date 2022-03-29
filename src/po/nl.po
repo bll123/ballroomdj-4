@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: BDJ4 4.0.0\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
-"POT-Creation-Date: 2022-03-26\n"
-"PO-Revision-Date: 2022-03-26\n"
+"POT-Creation-Date: 2022-03-29\n"
+"PO-Revision-Date: 2022-03-29\n"
 "Last-Translator: marimo\n"
 "Language-Team: dutch\n"
 "Language: nl\n"
@@ -70,11 +70,17 @@ msgstr ""
 msgid "Audio Output"
 msgstr "Audio-Output"
 
+msgid "Auto Organize"
+msgstr "Automatisch organiseren"
+
 msgid "BDJ Tags Only"
 msgstr "Enkel BDJ Tags"
 
 msgid "BDJ4 Installer"
 msgstr ""
+
+msgid "BPM"
+msgstr "BPM"
 
 msgid "Bachata"
 msgstr "Bachata"
@@ -113,6 +119,9 @@ msgstr "Sluiten"
 msgid "Complete"
 msgstr "Voltooien"
 
+msgid "Composer"
+msgstr "Componist"
+
 msgid "Configure"
 msgstr ""
 
@@ -149,8 +158,17 @@ msgstr "Database laadt dansen voor Genre"
 msgid "Date Added"
 msgstr "Datum toegevoegd"
 
+msgid "Debug Options"
+msgstr ""
+
 msgid "Default Volume"
 msgstr "Standaard Volume"
+
+msgid "Disc"
+msgstr "Schijf"
+
+msgid "Display Settings"
+msgstr ""
 
 msgid "Don't Write"
 msgstr "Niet wegschrijven"
@@ -285,6 +303,9 @@ msgstr ""
 msgid "Integrated VLC"
 msgstr ""
 
+msgid "Internet"
+msgstr ""
+
 msgid "Inverted Parabola"
 msgstr "Omgekeerde parabool"
 
@@ -300,6 +321,9 @@ msgstr "Laatst bijgewerkt"
 msgid "Listing Font"
 msgstr ""
 
+msgid "Local"
+msgstr ""
+
 msgid "Locale"
 msgstr "Taalregio"
 
@@ -308,6 +332,9 @@ msgstr ""
 
 msgid "Logarithmic"
 msgstr "Logaritmisch"
+
+msgid "MPM"
+msgstr "MPM"
 
 msgid "Manage"
 msgstr ""
@@ -345,6 +372,9 @@ msgstr ""
 msgid "Music Folder"
 msgstr ""
 
+msgid "Music Queue"
+msgstr ""
+
 msgid "NC2S"
 msgstr "Night Club Two Step"
 
@@ -376,11 +406,17 @@ msgstr ""
 msgid "Null Player"
 msgstr ""
 
+msgid "Off"
+msgstr "Uit"
+
 msgid "Options"
 msgstr "Opties"
 
 msgid "Organization"
 msgstr "Organisatie"
+
+msgid "Organization Path"
+msgstr ""
 
 msgid "Overwrite"
 msgstr ""
@@ -457,6 +493,9 @@ msgstr ""
 msgid "Queue A Name"
 msgstr ""
 
+msgid "Queue B"
+msgstr "Wachtrij B"
+
 msgid "Queue B Name"
 msgstr ""
 
@@ -471,6 +510,9 @@ msgstr ""
 
 msgid "Quickstep"
 msgstr "Quickstep"
+
+msgid "Remove Spaces"
+msgstr ""
 
 msgid "Remove from queue"
 msgstr ""
@@ -583,6 +625,9 @@ msgstr ""
 msgid "Track"
 msgstr "Track"
 
+msgid "Track Number"
+msgstr "Track nummer"
+
 msgid "Triangle"
 msgstr "Driehoek"
 
@@ -621,6 +666,10 @@ msgstr "West Coast Swing"
 msgid "Write Audio File Tags"
 msgstr "Werk de audio tags bij"
 
+#. CONTEXT: The name of the 'automatic' playlist file
+msgid "automatic"
+msgstr "Automatisch"
+
 msgid "club"
 msgstr "club"
 
@@ -629,3 +678,7 @@ msgstr ""
 
 msgid "standard"
 msgstr "standaard"
+
+#. CONTEXT: The name of the 'standardrounds' playlist file
+msgid "standardrounds"
+msgstr "Standaardrondes"
