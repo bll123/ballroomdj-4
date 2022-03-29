@@ -95,7 +95,7 @@ xgettext -s -j -d bdj4 \
 rm -f $TMP
 
 mkpo en en_GB.po "Automatically generated" "English (GB)" english/gb
-mkpo nl nl.po "marimo" Nederlands dutch
+mkpo nl nl_BE.po "marimo" Nederlands dutch
 #mkpo de de_DE.po "various" Deutsch german
 ./lang-lookup.sh
 echo "-- $(date +%T) creating english/us .po files"

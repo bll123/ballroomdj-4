@@ -1,8 +1,6 @@
 #ifndef INC_BDJ4_H
 #define INC_BDJ4_H
 
-#include <locale.h>
-
 typedef enum {
   PL_STATE_UNKNOWN,
   PL_STATE_STOPPED,
@@ -15,12 +13,6 @@ typedef enum {
 
 #if ! defined (MAXPATHLEN)
 # define MAXPATHLEN         512
-#endif
-
-#if defined (LC_MESSAGES)
-# define LOC_LC_MESSAGES LC_MESSAGES
-#else
-# define LOC_LC_MESSAGES LC_ALL
 #endif
 
 #endif /* INC_BDJ4_H */

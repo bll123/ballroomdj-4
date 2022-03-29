@@ -231,6 +231,9 @@ starterCreateGui (startui_t *starter, int argc, char *argv [])
 
   g_signal_connect (starter->app, "activate", G_CALLBACK (starterActivate), starter);
 
+  /* gtk messes up the locale setting somehow; a re-bind is necessary */
+  localeInit ();
+
   status = g_application_run (G_APPLICATION (starter->app), argc, argv);
   if (GTK_IS_WIDGET (starter->window)) {
     gtk_widget_destroy (starter->window);

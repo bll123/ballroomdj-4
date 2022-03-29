@@ -575,6 +575,9 @@ confuiCreateGui (configui_t *confui, int argc, char *argv [])
 
   g_signal_connect (confui->app, "activate", G_CALLBACK (confuiActivate), confui);
 
+  /* gtk messes up the locale setting somehow; a re-bind is necessary */
+  localeInit ();
+
   status = g_application_run (G_APPLICATION (confui->app), argc, argv);
   if (GTK_IS_WIDGET (confui->window)) {
     gtk_widget_destroy (confui->window);
@@ -668,7 +671,7 @@ confuiActivate (GApplication *app, gpointer userdata)
 
   /* bdj4 */
   confuiMakeItemSpinboxText (confui, vbox, sg, _("Locale"),
-      CONFUI_SPINBOX_LOCALE, -1, 0);
+      CONFUI_SPINBOX_LOCALE, -1, confui->localeidx);
   confuiMakeItemEntryChooser (confui, vbox, sg, _("Startup Script"),
       CONFUI_ENTRY_STARTUP, OPT_M_STARTUPSCRIPT,
       bdjoptGetStr (OPT_M_STARTUPSCRIPT), confuiSelectStartup);
@@ -1184,6 +1187,24 @@ confuiPopulateOptions (configui_t *confui)
       }
     } /* out type */
 
+    if (i == CONFUI_SPINBOX_LOCALE) {
+      pathbldMakePath (tbuff, sizeof (tbuff), "",
+          "locale", ".txt", PATHBLD_MP_NONE);
+      fileopDelete (tbuff);
+
+      /* if the set locale does not match the system or default locale */
+      /* save it in the locale file */
+      if (strcmp (sval, sysvarsGetStr (SV_LOCALE_SYSTEM)) != 0 &&
+          strcmp (sval, "en_GB") != 0) {
+        FILE    *fh;
+
+        fh = fopen (tbuff, "w");
+        fprintf (fh, "%s\n", sval);
+        fclose (fh);
+      }
+
+    }
+
     if (i == CONFUI_ENTRY_MUSIC_DIR) {
       strlcpy (tbuff, bdjoptGetStr (confui->uiitem [i].bdjoptIdx), sizeof (tbuff));
       pathNormPath (tbuff, sizeof (tbuff));
@@ -1680,6 +1701,7 @@ confuiLoadLocaleList (configui_t *confui)
   int           count;
   bool          found;
   int           engbidx;
+  int           shortidx;
 
 
   tlist = nlistAlloc ("cu-locale-list", LIST_ORDERED, free);
@@ -1694,6 +1716,7 @@ confuiLoadLocaleList (configui_t *confui)
   slistStartIterator (list, &iteridx);
   count = 0;
   found = false;
+  shortidx = -1;
   while ((key = slistIterateKey (list, &iteridx)) != NULL) {
     data = slistGetStr (list, key);
     if (strcmp (data, "en_GB") == 0) {
@@ -1703,11 +1726,16 @@ confuiLoadLocaleList (configui_t *confui)
       confui->localeidx = count;
       found = true;
     }
+    if (strncmp (data, sysvarsGetStr (SV_LOCALE_SHORT), 2) == 0) {
+      shortidx = count;
+    }
     nlistSetStr (tlist, count, key);
     nlistSetStr (llist, count, data);
     ++count;
   }
-  if (! found) {
+  if (! found && shortidx >= 0) {
+    confui->localeidx = shortidx;
+  } else if (! found) {
     confui->localeidx = engbidx;
   }
   datafileFree (df);

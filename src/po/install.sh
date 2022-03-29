@@ -1,5 +1,9 @@
 #!/bin/bash
 
+LOCALEDIR=../../locale
+TMPLDIR=../../templates
+INSTDIR=../../install
+
 cwd=$(pwd)
 case ${cwd} in
   */src)
@@ -106,13 +110,23 @@ CTMP=tempcomp.txt
 
 echo "-- Creating .mo files"
 for i in *.po; do
-  j=$(echo $i | sed 's,.po$,,')
-  mkdir -p ../../locale/$j/LC_MESSAGES
-  msgfmt -c -o ../../locale/$j/LC_MESSAGES/bdj4.mo $i
-  if [[ $i == en_GB.po ]]; then
-    j=en
-    mkdir -p ../../locale/$j/LC_MESSAGES
-    msgfmt -c -o ../../locale/$j/LC_MESSAGES/bdj4.mo $i
+  j=$(echo $i | sed 's,\.po$,,')
+  sj=$(echo $j | sed 's,\(..\).*,\1,')
+  if [[ -d ${LOCALEDIR}/$sj ]]; then
+    rm -rf ${LOCALEDIR}/$sj
+  fi
+  if [[ -h ${LOCALEDIR}/$sj ]]; then
+    rm -f ${LOCALEDIR}/$sj
+  fi
+done
+
+for i in *.po; do
+  j=$(echo $i | sed 's,\.po$,,')
+  sj=$(echo $j | sed 's,\(..\).*,\1,')
+  mkdir -p ${LOCALEDIR}/$j/LC_MESSAGES
+  msgfmt -c -o ${LOCALEDIR}/$j/LC_MESSAGES/bdj4.mo $i
+  if [[ ! -d ${LOCALEDIR}/$sj && ! -h ${LOCALEDIR}/$sj ]]; then
+    ln -s $j ${LOCALEDIR}/$sj
   fi
 done
 
@@ -129,6 +143,8 @@ while read -r line; do
   fi
 
   locale=$(echo $pofile | sed 's,\.po$,,')
+  # want the short locale
+  locale=$(echo $locale | sed 's,\(..\).*,\1,')
 
   desc=$(sed -n -e '1,1p' $pofile)
   desc=$(echo $desc | sed -e 's/^# == //')
@@ -141,16 +157,16 @@ while read -r line; do
       ;;
   esac
 
-  fn=../../templates/dancetypes.txt
+  fn=${TMPLDIR}/dancetypes.txt
   sed -e '/^#/d' $fn > $TMP
   mksub $fn $TMP $locale $pofile
 
-  fn=../../templates/bdjconfig.txt.p
+  fn=${TMPLDIR}/bdjconfig.txt.p
   # may also need pause msg and done msg in the future
   sed -n -e '/^QUEUE_NAME_[AB]/ {n;p}' $fn > $TMP
   mksub $fn $TMP $locale $pofile
 
-  fn=../../templates/dances.txt
+  fn=${TMPLDIR}/dances.txt
   sed -n -e '/^DANCE/ {n;p}' $fn > $TMP
   sed -n -e '/^TYPE/ {n;p}' $fn >> $TMP
   sed -n -e '/^SPEED/ {n;p}' $fn >> $TMP
@@ -158,30 +174,30 @@ while read -r line; do
   mv -f $TMP.n $TMP
   mksub $fn $TMP $locale $pofile
 
-  fn=../../templates/ratings.txt
+  fn=${TMPLDIR}/ratings.txt
   sed -n -e '/^RATING/ {n;p}' $fn > $TMP
   mksub $fn $TMP $locale $pofile
 
-  fn=../../templates/genres.txt
+  fn=${TMPLDIR}/genres.txt
   sed -n -e '/^GENRE/ {n;p}' $fn > $TMP
   mksub $fn $TMP $locale $pofile
 
-  fn=../../templates/levels.txt
+  fn=${TMPLDIR}/levels.txt
   sed -n -e '/^LABEL/ {n;p}' $fn > $TMP
   mksub $fn $TMP $locale $pofile
 
-  fn=../../templates/status.txt
+  fn=${TMPLDIR}/status.txt
   sed -n -e '/^STATUS/ {n;p}' $fn > $TMP
   mksub $fn $TMP $locale $pofile
 
-  for fn in ../../templates/*.pldances; do
+  for fn in ${TMPLDIR}/*.pldances; do
     sed -n -e '/^DANCE/ {n;p}' $fn > $TMP
     sort -u $TMP > $TMP.n
     mv -f $TMP.n $TMP
     mksub $fn $TMP $locale $pofile
   done
 
-  for fn in ../../templates/*.pl; do
+  for fn in ${TMPLDIR}/*.pl; do
     sed -n -e '/^DANCERATING/ {n;p}' $fn > $TMP
     sed -n -e '/^DANCELEVEL/ {n;p}' $fn >> $TMP
     sort -u $TMP > $TMP.n
@@ -189,12 +205,12 @@ while read -r line; do
     mksub $fn $TMP $locale $pofile
   done
 
-  for fn in ../../templates/*.sequence; do
+  for fn in ${TMPLDIR}/*.sequence; do
     sed -e '/^#/d' $fn > $TMP
     mksub $fn $TMP $locale $pofile
   done
 
-  for fn in ../../templates/*.html; do
+  for fn in ${TMPLDIR}/*.html; do
     case $fn in
       *qrcode.html)
         continue
@@ -212,13 +228,17 @@ while read -r line; do
     mkhtmlsub $fn $TMP $locale $pofile
   done
 
-  fn=../../templates/fades.svg
+  fn=${TMPLDIR}/fades.svg
   egrep 'aria-label=' $fn |
       sed -e 's,.*aria-label=",,' -e 's,".*,,' > $TMP
   sort -u $TMP > $TMP.n
   mv -f $TMP.n $TMP
   mkimgsub $fn $TMP $locale $pofile
 
+  ATMP=${INSTDIR}/localized-auto.txt
+  SRTMP=${INSTDIR}/localized-sr.txt
+  > $ATMP
+  > $SRTMP
   if [[ $pofile != en_US.po && $pofile != en_GB.po ]]; then
     for txt in automatic standardrounds; do
       xl=$(sed -n "\~msgid .${txt}.~ {n;p}" $pofile)
@@ -228,11 +248,20 @@ while read -r line; do
           ;;
       esac
       xl=$(echo $xl | sed -e 's,^msgstr ",,' -e 's,"$,,')
+      if [[ $xl == "" ]]; then
+        xl=$txt
+      fi
       eval $txt="$xl"
     done
 
     cwd=$(pwd)
-    cd ../../templates
+
+    echo $locale >> $ATMP
+    echo "..${automatic}" >> $ATMP
+    echo $locale >> $SRTMP
+    echo "..${standardrounds}" >> $SRTMP
+
+    cd ${TMPLDIR}
     mv -f automatic.pl.${locale} ${automatic}.pl.${locale}
     mv -f automatic.pldances.${locale} ${automatic}.pldances.${locale}
     mv -f standardrounds.pl.${locale} ${standardrounds}.pl.${locale}
@@ -253,7 +282,7 @@ while read -r line; do
   fi
 done < complete.txt
 
-mv -f $CTMP ../../locale/locales.txt
+mv -f $CTMP ${LOCALEDIR}/locales.txt
 
 test -f $TMP && rm -f $TMP
 test -f $CTMP && rm -f $CTMP

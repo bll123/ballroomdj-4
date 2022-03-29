@@ -359,6 +359,9 @@ installerCreateGui (installer_t *installer, int argc, char *argv [])
   );
   g_signal_connect (installer->app, "activate", G_CALLBACK (installerActivate), installer);
 
+  /* gtk messes up the locale setting somehow; a re-bind is necessary */
+  localeInit ();
+
   status = g_application_run (G_APPLICATION (installer->app), argc, argv);
   if (GTK_IS_WIDGET (installer->window)) {
     gtk_widget_destroy (installer->window);

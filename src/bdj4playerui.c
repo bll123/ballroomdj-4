@@ -299,6 +299,9 @@ pluiCreateGui (playerui_t *plui, int argc, char *argv [])
 
   g_signal_connect (plui->app, "activate", G_CALLBACK (pluiActivate), plui);
 
+  /* gtk messes up the locale setting somehow; a re-bind is necessary */
+  localeInit ();
+
   status = g_application_run (G_APPLICATION (plui->app), argc, argv);
   if (GTK_IS_WIDGET (plui->window)) {
     gtk_widget_destroy (plui->window);

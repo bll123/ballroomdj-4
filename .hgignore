@@ -7,11 +7,12 @@ syntax: regexp
 ^http/
 ^licenses/
 ^locale/locales.txt$
-^locale/en/
+^locale/en
 ^locale/en_US/
 ^locale/en_GB/
-^locale/nl/
-^locale/de/
+^locale/nl
+^locale/nl_BE/
+^locale/de
 ^packages/
 ^plocal/
 ^src/build/

@@ -388,6 +388,9 @@ marqueeCreateGui (marquee_t *marquee, int argc, char *argv [])
   );
   g_signal_connect (marquee->app, "activate", G_CALLBACK (marqueeActivate), marquee);
 
+  /* gtk messes up the locale setting somehow; a re-bind is necessary */
+  localeInit ();
+
   status = g_application_run (G_APPLICATION (marquee->app), argc, argv);
 
   logProcEnd (LOG_PROC, "marqueeCreateGui", "");

@@ -24,6 +24,7 @@
 #endif
 
 #include "bdj4.h"
+#include "bdj4intl.h"
 #include "sysvars.h"
 #include "bdjstring.h"
 #include "filedata.h"
@@ -202,11 +203,8 @@ sysvarsInit (const char *argv0)
 
   /* the locale is reset by localeinit */
   /* localeinit will convert the windows names to something normal */
-  if (! isWindows ()) {
-    snprintf (tbuf, sizeof (tbuf), "%-.5s", setlocale (LC_MESSAGES, NULL));
-  } else {
-    snprintf (tbuf, sizeof (tbuf), "%-.5s", setlocale (LC_ALL, NULL));
-  }
+  snprintf (tbuf, sizeof (tbuf), "%-.5s", setlocale (LOC_LC_MESSAGES, NULL));
+  strlcpy (sysvars [SV_LOCALE_SYSTEM], tbuf, SV_MAX_SZ);
   strlcpy (sysvars [SV_LOCALE], tbuf, SV_MAX_SZ);
   lsysvars [SVL_LOCALE_SET] = 0;
 
