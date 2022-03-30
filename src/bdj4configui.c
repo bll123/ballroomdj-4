@@ -43,6 +43,7 @@
 #include "tmutil.h"
 #include "uiutils.h"
 #include "volume.h"
+#include "webclient.h"
 
 
 /* base type */
@@ -1821,14 +1822,16 @@ confuiUpdateMobmqQrcode (configui_t *confui)
   }
   if (type == MOBILEMQ_INTERNET) {
     tag = bdjoptGetStr (OPT_P_MOBILEMQTAG);
-    snprintf (uri, sizeof (uri), "http://%s%s?v=1&tag=%s",
+    snprintf (uri, sizeof (uri), "%s%s?v=1&tag=%s",
         sysvarsGetStr (SV_MOBMQ_HOST), sysvarsGetStr (SV_MOBMQ_URL),
         tag);
   }
   if (type == MOBILEMQ_LOCAL) {
-// ### need ip address
+    char *ip;
+
+    ip = webclientGetLocalIP ();
     snprintf (uri, sizeof (uri), "http://%s:%zd",
-        "localhost", bdjoptGetNum (OPT_P_MOBILEMQPORT));
+        ip, bdjoptGetNum (OPT_P_MOBILEMQPORT));
   }
 
   if (type != MOBILEMQ_OFF) {
@@ -1917,9 +1920,11 @@ confuiUpdateRemctrlQrcode (configui_t *confui)
     qruri = "";
   }
   if (onoff == 1) {
-// ### need ip address
+    char *ip;
+
+    ip = webclientGetLocalIP ();
     snprintf (uri, sizeof (uri), "http://%s:%zd",
-        "localhost", bdjoptGetNum (OPT_P_REMCONTROLPORT));
+        ip, bdjoptGetNum (OPT_P_REMCONTROLPORT));
   }
 
   if (onoff == 1) {

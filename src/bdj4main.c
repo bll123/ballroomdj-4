@@ -786,7 +786,7 @@ mainSendMobileMarqueeData (maindata_t *mainData)
     }
 
     snprintf (tbuff, sizeof (tbuff),
-        "https://%s/marquee4.php", sysvarsGetStr (SV_MOBMQ_HOST));
+        "%s/marquee4.php", sysvarsGetStr (SV_MOBMQ_HOST));
     snprintf (qbuff, sizeof (qbuff), "v=2&mqdata=%s&key=%s&tag=%s",
         jbuff, "93457645", tag);
     if (mainData->mobmqUserkey != NULL) {

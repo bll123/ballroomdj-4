@@ -35,6 +35,7 @@ typedef enum {
   SV_PYTHON_PATH,
   SV_PYTHON_VERSION,      // 3.10.2 => 310
   SV_SHLIB_EXT,
+  SV_WEB_HOST,
   SV_MAX
 } sysvarkey_t;
 
