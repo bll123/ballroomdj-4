@@ -22,6 +22,7 @@
 #include "bdjvarsdfload.h"
 #include "conn.h"
 #include "datafile.h"
+#include "filedata.h"
 #include "fileop.h"
 #include "filemanip.h"
 #include "localeutil.h"
@@ -216,15 +217,19 @@ static void confuiSelectShutdown (GtkButton *b, gpointer udata);
 static void confuiSelectFileDialog (configui_t *confui, int widx);
 
 static GtkWidget * confuiMakeNotebookTab (GtkWidget *notebook, char *txt);
+/* makeitementry returns the hbox */
 static GtkWidget * confuiMakeItemEntry (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, char *txt, int widx, int bdjoptIdx, char *disp);
 static void confuiMakeItemEntryChooser (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, char *txt, int widx, int bdjoptIdx, char *disp, void *dialogFunc);
+/* makeitemcombobox returns the hbox */
 static GtkWidget * confuiMakeItemCombobox (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, char *txt, int widx, int bdjoptIdx, void *ddcb, char *value);
 static void confuiMakeItemLink (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, char *txt, int widx, char *disp);
 static void confuiMakeItemFontButton (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, char *txt, int widx, int bdjoptIdx, char *fontname);
 static void confuiMakeItemColorButton (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, char *txt, int widx, int bdjoptIdx, char *color);
+/* makeitemspinboxtext returns the widget */
 static GtkWidget *confuiMakeItemSpinboxText (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, char *txt, int widx, int bdjoptIdx, ssize_t value);
 static void confuiMakeItemSpinboxTime (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, char *txt, int widx, int bdjoptIdx, ssize_t value);
-static void confuiMakeItemSpinboxInt (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, char *txt, int widx, int bdjoptIdx, int min, int max, int value);
+/* makeitemspinboxint returns the widget */
+static GtkWidget *confuiMakeItemSpinboxInt (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, char *txt, int widx, int bdjoptIdx, int min, int max, int value);
 static void confuiMakeItemSpinboxDouble (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, char *txt, int widx, int bdjoptIdx, double min, double max, double value);
 static void confuiMakeItemSwitch (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, char *txt, int widx, int bdjoptIdx, int value);
 static void confuiMakeItemCheckButton (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, const char *txt, int widx, int bdjoptIdx, int value);
@@ -237,6 +242,12 @@ static void     confuiLoadLocaleList (configui_t *confui);
 static gboolean confuiFadeTypeTooltip (GtkWidget *, gint, gint, gboolean, GtkTooltip *, void *);
 static void     confuiOrgPathSelect (GtkTreeView *tv, GtkTreePath *path,
     GtkTreeViewColumn *column, gpointer udata);
+static void     confuiUpdateMobmqQrcode (configui_t *confui);
+static void     confuiMobmqTypeChg (GtkSpinButton *sb, gpointer udata);
+static void     confuiMobmqPortChg (GtkSpinButton *sb, gpointer udata);
+static bool     confuiMobmqNameChg (void *edata, void *udata);
+static bool     confuiMobmqTitleChg (void *edata, void *udata);
+
 
 static int gKillReceived = 0;
 static int gdone = 0;
@@ -842,25 +853,30 @@ confuiActivate (GApplication *app, gpointer userdata)
   vbox = confuiMakeNotebookTab (confui->notebook, _("Mobile Marquee"));
   sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
-  confuiMakeItemSpinboxText (confui, vbox, sg, _("Mobile Marquee"),
+  widget = confuiMakeItemSpinboxText (confui, vbox, sg, _("Mobile Marquee"),
       CONFUI_SPINBOX_MOBILE_MQ, OPT_P_MOBILEMARQUEE,
       bdjoptGetNum (OPT_P_MOBILEMARQUEE));
+  g_signal_connect (widget, "value-changed", G_CALLBACK (confuiMobmqTypeChg), confui);
 
-  confuiMakeItemSpinboxInt (confui, vbox, sg, _("Port"),
+  widget = confuiMakeItemSpinboxInt (confui, vbox, sg, _("Port"),
       CONFUI_WIDGET_MMQ_PORT, OPT_P_MOBILEMQPORT,
       8000, 30000, bdjoptGetNum (OPT_P_MOBILEMQPORT));
+  g_signal_connect (widget, "value-changed", G_CALLBACK (confuiMobmqPortChg), confui);
 
   confuiMakeItemEntry (confui, vbox, sg, _("Name"),
       CONFUI_ENTRY_MM_NAME, OPT_P_MOBILEMQTAG,
       bdjoptGetStr (OPT_P_MOBILEMQTAG));
+  uiutilsEntrySetValidate (&confui->uiitem [CONFUI_ENTRY_MM_NAME].u.entry,
+      confuiMobmqNameChg, confui);
+
   confuiMakeItemEntry (confui, vbox, sg, _("Title"),
       CONFUI_ENTRY_MM_TITLE, OPT_P_MOBILEMQTITLE,
       bdjoptGetStr (OPT_P_MOBILEMQTITLE));
+  uiutilsEntrySetValidate (&confui->uiitem [CONFUI_ENTRY_MM_TITLE].u.entry,
+      confuiMobmqTitleChg, confui);
 
-  snprintf (tbuff, sizeof (tbuff), "http://%s:%zd",
-      "localhost", bdjoptGetNum (OPT_P_MOBILEMQPORT));
   confuiMakeItemLink (confui, vbox, sg, _("QR Code"),
-      CONFUI_WIDGET_MMQ_QR_CODE, tbuff);
+      CONFUI_WIDGET_MMQ_QR_CODE, "");
 
   vbox = confuiMakeNotebookTab (confui->notebook, _("Debug Options"));
   sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
@@ -998,6 +1014,8 @@ static bool
 confuiHandshakeCallback (void *udata, programstate_t programState)
 {
   configui_t   *confui = udata;
+
+  confuiUpdateMobmqQrcode (confui);
 
   progstateLogTime (confui->progstate, "time-to-start-gui");
   return true;
@@ -1195,7 +1213,6 @@ confuiPopulateOptions (configui_t *confui)
 
       /* if the set locale does not match the system or default locale */
       /* save it in the locale file */
-fprintf (stderr, "locale: %s %s %s\n", sval, sysvarsGetStr (SV_LOCALE_SYSTEM), sysvarsGetStr (SV_LOCALE));
       if (strcmp (sval, sysvarsGetStr (SV_LOCALE_SYSTEM)) != 0 &&
           strcmp (sval, "en_GB") != 0) {
         FILE    *fh;
@@ -1228,9 +1245,6 @@ fprintf (stderr, "locale: %s %s %s\n", sval, sysvarsGetStr (SV_LOCALE_SYSTEM), s
 
     if (i == CONFUI_WIDGET_UI_ACCENT_COLOR) {
       templateImageCopy (sval);
-    }
-
-    if (i == CONFUI_WIDGET_MQ_ACCENT_COLOR) {
     }
   } /* for each item */
 
@@ -1494,7 +1508,7 @@ confuiMakeItemSpinboxTime (configui_t *confui, GtkWidget *vbox,
   confui->uiitem [widx].bdjoptIdx = bdjoptIdx;
 }
 
-static void
+static GtkWidget *
 confuiMakeItemSpinboxInt (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg,
     char *txt, int widx, int bdjoptIdx, int min, int max, int value)
 {
@@ -1513,6 +1527,7 @@ confuiMakeItemSpinboxInt (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg,
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
   confui->uiitem [widx].u.widget = widget;
   confui->uiitem [widx].bdjoptIdx = bdjoptIdx;
+  return widget;
 }
 
 static void
@@ -1722,17 +1737,14 @@ confuiLoadLocaleList (configui_t *confui)
   shortidx = -1;
   while ((key = slistIterateKey (list, &iteridx)) != NULL) {
     data = slistGetStr (list, key);
-fprintf (stderr, "chk-locale: %s\n", data);
     if (strcmp (data, "en_GB") == 0) {
       engbidx = count;
     }
     if (strcmp (data, sysvarsGetStr (SV_LOCALE)) == 0) {
-fprintf (stderr, "found-locale: %s %d\n", data, count);
       confui->localeidx = count;
       found = true;
     }
     if (strncmp (data, sysvarsGetStr (SV_LOCALE_SHORT), 2) == 0) {
-fprintf (stderr, "found-short: %s %d\n", data, count);
       shortidx = count;
     }
     nlistSetStr (tlist, count, key);
@@ -1744,7 +1756,6 @@ fprintf (stderr, "found-short: %s %d\n", data, count);
   } else if (! found) {
     confui->localeidx = engbidx;
   }
-fprintf (stderr, "localeidx: %d\n", confui->localeidx);
   datafileFree (df);
 
   confui->uiitem [CONFUI_SPINBOX_LOCALE].list = tlist;
@@ -1778,5 +1789,130 @@ confuiOrgPathSelect (GtkTreeView *tv, GtkTreePath *path,
   idx = uiutilsDropDownSelectionGet (dd, path);
   confui->orgpathidx = idx;
   logProcEnd (LOG_PROC, "confuiOrgPathSelect", "");
+}
+
+static void
+confuiUpdateMobmqQrcode (configui_t *confui)
+{
+  char          uri [MAXPATHLEN];
+  char          qruri [MAXPATHLEN];
+  char          tbuff [MAXPATHLEN];
+  char          *tag;
+  bdjmobilemq_t type;
+  GtkWidget     *widget;
+  size_t        dlen;
+
+
+  type = (bdjmobilemq_t) bdjoptGetNum (OPT_P_MOBILEMARQUEE);
+
+  if (type == MOBILEMQ_OFF) {
+    *tbuff = '\0';
+    *uri = '\0';
+    *qruri = '\0';
+  }
+  if (type == MOBILEMQ_INTERNET) {
+    tag = bdjoptGetStr (OPT_P_MOBILEMQTAG);
+    snprintf (uri, sizeof (uri), "http://%s%s?v=1&tag=%s",
+        sysvarsGetStr (SV_MOBMQ_HOST), sysvarsGetStr (SV_MOBMQ_URL),
+        tag);
+  }
+  if (type == MOBILEMQ_LOCAL) {
+// ### need ip address
+    snprintf (uri, sizeof (uri), "http://%s:%zd",
+        "localhost", bdjoptGetNum (OPT_P_MOBILEMQPORT));
+  }
+
+  if (type != MOBILEMQ_OFF) {
+    char          *data;
+    char          *ndata;
+    char          baseuri [200];
+    FILE          *fh;
+
+    pathbldMakePath (baseuri, sizeof (baseuri), "",
+        "", "", PATHBLD_MP_TEMPLATEDIR);
+    pathbldMakePath (tbuff, sizeof (tbuff), "",
+        "qrcode", ".html", PATHBLD_MP_TEMPLATEDIR);
+
+    /* this is gross */
+    data = filedataReadAll (tbuff, &dlen);
+    ndata = filedataReplace (data, &dlen, "#TITLE#", bdjoptGetStr (OPT_P_MOBILEMQTITLE));
+    free (data);
+    data = ndata;
+    ndata = filedataReplace (data, &dlen, "#BASEURL#", baseuri);
+    free (data);
+    data = ndata;
+    ndata = filedataReplace (data, &dlen, "#QRCODEURL#", uri);
+
+    pathbldMakePath (tbuff, sizeof (tbuff), "",
+        "qrcode", ".html", PATHBLD_MP_TMPDIR);
+    fh = fopen (tbuff, "w");
+    fwrite (ndata, dlen, 1, fh);
+    fclose (fh);
+    snprintf (qruri, sizeof (qruri), "file://%s/%s",
+        sysvarsGetStr (SV_BDJ4DATATOPDIR), tbuff);
+
+    free (data);
+    free (ndata);
+  }
+
+  widget = confui->uiitem [CONFUI_WIDGET_MMQ_QR_CODE].u.widget;
+  gtk_link_button_set_uri (GTK_LINK_BUTTON (widget), qruri);
+  gtk_button_set_label (GTK_BUTTON (widget), uri);
+}
+
+static void
+confuiMobmqTypeChg (GtkSpinButton *sb, gpointer udata)
+{
+  configui_t    *confui = udata;
+  GtkAdjustment *adjustment;
+  double        value;
+  ssize_t       nval;
+
+  adjustment = gtk_spin_button_get_adjustment (sb);
+  value = gtk_adjustment_get_value (adjustment);
+  nval = (ssize_t) value;
+  bdjoptSetNum (OPT_P_MOBILEMARQUEE, nval);
+  confuiUpdateMobmqQrcode (confui);
+}
+
+static void
+confuiMobmqPortChg (GtkSpinButton *sb, gpointer udata)
+{
+  configui_t    *confui = udata;
+  GtkAdjustment *adjustment;
+  double        value;
+  ssize_t       nval;
+
+  adjustment = gtk_spin_button_get_adjustment (sb);
+  value = gtk_adjustment_get_value (adjustment);
+  nval = (ssize_t) value;
+  bdjoptSetNum (OPT_P_MOBILEMQPORT, nval);
+  confuiUpdateMobmqQrcode (confui);
+}
+
+static bool
+confuiMobmqNameChg (void *edata, void *udata)
+{
+  uiutilsentry_t  *entry = edata;
+  configui_t    *confui = udata;
+  const char      *sval;
+
+  sval = uiutilsEntryGetValue (entry);
+  bdjoptSetStr (OPT_P_MOBILEMQTAG, sval);
+  confuiUpdateMobmqQrcode (confui);
+  return true;
+}
+
+static bool
+confuiMobmqTitleChg (void *edata, void *udata)
+{
+  uiutilsentry_t  *entry = edata;
+  configui_t      *confui = udata;
+  const char      *sval;
+
+  sval = uiutilsEntryGetValue (entry);
+  bdjoptSetStr (OPT_P_MOBILEMQTITLE, sval);
+  confuiUpdateMobmqQrcode (confui);
+  return true;
 }
 

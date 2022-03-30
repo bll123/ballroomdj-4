@@ -89,6 +89,7 @@ void uiutilsDropDownSelectionSetStr (uiutilsdropdown_t *dropdown, char *stridx);
 void uiutilsEntryInit (uiutilsentry_t *entry, int entrySize, int maxSize);
 void uiutilsEntryFree (uiutilsentry_t *entry);
 GtkWidget * uiutilsEntryCreate (uiutilsentry_t *entry);
+GtkWidget * uiutilsEntryGetWidget (uiutilsentry_t *entry);
 const char * uiutilsEntryGetValue (uiutilsentry_t *entry);
 void uiutilsEntrySetValue (uiutilsentry_t *entry, char *value);
 void uiutilsEntrySetValidate (uiutilsentry_t *entry,

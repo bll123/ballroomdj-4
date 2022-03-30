@@ -191,6 +191,7 @@ sysvarsInit (const char *argv0)
   strlcpy (sysvars [SV_SHLIB_EXT], SHLIB_EXT, SV_MAX_SZ);
 
   strlcpy (sysvars [SV_MOBMQ_HOST], "ballroomdj.org", SV_MAX_SZ);
+  strlcpy (sysvars [SV_MOBMQ_URL], "/marquee4.html", SV_MAX_SZ);
 
   for (size_t i = 0; i < CACERT_FILE_COUNT; ++i) {
     if (fileopFileExists (cacertFiles [i])) {
@@ -205,7 +206,6 @@ sysvarsInit (const char *argv0)
   /* localeinit will convert the windows names to something normal */
   snprintf (tbuf, sizeof (tbuf), "%-.5s", setlocale (LOC_LC_MESSAGES, NULL));
   strlcpy (sysvars [SV_LOCALE_SYSTEM], tbuf, SV_MAX_SZ);
-fprintf (stderr, "sv-locale: %s\n", tbuf);
   strlcpy (sysvars [SV_LOCALE], tbuf, SV_MAX_SZ);
   lsysvars [SVL_LOCALE_SET] = 0;
 
@@ -220,13 +220,11 @@ fprintf (stderr, "sv-locale: %s\n", tbuf);
     if (*tbuf) {
       lsysvars [SVL_LOCALE_SET] = 1;
       strlcpy (sysvars [SV_LOCALE], tbuf, SV_MAX_SZ);
-fprintf (stderr, "set-locale: %s\n", tbuf);
     }
   }
 
   snprintf (buff, sizeof (buff), "%-.2s", tbuf);
   strlcpy (sysvars [SV_LOCALE_SHORT], buff, SV_MAX_SZ);
-fprintf (stderr, "short-locale: %s\n", buff);
 
   strlcpy (sysvars [SV_BDJ4_VERSION], "unknown", SV_MAX_SZ);
   if (fileopFileExists ("VERSION.txt")) {

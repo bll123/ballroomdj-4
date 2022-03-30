@@ -17,7 +17,7 @@ function readolddata {
       continue
     fi
 
-    line=$(echo $line | sed 's/[: ]*"$/"/')
+    line=$(echo $line | sed 's/[: .]*"$/"/')
 
     case $line in
       msgid*)

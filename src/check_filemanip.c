@@ -123,6 +123,7 @@ START_TEST(filemanip_basic_dirlist)
   while ((fn = slistIterateKey (slist, &iteridx)) != NULL) {
     ck_assert_str_eq (fn, "abc.txt");
   }
+  slistFree (slist);
 
   slist = filemanipBasicDirList (dcfn, NULL);
   ck_assert_int_eq (slistGetCount (slist), 1);
@@ -130,6 +131,7 @@ START_TEST(filemanip_basic_dirlist)
   while ((fn = slistIterateKey (slist, &iteridx)) != NULL) {
     ck_assert_str_eq (fn, "ghi.txt");
   }
+  slistFree (slist);
 
   filemanipDeleteDir (dafn);
 }
@@ -172,6 +174,7 @@ START_TEST(filemanip_recursive_dirlist)
   ck_assert_str_eq (fn, "tmp/abc/ghi/ghi.txt");
 
   filemanipDeleteDir (dafn);
+  slistFree (slist);
 }
 END_TEST
 

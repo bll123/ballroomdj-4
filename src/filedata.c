@@ -42,3 +42,53 @@ filedataReadAll (const char *fname, size_t *rlen)
   return data;
 }
 
+char *
+filedataReplace (char *data, size_t *dlen, char *target, char *repl)
+{
+  char    *p;
+  char    *lastp;
+  size_t  nlenalloc;
+  size_t  nlen;
+  size_t  nlenpos;
+  size_t  tlen;
+  size_t  targetlen;
+  size_t  repllen;
+  char    *ndata;
+
+  if (data == NULL) {
+    return NULL;
+  }
+
+  targetlen = strlen (target);
+  repllen = strlen (repl);
+  nlen = *dlen;
+  nlenalloc = nlen;
+  ndata = malloc (nlenalloc + 1);
+  assert (ndata != NULL);
+  lastp = data;
+
+  nlenpos = 0;
+  p = strstr (data, target);
+  while (p != NULL) {
+    tlen = nlenalloc + (repllen - targetlen);
+    if (tlen > nlenalloc) {
+      ndata = realloc (ndata, tlen + 1);
+      assert (ndata != NULL);
+      nlenalloc = tlen;
+    }
+    nlen += (repllen - targetlen);
+    memcpy (ndata + nlenpos, lastp, p - lastp);
+    nlenpos += p - lastp;
+    memcpy (ndata + nlenpos, repl, repllen);
+    nlenpos += repllen;
+
+    lastp = p + targetlen;
+    ++p;
+    p = strstr (p, target);
+  }
+  memcpy (ndata + nlenpos, lastp, *dlen - (lastp - data));
+  ndata [nlen] = '\0';
+  *dlen = nlen;
+
+  return ndata;
+}

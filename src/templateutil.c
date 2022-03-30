@@ -83,20 +83,16 @@ templateCopy (const char *from, const char *to, const char *color)
     filemanipCopy (from, to);
   } else {
     char    *data;
-    char    *p;
     FILE    *fh;
     size_t  len;
+    char    *ndata;
 
     data = filedataReadAll (from, &len);
     fh = fopen (to, "w");
-    p = strstr (data, "#ffa600");
-    while (p != NULL) {
-      memcpy (p, color, 7);
-      ++p;
-      p = strstr (p, "#ffa600");
-    }
-    fwrite (data, len, 1, fh);
+    ndata = filedataReplace (data, &len, "#ffa600", color);
+    fwrite (ndata, len, 1, fh);
     fclose (fh);
+    free (ndata);
     free (data);
   }
 }

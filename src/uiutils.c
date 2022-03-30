@@ -591,6 +591,12 @@ uiutilsEntryCreate (uiutilsentry_t *entry)
   return entry->entry;
 }
 
+GtkWidget *
+uiutilsEntryGetWidget (uiutilsentry_t *entry)
+{
+  return entry->entry;
+}
+
 const char *
 uiutilsEntryGetValue (uiutilsentry_t *entry)
 {
