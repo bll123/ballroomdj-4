@@ -43,7 +43,7 @@ filedataReadAll (const char *fname, size_t *rlen)
 }
 
 char *
-filedataReplace (char *data, size_t *dlen, char *target, char *repl)
+filedataReplace (char *data, size_t *dlen, const char *target, const char *repl)
 {
   char    *p;
   char    *lastp;

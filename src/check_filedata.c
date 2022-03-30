@@ -47,6 +47,8 @@ START_TEST(filedata_readall)
   ck_assert_int_eq (strlen (data), strlen (tdata));
   ck_assert_mem_eq (data, tdata, strlen (tdata));
   free (data);
+
+  unlink (fn);
 }
 END_TEST
 
@@ -123,6 +125,7 @@ START_TEST(filedata_repl)
   free (ndata);
 
   free (data);
+  unlink (fn);
 }
 END_TEST
 

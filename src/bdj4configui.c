@@ -231,7 +231,8 @@ static void confuiMakeItemSpinboxTime (configui_t *confui, GtkWidget *vbox, GtkS
 /* makeitemspinboxint returns the widget */
 static GtkWidget *confuiMakeItemSpinboxInt (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, char *txt, int widx, int bdjoptIdx, int min, int max, int value);
 static void confuiMakeItemSpinboxDouble (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, char *txt, int widx, int bdjoptIdx, double min, double max, double value);
-static void confuiMakeItemSwitch (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, char *txt, int widx, int bdjoptIdx, int value);
+/* makeitemswitch returns the widget */
+static GtkWidget *confuiMakeItemSwitch (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, char *txt, int widx, int bdjoptIdx, int value);
 static void confuiMakeItemCheckButton (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, const char *txt, int widx, int bdjoptIdx, int value);
 static GtkWidget * confuiMakeItemLabel (GtkWidget *vbox, GtkSizeGroup *sg, char *txt);
 
@@ -247,6 +248,10 @@ static void     confuiMobmqTypeChg (GtkSpinButton *sb, gpointer udata);
 static void     confuiMobmqPortChg (GtkSpinButton *sb, gpointer udata);
 static bool     confuiMobmqNameChg (void *edata, void *udata);
 static bool     confuiMobmqTitleChg (void *edata, void *udata);
+static void     confuiUpdateRemctrlQrcode (configui_t *confui);
+static gboolean confuiRemctrlChg (GtkSwitch *sw, gboolean value, gpointer udata);
+static void     confuiRemctrlPortChg (GtkSpinButton *sb, gpointer udata);
+static char *   confuiMakeQRCodeFile (configui_t *confui, char *title, char *uri);
 
 
 static int gKillReceived = 0;
@@ -827,27 +832,30 @@ confuiActivate (GApplication *app, gpointer userdata)
   vbox = confuiMakeNotebookTab (confui->notebook, _("Mobile Remote Control"));
   sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
-  confuiMakeItemSwitch (confui, vbox, sg, _("Enable Remote Control"),
+  widget = confuiMakeItemSwitch (confui, vbox, sg, _("Enable Remote Control"),
       CONFUI_WIDGET_RC_ENABLE, OPT_P_REMOTECONTROL,
       bdjoptGetNum (OPT_P_REMOTECONTROL));
+  g_signal_connect (widget, "state-set", G_CALLBACK (confuiRemctrlChg), confui);
+
   confuiMakeItemSpinboxText (confui, vbox, sg, _("HTML Template"),
       CONFUI_SPINBOX_RC_HTML_TEMPLATE, OPT_G_REMCONTROLHTML,
       confui->rchtmlidx);
+
   confuiMakeItemEntry (confui, vbox, sg, _("User ID"),
       CONFUI_ENTRY_RC_USER_ID,  OPT_P_REMCONTROLUSER,
       bdjoptGetStr (OPT_P_REMCONTROLUSER));
+
   confuiMakeItemEntry (confui, vbox, sg, _("Password"),
       CONFUI_ENTRY_RC_PASS, OPT_P_REMCONTROLPASS,
       bdjoptGetStr (OPT_P_REMCONTROLPASS));
 
-  confuiMakeItemSpinboxInt (confui, vbox, sg, _("Port Number"),
+  widget = confuiMakeItemSpinboxInt (confui, vbox, sg, _("Port"),
       CONFUI_WIDGET_RC_PORT, OPT_P_REMCONTROLPORT,
       8000, 30000, bdjoptGetNum (OPT_P_REMCONTROLPORT));
+  g_signal_connect (widget, "value-changed", G_CALLBACK (confuiRemctrlPortChg), confui);
 
-  snprintf (tbuff, sizeof (tbuff), "http://%s:%zd",
-      "localhost", bdjoptGetNum (OPT_P_REMCONTROLPORT));
   confuiMakeItemLink (confui, vbox, sg, _("QR Code"),
-      CONFUI_WIDGET_RC_QR_CODE, tbuff);
+      CONFUI_WIDGET_RC_QR_CODE, "");
 
   /* mobile marquee */
   vbox = confuiMakeNotebookTab (confui->notebook, _("Mobile Marquee"));
@@ -1016,6 +1024,7 @@ confuiHandshakeCallback (void *udata, programstate_t programState)
   configui_t   *confui = udata;
 
   confuiUpdateMobmqQrcode (confui);
+  confuiUpdateRemctrlQrcode (confui);
 
   progstateLogTime (confui->progstate, "time-to-start-gui");
   return true;
@@ -1551,7 +1560,7 @@ confuiMakeItemSpinboxDouble (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *
   confui->uiitem [widx].bdjoptIdx = bdjoptIdx;
 }
 
-static void
+static GtkWidget *
 confuiMakeItemSwitch (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg,
     char *txt, int widx, int bdjoptIdx, int value)
 {
@@ -1568,6 +1577,7 @@ confuiMakeItemSwitch (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg,
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
   confui->uiitem [widx].u.widget = widget;
   confui->uiitem [widx].bdjoptIdx = bdjoptIdx;
+  return widget;
 }
 
 static void
@@ -1795,12 +1805,11 @@ static void
 confuiUpdateMobmqQrcode (configui_t *confui)
 {
   char          uri [MAXPATHLEN];
-  char          qruri [MAXPATHLEN];
+  char          *qruri = "";
   char          tbuff [MAXPATHLEN];
   char          *tag;
   bdjmobilemq_t type;
   GtkWidget     *widget;
-  size_t        dlen;
 
 
   type = (bdjmobilemq_t) bdjoptGetNum (OPT_P_MOBILEMARQUEE);
@@ -1808,7 +1817,7 @@ confuiUpdateMobmqQrcode (configui_t *confui)
   if (type == MOBILEMQ_OFF) {
     *tbuff = '\0';
     *uri = '\0';
-    *qruri = '\0';
+    qruri = "";
   }
   if (type == MOBILEMQ_INTERNET) {
     tag = bdjoptGetStr (OPT_P_MOBILEMQTAG);
@@ -1823,41 +1832,15 @@ confuiUpdateMobmqQrcode (configui_t *confui)
   }
 
   if (type != MOBILEMQ_OFF) {
-    char          *data;
-    char          *ndata;
-    char          baseuri [200];
-    FILE          *fh;
-
-    pathbldMakePath (baseuri, sizeof (baseuri), "",
-        "", "", PATHBLD_MP_TEMPLATEDIR);
-    pathbldMakePath (tbuff, sizeof (tbuff), "",
-        "qrcode", ".html", PATHBLD_MP_TEMPLATEDIR);
-
-    /* this is gross */
-    data = filedataReadAll (tbuff, &dlen);
-    ndata = filedataReplace (data, &dlen, "#TITLE#", bdjoptGetStr (OPT_P_MOBILEMQTITLE));
-    free (data);
-    data = ndata;
-    ndata = filedataReplace (data, &dlen, "#BASEURL#", baseuri);
-    free (data);
-    data = ndata;
-    ndata = filedataReplace (data, &dlen, "#QRCODEURL#", uri);
-
-    pathbldMakePath (tbuff, sizeof (tbuff), "",
-        "qrcode", ".html", PATHBLD_MP_TMPDIR);
-    fh = fopen (tbuff, "w");
-    fwrite (ndata, dlen, 1, fh);
-    fclose (fh);
-    snprintf (qruri, sizeof (qruri), "file://%s/%s",
-        sysvarsGetStr (SV_BDJ4DATATOPDIR), tbuff);
-
-    free (data);
-    free (ndata);
+    qruri = confuiMakeQRCodeFile (confui, _("Mobile Marquee"), uri);
   }
 
   widget = confui->uiitem [CONFUI_WIDGET_MMQ_QR_CODE].u.widget;
   gtk_link_button_set_uri (GTK_LINK_BUTTON (widget), qruri);
   gtk_button_set_label (GTK_BUTTON (widget), uri);
+  if (*qruri) {
+    free (qruri);
+  }
 }
 
 static void
@@ -1916,3 +1899,104 @@ confuiMobmqTitleChg (void *edata, void *udata)
   return true;
 }
 
+static void
+confuiUpdateRemctrlQrcode (configui_t *confui)
+{
+  char          uri [MAXPATHLEN];
+  char          *qruri = "";
+  char          tbuff [MAXPATHLEN];
+  ssize_t       onoff;
+  GtkWidget     *widget;
+
+
+  onoff = (bdjmobilemq_t) bdjoptGetNum (OPT_P_REMOTECONTROL);
+
+  if (onoff == 0) {
+    *tbuff = '\0';
+    *uri = '\0';
+    qruri = "";
+  }
+  if (onoff == 1) {
+// ### need ip address
+    snprintf (uri, sizeof (uri), "http://%s:%zd",
+        "localhost", bdjoptGetNum (OPT_P_REMCONTROLPORT));
+  }
+
+  if (onoff == 1) {
+    qruri = confuiMakeQRCodeFile (confui, _("Mobile Remote Control"), uri);
+  }
+
+  widget = confui->uiitem [CONFUI_WIDGET_RC_QR_CODE].u.widget;
+  gtk_link_button_set_uri (GTK_LINK_BUTTON (widget), qruri);
+  gtk_button_set_label (GTK_BUTTON (widget), uri);
+  if (*qruri) {
+    free (qruri);
+  }
+}
+
+static gboolean
+confuiRemctrlChg (GtkSwitch *sw, gboolean value, gpointer udata)
+{
+  configui_t  *confui = udata;
+
+  bdjoptSetNum (OPT_P_REMOTECONTROL, value);
+  confuiUpdateRemctrlQrcode (confui);
+  return FALSE;
+}
+
+static void
+confuiRemctrlPortChg (GtkSpinButton *sb, gpointer udata)
+{
+  configui_t    *confui = udata;
+  GtkAdjustment *adjustment;
+  double        value;
+  ssize_t       nval;
+
+  adjustment = gtk_spin_button_get_adjustment (sb);
+  value = gtk_adjustment_get_value (adjustment);
+  nval = (ssize_t) value;
+  bdjoptSetNum (OPT_P_REMCONTROLPORT, nval);
+  confuiUpdateRemctrlQrcode (confui);
+}
+
+
+static char *
+confuiMakeQRCodeFile (configui_t *confui, char *title, char *uri)
+{
+  char          *data;
+  char          *ndata;
+  char          *qruri;
+  char          baseuri [MAXPATHLEN];
+  char          tbuff [MAXPATHLEN];
+  FILE          *fh;
+  size_t        dlen;
+
+  qruri = malloc (MAXPATHLEN);
+
+  pathbldMakePath (baseuri, sizeof (baseuri), "",
+      "", "", PATHBLD_MP_TEMPLATEDIR);
+  pathbldMakePath (tbuff, sizeof (tbuff), "",
+      "qrcode", ".html", PATHBLD_MP_TEMPLATEDIR);
+
+  /* this is gross */
+  data = filedataReadAll (tbuff, &dlen);
+  ndata = filedataReplace (data, &dlen, "#TITLE#", title);
+  free (data);
+  data = ndata;
+  ndata = filedataReplace (data, &dlen, "#BASEURL#", baseuri);
+  free (data);
+  data = ndata;
+  ndata = filedataReplace (data, &dlen, "#QRCODEURL#", uri);
+
+  pathbldMakePath (tbuff, sizeof (tbuff), "",
+      "qrcode", ".html", PATHBLD_MP_TMPDIR);
+  fh = fopen (tbuff, "w");
+  fwrite (ndata, dlen, 1, fh);
+  fclose (fh);
+  snprintf (qruri, MAXPATHLEN, "file://%s/%s",
+      sysvarsGetStr (SV_BDJ4DATATOPDIR), tbuff);
+
+  free (data);
+  free (ndata);
+  return qruri;
+}
