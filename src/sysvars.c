@@ -193,7 +193,7 @@ sysvarsInit (const char *argv0)
   strlcpy (sysvars [SV_MOBMQ_HOST], "https://ballroomdj.org", SV_MAX_SZ);
   strlcpy (sysvars [SV_MOBMQ_URL], "/marquee4.html", SV_MAX_SZ);
 
-  strlcpy (sysvars [SV_WEB_HOST], "https://ballroomdj.sourceforge.io", SV_MAX_SZ);
+  strlcpy (sysvars [SV_WEB_HOST], "https://ballroomdj4.sourceforge.io", SV_MAX_SZ);
 
   for (size_t i = 0; i < CACERT_FILE_COUNT; ++i) {
     if (fileopFileExists (cacertFiles [i])) {

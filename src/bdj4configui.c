@@ -30,6 +30,7 @@
 #include "log.h"
 #include "nlist.h"
 #include "orgopt.h"
+#include "orgutil.h"
 #include "osuiutils.h"
 #include "pathbld.h"
 #include "pathutil.h"
@@ -99,6 +100,10 @@ enum {
   CONFUI_SPINBOX_UI_THEME,
   CONFUI_SPINBOX_WRITE_AUDIO_FILE_TAGS,
   CONFUI_SPINBOX_MAX,
+  CONFUI_WIDGET_AO_EXAMPLE_1,
+  CONFUI_WIDGET_AO_EXAMPLE_2,
+  CONFUI_WIDGET_AO_EXAMPLE_3,
+  CONFUI_WIDGET_AO_EXAMPLE_4,
   CONFUI_WIDGET_AO_CHG_SPACE,
   CONFUI_WIDGET_AUTO_ORGANIZE,
   CONFUI_WIDGET_DB_LOAD_FROM_GENRE,
@@ -234,6 +239,7 @@ static GtkWidget *confuiMakeItemSpinboxInt (configui_t *confui, GtkWidget *vbox,
 static void confuiMakeItemSpinboxDouble (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, char *txt, int widx, int bdjoptIdx, double min, double max, double value);
 /* makeitemswitch returns the widget */
 static GtkWidget *confuiMakeItemSwitch (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, char *txt, int widx, int bdjoptIdx, int value);
+static GtkWidget *confuiMakeItemLabelDisp (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, char *txt, int widx, int bdjoptIdx);
 static void confuiMakeItemCheckButton (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, const char *txt, int widx, int bdjoptIdx, int value);
 static GtkWidget * confuiMakeItemLabel (GtkWidget *vbox, GtkSizeGroup *sg, char *txt);
 
@@ -253,6 +259,8 @@ static void     confuiUpdateRemctrlQrcode (configui_t *confui);
 static gboolean confuiRemctrlChg (GtkSwitch *sw, gboolean value, gpointer udata);
 static void     confuiRemctrlPortChg (GtkSpinButton *sb, gpointer udata);
 static char *   confuiMakeQRCodeFile (configui_t *confui, char *title, char *uri);
+static void     confuiUpdateOrgExamples (configui_t *confui, char *pathfmt);
+static void     confuiUpdateOrgExample (configui_t *config, org_t *org, char *data, GtkWidget *widget);
 
 
 static int gKillReceived = 0;
@@ -292,6 +300,7 @@ main (int argc, char *argv[])
 
   for (int i = 0; i < CONFUI_ITEM_MAX; ++i) {
     confui.uiitem [i].list = NULL;
+    confui.uiitem [i].u.widget = NULL;
     confui.uiitem [i].sblookuplist = NULL;
     confui.uiitem [i].basetype = CONFUI_NONE;
     confui.uiitem [i].outtype = CONFUI_OUT_NONE;
@@ -807,9 +816,19 @@ confuiActivate (GApplication *app, gpointer userdata)
   confuiMakeItemCombobox (confui, vbox, sg, _("Organisation Path"),
       CONFUI_COMBOBOX_AO_PATHFMT, OPT_G_AO_PATHFMT,
       confuiOrgPathSelect, bdjoptGetStr (OPT_G_AO_PATHFMT));
+  confuiMakeItemLabelDisp (confui, vbox, sg, _("Examples"),
+      CONFUI_WIDGET_AO_EXAMPLE_1, -1);
+  confuiMakeItemLabelDisp (confui, vbox, sg, "",
+      CONFUI_WIDGET_AO_EXAMPLE_2, -1);
+  confuiMakeItemLabelDisp (confui, vbox, sg, "",
+      CONFUI_WIDGET_AO_EXAMPLE_3, -1);
+  confuiMakeItemLabelDisp (confui, vbox, sg, "",
+      CONFUI_WIDGET_AO_EXAMPLE_4, -1);
+
   confuiMakeItemSwitch (confui, vbox, sg, _("Auto Organise"),
       CONFUI_WIDGET_AUTO_ORGANIZE, OPT_G_AUTOORGANIZE,
       bdjoptGetNum (OPT_G_AUTOORGANIZE));
+
   confuiMakeItemSwitch (confui, vbox, sg, _("Remove Spaces"),
       CONFUI_WIDGET_AO_CHG_SPACE, OPT_G_AO_CHANGESPACE,
       bdjoptGetNum (OPT_G_AO_CHANGESPACE));
@@ -980,6 +999,10 @@ confuiActivate (GApplication *app, gpointer userdata)
       "bdj4_icon", ".png", PATHBLD_MP_IMGDIR);
   osuiSetIcon (imgbuff);
 
+  confuiUpdateMobmqQrcode (confui);
+  confuiUpdateRemctrlQrcode (confui);
+  confuiUpdateOrgExamples (confui, bdjoptGetStr (OPT_G_AO_PATHFMT));
+
   logProcEnd (LOG_PROC, "confuiActivate", "");
 }
 
@@ -1023,9 +1046,6 @@ static bool
 confuiHandshakeCallback (void *udata, programstate_t programState)
 {
   configui_t   *confui = udata;
-
-  confuiUpdateMobmqQrcode (confui);
-  confuiUpdateRemctrlQrcode (confui);
 
   progstateLogTime (confui->progstate, "time-to-start-gui");
   return true;
@@ -1581,6 +1601,26 @@ confuiMakeItemSwitch (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg,
   return widget;
 }
 
+static GtkWidget *
+confuiMakeItemLabelDisp (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg,
+    char *txt, int widx, int bdjoptIdx)
+{
+  GtkWidget   *hbox;
+  GtkWidget   *widget;
+
+
+  confui->uiitem [widx].basetype = CONFUI_NONE;
+  confui->uiitem [widx].outtype = CONFUI_OUT_NONE;
+  hbox = confuiMakeItemLabel (vbox, sg, txt);
+  widget = uiutilsCreateLabel ("");
+  gtk_widget_set_margin_start (widget, 8);
+  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+  confui->uiitem [widx].u.widget = widget;
+  confui->uiitem [widx].bdjoptIdx = bdjoptIdx;
+  return widget;
+}
+
 static void
 confuiMakeItemCheckButton (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg,
     const char *txt, int widx, int bdjoptIdx, int value)
@@ -1604,7 +1644,11 @@ confuiMakeItemLabel (GtkWidget *vbox, GtkSizeGroup *sg, char *txt)
   GtkWidget   *widget;
 
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
-  widget = uiutilsCreateColonLabel (txt);
+  if (*txt == '\0') {
+    widget = uiutilsCreateLabel (txt);
+  } else {
+    widget = uiutilsCreateColonLabel (txt);
+  }
   gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
   gtk_size_group_add_widget (sg, widget);
@@ -1793,12 +1837,16 @@ confuiOrgPathSelect (GtkTreeView *tv, GtkTreePath *path,
   configui_t        *confui = udata;
   uiutilsdropdown_t *dd = NULL;
   ssize_t           idx;
+  char              *sval;
 
   logProcBegin (LOG_PROC, "confuiOrgPathSelect");
 
   dd = &confui->uiitem [CONFUI_COMBOBOX_AO_PATHFMT].u.dropdown;
   idx = uiutilsDropDownSelectionGet (dd, path);
   confui->orgpathidx = idx;
+  sval = slistGetDataByIdx (confui->uiitem [CONFUI_COMBOBOX_AO_PATHFMT].list,
+      confui->orgpathidx);
+  confuiUpdateOrgExamples (confui, sval);
   logProcEnd (LOG_PROC, "confuiOrgPathSelect", "");
 }
 
@@ -2004,4 +2052,49 @@ confuiMakeQRCodeFile (configui_t *confui, char *title, char *uri)
   free (data);
   free (ndata);
   return qruri;
+}
+
+static void
+confuiUpdateOrgExamples (configui_t *confui, char *pathfmt)
+{
+  char      *data;
+  org_t     *org;
+  GtkWidget *widget;
+
+  org = orgAlloc (pathfmt);
+
+  data = "FILE\n..none\nDISCNUMBER\n..1\nTRACKNUMBER\n..1\nALBUMARTIST\n..Prandi Sound Orchestra\nARTIST\n..Prandi Sound Orchestra\nDANCE\n..Foxtrot\nGENRE\n..Ballroom Dance\nTITLE\n..Don't Be That Way\n";
+  widget = confui->uiitem [CONFUI_WIDGET_AO_EXAMPLE_1].u.widget;
+  confuiUpdateOrgExample (confui, org, data, widget);
+
+  data = "FILE\n..none\nDISCNUMBER\n..2\nTRACKNUMBER\n..17\nALBUMARTIST\n..Dancehouse\nARTIST\n..John Painter Feat. Shannon Lea Smith\nDANCE\n..Quickstep\nGENRE\n..Ballroom Dance\nTITLE\n..You Want a Piece of Me\n";
+  widget = confui->uiitem [CONFUI_WIDGET_AO_EXAMPLE_2].u.widget;
+  confuiUpdateOrgExample (confui, org, data, widget);
+
+  data = "FILE\n..none\nDISCNUMBER\n..1\nTRACKNUMBER\n..2\nALBUMARTIST\n..Casa Musica\nARTIST\n..Boris Myagkov Big Band\nDANCE\n..Waltz\nTITLE\n..If You Don't Know Me By Now\nALBUM\n..The Music of the German Open Championships 2014\nGENRE\n..Ballroom Dance\n";
+  widget = confui->uiitem [CONFUI_WIDGET_AO_EXAMPLE_3].u.widget;
+  confuiUpdateOrgExample (confui, org, data, widget);
+
+  data = "FILE\n..none\nDISCNUMBER\n..1\nTRACKNUMBER\n..3\nCOMPOSER\n..Beethoven\nCONDUCTOR\n..Herbert von Karajan\nALBUMARTIST\n..Berliner Philharmonker\nnDANCE\n..\nTITLE\n..Symphonie No.5 C-minor, Op.67: I Allegro con brio\nALBUM\n..Beethoven Symphonien 5 & 6\nGENRE\n..Classical\n";
+  widget = confui->uiitem [CONFUI_WIDGET_AO_EXAMPLE_4].u.widget;
+  confuiUpdateOrgExample (confui, org, data, widget);
+
+  orgFree (org);
+}
+
+static void
+confuiUpdateOrgExample (configui_t *config, org_t *org, char *data, GtkWidget *widget)
+{
+  song_t    *song;
+  char      *tdata;
+  char      *disp;
+
+  tdata = strdup (data);
+  song = songAlloc ();
+  songParse (song, tdata, 0);
+  disp = orgMakeSongPath (org, song);
+  gtk_label_set_text (GTK_LABEL (widget), disp);
+  songFree (song);
+  free (disp);
+  free (tdata);
 }

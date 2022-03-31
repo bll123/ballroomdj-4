@@ -115,6 +115,7 @@ orgMakeSongPath (org_t *org, song_t *song)
 {
   slistidx_t      iteridx;
   char            *p;
+  char            *tp;
   char            tbuff [MAXPATHLEN];
   char            gbuff [MAXPATHLEN];
   char            tmp [40];
@@ -166,6 +167,28 @@ orgMakeSongPath (org_t *org, song_t *song)
         }
       } else {
         p = songGetStr (song, orginfo->tagkey);
+      }
+
+      if (orginfo->orgkey == ORG_ALBUMARTIST) {
+        /* if the albumartist is empty, replace it with the artist */
+        if (p == NULL || *p == '\0') {
+          p = songGetStr (song, TAG_ARTIST);
+        }
+      }
+
+      if (orginfo->orgkey == ORG_COMPOSER) {
+        /* if the composer is the same as the albumartist or artist */
+        /* leave it empty */
+        if (p != NULL && *p) {
+          tp = songGetStr (song, TAG_ALBUMARTIST);
+          if (tp != NULL && strcmp (p, tp) == 0) {
+            p = "";
+          }
+          tp = songGetStr (song, TAG_ARTIST);
+          if (tp != NULL && strcmp (p, tp) == 0) {
+            p = "";
+          }
+        }
       }
 
       if (p != NULL && *p) {
