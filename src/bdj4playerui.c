@@ -54,6 +54,7 @@ typedef struct {
   GtkApplication  *app;
   GtkWidget       *window;
   GtkWidget       *vbox;
+  GtkWidget       *clock;
   GtkWidget       *notebook;
   GtkWidget       *musicqImage [MUSICQ_MAX];
   GtkWidget       *setPlaybackButton;
@@ -92,6 +93,7 @@ static bool     pluiClosingCallback (void *udata, programstate_t programState);
 static int      pluiCreateGui (playerui_t *plui, int argc, char *argv []);
 static void     pluiActivate (GApplication *app, gpointer userdata);
 gboolean        pluiMainLoop  (void *tplui);
+gboolean        pluiClock (void *tplui);
 static int      pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
                     bdjmsgmsg_t msg, char *args, void *udata);
 static gboolean pluiCloseWin (GtkWidget *window, GdkEvent *event, gpointer userdata);
@@ -123,6 +125,7 @@ main (int argc, char *argv[])
   char            tbuff [MAXPATHLEN];
 
 
+  plui.clock = NULL;
   plui.notebook = NULL;
   plui.progstate = progstateInit ("playerui");
   progstateSetCallback (plui.progstate, STATE_LISTENING,
@@ -201,6 +204,7 @@ main (int argc, char *argv[])
   pluiSetSwitchQueue (&plui);
 
   g_timeout_add (UI_MAIN_LOOP_TIMER, pluiMainLoop, &plui);
+  g_timeout_add (200, pluiClock, &plui);
 
   status = pluiCreateGui (&plui, 0, NULL);
 
@@ -360,10 +364,15 @@ pluiActivate (GApplication *app, gpointer userdata)
   gtk_widget_set_margin_end (plui->vbox, 4);
 
   /* menu */
+  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+  gtk_widget_set_hexpand (hbox, TRUE);
+  gtk_box_pack_start (GTK_BOX (plui->vbox), hbox, FALSE, FALSE, 0);
+
   menubar = gtk_menu_bar_new ();
-  gtk_widget_set_hexpand (menubar, TRUE);
-  gtk_box_pack_start (GTK_BOX (plui->vbox), menubar,
-      FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (hbox), menubar, FALSE, FALSE, 0);
+
+  plui->clock = uiutilsCreateLabel ("");
+  gtk_box_pack_end (GTK_BOX (hbox), plui->clock, FALSE, FALSE, 0);
 
   menuitem = gtk_menu_item_new_with_label (_("Options"));
   gtk_menu_shell_append (GTK_MENU_SHELL (menubar), menuitem);
@@ -510,6 +519,23 @@ pluiMainLoop (void *tplui)
   }
   return cont;
 }
+
+gboolean
+pluiClock (void *tplui)
+{
+  playerui_t  *plui = tplui;
+  char        tbuff [100];
+
+  if (plui->clock != NULL) {
+    gtk_label_set_text (GTK_LABEL (plui->clock),
+        tmutilDisp (tbuff, sizeof (tbuff)));
+  }
+  if (gKillReceived) {
+    return FALSE;
+  }
+  return TRUE;
+}
+
 
 static bool
 pluiListeningCallback (void *udata, programstate_t programState)

@@ -124,7 +124,29 @@ tmutilDstamp (char *buff, size_t max)
 #else
   tp = localtime (&s);
 #endif
-  strftime (buff, max, "%Y-%m-%d", tp);
+  strftime (buff, max, "%F", tp);
+  return buff;
+}
+
+char *
+tmutilDisp (char *buff, size_t max)
+{
+  struct timeval    curr;
+  struct tm         *tp;
+  time_t            s;
+#if _lib_localtime_r
+  struct tm         t;
+#endif
+
+  gettimeofday (&curr, NULL);
+  s = curr.tv_sec;
+#if _lib_localtime_r
+  localtime_r (&s, &t);
+  tp = &t;
+#else
+  tp = localtime (&s);
+#endif
+  strftime (buff, max, "%a %F %r", tp);
   return buff;
 }
 
