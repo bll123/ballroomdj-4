@@ -35,7 +35,7 @@ typedef struct {
 dance_t       *danceAlloc (char *);
 void          danceFree (dance_t *);
 void          danceStartIterator (dance_t *, ilistidx_t *idx);
-ilistidx_t    danceIterateKey (dance_t *, ilistidx_t *idx);
+ilistidx_t    danceIterate (dance_t *, ilistidx_t *idx);
 ssize_t       danceGetCount (dance_t *);
 char *        danceGetStr (dance_t *, ilistidx_t dkey, ilistidx_t idx);
 ssize_t       danceGetNum (dance_t *, ilistidx_t dkey, ilistidx_t idx);

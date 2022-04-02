@@ -84,7 +84,7 @@ danceStartIterator (dance_t *dances, ilistidx_t *iteridx)
 }
 
 ilistidx_t
-danceIterateKey (dance_t *dances, ilistidx_t *iteridx)
+danceIterate (dance_t *dances, ilistidx_t *iteridx)
 {
   ilistidx_t     ikey;
 

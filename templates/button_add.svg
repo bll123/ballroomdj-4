@@ -8,7 +8,7 @@
    inkscape:export-xdpi="4.8292031"
    inkscape:export-ydpi="4.8292031"
    inkscape:version="1.1.1 (3bf5ae0d25, 2021-09-20)"
-   sodipodi:docname="button_remove.svg"
+   sodipodi:docname="button_add.svg"
    sodipodi:version="0.32"
    id="svg2"
    version="1.1"
@@ -138,26 +138,17 @@
      inkscape:groupmode="layer"
      inkscape:label="Layer 1"
      transform="translate(-5.4503245,-439.18771)">
-    <g
-       id="g845"
-       transform="matrix(2.3215461,0,0,2.179734,-100.52843,-904.08561)">
-      <ellipse
-         style="opacity:0.996;fill:#ad0808;fill-opacity:1;stroke:#5c515f;stroke-width:0;stroke-linecap:round"
-         id="path1019"
-         cx="71.968056"
-         cy="761.83807"
-         rx="3.9117067"
-         ry="4.0117188" />
-      <g
-         aria-label="❌"
-         style="font-style:normal;font-weight:normal;font-size:2.99785px;line-height:0%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.249821px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-         id="text4700"
-         transform="matrix(0.42802627,0,0,0.43896981,68.438158,737.36413)">
-        <path
-           d="M 11.569501,50.753082 13.24692,52.430501 9.9243397,55.753082 13.24692,59.075663 11.569501,60.753082 8.2469204,57.430501 4.9243398,60.753082 3.2469204,59.075663 6.569501,55.753082 3.2469204,52.430501 4.9243398,50.753082 8.2469204,54.075663 Z"
-           style="font-size:16.129px;line-height:1.25;fill:#ffffff;fill-opacity:1;stroke-width:0.249821px"
-           id="path10" />
-      </g>
-    </g>
+    <text
+       xml:space="preserve"
+       style="font-size:27.6475px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffa600;fill-opacity:1;stroke-width:1.28695"
+       x="55.123585"
+       y="763.39777"
+       id="text3385"
+       transform="scale(0.99763679,1.0023688)"><tspan
+         sodipodi:role="line"
+         id="tspan3383"
+         style="font-size:27.6475px;fill:#ffa600;fill-opacity:1;stroke-width:1.28695"
+         x="55.123585"
+         y="763.39777">+</tspan></text>
   </g>
 </svg>

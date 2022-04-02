@@ -264,6 +264,23 @@ uiutilsCreateCheckButton (const char *txt, int value)
   return widget;
 }
 
+GtkWidget *
+uiutilsCreateNotebook (void)
+{
+  GtkWidget   *widget;
+
+  widget = gtk_notebook_new ();
+  assert (widget != NULL);
+  gtk_notebook_set_show_border (GTK_NOTEBOOK (widget), TRUE);
+  gtk_widget_set_margin_top (widget, 4);
+  gtk_widget_set_hexpand (widget, TRUE);
+  gtk_widget_set_vexpand (widget, FALSE);
+  gtk_notebook_set_tab_pos (GTK_NOTEBOOK (widget), GTK_POS_LEFT);
+  uiutilsSetCss (widget,
+      "notebook tab:checked { background-color: #111111; }");
+  return widget;
+}
+
 void
 uiutilsDropDownInit (uiutilsdropdown_t *dropdown)
 {

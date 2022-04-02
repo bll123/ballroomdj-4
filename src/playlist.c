@@ -222,7 +222,7 @@ playlistCreate (char *plfname, pltype_t type, char *ofname)
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
   danceStartIterator (dances, &iteridx);
-  while ((didx = danceIterateKey (dances, &iteridx)) >= 0) {
+  while ((didx = danceIterate (dances, &iteridx)) >= 0) {
     ilistSetNum (pl->pldances, didx, PLDANCE_BPM_HIGH, LIST_VALUE_INVALID);
     ilistSetNum (pl->pldances, didx, PLDANCE_BPM_LOW, LIST_VALUE_INVALID);
     ilistSetNum (pl->pldances, didx, PLDANCE_COUNT, 0);

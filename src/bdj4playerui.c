@@ -410,16 +410,9 @@ pluiActivate (GApplication *app, gpointer userdata)
   /* there doesn't seem to be any other good method to identify which */
   /* notebook page is which.  The code is dependent on musicq_a being */
   /* in tab 0, */
-  plui->notebook = gtk_notebook_new ();
-  assert (plui->notebook != NULL);
-  gtk_notebook_set_show_border (GTK_NOTEBOOK (plui->notebook), TRUE);
-  gtk_widget_set_margin_top (plui->notebook, 4);
-  gtk_widget_set_hexpand (plui->notebook, TRUE);
-  gtk_widget_set_vexpand (plui->notebook, FALSE);
-  uiutilsSetCss (plui->notebook,
-      "notebook tab:checked { background-color: #111111; }");
-  gtk_box_pack_start (GTK_BOX (plui->vbox), plui->notebook,
-      TRUE, TRUE, 0);
+  plui->notebook = uiutilsCreateNotebook ();
+  gtk_notebook_set_tab_pos (GTK_NOTEBOOK (plui->notebook), GTK_POS_TOP);
+  gtk_box_pack_start (GTK_BOX (plui->vbox), plui->notebook, TRUE, TRUE, 0);
 
   g_signal_connect (plui->notebook, "switch-page", G_CALLBACK (pluiSwitchPage), plui);
 
@@ -458,9 +451,9 @@ pluiActivate (GApplication *app, gpointer userdata)
   gtk_notebook_append_page (GTK_NOTEBOOK (plui->notebook), widget, hbox);
   gtk_widget_show_all (hbox);
 
-  /* song selection tab */
+  /* request tab */
   widget = uisongselActivate (plui->uisongsel, plui->window);
-  tabLabel = gtk_label_new ("Song Selection");
+  tabLabel = gtk_label_new ("Request");
   gtk_notebook_append_page (GTK_NOTEBOOK (plui->notebook), widget, tabLabel);
 
   x = nlistGetNum (plui->options, PLUI_SIZE_X);
