@@ -2,7 +2,7 @@
 #define INC_RATING_H
 
 #include "datafile.h"
-#include "nlist.h"
+#include "ilist.h"
 
 typedef enum {
   RATING_RATING,
@@ -12,7 +12,7 @@ typedef enum {
 
 typedef struct {
   datafile_t        *df;
-  nlist_t           *rating;
+  ilist_t           *rating;
   int               maxWidth;
 } rating_t;
 
@@ -22,8 +22,10 @@ rating_t    *ratingAlloc (char *);
 void        ratingFree (rating_t *rating);
 ssize_t     ratingGetCount (rating_t *rating);
 int         ratingGetMaxWidth (rating_t *rating);
-char        * ratingGetRating (rating_t *rating, nlistidx_t idx);
-ssize_t     ratingGetWeight (rating_t *rating, nlistidx_t idx);
+char        * ratingGetRating (rating_t *rating, ilistidx_t idx);
+ssize_t     ratingGetWeight (rating_t *rating, ilistidx_t idx);
+void        ratingStartIterator (rating_t *rating, ilistidx_t *iteridx);
+ilistidx_t  ratingIterate (rating_t *rating, ilistidx_t *iteridx);
 void        ratingConv (datafileconv_t *conv);
 
 #endif /* INC_RATING_H */

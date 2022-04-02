@@ -30,8 +30,6 @@
 
 enum {
   MUSICQ_COL_ELLIPSIZE,
-//  MUSICQ_COL_SIZE,
-//  MUSICQ_COL_SIZE_POINTS,
   MUSICQ_COL_FONT,
   MUSICQ_COL_IDX,
   MUSICQ_COL_UNIQUE_IDX,
@@ -248,30 +246,31 @@ uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
 
   renderer = gtk_cell_renderer_text_new ();
   gtk_cell_renderer_set_alignment (renderer, 1.0, 0.5);
-  column = gtk_tree_view_column_new_with_attributes ("",
-      renderer, "text", MUSICQ_COL_DISP_IDX,
+  column = gtk_tree_view_column_new_with_attributes ("", renderer,
+      "text", MUSICQ_COL_DISP_IDX,
       "font", MUSICQ_COL_FONT,
       NULL);
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
   gtk_tree_view_append_column (GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree), column);
 
   renderer = gtk_cell_renderer_pixbuf_new ();
-  column = gtk_tree_view_column_new_with_attributes ("",
-      renderer, "pixbuf", MUSICQ_COL_PAUSEIND, NULL);
+  column = gtk_tree_view_column_new_with_attributes ("", renderer,
+      "pixbuf", MUSICQ_COL_PAUSEIND,
+      NULL);
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
   gtk_tree_view_append_column (GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree), column);
 
   renderer = gtk_cell_renderer_text_new ();
-  column = gtk_tree_view_column_new_with_attributes ("",
-      renderer, "text", MUSICQ_COL_DANCE,
+  column = gtk_tree_view_column_new_with_attributes ("", renderer,
+      "text", MUSICQ_COL_DANCE,
       "font", MUSICQ_COL_FONT,
       NULL);
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
   gtk_tree_view_append_column (GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree), column);
 
   renderer = gtk_cell_renderer_text_new ();
-  column = gtk_tree_view_column_new_with_attributes ("",
-      renderer, "text", MUSICQ_COL_TITLE,
+  column = gtk_tree_view_column_new_with_attributes ("", renderer,
+      "text", MUSICQ_COL_TITLE,
       "font", MUSICQ_COL_FONT,
       "ellipsize", MUSICQ_COL_ELLIPSIZE,
       NULL);
@@ -281,8 +280,8 @@ uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
   gtk_tree_view_append_column (GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree), column);
 
   renderer = gtk_cell_renderer_text_new ();
-  column = gtk_tree_view_column_new_with_attributes ("",
-      renderer, "text", MUSICQ_COL_ARTIST,
+  column = gtk_tree_view_column_new_with_attributes ("", renderer,
+      "text", MUSICQ_COL_ARTIST,
       "font", MUSICQ_COL_FONT,
       "ellipsize", MUSICQ_COL_ELLIPSIZE,
       NULL);

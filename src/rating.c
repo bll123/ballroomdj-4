@@ -94,6 +94,18 @@ ratingGetWeight (rating_t *rating, ilistidx_t ikey)
 }
 
 void
+ratingStartIterator (rating_t *rating, ilistidx_t *iteridx)
+{
+  ilistStartIterator (rating->rating, iteridx);
+}
+
+ilistidx_t
+ratingIterate (rating_t *rating, ilistidx_t *iteridx)
+{
+  return ilistIterateKey (rating->rating, iteridx);
+}
+
+void
 ratingConv (datafileconv_t *conv)
 {
   rating_t    *rating;

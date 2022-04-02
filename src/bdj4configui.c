@@ -19,6 +19,7 @@
 #include "bdjopt.h"
 #include "bdjstring.h"
 #include "bdjvars.h"
+#include "bdjvarsdf.h"
 #include "bdjvarsdfload.h"
 #include "conn.h"
 #include "datafile.h"
@@ -36,6 +37,7 @@
 #include "pathutil.h"
 #include "procutil.h"
 #include "progstate.h"
+#include "rating.h"
 #include "slist.h"
 #include "sock.h"
 #include "sockh.h"
@@ -45,7 +47,6 @@
 #include "uiutils.h"
 #include "volume.h"
 #include "webclient.h"
-
 
 /* base type */
 typedef enum {
@@ -162,6 +163,27 @@ typedef struct {
   nlist_t             *sblookuplist;
 } confuiitem_t;
 
+typedef enum {
+  CONFUI_ID_GENRES,
+  CONFUI_ID_RATINGS,
+  CONFUI_ID_LEVELS,
+  CONFUI_ID_STATUS,
+  CONFUI_ID_MAX,
+  CONFUI_ID_NONE,
+} confuiident_t;
+
+typedef struct {
+  GtkWidget       *tree;
+} confuitable_t;
+
+enum {
+  CONFUI_RATING_COL_R_EDITABLE,
+  CONFUI_RATING_COL_W_EDITABLE,
+  CONFUI_RATING_COL_RATING,
+  CONFUI_RATING_COL_WEIGHT,
+  CONFUI_RATING_COL_MAX,
+};
+
 typedef struct {
   progstate_t       *progstate;
   char              *locknm;
@@ -176,13 +198,18 @@ typedef struct {
   int               localeidx;
   int               audiosinkidx;
   int               orgpathidx;
+  int               tabcount;
+  confuiident_t     tablecurr;
+  int               *tableidents;
   volume_t          *volume;
-  GtkWidget         *fadetypeImage;
   /* gtk stuff */
   GtkApplication    *app;
   GtkWidget         *window;
   GtkWidget         *vbox;
   GtkWidget         *notebook;
+  GtkWidget         *tablevbox;
+  confuitable_t     tables [CONFUI_ID_MAX];
+  GtkWidget         *fadetypeImage;
   /* options */
   datafile_t        *optiondf;
   nlist_t           *options;
@@ -222,7 +249,7 @@ static void confuiSelectStartup (GtkButton *b, gpointer udata);
 static void confuiSelectShutdown (GtkButton *b, gpointer udata);
 static void confuiSelectFileDialog (configui_t *confui, int widx);
 
-static GtkWidget * confuiMakeNotebookTab (GtkWidget *notebook, char *txt);
+static GtkWidget * confuiMakeNotebookTab (configui_t *confui, char *txt, int);
 /* makeitementry returns the hbox */
 static GtkWidget * confuiMakeItemEntry (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, char *txt, int widx, int bdjoptIdx, char *disp);
 static void confuiMakeItemEntryChooser (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, char *txt, int widx, int bdjoptIdx, char *disp, void *dialogFunc);
@@ -242,6 +269,7 @@ static GtkWidget *confuiMakeItemSwitch (configui_t *confui, GtkWidget *vbox, Gtk
 static GtkWidget *confuiMakeItemLabelDisp (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, char *txt, int widx, int bdjoptIdx);
 static void confuiMakeItemCheckButton (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, const char *txt, int widx, int bdjoptIdx, int value);
 static GtkWidget * confuiMakeItemLabel (GtkWidget *vbox, GtkSizeGroup *sg, char *txt);
+static GtkWidget * confuiMakeItemTable (configui_t *confui, GtkWidget *vbox, confuiident_t id);
 
 static nlist_t  * confuiGetThemeList (void);
 static nlist_t  * confuiGetThemeNames (nlist_t *themelist, slist_t *filelist);
@@ -261,6 +289,13 @@ static void     confuiRemctrlPortChg (GtkSpinButton *sb, gpointer udata);
 static char *   confuiMakeQRCodeFile (configui_t *confui, char *title, char *uri);
 static void     confuiUpdateOrgExamples (configui_t *confui, char *pathfmt);
 static void     confuiUpdateOrgExample (configui_t *config, org_t *org, char *data, GtkWidget *widget);
+
+/* table editing */
+static void   confuiTableMoveUp (GtkButton *b, gpointer udata);
+static void   confuiTableMoveDown (GtkButton *b, gpointer udata);
+static void   confuiTableRemove (GtkButton *b, gpointer udata);
+static void   confuiSwitchTable (GtkNotebook *nb, GtkWidget *page, guint pagenum, gpointer udata);
+static void   confuiCreateRatingsTable (configui_t *confui);
 
 
 static int gKillReceived = 0;
@@ -293,6 +328,12 @@ main (int argc, char *argv[])
   confui.mqthemeidx = 0;
   confui.rchtmlidx = 0;
   confui.localeidx = 0;
+  confui.tabcount = 0;
+  confui.tablecurr = CONFUI_ID_NONE;
+  confui.tableidents = NULL;
+  for (int i = 0; i < CONFUI_ID_MAX; ++i) {
+    confui.tables [i].tree = NULL;
+  }
 
   for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
     confui.processes [i] = NULL;
@@ -522,6 +563,10 @@ confuiStoppingCallback (void *udata, programstate_t programState)
     }
   }
 
+  if (confui->tablevbox != NULL) {
+    g_object_unref (confui->tablevbox);
+  }
+
   gdone = 1;
   connDisconnectAll (confui->conn);
   logProcEnd (LOG_PROC, "confuiStoppingCallback", "");
@@ -568,6 +613,9 @@ confuiClosingCallback (void *udata, programstate_t programState)
     nlistFree (confui->options);
   }
   datafileFree (confui->optiondf);
+  if (confui->tableidents != NULL) {
+    free (confui->tableidents);
+  }
 
   sockhCloseServer (confui->sockserver);
   bdj4shutdown (ROUTE_CONFIGUI);
@@ -662,7 +710,7 @@ confuiActivate (GApplication *app, gpointer userdata)
       TRUE, TRUE, 0);
 
   /* general options */
-  vbox = confuiMakeNotebookTab (confui->notebook, _("General Options"));
+  vbox = confuiMakeNotebookTab (confui, _("General Options"), CONFUI_ID_NONE);
   sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
   strlcpy (tbuff, bdjoptGetStr (OPT_M_DIR_MUSIC), sizeof (tbuff));
@@ -712,7 +760,7 @@ confuiActivate (GApplication *app, gpointer userdata)
       uiutilsEntryValidateFile, confui);
 
   /* player options */
-  vbox = confuiMakeNotebookTab (confui->notebook, _("Player Options"));
+  vbox = confuiMakeNotebookTab (confui, _("Player Options"), CONFUI_ID_NONE);
   sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
   confuiMakeItemSpinboxText (confui, vbox, sg, _("Player"),
@@ -768,7 +816,7 @@ confuiActivate (GApplication *app, gpointer userdata)
       bdjoptGetStr (OPT_P_QUEUE_NAME_B));
 
   /* marquee options */
-  vbox = confuiMakeNotebookTab (confui->notebook, _("Marquee Options"));
+  vbox = confuiMakeNotebookTab (confui, _("Marquee Options"), CONFUI_ID_NONE);
   sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
   confuiMakeItemSpinboxText (confui, vbox, sg, _("Marquee Theme"),
@@ -791,7 +839,7 @@ confuiActivate (GApplication *app, gpointer userdata)
       bdjoptGetNum (OPT_P_HIDE_MARQUEE_ON_START));
 
   /* user infterface */
-  vbox = confuiMakeNotebookTab (confui->notebook, _("User Interface"));
+  vbox = confuiMakeNotebookTab (confui, _("User Interface"), CONFUI_ID_NONE);
   sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
   confuiMakeItemSpinboxText (confui, vbox, sg, _("Theme"),
@@ -807,10 +855,10 @@ confuiActivate (GApplication *app, gpointer userdata)
       CONFUI_WIDGET_UI_ACCENT_COLOR, OPT_P_UI_ACCENT_COL,
       bdjoptGetStr (OPT_P_UI_ACCENT_COL));
 
-  vbox = confuiMakeNotebookTab (confui->notebook, _("Display Settings"));
+  vbox = confuiMakeNotebookTab (confui, _("Display Settings"), CONFUI_ID_NONE);
   sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
-  vbox = confuiMakeNotebookTab (confui->notebook, _("Organisation"));
+  vbox = confuiMakeNotebookTab (confui, _("Organisation"), CONFUI_ID_NONE);
   sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
   confuiMakeItemCombobox (confui, vbox, sg, _("Organisation Path"),
@@ -833,23 +881,56 @@ confuiActivate (GApplication *app, gpointer userdata)
       CONFUI_WIDGET_AO_CHG_SPACE, OPT_G_AO_CHANGESPACE,
       bdjoptGetNum (OPT_G_AO_CHANGESPACE));
 
-  vbox = confuiMakeNotebookTab (confui->notebook, _("Edit Dances"));
+  vbox = confuiMakeNotebookTab (confui, _("Edit Dances"), CONFUI_ID_NONE);
   sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
-  vbox = confuiMakeNotebookTab (confui->notebook, _("Edit Genres"));
+  /* edit ratings */
+  vbox = confuiMakeNotebookTab (confui, _("Edit Ratings"), CONFUI_ID_RATINGS);
   sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+  g_signal_connect (confui->notebook, "switch-page",
+      G_CALLBACK (confuiSwitchTable), confui);
 
-  vbox = confuiMakeNotebookTab (confui->notebook, _("Edit Levels"));
-  sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+  widget = uiutilsCreateLabel (_("Ratings must be ordered from the worst"));
+  gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
+  gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
 
-  vbox = confuiMakeNotebookTab (confui->notebook, _("Edit Ratings"));
-  sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+  widget = uiutilsCreateLabel (_("at the top the best at the bottom."));
+  gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
+  gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
 
-  vbox = confuiMakeNotebookTab (confui->notebook, _("Edit Status"));
+  confuiMakeItemTable (confui, vbox, CONFUI_ID_RATINGS);
+  confuiCreateRatingsTable (confui);
+
+  /* edit status */
+  vbox = confuiMakeNotebookTab (confui, _("Edit Status"), CONFUI_ID_STATUS);
   sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+  g_signal_connect (confui->notebook, "switch-page",
+      G_CALLBACK (confuiSwitchTable), confui);
+
+  confuiMakeItemTable (confui, vbox, CONFUI_ID_STATUS);
+
+  /* edit levels */
+  vbox = confuiMakeNotebookTab (confui, _("Edit Levels"), CONFUI_ID_LEVELS);
+  sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+  g_signal_connect (confui->notebook, "switch-page",
+      G_CALLBACK (confuiSwitchTable), confui);
+
+  widget = uiutilsCreateLabel (_("Order from easiest to most advanced."));
+  gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
+  gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
+
+  confuiMakeItemTable (confui, vbox, CONFUI_ID_LEVELS);
+
+  /* edit genres */
+  vbox = confuiMakeNotebookTab (confui, _("Edit Genres"), CONFUI_ID_GENRES);
+  sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+  g_signal_connect (confui->notebook, "switch-page",
+      G_CALLBACK (confuiSwitchTable), confui);
+
+  confuiMakeItemTable (confui, vbox, CONFUI_ID_GENRES);
 
   /* mobile remote control */
-  vbox = confuiMakeNotebookTab (confui->notebook, _("Mobile Remote Control"));
+  vbox = confuiMakeNotebookTab (confui, _("Mobile Remote Control"), CONFUI_ID_NONE);
   sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
   widget = confuiMakeItemSwitch (confui, vbox, sg, _("Enable Remote Control"),
@@ -878,7 +959,7 @@ confuiActivate (GApplication *app, gpointer userdata)
       CONFUI_WIDGET_RC_QR_CODE, "");
 
   /* mobile marquee */
-  vbox = confuiMakeNotebookTab (confui->notebook, _("Mobile Marquee"));
+  vbox = confuiMakeNotebookTab (confui, _("Mobile Marquee"), CONFUI_ID_NONE);
   sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
   widget = confuiMakeItemSpinboxText (confui, vbox, sg, _("Mobile Marquee"),
@@ -906,7 +987,7 @@ confuiActivate (GApplication *app, gpointer userdata)
   confuiMakeItemLink (confui, vbox, sg, _("QR Code"),
       CONFUI_WIDGET_MMQ_QR_CODE, "");
 
-  vbox = confuiMakeNotebookTab (confui->notebook, _("Debug Options"));
+  vbox = confuiMakeNotebookTab (confui, _("Debug Options"), CONFUI_ID_NONE);
   sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
   val = bdjoptGetNum (OPT_G_DEBUGLVL);
@@ -1334,7 +1415,7 @@ confuiSelectFileDialog (configui_t *confui, int widx)
 }
 
 static GtkWidget *
-confuiMakeNotebookTab (GtkWidget *notebook, char *txt)
+confuiMakeNotebookTab (configui_t *confui, char *txt, int id)
 {
   GtkWidget   *tablabel;
   GtkWidget   *vbox;
@@ -1348,7 +1429,12 @@ confuiMakeNotebookTab (GtkWidget *notebook, char *txt)
   gtk_widget_set_margin_bottom (vbox, 4);
   gtk_widget_set_margin_start (vbox, 4);
   gtk_widget_set_margin_end (vbox, 4);
-  gtk_notebook_append_page (GTK_NOTEBOOK (notebook), vbox, tablabel);
+  gtk_notebook_append_page (GTK_NOTEBOOK (confui->notebook), vbox, tablabel);
+
+  confui->tableidents = realloc (confui->tableidents,
+      sizeof (int) * (confui->tabcount + 1));
+  confui->tableidents [confui->tabcount] = id;
+  ++confui->tabcount;
 
   return vbox;
 }
@@ -1653,6 +1739,59 @@ confuiMakeItemLabel (GtkWidget *vbox, GtkSizeGroup *sg, char *txt)
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
   gtk_size_group_add_widget (sg, widget);
   return hbox;
+}
+
+static GtkWidget *
+confuiMakeItemTable (configui_t *confui, GtkWidget *vbox, confuiident_t id)
+{
+  GtkWidget   *mhbox;
+  GtkWidget   *bvbox;
+  GtkWidget   *widget;
+  GtkWidget   *tree;
+  GtkTreeSelection  *sel;
+
+  mhbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+  assert (mhbox != NULL);
+  gtk_widget_set_margin_top (mhbox, 4);
+  gtk_widget_set_hexpand (mhbox, TRUE);
+  gtk_box_pack_start (GTK_BOX (vbox), mhbox, FALSE, FALSE, 0);
+
+  tree = gtk_tree_view_new ();
+  confui->tables [id].tree = tree;
+  gtk_widget_set_margin_top (tree, 2);
+  gtk_widget_set_margin_start (tree, 16);
+  gtk_tree_view_set_activate_on_single_click (GTK_TREE_VIEW (tree), TRUE);
+  gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (tree), TRUE);
+  sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (tree));
+  gtk_tree_selection_set_mode (sel, GTK_SELECTION_SINGLE);
+  gtk_widget_set_halign (tree, GTK_ALIGN_START);
+  gtk_widget_set_hexpand (tree, FALSE);
+  gtk_widget_set_vexpand (tree, FALSE);
+  gtk_box_pack_start (GTK_BOX (mhbox), tree, FALSE, FALSE, 0);
+
+  bvbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+  assert (bvbox != NULL);
+  gtk_widget_set_margin_top (bvbox, 2);
+  gtk_widget_set_margin_start (bvbox, 8);
+  gtk_widget_set_valign (bvbox, GTK_ALIGN_CENTER);
+  gtk_box_pack_start (GTK_BOX (mhbox), bvbox, FALSE, FALSE, 0);
+
+  widget = uiutilsCreateButton (_("Move Up"), "button_up", NULL, confui);
+  g_signal_connect (widget, "clicked",
+      G_CALLBACK (confuiTableMoveUp), confui);
+  gtk_box_pack_start (GTK_BOX (bvbox), widget, FALSE, FALSE, 0);
+
+  widget = uiutilsCreateButton (_("Move Down"), "button_down", NULL, confui);
+  g_signal_connect (widget, "clicked",
+      G_CALLBACK (confuiTableMoveDown), confui);
+  gtk_box_pack_start (GTK_BOX (bvbox), widget, FALSE, FALSE, 0);
+
+  widget = uiutilsCreateButton (_("Delete"), "button_remove", NULL, confui);
+  g_signal_connect (widget, "clicked",
+      G_CALLBACK (confuiTableRemove), confui);
+  gtk_box_pack_start (GTK_BOX (bvbox), widget, FALSE, FALSE, 0);
+
+  return vbox;
 }
 
 static nlist_t *
@@ -2098,3 +2237,103 @@ confuiUpdateOrgExample (configui_t *config, org_t *org, char *data, GtkWidget *w
   free (disp);
   free (tdata);
 }
+
+/* table editing */
+static void
+confuiTableMoveUp (GtkButton *b, gpointer udata)
+{
+}
+
+static void
+confuiTableMoveDown (GtkButton *b, gpointer udata)
+{
+}
+
+static void
+confuiTableRemove (GtkButton *b, gpointer udata)
+{
+}
+
+static void
+confuiSwitchTable (GtkNotebook *nb, GtkWidget *page, guint pagenum, gpointer udata)
+{
+  configui_t  *confui = udata;
+
+  logProcBegin (LOG_PROC, "confuiSwitchTable");
+  if (pagenum >= (unsigned int) confui->tabcount) {
+    return;
+  }
+
+  confui->tablecurr = confui->tableidents [pagenum];
+
+  logProcEnd (LOG_PROC, "confuiSwitchTable", "");
+}
+
+static void
+confuiCreateRatingsTable (configui_t *confui)
+{
+  GtkTreeIter       iter;
+  GtkListStore      *store = NULL;
+  GtkCellRenderer   *renderer = NULL;
+  GtkTreeViewColumn *column = NULL;
+  ilistidx_t        iteridx;
+  ilistidx_t        key;
+  rating_t          *ratings;
+  GtkWidget         *tree;
+  int               editable;
+
+  logProcBegin (LOG_PROC, "confuiCreateRatingsTable");
+
+  ratings = bdjvarsdfGet (BDJVDF_RATINGS);
+
+  store = gtk_list_store_new (CONFUI_RATING_COL_MAX,
+      G_TYPE_ULONG, G_TYPE_ULONG, G_TYPE_STRING, G_TYPE_ULONG);
+  assert (store != NULL);
+
+  ratingStartIterator (ratings, &iteridx);
+
+  editable = FALSE;
+  while ((key = ratingIterate (ratings, &iteridx)) >= 0) {
+    char    *ratingdisp;
+    ssize_t weight;
+
+    ratingdisp = ratingGetRating (ratings, key);
+    weight = ratingGetWeight (ratings, key);
+
+    gtk_list_store_append (store, &iter);
+    gtk_list_store_set (store, &iter,
+        CONFUI_RATING_COL_R_EDITABLE, editable,
+        CONFUI_RATING_COL_W_EDITABLE, TRUE,
+        CONFUI_RATING_COL_RATING, ratingdisp,
+        CONFUI_RATING_COL_WEIGHT, weight,
+        -1);
+    /* all cells other than the very first (Unrated) are editable */
+    editable = TRUE;
+  }
+
+  tree = confui->tables [CONFUI_ID_RATINGS].tree;
+
+  renderer = gtk_cell_renderer_text_new ();
+  column = gtk_tree_view_column_new_with_attributes ("", renderer,
+      "text", CONFUI_RATING_COL_RATING,
+      "editable", CONFUI_RATING_COL_R_EDITABLE,
+      NULL);
+  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
+  gtk_tree_view_column_set_title (column, _("Rating"));
+  gtk_tree_view_append_column (GTK_TREE_VIEW (tree), column);
+
+  renderer = gtk_cell_renderer_text_new ();
+  gtk_cell_renderer_set_alignment (renderer, 1.0, 0.5);
+  column = gtk_tree_view_column_new_with_attributes ("", renderer,
+      "text", CONFUI_RATING_COL_WEIGHT,
+      "editable", CONFUI_RATING_COL_W_EDITABLE,
+      NULL);
+  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
+  gtk_tree_view_column_set_title (column, _("Weight"));
+  gtk_tree_view_append_column (GTK_TREE_VIEW (tree), column);
+
+  gtk_tree_view_set_model (GTK_TREE_VIEW (tree), GTK_TREE_MODEL (store));
+  g_object_unref (store);
+  logProcEnd (LOG_PROC, "confuiCreateRatingsTable", "");
+}
+
