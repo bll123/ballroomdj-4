@@ -87,10 +87,22 @@ statusGetStatus (status_t *status, ilistidx_t idx)
   return ilistGetStr (status->status, idx, STATUS_STATUS);
 }
 
-bool
-statusPlayCheck (status_t *status, ilistidx_t ikey)
+ssize_t
+statusGetPlayFlag (status_t *status, ilistidx_t ikey)
 {
-  return (ilistGetNum (status->status, ikey, STATUS_PLAY_FLAG) == 1);
+  return ilistGetNum (status->status, ikey, STATUS_PLAY_FLAG);
+}
+
+void
+statusStartIterator (status_t *status, ilistidx_t *iteridx)
+{
+  ilistStartIterator (status->status, iteridx);
+}
+
+ilistidx_t
+statusIterate (status_t *status, ilistidx_t *iteridx)
+{
+  return ilistIterateKey (status->status, iteridx);
 }
 
 void

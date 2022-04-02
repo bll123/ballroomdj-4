@@ -71,6 +71,30 @@ genreFree (genre_t *genre)
   }
 }
 
+char *
+genreGetGenre (genre_t *genre, ilistidx_t ikey)
+{
+  return ilistGetStr (genre->genre, ikey, GENRE_GENRE);
+}
+
+ssize_t
+genreGetClassicalFlag (genre_t *genre, ilistidx_t ikey)
+{
+  return ilistGetNum (genre->genre, ikey, GENRE_CLASSICAL_FLAG);
+}
+
+void
+genreStartIterator (genre_t *genre, ilistidx_t *iteridx)
+{
+  ilistStartIterator (genre->genre, iteridx);
+}
+
+ilistidx_t
+genreIterate (genre_t *genre, ilistidx_t *iteridx)
+{
+  return ilistIterateKey (genre->genre, iteridx);
+}
+
 void
 genreConv (datafileconv_t *conv)
 {

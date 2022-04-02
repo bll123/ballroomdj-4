@@ -95,9 +95,27 @@ levelGetWeight (level_t *level, ilistidx_t ikey)
 }
 
 ssize_t
+levelGetDefault (level_t *level, ilistidx_t ikey)
+{
+  return ilistGetNum (level->level, ikey, LEVEL_DEFAULT_FLAG);
+}
+
+ssize_t
 levelGetMax (level_t *level)
 {
   return ilistGetCount (level->level) - 1;
+}
+
+void
+levelStartIterator (level_t *level, ilistidx_t *iteridx)
+{
+  ilistStartIterator (level->level, iteridx);
+}
+
+ilistidx_t
+levelIterate (level_t *level, ilistidx_t *iteridx)
+{
+  return ilistIterateKey (level->level, iteridx);
 }
 
 void

@@ -26,6 +26,8 @@
 #include "filedata.h"
 #include "fileop.h"
 #include "filemanip.h"
+#include "genre.h"
+#include "level.h"
 #include "localeutil.h"
 #include "lock.h"
 #include "log.h"
@@ -41,6 +43,7 @@
 #include "slist.h"
 #include "sock.h"
 #include "sockh.h"
+#include "status.h"
 #include "sysvars.h"
 #include "templateutil.h"
 #include "tmutil.h"
@@ -173,7 +176,9 @@ typedef enum {
 } confuiident_t;
 
 typedef struct {
-  GtkWidget       *tree;
+  GtkWidget *tree;
+  int       radiorow;
+  int       togglecol;
 } confuitable_t;
 
 enum {
@@ -181,7 +186,33 @@ enum {
   CONFUI_RATING_COL_W_EDITABLE,
   CONFUI_RATING_COL_RATING,
   CONFUI_RATING_COL_WEIGHT,
+  CONFUI_RATING_COL_ADJUST,
+  CONFUI_RATING_COL_DIGITS,
   CONFUI_RATING_COL_MAX,
+};
+
+enum {
+  CONFUI_LEVEL_COL_EDITABLE,
+  CONFUI_LEVEL_COL_LEVEL,
+  CONFUI_LEVEL_COL_WEIGHT,
+  CONFUI_LEVEL_COL_DEFAULT,
+  CONFUI_LEVEL_COL_ADJUST,
+  CONFUI_LEVEL_COL_DIGITS,
+  CONFUI_LEVEL_COL_MAX,
+};
+
+enum {
+  CONFUI_GENRE_COL_EDITABLE,
+  CONFUI_GENRE_COL_GENRE,
+  CONFUI_GENRE_COL_CLASSICAL,
+  CONFUI_GENRE_COL_MAX,
+};
+
+enum {
+  CONFUI_STATUS_COL_EDITABLE,
+  CONFUI_STATUS_COL_STATUS,
+  CONFUI_STATUS_COL_PLAY_FLAG,
+  CONFUI_STATUS_COL_MAX,
 };
 
 typedef struct {
@@ -295,8 +326,12 @@ static void   confuiTableMoveUp (GtkButton *b, gpointer udata);
 static void   confuiTableMoveDown (GtkButton *b, gpointer udata);
 static void   confuiTableRemove (GtkButton *b, gpointer udata);
 static void   confuiSwitchTable (GtkNotebook *nb, GtkWidget *page, guint pagenum, gpointer udata);
-static void   confuiCreateRatingsTable (configui_t *confui);
-
+static void   confuiCreateRatingTable (configui_t *confui);
+static void   confuiCreateStatusTable (configui_t *confui);
+static void   confuiCreateLevelTable (configui_t *confui);
+static void   confuiCreateGenreTable (configui_t *confui);
+static void   confuiTableToggle (GtkCellRendererToggle *renderer, gchar *path, gpointer udata);
+static void   confuiTableRadioToggle (GtkCellRendererToggle *renderer, gchar *path, gpointer udata);
 
 static int gKillReceived = 0;
 static int gdone = 0;
@@ -333,6 +368,8 @@ main (int argc, char *argv[])
   confui.tableidents = NULL;
   for (int i = 0; i < CONFUI_ID_MAX; ++i) {
     confui.tables [i].tree = NULL;
+    confui.tables [i].radiorow = 0;
+    confui.tables [i].togglecol = -1;
   }
 
   for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
@@ -890,16 +927,12 @@ confuiActivate (GApplication *app, gpointer userdata)
   g_signal_connect (confui->notebook, "switch-page",
       G_CALLBACK (confuiSwitchTable), confui);
 
-  widget = uiutilsCreateLabel (_("Ratings must be ordered from the worst"));
-  gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
-  gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
-
-  widget = uiutilsCreateLabel (_("at the top the best at the bottom."));
+  widget = uiutilsCreateLabel (_("Order from the lowest rating to the highest rating."));
   gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
   gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
 
   confuiMakeItemTable (confui, vbox, CONFUI_ID_RATINGS);
-  confuiCreateRatingsTable (confui);
+  confuiCreateRatingTable (confui);
 
   /* edit status */
   vbox = confuiMakeNotebookTab (confui, _("Edit Status"), CONFUI_ID_STATUS);
@@ -908,6 +941,8 @@ confuiActivate (GApplication *app, gpointer userdata)
       G_CALLBACK (confuiSwitchTable), confui);
 
   confuiMakeItemTable (confui, vbox, CONFUI_ID_STATUS);
+  confui->tables [CONFUI_ID_STATUS].togglecol = CONFUI_STATUS_COL_PLAY_FLAG;
+  confuiCreateStatusTable (confui);
 
   /* edit levels */
   vbox = confuiMakeNotebookTab (confui, _("Edit Levels"), CONFUI_ID_LEVELS);
@@ -920,6 +955,8 @@ confuiActivate (GApplication *app, gpointer userdata)
   gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
 
   confuiMakeItemTable (confui, vbox, CONFUI_ID_LEVELS);
+  confui->tables [CONFUI_ID_LEVELS].togglecol = CONFUI_LEVEL_COL_DEFAULT;
+  confuiCreateLevelTable (confui);
 
   /* edit genres */
   vbox = confuiMakeNotebookTab (confui, _("Edit Genres"), CONFUI_ID_GENRES);
@@ -928,6 +965,8 @@ confuiActivate (GApplication *app, gpointer userdata)
       G_CALLBACK (confuiSwitchTable), confui);
 
   confuiMakeItemTable (confui, vbox, CONFUI_ID_GENRES);
+  confui->tables [CONFUI_ID_GENRES].togglecol = CONFUI_GENRE_COL_CLASSICAL;
+  confuiCreateGenreTable (confui);
 
   /* mobile remote control */
   vbox = confuiMakeNotebookTab (confui, _("Mobile Remote Control"), CONFUI_ID_NONE);
@@ -2270,7 +2309,7 @@ confuiSwitchTable (GtkNotebook *nb, GtkWidget *page, guint pagenum, gpointer uda
 }
 
 static void
-confuiCreateRatingsTable (configui_t *confui)
+confuiCreateRatingTable (configui_t *confui)
 {
   GtkTreeIter       iter;
   GtkListStore      *store = NULL;
@@ -2281,13 +2320,15 @@ confuiCreateRatingsTable (configui_t *confui)
   rating_t          *ratings;
   GtkWidget         *tree;
   int               editable;
+  GtkAdjustment     *adjustment;
 
   logProcBegin (LOG_PROC, "confuiCreateRatingsTable");
 
   ratings = bdjvarsdfGet (BDJVDF_RATINGS);
 
   store = gtk_list_store_new (CONFUI_RATING_COL_MAX,
-      G_TYPE_ULONG, G_TYPE_ULONG, G_TYPE_STRING, G_TYPE_ULONG);
+      G_TYPE_ULONG, G_TYPE_ULONG, G_TYPE_STRING,
+      G_TYPE_ULONG, G_TYPE_OBJECT, G_TYPE_ULONG);
   assert (store != NULL);
 
   ratingStartIterator (ratings, &iteridx);
@@ -2301,11 +2342,14 @@ confuiCreateRatingsTable (configui_t *confui)
     weight = ratingGetWeight (ratings, key);
 
     gtk_list_store_append (store, &iter);
+    adjustment = gtk_adjustment_new (weight, 0.0, 100.0, 1.0, 5.0, 0.0);
     gtk_list_store_set (store, &iter,
         CONFUI_RATING_COL_R_EDITABLE, editable,
         CONFUI_RATING_COL_W_EDITABLE, TRUE,
         CONFUI_RATING_COL_RATING, ratingdisp,
         CONFUI_RATING_COL_WEIGHT, weight,
+        CONFUI_RATING_COL_ADJUST, adjustment,
+        CONFUI_RATING_COL_DIGITS, 0,
         -1);
     /* all cells other than the very first (Unrated) are editable */
     editable = TRUE;
@@ -2322,11 +2366,14 @@ confuiCreateRatingsTable (configui_t *confui)
   gtk_tree_view_column_set_title (column, _("Rating"));
   gtk_tree_view_append_column (GTK_TREE_VIEW (tree), column);
 
-  renderer = gtk_cell_renderer_text_new ();
+  renderer = gtk_cell_renderer_spin_new ();
   gtk_cell_renderer_set_alignment (renderer, 1.0, 0.5);
+
   column = gtk_tree_view_column_new_with_attributes ("", renderer,
       "text", CONFUI_RATING_COL_WEIGHT,
       "editable", CONFUI_RATING_COL_W_EDITABLE,
+      "adjustment", CONFUI_RATING_COL_ADJUST,
+      "digits", CONFUI_RATING_COL_DIGITS,
       NULL);
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
   gtk_tree_view_column_set_title (column, _("Weight"));
@@ -2335,5 +2382,283 @@ confuiCreateRatingsTable (configui_t *confui)
   gtk_tree_view_set_model (GTK_TREE_VIEW (tree), GTK_TREE_MODEL (store));
   g_object_unref (store);
   logProcEnd (LOG_PROC, "confuiCreateRatingsTable", "");
+}
+
+static void
+confuiCreateStatusTable (configui_t *confui)
+{
+  GtkTreeIter       iter;
+  GtkListStore      *store = NULL;
+  GtkCellRenderer   *renderer = NULL;
+  GtkTreeViewColumn *column = NULL;
+  ilistidx_t        iteridx;
+  ilistidx_t        key;
+  status_t          *status;
+  GtkWidget         *tree;
+  int               editable;
+
+  logProcBegin (LOG_PROC, "confuiCreateStatusTable");
+
+  status = bdjvarsdfGet (BDJVDF_STATUS);
+
+  store = gtk_list_store_new (CONFUI_STATUS_COL_MAX,
+      G_TYPE_ULONG, G_TYPE_STRING, G_TYPE_BOOLEAN);
+  assert (store != NULL);
+
+  statusStartIterator (status, &iteridx);
+
+  editable = FALSE;
+  while ((key = statusIterate (status, &iteridx)) >= 0) {
+    char    *statusdisp;
+    ssize_t playflag;
+
+    statusdisp = statusGetStatus (status, key);
+    playflag = statusGetPlayFlag (status, key);
+
+    gtk_list_store_append (store, &iter);
+    gtk_list_store_set (store, &iter,
+        CONFUI_STATUS_COL_EDITABLE, TRUE,
+        CONFUI_STATUS_COL_STATUS, statusdisp,
+        CONFUI_STATUS_COL_PLAY_FLAG, playflag,
+        -1);
+    /* all cells other than the very first (Unrated) are editable */
+    editable = TRUE;
+  }
+
+  tree = confui->tables [CONFUI_ID_STATUS].tree;
+
+  renderer = gtk_cell_renderer_text_new ();
+  column = gtk_tree_view_column_new_with_attributes ("", renderer,
+      "text", CONFUI_STATUS_COL_STATUS,
+      "editable", CONFUI_STATUS_COL_EDITABLE,
+      NULL);
+  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
+  gtk_tree_view_column_set_title (column, _("Status"));
+  gtk_tree_view_append_column (GTK_TREE_VIEW (tree), column);
+
+  renderer = gtk_cell_renderer_toggle_new ();
+  g_signal_connect (G_OBJECT(renderer), "toggled",
+      G_CALLBACK (confuiTableToggle), confui);
+  column = gtk_tree_view_column_new_with_attributes ("", renderer,
+      "active", CONFUI_STATUS_COL_PLAY_FLAG,
+      NULL);
+  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
+  gtk_tree_view_column_set_title (column, _("Play?"));
+  gtk_tree_view_append_column (GTK_TREE_VIEW (tree), column);
+
+  gtk_tree_view_set_model (GTK_TREE_VIEW (tree), GTK_TREE_MODEL (store));
+  g_object_unref (store);
+  logProcEnd (LOG_PROC, "confuiCreateStatusTable", "");
+}
+
+static void
+confuiCreateLevelTable (configui_t *confui)
+{
+  GtkTreeIter       iter;
+  GtkListStore      *store = NULL;
+  GtkCellRenderer   *renderer = NULL;
+  GtkTreeViewColumn *column = NULL;
+  ilistidx_t        iteridx;
+  ilistidx_t        key;
+  level_t           *levels;
+  GtkWidget         *tree;
+  int               editable;
+  GtkAdjustment     *adjustment;
+
+  logProcBegin (LOG_PROC, "confuiCreateLevelTable");
+
+  levels = bdjvarsdfGet (BDJVDF_LEVELS);
+
+  store = gtk_list_store_new (CONFUI_LEVEL_COL_MAX,
+      G_TYPE_ULONG, G_TYPE_STRING, G_TYPE_ULONG, G_TYPE_BOOLEAN,
+      G_TYPE_OBJECT, G_TYPE_ULONG);
+  assert (store != NULL);
+
+  levelStartIterator (levels, &iteridx);
+
+  editable = FALSE;
+  while ((key = levelIterate (levels, &iteridx)) >= 0) {
+    char    *leveldisp;
+    ssize_t weight;
+    ssize_t def;
+
+    leveldisp = levelGetLevel (levels, key);
+    weight = levelGetWeight (levels, key);
+    def = levelGetDefault (levels, key);
+    if (def) {
+      confui->tables [CONFUI_ID_LEVELS].radiorow = key;
+    }
+
+    gtk_list_store_append (store, &iter);
+    adjustment = gtk_adjustment_new (weight, 0.0, 100.0, 1.0, 5.0, 0.0);
+    gtk_list_store_set (store, &iter,
+        CONFUI_LEVEL_COL_EDITABLE, TRUE,
+        CONFUI_LEVEL_COL_LEVEL, leveldisp,
+        CONFUI_LEVEL_COL_WEIGHT, weight,
+        CONFUI_LEVEL_COL_ADJUST, adjustment,
+        CONFUI_LEVEL_COL_DIGITS, 0,
+        CONFUI_LEVEL_COL_DEFAULT, def,
+        -1);
+    /* all cells other than the very first (Unrated) are editable */
+    editable = TRUE;
+  }
+
+  tree = confui->tables [CONFUI_ID_LEVELS].tree;
+
+  renderer = gtk_cell_renderer_text_new ();
+  column = gtk_tree_view_column_new_with_attributes ("", renderer,
+      "text", CONFUI_LEVEL_COL_LEVEL,
+      "editable", CONFUI_LEVEL_COL_EDITABLE,
+      NULL);
+  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
+  gtk_tree_view_column_set_title (column, _("Level"));
+  gtk_tree_view_append_column (GTK_TREE_VIEW (tree), column);
+
+  renderer = gtk_cell_renderer_spin_new ();
+  gtk_cell_renderer_set_alignment (renderer, 1.0, 0.5);
+  column = gtk_tree_view_column_new_with_attributes ("", renderer,
+      "text", CONFUI_LEVEL_COL_WEIGHT,
+      "editable", CONFUI_LEVEL_COL_EDITABLE,
+      "adjustment", CONFUI_LEVEL_COL_ADJUST,
+      "digits", CONFUI_LEVEL_COL_DIGITS,
+      NULL);
+  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
+  gtk_tree_view_column_set_title (column, _("Weight"));
+  gtk_tree_view_append_column (GTK_TREE_VIEW (tree), column);
+
+  renderer = gtk_cell_renderer_toggle_new ();
+  g_signal_connect (G_OBJECT(renderer), "toggled",
+      G_CALLBACK (confuiTableRadioToggle), confui);
+  gtk_cell_renderer_toggle_set_radio (GTK_CELL_RENDERER_TOGGLE (renderer), TRUE);
+  column = gtk_tree_view_column_new_with_attributes ("", renderer,
+      "active", CONFUI_LEVEL_COL_DEFAULT,
+      NULL);
+  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
+  gtk_tree_view_column_set_title (column, _("Default"));
+  gtk_tree_view_append_column (GTK_TREE_VIEW (tree), column);
+
+  gtk_tree_view_set_model (GTK_TREE_VIEW (tree), GTK_TREE_MODEL (store));
+  g_object_unref (store);
+  logProcEnd (LOG_PROC, "confuiCreatelevelsTable", "");
+}
+
+static void
+confuiCreateGenreTable (configui_t *confui)
+{
+  GtkTreeIter       iter;
+  GtkListStore      *store = NULL;
+  GtkCellRenderer   *renderer = NULL;
+  GtkTreeViewColumn *column = NULL;
+  ilistidx_t        iteridx;
+  ilistidx_t        key;
+  genre_t           *genres;
+  GtkWidget         *tree;
+  int               editable;
+
+  logProcBegin (LOG_PROC, "confuiCreateGenreTable");
+
+  genres = bdjvarsdfGet (BDJVDF_GENRES);
+
+  store = gtk_list_store_new (CONFUI_GENRE_COL_MAX,
+      G_TYPE_ULONG, G_TYPE_STRING, G_TYPE_BOOLEAN);
+  assert (store != NULL);
+
+  genreStartIterator (genres, &iteridx);
+
+  editable = FALSE;
+  while ((key = genreIterate (genres, &iteridx)) >= 0) {
+    char    *genredisp;
+    ssize_t clflag;
+
+    genredisp = genreGetGenre (genres, key);
+    clflag = genreGetClassicalFlag (genres, key);
+
+    gtk_list_store_append (store, &iter);
+    gtk_list_store_set (store, &iter,
+        CONFUI_GENRE_COL_EDITABLE, TRUE,
+        CONFUI_GENRE_COL_GENRE, genredisp,
+        CONFUI_GENRE_COL_CLASSICAL, clflag,
+        -1);
+    /* all cells other than the very first (Unrated) are editable */
+    editable = TRUE;
+  }
+
+  tree = confui->tables [CONFUI_ID_GENRES].tree;
+
+  renderer = gtk_cell_renderer_text_new ();
+  column = gtk_tree_view_column_new_with_attributes ("", renderer,
+      "text", CONFUI_GENRE_COL_GENRE,
+      "editable", CONFUI_GENRE_COL_EDITABLE,
+      NULL);
+  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
+  gtk_tree_view_column_set_title (column, _("Genre"));
+  gtk_tree_view_append_column (GTK_TREE_VIEW (tree), column);
+
+  renderer = gtk_cell_renderer_toggle_new ();
+  g_signal_connect (G_OBJECT(renderer), "toggled",
+      G_CALLBACK (confuiTableToggle), confui);
+  column = gtk_tree_view_column_new_with_attributes ("", renderer,
+      "active", CONFUI_GENRE_COL_CLASSICAL,
+      NULL);
+  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
+  gtk_tree_view_column_set_title (column, _("Classical?"));
+  gtk_tree_view_append_column (GTK_TREE_VIEW (tree), column);
+
+  gtk_tree_view_set_model (GTK_TREE_VIEW (tree), GTK_TREE_MODEL (store));
+  g_object_unref (store);
+  logProcEnd (LOG_PROC, "confuiCreateGenreTable", "");
+}
+
+
+static void
+confuiTableToggle (GtkCellRendererToggle *renderer, gchar *spath, gpointer udata)
+{
+  configui_t    *confui = udata;
+  gboolean      val;
+  GtkTreeIter   iter;
+  GtkTreePath   *path;
+  GtkTreeModel  *model;
+  int           col;
+
+  model = gtk_tree_view_get_model (
+      GTK_TREE_VIEW (confui->tables [confui->tablecurr].tree));
+  path = gtk_tree_path_new_from_string (spath);
+  if (gtk_tree_model_get_iter (model, &iter, path) == FALSE) {
+    return;
+  }
+  col = confui->tables [confui->tablecurr].togglecol;
+  gtk_tree_model_get (model, &iter, col, &val, -1);
+  gtk_list_store_set (GTK_LIST_STORE (model), &iter, col, !val, -1);
+}
+
+static void
+confuiTableRadioToggle (GtkCellRendererToggle *renderer, gchar *path, gpointer udata)
+{
+  configui_t    *confui = udata;
+  GtkTreeIter   iter;
+  GtkTreeModel  *model;
+  GtkListStore  *store;
+  char          tmp [40];
+  int           col;
+  int           row;
+
+  model = gtk_tree_view_get_model (
+      GTK_TREE_VIEW (confui->tables [confui->tablecurr].tree));
+
+  store = GTK_LIST_STORE (model);
+  col = confui->tables [confui->tablecurr].togglecol;
+  row = confui->tables [confui->tablecurr].radiorow;
+  snprintf (tmp, sizeof (tmp), "%d", row);
+
+  if (gtk_tree_model_get_iter_from_string (model, &iter, path)) {
+    gtk_list_store_set (store, &iter, col, 1, -1);
+  }
+
+  if (gtk_tree_model_get_iter_from_string (model, &iter, tmp)) {
+    gtk_list_store_set (store, &iter, col, 0, -1);
+  }
+
+  sscanf (path, "%d", &row);
+  confui->tables [confui->tablecurr].radiorow = row;
 }
 
