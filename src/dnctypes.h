@@ -2,15 +2,17 @@
 #define INC_DNCTYPES_H
 
 #include "datafile.h"
-#include "ilist.h"
+#include "slist.h"
 
 typedef struct {
   datafile_t  *df;
-  ilist_t     *dnctypes;
+  slist_t     *dnctypes;
 } dnctype_t;
 
 dnctype_t     *dnctypesAlloc (char *);
 void          dnctypesFree (dnctype_t *);
+void          dnctypesStartIterator (dnctype_t *dnctypes, slistidx_t *iteridx);
+char          *dnctypesIterate (dnctype_t *dnctypes, slistidx_t *iteridx);
 void          dnctypesConv (datafileconv_t *conv);
 
 #endif /* INC_DNCTYPES_H */

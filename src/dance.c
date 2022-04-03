@@ -18,6 +18,7 @@
 #include "slist.h"
 
 static void danceConvSpeed (datafileconv_t *conv);
+static void danceConvTimeSig (datafileconv_t *conv);
 
   /* must be sorted in ascii order */
 static datafilekey_t dancedfkeys [DANCE_KEY_MAX] = {
@@ -29,7 +30,7 @@ static datafilekey_t dancedfkeys [DANCE_KEY_MAX] = {
   { "SELECT",     DANCE_SELECT,   VALUE_NUM, NULL, -1 },
   { "SPEED",      DANCE_SPEED,    VALUE_LIST, danceConvSpeed, -1 },
   { "TAGS",       DANCE_TAGS,     VALUE_LIST, convTextList, -1 },
-  { "TIMESIG",    DANCE_TIMESIG,  VALUE_STR, NULL, -1 },
+  { "TIMESIG",    DANCE_TIMESIG,  VALUE_NUM, danceConvTimeSig, -1 },
   { "TYPE",       DANCE_TYPE,     VALUE_NUM, dnctypesConv, -1 },
 };
 
@@ -37,6 +38,13 @@ static datafilekey_t dancespeeddfkeys [DANCE_SPEED_MAX] = {
   { "fast",       DANCE_SPEED_FAST,   VALUE_NUM, NULL, -1 },
   { "normal",     DANCE_SPEED_NORMAL, VALUE_NUM, NULL, -1 },
   { "slow",       DANCE_SPEED_SLOW,   VALUE_NUM, NULL, -1 },
+};
+
+static datafilekey_t dancetimesigdfkeys [DANCE_TIMESIG_MAX] = {
+  { "2/4",       DANCE_TIMESIG_24,   VALUE_NUM, NULL, -1 },
+  { "3/4",       DANCE_TIMESIG_34,   VALUE_NUM, NULL, -1 },
+  { "4/4",       DANCE_TIMESIG_44,   VALUE_NUM, NULL, -1 },
+  { "4/8",       DANCE_TIMESIG_48,   VALUE_NUM, NULL, -1 },
 };
 
 dance_t *
@@ -183,6 +191,21 @@ danceConvSpeed (datafileconv_t *conv)
   } else if (conv->valuetype == VALUE_NUM) {
     conv->valuetype = VALUE_STR;
     conv->u.str = dancespeeddfkeys [conv->u.num].name;
+  }
+}
+
+static void
+danceConvTimeSig (datafileconv_t *conv)
+{
+  nlistidx_t       idx;
+
+  if (conv->valuetype == VALUE_STR) {
+    conv->valuetype = VALUE_NUM;
+    idx = dfkeyBinarySearch (dancetimesigdfkeys, DANCE_TIMESIG_MAX, conv->u.str);
+    conv->u.num = dancetimesigdfkeys [idx].itemkey;
+  } else if (conv->valuetype == VALUE_NUM) {
+    conv->valuetype = VALUE_STR;
+    conv->u.str = dancetimesigdfkeys [conv->u.num].name;
   }
 }
 

@@ -26,6 +26,14 @@ typedef enum {
   DANCE_SPEED_MAX,
 } dancespeed_t;
 
+typedef enum {
+  DANCE_TIMESIG_24,
+  DANCE_TIMESIG_34,
+  DANCE_TIMESIG_44,
+  DANCE_TIMESIG_48,
+  DANCE_TIMESIG_MAX,
+} dancetimesig_t;
+
 typedef struct {
   datafile_t      *df;
   ilist_t         *dances;

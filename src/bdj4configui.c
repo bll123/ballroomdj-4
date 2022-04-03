@@ -24,6 +24,7 @@
 #include "conn.h"
 #include "dance.h"
 #include "datafile.h"
+#include "dnctypes.h"
 #include "filedata.h"
 #include "fileop.h"
 #include "filemanip.h"
@@ -80,9 +81,6 @@ typedef enum {
 enum {
   CONFUI_BEGIN,
   CONFUI_COMBOBOX_AO_PATHFMT,
-  CONFUI_COMBOBOX_DANCE_TYPE,
-  CONFUI_COMBOBOX_DANCE_SPEED,
-  CONFUI_COMBOBOX_DANCE_TIME_SIG,
   CONFUI_COMBOBOX_MAX,
   CONFUI_ENTRY_DANCE_TAGS,
   CONFUI_ENTRY_DANCE_ANNOUNCEMENT,
@@ -100,8 +98,11 @@ enum {
   CONFUI_SPINBOX_AUDIO,
   CONFUI_SPINBOX_AUDIO_OUTPUT,
   CONFUI_SPINBOX_BPM,
-  CONFUI_SPINBOX_DANCE_LOW_BPM,
   CONFUI_SPINBOX_DANCE_HIGH_BPM,
+  CONFUI_SPINBOX_DANCE_LOW_BPM,
+  CONFUI_SPINBOX_DANCE_SPEED,
+  CONFUI_SPINBOX_DANCE_TIME_SIG,
+  CONFUI_SPINBOX_DANCE_TYPE,
   CONFUI_SPINBOX_FADE_TYPE,
   CONFUI_SPINBOX_LOCALE,
   CONFUI_SPINBOX_MAX_PLAY_TIME,
@@ -120,6 +121,7 @@ enum {
   CONFUI_WIDGET_AUTO_ORGANIZE,
   CONFUI_WIDGET_DB_LOAD_FROM_GENRE,
   CONFUI_WIDGET_DANCE_DANCE,
+  /* the debug enums must be in numeric order */
   CONFUI_WIDGET_DEBUG_1,
   CONFUI_WIDGET_DEBUG_2,
   CONFUI_WIDGET_DEBUG_4,
@@ -301,7 +303,8 @@ static void confuiPopulateOptions (configui_t *confui);
 static void confuiSelectMusicDir (GtkButton *b, gpointer udata);
 static void confuiSelectStartup (GtkButton *b, gpointer udata);
 static void confuiSelectShutdown (GtkButton *b, gpointer udata);
-static void confuiSelectFileDialog (configui_t *confui, int widx);
+static void confuiSelectAnnouncement (GtkButton *b, gpointer udata);
+static void confuiSelectFileDialog (configui_t *confui, int widx, char *startpath, char *mimefiltername, char *mimetype);
 
 static GtkWidget * confuiMakeNotebookTab (configui_t *confui, GtkWidget *notebook, char *txt, int);
 /* makeitementry returns the hbox */
@@ -329,12 +332,9 @@ static nlist_t  * confuiGetThemeList (void);
 static nlist_t  * confuiGetThemeNames (nlist_t *themelist, slist_t *filelist);
 static void     confuiLoadHTMLList (configui_t *confui);
 static void     confuiLoadLocaleList (configui_t *confui);
+static void     confuiLoadDanceTypeList (configui_t *confui);
 static gboolean confuiFadeTypeTooltip (GtkWidget *, gint, gint, gboolean, GtkTooltip *, void *);
 static void     confuiOrgPathSelect (GtkTreeView *tv, GtkTreePath *path,
-    GtkTreeViewColumn *column, gpointer udata);
-static void     confuiDanceTypeSelect (GtkTreeView *tv, GtkTreePath *path,
-    GtkTreeViewColumn *column, gpointer udata);
-static void     confuiDanceSpeedSelect (GtkTreeView *tv, GtkTreePath *path,
     GtkTreeViewColumn *column, gpointer udata);
 static char     * confuiComboboxSelect (configui_t *confui, GtkTreePath *path, int widx);
 static void     confuiUpdateMobmqQrcode (configui_t *confui);
@@ -421,10 +421,12 @@ main (int argc, char *argv[])
     }
   }
 
-  uiutilsEntryInit (&confui.uiitem [CONFUI_ENTRY_MUSIC_DIR].u.entry, 50, 100);
+  uiutilsEntryInit (&confui.uiitem [CONFUI_ENTRY_DANCE_TAGS].u.entry, 30, 100);
+  uiutilsEntryInit (&confui.uiitem [CONFUI_ENTRY_DANCE_ANNOUNCEMENT].u.entry, 50, 200);
+  uiutilsEntryInit (&confui.uiitem [CONFUI_ENTRY_MUSIC_DIR].u.entry, 50, 300);
   uiutilsEntryInit (&confui.uiitem [CONFUI_ENTRY_PROFILE_NAME].u.entry, 20, 30);
-  uiutilsEntryInit (&confui.uiitem [CONFUI_ENTRY_STARTUP].u.entry, 50, 100);
-  uiutilsEntryInit (&confui.uiitem [CONFUI_ENTRY_SHUTDOWN].u.entry, 50, 100);
+  uiutilsEntryInit (&confui.uiitem [CONFUI_ENTRY_STARTUP].u.entry, 50, 300);
+  uiutilsEntryInit (&confui.uiitem [CONFUI_ENTRY_SHUTDOWN].u.entry, 50, 300);
   uiutilsEntryInit (&confui.uiitem [CONFUI_ENTRY_QUEUE_NM_A].u.entry, 20, 30);
   uiutilsEntryInit (&confui.uiitem [CONFUI_ENTRY_QUEUE_NM_B].u.entry, 20, 30);
   uiutilsEntryInit (&confui.uiitem [CONFUI_ENTRY_RC_USER_ID].u.entry, 10, 30);
@@ -534,8 +536,24 @@ main (int argc, char *argv[])
   confui.uiitem [CONFUI_SPINBOX_AUDIO].list = tlist;
   confui.uiitem [CONFUI_SPINBOX_AUDIO].sblookuplist = llist;
 
+  tlist = nlistAlloc ("cu-dance-speed", LIST_UNORDERED, free);
+  /* order these in the same order as defined in dance.h */
+  nlistSetStr (tlist, DANCE_SPEED_SLOW, _("slow"));
+  nlistSetStr (tlist, DANCE_SPEED_NORMAL, _("normal"));
+  nlistSetStr (tlist, DANCE_SPEED_FAST, _("fast"));
+  confui.uiitem [CONFUI_SPINBOX_DANCE_SPEED].list = tlist;
+
+  tlist = nlistAlloc ("cu-dance-time-sig", LIST_UNORDERED, free);
+  /* order these in the same order as defined in dance.h */
+  nlistSetStr (tlist, DANCE_TIMESIG_24, _("2/4"));
+  nlistSetStr (tlist, DANCE_TIMESIG_34, _("3/4"));
+  nlistSetStr (tlist, DANCE_TIMESIG_44, _("4/4"));
+  nlistSetStr (tlist, DANCE_TIMESIG_48, _("4/8"));
+  confui.uiitem [CONFUI_SPINBOX_DANCE_TIME_SIG].list = tlist;
+
   confuiLoadHTMLList (&confui);
   confuiLoadLocaleList (&confui);
+  confuiLoadDanceTypeList (&confui);
 
   tlist = confuiGetThemeList ();
   nlistStartIterator (tlist, &iteridx);
@@ -664,15 +682,18 @@ confuiClosingCallback (void *udata, programstate_t programState)
 
   for (int i = CONFUI_ENTRY_MAX + 1; i < CONFUI_SPINBOX_MAX; ++i) {
     uiutilsSpinboxTextFree (&confui->uiitem [i].u.spinbox);
-    /* the mq and ui theme share both list and sblookuplist */
-    /* ui_theme > mq_theme */
+    /* the mq and ui-theme share both list and sblookuplist */
+    /* ui-theme > mq-theme */
     if (i == CONFUI_SPINBOX_UI_THEME) {
       continue;
     }
     if (confui->uiitem [i].list != NULL) {
       nlistFree (confui->uiitem [i].list);
     }
-    if (i != CONFUI_SPINBOX_MQ_THEME && confui->uiitem [i].sblookuplist != NULL) {
+    /* mq-theme and dance-type share the list and sblookuplist */
+    if (i != CONFUI_SPINBOX_MQ_THEME &&
+        i != CONFUI_SPINBOX_DANCE_TYPE &&
+        confui->uiitem [i].sblookuplist != NULL) {
       nlistFree (confui->uiitem [i].sblookuplist);
     }
     confui->uiitem [i].list = NULL;
@@ -742,7 +763,6 @@ confuiActivate (GApplication *app, gpointer userdata)
   GtkWidget     *image;
   GtkSizeGroup  *sg;
   GtkWidget     *dvbox;
-  GtkWidget     *dsvbox;
   GtkWidget     *hbox;
   char          imgbuff [MAXPATHLEN];
   char          tbuff [MAXPATHLEN];
@@ -932,23 +952,12 @@ confuiActivate (GApplication *app, gpointer userdata)
   confui->dsnotebook = uiutilsCreateNotebook ();
   gtk_box_pack_start (GTK_BOX (vbox), confui->dsnotebook, TRUE, TRUE, 0);
 
-  dsvbox = confuiMakeNotebookTab (confui, confui->dsnotebook,
-      _("Music Queue"), CONFUI_ID_NONE);
-
-  dsvbox = confuiMakeNotebookTab (confui, confui->dsnotebook,
-      _("Request"), CONFUI_ID_NONE);
-
-  dsvbox = confuiMakeNotebookTab (confui, confui->dsnotebook,
-      _("Song List"), CONFUI_ID_NONE);
-
-  dsvbox = confuiMakeNotebookTab (confui, confui->dsnotebook,
-      _("Song Selection"), CONFUI_ID_NONE);
-
-  dsvbox = confuiMakeNotebookTab (confui, confui->dsnotebook,
-      _("Music Manager"), CONFUI_ID_NONE);
-
-  dsvbox = confuiMakeNotebookTab (confui, confui->dsnotebook,
-      _("Song Editor"), CONFUI_ID_NONE);
+//      _("Music Queue")
+//      _("Request")
+//      _("Song List")
+//      _("Song Selection")
+//      _("Music Manager")
+//      _("Song Editor")
 
   /* organization */
   vbox = confuiMakeNotebookTab (confui, confui->notebook,
@@ -984,7 +993,6 @@ confuiActivate (GApplication *app, gpointer userdata)
 
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   gtk_widget_set_halign (hbox, GTK_ALIGN_START);
-  gtk_widget_set_margin_start (hbox, 16);
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
 
   confuiMakeItemTable (confui, hbox, CONFUI_ID_DANCE, CONFUI_TABLE_NO_UP_DOWN);
@@ -992,22 +1000,27 @@ confuiActivate (GApplication *app, gpointer userdata)
 
   dvbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   gtk_widget_set_vexpand (dvbox, FALSE);
+  gtk_widget_set_margin_start (dvbox, 16);
   gtk_box_pack_start (GTK_BOX (hbox), dvbox, FALSE, FALSE, 0);
 
   confuiMakeItemLabelDisp (confui, dvbox, sg, _("Dance"),
       CONFUI_WIDGET_DANCE_DANCE, -1);
 
-//  confuiMakeItemCombobox (confui, dvbox, sg, _("Type"),
-//      CONFUI_COMBOBOX_DANCE_TYPE, -1, confuiDanceTypeSelect, "");
+  confuiMakeItemSpinboxText (confui, dvbox, sg, _("Type"),
+      CONFUI_SPINBOX_DANCE_TYPE, -1, 0);
 
-//  confuiMakeItemCombobox (confui, dvbox, sg, _("Speed"),
-//      CONFUI_COMBOBOX_DANCE_SPEED, -1, confuiDanceSpeedSelect, "");
+  confuiMakeItemSpinboxText (confui, dvbox, sg, _("Speed"),
+      CONFUI_SPINBOX_DANCE_SPEED, -1, 0);
 
   confuiMakeItemEntry (confui, dvbox, sg, _("Tags"),
-      CONFUI_ENTRY_DANCE_TAGS,-1, "");
+      CONFUI_ENTRY_DANCE_TAGS, -1, "");
 
-//  confuiMakeItemEntryChooser (confui, dvbox, sg, _("Announcement"),
-//      CONFUI_ENTRY_DANCE_ANNOUNCEMENT, -1, "", NULL);
+  confuiMakeItemEntryChooser (confui, dvbox, sg, _("Announcement"),
+      CONFUI_ENTRY_DANCE_ANNOUNCEMENT, -1, "",
+      confuiSelectAnnouncement);
+  uiutilsEntrySetValidate (
+      &confui->uiitem [CONFUI_ENTRY_DANCE_ANNOUNCEMENT].u.entry,
+      uiutilsEntryValidateFile, confui);
 
   confuiMakeItemSpinboxInt (confui, dvbox, sg, _("Low BPM"),
       CONFUI_SPINBOX_DANCE_LOW_BPM, -1, 10, 500, 0);
@@ -1015,8 +1028,8 @@ confuiActivate (GApplication *app, gpointer userdata)
   confuiMakeItemSpinboxInt (confui, dvbox, sg, _("High BPM"),
       CONFUI_SPINBOX_DANCE_HIGH_BPM, -1, 10, 500, 0);
 
-//  confuiMakeItemCombobox (confui, dvbox, sg, _("Time Signature"),
-//      CONFUI_COMBOBOX_DANCE_TIME_SIG, -1, NULL, "");
+  confuiMakeItemSpinboxText (confui, dvbox, sg, _("Time Signature"),
+      CONFUI_SPINBOX_DANCE_TIME_SIG, -1, 0);
 
   /* edit ratings */
   vbox = confuiMakeNotebookTab (confui, confui->notebook,
@@ -1516,6 +1529,8 @@ confuiSelectMusicDir (GtkButton *b, gpointer udata)
 
   selectdata.label = _("Select Music Folder Location");
   selectdata.window = confui->window;
+  selectdata.startpath = bdjoptGetStr (OPT_M_DIR_MUSIC);
+  selectdata.mimetype = NULL;
   fn = uiutilsSelectDirDialog (&selectdata);
   if (fn != NULL) {
     gtk_entry_buffer_set_text (confui->uiitem [CONFUI_ENTRY_MUSIC_DIR].u.entry.buffer,
@@ -1530,7 +1545,8 @@ confuiSelectStartup (GtkButton *b, gpointer udata)
 {
   configui_t            *confui = udata;
 
-  confuiSelectFileDialog (confui, CONFUI_ENTRY_STARTUP);
+  confuiSelectFileDialog (confui, CONFUI_ENTRY_STARTUP,
+      sysvarsGetStr (SV_BDJ4DATATOPDIR), NULL, NULL);
 }
 
 static void
@@ -1538,17 +1554,31 @@ confuiSelectShutdown (GtkButton *b, gpointer udata)
 {
   configui_t            *confui = udata;
 
-  confuiSelectFileDialog (confui, CONFUI_ENTRY_SHUTDOWN);
+  confuiSelectFileDialog (confui, CONFUI_ENTRY_SHUTDOWN,
+      sysvarsGetStr (SV_BDJ4DATATOPDIR), NULL, NULL);
 }
 
 static void
-confuiSelectFileDialog (configui_t *confui, int widx)
+confuiSelectAnnouncement (GtkButton *b, gpointer udata)
+{
+  configui_t            *confui = udata;
+
+  confuiSelectFileDialog (confui, CONFUI_ENTRY_DANCE_ANNOUNCEMENT,
+      bdjoptGetStr (OPT_M_DIR_MUSIC), _("Audio Files"), "audio/*");
+}
+
+static void
+confuiSelectFileDialog (configui_t *confui, int widx, char *startpath,
+    char *mimefiltername, char *mimetype)
 {
   char                  *fn = NULL;
   uiutilsselect_t       selectdata;
 
-  selectdata.label = _("Select file");
+  selectdata.label = _("Select File");
   selectdata.window = confui->window;
+  selectdata.startpath = startpath;
+  selectdata.mimefiltername = mimefiltername;
+  selectdata.mimetype = mimetype;
   fn = uiutilsSelectFileDialog (&selectdata);
   if (fn != NULL) {
     gtk_entry_buffer_set_text (confui->uiitem [widx].u.entry.buffer,
@@ -2114,6 +2144,30 @@ confuiLoadLocaleList (configui_t *confui)
 }
 
 
+static void
+confuiLoadDanceTypeList (configui_t *confui)
+{
+  nlist_t       *tlist = NULL;
+  dnctype_t     *dnctypes;
+  slistidx_t    iteridx;
+  char          *key;
+  int           count;
+
+
+  tlist = nlistAlloc ("cu-dance-type", LIST_UNORDERED, free);
+
+  dnctypes = bdjvarsdfGet (BDJVDF_DANCE_TYPES);
+  dnctypesStartIterator (dnctypes, &iteridx);
+  count = 0;
+  while ((key = dnctypesIterate (dnctypes, &iteridx)) != NULL) {
+    nlistSetStr (tlist, count, key);
+    ++count;
+  }
+
+  confui->uiitem [CONFUI_SPINBOX_DANCE_TYPE].list = tlist;
+  confui->uiitem [CONFUI_SPINBOX_DANCE_TYPE].sblookuplist = tlist;
+}
+
 static gboolean
 confuiFadeTypeTooltip (GtkWidget *w, gint x, gint y, gboolean kbmode,
     GtkTooltip *tt, void *udata)
@@ -2135,24 +2189,6 @@ confuiOrgPathSelect (GtkTreeView *tv, GtkTreePath *path,
 
   sval = confuiComboboxSelect (confui, path, CONFUI_COMBOBOX_AO_PATHFMT);
   confuiUpdateOrgExamples (confui, sval);
-}
-
-static void
-confuiDanceTypeSelect (GtkTreeView *tv, GtkTreePath *path,
-    GtkTreeViewColumn *column, gpointer udata)
-{
-  configui_t        *confui = udata;
-
-  confuiComboboxSelect (confui, path, CONFUI_COMBOBOX_DANCE_TYPE);
-}
-
-static void
-confuiDanceSpeedSelect (GtkTreeView *tv, GtkTreePath *path,
-    GtkTreeViewColumn *column, gpointer udata)
-{
-  configui_t        *confui = udata;
-
-  confuiComboboxSelect (confui, path, CONFUI_COMBOBOX_DANCE_SPEED);
 }
 
 static char *
@@ -2530,10 +2566,11 @@ confuiCreateRatingTable (configui_t *confui)
 
   editable = FALSE;
   while ((key = ratingIterate (ratings, &iteridx)) >= 0) {
-    char    *ratingdisp;
+    char    ratingdisp [100];
     ssize_t weight;
 
-    ratingdisp = ratingGetRating (ratings, key);
+    snprintf (ratingdisp, sizeof (ratingdisp), "%s    ",
+        ratingGetRating (ratings, key));
     weight = ratingGetWeight (ratings, key);
 
     gtk_list_store_append (store, &iter);
@@ -2604,10 +2641,11 @@ confuiCreateStatusTable (configui_t *confui)
 
   editable = FALSE;
   while ((key = statusIterate (status, &iteridx)) >= 0) {
-    char    *statusdisp;
+    char    statusdisp [100];
     ssize_t playflag;
 
-    statusdisp = statusGetStatus (status, key);
+    snprintf (statusdisp, sizeof (statusdisp), "%s    ",
+        statusGetStatus (status, key));
     playflag = statusGetPlayFlag (status, key);
 
     if (key == statusGetCount (status) - 1) {
@@ -2677,11 +2715,12 @@ confuiCreateLevelTable (configui_t *confui)
 
   editable = FALSE;
   while ((key = levelIterate (levels, &iteridx)) >= 0) {
-    char    *leveldisp;
+    char    leveldisp [100];
     ssize_t weight;
     ssize_t def;
 
-    leveldisp = levelGetLevel (levels, key);
+    snprintf (leveldisp, sizeof (leveldisp), "%s    ",
+        levelGetLevel (levels, key));
     weight = levelGetWeight (levels, key);
     def = levelGetDefault (levels, key);
     if (def) {

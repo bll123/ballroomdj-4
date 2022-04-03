@@ -47,6 +47,18 @@ dnctypesFree (dnctype_t *dnctypes)
 }
 
 void
+dnctypesStartIterator (dnctype_t *dnctypes, slistidx_t *iteridx)
+{
+  slistStartIterator (dnctypes->dnctypes, iteridx);
+}
+
+char *
+dnctypesIterate (dnctype_t *dnctypes, slistidx_t *iteridx)
+{
+  return slistIterateKey (dnctypes->dnctypes, iteridx);
+}
+
+void
 dnctypesConv (datafileconv_t *conv)
 {
   dnctype_t       *dnctypes;
