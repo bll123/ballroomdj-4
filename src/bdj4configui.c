@@ -188,10 +188,21 @@ typedef enum {
   CONFUI_ID_NONE,
 } confuiident_t;
 
+enum {
+  CONFUI_TABLE_MOVE_PREV,
+  CONFUI_TABLE_MOVE_NEXT,
+};
 
 enum {
-  CONFUI_TABLE_NONE = 0x00,
+  CONFUI_TABLE_TEXT,
+  CONFUI_TABLE_NUM,
+};
+
+enum {
+  CONFUI_TABLE_NONE       = 0x00,
   CONFUI_TABLE_NO_UP_DOWN = 0x01,
+  CONFUI_TABLE_KEEP_FIRST = 0x02,
+  CONFUI_TABLE_KEEP_LAST  = 0x04,
 };
 
 typedef struct {
@@ -199,6 +210,8 @@ typedef struct {
   int       radiorow;
   int       togglecol;
   int       flags;
+  bool      changed;
+  int       currcount;
 } confuitable_t;
 
 enum {
@@ -352,16 +365,27 @@ static void     confuiUpdateOrgExample (configui_t *config, org_t *org, char *da
 /* table editing */
 static void   confuiTableMoveUp (GtkButton *b, gpointer udata);
 static void   confuiTableMoveDown (GtkButton *b, gpointer udata);
+static void   confuiTableMove (configui_t *confui, int dir);
 static void   confuiTableRemove (GtkButton *b, gpointer udata);
 static void   confuiTableAdd (GtkButton *b, gpointer udata);
 static void   confuiSwitchTable (GtkNotebook *nb, GtkWidget *page, guint pagenum, gpointer udata);
 static void   confuiCreateDanceTable (configui_t *confui);
 static void   confuiCreateRatingTable (configui_t *confui);
+static void   confuiRatingSet (GtkListStore *store, GtkTreeIter *iter, int editable, char *ratingdisp, ssize_t weight);
 static void   confuiCreateStatusTable (configui_t *confui);
+static void   confuiStatusSet (GtkListStore *store, GtkTreeIter *iter, int editable, char *statusdisp, int playflag);
 static void   confuiCreateLevelTable (configui_t *confui);
+static void   confuiLevelSet (GtkListStore *store, GtkTreeIter *iter, int editable, char *leveldisp, ssize_t weight, int def);
 static void   confuiCreateGenreTable (configui_t *confui);
+static void   confuiGenreSet (GtkListStore *store, GtkTreeIter *iter, int editable, char *genredisp, int clflag);
 static void   confuiTableToggle (GtkCellRendererToggle *renderer, gchar *path, gpointer udata);
 static void   confuiTableRadioToggle (GtkCellRendererToggle *renderer, gchar *path, gpointer udata);
+static void   confuiTableEditText (GtkCellRendererText* r, const gchar* path,
+    const gchar* ntext, gpointer udata);
+static void   confuiTableEditSpinbox (GtkCellRendererText* r, const gchar* path,
+    const gchar* ntext, gpointer udata);
+static void   confuiTableEdit (configui_t *confui, GtkCellRendererText* r,
+    const gchar* path, const gchar* ntext, int type);
 
 static int gKillReceived = 0;
 static int gdone = 0;
@@ -401,6 +425,9 @@ main (int argc, char *argv[])
     confui.tables [i].tree = NULL;
     confui.tables [i].radiorow = 0;
     confui.tables [i].togglecol = -1;
+    confui.tables [i].flags = CONFUI_TABLE_NONE;
+    confui.tables [i].changed = false;
+    confui.tables [i].currcount = 0;
   }
 
   for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
@@ -1042,7 +1069,7 @@ confuiActivate (GApplication *app, gpointer userdata)
   gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
   gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
 
-  confuiMakeItemTable (confui, vbox, CONFUI_ID_RATINGS, CONFUI_TABLE_NONE);
+  confuiMakeItemTable (confui, vbox, CONFUI_ID_RATINGS, CONFUI_TABLE_KEEP_FIRST);
   confuiCreateRatingTable (confui);
 
   /* edit status */
@@ -1052,7 +1079,8 @@ confuiActivate (GApplication *app, gpointer userdata)
   g_signal_connect (confui->notebook, "switch-page",
       G_CALLBACK (confuiSwitchTable), confui);
 
-  confuiMakeItemTable (confui, vbox, CONFUI_ID_STATUS, CONFUI_TABLE_NONE);
+  confuiMakeItemTable (confui, vbox, CONFUI_ID_STATUS,
+      CONFUI_TABLE_KEEP_FIRST | CONFUI_TABLE_KEEP_LAST);
   confui->tables [CONFUI_ID_STATUS].togglecol = CONFUI_STATUS_COL_PLAY_FLAG;
   confuiCreateStatusTable (confui);
 
@@ -1938,6 +1966,7 @@ confuiMakeItemTable (configui_t *confui, GtkWidget *vbox, confuiident_t id,
 
   tree = gtk_tree_view_new ();
   confui->tables [id].tree = tree;
+  confui->tables [id].flags = flags;
   gtk_widget_set_margin_top (tree, 2);
   gtk_widget_set_margin_start (tree, 16);
   gtk_tree_view_set_activate_on_single_click (GTK_TREE_VIEW (tree), TRUE);
@@ -2458,34 +2487,263 @@ confuiUpdateOrgExample (configui_t *config, org_t *org, char *data, GtkWidget *w
 static void
 confuiTableMoveUp (GtkButton *b, gpointer udata)
 {
+  confuiTableMove (udata, CONFUI_TABLE_MOVE_PREV);
 }
 
 static void
 confuiTableMoveDown (GtkButton *b, gpointer udata)
 {
+  confuiTableMove (udata, CONFUI_TABLE_MOVE_NEXT);
+}
+
+static void
+confuiTableMove (configui_t *confui, int dir)
+{
+  GtkTreeSelection  *sel;
+  GtkWidget         *tree;
+  GtkTreeModel      *model;
+  GtkTreeIter       iter;
+  GtkTreeIter       citer;
+  GtkTreePath       *path;
+  char              *pathstr;
+  int               count;
+  gboolean          valid;
+  int               idx;
+  int               flags;
+
+  tree = confui->tables [confui->tablecurr].tree;
+  flags = confui->tables [confui->tablecurr].flags;
+  sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (tree));
+  count = gtk_tree_selection_count_selected_rows (sel);
+  if (count != 1) {
+    return;
+  }
+  gtk_tree_selection_get_selected (sel, &model, &iter);
+
+  path = gtk_tree_model_get_path (model, &iter);
+  pathstr = gtk_tree_path_to_string (path);
+  sscanf (pathstr, "%d", &idx);
+  free (pathstr);
+  gtk_tree_path_free (path);
+  if (idx == 1 &&
+      dir == CONFUI_TABLE_MOVE_PREV &&
+      (flags & CONFUI_TABLE_KEEP_FIRST) == CONFUI_TABLE_KEEP_FIRST) {
+    return;
+  }
+  if (idx == confui->tables [confui->tablecurr].currcount - 1 &&
+      dir == CONFUI_TABLE_MOVE_PREV &&
+      (flags & CONFUI_TABLE_KEEP_LAST) == CONFUI_TABLE_KEEP_LAST) {
+    return;
+  }
+  if (idx == confui->tables [confui->tablecurr].currcount - 2 &&
+      dir == CONFUI_TABLE_MOVE_NEXT &&
+      (flags & CONFUI_TABLE_KEEP_LAST) == CONFUI_TABLE_KEEP_LAST) {
+    return;
+  }
+  if (idx == 0 &&
+      dir == CONFUI_TABLE_MOVE_NEXT &&
+      (flags & CONFUI_TABLE_KEEP_FIRST) == CONFUI_TABLE_KEEP_FIRST) {
+    return;
+  }
+
+  memcpy (&citer, &iter, sizeof (iter));
+  if (dir == CONFUI_TABLE_MOVE_PREV) {
+    valid = gtk_tree_model_iter_previous (model, &iter);
+    if (valid) {
+      gtk_list_store_move_before (GTK_LIST_STORE (model), &citer, &iter);
+    }
+  } else {
+    valid = gtk_tree_model_iter_next (model, &iter);
+    if (valid) {
+      gtk_list_store_move_after (GTK_LIST_STORE (model), &citer, &iter);
+    }
+  }
+  confui->tables [confui->tablecurr].changed = true;
+//  confuiTableView (tree);
 }
 
 static void
 confuiTableRemove (GtkButton *b, gpointer udata)
 {
+  configui_t        *confui = udata;
+  GtkTreeSelection  *sel;
+  GtkWidget         *tree;
+  GtkTreeModel      *model;
+  GtkTreeIter       iter;
+  GtkTreePath       *path;
+  char              *pathstr;
+  int               idx;
+  int               count;
+  int               flags;
+
+  tree = confui->tables [confui->tablecurr].tree;
+  flags = confui->tables [confui->tablecurr].flags;
+  sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (tree));
+  count = gtk_tree_selection_count_selected_rows (sel);
+  if (count != 1) {
+    return;
+  }
+  gtk_tree_selection_get_selected (sel, &model, &iter);
+
+  path = gtk_tree_model_get_path (model, &iter);
+  pathstr = gtk_tree_path_to_string (path);
+  sscanf (pathstr, "%d", &idx);
+  free (pathstr);
+  gtk_tree_path_free (path);
+  if (idx == 0 &&
+      (flags & CONFUI_TABLE_KEEP_FIRST) == CONFUI_TABLE_KEEP_FIRST) {
+    return;
+  }
+  if (idx == confui->tables [confui->tablecurr].currcount - 1 &&
+      (flags & CONFUI_TABLE_KEEP_LAST) == CONFUI_TABLE_KEEP_LAST) {
+    return;
+  }
+
+  gtk_list_store_remove (GTK_LIST_STORE (model), &iter);
+  confui->tables [confui->tablecurr].changed = true;
+  confui->tables [confui->tablecurr].currcount -= 1;
 }
 
 static void
 confuiTableAdd (GtkButton *b, gpointer udata)
 {
+  configui_t        *confui = udata;
+  GtkTreeSelection  *sel = NULL;
+  GtkWidget         *tree = NULL;
+  GtkTreeModel      *model = NULL;
+  GtkTreeIter       iter;
+  GtkTreeIter       niter;
+  GtkTreeIter       *titer;
+  int               count;
+  int               valid;
+  int               flags;
+
+
+  tree = confui->tables [confui->tablecurr].tree;
+  flags = confui->tables [confui->tablecurr].flags;
+  model = gtk_tree_view_get_model (GTK_TREE_VIEW (tree));
+  sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (tree));
+  if (sel != NULL) {
+fprintf (stderr, "sel is not null\n");
+    count = gtk_tree_selection_count_selected_rows (sel);
+    if (count != 1) {
+fprintf (stderr, "count is not 1\n");
+      titer = NULL;
+    } else {
+fprintf (stderr, "count is 1\n");
+      gtk_tree_selection_get_selected (sel, &model, &iter);
+      titer = &iter;
+    }
+  } else {
+fprintf (stderr, "sel is null\n");
+    titer = NULL;
+  }
+
+  if (titer != NULL) {
+    GtkTreePath       *path;
+    char              *pathstr;
+    int               idx;
+
+    path = gtk_tree_model_get_path (model, titer);
+    pathstr = gtk_tree_path_to_string (path);
+    sscanf (pathstr, "%d", &idx);
+    free (pathstr);
+    gtk_tree_path_free (path);
+    if (idx == 0 &&
+        (flags & CONFUI_TABLE_KEEP_FIRST) == CONFUI_TABLE_KEEP_FIRST) {
+      valid = gtk_tree_model_iter_next (model, &iter);
+    }
+  }
+
+  if (titer == NULL) {
+fprintf (stderr, "titer is null, append\n");
+    gtk_list_store_append (GTK_LIST_STORE (model), &niter);
+  } else {
+fprintf (stderr, "titer is not null, ins-before\n");
+    gtk_list_store_insert_before (GTK_LIST_STORE (model), &niter, &iter);
+  }
+
+  switch (confui->tablecurr) {
+    case CONFUI_ID_NONE:
+    case CONFUI_ID_MAX:
+    {
+      break;
+    }
+
+    case CONFUI_ID_DANCE:
+    {
+      break;
+    }
+
+    case CONFUI_ID_GENRES:
+    {
+fprintf (stderr, "genre-set\n");
+      confuiGenreSet (GTK_LIST_STORE (model), &niter, TRUE, "", 0);
+      break;
+    }
+
+    case CONFUI_ID_RATINGS:
+    {
+fprintf (stderr, "ratings-set\n");
+      confuiRatingSet (GTK_LIST_STORE (model), &niter, TRUE, "", 0);
+      break;
+    }
+
+    case CONFUI_ID_LEVELS:
+    {
+fprintf (stderr, "levels-set\n");
+      confuiLevelSet (GTK_LIST_STORE (model), &niter, TRUE, "", 0, 0);
+      break;
+    }
+
+    case CONFUI_ID_STATUS:
+    {
+fprintf (stderr, "status-set\n");
+      confuiStatusSet (GTK_LIST_STORE (model), &niter, TRUE, "", 0);
+      break;
+    }
+  }
+
+  confui->tables [confui->tablecurr].changed = true;
+  confui->tables [confui->tablecurr].currcount += 1;
 }
 
 static void
 confuiSwitchTable (GtkNotebook *nb, GtkWidget *page, guint pagenum, gpointer udata)
 {
-  configui_t  *confui = udata;
+  configui_t        *confui = udata;
+  GtkWidget         *tree;
+  int               count;
+  GtkTreeSelection  *sel;
 
   logProcBegin (LOG_PROC, "confuiSwitchTable");
   if (pagenum >= (unsigned int) confui->tabcount) {
+    logProcEnd (LOG_PROC, "confuiSwitchTable", "bad-pagenum");
     return;
   }
 
   confui->tablecurr = confui->tableidents [pagenum];
+  if (confui->tablecurr == CONFUI_ID_NONE) {
+    logProcEnd (LOG_PROC, "confuiSwitchTable", "no-table");
+    return;
+  }
+
+  tree = confui->tables [confui->tablecurr].tree;
+  sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (tree));
+  count = 0;
+  if (sel != NULL) {
+    count = gtk_tree_selection_count_selected_rows (sel);
+  }
+
+  if (count != 1) {
+    GtkTreePath   *path;
+
+    path = gtk_tree_path_new_from_string ("0");
+    if (path != NULL) {
+      gtk_tree_view_set_cursor (GTK_TREE_VIEW (tree), path, NULL, FALSE);
+      gtk_tree_path_free (path);
+    }
+  }
 
   logProcEnd (LOG_PROC, "confuiSwitchTable", "");
 }
@@ -2522,12 +2780,15 @@ confuiCreateDanceTable (configui_t *confui)
     gtk_list_store_set (store, &iter,
         CONFUI_DANCE_COL_DANCE, dancedisp,
         -1);
+    confui->tables [CONFUI_ID_DANCE].currcount += 1;
   }
 
   tree = confui->tables [CONFUI_ID_DANCE].tree;
   gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (tree), FALSE);
 
   renderer = gtk_cell_renderer_text_new ();
+  g_object_set_data (G_OBJECT (renderer), "confuicolumn",
+      GUINT_TO_POINTER (CONFUI_DANCE_COL_DANCE));
   column = gtk_tree_view_column_new_with_attributes ("", renderer,
       "text", CONFUI_DANCE_COL_DANCE,
       NULL);
@@ -2551,7 +2812,6 @@ confuiCreateRatingTable (configui_t *confui)
   rating_t          *ratings;
   GtkWidget         *tree;
   int               editable;
-  GtkAdjustment     *adjustment;
 
   logProcBegin (LOG_PROC, "confuiCreateRatingsTable");
 
@@ -2574,33 +2834,30 @@ confuiCreateRatingTable (configui_t *confui)
     weight = ratingGetWeight (ratings, key);
 
     gtk_list_store_append (store, &iter);
-    adjustment = gtk_adjustment_new (weight, 0.0, 100.0, 1.0, 5.0, 0.0);
-    gtk_list_store_set (store, &iter,
-        CONFUI_RATING_COL_R_EDITABLE, editable,
-        CONFUI_RATING_COL_W_EDITABLE, TRUE,
-        CONFUI_RATING_COL_RATING, ratingdisp,
-        CONFUI_RATING_COL_WEIGHT, weight,
-        CONFUI_RATING_COL_ADJUST, adjustment,
-        CONFUI_RATING_COL_DIGITS, 0,
-        -1);
+    confuiRatingSet (store, &iter, editable, ratingdisp, weight);
     /* all cells other than the very first (Unrated) are editable */
     editable = TRUE;
+    confui->tables [CONFUI_ID_RATINGS].currcount += 1;
   }
 
   tree = confui->tables [CONFUI_ID_RATINGS].tree;
 
   renderer = gtk_cell_renderer_text_new ();
+  g_object_set_data (G_OBJECT (renderer), "confuicolumn",
+      GUINT_TO_POINTER (CONFUI_RATING_COL_RATING));
   column = gtk_tree_view_column_new_with_attributes ("", renderer,
       "text", CONFUI_RATING_COL_RATING,
       "editable", CONFUI_RATING_COL_R_EDITABLE,
       NULL);
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
   gtk_tree_view_column_set_title (column, _("Rating"));
+  g_signal_connect (renderer, "edited", G_CALLBACK (confuiTableEditText), confui);
   gtk_tree_view_append_column (GTK_TREE_VIEW (tree), column);
 
   renderer = gtk_cell_renderer_spin_new ();
   gtk_cell_renderer_set_alignment (renderer, 1.0, 0.5);
-
+  g_object_set_data (G_OBJECT (renderer), "confuicolumn",
+      GUINT_TO_POINTER (CONFUI_RATING_COL_WEIGHT));
   column = gtk_tree_view_column_new_with_attributes ("", renderer,
       "text", CONFUI_RATING_COL_WEIGHT,
       "editable", CONFUI_RATING_COL_W_EDITABLE,
@@ -2609,11 +2866,29 @@ confuiCreateRatingTable (configui_t *confui)
       NULL);
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
   gtk_tree_view_column_set_title (column, _("Weight"));
+  g_signal_connect (renderer, "edited", G_CALLBACK (confuiTableEditSpinbox), confui);
   gtk_tree_view_append_column (GTK_TREE_VIEW (tree), column);
 
   gtk_tree_view_set_model (GTK_TREE_VIEW (tree), GTK_TREE_MODEL (store));
   g_object_unref (store);
   logProcEnd (LOG_PROC, "confuiCreateRatingsTable", "");
+}
+
+static void
+confuiRatingSet (GtkListStore *store, GtkTreeIter *iter,
+    int editable, char *ratingdisp, ssize_t weight)
+{
+  GtkAdjustment     *adjustment;
+
+  adjustment = gtk_adjustment_new (weight, 0.0, 100.0, 1.0, 5.0, 0.0);
+  gtk_list_store_set (store, iter,
+      CONFUI_RATING_COL_R_EDITABLE, editable,
+      CONFUI_RATING_COL_W_EDITABLE, TRUE,
+      CONFUI_RATING_COL_RATING, ratingdisp,
+      CONFUI_RATING_COL_WEIGHT, weight,
+      CONFUI_RATING_COL_ADJUST, adjustment,
+      CONFUI_RATING_COL_DIGITS, 0,
+      -1);
 }
 
 static void
@@ -2653,24 +2928,24 @@ confuiCreateStatusTable (configui_t *confui)
     }
 
     gtk_list_store_append (store, &iter);
-    gtk_list_store_set (store, &iter,
-        CONFUI_STATUS_COL_EDITABLE, editable,
-        CONFUI_STATUS_COL_STATUS, statusdisp,
-        CONFUI_STATUS_COL_PLAY_FLAG, playflag,
-        -1);
+    confuiStatusSet (store, &iter, editable, statusdisp, playflag);
     /* all cells other than the very first (Unrated) are editable */
     editable = TRUE;
+    confui->tables [CONFUI_ID_STATUS].currcount += 1;
   }
 
   tree = confui->tables [CONFUI_ID_STATUS].tree;
 
   renderer = gtk_cell_renderer_text_new ();
+  g_object_set_data (G_OBJECT (renderer), "confuicolumn",
+      GUINT_TO_POINTER (CONFUI_STATUS_COL_STATUS));
   column = gtk_tree_view_column_new_with_attributes ("", renderer,
       "text", CONFUI_STATUS_COL_STATUS,
       "editable", CONFUI_STATUS_COL_EDITABLE,
       NULL);
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
   gtk_tree_view_column_set_title (column, _("Status"));
+  g_signal_connect (renderer, "edited", G_CALLBACK (confuiTableEditText), confui);
   gtk_tree_view_append_column (GTK_TREE_VIEW (tree), column);
 
   renderer = gtk_cell_renderer_toggle_new ();
@@ -2689,6 +2964,17 @@ confuiCreateStatusTable (configui_t *confui)
 }
 
 static void
+confuiStatusSet (GtkListStore *store, GtkTreeIter *iter,
+    int editable, char *statusdisp, int playflag)
+{
+  gtk_list_store_set (store, iter,
+      CONFUI_STATUS_COL_EDITABLE, editable,
+      CONFUI_STATUS_COL_STATUS, statusdisp,
+      CONFUI_STATUS_COL_PLAY_FLAG, playflag,
+      -1);
+}
+
+static void
 confuiCreateLevelTable (configui_t *confui)
 {
   GtkTreeIter       iter;
@@ -2700,7 +2986,6 @@ confuiCreateLevelTable (configui_t *confui)
   level_t           *levels;
   GtkWidget         *tree;
   int               editable;
-  GtkAdjustment     *adjustment;
 
   logProcBegin (LOG_PROC, "confuiCreateLevelTable");
 
@@ -2728,32 +3013,30 @@ confuiCreateLevelTable (configui_t *confui)
     }
 
     gtk_list_store_append (store, &iter);
-    adjustment = gtk_adjustment_new (weight, 0.0, 100.0, 1.0, 5.0, 0.0);
-    gtk_list_store_set (store, &iter,
-        CONFUI_LEVEL_COL_EDITABLE, TRUE,
-        CONFUI_LEVEL_COL_LEVEL, leveldisp,
-        CONFUI_LEVEL_COL_WEIGHT, weight,
-        CONFUI_LEVEL_COL_ADJUST, adjustment,
-        CONFUI_LEVEL_COL_DIGITS, 0,
-        CONFUI_LEVEL_COL_DEFAULT, def,
-        -1);
+    confuiLevelSet (store, &iter, TRUE, leveldisp, weight, def);
     /* all cells other than the very first (Unrated) are editable */
     editable = TRUE;
+    confui->tables [CONFUI_ID_LEVELS].currcount += 1;
   }
 
   tree = confui->tables [CONFUI_ID_LEVELS].tree;
 
   renderer = gtk_cell_renderer_text_new ();
+  g_object_set_data (G_OBJECT (renderer), "confuicolumn",
+      GUINT_TO_POINTER (CONFUI_LEVEL_COL_LEVEL));
   column = gtk_tree_view_column_new_with_attributes ("", renderer,
       "text", CONFUI_LEVEL_COL_LEVEL,
       "editable", CONFUI_LEVEL_COL_EDITABLE,
       NULL);
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
   gtk_tree_view_column_set_title (column, _("Level"));
+  g_signal_connect (renderer, "edited", G_CALLBACK (confuiTableEditText), confui);
   gtk_tree_view_append_column (GTK_TREE_VIEW (tree), column);
 
   renderer = gtk_cell_renderer_spin_new ();
   gtk_cell_renderer_set_alignment (renderer, 1.0, 0.5);
+  g_object_set_data (G_OBJECT (renderer), "confuicolumn",
+      GUINT_TO_POINTER (CONFUI_LEVEL_COL_WEIGHT));
   column = gtk_tree_view_column_new_with_attributes ("", renderer,
       "text", CONFUI_LEVEL_COL_WEIGHT,
       "editable", CONFUI_LEVEL_COL_EDITABLE,
@@ -2762,6 +3045,7 @@ confuiCreateLevelTable (configui_t *confui)
       NULL);
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
   gtk_tree_view_column_set_title (column, _("Weight"));
+  g_signal_connect (renderer, "edited", G_CALLBACK (confuiTableEditSpinbox), confui);
   gtk_tree_view_append_column (GTK_TREE_VIEW (tree), column);
 
   renderer = gtk_cell_renderer_toggle_new ();
@@ -2781,6 +3065,24 @@ confuiCreateLevelTable (configui_t *confui)
 }
 
 static void
+confuiLevelSet (GtkListStore *store, GtkTreeIter *iter,
+    int editable, char *leveldisp, ssize_t weight, int def)
+{
+  GtkAdjustment     *adjustment;
+
+  adjustment = gtk_adjustment_new (weight, 0.0, 100.0, 1.0, 5.0, 0.0);
+  gtk_list_store_set (store, iter,
+      CONFUI_LEVEL_COL_EDITABLE, editable,
+      CONFUI_LEVEL_COL_LEVEL, leveldisp,
+      CONFUI_LEVEL_COL_WEIGHT, weight,
+      CONFUI_LEVEL_COL_ADJUST, adjustment,
+      CONFUI_LEVEL_COL_DIGITS, 0,
+      CONFUI_LEVEL_COL_DEFAULT, def,
+      -1);
+}
+
+
+static void
 confuiCreateGenreTable (configui_t *confui)
 {
   GtkTreeIter       iter;
@@ -2791,7 +3093,6 @@ confuiCreateGenreTable (configui_t *confui)
   ilistidx_t        key;
   genre_t           *genres;
   GtkWidget         *tree;
-  int               editable;
 
   logProcBegin (LOG_PROC, "confuiCreateGenreTable");
 
@@ -2803,7 +3104,6 @@ confuiCreateGenreTable (configui_t *confui)
 
   genreStartIterator (genres, &iteridx);
 
-  editable = FALSE;
   while ((key = genreIterate (genres, &iteridx)) >= 0) {
     char    genredisp [100];
     ssize_t clflag;
@@ -2813,24 +3113,22 @@ confuiCreateGenreTable (configui_t *confui)
     clflag = genreGetClassicalFlag (genres, key);
 
     gtk_list_store_append (store, &iter);
-    gtk_list_store_set (store, &iter,
-        CONFUI_GENRE_COL_EDITABLE, TRUE,
-        CONFUI_GENRE_COL_GENRE, genredisp,
-        CONFUI_GENRE_COL_CLASSICAL, clflag,
-        -1);
-    /* all cells other than the very first (Unrated) are editable */
-    editable = TRUE;
+    confuiGenreSet (store, &iter, TRUE, genredisp, clflag);
+    confui->tables [CONFUI_ID_GENRES].currcount += 1;
   }
 
   tree = confui->tables [CONFUI_ID_GENRES].tree;
 
   renderer = gtk_cell_renderer_text_new ();
+  g_object_set_data (G_OBJECT (renderer), "confuicolumn",
+      GUINT_TO_POINTER (CONFUI_GENRE_COL_GENRE));
   column = gtk_tree_view_column_new_with_attributes ("", renderer,
       "text", CONFUI_GENRE_COL_GENRE,
       "editable", CONFUI_GENRE_COL_EDITABLE,
       NULL);
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
   gtk_tree_view_column_set_title (column, _("Genre"));
+  g_signal_connect (renderer, "edited", G_CALLBACK (confuiTableEditText), confui);
   gtk_tree_view_append_column (GTK_TREE_VIEW (tree), column);
 
   renderer = gtk_cell_renderer_toggle_new ();
@@ -2850,6 +3148,18 @@ confuiCreateGenreTable (configui_t *confui)
 
 
 static void
+confuiGenreSet (GtkListStore *store, GtkTreeIter *iter,
+    int editable, char *genredisp, int clflag)
+{
+  gtk_list_store_set (store, iter,
+      CONFUI_GENRE_COL_EDITABLE, editable,
+      CONFUI_GENRE_COL_GENRE, genredisp,
+      CONFUI_GENRE_COL_CLASSICAL, clflag,
+      -1);
+}
+
+
+static void
 confuiTableToggle (GtkCellRendererToggle *renderer, gchar *spath, gpointer udata)
 {
   configui_t    *confui = udata;
@@ -2865,9 +3175,11 @@ confuiTableToggle (GtkCellRendererToggle *renderer, gchar *spath, gpointer udata
   if (gtk_tree_model_get_iter (model, &iter, path) == FALSE) {
     return;
   }
+  gtk_tree_path_free (path);
   col = confui->tables [confui->tablecurr].togglecol;
   gtk_tree_model_get (model, &iter, col, &val, -1);
   gtk_list_store_set (GTK_LIST_STORE (model), &iter, col, !val, -1);
+  confui->tables [confui->tablecurr].changed = true;
 }
 
 static void
@@ -2899,5 +3211,45 @@ confuiTableRadioToggle (GtkCellRendererToggle *renderer, gchar *path, gpointer u
 
   sscanf (path, "%d", &row);
   confui->tables [confui->tablecurr].radiorow = row;
+  confui->tables [confui->tablecurr].changed = true;
 }
 
+static void
+confuiTableEditText (GtkCellRendererText* r, const gchar* path,
+    const gchar* ntext, gpointer udata)
+{
+  configui_t    *confui = udata;
+
+  confuiTableEdit (confui, r, path, ntext, CONFUI_TABLE_TEXT);
+}
+
+static void
+confuiTableEditSpinbox (GtkCellRendererText* r, const gchar* path,
+    const gchar* ntext, gpointer udata)
+{
+  configui_t    *confui = udata;
+
+  confuiTableEdit (confui, r, path, ntext, CONFUI_TABLE_NUM);
+}
+
+static void
+confuiTableEdit (configui_t *confui, GtkCellRendererText* r,
+    const gchar* path, const gchar* ntext, int type)
+{
+  GtkWidget     *tree;
+  GtkTreeModel  *model;
+  GtkTreeIter   iter;
+  int           col;
+
+  tree = confui->tables [confui->tablecurr].tree;
+  model = gtk_tree_view_get_model (GTK_TREE_VIEW (tree));
+  gtk_tree_model_get_iter_from_string (model, &iter, path);
+  col = GPOINTER_TO_UINT (g_object_get_data (G_OBJECT (r), "confuicolumn"));
+  if (type == CONFUI_TABLE_TEXT) {
+    gtk_list_store_set (GTK_LIST_STORE (model), &iter, col, ntext, -1);
+  }
+  if (type == CONFUI_TABLE_NUM) {
+    gulong val = atol (ntext);
+    gtk_list_store_set (GTK_LIST_STORE (model), &iter, col, val, -1);
+  }
+}
