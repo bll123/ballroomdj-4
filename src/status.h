@@ -14,9 +14,10 @@ typedef struct {
   datafile_t  *df;
   ilist_t     *status;
   int         maxWidth;
+  char        *path;
 } status_t;
 
-status_t    * statusAlloc (char *);
+status_t    * statusAlloc (void);
 void        statusFree (status_t *);
 ssize_t     statusGetCount (status_t *);
 int         statusGetMaxWidth (status_t *);
@@ -25,5 +26,6 @@ ssize_t     statusGetPlayFlag (status_t *status, ilistidx_t ikey);
 void        statusStartIterator (status_t *status, ilistidx_t *iteridx);
 ilistidx_t  statusIterate (status_t *status, ilistidx_t *iteridx);
 void        statusConv (datafileconv_t *conv);
+void        statusSave (status_t *status, ilist_t *list);
 
 #endif /* INC_STATUS_H */

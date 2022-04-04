@@ -26,6 +26,9 @@ typedef enum {
 static ssize_t  parse (parseinfo_t *pi, char *data, parsetype_t parsetype);
 static void     datafileFreeInternal (datafile_t *df);
 static bool     datafileCheckDfkeys (char *name, datafilekey_t *dfkeys, ssize_t dfkeycount);
+static FILE *   datafileSavePrep (char *fn, char *tag);
+static void     datafileSaveItem (FILE *fh, char *name, dfConvFunc_t convFunc,
+    datafileconv_t *conv);
 
 /* parsing routines */
 
@@ -503,24 +506,15 @@ datafileSaveKeyVal (char *tag, char *fn, datafilekey_t *dfkeys,
     ssize_t dfkeycount, nlist_t *list)
 {
   FILE            *fh;
-  char            tbuff [100];
   datafileconv_t  conv;
   valuetype_t     vt;
 
-  datafileBackup (fn, 1);
-  fh = fileopOpen (fn, "w");
-
+  fh = datafileSavePrep (fn, tag);
   if (fh == NULL) {
     return;
   }
 
-  fprintf (fh, "# %s\n", tag);
-  fprintf (fh, "# %s", tmutilDstamp (tbuff, sizeof (tbuff)));
-  fprintf (fh, "%s\n", tmutilTstamp (tbuff, sizeof (tbuff)));
-
   for (ssize_t i = 0; i < dfkeycount; ++i) {
-    fprintf (fh, "%s\n", dfkeys [i].name);
-
     vt = dfkeys [i].valuetype;
     conv.valuetype = vt;
 
@@ -535,17 +529,59 @@ datafileSaveKeyVal (char *tag, char *fn, datafilekey_t *dfkeys,
     if (vt == VALUE_LIST) {
       conv.u.list = nlistGetList (list, dfkeys [i].itemkey);
     }
-
-    if (dfkeys [i].convFunc != NULL) {
-      dfkeys [i].convFunc (&conv);
-      vt = conv.valuetype;
+    if (vt == VALUE_DOUBLE) {
+      conv.u.dval = nlistGetDouble (list, dfkeys [i].itemkey);
     }
 
-    if (vt == VALUE_NUM) {
-      fprintf (fh, "..%zd\n", conv.u.num);
-    }
-    if (vt == VALUE_STR) {
-      fprintf (fh, "..%s\n", conv.u.str);
+    datafileSaveItem (fh, dfkeys [i].name, dfkeys [i].convFunc, &conv);
+  }
+  fclose (fh);
+}
+
+void
+datafileSaveIndirect (char *tag, char *fn, datafilekey_t *dfkeys,
+    ssize_t dfkeycount, ilist_t *list)
+{
+  FILE            *fh;
+  datafileconv_t  conv;
+  valuetype_t     vt;
+  ssize_t         count;
+
+  fh = datafileSavePrep (fn, tag);
+  if (fh == NULL) {
+    return;
+  }
+
+  count = ilistGetCount (list);
+
+  fprintf (fh, "version\n..1\n");
+  fprintf (fh, "count\n..%zd\n", count);
+
+  for (ssize_t key = 0; key < count; ++key) {
+    conv.valuetype = VALUE_NUM;
+    conv.u.num = key;
+    datafileSaveItem (fh, "KEY", NULL, &conv);
+
+    for (ssize_t i = 0; i < dfkeycount; ++i) {
+      vt = dfkeys [i].valuetype;
+      conv.valuetype = vt;
+
+      /* load the data value into the conv structure so that retrieval is */
+      /* the same for both non-converted and converted values */
+      if (vt == VALUE_NUM) {
+        conv.u.num = ilistGetNum (list, key, dfkeys [i].itemkey);
+      }
+      if (vt == VALUE_STR) {
+        conv.u.str = ilistGetStr (list, key, dfkeys [i].itemkey);
+      }
+      if (vt == VALUE_LIST) {
+        conv.u.list = ilistGetList (list, key, dfkeys [i].itemkey);
+      }
+      if (vt == VALUE_DOUBLE) {
+        conv.u.dval = ilistGetDouble (list, key, dfkeys [i].itemkey);
+      }
+
+      datafileSaveItem (fh, dfkeys [i].name, dfkeys [i].convFunc, &conv);
     }
   }
   fclose (fh);
@@ -740,3 +776,48 @@ datafileCheckDfkeys (char *name, datafilekey_t *dfkeys, ssize_t dfkeycount)
   }
   return ok;
 }
+
+static FILE *
+datafileSavePrep (char *fn, char *tag)
+{
+  FILE    *fh;
+  char    tbuff [100];
+
+
+  datafileBackup (fn, 1);
+  fh = fileopOpen (fn, "w");
+
+  if (fh == NULL) {
+    return NULL;
+  }
+
+  fprintf (fh, "# %s\n", tag);
+  fprintf (fh, "# %s ", tmutilDstamp (tbuff, sizeof (tbuff)));
+  fprintf (fh, "%s\n", tmutilTstamp (tbuff, sizeof (tbuff)));
+  return fh;
+}
+
+static void
+datafileSaveItem (FILE *fh, char *name, dfConvFunc_t convFunc,
+    datafileconv_t *conv)
+{
+  valuetype_t     vt;
+
+  vt = conv->valuetype;
+  if (convFunc != NULL) {
+    convFunc (conv);
+    vt = conv->valuetype;
+  }
+
+  fprintf (fh, "%s\n", name);
+  if (vt == VALUE_NUM) {
+    fprintf (fh, "..%zd\n", conv->u.num);
+  }
+  if (vt == VALUE_DOUBLE) {
+    fprintf (fh, "..%.2f\n", conv->u.dval);
+  }
+  if (vt == VALUE_STR) {
+    fprintf (fh, "..%s\n", conv->u.str);
+  }
+}
+

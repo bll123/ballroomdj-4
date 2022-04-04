@@ -6,13 +6,15 @@
 #include <string.h>
 #include <assert.h>
 
+#include "bdj4.h"
 #include "bdjstring.h"
 #include "bdjvarsdf.h"
 #include "datafile.h"
 #include "fileop.h"
+#include "ilist.h"
 #include "level.h"
 #include "log.h"
-#include "ilist.h"
+#include "pathbld.h"
 #include "slist.h"
 
   /* must be sorted in ascii order */
@@ -23,13 +25,15 @@ static datafilekey_t leveldfkeys [LEVEL_KEY_MAX] = {
 };
 
 level_t *
-levelAlloc (char *fname)
+levelAlloc ()
 {
   level_t     *level;
   ilistidx_t  key;
   ilistidx_t  iteridx;
+  char        fname [MAXPATHLEN];
 
 
+  pathbldMakePath (fname, sizeof (fname), "", "levels", ".txt", PATHBLD_MP_NONE);
   if (! fileopFileExists (fname)) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: level: missing %s", fname);
     return NULL;
@@ -38,6 +42,7 @@ levelAlloc (char *fname)
   level = malloc (sizeof (level_t));
   assert (level != NULL);
 
+  level->path = strdup (fname);
   level->df = datafileAllocParse ("level", DFTYPE_INDIRECT, fname,
       leveldfkeys, LEVEL_KEY_MAX, LEVEL_LEVEL);
   level->level = datafileGetList (level->df);
@@ -63,6 +68,9 @@ void
 levelFree (level_t *level)
 {
   if (level != NULL) {
+    if (level->path != NULL) {
+      free (level->path);
+    }
     if (level->df != NULL) {
       datafileFree (level->df);
     }
@@ -142,4 +150,11 @@ levelConv (datafileconv_t *conv)
     num = conv->u.num;
     conv->u.str = ilistGetStr (level->level, num, LEVEL_LEVEL);
   }
+}
+
+void
+levelSave (level_t *level, ilist_t *list)
+{
+  datafileSaveIndirect ("level", level->path, leveldfkeys,
+      LEVEL_KEY_MAX, list);
 }

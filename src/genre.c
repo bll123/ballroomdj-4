@@ -7,12 +7,14 @@
 #include <string.h>
 #include <assert.h>
 
+#include "bdj4.h"
 #include "bdjvarsdf.h"
 #include "datafile.h"
 #include "fileop.h"
 #include "genre.h"
-#include "log.h"
 #include "ilist.h"
+#include "log.h"
+#include "pathbld.h"
 #include "slist.h"
 
   /* must be sorted in ascii order */
@@ -22,13 +24,15 @@ static datafilekey_t genredfkeys [GENRE_KEY_MAX] = {
 };
 
 genre_t *
-genreAlloc (char *fname)
+genreAlloc (void)
 {
   genre_t       *genre = NULL;
   slist_t       *dflist = NULL;
   ilistidx_t    gkey;
   ilistidx_t    iteridx;
+  char          fname [MAXPATHLEN];
 
+  pathbldMakePath (fname, sizeof (fname), "", "genres", ".txt", PATHBLD_MP_NONE);
   if (! fileopFileExists (fname)) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: genre: missing %s", fname);
     return NULL;
@@ -37,6 +41,7 @@ genreAlloc (char *fname)
   genre = malloc (sizeof (genre_t));
   assert (genre != NULL);
 
+  genre->path = strdup (fname);
   genre->df = NULL;
   genre->genreList = NULL;
 
@@ -128,4 +133,11 @@ genreGetList (genre_t *genre)
   }
 
   return genre->genreList;
+}
+
+void
+genreSave (genre_t *genre, ilist_t *list)
+{
+  datafileSaveIndirect ("genre", genre->path, genredfkeys,
+      GENRE_KEY_MAX, list);
 }

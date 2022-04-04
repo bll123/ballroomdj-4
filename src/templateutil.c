@@ -43,6 +43,10 @@ templateImageCopy (const char *color)
   dirlist = filemanipBasicDirList (tbuff, ".svg");
   slistStartIterator (dirlist, &iteridx);
   while ((fname = slistIterateKey (dirlist, &iteridx)) != NULL) {
+    if (strcmp (fname, "fades.svg") == 0) {
+      continue;
+    }
+
     pathbldMakePath (from, sizeof (from), "",
         fname, "", PATHBLD_MP_TEMPLATEDIR);
     pathbldMakePath (to, sizeof (to), "",
@@ -51,6 +55,29 @@ templateImageCopy (const char *color)
     templateCopy (from, to, color);
   }
   slistFree (dirlist);
+}
+
+void
+templateImageLocaleCopy (void)
+{
+  char        localesfx [20];
+  char        tbuff [MAXPATHLEN];
+  char        from [MAXPATHLEN];
+  char        to [MAXPATHLEN];
+  char        *fname;
+
+  snprintf (localesfx, sizeof (localesfx), ".%s", sysvarsGetStr (SV_LOCALE_SHORT));
+
+  pathbldMakePath (tbuff, sizeof (tbuff), "",
+      "", "", PATHBLD_MP_TEMPLATEDIR);
+
+  /* at this time, only fades.svg has localization in it */
+  fname = "fades.svg";
+  pathbldMakePath (from, sizeof (from), "",
+      fname, "", PATHBLD_MP_TEMPLATEDIR);
+  pathbldMakePath (to, sizeof (to), "",
+      fname, "", PATHBLD_MP_IMGDIR);
+  templateCopy (from, to, NULL);
 }
 
 /* internal routines */
@@ -79,7 +106,8 @@ templateCopy (const char *from, const char *to, const char *color)
     }
   }
 
-  if (strcmp (color, "#ffa600") == 0) {
+  if (color == NULL ||
+      strcmp (color, "#ffa600") == 0) {
     filemanipCopy (from, to);
   } else {
     char    *data;

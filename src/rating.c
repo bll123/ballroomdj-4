@@ -1,18 +1,19 @@
 #include "config.h"
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
 #include <assert.h>
 
+#include "bdj4.h"
 #include "bdjstring.h"
 #include "bdjvarsdf.h"
 #include "datafile.h"
 #include "fileop.h"
 #include "log.h"
 #include "ilist.h"
+#include "pathbld.h"
 #include "rating.h"
 #include "slist.h"
 
@@ -23,12 +24,14 @@ static datafilekey_t ratingdfkeys [RATING_KEY_MAX] = {
 };
 
 rating_t *
-ratingAlloc (char *fname)
+ratingAlloc (void)
 {
   rating_t        *rating;
   ilistidx_t      key;
   ilistidx_t      iteridx;
+  char            fname [MAXPATHLEN];
 
+  pathbldMakePath (fname, sizeof (fname), "", "ratings", ".txt", PATHBLD_MP_NONE);
   if (! fileopFileExists (fname)) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: rating: missing %s", fname);
     return NULL;
@@ -37,6 +40,7 @@ ratingAlloc (char *fname)
   rating = malloc (sizeof (rating_t));
   assert (rating != NULL);
 
+  rating->path = strdup (fname);
   rating->df = datafileAllocParse ("rating", DFTYPE_INDIRECT, fname,
       ratingdfkeys, RATING_KEY_MAX, RATING_RATING);
   rating->rating = datafileGetList (rating->df);
@@ -62,6 +66,9 @@ void
 ratingFree (rating_t *rating)
 {
   if (rating != NULL) {
+    if (rating->path != NULL) {
+      free (rating->path);
+    }
     if (rating->df != NULL) {
       datafileFree (rating->df);
     }
@@ -128,4 +135,11 @@ ratingConv (datafileconv_t *conv)
     num = conv->u.num;
     conv->u.str = ilistGetStr (rating->rating, num, RATING_RATING);
   }
+}
+
+void
+ratingSave (rating_t *rating, ilist_t *list)
+{
+  datafileSaveIndirect ("rating", rating->path, ratingdfkeys,
+      RATING_KEY_MAX, list);
 }

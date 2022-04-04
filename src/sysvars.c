@@ -428,7 +428,7 @@ sysvarsGetNum (sysvarlkey_t idx)
 
 
 inline void
-sysvarsSetStr (sysvarkey_t idx, char *value)
+sysvarsSetStr (sysvarkey_t idx, const char *value)
 {
   if (idx >= SV_MAX) {
     return;

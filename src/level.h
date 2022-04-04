@@ -12,12 +12,13 @@ typedef enum {
 } levelkey_t;
 
 typedef struct {
-  datafile_t        *df;
-  ilist_t           *level;
-  int               maxWidth;
+  datafile_t  *df;
+  ilist_t     *level;
+  int         maxWidth;
+  char        *path;
 } level_t;
 
-level_t     *levelAlloc (char *);
+level_t     *levelAlloc (void);
 void        levelFree (level_t *);
 ssize_t     levelGetCount (level_t *level);
 int         levelGetMaxWidth (level_t *level);
@@ -28,5 +29,6 @@ ssize_t     levelGetMax (level_t *level);
 void        levelStartIterator (level_t *level, ilistidx_t *iteridx);
 ilistidx_t  levelIterate (level_t *level, ilistidx_t *iteridx);
 void        levelConv (datafileconv_t *conv);
+void        levelSave (level_t *level, ilist_t *list);
 
 #endif /* INC_LEVEL_H */

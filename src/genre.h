@@ -12,12 +12,13 @@ typedef enum {
 } genrekey_t;
 
 typedef struct {
-  datafile_t        *df;
-  ilist_t           *genre;
-  slist_t           *genreList;   // for drop-downs
+  datafile_t  *df;
+  ilist_t     *genre;
+  slist_t     *genreList;   // for drop-downs
+  char        *path;
 } genre_t;
 
-genre_t   *genreAlloc (char *);
+genre_t   *genreAlloc (void);
 void      genreFree (genre_t *);
 char      *genreGetGenre (genre_t *genre, ilistidx_t ikey);
 ssize_t   genreGetClassicalFlag (genre_t *genre, ilistidx_t ikey);
@@ -25,5 +26,6 @@ void      genreStartIterator (genre_t *genre, ilistidx_t *iteridx);
 ilistidx_t genreIterate (genre_t *genre, ilistidx_t *iteridx);
 void      genreConv (datafileconv_t *conv);
 slist_t   *genreGetList (genre_t *);
+void      genreSave (genre_t *genre, ilist_t *list);
 
 #endif /* INC_GENRE_H */

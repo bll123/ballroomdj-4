@@ -53,7 +53,7 @@ typedef enum {
 void    sysvarsInit (const char *);
 char    * sysvarsGetStr (sysvarkey_t idx);
 ssize_t sysvarsGetNum (sysvarlkey_t idx);
-void    sysvarsSetStr (sysvarkey_t, char *value);
+void    sysvarsSetStr (sysvarkey_t, const char *value);
 void    sysvarsSetNum (sysvarlkey_t, ssize_t);
 bool    isMacOS (void);
 bool    isWindows (void);

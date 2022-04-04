@@ -51,6 +51,7 @@ typedef struct {
     ssize_t     num;
     list_t      *list;
     char        *str;
+    double      dval;
   } u;
 } datafileconv_t;
 
@@ -94,5 +95,6 @@ list_t *      datafileGetLookup (datafile_t *);
 void          datafileSetData (datafile_t *df, void *data);
 void          datafileBackup (char *fname, int count);
 void          datafileSaveKeyVal (char *tag, char *fn, datafilekey_t *dfkeys, ssize_t count, nlist_t *list);
+void          datafileSaveIndirect (char *tag, char *fn, datafilekey_t *dfkeys, ssize_t count, nlist_t *list);
 
 #endif /* INC_DATAFILE_H */
