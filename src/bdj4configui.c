@@ -277,7 +277,6 @@ typedef struct {
   int               tabcount;
   confuiident_t     tablecurr;
   int               *tableidents;
-  volume_t          *volume;
   /* gtk stuff */
   GtkApplication    *app;
   GtkWidget         *window;
@@ -411,6 +410,9 @@ static void   confuiGenreSave (configui_t *confui);
 
 static void   confuiDanceSelect (GtkTreeView *tv, GtkTreePath *path,
     GtkTreeViewColumn *column, gpointer udata);
+static void   confuiDanceEntryChg (GtkEditable *e, gpointer udata);
+static void   confuiDanceSpinboxChg (GtkSpinButton *sb, gpointer udata);
+static bool   confuiDanceValidateAnnouncement (void *edata, void *udata);
 
 
 static int gKillReceived = 0;
@@ -430,6 +432,7 @@ main (int argc, char *argv[])
   int             count;
   char            *p;
   volsinklist_t   sinklist;
+  volume_t        *volume;
   orgopt_t        *orgopt;
 
 
@@ -520,9 +523,9 @@ main (int argc, char *argv[])
     ++count;
   }
 
-  confui.volume = volumeInit ();
-  assert (confui.volume != NULL);
-  volumeGetSinkList (confui.volume, "", &sinklist);
+  volume = volumeInit ();
+  assert (volume != NULL);
+  volumeGetSinkList (volume, "", &sinklist);
   tlist = nlistAlloc ("cu-audio-out", LIST_UNORDERED, free);
   llist = nlistAlloc ("cu-audio-out-l", LIST_ORDERED, free);
   confui.audiosinkidx = 0;
@@ -536,6 +539,7 @@ main (int argc, char *argv[])
   confui.uiitem [CONFUI_SPINBOX_AUDIO_OUTPUT].list = tlist;
   confui.uiitem [CONFUI_SPINBOX_AUDIO_OUTPUT].sblookuplist = llist;
   volumeFreeSinkList (&sinklist);
+  volumeFree (volume);
 
   tlist = nlistAlloc ("cu-writetags", LIST_UNORDERED, free);
   /* order these in the same order as defined in bdjopt.h */
@@ -677,6 +681,7 @@ main (int argc, char *argv[])
     ;
   }
   progstateFree (confui.progstate);
+  orgoptFree (orgopt);
 
   logProcEnd (LOG_PROC, "configui", "");
   logEnd ();
@@ -1063,33 +1068,72 @@ confuiActivate (GApplication *app, gpointer userdata)
   gtk_widget_set_margin_start (dvbox, 16);
   gtk_box_pack_start (GTK_BOX (hbox), dvbox, FALSE, FALSE, 0);
 
-  confuiMakeItemEntry (confui, dvbox, sg, _("Tags"),
+  confuiMakeItemEntry (confui, dvbox, sg, _("Dance"),
       CONFUI_ENTRY_DANCE_DANCE, -1, "");
+  g_object_set_data (
+      G_OBJECT (confui->uiitem [CONFUI_ENTRY_DANCE_DANCE].u.entry.entry),
+      "confuiwidx", GUINT_TO_POINTER (CONFUI_ENTRY_DANCE_DANCE));
+  g_object_set_data (
+      G_OBJECT (confui->uiitem [CONFUI_ENTRY_DANCE_DANCE].u.entry.entry),
+      "confuididx", GUINT_TO_POINTER (DANCE_DANCE));
+  g_signal_connect (confui->uiitem [CONFUI_ENTRY_DANCE_DANCE].u.entry.entry,
+      "changed", G_CALLBACK (confuiDanceEntryChg), confui);
 
-  confuiMakeItemSpinboxText (confui, dvbox, sg, _("Type"),
+  widget = confuiMakeItemSpinboxText (confui, dvbox, sg, _("Type"),
       CONFUI_SPINBOX_DANCE_TYPE, -1, 0);
+  g_object_set_data (G_OBJECT (widget), "confuididx",
+      GUINT_TO_POINTER (DANCE_TYPE));
+  g_signal_connect (widget, "value-changed", G_CALLBACK (confuiDanceSpinboxChg), confui);
 
-  confuiMakeItemSpinboxText (confui, dvbox, sg, _("Speed"),
+  widget = confuiMakeItemSpinboxText (confui, dvbox, sg, _("Speed"),
       CONFUI_SPINBOX_DANCE_SPEED, -1, 0);
+  g_object_set_data (G_OBJECT (widget), "confuididx",
+      GUINT_TO_POINTER (DANCE_SPEED));
+  g_signal_connect (widget, "value-changed", G_CALLBACK (confuiDanceSpinboxChg), confui);
 
   confuiMakeItemEntry (confui, dvbox, sg, _("Tags"),
       CONFUI_ENTRY_DANCE_TAGS, -1, "");
+  g_object_set_data (
+      G_OBJECT (confui->uiitem [CONFUI_ENTRY_DANCE_TAGS].u.entry.entry),
+      "confuiwidx", GUINT_TO_POINTER (CONFUI_ENTRY_DANCE_TAGS));
+  g_object_set_data (
+      G_OBJECT (confui->uiitem [CONFUI_ENTRY_DANCE_TAGS].u.entry.entry),
+      "confuididx", GUINT_TO_POINTER (DANCE_TAGS));
+  g_signal_connect (confui->uiitem [CONFUI_ENTRY_DANCE_TAGS].u.entry.entry,
+      "changed", G_CALLBACK (confuiDanceEntryChg), confui);
 
   confuiMakeItemEntryChooser (confui, dvbox, sg, _("Announcement"),
       CONFUI_ENTRY_DANCE_ANNOUNCEMENT, -1, "",
       confuiSelectAnnouncement);
+  g_object_set_data (
+      G_OBJECT (confui->uiitem [CONFUI_ENTRY_DANCE_ANNOUNCEMENT].u.entry.entry),
+      "confuiwidx", GUINT_TO_POINTER (CONFUI_ENTRY_DANCE_ANNOUNCEMENT));
+  g_object_set_data (
+      G_OBJECT (confui->uiitem [CONFUI_ENTRY_DANCE_ANNOUNCEMENT].u.entry.entry),
+      "confuididx", GUINT_TO_POINTER (DANCE_ANNOUNCE));
   uiutilsEntrySetValidate (
       &confui->uiitem [CONFUI_ENTRY_DANCE_ANNOUNCEMENT].u.entry,
-      uiutilsEntryValidateFile, confui);
+      confuiDanceValidateAnnouncement, confui);
+  g_signal_connect (confui->uiitem [CONFUI_ENTRY_DANCE_ANNOUNCEMENT].u.entry.entry,
+      "changed", G_CALLBACK (confuiDanceEntryChg), confui);
 
-  confuiMakeItemSpinboxInt (confui, dvbox, sg, _("Low BPM"),
+  widget = confuiMakeItemSpinboxInt (confui, dvbox, sg, _("Low BPM"),
       CONFUI_SPINBOX_DANCE_LOW_BPM, -1, 10, 500, 0);
+  g_object_set_data (G_OBJECT (widget), "confuididx",
+      GUINT_TO_POINTER (DANCE_LOW_BPM));
+  g_signal_connect (widget, "value-changed", G_CALLBACK (confuiDanceSpinboxChg), confui);
 
-  confuiMakeItemSpinboxInt (confui, dvbox, sg, _("High BPM"),
+  widget = confuiMakeItemSpinboxInt (confui, dvbox, sg, _("High BPM"),
       CONFUI_SPINBOX_DANCE_HIGH_BPM, -1, 10, 500, 0);
+  g_object_set_data (G_OBJECT (widget), "confuididx",
+      GUINT_TO_POINTER (DANCE_HIGH_BPM));
+  g_signal_connect (widget, "value-changed", G_CALLBACK (confuiDanceSpinboxChg), confui);
 
-  confuiMakeItemSpinboxText (confui, dvbox, sg, _("Time Signature"),
+  widget = confuiMakeItemSpinboxText (confui, dvbox, sg, _("Time Signature"),
       CONFUI_SPINBOX_DANCE_TIME_SIG, -1, 0);
+  g_object_set_data (G_OBJECT (widget), "confuididx",
+      GUINT_TO_POINTER (DANCE_TIMESIG));
+  g_signal_connect (widget, "value-changed", G_CALLBACK (confuiDanceSpinboxChg), confui);
 
   /* edit ratings */
   vbox = confuiMakeNotebookTab (confui, confui->notebook,
@@ -1579,7 +1623,6 @@ confuiPopulateOptions (configui_t *confui)
 
     if (i == CONFUI_SPINBOX_LOCALE &&
         localechanged) {
-fprintf (stderr, "locale changed\n");
       sysvarsSetStr (SV_LOCALE, sval);
       snprintf (tbuff, sizeof (tbuff), "%.2s", sval);
       sysvarsSetStr (SV_LOCALE_SHORT, tbuff);
@@ -1611,7 +1654,6 @@ fprintf (stderr, "locale changed\n");
         themechanged) {
       FILE    *fh;
 
-fprintf (stderr, "theme changed\n");
       pathbldMakePath (tbuff, sizeof (tbuff), "",
           "theme", ".txt", PATHBLD_MP_NONE);
       fh = fopen (tbuff, "w");
@@ -1624,7 +1666,6 @@ fprintf (stderr, "theme changed\n");
 
     if (i == CONFUI_WIDGET_UI_ACCENT_COLOR &&
         accentcolorchanged) {
-fprintf (stderr, "accent color changed\n");
       templateImageCopy (sval);
     }
   } /* for each item */
@@ -2349,6 +2390,7 @@ confuiUpdateMobmqQrcode (configui_t *confui)
     ip = webclientGetLocalIP ();
     snprintf (uri, sizeof (uri), "http://%s:%zd",
         ip, bdjoptGetNum (OPT_P_MOBILEMQPORT));
+    free (ip);
   }
 
   if (type != MOBILEMQ_OFF) {
@@ -2442,6 +2484,7 @@ confuiUpdateRemctrlQrcode (configui_t *confui)
     ip = webclientGetLocalIP ();
     snprintf (uri, sizeof (uri), "http://%s:%zd",
         ip, bdjoptGetNum (OPT_P_REMCONTROLPORT));
+    free (ip);
   }
 
   if (onoff == 1) {
@@ -3528,6 +3571,7 @@ confuiDanceSelect (GtkTreeView *tv, GtkTreePath *path,
   sval = conv.u.str;
   widx = CONFUI_ENTRY_DANCE_TAGS;
   uiutilsEntrySetValue (&confui->uiitem [widx].u.entry, sval);
+  free (conv.u.str);
 
   sval = danceGetStr (dances, key, DANCE_ANNOUNCE);
   widx = CONFUI_ENTRY_DANCE_ANNOUNCEMENT;
@@ -3553,3 +3597,158 @@ confuiDanceSelect (GtkTreeView *tv, GtkTreePath *path,
   widx = CONFUI_SPINBOX_DANCE_TYPE;
   uiutilsSpinboxTextSetValue (&confui->uiitem [widx].u.spinbox, (double) num);
 }
+
+static void
+confuiDanceEntryChg (GtkEditable *e, gpointer udata)
+{
+  configui_t      *confui = udata;
+  uiutilsentry_t  *entry;
+  const char      *str;
+  GtkWidget       *tree;
+  GtkTreeSelection  *sel;
+  GtkTreeModel    *model;
+  GtkTreeIter     iter;
+  int             count;
+  gulong          idx;
+  ssize_t         key;
+  dance_t         *dances;
+  int             didx;
+  datafileconv_t  conv;
+  int             widx;
+
+  widx = GPOINTER_TO_UINT (g_object_get_data (G_OBJECT (e), "confuiwidx"));
+
+  entry = &confui->uiitem [widx].u.entry;
+  if (entry->buffer == NULL) {
+    return;
+  }
+  str = gtk_entry_buffer_get_text (entry->buffer);
+  if (str == NULL || *str == '\0') {
+    return;
+  }
+
+  didx = GPOINTER_TO_UINT (g_object_get_data (G_OBJECT (e), "confuididx"));
+
+  tree = confui->tables [CONFUI_ID_DANCE].tree;
+  model = gtk_tree_view_get_model (GTK_TREE_VIEW (tree));
+  sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (tree));
+  count = gtk_tree_selection_count_selected_rows (sel);
+  if (count != 1) {
+    return;
+  }
+  gtk_tree_selection_get_selected (sel, &model, &iter);
+
+  if (didx == DANCE_DANCE) {
+    gtk_list_store_set (GTK_LIST_STORE (model), &iter,
+        CONFUI_DANCE_COL_DANCE, str,
+        -1);
+  }
+
+  dances = bdjvarsdfGet (BDJVDF_DANCES);
+  gtk_tree_model_get (model, &iter, CONFUI_DANCE_COL_DANCE_IDX, &idx, -1);
+  key = (ssize_t) idx;
+
+  if (didx == DANCE_TAGS) {
+    slist_t *slist;
+    char    *tstr;
+
+    tstr = strdup (str);
+    conv.u.str = tstr;
+    conv.valuetype = VALUE_STR;
+    convTextList (&conv);
+    slist = conv.u.list;
+    danceSetList (dances, key, didx, slist);
+    free (tstr);
+  } else {
+    danceSetStr (dances, key, didx, str);
+  }
+}
+
+static void
+confuiDanceSpinboxChg (GtkSpinButton *sb, gpointer udata)
+{
+  configui_t      *confui = udata;
+  GtkAdjustment   *adjustment;
+  GtkWidget       *tree;
+  GtkTreeSelection  *sel;
+  GtkTreeModel    *model;
+  GtkTreeIter     iter;
+  int             count;
+  gulong          idx;
+  double          value;
+  ssize_t         nval;
+  ssize_t         key;
+  dance_t         *dances;
+  int             didx;
+
+  adjustment = gtk_spin_button_get_adjustment (sb);
+  value = gtk_adjustment_get_value (adjustment);
+  nval = (ssize_t) value;
+
+  tree = confui->tables [CONFUI_ID_DANCE].tree;
+  model = gtk_tree_view_get_model (GTK_TREE_VIEW (tree));
+  sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (tree));
+  count = gtk_tree_selection_count_selected_rows (sel);
+  if (count != 1) {
+    return;
+  }
+  gtk_tree_selection_get_selected (sel, &model, &iter);
+
+  didx = GPOINTER_TO_UINT (g_object_get_data (G_OBJECT (sb), "confuididx"));
+
+  dances = bdjvarsdfGet (BDJVDF_DANCES);
+  gtk_tree_model_get (model, &iter, CONFUI_DANCE_COL_DANCE_IDX, &idx, -1);
+  key = (ssize_t) idx;
+  danceSetNum (dances, key, didx, nval);
+}
+
+bool
+confuiDanceValidateAnnouncement (void *edata, void *udata)
+{
+  uiutilsentry_t    *entry = edata;
+  bool              rc;
+  const char        *fn;
+  char              tbuff [MAXPATHLEN];
+  char              nfn [MAXPATHLEN];
+  char              *musicdir;
+  size_t            mlen;
+
+  musicdir = bdjoptGetStr (OPT_M_DIR_MUSIC);
+  mlen = strlen (musicdir);
+fprintf (stderr, "mdir: %s\n", musicdir);
+
+  rc = false;
+  if (entry->buffer != NULL) {
+    fn = gtk_entry_buffer_get_text (entry->buffer);
+    if (fn == NULL) {
+      return rc;
+    }
+fprintf (stderr, "fn: %s\n", fn);
+
+    strlcpy (nfn, fn, sizeof (nfn));
+    if (strncmp (musicdir, fn, mlen) == 0) {
+      strlcpy (nfn, fn + mlen + 1, sizeof (nfn));
+      gtk_entry_buffer_set_text (entry->buffer, nfn, -1);
+    }
+fprintf (stderr, "nfn: %s\n", nfn);
+
+    if (*nfn == '\0') {
+      rc = true;
+    } else {
+      *tbuff = '\0';
+      if (*nfn != '/' && *(nfn + 1) != ':') {
+        strlcpy (tbuff, musicdir, sizeof (tbuff));
+        strlcat (tbuff, "/", sizeof (tbuff));
+      }
+      strlcat (tbuff, nfn, sizeof (tbuff));
+fprintf (stderr, "tbuff: %s\n", tbuff);
+      pathNormPath (tbuff, sizeof (tbuff));
+      if (fileopFileExists (tbuff)) {
+        rc = true;
+      }
+    }
+  }
+
+  return rc;
+}
+

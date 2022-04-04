@@ -110,22 +110,24 @@ convTextList (datafileconv_t *conv)
 
   logProcBegin (LOG_PROC, "convTextList");
   if (conv->valuetype == VALUE_STR) {
-    char  *tokptr;
-    char  *str;
+    char    *tokptr;
+    char    *str;
+    slist_t *tlist;
 
     str = conv->u.str;
 
     conv->valuetype = VALUE_LIST;
-    conv->u.list = slistAlloc ("textlist", LIST_ORDERED, NULL);
+    tlist = slistAlloc ("textlist", LIST_ORDERED, NULL);
     assert (conv->u.list != NULL);
 
     if (conv->u.str != NULL && *conv->u.str) {
       p = strtok_r (str, " ,;", &tokptr);
       while (p != NULL) {
-        slistSetStr (conv->u.list, p, NULL);
+        slistSetStr (tlist, p, NULL);
         p = strtok_r (NULL, " ,;", &tokptr);
       }
     }
+    conv->u.list = tlist;
   } else if (conv->valuetype == VALUE_LIST) {
     slist_t     *list;
     slistidx_t  iteridx;

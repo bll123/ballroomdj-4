@@ -126,6 +126,24 @@ danceGetNum (dance_t *dance, ilistidx_t dkey, ilistidx_t idx)
   return ilistGetNum (dance->dances, dkey, idx);
 }
 
+void
+danceSetStr (dance_t *dances, ilistidx_t dkey, ilistidx_t idx, const char *str)
+{
+  ilistSetStr (dances->dances, dkey, idx, str);
+}
+
+void
+danceSetNum (dance_t *dances, ilistidx_t dkey, ilistidx_t idx, ssize_t value)
+{
+  ilistSetNum (dances->dances, dkey, idx, value);
+}
+
+void
+danceSetList (dance_t *dances, ilistidx_t dkey, ilistidx_t idx, slist_t *list)
+{
+  ilistSetList (dances->dances, dkey, idx, list);
+}
+
 slist_t *
 danceGetDanceList (dance_t *dance)
 {

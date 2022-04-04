@@ -66,6 +66,9 @@ void
 genreFree (genre_t *genre)
 {
   if (genre != NULL) {
+    if (genre->path != NULL) {
+      free (genre->path);
+    }
     if (genre->df != NULL) {
       datafileFree (genre->df);
     }

@@ -78,6 +78,7 @@ webclientClose (webclient_t *webclient)
 char *
 webclientGetLocalIP (void)
 {
+  char  *tip;
   char  *ip;
   CURL  *curl;
 
@@ -95,7 +96,9 @@ webclientGetLocalIP (void)
     curl_easy_setopt (curl, CURLOPT_VERBOSE, 1);
   }
   curl_easy_perform (curl);
-  curl_easy_getinfo (curl, CURLINFO_LOCAL_IP, &ip);
+  curl_easy_getinfo (curl, CURLINFO_LOCAL_IP, &tip);
+  ip = strdup (tip);
+  curl_easy_cleanup (curl);
   if (initialized == INIT_NONE) {
     curl_global_cleanup ();
   }

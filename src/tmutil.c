@@ -146,7 +146,7 @@ tmutilDisp (char *buff, size_t max)
 #else
   tp = localtime (&s);
 #endif
-  strftime (buff, max, "%a %F %r", tp);
+  strftime (buff, max, "%A %F %r", tp);
   return buff;
 }
 

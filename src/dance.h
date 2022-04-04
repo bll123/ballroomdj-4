@@ -46,6 +46,9 @@ ssize_t       danceGetCount (dance_t *);
 char *        danceGetStr (dance_t *, ilistidx_t dkey, ilistidx_t idx);
 ssize_t       danceGetNum (dance_t *, ilistidx_t dkey, ilistidx_t idx);
 slist_t       *danceGetList (dance_t *, ilistidx_t dkey, ilistidx_t idx);
+void          danceSetStr (dance_t *, ilistidx_t dkey, ilistidx_t idx, const char *str);
+void          danceSetNum (dance_t *, ilistidx_t dkey, ilistidx_t idx, ssize_t value);
+void          danceSetList (dance_t *, ilistidx_t dkey, ilistidx_t idx, slist_t *list);
 slist_t       *danceGetDanceList (dance_t *);
 void          danceConvDance (datafileconv_t *conv);
 

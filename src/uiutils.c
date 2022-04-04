@@ -361,7 +361,7 @@ uiutilsDropDownSelectionGet (uiutilsdropdown_t *dropdown, GtkTreePath *path)
 {
   GtkTreeIter   iter;
   GtkTreeModel  *model = NULL;
-  unsigned long idx = 0;
+  gulong        idx = 0;
   int32_t       idx32;
 
   logProcBegin (LOG_PROC, "uiutilsDropDownSelectionGet");

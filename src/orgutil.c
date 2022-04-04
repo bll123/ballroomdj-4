@@ -98,6 +98,7 @@ orgAlloc (char *orgpath)
     ++grpcount;
     p = strtok_r (NULL, "{}", &tokstr);
   }
+  free (tvalue);
 
   return org;
 }
@@ -106,6 +107,9 @@ void
 orgFree (org_t *org)
 {
   if (org != NULL) {
+    if (org->orgparsed != NULL) {
+      slistFree (org->orgparsed);
+    }
     free (org);
   }
 }
