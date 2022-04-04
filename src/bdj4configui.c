@@ -3715,7 +3715,6 @@ confuiDanceValidateAnnouncement (void *edata, void *udata)
 
   musicdir = bdjoptGetStr (OPT_M_DIR_MUSIC);
   mlen = strlen (musicdir);
-fprintf (stderr, "mdir: %s\n", musicdir);
 
   rc = false;
   if (entry->buffer != NULL) {
@@ -3723,14 +3722,12 @@ fprintf (stderr, "mdir: %s\n", musicdir);
     if (fn == NULL) {
       return rc;
     }
-fprintf (stderr, "fn: %s\n", fn);
 
     strlcpy (nfn, fn, sizeof (nfn));
     if (strncmp (musicdir, fn, mlen) == 0) {
       strlcpy (nfn, fn + mlen + 1, sizeof (nfn));
       gtk_entry_buffer_set_text (entry->buffer, nfn, -1);
     }
-fprintf (stderr, "nfn: %s\n", nfn);
 
     if (*nfn == '\0') {
       rc = true;
@@ -3741,7 +3738,6 @@ fprintf (stderr, "nfn: %s\n", nfn);
         strlcat (tbuff, "/", sizeof (tbuff));
       }
       strlcat (tbuff, nfn, sizeof (tbuff));
-fprintf (stderr, "tbuff: %s\n", tbuff);
       pathNormPath (tbuff, sizeof (tbuff));
       if (fileopFileExists (tbuff)) {
         rc = true;
