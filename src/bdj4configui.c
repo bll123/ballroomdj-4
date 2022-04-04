@@ -85,6 +85,7 @@ enum {
   CONFUI_COMBOBOX_MAX,
   CONFUI_ENTRY_DANCE_TAGS,
   CONFUI_ENTRY_DANCE_ANNOUNCEMENT,
+  CONFUI_ENTRY_DANCE_DANCE,
   CONFUI_ENTRY_MM_NAME,
   CONFUI_ENTRY_MM_TITLE,
   CONFUI_ENTRY_MUSIC_DIR,
@@ -121,7 +122,6 @@ enum {
   CONFUI_WIDGET_AO_CHG_SPACE,
   CONFUI_WIDGET_AUTO_ORGANIZE,
   CONFUI_WIDGET_DB_LOAD_FROM_GENRE,
-  CONFUI_WIDGET_DANCE_DANCE,
   /* the debug enums must be in numeric order */
   CONFUI_WIDGET_DEBUG_1,
   CONFUI_WIDGET_DEBUG_2,
@@ -222,6 +222,7 @@ typedef struct {
 enum {
   CONFUI_DANCE_COL_DANCE,
   CONFUI_DANCE_COL_SB_PAD,
+  CONFUI_DANCE_COL_DANCE_IDX,
   CONFUI_DANCE_COL_MAX,
 };
 
@@ -408,6 +409,9 @@ static void   confuiLevelSave (configui_t *confui);
 static void   confuiStatusSave (configui_t *confui);
 static void   confuiGenreSave (configui_t *confui);
 
+static void   confuiDanceSelect (GtkTreeView *tv, GtkTreePath *path,
+    GtkTreeViewColumn *column, gpointer udata);
+
 
 static int gKillReceived = 0;
 static int gdone = 0;
@@ -477,6 +481,7 @@ main (int argc, char *argv[])
 
   uiutilsEntryInit (&confui.uiitem [CONFUI_ENTRY_DANCE_TAGS].u.entry, 30, 100);
   uiutilsEntryInit (&confui.uiitem [CONFUI_ENTRY_DANCE_ANNOUNCEMENT].u.entry, 50, 200);
+  uiutilsEntryInit (&confui.uiitem [CONFUI_ENTRY_DANCE_DANCE].u.entry, 30, 50);
   uiutilsEntryInit (&confui.uiitem [CONFUI_ENTRY_MUSIC_DIR].u.entry, 50, 300);
   uiutilsEntryInit (&confui.uiitem [CONFUI_ENTRY_PROFILE_NAME].u.entry, 20, 30);
   uiutilsEntryInit (&confui.uiitem [CONFUI_ENTRY_STARTUP].u.entry, 50, 300);
@@ -1050,14 +1055,16 @@ confuiActivate (GApplication *app, gpointer userdata)
 
   confuiMakeItemTable (confui, hbox, CONFUI_ID_DANCE, CONFUI_TABLE_NO_UP_DOWN);
   confuiCreateDanceTable (confui);
+  g_signal_connect (confui->tables [CONFUI_ID_DANCE].tree, "row-activated",
+      G_CALLBACK (confuiDanceSelect), confui);
 
   dvbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   gtk_widget_set_vexpand (dvbox, FALSE);
   gtk_widget_set_margin_start (dvbox, 16);
   gtk_box_pack_start (GTK_BOX (hbox), dvbox, FALSE, FALSE, 0);
 
-  confuiMakeItemLabelDisp (confui, dvbox, sg, _("Dance"),
-      CONFUI_WIDGET_DANCE_DANCE, -1);
+  confuiMakeItemEntry (confui, dvbox, sg, _("Tags"),
+      CONFUI_ENTRY_DANCE_DANCE, -1, "");
 
   confuiMakeItemSpinboxText (confui, dvbox, sg, _("Type"),
       CONFUI_SPINBOX_DANCE_TYPE, -1, 0);
@@ -1095,6 +1102,10 @@ confuiActivate (GApplication *app, gpointer userdata)
   gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
   gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
 
+  widget = uiutilsCreateLabel (_("Double click on a field to edit."));
+  gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
+  gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
+
   confuiMakeItemTable (confui, vbox, CONFUI_ID_RATINGS, CONFUI_TABLE_KEEP_FIRST);
   confui->tables [CONFUI_ID_RATINGS].listcreatefunc = confuiRatingListCreate;
   confui->tables [CONFUI_ID_RATINGS].savefunc = confuiRatingSave;
@@ -1106,6 +1117,10 @@ confuiActivate (GApplication *app, gpointer userdata)
   sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
   g_signal_connect (confui->notebook, "switch-page",
       G_CALLBACK (confuiSwitchTable), confui);
+
+  widget = uiutilsCreateLabel (_("Double click on a field to edit."));
+  gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
+  gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
 
   confuiMakeItemTable (confui, vbox, CONFUI_ID_STATUS,
       CONFUI_TABLE_KEEP_FIRST | CONFUI_TABLE_KEEP_LAST);
@@ -1125,6 +1140,10 @@ confuiActivate (GApplication *app, gpointer userdata)
   gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
   gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
 
+  widget = uiutilsCreateLabel (_("Double click on a field to edit."));
+  gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
+  gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
+
   confuiMakeItemTable (confui, vbox, CONFUI_ID_LEVELS, CONFUI_TABLE_NONE);
   confui->tables [CONFUI_ID_LEVELS].togglecol = CONFUI_LEVEL_COL_DEFAULT;
   confui->tables [CONFUI_ID_LEVELS].listcreatefunc = confuiLevelListCreate;
@@ -1137,6 +1156,10 @@ confuiActivate (GApplication *app, gpointer userdata)
   sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
   g_signal_connect (confui->notebook, "switch-page",
       G_CALLBACK (confuiSwitchTable), confui);
+
+  widget = uiutilsCreateLabel (_("Double click on a field to edit."));
+  gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
+  gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
 
   confuiMakeItemTable (confui, vbox, CONFUI_ID_GENRES, CONFUI_TABLE_NONE);
   confui->tables [CONFUI_ID_GENRES].togglecol = CONFUI_GENRE_COL_CLASSICAL;
@@ -2793,8 +2816,11 @@ confuiSwitchTable (GtkNotebook *nb, GtkWidget *page, guint pagenum, gpointer uda
     path = gtk_tree_path_new_from_string ("0");
     if (path != NULL) {
       gtk_tree_view_set_cursor (GTK_TREE_VIEW (tree), path, NULL, FALSE);
-      gtk_tree_path_free (path);
     }
+    if (confui->tablecurr == CONFUI_ID_DANCE) {
+      confuiDanceSelect (GTK_TREE_VIEW (tree), path, NULL, confui);
+    }
+    gtk_tree_path_free (path);
   }
 
   logProcEnd (LOG_PROC, "confuiSwitchTable", "");
@@ -2817,13 +2843,13 @@ confuiCreateDanceTable (configui_t *confui)
   dances = bdjvarsdfGet (BDJVDF_DANCES);
 
   store = gtk_list_store_new (CONFUI_DANCE_COL_MAX,
-      G_TYPE_STRING, G_TYPE_STRING);
+      G_TYPE_STRING, G_TYPE_STRING, G_TYPE_ULONG);
   assert (store != NULL);
 
   danceStartIterator (dances, &iteridx);
 
   while ((key = danceIterate (dances, &iteridx)) >= 0) {
-    char    *dancedisp;
+    char        *dancedisp;
 
     dancedisp = danceGetStr (dances, key, DANCE_DANCE);
 
@@ -2831,6 +2857,7 @@ confuiCreateDanceTable (configui_t *confui)
     gtk_list_store_set (store, &iter,
         CONFUI_DANCE_COL_DANCE, dancedisp,
         CONFUI_DANCE_COL_SB_PAD, "    ",
+        CONFUI_DANCE_COL_DANCE_IDX, key,
         -1);
     confui->tables [CONFUI_ID_DANCE].currcount += 1;
   }
@@ -3465,3 +3492,64 @@ confuiGenreSave (configui_t *confui)
   genreSave (genres, confui->tables [CONFUI_ID_GENRES].savelist);
 }
 
+static void
+confuiDanceSelect (GtkTreeView *tv, GtkTreePath *path,
+    GtkTreeViewColumn *column, gpointer udata)
+{
+  configui_t    *confui = udata;
+  GtkTreeIter   iter;
+  GtkTreeModel  *model = NULL;
+  unsigned long idx = 0;
+  ilistidx_t    key;
+  int           widx;
+  char          *sval;
+  ssize_t       num;
+  slist_t       *slist;
+  datafileconv_t conv;
+  dance_t       *dances;
+
+  model = gtk_tree_view_get_model (tv);
+  if (! gtk_tree_model_get_iter (model, &iter, path)) {
+    return;
+  }
+  gtk_tree_model_get (model, &iter, CONFUI_DANCE_COL_DANCE_IDX, &idx, -1);
+  key = (ilistidx_t) idx;
+
+  dances = bdjvarsdfGet (BDJVDF_DANCES);
+
+  sval = danceGetStr (dances, key, DANCE_DANCE);
+  widx = CONFUI_ENTRY_DANCE_DANCE;
+  uiutilsEntrySetValue (&confui->uiitem [widx].u.entry, sval);
+
+  slist = danceGetList (dances, key, DANCE_TAGS);
+  conv.u.list = slist;
+  conv.valuetype = VALUE_LIST;
+  convTextList (&conv);
+  sval = conv.u.str;
+  widx = CONFUI_ENTRY_DANCE_TAGS;
+  uiutilsEntrySetValue (&confui->uiitem [widx].u.entry, sval);
+
+  sval = danceGetStr (dances, key, DANCE_ANNOUNCE);
+  widx = CONFUI_ENTRY_DANCE_ANNOUNCEMENT;
+  uiutilsEntrySetValue (&confui->uiitem [widx].u.entry, sval);
+
+  num = danceGetNum (dances, key, DANCE_HIGH_BPM);
+  widx = CONFUI_SPINBOX_DANCE_HIGH_BPM;
+  uiutilsSpinboxTextSetValue (&confui->uiitem [widx].u.spinbox, (double) num);
+
+  num = danceGetNum (dances, key, DANCE_LOW_BPM);
+  widx = CONFUI_SPINBOX_DANCE_LOW_BPM;
+  uiutilsSpinboxTextSetValue (&confui->uiitem [widx].u.spinbox, (double) num);
+
+  num = danceGetNum (dances, key, DANCE_SPEED);
+  widx = CONFUI_SPINBOX_DANCE_SPEED;
+  uiutilsSpinboxTextSetValue (&confui->uiitem [widx].u.spinbox, (double) num);
+
+  num = danceGetNum (dances, key, DANCE_TIMESIG);
+  widx = CONFUI_SPINBOX_DANCE_TIME_SIG;
+  uiutilsSpinboxTextSetValue (&confui->uiitem [widx].u.spinbox, (double) num);
+
+  num = danceGetNum (dances, key, DANCE_TYPE);
+  widx = CONFUI_SPINBOX_DANCE_TYPE;
+  uiutilsSpinboxTextSetValue (&confui->uiitem [widx].u.spinbox, (double) num);
+}

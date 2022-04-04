@@ -23,11 +23,9 @@ static void danceConvTimeSig (datafileconv_t *conv);
   /* must be sorted in ascii order */
 static datafilekey_t dancedfkeys [DANCE_KEY_MAX] = {
   { "ANNOUNCE",   DANCE_ANNOUNCE, VALUE_STR, NULL, -1 },
-  { "COUNT",      DANCE_COUNT,    VALUE_NUM, NULL, -1 },
   { "DANCE",      DANCE_DANCE,    VALUE_STR, NULL, -1 },
   { "HIGHBPM",    DANCE_HIGH_BPM, VALUE_NUM, NULL, -1 },
   { "LOWBPM",     DANCE_LOW_BPM,  VALUE_NUM, NULL, -1 },
-  { "SELECT",     DANCE_SELECT,   VALUE_NUM, NULL, -1 },
   { "SPEED",      DANCE_SPEED,    VALUE_LIST, danceConvSpeed, -1 },
   { "TAGS",       DANCE_TAGS,     VALUE_LIST, convTextList, -1 },
   { "TIMESIG",    DANCE_TIMESIG,  VALUE_NUM, danceConvTimeSig, -1 },

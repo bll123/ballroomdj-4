@@ -13,10 +13,6 @@ SPEED
 ..normal
 TAGS
 ..tango club
-COUNT
-..2
-SELECT
-..0
 LOWBPM
 ..120
 HIGHBPM
@@ -35,10 +31,6 @@ SPEED
 ..normal
 TAGS
 ..club
-COUNT
-..2
-SELECT
-..0
 LOWBPM
 ..
 HIGHBPM
@@ -49,28 +41,6 @@ TIMESIG
 ..4/4
 KEY
 ..2
-DANCE
-..Bolero
-TYPE
-..latin
-SPEED
-..slow
-TAGS
-..rumba
-COUNT
-..3
-SELECT
-..1
-LOWBPM
-..96
-HIGHBPM
-..104
-ANNOUNCE
-..
-TIMESIG
-..4/4
-KEY
-..3
 DANCE
 ..Cha Cha
 TYPE
@@ -79,10 +49,6 @@ SPEED
 ..normal
 TAGS
 ..
-COUNT
-..5
-SELECT
-..1
 LOWBPM
 ..124
 HIGHBPM
@@ -92,7 +58,7 @@ ANNOUNCE
 TIMESIG
 ..4/4
 KEY
-..4
+..3
 DANCE
 ..Foxtrot
 TYPE
@@ -101,10 +67,6 @@ SPEED
 ..normal
 TAGS
 ..
-COUNT
-..7
-SELECT
-..1
 LOWBPM
 ..112
 HIGHBPM
@@ -114,7 +76,7 @@ ANNOUNCE
 TIMESIG
 ..4/4
 KEY
-..5
+..4
 DANCE
 ..Jive
 TYPE
@@ -123,10 +85,6 @@ SPEED
 ..fast
 TAGS
 ..swing
-COUNT
-..2
-SELECT
-..1
 LOWBPM
 ..152
 HIGHBPM
@@ -136,29 +94,7 @@ ANNOUNCE
 TIMESIG
 ..4/4
 KEY
-..6
-DANCE
-..NC2S
-TYPE
-..club
-SPEED
-..normal
-TAGS
-..club
-COUNT
 ..5
-SELECT
-..1
-LOWBPM
-..200
-HIGHBPM
-..368
-ANNOUNCE
-..
-TIMESIG
-..4/4
-KEY
-..7
 DANCE
 ..Paso Doble
 TYPE
@@ -167,10 +103,6 @@ SPEED
 ..normal
 TAGS
 ..
-COUNT
-..4
-SELECT
-..0
 LOWBPM
 ..120
 HIGHBPM
@@ -180,7 +112,7 @@ ANNOUNCE
 TIMESIG
 ..2/4
 KEY
-..8
+..6
 DANCE
 ..Quickstep
 TYPE
@@ -189,10 +121,6 @@ SPEED
 ..fast
 TAGS
 ..
-COUNT
-..4
-SELECT
-..1
 LOWBPM
 ..192
 HIGHBPM
@@ -202,7 +130,7 @@ ANNOUNCE
 TIMESIG
 ..4/4
 KEY
-..9
+..7
 DANCE
 ..Rumba
 TYPE
@@ -211,10 +139,6 @@ SPEED
 ..normal
 TAGS
 ..rumba
-COUNT
-..5
-SELECT
-..1
 LOWBPM
 ..104
 HIGHBPM
@@ -224,7 +148,7 @@ ANNOUNCE
 TIMESIG
 ..4/4
 KEY
-..10
+..8
 DANCE
 ..Salsa
 TYPE
@@ -233,10 +157,6 @@ SPEED
 ..fast
 TAGS
 ..salsa club
-COUNT
-..2
-SELECT
-..1
 LOWBPM
 ..160
 HIGHBPM
@@ -246,7 +166,7 @@ ANNOUNCE
 TIMESIG
 ..4/4
 KEY
-..11
+..9
 DANCE
 ..Samba
 TYPE
@@ -255,10 +175,6 @@ SPEED
 ..normal
 TAGS
 ..
-COUNT
-..3
-SELECT
-..1
 LOWBPM
 ..96
 HIGHBPM
@@ -268,7 +184,7 @@ ANNOUNCE
 TIMESIG
 ..2/4
 KEY
-..12
+..10
 DANCE
 ..Tango
 TYPE
@@ -277,10 +193,6 @@ SPEED
 ..normal
 TAGS
 ..tango
-COUNT
-..7
-SELECT
-..1
 LOWBPM
 ..128
 HIGHBPM
@@ -290,7 +202,7 @@ ANNOUNCE
 TIMESIG
 ..2/4
 KEY
-..13
+..11
 DANCE
 ..Viennese Waltz
 TYPE
@@ -299,10 +211,6 @@ SPEED
 ..fast
 TAGS
 ..waltz
-COUNT
-..3
-SELECT
-..1
 LOWBPM
 ..174
 HIGHBPM
@@ -312,7 +220,7 @@ ANNOUNCE
 TIMESIG
 ..3/4
 KEY
-..14
+..12
 DANCE
 ..Waltz
 TYPE
@@ -321,10 +229,6 @@ SPEED
 ..normal
 TAGS
 ..waltz
-COUNT
-..7
-SELECT
-..1
 LOWBPM
 ..84
 HIGHBPM
@@ -334,7 +238,7 @@ ANNOUNCE
 TIMESIG
 ..3/4
 KEY
-..15
+..13
 DANCE
 ..West Coast Swing
 TYPE
@@ -343,10 +247,6 @@ SPEED
 ..normal
 TAGS
 ..swing club
-COUNT
-..5
-SELECT
-..1
 LOWBPM
 ..90
 HIGHBPM

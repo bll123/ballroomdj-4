@@ -32,6 +32,7 @@ if { [file exists $infn] } {
   puts $fh "# [clock format [clock seconds] -gmt 1]"
   puts $fh "# version 1"
   foreach {item} $typevals {
+    if { $item eq "rhythm" } { set item latin }
     puts $fh $item
   }
   close $fh

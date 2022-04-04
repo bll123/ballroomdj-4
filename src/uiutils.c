@@ -693,17 +693,21 @@ uiutilsEntryValidateFile (void *edata, void *udata)
 {
   uiutilsentry_t    *entry = edata;
   bool              rc;
-  const char        *dir;
+  const char        *fn;
   char              tbuff [MAXPATHLEN];
 
   rc = false;
   if (entry->buffer != NULL) {
-    dir = gtk_entry_buffer_get_text (entry->buffer);
-    if (dir != NULL) {
-      strlcpy (tbuff, dir, sizeof (tbuff));
-      pathNormPath (tbuff, sizeof (tbuff));
-      if (fileopFileExists (tbuff)) {
+    fn = gtk_entry_buffer_get_text (entry->buffer);
+    if (fn != NULL) {
+      if (*fn == '\0') {
         rc = true;
+      } else {
+        strlcpy (tbuff, fn, sizeof (tbuff));
+        pathNormPath (tbuff, sizeof (tbuff));
+        if (fileopFileExists (tbuff)) {
+          rc = true;
+        }
       }
     }
   }

@@ -7,11 +7,9 @@
 
 typedef enum {
   DANCE_ANNOUNCE,           //
-  DANCE_COUNT,              //
   DANCE_DANCE,              //
   DANCE_HIGH_BPM,           //
   DANCE_LOW_BPM,            //
-  DANCE_SELECT,             //
   DANCE_SPEED,              //
   DANCE_TAGS,               //
   DANCE_TIMESIG,
