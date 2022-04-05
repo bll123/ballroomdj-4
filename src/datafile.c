@@ -260,6 +260,7 @@ datafileParseMerge (list_t *datalist, char *data, char *name,
   nlist_t       *setlist = NULL;
   valuetype_t   vt = 0;
   size_t        inc = 2;
+  nlistidx_t    nikey = 0;
   nlistidx_t    ikey = 0;
   ssize_t       lval = 0;
   double        dval = 0.0;
@@ -342,6 +343,7 @@ datafileParseMerge (list_t *datalist, char *data, char *name,
     logMsg (LOG_DBG, LOG_DATAFILE, "use dfkeys");
   }
 
+  nikey = 0;
   for (ssize_t i = 0; i < dataCount; i += inc) {
     tkeystr = strdata [i];
     if (inc > 1) {
@@ -367,18 +369,20 @@ datafileParseMerge (list_t *datalist, char *data, char *name,
         strcmp (tkeystr, "KEY") == 0) {
       char      temp [80];
 
+      /* rather than using the indirect key in the file, renumber the data */
       if (key >= 0) {
-        nlistSetList (datalist, key, itemList);
+        nlistSetList (datalist, nikey, itemList);
         if (lookup != NULL &&
             lookupKey != DATAFILE_NO_LOOKUP &&
             tlookupkey != NULL) {
           logMsg (LOG_DBG, LOG_DATAFILE, "lookup: set %s to %ld", tlookupkey, key);
-          slistSetNum (*lookup, tlookupkey, key);
+          slistSetNum (*lookup, tlookupkey, nikey);
         }
         key = -1L;
+        nikey++;
       }
       key = atol (tvalstr);
-      snprintf (temp, sizeof (temp), "%s-item-%zd", name, key);
+      snprintf (temp, sizeof (temp), "%s-item-%zd", name, nikey);
       itemList = nlistAlloc (temp, LIST_ORDERED, free);
       continue;
     }
@@ -553,7 +557,7 @@ datafileSaveIndirect (char *tag, char *fn, datafilekey_t *dfkeys,
   FILE            *fh;
   datafileconv_t  conv;
   valuetype_t     vt;
-  ssize_t         count;
+  ilistidx_t      count;
   ilistidx_t      iteridx;
   ilistidx_t      key;
 
@@ -568,10 +572,12 @@ datafileSaveIndirect (char *tag, char *fn, datafilekey_t *dfkeys,
   fprintf (fh, "version\n..1\n");
   fprintf (fh, "count\n..%zd\n", count);
 
+  count = 0;
   while ((key = ilistIterateKey (list, &iteridx)) >= 0) {
     conv.allocated = false;
     conv.valuetype = VALUE_NUM;
-    conv.u.num = key;
+    /* on save, re-order the keys */
+    conv.u.num = count++;
     datafileSaveItem (fh, "KEY", NULL, &conv);
 
     for (ssize_t i = 0; i < dfkeycount; ++i) {

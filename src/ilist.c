@@ -37,7 +37,7 @@ ilistFree (void *list)
   listFree (list);
 }
 
-inline ssize_t
+inline int
 ilistGetVersion (ilist_t *list)
 {
   if (list == NULL) {
@@ -46,7 +46,7 @@ ilistGetVersion (ilist_t *list)
   return list->version;
 }
 
-inline ssize_t
+inline ilistidx_t
 ilistGetCount (ilist_t *list)
 {
   if (list == NULL) {
@@ -56,7 +56,7 @@ ilistGetCount (ilist_t *list)
 }
 
 inline void
-ilistSetSize (ilist_t *list, ssize_t siz)
+ilistSetSize (ilist_t *list, ilistidx_t siz)
 {
   listSetSize (list, siz);
 }
@@ -85,7 +85,7 @@ ilistSetData (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx, void *data)
 }
 
 void
-ilistSetNum (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx, ssize_t data)
+ilistSetNum (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx, ilistidx_t data)
 {
   listitem_t    item;
 
@@ -162,10 +162,10 @@ ilistGetStr (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx)
   return ilistGetData (list, ikey, lidx);
 }
 
-ssize_t
+ilistidx_t
 ilistGetNum (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx)
 {
-  ssize_t     value = LIST_VALUE_INVALID;
+  ilistidx_t     value = LIST_VALUE_INVALID;
   listkey_t   key;
   ilistidx_t   idx;
   nlist_t     *datalist;
@@ -248,7 +248,7 @@ ilistStartIterator (ilist_t *list, ilistidx_t *iteridx)
 ilistidx_t
 ilistIterateKey (ilist_t *list, ilistidx_t *iteridx)
 {
-  ssize_t      value = LIST_LOC_INVALID;
+  ilistidx_t      value = LIST_LOC_INVALID;
 
   logProcBegin (LOG_PROC, "ilistIterateKey");
   if (list == NULL || list->keytype == LIST_KEY_STR) {

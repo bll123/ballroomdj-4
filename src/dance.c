@@ -214,6 +214,23 @@ danceDelete (dance_t *dances, ilistidx_t dkey)
   ilistDelete (dances->dances, dkey);
 }
 
+ilistidx_t
+danceAdd (dance_t *dances, char *name)
+{
+  ilistidx_t    count;
+
+  count = ilistGetCount (dances->dances);
+  ilistSetStr (dances->dances, count, DANCE_DANCE, name);
+  ilistSetNum (dances->dances, count, DANCE_SPEED, DANCE_SPEED_NORMAL);
+  ilistSetNum (dances->dances, count, DANCE_TYPE, 0);
+  ilistSetNum (dances->dances, count, DANCE_TIMESIG, DANCE_TIMESIG_44);
+  ilistSetNum (dances->dances, count, DANCE_HIGH_BPM, 0);
+  ilistSetNum (dances->dances, count, DANCE_LOW_BPM, 0);
+  ilistSetStr (dances->dances, count, DANCE_ANNOUNCE, "");
+  ilistSetList (dances->dances, count, DANCE_TAGS, NULL);
+  return count;
+}
+
 /* internal routines */
 
 static void

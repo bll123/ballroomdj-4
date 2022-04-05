@@ -103,11 +103,14 @@ listSetSize (list_t *list, ssize_t siz)
   }
 
   if (siz > list->allocCount) {
+    ssize_t   tsiz;
+
+    tsiz = list->allocCount;
     list->allocCount = siz;
     list->data = realloc (list->data,
         (size_t) list->allocCount * sizeof (listitem_t));
     assert (list->data != NULL);
-    list->allocCount = siz;
+    memset (list->data + tsiz, '\0', sizeof (listitem_t) * (siz - tsiz));
   }
 }
 
@@ -414,10 +417,12 @@ listFreeItem (list_t *list, ssize_t idx)
     if (list->keytype == LIST_KEY_STR &&
         dp->key.strkey != NULL) {
       free (dp->key.strkey);
+      dp->key.strkey = NULL;
     }
     if (dp->valuetype == VALUE_STR &&
         dp->value.data != NULL) {
       free (dp->value.data);
+      dp->value.data = NULL;
     }
     if (dp->valuetype == VALUE_DATA &&
         dp->value.data != NULL &&

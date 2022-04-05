@@ -378,6 +378,7 @@ static void   confuiTableRemove (GtkButton *b, gpointer udata);
 static void   confuiTableAdd (GtkButton *b, gpointer udata);
 static void   confuiSwitchTable (GtkNotebook *nb, GtkWidget *page, guint pagenum, gpointer udata);
 static void   confuiCreateDanceTable (configui_t *confui);
+static void   confuiDanceSet (GtkListStore *store, GtkTreeIter *iter, char *dancedisp, ilistidx_t key);
 static void   confuiCreateRatingTable (configui_t *confui);
 static void   confuiRatingSet (GtkListStore *store, GtkTreeIter *iter, int editable, char *ratingdisp, ssize_t weight);
 static void   confuiCreateStatusTable (configui_t *confui);
@@ -2919,37 +2920,36 @@ confuiTableAdd (GtkButton *b, gpointer udata)
 
   switch (confui->tablecurr) {
     case CONFUI_ID_NONE:
-    case CONFUI_ID_MAX:
-    {
+    case CONFUI_ID_MAX: {
       break;
     }
 
-    case CONFUI_ID_DANCE:
-    {
-//      confuiDanceSet (GTK_LIST_STORE (model), &niter, TRUE, _("New Dance"), 0);
+    case CONFUI_ID_DANCE: {
+      dance_t     *dances;
+      ilistidx_t  dkey;
+
+      dances = bdjvarsdfGet (BDJVDF_DANCES);
+      dkey = danceAdd (dances, _("New Dance"));
+      confuiDanceSet (GTK_LIST_STORE (model), &niter, _("New Dance"), dkey);
       break;
     }
 
-    case CONFUI_ID_GENRES:
-    {
+    case CONFUI_ID_GENRES: {
       confuiGenreSet (GTK_LIST_STORE (model), &niter, TRUE, _("New Genre"), 0);
       break;
     }
 
-    case CONFUI_ID_RATINGS:
-    {
+    case CONFUI_ID_RATINGS: {
       confuiRatingSet (GTK_LIST_STORE (model), &niter, TRUE, _("New Rating"), 0);
       break;
     }
 
-    case CONFUI_ID_LEVELS:
-    {
+    case CONFUI_ID_LEVELS: {
       confuiLevelSet (GTK_LIST_STORE (model), &niter, TRUE, _("New Level"), 0, 0);
       break;
     }
 
-    case CONFUI_ID_STATUS:
-    {
+    case CONFUI_ID_STATUS: {
       confuiStatusSet (GTK_LIST_STORE (model), &niter, TRUE, _("New Status"), 0);
       break;
     }
@@ -3010,10 +3010,12 @@ confuiCreateDanceTable (configui_t *confui)
   GtkListStore      *store = NULL;
   GtkCellRenderer   *renderer = NULL;
   GtkTreeViewColumn *column = NULL;
-  ilistidx_t        iteridx;
+  slistidx_t        iteridx;
   ilistidx_t        key;
   dance_t           *dances;
   GtkWidget         *tree;
+  slist_t           *dancelist;
+
 
   logProcBegin (LOG_PROC, "confuiCreateDanceTable");
 
@@ -3023,19 +3025,15 @@ confuiCreateDanceTable (configui_t *confui)
       G_TYPE_STRING, G_TYPE_STRING, G_TYPE_ULONG);
   assert (store != NULL);
 
-  danceStartIterator (dances, &iteridx);
-
-  while ((key = danceIterate (dances, &iteridx)) >= 0) {
+  dancelist = danceGetDanceList (dances);
+  slistStartIterator (dancelist, &iteridx);
+  while ((key = slistIterateValueNum (dancelist, &iteridx)) >= 0) {
     char        *dancedisp;
 
     dancedisp = danceGetStr (dances, key, DANCE_DANCE);
 
     gtk_list_store_append (store, &iter);
-    gtk_list_store_set (store, &iter,
-        CONFUI_DANCE_COL_DANCE, dancedisp,
-        CONFUI_DANCE_COL_SB_PAD, "    ",
-        CONFUI_DANCE_COL_DANCE_IDX, key,
-        -1);
+    confuiDanceSet (store, &iter, dancedisp, key);
     confui->tables [CONFUI_ID_DANCE].currcount += 1;
   }
 
@@ -3061,6 +3059,19 @@ confuiCreateDanceTable (configui_t *confui)
   gtk_tree_view_set_model (GTK_TREE_VIEW (tree), GTK_TREE_MODEL (store));
   g_object_unref (store);
   logProcEnd (LOG_PROC, "confuiCreateDanceTable", "");
+}
+
+static void
+confuiDanceSet (GtkListStore *store, GtkTreeIter *iter,
+    char *dancedisp, ilistidx_t key)
+{
+  logProcBegin (LOG_PROC, "confuiDanceSet");
+  gtk_list_store_set (store, iter,
+      CONFUI_DANCE_COL_DANCE, dancedisp,
+      CONFUI_DANCE_COL_SB_PAD, "    ",
+      CONFUI_DANCE_COL_DANCE_IDX, key,
+      -1);
+  logProcEnd (LOG_PROC, "confuiDanceSet", "");
 }
 
 static void

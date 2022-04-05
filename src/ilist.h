@@ -11,20 +11,20 @@ typedef listorder_t ilistorder_t;
   /* keyed by a ilistidx_t */
 ilist_t   *ilistAlloc (char *name, ilistorder_t);
 void      ilistFree (void * list);
-ssize_t   ilistGetVersion (ilist_t *list);
-ssize_t   ilistGetCount (ilist_t *list);
-void      ilistSetSize (ilist_t *, ssize_t);
+int       ilistGetVersion (ilist_t *list);
+ilistidx_t   ilistGetCount (ilist_t *list);
+void      ilistSetSize (ilist_t *, ilistidx_t);
   /* set routines */
 void      ilistSetStr (list_t *, ilistidx_t ikey, ilistidx_t lidx, const char *value);
 void      ilistSetList (list_t *, ilistidx_t ikey, ilistidx_t lidx, void *value);
 void      ilistSetData (list_t *, ilistidx_t ikey, ilistidx_t lidx, void *value);
-void      ilistSetNum (list_t *, ilistidx_t ikey, ilistidx_t lidx, ssize_t value);
+void      ilistSetNum (list_t *, ilistidx_t ikey, ilistidx_t lidx, ilistidx_t value);
 void      ilistSetDouble (list_t *, ilistidx_t ikey, ilistidx_t lidx, double value);
   /* get routines */
 bool      ilistExists (list_t *, ilistidx_t ikey);
 void      *ilistGetData (list_t *, ilistidx_t ikey, ilistidx_t lidx);
 char      *ilistGetStr (list_t *, ilistidx_t ikey, ilistidx_t lidx);
-ssize_t   ilistGetNum (list_t *, ilistidx_t ikey, ilistidx_t lidx);
+ilistidx_t   ilistGetNum (list_t *, ilistidx_t ikey, ilistidx_t lidx);
 double    ilistGetDouble (list_t *, ilistidx_t ikey, ilistidx_t lidx);
 slist_t   *ilistGetList (list_t *, ilistidx_t ikey, ilistidx_t lidx);
 void      ilistDelete (list_t *, ilistidx_t ikey);
