@@ -4,7 +4,7 @@ version
 KEY
 ..0
 DANCE
-..Argentijnse Tango
+..Argentine Tango
 SELECTED
 ..0
 COUNT
@@ -17,6 +17,34 @@ BPMHIGH
 ..
 KEY
 ..1
+DANCE
+..Bachata
+SELECTED
+..0
+COUNT
+..2
+MAXPLAYTIME
+..
+BPMLOW
+..
+BPMHIGH
+..
+KEY
+..2
+DANCE
+..Bolero
+SELECTED
+..1
+COUNT
+..3
+MAXPLAYTIME
+..
+BPMLOW
+..
+BPMHIGH
+..
+KEY
+..3
 DANCE
 ..Cha Cha
 SELECTED
@@ -30,7 +58,21 @@ BPMLOW
 BPMHIGH
 ..
 KEY
+..4
+DANCE
+..East Coast Swing
+SELECTED
+..1
+COUNT
 ..2
+MAXPLAYTIME
+..
+BPMLOW
+..
+BPMHIGH
+..
+KEY
+..5
 DANCE
 ..Foxtrot
 SELECTED
@@ -44,7 +86,21 @@ BPMLOW
 BPMHIGH
 ..
 KEY
+..6
+DANCE
+..Hustle
+SELECTED
+..1
+COUNT
 ..3
+MAXPLAYTIME
+..
+BPMLOW
+..
+BPMHIGH
+..
+KEY
+..7
 DANCE
 ..Jive
 SELECTED
@@ -58,7 +114,49 @@ BPMLOW
 BPMHIGH
 ..
 KEY
+..8
+DANCE
+..Mambo
+SELECTED
+..0
+COUNT
 ..4
+MAXPLAYTIME
+..
+BPMLOW
+..
+BPMHIGH
+..
+KEY
+..9
+DANCE
+..Merengue
+SELECTED
+..1
+COUNT
+..1
+MAXPLAYTIME
+..
+BPMLOW
+..
+BPMHIGH
+..
+KEY
+..10
+DANCE
+..NC2S
+SELECTED
+..1
+COUNT
+..5
+MAXPLAYTIME
+..
+BPMLOW
+..
+BPMHIGH
+..
+KEY
+..11
 DANCE
 ..Paso Doble
 SELECTED
@@ -72,7 +170,7 @@ BPMLOW
 BPMHIGH
 ..
 KEY
-..5
+..12
 DANCE
 ..Quickstep
 SELECTED
@@ -86,7 +184,7 @@ BPMLOW
 BPMHIGH
 ..
 KEY
-..6
+..13
 DANCE
 ..Rumba
 SELECTED
@@ -100,7 +198,7 @@ BPMLOW
 BPMHIGH
 ..
 KEY
-..7
+..14
 DANCE
 ..Salsa
 SELECTED
@@ -114,7 +212,7 @@ BPMLOW
 BPMHIGH
 ..
 KEY
-..8
+..15
 DANCE
 ..Samba
 SELECTED
@@ -128,7 +226,7 @@ BPMLOW
 BPMHIGH
 ..
 KEY
-..9
+..16
 DANCE
 ..Tango
 SELECTED
@@ -142,9 +240,9 @@ BPMLOW
 BPMHIGH
 ..
 KEY
-..10
+..17
 DANCE
-..Weense wals
+..Viennese Waltz
 SELECTED
 ..1
 COUNT
@@ -156,9 +254,9 @@ BPMLOW
 BPMHIGH
 ..
 KEY
-..11
+..18
 DANCE
-..Engelse wals
+..Waltz
 SELECTED
 ..1
 COUNT
@@ -170,7 +268,7 @@ BPMLOW
 BPMHIGH
 ..84
 KEY
-..12
+..19
 DANCE
 ..West Coast Swing
 SELECTED

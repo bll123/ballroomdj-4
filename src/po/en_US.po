@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: BDJ4 4.0.0\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
-"POT-Creation-Date: 2022-03-29\n"
-"PO-Revision-Date: 2022-03-29\n"
+"POT-Creation-Date: 2022-04-05\n"
+"PO-Revision-Date: 2022-04-05\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/gb\n"
 "Language: en\n"
@@ -25,8 +25,23 @@ msgstr ""
 msgid "%s is not installed"
 msgstr ""
 
+msgid "2/4"
+msgstr ""
+
+msgid "3/4"
+msgstr ""
+
+msgid "4/4"
+msgstr ""
+
+msgid "4/8"
+msgstr ""
+
 msgid "Accent Colour"
 msgstr "Accent Color"
+
+msgid "Add New"
+msgstr ""
 
 msgid "Advanced"
 msgstr ""
@@ -52,6 +67,9 @@ msgstr ""
 msgid "All Tags"
 msgstr ""
 
+msgid "Announcement"
+msgstr ""
+
 msgid "Any Status"
 msgstr ""
 
@@ -65,6 +83,9 @@ msgid "Artist"
 msgstr ""
 
 msgid "Audio"
+msgstr ""
+
+msgid "Audio Files"
 msgstr ""
 
 msgid "Audio Output"
@@ -95,13 +116,13 @@ msgstr ""
 msgid "BallroomDJ 3 Location"
 msgstr ""
 
-msgid "Bolero"
-msgstr ""
-
 msgid "Cha Cha"
 msgstr ""
 
 msgid "Classical"
+msgstr ""
+
+msgid "Classical?"
 msgstr ""
 
 msgid "Cleaning old files."
@@ -161,7 +182,13 @@ msgstr ""
 msgid "Debug Options"
 msgstr ""
 
+msgid "Default"
+msgstr ""
+
 msgid "Default Volume"
+msgstr ""
+
+msgid "Delete"
 msgstr ""
 
 msgid "Disc"
@@ -171,6 +198,9 @@ msgid "Display Settings"
 msgstr ""
 
 msgid "Don't Write"
+msgstr ""
+
+msgid "Double click on a field to edit."
 msgstr ""
 
 #, c-format
@@ -224,6 +254,9 @@ msgid "Error: Folder already exists."
 msgstr ""
 
 msgid "Error: Unable to set working folder."
+msgstr ""
+
+msgid "Examples"
 msgstr ""
 
 msgid "Exit"
@@ -283,6 +316,9 @@ msgstr ""
 msgid "Hide Marquee on Start"
 msgstr ""
 
+msgid "High BPM"
+msgstr ""
+
 #, c-format
 msgid "If there is no BallroomDJ 3 installation, enter a single '-'."
 msgstr ""
@@ -318,6 +354,9 @@ msgstr ""
 msgid "Last Updated"
 msgstr ""
 
+msgid "Level"
+msgstr ""
+
 msgid "Listing Font"
 msgstr ""
 
@@ -331,6 +370,9 @@ msgid "Located 'tclsh'."
 msgstr ""
 
 msgid "Logarithmic"
+msgstr ""
+
+msgid "Low BPM"
 msgstr ""
 
 msgid "MPM"
@@ -375,9 +417,6 @@ msgstr ""
 msgid "Music Queue"
 msgstr ""
 
-msgid "NC2S"
-msgstr ""
-
 msgid "Name"
 msgstr ""
 
@@ -386,6 +425,21 @@ msgstr ""
 
 #, c-format
 msgid "New BDJ4 installation."
+msgstr ""
+
+msgid "New Dance"
+msgstr ""
+
+msgid "New Genre"
+msgstr ""
+
+msgid "New Level"
+msgstr ""
+
+msgid "New Rating"
+msgstr ""
+
+msgid "New Status"
 msgstr ""
 
 msgid "Next Song"
@@ -410,6 +464,12 @@ msgid "Off"
 msgstr ""
 
 msgid "Options"
+msgstr ""
+
+msgid "Order from easiest to most advanced."
+msgstr ""
+
+msgid "Order from the lowest rating to the highest rating."
 msgstr ""
 
 msgid "Organisation"
@@ -446,6 +506,9 @@ msgstr ""
 msgid "Play/Pause"
 msgstr ""
 
+msgid "Play?"
+msgstr ""
+
 msgid "Player"
 msgstr ""
 
@@ -456,9 +519,6 @@ msgid "Poor"
 msgstr ""
 
 msgid "Port"
-msgstr ""
-
-msgid "Port Number"
 msgstr ""
 
 msgid "Position"
@@ -511,6 +571,9 @@ msgstr ""
 msgid "Quickstep"
 msgstr ""
 
+msgid "Rating"
+msgstr ""
+
 msgid "Remove Spaces"
 msgstr ""
 
@@ -560,10 +623,10 @@ msgstr ""
 msgid "Select BallroomDJ 3 Location"
 msgstr ""
 
-msgid "Select Music Folder Location"
+msgid "Select File"
 msgstr ""
 
-msgid "Select file"
+msgid "Select Music Folder Location"
 msgstr ""
 
 msgid "Show Extra Queues"
@@ -596,6 +659,9 @@ msgstr ""
 msgid "Switch Queue When Empty"
 msgstr ""
 
+msgid "Tags"
+msgstr ""
+
 msgid "Tango"
 msgstr ""
 
@@ -611,6 +677,9 @@ msgid ""
 msgstr ""
 
 msgid "Theme"
+msgstr ""
+
+msgid "Time Signature"
 msgstr ""
 
 msgid "Title"
@@ -629,6 +698,9 @@ msgid "Track Number"
 msgstr ""
 
 msgid "Triangle"
+msgstr ""
+
+msgid "Type"
 msgstr ""
 
 #, c-format
@@ -660,6 +732,9 @@ msgstr ""
 msgid "Waltz"
 msgstr ""
 
+msgid "Weight"
+msgstr ""
+
 msgid "West Coast Swing"
 msgstr ""
 
@@ -673,7 +748,16 @@ msgstr ""
 msgid "club"
 msgstr ""
 
+msgid "fast"
+msgstr ""
+
 msgid "latin"
+msgstr ""
+
+msgid "normal"
+msgstr ""
+
+msgid "slow"
 msgstr ""
 
 msgid "standard"
