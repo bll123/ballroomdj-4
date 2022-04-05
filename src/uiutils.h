@@ -72,6 +72,7 @@ GtkWidget * uiutilsCreateScrolledWindow (void);
 GtkWidget * uiutilsCreateSwitch (int value);
 GtkWidget * uiutilsCreateCheckButton (const char *txt, int value);
 GtkWidget * uiutilsCreateNotebook (void);
+GtkWidget * uiutilsCreateTreeView (void);
 
 void uiutilsDropDownInit (uiutilsdropdown_t *dropdown);
 void uiutilsDropDownFree (uiutilsdropdown_t *dropdown);

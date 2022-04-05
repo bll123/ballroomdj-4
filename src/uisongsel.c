@@ -168,7 +168,6 @@ uisongselActivate (uisongsel_t *uisongsel, GtkWidget *parentwin)
   GtkWidget         *hbox;
   GtkWidget         *vbox;
   GtkWidget         *widget;
-  GtkTreeSelection  *sel;
   GtkCellRenderer   *renderer = NULL;
   GtkTreeViewColumn *column = NULL;
   GtkAdjustment     *adjustment;
@@ -231,19 +230,12 @@ uisongselActivate (uisongsel_t *uisongsel, GtkWidget *parentwin)
   gtk_box_pack_start (GTK_BOX (vbox), widget,
       FALSE, FALSE, 0);
 
-  uisongsel->songselTree = gtk_tree_view_new ();
+  uisongsel->songselTree = uiutilsCreateTreeView ();
   assert (uisongsel->songselTree != NULL);
-  gtk_tree_view_set_enable_search (GTK_TREE_VIEW (uisongsel->songselTree), FALSE);
-  gtk_tree_view_set_activate_on_single_click (GTK_TREE_VIEW (uisongsel->songselTree), TRUE);
   gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (uisongsel->songselTree), TRUE);
-  sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (uisongsel->songselTree));
-  gtk_tree_selection_set_mode (sel, GTK_SELECTION_SINGLE);
-  gtk_widget_set_margin_start (uisongsel->songselTree, 4);
-  gtk_widget_set_margin_end (uisongsel->songselTree, 4);
-  gtk_widget_set_margin_top (uisongsel->songselTree, 2);
-  gtk_widget_set_margin_bottom (uisongsel->songselTree, 4);
   gtk_widget_set_hexpand (uisongsel->songselTree, TRUE);
   gtk_widget_set_vexpand (uisongsel->songselTree, TRUE);
+
   adjustment = gtk_scrollable_get_vadjustment (GTK_SCROLLABLE (uisongsel->songselTree));
   gtk_adjustment_set_upper (adjustment, uisongsel->dfilterCount);
   uisongsel->scrollController =

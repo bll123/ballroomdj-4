@@ -136,7 +136,6 @@ uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
   GtkWidget             *hbox = NULL;
   GtkCellRenderer       *renderer = NULL;
   GtkTreeViewColumn     *column = NULL;
-  GtkTreeSelection      *sel = NULL;
 
 
   logProcBegin (LOG_PROC, "uimusicqActivate");
@@ -229,17 +228,8 @@ uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
   gtk_box_pack_start (GTK_BOX (uimusicq->ui [ci].box), widget,
       FALSE, FALSE, 0);
 
-  uimusicq->ui [ci].musicqTree = gtk_tree_view_new ();
+  uimusicq->ui [ci].musicqTree = uiutilsCreateTreeView ();
   assert (uimusicq->ui [ci].musicqTree != NULL);
-  gtk_tree_view_set_enable_search (GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree), FALSE);
-  gtk_tree_view_set_activate_on_single_click (GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree), TRUE);
-  gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree), FALSE);
-  sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree));
-  gtk_tree_selection_set_mode (sel, GTK_SELECTION_SINGLE);
-  gtk_widget_set_margin_start (uimusicq->ui [ci].musicqTree, 4);
-  gtk_widget_set_margin_end (uimusicq->ui [ci].musicqTree, 4);
-  gtk_widget_set_margin_top (uimusicq->ui [ci].musicqTree, 2);
-  gtk_widget_set_margin_bottom (uimusicq->ui [ci].musicqTree, 4);
   gtk_widget_set_hexpand (uimusicq->ui [ci].musicqTree, TRUE);
   gtk_widget_set_vexpand (uimusicq->ui [ci].musicqTree, TRUE);
   gtk_container_add (GTK_CONTAINER (widget), uimusicq->ui [ci].musicqTree);

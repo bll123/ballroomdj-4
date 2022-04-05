@@ -185,8 +185,11 @@ typedef enum {
   CONFUI_ID_RATINGS,
   CONFUI_ID_LEVELS,
   CONFUI_ID_STATUS,
-  CONFUI_ID_MAX,
+  CONFUI_ID_TABLE_MAX,
   CONFUI_ID_NONE,
+  CONFUI_ID_MOBILE_MQ,
+  CONFUI_ID_REM_CONTROL,
+  CONFUI_ID_ORGANIZATION,
 } confuiident_t;
 
 enum {
@@ -267,6 +270,7 @@ typedef struct {
   procutil_t        *processes [ROUTE_MAX];
   conn_t            *conn;
   sockserver_t      *sockserver;
+  char              *localip;
   int               dbgflags;
   confuiitem_t      uiitem [CONFUI_ITEM_MAX];
   int               uithemeidx;
@@ -276,13 +280,13 @@ typedef struct {
   int               audiosinkidx;
   int               tabcount;
   confuiident_t     tablecurr;
-  int               *tableidents;
+  confuiident_t     *tableidents;
   /* gtk stuff */
   GtkApplication    *app;
   GtkWidget         *window;
   GtkWidget         *vbox;
   GtkWidget         *notebook;
-  confuitable_t     tables [CONFUI_ID_MAX];
+  confuitable_t     tables [CONFUI_ID_TABLE_MAX];
   GtkWidget         *fadetypeImage;
   GtkWidget         *dsnotebook;
   /* options */
@@ -369,6 +373,7 @@ static void     confuiRemctrlPortChg (GtkSpinButton *sb, gpointer udata);
 static char *   confuiMakeQRCodeFile (configui_t *confui, char *title, char *uri);
 static void     confuiUpdateOrgExamples (configui_t *confui, char *pathfmt);
 static void     confuiUpdateOrgExample (configui_t *config, org_t *org, char *data, GtkWidget *widget);
+static char     * confuiGetLocalIP (configui_t *confui);
 
 /* table editing */
 static void   confuiTableMoveUp (GtkButton *b, gpointer udata);
@@ -452,7 +457,8 @@ main (int argc, char *argv[])
   confui.tabcount = 0;
   confui.tablecurr = CONFUI_ID_NONE;
   confui.tableidents = NULL;
-  for (int i = 0; i < CONFUI_ID_MAX; ++i) {
+  confui.localip = NULL;
+  for (int i = 0; i < CONFUI_ID_TABLE_MAX; ++i) {
     confui.tables [i].tree = NULL;
     confui.tables [i].radiorow = 0;
     confui.tables [i].togglecol = -1;
@@ -702,7 +708,7 @@ confuiStoppingCallback (void *udata, programstate_t programState)
 
   confuiPopulateOptions (confui);
   bdjoptSave ();
-  for (confuiident_t i = 0; i < CONFUI_ID_MAX; ++i) {
+  for (confuiident_t i = 0; i < CONFUI_ID_TABLE_MAX; ++i) {
     confuiTableSave (confui, i);
   }
 
@@ -764,6 +770,9 @@ confuiClosingCallback (void *udata, programstate_t programState)
     confui->uiitem [i].list = NULL;
   }
 
+  if (confui->localip != NULL) {
+    free (confui->localip);
+  }
   if (confui->options != datafileGetList (confui->optiondf)) {
     nlistFree (confui->options);
   }
@@ -991,7 +1000,7 @@ confuiActivate (GApplication *app, gpointer userdata)
       CONFUI_WIDGET_HIDE_MARQUEE_ON_START, OPT_P_HIDE_MARQUEE_ON_START,
       bdjoptGetNum (OPT_P_HIDE_MARQUEE_ON_START));
 
-  /* user infterface */
+  /* user interface */
   vbox = confuiMakeNotebookTab (confui, confui->notebook,
       _("User Interface"), CONFUI_ID_NONE);
   sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
@@ -1026,7 +1035,7 @@ confuiActivate (GApplication *app, gpointer userdata)
 
   /* organization */
   vbox = confuiMakeNotebookTab (confui, confui->notebook,
-      _("Organisation"), CONFUI_ID_NONE);
+      _("Organisation"), CONFUI_ID_ORGANIZATION);
   sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
   confuiMakeItemCombobox (confui, vbox, sg, _("Organisation Path"),
@@ -1216,7 +1225,7 @@ confuiActivate (GApplication *app, gpointer userdata)
 
   /* mobile remote control */
   vbox = confuiMakeNotebookTab (confui, confui->notebook,
-      _("Mobile Remote Control"), CONFUI_ID_NONE);
+      _("Mobile Remote Control"), CONFUI_ID_REM_CONTROL);
   sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
   widget = confuiMakeItemSwitch (confui, vbox, sg, _("Enable Remote Control"),
@@ -1246,7 +1255,7 @@ confuiActivate (GApplication *app, gpointer userdata)
 
   /* mobile marquee */
   vbox = confuiMakeNotebookTab (confui, confui->notebook,
-      _("Mobile Marquee"), CONFUI_ID_NONE);
+      _("Mobile Marquee"), CONFUI_ID_MOBILE_MQ);
   sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
   widget = confuiMakeItemSpinboxText (confui, vbox, sg, _("Mobile Marquee"),
@@ -1274,6 +1283,7 @@ confuiActivate (GApplication *app, gpointer userdata)
   confuiMakeItemLink (confui, vbox, sg, _("QR Code"),
       CONFUI_WIDGET_MMQ_QR_CODE, "");
 
+  /* debug options */
   vbox = confuiMakeNotebookTab (confui, confui->notebook,
       _("Debug Options"), CONFUI_ID_NONE);
   sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
@@ -1367,10 +1377,6 @@ confuiActivate (GApplication *app, gpointer userdata)
   pathbldMakePath (imgbuff, sizeof (imgbuff), "",
       "bdj4_icon", ".png", PATHBLD_MP_IMGDIR);
   osuiSetIcon (imgbuff);
-
-  confuiUpdateMobmqQrcode (confui);
-  confuiUpdateRemctrlQrcode (confui);
-  confuiUpdateOrgExamples (confui, bdjoptGetStr (OPT_G_AO_PATHFMT));
 
   logProcEnd (LOG_PROC, "confuiActivate", "");
 }
@@ -2122,7 +2128,6 @@ confuiMakeItemTable (configui_t *confui, GtkWidget *vbox, confuiident_t id,
   GtkWidget   *bvbox;
   GtkWidget   *widget;
   GtkWidget   *tree;
-  GtkTreeSelection  *sel;
 
   logProcBegin (LOG_PROC, "confuiMakeItemTable");
   mhbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
@@ -2136,18 +2141,11 @@ confuiMakeItemTable (configui_t *confui, GtkWidget *vbox, confuiident_t id,
   gtk_scrolled_window_set_min_content_height (GTK_SCROLLED_WINDOW (widget), 200);
   gtk_box_pack_start (GTK_BOX (mhbox), widget, FALSE, FALSE, 0);
 
-  tree = gtk_tree_view_new ();
+  tree = uiutilsCreateTreeView ();
   confui->tables [id].tree = tree;
   confui->tables [id].flags = flags;
-  gtk_widget_set_margin_top (tree, 2);
   gtk_widget_set_margin_start (tree, 16);
-  gtk_tree_view_set_activate_on_single_click (GTK_TREE_VIEW (tree), TRUE);
   gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (tree), TRUE);
-  sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (tree));
-  gtk_tree_selection_set_mode (sel, GTK_SELECTION_SINGLE);
-  gtk_widget_set_halign (tree, GTK_ALIGN_START);
-  gtk_widget_set_hexpand (tree, FALSE);
-  gtk_widget_set_vexpand (tree, FALSE);
   gtk_container_add (GTK_CONTAINER (widget), tree);
 
   bvbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
@@ -2452,10 +2450,9 @@ confuiUpdateMobmqQrcode (configui_t *confui)
   if (type == MOBILEMQ_LOCAL) {
     char *ip;
 
-    ip = webclientGetLocalIP ();
+    ip = confuiGetLocalIP (confui);
     snprintf (uri, sizeof (uri), "http://%s:%zd",
         ip, bdjoptGetNum (OPT_P_MOBILEMQPORT));
-    free (ip);
   }
 
   if (type != MOBILEMQ_OFF) {
@@ -2556,10 +2553,9 @@ confuiUpdateRemctrlQrcode (configui_t *confui)
   if (onoff == 1) {
     char *ip;
 
-    ip = webclientGetLocalIP ();
+    ip = confuiGetLocalIP (confui);
     snprintf (uri, sizeof (uri), "http://%s:%zd",
         ip, bdjoptGetNum (OPT_P_REMCONTROLPORT));
-    free (ip);
   }
 
   if (onoff == 1) {
@@ -2695,6 +2691,20 @@ confuiUpdateOrgExample (configui_t *config, org_t *org, char *data, GtkWidget *w
   free (disp);
   free (tdata);
   logProcEnd (LOG_PROC, "confuiUpdateOrgExample", "");
+}
+
+static char *
+confuiGetLocalIP (configui_t *confui)
+{
+  char    *ip;
+
+  if (confui->localip == NULL) {
+    ip = webclientGetLocalIP ();
+    confui->localip = strdup (ip);
+    free (ip);
+  }
+
+  return confui->localip;
 }
 
 /* table editing */
@@ -2874,11 +2884,17 @@ confuiTableAdd (GtkButton *b, gpointer udata)
   GtkTreeIter       iter;
   GtkTreeIter       niter;
   GtkTreeIter       *titer;
+  GtkTreePath       *path;
   int               count;
   int               valid;
   int               flags;
 
   logProcBegin (LOG_PROC, "confuiTableAdd");
+
+  if (confui->tablecurr >= CONFUI_ID_TABLE_MAX) {
+    logProcEnd (LOG_PROC, "confuiTableAdd", "non-table");
+    return;
+  }
 
   tree = confui->tables [confui->tablecurr].tree;
   flags = confui->tables [confui->tablecurr].flags;
@@ -2920,7 +2936,10 @@ confuiTableAdd (GtkButton *b, gpointer udata)
 
   switch (confui->tablecurr) {
     case CONFUI_ID_NONE:
-    case CONFUI_ID_MAX: {
+    case CONFUI_ID_MOBILE_MQ:
+    case CONFUI_ID_REM_CONTROL:
+    case CONFUI_ID_ORGANIZATION:
+    case CONFUI_ID_TABLE_MAX: {
       break;
     }
 
@@ -2955,6 +2974,13 @@ confuiTableAdd (GtkButton *b, gpointer udata)
     }
   }
 
+  path = gtk_tree_model_get_path (model, &niter);
+  gtk_tree_view_set_cursor (GTK_TREE_VIEW (tree), path, NULL, FALSE);
+  if (confui->tablecurr == CONFUI_ID_DANCE) {
+    confuiDanceSelect (GTK_TREE_VIEW (tree), path, NULL, confui);
+  }
+  gtk_tree_path_free (path);
+
   confui->tables [confui->tablecurr].changed = true;
   confui->tables [confui->tablecurr].currcount += 1;
   logProcEnd (LOG_PROC, "confuiTableAdd", "");
@@ -2974,9 +3000,25 @@ confuiSwitchTable (GtkNotebook *nb, GtkWidget *page, guint pagenum, gpointer uda
     return;
   }
 
+  if (confui->tablecurr == confui->tableidents [pagenum]) {
+    logProcEnd (LOG_PROC, "confuiSwitchTable", "same-page");
+    return;
+  }
+
   confui->tablecurr = confui->tableidents [pagenum];
-  if (confui->tablecurr == CONFUI_ID_NONE) {
-    logProcEnd (LOG_PROC, "confuiSwitchTable", "no-table");
+
+  if (confui->tablecurr == CONFUI_ID_MOBILE_MQ) {
+    confuiUpdateMobmqQrcode (confui);
+  }
+  if (confui->tablecurr == CONFUI_ID_REM_CONTROL) {
+    confuiUpdateRemctrlQrcode (confui);
+  }
+  if (confui->tablecurr == CONFUI_ID_ORGANIZATION) {
+    confuiUpdateOrgExamples (confui, bdjoptGetStr (OPT_G_AO_PATHFMT));
+  }
+
+  if (confui->tablecurr >= CONFUI_ID_TABLE_MAX) {
+    logProcEnd (LOG_PROC, "confuiSwitchTable", "non-table");
     return;
   }
 
@@ -3968,3 +4010,4 @@ confuiDanceValidateAnnouncement (void *edata, void *udata)
   logProcEnd (LOG_PROC, "confuiDanceValidateAnnouncement", "");
   return rc;
 }
+

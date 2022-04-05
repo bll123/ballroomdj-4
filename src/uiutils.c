@@ -281,6 +281,28 @@ uiutilsCreateNotebook (void)
   return widget;
 }
 
+GtkWidget *
+uiutilsCreateTreeView (void)
+{
+  GtkWidget         *tree;
+  GtkTreeSelection  *sel;
+
+  tree = gtk_tree_view_new ();
+  gtk_widget_set_margin_start (tree, 4);
+  gtk_widget_set_margin_end (tree, 4);
+  gtk_widget_set_margin_top (tree, 4);
+  gtk_widget_set_margin_bottom (tree, 4);
+  gtk_tree_view_set_enable_search (GTK_TREE_VIEW (tree), FALSE);
+  gtk_tree_view_set_activate_on_single_click (GTK_TREE_VIEW (tree), TRUE);
+  gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (tree), FALSE);
+  sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (tree));
+  gtk_tree_selection_set_mode (sel, GTK_SELECTION_SINGLE);
+  gtk_widget_set_halign (tree, GTK_ALIGN_START);
+  gtk_widget_set_hexpand (tree, FALSE);
+  gtk_widget_set_vexpand (tree, FALSE);
+  return tree;
+}
+
 void
 uiutilsDropDownInit (uiutilsdropdown_t *dropdown)
 {
