@@ -200,6 +200,7 @@ foreach path [list {} profiles $mpath $mppath] {
           }
         }
         if { $key eq "PATHFMT" } {
+          regsub -all {PALBART} $value {%ALBUMARTIST%} value
           regsub -all {P([A-Z]*0?)} $value {%\1%} value
         }
 

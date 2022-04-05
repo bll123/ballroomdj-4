@@ -84,6 +84,12 @@ fi
 "$tclsh" conv/songlists.tcl "$bdj3dir" "$datatopdir"
 "$tclsh" conv/sort-options.tcl "$bdj3dir" "$datatopdir"
 "$tclsh" conv/status.tcl "$bdj3dir" "$datatopdir"
+
+nfn="$datatopdir/data/orgopt.txt"
+if [[ ! -f $nfn ]]; then
+  cp -f templates/orgopt.txt $nfn
+fi
+
 echo "OK"
 
 exit 0

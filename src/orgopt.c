@@ -18,6 +18,7 @@
 #include "fileop.h"
 #include "log.h"
 #include "orgopt.h"
+#include "orgutil.h"
 #include "song.h"
 #include "slist.h"
 
@@ -29,10 +30,7 @@ orgoptAlloc (char *fname)
   slistidx_t    dfiteridx;
   slist_t       *list;
   char          *value;
-  char          *tvalue;
   char          *p;
-  char          *tokstr;
-  char          *tokstrB;
   char          dispstr [MAXPATHLEN];
 
   if (! fileopFileExists (fname)) {
@@ -48,50 +46,50 @@ orgoptAlloc (char *fname)
   dflist = datafileGetList (orgopt->df);
 
   list = slistAlloc ("org-disp", LIST_UNORDERED, free);
+
   slistStartIterator (dflist, &dfiteridx);
   while ((value = slistIterateKey (dflist, &dfiteridx)) != NULL) {
-    tvalue = strdup (value);
+    org_t       *org;
+    slist_t     *parsedlist;
+    slistidx_t  piteridx;
+
+    org = orgAlloc (value);
+    parsedlist = orgGetList (org);
 
     dispstr [0] = '\0';
-    p = strtok_r (tvalue, "{}", &tokstr);
-
-    while (p != NULL) {
-      p = strtok_r (p, "%", &tokstrB);
-      while (p != NULL) {
-        if (strcmp (p, "ALBUM") == 0) {
-          strlcat (dispstr, _("Album"), sizeof (dispstr));
-        } else if (strcmp (p, "ALBUMARTIST") == 0) {
-          strlcat (dispstr, _("Album Artist"), sizeof (dispstr));
-        } else if (strcmp (p, "ARTIST") == 0) {
-          strlcat (dispstr, _("Artist"), sizeof (dispstr));
-        } else if (strcmp (p, "COMPOSER") == 0) {
-          strlcat (dispstr, _("Composer"), sizeof (dispstr));
-        } else if (strcmp (p, "DANCE") == 0) {
-          strlcat (dispstr, _("Dance"), sizeof (dispstr));
-        } else if (strcmp (p, "DISC") == 0) {
-          strlcat (dispstr, _("Disc"), sizeof (dispstr));
-        } else if (strcmp (p, "GENRE") == 0) {
-          strlcat (dispstr, _("Genre"), sizeof (dispstr));
-        } else if (strcmp (p, "TITLE") == 0) {
-          strlcat (dispstr, _("Title"), sizeof (dispstr));
-        } else if (strcmp (p, "TRACKNUM") == 0) {
-          strlcat (dispstr, _("Track Number"), sizeof (dispstr));
-        } else if (strcmp (p, "TRACKNUM0") == 0) {
-          strlcat (dispstr, "0", sizeof (dispstr));
-          strlcat (dispstr, _("Track Number"), sizeof (dispstr));
-        } else {
-          /* leading or trailing characters */
-          strlcat (dispstr, p, sizeof (dispstr));
-        }
-        p = strtok_r (NULL, "%", &tokstrB);
+    slistStartIterator (parsedlist, &piteridx);
+    while ((p = slistIterateKey (parsedlist, &piteridx)) != NULL) {
+      if (strcmp (p, "ALBUM") == 0) {
+        strlcat (dispstr, _("Album"), sizeof (dispstr));
+      } else if (strcmp (p, "ALBUMARTIST") == 0) {
+        strlcat (dispstr, _("Album Artist"), sizeof (dispstr));
+      } else if (strcmp (p, "ARTIST") == 0) {
+        strlcat (dispstr, _("Artist"), sizeof (dispstr));
+      } else if (strcmp (p, "COMPOSER") == 0) {
+        strlcat (dispstr, _("Composer"), sizeof (dispstr));
+      } else if (strcmp (p, "DANCE") == 0) {
+        strlcat (dispstr, _("Dance"), sizeof (dispstr));
+      } else if (strcmp (p, "DISC") == 0) {
+        strlcat (dispstr, _("Disc"), sizeof (dispstr));
+      } else if (strcmp (p, "GENRE") == 0) {
+        strlcat (dispstr, _("Genre"), sizeof (dispstr));
+      } else if (strcmp (p, "TITLE") == 0) {
+        strlcat (dispstr, _("Title"), sizeof (dispstr));
+      } else if (strcmp (p, "TRACKNUM") == 0) {
+        strlcat (dispstr, _("Track Number"), sizeof (dispstr));
+      } else if (strcmp (p, "TRACKNUM0") == 0) {
+        strlcat (dispstr, "0", sizeof (dispstr));
+        strlcat (dispstr, _("Track Number"), sizeof (dispstr));
+      } else {
+        /* leading or trailing characters */
+        strlcat (dispstr, p, sizeof (dispstr));
       }
-
-      p = strtok_r (NULL, "{}", &tokstr);
     }
 
     slistSetStr (list, dispstr, value);
-    free (tvalue);
+    orgFree (org);
   }
+
   slistSort (list);
   orgopt->orgList = list;
 

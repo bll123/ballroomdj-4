@@ -554,6 +554,8 @@ datafileSaveIndirect (char *tag, char *fn, datafilekey_t *dfkeys,
   datafileconv_t  conv;
   valuetype_t     vt;
   ssize_t         count;
+  ilistidx_t      iteridx;
+  ilistidx_t      key;
 
   fh = datafileSavePrep (fn, tag);
   if (fh == NULL) {
@@ -561,11 +563,12 @@ datafileSaveIndirect (char *tag, char *fn, datafilekey_t *dfkeys,
   }
 
   count = ilistGetCount (list);
+  ilistStartIterator (list, &iteridx);
 
   fprintf (fh, "version\n..1\n");
   fprintf (fh, "count\n..%zd\n", count);
 
-  for (ssize_t key = 0; key < count; ++key) {
+  while ((key = ilistIterateKey (list, &iteridx)) >= 0) {
     conv.allocated = false;
     conv.valuetype = VALUE_NUM;
     conv.u.num = key;

@@ -12,20 +12,13 @@ if { ! [file exists $bdj3dir] || ! [file isdirectory $bdj3dir] } {
 }
 set datatopdir [lindex $argv 2]
 
-set nfn [file join $datatopdir data sortopt.txt]
-if { ! [file exists $nfn] } {
-  file copy -force templates/sortopt.txt $nfn
-}
-
-if { [lindex $argv 0] != "--force" } {
-  puts "skipping sort option conversion"
-  exit 0
-}
-
 set infn [file join $bdj3dir sortopt.tcl]
+set nfn [file join $datatopdir data sortopt.txt]
+
 if { ! [file exists $infn] } {
-  puts "   no sort options file"
-  exit 1
+  puts "   sortopt: copying template"
+  file copy -force templates/sortopt.txt $nfn
+  exit 0
 }
 
 source $infn

@@ -216,6 +216,22 @@ ilistGetList (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx)
   return ilistGetData (list, ikey, lidx);
 }
 
+void
+ilistDelete (list_t *list, ilistidx_t ikey)
+{
+  ilistidx_t      idx;
+  listkey_t       key;
+
+  if (list == NULL) {
+    return;
+  }
+
+  key.idx = ikey;
+  idx = listGetIdx (list, &key);
+  if (idx >= 0) {
+    listDeleteByIdx (list, idx);
+  }
+}
 
 inline void
 ilistSort (ilist_t *list)

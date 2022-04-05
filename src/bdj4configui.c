@@ -518,11 +518,11 @@ main (int argc, char *argv[])
   count = 0;
   while ((p = slistIterateValueData (tlist, &iteridx)) != NULL) {
     if (strcmp (p, bdjoptGetStr (OPT_G_AO_PATHFMT)) == 0) {
-      confui.uiitem [CONFUI_COMBOBOX_AO_PATHFMT].listidx = count;
       break;
     }
     ++count;
   }
+  confui.uiitem [CONFUI_COMBOBOX_AO_PATHFMT].listidx = count;
 
   volume = volumeInit ();
   assert (volume != NULL);
@@ -1505,6 +1505,7 @@ confuiPopulateOptions (configui_t *confui)
   bool        localechanged = false;
   bool        themechanged = false;
 
+  logProcBegin (LOG_PROC, "confuiPopulateOptions");
   for (int i = 0; i < CONFUI_ITEM_MAX; ++i) {
     sval = "fail";
     nval = -1;
@@ -1673,6 +1674,7 @@ confuiPopulateOptions (configui_t *confui)
   } /* for each item */
 
   bdjoptSetNum (OPT_G_DEBUGLVL, debug);
+  logProcEnd (LOG_PROC, "confuiPopulateOptions", "");
 }
 
 
@@ -1683,6 +1685,7 @@ confuiSelectMusicDir (GtkButton *b, gpointer udata)
   char                  *fn = NULL;
   uiutilsselect_t       selectdata;
 
+  logProcBegin (LOG_PROC, "confuiSelectMusicDir");
   selectdata.label = _("Select Music Folder Location");
   selectdata.window = confui->window;
   selectdata.startpath = bdjoptGetStr (OPT_M_DIR_MUSIC);
@@ -1694,6 +1697,7 @@ confuiSelectMusicDir (GtkButton *b, gpointer udata)
     free (fn);
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected loc: %s", fn);
   }
+  logProcEnd (LOG_PROC, "confuiSelectMusicDir", "");
 }
 
 static void
@@ -1701,8 +1705,10 @@ confuiSelectStartup (GtkButton *b, gpointer udata)
 {
   configui_t            *confui = udata;
 
+  logProcBegin (LOG_PROC, "confuiSelectStartup");
   confuiSelectFileDialog (confui, CONFUI_ENTRY_STARTUP,
       sysvarsGetStr (SV_BDJ4DATATOPDIR), NULL, NULL);
+  logProcEnd (LOG_PROC, "confuiSelectStartup", "");
 }
 
 static void
@@ -1710,8 +1716,10 @@ confuiSelectShutdown (GtkButton *b, gpointer udata)
 {
   configui_t            *confui = udata;
 
+  logProcBegin (LOG_PROC, "confuiSelectShutdown");
   confuiSelectFileDialog (confui, CONFUI_ENTRY_SHUTDOWN,
       sysvarsGetStr (SV_BDJ4DATATOPDIR), NULL, NULL);
+  logProcEnd (LOG_PROC, "confuiSelectShutdown", "");
 }
 
 static void
@@ -1719,8 +1727,10 @@ confuiSelectAnnouncement (GtkButton *b, gpointer udata)
 {
   configui_t            *confui = udata;
 
+  logProcBegin (LOG_PROC, "confuiSelectAnnouncement");
   confuiSelectFileDialog (confui, CONFUI_ENTRY_DANCE_ANNOUNCEMENT,
       bdjoptGetStr (OPT_M_DIR_MUSIC), _("Audio Files"), "audio/*");
+  logProcEnd (LOG_PROC, "confuiSelectAnnouncement", "");
 }
 
 static void
@@ -1730,6 +1740,7 @@ confuiSelectFileDialog (configui_t *confui, int widx, char *startpath,
   char                  *fn = NULL;
   uiutilsselect_t       selectdata;
 
+  logProcBegin (LOG_PROC, "confuiSelectFileDialog");
   selectdata.label = _("Select File");
   selectdata.window = confui->window;
   selectdata.startpath = startpath;
@@ -1742,6 +1753,7 @@ confuiSelectFileDialog (configui_t *confui, int widx, char *startpath,
     free (fn);
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected loc: %s", fn);
   }
+  logProcEnd (LOG_PROC, "confuiSelectFileDialog", "");
 }
 
 static GtkWidget *
@@ -1750,6 +1762,7 @@ confuiMakeNotebookTab (configui_t *confui, GtkWidget *nb, char *txt, int id)
   GtkWidget   *tablabel;
   GtkWidget   *vbox;
 
+  logProcBegin (LOG_PROC, "confuiMakeNotebookTab");
   tablabel = uiutilsCreateLabel (txt);
   gtk_label_set_xalign (GTK_LABEL (tablabel), 0.0);
   gtk_widget_set_margin_top (tablabel, 0);
@@ -1766,6 +1779,7 @@ confuiMakeNotebookTab (configui_t *confui, GtkWidget *nb, char *txt, int id)
   confui->tableidents [confui->tabcount] = id;
   ++confui->tabcount;
 
+  logProcEnd (LOG_PROC, "confuiMakeNotebookTab", "");
   return vbox;
 }
 
@@ -1776,6 +1790,7 @@ confuiMakeItemEntry (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg,
   GtkWidget   *hbox;
   GtkWidget   *widget;
 
+  logProcBegin (LOG_PROC, "confuiMakeItemEntry");
   confui->uiitem [widx].basetype = CONFUI_ENTRY;
   confui->uiitem [widx].outtype = CONFUI_OUT_STR;
   hbox = confuiMakeItemLabel (vbox, sg, txt);
@@ -1789,6 +1804,7 @@ confuiMakeItemEntry (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg,
     uiutilsEntrySetValue (&confui->uiitem [widx].u.entry, "");
   }
   confui->uiitem [widx].bdjoptIdx = bdjoptIdx;
+  logProcEnd (LOG_PROC, "confuiMakeItemEntry", "");
   return hbox;
 }
 
@@ -1801,6 +1817,7 @@ confuiMakeItemEntryChooser (configui_t *confui, GtkWidget *vbox,
   GtkWidget   *widget;
   GtkWidget   *image;
 
+  logProcBegin (LOG_PROC, "confuiMakeItemEntryChooser");
   hbox = confuiMakeItemEntry (confui, vbox, sg, txt, widx, bdjoptIdx, disp);
 
   widget = uiutilsCreateButton ("", NULL, dialogFunc, confui);
@@ -1810,6 +1827,7 @@ confuiMakeItemEntryChooser (configui_t *confui, GtkWidget *vbox,
   gtk_widget_set_margin_start (widget, 0);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
   confui->uiitem [widx].bdjoptIdx = bdjoptIdx;
+  logProcEnd (LOG_PROC, "confuiMakeItemEntryChooser", "");
 }
 
 static GtkWidget *
@@ -1819,6 +1837,7 @@ confuiMakeItemCombobox (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg,
   GtkWidget   *hbox;
   GtkWidget   *widget;
 
+  logProcBegin (LOG_PROC, "confuiMakeItemCombobox");
   confui->uiitem [widx].basetype = CONFUI_COMBOBOX;
   confui->uiitem [widx].outtype = CONFUI_OUT_STR;
   hbox = confuiMakeItemLabel (vbox, sg, txt);
@@ -1831,6 +1850,7 @@ confuiMakeItemCombobox (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg,
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
   confui->uiitem [widx].bdjoptIdx = bdjoptIdx;
+  logProcEnd (LOG_PROC, "confuiMakeItemCombobox", "");
   return hbox;
 }
 
@@ -1841,11 +1861,13 @@ confuiMakeItemLink (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg,
   GtkWidget   *hbox;
   GtkWidget   *widget;
 
+  logProcBegin (LOG_PROC, "confuiMakeItemLink");
   hbox = confuiMakeItemLabel (vbox, sg, txt);
   widget = gtk_link_button_new (disp);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
   confui->uiitem [widx].u.widget = widget;
+  logProcEnd (LOG_PROC, "confuiMakeItemLink", "");
 }
 
 static void
@@ -1855,6 +1877,7 @@ confuiMakeItemFontButton (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg,
   GtkWidget   *hbox;
   GtkWidget   *widget;
 
+  logProcBegin (LOG_PROC, "confuiMakeItemFontButton");
   confui->uiitem [widx].basetype = CONFUI_FONT;
   confui->uiitem [widx].outtype = CONFUI_OUT_STR;
   hbox = confuiMakeItemLabel (vbox, sg, txt);
@@ -1868,6 +1891,7 @@ confuiMakeItemFontButton (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg,
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
   confui->uiitem [widx].u.widget = widget;
   confui->uiitem [widx].bdjoptIdx = bdjoptIdx;
+  logProcEnd (LOG_PROC, "confuiMakeItemFontButton", "");
 }
 
 static void
@@ -1878,6 +1902,7 @@ confuiMakeItemColorButton (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg
   GtkWidget   *widget;
   GdkRGBA     rgba;
 
+  logProcBegin (LOG_PROC, "confuiMakeItemColorButton");
 
   confui->uiitem [widx].basetype = CONFUI_COLOR;
   confui->uiitem [widx].outtype = CONFUI_OUT_STR;
@@ -1893,6 +1918,7 @@ confuiMakeItemColorButton (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
   confui->uiitem [widx].u.widget = widget;
   confui->uiitem [widx].bdjoptIdx = bdjoptIdx;
+  logProcEnd (LOG_PROC, "confuiMakeItemColorButton", "");
 }
 
 static GtkWidget *
@@ -1904,6 +1930,7 @@ confuiMakeItemSpinboxText (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg
   nlist_t     *list;
   size_t      maxWidth;
 
+  logProcBegin (LOG_PROC, "confuiMakeItemSpinboxText");
 
   confui->uiitem [widx].basetype = CONFUI_SPINBOX_TEXT;
   confui->uiitem [widx].outtype = CONFUI_OUT_NUM;
@@ -1932,6 +1959,7 @@ confuiMakeItemSpinboxText (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
   confui->uiitem [widx].bdjoptIdx = bdjoptIdx;
 
+  logProcEnd (LOG_PROC, "confuiMakeItemSpinboxText", "");
   return widget;
 }
 
@@ -1942,6 +1970,7 @@ confuiMakeItemSpinboxTime (configui_t *confui, GtkWidget *vbox,
   GtkWidget   *hbox;
   GtkWidget   *widget;
 
+  logProcBegin (LOG_PROC, "confuiMakeItemSpinboxTime");
 
   confui->uiitem [widx].basetype = CONFUI_SPINBOX_TIME;
   confui->uiitem [widx].outtype = CONFUI_OUT_NUM;
@@ -1952,6 +1981,7 @@ confuiMakeItemSpinboxTime (configui_t *confui, GtkWidget *vbox,
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
   confui->uiitem [widx].bdjoptIdx = bdjoptIdx;
+  logProcEnd (LOG_PROC, "confuiMakeItemSpinboxTime", "");
 }
 
 static GtkWidget *
@@ -1961,6 +1991,7 @@ confuiMakeItemSpinboxInt (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg,
   GtkWidget   *hbox;
   GtkWidget   *widget;
 
+  logProcBegin (LOG_PROC, "confuiMakeItemSpinboxInt");
 
   confui->uiitem [widx].basetype = CONFUI_SPINBOX_NUM;
   confui->uiitem [widx].outtype = CONFUI_OUT_NUM;
@@ -1973,6 +2004,7 @@ confuiMakeItemSpinboxInt (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg,
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
   confui->uiitem [widx].u.widget = widget;
   confui->uiitem [widx].bdjoptIdx = bdjoptIdx;
+  logProcEnd (LOG_PROC, "confuiMakeItemSpinboxInt", "");
   return widget;
 }
 
@@ -1983,6 +2015,7 @@ confuiMakeItemSpinboxDouble (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *
   GtkWidget   *hbox;
   GtkWidget   *widget;
 
+  logProcBegin (LOG_PROC, "confuiMakeItemSpinboxDouble");
 
   confui->uiitem [widx].basetype = CONFUI_SPINBOX_DOUBLE;
   confui->uiitem [widx].outtype = CONFUI_OUT_DOUBLE;
@@ -1995,6 +2028,7 @@ confuiMakeItemSpinboxDouble (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
   confui->uiitem [widx].u.widget = widget;
   confui->uiitem [widx].bdjoptIdx = bdjoptIdx;
+  logProcEnd (LOG_PROC, "confuiMakeItemSpinboxDouble", "");
 }
 
 static GtkWidget *
@@ -2004,6 +2038,7 @@ confuiMakeItemSwitch (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg,
   GtkWidget   *hbox;
   GtkWidget   *widget;
 
+  logProcBegin (LOG_PROC, "confuiMakeItemSwitch");
 
   confui->uiitem [widx].basetype = CONFUI_SWITCH;
   confui->uiitem [widx].outtype = CONFUI_OUT_BOOL;
@@ -2014,6 +2049,7 @@ confuiMakeItemSwitch (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg,
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
   confui->uiitem [widx].u.widget = widget;
   confui->uiitem [widx].bdjoptIdx = bdjoptIdx;
+  logProcEnd (LOG_PROC, "confuiMakeItemSwitch", "");
   return widget;
 }
 
@@ -2024,6 +2060,7 @@ confuiMakeItemLabelDisp (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg,
   GtkWidget   *hbox;
   GtkWidget   *widget;
 
+  logProcBegin (LOG_PROC, "confuiMakeItemLabelDisp");
 
   confui->uiitem [widx].basetype = CONFUI_NONE;
   confui->uiitem [widx].outtype = CONFUI_OUT_NONE;
@@ -2034,6 +2071,7 @@ confuiMakeItemLabelDisp (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg,
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
   confui->uiitem [widx].u.widget = widget;
   confui->uiitem [widx].bdjoptIdx = bdjoptIdx;
+  logProcEnd (LOG_PROC, "confuiMakeItemLabelDisp", "");
   return widget;
 }
 
@@ -2043,6 +2081,7 @@ confuiMakeItemCheckButton (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg
 {
   GtkWidget   *widget;
 
+  logProcBegin (LOG_PROC, "confuiMakeItemCheckButton");
 
   confui->uiitem [widx].basetype = CONFUI_CHECK_BUTTON;
   confui->uiitem [widx].outtype = CONFUI_OUT_BOOL;
@@ -2051,6 +2090,7 @@ confuiMakeItemCheckButton (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg
   gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
   confui->uiitem [widx].u.widget = widget;
   confui->uiitem [widx].bdjoptIdx = bdjoptIdx;
+  logProcEnd (LOG_PROC, "confuiMakeItemCheckButton", "");
 }
 
 static GtkWidget *
@@ -2059,6 +2099,7 @@ confuiMakeItemLabel (GtkWidget *vbox, GtkSizeGroup *sg, char *txt)
   GtkWidget   *hbox;
   GtkWidget   *widget;
 
+  logProcBegin (LOG_PROC, "confuiMakeItemLabel");
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   if (*txt == '\0') {
     widget = uiutilsCreateLabel (txt);
@@ -2068,6 +2109,7 @@ confuiMakeItemLabel (GtkWidget *vbox, GtkSizeGroup *sg, char *txt)
   gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
   gtk_size_group_add_widget (sg, widget);
+  logProcEnd (LOG_PROC, "confuiMakeItemLabel", "");
   return hbox;
 }
 
@@ -2081,6 +2123,7 @@ confuiMakeItemTable (configui_t *confui, GtkWidget *vbox, confuiident_t id,
   GtkWidget   *tree;
   GtkTreeSelection  *sel;
 
+  logProcBegin (LOG_PROC, "confuiMakeItemTable");
   mhbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   assert (mhbox != NULL);
   gtk_widget_set_halign (mhbox, GTK_ALIGN_START);
@@ -2135,6 +2178,7 @@ confuiMakeItemTable (configui_t *confui, GtkWidget *vbox, confuiident_t id,
       G_CALLBACK (confuiTableAdd), confui);
   gtk_box_pack_start (GTK_BOX (bvbox), widget, FALSE, FALSE, 0);
 
+  logProcEnd (LOG_PROC, "confuiMakeItemTable", "");
   return vbox;
 }
 
@@ -2145,6 +2189,7 @@ confuiGetThemeList (void)
   nlist_t     *themelist = NULL;
   char        tbuff [MAXPATHLEN];
 
+  logProcBegin (LOG_PROC, "confuiGetThemeList");
   themelist = nlistAlloc ("cu-themes", LIST_ORDERED, free);
 
   if (isWindows ()) {
@@ -2164,6 +2209,7 @@ confuiGetThemeList (void)
     slistFree (filelist);
   }
 
+  logProcEnd (LOG_PROC, "confuiGetThemeList", "");
   return themelist;
 }
 
@@ -2178,7 +2224,9 @@ confuiGetThemeNames (nlist_t *themelist, slist_t *filelist)
   char          tmp [MAXPATHLEN];
   int           count;
 
+  logProcBegin (LOG_PROC, "confuiGetThemeNames");
   if (filelist == NULL) {
+    logProcEnd (LOG_PROC, "confuiGetThemeNames", "no-filelist");
     return NULL;
   }
 
@@ -2200,6 +2248,7 @@ confuiGetThemeNames (nlist_t *themelist, slist_t *filelist)
     } /* is directory */
   } /* for each file */
 
+  logProcEnd (LOG_PROC, "confuiGetThemeNames", "");
   return themelist;
 }
 
@@ -2216,6 +2265,7 @@ confuiLoadHTMLList (configui_t *confui)
   nlist_t       *llist;
   int           count;
 
+  logProcBegin (LOG_PROC, "confuiLoadHTMLList");
 
   tlist = nlistAlloc ("cu-html-list", LIST_ORDERED, free);
   llist = nlistAlloc ("cu-html-list-l", LIST_ORDERED, free);
@@ -2241,6 +2291,7 @@ confuiLoadHTMLList (configui_t *confui)
 
   confui->uiitem [CONFUI_SPINBOX_RC_HTML_TEMPLATE].list = tlist;
   confui->uiitem [CONFUI_SPINBOX_RC_HTML_TEMPLATE].sblookuplist = llist;
+  logProcEnd (LOG_PROC, "confuiLoadHTMLList", "");
 }
 
 static void
@@ -2259,6 +2310,7 @@ confuiLoadLocaleList (configui_t *confui)
   int           engbidx;
   int           shortidx;
 
+  logProcBegin (LOG_PROC, "confuiLoadLocaleList");
 
   tlist = nlistAlloc ("cu-locale-list", LIST_ORDERED, free);
   llist = nlistAlloc ("cu-locale-list-l", LIST_ORDERED, free);
@@ -2298,6 +2350,7 @@ confuiLoadLocaleList (configui_t *confui)
 
   confui->uiitem [CONFUI_SPINBOX_LOCALE].list = tlist;
   confui->uiitem [CONFUI_SPINBOX_LOCALE].sblookuplist = llist;
+  logProcEnd (LOG_PROC, "confuiLoadLocaleList", "");
 }
 
 
@@ -2310,6 +2363,7 @@ confuiLoadDanceTypeList (configui_t *confui)
   char          *key;
   int           count;
 
+  logProcBegin (LOG_PROC, "confuiLoadDanceTypeList");
 
   tlist = nlistAlloc ("cu-dance-type", LIST_UNORDERED, free);
 
@@ -2323,6 +2377,7 @@ confuiLoadDanceTypeList (configui_t *confui)
 
   confui->uiitem [CONFUI_SPINBOX_DANCE_TYPE].list = tlist;
   confui->uiitem [CONFUI_SPINBOX_DANCE_TYPE].sblookuplist = tlist;
+  logProcEnd (LOG_PROC, "confuiLoadDanceTypeList", "");
 }
 
 static gboolean
@@ -2332,8 +2387,10 @@ confuiFadeTypeTooltip (GtkWidget *w, gint x, gint y, gboolean kbmode,
   configui_t  *confui = udata;
   GdkPixbuf   *pixbuf;
 
+  logProcBegin (LOG_PROC, "confuiFadeTypeTooltip");
   pixbuf = gtk_image_get_pixbuf (GTK_IMAGE (confui->fadetypeImage));
   gtk_tooltip_set_icon (tt, pixbuf);
+  logProcEnd (LOG_PROC, "confuiFadeTypeTooltip", "");
   return TRUE;
 }
 
@@ -2344,8 +2401,10 @@ confuiOrgPathSelect (GtkTreeView *tv, GtkTreePath *path,
   configui_t        *confui = udata;
   char              *sval;
 
+  logProcBegin (LOG_PROC, "confuiOrgPathSelect");
   sval = confuiComboboxSelect (confui, path, CONFUI_COMBOBOX_AO_PATHFMT);
   confuiUpdateOrgExamples (confui, sval);
+  logProcEnd (LOG_PROC, "confuiOrgPathSelect", "");
 }
 
 static char *
@@ -2355,10 +2414,12 @@ confuiComboboxSelect (configui_t *confui, GtkTreePath *path, int widx)
   ssize_t           idx;
   char              *sval;
 
+  logProcBegin (LOG_PROC, "confuiComboboxSelect");
   dd = &confui->uiitem [widx].u.dropdown;
   idx = uiutilsDropDownSelectionGet (dd, path);
   sval = slistGetDataByIdx (confui->uiitem [widx].list, idx);
   confui->uiitem [widx].listidx = idx;
+  logProcEnd (LOG_PROC, "confuiComboboxSelect", "");
   return sval;
 }
 
@@ -2372,6 +2433,7 @@ confuiUpdateMobmqQrcode (configui_t *confui)
   bdjmobilemq_t type;
   GtkWidget     *widget;
 
+  logProcBegin (LOG_PROC, "confuiUpdateMobmqQrcode");
 
   type = (bdjmobilemq_t) bdjoptGetNum (OPT_P_MOBILEMARQUEE);
 
@@ -2405,6 +2467,7 @@ confuiUpdateMobmqQrcode (configui_t *confui)
   if (*qruri) {
     free (qruri);
   }
+  logProcEnd (LOG_PROC, "confuiUpdateMobmqQrcode", "");
 }
 
 static void
@@ -2415,11 +2478,13 @@ confuiMobmqTypeChg (GtkSpinButton *sb, gpointer udata)
   double        value;
   ssize_t       nval;
 
+  logProcBegin (LOG_PROC, "confuiMobmqTypeChg");
   adjustment = gtk_spin_button_get_adjustment (sb);
   value = gtk_adjustment_get_value (adjustment);
   nval = (ssize_t) value;
   bdjoptSetNum (OPT_P_MOBILEMARQUEE, nval);
   confuiUpdateMobmqQrcode (confui);
+  logProcEnd (LOG_PROC, "confuiMobmqTypeChg", "");
 }
 
 static void
@@ -2430,11 +2495,13 @@ confuiMobmqPortChg (GtkSpinButton *sb, gpointer udata)
   double        value;
   ssize_t       nval;
 
+  logProcBegin (LOG_PROC, "confuiMobmqPortChg");
   adjustment = gtk_spin_button_get_adjustment (sb);
   value = gtk_adjustment_get_value (adjustment);
   nval = (ssize_t) value;
   bdjoptSetNum (OPT_P_MOBILEMQPORT, nval);
   confuiUpdateMobmqQrcode (confui);
+  logProcEnd (LOG_PROC, "confuiMobmqPortChg", "");
 }
 
 static bool
@@ -2444,9 +2511,11 @@ confuiMobmqNameChg (void *edata, void *udata)
   configui_t    *confui = udata;
   const char      *sval;
 
+  logProcBegin (LOG_PROC, "confuiMobmqNameChg");
   sval = uiutilsEntryGetValue (entry);
   bdjoptSetStr (OPT_P_MOBILEMQTAG, sval);
   confuiUpdateMobmqQrcode (confui);
+  logProcEnd (LOG_PROC, "confuiMobmqNameChg", "");
   return true;
 }
 
@@ -2457,9 +2526,11 @@ confuiMobmqTitleChg (void *edata, void *udata)
   configui_t      *confui = udata;
   const char      *sval;
 
+  logProcBegin (LOG_PROC, "confuiMobmqTitleChg");
   sval = uiutilsEntryGetValue (entry);
   bdjoptSetStr (OPT_P_MOBILEMQTITLE, sval);
   confuiUpdateMobmqQrcode (confui);
+  logProcEnd (LOG_PROC, "confuiMobmqTitleChg", "");
   return true;
 }
 
@@ -2472,6 +2543,7 @@ confuiUpdateRemctrlQrcode (configui_t *confui)
   ssize_t       onoff;
   GtkWidget     *widget;
 
+  logProcBegin (LOG_PROC, "confuiUpdateRemctrlQrcode");
 
   onoff = (bdjmobilemq_t) bdjoptGetNum (OPT_P_REMOTECONTROL);
 
@@ -2499,6 +2571,7 @@ confuiUpdateRemctrlQrcode (configui_t *confui)
   if (*qruri) {
     free (qruri);
   }
+  logProcEnd (LOG_PROC, "confuiUpdateRemctrlQrcode", "");
 }
 
 static gboolean
@@ -2506,8 +2579,10 @@ confuiRemctrlChg (GtkSwitch *sw, gboolean value, gpointer udata)
 {
   configui_t  *confui = udata;
 
+  logProcBegin (LOG_PROC, "confuiRemctrlChg");
   bdjoptSetNum (OPT_P_REMOTECONTROL, value);
   confuiUpdateRemctrlQrcode (confui);
+  logProcEnd (LOG_PROC, "confuiRemctrlChg", "");
   return FALSE;
 }
 
@@ -2519,11 +2594,13 @@ confuiRemctrlPortChg (GtkSpinButton *sb, gpointer udata)
   double        value;
   ssize_t       nval;
 
+  logProcBegin (LOG_PROC, "confuiRemctrlPortChg");
   adjustment = gtk_spin_button_get_adjustment (sb);
   value = gtk_adjustment_get_value (adjustment);
   nval = (ssize_t) value;
   bdjoptSetNum (OPT_P_REMCONTROLPORT, nval);
   confuiUpdateRemctrlQrcode (confui);
+  logProcEnd (LOG_PROC, "confuiRemctrlPortChg", "");
 }
 
 
@@ -2538,6 +2615,7 @@ confuiMakeQRCodeFile (configui_t *confui, char *title, char *uri)
   FILE          *fh;
   size_t        dlen;
 
+  logProcBegin (LOG_PROC, "confuiMakeQRCodeFile");
   qruri = malloc (MAXPATHLEN);
 
   pathbldMakePath (baseuri, sizeof (baseuri), "",
@@ -2565,6 +2643,7 @@ confuiMakeQRCodeFile (configui_t *confui, char *title, char *uri)
 
   free (data);
   free (ndata);
+  logProcEnd (LOG_PROC, "confuiMakeQRCodeFile", "");
   return qruri;
 }
 
@@ -2575,25 +2654,27 @@ confuiUpdateOrgExamples (configui_t *confui, char *pathfmt)
   org_t     *org;
   GtkWidget *widget;
 
+  logProcBegin (LOG_PROC, "confuiUpdateOrgExamples");
   org = orgAlloc (pathfmt);
 
-  data = "FILE\n..none\nDISCNUMBER\n..1\nTRACKNUMBER\n..1\nALBUMARTIST\n..Prandi Sound Orchestra\nARTIST\n..Prandi Sound Orchestra\nDANCE\n..Foxtrot\nGENRE\n..Ballroom Dance\nTITLE\n..Don't Be That Way\n";
+  data = "FILE\n..none\nDISCNUMBER\n..1\nTRACKNUMBER\n..1\nALBUM\n..Smooth\nALBUMARTIST\n..Santana\nARTIST\n..Santana\nDANCE\n..Cha Cha\nGENRE\n..Ballroom Dance\nTITLE\n..Smooth\n";
   widget = confui->uiitem [CONFUI_WIDGET_AO_EXAMPLE_1].u.widget;
   confuiUpdateOrgExample (confui, org, data, widget);
 
-  data = "FILE\n..none\nDISCNUMBER\n..2\nTRACKNUMBER\n..17\nALBUMARTIST\n..Dancehouse\nARTIST\n..John Painter Feat. Shannon Lea Smith\nDANCE\n..Quickstep\nGENRE\n..Ballroom Dance\nTITLE\n..You Want a Piece of Me\n";
+  data = "FILE\n..none\nDISCNUMBER\n..1\nTRACKNUMBER\n..2\nALBUM\n..The Ultimate Latin Album 4: Latin Eyes\nALBUMARTIST\n..WRD\nARTIST\n..Gizelle D'Cole\nDANCE\n..Rumba\nGENRE\n..Ballroom Dance\nTITLE\n..Asi\n";
   widget = confui->uiitem [CONFUI_WIDGET_AO_EXAMPLE_2].u.widget;
   confuiUpdateOrgExample (confui, org, data, widget);
 
-  data = "FILE\n..none\nDISCNUMBER\n..1\nTRACKNUMBER\n..2\nALBUMARTIST\n..Casa Musica\nARTIST\n..Boris Myagkov Big Band\nDANCE\n..Waltz\nTITLE\n..If You Don't Know Me By Now\nALBUM\n..The Music of the German Open Championships 2014\nGENRE\n..Ballroom Dance\n";
+  data = "FILE\n..none\nDISCNUMBER\n..1\nTRACKNUMBER\n..3\nALBUM\n..Shaman\nALBUMARTIST\n..Santana\nARTIST\n..Santana\nDANCE\n..Waltz\nTITLE\n..The Game of Love\nGENRE\n..Latin";
   widget = confui->uiitem [CONFUI_WIDGET_AO_EXAMPLE_3].u.widget;
   confuiUpdateOrgExample (confui, org, data, widget);
 
-  data = "FILE\n..none\nDISCNUMBER\n..1\nTRACKNUMBER\n..3\nCOMPOSER\n..Beethoven\nCONDUCTOR\n..Herbert von Karajan\nALBUMARTIST\n..Berliner Philharmonker\nnDANCE\n..\nTITLE\n..Symphonie No.5 C-minor, Op.67: I Allegro con brio\nALBUM\n..Beethoven Symphonien 5 & 6\nGENRE\n..Classical\n";
+  data = "FILE\n..none\nDISCNUMBER\n..2\nTRACKNUMBER\n..2\nALBUM\n..The Ultimate Latin Album 9: Footloose\nALBUMARTIST\n..\nARTIST\n..Raphael\nDANCE\n..Rumba\nTITLE\n..Ni tú ni yo\nGENRE\n..Latin";
   widget = confui->uiitem [CONFUI_WIDGET_AO_EXAMPLE_4].u.widget;
   confuiUpdateOrgExample (confui, org, data, widget);
 
   orgFree (org);
+  logProcEnd (LOG_PROC, "confuiUpdateOrgExamples", "");
 }
 
 static void
@@ -2603,6 +2684,7 @@ confuiUpdateOrgExample (configui_t *config, org_t *org, char *data, GtkWidget *w
   char      *tdata;
   char      *disp;
 
+  logProcBegin (LOG_PROC, "confuiUpdateOrgExample");
   tdata = strdup (data);
   song = songAlloc ();
   songParse (song, tdata, 0);
@@ -2611,19 +2693,26 @@ confuiUpdateOrgExample (configui_t *config, org_t *org, char *data, GtkWidget *w
   songFree (song);
   free (disp);
   free (tdata);
+  logProcEnd (LOG_PROC, "confuiUpdateOrgExample", "");
 }
 
 /* table editing */
 static void
 confuiTableMoveUp (GtkButton *b, gpointer udata)
 {
+
+  logProcBegin (LOG_PROC, "confuiTableMoveUp");
   confuiTableMove (udata, CONFUI_TABLE_MOVE_PREV);
+  logProcEnd (LOG_PROC, "confuiTableMoveUp", "");
 }
 
 static void
 confuiTableMoveDown (GtkButton *b, gpointer udata)
 {
+
+  logProcBegin (LOG_PROC, "confuiTableMoveDown");
   confuiTableMove (udata, CONFUI_TABLE_MOVE_NEXT);
+  logProcEnd (LOG_PROC, "confuiTableMoveDown", "");
 }
 
 static void
@@ -2641,11 +2730,13 @@ confuiTableMove (configui_t *confui, int dir)
   int               idx;
   int               flags;
 
+  logProcBegin (LOG_PROC, "confuiTableMove");
   tree = confui->tables [confui->tablecurr].tree;
   flags = confui->tables [confui->tablecurr].flags;
   sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (tree));
   count = gtk_tree_selection_count_selected_rows (sel);
   if (count != 1) {
+    logProcEnd (LOG_PROC, "confuiTableMove", "no-selection");
     return;
   }
   gtk_tree_selection_get_selected (sel, &model, &iter);
@@ -2658,21 +2749,25 @@ confuiTableMove (configui_t *confui, int dir)
   if (idx == 1 &&
       dir == CONFUI_TABLE_MOVE_PREV &&
       (flags & CONFUI_TABLE_KEEP_FIRST) == CONFUI_TABLE_KEEP_FIRST) {
+    logProcEnd (LOG_PROC, "confuiTableMove", "move-prev-keep-first");
     return;
   }
   if (idx == confui->tables [confui->tablecurr].currcount - 1 &&
       dir == CONFUI_TABLE_MOVE_PREV &&
       (flags & CONFUI_TABLE_KEEP_LAST) == CONFUI_TABLE_KEEP_LAST) {
+    logProcEnd (LOG_PROC, "confuiTableMove", "move-prev-keep-last");
     return;
   }
   if (idx == confui->tables [confui->tablecurr].currcount - 2 &&
       dir == CONFUI_TABLE_MOVE_NEXT &&
       (flags & CONFUI_TABLE_KEEP_LAST) == CONFUI_TABLE_KEEP_LAST) {
+    logProcEnd (LOG_PROC, "confuiTableMove", "move-next-keep-last");
     return;
   }
   if (idx == 0 &&
       dir == CONFUI_TABLE_MOVE_NEXT &&
       (flags & CONFUI_TABLE_KEEP_FIRST) == CONFUI_TABLE_KEEP_FIRST) {
+    logProcEnd (LOG_PROC, "confuiTableMove", "move-next-keep-first");
     return;
   }
 
@@ -2689,7 +2784,7 @@ confuiTableMove (configui_t *confui, int dir)
     }
   }
   confui->tables [confui->tablecurr].changed = true;
-//  confuiTableView (tree);
+  logProcEnd (LOG_PROC, "confuiTableMove", "");
 }
 
 static void
@@ -2706,11 +2801,13 @@ confuiTableRemove (GtkButton *b, gpointer udata)
   int               count;
   int               flags;
 
+  logProcBegin (LOG_PROC, "confuiTableRemove");
   tree = confui->tables [confui->tablecurr].tree;
   flags = confui->tables [confui->tablecurr].flags;
   sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (tree));
   count = gtk_tree_selection_count_selected_rows (sel);
   if (count != 1) {
+    logProcEnd (LOG_PROC, "confuiTableRemove", "no-selection");
     return;
   }
   gtk_tree_selection_get_selected (sel, &model, &iter);
@@ -2722,16 +2819,48 @@ confuiTableRemove (GtkButton *b, gpointer udata)
   gtk_tree_path_free (path);
   if (idx == 0 &&
       (flags & CONFUI_TABLE_KEEP_FIRST) == CONFUI_TABLE_KEEP_FIRST) {
+    logProcEnd (LOG_PROC, "confuiTableRemove", "keep-first");
     return;
   }
   if (idx == confui->tables [confui->tablecurr].currcount - 1 &&
       (flags & CONFUI_TABLE_KEEP_LAST) == CONFUI_TABLE_KEEP_LAST) {
+    logProcEnd (LOG_PROC, "confuiTableRemove", "keep-last");
     return;
+  }
+
+  if (confui->tablecurr == CONFUI_ID_DANCE) {
+    gulong        idx;
+    dance_t       *dances;
+    GtkWidget     *tree;
+    GtkTreeSelection  *sel;
+    GtkTreeModel  *model;
+    GtkTreeIter   iter;
+
+    tree = confui->tables [confui->tablecurr].tree;
+    sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (tree));
+    gtk_tree_selection_get_selected (sel, &model, &iter);
+    gtk_tree_model_get (model, &iter, CONFUI_DANCE_COL_DANCE_IDX, &idx, -1);
+    dances = bdjvarsdfGet (BDJVDF_DANCES);
+    danceDelete (dances, idx);
   }
 
   gtk_list_store_remove (GTK_LIST_STORE (model), &iter);
   confui->tables [confui->tablecurr].changed = true;
   confui->tables [confui->tablecurr].currcount -= 1;
+  logProcEnd (LOG_PROC, "confuiTableRemove", "");
+
+  if (confui->tablecurr == CONFUI_ID_DANCE) {
+    GtkWidget   *tree;
+    GtkTreeSelection  *sel;
+    GtkTreePath *path;
+    GtkTreeIter iter;
+
+    tree = confui->tables [confui->tablecurr].tree;
+    sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (tree));
+    gtk_tree_selection_get_selected (sel, &model, &iter);
+    path = gtk_tree_model_get_path (model, &iter);
+    confuiDanceSelect (GTK_TREE_VIEW (tree), path, NULL, confui);
+  }
 }
 
 static void
@@ -2748,6 +2877,7 @@ confuiTableAdd (GtkButton *b, gpointer udata)
   int               valid;
   int               flags;
 
+  logProcBegin (LOG_PROC, "confuiTableAdd");
 
   tree = confui->tables [confui->tablecurr].tree;
   flags = confui->tables [confui->tablecurr].flags;
@@ -2796,36 +2926,38 @@ confuiTableAdd (GtkButton *b, gpointer udata)
 
     case CONFUI_ID_DANCE:
     {
+//      confuiDanceSet (GTK_LIST_STORE (model), &niter, TRUE, _("New Dance"), 0);
       break;
     }
 
     case CONFUI_ID_GENRES:
     {
-      confuiGenreSet (GTK_LIST_STORE (model), &niter, TRUE, "", 0);
+      confuiGenreSet (GTK_LIST_STORE (model), &niter, TRUE, _("New Genre"), 0);
       break;
     }
 
     case CONFUI_ID_RATINGS:
     {
-      confuiRatingSet (GTK_LIST_STORE (model), &niter, TRUE, "", 0);
+      confuiRatingSet (GTK_LIST_STORE (model), &niter, TRUE, _("New Rating"), 0);
       break;
     }
 
     case CONFUI_ID_LEVELS:
     {
-      confuiLevelSet (GTK_LIST_STORE (model), &niter, TRUE, "", 0, 0);
+      confuiLevelSet (GTK_LIST_STORE (model), &niter, TRUE, _("New Level"), 0, 0);
       break;
     }
 
     case CONFUI_ID_STATUS:
     {
-      confuiStatusSet (GTK_LIST_STORE (model), &niter, TRUE, "", 0);
+      confuiStatusSet (GTK_LIST_STORE (model), &niter, TRUE, _("New Status"), 0);
       break;
     }
   }
 
   confui->tables [confui->tablecurr].changed = true;
   confui->tables [confui->tablecurr].currcount += 1;
+  logProcEnd (LOG_PROC, "confuiTableAdd", "");
 }
 
 static void
@@ -2883,7 +3015,7 @@ confuiCreateDanceTable (configui_t *confui)
   dance_t           *dances;
   GtkWidget         *tree;
 
-  logProcBegin (LOG_PROC, "confuiCreateDancesTable");
+  logProcBegin (LOG_PROC, "confuiCreateDanceTable");
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
 
@@ -2944,7 +3076,7 @@ confuiCreateRatingTable (configui_t *confui)
   GtkWidget         *tree;
   int               editable;
 
-  logProcBegin (LOG_PROC, "confuiCreateRatingsTable");
+  logProcBegin (LOG_PROC, "confuiCreateRatingTable");
 
   ratings = bdjvarsdfGet (BDJVDF_RATINGS);
 
@@ -3001,7 +3133,7 @@ confuiCreateRatingTable (configui_t *confui)
 
   gtk_tree_view_set_model (GTK_TREE_VIEW (tree), GTK_TREE_MODEL (store));
   g_object_unref (store);
-  logProcEnd (LOG_PROC, "confuiCreateRatingsTable", "");
+  logProcEnd (LOG_PROC, "confuiCreateRatingTable", "");
 }
 
 static void
@@ -3010,6 +3142,7 @@ confuiRatingSet (GtkListStore *store, GtkTreeIter *iter,
 {
   GtkAdjustment     *adjustment;
 
+  logProcBegin (LOG_PROC, "confuiRatingSet");
   adjustment = gtk_adjustment_new (weight, 0.0, 100.0, 1.0, 5.0, 0.0);
   gtk_list_store_set (store, iter,
       CONFUI_RATING_COL_R_EDITABLE, editable,
@@ -3019,6 +3152,7 @@ confuiRatingSet (GtkListStore *store, GtkTreeIter *iter,
       CONFUI_RATING_COL_ADJUST, adjustment,
       CONFUI_RATING_COL_DIGITS, 0,
       -1);
+  logProcEnd (LOG_PROC, "confuiRatingSet", "");
 }
 
 static void
@@ -3096,11 +3230,13 @@ static void
 confuiStatusSet (GtkListStore *store, GtkTreeIter *iter,
     int editable, char *statusdisp, int playflag)
 {
+  logProcBegin (LOG_PROC, "confuiStatusSet");
   gtk_list_store_set (store, iter,
       CONFUI_STATUS_COL_EDITABLE, editable,
       CONFUI_STATUS_COL_STATUS, statusdisp,
       CONFUI_STATUS_COL_PLAY_FLAG, playflag,
       -1);
+  logProcEnd (LOG_PROC, "confuiStatusSet", "");
 }
 
 static void
@@ -3189,7 +3325,7 @@ confuiCreateLevelTable (configui_t *confui)
 
   gtk_tree_view_set_model (GTK_TREE_VIEW (tree), GTK_TREE_MODEL (store));
   g_object_unref (store);
-  logProcEnd (LOG_PROC, "confuiCreatelevelsTable", "");
+  logProcEnd (LOG_PROC, "confuiCreateLevelTable", "");
 }
 
 static void
@@ -3198,6 +3334,7 @@ confuiLevelSet (GtkListStore *store, GtkTreeIter *iter,
 {
   GtkAdjustment     *adjustment;
 
+  logProcBegin (LOG_PROC, "confuiLevelSet");
   adjustment = gtk_adjustment_new (weight, 0.0, 100.0, 1.0, 5.0, 0.0);
   gtk_list_store_set (store, iter,
       CONFUI_LEVEL_COL_EDITABLE, editable,
@@ -3207,6 +3344,7 @@ confuiLevelSet (GtkListStore *store, GtkTreeIter *iter,
       CONFUI_LEVEL_COL_DIGITS, 0,
       CONFUI_LEVEL_COL_DEFAULT, def,
       -1);
+  logProcEnd (LOG_PROC, "confuiLevelSet", "");
 }
 
 
@@ -3285,13 +3423,14 @@ static void
 confuiGenreSet (GtkListStore *store, GtkTreeIter *iter,
     int editable, char *genredisp, int clflag)
 {
+  logProcBegin (LOG_PROC, "confuiGenreSet");
   gtk_list_store_set (store, iter,
       CONFUI_GENRE_COL_EDITABLE, editable,
       CONFUI_GENRE_COL_GENRE, genredisp,
       CONFUI_GENRE_COL_CLASSICAL, clflag,
       -1);
+  logProcEnd (LOG_PROC, "confuiGenreSet", "");
 }
-
 
 static void
 confuiTableToggle (GtkCellRendererToggle *renderer, gchar *spath, gpointer udata)
@@ -3303,10 +3442,12 @@ confuiTableToggle (GtkCellRendererToggle *renderer, gchar *spath, gpointer udata
   GtkTreeModel  *model;
   int           col;
 
+  logProcBegin (LOG_PROC, "confuiTableToggle");
   model = gtk_tree_view_get_model (
       GTK_TREE_VIEW (confui->tables [confui->tablecurr].tree));
   path = gtk_tree_path_new_from_string (spath);
   if (gtk_tree_model_get_iter (model, &iter, path) == FALSE) {
+    logProcEnd (LOG_PROC, "confuiTableToggle", "no model/iter");
     return;
   }
   gtk_tree_path_free (path);
@@ -3314,6 +3455,7 @@ confuiTableToggle (GtkCellRendererToggle *renderer, gchar *spath, gpointer udata
   gtk_tree_model_get (model, &iter, col, &val, -1);
   gtk_list_store_set (GTK_LIST_STORE (model), &iter, col, !val, -1);
   confui->tables [confui->tablecurr].changed = true;
+  logProcEnd (LOG_PROC, "confuiTableToggle", "");
 }
 
 static void
@@ -3327,6 +3469,7 @@ confuiTableRadioToggle (GtkCellRendererToggle *renderer, gchar *path, gpointer u
   int           col;
   int           row;
 
+  logProcBegin (LOG_PROC, "confuiTableRadioToggle");
   model = gtk_tree_view_get_model (
       GTK_TREE_VIEW (confui->tables [confui->tablecurr].tree));
 
@@ -3346,6 +3489,7 @@ confuiTableRadioToggle (GtkCellRendererToggle *renderer, gchar *path, gpointer u
   sscanf (path, "%d", &row);
   confui->tables [confui->tablecurr].radiorow = row;
   confui->tables [confui->tablecurr].changed = true;
+  logProcEnd (LOG_PROC, "confuiTableRadioToggle", "");
 }
 
 static void
@@ -3354,7 +3498,9 @@ confuiTableEditText (GtkCellRendererText* r, const gchar* path,
 {
   configui_t    *confui = udata;
 
+  logProcBegin (LOG_PROC, "confuiTableEditText");
   confuiTableEdit (confui, r, path, ntext, CONFUI_TABLE_TEXT);
+  logProcEnd (LOG_PROC, "confuiTableEditText", "");
 }
 
 static void
@@ -3363,7 +3509,9 @@ confuiTableEditSpinbox (GtkCellRendererText* r, const gchar* path,
 {
   configui_t    *confui = udata;
 
+  logProcBegin (LOG_PROC, "confuiTableEditSpinbox");
   confuiTableEdit (confui, r, path, ntext, CONFUI_TABLE_NUM);
+  logProcEnd (LOG_PROC, "confuiTableEditSpinbox", "");
 }
 
 static void
@@ -3375,6 +3523,7 @@ confuiTableEdit (configui_t *confui, GtkCellRendererText* r,
   GtkTreeIter   iter;
   int           col;
 
+  logProcBegin (LOG_PROC, "confuiTableEdit");
   tree = confui->tables [confui->tablecurr].tree;
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (tree));
   gtk_tree_model_get_iter_from_string (model, &iter, path);
@@ -3387,6 +3536,7 @@ confuiTableEdit (configui_t *confui, GtkCellRendererText* r,
     gtk_list_store_set (GTK_LIST_STORE (model), &iter, col, val, -1);
   }
   confui->tables [confui->tablecurr].changed = true;
+  logProcEnd (LOG_PROC, "confuiTableEdit", "");
 }
 
 static void
@@ -3397,10 +3547,13 @@ confuiTableSave (configui_t *confui, confuiident_t id)
   savefunc_t    savefunc;
   char          tbuff [40];
 
+  logProcBegin (LOG_PROC, "confuiTableSave");
   if (confui->tables [id].changed == false) {
+    logProcEnd (LOG_PROC, "confuiTableSave", "not-changed");
     return;
   }
   if (confui->tables [id].savefunc == NULL) {
+    logProcEnd (LOG_PROC, "confuiTableSave", "no-savefunc");
     return;
   }
 
@@ -3414,6 +3567,7 @@ confuiTableSave (configui_t *confui, confuiident_t id)
   }
   savefunc = confui->tables [id].savefunc;
   savefunc (confui);
+  logProcEnd (LOG_PROC, "confuiTableSave", "");
 }
 
 static gboolean
@@ -3424,6 +3578,7 @@ confuiRatingListCreate (GtkTreeModel *model, GtkTreePath *path,
   char        *ratingdisp;
   gulong      weight;
 
+  logProcBegin (LOG_PROC, "confuiRatingListCreate");
   gtk_tree_model_get (model, iter,
       CONFUI_RATING_COL_RATING, &ratingdisp,
       CONFUI_RATING_COL_WEIGHT, &weight,
@@ -3434,6 +3589,7 @@ confuiRatingListCreate (GtkTreeModel *model, GtkTreePath *path,
       confui->tables [CONFUI_ID_RATINGS].saveidx, RATING_WEIGHT, weight);
   free (ratingdisp);
   confui->tables [CONFUI_ID_RATINGS].saveidx += 1;
+  logProcEnd (LOG_PROC, "confuiRatingListCreate", "");
   return FALSE;
 }
 
@@ -3446,6 +3602,7 @@ confuiLevelListCreate (GtkTreeModel *model, GtkTreePath *path,
   gulong      weight;
   gboolean    def;
 
+  logProcBegin (LOG_PROC, "confuiLevelListCreate");
   gtk_tree_model_get (model, iter,
       CONFUI_LEVEL_COL_LEVEL, &leveldisp,
       CONFUI_LEVEL_COL_WEIGHT, &weight,
@@ -3459,6 +3616,7 @@ confuiLevelListCreate (GtkTreeModel *model, GtkTreePath *path,
       confui->tables [CONFUI_ID_LEVELS].saveidx, LEVEL_DEFAULT_FLAG, def);
   free (leveldisp);
   confui->tables [CONFUI_ID_LEVELS].saveidx += 1;
+  logProcEnd (LOG_PROC, "confuiLevelListCreate", "");
   return FALSE;
 }
 
@@ -3470,6 +3628,7 @@ confuiStatusListCreate (GtkTreeModel *model, GtkTreePath *path,
   char        *statusdisp;
   gboolean    playflag;
 
+  logProcBegin (LOG_PROC, "confuiStatusListCreate");
   gtk_tree_model_get (model, iter,
       CONFUI_STATUS_COL_STATUS, &statusdisp,
       CONFUI_STATUS_COL_PLAY_FLAG, &playflag,
@@ -3480,6 +3639,7 @@ confuiStatusListCreate (GtkTreeModel *model, GtkTreePath *path,
       confui->tables [CONFUI_ID_STATUS].saveidx, STATUS_PLAY_FLAG, playflag);
   free (statusdisp);
   confui->tables [CONFUI_ID_STATUS].saveidx += 1;
+  logProcEnd (LOG_PROC, "confuiStatusListCreate", "");
   return FALSE;
 }
 
@@ -3491,6 +3651,7 @@ confuiGenreListCreate (GtkTreeModel *model, GtkTreePath *path,
   char        *genredisp;
   gboolean    clflag;
 
+  logProcBegin (LOG_PROC, "confuiGenreListCreate");
   gtk_tree_model_get (model, iter,
       CONFUI_GENRE_COL_GENRE, &genredisp,
       CONFUI_GENRE_COL_CLASSICAL, &clflag,
@@ -3500,6 +3661,7 @@ confuiGenreListCreate (GtkTreeModel *model, GtkTreePath *path,
   ilistSetNum (confui->tables [CONFUI_ID_GENRES].savelist,
       confui->tables [CONFUI_ID_GENRES].saveidx, GENRE_CLASSICAL_FLAG, clflag);
   confui->tables [CONFUI_ID_GENRES].saveidx += 1;
+  logProcEnd (LOG_PROC, "confuiGenreListCreate", "");
   return FALSE;
 }
 
@@ -3508,9 +3670,11 @@ confuiDanceSave (configui_t *confui)
 {
   dance_t   *dances;
 
+  logProcBegin (LOG_PROC, "confuiDanceSave");
   dances = bdjvarsdfGet (BDJVDF_DANCES);
   /* the data is already saved in the dance list; just re-use it */
   danceSave (dances, dances->dances);
+  logProcEnd (LOG_PROC, "confuiDanceSave", "");
 }
 
 static void
@@ -3518,9 +3682,11 @@ confuiRatingSave (configui_t *confui)
 {
   rating_t    *ratings;
 
+  logProcBegin (LOG_PROC, "confuiRatingSave");
   ratings = bdjvarsdfGet (BDJVDF_RATINGS);
   ratingSave (ratings, confui->tables [CONFUI_ID_RATINGS].savelist);
   ilistFree (confui->tables [CONFUI_ID_RATINGS].savelist);
+  logProcEnd (LOG_PROC, "confuiRatingSave", "");
 }
 
 static void
@@ -3528,9 +3694,11 @@ confuiLevelSave (configui_t *confui)
 {
   level_t    *levels;
 
+  logProcBegin (LOG_PROC, "confuiLevelSave");
   levels = bdjvarsdfGet (BDJVDF_LEVELS);
   levelSave (levels, confui->tables [CONFUI_ID_LEVELS].savelist);
   ilistFree (confui->tables [CONFUI_ID_LEVELS].savelist);
+  logProcEnd (LOG_PROC, "confuiLevelSave", "");
 }
 
 static void
@@ -3538,9 +3706,11 @@ confuiStatusSave (configui_t *confui)
 {
   status_t    *status;
 
+  logProcBegin (LOG_PROC, "confuiStatusSave");
   status = bdjvarsdfGet (BDJVDF_STATUS);
   statusSave (status, confui->tables [CONFUI_ID_STATUS].savelist);
   ilistFree (confui->tables [CONFUI_ID_STATUS].savelist);
+  logProcEnd (LOG_PROC, "confuiStatusSave", "");
 }
 
 static void
@@ -3548,9 +3718,11 @@ confuiGenreSave (configui_t *confui)
 {
   genre_t    *genres;
 
+  logProcBegin (LOG_PROC, "confuiGenreSave");
   genres = bdjvarsdfGet (BDJVDF_GENRES);
   genreSave (genres, confui->tables [CONFUI_ID_GENRES].savelist);
   ilistFree (confui->tables [CONFUI_ID_GENRES].savelist);
+  logProcEnd (LOG_PROC, "confuiGenreSave", "");
 }
 
 static void
@@ -3569,8 +3741,10 @@ confuiDanceSelect (GtkTreeView *tv, GtkTreePath *path,
   datafileconv_t conv;
   dance_t       *dances;
 
+  logProcBegin (LOG_PROC, "confuiDanceSelect");
   model = gtk_tree_view_get_model (tv);
   if (! gtk_tree_model_get_iter (model, &iter, path)) {
+    logProcEnd (LOG_PROC, "confuiDanceSelect", "no model/iter");
     return;
   }
   gtk_tree_model_get (model, &iter, CONFUI_DANCE_COL_DANCE_IDX, &idx, -1);
@@ -3615,6 +3789,7 @@ confuiDanceSelect (GtkTreeView *tv, GtkTreePath *path,
   num = danceGetNum (dances, key, DANCE_TYPE);
   widx = CONFUI_SPINBOX_DANCE_TYPE;
   uiutilsSpinboxTextSetValue (&confui->uiitem [widx].u.spinbox, (double) num);
+  logProcEnd (LOG_PROC, "confuiDanceSelect", "");
 }
 
 static void
@@ -3635,14 +3810,17 @@ confuiDanceEntryChg (GtkEditable *e, gpointer udata)
   datafileconv_t  conv;
   int             widx;
 
+  logProcBegin (LOG_PROC, "confuiDanceEntryChg");
   widx = GPOINTER_TO_UINT (g_object_get_data (G_OBJECT (e), "confuiwidx"));
 
   entry = &confui->uiitem [widx].u.entry;
   if (entry->buffer == NULL) {
+    logProcEnd (LOG_PROC, "confuiDanceEntryChg", "no-buffer");
     return;
   }
   str = gtk_entry_buffer_get_text (entry->buffer);
   if (str == NULL || *str == '\0') {
+    logProcEnd (LOG_PROC, "confuiDanceEntryChg", "no-string");
     return;
   }
 
@@ -3653,6 +3831,7 @@ confuiDanceEntryChg (GtkEditable *e, gpointer udata)
   sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (tree));
   count = gtk_tree_selection_count_selected_rows (sel);
   if (count != 1) {
+    logProcEnd (LOG_PROC, "confuiDanceEntryChg", "no-selection");
     return;
   }
   gtk_tree_selection_get_selected (sel, &model, &iter);
@@ -3683,6 +3862,7 @@ confuiDanceEntryChg (GtkEditable *e, gpointer udata)
     danceSetStr (dances, key, didx, str);
   }
   confui->tables [confui->tablecurr].changed = true;
+  logProcEnd (LOG_PROC, "confuiDanceEntryChg", "");
 }
 
 static void
@@ -3702,6 +3882,7 @@ confuiDanceSpinboxChg (GtkSpinButton *sb, gpointer udata)
   dance_t         *dances;
   int             didx;
 
+  logProcBegin (LOG_PROC, "confuiDanceSpinboxChg");
   adjustment = gtk_spin_button_get_adjustment (sb);
   value = gtk_adjustment_get_value (adjustment);
   nval = (ssize_t) value;
@@ -3711,6 +3892,7 @@ confuiDanceSpinboxChg (GtkSpinButton *sb, gpointer udata)
   sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (tree));
   count = gtk_tree_selection_count_selected_rows (sel);
   if (count != 1) {
+    logProcEnd (LOG_PROC, "confuiDanceSpinboxChg", "no-selection");
     return;
   }
   gtk_tree_selection_get_selected (sel, &model, &iter);
@@ -3722,9 +3904,10 @@ confuiDanceSpinboxChg (GtkSpinButton *sb, gpointer udata)
   key = (ssize_t) idx;
   danceSetNum (dances, key, didx, nval);
   confui->tables [confui->tablecurr].changed = true;
+  logProcEnd (LOG_PROC, "confuiDanceSpinboxChg", "");
 }
 
-bool
+static bool
 confuiDanceValidateAnnouncement (void *edata, void *udata)
 {
   configui_t        *confui = udata;
@@ -3736,6 +3919,7 @@ confuiDanceValidateAnnouncement (void *edata, void *udata)
   char              *musicdir;
   size_t            mlen;
 
+  logProcBegin (LOG_PROC, "confuiDanceValidateAnnouncement");
   musicdir = bdjoptGetStr (OPT_M_DIR_MUSIC);
   mlen = strlen (musicdir);
 
@@ -3743,6 +3927,7 @@ confuiDanceValidateAnnouncement (void *edata, void *udata)
   if (entry->buffer != NULL) {
     fn = gtk_entry_buffer_get_text (entry->buffer);
     if (fn == NULL) {
+      logProcEnd (LOG_PROC, "confuiDanceValidateAnnouncement", "bad-fn");
       return rc;
     }
 
@@ -3769,5 +3954,6 @@ confuiDanceValidateAnnouncement (void *edata, void *udata)
   }
 
   confui->tables [confui->tablecurr].changed = true;
+  logProcEnd (LOG_PROC, "confuiDanceValidateAnnouncement", "");
   return rc;
 }

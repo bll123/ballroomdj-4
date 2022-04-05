@@ -208,6 +208,12 @@ danceSave (dance_t *dances, ilist_t *list)
       DANCE_KEY_MAX, list);
 }
 
+void
+danceDelete (dance_t *dances, ilistidx_t dkey)
+{
+  ilistDelete (dances->dances, dkey);
+}
+
 /* internal routines */
 
 static void

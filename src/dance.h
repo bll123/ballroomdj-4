@@ -53,5 +53,6 @@ void          danceSetList (dance_t *, ilistidx_t dkey, ilistidx_t idx, slist_t 
 slist_t       *danceGetDanceList (dance_t *);
 void          danceConvDance (datafileconv_t *conv);
 void          danceSave (dance_t *dances, ilist_t *list);
+void          danceDelete (dance_t *dances, ilistidx_t dkey);
 
 #endif /* INC_DANCE_H */

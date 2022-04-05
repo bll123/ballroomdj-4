@@ -14,10 +14,13 @@ set datatopdir [lindex $argv 1]
 
 set infn [file join $bdj3dir status.tcl]
 set nfn [file join $datatopdir data status.txt]
+
 if { ! [file exists $infn] } {
-  puts "   no status file"
-  exit 1
+  puts "   status: copying template"
+  file copy -force templates/status.txt $nfn
+  exit 0
 }
+
 source $infn
 set fh [open $nfn w]
 puts $fh "# BDJ4 status"

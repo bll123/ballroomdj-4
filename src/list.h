@@ -87,6 +87,7 @@ void        *listGetData (list_t *list, char *keystr);
 void        *listGetDataByIdx (list_t *list, listidx_t idx);
 ssize_t     listGetNumByIdx (list_t *list, listidx_t idx);
 ssize_t     listGetNum (list_t *list, char *keystr);
+void        listDeleteByIdx (list_t *, listidx_t idx);
 void        listSort (list_t *list);
 void        listStartIterator (list_t *list, listidx_t *iteridx);
 void *      listIterateValue (list_t *list, listidx_t *iteridx);

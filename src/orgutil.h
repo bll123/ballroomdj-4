@@ -10,6 +10,7 @@ typedef enum {
   ORG_ALBUMARTIST,
   ORG_ARTIST,
   ORG_COMPOSER,
+  ORG_CONDUCTOR,
   ORG_DANCE,
   ORG_DISC,
   ORG_GENRE,
@@ -26,6 +27,7 @@ typedef struct {
 
 org_t   * orgAlloc (char *orgpath);
 void    orgFree (org_t *org);
+slist_t *orgGetList (org_t *org);
 char    * orgMakeSongPath (org_t *org, song_t *song);
 
 #endif /* INC_ORGUTIL_H */

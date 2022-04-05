@@ -10,9 +10,11 @@
 #include <unistd.h>
 #include <assert.h>
 #include <ctype.h>
+#include <wchar.h>
 
 #include "bdj4.h"
 #include "bdj4intl.h"
+#include "bdjopt.h"
 #include "bdjstring.h"
 #include "dance.h"
 #include "datafile.h"
@@ -20,6 +22,7 @@
 #include "log.h"
 #include "orgutil.h"
 #include "song.h"
+#include "sysvars.h"
 #include "tagdef.h"
 
 typedef struct {
@@ -35,6 +38,7 @@ orglookup_t orglookup [ORG_MAX_KEY] = {
   { "ALBUMARTIST", ORG_ALBUMARTIST, TAG_ALBUMARTIST, NULL, },
   { "ARTIST",     ORG_ARTIST,     TAG_ARTIST, NULL, },
   { "COMPOSER",   ORG_COMPOSER,   TAG_COMPOSER, NULL, },
+  { "CONDUCTOR",  ORG_CONDUCTOR,  TAG_CONDUCTOR, NULL, },
   { "DANCE",      ORG_DANCE,      TAG_DANCE,  danceConvDance },
   { "DISC",       ORG_DISC,       TAG_DISCNUMBER, NULL, },
   { "GENRE",      ORG_GENRE,      TAG_GENRE,  genreConv },
@@ -51,6 +55,8 @@ typedef struct {
 } orginfo_t;
 
 #define ORG_FIRST_GRP 1
+
+static void   orgutilClean (char *target, const char *from, size_t sz);
 
 org_t *
 orgAlloc (char *orgpath)
@@ -114,6 +120,15 @@ orgFree (org_t *org)
   }
 }
 
+slist_t *
+orgGetList (org_t *org)
+{
+  if (org == NULL) {
+    return NULL;
+  }
+  return org->orgparsed;
+}
+
 char *
 orgMakeSongPath (org_t *org, song_t *song)
 {
@@ -126,6 +141,7 @@ orgMakeSongPath (org_t *org, song_t *song)
   orginfo_t       *orginfo;
   int             grpnum = ORG_FIRST_GRP;
   bool            grpok = false;
+  bool            doclean = false;
   datafileconv_t  conv;
 
 
@@ -133,6 +149,8 @@ orgMakeSongPath (org_t *org, song_t *song)
   *gbuff = '\0';
   slistStartIterator (org->orgparsed, &iteridx);
   while ((p = slistIterateKey (org->orgparsed, &iteridx)) != NULL) {
+    doclean = false;
+
     orginfo = slistGetData (org->orgparsed, p);
     if (orginfo->groupnum != grpnum) {
       if (grpok) {
@@ -172,12 +190,14 @@ orgMakeSongPath (org_t *org, song_t *song)
         }
       } else {
         p = songGetStr (song, orginfo->tagkey);
+        doclean = true;
       }
 
       if (orginfo->orgkey == ORG_ALBUMARTIST) {
         /* if the albumartist is empty, replace it with the artist */
         if (p == NULL || *p == '\0') {
           p = songGetStr (song, TAG_ARTIST);
+          doclean = true;
         }
       }
 
@@ -188,10 +208,12 @@ orgMakeSongPath (org_t *org, song_t *song)
           tp = songGetStr (song, TAG_ALBUMARTIST);
           if (tp != NULL && strcmp (p, tp) == 0) {
             p = "";
+            doclean = false;
           }
           tp = songGetStr (song, TAG_ARTIST);
           if (tp != NULL && strcmp (p, tp) == 0) {
             p = "";
+            doclean = false;
           }
         }
       }
@@ -201,7 +223,13 @@ orgMakeSongPath (org_t *org, song_t *song)
       }
     }
     if (p != NULL && *p) {
-      strlcat (gbuff, p, sizeof (gbuff));
+      char  sbuff [MAXPATHLEN];
+
+      strlcpy (sbuff, p, sizeof (sbuff));
+      if (doclean) {
+        orgutilClean (sbuff, p, sizeof (sbuff));
+      }
+      strlcat (gbuff, sbuff, sizeof (gbuff));
     }
   }
 
@@ -211,4 +239,106 @@ orgMakeSongPath (org_t *org, song_t *song)
 
   p = strdup (tbuff);
   return p;
+}
+
+/* internal routines */
+
+/* this must be locale aware, otherwise the characters that are */
+/* being cleaned might appear within a multi-byte sequence */
+static void
+orgutilClean (char *target, const char *from, size_t sz)
+{
+  size_t      bytelen;
+  size_t      slen;
+  size_t      mlen;
+  mbstate_t   ps;
+  const char  *tstr;
+  char        *tgtp;
+  size_t      tgtlen;
+  bool        isdot = false;
+
+  tgtp = target;
+  tgtlen = 0;
+
+  memset (&ps, 0, sizeof (mbstate_t));
+  bytelen = strlen (from);
+  slen = bytelen;
+  tstr = from;
+
+  while (slen > 0) {
+    mlen = mbrlen (tstr, slen, &ps);
+    if (mlen <= 0) {
+      /* bad character; do not copy to target */
+      tstr += 1;
+      slen -= 1;
+      continue;
+    }
+
+    isdot = false;
+    if (mlen == 1) {
+      bool skip = false;
+
+      /* period at the end of the string is not valid on windows */
+      /* this does not handle multiple . at the end of the string */
+      if (*tstr == '.' && slen == 1) {
+        skip = true;
+      }
+
+      /* always skip / and \ characters */
+      if (! skip && (*tstr == '/' || *tstr == '\\')) {
+        skip = true;
+      }
+
+      /*      mp3tag: * :             | < >     " */
+      /*     windows: * : ( ) &     ^ | < > ? ' " */
+      /* linux/macos: *       & [ ]   | < > ? ' " */
+
+      /* these characters just cause issues with filename handling */
+      /* using scripts */
+      if (! skip &&
+          (*tstr == '|' || *tstr == '<' || *tstr == '>' || *tstr == '?')) {
+        skip = true;
+      }
+      /* more issues with filename handling */
+      if (! skip &&
+          (*tstr == '*' || *tstr == '\'' || *tstr == '"' || *tstr == '&')) {
+        skip = true;
+      }
+      /* windows special characters */
+      if (! skip && isWindows ()) {
+        if (*tstr == ':' || *tstr == '(' || *tstr == ')' || *tstr == '^') {
+          skip = true;
+        }
+      }
+      /* linux/macos special characters */
+      if (! skip && ! isWindows ()) {
+        if (*tstr == '[' || *tstr == ']') {
+          skip = true;
+        }
+      }
+      if (! skip && bdjoptGetNum (OPT_G_AO_CHANGESPACE)) {
+        if (*tstr == ' ') {
+          skip = true;
+        }
+      }
+
+      if (skip) {
+        tstr += mlen;
+        slen -= mlen;
+        continue;
+      }
+    }
+
+    if (tgtlen + mlen + 1 >= sz) {
+      break;
+    }
+
+    memcpy (tgtp, tstr, mlen);
+    tgtp += mlen;
+    tgtlen += mlen;
+    tstr += mlen;
+    slen -= mlen;
+  }
+
+  *tgtp = '\0';
 }

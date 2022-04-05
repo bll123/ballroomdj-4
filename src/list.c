@@ -1,6 +1,5 @@
 #include "config.h"
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -176,6 +175,29 @@ listGetNum (list_t *list, char *keydata)
   }
   logMsg (LOG_DBG, LOG_LIST, "list:%s key:%s idx:%ld value:%ld", list->name, keydata, idx, value);
   return value;
+}
+
+void
+listDeleteByIdx (list_t *list, listidx_t idx)
+{
+  listidx_t   copycount;
+
+  if (list == NULL) {
+    return;
+  }
+  if (idx < 0 || idx >= list->count) {
+    return;
+  }
+
+  copycount = list->count - idx - 1;
+  listFreeItem (list, idx);
+  list->count -= 1;
+  if (copycount > 0) {
+    for (ssize_t i = idx; i < list->count; ++i) {
+       memcpy (list->data + i, list->data + i + 1, sizeof (listitem_t));
+    }
+  }
+  logMsg (LOG_DBG, LOG_LIST, "list-del:%s idx:%ld", list->name, idx);
 }
 
 void
@@ -428,7 +450,7 @@ listInsert (list_t *list, ssize_t loc, listitem_t *item)
 
   copycount = list->count - (loc + 1);
   if (copycount > 0) {
-    for (int i = copycount - 1; i >= 0; --i) {
+    for (ssize_t i = copycount - 1; i >= 0; --i) {
        memcpy (list->data + loc + 1 + i, list->data + loc + i, sizeof (listitem_t));
     }
   }
