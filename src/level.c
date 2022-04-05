@@ -135,6 +135,7 @@ levelConv (datafileconv_t *conv)
 
   level = bdjvarsdfGet (BDJVDF_LEVELS);
 
+  conv->allocated = false;
   if (conv->valuetype == VALUE_STR) {
     conv->valuetype = VALUE_NUM;
 

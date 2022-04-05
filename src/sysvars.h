@@ -17,7 +17,6 @@ typedef enum {
   SV_BDJ4TMPDIR,      // tmp
   SV_BDJ4_VERSION,
   SV_CA_FILE,
-  SV_CP_PATH,
   SV_GETCONF_PATH,
   SV_HOME,
   SV_HOSTNAME,

@@ -1,12 +1,12 @@
 #include "config.h"
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
 #include <assert.h>
 
+#include "bdj4.h"
 #include "bdjstring.h"
 #include "bdjvarsdf.h"
 #include "dance.h"
@@ -15,6 +15,7 @@
 #include "fileop.h"
 #include "ilist.h"
 #include "log.h"
+#include "pathbld.h"
 #include "slist.h"
 
 static void danceConvSpeed (datafileconv_t *conv);
@@ -26,7 +27,7 @@ static datafilekey_t dancedfkeys [DANCE_KEY_MAX] = {
   { "DANCE",      DANCE_DANCE,    VALUE_STR, NULL, -1 },
   { "HIGHBPM",    DANCE_HIGH_BPM, VALUE_NUM, NULL, -1 },
   { "LOWBPM",     DANCE_LOW_BPM,  VALUE_NUM, NULL, -1 },
-  { "SPEED",      DANCE_SPEED,    VALUE_LIST, danceConvSpeed, -1 },
+  { "SPEED",      DANCE_SPEED,    VALUE_NUM, danceConvSpeed, -1 },
   { "TAGS",       DANCE_TAGS,     VALUE_LIST, convTextList, -1 },
   { "TIMESIG",    DANCE_TIMESIG,  VALUE_NUM, danceConvTimeSig, -1 },
   { "TYPE",       DANCE_TYPE,     VALUE_NUM, dnctypesConv, -1 },
@@ -46,10 +47,12 @@ static datafilekey_t dancetimesigdfkeys [DANCE_TIMESIG_MAX] = {
 };
 
 dance_t *
-danceAlloc (char *fname)
+danceAlloc (void)
 {
-  dance_t           *dance;
+  dance_t   *dance;
+  char      fname [MAXPATHLEN];
 
+  pathbldMakePath (fname, sizeof (fname), "", "dances", ".txt", PATHBLD_MP_NONE);
   if (! fileopFileExists (fname)) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "dance: missing: %s", fname);
     return NULL;
@@ -57,8 +60,9 @@ danceAlloc (char *fname)
 
   dance = malloc (sizeof (dance_t));
   assert (dance != NULL);
-  dance->danceList = NULL;
 
+  dance->path = strdup (fname);
+  dance->danceList = NULL;
   dance->df = datafileAllocParse ("dance", DFTYPE_INDIRECT, fname,
       dancedfkeys, DANCE_KEY_MAX, DANCE_DANCE);
   dance->dances = datafileGetList (dance->df);
@@ -69,6 +73,9 @@ void
 danceFree (dance_t *dance)
 {
   if (dance != NULL) {
+    if (dance->path != NULL) {
+      free (dance->path);
+    }
     if (dance->df != NULL) {
       datafileFree (dance->df);
     }
@@ -178,6 +185,7 @@ danceConvDance (datafileconv_t *conv)
 
   dance = bdjvarsdfGet (BDJVDF_DANCES);
 
+  conv->allocated = false;
   if (conv->valuetype == VALUE_STR) {
     conv->valuetype = VALUE_NUM;
     num = -1;
@@ -193,6 +201,13 @@ danceConvDance (datafileconv_t *conv)
   }
 }
 
+void
+danceSave (dance_t *dances, ilist_t *list)
+{
+  datafileSaveIndirect ("dance", dances->path, dancedfkeys,
+      DANCE_KEY_MAX, list);
+}
+
 /* internal routines */
 
 static void
@@ -200,6 +215,7 @@ danceConvSpeed (datafileconv_t *conv)
 {
   nlistidx_t       idx;
 
+  conv->allocated = false;
   if (conv->valuetype == VALUE_STR) {
     conv->valuetype = VALUE_NUM;
     idx = dfkeyBinarySearch (dancespeeddfkeys, DANCE_SPEED_MAX, conv->u.str);
@@ -215,6 +231,7 @@ danceConvTimeSig (datafileconv_t *conv)
 {
   nlistidx_t       idx;
 
+  conv->allocated = false;
   if (conv->valuetype == VALUE_STR) {
     conv->valuetype = VALUE_NUM;
     idx = dfkeyBinarySearch (dancetimesigdfkeys, DANCE_TIMESIG_MAX, conv->u.str);

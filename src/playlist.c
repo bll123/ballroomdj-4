@@ -569,6 +569,7 @@ playlistSetSongFilter (playlist_t *pl)
 static void
 plConvType (datafileconv_t *conv)
 {
+  conv->allocated = false;
   if (conv->valuetype == VALUE_STR) {
     ssize_t   num;
 

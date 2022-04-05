@@ -164,6 +164,7 @@ orgMakeSongPath (org_t *org, song_t *song)
           p = tmp;
         }
         if (orginfo->convFunc != NULL) {
+          conv.allocated = false;
           conv.valuetype = VALUE_NUM;
           conv.u.num = val;
           orginfo->convFunc (&conv);

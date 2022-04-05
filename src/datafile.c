@@ -83,6 +83,7 @@ convBoolean (datafileconv_t *conv)
 {
   ssize_t   num;
 
+  conv->allocated = false;
   if (conv->valuetype == VALUE_STR) {
     conv->valuetype = VALUE_NUM;
     num = 0;
@@ -109,6 +110,7 @@ convTextList (datafileconv_t *conv)
   char  *p;
 
   logProcBegin (LOG_PROC, "convTextList");
+  conv->allocated = false;
   if (conv->valuetype == VALUE_STR) {
     char    *tokptr;
     char    *str;
@@ -128,6 +130,7 @@ convTextList (datafileconv_t *conv)
       }
     }
     conv->u.list = tlist;
+    conv->allocated = true;
   } else if (conv->valuetype == VALUE_LIST) {
     slist_t     *list;
     slistidx_t  iteridx;
@@ -144,6 +147,7 @@ convTextList (datafileconv_t *conv)
     }
     stringTrimChar (tbuff, ' ');
     conv->u.str = strdup (tbuff);
+    conv->allocated = true;
   }
 
   logProcEnd (LOG_PROC, "convTextList", "");
@@ -394,6 +398,7 @@ datafileParseMerge (list_t *datalist, char *data, char *name,
 
         conv.valuetype = VALUE_NONE;
         if (dfkeys [idx].convFunc != NULL) {
+          conv.allocated = false;
           conv.valuetype = VALUE_STR;
           conv.u.str = tvalstr;
           dfkeys [idx].convFunc (&conv);
@@ -518,6 +523,7 @@ datafileSaveKeyVal (char *tag, char *fn, datafilekey_t *dfkeys,
 
   for (ssize_t i = 0; i < dfkeycount; ++i) {
     vt = dfkeys [i].valuetype;
+    conv.allocated = false;
     conv.valuetype = vt;
 
     /* load the data value into the conv structure so that retrieval is */
@@ -560,6 +566,7 @@ datafileSaveIndirect (char *tag, char *fn, datafilekey_t *dfkeys,
   fprintf (fh, "count\n..%zd\n", count);
 
   for (ssize_t key = 0; key < count; ++key) {
+    conv.allocated = false;
     conv.valuetype = VALUE_NUM;
     conv.u.num = key;
     datafileSaveItem (fh, "KEY", NULL, &conv);
@@ -813,13 +820,28 @@ datafileSaveItem (FILE *fh, char *name, dfConvFunc_t convFunc,
 
   fprintf (fh, "%s\n", name);
   if (vt == VALUE_NUM) {
-    fprintf (fh, "..%zd\n", conv->u.num);
+    if (conv->u.num != LIST_VALUE_INVALID) {
+      fprintf (fh, "..%zd\n", conv->u.num);
+    } else {
+      fprintf (fh, "..\n");
+    }
   }
   if (vt == VALUE_DOUBLE) {
-    fprintf (fh, "..%.2f\n", conv->u.dval);
+    if (conv->u.dval != LIST_DOUBLE_INVALID) {
+      fprintf (fh, "..%.2f\n", conv->u.dval);
+    } else {
+      fprintf (fh, "..\n");
+    }
   }
   if (vt == VALUE_STR) {
-    fprintf (fh, "..%s\n", conv->u.str);
+    if (conv->u.str != NULL) {
+      fprintf (fh, "..%s\n", conv->u.str);
+    } else {
+      fprintf (fh, "..\n");
+    }
+    if (conv->allocated) {
+      free (conv->u.str);
+    }
   }
 }
 

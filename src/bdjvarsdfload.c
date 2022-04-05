@@ -34,8 +34,7 @@ bdjvarsdfloadInit (void)
   /* the database load depends on dances */
   /* playlist loads depend on dances */
   /* sequence loads depend on dances */
-  pathbldMakePath (fn, sizeof (fn), "", "dances", ".txt", PATHBLD_MP_NONE);
-  bdjvarsdfSet (BDJVDF_DANCES, danceAlloc (fn));
+  bdjvarsdfSet (BDJVDF_DANCES, danceAlloc ());
 
   /* the database load depends on ratings, levels and status*/
   /* playlist loads depend on ratings, levels and status */

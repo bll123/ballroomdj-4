@@ -254,6 +254,7 @@ bdjoptConvFadeType (datafileconv_t *conv)
 {
   bdjfadetype_t   fadetype = FADETYPE_TRIANGLE;
 
+  conv->allocated = false;
   if (conv->valuetype == VALUE_STR) {
     conv->valuetype = VALUE_NUM;
 
@@ -287,6 +288,7 @@ bdjoptConvWriteTags (datafileconv_t *conv)
 {
   bdjwritetags_t   wtag = WRITE_TAGS_NONE;
 
+  conv->allocated = false;
   if (conv->valuetype == VALUE_STR) {
     conv->valuetype = VALUE_NUM;
 
@@ -315,6 +317,7 @@ bdjoptConvBPM (datafileconv_t *conv)
 {
   bdjbpm_t   sbpm = BPM_BPM;
 
+  conv->allocated = false;
   if (conv->valuetype == VALUE_STR) {
     conv->valuetype = VALUE_NUM;
 
@@ -396,6 +399,7 @@ bdjoptConvMobileMq (datafileconv_t *conv)
 {
   bdjmobilemq_t   val = MOBILEMQ_OFF;
 
+  conv->allocated = false;
   if (conv->valuetype == VALUE_STR) {
     conv->valuetype = VALUE_NUM;
 

@@ -112,6 +112,7 @@ genreConv (datafileconv_t *conv)
 
   genre = bdjvarsdfGet (BDJVDF_GENRES);
 
+  conv->allocated = false;
   if (conv->valuetype == VALUE_STR) {
     conv->valuetype = VALUE_NUM;
     lookup = datafileGetLookup (genre->df);

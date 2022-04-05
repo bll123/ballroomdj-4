@@ -403,6 +403,7 @@ static int    confuiStatusListCreate (GtkTreeModel *model, GtkTreePath *path,
     GtkTreeIter *iter, gpointer udata);
 static int    confuiGenreListCreate (GtkTreeModel *model, GtkTreePath *path,
     GtkTreeIter *iter, gpointer udata);
+static void   confuiDanceSave (configui_t *confui);
 static void   confuiRatingSave (configui_t *confui);
 static void   confuiLevelSave (configui_t *confui);
 static void   confuiStatusSave (configui_t *confui);
@@ -1059,6 +1060,7 @@ confuiActivate (GApplication *app, gpointer userdata)
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
 
   confuiMakeItemTable (confui, hbox, CONFUI_ID_DANCE, CONFUI_TABLE_NO_UP_DOWN);
+  confui->tables [CONFUI_ID_DANCE].savefunc = confuiDanceSave;
   confuiCreateDanceTable (confui);
   g_signal_connect (confui->tables [CONFUI_ID_DANCE].tree, "row-activated",
       G_CALLBACK (confuiDanceSelect), confui);
@@ -3393,20 +3395,23 @@ confuiTableSave (configui_t *confui, confuiident_t id)
   GtkWidget     *tree;
   GtkTreeModel  *model;
   savefunc_t    savefunc;
+  char          tbuff [40];
 
   if (confui->tables [id].changed == false) {
     return;
   }
-  if (confui->tables [id].savefunc == NULL ||
-      confui->tables [id].listcreatefunc == NULL) {
+  if (confui->tables [id].savefunc == NULL) {
     return;
   }
 
   tree = confui->tables [id].tree;
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (tree));
-  confui->tables [id].savelist = ilistAlloc ("cu-table-save", LIST_ORDERED);
-  confui->tables [id].saveidx = 0;
-  gtk_tree_model_foreach (model, confui->tables [id].listcreatefunc, confui);
+  if (confui->tables [id].listcreatefunc != NULL) {
+    snprintf (tbuff, sizeof (tbuff), "cu-table-save-%d", id);
+    confui->tables [id].savelist = ilistAlloc (tbuff, LIST_ORDERED);
+    confui->tables [id].saveidx = 0;
+    gtk_tree_model_foreach (model, confui->tables [id].listcreatefunc, confui);
+  }
   savefunc = confui->tables [id].savefunc;
   savefunc (confui);
 }
@@ -3494,9 +3499,18 @@ confuiGenreListCreate (GtkTreeModel *model, GtkTreePath *path,
       confui->tables [CONFUI_ID_GENRES].saveidx, GENRE_GENRE, genredisp);
   ilistSetNum (confui->tables [CONFUI_ID_GENRES].savelist,
       confui->tables [CONFUI_ID_GENRES].saveidx, GENRE_CLASSICAL_FLAG, clflag);
-  free (genredisp);
   confui->tables [CONFUI_ID_GENRES].saveidx += 1;
   return FALSE;
+}
+
+static void
+confuiDanceSave (configui_t *confui)
+{
+  dance_t   *dances;
+
+  dances = bdjvarsdfGet (BDJVDF_DANCES);
+  /* the data is already saved in the dance list; just re-use it */
+  danceSave (dances, dances->dances);
 }
 
 static void
@@ -3506,6 +3520,7 @@ confuiRatingSave (configui_t *confui)
 
   ratings = bdjvarsdfGet (BDJVDF_RATINGS);
   ratingSave (ratings, confui->tables [CONFUI_ID_RATINGS].savelist);
+  ilistFree (confui->tables [CONFUI_ID_RATINGS].savelist);
 }
 
 static void
@@ -3515,6 +3530,7 @@ confuiLevelSave (configui_t *confui)
 
   levels = bdjvarsdfGet (BDJVDF_LEVELS);
   levelSave (levels, confui->tables [CONFUI_ID_LEVELS].savelist);
+  ilistFree (confui->tables [CONFUI_ID_LEVELS].savelist);
 }
 
 static void
@@ -3524,6 +3540,7 @@ confuiStatusSave (configui_t *confui)
 
   status = bdjvarsdfGet (BDJVDF_STATUS);
   statusSave (status, confui->tables [CONFUI_ID_STATUS].savelist);
+  ilistFree (confui->tables [CONFUI_ID_STATUS].savelist);
 }
 
 static void
@@ -3533,6 +3550,7 @@ confuiGenreSave (configui_t *confui)
 
   genres = bdjvarsdfGet (BDJVDF_GENRES);
   genreSave (genres, confui->tables [CONFUI_ID_GENRES].savelist);
+  ilistFree (confui->tables [CONFUI_ID_GENRES].savelist);
 }
 
 static void
@@ -3565,6 +3583,7 @@ confuiDanceSelect (GtkTreeView *tv, GtkTreePath *path,
   uiutilsEntrySetValue (&confui->uiitem [widx].u.entry, sval);
 
   slist = danceGetList (dances, key, DANCE_TAGS);
+  conv.allocated = false;
   conv.u.list = slist;
   conv.valuetype = VALUE_LIST;
   convTextList (&conv);
@@ -3653,6 +3672,7 @@ confuiDanceEntryChg (GtkEditable *e, gpointer udata)
     char    *tstr;
 
     tstr = strdup (str);
+    conv.allocated = false;
     conv.u.str = tstr;
     conv.valuetype = VALUE_STR;
     convTextList (&conv);
@@ -3662,6 +3682,7 @@ confuiDanceEntryChg (GtkEditable *e, gpointer udata)
   } else {
     danceSetStr (dances, key, didx, str);
   }
+  confui->tables [confui->tablecurr].changed = true;
 }
 
 static void
@@ -3700,11 +3721,13 @@ confuiDanceSpinboxChg (GtkSpinButton *sb, gpointer udata)
   gtk_tree_model_get (model, &iter, CONFUI_DANCE_COL_DANCE_IDX, &idx, -1);
   key = (ssize_t) idx;
   danceSetNum (dances, key, didx, nval);
+  confui->tables [confui->tablecurr].changed = true;
 }
 
 bool
 confuiDanceValidateAnnouncement (void *edata, void *udata)
 {
+  configui_t        *confui = udata;
   uiutilsentry_t    *entry = edata;
   bool              rc;
   const char        *fn;
@@ -3724,6 +3747,7 @@ confuiDanceValidateAnnouncement (void *edata, void *udata)
     }
 
     strlcpy (nfn, fn, sizeof (nfn));
+    pathNormPath (nfn, sizeof (nfn));
     if (strncmp (musicdir, fn, mlen) == 0) {
       strlcpy (nfn, fn + mlen + 1, sizeof (nfn));
       gtk_entry_buffer_set_text (entry->buffer, nfn, -1);
@@ -3738,13 +3762,12 @@ confuiDanceValidateAnnouncement (void *edata, void *udata)
         strlcat (tbuff, "/", sizeof (tbuff));
       }
       strlcat (tbuff, nfn, sizeof (tbuff));
-      pathNormPath (tbuff, sizeof (tbuff));
       if (fileopFileExists (tbuff)) {
         rc = true;
       }
     }
   }
 
+  confui->tables [confui->tablecurr].changed = true;
   return rc;
 }
-

@@ -273,6 +273,7 @@ songConvFavorite (datafileconv_t *conv)
 {
   nlistidx_t       idx;
 
+  conv->allocated = false;
   if (conv->valuetype == VALUE_STR) {
     conv->valuetype = VALUE_NUM;
     if (conv->u.str == NULL || strcmp (conv->u.str, "") == 0) {

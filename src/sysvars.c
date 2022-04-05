@@ -260,7 +260,7 @@ sysvarsInit (const char *argv0)
   }
 
   strlcpy (sysvars [SV_PYTHON_PATH], "", SV_MAX_SZ);
-  strlcpy (sysvars [SV_CP_PATH], "", SV_MAX_SZ);
+  strlcpy (sysvars [SV_GETCONF_PATH], "", SV_MAX_SZ);
 
   tptr = strdup (getenv ("PATH"));
   tsep = ":";
@@ -293,11 +293,10 @@ sysvarsInit (const char *argv0)
       }
     }
 
-    if (*sysvars [SV_CP_PATH] == '\0') {
-      /* 'cp' checks */
-      snprintf (buff, sizeof (buff), "%s/%s", tbuf, "cp");
+    if (*sysvars [SV_GETCONF_PATH] == '\0') {
+      snprintf (buff, sizeof (buff), "%s/%s", tbuf, "getconf");
       if (fileopFileExists (buff)) {
-        strlcpy (sysvars [SV_CP_PATH], buff, SV_MAX_SZ);
+        strlcpy (sysvars [SV_GETCONF_PATH], buff, SV_MAX_SZ);
       }
     }
 
@@ -385,7 +384,7 @@ sysvarsInit (const char *argv0)
     char  *targv [3];
 
     /* don't bother with this if tmp is not there */
-    targv [0] = "getconf";
+    targv [0] = sysvars [SV_GETCONF_PATH];
     targv [1] = "_NPROCESSORS_ONLN";
     targv [2] = NULL;
     osProcessStart (targv, OS_PROC_WAIT, NULL, SV_TMP_FILE);

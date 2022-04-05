@@ -36,9 +36,10 @@ typedef struct {
   datafile_t      *df;
   ilist_t         *dances;
   slist_t         *danceList;
+  char            *path;
 } dance_t;
 
-dance_t       *danceAlloc (char *);
+dance_t       *danceAlloc (void);
 void          danceFree (dance_t *);
 void          danceStartIterator (dance_t *, ilistidx_t *idx);
 ilistidx_t    danceIterate (dance_t *, ilistidx_t *idx);
@@ -51,5 +52,6 @@ void          danceSetNum (dance_t *, ilistidx_t dkey, ilistidx_t idx, ssize_t v
 void          danceSetList (dance_t *, ilistidx_t dkey, ilistidx_t idx, slist_t *list);
 slist_t       *danceGetDanceList (dance_t *);
 void          danceConvDance (datafileconv_t *conv);
+void          danceSave (dance_t *dances, ilist_t *list);
 
 #endif /* INC_DANCE_H */

@@ -122,6 +122,7 @@ statusConv (datafileconv_t *conv)
 
   status = bdjvarsdfGet (BDJVDF_STATUS);
 
+  conv->allocated = false;
   if (conv->valuetype == VALUE_STR) {
     conv->valuetype = VALUE_NUM;
 

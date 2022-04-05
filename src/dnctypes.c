@@ -66,6 +66,7 @@ dnctypesConv (datafileconv_t *conv)
 
   dnctypes = bdjvarsdfGet (BDJVDF_DANCE_TYPES);
 
+  conv->allocated = false;
   if (conv->valuetype == VALUE_STR) {
     conv->valuetype = VALUE_NUM;
     num = slistGetIdx (dnctypes->dnctypes, conv->u.str);

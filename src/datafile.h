@@ -47,6 +47,7 @@ typedef struct {
 
 typedef struct {
   valuetype_t   valuetype;
+  bool          allocated;
   union {
     ssize_t     num;
     list_t      *list;

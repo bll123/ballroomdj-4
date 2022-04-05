@@ -121,6 +121,7 @@ ratingConv (datafileconv_t *conv)
 
   rating = bdjvarsdfGet (BDJVDF_RATINGS);
 
+  conv->allocated = false;
   if (conv->valuetype == VALUE_STR) {
     conv->valuetype = VALUE_NUM;
     lookup = datafileGetLookup (rating->df);

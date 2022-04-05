@@ -48,6 +48,7 @@ sequenceAlloc (char *fname)
 
   slistStartIterator (tlist, &iteridx);
   while ((seqkey = slistIterateKey (tlist, &iteridx)) != NULL) {
+    conv.allocated = false;
     conv.valuetype = VALUE_STR;
     conv.u.str = seqkey;
     danceConvDance (&conv);
