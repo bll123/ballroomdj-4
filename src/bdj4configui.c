@@ -105,6 +105,7 @@ enum {
   CONFUI_SPINBOX_DANCE_SPEED,
   CONFUI_SPINBOX_DANCE_TIME_SIG,
   CONFUI_SPINBOX_DANCE_TYPE,
+  CONFUI_SPINBOX_DISPLAY_SETTINGS,
   CONFUI_SPINBOX_FADE_TYPE,
   CONFUI_SPINBOX_LOCALE,
   CONFUI_SPINBOX_MAX_PLAY_TIME,
@@ -162,6 +163,15 @@ enum {
   CONFUI_WIDGET_UI_FONT,
   CONFUI_WIDGET_UI_LISTING_FONT,
   CONFUI_ITEM_MAX,
+};
+
+enum {
+  DANCE_DISP_SEL_MM,
+  DANCE_DISP_SEL_MUSICQ,
+  DANCE_DISP_SEL_REQ,
+  DANCE_DISP_SEL_SONGEDIT,
+  DANCE_DISP_SEL_SONGLIST,
+  DANCE_DISP_SEL_SONGSEL,
 };
 
 typedef struct {
@@ -288,7 +298,6 @@ typedef struct {
   GtkWidget         *notebook;
   confuitable_t     tables [CONFUI_ID_TABLE_MAX];
   GtkWidget         *fadetypeImage;
-  GtkWidget         *dsnotebook;
   /* options */
   datafile_t        *optiondf;
   nlist_t           *options;
@@ -331,6 +340,7 @@ static void confuiSelectShutdown (GtkButton *b, gpointer udata);
 static void confuiSelectAnnouncement (GtkButton *b, gpointer udata);
 static void confuiSelectFileDialog (configui_t *confui, int widx, char *startpath, char *mimefiltername, char *mimetype);
 
+/* gui */
 static GtkWidget * confuiMakeNotebookTab (configui_t *confui, GtkWidget *notebook, char *txt, int);
 /* makeitementry returns the hbox */
 static GtkWidget * confuiMakeItemEntry (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg, char *txt, int widx, int bdjoptIdx, char *disp);
@@ -353,6 +363,7 @@ static void confuiMakeItemCheckButton (configui_t *confui, GtkWidget *vbox, GtkS
 static GtkWidget * confuiMakeItemLabel (GtkWidget *vbox, GtkSizeGroup *sg, char *txt);
 static GtkWidget * confuiMakeItemTable (configui_t *confui, GtkWidget *vbox, confuiident_t id, int flags);
 
+/* misc */
 static nlist_t  * confuiGetThemeList (void);
 static nlist_t  * confuiGetThemeNames (nlist_t *themelist, slist_t *filelist);
 static void     confuiLoadHTMLList (configui_t *confui);
@@ -370,10 +381,11 @@ static bool     confuiMobmqTitleChg (void *edata, void *udata);
 static void     confuiUpdateRemctrlQrcode (configui_t *confui);
 static gboolean confuiRemctrlChg (GtkSwitch *sw, gboolean value, gpointer udata);
 static void     confuiRemctrlPortChg (GtkSpinButton *sb, gpointer udata);
-static char *   confuiMakeQRCodeFile (configui_t *confui, char *title, char *uri);
+static char     * confuiMakeQRCodeFile (configui_t *confui, char *title, char *uri);
 static void     confuiUpdateOrgExamples (configui_t *confui, char *pathfmt);
 static void     confuiUpdateOrgExample (configui_t *config, org_t *org, char *data, GtkWidget *widget);
 static char     * confuiGetLocalIP (configui_t *confui);
+static int      confuiGetSelectionIter (GtkWidget *tree, GtkTreeModel **model, GtkTreeIter *iter);
 
 /* table editing */
 static void   confuiTableMoveUp (GtkButton *b, gpointer udata);
@@ -415,12 +427,15 @@ static void   confuiLevelSave (configui_t *confui);
 static void   confuiStatusSave (configui_t *confui);
 static void   confuiGenreSave (configui_t *confui);
 
+/* dance table */
 static void   confuiDanceSelect (GtkTreeView *tv, GtkTreePath *path,
     GtkTreeViewColumn *column, gpointer udata);
 static void   confuiDanceEntryChg (GtkEditable *e, gpointer udata);
 static void   confuiDanceSpinboxChg (GtkSpinButton *sb, gpointer udata);
 static bool   confuiDanceValidateAnnouncement (void *edata, void *udata);
 
+/* display settings */
+static void   confuiDispSettingChg (GtkSpinButton *sb, gpointer udata);
 
 static int gKillReceived = 0;
 static int gdone = 0;
@@ -444,7 +459,6 @@ main (int argc, char *argv[])
 
 
   confui.notebook = NULL;
-  confui.dsnotebook = NULL;
   confui.progstate = progstateInit ("configui");
   progstateSetCallback (confui.progstate, STATE_WAIT_HANDSHAKE,
       confuiHandshakeCallback, &confui);
@@ -621,6 +635,15 @@ main (int argc, char *argv[])
   nlistSetStr (tlist, DANCE_TIMESIG_44, _("4/4"));
   nlistSetStr (tlist, DANCE_TIMESIG_48, _("4/8"));
   confui.uiitem [CONFUI_SPINBOX_DANCE_TIME_SIG].list = tlist;
+
+  tlist = nlistAlloc ("cu-display-settings", LIST_UNORDERED, free);
+  nlistSetStr (tlist, DANCE_DISP_SEL_MM, _("Music Manager"));
+  nlistSetStr (tlist, DANCE_DISP_SEL_MUSICQ, _("Music Queue"));
+  nlistSetStr (tlist, DANCE_DISP_SEL_REQ, _("Request"));
+  nlistSetStr (tlist, DANCE_DISP_SEL_SONGEDIT, _("Song Editor"));
+  nlistSetStr (tlist, DANCE_DISP_SEL_SONGLIST, _("Song List"));
+  nlistSetStr (tlist, DANCE_DISP_SEL_SONGSEL, _("Song Selection"));
+  confui.uiitem [CONFUI_SPINBOX_DISPLAY_SETTINGS].list = tlist;
 
   confuiLoadHTMLList (&confui);
   confuiLoadLocaleList (&confui);
@@ -1023,15 +1046,9 @@ confuiActivate (GApplication *app, gpointer userdata)
       _("Display Settings"), CONFUI_ID_NONE);
   sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
-  confui->dsnotebook = uiutilsCreateNotebook ();
-  gtk_box_pack_start (GTK_BOX (vbox), confui->dsnotebook, TRUE, TRUE, 0);
-
-//      _("Music Queue")
-//      _("Request")
-//      _("Song List")
-//      _("Song Selection")
-//      _("Music Manager")
-//      _("Song Editor")
+  widget = confuiMakeItemSpinboxText (confui, vbox, sg, _("Display"),
+      CONFUI_SPINBOX_DISPLAY_SETTINGS, -1, 0);
+  g_signal_connect (widget, "value-changed", G_CALLBACK (confuiDispSettingChg), confui);
 
   /* organization */
   vbox = confuiMakeNotebookTab (confui, confui->notebook,
@@ -2654,19 +2671,19 @@ confuiUpdateOrgExamples (configui_t *confui, char *pathfmt)
   logProcBegin (LOG_PROC, "confuiUpdateOrgExamples");
   org = orgAlloc (pathfmt);
 
-  data = "FILE\n..none\nDISCNUMBER\n..1\nTRACKNUMBER\n..1\nALBUM\n..Smooth\nALBUMARTIST\n..Santana\nARTIST\n..Santana\nDANCE\n..Cha Cha\nGENRE\n..Ballroom Dance\nTITLE\n..Smooth\n";
+  data = "FILE\n..none\nDISC\n..1\nTRACKNUMBER\n..1\nALBUM\n..Smooth\nALBUMARTIST\n..Santana\nARTIST\n..Santana\nDANCE\n..Cha Cha\nGENRE\n..Ballroom Dance\nTITLE\n..Smooth\n";
   widget = confui->uiitem [CONFUI_WIDGET_AO_EXAMPLE_1].u.widget;
   confuiUpdateOrgExample (confui, org, data, widget);
 
-  data = "FILE\n..none\nDISCNUMBER\n..1\nTRACKNUMBER\n..2\nALBUM\n..The Ultimate Latin Album 4: Latin Eyes\nALBUMARTIST\n..WRD\nARTIST\n..Gizelle D'Cole\nDANCE\n..Rumba\nGENRE\n..Ballroom Dance\nTITLE\n..Asi\n";
+  data = "FILE\n..none\nDISC\n..1\nTRACKNUMBER\n..2\nALBUM\n..The Ultimate Latin Album 4: Latin Eyes\nALBUMARTIST\n..WRD\nARTIST\n..Gizelle D'Cole\nDANCE\n..Rumba\nGENRE\n..Ballroom Dance\nTITLE\n..Asi\n";
   widget = confui->uiitem [CONFUI_WIDGET_AO_EXAMPLE_2].u.widget;
   confuiUpdateOrgExample (confui, org, data, widget);
 
-  data = "FILE\n..none\nDISCNUMBER\n..1\nTRACKNUMBER\n..3\nALBUM\n..Shaman\nALBUMARTIST\n..Santana\nARTIST\n..Santana\nDANCE\n..Waltz\nTITLE\n..The Game of Love\nGENRE\n..Latin";
+  data = "FILE\n..none\nDISC\n..1\nTRACKNUMBER\n..3\nALBUM\n..Shaman\nALBUMARTIST\n..Santana\nARTIST\n..Santana\nDANCE\n..Waltz\nTITLE\n..The Game of Love\nGENRE\n..Latin";
   widget = confui->uiitem [CONFUI_WIDGET_AO_EXAMPLE_3].u.widget;
   confuiUpdateOrgExample (confui, org, data, widget);
 
-  data = "FILE\n..none\nDISCNUMBER\n..2\nTRACKNUMBER\n..2\nALBUM\n..The Ultimate Latin Album 9: Footloose\nALBUMARTIST\n..\nARTIST\n..Raphael\nDANCE\n..Rumba\nTITLE\n..Ni tú ni yo\nGENRE\n..Latin";
+  data = "FILE\n..none\nDISC\n..2\nTRACKNUMBER\n..2\nALBUM\n..The Ultimate Latin Album 9: Footloose\nALBUMARTIST\n..\nARTIST\n..Raphael\nDANCE\n..Rumba\nTITLE\n..Ni tú ni yo\nGENRE\n..Latin";
   widget = confui->uiitem [CONFUI_WIDGET_AO_EXAMPLE_4].u.widget;
   confuiUpdateOrgExample (confui, org, data, widget);
 
@@ -2705,6 +2722,20 @@ confuiGetLocalIP (configui_t *confui)
   }
 
   return confui->localip;
+}
+
+static int
+confuiGetSelectionIter (GtkWidget *tree, GtkTreeModel **model, GtkTreeIter *iter)
+{
+  GtkTreeSelection  *sel;
+  int               count;
+
+  sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (tree));
+  count = gtk_tree_selection_count_selected_rows (sel);
+  if (count == 1) {
+    gtk_tree_selection_get_selected (sel, model, iter);
+  }
+  return count;
 }
 
 /* table editing */
@@ -2802,7 +2833,6 @@ static void
 confuiTableRemove (GtkButton *b, gpointer udata)
 {
   configui_t        *confui = udata;
-  GtkTreeSelection  *sel;
   GtkWidget         *tree;
   GtkTreeModel      *model;
   GtkTreeIter       iter;
@@ -2815,13 +2845,11 @@ confuiTableRemove (GtkButton *b, gpointer udata)
   logProcBegin (LOG_PROC, "confuiTableRemove");
   tree = confui->tables [confui->tablecurr].tree;
   flags = confui->tables [confui->tablecurr].flags;
-  sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (tree));
-  count = gtk_tree_selection_count_selected_rows (sel);
+  count = confuiGetSelectionIter (tree, &model, &iter);
   if (count != 1) {
     logProcEnd (LOG_PROC, "confuiTableRemove", "no-selection");
     return;
   }
-  gtk_tree_selection_get_selected (sel, &model, &iter);
 
   path = gtk_tree_model_get_path (model, &iter);
   pathstr = gtk_tree_path_to_string (path);
@@ -2843,13 +2871,11 @@ confuiTableRemove (GtkButton *b, gpointer udata)
     gulong        idx;
     dance_t       *dances;
     GtkWidget     *tree;
-    GtkTreeSelection  *sel;
     GtkTreeModel  *model;
     GtkTreeIter   iter;
 
     tree = confui->tables [confui->tablecurr].tree;
-    sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (tree));
-    gtk_tree_selection_get_selected (sel, &model, &iter);
+    confuiGetSelectionIter (tree, &model, &iter);
     gtk_tree_model_get (model, &iter, CONFUI_DANCE_COL_DANCE_IDX, &idx, -1);
     dances = bdjvarsdfGet (BDJVDF_DANCES);
     danceDelete (dances, idx);
@@ -2862,13 +2888,11 @@ confuiTableRemove (GtkButton *b, gpointer udata)
 
   if (confui->tablecurr == CONFUI_ID_DANCE) {
     GtkWidget   *tree;
-    GtkTreeSelection  *sel;
     GtkTreePath *path;
     GtkTreeIter iter;
 
     tree = confui->tables [confui->tablecurr].tree;
-    sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (tree));
-    gtk_tree_selection_get_selected (sel, &model, &iter);
+    confuiGetSelectionIter (tree, &model, &iter);
     path = gtk_tree_model_get_path (model, &iter);
     confuiDanceSelect (GTK_TREE_VIEW (tree), path, NULL, confui);
   }
@@ -2992,7 +3016,8 @@ confuiSwitchTable (GtkNotebook *nb, GtkWidget *page, guint pagenum, gpointer uda
   configui_t        *confui = udata;
   GtkWidget         *tree;
   int               count;
-  GtkTreeSelection  *sel;
+  GtkTreeModel      *model;
+  GtkTreeIter       iter;
 
   logProcBegin (LOG_PROC, "confuiSwitchTable");
   if (pagenum >= (unsigned int) confui->tabcount) {
@@ -3023,11 +3048,7 @@ confuiSwitchTable (GtkNotebook *nb, GtkWidget *page, guint pagenum, gpointer uda
   }
 
   tree = confui->tables [confui->tablecurr].tree;
-  sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (tree));
-  count = 0;
-  if (sel != NULL) {
-    count = gtk_tree_selection_count_selected_rows (sel);
-  }
+  count = confuiGetSelectionIter (tree, &model, &iter);
 
   if (count != 1) {
     GtkTreePath   *path;
@@ -3852,7 +3873,6 @@ confuiDanceEntryChg (GtkEditable *e, gpointer udata)
   uiutilsentry_t  *entry;
   const char      *str;
   GtkWidget       *tree;
-  GtkTreeSelection  *sel;
   GtkTreeModel    *model;
   GtkTreeIter     iter;
   int             count;
@@ -3881,13 +3901,11 @@ confuiDanceEntryChg (GtkEditable *e, gpointer udata)
 
   tree = confui->tables [CONFUI_ID_DANCE].tree;
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (tree));
-  sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (tree));
-  count = gtk_tree_selection_count_selected_rows (sel);
+  count = confuiGetSelectionIter (tree, &model, &iter);
   if (count != 1) {
     logProcEnd (LOG_PROC, "confuiDanceEntryChg", "no-selection");
     return;
   }
-  gtk_tree_selection_get_selected (sel, &model, &iter);
 
   if (didx == DANCE_DANCE) {
     gtk_list_store_set (GTK_LIST_STORE (model), &iter,
@@ -3924,7 +3942,6 @@ confuiDanceSpinboxChg (GtkSpinButton *sb, gpointer udata)
   configui_t      *confui = udata;
   GtkAdjustment   *adjustment;
   GtkWidget       *tree;
-  GtkTreeSelection  *sel;
   GtkTreeModel    *model;
   GtkTreeIter     iter;
   int             count;
@@ -3941,14 +3958,11 @@ confuiDanceSpinboxChg (GtkSpinButton *sb, gpointer udata)
   nval = (ssize_t) value;
 
   tree = confui->tables [CONFUI_ID_DANCE].tree;
-  model = gtk_tree_view_get_model (GTK_TREE_VIEW (tree));
-  sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (tree));
-  count = gtk_tree_selection_count_selected_rows (sel);
+  count = confuiGetSelectionIter (tree, &model, &iter);
   if (count != 1) {
     logProcEnd (LOG_PROC, "confuiDanceSpinboxChg", "no-selection");
     return;
   }
-  gtk_tree_selection_get_selected (sel, &model, &iter);
 
   didx = GPOINTER_TO_UINT (g_object_get_data (G_OBJECT (sb), "confuididx"));
 
@@ -4011,3 +4025,11 @@ confuiDanceValidateAnnouncement (void *edata, void *udata)
   return rc;
 }
 
+/* display settings */
+
+static void
+confuiDispSettingChg (GtkSpinButton *sb, gpointer udata)
+{
+  configui_t      *confui = udata;
+
+}

@@ -257,6 +257,8 @@ audiotagCreateLookupTable (int tagtype)
   char    buff [40];
   slist_t * taglist;
 
+  tagdefInit ();
+
   if (tagLookup [tagtype] != NULL) {
     return;
   }
@@ -265,13 +267,9 @@ audiotagCreateLookupTable (int tagtype)
   tagLookup [tagtype] = slistAlloc (buff, LIST_ORDERED, free);
   taglist = tagLookup [tagtype];
 
-  for (int i = 0; i < MAX_TAG_KEY; ++i) {
-    if (tagdefs [i].tag == NULL) {
-      continue;
-    }
-
+  for (int i = 0; i < TAG_MAX_KEY; ++i) {
     if (tagdefs [i].audiotags [tagtype] != NULL &&
-       strcmp (tagdefs [i].audiotags [tagtype], "TXXX") != 0) {
+        strcmp (tagdefs [i].audiotags [tagtype], "TXXX") != 0) {
       slistSetStr (taglist, tagdefs [i].audiotags [tagtype], tagdefs [i].tag);
     }
     /* always add the tag/tag mapping to handle flac, ogg, etc. */

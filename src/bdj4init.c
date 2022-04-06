@@ -191,6 +191,7 @@ bdj4shutdown (bdjmsgroute_t route)
   bdjvarsdfloadCleanup ();
   logMsg (LOG_SESS, LOG_IMPORTANT, "init cleanup time: %ld ms", mstimeend (&mt));
   bdjvarsCleanup ();
+  tagdefCleanup ();
   lockRelease (lockName (route), PATHBLD_MP_USEIDX);
   logProcEnd (LOG_PROC, "bdj4shutdown", "");
 }

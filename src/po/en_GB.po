@@ -143,6 +143,9 @@ msgstr ""
 msgid "Composer"
 msgstr ""
 
+msgid "Conductor"
+msgstr ""
+
 msgid "Configure"
 msgstr ""
 
@@ -194,6 +197,9 @@ msgstr ""
 msgid "Disc"
 msgstr ""
 
+msgid "Display"
+msgstr ""
+
 msgid "Display Settings"
 msgstr ""
 
@@ -209,6 +215,9 @@ msgstr ""
 
 #, c-format
 msgid "Downloading %s."
+msgstr ""
+
+msgid "Duration"
 msgstr ""
 
 msgid "Easy"
@@ -351,6 +360,9 @@ msgstr ""
 msgid "Jive"
 msgstr ""
 
+msgid "Keyword"
+msgstr ""
+
 msgid "Last Updated"
 msgstr ""
 
@@ -384,6 +396,9 @@ msgstr ""
 msgid "Marquee"
 msgstr ""
 
+msgid "Marquee Display"
+msgstr ""
+
 msgid "Marquee Font"
 msgstr ""
 
@@ -412,6 +427,9 @@ msgid "Move to Top"
 msgstr ""
 
 msgid "Music Folder"
+msgstr ""
+
+msgid "Music Manager"
 msgstr ""
 
 msgid "Music Queue"
@@ -452,6 +470,9 @@ msgid "Normal"
 msgstr ""
 
 msgid "Not Playing"
+msgstr ""
+
+msgid "Notes"
 msgstr ""
 
 msgid "Null Audio"
@@ -583,6 +604,9 @@ msgstr ""
 msgid "Repeat"
 msgstr ""
 
+msgid "Request"
+msgstr ""
+
 msgid "Request External"
 msgstr ""
 
@@ -641,10 +665,28 @@ msgstr ""
 msgid "Skipping conversion."
 msgstr ""
 
+msgid "Song Editor"
+msgstr ""
+
+msgid "Song End"
+msgstr ""
+
+msgid "Song List"
+msgstr ""
+
+msgid "Song Selection"
+msgstr ""
+
+msgid "Song Start"
+msgstr ""
+
 msgid "Sort by"
 msgstr ""
 
 msgid "Speed"
+msgstr ""
+
+msgid "Speed Adjustment"
 msgstr ""
 
 msgid "Starting conversion process."
@@ -691,9 +733,6 @@ msgstr ""
 msgid "Toggle Repeat"
 msgstr ""
 
-msgid "Track"
-msgstr ""
-
 msgid "Track Number"
 msgstr ""
 
@@ -727,6 +766,9 @@ msgid "Viennese Waltz"
 msgstr ""
 
 msgid "Volume"
+msgstr ""
+
+msgid "Volume Adjustment"
 msgstr ""
 
 msgid "Waltz"

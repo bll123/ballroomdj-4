@@ -22,6 +22,7 @@
 #include "procutil.h"
 #include "sockh.h"
 #include "sysvars.h"
+#include "tagdef.h"
 #include "tmutil.h"
 
 static bdjmsgroute_t cvtRoute (char *routename);
@@ -129,6 +130,7 @@ main (int argc, char *argv[])
   }
 
   bdjvarsCleanup ();
+  tagdefCleanup ();
   logEnd ();
   connFree (conn);
   exit (0);

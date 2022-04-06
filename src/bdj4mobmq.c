@@ -35,6 +35,7 @@
 #include "progstate.h"
 #include "sockh.h"
 #include "sysvars.h"
+#include "tagdef.h"
 #include "tmutil.h"
 #include "websrv.h"
 
@@ -210,6 +211,7 @@ mobmqClosingCallback (void *tmmdata, programstate_t programState)
 
   bdjoptFree ();
   bdjvarsCleanup ();
+  tagdefCleanup ();
   lockRelease (mobmqData->locknm, PATHBLD_MP_USEIDX);
 
   return true;

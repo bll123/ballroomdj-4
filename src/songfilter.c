@@ -612,15 +612,8 @@ songfilterMakeSortKey (songfilter_t *sf, slist_t *sortselParsed,
       snprintf (tbuff, sizeof (tbuff), "/%02zd", idx);
       strlcat (sortkey, tbuff, sz);
     } else if (strcmp (p, "ARTIST") == 0) {
-      ssize_t   tval;
-
-      tval = songGetNum (song, TAG_VARIOUSARTISTS);
-      if (tval > 0 && tval) {
-        snprintf (tbuff, sizeof (tbuff), "/Various");
-      } else {
-        snprintf (tbuff, sizeof (tbuff), "/%s",
+      snprintf (tbuff, sizeof (tbuff), "/%s",
             songGetStr (song, TAG_ARTIST));
-      }
       strlcat (sortkey, tbuff, sz);
     } else if (strcmp (p, "TRACK") == 0) {
       ssize_t   tval;

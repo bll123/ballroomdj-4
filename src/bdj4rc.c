@@ -37,6 +37,7 @@
 #include "sock.h"
 #include "sockh.h"
 #include "sysvars.h"
+#include "tagdef.h"
 #include "tmutil.h"
 #include "websrv.h"
 
@@ -222,6 +223,7 @@ remctrlClosingCallback (void *udata, programstate_t programState)
 
   bdjoptFree ();
   bdjvarsCleanup ();
+  tagdefCleanup ();
   lockRelease (remctrlData->locknm, PATHBLD_MP_USEIDX);
 
   return true;

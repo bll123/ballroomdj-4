@@ -40,6 +40,7 @@
 #include "sockh.h"
 #include "songutil.h"
 #include "sysvars.h"
+#include "tagdef.h"
 #include "tmutil.h"
 #include "volume.h"
 
@@ -344,6 +345,7 @@ playerClosingCallback (void *tpdata, programstate_t programState)
 
   bdjoptFree ();
   bdjvarsCleanup ();
+  tagdefCleanup ();
   lockRelease (playerData->locknm, PATHBLD_MP_USEIDX);
 
   return true;

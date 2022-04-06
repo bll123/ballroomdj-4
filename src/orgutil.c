@@ -43,8 +43,8 @@ orglookup_t orglookup [ORG_MAX_KEY] = {
   { "DISC",       ORG_DISC,       TAG_DISCNUMBER, NULL, },
   { "GENRE",      ORG_GENRE,      TAG_GENRE,  genreConv },
   { "TITLE",      ORG_TITLE,      TAG_TITLE,  NULL, },
-  { "TRACKNUM",   ORG_TRACKNUM,   TAG_TRACKNUMBER, NULL, },
-  { "TRACKNUM0",  ORG_TRACKNUM0,  TAG_TRACKNUMBER, NULL, },
+  { "TRACKNUMBER",ORG_TRACKNUM,   TAG_TRACKNUMBER, NULL, },
+  { "TRACKNUMBER0",ORG_TRACKNUM0,  TAG_TRACKNUMBER, NULL, },
 };
 
 typedef struct {

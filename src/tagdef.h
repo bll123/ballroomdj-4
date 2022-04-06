@@ -6,10 +6,10 @@
 #include "bdjstring.h"
 
 typedef enum {
-  AIDD_YES,
-  AIDD_OPT,
-  AIDD_NO
-} audioiddispflag_t;
+  DISP_YES,
+  DISP_OPT,
+  DISP_NO,
+} tagdispflag_t;
 
 typedef enum {
   ET_SCALE,
@@ -18,13 +18,13 @@ typedef enum {
   ET_ENTRY,
   ET_NA,
   ET_DISABLED_ENTRY
-} edittype_t;
+} tagedittype_t;
 
 typedef enum {
-  ANCHOR_WEST,
-  ANCHOR_EAST,
-  ANCHOR_BOTH
-} anchor_t;
+  ALIGN_START,
+  ALIGN_END,
+  ALIGN_CENTER,
+} tagalign_t;
 
 enum {
   TAG_TYPE_M4A,
@@ -35,24 +35,24 @@ enum {
 
 typedef struct {
   char                *tag;
+  char                *displayname;
   char                *audiotags [TAG_TYPE_MAX];
   unsigned int        defaultEditOrder;
   unsigned int        editIndex;
   unsigned int        editWidth;
-  anchor_t            listingAnchor;
-  unsigned int        listingWeight;
-  anchor_t            songlistAnchor;
-  unsigned int        songlistWeight;
-  audioiddispflag_t   audioiddispflag;
-  edittype_t          editType;
+  tagalign_t          listingAnchor;
+  tagalign_t          songlistAnchor;
+  tagedittype_t       editType;
+  tagdispflag_t       audioiddispflag;
+  bool                listingDisplay : 1;
+  bool                songListDisplay : 1;
   bool                isBdjTag : 1;
   bool                isNormTag : 1;
   bool                albumEdit : 1;
   bool                allEdit : 1;
   bool                isEditable : 1;
-  bool                listingDisplay : 1;
-  bool                songListDisplay : 1;
   bool                textSearchable : 1;
+  bool                isOrgTag : 1;
 } tagdef_t;
 
 typedef enum {
@@ -73,7 +73,6 @@ typedef enum {
   TAG_DBIDX,                  // not saved
   TAG_DISCNUMBER,
   TAG_DISCTOTAL,
-  TAG_DISPLAYIMG,
   TAG_DURATION,               //
   TAG_FAVORITE,
   TAG_FILE,                   //
@@ -81,7 +80,6 @@ typedef enum {
   TAG_KEYWORD,                //
   TAG_MQDISPLAY,              //
   TAG_MUSICBRAINZ_TRACKID,
-  TAG_NOMAXPLAYTIME,
   TAG_NOTES,
   TAG_SAMESONG,
   TAG_SONGEND,                //
@@ -94,13 +92,16 @@ typedef enum {
   TAG_TRACKTOTAL,
   TAG_UPDATEFLAG,
   TAG_UPDATETIME,
-  TAG_VARIOUSARTISTS,
   TAG_VOLUMEADJUSTPERC,       //
   TAG_WRITETIME,
   TAG_RRN,                    //
-  MAX_TAG_KEY
+  TAG_MAX_KEY,
 } tagdefkey_t;
 
-extern tagdef_t tagdefs[MAX_TAG_KEY];
+extern tagdef_t tagdefs [TAG_MAX_KEY];
+
+void        tagdefInit (void);
+void        tagdefCleanup (void);
+tagdefkey_t tagdefLookup (char *str);
 
 #endif /* INC_TAGDEF_H */

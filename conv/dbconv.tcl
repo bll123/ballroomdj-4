@@ -73,6 +73,8 @@ dict for {fn data} $musicdbList {
     if { $tag eq "DURATION_HMS" } { continue }
     if { $tag eq "DURATION_STR" } { continue }
     if { $tag eq "DISPLAYIMG" } { continue }
+    if { $tag eq "NOMAXPLAYTIME" } { continue }
+    if { $tag eq "VARIOUSARTISTS" } { continue }
     # FILE is already handled
     if { $tag eq "FILE" } { continue }
 
@@ -98,6 +100,7 @@ dict for {fn data} $musicdbList {
       }
     }
 
+    if { $tag eq "DISCNUMBER" } { set tag DISC }
     if { $tag eq "rrn" } { set tag RRN }
     if { $tag eq "DURATION" } {
       set value [expr {int($value * 1000)}]

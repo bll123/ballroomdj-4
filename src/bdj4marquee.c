@@ -30,6 +30,7 @@
 #include "sock.h"
 #include "sockh.h"
 #include "sysvars.h"
+#include "tagdef.h"
 #include "tmutil.h"
 #include "uiutils.h"
 
@@ -355,6 +356,7 @@ marqueeClosingCallback (void *udata, programstate_t programState)
 
   bdjoptFree ();
   bdjvarsCleanup ();
+  tagdefCleanup ();
 
   lockRelease (marquee->locknm, PATHBLD_MP_USEIDX);
 

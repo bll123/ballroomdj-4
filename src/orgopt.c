@@ -21,6 +21,7 @@
 #include "orgutil.h"
 #include "song.h"
 #include "slist.h"
+#include "tagdef.h"
 
 orgopt_t *
 orgoptAlloc (char *fname)
@@ -32,6 +33,8 @@ orgoptAlloc (char *fname)
   char          *value;
   char          *p;
   char          dispstr [MAXPATHLEN];
+
+  tagdefInit ();
 
   if (! fileopFileExists (fname)) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: org: missing %s", fname);
@@ -59,27 +62,16 @@ orgoptAlloc (char *fname)
     dispstr [0] = '\0';
     slistStartIterator (parsedlist, &piteridx);
     while ((p = slistIterateKey (parsedlist, &piteridx)) != NULL) {
-      if (strcmp (p, "ALBUM") == 0) {
-        strlcat (dispstr, _("Album"), sizeof (dispstr));
-      } else if (strcmp (p, "ALBUMARTIST") == 0) {
-        strlcat (dispstr, _("Album Artist"), sizeof (dispstr));
-      } else if (strcmp (p, "ARTIST") == 0) {
-        strlcat (dispstr, _("Artist"), sizeof (dispstr));
-      } else if (strcmp (p, "COMPOSER") == 0) {
-        strlcat (dispstr, _("Composer"), sizeof (dispstr));
-      } else if (strcmp (p, "DANCE") == 0) {
-        strlcat (dispstr, _("Dance"), sizeof (dispstr));
-      } else if (strcmp (p, "DISC") == 0) {
-        strlcat (dispstr, _("Disc"), sizeof (dispstr));
-      } else if (strcmp (p, "GENRE") == 0) {
-        strlcat (dispstr, _("Genre"), sizeof (dispstr));
-      } else if (strcmp (p, "TITLE") == 0) {
-        strlcat (dispstr, _("Title"), sizeof (dispstr));
-      } else if (strcmp (p, "TRACKNUM") == 0) {
-        strlcat (dispstr, _("Track Number"), sizeof (dispstr));
-      } else if (strcmp (p, "TRACKNUM0") == 0) {
+      int tagidx;
+
+      tagidx = tagdefLookup (p);
+      if (tagidx >= 0) {
+        if (tagdefs [tagidx].isOrgTag) {
+          strlcat (dispstr, tagdefs [tagidx].displayname, sizeof (dispstr));
+        }
+      } else if (strcmp (p, "TRACKNUMBER0") == 0) {
         strlcat (dispstr, "0", sizeof (dispstr));
-        strlcat (dispstr, _("Track Number"), sizeof (dispstr));
+        strlcat (dispstr, tagdefs [TAG_TRACKNUMBER].displayname, sizeof (dispstr));
       } else {
         /* leading or trailing characters */
         strlcat (dispstr, p, sizeof (dispstr));

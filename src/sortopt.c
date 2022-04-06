@@ -1,6 +1,5 @@
 #include "config.h"
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -15,6 +14,7 @@
 #include "log.h"
 #include "slist.h"
 #include "sortopt.h"
+#include "tagdef.h"
 
 sortopt_t *
 sortoptAlloc (char *fname)
@@ -28,6 +28,8 @@ sortoptAlloc (char *fname)
   char          *p;
   char          *tokstr;
   char          dispstr [MAXPATHLEN];
+
+  tagdefInit ();
 
   if (! fileopFileExists (fname)) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: sortopt: missing %s", fname);
@@ -49,41 +51,15 @@ sortoptAlloc (char *fname)
     dispstr [0] = '\0';
     p = strtok_r (tvalue, " ", &tokstr);
     while (p != NULL) {
+      int tagidx;
+
       if (*dispstr) {
         strlcat (dispstr, " / ", sizeof (dispstr));
       }
-      if (strcmp (p, "ALBUM") == 0) {
-        strlcat (dispstr, _("Album"), sizeof (dispstr));
-      }
-      if (strcmp (p, "ALBUMARTIST") == 0) {
-        strlcat (dispstr, _("Album Artist"), sizeof (dispstr));
-      }
-      if (strcmp (p, "ARTIST") == 0) {
-        strlcat (dispstr, _("Artist"), sizeof (dispstr));
-      }
-      if (strcmp (p, "DANCE") == 0) {
-        strlcat (dispstr, _("Dance"), sizeof (dispstr));
-      }
-      if (strcmp (p, "DANCELEVEL") == 0) {
-        strlcat (dispstr, _("Dance Level"), sizeof (dispstr));
-      }
-      if (strcmp (p, "DANCERATING") == 0) {
-        strlcat (dispstr, _("Dance Rating"), sizeof (dispstr));
-      }
-      if (strcmp (p, "DATEADDED") == 0) {
-        strlcat (dispstr, _("Date Added"), sizeof (dispstr));
-      }
-      if (strcmp (p, "GENRE") == 0) {
-        strlcat (dispstr, _("Genre"), sizeof (dispstr));
-      }
-      if (strcmp (p, "TITLE") == 0) {
-        strlcat (dispstr, _("Title"), sizeof (dispstr));
-      }
-      if (strcmp (p, "TRACK") == 0) {
-        strlcat (dispstr, _("Track"), sizeof (dispstr));
-      }
-      if (strcmp (p, "UPDATETIME") == 0) {
-        strlcat (dispstr, _("Last Updated"), sizeof (dispstr));
+
+      tagidx = tagdefLookup (p);
+      if (tagidx >= 0) {
+        strlcat (dispstr, tagdefs [tagidx].displayname, sizeof (dispstr));
       }
 
       p = strtok_r (NULL, " ", &tokstr);
