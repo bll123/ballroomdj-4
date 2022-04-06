@@ -18,7 +18,6 @@
 #include "genre.h"
 #include "level.h"
 #include "rating.h"
-#include "sortopt.h"
 #include "status.h"
 
 int
@@ -45,8 +44,6 @@ bdjvarsdfloadInit (void)
   /* the database load depends on genres */
   bdjvarsdfSet (BDJVDF_GENRES, genreAlloc ());
 
-  pathbldMakePath (fn, sizeof (fn), "", "sortopt", ".txt", PATHBLD_MP_NONE);
-  bdjvarsdfSet (BDJVDF_SORT_OPT, sortoptAlloc (fn));
   pathbldMakePath (fn, sizeof (fn), "", "autoselection", ".txt", PATHBLD_MP_NONE);
   bdjvarsdfSet (BDJVDF_AUTO_SEL, autoselAlloc (fn));
 
@@ -66,7 +63,6 @@ void
 bdjvarsdfloadCleanup (void)
 {
   autoselFree (bdjvarsdfGet (BDJVDF_AUTO_SEL));
-  sortoptFree (bdjvarsdfGet (BDJVDF_SORT_OPT));
   statusFree (bdjvarsdfGet (BDJVDF_STATUS));
   levelFree (bdjvarsdfGet (BDJVDF_LEVELS));
   genreFree (bdjvarsdfGet (BDJVDF_GENRES));

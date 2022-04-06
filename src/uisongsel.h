@@ -11,6 +11,7 @@
 #include "progstate.h"
 #include "rating.h"
 #include "songfilter.h"
+#include "sortopt.h"
 #include "status.h"
 #include "uiutils.h"
 
@@ -28,6 +29,7 @@ typedef struct {
   level_t           *levels;
   status_t          *status;
   nlist_t           *options;
+  sortopt_t         *sortopt;
   /* filter data */
   uiutilsdropdown_t sortbysel;
   uiutilsdropdown_t filterdancesel;

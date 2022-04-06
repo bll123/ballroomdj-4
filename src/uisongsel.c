@@ -129,6 +129,7 @@ uisongselInit (progstate_t *progstate, conn_t *conn, nlist_t *options,
   uisongsel->songfilter = songfilterAlloc (filterFlags);
   songfilterSetSort (uisongsel->songfilter,
       nlistGetStr (options, SONGSEL_SORT_BY));
+  uisongsel->sortopt = sortoptAlloc ();
 
   // ### FIX load last option/etc settings from datafile.
 
@@ -157,6 +158,7 @@ uisongselFree (uisongsel_t *uisongsel)
     uiutilsSpinboxTextFree (&uisongsel->filterlevelsel);
     uiutilsSpinboxTextFree (&uisongsel->filterstatussel);
     uiutilsSpinboxTextFree (&uisongsel->filterfavoritesel);
+    sortoptFree (uisongsel->sortopt);
     free (uisongsel);
   }
   logProcEnd (LOG_PROC, "uisongselFree", "");
@@ -890,12 +892,10 @@ static void
 uisongselCreateSortByList (uisongsel_t *uisongsel)
 {
   slist_t           *sortoptlist;
-  sortopt_t         *sortopt;
 
   logProcBegin (LOG_PROC, "uisongselCreateSortByList");
 
-  sortopt = bdjvarsdfGet (BDJVDF_SORT_OPT);
-  sortoptlist = sortoptGetList (sortopt);
+  sortoptlist = sortoptGetList (uisongsel->sortopt);
   uiutilsDropDownSetList (&uisongsel->sortbysel, sortoptlist, NULL);
   logProcEnd (LOG_PROC, "uisongselCreateSortByList", "");
 }

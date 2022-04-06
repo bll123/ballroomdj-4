@@ -48,6 +48,7 @@
 #include "sockh.h"
 #include "status.h"
 #include "sysvars.h"
+#include "tagdef.h"
 #include "templateutil.h"
 #include "tmutil.h"
 #include "uiutils.h"
@@ -195,6 +196,7 @@ typedef enum {
   CONFUI_ID_RATINGS,
   CONFUI_ID_LEVELS,
   CONFUI_ID_STATUS,
+  CONFUI_ID_TAG_DISP,
   CONFUI_ID_TABLE_MAX,
   CONFUI_ID_NONE,
   CONFUI_ID_MOBILE_MQ,
@@ -274,6 +276,13 @@ enum {
   CONFUI_STATUS_COL_MAX,
 };
 
+enum {
+  CONFUI_TAG_COL_TAG,
+  CONFUI_TAG_COL_SB_PAD,
+  CONFUI_TAG_COL_TAG_IDX,
+  CONFUI_TAG_COL_MAX,
+};
+
 typedef struct {
   progstate_t       *progstate;
   char              *locknm;
@@ -291,6 +300,8 @@ typedef struct {
   int               tabcount;
   confuiident_t     tablecurr;
   confuiident_t     *tableidents;
+  slist_t           *listingtaglist;
+  slist_t           *songlisttaglist;
   /* gtk stuff */
   GtkApplication    *app;
   GtkWidget         *window;
@@ -369,6 +380,7 @@ static nlist_t  * confuiGetThemeNames (nlist_t *themelist, slist_t *filelist);
 static void     confuiLoadHTMLList (configui_t *confui);
 static void     confuiLoadLocaleList (configui_t *confui);
 static void     confuiLoadDanceTypeList (configui_t *confui);
+static void     confuiLoadTagList (configui_t *confui);
 static gboolean confuiFadeTypeTooltip (GtkWidget *, gint, gint, gboolean, GtkTooltip *, void *);
 static void     confuiOrgPathSelect (GtkTreeView *tv, GtkTreePath *path,
     GtkTreeViewColumn *column, gpointer udata);
@@ -436,6 +448,7 @@ static bool   confuiDanceValidateAnnouncement (void *edata, void *udata);
 
 /* display settings */
 static void   confuiDispSettingChg (GtkSpinButton *sb, gpointer udata);
+static void   confuiCreateTagListingTable (configui_t *confui);
 
 static int gKillReceived = 0;
 static int gdone = 0;
@@ -471,6 +484,8 @@ main (int argc, char *argv[])
   confui.tabcount = 0;
   confui.tablecurr = CONFUI_ID_NONE;
   confui.tableidents = NULL;
+  confui.listingtaglist = NULL;
+  confui.songlisttaglist = NULL;
   confui.localip = NULL;
   for (int i = 0; i < CONFUI_ID_TABLE_MAX; ++i) {
     confui.tables [i].tree = NULL;
@@ -648,6 +663,7 @@ main (int argc, char *argv[])
   confuiLoadHTMLList (&confui);
   confuiLoadLocaleList (&confui);
   confuiLoadDanceTypeList (&confui);
+  confuiLoadTagList (&confui);
 
   tlist = confuiGetThemeList ();
   nlistStartIterator (tlist, &iteridx);
@@ -803,6 +819,12 @@ confuiClosingCallback (void *udata, programstate_t programState)
   if (confui->tableidents != NULL) {
     free (confui->tableidents);
   }
+  if (confui->listingtaglist != NULL) {
+    slistFree (confui->listingtaglist);
+  }
+  if (confui->songlisttaglist != NULL) {
+    slistFree (confui->songlisttaglist);
+  }
 
   sockhCloseServer (confui->sockserver);
   bdj4shutdown (ROUTE_CONFIGUI);
@@ -857,6 +879,7 @@ confuiActivate (GApplication *app, gpointer userdata)
   GError        *gerr = NULL;
   GtkWidget     *vbox;
   GtkWidget     *widget;
+  GtkWidget     *tree;
   GtkWidget     *image;
   GtkSizeGroup  *sg;
   GtkWidget     *dvbox;
@@ -1049,6 +1072,58 @@ confuiActivate (GApplication *app, gpointer userdata)
   widget = confuiMakeItemSpinboxText (confui, vbox, sg, _("Display"),
       CONFUI_SPINBOX_DISPLAY_SETTINGS, -1, 0);
   g_signal_connect (widget, "value-changed", G_CALLBACK (confuiDispSettingChg), confui);
+
+  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+  gtk_widget_set_halign (hbox, GTK_ALIGN_START);
+  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+
+  widget = uiutilsCreateScrolledWindow ();
+  gtk_scrolled_window_set_min_content_height (GTK_SCROLLED_WINDOW (widget), 200);
+  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+
+  tree = uiutilsCreateTreeView ();
+  confui->tables [CONFUI_ID_TAG_DISP].tree = tree;
+  confui->tables [CONFUI_ID_TAG_DISP].flags = CONFUI_TABLE_NONE;
+  gtk_widget_set_margin_start (tree, 16);
+  gtk_widget_set_margin_top (tree, 16);
+  gtk_container_add (GTK_CONTAINER (widget), tree);
+
+  confuiCreateTagListingTable (confui);
+
+  dvbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+  gtk_widget_set_vexpand (dvbox, FALSE);
+  gtk_widget_set_margin_start (dvbox, 8);
+  gtk_widget_set_margin_end (dvbox, 8);
+  gtk_widget_set_valign (dvbox, GTK_ALIGN_CENTER);
+  gtk_box_pack_start (GTK_BOX (hbox), dvbox, FALSE, FALSE, 0);
+
+  widget = uiutilsCreateButton (_("Remove"), "button_left", NULL, confui);
+//  g_signal_connect (widget, "clicked", NULL, confui);
+  gtk_box_pack_start (GTK_BOX (dvbox), widget, FALSE, FALSE, 0);
+
+  widget = uiutilsCreateButton (_("Select"), "button_right", NULL, confui);
+//  g_signal_connect (widget, "clicked", NULL, confui);
+  gtk_box_pack_start (GTK_BOX (dvbox), widget, FALSE, FALSE, 0);
+
+  dvbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+  gtk_widget_set_vexpand (dvbox, FALSE);
+  gtk_widget_set_margin_start (dvbox, 8);
+  gtk_widget_set_margin_end (dvbox, 8);
+  gtk_widget_set_valign (dvbox, GTK_ALIGN_CENTER);
+  gtk_box_pack_start (GTK_BOX (hbox), dvbox, FALSE, FALSE, 0);
+
+  widget = uiutilsCreateButton (_("Move Down"), "button_up", NULL, confui);
+//  g_signal_connect (widget, "clicked", NULL, confui);
+  gtk_box_pack_start (GTK_BOX (dvbox), widget, FALSE, FALSE, 0);
+
+  widget = uiutilsCreateButton (_("Move Up"), "button_down", NULL, confui);
+//  g_signal_connect (widget, "clicked", NULL, confui);
+  gtk_box_pack_start (GTK_BOX (dvbox), widget, FALSE, FALSE, 0);
+
+  widget = uiutilsCreateTreeView ();
+  gtk_widget_set_margin_start (widget, 16);
+  gtk_widget_set_margin_top (widget, 16);
+  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 
   /* organization */
   vbox = confuiMakeNotebookTab (confui, confui->notebook,
@@ -2396,6 +2471,32 @@ confuiLoadDanceTypeList (configui_t *confui)
   logProcEnd (LOG_PROC, "confuiLoadDanceTypeList", "");
 }
 
+static void
+confuiLoadTagList (configui_t *confui)
+{
+  slist_t       *llist = NULL;
+  slist_t       *sllist = NULL;
+
+  logProcBegin (LOG_PROC, "confuiLoadTagList");
+
+  llist = slistAlloc ("cu-tag-list", LIST_ORDERED, NULL);
+  sllist = slistAlloc ("cu-tag-list", LIST_ORDERED, NULL);
+
+  for (tagdefkey_t i = 0; i < TAG_MAX_KEY; ++i) {
+    if (tagdefs [i].listingDisplay) {
+      slistSetNum (llist, tagdefs [i].displayname, i);
+    }
+    if (tagdefs [i].songListDisplay) {
+      slistSetNum (sllist, tagdefs [i].displayname, i);
+    }
+  }
+
+  confui->listingtaglist = llist;
+  confui->songlisttaglist = sllist;
+  logProcEnd (LOG_PROC, "confuiLoadTagList", "");
+}
+
+
 static gboolean
 confuiFadeTypeTooltip (GtkWidget *w, gint x, gint y, gboolean kbmode,
     GtkTooltip *tt, void *udata)
@@ -2963,6 +3064,7 @@ confuiTableAdd (GtkButton *b, gpointer udata)
     case CONFUI_ID_MOBILE_MQ:
     case CONFUI_ID_REM_CONTROL:
     case CONFUI_ID_ORGANIZATION:
+    case CONFUI_ID_TAG_DISP:
     case CONFUI_ID_TABLE_MAX: {
       break;
     }
@@ -4032,4 +4134,53 @@ confuiDispSettingChg (GtkSpinButton *sb, gpointer udata)
 {
   configui_t      *confui = udata;
 
+}
+
+static void
+confuiCreateTagListingTable (configui_t *confui)
+{
+  GtkWidget     *tree;
+  GtkListStore  *store;
+  GtkTreeIter   iter;
+  GtkCellRenderer   *renderer = NULL;
+  GtkTreeViewColumn *column = NULL;
+  char          *keystr;
+  slistidx_t    iteridx;
+
+  store = gtk_list_store_new (CONFUI_TAG_COL_MAX,
+      G_TYPE_STRING, G_TYPE_STRING, G_TYPE_ULONG);
+  assert (store != NULL);
+
+  slistStartIterator (confui->listingtaglist, &iteridx);
+  while ((keystr = slistIterateKey (confui->listingtaglist, &iteridx)) != NULL) {
+    int val;
+
+    val = slistGetNum (confui->listingtaglist, keystr);
+    gtk_list_store_append (store, &iter);
+    gtk_list_store_set (store, &iter,
+        CONFUI_TAG_COL_TAG, keystr,
+        CONFUI_TAG_COL_SB_PAD, "    ",
+        CONFUI_TAG_COL_TAG_IDX, val,
+        -1);
+  }
+
+  tree = confui->tables [CONFUI_ID_TAG_DISP].tree;
+  gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (tree), FALSE);
+
+  renderer = gtk_cell_renderer_text_new ();
+  column = gtk_tree_view_column_new_with_attributes ("", renderer,
+      "text", CONFUI_TAG_COL_TAG,
+      NULL);
+  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
+  gtk_tree_view_append_column (GTK_TREE_VIEW (tree), column);
+
+  renderer = gtk_cell_renderer_text_new ();
+  column = gtk_tree_view_column_new_with_attributes ("", renderer,
+      "text", CONFUI_TAG_COL_SB_PAD,
+      NULL);
+  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
+  gtk_tree_view_append_column (GTK_TREE_VIEW (tree), column);
+
+  gtk_tree_view_set_model (GTK_TREE_VIEW (tree), GTK_TREE_MODEL (store));
+  g_object_unref (store);
 }

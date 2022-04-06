@@ -12,12 +12,13 @@
 #include "datafile.h"
 #include "fileop.h"
 #include "log.h"
+#include "pathbld.h"
 #include "slist.h"
 #include "sortopt.h"
 #include "tagdef.h"
 
 sortopt_t *
-sortoptAlloc (char *fname)
+sortoptAlloc (void)
 {
   sortopt_t     *sortopt;
   slist_t       *dflist;
@@ -28,9 +29,11 @@ sortoptAlloc (char *fname)
   char          *p;
   char          *tokstr;
   char          dispstr [MAXPATHLEN];
+  char          fname [MAXPATHLEN];
 
   tagdefInit ();
 
+  pathbldMakePath (fname, sizeof (fname), "", "sortopt", ".txt", PATHBLD_MP_NONE);
   if (! fileopFileExists (fname)) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: sortopt: missing %s", fname);
     return NULL;

@@ -6,6 +6,8 @@
 #include <assert.h>
 
 #include "bdj4intl.h"
+#include "bdjopt.h"
+#include "datafile.h"
 #include "slist.h"
 #include "tagdef.h"
 
@@ -42,8 +44,8 @@ tagdef_t tagdefs [TAG_MAX_KEY] = {
     ALIGN_START,                  /* song list anchor     */
     ET_NA,                        /* edit type            */
     DISP_NO,                      /* audio id disp        */
-    1,                            /* listing display      */
-    1,                            /* song list display    */
+    0,                            /* listing display      */
+    0,                            /* song list display    */
     0,                            /* is bdj tag           */
     0,                            /* is norm tag          */
     0,                            /* album edit           */
@@ -844,6 +846,8 @@ static tagdefinfo_t   tagdefinfo = {
 void
 tagdefInit (void)
 {
+  datafileconv_t    conv;
+
   if (tagdefinfo.initialized) {
     return;
   }
@@ -860,6 +864,7 @@ tagdefInit (void)
   tagdefs [TAG_DBADDDATE].displayname = _("Date Added");
   tagdefs [TAG_DISCNUMBER].displayname = _("Disc");
   tagdefs [TAG_DURATION].displayname = _("Duration");
+  tagdefs [TAG_FAVORITE].displayname = _("Favorite");
   tagdefs [TAG_GENRE].displayname = _("Genre");
   tagdefs [TAG_KEYWORD].displayname = _("Keyword");
   tagdefs [TAG_MQDISPLAY].displayname = _("Marquee Display");
@@ -873,6 +878,11 @@ tagdefInit (void)
   tagdefs [TAG_TRACKNUMBER].displayname = _("Track Number");
   tagdefs [TAG_UPDATETIME].displayname = _("Last Updated");
   tagdefs [TAG_VOLUMEADJUSTPERC].displayname = _("Volume Adjustment");
+
+  conv.valuetype = VALUE_NUM;
+  conv.u.num = bdjoptGetNum (OPT_G_BPM);
+  bdjoptConvBPM (&conv);
+  tagdefs [TAG_BPM].displayname = _(conv.u.str);
 
   tagdefinfo.taglookup = slistAlloc ("tagdef", LIST_UNORDERED, NULL);
   slistSetSize (tagdefinfo.taglookup, TAG_MAX_KEY);

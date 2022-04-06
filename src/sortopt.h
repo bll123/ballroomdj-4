@@ -9,7 +9,7 @@ typedef struct {
   slist_t         *sortoptList;
 } sortopt_t;
 
-sortopt_t     *sortoptAlloc (char *);
+sortopt_t     *sortoptAlloc (void);
 void          sortoptFree (sortopt_t *);
 slist_t       *sortoptGetList (sortopt_t *);
 

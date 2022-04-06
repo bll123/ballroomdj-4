@@ -162,6 +162,7 @@ bdj4startup (int argc, char *argv[], char *tag, bdjmsgroute_t route, int flags)
   }
 
   bdjoptInit ();
+  tagdefInit ();
 
   bdjoptSetNum (OPT_G_DEBUGLVL, loglevel);
 

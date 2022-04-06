@@ -1,6 +1,5 @@
 #include "config.h"
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -19,7 +18,6 @@
 
 static void bdjoptConvFadeType (datafileconv_t *conv);
 static void bdjoptConvWriteTags (datafileconv_t *conv);
-static void bdjoptConvBPM (datafileconv_t *conv);
 static void bdjoptCreateNewConfigs (void);
 static void bdjoptCreateDefaultFiles (void);
 static void bdjoptConvMobileMq (datafileconv_t *conv);
@@ -247,6 +245,31 @@ bdjoptSave (void)
   datafileSaveKeyVal ("config-machine-profile", path, bdjoptmachprofiledfkeys, BDJOPT_MACH_PROFILE_DFKEY_COUNT, bdjopt->data);
 }
 
+void
+bdjoptConvBPM (datafileconv_t *conv)
+{
+  bdjbpm_t   sbpm = BPM_BPM;
+
+  conv->allocated = false;
+  if (conv->valuetype == VALUE_STR) {
+    conv->valuetype = VALUE_NUM;
+
+    if (strcmp (conv->u.str, "BPM") == 0) {
+      sbpm = BPM_BPM;
+    }
+    if (strcmp (conv->u.str, "MPM") == 0) {
+      sbpm = BPM_MPM;
+    }
+    conv->u.num = sbpm;
+  } else if (conv->valuetype == VALUE_NUM) {
+    conv->valuetype = VALUE_STR;
+    switch (conv->u.num) {
+      case BPM_BPM: { conv->u.str = "BPM"; break; }
+      case BPM_MPM: { conv->u.str = "MPM"; break; }
+    }
+  }
+}
+
 /* internal routines */
 
 static void
@@ -308,31 +331,6 @@ bdjoptConvWriteTags (datafileconv_t *conv)
       case WRITE_TAGS_ALL: { conv->u.str = "ALL"; break; }
       case WRITE_TAGS_BDJ_ONLY: { conv->u.str = "BDJ"; break; }
       case WRITE_TAGS_NONE: { conv->u.str = "NONE"; break; }
-    }
-  }
-}
-
-static void
-bdjoptConvBPM (datafileconv_t *conv)
-{
-  bdjbpm_t   sbpm = BPM_BPM;
-
-  conv->allocated = false;
-  if (conv->valuetype == VALUE_STR) {
-    conv->valuetype = VALUE_NUM;
-
-    if (strcmp (conv->u.str, "BPM") == 0) {
-      sbpm = BPM_BPM;
-    }
-    if (strcmp (conv->u.str, "MPM") == 0) {
-      sbpm = BPM_MPM;
-    }
-    conv->u.num = sbpm;
-  } else if (conv->valuetype == VALUE_NUM) {
-    conv->valuetype = VALUE_STR;
-    switch (conv->u.num) {
-      case BPM_BPM: { conv->u.str = "BPM"; break; }
-      case BPM_MPM: { conv->u.str = "MPM"; break; }
     }
   }
 }
