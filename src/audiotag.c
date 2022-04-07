@@ -267,7 +267,7 @@ audiotagCreateLookupTable (int tagtype)
   tagLookup [tagtype] = slistAlloc (buff, LIST_ORDERED, free);
   taglist = tagLookup [tagtype];
 
-  for (int i = 0; i < TAG_MAX_KEY; ++i) {
+  for (int i = 0; i < TAG_KEY_MAX; ++i) {
     if (tagdefs [i].audiotags [tagtype] != NULL &&
         strcmp (tagdefs [i].audiotags [tagtype], "TXXX") != 0) {
       slistSetStr (taglist, tagdefs [i].audiotags [tagtype], tagdefs [i].tag);

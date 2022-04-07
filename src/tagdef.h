@@ -37,15 +37,13 @@ typedef struct {
   char                *tag;
   char                *displayname;
   char                *audiotags [TAG_TYPE_MAX];
-  unsigned int        defaultEditOrder;
-  unsigned int        editIndex;
   unsigned int        editWidth;
   tagalign_t          listingAnchor;
   tagalign_t          songlistAnchor;
   tagedittype_t       editType;
   tagdispflag_t       audioiddispflag;
   bool                listingDisplay : 1;
-  bool                songListDisplay : 1;
+  bool                songEditOnly : 1;
   bool                isBdjTag : 1;
   bool                isNormTag : 1;
   bool                albumEdit : 1;
@@ -95,10 +93,10 @@ typedef enum {
   TAG_VOLUMEADJUSTPERC,       //
   TAG_WRITETIME,
   TAG_RRN,                    //
-  TAG_MAX_KEY,
+  TAG_KEY_MAX,
 } tagdefkey_t;
 
-extern tagdef_t tagdefs [TAG_MAX_KEY];
+extern tagdef_t tagdefs [TAG_KEY_MAX];
 
 void        tagdefInit (void);
 void        tagdefCleanup (void);

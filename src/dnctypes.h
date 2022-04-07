@@ -9,7 +9,7 @@ typedef struct {
   slist_t     *dnctypes;
 } dnctype_t;
 
-dnctype_t     *dnctypesAlloc (char *);
+dnctype_t     *dnctypesAlloc (void);
 void          dnctypesFree (dnctype_t *);
 void          dnctypesStartIterator (dnctype_t *dnctypes, slistidx_t *iteridx);
 char          *dnctypesIterate (dnctype_t *dnctypes, slistidx_t *iteridx);

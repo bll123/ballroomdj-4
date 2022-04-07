@@ -6,29 +6,28 @@
 #include <stdbool.h>
 #include <string.h>
 
-#include "bdj4.h"
 #include "autosel.h"
+#include "bdj4.h"
 #include "bdjvarsdf.h"
 #include "bdjvarsdfload.h"
 #include "dance.h"
 #include "dance.h"
 #include "datafile.h"
-#include "pathbld.h"
+#include "dispsel.h"
 #include "dnctypes.h"
 #include "genre.h"
 #include "level.h"
+#include "pathbld.h"
 #include "rating.h"
 #include "status.h"
 
 int
 bdjvarsdfloadInit (void)
 {
-  char  fn [MAXPATHLEN];
   int   rc;
 
   /* dance types must be loaded before dance */
-  pathbldMakePath (fn, sizeof (fn), "", "dancetypes", ".txt", PATHBLD_MP_NONE);
-  bdjvarsdfSet (BDJVDF_DANCE_TYPES, dnctypesAlloc (fn));
+  bdjvarsdfSet (BDJVDF_DANCE_TYPES, dnctypesAlloc ());
 
   /* the database load depends on dances */
   /* playlist loads depend on dances */
@@ -44,8 +43,7 @@ bdjvarsdfloadInit (void)
   /* the database load depends on genres */
   bdjvarsdfSet (BDJVDF_GENRES, genreAlloc ());
 
-  pathbldMakePath (fn, sizeof (fn), "", "autoselection", ".txt", PATHBLD_MP_NONE);
-  bdjvarsdfSet (BDJVDF_AUTO_SEL, autoselAlloc (fn));
+  bdjvarsdfSet (BDJVDF_AUTO_SEL, autoselAlloc ());
 
   rc = 0;
   for (int i = BDJVDF_AUTO_SEL; i < BDJVDF_MAX; ++i) {

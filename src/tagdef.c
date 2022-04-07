@@ -11,20 +11,18 @@
 #include "slist.h"
 #include "tagdef.h"
 
-tagdef_t tagdefs [TAG_MAX_KEY] = {
+tagdef_t tagdefs [TAG_KEY_MAX] = {
   [TAG_ADJUSTFLAGS] =
   { "ADJUSTFLAGS",                /* tag */
     NULL,                         /* display name         */
     { NULL, "TXXX", NULL },       /* audio tags */
-    0,                            /* default edit order   */
-    0,                            /* edit index           */
     0,                            /* edit width           */
     ALIGN_START,                  /* listing anchor       */
     ALIGN_START,                  /* song list anchor     */
     ET_NA,                        /* edit type            */
     DISP_NO,                      /* audio id disp        */
     0,                            /* listing display      */
-    0,                            /* song list display    */
+    0,                            /* song edit only       */
     1,                            /* is bdj tag           */
     0,                            /* is norm tag          */
     0,                            /* album edit           */
@@ -37,15 +35,13 @@ tagdef_t tagdefs [TAG_MAX_KEY] = {
   { "AFMODTIME",                  /* tag */
     NULL,                         /* display name         */
     { NULL, NULL, NULL },         /* audio tags */
-    0,                            /* default edit order   */
-    0,                            /* edit index           */
     0,                            /* edit width           */
     ALIGN_START,                  /* listing anchor       */
     ALIGN_START,                  /* song list anchor     */
     ET_NA,                        /* edit type            */
     DISP_NO,                      /* audio id disp        */
     0,                            /* listing display      */
-    0,                            /* song list display    */
+    0,                            /* song edit only       */
     0,                            /* is bdj tag           */
     0,                            /* is norm tag          */
     0,                            /* album edit           */
@@ -58,15 +54,13 @@ tagdef_t tagdefs [TAG_MAX_KEY] = {
   { "ALBUM",                      /* tag */
     NULL,                         /* display name         */
     { "©alb", "TALB", "WM/AlbumTitle" },       /* audio tags */
-    0,                            /* default edit order   */
-    7,                            /* edit index           */
     0,                            /* edit width           */
     ALIGN_CENTER,                  /* listing anchor       */
     ALIGN_START,                  /* song list anchor     */
     ET_ENTRY,                     /* edit type            */
     DISP_YES,                     /* audio id disp        */
     1,                            /* listing display      */
-    1,                            /* song list display    */
+    0,                            /* song edit only       */
     0,                            /* is bdj tag           */
     1,                            /* is norm tag          */
     1,                            /* album edit           */
@@ -79,15 +73,13 @@ tagdef_t tagdefs [TAG_MAX_KEY] = {
   { "ALBUMARTIST",                /* tag */
     NULL,                         /* display name         */
     { "aART", "TPE2", "WM/AlbumArtist" },       /* audio tags */
-    1,                            /* default edit order   */
-    4,                            /* edit index           */
     0,                            /* edit width           */
     ALIGN_CENTER,                  /* listing anchor       */
     ALIGN_START,                  /* song list anchor     */
     ET_ENTRY,                     /* edit type            */
     DISP_YES,                     /* audio id disp        */
     1,                            /* listing display      */
-    1,                            /* song list display    */
+    0,                            /* song edit only       */
     0,                            /* is bdj tag           */
     1,                            /* is norm tag          */
     1,                            /* album edit           */
@@ -100,15 +92,13 @@ tagdef_t tagdefs [TAG_MAX_KEY] = {
   { "ARTIST",                     /* tag */
     NULL,                         /* display name         */
     { "©ART", "TPE1", "WM/Author" },       /* audio tags */
-    3,                            /* default edit order   */
-    5,                            /* edit index           */
     0,                            /* edit width           */
     ALIGN_CENTER,                  /* listing anchor       */
     ALIGN_START,                  /* song list anchor     */
     ET_ENTRY,                     /* edit type            */
     DISP_YES,                     /* audio id disp        */
     1,                            /* listing display      */
-    1,                            /* song list display    */
+    0,                            /* song edit only       */
     0,                            /* is bdj tag           */
     1,                            /* is norm tag          */
     1,                            /* album edit           */
@@ -121,15 +111,13 @@ tagdef_t tagdefs [TAG_MAX_KEY] = {
   { "AUTOORGFLAG",                /* tag */
     NULL,                         /* display name         */
     { NULL, NULL, NULL },         /* audio tags */
-    0,                            /* default edit order   */
-    0,                            /* edit index           */
     0,                            /* edit width           */
     ALIGN_END,                    /* listing anchor       */
     ALIGN_START,                  /* song list anchor     */
     ET_NA,                        /* edit type            */
     DISP_NO,                      /* audio id disp        */
     0,                            /* listing display      */
-    0,                            /* song list display    */
+    0,                            /* song edit only       */
     0,                            /* is bdj tag           */
     0,                            /* is norm tag          */
     0,                            /* album edit           */
@@ -142,15 +130,13 @@ tagdef_t tagdefs [TAG_MAX_KEY] = {
   { "BPM",                        /* tag */
     NULL,                         /* display name         */
     { "tmpo", "TBPM", "WM/BeatsPerMinute" },       /* audio tags */
-    0,                            /* default edit order   */
-    15,                           /* edit index           */
     0,                            /* edit width           */
     ALIGN_END,                    /* listing anchor       */
     ALIGN_END,                    /* song list anchor     */
     ET_ENTRY,                     /* edit type            */
     DISP_NO,                      /* audio id disp        */
     1,                            /* listing display      */
-    1,                            /* song list display    */
+    0,                            /* song edit only       */
     1,                            /* is bdj tag           */
     1,                            /* is norm tag          */
     0,                            /* album edit           */
@@ -163,15 +149,13 @@ tagdef_t tagdefs [TAG_MAX_KEY] = {
   { "COMPOSER",                   /* tag */
     NULL,                         /* display name         */
     { "©wrt", "TCOM", "WM/Composer" },       /* audio tags */
-    0,                            /* default edit order   */
-    2,                            /* edit index           */
     0,                            /* edit width           */
     ALIGN_CENTER,                  /* listing anchor       */
     ALIGN_START,                  /* song list anchor     */
     ET_ENTRY,                     /* edit type            */
     DISP_OPT,                     /* audio id disp        */
     1,                            /* listing display      */
-    1,                            /* song list display    */
+    0,                            /* song edit only       */
     0,                            /* is bdj tag           */
     1,                            /* is norm tag          */
     1,                            /* album edit           */
@@ -184,15 +168,13 @@ tagdef_t tagdefs [TAG_MAX_KEY] = {
   { "CONDUCTOR",                  /* tag */
     NULL,                         /* display name         */
     { NULL, "TPE3", "WM/Conductor" },       /* audio tags */
-    0,                            /* default edit order   */
-    3,                            /* edit index           */
     0,                            /* edit width           */
     ALIGN_CENTER,                  /* listing anchor       */
     ALIGN_START,                  /* song list anchor     */
     ET_ENTRY,                     /* edit type            */
     DISP_OPT,                     /* audio id disp        */
     1,                            /* listing display      */
-    1,                            /* song list display    */
+    0,                            /* song edit only       */
     0,                            /* is bdj tag           */
     1,                            /* is norm tag          */
     1,                            /* album edit           */
@@ -205,15 +187,13 @@ tagdef_t tagdefs [TAG_MAX_KEY] = {
   { "DANCE",                /* tag */
     NULL,                         /* display name         */
     { NULL, "TXXX", NULL },       /* audio tags */
-    5,                            /* default edit order   */
-    9,                            /* edit index           */
     0,                            /* edit width           */
     ALIGN_START,                  /* listing anchor       */
     ALIGN_START,                  /* song list anchor     */
     ET_COMBOBOX,                  /* edit type            */
     DISP_NO,                      /* audio id disp        */
     1,                            /* listing display      */
-    1,                            /* song list display    */
+    0,                            /* song edit only       */
     1,                            /* is bdj tag           */
     0,                            /* is norm tag          */
     0,                            /* album edit           */
@@ -226,15 +206,13 @@ tagdef_t tagdefs [TAG_MAX_KEY] = {
   { "DANCELEVEL",                 /* tag */
     NULL,                         /* display name         */
     { NULL, "TXXX", NULL },       /* audio tags */
-    7,                            /* default edit order   */
-    11,                           /* edit index           */
     0,                            /* edit width           */
     ALIGN_START,                  /* listing anchor       */
     ALIGN_START,                  /* song list anchor     */
     ET_COMBOBOX,                  /* edit type            */
     DISP_NO,                      /* audio id disp        */
     1,                            /* listing display      */
-    1,                            /* song list display    */
+    0,                            /* song edit only       */
     1,                            /* is bdj tag           */
     0,                            /* is norm tag          */
     0,                            /* album edit           */
@@ -247,15 +225,13 @@ tagdef_t tagdefs [TAG_MAX_KEY] = {
   { "DANCERATING",                /* tag */
     NULL,                         /* display name         */
     { NULL, "TXXX", NULL },       /* audio tags */
-    6,                            /* default edit order   */
-    10,                           /* edit index           */
     0,                            /* edit width           */
     ALIGN_START,                  /* listing anchor       */
     ALIGN_START,                  /* song list anchor     */
     ET_COMBOBOX,                  /* edit type            */
     DISP_NO,                      /* audio id disp        */
     1,                            /* listing display      */
-    1,                            /* song list display    */
+    0,                            /* song edit only       */
     1,                            /* is bdj tag           */
     0,                            /* is norm tag          */
     0,                            /* album edit           */
@@ -268,15 +244,13 @@ tagdef_t tagdefs [TAG_MAX_KEY] = {
   { "DATE",                       /* tag */
     NULL,                         /* display name         */
     { "©day", "TYER", "WM/Year" },       /* audio tags */
-    0,                            /* default edit order   */
-    0,                            /* edit index           */
     0,                            /* edit width           */
     ALIGN_START,                  /* listing anchor       */
     ALIGN_START,                  /* song list anchor     */
     ET_NA,                        /* edit type            */
     DISP_OPT,                     /* audio id disp        */
     0,                            /* listing display      */
-    0,                            /* song list display    */
+    0,                            /* song edit only       */
     0,                            /* is bdj tag           */
     1,                            /* is norm tag          */
     0,                            /* album edit           */
@@ -289,15 +263,13 @@ tagdef_t tagdefs [TAG_MAX_KEY] = {
   { "DBADDDATE",                  /* tag */
     NULL,                         /* display name         */
     { NULL, NULL, NULL },         /* audio tags */
-    0,                            /* default edit order   */
-    0,                            /* edit index           */
     0,                            /* edit width           */
     ALIGN_START,                  /* listing anchor       */
     ALIGN_START,                  /* song list anchor     */
     ET_NA,                        /* edit type            */
     DISP_NO,                      /* audio id disp        */
     1,                            /* listing display      */
-    1,                            /* song list display    */
+    0,                            /* song edit only       */
     0,                            /* is bdj tag           */
     0,                            /* is norm tag          */
     0,                            /* album edit           */
@@ -310,15 +282,13 @@ tagdef_t tagdefs [TAG_MAX_KEY] = {
   { "DISC",                       /* tag */
     NULL,                         /* display name         */
     { "disk", "TPOS", "WM/PartOfSet" },       /* audio tags */
-    13,                           /* default edit order   */
-    13,                           /* edit index           */
     5,                            /* edit width           */
     ALIGN_END,                    /* listing anchor       */
     ALIGN_END,                    /* song list anchor     */
     ET_ENTRY,                     /* edit type            */
     DISP_YES,                     /* audio id disp        */
     1,                            /* listing display      */
-    1,                            /* song list display    */
+    0,                            /* song edit only       */
     0,                            /* is bdj tag           */
     1,                            /* is norm tag          */
     1,                            /* album edit           */
@@ -331,15 +301,13 @@ tagdef_t tagdefs [TAG_MAX_KEY] = {
   { "DISCTOTAL",                  /* tag */
     NULL,                         /* display name         */
     { NULL, NULL, NULL },         /* audio tags */
-    0,                            /* default edit order   */
-    0,                            /* edit index           */
     0,                            /* edit width           */
     ALIGN_START,                  /* listing anchor       */
     ALIGN_START,                  /* song list anchor     */
     ET_NA,                        /* edit type            */
     DISP_YES,                     /* audio id disp        */
     0,                            /* listing display      */
-    0,                            /* song list display    */
+    0,                            /* song edit only       */
     0,                            /* is bdj tag           */
     1,                            /* is norm tag          */
     0,                            /* album edit           */
@@ -352,15 +320,13 @@ tagdef_t tagdefs [TAG_MAX_KEY] = {
   { "DURATION",                   /* tag */
     NULL,                         /* display name         */
     { NULL, "TXXX", NULL },       /* audio tags */
-    9,                            /* default edit order   */
-    16,                           /* edit index           */
     15,                           /* edit width           */
     ALIGN_END,                    /* listing anchor       */
     ALIGN_END,                    /* song list anchor     */
     ET_NA,                        /* edit type            */
     DISP_YES,                     /* audio id disp        */
     1,                            /* listing display      */
-    1,                            /* song list display    */
+    0,                            /* song edit only       */
     1,                            /* is bdj tag           */
     0,                            /* is norm tag          */
     0,                            /* album edit           */
@@ -373,15 +339,13 @@ tagdef_t tagdefs [TAG_MAX_KEY] = {
   { "FILE",                       /* tag */
     NULL,                         /* display name         */
     { NULL, NULL, NULL },         /* audio tags */
-    0,                            /* default edit order   */
-    0,                            /* edit index           */
     0,                            /* edit width           */
     ALIGN_START,                  /* listing anchor       */
     ALIGN_START,                  /* song list anchor     */
     ET_NA,                        /* edit type            */
     DISP_NO,                      /* audio id disp        */
     0,                            /* listing display      */
-    0,                            /* song list display    */
+    0,                            /* song edit only       */
     0,                            /* is bdj tag           */
     0,                            /* is norm tag          */
     0,                            /* album edit           */
@@ -394,15 +358,13 @@ tagdef_t tagdefs [TAG_MAX_KEY] = {
   { "FAVORITE",                   /* tag */
     NULL,                         /* display name         */
     { NULL, "TXXX", NULL },       /* audio tags */
-    0,                            /* default edit order   */
-    0,                            /* edit index           */
     0,                            /* edit width           */
     ALIGN_START,                  /* listing anchor       */
     ALIGN_START,                  /* song list anchor     */
     ET_NA,                        /* edit type            */
     DISP_NO,                      /* audio id disp        */
     1,                            /* listing display      */
-    1,                            /* song list display    */
+    0,                            /* song edit only       */
     1,                            /* is bdj tag           */
     0,                            /* is norm tag          */
     0,                            /* album edit           */
@@ -415,15 +377,13 @@ tagdef_t tagdefs [TAG_MAX_KEY] = {
   { "GENRE",                      /* tag */
     NULL,                         /* display name         */
     { "gnre", "TCON", "WM/Genre" },       /* audio tags */
-    1,                            /* default edit order   */
-    1,                            /* edit index           */
     0,                            /* edit width           */
     ALIGN_START,                  /* listing anchor       */
     ALIGN_START,                  /* song list anchor     */
     ET_COMBOBOX,                  /* edit type            */
     DISP_YES,                     /* audio id disp        */
     1,                            /* listing display      */
-    1,                            /* song list display    */
+    0,                            /* song edit only       */
     0,                            /* is bdj tag           */
     1,                            /* is norm tag          */
     1,                            /* album edit           */
@@ -436,15 +396,13 @@ tagdef_t tagdefs [TAG_MAX_KEY] = {
   { "KEYWORD",                /* tag */
     NULL,                         /* display name         */
     { NULL, "TXXX", NULL },       /* audio tags */
-    0,                            /* default edit order   */
-    0,                            /* edit index           */
     20,                           /* edit width           */
     ALIGN_START,                  /* listing anchor       */
     ALIGN_START,                  /* song list anchor     */
     ET_ENTRY,                     /* edit type            */
     DISP_NO,                      /* audio id disp        */
     1,                            /* listing display      */
-    1,                            /* song list display    */
+    0,                            /* song edit only       */
     1,                            /* is bdj tag           */
     0,                            /* is norm tag          */
     0,                            /* album edit           */
@@ -457,15 +415,13 @@ tagdef_t tagdefs [TAG_MAX_KEY] = {
   { "MQDISPLAY",                /* tag */
     NULL,                         /* display name         */
     { NULL, "TXXX", NULL },       /* audio tags */
-    0,                            /* default edit order   */
-    0,                            /* edit index           */
     20,                           /* edit width           */
     ALIGN_START,                  /* listing anchor       */
     ALIGN_START,                  /* song list anchor     */
     ET_ENTRY,                     /* edit type            */
     DISP_NO,                      /* audio id disp        */
     0,                            /* listing display      */
-    0,                            /* song list display    */
+    0,                            /* song edit only       */
     1,                            /* is bdj tag           */
     0,                            /* is norm tag          */
     0,                            /* album edit           */
@@ -478,15 +434,13 @@ tagdef_t tagdefs [TAG_MAX_KEY] = {
   { "MUSICBRAINZ_TRACKID",                /* tag */
     NULL,                         /* display name         */
     { NULL, "UFID", "MusicBrainz/Track Id" },       /* audio tags */
-    0,                            /* default edit order   */
-    0,                            /* edit index           */
     0,                            /* edit width           */
     ALIGN_START,                  /* listing anchor       */
     ALIGN_START,                  /* song list anchor     */
     ET_NA,                        /* edit type            */
     DISP_NO,                      /* audio id disp        */
     0,                            /* listing display      */
-    0,                            /* song list display    */
+    0,                            /* song edit only       */
     0,                            /* is bdj tag           */
     1,                            /* is norm tag          */
     0,                            /* album edit           */
@@ -499,15 +453,13 @@ tagdef_t tagdefs [TAG_MAX_KEY] = {
   { "NOTES",                /* tag */
     NULL,                         /* display name         */
     { NULL, "TXXX", NULL },       /* audio tags */
-    8,                            /* default edit order   */
-    12,                           /* edit index           */
     0,                            /* edit width           */
     ALIGN_START,                  /* listing anchor       */
     ALIGN_START,                  /* song list anchor     */
     ET_ENTRY,                     /* edit type            */
     DISP_NO,                      /* audio id disp        */
     1,                            /* listing display      */
-    1,                            /* song list display    */
+    0,                            /* song edit only       */
     1,                            /* is bdj tag           */
     0,                            /* is norm tag          */
     0,                            /* album edit           */
@@ -520,15 +472,13 @@ tagdef_t tagdefs [TAG_MAX_KEY] = {
   { "SAMESONG",                 /* tag */
     NULL,                         /* display name         */
     { NULL, "TXXX", NULL },       /* audio tags */
-    0,                            /* default edit order   */
-    0,                            /* edit index           */
     0,                            /* edit width           */
     ALIGN_START,                  /* listing anchor       */
     ALIGN_START,                  /* song list anchor     */
     ET_NA,                        /* edit type            */
     DISP_NO,                      /* audio id disp        */
     0,                            /* listing display      */
-    0,                            /* song list display    */
+    0,                            /* song edit only       */
     1,                            /* is bdj tag           */
     0,                            /* is norm tag          */
     0,                            /* album edit           */
@@ -541,15 +491,13 @@ tagdef_t tagdefs [TAG_MAX_KEY] = {
   { "SONGEND",                /* tag */
     NULL,                         /* display name         */
     { NULL, "TXXX", NULL },       /* audio tags */
-    0,                            /* default edit order   */
-    0,                            /* edit index           */
     10,                           /* edit width           */
     ALIGN_END,                    /* listing anchor       */
     ALIGN_START,                  /* song list anchor     */
     ET_ENTRY,                     /* edit type            */
     DISP_NO,                      /* audio id disp        */
     1,                            /* listing display      */
-    0,                            /* song list display    */
+    1,                            /* song edit only       */
     1,                            /* is bdj tag           */
     0,                            /* is norm tag          */
     0,                            /* album edit           */
@@ -562,15 +510,13 @@ tagdef_t tagdefs [TAG_MAX_KEY] = {
   { "SONGSTART",                  /* tag */
     NULL,                         /* display name         */
     { NULL, "TXXX", NULL },       /* audio tags */
-    0,                            /* default edit order   */
-    0,                            /* edit index           */
     10,                           /* edit width           */
     ALIGN_END,                    /* listing anchor       */
     ALIGN_START,                  /* song list anchor     */
     ET_ENTRY,                     /* edit type            */
     DISP_NO,                      /* audio id disp        */
     1,                            /* listing display      */
-    0,                            /* song list display    */
+    1,                            /* song edit only       */
     1,                            /* is bdj tag           */
     0,                            /* is norm tag          */
     0,                            /* album edit           */
@@ -583,15 +529,13 @@ tagdef_t tagdefs [TAG_MAX_KEY] = {
   { "SPEEDADJUSTMENT",            /* tag */
     NULL,                         /* display name         */
     { NULL, "TXXX", NULL },       /* audio tags */
-    0,                            /* default edit order   */
-    0,                            /* edit index           */
     0,                            /* edit width           */
     ALIGN_END,                    /* listing anchor       */
     ALIGN_START,                  /* song list anchor     */
     ET_SCALE,                     /* edit type            */
     DISP_NO,                      /* audio id disp        */
     1,                            /* listing display      */
-    0,                            /* song list display    */
+    1,                            /* song edit only       */
     1,                            /* is bdj tag           */
     0,                            /* is norm tag          */
     0,                            /* album edit           */
@@ -604,15 +548,13 @@ tagdef_t tagdefs [TAG_MAX_KEY] = {
   { "STATUS",                     /* tag */
     NULL,                         /* display name         */
     { NULL, "TXXX", NULL },       /* audio tags */
-    0,                            /* default edit order   */
-    17,                           /* edit index           */
     0,                            /* edit width           */
     ALIGN_START,                  /* listing anchor       */
     ALIGN_START,                  /* song list anchor     */
     ET_COMBOBOX,                  /* edit type            */
     DISP_NO,                      /* audio id disp        */
     1,                            /* listing display      */
-    1,                            /* song list display    */
+    0,                            /* song edit only       */
     1,                            /* is bdj tag           */
     0,                            /* is norm tag          */
     1,                            /* album edit           */
@@ -625,15 +567,13 @@ tagdef_t tagdefs [TAG_MAX_KEY] = {
   { "TAGS",                       /* tag */
     NULL,                         /* display name         */
     { "keyw", "TXXX", NULL },       /* audio tags */
-    8,                            /* default edit order   */
-    12,                           /* edit index           */
     0,                            /* edit width           */
     ALIGN_START,                  /* listing anchor       */
     ALIGN_START,                  /* song list anchor     */
     ET_ENTRY,                     /* edit type            */
     DISP_NO,                      /* audio id disp        */
     1,                            /* listing display      */
-    1,                            /* song list display    */
+    0,                            /* song edit only       */
     1,                            /* is bdj tag           */
     0,                            /* is norm tag          */
     0,                            /* album edit           */
@@ -646,15 +586,13 @@ tagdef_t tagdefs [TAG_MAX_KEY] = {
   { "TITLE",                      /* tag */
     NULL,                         /* display name         */
     { "©nam", "TIT2", "WM/Title" },       /* audio tags */
-    4,                            /* default edit order   */
-    8,                            /* edit index           */
     0,                            /* edit width           */
     ALIGN_CENTER,                  /* listing anchor       */
     ALIGN_START,                  /* song list anchor     */
     ET_ENTRY,                     /* edit type            */
     DISP_YES,                     /* audio id disp        */
     1,                            /* listing display      */
-    1,                            /* song list display    */
+    0,                            /* song edit only       */
     0,                            /* is bdj tag           */
     1,                            /* is norm tag          */
     0,                            /* album edit           */
@@ -667,15 +605,13 @@ tagdef_t tagdefs [TAG_MAX_KEY] = {
   { "TRACKNUMBER",                /* tag */
     NULL,                         /* display name         */
     { "trkn", "TRCK", "WM/TrackNumber" },       /* audio tags */
-    0,                            /* default edit order   */
-    14,                           /* edit index           */
     5,                            /* edit width           */
     ALIGN_END,                    /* listing anchor       */
     ALIGN_END,                    /* song list anchor     */
     ET_ENTRY,                     /* edit type            */
     DISP_YES,                     /* audio id disp        */
     1,                            /* listing display      */
-    1,                            /* song list display    */
+    0,                            /* song edit only       */
     0,                            /* is bdj tag           */
     1,                            /* is norm tag          */
     1,                            /* album edit           */
@@ -688,15 +624,13 @@ tagdef_t tagdefs [TAG_MAX_KEY] = {
   { "TRACKTOTAL",                 /* tag */
     NULL,                         /* display name         */
     { NULL, NULL, NULL },         /* audio tags */
-    0,                            /* default edit order   */
-    0,                            /* edit index           */
     0,                            /* edit width           */
     ALIGN_START,                  /* listing anchor       */
     ALIGN_START,                  /* song list anchor     */
     ET_NA,                        /* edit type            */
     DISP_YES,                     /* audio id disp        */
     0,                            /* listing display      */
-    0,                            /* song list display    */
+    0,                            /* song edit only       */
     0,                            /* is bdj tag           */
     1,                            /* is norm tag          */
     0,                            /* album edit           */
@@ -709,15 +643,13 @@ tagdef_t tagdefs [TAG_MAX_KEY] = {
   { "UPDATEFLAG",                 /* tag */
     NULL,                         /* display name         */
     { NULL, NULL, NULL },         /* audio tags */
-    0,                            /* default edit order   */
-    0,                            /* edit index           */
     0,                            /* edit width           */
     ALIGN_END,                    /* listing anchor       */
     ALIGN_START,                  /* song list anchor     */
     ET_NA,                        /* edit type            */
     DISP_NO,                      /* audio id disp        */
     0,                            /* listing display      */
-    0,                            /* song list display    */
+    0,                            /* song edit only       */
     0,                            /* is bdj tag           */
     0,                            /* is norm tag          */
     0,                            /* album edit           */
@@ -730,15 +662,13 @@ tagdef_t tagdefs [TAG_MAX_KEY] = {
   { "UPDATETIME",                 /* tag */
     NULL,                         /* display name         */
     { NULL, NULL, NULL },         /* audio tags */
-    0,                            /* default edit order   */
-    0,                            /* edit index           */
     0,                            /* edit width           */
     ALIGN_END,                    /* listing anchor       */
     ALIGN_START,                  /* song list anchor     */
     ET_NA,                        /* edit type            */
     DISP_NO,                      /* audio id disp        */
     0,                            /* listing display      */
-    0,                            /* song list display    */
+    0,                            /* song edit only       */
     0,                            /* is bdj tag           */
     0,                            /* is norm tag          */
     0,                            /* album edit           */
@@ -751,15 +681,13 @@ tagdef_t tagdefs [TAG_MAX_KEY] = {
   { "VOLUMEADJUSTPERC",           /* tag */
     NULL,                         /* display name         */
     { NULL, "TXXX", NULL },       /* audio tags */
-    0,                            /* default edit order   */
-    0,                            /* edit index           */
     0,                            /* edit width           */
     ALIGN_END,                    /* listing anchor       */
     ALIGN_START,                  /* song list anchor     */
     ET_SCALE,                     /* edit type            */
     DISP_NO,                      /* audio id disp        */
     1,                            /* listing display      */
-    0,                            /* song list display    */
+    1,                            /* song edit only       */
     1,                            /* is bdj tag           */
     0,                            /* is norm tag          */
     0,                            /* album edit           */
@@ -772,15 +700,13 @@ tagdef_t tagdefs [TAG_MAX_KEY] = {
   { "WRITETIME",                  /* tag */
     NULL,                         /* display name         */
     { NULL, NULL, NULL },         /* audio tags */
-    0,                            /* default edit order   */
-    0,                            /* edit index           */
     0,                            /* edit width           */
     ALIGN_END,                    /* listing anchor       */
     ALIGN_START,                  /* song list anchor     */
     ET_NA,                        /* edit type            */
     DISP_NO,                      /* audio id disp        */
     0,                            /* listing display      */
-    0,                            /* song list display    */
+    0,                            /* song edit only       */
     0,                            /* is bdj tag           */
     0,                            /* is norm tag          */
     0,                            /* album edit           */
@@ -793,15 +719,13 @@ tagdef_t tagdefs [TAG_MAX_KEY] = {
   { "RRN",                        /* tag */
     NULL,                         /* display name         */
     { NULL, NULL, NULL },         /* audio tags */
-    0,                            /* default edit order   */
-    0,                            /* edit index           */
     0,                            /* edit width           */
     ALIGN_END,                    /* listing anchor       */
     ALIGN_START,                  /* song list anchor     */
     ET_NA,                        /* edit type            */
     DISP_NO,                      /* audio id disp        */
     0,                            /* listing display      */
-    0,                            /* song list display    */
+    0,                            /* song edit only       */
     0,                            /* is bdj tag           */
     0,                            /* is norm tag          */
     0,                            /* album edit           */
@@ -814,15 +738,13 @@ tagdef_t tagdefs [TAG_MAX_KEY] = {
   { "DBIDX",                      /* tag */
     NULL,                         /* display name         */
     { NULL, NULL, NULL },         /* audio tags */
-    0,                            /* default edit order   */
-    0,                            /* edit index           */
     0,                            /* edit width           */
     ALIGN_END,                    /* listing anchor       */
     ALIGN_START,                  /* song list anchor     */
     ET_NA,                        /* edit type            */
     DISP_NO,                      /* audio id disp        */
     0,                            /* listing display      */
-    0,                            /* song list display    */
+    0,                            /* song edit only       */
     0,                            /* is bdj tag           */
     0,                            /* is norm tag          */
     0,                            /* album edit           */
@@ -853,6 +775,7 @@ tagdefInit (void)
   }
   tagdefinfo.initialized = true;
 
+  tagdefs [TAG_AFMODTIME].displayname = _("Audio File Date");
   tagdefs [TAG_ALBUM].displayname = _("Album");
   tagdefs [TAG_ALBUMARTIST].displayname = _("Album Artist");
   tagdefs [TAG_ARTIST].displayname = _("Artist");
@@ -885,8 +808,8 @@ tagdefInit (void)
   tagdefs [TAG_BPM].displayname = _(conv.u.str);
 
   tagdefinfo.taglookup = slistAlloc ("tagdef", LIST_UNORDERED, NULL);
-  slistSetSize (tagdefinfo.taglookup, TAG_MAX_KEY);
-  for (tagdefkey_t i = 0; i < TAG_MAX_KEY; ++i) {
+  slistSetSize (tagdefinfo.taglookup, TAG_KEY_MAX);
+  for (tagdefkey_t i = 0; i < TAG_KEY_MAX; ++i) {
     slistSetNum (tagdefinfo.taglookup, tagdefs [i].tag, i);
   }
   slistSort (tagdefinfo.taglookup);

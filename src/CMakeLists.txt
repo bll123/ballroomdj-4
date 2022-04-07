@@ -436,6 +436,7 @@ add_library (libbdj4 SHARED
   bdjvarsdfload.c
   dance.c
   dancesel.c
+  dispsel.c
   dnctypes.c
   genre.c
   level.c

@@ -516,8 +516,6 @@ uimusicqProcessMusicQueueDataNew (uimusicq_t *uimusicq, char * args)
     gtk_list_store_append (store, &iter);
     gtk_list_store_set (store, &iter,
         MUSICQ_COL_ELLIPSIZE, 1,
-//        MUSICQ_COL_SIZE, 8,
-//        MUSICQ_COL_SIZE_POINTS, 8.0,
         MUSICQ_COL_FONT, listingFont,
         MUSICQ_COL_IDX, musicqupdate->idx,
         MUSICQ_COL_UNIQUE_IDX, musicqupdate->uniqueidx,

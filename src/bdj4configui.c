@@ -24,6 +24,7 @@
 #include "conn.h"
 #include "dance.h"
 #include "datafile.h"
+#include "dispsel.h"
 #include "dnctypes.h"
 #include "filedata.h"
 #include "fileop.h"
@@ -106,7 +107,7 @@ enum {
   CONFUI_SPINBOX_DANCE_SPEED,
   CONFUI_SPINBOX_DANCE_TIME_SIG,
   CONFUI_SPINBOX_DANCE_TYPE,
-  CONFUI_SPINBOX_DISPLAY_SETTINGS,
+  CONFUI_SPINBOX_DISP_SEL,
   CONFUI_SPINBOX_FADE_TYPE,
   CONFUI_SPINBOX_LOCALE,
   CONFUI_SPINBOX_MAX_PLAY_TIME,
@@ -166,15 +167,6 @@ enum {
   CONFUI_ITEM_MAX,
 };
 
-enum {
-  DANCE_DISP_SEL_MM,
-  DANCE_DISP_SEL_MUSICQ,
-  DANCE_DISP_SEL_REQ,
-  DANCE_DISP_SEL_SONGEDIT,
-  DANCE_DISP_SEL_SONGLIST,
-  DANCE_DISP_SEL_SONGSEL,
-};
-
 typedef struct {
   confuibasetype_t  basetype;
   confuiouttype_t   outtype;
@@ -196,7 +188,8 @@ typedef enum {
   CONFUI_ID_RATINGS,
   CONFUI_ID_LEVELS,
   CONFUI_ID_STATUS,
-  CONFUI_ID_TAG_DISP,
+  CONFUI_ID_DISP_SEL_LIST,
+  CONFUI_ID_DISP_SEL_TABLE,
   CONFUI_ID_TABLE_MAX,
   CONFUI_ID_NONE,
   CONFUI_ID_MOBILE_MQ,
@@ -292,16 +285,11 @@ typedef struct {
   char              *localip;
   int               dbgflags;
   confuiitem_t      uiitem [CONFUI_ITEM_MAX];
-  int               uithemeidx;
-  int               mqthemeidx;
-  int               rchtmlidx;
-  int               localeidx;
-  int               audiosinkidx;
   int               tabcount;
   confuiident_t     tablecurr;
   confuiident_t     *tableidents;
   slist_t           *listingtaglist;
-  slist_t           *songlisttaglist;
+  dispsel_t         *dispsel;
   /* gtk stuff */
   GtkApplication    *app;
   GtkWidget         *window;
@@ -449,6 +437,7 @@ static bool   confuiDanceValidateAnnouncement (void *edata, void *udata);
 /* display settings */
 static void   confuiDispSettingChg (GtkSpinButton *sb, gpointer udata);
 static void   confuiCreateTagListingTable (configui_t *confui);
+static void   confuiCreateTagListingDisp (configui_t *confui);
 
 static int gKillReceived = 0;
 static int gdone = 0;
@@ -477,15 +466,11 @@ main (int argc, char *argv[])
       confuiHandshakeCallback, &confui);
   confui.sockserver = NULL;
   confui.window = NULL;
-  confui.uithemeidx = 0;
-  confui.mqthemeidx = 0;
-  confui.rchtmlidx = 0;
-  confui.localeidx = 0;
   confui.tabcount = 0;
   confui.tablecurr = CONFUI_ID_NONE;
   confui.tableidents = NULL;
+  confui.dispsel = NULL;
   confui.listingtaglist = NULL;
-  confui.songlisttaglist = NULL;
   confui.localip = NULL;
   for (int i = 0; i < CONFUI_ID_TABLE_MAX; ++i) {
     confui.tables [i].tree = NULL;
@@ -511,6 +496,7 @@ main (int argc, char *argv[])
     confui.uiitem [i].basetype = CONFUI_NONE;
     confui.uiitem [i].outtype = CONFUI_OUT_NONE;
     confui.uiitem [i].bdjoptIdx = -1;
+    confui.uiitem [i].listidx = 0;
     if (i > CONFUI_BEGIN && i < CONFUI_COMBOBOX_MAX) {
       uiutilsDropDownInit (&confui.uiitem [i].u.dropdown);
     }
@@ -545,6 +531,8 @@ main (int argc, char *argv[])
   confui.dbgflags = bdj4startup (argc, argv, "cu", ROUTE_CONFIGUI, BDJ4_INIT_NONE);
   logProcBegin (LOG_PROC, "configui");
 
+  confui.dispsel = dispselAlloc ();
+
   pathbldMakePath (tbuff, sizeof (tbuff), "",
       "orgopt", ".txt", PATHBLD_MP_NONE);
   orgopt = orgoptAlloc (tbuff);
@@ -565,10 +553,9 @@ main (int argc, char *argv[])
   volumeGetSinkList (volume, "", &sinklist);
   tlist = nlistAlloc ("cu-audio-out", LIST_UNORDERED, free);
   llist = nlistAlloc ("cu-audio-out-l", LIST_ORDERED, free);
-  confui.audiosinkidx = 0;
   for (size_t i = 0; i < sinklist.count; ++i) {
     if (strcmp (sinklist.sinklist [i].name, bdjoptGetStr (OPT_M_AUDIOSINK)) == 0) {
-      confui.audiosinkidx = i;
+      confui.uiitem [CONFUI_SPINBOX_AUDIO_OUTPUT].listidx = i;
     }
     nlistSetStr (tlist, i, sinklist.sinklist [i].description);
     nlistSetStr (llist, i, sinklist.sinklist [i].name);
@@ -652,13 +639,14 @@ main (int argc, char *argv[])
   confui.uiitem [CONFUI_SPINBOX_DANCE_TIME_SIG].list = tlist;
 
   tlist = nlistAlloc ("cu-display-settings", LIST_UNORDERED, free);
-  nlistSetStr (tlist, DANCE_DISP_SEL_MM, _("Music Manager"));
-  nlistSetStr (tlist, DANCE_DISP_SEL_MUSICQ, _("Music Queue"));
-  nlistSetStr (tlist, DANCE_DISP_SEL_REQ, _("Request"));
-  nlistSetStr (tlist, DANCE_DISP_SEL_SONGEDIT, _("Song Editor"));
-  nlistSetStr (tlist, DANCE_DISP_SEL_SONGLIST, _("Song List"));
-  nlistSetStr (tlist, DANCE_DISP_SEL_SONGSEL, _("Song Selection"));
-  confui.uiitem [CONFUI_SPINBOX_DISPLAY_SETTINGS].list = tlist;
+  nlistSetStr (tlist, DISP_SEL_MM, _("Music Manager"));
+  nlistSetStr (tlist, DISP_SEL_MUSICQ, _("Music Queue"));
+  nlistSetStr (tlist, DISP_SEL_REQ, _("Request"));
+  nlistSetStr (tlist, DISP_SEL_SONGEDIT_A, _("Song Editor - Column 1"));
+  nlistSetStr (tlist, DISP_SEL_SONGEDIT_B, _("Song Editor - Column 2"));
+  nlistSetStr (tlist, DISP_SEL_SONGLIST, _("Song List"));
+//  nlistSetStr (tlist, DISP_SEL_SONGSEL, _("Song Selection"));
+  confui.uiitem [CONFUI_SPINBOX_DISP_SEL].list = tlist;
 
   confuiLoadHTMLList (&confui);
   confuiLoadLocaleList (&confui);
@@ -670,10 +658,10 @@ main (int argc, char *argv[])
   count = 0;
   while ((p = nlistIterateValueData (tlist, &iteridx)) != NULL) {
     if (strcmp (p, bdjoptGetStr (OPT_MP_MQ_THEME)) == 0) {
-      confui.mqthemeidx = count;
+      confui.uiitem [CONFUI_SPINBOX_MQ_THEME].listidx = count;
     }
     if (strcmp (p, bdjoptGetStr (OPT_MP_UI_THEME)) == 0) {
-      confui.uithemeidx = count;
+      confui.uiitem [CONFUI_SPINBOX_UI_THEME].listidx = count;
     }
     ++count;
   }
@@ -809,6 +797,7 @@ confuiClosingCallback (void *udata, programstate_t programState)
     confui->uiitem [i].list = NULL;
   }
 
+  dispselFree (confui->dispsel);
   if (confui->localip != NULL) {
     free (confui->localip);
   }
@@ -821,9 +810,6 @@ confuiClosingCallback (void *udata, programstate_t programState)
   }
   if (confui->listingtaglist != NULL) {
     slistFree (confui->listingtaglist);
-  }
-  if (confui->songlisttaglist != NULL) {
-    slistFree (confui->songlisttaglist);
   }
 
   sockhCloseServer (confui->sockserver);
@@ -952,7 +938,8 @@ confuiActivate (GApplication *app, gpointer userdata)
 
   /* bdj4 */
   confuiMakeItemSpinboxText (confui, vbox, sg, _("Locale"),
-      CONFUI_SPINBOX_LOCALE, -1, confui->localeidx);
+      CONFUI_SPINBOX_LOCALE, -1,
+      confui->uiitem [CONFUI_SPINBOX_LOCALE].listidx);
   confuiMakeItemEntryChooser (confui, vbox, sg, _("Startup Script"),
       CONFUI_ENTRY_STARTUP, OPT_M_STARTUPSCRIPT,
       bdjoptGetStr (OPT_M_STARTUPSCRIPT), confuiSelectStartup);
@@ -976,7 +963,7 @@ confuiActivate (GApplication *app, gpointer userdata)
       CONFUI_SPINBOX_AUDIO, OPT_M_VOLUME_INTFC, 0);
   confuiMakeItemSpinboxText (confui, vbox, sg, _("Audio Output"),
       CONFUI_SPINBOX_AUDIO_OUTPUT, OPT_M_AUDIOSINK,
-      confui->audiosinkidx);
+      confui->uiitem [CONFUI_SPINBOX_AUDIO_OUTPUT].listidx);
   confuiMakeItemSpinboxInt (confui, vbox, sg, _("Default Volume"),
       CONFUI_WIDGET_DEFAULT_VOL, OPT_P_DEFAULTVOLUME,
       10, 100, bdjoptGetNum (OPT_P_DEFAULTVOLUME));
@@ -1029,7 +1016,7 @@ confuiActivate (GApplication *app, gpointer userdata)
 
   confuiMakeItemSpinboxText (confui, vbox, sg, _("Marquee Theme"),
       CONFUI_SPINBOX_MQ_THEME, OPT_MP_MQ_THEME,
-      confui->mqthemeidx);
+      confui->uiitem [CONFUI_SPINBOX_MQ_THEME].listidx);
   confuiMakeItemFontButton (confui, vbox, sg, _("Marquee Font"),
       CONFUI_WIDGET_MQ_FONT, OPT_MP_MQFONT,
       bdjoptGetStr (OPT_MP_MQFONT));
@@ -1053,7 +1040,7 @@ confuiActivate (GApplication *app, gpointer userdata)
 
   confuiMakeItemSpinboxText (confui, vbox, sg, _("Theme"),
       CONFUI_SPINBOX_UI_THEME, OPT_MP_UI_THEME,
-      confui->uithemeidx);
+      confui->uiitem [CONFUI_SPINBOX_UI_THEME].listidx);
   confuiMakeItemFontButton (confui, vbox, sg, _("Font"),
       CONFUI_WIDGET_UI_FONT, OPT_MP_UIFONT,
       bdjoptGetStr (OPT_MP_UIFONT));
@@ -1066,11 +1053,11 @@ confuiActivate (GApplication *app, gpointer userdata)
 
   /* display settings */
   vbox = confuiMakeNotebookTab (confui, confui->notebook,
-      _("Display Settings"), CONFUI_ID_NONE);
+      _("Display Settings"), CONFUI_ID_DISP_SEL_LIST);
   sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
   widget = confuiMakeItemSpinboxText (confui, vbox, sg, _("Display"),
-      CONFUI_SPINBOX_DISPLAY_SETTINGS, -1, 0);
+      CONFUI_SPINBOX_DISP_SEL, -1, 0);
   g_signal_connect (widget, "value-changed", G_CALLBACK (confuiDispSettingChg), confui);
 
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
@@ -1082,13 +1069,11 @@ confuiActivate (GApplication *app, gpointer userdata)
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 
   tree = uiutilsCreateTreeView ();
-  confui->tables [CONFUI_ID_TAG_DISP].tree = tree;
-  confui->tables [CONFUI_ID_TAG_DISP].flags = CONFUI_TABLE_NONE;
+  confui->tables [CONFUI_ID_DISP_SEL_LIST].tree = tree;
+  confui->tables [CONFUI_ID_DISP_SEL_LIST].flags = CONFUI_TABLE_NONE;
   gtk_widget_set_margin_start (tree, 16);
   gtk_widget_set_margin_top (tree, 16);
   gtk_container_add (GTK_CONTAINER (widget), tree);
-
-  confuiCreateTagListingTable (confui);
 
   dvbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   gtk_widget_set_vexpand (dvbox, FALSE);
@@ -1105,6 +1090,13 @@ confuiActivate (GApplication *app, gpointer userdata)
 //  g_signal_connect (widget, "clicked", NULL, confui);
   gtk_box_pack_start (GTK_BOX (dvbox), widget, FALSE, FALSE, 0);
 
+  tree = uiutilsCreateTreeView ();
+  confui->tables [CONFUI_ID_DISP_SEL_TABLE].tree = tree;
+  confui->tables [CONFUI_ID_DISP_SEL_TABLE].flags = CONFUI_TABLE_NONE;
+  gtk_widget_set_margin_start (tree, 16);
+  gtk_widget_set_margin_top (tree, 16);
+  gtk_box_pack_start (GTK_BOX (hbox), tree, FALSE, FALSE, 0);
+
   dvbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   gtk_widget_set_vexpand (dvbox, FALSE);
   gtk_widget_set_margin_start (dvbox, 8);
@@ -1112,18 +1104,16 @@ confuiActivate (GApplication *app, gpointer userdata)
   gtk_widget_set_valign (dvbox, GTK_ALIGN_CENTER);
   gtk_box_pack_start (GTK_BOX (hbox), dvbox, FALSE, FALSE, 0);
 
-  widget = uiutilsCreateButton (_("Move Down"), "button_up", NULL, confui);
+  widget = uiutilsCreateButton (_("Move Up"), "button_up", NULL, confui);
 //  g_signal_connect (widget, "clicked", NULL, confui);
   gtk_box_pack_start (GTK_BOX (dvbox), widget, FALSE, FALSE, 0);
 
-  widget = uiutilsCreateButton (_("Move Up"), "button_down", NULL, confui);
+  widget = uiutilsCreateButton (_("Move Down"), "button_down", NULL, confui);
 //  g_signal_connect (widget, "clicked", NULL, confui);
   gtk_box_pack_start (GTK_BOX (dvbox), widget, FALSE, FALSE, 0);
 
-  widget = uiutilsCreateTreeView ();
-  gtk_widget_set_margin_start (widget, 16);
-  gtk_widget_set_margin_top (widget, 16);
-  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+  /* call this after both tree views have been instantiated */
+  confuiCreateTagListingTable (confui);
 
   /* organization */
   vbox = confuiMakeNotebookTab (confui, confui->notebook,
@@ -1327,7 +1317,7 @@ confuiActivate (GApplication *app, gpointer userdata)
 
   confuiMakeItemSpinboxText (confui, vbox, sg, _("HTML Template"),
       CONFUI_SPINBOX_RC_HTML_TEMPLATE, OPT_G_REMCONTROLHTML,
-      confui->rchtmlidx);
+      confui->uiitem [CONFUI_SPINBOX_RC_HTML_TEMPLATE].listidx);
 
   confuiMakeItemEntry (confui, vbox, sg, _("User ID"),
       CONFUI_ENTRY_RC_USER_ID,  OPT_P_REMCONTROLUSER,
@@ -2372,7 +2362,7 @@ confuiLoadHTMLList (configui_t *confui)
   while ((key = slistIterateKey (list, &iteridx)) != NULL) {
     data = slistGetStr (list, key);
     if (strcmp (key, bdjoptGetStr (OPT_G_REMCONTROLHTML)) == 0) {
-      confui->rchtmlidx = count;
+      confui->uiitem [CONFUI_SPINBOX_RC_HTML_TEMPLATE].listidx = count;
     }
     nlistSetStr (tlist, count, key);
     nlistSetStr (llist, count, data);
@@ -2422,7 +2412,7 @@ confuiLoadLocaleList (configui_t *confui)
       engbidx = count;
     }
     if (strcmp (data, sysvarsGetStr (SV_LOCALE)) == 0) {
-      confui->localeidx = count;
+      confui->uiitem [CONFUI_SPINBOX_LOCALE].listidx = count;
       found = true;
     }
     if (strncmp (data, sysvarsGetStr (SV_LOCALE_SHORT), 2) == 0) {
@@ -2433,9 +2423,9 @@ confuiLoadLocaleList (configui_t *confui)
     ++count;
   }
   if (! found && shortidx >= 0) {
-    confui->localeidx = shortidx;
+    confui->uiitem [CONFUI_SPINBOX_LOCALE].listidx = shortidx;
   } else if (! found) {
-    confui->localeidx = engbidx;
+    confui->uiitem [CONFUI_SPINBOX_LOCALE].listidx = engbidx;
   }
   datafileFree (df);
 
@@ -2475,24 +2465,18 @@ static void
 confuiLoadTagList (configui_t *confui)
 {
   slist_t       *llist = NULL;
-  slist_t       *sllist = NULL;
 
   logProcBegin (LOG_PROC, "confuiLoadTagList");
 
   llist = slistAlloc ("cu-tag-list", LIST_ORDERED, NULL);
-  sllist = slistAlloc ("cu-tag-list", LIST_ORDERED, NULL);
 
-  for (tagdefkey_t i = 0; i < TAG_MAX_KEY; ++i) {
+  for (tagdefkey_t i = 0; i < TAG_KEY_MAX; ++i) {
     if (tagdefs [i].listingDisplay) {
       slistSetNum (llist, tagdefs [i].displayname, i);
-    }
-    if (tagdefs [i].songListDisplay) {
-      slistSetNum (sllist, tagdefs [i].displayname, i);
     }
   }
 
   confui->listingtaglist = llist;
-  confui->songlisttaglist = sllist;
   logProcEnd (LOG_PROC, "confuiLoadTagList", "");
 }
 
@@ -3060,15 +3044,6 @@ confuiTableAdd (GtkButton *b, gpointer udata)
   }
 
   switch (confui->tablecurr) {
-    case CONFUI_ID_NONE:
-    case CONFUI_ID_MOBILE_MQ:
-    case CONFUI_ID_REM_CONTROL:
-    case CONFUI_ID_ORGANIZATION:
-    case CONFUI_ID_TAG_DISP:
-    case CONFUI_ID_TABLE_MAX: {
-      break;
-    }
-
     case CONFUI_ID_DANCE: {
       dance_t     *dances;
       ilistidx_t  dkey;
@@ -3096,6 +3071,10 @@ confuiTableAdd (GtkButton *b, gpointer udata)
 
     case CONFUI_ID_STATUS: {
       confuiStatusSet (GTK_LIST_STORE (model), &niter, TRUE, _("New Status"), 0);
+      break;
+    }
+
+    default: {
       break;
     }
   }
@@ -3142,6 +3121,9 @@ confuiSwitchTable (GtkNotebook *nb, GtkWidget *page, guint pagenum, gpointer uda
   }
   if (confui->tablecurr == CONFUI_ID_ORGANIZATION) {
     confuiUpdateOrgExamples (confui, bdjoptGetStr (OPT_G_AO_PATHFMT));
+  }
+  if (confui->tablecurr == CONFUI_ID_DISP_SEL_LIST) {
+    confuiCreateTagListingDisp (confui);
   }
 
   if (confui->tablecurr >= CONFUI_ID_TABLE_MAX) {
@@ -4132,39 +4114,22 @@ confuiDanceValidateAnnouncement (void *edata, void *udata)
 static void
 confuiDispSettingChg (GtkSpinButton *sb, gpointer udata)
 {
-  configui_t      *confui = udata;
+  configui_t  *confui = udata;
+  int         nval;
 
+  nval = uiutilsSpinboxTextGetValue (&confui->uiitem [CONFUI_SPINBOX_DISP_SEL].u.spinbox);
+  confui->uiitem [CONFUI_SPINBOX_DISP_SEL].listidx = nval;
+  confuiCreateTagListingDisp (confui);
 }
 
 static void
 confuiCreateTagListingTable (configui_t *confui)
 {
   GtkWidget     *tree;
-  GtkListStore  *store;
-  GtkTreeIter   iter;
   GtkCellRenderer   *renderer = NULL;
   GtkTreeViewColumn *column = NULL;
-  char          *keystr;
-  slistidx_t    iteridx;
 
-  store = gtk_list_store_new (CONFUI_TAG_COL_MAX,
-      G_TYPE_STRING, G_TYPE_STRING, G_TYPE_ULONG);
-  assert (store != NULL);
-
-  slistStartIterator (confui->listingtaglist, &iteridx);
-  while ((keystr = slistIterateKey (confui->listingtaglist, &iteridx)) != NULL) {
-    int val;
-
-    val = slistGetNum (confui->listingtaglist, keystr);
-    gtk_list_store_append (store, &iter);
-    gtk_list_store_set (store, &iter,
-        CONFUI_TAG_COL_TAG, keystr,
-        CONFUI_TAG_COL_SB_PAD, "    ",
-        CONFUI_TAG_COL_TAG_IDX, val,
-        -1);
-  }
-
-  tree = confui->tables [CONFUI_ID_TAG_DISP].tree;
+  tree = confui->tables [CONFUI_ID_DISP_SEL_LIST].tree;
   gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (tree), FALSE);
 
   renderer = gtk_cell_renderer_text_new ();
@@ -4180,6 +4145,109 @@ confuiCreateTagListingTable (configui_t *confui)
       NULL);
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
   gtk_tree_view_append_column (GTK_TREE_VIEW (tree), column);
+
+  tree = confui->tables [CONFUI_ID_DISP_SEL_TABLE].tree;
+  gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (tree), FALSE);
+
+  renderer = gtk_cell_renderer_text_new ();
+  column = gtk_tree_view_column_new_with_attributes ("", renderer,
+      "text", CONFUI_TAG_COL_TAG,
+      NULL);
+  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
+  gtk_tree_view_append_column (GTK_TREE_VIEW (tree), column);
+
+  renderer = gtk_cell_renderer_text_new ();
+  column = gtk_tree_view_column_new_with_attributes ("", renderer,
+      "text", CONFUI_TAG_COL_SB_PAD,
+      NULL);
+  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
+  gtk_tree_view_append_column (GTK_TREE_VIEW (tree), column);
+}
+
+static void
+confuiCreateTagListingDisp (configui_t *confui)
+{
+  GtkWidget     *tree;
+  GtkListStore  *store;
+  GtkTreeIter   iter;
+  char          *keystr;
+  char          *tkeystr;
+  slistidx_t    iteridx;
+  slistidx_t    seliteridx;
+  dispselsel_t  selidx;
+  dispsel_t     *dispsel;
+  slist_t       *sellist;
+
+  selidx = confui->uiitem [CONFUI_SPINBOX_DISP_SEL].listidx;
+
+  dispsel = confui->dispsel;
+  sellist = dispselGetList (dispsel, selidx);
+
+  tree = confui->tables [CONFUI_ID_DISP_SEL_LIST].tree;
+
+  store = gtk_list_store_new (CONFUI_TAG_COL_MAX,
+      G_TYPE_STRING, G_TYPE_STRING, G_TYPE_ULONG);
+  assert (store != NULL);
+
+  slistStartIterator (confui->listingtaglist, &iteridx);
+  while ((keystr = slistIterateKey (confui->listingtaglist, &iteridx)) != NULL) {
+    int   val;
+    bool  match = false;
+
+    val = slistGetNum (confui->listingtaglist, keystr);
+
+    if (selidx != DISP_SEL_SONGEDIT_A && selidx != DISP_SEL_SONGEDIT_B) {
+      if (tagdefs [val].songEditOnly) {
+        continue;
+      }
+    }
+
+    match = false;
+    /* just do a brute force search; the lists are not long */
+    /* horribly inefficient */
+    slistStartIterator (sellist, &seliteridx);
+    while ((tkeystr = slistIterateKey (sellist, &seliteridx)) != NULL) {
+      int     tval;
+
+      tval = slistGetNum (sellist, tkeystr);
+      if (tval == val) {
+        match = true;
+        break;
+      }
+    }
+    if (match) {
+      continue;
+    }
+
+    gtk_list_store_append (store, &iter);
+    gtk_list_store_set (store, &iter,
+        CONFUI_TAG_COL_TAG, keystr,
+        CONFUI_TAG_COL_SB_PAD, "    ",
+        CONFUI_TAG_COL_TAG_IDX, val,
+        -1);
+  }
+
+  gtk_tree_view_set_model (GTK_TREE_VIEW (tree), GTK_TREE_MODEL (store));
+  g_object_unref (store);
+
+  tree = confui->tables [CONFUI_ID_DISP_SEL_TABLE].tree;
+
+  store = gtk_list_store_new (CONFUI_TAG_COL_MAX,
+      G_TYPE_STRING, G_TYPE_STRING, G_TYPE_ULONG);
+  assert (store != NULL);
+
+  slistStartIterator (sellist, &seliteridx);
+  while ((keystr = slistIterateKey (sellist, &seliteridx)) != NULL) {
+    int val;
+
+    val = slistGetNum (sellist, keystr);
+    gtk_list_store_append (store, &iter);
+    gtk_list_store_set (store, &iter,
+        CONFUI_TAG_COL_TAG, keystr,
+        CONFUI_TAG_COL_SB_PAD, "    ",
+        CONFUI_TAG_COL_TAG_IDX, val,
+        -1);
+  }
 
   gtk_tree_view_set_model (GTK_TREE_VIEW (tree), GTK_TREE_MODEL (store));
   g_object_unref (store);

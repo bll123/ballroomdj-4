@@ -7,18 +7,22 @@
 #include <string.h>
 #include <assert.h>
 
+#include "bdj4.h"
 #include "dnctypes.h"
 #include "datafile.h"
 #include "fileop.h"
 #include "bdjvarsdf.h"
 #include "log.h"
+#include "pathbld.h"
 #include "slist.h"
 
 dnctype_t *
-dnctypesAlloc (char *fname)
+dnctypesAlloc (void)
 {
-  dnctype_t       *dnctypes;
+  dnctype_t *dnctypes;
+  char      fname [MAXPATHLEN];
 
+  pathbldMakePath (fname, sizeof (fname), "", "dancetypes", ".txt", PATHBLD_MP_NONE);
   if (! fileopFileExists (fname)) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: dnctypes: missing %s", fname);
     return NULL;

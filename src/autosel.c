@@ -1,17 +1,18 @@
 #include "config.h"
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
 #include <assert.h>
 
+#include "bdj4.h"
 #include "autosel.h"
 #include "datafile.h"
 #include "fileop.h"
 #include "log.h"
 #include "nlist.h"
+#include "pathbld.h"
 
 static datafilekey_t autoseldfkeys [AUTOSEL_KEY_MAX] = {
   { "begincount",     AUTOSEL_BEG_COUNT,        VALUE_NUM,    NULL, -1 },
@@ -29,10 +30,12 @@ static datafilekey_t autoseldfkeys [AUTOSEL_KEY_MAX] = {
 };
 
 autosel_t *
-autoselAlloc (char *fname)
+autoselAlloc (void)
 {
-  autosel_t     *autosel;
+  autosel_t   *autosel;
+  char        fname [MAXPATHLEN];
 
+  pathbldMakePath (fname, sizeof (fname), "", "autoselection", ".txt", PATHBLD_MP_NONE);
   if (! fileopFileExists (fname)) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: autosel: missing %s", fname);
     return NULL;
