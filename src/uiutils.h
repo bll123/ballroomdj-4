@@ -134,5 +134,10 @@ char  *uiutilsSelectFileDialog (uiutilsselect_t *selectdata);
 GType       * uiutilsAppendType (GType *types, int *ncol, int type);
 valuetype_t uiutilsDetermineValueType (int tagidx);
 const char  * uiutilsMakeDisplayStr (song_t *song, int tagidx);
+void        uiutilsAddDisplayColumns (GtkWidget *tree,
+    slist_t *sellist, int col, int fontcol, int ellipsizeCol);
+GType *     uiutilsAddDisplayTypes (GType *types, slist_t *sellist, int *col);
+void        uiutilsSetDisplayColumns (GtkListStore *store, GtkTreeIter *iter,
+    slist_t *sellist, song_t *song, int col);
 
 #endif /* INC_UIUTILS_H */

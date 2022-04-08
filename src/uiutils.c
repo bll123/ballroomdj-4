@@ -1144,6 +1144,106 @@ uiutilsMakeDisplayStr (song_t *song, int tagidx)
   return str;
 }
 
+void
+uiutilsAddDisplayColumns (GtkWidget *tree, slist_t *sellist, int col,
+    int fontcol, int ellipsizeCol)
+{
+  slistidx_t  seliteridx;
+  int         tagidx;
+  GtkCellRenderer       *renderer = NULL;
+  GtkTreeViewColumn     *column = NULL;
+
+
+  slistStartIterator (sellist, &seliteridx);
+  while ((tagidx = slistIterateValueNum (sellist, &seliteridx)) >= 0) {
+    valuetype_t vt;
+
+    vt = uiutilsDetermineValueType (tagidx);
+    renderer = gtk_cell_renderer_text_new ();
+    column = gtk_tree_view_column_new_with_attributes ("", renderer,
+        "text", col,
+        "font", fontcol,
+        NULL);
+    if (tagdefs [tagidx].ellipsize) {
+      gtk_tree_view_column_set_min_width (column, 250);
+      if (tagidx == TAG_TITLE) {
+        gtk_tree_view_column_set_min_width (column, 400);
+      }
+      gtk_tree_view_column_add_attribute (column, renderer,
+          "ellipsize", ellipsizeCol);
+      gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+      gtk_tree_view_column_set_expand (column, TRUE);
+    } else {
+      gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
+    }
+    gtk_tree_view_append_column (GTK_TREE_VIEW (tree), column);
+    if (tagidx == TAG_FAVORITE) {
+      gtk_tree_view_column_set_title (column, "\xE2\x98\x86");
+    } else {
+      gtk_tree_view_column_set_title (column, tagdefs [tagidx].displayname);
+    }
+    col++;
+  }
+}
+
+void
+uiutilsSetDisplayColumns (GtkListStore *store, GtkTreeIter *iter,
+    slist_t *sellist, song_t *song, int col)
+{
+  slistidx_t    seliteridx;
+  int           tagidx;
+
+
+  slistStartIterator (sellist, &seliteridx);
+  while ((tagidx = slistIterateValueNum (sellist, &seliteridx)) >= 0) {
+    valuetype_t vt;
+    const char  *str;
+    gulong      num;
+
+    vt = uiutilsDetermineValueType (tagidx);
+    if (vt == VALUE_STR) {
+      songfavoriteinfo_t  * favorite;
+
+      if (tagidx == TAG_FAVORITE) {
+        favorite = songGetFavoriteData (song);
+        str = favorite->spanStr;
+      } else {
+        str = uiutilsMakeDisplayStr (song, tagidx);
+      }
+      gtk_list_store_set (store, iter, col++, str, -1);
+    } else {
+      num = songGetNum (song, tagidx);
+      gtk_list_store_set (store, iter, col++, num -1);
+    }
+  }
+}
+
+
+GType *
+uiutilsAddDisplayTypes (GType *types, slist_t *sellist, int *col)
+{
+  slistidx_t    seliteridx;
+  int           tagidx;
+
+  slistStartIterator (sellist, &seliteridx);
+  while ((tagidx = slistIterateValueNum (sellist, &seliteridx)) >= 0) {
+    valuetype_t vt;
+    int         type;
+
+    vt = uiutilsDetermineValueType (tagidx);
+    if (vt == VALUE_NUM) {
+      type = G_TYPE_ULONG;
+    }
+    if (vt == VALUE_STR) {
+      type = G_TYPE_STRING;
+    }
+    types = uiutilsAppendType (types, col, type);
+  }
+
+  return types;
+}
+
+
 /* internal routines */
 
 static GLogWriterOutput

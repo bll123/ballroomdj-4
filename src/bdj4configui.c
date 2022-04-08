@@ -642,7 +642,7 @@ main (int argc, char *argv[])
   tlist = nlistAlloc ("cu-display-settings", LIST_UNORDERED, free);
   nlistSetStr (tlist, DISP_SEL_MM, _("Music Manager"));
   nlistSetStr (tlist, DISP_SEL_MUSICQ, _("Music Queue"));
-  nlistSetStr (tlist, DISP_SEL_REQ, _("Request"));
+  nlistSetStr (tlist, DISP_SEL_REQUEST, _("Request"));
   nlistSetStr (tlist, DISP_SEL_SONGEDIT_A, _("Song Editor - Column 1"));
   nlistSetStr (tlist, DISP_SEL_SONGEDIT_B, _("Song Editor - Column 2"));
   nlistSetStr (tlist, DISP_SEL_SONGLIST, _("Song List"));

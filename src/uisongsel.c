@@ -17,6 +17,7 @@
 #include "bdjvarsdf.h"
 #include "conn.h"
 #include "dance.h"
+#include "dispsel.h"
 #include "genre.h"
 #include "ilist.h"
 #include "level.h"
@@ -45,10 +46,6 @@ enum {
   SONGSEL_COL_SORTIDX,
   SONGSEL_COL_DBIDX,
   SONGSEL_COL_FAV_COLOR,
-  SONGSEL_COL_DANCE,
-  SONGSEL_COL_TITLE,
-  SONGSEL_COL_ARTIST,
-  SONGSEL_COL_FAVORITE,
   SONGSEL_COL_MAX,
 };
 
@@ -172,9 +169,8 @@ uisongselActivate (uisongsel_t *uisongsel, GtkWidget *parentwin)
   GtkWidget         *hbox;
   GtkWidget         *vbox;
   GtkWidget         *widget;
-  GtkCellRenderer   *renderer = NULL;
-  GtkTreeViewColumn *column = NULL;
   GtkAdjustment     *adjustment;
+  slist_t           *sellist;
 
   logProcBegin (LOG_PROC, "uisongselActivate");
 
@@ -257,51 +253,9 @@ uisongselActivate (uisongsel_t *uisongsel, GtkWidget *parentwin)
   gtk_event_controller_scroll_new (uisongsel->songselTree,
       GTK_EVENT_CONTROLLER_SCROLL_VERTICAL);
 
-  renderer = gtk_cell_renderer_text_new ();
-  column = gtk_tree_view_column_new_with_attributes ("",
-      renderer, "text", SONGSEL_COL_DANCE,
-      "font", SONGSEL_COL_FONT,
-      NULL);
-  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
-  gtk_tree_view_column_set_title (column, _("Dance"));
-  gtk_tree_view_append_column (GTK_TREE_VIEW (uisongsel->songselTree), column);
-
-  renderer = gtk_cell_renderer_text_new ();
-  column = gtk_tree_view_column_new_with_attributes ("",
-      renderer, "text", SONGSEL_COL_TITLE,
-      "font", SONGSEL_COL_FONT,
-      "ellipsize", SONGSEL_COL_ELLIPSIZE,
-      NULL);
-  /* if set to autosize, the column disappears on a resize */
-  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
-  gtk_tree_view_column_set_fixed_width (column, 400);
-  gtk_tree_view_column_set_expand (column, TRUE);
-  gtk_tree_view_column_set_title (column, _("Title"));
-  gtk_tree_view_append_column (GTK_TREE_VIEW (uisongsel->songselTree), column);
-
-  renderer = gtk_cell_renderer_text_new ();
-  column = gtk_tree_view_column_new_with_attributes ("",
-      renderer, "text", SONGSEL_COL_ARTIST,
-      "font", SONGSEL_COL_FONT,
-      "ellipsize", SONGSEL_COL_ELLIPSIZE,
-      NULL);
-  gtk_tree_view_column_set_fixed_width (column, 250);
-  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_FIXED);
-  gtk_tree_view_column_set_title (column, _("Artist"));
-  gtk_tree_view_append_column (GTK_TREE_VIEW (uisongsel->songselTree), column);
-
-  renderer = gtk_cell_renderer_text_new ();
-  gtk_cell_renderer_set_alignment (renderer, 0.5, 0.5);
-  column = gtk_tree_view_column_new_with_attributes ("",
-      renderer,
-      "markup", SONGSEL_COL_FAVORITE,
-      "font", SONGSEL_COL_FONT,
-      "foreground", SONGSEL_COL_FAV_COLOR,
-      NULL);
-  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
-  gtk_tree_view_column_set_title (column, "\xE2\x98\x86");
-  gtk_tree_view_append_column (GTK_TREE_VIEW (uisongsel->songselTree), column);
-  uisongsel->favColumn = column;
+  sellist = dispselGetList (uisongsel->dispsel, DISP_SEL_REQUEST);
+  uiutilsAddDisplayColumns (uisongsel->songselTree, sellist, SONGSEL_COL_MAX,
+      SONGSEL_COL_FONT, SONGSEL_COL_ELLIPSIZE);
 
   uisongselInitializeStore (uisongsel);
   /* pre-populate so that the number of displayable rows can be calculated */
@@ -333,19 +287,28 @@ static void
 uisongselInitializeStore (uisongsel_t *uisongsel)
 {
   GtkListStore      *store = NULL;
+  GType             *songselstoretypes;
+  int               colcount = 0;
+  slist_t           *sellist;
 
   logProcBegin (LOG_PROC, "uisongselInitializeStore");
 
-  store = gtk_list_store_new (SONGSEL_COL_MAX,
-      /* attributes ellipsize/font*/
-      G_TYPE_INT, G_TYPE_STRING,
-      /* internal idx/sortidx/dbidx/fav color */
-      G_TYPE_ULONG, G_TYPE_ULONG, G_TYPE_ULONG,
-      G_TYPE_STRING,
-      /* display */
-      G_TYPE_STRING, G_TYPE_STRING,
-      G_TYPE_STRING, G_TYPE_STRING);
+  songselstoretypes = malloc (sizeof (GType) * SONGSEL_COL_MAX);
+  colcount = 0;
+  /* attributes ellipsize/font*/
+  songselstoretypes [colcount++] = G_TYPE_INT;
+  songselstoretypes [colcount++] = G_TYPE_STRING;
+  /* internal idx/sortidx/dbidx/fav color */
+  songselstoretypes [colcount++] = G_TYPE_ULONG,
+  songselstoretypes [colcount++] = G_TYPE_ULONG,
+  songselstoretypes [colcount++] = G_TYPE_ULONG,
+  songselstoretypes [colcount++] = G_TYPE_STRING,
+
+  sellist = dispselGetList (uisongsel->dispsel, DISP_SEL_REQUEST);
+  songselstoretypes = uiutilsAddDisplayTypes (songselstoretypes, sellist, &colcount);
+  store = gtk_list_store_newv (colcount, songselstoretypes);
   assert (store != NULL);
+  free (songselstoretypes);
 
   gtk_tree_view_set_model (GTK_TREE_VIEW (uisongsel->songselTree), GTK_TREE_MODEL (store));
   uisongsel->createRowProcessFlag = true;
@@ -398,14 +361,13 @@ uisongselPopulateData (uisongsel_t *uisongsel)
   int                 count;
   song_t              * song;
   dance_t             * dances;
-  ilistidx_t          danceIdx;
-  char                * danceStr;
   songfavoriteinfo_t  * favorite;
   char                * color;
   char                tmp [40];
   char                tbuff [100];
   dbidx_t             dbidx;
   char                * listingFont;
+  slist_t             *sellist;
 
   logProcBegin (LOG_PROC, "uisongselPopulateData");
   listingFont = bdjoptGetStr (OPT_MP_LISTING_FONT);
@@ -424,8 +386,8 @@ uisongselPopulateData (uisongsel_t *uisongsel)
       dbidx = songfilterGetByIdx (uisongsel->songfilter, idx);
       song = dbGetByIdx (dbidx);
       if (song != NULL) {
-        danceIdx = songGetNum (song, TAG_DANCE);
-        danceStr = danceGetStr (dances, danceIdx, DANCE_DANCE);
+//        danceIdx = songGetNum (song, TAG_DANCE);
+//        danceStr = danceGetStr (dances, danceIdx, DANCE_DANCE);
         favorite = songGetFavoriteData (song);
         color = favorite->color;
         if (strcmp (color, "") == 0) {
@@ -438,12 +400,12 @@ uisongselPopulateData (uisongsel_t *uisongsel)
             SONGSEL_COL_IDX, idx,
             SONGSEL_COL_SORTIDX, idx,
             SONGSEL_COL_DBIDX, dbidx,
-            SONGSEL_COL_DANCE, danceStr,
-            SONGSEL_COL_ARTIST, songGetStr (song, TAG_ARTIST),
-            SONGSEL_COL_TITLE, songGetStr (song, TAG_TITLE),
             SONGSEL_COL_FAV_COLOR, color,
-            SONGSEL_COL_FAVORITE, favorite->spanStr,
             -1);
+
+        sellist = dispselGetList (uisongsel->dispsel, DISP_SEL_REQUEST);
+        uiutilsSetDisplayColumns (GTK_LIST_STORE (model), &iter, sellist,
+            song, SONGSEL_COL_MAX);
       }
     }
 

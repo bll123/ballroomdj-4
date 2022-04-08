@@ -22,7 +22,7 @@ typedef struct {
 dispselmap_t dispselmap [DISP_SEL_MAX] = {
   { DISP_SEL_MM,          "ds-mm" },
   { DISP_SEL_MUSICQ,      "ds-musicq" },
-  { DISP_SEL_REQ,         "ds-request" },
+  { DISP_SEL_REQUEST,     "ds-request" },
   { DISP_SEL_SONGEDIT_A,  "ds-songedit-a" },
   { DISP_SEL_SONGEDIT_B,  "ds-songedit-b" },
   { DISP_SEL_SONGLIST,    "ds-songlist" },

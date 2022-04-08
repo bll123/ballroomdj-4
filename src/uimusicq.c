@@ -142,9 +142,6 @@ uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
   GtkCellRenderer       *renderer = NULL;
   GtkTreeViewColumn     *column = NULL;
   slist_t               *sellist;
-  slistidx_t            seliteridx;
-  int                   musicqcol;
-  int                   tagidx;
 
 
   logProcBegin (LOG_PROC, "uimusicqActivate");
@@ -239,6 +236,7 @@ uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
 
   uimusicq->ui [ci].musicqTree = uiutilsCreateTreeView ();
   assert (uimusicq->ui [ci].musicqTree != NULL);
+  gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree), TRUE);
   gtk_widget_set_halign (uimusicq->ui [ci].musicqTree, GTK_ALIGN_FILL);
   gtk_widget_set_hexpand (uimusicq->ui [ci].musicqTree, TRUE);
   gtk_widget_set_vexpand (uimusicq->ui [ci].musicqTree, TRUE);
@@ -250,6 +248,7 @@ uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
       "text", MUSICQ_COL_DISP_IDX,
       "font", MUSICQ_COL_FONT,
       NULL);
+  gtk_tree_view_column_set_title (column, "");
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
   gtk_tree_view_append_column (GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree), column);
 
@@ -257,36 +256,13 @@ uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
   column = gtk_tree_view_column_new_with_attributes ("", renderer,
       "pixbuf", MUSICQ_COL_PAUSEIND,
       NULL);
+  gtk_tree_view_column_set_title (column, "");
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
   gtk_tree_view_append_column (GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree), column);
 
   sellist = dispselGetList (uimusicq->dispsel, DISP_SEL_MUSICQ);
-  musicqcol = MUSICQ_COL_MAX;
-  slistStartIterator (sellist, &seliteridx);
-  while ((tagidx = slistIterateValueNum (sellist, &seliteridx)) >= 0) {
-    valuetype_t vt;
-
-    vt = uiutilsDetermineValueType (tagidx);
-    renderer = gtk_cell_renderer_text_new ();
-    column = gtk_tree_view_column_new_with_attributes ("", renderer,
-        "text", musicqcol,
-        "font", MUSICQ_COL_FONT,
-        NULL);
-    if (tagdefs [tagidx].ellipsize) {
-      gtk_tree_view_column_set_min_width (column, 250);
-      if (tagidx == TAG_TITLE) {
-        gtk_tree_view_column_set_min_width (column, 400);
-      }
-      gtk_tree_view_column_add_attribute (column, renderer,
-          "ellipsize", MUSICQ_COL_ELLIPSIZE);;
-      gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
-      gtk_tree_view_column_set_expand (column, TRUE);
-    } else {
-      gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
-    }
-    gtk_tree_view_append_column (GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree), column);
-    musicqcol++;
-  }
+  uiutilsAddDisplayColumns (uimusicq->ui [ci].musicqTree, sellist, MUSICQ_COL_MAX,
+      MUSICQ_COL_FONT, MUSICQ_COL_ELLIPSIZE);
 
   gtk_tree_view_set_model (GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree), NULL);
 
@@ -492,8 +468,6 @@ uimusicqProcessMusicQueueDataNew (uimusicq_t *uimusicq, char * args)
   int               musicqcolcount;
   GType             *musicqstoretypes;
   slist_t           *sellist;
-  slistidx_t        seliteridx;
-  int               tagidx;
 
 
   logProcBegin (LOG_PROC, "uimusicqProcessMusicQueueDataNew");
@@ -516,21 +490,7 @@ uimusicqProcessMusicQueueDataNew (uimusicq_t *uimusicq, char * args)
   musicqstoretypes [musicqcolcount++] = GDK_TYPE_PIXBUF;
 
   sellist = dispselGetList (uimusicq->dispsel, DISP_SEL_MUSICQ);
-
-  slistStartIterator (sellist, &seliteridx);
-  while ((tagidx = slistIterateValueNum (sellist, &seliteridx)) >= 0) {
-    valuetype_t vt;
-    int         type;
-
-    vt = uiutilsDetermineValueType (tagidx);
-    if (vt == VALUE_NUM) {
-      type = G_TYPE_ULONG;
-    }
-    if (vt == VALUE_STR) {
-      type = G_TYPE_STRING;
-    }
-    musicqstoretypes = uiutilsAppendType (musicqstoretypes, &musicqcolcount, type);
-  }
+  musicqstoretypes = uiutilsAddDisplayTypes (musicqstoretypes, sellist, &musicqcolcount);
 
   store = gtk_list_store_newv (musicqcolcount, musicqstoretypes);
   assert (store != NULL);
@@ -1038,27 +998,8 @@ static void
 uimusicqSetMusicqDisplay (uimusicq_t *uimusicq, GtkListStore *store,
     GtkTreeIter *iter, song_t *song)
 {
-  int         col = MUSICQ_COL_MAX;
-  int         tagidx;
   slist_t     *sellist;
-  slistidx_t  seliteridx;
 
   sellist = dispselGetList (uimusicq->dispsel, DISP_SEL_MUSICQ);
-
-  col = MUSICQ_COL_MAX;
-  slistStartIterator (sellist, &seliteridx);
-  while ((tagidx = slistIterateValueNum (sellist, &seliteridx)) >= 0) {
-    valuetype_t vt;
-    const char  *str;
-    gulong      num;
-
-    vt = uiutilsDetermineValueType (tagidx);
-    if (vt == VALUE_STR) {
-      str = uiutilsMakeDisplayStr (song, tagidx);
-      gtk_list_store_set (store, iter, col++, str, -1);
-    } else {
-      num = songGetNum (song, tagidx);
-      gtk_list_store_set (store, iter, col++, num -1);
-    }
-  }
+  uiutilsSetDisplayColumns (store, iter, sellist, song, MUSICQ_COL_MAX);
 }
