@@ -21,7 +21,9 @@
 #include "log.h"
 #include "pathbld.h"
 #include "pathutil.h"
+#include "song.h"
 #include "sysvars.h"
+#include "tagdef.h"
 #include "tmutil.h"
 #include "uiutils.h"
 
@@ -215,6 +217,10 @@ uiutilsCreateScrolledWindow (void)
   logProcBegin (LOG_PROC, "uiutilsCreateScrolledWindow");
 
   widget = gtk_scrolled_window_new (NULL, NULL);
+  uiutilsSetCss (widget,
+      "undershoot.top, undershoot.right, "
+      "undershoot.left, undershoot.bottom "
+      "{ background-image: none; outline-width: 0; }");
   gtk_scrolled_window_set_overlay_scrolling (GTK_SCROLLED_WINDOW (widget), FALSE);
   gtk_scrolled_window_set_kinetic_scrolling (GTK_SCROLLED_WINDOW (widget), FALSE);
   gtk_scrolled_window_set_propagate_natural_width (GTK_SCROLLED_WINDOW (widget), TRUE);
@@ -277,7 +283,7 @@ uiutilsCreateNotebook (void)
   gtk_widget_set_vexpand (widget, FALSE);
   gtk_notebook_set_tab_pos (GTK_NOTEBOOK (widget), GTK_POS_LEFT);
   uiutilsSetCss (widget,
-      "notebook tab:checked { background-color: #111111; }");
+      "notebook tab:checked { background-color: shade(@theme_base_color,0.6); }");
   return widget;
 }
 
@@ -774,8 +780,8 @@ uiutilsSpinboxTextCreate (uiutilsspinbox_t *spinbox, void *udata)
       G_CALLBACK (uiutilsSpinboxInput), spinbox);
   spinbox->udata = udata;
   uiutilsSetCss (spinbox->spinbox,
-      "spinbutton { caret-color: rgba(255,255,255,0.0); } "
-      "spinbutton selection { background-color: rgba(255,255,255,0.0) }");
+      "spinbutton { caret-color: @theme_base_color; } "
+      "spinbutton selection { background-color: @theme_base_color }");
   g_signal_connect (spinbox->spinbox, "key-press-event",
       G_CALLBACK (uiuitilsSpinboxTextKeyCallback), NULL);
   logProcEnd (LOG_PROC, "uiutilsSpinboxTextCreate", "");
@@ -1089,6 +1095,53 @@ uiutilsSelectFileDialog (uiutilsselect_t *selectdata)
 
   g_object_unref (widget);
   return fn;
+}
+
+GType *
+uiutilsAppendType (GType *types, int *ncol, int type)
+{
+  ++(*ncol);
+  types = realloc (types, *ncol * sizeof (GType));
+  types [*ncol-1] = type;
+
+  return types;
+}
+
+valuetype_t
+uiutilsDetermineValueType (int tagidx)
+{
+  valuetype_t   vt;
+
+  vt = tagdefs [tagidx].valueType;
+  if (tagdefs [tagidx].convfunc != NULL) {
+    vt = VALUE_STR;
+  }
+
+  return vt;
+}
+
+
+const char *
+uiutilsMakeDisplayStr (song_t *song, int tagidx)
+{
+  valuetype_t     vt;
+  dfConvFunc_t    convfunc;
+  datafileconv_t  conv;
+  const char      *str;
+
+  vt = tagdefs [tagidx].valueType;
+  convfunc = tagdefs [tagidx].convfunc;
+  if (convfunc != NULL) {
+    conv.allocated = false;
+    conv.u.num = songGetNum (song, tagidx);
+    conv.valuetype = VALUE_NUM;
+    convfunc (&conv);
+    str = conv.u.str;
+  } else {
+    str = songGetStr (song, tagidx);
+  }
+
+  return str;
 }
 
 /* internal routines */

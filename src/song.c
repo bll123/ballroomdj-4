@@ -24,8 +24,6 @@
 
 #include "orgutil.h"
 
-static void songConvFavorite (datafileconv_t *conv);
-
   /* must be sorted in ascii order */
 static datafilekey_t songdfkeys [] = {
   { "ADJUSTFLAGS",          TAG_ADJUSTFLAGS,          VALUE_STR, NULL, -1 },
@@ -264,9 +262,7 @@ songAudioFileExists (song_t *song)
   return fileopFileExists (tbuff);
 }
 
-/* internal routines */
-
-static void
+void
 songConvFavorite (datafileconv_t *conv)
 {
   nlistidx_t       idx;
@@ -289,6 +285,8 @@ songConvFavorite (datafileconv_t *conv)
     conv->u.str = favoritedfkeys [conv->u.num].name;
   }
 }
+
+/* internal routines */
 
 static void
 songInit (void)

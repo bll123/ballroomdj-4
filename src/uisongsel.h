@@ -5,6 +5,7 @@
 #include <gtk/gtk.h>
 
 #include "conn.h"
+#include "dispsel.h"
 #include "level.h"
 #include "musicdb.h"
 #include "nlist.h"
@@ -30,6 +31,7 @@ typedef struct {
   status_t          *status;
   nlist_t           *options;
   sortopt_t         *sortopt;
+  dispsel_t         *dispsel;
   /* filter data */
   uiutilsdropdown_t sortbysel;
   uiutilsdropdown_t filterdancesel;
@@ -54,7 +56,7 @@ typedef struct {
 } uisongsel_t;
 
 uisongsel_t * uisongselInit (progstate_t *progstate, conn_t *conn,
-                nlist_t *opts, songfilterpb_t filterFlags);
+                dispsel_t *dispsel, nlist_t *opts, songfilterpb_t filterFlags);
 void        uisongselFree (uisongsel_t *uisongsel);
 GtkWidget   * uisongselActivate (uisongsel_t *uisongsel, GtkWidget *parentwin);
 void        uisongselMainLoop (uisongsel_t *uisongsel);

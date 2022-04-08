@@ -5,6 +5,7 @@
 
 #include "nlist.h"
 #include "slist.h"
+#include "song.h"
 
 enum {
   UIUTILS_DROPDOWN_COL_IDX,
@@ -129,5 +130,9 @@ void  uiutilsGetForegroundColor (GtkWidget *widget, char *buff, size_t sz);
 
 char  *uiutilsSelectDirDialog (uiutilsselect_t *selectdata);
 char  *uiutilsSelectFileDialog (uiutilsselect_t *selectdata);
+
+GType       * uiutilsAppendType (GType *types, int *ncol, int type);
+valuetype_t uiutilsDetermineValueType (int tagidx);
+const char  * uiutilsMakeDisplayStr (song_t *song, int tagidx);
 
 #endif /* INC_UIUTILS_H */

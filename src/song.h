@@ -1,6 +1,7 @@
 #ifndef INC_SONG
 #define INC_SONG
 
+#include "datafile.h"
 #include "nlist.h"
 #include "slist.h"
 
@@ -45,5 +46,7 @@ void      songSetNum (song_t *, nlistidx_t, ssize_t);
 void      songSetStr (song_t *song, nlistidx_t tagidx, char *str);
 void      songChangeFavorite (song_t *song);
 bool      songAudioFileExists (song_t *song);
+void      songConvFavorite (datafileconv_t *conv);
+
 
 #endif /* INC_SONG */

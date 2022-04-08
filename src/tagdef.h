@@ -4,6 +4,8 @@
 #include <stdbool.h>
 
 #include "bdjstring.h"
+#include "datafile.h"
+#include "slist.h"
 
 typedef enum {
   DISP_YES,
@@ -12,19 +14,16 @@ typedef enum {
 } tagdispflag_t;
 
 typedef enum {
-  ET_SCALE,
   ET_CHECKBUTTON,
   ET_COMBOBOX,
   ET_ENTRY,
+  ET_LABEL,
   ET_NA,
-  ET_DISABLED_ENTRY
+  ET_SCALE,
+  ET_SPINBOX,
+  ET_SPINBOX_TIME,
+  ET_SPINBOX_TEXT,
 } tagedittype_t;
-
-typedef enum {
-  ALIGN_START,
-  ALIGN_END,
-  ALIGN_CENTER,
-} tagalign_t;
 
 enum {
   TAG_TYPE_M4A,
@@ -38,11 +37,12 @@ typedef struct {
   char                *displayname;
   char                *audiotags [TAG_TYPE_MAX];
   unsigned int        editWidth;
-  tagalign_t          listingAnchor;
-  tagalign_t          songlistAnchor;
   tagedittype_t       editType;
+  valuetype_t         valueType;
+  dfConvFunc_t        convfunc;
   tagdispflag_t       audioiddispflag;
   bool                listingDisplay : 1;
+  bool                ellipsize : 1;
   bool                songEditOnly : 1;
   bool                isBdjTag : 1;
   bool                isNormTag : 1;

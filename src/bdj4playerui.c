@@ -23,6 +23,7 @@
 #include "bdjvarsdfload.h"
 #include "conn.h"
 #include "datafile.h"
+#include "dispsel.h"
 #include "localeutil.h"
 #include "lock.h"
 #include "log.h"
@@ -49,6 +50,7 @@ typedef struct {
   sockserver_t    *sockserver;
   musicqidx_t     musicqPlayIdx;
   musicqidx_t     musicqManageIdx;
+  dispsel_t       *dispsel;
   int             dbgflags;
   /* gtk stuff */
   GtkApplication  *app;
@@ -158,6 +160,8 @@ main (int argc, char *argv[])
   plui.dbgflags = bdj4startup (argc, argv, "pu", ROUTE_PLAYERUI, BDJ4_INIT_NONE);
   logProcBegin (LOG_PROC, "playerui");
 
+  plui.dispsel = dispselAlloc ();
+
   listenPort = bdjvarsGetNum (BDJVL_PLAYERUI_PORT);
   plui.conn = connInit (ROUTE_PLAYERUI);
 
@@ -182,9 +186,9 @@ main (int argc, char *argv[])
   }
 
   plui.uiplayer = uiplayerInit (plui.progstate, plui.conn);
-  plui.uimusicq = uimusicqInit (plui.progstate, plui.conn);
-  plui.uisongsel = uisongselInit (plui.progstate, plui.conn, plui.options,
-      SONG_FILTER_FOR_PLAYBACK);
+  plui.uimusicq = uimusicqInit (plui.progstate, plui.conn, plui.dispsel);
+  plui.uisongsel = uisongselInit (plui.progstate, plui.conn, plui.dispsel,
+      plui.options, SONG_FILTER_FOR_PLAYBACK);
 
   /* register these after calling the sub-window initialization */
   /* then these will be run last, after the other closing callbacks */
@@ -263,6 +267,7 @@ pluiClosingCallback (void *udata, programstate_t programState)
   sockhCloseServer (plui->sockserver);
 
   bdj4shutdown (ROUTE_PLAYERUI);
+  dispselFree (plui->dispsel);
 
   if (plui->options != datafileGetList (plui->optiondf)) {
     nlistFree (plui->options);

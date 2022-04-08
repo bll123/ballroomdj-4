@@ -5,6 +5,7 @@
 #include <gtk/gtk.h>
 
 #include "conn.h"
+#include "dispsel.h"
 #include "musicq.h"
 #include "progstate.h"
 #include "uiutils.h"
@@ -28,6 +29,7 @@ typedef struct {
   int             musicqManageIdx;
   progstate_t     *progstate;
   conn_t          *conn;
+  dispsel_t       *dispsel;
   GtkWidget       *parentwin;
   GdkPixbuf       *pauseImg;
   uimusicqui_t    ui [MUSICQ_MAX];
@@ -37,7 +39,7 @@ typedef struct {
   nlist_t         *workList;
 } uimusicq_t;
 
-uimusicq_t  * uimusicqInit (progstate_t *progstate, conn_t *conn);
+uimusicq_t  * uimusicqInit (progstate_t *progstate, conn_t *conn, dispsel_t *dispsel);
 void        uimusicqFree (uimusicq_t *uimusicq);
 GtkWidget   * uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci);
 void        uimusicqMainLoop (uimusicq_t *uimuiscq);

@@ -44,10 +44,10 @@ enum {
   SONGSEL_COL_IDX,
   SONGSEL_COL_SORTIDX,
   SONGSEL_COL_DBIDX,
+  SONGSEL_COL_FAV_COLOR,
   SONGSEL_COL_DANCE,
   SONGSEL_COL_TITLE,
   SONGSEL_COL_ARTIST,
-  SONGSEL_COL_FAV_COLOR,
   SONGSEL_COL_FAVORITE,
   SONGSEL_COL_MAX,
 };
@@ -94,8 +94,8 @@ static void uisongselFilterResponseHandler (GtkDialog *d, gint responseid,
 static void uisongselInitFilterDisplay (uisongsel_t *uisongsel);
 
 uisongsel_t *
-uisongselInit (progstate_t *progstate, conn_t *conn, nlist_t *options,
-    songfilterpb_t filterFlags)
+uisongselInit (progstate_t *progstate, conn_t *conn, dispsel_t *dispsel,
+    nlist_t *options, songfilterpb_t filterFlags)
 {
   uisongsel_t    *uisongsel;
 
@@ -103,11 +103,13 @@ uisongselInit (progstate_t *progstate, conn_t *conn, nlist_t *options,
 
   uisongsel = malloc (sizeof (uisongsel_t));
   assert (uisongsel != NULL);
+
   uisongsel->ratings = bdjvarsdfGet (BDJVDF_RATINGS);
   uisongsel->levels = bdjvarsdfGet (BDJVDF_LEVELS);
   uisongsel->status = bdjvarsdfGet (BDJVDF_STATUS);
   uisongsel->progstate = progstate;
   uisongsel->conn = conn;
+  uisongsel->dispsel = dispsel;
   uisongsel->maxRows = 0;
   uisongsel->idxStart = 0;
   uisongsel->createRowProcessFlag = false;
@@ -235,6 +237,7 @@ uisongselActivate (uisongsel_t *uisongsel, GtkWidget *parentwin)
   uisongsel->songselTree = uiutilsCreateTreeView ();
   assert (uisongsel->songselTree != NULL);
   gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (uisongsel->songselTree), TRUE);
+  gtk_widget_set_halign (uisongsel->songselTree, GTK_ALIGN_FILL);
   gtk_widget_set_hexpand (uisongsel->songselTree, TRUE);
   gtk_widget_set_vexpand (uisongsel->songselTree, TRUE);
 
@@ -296,7 +299,7 @@ uisongselActivate (uisongsel_t *uisongsel, GtkWidget *parentwin)
       "foreground", SONGSEL_COL_FAV_COLOR,
       NULL);
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
-  gtk_tree_view_column_set_title (column, "\xE2\x98\x85");
+  gtk_tree_view_column_set_title (column, "\xE2\x98\x86");
   gtk_tree_view_append_column (GTK_TREE_VIEW (uisongsel->songselTree), column);
   uisongsel->favColumn = column;
 
@@ -334,12 +337,13 @@ uisongselInitializeStore (uisongsel_t *uisongsel)
   logProcBegin (LOG_PROC, "uisongselInitializeStore");
 
   store = gtk_list_store_new (SONGSEL_COL_MAX,
-      /* attributes */
+      /* attributes ellipsize/font*/
       G_TYPE_INT, G_TYPE_STRING,
-      /* internal */
+      /* internal idx/sortidx/dbidx/fav color */
       G_TYPE_ULONG, G_TYPE_ULONG, G_TYPE_ULONG,
+      G_TYPE_STRING,
       /* display */
-      G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING,
+      G_TYPE_STRING, G_TYPE_STRING,
       G_TYPE_STRING, G_TYPE_STRING);
   assert (store != NULL);
 
@@ -429,7 +433,7 @@ uisongselPopulateData (uisongsel_t *uisongsel)
           color = tmp;
         }
         gtk_list_store_set (GTK_LIST_STORE (model), &iter,
-            SONGSEL_COL_ELLIPSIZE, 1,
+            SONGSEL_COL_ELLIPSIZE, PANGO_ELLIPSIZE_END,
             SONGSEL_COL_FONT, listingFont,
             SONGSEL_COL_IDX, idx,
             SONGSEL_COL_SORTIDX, idx,
