@@ -27,15 +27,12 @@ static void templateCopy (const char *from, const char *to, const char *color);
 void
 templateImageCopy (const char *color)
 {
-  char        localesfx [20];
   char        tbuff [MAXPATHLEN];
   char        from [MAXPATHLEN];
   char        to [MAXPATHLEN];
   slist_t     *dirlist;
   slistidx_t  iteridx;
   char        *fname;
-
-  snprintf (localesfx, sizeof (localesfx), ".%s", sysvarsGetStr (SV_LOCALE_SHORT));
 
   pathbldMakePath (tbuff, sizeof (tbuff), "",
       "", "", PATHBLD_MP_TEMPLATEDIR);
@@ -60,13 +57,10 @@ templateImageCopy (const char *color)
 void
 templateImageLocaleCopy (void)
 {
-  char        localesfx [20];
   char        tbuff [MAXPATHLEN];
   char        from [MAXPATHLEN];
   char        to [MAXPATHLEN];
   char        *fname;
-
-  snprintf (localesfx, sizeof (localesfx), ".%s", sysvarsGetStr (SV_LOCALE_SHORT));
 
   pathbldMakePath (tbuff, sizeof (tbuff), "",
       "", "", PATHBLD_MP_TEMPLATEDIR);
@@ -77,6 +71,19 @@ templateImageLocaleCopy (void)
       fname, "", PATHBLD_MP_TEMPLATEDIR);
   pathbldMakePath (to, sizeof (to), "",
       fname, "", PATHBLD_MP_IMGDIR);
+  templateCopy (from, to, NULL);
+}
+
+void
+templateFileCopy (const char *fromfn, const char *tofn)
+{
+  char    from [MAXPATHLEN];
+  char    to [MAXPATHLEN];
+
+  pathbldMakePath (from, sizeof (from), "",
+      fromfn, "", PATHBLD_MP_TEMPLATEDIR);
+  pathbldMakePath (to, sizeof (to), "",
+      tofn, "", PATHBLD_MP_NONE);
   templateCopy (from, to, NULL);
 }
 

@@ -731,6 +731,7 @@ confuiStoppingCallback (void *udata, programstate_t programState)
 {
   configui_t    * confui = udata;
   gint          x, y;
+  char          fn [MAXPATHLEN];
 
   logProcBegin (LOG_PROC, "confuiStoppingCallback");
 
@@ -746,6 +747,10 @@ confuiStoppingCallback (void *udata, programstate_t programState)
   gtk_window_get_position (GTK_WINDOW (confui->window), &x, &y);
   nlistSetNum (confui->options, CONFUI_POSITION_X, x);
   nlistSetNum (confui->options, CONFUI_POSITION_Y, y);
+
+  pathbldMakePath (fn, sizeof (fn), "",
+      "configui", ".txt", PATHBLD_MP_USEIDX);
+  datafileSaveKeyVal ("configui", fn, configuidfkeys, CONFUI_KEY_MAX, confui->options);
 
   for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
     if (confui->processes [i] != NULL) {
@@ -763,13 +768,8 @@ static bool
 confuiClosingCallback (void *udata, programstate_t programState)
 {
   configui_t    *confui = udata;
-  char          fn [MAXPATHLEN];
 
   logProcBegin (LOG_PROC, "confuiClosingCallback");
-
-  pathbldMakePath (fn, sizeof (fn), "",
-      "configui", ".txt", PATHBLD_MP_USEIDX);
-  datafileSaveKeyVal ("configui", fn, configuidfkeys, CONFUI_KEY_MAX, confui->options);
 
   for (int i = CONFUI_BEGIN + 1; i < CONFUI_COMBOBOX_MAX; ++i) {
     uiutilsDropDownFree (&confui->uiitem [i].u.dropdown);
@@ -1771,6 +1771,11 @@ confuiPopulateOptions (configui_t *confui)
         accentcolorchanged) {
       templateImageCopy (sval);
     }
+
+    if (i == CONFUI_SPINBOX_RC_HTML_TEMPLATE) {
+      sval = bdjoptGetStr (confui->uiitem [i].bdjoptIdx);
+      templateFileCopy (sval, "bdj.html");
+    }
   } /* for each item */
 
   bdjoptSetNum (OPT_G_DEBUGLVL, debug);
@@ -2372,7 +2377,8 @@ confuiLoadHTMLList (configui_t *confui)
   count = 0;
   while ((key = slistIterateKey (list, &iteridx)) != NULL) {
     data = slistGetStr (list, key);
-    if (strcmp (key, bdjoptGetStr (OPT_G_REMCONTROLHTML)) == 0) {
+fprintf (stderr, "%s %s %s\n", key, data, bdjoptGetStr (OPT_G_REMCONTROLHTML));
+    if (strcmp (data, bdjoptGetStr (OPT_G_REMCONTROLHTML)) == 0) {
       confui->uiitem [CONFUI_SPINBOX_RC_HTML_TEMPLATE].listidx = count;
     }
     nlistSetStr (tlist, count, key);
