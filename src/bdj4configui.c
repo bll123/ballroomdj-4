@@ -436,9 +436,13 @@ static void   confuiDanceSpinboxChg (GtkSpinButton *sb, gpointer udata);
 static bool   confuiDanceValidateAnnouncement (void *edata, void *udata);
 
 /* display settings */
-static void   confuiDispSettingChg (GtkSpinButton *sb, gpointer udata);
 static void   confuiCreateTagListingTable (configui_t *confui);
+static void   confuiDispSettingChg (GtkSpinButton *sb, gpointer udata);
+static void   confuiDispSaveTable (configui_t *confui, int selidx);
+static void   confuiCreateTagTableDisp (configui_t *confui);
 static void   confuiCreateTagListingDisp (configui_t *confui);
+static void   confuiDispSelect (GtkButton *b, gpointer udata);
+static void   confuiDispRemove (GtkButton *b, gpointer udata);
 
 static int gKillReceived = 0;
 static int gdone = 0;
@@ -1087,11 +1091,11 @@ confuiActivate (GApplication *app, gpointer userdata)
   gtk_box_pack_start (GTK_BOX (hbox), dvbox, FALSE, FALSE, 0);
 
   widget = uiutilsCreateButton (_("Remove"), "button_left", NULL, confui);
-//  g_signal_connect (widget, "clicked", NULL, confui);
+  g_signal_connect (widget, "clicked", G_CALLBACK (confuiDispRemove), confui);
   gtk_box_pack_start (GTK_BOX (dvbox), widget, FALSE, FALSE, 0);
 
   widget = uiutilsCreateButton (_("Select"), "button_right", NULL, confui);
-//  g_signal_connect (widget, "clicked", NULL, confui);
+  g_signal_connect (widget, "clicked", G_CALLBACK (confuiDispSelect), confui);
   gtk_box_pack_start (GTK_BOX (dvbox), widget, FALSE, FALSE, 0);
 
   widget = uiutilsCreateScrolledWindow ();
@@ -1778,6 +1782,8 @@ confuiPopulateOptions (configui_t *confui)
     }
   } /* for each item */
 
+  confuiDispSaveTable (confui, confui->uiitem [CONFUI_SPINBOX_DISP_SEL].listidx);
+
   bdjoptSetNum (OPT_G_DEBUGLVL, debug);
   logProcEnd (LOG_PROC, "confuiPopulateOptions", "");
 }
@@ -2377,7 +2383,6 @@ confuiLoadHTMLList (configui_t *confui)
   count = 0;
   while ((key = slistIterateKey (list, &iteridx)) != NULL) {
     data = slistGetStr (list, key);
-fprintf (stderr, "%s %s %s\n", key, data, bdjoptGetStr (OPT_G_REMCONTROLHTML));
     if (strcmp (data, bdjoptGetStr (OPT_G_REMCONTROLHTML)) == 0) {
       confui->uiitem [CONFUI_SPINBOX_RC_HTML_TEMPLATE].listidx = count;
     }
@@ -3139,6 +3144,7 @@ confuiSwitchTable (GtkNotebook *nb, GtkWidget *page, guint pagenum, gpointer uda
     confuiUpdateOrgExamples (confui, bdjoptGetStr (OPT_G_AO_PATHFMT));
   }
   if (confui->tablecurr == CONFUI_ID_DISP_SEL_LIST) {
+    confuiCreateTagTableDisp (confui);
     confuiCreateTagListingDisp (confui);
   }
 
@@ -4139,17 +4145,6 @@ confuiDanceValidateAnnouncement (void *edata, void *udata)
 /* display settings */
 
 static void
-confuiDispSettingChg (GtkSpinButton *sb, gpointer udata)
-{
-  configui_t  *confui = udata;
-  int         nval;
-
-  nval = uiutilsSpinboxTextGetValue (&confui->uiitem [CONFUI_SPINBOX_DISP_SEL].u.spinbox);
-  confui->uiitem [CONFUI_SPINBOX_DISP_SEL].listidx = nval;
-  confuiCreateTagListingDisp (confui);
-}
-
-static void
 confuiCreateTagListingTable (configui_t *confui)
 {
   GtkWidget     *tree;
@@ -4192,70 +4187,74 @@ confuiCreateTagListingTable (configui_t *confui)
 }
 
 static void
-confuiCreateTagListingDisp (configui_t *confui)
+confuiDispSettingChg (GtkSpinButton *sb, gpointer udata)
+{
+  configui_t  *confui = udata;
+  int         nval;
+  int         oval;
+
+
+  oval = confui->uiitem [CONFUI_SPINBOX_DISP_SEL].listidx;
+  nval = uiutilsSpinboxTextGetValue (&confui->uiitem [CONFUI_SPINBOX_DISP_SEL].u.spinbox);
+  confui->uiitem [CONFUI_SPINBOX_DISP_SEL].listidx = nval;
+
+  confuiDispSaveTable (confui, oval);
+  confuiCreateTagTableDisp (confui);
+  confuiCreateTagListingDisp (confui);
+}
+
+static void
+confuiDispSaveTable (configui_t *confui, int selidx)
+{
+  dispsel_t     *dispsel;
+  slist_t       *tlist;
+  gboolean      valid;
+  GtkWidget     *tree;
+  GtkTreeModel  *model;
+  GtkTreeIter   iter;
+
+
+  if (! confui->tables [CONFUI_ID_DISP_SEL_TABLE].changed) {
+    return;
+  }
+
+  dispsel = confui->dispsel;
+
+  tree = confui->tables [CONFUI_ID_DISP_SEL_TABLE].tree;
+  model = gtk_tree_view_get_model (GTK_TREE_VIEW (tree));
+
+  tlist = slistAlloc ("dispsel-save", LIST_UNORDERED, NULL);
+  valid = gtk_tree_model_get_iter_first (model, &iter);
+  while (valid) {
+    gulong  tval;
+    char    *tag;
+
+    gtk_tree_model_get (model, &iter, CONFUI_TAG_COL_TAG_IDX, &tval, -1);
+    tag = tagdefs [tval].tag;
+    slistSetNum (tlist, tag, 0);
+    valid = gtk_tree_model_iter_next (model, &iter);
+  }
+
+  dispselSave (confui->dispsel, selidx, tlist);
+  slistFree (tlist);
+}
+
+static void
+confuiCreateTagTableDisp (configui_t *confui)
 {
   GtkWidget     *tree;
   GtkListStore  *store;
   GtkTreeIter   iter;
   char          *keystr;
-  char          *tkeystr;
-  slistidx_t    iteridx;
   slistidx_t    seliteridx;
   dispselsel_t  selidx;
-  dispsel_t     *dispsel;
   slist_t       *sellist;
+  dispsel_t     *dispsel;
+
 
   selidx = confui->uiitem [CONFUI_SPINBOX_DISP_SEL].listidx;
-
   dispsel = confui->dispsel;
   sellist = dispselGetList (dispsel, selidx);
-
-  tree = confui->tables [CONFUI_ID_DISP_SEL_LIST].tree;
-
-  store = gtk_list_store_new (CONFUI_TAG_COL_MAX,
-      G_TYPE_STRING, G_TYPE_STRING, G_TYPE_ULONG);
-  assert (store != NULL);
-
-  slistStartIterator (confui->listingtaglist, &iteridx);
-  while ((keystr = slistIterateKey (confui->listingtaglist, &iteridx)) != NULL) {
-    int   val;
-    bool  match = false;
-
-    val = slistGetNum (confui->listingtaglist, keystr);
-
-    if (selidx != DISP_SEL_SONGEDIT_A && selidx != DISP_SEL_SONGEDIT_B) {
-      if (tagdefs [val].songEditOnly) {
-        continue;
-      }
-    }
-
-    match = false;
-    /* just do a brute force search; the lists are not long */
-    /* horribly inefficient */
-    slistStartIterator (sellist, &seliteridx);
-    while ((tkeystr = slistIterateKey (sellist, &seliteridx)) != NULL) {
-      int     tval;
-
-      tval = slistGetNum (sellist, tkeystr);
-      if (tval == val) {
-        match = true;
-        break;
-      }
-    }
-    if (match) {
-      continue;
-    }
-
-    gtk_list_store_append (store, &iter);
-    gtk_list_store_set (store, &iter,
-        CONFUI_TAG_COL_TAG, keystr,
-        CONFUI_TAG_COL_SB_PAD, "    ",
-        CONFUI_TAG_COL_TAG_IDX, val,
-        -1);
-  }
-
-  gtk_tree_view_set_model (GTK_TREE_VIEW (tree), GTK_TREE_MODEL (store));
-  g_object_unref (store);
 
   tree = confui->tables [CONFUI_ID_DISP_SEL_TABLE].tree;
 
@@ -4282,3 +4281,136 @@ confuiCreateTagListingDisp (configui_t *confui)
   confuiTableSetDefaultSelection (confui, tree);
 }
 
+
+static void
+confuiCreateTagListingDisp (configui_t *confui)
+{
+  GtkWidget     *tree;
+  GtkListStore  *store;
+  GtkTreeIter   iter;
+  GtkWidget     *tabletree;
+  GtkTreeModel  *tablemodel;
+  GtkTreeIter   tableiter;
+  char          *keystr;
+  slistidx_t    iteridx;
+  dispselsel_t  selidx;
+  dispsel_t     *dispsel;
+  slist_t       *sellist;
+  gboolean      valid;
+
+
+  selidx = confui->uiitem [CONFUI_SPINBOX_DISP_SEL].listidx;
+  dispsel = confui->dispsel;
+  sellist = dispselGetList (dispsel, selidx);
+
+  tree = confui->tables [CONFUI_ID_DISP_SEL_LIST].tree;
+
+  tabletree = confui->tables [CONFUI_ID_DISP_SEL_TABLE].tree;
+  tablemodel = gtk_tree_view_get_model (GTK_TREE_VIEW (tabletree));
+
+  store = gtk_list_store_new (CONFUI_TAG_COL_MAX,
+      G_TYPE_STRING, G_TYPE_STRING, G_TYPE_ULONG);
+  assert (store != NULL);
+
+  slistStartIterator (confui->listingtaglist, &iteridx);
+  while ((keystr = slistIterateKey (confui->listingtaglist, &iteridx)) != NULL) {
+    int   val;
+    bool  match = false;
+
+    val = slistGetNum (confui->listingtaglist, keystr);
+
+    if (selidx != DISP_SEL_SONGEDIT_A && selidx != DISP_SEL_SONGEDIT_B) {
+      if (tagdefs [val].songEditOnly) {
+        continue;
+      }
+    }
+
+    match = false;
+    /* just do a brute force search; the lists are not long */
+    /* horribly inefficient */
+    valid = gtk_tree_model_get_iter_first (tablemodel, &tableiter);
+    while (valid) {
+      gulong  tval;
+
+      gtk_tree_model_get (tablemodel, &tableiter, CONFUI_TAG_COL_TAG_IDX, &tval, -1);
+
+      if ((int) tval == val) {
+        match = true;
+        break;
+      }
+      valid = gtk_tree_model_iter_next (tablemodel, &tableiter);
+      if (! valid) {
+        break;
+      }
+    }
+    if (match) {
+      continue;
+    }
+
+    gtk_list_store_append (store, &iter);
+    gtk_list_store_set (store, &iter,
+        CONFUI_TAG_COL_TAG, keystr,
+        CONFUI_TAG_COL_SB_PAD, "    ",
+        CONFUI_TAG_COL_TAG_IDX, val,
+        -1);
+  }
+
+  gtk_tree_view_set_model (GTK_TREE_VIEW (tree), GTK_TREE_MODEL (store));
+  g_object_unref (store);
+}
+
+static void
+confuiDispSelect (GtkButton *b, gpointer udata)
+{
+  configui_t    * confui = udata;
+  GtkWidget     * tree;
+  GtkTreeModel  * model;
+  GtkTreeIter   iter;
+  int           count;
+
+  tree = confui->tables [CONFUI_ID_DISP_SEL_LIST].tree;
+  count = confuiGetSelectionIter (tree, &model, &iter);
+
+  if (count == 1) {
+    char          *str;
+    gulong        tval;
+    GtkWidget     *tabletree;
+    GtkTreeModel  *tablemodel;
+
+    tabletree = confui->tables [CONFUI_ID_DISP_SEL_TABLE].tree;
+    tablemodel = gtk_tree_view_get_model (GTK_TREE_VIEW (tabletree));
+
+    gtk_tree_model_get (model, &iter, CONFUI_TAG_COL_TAG, &str, -1);
+    gtk_tree_model_get (model, &iter, CONFUI_TAG_COL_TAG_IDX, &tval, -1);
+
+    gtk_list_store_append (GTK_LIST_STORE (tablemodel), &iter);
+    gtk_list_store_set (GTK_LIST_STORE (tablemodel), &iter,
+        CONFUI_TAG_COL_TAG, str,
+        CONFUI_TAG_COL_SB_PAD, "    ",
+        CONFUI_TAG_COL_TAG_IDX, tval,
+        -1);
+
+    confui->tables [CONFUI_ID_DISP_SEL_TABLE].changed = true;
+    confuiCreateTagListingDisp (confui);
+  }
+}
+
+static void
+confuiDispRemove (GtkButton *b, gpointer udata)
+{
+  configui_t    * confui = udata;
+
+  GtkWidget     * tree;
+  GtkTreeModel  * model;
+  GtkTreeIter   iter;
+  int           count;
+
+  tree = confui->tables [CONFUI_ID_DISP_SEL_TABLE].tree;
+  count = confuiGetSelectionIter (tree, &model, &iter);
+
+  if (count == 1) {
+    gtk_list_store_remove (GTK_LIST_STORE (model), &iter);
+    confui->tables [CONFUI_ID_DISP_SEL_TABLE].changed = true;
+    confuiCreateTagListingDisp (confui);
+  }
+}

@@ -605,6 +605,29 @@ datafileSaveIndirect (char *tag, char *fn, datafilekey_t *dfkeys,
   fclose (fh);
 }
 
+void
+datafileSaveList (char *tag, char *fn, slist_t *list)
+{
+  FILE            *fh;
+  slistidx_t      iteridx;
+  slistidx_t      count;
+  char            *str;
+
+  fh = datafileSavePrep (fn, tag);
+  if (fh == NULL) {
+    return;
+  }
+
+  count = slistGetCount (list);
+  slistStartIterator (list, &iteridx);
+
+  count = 0;
+  while ((str = slistIterateKey (list, &iteridx)) != NULL) {
+    fprintf (fh, "%s\n", str);
+  }
+  fclose (fh);
+}
+
 listidx_t
 dfkeyBinarySearch (const datafilekey_t *dfkeys, ssize_t count, char *key)
 {

@@ -16,11 +16,13 @@ typedef enum {
 } dispselsel_t;
 
 typedef struct {
+  datafile_t    *df [DISP_SEL_MAX];
   slist_t       *dispsel [DISP_SEL_MAX];
 } dispsel_t;
 
 dispsel_t * dispselAlloc (void);
 void      dispselFree (dispsel_t *dispsel);
 slist_t   * dispselGetList (dispsel_t *dispsel, dispselsel_t idx);
+void      dispselSave (dispsel_t *dispsel, dispselsel_t idx, slist_t *list);
 
 #endif /* INC_DISPSEL_H */

@@ -29,18 +29,14 @@ dispselmap_t dispselmap [DISP_SEL_MAX] = {
 //  { DISP_SEL_SONGSEL,     "ds-songsel" },
 };
 
+static void dispselCreateList (dispsel_t *dispsel, slist_t *tlist, int selidx);
 
 dispsel_t *
 dispselAlloc (void)
 {
   dispsel_t     *dispsel;
   slist_t       *tlist;
-  slist_t       *tsellist;
-  datafile_t    *df;
   char          fn [MAXPATHLEN];
-  slistidx_t    iteridx;
-  tagdefkey_t   tagkey;
-  char          *keystr;
 
 
   dispsel = malloc (sizeof (dispsel_t));
@@ -56,20 +52,11 @@ dispselAlloc (void)
       return NULL;
     }
 
-    df = datafileAllocParse ("dispsel", DFTYPE_LIST, fn,
-        NULL, 0, DATAFILE_NO_LOOKUP);
-    tlist = datafileGetList (df);
+    dispsel->df [i] = datafileAllocParse (dispselmap [i].fname,
+        DFTYPE_LIST, fn, NULL, 0, DATAFILE_NO_LOOKUP);
+    tlist = datafileGetList (dispsel->df [i]);
 
-    tsellist = slistAlloc ("dispsel-disp", LIST_UNORDERED, NULL);
-    slistStartIterator (tlist, &iteridx);
-    while ((keystr = slistIterateKey (tlist, &iteridx)) != NULL) {
-      tagkey = tagdefLookup (keystr);
-      if (tagkey >= 0 && tagkey < TAG_KEY_MAX) {
-        slistSetNum (tsellist, tagdefs [tagkey].displayname, tagkey);
-      }
-    }
-    datafileFree (df);
-    dispsel->dispsel [i] = tsellist;
+    dispselCreateList (dispsel, tlist, i);
   }
 
   return dispsel;
@@ -99,4 +86,49 @@ dispselGetList (dispsel_t *dispsel, dispselsel_t idx)
   }
 
   return dispsel->dispsel [idx];
+}
+
+void
+dispselSave (dispsel_t *dispsel, dispselsel_t idx, slist_t *list)
+{
+  char    fn [MAXPATHLEN];
+
+  if (dispsel == NULL) {
+    return;
+  }
+  if (idx >= DISP_SEL_MAX) {
+    return;
+  }
+
+  pathbldMakePath (fn, sizeof (fn), "profiles",
+      dispselmap [idx].fname, ".txt", PATHBLD_MP_USEIDX);
+
+  datafileSaveList (dispselmap [idx].fname, fn, list);
+  dispselCreateList (dispsel, list, idx);
+}
+
+/* internal routines */
+
+static void
+dispselCreateList (dispsel_t *dispsel, slist_t *tlist, int selidx)
+{
+  slist_t       *tsellist;
+  slistidx_t    iteridx;
+  tagdefkey_t   tagkey;
+  char          *keystr;
+
+  if (dispsel->dispsel [selidx] != NULL) {
+    slistFree (dispsel->dispsel [selidx]);
+    dispsel->dispsel [selidx] = NULL;
+  }
+
+  tsellist = slistAlloc ("dispsel-disp", LIST_UNORDERED, NULL);
+  slistStartIterator (tlist, &iteridx);
+  while ((keystr = slistIterateKey (tlist, &iteridx)) != NULL) {
+    tagkey = tagdefLookup (keystr);
+    if (tagkey >= 0 && tagkey < TAG_KEY_MAX) {
+      slistSetNum (tsellist, tagdefs [tagkey].displayname, tagkey);
+    }
+  }
+  dispsel->dispsel [selidx] = tsellist;
 }
