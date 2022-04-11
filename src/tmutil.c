@@ -1,6 +1,5 @@
 #include "config.h"
 
-
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
@@ -201,6 +200,26 @@ tmutilToMSD (ssize_t ms, char *buff, size_t max)
   return buff;
 }
 
+
+char *
+tmutilToDateHM (ssize_t ms, char *buff, size_t max)
+{
+  struct tm         *tp;
+  time_t            s;
+#if _lib_localtime_r
+  struct tm         t;
+#endif
+
+  s = ms / 1000;
+#if _lib_localtime_r
+  localtime_r (&s, &t);
+  tp = &t;
+#else
+  tp = localtime (&s);
+#endif
+  strftime (buff, max, "%F %H:%M", tp);
+  return buff;
+}
 
 
 

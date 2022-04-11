@@ -116,6 +116,7 @@ uisongselInit (progstate_t *progstate, conn_t *conn, dispsel_t *dispsel,
   uisongsel->lastRowHeight = 0.0;
   uisongsel->danceIdx = -1;
   uisongsel->options = options;
+  uisongsel->favColumn = NULL;
   uiutilsDropDownInit (&uisongsel->dancesel);
   uiutilsDropDownInit (&uisongsel->sortbysel);
   uiutilsEntryInit (&uisongsel->searchentry, 30, 100);
@@ -232,6 +233,7 @@ uisongselActivate (uisongsel_t *uisongsel, GtkWidget *parentwin)
 
   uisongsel->songselTree = uiutilsCreateTreeView ();
   assert (uisongsel->songselTree != NULL);
+
   gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (uisongsel->songselTree), TRUE);
   gtk_widget_set_halign (uisongsel->songselTree, GTK_ALIGN_FILL);
   gtk_widget_set_hexpand (uisongsel->songselTree, TRUE);
@@ -254,7 +256,8 @@ uisongselActivate (uisongsel_t *uisongsel, GtkWidget *parentwin)
       GTK_EVENT_CONTROLLER_SCROLL_VERTICAL);
 
   sellist = dispselGetList (uisongsel->dispsel, DISP_SEL_REQUEST);
-  uiutilsAddDisplayColumns (uisongsel->songselTree, sellist, SONGSEL_COL_MAX,
+  uisongsel->favColumn = uiutilsAddDisplayColumns (
+      uisongsel->songselTree, sellist, SONGSEL_COL_MAX,
       SONGSEL_COL_FONT, SONGSEL_COL_ELLIPSIZE);
 
   uisongselInitializeStore (uisongsel);
@@ -295,7 +298,7 @@ uisongselInitializeStore (uisongsel_t *uisongsel)
 
   songselstoretypes = malloc (sizeof (GType) * SONGSEL_COL_MAX);
   colcount = 0;
-  /* attributes ellipsize/font*/
+  /* attributes ellipsize/align/font*/
   songselstoretypes [colcount++] = G_TYPE_INT;
   songselstoretypes [colcount++] = G_TYPE_STRING;
   /* internal idx/sortidx/dbidx/fav color */
@@ -386,14 +389,13 @@ uisongselPopulateData (uisongsel_t *uisongsel)
       dbidx = songfilterGetByIdx (uisongsel->songfilter, idx);
       song = dbGetByIdx (dbidx);
       if (song != NULL) {
-//        danceIdx = songGetNum (song, TAG_DANCE);
-//        danceStr = danceGetStr (dances, danceIdx, DANCE_DANCE);
         favorite = songGetFavoriteData (song);
         color = favorite->color;
         if (strcmp (color, "") == 0) {
           uiutilsGetForegroundColor (uisongsel->songselTree, tmp, sizeof (tmp));
           color = tmp;
         }
+
         gtk_list_store_set (GTK_LIST_STORE (model), &iter,
             SONGSEL_COL_ELLIPSIZE, PANGO_ELLIPSIZE_END,
             SONGSEL_COL_FONT, listingFont,
@@ -404,7 +406,8 @@ uisongselPopulateData (uisongsel_t *uisongsel)
             -1);
 
         sellist = dispselGetList (uisongsel->dispsel, DISP_SEL_REQUEST);
-        uiutilsSetDisplayColumns (GTK_LIST_STORE (model), &iter, sellist,
+        uiutilsSetDisplayColumns (
+            GTK_LIST_STORE (model), &iter, sellist,
             song, SONGSEL_COL_MAX);
       }
     }
@@ -531,7 +534,7 @@ uisongselRowSelected (GtkTreeView* tv, GtkTreePath* path,
   gtk_tree_model_get (model, &iter, SONGSEL_COL_DBIDX, &dbidx, -1);
   song = dbGetByIdx ((ssize_t) dbidx);
   songChangeFavorite (song);
-  // ## TODO song data must be saved to the database.
+// ### TODO song data must be saved to the database.
   logMsg (LOG_DBG, LOG_SONGSEL, "populate: favorite changed");
   uisongselPopulateData (uisongsel);
   logProcEnd (LOG_PROC, "uisongselRowSelected", "");

@@ -43,6 +43,7 @@ typedef struct {
   tagdispflag_t       audioiddispflag;
   bool                listingDisplay : 1;
   bool                ellipsize : 1;
+  bool                alignRight : 1;
   bool                songEditOnly : 1;
   bool                isBdjTag : 1;
   bool                isNormTag : 1;

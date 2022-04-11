@@ -29,6 +29,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     DISP_NO,                      /* audio id disp        */
     0,                            /* listing display      */
     0,                            /* ellipsize            */
+    1,                            /* align right          */
     0,                            /* song edit only       */
     1,                            /* is bdj tag           */
     0,                            /* is norm tag          */
@@ -49,6 +50,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     DISP_NO,                      /* audio id disp        */
     0,                            /* listing display      */
     0,                            /* ellipsize            */
+    1,                            /* align right          */
     0,                            /* song edit only       */
     0,                            /* is bdj tag           */
     0,                            /* is norm tag          */
@@ -69,6 +71,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     DISP_YES,                     /* audio id disp        */
     1,                            /* listing display      */
     1,                            /* ellipsize            */
+    1,                            /* align right          */
     0,                            /* song edit only       */
     0,                            /* is bdj tag           */
     1,                            /* is norm tag          */
@@ -89,6 +92,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     DISP_YES,                     /* audio id disp        */
     1,                            /* listing display      */
     1,                            /* ellipsize            */
+    1,                            /* align right          */
     0,                            /* song edit only       */
     0,                            /* is bdj tag           */
     1,                            /* is norm tag          */
@@ -109,6 +113,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     DISP_YES,                     /* audio id disp        */
     1,                            /* listing display      */
     1,                            /* ellipsize            */
+    1,                            /* align right          */
     0,                            /* song edit only       */
     0,                            /* is bdj tag           */
     1,                            /* is norm tag          */
@@ -129,6 +134,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     DISP_NO,                      /* audio id disp        */
     0,                            /* listing display      */
     0,                            /* ellipsize            */
+    1,                            /* align right          */
     0,                            /* song edit only       */
     0,                            /* is bdj tag           */
     0,                            /* is norm tag          */
@@ -145,10 +151,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     0,                            /* edit width           */
     ET_SPINBOX,                   /* edit type            */
     VALUE_NUM,                    /* value type           */
-    bdjoptConvBPM,                /* conv func            */
+    NULL,                         /* conv func            */
     DISP_NO,                      /* audio id disp        */
     1,                            /* listing display      */
     0,                            /* ellipsize            */
+    1,                            /* align right          */
     0,                            /* song edit only       */
     1,                            /* is bdj tag           */
     1,                            /* is norm tag          */
@@ -169,6 +176,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     DISP_OPT,                     /* audio id disp        */
     1,                            /* listing display      */
     1,                            /* ellipsize            */
+    0,                            /* align right          */
     0,                            /* song edit only       */
     0,                            /* is bdj tag           */
     1,                            /* is norm tag          */
@@ -189,6 +197,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     DISP_OPT,                     /* audio id disp        */
     1,                            /* listing display      */
     1,                            /* ellipsize            */
+    0,                            /* align right          */
     0,                            /* song edit only       */
     0,                            /* is bdj tag           */
     1,                            /* is norm tag          */
@@ -209,6 +218,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     DISP_NO,                      /* audio id disp        */
     1,                            /* listing display      */
     0,                            /* ellipsize            */
+    0,                            /* align right          */
     0,                            /* song edit only       */
     1,                            /* is bdj tag           */
     0,                            /* is norm tag          */
@@ -229,6 +239,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     DISP_NO,                      /* audio id disp        */
     1,                            /* listing display      */
     0,                            /* ellipsize            */
+    0,                            /* align right          */
     0,                            /* song edit only       */
     1,                            /* is bdj tag           */
     0,                            /* is norm tag          */
@@ -249,6 +260,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     DISP_NO,                      /* audio id disp        */
     1,                            /* listing display      */
     0,                            /* ellipsize            */
+    0,                            /* align right          */
     0,                            /* song edit only       */
     1,                            /* is bdj tag           */
     0,                            /* is norm tag          */
@@ -267,8 +279,9 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     VALUE_STR,                    /* value type           */
     NULL,                         /* conv func            */
     DISP_OPT,                     /* audio id disp        */
-    0,                            /* listing display      */
+    1,                            /* listing display      */
     0,                            /* ellipsize            */
+    0,                            /* align right          */
     0,                            /* song edit only       */
     0,                            /* is bdj tag           */
     1,                            /* is norm tag          */
@@ -284,11 +297,12 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     { NULL, NULL, NULL },         /* audio tags */
     0,                            /* edit width           */
     ET_NA,                        /* edit type            */
-    VALUE_NUM,                    /* value type           */
+    VALUE_STR,                    /* value type           */
     NULL,                         /* conv func            */
     DISP_NO,                      /* audio id disp        */
     1,                            /* listing display      */
     0,                            /* ellipsize            */
+    0,                            /* align right          */
     0,                            /* song edit only       */
     0,                            /* is bdj tag           */
     0,                            /* is norm tag          */
@@ -309,6 +323,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     DISP_YES,                     /* audio id disp        */
     1,                            /* listing display      */
     0,                            /* ellipsize            */
+    1,                            /* align right          */
     0,                            /* song edit only       */
     0,                            /* is bdj tag           */
     1,                            /* is norm tag          */
@@ -329,6 +344,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     DISP_YES,                     /* audio id disp        */
     0,                            /* listing display      */
     0,                            /* ellipsize            */
+    0,                            /* align right          */
     0,                            /* song edit only       */
     0,                            /* is bdj tag           */
     1,                            /* is norm tag          */
@@ -345,10 +361,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     15,                           /* edit width           */
     ET_LABEL,                     /* edit type            */
     VALUE_NUM,                    /* value type           */
-    NULL,                         /* conv func            */
+    convMS,                       /* conv func            */
     DISP_YES,                     /* audio id disp        */
     1,                            /* listing display      */
     0,                            /* ellipsize            */
+    1,                            /* align right          */
     0,                            /* song edit only       */
     1,                            /* is bdj tag           */
     0,                            /* is norm tag          */
@@ -369,6 +386,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     DISP_NO,                      /* audio id disp        */
     0,                            /* listing display      */
     0,                            /* ellipsize            */
+    0,                            /* align right          */
     0,                            /* song edit only       */
     0,                            /* is bdj tag           */
     0,                            /* is norm tag          */
@@ -389,6 +407,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     DISP_NO,                      /* audio id disp        */
     1,                            /* listing display      */
     0,                            /* ellipsize            */
+    0,                            /* align right          */
     0,                            /* song edit only       */
     1,                            /* is bdj tag           */
     0,                            /* is norm tag          */
@@ -409,6 +428,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     DISP_YES,                     /* audio id disp        */
     1,                            /* listing display      */
     0,                            /* ellipsize            */
+    0,                            /* align right          */
     0,                            /* song edit only       */
     0,                            /* is bdj tag           */
     1,                            /* is norm tag          */
@@ -429,6 +449,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     DISP_NO,                      /* audio id disp        */
     1,                            /* listing display      */
     0,                            /* ellipsize            */
+    0,                            /* align right          */
     0,                            /* song edit only       */
     1,                            /* is bdj tag           */
     0,                            /* is norm tag          */
@@ -449,6 +470,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     DISP_NO,                      /* audio id disp        */
     0,                            /* listing display      */
     0,                            /* ellipsize            */
+    0,                            /* align right          */
     0,                            /* song edit only       */
     1,                            /* is bdj tag           */
     0,                            /* is norm tag          */
@@ -469,6 +491,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     DISP_NO,                      /* audio id disp        */
     0,                            /* listing display      */
     0,                            /* ellipsize            */
+    0,                            /* align right          */
     0,                            /* song edit only       */
     0,                            /* is bdj tag           */
     1,                            /* is norm tag          */
@@ -488,7 +511,8 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     NULL,                         /* conv func            */
     DISP_NO,                      /* audio id disp        */
     1,                            /* listing display      */
-    0,                            /* ellipsize            */
+    1,                            /* ellipsize            */
+    0,                            /* align right          */
     0,                            /* song edit only       */
     1,                            /* is bdj tag           */
     0,                            /* is norm tag          */
@@ -509,6 +533,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     DISP_NO,                      /* audio id disp        */
     0,                            /* listing display      */
     0,                            /* ellipsize            */
+    0,                            /* align right          */
     0,                            /* song edit only       */
     1,                            /* is bdj tag           */
     0,                            /* is norm tag          */
@@ -529,6 +554,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     DISP_NO,                      /* audio id disp        */
     1,                            /* listing display      */
     0,                            /* ellipsize            */
+    0,                            /* align right          */
     1,                            /* song edit only       */
     1,                            /* is bdj tag           */
     0,                            /* is norm tag          */
@@ -549,6 +575,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     DISP_NO,                      /* audio id disp        */
     1,                            /* listing display      */
     0,                            /* ellipsize            */
+    0,                            /* align right          */
     1,                            /* song edit only       */
     1,                            /* is bdj tag           */
     0,                            /* is norm tag          */
@@ -569,6 +596,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     DISP_NO,                      /* audio id disp        */
     1,                            /* listing display      */
     0,                            /* ellipsize            */
+    0,                            /* align right          */
     1,                            /* song edit only       */
     1,                            /* is bdj tag           */
     0,                            /* is norm tag          */
@@ -589,6 +617,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     DISP_NO,                      /* audio id disp        */
     1,                            /* listing display      */
     0,                            /* ellipsize            */
+    0,                            /* align right          */
     0,                            /* song edit only       */
     1,                            /* is bdj tag           */
     0,                            /* is norm tag          */
@@ -605,10 +634,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     0,                            /* edit width           */
     ET_ENTRY,                     /* edit type            */
     VALUE_LIST,                   /* value type           */
-    NULL,                         /* conv func            */
+    convTextList,                 /* conv func            */
     DISP_NO,                      /* audio id disp        */
     1,                            /* listing display      */
-    0,                            /* ellipsize            */
+    1,                            /* ellipsize            */
+    0,                            /* align right          */
     0,                            /* song edit only       */
     1,                            /* is bdj tag           */
     0,                            /* is norm tag          */
@@ -629,6 +659,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     DISP_YES,                     /* audio id disp        */
     1,                            /* listing display      */
     1,                            /* ellipsize            */
+    0,                            /* align right          */
     0,                            /* song edit only       */
     0,                            /* is bdj tag           */
     1,                            /* is norm tag          */
@@ -649,6 +680,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     DISP_YES,                     /* audio id disp        */
     1,                            /* listing display      */
     0,                            /* ellipsize            */
+    1,                            /* align right          */
     0,                            /* song edit only       */
     0,                            /* is bdj tag           */
     1,                            /* is norm tag          */
@@ -669,6 +701,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     DISP_YES,                     /* audio id disp        */
     0,                            /* listing display      */
     0,                            /* ellipsize            */
+    0,                            /* align right          */
     0,                            /* song edit only       */
     0,                            /* is bdj tag           */
     1,                            /* is norm tag          */
@@ -689,6 +722,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     DISP_NO,                      /* audio id disp        */
     0,                            /* listing display      */
     0,                            /* ellipsize            */
+    0,                            /* align right          */
     0,                            /* song edit only       */
     0,                            /* is bdj tag           */
     0,                            /* is norm tag          */
@@ -709,6 +743,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     DISP_NO,                      /* audio id disp        */
     0,                            /* listing display      */
     0,                            /* ellipsize            */
+    0,                            /* align right          */
     0,                            /* song edit only       */
     0,                            /* is bdj tag           */
     0,                            /* is norm tag          */
@@ -729,6 +764,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     DISP_NO,                      /* audio id disp        */
     1,                            /* listing display      */
     0,                            /* ellipsize            */
+    0,                            /* align right          */
     1,                            /* song edit only       */
     1,                            /* is bdj tag           */
     0,                            /* is norm tag          */
@@ -749,6 +785,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     DISP_NO,                      /* audio id disp        */
     0,                            /* listing display      */
     0,                            /* ellipsize            */
+    0,                            /* align right          */
     0,                            /* song edit only       */
     0,                            /* is bdj tag           */
     0,                            /* is norm tag          */
@@ -769,6 +806,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     DISP_NO,                      /* audio id disp        */
     0,                            /* listing display      */
     0,                            /* ellipsize            */
+    0,                            /* align right          */
     0,                            /* song edit only       */
     0,                            /* is bdj tag           */
     0,                            /* is norm tag          */
@@ -789,6 +827,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     DISP_NO,                      /* audio id disp        */
     0,                            /* listing display      */
     0,                            /* ellipsize            */
+    0,                            /* align right          */
     0,                            /* song edit only       */
     0,                            /* is bdj tag           */
     0,                            /* is norm tag          */
@@ -829,6 +868,7 @@ tagdefInit (void)
   tagdefs [TAG_DANCE].displayname = _("Dance");
   tagdefs [TAG_DANCELEVEL].displayname = _("Dance Level");
   tagdefs [TAG_DANCERATING].displayname = _("Dance Rating");
+  tagdefs [TAG_DATE].displayname = _("Date");
   tagdefs [TAG_DBADDDATE].displayname = _("Date Added");
   tagdefs [TAG_DISCNUMBER].displayname = _("Disc");
   tagdefs [TAG_DURATION].displayname = _("Duration");
@@ -843,7 +883,7 @@ tagdefInit (void)
   tagdefs [TAG_STATUS].displayname = _("Status");
   tagdefs [TAG_TAGS].displayname = _("Tags");
   tagdefs [TAG_TITLE].displayname = _("Title");
-  tagdefs [TAG_TRACKNUMBER].displayname = _("Track Number");
+  tagdefs [TAG_TRACKNUMBER].displayname = _("Track");
   tagdefs [TAG_UPDATETIME].displayname = _("Last Updated");
   tagdefs [TAG_VOLUMEADJUSTPERC].displayname = _("Volume Adjustment");
 

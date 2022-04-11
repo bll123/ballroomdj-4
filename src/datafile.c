@@ -153,6 +153,35 @@ convTextList (datafileconv_t *conv)
   logProcEnd (LOG_PROC, "convTextList", "");
 }
 
+void
+convMS (datafileconv_t *conv)
+{
+  ssize_t   num;
+  char      tbuff [40];
+
+  conv->allocated = false;
+  if (conv->valuetype == VALUE_STR) {
+    char      *p;
+    char      *tstr;
+    char      *tokstr;
+
+    conv->valuetype = VALUE_NUM;
+    tstr = strdup (conv->u.str);
+    num = 0;
+    p = strtok_r (tstr, ":", &tokstr);
+    num += atoi (p) * 60;
+    p = strtok_r (NULL, ":", &tokstr);
+    num += atoi (p);
+    conv->u.num = num;
+    free (tstr);
+  } else if (conv->valuetype == VALUE_NUM) {
+    conv->valuetype = VALUE_STR;
+    tmutilToMS (conv->u.num, tbuff, sizeof (tbuff));
+    conv->allocated = true;
+    conv->u.str = strdup (tbuff);
+  }
+}
+
 /* datafile loading routines */
 
 datafile_t *

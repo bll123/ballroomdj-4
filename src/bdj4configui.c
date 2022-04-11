@@ -1059,6 +1059,7 @@ confuiActivate (GApplication *app, gpointer userdata)
   /* display settings */
   vbox = confuiMakeNotebookTab (confui, confui->notebook,
       _("Display Settings"), CONFUI_ID_DISP_SEL_LIST);
+  gtk_widget_set_vexpand (vbox, TRUE);
   sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
   widget = confuiMakeItemSpinboxText (confui, vbox, sg, _("Display"),
@@ -1071,6 +1072,7 @@ confuiActivate (GApplication *app, gpointer userdata)
 
   widget = uiutilsCreateScrolledWindow ();
   gtk_scrolled_window_set_min_content_height (GTK_SCROLLED_WINDOW (widget), 200);
+  gtk_widget_set_vexpand (widget, TRUE);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 
   tree = uiutilsCreateTreeView ();
@@ -1081,6 +1083,7 @@ confuiActivate (GApplication *app, gpointer userdata)
   confui->tables [CONFUI_ID_DISP_SEL_LIST].flags = CONFUI_TABLE_NONE;
   gtk_widget_set_margin_start (tree, 16);
   gtk_widget_set_margin_top (tree, 16);
+  gtk_widget_set_vexpand (tree, TRUE);
   gtk_container_add (GTK_CONTAINER (widget), tree);
 
   dvbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
@@ -1090,16 +1093,17 @@ confuiActivate (GApplication *app, gpointer userdata)
   gtk_widget_set_valign (dvbox, GTK_ALIGN_CENTER);
   gtk_box_pack_start (GTK_BOX (hbox), dvbox, FALSE, FALSE, 0);
 
-  widget = uiutilsCreateButton (_("Remove"), "button_left", NULL, confui);
-  g_signal_connect (widget, "clicked", G_CALLBACK (confuiDispRemove), confui);
-  gtk_box_pack_start (GTK_BOX (dvbox), widget, FALSE, FALSE, 0);
-
   widget = uiutilsCreateButton (_("Select"), "button_right", NULL, confui);
   g_signal_connect (widget, "clicked", G_CALLBACK (confuiDispSelect), confui);
   gtk_box_pack_start (GTK_BOX (dvbox), widget, FALSE, FALSE, 0);
 
+  widget = uiutilsCreateButton (_("Remove"), "button_left", NULL, confui);
+  g_signal_connect (widget, "clicked", G_CALLBACK (confuiDispRemove), confui);
+  gtk_box_pack_start (GTK_BOX (dvbox), widget, FALSE, FALSE, 0);
+
   widget = uiutilsCreateScrolledWindow ();
   gtk_scrolled_window_set_min_content_height (GTK_SCROLLED_WINDOW (widget), 200);
+  gtk_widget_set_vexpand (widget, TRUE);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 
   tree = uiutilsCreateTreeView ();
@@ -1110,6 +1114,7 @@ confuiActivate (GApplication *app, gpointer userdata)
   confui->tables [CONFUI_ID_DISP_SEL_TABLE].flags = CONFUI_TABLE_NONE;
   gtk_widget_set_margin_start (tree, 16);
   gtk_widget_set_margin_top (tree, 16);
+  gtk_widget_set_vexpand (tree, TRUE);
   gtk_container_add (GTK_CONTAINER (widget), tree);
 
   dvbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
@@ -4287,16 +4292,19 @@ confuiCreateTagListingDisp (configui_t *confui)
 {
   GtkWidget     *tree;
   GtkListStore  *store;
+  GtkTreeModel  *model;
   GtkTreeIter   iter;
   GtkWidget     *tabletree;
   GtkTreeModel  *tablemodel;
   GtkTreeIter   tableiter;
+  GtkTreePath   *path;
   char          *keystr;
   slistidx_t    iteridx;
   dispselsel_t  selidx;
   dispsel_t     *dispsel;
   slist_t       *sellist;
   gboolean      valid;
+  int           count;
 
 
   selidx = confui->uiitem [CONFUI_SPINBOX_DISP_SEL].listidx;
@@ -4307,6 +4315,12 @@ confuiCreateTagListingDisp (configui_t *confui)
 
   tabletree = confui->tables [CONFUI_ID_DISP_SEL_TABLE].tree;
   tablemodel = gtk_tree_view_get_model (GTK_TREE_VIEW (tabletree));
+
+  /* get the current selection for the listing display */
+  count = confuiGetSelectionIter (tree, &model, &iter);
+  if (count == 1) {
+    path = gtk_tree_model_get_path (model, &iter);
+  }
 
   store = gtk_list_store_new (CONFUI_TAG_COL_MAX,
       G_TYPE_STRING, G_TYPE_STRING, G_TYPE_ULONG);
@@ -4357,15 +4371,21 @@ confuiCreateTagListingDisp (configui_t *confui)
 
   gtk_tree_view_set_model (GTK_TREE_VIEW (tree), GTK_TREE_MODEL (store));
   g_object_unref (store);
+
+  if (count == 1) {
+    gtk_tree_view_set_cursor (GTK_TREE_VIEW (tree), path, NULL, FALSE);
+  }
+  confuiTableSetDefaultSelection (confui, tree);
 }
 
 static void
 confuiDispSelect (GtkButton *b, gpointer udata)
 {
-  configui_t    * confui = udata;
-  GtkWidget     * tree;
-  GtkTreeModel  * model;
+  configui_t    *confui = udata;
+  GtkWidget     *tree;
+  GtkTreeModel  *model;
   GtkTreeIter   iter;
+  GtkTreePath   *path;
   int           count;
 
   tree = confui->tables [CONFUI_ID_DISP_SEL_LIST].tree;
@@ -4389,6 +4409,9 @@ confuiDispSelect (GtkButton *b, gpointer udata)
         CONFUI_TAG_COL_SB_PAD, "    ",
         CONFUI_TAG_COL_TAG_IDX, tval,
         -1);
+
+    path = gtk_tree_model_get_path (tablemodel, &iter);
+    gtk_tree_view_set_cursor (GTK_TREE_VIEW (tabletree), path, NULL, FALSE);
 
     confui->tables [CONFUI_ID_DISP_SEL_TABLE].changed = true;
     confuiCreateTagListingDisp (confui);

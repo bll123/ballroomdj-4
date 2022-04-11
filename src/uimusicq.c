@@ -478,7 +478,7 @@ uimusicqProcessMusicQueueDataNew (uimusicq_t *uimusicq, char * args)
 
   musicqstoretypes = malloc (sizeof (GType) * MUSICQ_COL_MAX);
   musicqcolcount = 0;
-  /* attributes: ellipsize/font */
+  /* attributes: ellipsize/align/font */
   musicqstoretypes [musicqcolcount++] = G_TYPE_INT;
   musicqstoretypes [musicqcolcount++] = G_TYPE_STRING;
   /* internal idx/unique idx/dbidx*/

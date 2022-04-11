@@ -73,8 +73,9 @@ void          parseFree (parseinfo_t *);
 char **       parseGetData (parseinfo_t *);
 ssize_t       parseSimple (parseinfo_t *, char *);
 ssize_t       parseKeyValue (parseinfo_t *, char *);
-void          convBoolean (datafileconv_t *);
-void          convTextList (datafileconv_t *);
+void          convBoolean (datafileconv_t *conv);
+void          convTextList (datafileconv_t *conv);
+void          convMS (datafileconv_t *conv);
 
 datafile_t *  datafileAlloc (char *name);
 datafile_t *  datafileAllocParse (char *name, datafiletype_t dftype,

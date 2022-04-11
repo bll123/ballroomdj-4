@@ -52,6 +52,9 @@ static char * uiutilsSpinboxTextGetDisp (slist_t *list, int idx);
 static void uiutilsValidateStart (GtkEditable *e, gpointer udata);
 static gboolean uiuitilsSpinboxTextKeyCallback (GtkWidget *w, GdkEventKey *event, gpointer udata);
 
+static valuetype_t uiutilsDetermineValueType (int tagidx);
+static char  * uiutilsMakeDisplayStr (song_t *song, int tagidx, int *allocflag);
+
 void
 uiutilsCleanup (void)
 {
@@ -1107,44 +1110,7 @@ uiutilsAppendType (GType *types, int *ncol, int type)
   return types;
 }
 
-valuetype_t
-uiutilsDetermineValueType (int tagidx)
-{
-  valuetype_t   vt;
-
-  vt = tagdefs [tagidx].valueType;
-  if (tagdefs [tagidx].convfunc != NULL) {
-    vt = VALUE_STR;
-  }
-
-  return vt;
-}
-
-
-const char *
-uiutilsMakeDisplayStr (song_t *song, int tagidx)
-{
-  valuetype_t     vt;
-  dfConvFunc_t    convfunc;
-  datafileconv_t  conv;
-  const char      *str;
-
-  vt = tagdefs [tagidx].valueType;
-  convfunc = tagdefs [tagidx].convfunc;
-  if (convfunc != NULL) {
-    conv.allocated = false;
-    conv.u.num = songGetNum (song, tagidx);
-    conv.valuetype = VALUE_NUM;
-    convfunc (&conv);
-    str = conv.u.str;
-  } else {
-    str = songGetStr (song, tagidx);
-  }
-
-  return str;
-}
-
-void
+GtkTreeViewColumn *
 uiutilsAddDisplayColumns (GtkWidget *tree, slist_t *sellist, int col,
     int fontcol, int ellipsizeCol)
 {
@@ -1152,6 +1118,7 @@ uiutilsAddDisplayColumns (GtkWidget *tree, slist_t *sellist, int col,
   int         tagidx;
   GtkCellRenderer       *renderer = NULL;
   GtkTreeViewColumn     *column = NULL;
+  GtkTreeViewColumn     *favColumn = NULL;
 
 
   slistStartIterator (sellist, &seliteridx);
@@ -1160,14 +1127,25 @@ uiutilsAddDisplayColumns (GtkWidget *tree, slist_t *sellist, int col,
 
     vt = uiutilsDetermineValueType (tagidx);
     renderer = gtk_cell_renderer_text_new ();
-    column = gtk_tree_view_column_new_with_attributes ("", renderer,
-        "text", col,
-        "font", fontcol,
-        NULL);
+    if (tagidx == TAG_FAVORITE) {
+      /* use the normal UI font here */
+      column = gtk_tree_view_column_new_with_attributes ("", renderer,
+          "markup", col,
+          NULL);
+      gtk_cell_renderer_set_alignment (renderer, 0.5, 0.5);
+      favColumn = column;
+    } else {
+      column = gtk_tree_view_column_new_with_attributes ("", renderer,
+          "text", col,
+          "font", fontcol,
+          NULL);
+    }
+    if (tagdefs [tagidx].alignRight) {
+      gtk_cell_renderer_set_alignment (renderer, 1.0, 0.5);
+    }
     if (tagdefs [tagidx].ellipsize) {
-      gtk_tree_view_column_set_min_width (column, 250);
       if (tagidx == TAG_TITLE) {
-        gtk_tree_view_column_set_min_width (column, 400);
+        gtk_tree_view_column_set_min_width (column, 200);
       }
       gtk_tree_view_column_add_attribute (column, renderer,
           "ellipsize", ellipsizeCol);
@@ -1184,6 +1162,8 @@ uiutilsAddDisplayColumns (GtkWidget *tree, slist_t *sellist, int col,
     }
     col++;
   }
+
+  return favColumn;
 }
 
 void
@@ -1197,8 +1177,10 @@ uiutilsSetDisplayColumns (GtkListStore *store, GtkTreeIter *iter,
   slistStartIterator (sellist, &seliteridx);
   while ((tagidx = slistIterateValueNum (sellist, &seliteridx)) >= 0) {
     valuetype_t vt;
-    const char  *str;
+    char        *str;
     gulong      num;
+    ssize_t     val;
+    int         allocated;
 
     vt = uiutilsDetermineValueType (tagidx);
     if (vt == VALUE_STR) {
@@ -1208,12 +1190,20 @@ uiutilsSetDisplayColumns (GtkListStore *store, GtkTreeIter *iter,
         favorite = songGetFavoriteData (song);
         str = favorite->spanStr;
       } else {
-        str = uiutilsMakeDisplayStr (song, tagidx);
+        str = uiutilsMakeDisplayStr (song, tagidx, &allocated);
       }
       gtk_list_store_set (store, iter, col++, str, -1);
+      if (allocated) {
+        free (str);
+      }
     } else {
       num = songGetNum (song, tagidx);
-      gtk_list_store_set (store, iter, col++, num -1);
+      val = (ssize_t) num;
+      if (val != LIST_VALUE_INVALID) {
+        gtk_list_store_set (store, iter, col++, num, -1);
+      } else {
+        gtk_list_store_set (store, iter, col++, 0, -1);
+      }
     }
   }
 }
@@ -1453,3 +1443,47 @@ uiuitilsSpinboxTextKeyCallback (GtkWidget *w, GdkEventKey *event, gpointer udata
 
   return TRUE;
 }
+
+static valuetype_t
+uiutilsDetermineValueType (int tagidx)
+{
+  valuetype_t   vt;
+
+  vt = tagdefs [tagidx].valueType;
+  if (tagdefs [tagidx].convfunc != NULL) {
+    vt = VALUE_STR;
+  }
+
+  return vt;
+}
+
+
+static char *
+uiutilsMakeDisplayStr (song_t *song, int tagidx, int *allocated)
+{
+  valuetype_t     vt;
+  dfConvFunc_t    convfunc;
+  datafileconv_t  conv;
+  char            *str;
+
+  *allocated = false;
+  vt = tagdefs [tagidx].valueType;
+  convfunc = tagdefs [tagidx].convfunc;
+  if (convfunc != NULL) {
+    conv.allocated = false;
+    if (vt == VALUE_NUM) {
+      conv.u.num = songGetNum (song, tagidx);
+    } else if (vt == VALUE_LIST) {
+      conv.u.list = songGetList (song, tagidx);
+    }
+    conv.valuetype = vt;
+    convfunc (&conv);
+    str = conv.u.str;
+    *allocated = conv.allocated;
+  } else {
+    str = songGetStr (song, tagidx);
+  }
+
+  return str;
+}
+
