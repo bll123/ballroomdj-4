@@ -241,7 +241,7 @@ main (int argc, char * argv[])
   putenv ("GTK_CSD=0");
   putenv ("PYTHONIOENCODING=utf-8");
 
-  if (isMacOS()) {
+  if (isMacOS ()) {
     char      *path = NULL;
     char      *npath = NULL;
     size_t    sz = 4096;

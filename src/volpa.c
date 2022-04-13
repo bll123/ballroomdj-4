@@ -244,15 +244,17 @@ volumeProcess (volaction_t action, char *sinkname,
   unsigned int          tvol;
   int                   count;
 
-  if (! ginit) {
-    gstate.pacontext = NULL;
-    gstate.pamainloop = pa_threaded_mainloop_new();
-    pa_threaded_mainloop_start (gstate.pamainloop);
-    ginit = 1;
-  }
-
   count = 0;
-  while (ginit == 1 && count < 20) {
+  while (count < 40) {
+    int     rc;
+
+    if (! ginit) {
+      gstate.pacontext = NULL;
+      gstate.pamainloop = pa_threaded_mainloop_new();
+      pa_threaded_mainloop_start (gstate.pamainloop);
+      ginit = 1;
+    }
+
     if (gstate.pacontext == NULL) {
       init_context ();
     }
@@ -267,13 +269,15 @@ volumeProcess (volaction_t action, char *sinkname,
       break;
     }
 
-    if (count == 0) {
-      /* pulseaudio is not restarting properly after the computer sleeps */
-      (void) ! system ("pulseaudio --start");
-      mssleep (400);
+    rc = pa_context_errno (gstate.pacontext);
+    volumeProcessFailure ("init-context");
+
+    if (rc == PA_ERR_CONNECTIONREFUSED) {
+      (void) ! system ("/usr/bin/pulseaudio -D");
+      mssleep (600);
     }
 
-    mssleep(20);
+    mssleep (100);
     ++count;
   }
 

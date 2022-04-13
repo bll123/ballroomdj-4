@@ -355,12 +355,13 @@ vlcMedia (vlcData_t *vlcData, char *fn)
 /* initialization and cleanup */
 
 vlcData_t *
-vlcInit (int vlcargc, char *vlcargv [])
+vlcInit (int vlcargc, char *vlcargv [], char *vlcopt [])
 {
   vlcData_t *   vlcData;
   char *        tptr;
   char *        nptr;
   int           i;
+  int           j;
 
   vlcData = (vlcData_t *) malloc (sizeof (vlcData_t));
   assert (vlcData != NULL);
@@ -380,6 +381,19 @@ vlcInit (int vlcargc, char *vlcargv [])
     assert (nptr != NULL);
     vlcData->argv [i] = nptr;
   }
+
+  j = 0;
+  while ((tptr = vlcopt [j]) != NULL) {
+    ++vlcargc;
+    vlcData->argv = (char **) realloc (vlcData->argv,
+        sizeof (char *) * (size_t) (vlcargc + 1));
+    nptr = strdup (tptr);
+    assert (nptr != NULL);
+    vlcData->argv [i] = nptr;
+    ++i;
+    ++j;
+  }
+
   vlcData->argc = vlcargc;
   vlcData->argv [vlcData->argc] = NULL;
 

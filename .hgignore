@@ -15,6 +15,7 @@ syntax: regexp
 ^locale/de
 ^packages/
 ^plocal/
+^scripts/linux/.ballroomdj-ss-restore
 ^src/build/
 ^src/po/.*\.bak$
 ^src/w$

@@ -30,6 +30,7 @@
 #include "log.h"
 #include "musicdb.h"
 #include "musicq.h"
+#include "osutils.h"
 #include "pathbld.h"
 #include "playlist.h"
 #include "procutil.h"
@@ -219,6 +220,7 @@ static bool
 mainClosingCallback (void *tmaindata, programstate_t programState)
 {
   maindata_t    *mainData = tmaindata;
+  char          *script;
 
   logProcBegin (LOG_PROC, "mainClosingCallback");
 
@@ -246,7 +248,7 @@ mainClosingCallback (void *tmaindata, programstate_t programState)
   if (mainData->danceCounts != NULL) {
     nlistFree (mainData->danceCounts);
   }
-  bdj4shutdown (ROUTE_MAIN);
+
   /* give the other processes some time to shut down */
   mssleep (200);
   for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
@@ -256,6 +258,16 @@ mainClosingCallback (void *tmaindata, programstate_t programState)
     }
   }
 
+  script = bdjoptGetStr (OPT_M_SHUTDOWNSCRIPT);
+  if (script != NULL && *script) {
+    char  *targv [2];
+
+    targv [0] = script;
+    targv [1] = NULL;
+    osProcessStart (targv, OS_PROC_DETACH, NULL, NULL);
+  }
+
+  bdj4shutdown (ROUTE_MAIN);
   connFree (mainData->conn);
 
   logProcEnd (LOG_PROC, "mainClosingCallback", "");
@@ -474,6 +486,25 @@ mainListeningCallback (void *tmaindata, programstate_t programState)
   }
 
   if ((mainData->dbgflags & BDJ4_INIT_NO_START) != BDJ4_INIT_NO_START) {
+    char          *script;
+
+    script = bdjoptGetStr (OPT_M_STARTUPSCRIPT);
+    if (script != NULL && *script) {
+      char  *targv [2];
+
+      targv [0] = script;
+      targv [1] = NULL;
+      osProcessStart (targv, OS_PROC_DETACH, NULL, NULL);
+    }
+
+    if (isLinux ()) {
+      char  *audiosink;
+
+      audiosink = bdjoptGetStr (OPT_M_AUDIOSINK);
+      snprintf (buff, sizeof (buff), "PULSE_SINK=%s", audiosink);
+      putenv (buff);
+    }
+
     mainData->processes [ROUTE_PLAYER] = procutilStartProcess (
         ROUTE_PLAYER, "bdj4player", flags);
     if (bdjoptGetNum (OPT_P_MOBILEMARQUEE) != MOBILEMQ_OFF) {

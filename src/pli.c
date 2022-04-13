@@ -16,7 +16,7 @@
 #include "sysvars.h"
 
 pli_t *
-pliInit (void)
+pliInit (const char *volpkg, const char *sinkname)
 {
   pli_t     *pli;
   char      dlpath [MAXPATHLEN];
@@ -65,7 +65,7 @@ pliInit (void)
   assert (pli->pliiState != NULL);
 #pragma clang diagnostic pop
 
-  pli->pliData = pli->pliiInit ();
+  pli->pliData = pli->pliiInit (volpkg, sinkname);
   return pli;
 }
 

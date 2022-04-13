@@ -21,7 +21,7 @@
       "--verbose=3",
 #endif
 
-static char *   vlcDefaultOptions [] = {
+static char *vlcDefaultOptions [] = {
       "--quiet",
       "--audio-filter", "scaletempo",
       "--intf=dummy",
@@ -39,14 +39,30 @@ static char *   vlcDefaultOptions [] = {
 static void     pliiWaitUntilPlaying (plidata_t *pliData);
 
 plidata_t *
-pliiInit (void)
+pliiInit (const char *volpkg, const char *sinkname)
 {
   plidata_t *pliData;
+  char      * vlcOptions [5];
 
   pliData = malloc (sizeof (plidata_t));
   assert (pliData != NULL);
   if (pliData != NULL) {
-    pliData->plData = vlcInit (VLC_DFLT_OPT_SZ, vlcDefaultOptions);
+    char  tbuff [200];
+
+    vlcOptions [0] = NULL;
+    if (strcmp (volpkg, "libvolwin") == 0) {
+      vlcOptions [0] = "--aout=direct";
+      snprintf (tbuff, sizeof (tbuff), "--directx-audio-device=%s\n", sinkname);
+      vlcOptions [1] = tbuff;
+      vlcOptions [2] = NULL;
+    }
+    if (strcmp (volpkg, "libvolalsa") == 0) {
+      snprintf (tbuff, sizeof (tbuff), "--alsa-audio-device=%s\n", sinkname);
+      vlcOptions [0] = tbuff;
+      vlcOptions [1] = NULL;
+    }
+
+    pliData->plData = vlcInit (VLC_DFLT_OPT_SZ, vlcDefaultOptions, vlcOptions);
   }
   pliData->name = "VLC Integrated";
   return pliData;

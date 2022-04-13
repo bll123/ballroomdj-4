@@ -35,25 +35,22 @@ typedef enum {
  */
 
 typedef enum {
-  OPT_G_AO_CHANGESPACE,
-  OPT_G_AO_PATHFMT,
-  OPT_G_AUTOORGANIZE,
-  OPT_G_BPM,                      //   d s
+  OPT_G_AO_CHANGESPACE,           //   d s
+  OPT_G_AO_PATHFMT,               //   d s
+  OPT_G_AUTOORGANIZE,             //   d s
+  OPT_G_BPM,                      // u d s
   OPT_G_DEBUGLVL,                 // u d s
   OPT_G_ITUNESSUPPORT,            //   d s
   OPT_G_LOADDANCEFROMGENRE,       //   d s
   OPT_G_MUSICDIRDFLT,
   OPT_G_PLAYERQLEN,               // u d s
-  OPT_G_REMCONTROLHTML,           //   d
-  OPT_G_SHOWALBUM,
-  OPT_G_SHOWCLASSICAL,
-  OPT_G_VARIOUS,
+  OPT_G_REMCONTROLHTML,           //   d s
   OPT_G_WRITETAGS,                //   d s
-  OPT_M_AUDIOSINK,                //   d
-  OPT_M_DIR_MUSIC,                // u d
+  OPT_M_AUDIOSINK,                //   d s
+  OPT_M_DIR_MUSIC,                // u d s
   OPT_M_PLAYER_INTFC,             // u d s
-  OPT_M_SHUTDOWNSCRIPT,           //   d s
-  OPT_M_STARTUPSCRIPT,            //   d s
+  OPT_M_SHUTDOWNSCRIPT,           // u d s
+  OPT_M_STARTUPSCRIPT,            // u d s
   OPT_M_VOLUME_INTFC,             // u d s
   OPT_MP_LISTING_FONT,            // u d s
   OPT_MP_MQFONT,                  // u d s
@@ -76,7 +73,7 @@ typedef enum {
   OPT_P_MOBILEMQPORT,             // u d s
   OPT_P_MOBILEMQTAG,              // u d s
   OPT_P_MOBILEMQTITLE,            // u d s
-  OPT_P_MQ_ACCENT_COL,            //   d
+  OPT_P_MQ_ACCENT_COL,            // u d s
   OPT_P_MQQLEN,                   // u d s
   OPT_P_MQ_SHOW_INFO,             // u d s
   OPT_P_PAUSEMSG,
@@ -87,7 +84,7 @@ typedef enum {
   OPT_P_REMCONTROLPORT,           // u d s
   OPT_P_REMCONTROLUSER,           // u d s
   OPT_P_REMOTECONTROL,            // u d s
-  OPT_P_UI_ACCENT_COL,            //   d
+  OPT_P_UI_ACCENT_COL,            // u d s
 } bdjoptkey_t;
 
 typedef enum {

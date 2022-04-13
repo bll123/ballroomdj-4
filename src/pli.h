@@ -31,7 +31,7 @@ typedef struct {
 
 typedef struct {
   dlhandle_t        *dlHandle;
-  plidata_t         *(*pliiInit) (void);
+  plidata_t         *(*pliiInit) (const char *volpkg, const char *sinkname);
   void              (*pliiFree) (plidata_t *);
   void              (*pliiMediaSetup) (plidata_t *, char *);
   void              (*pliiStartPlayback) (plidata_t *, ssize_t pos, ssize_t speed);
@@ -47,7 +47,7 @@ typedef struct {
   plidata_t         *pliData;
 } pli_t;
 
-pli_t         *pliInit (void);
+pli_t         *pliInit (const char *volpkg, const char *sinkname);
 void          pliFree (pli_t *pli);
 void          pliMediaSetup (pli_t *pli, char *mediaPath);
 void          pliStartPlayback (pli_t *pli, ssize_t dpos, ssize_t speed);
@@ -61,7 +61,7 @@ ssize_t       pliGetDuration (pli_t *pli);
 ssize_t       pliGetTime (pli_t *pli);
 plistate_t    pliState (pli_t *pli);
 
-plidata_t     *pliiInit (void);
+plidata_t     *pliiInit (const char *volpkg, const char *sinkname);
 void          pliiFree (plidata_t *pliData);
 void          pliiMediaSetup (plidata_t *pliData, char *mediaPath);
 void          pliiStartPlayback (plidata_t *pliData, ssize_t dpos, ssize_t speed);

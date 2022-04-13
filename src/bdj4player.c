@@ -289,7 +289,8 @@ main (int argc, char *argv[])
     }
   }
 
-  playerData.pli = pliInit ();
+  playerData.pli = pliInit (bdjoptGetStr (OPT_M_VOLUME_INTFC),
+      playerData.currentSink);
 
   listenPort = bdjvarsGetNum (BDJVL_PLAYER_PORT);
   sockhMainLoop (listenPort, playerProcessMsg, playerProcessing, &playerData);
@@ -456,10 +457,6 @@ playerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_PLAY_SEEK: {
           logMsg (LOG_DBG, LOG_MSGS, "got: seek", args);
           playerSeek (playerData, atol (args));
-          break;
-        }
-        case MSG_PLAYER_VOLSINK_SET: {
-          playerSetAudioSink (playerData, args);
           break;
         }
         case MSG_SONG_PREP: {
@@ -1234,6 +1231,8 @@ playerSetAudioSink (playerdata_t *playerData, char *sinkname)
 static void
 playerInitSinklist (playerdata_t *playerData)
 {
+  int count;
+
   volumeFreeSinkList (&playerData->sinklist);
 
   logProcBegin (LOG_PROC, "playerInitSinklist");
@@ -1243,7 +1242,12 @@ playerInitSinklist (playerdata_t *playerData)
   playerData->defaultSink = "";
   playerData->currentSink = "";
 
-  volumeGetSinkList (playerData->volume, "", &playerData->sinklist);
+  count = 0;
+  while (volumeGetSinkList (playerData->volume, "", &playerData->sinklist) != 0 &&
+      count < 20) {
+    mssleep (100);
+    ++count;
+  }
   playerData->defaultSink = playerData->sinklist.defname;
   logProcEnd (LOG_PROC, "playerInitSinklist", "");
 }

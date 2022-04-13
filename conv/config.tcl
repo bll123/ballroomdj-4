@@ -101,6 +101,9 @@ foreach path [list {} profiles $mpath $mppath] {
         if { $key eq "CLVAPATHFMT" } { continue }
         if { $key eq "VAPATHFMT" } { continue }
         if { $key eq "CLPATHFMT" } { continue }
+        if { $key eq "SHOWALBUM" } { continue }
+        if { $key eq "SHOWCLASSICAL" } { continue }
+        if { $key eq "VARIOUS" } { continue }
 
         if { $key eq "version" } { set value 1 }
 

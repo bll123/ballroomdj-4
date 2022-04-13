@@ -12,7 +12,7 @@
 #include "tmutil.h"
 
 plidata_t *
-pliiInit (void)
+pliiInit (const char *volpkg, const char *sinkname)
 {
   plidata_t *pliData;
 
