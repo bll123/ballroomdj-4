@@ -558,12 +558,15 @@ main (int argc, char *argv[])
   volumeGetSinkList (volume, "", &sinklist);
   tlist = nlistAlloc ("cu-audio-out", LIST_UNORDERED, free);
   llist = nlistAlloc ("cu-audio-out-l", LIST_ORDERED, free);
+  nlistSetStr (tlist, 0, _("Default"));
+  nlistSetStr (llist, 0, "default");
+  confui.uiitem [CONFUI_SPINBOX_AUDIO_OUTPUT].listidx = 0;
   for (size_t i = 0; i < sinklist.count; ++i) {
     if (strcmp (sinklist.sinklist [i].name, bdjoptGetStr (OPT_M_AUDIOSINK)) == 0) {
-      confui.uiitem [CONFUI_SPINBOX_AUDIO_OUTPUT].listidx = i;
+      confui.uiitem [CONFUI_SPINBOX_AUDIO_OUTPUT].listidx = i + 1;
     }
-    nlistSetStr (tlist, i, sinklist.sinklist [i].description);
-    nlistSetStr (llist, i, sinklist.sinklist [i].name);
+    nlistSetStr (tlist, i + 1, sinklist.sinklist [i].description);
+    nlistSetStr (llist, i + 1, sinklist.sinklist [i].name);
   }
   confui.uiitem [CONFUI_SPINBOX_AUDIO_OUTPUT].list = tlist;
   confui.uiitem [CONFUI_SPINBOX_AUDIO_OUTPUT].sblookuplist = llist;
@@ -1682,6 +1685,15 @@ confuiPopulateOptions (configui_t *confui)
             confui->uiitem [i].listidx);
         outtype = CONFUI_OUT_STR;
         break;
+      }
+    }
+
+    if (i == CONFUI_SPINBOX_AUDIO_OUTPUT) {
+      uiutilsspinbox_t  *spinbox;
+
+      spinbox = &confui->uiitem [i].u.spinbox;
+      if (! uiutilsSpinboxIsChanged (spinbox)) {
+        continue;
       }
     }
 

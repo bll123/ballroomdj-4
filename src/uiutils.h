@@ -47,8 +47,9 @@ typedef struct {
   uiutilsspinboxdisp_t  textGetProc;
   void                  *udata;
   int                   maxWidth;
-  bool                  indisp;
   slist_t               *list;
+  bool                  indisp : 1;
+  bool                  changed : 1;
 } uiutilsspinbox_t;
 
 typedef struct {
@@ -124,6 +125,7 @@ GtkWidget * uiutilsSpinboxDoubleCreate (void);
 void  uiutilsSpinboxSet (GtkWidget *spinbox, double min, double max);
 double uiutilsSpinboxGetValue (GtkWidget *spinbox);
 void  uiutilsSpinboxSetValue (GtkWidget *spinbox, double ivalue);
+bool  uiutilsSpinboxIsChanged (uiutilsspinbox_t *spinbox);
 
 void  uiutilsCreateDanceList (uiutilsdropdown_t *dancesel, char *selectLabel);
 void  uiutilsGetForegroundColor (GtkWidget *widget, char *buff, size_t sz);

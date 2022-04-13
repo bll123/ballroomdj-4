@@ -378,6 +378,10 @@ pluiActivate (GApplication *app, gpointer userdata)
 
   plui->clock = uiutilsCreateLabel ("");
   gtk_box_pack_end (GTK_BOX (hbox), plui->clock, FALSE, FALSE, 0);
+  snprintf (tbuff, sizeof (tbuff),
+      "label { color: shade(%s,0.6); }",
+      (char *) bdjoptGetStr (OPT_P_UI_ACCENT_COL));
+  uiutilsSetCss (plui->clock, tbuff);
 
   menuitem = gtk_menu_item_new_with_label (_("Options"));
   gtk_menu_shell_append (GTK_MENU_SHELL (menubar), menuitem);
