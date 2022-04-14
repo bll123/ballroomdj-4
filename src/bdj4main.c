@@ -1498,6 +1498,7 @@ mainMusicQueuePlay (maindata_t *mainData)
   char              *sfname;
   song_t            *song;
   ssize_t           currlen;
+  musicqidx_t       origMusicqPlayIdx;
 
   logProcBegin (LOG_PROC, "mainMusicQueuePlay");
 
@@ -1530,21 +1531,35 @@ mainMusicQueuePlay (maindata_t *mainData)
     }
 
     currlen = musicqGetLen (mainData->musicQueue, mainData->musicqPlayIdx);
+    origMusicqPlayIdx = mainData->musicqPlayIdx;
+
     if (song == NULL && currlen == 0) {
       if (mainData->switchQueueWhenEmpty) {
         char    tmp [40];
 
         mainData->musicqPlayIdx = musicqNextQueue (mainData->musicqPlayIdx);
         mainData->musicqManageIdx = mainData->musicqPlayIdx;
-        /* only process this flag once */
-        /* do not want this program to bounce back and forth between queues */
-        mainData->switchQueueWhenEmpty = false;
-        snprintf (tmp, sizeof (tmp), "%d", mainData->musicqPlayIdx);
-        connSendMessage (mainData->conn, ROUTE_PLAYERUI, MSG_QUEUE_SWITCH, tmp);
-        /* and start up playback for the new queue */
-        mainMusicQueueNext (mainData);
-        /* since the player state is stopped, must re-start playback */
-        mainMusicQueuePlay (mainData);
+        currlen = musicqGetLen (mainData->musicQueue, mainData->musicqPlayIdx);
+
+        /* locate a queue that has songs in it */
+        while (mainData->musicqPlayIdx != origMusicqPlayIdx &&
+            currlen == 0) {
+          mainData->musicqPlayIdx = musicqNextQueue (mainData->musicqPlayIdx);
+          mainData->musicqManageIdx = mainData->musicqPlayIdx;
+          currlen = musicqGetLen (mainData->musicQueue, mainData->musicqPlayIdx);
+        }
+
+        if (currlen > 0) {
+          snprintf (tmp, sizeof (tmp), "%d", mainData->musicqPlayIdx);
+          connSendMessage (mainData->conn, ROUTE_PLAYERUI, MSG_QUEUE_SWITCH, tmp);
+          /* and start up playback for the new queue */
+          mainMusicQueueNext (mainData);
+          /* since the player state is stopped, must re-start playback */
+          mainMusicQueuePlay (mainData);
+        } else {
+          /* there is no music to play; tell the player to clear its display */
+          connSendMessage (mainData->conn, ROUTE_PLAYERUI, MSG_PLAYERUI_CLR_DISP, NULL);
+        }
       } /* switch on empty? */
     } /* if the song was null and the queue is empty */
   } /* if the player state is stopped */

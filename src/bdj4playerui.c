@@ -221,9 +221,6 @@ main (int argc, char *argv[])
   uifont = bdjoptGetStr (OPT_MP_UIFONT);
   uiutilsSetUIFont (uifont);
 
-  pluiSetPlayWhenQueued (&plui);
-  pluiSetSwitchQueue (&plui);
-
   g_timeout_add (UI_MAIN_LOOP_TIMER, pluiMainLoop, &plui);
   g_timeout_add (200, pluiClock, &plui);
 
@@ -637,6 +634,8 @@ pluiHandshakeCallback (void *udata, programstate_t programState)
   if (connHaveHandshake (plui->conn, ROUTE_MAIN) &&
       connHaveHandshake (plui->conn, ROUTE_PLAYER) &&
       connHaveHandshake (plui->conn, ROUTE_MARQUEE)) {
+    pluiSetPlayWhenQueued (plui);
+    pluiSetSwitchQueue (plui);
     progstateLogTime (plui->progstate, "time-to-start-gui");
     rc = true;
   }

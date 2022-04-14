@@ -47,6 +47,7 @@ static void     uiplayerPauseatendProcess (GtkButton *b, gpointer udata);
 static gboolean uiplayerSpeedProcess (GtkRange *range, GtkScrollType *scroll, gdouble value, gpointer udata);
 static gboolean uiplayerSeekProcess (GtkRange *range, GtkScrollType *scroll, gdouble value, gpointer udata);
 static gboolean uiplayerVolumeProcess (GtkRange *range, GtkScrollType *scroll, gdouble value, gpointer udata);
+static void     uiplayerClearDisplay (uiplayer_t *uiplayer);
 
 uiplayer_t *
 uiplayerInit (progstate_t *progstate, conn_t *conn)
@@ -491,6 +492,10 @@ uiplayerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           uiplayerProcessMusicqStatusData (uiplayer, args);
           break;
         }
+        case MSG_PLAYERUI_CLR_DISP: {
+          uiplayerClearDisplay (uiplayer);
+          break;
+        }
         default: {
           break;
         }
@@ -895,3 +900,10 @@ uiplayerVolumeProcess (GtkRange *range, GtkScrollType *scroll, gdouble value, gp
   return FALSE;
 }
 
+static void
+uiplayerClearDisplay (uiplayer_t *uiplayer)
+{
+  gtk_label_set_label (GTK_LABEL (uiplayer->danceLab), "");
+  gtk_label_set_label (GTK_LABEL (uiplayer->artistLab), "");
+  gtk_label_set_label (GTK_LABEL (uiplayer->titleLab), "");
+}

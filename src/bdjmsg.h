@@ -80,6 +80,7 @@ typedef enum {
   MSG_MUSIC_QUEUE_DATA,
   MSG_QUEUE_SWITCH,         // args: queue number
   MSG_SONG_SELECT,          // args: queue number, position
+  MSG_PLAYERUI_CLR_DISP,
 
   /* to/from web servers */
   MSG_DANCE_LIST_DATA,      // args: html option list
