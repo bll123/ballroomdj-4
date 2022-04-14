@@ -40,8 +40,8 @@ static datafilekey_t bdjoptglobaldfkeys[] = {
 #define BDJOPT_GLOBAL_DFKEY_COUNT (sizeof (bdjoptglobaldfkeys) / sizeof (datafilekey_t))
 
 datafilekey_t bdjoptprofiledfkeys[] = {
+  { "COMPLETEMSG",          OPT_P_COMPLETE_MSG,         VALUE_STR, NULL, -1 },
   { "DEFAULTVOLUME",        OPT_P_DEFAULTVOLUME,        VALUE_NUM, NULL, -1 },
-  { "DONEMSG",              OPT_P_DONEMSG,              VALUE_STR, NULL, -1 },
   { "FADEINTIME",           OPT_P_FADEINTIME,           VALUE_NUM, NULL, -1 },
   { "FADEOUTTIME",          OPT_P_FADEOUTTIME,          VALUE_NUM, NULL, -1 },
   { "FADETYPE",             OPT_P_FADETYPE,             VALUE_NUM, bdjoptConvFadeType, -1 },
@@ -56,7 +56,6 @@ datafilekey_t bdjoptprofiledfkeys[] = {
   { "MQQLEN",               OPT_P_MQQLEN,               VALUE_NUM, NULL, -1 },
   { "MQSHOWINFO",           OPT_P_MQ_SHOW_INFO,         VALUE_NUM, convBoolean, -1 },
   { "MQ_ACCENT_COL",        OPT_P_MQ_ACCENT_COL,        VALUE_STR, NULL, -1 },
-  { "PAUSEMSG",             OPT_P_PAUSEMSG,             VALUE_STR, NULL, -1 },
   { "PROFILENAME",          OPT_P_PROFILENAME,          VALUE_STR, NULL, -1 },
   { "QUEUE_NAME_A",         OPT_P_QUEUE_NAME_A,         VALUE_STR, NULL, -1 },
   { "QUEUE_NAME_B",         OPT_P_QUEUE_NAME_B,         VALUE_STR, NULL, -1 },

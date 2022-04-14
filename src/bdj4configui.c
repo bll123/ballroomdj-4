@@ -92,6 +92,7 @@ enum {
   CONFUI_ENTRY_MM_TITLE,
   CONFUI_ENTRY_MUSIC_DIR,
   CONFUI_ENTRY_PROFILE_NAME,
+  CONFUI_ENTRY_COMPLETE_MSG,
   CONFUI_ENTRY_QUEUE_NM_A,
   CONFUI_ENTRY_QUEUE_NM_B,
   CONFUI_ENTRY_RC_PASS,
@@ -518,6 +519,7 @@ main (int argc, char *argv[])
   uiutilsEntryInit (&confui.uiitem [CONFUI_ENTRY_PROFILE_NAME].u.entry, 20, 30);
   uiutilsEntryInit (&confui.uiitem [CONFUI_ENTRY_STARTUP].u.entry, 50, 300);
   uiutilsEntryInit (&confui.uiitem [CONFUI_ENTRY_SHUTDOWN].u.entry, 50, 300);
+  uiutilsEntryInit (&confui.uiitem [CONFUI_ENTRY_COMPLETE_MSG].u.entry, 20, 30);
   uiutilsEntryInit (&confui.uiitem [CONFUI_ENTRY_QUEUE_NM_A].u.entry, 20, 30);
   uiutilsEntryInit (&confui.uiitem [CONFUI_ENTRY_QUEUE_NM_B].u.entry, 20, 30);
   uiutilsEntryInit (&confui.uiitem [CONFUI_ENTRY_RC_USER_ID].u.entry, 10, 30);
@@ -1011,6 +1013,9 @@ confuiActivate (GApplication *app, gpointer userdata)
       CONFUI_WIDGET_INSERT_LOC, OPT_P_INSERT_LOCATION,
       1, 10, bdjoptGetNum (OPT_P_INSERT_LOCATION));
 
+  confuiMakeItemEntry (confui, vbox, sg, _("Completion Message"),
+      CONFUI_ENTRY_COMPLETE_MSG, OPT_P_COMPLETE_MSG,
+      bdjoptGetStr (OPT_P_COMPLETE_MSG));
   confuiMakeItemEntry (confui, vbox, sg, _("Queue A Name"),
       CONFUI_ENTRY_QUEUE_NM_A, OPT_P_QUEUE_NAME_A,
       bdjoptGetStr (OPT_P_QUEUE_NAME_A));

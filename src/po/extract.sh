@@ -71,6 +71,7 @@ fn=../../templates/status.txt
 sed -n -e '/^STATUS/ {n;p}' -e 's,^,..,' $fn >> $TMP
 fn=../../templates/bdjconfig.txt.p
 sed -n -e '/^QUEUE_NAME_[AB]/ {n;p}' -e 's,^,..,' $fn >> $TMP
+sed -n -e '/^COMPLETEMSG/ {n;p}' -e 's,^,..,' $fn >> $TMP
 
 egrep 'value=' ../../templates/*.html |
   sed -e 's,.*value=",,' -e 's,".*,,' -e '/^100$/ d' -e 's,^,..,' >> $TMP

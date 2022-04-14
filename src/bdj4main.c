@@ -75,6 +75,7 @@ typedef struct {
   bool              marqueeChanged [MUSICQ_MAX];
   bool              playWhenQueued : 1;
   bool              switchQueueWhenEmpty : 1;
+  bool              finished : 1;
 } maindata_t;
 
 static int      mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
@@ -119,6 +120,7 @@ static void     mainSendMusicqStatus (maindata_t *mainData, char *rbuff, size_t 
 static void     mainDanceCountsInit (maindata_t *mainData);
 static void     mainParseIntNum (char *args, int *a, ssize_t *b);
 static void     mainParseIntStr (char *args, int *a, char **b);
+static void     mainSendFinished (maindata_t *mainData);
 
 static long globalCounter = 0;
 static int  gKillReceived = 0;
@@ -152,6 +154,7 @@ main (int argc, char *argv[])
   mainData.mobmqUserkey = NULL;
   mainData.playWhenQueued = true;
   mainData.switchQueueWhenEmpty = false;
+  mainData.finished = false;
   for (int i = 0; i < MUSICQ_MAX; ++i) {
     mainData.playlistQueue [i] = NULL;
     mainData.musicqChanged [i] = false;
@@ -456,6 +459,7 @@ mainProcessing (void *udata)
       mainData->musicqChanged [i] = false;
     }
   }
+
   /* for the marquee, only the currently selected playback queue is */
   /* of interest */
   if (mainData->marqueeChanged [mainData->musicqPlayIdx]) {
@@ -669,7 +673,6 @@ mainSendMarqueeData (maindata_t *mainData)
 
   logProcBegin (LOG_PROC, "mainSendMarqueeData");
 
-
   mqLen = bdjoptGetNum (OPT_P_MQQLEN);
   musicqLen = musicqGetLen (mainData->musicQueue, mainData->musicqPlayIdx);
 
@@ -702,6 +705,14 @@ mainSendMarqueeData (maindata_t *mainData)
 
   connSendMessage (mainData->conn, ROUTE_MARQUEE,
       MSG_MARQUEE_DATA, sbuff);
+
+  if (mainData->playerState == PL_STATE_STOPPED &&
+      mainData->finished) {
+    mainSendFinished (mainData);
+    mainData->finished = false;
+    return;
+  }
+
   logProcEnd (LOG_PROC, "mainSendMarqueeData", "");
 }
 
@@ -1510,63 +1521,64 @@ mainMusicQueuePlay (maindata_t *mainData)
   mainData->musicqManageIdx = mainData->musicqPlayIdx;
 
   logMsg (LOG_DBG, LOG_BASIC, "playerState: %d", mainData->playerState);
-  if (mainData->playerState == PL_STATE_STOPPED) {
-    /* grab a song out of the music queue and start playing */
-    logMsg (LOG_DBG, LOG_MAIN, "player is stopped, get song, start");
-    song = musicqGetCurrent (mainData->musicQueue, mainData->musicqPlayIdx);
-    if (song != NULL) {
-      flags = musicqGetFlags (mainData->musicQueue, mainData->musicqPlayIdx, 0);
-      if ((flags & MUSICQ_FLAG_ANNOUNCE) == MUSICQ_FLAG_ANNOUNCE) {
-        char      *annfname;
 
-        annfname = musicqGetAnnounce (mainData->musicQueue, mainData->musicqPlayIdx, 0);
-        if (annfname != NULL) {
-          connSendMessage (mainData->conn, ROUTE_PLAYER,
-              MSG_SONG_PLAY, annfname);
-        }
+  /* grab a song out of the music queue and start playing */
+  logMsg (LOG_DBG, LOG_MAIN, "player is stopped/in-fadeout/in-gap, get song, start");
+  song = musicqGetCurrent (mainData->musicQueue, mainData->musicqPlayIdx);
+  if (song != NULL) {
+    flags = musicqGetFlags (mainData->musicQueue, mainData->musicqPlayIdx, 0);
+    if ((flags & MUSICQ_FLAG_ANNOUNCE) == MUSICQ_FLAG_ANNOUNCE) {
+      char      *annfname;
+
+      annfname = musicqGetAnnounce (mainData->musicQueue, mainData->musicqPlayIdx, 0);
+      if (annfname != NULL) {
+        connSendMessage (mainData->conn, ROUTE_PLAYER,
+            MSG_SONG_PLAY, annfname);
       }
-      sfname = songGetStr (song, TAG_FILE);
-      connSendMessage (mainData->conn, ROUTE_PLAYER,
-          MSG_SONG_PLAY, sfname);
     }
+    sfname = songGetStr (song, TAG_FILE);
+    connSendMessage (mainData->conn, ROUTE_PLAYER,
+        MSG_SONG_PLAY, sfname);
+  }
 
-    currlen = musicqGetLen (mainData->musicQueue, mainData->musicqPlayIdx);
-    origMusicqPlayIdx = mainData->musicqPlayIdx;
+  currlen = musicqGetLen (mainData->musicQueue, mainData->musicqPlayIdx);
+  origMusicqPlayIdx = mainData->musicqPlayIdx;
 
-    if (song == NULL && currlen == 0) {
-      if (mainData->switchQueueWhenEmpty) {
-        char    tmp [40];
+  if (song == NULL && currlen == 0) {
+    if (mainData->switchQueueWhenEmpty) {
+      char    tmp [40];
 
+      mainData->musicqPlayIdx = musicqNextQueue (mainData->musicqPlayIdx);
+      mainData->musicqManageIdx = mainData->musicqPlayIdx;
+      currlen = musicqGetLen (mainData->musicQueue, mainData->musicqPlayIdx);
+
+      /* locate a queue that has songs in it */
+      while (mainData->musicqPlayIdx != origMusicqPlayIdx &&
+          currlen == 0) {
         mainData->musicqPlayIdx = musicqNextQueue (mainData->musicqPlayIdx);
         mainData->musicqManageIdx = mainData->musicqPlayIdx;
         currlen = musicqGetLen (mainData->musicQueue, mainData->musicqPlayIdx);
+      }
 
-        /* locate a queue that has songs in it */
-        while (mainData->musicqPlayIdx != origMusicqPlayIdx &&
-            currlen == 0) {
-          mainData->musicqPlayIdx = musicqNextQueue (mainData->musicqPlayIdx);
-          mainData->musicqManageIdx = mainData->musicqPlayIdx;
-          currlen = musicqGetLen (mainData->musicQueue, mainData->musicqPlayIdx);
-        }
+      if (currlen > 0) {
+        snprintf (tmp, sizeof (tmp), "%d", mainData->musicqPlayIdx);
+        connSendMessage (mainData->conn, ROUTE_PLAYERUI, MSG_QUEUE_SWITCH, tmp);
+        /* and start up playback for the new queue */
+        mainMusicQueueNext (mainData);
+        /* since the player state is stopped, must re-start playback */
+        mainMusicQueuePlay (mainData);
+      } else {
+        /* there is no music to play; tell the player to clear its display */
+        mainData->finished = true;
+      }
+    } /* switch on empty? */
+  } /* if the song was null and the queue is empty */
 
-        if (currlen > 0) {
-          snprintf (tmp, sizeof (tmp), "%d", mainData->musicqPlayIdx);
-          connSendMessage (mainData->conn, ROUTE_PLAYERUI, MSG_QUEUE_SWITCH, tmp);
-          /* and start up playback for the new queue */
-          mainMusicQueueNext (mainData);
-          /* since the player state is stopped, must re-start playback */
-          mainMusicQueuePlay (mainData);
-        } else {
-          /* there is no music to play; tell the player to clear its display */
-          connSendMessage (mainData->conn, ROUTE_PLAYERUI, MSG_PLAYERUI_CLR_DISP, NULL);
-        }
-      } /* switch on empty? */
-    } /* if the song was null and the queue is empty */
-  } /* if the player state is stopped */
-
-  if (mainData->playerState == PL_STATE_IN_GAP ||
-      mainData->playerState == PL_STATE_PAUSED) {
-    logMsg (LOG_DBG, LOG_MAIN, "player is paused/in gap, send play msg");
+  /* this handles the user-selected play button when the song is paused */
+  /* it no longer handles in-gap due to some changes */
+  /* this might need to be moved to the message handler */
+  if (mainData->playerState == PL_STATE_PAUSED) {
+    logMsg (LOG_DBG, LOG_MAIN, "player is paused, send play msg");
     connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_PLAY_PLAY, NULL);
   }
   logProcEnd (LOG_PROC, "mainMusicQueuePlay", "");
@@ -1601,7 +1613,6 @@ mainMusicQueueFinish (maindata_t *mainData)
     }
   }
 
-  mainData->playerState = PL_STATE_STOPPED;
   musicqPop (mainData->musicQueue, mainData->musicqPlayIdx);
   mainData->musicqChanged [mainData->musicqPlayIdx] = true;
   mainData->marqueeChanged [mainData->musicqPlayIdx] = true;
@@ -1612,16 +1623,13 @@ mainMusicQueueFinish (maindata_t *mainData)
 static void
 mainMusicQueueNext (maindata_t *mainData)
 {
-  playerstate_t     tplaystate;
-
   logProcBegin (LOG_PROC, "mainMusicQueueNext");
 
   mainData->musicqManageIdx = mainData->musicqPlayIdx;
 
-  tplaystate = mainData->playerState;
   mainMusicQueueFinish (mainData);
-  if (tplaystate != PL_STATE_STOPPED &&
-      tplaystate != PL_STATE_PAUSED) {
+  if (mainData->playerState != PL_STATE_STOPPED &&
+      mainData->playerState != PL_STATE_PAUSED) {
     mainMusicQueuePlay (mainData);
   }
   mainMusicQueueFill (mainData);
@@ -1927,4 +1935,11 @@ mainParseIntStr (char *args, int *a, char **b)
   *a = atoi (p);
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   *b = p;
+}
+
+static void
+mainSendFinished (maindata_t *mainData)
+{
+  connSendMessage (mainData->conn, ROUTE_PLAYERUI, MSG_FINISHED, NULL);
+  connSendMessage (mainData->conn, ROUTE_MARQUEE, MSG_FINISHED, NULL);
 }

@@ -104,9 +104,11 @@ foreach path [list {} profiles $mpath $mppath] {
         if { $key eq "SHOWALBUM" } { continue }
         if { $key eq "SHOWCLASSICAL" } { continue }
         if { $key eq "VARIOUS" } { continue }
+        if { $key eq "PAUSEMSG" } { continue }
 
         if { $key eq "version" } { set value 1 }
 
+        if { $key eq "DONEMSG" } { set key "COMPLETEMSG" }
         if { $key eq "SHOWBPM" } { set key "BPM" }
         if { $key eq "PLAYERQLEN0" } { set key "PLAYERQLEN" }
         if { $key eq "MUSICDIR" } { set key DIRMUSIC }

@@ -61,7 +61,7 @@ typedef enum {
   OPT_MP_UIFONT,                  // u d s
   OPT_MP_UI_THEME,                // u d s
   OPT_P_DEFAULTVOLUME,            // u d s
-  OPT_P_DONEMSG,
+  OPT_P_COMPLETE_MSG,             //   d s
   OPT_P_FADEINTIME,               // u d s
   OPT_P_FADEOUTTIME,              // u d s
   OPT_P_FADETYPE,                 // u d s
@@ -76,7 +76,6 @@ typedef enum {
   OPT_P_MQ_ACCENT_COL,            // u d s
   OPT_P_MQQLEN,                   // u d s
   OPT_P_MQ_SHOW_INFO,             // u d s
-  OPT_P_PAUSEMSG,
   OPT_P_PROFILENAME,              // u d s
   OPT_P_QUEUE_NAME_A,             // u d s
   OPT_P_QUEUE_NAME_B,             // u d s

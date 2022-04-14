@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: BDJ4 4.0.0\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
-"POT-Creation-Date: 2022-04-05\n"
-"PO-Revision-Date: 2022-04-05\n"
+"POT-Creation-Date: 2022-04-14\n"
+"PO-Revision-Date: 2022-04-14\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/gb\n"
 "Language: en\n"
@@ -85,6 +85,9 @@ msgstr ""
 msgid "Audio"
 msgstr ""
 
+msgid "Audio File Date"
+msgstr ""
+
 msgid "Audio Files"
 msgstr ""
 
@@ -140,6 +143,9 @@ msgstr ""
 msgid "Complete"
 msgstr ""
 
+msgid "Completion Message"
+msgstr ""
+
 msgid "Composer"
 msgstr ""
 
@@ -177,6 +183,9 @@ msgid "Dance Rating"
 msgstr ""
 
 msgid "Database Loads Dance From Genre"
+msgstr ""
+
+msgid "Date"
 msgstr ""
 
 msgid "Date Added"
@@ -298,6 +307,9 @@ msgstr ""
 msgid "Font"
 msgstr ""
 
+msgid "Font Size"
+msgstr ""
+
 msgid "Foxtrot"
 msgstr ""
 
@@ -400,6 +412,9 @@ msgid "Marquee Display"
 msgstr ""
 
 msgid "Marquee Font"
+msgstr ""
+
+msgid "Marquee Font Size"
 msgstr ""
 
 msgid "Marquee Options"
@@ -595,6 +610,9 @@ msgstr ""
 msgid "Rating"
 msgstr ""
 
+msgid "Remove"
+msgstr ""
+
 msgid "Remove Spaces"
 msgstr ""
 
@@ -665,16 +683,16 @@ msgstr ""
 msgid "Skipping conversion."
 msgstr ""
 
-msgid "Song Editor"
+msgid "Song Editor - Column 1"
+msgstr ""
+
+msgid "Song Editor - Column 2"
 msgstr ""
 
 msgid "Song End"
 msgstr ""
 
 msgid "Song List"
-msgstr ""
-
-msgid "Song Selection"
 msgstr ""
 
 msgid "Song Start"
@@ -707,6 +725,9 @@ msgstr ""
 msgid "Tango"
 msgstr ""
 
+msgid "Thank You Dancers"
+msgstr ""
+
 msgid ""
 "The conversion process will only run for new installations and for re-"
 "installations."
@@ -733,7 +754,7 @@ msgstr ""
 msgid "Toggle Repeat"
 msgstr ""
 
-msgid "Track Number"
+msgid "Track"
 msgstr ""
 
 msgid "Triangle"

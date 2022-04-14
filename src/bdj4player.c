@@ -1016,7 +1016,7 @@ playerNextSong (playerdata_t *playerData)
   if (playerData->playerState == PL_STATE_LOADING ||
       playerData->playerState == PL_STATE_PLAYING ||
       playerData->playerState == PL_STATE_IN_FADEOUT) {
-    /* the sone will stop playing, and the normal logic will move */
+    /* the song will stop playing, and the normal logic will move */
     /* to the next song and continue playing */
     playerData->stopPlaying = true;
   } else {

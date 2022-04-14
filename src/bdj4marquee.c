@@ -68,6 +68,7 @@ typedef struct {
   GtkWidget       *pbar;
   GtkWidget       *danceLab;
   GtkWidget       *countdownTimerLab;
+  GtkWidget       *infoBox;
   GtkWidget       *infoArtistLab;
   GtkWidget       *infoSepLab;
   GtkWidget       *infoTitleLab;
@@ -119,6 +120,7 @@ static void marqueeSetFontSize (marquee_t *marquee, GtkWidget *lab, char *font);
 static void marqueePopulate (marquee_t *marquee, char *args);
 static void marqueeSetTimer (marquee_t *marquee, char *args);
 static void marqueeSetFont (marquee_t *marquee, int sz);
+static void marqueeDisplayCompletion (marquee_t *marquee);
 
 static int gKillReceived = 0;
 static int gdone = 0;
@@ -474,38 +476,37 @@ marqueeActivate (GApplication *app, gpointer userdata)
   gtk_box_pack_end (GTK_BOX (hbox), marquee->countdownTimerLab,
       FALSE, FALSE, 0);
 
-  if (marquee->mqShowInfo) {
-    hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 5);
-    gtk_widget_set_halign (hbox, GTK_ALIGN_FILL);
-    gtk_widget_set_hexpand (hbox, TRUE);
-    gtk_widget_set_margin_end (hbox, 0);
-    gtk_widget_set_margin_start (hbox, 0);
-    gtk_box_pack_start (GTK_BOX (vbox), hbox,
-        FALSE, FALSE, 0);
+  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 5);
+  gtk_widget_set_halign (hbox, GTK_ALIGN_FILL);
+  gtk_widget_set_hexpand (hbox, TRUE);
+  gtk_widget_set_margin_end (hbox, 0);
+  gtk_widget_set_margin_start (hbox, 0);
+  gtk_box_pack_start (GTK_BOX (vbox), hbox,
+      FALSE, FALSE, 0);
+  marquee->infoBox = hbox;
 
-    marquee->infoArtistLab = uiutilsCreateLabel ("");
-    gtk_widget_set_halign (marquee->infoArtistLab, GTK_ALIGN_START);
-    gtk_widget_set_hexpand (hbox, TRUE);
-    gtk_widget_set_can_focus (marquee->infoArtistLab, FALSE);
-    gtk_label_set_ellipsize (GTK_LABEL (marquee->infoArtistLab), PANGO_ELLIPSIZE_END);
-    gtk_box_pack_start (GTK_BOX (hbox), marquee->infoArtistLab,
-        FALSE, FALSE, 0);
+  marquee->infoArtistLab = uiutilsCreateLabel ("");
+  gtk_widget_set_halign (marquee->infoArtistLab, GTK_ALIGN_START);
+  gtk_widget_set_hexpand (hbox, TRUE);
+  gtk_widget_set_can_focus (marquee->infoArtistLab, FALSE);
+  gtk_label_set_ellipsize (GTK_LABEL (marquee->infoArtistLab), PANGO_ELLIPSIZE_END);
+  gtk_box_pack_start (GTK_BOX (hbox), marquee->infoArtistLab,
+      FALSE, FALSE, 0);
 
-    marquee->infoSepLab = uiutilsCreateLabel ("");
-    gtk_widget_set_halign (marquee->infoSepLab, GTK_ALIGN_START);
-    gtk_widget_set_hexpand (hbox, FALSE);
-    gtk_widget_set_can_focus (marquee->infoSepLab, FALSE);
-    gtk_box_pack_start (GTK_BOX (hbox), marquee->infoSepLab,
-        FALSE, FALSE, 0);
+  marquee->infoSepLab = uiutilsCreateLabel ("");
+  gtk_widget_set_halign (marquee->infoSepLab, GTK_ALIGN_START);
+  gtk_widget_set_hexpand (hbox, FALSE);
+  gtk_widget_set_can_focus (marquee->infoSepLab, FALSE);
+  gtk_box_pack_start (GTK_BOX (hbox), marquee->infoSepLab,
+      FALSE, FALSE, 0);
 
-    marquee->infoTitleLab = uiutilsCreateLabel ("");
-    gtk_widget_set_halign (marquee->infoTitleLab, GTK_ALIGN_START);
-    gtk_widget_set_hexpand (hbox, TRUE);
-    gtk_widget_set_can_focus (marquee->infoTitleLab, FALSE);
-    gtk_label_set_ellipsize (GTK_LABEL (marquee->infoArtistLab), PANGO_ELLIPSIZE_END);
-    gtk_box_pack_start (GTK_BOX (hbox), marquee->infoTitleLab,
-        FALSE, FALSE, 0);
-  }
+  marquee->infoTitleLab = uiutilsCreateLabel ("");
+  gtk_widget_set_halign (marquee->infoTitleLab, GTK_ALIGN_START);
+  gtk_widget_set_hexpand (hbox, TRUE);
+  gtk_widget_set_can_focus (marquee->infoTitleLab, FALSE);
+  gtk_label_set_ellipsize (GTK_LABEL (marquee->infoTitleLab), PANGO_ELLIPSIZE_END);
+  gtk_box_pack_start (GTK_BOX (hbox), marquee->infoTitleLab,
+      FALSE, FALSE, 0);
 
   marquee->sep = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
   gtk_widget_set_margin_top (marquee->sep, 2);
@@ -535,7 +536,11 @@ marqueeActivate (GApplication *app, gpointer userdata)
     marquee->isIconified = true;
   }
 
+  if (! marquee->mqShowInfo) {
+    gtk_widget_hide (marquee->infoBox);
+  }
   gtk_widget_show_all (window);
+
   marqueeMoveWindow (marquee);
 
   progstateLogTime (marquee->progstate, "time-to-start-gui");
@@ -675,6 +680,10 @@ marqueeProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_MARQUEE_SET_FONT_SZ: {
           marqueeSetFont (marquee, atoi (args));
+          break;
+        }
+        case MSG_FINISHED: {
+          marqueeDisplayCompletion (marquee);
           break;
         }
         default: {
@@ -925,6 +934,10 @@ marqueePopulate (marquee_t *marquee, char *args)
 
   logProcBegin (LOG_PROC, "marqueePopulate");
 
+  if (! marquee->mqShowInfo) {
+    gtk_widget_hide (marquee->infoBox);
+  }
+
   p = strtok_r (args, MSG_ARGS_RS_STR, &tokptr);
   if (marquee->infoArtistLab != NULL) {
     if (p != NULL && *p == MSG_ARGS_EMPTY) {
@@ -1049,3 +1062,17 @@ marqueeSetFont (marquee_t *marquee, int sz)
   logProcEnd (LOG_PROC, "marqueeSetFont", "");
 }
 
+static void
+marqueeDisplayCompletion (marquee_t *marquee)
+{
+  char  *disp;
+
+  disp = bdjoptGetStr (OPT_P_COMPLETE_MSG);
+  gtk_label_set_label (GTK_LABEL (marquee->infoArtistLab), "");
+  gtk_label_set_label (GTK_LABEL (marquee->infoSepLab), "");
+  gtk_label_set_label (GTK_LABEL (marquee->infoTitleLab), disp);
+
+  if (! marquee->mqShowInfo) {
+    gtk_widget_show_all (marquee->infoBox);
+  }
+}

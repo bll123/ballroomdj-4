@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: BDJ4 4.0.0\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
-"POT-Creation-Date: 2022-04-05\n"
-"PO-Revision-Date: 2022-04-05\n"
+"POT-Creation-Date: 2022-04-14\n"
+"PO-Revision-Date: 2022-04-14\n"
 "Last-Translator: marimo\n"
 "Language-Team: dutch\n"
 "Language: nl\n"
@@ -85,6 +85,9 @@ msgstr "Artiest"
 msgid "Audio"
 msgstr ""
 
+msgid "Audio File Date"
+msgstr "Audio bestandsdatum"
+
 msgid "Audio Files"
 msgstr "Audiobestanden"
 
@@ -140,6 +143,9 @@ msgstr "Sluiten"
 msgid "Complete"
 msgstr "Voltooien"
 
+msgid "Completion Message"
+msgstr "Voltooiingsbericht"
+
 msgid "Composer"
 msgstr "Componist"
 
@@ -178,6 +184,9 @@ msgstr "Dans beoordeling"
 
 msgid "Database Loads Dance From Genre"
 msgstr "Database laadt dansen voor Genre"
+
+msgid "Date"
+msgstr "Datum"
 
 msgid "Date Added"
 msgstr "Datum toegevoegd"
@@ -298,6 +307,9 @@ msgstr ""
 msgid "Font"
 msgstr "Lettertype"
 
+msgid "Font Size"
+msgstr ""
+
 msgid "Foxtrot"
 msgstr "Foxtrot"
 
@@ -401,6 +413,9 @@ msgstr "Marquee weergave"
 
 msgid "Marquee Font"
 msgstr "Marquee lettertype"
+
+msgid "Marquee Font Size"
+msgstr ""
 
 msgid "Marquee Options"
 msgstr "Marquee Opties"
@@ -595,6 +610,9 @@ msgstr "Quickstep"
 msgid "Rating"
 msgstr "Beoordeling"
 
+msgid "Remove"
+msgstr "Verwijderen"
+
 msgid "Remove Spaces"
 msgstr ""
 
@@ -665,17 +683,17 @@ msgstr "Afsluitscript"
 msgid "Skipping conversion."
 msgstr ""
 
-msgid "Song Editor"
-msgstr "Song Editor"
+msgid "Song Editor - Column 1"
+msgstr ""
+
+msgid "Song Editor - Column 2"
+msgstr ""
 
 msgid "Song End"
 msgstr "Song Einde"
 
 msgid "Song List"
 msgstr "Songlijst"
-
-msgid "Song Selection"
-msgstr "Song selectie"
 
 msgid "Song Start"
 msgstr "Song Start"
@@ -707,6 +725,9 @@ msgstr "Tags"
 msgid "Tango"
 msgstr "Tango"
 
+msgid "Thank You Dancers"
+msgstr ""
+
 msgid ""
 "The conversion process will only run for new installations and for re-"
 "installations."
@@ -733,8 +754,8 @@ msgstr "Pauze omschakelen"
 msgid "Toggle Repeat"
 msgstr ""
 
-msgid "Track Number"
-msgstr "Track nummer"
+msgid "Track"
+msgstr "Track"
 
 msgid "Triangle"
 msgstr "Driehoek"

@@ -492,7 +492,7 @@ uiplayerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           uiplayerProcessMusicqStatusData (uiplayer, args);
           break;
         }
-        case MSG_PLAYERUI_CLR_DISP: {
+        case MSG_FINISHED: {
           uiplayerClearDisplay (uiplayer);
           break;
         }
