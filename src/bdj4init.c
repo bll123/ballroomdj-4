@@ -133,6 +133,7 @@ bdj4startup (int argc, char *argv[], char *tag, bdjmsgroute_t route, int flags)
   while (rc < 0) {
     ++count;
     if (count > 10) {
+      fprintf (stderr, "Unable to acquire lock: %s\n", lockName (route));
       bdj4shutdown (route);
       exit (1);
     }

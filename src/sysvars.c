@@ -8,7 +8,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include <locale.h>
 
 #if _sys_resource
 # include <sys/resource.h>
@@ -24,7 +23,6 @@
 #endif
 
 #include "bdj4.h"
-#include "bdj4intl.h"
 #include "sysvars.h"
 #include "bdjstring.h"
 #include "filedata.h"
@@ -202,13 +200,12 @@ sysvarsInit (const char *argv0)
     }
   }
 
-  setlocale (LC_ALL, "");
-
+  /* want to avoid having setlocale() linked in to sysvars. */
+  /* so these defaults are all wrong */
   /* the locale is reset by localeinit */
-  /* localeinit will convert the windows names to something normal */
-  snprintf (tbuf, sizeof (tbuf), "%-.5s", setlocale (LOC_LC_MESSAGES, NULL));
-  strlcpy (sysvars [SV_LOCALE_SYSTEM], tbuf, SV_MAX_SZ);
-  strlcpy (sysvars [SV_LOCALE], tbuf, SV_MAX_SZ);
+  /* localeinit will also convert the windows names to something normal */
+  strlcpy (sysvars [SV_LOCALE_SYSTEM], "en_GB.UTF-8", SV_MAX_SZ);
+  strlcpy (sysvars [SV_LOCALE], "en_GB", SV_MAX_SZ);
   lsysvars [SVL_LOCALE_SET] = 0;
 
   snprintf (buff, sizeof (buff), "%s/locale.txt", sysvars [SV_BDJ4DATADIR]);
@@ -343,6 +340,7 @@ sysvarsInit (const char *argv0)
   // $HOME/.local/bin/mutagen-inspect
   // %USERPROFILE%/AppData/Local/Programs/Python/Python<pyver>/Scripts/mutagen-inspect-script.py
   // $HOME/Library/Python/<pyver>/lib/python/site-packages
+  // msys2: $HOME/.local/bin/mutagen-inspect (use $HOME, not %USERPROFILE%)
 
   if (isLinux ()) {
     snprintf (buff, sizeof (buff),
@@ -364,7 +362,7 @@ sysvarsInit (const char *argv0)
     if (isWindows ()) {
       /* for msys2 testing */
       snprintf (buff, sizeof (buff),
-          "%s/.local/bin/%s", sysvars [SV_HOME], "mutagen-inspect");
+          "%s/.local/bin/%s", getenv ("HOME"), "mutagen-inspect");
       if (fileopFileExists (buff)) {
         strlcpy (sysvars [SV_PYTHON_MUTAGEN], buff, SV_MAX_SZ);
       }

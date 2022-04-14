@@ -36,24 +36,16 @@ static slist_t    * tagLookup [TAG_TYPE_MAX] = { NULL, NULL, NULL };
 char *
 audiotagReadTags (char *ffn, long count)
 {
-  char        tmpfn [MAXPATHLEN];
-  char        buff [40];
-  char        *data;
+  char        * data;
   char        * targv [5];
-
-  snprintf (buff, sizeof (buff), "%s-%ld", AUDIOTAG_TMP_FILE, count);
-  pathbldMakePath (tmpfn, sizeof (tmpfn), "",
-      buff, ".txt", PATHBLD_MP_TMPDIR);
-
 
   targv [0] = sysvarsGetStr (SV_PYTHON_PATH);
   targv [1] = sysvarsGetStr (SV_PYTHON_MUTAGEN);
   targv [2] = ffn;
   targv [3] = NULL;
 
-  osProcessStart (targv, OS_PROC_WAIT, NULL, tmpfn);
-  data = filedataReadAll (tmpfn, NULL);
-  fileopDelete (tmpfn);
+  data = malloc (AUDIOTAG_TAG_BUFF_SIZE);
+  osProcessPipe (targv, OS_PROC_WAIT, data, AUDIOTAG_TAG_BUFF_SIZE);
   return data;
 }
 
@@ -282,6 +274,9 @@ audiotagParseNumberPair (char *data, int *a, int *b)
 {
   char    *p;
 
+  *a = 0;
+  *b = 0;
+
   /* apple style track number */
   if (*data == '(') {
     p = data;
@@ -292,10 +287,13 @@ audiotagParseNumberPair (char *data, int *a, int *b)
       ++p;
       *b = atoi (p);
     }
+    return;
   }
+
+  /* track/total style */
   p = strstr (data, "/");
+  *a = atoi (data);
   if (p != NULL) {
-    *a = atoi (data);
     ++p;
     *b = atoi (p);
   }

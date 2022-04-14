@@ -70,6 +70,7 @@ sRandom (void)
 #endif
 }
 
+/* handles redirection to a file */
 pid_t
 osProcessStart (char *targv[], int flags, void **handle, char *outfname)
 {
@@ -152,7 +153,7 @@ osProcessStart (char *targv[], int flags, void **handle, char *outfname)
 
       sao.nLength = sizeof (SECURITY_ATTRIBUTES);
       sao.lpSecurityDescriptor = NULL;
-      sao.bInheritHandle = 1;
+      sao.bInheritHandle = TRUE;
 
       outhandle = CreateFile (outfname,
         GENERIC_WRITE,
@@ -230,6 +231,171 @@ osProcessStart (char *targv[], int flags, void **handle, char *outfname)
         ++count;
       }
     }
+    free (wbuff);
+  }
+#endif
+  return pid;
+}
+
+/* creates a pipe for re-direction and grabs the output */
+pid_t
+osProcessPipe (char *targv[], int flags, char *rbuff, size_t sz)
+{
+  pid_t       pid;
+
+#if _lib_fork
+  {
+    pid_t       tpid;
+    int         rc;
+    int         pipefd [2];
+    int         ostdout;
+    int         ostderr;
+    ssize_t     bytesread;
+
+    if (pipe (pipefd) < 0) {
+      return -1;
+    }
+
+    /* this may be slower, but it works; speed is not a major issue */
+    tpid = fork ();
+    if (tpid < 0) {
+      return tpid;
+    }
+
+    if (tpid == 0) {
+      /* child */
+      /* close any open file descriptors, but not the pipe write side */
+      for (int i = 3; i < 30; ++i) {
+        if (pipefd [1] == i) {
+          continue;
+        }
+        close (i);
+      }
+
+      ostdout = dup (STDOUT_FILENO);
+      ostderr = dup (STDERR_FILENO);
+      dup2 (pipefd [1], STDOUT_FILENO);
+      dup2 (pipefd [1], STDERR_FILENO);
+
+      rc = execv (targv [0], targv);
+      if (rc < 0) {
+        fprintf (stderr, "unable to execute %s %d %s\n", targv [0], errno, strerror (errno));
+        exit (1);
+      }
+
+      close (STDOUT_FILENO);
+      close (STDERR_FILENO);
+      dup2 (ostdout, STDOUT_FILENO);
+      dup2 (ostderr, STDERR_FILENO);
+      close (ostdout);
+      close (ostderr);
+
+      exit (0);
+    }
+
+    pid = tpid;
+    if ((flags & OS_PROC_WAIT) == OS_PROC_WAIT) {
+      waitpid (pid, NULL, 0);
+    }
+
+    bytesread = read (pipefd [0], rbuff, sz);
+    rbuff [bytesread] = '\0';
+    close (pipefd [0]);
+    close (pipefd [1]);
+  }
+#endif
+
+#if _lib_CreateProcess
+  {
+    STARTUPINFOW        si;
+    PROCESS_INFORMATION pi;
+    char                tbuff [MAXPATHLEN];
+    char                buff [MAXPATHLEN];
+    int                 idx;
+    int                 val;
+    wchar_t             *wbuff;
+    HANDLE              handleStdoutRead = INVALID_HANDLE_VALUE;
+    HANDLE              handleStdoutWrite = INVALID_HANDLE_VALUE;
+    SECURITY_ATTRIBUTES sao;
+    DWORD               bytesRead;
+
+    memset (&si, '\0', sizeof (si));
+    si.cb = sizeof (si);
+    memset (&pi, '\0', sizeof (pi));
+
+    sao.nLength = sizeof (SECURITY_ATTRIBUTES);
+    sao.lpSecurityDescriptor = NULL;
+    sao.bInheritHandle = TRUE;
+
+    if ( ! CreatePipe (&handleStdoutRead, &handleStdoutWrite, &sao, 0) ) {
+      int err = GetLastError ();
+      fprintf (stderr, "createpipe: getlasterr: %d\n", err);
+      return -1;
+    }
+    /* do want to inherit the stdout read side */
+#if 0
+    if ( ! SetHandleInformation (handleStdoutRead, HANDLE_FLAG_INHERIT, 0) ) {
+      int err = GetLastError ();
+      fprintf (stderr, "sethandleinfo: getlasterr: %d\n", err);
+      return -1;
+    }
+#endif
+
+    si.hStdOutput = handleStdoutWrite;
+    si.hStdError = handleStdoutWrite;
+    si.hStdInput = GetStdHandle (STD_INPUT_HANDLE);
+    si.dwFlags |= STARTF_USESTDHANDLES;
+
+    buff [0] = '\0';
+    idx = 0;
+    while (targv [idx] != NULL) {
+      /* quote everything on windows. the batch files must be adjusted to suit */
+      snprintf (tbuff, sizeof (tbuff), "\"%s\"", targv [idx++]);
+      strlcat (buff, tbuff, MAXPATHLEN);
+      strlcat (buff, " ", MAXPATHLEN);
+    }
+    wbuff = osToFSFilename (buff);
+
+    val = 0;
+    if ((flags & OS_PROC_DETACH) == OS_PROC_DETACH) {
+      val |= DETACHED_PROCESS;
+      val |= CREATE_NO_WINDOW;
+    }
+
+    /* windows and its stupid space-in-name and quoting issues */
+    /* leave the module name as null, as otherwise it would have to be */
+    /* a non-quoted version.  the command in the command line must be quoted */
+    if (! CreateProcessW (
+        NULL,           // module name
+        wbuff,           // command line
+        NULL,           // process handle
+        NULL,           // hread handle
+        TRUE,           // handle inheritance
+        val,            // set to DETACHED_PROCESS
+        NULL,           // parent's environment
+        NULL,           // parent's starting directory
+        &si,            // STARTUPINFO structure
+        &pi )           // PROCESS_INFORMATION structure
+    ) {
+      int err = GetLastError ();
+      fprintf (stderr, "getlasterr: %d\n", err);
+      return -1;
+    }
+
+    pid = pi.dwProcessId;
+    CloseHandle (pi.hThread);
+
+    if ((flags & OS_PROC_WAIT) == OS_PROC_WAIT) {
+      WaitForSingleObject (pi.hProcess, INFINITE);
+    }
+
+    ReadFile (handleStdoutRead, rbuff, sz, &bytesRead, NULL);
+    rbuff [bytesRead] = '\0';
+
+    CloseHandle (handleStdoutRead);
+    CloseHandle (handleStdoutWrite);
+    CloseHandle (pi.hProcess);
+
     free (wbuff);
   }
 #endif

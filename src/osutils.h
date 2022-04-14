@@ -39,6 +39,7 @@ double        dRandom (void);
 void          sRandom (void);
 pid_t         osProcessStart (char *targv[], int flags,
                 void **handle, char *outfname);
+pid_t         osProcessPipe (char *targv[], int flags, char *rbuff, size_t sz);
 void          * osToFSFilename (const char *fname);
 char          * osFromFSFilename (const void *fname);
 dirhandle_t   * osDirOpen (const char *dir);

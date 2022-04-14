@@ -213,6 +213,9 @@ dbWrite (char *fn, slist_t *tagList)
   char          tmp [40];
   dbidx_t       rrn;
 
+  if (musicdb == NULL) {
+    return;
+  }
   if (musicdb->radb == NULL) {
     return;
   }

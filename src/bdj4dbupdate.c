@@ -327,6 +327,9 @@ dbupdateProcessing (void *udata)
     }
     logMsg (LOG_DBG, LOG_IMPORTANT, "finish: %ld ms",
         mstimeend (&dbupdate->starttm));
+    logMsg (LOG_DBG, LOG_IMPORTANT, "    found: %lu", dbupdate->fileCount);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "     sent: %lu", dbupdate->fileCountSent);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "processed: %lu", dbupdate->filesProcessed);
     logMsg (LOG_DBG, LOG_IMPORTANT, "  already: %lu", dbupdate->countAlready);
     logMsg (LOG_DBG, LOG_IMPORTANT, "      bad: %lu", dbupdate->countBad);
     logMsg (LOG_DBG, LOG_IMPORTANT, "      new: %lu", dbupdate->countNew);
@@ -458,7 +461,8 @@ dbupdateProcessTagData (dbupdate_t *dbupdate, char *args)
   ffn = strtok_r (args, MSG_ARGS_RS_STR, &tokstr);
   data = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   if (data == NULL) {
-//### fix : need to get what is possible from the pathname
+// ### fix : need to get what is possible from the pathname
+    logMsg (LOG_DBG, LOG_DBUPDATE, "  - null data");
     ++dbupdate->countNullData;
     ++dbupdate->filesProcessed;
     return;
@@ -466,10 +470,9 @@ dbupdateProcessTagData (dbupdate_t *dbupdate, char *args)
 
   tagdata = audiotagParseData (ffn, data);
   if (slistGetCount (tagdata) == 0) {
-//### fix : need to get what is possible from the pathname
+// ### fix : need to get what is possible from the pathname
+    logMsg (LOG_DBG, LOG_DBUPDATE, "  - no tags");
     ++dbupdate->countNoTags;
-    ++dbupdate->filesProcessed;
-    return;
   }
 
   if (logCheck (LOG_DBG, LOG_DBUPDATE)) {

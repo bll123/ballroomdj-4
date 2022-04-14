@@ -426,6 +426,7 @@ target_link_libraries (libbdj4common
   ${GLIB_LDFLAGS}
 )
 addWinSockLibrary (libbdj4common)
+# for RtlGetVersion
 addWinNtdllLibrary (libbdj4common)
 
 add_library (libbdj4 SHARED
