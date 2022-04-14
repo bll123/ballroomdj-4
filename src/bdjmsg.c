@@ -16,6 +16,7 @@ typedef struct {
   char            *text;
 } bdjmsgtxt_t;
 
+/* for debugging */
 static bdjmsgtxt_t routetxt [ROUTE_MAX] = {
   [ROUTE_CLICOMM] = { "CLICOMM" },
   [ROUTE_CONFIGUI] = { "CONFIGUI" },
@@ -32,6 +33,7 @@ static bdjmsgtxt_t routetxt [ROUTE_MAX] = {
   [ROUTE_STARTERUI] = { "STARTERUI" },
 };
 
+/* for debugging */
 static bdjmsgtxt_t msgtxt [MSG_MAX] = {
   [MSG_NULL] = { "NULL" },
   [MSG_EXIT_REQUEST] = { "EXIT_REQUEST" },
@@ -84,6 +86,9 @@ static bdjmsgtxt_t msgtxt [MSG_MAX] = {
   [MSG_MUSICQ_STATUS_DATA] = { "MUSICQ_STATUS_DATA" },
   [MSG_PLAYLIST_LIST_DATA] = { "PLAYLIST_LIST_DATA" },
   [MSG_MARQUEE_TIMER] = { "MARQUEE_TIMER" },
+  [MSG_MARQUEE_SET_FONT_SZ] = { "MARQUEE_SET_FONT_SZ" },
+  [MSG_MARQUEE_IS_MAX] = { "MARQUEE_IS_MAX" },
+  [MSG_MARQUEE_FONT_SIZES] = { "MARQUEE_FONT_SIZES" },
   [MSG_DB_FILE_TAGS] = { "DB_FILE_TAGS" },
   [MSG_DB_STATUS] = { "DB_STATUS" },
   [MSG_DB_FILE_CHK] = { "DB_FILE_CHK" },

@@ -89,8 +89,11 @@ typedef enum {
   MSG_MUSICQ_STATUS_DATA,   // main response to remote control
   MSG_PLAYLIST_LIST_DATA,   // args: html option list
 
-  /* to marquee */
+  /* to/from marquee */
   MSG_MARQUEE_TIMER,        // args: played time, duration
+  MSG_MARQUEE_SET_FONT_SZ,  // args: font-size
+  MSG_MARQUEE_IS_MAX,       // args: boolean flag
+  MSG_MARQUEE_FONT_SIZES,   // args: font-size, font-size-fs
 
   /* to/from dbudpate */
   MSG_DB_FILE_TAGS,         // args: filename, tag data

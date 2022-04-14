@@ -1450,5 +1450,6 @@ playerSendStatus (playerdata_t *playerData)
 
   connSendMessage (playerData->conn, ROUTE_MAIN,
       MSG_PLAYER_STATUS_DATA, rbuff);
-  mstimeset (&playerData->statusCheck, 100);
+  /* four times a second... */
+  mstimeset (&playerData->statusCheck, 250);
 }

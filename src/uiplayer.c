@@ -699,7 +699,7 @@ uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args)
     gtk_label_set_label (GTK_LABEL (uiplayer->seekDisplayLab), tbuff);
 
     timeleft = dur - position;
-    tmutilToMSD (timeleft, tbuff, sizeof (tbuff));
+    tmutilToMS (timeleft, tbuff, sizeof (tbuff));
     gtk_label_set_label (GTK_LABEL (uiplayer->countdownTimerLab), tbuff);
 
     if (ddur == 0.0) {

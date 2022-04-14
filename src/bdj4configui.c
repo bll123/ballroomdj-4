@@ -155,6 +155,7 @@ enum {
   CONFUI_WIDGET_MMQ_QR_CODE,
   CONFUI_WIDGET_MQ_ACCENT_COLOR,
   CONFUI_WIDGET_MQ_FONT,
+  CONFUI_WIDGET_MQ_FONT_FS,
   CONFUI_WIDGET_MQ_QUEUE_LEN,
   CONFUI_WIDGET_MQ_SHOW_SONG_INFO,
   CONFUI_WIDGET_PL_QUEUE_LEN,
@@ -1071,6 +1072,7 @@ confuiActivate (GApplication *app, gpointer userdata)
 
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   gtk_widget_set_halign (hbox, GTK_ALIGN_START);
+  gtk_widget_set_vexpand (hbox, FALSE);
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
 
   widget = uiutilsCreateScrolledWindow ();
@@ -1093,7 +1095,8 @@ confuiActivate (GApplication *app, gpointer userdata)
   gtk_widget_set_vexpand (dvbox, FALSE);
   gtk_widget_set_margin_start (dvbox, 8);
   gtk_widget_set_margin_end (dvbox, 8);
-  gtk_widget_set_valign (dvbox, GTK_ALIGN_CENTER);
+  gtk_widget_set_margin_top (dvbox, 128);
+  gtk_widget_set_valign (dvbox, GTK_ALIGN_START);
   gtk_box_pack_start (GTK_BOX (hbox), dvbox, FALSE, FALSE, 0);
 
   widget = uiutilsCreateButton (_("Select"), "button_right", NULL, confui);
@@ -1124,7 +1127,8 @@ confuiActivate (GApplication *app, gpointer userdata)
   gtk_widget_set_vexpand (dvbox, FALSE);
   gtk_widget_set_margin_start (dvbox, 8);
   gtk_widget_set_margin_end (dvbox, 8);
-  gtk_widget_set_valign (dvbox, GTK_ALIGN_CENTER);
+  gtk_widget_set_margin_top (dvbox, 128);
+  gtk_widget_set_valign (dvbox, GTK_ALIGN_START);
   gtk_box_pack_start (GTK_BOX (hbox), dvbox, FALSE, FALSE, 0);
 
   widget = uiutilsCreateButton (_("Move Up"), "button_up", NULL, confui);

@@ -52,6 +52,10 @@ typedef struct {
   musicqidx_t     musicqManageIdx;
   dispsel_t       *dispsel;
   int             dbgflags;
+  int             marqueeIsMaximized;
+  int             marqueeFontSize;
+  int             marqueeFontSizeFS;
+  mstime_t        marqueeFontSizeCheck;
   /* gtk stuff */
   GtkApplication  *app;
   GtkWidget       *window;
@@ -62,6 +66,8 @@ typedef struct {
   GtkWidget       *setPlaybackButton;
   GdkPixbuf       *ledoffImg;
   GdkPixbuf       *ledonImg;
+  GtkWidget       *marqueeFontSizeDialog;
+  GtkWidget       *marqueeSpinBox;
   /* ui major elements */
   uiplayer_t      *uiplayer;
   uimusicq_t      *uimusicq;
@@ -112,6 +118,12 @@ static void     pluiToggleExtraQueues (GtkWidget *mi, gpointer udata);
 static void     pluiSetExtraQueues (playerui_t *plui);
 static void     pluiToggleSwitchQueue (GtkWidget *mi, gpointer udata);
 static void     pluiSetSwitchQueue (playerui_t *plui);
+static void     pluiMarqueeFontSizeDialog (GtkMenuItem *mi, gpointer udata);
+static void     pluiCreateMarqueeFontSizeDialog (playerui_t *plui);
+static void     pluiMarqueeFontSizeDialogResponse (GtkDialog *d, gint responseid, gpointer udata);
+static void     pluiMarqueeFontSizeChg (GtkSpinButton *fb, gpointer udata);
+static void     pluisetMarqueeIsMaximized (playerui_t *plui, char *args);
+static void     pluisetMarqueeFontSizes (playerui_t *plui, char *args);
 
 
 static int gKillReceived = 0;
@@ -129,6 +141,7 @@ main (int argc, char *argv[])
 
   plui.clock = NULL;
   plui.notebook = NULL;
+  plui.marqueeFontSizeDialog = NULL;
   plui.progstate = progstateInit ("playerui");
   progstateSetCallback (plui.progstate, STATE_LISTENING,
       pluiListeningCallback, &plui);
@@ -143,6 +156,10 @@ main (int argc, char *argv[])
   plui.uisongsel = NULL;
   plui.musicqPlayIdx = MUSICQ_A;
   plui.musicqManageIdx = MUSICQ_A;
+  plui.marqueeIsMaximized = false;
+  plui.marqueeFontSize = 36;
+  plui.marqueeFontSizeFS = 60;
+  mstimeset (&plui.marqueeFontSizeCheck, 3600000);
 
   for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
     plui.processes [i] = NULL;
@@ -410,6 +427,17 @@ pluiActivate (GApplication *app, gpointer userdata)
   g_signal_connect (menuitem, "toggled",
       G_CALLBACK (pluiToggleSwitchQueue), plui);
 
+  menuitem = gtk_menu_item_new_with_label (_("Marquee"));
+  gtk_menu_shell_append (GTK_MENU_SHELL (menubar), menuitem);
+
+  menu = gtk_menu_new ();
+  gtk_menu_item_set_submenu (GTK_MENU_ITEM (menuitem), menu);
+
+  menuitem = gtk_menu_item_new_with_label (_("Font Size"));
+  gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
+  g_signal_connect (menuitem, "activate",
+      G_CALLBACK (pluiMarqueeFontSizeDialog), plui);
+
   /* player */
   widget = uiplayerActivate (plui->uiplayer);
   gtk_widget_set_hexpand (widget, TRUE);
@@ -511,6 +539,20 @@ pluiMainLoop (void *tplui)
     return cont;
   }
 
+  if (mstimeCheck (&plui->marqueeFontSizeCheck)) {
+    char        tbuff [40];
+    int         sz;
+
+    if (plui->marqueeIsMaximized) {
+      sz = plui->marqueeFontSizeFS;
+    } else {
+      sz = plui->marqueeFontSize;
+    }
+    snprintf (tbuff, sizeof (tbuff), "%d", sz);
+    connSendMessage (plui->conn, ROUTE_MARQUEE, MSG_MARQUEE_SET_FONT_SZ, tbuff);
+    mstimeset (&plui->marqueeFontSizeCheck, 3600000);
+  }
+
   uiplayerMainLoop (plui->uiplayer);
   uimusicqMainLoop (plui->uimusicq);
   uisongselMainLoop (plui->uisongsel);
@@ -570,9 +612,13 @@ pluiConnectingCallback (void *udata, programstate_t programState)
   if (! connIsConnected (plui->conn, ROUTE_PLAYER)) {
     connConnect (plui->conn, ROUTE_PLAYER);
   }
+  if (! connIsConnected (plui->conn, ROUTE_MARQUEE)) {
+    connConnect (plui->conn, ROUTE_MARQUEE);
+  }
 
   if (connIsConnected (plui->conn, ROUTE_MAIN) &&
-      connIsConnected (plui->conn, ROUTE_PLAYER)) {
+      connIsConnected (plui->conn, ROUTE_PLAYER) &&
+      connIsConnected (plui->conn, ROUTE_MARQUEE)) {
     rc = true;
   }
 
@@ -589,7 +635,8 @@ pluiHandshakeCallback (void *udata, programstate_t programState)
   logProcBegin (LOG_PROC, "pluiHandshakeCallback");
 
   if (connHaveHandshake (plui->conn, ROUTE_MAIN) &&
-      connHaveHandshake (plui->conn, ROUTE_PLAYER)) {
+      connHaveHandshake (plui->conn, ROUTE_PLAYER) &&
+      connHaveHandshake (plui->conn, ROUTE_MARQUEE)) {
     progstateLogTime (plui->progstate, "time-to-start-gui");
     rc = true;
   }
@@ -632,6 +679,14 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_QUEUE_SWITCH: {
           pluiSetPlaybackQueue (plui, atoi (args));
+          break;
+        }
+        case MSG_MARQUEE_IS_MAX: {
+          pluisetMarqueeIsMaximized (plui, args);
+          break;
+        }
+        case MSG_MARQUEE_FONT_SIZES: {
+          pluisetMarqueeFontSizes (plui, args);
           break;
         }
         default: {
@@ -831,5 +886,145 @@ pluiSetSwitchQueue (playerui_t *plui)
       nlistGetNum (plui->options, PLUI_SWITCH_QUEUE_WHEN_EMPTY));
   connSendMessage (plui->conn, ROUTE_MAIN, MSG_QUEUE_SWITCH_EMPTY, tbuff);
   logProcEnd (LOG_PROC, "pluiSetSwitchQueue", "");
+}
+
+static void
+pluiMarqueeFontSizeDialog (GtkMenuItem *mi, gpointer udata)
+{
+  playerui_t      *plui = udata;
+  int             sz;
+  GtkAdjustment   *adjustment;
+
+  logProcBegin (LOG_PROC, "pluiMarqueeFontSizeDialog");
+
+  if (plui->marqueeFontSizeDialog == NULL) {
+    pluiCreateMarqueeFontSizeDialog (plui);
+  }
+
+  if (plui->marqueeIsMaximized) {
+    sz = plui->marqueeFontSizeFS;
+  } else {
+    sz = plui->marqueeFontSize;
+  }
+
+  adjustment = gtk_spin_button_get_adjustment (
+      GTK_SPIN_BUTTON (plui->marqueeSpinBox));
+  gtk_adjustment_set_value (adjustment, (double) sz);
+
+  gtk_widget_show_all (plui->marqueeFontSizeDialog);
+
+  logProcEnd (LOG_PROC, "pluiMarqueeFontSizeDialog", "");
+}
+
+
+
+static void
+pluiCreateMarqueeFontSizeDialog (playerui_t *plui)
+{
+  GtkWidget     *content;
+  GtkWidget     *vbox;
+  GtkWidget     *hbox;
+  GtkWidget     *widget;
+
+  logProcBegin (LOG_PROC, "pluiCreateMarqueeFontSizeDialog");
+
+  plui->marqueeFontSizeDialog = gtk_dialog_new_with_buttons (
+      _("Marquee Font Size"),
+      GTK_WINDOW (plui->window),
+      GTK_DIALOG_DESTROY_WITH_PARENT,
+      _("Close"),
+      GTK_RESPONSE_CLOSE,
+      NULL
+      );
+
+  content = gtk_dialog_get_content_area (GTK_DIALOG (plui->marqueeFontSizeDialog));
+
+  vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+  assert (vbox != NULL);
+  gtk_widget_set_hexpand (vbox, FALSE);
+  gtk_widget_set_vexpand (vbox, FALSE);
+  gtk_container_add (GTK_CONTAINER (content), vbox);
+
+  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+  assert (hbox != NULL);
+  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+
+  widget = uiutilsCreateColonLabel (_("Font Size"));
+  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+
+  plui->marqueeSpinBox = uiutilsSpinboxIntCreate ();
+  uiutilsSpinboxSet (plui->marqueeSpinBox, 10.0, 300.0);
+  uiutilsSpinboxSetValue (plui->marqueeSpinBox, 36.0);
+  gtk_box_pack_start (GTK_BOX (hbox), plui->marqueeSpinBox, FALSE, FALSE, 0);
+  g_signal_connect (plui->marqueeSpinBox, "value-changed",
+      G_CALLBACK (pluiMarqueeFontSizeChg), plui);
+
+  /* the dialog doesn't have any space above the buttons */
+  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+  assert (hbox != NULL);
+  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+
+  widget = uiutilsCreateLabel ("");
+  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+
+  g_signal_connect (plui->marqueeFontSizeDialog, "response",
+      G_CALLBACK (pluiMarqueeFontSizeDialogResponse), plui);
+  logProcEnd (LOG_PROC, "pluiCreateMarqueeFontSizeDialog", "");
+}
+
+static void
+pluiMarqueeFontSizeDialogResponse (GtkDialog *d, gint responseid, gpointer udata)
+{
+  playerui_t  *plui = udata;
+
+  switch (responseid) {
+    case GTK_RESPONSE_DELETE_EVENT: {
+      plui->marqueeFontSizeDialog = NULL;
+      break;
+    }
+    case GTK_RESPONSE_CLOSE: {
+      gtk_widget_hide (plui->marqueeFontSizeDialog);
+      break;
+    }
+  }
+}
+
+static void
+pluiMarqueeFontSizeChg (GtkSpinButton *sb, gpointer udata)
+{
+  playerui_t  *plui = udata;
+  int         fontsz;
+  GtkAdjustment *adjustment;
+  double      value;
+
+  adjustment = gtk_spin_button_get_adjustment (sb);
+  value = gtk_adjustment_get_value (adjustment);
+  fontsz = (int) round (value);
+  if (plui->marqueeIsMaximized) {
+    plui->marqueeFontSizeFS = fontsz;
+  } else {
+    plui->marqueeFontSize = fontsz;
+  }
+  mstimeset (&plui->marqueeFontSizeCheck, 100);
+}
+
+static void
+pluisetMarqueeIsMaximized (playerui_t *plui, char *args)
+{
+  int   val = atoi (args);
+
+  plui->marqueeIsMaximized = val;
+}
+
+static void
+pluisetMarqueeFontSizes (playerui_t *plui, char *args)
+{
+  char      *p;
+  char      *tokstr;
+
+  p = strtok_r (args, MSG_ARGS_RS_STR, &tokstr);
+  plui->marqueeFontSize = atoi (p);
+  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
+  plui->marqueeFontSizeFS = atoi (p);
 }
 
