@@ -96,7 +96,6 @@ static bool     marqueeConnectingCallback (void *udata, programstate_t programSt
 static bool     marqueeHandshakeCallback (void *udata, programstate_t programState);
 static bool     marqueeStoppingCallback (void *udata, programstate_t programState);
 static bool     marqueeClosingCallback (void *udata, programstate_t programState);
-static int      marqueeCreateGui (marquee_t *marquee, int argc, char *argv []);
 static void     marqueeActivate (GApplication *app, gpointer userdata);
 gboolean        marqueeMainLoop  (void *tmarquee);
 static int      marqueeProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
@@ -276,7 +275,8 @@ main (int argc, char *argv[])
   mqfont = bdjoptGetStr (OPT_MP_MQFONT);
   uiutilsSetUIFont (mqfont);
 
-  status = marqueeCreateGui (&marquee, 0, NULL);
+  status = uiutilsCreateApplication (0, NULL, "marquee",
+      &marquee.app, marqueeActivate, &marquee);
 
   while (progstateShutdownProcess (marquee.progstate) != STATE_CLOSED) {
     mssleep (10);
@@ -329,8 +329,9 @@ marqueeClosingCallback (void *udata, programstate_t programState)
 
   /* these are moved here so that the window can be un-maximized and */
   /* the size/position saved */
-  gtk_widget_destroy (marquee->window);
-  g_object_unref (marquee->app);
+  if (GTK_IS_WIDGET (marquee->window)) {
+    gtk_widget_destroy (marquee->window);
+  }
 
   pathbldMakePath (fn, sizeof (fn), "",
       "marquee", ".txt", PATHBLD_MP_USEIDX);
@@ -358,28 +359,6 @@ marqueeClosingCallback (void *udata, programstate_t programState)
 
   logProcEnd (LOG_PROC, "marqueeClosingCallback", "");
   return true;
-}
-
-static int
-marqueeCreateGui (marquee_t *marquee, int argc, char *argv [])
-{
-  int             status;
-
-  logProcBegin (LOG_PROC, "marqueeCreateGui");
-
-  marquee->app = gtk_application_new (
-      "org.bdj4.BDJ4.marquee",
-      G_APPLICATION_NON_UNIQUE
-  );
-  g_signal_connect (marquee->app, "activate", G_CALLBACK (marqueeActivate), marquee);
-
-  /* gtk messes up the locale setting somehow; a re-bind is necessary */
-  localeInit ();
-
-  status = g_application_run (G_APPLICATION (marquee->app), argc, argv);
-
-  logProcEnd (LOG_PROC, "marqueeCreateGui", "");
-  return status;
 }
 
 static void

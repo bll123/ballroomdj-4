@@ -68,7 +68,6 @@ static datafilekey_t starteruidfkeys [STARTERUI_KEY_MAX] = {
 
 static bool     starterStoppingCallback (void *udata, programstate_t programState);
 static bool     starterClosingCallback (void *udata, programstate_t programState);
-static int      starterCreateGui (startui_t *starter, int argc, char *argv []);
 static void     starterActivate (GApplication *app, gpointer userdata);
 gboolean        starterMainLoop  (void *tstarter);
 static int      starterProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
@@ -154,7 +153,8 @@ main (int argc, char *argv[])
 
   g_timeout_add (UI_MAIN_LOOP_TIMER, starterMainLoop, &starter);
 
-  status = starterCreateGui (&starter, 0, NULL);
+  status = uiutilsCreateApplication (0, NULL, "starterui",
+      &starter.app, starterActivate, &starter);
 
   while (progstateShutdownProcess (starter.progstate) != STATE_CLOSED) {
     ;
@@ -197,6 +197,10 @@ starterClosingCallback (void *udata, programstate_t programState)
   startui_t   *starter = udata;
   char        fn [MAXPATHLEN];
 
+  if (GTK_IS_WIDGET (starter->window)) {
+    gtk_widget_destroy (starter->window);
+  }
+
   pathbldMakePath (fn, sizeof (fn), "",
       "starterui", ".txt", PATHBLD_MP_USEIDX);
   datafileSaveKeyVal ("starterui", fn, starteruidfkeys, STARTERUI_KEY_MAX, starter->options);
@@ -219,29 +223,6 @@ starterClosingCallback (void *udata, programstate_t programState)
   return true;
 }
 
-static int
-starterCreateGui (startui_t *starter, int argc, char *argv [])
-{
-  int           status;
-
-  starter->app = gtk_application_new (
-      "org.bdj4.BDJ4.starterui",
-      G_APPLICATION_NON_UNIQUE
-  );
-
-  g_signal_connect (starter->app, "activate", G_CALLBACK (starterActivate), starter);
-
-  /* gtk messes up the locale setting somehow; a re-bind is necessary */
-  localeInit ();
-
-  status = g_application_run (G_APPLICATION (starter->app), argc, argv);
-  if (GTK_IS_WIDGET (starter->window)) {
-    gtk_widget_destroy (starter->window);
-  }
-  g_object_unref (starter->app);
-  return status;
-}
-
 static void
 starterActivate (GApplication *app, gpointer userdata)
 {
@@ -252,6 +233,9 @@ starterActivate (GApplication *app, gpointer userdata)
   GtkWidget           *hbox;
   char                imgbuff [MAXPATHLEN];
   char                tbuff [MAXPATHLEN];
+
+  pathbldMakePath (imgbuff, sizeof (imgbuff), "",
+      "bdj4_icon", ".svg", PATHBLD_MP_IMGDIR);
 
   starter->window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   assert (starter->window != NULL);

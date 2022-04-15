@@ -62,10 +62,13 @@ typedef struct {
 
 #define UI_MAIN_LOOP_TIMER 20
 
-void uiutilsCleanup (void);
-void uiutilsSetCss (GtkWidget *w, char *style);
-void uiutilsSetUIFont (char *uifont);
-void uiutilsInitGtkLog (void);
+void  uiutilsCleanup (void);
+void  uiutilsSetCss (GtkWidget *w, char *style);
+void  uiutilsSetUIFont (char *uifont);
+void  uiutilsInitGtkLog (void);
+int   uiutilsCreateApplication (int argc, char *argv [],
+    char *tag, GtkApplication **app, void *activateFunc, void *udata);
+
 GtkWidget * uiutilsCreateLabel (char *label);
 GtkWidget * uiutilsCreateColonLabel (char *label);
 GtkWidget * uiutilsCreateButton (char *title, char *imagenm,

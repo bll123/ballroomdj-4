@@ -15,7 +15,10 @@
 #include <gtk/gtk.h>
 
 #if _hdr_winsock2
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wmissing-declarations"
 # include <winsock2.h>
+# pragma clang diagnostic pop
 #endif
 #if _hdr_windows
 # include <windows.h>
@@ -118,7 +121,6 @@ typedef struct {
 #define CONV_TEMP_FILE "tmp/bdj4convout.txt"
 #define BDJ3_LOC_FILE "install/bdj3loc.txt"
 
-static int  installerCreateGui (installer_t *installer, int argc, char *argv []);
 static void installerActivate (GApplication *app, gpointer udata);
 static int  installerMainLoop (void *udata);
 static void installerExit (GtkButton *b, gpointer udata);
@@ -317,7 +319,8 @@ main (int argc, char *argv[])
 
   if (installer.guienabled) {
     g_timeout_add (UI_MAIN_LOOP_TIMER * 5, installerMainLoop, &installer);
-    status = installerCreateGui (&installer, 0, NULL);
+    status = uiutilsCreateApplication (0, NULL, "installer",
+        &installer.app, installerActivate, &installer);
   } else {
     status = 0;
     installer.instState = INST_INIT;
@@ -348,28 +351,6 @@ main (int argc, char *argv[])
   return status;
 }
 
-static int
-installerCreateGui (installer_t *installer, int argc, char *argv [])
-{
-  int             status;
-
-  installer->app = gtk_application_new (
-      "org.bdj4.BDJ4.installer",
-      G_APPLICATION_FLAGS_NONE
-  );
-  g_signal_connect (installer->app, "activate", G_CALLBACK (installerActivate), installer);
-
-  /* gtk messes up the locale setting somehow; a re-bind is necessary */
-  localeInit ();
-
-  status = g_application_run (G_APPLICATION (installer->app), argc, argv);
-  if (GTK_IS_WIDGET (installer->window)) {
-    gtk_widget_destroy (installer->window);
-  }
-  g_object_unref (installer->app);
-  return status;
-}
-
 static void
 installerActivate (GApplication *app, gpointer udata)
 {
@@ -388,7 +369,7 @@ installerActivate (GApplication *app, gpointer udata)
   gtk_window_set_type_hint (GTK_WINDOW (window), GDK_WINDOW_TYPE_HINT_NORMAL);
   gtk_window_set_focus_on_map (GTK_WINDOW (window), FALSE);
   gtk_window_set_title (GTK_WINDOW (window), _("BDJ4 Installer"));
-  gtk_window_set_default_icon_from_file ("img/bdj4_icon.svg", &gerr);
+  gtk_window_set_default_icon_from_file ("img/bdj4_icon_inst.svg", &gerr);
   gtk_window_set_default_size (GTK_WINDOW (window), 1000, 600);
   installer->window = window;
 

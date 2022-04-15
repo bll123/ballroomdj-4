@@ -19,7 +19,10 @@
 #endif
 
 #if _hdr_winsock2
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wmissing-declarations"
 # include <winsock2.h>
+# pragma clang diagnostic pop
 #endif
 #if _hdr_windows
 # include <windows.h>
@@ -153,7 +156,7 @@ osProcessStart (char *targv[], int flags, void **handle, char *outfname)
 
       sao.nLength = sizeof (SECURITY_ATTRIBUTES);
       sao.lpSecurityDescriptor = NULL;
-      sao.bInheritHandle = TRUE;
+      sao.bInheritHandle = 1;
 
       outhandle = CreateFile (outfname,
         GENERIC_WRITE,

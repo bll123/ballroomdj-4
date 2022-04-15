@@ -255,7 +255,6 @@ orgutilClean (char *target, const char *from, size_t sz)
   const char  *tstr;
   char        *tgtp;
   size_t      tgtlen;
-  bool        isdot = false;
 
   tgtp = target;
   tgtlen = 0;
@@ -274,7 +273,6 @@ orgutilClean (char *target, const char *from, size_t sz)
       continue;
     }
 
-    isdot = false;
     if (mlen == 1) {
       bool skip = false;
 

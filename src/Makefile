@@ -22,6 +22,9 @@ release:
 sanitizeaddress:
 	BDJ4_BUILD=SanitizeAddress $(MAKE) cmake
 
+sanitizeaddressclang:
+	BDJ4_BUILD=SanitizeAddress $(MAKE) cmakeclang
+
 sanitizeleak:
 	BDJ4_BUILD=SanitizeLeak $(MAKE) cmake
 
@@ -35,6 +38,19 @@ cmake:
 	  COMP=$(CLANG) COMPXX=$(CLANGXX) $(MAKE) cmake-unix; \
 	else \
 	  COMP=$(GCC) COMPXX=$(GXX) $(MAKE) cmake-windows; \
+	fi
+	$(MAKE) build
+
+cmakeclang:
+	if test $$(uname -s) = Linux; then \
+	  COMP=$(CLANG) COMPXX=$(CLANGXX) $(MAKE) cmake-unix; \
+	elif test $$(uname -s) = Darwin; then \
+	  COMP=$(CLANG) COMPXX=$(CLANGXX) $(MAKE) cmake-unix; \
+	else \
+	  PATH=/ucrt64/bin:$$PATH \
+	  COMP=/ucrt64/bin/clang.exe \
+	  COMPXX=/ucrt64/bin/clang++.exe \
+	  $(MAKE) cmake-windows; \
 	fi
 	$(MAKE) build
 

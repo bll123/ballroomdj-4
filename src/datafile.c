@@ -639,7 +639,6 @@ datafileSaveList (char *tag, char *fn, slist_t *list)
 {
   FILE            *fh;
   slistidx_t      iteridx;
-  slistidx_t      count;
   char            *str;
 
   fh = datafileSavePrep (fn, tag);
@@ -647,10 +646,8 @@ datafileSaveList (char *tag, char *fn, slist_t *list)
     return;
   }
 
-  count = slistGetCount (list);
   slistStartIterator (list, &iteridx);
 
-  count = 0;
   while ((str = slistIterateKey (list, &iteridx)) != NULL) {
     fprintf (fh, "%s\n", str);
   }

@@ -460,7 +460,6 @@ uimusicqProcessMusicQueueDataNew (uimusicq_t *uimusicq, char * args)
   song_t            *song = NULL;
   GtkTreeIter       iter;
   GtkListStore      *store = NULL;
-  dance_t           *dances = NULL;
   GdkPixbuf         *pixbuf = NULL;
   nlistidx_t        iteridx;
   musicqupdate_t    *musicqupdate = NULL;
@@ -473,8 +472,6 @@ uimusicqProcessMusicQueueDataNew (uimusicq_t *uimusicq, char * args)
   logProcBegin (LOG_PROC, "uimusicqProcessMusicQueueDataNew");
   listingFont = bdjoptGetStr (OPT_MP_LISTING_FONT);
 
-
-  dances = bdjvarsdfGet (BDJVDF_DANCES);
 
   musicqstoretypes = malloc (sizeof (GType) * MUSICQ_COL_MAX);
   musicqcolcount = 0;
@@ -537,7 +534,6 @@ uimusicqProcessMusicQueueDataUpdate (uimusicq_t *uimusicq, char * args)
 {
   int               ci;
   unsigned long     tlong;
-  dance_t           *dances;
   GtkTreeModel      *model;
   GtkTreeIter       iter;
   GtkTreeRowReference *rowref;
@@ -582,15 +578,11 @@ uimusicqProcessMusicQueueDataUpdate (uimusicq_t *uimusicq, char * args)
   nlistFree (uimusicq->workList);
   uimusicq->workList = NULL;
 
-  dances = bdjvarsdfGet (BDJVDF_DANCES);
-
   valid = gtk_tree_model_get_iter_first (model, &iter);
 
   nlistStartIterator (uimusicq->dispList, &iteridx);
   while ((musicqupdate = nlistIterateValueData (uimusicq->dispList, &iteridx)) != NULL) {
     song_t        *song;
-    ilistidx_t    danceIdx;
-    char          *danceStr;
     GdkPixbuf     *pixbuf;
 
     pixbuf = NULL;
@@ -604,8 +596,6 @@ uimusicqProcessMusicQueueDataUpdate (uimusicq_t *uimusicq, char * args)
     }
 
     song = dbGetByIdx (musicqupdate->dbidx);
-    danceIdx = songGetNum (song, TAG_DANCE);
-    danceStr = danceGetStr (dances, danceIdx, DANCE_DANCE);
 
     /* there's no need to determine if the entry is new or not    */
     /* simply overwrite everything until the end of the gtk-store */

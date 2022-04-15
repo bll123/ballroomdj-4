@@ -18,6 +18,7 @@
 #include "dance.h"
 #include "fileop.h"
 #include "ilist.h"
+#include "localeutil.h"
 #include "log.h"
 #include "pathbld.h"
 #include "pathutil.h"
@@ -143,6 +144,29 @@ void
 uiutilsInitGtkLog (void)
 {
   g_log_set_writer_func (uiutilsGtkLogger, NULL, NULL);
+}
+
+int
+uiutilsCreateApplication (int argc, char *argv [],
+    char *tag, GtkApplication **app, void *activateFunc, void *udata)
+{
+  int             status;
+  char            tbuff [80];
+
+  logProcBegin (LOG_PROC, "uiutilsCreateApplication");
+
+  snprintf (tbuff, sizeof (tbuff), "org.bdj4.BDJ4.%s", tag);
+  *app = gtk_application_new (tbuff, G_APPLICATION_NON_UNIQUE);
+
+  g_signal_connect (*app, "activate", G_CALLBACK (activateFunc), udata);
+
+  /* gtk messes up the locale setting somehow; a re-bind is necessary */
+  localeInit ();
+
+  status = g_application_run (G_APPLICATION (*app), argc, argv);
+
+  logProcEnd (LOG_PROC, "uiutilsCreateApplication", "");
+  return status;
 }
 
 GtkWidget *
@@ -1054,9 +1078,6 @@ uiutilsAddDisplayColumns (GtkWidget *tree, slist_t *sellist, int col,
 
   slistStartIterator (sellist, &seliteridx);
   while ((tagidx = slistIterateValueNum (sellist, &seliteridx)) >= 0) {
-    valuetype_t vt;
-
-    vt = uiutilsDetermineValueType (tagidx);
     renderer = gtk_cell_renderer_text_new ();
     if (tagidx == TAG_FAVORITE) {
       /* use the normal UI font here */
@@ -1111,7 +1132,7 @@ uiutilsSetDisplayColumns (GtkListStore *store, GtkTreeIter *iter,
     char        *str;
     gulong      num;
     ssize_t     val;
-    int         allocated;
+    int         allocated = 0;
 
     vt = uiutilsDetermineValueType (tagidx);
     if (vt == VALUE_STR) {
@@ -1122,11 +1143,11 @@ uiutilsSetDisplayColumns (GtkListStore *store, GtkTreeIter *iter,
         str = favorite->spanStr;
       } else {
         str = uiutilsMakeDisplayStr (song, tagidx, &allocated);
+        if (allocated) {
+          free (str);
+        }
       }
       gtk_list_store_set (store, iter, col++, str, -1);
-      if (allocated) {
-        free (str);
-      }
     } else {
       num = songGetNum (song, tagidx);
       val = (ssize_t) num;

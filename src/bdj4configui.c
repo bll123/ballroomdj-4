@@ -326,7 +326,6 @@ static datafilekey_t configuidfkeys [CONFUI_KEY_MAX] = {
 static bool     confuiHandshakeCallback (void *udata, programstate_t programState);
 static bool     confuiStoppingCallback (void *udata, programstate_t programState);
 static bool     confuiClosingCallback (void *udata, programstate_t programState);
-static int      confuiCreateGui (configui_t *confui, int argc, char *argv []);
 static void     confuiActivate (GApplication *app, gpointer userdata);
 gboolean        confuiMainLoop  (void *tconfui);
 static int      confuiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
@@ -721,7 +720,8 @@ main (int argc, char *argv[])
 
   g_timeout_add (UI_MAIN_LOOP_TIMER, confuiMainLoop, &confui);
 
-  status = confuiCreateGui (&confui, 0, NULL);
+  status = uiutilsCreateApplication (0, NULL, "configui",
+      &confui.app, confuiActivate, &confui);
 
   while (progstateShutdownProcess (confui.progstate) != STATE_CLOSED) {
     ;
@@ -780,6 +780,10 @@ confuiClosingCallback (void *udata, programstate_t programState)
   configui_t    *confui = udata;
 
   logProcBegin (LOG_PROC, "confuiClosingCallback");
+
+  if (GTK_IS_WIDGET (confui->window)) {
+    gtk_widget_destroy (confui->window);
+  }
 
   for (int i = CONFUI_BEGIN + 1; i < CONFUI_COMBOBOX_MAX; ++i) {
     uiutilsDropDownFree (&confui->uiitem [i].u.dropdown);
@@ -840,33 +844,6 @@ confuiClosingCallback (void *udata, programstate_t programState)
 
   logProcEnd (LOG_PROC, "confuiClosingCallback", "");
   return true;
-}
-
-static int
-confuiCreateGui (configui_t *confui, int argc, char *argv [])
-{
-  int           status;
-
-  logProcBegin (LOG_PROC, "confuiCreateGui");
-
-  confui->app = gtk_application_new (
-      "org.bdj4.BDJ4.configui",
-      G_APPLICATION_NON_UNIQUE
-  );
-
-  g_signal_connect (confui->app, "activate", G_CALLBACK (confuiActivate), confui);
-
-  /* gtk messes up the locale setting somehow; a re-bind is necessary */
-  localeInit ();
-
-  status = g_application_run (G_APPLICATION (confui->app), argc, argv);
-  if (GTK_IS_WIDGET (confui->window)) {
-    gtk_widget_destroy (confui->window);
-  }
-  g_object_unref (confui->app);
-
-  logProcEnd (LOG_PROC, "confuiCreateGui", "");
-  return status;
 }
 
 static void
@@ -1887,8 +1864,8 @@ confuiSelectFileDialog (configui_t *confui, int widx, char *startpath,
   if (fn != NULL) {
     gtk_entry_buffer_set_text (confui->uiitem [widx].u.entry.buffer,
         fn, -1);
-    free (fn);
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected loc: %s", fn);
+    free (fn);
   }
   logProcEnd (LOG_PROC, "confuiSelectFileDialog", "");
 }
@@ -3045,7 +3022,6 @@ confuiTableAdd (GtkButton *b, gpointer udata)
   GtkTreeIter       *titer;
   GtkTreePath       *path;
   int               count;
-  int               valid;
   int               flags;
 
   logProcBegin (LOG_PROC, "confuiTableAdd");
@@ -3083,7 +3059,7 @@ confuiTableAdd (GtkButton *b, gpointer udata)
     gtk_tree_path_free (path);
     if (idx == 0 &&
         (flags & CONFUI_TABLE_KEEP_FIRST) == CONFUI_TABLE_KEEP_FIRST) {
-      valid = gtk_tree_model_iter_next (model, &iter);
+      gtk_tree_model_iter_next (model, &iter);
     }
   }
 
@@ -3467,7 +3443,6 @@ confuiCreateLevelTable (configui_t *confui)
   ilistidx_t        key;
   level_t           *levels;
   GtkWidget         *tree;
-  int               editable;
 
   logProcBegin (LOG_PROC, "confuiCreateLevelTable");
 
@@ -3480,7 +3455,6 @@ confuiCreateLevelTable (configui_t *confui)
 
   levelStartIterator (levels, &iteridx);
 
-  editable = FALSE;
   while ((key = levelIterate (levels, &iteridx)) >= 0) {
     char    *leveldisp;
     ssize_t weight;
@@ -3496,7 +3470,6 @@ confuiCreateLevelTable (configui_t *confui)
     gtk_list_store_append (store, &iter);
     confuiLevelSet (store, &iter, TRUE, leveldisp, weight, def);
     /* all cells other than the very first (Unrated) are editable */
-    editable = TRUE;
     confui->tables [CONFUI_ID_LEVELS].currcount += 1;
   }
 
@@ -4232,7 +4205,6 @@ confuiDispSettingChg (GtkSpinButton *sb, gpointer udata)
 static void
 confuiDispSaveTable (configui_t *confui, int selidx)
 {
-  dispsel_t     *dispsel;
   slist_t       *tlist;
   gboolean      valid;
   GtkWidget     *tree;
@@ -4243,8 +4215,6 @@ confuiDispSaveTable (configui_t *confui, int selidx)
   if (! confui->tables [CONFUI_ID_DISP_SEL_TABLE].changed) {
     return;
   }
-
-  dispsel = confui->dispsel;
 
   tree = confui->tables [CONFUI_ID_DISP_SEL_TABLE].tree;
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (tree));
@@ -4322,15 +4292,11 @@ confuiCreateTagListingDisp (configui_t *confui)
   char          *keystr;
   slistidx_t    iteridx;
   dispselsel_t  selidx;
-  dispsel_t     *dispsel;
-  slist_t       *sellist;
   gboolean      valid;
   int           count;
 
 
   selidx = confui->uiitem [CONFUI_SPINBOX_DISP_SEL].listidx;
-  dispsel = confui->dispsel;
-  sellist = dispselGetList (dispsel, selidx);
 
   tree = confui->tables [CONFUI_ID_DISP_SEL_LIST].tree;
 

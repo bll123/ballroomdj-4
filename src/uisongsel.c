@@ -363,7 +363,6 @@ uisongselPopulateData (uisongsel_t *uisongsel)
   ssize_t             idx;
   int                 count;
   song_t              * song;
-  dance_t             * dances;
   songfavoriteinfo_t  * favorite;
   char                * color;
   char                tmp [40];
@@ -378,7 +377,6 @@ uisongselPopulateData (uisongsel_t *uisongsel)
   adjustment = gtk_range_get_adjustment (GTK_RANGE (uisongsel->songselScrollbar));
   gtk_adjustment_set_upper (adjustment, uisongsel->dfilterCount);
 
-  dances = bdjvarsdfGet (BDJVDF_DANCES);
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (uisongsel->songselTree));
 
   count = 0;

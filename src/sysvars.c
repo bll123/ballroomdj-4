@@ -16,7 +16,10 @@
 # include <sys/utsname.h>
 #endif
 #if _hdr_winsock2
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wmissing-declarations"
 # include <winsock2.h>
+# pragma clang diagnostic pop
 #endif
 #if _hdr_windows
 # include <windows.h>
@@ -61,7 +64,7 @@ sysvarsInit (const char *argv0)
   struct utsname  ubuf;
 #endif
 #if _lib_RtlGetVersion
-  OSVERSIONINFOW osvi;
+  RTL_OSVERSIONINFOEXW osvi;
 #endif
 
 
@@ -75,9 +78,9 @@ sysvarsInit (const char *argv0)
   strlcpy (sysvars [SV_OSBUILD], "", SV_MAX_SZ);
 #endif
 #if _lib_RtlGetVersion
-  NTSTATUS RtlGetVersion (PRTL_OSVERSIONINFOW lpVersionInformation);
-  memset (&osvi, 0, sizeof (OSVERSIONINFOEXW));
-  osvi.dwOSVersionInfoSize = sizeof (OSVERSIONINFOEXW);
+  NTSTATUS RtlGetVersion (PRTL_OSVERSIONINFOEXW lpVersionInformation);
+  memset (&osvi, 0, sizeof (RTL_OSVERSIONINFOEXW));
+  osvi.dwOSVersionInfoSize = sizeof (RTL_OSVERSIONINFOEXW);
   RtlGetVersion (&osvi);
 
   strlcpy (sysvars [SV_OSNAME], "windows", SV_MAX_SZ);
@@ -314,6 +317,7 @@ sysvarsInit (const char *argv0)
     targv [2] = NULL;
     osProcessStart (targv, OS_PROC_WAIT, NULL, SV_TMP_FILE);
     data = filedataReadAll (SV_TMP_FILE, NULL);
+    fileopDelete (SV_TMP_FILE);
     p = strstr (data, "3");
 
     if (p != NULL) {
@@ -387,6 +391,7 @@ sysvarsInit (const char *argv0)
     targv [2] = NULL;
     osProcessStart (targv, OS_PROC_WAIT, NULL, SV_TMP_FILE);
     tptr = filedataReadAll (SV_TMP_FILE, NULL);
+    fileopDelete (SV_TMP_FILE);
     if (tptr != NULL) {
       lsysvars [SVL_NUM_PROC] = atoi (tptr);
     }
@@ -399,8 +404,6 @@ sysvarsInit (const char *argv0)
   if (strcmp (sysvars [SV_BDJ4_RELEASELEVEL], "alpha") == 0) {
     enable_core_dump ();
   }
-
-  fileopDelete (SV_TMP_FILE);
 }
 
 inline char *

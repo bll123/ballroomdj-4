@@ -16,6 +16,7 @@ typedef enum {
 } dispselsel_t;
 
 typedef struct {
+  char          *name [DISP_SEL_MAX];
   datafile_t    *df [DISP_SEL_MAX];
   slist_t       *dispsel [DISP_SEL_MAX];
 } dispsel_t;

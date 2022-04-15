@@ -98,7 +98,6 @@ static bool     pluiConnectingCallback (void *udata, programstate_t programState
 static bool     pluiHandshakeCallback (void *udata, programstate_t programState);
 static bool     pluiStoppingCallback (void *udata, programstate_t programState);
 static bool     pluiClosingCallback (void *udata, programstate_t programState);
-static int      pluiCreateGui (playerui_t *plui, int argc, char *argv []);
 static void     pluiActivate (GApplication *app, gpointer userdata);
 gboolean        pluiMainLoop  (void *tplui);
 gboolean        pluiClock (void *tplui);
@@ -224,7 +223,8 @@ main (int argc, char *argv[])
   g_timeout_add (UI_MAIN_LOOP_TIMER, pluiMainLoop, &plui);
   g_timeout_add (200, pluiClock, &plui);
 
-  status = pluiCreateGui (&plui, 0, NULL);
+  status = uiutilsCreateApplication (0, NULL, "playerui",
+      &plui.app, pluiActivate, &plui);
 
   while (progstateShutdownProcess (plui.progstate) != STATE_CLOSED) {
     ;
@@ -271,6 +271,11 @@ pluiClosingCallback (void *udata, programstate_t programState)
   char          fn [MAXPATHLEN];
 
   logProcBegin (LOG_PROC, "pluiClosingCallback");
+
+  if (GTK_IS_WIDGET (plui->window)) {
+    gtk_widget_destroy (plui->window);
+  }
+
   pathbldMakePath (fn, sizeof (fn), "",
       "playerui", ".txt", PATHBLD_MP_USEIDX);
   datafileSaveKeyVal ("playerui", fn, playeruidfkeys, PLAYERUI_DFKEY_COUNT, plui->options);
@@ -306,33 +311,6 @@ pluiClosingCallback (void *udata, programstate_t programState)
 
   logProcEnd (LOG_PROC, "pluiClosingCallback", "");
   return true;
-}
-
-static int
-pluiCreateGui (playerui_t *plui, int argc, char *argv [])
-{
-  int           status;
-
-  logProcBegin (LOG_PROC, "pluiCreateGui");
-
-  plui->app = gtk_application_new (
-      "org.bdj4.BDJ4.playerui",
-      G_APPLICATION_NON_UNIQUE
-  );
-
-  g_signal_connect (plui->app, "activate", G_CALLBACK (pluiActivate), plui);
-
-  /* gtk messes up the locale setting somehow; a re-bind is necessary */
-  localeInit ();
-
-  status = g_application_run (G_APPLICATION (plui->app), argc, argv);
-  if (GTK_IS_WIDGET (plui->window)) {
-    gtk_widget_destroy (plui->window);
-  }
-  g_object_unref (plui->app);
-
-  logProcEnd (LOG_PROC, "pluiCreateGui", "");
-  return status;
 }
 
 static void

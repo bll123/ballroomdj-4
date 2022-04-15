@@ -44,13 +44,16 @@ dispselAlloc (void)
 
   for (dispselsel_t i = 0; i < DISP_SEL_MAX; ++i) {
     dispsel->dispsel [i] = NULL;
+    dispsel->df [i] = NULL;
+    dispsel->name [i] = NULL;
 
     pathbldMakePath (fn, sizeof (fn), "profiles",
         dispselmap [i].fname, ".txt", PATHBLD_MP_USEIDX);
     if (! fileopFileExists (fn)) {
       fprintf (stderr, "%s does not exist\n", fn);
-      return NULL;
+      continue;
     }
+    dispsel->name [i] = strdup (fn);
 
     dispsel->df [i] = datafileAllocParse (dispselmap [i].fname,
         DFTYPE_LIST, fn, NULL, 0, DATAFILE_NO_LOOKUP);
@@ -67,6 +70,12 @@ dispselFree (dispsel_t *dispsel)
 {
   if (dispsel != NULL) {
     for (dispselsel_t i = 0; i < DISP_SEL_MAX; ++i) {
+      if (dispsel->name [i] != NULL) {
+        free (dispsel->name [i]);
+      }
+      if (dispsel->df [i] != NULL) {
+        datafileFree (dispsel->df [i]);
+      }
       if (dispsel->dispsel [i] != NULL) {
         slistFree (dispsel->dispsel [i]);
       }
@@ -91,8 +100,6 @@ dispselGetList (dispsel_t *dispsel, dispselsel_t idx)
 void
 dispselSave (dispsel_t *dispsel, dispselsel_t idx, slist_t *list)
 {
-  char    fn [MAXPATHLEN];
-
   if (dispsel == NULL) {
     return;
   }
@@ -100,10 +107,7 @@ dispselSave (dispsel_t *dispsel, dispselsel_t idx, slist_t *list)
     return;
   }
 
-  pathbldMakePath (fn, sizeof (fn), "profiles",
-      dispselmap [idx].fname, ".txt", PATHBLD_MP_USEIDX);
-
-  datafileSaveList (dispselmap [idx].fname, fn, list);
+  datafileSaveList (dispselmap [idx].fname, dispsel->name [idx], list);
   dispselCreateList (dispsel, list, idx);
 }
 
@@ -116,13 +120,15 @@ dispselCreateList (dispsel_t *dispsel, slist_t *tlist, int selidx)
   slistidx_t    iteridx;
   tagdefkey_t   tagkey;
   char          *keystr;
+  char          tbuff [80];
 
   if (dispsel->dispsel [selidx] != NULL) {
     slistFree (dispsel->dispsel [selidx]);
     dispsel->dispsel [selidx] = NULL;
   }
 
-  tsellist = slistAlloc ("dispsel-disp", LIST_UNORDERED, NULL);
+  snprintf (tbuff, sizeof (tbuff), "dispsel-%s", dispsel->name [selidx]);
+  tsellist = slistAlloc (tbuff, LIST_UNORDERED, NULL);
   slistStartIterator (tlist, &iteridx);
   while ((keystr = slistIterateKey (tlist, &iteridx)) != NULL) {
     tagkey = tagdefLookup (keystr);

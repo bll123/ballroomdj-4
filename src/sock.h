@@ -6,9 +6,6 @@
 #include <stdint.h>
 #include <sys/types.h>
 #include <unistd.h>
-#if _hdr_ws2tcpip
-# include <ws2tcpip.h>
-#endif
 
 #if _sys_socket
 # include <sys/socket.h>
@@ -16,10 +13,16 @@
 
 /* winsock2.h should come before windows.h */
 #if _hdr_winsock2
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wmissing-declarations"
 # include <winsock2.h>
+# pragma clang diagnostic pop
 #endif
-#if _hdr_WS2tcpip
-# include <WS2tcpip.h>
+#if _hdr_ws2tcpip
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wmissing-declarations"
+# include <ws2tcpip.h>
+# pragma clang diagnostic pop
 #endif
 #if _hdr_windows
 # include <windows.h>
