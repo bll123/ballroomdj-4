@@ -151,6 +151,7 @@ main (int argc, char *argv[])
   playerdata_t    playerData;
   uint16_t        listenPort;
   int             flags;
+  char            tbuff [200];
 
 #if _define_SIGHUP
   procutilCatchSignal (playerSigHandler, SIGHUP);
@@ -213,7 +214,7 @@ main (int argc, char *argv[])
   assert (playerData.volume != NULL);
 
   playerInitSinklist (&playerData);
-    /* sets the current sink */
+  /* sets the current sink */
   playerSetAudioSink (&playerData, bdjoptGetStr (OPT_M_AUDIOSINK));
 
   playerData.originalSystemVolume =
@@ -232,6 +233,13 @@ main (int argc, char *argv[])
                playerData.sinklist.sinklist [i].name,
                playerData.sinklist.sinklist [i].description);
     }
+  }
+
+  /* this works for pulse audio */
+  if (isLinux () &&
+      strcmp (bdjoptGetStr (OPT_M_VOLUME_INTFC), "libvolpa") == 0) {
+    snprintf (tbuff, sizeof (tbuff), "PULSE_SINK=%s", playerData.currentSink);
+    putenv (tbuff);
   }
 
   playerData.pli = pliInit (bdjoptGetStr (OPT_M_VOLUME_INTFC),
@@ -1150,7 +1158,7 @@ playerSetAudioSink (playerdata_t *playerData, char *sinkname)
   int           idx = -1;
 
   logProcBegin (LOG_PROC, "playerSetAudioSink");
-    /* the sink list is not ordered */
+  /* the sink list is not ordered */
   found = 0;
   for (size_t i = 0; i < playerData->sinklist.count; ++i) {
     if (strcmp (sinkname, playerData->sinklist.sinklist [i].name) == 0) {

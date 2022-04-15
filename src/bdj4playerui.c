@@ -280,8 +280,12 @@ pluiClosingCallback (void *udata, programstate_t programState)
       "playerui", ".txt", PATHBLD_MP_USEIDX);
   datafileSaveKeyVal ("playerui", fn, playeruidfkeys, PLAYERUI_DFKEY_COUNT, plui->options);
 
-  g_object_unref (plui->ledonImg);
-  g_object_unref (plui->ledoffImg);
+  if (G_IS_OBJECT (plui->ledonImg)) {
+    g_object_unref (plui->ledonImg);
+  }
+  if (G_IS_OBJECT (plui->ledoffImg)) {
+    g_object_unref (plui->ledoffImg);
+  }
 
   sockhCloseServer (plui->sockserver);
 

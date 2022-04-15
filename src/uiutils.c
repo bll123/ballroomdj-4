@@ -1391,7 +1391,9 @@ uiutilsDropDownWindowCreate (uiutilsdropdown_t *dropdown,
 
   dropdown->tree = gtk_tree_view_new ();
   assert (dropdown->tree != NULL);
-  g_object_ref_sink (G_OBJECT (dropdown->tree));
+  if (G_IS_OBJECT (dropdown->tree)) {
+    g_object_ref_sink (G_OBJECT (dropdown->tree));
+  }
   gtk_tree_view_set_activate_on_single_click (GTK_TREE_VIEW (dropdown->tree), TRUE);
   gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (dropdown->tree), FALSE);
   sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (dropdown->tree));

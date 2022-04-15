@@ -1249,7 +1249,11 @@ installerCopyTemplates (installer_t *installer)
 
       snprintf (from, sizeof (from), "%s/templates/%s",
           installer->rundir, tbuff);
-      snprintf (to, sizeof (to), "data/%s", tbuff);
+      if (strncmp (pi->basename, "ds-", 3) == 0) {
+        snprintf (to, sizeof (to), "data/profiles/%s", tbuff);
+      } else {
+        snprintf (to, sizeof (to), "data/%s", tbuff);
+      }
     } else {
       /* uknown extension, probably a localized file */
       continue;

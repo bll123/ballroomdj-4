@@ -502,14 +502,6 @@ mainListeningCallback (void *tmaindata, programstate_t programState)
       osProcessStart (targv, OS_PROC_DETACH, NULL, NULL);
     }
 
-    if (isLinux ()) {
-      char  *audiosink;
-
-      audiosink = bdjoptGetStr (OPT_M_AUDIOSINK);
-      snprintf (buff, sizeof (buff), "PULSE_SINK=%s", audiosink);
-      putenv (buff);
-    }
-
     mainData->processes [ROUTE_PLAYER] = procutilStartProcess (
         ROUTE_PLAYER, "bdj4player", flags);
     if (bdjoptGetNum (OPT_P_MOBILEMARQUEE) != MOBILEMQ_OFF) {

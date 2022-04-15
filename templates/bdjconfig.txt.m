@@ -9,12 +9,8 @@ DIRDELETE
 ..
 DIRIMAGE
 ..
-DIRMUSICTMP
-../ramdisk
 DIRMUSIC
 ../home/music/m
-DIRORIGINAL
-..
 SHUTDOWNSCRIPT
 ../home/bll/tmp/xyz/linux/bdjshutdown.sh
 STARTUPSCRIPT
