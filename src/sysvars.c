@@ -260,6 +260,7 @@ sysvarsInit (const char *argv0)
   }
 
   strlcpy (sysvars [SV_PYTHON_PATH], "", SV_MAX_SZ);
+  strlcpy (sysvars [SV_PYTHON_PIP_PATH], "", SV_MAX_SZ);
   strlcpy (sysvars [SV_GETCONF_PATH], "", SV_MAX_SZ);
 
   tptr = strdup (getenv ("PATH"));
@@ -272,24 +273,57 @@ sysvarsInit (const char *argv0)
     strlcpy (tbuf, p, sizeof (tbuf));
     pathNormPath (tbuf, sizeof (tbuf));
 
+    if (*sysvars [SV_PYTHON_PIP_PATH] == '\0') {
+      bool    found = false;
+
+      /* 'pip' checks */
+      /* 'pip3' is preferred */
+      snprintf (buff, sizeof (buff), "%s/%s", tbuf, "pip3.exe");
+      if (! found && fileopFileExists (buff)) {
+        strlcpy (sysvars [SV_PYTHON_PIP_PATH], buff, SV_MAX_SZ);
+        found = true;
+      }
+      snprintf (buff, sizeof (buff), "%s/%s", tbuf, "pip.exe");
+      if (! found && fileopFileExists (buff)) {
+        strlcpy (sysvars [SV_PYTHON_PIP_PATH], buff, SV_MAX_SZ);
+        found = true;
+      }
+      snprintf (buff, sizeof (buff), "%s/%s", tbuf, "pip3");
+      if (! found && fileopFileExists (buff)) {
+        strlcpy (sysvars [SV_PYTHON_PIP_PATH], buff, SV_MAX_SZ);
+        found = true;
+      }
+      snprintf (buff, sizeof (buff), "%s/%s", tbuf, "pip");
+      if (! found && fileopFileExists (buff)) {
+        strlcpy (sysvars [SV_PYTHON_PIP_PATH], buff, SV_MAX_SZ);
+        found = true;
+      }
+    }
+
     if (*sysvars [SV_PYTHON_PATH] == '\0') {
+      bool    found = false;
+
       /* 'python' checks */
       /* 'python3' is preferred */
       snprintf (buff, sizeof (buff), "%s/%s", tbuf, "python3.exe");
-      if (fileopFileExists (buff)) {
+      if (! found && fileopFileExists (buff)) {
         strlcpy (sysvars [SV_PYTHON_PATH], buff, SV_MAX_SZ);
+        found = true;
       }
       snprintf (buff, sizeof (buff), "%s/%s", tbuf, "python.exe");
-      if (fileopFileExists (buff)) {
+      if (! found && fileopFileExists (buff)) {
         strlcpy (sysvars [SV_PYTHON_PATH], buff, SV_MAX_SZ);
+        found = true;
       }
       snprintf (buff, sizeof (buff), "%s/%s", tbuf, "python3");
-      if (fileopFileExists (buff)) {
+      if (! found && fileopFileExists (buff)) {
         strlcpy (sysvars [SV_PYTHON_PATH], buff, SV_MAX_SZ);
+        found = true;
       }
       snprintf (buff, sizeof (buff), "%s/%s", tbuf, "python");
-      if (fileopFileExists (buff)) {
+      if (! found && fileopFileExists (buff)) {
         strlcpy (sysvars [SV_PYTHON_PATH], buff, SV_MAX_SZ);
+        found = true;
       }
     }
 

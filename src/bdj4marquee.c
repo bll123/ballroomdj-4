@@ -410,8 +410,7 @@ marqueeActivate (GApplication *app, gpointer userdata)
   gtk_widget_set_hexpand (hbox, TRUE);
   gtk_widget_set_can_focus (marquee->infoTitleLab, FALSE);
   gtk_label_set_ellipsize (GTK_LABEL (marquee->infoTitleLab), PANGO_ELLIPSIZE_END);
-  gtk_box_pack_start (GTK_BOX (hbox), marquee->infoTitleLab,
-      FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (hbox), marquee->infoTitleLab, FALSE, FALSE, 0);
 
   marquee->sep = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
   gtk_widget_set_margin_top (marquee->sep, 2);
@@ -419,8 +418,7 @@ marqueeActivate (GApplication *app, gpointer userdata)
       "separator { min-height: 4px; background-color: %s; }",
       (char *) bdjoptGetStr (OPT_P_MQ_ACCENT_COL));
   uiutilsSetCss (marquee->sep, tbuff);
-  gtk_box_pack_end (GTK_BOX (vbox), marquee->sep,
-      TRUE, TRUE, 0);
+  gtk_box_pack_end (GTK_BOX (vbox), marquee->sep, TRUE, TRUE, 0);
 
   marquee->marqueeLabs = malloc (sizeof (GtkWidget *) * marquee->mqLen);
 

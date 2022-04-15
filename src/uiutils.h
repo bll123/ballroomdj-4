@@ -55,9 +55,9 @@ typedef struct {
 typedef struct {
   char        *label;
   GtkWidget   *window;
-  char        *startpath;
-  char        *mimefiltername;
-  char        *mimetype;
+  const char  *startpath;
+  const char  *mimefiltername;
+  const char  *mimetype;
 } uiutilsselect_t;
 
 #define UI_MAIN_LOOP_TIMER 20

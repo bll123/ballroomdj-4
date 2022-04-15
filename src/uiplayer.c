@@ -155,41 +155,38 @@ uiplayerActivate (uiplayer_t *uiplayer)
   gtk_box_pack_start (GTK_BOX (tbox), uiplayer->repeatImg,
       FALSE, FALSE, 0);
 
-  uiplayer->danceLab = gtk_label_new ("");
-  assert (uiplayer->danceLab != NULL);
-  gtk_widget_set_margin_start (uiplayer->danceLab, 2);
+  uiplayer->danceLab = uiutilsCreateLabel ("");
   gtk_box_pack_start (GTK_BOX (hbox), uiplayer->danceLab,
       FALSE, FALSE, 0);
 
-  widget = gtk_label_new (" : ");
+  widget = uiutilsCreateLabel (" : ");
+  gtk_widget_set_margin_start (widget, 0);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 
-  uiplayer->artistLab = gtk_label_new ("");
-  assert (uiplayer->artistLab != NULL);
+  uiplayer->artistLab = uiutilsCreateLabel ("");
+  gtk_widget_set_margin_start (uiplayer->artistLab, 0);
   gtk_box_pack_start (GTK_BOX (hbox), uiplayer->artistLab,
       FALSE, FALSE, 0);
 
-  widget = gtk_label_new (" : ");
+  widget = uiutilsCreateLabel (" : ");
+  gtk_widget_set_margin_start (widget, 0);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 
-  uiplayer->titleLab = gtk_label_new ("");
-  assert (uiplayer->titleLab != NULL);
+  uiplayer->titleLab = uiutilsCreateLabel ("");
   gtk_box_pack_start (GTK_BOX (hbox), uiplayer->titleLab,
       FALSE, FALSE, 0);
 
-  widget = gtk_label_new ("");
-  assert (widget != NULL);
+  widget = uiutilsCreateLabel ("");
   gtk_widget_set_hexpand (widget, TRUE);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 
   /* size group A */
-  widget = gtk_label_new ("%");
+  widget = uiutilsCreateLabel ("%");
   gtk_box_pack_end (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
-  gtk_widget_set_margin_start (widget, 1);
   gtk_size_group_add_widget (sgA, widget);
 
   /* size group B */
-  uiplayer->speedDisplayLab = gtk_label_new ("100");
+  uiplayer->speedDisplayLab = uiutilsCreateLabel ("100");
   assert (uiplayer->speedDisplayLab != NULL);
   gtk_widget_set_size_request (uiplayer->speedDisplayLab, 24, -1);
   gtk_widget_set_halign (uiplayer->speedDisplayLab, GTK_ALIGN_END);
@@ -229,38 +226,37 @@ uiplayerActivate (uiplayer_t *uiplayer)
       FALSE, FALSE, 0);
 
   /* size group E */
-  widget = gtk_label_new ("");
+  widget = uiutilsCreateLabel ("");
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
   gtk_size_group_add_widget (sgE, widget);
 
-  uiplayer->countdownTimerLab = gtk_label_new (" 0:00");
-  assert (uiplayer->countdownTimerLab != NULL);
+  uiplayer->countdownTimerLab = uiutilsCreateLabel (" 0:00");
+  gtk_label_set_xalign (GTK_LABEL (uiplayer->countdownTimerLab), 1.0);
   gtk_widget_set_size_request (uiplayer->countdownTimerLab, 40, -1);
-  gtk_widget_set_margin_start (uiplayer->countdownTimerLab, 2);
   gtk_box_pack_start (GTK_BOX (hbox), uiplayer->countdownTimerLab,
       FALSE, FALSE, 0);
 
-  widget = gtk_label_new (" / ");
+  widget = uiutilsCreateLabel (" / ");
+  gtk_widget_set_margin_start (widget, 0);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 
-  uiplayer->durationLab = gtk_label_new (" 3:00");
-  assert (uiplayer->durationLab != NULL);
+  uiplayer->durationLab = uiutilsCreateLabel (" 3:00");
+  gtk_label_set_xalign (GTK_LABEL (uiplayer->durationLab), 1.0);
   gtk_widget_set_size_request (uiplayer->countdownTimerLab, 40, -1);
   gtk_box_pack_start (GTK_BOX (hbox), uiplayer->durationLab,
       FALSE, FALSE, 0);
 
-  widget = gtk_label_new ("");
-  assert (widget != NULL);
+  widget = uiutilsCreateLabel ("");
   gtk_widget_set_hexpand (widget, TRUE);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 
   /* size group A */
-  widget = gtk_label_new ("");
+  widget = uiutilsCreateLabel ("");
   gtk_box_pack_end (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
   gtk_size_group_add_widget (sgA, widget);
 
   /* size group B */
-  uiplayer->seekDisplayLab = gtk_label_new ("3:00");
+  uiplayer->seekDisplayLab = uiutilsCreateLabel ("3:00");
   assert (uiplayer->seekDisplayLab != NULL);
   gtk_widget_set_size_request (uiplayer->seekDisplayLab, 40, -1);
   gtk_widget_set_halign (uiplayer->seekDisplayLab, GTK_ALIGN_END);
@@ -299,7 +295,7 @@ uiplayerActivate (uiplayer_t *uiplayer)
       FALSE, FALSE, 0);
 
   /* size group E */
-  widget = gtk_label_new ("");
+  widget = uiutilsCreateLabel ("");
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
   gtk_size_group_add_widget (sgE, widget);
 
@@ -362,13 +358,12 @@ uiplayerActivate (uiplayer_t *uiplayer)
   /* volume controls / display */
 
   /* size group A */
-  widget = gtk_label_new ("%");
+  widget = uiutilsCreateLabel ("%");
   gtk_box_pack_end (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
-  gtk_widget_set_margin_start (widget, 1);
   gtk_size_group_add_widget (sgA, widget);
 
   /* size group B */
-  uiplayer->volumeDisplayLab = gtk_label_new ("100");
+  uiplayer->volumeDisplayLab = uiutilsCreateLabel ("100");
   assert (uiplayer->volumeDisplayLab != NULL);
   gtk_widget_set_size_request (uiplayer->volumeDisplayLab, 24, -1);
   gtk_widget_set_halign (uiplayer->volumeDisplayLab, GTK_ALIGN_END);

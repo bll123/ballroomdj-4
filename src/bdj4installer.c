@@ -92,19 +92,18 @@ typedef struct {
   char            *tclshloc;
   slist_t         *convlist;
   slistidx_t      convidx;
+  uiutilsentry_t  targetEntry;
+  uiutilsentry_t  bdj3locEntry;
   /* gtk */
   GtkApplication  *app;
   GtkWidget       *window;
-  GtkWidget       *targetEntry;
   GtkWidget       *reinstWidget;
   GtkWidget       *feedbackMsg;
   GtkWidget       *vlcMsg;
   GtkWidget       *pythonMsg;
-  GtkEntryBuffer  *targetBuffer;
+  GtkWidget       *mutagenMsg;
   GtkTextBuffer   *dispBuffer;
   GtkWidget       *dispTextView;
-  GtkWidget       *bdj3locEntry;        // bdj3 location
-  GtkEntryBuffer  *bdj3locBuffer;
   mstime_t        validateTimer;
   /* flags */
   bool            newinstall : 1;
@@ -163,6 +162,7 @@ static void installerTemplateCopy (char *from, char *to);
 static void installerSetrundir (installer_t *installer, const char *dir);
 static void installerVLCGetVersion (installer_t *installer);
 static void installerPythonGetVersion (installer_t *installer);
+static void installerCleanFiles (char *fname);
 
 int
 main (int argc, char *argv[])
@@ -184,6 +184,7 @@ main (int argc, char *argv[])
     { "debug",      required_argument,  NULL,   'd' },
     { "theme",      required_argument,  NULL,   't' },
     { "debugself",  no_argument,        NULL,   'D' },
+    { "bdj4",       no_argument,        NULL,   0 },
     { NULL,         0,                  NULL,   0 }
   };
 
@@ -206,10 +207,8 @@ main (int argc, char *argv[])
   installer.tclshloc = NULL;
   installer.app = NULL;
   installer.window = NULL;
-  installer.targetEntry = NULL;
   installer.reinstWidget = NULL;
   installer.feedbackMsg = NULL;
-  installer.targetBuffer = NULL;
   installer.dispBuffer = NULL;
   installer.dispTextView = NULL;
   installer.currdir [0] = '\0';
@@ -220,6 +219,9 @@ main (int argc, char *argv[])
   installer.guienabled = true;
   getcwd (installer.currdir, sizeof (installer.currdir));
   mstimeset (&installer.validateTimer, 3600000);
+
+  uiutilsEntryInit (&installer.targetEntry, 80, MAXPATHLEN);
+  uiutilsEntryInit (&installer.bdj3locEntry, 80, MAXPATHLEN);
 
   while ((c = getopt_long_only (argc, argv, "p:d:t:", bdj_options, &option_index)) != -1) {
     switch (c) {
@@ -354,14 +356,15 @@ main (int argc, char *argv[])
 static void
 installerActivate (GApplication *app, gpointer udata)
 {
-  installer_t           *installer = udata;
-  GtkWidget             *window;
-  GtkWidget             *vbox;
-  GtkWidget             *hbox;
-  GtkWidget             *widget;
-  GtkWidget             *scwidget;
-  GtkWidget             *image;
-  GError                *gerr = NULL;
+  installer_t   *installer = udata;
+  GtkWidget     *window;
+  GtkWidget     *vbox;
+  GtkWidget     *hbox;
+  GtkWidget     *widget;
+  GtkWidget     *scwidget;
+  GtkWidget     *image;
+  GError        *gerr = NULL;
+  GtkSizeGroup  *sg;
 
 
   window = gtk_application_window_new (GTK_APPLICATION (app));
@@ -382,28 +385,19 @@ installerActivate (GApplication *app, gpointer udata)
   gtk_widget_set_vexpand (vbox, TRUE);
   gtk_container_add (GTK_CONTAINER (window), vbox);
 
-  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
-  gtk_widget_set_hexpand (hbox, TRUE);
-  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
-
   widget = uiutilsCreateLabel (
       _("Enter the destination folder where BDJ4 will be installed."));
-  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+  gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
+  gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
 
-  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
-  gtk_widget_set_hexpand (hbox, TRUE);
-  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+  widget = uiutilsEntryCreate (&installer->targetEntry);
+  uiutilsEntrySetValue (&installer->targetEntry, installer->target);
+  gtk_widget_set_halign (widget, GTK_ALIGN_FILL);
+  gtk_widget_set_hexpand (widget, TRUE);
+  gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
 
-  installer->targetBuffer = gtk_entry_buffer_new (installer->target, -1);
-  installer->targetEntry = gtk_entry_new_with_buffer (installer->targetBuffer);
-  gtk_entry_set_width_chars (GTK_ENTRY (installer->targetEntry), 80);
-  gtk_entry_set_max_length (GTK_ENTRY (installer->targetEntry), MAXPATHLEN);
-  gtk_entry_set_input_purpose (GTK_ENTRY (installer->targetEntry), GTK_INPUT_PURPOSE_FREE_FORM);
-  gtk_widget_set_halign (installer->targetEntry, GTK_ALIGN_FILL);
-  gtk_widget_set_hexpand (installer->targetEntry, TRUE);
-  gtk_box_pack_start (GTK_BOX (hbox), installer->targetEntry,
-      TRUE, TRUE, 0);
-  g_signal_connect (installer->targetEntry, "changed", G_CALLBACK (installerValidateStart), installer);
+  g_signal_connect (installer->targetEntry.entry, "changed",
+      G_CALLBACK (installerValidateStart), installer);
 
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
   gtk_widget_set_hexpand (hbox, TRUE);
@@ -421,30 +415,31 @@ installerActivate (GApplication *app, gpointer udata)
       "label { color: #ffa600; }");
   gtk_box_pack_start (GTK_BOX (hbox), installer->feedbackMsg, FALSE, FALSE, 0);
 
-  /* conversion process */
-  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
-  gtk_widget_set_hexpand (hbox, TRUE);
-  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+  widget = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
+  gtk_widget_set_margin_top (widget, 2);
+  uiutilsSetCss (widget,
+      "separator { min-height: 4px; background-color: #733000; }");
+  gtk_box_pack_start (GTK_BOX (vbox), widget, TRUE, TRUE, 0);
 
+  /* conversion process */
   widget = uiutilsCreateLabel (
       _("Enter the folder where BallroomDJ 3 is installed."));
-  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+  gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
+  gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
 
-  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
-  gtk_widget_set_hexpand (hbox, TRUE);
-  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+  widget = uiutilsCreateLabel (
+      _("If there is no BallroomDJ 3 installation, leave the entry blank."));
+  gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
+  gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
 
   widget = uiutilsCreateLabel (
       _("The conversion process will only run for new installations and for re-installations."));
-  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+  gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
+  gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
 
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
   gtk_widget_set_hexpand (hbox, TRUE);
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
-
-  widget = uiutilsCreateLabel (
-      _("If there is no BallroomDJ 3 installation, enter a single '-'."));
-  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
   gtk_widget_set_hexpand (hbox, TRUE);
@@ -453,16 +448,14 @@ installerActivate (GApplication *app, gpointer udata)
   widget = uiutilsCreateColonLabel (_("BallroomDJ 3 Location"));
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 
-  installer->bdj3locBuffer = gtk_entry_buffer_new (installer->bdj3loc, -1);
-  installer->bdj3locEntry = gtk_entry_new_with_buffer (installer->bdj3locBuffer);
-  gtk_entry_set_width_chars (GTK_ENTRY (installer->bdj3locEntry), 80);
-  gtk_entry_set_max_length (GTK_ENTRY (installer->bdj3locEntry), MAXPATHLEN);
-  gtk_entry_set_input_purpose (GTK_ENTRY (installer->bdj3locEntry), GTK_INPUT_PURPOSE_FREE_FORM);
-  gtk_widget_set_halign (installer->bdj3locEntry, GTK_ALIGN_FILL);
-  gtk_widget_set_hexpand (installer->bdj3locEntry, TRUE);
-  gtk_box_pack_start (GTK_BOX (hbox), installer->bdj3locEntry,
-      TRUE, TRUE, 0);
-  g_signal_connect (installer->bdj3locEntry, "changed", G_CALLBACK (installerValidateStart), installer);
+  widget = uiutilsEntryCreate (&installer->bdj3locEntry);
+  uiutilsEntrySetValue (&installer->bdj3locEntry, installer->bdj3loc);
+  gtk_widget_set_halign (widget, GTK_ALIGN_FILL);
+  gtk_widget_set_hexpand (widget, TRUE);
+  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+
+  g_signal_connect (installer->bdj3locEntry.entry, "changed",
+      G_CALLBACK (installerValidateStart), installer);
 
   widget = uiutilsCreateButton ("", NULL, installerSelectDirDialog, installer);
   image = gtk_image_new_from_icon_name ("folder", GTK_ICON_SIZE_BUTTON);
@@ -472,12 +465,23 @@ installerActivate (GApplication *app, gpointer udata)
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 
   /* VLC status */
+
+  widget = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
+  gtk_widget_set_margin_top (widget, 2);
+  uiutilsSetCss (widget,
+      "separator { min-height: 4px; background-color: #733000; }");
+  gtk_box_pack_start (GTK_BOX (vbox), widget, TRUE, TRUE, 0);
+
+  sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
   gtk_widget_set_hexpand (hbox, TRUE);
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
 
   widget = uiutilsCreateColonLabel ("VLC");
+  gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+  gtk_size_group_add_widget (sg, widget);
 
   installer->vlcMsg = uiutilsCreateLabel ("");
   uiutilsSetCss (installer->vlcMsg,
@@ -490,12 +494,29 @@ installerActivate (GApplication *app, gpointer udata)
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
 
   widget = uiutilsCreateColonLabel ("Python");
+  gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+  gtk_size_group_add_widget (sg, widget);
 
   installer->pythonMsg = uiutilsCreateLabel ("");
   uiutilsSetCss (installer->pythonMsg,
       "label { color: #ffa600; }");
   gtk_box_pack_start (GTK_BOX (hbox), installer->pythonMsg, FALSE, FALSE, 0);
+
+  /* mutagen status */
+  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
+  gtk_widget_set_hexpand (hbox, TRUE);
+  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+
+  widget = uiutilsCreateColonLabel ("Mutagen");
+  gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
+  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+  gtk_size_group_add_widget (sg, widget);
+
+  installer->mutagenMsg = uiutilsCreateLabel ("");
+  uiutilsSetCss (installer->mutagenMsg,
+      "label { color: #ffa600; }");
+  gtk_box_pack_start (GTK_BOX (hbox), installer->mutagenMsg, FALSE, FALSE, 0);
 
   /* button box */
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
@@ -678,15 +699,15 @@ installerValidateDir (installer_t *installer)
   }
 
   if (installer->feedbackMsg == NULL ||
-      installer->targetBuffer == NULL ||
       installer->reinstWidget == NULL ||
       installer->vlcMsg == NULL ||
-      installer->pythonMsg == NULL) {
+      installer->pythonMsg == NULL ||
+      installer->mutagenMsg == NULL) {
     mstimeset (&installer->validateTimer, 500);
     return;
   }
 
-  dir = gtk_entry_buffer_get_text (installer->targetBuffer);
+  dir = uiutilsEntryGetValue (&installer->targetEntry);
   installer->reinstall = gtk_toggle_button_get_active (
       GTK_TOGGLE_BUTTON (installer->reinstWidget));
   gtk_label_set_text (GTK_LABEL (installer->feedbackMsg), "");
@@ -709,21 +730,21 @@ installerValidateDir (installer_t *installer)
 
   /* bdj3 location validation */
 
-  if (installer->bdj3locBuffer == NULL) {
+  if (installer->bdj3locEntry.buffer == NULL) {
     mstimeset (&installer->validateTimer, 500);
     return;
   }
 
-  fn = gtk_entry_buffer_get_text (installer->bdj3locBuffer);
+  fn = uiutilsEntryGetValue (&installer->bdj3locEntry);
   if (*fn == '\0' || strcmp (fn, "-") == 0 || locationcheck (fn)) {
     locok = true;
   }
 
   if (! locok) {
-    gtk_entry_set_icon_from_icon_name (GTK_ENTRY (installer->bdj3locEntry),
+    gtk_entry_set_icon_from_icon_name (GTK_ENTRY (installer->bdj3locEntry.entry),
         GTK_ENTRY_ICON_SECONDARY, "dialog-error");
   } else {
-    gtk_entry_set_icon_from_icon_name (GTK_ENTRY (installer->bdj3locEntry),
+    gtk_entry_set_icon_from_icon_name (GTK_ENTRY (installer->bdj3locEntry.entry),
         GTK_ENTRY_ICON_SECONDARY, NULL);
   }
 
@@ -770,7 +791,17 @@ installerValidateDir (installer_t *installer)
     } else {
       snprintf (tbuff, sizeof (tbuff), _("%s is not installed"), "Python");
       gtk_label_set_text (GTK_LABEL (installer->pythonMsg), tbuff);
+      snprintf (tbuff, sizeof (tbuff), _("%s is not installed"), "Mutagen");
+      gtk_label_set_text (GTK_LABEL (installer->mutagenMsg), tbuff);
       installer->pythoninstalled = false;
+    }
+  }
+
+  if (installer->pythoninstalled) {
+    fn = sysvarsGetStr (SV_PYTHON_MUTAGEN);
+    if (fn != NULL && *fn) {
+      snprintf (tbuff, sizeof (tbuff), _("%s is installed"), "Mutagen");
+      gtk_label_set_text (GTK_LABEL (installer->mutagenMsg), tbuff);
     }
   }
 }
@@ -786,7 +817,7 @@ installerValidateStart (GtkEditable *e, gpointer udata)
 
   /* if the user is typing, clear the message */
   gtk_label_set_text (GTK_LABEL (installer->feedbackMsg), "");
-  gtk_entry_set_icon_from_icon_name (GTK_ENTRY (installer->bdj3locEntry),
+  gtk_entry_set_icon_from_icon_name (GTK_ENTRY (installer->bdj3locEntry.entry),
       GTK_ENTRY_ICON_SECONDARY, NULL);
   mstimeset (&installer->validateTimer, 500);
 }
@@ -800,6 +831,7 @@ installerSelectDirDialog (GtkButton *b, gpointer udata)
 
   selectdata.label = _("Select BallroomDJ 3 Location");
   selectdata.window = installer->window;
+  selectdata.startpath = uiutilsEntryGetValue (&installer->bdj3locEntry);
   fn = uiutilsSelectDirDialog (&selectdata);
   if (fn != NULL) {
     if (installer->bdj3loc != NULL && installer->freebdj3loc) {
@@ -807,7 +839,7 @@ installerSelectDirDialog (GtkButton *b, gpointer udata)
     }
     installer->bdj3loc = fn;
     installer->freebdj3loc = true;
-    gtk_entry_buffer_set_text (installer->bdj3locBuffer, fn, -1);
+    uiutilsEntrySetValue (&installer->bdj3locEntry, fn);
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected loc: %s", installer->bdj3loc);
   }
 }
@@ -876,7 +908,7 @@ installerInstInit (installer_t *installer)
   char        tbuff [MAXPATHLEN];
 
   if (installer->guienabled) {
-    installer->target = strdup (gtk_entry_buffer_get_text (installer->targetBuffer));
+    installer->target = strdup (uiutilsEntryGetValue (&installer->targetEntry));
     installer->freetarget = true;
     installer->reinstall = gtk_toggle_button_get_active (
         GTK_TOGGLE_BUTTON (installer->reinstWidget));
@@ -884,7 +916,7 @@ installerInstInit (installer_t *installer)
     if (installer->bdj3loc != NULL && installer->freebdj3loc) {
       free (installer->bdj3loc);
     }
-    installer->bdj3loc = strdup (gtk_entry_buffer_get_text (installer->bdj3locBuffer));
+    installer->bdj3loc = strdup (uiutilsEntryGetValue (&installer->bdj3locEntry));
     installer->freebdj3loc = true;
   }
 
@@ -1071,9 +1103,6 @@ installerCreateDirs (installer_t *installer)
 static void
 installerCleanOldFiles (installer_t *installer)
 {
-  FILE  *fh;
-  char  tbuff [MAXPATHLEN];
-
   installerDisplayText (installer, "-- ", _("Cleaning old files."));
 
   if (chdir (installer->rundir)) {
@@ -1084,25 +1113,10 @@ installerCleanOldFiles (installer_t *installer)
     return;
   }
 
-  fh = fileopOpen ("install/cleanuplist.txt", "r");
-  if (fh != NULL) {
-    while (fgets (tbuff, sizeof (tbuff), fh) != NULL) {
-      stringTrim (tbuff);
-      if (! fileopFileExists (tbuff)) {
-        continue;
-      }
-
-      if (fileopIsDirectory (tbuff)) {
-        filemanipDeleteDir (tbuff);
-      } else {
-        fileopDelete (tbuff);
-      }
-    }
-    fclose (fh);
-  }
-
+  installerCleanFiles ("install/cleanuplist.txt");
   installer->instState = INST_COPY_TEMPLATES;
 }
+
 
 static void
 installerCopyTemplates (installer_t *installer)
@@ -1236,6 +1250,9 @@ installerCopyTemplates (installer_t *installer)
       snprintf (from, sizeof (from), "%s/templates/%s",
           installer->rundir, tbuff);
       snprintf (to, sizeof (to), "data/%s", tbuff);
+    } else {
+      /* uknown extension, probably a localized file */
+      continue;
     }
 
     installerTemplateCopy (from, to);
@@ -1535,6 +1552,7 @@ installerVLCDownload (installer_t *installer)
   if (fileopFileExists (installer->dlfname)) {
     snprintf (tbuff, sizeof (tbuff), _("Installing %s."), "VLC");
     installerDisplayText (installer, "-- ", tbuff);
+    installerDisplayText (installer, "   ", _("Please wait..."));
     installer->delayCount = 0;
     installer->delayState = INST_VLC_INSTALL;
     installer->instState = INST_DELAY;
@@ -1637,6 +1655,7 @@ installerPythonDownload (installer_t *installer)
   if (fileopFileExists (installer->dlfname)) {
     snprintf (tbuff, sizeof (tbuff), _("Installing %s."), "Python");
     installerDisplayText (installer, "-- ", tbuff);
+    installerDisplayText (installer, "   ", _("Please wait..."));
     installer->delayCount = 0;
     installer->delayState = INST_PYTHON_INSTALL;
     installer->instState = INST_DELAY;
@@ -1680,6 +1699,7 @@ installerMutagenCheck (installer_t *installer)
 
   snprintf (tbuff, sizeof (tbuff), _("Installing %s."), "Mutagen");
   installerDisplayText (installer, "-- ", tbuff);
+  installerDisplayText (installer, "   ", _("Please wait..."));
   installer->delayCount = 0;
   installer->delayState = INST_MUTAGEN_INSTALL;
   installer->instState = INST_DELAY;
@@ -1689,8 +1709,18 @@ static void
 installerMutagenInstall (installer_t *installer)
 {
   char      tbuff [MAXPATHLEN];
+  char      *pipnm = "pip";
 
-  strlcpy (tbuff, "pip install --no-cache-dir --user --upgrade mutagen", sizeof (tbuff));
+  if (installer->pythoninstalled) {
+    char  *tptr;
+
+    tptr = sysvarsGetStr (SV_PYTHON_PIP_PATH);
+    if (tptr != NULL && *tptr) {
+      pipnm = tptr;
+    }
+  }
+  snprintf (tbuff, sizeof (tbuff),
+      "%s --quiet install --user --upgrade mutagen", pipnm);
   system (tbuff);
   snprintf (tbuff, sizeof (tbuff), _("%s installed."), "Mutagen");
   installer->instState = INST_FINISH;
@@ -1858,3 +1888,28 @@ installerPythonGetVersion (installer_t *installer)
     strlcpy (installer->pyversion, p, e - p + 1);
   }
 }
+
+static void
+installerCleanFiles (char *fname)
+{
+  FILE    *fh;
+  char    tbuff [MAXPATHLEN];
+
+  fh = fileopOpen (fname, "r");
+  if (fh != NULL) {
+    while (fgets (tbuff, sizeof (tbuff), fh) != NULL) {
+      stringTrim (tbuff);
+      stringTrimChar (tbuff, '/');
+
+      if (fileopIsDirectory (tbuff)) {
+        filemanipDeleteDir (tbuff);
+      } else {
+        if (fileopFileExists (tbuff)) {
+          fileopDelete (tbuff);
+        }
+      }
+    }
+    fclose (fh);
+  }
+}
+

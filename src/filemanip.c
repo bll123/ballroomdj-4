@@ -80,8 +80,10 @@ filemanipCopy (const char *fname, const char *nfn)
 
     data = filedataReadAll (fname, &len);
     fh = fopen (nfn, "w");
-    trc = fwrite (data, len, 1, fh);
-    fclose (fh);
+    if (fh != NULL) {
+      trc = fwrite (data, len, 1, fh);
+      fclose (fh);
+    }
     free (data);
     rc = (trc == 1);
   }
