@@ -18,6 +18,7 @@
 
 #include "audiotag.h"
 #include "bdj4.h"
+#include "bdj4init.h"
 #include "bdjmsg.h"
 #include "bdjopt.h"
 #include "bdjstring.h"
@@ -86,18 +87,7 @@ main (int argc, char *argv[])
 {
   dbtag_t     dbtag;
   uint16_t    listenPort;
-  loglevel_t  loglevel = LOG_IMPORTANT | LOG_MAIN;
-  int         rc;
-  int         c;
-  int         option_index;
-  bool        isbdj4 = false;
-
-  static struct option bdj_options [] = {
-    { "bdj4",       no_argument,        NULL,   'B' },
-    { "debug",      required_argument,  NULL,   'd' },
-    { "profile",    required_argument,  NULL,   'p' },
-    { NULL,         0,                  NULL,   0 }
-  };
+  int         flags;
 
 #if _define_SIGHUP
   procutilCatchSignal (dbtagSigHandler, SIGHUP);
@@ -108,48 +98,9 @@ main (int argc, char *argv[])
   procutilIgnoreSignal (SIGCHLD);
 #endif
 
-  sysvarsInit (argv[0]);
-
-  while ((c = getopt_long_only (argc, argv, "Bp:d:", bdj_options, &option_index)) != -1) {
-    switch (c) {
-      case 'B': {
-        isbdj4 = true;
-        break;
-      }
-      case 'd': {
-        if (optarg) {
-          loglevel = (loglevel_t) atoi (optarg);
-        }
-        break;
-      }
-      case 'p': {
-        if (optarg) {
-          sysvarsSetNum (SVL_BDJIDX, atol (optarg));
-        }
-        break;
-      }
-      default: {
-        break;
-      }
-    }
-  }
-
-  if (! isbdj4) {
-    fprintf (stderr, "not started with launcher\n");
-    exit (1);
-  }
-
-  logStartAppend ("dbtag", "dt", loglevel);
+  flags = BDJ4_INIT_NO_DB_LOAD | BDJ4_INIT_NO_DATAFILE_LOAD;
+  bdj4startup (argc, argv, "dt", ROUTE_DBTAG, flags);
   logProcBegin (LOG_PROC, "dbtag");
-
-  dbtag.locknm = lockName (ROUTE_DBTAG);
-  rc = lockAcquire (dbtag.locknm, PATHBLD_MP_USEIDX);
-  if (rc < 0) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: dbtag: unable to acquire lock: profile: %zd", sysvarsGetNum (SVL_BDJIDX));
-    logMsg (LOG_SESS, LOG_IMPORTANT, "ERR: dbtag: unable to acquire lock: profile: %zd", sysvarsGetNum (SVL_BDJIDX));
-    logEnd ();
-    exit (0);
-  }
 
   dbtag.maxThreads = sysvarsGetNum (SVL_NUM_PROC);
   dbtag.threads = malloc (sizeof (dbthread_t) * dbtag.maxThreads);
@@ -180,9 +131,6 @@ main (int argc, char *argv[])
   for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
     dbtag.processes [i] = NULL;
   }
-
-  bdjvarsInit ();
-  bdjoptInit ();
 
   dbtag.conn = connInit (ROUTE_DBTAG);
 
@@ -381,11 +329,11 @@ dbtagClosingCallback (void *tdbtag, programstate_t programState)
   dbtag_t    *dbtag = tdbtag;
 
   logProcBegin (LOG_PROC, "dbtagClosingCallback");
+  bdj4shutdown (ROUTE_DBTAG);
 
   free (dbtag->threads);
   queueFree (dbtag->fileQueue);
   connFree (dbtag->conn);
-  lockRelease (dbtag->locknm, PATHBLD_MP_USEIDX);
 
   logProcEnd (LOG_PROC, "dbtagClosingCallback", "");
   return true;

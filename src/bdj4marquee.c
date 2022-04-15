@@ -14,6 +14,7 @@
 #include <gtk/gtk.h>
 
 #include "bdj4.h"
+#include "bdj4init.h"
 #include "bdj4intl.h"
 #include "bdjmsg.h"
 #include "bdjopt.h"
@@ -128,28 +129,12 @@ int
 main (int argc, char *argv[])
 {
   int             status = 0;
-  int             c = 0;
-  int             rc = 0;
-  int             option_index = 0;
   uint16_t        listenPort;
-  loglevel_t      loglevel = LOG_IMPORTANT | LOG_MAIN;
   marquee_t       marquee;
   char            *mqfont;
   char            tbuff [MAXPATHLEN];
-  bool            ignorelock = false;
-  bool            isbdj4 = false;
+  int             flags;
 
-
-  static struct option bdj_options [] = {
-    { "bdj4",        no_argument,  NULL,      'B' },
-    { "debug",      required_argument,  NULL,   'd' },
-    { "profile",    required_argument,  NULL,   'p' },
-    { "bdj4marquee",no_argument,        NULL,   0 },
-    { "marquee",    no_argument,        NULL,   0 },
-    { "nodetach",   no_argument,        NULL,   0 },
-    { "ignorelock", no_argument,        NULL,   'i' },
-    { NULL,         0,                  NULL,   0 }
-  };
 
   marquee.progstate = progstateInit ("marquee");
   progstateSetCallback (marquee.progstate, STATE_CONNECTING,
@@ -160,6 +145,7 @@ main (int argc, char *argv[])
       marqueeStoppingCallback, &marquee);
   progstateSetCallback (marquee.progstate, STATE_CLOSING,
       marqueeClosingCallback, &marquee);
+
   marquee.sockserver = NULL;
   marquee.window = NULL;
   marquee.pbar = NULL;
@@ -190,61 +176,8 @@ main (int argc, char *argv[])
   procutilDefaultSignal (SIGCHLD);
 #endif
 
-  sysvarsInit (argv[0]);
-  localeInit ();
-
-  while ((c = getopt_long_only (argc, argv, "Bp:d:", bdj_options, &option_index)) != -1) {
-    switch (c) {
-      case 'B': {
-        isbdj4 = true;
-        break;
-      }
-      case 'd': {
-        if (optarg) {
-          loglevel = (loglevel_t) atoi (optarg);
-        }
-        break;
-      }
-      case 'p': {
-        if (optarg) {
-          sysvarsSetNum (SVL_BDJIDX, atol (optarg));
-        }
-        break;
-      }
-      case 'i': {
-        ignorelock = true;
-        break;
-      }
-      default: {
-        break;
-      }
-    }
-  }
-
-  if (! isbdj4) {
-    fprintf (stderr, "not started with launcher\n");
-    exit (1);
-  }
-
-  logStartAppend ("bdj4marquee", "mq", loglevel);
-  logMsg (LOG_SESS, LOG_IMPORTANT, "Using profile %ld", sysvarsGetNum (SVL_BDJIDX));
-
-  marquee.locknm = lockName (ROUTE_MARQUEE);
-  rc = lockAcquire (marquee.locknm, PATHBLD_MP_USEIDX);
-  if (rc < 0) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: marquee: unable to acquire lock: profile: %zd", sysvarsGetNum (SVL_BDJIDX));
-    logMsg (LOG_SESS, LOG_IMPORTANT, "ERR: marquee: unable to acquire lock: profile: %zd", sysvarsGetNum (SVL_BDJIDX));
-    if (ignorelock == false) {
-      logEnd ();
-      exit (0);
-    } else {
-      logMsg (LOG_DBG, LOG_IMPORTANT, "marquee: lock ignored: profile: %zd", sysvarsGetNum (SVL_BDJIDX));
-      logMsg (LOG_SESS, LOG_IMPORTANT, "marquee: lock ignored: profile: %zd", sysvarsGetNum (SVL_BDJIDX));
-    }
-  }
-
-  bdjvarsInit ();
-  bdjoptInit ();
+  flags = BDJ4_INIT_NO_DB_LOAD | BDJ4_INIT_NO_DATAFILE_LOAD;
+  bdj4startup (argc, argv, "mq", ROUTE_MARQUEE, flags);
 
   listenPort = bdjvarsGetNum (BDJVL_MARQUEE_PORT);
   marquee.mqLen = bdjoptGetNum (OPT_P_MQQLEN);
@@ -337,15 +270,8 @@ marqueeClosingCallback (void *udata, programstate_t programState)
       "marquee", ".txt", PATHBLD_MP_USEIDX);
   datafileSaveKeyVal ("marquee", fn, mqdfkeys, MQ_KEY_MAX, marquee->options);
 
-  sockhCloseServer (marquee->sockserver);
-
+  bdj4shutdown (ROUTE_MARQUEE);
   connFree (marquee->conn);
-
-  bdjoptFree ();
-  bdjvarsCleanup ();
-  tagdefCleanup ();
-
-  lockRelease (marquee->locknm, PATHBLD_MP_USEIDX);
 
   if (marquee->marqueeLabs != NULL) {
     free (marquee->marqueeLabs);

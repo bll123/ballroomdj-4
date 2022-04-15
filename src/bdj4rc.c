@@ -1,6 +1,5 @@
 #include "config.h"
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -26,6 +25,7 @@
 #include "mongoose.h"
 
 #include "bdj4.h"
+#include "bdj4init.h"
 #include "bdjmsg.h"
 #include "bdjopt.h"
 #include "bdjstring.h"
@@ -79,20 +79,8 @@ int
 main (int argc, char *argv[])
 {
   remctrldata_t   remctrlData;
-  int             c = 0;
-  int             rc = 0;
-  int             option_index = 0;
-  loglevel_t      loglevel = LOG_IMPORTANT | LOG_MAIN;
   uint16_t        listenPort;
-  bool            isbdj4 = false;
-
-  static struct option bdj_options [] = {
-    { "bdj4",       no_argument,        NULL,   'B' },
-    { "bdj4rc",     no_argument,        NULL,   0 },
-    { "debug",      required_argument,  NULL,   'd' },
-    { "profile",    required_argument,  NULL,   'p' },
-    { NULL,         0,                  NULL,   0 }
-  };
+  int             flags;
 
 #if _define_SIGHUP
   procutilCatchSignal (remctrlSigHandler, SIGHUP);
@@ -100,51 +88,8 @@ main (int argc, char *argv[])
   procutilCatchSignal (remctrlSigHandler, SIGINT);
   procutilDefaultSignal (SIGTERM);
 
-  sysvarsInit (argv[0]);
-
-  while ((c = getopt_long_only (argc, argv, "Bp:d:", bdj_options, &option_index)) != -1) {
-    switch (c) {
-      case 'B': {
-        isbdj4 = true;
-        break;
-      }
-      case 'd': {
-        if (optarg) {
-          loglevel = (loglevel_t) atoi (optarg);
-        }
-        break;
-      }
-      case 'p': {
-        if (optarg) {
-          sysvarsSetNum (SVL_BDJIDX, atol (optarg));
-        }
-        break;
-      }
-      default: {
-        break;
-      }
-    }
-  }
-
-  if (! isbdj4) {
-    fprintf (stderr, "not started with launcher\n");
-    exit (1);
-  }
-
-  logStartAppend ("remotecontrol", "rc", loglevel);
-  logMsg (LOG_SESS, LOG_IMPORTANT, "Using profile %ld", sysvarsGetNum (SVL_BDJIDX));
-
-  remctrlData.locknm = lockName (ROUTE_REMCTRL);
-  rc = lockAcquire (remctrlData.locknm, PATHBLD_MP_USEIDX);
-  if (rc < 0) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: remctrl: unable to acquire lock: profile: %zd", sysvarsGetNum (SVL_BDJIDX));
-    logMsg (LOG_SESS, LOG_IMPORTANT, "ERR: remctrl: unable to acquire lock: profile: %zd", sysvarsGetNum (SVL_BDJIDX));
-    logEnd ();
-    exit (0);
-  }
-
-  bdjvarsInit ();
-  bdjoptInit ();
+  flags = BDJ4_INIT_NO_DB_LOAD | BDJ4_INIT_NO_DATAFILE_LOAD;
+  bdj4startup (argc, argv, "rc", ROUTE_REMCTRL, flags);
 
   remctrlData.enabled = (bdjoptGetNum (OPT_P_REMOTECONTROL) != 0);
   if (! remctrlData.enabled) {
@@ -154,12 +99,15 @@ main (int argc, char *argv[])
 
   remctrlData.danceList = "";
   mstimeset (&remctrlData.danceListTimer, 0);
+  remctrlData.user = strdup (bdjoptGetStr (OPT_P_REMCONTROLUSER));
   remctrlData.pass = strdup (bdjoptGetStr (OPT_P_REMCONTROLPASS));
   remctrlData.playerStatus = NULL;
   remctrlData.playlistList = "";
   mstimeset (&remctrlData.playlistListTimer, 0);
   remctrlData.port = bdjoptGetNum (OPT_P_REMCONTROLPORT);
   remctrlData.progstate = progstateInit ("remctrl");
+  remctrlData.websrv = NULL;
+
   progstateSetCallback (remctrlData.progstate, STATE_CONNECTING,
       remctrlConnectingCallback, &remctrlData);
   progstateSetCallback (remctrlData.progstate, STATE_WAIT_HANDSHAKE,
@@ -170,8 +118,7 @@ main (int argc, char *argv[])
       remctrlStoppingCallback, &remctrlData);
   progstateSetCallback (remctrlData.progstate, STATE_CLOSING,
       remctrlClosingCallback, &remctrlData);
-  remctrlData.user = strdup (bdjoptGetStr (OPT_P_REMCONTROLUSER));
-  remctrlData.websrv = NULL;
+
   remctrlData.conn = connInit (ROUTE_REMCTRL);
 
   remctrlData.websrv = websrvInit (remctrlData.port, remctrlEventHandler, &remctrlData);
@@ -204,6 +151,8 @@ remctrlClosingCallback (void *udata, programstate_t programState)
 {
   remctrldata_t   *remctrlData = udata;
 
+  bdj4shutdown (ROUTE_REMCTRL);
+
   websrvFree (remctrlData->websrv);
   if (remctrlData->user != NULL) {
     free (remctrlData->user);
@@ -222,11 +171,6 @@ remctrlClosingCallback (void *udata, programstate_t programState)
   }
 
   connFree (remctrlData->conn);
-
-  bdjoptFree ();
-  bdjvarsCleanup ();
-  tagdefCleanup ();
-  lockRelease (remctrlData->locknm, PATHBLD_MP_USEIDX);
 
   return true;
 }

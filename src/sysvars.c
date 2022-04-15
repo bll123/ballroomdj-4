@@ -318,7 +318,11 @@ sysvarsInit (const char *argv0)
     osProcessStart (targv, OS_PROC_WAIT, NULL, SV_TMP_FILE);
     data = filedataReadAll (SV_TMP_FILE, NULL);
     fileopDelete (SV_TMP_FILE);
-    p = strstr (data, "3");
+
+    p = NULL;
+    if (data != NULL) {
+      p = strstr (data, "3");
+    }
 
     if (p != NULL) {
       strlcpy (buff, p, sizeof (buff));

@@ -26,6 +26,7 @@
 #include "mongoose.h"
 
 #include "bdj4.h"
+#include "bdj4init.h"
 #include "bdjmsg.h"
 #include "bdjopt.h"
 #include "bdjvars.h"
@@ -70,22 +71,9 @@ int
 main (int argc, char *argv[])
 {
   mobmqdata_t     mobmqData;
-  int             c = 0;
-  int             rc = 0;
-  int             option_index = 0;
-  loglevel_t      loglevel = LOG_IMPORTANT | LOG_MAIN;
   uint16_t        listenPort;
   char            *tval;
-  bool            isbdj4 = false;
-
-  static struct option bdj_options [] = {
-    { "bdj4",       no_argument,        NULL,   'B' },
-    { "bdj4mobilemq", no_argument,      NULL,   0 },
-    { "mobilemq",   no_argument,        NULL,   0 },
-    { "debug",      required_argument,  NULL,   'd' },
-    { "profile",    required_argument,  NULL,   'p' },
-    { NULL,         0,                  NULL,   0 }
-  };
+  int             flags;
 
 #if _define_SIGHUP
   procutilCatchSignal (mobmqSigHandler, SIGHUP);
@@ -93,51 +81,8 @@ main (int argc, char *argv[])
   procutilCatchSignal (mobmqSigHandler, SIGINT);
   procutilDefaultSignal (SIGTERM);
 
-  sysvarsInit (argv[0]);
-
-  while ((c = getopt_long_only (argc, argv, "Bp:d:", bdj_options, &option_index)) != -1) {
-    switch (c) {
-      case 'B': {
-        isbdj4 = true;
-        break;
-      }
-      case 'd': {
-        if (optarg) {
-          loglevel = (loglevel_t) atoi (optarg);
-        }
-        break;
-      }
-      case 'p': {
-        if (optarg) {
-          sysvarsSetNum (SVL_BDJIDX, atol (optarg));
-        }
-        break;
-      }
-      default: {
-        break;
-      }
-    }
-  }
-
-  if (! isbdj4) {
-    fprintf (stderr, "not started with launcher\n");
-    exit (1);
-  }
-
-  logStartAppend ("mobilemarquee", "mm", loglevel);
-  logMsg (LOG_SESS, LOG_IMPORTANT, "Using profile %ld", sysvarsGetNum (SVL_BDJIDX));
-
-  mobmqData.locknm = lockName (ROUTE_MOBILEMQ);
-  rc = lockAcquire (mobmqData.locknm, PATHBLD_MP_USEIDX);
-  if (rc < 0) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: mobilemq: unable to acquire lock: profile: %zd", sysvarsGetNum (SVL_BDJIDX));
-    logMsg (LOG_SESS, LOG_IMPORTANT, "ERR: mobilemq: unable to acquire lock: profile: %zd", sysvarsGetNum (SVL_BDJIDX));
-    logEnd ();
-    exit (0);
-  }
-
-  bdjvarsInit ();
-  bdjoptInit ();
+  flags = BDJ4_INIT_NO_DB_LOAD | BDJ4_INIT_NO_DATAFILE_LOAD;
+  bdj4startup (argc, argv, "mm", ROUTE_MOBILEMQ, flags);
   mobmqData.conn = connInit (ROUTE_MARQUEE);
 
   mobmqData.type = (bdjmobilemq_t) bdjoptGetNum (OPT_P_MOBILEMARQUEE);
@@ -198,6 +143,8 @@ mobmqClosingCallback (void *tmmdata, programstate_t programState)
 {
   mobmqdata_t   *mobmqData = tmmdata;
 
+  bdj4shutdown (ROUTE_MOBILEMQ);
+
   websrvFree (mobmqData->websrv);
   if (mobmqData->name != NULL) {
     free (mobmqData->name);
@@ -210,11 +157,6 @@ mobmqClosingCallback (void *tmmdata, programstate_t programState)
   }
 
   connFree (mobmqData->conn);
-
-  bdjoptFree ();
-  bdjvarsCleanup ();
-  tagdefCleanup ();
-  lockRelease (mobmqData->locknm, PATHBLD_MP_USEIDX);
 
   return true;
 }

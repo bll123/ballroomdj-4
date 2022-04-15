@@ -147,7 +147,7 @@ bdj4startup (int argc, char *argv[], char *tag, bdjmsgroute_t route, int flags)
   bdjvarsInit ();
 
   /* re-use the lock name as the program name */
-  if (startlog || route == ROUTE_PLAYERUI) {
+  if (startlog || route == ROUTE_STARTERUI) {
     logStart (lockName (route), tag, loglevel);
   } else {
     logStartAppend (lockName (route), tag, loglevel);
@@ -155,11 +155,13 @@ bdj4startup (int argc, char *argv[], char *tag, bdjmsgroute_t route, int flags)
   logProcBegin (LOG_PROC, "bdj4startup");
   logMsg (LOG_SESS, LOG_IMPORTANT, "Using profile %ld", sysvarsGetNum (SVL_BDJIDX));
 
-  rc = bdjvarsdfloadInit ();
-  if (rc < 0) {
-    logMsg (LOG_SESS, LOG_IMPORTANT, "Unable to load all data files");
-    fprintf (stderr, "Unable to load all data files\n");
-    exit (1);
+  if ((flags & BDJ4_INIT_NO_DATAFILE_LOAD) != BDJ4_INIT_NO_DATAFILE_LOAD) {
+    rc = bdjvarsdfloadInit ();
+    if (rc < 0) {
+      logMsg (LOG_SESS, LOG_IMPORTANT, "Unable to load all data files");
+      fprintf (stderr, "Unable to load all data files\n");
+      exit (1);
+    }
   }
 
   bdjoptInit ();
@@ -191,9 +193,9 @@ bdj4shutdown (bdjmsgroute_t route)
   bdjoptFree ();
   dbClose ();
   bdjvarsdfloadCleanup ();
-  logMsg (LOG_SESS, LOG_IMPORTANT, "init cleanup time: %ld ms", mstimeend (&mt));
   bdjvarsCleanup ();
   tagdefCleanup ();
+  logMsg (LOG_SESS, LOG_IMPORTANT, "init cleanup time: %ld ms", mstimeend (&mt));
   lockRelease (lockName (route), PATHBLD_MP_USEIDX);
   logProcEnd (LOG_PROC, "bdj4shutdown", "");
 }

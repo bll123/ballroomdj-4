@@ -21,6 +21,7 @@
 #include <signal.h>
 
 #include "bdj4.h"
+#include "bdj4init.h"
 #include "bdjmsg.h"
 #include "bdjopt.h"
 #include "bdjstring.h"
@@ -148,21 +149,8 @@ int
 main (int argc, char *argv[])
 {
   playerdata_t    playerData;
-  int             c = 0;
-  int             rc = 0;
-  int             option_index = 0;
-  loglevel_t      loglevel = LOG_IMPORTANT | LOG_MAIN;
   uint16_t        listenPort;
-  bool            isbdj4 = false;
-
-  static struct option bdj_options [] = {
-    { "bdj4",       no_argument,        NULL,   'B' },
-    { "debug",      required_argument,  NULL,   'd' },
-    { "profile",    required_argument,  NULL,   'p' },
-    { "bdj4player", no_argument,        NULL,   0 },
-    { "player",     no_argument,        NULL,   0 },
-    { NULL,         0,                  NULL,   0 }
-  };
+  int             flags;
 
 #if _define_SIGHUP
   procutilCatchSignal (playerSigHandler, SIGHUP);
@@ -187,15 +175,6 @@ main (int argc, char *argv[])
   playerData.prepQueue = queueAlloc (playerPrepQueueFree);
   playerData.prepRequestQueue = queueAlloc (playerPrepQueueFree);
   playerData.progstate = progstateInit ("player");
-  progstateSetCallback (playerData.progstate, STATE_CONNECTING,
-      playerConnectingCallback, &playerData);
-  progstateSetCallback (playerData.progstate, STATE_WAIT_HANDSHAKE,
-      playerHandshakeCallback, &playerData);
-  progstateSetCallback (playerData.progstate, STATE_STOPPING,
-      playerStoppingCallback, &playerData);
-  progstateSetCallback (playerData.progstate, STATE_CLOSING,
-      playerClosingCallback, &playerData);
-
   playerData.inFade = false;
   playerData.inFadeIn = false;
   playerData.inFadeOut = false;
@@ -205,51 +184,17 @@ main (int argc, char *argv[])
   playerData.repeat = false;
   playerData.stopPlaying = false;
 
-  sysvarsInit (argv[0]);
+  progstateSetCallback (playerData.progstate, STATE_CONNECTING,
+      playerConnectingCallback, &playerData);
+  progstateSetCallback (playerData.progstate, STATE_WAIT_HANDSHAKE,
+      playerHandshakeCallback, &playerData);
+  progstateSetCallback (playerData.progstate, STATE_STOPPING,
+      playerStoppingCallback, &playerData);
+  progstateSetCallback (playerData.progstate, STATE_CLOSING,
+      playerClosingCallback, &playerData);
 
-  while ((c = getopt_long_only (argc, argv, "Bp:d:", bdj_options, &option_index)) != -1) {
-    switch (c) {
-      case 'B': {
-        isbdj4 = true;
-        break;
-      }
-      case 'd': {
-        if (optarg) {
-          loglevel = (loglevel_t) atoi (optarg);
-        }
-        break;
-      }
-      case 'p': {
-        if (optarg) {
-          sysvarsSetNum (SVL_BDJIDX, atol (optarg));
-        }
-        break;
-      }
-      default: {
-        break;
-      }
-    }
-  }
-
-  if (! isbdj4) {
-    fprintf (stderr, "not started with launcher\n");
-    exit (1);
-  }
-
-  logStartAppend ("bdj4player", "p", loglevel);
-  logMsg (LOG_SESS, LOG_IMPORTANT, "Using profile %ld", sysvarsGetNum (SVL_BDJIDX));
-
-  playerData.locknm = lockName (ROUTE_PLAYER);
-  rc = lockAcquire (playerData.locknm, PATHBLD_MP_USEIDX);
-  if (rc < 0) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: player: unable to acquire lock: profile: %zd", sysvarsGetNum (SVL_BDJIDX));
-    logMsg (LOG_SESS, LOG_IMPORTANT, "ERR: player: unable to acquire lock: profile: %zd", sysvarsGetNum (SVL_BDJIDX));
-    logEnd ();
-    exit (0);
-  }
-
-  bdjvarsInit ();
-  bdjoptInit ();
+  flags = BDJ4_INIT_NO_DB_LOAD | BDJ4_INIT_NO_DATAFILE_LOAD;
+  bdj4startup (argc, argv, "p", ROUTE_PLAYER, flags);
 
   playerData.conn = connInit (ROUTE_PLAYER);
 
@@ -319,6 +264,8 @@ playerClosingCallback (void *tpdata, programstate_t programState)
 {
   playerdata_t    *playerData = tpdata;
 
+  bdj4shutdown (ROUTE_PLAYER);
+
   if (playerData->pli != NULL) {
     pliStop (playerData->pli);
     pliClose (playerData->pli);
@@ -343,11 +290,6 @@ playerClosingCallback (void *tpdata, programstate_t programState)
   }
 
   connFree (playerData->conn);
-
-  bdjoptFree ();
-  bdjvarsCleanup ();
-  tagdefCleanup ();
-  lockRelease (playerData->locknm, PATHBLD_MP_USEIDX);
 
   return true;
 }

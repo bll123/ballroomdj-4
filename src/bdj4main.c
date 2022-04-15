@@ -143,6 +143,7 @@ main (int argc, char *argv[])
       mainStoppingCallback, &mainData);
   progstateSetCallback (mainData.progstate, STATE_CLOSING,
       mainClosingCallback, &mainData);
+
   mainData.playlistCache = NULL;
   mainData.musicQueue = NULL;
   mainData.danceCounts = NULL;
