@@ -2339,6 +2339,7 @@ confuiGetThemeNames (nlist_t *themelist, slist_t *filelist)
   }
 
   count = nlistGetCount (themelist);
+  slistStartIterator (filelist, &iteridx);
 
   /* the key value used here is meaningless */
   while ((fn = slistIterateKey (filelist, &iteridx)) != NULL) {

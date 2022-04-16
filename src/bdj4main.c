@@ -479,7 +479,6 @@ static bool
 mainListeningCallback (void *tmaindata, programstate_t programState)
 {
   maindata_t    *mainData = tmaindata;
-  char          buff [100];
   char          *theme;
   int           flags;
 
@@ -514,19 +513,15 @@ mainListeningCallback (void *tmaindata, programstate_t programState)
     }
   }
 
+  /* set the GTK theme for the marquee */
   theme = bdjoptGetStr (OPT_MP_MQ_THEME);
-  snprintf (buff, sizeof (buff), "GTK_THEME=%s", theme);
-  putenv (buff);
+  osSetEnv ("GTK_THEME", theme);
 
   if ((mainData->dbgflags & BDJ4_INIT_NO_START) != BDJ4_INIT_NO_START &&
       (mainData->dbgflags & BDJ4_INIT_NO_MARQUEE) != BDJ4_INIT_NO_MARQUEE) {
     mainData->processes [ROUTE_MARQUEE] = procutilStartProcess (
         ROUTE_MARQUEE, "bdj4marquee", flags);
   }
-
-  theme = bdjoptGetStr (OPT_MP_UI_THEME);
-  snprintf (buff, sizeof (buff), "GTK_THEME=%s", theme);
-  putenv (buff);
 
   logProcEnd (LOG_PROC, "mainListeningCallback", "");
   return true;

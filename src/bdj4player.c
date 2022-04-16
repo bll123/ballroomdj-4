@@ -27,6 +27,7 @@
 #include "bdjstring.h"
 #include "bdjvars.h"
 #include "conn.h"
+#include "osutils.h"
 #include "pathbld.h"
 #include "progstate.h"
 #include "fileop.h"
@@ -151,7 +152,6 @@ main (int argc, char *argv[])
   playerdata_t    playerData;
   uint16_t        listenPort;
   int             flags;
-  char            tbuff [200];
 
 #if _define_SIGHUP
   procutilCatchSignal (playerSigHandler, SIGHUP);
@@ -238,8 +238,7 @@ main (int argc, char *argv[])
   /* this works for pulse audio */
   if (isLinux () &&
       strcmp (bdjoptGetStr (OPT_M_VOLUME_INTFC), "libvolpa") == 0) {
-    snprintf (tbuff, sizeof (tbuff), "PULSE_SINK=%s", playerData.currentSink);
-    putenv (tbuff);
+    osSetEnv ("PULSE_SINK", playerData.currentSink);
   }
 
   playerData.pli = pliInit (bdjoptGetStr (OPT_M_VOLUME_INTFC),

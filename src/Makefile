@@ -47,9 +47,8 @@ cmakeclang:
 	elif test $$(uname -s) = Darwin; then \
 	  COMP=$(CLANG) COMPXX=$(CLANGXX) $(MAKE) cmake-unix; \
 	else \
-	  PATH=/ucrt64/bin:$$PATH \
-	  COMP=/ucrt64/bin/clang.exe \
-	  COMPXX=/ucrt64/bin/clang++.exe \
+	  COMP=/mingw64/bin/clang.exe \
+	  COMPXX=/mingw64/bin/clang++.exe \
 	  $(MAKE) cmake-windows; \
 	fi
 	$(MAKE) build

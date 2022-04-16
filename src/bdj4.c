@@ -67,10 +67,10 @@ main (int argc, char * argv[])
     { "bdj4playerui",   no_argument,        NULL,   10 },
     { "playerui",       no_argument,        NULL,   10 },
     { "bdj4remctrl",    no_argument,        NULL,   11 },
-    { "bdj4starterui",  no_argument,        NULL,   14 },
     { "bdj4installer",  no_argument,        NULL,   12 },
     { "installer",      no_argument,        NULL,   12 },
-    { "locale",         no_argument,        NULL,   13 },
+    { "bdj4locale",     no_argument,        NULL,   13 },
+    { "bdj4starterui",  no_argument,        NULL,   14 },
     { "bdj4dbupdate",   no_argument,        NULL,   15 },
     /* cli */
     { "forcestop",      no_argument,        NULL,   0 },
@@ -104,6 +104,10 @@ main (int argc, char * argv[])
   prog = "bdj4starterui";  // default
 
   sysvarsInit (argv [0]);
+
+  if (getenv ("GTK_THEME") != NULL) {
+    havetheme = true;
+  }
 
   while ((c = getopt_long_only (argc, argv, "p:d:t:", bdj_options, &option_index)) != -1) {
     switch (c) {
@@ -209,8 +213,7 @@ main (int argc, char * argv[])
         break;
       }
       case 't': {
-        snprintf (buff, sizeof (buff), "GTK_THEME=%s", optarg);
-        putenv (buff);
+        osSetEnv ("GTK_THEME", optarg);
         havetheme = true;
         break;
       }
@@ -241,8 +244,8 @@ main (int argc, char * argv[])
     }
   }
 
-  putenv ("GTK_CSD=0");
-  putenv ("PYTHONIOENCODING=utf-8");
+  osSetEnv ("GTK_CSD", "0");
+  osSetEnv ("PYTHONIOENCODING", "utf-8");
 
   if (isMacOS ()) {
     char      *path = NULL;
@@ -254,17 +257,18 @@ main (int argc, char * argv[])
     assert (npath != NULL);
 
     path = getenv ("PATH");
-    strlcpy (npath, "PATH=", sz);
+    *npath = '\0';
     strlcat (npath, path, sz);
     strlcat (npath, ":/opt/local/bin", sz);
-    putenv (npath);
+    osSetEnv ("PATH", npath);
 
-    putenv ("DYLD_FALLBACK_LIBRARY_PATH="
+    osSetEnv ("DYLD_FALLBACK_LIBRARY_PATH",
         "/Applications/VLC.app/Contents/MacOS/lib/");
-    putenv ("VLC_PLUGIN_PATH=/Applications/VLC.app/Contents/MacOS/plugins");
+    osSetEnv ("VLC_PLUGIN_PATH",
+        "/Applications/VLC.app/Contents/MacOS/plugins");
     free (npath);
 
-    putenv ("G_FILENAME_ENCODING=UTF8-MAC");
+    osSetEnv ("G_FILENAME_ENCODING", "UTF8-MAC");
   }
 
   if (isWindows ()) {
@@ -287,7 +291,7 @@ main (int argc, char * argv[])
 
     strlcpy (tbuff, getenv ("PATH"), sz);
     p = strtok_r (tbuff, ";", &tokstr);
-    strlcpy (path, "PATH=", sz);
+    *path = '\0';
     while (p != NULL) {
       snprintf (tmp, sz, "%s\\libgtk-3-0.dll", p);
       if (usemsys || ! fileopFileExists (tmp)) {
@@ -319,15 +323,15 @@ main (int argc, char * argv[])
     strlcat (path, tbuff, sz);
 
     strlcat (path, ";", sz);
-    /* do not use double quotes w/putenv */
+    /* do not use double quotes w/environment var */
     strlcat (path, "C:\\Program Files\\VideoLAN\\VLC", sz);
-    putenv (path);
+    osSetEnv ("PATH", path);
 
     if (debugself) {
       fprintf (stderr, "final PATH=%s\n", getenv ("PATH"));
     }
 
-    putenv ("PANGOCAIRO_BACKEND=fc");
+    osSetEnv ("PANGOCAIRO_BACKEND", "fc");
 
     free (pbuff);
     free (tbuff);
@@ -338,14 +342,11 @@ main (int argc, char * argv[])
     pathbldMakePath (buff, sizeof (buff), "",
         "theme", ".txt", PATHBLD_MP_NONE);
     if (fileopFileExists (buff)) {
-      char tbuff [MAXPATHLEN];
-
       fh = fopen (buff, "r");
       fgets (buff, sizeof (buff), fh);
       stringTrim (buff);
       fclose (fh);
-      snprintf (tbuff, sizeof (tbuff), "GTK_THEME=%s", buff);
-      putenv (tbuff);
+      osSetEnv ("GTK_THEME", buff);
     }
   }
 

@@ -19,6 +19,7 @@
 #include "bdjstring.h"
 #include "datafile.h"
 #include "localeutil.h"
+#include "osutils.h"
 #include "pathbld.h"
 #include "slist.h"
 #include "sysvars.h"
@@ -28,14 +29,23 @@ localeInit (void)
 {
   char        lbuff [MAXPATHLEN];
   char        tbuff [MAXPATHLEN];
-  char        tmp [MAXPATHLEN];
   bool        useutf8ext = false;
 
-  /* on non-windows, the locale will already be set correctly in sysvars */
-  /* if SV_LOCALE_SET is true, the locale was loaded from the */
-  /* data/locale.txt file, and there is no need to do the windows processing */
+
+  /* get the locale from the environment */
+  setlocale (LC_ALL, "");
+
+  /* these will be incorrect for windows */
+  sysvarsSetStr (SV_LOCALE_SYSTEM, setlocale (LC_ALL, NULL));
+  snprintf (tbuff, sizeof (tbuff), "%-.5s", sysvarsGetStr (SV_LOCALE_SYSTEM));
+  sysvarsSetStr (SV_LOCALE, tbuff);
+  snprintf (tbuff, sizeof (tbuff), "%-.2s", sysvarsGetStr (SV_LOCALE_SYSTEM));
+  sysvarsSetStr (SV_LOCALE_SHORT, tbuff);
+
   strlcpy (lbuff, sysvarsGetStr (SV_LOCALE), sizeof (lbuff));
 
+  /* if SV_LOCALE_SET is true, the locale was already loaded from the */
+  /* data/locale.txt file, and there is no need to do the windows processing */
   if (isWindows () && sysvarsGetNum (SVL_LOCALE_SET) == 0) {
     datafile_t  *df;
     slist_t     *list;
@@ -81,8 +91,7 @@ localeInit (void)
 
   if (isWindows ()) {
     /* windows doesn't work without this */
-    snprintf (tmp, sizeof (tmp), "LC_ALL=%s", tbuff);
-    putenv (tmp);
+    osSetEnv ("LC_ALL", tbuff);
   }
 
   pathbldMakePath (lbuff, sizeof (lbuff), "", "", "", PATHBLD_MP_LOCALEDIR);

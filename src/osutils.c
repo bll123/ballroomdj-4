@@ -535,3 +535,27 @@ osDirClose (dirhandle_t *dirh)
   }
   free (dirh);
 }
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-variable"
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-variable"
+
+int
+osSetEnv (const char *name, const char *value)
+{
+  int     rc;
+  char    tbuff [4096];
+
+  /* setenv is better */
+#if _lib_setenv
+  rc = setenv (name, value, 1);
+#else
+  snprintf (tbuff, "%s=%s", name, value);
+  rc = putenv (tbuff);
+#endif
+  return rc;
+}
+
+#pragma GCC diagnostic pop
+#pragma clang diagnostic pop

@@ -76,7 +76,7 @@ filemanipCopy (const char *fname, const char *nfn)
     char    *data;
     FILE    *fh;
     size_t  len;
-    size_t  trc;
+    size_t  trc = 0;
 
     data = filedataReadAll (fname, &len);
     fh = fopen (nfn, "w");

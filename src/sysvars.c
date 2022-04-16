@@ -8,6 +8,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <stdarg.h>
 
 #if _sys_resource
 # include <sys/resource.h>
@@ -48,6 +49,7 @@ static char *cacertFiles [] = {
 #define CACERT_FILE_COUNT (sizeof (cacertFiles) / sizeof (char *))
 
 static void enable_core_dump (void);
+static void checkForFile (char *path, int idx, ...);
 
 void
 sysvarsInit (const char *argv0)
@@ -274,64 +276,18 @@ sysvarsInit (const char *argv0)
     pathNormPath (tbuf, sizeof (tbuf));
 
     if (*sysvars [SV_PYTHON_PIP_PATH] == '\0') {
-      bool    found = false;
-
-      /* 'pip' checks */
-      /* 'pip3' is preferred */
-      snprintf (buff, sizeof (buff), "%s/%s", tbuf, "pip3.exe");
-      if (! found && fileopFileExists (buff)) {
-        strlcpy (sysvars [SV_PYTHON_PIP_PATH], buff, SV_MAX_SZ);
-        found = true;
-      }
-      snprintf (buff, sizeof (buff), "%s/%s", tbuf, "pip.exe");
-      if (! found && fileopFileExists (buff)) {
-        strlcpy (sysvars [SV_PYTHON_PIP_PATH], buff, SV_MAX_SZ);
-        found = true;
-      }
-      snprintf (buff, sizeof (buff), "%s/%s", tbuf, "pip3");
-      if (! found && fileopFileExists (buff)) {
-        strlcpy (sysvars [SV_PYTHON_PIP_PATH], buff, SV_MAX_SZ);
-        found = true;
-      }
-      snprintf (buff, sizeof (buff), "%s/%s", tbuf, "pip");
-      if (! found && fileopFileExists (buff)) {
-        strlcpy (sysvars [SV_PYTHON_PIP_PATH], buff, SV_MAX_SZ);
-        found = true;
-      }
+      checkForFile (tbuf, SV_PYTHON_PIP_PATH,
+          "pip3.exe", "pip.exe", "pip3", "pip", NULL);
     }
 
     if (*sysvars [SV_PYTHON_PATH] == '\0') {
-      bool    found = false;
-
-      /* 'python' checks */
-      /* 'python3' is preferred */
-      snprintf (buff, sizeof (buff), "%s/%s", tbuf, "python3.exe");
-      if (! found && fileopFileExists (buff)) {
-        strlcpy (sysvars [SV_PYTHON_PATH], buff, SV_MAX_SZ);
-        found = true;
-      }
-      snprintf (buff, sizeof (buff), "%s/%s", tbuf, "python.exe");
-      if (! found && fileopFileExists (buff)) {
-        strlcpy (sysvars [SV_PYTHON_PATH], buff, SV_MAX_SZ);
-        found = true;
-      }
-      snprintf (buff, sizeof (buff), "%s/%s", tbuf, "python3");
-      if (! found && fileopFileExists (buff)) {
-        strlcpy (sysvars [SV_PYTHON_PATH], buff, SV_MAX_SZ);
-        found = true;
-      }
-      snprintf (buff, sizeof (buff), "%s/%s", tbuf, "python");
-      if (! found && fileopFileExists (buff)) {
-        strlcpy (sysvars [SV_PYTHON_PATH], buff, SV_MAX_SZ);
-        found = true;
-      }
+      checkForFile (tbuf, SV_PYTHON_PATH,
+          "python3.exe", "python.exe", "python3", "python", NULL);
     }
 
     if (*sysvars [SV_GETCONF_PATH] == '\0') {
-      snprintf (buff, sizeof (buff), "%s/%s", tbuf, "getconf");
-      if (fileopFileExists (buff)) {
-        strlcpy (sysvars [SV_GETCONF_PATH], buff, SV_MAX_SZ);
-      }
+      checkForFile (tbuf, SV_GETCONF_PATH,
+          "getconf", NULL);
     }
 
     p = strtok_r (NULL, tsep, &tokstr);
@@ -519,3 +475,23 @@ enable_core_dump (void)
   return;
 }
 
+static void
+checkForFile (char *path, int idx, ...)
+{
+  va_list   valist;
+  char      buff [MAXPATHLEN];
+  char      *fn;
+  bool      found = false;
+
+  va_start (valist, idx);
+
+  while (! found && (fn = va_arg (valist, char *)) != NULL) {
+    snprintf (buff, sizeof (buff), "%s/%s", path, fn);
+    if (fileopFileExists (buff)) {
+      strlcpy (sysvars [idx], buff, SV_MAX_SZ);
+      found = true;
+    }
+  }
+
+  va_end (valist);
+}

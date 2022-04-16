@@ -22,18 +22,9 @@ main (int argc, char *argv [])
 
   setlocale (LC_ALL, "");
   locale = setlocale (LC_ALL, NULL);
-  printf ("all: %s\n", locale);
+  printf ("current: %s\n", locale);
   locale = setlocale (LC_MESSAGES, NULL);
   printf ("msgs: %s\n", locale);
-  if (locale != NULL) {
-    printf ("%2.2s ", locale);
-    if (locale [2] == '_') {
-      printf ("%5.5s ", locale);
-    } else {
-      printf ("'' ");
-    }
-    printf ("'%s'\n", locale);
-  }
 
   sysvarsInit (argv [0]);
   localeInit ();

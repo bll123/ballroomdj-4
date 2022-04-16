@@ -3,7 +3,7 @@
 
 #include <locale.h>
 
-// do this before including libintl, as libintl on windows
+// do this before including libintl, as libintl on msys64/windows
 // defines LC_MESSAGES
 
 #if defined (LC_MESSAGES)

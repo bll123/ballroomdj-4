@@ -807,9 +807,13 @@ uiutilsSpinboxTextCreate (uiutilsspinbox_t *spinbox, void *udata)
   g_signal_connect (spinbox->spinbox, "input",
       G_CALLBACK (uiutilsSpinboxInput), spinbox);
   spinbox->udata = udata;
+  /* for some reason, if the selection background color alone is set, the */
+  /* text color temporarily becomes white on light colored themes */
+  /* the text color must be set also */
   uiutilsSetCss (spinbox->spinbox,
       "spinbutton { caret-color: @theme_base_color; } "
-      "spinbutton selection { background-color: @theme_base_color }");
+      "selection { background-color: @theme_base_color; color: @theme_text_color; }"
+      );
   g_signal_connect (spinbox->spinbox, "key-press-event",
       G_CALLBACK (uiuitilsSpinboxTextKeyCallback), NULL);
   logProcEnd (LOG_PROC, "uiutilsSpinboxTextCreate", "");

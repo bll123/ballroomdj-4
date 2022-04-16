@@ -76,6 +76,7 @@
 #cmakedefine01 _lib_rand
 #cmakedefine01 _lib_random
 #cmakedefine01 _lib_realpath
+#cmakedefine01 _lib_setenv
 #cmakedefine01 _lib_setrlimit
 #cmakedefine01 _lib_sigaction
 #cmakedefine01 _lib_signal
