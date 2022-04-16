@@ -94,6 +94,7 @@ main (int argc, char *argv[])
   startui_t       starter;
   char            *uifont;
   char            tbuff [MAXPATHLEN];
+  int             flags;
 
 
   starter.progstate = progstateInit ("starterui");
@@ -120,7 +121,8 @@ main (int argc, char *argv[])
   procutilDefaultSignal (SIGCHLD);
 #endif
 
-  bdj4startup (argc, argv, "st", ROUTE_STARTERUI, BDJ4_INIT_NO_DB_LOAD);
+  flags = BDJ4_INIT_NO_DB_LOAD | BDJ4_INIT_NO_DATAFILE_LOAD;
+  bdj4startup (argc, argv, "st", ROUTE_STARTERUI, flags);
   logProcBegin (LOG_PROC, "starterui");
 
   /* get the profile list after bdjopt has been initialized */

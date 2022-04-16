@@ -544,16 +544,18 @@ main (int argc, char *argv[])
       "orgopt", ".txt", PATHBLD_MP_NONE);
   orgopt = orgoptAlloc (tbuff);
   tlist = orgoptGetList (orgopt);
+
   confui.uiitem [CONFUI_COMBOBOX_AO_PATHFMT].list = tlist;
   slistStartIterator (tlist, &iteridx);
+  confui.uiitem [CONFUI_COMBOBOX_AO_PATHFMT].listidx = 0;
   count = 0;
   while ((p = slistIterateValueData (tlist, &iteridx)) != NULL) {
     if (strcmp (p, bdjoptGetStr (OPT_G_AO_PATHFMT)) == 0) {
+      confui.uiitem [CONFUI_COMBOBOX_AO_PATHFMT].listidx = count;
       break;
     }
     ++count;
   }
-  confui.uiitem [CONFUI_COMBOBOX_AO_PATHFMT].listidx = count;
 
   volume = volumeInit ();
   assert (volume != NULL);

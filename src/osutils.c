@@ -436,7 +436,7 @@ osFromFSFilename (const void *fname)
   {
     size_t      len;
     BOOL        used;
-    char        *defChar = "?";
+    static char *defChar = "?";
 
     /* the documentation lies; len does not include room for the null byte */
     len = WideCharToMultiByte (CP_UTF8, 0, fname, -1, NULL, 0, defChar, &used);

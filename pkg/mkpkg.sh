@@ -67,6 +67,7 @@ function copyreleasefiles {
       ${stage}/bin/bdj4se \
       ${stage}/bin/check_all \
       ${stage}/bin/chkprocess \
+      ${stage}/bin/voltest \
       ${stage}/img/mkicon.sh \
       ${stage}/img/README.txt \
       ${stage}/plocal/bin/checkmk \

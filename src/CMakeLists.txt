@@ -516,6 +516,24 @@ target_link_libraries (libbdj4ui
 addIntlLibrary (libbdj4ui)
 addWinSockLibrary (libbdj4ui)
 
+# reusable objects; there's no need to compile these twice
+add_library (libbdj4fileop STATIC
+  fileop.c osutils.c tmutil.c
+)
+add_library (libbdj4string STATIC
+  bdjstring.c strlcat.c strlcpy.c
+)
+add_library (libmongoose STATIC ${MONGOOSE_SRC})
+add_library (libwebsrv STATIC websrv.c)
+target_include_directories (libwebsrv
+  PRIVATE "${MONGOOSE_INC_DIR}"
+)
+add_library (liblocatebdj3 STATIC locatebdj3.c)
+
+add_library (libbdj4launcher STATIC
+  filedata.c osnetutils.c pathbld.c pathutil.c sysvars.c
+)
+
 add_library (libplinull SHARED plinull.c)
 target_link_libraries (libplinull
   libbdj4common
@@ -565,24 +583,9 @@ endif()
 
 add_library (libvolwin SHARED volwin.cpp)
 target_compile_options (libvolwin PRIVATE -static-libstdc++)
-
-# reusable objects; there's no need to compile these twice
-add_library (libbdj4fileop STATIC
-  fileop.c osutils.c tmutil.c
-)
-add_library (libbdj4string STATIC
-  bdjstring.c strlcat.c strlcpy.c
-)
-
-add_library (libmongoose STATIC ${MONGOOSE_SRC})
-add_library (libwebsrv STATIC websrv.c)
-target_include_directories (libwebsrv
-  PRIVATE "${MONGOOSE_INC_DIR}"
-)
-add_library (liblocatebdj3 STATIC locatebdj3.c)
-
-add_library (libbdj4launcher STATIC
-  filedata.c osnetutils.c pathbld.c pathutil.c sysvars.c
+target_link_libraries (libvolwin
+  libbdj4fileop
+  libbdj4string
 )
 
 add_executable (bdj4locatebdj3 bdj4locatebdj3.c)
@@ -597,6 +600,13 @@ target_link_libraries (bdj4locale
   libbdj4common
 )
 addIntlLibrary (bdj4locale)
+
+add_executable (voltest voltest.c)
+target_link_libraries (voltest
+  libbdj4vol libbdj4common
+  ${CMAKE_DL_LIBS}
+  m
+)
 
 if (WIN32)
   # the bdj4se executable
@@ -818,7 +828,7 @@ add_executable (chkprocess chkprocess.c)
 install (TARGETS
   libbdj4common libbdj4 libbdj4pli libbdj4vol libbdj4ui
   libplinull libplivlc
-  libvolalsa libvolmac libvolnull libvolpa libvolwin
+  libvolalsa libvolmac libvolnull libvolpa libvolwin voltest
   bdj4 bdj4g bdj4cli
   bdj4installer bdj4locale bdj4locatebdj3 bdj4se
   bdj4dbupdate bdj4dbtag

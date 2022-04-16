@@ -56,6 +56,7 @@ bdj4startup (int argc, char *argv[], char *tag, bdjmsgroute_t route, int flags)
     /* bdj4 loader options to ignore */
     { "debugself",    no_argument,      NULL,   0 },
     { "msys",         no_argument,      NULL,   0 },
+    { "theme",        required_argument,NULL,   0 },
     /* normal options */
     { "profile",      required_argument,NULL,   'p' },
     { "debug",        required_argument,NULL,   'd' },
