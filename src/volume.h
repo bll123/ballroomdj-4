@@ -34,6 +34,7 @@ typedef struct {
 
 volume_t  *volumeInit (void);
 void      volumeFree (volume_t *volume);
+void      volumeSinklistInit (volsinklist_t *sinklist);
 int       volumeGet (volume_t *volume, char *sinkname);
 int       volumeSet (volume_t *volume, char *sinkname, int vol);
 int       volumeGetSinkList (volume_t *volume, char *sinkname, volsinklist_t *sinklist);

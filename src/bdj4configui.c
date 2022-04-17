@@ -100,7 +100,7 @@ enum {
   CONFUI_ENTRY_SHUTDOWN,
   CONFUI_ENTRY_STARTUP,
   CONFUI_ENTRY_MAX,
-  CONFUI_SPINBOX_AUDIO,
+  CONFUI_SPINBOX_VOL_INTFC,
   CONFUI_SPINBOX_AUDIO_OUTPUT,
   CONFUI_SPINBOX_BPM,
   CONFUI_SPINBOX_DANCE_HIGH_BPM,
@@ -214,6 +214,20 @@ enum {
   CONFUI_TABLE_NO_UP_DOWN = 0x01,
   CONFUI_TABLE_KEEP_FIRST = 0x02,
   CONFUI_TABLE_KEEP_LAST  = 0x04,
+};
+
+enum {
+  CONFUI_VOL_DESC,
+  CONFUI_VOL_INTFC,
+  CONFUI_VOL_OS,
+  CONFUI_VOL_MAX,
+};
+
+enum {
+  CONFUI_PLAYER_DESC,
+  CONFUI_PLAYER_INTFC,
+  CONFUI_PLAYER_OS,
+  CONFUI_PLAYER_MAX,
 };
 
 typedef struct {
@@ -367,6 +381,8 @@ static GtkWidget * confuiMakeItemTable (configui_t *confui, GtkWidget *vbox, con
 static nlist_t  * confuiGetThemeList (void);
 static nlist_t  * confuiGetThemeNames (nlist_t *themelist, slist_t *filelist);
 static void     confuiLoadHTMLList (configui_t *confui);
+static void     confuiLoadVolIntfcList (configui_t *confui);
+static void     confuiLoadPlayerIntfcList (configui_t *confui);
 static void     confuiLoadLocaleList (configui_t *confui);
 static void     confuiLoadDanceTypeList (configui_t *confui);
 static void     confuiLoadTagList (configui_t *confui);
@@ -558,6 +574,7 @@ main (int argc, char *argv[])
   }
 
   volume = volumeInit ();
+  volumeSinklistInit (&sinklist);
   assert (volume != NULL);
   volumeGetSinkList (volume, "", &sinklist);
   tlist = nlistAlloc ("cu-audio-out", LIST_UNORDERED, free);
@@ -599,42 +616,6 @@ main (int argc, char *argv[])
   nlistSetStr (tlist, FADETYPE_INVERTED_PARABOLA, _("Inverted Parabola"));
   confui.uiitem [CONFUI_SPINBOX_FADE_TYPE].list = tlist;
 
-  tlist = nlistAlloc ("cu-player", LIST_UNORDERED, free);
-  llist = nlistAlloc ("cu-player", LIST_ORDERED, free);
-  nlistSetStr (tlist, 0, _("Integrated VLC"));
-  nlistSetStr (llist, 0, "libplivlc");
-  nlistSetStr (tlist, 1, _("Null Player"));
-  nlistSetStr (llist, 1, "libnull");
-  confui.uiitem [CONFUI_SPINBOX_PLAYER].list = tlist;
-  confui.uiitem [CONFUI_SPINBOX_PLAYER].sblookuplist = llist;
-
-  tlist = nlistAlloc ("cu-audio", LIST_UNORDERED, free);
-  llist = nlistAlloc ("cu-audio-l", LIST_ORDERED, free);
-  count = 0;
-  if (isWindows ()) {
-    nlistSetStr (tlist, count, "Windows");
-    nlistSetStr (llist, count, "libvolwin");
-    ++count;
-  }
-  if (isMacOS ()) {
-    nlistSetStr (tlist, count, "MacOS");
-    nlistSetStr (llist, count, "libvolmac");
-    ++count;
-  }
-  if (isLinux ()) {
-    nlistSetStr (tlist, count, "Pulse Audio");
-    nlistSetStr (llist, count, "libvolpa");
-    ++count;
-    nlistSetStr (tlist, count, "ALSA");
-    nlistSetStr (llist, count, "libvolalsa");
-    ++count;
-  }
-  nlistSetStr (tlist, count++, _("Null Audio"));
-  nlistSetStr (llist, count, "libvolnull");
-  ++count;
-  confui.uiitem [CONFUI_SPINBOX_AUDIO].list = tlist;
-  confui.uiitem [CONFUI_SPINBOX_AUDIO].sblookuplist = llist;
-
   tlist = nlistAlloc ("cu-dance-speed", LIST_UNORDERED, free);
   /* order these in the same order as defined in dance.h */
   nlistSetStr (tlist, DANCE_SPEED_SLOW, _("slow"));
@@ -661,6 +642,8 @@ main (int argc, char *argv[])
   confui.uiitem [CONFUI_SPINBOX_DISP_SEL].list = tlist;
 
   confuiLoadHTMLList (&confui);
+  confuiLoadVolIntfcList (&confui);
+  confuiLoadPlayerIntfcList (&confui);
   confuiLoadLocaleList (&confui);
   confuiLoadDanceTypeList (&confui);
   confuiLoadTagList (&confui);
@@ -948,9 +931,11 @@ confuiActivate (GApplication *app, gpointer userdata)
   sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
   confuiMakeItemSpinboxText (confui, vbox, sg, _("Player"),
-      CONFUI_SPINBOX_PLAYER, OPT_M_PLAYER_INTFC, 0);
+      CONFUI_SPINBOX_PLAYER, OPT_M_PLAYER_INTFC,
+      confui->uiitem [CONFUI_SPINBOX_PLAYER].listidx);
   confuiMakeItemSpinboxText (confui, vbox, sg, _("Audio"),
-      CONFUI_SPINBOX_AUDIO, OPT_M_VOLUME_INTFC, 0);
+      CONFUI_SPINBOX_VOL_INTFC, OPT_M_VOLUME_INTFC,
+      confui->uiitem [CONFUI_SPINBOX_VOL_INTFC].listidx);
   confuiMakeItemSpinboxText (confui, vbox, sg, _("Audio Output"),
       CONFUI_SPINBOX_AUDIO_OUTPUT, OPT_M_AUDIOSINK,
       confui->uiitem [CONFUI_SPINBOX_AUDIO_OUTPUT].listidx);
@@ -2401,6 +2386,116 @@ confuiLoadHTMLList (configui_t *confui)
   confui->uiitem [CONFUI_SPINBOX_RC_HTML_TEMPLATE].list = tlist;
   confui->uiitem [CONFUI_SPINBOX_RC_HTML_TEMPLATE].sblookuplist = llist;
   logProcEnd (LOG_PROC, "confuiLoadHTMLList", "");
+}
+
+static void
+confuiLoadVolIntfcList (configui_t *confui)
+{
+  char          tbuff [MAXPATHLEN];
+  nlist_t       *tlist = NULL;
+  datafile_t    *df = NULL;
+  ilist_t       *list = NULL;
+  ilistidx_t    iteridx;
+  ilistidx_t    key;
+  char          *os;
+  char          *intfc;
+  char          *desc;
+  nlist_t       *llist;
+  int           count;
+
+  static datafilekey_t dfkeys [CONFUI_VOL_MAX] = {
+    { "DESC",   CONFUI_VOL_DESC,  VALUE_STR, NULL, -1 },
+    { "INTFC",  CONFUI_VOL_INTFC, VALUE_STR, NULL, -1 },
+    { "OS",     CONFUI_VOL_OS,    VALUE_STR, NULL, -1 },
+  };
+
+  logProcBegin (LOG_PROC, "confuiLoadVolIntfcList");
+
+  tlist = nlistAlloc ("cu-volintfc-list", LIST_ORDERED, free);
+  llist = nlistAlloc ("cu-volintfc-list-l", LIST_ORDERED, free);
+
+  pathbldMakePath (tbuff, sizeof (tbuff), "",
+      "volintfc", ".txt", PATHBLD_MP_TEMPLATEDIR);
+  df = datafileAllocParse ("conf-volintfc-list", DFTYPE_INDIRECT, tbuff,
+      dfkeys, CONFUI_VOL_MAX, DATAFILE_NO_LOOKUP);
+  list = datafileGetList (df);
+
+  ilistStartIterator (list, &iteridx);
+  count = 0;
+  while ((key = ilistIterateKey (list, &iteridx)) >= 0) {
+    intfc = ilistGetStr (list, key, CONFUI_VOL_INTFC);
+    desc = ilistGetStr (list, key, CONFUI_VOL_DESC);
+    os = ilistGetStr (list, key, CONFUI_VOL_OS);
+    if (strcmp (os, sysvarsGetStr (SV_OSNAME)) == 0 ||
+        strcmp (os, "all") == 0) {
+      if (strcmp (intfc, bdjoptGetStr (OPT_M_VOLUME_INTFC)) == 0) {
+        confui->uiitem [CONFUI_SPINBOX_VOL_INTFC].listidx = count;
+      }
+      nlistSetStr (tlist, count, desc);
+      nlistSetStr (llist, count, intfc);
+      ++count;
+    }
+  }
+  datafileFree (df);
+
+  confui->uiitem [CONFUI_SPINBOX_VOL_INTFC].list = tlist;
+  confui->uiitem [CONFUI_SPINBOX_VOL_INTFC].sblookuplist = llist;
+  logProcEnd (LOG_PROC, "confuiLoadVolIntfcList", "");
+}
+
+static void
+confuiLoadPlayerIntfcList (configui_t *confui)
+{
+  char          tbuff [MAXPATHLEN];
+  nlist_t       *tlist = NULL;
+  datafile_t    *df = NULL;
+  ilist_t       *list = NULL;
+  ilistidx_t    iteridx;
+  ilistidx_t    key;
+  char          *os;
+  char          *intfc;
+  char          *desc;
+  nlist_t       *llist;
+  int           count;
+
+  static datafilekey_t dfkeys [CONFUI_PLAYER_MAX] = {
+    { "DESC",   CONFUI_PLAYER_DESC,  VALUE_STR, NULL, -1 },
+    { "INTFC",  CONFUI_PLAYER_INTFC, VALUE_STR, NULL, -1 },
+    { "OS",     CONFUI_PLAYER_OS,    VALUE_STR, NULL, -1 },
+  };
+
+  logProcBegin (LOG_PROC, "confuiLoadPlayerIntfcList");
+
+  tlist = nlistAlloc ("cu-playerintfc-list", LIST_ORDERED, free);
+  llist = nlistAlloc ("cu-playerintfc-list-l", LIST_ORDERED, free);
+
+  pathbldMakePath (tbuff, sizeof (tbuff), "",
+      "playerintfc", ".txt", PATHBLD_MP_TEMPLATEDIR);
+  df = datafileAllocParse ("conf-playerintfc-list", DFTYPE_INDIRECT, tbuff,
+      dfkeys, CONFUI_PLAYER_MAX, DATAFILE_NO_LOOKUP);
+  list = datafileGetList (df);
+
+  ilistStartIterator (list, &iteridx);
+  count = 0;
+  while ((key = ilistIterateKey (list, &iteridx)) >= 0) {
+    intfc = ilistGetStr (list, key, CONFUI_PLAYER_INTFC);
+    desc = ilistGetStr (list, key, CONFUI_PLAYER_DESC);
+    os = ilistGetStr (list, key, CONFUI_PLAYER_OS);
+    if (strcmp (os, sysvarsGetStr (SV_OSNAME)) == 0 ||
+        strcmp (os, "all") == 0) {
+      if (strcmp (intfc, bdjoptGetStr (OPT_M_PLAYER_INTFC)) == 0) {
+        confui->uiitem [CONFUI_SPINBOX_PLAYER].listidx = count;
+      }
+      nlistSetStr (tlist, count, desc);
+      nlistSetStr (llist, count, intfc);
+      ++count;
+    }
+  }
+  datafileFree (df);
+
+  confui->uiitem [CONFUI_SPINBOX_PLAYER].list = tlist;
+  confui->uiitem [CONFUI_SPINBOX_PLAYER].sblookuplist = llist;
+  logProcEnd (LOG_PROC, "confuiLoadPlayerIntfcList", "");
 }
 
 static void

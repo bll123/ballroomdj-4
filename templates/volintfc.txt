@@ -1,0 +1,42 @@
+# volume interfaces
+# 2022-4-16
+KEY
+..0
+INTFC
+..libvolwin
+DESC
+..Windows
+OS
+..windows
+KEY
+..1
+INTFC
+..libvolmac
+DESC
+..MacOS
+OS
+..darwin
+KEY
+..2
+INTFC
+..libvolpa
+DESC
+..Pulse Audio
+OS
+..linux
+KEY
+..3
+INTFC
+..libvolalsa
+DESC
+..ALSA
+OS
+..linux
+KEY
+..4
+INTFC
+..libvolnull
+DESC
+..Null Audio
+OS
+..all

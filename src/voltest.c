@@ -24,6 +24,7 @@ main (int argc, char *argv [])
   bdjoptInit ();
 
   volume = volumeInit ();
+  volumeSinklistInit (&sinklist);
 
   if (argc == 2 && strcmp (argv [1], "getsinklist") == 0) {
     volumeGetSinkList (volume, "", &sinklist);
@@ -35,6 +36,7 @@ main (int argc, char *argv [])
           sinklist.sinklist [i].name,
           sinklist.sinklist [i].description);
     }
+    volumeFreeSinkList (&sinklist);
   }
   if (argc == 3 && strcmp (argv [1], "get") == 0) {
     vol = volumeGet (volume, argv [2]);

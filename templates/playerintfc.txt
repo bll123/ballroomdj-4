@@ -1,0 +1,18 @@
+# player interfaces
+# 2022-4-16
+KEY
+..0
+INTFC
+..libplivlc
+DESC
+..Integrated VLC
+OS
+..all
+KEY
+..1
+INTFC
+..libplinull
+DESC
+..Null Player
+OS
+..all

@@ -59,6 +59,14 @@ volumeFree (volume_t *volume)
   }
 }
 
+void
+volumeSinklistInit (volsinklist_t *sinklist)
+{
+  sinklist->defname = NULL;
+  sinklist->count = 0;
+  sinklist->sinklist = NULL;
+}
+
 
 int
 volumeGet (volume_t *volume, char *sinkname)

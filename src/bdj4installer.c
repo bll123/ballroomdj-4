@@ -1174,6 +1174,12 @@ installerCopyTemplates (installer_t *installer)
     if (strcmp (fname, "html-list.txt") == 0) {
       continue;
     }
+    if (strcmp (fname, "volintfc.txt") == 0) {
+      continue;
+    }
+    if (strcmp (fname, "playerintfc.txt") == 0) {
+      continue;
+    }
 
     if (strcmp (fname, "bdj-flex-dark.html") == 0) {
       snprintf (from, sizeof (from), "%s/templates/%s",

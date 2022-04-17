@@ -203,9 +203,7 @@ main (int argc, char *argv[])
   playerData.fadeinTime = bdjoptGetNum (OPT_P_FADEINTIME);
   playerData.fadeoutTime = bdjoptGetNum (OPT_P_FADEOUTTIME);
 
-  playerData.sinklist.defname = "";
-  playerData.sinklist.count = 0;
-  playerData.sinklist.sinklist = NULL;
+  volumeSinklistInit (&playerData.sinklist);
   playerData.defaultSink = "";
   playerData.currentSink = "";
   playerData.currentSpeed = 100;
