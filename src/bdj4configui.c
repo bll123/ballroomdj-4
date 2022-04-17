@@ -4106,8 +4106,8 @@ confuiDanceEntryChg (GtkEditable *e, gpointer udata)
     return;
   }
   str = gtk_entry_buffer_get_text (entry->buffer);
-  if (str == NULL || *str == '\0') {
-    logProcEnd (LOG_PROC, "confuiDanceEntryChg", "no-string");
+  if (str == NULL) {
+    logProcEnd (LOG_PROC, "confuiDanceEntryChg", "null-string");
     return;
   }
 
@@ -4133,16 +4133,13 @@ confuiDanceEntryChg (GtkEditable *e, gpointer udata)
 
   if (didx == DANCE_TAGS) {
     slist_t *slist;
-    char    *tstr;
 
-    tstr = strdup (str);
-    conv.allocated = false;
-    conv.u.str = tstr;
+    conv.allocated = true;
+    conv.u.str = strdup (str);
     conv.valuetype = VALUE_STR;
     convTextList (&conv);
     slist = conv.u.list;
     danceSetList (dances, key, didx, slist);
-    free (tstr);
   } else {
     danceSetStr (dances, key, didx, str);
   }
