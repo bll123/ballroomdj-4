@@ -131,8 +131,7 @@ case $systype in
     ;;
 esac
 
-echo "prepkg is currently off"
-# ./pkg/prepkg.sh
+./pkg/prepkg.sh
 
 # update build number
 

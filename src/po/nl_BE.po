@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: BDJ4 4.0.0\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
-"POT-Creation-Date: 2022-04-15\n"
-"PO-Revision-Date: 2022-04-15\n"
+"POT-Creation-Date: 2022-04-17\n"
+"PO-Revision-Date: 2022-04-17\n"
 "Last-Translator: marimo\n"
 "Language-Team: dutch\n"
 "Language: nl\n"
@@ -344,6 +344,9 @@ msgstr ""
 msgid "If there is no BallroomDJ 3 installation, enter a single '-'."
 msgstr ""
 
+msgid "If there is no BallroomDJ 3 installation, leave the entry blank."
+msgstr ""
+
 msgid "Install"
 msgstr "Installeren"
 
@@ -355,9 +358,6 @@ msgstr ""
 
 #, c-format
 msgid "Installing %s."
-msgstr ""
-
-msgid "Integrated VLC"
 msgstr ""
 
 msgid "Internet"
@@ -490,12 +490,6 @@ msgstr ""
 msgid "Notes"
 msgstr "Notities"
 
-msgid "Null Audio"
-msgstr ""
-
-msgid "Null Player"
-msgstr ""
-
 msgid "Off"
 msgstr "Uit"
 
@@ -550,6 +544,9 @@ msgstr "Speler"
 
 msgid "Player Options"
 msgstr "Speler Opties"
+
+msgid "Please wait..."
+msgstr ""
 
 msgid "Poor"
 msgstr "Slecht"

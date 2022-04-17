@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-04-15 12:53-0700\n"
+"POT-Creation-Date: 2022-04-17 09:13-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -348,6 +348,9 @@ msgstr ""
 msgid "If there is no BallroomDJ 3 installation, enter a single '-'."
 msgstr ""
 
+msgid "If there is no BallroomDJ 3 installation, leave the entry blank."
+msgstr ""
+
 msgid "Install"
 msgstr ""
 
@@ -359,9 +362,6 @@ msgstr ""
 
 #, c-format
 msgid "Installing %s."
-msgstr ""
-
-msgid "Integrated VLC"
 msgstr ""
 
 msgid "Internet"
@@ -494,12 +494,6 @@ msgstr ""
 msgid "Notes"
 msgstr ""
 
-msgid "Null Audio"
-msgstr ""
-
-msgid "Null Player"
-msgstr ""
-
 msgid "Off"
 msgstr ""
 
@@ -553,6 +547,9 @@ msgid "Player"
 msgstr ""
 
 msgid "Player Options"
+msgstr ""
+
+msgid "Please wait..."
 msgstr ""
 
 msgid "Poor"
