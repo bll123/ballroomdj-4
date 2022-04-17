@@ -85,6 +85,7 @@ typedef struct {
   char            vlcversion [40];
   char            pyversion [40];
   char            dlfname [MAXPATHLEN];
+  int             delayMax;
   int             delayCount;
   installstate_t  delayState;
   /* conversion */
@@ -163,6 +164,7 @@ static void installerSetrundir (installer_t *installer, const char *dir);
 static void installerVLCGetVersion (installer_t *installer);
 static void installerPythonGetVersion (installer_t *installer);
 static void installerCleanFiles (char *fname);
+static void installerCheckPackages (installer_t *installer);
 
 int
 main (int argc, char *argv[])
@@ -177,13 +179,13 @@ main (int argc, char *argv[])
   int           option_index = 0;
 
   static struct option bdj_options [] = {
-    { "installer",  no_argument,        NULL,   12 },
+    { "installer",  no_argument,        NULL,   0 },
     { "reinstall",  no_argument,        NULL,   'r' },
     { "guidisabled",no_argument,        NULL,   'g' },
     { "unpackdir",  required_argument,  NULL,   'u' },
-    { "debug",      required_argument,  NULL,   'd' },
-    { "theme",      required_argument,  NULL,   't' },
-    { "debugself",  no_argument,        NULL,   'D' },
+    { "debug",      required_argument,  NULL,   0 },
+    { "theme",      required_argument,  NULL,   0 },
+    { "debugself",  no_argument,        NULL,   0 },
     { "bdj4",       no_argument,        NULL,   0 },
     { NULL,         0,                  NULL,   0 }
   };
@@ -217,26 +219,25 @@ main (int argc, char *argv[])
   installer.freetarget = false;
   installer.freebdj3loc = false;
   installer.guienabled = true;
+  installer.delayMax = 20;
+  installer.delayCount = 0;
+  installer.app = NULL;
+  installer.window = NULL;
+  installer.reinstWidget = NULL;
+  installer.feedbackMsg = NULL;
+  installer.vlcMsg = NULL;
+  installer.pythonMsg = NULL;
+  installer.mutagenMsg = NULL;
+  installer.dispBuffer = NULL;
+  installer.dispTextView = NULL;
   getcwd (installer.currdir, sizeof (installer.currdir));
   mstimeset (&installer.validateTimer, 3600000);
 
   uiutilsEntryInit (&installer.targetEntry, 80, MAXPATHLEN);
   uiutilsEntryInit (&installer.bdj3locEntry, 80, MAXPATHLEN);
 
-  while ((c = getopt_long_only (argc, argv, "p:d:t:", bdj_options, &option_index)) != -1) {
+  while ((c = getopt_long_only (argc, argv, "g:r:u:", bdj_options, &option_index)) != -1) {
     switch (c) {
-      case 12: {
-        break;
-      }
-      case 'd': {
-        break;
-      }
-      case 'D': {
-        break;
-      }
-      case 't': {
-        break;
-      }
       case 'g': {
         installer.guienabled = false;
         break;
@@ -319,19 +320,18 @@ main (int argc, char *argv[])
     }
   }
 
+  installerCheckPackages (&installer);
+
   if (installer.guienabled) {
     g_timeout_add (UI_MAIN_LOOP_TIMER * 5, installerMainLoop, &installer);
     status = uiutilsCreateApplication (0, NULL, "installer",
         &installer.app, installerActivate, &installer);
   } else {
+    installer.delayMax = 10;
     status = 0;
     installer.instState = INST_INIT;
-    while (installer.instState != INST_FINISH) {
+    while (installer.instState != INST_BEGIN) {
       installerMainLoop (&installer);
-      if (installer.instState == INST_BEGIN) {
-        /* exit the loop */
-        installer.instState = INST_FINISH;
-      }
       mssleep (50);
     }
   }
@@ -554,6 +554,8 @@ installerActivate (GApplication *app, gpointer udata)
   gtk_box_pack_start (GTK_BOX (vbox), hbox, TRUE, TRUE, 0);
 
   gtk_widget_show_all (window);
+
+  installerCheckPackages (installer);
 }
 
 static int
@@ -692,7 +694,6 @@ installerValidateDir (installer_t *installer)
   const char    *dir;
   bool          exists = false;
   const char    *fn;
-  char          tbuff [MAXPATHLEN];
 
   if (! installer->guienabled) {
     return;
@@ -746,63 +747,6 @@ installerValidateDir (installer_t *installer)
   } else {
     gtk_entry_set_icon_from_icon_name (GTK_ENTRY (installer->bdj3locEntry.entry),
         GTK_ENTRY_ICON_SECONDARY, NULL);
-  }
-
-  *tbuff = '\0';
-  if (isWindows ()) {
-    strlcpy (tbuff, "C:/Program Files/VideoLAN/VLC", sizeof (tbuff));
-  }
-  if (isMacOS ()) {
-    strlcpy (tbuff, "/Applications/VLC.app/Contents/MacOS/lib/", sizeof (tbuff));
-  }
-  if (isLinux ()) {
-    strlcpy (tbuff, "/usr/lib/x86_64-linux-gnu/libvlc.so.5", sizeof (tbuff));
-  }
-
-  if (*tbuff) {
-    if (fileopIsDirectory (tbuff) || fileopFileExists (tbuff)) {
-      snprintf (tbuff, sizeof (tbuff), _("%s is installed"), "VLC");
-      gtk_label_set_text (GTK_LABEL (installer->vlcMsg), tbuff);
-      installer->vlcinstalled = true;
-    } else {
-      snprintf (tbuff, sizeof (tbuff), _("%s is not installed"), "VLC");
-      gtk_label_set_text (GTK_LABEL (installer->vlcMsg), tbuff);
-      installer->vlcinstalled = false;
-    }
-  }
-
-  *tbuff = '\0';
-  if (isWindows ()) {
-    snprintf (tbuff, sizeof (tbuff),
-        "%s/AppData/Local/Programs/Python", installer->home);
-  }
-  if (isMacOS ()) {
-    strlcpy (tbuff, "/opt/local/bin/python3", sizeof (tbuff));
-  }
-  if (isLinux ()) {
-    strlcpy (tbuff, "/usr/bin/python3", sizeof (tbuff));
-  }
-
-  if (*tbuff) {
-    if (fileopIsDirectory (tbuff) || fileopFileExists (tbuff)) {
-      snprintf (tbuff, sizeof (tbuff), _("%s is installed"), "Python");
-      gtk_label_set_text (GTK_LABEL (installer->pythonMsg), tbuff);
-      installer->pythoninstalled = true;
-    } else {
-      snprintf (tbuff, sizeof (tbuff), _("%s is not installed"), "Python");
-      gtk_label_set_text (GTK_LABEL (installer->pythonMsg), tbuff);
-      snprintf (tbuff, sizeof (tbuff), _("%s is not installed"), "Mutagen");
-      gtk_label_set_text (GTK_LABEL (installer->mutagenMsg), tbuff);
-      installer->pythoninstalled = false;
-    }
-  }
-
-  if (installer->pythoninstalled) {
-    fn = sysvarsGetStr (SV_PYTHON_MUTAGEN);
-    if (fn != NULL && *fn) {
-      snprintf (tbuff, sizeof (tbuff), _("%s is installed"), "Mutagen");
-      gtk_label_set_text (GTK_LABEL (installer->mutagenMsg), tbuff);
-    }
   }
 }
 
@@ -896,7 +840,7 @@ installerDelay (installer_t *installer)
 {
   installer->instState = INST_DELAY;
   ++installer->delayCount;
-  if (installer->delayCount > 50) {
+  if (installer->delayCount > installer->delayMax) {
     installer->instState = installer->delayState;
   }
 }
@@ -1295,7 +1239,6 @@ installerCopyTemplates (installer_t *installer)
     system (tbuff);
   } else {
     snprintf (tbuff, sizeof (tbuff), "cp -r '%s' '%s'", from, "http");
-    system (tbuff);
   }
 
   datafileFree (srdf);
@@ -1312,14 +1255,14 @@ installerConvertStart (installer_t *installer)
   char  tbuff [MAXPATHLEN];
   char  *locs [15];
   int   locidx = 0;
-  FILE  *fh;
 
   if (! installer->newinstall && ! installer->reinstall) {
     installer->instState = INST_CREATE_SHORTCUT;
     return;
   }
 
-  if (strcmp (installer->bdj3loc, "-") == 0) {
+  if (strcmp (installer->bdj3loc, "-") == 0 ||
+     *installer->bdj3loc == '\0') {
     installer->instState = INST_CREATE_SHORTCUT;
     return;
   }
@@ -1347,7 +1290,8 @@ installerConvertStart (installer_t *installer)
     }
   }
 
-  if (strcmp (installer->bdj3loc, "-") == 0) {
+  if (strcmp (installer->bdj3loc, "-") == 0 ||
+     *installer->bdj3loc == '\0') {
     installer->instState = INST_CREATE_SHORTCUT;
     return;
   }
@@ -1361,12 +1305,6 @@ installerConvertStart (installer_t *installer)
   }
 
   installerDisplayText (installer, "-- ", _("Starting conversion process."));
-
-  fh = fileopOpen (tbuff, "w");
-  if (fh != NULL) {
-    fprintf (fh, "%s\n", installer->bdj3loc);
-    fclose (fh);
-  }
 
   installer->convlist = filemanipBasicDirList ("conv", ".tcl");
   slistStartIterator (installer->convlist, &installer->convidx);
@@ -1733,6 +1671,7 @@ installerMutagenInstall (installer_t *installer)
       "%s --quiet install --user --upgrade mutagen", pipnm);
   system (tbuff);
   snprintf (tbuff, sizeof (tbuff), _("%s installed."), "Mutagen");
+  installerDisplayText (installer, "-- ", tbuff);
   installer->instState = INST_FINISH;
 }
 
@@ -1923,3 +1862,79 @@ installerCleanFiles (char *fname)
   }
 }
 
+static void
+installerCheckPackages (installer_t *installer)
+{
+  char  tbuff [MAXPATHLEN];
+
+  *tbuff = '\0';
+  if (isWindows ()) {
+    strlcpy (tbuff, "C:/Program Files/VideoLAN/VLC", sizeof (tbuff));
+  }
+  if (isMacOS ()) {
+    strlcpy (tbuff, "/Applications/VLC.app/Contents/MacOS/lib/", sizeof (tbuff));
+  }
+  if (isLinux ()) {
+    strlcpy (tbuff, "/usr/lib/x86_64-linux-gnu/libvlc.so.5", sizeof (tbuff));
+  }
+
+  if (*tbuff) {
+    if (fileopIsDirectory (tbuff) || fileopFileExists (tbuff)) {
+      snprintf (tbuff, sizeof (tbuff), _("%s is installed"), "VLC");
+      if (installer->vlcMsg != NULL) {
+        gtk_label_set_text (GTK_LABEL (installer->vlcMsg), tbuff);
+      }
+      installer->vlcinstalled = true;
+    } else {
+      snprintf (tbuff, sizeof (tbuff), _("%s is not installed"), "VLC");
+      if (installer->vlcMsg != NULL) {
+        gtk_label_set_text (GTK_LABEL (installer->vlcMsg), tbuff);
+      }
+      installer->vlcinstalled = false;
+    }
+  }
+
+  *tbuff = '\0';
+  if (isWindows ()) {
+    snprintf (tbuff, sizeof (tbuff),
+        "%s/AppData/Local/Programs/Python", installer->home);
+  }
+  if (isMacOS ()) {
+    strlcpy (tbuff, "/opt/local/bin/python3", sizeof (tbuff));
+  }
+  if (isLinux ()) {
+    strlcpy (tbuff, "/usr/bin/python3", sizeof (tbuff));
+  }
+
+  if (*tbuff) {
+    if (fileopIsDirectory (tbuff) || fileopFileExists (tbuff)) {
+      snprintf (tbuff, sizeof (tbuff), _("%s is installed"), "Python");
+      if (installer->pythonMsg != NULL) {
+        gtk_label_set_text (GTK_LABEL (installer->pythonMsg), tbuff);
+      }
+      installer->pythoninstalled = true;
+    } else {
+      snprintf (tbuff, sizeof (tbuff), _("%s is not installed"), "Python");
+      if (installer->pythonMsg != NULL) {
+        gtk_label_set_text (GTK_LABEL (installer->pythonMsg), tbuff);
+      }
+      snprintf (tbuff, sizeof (tbuff), _("%s is not installed"), "Mutagen");
+      if (installer->mutagenMsg != NULL) {
+        gtk_label_set_text (GTK_LABEL (installer->mutagenMsg), tbuff);
+      }
+      installer->pythoninstalled = false;
+    }
+  }
+
+  if (installer->pythoninstalled) {
+    char    *fn;
+
+    fn = sysvarsGetStr (SV_PYTHON_MUTAGEN);
+    if (fn != NULL && *fn) {
+      snprintf (tbuff, sizeof (tbuff), _("%s is installed"), "Mutagen");
+      if (installer->mutagenMsg != NULL) {
+        gtk_label_set_text (GTK_LABEL (installer->mutagenMsg), tbuff);
+      }
+    }
+  }
+}

@@ -107,6 +107,11 @@ case $cwd in
     ;;
 esac
 
+preskip=F
+if [[ $1 == "--preskip" ]]; then
+  preskip=T
+fi
+
 systype=$(uname -s)
 case $systype in
   Linux)
@@ -131,7 +136,9 @@ case $systype in
     ;;
 esac
 
-./pkg/prepkg.sh
+if [[ $preskip == F ]]; then
+  ./pkg/prepkg.sh
+fi
 
 # update build number
 

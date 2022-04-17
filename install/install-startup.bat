@@ -12,7 +12,7 @@ if "%1" == "" ( goto endargs )
 if %1 == "--reinstall" (
   set reinstall="--reinstall"
 )
-if %1 == "--cli" (
+if %1 == "--guidisabled" (
   set guidisabled="--guidisabled"
 )
 shift

@@ -28,19 +28,18 @@ if [[ $rc -ne 0 ]]; then
 fi
 
 reinstall=""
-if [[ $1 == "--reinstall" ]]; then
-  reinstall=--reinstall
-fi
-if [[ $2 == "--reinstall" ]]; then
-  reinstall=--reinstall
-fi
+guidisabled=""
+while test $# -gt 0; do
+  if [[ $1 == "--reinstall" ]]; then
+    reinstall=--reinstall
+  fi
+  if [[ $1 == "--guidisabled" ]]; then
+    guidisabled=--guidisabled
+  fi
+  shift
+done
 
-if [[ $1 == "--cli" ]]; then
-  echo "-- Starting console installer."
-  ./bin/bdj4 --installer --guidisabled --unpackdir "$unpackdir" $reinstall
-else
-  echo "-- Starting graphical installer."
-  ./bin/bdj4 --installer --unpackdir "$unpackdir" $reinstall > /dev/tty 2>&1
-fi
+echo "-- Starting installer."
+./bin/bdj4 --installer ${guidisabled} --unpackdir "$unpackdir" $reinstall
 
 exit 0

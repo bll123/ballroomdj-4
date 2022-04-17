@@ -97,10 +97,6 @@ osProcessStart (char *targv[], int flags, void **handle, char *outfname)
       if ((flags & OS_PROC_DETACH) == OS_PROC_DETACH) {
         setsid ();
       }
-      /* close any open file descriptors */
-      for (int i = 3; i < 30; ++i) {
-        close (i);
-      }
 
       if (outfname != NULL) {
         int fd = open (outfname, O_CREAT | O_WRONLY | O_TRUNC);
