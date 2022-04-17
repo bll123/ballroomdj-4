@@ -951,18 +951,21 @@ datafileDumpItem (char *tag, char *name, dfConvFunc_t convFunc,
   fprintf (stdout, "%2s: %-20s ", tag, name);
   if (vt == VALUE_NUM) {
     if (conv->u.num != LIST_VALUE_INVALID) {
-      fprintf (stdout, "%zd\n", conv->u.num);
+      fprintf (stdout, "%zd", conv->u.num);
     }
+    fprintf (stdout, "\n");
   }
   if (vt == VALUE_DOUBLE) {
     if (conv->u.dval != LIST_DOUBLE_INVALID) {
-      fprintf (stdout, "%.2f\n", conv->u.dval);
+      fprintf (stdout, "%.2f", conv->u.dval);
     }
+    fprintf (stdout, "\n");
   }
   if (vt == VALUE_STR) {
     if (conv->u.str != NULL) {
-      fprintf (stdout, "%s\n", conv->u.str);
+      fprintf (stdout, "%s", conv->u.str);
     }
+    fprintf (stdout, "\n");
     if (conv->allocated) {
       free (conv->u.str);
     }

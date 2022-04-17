@@ -99,7 +99,7 @@ static char *cacertFiles [] = {
 
 static void enable_core_dump (void);
 static void checkForFile (char *path, int idx, ...);
-static char * svRunProgram (const char *prog, const char *arg);
+static char * svRunProgram (char *prog, char *arg);
 static bool svGetLinuxOSInfo (char *fn);
 
 void
@@ -314,6 +314,7 @@ sysvarsInit (const char *argv0)
   strlcpy (sysvars [SV_PYTHON_PATH], "", SV_MAX_SZ);
   strlcpy (sysvars [SV_PYTHON_PIP_PATH], "", SV_MAX_SZ);
   strlcpy (sysvars [SV_GETCONF_PATH], "", SV_MAX_SZ);
+  strlcpy (sysvars [SV_TEMP_A], "", SV_MAX_SZ);
 
   tptr = strdup (getenv ("PATH"));
   tsep = ":";
@@ -353,6 +354,8 @@ sysvarsInit (const char *argv0)
 
     strlcpy (sysvars [SV_OSDISP], "MacOS", SV_MAX_SZ);
     data = svRunProgram (sysvars [SV_TEMP_A], "-productVersion");
+    stringTrim (data);
+    strlcpy (sysvars [SV_OSVERS], data, SV_MAX_SZ);
     if (data != NULL) {
       if (strcmp (data, "13") > 0) {
         strlcat (sysvars [SV_OSDISP], " ", SV_MAX_SZ);
@@ -420,7 +423,7 @@ sysvarsInit (const char *argv0)
 
   // $HOME/.local/bin/mutagen-inspect
   // %USERPROFILE%/AppData/Local/Programs/Python/Python<pyver>/Scripts/mutagen-inspect-script.py
-  // $HOME/Library/Python/<pyver>/lib/python/site-packages
+  // $HOME/Library/Python/<pydotver>/bin/mutagen-inspect
   // msys2: $HOME/.local/bin/mutagen-inspect (use $HOME, not %USERPROFILE%)
 
   if (isLinux ()) {
@@ -434,7 +437,7 @@ sysvarsInit (const char *argv0)
   }
   if (isMacOS ()) {
     snprintf (buff, sizeof (buff),
-        "%s/Library/Python/%s/lib/python/site-packages/%s",
+        "%s/Library/Python/%s/bin/%s",
         sysvars [SV_HOME], sysvars [SV_PYTHON_DOT_VERSION], "mutagen-inspect");
   }
   if (fileopFileExists (buff)) {
@@ -460,15 +463,7 @@ sysvarsInit (const char *argv0)
       lsysvars [SVL_NUM_PROC] = atoi (tptr);
     }
   } else if (fileopIsDirectory ("tmp")) {
-    char  *targv [3];
-
-    /* don't bother with this if tmp is not there */
-    targv [0] = sysvars [SV_GETCONF_PATH];
-    targv [1] = "_NPROCESSORS_ONLN";
-    targv [2] = NULL;
-    osProcessStart (targv, OS_PROC_WAIT, NULL, SV_TMP_FILE);
-    tptr = filedataReadAll (SV_TMP_FILE, NULL);
-    fileopDelete (SV_TMP_FILE);
+    tptr = svRunProgram (sysvars [SV_GETCONF_PATH], "_NPROCESSORS_ONLN");
     if (tptr != NULL) {
       lsysvars [SVL_NUM_PROC] = atoi (tptr);
     }
@@ -599,13 +594,13 @@ checkForFile (char *path, int idx, ...)
 }
 
 static char *
-svRunProgram (const char *prog, const char *arg)
+svRunProgram (char *prog, char *arg)
 {
   char    *targv [3];
   char    *data;
 
-  targv [0] = sysvars [SV_PYTHON_PATH];
-  targv [1] = "--version";
+  targv [0] = prog;
+  targv [1] = arg;
   targv [2] = NULL;
   osProcessStart (targv, OS_PROC_WAIT, NULL, SV_TMP_FILE);
   data = filedataReadAll (SV_TMP_FILE, NULL);
@@ -629,20 +624,20 @@ svGetLinuxOSInfo (char *fn)
     while (fgets (tbuf, sizeof (tbuf), fh) != NULL) {
       if (strncmp (tbuf, desctag, strlen (desctag)) == 0) {
         strlcpy (buff, tbuf + strlen (desctag) + 1, sizeof (buff));
-        stringTrimChar (buff, '\n');
+        stringTrim (buff);
         stringTrimChar (buff, '"');
         strlcpy (sysvars [SV_OSDISP], buff, SV_MAX_SZ);
         rc = true;
       }
       if (strncmp (tbuf, reltag, strlen (reltag)) == 0) {
         strlcpy (buff, tbuf + strlen (reltag), sizeof (buff));
-        stringTrimChar (buff, '\n');
+        stringTrim (buff);
         strlcpy (sysvars [SV_OSVERS], buff, SV_MAX_SZ);
         rc = true;
       }
       if (strncmp (tbuf, verstag, strlen (verstag)) == 0) {
         strlcpy (buff, tbuf + strlen (verstag) + 1, sizeof (buff));
-        stringTrimChar (buff, '\n');
+        stringTrim (buff);
         stringTrimChar (buff, '"');
         strlcpy (sysvars [SV_OSVERS], buff, SV_MAX_SZ);
         rc = true;

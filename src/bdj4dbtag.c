@@ -112,7 +112,6 @@ main (int argc, char *argv[])
   for (int i = 0; i < dbtag.maxThreads; ++i) {
     dbtag.threads [i].state = DBTAG_T_STATE_INIT;
     dbtag.threads [i].idx = i;
-    dbtag.threads [i].thread = -1;
     dbtag.threads [i].count = 0;
     dbtag.threads [i].fn = NULL;
     dbtag.threads [i].data = NULL;
