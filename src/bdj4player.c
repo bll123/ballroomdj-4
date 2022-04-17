@@ -203,9 +203,9 @@ main (int argc, char *argv[])
   playerData.fadeinTime = bdjoptGetNum (OPT_P_FADEINTIME);
   playerData.fadeoutTime = bdjoptGetNum (OPT_P_FADEOUTTIME);
 
-  volumeSinklistInit (&playerData.sinklist);
   playerData.defaultSink = "";
   playerData.currentSink = "";
+  volumeSinklistInit (&playerData.sinklist);
   playerData.currentSpeed = 100;
 
   playerData.volume = volumeInit ();
@@ -279,8 +279,6 @@ playerClosingCallback (void *tpdata, programstate_t programState)
 
   volumeSet (playerData->volume, playerData->currentSink, playerData->originalSystemVolume);
   logMsg (LOG_DBG, LOG_MAIN, "set to orig volume: %d", playerData->originalSystemVolume);
-  playerData->defaultSink = "";
-  playerData->currentSink = "";
   volumeFreeSinkList (&playerData->sinklist);
   volumeFree (playerData->volume);
 
@@ -1169,7 +1167,7 @@ playerSetAudioSink (playerdata_t *playerData, char *sinkname)
     playerData->currentSink = playerData->sinklist.sinklist [idx].name;
     logMsg (LOG_DBG, LOG_IMPORTANT, "audio sink set to %s", playerData->sinklist.sinklist [idx].description);
   } else {
-    playerData->currentSink = playerData->sinklist.defname;
+    playerData->currentSink = playerData->defaultSink;
     logMsg (LOG_DBG, LOG_IMPORTANT, "audio sink set to default");
   }
   logProcEnd (LOG_PROC, "playerSetAudioSink", "");
@@ -1195,7 +1193,11 @@ playerInitSinklist (playerdata_t *playerData)
     mssleep (100);
     ++count;
   }
-  playerData->defaultSink = playerData->sinklist.defname;
+  if (*playerData->sinklist.defname) {
+    playerData->defaultSink = playerData->sinklist.defname;
+  } else {
+    playerData->defaultSink = "default";
+  }
   logProcEnd (LOG_PROC, "playerInitSinklist", "");
 }
 
