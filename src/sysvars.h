@@ -1,7 +1,6 @@
 #ifndef INC_SYSVARS_H
 #define INC_SYSVARS_H
 
-
 typedef enum {
   SV_BDJ4_BUILD,
   SV_BDJ4_BUILDDATE,
@@ -36,6 +35,8 @@ typedef enum {
   SV_PYTHON_VERSION,      // 3.10.2 => 310
   SV_SHLIB_EXT,
   SV_WEB_HOST,
+  SV_TEMP_A,
+  SV_TEMP_B,
   SV_MAX
 } sysvarkey_t;
 
@@ -55,6 +56,8 @@ char    * sysvarsGetStr (sysvarkey_t idx);
 ssize_t sysvarsGetNum (sysvarlkey_t idx);
 void    sysvarsSetStr (sysvarkey_t, const char *value);
 void    sysvarsSetNum (sysvarlkey_t, ssize_t);
+const char * sysvarsDesc (sysvarkey_t idx);
+const char * sysvarslDesc (sysvarlkey_t idx);
 bool    isMacOS (void);
 bool    isWindows (void);
 bool    isLinux (void);

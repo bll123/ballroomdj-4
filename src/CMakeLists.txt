@@ -596,11 +596,11 @@ target_link_libraries (bdj4locatebdj3
   libbdj4string
 )
 
-add_executable (bdj4locale bdj4locale.c)
-target_link_libraries (bdj4locale
+add_executable (bdj4info bdj4info.c)
+target_link_libraries (bdj4info
   libbdj4common
 )
-addIntlLibrary (bdj4locale)
+addIntlLibrary (bdj4info)
 
 add_executable (voltest voltest.c)
 target_link_libraries (voltest
@@ -831,7 +831,8 @@ install (TARGETS
   libplinull libplivlc
   libvolalsa libvolmac libvolnull libvolpa libvolwin voltest
   bdj4 bdj4g bdj4cli
-  bdj4installer bdj4locale bdj4locatebdj3 bdj4se
+  bdj4se bdj4installer
+  bdj4locatebdj3 bdj4info
   bdj4dbupdate bdj4dbtag
   bdj4main bdj4player bdj4mobmq bdj4rc bdj4marquee
   bdj4starterui bdj4playerui bdj4configui
@@ -885,5 +886,6 @@ if (APPLE)
   macUpdateRPath (bdj4installer)
   macUpdateRPath (bdj4locatebdj3)
   macUpdateRPath (bdj4locale)
+  macUpdateRPath (bdj4info)
   macUpdateRPath (check_all)
 endif()

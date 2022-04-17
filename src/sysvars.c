@@ -35,6 +35,55 @@
 #include "osutils.h"
 #include "pathutil.h"
 
+typedef struct {
+  const char  *desc;
+} sysvarsdesc_t;
+
+/* for debugging */
+static sysvarsdesc_t sysvarsdesc [SV_MAX] = {
+  [SV_BDJ4_BUILD] = { "BDJ4-Build-Number" },
+  [SV_BDJ4_BUILDDATE] = { "BDJ4-Build-Date" },
+  [SV_BDJ4DATADIR] = { "Dir-Data" },
+  [SV_BDJ4DATATOPDIR] = { "Dir-Data-Top" },
+  [SV_BDJ4EXECDIR] = { "Dir-Exec" },
+  [SV_BDJ4HTTPDIR] = { "Dir-Http" },
+  [SV_BDJ4IMGDIR] = { "Dir-Image" },
+  [SV_BDJ4LOCALEDIR] = { "Dir-Locale" },
+  [SV_BDJ4MAINDIR] = { "Dir-Main" },
+  [SV_BDJ4_RELEASELEVEL] = { "BDJ4-Release-Level" },
+  [SV_BDJ4TEMPLATEDIR] = { "Dir-Template" },
+  [SV_BDJ4TMPDIR] = { "Dir-Temp" },
+  [SV_BDJ4_VERSION] = { "BDJ4-Version" },
+  [SV_CA_FILE] = { "CA-File" },
+  [SV_GETCONF_PATH] = { "Path-getconf" },
+  [SV_HOME] = { "Path-Home" },
+  [SV_HOSTNAME] = { "Hostname" },
+  [SV_LOCALE] = { "Locale" },
+  [SV_LOCALE_SHORT] = { "Locale-Short" },
+  [SV_LOCALE_SYSTEM] = { "Locale-System" },
+  [SV_MOBMQ_HOST] = { "Mobmq-Host" },
+  [SV_MOBMQ_URL] = { "Mobmq-URL" },
+  [SV_OSBUILD] = { "OS-Build" },
+  [SV_OSDISP] = { "OS-Display" },
+  [SV_OSNAME] = { "OS-Name" },
+  [SV_OSVERS] = { "OS-Version" },
+  [SV_PYTHON_DOT_VERSION] = { "Version-Python-Dot" },
+  [SV_PYTHON_MUTAGEN] = { "Path-mutagen" },
+  [SV_PYTHON_PATH] = { "Path-python" },
+  [SV_PYTHON_PIP_PATH] = { "Path-pip" },
+  [SV_PYTHON_VERSION] = { "Version-Python" },
+  [SV_SHLIB_EXT] = { "Sharedlib-Extension" },
+  [SV_WEB_HOST] = { "Host-Web" },
+};
+
+static sysvarsdesc_t sysvarsldesc [SVL_MAX] = {
+  [SVL_BDJIDX] = { "Profile" },
+  [SVL_BASEPORT] = { "Base-Port" },
+  [SVL_OSBITS] = { "OS-Bits" },
+  [SVL_NUM_PROC] = { "Number-of-Processors" },
+  [SVL_LOCALE_SET] = { "Locale-Set" },
+};
+
 #define SV_MAX_SZ   512
 
 static char        sysvars [SV_MAX][SV_MAX_SZ];
@@ -50,6 +99,8 @@ static char *cacertFiles [] = {
 
 static void enable_core_dump (void);
 static void checkForFile (char *path, int idx, ...);
+static char * svRunProgram (const char *prog, const char *arg);
+static bool svGetLinuxOSInfo (char *fn);
 
 void
 sysvarsInit (const char *argv0)
@@ -74,7 +125,6 @@ sysvarsInit (const char *argv0)
   rc = uname (&ubuf);
   assert (rc == 0);
   strlcpy (sysvars [SV_OSNAME], ubuf.sysname, SV_MAX_SZ);
-  /* ### FIX : fix osdisp later */
   strlcpy (sysvars [SV_OSDISP], ubuf.sysname, SV_MAX_SZ);
   strlcpy (sysvars [SV_OSVERS], ubuf.version, SV_MAX_SZ);
   strlcpy (sysvars [SV_OSBUILD], "", SV_MAX_SZ);
@@ -290,24 +340,57 @@ sysvarsInit (const char *argv0)
           "getconf", NULL);
     }
 
+    if (*sysvars [SV_TEMP_A] == '\0') {
+      checkForFile (tbuf, SV_TEMP_A, "sw_vers", NULL);
+    }
+
     p = strtok_r (NULL, tsep, &tokstr);
   }
   free (tptr);
+
+  if (strcmp (sysvars [SV_OSNAME], "darwin") == 0) {
+    char *data;
+
+    strlcpy (sysvars [SV_OSDISP], "MacOS", SV_MAX_SZ);
+    data = svRunProgram (sysvars [SV_TEMP_A], "-productVersion");
+    if (data != NULL) {
+      if (strcmp (data, "13") > 0) {
+        strlcat (sysvars [SV_OSDISP], " ", SV_MAX_SZ);
+        strlcat (sysvars [SV_OSDISP], data, SV_MAX_SZ);
+      } else if (strcmp (data, "12") > 0) {
+        strlcat (sysvars [SV_OSDISP], " Monterey", SV_MAX_SZ);
+      } else if (strcmp (data, "11") > 0) {
+        strlcat (sysvars [SV_OSDISP], " Big Sur", SV_MAX_SZ);
+      } else if (strcmp (data, "10.15") > 0) {
+        strlcat (sysvars [SV_OSDISP], " Catalina", SV_MAX_SZ);
+      } else if (strcmp (data, "10.14") > 0) {
+        strlcat (sysvars [SV_OSDISP], " Mojave", SV_MAX_SZ);
+      } else if (strcmp (data, "10.13") > 0) {
+        strlcat (sysvars [SV_OSDISP], " High Sierra", SV_MAX_SZ);
+      } else if (strcmp (data, "10.12") > 0) {
+        strlcat (sysvars [SV_OSDISP], " ", SV_MAX_SZ);
+        strlcat (sysvars [SV_OSDISP], data, SV_MAX_SZ);
+      }
+    }
+    free (data);
+  }
+  if (strcmp (sysvars [SV_OSNAME], "linux") == 0) {
+    static char *fna = "/etc/lsb-release";
+    static char *fnb = "/etc/os-release";
+
+    if (! svGetLinuxOSInfo (fna)) {
+      svGetLinuxOSInfo (fnb);
+    }
+  }
 
   /* the launcher is not in the right directory. */
   /* don't bother with this if tmp is not there */
   if (fileopIsDirectory ("tmp") &&
       *sysvars [SV_PYTHON_PATH]) {
     char    *data;
-    char    *targv [3];
     int     j;
 
-    targv [0] = sysvars [SV_PYTHON_PATH];
-    targv [1] = "--version";
-    targv [2] = NULL;
-    osProcessStart (targv, OS_PROC_WAIT, NULL, SV_TMP_FILE);
-    data = filedataReadAll (SV_TMP_FILE, NULL);
-    fileopDelete (SV_TMP_FILE);
+    data = svRunProgram (sysvars [SV_PYTHON_PATH], "--version");
 
     p = NULL;
     if (data != NULL) {
@@ -459,6 +542,25 @@ isLinux (void)
   return (strcmp (sysvars[SV_OSNAME], "linux") == 0);
 }
 
+/* for debugging */
+const char *
+sysvarsDesc (sysvarkey_t idx)
+{
+  if (idx >= SV_MAX) {
+    return "";
+  }
+  return sysvarsdesc [idx].desc;
+}
+
+const char *
+sysvarslDesc (sysvarlkey_t idx)
+{
+  if (idx >= SVL_MAX) {
+    return "";
+  }
+  return sysvarsldesc [idx].desc;
+}
+
 /* internal routines */
 
 static void
@@ -494,4 +596,60 @@ checkForFile (char *path, int idx, ...)
   }
 
   va_end (valist);
+}
+
+static char *
+svRunProgram (const char *prog, const char *arg)
+{
+  char    *targv [3];
+  char    *data;
+
+  targv [0] = sysvars [SV_PYTHON_PATH];
+  targv [1] = "--version";
+  targv [2] = NULL;
+  osProcessStart (targv, OS_PROC_WAIT, NULL, SV_TMP_FILE);
+  data = filedataReadAll (SV_TMP_FILE, NULL);
+  fileopDelete (SV_TMP_FILE);
+  return data;
+}
+
+static bool
+svGetLinuxOSInfo (char *fn)
+{
+  static char *desctag = "PRETTY_NAME=";
+  static char *reltag = "DISTRIB_RELEASE=";
+  static char *verstag = "VERSION_ID=";
+  FILE        *fh;
+  char        tbuf [MAXPATHLEN];
+  char        buff [MAXPATHLEN];
+  bool        rc = false;
+
+  fh = fopen (fn, "r");
+  if (fh != NULL) {
+    while (fgets (tbuf, sizeof (tbuf), fh) != NULL) {
+      if (strncmp (tbuf, desctag, strlen (desctag)) == 0) {
+        strlcpy (buff, tbuf + strlen (desctag) + 1, sizeof (buff));
+        stringTrimChar (buff, '\n');
+        stringTrimChar (buff, '"');
+        strlcpy (sysvars [SV_OSDISP], buff, SV_MAX_SZ);
+        rc = true;
+      }
+      if (strncmp (tbuf, reltag, strlen (reltag)) == 0) {
+        strlcpy (buff, tbuf + strlen (reltag), sizeof (buff));
+        stringTrimChar (buff, '\n');
+        strlcpy (sysvars [SV_OSVERS], buff, SV_MAX_SZ);
+        rc = true;
+      }
+      if (strncmp (tbuf, verstag, strlen (verstag)) == 0) {
+        strlcpy (buff, tbuf + strlen (verstag) + 1, sizeof (buff));
+        stringTrimChar (buff, '\n');
+        stringTrimChar (buff, '"');
+        strlcpy (sysvars [SV_OSVERS], buff, SV_MAX_SZ);
+        rc = true;
+      }
+    }
+    fclose (fh);
+  }
+
+  return rc;
 }

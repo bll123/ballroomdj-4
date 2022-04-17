@@ -266,6 +266,22 @@ bdjoptConvBPM (datafileconv_t *conv)
   }
 }
 
+void
+bdjoptDump (void)
+{
+  /* global */
+  datafileDumpKeyVal ("g", bdjoptglobaldfkeys, BDJOPT_GLOBAL_DFKEY_COUNT, bdjopt->data);
+
+  /* profile */
+  datafileDumpKeyVal ("p", bdjoptprofiledfkeys, BDJOPT_PROFILE_DFKEY_COUNT, bdjopt->data);
+
+  /* machine */
+  datafileDumpKeyVal ("m", bdjoptmachdfkeys, BDJOPT_MACHINE_DFKEY_COUNT, bdjopt->data);
+
+  /* machine/profile */
+  datafileDumpKeyVal ("mp", bdjoptmachprofiledfkeys, BDJOPT_MACH_PROFILE_DFKEY_COUNT, bdjopt->data);
+}
+
 /* internal routines */
 
 static void

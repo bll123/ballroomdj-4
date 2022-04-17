@@ -69,7 +69,7 @@ main (int argc, char * argv[])
     { "bdj4remctrl",    no_argument,        NULL,   11 },
     { "bdj4installer",  no_argument,        NULL,   12 },
     { "installer",      no_argument,        NULL,   12 },
-    { "bdj4locale",     no_argument,        NULL,   13 },
+    { "bdj4info",       no_argument,        NULL,   13 },
     { "bdj4starterui",  no_argument,        NULL,   14 },
     { "bdj4dbupdate",   no_argument,        NULL,   15 },
     /* cli */
@@ -176,7 +176,7 @@ main (int argc, char * argv[])
         break;
       }
       case 13: {
-        prog = "bdj4locale";
+        prog = "bdj4info";
         nodetach = true;
         ++validargs;
         break;

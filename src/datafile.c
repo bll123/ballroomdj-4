@@ -29,6 +29,8 @@ static bool     datafileCheckDfkeys (char *name, datafilekey_t *dfkeys, ssize_t 
 static FILE *   datafileSavePrep (char *fn, char *tag);
 static void     datafileSaveItem (FILE *fh, char *name, dfConvFunc_t convFunc,
     datafileconv_t *conv);
+static void     datafileDumpItem (char *tag, char *name, dfConvFunc_t convFunc,
+    datafileconv_t *conv);
 
 /* parsing routines */
 
@@ -731,6 +733,37 @@ datafileBackup (char *fname, int count)
   return;
 }
 
+void
+datafileDumpKeyVal (char *tag, datafilekey_t *dfkeys,
+    ssize_t dfkeycount, nlist_t *list)
+{
+  datafileconv_t  conv;
+  valuetype_t     vt;
+
+  for (ssize_t i = 0; i < dfkeycount; ++i) {
+    vt = dfkeys [i].valuetype;
+    conv.allocated = false;
+    conv.valuetype = vt;
+
+    /* load the data value into the conv structure so that retrieval is */
+    /* the same for both non-converted and converted values */
+    if (vt == VALUE_NUM) {
+      conv.u.num = nlistGetNum (list, dfkeys [i].itemkey);
+    }
+    if (vt == VALUE_STR) {
+      conv.u.str = nlistGetStr (list, dfkeys [i].itemkey);
+    }
+    if (vt == VALUE_LIST) {
+      conv.u.list = nlistGetList (list, dfkeys [i].itemkey);
+    }
+    if (vt == VALUE_DOUBLE) {
+      conv.u.dval = nlistGetDouble (list, dfkeys [i].itemkey);
+    }
+
+    datafileDumpItem (tag, dfkeys [i].name, dfkeys [i].convFunc, &conv);
+  }
+}
+
 /* internal parse routines */
 
 static ssize_t
@@ -896,6 +929,39 @@ datafileSaveItem (FILE *fh, char *name, dfConvFunc_t convFunc,
       fprintf (fh, "..%s\n", conv->u.str);
     } else {
       fprintf (fh, "..\n");
+    }
+    if (conv->allocated) {
+      free (conv->u.str);
+    }
+  }
+}
+
+static void
+datafileDumpItem (char *tag, char *name, dfConvFunc_t convFunc,
+    datafileconv_t *conv)
+{
+  valuetype_t     vt;
+
+  vt = conv->valuetype;
+  if (convFunc != NULL) {
+    convFunc (conv);
+    vt = conv->valuetype;
+  }
+
+  fprintf (stdout, "%2s: %-20s ", tag, name);
+  if (vt == VALUE_NUM) {
+    if (conv->u.num != LIST_VALUE_INVALID) {
+      fprintf (stdout, "%zd\n", conv->u.num);
+    }
+  }
+  if (vt == VALUE_DOUBLE) {
+    if (conv->u.dval != LIST_DOUBLE_INVALID) {
+      fprintf (stdout, "%.2f\n", conv->u.dval);
+    }
+  }
+  if (vt == VALUE_STR) {
+    if (conv->u.str != NULL) {
+      fprintf (stdout, "%s\n", conv->u.str);
     }
     if (conv->allocated) {
       free (conv->u.str);
