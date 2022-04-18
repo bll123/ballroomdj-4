@@ -27,6 +27,9 @@ function mkpo {
   elang=$5
 
   echo "-- $(date +%T) creating $out"
+  if [[ -f ${out} ]]; then
+    mv ${out} ${out}.old
+  fi
   > ${out}
   echo "# == $dlang" >> ${out}
   echo "# -- $elang" >> ${out}
@@ -96,8 +99,9 @@ xgettext -s -j -d bdj4 \
 rm -f $TMP
 
 mkpo en en_GB.po "Automatically generated" "English (GB)" english/gb
+rm -f en_GB.po.old
 mkpo nl nl_BE.po "marimo" Nederlands dutch
-#mkpo de de_DE.po "various" Deutsch german
+# mkpo de de_DE.po "unassigned" Deutsch german
 ./lang-lookup.sh
 echo "-- $(date +%T) creating english/us .po files"
 ./mken_us.sh

@@ -133,10 +133,10 @@ echo "-- Installing packages needed by BDJ4"
 sudo port install gtk3 +quartz -x11
 sudo port install ffmpeg +nonfree -x11
 sudo port install python${pyver} py${pyver}-pip py${pyver}-wheel
-sudo port select --set python python310
-sudo port select --set python3 python310
-sudo port select --set pip py310-pip
-sudo port select --set pip3 py310-pip
+sudo port select --set python python${pyver}
+sudo port select --set python3 python${pyver}
+sudo port select --set pip py${pyver}-pip
+sudo port select --set pip3 py${pyver}-pip
 
 echo "-- Cleaning up old MacPorts files"
 if [[ -z "$(port -q list inactive)" ]]; then

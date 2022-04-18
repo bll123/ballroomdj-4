@@ -34,6 +34,7 @@ typedef enum {
   SV_PYTHON_PIP_PATH,
   SV_PYTHON_VERSION,      // 3.10.2 => 310
   SV_SHLIB_EXT,
+  SV_USER_AGENT,
   SV_VLC_PATH,
   SV_WEB_HOST,
   SV_TEMP_A,

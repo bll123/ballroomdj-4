@@ -15,4 +15,8 @@ typedef enum {
 # define MAXPATHLEN         512
 #endif
 
+#define BDJ4_LONG_NAME  "BallroomDJ 4"
+#define BDJ4_NAME       "BDJ4"
+#define BDJ3_NAME       "BallroomDJ 3"
+
 #endif /* INC_BDJ4_H */

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-04-18 08:29-0700\n"
+"POT-Creation-Date: 2022-04-18 12:30-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,6 +16,21 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#. CONTEXT: installer: command line interface: BDJ3 location prompt
+#, c-format
+msgid "%s Folder"
+msgstr ""
+
+#. CONTEXT: installer: window title
+#, c-format
+msgid "%s Installer"
+msgstr ""
+
+#. CONTEXT: installer: label for entry field asking for BDJ3 location
+#, c-format
+msgid "%s Location"
+msgstr ""
 
 #. CONTEXT: installer: status message
 #, c-format
@@ -107,9 +122,6 @@ msgstr ""
 msgid "BDJ Tags Only"
 msgstr ""
 
-msgid "BDJ4 Installer"
-msgstr ""
-
 msgid "BPM"
 msgstr ""
 
@@ -117,15 +129,6 @@ msgid "Bachata"
 msgstr ""
 
 msgid "Ballroom Dance"
-msgstr ""
-
-#. CONTEXT: installer: command line interface: BDJ3 location prompt
-#, c-format
-msgid "BallroomDJ 3 Folder [%s] : "
-msgstr ""
-
-#. CONTEXT: installer: label for entry field asking for BDJ3 location
-msgid "BallroomDJ 3 Location"
 msgstr ""
 
 msgid "Cha Cha"
@@ -167,6 +170,11 @@ msgstr ""
 
 #. CONTEXT: installer: status message
 msgid "Conversion complete."
+msgstr ""
+
+#. CONTEXT: installer: convert the BallroomDJ 3 installation
+#, c-format
+msgid "Convert %s"
 msgstr ""
 
 #. CONTEXT: installer: status message
@@ -282,7 +290,7 @@ msgstr ""
 #. CONTEXT: installer
 #. CONTEXT: installer: command line interface
 #, c-format
-msgid "Enter the folder where BallroomDJ 3 is installed."
+msgid "Enter the folder where %s is installed."
 msgstr ""
 
 #. CONTEXT: installer: command line interface: the selected folder exists and is not a BDJ4 installation
@@ -366,7 +374,7 @@ msgstr ""
 
 #. CONTEXT: installer: command line interface
 #, c-format
-msgid "If there is no BallroomDJ 3 installation, enter a single '-'."
+msgid "If there is no %s installation, enter a single '-'."
 msgstr ""
 
 #. CONTEXT: installer
@@ -490,7 +498,7 @@ msgstr ""
 #. CONTEXT: installer: message indicating the action that will be taken
 #. CONTEXT: installer: command line interface:
 #, c-format
-msgid "New BDJ4 installation."
+msgid "New %s installation."
 msgstr ""
 
 msgid "New Dance"
@@ -548,7 +556,7 @@ msgstr ""
 #. CONTEXT: installer: message indicating the action that will be taken
 #. CONTEXT: installer: command line interface: indicating action
 #, c-format
-msgid "Overwriting existing BDJ4 installation."
+msgid "Overwriting existing %s installation."
 msgstr ""
 
 msgid "Paso Doble"
@@ -594,7 +602,7 @@ msgid "Position"
 msgstr ""
 
 #. CONTEXT: installer: command line interface:
-#. CONTEXT: installer: command line interface: accep BDJ3 location default
+#. CONTEXT: installer: command line interface: accept BDJ3 location default
 #, c-format
 msgid "Press 'Enter' to select the default."
 msgstr ""
@@ -701,7 +709,8 @@ msgid "Select"
 msgstr ""
 
 #. CONTEXT: installer: label for entry field for BDJ3 location
-msgid "Select BallroomDJ 3 Location"
+#, c-format
+msgid "Select %s Location"
 msgstr ""
 
 msgid "Select File"
@@ -820,7 +829,7 @@ msgstr ""
 #. CONTEXT: installer: message indicating the action that will be taken
 #. CONTEXT: installer: command line interface: indicating action
 #, c-format
-msgid "Updating existing BDJ4 installation."
+msgid "Updating existing %s installation."
 msgstr ""
 
 msgid "User ID"

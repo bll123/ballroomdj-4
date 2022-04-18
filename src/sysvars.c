@@ -73,6 +73,7 @@ static sysvarsdesc_t sysvarsdesc [SV_MAX] = {
   [SV_PYTHON_PIP_PATH] = { "Path-pip" },
   [SV_PYTHON_VERSION] = { "Version-Python" },
   [SV_SHLIB_EXT] = { "Sharedlib-Extension" },
+  [SV_USER_AGENT] = { "User-Agent" },
   [SV_VLC_PATH] = { "Path-vlc" },
   [SV_WEB_HOST] = { "Host-Web" },
 };
@@ -313,6 +314,10 @@ sysvarsInit (const char *argv0)
     free (data);
   }
 
+  snprintf (sysvars [SV_USER_AGENT], SV_MAX_SZ,
+      "%s/%s ( https://ballroomdj.org/ )", BDJ4_NAME,
+      sysvars [SV_BDJ4_VERSION]);
+
   strlcpy (sysvars [SV_PYTHON_PATH], "", SV_MAX_SZ);
   strlcpy (sysvars [SV_PYTHON_PIP_PATH], "", SV_MAX_SZ);
   strlcpy (sysvars [SV_GETCONF_PATH], "", SV_MAX_SZ);
@@ -327,6 +332,7 @@ sysvarsInit (const char *argv0)
   while (p != NULL) {
     strlcpy (tbuff, p, sizeof (tbuff));
     pathNormPath (tbuff, sizeof (tbuff));
+    stringTrimChar (tbuff, '/');
 
     if (*sysvars [SV_PYTHON_PIP_PATH] == '\0') {
       checkForFile (tbuff, SV_PYTHON_PIP_PATH,
@@ -361,7 +367,7 @@ sysvarsInit (const char *argv0)
   if (isLinux ()) {
     strlcpy (tbuff, "/usr/lib/x86_64-linux-gnu/libvlc.so.5", sizeof (tbuff));
   }
-  if (fileopFileExists (tbuff)) {
+  if (fileopIsDirectory (tbuff) || fileopFileExists (tbuff)) {
     strlcpy (sysvars [SV_VLC_PATH], tbuff, SV_MAX_SZ);
   }
 
@@ -459,7 +465,7 @@ sysvarsInit (const char *argv0)
     if (isWindows ()) {
       /* for msys2 testing */
       snprintf (buff, sizeof (buff),
-          "%s/.local/bin/%s", getenv ("HOME"), "mutagen-inspect");
+          "%s/.local/bin/%s", sysvars [SV_HOME], "mutagen-inspect");
       if (fileopFileExists (buff)) {
         strlcpy (sysvars [SV_PYTHON_MUTAGEN], buff, SV_MAX_SZ);
       }
@@ -619,7 +625,7 @@ svRunProgram (char *prog, char *arg)
   snprintf (tbuff, sizeof (tbuff), "%s-%d-%d.txt",
       SV_TMP_FILE, getpid(), gtmpcount++);
   osProcessStart (targv, OS_PROC_WAIT, NULL, tbuff);
-  data = filedataReadAll (SV_TMP_FILE, NULL);
+  data = filedataReadAll (tbuff, NULL);
   fileopDelete (tbuff);
   return data;
 }

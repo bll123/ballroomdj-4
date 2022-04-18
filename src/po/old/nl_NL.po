@@ -2696,8 +2696,8 @@ msgid "Synchronization:"
 msgstr "Synchronisatie:"
 
 # Sort key: tags
-msgid "Tags"
-msgstr "Tags/Labels"
+# msgid "Tags"
+# msgstr "Tags/Labels"
 
 msgid "Tags:"
 msgstr "Tags:"

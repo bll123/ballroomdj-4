@@ -365,13 +365,16 @@ installerActivate (GApplication *app, gpointer udata)
   GtkWidget     *image;
   GError        *gerr = NULL;
   GtkSizeGroup  *sg;
+  char          tbuff [100];
 
 
   window = gtk_application_window_new (GTK_APPLICATION (app));
 
   gtk_window_set_type_hint (GTK_WINDOW (window), GDK_WINDOW_TYPE_HINT_NORMAL);
   gtk_window_set_focus_on_map (GTK_WINDOW (window), FALSE);
-  gtk_window_set_title (GTK_WINDOW (window), _("BDJ4 Installer"));
+  /* CONTEXT: installer: window title */
+  snprintf (tbuff, sizeof (tbuff), _("%s Installer"), BDJ4_NAME);
+  gtk_window_set_title (GTK_WINDOW (window), tbuff);
   gtk_window_set_default_icon_from_file ("img/bdj4_icon_inst.svg", &gerr);
   gtk_window_set_default_size (GTK_WINDOW (window), 1000, 600);
   installer->window = window;
@@ -424,9 +427,10 @@ installerActivate (GApplication *app, gpointer udata)
   gtk_box_pack_start (GTK_BOX (vbox), widget, TRUE, TRUE, 0);
 
   /* conversion process */
-  widget = uiutilsCreateLabel (
+  snprintf (tbuff, sizeof (tbuff),
       /* CONTEXT: installer */
-      _("Enter the folder where BallroomDJ 3 is installed."));
+      _("Enter the folder where %s is installed."), BDJ3_NAME);
+  widget = uiutilsCreateLabel (tbuff);
   gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
   gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
 
@@ -451,13 +455,14 @@ installerActivate (GApplication *app, gpointer udata)
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
 
   /* CONTEXT: installer: label for entry field asking for BDJ3 location */
-  widget = uiutilsCreateColonLabel (_("BallroomDJ 3 Location"));
+  snprintf (tbuff, sizeof (tbuff), _("%s Location"), BDJ3_NAME);
+  widget = uiutilsCreateColonLabel (tbuff);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 
   widget = uiutilsEntryCreate (&installer->bdj3locEntry);
   uiutilsEntrySetValue (&installer->bdj3locEntry, installer->bdj3loc);
-  gtk_widget_set_halign (widget, GTK_ALIGN_FILL);
-  gtk_widget_set_hexpand (widget, TRUE);
+  gtk_widget_set_halign (widget, GTK_ALIGN_START);
+  gtk_widget_set_hexpand (widget, FALSE);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 
   g_signal_connect (installer->bdj3locEntry.entry, "changed",
@@ -469,6 +474,14 @@ installerActivate (GApplication *app, gpointer udata)
   gtk_button_set_always_show_image (GTK_BUTTON (widget), TRUE);
   gtk_widget_set_margin_start (widget, 0);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+
+  /* CONTEXT: installer: convert the BallroomDJ 3 installation */
+  installer->reinstWidget = gtk_check_button_new_with_label (_("Convert %s"));
+  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (installer->reinstWidget),
+      installer->reinstall);
+  gtk_box_pack_start (GTK_BOX (hbox), installer->reinstWidget, FALSE, FALSE, 0);
+  g_signal_connect (installer->reinstWidget, "toggled",
+      G_CALLBACK (installerCheckDir), installer);
 
   /* VLC status */
 
@@ -702,6 +715,7 @@ installerValidateDir (installer_t *installer)
   const char    *dir;
   bool          exists = false;
   const char    *fn;
+  char          tbuff [100];
 
   if (! installer->guienabled) {
     return;
@@ -727,10 +741,12 @@ installerValidateDir (installer_t *installer)
     if (exists) {
       if (installer->reinstall) {
         /* CONTEXT: installer: message indicating the action that will be taken */
-        gtk_label_set_text (GTK_LABEL (installer->feedbackMsg), _("Overwriting existing BDJ4 installation."));
+        snprintf (tbuff, sizeof (tbuff), _("Overwriting existing %s installation."), BDJ4_NAME);
+        gtk_label_set_text (GTK_LABEL (installer->feedbackMsg), tbuff);
       } else {
         /* CONTEXT: installer: message indicating the action that will be taken */
-        gtk_label_set_text (GTK_LABEL (installer->feedbackMsg), _("Updating existing BDJ4 installation."));
+        snprintf (tbuff, sizeof (tbuff), _("Updating existing %s installation."), BDJ4_NAME);
+        gtk_label_set_text (GTK_LABEL (installer->feedbackMsg), tbuff);
       }
     } else {
       /* CONTEXT: installer: the selected folder exists and is not a BDJ4 installation */
@@ -738,7 +754,8 @@ installerValidateDir (installer_t *installer)
     }
   } else {
     /* CONTEXT: installer: message indicating the action that will be taken */
-    gtk_label_set_text (GTK_LABEL (installer->feedbackMsg), _("New BDJ4 installation."));
+    snprintf (tbuff, sizeof (tbuff), _("New %s installation."), BDJ4_NAME);
+    gtk_label_set_text (GTK_LABEL (installer->feedbackMsg), tbuff);
   }
 
   /* bdj3 location validation */
@@ -781,12 +798,14 @@ installerValidateStart (GtkEditable *e, gpointer udata)
 static void
 installerSelectDirDialog (GtkButton *b, gpointer udata)
 {
-  installer_t           *installer = udata;
-  char                  *fn = NULL;
-  uiutilsselect_t       selectdata;
+  installer_t     *installer = udata;
+  char            *fn = NULL;
+  uiutilsselect_t selectdata;
+  char            tbuff [100];
 
   /* CONTEXT: installer: label for entry field for BDJ3 location */
-  selectdata.label = _("Select BallroomDJ 3 Location");
+  snprintf (tbuff, sizeof (tbuff), _("Select %s Location"), BDJ3_NAME);
+  selectdata.label = tbuff;
   selectdata.window = installer->window;
   selectdata.startpath = uiutilsEntryGetValue (&installer->bdj3locEntry);
   fn = uiutilsSelectDirDialog (&selectdata);
@@ -905,10 +924,10 @@ installerInstInit (installer_t *installer)
       printf ("\n");
       if (installer->reinstall) {
         /* CONTEXT: installer: command line interface: indicating action */
-        printf (_("Overwriting existing BDJ4 installation."));
+        printf (_("Overwriting existing %s installation."), BDJ4_NAME);
       } else {
         /* CONTEXT: installer: command line interface: indicating action */
-        printf (_("Updating existing BDJ4 installation."));
+        printf (_("Updating existing %s installation."), BDJ4_NAME);
       }
       printf ("\n");
       fflush (stdout);
@@ -935,7 +954,7 @@ installerInstInit (installer_t *installer)
 
     if (! exists) {
       /* CONTEXT: installer: command line interface: */
-      printf (_("New BDJ4 installation."));
+      printf (_("New %s installation."), BDJ4_NAME);
 
       /* do not allow an overwrite of an existing directory that is not bdj4 */
       if (installer->guienabled) {
@@ -1298,19 +1317,20 @@ installerConvertStart (installer_t *installer)
   if (! installer->guienabled) {
     tbuff [0] = '\0';
     /* CONTEXT: installer: command line interface */
-    printf (_("Enter the folder where BallroomDJ 3 is installed."));
+    printf (_("Enter the folder where %s is installed."), BDJ3_NAME);
     printf ("\n");
     /* CONTEXT: installer: command line interface */
     printf (_("The conversion process will only run for new installations and for re-installs."));
     printf ("\n");
-    /* CONTEXT: installer: command line interface: accep BDJ3 location default */
+    /* CONTEXT: installer: command line interface: accept BDJ3 location default */
     printf (_("Press 'Enter' to select the default."));
     printf ("\n");
     /* CONTEXT: installer: command line interface */
-    printf (_("If there is no BallroomDJ 3 installation, enter a single '-'."));
+    printf (_("If there is no %s installation, enter a single '-'."), BDJ3_NAME);
     printf ("\n");
     /* CONTEXT: installer: command line interface: BDJ3 location prompt */
-    printf (_("BallroomDJ 3 Folder [%s] : "), installer->bdj3loc);
+    snprintf (tbuff, sizeof (tbuff), _("%s Folder"), BDJ3_NAME);
+    printf ("%s [%s] : ", tbuff, installer->bdj3loc);
     fflush (stdout);
     fgets (tbuff, sizeof (tbuff), stdin);
     stringTrim (tbuff);
@@ -1537,8 +1557,11 @@ installerVLCDownload (installer_t *installer)
         installer->dlfname);
   }
   if (*url) {
+    char    *ua;
+
+    ua = sysvarsGetStr (SV_USER_AGENT);
     snprintf (tbuff, sizeof (tbuff), "curl --location --remote-name "
-        "--silent --user-agent BDJ4 %s", url);
+        "--silent --user-agent \"%s\" %s", ua, url);
     system (tbuff);
   }
 
@@ -1644,8 +1667,11 @@ installerPythonDownload (installer_t *installer)
         installer->pyversion, installer->dlfname);
   }
   if (*url) {
+    char *ua;
+
+    ua = sysvarsGetStr (SV_USER_AGENT);
     snprintf (tbuff, sizeof (tbuff), "curl --location --remote-name "
-        "--silent --user-agent BDJ4 %s", url);
+        "--silent --user-agent \"%s\" %s", ua, url);
     system (tbuff);
   }
 
@@ -1850,13 +1876,16 @@ installerVLCGetVersion (installer_t *installer)
   char      *data;
   char      *p;
   char      *e;
+  char      *ua;
   char      *tmpfile = "tmp/vlcvers.txt";
   char      tbuff [MAXPATHLEN];
 
   *installer->vlcversion = '\0';
+  ua = sysvarsGetStr (SV_USER_AGENT);
   snprintf (tbuff, sizeof (tbuff),
-      "curl --silent --user-agent BDJ4 -o %s "
-      "http://get.videolan.org/vlc/last/macosx/", tmpfile);
+      "curl --silent --user-agent \"%s\" -o %s "
+      "http://get.videolan.org/vlc/last/macosx/",
+      ua, tmpfile);
   system (tbuff);
   if (fileopFileExists (tmpfile)) {
     data = filedataReadAll (tmpfile, NULL);
@@ -1875,13 +1904,16 @@ installerPythonGetVersion (installer_t *installer)
   char      *data;
   char      *p;
   char      *e;
+  char      *ua;
   char      *tmpfile = "tmp/pyvers.txt";
   char      tbuff [MAXPATHLEN];
 
   *installer->pyversion = '\0';
+  ua = sysvarsGetStr (SV_USER_AGENT);
   snprintf (tbuff, sizeof (tbuff),
-      "curl --silent --user-agent BDJ4 -o %s "
-      "https://www.python.org/downloads/windows/", tmpfile);
+      "curl --silent --user-agent \"%s\" -o %s "
+      "https://www.python.org/downloads/windows/",
+      ua, tmpfile);
   system (tbuff);
   if (fileopFileExists (tmpfile)) {
     data = filedataReadAll (tmpfile, NULL);
