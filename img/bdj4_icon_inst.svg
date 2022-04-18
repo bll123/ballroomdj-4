@@ -26,9 +26,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:zoom="2.2695312"
+     inkscape:zoom="2.0742188"
      inkscape:cx="128"
-     inkscape:cy="128"
+     inkscape:cy="127.75894"
      inkscape:current-layer="layer6"
      showgrid="true"
      inkscape:document-units="px"
@@ -149,7 +149,7 @@
      transform="translate(-8.5333405,-8.5333405)">
     <text
        xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:53.3333px;line-height:0%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#e9b117;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="font-style:normal;font-weight:normal;font-size:53.3333px;line-height:0%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#303030;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        x="24.436132"
        y="56.727303"
        id="text4153"
@@ -158,7 +158,7 @@
          id="tspan4155"
          x="24.436132"
          y="56.727303"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:53.3333px;line-height:1.25;font-family:Roboto;-inkscape-font-specification:'Roboto Bold';stroke:#000000;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1">INSTALL</tspan></text>
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:53.3333px;line-height:1.25;font-family:Roboto;-inkscape-font-specification:'Roboto Bold';stroke:#000000;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;fill:#303030;fill-opacity:1">INSTALL</tspan></text>
   </g>
   <g
      inkscape:groupmode="layer"

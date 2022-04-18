@@ -49,7 +49,7 @@ typedef enum {
   SVL_MAX
 } sysvarlkey_t;
 
-#define SV_TMP_FILE "tmp/sysvars.txt"
+#define SV_TMP_FILE "tmpsysvars.txt"
 
 void    sysvarsInit (const char *);
 char    * sysvarsGetStr (sysvarkey_t idx);

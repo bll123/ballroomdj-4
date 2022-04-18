@@ -386,10 +386,7 @@ sysvarsInit (const char *argv0)
     }
   }
 
-  /* the launcher is not in the right directory. */
-  /* don't bother with this if tmp is not there */
-  if (fileopIsDirectory ("tmp") &&
-      *sysvars [SV_PYTHON_PATH]) {
+  if (*sysvars [SV_PYTHON_PATH]) {
     char    *data;
     int     j;
 
@@ -462,7 +459,7 @@ sysvarsInit (const char *argv0)
     if (tptr != NULL) {
       lsysvars [SVL_NUM_PROC] = atoi (tptr);
     }
-  } else if (fileopIsDirectory ("tmp")) {
+  } else {
     tptr = svRunProgram (sysvars [SV_GETCONF_PATH], "_NPROCESSORS_ONLN");
     if (tptr != NULL) {
       lsysvars [SVL_NUM_PROC] = atoi (tptr);

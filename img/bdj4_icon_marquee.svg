@@ -14,11 +14,34 @@
    inkscape:export-ydpi="96"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns="http://www.w3.org/2000/svg"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
   <defs
-     id="defs4758" />
+     id="defs4758">
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient853">
+      <stop
+         style="stop-color:#e9b117;stop-opacity:1;"
+         offset="0"
+         id="stop849" />
+      <stop
+         style="stop-color:#e9b117;stop-opacity:0;"
+         offset="1"
+         id="stop851" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient853"
+       id="linearGradient855"
+       x1="19.593622"
+       y1="42.477303"
+       x2="241.64831"
+       y2="42.477303"
+       gradientUnits="userSpaceOnUse" />
+  </defs>
   <sodipodi:namedview
      id="base"
      pagecolor="#ffffff"
@@ -28,8 +51,8 @@
      inkscape:pageshadow="2"
      inkscape:zoom="2.2695312"
      inkscape:cx="128"
-     inkscape:cy="128"
-     inkscape:current-layer="g75580"
+     inkscape:cy="127.77969"
+     inkscape:current-layer="g75574"
      showgrid="true"
      inkscape:document-units="px"
      inkscape:grid-bbox="true"
@@ -168,7 +191,7 @@
      transform="translate(-8.5333405,-8.5333405)">
     <text
        xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:48px;line-height:0%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#e9b117;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="font-style:normal;font-weight:normal;font-size:48px;line-height:0%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#303030;fill-opacity:0.18565243;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        x="17.546747"
        y="56.727303"
        id="text75572"
@@ -177,7 +200,7 @@
          id="tspan75570"
          x="17.546747"
          y="56.727303"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:48px;line-height:1.25;font-family:Roboto;-inkscape-font-specification:'Roboto Bold';stroke:#000000;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1">MARQUEE</tspan></text>
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:48px;line-height:1.25;font-family:Roboto;-inkscape-font-specification:'Roboto Bold';stroke:#000000;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;fill-opacity:0.18565243;fill:#303030">MARQUEE</tspan></text>
   </g>
   <g
      inkscape:groupmode="layer"

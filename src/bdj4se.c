@@ -44,6 +44,7 @@ main (int argc, char *argv [])
 #if __WINNT__
   isWindows = true;
   archivenm = "bdj4-install.zip";
+  osSetEnv ("GTK_THEME", "Windows-10-Dark");
 #endif
 
   buff = malloc (BUFFSZ);

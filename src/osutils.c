@@ -547,7 +547,7 @@ osSetEnv (const char *name, const char *value)
 #if _lib_setenv
   rc = setenv (name, value, 1);
 #else
-  snprintf (tbuff, "%s=%s", name, value);
+  snprintf (tbuff, sizeof (tbuff), "%s=%s", name, value);
   rc = putenv (tbuff);
 #endif
   return rc;

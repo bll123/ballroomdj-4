@@ -1320,6 +1320,10 @@ installerConvertStart (installer_t *installer)
   locs [locidx++] = strdup (tbuff);
   snprintf (tbuff, sizeof (tbuff), "%s/bin/tclsh", installer->home);
   locs [locidx++] = strdup (tbuff);
+  /* for testing; low priority */
+  snprintf (tbuff, sizeof (tbuff), "%s/../%s/%zd/tcl/bin/tclsh",
+      installer->bdj3loc, sysvarsGetStr (SV_OSNAME), sysvarsGetNum (SVL_OSBITS));
+  locs [locidx++] = strdup (tbuff);
   locs [locidx++] = strdup ("/opt/local/bin/tclsh");
   locs [locidx++] = strdup ("/usr/local/bin/tclsh");
   locs [locidx++] = strdup ("/usr/bin/tclsh");
@@ -1345,7 +1349,8 @@ installerConvertStart (installer_t *installer)
   }
 
   if (installer->tclshloc == NULL) {
-    installerDisplayText (installer, "   ", _("Unable to locate 'tclsh'."));
+    snprintf (tbuff, sizeof (tbuff), _("Unable to locate %s."), "tclsh");
+    installerDisplayText (installer, "   ", tbuff);
     installerDisplayText (installer, "   ", _("Skipping conversion."));
     installer->instState = INST_CREATE_SHORTCUT;
     return;
@@ -1529,6 +1534,7 @@ installerVLCInstall (installer_t *installer)
     installerDisplayText (installer, "-- ", tbuff);
   }
   fileopDelete (installer->dlfname);
+  installerCheckPackages (installer);
   installer->instState = INST_PYTHON_CHECK;
 }
 
@@ -1629,6 +1635,7 @@ installerPythonInstall (installer_t *installer)
     installerDisplayText (installer, "-- ", tbuff);
   }
   fileopDelete (installer->dlfname);
+  installerCheckPackages (installer);
   installer->instState = INST_MUTAGEN_CHECK;
 }
 
@@ -1672,6 +1679,7 @@ installerMutagenInstall (installer_t *installer)
   system (tbuff);
   snprintf (tbuff, sizeof (tbuff), _("%s installed."), "Mutagen");
   installerDisplayText (installer, "-- ", tbuff);
+  installerCheckPackages (installer);
   installer->instState = INST_FINISH;
 }
 
@@ -1932,6 +1940,11 @@ installerCheckPackages (installer_t *installer)
     fn = sysvarsGetStr (SV_PYTHON_MUTAGEN);
     if (fn != NULL && *fn) {
       snprintf (tbuff, sizeof (tbuff), _("%s is installed"), "Mutagen");
+      if (installer->mutagenMsg != NULL) {
+        gtk_label_set_text (GTK_LABEL (installer->mutagenMsg), tbuff);
+      }
+    } else {
+      snprintf (tbuff, sizeof (tbuff), _("%s is not installed"), "Mutagen");
       if (installer->mutagenMsg != NULL) {
         gtk_label_set_text (GTK_LABEL (installer->mutagenMsg), tbuff);
       }
