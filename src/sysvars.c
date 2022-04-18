@@ -73,6 +73,7 @@ static sysvarsdesc_t sysvarsdesc [SV_MAX] = {
   [SV_PYTHON_PIP_PATH] = { "Path-pip" },
   [SV_PYTHON_VERSION] = { "Version-Python" },
   [SV_SHLIB_EXT] = { "Sharedlib-Extension" },
+  [SV_VLC_PATH] = { "Path-vlc" },
   [SV_WEB_HOST] = { "Host-Web" },
 };
 
@@ -86,8 +87,9 @@ static sysvarsdesc_t sysvarsldesc [SVL_MAX] = {
 
 #define SV_MAX_SZ   512
 
-static char        sysvars [SV_MAX][SV_MAX_SZ];
-static ssize_t     lsysvars [SVL_MAX];
+static char       sysvars [SV_MAX][SV_MAX_SZ];
+static ssize_t    lsysvars [SVL_MAX];
+static int        gtmpcount = 0;
 
 static char *cacertFiles [] = {
   "/etc/ssl/certs/ca-certificates.crt",
@@ -105,7 +107,7 @@ static bool svGetLinuxOSInfo (char *fn);
 void
 sysvarsInit (const char *argv0)
 {
-  char          tbuf [SV_MAX_SZ+1];
+  char          tbuff [SV_MAX_SZ+1];
   char          tcwd [SV_MAX_SZ+1];
   char          buff [SV_MAX_SZ+1];
   char          *tptr;
@@ -186,16 +188,16 @@ sysvarsInit (const char *argv0)
 
   (void) ! getcwd (tcwd, sizeof (tcwd));
 
-  strlcpy (tbuf, argv0, sizeof (tbuf));
+  strlcpy (tbuff, argv0, sizeof (tbuff));
   strlcpy (buff, argv0, sizeof (buff));
   pathNormPath (buff, SV_MAX_SZ);
   if (*buff != '/' &&
       (strlen (buff) > 2 && *(buff + 1) == ':' && *(buff + 2) != '/')) {
-    strlcpy (tbuf, tcwd, sizeof (tbuf));
-    strlcat (tbuf, buff, sizeof (tbuf));
+    strlcpy (tbuff, tcwd, sizeof (tbuff));
+    strlcat (tbuff, buff, sizeof (tbuff));
   }
   /* this gives us the real path to the executable */
-  pathRealPath (buff, tbuf, sizeof (buff));
+  pathRealPath (buff, tbuff, sizeof (buff));
   pathNormPath (buff, sizeof (buff));
 
   /* strip off the filename */
@@ -268,16 +270,16 @@ sysvarsInit (const char *argv0)
     FILE    *fh;
 
     fh = fopen (buff, "r");
-    fgets (tbuf, sizeof (tbuf), fh);
-    stringTrim (tbuf);
+    fgets (tbuff, sizeof (tbuff), fh);
+    stringTrim (tbuff);
     fclose (fh);
-    if (*tbuf) {
+    if (*tbuff) {
       lsysvars [SVL_LOCALE_SET] = 1;
-      strlcpy (sysvars [SV_LOCALE], tbuf, SV_MAX_SZ);
+      strlcpy (sysvars [SV_LOCALE], tbuff, SV_MAX_SZ);
     }
   }
 
-  snprintf (buff, sizeof (buff), "%-.2s", tbuf);
+  snprintf (buff, sizeof (buff), "%-.2s", tbuff);
   strlcpy (sysvars [SV_LOCALE_SHORT], buff, SV_MAX_SZ);
 
   strlcpy (sysvars [SV_BDJ4_VERSION], "unknown", SV_MAX_SZ);
@@ -323,31 +325,45 @@ sysvarsInit (const char *argv0)
   }
   p = strtok_r (tptr, tsep, &tokstr);
   while (p != NULL) {
-    strlcpy (tbuf, p, sizeof (tbuf));
-    pathNormPath (tbuf, sizeof (tbuf));
+    strlcpy (tbuff, p, sizeof (tbuff));
+    pathNormPath (tbuff, sizeof (tbuff));
 
     if (*sysvars [SV_PYTHON_PIP_PATH] == '\0') {
-      checkForFile (tbuf, SV_PYTHON_PIP_PATH,
+      checkForFile (tbuff, SV_PYTHON_PIP_PATH,
           "pip3.exe", "pip.exe", "pip3", "pip", NULL);
     }
 
     if (*sysvars [SV_PYTHON_PATH] == '\0') {
-      checkForFile (tbuf, SV_PYTHON_PATH,
+      checkForFile (tbuff, SV_PYTHON_PATH,
           "python3.exe", "python.exe", "python3", "python", NULL);
     }
 
     if (*sysvars [SV_GETCONF_PATH] == '\0') {
-      checkForFile (tbuf, SV_GETCONF_PATH,
+      checkForFile (tbuff, SV_GETCONF_PATH,
           "getconf", NULL);
     }
 
     if (*sysvars [SV_TEMP_A] == '\0') {
-      checkForFile (tbuf, SV_TEMP_A, "sw_vers", NULL);
+      checkForFile (tbuff, SV_TEMP_A, "sw_vers", NULL);
     }
 
     p = strtok_r (NULL, tsep, &tokstr);
   }
   free (tptr);
+
+  strlcpy (sysvars [SV_VLC_PATH], "", SV_MAX_SZ);
+  if (isWindows ()) {
+    strlcpy (tbuff, "C:/Program Files/VideoLAN/VLC", sizeof (tbuff));
+  }
+  if (isMacOS ()) {
+    strlcpy (tbuff, "/Applications/VLC.app/Contents/MacOS/lib/", sizeof (tbuff));
+  }
+  if (isLinux ()) {
+    strlcpy (tbuff, "/usr/lib/x86_64-linux-gnu/libvlc.so.5", sizeof (tbuff));
+  }
+  if (fileopFileExists (tbuff)) {
+    strlcpy (sysvars [SV_VLC_PATH], tbuff, SV_MAX_SZ);
+  }
 
   if (strcmp (sysvars [SV_OSNAME], "darwin") == 0) {
     char *data;
@@ -595,13 +611,16 @@ svRunProgram (char *prog, char *arg)
 {
   char    *targv [3];
   char    *data;
+  char    tbuff [100];
 
   targv [0] = prog;
   targv [1] = arg;
   targv [2] = NULL;
-  osProcessStart (targv, OS_PROC_WAIT, NULL, SV_TMP_FILE);
+  snprintf (tbuff, sizeof (tbuff), "%s-%d-%d.txt",
+      SV_TMP_FILE, getpid(), gtmpcount++);
+  osProcessStart (targv, OS_PROC_WAIT, NULL, tbuff);
   data = filedataReadAll (SV_TMP_FILE, NULL);
-  fileopDelete (SV_TMP_FILE);
+  fileopDelete (tbuff);
   return data;
 }
 
@@ -612,28 +631,28 @@ svGetLinuxOSInfo (char *fn)
   static char *reltag = "DISTRIB_RELEASE=";
   static char *verstag = "VERSION_ID=";
   FILE        *fh;
-  char        tbuf [MAXPATHLEN];
+  char        tbuff [MAXPATHLEN];
   char        buff [MAXPATHLEN];
   bool        rc = false;
 
   fh = fopen (fn, "r");
   if (fh != NULL) {
-    while (fgets (tbuf, sizeof (tbuf), fh) != NULL) {
-      if (strncmp (tbuf, desctag, strlen (desctag)) == 0) {
-        strlcpy (buff, tbuf + strlen (desctag) + 1, sizeof (buff));
+    while (fgets (tbuff, sizeof (tbuff), fh) != NULL) {
+      if (strncmp (tbuff, desctag, strlen (desctag)) == 0) {
+        strlcpy (buff, tbuff + strlen (desctag) + 1, sizeof (buff));
         stringTrim (buff);
         stringTrimChar (buff, '"');
         strlcpy (sysvars [SV_OSDISP], buff, SV_MAX_SZ);
         rc = true;
       }
-      if (strncmp (tbuf, reltag, strlen (reltag)) == 0) {
-        strlcpy (buff, tbuf + strlen (reltag), sizeof (buff));
+      if (strncmp (tbuff, reltag, strlen (reltag)) == 0) {
+        strlcpy (buff, tbuff + strlen (reltag), sizeof (buff));
         stringTrim (buff);
         strlcpy (sysvars [SV_OSVERS], buff, SV_MAX_SZ);
         rc = true;
       }
-      if (strncmp (tbuf, verstag, strlen (verstag)) == 0) {
-        strlcpy (buff, tbuf + strlen (verstag) + 1, sizeof (buff));
+      if (strncmp (tbuff, verstag, strlen (verstag)) == 0) {
+        strlcpy (buff, tbuff + strlen (verstag) + 1, sizeof (buff));
         stringTrim (buff);
         stringTrimChar (buff, '"');
         strlcpy (sysvars [SV_OSVERS], buff, SV_MAX_SZ);

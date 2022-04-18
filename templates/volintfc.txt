@@ -1,5 +1,5 @@
 # volume interfaces
-# 2022-4-16
+# 2022-4-18
 KEY
 ..0
 INTFC
@@ -26,14 +26,6 @@ OS
 ..linux
 KEY
 ..3
-INTFC
-..libvolalsa
-DESC
-..ALSA
-OS
-..linux
-KEY
-..4
 INTFC
 ..libvolnull
 DESC

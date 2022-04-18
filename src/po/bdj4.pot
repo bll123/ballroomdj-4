@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-04-17 11:55-0700\n"
+"POT-Creation-Date: 2022-04-18 08:29-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,14 +17,17 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+#. CONTEXT: installer: status message
 #, c-format
 msgid "%s installed."
 msgstr ""
 
+#. CONTEXT: installer: display of package status
 #, c-format
 msgid "%s is installed"
 msgstr ""
 
+#. CONTEXT: installer: display of package status
 #, c-format
 msgid "%s is not installed"
 msgstr ""
@@ -116,10 +119,12 @@ msgstr ""
 msgid "Ballroom Dance"
 msgstr ""
 
+#. CONTEXT: installer: command line interface: BDJ3 location prompt
 #, c-format
 msgid "BallroomDJ 3 Folder [%s] : "
 msgstr ""
 
+#. CONTEXT: installer: label for entry field asking for BDJ3 location
 msgid "BallroomDJ 3 Location"
 msgstr ""
 
@@ -132,6 +137,7 @@ msgstr ""
 msgid "Classical?"
 msgstr ""
 
+#. CONTEXT: installer: status message
 msgid "Cleaning old files."
 msgstr ""
 
@@ -159,21 +165,27 @@ msgstr ""
 msgid "Configure"
 msgstr ""
 
+#. CONTEXT: installer: status message
 msgid "Conversion complete."
 msgstr ""
 
+#. CONTEXT: installer: status message
 msgid "Copy finished."
 msgstr ""
 
+#. CONTEXT: installer: status message
 msgid "Copying files."
 msgstr ""
 
+#. CONTEXT: installer: status message
 msgid "Copying template files."
 msgstr ""
 
+#. CONTEXT: installer: status message
 msgid "Creating folder structure."
 msgstr ""
 
+#. CONTEXT: installer: status message
 msgid "Creating shortcut."
 msgstr ""
 
@@ -226,6 +238,7 @@ msgstr ""
 msgid "Download of %s failed."
 msgstr ""
 
+#. CONTEXT: installer: status message
 #, c-format
 msgid "Downloading %s."
 msgstr ""
@@ -257,24 +270,31 @@ msgstr ""
 msgid "Enable iTunes Support"
 msgstr ""
 
+#. CONTEXT: installer
 msgid "Enter the destination folder where BDJ4 will be installed."
 msgstr ""
 
+#. CONTEXT: installer: command line interface: asking for the BDJ4 destination
 #, c-format
 msgid "Enter the destination folder."
 msgstr ""
 
+#. CONTEXT: installer
+#. CONTEXT: installer: command line interface
 #, c-format
 msgid "Enter the folder where BallroomDJ 3 is installed."
 msgstr ""
 
+#. CONTEXT: installer: command line interface: the selected folder exists and is not a BDJ4 installation
 #, c-format
 msgid "Error: Folder %s already exists."
 msgstr ""
 
+#. CONTEXT: installer: the selected folder exists and is not a BDJ4 installation
 msgid "Error: Folder already exists."
 msgstr ""
 
+#. CONTEXT: installer: failure message
 msgid "Error: Unable to set working folder."
 msgstr ""
 
@@ -344,22 +364,28 @@ msgstr ""
 msgid "High BPM"
 msgstr ""
 
+#. CONTEXT: installer: command line interface
 #, c-format
 msgid "If there is no BallroomDJ 3 installation, enter a single '-'."
 msgstr ""
 
+#. CONTEXT: installer
 msgid "If there is no BallroomDJ 3 installation, leave the entry blank."
 msgstr ""
 
+#. CONTEXT: installer: start the installation process
 msgid "Install"
 msgstr ""
 
+#. CONTEXT: installer: command line interface:
 msgid "Installation aborted."
 msgstr ""
 
+#. CONTEXT: installer
 msgid "Installation complete."
 msgstr ""
 
+#. CONTEXT: installer: status message
 #, c-format
 msgid "Installing %s."
 msgstr ""
@@ -394,6 +420,7 @@ msgstr ""
 msgid "Locale"
 msgstr ""
 
+#. CONTEXT: installer: status message
 msgid "Located 'tclsh'."
 msgstr ""
 
@@ -460,6 +487,8 @@ msgstr ""
 msgid "New"
 msgstr ""
 
+#. CONTEXT: installer: message indicating the action that will be taken
+#. CONTEXT: installer: command line interface:
 #, c-format
 msgid "New BDJ4 installation."
 msgstr ""
@@ -512,9 +541,12 @@ msgstr ""
 msgid "Organisation Path"
 msgstr ""
 
+#. CONTEXT: installer: overwrite the previous BDJ4 installation
 msgid "Overwrite"
 msgstr ""
 
+#. CONTEXT: installer: message indicating the action that will be taken
+#. CONTEXT: installer: command line interface: indicating action
 #, c-format
 msgid "Overwriting existing BDJ4 installation."
 msgstr ""
@@ -561,10 +593,13 @@ msgstr ""
 msgid "Position"
 msgstr ""
 
+#. CONTEXT: installer: command line interface:
+#. CONTEXT: installer: command line interface: accep BDJ3 location default
 #, c-format
 msgid "Press 'Enter' to select the default."
 msgstr ""
 
+#. CONTEXT: installer: command line interface: prompt to continue
 #, c-format
 msgid "Proceed with installation?"
 msgstr ""
@@ -644,6 +679,7 @@ msgstr ""
 msgid "Rumba"
 msgstr ""
 
+#. CONTEXT: installer: status message
 #, c-format
 msgid "Running conversion script: %s."
 msgstr ""
@@ -654,6 +690,7 @@ msgstr ""
 msgid "Samba"
 msgstr ""
 
+#. CONTEXT: installer: status message
 msgid "Saving install location."
 msgstr ""
 
@@ -663,6 +700,7 @@ msgstr ""
 msgid "Select"
 msgstr ""
 
+#. CONTEXT: installer: label for entry field for BDJ3 location
 msgid "Select BallroomDJ 3 Location"
 msgstr ""
 
@@ -708,6 +746,7 @@ msgstr ""
 msgid "Speed Adjustment"
 msgstr ""
 
+#. CONTEXT: installer: status message
 msgid "Starting conversion process."
 msgstr ""
 
@@ -729,11 +768,13 @@ msgstr ""
 msgid "Thank You Dancers"
 msgstr ""
 
+#. CONTEXT: installer
 msgid ""
 "The conversion process will only run for new installations and for re-"
 "installations."
 msgstr ""
 
+#. CONTEXT: installer: command line interface
 #, c-format
 msgid ""
 "The conversion process will only run for new installations and for re-"
@@ -768,12 +809,16 @@ msgstr ""
 msgid "Unable to determine %s version."
 msgstr ""
 
-msgid "Unable to locate 'tclsh'."
+#. CONTEXT: installer: failure message
+#, c-format
+msgid "Unable to locate %s."
 msgstr ""
 
 msgid "Unrated"
 msgstr ""
 
+#. CONTEXT: installer: message indicating the action that will be taken
+#. CONTEXT: installer: command line interface: indicating action
 #, c-format
 msgid "Updating existing BDJ4 installation."
 msgstr ""

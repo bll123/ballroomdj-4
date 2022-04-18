@@ -468,20 +468,22 @@ uiutilsDropDownSetList (uiutilsdropdown_t *dropdown, slist_t *list,
   logProcBegin (LOG_PROC, "uiutilsDropDownSetList");
 
   store = gtk_list_store_new (UIUTILS_DROPDOWN_COL_MAX,
-      G_TYPE_ULONG, G_TYPE_STRING, G_TYPE_STRING);
+      G_TYPE_ULONG, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
   assert (store != NULL);
 
   dropdown->strIndexMap = slistAlloc ("uiutils-str-index", LIST_ORDERED, NULL);
   internalidx = 0;
 
   if (dropdown->iscombobox && selectLabel != NULL) {
-    snprintf (tbuff, sizeof (tbuff), "%-*s    ",
+    snprintf (tbuff, sizeof (tbuff), "%-*s",
         slistGetMaxKeyWidth (list), selectLabel);
     gtk_list_store_append (store, &iter);
     gtk_list_store_set (store, &iter,
         UIUTILS_DROPDOWN_COL_IDX, -1,
         UIUTILS_DROPDOWN_COL_STR, "",
-        UIUTILS_DROPDOWN_COL_DISP, tbuff, -1);
+        UIUTILS_DROPDOWN_COL_DISP, tbuff,
+        UIUTILS_DROPDOWN_COL_SB_PAD, "    ",
+        -1);
     slistSetNum (dropdown->strIndexMap, "", internalidx++);
   }
 
@@ -493,12 +495,13 @@ uiutilsDropDownSetList (uiutilsdropdown_t *dropdown, slist_t *list,
 
     gtk_list_store_append (store, &iter);
     /* gtk does not leave room for the scrollbar */
-    snprintf (tbuff, sizeof (tbuff), "%-*s    ",
+    snprintf (tbuff, sizeof (tbuff), "%-*s",
         slistGetMaxKeyWidth (list), dispval);
     gtk_list_store_set (store, &iter,
         UIUTILS_DROPDOWN_COL_IDX, internalidx,
         UIUTILS_DROPDOWN_COL_STR, strval,
         UIUTILS_DROPDOWN_COL_DISP, tbuff,
+        UIUTILS_DROPDOWN_COL_SB_PAD, "    ",
         -1);
     ++internalidx;
   }
@@ -507,6 +510,12 @@ uiutilsDropDownSetList (uiutilsdropdown_t *dropdown, slist_t *list,
   column = gtk_tree_view_column_new_with_attributes ("",
       renderer, "text", UIUTILS_DROPDOWN_COL_DISP, NULL);
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
+  gtk_tree_view_append_column (GTK_TREE_VIEW (dropdown->tree), column);
+
+  renderer = gtk_cell_renderer_text_new ();
+  column = gtk_tree_view_column_new_with_attributes ("",
+      renderer, "text", UIUTILS_DROPDOWN_COL_SB_PAD, NULL);
+  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_FIXED);
   gtk_tree_view_append_column (GTK_TREE_VIEW (dropdown->tree), column);
 
   gtk_tree_view_set_model (GTK_TREE_VIEW (dropdown->tree),
@@ -532,20 +541,22 @@ uiutilsDropDownSetNumList (uiutilsdropdown_t *dropdown, slist_t *list,
   logProcBegin (LOG_PROC, "uiutilsDropDownSetNumList");
 
   store = gtk_list_store_new (UIUTILS_DROPDOWN_COL_MAX,
-      G_TYPE_ULONG, G_TYPE_STRING, G_TYPE_STRING);
+      G_TYPE_ULONG, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
   assert (store != NULL);
 
   dropdown->numIndexMap = nlistAlloc ("uiutils-num-index", LIST_ORDERED, NULL);
   internalidx = 0;
 
   if (dropdown->iscombobox && selectLabel != NULL) {
-    snprintf (tbuff, sizeof (tbuff), "%-*s    ",
+    snprintf (tbuff, sizeof (tbuff), "%-*s",
         slistGetMaxKeyWidth (list), selectLabel);
     gtk_list_store_append (store, &iter);
     gtk_list_store_set (store, &iter,
         UIUTILS_DROPDOWN_COL_IDX, -1,
         UIUTILS_DROPDOWN_COL_STR, "",
-        UIUTILS_DROPDOWN_COL_DISP, tbuff, -1);
+        UIUTILS_DROPDOWN_COL_DISP, tbuff,
+        UIUTILS_DROPDOWN_COL_SB_PAD, "    ",
+        -1);
     nlistSetNum (dropdown->numIndexMap, -1, internalidx++);
   }
 
@@ -557,12 +568,13 @@ uiutilsDropDownSetNumList (uiutilsdropdown_t *dropdown, slist_t *list,
 
     gtk_list_store_append (store, &iter);
     /* gtk does not leave room for the scrollbar */
-    snprintf (tbuff, sizeof (tbuff), "%-*s    ",
+    snprintf (tbuff, sizeof (tbuff), "%-*s",
         slistGetMaxKeyWidth (list), dispval);
     gtk_list_store_set (store, &iter,
         UIUTILS_DROPDOWN_COL_IDX, idx,
         UIUTILS_DROPDOWN_COL_STR, "",
         UIUTILS_DROPDOWN_COL_DISP, tbuff,
+        UIUTILS_DROPDOWN_COL_SB_PAD, "    ",
         -1);
     ++internalidx;
   }
@@ -571,6 +583,12 @@ uiutilsDropDownSetNumList (uiutilsdropdown_t *dropdown, slist_t *list,
   column = gtk_tree_view_column_new_with_attributes ("",
       renderer, "text", UIUTILS_DROPDOWN_COL_DISP, NULL);
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
+  gtk_tree_view_append_column (GTK_TREE_VIEW (dropdown->tree), column);
+
+  renderer = gtk_cell_renderer_text_new ();
+  column = gtk_tree_view_column_new_with_attributes ("",
+      renderer, "text", UIUTILS_DROPDOWN_COL_SB_PAD, NULL);
+  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_FIXED);
   gtk_tree_view_append_column (GTK_TREE_VIEW (dropdown->tree), column);
 
   gtk_tree_view_set_model (GTK_TREE_VIEW (dropdown->tree),
@@ -1377,17 +1395,19 @@ uiutilsDropDownWindowCreate (uiutilsdropdown_t *dropdown,
   gtk_window_set_type_hint (GTK_WINDOW (dropdown->window), GDK_WINDOW_TYPE_HINT_POPUP_MENU);
   gtk_window_set_skip_taskbar_hint (GTK_WINDOW (dropdown->window), TRUE);
   gtk_window_set_skip_pager_hint (GTK_WINDOW (dropdown->window), TRUE);
-  gtk_container_set_border_width (GTK_CONTAINER (dropdown->window), 4);
+  gtk_container_set_border_width (GTK_CONTAINER (dropdown->window), 6);
   gtk_widget_hide (dropdown->window);
+  gtk_widget_set_vexpand (dropdown->window, FALSE);
   gtk_widget_set_events (dropdown->window, GDK_FOCUS_CHANGE_MASK);
   g_signal_connect (G_OBJECT (dropdown->window),
       "focus-out-event", G_CALLBACK (uiutilsDropDownClose), dropdown);
 
   scwin = uiutilsCreateScrolledWindow ();
-  gtk_scrolled_window_set_min_content_height (GTK_SCROLLED_WINDOW (scwin), 300);
   gtk_scrolled_window_set_max_content_height (GTK_SCROLLED_WINDOW (scwin), 400);
+  /* setting the min content height limits the scrolled window to that height */
+  /* https://stackoverflow.com/questions/65449889/gtk-scrolledwindow-max-content-width-height-does-not-work-with-textview */
   gtk_widget_set_hexpand (scwin, TRUE);
-//  gtk_widget_set_vexpand (scwin, TRUE);
+  gtk_widget_set_vexpand (scwin, FALSE);
   twidget = gtk_scrolled_window_get_vscrollbar (GTK_SCROLLED_WINDOW (scwin));
   uiutilsSetCss (twidget,
       "scrollbar, scrollbar slider { min-width: 9px; } ");

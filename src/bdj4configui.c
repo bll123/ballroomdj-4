@@ -2286,11 +2286,15 @@ confuiGetThemeList (void)
   themelist = nlistAlloc ("cu-themes", LIST_ORDERED, free);
 
   if (isWindows ()) {
+    nlistidx_t    count;
+
     snprintf (tbuff, sizeof (tbuff), "%s/plocal/share/themes",
         sysvarsGetStr (SV_BDJ4MAINDIR));
     filelist = filemanipRecursiveDirList (tbuff, FILEMANIP_DIRS);
     confuiGetThemeNames (themelist, filelist);
     slistFree (filelist);
+    count = nlistGetCount (themelist);
+    nlistSetStr (themelist, count, "Adwaita");
   } else {
     filelist = filemanipRecursiveDirList ("/usr/share/themes", FILEMANIP_DIRS);
     confuiGetThemeNames (themelist, filelist);

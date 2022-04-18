@@ -386,6 +386,7 @@ installerActivate (GApplication *app, gpointer udata)
   gtk_container_add (GTK_CONTAINER (window), vbox);
 
   widget = uiutilsCreateLabel (
+      /* CONTEXT: installer */
       _("Enter the destination folder where BDJ4 will be installed."));
   gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
   gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
@@ -403,6 +404,7 @@ installerActivate (GApplication *app, gpointer udata)
   gtk_widget_set_hexpand (hbox, TRUE);
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
 
+  /* CONTEXT: installer: overwrite the previous BDJ4 installation */
   installer->reinstWidget = gtk_check_button_new_with_label (_("Overwrite"));
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (installer->reinstWidget),
       installer->reinstall);
@@ -423,16 +425,19 @@ installerActivate (GApplication *app, gpointer udata)
 
   /* conversion process */
   widget = uiutilsCreateLabel (
+      /* CONTEXT: installer */
       _("Enter the folder where BallroomDJ 3 is installed."));
   gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
   gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
 
   widget = uiutilsCreateLabel (
+      /* CONTEXT: installer */
       _("If there is no BallroomDJ 3 installation, leave the entry blank."));
   gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
   gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
 
   widget = uiutilsCreateLabel (
+      /* CONTEXT: installer */
       _("The conversion process will only run for new installations and for re-installations."));
   gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
   gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
@@ -445,6 +450,7 @@ installerActivate (GApplication *app, gpointer udata)
   gtk_widget_set_hexpand (hbox, TRUE);
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
 
+  /* CONTEXT: installer: label for entry field asking for BDJ3 location */
   widget = uiutilsCreateColonLabel (_("BallroomDJ 3 Location"));
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 
@@ -526,6 +532,7 @@ installerActivate (GApplication *app, gpointer udata)
   widget = uiutilsCreateButton (_("Exit"), NULL, installerExit, installer);
   gtk_box_pack_end (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 
+  /* CONTEXT: installer: start the installation process */
   widget = uiutilsCreateButton (_("Install"), NULL, installerInstall, installer);
   gtk_box_pack_end (GTK_BOX (hbox), widget,
       FALSE, FALSE, 0);
@@ -670,6 +677,7 @@ installerMainLoop (void *udata)
       break;
     }
     case INST_FINISH: {
+      /* CONTEXT: installer */
       installerDisplayText (installer, "## ",  _("Installation complete."));
       installer->instState = INST_BEGIN;
       break;
@@ -718,14 +726,18 @@ installerValidateDir (installer_t *installer)
     exists = installerCheckTarget (installer, dir);
     if (exists) {
       if (installer->reinstall) {
+        /* CONTEXT: installer: message indicating the action that will be taken */
         gtk_label_set_text (GTK_LABEL (installer->feedbackMsg), _("Overwriting existing BDJ4 installation."));
       } else {
+        /* CONTEXT: installer: message indicating the action that will be taken */
         gtk_label_set_text (GTK_LABEL (installer->feedbackMsg), _("Updating existing BDJ4 installation."));
       }
     } else {
+      /* CONTEXT: installer: the selected folder exists and is not a BDJ4 installation */
       gtk_label_set_text (GTK_LABEL (installer->feedbackMsg), _("Error: Folder already exists."));
     }
   } else {
+    /* CONTEXT: installer: message indicating the action that will be taken */
     gtk_label_set_text (GTK_LABEL (installer->feedbackMsg), _("New BDJ4 installation."));
   }
 
@@ -773,6 +785,7 @@ installerSelectDirDialog (GtkButton *b, gpointer udata)
   char                  *fn = NULL;
   uiutilsselect_t       selectdata;
 
+  /* CONTEXT: installer: label for entry field for BDJ3 location */
   selectdata.label = _("Select BallroomDJ 3 Location");
   selectdata.window = installer->window;
   selectdata.startpath = uiutilsEntryGetValue (&installer->bdj3locEntry);
@@ -866,8 +879,10 @@ installerInstInit (installer_t *installer)
 
   if (! installer->guienabled) {
     tbuff [0] = '\0';
+    /* CONTEXT: installer: command line interface: asking for the BDJ4 destination */
     printf (_("Enter the destination folder."));
     printf ("\n");
+    /* CONTEXT: installer: command line interface: */
     printf (_("Press 'Enter' to select the default."));
     printf ("\n");
     printf ("[%s] : ", installer->target);
@@ -889,13 +904,16 @@ installerInstInit (installer_t *installer)
     if (exists && ! installer->guienabled) {
       printf ("\n");
       if (installer->reinstall) {
+        /* CONTEXT: installer: command line interface: indicating action */
         printf (_("Overwriting existing BDJ4 installation."));
       } else {
+        /* CONTEXT: installer: command line interface: indicating action */
         printf (_("Updating existing BDJ4 installation."));
       }
       printf ("\n");
       fflush (stdout);
 
+      /* CONTEXT: installer: command line interface: prompt to continue */
       printf (_("Proceed with installation?"));
       printf ("\n");
       printf ("[Y] : ");
@@ -905,6 +923,7 @@ installerInstInit (installer_t *installer)
       if (*tbuff != '\0') {
         if (strncmp (tbuff, "Y", 1) != 0 &&
             strncmp (tbuff, "y", 1) != 0) {
+          /* CONTEXT: installer: command line interface: */
           printf (" * %s", _("Installation aborted."));
           printf ("\n");
           fflush (stdout);
@@ -915,6 +934,7 @@ installerInstInit (installer_t *installer)
     }
 
     if (! exists) {
+      /* CONTEXT: installer: command line interface: */
       printf (_("New BDJ4 installation."));
 
       /* do not allow an overwrite of an existing directory that is not bdj4 */
@@ -922,6 +942,7 @@ installerInstInit (installer_t *installer)
         gtk_label_set_text (GTK_LABEL (installer->feedbackMsg), _("Folder already exists."));
       }
 
+      /* CONTEXT: installer: command line interface: the selected folder exists and is not a BDJ4 installation */
       snprintf (tbuff, sizeof (tbuff), _("Error: Folder %s already exists."),
           installer->target);
       installerDisplayText (installer, "", tbuff);
@@ -941,6 +962,7 @@ installerSaveTargetDir (installer_t *installer)
   char  tbuff [MAXPATHLEN];
   FILE  *fh;
 
+  /* CONTEXT: installer: status message */
   installerDisplayText (installer, "-- ", _("Saving install location."));
 
   if (isWindows ()) {
@@ -973,12 +995,14 @@ installerMakeTarget (installer_t *installer)
 static void
 installerCopyStart (installer_t *installer)
 {
+  /* CONTEXT: installer: status message */
   installerDisplayText (installer, "-- ", _("Copying files."));
 
   /* the unpackdir is not necessarily the same as the current dir */
   /* on mac os, they are different */
   if (chdir (installer->unpackdir) < 0) {
     fprintf (stderr, "Unable to set working dir: %s\n", installer->unpackdir);
+    /* CONTEXT: installer: failure message */
     installerDisplayText (installer, "", _("Error: Unable to set working folder."));
     installerDisplayText (installer, " * ", _("Installation aborted."));
     installer->instState = INST_BEGIN;
@@ -1002,6 +1026,7 @@ installerCopyFiles (installer_t *installer)
         installer->target);
     system (tbuff);
   }
+  /* CONTEXT: installer: status message */
   installerDisplayText (installer, "   ", _("Copy finished."));
   installer->instState = INST_CHDIR;
 }
@@ -1032,6 +1057,7 @@ installerChangeDir (installer_t *installer)
 static void
 installerCreateDirs (installer_t *installer)
 {
+  /* CONTEXT: installer: status message */
   installerDisplayText (installer, "-- ", _("Creating folder structure."));
 
   /* create the directories that are not included in the distribution */
@@ -1047,6 +1073,7 @@ installerCreateDirs (installer_t *installer)
 static void
 installerCleanOldFiles (installer_t *installer)
 {
+  /* CONTEXT: installer: status message */
   installerDisplayText (installer, "-- ", _("Cleaning old files."));
 
   if (chdir (installer->rundir)) {
@@ -1083,6 +1110,7 @@ installerCopyTemplates (installer_t *installer)
     return;
   }
 
+  /* CONTEXT: installer: status message */
   installerDisplayText (installer, "-- ", _("Copying template files."));
 
   if (chdir (installer->datatopdir)) {
@@ -1269,14 +1297,19 @@ installerConvertStart (installer_t *installer)
 
   if (! installer->guienabled) {
     tbuff [0] = '\0';
+    /* CONTEXT: installer: command line interface */
     printf (_("Enter the folder where BallroomDJ 3 is installed."));
     printf ("\n");
+    /* CONTEXT: installer: command line interface */
     printf (_("The conversion process will only run for new installations and for re-installs."));
     printf ("\n");
+    /* CONTEXT: installer: command line interface: accep BDJ3 location default */
     printf (_("Press 'Enter' to select the default."));
     printf ("\n");
+    /* CONTEXT: installer: command line interface */
     printf (_("If there is no BallroomDJ 3 installation, enter a single '-'."));
     printf ("\n");
+    /* CONTEXT: installer: command line interface: BDJ3 location prompt */
     printf (_("BallroomDJ 3 Folder [%s] : "), installer->bdj3loc);
     fflush (stdout);
     fgets (tbuff, sizeof (tbuff), stdin);
@@ -1304,6 +1337,7 @@ installerConvertStart (installer_t *installer)
     return;
   }
 
+  /* CONTEXT: installer: status message */
   installerDisplayText (installer, "-- ", _("Starting conversion process."));
 
   installer->convlist = filemanipBasicDirList ("conv", ".tcl");
@@ -1341,6 +1375,7 @@ installerConvertStart (installer_t *installer)
         pathWinPath (tbuff, sizeof (tbuff));
       }
       installer->tclshloc = strdup (tbuff);
+      /* CONTEXT: installer: status message */
       installerDisplayText (installer, "   ", _("Located 'tclsh'."));
     }
 
@@ -1349,6 +1384,7 @@ installerConvertStart (installer_t *installer)
   }
 
   if (installer->tclshloc == NULL) {
+    /* CONTEXT: installer: failure message */
     snprintf (tbuff, sizeof (tbuff), _("Unable to locate %s."), "tclsh");
     installerDisplayText (installer, "   ", tbuff);
     installerDisplayText (installer, "   ", _("Skipping conversion."));
@@ -1373,6 +1409,7 @@ installerConvert (installer_t *installer)
     return;
   }
 
+  /* CONTEXT: installer: status message */
   snprintf (buffa, sizeof (buffa), _("Running conversion script: %s."), fn);
   installerDisplayText (installer, "   ", buffa);
 
@@ -1393,6 +1430,7 @@ installerConvert (installer_t *installer)
 static void
 installerConvertFinish (installer_t *installer)
 {
+  /* CONTEXT: installer: status message */
   installerDisplayText (installer, "   ", _("Conversion complete."));
   installer->instState = INST_CREATE_SHORTCUT;
 }
@@ -1410,6 +1448,7 @@ installerCreateShortcut (installer_t *installer)
     return;
   }
 
+  /* CONTEXT: installer: status message */
   installerDisplayText (installer, "-- ", _("Creating shortcut."));
   if (isWindows ()) {
     if (! chdir ("install")) {
@@ -1459,6 +1498,7 @@ installerVLCCheck (installer_t *installer)
 
   installerVLCGetVersion (installer);
   if (*installer->vlcversion) {
+    /* CONTEXT: installer: status message */
     snprintf (tbuff, sizeof (tbuff), _("Downloading %s."), "VLC");
     installerDisplayText (installer, "-- ", tbuff);
     installer->delayCount = 0;
@@ -1503,6 +1543,7 @@ installerVLCDownload (installer_t *installer)
   }
 
   if (fileopFileExists (installer->dlfname)) {
+    /* CONTEXT: installer: status message */
     snprintf (tbuff, sizeof (tbuff), _("Installing %s."), "VLC");
     installerDisplayText (installer, "-- ", tbuff);
     installerDisplayText (installer, "   ", _("Please wait..."));
@@ -1530,6 +1571,7 @@ installerVLCInstall (installer_t *installer)
     }
     system (tbuff);
     installerValidateDir (installer);
+    /* CONTEXT: installer: status message */
     snprintf (tbuff, sizeof (tbuff), _("%s installed."), "VLC");
     installerDisplayText (installer, "-- ", tbuff);
   }
@@ -1563,6 +1605,7 @@ installerPythonCheck (installer_t *installer)
   }
 
   if (*installer->pyversion) {
+    /* CONTEXT: installer: status message */
     snprintf (tbuff, sizeof (tbuff), _("Downloading %s."), "Python");
     installerDisplayText (installer, "-- ", tbuff);
     installer->delayCount = 0;
@@ -1607,6 +1650,7 @@ installerPythonDownload (installer_t *installer)
   }
 
   if (fileopFileExists (installer->dlfname)) {
+    /* CONTEXT: installer: status message */
     snprintf (tbuff, sizeof (tbuff), _("Installing %s."), "Python");
     installerDisplayText (installer, "-- ", tbuff);
     installerDisplayText (installer, "   ", _("Please wait..."));
@@ -1631,6 +1675,7 @@ installerPythonInstall (installer_t *installer)
     }
     system (tbuff);
     installerValidateDir (installer);
+    /* CONTEXT: installer: status message */
     snprintf (tbuff, sizeof (tbuff), _("%s installed."), "Python");
     installerDisplayText (installer, "-- ", tbuff);
   }
@@ -1652,6 +1697,7 @@ installerMutagenCheck (installer_t *installer)
     return;
   }
 
+  /* CONTEXT: installer: status message */
   snprintf (tbuff, sizeof (tbuff), _("Installing %s."), "Mutagen");
   installerDisplayText (installer, "-- ", tbuff);
   installerDisplayText (installer, "   ", _("Please wait..."));
@@ -1677,6 +1723,7 @@ installerMutagenInstall (installer_t *installer)
   snprintf (tbuff, sizeof (tbuff),
       "%s --quiet install --user --upgrade mutagen", pipnm);
   system (tbuff);
+  /* CONTEXT: installer: status message */
   snprintf (tbuff, sizeof (tbuff), _("%s installed."), "Mutagen");
   installerDisplayText (installer, "-- ", tbuff);
   installerCheckPackages (installer);
@@ -1874,76 +1921,59 @@ static void
 installerCheckPackages (installer_t *installer)
 {
   char  tbuff [MAXPATHLEN];
+  char  *tmp;
 
-  *tbuff = '\0';
-  if (isWindows ()) {
-    strlcpy (tbuff, "C:/Program Files/VideoLAN/VLC", sizeof (tbuff));
-  }
-  if (isMacOS ()) {
-    strlcpy (tbuff, "/Applications/VLC.app/Contents/MacOS/lib/", sizeof (tbuff));
-  }
-  if (isLinux ()) {
-    strlcpy (tbuff, "/usr/lib/x86_64-linux-gnu/libvlc.so.5", sizeof (tbuff));
-  }
+  tmp = sysvarsGetStr (SV_VLC_PATH);
 
-  if (*tbuff) {
-    if (fileopIsDirectory (tbuff) || fileopFileExists (tbuff)) {
-      snprintf (tbuff, sizeof (tbuff), _("%s is installed"), "VLC");
-      if (installer->vlcMsg != NULL) {
-        gtk_label_set_text (GTK_LABEL (installer->vlcMsg), tbuff);
-      }
-      installer->vlcinstalled = true;
-    } else {
-      snprintf (tbuff, sizeof (tbuff), _("%s is not installed"), "VLC");
-      if (installer->vlcMsg != NULL) {
-        gtk_label_set_text (GTK_LABEL (installer->vlcMsg), tbuff);
-      }
-      installer->vlcinstalled = false;
+  if (*tmp) {
+    /* CONTEXT: installer: display of package status */
+    snprintf (tbuff, sizeof (tbuff), _("%s is installed"), "VLC");
+    if (installer->vlcMsg != NULL) {
+      gtk_label_set_text (GTK_LABEL (installer->vlcMsg), tbuff);
     }
-  }
-
-  *tbuff = '\0';
-  if (isWindows ()) {
-    snprintf (tbuff, sizeof (tbuff),
-        "%s/AppData/Local/Programs/Python", installer->home);
-  }
-  if (isMacOS ()) {
-    strlcpy (tbuff, "/opt/local/bin/python3", sizeof (tbuff));
-  }
-  if (isLinux ()) {
-    strlcpy (tbuff, "/usr/bin/python3", sizeof (tbuff));
-  }
-
-  if (*tbuff) {
-    if (fileopIsDirectory (tbuff) || fileopFileExists (tbuff)) {
-      snprintf (tbuff, sizeof (tbuff), _("%s is installed"), "Python");
-      if (installer->pythonMsg != NULL) {
-        gtk_label_set_text (GTK_LABEL (installer->pythonMsg), tbuff);
-      }
-      installer->pythoninstalled = true;
-    } else {
-      snprintf (tbuff, sizeof (tbuff), _("%s is not installed"), "Python");
-      if (installer->pythonMsg != NULL) {
-        gtk_label_set_text (GTK_LABEL (installer->pythonMsg), tbuff);
-      }
-      snprintf (tbuff, sizeof (tbuff), _("%s is not installed"), "Mutagen");
-      if (installer->mutagenMsg != NULL) {
-        gtk_label_set_text (GTK_LABEL (installer->mutagenMsg), tbuff);
-      }
-      installer->pythoninstalled = false;
+    installer->vlcinstalled = true;
+  } else {
+    /* CONTEXT: installer: display of package status */
+    snprintf (tbuff, sizeof (tbuff), _("%s is not installed"), "VLC");
+    if (installer->vlcMsg != NULL) {
+      gtk_label_set_text (GTK_LABEL (installer->vlcMsg), tbuff);
     }
+    installer->vlcinstalled = false;
+  }
+
+  tmp = sysvarsGetStr (SV_PYTHON_PATH);
+
+  if (*tmp) {
+    /* CONTEXT: installer: display of package status */
+    snprintf (tbuff, sizeof (tbuff), _("%s is installed"), "Python");
+    if (installer->pythonMsg != NULL) {
+      gtk_label_set_text (GTK_LABEL (installer->pythonMsg), tbuff);
+    }
+    installer->pythoninstalled = true;
+  } else {
+    /* CONTEXT: installer: display of package status */
+    snprintf (tbuff, sizeof (tbuff), _("%s is not installed"), "Python");
+    if (installer->pythonMsg != NULL) {
+      gtk_label_set_text (GTK_LABEL (installer->pythonMsg), tbuff);
+    }
+    /* CONTEXT: installer: display of package status */
+    snprintf (tbuff, sizeof (tbuff), _("%s is not installed"), "Mutagen");
+    if (installer->mutagenMsg != NULL) {
+      gtk_label_set_text (GTK_LABEL (installer->mutagenMsg), tbuff);
+    }
+    installer->pythoninstalled = false;
   }
 
   if (installer->pythoninstalled) {
-    char    *fn;
-
-    fn = sysvarsGetStr (SV_PYTHON_MUTAGEN);
-    if (fn != NULL && *fn) {
+    tmp = sysvarsGetStr (SV_PYTHON_MUTAGEN);
+    if (*tmp) {
+      /* CONTEXT: installer: display of package status */
       snprintf (tbuff, sizeof (tbuff), _("%s is installed"), "Mutagen");
       if (installer->mutagenMsg != NULL) {
         gtk_label_set_text (GTK_LABEL (installer->mutagenMsg), tbuff);
       }
     } else {
+      /* CONTEXT: installer: display of package status */
       snprintf (tbuff, sizeof (tbuff), _("%s is not installed"), "Mutagen");
       if (installer->mutagenMsg != NULL) {
         gtk_label_set_text (GTK_LABEL (installer->mutagenMsg), tbuff);

@@ -34,6 +34,7 @@ typedef enum {
   SV_PYTHON_PIP_PATH,
   SV_PYTHON_VERSION,      // 3.10.2 => 310
   SV_SHLIB_EXT,
+  SV_VLC_PATH,
   SV_WEB_HOST,
   SV_TEMP_A,
   SV_TEMP_B,
@@ -49,7 +50,7 @@ typedef enum {
   SVL_MAX
 } sysvarlkey_t;
 
-#define SV_TMP_FILE "tmpsysvars.txt"
+#define SV_TMP_FILE "tmpsysvars"
 
 void    sysvarsInit (const char *);
 char    * sysvarsGetStr (sysvarkey_t idx);

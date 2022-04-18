@@ -15,7 +15,7 @@ PLAYER
 PLAYERQLEN
 ..70
 REMCONTROLHTML
-..bdj-flex-dark.html
+..bdj-flex-dark.html.nl
 SHOWALBUM
 ..no
 SHOWBPM
