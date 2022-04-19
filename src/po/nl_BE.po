@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: BDJ4 4.0.0\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
-"POT-Creation-Date: 2022-04-18\n"
-"PO-Revision-Date: 2022-04-18\n"
+"POT-Creation-Date: 2022-04-19\n"
+"PO-Revision-Date: 2022-04-19\n"
 "Last-Translator: marimo\n"
 "Language-Team: dutch\n"
 "Language: nl\n"
@@ -166,6 +166,10 @@ msgstr ""
 
 #. CONTEXT: installer: status message
 msgid "Conversion complete."
+msgstr ""
+
+#. CONTEXT: installer: message indicating the conversion action that will be taken
+msgid "Conversion will be processed"
 msgstr ""
 
 #. CONTEXT: installer: convert the BallroomDJ 3 installation
@@ -514,6 +518,10 @@ msgstr ""
 
 msgid "Next Song"
 msgstr "Volgende nummer"
+
+#. CONTEXT: installer: message indicating the conversion action that will be taken
+msgid "No conversion."
+msgstr ""
 
 msgid "None"
 msgstr "Geen"

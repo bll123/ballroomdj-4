@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-04-18 12:30-0700\n"
+"POT-Creation-Date: 2022-04-19 10:16-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -170,6 +170,10 @@ msgstr ""
 
 #. CONTEXT: installer: status message
 msgid "Conversion complete."
+msgstr ""
+
+#. CONTEXT: installer: message indicating the conversion action that will be taken
+msgid "Conversion will be processed"
 msgstr ""
 
 #. CONTEXT: installer: convert the BallroomDJ 3 installation
@@ -517,6 +521,10 @@ msgid "New Status"
 msgstr ""
 
 msgid "Next Song"
+msgstr ""
+
+#. CONTEXT: installer: message indicating the conversion action that will be taken
+msgid "No conversion."
 msgstr ""
 
 msgid "None"
