@@ -217,6 +217,7 @@ uiplayerActivate (uiplayer_t *uiplayer)
   g_signal_connect (uiplayer->speedScale, "change-value", G_CALLBACK (uiplayerSpeedProcess), uiplayer);
 
   /* size group D */
+  /* CONTEXT: the current speed for song playback */
   widget = uiutilsCreateColonLabel (_("Speed"));
   gtk_widget_set_halign (widget, GTK_ALIGN_END);
   gtk_label_set_xalign (GTK_LABEL (widget), 1.0);
@@ -286,6 +287,7 @@ uiplayerActivate (uiplayer_t *uiplayer)
   g_signal_connect (uiplayer->seekScale, "change-value", G_CALLBACK (uiplayerSeekProcess), uiplayer);
 
   /* size group D */
+  /* CONTEXT: the current position of the song during song playback */
   widget = uiutilsCreateColonLabel (_("Position"));
   gtk_box_pack_end (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
   gtk_widget_set_halign (widget, GTK_ALIGN_END);
@@ -305,11 +307,13 @@ uiplayerActivate (uiplayer_t *uiplayer)
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
   gtk_size_group_add_widget (sgE, widget);
 
+  /* CONTEXT: button: fade out the song and stop playing it */
   widget = uiutilsCreateButton (_("Fade"), NULL,
       uiplayerFadeProcess, uiplayer);
   gtk_box_pack_start (GTK_BOX (hbox), widget,
       FALSE, FALSE, 0);
 
+  /* CONTEXT: button: play or pause the song */
   snprintf (tbuff, sizeof (tbuff), "%s / %s", _("Play"), _("Pause"));
   widget = uiutilsCreateButton (tbuff, "button_playpause",
       uiplayerPlayPauseProcess, uiplayer);
@@ -325,22 +329,27 @@ uiplayerActivate (uiplayer_t *uiplayer)
       PATHBLD_MP_IMGDIR);
   image = gtk_image_new_from_file (tbuff);
   gtk_button_set_image (GTK_BUTTON (uiplayer->repeatButton), image);
+  /* CONTEXT: button: toggle the repeat song on and off */
   gtk_widget_set_tooltip_text (uiplayer->repeatButton, _("Toggle Repeat"));
   gtk_box_pack_start (GTK_BOX (hbox), uiplayer->repeatButton,
       FALSE, FALSE, 0);
   g_signal_connect (uiplayer->repeatButton, "toggled", G_CALLBACK (uiplayerRepeatProcess), uiplayer);
 
+  /* CONTEXT: button: return to the beginning of the song */
   widget = uiutilsCreateButton (_("Return to beginning of song"),
       "button_begin", uiplayerSongBeginProcess, uiplayer);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 
+  /* CONTEXT: button: start playing the next song (immediate) */
   widget = uiutilsCreateButton (_("Next Song"), "button_nextsong",
       uiplayerNextSongProcess, uiplayer);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 
   uiplayer->pauseatendButton = gtk_toggle_button_new ();
   assert (uiplayer->pauseatendButton != NULL);
-  gtk_button_set_label (GTK_BUTTON (uiplayer->pauseatendButton), _("Pause at End"));
+  /* CONTEXT: button: pause at the end of the song (toggle) */
+  gtk_button_set_label (GTK_BUTTON (uiplayer->pauseatendButton),
+      _("Pause at End"));
   gtk_widget_set_margin_top (uiplayer->pauseatendButton, 2);
   gtk_widget_set_margin_start (uiplayer->pauseatendButton, 2);
 
@@ -398,6 +407,7 @@ uiplayerActivate (uiplayer_t *uiplayer)
   g_signal_connect (uiplayer->volumeScale, "change-value", G_CALLBACK (uiplayerVolumeProcess), uiplayer);
 
   /* size group D */
+  /* CONTEXT: The current volume of the song */
   widget = uiutilsCreateColonLabel (_("Volume"));
   gtk_box_pack_end (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
   gtk_widget_set_halign (widget, GTK_ALIGN_END);

@@ -379,12 +379,14 @@ pluiActivate (GApplication *app, gpointer userdata)
       (char *) bdjoptGetStr (OPT_P_UI_ACCENT_COL));
   uiutilsSetCss (plui->clock, tbuff);
 
+  /* CONTEXT: menu selection: options for the player */
   menuitem = gtk_menu_item_new_with_label (_("Options"));
   gtk_menu_shell_append (GTK_MENU_SHELL (menubar), menuitem);
 
   menu = gtk_menu_new ();
   gtk_menu_item_set_submenu (GTK_MENU_ITEM (menuitem), menu);
 
+  /* CONTEXT: menu checkbox: start playback when a dance or playlist is queued */
   menuitem = gtk_check_menu_item_new_with_label (_("Play When Queued"));
   gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (menuitem),
       nlistGetNum (plui->options, PLUI_PLAY_WHEN_QUEUED));
@@ -392,6 +394,7 @@ pluiActivate (GApplication *app, gpointer userdata)
   g_signal_connect (menuitem, "toggled",
       G_CALLBACK (pluiTogglePlayWhenQueued), plui);
 
+  /* CONTEXT: menu checkbox: show the extra queues (in addition to the main music queue) */
   menuitem = gtk_check_menu_item_new_with_label (_("Show Extra Queues"));
   gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (menuitem),
       nlistGetNum (plui->options, PLUI_SHOW_EXTRA_QUEUES));
@@ -399,6 +402,7 @@ pluiActivate (GApplication *app, gpointer userdata)
   g_signal_connect (menuitem, "toggled",
       G_CALLBACK (pluiToggleExtraQueues), plui);
 
+  /* CONTEXT: menu checkbox: when a queue is emptied, switch playback to the other queue */
   menuitem = gtk_check_menu_item_new_with_label (_("Switch Queue When Empty"));
   gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (menuitem),
       nlistGetNum (plui->options, PLUI_SWITCH_QUEUE_WHEN_EMPTY));
@@ -406,12 +410,14 @@ pluiActivate (GApplication *app, gpointer userdata)
   g_signal_connect (menuitem, "toggled",
       G_CALLBACK (pluiToggleSwitchQueue), plui);
 
+  /* CONTEXT: menu selection: marquee related options */
   menuitem = gtk_menu_item_new_with_label (_("Marquee"));
   gtk_menu_shell_append (GTK_MENU_SHELL (menubar), menuitem);
 
   menu = gtk_menu_new ();
   gtk_menu_item_set_submenu (GTK_MENU_ITEM (menuitem), menu);
 
+  /* CONTEXT: menu selection: marquee: change the marquee font size */
   menuitem = gtk_menu_item_new_with_label (_("Font Size"));
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
   g_signal_connect (menuitem, "activate",
@@ -910,9 +916,11 @@ pluiCreateMarqueeFontSizeDialog (playerui_t *plui)
   logProcBegin (LOG_PROC, "pluiCreateMarqueeFontSizeDialog");
 
   plui->marqueeFontSizeDialog = gtk_dialog_new_with_buttons (
+      /* CONTEXT: marquee font size dialog: window title */
       _("Marquee Font Size"),
       GTK_WINDOW (plui->window),
       GTK_DIALOG_DESTROY_WITH_PARENT,
+      /* CONTEXT: marquee font size dialog: action button */
       _("Close"),
       GTK_RESPONSE_CLOSE,
       NULL
@@ -930,6 +938,7 @@ pluiCreateMarqueeFontSizeDialog (playerui_t *plui)
   assert (hbox != NULL);
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
 
+  /* CONTEXT: marquee font size dialog: the font size selector */
   widget = uiutilsCreateColonLabel (_("Font Size"));
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 

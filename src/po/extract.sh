@@ -73,7 +73,9 @@ sed -n -e '/^LABEL/ {n;p}' -e 's,^,..,' $fn >> $TMP
 fn=../../templates/status.txt
 sed -n -e '/^STATUS/ {n;p}' -e 's,^,..,' $fn >> $TMP
 fn=../../templates/bdjconfig.txt.p
+echo "// CONTEXT: The names of the music queues" >> $TMP
 sed -n -e '/^QUEUE_NAME_[AB]/ {n;p}' -e 's,^,..,' $fn >> $TMP
+echo "// CONTEXT: The completion message displayed on the marquee when the playlist is finished." >> $TMP
 sed -n -e '/^COMPLETEMSG/ {n;p}' -e 's,^,..,' $fn >> $TMP
 
 egrep 'value=' ../../templates/*.html |

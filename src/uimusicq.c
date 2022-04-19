@@ -170,11 +170,13 @@ uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
   gtk_box_pack_start (GTK_BOX (uimusicq->ui [ci].box), hbox,
       FALSE, FALSE, 0);
 
+  /* CONTEXT: button: move the selected song to the top of the queue */
   widget = uiutilsCreateButton (_("Move to Top"), "button_movetop",
       uimusicqMoveTopProcess, uimusicq);
   gtk_box_pack_start (GTK_BOX (hbox), widget,
       FALSE, FALSE, 0);
 
+  /* CONTEXT: button: move the selected song up in the queue */
   widget = uiutilsCreateButton (_("Move Up"), "button_up",
       NULL, uimusicq);
   g_signal_connect (widget, "pressed",
@@ -184,6 +186,7 @@ uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
   gtk_box_pack_start (GTK_BOX (hbox), widget,
       FALSE, FALSE, 0);
 
+  /* CONTEXT: button: move the selected song down in the queue */
   widget = uiutilsCreateButton (_("Move Down"), "button_down",
       NULL, uimusicq);
   g_signal_connect (widget, "pressed",
@@ -193,34 +196,40 @@ uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
   gtk_box_pack_start (GTK_BOX (hbox), widget,
       FALSE, FALSE, 0);
 
+  /* CONTEXT: button: set playback to pause after the selected song is played (toggle) */
   widget = uiutilsCreateButton (_("Toggle Pause"), "button_pause",
       uimusicqTogglePauseProcess, uimusicq);
   gtk_box_pack_start (GTK_BOX (hbox), widget,
       FALSE, FALSE, 0);
 
+  /* CONTEXT: button: remove the song from the queue */
   widget = uiutilsCreateButton (_("Remove from queue"), "button_audioremove",
       uimusicqRemoveProcess, uimusicq);
   gtk_box_pack_start (GTK_BOX (hbox), widget,
       FALSE, FALSE, 0);
 
   // ### TODO create code to handle this.
+  /* CONTEXT: button: request playback of a song external to BDJ4 (not in the database) */
   widget = uiutilsCreateButton (_("Request External"), NULL,
       NULL, uimusicq);
   gtk_box_pack_end (GTK_BOX (hbox), widget,
       FALSE, FALSE, 0);
 
   widget = uiutilsDropDownCreate (parentwin,
+      /* CONTEXT: button: queue a playlist for playback */
       _("Queue Playlist"), uimusicqQueuePlaylistProcess,
       &uimusicq->ui [ci].playlistsel, uimusicq);
   gtk_box_pack_end (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
   uimusicqCreatePlaylistList (uimusicq);
 
   widget = uiutilsDropDownCreate (parentwin,
+      /* CONTEXT: button: queue a dance for playback */
       _("Queue Dance"), uimusicqQueueDanceProcess,
       &uimusicq->ui [ci].dancesel, uimusicq);
   uiutilsCreateDanceList (&uimusicq->ui [ci].dancesel, NULL);
   gtk_box_pack_end (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 
+  /* CONTEXT: button: clear the queue */
   widget = uiutilsCreateButton (_("Clear Queue"), NULL,
       uimusicqClearQueueProcess, uimusicq);
   g_signal_connect (widget, "clicked",

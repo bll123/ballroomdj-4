@@ -884,6 +884,7 @@ tagdefInit (void)
   tagdefs [TAG_TAGS].displayname = _("Tags");
   tagdefs [TAG_TITLE].displayname = _("Title");
   tagdefs [TAG_TRACKNUMBER].displayname = _("Track");
+  /* CONTEXT: when the database entry was last updated */
   tagdefs [TAG_UPDATETIME].displayname = _("Last Updated");
   tagdefs [TAG_VOLUMEADJUSTPERC].displayname = _("Volume Adjustment");
 

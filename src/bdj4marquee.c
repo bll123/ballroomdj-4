@@ -317,6 +317,7 @@ marqueeActivate (GApplication *app, gpointer userdata)
 
   gtk_window_set_type_hint (GTK_WINDOW (window), GDK_WINDOW_TYPE_HINT_NORMAL);
   gtk_window_set_focus_on_map (GTK_WINDOW (window), FALSE);
+  /* CONTEXT: The window title for the marquee */
   gtk_window_set_title (GTK_WINDOW (window), _("Marquee"));
   gtk_window_set_default_icon_from_file (imgbuff, &gerr);
 
@@ -359,6 +360,7 @@ marqueeActivate (GApplication *app, gpointer userdata)
   gtk_box_pack_start (GTK_BOX (vbox), hbox,
       FALSE, FALSE, 0);
 
+  /* CONTEXT: marquee: displayed when nothing is set to be played */
   marquee->danceLab = uiutilsCreateLabel (_("Not Playing"));
   gtk_widget_set_halign (marquee->danceLab, GTK_ALIGN_START);
   gtk_widget_set_hexpand (marquee->danceLab, TRUE);

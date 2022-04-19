@@ -265,6 +265,7 @@ starterActivate (GApplication *app, gpointer userdata)
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
 
+  /* CONTEXT: the profile to be used when starting BDJ4 */
   widget = uiutilsCreateColonLabel (_("Profile"));
   gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
@@ -277,18 +278,22 @@ starterActivate (GApplication *app, gpointer userdata)
   gtk_widget_set_halign (widget, GTK_ALIGN_FILL);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 
+  /* CONTEXT: button: starts the player user interface */
   widget = uiutilsCreateButton (_("Player"), NULL, starterStartPlayer, starter);
   gtk_widget_set_margin_top (widget, 4);
   gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
 
+  /* CONTEXT: button: starts the management user interface */
   widget = uiutilsCreateButton (_("Manage"), NULL, starterStartManage, starter);
   gtk_widget_set_margin_top (widget, 4);
   gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
 
+  /* CONTEXT: button: starts the configuration user interface */
   widget = uiutilsCreateButton (_("Configure"), NULL, starterStartConfig, starter);
   gtk_widget_set_margin_top (widget, 4);
   gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
 
+  /* CONTEXT: button: exits BDJ4 */
   widget = uiutilsCreateButton (_("Exit"), NULL, starterProcessExit, starter);
   gtk_widget_set_margin_top (widget, 4);
   gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);

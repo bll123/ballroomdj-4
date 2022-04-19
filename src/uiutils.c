@@ -1026,6 +1026,7 @@ uiutilsSelectDirDialog (uiutilsselect_t *selectdata)
       selectdata->label,
       GTK_WINDOW (selectdata->window),
       GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER,
+      /* CONTEXT: actions associated with the select folder dialog */
       _("Select"), _("Close"));
   if (selectdata->startpath != NULL) {
     gtk_file_chooser_set_current_folder (GTK_FILE_CHOOSER (widget),
@@ -1052,6 +1053,7 @@ uiutilsSelectFileDialog (uiutilsselect_t *selectdata)
       selectdata->label,
       GTK_WINDOW (selectdata->window),
       GTK_FILE_CHOOSER_ACTION_OPEN,
+      /* CONTEXT: actions associated with the select file dialog */
       _("Select"), _("Close"));
   if (selectdata->startpath != NULL) {
     gtk_file_chooser_set_current_folder (GTK_FILE_CHOOSER (widget),
