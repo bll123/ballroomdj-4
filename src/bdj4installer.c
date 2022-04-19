@@ -100,6 +100,8 @@ typedef struct {
   GtkWidget       *window;
   GtkWidget       *reinstWidget;
   GtkWidget       *feedbackMsg;
+  GtkWidget       *convWidget;
+  GtkWidget       *convFeedbackMsg;
   GtkWidget       *vlcMsg;
   GtkWidget       *pythonMsg;
   GtkWidget       *mutagenMsg;
@@ -109,11 +111,13 @@ typedef struct {
   /* flags */
   bool            newinstall : 1;
   bool            reinstall : 1;
+  bool            convprocess : 1;
   bool            freetarget : 1;
   bool            freebdj3loc : 1;
   bool            guienabled : 1;
   bool            vlcinstalled : 1;
   bool            pythoninstalled : 1;
+  bool            inSetConvert : 1;
 } installer_t;
 
 #define INST_TEMP_FILE  "tmp/bdj4instout.txt"
@@ -128,8 +132,12 @@ static void installerCheckDir (GtkButton *b, gpointer udata);
 static void installerSelectDirDialog (GtkButton *b, gpointer udata);
 static void installerValidateDir (installer_t *installer);
 static void installerValidateStart (GtkEditable *e, gpointer udata);
+static void installerCheckConvert (GtkButton *b, gpointer udata);
+static void installerSetConvert (installer_t *installer, int val);
+static void installerDisplayConvert (installer_t *installer);
 static void installerInstall (GtkButton *b, gpointer udata);
 static bool installerCheckTarget (installer_t *installer, const char *dir);
+static void installerSetPaths (installer_t *installer);
 
 static void installerDelay (installer_t *installer);
 static void installerInstInit (installer_t *installer);
@@ -209,22 +217,24 @@ main (int argc, char *argv[])
   installer.tclshloc = NULL;
   installer.app = NULL;
   installer.window = NULL;
-  installer.reinstWidget = NULL;
-  installer.feedbackMsg = NULL;
-  installer.dispBuffer = NULL;
-  installer.dispTextView = NULL;
   installer.currdir [0] = '\0';
   installer.newinstall = true;
   installer.reinstall = false;
+  installer.convprocess = false;
   installer.freetarget = false;
   installer.freebdj3loc = false;
   installer.guienabled = true;
+  installer.vlcinstalled = false;
+  installer.pythoninstalled = false;
+  installer.inSetConvert = false;
   installer.delayMax = 20;
   installer.delayCount = 0;
   installer.app = NULL;
   installer.window = NULL;
   installer.reinstWidget = NULL;
   installer.feedbackMsg = NULL;
+  installer.convWidget = NULL;
+  installer.convFeedbackMsg = NULL;
   installer.vlcMsg = NULL;
   installer.pythonMsg = NULL;
   installer.mutagenMsg = NULL;
@@ -450,10 +460,6 @@ installerActivate (GApplication *app, gpointer udata)
   gtk_widget_set_hexpand (hbox, TRUE);
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
 
-  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
-  gtk_widget_set_hexpand (hbox, TRUE);
-  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
-
   /* CONTEXT: installer: label for entry field asking for BDJ3 location */
   snprintf (tbuff, sizeof (tbuff), _("%s Location"), BDJ3_NAME);
   widget = uiutilsCreateColonLabel (tbuff);
@@ -461,10 +467,9 @@ installerActivate (GApplication *app, gpointer udata)
 
   widget = uiutilsEntryCreate (&installer->bdj3locEntry);
   uiutilsEntrySetValue (&installer->bdj3locEntry, installer->bdj3loc);
-  gtk_widget_set_halign (widget, GTK_ALIGN_START);
-  gtk_widget_set_hexpand (widget, FALSE);
+  gtk_widget_set_halign (widget, GTK_ALIGN_FILL);
+  gtk_widget_set_hexpand (widget, TRUE);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
-
   g_signal_connect (installer->bdj3locEntry.entry, "changed",
       G_CALLBACK (installerValidateStart), installer);
 
@@ -475,13 +480,21 @@ installerActivate (GApplication *app, gpointer udata)
   gtk_widget_set_margin_start (widget, 0);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 
+  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
+  gtk_widget_set_hexpand (hbox, TRUE);
+  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+
   /* CONTEXT: installer: convert the BallroomDJ 3 installation */
-  installer->reinstWidget = gtk_check_button_new_with_label (_("Convert %s"));
-  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (installer->reinstWidget),
-      installer->reinstall);
-  gtk_box_pack_start (GTK_BOX (hbox), installer->reinstWidget, FALSE, FALSE, 0);
-  g_signal_connect (installer->reinstWidget, "toggled",
-      G_CALLBACK (installerCheckDir), installer);
+  snprintf (tbuff, sizeof (tbuff), _("Convert %s"), BDJ3_NAME);
+  installer->convWidget = gtk_check_button_new_with_label (tbuff);
+  gtk_box_pack_start (GTK_BOX (hbox), installer->convWidget, FALSE, FALSE, 0);
+  g_signal_connect (installer->convWidget, "toggled",
+      G_CALLBACK (installerCheckConvert), installer);
+
+  installer->convFeedbackMsg = uiutilsCreateLabel ("");
+  uiutilsSetCss (installer->convFeedbackMsg,
+      "label { color: #ffa600; }");
+  gtk_box_pack_start (GTK_BOX (hbox), installer->convFeedbackMsg, FALSE, FALSE, 0);
 
   /* VLC status */
 
@@ -575,6 +588,7 @@ installerActivate (GApplication *app, gpointer udata)
 
   gtk_widget_show_all (window);
 
+  installerDisplayConvert (installer);
   installerCheckPackages (installer);
 }
 
@@ -722,6 +736,8 @@ installerValidateDir (installer_t *installer)
   }
 
   if (installer->feedbackMsg == NULL ||
+      installer->convFeedbackMsg == NULL ||
+      installer->convWidget == NULL ||
       installer->reinstWidget == NULL ||
       installer->vlcMsg == NULL ||
       installer->pythonMsg == NULL ||
@@ -743,19 +759,23 @@ installerValidateDir (installer_t *installer)
         /* CONTEXT: installer: message indicating the action that will be taken */
         snprintf (tbuff, sizeof (tbuff), _("Overwriting existing %s installation."), BDJ4_NAME);
         gtk_label_set_text (GTK_LABEL (installer->feedbackMsg), tbuff);
+        installerSetConvert (installer, TRUE);
       } else {
         /* CONTEXT: installer: message indicating the action that will be taken */
         snprintf (tbuff, sizeof (tbuff), _("Updating existing %s installation."), BDJ4_NAME);
         gtk_label_set_text (GTK_LABEL (installer->feedbackMsg), tbuff);
+        installerSetConvert (installer, FALSE);
       }
     } else {
       /* CONTEXT: installer: the selected folder exists and is not a BDJ4 installation */
       gtk_label_set_text (GTK_LABEL (installer->feedbackMsg), _("Error: Folder already exists."));
+      installerSetConvert (installer, FALSE);
     }
   } else {
     /* CONTEXT: installer: message indicating the action that will be taken */
     snprintf (tbuff, sizeof (tbuff), _("New %s installation."), BDJ4_NAME);
     gtk_label_set_text (GTK_LABEL (installer->feedbackMsg), tbuff);
+    installerSetConvert (installer, TRUE);
   }
 
   /* bdj3 location validation */
@@ -773,10 +793,14 @@ installerValidateDir (installer_t *installer)
   if (! locok) {
     gtk_entry_set_icon_from_icon_name (GTK_ENTRY (installer->bdj3locEntry.entry),
         GTK_ENTRY_ICON_SECONDARY, "dialog-error");
+    installerSetConvert (installer, FALSE);
   } else {
     gtk_entry_set_icon_from_icon_name (GTK_ENTRY (installer->bdj3locEntry.entry),
         GTK_ENTRY_ICON_SECONDARY, NULL);
   }
+
+  installerSetPaths (installer);
+  installerDisplayConvert (installer);
 }
 
 static void
@@ -817,6 +841,68 @@ installerSelectDirDialog (GtkButton *b, gpointer udata)
     installer->freebdj3loc = true;
     uiutilsEntrySetValue (&installer->bdj3locEntry, fn);
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected loc: %s", installer->bdj3loc);
+  }
+}
+
+static void
+installerCheckConvert (GtkButton *b, gpointer udata)
+{
+  installer_t   *installer = udata;
+
+  if (installer->inSetConvert) {
+    return;
+  }
+
+  installerDisplayConvert (installer);
+}
+
+static void
+installerSetConvert (installer_t *installer, int val)
+{
+  if (installer->convWidget == NULL ||
+     installer->convFeedbackMsg == NULL) {
+    return;
+  }
+
+  gtk_toggle_button_set_active (
+      GTK_TOGGLE_BUTTON (installer->convWidget), val);
+}
+
+static void
+installerDisplayConvert (installer_t *installer)
+{
+  int           nval;
+  char          *tptr;
+
+  if (installer->convWidget == NULL ||
+     installer->convFeedbackMsg == NULL) {
+    return;
+  }
+
+  nval = gtk_toggle_button_get_active (
+      GTK_TOGGLE_BUTTON (installer->convWidget));
+
+  installer->inSetConvert = true;
+
+  if (strcmp (installer->bdj3loc, "-") == 0 ||
+      *installer->bdj3loc == '\0') {
+    nval = 0;
+    gtk_toggle_button_set_active (
+        GTK_TOGGLE_BUTTON (installer->convWidget), nval);
+  }
+
+  installer->inSetConvert = false;
+
+  installer->convprocess = nval;
+
+  if (nval) {
+    /* CONTEXT: installer: message indicating the conversion action that will be taken */
+    tptr = _("Conversion will be processed");
+    gtk_label_set_text (GTK_LABEL (installer->convFeedbackMsg), tptr);
+  } else {
+    /* CONTEXT: installer: message indicating the conversion action that will be taken */
+    tptr = _("No conversion.");
+    gtk_label_set_text (GTK_LABEL (installer->convFeedbackMsg), tptr);
   }
 }
 
@@ -865,6 +951,23 @@ installerCheckTarget (installer_t *installer, const char *dir)
   return exists;
 }
 
+static void
+installerSetPaths (installer_t *installer)
+{
+  if (installer->target != NULL && installer->freetarget) {
+    free (installer->target);
+  }
+  installer->target = strdup (uiutilsEntryGetValue (&installer->targetEntry));
+  installer->freetarget = true;
+
+  if (installer->bdj3loc != NULL && installer->freebdj3loc) {
+    free (installer->bdj3loc);
+  }
+  installer->bdj3loc = strdup (uiutilsEntryGetValue (&installer->bdj3locEntry));
+  installer->freebdj3loc = true;
+}
+
+
 /* installation routines */
 
 static void
@@ -884,16 +987,12 @@ installerInstInit (installer_t *installer)
   char        tbuff [MAXPATHLEN];
 
   if (installer->guienabled) {
-    installer->target = strdup (uiutilsEntryGetValue (&installer->targetEntry));
-    installer->freetarget = true;
+    installerSetPaths (installer);
+  }
+
+  if (installer->guienabled) {
     installer->reinstall = gtk_toggle_button_get_active (
         GTK_TOGGLE_BUTTON (installer->reinstWidget));
-
-    if (installer->bdj3loc != NULL && installer->freebdj3loc) {
-      free (installer->bdj3loc);
-    }
-    installer->bdj3loc = strdup (uiutilsEntryGetValue (&installer->bdj3locEntry));
-    installer->freebdj3loc = true;
   }
 
   if (! installer->guienabled) {
@@ -1303,7 +1402,7 @@ installerConvertStart (installer_t *installer)
   char  *locs [15];
   int   locidx = 0;
 
-  if (! installer->newinstall && ! installer->reinstall) {
+  if (! installer->convprocess) {
     installer->instState = INST_CREATE_SHORTCUT;
     return;
   }
