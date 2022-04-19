@@ -434,7 +434,7 @@ installerActivate (GApplication *app, gpointer udata)
   gtk_widget_set_margin_top (widget, 2);
   uiutilsSetCss (widget,
       "separator { min-height: 4px; background-color: #733000; }");
-  gtk_box_pack_start (GTK_BOX (vbox), widget, TRUE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (vbox), widget, TRUE, FALSE, 0);
 
   /* conversion process */
   snprintf (tbuff, sizeof (tbuff),
@@ -502,7 +502,7 @@ installerActivate (GApplication *app, gpointer udata)
   gtk_widget_set_margin_top (widget, 2);
   uiutilsSetCss (widget,
       "separator { min-height: 4px; background-color: #733000; }");
-  gtk_box_pack_start (GTK_BOX (vbox), widget, TRUE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (vbox), widget, TRUE, FALSE, 0);
 
   sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
@@ -1954,6 +1954,7 @@ installerTemplateCopy (char *from, char *to)
       from = tbuff;
     }
   }
+  datafileBackup (to, 1);
   filemanipCopy (from, to);
 }
 

@@ -418,7 +418,7 @@ marqueeActivate (GApplication *app, gpointer userdata)
       "separator { min-height: 4px; background-color: %s; }",
       (char *) bdjoptGetStr (OPT_P_MQ_ACCENT_COL));
   uiutilsSetCss (marquee->sep, tbuff);
-  gtk_box_pack_end (GTK_BOX (vbox), marquee->sep, TRUE, TRUE, 0);
+  gtk_box_pack_end (GTK_BOX (vbox), marquee->sep, TRUE, FALSE, 0);
 
   marquee->marqueeLabs = malloc (sizeof (GtkWidget *) * marquee->mqLen);
 
