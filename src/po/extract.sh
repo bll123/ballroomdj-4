@@ -87,6 +87,11 @@ echo "..automatic" >> $TMP
 echo "// CONTEXT: The name of the 'standardrounds' playlist file" >> $TMP
 echo "..standardrounds" >> $TMP
 
+# linux desktop shortcut
+echo "// CONTEXT: tooltip for desktop icon" >> $TMP
+egrep '^Comment=' ../../install/bdj4.desktop |
+  sed -e 's,Comment=,,' -e 's,^,..,' >> $TMP
+
 sed -e '/^\.\./ {s,^\.\.,, ; s,^,_(", ; s,$,"),}' $TMP > $TMP.n
 mv -f $TMP.n $TMP
 

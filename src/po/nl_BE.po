@@ -152,6 +152,10 @@ msgstr "Bachata"
 msgid "Ballroom Dance"
 msgstr "Ballroom dans"
 
+#. CONTEXT: tooltip for desktop icon
+msgid "Ballroom Music Player"
+msgstr "Ballroom muziekspeler"
+
 msgid "Cha Cha"
 msgstr "Cha Cha"
 
