@@ -54,7 +54,7 @@ localeInit (void)
     strlcpy (lbuff, setlocale (LOC_LC_MESSAGES, NULL), sizeof (lbuff));
 
     /* windows has non-standard names; convert them */
-    pathbldMakePath (tbuff, sizeof (tbuff), "",
+    pathbldMakePath (tbuff, sizeof (tbuff),
         "locale-win", ".txt", PATHBLD_MP_LOCALEDIR);
     df = datafileAllocParse ("locale-win", DFTYPE_KEY_VAL, tbuff,
         NULL, 0, DATAFILE_NO_LOOKUP);
@@ -94,7 +94,7 @@ localeInit (void)
     osSetEnv ("LC_ALL", tbuff);
   }
 
-  pathbldMakePath (lbuff, sizeof (lbuff), "", "", "", PATHBLD_MP_LOCALEDIR);
+  pathbldMakePath (lbuff, sizeof (lbuff), "", "", PATHBLD_MP_LOCALEDIR);
   bindtextdomain (GETTEXT_DOMAIN, lbuff);
   textdomain (GETTEXT_DOMAIN);
 #if _lib_bind_textdomain_codeset

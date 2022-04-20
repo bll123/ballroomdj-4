@@ -69,7 +69,7 @@ uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
   uimusicq->parentwin = parentwin;
 
   /* want a copy of the pixbuf for this image */
-  pathbldMakePath (tbuff, sizeof (tbuff), "", "button_pause", ".svg",
+  pathbldMakePath (tbuff, sizeof (tbuff), "button_pause", ".svg",
       PATHBLD_MP_IMGDIR);
   image = gtk_image_new_from_file (tbuff);
   uimusicq->pauseImg = gtk_image_get_pixbuf (GTK_IMAGE (image));

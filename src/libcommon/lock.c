@@ -52,7 +52,7 @@ lockExists (char *fn, int flags)
   char      tfn [MAXPATHLEN];
   pid_t     fpid = 0;
 
-  pathbldMakePath (tfn, sizeof (tfn), "", fn, ".lck",
+  pathbldMakePath (tfn, sizeof (tfn), fn, ".lck",
       flags | PATHBLD_MP_TMPDIR);
   fpid = getPidFromFile (tfn);
   process.pid = fpid;
@@ -84,7 +84,7 @@ lockAcquirePid (char *fn, pid_t pid, int flags)
   procutil_t process;
 
 
-  pathbldMakePath (tfn, sizeof (tfn), "", fn, ".lck",
+  pathbldMakePath (tfn, sizeof (tfn), fn, ".lck",
       flags | PATHBLD_MP_TMPDIR);
 
   fd = open (tfn, O_CREAT | O_EXCL | O_RDWR, 0600);
@@ -130,7 +130,7 @@ lockReleasePid (char *fn, pid_t pid, int flags)
   int       rc;
   pid_t     fpid;
 
-  pathbldMakePath (tfn, sizeof (tfn), "", fn, ".lck",
+  pathbldMakePath (tfn, sizeof (tfn), fn, ".lck",
       flags | PATHBLD_MP_TMPDIR);
   rc = -1;
   fpid = getPidFromFile (tfn);

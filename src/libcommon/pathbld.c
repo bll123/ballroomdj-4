@@ -11,19 +11,14 @@
 #include "sysvars.h"
 
 char *
-pathbldMakePath (char *buff, size_t buffsz, const char *subpath,
+pathbldMakePath (char *buff, size_t buffsz,
     const char *base, const char *extension, int flags)
 {
-  char      suffix [30];
-  char      *subpathsep;
-  char      *dirprefix;
+  char      profpath [50];
+  char      *dirprefix = "";
 
 
-  *suffix = '\0';
-  subpathsep = "";
-  if (*subpath) {
-    subpathsep = "/";
-  }
+  *profpath = '\0';
 
   dirprefix = sysvarsGetStr (SV_BDJ4DATADIR);
   if ((flags & PATHBLD_MP_TMPDIR) == PATHBLD_MP_TMPDIR) {
@@ -53,17 +48,21 @@ pathbldMakePath (char *buff, size_t buffsz, const char *subpath,
   }
 
   if ((flags & PATHBLD_MP_USEIDX) == PATHBLD_MP_USEIDX) {
-    if (sysvarsGetNum (SVL_BDJIDX) != 0L) {
-      snprintf (suffix, sizeof (suffix), "-%zd", sysvarsGetNum (SVL_BDJIDX));
+    if ((flags & PATHBLD_MP_TMPDIR) == PATHBLD_MP_TMPDIR) {
+      /* if the tmp dir is being used, there is no pre-made directory */
+      /* use a prefix */
+      snprintf (profpath, sizeof (profpath), "t%02zd-", sysvarsGetNum (SVL_BDJIDX));
+    } else {
+      snprintf (profpath, sizeof (profpath), "profile%02zd/", sysvarsGetNum (SVL_BDJIDX));
     }
   }
   if ((flags & PATHBLD_MP_HOSTNAME) == PATHBLD_MP_HOSTNAME) {
-    snprintf (buff, buffsz, "%s/%s/%s%s%s%s%s", dirprefix,
-        sysvarsGetStr (SV_HOSTNAME), subpath, subpathsep, base, suffix, extension);
+    snprintf (buff, buffsz, "%s/%s/%s%s%s", dirprefix,
+        sysvarsGetStr (SV_HOSTNAME), profpath, base, extension);
   }
   if ((flags & PATHBLD_MP_HOSTNAME) != PATHBLD_MP_HOSTNAME) {
-    snprintf (buff, buffsz, "%s/%s%s%s%s%s", dirprefix,
-        subpath, subpathsep, base, suffix, extension);
+    snprintf (buff, buffsz, "%s/%s%s%s", dirprefix,
+        profpath, base, extension);
   }
   stringTrimChar (buff, '/');
 

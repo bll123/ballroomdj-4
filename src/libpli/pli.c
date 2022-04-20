@@ -25,7 +25,7 @@ pliInit (const char *volpkg, const char *sinkname)
   assert (pli != NULL);
   pli->pliData = NULL;
 
-  pathbldMakePath (dlpath, sizeof (dlpath), "",
+  pathbldMakePath (dlpath, sizeof (dlpath),
       bdjoptGetStr (OPT_M_PLAYER_INTFC),
       sysvarsGetStr (SV_SHLIB_EXT), PATHBLD_MP_EXECDIR);
   pli->dlHandle = dylibLoad (dlpath);

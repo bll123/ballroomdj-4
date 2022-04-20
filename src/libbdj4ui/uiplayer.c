@@ -123,7 +123,7 @@ uiplayerActivate (uiplayer_t *uiplayer)
   uiplayer->statusImg = gtk_image_new ();
   assert (uiplayer->statusImg != NULL);
 
-  pathbldMakePath (tbuff, sizeof (tbuff), "", "button_stop", ".svg",
+  pathbldMakePath (tbuff, sizeof (tbuff), "button_stop", ".svg",
       PATHBLD_MP_IMGDIR);
   image = gtk_image_new_from_file (tbuff);
   uiplayer->stopImg = gtk_image_get_pixbuf (GTK_IMAGE (image));
@@ -137,7 +137,7 @@ uiplayerActivate (uiplayer_t *uiplayer)
   gtk_box_pack_start (GTK_BOX (tbox), uiplayer->statusImg,
       FALSE, FALSE, 0);
 
-  pathbldMakePath (tbuff, sizeof (tbuff), "", "button_play", ".svg",
+  pathbldMakePath (tbuff, sizeof (tbuff), "button_play", ".svg",
       PATHBLD_MP_IMGDIR);
   image = gtk_image_new_from_file (tbuff);
   uiplayer->playImg = gtk_image_get_pixbuf (GTK_IMAGE (image));
@@ -145,7 +145,7 @@ uiplayerActivate (uiplayer_t *uiplayer)
     g_object_ref_sink (G_OBJECT (uiplayer->playImg));
   }
 
-  pathbldMakePath (tbuff, sizeof (tbuff), "", "button_pause", ".svg",
+  pathbldMakePath (tbuff, sizeof (tbuff), "button_pause", ".svg",
       PATHBLD_MP_IMGDIR);
   image = gtk_image_new_from_file (tbuff);
   uiplayer->pauseImg = gtk_image_get_pixbuf (GTK_IMAGE (image));
@@ -325,7 +325,7 @@ uiplayerActivate (uiplayer_t *uiplayer)
   gtk_widget_set_margin_top (uiplayer->repeatButton, 2);
   gtk_widget_set_margin_start (uiplayer->repeatButton, 2);
 
-  pathbldMakePath (tbuff, sizeof (tbuff), "", "button_repeat", ".svg",
+  pathbldMakePath (tbuff, sizeof (tbuff), "button_repeat", ".svg",
       PATHBLD_MP_IMGDIR);
   image = gtk_image_new_from_file (tbuff);
   gtk_button_set_image (GTK_BUTTON (uiplayer->repeatButton), image);
@@ -353,14 +353,14 @@ uiplayerActivate (uiplayer_t *uiplayer)
   gtk_widget_set_margin_top (uiplayer->pauseatendButton, 2);
   gtk_widget_set_margin_start (uiplayer->pauseatendButton, 2);
 
-  pathbldMakePath (tbuff, sizeof (tbuff), "", "led_off", ".svg",
+  pathbldMakePath (tbuff, sizeof (tbuff), "led_off", ".svg",
       PATHBLD_MP_IMGDIR);
   uiplayer->ledoffImg = gtk_image_new_from_file (tbuff);
   if (G_IS_OBJECT (uiplayer->ledoffImg)) {
     g_object_ref_sink (G_OBJECT (uiplayer->ledoffImg));
   }
 
-  pathbldMakePath (tbuff, sizeof (tbuff), "", "led_on", ".svg",
+  pathbldMakePath (tbuff, sizeof (tbuff), "led_on", ".svg",
       PATHBLD_MP_IMGDIR);
   uiplayer->ledonImg = gtk_image_new_from_file (tbuff);
   if (G_IS_OBJECT (uiplayer->ledonImg)) {
@@ -672,7 +672,7 @@ uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args)
   if (uiplayer->repeatImg != NULL) {
     uiplayer->repeatLock = true;
     if (atol (p)) {
-      pathbldMakePath (tbuff, sizeof (tbuff), "", "button_repeat", ".svg",
+      pathbldMakePath (tbuff, sizeof (tbuff), "button_repeat", ".svg",
           PATHBLD_MP_IMGDIR);
       gtk_image_clear (GTK_IMAGE (uiplayer->repeatImg));
       gtk_image_set_from_file (GTK_IMAGE (uiplayer->repeatImg), tbuff);

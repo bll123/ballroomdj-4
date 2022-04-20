@@ -132,7 +132,7 @@ main (int argc, char *argv[])
   listenPort = bdjvarsGetNum (BDJVL_STARTERUI_PORT);
   starter.conn = connInit (ROUTE_STARTERUI);
 
-  pathbldMakePath (tbuff, sizeof (tbuff), "",
+  pathbldMakePath (tbuff, sizeof (tbuff),
       "starterui", ".txt", PATHBLD_MP_USEIDX);
   starter.optiondf = datafileAllocParse ("starterui-opt", DFTYPE_KEY_VAL, tbuff,
       starteruidfkeys, STARTERUI_KEY_MAX, DATAFILE_NO_LOOKUP);
@@ -161,8 +161,9 @@ main (int argc, char *argv[])
   while (progstateShutdownProcess (starter.progstate) != STATE_CLOSED) {
     ;
   }
-  uiutilsSpinboxTextFree (&starter.profilesel);
+
   progstateFree (starter.progstate);
+  logProcEnd (LOG_PROC, "starterui", "");
   logEnd ();
   return status;
 }
@@ -203,7 +204,9 @@ starterClosingCallback (void *udata, programstate_t programState)
     gtk_widget_destroy (starter->window);
   }
 
-  pathbldMakePath (fn, sizeof (fn), "",
+  uiutilsSpinboxTextFree (&starter->profilesel);
+
+  pathbldMakePath (fn, sizeof (fn),
       "starterui", ".txt", PATHBLD_MP_USEIDX);
   datafileSaveKeyVal ("starterui", fn, starteruidfkeys, STARTERUI_KEY_MAX, starter->options);
 
@@ -236,7 +239,7 @@ starterActivate (GApplication *app, gpointer userdata)
   char                imgbuff [MAXPATHLEN];
   char                tbuff [MAXPATHLEN];
 
-  pathbldMakePath (imgbuff, sizeof (imgbuff), "",
+  pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", ".svg", PATHBLD_MP_IMGDIR);
 
   starter->window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
@@ -254,7 +257,7 @@ starterActivate (GApplication *app, gpointer userdata)
   gtk_widget_set_margin_start (vbox, 4);
   gtk_widget_set_margin_end (vbox, 4);
 
-  pathbldMakePath (tbuff, sizeof (tbuff), "", "ballroomdj4", ".svg",
+  pathbldMakePath (tbuff, sizeof (tbuff),  "ballroomdj4", ".svg",
       PATHBLD_MP_IMGDIR);
   widget = gtk_image_new_from_file (tbuff);
   assert (widget != NULL);
@@ -474,7 +477,7 @@ starterGetProfiles (startui_t *starter)
   count = 0;
   for (int i = 0; i < 20; ++i) {
     sysvarsSetNum (SVL_BDJIDX, i);
-    pathbldMakePath (tbuff, sizeof (tbuff), "profiles",
+    pathbldMakePath (tbuff, sizeof (tbuff),
         BDJ_CONFIG_BASEFN, BDJ_CONFIG_EXT, PATHBLD_MP_USEIDX);
     if (fileopFileExists (tbuff)) {
       if (i == starter->currprofile) {

@@ -244,7 +244,7 @@ dbupdateProcessing (void *udata)
       char  tbuff [MAXPATHLEN];
 
       dbClose ();
-      pathbldMakePath (tbuff, sizeof (tbuff), "",
+      pathbldMakePath (tbuff, sizeof (tbuff),
           MUSICDB_TMP_FNAME, MUSICDB_EXT, PATHBLD_MP_NONE);
       fileopDelete (tbuff);
       dbOpen (tbuff);

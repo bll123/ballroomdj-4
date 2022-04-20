@@ -16,7 +16,9 @@ typedef enum {
   PATHBLD_MP_USEIDX      = 0x0400,
 } pathbld_mp_t;
 
-char *        pathbldMakePath (char *buff, size_t buffsz, const char *subpath,
+#define PATH_PROFILES   "profiles"
+
+char *        pathbldMakePath (char *buff, size_t buffsz,
                   const char *base, const char *extension, int flags);
 
 #endif /* INC_PATHBLD_H */

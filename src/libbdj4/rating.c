@@ -31,7 +31,7 @@ ratingAlloc (void)
   ilistidx_t      iteridx;
   char            fname [MAXPATHLEN];
 
-  pathbldMakePath (fname, sizeof (fname), "", "ratings", ".txt", PATHBLD_MP_NONE);
+  pathbldMakePath (fname, sizeof (fname), "ratings", ".txt", PATHBLD_MP_NONE);
   if (! fileopFileExists (fname)) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: rating: missing %s", fname);
     return NULL;

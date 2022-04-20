@@ -32,7 +32,7 @@ statusAlloc (void)
   char        fname [MAXPATHLEN];
 
 
-  pathbldMakePath (fname, sizeof (fname), "", "status", ".txt", PATHBLD_MP_NONE);
+  pathbldMakePath (fname, sizeof (fname), "status", ".txt", PATHBLD_MP_NONE);
   if (! fileopFileExists (fname)) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: status: missing %s", fname);
     return NULL;

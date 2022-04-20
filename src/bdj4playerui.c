@@ -181,7 +181,7 @@ main (int argc, char *argv[])
   listenPort = bdjvarsGetNum (BDJVL_PLAYERUI_PORT);
   plui.conn = connInit (ROUTE_PLAYERUI);
 
-  pathbldMakePath (tbuff, sizeof (tbuff), "",
+  pathbldMakePath (tbuff, sizeof (tbuff),
       "playerui", ".txt", PATHBLD_MP_USEIDX);
   plui.optiondf = datafileAllocParse ("playerui-opt", DFTYPE_KEY_VAL, tbuff,
       playeruidfkeys, PLAYERUI_DFKEY_COUNT, DATAFILE_NO_LOOKUP);
@@ -229,8 +229,8 @@ main (int argc, char *argv[])
   while (progstateShutdownProcess (plui.progstate) != STATE_CLOSED) {
     ;
   }
-  progstateFree (plui.progstate);
 
+  progstateFree (plui.progstate);
   logProcEnd (LOG_PROC, "playerui", "");
   logEnd ();
   return status;
@@ -276,7 +276,7 @@ pluiClosingCallback (void *udata, programstate_t programState)
     gtk_widget_destroy (plui->window);
   }
 
-  pathbldMakePath (fn, sizeof (fn), "",
+  pathbldMakePath (fn, sizeof (fn),
       "playerui", ".txt", PATHBLD_MP_USEIDX);
   datafileSaveKeyVal ("playerui", fn, playeruidfkeys, PLAYERUI_DFKEY_COUNT, plui->options);
 
@@ -336,14 +336,14 @@ pluiActivate (GApplication *app, gpointer userdata)
 
   logProcBegin (LOG_PROC, "pluiActivate");
 
-  pathbldMakePath (imgbuff, sizeof (imgbuff), "",
+  pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", ".svg", PATHBLD_MP_IMGDIR);
-  pathbldMakePath (tbuff, sizeof (tbuff), "", "led_off", ".svg",
+  pathbldMakePath (tbuff, sizeof (tbuff),  "led_off", ".svg",
       PATHBLD_MP_IMGDIR);
   image = gtk_image_new_from_file (tbuff);
   plui->ledoffImg = gtk_image_get_pixbuf (GTK_IMAGE (image));
   g_object_ref (G_OBJECT (plui->ledoffImg));
-  pathbldMakePath (tbuff, sizeof (tbuff), "", "led_on", ".svg",
+  pathbldMakePath (tbuff, sizeof (tbuff),  "led_on", ".svg",
       PATHBLD_MP_IMGDIR);
   image = gtk_image_new_from_file (tbuff);
   plui->ledonImg = gtk_image_get_pixbuf (GTK_IMAGE (image));
@@ -490,7 +490,7 @@ pluiActivate (GApplication *app, gpointer userdata)
     gtk_window_move (GTK_WINDOW (plui->window), x, y);
   }
 
-  pathbldMakePath (imgbuff, sizeof (imgbuff), "",
+  pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", ".png", PATHBLD_MP_IMGDIR);
   osuiSetIcon (imgbuff);
 

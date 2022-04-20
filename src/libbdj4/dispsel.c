@@ -47,7 +47,7 @@ dispselAlloc (void)
     dispsel->df [i] = NULL;
     dispsel->name [i] = NULL;
 
-    pathbldMakePath (fn, sizeof (fn), "profiles",
+    pathbldMakePath (fn, sizeof (fn),
         dispselmap [i].fname, ".txt", PATHBLD_MP_USEIDX);
     if (! fileopFileExists (fn)) {
       fprintf (stderr, "%s does not exist\n", fn);

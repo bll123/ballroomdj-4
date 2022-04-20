@@ -27,7 +27,7 @@ volumeInit (void)
   volume->volumeProcess = NULL;
   volume->volumeDisconnect = NULL;
 
-  pathbldMakePath (dlpath, sizeof (dlpath), "",
+  pathbldMakePath (dlpath, sizeof (dlpath),
       bdjoptGetStr (OPT_M_VOLUME_INTFC),
       sysvarsGetStr (SV_SHLIB_EXT), PATHBLD_MP_EXECDIR);
   volume->dlHandle = dylibLoad (dlpath);

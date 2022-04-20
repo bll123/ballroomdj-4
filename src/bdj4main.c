@@ -810,7 +810,7 @@ mainSendMobileMarqueeData (maindata_t *mainData)
   tag = bdjoptGetStr (OPT_P_MOBILEMQTAG);
   if (tag != NULL && *tag != '\0') {
     if (mainData->mobmqUserkey == NULL) {
-      pathbldMakePath (tbuff, sizeof (tbuff), "",
+      pathbldMakePath (tbuff, sizeof (tbuff),
           "mmq", ".key", PATHBLD_MP_USEIDX);
       mainData->mobmqUserkey = filedataReadAll (tbuff, NULL);
     }
@@ -849,7 +849,7 @@ mainMobilePostCallback (void *userdata, char *resp, size_t len)
     tbuff [2] = '\0';
     mainData->mobmqUserkey = strdup (tbuff);
     /* need to save this for future use */
-    pathbldMakePath (tbuff, sizeof (tbuff), "",
+    pathbldMakePath (tbuff, sizeof (tbuff),
         "mmq", ".key", PATHBLD_MP_USEIDX);
     fh = fopen (tbuff, "w");
     fprintf (fh, "%.*s", (int) len, resp);

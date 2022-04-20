@@ -339,7 +339,7 @@ main (int argc, char * argv[])
   }
 
   if (! havetheme) {
-    pathbldMakePath (buff, sizeof (buff), "",
+    pathbldMakePath (buff, sizeof (buff),
         "theme", ".txt", PATHBLD_MP_NONE);
     if (fileopFileExists (buff)) {
       fh = fopen (buff, "r");
@@ -378,7 +378,7 @@ main (int argc, char * argv[])
   targv [targc++] = "--bdj4";
   targv [targc++] = NULL;
 
-  pathbldMakePath (buff, sizeof (buff), "",
+  pathbldMakePath (buff, sizeof (buff),
       prog, extension, PATHBLD_MP_EXECDIR);
   /* this is necessary on mac os, as otherwise it will use the path     */
   /* from the start of this launcher, and the executable path can not   */

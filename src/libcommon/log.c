@@ -189,7 +189,7 @@ rlogStart (const char *processnm, const char *processtag,
   tmutilDstamp (tdt, sizeof (tdt));
 
   for (logidx_t idx = LOG_ERR; idx < LOG_MAX; ++idx) {
-    pathbldMakePath (tnm, sizeof (tnm), "", logbasenm [idx], LOG_EXTENSION,
+    pathbldMakePath (tnm, sizeof (tnm), logbasenm [idx], LOG_EXTENSION,
         PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
     syslogs [idx] = rlogOpen (tnm, processtag, truncflag);
     syslogs [idx]->level = level;

@@ -48,7 +48,7 @@ START_TEST(procutil_start)
   if (isWindows ()) {
     extension = ".exe";
   }
-  pathbldMakePath (tbuff, sizeof (tbuff), "",
+  pathbldMakePath (tbuff, sizeof (tbuff),
       "chkprocess", extension, PATHBLD_MP_EXECDIR);
   /* if the signal is not ignored, the process goes into a zombie state */
   /* and still exists */
@@ -82,7 +82,7 @@ START_TEST(procutil_kill)
   if (isWindows ()) {
     extension = ".exe";
   }
-  pathbldMakePath (tbuff, sizeof (tbuff), "",
+  pathbldMakePath (tbuff, sizeof (tbuff),
       "chkprocess", extension, PATHBLD_MP_EXECDIR);
   /* if the signal is not ignored, the process goes into a zombie state */
   /* and still exists */

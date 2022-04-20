@@ -33,7 +33,7 @@ uiutilsCreateButton (char *title, char *imagenm,
     char        tbuff [MAXPATHLEN];
 
     gtk_button_set_label (GTK_BUTTON (widget), "");
-    pathbldMakePath (tbuff, sizeof (tbuff), "", imagenm, ".svg",
+    pathbldMakePath (tbuff, sizeof (tbuff), imagenm, ".svg",
         PATHBLD_MP_IMGDIR);
     image = gtk_image_new_from_file (tbuff);
     gtk_button_set_image (GTK_BUTTON (widget), image);

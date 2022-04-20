@@ -239,7 +239,7 @@ procutilStartProcess (bdjmsgroute_t route, char *fname, int detachflag)
   if (isWindows ()) {
     extension = ".exe";
   }
-  pathbldMakePath (tbuff, sizeof (tbuff), "",
+  pathbldMakePath (tbuff, sizeof (tbuff),
       fname, extension, PATHBLD_MP_EXECDIR);
   process = procutilStart (tbuff, sysvarsGetNum (SVL_BDJIDX),
       bdjoptGetNum (OPT_G_DEBUGLVL), detachflag);

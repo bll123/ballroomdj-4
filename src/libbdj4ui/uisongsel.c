@@ -71,7 +71,7 @@ uisongselInit (progstate_t *progstate, conn_t *conn, dispsel_t *dispsel,
       nlistGetStr (options, SONGSEL_SORT_BY));
   uisongsel->sortopt = sortoptAlloc ();
 
-  pathbldMakePath (tbuff, sizeof (tbuff), "profiles",
+  pathbldMakePath (tbuff, sizeof (tbuff),
       "ds-songfilter", ".txt", PATHBLD_MP_USEIDX);
   uisongsel->filterDisplayDf = datafileAllocParse ("uisongsel-filter",
       DFTYPE_KEY_VAL, tbuff, filterdisplaydfkeys, FILTER_DISP_MAX, DATAFILE_NO_LOOKUP);

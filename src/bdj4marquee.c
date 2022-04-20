@@ -184,7 +184,7 @@ main (int argc, char *argv[])
   marquee.mqShowInfo = bdjoptGetNum (OPT_P_MQ_SHOW_INFO);
   marquee.conn = connInit (ROUTE_MARQUEE);
 
-  pathbldMakePath (tbuff, sizeof (tbuff), "",
+  pathbldMakePath (tbuff, sizeof (tbuff),
       "marquee", ".txt", PATHBLD_MP_USEIDX);
   marquee.optiondf = datafileAllocParse ("marquee-opt", DFTYPE_KEY_VAL, tbuff,
       mqdfkeys, MQ_KEY_MAX, DATAFILE_NO_LOOKUP);
@@ -266,7 +266,7 @@ marqueeClosingCallback (void *udata, programstate_t programState)
     gtk_widget_destroy (marquee->window);
   }
 
-  pathbldMakePath (fn, sizeof (fn), "",
+  pathbldMakePath (fn, sizeof (fn),
       "marquee", ".txt", PATHBLD_MP_USEIDX);
   datafileSaveKeyVal ("marquee", fn, mqdfkeys, MQ_KEY_MAX, marquee->options);
 
@@ -301,7 +301,7 @@ marqueeActivate (GApplication *app, gpointer userdata)
 
   logProcBegin (LOG_PROC, "marqueeActivate");
 
-  pathbldMakePath (imgbuff, sizeof (imgbuff), "",
+  pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon_marquee", ".svg", PATHBLD_MP_IMGDIR);
 
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
@@ -450,7 +450,7 @@ marqueeActivate (GApplication *app, gpointer userdata)
 
   progstateLogTime (marquee->progstate, "time-to-start-gui");
 
-  pathbldMakePath (imgbuff, sizeof (imgbuff), "",
+  pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon_marquee", ".png", PATHBLD_MP_IMGDIR);
   osuiSetIcon (imgbuff);
 

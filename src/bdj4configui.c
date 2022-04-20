@@ -556,7 +556,7 @@ main (int argc, char *argv[])
 
   confui.dispsel = dispselAlloc ();
 
-  pathbldMakePath (tbuff, sizeof (tbuff), "",
+  pathbldMakePath (tbuff, sizeof (tbuff),
       "orgopt", ".txt", PATHBLD_MP_NONE);
   orgopt = orgoptAlloc (tbuff);
   tlist = orgoptGetList (orgopt);
@@ -702,7 +702,7 @@ main (int argc, char *argv[])
   listenPort = bdjvarsGetNum (BDJVL_CONFIGUI_PORT);
   confui.conn = connInit (ROUTE_CONFIGUI);
 
-  pathbldMakePath (tbuff, sizeof (tbuff), "",
+  pathbldMakePath (tbuff, sizeof (tbuff),
       "configui", ".txt", PATHBLD_MP_USEIDX);
   confui.optiondf = datafileAllocParse ("configui-opt", DFTYPE_KEY_VAL, tbuff,
       configuidfkeys, CONFUI_KEY_MAX, DATAFILE_NO_LOOKUP);
@@ -770,7 +770,7 @@ confuiStoppingCallback (void *udata, programstate_t programState)
   nlistSetNum (confui->options, CONFUI_POSITION_X, x);
   nlistSetNum (confui->options, CONFUI_POSITION_Y, y);
 
-  pathbldMakePath (fn, sizeof (fn), "",
+  pathbldMakePath (fn, sizeof (fn),
       "configui", ".txt", PATHBLD_MP_USEIDX);
   datafileSaveKeyVal ("configui", fn, configuidfkeys, CONFUI_KEY_MAX, confui->options);
 
@@ -877,7 +877,7 @@ confuiActivate (GApplication *app, gpointer userdata)
 
   logProcBegin (LOG_PROC, "confuiActivate");
 
-  pathbldMakePath (imgbuff, sizeof (imgbuff), "",
+  pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon_config", ".svg", PATHBLD_MP_IMGDIR);
 
   confui->window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
@@ -997,7 +997,7 @@ confuiActivate (GApplication *app, gpointer userdata)
   widget = confuiMakeItemSpinboxText (confui, vbox, sg, _("Fade Type"),
       CONFUI_SPINBOX_FADE_TYPE, OPT_P_FADETYPE,
       bdjoptGetNum (OPT_P_FADETYPE));
-  pathbldMakePath (tbuff, sizeof (tbuff), "", "fades", ".svg",
+  pathbldMakePath (tbuff, sizeof (tbuff),  "fades", ".svg",
       PATHBLD_MP_IMGDIR);
   image = gtk_image_new_from_file (tbuff);
   gtk_widget_set_margin_top (image, 2);
@@ -1559,7 +1559,7 @@ confuiActivate (GApplication *app, gpointer userdata)
     gtk_window_move (GTK_WINDOW (confui->window), x, y);
   }
 
-  pathbldMakePath (imgbuff, sizeof (imgbuff), "",
+  pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", ".png", PATHBLD_MP_IMGDIR);
   osuiSetIcon (imgbuff);
 
@@ -1830,7 +1830,7 @@ confuiPopulateOptions (configui_t *confui)
       sysvarsSetStr (SV_LOCALE, sval);
       snprintf (tbuff, sizeof (tbuff), "%.2s", sval);
       sysvarsSetStr (SV_LOCALE_SHORT, tbuff);
-      pathbldMakePath (tbuff, sizeof (tbuff), "",
+      pathbldMakePath (tbuff, sizeof (tbuff),
           "locale", ".txt", PATHBLD_MP_NONE);
       fileopDelete (tbuff);
 
@@ -1858,7 +1858,7 @@ confuiPopulateOptions (configui_t *confui)
         themechanged) {
       FILE    *fh;
 
-      pathbldMakePath (tbuff, sizeof (tbuff), "",
+      pathbldMakePath (tbuff, sizeof (tbuff),
           "theme", ".txt", PATHBLD_MP_NONE);
       fh = fopen (tbuff, "w");
       sval = bdjoptGetStr (confui->uiitem [i].bdjoptIdx);
@@ -2482,7 +2482,7 @@ confuiLoadHTMLList (configui_t *confui)
   tlist = nlistAlloc ("cu-html-list", LIST_ORDERED, free);
   llist = nlistAlloc ("cu-html-list-l", LIST_ORDERED, free);
 
-  pathbldMakePath (tbuff, sizeof (tbuff), "",
+  pathbldMakePath (tbuff, sizeof (tbuff),
       "html-list", ".txt", PATHBLD_MP_TEMPLATEDIR);
   df = datafileAllocParse ("conf-html-list", DFTYPE_KEY_VAL, tbuff,
       NULL, 0, DATAFILE_NO_LOOKUP);
@@ -2532,7 +2532,7 @@ confuiLoadVolIntfcList (configui_t *confui)
   tlist = nlistAlloc ("cu-volintfc-list", LIST_ORDERED, free);
   llist = nlistAlloc ("cu-volintfc-list-l", LIST_ORDERED, free);
 
-  pathbldMakePath (tbuff, sizeof (tbuff), "",
+  pathbldMakePath (tbuff, sizeof (tbuff),
       "volintfc", ".txt", PATHBLD_MP_TEMPLATEDIR);
   df = datafileAllocParse ("conf-volintfc-list", DFTYPE_INDIRECT, tbuff,
       dfkeys, CONFUI_VOL_MAX, DATAFILE_NO_LOOKUP);
@@ -2587,7 +2587,7 @@ confuiLoadPlayerIntfcList (configui_t *confui)
   tlist = nlistAlloc ("cu-playerintfc-list", LIST_ORDERED, free);
   llist = nlistAlloc ("cu-playerintfc-list-l", LIST_ORDERED, free);
 
-  pathbldMakePath (tbuff, sizeof (tbuff), "",
+  pathbldMakePath (tbuff, sizeof (tbuff),
       "playerintfc", ".txt", PATHBLD_MP_TEMPLATEDIR);
   df = datafileAllocParse ("conf-playerintfc-list", DFTYPE_INDIRECT, tbuff,
       dfkeys, CONFUI_PLAYER_MAX, DATAFILE_NO_LOOKUP);
@@ -2637,7 +2637,7 @@ confuiLoadLocaleList (configui_t *confui)
   tlist = nlistAlloc ("cu-locale-list", LIST_ORDERED, free);
   llist = nlistAlloc ("cu-locale-list-l", LIST_ORDERED, free);
 
-  pathbldMakePath (tbuff, sizeof (tbuff), "",
+  pathbldMakePath (tbuff, sizeof (tbuff),
       "locales", ".txt", PATHBLD_MP_LOCALEDIR);
   df = datafileAllocParse ("conf-locale-list", DFTYPE_KEY_VAL, tbuff,
       NULL, 0, DATAFILE_NO_LOOKUP);
@@ -2960,9 +2960,9 @@ confuiMakeQRCodeFile (configui_t *confui, char *title, char *uri)
   logProcBegin (LOG_PROC, "confuiMakeQRCodeFile");
   qruri = malloc (MAXPATHLEN);
 
-  pathbldMakePath (baseuri, sizeof (baseuri), "",
+  pathbldMakePath (baseuri, sizeof (baseuri),
       "", "", PATHBLD_MP_TEMPLATEDIR);
-  pathbldMakePath (tbuff, sizeof (tbuff), "",
+  pathbldMakePath (tbuff, sizeof (tbuff),
       "qrcode", ".html", PATHBLD_MP_TEMPLATEDIR);
 
   /* this is gross */
@@ -2975,7 +2975,7 @@ confuiMakeQRCodeFile (configui_t *confui, char *title, char *uri)
   data = ndata;
   ndata = filedataReplace (data, &dlen, "#QRCODEURL#", uri);
 
-  pathbldMakePath (tbuff, sizeof (tbuff), "",
+  pathbldMakePath (tbuff, sizeof (tbuff),
       "qrcode", ".html", PATHBLD_MP_TMPDIR);
   fh = fopen (tbuff, "w");
   fwrite (ndata, dlen, 1, fh);

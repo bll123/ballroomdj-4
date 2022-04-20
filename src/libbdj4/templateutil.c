@@ -34,7 +34,7 @@ templateImageCopy (const char *color)
   slistidx_t  iteridx;
   char        *fname;
 
-  pathbldMakePath (tbuff, sizeof (tbuff), "",
+  pathbldMakePath (tbuff, sizeof (tbuff),
       "", "", PATHBLD_MP_TEMPLATEDIR);
 
   dirlist = filemanipBasicDirList (tbuff, ".svg");
@@ -44,9 +44,9 @@ templateImageCopy (const char *color)
       continue;
     }
 
-    pathbldMakePath (from, sizeof (from), "",
+    pathbldMakePath (from, sizeof (from),
         fname, "", PATHBLD_MP_TEMPLATEDIR);
-    pathbldMakePath (to, sizeof (to), "",
+    pathbldMakePath (to, sizeof (to),
         fname, "", PATHBLD_MP_IMGDIR);
 
     templateCopy (from, to, color);
@@ -62,14 +62,14 @@ templateImageLocaleCopy (void)
   char        to [MAXPATHLEN];
   char        *fname;
 
-  pathbldMakePath (tbuff, sizeof (tbuff), "",
+  pathbldMakePath (tbuff, sizeof (tbuff),
       "", "", PATHBLD_MP_TEMPLATEDIR);
 
   /* at this time, only fades.svg has localization in it */
   fname = "fades.svg";
-  pathbldMakePath (from, sizeof (from), "",
+  pathbldMakePath (from, sizeof (from),
       fname, "", PATHBLD_MP_TEMPLATEDIR);
-  pathbldMakePath (to, sizeof (to), "",
+  pathbldMakePath (to, sizeof (to),
       fname, "", PATHBLD_MP_IMGDIR);
   templateCopy (from, to, NULL);
 }
@@ -80,9 +80,9 @@ templateFileCopy (const char *fromfn, const char *tofn)
   char    from [MAXPATHLEN];
   char    to [MAXPATHLEN];
 
-  pathbldMakePath (from, sizeof (from), "",
+  pathbldMakePath (from, sizeof (from),
       fromfn, "", PATHBLD_MP_TEMPLATEDIR);
-  pathbldMakePath (to, sizeof (to), "",
+  pathbldMakePath (to, sizeof (to),
       tofn, "", PATHBLD_MP_NONE);
   templateCopy (from, to, NULL);
 }

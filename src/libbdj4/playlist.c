@@ -76,7 +76,7 @@ playlistLoad (char *fname)
   ilistidx_t    iteridx;
 
 
-  pathbldMakePath (tfn, sizeof (tfn), "", fname, ".pl", PATHBLD_MP_NONE);
+  pathbldMakePath (tfn, sizeof (tfn), fname, ".pl", PATHBLD_MP_NONE);
   if (! fileopFileExists (tfn)) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Missing playlist-pl %s", tfn);
     return NULL;
@@ -95,7 +95,7 @@ playlistLoad (char *fname)
   pl->plinfo = datafileGetList (pl->plinfodf);
   nlistDumpInfo (pl->plinfo);
 
-  pathbldMakePath (tfn, sizeof (tfn), "", fname, ".pldances", PATHBLD_MP_NONE);
+  pathbldMakePath (tfn, sizeof (tfn), fname, ".pldances", PATHBLD_MP_NONE);
   if (! fileopFileExists (tfn)) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Missing playlist-dance %s", tfn);
     playlistFree (pl);
@@ -135,7 +135,7 @@ playlistLoad (char *fname)
   if (type == PLTYPE_MANUAL) {
     char *slfname = nlistGetStr (pl->plinfo, PLAYLIST_MANUAL_LIST_NAME);
     logMsg (LOG_DBG, LOG_IMPORTANT, "manual: load songlist %s", slfname);
-    pathbldMakePath (tfn, sizeof (tfn), "", slfname, ".songlist", PATHBLD_MP_NONE);
+    pathbldMakePath (tfn, sizeof (tfn), slfname, ".songlist", PATHBLD_MP_NONE);
     if (! fileopFileExists (tfn)) {
       logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Missing songlist %s", tfn);
       playlistFree (pl);
@@ -152,7 +152,7 @@ playlistLoad (char *fname)
   if (type == PLTYPE_SEQ) {
     char *seqfname = nlistGetStr (pl->plinfo, PLAYLIST_SEQ_NAME);
     logMsg (LOG_DBG, LOG_IMPORTANT, "sequence: load sequence %s", seqfname);
-    pathbldMakePath (tfn, sizeof (tfn), "", seqfname, ".sequence", PATHBLD_MP_NONE);
+    pathbldMakePath (tfn, sizeof (tfn), seqfname, ".sequence", PATHBLD_MP_NONE);
     if (! fileopFileExists (tfn)) {
       logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Missing sequence %s", tfn);
       playlistFree (pl);
@@ -484,7 +484,7 @@ playlistGetPlaylistList (void)
 
   pnlist = slistAlloc ("playlistlist", LIST_ORDERED, free);
 
-  pathbldMakePath (tfn, sizeof (tfn), "", "", "", PATHBLD_MP_NONE);
+  pathbldMakePath (tfn, sizeof (tfn), "", "", PATHBLD_MP_NONE);
   filelist = filemanipBasicDirList (tfn, ".pl");
 
   slistStartIterator (filelist, &iteridx);

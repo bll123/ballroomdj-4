@@ -20,8 +20,14 @@ if { $::tcl_platform(platform) eq "windows" } {
 }
 
 set suffixlist [list .txt]
+set nprefixlist [list profile00/]
 for { set i 1 } { $i < 20 } { incr i } {
   lappend suffixlist -$i.txt
+  if { $i < 10 } {
+    lappend nprefixlist "profile0${i}/"
+  } else {
+    lappend nprefixlist "profile${i}/"
+  }
 }
 
 set cnm bdj_config
@@ -29,13 +35,20 @@ set nnm bdjconfig
 set mpath $hostname
 set mppath [file join $hostname profiles]
 foreach path [list {} profiles $mpath $mppath] {
-  foreach sfx $suffixlist {
+  foreach sfx $suffixlist pfx $nprefixlist {
     set fn "[file join $bdj3dir $path $cnm]$sfx"
     if { [file exists $fn] } {
-      set nfn "[file join $datatopdir data $path $nnm]$sfx"
-#      puts "   - [file join $path $cnm]$sfx : [file join $path $nnm]$sfx"
+      set tdir $path
+      if { [regexp {profiles} $path] } {
+        set tdir [file dirname $path]
+      } else {
+        set pfx {}
+      }
+
+      set nfn "[file join $datatopdir data $tdir $pfx $nnm].txt"
+
       set ifh [open $fn r]
-      file mkdir [file join $datatopdir data $path]
+      file mkdir [file dirname $nfn]
       set ofh [open $nfn w]
 
       puts $ofh "# BDJ4 [file join $path $nnm]"
