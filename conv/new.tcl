@@ -12,8 +12,7 @@ if { ! [file exists $bdj3dir] || ! [file isdirectory $bdj3dir] } {
 }
 set datatopdir [lindex $argv 1]
 
-puts "cwd: [pwd]"
-foreach fn [list optorg.tcl] {
+foreach fn [list orgopt.txt] {
   set nfn [file join $datatopdir data $fn]
 
   if { ! [file exists templates/$fn] } {

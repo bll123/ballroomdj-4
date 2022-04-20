@@ -34,8 +34,7 @@ templateImageCopy (const char *color)
   slistidx_t  iteridx;
   char        *fname;
 
-  pathbldMakePath (tbuff, sizeof (tbuff),
-      "", "", PATHBLD_MP_TEMPLATEDIR);
+  pathbldMakePath (tbuff, sizeof (tbuff), "", "", PATHBLD_MP_TEMPLATEDIR);
 
   dirlist = filemanipBasicDirList (tbuff, ".svg");
   slistStartIterator (dirlist, &iteridx);
@@ -44,10 +43,8 @@ templateImageCopy (const char *color)
       continue;
     }
 
-    pathbldMakePath (from, sizeof (from),
-        fname, "", PATHBLD_MP_TEMPLATEDIR);
-    pathbldMakePath (to, sizeof (to),
-        fname, "", PATHBLD_MP_IMGDIR);
+    pathbldMakePath (from, sizeof (from), fname, "", PATHBLD_MP_TEMPLATEDIR);
+    pathbldMakePath (to, sizeof (to), fname, "", PATHBLD_MP_IMGDIR);
 
     templateCopy (from, to, color);
   }
@@ -62,15 +59,12 @@ templateImageLocaleCopy (void)
   char        to [MAXPATHLEN];
   char        *fname;
 
-  pathbldMakePath (tbuff, sizeof (tbuff),
-      "", "", PATHBLD_MP_TEMPLATEDIR);
+  pathbldMakePath (tbuff, sizeof (tbuff), "", "", PATHBLD_MP_TEMPLATEDIR);
 
   /* at this time, only fades.svg has localization in it */
   fname = "fades.svg";
-  pathbldMakePath (from, sizeof (from),
-      fname, "", PATHBLD_MP_TEMPLATEDIR);
-  pathbldMakePath (to, sizeof (to),
-      fname, "", PATHBLD_MP_IMGDIR);
+  pathbldMakePath (from, sizeof (from), fname, "", PATHBLD_MP_TEMPLATEDIR);
+  pathbldMakePath (to, sizeof (to), fname, "", PATHBLD_MP_IMGDIR);
   templateCopy (from, to, NULL);
 }
 
@@ -80,11 +74,35 @@ templateFileCopy (const char *fromfn, const char *tofn)
   char    from [MAXPATHLEN];
   char    to [MAXPATHLEN];
 
-  pathbldMakePath (from, sizeof (from),
-      fromfn, "", PATHBLD_MP_TEMPLATEDIR);
-  pathbldMakePath (to, sizeof (to),
-      tofn, "", PATHBLD_MP_NONE);
+  pathbldMakePath (from, sizeof (from), fromfn, "", PATHBLD_MP_TEMPLATEDIR);
+  pathbldMakePath (to, sizeof (to), tofn, "", PATHBLD_MP_NONE);
   templateCopy (from, to, NULL);
+}
+
+void
+templateDisplaySettingsCopy (void)
+{
+  char        tbuff [MAXPATHLEN];
+  char        from [MAXPATHLEN];
+  char        to [MAXPATHLEN];
+  slist_t     *dirlist;
+  slistidx_t  iteridx;
+  char        *fname;
+
+  pathbldMakePath (tbuff, sizeof (tbuff), "", "", PATHBLD_MP_TEMPLATEDIR);
+
+  dirlist = filemanipBasicDirList (tbuff, ".txt");
+  slistStartIterator (dirlist, &iteridx);
+  while ((fname = slistIterateKey (dirlist, &iteridx)) != NULL) {
+    if (strncmp (fname, "ds-", 3) != 0) {
+      continue;
+    }
+
+    pathbldMakePath (from, sizeof (from), fname, "", PATHBLD_MP_TEMPLATEDIR);
+    pathbldMakePath (to, sizeof (to), fname, "", PATHBLD_MP_USEIDX);
+    templateCopy (from, to, NULL);
+  }
+  slistFree (dirlist);
 }
 
 /* internal routines */

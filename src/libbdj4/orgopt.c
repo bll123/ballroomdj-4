@@ -19,12 +19,13 @@
 #include "log.h"
 #include "orgopt.h"
 #include "orgutil.h"
+#include "pathbld.h"
 #include "song.h"
 #include "slist.h"
 #include "tagdef.h"
 
 orgopt_t *
-orgoptAlloc (char *fname)
+orgoptAlloc (void)
 {
   orgopt_t      *orgopt;
   slist_t       *dflist;
@@ -33,18 +34,22 @@ orgoptAlloc (char *fname)
   char          *value;
   char          *p;
   char          dispstr [MAXPATHLEN];
+  char          path [MAXPATHLEN];
+
+  pathbldMakePath (path, sizeof (path),
+      "orgopt", ".txt", PATHBLD_MP_NONE);
 
   tagdefInit ();
 
-  if (! fileopFileExists (fname)) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: org: missing %s", fname);
+  if (! fileopFileExists (path)) {
+    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: org: missing %s", path);
     return NULL;
   }
 
   orgopt = malloc (sizeof (orgopt_t));
   assert (orgopt != NULL);
 
-  orgopt->df = datafileAllocParse ("org", DFTYPE_LIST, fname, NULL, 0,
+  orgopt->df = datafileAllocParse ("org", DFTYPE_LIST, path, NULL, 0,
       DATAFILE_NO_LOOKUP);
   dflist = datafileGetList (orgopt->df);
 
@@ -105,5 +110,8 @@ orgoptFree (orgopt_t *orgopt)
 slist_t *
 orgoptGetList (orgopt_t *orgopt)
 {
+  if (orgopt == NULL) {
+    return NULL;
+  }
   return orgopt->orgList;
 }

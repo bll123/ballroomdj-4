@@ -28,6 +28,7 @@
 #include "progstate.h"
 #include "sockh.h"
 #include "sysvars.h"
+#include "templateutil.h"
 #include "uiutils.h"
 
 typedef struct {
@@ -39,6 +40,7 @@ typedef struct {
   nlist_t         *dispProfileList;
   nlist_t         *profileIdxMap;
   ssize_t         currprofile;
+  ssize_t         newprofile;
   int             maxProfileWidth;
   /* gtk stuff */
   uiutilsspinbox_t  profilesel;
@@ -81,6 +83,8 @@ static void     starterStartConfig (GtkButton *b, gpointer udata);
 static void     starterProcessExit (GtkButton *b, gpointer udata);
 
 static void     starterGetProfiles (startui_t *starter);
+static char     * starterSetProfile (void *udata, int idx);
+static void     starterCheckProfile (startui_t *starter);
 
 
 static int gKillReceived = 0;
@@ -214,6 +218,9 @@ starterClosingCallback (void *udata, programstate_t programState)
   sockhCloseServer (starter->sockserver);
   nlistFree (starter->dispProfileList);
   nlistFree (starter->profileIdxMap);
+  if (starter->optiondf != NULL) {
+    datafileFree (starter->optiondf);
+  }
 
   bdj4shutdown (ROUTE_STARTERUI);
 
@@ -238,6 +245,7 @@ starterActivate (GApplication *app, gpointer userdata)
   GtkWidget           *hbox;
   char                imgbuff [MAXPATHLEN];
   char                tbuff [MAXPATHLEN];
+  int                 x, y;
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", ".svg", PATHBLD_MP_IMGDIR);
@@ -276,7 +284,7 @@ starterActivate (GApplication *app, gpointer userdata)
   widget = uiutilsSpinboxTextCreate (&starter->profilesel, starter);
   uiutilsSpinboxTextSet (&starter->profilesel, starter->currprofile,
       nlistGetCount (starter->dispProfileList),
-      starter->maxProfileWidth, starter->dispProfileList, NULL);
+      starter->maxProfileWidth, starter->dispProfileList, starterSetProfile);
   gtk_widget_set_margin_start (widget, 8);
   gtk_widget_set_halign (widget, GTK_ALIGN_FILL);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
@@ -301,6 +309,12 @@ starterActivate (GApplication *app, gpointer userdata)
   gtk_widget_set_margin_top (widget, 4);
   gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
 
+  x = nlistGetNum (starter->options, STARTERUI_POSITION_X);
+  y = nlistGetNum (starter->options, STARTERUI_POSITION_Y);
+  if (x != -1 && y != -1) {
+    gtk_window_move (GTK_WINDOW (starter->window), x, y);
+  }
+
   gtk_widget_show_all (starter->window);
 }
 
@@ -310,8 +324,6 @@ starterMainLoop (void *tstarter)
   startui_t   *starter = tstarter;
   int         tdone = 0;
   gboolean    cont = TRUE;
-  int         idx;
-  int         profidx;
 
   tdone = sockhProcessMain (starter->sockserver, starterProcessMsg, starter);
   if (tdone || gdone) {
@@ -330,10 +342,6 @@ starterMainLoop (void *tstarter)
     }
     return cont;
   }
-
-  idx = uiutilsSpinboxTextGetValue (&starter->profilesel);
-  profidx = nlistGetNum (starter->profileIdxMap, idx);
-  sysvarsSetNum (SVL_BDJIDX, profidx);
 
   if (starter->processes [ROUTE_PLAYERUI] != NULL &&
       ! connIsConnected (starter->conn, ROUTE_PLAYERUI)) {
@@ -428,6 +436,7 @@ starterStartPlayer (GtkButton *b, gpointer udata)
 {
   startui_t      *starter = udata;
 
+  starterCheckProfile (starter);
   starter->processes [ROUTE_PLAYERUI] = procutilStartProcess (
       ROUTE_PLAYERUI, "bdj4playerui", PROCUTIL_DETACH);
 }
@@ -437,6 +446,7 @@ starterStartManage (GtkButton *b, gpointer udata)
 {
 //  startui_t      *starter = udata;
 
+//  starterCheckProfile (starter);
 //  starter->processes [ROUTE_MANAGEUI] = procutilStartProcess (
 //      ROUTE_MANAGEUI, "bdj4manageui");
 }
@@ -446,6 +456,7 @@ starterStartConfig (GtkButton *b, gpointer udata)
 {
   startui_t      *starter = udata;
 
+  starterCheckProfile (starter);
   starter->processes [ROUTE_CONFIGUI] = procutilStartProcess (
       ROUTE_CONFIGUI, "bdj4configui", PROCUTIL_DETACH);
 }
@@ -467,7 +478,9 @@ starterGetProfiles (startui_t *starter)
   size_t      len;
   nlist_t     *dflist;
   char        *pname;
+  int         availidx = -1;
 
+  starter->newprofile = -1;
   starter->currprofile = sysvarsGetNum (SVL_BDJIDX);
 
   starter->dispProfileList = nlistAlloc ("profile-list", LIST_ORDERED, free);
@@ -475,7 +488,7 @@ starterGetProfiles (startui_t *starter)
   max = 0;
 
   count = 0;
-  for (int i = 0; i < 20; ++i) {
+  for (int i = 0; i < BDJOPT_MAX_PROFILES; ++i) {
     sysvarsSetNum (SVL_BDJIDX, i);
     pathbldMakePath (tbuff, sizeof (tbuff),
         BDJ_CONFIG_BASEFN, BDJ_CONFIG_EXT, PATHBLD_MP_USEIDX);
@@ -496,10 +509,47 @@ starterGetProfiles (startui_t *starter)
         datafileFree (df);
       }
       ++count;
+    } else if (availidx == -1) {
+      availidx = i;
     }
   }
 
+  nlistSetStr (starter->dispProfileList, count, _("New Profile"));
+  nlistSetNum (starter->profileIdxMap, count, availidx);
+  starter->newprofile = availidx;
+  len = strlen (nlistGetStr (starter->dispProfileList, count));
+  max = len > max ? len : max;
   starter->maxProfileWidth = (int) max;
   sysvarsSetNum (SVL_BDJIDX, starter->currprofile);
 }
 
+static char *
+starterSetProfile (void *udata, int idx)
+{
+  startui_t *starter = udata;
+  char      *disp;
+  int       profidx;
+
+  profidx = nlistGetNum (starter->profileIdxMap, idx);
+  sysvarsSetNum (SVL_BDJIDX, profidx);
+  disp = nlistGetStr (starter->dispProfileList, idx);
+  return disp;
+}
+
+static void
+starterCheckProfile (startui_t *starter)
+{
+  if (sysvarsGetNum (SVL_BDJIDX) == starter->newprofile) {
+    char  tbuff [100];
+    int   profidx;
+
+    bdjoptInit ();
+    profidx = sysvarsGetNum (SVL_BDJIDX);
+    snprintf (tbuff, sizeof (tbuff), "%s %d", _("New Profile"), profidx);
+    bdjoptSetStr (OPT_P_PROFILENAME, tbuff);
+    bdjoptSave ();
+    templateDisplaySettingsCopy ();
+    /* do not re-run the new profile init */
+    starter->newprofile = -1;
+  }
+}

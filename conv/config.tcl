@@ -125,6 +125,10 @@ foreach path [list {} profiles $mpath $mppath] {
         if { $key eq "SHOWBPM" } { set key "BPM" }
         if { $key eq "PLAYERQLEN0" } { set key "PLAYERQLEN" }
         if { $key eq "MUSICDIR" } { set key DIRMUSIC }
+        if { $key eq "UIFONT" } {
+          regsub -all "\{" $value {} value
+          regsub -all "\}" $value {} value
+        }
         if { $key eq "LISTINGFONTSIZE" } {
           set key LISTINGFONT
           set value {}

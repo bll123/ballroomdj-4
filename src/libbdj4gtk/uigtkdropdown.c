@@ -171,7 +171,6 @@ uiutilsDropDownSetList (uiutilsdropdown_t *dropdown, slist_t *list,
     slistSetNum (dropdown->strIndexMap, strval, internalidx);
 
     gtk_list_store_append (store, &iter);
-    /* gtk does not leave room for the scrollbar */
     snprintf (tbuff, sizeof (tbuff), "%-*s",
         slistGetMaxKeyWidth (list), dispval);
     gtk_list_store_set (store, &iter,
@@ -244,7 +243,6 @@ uiutilsDropDownSetNumList (uiutilsdropdown_t *dropdown, slist_t *list,
     nlistSetNum (dropdown->numIndexMap, idx, internalidx);
 
     gtk_list_store_append (store, &iter);
-    /* gtk does not leave room for the scrollbar */
     snprintf (tbuff, sizeof (tbuff), "%-*s",
         slistGetMaxKeyWidth (list), dispval);
     gtk_list_store_set (store, &iter,

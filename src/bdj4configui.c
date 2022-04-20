@@ -556,9 +556,8 @@ main (int argc, char *argv[])
 
   confui.dispsel = dispselAlloc ();
 
-  pathbldMakePath (tbuff, sizeof (tbuff),
-      "orgopt", ".txt", PATHBLD_MP_NONE);
-  orgopt = orgoptAlloc (tbuff);
+  orgopt = orgoptAlloc ();
+  assert (orgopt != NULL);
   tlist = orgoptGetList (orgopt);
 
   confui.uiitem [CONFUI_COMBOBOX_AO_PATHFMT].list = tlist;

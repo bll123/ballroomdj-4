@@ -93,8 +93,19 @@ typedef enum {
   OPTTYPE_MACH_PROF
 } bdjopttype_t;
 
+typedef struct {
+  ssize_t       currprofile;
+  datafile_t    *df;
+  nlist_t       *bdjoptList;
+  char          *globalFname;
+  char          *profileFname;
+  char          *machineFname;
+  char          *machineProfileFname;
+} bdjopt_t;
+
 #define BDJ_CONFIG_BASEFN   "bdjconfig"
 #define BDJ_CONFIG_EXT      ".txt"
+#define BDJOPT_MAX_PROFILES 20
 
 extern datafilekey_t  bdjoptprofiledfkeys[];
 extern int            bdjoptprofiledfcount;
