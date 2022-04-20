@@ -148,7 +148,7 @@ main (int argc, char *argv[])
 
   starter.sockserver = sockhStartServer (listenPort);
 
-  uiutilsInitGtkLog ();
+  uiutilsInitUILog ();
   gtk_init (&argc, NULL);
   uifont = bdjoptGetStr (OPT_MP_UIFONT);
   uiutilsSetUIFont (uifont);

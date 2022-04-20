@@ -15,12 +15,22 @@
 #include "bdj4playerui.h"
 #include "bdjopt.h"
 #include "bdjvarsdf.h"
+#include "datafile.h"
 #include "genre.h"
 #include "log.h"
+#include "pathbld.h"
 #include "songfilter.h"
 #include "uimusicq.h"
 #include "uisongsel.h"
 #include "uiutils.h"
+
+static datafilekey_t filterdisplaydfkeys [FILTER_DISP_MAX] = {
+  { "DANCELEVEL",     FILTER_DISP_DANCELEVEL,      VALUE_NUM, convBoolean, -1 },
+  { "FAVORITE",       FILTER_DISP_FAVORITE,        VALUE_NUM, convBoolean, -1 },
+  { "GENRE",          FILTER_DISP_GENRE,           VALUE_NUM, convBoolean, -1 },
+  { "STATUS",         FILTER_DISP_STATUS,          VALUE_NUM, convBoolean, -1 },
+  { "STATUSPLAYABLE", FILTER_DISP_STATUSPLAYABLE,  VALUE_NUM, convBoolean, -1 },
+};
 
 static void uisongselSongfilterSetDance (uisongsel_t *uisongsel, ssize_t idx);
 
@@ -28,7 +38,8 @@ uisongsel_t *
 uisongselInit (progstate_t *progstate, conn_t *conn, dispsel_t *dispsel,
     nlist_t *options, songfilterpb_t filterFlags)
 {
-  uisongsel_t    *uisongsel;
+  uisongsel_t   *uisongsel;
+  char          tbuff [MAXPATHLEN];
 
   logProcBegin (LOG_PROC, "uisongselInit");
 
@@ -41,16 +52,11 @@ uisongselInit (progstate_t *progstate, conn_t *conn, dispsel_t *dispsel,
   uisongsel->progstate = progstate;
   uisongsel->conn = conn;
   uisongsel->dispsel = dispsel;
-  uisongsel->maxRows = 0;
-  uisongsel->idxStart = 0;
-  uisongsel->createRowProcessFlag = false;
-  uisongsel->createRowFlag = false;
-  uisongsel->dfilterCount = (double) dbCount ();
-  uisongsel->lastTreeSize = 0;
-  uisongsel->lastRowHeight = 0.0;
-  uisongsel->danceIdx = -1;
+  uisongsel->filterDisplaySel = NULL;
   uisongsel->options = options;
-  uisongsel->favColumn = NULL;
+  uisongsel->idxStart = 0;
+  uisongsel->danceIdx = -1;
+  uisongsel->dfilterCount = (double) dbCount ();
   uiutilsDropDownInit (&uisongsel->dancesel);
   uiutilsDropDownInit (&uisongsel->sortbysel);
   uiutilsEntryInit (&uisongsel->searchentry, 30, 100);
@@ -65,9 +71,13 @@ uisongselInit (progstate_t *progstate, conn_t *conn, dispsel_t *dispsel,
       nlistGetStr (options, SONGSEL_SORT_BY));
   uisongsel->sortopt = sortoptAlloc ();
 
-  // ### FIX load last option/etc settings from datafile.
+  pathbldMakePath (tbuff, sizeof (tbuff), "profiles",
+      "ds-songfilter", ".txt", PATHBLD_MP_USEIDX);
+  uisongsel->filterDisplayDf = datafileAllocParse ("uisongsel-filter",
+      DFTYPE_KEY_VAL, tbuff, filterdisplaydfkeys, FILTER_DISP_MAX, DATAFILE_NO_LOOKUP);
+  uisongsel->filterDisplaySel = datafileGetList (uisongsel->filterDisplayDf);
 
-  uisongsel->filterDialog = NULL;
+  uisongselUIInit (uisongsel);
 
   logProcEnd (LOG_PROC, "uisongselInit", "");
   return uisongsel;
@@ -83,6 +93,9 @@ uisongselFree (uisongsel_t *uisongsel)
     if (uisongsel->songfilter != NULL) {
       songfilterFree (uisongsel->songfilter);
     }
+    if (uisongsel->filterDisplayDf != NULL) {
+      datafileFree (uisongsel->filterDisplayDf);
+    }
     uiutilsDropDownFree (&uisongsel->dancesel);
     uiutilsDropDownFree (&uisongsel->sortbysel);
     uiutilsEntryFree (&uisongsel->searchentry);
@@ -93,8 +106,10 @@ uisongselFree (uisongsel_t *uisongsel)
     uiutilsSpinboxTextFree (&uisongsel->filterstatussel);
     uiutilsSpinboxTextFree (&uisongsel->filterfavoritesel);
     sortoptFree (uisongsel->sortopt);
+    uisongselUIFree (uisongsel);
     free (uisongsel);
   }
+
   logProcEnd (LOG_PROC, "uisongselFree", "");
 }
 
@@ -263,23 +278,12 @@ char *
 uisongselFavoriteGet (void *udata, int idx)
 {
   uisongsel_t         *uisongsel = udata;
-  char                tbuff [100];
-  char                tmp [40];
   songfavoriteinfo_t  *favorite;
 
   logProcBegin (LOG_PROC, "uisongselFavoriteGet");
 
   favorite = songGetFavorite (idx);
-  if (strcmp (favorite->color, "") != 0) {
-    snprintf (tbuff, sizeof (tbuff),
-        "spinbutton { color: %s; } ", favorite->color);
-    uiutilsSetCss (uisongsel->filterfavoritesel.spinbox, tbuff);
-  } else {
-    uiutilsGetForegroundColor (uisongsel->songselTree, tmp, sizeof (tmp));
-    snprintf (tbuff, sizeof (tbuff),
-        "spinbutton { color: %s; } ", tmp);
-    uiutilsSetCss (uisongsel->filterfavoritesel.spinbox, tbuff);
-  }
+  uisongselSetFavoriteForeground (uisongsel, favorite->color);
   logProcEnd (LOG_PROC, "uisongselFavoriteGet", "");
   return favorite->dispStr;
 }
@@ -314,10 +318,12 @@ void
 uisongselGenreSelect (uisongsel_t *uisongsel, ssize_t idx)
 {
   logProcBegin (LOG_PROC, "uisongselGenreSelect");
-  if (idx >= 0) {
-    songfilterSetNum (uisongsel->songfilter, SONG_FILTER_GENRE, idx);
-  } else {
-    songfilterClear (uisongsel->songfilter, SONG_FILTER_GENRE);
+  if (nlistGetNum (uisongsel->filterDisplaySel, FILTER_DISP_GENRE)) {
+    if (idx >= 0) {
+      songfilterSetNum (uisongsel->songfilter, SONG_FILTER_GENRE, idx);
+    } else {
+      songfilterClear (uisongsel->songfilter, SONG_FILTER_GENRE);
+    }
   }
   logProcEnd (LOG_PROC, "uisongselGenreSelect", "");
 }

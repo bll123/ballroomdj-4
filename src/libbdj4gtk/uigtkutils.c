@@ -122,7 +122,7 @@ uiutilsSetUIFont (char *uifont)
 }
 
 void
-uiutilsInitGtkLog (void)
+uiutilsInitUILog (void)
 {
   g_log_set_writer_func (uiutilsGtkLogger, NULL, NULL);
 }

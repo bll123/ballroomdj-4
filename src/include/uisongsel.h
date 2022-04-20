@@ -16,22 +16,30 @@
 #include "status.h"
 #include "uiutils.h"
 
+enum {
+  FILTER_DISP_GENRE,
+  FILTER_DISP_DANCELEVEL,
+  FILTER_DISP_STATUS,
+  FILTER_DISP_FAVORITE,
+  FILTER_DISP_STATUSPLAYABLE,
+  FILTER_DISP_MAX,
+};
+
 typedef struct {
   progstate_t       *progstate;
   conn_t            *conn;
-  int               maxRows;
-  int               lastTreeSize;
-  double            lastRowHeight;
   ssize_t           idxStart;
   ilistidx_t        danceIdx;
-  double            dfilterCount;
   songfilter_t      *songfilter;
   rating_t          *ratings;
   level_t           *levels;
   status_t          *status;
   nlist_t           *options;
+  datafile_t        *filterDisplayDf;
+  nlist_t           *filterDisplaySel;
   sortopt_t         *sortopt;
   dispsel_t         *dispsel;
+  double            dfilterCount;
   /* filter data */
   uiutilsdropdown_t sortbysel;
   uiutilsdropdown_t filterdancesel;
@@ -43,16 +51,8 @@ typedef struct {
   uiutilsspinbox_t  filterfavoritesel;
   /* song selection tab */
   uiutilsdropdown_t dancesel;
-  GtkWidget         *parentwin;
-  GtkWidget         *vbox;
-  GtkWidget         *songselTree;
-  GtkWidget         *songselScrollbar;
-  GtkEventController  *scrollController;
-  GtkTreeViewColumn   * favColumn;
-  GtkWidget         *filterDialog;
-  /* internal flags */
-  bool              createRowProcessFlag : 1;
-  bool              createRowFlag : 1;
+  /* widget data */
+  void              *uiWidgetData;
 } uisongsel_t;
 
 /* uisongsel.c */
@@ -77,9 +77,12 @@ void  uisongselCreateGenreList (uisongsel_t *uisongsel);
 
 
 /* uisongselgtk.c */
+void      uisongselUIInit (uisongsel_t *uisongsel);
+void      uisongselUIFree (uisongsel_t *uisongsel);
 GtkWidget * uisongselActivate (uisongsel_t *uisongsel, GtkWidget *parentwin);
 void      uisongselClearData (uisongsel_t *uisongsel);
 void      uisongselPopulateData (uisongsel_t *uisongsel);
+void      uisongselSetFavoriteForeground (uisongsel_t *uisongsel, char *color);
 
 #endif /* INC_UISONGSEL_H */
 

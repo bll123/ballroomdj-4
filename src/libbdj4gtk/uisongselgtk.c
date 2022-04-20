@@ -39,6 +39,20 @@ enum {
 
 #define STORE_ROWS     60
 
+typedef struct {
+  GtkWidget           *parentwin;
+  GtkWidget           *vbox;
+  GtkWidget           *songselTree;
+  GtkWidget           *songselScrollbar;
+  GtkEventController  *scrollController;
+  GtkTreeViewColumn   *favColumn;
+  GtkWidget           *filterDialog;
+  /* other data */
+  int               lastTreeSize;
+  double            lastRowHeight;
+  int               maxRows;
+} uisongselgtk_t;
+
 static void uisongselInitializeStore (uisongsel_t *uisongsel);
 static void uisongselCreateRows (uisongsel_t *uisongsel);
 
@@ -67,9 +81,39 @@ static void uisongselGenreSelectHandler (GtkTreeView *tv, GtkTreePath *path,
 static void uisongselDanceSelectSignal (GtkTreeView *tv, GtkTreePath *path,
     GtkTreeViewColumn *column, gpointer udata);
 
+void
+uisongselUIInit (uisongsel_t *uisongsel)
+{
+  uisongselgtk_t  *uiw;
+
+  uiw = malloc (sizeof (uisongselgtk_t));
+  uiw->parentwin = NULL;
+  uiw->vbox = NULL;
+  uiw->songselTree = NULL;
+  uiw->songselScrollbar = NULL;
+  uiw->scrollController = NULL;
+  uiw->favColumn = NULL;
+  uiw->filterDialog = NULL;
+  uiw->lastTreeSize = 0;
+  uiw->lastRowHeight = 0.0;
+  uiw->maxRows = 0;
+  uisongsel->uiWidgetData = uiw;
+
+}
+
+void
+uisongselUIFree (uisongsel_t *uisongsel)
+{
+  if (uisongsel->uiWidgetData != NULL) {
+    free (uisongsel->uiWidgetData);
+    uisongsel->uiWidgetData = NULL;
+  }
+}
+
 GtkWidget *
 uisongselActivate (uisongsel_t *uisongsel, GtkWidget *parentwin)
 {
+  uisongselgtk_t    *uiw;
   GtkWidget         *hbox;
   GtkWidget         *vbox;
   GtkWidget         *widget;
@@ -78,17 +122,18 @@ uisongselActivate (uisongsel_t *uisongsel, GtkWidget *parentwin)
 
   logProcBegin (LOG_PROC, "uisongselActivate");
 
-  uisongsel->parentwin = parentwin;
+  uiw = uisongsel->uiWidgetData;
+  uiw->parentwin = parentwin;
 
-  uisongsel->vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
-  assert (uisongsel->vbox != NULL);
-  gtk_widget_set_hexpand (uisongsel->vbox, TRUE);
-  gtk_widget_set_vexpand (uisongsel->vbox, TRUE);
+  uiw->vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+  assert (uiw->vbox != NULL);
+  gtk_widget_set_hexpand (uiw->vbox, TRUE);
+  gtk_widget_set_vexpand (uiw->vbox, TRUE);
 
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   assert (hbox != NULL);
   gtk_widget_set_hexpand (hbox, TRUE);
-  gtk_box_pack_start (GTK_BOX (uisongsel->vbox), hbox,
+  gtk_box_pack_start (GTK_BOX (uiw->vbox), hbox,
       FALSE, FALSE, 0);
 
   /* CONTEXT: queue a song to be played */
@@ -113,18 +158,18 @@ uisongselActivate (uisongsel_t *uisongsel, GtkWidget *parentwin)
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   assert (hbox != NULL);
   gtk_widget_set_vexpand (hbox, TRUE);
-  gtk_box_pack_start (GTK_BOX (uisongsel->vbox), hbox,
+  gtk_box_pack_start (GTK_BOX (uiw->vbox), hbox,
       TRUE, TRUE, 0);
 
   adjustment = gtk_adjustment_new (0.0, 0.0, uisongsel->dfilterCount, 1.0, 10.0, 10.0);
-  uisongsel->songselScrollbar = gtk_scrollbar_new (GTK_ORIENTATION_VERTICAL, adjustment);
-  assert (uisongsel->songselScrollbar != NULL);
-  gtk_widget_set_vexpand (uisongsel->songselScrollbar, TRUE);
-  uiutilsSetCss (uisongsel->songselScrollbar,
+  uiw->songselScrollbar = gtk_scrollbar_new (GTK_ORIENTATION_VERTICAL, adjustment);
+  assert (uiw->songselScrollbar != NULL);
+  gtk_widget_set_vexpand (uiw->songselScrollbar, TRUE);
+  uiutilsSetCss (uiw->songselScrollbar,
       "scrollbar, scrollbar slider { min-width: 9px; } ");
-  gtk_box_pack_end (GTK_BOX (hbox), uisongsel->songselScrollbar,
+  gtk_box_pack_end (GTK_BOX (hbox), uiw->songselScrollbar,
       FALSE, FALSE, 0);
-  g_signal_connect (uisongsel->songselScrollbar, "change-value",
+  g_signal_connect (uiw->songselScrollbar, "change-value",
       G_CALLBACK (uisongselScroll), uisongsel);
 
   vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
@@ -137,38 +182,38 @@ uisongselActivate (uisongsel_t *uisongsel, GtkWidget *parentwin)
   gtk_box_pack_start (GTK_BOX (vbox), widget,
       FALSE, FALSE, 0);
 
-  uisongsel->songselTree = uiutilsCreateTreeView ();
-  assert (uisongsel->songselTree != NULL);
+  uiw->songselTree = uiutilsCreateTreeView ();
+  assert (uiw->songselTree != NULL);
 
-  gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (uisongsel->songselTree), TRUE);
-  gtk_widget_set_halign (uisongsel->songselTree, GTK_ALIGN_FILL);
-  gtk_widget_set_hexpand (uisongsel->songselTree, TRUE);
-  gtk_widget_set_vexpand (uisongsel->songselTree, TRUE);
+  gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (uiw->songselTree), TRUE);
+  gtk_widget_set_halign (uiw->songselTree, GTK_ALIGN_FILL);
+  gtk_widget_set_hexpand (uiw->songselTree, TRUE);
+  gtk_widget_set_vexpand (uiw->songselTree, TRUE);
 
-  adjustment = gtk_scrollable_get_vadjustment (GTK_SCROLLABLE (uisongsel->songselTree));
+  adjustment = gtk_scrollable_get_vadjustment (GTK_SCROLLABLE (uiw->songselTree));
   gtk_adjustment_set_upper (adjustment, uisongsel->dfilterCount);
-  uisongsel->scrollController =
-      gtk_event_controller_scroll_new (uisongsel->songselTree,
+  uiw->scrollController =
+      gtk_event_controller_scroll_new (uiw->songselTree,
       GTK_EVENT_CONTROLLER_SCROLL_VERTICAL |
       GTK_EVENT_CONTROLLER_SCROLL_DISCRETE);
-  gtk_widget_add_events (uisongsel->songselTree, GDK_SCROLL_MASK);
-  gtk_container_add (GTK_CONTAINER (widget), uisongsel->songselTree);
-  g_signal_connect (uisongsel->songselTree, "row-activated",
+  gtk_widget_add_events (uiw->songselTree, GDK_SCROLL_MASK);
+  gtk_container_add (GTK_CONTAINER (widget), uiw->songselTree);
+  g_signal_connect (uiw->songselTree, "row-activated",
       G_CALLBACK (uisongselCheckFavChgSignal), uisongsel);
-  g_signal_connect (uisongsel->songselTree, "scroll-event",
+  g_signal_connect (uiw->songselTree, "scroll-event",
       G_CALLBACK (uisongselScrollEvent), uisongsel);
 
-  gtk_event_controller_scroll_new (uisongsel->songselTree,
+  gtk_event_controller_scroll_new (uiw->songselTree,
       GTK_EVENT_CONTROLLER_SCROLL_VERTICAL);
 
   sellist = dispselGetList (uisongsel->dispsel, DISP_SEL_REQUEST);
-  uisongsel->favColumn = uiutilsAddDisplayColumns (
-      uisongsel->songselTree, sellist, SONGSEL_COL_MAX,
+  uiw->favColumn = uiutilsAddDisplayColumns (
+      uiw->songselTree, sellist, SONGSEL_COL_MAX,
       SONGSEL_COL_FONT, SONGSEL_COL_ELLIPSIZE);
 
   uisongselInitializeStore (uisongsel);
   /* pre-populate so that the number of displayable rows can be calculated */
-  uisongsel->maxRows = STORE_ROWS;
+  uiw->maxRows = STORE_ROWS;
   uisongselPopulateData (uisongsel);
 
   uisongselCreateRows (uisongsel);
@@ -177,21 +222,23 @@ uisongselActivate (uisongsel_t *uisongsel, GtkWidget *parentwin)
 
   uiutilsDropDownSelectionSetNum (&uisongsel->dancesel, -1);
 
-  g_signal_connect (uisongsel->songselTree, "size-allocate",
+  g_signal_connect (uiw->songselTree, "size-allocate",
       G_CALLBACK (uisongselProcessTreeSize), uisongsel);
 
   logProcEnd (LOG_PROC, "uisongselActivate", "");
-  return uisongsel->vbox;
+  return uiw->vbox;
 }
 
 void
 uisongselClearData (uisongsel_t *uisongsel)
 {
+  uisongselgtk_t      * uiw;
   GtkTreeModel        * model = NULL;
 
   logProcBegin (LOG_PROC, "uisongselClearData");
 
-  model = gtk_tree_view_get_model (GTK_TREE_VIEW (uisongsel->songselTree));
+  uiw = uisongsel->uiWidgetData;
+  model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiw->songselTree));
   gtk_list_store_clear (GTK_LIST_STORE (model));
   /* having cleared the list, the rows must be re-created */
   uisongselCreateRows (uisongsel);
@@ -201,6 +248,7 @@ uisongselClearData (uisongsel_t *uisongsel)
 void
 uisongselPopulateData (uisongsel_t *uisongsel)
 {
+  uisongselgtk_t      * uiw;
   GtkTreeModel        * model = NULL;
   GtkTreeIter         iter;
   GtkAdjustment       *adjustment;
@@ -216,16 +264,17 @@ uisongselPopulateData (uisongsel_t *uisongsel)
   slist_t             *sellist;
 
   logProcBegin (LOG_PROC, "uisongselPopulateData");
+  uiw = uisongsel->uiWidgetData;
   listingFont = bdjoptGetStr (OPT_MP_LISTING_FONT);
 
-  adjustment = gtk_range_get_adjustment (GTK_RANGE (uisongsel->songselScrollbar));
+  adjustment = gtk_range_get_adjustment (GTK_RANGE (uiw->songselScrollbar));
   gtk_adjustment_set_upper (adjustment, uisongsel->dfilterCount);
 
-  model = gtk_tree_view_get_model (GTK_TREE_VIEW (uisongsel->songselTree));
+  model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiw->songselTree));
 
   count = 0;
   idx = uisongsel->idxStart;
-  while (count < uisongsel->maxRows) {
+  while (count < uiw->maxRows) {
     snprintf (tbuff, sizeof (tbuff), "%d", count);
     if (gtk_tree_model_get_iter_from_string (model, &iter, tbuff)) {
       dbidx = songfilterGetByIdx (uisongsel->songfilter, idx);
@@ -234,7 +283,7 @@ uisongselPopulateData (uisongsel_t *uisongsel)
         favorite = songGetFavoriteData (song);
         color = favorite->color;
         if (strcmp (color, "") == 0) {
-          uiutilsGetForegroundColor (uisongsel->songselTree, tmp, sizeof (tmp));
+          uiutilsGetForegroundColor (uiw->songselTree, tmp, sizeof (tmp));
           color = tmp;
         }
 
@@ -260,11 +309,33 @@ uisongselPopulateData (uisongsel_t *uisongsel)
   logProcEnd (LOG_PROC, "uisongselPopulateData", "");
 }
 
+void
+uisongselSetFavoriteForeground (uisongsel_t *uisongsel, char *color)
+{
+  uisongselgtk_t      *uiw;
+  char                tbuff [100];
+  char                tmp [40];
+
+  uiw = uisongsel->uiWidgetData;
+
+  if (strcmp (color, "") != 0) {
+    snprintf (tbuff, sizeof (tbuff),
+        "spinbutton { color: %s; } ", color);
+    uiutilsSetCss (uisongsel->filterfavoritesel.spinbox, tbuff);
+  } else {
+    uiutilsGetForegroundColor (uiw->songselTree, tmp, sizeof (tmp));
+    snprintf (tbuff, sizeof (tbuff),
+        "spinbutton { color: %s; } ", tmp);
+    uiutilsSetCss (uisongsel->filterfavoritesel.spinbox, tbuff);
+  }
+}
+
 /* internal routines */
 
 static void
 uisongselInitializeStore (uisongsel_t *uisongsel)
 {
+  uisongselgtk_t      * uiw;
   GtkListStore      *store = NULL;
   GType             *songselstoretypes;
   int               colcount = 0;
@@ -272,6 +343,7 @@ uisongselInitializeStore (uisongsel_t *uisongsel)
 
   logProcBegin (LOG_PROC, "uisongselInitializeStore");
 
+  uiw = uisongsel->uiWidgetData;
   songselstoretypes = malloc (sizeof (GType) * SONGSEL_COL_MAX);
   colcount = 0;
   /* attributes ellipsize/align/font*/
@@ -289,21 +361,21 @@ uisongselInitializeStore (uisongsel_t *uisongsel)
   assert (store != NULL);
   free (songselstoretypes);
 
-  gtk_tree_view_set_model (GTK_TREE_VIEW (uisongsel->songselTree), GTK_TREE_MODEL (store));
-  uisongsel->createRowProcessFlag = true;
-  uisongsel->createRowFlag = true;
+  gtk_tree_view_set_model (GTK_TREE_VIEW (uiw->songselTree), GTK_TREE_MODEL (store));
   logProcEnd (LOG_PROC, "uisongselInitializeStore", "");
 }
 
 static void
 uisongselCreateRows (uisongsel_t *uisongsel)
 {
+  uisongselgtk_t      * uiw;
   GtkTreeModel      *model = NULL;
   GtkTreeIter       iter;
 
   logProcBegin (LOG_PROC, "uisongselCreateRows");
 
-  model = gtk_tree_view_get_model (GTK_TREE_VIEW (uisongsel->songselTree));
+  uiw = uisongsel->uiWidgetData;
+  model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiw->songselTree));
   /* enough pre-allocated rows are needed so that if the windows is */
   /* maximized and the font size is not large, enough rows are available */
   /* to be displayed */
@@ -319,6 +391,7 @@ uisongselCreateRows (uisongsel_t *uisongsel)
 static void
 uisongselQueueProcessSignal (GtkButton *b, gpointer udata)
 {
+  uisongselgtk_t      * uiw;
   uisongsel_t       * uisongsel = udata;
   GtkTreeSelection  * sel;
   GtkTreeModel      * model = NULL;
@@ -328,7 +401,8 @@ uisongselQueueProcessSignal (GtkButton *b, gpointer udata)
 
   logProcBegin (LOG_PROC, "uisongselQueueProcessSignal");
 
-  sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (uisongsel->songselTree));
+  uiw = uisongsel->uiWidgetData;
+  sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (uiw->songselTree));
   count = gtk_tree_selection_count_selected_rows (sel);
   if (count != 1) {
     logProcEnd (LOG_PROC, "uisongselQueueProcess", "count != 1");
@@ -346,22 +420,24 @@ uisongselQueueProcessSignal (GtkButton *b, gpointer udata)
 static void
 uisongselFilterDialog (GtkButton *b, gpointer udata)
 {
+  uisongselgtk_t      * uiw;
   uisongsel_t * uisongsel = udata;
   gint        x, y;
 
   logProcBegin (LOG_PROC, "uisongselFilterDialog");
 
-  if (uisongsel->filterDialog == NULL) {
+  uiw = uisongsel->uiWidgetData;
+  if (uiw->filterDialog == NULL) {
     uisongselCreateFilterDialog (uisongsel);
   }
 
   uisongselInitFilterDisplay (uisongsel);
-  gtk_widget_show_all (uisongsel->filterDialog);
+  gtk_widget_show_all (uiw->filterDialog);
 
   x = nlistGetNum (uisongsel->options, SONGSEL_FILTER_POSITION_X);
   y = nlistGetNum (uisongsel->options, SONGSEL_FILTER_POSITION_Y);
   if (x != -1 && y != -1) {
-    gtk_window_move (GTK_WINDOW (uisongsel->filterDialog), x, y);
+    gtk_window_move (GTK_WINDOW (uiw->filterDialog), x, y);
   }
   logProcEnd (LOG_PROC, "uisongselFilterDialog", "");
 }
@@ -382,19 +458,21 @@ static gboolean
 uisongselScroll (GtkRange *range, GtkScrollType scrolltype,
     gdouble value, gpointer udata)
 {
+  uisongselgtk_t      * uiw;
   uisongsel_t   *uisongsel = udata;
   double        start;
 
   logProcBegin (LOG_PROC, "uisongselScroll");
 
+  uiw = uisongsel->uiWidgetData;
   if (value < 0 || value > uisongsel->dfilterCount) {
     logProcEnd (LOG_PROC, "uisongselScroll", "bad-value");
     return TRUE;
   }
 
   start = floor (value);
-  if (start > uisongsel->dfilterCount - uisongsel->maxRows) {
-    start = uisongsel->dfilterCount - uisongsel->maxRows;
+  if (start > uisongsel->dfilterCount - uiw->maxRows) {
+    start = uisongsel->dfilterCount - uiw->maxRows;
   }
   uisongsel->idxStart = (ssize_t) start;
 
@@ -408,6 +486,7 @@ static void
 uisongselCheckFavChgSignal (GtkTreeView* tv, GtkTreePath* path,
     GtkTreeViewColumn* column, gpointer udata)
 {
+  uisongselgtk_t      * uiw;
   uisongsel_t       * uisongsel = udata;
   GtkTreeSelection  * sel;
   int               count;
@@ -418,12 +497,13 @@ uisongselCheckFavChgSignal (GtkTreeView* tv, GtkTreePath* path,
 
   logProcBegin (LOG_PROC, "uisongselCheckFavChgSignal");
 
-  if (column != uisongsel->favColumn) {
+  uiw = uisongsel->uiWidgetData;
+  if (column != uiw->favColumn) {
     logProcEnd (LOG_PROC, "uisongselCheckFavChgSignal", "not-fav-col");
     return;
   }
 
-  sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (uisongsel->songselTree));
+  sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (uiw->songselTree));
   count = gtk_tree_selection_count_selected_rows (sel);
   if (count != 1) {
     logProcEnd (LOG_PROC, "uisongselCheckFavChgSignal", "count != 1");
@@ -440,9 +520,12 @@ uisongselCheckFavChgSignal (GtkTreeView* tv, GtkTreePath* path,
 static gboolean
 uisongselScrollEvent (GtkWidget* tv, GdkEventScroll *event, gpointer udata)
 {
-  uisongsel_t   *uisongsel = udata;
+  uisongselgtk_t  *uiw;
+  uisongsel_t     *uisongsel = udata;
 
   logProcBegin (LOG_PROC, "uisongselScrollEvent");
+
+  uiw = uisongsel->uiWidgetData;
 
   /* i'd like to have a way to turn off smooth scrolling for the application */
   if (event->direction == GDK_SCROLL_SMOOTH) {
@@ -462,7 +545,7 @@ uisongselScrollEvent (GtkWidget* tv, GdkEventScroll *event, gpointer udata)
   if (event->direction == GDK_SCROLL_UP) {
     --uisongsel->idxStart;
   }
-  g_signal_emit_by_name (GTK_RANGE (uisongsel->songselScrollbar),
+  g_signal_emit_by_name (GTK_RANGE (uiw->songselScrollbar),
       "change-value", NULL, (double) uisongsel->idxStart, uisongsel, NULL);
 
   logProcEnd (LOG_PROC, "uisongselScrollEvent", "");
@@ -473,13 +556,16 @@ static void
 uisongselProcessTreeSize (GtkWidget* w, GtkAllocation* allocation,
     gpointer udata)
 {
+  uisongselgtk_t  *uiw;
   uisongsel_t   *uisongsel = udata;
   GtkAdjustment *adjustment;
   double        ps;
 
   logProcBegin (LOG_PROC, "uisongselProcessTreeSize");
 
-  if (allocation->height != uisongsel->lastTreeSize) {
+  uiw = uisongsel->uiWidgetData;
+
+  if (allocation->height != uiw->lastTreeSize) {
     if (allocation->height < 200) {
       logProcEnd (LOG_PROC, "uisongselProcessTreeSize", "small-alloc-height");
       return;
@@ -488,11 +574,11 @@ uisongselProcessTreeSize (GtkWidget* w, GtkAllocation* allocation,
     /* the step increment is useless */
     /* the page-size and upper can be used to determine */
     /* how many rows can be displayed */
-    adjustment = gtk_scrollable_get_vadjustment (GTK_SCROLLABLE (uisongsel->songselTree));
+    adjustment = gtk_scrollable_get_vadjustment (GTK_SCROLLABLE (uiw->songselTree));
     ps = gtk_adjustment_get_page_size (adjustment);
 
 
-    if (uisongsel->lastRowHeight == 0.0) {
+    if (uiw->lastRowHeight == 0.0) {
       double      u, hpr;
 
       u = gtk_adjustment_get_upper (adjustment);
@@ -500,31 +586,31 @@ uisongselProcessTreeSize (GtkWidget* w, GtkAllocation* allocation,
       /* save the original step increment for use in calculations later */
       /* the current step increment has been adjusted for the current */
       /* number of rows that are displayed */
-      uisongsel->lastRowHeight = hpr;
+      uiw->lastRowHeight = hpr;
     }
 
-    uisongsel->maxRows = (int) (ps / uisongsel->lastRowHeight);
-    ++uisongsel->maxRows;
-    logMsg (LOG_DBG, LOG_IMPORTANT, "max-rows:%d", uisongsel->maxRows);
+    uiw->maxRows = (int) (ps / uiw->lastRowHeight);
+    ++uiw->maxRows;
+    logMsg (LOG_DBG, LOG_IMPORTANT, "max-rows:%d", uiw->maxRows);
 
     /* force a redraw */
     gtk_adjustment_set_value (adjustment, 0.0);
-    g_signal_emit_by_name (GTK_RANGE (uisongsel->songselScrollbar),
+    g_signal_emit_by_name (GTK_RANGE (uiw->songselScrollbar),
         "change-value", NULL, 0.0, uisongsel, NULL);
 
-    adjustment = gtk_range_get_adjustment (GTK_RANGE (uisongsel->songselScrollbar));
+    adjustment = gtk_range_get_adjustment (GTK_RANGE (uiw->songselScrollbar));
     /* the step increment does not work correctly with smooth scrolling */
     /* and it appears there's no easy way to turn smooth scrolling off */
     gtk_adjustment_set_step_increment (adjustment, 4.0);
-    gtk_adjustment_set_page_increment (adjustment, (double) uisongsel->maxRows);
-    gtk_adjustment_set_page_size (adjustment, (double) uisongsel->maxRows);
+    gtk_adjustment_set_page_increment (adjustment, (double) uiw->maxRows);
+    gtk_adjustment_set_page_size (adjustment, (double) uiw->maxRows);
 
-    uisongsel->lastTreeSize = allocation->height;
+    uiw->lastTreeSize = allocation->height;
 
     logMsg (LOG_DBG, LOG_SONGSEL, "populate: tree size change");
     uisongselPopulateData (uisongsel);
 
-    g_signal_emit_by_name (GTK_RANGE (uisongsel->songselScrollbar),
+    g_signal_emit_by_name (GTK_RANGE (uiw->songselScrollbar),
         "change-value", NULL, (double) uisongsel->idxStart, uisongsel, NULL);
   }
   logProcEnd (LOG_PROC, "uisongselProcessTreeSize", "");
@@ -533,6 +619,7 @@ uisongselProcessTreeSize (GtkWidget* w, GtkAllocation* allocation,
 static void
 uisongselCreateFilterDialog (uisongsel_t *uisongsel)
 {
+  uisongselgtk_t  *uiw;
   GtkWidget     *content;
   GtkWidget     *vbox;
   GtkWidget     *hbox;
@@ -543,13 +630,14 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
 
   logProcBegin (LOG_PROC, "uisongselCreateFilterDialog");
 
+  uiw = uisongsel->uiWidgetData;
 
   sgA = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
-  uisongsel->filterDialog = gtk_dialog_new_with_buttons (
+  uiw->filterDialog = gtk_dialog_new_with_buttons (
       /* CONTEXT: title for the filter dialog */
       _("Filter Songs"),
-      GTK_WINDOW (uisongsel->parentwin),
+      GTK_WINDOW (uiw->parentwin),
       GTK_DIALOG_DESTROY_WITH_PARENT,
       /* CONTEXT: action button for the filter dialog */
       _("Close"),
@@ -563,7 +651,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
       NULL
       );
 
-  content = gtk_dialog_get_content_area (GTK_DIALOG (uisongsel->filterDialog));
+  content = gtk_dialog_get_content_area (GTK_DIALOG (uiw->filterDialog));
 
   vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   assert (vbox != NULL);
@@ -571,7 +659,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
   gtk_widget_set_vexpand (vbox, FALSE);
   gtk_container_add (GTK_CONTAINER (content), vbox);
 
-  /* sort-by */
+  /* sort-by : always available */
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   assert (hbox != NULL);
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
@@ -582,12 +670,12 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
   gtk_size_group_add_widget (sgA, widget);
 
-  widget = uiutilsComboboxCreate (uisongsel->filterDialog,
+  widget = uiutilsComboboxCreate (uiw->filterDialog,
       "", uisongselSortBySelectHandler, &uisongsel->sortbysel, uisongsel);
   uisongselCreateSortByList (uisongsel);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 
-  /* search */
+  /* search : always available */
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   assert (hbox != NULL);
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
@@ -603,23 +691,26 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
   gtk_widget_set_hexpand (widget, TRUE);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 
-  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
-  assert (hbox != NULL);
-  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+  /* genre */
+  if (nlistGetNum (uisongsel->filterDisplaySel, FILTER_DISP_GENRE)) {
+    hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+    assert (hbox != NULL);
+    gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
 
-  /* CONTEXT: a filter: select the genre displayed in the song selection */
-  widget = uiutilsCreateColonLabel (_("Genre"));
-  gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
-  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
-  gtk_size_group_add_widget (sgA, widget);
+    /* CONTEXT: a filter: select the genre displayed in the song selection */
+    widget = uiutilsCreateColonLabel (_("Genre"));
+    gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
+    gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+    gtk_size_group_add_widget (sgA, widget);
 
-  widget = uiutilsComboboxCreate (uisongsel->filterDialog,
-      "", uisongselGenreSelectHandler,
-      &uisongsel->filtergenresel, uisongsel);
-  uisongselCreateGenreList (uisongsel);
-  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+    widget = uiutilsComboboxCreate (uiw->filterDialog,
+        "", uisongselGenreSelectHandler,
+        &uisongsel->filtergenresel, uisongsel);
+    uisongselCreateGenreList (uisongsel);
+    gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+  }
 
-  /* dance */
+  /* dance : always available */
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   assert (hbox != NULL);
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
@@ -630,14 +721,14 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
   gtk_size_group_add_widget (sgA, widget);
 
-  widget = uiutilsComboboxCreate (uisongsel->filterDialog,
+  widget = uiutilsComboboxCreate (uiw->filterDialog,
       "", uisongselDanceSelectSignal,
       &uisongsel->filterdancesel, uisongsel);
   /* CONTEXT: a filter: all dances are selected */
   uiutilsCreateDanceList (&uisongsel->filterdancesel, _("All Dances"));
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 
-  /* rating */
+  /* rating : always available */
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   assert (hbox != NULL);
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
@@ -661,76 +752,82 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 
   /* level */
-  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
-  assert (hbox != NULL);
-  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+  if (nlistGetNum (uisongsel->filterDisplaySel, FILTER_DISP_DANCELEVEL)) {
+    hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+    assert (hbox != NULL);
+    gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
 
-  /* CONTEXT: a filter: select the dance level displayed in the song selection */
-  widget = uiutilsCreateColonLabel (_("Dance Level"));
-  gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
-  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
-  gtk_size_group_add_widget (sgA, widget);
+    /* CONTEXT: a filter: select the dance level displayed in the song selection */
+    widget = uiutilsCreateColonLabel (_("Dance Level"));
+    gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
+    gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+    gtk_size_group_add_widget (sgA, widget);
 
-  widget = uiutilsSpinboxTextCreate (&uisongsel->filterlevelsel, uisongsel);
-  max = levelGetMaxWidth (uisongsel->levels);
-  /* CONTEXT: a filter: all dance levels will be listed */
-  len = istrlen (_("All Levels"));
-  if (len > max) {
-    max = len;
+    widget = uiutilsSpinboxTextCreate (&uisongsel->filterlevelsel, uisongsel);
+    max = levelGetMaxWidth (uisongsel->levels);
+    /* CONTEXT: a filter: all dance levels will be listed */
+    len = istrlen (_("All Levels"));
+    if (len > max) {
+      max = len;
+    }
+    uiutilsSpinboxTextSet (&uisongsel->filterlevelsel, -1,
+        levelGetCount (uisongsel->levels),
+        max, NULL, uisongselLevelGet);
+    gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
   }
-  uiutilsSpinboxTextSet (&uisongsel->filterlevelsel, -1,
-      levelGetCount (uisongsel->levels),
-      max, NULL, uisongselLevelGet);
-  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 
   /* status */
-  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
-  assert (hbox != NULL);
-  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+  if (nlistGetNum (uisongsel->filterDisplaySel, FILTER_DISP_STATUS)) {
+    hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+    assert (hbox != NULL);
+    gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
 
-  /* CONTEXT: a filter: select the status displayed in the song selection */
-  widget = uiutilsCreateColonLabel (_("Status"));
-  gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
-  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
-  gtk_size_group_add_widget (sgA, widget);
+    /* CONTEXT: a filter: select the status displayed in the song selection */
+    widget = uiutilsCreateColonLabel (_("Status"));
+    gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
+    gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+    gtk_size_group_add_widget (sgA, widget);
 
-  widget = uiutilsSpinboxTextCreate (&uisongsel->filterstatussel, uisongsel);
-  max = statusGetMaxWidth (uisongsel->status);
-  /* CONTEXT: a filter: all statuses are displayed in the song selection */
-  len = istrlen (_("Any Status"));
-  if (len > max) {
-    max = len;
+    widget = uiutilsSpinboxTextCreate (&uisongsel->filterstatussel, uisongsel);
+    max = statusGetMaxWidth (uisongsel->status);
+    /* CONTEXT: a filter: all statuses are displayed in the song selection */
+    len = istrlen (_("Any Status"));
+    if (len > max) {
+      max = len;
+    }
+    uiutilsSpinboxTextSet (&uisongsel->filterstatussel, -1,
+        statusGetCount (uisongsel->status),
+        max, NULL, uisongselStatusGet);
+    gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
   }
-  uiutilsSpinboxTextSet (&uisongsel->filterstatussel, -1,
-      statusGetCount (uisongsel->status),
-      max, NULL, uisongselStatusGet);
-  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 
   /* favorite */
-  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
-  assert (hbox != NULL);
-  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+  if (nlistGetNum (uisongsel->filterDisplaySel, FILTER_DISP_FAVORITE)) {
+    hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+    assert (hbox != NULL);
+    gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
 
-  /* CONTEXT: a filter: select the 'favorite' displayed in the song selection */
-  widget = uiutilsCreateColonLabel (_("Favorite"));
-  gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
-  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
-  gtk_size_group_add_widget (sgA, widget);
+    /* CONTEXT: a filter: select the 'favorite' displayed in the song selection */
+    widget = uiutilsCreateColonLabel (_("Favorite"));
+    gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
+    gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+    gtk_size_group_add_widget (sgA, widget);
 
-  widget = uiutilsSpinboxTextCreate (&uisongsel->filterfavoritesel, uisongsel);
-  uiutilsSpinboxTextSet (&uisongsel->filterfavoritesel, 0,
-      SONG_FAVORITE_MAX, 1, NULL, uisongselFavoriteGet);
-  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+    widget = uiutilsSpinboxTextCreate (&uisongsel->filterfavoritesel, uisongsel);
+    uiutilsSpinboxTextSet (&uisongsel->filterfavoritesel, 0,
+        SONG_FAVORITE_MAX, 1, NULL, uisongselFavoriteGet);
+    gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+  }
 
   /* the dialog doesn't have any space above the buttons */
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   assert (hbox != NULL);
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
 
-  widget = uiutilsCreateLabel ("");
+  widget = uiutilsCreateLabel (" ");
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 
-  g_signal_connect (uisongsel->filterDialog, "response",
+  g_signal_connect (uiw->filterDialog, "response",
       G_CALLBACK (uisongselFilterResponseHandler), uisongsel);
   logProcEnd (LOG_PROC, "uisongselCreateFilterDialog", "");
 }
@@ -738,6 +835,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
 static void
 uisongselFilterResponseHandler (GtkDialog *d, gint responseid, gpointer udata)
 {
+  uisongselgtk_t  *uiw;
   uisongsel_t   *uisongsel = udata;
   const char    *searchstr;
   int           idx;
@@ -745,23 +843,25 @@ uisongselFilterResponseHandler (GtkDialog *d, gint responseid, gpointer udata)
 
   logProcBegin (LOG_PROC, "uisongselFilterResponseHandler");
 
+  uiw = uisongsel->uiWidgetData;
+
   switch (responseid) {
     case GTK_RESPONSE_DELETE_EVENT: {
-      gtk_window_get_position (GTK_WINDOW (uisongsel->filterDialog), &x, &y);
+      gtk_window_get_position (GTK_WINDOW (uiw->filterDialog), &x, &y);
       nlistSetNum (uisongsel->options, SONGSEL_FILTER_POSITION_X, x);
       nlistSetNum (uisongsel->options, SONGSEL_FILTER_POSITION_Y, y);
 
       songfilterReset (uisongsel->songfilter);
-      uisongsel->filterDialog = NULL;
+      uiw->filterDialog = NULL;
       break;
     }
     case GTK_RESPONSE_CLOSE: {
-      gtk_window_get_position (GTK_WINDOW (uisongsel->filterDialog), &x, &y);
+      gtk_window_get_position (GTK_WINDOW (uiw->filterDialog), &x, &y);
       nlistSetNum (uisongsel->options, SONGSEL_FILTER_POSITION_X, x);
       nlistSetNum (uisongsel->options, SONGSEL_FILTER_POSITION_Y, y);
 
       songfilterReset (uisongsel->songfilter);
-      gtk_widget_hide (uisongsel->filterDialog);
+      gtk_widget_hide (uiw->filterDialog);
       break;
     }
     case GTK_RESPONSE_APPLY: {
@@ -777,6 +877,7 @@ uisongselFilterResponseHandler (GtkDialog *d, gint responseid, gpointer udata)
     }
   }
 
+  /* search : always active */
   searchstr = uiutilsEntryGetValue (&uisongsel->searchentry);
   if (searchstr != NULL && strlen (searchstr) > 0) {
     songfilterSetData (uisongsel->songfilter, SONG_FILTER_SEARCH, (void *) searchstr);
@@ -784,6 +885,7 @@ uisongselFilterResponseHandler (GtkDialog *d, gint responseid, gpointer udata)
     songfilterClear (uisongsel->songfilter, SONG_FILTER_SEARCH);
   }
 
+  /* dance rating : always active */
   idx = uiutilsSpinboxTextGetValue (&uisongsel->filterratingsel);
   if (idx >= 0) {
     songfilterSetNum (uisongsel->songfilter, SONG_FILTER_RATING, idx);
@@ -791,27 +893,36 @@ uisongselFilterResponseHandler (GtkDialog *d, gint responseid, gpointer udata)
     songfilterClear (uisongsel->songfilter, SONG_FILTER_RATING);
   }
 
-  idx = uiutilsSpinboxTextGetValue (&uisongsel->filterlevelsel);
-  if (idx >= 0) {
-    songfilterSetNum (uisongsel->songfilter, SONG_FILTER_LEVEL_LOW, idx);
-    songfilterSetNum (uisongsel->songfilter, SONG_FILTER_LEVEL_HIGH, idx);
-  } else {
-    songfilterClear (uisongsel->songfilter, SONG_FILTER_LEVEL_LOW);
-    songfilterClear (uisongsel->songfilter, SONG_FILTER_LEVEL_HIGH);
+  /* dance level */
+  if (nlistGetNum (uisongsel->filterDisplaySel, FILTER_DISP_DANCELEVEL)) {
+    idx = uiutilsSpinboxTextGetValue (&uisongsel->filterlevelsel);
+    if (idx >= 0) {
+      songfilterSetNum (uisongsel->songfilter, SONG_FILTER_LEVEL_LOW, idx);
+      songfilterSetNum (uisongsel->songfilter, SONG_FILTER_LEVEL_HIGH, idx);
+    } else {
+      songfilterClear (uisongsel->songfilter, SONG_FILTER_LEVEL_LOW);
+      songfilterClear (uisongsel->songfilter, SONG_FILTER_LEVEL_HIGH);
+    }
   }
 
-  idx = uiutilsSpinboxTextGetValue (&uisongsel->filterstatussel);
-  if (idx >= 0) {
-    songfilterSetNum (uisongsel->songfilter, SONG_FILTER_STATUS, idx);
-  } else {
-    songfilterClear (uisongsel->songfilter, SONG_FILTER_STATUS);
+  /* status */
+  if (nlistGetNum (uisongsel->filterDisplaySel, FILTER_DISP_STATUS)) {
+    idx = uiutilsSpinboxTextGetValue (&uisongsel->filterstatussel);
+    if (idx >= 0) {
+      songfilterSetNum (uisongsel->songfilter, SONG_FILTER_STATUS, idx);
+    } else {
+      songfilterClear (uisongsel->songfilter, SONG_FILTER_STATUS);
+    }
   }
 
-  idx = uiutilsSpinboxTextGetValue (&uisongsel->filterfavoritesel);
-  if (idx != SONG_FAVORITE_NONE) {
-    songfilterSetNum (uisongsel->songfilter, SONG_FILTER_FAVORITE, idx);
-  } else {
-    songfilterClear (uisongsel->songfilter, SONG_FILTER_FAVORITE);
+  /* favorite */
+  if (nlistGetNum (uisongsel->filterDisplaySel, FILTER_DISP_FAVORITE)) {
+    idx = uiutilsSpinboxTextGetValue (&uisongsel->filterfavoritesel);
+    if (idx != SONG_FAVORITE_NONE) {
+      songfilterSetNum (uisongsel->songfilter, SONG_FILTER_FAVORITE, idx);
+    } else {
+      songfilterClear (uisongsel->songfilter, SONG_FILTER_FAVORITE);
+    }
   }
 
   uisongselApplySongFilter (uisongsel);

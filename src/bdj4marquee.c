@@ -203,7 +203,7 @@ main (int argc, char *argv[])
   marquee.sockserver = sockhStartServer (listenPort);
   g_timeout_add (UI_MAIN_LOOP_TIMER, marqueeMainLoop, &marquee);
 
-  uiutilsInitGtkLog ();
+  uiutilsInitUILog ();
   gtk_init (&argc, NULL);
   mqfont = bdjoptGetStr (OPT_MP_MQFONT);
   uiutilsSetUIFont (mqfont);

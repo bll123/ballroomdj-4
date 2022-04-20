@@ -321,7 +321,7 @@ main (int argc, char *argv[])
 
   if (installer.guienabled) {
     gtk_init (&argc, NULL);
-    uiutilsInitGtkLog ();
+    uiutilsInitUILog ();
     if (isWindows ()) {
       char *uifont;
 
