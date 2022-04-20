@@ -399,52 +399,7 @@ add_library (libbdj4launcher STATIC
 )
 
 add_subdirectory (libcommon)
-
-add_library (libbdj4 SHARED
-  audiotag.c
-  autosel.c
-  bdj4init.c
-  bdjvarsdf.c
-  bdjvarsdfload.c
-  dance.c
-  dancesel.c
-  dispsel.c
-  dnctypes.c
-  genre.c
-  level.c
-  musicdb.c
-  musicq.c
-  orgopt.c
-  orgutil.c
-  playlist.c
-  rating.c
-  sequence.c
-  song.c
-  songfilter.c
-  songlist.c
-  songsel.c
-  songutil.c
-  sortopt.c
-  status.c
-  tagdef.c
-  templateutil.c
-  webclient.c
-)
-target_include_directories (libbdj4
-  PUBLIC "${CURL_INCLUDE_DIRS}"
-)
-target_link_libraries (libbdj4
-  libbdj4common
-  ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
-  m
-)
-if (APPLE)
-  target_link_libraries (libbdj4
-    "-framework Cocoa"
-  )
-endif()
-addIntlLibrary (libbdj4)
-addWinSockLibrary (libbdj4)
+add_subdirectory (libbdj4)
 
 add_library (libbdj4pli SHARED
   pli.c
@@ -472,14 +427,8 @@ add_library (libbdj4ui SHARED
   uiplayer.c
   uisongsel.c
   uiutils.c
-  uisongselgtk.c
-  uigtkutils.c
-  uigtklabel.c
-  uigtkbutton.c
-  uigtkentry.c
-  uigtkspinbox.c
-  uigtkdropdown.c
 )
+# for the time being, these need gtk
 target_include_directories (libbdj4ui
   PUBLIC ${GTK_INCLUDE_DIRS}
 )
@@ -490,6 +439,26 @@ target_link_libraries (libbdj4ui
 )
 addIntlLibrary (libbdj4ui)
 addWinSockLibrary (libbdj4ui)
+
+add_library (libbdj4gtk SHARED
+  uisongselgtk.c
+  uigtkutils.c
+  uigtklabel.c
+  uigtkbutton.c
+  uigtkentry.c
+  uigtkspinbox.c
+  uigtkdropdown.c
+)
+target_include_directories (libbdj4gtk
+  PUBLIC ${GTK_INCLUDE_DIRS}
+)
+target_link_libraries (libbdj4gtk
+  libbdj4ui libbdj4 libbdj4common
+  ${GTK_LDFLAGS}
+  m
+)
+addIntlLibrary (libbdj4gtk)
+addWinSockLibrary (libbdj4gtk)
 
 add_library (libplinull SHARED plinull.c)
 target_link_libraries (libplinull
@@ -704,7 +673,7 @@ addWinSockLibrary (bdj4rc)
 
 add_executable (bdj4marquee bdj4marquee.c)
 target_link_libraries (bdj4marquee
-  libbdj4ui libbdj4 libbdj4common
+  libbdj4ui libbdj4gtk libbdj4 libbdj4common
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}
   m
@@ -715,7 +684,7 @@ addWinSockLibrary (bdj4marquee)
 add_executable (bdj4installer bdj4installer.c)
 target_link_libraries (bdj4installer
   liblocatebdj3
-  libbdj4ui libbdj4 libbdj4common
+  libbdj4ui libbdj4gtk libbdj4 libbdj4common
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}
   m
@@ -724,7 +693,7 @@ addIntlLibrary (bdj4installer)
 
 add_executable (bdj4starterui bdj4starterui.c)
 target_link_libraries (bdj4starterui
-  libbdj4ui libbdj4 libbdj4common
+  libbdj4ui libbdj4gtk libbdj4common
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}
   m
@@ -734,7 +703,7 @@ addWinSockLibrary (bdj4starterui)
 
 add_executable (bdj4playerui bdj4playerui.c)
 target_link_libraries (bdj4playerui
-  libbdj4ui libbdj4 libbdj4common
+  libbdj4ui libbdj4gtk libbdj4 libbdj4common
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}
   m
@@ -744,7 +713,7 @@ addWinSockLibrary (bdj4playerui)
 
 add_executable (bdj4configui bdj4configui.c)
 target_link_libraries (bdj4configui
-  libbdj4ui libbdj4vol libbdj4 libbdj4common
+  libbdj4ui libbdj4gtk libbdj4vol libbdj4 libbdj4common
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}
   m
@@ -755,7 +724,8 @@ addWinSockLibrary (bdj4configui)
 add_subdirectory (check)
 
 install (TARGETS
-  libbdj4common libbdj4 libbdj4pli libbdj4vol libbdj4ui
+  libbdj4common libbdj4 libbdj4pli libbdj4vol
+  libbdj4ui libbdj4gtk
   libplinull libplivlc
   libvolalsa libvolmac libvolnull libvolpa libvolwin voltest
   bdj4 bdj4g bdj4cli
