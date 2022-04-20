@@ -505,6 +505,13 @@ add_library (libbdj4ui SHARED
   uiplayer.c
   uisongsel.c
   uiutils.c
+  uisongselgtk.c
+  uigtkutils.c
+  uigtklabel.c
+  uigtkbutton.c
+  uigtkentry.c
+  uigtkspinbox.c
+  uigtkdropdown.c
 )
 target_include_directories (libbdj4ui
   PUBLIC ${GTK_INCLUDE_DIRS}
