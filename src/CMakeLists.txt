@@ -19,7 +19,8 @@ set (CMAKE_PREFIX_PATH /opt/local;${PROJECT_SOURCE_DIR}/../plocal)
 
 # this doesn't seem to help with locating header files...
 include_directories (
-  "${CMAKE_BINARY_DIR}" "${PROJECT_SOURCE_DIR}"
+  "${CMAKE_BINARY_DIR}"
+  "${PROJECT_SOURCE_DIR}/include"
   ${PROJECT_SOURCE_DIR}/../plocal/include
 )
 
