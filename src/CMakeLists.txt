@@ -403,27 +403,7 @@ add_subdirectory (libcommon)
 add_subdirectory (libbdj4)
 add_subdirectory (libpli)
 add_subdirectory (libvol)
-
-add_library (libbdj4ui SHARED
-  osuilinuxutils.c
-  osuimacutils.m
-  osuiwinutils.c
-  uimusicq.c
-  uiplayer.c
-  uisongsel.c
-  uiutils.c
-)
-# for the time being, these need gtk
-target_include_directories (libbdj4ui
-  PUBLIC ${GTK_INCLUDE_DIRS}
-)
-target_link_libraries (libbdj4ui
-  libbdj4 libbdj4common
-  ${GTK_LDFLAGS}
-  m
-)
-addIntlLibrary (libbdj4ui)
-addWinSockLibrary (libbdj4ui)
+add_subdirectory (libbdj4ui)
 
 add_library (libbdj4gtk SHARED
   uisongselgtk.c
@@ -649,7 +629,7 @@ add_subdirectory (check)
 
 install (TARGETS
   libbdj4common libbdj4
-  libbdj4ui libbdj4gtk
+  libbdj4gtk
   bdj4 bdj4g bdj4cli
   bdj4se bdj4installer
   bdj4locatebdj3 bdj4info
