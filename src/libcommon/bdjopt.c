@@ -103,7 +103,7 @@ bdjoptInit (void)
 
   /* global */
   pathbldMakePath (path, sizeof (path), BDJ_CONFIG_BASEFN,
-      BDJ_CONFIG_EXT, PATHBLD_MP_USEIDX);
+      BDJ_CONFIG_EXT, PATHBLD_MP_NONE);
   if (! fileopFileExists (path)) {
     bdjoptCreateNewConfigs ();
   }
@@ -123,7 +123,7 @@ bdjoptInit (void)
 
   /* per machine */
   pathbldMakePath (path, sizeof (path), BDJ_CONFIG_BASEFN,
-      BDJ_CONFIG_EXT, PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
+      BDJ_CONFIG_EXT, PATHBLD_MP_HOSTNAME);
   ddata = datafileLoad (df, DFTYPE_KEY_VAL, path);
   tlist = datafileGetList (df);
   tlist = datafileParseMerge (tlist, ddata, "bdjopt-m", DFTYPE_KEY_VAL,
@@ -203,12 +203,12 @@ bdjoptCreateDirectories (void)
 {
   char      path [MAXPATHLEN];
 
-  pathbldMakePath (path, sizeof (path), "", "", PATHBLD_MP_USEIDX);
+  pathbldMakePath (path, sizeof (path), "", "", PATHBLD_MP_NONE);
   fileopMakeDir (path);
   pathbldMakePath (path, sizeof (path), "", "", PATHBLD_MP_USEIDX);
   fileopMakeDir (path);
   pathbldMakePath (path, sizeof (path), "", "",
-      PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
+      PATHBLD_MP_HOSTNAME);
   fileopMakeDir (path);
   pathbldMakePath (path, sizeof (path), "", "",
       PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
@@ -222,7 +222,7 @@ bdjoptSave (void)
 
   /* global */
   pathbldMakePath (path, sizeof (path), BDJ_CONFIG_BASEFN,
-      BDJ_CONFIG_EXT, PATHBLD_MP_USEIDX);
+      BDJ_CONFIG_EXT, PATHBLD_MP_NONE);
   datafileSaveKeyVal ("config-global", path, bdjoptglobaldfkeys, BDJOPT_GLOBAL_DFKEY_COUNT, bdjopt->data);
 
   /* profile */
@@ -232,7 +232,7 @@ bdjoptSave (void)
 
   /* machine */
   pathbldMakePath (path, sizeof (path), BDJ_CONFIG_BASEFN,
-      BDJ_CONFIG_EXT, PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
+      BDJ_CONFIG_EXT, PATHBLD_MP_HOSTNAME);
   datafileSaveKeyVal ("config-machine", path, bdjoptmachdfkeys, BDJOPT_MACHINE_DFKEY_COUNT, bdjopt->data);
 
   /* machine/profile */
@@ -354,39 +354,39 @@ bdjoptCreateNewConfigs (void)
   char      path [MAXPATHLEN];
   char      tpath [MAXPATHLEN];
 
-    /* see if profile 0 exists */
+  /* see if profile 0 exists */
   sysvarsSetNum (SVL_BDJIDX, 0);
-  pathbldMakePath (path, sizeof (path), BDJ_CONFIG_BASEFN,
-      BDJ_CONFIG_EXT, PATHBLD_MP_USEIDX);
+  pathbldMakePath (path, sizeof (path),
+      BDJ_CONFIG_BASEFN, BDJ_CONFIG_EXT, PATHBLD_MP_USEIDX);
   if (! fileopFileExists (path)) {
     bdjoptCreateDefaultFiles ();
   }
 
-    /* global */
+  /* global */
   sysvarsSetNum (SVL_BDJIDX, currProfile);
-  pathbldMakePath (tpath, sizeof (tpath), BDJ_CONFIG_BASEFN,
-      BDJ_CONFIG_EXT, PATHBLD_MP_USEIDX);
+  pathbldMakePath (tpath, sizeof (tpath),
+      BDJ_CONFIG_BASEFN, BDJ_CONFIG_EXT, PATHBLD_MP_NONE);
   filemanipCopy (path, tpath);
 
-    /* profile */
+  /* profile */
   sysvarsSetNum (SVL_BDJIDX, 0);
-  pathbldMakePath (path, sizeof (path), BDJ_CONFIG_BASEFN,
-      BDJ_CONFIG_EXT, PATHBLD_MP_USEIDX);
+  pathbldMakePath (path, sizeof (path),
+      BDJ_CONFIG_BASEFN, BDJ_CONFIG_EXT, PATHBLD_MP_USEIDX);
   sysvarsSetNum (SVL_BDJIDX, currProfile);
-  pathbldMakePath (tpath, sizeof (tpath), BDJ_CONFIG_BASEFN,
-      BDJ_CONFIG_EXT, PATHBLD_MP_USEIDX);
+  pathbldMakePath (tpath, sizeof (tpath),
+      BDJ_CONFIG_BASEFN, BDJ_CONFIG_EXT, PATHBLD_MP_USEIDX);
   filemanipCopy (path, tpath);
 
-    /* per machine */
+  /* per machine */
   sysvarsSetNum (SVL_BDJIDX, 0);
-  pathbldMakePath (path, sizeof (path), BDJ_CONFIG_BASEFN,
-      BDJ_CONFIG_EXT, PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
+  pathbldMakePath (path, sizeof (path),
+      BDJ_CONFIG_BASEFN, BDJ_CONFIG_EXT, PATHBLD_MP_HOSTNAME);
   sysvarsSetNum (SVL_BDJIDX, currProfile);
-  pathbldMakePath (tpath, sizeof (tpath), BDJ_CONFIG_BASEFN,
-      BDJ_CONFIG_EXT, PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
+  pathbldMakePath (tpath, sizeof (tpath),
+      BDJ_CONFIG_BASEFN, BDJ_CONFIG_EXT, PATHBLD_MP_HOSTNAME);
   filemanipCopy (path, tpath);
 
-    /* per machine per profile */
+  /* per machine per profile */
   sysvarsSetNum (SVL_BDJIDX, 0);
   pathbldMakePath (path, sizeof (path), BDJ_CONFIG_BASEFN,
       BDJ_CONFIG_EXT, PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);

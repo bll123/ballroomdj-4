@@ -16,8 +16,10 @@
 #include "bdj4.h"
 #include "log.h"
 #include "tmutil.h"
+#include "fileop.h"
 #include "fileutil.h"
 #include "pathbld.h"
+#include "pathutil.h"
 #include "bdjstring.h"
 
 static void         rlogStart (const char *processnm,
@@ -100,7 +102,7 @@ rlogVarMsg (logidx_t idx, loglevel_t level,
 {
   bdjlog_t      *l;
   char          ttm [40];
-  char          tbuff [512];
+  char          tbuff [1024];
   char          wbuff [1024];
   char          tfn [MAXPATHLEN];
   va_list       args;
@@ -205,10 +207,19 @@ rlogOpen (const char *fn, const char *processtag, int truncflag)
 {
   bdjlog_t      *l = NULL;
   int           rc;
+  pathinfo_t    *pi;
+  char          tbuff [MAXPATHLEN];
 
 
   l = malloc (sizeof (bdjlog_t));
   assert (l != NULL);
+
+  pi = pathInfo (fn);
+  strlcpy (tbuff, pi->dirname, pi->dlen + 1);
+  if ( ! fileopIsDirectory (tbuff)) {
+    fileopMakeDir (tbuff);
+  }
+  pathInfoFree (pi);
 
   l->opened = 0;
   l->indent = 0;

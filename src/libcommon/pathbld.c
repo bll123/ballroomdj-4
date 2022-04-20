@@ -51,7 +51,7 @@ pathbldMakePath (char *buff, size_t buffsz,
     if ((flags & PATHBLD_MP_TMPDIR) == PATHBLD_MP_TMPDIR) {
       /* if the tmp dir is being used, there is no pre-made directory */
       /* use a prefix */
-      snprintf (profpath, sizeof (profpath), "t%02zd-", sysvarsGetNum (SVL_BDJIDX));
+      snprintf (profpath, sizeof (profpath), "l%02zd-", sysvarsGetNum (SVL_BDJIDX));
     } else {
       snprintf (profpath, sizeof (profpath), "profile%02zd/", sysvarsGetNum (SVL_BDJIDX));
     }
