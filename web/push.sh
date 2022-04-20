@@ -64,6 +64,8 @@ rsync -v -e ssh bdj4-${VERSION}-installer-${tag}${datetag}${rlstag}${sfx} \
 if [[ $tag == linux ]]; then
   rsync -v -e ssh README.txt \
     bll123@frs.sourceforge.net:/home/frs/project/ballroomdj4/
+  rsync -v -e ssh install/linux-pre-install.sh \
+    bll123@frs.sourceforge.net:/home/frs/project/ballroomdj4/
 fi
 
 exit 0

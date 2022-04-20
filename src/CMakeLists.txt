@@ -63,27 +63,6 @@ if (NOT LIBVLC_LIBRARY)
   set (LIBVLC_FOUND TRUE)
 endif()
 
-macro (addIntlLibrary name)
-  if (Intl_LIBRARY)
-    target_link_libraries (${name}
-      ${Intl_LIBRARY}
-      ${Iconv_LIBRARY}
-    )
-  endif()
-endmacro()
-
-macro (addWinSockLibrary name)
-  if (WIN32)
-    target_link_libraries (${name} ws2_32)
-  endif()
-endmacro()
-# the ntdll library is used for RtlGetVersion()
-macro (addWinNtdllLibrary name)
-  if (WIN32)
-    target_link_libraries (${name} ntdll)
-  endif()
-endmacro()
-
 pkg_check_modules (OPENSSL openssl)
 pkg_check_modules (CURL libcurl)
 pkg_check_modules (ALSA alsa)
@@ -390,48 +369,35 @@ set (CMAKE_EXTRA_INCLUDE_FILES "")
 
 configure_file (config.h.in config.h)
 
-add_library (libbdj4common SHARED
-  bdjmsg.c
-  bdjopt.c
-  bdjstring.c
-  bdjvars.c
-  conn.c
-  datafile.c
-  filedata.c
-  filemanip.c
-  fileop.c
-  fileutil.c
-  ilist.c
-  list.c
-  localeutil.c
-  lock.c
-  log.c
-  nlist.c
-  osnetutils.c
-  osutils.c
-  pathbld.c
-  pathutil.c
-  procutil.c
-  progstate.c
-  queue.c
-  rafile.c
-  slist.c
-  sock.c
-  sockh.c
-  strlcat.c
-  strlcpy.c
-  sysvars.c
-  tmutil.c
+include (utils/bdj4macros.cmake)
+
+add_library (libbdj4string STATIC
+  libcommon/bdjstring.c
+  libcommon/strlcat.c
+  libcommon/strlcpy.c
 )
-target_include_directories (libbdj4common
-  PUBLIC "${GLIB_INCLUDE_DIRS}"
+# reusable objects; there's no need to compile these twice
+add_library (libbdj4fileop STATIC
+  libcommon/fileop.c
+  libcommon/osutils.c
+  libcommon/tmutil.c
 )
-target_link_libraries (libbdj4common
-  ${GLIB_LDFLAGS}
+add_library (libmongoose STATIC ${MONGOOSE_SRC})
+add_library (libwebsrv STATIC websrv.c)
+target_include_directories (libwebsrv
+  PRIVATE "${MONGOOSE_INC_DIR}"
 )
-addWinSockLibrary (libbdj4common)
-# for RtlGetVersion
-addWinNtdllLibrary (libbdj4common)
+add_library (liblocatebdj3 STATIC locatebdj3.c)
+
+add_library (libbdj4launcher STATIC
+  libcommon/filedata.c
+  libcommon/osnetutils.c
+  libcommon/pathbld.c
+  libcommon/pathutil.c
+  libcommon/sysvars.c
+)
+
+add_subdirectory (libcommon)
 
 add_library (libbdj4 SHARED
   audiotag.c
@@ -523,24 +489,6 @@ target_link_libraries (libbdj4ui
 )
 addIntlLibrary (libbdj4ui)
 addWinSockLibrary (libbdj4ui)
-
-# reusable objects; there's no need to compile these twice
-add_library (libbdj4fileop STATIC
-  fileop.c osutils.c tmutil.c
-)
-add_library (libbdj4string STATIC
-  bdjstring.c strlcat.c strlcpy.c
-)
-add_library (libmongoose STATIC ${MONGOOSE_SRC})
-add_library (libwebsrv STATIC websrv.c)
-target_include_directories (libwebsrv
-  PRIVATE "${MONGOOSE_INC_DIR}"
-)
-add_library (liblocatebdj3 STATIC locatebdj3.c)
-
-add_library (libbdj4launcher STATIC
-  filedata.c osnetutils.c pathbld.c pathutil.c sysvars.c
-)
 
 add_library (libplinull SHARED plinull.c)
 target_link_libraries (libplinull
@@ -803,35 +751,7 @@ target_link_libraries (bdj4configui
 addIntlLibrary (bdj4configui)
 addWinSockLibrary (bdj4configui)
 
-add_executable (check_all
-  check_all.c
-  check_datafile.c
-  check_filedata.c
-  check_filemanip.c
-  check_fileop.c
-  check_ilist.c
-  check_lock.c
-  check_musicq.c
-  check_nlist.c
-  check_pathutil.c
-  check_procutil.c
-  check_queue.c
-  check_rafile.c
-  check_slist.c
-  check_sock.c
-  check_tmutil.c
-)
-target_link_libraries (check_all
-  libbdj4 libbdj4common
-  ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
-  ${CHECK_LDFLAGS}
-  pthread
-)
-target_compile_options (check_all PRIVATE -pthread)
-addIntlLibrary (check_all)
-addWinSockLibrary (check_all)
-
-add_executable (chkprocess chkprocess.c)
+add_subdirectory (check)
 
 install (TARGETS
   libbdj4common libbdj4 libbdj4pli libbdj4vol libbdj4ui
@@ -843,41 +763,8 @@ install (TARGETS
   bdj4dbupdate bdj4dbtag
   bdj4main bdj4player bdj4mobmq bdj4rc bdj4marquee
   bdj4starterui bdj4playerui bdj4configui
-  check_all chkprocess
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
-
-macro (macUpdateRPath name)
-  add_custom_command(TARGET ${name}
-      POST_BUILD
-      COMMAND
-        ${CMAKE_INSTALL_NAME_TOOL} -change
-            "@rpath/libbdj4common.dylib"
-            "@executable_path/libbdj4common.dylib"
-            $<TARGET_FILE:${name}>
-      COMMAND
-        ${CMAKE_INSTALL_NAME_TOOL} -change
-            "@rpath/libbdj4.dylib"
-            "@executable_path/libbdj4.dylib"
-            $<TARGET_FILE:${name}>
-      COMMAND
-        ${CMAKE_INSTALL_NAME_TOOL} -change
-            "@rpath/libbdj4pli.dylib"
-            "@executable_path/libbdj4pli.dylib"
-            $<TARGET_FILE:${name}>
-      COMMAND
-        ${CMAKE_INSTALL_NAME_TOOL} -change
-            "@rpath/libbdj4vol.dylib"
-            "@executable_path/libbdj4vol.dylib"
-            $<TARGET_FILE:${name}>
-      COMMAND
-        ${CMAKE_INSTALL_NAME_TOOL} -change
-            "@rpath/libbdj4ui.dylib"
-            "@executable_path/libbdj4ui.dylib"
-            $<TARGET_FILE:${name}>
-      VERBATIM
-  )
-endmacro()
 
 if (APPLE)
   macUpdateRPath (bdj4)
