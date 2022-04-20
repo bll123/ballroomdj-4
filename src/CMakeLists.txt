@@ -59,7 +59,7 @@ find_package (LIBVLC)
 # so hard-code the paths.
 # the library path will always be valid.
 if (NOT LIBVLC_LIBRARY)
-  set (LIBVLC_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/vlc-3.0.16")
+  set (LIBVLC_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/libpli/vlc-3.0.16")
   set (LIBVLC_LIBRARY "C:/Program Files/VideoLAN/VLC/libvlc.dll")
   set (LIBVLC_FOUND TRUE)
 endif()
