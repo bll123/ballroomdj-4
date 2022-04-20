@@ -57,13 +57,24 @@ typedef struct {
 
 /* uisongsel.c */
 uisongsel_t * uisongselInit (progstate_t *progstate, conn_t *conn,
-                dispsel_t *dispsel, nlist_t *opts, songfilterpb_t filterFlags);
-void        uisongselFree (uisongsel_t *uisongsel);
-void        uisongselMainLoop (uisongsel_t *uisongsel);
-void        uisongselFilterDanceProcess (uisongsel_t *uisongsel, ssize_t idx);
-void        uisongselDanceSelect (uisongsel_t *uisongsel, ssize_t idx);
-void        uisongselQueueProcess (uisongsel_t *uisongsel, dbidx_t dbidx);
-void        uisongselChangeFavorite (uisongsel_t *uisongsel, dbidx_t dbidx);
+    dispsel_t *dispsel, nlist_t *opts, songfilterpb_t filterFlags);
+void  uisongselFree (uisongsel_t *uisongsel);
+void  uisongselMainLoop (uisongsel_t *uisongsel);
+void  uisongselFilterDanceProcess (uisongsel_t *uisongsel, ssize_t idx);
+void  uisongselDanceSelect (uisongsel_t *uisongsel, ssize_t idx);
+void  uisongselQueueProcess (uisongsel_t *uisongsel, dbidx_t dbidx);
+void  uisongselChangeFavorite (uisongsel_t *uisongsel, dbidx_t dbidx);
+void  uisongselApplySongFilter (uisongsel_t *uisongsel);
+void  uisongselInitFilterDisplay (uisongsel_t *uisongsel);
+char  * uisongselRatingGet (void *udata, int idx);
+char  * uisongselLevelGet (void *udata, int idx);
+char  * uisongselStatusGet (void *udata, int idx);
+char  * uisongselFavoriteGet (void *udata, int idx);
+void  uisongselSortBySelect (uisongsel_t *uisongsel, ssize_t idx);
+void  uisongselCreateSortByList (uisongsel_t *uisongsel);
+void  uisongselGenreSelect (uisongsel_t *uisongsel, ssize_t idx);
+void  uisongselCreateGenreList (uisongsel_t *uisongsel);
+
 
 /* uisongselgtk.c */
 GtkWidget * uisongselActivate (uisongsel_t *uisongsel, GtkWidget *parentwin);
