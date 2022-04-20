@@ -4,7 +4,7 @@ TIN=si-in.txt
 TSORT=si-sort.txt
 
 > $TIN
-for fn in *.c *.h build/config.h; do
+for fn in *.c */*.c */*.h build/config.h; do
   echo $fn $fn >> $TIN
   sed -n -e '/^#include "/p' $fn |
       sed -e 's,^#include ",,' -e 's,"$,,' -e "s,^,$fn ," >> $TIN

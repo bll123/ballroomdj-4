@@ -17,6 +17,7 @@
 #include "bdjvarsdf.h"
 #include "genre.h"
 #include "log.h"
+#include "songfilter.h"
 #include "uimusicq.h"
 #include "uisongsel.h"
 #include "uiutils.h"

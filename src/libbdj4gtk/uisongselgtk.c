@@ -18,6 +18,7 @@
 #include "bdj4playerui.h"
 #include "log.h"
 #include "nlist.h"
+#include "songfilter.h"
 #include "uisongsel.h"
 #include "uiutils.h"
 

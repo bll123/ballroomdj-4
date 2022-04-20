@@ -46,6 +46,8 @@ function mkpo {
       bdj4.pot >> ${out}
 }
 
+TMP=potemplates.c
+
 echo "-- $(date +%T) extracting"
 xgettext -s -d bdj4 \
     --language=C \
@@ -53,11 +55,9 @@ xgettext -s -d bdj4 \
     --no-location \
     --keyword=_ \
     --flag=_:1:pass-c-format \
-    *.c *.cpp *.m \
+    bdj4*.c libbdj4/tagdef.c libbdj4ui/*.c libbdj4gtk/*.c $TMP \
     -p po -o bdj4.pot
 cd po
-
-TMP=potemplates.c
 
 > $TMP
 fn=../../templates/dancetypes.txt
