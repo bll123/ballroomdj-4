@@ -42,12 +42,13 @@ include (utils/bdj4config.cmake)
 
 include (utils/bdj4macros.cmake)
 
+# reusable objects; there's no need to compile these twice
+
 add_library (libbdj4string STATIC
   libcommon/bdjstring.c
   libcommon/strlcat.c
   libcommon/strlcpy.c
 )
-# reusable objects; there's no need to compile these twice
 add_library (libbdj4fileop STATIC
   libcommon/fileop.c
   libcommon/osutils.c

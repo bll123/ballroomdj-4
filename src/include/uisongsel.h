@@ -60,9 +60,15 @@ uisongsel_t * uisongselInit (progstate_t *progstate, conn_t *conn,
                 dispsel_t *dispsel, nlist_t *opts, songfilterpb_t filterFlags);
 void        uisongselFree (uisongsel_t *uisongsel);
 void        uisongselMainLoop (uisongsel_t *uisongsel);
+void        uisongselFilterDanceProcess (uisongsel_t *uisongsel, ssize_t idx);
+void        uisongselDanceSelect (uisongsel_t *uisongsel, ssize_t idx);
+void        uisongselQueueProcess (uisongsel_t *uisongsel, dbidx_t dbidx);
+void        uisongselChangeFavorite (uisongsel_t *uisongsel, dbidx_t dbidx);
 
 /* uisongselgtk.c */
-GtkWidget   * uisongselActivate (uisongsel_t *uisongsel, GtkWidget *parentwin);
+GtkWidget * uisongselActivate (uisongsel_t *uisongsel, GtkWidget *parentwin);
+void      uisongselClearData (uisongsel_t *uisongsel);
+void      uisongselPopulateData (uisongsel_t *uisongsel);
 
 #endif /* INC_UISONGSEL_H */
 

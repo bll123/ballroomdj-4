@@ -10,11 +10,16 @@
 #include <assert.h>
 #include <math.h>
 
+#include "bdj4.h"
 #include "bdj4playerui.h"
+#include "bdjopt.h"
 #include "bdjvarsdf.h"
 #include "log.h"
+#include "uimusicq.h"
 #include "uisongsel.h"
 #include "uiutils.h"
+
+static void uisongselSongfilterSetDance (uisongsel_t *uisongsel, ssize_t idx);
 
 uisongsel_t *
 uisongselInit (progstate_t *progstate, conn_t *conn, dispsel_t *dispsel,
@@ -96,3 +101,72 @@ uisongselMainLoop (uisongsel_t *uisongsel)
   return;
 }
 
+void
+uisongselFilterDanceProcess (uisongsel_t *uisongsel, ssize_t idx)
+{
+  logProcBegin (LOG_PROC, "uisongselFilterDanceProcess");
+
+  uisongselSongfilterSetDance (uisongsel, idx);
+  uiutilsDropDownSelectionSetNum (&uisongsel->filterdancesel, idx);
+  uisongsel->dfilterCount = (double) songfilterProcess (uisongsel->songfilter);
+  uisongsel->idxStart = 0;
+  uisongselClearData (uisongsel);
+  logMsg (LOG_DBG, LOG_SONGSEL, "populate: filter by dance");
+  uisongselPopulateData (uisongsel);
+  logProcEnd (LOG_PROC, "uisongselFilterDanceProcess", "");
+}
+
+/* internal routines */
+
+static void
+uisongselSongfilterSetDance (uisongsel_t *uisongsel, ssize_t idx)
+{
+  logProcBegin (LOG_PROC, "uisongselSongfilterSetDance");
+
+  uisongsel->danceIdx = idx;
+  if (idx >= 0) {
+    ilist_t   *danceList;
+
+    danceList = ilistAlloc ("songsel-filter-dance", LIST_ORDERED);
+    /* any value will do; only interested in the dance index at this point */
+    ilistSetNum (danceList, idx, 0, 0);
+    songfilterSetData (uisongsel->songfilter, SONG_FILTER_DANCE, danceList);
+  } else {
+    songfilterClear (uisongsel->songfilter, SONG_FILTER_DANCE);
+  }
+  logProcEnd (LOG_PROC, "uisongselSongfilterSetDance", "");
+}
+
+void
+uisongselDanceSelect (uisongsel_t *uisongsel, ssize_t idx)
+{
+  logProcBegin (LOG_PROC, "uisongselDanceSelect");
+  uisongsel->danceIdx = idx;
+  uisongselSongfilterSetDance (uisongsel, idx);
+  logProcEnd (LOG_PROC, "uisongselDanceSelect", "");
+}
+
+void
+uisongselQueueProcess (uisongsel_t *uisongsel, dbidx_t dbidx)
+{
+  ssize_t insloc;
+  char    tbuff [MAXPATHLEN];
+
+  insloc = bdjoptGetNum (OPT_P_INSERT_LOCATION);
+  snprintf (tbuff, sizeof (tbuff), "%d%c%zd%c%d", MUSICQ_CURRENT,
+      MSG_ARGS_RS, insloc, MSG_ARGS_RS, dbidx);
+  connSendMessage (uisongsel->conn, ROUTE_MAIN,
+      MSG_MUSICQ_INSERT, tbuff);
+}
+
+void
+uisongselChangeFavorite (uisongsel_t *uisongsel, dbidx_t dbidx)
+{
+  song_t    *song;
+
+  song = dbGetByIdx ((ssize_t) dbidx);
+  songChangeFavorite (song);
+// ### TODO song data must be saved to the database.
+  logMsg (LOG_DBG, LOG_SONGSEL, "favorite changed");
+  uisongselPopulateData (uisongsel);
+}

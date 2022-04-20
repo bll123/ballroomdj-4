@@ -46,13 +46,11 @@ enum {
 #define STORE_ROWS     60
 
 static void uisongselInitializeStore (uisongsel_t *uisongsel);
-static void uisongselClearData (uisongsel_t *uisongsel);
-static void uisongselPopulateData (uisongsel_t *uisongsel);
 static void uisongselCreateRows (uisongsel_t *uisongsel);
 
-static void uisongselQueueProcess (GtkButton *b, gpointer udata);
+static void uisongselQueueProcessSignal (GtkButton *b, gpointer udata);
 static void uisongselFilterDialog (GtkButton *b, gpointer udata);
-static void uisongselFilterDanceProcess (GtkTreeView *tv, GtkTreePath *path,
+static void uisongselFilterDanceSignal (GtkTreeView *tv, GtkTreePath *path,
     GtkTreeViewColumn *column, gpointer udata);
 static gboolean uisongselScroll (GtkRange *range, GtkScrollType scrolltype,
     gdouble value, gpointer udata);
@@ -80,9 +78,8 @@ static void uisongselGenreSelect (GtkTreeView *tv, GtkTreePath *path,
     GtkTreeViewColumn *column, gpointer udata);
 static void uisongselCreateGenreList (uisongsel_t *uisongsel);
 
-static void uisongselDanceSelect (GtkTreeView *tv, GtkTreePath *path,
+static void uisongselDanceSelectSignal (GtkTreeView *tv, GtkTreePath *path,
     GtkTreeViewColumn *column, gpointer udata);
-static void uisongselSongfilterSetDance (uisongsel_t *uisongsel, ssize_t idx);
 
 GtkWidget *
 uisongselActivate (uisongsel_t *uisongsel, GtkWidget *parentwin)
@@ -110,12 +107,12 @@ uisongselActivate (uisongsel_t *uisongsel, GtkWidget *parentwin)
 
   /* CONTEXT: queue a song to be played */
   widget = uiutilsCreateButton (_("Queue"), NULL,
-      uisongselQueueProcess, uisongsel);
+      uisongselQueueProcessSignal, uisongsel);
   gtk_box_pack_start (GTK_BOX (hbox), widget,
       FALSE, FALSE, 0);
 
   widget = uiutilsComboboxCreate (parentwin,
-      "", uisongselFilterDanceProcess,
+      "", uisongselFilterDanceSignal,
       &uisongsel->dancesel, uisongsel);
   /* CONTEXT: filter: all dances are selected */
   uiutilsCreateDanceList (&uisongsel->dancesel, _("All Dances"));
@@ -201,63 +198,7 @@ uisongselActivate (uisongsel_t *uisongsel, GtkWidget *parentwin)
   return uisongsel->vbox;
 }
 
-/* internal routines */
-
-static void
-uisongselInitializeStore (uisongsel_t *uisongsel)
-{
-  GtkListStore      *store = NULL;
-  GType             *songselstoretypes;
-  int               colcount = 0;
-  slist_t           *sellist;
-
-  logProcBegin (LOG_PROC, "uisongselInitializeStore");
-
-  songselstoretypes = malloc (sizeof (GType) * SONGSEL_COL_MAX);
-  colcount = 0;
-  /* attributes ellipsize/align/font*/
-  songselstoretypes [colcount++] = G_TYPE_INT;
-  songselstoretypes [colcount++] = G_TYPE_STRING;
-  /* internal idx/sortidx/dbidx/fav color */
-  songselstoretypes [colcount++] = G_TYPE_ULONG,
-  songselstoretypes [colcount++] = G_TYPE_ULONG,
-  songselstoretypes [colcount++] = G_TYPE_ULONG,
-  songselstoretypes [colcount++] = G_TYPE_STRING,
-
-  sellist = dispselGetList (uisongsel->dispsel, DISP_SEL_REQUEST);
-  songselstoretypes = uiutilsAddDisplayTypes (songselstoretypes, sellist, &colcount);
-  store = gtk_list_store_newv (colcount, songselstoretypes);
-  assert (store != NULL);
-  free (songselstoretypes);
-
-  gtk_tree_view_set_model (GTK_TREE_VIEW (uisongsel->songselTree), GTK_TREE_MODEL (store));
-  uisongsel->createRowProcessFlag = true;
-  uisongsel->createRowFlag = true;
-  logProcEnd (LOG_PROC, "uisongselInitializeStore", "");
-}
-
-static void
-uisongselCreateRows (uisongsel_t *uisongsel)
-{
-  GtkTreeModel      *model = NULL;
-  GtkTreeIter       iter;
-
-  logProcBegin (LOG_PROC, "uisongselCreateRows");
-
-  model = gtk_tree_view_get_model (GTK_TREE_VIEW (uisongsel->songselTree));
-  /* enough pre-allocated rows are needed so that if the windows is */
-  /* maximized and the font size is not large, enough rows are available */
-  /* to be displayed */
-  for (int i = 0; i < STORE_ROWS; ++i) {
-    gtk_list_store_append (GTK_LIST_STORE (model), &iter);
-  }
-
-  /* initial song filter process */
-  uisongsel->dfilterCount = (double) songfilterProcess (uisongsel->songfilter);
-  logProcEnd (LOG_PROC, "uisongselCreateRows", "");
-}
-
-static void
+void
 uisongselClearData (uisongsel_t *uisongsel)
 {
   GtkTreeModel        * model = NULL;
@@ -271,7 +212,7 @@ uisongselClearData (uisongsel_t *uisongsel)
   logProcEnd (LOG_PROC, "uisongselClearData", "");
 }
 
-static void
+void
 uisongselPopulateData (uisongsel_t *uisongsel)
 {
   GtkTreeModel        * model = NULL;
@@ -333,8 +274,64 @@ uisongselPopulateData (uisongsel_t *uisongsel)
   logProcEnd (LOG_PROC, "uisongselPopulateData", "");
 }
 
+/* internal routines */
+
 static void
-uisongselQueueProcess (GtkButton *b, gpointer udata)
+uisongselInitializeStore (uisongsel_t *uisongsel)
+{
+  GtkListStore      *store = NULL;
+  GType             *songselstoretypes;
+  int               colcount = 0;
+  slist_t           *sellist;
+
+  logProcBegin (LOG_PROC, "uisongselInitializeStore");
+
+  songselstoretypes = malloc (sizeof (GType) * SONGSEL_COL_MAX);
+  colcount = 0;
+  /* attributes ellipsize/align/font*/
+  songselstoretypes [colcount++] = G_TYPE_INT;
+  songselstoretypes [colcount++] = G_TYPE_STRING;
+  /* internal idx/sortidx/dbidx/fav color */
+  songselstoretypes [colcount++] = G_TYPE_ULONG,
+  songselstoretypes [colcount++] = G_TYPE_ULONG,
+  songselstoretypes [colcount++] = G_TYPE_ULONG,
+  songselstoretypes [colcount++] = G_TYPE_STRING,
+
+  sellist = dispselGetList (uisongsel->dispsel, DISP_SEL_REQUEST);
+  songselstoretypes = uiutilsAddDisplayTypes (songselstoretypes, sellist, &colcount);
+  store = gtk_list_store_newv (colcount, songselstoretypes);
+  assert (store != NULL);
+  free (songselstoretypes);
+
+  gtk_tree_view_set_model (GTK_TREE_VIEW (uisongsel->songselTree), GTK_TREE_MODEL (store));
+  uisongsel->createRowProcessFlag = true;
+  uisongsel->createRowFlag = true;
+  logProcEnd (LOG_PROC, "uisongselInitializeStore", "");
+}
+
+static void
+uisongselCreateRows (uisongsel_t *uisongsel)
+{
+  GtkTreeModel      *model = NULL;
+  GtkTreeIter       iter;
+
+  logProcBegin (LOG_PROC, "uisongselCreateRows");
+
+  model = gtk_tree_view_get_model (GTK_TREE_VIEW (uisongsel->songselTree));
+  /* enough pre-allocated rows are needed so that if the windows is */
+  /* maximized and the font size is not large, enough rows are available */
+  /* to be displayed */
+  for (int i = 0; i < STORE_ROWS; ++i) {
+    gtk_list_store_append (GTK_LIST_STORE (model), &iter);
+  }
+
+  /* initial song filter process */
+  uisongsel->dfilterCount = (double) songfilterProcess (uisongsel->songfilter);
+  logProcEnd (LOG_PROC, "uisongselCreateRows", "");
+}
+
+static void
+uisongselQueueProcessSignal (GtkButton *b, gpointer udata)
 {
   uisongsel_t       * uisongsel = udata;
   GtkTreeSelection  * sel;
@@ -342,10 +339,8 @@ uisongselQueueProcess (GtkButton *b, gpointer udata)
   GtkTreeIter       iter;
   int               count;
   gulong            dbidx;
-  char              tbuff [MAXPATHLEN];
-  ssize_t           insloc;
 
-  logProcBegin (LOG_PROC, "uisongselQueueProcess");
+  logProcBegin (LOG_PROC, "uisongselQueueProcessSignal");
 
   sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (uisongsel->songselTree));
   count = gtk_tree_selection_count_selected_rows (sel);
@@ -356,13 +351,9 @@ uisongselQueueProcess (GtkButton *b, gpointer udata)
   gtk_tree_selection_get_selected (sel, &model, &iter);
   gtk_tree_model_get (model, &iter, SONGSEL_COL_DBIDX, &dbidx, -1);
 
-  insloc = bdjoptGetNum (OPT_P_INSERT_LOCATION);
-  snprintf (tbuff, sizeof (tbuff), "%d%c%zd%c%ld", MUSICQ_CURRENT,
-      MSG_ARGS_RS, insloc, MSG_ARGS_RS, dbidx);
-  connSendMessage (uisongsel->conn, ROUTE_MAIN,
-      MSG_MUSICQ_INSERT, tbuff);
+  uisongselQueueProcess (uisongsel, dbidx);
 
-  logProcEnd (LOG_PROC, "uisongselQueueProcess", "");
+  logProcEnd (LOG_PROC, "uisongselQueueProcessSignal", "");
   return;
 }
 
@@ -390,23 +381,14 @@ uisongselFilterDialog (GtkButton *b, gpointer udata)
 }
 
 static void
-uisongselFilterDanceProcess (GtkTreeView *tv, GtkTreePath *path,
+uisongselFilterDanceSignal (GtkTreeView *tv, GtkTreePath *path,
     GtkTreeViewColumn *column, gpointer udata)
 {
   uisongsel_t *uisongsel = udata;
   ssize_t     idx;
 
-  logProcBegin (LOG_PROC, "uisongselFilterDanceProcess");
-
   idx = uiutilsDropDownSelectionGet (&uisongsel->dancesel, path);
-  uisongselSongfilterSetDance (uisongsel, idx);
-  uiutilsDropDownSelectionSetNum (&uisongsel->filterdancesel, idx);
-  uisongsel->dfilterCount = (double) songfilterProcess (uisongsel->songfilter);
-  uisongsel->idxStart = 0;
-  uisongselClearData (uisongsel);
-  logMsg (LOG_DBG, LOG_SONGSEL, "populate: filter by dance");
-  uisongselPopulateData (uisongsel);
-  logProcEnd (LOG_PROC, "uisongselFilterDanceProcess", "");
+  uisongselFilterDanceProcess (uisongsel, idx);
   return;
 }
 
@@ -446,7 +428,7 @@ uisongselRowSelected (GtkTreeView* tv, GtkTreePath* path,
   GtkTreeModel      * model = NULL;
   GtkTreeIter       iter;
   gulong            dbidx;
-  song_t            * song;
+
 
   logProcBegin (LOG_PROC, "uisongselRowSelected");
 
@@ -463,11 +445,9 @@ uisongselRowSelected (GtkTreeView* tv, GtkTreePath* path,
   }
   gtk_tree_selection_get_selected (sel, &model, &iter);
   gtk_tree_model_get (model, &iter, SONGSEL_COL_DBIDX, &dbidx, -1);
-  song = dbGetByIdx ((ssize_t) dbidx);
-  songChangeFavorite (song);
-// ### TODO song data must be saved to the database.
-  logMsg (LOG_DBG, LOG_SONGSEL, "populate: favorite changed");
-  uisongselPopulateData (uisongsel);
+
+  uisongselChangeFavorite (uisongsel, dbidx);
+
   logProcEnd (LOG_PROC, "uisongselRowSelected", "");
 }
 
@@ -665,7 +645,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
   gtk_size_group_add_widget (sgA, widget);
 
   widget = uiutilsComboboxCreate (uisongsel->filterDialog,
-      "", uisongselDanceSelect,
+      "", uisongselDanceSelectSignal,
       &uisongsel->filterdancesel, uisongsel);
   /* CONTEXT: a filter: all dances are selected */
   uiutilsCreateDanceList (&uisongsel->filterdancesel, _("All Dances"));
@@ -1025,36 +1005,13 @@ uisongselCreateGenreList (uisongsel_t *uisongsel)
 
 
 static void
-uisongselDanceSelect (GtkTreeView *tv, GtkTreePath *path,
+uisongselDanceSelectSignal (GtkTreeView *tv, GtkTreePath *path,
     GtkTreeViewColumn *column, gpointer udata)
 {
   uisongsel_t *uisongsel = udata;
   ssize_t     idx;
 
-  logProcBegin (LOG_PROC, "uisongselDanceSelect");
-
   idx = uiutilsDropDownSelectionGet (&uisongsel->filterdancesel, path);
-  uisongsel->danceIdx = idx;
-  uisongselSongfilterSetDance (uisongsel, idx);
-  logProcEnd (LOG_PROC, "uisongselDanceSelect", "");
-}
-
-static void
-uisongselSongfilterSetDance (uisongsel_t *uisongsel, ssize_t idx)
-{
-  logProcBegin (LOG_PROC, "uisongselSongfilterSetDance");
-
-  uisongsel->danceIdx = idx;
-  if (idx >= 0) {
-    ilist_t   *danceList;
-
-    danceList = ilistAlloc ("songsel-filter-dance", LIST_ORDERED);
-    /* any value will do; only interested in the dance index at this point */
-    ilistSetNum (danceList, idx, 0, 0);
-    songfilterSetData (uisongsel->songfilter, SONG_FILTER_DANCE, danceList);
-  } else {
-    songfilterClear (uisongsel->songfilter, SONG_FILTER_DANCE);
-  }
-  logProcEnd (LOG_PROC, "uisongselSongfilterSetDance", "");
+  uisongselDanceSelect (uisongsel, idx);
 }
 
