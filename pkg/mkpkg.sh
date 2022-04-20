@@ -142,12 +142,11 @@ fi
 
 # update build number
 
-echo "-- updating build number"
-
 . ./VERSION.txt
 
 # only rebuild the version.txt file on linux.
 if [[ $tag == linux ]]; then
+  echo "-- updating build number"
   BUILD=$(($BUILD+1))
   BUILDDATE=$(date '+%Y%m%d')
   cat > VERSION.txt << _HERE_
