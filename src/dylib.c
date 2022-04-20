@@ -41,11 +41,13 @@ dylibLoad (char *path)
   whandle = LoadLibrary (npath);
   handle = whandle;
 #endif
+#if 0
   if (handle == NULL) {
     fprintf (stderr, "dylib open %s failed: %d %s\n", path, errno, strerror (errno));
   } else {
-//    fprintf (stderr, "dylib open %s OK\n", path);
+    fprintf (stderr, "dylib open %s OK\n", path);
   }
+#endif
 
   return handle;
 }
@@ -74,13 +76,15 @@ dylibLookup (dlhandle_t *handle, char *funcname)
   HMODULE   whandle = handle;
   addr = GetProcAddress (whandle, funcname);
 #endif
+#if 0
   if (addr == NULL) {
     fprintf (stderr, "sym lookup %s failed: %d %s\n", funcname, errno, strerror (errno));
 #if _lib_LoadLibrary
     fprintf (stderr, "sym lookup %s getlasterror: %ld\n", funcname, GetLastError() );
 #endif
   } else {
-//    fprintf (stderr, "sym lookup %s OK\n", funcname);
+    fprintf (stderr, "sym lookup %s OK\n", funcname);
   }
+#endif
   return addr;
 }

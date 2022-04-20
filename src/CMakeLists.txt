@@ -389,6 +389,7 @@ target_include_directories (libwebsrv
   PRIVATE "${MONGOOSE_INC_DIR}"
 )
 add_library (liblocatebdj3 STATIC locatebdj3.c)
+add_library (libdylib STATIC dylib.c)
 
 add_library (libbdj4launcher STATIC
   libcommon/filedata.c
@@ -400,24 +401,8 @@ add_library (libbdj4launcher STATIC
 
 add_subdirectory (libcommon)
 add_subdirectory (libbdj4)
-
-add_library (libbdj4pli SHARED
-  pli.c
-  dylib.c
-)
-target_link_libraries (libbdj4pli
-  libbdj4common
-  m
-)
-
-add_library (libbdj4vol SHARED
-  volume.c
-  dylib.c
-)
-target_link_libraries (libbdj4vol
-  libbdj4common
-  m
-)
+add_subdirectory (libpli)
+add_subdirectory (libvol)
 
 add_library (libbdj4ui SHARED
   osuilinuxutils.c
@@ -460,60 +445,6 @@ target_link_libraries (libbdj4gtk
 addIntlLibrary (libbdj4gtk)
 addWinSockLibrary (libbdj4gtk)
 
-add_library (libplinull SHARED plinull.c)
-target_link_libraries (libplinull
-  libbdj4common
-  m
-)
-
-add_library (libplivlc SHARED plivlc.c vlci.c)
-target_include_directories (libplivlc
-  PUBLIC "${LIBVLC_INCLUDE_DIR}"
-)
-target_link_libraries (libplivlc
-  libbdj4common
-  ${LIBVLC_LIBRARY}
-  m
-)
-
-add_library (libvolalsa SHARED volalsa.c)
-if (ALSA_FOUND)
-  target_include_directories (libvolalsa
-    PUBLIC "${ALSA_INCLUDE_DIR}"
-  )
-  target_link_libraries (libvolalsa
-    ${ALSA_LDFLAGS}
-    m
-  )
-endif ()
-
-add_library (libvolmac SHARED volmac.m)
-if (APPLE)
-  target_link_libraries (libvolmac
-    PUBLIC "-framework Cocoa" "-framework CoreAudio"
-  )
-endif()
-
-add_library (libvolnull SHARED volnull.c)
-
-add_library (libvolpa SHARED volpa.c)
-if (PA_FOUND)
-  target_include_directories (libvolpa
-    PUBLIC "${PA_INCLUDE_DIRS}"
-  )
-  target_link_libraries (libvolpa
-    ${PA_LDFLAGS}
-    m
-  )
-endif()
-
-add_library (libvolwin SHARED volwin.cpp)
-target_compile_options (libvolwin PRIVATE -static-libstdc++)
-target_link_libraries (libvolwin
-  libbdj4fileop
-  libbdj4string
-)
-
 add_executable (bdj4locatebdj3 bdj4locatebdj3.c)
 target_link_libraries (bdj4locatebdj3
   liblocatebdj3
@@ -526,13 +457,6 @@ target_link_libraries (bdj4info
   libbdj4common
 )
 addIntlLibrary (bdj4info)
-
-add_executable (voltest voltest.c)
-target_link_libraries (voltest
-  libbdj4vol libbdj4common
-  ${CMAKE_DL_LIBS}
-  m
-)
 
 if (WIN32)
   # the bdj4se executable
@@ -724,10 +648,8 @@ addWinSockLibrary (bdj4configui)
 add_subdirectory (check)
 
 install (TARGETS
-  libbdj4common libbdj4 libbdj4pli libbdj4vol
+  libbdj4common libbdj4
   libbdj4ui libbdj4gtk
-  libplinull libplivlc
-  libvolalsa libvolmac libvolnull libvolpa libvolwin voltest
   bdj4 bdj4g bdj4cli
   bdj4se bdj4installer
   bdj4locatebdj3 bdj4info
