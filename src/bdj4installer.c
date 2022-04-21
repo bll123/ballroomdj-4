@@ -401,7 +401,6 @@ installerActivate (GApplication *app, gpointer udata)
   widget = uiutilsCreateLabel (
       /* CONTEXT: installer */
       _("Enter the destination folder where BDJ4 will be installed."));
-  gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
   gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
 
   widget = uiutilsEntryCreate (&installer->targetEntry);
@@ -441,19 +440,16 @@ installerActivate (GApplication *app, gpointer udata)
       /* CONTEXT: installer */
       _("Enter the folder where %s is installed."), BDJ3_NAME);
   widget = uiutilsCreateLabel (tbuff);
-  gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
   gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
 
   widget = uiutilsCreateLabel (
       /* CONTEXT: installer */
       _("If there is no BallroomDJ 3 installation, leave the entry blank."));
-  gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
   gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
 
   widget = uiutilsCreateLabel (
       /* CONTEXT: installer */
       _("The conversion process will only run for new installations and for re-installations."));
-  gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
   gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
 
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
@@ -511,7 +507,6 @@ installerActivate (GApplication *app, gpointer udata)
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
 
   widget = uiutilsCreateColonLabel ("VLC");
-  gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
   gtk_size_group_add_widget (sg, widget);
 
@@ -526,7 +521,6 @@ installerActivate (GApplication *app, gpointer udata)
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
 
   widget = uiutilsCreateColonLabel ("Python");
-  gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
   gtk_size_group_add_widget (sg, widget);
 
@@ -541,7 +535,6 @@ installerActivate (GApplication *app, gpointer udata)
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
 
   widget = uiutilsCreateColonLabel ("Mutagen");
-  gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
   gtk_size_group_add_widget (sg, widget);
 

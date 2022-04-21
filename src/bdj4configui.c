@@ -1318,12 +1318,10 @@ confuiActivate (GApplication *app, gpointer userdata)
 
   /* CONTEXT: config: dance ratings: information on how to order the ratings */
   widget = uiutilsCreateLabel (_("Order from the lowest rating to the highest rating."));
-  gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
   gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
 
   /* CONTEXT: config: dance ratings: information on how to edit a rating entry */
   widget = uiutilsCreateLabel (_("Double click on a field to edit."));
-  gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
   gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
 
   confuiMakeItemTable (confui, vbox, CONFUI_ID_RATINGS, CONFUI_TABLE_KEEP_FIRST);
@@ -1341,7 +1339,6 @@ confuiActivate (GApplication *app, gpointer userdata)
 
   /* CONTEXT: config: status: information on how to edit a status entry */
   widget = uiutilsCreateLabel (_("Double click on a field to edit."));
-  gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
   gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
 
   confuiMakeItemTable (confui, vbox, CONFUI_ID_STATUS,
@@ -1360,12 +1357,10 @@ confuiActivate (GApplication *app, gpointer userdata)
       G_CALLBACK (confuiSwitchTable), confui);
 
   widget = uiutilsCreateLabel (_("Order from easiest to most advanced."));
-  gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
   gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
 
   /* CONTEXT: config: dance levels: information on how to edit a level entry */
   widget = uiutilsCreateLabel (_("Double click on a field to edit."));
-  gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
   gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
 
   confuiMakeItemTable (confui, vbox, CONFUI_ID_LEVELS, CONFUI_TABLE_NONE);
@@ -1384,7 +1379,6 @@ confuiActivate (GApplication *app, gpointer userdata)
 
   /* CONTEXT: config: genres: information on how to edit a genre entry */
   widget = uiutilsCreateLabel (_("Double click on a field to edit."));
-  gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
   gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
 
   confuiMakeItemTable (confui, vbox, CONFUI_ID_GENRES, CONFUI_TABLE_NONE);
@@ -1974,7 +1968,6 @@ confuiMakeNotebookTab (configui_t *confui, GtkWidget *nb, char *txt, int id)
 
   logProcBegin (LOG_PROC, "confuiMakeNotebookTab");
   tablabel = uiutilsCreateLabel (txt);
-  gtk_label_set_xalign (GTK_LABEL (tablabel), 0.0);
   gtk_widget_set_margin_top (tablabel, 0);
   gtk_widget_set_margin_start (tablabel, 0);
   vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
@@ -2316,7 +2309,6 @@ confuiMakeItemLabel (GtkWidget *vbox, GtkSizeGroup *sg, char *txt)
   } else {
     widget = uiutilsCreateColonLabel (txt);
   }
-  gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
   gtk_size_group_add_widget (sg, widget);
   logProcEnd (LOG_PROC, "confuiMakeItemLabel", "");

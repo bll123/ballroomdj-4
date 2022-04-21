@@ -250,6 +250,10 @@ sysvarsInit (const char *argv0)
   strlcpy (sysvars [SV_MOBMQ_URL], "/marquee4.html", SV_MAX_SZ);
 
   strlcpy (sysvars [SV_WEB_HOST], "https://ballroomdj4.sourceforge.io", SV_MAX_SZ);
+  strlcpy (sysvars [SV_FORUM_HOST], "https://ballroomdj.org", SV_MAX_SZ);
+  strlcpy (sysvars [SV_FORUM_URI], "/forum/index.php", SV_MAX_SZ);
+  strlcpy (sysvars [SV_SUPPORT_HOST], "https://sourceforge.net", SV_MAX_SZ);
+  strlcpy (sysvars [SV_SUPPORT_URI], "/p/ballroomdj4/tickets/", SV_MAX_SZ);
 
   for (size_t i = 0; i < CACERT_FILE_COUNT; ++i) {
     if (fileopFileExists (cacertFiles [i])) {

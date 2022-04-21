@@ -80,11 +80,14 @@ static void     starterSigHandler (int sig);
 static void     starterStartPlayer (GtkButton *b, gpointer udata);
 static void     starterStartManage (GtkButton *b, gpointer udata);
 static void     starterStartConfig (GtkButton *b, gpointer udata);
+static void     starterProcessSupport (GtkButton *b, gpointer udata);
 static void     starterProcessExit (GtkButton *b, gpointer udata);
 
 static void     starterGetProfiles (startui_t *starter);
 static char     * starterSetProfile (void *udata, int idx);
 static void     starterCheckProfile (startui_t *starter);
+static void     starterProcessSupport (GtkButton *b, gpointer udata);
+static void     starterSupportResponseHandler (GtkDialog *d, gint responseid, gpointer udata);
 
 
 static int gKillReceived = 0;
@@ -239,13 +242,18 @@ static void
 starterActivate (GApplication *app, gpointer userdata)
 {
   startui_t           *starter = userdata;
-  GError              *gerr = NULL;
   GtkWidget           *widget;
   GtkWidget           *vbox;
+  GtkWidget           *bvbox;
   GtkWidget           *hbox;
+  GdkPixbuf           *image;
+  GError              *gerr = NULL;
+  GtkSizeGroup        *sg;
   char                imgbuff [MAXPATHLEN];
   char                tbuff [MAXPATHLEN];
   int                 x, y;
+
+  sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", ".svg", PATHBLD_MP_IMGDIR);
@@ -265,15 +273,8 @@ starterActivate (GApplication *app, gpointer userdata)
   gtk_widget_set_margin_start (vbox, 4);
   gtk_widget_set_margin_end (vbox, 4);
 
-  pathbldMakePath (tbuff, sizeof (tbuff),  "ballroomdj4", ".svg",
-      PATHBLD_MP_IMGDIR);
-  widget = gtk_image_new_from_file (tbuff);
-  assert (widget != NULL);
-  gtk_widget_set_margin_top (widget, 2);
-  gtk_widget_set_margin_start (widget, 2);
-  gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
-
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+  gtk_widget_set_margin_top (hbox, 8);
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
 
   /* CONTEXT: the profile to be used when starting BDJ4 */
@@ -289,25 +290,65 @@ starterActivate (GApplication *app, gpointer userdata)
   gtk_widget_set_halign (widget, GTK_ALIGN_FILL);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 
+  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+  gtk_box_pack_start (GTK_BOX (vbox), hbox, TRUE, FALSE, 0);
+
+  bvbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+  gtk_box_pack_start (GTK_BOX (hbox), bvbox, FALSE, FALSE, 0);
+
+  pathbldMakePath (tbuff, sizeof (tbuff),
+     "bdj4_icon", ".svg", PATHBLD_MP_IMGDIR);
+  image = gdk_pixbuf_new_from_file_at_scale (tbuff, 128, -1, TRUE, &gerr);
+  assert (image != NULL);
+  widget = gtk_image_new_from_pixbuf (image);
+  assert (widget != NULL);
+  gtk_widget_set_hexpand (widget, TRUE);
+  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+
   /* CONTEXT: button: starts the player user interface */
   widget = uiutilsCreateButton (_("Player"), NULL, starterStartPlayer, starter);
   gtk_widget_set_margin_top (widget, 4);
-  gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
+  gtk_widget_set_halign (widget, GTK_ALIGN_START);
+  gtk_size_group_add_widget (sg, widget);
+  gtk_box_pack_start (GTK_BOX (bvbox), widget, FALSE, FALSE, 0);
+  widget = gtk_bin_get_child (GTK_BIN (widget));
+  gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
 
   /* CONTEXT: button: starts the management user interface */
   widget = uiutilsCreateButton (_("Manage"), NULL, starterStartManage, starter);
   gtk_widget_set_margin_top (widget, 4);
-  gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
+  gtk_widget_set_halign (widget, GTK_ALIGN_START);
+  gtk_size_group_add_widget (sg, widget);
+  gtk_box_pack_start (GTK_BOX (bvbox), widget, FALSE, FALSE, 0);
+  widget = gtk_bin_get_child (GTK_BIN (widget));
+  gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
 
   /* CONTEXT: button: starts the configuration user interface */
   widget = uiutilsCreateButton (_("Configure"), NULL, starterStartConfig, starter);
   gtk_widget_set_margin_top (widget, 4);
-  gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
+  gtk_widget_set_halign (widget, GTK_ALIGN_START);
+  gtk_size_group_add_widget (sg, widget);
+  gtk_box_pack_start (GTK_BOX (bvbox), widget, FALSE, FALSE, 0);
+  widget = gtk_bin_get_child (GTK_BIN (widget));
+  gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
+
+  /* CONTEXT: button: support : support information */
+  widget = uiutilsCreateButton (_("Support"), NULL, starterProcessSupport, starter);
+  gtk_widget_set_margin_top (widget, 4);
+  gtk_widget_set_halign (widget, GTK_ALIGN_START);
+  gtk_size_group_add_widget (sg, widget);
+  gtk_box_pack_start (GTK_BOX (bvbox), widget, FALSE, FALSE, 0);
+  widget = gtk_bin_get_child (GTK_BIN (widget));
+  gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
 
   /* CONTEXT: button: exits BDJ4 */
   widget = uiutilsCreateButton (_("Exit"), NULL, starterProcessExit, starter);
   gtk_widget_set_margin_top (widget, 4);
-  gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
+  gtk_widget_set_halign (widget, GTK_ALIGN_START);
+  gtk_size_group_add_widget (sg, widget);
+  gtk_box_pack_start (GTK_BOX (bvbox), widget, FALSE, FALSE, 0);
+  widget = gtk_bin_get_child (GTK_BIN (widget));
+  gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
 
   x = nlistGetNum (starter->options, STARTERUI_POSITION_X);
   y = nlistGetNum (starter->options, STARTERUI_POSITION_Y);
@@ -461,6 +502,85 @@ starterStartConfig (GtkButton *b, gpointer udata)
       ROUTE_CONFIGUI, "bdj4configui", PROCUTIL_DETACH);
 }
 
+static void
+starterProcessSupport (GtkButton *b, gpointer udata)
+{
+  startui_t     *starter = udata;
+  GtkWidget     *content;
+  GtkWidget     *vbox;
+  GtkWidget     *hbox;
+  GtkWidget     *widget;
+  GtkWidget     *dialog;
+  char          tbuff [MAXPATHLEN];
+
+  dialog = gtk_dialog_new_with_buttons (
+      /* CONTEXT: title for the support dialog */
+      _("Support"),
+      GTK_WINDOW (starter->window),
+      GTK_DIALOG_DESTROY_WITH_PARENT,
+      /* CONTEXT: action button for the support dialog */
+      _("Close"),
+      GTK_RESPONSE_CLOSE,
+      NULL
+      );
+
+  content = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
+
+  vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+  assert (vbox != NULL);
+  gtk_widget_set_hexpand (vbox, FALSE);
+  gtk_widget_set_vexpand (vbox, FALSE);
+  gtk_container_add (GTK_CONTAINER (content), vbox);
+
+  /* line 1 */
+  widget = uiutilsCreateColonLabel (_("Support options"));
+  gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
+
+  /* line 2 */
+  widget = gtk_link_button_new ("");
+  snprintf (tbuff, sizeof (tbuff), _("%s%s"),
+      sysvarsGetStr (SV_FORUM_HOST), sysvarsGetStr (SV_FORUM_URI));
+  gtk_link_button_set_uri (GTK_LINK_BUTTON (widget), tbuff);
+  snprintf (tbuff, sizeof (tbuff), _("%s Forums"), BDJ4_NAME);
+  gtk_button_set_label (GTK_BUTTON (widget), tbuff);
+  gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
+
+  /* line 3 */
+  widget = gtk_link_button_new ("");
+  snprintf (tbuff, sizeof (tbuff), _("%s%s"),
+      sysvarsGetStr (SV_SUPPORT_HOST), sysvarsGetStr (SV_SUPPORT_URI));
+  gtk_link_button_set_uri (GTK_LINK_BUTTON (widget), tbuff);
+  snprintf (tbuff, sizeof (tbuff), _("%s Support Tickets"), BDJ4_NAME);
+  gtk_button_set_label (GTK_BUTTON (widget), tbuff);
+  gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
+
+  /* the dialog doesn't have any space above the buttons */
+  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+  assert (hbox != NULL);
+  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+
+  widget = uiutilsCreateLabel (" ");
+  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+
+  g_signal_connect (dialog, "response",
+      G_CALLBACK (starterSupportResponseHandler), starter);
+  gtk_widget_show_all (dialog);
+}
+
+
+static void
+starterSupportResponseHandler (GtkDialog *d, gint responseid, gpointer udata)
+{
+  switch (responseid) {
+    case GTK_RESPONSE_DELETE_EVENT: {
+      break;
+    }
+    case GTK_RESPONSE_CLOSE: {
+      gtk_widget_destroy (GTK_WIDGET (d));
+      break;
+    }
+  }
+}
 
 static void
 starterProcessExit (GtkButton *b, gpointer udata)
@@ -514,6 +634,7 @@ starterGetProfiles (startui_t *starter)
     }
   }
 
+  /* CONTEXT: starter: creating a new profile */
   nlistSetStr (starter->dispProfileList, count, _("New Profile"));
   nlistSetNum (starter->profileIdxMap, count, availidx);
   starter->newprofile = availidx;
@@ -545,6 +666,8 @@ starterCheckProfile (startui_t *starter)
 
     bdjoptInit ();
     profidx = sysvarsGetNum (SVL_BDJIDX);
+
+    /* CONTEXT: starter: name of the new profile (New profile 9) */
     snprintf (tbuff, sizeof (tbuff), "%s %d", _("New Profile"), profidx);
     bdjoptSetStr (OPT_P_PROFILENAME, tbuff);
     bdjoptSave ();
