@@ -11,8 +11,11 @@
 #include <math.h>
 
 #include <gtk/gtk.h>
+#include <glib.h>
+#include <zlib.h>
 
 #include "bdj4.h"
+#include "bdjstring.h"
 #include "bdj4init.h"
 #include "bdj4intl.h"
 #include "bdjmsg.h"
@@ -20,6 +23,7 @@
 #include "bdjvars.h"
 #include "conn.h"
 #include "fileop.h"
+#include "filemanip.h"
 #include "localeutil.h"
 #include "log.h"
 #include "nlist.h"
@@ -30,6 +34,7 @@
 #include "sysvars.h"
 #include "templateutil.h"
 #include "uiutils.h"
+#include "webclient.h"
 
 typedef struct {
   progstate_t     *progstate;
@@ -44,8 +49,13 @@ typedef struct {
   int             maxProfileWidth;
   /* gtk stuff */
   uiutilsspinbox_t  profilesel;
-  GtkApplication  *app;
-  GtkWidget       *window;
+  GtkApplication    *app;
+  GtkWidget         *window;
+  GtkWidget         *supportSendFiles;
+  GtkWidget         *supportSendDB;
+  uiutilstextbox_t  *supporttb;
+  uiutilsentry_t    supportsubject;
+  uiutilsentry_t    supportemail;
   /* options */
   datafile_t      *optiondf;
   nlist_t         *options;
@@ -67,6 +77,7 @@ static datafilekey_t starteruidfkeys [STARTERUI_KEY_MAX] = {
 };
 
 #define STARTER_EXIT_WAIT_COUNT      20
+#define SUPPORT_BUFF_SZ (10*1024*1024)
 
 static bool     starterStoppingCallback (void *udata, programstate_t programState);
 static bool     starterClosingCallback (void *udata, programstate_t programState);
@@ -88,6 +99,16 @@ static char     * starterSetProfile (void *udata, int idx);
 static void     starterCheckProfile (startui_t *starter);
 static void     starterProcessSupport (GtkButton *b, gpointer udata);
 static void     starterSupportResponseHandler (GtkDialog *d, gint responseid, gpointer udata);
+static void     starterCreateSupportDialog (GtkButton *b, gpointer udata);
+static void     starterSupportMsgHandler (GtkDialog *d, gint responseid, gpointer udata);
+static void     starterSendFiles (webclient_t *webclient, char *ident, char *dir);
+static void     starterSendFile (webclient_t *webclient, char *ident, char *origfn, char *fn);
+static void     starterSendFileCallback (void *userdata, char *resp, size_t len);
+
+static void     starterCompressFile (char *infn, char *outfn);
+static z_stream * starterGzipInit (char *out, int outsz);
+static void     starterGzip (z_stream *zs, const char* in, int insz);
+static size_t   starterGzipEnd (z_stream *zs);
 
 
 static int gKillReceived = 0;
@@ -512,6 +533,7 @@ starterProcessSupport (GtkButton *b, gpointer udata)
   GtkWidget     *widget;
   GtkWidget     *dialog;
   char          tbuff [MAXPATHLEN];
+  char          uri [MAXPATHLEN];
 
   dialog = gtk_dialog_new_with_buttons (
       /* CONTEXT: title for the support dialog */
@@ -537,21 +559,22 @@ starterProcessSupport (GtkButton *b, gpointer udata)
   gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
 
   /* line 2 */
-  widget = gtk_link_button_new ("");
-  snprintf (tbuff, sizeof (tbuff), _("%s%s"),
+  snprintf (uri, sizeof (uri), "%s%s",
       sysvarsGetStr (SV_FORUM_HOST), sysvarsGetStr (SV_FORUM_URI));
-  gtk_link_button_set_uri (GTK_LINK_BUTTON (widget), tbuff);
   snprintf (tbuff, sizeof (tbuff), _("%s Forums"), BDJ4_NAME);
-  gtk_button_set_label (GTK_BUTTON (widget), tbuff);
+  widget = uiutilsCreateLink (tbuff, uri);
   gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
 
   /* line 3 */
-  widget = gtk_link_button_new ("");
-  snprintf (tbuff, sizeof (tbuff), _("%s%s"),
+  snprintf (uri, sizeof (uri), "%s%s",
       sysvarsGetStr (SV_SUPPORT_HOST), sysvarsGetStr (SV_SUPPORT_URI));
-  gtk_link_button_set_uri (GTK_LINK_BUTTON (widget), tbuff);
   snprintf (tbuff, sizeof (tbuff), _("%s Support Tickets"), BDJ4_NAME);
-  gtk_button_set_label (GTK_BUTTON (widget), tbuff);
+  widget = uiutilsCreateLink (tbuff, uri);
+  gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
+
+  /* line 4 */
+  widget = uiutilsCreateButton (_("Send Support Message"), NULL,
+      starterCreateSupportDialog, starter);
   gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
 
   /* the dialog doesn't have any space above the buttons */
@@ -676,3 +699,326 @@ starterCheckProfile (startui_t *starter)
     starter->newprofile = -1;
   }
 }
+
+
+static void
+starterCreateSupportDialog (GtkButton *b, gpointer udata)
+{
+  startui_t     *starter = udata;
+  GtkWidget     *content;
+  GtkWidget     *vbox;
+  GtkWidget     *hbox;
+  GtkWidget     *widget;
+  GtkWidget     *dialog;
+  GtkSizeGroup  *sg;
+  uiutilstextbox_t *tb;
+
+  dialog = gtk_dialog_new_with_buttons (
+      /* CONTEXT: title for the support message dialog */
+      _("Support Message"),
+      GTK_WINDOW (starter->window),
+      GTK_DIALOG_DESTROY_WITH_PARENT,
+      /* CONTEXT: action button for the support message dialog */
+      _("Close"),
+      GTK_RESPONSE_CLOSE,
+      /* CONTEXT: action button for the support message dialog */
+      _("Send Support Message"),
+      GTK_RESPONSE_APPLY,
+      NULL
+      );
+  gtk_window_set_default_size (GTK_WINDOW (dialog), 800, 200);
+
+  content = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
+
+  sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+
+  vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+  assert (vbox != NULL);
+  gtk_widget_set_hexpand (vbox, FALSE);
+  gtk_widget_set_vexpand (vbox, FALSE);
+  gtk_container_add (GTK_CONTAINER (content), vbox);
+
+  /* line 1 */
+  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+  assert (hbox != NULL);
+  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+
+  widget = uiutilsCreateColonLabel (_("E-Mail Address"));
+  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+  gtk_size_group_add_widget (sg, widget);
+
+  uiutilsEntryInit (&starter->supportemail, 50, 100);
+  widget = uiutilsEntryCreate (&starter->supportemail);
+  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+
+  /* line 2 */
+  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+  assert (hbox != NULL);
+  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+
+  widget = uiutilsCreateColonLabel (_("Subject"));
+  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+  gtk_size_group_add_widget (sg, widget);
+
+  uiutilsEntryInit (&starter->supportsubject, 50, 100);
+  widget = uiutilsEntryCreate (&starter->supportsubject);
+  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+
+  /* line 3 */
+  widget = uiutilsCreateColonLabel (_("Message"));
+  gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
+
+  /* line 4 */
+  tb = uiutilsTextBoxCreate ();
+  gtk_widget_set_can_focus (tb->textbox, TRUE);
+  gtk_box_pack_start (GTK_BOX (vbox), tb->scw, FALSE, FALSE, 0);
+  starter->supporttb = tb;
+
+  /* line 5 */
+  widget = uiutilsCreateCheckButton (_("Send Data Files"), 0);
+  gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
+  starter->supportSendFiles = widget;
+
+  /* line 5 */
+  widget = uiutilsCreateCheckButton (_("Send Database"), 0);
+  gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
+  starter->supportSendDB = widget;
+
+  /* the dialog doesn't have any space above the buttons */
+  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+  assert (hbox != NULL);
+  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+
+  widget = uiutilsCreateLabel (" ");
+  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+
+  g_signal_connect (dialog, "response",
+      G_CALLBACK (starterSupportMsgHandler), starter);
+  gtk_widget_show_all (dialog);
+}
+
+
+static void
+starterSupportMsgHandler (GtkDialog *d, gint responseid, gpointer udata)
+{
+  startui_t   *starter = udata;
+  webclient_t *webclient = NULL;
+
+  switch (responseid) {
+    case GTK_RESPONSE_DELETE_EVENT: {
+      break;
+    }
+    case GTK_RESPONSE_CLOSE: {
+      gtk_widget_destroy (GTK_WIDGET (d));
+      break;
+    }
+    case GTK_RESPONSE_APPLY: {
+      const char  *email;
+      const char  *subj;
+      char        *msg;
+      FILE        *fh;
+      char        tbuff [MAXPATHLEN];
+      char        ofn [MAXPATHLEN];
+      char        ident [80];
+      char        datestr [40];
+      bool        sendfiles;
+      bool        senddb;
+
+      sendfiles = gtk_toggle_button_get_active (
+            GTK_TOGGLE_BUTTON (starter->supportSendFiles));
+      senddb = gtk_toggle_button_get_active (
+            GTK_TOGGLE_BUTTON (starter->supportSendDB));
+
+      tmutilDstamp (datestr, sizeof (datestr));
+      snprintf (ident, sizeof (ident), "%s-%s",
+          sysvarsGetStr (SV_USER_MUNGE), datestr);
+      email = uiutilsEntryGetValue (&starter->supportemail);
+      subj = uiutilsEntryGetValue (&starter->supportsubject);
+      msg = uiutilsTextBoxGetValue (starter->supporttb);
+
+      strlcpy (tbuff, "support.txt", sizeof (tbuff));
+      fh = fopen (tbuff, "w");
+      if (fh != NULL) {
+        fprintf (fh, " Date: %s\n", datestr);
+        fprintf (fh, " Ident: %s\n", ident);
+        fprintf (fh, " E-Mail: %s\n", email);
+        fprintf (fh, " Subject: %s\n", subj);
+        fprintf (fh, " Message:\n%s\n", msg);
+        fclose (fh);
+      }
+      free (msg);
+
+      webclient = webclientAlloc (starter, starterSendFileCallback);
+
+      pathbldMakePath (ofn, sizeof (ofn),
+          tbuff, ".gz.b64", PATHBLD_MP_TMPDIR);
+      starterSendFile (webclient, ident, tbuff, ofn);
+      fileopDelete (tbuff);
+
+      if (sendfiles) {
+        pathbldMakePath (tbuff, sizeof (tbuff),
+            "", "", PATHBLD_MP_NONE);
+        starterSendFiles (webclient, ident, tbuff);
+        pathbldMakePath (tbuff, sizeof (tbuff),
+            "", "", PATHBLD_MP_USEIDX);
+        starterSendFiles (webclient, ident, tbuff);
+        pathbldMakePath (tbuff, sizeof (tbuff),
+            "", "", PATHBLD_MP_HOSTNAME);
+        starterSendFiles (webclient, ident, tbuff);
+        pathbldMakePath (tbuff, sizeof (tbuff),
+            "", "", PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
+        starterSendFiles (webclient, ident, tbuff);
+      }
+
+      if (senddb) {
+        strlcpy (tbuff, "data/musicdb.dat", sizeof (tbuff));
+        pathbldMakePath (ofn, sizeof (ofn),
+            "musicdb.dat", ".gz.b64", PATHBLD_MP_TMPDIR);
+        starterSendFile (webclient, ident, tbuff, ofn);
+      }
+
+      webclientClose (webclient);
+      gtk_widget_destroy (GTK_WIDGET (d));
+      break;
+    }
+  }
+
+  uiutilsEntryFree (&starter->supportsubject);
+  uiutilsEntryFree (&starter->supportemail);
+}
+
+static void
+starterSendFiles (webclient_t *webclient, char *ident, char *dir)
+{
+  slist_t     *list;
+  slistidx_t  iteridx;
+  char        *fn;
+  char        ifn [MAXPATHLEN];
+  char        ofn [MAXPATHLEN];
+
+  list = filemanipBasicDirList (dir, ".txt");
+  slistStartIterator (list, &iteridx);
+  while ((fn = slistIterateKey (list, &iteridx)) != NULL) {
+    strlcpy (ifn, dir, sizeof (ifn));
+    strlcat (ifn, "/", sizeof (ifn));
+    strlcat (ifn, fn, sizeof (ifn));
+    pathbldMakePath (ofn, sizeof (ofn),
+        fn, ".gz.b64", PATHBLD_MP_TMPDIR);
+    starterSendFile (webclient, ident, ifn, ofn);
+  }
+  slistFree (list);
+}
+
+static void
+starterSendFile (webclient_t *webclient, char *ident, char *origfn, char *fn)
+{
+  char      uri [1024];
+  char      *query [7];
+
+  starterCompressFile (origfn, fn);
+  snprintf (uri, sizeof (uri), "%s%s",
+      sysvarsGetStr (SV_SUPPORTMSG_HOST), sysvarsGetStr (SV_SUPPORTMSG_URI));
+  query [0] = "key";
+  query [1] = "9034545";
+  query [2] = "ident";
+  query [3] = ident;
+  query [4] = "origfn";
+  query [5] = origfn;
+  query [6] = NULL;
+  webclientUploadFile (webclient, uri, query, fn);
+  fileopDelete (fn);
+}
+
+static void
+starterSendFileCallback (void *userdata, char *resp, size_t len)
+{
+  return;
+}
+
+static void
+starterCompressFile (char *infn, char *outfn)
+{
+  FILE      *infh = NULL;
+  FILE      *outfh = NULL;
+  char      *buff;
+  char      *obuff;
+  char      *data;
+  size_t    r;
+  size_t    olen;
+  z_stream  *zs;
+
+  infh = fopen (infn, "rb");
+  if (infh == NULL) {
+    return;
+  }
+  outfh = fopen (outfn, "wb");
+  if (outfh == NULL) {
+    return;
+  }
+
+  buff = malloc (SUPPORT_BUFF_SZ);
+  assert (buff != NULL);
+  /* if the database becomes so large that 10 megs compressed can't hold it */
+  /* then there will be a problem */
+  obuff = malloc (SUPPORT_BUFF_SZ);
+  assert (obuff != NULL);
+
+  zs = starterGzipInit (obuff, SUPPORT_BUFF_SZ);
+  while ((r = fread (buff, 1, SUPPORT_BUFF_SZ, infh)) > 0) {
+    starterGzip (zs, buff, r);
+  }
+  olen = starterGzipEnd (zs);
+  data = g_base64_encode ((const guchar *) obuff, olen);
+  fwrite (data, strlen (data), 1, outfh);
+  free (data);
+
+  fclose (infh);
+  fclose (outfh);
+  free (buff);
+  free (obuff);
+}
+
+static z_stream *
+starterGzipInit (char *out, int outsz)
+{
+  z_stream *zs;
+
+  zs = malloc (sizeof (z_stream));
+  zs->zalloc = Z_NULL;
+  zs->zfree = Z_NULL;
+  zs->opaque = Z_NULL;
+  zs->avail_in = (uInt) 0;
+  zs->next_in = (Bytef *) NULL;
+  zs->avail_out = (uInt) outsz;
+  zs->next_out = (Bytef *) out;
+
+  // hard to believe they don't have a macro for gzip encoding, "Add 16" is the best thing zlib can do:
+  // "Add 16 to windowBits to write a simple gzip header and trailer around the compressed data instead of a zlib wrapper"
+  deflateInit2 (zs, 6, Z_DEFLATED, 15 | 16, 8, Z_DEFAULT_STRATEGY);
+  return zs;
+}
+
+static void
+starterGzip (z_stream *zs, const char* in, int insz)
+{
+  zs->avail_in = (uInt) insz;
+  zs->next_in = (Bytef *) in;
+
+  deflate (zs, Z_NO_FLUSH);
+}
+
+static size_t
+starterGzipEnd (z_stream *zs)
+{
+  size_t    olen;
+
+  zs->avail_in = (uInt) 0;
+  zs->next_in = (Bytef *) NULL;
+
+  deflate (zs, Z_FINISH);
+  olen = zs->total_out;
+  deflateEnd (zs);
+  free (zs);
+  return olen;
+}
+

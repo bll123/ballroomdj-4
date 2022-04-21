@@ -252,6 +252,7 @@ target_link_libraries (bdj4starterui
   libbdj4ui libbdj4gtk libbdj4common
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}
+  z
   m
 )
 addIntlLibrary (bdj4starterui)

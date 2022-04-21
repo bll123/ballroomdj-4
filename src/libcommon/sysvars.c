@@ -55,6 +55,8 @@ static sysvarsdesc_t sysvarsdesc [SV_MAX] = {
   [SV_BDJ4TMPDIR] = { "Dir-Temp" },
   [SV_BDJ4_VERSION] = { "BDJ4-Version" },
   [SV_CA_FILE] = { "CA-File" },
+  [SV_FORUM_HOST] = { "Host-Forum" },
+  [SV_FORUM_URI] = { "URI-Forum" },
   [SV_GETCONF_PATH] = { "Path-getconf" },
   [SV_HOME] = { "Path-Home" },
   [SV_HOSTNAME] = { "Hostname" },
@@ -73,6 +75,12 @@ static sysvarsdesc_t sysvarsdesc [SV_MAX] = {
   [SV_PYTHON_PIP_PATH] = { "Path-pip" },
   [SV_PYTHON_VERSION] = { "Version-Python" },
   [SV_SHLIB_EXT] = { "Sharedlib-Extension" },
+  [SV_SUPPORT_HOST] = { "Host-Support" },
+  [SV_SUPPORT_URI] = { "URI-Support" },
+  [SV_SUPPORTMSG_HOST] = { "Host-Support-Msg" },
+  [SV_SUPPORTMSG_URI] = { "URI-Support-Msg" },
+  [SV_USER] = { "User" },
+  [SV_USER_MUNGE] = { "User-Munge" },
   [SV_USER_AGENT] = { "User-Agent" },
   [SV_VLC_PATH] = { "Path-vlc" },
   [SV_WEB_HOST] = { "Host-Web" },
@@ -115,6 +123,7 @@ sysvarsInit (const char *argv0)
   char          *tsep;
   char          *tokstr;
   char          *p;
+  size_t        dlen;
 #if _lib_uname
   int             rc;
   struct utsname  ubuf;
@@ -183,9 +192,15 @@ sysvarsInit (const char *argv0)
   if (isWindows ()) {
     strlcpy (sysvars [SV_HOME], getenv ("USERPROFILE"), SV_MAX_SZ);
     pathNormPath (sysvars [SV_HOME], SV_MAX_SZ);
+    strlcpy (sysvars [SV_USER], getenv ("USERNAME"), SV_MAX_SZ);
   } else {
     strlcpy (sysvars [SV_HOME], getenv ("HOME"), SV_MAX_SZ);
+    strlcpy (sysvars [SV_USER], getenv ("USER"), SV_MAX_SZ);
   }
+  dlen = strlen (sysvars [SV_USER]) + 1;
+  tptr = filedataReplace (sysvars [SV_USER], &dlen, " ", "-");
+  strlcpy (sysvars [SV_USER_MUNGE], tptr, SV_MAX_SZ);
+  free (tptr);
 
   (void) ! getcwd (tcwd, sizeof (tcwd));
 
@@ -254,6 +269,8 @@ sysvarsInit (const char *argv0)
   strlcpy (sysvars [SV_FORUM_URI], "/forum/index.php", SV_MAX_SZ);
   strlcpy (sysvars [SV_SUPPORT_HOST], "https://sourceforge.net", SV_MAX_SZ);
   strlcpy (sysvars [SV_SUPPORT_URI], "/p/ballroomdj4/tickets/", SV_MAX_SZ);
+  strlcpy (sysvars [SV_SUPPORTMSG_HOST], "https://ballroomdj.org", SV_MAX_SZ);
+  strlcpy (sysvars [SV_SUPPORTMSG_URI], "/bdj4support.php", SV_MAX_SZ);
 
   for (size_t i = 0; i < CACERT_FILE_COUNT; ++i) {
     if (fileopFileExists (cacertFiles [i])) {

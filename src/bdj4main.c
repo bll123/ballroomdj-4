@@ -152,6 +152,9 @@ main (int argc, char *argv[])
   mainData.musicqDeferredPlayIdx = MAIN_NOT_SET;
   mainData.playerState = PL_STATE_STOPPED;
   mainData.webclient = NULL;
+  if (bdjoptGetNum (OPT_P_MOBILEMARQUEE) != MOBILEMQ_OFF) {
+    mainData.webclient = webclientAlloc (&mainData, mainMobilePostCallback);
+  }
   mainData.mobmqUserkey = NULL;
   mainData.playWhenQueued = true;
   mainData.switchQueueWhenEmpty = false;
@@ -823,8 +826,7 @@ mainSendMobileMarqueeData (maindata_t *mainData)
       snprintf (tbuffb, sizeof (tbuffb), "&userkey=%s", mainData->mobmqUserkey);
       strlcat (qbuff, tbuffb, sizeof (qbuff));
     }
-    mainData->webclient = webclientPost (mainData->webclient,
-        tbuff, qbuff, mainData, mainMobilePostCallback);
+    webclientPost (mainData->webclient, tbuff, qbuff);
   }
   logProcEnd (LOG_PROC, "mainSendMobileMarqueeData", "");
 }

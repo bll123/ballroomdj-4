@@ -5,12 +5,14 @@ include (../utils/bdj4macros.cmake)
 add_library (libbdj4gtk SHARED
   uimusicqgtk.c
   uisongselgtk.c
-  uigtkutils.c
-  uigtklabel.c
   uigtkbutton.c
-  uigtkentry.c
-  uigtkspinbox.c
   uigtkdropdown.c
+  uigtkentry.c
+  uigtklabel.c
+  uigtklink.c
+  uigtkspinbox.c
+  uigtktextbox.c
+  uigtkutils.c
 )
 target_include_directories (libbdj4gtk
   PUBLIC ${GTK_INCLUDE_DIRS}

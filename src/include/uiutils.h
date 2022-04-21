@@ -31,6 +31,12 @@ typedef struct {
   bool          iscombobox : 1;
 } uiutilsdropdown_t;
 
+typedef struct {
+  GtkWidget     *scw;
+  GtkWidget     *textbox;
+  GtkTextBuffer *buffer;
+} uiutilstextbox_t;
+
 typedef bool (*uiutilsentryval_t)(void *entry, void *udata);
 
 typedef struct {
@@ -129,6 +135,16 @@ void uiutilsDropDownSetNumList (uiutilsdropdown_t *dropdown, slist_t *list,
     char *selectLabel);
 void uiutilsDropDownSelectionSetNum (uiutilsdropdown_t *dropdown, nlistidx_t idx);
 void uiutilsDropDownSelectionSetStr (uiutilsdropdown_t *dropdown, char *stridx);
+
+/* uigtklink.c */
+GtkWidget * uiutilsCreateLink (char *label, char *uri);
+void        uiutilsLinkSet (GtkWidget *widget, char *label, char *uri);
+
+/* uigtktextbox.c */
+uiutilstextbox_t  *uiutilsTextBoxCreate (void);
+char  *uiutilsTextBoxGetValue (uiutilstextbox_t *tb);
+void  uiutilsTextBoxSetReadonly (uiutilstextbox_t *tb);
+void  uiutilsTextBoxScrollToEnd (uiutilstextbox_t *tb);
 
 /* uigtkutils.c */
 void  uiutilsCleanup (void);
