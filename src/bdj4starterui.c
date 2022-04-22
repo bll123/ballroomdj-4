@@ -371,7 +371,7 @@ starterActivate (GApplication *app, gpointer userdata)
   gtk_widget_set_margin_top (hbox, 8);
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
 
-  /* CONTEXT: the profile to be used when starting BDJ4 */
+  /* CONTEXT: starer: profile to be used when starting BDJ4 */
   widget = uiutilsCreateColonLabel (_("Profile"));
   gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
@@ -504,6 +504,7 @@ starterMainLoop (void *tstarter)
           sysvarsGetStr (SV_USER_MUNGE), datestr, tmstr);
 
       starter->webclient = webclientAlloc (starter, starterSendFileCallback);
+      /* CONTEXT: starterui: support: status message */
       snprintf (tbuff, sizeof (tbuff), _("Sending Support Message"));
       uiutilsLabelSetText (starter->supportStatus, tbuff);
       starter->delayCount = 0;
@@ -588,6 +589,7 @@ starterMainLoop (void *tstarter)
         starter->startState = START_STATE_SUPPORT_FINISH;
         break;
       }
+      /* CONTEXT: starterui: support: status message */
       snprintf (tbuff, sizeof (tbuff), _("Sending %s"), "data/musicdb.dat");
       uiutilsLabelSetText (starter->supportStatus, tbuff);
       starter->delayCount = 0;
@@ -763,12 +765,14 @@ starterProcessSupport (GtkButton *b, gpointer udata)
   gtk_container_add (GTK_CONTAINER (content), vbox);
 
   /* line 1 */
+  /* CONTEXT: starterui: basic support dialog, listing support options */
   widget = uiutilsCreateColonLabel (_("Support options"));
   gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
 
   /* line 2 */
   snprintf (uri, sizeof (uri), "%s%s",
       sysvarsGetStr (SV_FORUM_HOST), sysvarsGetStr (SV_FORUM_URI));
+  /* CONTEXT: starterui: basic support dialog: support option */
   snprintf (tbuff, sizeof (tbuff), _("%s Forums"), BDJ4_NAME);
   widget = uiutilsCreateLink (tbuff, uri);
   gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
@@ -776,11 +780,13 @@ starterProcessSupport (GtkButton *b, gpointer udata)
   /* line 3 */
   snprintf (uri, sizeof (uri), "%s%s",
       sysvarsGetStr (SV_SUPPORT_HOST), sysvarsGetStr (SV_SUPPORT_URI));
+  /* CONTEXT: starterui: basic support dialog: support option */
   snprintf (tbuff, sizeof (tbuff), _("%s Support Tickets"), BDJ4_NAME);
   widget = uiutilsCreateLink (tbuff, uri);
   gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
 
   /* line 4 */
+  /* CONTEXT: starterui: basic support dialog: button: support option */
   widget = uiutilsCreateButton (_("Send Support Message"), NULL,
       starterCreateSupportDialog, starter);
   gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
@@ -952,6 +958,7 @@ starterCreateSupportDialog (GtkButton *b, gpointer udata)
   assert (hbox != NULL);
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
 
+  /* CONTEXT: sending support message: user's e-mail address */
   widget = uiutilsCreateColonLabel (_("E-Mail Address"));
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
   gtk_size_group_add_widget (sg, widget);
@@ -965,6 +972,7 @@ starterCreateSupportDialog (GtkButton *b, gpointer udata)
   assert (hbox != NULL);
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
 
+  /* CONTEXT: sending support message: subject of message */
   widget = uiutilsCreateColonLabel (_("Subject"));
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
   gtk_size_group_add_widget (sg, widget);
@@ -974,6 +982,7 @@ starterCreateSupportDialog (GtkButton *b, gpointer udata)
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 
   /* line 3 */
+  /* CONTEXT: sending support message: message */
   widget = uiutilsCreateColonLabel (_("Message"));
   gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
 
@@ -984,11 +993,13 @@ starterCreateSupportDialog (GtkButton *b, gpointer udata)
   starter->supporttb = tb;
 
   /* line 5 */
+  /* CONTEXT: sending support message: checkbox: option to send data files */
   widget = uiutilsCreateCheckButton (_("Send Data Files"), 0);
   gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
   starter->supportSendFiles = widget;
 
   /* line 6 */
+  /* CONTEXT: sending support message: checkbox: option to send database */
   widget = uiutilsCreateCheckButton (_("Send Database"), 0);
   gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
   starter->supportSendDB = widget;
@@ -1086,6 +1097,7 @@ starterSendFiles (startui_t *starter)
       fn, ".gz.b64", PATHBLD_MP_TMPDIR);
   starter->supportInFname = strdup (ifn);
   starter->supportOutFname = strdup (ofn);
+  /* CONTEXT: starterui: support: status message */
   snprintf (tbuff, sizeof (tbuff), _("Sending %s"), ifn);
   uiutilsLabelSetText (starter->supportStatus, tbuff);
 }

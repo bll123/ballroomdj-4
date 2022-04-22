@@ -1,10 +1,5 @@
 #!/bin/bash
 
-echo "Will overwrite existing .po files."
-echo "Press enter to continue."
-echo -n ": "
-read answer
-
 cwd=$(pwd)
 case ${cwd} in
   */po)
