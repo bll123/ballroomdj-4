@@ -48,3 +48,8 @@ uiutilsCreateColonLabel (char *label)
   return widget;
 }
 
+void
+uiutilsLabelSetText (GtkWidget *widget, char *text)
+{
+  gtk_label_set_text (GTK_LABEL (widget), text);
+}

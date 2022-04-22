@@ -152,7 +152,7 @@ main (int argc, char *argv[])
   mainData.musicqDeferredPlayIdx = MAIN_NOT_SET;
   mainData.playerState = PL_STATE_STOPPED;
   mainData.webclient = NULL;
-  if (bdjoptGetNum (OPT_P_MOBILEMARQUEE) != MOBILEMQ_OFF) {
+  if (bdjoptGetNum (OPT_P_MOBILEMARQUEE) == MOBILEMQ_INTERNET) {
     mainData.webclient = webclientAlloc (&mainData, mainMobilePostCallback);
   }
   mainData.mobmqUserkey = NULL;

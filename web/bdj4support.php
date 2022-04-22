@@ -25,9 +25,12 @@ if (isset($_FILES['upfile']['name']) &&
   $fdata = file_get_contents ($tfn);
   $fdata = base64_decode ($fdata);
   mkdir (dirname ($fn));
+  unlink ($fn . '.gz');
   file_put_contents ($fn . '.gz', $fdata);
   unlink ($tfn);
+  unlink ($fn);
   system ("gzip -d $fn.gz");
+  unlink ($fn . '.gz');
 
   if ($base == 'support.txt') {
     $msg = file_get_contents ($fn);

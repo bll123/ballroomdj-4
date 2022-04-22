@@ -36,6 +36,21 @@
 #include "uiutils.h"
 #include "webclient.h"
 
+typedef enum {
+  START_STATE_NONE,
+  START_STATE_DELAY,
+  START_STATE_SUPPORT_INIT,
+  START_STATE_SUPPORT_SEND_MSG,
+  START_STATE_SUPPORT_SEND_FILES_A,
+  START_STATE_SUPPORT_SEND_FILES_B,
+  START_STATE_SUPPORT_SEND_FILES_C,
+  START_STATE_SUPPORT_SEND_FILES_D,
+  START_STATE_SUPPORT_SEND_DB_PRE,
+  START_STATE_SUPPORT_SEND_DB,
+  START_STATE_SUPPORT_FINISH,
+  START_STATE_SUPPORT_SEND_FILE,
+} startstate_t;
+
 typedef struct {
   progstate_t     *progstate;
   char            *locknm;
@@ -47,12 +62,25 @@ typedef struct {
   ssize_t         currprofile;
   ssize_t         newprofile;
   int             maxProfileWidth;
+  startstate_t    startState;
+  startstate_t    nextState;
+  startstate_t    delayState;
+  int             delayCount;
+  char            *supportDir;
+  slist_t         *supportFileList;
+  slistidx_t      supportFileIterIdx;
+  char            *supportInFname;
+  char            *supportOutFname;
+  webclient_t     *webclient;
+  char            ident [80];
   /* gtk stuff */
   uiutilsspinbox_t  profilesel;
   GtkApplication    *app;
   GtkWidget         *window;
+  GtkWidget         *supportDialog;
   GtkWidget         *supportSendFiles;
   GtkWidget         *supportSendDB;
+  GtkWidget         *supportStatus;
   uiutilstextbox_t  *supporttb;
   uiutilsentry_t    supportsubject;
   uiutilsentry_t    supportemail;
@@ -76,9 +104,11 @@ static datafilekey_t starteruidfkeys [STARTERUI_KEY_MAX] = {
   { "STARTERUI_SIZE_Y",    STARTERUI_SIZE_Y,        VALUE_NUM, NULL, -1 },
 };
 
-#define STARTER_EXIT_WAIT_COUNT      20
-#define SUPPORT_BUFF_SZ (10*1024*1024)
+#define STARTER_EXIT_WAIT_COUNT 20
+#define SUPPORT_BUFF_SZ         (10*1024*1024)
+#define LOOP_DELAY              5
 
+static bool     starterConnectingCallback (void *udata, programstate_t programState);
 static bool     starterStoppingCallback (void *udata, programstate_t programState);
 static bool     starterClosingCallback (void *udata, programstate_t programState);
 static void     starterActivate (GApplication *app, gpointer userdata);
@@ -101,8 +131,9 @@ static void     starterProcessSupport (GtkButton *b, gpointer udata);
 static void     starterSupportResponseHandler (GtkDialog *d, gint responseid, gpointer udata);
 static void     starterCreateSupportDialog (GtkButton *b, gpointer udata);
 static void     starterSupportMsgHandler (GtkDialog *d, gint responseid, gpointer udata);
-static void     starterSendFiles (webclient_t *webclient, char *ident, char *dir);
-static void     starterSendFile (webclient_t *webclient, char *ident, char *origfn, char *fn);
+static void     starterSendFilesInit (startui_t *starter, char *dir);
+static void     starterSendFiles (startui_t *starter);
+static void     starterSendFile (startui_t *starter, char *origfn, char *fn);
 static void     starterSendFileCallback (void *userdata, char *resp, size_t len);
 
 static void     starterCompressFile (char *infn, char *outfn);
@@ -126,6 +157,8 @@ main (int argc, char *argv[])
 
 
   starter.progstate = progstateInit ("starterui");
+  progstateSetCallback (starter.progstate, STATE_CONNECTING,
+      starterConnectingCallback, &starter);
   progstateSetCallback (starter.progstate, STATE_STOPPING,
       starterStoppingCallback, &starter);
   progstateSetCallback (starter.progstate, STATE_CLOSING,
@@ -135,6 +168,15 @@ main (int argc, char *argv[])
   starter.maxProfileWidth = 0;
   starter.dispProfileList = NULL;
   starter.profileIdxMap = NULL;
+  starter.startState = START_STATE_NONE;
+  starter.nextState = START_STATE_NONE;
+  starter.delayState = START_STATE_NONE;
+  starter.delayCount = 0;
+  starter.supportDir = NULL;
+  starter.supportFileList = NULL;
+  starter.supportInFname = NULL;
+  starter.supportOutFname = NULL;
+  starter.webclient = NULL;
 
   for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
     starter.processes [i] = NULL;
@@ -199,6 +241,31 @@ main (int argc, char *argv[])
 /* internal routines */
 
 static bool
+starterConnectingCallback (void *udata, programstate_t programState)
+{
+  startui_t *starter = udata;
+
+  /* the starter process only need to re-try a connection if it */
+  /* had crashed.  these connections are not possible during normal */
+  /* startup */
+
+  if (starter->processes [ROUTE_PLAYERUI] != NULL &&
+      ! connIsConnected (starter->conn, ROUTE_PLAYERUI)) {
+    connConnect (starter->conn, ROUTE_PLAYERUI);
+  }
+  if (starter->processes [ROUTE_MANAGEUI] != NULL &&
+      ! connIsConnected (starter->conn, ROUTE_MANAGEUI)) {
+    connConnect (starter->conn, ROUTE_MANAGEUI);
+  }
+  if (starter->processes [ROUTE_CONFIGUI] != NULL &&
+      ! connIsConnected (starter->conn, ROUTE_CONFIGUI)) {
+    connConnect (starter->conn, ROUTE_CONFIGUI);
+  }
+
+  return true;
+}
+
+static bool
 starterStoppingCallback (void *udata, programstate_t programState)
 {
   startui_t   *starter = udata;
@@ -244,6 +311,12 @@ starterClosingCallback (void *udata, programstate_t programState)
   nlistFree (starter->profileIdxMap);
   if (starter->optiondf != NULL) {
     datafileFree (starter->optiondf);
+  }
+  if (starter->supportDir != NULL) {
+    free (starter->supportDir);
+  }
+  if (starter->supportFileList != NULL) {
+    slistFree (starter->supportFileList);
   }
 
   bdj4shutdown (ROUTE_STARTERUI);
@@ -386,6 +459,10 @@ starterMainLoop (void *tstarter)
   startui_t   *starter = tstarter;
   int         tdone = 0;
   gboolean    cont = TRUE;
+  /* support message handling */
+  char        tbuff [MAXPATHLEN];
+  char        ofn [MAXPATHLEN];
+
 
   tdone = sockhProcessMain (starter->sockserver, starterProcessMsg, starter);
   if (tdone || gdone) {
@@ -405,17 +482,148 @@ starterMainLoop (void *tstarter)
     return cont;
   }
 
-  if (starter->processes [ROUTE_PLAYERUI] != NULL &&
-      ! connIsConnected (starter->conn, ROUTE_PLAYERUI)) {
-    connConnect (starter->conn, ROUTE_PLAYERUI);
-  }
-  if (starter->processes [ROUTE_MANAGEUI] != NULL &&
-      ! connIsConnected (starter->conn, ROUTE_MANAGEUI)) {
-    connConnect (starter->conn, ROUTE_MANAGEUI);
-  }
-  if (starter->processes [ROUTE_CONFIGUI] != NULL &&
-      ! connIsConnected (starter->conn, ROUTE_CONFIGUI)) {
-    connConnect (starter->conn, ROUTE_CONFIGUI);
+  switch (starter->startState) {
+    case START_STATE_NONE: {
+      break;
+    }
+    case START_STATE_DELAY: {
+      ++starter->delayCount;
+      if (starter->delayCount > LOOP_DELAY) {
+        starter->delayCount = 0;
+        starter->startState = starter->delayState;
+      }
+      break;
+    }
+    case START_STATE_SUPPORT_INIT: {
+      char        datestr [40];
+      char        tmstr [40];
+
+      tmutilDstamp (datestr, sizeof (datestr));
+      tmutilTstamp (tmstr, sizeof (tmstr));
+      snprintf (starter->ident, sizeof (starter->ident), "%s-%s-%s",
+          sysvarsGetStr (SV_USER_MUNGE), datestr, tmstr);
+
+      starter->webclient = webclientAlloc (starter, starterSendFileCallback);
+      snprintf (tbuff, sizeof (tbuff), _("Sending Support Message"));
+      uiutilsLabelSetText (starter->supportStatus, tbuff);
+      starter->delayCount = 0;
+      starter->delayState = START_STATE_SUPPORT_SEND_MSG;
+      starter->startState = START_STATE_DELAY;
+      break;
+    }
+    case START_STATE_SUPPORT_SEND_MSG: {
+      const char  *email;
+      const char  *subj;
+      char        *msg;
+      FILE        *fh;
+
+      email = uiutilsEntryGetValue (&starter->supportemail);
+      subj = uiutilsEntryGetValue (&starter->supportsubject);
+      msg = uiutilsTextBoxGetValue (starter->supporttb);
+
+      strlcpy (tbuff, "support.txt", sizeof (tbuff));
+      fh = fopen (tbuff, "w");
+      if (fh != NULL) {
+        fprintf (fh, " Ident: %s\n", starter->ident);
+        fprintf (fh, " E-Mail: %s\n", email);
+        fprintf (fh, " Subject: %s\n", subj);
+        fprintf (fh, " Message:\n%s\n", msg);
+        fclose (fh);
+      }
+      free (msg);
+
+      pathbldMakePath (ofn, sizeof (ofn),
+          tbuff, ".gz.b64", PATHBLD_MP_TMPDIR);
+      starterSendFile (starter, tbuff, ofn);
+      fileopDelete (tbuff);
+      starter->startState = START_STATE_SUPPORT_SEND_FILES_A;
+      break;
+    }
+    case START_STATE_SUPPORT_SEND_FILES_A: {
+      bool        sendfiles;
+
+      sendfiles = gtk_toggle_button_get_active (
+            GTK_TOGGLE_BUTTON (starter->supportSendFiles));
+      if (! sendfiles) {
+        starter->startState = START_STATE_SUPPORT_SEND_DB_PRE;
+      }
+
+      pathbldMakePath (tbuff, sizeof (tbuff),
+          "", "", PATHBLD_MP_NONE);
+      starterSendFilesInit (starter, tbuff);
+      starter->startState = START_STATE_SUPPORT_SEND_FILE;
+      starter->nextState = START_STATE_SUPPORT_SEND_FILES_B;
+      break;
+    }
+    case START_STATE_SUPPORT_SEND_FILES_B: {
+      pathbldMakePath (tbuff, sizeof (tbuff),
+          "", "", PATHBLD_MP_USEIDX);
+      starterSendFilesInit (starter, tbuff);
+      starter->startState = START_STATE_SUPPORT_SEND_FILE;
+      starter->nextState = START_STATE_SUPPORT_SEND_FILES_C;
+      break;
+    }
+    case START_STATE_SUPPORT_SEND_FILES_C: {
+      pathbldMakePath (tbuff, sizeof (tbuff),
+          "", "", PATHBLD_MP_HOSTNAME);
+      starterSendFilesInit (starter, tbuff);
+      starter->startState = START_STATE_SUPPORT_SEND_FILE;
+      starter->nextState = START_STATE_SUPPORT_SEND_FILES_D;
+      break;
+    }
+    case START_STATE_SUPPORT_SEND_FILES_D: {
+      pathbldMakePath (tbuff, sizeof (tbuff),
+          "", "", PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
+      starterSendFilesInit (starter, tbuff);
+      starter->startState = START_STATE_SUPPORT_SEND_FILE;
+      starter->nextState = START_STATE_SUPPORT_SEND_DB_PRE;
+      break;
+    }
+    case START_STATE_SUPPORT_SEND_DB_PRE: {
+      bool        senddb;
+
+      senddb = gtk_toggle_button_get_active (
+            GTK_TOGGLE_BUTTON (starter->supportSendDB));
+      if (! senddb) {
+        starter->startState = START_STATE_SUPPORT_FINISH;
+        break;
+      }
+      snprintf (tbuff, sizeof (tbuff), _("Sending %s"), "data/musicdb.dat");
+      uiutilsLabelSetText (starter->supportStatus, tbuff);
+      starter->delayCount = 0;
+      starter->delayState = START_STATE_SUPPORT_SEND_DB;
+      starter->startState = START_STATE_DELAY;
+      break;
+    }
+    case START_STATE_SUPPORT_SEND_DB: {
+      bool        senddb;
+
+      senddb = gtk_toggle_button_get_active (
+            GTK_TOGGLE_BUTTON (starter->supportSendDB));
+      if (senddb) {
+        strlcpy (tbuff, "data/musicdb.dat", sizeof (tbuff));
+        pathbldMakePath (ofn, sizeof (ofn),
+            "musicdb.dat", ".gz.b64", PATHBLD_MP_TMPDIR);
+        starterSendFile (starter, tbuff, ofn);
+      }
+      starter->startState = START_STATE_SUPPORT_FINISH;
+      break;
+    }
+    case START_STATE_SUPPORT_FINISH: {
+      webclientClose (starter->webclient);
+      gtk_widget_destroy (GTK_WIDGET (starter->supportDialog));
+      uiutilsEntryFree (&starter->supportsubject);
+      uiutilsEntryFree (&starter->supportemail);
+      starter->startState = START_STATE_NONE;
+      break;
+    }
+    case START_STATE_SUPPORT_SEND_FILE: {
+      starterSendFiles (starter);
+      starter->delayCount = 0;
+      starter->delayState = starter->startState;
+      starter->startState = START_STATE_DELAY;
+      break;
+    }
   }
 
   if (gKillReceived) {
@@ -712,6 +920,7 @@ starterCreateSupportDialog (GtkButton *b, gpointer udata)
   GtkWidget     *dialog;
   GtkSizeGroup  *sg;
   uiutilstextbox_t *tb;
+  char          tbuff [200];
 
   dialog = gtk_dialog_new_with_buttons (
       /* CONTEXT: title for the support message dialog */
@@ -779,10 +988,18 @@ starterCreateSupportDialog (GtkButton *b, gpointer udata)
   gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
   starter->supportSendFiles = widget;
 
-  /* line 5 */
+  /* line 6 */
   widget = uiutilsCreateCheckButton (_("Send Database"), 0);
   gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
   starter->supportSendDB = widget;
+
+  /* line 7 */
+  widget = uiutilsCreateLabel ("");
+  gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
+  snprintf (tbuff, sizeof (tbuff),
+      "label { color: %s; }", (char *) bdjoptGetStr (OPT_P_UI_ACCENT_COL));
+  uiutilsSetCss (widget, tbuff);
+  starter->supportStatus = widget;
 
   /* the dialog doesn't have any space above the buttons */
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
@@ -795,6 +1012,7 @@ starterCreateSupportDialog (GtkButton *b, gpointer udata)
   g_signal_connect (dialog, "response",
       G_CALLBACK (starterSupportMsgHandler), starter);
   gtk_widget_show_all (dialog);
+  starter->supportDialog = dialog;
 }
 
 
@@ -802,7 +1020,6 @@ static void
 starterSupportMsgHandler (GtkDialog *d, gint responseid, gpointer udata)
 {
   startui_t   *starter = udata;
-  webclient_t *webclient = NULL;
 
   switch (responseid) {
     case GTK_RESPONSE_DELETE_EVENT: {
@@ -813,104 +1030,68 @@ starterSupportMsgHandler (GtkDialog *d, gint responseid, gpointer udata)
       break;
     }
     case GTK_RESPONSE_APPLY: {
-      const char  *email;
-      const char  *subj;
-      char        *msg;
-      FILE        *fh;
-      char        tbuff [MAXPATHLEN];
-      char        ofn [MAXPATHLEN];
-      char        ident [80];
-      char        datestr [40];
-      bool        sendfiles;
-      bool        senddb;
-
-      sendfiles = gtk_toggle_button_get_active (
-            GTK_TOGGLE_BUTTON (starter->supportSendFiles));
-      senddb = gtk_toggle_button_get_active (
-            GTK_TOGGLE_BUTTON (starter->supportSendDB));
-
-      tmutilDstamp (datestr, sizeof (datestr));
-      snprintf (ident, sizeof (ident), "%s-%s",
-          sysvarsGetStr (SV_USER_MUNGE), datestr);
-      email = uiutilsEntryGetValue (&starter->supportemail);
-      subj = uiutilsEntryGetValue (&starter->supportsubject);
-      msg = uiutilsTextBoxGetValue (starter->supporttb);
-
-      strlcpy (tbuff, "support.txt", sizeof (tbuff));
-      fh = fopen (tbuff, "w");
-      if (fh != NULL) {
-        fprintf (fh, " Date: %s\n", datestr);
-        fprintf (fh, " Ident: %s\n", ident);
-        fprintf (fh, " E-Mail: %s\n", email);
-        fprintf (fh, " Subject: %s\n", subj);
-        fprintf (fh, " Message:\n%s\n", msg);
-        fclose (fh);
-      }
-      free (msg);
-
-      webclient = webclientAlloc (starter, starterSendFileCallback);
-
-      pathbldMakePath (ofn, sizeof (ofn),
-          tbuff, ".gz.b64", PATHBLD_MP_TMPDIR);
-      starterSendFile (webclient, ident, tbuff, ofn);
-      fileopDelete (tbuff);
-
-      if (sendfiles) {
-        pathbldMakePath (tbuff, sizeof (tbuff),
-            "", "", PATHBLD_MP_NONE);
-        starterSendFiles (webclient, ident, tbuff);
-        pathbldMakePath (tbuff, sizeof (tbuff),
-            "", "", PATHBLD_MP_USEIDX);
-        starterSendFiles (webclient, ident, tbuff);
-        pathbldMakePath (tbuff, sizeof (tbuff),
-            "", "", PATHBLD_MP_HOSTNAME);
-        starterSendFiles (webclient, ident, tbuff);
-        pathbldMakePath (tbuff, sizeof (tbuff),
-            "", "", PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
-        starterSendFiles (webclient, ident, tbuff);
-      }
-
-      if (senddb) {
-        strlcpy (tbuff, "data/musicdb.dat", sizeof (tbuff));
-        pathbldMakePath (ofn, sizeof (ofn),
-            "musicdb.dat", ".gz.b64", PATHBLD_MP_TMPDIR);
-        starterSendFile (webclient, ident, tbuff, ofn);
-      }
-
-      webclientClose (webclient);
-      gtk_widget_destroy (GTK_WIDGET (d));
+      starter->startState = START_STATE_SUPPORT_INIT;
       break;
     }
   }
-
-  uiutilsEntryFree (&starter->supportsubject);
-  uiutilsEntryFree (&starter->supportemail);
 }
 
 static void
-starterSendFiles (webclient_t *webclient, char *ident, char *dir)
+starterSendFilesInit (startui_t *starter, char *dir)
 {
   slist_t     *list;
-  slistidx_t  iteridx;
+
+  list = filemanipBasicDirList (dir, ".txt");
+  starter->supportFileList = list;
+  slistStartIterator (list, &starter->supportFileIterIdx);
+  if (starter->supportDir != NULL) {
+    free (starter->supportDir);
+  }
+  starter->supportDir = strdup (dir);
+}
+
+static void
+starterSendFiles (startui_t *starter)
+{
   char        *fn;
   char        ifn [MAXPATHLEN];
   char        ofn [MAXPATHLEN];
+  char        tbuff [100];
 
-  list = filemanipBasicDirList (dir, ".txt");
-  slistStartIterator (list, &iteridx);
-  while ((fn = slistIterateKey (list, &iteridx)) != NULL) {
-    strlcpy (ifn, dir, sizeof (ifn));
-    strlcat (ifn, "/", sizeof (ifn));
-    strlcat (ifn, fn, sizeof (ifn));
-    pathbldMakePath (ofn, sizeof (ofn),
-        fn, ".gz.b64", PATHBLD_MP_TMPDIR);
-    starterSendFile (webclient, ident, ifn, ofn);
+  if (starter->supportInFname != NULL) {
+    starterSendFile (starter, starter->supportInFname, starter->supportOutFname);
+    free (starter->supportInFname);
+    free (starter->supportOutFname);
+    starter->supportInFname = NULL;
+    starter->supportOutFname = NULL;
+    return;
   }
-  slistFree (list);
+
+  if ((fn = slistIterateKey (starter->supportFileList,
+      &starter->supportFileIterIdx)) == NULL) {
+    slistFree (starter->supportFileList);
+    starter->supportFileList = NULL;
+    if (starter->supportDir != NULL) {
+      free (starter->supportDir);
+    }
+    starter->supportDir = NULL;
+    starter->startState = starter->nextState;
+    return;
+  }
+
+  strlcpy (ifn, starter->supportDir, sizeof (ifn));
+  strlcat (ifn, "/", sizeof (ifn));
+  strlcat (ifn, fn, sizeof (ifn));
+  pathbldMakePath (ofn, sizeof (ofn),
+      fn, ".gz.b64", PATHBLD_MP_TMPDIR);
+  starter->supportInFname = strdup (ifn);
+  starter->supportOutFname = strdup (ofn);
+  snprintf (tbuff, sizeof (tbuff), _("Sending %s"), ifn);
+  uiutilsLabelSetText (starter->supportStatus, tbuff);
 }
 
 static void
-starterSendFile (webclient_t *webclient, char *ident, char *origfn, char *fn)
+starterSendFile (startui_t *starter, char *origfn, char *fn)
 {
   char      uri [1024];
   char      *query [7];
@@ -921,11 +1102,11 @@ starterSendFile (webclient_t *webclient, char *ident, char *origfn, char *fn)
   query [0] = "key";
   query [1] = "9034545";
   query [2] = "ident";
-  query [3] = ident;
+  query [3] = starter->ident;
   query [4] = "origfn";
   query [5] = origfn;
   query [6] = NULL;
-  webclientUploadFile (webclient, uri, query, fn);
+  webclientUploadFile (starter->webclient, uri, query, fn);
   fileopDelete (fn);
 }
 

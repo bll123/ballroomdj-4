@@ -227,7 +227,7 @@ main (int argc, char *argv[])
   installer.vlcinstalled = false;
   installer.pythoninstalled = false;
   installer.inSetConvert = false;
-  installer.delayMax = 20;
+  installer.delayMax = 10;
   installer.delayCount = 0;
   installer.app = NULL;
   installer.window = NULL;
@@ -337,7 +337,7 @@ main (int argc, char *argv[])
     status = uiutilsCreateApplication (0, NULL, "installer",
         &installer.app, installerActivate, &installer);
   } else {
-    installer.delayMax = 10;
+    installer.delayMax = 5;
     status = 0;
     installer.instState = INST_INIT;
     while (installer.instState != INST_BEGIN) {

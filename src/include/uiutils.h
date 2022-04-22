@@ -77,6 +77,7 @@ void  uiutilsCreateDanceList (uiutilsdropdown_t *dancesel, char *selectLabel);
 /* uigtklabel.c */
 GtkWidget * uiutilsCreateLabel (char *label);
 GtkWidget * uiutilsCreateColonLabel (char *label);
+void        uiutilsLabelSetText (GtkWidget *label, char *text);
 
 /* uigtkbutton.c */
 GtkWidget * uiutilsCreateButton (char *title, char *imagenm,
