@@ -147,6 +147,11 @@ char  *uiutilsTextBoxGetValue (uiutilstextbox_t *tb);
 void  uiutilsTextBoxSetReadonly (uiutilstextbox_t *tb);
 void  uiutilsTextBoxScrollToEnd (uiutilstextbox_t *tb);
 
+/* uigtknotebook.c */
+GtkWidget * uiutilsCreateNotebook (void);
+void  uiutilsNotebookAppendPage (GtkWidget *notebook, GtkWidget *widget, GtkWidget *label);
+void  uiutilsNotebookSetActionWidget (GtkWidget *notebook, GtkWidget *widget, GtkPackType pack);
+
 /* uigtkutils.c */
 void  uiutilsCleanup (void);
 void  uiutilsSetCss (GtkWidget *w, char *style);
@@ -159,7 +164,6 @@ void  uiutilsGetForegroundColor (GtkWidget *widget, char *buff, size_t sz);
 GtkWidget * uiutilsCreateScrolledWindow (void);
 GtkWidget * uiutilsCreateSwitch (int value);
 GtkWidget * uiutilsCreateCheckButton (const char *txt, int value);
-GtkWidget * uiutilsCreateNotebook (void);
 GtkWidget * uiutilsCreateTreeView (void);
 
 char  *uiutilsSelectDirDialog (uiutilsselect_t *selectdata);

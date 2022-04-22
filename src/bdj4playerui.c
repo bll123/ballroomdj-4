@@ -202,9 +202,11 @@ main (int argc, char *argv[])
   }
 
   plui.uiplayer = uiplayerInit (plui.progstate, plui.conn);
-  plui.uimusicq = uimusicqInit (plui.progstate, plui.conn, plui.dispsel);
+  plui.uimusicq = uimusicqInit (plui.progstate, plui.conn, plui.dispsel,
+      UIMUSICQ_FLAGS_NONE, DISP_SEL_MUSICQ);
   plui.uisongsel = uisongselInit (plui.progstate, plui.conn, plui.dispsel,
-      plui.options, SONG_FILTER_FOR_PLAYBACK);
+      plui.options, SONG_FILTER_FOR_PLAYBACK, UISONGSEL_FLAGS_NONE,
+      DISP_SEL_REQUEST);
 
   /* register these after calling the sub-window initialization */
   /* then these will be run last, after the other closing callbacks */
@@ -433,16 +435,14 @@ pluiActivate (GApplication *app, gpointer userdata)
   /* notebook page is which.  The code is dependent on musicq_a being */
   /* in tab 0, */
   plui->notebook = uiutilsCreateNotebook ();
-  gtk_notebook_set_tab_pos (GTK_NOTEBOOK (plui->notebook), GTK_POS_TOP);
   gtk_box_pack_start (GTK_BOX (plui->vbox), plui->notebook, TRUE, TRUE, 0);
-
   g_signal_connect (plui->notebook, "switch-page", G_CALLBACK (pluiSwitchPage), plui);
 
   widget = gtk_button_new ();
   assert (widget != NULL);
   gtk_button_set_label (GTK_BUTTON (widget), "Set Queue for Playback");
   gtk_widget_set_margin_start (widget, 2);
-  gtk_notebook_set_action_widget (GTK_NOTEBOOK (plui->notebook), widget, GTK_PACK_END);
+  uiutilsNotebookSetActionWidget (plui->notebook, widget, GTK_PACK_END);
   gtk_widget_show_all (widget);
   g_signal_connect (widget, "clicked", G_CALLBACK (pluiProcessSetPlaybackQueue), plui);
   plui->setPlaybackButton = widget;
@@ -457,7 +457,7 @@ pluiActivate (GApplication *app, gpointer userdata)
   gtk_image_set_from_pixbuf (GTK_IMAGE (plui->musicqImage [MUSICQ_A]), plui->ledonImg);
   gtk_widget_set_margin_start (plui->musicqImage [MUSICQ_A], 2);
   gtk_box_pack_start (GTK_BOX (hbox), plui->musicqImage [MUSICQ_A], FALSE, FALSE, 0);
-  gtk_notebook_append_page (GTK_NOTEBOOK (plui->notebook), widget, hbox);
+  uiutilsNotebookAppendPage (plui->notebook, widget, hbox);
   gtk_widget_show_all (hbox);
 
   /* queue B tab */
@@ -470,13 +470,14 @@ pluiActivate (GApplication *app, gpointer userdata)
   gtk_image_set_from_pixbuf (GTK_IMAGE (plui->musicqImage [MUSICQ_B]), plui->ledoffImg);
   gtk_widget_set_margin_start (plui->musicqImage [MUSICQ_B], 2);
   gtk_box_pack_start (GTK_BOX (hbox), plui->musicqImage [MUSICQ_B], FALSE, FALSE, 0);
-  gtk_notebook_append_page (GTK_NOTEBOOK (plui->notebook), widget, hbox);
+  uiutilsNotebookAppendPage (plui->notebook, widget, hbox);
   gtk_widget_show_all (hbox);
 
   /* request tab */
   widget = uisongselActivate (plui->uisongsel, plui->window);
-  tabLabel = gtk_label_new ("Request");
-  gtk_notebook_append_page (GTK_NOTEBOOK (plui->notebook), widget, tabLabel);
+  /* CONTEXT: name of request tab */
+  tabLabel = gtk_label_new (_("Request"));
+  uiutilsNotebookAppendPage (plui->notebook, widget, tabLabel);
 
   x = nlistGetNum (plui->options, PLUI_SIZE_X);
   y = nlistGetNum (plui->options, PLUI_SIZE_Y);

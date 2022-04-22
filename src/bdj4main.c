@@ -152,9 +152,6 @@ main (int argc, char *argv[])
   mainData.musicqDeferredPlayIdx = MAIN_NOT_SET;
   mainData.playerState = PL_STATE_STOPPED;
   mainData.webclient = NULL;
-  if (bdjoptGetNum (OPT_P_MOBILEMARQUEE) == MOBILEMQ_INTERNET) {
-    mainData.webclient = webclientAlloc (&mainData, mainMobilePostCallback);
-  }
   mainData.mobmqUserkey = NULL;
   mainData.playWhenQueued = true;
   mainData.switchQueueWhenEmpty = false;
@@ -179,6 +176,10 @@ main (int argc, char *argv[])
 
   mainData.dbgflags = bdj4startup (argc, argv, "m", ROUTE_MAIN, BDJ4_INIT_NONE);
   logProcBegin (LOG_PROC, "main");
+
+  if (bdjoptGetNum (OPT_P_MOBILEMARQUEE) == MOBILEMQ_INTERNET) {
+    mainData.webclient = webclientAlloc (&mainData, mainMobilePostCallback);
+  }
 
   mainData.conn = connInit (ROUTE_MAIN);
   mainData.gap = bdjoptGetNum (OPT_P_GAP);
@@ -751,7 +752,6 @@ mainSendMobileMarqueeData (maindata_t *mainData)
   ssize_t     musicqLen = 0;
 
   logProcBegin (LOG_PROC, "mainSendMobileMarqueeData");
-
 
   if (bdjoptGetNum (OPT_P_MOBILEMARQUEE) == MOBILEMQ_OFF) {
     logProcEnd (LOG_PROC, "mainSendMobileMarqueeData", "is-off");

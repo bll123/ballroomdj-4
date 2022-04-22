@@ -51,6 +51,7 @@ typedef struct {
   int               lastTreeSize;
   double            lastRowHeight;
   int               maxRows;
+  int               songselflags;
 } uisongselgtk_t;
 
 static void uisongselInitializeStore (uisongsel_t *uisongsel);
@@ -136,11 +137,13 @@ uisongselActivate (uisongsel_t *uisongsel, GtkWidget *parentwin)
   gtk_box_pack_start (GTK_BOX (uiw->vbox), hbox,
       FALSE, FALSE, 0);
 
-  /* CONTEXT: queue a song to be played */
-  widget = uiutilsCreateButton (_("Queue"), NULL,
-      uisongselQueueProcessSignal, uisongsel);
-  gtk_box_pack_start (GTK_BOX (hbox), widget,
-      FALSE, FALSE, 0);
+  if ((uisongsel->songselflags & UISONGSEL_FLAGS_NO_Q_BUTTON) != UISONGSEL_FLAGS_NO_Q_BUTTON) {
+    /* CONTEXT: queue a song to be played */
+    widget = uiutilsCreateButton (_("Queue"), NULL,
+        uisongselQueueProcessSignal, uisongsel);
+    gtk_box_pack_start (GTK_BOX (hbox), widget,
+        FALSE, FALSE, 0);
+  }
 
   widget = uiutilsComboboxCreate (parentwin,
       "", uisongselFilterDanceSignal,
@@ -206,7 +209,7 @@ uisongselActivate (uisongsel_t *uisongsel, GtkWidget *parentwin)
   gtk_event_controller_scroll_new (uiw->songselTree,
       GTK_EVENT_CONTROLLER_SCROLL_VERTICAL);
 
-  sellist = dispselGetList (uisongsel->dispsel, DISP_SEL_REQUEST);
+  sellist = dispselGetList (uisongsel->dispsel, uisongsel->dispselType);
   uiw->favColumn = uiutilsAddDisplayColumns (
       uiw->songselTree, sellist, SONGSEL_COL_MAX,
       SONGSEL_COL_FONT, SONGSEL_COL_ELLIPSIZE);
@@ -296,7 +299,7 @@ uisongselPopulateData (uisongsel_t *uisongsel)
             SONGSEL_COL_FAV_COLOR, color,
             -1);
 
-        sellist = dispselGetList (uisongsel->dispsel, DISP_SEL_REQUEST);
+        sellist = dispselGetList (uisongsel->dispsel, uisongsel->dispselType);
         uiutilsSetDisplayColumns (
             GTK_LIST_STORE (model), &iter, sellist,
             song, SONGSEL_COL_MAX);
@@ -355,7 +358,7 @@ uisongselInitializeStore (uisongsel_t *uisongsel)
   songselstoretypes [colcount++] = G_TYPE_ULONG,
   songselstoretypes [colcount++] = G_TYPE_STRING,
 
-  sellist = dispselGetList (uisongsel->dispsel, DISP_SEL_REQUEST);
+  sellist = dispselGetList (uisongsel->dispsel, uisongsel->dispselType);
   songselstoretypes = uiutilsAddDisplayTypes (songselstoretypes, sellist, &colcount);
   store = gtk_list_store_newv (colcount, songselstoretypes);
   assert (store != NULL);

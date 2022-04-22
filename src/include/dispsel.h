@@ -11,7 +11,7 @@ typedef enum {
   DISP_SEL_SONGEDIT_A,
   DISP_SEL_SONGEDIT_B,
   DISP_SEL_SONGLIST,
-//  DISP_SEL_SONGSEL,
+  DISP_SEL_SONGSEL,
   DISP_SEL_MAX,
 } dispselsel_t;
 

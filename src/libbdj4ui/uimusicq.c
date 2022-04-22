@@ -22,7 +22,8 @@ static int    uimusicqMoveUpRepeat (void *udata);
 static int    uimusicqMoveDownRepeat (void *udata);
 
 uimusicq_t *
-uimusicqInit (progstate_t *progstate, conn_t *conn, dispsel_t *dispsel)
+uimusicqInit (progstate_t *progstate, conn_t *conn, dispsel_t *dispsel,
+    int uimusicqflags, dispselsel_t dispselType)
 {
   uimusicq_t    *uimusicq;
 
@@ -35,6 +36,8 @@ uimusicqInit (progstate_t *progstate, conn_t *conn, dispsel_t *dispsel)
   uimusicq->progstate = progstate;
   uimusicq->conn = conn;
   uimusicq->dispsel = dispsel;
+  uimusicq->dispselType = dispselType;
+  uimusicq->uimusicqflags = uimusicqflags;
   uimusicq->uniqueList = NULL;
   uimusicq->dispList = NULL;
   uimusicq->workList = NULL;

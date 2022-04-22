@@ -661,7 +661,8 @@ main (int argc, char *argv[])
   nlistSetStr (tlist, DISP_SEL_SONGEDIT_B, _("Song Editor - Column 2"));
   /* CONTEXT: display settings for: song list */
   nlistSetStr (tlist, DISP_SEL_SONGLIST, _("Song List"));
-//  nlistSetStr (tlist, DISP_SEL_SONGSEL, _("Song Selection"));
+  /* CONTEXT: display settings for: song selection */
+  nlistSetStr (tlist, DISP_SEL_SONGSEL, _("Song Selection"));
   confui.uiitem [CONFUI_SPINBOX_DISP_SEL].list = tlist;
 
   confuiLoadHTMLList (&confui);
@@ -885,7 +886,9 @@ confuiActivate (GApplication *app, gpointer userdata)
   gtk_window_set_application (GTK_WINDOW (confui->window), confui->app);
   gtk_window_set_default_icon_from_file (imgbuff, &gerr);
   g_signal_connect (confui->window, "delete-event", G_CALLBACK (confuiCloseWin), confui);
-  gtk_window_set_title (GTK_WINDOW (confui->window), bdjoptGetStr (OPT_P_PROFILENAME));
+  /* CONTEXT: configuration ui window title */
+  snprintf (tbuff, sizeof (tbuff), _("%s Configuration"), BDJ4_NAME);
+  gtk_window_set_title (GTK_WINDOW (confui->window), tbuff);
 
   confui->vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   gtk_container_add (GTK_CONTAINER (confui->window), confui->vbox);
@@ -895,9 +898,9 @@ confuiActivate (GApplication *app, gpointer userdata)
   gtk_widget_set_margin_end (confui->vbox, 4);
 
   confui->notebook = uiutilsCreateNotebook ();
+  gtk_notebook_set_tab_pos (GTK_NOTEBOOK (confui->notebook), GTK_POS_LEFT);
   assert (confui->notebook != NULL);
-  gtk_box_pack_start (GTK_BOX (confui->vbox), confui->notebook,
-      TRUE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (confui->vbox), confui->notebook, TRUE, TRUE, 0);
 
   /* general options */
   vbox = confuiMakeNotebookTab (confui, confui->notebook,
@@ -1975,7 +1978,7 @@ confuiMakeNotebookTab (configui_t *confui, GtkWidget *nb, char *txt, int id)
   gtk_widget_set_margin_bottom (vbox, 4);
   gtk_widget_set_margin_start (vbox, 4);
   gtk_widget_set_margin_end (vbox, 4);
-  gtk_notebook_append_page (GTK_NOTEBOOK (nb), vbox, tablabel);
+  uiutilsNotebookAppendPage (nb, vbox, tablabel);
 
   confui->tableidents = realloc (confui->tableidents,
       sizeof (int) * (confui->tabcount + 1));

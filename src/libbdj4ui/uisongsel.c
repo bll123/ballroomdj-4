@@ -36,7 +36,8 @@ static void uisongselSongfilterSetDance (uisongsel_t *uisongsel, ssize_t idx);
 
 uisongsel_t *
 uisongselInit (progstate_t *progstate, conn_t *conn, dispsel_t *dispsel,
-    nlist_t *options, songfilterpb_t filterFlags)
+    nlist_t *options, songfilterpb_t filterFlags, int songselflags,
+    dispselsel_t dispselType)
 {
   uisongsel_t   *uisongsel;
   char          tbuff [MAXPATHLEN];
@@ -52,6 +53,7 @@ uisongselInit (progstate_t *progstate, conn_t *conn, dispsel_t *dispsel,
   uisongsel->progstate = progstate;
   uisongsel->conn = conn;
   uisongsel->dispsel = dispsel;
+  uisongsel->dispselType = dispselType;
   uisongsel->filterDisplaySel = NULL;
   uisongsel->options = options;
   uisongsel->idxStart = 0;

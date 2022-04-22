@@ -74,7 +74,7 @@ procutilExists (procutil_t *process)
 }
 
 procutil_t *
-procutilStart (const char *fn, ssize_t profile, ssize_t loglvl, int detachflag)
+procutilStart (const char *fn, ssize_t profile, ssize_t loglvl, int procutilflag)
 {
   procutil_t  * process;
   char        sprof [40];
@@ -105,7 +105,7 @@ procutilStart (const char *fn, ssize_t profile, ssize_t loglvl, int detachflag)
 
   process->processHandle = NULL;
   flags = OS_PROC_DETACH;
-  if (detachflag == PROCUTIL_NO_DETACH) {
+  if ((procutilflag & PROCUTIL_NO_DETACH) == PROCUTIL_NO_DETACH) {
     flags = OS_PROC_NONE;
   }
   process->pid = osProcessStart (targv, flags, &process->processHandle, NULL);

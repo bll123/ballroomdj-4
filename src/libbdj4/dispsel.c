@@ -26,7 +26,7 @@ dispselmap_t dispselmap [DISP_SEL_MAX] = {
   { DISP_SEL_SONGEDIT_A,  "ds-songedit-a" },
   { DISP_SEL_SONGEDIT_B,  "ds-songedit-b" },
   { DISP_SEL_SONGLIST,    "ds-songlist" },
-//  { DISP_SEL_SONGSEL,     "ds-songsel" },
+  { DISP_SEL_SONGSEL,     "ds-songsel" },
 };
 
 static void dispselCreateList (dispsel_t *dispsel, slist_t *tlist, int selidx);

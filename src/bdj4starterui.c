@@ -121,6 +121,7 @@ static void     starterSigHandler (int sig);
 static void     starterStartPlayer (GtkButton *b, gpointer udata);
 static void     starterStartManage (GtkButton *b, gpointer udata);
 static void     starterStartConfig (GtkButton *b, gpointer udata);
+static void     starterStartRaffleGames (GtkButton *b, gpointer udata);
 static void     starterProcessSupport (GtkButton *b, gpointer udata);
 static void     starterProcessExit (GtkButton *b, gpointer udata);
 
@@ -358,7 +359,7 @@ starterActivate (GApplication *app, gpointer userdata)
   gtk_window_set_application (GTK_WINDOW (starter->window), starter->app);
   gtk_window_set_default_icon_from_file (imgbuff, &gerr);
   g_signal_connect (starter->window, "delete-event", G_CALLBACK (starterCloseWin), starter);
-  gtk_window_set_title (GTK_WINDOW (starter->window), bdjoptGetStr (OPT_P_PROFILENAME));
+  gtk_window_set_title (GTK_WINDOW (starter->window), BDJ4_LONG_NAME);
 
   vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   gtk_container_add (GTK_CONTAINER (starter->window), vbox);
@@ -419,6 +420,15 @@ starterActivate (GApplication *app, gpointer userdata)
 
   /* CONTEXT: button: starts the configuration user interface */
   widget = uiutilsCreateButton (_("Configure"), NULL, starterStartConfig, starter);
+  gtk_widget_set_margin_top (widget, 4);
+  gtk_widget_set_halign (widget, GTK_ALIGN_START);
+  gtk_size_group_add_widget (sg, widget);
+  gtk_box_pack_start (GTK_BOX (bvbox), widget, FALSE, FALSE, 0);
+  widget = gtk_bin_get_child (GTK_BIN (widget));
+  gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
+
+  /* CONTEXT: button: support : starts raffle games  */
+  widget = uiutilsCreateButton (_("Raffle Games"), NULL, starterStartRaffleGames, starter);
   gtk_widget_set_margin_top (widget, 4);
   gtk_widget_set_halign (widget, GTK_ALIGN_START);
   gtk_size_group_add_widget (sg, widget);
@@ -716,11 +726,21 @@ starterStartPlayer (GtkButton *b, gpointer udata)
 static void
 starterStartManage (GtkButton *b, gpointer udata)
 {
+  startui_t      *starter = udata;
+
+  starterCheckProfile (starter);
+  starter->processes [ROUTE_MANAGEUI] = procutilStartProcess (
+      ROUTE_MANAGEUI, "bdj4manageui", PROCUTIL_DETACH);
+}
+
+static void
+starterStartRaffleGames (GtkButton *b, gpointer udata)
+{
 //  startui_t      *starter = udata;
 
 //  starterCheckProfile (starter);
-//  starter->processes [ROUTE_MANAGEUI] = procutilStartProcess (
-//      ROUTE_MANAGEUI, "bdj4manageui");
+//  starter->processes [ROUTE_RAFFLE] = procutilStartProcess (
+//      ROUTE_RAFFLE, "bdj4raffle");
 }
 
 static void

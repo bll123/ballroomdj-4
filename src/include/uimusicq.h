@@ -17,6 +17,12 @@ enum {
   UIMUSICQ_SEL_TOP,
 };
 
+enum {
+  UIMUSICQ_FLAGS_NONE             = 0x00,
+  UIMUSICQ_FLAGS_NO_QUEUE         = 0x01,
+  UIMUSICQ_FLAGS_NO_TOGGLE_PAUSE  = 0x02,
+};
+
 #define UIMUSICQ_REPEAT_TIME 250
 
 typedef struct {
@@ -37,6 +43,8 @@ typedef struct {
   progstate_t     *progstate;
   conn_t          *conn;
   dispsel_t       *dispsel;
+  dispselsel_t    dispselType;
+  int             uimusicqflags;
   GtkWidget       *parentwin;
   GdkPixbuf       *pauseImg;
   uimusicqui_t    ui [MUSICQ_MAX];
@@ -56,7 +64,8 @@ typedef struct {
 
 /* uimusicq.c */
 uimusicq_t  * uimusicqInit (progstate_t *progstate,
-    conn_t *conn, dispsel_t *dispsel);
+    conn_t *conn, dispsel_t *dispsel, int uimusicqflags,
+    dispselsel_t dispselType);
 void  uimusicqFree (uimusicq_t *uimusicq);
 void  uimusicqMainLoop (uimusicq_t *uimuiscq);
 int   uimusicqProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
