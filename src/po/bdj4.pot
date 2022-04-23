@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-04-22 18:10-0700\n"
+"POT-Creation-Date: 2022-04-22 19:00-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,9 +17,19 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+#. CONTEXT: configuration ui window title
+#, c-format
+msgid "%s Configuration"
+msgstr ""
+
 #. CONTEXT: installer: command line interface: BDJ3 location prompt
 #, c-format
 msgid "%s Folder"
+msgstr ""
+
+#. CONTEXT: starterui: basic support dialog: support option
+#, c-format
+msgid "%s Forums"
 msgstr ""
 
 #. CONTEXT: installer: window title
@@ -30,6 +40,16 @@ msgstr ""
 #. CONTEXT: installer: label for entry field asking for BDJ3 location
 #, c-format
 msgid "%s Location"
+msgstr ""
+
+#. CONTEXT: management ui window title
+#, c-format
+msgid "%s Management"
+msgstr ""
+
+#. CONTEXT: starterui: basic support dialog: support option
+#, c-format
+msgid "%s Support Tickets"
 msgstr ""
 
 #. CONTEXT: installer: status message
@@ -68,6 +88,9 @@ msgstr ""
 msgid "Accent Colour"
 msgstr ""
 
+msgid "Actions"
+msgstr ""
+
 #. CONTEXT: config: table edit: button: add new selection
 msgid "Add New"
 msgstr ""
@@ -90,13 +113,13 @@ msgstr ""
 msgid "All Genres"
 msgstr ""
 
-#. CONTEXT: a filter: all dance levels will be listed
 #. CONTEXT: a filter: all dance levels are displayed in the song selection
+#. CONTEXT: a filter: all dance levels will be listed
 msgid "All Levels"
 msgstr ""
 
-#. CONTEXT: a filter: all dance ratings will be listed
 #. CONTEXT: a filter: all dance ratings are displayed in the song selection
+#. CONTEXT: a filter: all dance ratings will be listed
 msgid "All Ratings"
 msgstr ""
 
@@ -120,6 +143,14 @@ msgid "Argentine Tango"
 msgstr ""
 
 msgid "Artist"
+msgstr ""
+
+#. CONTEXT: sending support message: checkbox: option to send data files
+msgid "Attach Data Files"
+msgstr ""
+
+#. CONTEXT: sending support message: checkbox: option to send database
+msgid "Attach Database"
 msgstr ""
 
 #. CONTEXT: config: which audio interface to use
@@ -163,6 +194,12 @@ msgstr ""
 msgid "Cha Cha"
 msgstr ""
 
+msgid "Check For New"
+msgstr ""
+
+msgid "Checks for new files."
+msgstr ""
+
 msgid "Classical"
 msgstr ""
 
@@ -182,6 +219,8 @@ msgid "Clear Queue"
 msgstr ""
 
 #. CONTEXT: marquee font size dialog: action button
+#. CONTEXT: action button for the support dialog
+#. CONTEXT: action button for the support message dialog
 #. CONTEXT: action button for the filter dialog
 msgid "Close"
 msgstr ""
@@ -309,6 +348,10 @@ msgstr ""
 msgid "Duration"
 msgstr ""
 
+#. CONTEXT: sending support message: user's e-mail address
+msgid "E-Mail Address"
+msgstr ""
+
 msgid "Easy"
 msgstr ""
 
@@ -326,6 +369,12 @@ msgstr ""
 
 #. CONTEXT: config: edit the dance ratings table
 msgid "Edit Ratings"
+msgstr ""
+
+msgid "Edit Sequences"
+msgstr ""
+
+msgid "Edit Song Lists"
 msgstr ""
 
 #. CONTEXT: config: edit status table
@@ -394,6 +443,9 @@ msgstr ""
 
 #. CONTEXT: a filter: select the 'favorite' displayed in the song selection
 msgid "Favorite"
+msgstr ""
+
+msgid "File Manager"
 msgstr ""
 
 #. CONTEXT: title for the filter dialog
@@ -565,6 +617,10 @@ msgstr ""
 msgid "Maximum Play Time"
 msgstr ""
 
+#. CONTEXT: sending support message: message
+msgid "Message"
+msgstr ""
+
 #. CONTEXT: config: options associated with the mobile marquee
 #. CONTEXT: config: set mobile marquee mode (off/local/internet)
 #. CONTEXT: config: qr code: title display for mobile marquee
@@ -628,6 +684,11 @@ msgstr ""
 
 #. CONTEXT: config: level name that is set when adding a new level
 msgid "New Level"
+msgstr ""
+
+#. CONTEXT: starter: creating a new profile
+#. CONTEXT: starter: name of the new profile (New profile 9)
+msgid "New Profile"
 msgstr ""
 
 #. CONTEXT: config: rating name that is set when adding a new rating
@@ -729,6 +790,9 @@ msgstr ""
 msgid "Player Options"
 msgstr ""
 
+msgid "Playlist Management"
+msgstr ""
+
 msgid "Please wait..."
 msgstr ""
 
@@ -755,7 +819,7 @@ msgstr ""
 msgid "Proceed with installation?"
 msgstr ""
 
-#. CONTEXT: the profile to be used when starting BDJ4
+#. CONTEXT: starter: profile to be used when starting BDJ4
 msgid "Profile"
 msgstr ""
 
@@ -806,8 +870,15 @@ msgstr ""
 msgid "Quickstep"
 msgstr ""
 
+#. CONTEXT: button: support : starts raffle games
+msgid "Raffle Games"
+msgstr ""
+
 #. CONTEXT: config: rating: title of the rating name column
 msgid "Rating"
+msgstr ""
+
+msgid "Rebuild Database"
 msgstr ""
 
 #. CONTEXT: config: display settings: button: remove the selected field
@@ -822,10 +893,27 @@ msgstr ""
 msgid "Remove from queue"
 msgstr ""
 
+msgid "Renames the audio files based on the organization settings."
+msgstr ""
+
+msgid "Reorganize"
+msgstr ""
+
 msgid "Repeat"
 msgstr ""
 
+msgid ""
+"Replaces the BallroomDJ database in its entirety. All changes to the "
+"database will be lost."
+msgstr ""
+
+msgid ""
+"Replaces the information in the BallroomDJ database with the audio file tag "
+"information."
+msgstr ""
+
 #. CONTEXT: display settings for: requests
+#. CONTEXT: name of request tab
 msgid "Request"
 msgstr ""
 
@@ -889,6 +977,21 @@ msgstr ""
 msgid "Select Music Folder Location"
 msgstr ""
 
+#. CONTEXT: starterui: basic support dialog: button: support option
+#. CONTEXT: action button for the support message dialog
+msgid "Send Support Message"
+msgstr ""
+
+#. CONTEXT: starterui: support: status message
+#, c-format
+msgid "Sending %s"
+msgstr ""
+
+#. CONTEXT: starterui: support: status message
+#, c-format
+msgid "Sending Support Message"
+msgstr ""
+
 #. CONTEXT: menu checkbox: show the extra queues (in addition to the main music queue)
 msgid "Show Extra Queues"
 msgstr ""
@@ -916,7 +1019,13 @@ msgid "Song End"
 msgstr ""
 
 #. CONTEXT: display settings for: song list
+#. CONTEXT: name of song list editor tab
 msgid "Song List"
+msgstr ""
+
+#. CONTEXT: display settings for: song selection
+#. CONTEXT: name of song selection tab
+msgid "Song Selection"
 msgstr ""
 
 msgid "Song Start"
@@ -934,6 +1043,9 @@ msgstr ""
 msgid "Speed Adjustment"
 msgstr ""
 
+msgid "Start"
+msgstr ""
+
 #. CONTEXT: installer: status message
 msgid "Starting conversion process."
 msgstr ""
@@ -945,6 +1057,27 @@ msgstr ""
 #. CONTEXT: config: status: title of the status name column
 #. CONTEXT: a filter: select the status displayed in the song selection
 msgid "Status"
+msgstr ""
+
+#, c-format
+msgid "Stop All %s Processes"
+msgstr ""
+
+#. CONTEXT: sending support message: subject of message
+msgid "Subject"
+msgstr ""
+
+#. CONTEXT: button: support : support information
+#. CONTEXT: title for the support dialog
+msgid "Support"
+msgstr ""
+
+#. CONTEXT: title for the support message dialog
+msgid "Support Message"
+msgstr ""
+
+#. CONTEXT: starterui: basic support dialog, listing support options
+msgid "Support options"
 msgstr ""
 
 #. CONTEXT: menu checkbox: when a queue is emptied, switch playback to the other queue
@@ -1018,6 +1151,17 @@ msgstr ""
 msgid "Unrated"
 msgstr ""
 
+msgid "Update Database"
+msgstr ""
+
+msgid "Update from Audio File Tags"
+msgstr ""
+
+msgid ""
+"Updates the audio file tags with the information from the BallroomDJ "
+"database."
+msgstr ""
+
 #. CONTEXT: installer: message indicating the action that will be taken
 #. CONTEXT: installer: command line interface: indicating action
 #, c-format
@@ -1055,6 +1199,9 @@ msgstr ""
 
 #. CONTEXT: config: which audio tags will be written to the audio file
 msgid "Write Audio File Tags"
+msgstr ""
+
+msgid "Write Tags to Audio Files"
 msgstr ""
 
 #. CONTEXT: The name of the 'automatic' playlist file

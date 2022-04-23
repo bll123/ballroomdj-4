@@ -43,37 +43,26 @@ function mkpo {
 
 TMP=potemplates.c
 
-echo "-- $(date +%T) extracting"
-xgettext -s -d bdj4 \
-    --language=C \
-    --add-comments=CONTEXT: \
-    --no-location \
-    --keyword=_ \
-    --flag=_:1:pass-c-format \
-    bdj4*.c libbdj4/tagdef.c libbdj4ui/*.c libbdj4gtk/*.c $TMP \
-    -p po -o bdj4.pot
-cd po
-
 > $TMP
-fn=../../templates/dancetypes.txt
+fn=../templates/dancetypes.txt
 sed -e '/^#/d' -e 's,^,..,' $fn >> $TMP
-fn=../../templates/dances.txt
+fn=../templates/dances.txt
 sed -n -e '/^DANCE/ {n;p}' -e 's,^,..,' $fn >> $TMP
-fn=../../templates/ratings.txt
+fn=../templates/ratings.txt
 sed -n -e '/^RATING/ {n;p}' -e 's,^,..,' $fn >> $TMP
-fn=../../templates/genres.txt
+fn=../templates/genres.txt
 sed -n -e '/^GENRE/ {n;p}' -e 's,^,..,' $fn >> $TMP
-fn=../../templates/levels.txt
+fn=../templates/levels.txt
 sed -n -e '/^LABEL/ {n;p}' -e 's,^,..,' $fn >> $TMP
-fn=../../templates/status.txt
+fn=../templates/status.txt
 sed -n -e '/^STATUS/ {n;p}' -e 's,^,..,' $fn >> $TMP
-fn=../../templates/bdjconfig.txt.p
+fn=../templates/bdjconfig.txt.p
 echo "// CONTEXT: The names of the music queues" >> $TMP
 sed -n -e '/^QUEUE_NAME_[AB]/ {n;p}' -e 's,^,..,' $fn >> $TMP
 echo "// CONTEXT: The completion message displayed on the marquee when the playlist is finished." >> $TMP
 sed -n -e '/^COMPLETEMSG/ {n;p}' -e 's,^,..,' $fn >> $TMP
 
-egrep 'value=' ../../templates/*.html |
+egrep 'value=' ../templates/*.html |
   sed -e 's,.*value=",,' -e 's,".*,,' -e '/^100$/ d' -e 's,^,..,' >> $TMP
 
 # names of playlist files
@@ -84,21 +73,34 @@ echo "..standardrounds" >> $TMP
 
 # linux desktop shortcut
 echo "// CONTEXT: tooltip for desktop icon" >> $TMP
-egrep '^Comment=' ../../install/bdj4.desktop |
+egrep '^Comment=' ../install/bdj4.desktop |
   sed -e 's,Comment=,,' -e 's,^,..,' >> $TMP
 
 sed -e '/^\.\./ {s,^\.\.,, ; s,^,_(", ; s,$,"),}' $TMP > $TMP.n
 mv -f $TMP.n $TMP
 
-xgettext -s -j -d bdj4 \
+echo "-- $(date +%T) extracting"
+xgettext -s -d bdj4 \
     --language=C \
     --add-comments=CONTEXT: \
     --no-location \
     --keyword=_ \
     --flag=_:1:pass-c-format \
-    $TMP \
-    -o bdj4.pot
+    bdj4*.c libbdj4/tagdef.c libbdj4ui/*.c libbdj4gtk/*.c $TMP \
+    -p po -o bdj4.pot
+
+#xgettext -s -j -d bdj4 \
+#    --language=C \
+#    --add-comments=CONTEXT: \
+#    --no-location \
+#    --keyword=_ \
+#    --flag=_:1:pass-c-format \
+#    $TMP \
+#    -o bdj4.pot
+
 rm -f $TMP
+
+cd po
 
 mkpo en en_GB.po "Automatically generated" "English (GB)" english/gb
 rm -f en_GB.po.old
