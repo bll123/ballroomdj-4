@@ -41,6 +41,7 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
   int         option_index = 0;
   char        tbuff [MAXPATHLEN];
   loglevel_t  loglevel = LOG_IMPORTANT | LOG_MAIN;
+  bool        loglevelset = false;
   bool        startlog = false;
   bool        isbdj4 = false;
 
@@ -110,6 +111,7 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
       case 'd': {
         if (optarg) {
           loglevel = (loglevel_t) atoi (optarg);
+          loglevelset = true;
         }
         break;
       }
@@ -167,6 +169,12 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
     exit (1);
   }
   bdjvarsInit ();
+  bdjoptInit ();
+  tagdefInit ();
+
+  if (! loglevelset) {
+    loglevel = bdjoptGetNum (OPT_G_DEBUGLVL);
+  }
 
   /* re-use the lock name as the program name */
   if (startlog || route == ROUTE_STARTERUI) {
@@ -185,9 +193,6 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
       exit (1);
     }
   }
-
-  bdjoptInit ();
-  tagdefInit ();
 
   bdjoptSetNum (OPT_G_DEBUGLVL, loglevel);
 
