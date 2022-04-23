@@ -146,11 +146,18 @@ uiutilstextbox_t  *uiutilsTextBoxCreate (void);
 char  *uiutilsTextBoxGetValue (uiutilstextbox_t *tb);
 void  uiutilsTextBoxSetReadonly (uiutilstextbox_t *tb);
 void  uiutilsTextBoxScrollToEnd (uiutilstextbox_t *tb);
+void  uiutilsTextBoxAppendStr (uiutilstextbox_t *tb, const char *str);
+void  uiutilsTextBoxSetValue (uiutilstextbox_t *tb, const char *str);
 
 /* uigtknotebook.c */
 GtkWidget * uiutilsCreateNotebook (void);
 void  uiutilsNotebookAppendPage (GtkWidget *notebook, GtkWidget *widget, GtkWidget *label);
 void  uiutilsNotebookSetActionWidget (GtkWidget *notebook, GtkWidget *widget, GtkPackType pack);
+
+/* uigtkbox.c */
+GtkWidget *uiutilsCreateVertBox (void);
+GtkWidget *uiutilsCreateHorizBox (void);
+void      uiutilsBoxSetMargins (GtkWidget *box, int margin);
 
 /* uigtkutils.c */
 void  uiutilsCleanup (void);

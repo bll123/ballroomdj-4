@@ -5,6 +5,7 @@ include (../utils/bdj4macros.cmake)
 add_library (libbdj4gtk SHARED
   uimusicqgtk.c
   uisongselgtk.c
+  uigtkbox.c
   uigtkbutton.c
   uigtkdropdown.c
   uigtkentry.c

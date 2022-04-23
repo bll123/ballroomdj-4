@@ -42,6 +42,14 @@
 #include "uisongsel.h"
 #include "uiutils.h"
 
+enum {
+  MANAGE_DB_CHECK_NEW,
+  MANAGE_DB_REORGANIZE,
+  MANAGE_DB_UPD_FROM_TAGS,
+  MANAGE_DB_WRITE_TAGS,
+  MANAGE_DB_REBUILD,
+};
+
 typedef struct {
   progstate_t     *progstate;
   char            *locknm;
@@ -52,16 +60,22 @@ typedef struct {
   musicqidx_t     musicqManageIdx;
   dispsel_t       *dispsel;
   int             dbgflags;
+  /* update database */
+  uiutilsspinbox_t  dbspinbox;
+  uiutilstextbox_t  *dbhelpdisp;
+  uiutilstextbox_t  *dbstatus;
+  nlist_t         *dblist;
+  nlist_t         *dbhelp;
   /* gtk stuff */
   GtkApplication  *app;
   GtkWidget       *window;
   GtkWidget       *mainnotebook;
   GtkWidget       *vbox;
   GtkWidget       *notebook;
-  /* ui major elements */
-  uiplayer_t      *uiplayer;
-  uimusicq_t      *uimusicq;
-  uisongsel_t     *uisongsel;
+  /* song list ui major elements */
+  uiplayer_t      *slplayer;
+  uimusicq_t      *slmusicq;
+  uisongsel_t     *slsongsel;
   /* options */
   datafile_t      *optiondf;
   nlist_t         *options;
@@ -92,6 +106,9 @@ static int      manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
                     bdjmsgmsg_t msg, char *args, void *udata);
 static gboolean manageCloseWin (GtkWidget *window, GdkEvent *event, gpointer userdata);
 static void     manageSigHandler (int sig);
+/* update database */
+static void     manageDbChg (GtkSpinButton *sb, gpointer udata);
+static void     manageDbStart (GtkButton *b, gpointer udata);
 
 
 static int gKillReceived = 0;
@@ -105,6 +122,8 @@ main (int argc, char *argv[])
   manageui_t      manage;
   char            *uifont;
   char            tbuff [MAXPATHLEN];
+  nlist_t         *tlist;
+  nlist_t         *hlist;
 
 
   manage.mainnotebook = NULL;
@@ -118,11 +137,13 @@ main (int argc, char *argv[])
       manageHandshakeCallback, &manage);
   manage.sockserver = NULL;
   manage.window = NULL;
-  manage.uiplayer = NULL;
-  manage.uimusicq = NULL;
-  manage.uisongsel = NULL;
+  manage.slplayer = NULL;
+  manage.slmusicq = NULL;
+  manage.slsongsel = NULL;
   manage.musicqPlayIdx = MUSICQ_B;
   manage.musicqManageIdx = MUSICQ_A;
+  manage.dblist = NULL;
+  manage.dbhelp = NULL;
 
   for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
     manage.processes [i] = NULL;
@@ -141,6 +162,26 @@ main (int argc, char *argv[])
   logProcBegin (LOG_PROC, "manageui");
 
   manage.dispsel = dispselAlloc ();
+  uiutilsSpinboxTextInit (&manage.dbspinbox);
+  tlist = nlistAlloc ("db-action", LIST_UNORDERED, free);
+  hlist = nlistAlloc ("db-action-help", LIST_ORDERED, free);
+  nlistSetStr (tlist, MANAGE_DB_CHECK_NEW, _("Check For New"));
+  nlistSetStr (hlist, MANAGE_DB_CHECK_NEW,
+      _("Checks for new files."));
+  nlistSetStr (tlist, MANAGE_DB_REORGANIZE, _("Reorganize"));
+  nlistSetStr (hlist, MANAGE_DB_REORGANIZE,
+      _("Renames the audio files based on the organization settings."));
+  nlistSetStr (tlist, MANAGE_DB_UPD_FROM_TAGS, _("Update from Audio File Tags"));
+  nlistSetStr (hlist, MANAGE_DB_UPD_FROM_TAGS,
+      _("Replaces the information in the BallroomDJ database with the audio file tag information."));
+  nlistSetStr (tlist, MANAGE_DB_WRITE_TAGS, _("Write Tags to Audio Files"));
+  nlistSetStr (hlist, MANAGE_DB_WRITE_TAGS,
+      _("Updates the audio file tags with the information from the BallroomDJ database."));
+  nlistSetStr (tlist, MANAGE_DB_REBUILD, _("Rebuild Database"));
+  nlistSetStr (hlist, MANAGE_DB_REBUILD,
+      _("Replaces the BallroomDJ database in its entirety. All changes to the database will be lost."));
+  manage.dblist = tlist;
+  manage.dbhelp = hlist;
 
   listenPort = bdjvarsGetNum (BDJVL_MANAGEUI_PORT);
   manage.conn = connInit (ROUTE_MANAGEUI);
@@ -162,11 +203,11 @@ main (int argc, char *argv[])
     nlistSetStr (manage.options, SONGSEL_SORT_BY, "TITLE");
   }
 
-  manage.uiplayer = uiplayerInit (manage.progstate, manage.conn);
-  manage.uimusicq = uimusicqInit (manage.progstate, manage.conn, manage.dispsel,
+  manage.slplayer = uiplayerInit (manage.progstate, manage.conn);
+  manage.slmusicq = uimusicqInit (manage.progstate, manage.conn, manage.dispsel,
       UIMUSICQ_FLAGS_NO_QUEUE | UIMUSICQ_FLAGS_NO_TOGGLE_PAUSE,
       DISP_SEL_SONGLIST);
-  manage.uisongsel = uisongselInit (manage.progstate, manage.conn, manage.dispsel,
+  manage.slsongsel = uisongselInit (manage.progstate, manage.conn, manage.dispsel,
       manage.options, SONG_FILTER_FOR_SELECTION, UISONGSEL_FLAGS_NO_Q_BUTTON,
       DISP_SEL_SONGSEL);
 
@@ -264,10 +305,13 @@ manageClosingCallback (void *udata, programstate_t programState)
 
   connFree (manage->conn);
 
-  uiplayerFree (manage->uiplayer);
-  uimusicqFree (manage->uimusicq);
-  uisongselFree (manage->uisongsel);
+  uiplayerFree (manage->slplayer);
+  uimusicqFree (manage->slmusicq);
+  uisongselFree (manage->slsongsel);
   uiutilsCleanup ();
+  if (manage->dbhelp != NULL) {
+    nlistFree (manage->dbhelp);
+  }
 
   logProcEnd (LOG_PROC, "manageClosingCallback", "");
   return true;
@@ -282,6 +326,7 @@ manageActivate (GApplication *app, gpointer userdata)
   GtkWidget           *widget;
   GtkWidget           *hbox;
   GtkWidget           *vbox;
+  uiutilstextbox_t    *tb;
   char                imgbuff [MAXPATHLEN];
   char                tbuff [MAXPATHLEN];
   gint                x, y;
@@ -298,80 +343,108 @@ manageActivate (GApplication *app, gpointer userdata)
   snprintf (tbuff, sizeof (tbuff), _("%s Management"), BDJ4_NAME);
   gtk_window_set_title (GTK_WINDOW (manage->window), tbuff);
 
-  vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+  vbox = uiutilsCreateVertBox ();
+  uiutilsBoxSetMargins (vbox, 4);
   gtk_container_add (GTK_CONTAINER (manage->window), vbox);
-  gtk_widget_set_margin_top (vbox, 4);
-  gtk_widget_set_margin_bottom (vbox, 4);
-  gtk_widget_set_margin_start (vbox, 4);
-  gtk_widget_set_margin_end (vbox, 4);
 
   manage->mainnotebook = uiutilsCreateNotebook ();
   gtk_notebook_set_tab_pos (GTK_NOTEBOOK (manage->mainnotebook), GTK_POS_LEFT);
   gtk_box_pack_start (GTK_BOX (vbox), manage->mainnotebook,
       FALSE, FALSE, 0);
 
-  manage->vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
-  gtk_widget_set_margin_top (manage->vbox, 4);
-  gtk_widget_set_margin_bottom (manage->vbox, 4);
-  gtk_widget_set_margin_start (manage->vbox, 4);
-  gtk_widget_set_margin_end (manage->vbox, 4);
+  /* song list editor */
+  vbox = uiutilsCreateVertBox ();
+  uiutilsBoxSetMargins (vbox, 4);
 
-  tabLabel = uiutilsCreateLabel (_("Song List Editor"));
-  uiutilsNotebookAppendPage (manage->mainnotebook, manage->vbox, tabLabel);
-
-  vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
-  tabLabel = uiutilsCreateLabel (_("Music Manager"));
+  tabLabel = uiutilsCreateLabel (_("Edit Song Lists"));
   uiutilsNotebookAppendPage (manage->mainnotebook, vbox, tabLabel);
 
-  vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
-  tabLabel = uiutilsCreateLabel (_("Database Update"));
-  uiutilsNotebookAppendPage (manage->mainnotebook, vbox, tabLabel);
-
-  vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
-  tabLabel = uiutilsCreateLabel (_("Playlist Management"));
-  uiutilsNotebookAppendPage (manage->mainnotebook, vbox, tabLabel);
-
-  vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
-  tabLabel = uiutilsCreateLabel (_("Sequences"));
-  uiutilsNotebookAppendPage (manage->mainnotebook, vbox, tabLabel);
-
-  vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
-  tabLabel = uiutilsCreateLabel (_("File Manager"));
-  uiutilsNotebookAppendPage (manage->mainnotebook, vbox, tabLabel);
-
-  /* player */
-  widget = uiplayerActivate (manage->uiplayer);
+  /* song list editor: player */
+  widget = uiplayerActivate (manage->slplayer);
   gtk_widget_set_hexpand (widget, TRUE);
-  gtk_box_pack_start (GTK_BOX (manage->vbox), widget,
-      FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
 
   /* there doesn't seem to be any other good method to identify which */
   /* notebook page is which.  The code is dependent on musicq_a being */
   /* in tab 0, */
   manage->notebook = uiutilsCreateNotebook ();
-  gtk_box_pack_start (GTK_BOX (manage->vbox), manage->notebook, TRUE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (vbox), manage->notebook, TRUE, TRUE, 0);
 
-  /* music queue tab */
-  widget = uimusicqActivate (manage->uimusicq, manage->window, 0);
+  /* song list editor: music queue tab */
+  widget = uimusicqActivate (manage->slmusicq, manage->window, 0);
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   /* CONTEXT: name of song list editor tab */
   tabLabel = uiutilsCreateLabel (_("Song List"));
   uiutilsNotebookAppendPage (manage->notebook, widget, tabLabel);
   gtk_widget_show_all (hbox);
 
-  /* queue B tab */
-  widget = uimusicqActivate (manage->uimusicq, manage->window, 1);
+  /* song list editor: queue b tab */
+  /* always hidden */
+  widget = uimusicqActivate (manage->slmusicq, manage->window, 1);
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   /* this tab is never shown */
   tabLabel = uiutilsCreateLabel ("Queue B");
   uiutilsNotebookAppendPage (manage->notebook, widget, tabLabel);
   gtk_widget_show_all (hbox);
 
-  /* song selection tab */
-  widget = uisongselActivate (manage->uisongsel, manage->window);
+  /* song list editor: song selection tab*/
+  widget = uisongselActivate (manage->slsongsel, manage->window);
   /* CONTEXT: name of song selection tab */
   tabLabel = uiutilsCreateLabel (_("Song Selection"));
   uiutilsNotebookAppendPage (manage->notebook, widget, tabLabel);
+
+  /* music manager */
+  vbox = uiutilsCreateVertBox ();
+  uiutilsBoxSetMargins (vbox, 4);
+  tabLabel = uiutilsCreateLabel (_("Music Manager"));
+  uiutilsNotebookAppendPage (manage->mainnotebook, vbox, tabLabel);
+
+  /* update database */
+  vbox = uiutilsCreateVertBox ();
+  uiutilsBoxSetMargins (vbox, 4);
+  tabLabel = uiutilsCreateLabel (_("Update Database"));
+  uiutilsNotebookAppendPage (manage->mainnotebook, vbox, tabLabel);
+
+  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+
+  widget = uiutilsSpinboxTextCreate (&manage->dbspinbox, manage);
+  /* hard-coded at 30 chars */
+  uiutilsSpinboxTextSet (&manage->dbspinbox, 0,
+      nlistGetCount (manage->dblist), 30, manage->dblist, NULL);
+  uiutilsSpinboxTextSetValue (&manage->dbspinbox, 0);
+  g_signal_connect (widget, "value-changed", G_CALLBACK (manageDbChg), manage);
+  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+
+  widget = uiutilsCreateButton (_("Start"), NULL, manageDbStart, manage);
+  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+
+  tb = uiutilsTextBoxCreate ();
+  gtk_widget_set_size_request (tb->textbox, -1, 60);
+  gtk_box_pack_start (GTK_BOX (vbox), tb->scw, FALSE, FALSE, 0);
+  manage->dbhelpdisp = tb;
+
+  tb = uiutilsTextBoxCreate ();
+  gtk_box_pack_start (GTK_BOX (vbox), tb->scw, FALSE, FALSE, 0);
+  manage->dbstatus = tb;
+
+  /* playlist management */
+  vbox = uiutilsCreateVertBox ();
+  uiutilsBoxSetMargins (vbox, 4);
+  tabLabel = uiutilsCreateLabel (_("Playlist Management"));
+  uiutilsNotebookAppendPage (manage->mainnotebook, vbox, tabLabel);
+
+  /* edit sequences */
+  vbox = uiutilsCreateVertBox ();
+  uiutilsBoxSetMargins (vbox, 4);
+  tabLabel = uiutilsCreateLabel (_("Edit Sequences"));
+  uiutilsNotebookAppendPage (manage->mainnotebook, vbox, tabLabel);
+
+  /* file manager */
+  vbox = uiutilsCreateVertBox ();
+  uiutilsBoxSetMargins (vbox, 4);
+  tabLabel = uiutilsCreateLabel (_("File Manager"));
+  uiutilsNotebookAppendPage (manage->mainnotebook, vbox, tabLabel);
 
   x = nlistGetNum (manage->options, PLUI_SIZE_X);
   y = nlistGetNum (manage->options, PLUI_SIZE_Y);
@@ -388,6 +461,7 @@ manageActivate (GApplication *app, gpointer userdata)
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", ".png", PATHBLD_MP_IMGDIR);
   osuiSetIcon (imgbuff);
+  manageDbChg (NULL, manage);
 
   logProcEnd (LOG_PROC, "manageActivate", "");
 }
@@ -417,9 +491,9 @@ manageMainLoop (void *tmanage)
     return cont;
   }
 
-  uiplayerMainLoop (manage->uiplayer);
-  uimusicqMainLoop (manage->uimusicq);
-  uisongselMainLoop (manage->uisongsel);
+  uiplayerMainLoop (manage->slplayer);
+  uimusicqMainLoop (manage->slmusicq);
+  uisongselMainLoop (manage->slsongsel);
 
   if (gKillReceived) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
@@ -499,8 +573,8 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
       routefrom, msgRouteDebugText (routefrom),
       route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
 
-  uiplayerProcessMsg (routefrom, route, msg, args, manage->uiplayer);
-  uimusicqProcessMsg (routefrom, route, msg, args, manage->uimusicq);
+  uiplayerProcessMsg (routefrom, route, msg, args, manage->slplayer);
+  uimusicqProcessMsg (routefrom, route, msg, args, manage->slmusicq);
 
   switch (route) {
     case ROUTE_NONE:
@@ -559,4 +633,31 @@ static void
 manageSigHandler (int sig)
 {
   gKillReceived = 1;
+}
+
+/* update database */
+
+static void
+manageDbChg (GtkSpinButton *sb, gpointer udata)
+{
+  manageui_t      *manage = udata;
+  GtkAdjustment   *adjustment;
+  double          value;
+  ssize_t         nval;
+  char            *sval;
+
+  nval = MANAGE_DB_CHECK_NEW;
+  if (sb != NULL) {
+    adjustment = gtk_spin_button_get_adjustment (sb);
+    value = gtk_adjustment_get_value (adjustment);
+    nval = (ssize_t) value;
+  }
+
+  sval = nlistGetStr (manage->dbhelp, nval);
+  uiutilsTextBoxSetValue (manage->dbhelpdisp, sval);
+}
+
+static void
+manageDbStart (GtkButton *b, gpointer udata)
+{
 }

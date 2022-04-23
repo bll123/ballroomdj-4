@@ -361,14 +361,11 @@ starterActivate (GApplication *app, gpointer userdata)
   g_signal_connect (starter->window, "delete-event", G_CALLBACK (starterCloseWin), starter);
   gtk_window_set_title (GTK_WINDOW (starter->window), BDJ4_LONG_NAME);
 
-  vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+  vbox = uiutilsCreateVertBox ();
+  uiutilsBoxSetMargins (vbox, 4);
   gtk_container_add (GTK_CONTAINER (starter->window), vbox);
-  gtk_widget_set_margin_top (vbox, 4);
-  gtk_widget_set_margin_bottom (vbox, 4);
-  gtk_widget_set_margin_start (vbox, 4);
-  gtk_widget_set_margin_end (vbox, 4);
 
-  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+  hbox = uiutilsCreateHorizBox ();
   gtk_widget_set_margin_top (hbox, 8);
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
 
@@ -385,10 +382,10 @@ starterActivate (GApplication *app, gpointer userdata)
   gtk_widget_set_halign (widget, GTK_ALIGN_FILL);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 
-  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+  hbox = uiutilsCreateHorizBox ();
   gtk_box_pack_start (GTK_BOX (vbox), hbox, TRUE, FALSE, 0);
 
-  bvbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+  bvbox = uiutilsCreateVertBox ();
   gtk_box_pack_start (GTK_BOX (hbox), bvbox, FALSE, FALSE, 0);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
@@ -1014,13 +1011,13 @@ starterCreateSupportDialog (GtkButton *b, gpointer udata)
 
   /* line 5 */
   /* CONTEXT: sending support message: checkbox: option to send data files */
-  widget = uiutilsCreateCheckButton (_("Send Data Files"), 0);
+  widget = uiutilsCreateCheckButton (_("Attach Data Files"), 0);
   gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
   starter->supportSendFiles = widget;
 
   /* line 6 */
   /* CONTEXT: sending support message: checkbox: option to send database */
-  widget = uiutilsCreateCheckButton (_("Send Database"), 0);
+  widget = uiutilsCreateCheckButton (_("Attach Database"), 0);
   gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
   starter->supportSendDB = widget;
 

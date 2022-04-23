@@ -890,12 +890,9 @@ confuiActivate (GApplication *app, gpointer userdata)
   snprintf (tbuff, sizeof (tbuff), _("%s Configuration"), BDJ4_NAME);
   gtk_window_set_title (GTK_WINDOW (confui->window), tbuff);
 
-  confui->vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+  confui->vbox = uiutilsCreateVertBox ();
+  uiutilsBoxSetMargins (confui->vbox, 4);
   gtk_container_add (GTK_CONTAINER (confui->window), confui->vbox);
-  gtk_widget_set_margin_top (confui->vbox, 4);
-  gtk_widget_set_margin_bottom (confui->vbox, 4);
-  gtk_widget_set_margin_start (confui->vbox, 4);
-  gtk_widget_set_margin_end (confui->vbox, 4);
 
   confui->notebook = uiutilsCreateNotebook ();
   gtk_notebook_set_tab_pos (GTK_NOTEBOOK (confui->notebook), GTK_POS_LEFT);
@@ -1137,13 +1134,13 @@ confuiActivate (GApplication *app, gpointer userdata)
   gtk_box_pack_start (GTK_BOX (hbox), dvbox, FALSE, FALSE, 0);
 
   /* CONTEXT: config: display settings: button: add the selected field */
-  widget = uiutilsCreateButton (_("Select"), "button_right", NULL, confui);
-  g_signal_connect (widget, "clicked", G_CALLBACK (confuiDispSelect), confui);
+  widget = uiutilsCreateButton (_("Select"), "button_right",
+      confuiDispSelect, confui);
   gtk_box_pack_start (GTK_BOX (dvbox), widget, FALSE, FALSE, 0);
 
   /* CONTEXT: config: display settings: button: remove the selected field */
-  widget = uiutilsCreateButton (_("Remove"), "button_left", NULL, confui);
-  g_signal_connect (widget, "clicked", G_CALLBACK (confuiDispRemove), confui);
+  widget = uiutilsCreateButton (_("Remove"), "button_left",
+      confuiDispRemove, confui);
   gtk_box_pack_start (GTK_BOX (dvbox), widget, FALSE, FALSE, 0);
 
   widget = uiutilsCreateScrolledWindow ();
@@ -1171,13 +1168,13 @@ confuiActivate (GApplication *app, gpointer userdata)
   gtk_box_pack_start (GTK_BOX (hbox), dvbox, FALSE, FALSE, 0);
 
   /* CONTEXT: config: display settings: button: move the selected field up */
-  widget = uiutilsCreateButton (_("Move Up"), "button_up", NULL, confui);
-  g_signal_connect (widget, "clicked", G_CALLBACK (confuiTableMoveUp), confui);
+  widget = uiutilsCreateButton (_("Move Up"), "button_up",
+      confuiTableMoveUp, confui);
   gtk_box_pack_start (GTK_BOX (dvbox), widget, FALSE, FALSE, 0);
 
   /* CONTEXT: config: display settings: button: move the selected field down */
-  widget = uiutilsCreateButton (_("Move Down"), "button_down", NULL, confui);
-  g_signal_connect (widget, "clicked", G_CALLBACK (confuiTableMoveDown), confui);
+  widget = uiutilsCreateButton (_("Move Down"), "button_down",
+      confuiTableMoveDown, confui);
   gtk_box_pack_start (GTK_BOX (dvbox), widget, FALSE, FALSE, 0);
 
   /* call this after both tree views have been instantiated */
@@ -2355,28 +2352,24 @@ confuiMakeItemTable (configui_t *confui, GtkWidget *vbox, confuiident_t id,
 
   if ((flags & CONFUI_TABLE_NO_UP_DOWN) != CONFUI_TABLE_NO_UP_DOWN) {
     /* CONTEXT: config: table edit: button: move selection up */
-    widget = uiutilsCreateButton (_("Move Up"), "button_up", NULL, confui);
-    g_signal_connect (widget, "clicked",
-        G_CALLBACK (confuiTableMoveUp), confui);
+    widget = uiutilsCreateButton (_("Move Up"), "button_up",
+        confuiTableMoveUp, confui);
     gtk_box_pack_start (GTK_BOX (bvbox), widget, FALSE, FALSE, 0);
 
     /* CONTEXT: config: table edit: button: move selection down */
-    widget = uiutilsCreateButton (_("Move Down"), "button_down", NULL, confui);
-    g_signal_connect (widget, "clicked",
-        G_CALLBACK (confuiTableMoveDown), confui);
+    widget = uiutilsCreateButton (_("Move Down"), "button_down",
+        confuiTableMoveDown, confui);
     gtk_box_pack_start (GTK_BOX (bvbox), widget, FALSE, FALSE, 0);
   }
 
   /* CONTEXT: config: table edit: button: delete selection */
-  widget = uiutilsCreateButton (_("Delete"), "button_remove", NULL, confui);
-  g_signal_connect (widget, "clicked",
-      G_CALLBACK (confuiTableRemove), confui);
+  widget = uiutilsCreateButton (_("Delete"), "button_remove",
+      confuiTableRemove, confui);
   gtk_box_pack_start (GTK_BOX (bvbox), widget, FALSE, FALSE, 0);
 
   /* CONTEXT: config: table edit: button: add new selection */
-  widget = uiutilsCreateButton (_("Add New"), "button_add", NULL, confui);
-  g_signal_connect (widget, "clicked",
-      G_CALLBACK (confuiTableAdd), confui);
+  widget = uiutilsCreateButton (_("Add New"), "button_add",
+      confuiTableAdd, confui);
   gtk_box_pack_start (GTK_BOX (bvbox), widget, FALSE, FALSE, 0);
 
   logProcEnd (LOG_PROC, "confuiMakeItemTable", "");
