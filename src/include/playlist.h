@@ -72,9 +72,9 @@ typedef struct {
 
 typedef bool (*playlistCheck_t)(song_t *, void *);
 
-playlist_t    *playlistLoad (musicdb_t *musicdb, char *);
-playlist_t    *playlistCreate (musicdb_t *musicdb, char *plfname, pltype_t type, char *ofname);
-playlist_t    *playlistAlloc (char *, musicdb_t *musicdb);
+playlist_t    *playlistAlloc (musicdb_t *musicdb);
+int           playlistLoad (playlist_t *pl, char *);
+void          playlistCreate (playlist_t *pl, char *plfname, pltype_t type, char *ofname);
 void          playlistFree (void *);
 char          *playlistGetName (playlist_t *pl);
 ssize_t       playlistGetConfigNum (playlist_t *pl, playlistkey_t key);

@@ -905,7 +905,8 @@ mainQueueDance (maindata_t *mainData, char *args, ssize_t count)
   logMsg (LOG_DBG, LOG_BASIC, "queue dance %d %zd %zd", mi, danceIdx, count);
   snprintf (plname, sizeof (plname), "_main_dance_%zd_%ld",
       danceIdx, globalCounter++);
-  playlist = playlistCreate (mainData->musicdb, plname, PLTYPE_AUTO, NULL);
+  playlist = playlistAlloc (mainData->musicdb);
+  playlistCreate (playlist, plname, PLTYPE_AUTO, NULL);
   playlistSetConfigNum (playlist, PLAYLIST_STOP_AFTER, count);
   /* this will also set 'selected' */
   playlistSetDanceCount (playlist, danceIdx, 1);
@@ -931,14 +932,16 @@ mainQueuePlaylist (maindata_t *mainData, char *args)
   int             mi;
   playlist_t      *playlist;
   char            *plname;
+  int             rc;
 
   logProcBegin (LOG_PROC, "mainQueuePlaylist");
 
   mainParseIntStr (args, &mi, &plname);
   mainData->musicqManageIdx = mi;
 
-  playlist = playlistLoad (mainData->musicdb, plname);
-  if (playlist != NULL) {
+  playlist = playlistAlloc (mainData->musicdb);
+  rc = playlistLoad (playlist, plname);
+  if (rc == 0) {
     logMsg (LOG_DBG, LOG_BASIC, "Queue Playlist: %d %s", mi, plname);
     slistSetData (mainData->playlistCache, plname, playlist);
     queuePush (mainData->playlistQueue [mainData->musicqManageIdx], playlist);
