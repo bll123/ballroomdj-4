@@ -157,7 +157,6 @@ void  uiutilsNotebookSetActionWidget (GtkWidget *notebook, GtkWidget *widget, Gt
 /* uigtkbox.c */
 GtkWidget *uiutilsCreateVertBox (void);
 GtkWidget *uiutilsCreateHorizBox (void);
-void      uiutilsBoxSetMargins (GtkWidget *box, int margin);
 
 /* uigtkutils.c */
 void  uiutilsCleanup (void);
@@ -167,6 +166,7 @@ void  uiutilsInitUILog (void);
 int   uiutilsCreateApplication (int argc, char *argv [],
     char *tag, GtkApplication **app, void *activateFunc, void *udata);
 void  uiutilsGetForegroundColor (GtkWidget *widget, char *buff, size_t sz);
+void  uiutilsWidgetSetAllMargins (GtkWidget *widget, int margin);
 
 GtkWidget * uiutilsCreateScrolledWindow (void);
 GtkWidget * uiutilsCreateSwitch (int value);

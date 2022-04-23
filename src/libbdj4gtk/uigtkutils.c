@@ -103,6 +103,8 @@ uiutilsSetUIFont (char *uifont)
     snprintf (tbuff, sizeof (tbuff), "* { font-family: '%s'; }", wbuff);
     if (sz > 0) {
       snprintf (wbuff, sizeof (wbuff), " * { font-size: %dpt; }", sz);
+      sz -= 2;
+      snprintf (wbuff, sizeof (wbuff), " menuitem label { font-size: %dpt; }", sz);
       strlcat (tbuff, wbuff, MAXPATHLEN);
     }
 
@@ -440,6 +442,15 @@ uiutilsAddDisplayTypes (GType *types, slist_t *sellist, int *col)
   }
 
   return types;
+}
+
+void
+uiutilsWidgetSetAllMargins (GtkWidget *widget, int margin)
+{
+  gtk_widget_set_margin_top (widget, margin);
+  gtk_widget_set_margin_bottom (widget, margin);
+  gtk_widget_set_margin_start (widget, margin);
+  gtk_widget_set_margin_end (widget, margin);
 }
 
 /* internal routines */

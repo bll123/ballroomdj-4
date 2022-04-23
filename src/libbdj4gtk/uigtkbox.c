@@ -32,11 +32,3 @@ uiutilsCreateHorizBox (void)
   return box;
 }
 
-void
-uiutilsBoxSetMargins (GtkWidget *box, int margin)
-{
-  gtk_widget_set_margin_top (box, margin);
-  gtk_widget_set_margin_bottom (box, margin);
-  gtk_widget_set_margin_start (box, margin);
-  gtk_widget_set_margin_end (box, margin);
-}

@@ -155,14 +155,6 @@ target_link_libraries (bdj4g
 addWinSockLibrary (bdj4g)
 addWinNtdllLibrary (bdj4g)
 
-add_executable (bdj4cli bdj4cli.c)
-target_link_libraries (bdj4cli
-  libbdj4 libbdj4common
-  ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
-  m
-)
-addWinSockLibrary (bdj4cli)
-
 add_executable (bdj4dbupdate bdj4dbupdate.c)
 target_link_libraries (bdj4dbupdate
   libbdj4 libbdj4common
@@ -293,7 +285,7 @@ add_subdirectory (check)
 install (TARGETS
   libbdj4common libbdj4
   libbdj4gtk
-  bdj4 bdj4g bdj4cli
+  bdj4 bdj4g
   bdj4se bdj4installer
   bdj4locatebdj3 bdj4info
   bdj4dbupdate bdj4dbtag

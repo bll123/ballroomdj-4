@@ -891,7 +891,7 @@ confuiActivate (GApplication *app, gpointer userdata)
   gtk_window_set_title (GTK_WINDOW (confui->window), tbuff);
 
   confui->vbox = uiutilsCreateVertBox ();
-  uiutilsBoxSetMargins (confui->vbox, 4);
+  uiutilsWidgetSetAllMargins (confui->vbox, 4);
   gtk_container_add (GTK_CONTAINER (confui->window), confui->vbox);
 
   confui->notebook = uiutilsCreateNotebook ();

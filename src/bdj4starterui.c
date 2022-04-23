@@ -25,6 +25,7 @@
 #include "fileop.h"
 #include "filemanip.h"
 #include "localeutil.h"
+#include "lock.h"
 #include "log.h"
 #include "nlist.h"
 #include "pathbld.h"
@@ -128,6 +129,7 @@ static void     starterProcessExit (GtkButton *b, gpointer udata);
 static void     starterGetProfiles (startui_t *starter);
 static char     * starterSetProfile (void *udata, int idx);
 static void     starterCheckProfile (startui_t *starter);
+
 static void     starterProcessSupport (GtkButton *b, gpointer udata);
 static void     starterSupportResponseHandler (GtkDialog *d, gint responseid, gpointer udata);
 static void     starterCreateSupportDialog (GtkButton *b, gpointer udata);
@@ -142,6 +144,8 @@ static z_stream * starterGzipInit (char *out, int outsz);
 static void     starterGzip (z_stream *zs, const char* in, int insz);
 static size_t   starterGzipEnd (z_stream *zs);
 
+static void     starterStopAllProcesses (GtkMenuItem *mi, gpointer udata);
+static int      starterCountProcesses (startui_t *starter);
 
 static int gKillReceived = 0;
 static int gdone = 0;
@@ -338,6 +342,9 @@ starterActivate (GApplication *app, gpointer userdata)
 {
   startui_t           *starter = userdata;
   GtkWidget           *widget;
+  GtkWidget           *menubar;
+  GtkWidget           *menu;
+  GtkWidget           *menuitem;
   GtkWidget           *vbox;
   GtkWidget           *bvbox;
   GtkWidget           *hbox;
@@ -362,14 +369,34 @@ starterActivate (GApplication *app, gpointer userdata)
   gtk_window_set_title (GTK_WINDOW (starter->window), BDJ4_LONG_NAME);
 
   vbox = uiutilsCreateVertBox ();
-  uiutilsBoxSetMargins (vbox, 4);
+  uiutilsWidgetSetAllMargins (vbox, 4);
   gtk_container_add (GTK_CONTAINER (starter->window), vbox);
 
   hbox = uiutilsCreateHorizBox ();
   gtk_widget_set_margin_top (hbox, 8);
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
 
-  /* CONTEXT: starer: profile to be used when starting BDJ4 */
+  menubar = gtk_menu_bar_new ();
+  gtk_box_pack_start (GTK_BOX (hbox), menubar, FALSE, FALSE, 0);
+
+  menuitem = gtk_menu_item_new_with_label (_("Actions"));
+  gtk_menu_shell_append (GTK_MENU_SHELL (menubar), menuitem);
+
+  menu = gtk_menu_new ();
+  gtk_menu_item_set_submenu (GTK_MENU_ITEM (menuitem), menu);
+
+  snprintf (tbuff, sizeof (tbuff), _("Stop All %s Processes"), BDJ4_NAME);
+  menuitem = gtk_menu_item_new_with_label (tbuff);
+  gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
+  g_signal_connect (menuitem, "activate",
+      G_CALLBACK (starterStopAllProcesses), starter);
+
+  /* main display */
+  hbox = uiutilsCreateHorizBox ();
+  gtk_widget_set_margin_top (hbox, 8);
+  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+
+  /* CONTEXT: starter: profile to be used when starting BDJ4 */
   widget = uiutilsCreateColonLabel (_("Profile"));
   gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
@@ -1230,5 +1257,177 @@ starterGzipEnd (z_stream *zs)
   deflateEnd (zs);
   free (zs);
   return olen;
+}
+
+static void
+starterStopAllProcesses (GtkMenuItem *mi, gpointer udata)
+{
+  startui_t     *starter = udata;
+  bdjmsgroute_t route;
+  char          *locknm;
+  pid_t         pid;
+  int           count;
+
+  logProcBegin (LOG_PROC, "starterStopAllProcesses");
+
+  count = starterCountProcesses (starter);
+  if (count <= 1) {
+    logProcEnd (LOG_PROC, "starterStopAllProcesses", "begin-only-one");
+    return;
+  }
+
+  /* send the standard exit request to the main controlling processes first */
+  logMsg (LOG_DBG, LOG_IMPORTANT, "send exit request to ui");
+  fprintf (stderr, "send exit request to ui\n");
+  if (! connIsConnected (starter->conn, ROUTE_PLAYERUI)) {
+    connConnect (starter->conn, ROUTE_PLAYERUI);
+  }
+  connSendMessage (starter->conn, ROUTE_PLAYERUI, MSG_EXIT_REQUEST, NULL);
+  if (! connIsConnected (starter->conn, ROUTE_MANAGEUI)) {
+    connConnect (starter->conn, ROUTE_MANAGEUI);
+  }
+  connSendMessage (starter->conn, ROUTE_MANAGEUI, MSG_EXIT_REQUEST, NULL);
+  if (! connIsConnected (starter->conn, ROUTE_CONFIGUI)) {
+    connConnect (starter->conn, ROUTE_CONFIGUI);
+  }
+  connSendMessage (starter->conn, ROUTE_CONFIGUI, MSG_EXIT_REQUEST, NULL);
+  logMsg (LOG_DBG, LOG_IMPORTANT, "sleeping");
+  fprintf (stderr, "sleeping\n");
+  mssleep (1000);
+
+  count = starterCountProcesses (starter);
+  if (count <= 1) {
+    logProcEnd (LOG_PROC, "starterStopAllProcesses", "after-ui");
+    return;
+  }
+
+  if (isWindows ()) {
+    /* windows is slow */
+    mssleep (1500);
+  }
+
+  /* send the exit request to main */
+  logMsg (LOG_DBG, LOG_IMPORTANT, "send exit request to main");
+  fprintf (stderr, "send exit request to main\n");
+  if (! connIsConnected (starter->conn, ROUTE_MAIN)) {
+    connConnect (starter->conn, ROUTE_MAIN);
+  }
+  connSendMessage (starter->conn, ROUTE_MAIN, MSG_EXIT_REQUEST, NULL);
+  logMsg (LOG_DBG, LOG_IMPORTANT, "sleeping");
+  fprintf (stderr, "sleeping\n");
+  mssleep (1000);
+
+  count = starterCountProcesses (starter);
+  if (count <= 1) {
+    logProcEnd (LOG_PROC, "starterStopAllProcesses", "after-main");
+    return;
+  }
+
+  /* see which lock files exist, and send exit requests to them */
+  count = 0;
+  for (route = ROUTE_MAIN; route < ROUTE_MAX; ++route) {
+    if (route == ROUTE_STARTERUI) {
+      continue;
+    }
+
+    locknm = lockName (route);
+    pid = lockExists (locknm, PATHBLD_MP_USEIDX);
+    if (pid > 0) {
+      logMsg (LOG_DBG, LOG_IMPORTANT, "route %d %s exists; send exit request",
+          route, msgRouteDebugText (route));
+      fprintf (stderr, "route %d %s exists; send exit request\n",
+          route, msgRouteDebugText (route));
+      if (! connIsConnected (starter->conn, ROUTE_MAIN)) {
+        connConnect (starter->conn, route);
+      }
+      connSendMessage (starter->conn, route, MSG_EXIT_REQUEST, NULL);
+      ++count;
+    }
+  }
+
+  if (count <= 1) {
+    logProcEnd (LOG_PROC, "starterStopAllProcesses", "after-exit-all");
+    return;
+  }
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "sleeping");
+  fprintf (stderr, "sleeping\n");
+  mssleep (1000);
+
+  /* see which lock files still exist and kill the processes */
+  count = 0;
+  for (route = ROUTE_MAIN; route < ROUTE_MAX; ++route) {
+    if (route == ROUTE_STARTERUI) {
+      continue;
+    }
+
+    locknm = lockName (route);
+    pid = lockExists (locknm, PATHBLD_MP_USEIDX);
+    if (pid > 0) {
+      logMsg (LOG_DBG, LOG_IMPORTANT, "lock %d %s exists; send terminate",
+          route, msgRouteDebugText (route));
+      fprintf (stderr, "lock %d %s exists; send terminate\n",
+          route, msgRouteDebugText (route));
+      procutilTerminate (pid, false);
+      ++count;
+    }
+  }
+
+  if (count <= 1) {
+    logProcEnd (LOG_PROC, "starterStopAllProcesses", "after-term");
+    return;
+  }
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "sleeping");
+  fprintf (stderr, "sleeping\n");
+  mssleep (1000);
+
+  /* see which lock files still exist and kill the processes with */
+  /* a signal that is not caught; remove the lock file */
+  for (route = ROUTE_MAIN; route < ROUTE_MAX; ++route) {
+    if (route == ROUTE_STARTERUI) {
+      continue;
+    }
+
+    locknm = lockName (route);
+    pid = lockExists (locknm, PATHBLD_MP_USEIDX);
+    if (pid > 0) {
+      logMsg (LOG_DBG, LOG_IMPORTANT, "lock %d %s exists; force terminate",
+          route, msgRouteDebugText (route));
+      fprintf (stderr, "lock %d %s exists; force terminate\n",
+          route, msgRouteDebugText (route));
+      procutilTerminate (pid, true);
+    }
+    mssleep (100);
+    pid = lockExists (locknm, PATHBLD_MP_USEIDX);
+    if (pid > 0) {
+      logMsg (LOG_DBG, LOG_IMPORTANT, "removing lock %d %s",
+          route, msgRouteDebugText (route));
+      fprintf (stderr, "removing lock %d %s\n",
+          route, msgRouteDebugText (route));
+      fileopDelete (locknm);
+    }
+  }
+  logProcEnd (LOG_PROC, "starterStopAllProcesses", "");
+}
+
+static int
+starterCountProcesses (startui_t *starter)
+{
+  bdjmsgroute_t route;
+  char          *locknm;
+  pid_t         pid;
+  int           count;
+
+  count = 0;
+  for (route = ROUTE_MAIN; route < ROUTE_MAX; ++route) {
+    locknm = lockName (route);
+    pid = lockExists (locknm, PATHBLD_MP_USEIDX);
+    if (pid > 0) {
+      ++count;
+    }
+  }
+
+  return count;
 }
 

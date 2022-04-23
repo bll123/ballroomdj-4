@@ -344,7 +344,7 @@ manageActivate (GApplication *app, gpointer userdata)
   gtk_window_set_title (GTK_WINDOW (manage->window), tbuff);
 
   vbox = uiutilsCreateVertBox ();
-  uiutilsBoxSetMargins (vbox, 4);
+  uiutilsWidgetSetAllMargins (vbox, 4);
   gtk_container_add (GTK_CONTAINER (manage->window), vbox);
 
   manage->mainnotebook = uiutilsCreateNotebook ();
@@ -354,7 +354,7 @@ manageActivate (GApplication *app, gpointer userdata)
 
   /* song list editor */
   vbox = uiutilsCreateVertBox ();
-  uiutilsBoxSetMargins (vbox, 4);
+  uiutilsWidgetSetAllMargins (vbox, 4);
 
   tabLabel = uiutilsCreateLabel (_("Edit Song Lists"));
   uiutilsNotebookAppendPage (manage->mainnotebook, vbox, tabLabel);
@@ -395,13 +395,13 @@ manageActivate (GApplication *app, gpointer userdata)
 
   /* music manager */
   vbox = uiutilsCreateVertBox ();
-  uiutilsBoxSetMargins (vbox, 4);
+  uiutilsWidgetSetAllMargins (vbox, 4);
   tabLabel = uiutilsCreateLabel (_("Music Manager"));
   uiutilsNotebookAppendPage (manage->mainnotebook, vbox, tabLabel);
 
   /* update database */
   vbox = uiutilsCreateVertBox ();
-  uiutilsBoxSetMargins (vbox, 4);
+  uiutilsWidgetSetAllMargins (vbox, 4);
   tabLabel = uiutilsCreateLabel (_("Update Database"));
   uiutilsNotebookAppendPage (manage->mainnotebook, vbox, tabLabel);
 
@@ -430,19 +430,19 @@ manageActivate (GApplication *app, gpointer userdata)
 
   /* playlist management */
   vbox = uiutilsCreateVertBox ();
-  uiutilsBoxSetMargins (vbox, 4);
+  uiutilsWidgetSetAllMargins (vbox, 4);
   tabLabel = uiutilsCreateLabel (_("Playlist Management"));
   uiutilsNotebookAppendPage (manage->mainnotebook, vbox, tabLabel);
 
   /* edit sequences */
   vbox = uiutilsCreateVertBox ();
-  uiutilsBoxSetMargins (vbox, 4);
+  uiutilsWidgetSetAllMargins (vbox, 4);
   tabLabel = uiutilsCreateLabel (_("Edit Sequences"));
   uiutilsNotebookAppendPage (manage->mainnotebook, vbox, tabLabel);
 
   /* file manager */
   vbox = uiutilsCreateVertBox ();
-  uiutilsBoxSetMargins (vbox, 4);
+  uiutilsWidgetSetAllMargins (vbox, 4);
   tabLabel = uiutilsCreateLabel (_("File Manager"));
   uiutilsNotebookAppendPage (manage->mainnotebook, vbox, tabLabel);
 
