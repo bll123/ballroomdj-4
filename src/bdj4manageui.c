@@ -148,6 +148,9 @@ main (int argc, char *argv[])
   manage.slplayer = NULL;
   manage.slmusicq = NULL;
   manage.slsongsel = NULL;
+  manage.mmplayer = NULL;
+  manage.mmmusicq = NULL;
+  manage.mmsongsel = NULL;
   manage.musicqPlayIdx = MUSICQ_B;
   manage.musicqManageIdx = MUSICQ_A;
   manage.dblist = NULL;
@@ -332,6 +335,9 @@ manageClosingCallback (void *udata, programstate_t programState)
   uiplayerFree (manage->slplayer);
   uimusicqFree (manage->slmusicq);
   uisongselFree (manage->slsongsel);
+  uiplayerFree (manage->mmplayer);
+  uimusicqFree (manage->mmmusicq);
+  uisongselFree (manage->mmsongsel);
   uiutilsCleanup ();
   if (manage->dbhelp != NULL) {
     nlistFree (manage->dbhelp);
@@ -350,6 +356,9 @@ manageActivate (GApplication *app, gpointer userdata)
   GtkWidget           *widget;
   GtkWidget           *hbox;
   GtkWidget           *vbox;
+  GtkWidget           *slqueueb;
+  GtkWidget           *mmqueuea;
+  GtkWidget           *mmqueueb;
   uiutilstextbox_t    *tb;
   char                imgbuff [MAXPATHLEN];
   char                tbuff [MAXPATHLEN];
@@ -388,28 +397,22 @@ manageActivate (GApplication *app, gpointer userdata)
   gtk_widget_set_hexpand (widget, TRUE);
   gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
 
-  /* there doesn't seem to be any other good method to identify which */
-  /* notebook page is which.  The code is dependent on musicq_a being */
-  /* in tab 0, */
   manage->notebook = uiutilsCreateNotebook ();
   gtk_box_pack_start (GTK_BOX (vbox), manage->notebook, TRUE, TRUE, 0);
 
   /* song list editor: music queue tab */
   widget = uimusicqActivate (manage->slmusicq, manage->window, 0);
-  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   /* CONTEXT: name of song list editor tab */
   tabLabel = uiutilsCreateLabel (_("Song List"));
   uiutilsNotebookAppendPage (manage->notebook, widget, tabLabel);
-  gtk_widget_show_all (hbox);
 
   /* song list editor: queue b tab */
   /* always hidden */
   widget = uimusicqActivate (manage->slmusicq, manage->window, 1);
-  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   /* this tab is never shown */
   tabLabel = uiutilsCreateLabel ("Queue B");
   uiutilsNotebookAppendPage (manage->notebook, widget, tabLabel);
-  gtk_widget_show_all (hbox);
+  slqueueb = widget;
 
   /* song list editor: song selection tab*/
   widget = uisongselActivate (manage->slsongsel, manage->window);
@@ -422,6 +425,34 @@ manageActivate (GApplication *app, gpointer userdata)
   uiutilsWidgetSetAllMargins (vbox, 4);
   tabLabel = uiutilsCreateLabel (_("Music Manager"));
   uiutilsNotebookAppendPage (manage->mainnotebook, vbox, tabLabel);
+
+  /* music manager: player */
+  widget = uiplayerActivate (manage->slplayer);
+  gtk_widget_set_hexpand (widget, TRUE);
+  gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
+
+  manage->notebook = uiutilsCreateNotebook ();
+  gtk_box_pack_start (GTK_BOX (vbox), manage->notebook, TRUE, TRUE, 0);
+
+  /* these tabs are never shown */
+  /* music manager: music queue tab */
+  widget = uimusicqActivate (manage->slmusicq, manage->window, 0);
+  tabLabel = uiutilsCreateLabel ("Queue A");
+  uiutilsNotebookAppendPage (manage->notebook, widget, tabLabel);
+  mmqueuea = widget;
+
+  /* music manager: queue b tab */
+  /* always hidden */
+  widget = uimusicqActivate (manage->slmusicq, manage->window, 1);
+  tabLabel = uiutilsCreateLabel ("Queue B");
+  uiutilsNotebookAppendPage (manage->notebook, widget, tabLabel);
+  mmqueueb = widget;
+
+  /* music manager: song selection tab*/
+  widget = uisongselActivate (manage->slsongsel, manage->window);
+  /* CONTEXT: name of song selection tab */
+  tabLabel = uiutilsCreateLabel (_("Song Selection"));
+  uiutilsNotebookAppendPage (manage->notebook, widget, tabLabel);
 
   /* update database */
   vbox = uiutilsCreateVertBox ();
@@ -483,6 +514,9 @@ manageActivate (GApplication *app, gpointer userdata)
   gtk_window_set_default_size (GTK_WINDOW (manage->window), x, y);
 
   gtk_widget_show_all (manage->window);
+  gtk_widget_hide (slqueueb);
+  gtk_widget_hide (mmqueuea);
+  gtk_widget_hide (mmqueueb);
 
   x = nlistGetNum (manage->options, PLUI_POSITION_X);
   y = nlistGetNum (manage->options, PLUI_POSITION_Y);

@@ -434,9 +434,6 @@ pluiActivate (GApplication *app, gpointer userdata)
   gtk_box_pack_start (GTK_BOX (plui->vbox), widget,
       FALSE, FALSE, 0);
 
-  /* there doesn't seem to be any other good method to identify which */
-  /* notebook page is which.  The code is dependent on musicq_a being */
-  /* in tab 0, */
   plui->notebook = uiutilsCreateNotebook ();
   gtk_box_pack_start (GTK_BOX (plui->vbox), plui->notebook, TRUE, TRUE, 0);
   g_signal_connect (plui->notebook, "switch-page", G_CALLBACK (pluiSwitchPage), plui);
