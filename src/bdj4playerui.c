@@ -460,6 +460,7 @@ pluiActivate (GApplication *app, gpointer userdata)
   gtk_image_set_from_pixbuf (GTK_IMAGE (plui->musicqImage [MUSICQ_A]), plui->ledonImg);
   gtk_widget_set_margin_start (plui->musicqImage [MUSICQ_A], 2);
   gtk_box_pack_start (GTK_BOX (hbox), plui->musicqImage [MUSICQ_A], FALSE, FALSE, 0);
+
   uiutilsNotebookAppendPage (plui->notebook, widget, hbox);
   gtk_widget_show_all (hbox);
 
@@ -735,15 +736,22 @@ pluiSwitchPage (GtkNotebook *nb, GtkWidget *page, guint pagenum, gpointer udata)
 static void
 pluiSetSwitchPage (playerui_t *plui, int pagenum)
 {
+  GtkWidget   *page;
+  int         tabid;
+
   logProcBegin (LOG_PROC, "pluiSetSwitchPage");
-  /* note that the design requires that the music queues be the first */
-  /* tabs in the notebook */
-  if (pagenum < MUSICQ_MAX &&
-      nlistGetNum (plui->options, PLUI_SHOW_EXTRA_QUEUES)) {
+
+  page = gtk_notebook_get_nth_page (GTK_NOTEBOOK (plui->notebook), pagenum);
+  tabid = GPOINTER_TO_UINT (g_object_get_data (G_OBJECT (page), "bdj4tabtype"));
+
+  /* note that his design requires that the music queues be the first */
+  /* set of tabs in the notebook */
+  if (tabid == UI_TAB_MUSICQ) {
     plui->musicqManageIdx = pagenum;
     uimusicqSetManageIdx (plui->uimusicq, pagenum);
     gtk_widget_show (plui->setPlaybackButton);
   } else {
+    /* must be a UI_TAB_SONGSEL */
     gtk_widget_hide (plui->setPlaybackButton);
   }
   logProcEnd (LOG_PROC, "pluiSetSwitchPage", "");
@@ -830,6 +838,7 @@ pluiSetExtraQueues (playerui_t *plui)
 {
   GtkWidget       *page;
   int             pagenum;
+  int             tabid;
 
   logProcBegin (LOG_PROC, "pluiSetExtraQueues");
   if (plui->notebook == NULL ||
@@ -841,12 +850,12 @@ pluiSetExtraQueues (playerui_t *plui)
   page = gtk_notebook_get_nth_page (GTK_NOTEBOOK (plui->notebook), MUSICQ_B);
   gtk_widget_set_visible (page,
       nlistGetNum (plui->options, PLUI_SHOW_EXTRA_QUEUES));
-  if (nlistGetNum (plui->options, PLUI_SHOW_EXTRA_QUEUES)) {
-    pagenum = gtk_notebook_get_current_page (GTK_NOTEBOOK (plui->notebook));
-    /* I wish there was a way to identify the notebook tab */
-    if (pagenum == 0) {
-      gtk_widget_show (plui->setPlaybackButton);
-    }
+
+  pagenum = gtk_notebook_get_current_page (GTK_NOTEBOOK (plui->notebook));
+  page = gtk_notebook_get_nth_page (GTK_NOTEBOOK (plui->notebook), pagenum);
+  tabid = GPOINTER_TO_UINT (g_object_get_data (G_OBJECT (page), "bdj4tabtype"));
+  if (tabid == UI_TAB_MUSICQ) {
+    gtk_widget_show (plui->setPlaybackButton);
   } else {
     gtk_widget_hide (plui->setPlaybackButton);
   }

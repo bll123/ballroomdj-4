@@ -76,6 +76,8 @@ uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
 
   uimusicq->ui [ci].box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   assert (uimusicq->ui [ci].box != NULL);
+  g_object_set_data (G_OBJECT (uimusicq->ui [ci].box),
+      "bdj4tabtype", GUINT_TO_POINTER (UI_TAB_MUSICQ));
   gtk_widget_set_hexpand (uimusicq->ui [ci].box, TRUE);
   gtk_widget_set_vexpand (uimusicq->ui [ci].box, TRUE);
 
