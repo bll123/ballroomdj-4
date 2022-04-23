@@ -177,6 +177,24 @@ GtkWidget *uiutilsCreateHorizBox (void);
 GtkWidget * uiutilsCreateProgressBar (char *color);
 void        uiutilsProgressBarSet (GtkWidget *pb, double val);
 
+/* uigtktreeview.c */
+GtkWidget * uiutilsCreateTreeView (void);
+GType       * uiutilsAppendType (GType *types, int *ncol, int type);
+GtkTreeViewColumn * uiutilsAddDisplayColumns (GtkWidget *tree,
+    slist_t *sellist, int col, int fontcol, int ellipsizeCol);
+GType *     uiutilsAddDisplayTypes (GType *types, slist_t *sellist, int *col);
+void        uiutilsSetDisplayColumns (GtkListStore *store, GtkTreeIter *iter,
+    slist_t *sellist, song_t *song, int col);
+
+/* uigtkdialog.c */
+char  *uiutilsSelectDirDialog (uiutilsselect_t *selectdata);
+char  *uiutilsSelectFileDialog (uiutilsselect_t *selectdata);
+
+/* uigtkwindow.c */
+GtkWidget * uiutilsCreateMainWindow (GApplication *app, char *title,
+    char *imagenm, void *cb, void *udata);
+GtkWidget * uiutilsCreateScrolledWindow (void);
+
 /* uigtkutils.c */
 void  uiutilsCleanup (void);
 void  uiutilsSetCss (GtkWidget *w, char *style);
@@ -187,19 +205,8 @@ int   uiutilsCreateApplication (int argc, char *argv [],
 void  uiutilsGetForegroundColor (GtkWidget *widget, char *buff, size_t sz);
 void  uiutilsWidgetSetAllMargins (GtkWidget *widget, int margin);
 
-GtkWidget * uiutilsCreateScrolledWindow (void);
 GtkWidget * uiutilsCreateSwitch (int value);
 GtkWidget * uiutilsCreateCheckButton (const char *txt, int value);
-GtkWidget * uiutilsCreateTreeView (void);
 
-char  *uiutilsSelectDirDialog (uiutilsselect_t *selectdata);
-char  *uiutilsSelectFileDialog (uiutilsselect_t *selectdata);
-
-GType       * uiutilsAppendType (GType *types, int *ncol, int type);
-GtkTreeViewColumn * uiutilsAddDisplayColumns (GtkWidget *tree,
-    slist_t *sellist, int col, int fontcol, int ellipsizeCol);
-GType *     uiutilsAddDisplayTypes (GType *types, slist_t *sellist, int *col);
-void        uiutilsSetDisplayColumns (GtkListStore *store, GtkTreeIter *iter,
-    slist_t *sellist, song_t *song, int col);
 
 #endif /* INC_UIUTILS_H */

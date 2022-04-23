@@ -865,7 +865,6 @@ static void
 confuiActivate (GApplication *app, gpointer userdata)
 {
   configui_t    *confui = userdata;
-  GError        *gerr = NULL;
   GtkWidget     *vbox;
   GtkWidget     *widget;
   GtkWidget     *tree;
@@ -882,16 +881,10 @@ confuiActivate (GApplication *app, gpointer userdata)
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon_config", ".svg", PATHBLD_MP_IMGDIR);
-
-  confui->window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-  assert (confui->window != NULL);
-  gtk_window_set_application (GTK_WINDOW (confui->window), GTK_APPLICATION (app));
-  gtk_window_set_application (GTK_WINDOW (confui->window), confui->app);
-  gtk_window_set_default_icon_from_file (imgbuff, &gerr);
-  g_signal_connect (confui->window, "delete-event", G_CALLBACK (confuiCloseWin), confui);
   /* CONTEXT: configuration ui window title */
   snprintf (tbuff, sizeof (tbuff), _("%s Configuration"), BDJ4_NAME);
-  gtk_window_set_title (GTK_WINDOW (confui->window), tbuff);
+  confui->window = uiutilsCreateMainWindow (app, tbuff, imgbuff,
+      confuiCloseWin, confui);
 
   confui->vbox = uiutilsCreateVertBox ();
   uiutilsWidgetSetAllMargins (confui->vbox, 4);

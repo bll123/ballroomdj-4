@@ -351,8 +351,8 @@ starterActivate (GApplication *app, gpointer userdata)
   GtkWidget           *bvbox;
   GtkWidget           *hbox;
   GdkPixbuf           *image;
-  GError              *gerr = NULL;
   GtkSizeGroup        *sg;
+  GError              *gerr = NULL;
   char                imgbuff [MAXPATHLEN];
   char                tbuff [MAXPATHLEN];
   int                 x, y;
@@ -361,14 +361,8 @@ starterActivate (GApplication *app, gpointer userdata)
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", ".svg", PATHBLD_MP_IMGDIR);
-
-  starter->window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-  assert (starter->window != NULL);
-  gtk_window_set_application (GTK_WINDOW (starter->window), GTK_APPLICATION (app));
-  gtk_window_set_application (GTK_WINDOW (starter->window), starter->app);
-  gtk_window_set_default_icon_from_file (imgbuff, &gerr);
-  g_signal_connect (starter->window, "delete-event", G_CALLBACK (starterCloseWin), starter);
-  gtk_window_set_title (GTK_WINDOW (starter->window), BDJ4_LONG_NAME);
+  starter->window = uiutilsCreateMainWindow (app, BDJ4_LONG_NAME, imgbuff,
+      starterCloseWin, starter);
 
   vbox = uiutilsCreateVertBox ();
   uiutilsWidgetSetAllMargins (vbox, uiutilsBaseMarginSz * 2);

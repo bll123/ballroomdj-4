@@ -7,6 +7,7 @@ add_library (libbdj4gtk SHARED
   uisongselgtk.c
   uigtkbox.c
   uigtkbutton.c
+  uigtkdialog.c
   uigtkdropdown.c
   uigtkentry.c
   uigtklabel.c
@@ -15,7 +16,9 @@ add_library (libbdj4gtk SHARED
   uigtkpbar.c
   uigtkspinbox.c
   uigtktextbox.c
+  uigtktreeview.c
   uigtkutils.c
+  uigtkwindow.c
 )
 target_include_directories (libbdj4gtk
   PUBLIC ${GTK_INCLUDE_DIRS}

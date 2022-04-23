@@ -296,7 +296,6 @@ marqueeActivate (GApplication *app, gpointer userdata)
   GtkWidget *window;
   GtkWidget *hbox;
   GtkWidget *vbox;
-  GError    *gerr = NULL;
   gint      x, y;
 
   logProcBegin (LOG_PROC, "marqueeActivate");
@@ -304,22 +303,15 @@ marqueeActivate (GApplication *app, gpointer userdata)
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon_marquee", ".svg", PATHBLD_MP_IMGDIR);
 
-  window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-  assert (window != NULL);
-  gtk_window_set_application (GTK_WINDOW (window), GTK_APPLICATION (app));
-  g_signal_connect (window, "delete-event", G_CALLBACK (marqueeCloseWin), marquee);
+  window = uiutilsCreateMainWindow (app, _("Marquee"), imgbuff,
+      marqueeCloseWin, marquee);
   g_signal_connect (window, "button-press-event", G_CALLBACK (marqueeToggleFullscreen), marquee);
   g_signal_connect (window, "window-state-event", G_CALLBACK (marqueeWinState), marquee);
   g_signal_connect (window, "map-event", G_CALLBACK (marqueeWinMapped), marquee);
   /* the backdrop window state must be intercepted */
   g_signal_connect (window, "state-flags-changed", G_CALLBACK (marqueeStateChg), marquee);
-  marquee->window = window;
-
-  gtk_window_set_type_hint (GTK_WINDOW (window), GDK_WINDOW_TYPE_HINT_NORMAL);
   gtk_window_set_focus_on_map (GTK_WINDOW (window), FALSE);
-  /* CONTEXT: The window title for the marquee */
-  gtk_window_set_title (GTK_WINDOW (window), _("Marquee"));
-  gtk_window_set_default_icon_from_file (imgbuff, &gerr);
+  marquee->window = window;
 
   x = nlistGetNum (marquee->options, MQ_SIZE_X);
   y = nlistGetNum (marquee->options, MQ_SIZE_Y);

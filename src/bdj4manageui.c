@@ -283,7 +283,16 @@ manageStoppingCallback (void *udata, programstate_t programState)
   nlistSetNum (manage->options, PLUI_POSITION_X, x);
   nlistSetNum (manage->options, PLUI_POSITION_Y, y);
 
+  /* the manager may not have started main */
+  if (manage->processes [ROUTE_MAIN] == NULL &&
+      ! lockExists (lockName (ROUTE_PLAYERUI), PATHBLD_MP_USEIDX)) {
+    connSendMessage (manage->conn, ROUTE_MAIN, MSG_EXIT_REQUEST, NULL);
+  }
   for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
+    if (i == ROUTE_MAIN &&
+        lockExists (lockName (ROUTE_PLAYERUI), PATHBLD_MP_USEIDX)) {
+      continue;
+    }
     if (manage->processes [i] != NULL) {
       procutilStopProcess (manage->processes [i], manage->conn, i, false);
     }
@@ -324,6 +333,10 @@ manageClosingCallback (void *udata, programstate_t programState)
   /* give the other processes some time to shut down */
   mssleep (200);
   for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
+    if (i == ROUTE_MAIN &&
+        lockExists (lockName (ROUTE_PLAYERUI), PATHBLD_MP_USEIDX)) {
+      continue;
+    }
     if (manage->processes [i] != NULL) {
       procutilStopProcess (manage->processes [i], manage->conn, i, true);
       procutilFree (manage->processes [i]);
@@ -351,7 +364,6 @@ static void
 manageActivate (GApplication *app, gpointer userdata)
 {
   manageui_t          *manage = userdata;
-  GError              *gerr = NULL;
   GtkWidget           *tabLabel;
   GtkWidget           *widget;
   GtkWidget           *hbox;
@@ -365,16 +377,12 @@ manageActivate (GApplication *app, gpointer userdata)
   gint                x, y;
 
   logProcBegin (LOG_PROC, "manageActivate");
+  *imgbuff = '\0';
 
-  manage->window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-  assert (manage->window != NULL);
-  gtk_window_set_application (GTK_WINDOW (manage->window), GTK_APPLICATION (app));
-  gtk_window_set_application (GTK_WINDOW (manage->window), manage->app);
-  gtk_window_set_default_icon_from_file (imgbuff, &gerr);
-  g_signal_connect (manage->window, "delete-event", G_CALLBACK (manageCloseWin), manage);
   /* CONTEXT: management ui window title */
   snprintf (tbuff, sizeof (tbuff), _("%s Management"), BDJ4_NAME);
-  gtk_window_set_title (GTK_WINDOW (manage->window), tbuff);
+  manage->window = uiutilsCreateMainWindow (app, tbuff, NULL,
+      manageCloseWin, manage);
 
   vbox = uiutilsCreateVertBox ();
   uiutilsWidgetSetAllMargins (vbox, 4);
@@ -599,8 +607,11 @@ manageListeningCallback (void *udata, programstate_t programState)
   if ((manage->dbgflags & BDJ4_INIT_NO_DETACH) == BDJ4_INIT_NO_DETACH) {
     flags = PROCUTIL_NO_DETACH;
   }
-  manage->processes [ROUTE_MAIN] = procutilStartProcess (
-      ROUTE_MAIN, "bdj4main", flags);
+
+  if (! lockExists (lockName (ROUTE_PLAYERUI), PATHBLD_MP_USEIDX)) {
+    manage->processes [ROUTE_MAIN] = procutilStartProcess (
+        ROUTE_MAIN, "bdj4main", flags);
+  }
   logProcEnd (LOG_PROC, "manageListeningCallback", "");
   return true;
 }

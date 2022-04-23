@@ -61,6 +61,28 @@ uiplayerInit (progstate_t *progstate, conn_t *conn, musicdb_t *musicdb)
   uiplayer->conn = conn;
   uiplayer->musicdb = musicdb;
 
+  uiplayer->vbox = NULL;
+  uiplayer->statusImg = NULL;
+  uiplayer->repeatImg = NULL;
+  uiplayer->danceLab = NULL;
+  uiplayer->artistLab = NULL;
+  uiplayer->titleLab = NULL;
+  uiplayer->speedScale = NULL;
+  uiplayer->speedDisplayLab = NULL;
+  uiplayer->countdownTimerLab = NULL;
+  uiplayer->durationLab = NULL;
+  uiplayer->seekScale = NULL;
+  uiplayer->seekDisplayLab = NULL;
+  uiplayer->repeatButton = NULL;
+  uiplayer->pauseatendButton = NULL;
+  uiplayer->playImg = NULL;
+  uiplayer->stopImg = NULL;
+  uiplayer->pauseImg = NULL;
+  uiplayer->ledoffImg = NULL;
+  uiplayer->ledonImg = NULL;
+  uiplayer->volumeScale = NULL;
+  uiplayer->volumeDisplayLab = NULL;
+
   progstateSetCallback (uiplayer->progstate, STATE_CONNECTING, uiplayerInitCallback, uiplayer);
   progstateSetCallback (uiplayer->progstate, STATE_CLOSING, uiplayerClosingCallback, uiplayer);
 

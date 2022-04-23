@@ -257,7 +257,16 @@ pluiStoppingCallback (void *udata, programstate_t programState)
   nlistSetNum (plui->options, PLUI_POSITION_X, x);
   nlistSetNum (plui->options, PLUI_POSITION_Y, y);
 
+  /* the player may not have started main */
+  if (plui->processes [ROUTE_MAIN] == NULL &&
+      ! lockExists (lockName (ROUTE_MANAGEUI), PATHBLD_MP_USEIDX)) {
+    connSendMessage (plui->conn, ROUTE_MAIN, MSG_EXIT_REQUEST, NULL);
+  }
   for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
+    if (i == ROUTE_MAIN &&
+        lockExists (lockName (ROUTE_MANAGEUI), PATHBLD_MP_USEIDX)) {
+      continue;
+    }
     if (plui->processes [i] != NULL) {
       procutilStopProcess (plui->processes [i], plui->conn, i, false);
     }
@@ -305,6 +314,10 @@ pluiClosingCallback (void *udata, programstate_t programState)
   /* give the other processes some time to shut down */
   mssleep (200);
   for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
+    if (i == ROUTE_MAIN &&
+        lockExists (lockName (ROUTE_MANAGEUI), PATHBLD_MP_USEIDX)) {
+      continue;
+    }
     if (plui->processes [i] != NULL) {
       procutilStopProcess (plui->processes [i], plui->conn, i, true);
       procutilFree (plui->processes [i]);
@@ -326,7 +339,6 @@ static void
 pluiActivate (GApplication *app, gpointer userdata)
 {
   playerui_t          *plui = userdata;
-  GError              *gerr = NULL;
   GtkWidget           *tabLabel;
   GtkWidget           *widget;
   GtkWidget           *image;
@@ -341,8 +353,6 @@ pluiActivate (GApplication *app, gpointer userdata)
 
   logProcBegin (LOG_PROC, "pluiActivate");
 
-  pathbldMakePath (imgbuff, sizeof (imgbuff),
-      "bdj4_icon", ".svg", PATHBLD_MP_IMGDIR);
   pathbldMakePath (tbuff, sizeof (tbuff),  "led_off", ".svg",
       PATHBLD_MP_IMGDIR);
   image = gtk_image_new_from_file (tbuff);
@@ -354,13 +364,11 @@ pluiActivate (GApplication *app, gpointer userdata)
   plui->ledonImg = gtk_image_get_pixbuf (GTK_IMAGE (image));
   g_object_ref (G_OBJECT (plui->ledonImg));
 
-  plui->window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-  assert (plui->window != NULL);
-  gtk_window_set_application (GTK_WINDOW (plui->window), GTK_APPLICATION (app));
-  gtk_window_set_application (GTK_WINDOW (plui->window), plui->app);
-  gtk_window_set_default_icon_from_file (imgbuff, &gerr);
-  g_signal_connect (plui->window, "delete-event", G_CALLBACK (pluiCloseWin), plui);
-  gtk_window_set_title (GTK_WINDOW (plui->window), bdjoptGetStr (OPT_P_PROFILENAME));
+  pathbldMakePath (imgbuff, sizeof (imgbuff),
+      "bdj4_icon", ".svg", PATHBLD_MP_IMGDIR);
+  plui->window = uiutilsCreateMainWindow (app,
+      bdjoptGetStr (OPT_P_PROFILENAME), imgbuff,
+      pluiCloseWin, plui);
 
   plui->vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   gtk_container_add (GTK_CONTAINER (plui->window), plui->vbox);
@@ -579,8 +587,11 @@ pluiListeningCallback (void *udata, programstate_t programState)
   if ((plui->dbgflags & BDJ4_INIT_NO_DETACH) == BDJ4_INIT_NO_DETACH) {
     flags = PROCUTIL_NO_DETACH;
   }
-  plui->processes [ROUTE_MAIN] = procutilStartProcess (
-      ROUTE_MAIN, "bdj4main", flags);
+
+  if (! lockExists (lockName (ROUTE_MANAGEUI), PATHBLD_MP_USEIDX)) {
+    plui->processes [ROUTE_MAIN] = procutilStartProcess (
+        ROUTE_MAIN, "bdj4main", flags);
+  }
   logProcEnd (LOG_PROC, "pluiListeningCallback", "");
   return true;
 }
