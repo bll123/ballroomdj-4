@@ -59,6 +59,7 @@ typedef struct {
   procutil_t        *processes [ROUTE_MAX];
   conn_t            *conn;
   int               dbgflags;
+  musicdb_t         *musicdb;
   slist_t           *playlistCache;
   queue_t           *playlistQueue [MUSICQ_MAX];
   musicq_t          *musicQueue;
@@ -174,7 +175,8 @@ main (int argc, char *argv[])
   procutilIgnoreSignal (SIGCHLD);
 #endif
 
-  mainData.dbgflags = bdj4startup (argc, argv, "m", ROUTE_MAIN, BDJ4_INIT_NONE);
+  mainData.dbgflags = bdj4startup (argc, argv, &mainData.musicdb,
+      "m", ROUTE_MAIN, BDJ4_INIT_NONE);
   logProcBegin (LOG_PROC, "main");
 
   if (bdjoptGetNum (OPT_P_MOBILEMARQUEE) == MOBILEMQ_INTERNET) {
@@ -275,7 +277,7 @@ mainClosingCallback (void *tmaindata, programstate_t programState)
     osProcessStart (targv, OS_PROC_DETACH, NULL, NULL);
   }
 
-  bdj4shutdown (ROUTE_MAIN);
+  bdj4shutdown (ROUTE_MAIN, mainData->musicdb);
   connFree (mainData->conn);
 
   logProcEnd (LOG_PROC, "mainClosingCallback", "");
@@ -903,7 +905,7 @@ mainQueueDance (maindata_t *mainData, char *args, ssize_t count)
   logMsg (LOG_DBG, LOG_BASIC, "queue dance %d %zd %zd", mi, danceIdx, count);
   snprintf (plname, sizeof (plname), "_main_dance_%zd_%ld",
       danceIdx, globalCounter++);
-  playlist = playlistCreate (plname, PLTYPE_AUTO, NULL);
+  playlist = playlistCreate (mainData->musicdb, plname, PLTYPE_AUTO, NULL);
   playlistSetConfigNum (playlist, PLAYLIST_STOP_AFTER, count);
   /* this will also set 'selected' */
   playlistSetDanceCount (playlist, danceIdx, 1);
@@ -935,7 +937,7 @@ mainQueuePlaylist (maindata_t *mainData, char *args)
   mainParseIntStr (args, &mi, &plname);
   mainData->musicqManageIdx = mi;
 
-  playlist = playlistLoad (plname);
+  playlist = playlistLoad (mainData->musicdb, plname);
   if (playlist != NULL) {
     logMsg (LOG_DBG, LOG_BASIC, "Queue Playlist: %d %s", mi, plname);
     slistSetData (mainData->playlistCache, plname, playlist);
@@ -1205,7 +1207,7 @@ mainPrepSong (maindata_t *mainData, song_t *song,
       if (annfname != NULL) {
         ssize_t   tval;
 
-        tsong = dbGetByName (annfname);
+        tsong = dbGetByName (mainData->musicdb, annfname);
         if (tsong != NULL) {
           tval = slistGetNum (mainData->announceList, annfname);
           if (tval == LIST_VALUE_INVALID) {
@@ -1399,7 +1401,7 @@ mainMusicqInsert (maindata_t *mainData, char *args)
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   dbidx = atol (p);
 
-  song = dbGetByIdx (dbidx);
+  song = dbGetByIdx (mainData->musicdb, dbidx);
 
   if (song != NULL) {
     loc = musicqInsert (mainData->musicQueue, mainData->musicqManageIdx, idx, song);
@@ -1887,7 +1889,7 @@ mainDanceCountsInit (maindata_t *mainData)
 
   logProcBegin (LOG_PROC, "mainDanceCountsInit");
 
-  dc = dbGetDanceCounts ();
+  dc = dbGetDanceCounts (mainData->musicdb);
 
   if (mainData->danceCounts != NULL) {
     nlistFree (mainData->danceCounts);

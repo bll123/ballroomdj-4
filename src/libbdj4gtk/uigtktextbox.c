@@ -32,11 +32,11 @@ uiutilsTextBoxCreate (void)
   tb->buffer = gtk_text_buffer_new (NULL);
   tb->textbox = gtk_text_view_new_with_buffer (tb->buffer);
   gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (tb->textbox), GTK_WRAP_WORD);
-  gtk_widget_set_margin_top (tb->textbox, 4);
-  gtk_widget_set_margin_bottom (tb->textbox, 4);
-  gtk_widget_set_margin_start (tb->textbox, 4);
-  gtk_widget_set_margin_end (tb->textbox, 4);
-  gtk_widget_set_size_request (tb->textbox, -1, 200);
+  gtk_widget_set_margin_top (tb->textbox, uiutilsBaseMarginSz * 2);
+  gtk_widget_set_margin_bottom (tb->textbox, uiutilsBaseMarginSz * 2);
+  gtk_widget_set_margin_start (tb->textbox, uiutilsBaseMarginSz * 2);
+  gtk_widget_set_margin_end (tb->textbox, uiutilsBaseMarginSz * 2);
+  gtk_widget_set_size_request (tb->textbox, -1, -1);
   gtk_widget_set_halign (tb->textbox, GTK_ALIGN_FILL);
   gtk_widget_set_valign (tb->textbox, GTK_ALIGN_START);
   gtk_widget_set_hexpand (tb->textbox, FALSE);
@@ -96,5 +96,27 @@ uiutilsTextBoxSetValue (uiutilstextbox_t *tb, const char *str)
   gtk_text_buffer_delete (tb->buffer, &siter, &eiter);
   gtk_text_buffer_get_end_iter (tb->buffer, &eiter);
   gtk_text_buffer_insert (tb->buffer, &eiter, str, -1);
+}
+
+/* this does not handle any selected text */
+void
+uiutilsTextBoxDarken (uiutilstextbox_t *tb)
+{
+  uiutilsSetCss (tb->textbox,
+      "textview text { background-color: shade(@theme_base_color,0.8); } ");
+}
+
+void
+uiutilsTextBoxVertExpand (uiutilstextbox_t *tb)
+{
+  gtk_widget_set_vexpand (tb->scw, TRUE);
+  gtk_widget_set_valign (tb->textbox, GTK_ALIGN_FILL);
+  gtk_widget_set_vexpand (tb->textbox, TRUE);
+}
+
+void
+uiutilsTextBoxSetHeight (uiutilstextbox_t *tb, int h)
+{
+  gtk_widget_set_size_request (tb->textbox, -1, h);
 }
 

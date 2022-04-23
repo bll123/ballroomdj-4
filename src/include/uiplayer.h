@@ -12,8 +12,9 @@ typedef struct {
   progstate_t     *progstate;
   conn_t          *conn;
   playerstate_t   playerState;
-  GtkWidget       *vbox;
+  musicdb_t       *musicdb;
   /* song display */
+  GtkWidget       *vbox;
   GtkWidget       *statusImg;
   GtkWidget       *repeatImg;
   GtkWidget       *danceLab;
@@ -52,7 +53,7 @@ typedef struct {
   GtkWidget       *volumeDisplayLab;
 } uiplayer_t;
 
-uiplayer_t  * uiplayerInit (progstate_t *progstate, conn_t *conn);
+uiplayer_t  * uiplayerInit (progstate_t *progstate, conn_t *conn, musicdb_t *musicdb);
 void        uiplayerFree (uiplayer_t *uiplayer);
 GtkWidget   * uiplayerActivate (uiplayer_t *uiplayer);
 void        uiplayerMainLoop (uiplayer_t *uiplayer);

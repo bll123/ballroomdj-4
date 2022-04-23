@@ -4,9 +4,10 @@
 /* when a new route is added, update: */
 /* conn.c : needs to know the port for each route */
 /* bdjmsg.c: debugging information for the route */
+/* bdjvars.h: port enum */
+/* lock.c: lock name */
 typedef enum {
   ROUTE_NONE,       // anonymous
-  ROUTE_CLICOMM,
   ROUTE_CONFIGUI,
   ROUTE_DBUPDATE,   // the main db update process
   ROUTE_DBTAG,      // the db tag reader process
@@ -16,9 +17,9 @@ typedef enum {
   ROUTE_MOBILEMQ,
   ROUTE_PLAYER,
   ROUTE_PLAYERUI,
+  ROUTE_RAFFLE,
   ROUTE_REMCTRL,
   ROUTE_STARTERUI,
-  ROUTE_RAFFLE,
   ROUTE_MAX,
 } bdjmsgroute_t;
 

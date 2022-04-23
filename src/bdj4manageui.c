@@ -28,6 +28,7 @@
 #include "lock.h"
 #include "log.h"
 #include "musicq.h"
+#include "osutils.h"
 #include "osuiutils.h"
 #include "pathbld.h"
 #include "procutil.h"
@@ -56,6 +57,7 @@ typedef struct {
   procutil_t      *processes [ROUTE_MAX];
   conn_t          *conn;
   sockserver_t    *sockserver;
+  musicdb_t       *musicdb;
   musicqidx_t     musicqPlayIdx;
   musicqidx_t     musicqManageIdx;
   dispsel_t       *dispsel;
@@ -66,12 +68,14 @@ typedef struct {
   uiutilstextbox_t  *dbstatus;
   nlist_t         *dblist;
   nlist_t         *dbhelp;
+  int             dbupdstarted;
   /* gtk stuff */
   GtkApplication  *app;
   GtkWidget       *window;
   GtkWidget       *mainnotebook;
   GtkWidget       *vbox;
   GtkWidget       *notebook;
+  GtkWidget       *dbpbar;
   /* song list ui major elements */
   uiplayer_t      *slplayer;
   uimusicq_t      *slmusicq;
@@ -144,6 +148,7 @@ main (int argc, char *argv[])
   manage.musicqManageIdx = MUSICQ_A;
   manage.dblist = NULL;
   manage.dbhelp = NULL;
+  manage.dbupdstarted = false;
 
   for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
     manage.processes [i] = NULL;
@@ -158,7 +163,8 @@ main (int argc, char *argv[])
   procutilDefaultSignal (SIGCHLD);
 #endif
 
-  manage.dbgflags = bdj4startup (argc, argv, "mu", ROUTE_MANAGEUI, BDJ4_INIT_NONE);
+  manage.dbgflags = bdj4startup (argc, argv, &manage.musicdb,
+      "mu", ROUTE_MANAGEUI, BDJ4_INIT_NONE);
   logProcBegin (LOG_PROC, "manageui");
 
   manage.dispsel = dispselAlloc ();
@@ -203,12 +209,15 @@ main (int argc, char *argv[])
     nlistSetStr (manage.options, SONGSEL_SORT_BY, "TITLE");
   }
 
-  manage.slplayer = uiplayerInit (manage.progstate, manage.conn);
-  manage.slmusicq = uimusicqInit (manage.progstate, manage.conn, manage.dispsel,
+  manage.slplayer = uiplayerInit (manage.progstate, manage.conn,
+      manage.musicdb);
+  manage.slmusicq = uimusicqInit (manage.progstate, manage.conn,
+      manage.musicdb, manage.dispsel,
       UIMUSICQ_FLAGS_NO_QUEUE | UIMUSICQ_FLAGS_NO_TOGGLE_PAUSE,
       DISP_SEL_SONGLIST);
-  manage.slsongsel = uisongselInit (manage.progstate, manage.conn, manage.dispsel,
-      manage.options, SONG_FILTER_FOR_SELECTION, UISONGSEL_FLAGS_NO_Q_BUTTON,
+  manage.slsongsel = uisongselInit (manage.progstate, manage.conn,
+      manage.musicdb, manage.dispsel, manage.options,
+      SONG_FILTER_FOR_SELECTION, UISONGSEL_FLAGS_NO_Q_BUTTON,
       DISP_SEL_SONGSEL);
 
   /* register these after calling the sub-window initialization */
@@ -286,7 +295,7 @@ manageClosingCallback (void *udata, programstate_t programState)
 
   sockhCloseServer (manage->sockserver);
 
-  bdj4shutdown (ROUTE_MANAGEUI);
+  bdj4shutdown (ROUTE_MANAGEUI, manage->musicdb);
   dispselFree (manage->dispsel);
 
   if (manage->options != datafileGetList (manage->optiondf)) {
@@ -405,11 +414,17 @@ manageActivate (GApplication *app, gpointer userdata)
   tabLabel = uiutilsCreateLabel (_("Update Database"));
   uiutilsNotebookAppendPage (manage->mainnotebook, vbox, tabLabel);
 
+  tb = uiutilsTextBoxCreate ();
+  uiutilsTextBoxSetReadonly (tb);
+  uiutilsTextBoxSetHeight (tb, 70);
+  gtk_box_pack_start (GTK_BOX (vbox), tb->scw, FALSE, FALSE, 0);
+  manage->dbhelpdisp = tb;
+
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
 
   widget = uiutilsSpinboxTextCreate (&manage->dbspinbox, manage);
-  /* hard-coded at 30 chars */
+  /* currently hard-coded at 30 chars */
   uiutilsSpinboxTextSet (&manage->dbspinbox, 0,
       nlistGetCount (manage->dblist), 30, manage->dblist, NULL);
   uiutilsSpinboxTextSetValue (&manage->dbspinbox, 0);
@@ -419,12 +434,14 @@ manageActivate (GApplication *app, gpointer userdata)
   widget = uiutilsCreateButton (_("Start"), NULL, manageDbStart, manage);
   gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 
-  tb = uiutilsTextBoxCreate ();
-  gtk_widget_set_size_request (tb->textbox, -1, 60);
-  gtk_box_pack_start (GTK_BOX (vbox), tb->scw, FALSE, FALSE, 0);
-  manage->dbhelpdisp = tb;
+  widget = uiutilsCreateProgressBar (bdjoptGetStr (OPT_P_UI_ACCENT_COL));
+  gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
+  manage->dbpbar = widget;
 
   tb = uiutilsTextBoxCreate ();
+  uiutilsTextBoxSetReadonly (tb);
+  uiutilsTextBoxDarken (tb);
+  uiutilsTextBoxSetHeight (tb, 300);
   gtk_box_pack_start (GTK_BOX (vbox), tb->scw, FALSE, FALSE, 0);
   manage->dbstatus = tb;
 
@@ -494,6 +511,25 @@ manageMainLoop (void *tmanage)
   uiplayerMainLoop (manage->slplayer);
   uimusicqMainLoop (manage->slmusicq);
   uisongselMainLoop (manage->slsongsel);
+
+  if (manage->dbupdstarted) {
+    char    tbuff [MAXPATHLEN];
+    char    *rval;
+    double  progval;
+
+    rval = fgets (tbuff, sizeof (tbuff), stdin);
+    if (rval != NULL) {
+      if (strncmp ("END", tbuff, 3) == 0) {
+        manage->dbupdstarted = false;
+      } else if (strncmp ("PROG ", tbuff, 5) == 0) {
+        if (sscanf (tbuff, "PROG %lf", &progval) == 1) {
+          uiutilsProgressBarSet (manage->dbpbar, progval);
+        }
+      } else {
+        uiutilsTextBoxAppendStr (manage->dbstatus, tbuff);
+      }
+    }
+  }
 
   if (gKillReceived) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
@@ -660,4 +696,47 @@ manageDbChg (GtkSpinButton *sb, gpointer udata)
 static void
 manageDbStart (GtkButton *b, gpointer udata)
 {
+  manageui_t  *manage = udata;
+  int         nval;
+  char        *targv [10];
+  int         targc = 0;
+  char        tbuff [MAXPATHLEN];
+  char        tmp [40];
+
+  pathbldMakePath (tbuff, sizeof (tbuff),
+      "bdj4dbupdate", sysvarsGetStr (SV_OS_EXEC_EXT), PATHBLD_MP_EXECDIR);
+  targv [targc++] = tbuff;
+  targv [targc++] = "--bdj4";
+
+  nval = uiutilsSpinboxTextGetValue (&manage->dbspinbox);
+  switch (nval) {
+    case MANAGE_DB_CHECK_NEW: {
+      targv [targc++] = "--checknew";
+      break;
+    }
+    case MANAGE_DB_REORGANIZE: {
+      targv [targc++] = "--reorganize";
+      break;
+    }
+    case MANAGE_DB_UPD_FROM_TAGS: {
+      targv [targc++] = "--updfromtags";
+      break;
+    }
+    case MANAGE_DB_WRITE_TAGS: {
+      targv [targc++] = "--writetags";
+      break;
+    }
+    case MANAGE_DB_REBUILD: {
+      targv [targc++] = "--rebuild";
+      break;
+    }
+  }
+
+  targv [targc++] = "--progress";
+  targv [targc++] = "--debug";
+  snprintf (tmp, sizeof (tmp), "%ld", bdjoptGetNum (OPT_G_DEBUGLVL));
+  targv [targc++] = tmp;
+  targv [targc++] = NULL;
+  manage->dbupdstarted = true;
+  osProcessPipe (targv, OS_PROC_NONE, NULL, 0);
 }

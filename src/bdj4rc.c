@@ -89,7 +89,7 @@ main (int argc, char *argv[])
   procutilDefaultSignal (SIGTERM);
 
   flags = BDJ4_INIT_NO_DB_LOAD | BDJ4_INIT_NO_DATAFILE_LOAD;
-  bdj4startup (argc, argv, "rc", ROUTE_REMCTRL, flags);
+  bdj4startup (argc, argv, NULL, "rc", ROUTE_REMCTRL, flags);
 
   remctrlData.enabled = (bdjoptGetNum (OPT_P_REMOTECONTROL) != 0);
   if (! remctrlData.enabled) {
@@ -151,7 +151,7 @@ remctrlClosingCallback (void *udata, programstate_t programState)
 {
   remctrldata_t   *remctrlData = udata;
 
-  bdj4shutdown (ROUTE_REMCTRL);
+  bdj4shutdown (ROUTE_REMCTRL, NULL);
 
   websrvFree (remctrlData->websrv);
   if (remctrlData->user != NULL) {

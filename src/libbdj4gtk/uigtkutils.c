@@ -37,6 +37,8 @@ static GLogWriterOutput uiutilsGtkLogger (GLogLevelFlags logLevel,
 static valuetype_t uiutilsDetermineValueType (int tagidx);
 static char  * uiutilsMakeDisplayStr (song_t *song, int tagidx, int *allocflag);
 
+int uiutilsBaseMarginSz = UIUTILS_BASE_MARGIN_SZ;
+
 void
 uiutilsCleanup (void)
 {

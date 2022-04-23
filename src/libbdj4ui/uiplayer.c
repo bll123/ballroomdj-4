@@ -50,7 +50,7 @@ static gboolean uiplayerVolumeProcess (GtkRange *range, GtkScrollType *scroll, g
 static void     uiplayerClearDisplay (uiplayer_t *uiplayer);
 
 uiplayer_t *
-uiplayerInit (progstate_t *progstate, conn_t *conn)
+uiplayerInit (progstate_t *progstate, conn_t *conn, musicdb_t *musicdb)
 {
   uiplayer_t    *uiplayer;
 
@@ -59,6 +59,7 @@ uiplayerInit (progstate_t *progstate, conn_t *conn)
   assert (uiplayer != NULL);
   uiplayer->progstate = progstate;
   uiplayer->conn = conn;
+  uiplayer->musicdb = musicdb;
 
   progstateSetCallback (uiplayer->progstate, STATE_CONNECTING, uiplayerInitCallback, uiplayer);
   progstateSetCallback (uiplayer->progstate, STATE_CLOSING, uiplayerClosingCallback, uiplayer);
@@ -763,7 +764,7 @@ uiplayerProcessMusicqStatusData (uiplayer_t *uiplayer, char *args)
     return;
   }
 
-  song = dbGetByIdx (dbidx);
+  song = dbGetByIdx (uiplayer->musicdb, dbidx);
   if (song == NULL) {
     logProcEnd (LOG_PROC, "uiplayerProcessMusicqStatusData", "null-song");
     return;

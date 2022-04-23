@@ -16,24 +16,24 @@ typedef struct {
   dbidx_t       danceCount;
   rafile_t      *radb;
   char          *fn;
-} db_t;
+} musicdb_t;
 
 #define MUSICDB_VERSION   10
 #define MUSICDB_FNAME     "musicdb"
 #define MUSICDB_TMP_FNAME "musicdb-tmp"
 #define MUSICDB_EXT       ".dat"
 
-void    dbOpen (char *);
-void    dbClose (void);
-dbidx_t dbCount (void);
-int     dbLoad (db_t *);
-void    dbStartBatch (void);
-void    dbEndBatch (void);
-void    dbWrite (char *fn, slist_t *tagList);
-song_t  *dbGetByName (char *);
-song_t  *dbGetByIdx (dbidx_t idx);
-void    dbStartIterator (slistidx_t *iteridx);
-song_t  *dbIterate (dbidx_t *dbidx, slistidx_t *iteridx);
-nlist_t *dbGetDanceCounts (void);
+musicdb_t *dbOpen (char *);
+void      dbClose (musicdb_t *db);
+dbidx_t   dbCount (musicdb_t *db);
+int       dbLoad (musicdb_t *);
+void      dbStartBatch (musicdb_t *db);
+void      dbEndBatch (musicdb_t *db);
+void      dbWrite (musicdb_t *db, char *fn, slist_t *tagList);
+song_t    *dbGetByName (musicdb_t *db, char *);
+song_t    *dbGetByIdx (musicdb_t *db, dbidx_t idx);
+void      dbStartIterator (musicdb_t *db, slistidx_t *iteridx);
+song_t    *dbIterate (musicdb_t *db, dbidx_t *dbidx, slistidx_t *iteridx);
+nlist_t   *dbGetDanceCounts (musicdb_t *db);
 
 #endif /* INC_MUSICDB_H */

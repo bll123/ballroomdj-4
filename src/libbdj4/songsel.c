@@ -67,7 +67,7 @@ static void   calcAttributePerc (songsel_t *songsel,
  */
 
 songsel_t *
-songselAlloc (list_t *dancelist, songfilter_t *songfilter)
+songselAlloc (musicdb_t *musicdb, list_t *dancelist, songfilter_t *songfilter)
 {
   songsel_t       *songsel;
   nlistidx_t      danceIdx;
@@ -114,11 +114,12 @@ songselAlloc (list_t *dancelist, songfilter_t *songfilter)
 
   ratings = bdjvarsdfGet (BDJVDF_RATINGS);
   levels = bdjvarsdfGet (BDJVDF_LEVELS);
+  songsel->musicdb = musicdb;
 
   /* for each song in the database */
   logMsg (LOG_DBG, LOG_SONGSEL, "processing songs");
-  dbStartIterator (&dbiteridx);
-  while ((song = dbIterate (&dbidx, &dbiteridx)) != NULL) {
+  dbStartIterator (musicdb, &dbiteridx);
+  while ((song = dbIterate (musicdb, &dbidx, &dbiteridx)) != NULL) {
     songselperc_t     *perc = NULL;
     songselsongdata_t *songdata = NULL;
     nlistidx_t        rating = 0;
@@ -270,7 +271,7 @@ songselSelect (songsel_t *songsel, nlistidx_t danceIdx)
     /* since the percentages are in order, do a binary search */
   songdata = searchForPercentage (songseldance, dval);
   if (songdata != NULL) {
-    song = dbGetByIdx (songdata->dbidx);
+    song = dbGetByIdx (songsel->musicdb, songdata->dbidx);
     logMsg (LOG_DBG, LOG_SONGSEL, "selected idx:%zd dbidx:%zd from %zd",
         songdata->idx, songdata->dbidx, songseldance->danceIdx);
     songsel->lastSelection = songdata;

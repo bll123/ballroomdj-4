@@ -102,8 +102,8 @@ rlogVarMsg (logidx_t idx, loglevel_t level,
 {
   bdjlog_t      *l;
   char          ttm [40];
-  char          tbuff [1024];
-  char          wbuff [1024];
+  char          tbuff [LOG_MAX_BUFF];
+  char          wbuff [LOG_MAX_BUFF];
   char          tfn [MAXPATHLEN];
   va_list       args;
   size_t        wlen;
@@ -127,6 +127,7 @@ rlogVarMsg (logidx_t idx, loglevel_t level,
   }
   wlen = (size_t) snprintf (wbuff, sizeof (wbuff),
       "%s: %-2s %*s%s %s\n", ttm, l->processTag, l->indent, "", tbuff, tfn);
+  wlen = wlen > LOG_MAX_BUFF ? LOG_MAX_BUFF - 1 : wlen;
   fileWriteShared (&l->fhandle, wbuff, wlen);
 }
 

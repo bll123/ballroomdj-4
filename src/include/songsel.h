@@ -43,12 +43,13 @@ typedef struct {
 } songseldance_t;
 
 typedef struct {
-  nlist_t              *danceSelList;
+  nlist_t             *danceSelList;
   double              autoselWeight [SONGSEL_ATTR_MAX];
   songselsongdata_t   *lastSelection;
+  musicdb_t           *musicdb;
 } songsel_t;
 
-songsel_t * songselAlloc (nlist_t *dancelist, songfilter_t *songfilter);
+songsel_t * songselAlloc (musicdb_t *musicdb, nlist_t *dancelist, songfilter_t *songfilter);
 void      songselFree (songsel_t *songsel);
 song_t    * songselSelect (songsel_t *songsel, listidx_t danceIdx);
 void      songselSelectFinalize (songsel_t *songsel, listidx_t danceIdx);

@@ -26,13 +26,13 @@ static char *locknames [ROUTE_MAX] = {
   [ROUTE_CONFIGUI] = "configui",
   [ROUTE_MANAGEUI] = "manageui",
   [ROUTE_PLAYER] = "player",
-  [ROUTE_CLICOMM] = "cli",
   [ROUTE_MOBILEMQ] = "mobilemq",
   [ROUTE_REMCTRL] = "remctrl",
   [ROUTE_STARTERUI] = "starterui",
   [ROUTE_DBUPDATE] = "dbupdate",
   [ROUTE_DBTAG] = "dbtag",
   [ROUTE_MARQUEE] = "marquee",
+  [ROUTE_RAFFLE] = "raffle",
 };
 
 static pid_t   getPidFromFile (char *);

@@ -48,6 +48,7 @@ typedef struct {
   procutil_t      *processes [ROUTE_MAX];
   conn_t          *conn;
   sockserver_t    *sockserver;
+  musicdb_t       *musicdb;
   musicqidx_t     musicqPlayIdx;
   musicqidx_t     musicqManageIdx;
   dispsel_t       *dispsel;
@@ -173,7 +174,8 @@ main (int argc, char *argv[])
   procutilDefaultSignal (SIGCHLD);
 #endif
 
-  plui.dbgflags = bdj4startup (argc, argv, "pu", ROUTE_PLAYERUI, BDJ4_INIT_NONE);
+  plui.dbgflags = bdj4startup (argc, argv, &plui.musicdb,
+      "pu", ROUTE_PLAYERUI, BDJ4_INIT_NONE);
   logProcBegin (LOG_PROC, "playerui");
 
   plui.dispsel = dispselAlloc ();
@@ -201,12 +203,13 @@ main (int argc, char *argv[])
     nlistSetStr (plui.options, SONGSEL_SORT_BY, "TITLE");
   }
 
-  plui.uiplayer = uiplayerInit (plui.progstate, plui.conn);
-  plui.uimusicq = uimusicqInit (plui.progstate, plui.conn, plui.dispsel,
+  plui.uiplayer = uiplayerInit (plui.progstate, plui.conn, plui.musicdb);
+  plui.uimusicq = uimusicqInit (plui.progstate, plui.conn, plui.musicdb,
+      plui.dispsel,
       UIMUSICQ_FLAGS_NONE, DISP_SEL_MUSICQ);
-  plui.uisongsel = uisongselInit (plui.progstate, plui.conn, plui.dispsel,
-      plui.options, SONG_FILTER_FOR_PLAYBACK, UISONGSEL_FLAGS_NONE,
-      DISP_SEL_REQUEST);
+  plui.uisongsel = uisongselInit (plui.progstate, plui.conn, plui.musicdb,
+      plui.dispsel, plui.options,
+      SONG_FILTER_FOR_PLAYBACK, UISONGSEL_FLAGS_NONE, DISP_SEL_REQUEST);
 
   /* register these after calling the sub-window initialization */
   /* then these will be run last, after the other closing callbacks */
@@ -291,7 +294,7 @@ pluiClosingCallback (void *udata, programstate_t programState)
 
   sockhCloseServer (plui->sockserver);
 
-  bdj4shutdown (ROUTE_PLAYERUI);
+  bdj4shutdown (ROUTE_PLAYERUI, plui->musicdb);
   dispselFree (plui->dispsel);
 
   if (plui->options != datafileGetList (plui->optiondf)) {

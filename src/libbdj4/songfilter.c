@@ -208,7 +208,7 @@ songfilterDanceSet (songfilter_t *sf, ilistidx_t danceIdx,
 }
 
 ssize_t
-songfilterProcess (songfilter_t *sf)
+songfilterProcess (songfilter_t *sf, musicdb_t *musicdb)
 {
   dbidx_t     dbidx;
   slistidx_t  dbiteridx;
@@ -237,8 +237,8 @@ songfilterProcess (songfilter_t *sf)
     sf->sortList = slistAlloc ("songfilter-sort-idx", LIST_UNORDERED, NULL);
   }
   sf->indexList = nlistAlloc ("songfilter-num-idx", LIST_UNORDERED, NULL);
-  dbStartIterator (&dbiteridx);
-  while ((song = dbIterate (&dbidx, &dbiteridx)) != NULL) {
+  dbStartIterator (musicdb, &dbiteridx);
+  while ((song = dbIterate (musicdb, &dbidx, &dbiteridx)) != NULL) {
     if (! songfilterFilterSong (sf, song)) {
       continue;
     }

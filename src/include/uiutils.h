@@ -68,7 +68,12 @@ typedef struct {
   const char  *mimetype;
 } uiutilsselect_t;
 
-#define UI_MAIN_LOOP_TIMER 20
+enum {
+  UIUTILS_BASE_MARGIN_SZ = 2,
+  UI_MAIN_LOOP_TIMER  = 20,
+};
+
+extern int uiutilsBaseMarginSz;
 
 /* uiutils.c */
 /* generic ui helper routines */
@@ -148,6 +153,9 @@ void  uiutilsTextBoxSetReadonly (uiutilstextbox_t *tb);
 void  uiutilsTextBoxScrollToEnd (uiutilstextbox_t *tb);
 void  uiutilsTextBoxAppendStr (uiutilstextbox_t *tb, const char *str);
 void  uiutilsTextBoxSetValue (uiutilstextbox_t *tb, const char *str);
+void  uiutilsTextBoxDarken (uiutilstextbox_t *tb);
+void  uiutilsTextBoxVertExpand (uiutilstextbox_t *tb);
+void  uiutilsTextBoxSetHeight (uiutilstextbox_t *tb, int h);
 
 /* uigtknotebook.c */
 GtkWidget * uiutilsCreateNotebook (void);
@@ -157,6 +165,10 @@ void  uiutilsNotebookSetActionWidget (GtkWidget *notebook, GtkWidget *widget, Gt
 /* uigtkbox.c */
 GtkWidget *uiutilsCreateVertBox (void);
 GtkWidget *uiutilsCreateHorizBox (void);
+
+/* uigtkpbar.c */
+GtkWidget * uiutilsCreateProgressBar (char *color);
+void        uiutilsProgressBarSet (GtkWidget *pb, double val);
 
 /* uigtkutils.c */
 void  uiutilsCleanup (void);

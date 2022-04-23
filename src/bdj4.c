@@ -41,7 +41,6 @@ main (int argc, char * argv[])
   int       c = 0;
   int       option_index = 0;
   char      *prog;
-  char      *extension;
   bool      debugself = false;
   bool      nodetach = false;
   bool      forcenodetach = false;
@@ -92,6 +91,9 @@ main (int argc, char * argv[])
     /* dbupdate options */
     { "rebuild",        no_argument,        NULL,   0 },
     { "checknew",       no_argument,        NULL,   0 },
+    { "progress",       no_argument,        NULL,   0 },
+    { "updfromtags",    no_argument,        NULL,   0 },
+    { "writetags",      no_argument,        NULL,   0 },
     { NULL,             0,                  NULL,   0 }
   };
 
@@ -358,11 +360,6 @@ main (int argc, char * argv[])
     fprintf (stderr, "PANGOCAIRO_BACKEND=%s\n", getenv ("PANGOCAIRO_BACKEND"));
   }
 
-  extension = "";
-  if (isWindows()) {
-    extension = ".exe";
-  }
-
   targc = 0;
   for (int i = 0; i < argc; ++i) {
     if (targc >= BDJ4_LAUNCHER_MAX_ARGS) {
@@ -379,7 +376,7 @@ main (int argc, char * argv[])
   targv [targc++] = NULL;
 
   pathbldMakePath (buff, sizeof (buff),
-      prog, extension, PATHBLD_MP_EXECDIR);
+      prog, sysvarsGetStr (SV_OS_EXEC_EXT), PATHBLD_MP_EXECDIR);
   /* this is necessary on mac os, as otherwise it will use the path     */
   /* from the start of this launcher, and the executable path can not   */
   /* be determined, as we've done a chdir().                            */

@@ -480,6 +480,7 @@ main (int argc, char *argv[])
   volsinklist_t   sinklist;
   volume_t        *volume;
   orgopt_t        *orgopt;
+  int             flags;
 
 
   confui.notebook = NULL;
@@ -551,7 +552,9 @@ main (int argc, char *argv[])
   procutilDefaultSignal (SIGCHLD);
 #endif
 
-  confui.dbgflags = bdj4startup (argc, argv, "cu", ROUTE_CONFIGUI, BDJ4_INIT_NONE);
+  flags = BDJ4_INIT_NO_DB_LOAD;
+  confui.dbgflags = bdj4startup (argc, argv, NULL,
+      "cu", ROUTE_CONFIGUI, flags);
   logProcBegin (LOG_PROC, "configui");
 
   confui.dispsel = dispselAlloc ();
@@ -840,7 +843,7 @@ confuiClosingCallback (void *udata, programstate_t programState)
   }
 
   sockhCloseServer (confui->sockserver);
-  bdj4shutdown (ROUTE_CONFIGUI);
+  bdj4shutdown (ROUTE_CONFIGUI, NULL);
 
   /* give the other processes some time to shut down */
   mssleep (200);

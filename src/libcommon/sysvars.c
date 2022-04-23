@@ -69,6 +69,7 @@ static sysvarsdesc_t sysvarsdesc [SV_MAX] = {
   [SV_OSDISP] = { "OS-Display" },
   [SV_OSNAME] = { "OS-Name" },
   [SV_OSVERS] = { "OS-Version" },
+  [SV_OS_EXEC_EXT] = { "OS-Exec_ext" },
   [SV_PYTHON_DOT_VERSION] = { "Version-Python-Dot" },
   [SV_PYTHON_MUTAGEN] = { "Path-mutagen" },
   [SV_PYTHON_PATH] = { "Path-python" },
@@ -133,6 +134,7 @@ sysvarsInit (const char *argv0)
 #endif
 
 
+  strlcpy (sysvars [SV_OS_EXEC_EXT], "", SV_MAX_SZ);
 #if _lib_uname
   rc = uname (&ubuf);
   assert (rc == 0);
@@ -147,6 +149,7 @@ sysvarsInit (const char *argv0)
   osvi.dwOSVersionInfoSize = sizeof (RTL_OSVERSIONINFOEXW);
   RtlGetVersion (&osvi);
 
+  strlcpy (sysvars [SV_OS_EXEC_EXT], ".exe", SV_MAX_SZ);
   strlcpy (sysvars [SV_OSNAME], "windows", SV_MAX_SZ);
   strlcpy (sysvars [SV_OSDISP], "Windows ", SV_MAX_SZ);
   snprintf (sysvars [SV_OSVERS], SV_MAX_SZ, "%ld.%ld",
@@ -356,18 +359,15 @@ sysvarsInit (const char *argv0)
     stringTrimChar (tbuff, '/');
 
     if (*sysvars [SV_PYTHON_PIP_PATH] == '\0') {
-      checkForFile (tbuff, SV_PYTHON_PIP_PATH,
-          "pip3.exe", "pip.exe", "pip3", "pip", NULL);
+      checkForFile (tbuff, SV_PYTHON_PIP_PATH, "pip3", "pip", NULL);
     }
 
     if (*sysvars [SV_PYTHON_PATH] == '\0') {
-      checkForFile (tbuff, SV_PYTHON_PATH,
-          "python3.exe", "python.exe", "python3", "python", NULL);
+      checkForFile (tbuff, SV_PYTHON_PATH, "python3", "python", NULL);
     }
 
     if (*sysvars [SV_GETCONF_PATH] == '\0') {
-      checkForFile (tbuff, SV_GETCONF_PATH,
-          "getconf", NULL);
+      checkForFile (tbuff, SV_GETCONF_PATH, "getconf", NULL);
     }
 
     if (*sysvars [SV_TEMP_A] == '\0') {
@@ -623,7 +623,7 @@ checkForFile (char *path, int idx, ...)
   va_start (valist, idx);
 
   while (! found && (fn = va_arg (valist, char *)) != NULL) {
-    snprintf (buff, sizeof (buff), "%s/%s", path, fn);
+    snprintf (buff, sizeof (buff), "%s/%s%s", path, fn, sysvars [SV_OS_EXEC_EXT]);
     if (fileopFileExists (buff)) {
       strlcpy (sysvars [idx], buff, SV_MAX_SZ);
       found = true;

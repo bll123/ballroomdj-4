@@ -281,7 +281,7 @@ uisongselPopulateData (uisongsel_t *uisongsel)
     snprintf (tbuff, sizeof (tbuff), "%d", count);
     if (gtk_tree_model_get_iter_from_string (model, &iter, tbuff)) {
       dbidx = songfilterGetByIdx (uisongsel->songfilter, idx);
-      song = dbGetByIdx (dbidx);
+      song = dbGetByIdx (uisongsel->musicdb, dbidx);
       if (song != NULL) {
         favorite = songGetFavoriteData (song);
         color = favorite->color;
@@ -387,7 +387,8 @@ uisongselCreateRows (uisongsel_t *uisongsel)
   }
 
   /* initial song filter process */
-  uisongsel->dfilterCount = (double) songfilterProcess (uisongsel->songfilter);
+  uisongsel->dfilterCount = (double) songfilterProcess (
+      uisongsel->songfilter, uisongsel->musicdb);
   logProcEnd (LOG_PROC, "uisongselCreateRows", "");
 }
 
@@ -655,6 +656,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
       );
 
   content = gtk_dialog_get_content_area (GTK_DIALOG (uiw->filterDialog));
+  uiutilsWidgetSetAllMargins (content, uiutilsBaseMarginSz * 2);
 
   vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   assert (vbox != NULL);

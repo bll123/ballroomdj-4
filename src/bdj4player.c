@@ -195,7 +195,7 @@ main (int argc, char *argv[])
       playerClosingCallback, &playerData);
 
   flags = BDJ4_INIT_NO_DB_LOAD | BDJ4_INIT_NO_DATAFILE_LOAD;
-  bdj4startup (argc, argv, "p", ROUTE_PLAYER, flags);
+  bdj4startup (argc, argv, NULL, "p", ROUTE_PLAYER, flags);
 
   playerData.conn = connInit (ROUTE_PLAYER);
 
@@ -269,7 +269,7 @@ playerClosingCallback (void *tpdata, programstate_t programState)
 {
   playerdata_t    *playerData = tpdata;
 
-  bdj4shutdown (ROUTE_PLAYER);
+  bdj4shutdown (ROUTE_PLAYER, NULL);
 
   if (playerData->pli != NULL) {
     pliStop (playerData->pli);

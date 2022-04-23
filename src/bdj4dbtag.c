@@ -99,7 +99,7 @@ main (int argc, char *argv[])
 #endif
 
   flags = BDJ4_INIT_NO_DB_LOAD | BDJ4_INIT_NO_DATAFILE_LOAD;
-  bdj4startup (argc, argv, "dt", ROUTE_DBTAG, flags);
+  bdj4startup (argc, argv, NULL, "dt", ROUTE_DBTAG, flags);
   logProcBegin (LOG_PROC, "dbtag");
 
   dbtag.maxThreads = sysvarsGetNum (SVL_NUM_PROC);
@@ -328,7 +328,7 @@ dbtagClosingCallback (void *tdbtag, programstate_t programState)
   dbtag_t    *dbtag = tdbtag;
 
   logProcBegin (LOG_PROC, "dbtagClosingCallback");
-  bdj4shutdown (ROUTE_DBTAG);
+  bdj4shutdown (ROUTE_DBTAG, NULL);
 
   free (dbtag->threads);
   queueFree (dbtag->fileQueue);

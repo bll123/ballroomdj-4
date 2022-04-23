@@ -30,7 +30,8 @@
 #include "tmutil.h"
 
 int
-bdj4startup (int argc, char *argv[], char *tag, bdjmsgroute_t route, int flags)
+bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
+    char *tag, bdjmsgroute_t route, int flags)
 {
   mstime_t    mt;
   mstime_t    dbmt;
@@ -68,6 +69,10 @@ bdj4startup (int argc, char *argv[], char *tag, bdjmsgroute_t route, int flags)
     /* dbupdate options */
     { "rebuild",      no_argument,      NULL,   'R' },
     { "checknew",     no_argument,      NULL,   'C' },
+    { "progress",     no_argument,      NULL,   'P' },
+    { "reorganize",   no_argument,      NULL,   'O' },
+    { "updfromtags",  no_argument,      NULL,   'U' },
+    { "writetags",    no_argument,      NULL,   'W' },
     { NULL,           0,                NULL,   0 }
   };
 
@@ -84,6 +89,22 @@ bdj4startup (int argc, char *argv[], char *tag, bdjmsgroute_t route, int flags)
       }
       case 'C': {
         flags |= BDJ4_DB_CHECK_NEW;
+        break;
+      }
+      case 'P': {
+        flags |= BDJ4_DB_PROGRESS;
+        break;
+      }
+      case 'O': {
+        flags |= BDJ4_DB_REORG;
+        break;
+      }
+      case 'U': {
+        flags |= BDJ4_DB_UPD_FROM_TAGS;
+        break;
+      }
+      case 'W': {
+        flags |= BDJ4_DB_WRITE_TAGS;
         break;
       }
       case 'd': {
@@ -135,7 +156,7 @@ bdj4startup (int argc, char *argv[], char *tag, bdjmsgroute_t route, int flags)
     ++count;
     if (count > 10) {
       fprintf (stderr, "Unable to acquire lock: %s\n", lockName (route));
-      bdj4shutdown (route);
+      bdj4shutdown (route, NULL);
       exit (1);
     }
     rc = lockAcquire (lockName (route), PATHBLD_MP_USEIDX);
@@ -170,13 +191,14 @@ bdj4startup (int argc, char *argv[], char *tag, bdjmsgroute_t route, int flags)
 
   bdjoptSetNum (OPT_G_DEBUGLVL, loglevel);
 
-  if ((flags & BDJ4_INIT_NO_DB_LOAD) != BDJ4_INIT_NO_DB_LOAD) {
+  if ((flags & BDJ4_INIT_NO_DB_LOAD) != BDJ4_INIT_NO_DB_LOAD &&
+      musicdb != NULL) {
     mstimestart (&dbmt);
     logMsg (LOG_SESS, LOG_IMPORTANT, "Database read: started");
     pathbldMakePath (tbuff, sizeof (tbuff),
         MUSICDB_FNAME, MUSICDB_EXT, PATHBLD_MP_NONE);
-    dbOpen (tbuff);
-    logMsg (LOG_SESS, LOG_IMPORTANT, "Database read: %ld items in %ld ms", dbCount(), mstimeend (&dbmt));
+    *musicdb = dbOpen (tbuff);
+    logMsg (LOG_SESS, LOG_IMPORTANT, "Database read: %ld items in %ld ms", dbCount(*musicdb), mstimeend (&dbmt));
   }
   logMsg (LOG_SESS, LOG_IMPORTANT, "Total init time: %ld ms", mstimeend (&mt));
 
@@ -185,14 +207,16 @@ bdj4startup (int argc, char *argv[], char *tag, bdjmsgroute_t route, int flags)
 }
 
 void
-bdj4shutdown (bdjmsgroute_t route)
+bdj4shutdown (bdjmsgroute_t route, musicdb_t *musicdb)
 {
   mstime_t       mt;
 
   logProcBegin (LOG_PROC, "bdj4shutdown");
   mstimestart (&mt);
   bdjoptFree ();
-  dbClose ();
+  if (musicdb != NULL) {
+    dbClose (musicdb);
+  }
   bdjvarsdfloadCleanup ();
   bdjvarsCleanup ();
   tagdefCleanup ();

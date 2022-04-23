@@ -44,6 +44,7 @@ typedef struct {
   nlist_t           *filterDisplaySel;
   sortopt_t         *sortopt;
   dispsel_t         *dispsel;
+  musicdb_t         *musicdb;
   dispselsel_t      dispselType;
   double            dfilterCount;
   int               songselflags;
@@ -64,8 +65,8 @@ typedef struct {
 
 /* uisongsel.c */
 uisongsel_t * uisongselInit (progstate_t *progstate, conn_t *conn,
-    dispsel_t *dispsel, nlist_t *opts, songfilterpb_t filterFlags,
-    int songselflags, dispselsel_t dispselType);
+    musicdb_t *musicdb, dispsel_t *dispsel, nlist_t *opts,
+    songfilterpb_t filterFlags, int songselflags, dispselsel_t dispselType);
 void  uisongselFree (uisongsel_t *uisongsel);
 void  uisongselMainLoop (uisongsel_t *uisongsel);
 void  uisongselFilterDanceProcess (uisongsel_t *uisongsel, ssize_t idx);

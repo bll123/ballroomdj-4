@@ -35,9 +35,9 @@ static datafilekey_t filterdisplaydfkeys [FILTER_DISP_MAX] = {
 static void uisongselSongfilterSetDance (uisongsel_t *uisongsel, ssize_t idx);
 
 uisongsel_t *
-uisongselInit (progstate_t *progstate, conn_t *conn, dispsel_t *dispsel,
-    nlist_t *options, songfilterpb_t filterFlags, int songselflags,
-    dispselsel_t dispselType)
+uisongselInit (progstate_t *progstate, conn_t *conn, musicdb_t *musicdb,
+    dispsel_t *dispsel, nlist_t *options,
+    songfilterpb_t filterFlags, int songselflags, dispselsel_t dispselType)
 {
   uisongsel_t   *uisongsel;
   char          tbuff [MAXPATHLEN];
@@ -53,12 +53,13 @@ uisongselInit (progstate_t *progstate, conn_t *conn, dispsel_t *dispsel,
   uisongsel->progstate = progstate;
   uisongsel->conn = conn;
   uisongsel->dispsel = dispsel;
+  uisongsel->musicdb = musicdb;
   uisongsel->dispselType = dispselType;
   uisongsel->filterDisplaySel = NULL;
   uisongsel->options = options;
   uisongsel->idxStart = 0;
   uisongsel->danceIdx = -1;
-  uisongsel->dfilterCount = (double) dbCount ();
+  uisongsel->dfilterCount = (double) dbCount (musicdb);
   uiutilsDropDownInit (&uisongsel->dancesel);
   uiutilsDropDownInit (&uisongsel->sortbysel);
   uiutilsEntryInit (&uisongsel->searchentry, 30, 100);
@@ -128,7 +129,8 @@ uisongselFilterDanceProcess (uisongsel_t *uisongsel, ssize_t idx)
 
   uisongselSongfilterSetDance (uisongsel, idx);
   uiutilsDropDownSelectionSetNum (&uisongsel->filterdancesel, idx);
-  uisongsel->dfilterCount = (double) songfilterProcess (uisongsel->songfilter);
+  uisongsel->dfilterCount = (double) songfilterProcess (
+      uisongsel->songfilter, uisongsel->musicdb);
   uisongsel->idxStart = 0;
   uisongselClearData (uisongsel);
   logMsg (LOG_DBG, LOG_SONGSEL, "populate: filter by dance");
@@ -184,7 +186,7 @@ uisongselChangeFavorite (uisongsel_t *uisongsel, dbidx_t dbidx)
 {
   song_t    *song;
 
-  song = dbGetByIdx ((ssize_t) dbidx);
+  song = dbGetByIdx (uisongsel->musicdb, (ssize_t) dbidx);
   songChangeFavorite (song);
 // ### TODO song data must be saved to the database.
   logMsg (LOG_DBG, LOG_SONGSEL, "favorite changed");
@@ -194,7 +196,8 @@ uisongselChangeFavorite (uisongsel_t *uisongsel, dbidx_t dbidx)
 void
 uisongselApplySongFilter (uisongsel_t *uisongsel)
 {
-  uisongsel->dfilterCount = (double) songfilterProcess (uisongsel->songfilter);
+  uisongsel->dfilterCount = (double) songfilterProcess (
+      uisongsel->songfilter, uisongsel->musicdb);
   uisongsel->idxStart = 0;
   uisongselClearData (uisongsel);
   uisongselPopulateData (uisongsel);

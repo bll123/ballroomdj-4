@@ -52,6 +52,7 @@ typedef enum {
 
 typedef struct {
   char          *name;
+  musicdb_t     *musicdb;
   datafile_t    *plinfodf;
   datafile_t    *pldancesdf;
   songlist_t    *songlist;
@@ -71,9 +72,9 @@ typedef struct {
 
 typedef bool (*playlistCheck_t)(song_t *, void *);
 
-playlist_t    *playlistLoad (char *);
-playlist_t    *playlistCreate (char *plfname, pltype_t type, char *ofname);
-playlist_t    *playlistAlloc (char *);
+playlist_t    *playlistLoad (musicdb_t *musicdb, char *);
+playlist_t    *playlistCreate (musicdb_t *musicdb, char *plfname, pltype_t type, char *ofname);
+playlist_t    *playlistAlloc (char *, musicdb_t *musicdb);
 void          playlistFree (void *);
 char          *playlistGetName (playlist_t *pl);
 ssize_t       playlistGetConfigNum (playlist_t *pl, playlistkey_t key);
@@ -82,7 +83,7 @@ ssize_t       playlistGetDanceNum (playlist_t *pl, ilistidx_t dancekey,
                   pldancekey_t key);
 void          playlistSetDanceCount (playlist_t *pl, ilistidx_t dancekey,
                   ssize_t value);
-song_t        *playlistGetNextSong (playlist_t *,
+song_t        *playlistGetNextSong (playlist_t *pl,
                   nlist_t *danceCounts,
                   ssize_t priorCount, playlistCheck_t checkProc,
                   danceselHistory_t historyProc, void *userdata);

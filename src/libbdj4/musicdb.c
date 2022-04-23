@@ -19,37 +19,33 @@
 #include "songutil.h"
 #include "tagdef.h"
 
-/* globals */
-static int         initialized = 0;
-static db_t        *musicdb = NULL;
-
-void
+musicdb_t *
 dbOpen (char *fn)
 {
-  if (! initialized) {
-    dance_t       *dances;
-    int32_t       dcount;
+  dance_t       *dances;
+  int32_t       dcount;
+  musicdb_t     *musicdb;
 
-    dances = bdjvarsdfGet (BDJVDF_DANCES);
-    dcount = danceGetCount (dances);
+  dances = bdjvarsdfGet (BDJVDF_DANCES);
+  dcount = danceGetCount (dances);
 
-    musicdb = malloc (sizeof (db_t));
-    assert (musicdb != NULL);
+  musicdb = malloc (sizeof (musicdb_t));
+  assert (musicdb != NULL);
 
-    musicdb->songs = slistAlloc ("db-songs", LIST_UNORDERED, songFree);
-    musicdb->danceCounts = nlistAlloc ("db-dance-counts", LIST_ORDERED, NULL);
-    nlistSetSize (musicdb->danceCounts, dcount);
-    musicdb->danceCount = dcount;
-    musicdb->count = 0L;
-    musicdb->radb = NULL;
-    musicdb->fn = strdup (fn);
-    dbLoad (musicdb);
-    initialized = 1;
-  }
+  musicdb->songs = slistAlloc ("db-songs", LIST_UNORDERED, songFree);
+  musicdb->danceCounts = nlistAlloc ("db-dance-counts", LIST_ORDERED, NULL);
+  nlistSetSize (musicdb->danceCounts, dcount);
+  musicdb->danceCount = dcount;
+  musicdb->count = 0L;
+  musicdb->radb = NULL;
+  musicdb->fn = strdup (fn);
+  dbLoad (musicdb);
+
+  return musicdb;
 }
 
 void
-dbClose (void)
+dbClose (musicdb_t *musicdb)
 {
   /* for each song in db, free the song */
   if (musicdb != NULL) {
@@ -67,12 +63,11 @@ dbClose (void)
     }
     free (musicdb);
   }
-  initialized = 0;
   musicdb = NULL;
 }
 
 dbidx_t
-dbCount (void)
+dbCount (musicdb_t *musicdb)
 {
   dbidx_t tcount = 0L;
   if (musicdb != NULL) {
@@ -82,7 +77,7 @@ dbCount (void)
 }
 
 int
-dbLoad (db_t *db)
+dbLoad (musicdb_t *musicdb)
 {
   char        data [RAFILE_REC_SIZE];
   char        *fstr;
@@ -98,8 +93,8 @@ dbLoad (db_t *db)
 
 
   fstr = "";
-  musicdb->radb = raOpen (db->fn, MUSICDB_VERSION);
-  slistSetSize (db->songs, raGetCount (musicdb->radb));
+  musicdb->radb = raOpen (musicdb->fn, MUSICDB_VERSION);
+  slistSetSize (musicdb->songs, raGetCount (musicdb->radb));
 
   raStartBatch (musicdb->radb);
 
@@ -130,29 +125,29 @@ dbLoad (db_t *db)
       srrn = songGetNum (song, TAG_RRN);
       dkey = songGetNum (song, TAG_DANCE);
       if (dkey >= 0) {
-        nlistIncrement (db->danceCounts, dkey);
+        nlistIncrement (musicdb->danceCounts, dkey);
       }
       if (i != srrn) {
         /* a double check to make sure the song has the correct rrn */
         songSetNum (song, TAG_RRN, i);
       }
-      slistSetData (db->songs, fstr, song);
+      slistSetData (musicdb->songs, fstr, song);
     }
-    ++db->count;
+    ++musicdb->count;
   }
-  slistSort (db->songs);
+  slistSort (musicdb->songs);
 
   /* set the database index according to the sorted values */
   dbidx = 0;
-  slistStartIterator (db->songs, &siteridx);
-  while ((song = slistIterateValueData (db->songs, &siteridx)) != NULL) {
+  slistStartIterator (musicdb->songs, &siteridx);
+  while ((song = slistIterateValueData (musicdb->songs, &siteridx)) != NULL) {
     songSetNum (song, TAG_DBIDX, dbidx);
     ++dbidx;
   }
 
-  nlistStartIterator (db->danceCounts, &iteridx);
-  while ((dkey = nlistIterateKey (db->danceCounts, &iteridx)) >= 0) {
-    dbidx_t count = nlistGetNum (db->danceCounts, dkey);
+  nlistStartIterator (musicdb->danceCounts, &iteridx);
+  while ((dkey = nlistIterateKey (musicdb->danceCounts, &iteridx)) >= 0) {
+    dbidx_t count = nlistGetNum (musicdb->danceCounts, dkey);
     if (count > 0) {
       logMsg (LOG_DBG, LOG_BASIC, "db-load: dance: %zd count: %ld", dkey, count);
     }
@@ -165,7 +160,7 @@ dbLoad (db_t *db)
 }
 
 void
-dbStartBatch (void)
+dbStartBatch (musicdb_t *musicdb)
 {
   if (musicdb->radb == NULL) {
     musicdb->radb = raOpen (musicdb->fn, MUSICDB_VERSION);
@@ -174,7 +169,7 @@ dbStartBatch (void)
 }
 
 void
-dbEndBatch (void)
+dbEndBatch (musicdb_t *musicdb)
 {
   if (musicdb->radb != NULL) {
     raEndBatch (musicdb->radb);
@@ -184,14 +179,14 @@ dbEndBatch (void)
 }
 
 song_t *
-dbGetByName (char *songname)
+dbGetByName (musicdb_t *musicdb, char *songname)
 {
   song_t *song = slistGetData (musicdb->songs, songname);
   return song;
 }
 
 song_t *
-dbGetByIdx (dbidx_t idx)
+dbGetByIdx (musicdb_t *musicdb, dbidx_t idx)
 {
   song_t  *song;
 
@@ -204,7 +199,7 @@ dbGetByIdx (dbidx_t idx)
 }
 
 void
-dbWrite (char *fn, slist_t *tagList)
+dbWrite (musicdb_t *musicdb, char *fn, slist_t *tagList)
 {
   slistidx_t    iteridx;
   char          *tag;
@@ -244,13 +239,13 @@ dbWrite (char *fn, slist_t *tagList)
 }
 
 void
-dbStartIterator (slistidx_t *iteridx)
+dbStartIterator (musicdb_t *musicdb, slistidx_t *iteridx)
 {
   slistStartIterator (musicdb->songs, iteridx);
 }
 
 song_t *
-dbIterate (dbidx_t *idx, slistidx_t *iteridx)
+dbIterate (musicdb_t *musicdb, dbidx_t *idx, slistidx_t *iteridx)
 {
   song_t    *song;
 
@@ -260,7 +255,7 @@ dbIterate (dbidx_t *idx, slistidx_t *iteridx)
 }
 
 nlist_t *
-dbGetDanceCounts (void)
+dbGetDanceCounts (musicdb_t *musicdb)
 {
   return musicdb->danceCounts;
 }

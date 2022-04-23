@@ -1,6 +1,5 @@
 #include "config.h"
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -18,7 +17,6 @@ typedef struct {
 
 /* for debugging */
 static bdjmsgtxt_t routetxt [ROUTE_MAX] = {
-  [ROUTE_CLICOMM] = { "CLICOMM" },
   [ROUTE_CONFIGUI] = { "CONFIGUI" },
   [ROUTE_DBTAG] = { "DBTAG" },
   [ROUTE_DBUPDATE] = { "DBUPDATE" },
@@ -29,6 +27,7 @@ static bdjmsgtxt_t routetxt [ROUTE_MAX] = {
   [ROUTE_NONE] = { "NONE" },
   [ROUTE_PLAYER] = { "PLAYER" },
   [ROUTE_PLAYERUI] = { "PLAYERUI" },
+  [ROUTE_RAFFLE] = { "RAFFLE" },
   [ROUTE_REMCTRL] = { "REMCTRL" },
   [ROUTE_STARTERUI] = { "STARTERUI" },
 };
@@ -107,6 +106,10 @@ msgEncode (bdjmsgroute_t routefrom, bdjmsgroute_t route,
   }
   len = (size_t) snprintf (msgbuff, mlen, "%0*d%c%0*d%c%0*d%c%s",
       LSZ, routefrom, MSG_RS, LSZ, route, MSG_RS, LSZ, msg, MSG_RS, args);
+  msgbuff [mlen - 1] = '\0';
+  if (len >= mlen) {
+    len = mlen - 1;
+  }
   ++len;
   return len;
 }

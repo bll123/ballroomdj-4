@@ -17,12 +17,14 @@
 #include <stdbool.h>
 #include <string.h>
 #include <errno.h>
+#include <assert.h>
 #include <signal.h>
 #include <regex.h>
 
 #include "audiotag.h"
 #include "bdj4.h"
 #include "bdj4init.h"
+#include "bdj4intl.h"
 #include "bdjmsg.h"
 #include "bdjopt.h"
 #include "bdjstring.h"
@@ -54,16 +56,20 @@ typedef struct {
   progstate_t       *progstate;
   procutil_t        *processes [ROUTE_MAX];
   conn_t            *conn;
-  int               dbgflags;
+  int               dbflags;
   int               state;
+  musicdb_t         *musicdb;
+  musicdb_t         *nmusicdb;
   char              *musicdir;
   size_t            musicdirlen;
+  mstime_t          outputTimer;
   slist_t           *fileList;
-  slistidx_t        flIterIdx;
+  slistidx_t        filelistIterIdx;
   regex_t           fnregex;
-  dbidx_t           fileCount;
-  dbidx_t           fileCountSent;
-  dbidx_t           filesProcessed;
+  dbidx_t           fileCount;            // total from reading dir
+  dbidx_t           filesSkipped;         // any sort of skip
+  dbidx_t           filesSent;
+  dbidx_t           filesProcessed;       // processed + skipped = count
   dbidx_t           countAlready;
   dbidx_t           countBad;
   dbidx_t           countNew;
@@ -73,6 +79,9 @@ typedef struct {
   mstime_t          starttm;
   bool              rebuild : 1;
   bool              checknew : 1;
+  bool              progress : 1;
+  bool              updfromtags : 1;
+  bool              writetags : 1;
 } dbupdate_t;
 
 #define FNAMES_SENT_PER_ITER  30
@@ -87,6 +96,7 @@ static bool     dbupdateStoppingCallback (void *tdbupdate, programstate_t progra
 static bool     dbupdateClosingCallback (void *tdbupdate, programstate_t programState);
 static void     dbupdateProcessTagData (dbupdate_t *dbupdate, char *args);
 static void     dbupdateSigHandler (int sig);
+static void     dbupdateOutputProgress (dbupdate_t *dbupdate);
 
 static int  gKillReceived = 0;
 
@@ -101,9 +111,12 @@ main (int argc, char *argv[])
 
 
   dbupdate.state = DB_UPD_INIT;
+  dbupdate.musicdb = NULL;
+  dbupdate.nmusicdb = NULL;
   dbupdate.filesProcessed = 0;
   dbupdate.fileCount = 0;
-  dbupdate.fileCountSent = 0;
+  dbupdate.filesSkipped = 0;
+  dbupdate.filesSent = 0;
   dbupdate.countAlready = 0;
   dbupdate.countBad = 0;
   dbupdate.countNew = 0;
@@ -112,6 +125,10 @@ main (int argc, char *argv[])
   dbupdate.countSaved = 0;
   dbupdate.rebuild = false;
   dbupdate.checknew = false;
+  dbupdate.progress = false;
+  dbupdate.updfromtags = false;
+  dbupdate.writetags = false;
+  mstimeset (&dbupdate.outputTimer, 0);
 
   dbupdate.progstate = progstateInit ("dbupdate");
   progstateSetCallback (dbupdate.progstate, STATE_LISTENING,
@@ -138,8 +155,9 @@ main (int argc, char *argv[])
   procutilIgnoreSignal (SIGCHLD);
 #endif
 
-  flags = BDJ4_INIT_NO_DB_LOAD;
-  dbupdate.dbgflags = bdj4startup (argc, argv, "db", ROUTE_DBUPDATE, flags);
+  flags = BDJ4_INIT_NONE;
+  dbupdate.dbflags = bdj4startup (argc, argv, &dbupdate.musicdb,
+      "db", ROUTE_DBUPDATE, flags);
   logProcBegin (LOG_PROC, "dbupdate");
 
   p = "[\"\\:]";
@@ -154,11 +172,14 @@ main (int argc, char *argv[])
     logMsg (LOG_DBG, LOG_IMPORTANT, "regcomp failed: %d %s", rc, ebuff);
   }
 
-  if ((dbupdate.dbgflags & BDJ4_DB_CHECK_NEW) == BDJ4_DB_CHECK_NEW) {
+  if ((dbupdate.dbflags & BDJ4_DB_CHECK_NEW) == BDJ4_DB_CHECK_NEW) {
     dbupdate.checknew = true;
   }
-  if ((dbupdate.dbgflags & BDJ4_DB_REBUILD) == BDJ4_DB_REBUILD) {
+  if ((dbupdate.dbflags & BDJ4_DB_REBUILD) == BDJ4_DB_REBUILD) {
     dbupdate.rebuild = true;
+  }
+  if ((dbupdate.dbflags & BDJ4_DB_PROGRESS) == BDJ4_DB_PROGRESS) {
+    dbupdate.progress = true;
   }
 
   dbupdate.conn = connInit (ROUTE_DBUPDATE);
@@ -243,12 +264,12 @@ dbupdateProcessing (void *udata)
     if (dbupdate->rebuild) {
       char  tbuff [MAXPATHLEN];
 
-      dbClose ();
       pathbldMakePath (tbuff, sizeof (tbuff),
           MUSICDB_TMP_FNAME, MUSICDB_EXT, PATHBLD_MP_NONE);
       fileopDelete (tbuff);
-      dbOpen (tbuff);
-      dbStartBatch ();
+      dbupdate->nmusicdb = dbOpen (tbuff);
+      assert (dbupdate->nmusicdb != NULL);
+      dbStartBatch (dbupdate->nmusicdb);
     }
 
     dbupdate->state = DB_UPD_PREP;
@@ -257,19 +278,24 @@ dbupdateProcessing (void *udata)
   if (dbupdate->state == DB_UPD_PREP) {
     mstimestart (&dbupdate->starttm);
 
-// ###
-    /* send status message first, as this process will be locked up */
-    /* reading the filesystem */
+    dbupdateOutputProgress (dbupdate);
 
     dbupdate->musicdir = bdjoptGetStr (OPT_M_DIR_MUSIC);
     dbupdate->musicdirlen = strlen (dbupdate->musicdir);
     dbupdate->fileList = filemanipRecursiveDirList (dbupdate->musicdir, FILEMANIP_FILES);
+
     dbupdate->fileCount = slistGetCount (dbupdate->fileList);
     mstimeend (&dbupdate->starttm);
     logMsg (LOG_DBG, LOG_IMPORTANT, "read directory %s: %ld ms",
         dbupdate->musicdir, mstimeend (&dbupdate->starttm));
-    logMsg (LOG_DBG, LOG_IMPORTANT, "  %ld files found", dbupdate->fileCount);
-    slistStartIterator (dbupdate->fileList, &dbupdate->flIterIdx);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "  %d files found", dbupdate->fileCount);
+
+    /* message to manageui */
+    fprintf (stdout, _("%d files found"), dbupdate->fileCount);
+    fprintf (stdout, "\n");
+    fflush (stdout);
+
+    slistStartIterator (dbupdate->fileList, &dbupdate->filelistIterIdx);
     dbupdate->state = DB_UPD_SEND;
   }
 
@@ -279,14 +305,32 @@ dbupdateProcessing (void *udata)
     int     rc;
 
     while ((fn =
-        slistIterateKey (dbupdate->fileList, &dbupdate->flIterIdx)) != NULL) {
-      if (dbupdate->checknew) {
-        // check the filename against the db
-        // if found, skip.
+        slistIterateKey (dbupdate->fileList, &dbupdate->filelistIterIdx)) != NULL) {
+
+      /* check to see if the file is already in the database */
+      if (dbupdate->checknew && fn != NULL) {
+        char  *p;
+
+        p = fn;
+        if (strncmp (fn, dbupdate->musicdir, dbupdate->musicdirlen) == 0) {
+          p += dbupdate->musicdirlen + 1;
+        }
+        if (dbGetByName (dbupdate->musicdb, p) != NULL) {
+          logMsg (LOG_DBG, LOG_DBUPDATE, "  already");
+          ++dbupdate->filesSkipped;
+          ++dbupdate->countAlready;
+          ++count;
+          dbupdateOutputProgress (dbupdate);
+          if (count > FNAMES_SENT_PER_ITER) {
+            break;
+          }
+          continue;
+        }
       }
 
       rc = regexec (&dbupdate->fnregex, fn, 0, NULL, 0);
       if (rc == 0) {
+        ++dbupdate->filesSkipped;
         ++dbupdate->countBad;
         continue;
       } else if (rc != REG_NOMATCH) {
@@ -297,7 +341,7 @@ dbupdateProcessing (void *udata)
       }
 
       connSendMessage (dbupdate->conn, ROUTE_DBTAG, MSG_DB_FILE_CHK, fn);
-      ++dbupdate->fileCountSent;
+      ++dbupdate->filesSent;
       ++dbupdate->countNew;
       ++count;
       if (count > FNAMES_SENT_PER_ITER) {
@@ -306,29 +350,36 @@ dbupdateProcessing (void *udata)
     }
 
     if (fn == NULL) {
-      logMsg (LOG_DBG, LOG_IMPORTANT, "all filenames sent (%d): %ld ms",
-          dbupdate->fileCountSent, mstimeend (&dbupdate->starttm));
+      logMsg (LOG_DBG, LOG_IMPORTANT, "-- skipped (%d)", dbupdate->filesSkipped);
+      logMsg (LOG_DBG, LOG_IMPORTANT, "-- all filenames sent (%d): %ld ms",
+          dbupdate->filesSent, mstimeend (&dbupdate->starttm));
       dbupdate->state = DB_UPD_PROCESS;
     }
   }
 
   if (dbupdate->state == DB_UPD_SEND ||
       dbupdate->state == DB_UPD_PROCESS) {
-    if (dbupdate->filesProcessed >= dbupdate->fileCountSent) {
+    dbupdateOutputProgress (dbupdate);
+    if (dbupdate->filesProcessed + dbupdate->filesSkipped >=
+        dbupdate->fileCount) {
       dbupdate->state = DB_UPD_FINISH;
     }
   }
 
   if (dbupdate->state == DB_UPD_FINISH) {
+    dbupdateOutputProgress (dbupdate);
+    fprintf (stdout, "END\n");
+    fflush (stdout);
+
     if (dbupdate->rebuild) {
-      dbEndBatch ();
-      dbClose ();
+      dbEndBatch (dbupdate->nmusicdb);
       /* rename the database files */
     }
-    logMsg (LOG_DBG, LOG_IMPORTANT, "finish: %ld ms",
+    logMsg (LOG_DBG, LOG_IMPORTANT, "-- finish: %ld ms",
         mstimeend (&dbupdate->starttm));
     logMsg (LOG_DBG, LOG_IMPORTANT, "    found: %lu", dbupdate->fileCount);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "     sent: %lu", dbupdate->fileCountSent);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "  skipped: %lu", dbupdate->filesSkipped);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "     sent: %lu", dbupdate->filesSent);
     logMsg (LOG_DBG, LOG_IMPORTANT, "processed: %lu", dbupdate->filesProcessed);
     logMsg (LOG_DBG, LOG_IMPORTANT, "  already: %lu", dbupdate->countAlready);
     logMsg (LOG_DBG, LOG_IMPORTANT, "      bad: %lu", dbupdate->countBad);
@@ -354,11 +405,11 @@ dbupdateListeningCallback (void *tdbupdate, programstate_t programState)
   logProcBegin (LOG_PROC, "dbupdateListeningCallback");
 
   flags = PROCUTIL_DETACH;
-  if ((dbupdate->dbgflags & BDJ4_INIT_NO_DETACH) == BDJ4_INIT_NO_DETACH) {
+  if ((dbupdate->dbflags & BDJ4_INIT_NO_DETACH) == BDJ4_INIT_NO_DETACH) {
     flags = PROCUTIL_NO_DETACH;
   }
 
-  if ((dbupdate->dbgflags & BDJ4_INIT_NO_START) != BDJ4_INIT_NO_START) {
+  if ((dbupdate->dbflags & BDJ4_INIT_NO_START) != BDJ4_INIT_NO_START) {
     dbupdate->processes [ROUTE_DBTAG] = procutilStartProcess (
         ROUTE_PLAYER, "bdj4dbtag", flags);
   }
@@ -375,7 +426,7 @@ dbupdateConnectingCallback (void *tdbupdate, programstate_t programState)
 
   logProcBegin (LOG_PROC, "dbupdateConnectingCallback");
 
-  if ((dbupdate->dbgflags & BDJ4_INIT_NO_START) != BDJ4_INIT_NO_START) {
+  if ((dbupdate->dbflags & BDJ4_INIT_NO_START) != BDJ4_INIT_NO_START) {
     if (! connIsConnected (dbupdate->conn, ROUTE_DBTAG)) {
       connConnect (dbupdate->conn, ROUTE_DBTAG);
     }
@@ -429,7 +480,10 @@ dbupdateClosingCallback (void *tdbupdate, programstate_t programState)
 
   logProcBegin (LOG_PROC, "dbupdateClosingCallback");
 
-  bdj4shutdown (ROUTE_DBUPDATE);
+  bdj4shutdown (ROUTE_DBUPDATE, dbupdate->musicdb);
+  if (dbupdate->nmusicdb != NULL) {
+    dbClose (dbupdate->nmusicdb);
+  }
 
   /* give the other processes some time to shut down */
   mssleep (200);
@@ -462,7 +516,7 @@ dbupdateProcessTagData (dbupdate_t *dbupdate, char *args)
   data = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   if (data == NULL) {
 // ### fix : need to get what is possible from the pathname
-    logMsg (LOG_DBG, LOG_DBUPDATE, "  - null data");
+    logMsg (LOG_DBG, LOG_DBUPDATE, "  null data");
     ++dbupdate->countNullData;
     ++dbupdate->filesProcessed;
     return;
@@ -471,7 +525,7 @@ dbupdateProcessTagData (dbupdate_t *dbupdate, char *args)
   tagdata = audiotagParseData (ffn, data);
   if (slistGetCount (tagdata) == 0) {
 // ### fix : need to get what is possible from the pathname
-    logMsg (LOG_DBG, LOG_DBUPDATE, "  - no tags");
+    logMsg (LOG_DBG, LOG_DBUPDATE, "  no tags");
     ++dbupdate->countNoTags;
   }
 
@@ -488,7 +542,7 @@ dbupdateProcessTagData (dbupdate_t *dbupdate, char *args)
 
   /* the dbWrite() procedure will set the FILE tag */
   relfname = slistGetStr (dbupdate->fileList, ffn);
-  dbWrite (relfname, tagdata);
+//  dbWrite (relfname, tagdata);
   ++dbupdate->countSaved;
 
   slistFree (tagdata);
@@ -499,4 +553,32 @@ static void
 dbupdateSigHandler (int sig)
 {
   gKillReceived = 1;
+}
+
+static void
+dbupdateOutputProgress (dbupdate_t *dbupdate)
+{
+  double    dval;
+
+  if (! dbupdate->progress) {
+    return;
+  }
+
+  if (dbupdate->fileCount == 0) {
+    fprintf (stdout, "PROG 0.0\n");
+    return;
+  }
+
+  if (! mstimeCheck (&dbupdate->outputTimer)) {
+    return;
+  }
+
+  mstimeset (&dbupdate->outputTimer, 50);
+
+  /* files processed / filecount */
+  dval = ((double) dbupdate->filesProcessed +
+      (double) dbupdate->filesSkipped) /
+      (double) dbupdate->fileCount;
+  fprintf (stdout, "PROG %.1f\n", dval);
+  fflush (stdout);
 }

@@ -177,7 +177,7 @@ main (int argc, char *argv[])
 #endif
 
   flags = BDJ4_INIT_NO_DB_LOAD | BDJ4_INIT_NO_DATAFILE_LOAD;
-  bdj4startup (argc, argv, "mq", ROUTE_MARQUEE, flags);
+  bdj4startup (argc, argv, NULL, "mq", ROUTE_MARQUEE, flags);
 
   listenPort = bdjvarsGetNum (BDJVL_MARQUEE_PORT);
   marquee.mqLen = bdjoptGetNum (OPT_P_MQQLEN);
@@ -270,7 +270,7 @@ marqueeClosingCallback (void *udata, programstate_t programState)
       "marquee", ".txt", PATHBLD_MP_USEIDX);
   datafileSaveKeyVal ("marquee", fn, mqdfkeys, MQ_KEY_MAX, marquee->options);
 
-  bdj4shutdown (ROUTE_MARQUEE);
+  bdj4shutdown (ROUTE_MARQUEE, NULL);
   connFree (marquee->conn);
 
   if (marquee->marqueeLabs != NULL) {
@@ -335,15 +335,8 @@ marqueeActivate (GApplication *app, gpointer userdata)
   gtk_widget_set_vexpand (marquee->vbox, TRUE);
   marquee->marginTotal = 20;
 
-  marquee->pbar = gtk_progress_bar_new ();
-  gtk_widget_set_halign (marquee->pbar, GTK_ALIGN_FILL);
-  gtk_widget_set_hexpand (marquee->pbar, TRUE);
-  snprintf (tbuff, sizeof (tbuff),
-      "progress, trough { min-height: 25px; } progressbar > trough > progress { background-color: %s; }",
-      (char *) bdjoptGetStr (OPT_P_MQ_ACCENT_COL));
-  uiutilsSetCss (marquee->pbar, tbuff);
-  gtk_box_pack_start (GTK_BOX (marquee->vbox), marquee->pbar,
-      FALSE, FALSE, 0);
+  marquee->pbar = uiutilsCreateProgressBar (bdjoptGetStr (OPT_P_MQ_ACCENT_COL));
+  gtk_box_pack_start (GTK_BOX (marquee->vbox), marquee->pbar, FALSE, FALSE, 0);
 
   vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 5);
   gtk_widget_set_margin_start (marquee->vbox, 10);

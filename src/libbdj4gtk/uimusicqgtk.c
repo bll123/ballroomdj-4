@@ -455,7 +455,7 @@ uimusicqProcessMusicQueueDataNew (uimusicq_t *uimusicq, char * args)
 
   nlistStartIterator (uimusicq->dispList, &iteridx);
   while ((musicqupdate = nlistIterateValueData (uimusicq->dispList, &iteridx)) != NULL) {
-    song = dbGetByIdx (musicqupdate->dbidx);
+    song = dbGetByIdx (uimusicq->musicdb, musicqupdate->dbidx);
 
     pixbuf = NULL;
     if (musicqupdate->pflag) {
@@ -553,7 +553,7 @@ uimusicqProcessMusicQueueDataUpdate (uimusicq_t *uimusicq, char * args)
       musicqupdate->uniqueidx = tlong;
     }
 
-    song = dbGetByIdx (musicqupdate->dbidx);
+    song = dbGetByIdx (uimusicq->musicdb, musicqupdate->dbidx);
 
     /* there's no need to determine if the entry is new or not    */
     /* simply overwrite everything until the end of the gtk-store */

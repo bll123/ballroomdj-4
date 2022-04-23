@@ -65,7 +65,7 @@ static void playlistSetSongFilter (playlist_t *pl);
 static void playlistCountList (playlist_t *pl);
 
 playlist_t *
-playlistLoad (char *fname)
+playlistLoad (musicdb_t *musicdb, char *fname)
 {
   playlist_t    *pl = NULL;
   char          tfn [MAXPATHLEN];
@@ -82,7 +82,7 @@ playlistLoad (char *fname)
     return NULL;
   }
 
-  pl = playlistAlloc (fname);
+  pl = playlistAlloc (fname, musicdb);
   assert (pl != NULL);
 
   pl->plinfodf = datafileAllocParse ("playlist-pl", DFTYPE_KEY_VAL, tfn,
@@ -171,7 +171,7 @@ playlistLoad (char *fname)
 }
 
 playlist_t *
-playlistCreate (char *plfname, pltype_t type, char *ofname)
+playlistCreate (musicdb_t *musicdb, char *plfname, pltype_t type, char *ofname)
 {
   playlist_t    *pl = NULL;
   char          tbuff [40];
@@ -183,7 +183,7 @@ playlistCreate (char *plfname, pltype_t type, char *ofname)
 
   levels = bdjvarsdfGet (BDJVDF_LEVELS);
 
-  pl = playlistAlloc (plfname);
+  pl = playlistAlloc (plfname, musicdb);
   assert (pl != NULL);
 
   snprintf (tbuff, sizeof (tbuff), "plinfo-c-%s", plfname);
@@ -235,7 +235,7 @@ playlistCreate (char *plfname, pltype_t type, char *ofname)
 }
 
 playlist_t *
-playlistAlloc (char *fname)
+playlistAlloc (char *fname, musicdb_t *musicdb)
 {
   playlist_t    *pl = NULL;
 
@@ -254,6 +254,7 @@ playlistAlloc (char *fname)
   pl->pldances = NULL;
   pl->countList = NULL;
   pl->count = 0;
+  pl->musicdb = musicdb;
 
   return pl;
 }
@@ -401,14 +402,15 @@ playlistGetNextSong (playlist_t *pl, nlist_t *danceCounts,
       logMsg (LOG_DBG, LOG_BASIC, "automatic: dance: %zd", danceIdx);
       if (pl->songsel == NULL) {
         playlistSetSongFilter (pl);
-        pl->songsel = songselAlloc (pl->countList, pl->songfilter);
+        pl->songsel = songselAlloc (pl->musicdb,
+            pl->countList, pl->songfilter);
       }
     }
     if (type == PLTYPE_SEQ) {
       if (pl->songsel == NULL) {
         playlistSetSongFilter (pl);
-        pl->songsel = songselAlloc (sequenceGetDanceList (pl->sequence),
-            pl->songfilter);
+        pl->songsel = songselAlloc (pl->musicdb,
+            sequenceGetDanceList (pl->sequence), pl->songfilter);
       }
       danceIdx = sequenceIterate (pl->sequence, &pl->seqiteridx);
       logMsg (LOG_DBG, LOG_BASIC, "sequence: dance: %zd", danceIdx);
@@ -438,7 +440,7 @@ playlistGetNextSong (playlist_t *pl, nlist_t *danceCounts,
   if (type == PLTYPE_MANUAL) {
     sfname = songlistGetNext (pl->songlist, pl->manualIdx, SONGLIST_FILE);
     while (sfname != NULL) {
-      song = dbGetByName (sfname);
+      song = dbGetByName (pl->musicdb, sfname);
       if (song != NULL && songAudioFileExists (song)) {
         ilistidx_t  tval;
         char        *tstr;
@@ -492,7 +494,7 @@ playlistGetPlaylistList (void)
     pi = pathInfo (tplfnm);
     strlcpy (tfn, pi->basename, MAXPATHLEN);
     tfn [pi->blen] = '\0';
-    pl = playlistAlloc (tfn);
+    pl = playlistAlloc (tfn, NULL);
     if (pl != NULL) {
       slistSetStr (pnlist, pl->name, tfn);
       playlistFree (pl);

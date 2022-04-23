@@ -99,12 +99,16 @@ osProcessStart (char *targv[], int flags, void **handle, char *outfname)
       }
 
       if (outfname != NULL) {
-        int fd = open (outfname, O_CREAT | O_WRONLY | O_TRUNC);
-        ostdout = dup (STDOUT_FILENO);
-        ostderr = dup (STDERR_FILENO);
-        dup2 (fd, STDOUT_FILENO);
-        dup2 (fd, STDERR_FILENO);
-        close (fd);
+        int fd = open (outfname, O_CREAT | O_WRONLY | O_TRUNC, S_IRWXU | S_IRWXG);
+        if (fd < 0) {
+          outfname = NULL;
+        } else {
+          ostdout = dup (STDOUT_FILENO);
+          ostderr = dup (STDERR_FILENO);
+          dup2 (fd, STDOUT_FILENO);
+          dup2 (fd, STDERR_FILENO);
+          close (fd);
+        }
       }
 
       rc = execv (targv [0], targv);
@@ -117,8 +121,6 @@ osProcessStart (char *targv[], int flags, void **handle, char *outfname)
         close (STDERR_FILENO);
         dup2 (ostdout, STDOUT_FILENO);
         dup2 (ostderr, STDERR_FILENO);
-        close (ostdout);
-        close (ostderr);
       }
 
       exit (0);
@@ -282,25 +284,30 @@ osProcessPipe (char *targv[], int flags, char *rbuff, size_t sz)
         exit (1);
       }
 
-      close (STDOUT_FILENO);
-      close (STDERR_FILENO);
-      dup2 (ostdout, STDOUT_FILENO);
-      dup2 (ostderr, STDERR_FILENO);
-      close (ostdout);
-      close (ostderr);
-
       exit (0);
     }
+
+    /* write end of pipe is not needed by parent */
+    close (pipefd [1]);
 
     pid = tpid;
     if ((flags & OS_PROC_WAIT) == OS_PROC_WAIT) {
       waitpid (pid, NULL, 0);
     }
 
-    bytesread = read (pipefd [0], rbuff, sz);
-    rbuff [bytesread] = '\0';
-    close (pipefd [0]);
-    close (pipefd [1]);
+    if (rbuff != NULL) {
+      /* the application wants all the data in one chunk */
+      bytesread = read (pipefd [0], rbuff, sz);
+      rbuff [sz - 1] = '\0';
+      if (bytesread < (ssize_t) sz) {
+        rbuff [bytesread] = '\0';
+      }
+      close (pipefd [0]);
+    } else {
+      /* set up so the application can read from stdin */
+      close (STDIN_FILENO);
+      dup2 (pipefd [0], STDIN_FILENO);
+    }
   }
 #endif
 
@@ -388,12 +395,15 @@ osProcessPipe (char *targv[], int flags, char *rbuff, size_t sz)
       WaitForSingleObject (pi.hProcess, INFINITE);
     }
 
-    ReadFile (handleStdoutRead, rbuff, sz, &bytesRead, NULL);
-    rbuff [bytesRead] = '\0';
+    if (rbuff != NULL) {
+      /* the application wants all the data in one chunk */
+      ReadFile (handleStdoutRead, rbuff, sz, &bytesRead, NULL);
+      rbuff [bytesRead] = '\0';
 
-    CloseHandle (handleStdoutRead);
-    CloseHandle (handleStdoutWrite);
-    CloseHandle (pi.hProcess);
+      CloseHandle (handleStdoutRead);
+      CloseHandle (handleStdoutWrite);
+      CloseHandle (pi.hProcess);
+    }
 
     free (wbuff);
   }

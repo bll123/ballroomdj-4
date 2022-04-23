@@ -54,6 +54,10 @@ typedef struct {
 #define LOG_GTK_NAME      "loggtk"
 #define LOG_EXTENSION     ".txt"
 
+enum {
+  LOG_MAX_BUFF    = 1024,
+};
+
 #define logProcBegin(lvl,tag)   rlogProcBegin (lvl, tag, __FILE__, __LINE__)
 #define logProcEnd(lvl,tag,suffix)  rlogProcEnd (lvl, tag, suffix, __FILE__, __LINE__)
 #define logError(msg)           rlogError (msg, errno, __FILE__, __LINE__)

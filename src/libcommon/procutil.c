@@ -229,18 +229,13 @@ procutil_t *
 procutilStartProcess (bdjmsgroute_t route, char *fname, int detachflag)
 {
   char      tbuff [MAXPATHLEN];
-  char      *extension = NULL;
   procutil_t *process = NULL;
 
 
   logProcBegin (LOG_PROC, "procutilStartProcess");
 
-  extension = "";
-  if (isWindows ()) {
-    extension = ".exe";
-  }
   pathbldMakePath (tbuff, sizeof (tbuff),
-      fname, extension, PATHBLD_MP_EXECDIR);
+      fname, sysvarsGetStr (SV_OS_EXEC_EXT), PATHBLD_MP_EXECDIR);
   process = procutilStart (tbuff, sysvarsGetNum (SVL_BDJIDX),
       bdjoptGetNum (OPT_G_DEBUGLVL), detachflag);
   if (isWindows ()) {

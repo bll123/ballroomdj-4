@@ -82,7 +82,7 @@ main (int argc, char *argv[])
   procutilDefaultSignal (SIGTERM);
 
   flags = BDJ4_INIT_NO_DB_LOAD | BDJ4_INIT_NO_DATAFILE_LOAD;
-  bdj4startup (argc, argv, "mm", ROUTE_MOBILEMQ, flags);
+  bdj4startup (argc, argv, NULL, "mm", ROUTE_MOBILEMQ, flags);
   mobmqData.conn = connInit (ROUTE_MARQUEE);
 
   mobmqData.type = (bdjmobilemq_t) bdjoptGetNum (OPT_P_MOBILEMARQUEE);
@@ -143,7 +143,7 @@ mobmqClosingCallback (void *tmmdata, programstate_t programState)
 {
   mobmqdata_t   *mobmqData = tmmdata;
 
-  bdj4shutdown (ROUTE_MOBILEMQ);
+  bdj4shutdown (ROUTE_MOBILEMQ, NULL);
 
   websrvFree (mobmqData->websrv);
   if (mobmqData->name != NULL) {

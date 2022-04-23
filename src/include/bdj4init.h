@@ -2,6 +2,7 @@
 #define INC_BDJ4INIT_H
 
 #include "bdjmsg.h"
+#include "musicdb.h"
 
 enum {
   BDJ4_INIT_NONE        = 0x00,
@@ -12,10 +13,14 @@ enum {
   BDJ4_INIT_NO_DATAFILE_LOAD  = 0x0010,
   BDJ4_DB_REBUILD       = 0x0020,
   BDJ4_DB_CHECK_NEW     = 0x0040,
+  BDJ4_DB_PROGRESS      = 0x0080,
+  BDJ4_DB_REORG         = 0x0100,
+  BDJ4_DB_UPD_FROM_TAGS = 0x0200,
+  BDJ4_DB_WRITE_TAGS    = 0x0400,
 };
 
-int bdj4startup (int argc, char *argv[], char *tag, bdjmsgroute_t route,
-    int flags);
-void bdj4shutdown (bdjmsgroute_t route);
+int bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
+    char *tag, bdjmsgroute_t route, int flags);
+void bdj4shutdown (bdjmsgroute_t route, musicdb_t *musicdb);
 
 #endif /* INC_BDJ4INIT_H */

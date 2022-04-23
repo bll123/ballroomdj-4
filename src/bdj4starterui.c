@@ -197,7 +197,7 @@ main (int argc, char *argv[])
 #endif
 
   flags = BDJ4_INIT_NO_DB_LOAD | BDJ4_INIT_NO_DATAFILE_LOAD;
-  bdj4startup (argc, argv, "st", ROUTE_STARTERUI, flags);
+  bdj4startup (argc, argv, NULL, "st", ROUTE_STARTERUI, flags);
   logProcBegin (LOG_PROC, "starterui");
 
   /* get the profile list after bdjopt has been initialized */
@@ -324,7 +324,7 @@ starterClosingCallback (void *udata, programstate_t programState)
     slistFree (starter->supportFileList);
   }
 
-  bdj4shutdown (ROUTE_STARTERUI);
+  bdj4shutdown (ROUTE_STARTERUI, NULL);
 
   /* give the other processes some time to shut down */
   mssleep (200);
@@ -369,7 +369,7 @@ starterActivate (GApplication *app, gpointer userdata)
   gtk_window_set_title (GTK_WINDOW (starter->window), BDJ4_LONG_NAME);
 
   vbox = uiutilsCreateVertBox ();
-  uiutilsWidgetSetAllMargins (vbox, 4);
+  uiutilsWidgetSetAllMargins (vbox, uiutilsBaseMarginSz * 2);
   gtk_container_add (GTK_CONTAINER (starter->window), vbox);
 
   hbox = uiutilsCreateHorizBox ();
@@ -801,6 +801,7 @@ starterProcessSupport (GtkButton *b, gpointer udata)
       );
 
   content = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
+  uiutilsWidgetSetAllMargins (content, uiutilsBaseMarginSz * 2);
 
   vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   assert (vbox != NULL);
@@ -985,9 +986,10 @@ starterCreateSupportDialog (GtkButton *b, gpointer udata)
       GTK_RESPONSE_APPLY,
       NULL
       );
-  gtk_window_set_default_size (GTK_WINDOW (dialog), 800, 200);
+  gtk_window_set_default_size (GTK_WINDOW (dialog), -1, 400);
 
   content = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
+  uiutilsWidgetSetAllMargins (content, uiutilsBaseMarginSz * 2);
 
   sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
@@ -1032,7 +1034,7 @@ starterCreateSupportDialog (GtkButton *b, gpointer udata)
 
   /* line 4 */
   tb = uiutilsTextBoxCreate ();
-  gtk_widget_set_can_focus (tb->textbox, TRUE);
+  uiutilsTextBoxSetHeight (tb, 200);
   gtk_box_pack_start (GTK_BOX (vbox), tb->scw, FALSE, FALSE, 0);
   starter->supporttb = tb;
 
@@ -1055,14 +1057,6 @@ starterCreateSupportDialog (GtkButton *b, gpointer udata)
       "label { color: %s; }", (char *) bdjoptGetStr (OPT_P_UI_ACCENT_COL));
   uiutilsSetCss (widget, tbuff);
   starter->supportStatus = widget;
-
-  /* the dialog doesn't have any space above the buttons */
-  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
-  assert (hbox != NULL);
-  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
-
-  widget = uiutilsCreateLabel (" ");
-  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 
   g_signal_connect (dialog, "response",
       G_CALLBACK (starterSupportMsgHandler), starter);
@@ -1269,10 +1263,12 @@ starterStopAllProcesses (GtkMenuItem *mi, gpointer udata)
   int           count;
 
   logProcBegin (LOG_PROC, "starterStopAllProcesses");
+  fprintf (stderr, "stop-all-processes\n");
 
   count = starterCountProcesses (starter);
   if (count <= 1) {
     logProcEnd (LOG_PROC, "starterStopAllProcesses", "begin-only-one");
+    fprintf (stderr, "done\n");
     return;
   }
 
@@ -1298,6 +1294,7 @@ starterStopAllProcesses (GtkMenuItem *mi, gpointer udata)
   count = starterCountProcesses (starter);
   if (count <= 1) {
     logProcEnd (LOG_PROC, "starterStopAllProcesses", "after-ui");
+    fprintf (stderr, "done\n");
     return;
   }
 
@@ -1320,12 +1317,13 @@ starterStopAllProcesses (GtkMenuItem *mi, gpointer udata)
   count = starterCountProcesses (starter);
   if (count <= 1) {
     logProcEnd (LOG_PROC, "starterStopAllProcesses", "after-main");
+    fprintf (stderr, "done\n");
     return;
   }
 
   /* see which lock files exist, and send exit requests to them */
   count = 0;
-  for (route = ROUTE_MAIN; route < ROUTE_MAX; ++route) {
+  for (route = ROUTE_NONE + 1; route < ROUTE_MAX; ++route) {
     if (route == ROUTE_STARTERUI) {
       continue;
     }
@@ -1337,7 +1335,7 @@ starterStopAllProcesses (GtkMenuItem *mi, gpointer udata)
           route, msgRouteDebugText (route));
       fprintf (stderr, "route %d %s exists; send exit request\n",
           route, msgRouteDebugText (route));
-      if (! connIsConnected (starter->conn, ROUTE_MAIN)) {
+      if (! connIsConnected (starter->conn, route)) {
         connConnect (starter->conn, route);
       }
       connSendMessage (starter->conn, route, MSG_EXIT_REQUEST, NULL);
@@ -1345,8 +1343,9 @@ starterStopAllProcesses (GtkMenuItem *mi, gpointer udata)
     }
   }
 
-  if (count <= 1) {
+  if (count <= 0) {
     logProcEnd (LOG_PROC, "starterStopAllProcesses", "after-exit-all");
+    fprintf (stderr, "done\n");
     return;
   }
 
@@ -1356,7 +1355,7 @@ starterStopAllProcesses (GtkMenuItem *mi, gpointer udata)
 
   /* see which lock files still exist and kill the processes */
   count = 0;
-  for (route = ROUTE_MAIN; route < ROUTE_MAX; ++route) {
+  for (route = ROUTE_NONE + 1; route < ROUTE_MAX; ++route) {
     if (route == ROUTE_STARTERUI) {
       continue;
     }
@@ -1373,8 +1372,9 @@ starterStopAllProcesses (GtkMenuItem *mi, gpointer udata)
     }
   }
 
-  if (count <= 1) {
+  if (count <= 0) {
     logProcEnd (LOG_PROC, "starterStopAllProcesses", "after-term");
+    fprintf (stderr, "done\n");
     return;
   }
 
@@ -1384,7 +1384,7 @@ starterStopAllProcesses (GtkMenuItem *mi, gpointer udata)
 
   /* see which lock files still exist and kill the processes with */
   /* a signal that is not caught; remove the lock file */
-  for (route = ROUTE_MAIN; route < ROUTE_MAX; ++route) {
+  for (route = ROUTE_NONE + 1; route < ROUTE_MAX; ++route) {
     if (route == ROUTE_STARTERUI) {
       continue;
     }
@@ -1408,6 +1408,7 @@ starterStopAllProcesses (GtkMenuItem *mi, gpointer udata)
       fileopDelete (locknm);
     }
   }
+  fprintf (stderr, "done\n");
   logProcEnd (LOG_PROC, "starterStopAllProcesses", "");
 }
 
@@ -1420,7 +1421,7 @@ starterCountProcesses (startui_t *starter)
   int           count;
 
   count = 0;
-  for (route = ROUTE_MAIN; route < ROUTE_MAX; ++route) {
+  for (route = ROUTE_NONE + 1; route < ROUTE_MAX; ++route) {
     locknm = lockName (route);
     pid = lockExists (locknm, PATHBLD_MP_USEIDX);
     if (pid > 0) {

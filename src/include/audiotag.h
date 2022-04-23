@@ -3,7 +3,7 @@
 
 #include "slist.h"
 
-#define AUDIOTAG_TAG_BUFF_SIZE  8192
+#define AUDIOTAG_TAG_BUFF_SIZE  16384
 
 char    * audiotagReadTags (char *ffn, long count);
 slist_t * audiotagParseData (char *ffn, char *data);

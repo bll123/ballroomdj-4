@@ -43,6 +43,7 @@ typedef struct {
   progstate_t     *progstate;
   conn_t          *conn;
   dispsel_t       *dispsel;
+  musicdb_t       *musicdb;
   dispselsel_t    dispselType;
   int             uimusicqflags;
   GtkWidget       *parentwin;
@@ -63,9 +64,9 @@ typedef struct {
 } musicqupdate_t;
 
 /* uimusicq.c */
-uimusicq_t  * uimusicqInit (progstate_t *progstate,
-    conn_t *conn, dispsel_t *dispsel, int uimusicqflags,
-    dispselsel_t dispselType);
+uimusicq_t  * uimusicqInit (progstate_t *progstate, conn_t *conn,
+    musicdb_t *musicdb, dispsel_t *dispsel,
+    int uimusicqflags, dispselsel_t dispselType);
 void  uimusicqFree (uimusicq_t *uimusicq);
 void  uimusicqMainLoop (uimusicq_t *uimuiscq);
 int   uimusicqProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
