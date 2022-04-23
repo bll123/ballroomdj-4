@@ -116,12 +116,6 @@ osProcessStart (char *targv[], int flags, void **handle, char *outfname)
         fprintf (stderr, "unable to execute %s %d %s\n", targv [0], errno, strerror (errno));
         exit (1);
       }
-      if (outfname != NULL) {
-        close (STDOUT_FILENO);
-        close (STDERR_FILENO);
-        dup2 (ostdout, STDOUT_FILENO);
-        dup2 (ostderr, STDERR_FILENO);
-      }
 
       exit (0);
     }
@@ -242,12 +236,12 @@ osProcessStart (char *targv[], int flags, void **handle, char *outfname)
 pid_t
 osProcessPipe (char *targv[], int flags, char *rbuff, size_t sz)
 {
-  pid_t       pid;
+  pid_t   pid;
 
 #if _lib_fork
   {
-    pid_t       tpid;
     int         rc;
+    pid_t       tpid;
     int         pipefd [2];
     int         ostdout;
     int         ostderr;
@@ -322,6 +316,8 @@ osProcessPipe (char *targv[], int flags, char *rbuff, size_t sz)
     wchar_t             *wbuff;
     HANDLE              handleStdoutRead = INVALID_HANDLE_VALUE;
     HANDLE              handleStdoutWrite = INVALID_HANDLE_VALUE;
+    HANDLE              handleStdinRead = INVALID_HANDLE_VALUE;
+    HANDLE              handleStdinWrite = INVALID_HANDLE_VALUE;
     SECURITY_ATTRIBUTES sao;
     DWORD               bytesRead;
 
@@ -338,18 +334,20 @@ osProcessPipe (char *targv[], int flags, char *rbuff, size_t sz)
       fprintf (stderr, "createpipe: getlasterr: %d\n", err);
       return -1;
     }
-    /* do want to inherit the stdout read side */
-#if 0
-    if ( ! SetHandleInformation (handleStdoutRead, HANDLE_FLAG_INHERIT, 0) ) {
+    if ( ! CreatePipe (&handleStdinRead, &handleStdinWrite, &sao, 0) ) {
       int err = GetLastError ();
-      fprintf (stderr, "sethandleinfo: getlasterr: %d\n", err);
+      fprintf (stderr, "createpipe: getlasterr: %d\n", err);
       return -1;
     }
-#endif
+    CloseHandle (handleStdinWrite);
 
     si.hStdOutput = handleStdoutWrite;
     si.hStdError = handleStdoutWrite;
-    si.hStdInput = GetStdHandle (STD_INPUT_HANDLE);
+    if (rbuff != NULL) {
+      si.hStdInput = GetStdHandle (STD_INPUT_HANDLE);
+    } else {
+      si.hStdInput = handleStdinRead;
+    }
     si.dwFlags |= STARTF_USESTDHANDLES;
 
     buff [0] = '\0';
@@ -395,13 +393,14 @@ osProcessPipe (char *targv[], int flags, char *rbuff, size_t sz)
       WaitForSingleObject (pi.hProcess, INFINITE);
     }
 
+    CloseHandle (handleStdoutWrite);
+
     if (rbuff != NULL) {
       /* the application wants all the data in one chunk */
       ReadFile (handleStdoutRead, rbuff, sz, &bytesRead, NULL);
       rbuff [bytesRead] = '\0';
 
       CloseHandle (handleStdoutRead);
-      CloseHandle (handleStdoutWrite);
       CloseHandle (pi.hProcess);
     }
 

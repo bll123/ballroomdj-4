@@ -367,26 +367,37 @@ dbupdateProcessing (void *udata)
   }
 
   if (dbupdate->state == DB_UPD_FINISH) {
-    dbupdateOutputProgress (dbupdate);
-    fprintf (stdout, "END\n");
-    fflush (stdout);
-
     if (dbupdate->rebuild) {
       dbEndBatch (dbupdate->nmusicdb);
       /* rename the database files */
     }
+
+    dbupdateOutputProgress (dbupdate);
+    fprintf (stdout, _("Complete"));
+    fprintf (stdout, "\n");
+    fprintf (stdout, "%s : %u\n", _("Total Files"), dbupdate->fileCount);
+    fprintf (stdout, "%s : %u\n", _("Loaded from Database"), dbupdate->countAlready);
+    fprintf (stdout, "%s : %u\n", _("Bad files"), dbupdate->countBad);
+    fprintf (stdout, "%s : %u\n", _("New Files"), dbupdate->countNew);
+    fprintf (stdout, "%s : %u\n", _("Saved"), dbupdate->countSaved);
+    fflush (stdout);
+
     logMsg (LOG_DBG, LOG_IMPORTANT, "-- finish: %ld ms",
         mstimeend (&dbupdate->starttm));
-    logMsg (LOG_DBG, LOG_IMPORTANT, "    found: %lu", dbupdate->fileCount);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "  skipped: %lu", dbupdate->filesSkipped);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "     sent: %lu", dbupdate->filesSent);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "processed: %lu", dbupdate->filesProcessed);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "  already: %lu", dbupdate->countAlready);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "      bad: %lu", dbupdate->countBad);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "      new: %lu", dbupdate->countNew);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "     null: %lu", dbupdate->countNullData);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "  no tags: %lu", dbupdate->countNoTags);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "    saved: %lu", dbupdate->countSaved);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "    found: %u", dbupdate->fileCount);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "  skipped: %u", dbupdate->filesSkipped);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "     sent: %u", dbupdate->filesSent);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "processed: %u", dbupdate->filesProcessed);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "  already: %u", dbupdate->countAlready);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "      bad: %u", dbupdate->countBad);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "      new: %u", dbupdate->countNew);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "     null: %u", dbupdate->countNullData);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "  no tags: %u", dbupdate->countNoTags);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "    saved: %u", dbupdate->countSaved);
+
+    fprintf (stdout, "END\n");
+    fflush (stdout);
+
     return 1;
   }
 
@@ -565,7 +576,8 @@ dbupdateOutputProgress (dbupdate_t *dbupdate)
   }
 
   if (dbupdate->fileCount == 0) {
-    fprintf (stdout, "PROG 0.0\n");
+    fprintf (stdout, "PROG 0.00\n");
+    fflush (stdout);
     return;
   }
 
@@ -579,6 +591,6 @@ dbupdateOutputProgress (dbupdate_t *dbupdate)
   dval = ((double) dbupdate->filesProcessed +
       (double) dbupdate->filesSkipped) /
       (double) dbupdate->fileCount;
-  fprintf (stdout, "PROG %.1f\n", dval);
+  fprintf (stdout, "PROG %.2f\n", dval);
   fflush (stdout);
 }

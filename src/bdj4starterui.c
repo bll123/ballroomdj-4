@@ -28,6 +28,7 @@
 #include "lock.h"
 #include "log.h"
 #include "nlist.h"
+#include "osutils.h"
 #include "pathbld.h"
 #include "procutil.h"
 #include "progstate.h"
@@ -42,6 +43,7 @@ typedef enum {
   START_STATE_DELAY,
   START_STATE_SUPPORT_INIT,
   START_STATE_SUPPORT_SEND_MSG,
+  START_STATE_SUPPORT_SEND_INFO,
   START_STATE_SUPPORT_SEND_FILES_A,
   START_STATE_SUPPORT_SEND_FILES_B,
   START_STATE_SUPPORT_SEND_FILES_C,
@@ -571,6 +573,34 @@ starterMainLoop (void *tstarter)
           tbuff, ".gz.b64", PATHBLD_MP_TMPDIR);
       starterSendFile (starter, tbuff, ofn);
       fileopDelete (tbuff);
+
+      /* CONTEXT: starterui: support: status message */
+      snprintf (tbuff, sizeof (tbuff), _("Sending %s Information"), BDJ4_NAME);
+      uiutilsLabelSetText (starter->supportStatus, tbuff);
+      starter->delayCount = 0;
+      starter->delayState = START_STATE_SUPPORT_SEND_INFO;
+      starter->startState = START_STATE_DELAY;
+      break;
+    }
+    case START_STATE_SUPPORT_SEND_INFO: {
+      char        prog [MAXPATHLEN];
+      char        arg [40];
+      char        *targv [4];
+      int         targc = 0;
+
+      pathbldMakePath (prog, sizeof (prog),
+          "bdj4info", sysvarsGetStr (SV_OS_EXEC_EXT), PATHBLD_MP_EXECDIR);
+      strlcpy (arg, "--bdj4", MAXPATHLEN);
+      strlcpy (tbuff, "bdj4info.txt", sizeof (tbuff));
+      targv [targc++] = prog;
+      targv [targc++] = arg;
+      targv [targc++] = NULL;
+      osProcessStart (targv, OS_PROC_WAIT, NULL, tbuff);
+      pathbldMakePath (ofn, sizeof (ofn),
+          tbuff, ".gz.b64", PATHBLD_MP_TMPDIR);
+      starterSendFile (starter, tbuff, ofn);
+      fileopDelete (tbuff);
+
       starter->startState = START_STATE_SUPPORT_SEND_FILES_A;
       break;
     }
@@ -581,6 +611,7 @@ starterMainLoop (void *tstarter)
             GTK_TOGGLE_BUTTON (starter->supportSendFiles));
       if (! sendfiles) {
         starter->startState = START_STATE_SUPPORT_SEND_DB_PRE;
+        break;
       }
 
       pathbldMakePath (tbuff, sizeof (tbuff),
@@ -1431,4 +1462,3 @@ starterCountProcesses (startui_t *starter)
 
   return count;
 }
-

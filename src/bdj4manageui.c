@@ -80,6 +80,10 @@ typedef struct {
   uiplayer_t      *slplayer;
   uimusicq_t      *slmusicq;
   uisongsel_t     *slsongsel;
+  /* music manager ui */
+  uiplayer_t      *mmplayer;
+  uimusicq_t      *mmmusicq;
+  uisongsel_t     *mmsongsel;
   /* options */
   datafile_t      *optiondf;
   nlist_t         *options;
@@ -216,6 +220,17 @@ main (int argc, char *argv[])
       UIMUSICQ_FLAGS_NO_QUEUE | UIMUSICQ_FLAGS_NO_TOGGLE_PAUSE,
       DISP_SEL_SONGLIST);
   manage.slsongsel = uisongselInit (manage.progstate, manage.conn,
+      manage.musicdb, manage.dispsel, manage.options,
+      SONG_FILTER_FOR_SELECTION, UISONGSEL_FLAGS_NO_Q_BUTTON,
+      DISP_SEL_SONGSEL);
+
+  manage.mmplayer = uiplayerInit (manage.progstate, manage.conn,
+      manage.musicdb);
+  manage.mmmusicq = uimusicqInit (manage.progstate, manage.conn,
+      manage.musicdb, manage.dispsel,
+      UIMUSICQ_FLAGS_NO_QUEUE | UIMUSICQ_FLAGS_NO_TOGGLE_PAUSE,
+      DISP_SEL_SONGLIST);
+  manage.mmsongsel = uisongselInit (manage.progstate, manage.conn,
       manage.musicdb, manage.dispsel, manage.options,
       SONG_FILTER_FOR_SELECTION, UISONGSEL_FLAGS_NO_Q_BUTTON,
       DISP_SEL_SONGSEL);
@@ -527,6 +542,7 @@ manageMainLoop (void *tmanage)
         }
       } else {
         uiutilsTextBoxAppendStr (manage->dbstatus, tbuff);
+        uiutilsTextBoxScrollToEnd (manage->dbstatus);
       }
     }
   }
