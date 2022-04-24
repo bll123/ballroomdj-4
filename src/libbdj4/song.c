@@ -86,9 +86,14 @@ static songfavoriteinfo_t songfavoriteinfo [SONG_FAVORITE_MAX] = {
   { SONG_FAVORITE_PURPLE, "\xE2\x98\x85", "#901ba3", NULL },
 };
 
-static bool     gsonginit = false;
-static size_t   gsongcount = 0;
-static level_t  *glevels = NULL;
+typedef struct {
+  size_t   songcount;
+  level_t  *levels;
+  status_t *status;
+  rating_t *ratings;
+} songinit_t;
+
+static songinit_t *gsonginit = NULL;
 
 static void songInit (void);
 static void songCleanup (void);
@@ -102,7 +107,7 @@ songAlloc (void)
 
   song = malloc (sizeof (song_t));
   assert (song != NULL);
-  ++gsongcount;
+  ++gsonginit->songcount;
   return song;
 }
 
@@ -115,8 +120,8 @@ songFree (void *tsong)
       nlistFree (song->songInfo);
     }
     free (song);
-    --gsongcount;
-    if (gsongcount <= 0) {
+    --gsonginit->songcount;
+    if (gsonginit->songcount <= 0) {
       songCleanup ();
     }
   }
@@ -136,8 +141,18 @@ songParse (song_t *song, char *data, ssize_t didx)
   /* check and set some defaults */
   lkey = nlistGetNum (song->songInfo, TAG_DANCELEVEL);
   if (lkey < 0) {
-    lkey = levelGetDefaultKey (glevels);
+    lkey = levelGetDefaultKey (gsonginit->levels);
     nlistSetNum (song->songInfo, TAG_DANCELEVEL, lkey);
+  }
+
+  lkey = nlistGetNum (song->songInfo, TAG_STATUS);
+  if (lkey < 0) {
+    nlistSetNum (song->songInfo, TAG_STATUS, 0);
+  }
+
+  lkey = nlistGetNum (song->songInfo, TAG_DANCERATING);
+  if (lkey < 0) {
+    nlistSetNum (song->songInfo, TAG_DANCERATING, 0);
   }
 }
 
@@ -304,9 +319,12 @@ songInit (void)
   char  *col;
   char  tbuff [100];
 
-  if (gsonginit) {
+  if (gsonginit != NULL) {
     return;
   }
+
+  gsonginit = malloc (sizeof (songinit_t));
+  assert (gsonginit != NULL);
 
   for (int i = 0; i < SONG_FAVORITE_MAX; ++i) {
     if (i == 0) {
@@ -319,9 +337,10 @@ songInit (void)
     songfavoriteinfo [i].spanStr = strdup (tbuff);
   }
 
-  glevels = bdjvarsdfGet (BDJVDF_LEVELS);
-  gsonginit = true;
-  gsongcount = 0;
+  gsonginit->levels = bdjvarsdfGet (BDJVDF_LEVELS);
+  gsonginit->status = bdjvarsdfGet (BDJVDF_STATUS);
+  gsonginit->ratings = bdjvarsdfGet (BDJVDF_RATINGS);
+  gsonginit->songcount = 0;
 }
 
 static void
@@ -338,10 +357,19 @@ songCleanup (void)
     }
   }
 
-  if (glevels != NULL) {
-    levelFree (glevels);
-    glevels = NULL;
+  if (gsonginit->levels != NULL) {
+    levelFree (gsonginit->levels);
+    gsonginit->levels = NULL;
+  }
+  if (gsonginit->status != NULL) {
+    statusFree (gsonginit->status);
+    gsonginit->status = NULL;
+  }
+  if (gsonginit->ratings != NULL) {
+    ratingFree (gsonginit->ratings);
+    gsonginit->ratings = NULL;
   }
 
-  gsonginit = false;
+  free (gsonginit);
+  gsonginit = NULL;
 }
