@@ -5,7 +5,7 @@
 
 #define AUDIOTAG_TAG_BUFF_SIZE  16384
 
-char    * audiotagReadTags (char *ffn, long count);
+char    * audiotagReadTags (char *ffn);
 slist_t * audiotagParseData (char *ffn, char *data);
 
 #endif /* INC_AUDIOTAG_H */

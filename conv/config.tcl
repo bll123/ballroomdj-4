@@ -65,12 +65,12 @@ foreach path [list {} profiles $mpath $mppath] {
         if { $key eq "ALLOWEDIT" } { continue }
         if { $key eq "AUTOSTARTUP" } { continue }
         if { $key eq "CBFONTSIZE" } { continue }
-        if { $key eq "HOST" } { continue }
         # debug level should be in the global; so just remove it.
         if { $key eq "DEBUGLVL" } { continue }
         if { $key eq "DEBUGON" } { continue }
         if { $key eq "ENABLEIMGPLAYER" } { continue }
         if { $key eq "FONTSIZE" } { continue }
+        if { $key eq "HOST" } { continue }
         if { $key eq "INSTPASSWORD" } { continue }
         if { $key eq "MQCLOCKFONTSIZE" } { continue }
         if { $key eq "MQDANCEFONT" } { continue }
@@ -95,9 +95,15 @@ foreach path [list {} profiles $mpath $mppath] {
         if { $key eq "SERVERPORT" } { continue }
         if { $key eq "SERVERTYPE" } { continue }
         if { $key eq "SERVERUSER" } { continue }
+        if { $key eq "SHOWSTATUS" } { continue }
+        if { $key eq "SLOWDEVICE" } { continue }
         if { $key eq "STARTMAXIMIZED" } { continue }
         if { $key eq "SYNCROLE" } { continue }
         if { $key eq "UIFIXEDFONT" } { continue }
+        if { $key eq "WEBENABLE" } { continue }
+        if { $key eq "WEBPASS" } { continue }
+        if { $key eq "WEBPORT" } { continue }
+        if { $key eq "WEBUSER" } { continue }
         if { [regexp {^[a-z_]} $key] } { continue }
         if { [regexp {^KEY} $key] } { continue }
         if { [regexp {^MQCOL} $key] } { continue }

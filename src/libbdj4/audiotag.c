@@ -34,7 +34,7 @@ static slist_t    * tagLookup [TAG_TYPE_MAX] = { NULL, NULL, NULL };
  */
 
 char *
-audiotagReadTags (char *ffn, long count)
+audiotagReadTags (char *ffn)
 {
   char        * data;
   char        * targv [5];
@@ -207,7 +207,7 @@ audiotagParseTags (slist_t *tagdata, char *data, int tagtype)
             pC = strtok_r (NULL, ":", &tokstrC);
             tm += atof (pC);
             tm *= 1000;
-            snprintf (pbuff, sizeof (pbuff), "%.0f\n", tm);
+            snprintf (pbuff, sizeof (pbuff), "%.0f", tm);
             p = pbuff;
           }
           free (tmp);

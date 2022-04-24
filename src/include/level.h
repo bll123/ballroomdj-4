@@ -16,6 +16,8 @@ typedef struct {
   ilist_t     *level;
   int         maxWidth;
   char        *path;
+  char        *defaultName;
+  int         defaultKey;
 } level_t;
 
 level_t     *levelAlloc (void);
@@ -25,6 +27,8 @@ int         levelGetMaxWidth (level_t *level);
 char        * levelGetLevel (level_t *level, ilistidx_t idx);
 ssize_t     levelGetWeight (level_t *level, ilistidx_t idx);
 ssize_t     levelGetDefault (level_t *level, ilistidx_t idx);
+char        * levelGetDefaultName (level_t *level);
+ssize_t     levelGetDefaultKey (level_t *level);
 ssize_t     levelGetMax (level_t *level);
 void        levelStartIterator (level_t *level, ilistidx_t *iteridx);
 ilistidx_t  levelIterate (level_t *level, ilistidx_t *iteridx);

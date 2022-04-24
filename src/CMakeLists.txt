@@ -90,6 +90,12 @@ target_link_libraries (bdj4info
 )
 addIntlLibrary (bdj4info)
 
+add_executable (bdj4tags bdj4tags.c)
+target_link_libraries (bdj4tags
+  libbdj4common libbdj4
+)
+addIntlLibrary (bdj4tags)
+
 add_executable (bdj4updater bdj4updater.c)
 target_link_libraries (bdj4updater
   libbdj4common libbdj4
@@ -293,7 +299,7 @@ install (TARGETS
   libbdj4gtk
   bdj4 bdj4g
   bdj4se bdj4installer bdj4updater
-  bdj4locatebdj3 bdj4info
+  bdj4locatebdj3 bdj4info bdj4tags
   bdj4dbupdate bdj4dbtag
   bdj4main bdj4player bdj4mobmq bdj4rc bdj4marquee
   bdj4starterui bdj4playerui bdj4manageui bdj4configui
@@ -314,6 +320,7 @@ if (APPLE)
   macUpdateRPath (bdj4player)
   macUpdateRPath (bdj4playerui)
   macUpdateRPath (bdj4rc)
+  macUpdateRPath (bdj4tags)
   macUpdateRPath (bdj4updater)
   macUpdateRPath (check_all)
 endif()

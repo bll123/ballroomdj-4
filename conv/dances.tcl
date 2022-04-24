@@ -29,12 +29,12 @@ puts $fh count
 puts $fh "..[expr {[llength $Dance]/2}]"
 set ikey 0
 foreach {key data} $Dance {
-  if { $key eq "select" } { continue }
-  if { $key eq "count" } { continue }
   puts $fh "KEY\n..$ikey"
   incr ikey;
   puts $fh "DANCE\n..$key"
   foreach {k v} $data {
+    if { $k eq "select" } { continue }
+    if { $k eq "count" } { continue }
     if { $k eq "ann" } { set k ANNOUNCE }
     if { $v eq "rhythm" } { set v latin }
     puts $fh [string toupper $k]

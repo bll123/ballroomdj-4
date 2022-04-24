@@ -354,7 +354,7 @@ dbtagProcessFile (void *tdbthread)
   dbthread_t    * dbthread = tdbthread;
 
 
-  dbthread->data = audiotagReadTags (dbthread->fn, dbthread->count);
+  dbthread->data = audiotagReadTags (dbthread->fn);
   dbthread->state = DBTAG_T_STATE_HAVE_DATA;
   pthread_exit (NULL);
   return NULL;

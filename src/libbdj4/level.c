@@ -53,12 +53,18 @@ levelAlloc ()
   ilistStartIterator (level->level, &iteridx);
   while ((key = ilistIterateKey (level->level, &iteridx)) >= 0) {
     char    *val;
+    ssize_t nval;
     int     len;
 
     val = ilistGetStr (level->level, key, LEVEL_LEVEL);
     len = istrlen (val);
     if (len > level->maxWidth) {
       level->maxWidth = len;
+    }
+    nval = ilistGetNum (level->level, key, LEVEL_DEFAULT_FLAG);
+    if (nval) {
+      level->defaultName = strdup (val);
+      level->defaultKey = nval;
     }
   }
 
@@ -107,6 +113,24 @@ ssize_t
 levelGetDefault (level_t *level, ilistidx_t ikey)
 {
   return ilistGetNum (level->level, ikey, LEVEL_DEFAULT_FLAG);
+}
+
+char *
+levelGetDefaultName (level_t *level)
+{
+  if (level == NULL) {
+    return NULL;
+  }
+  return level->defaultName;
+}
+
+ssize_t
+levelGetDefaultKey (level_t *level)
+{
+  if (level == NULL) {
+    return 0;
+  }
+  return level->defaultKey;
 }
 
 ssize_t

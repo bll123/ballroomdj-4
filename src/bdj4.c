@@ -54,8 +54,6 @@ main (int argc, char * argv[])
 
   static struct option bdj_options [] = {
     { "check_all",      no_argument,        NULL,   1 },
-    { "bdj4cli",        no_argument,        NULL,   2 },
-    { "cli",            no_argument,        NULL,   2 },
     { "bdj4configui",   no_argument,        NULL,   3 },
     { "bdj4main",       no_argument,        NULL,   5 },
     { "main",           no_argument,        NULL,   5 },
@@ -72,6 +70,7 @@ main (int argc, char * argv[])
     { "bdj4starterui",  no_argument,        NULL,   14 },
     { "bdj4dbupdate",   no_argument,        NULL,   15 },
     { "bdj4updater",    no_argument,        NULL,   16 },
+    { "bdj4tags",       no_argument,        NULL,   17 },
     /* bdj4updater */
     { "newinstall",     no_argument,        NULL,   0 },
     /* used by installer */
@@ -196,6 +195,12 @@ main (int argc, char * argv[])
       }
       case 16: {
         prog = "bdj4updater";
+        nodetach = true;
+        ++validargs;
+        break;
+      }
+      case 17: {
+        prog = "bdj4tags";
         nodetach = true;
         ++validargs;
         break;

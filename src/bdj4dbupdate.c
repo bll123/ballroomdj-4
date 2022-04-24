@@ -42,6 +42,7 @@
 #include "conn.h"
 #include "fileop.h"
 #include "filemanip.h"
+#include "level.h"
 #include "log.h"
 #include "musicdb.h"
 #include "pathbld.h"
@@ -51,6 +52,7 @@
 #include "slist.h"
 #include "sockh.h"
 #include "sysvars.h"
+#include "tagdef.h"
 #include "tmutil.h"
 
 enum {
@@ -121,7 +123,6 @@ main (int argc, char *argv[])
   int           flags;
   int           rc;
   char          *p;
-
 
   dbupdate.state = DB_UPD_INIT;
   dbupdate.musicdb = NULL;

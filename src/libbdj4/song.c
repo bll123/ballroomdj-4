@@ -8,6 +8,7 @@
 
 #include "bdj4.h"
 #include "bdjopt.h"
+#include "bdjvarsdf.h"
 #include "bdjstring.h"
 #include "dance.h"
 #include "datafile.h"
@@ -85,8 +86,9 @@ static songfavoriteinfo_t songfavoriteinfo [SONG_FAVORITE_MAX] = {
   { SONG_FAVORITE_PURPLE, "\xE2\x98\x85", "#901ba3", NULL },
 };
 
-static bool gsonginit = false;
-static size_t gsongcount = 0;
+static bool     gsonginit = false;
+static size_t   gsongcount = 0;
+static level_t  *glevels = NULL;
 
 static void songInit (void);
 static void songCleanup (void);
@@ -123,12 +125,20 @@ songFree (void *tsong)
 void
 songParse (song_t *song, char *data, ssize_t didx)
 {
-  char  tbuff [100];
+  char    tbuff [100];
+  ssize_t lkey;
 
   snprintf (tbuff, sizeof (tbuff), "song-%zd", didx);
   song->songInfo = datafileParse (data, tbuff, DFTYPE_KEY_VAL,
       songdfkeys, SONG_DFKEY_COUNT, DATAFILE_NO_LOOKUP, NULL);
   nlistSort (song->songInfo);
+
+  /* check and set some defaults */
+  lkey = nlistGetNum (song->songInfo, TAG_DANCELEVEL);
+  if (lkey < 0) {
+    lkey = levelGetDefaultKey (glevels);
+    nlistSetNum (song->songInfo, TAG_DANCELEVEL, lkey);
+  }
 }
 
 char *
@@ -309,6 +319,7 @@ songInit (void)
     songfavoriteinfo [i].spanStr = strdup (tbuff);
   }
 
+  glevels = bdjvarsdfGet (BDJVDF_LEVELS);
   gsonginit = true;
   gsongcount = 0;
 }
@@ -325,6 +336,11 @@ songCleanup (void)
       free (songfavoriteinfo [i].spanStr);
       songfavoriteinfo [i].spanStr = NULL;
     }
+  }
+
+  if (glevels != NULL) {
+    levelFree (glevels);
+    glevels = NULL;
   }
 
   gsonginit = false;
