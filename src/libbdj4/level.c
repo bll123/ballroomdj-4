@@ -33,6 +33,7 @@ levelAlloc ()
   char        fname [MAXPATHLEN];
 
 
+
   pathbldMakePath (fname, sizeof (fname), "levels", ".txt", PATHBLD_MP_NONE);
   if (! fileopFileExists (fname)) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: level: missing %s", fname);

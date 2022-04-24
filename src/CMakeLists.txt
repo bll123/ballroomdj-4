@@ -90,6 +90,12 @@ target_link_libraries (bdj4info
 )
 addIntlLibrary (bdj4info)
 
+add_executable (bdj4updater bdj4updater.c)
+target_link_libraries (bdj4updater
+  libbdj4common libbdj4
+)
+addIntlLibrary (bdj4updater)
+
 if (WIN32)
   # the bdj4se executable
   # for cmake, must use the .o file extension, not .res
@@ -286,7 +292,7 @@ install (TARGETS
   libbdj4common libbdj4
   libbdj4gtk
   bdj4 bdj4g
-  bdj4se bdj4installer
+  bdj4se bdj4installer bdj4updater
   bdj4locatebdj3 bdj4info
   bdj4dbupdate bdj4dbtag
   bdj4main bdj4player bdj4mobmq bdj4rc bdj4marquee
@@ -296,17 +302,18 @@ install (TARGETS
 
 if (APPLE)
   macUpdateRPath (bdj4)
-  macUpdateRPath (bdj4g)
+  macUpdateRPath (bdj4cli)
   macUpdateRPath (bdj4dbupdate)
+  macUpdateRPath (bdj4g)
+  macUpdateRPath (bdj4info)
+  macUpdateRPath (bdj4installer)
+  macUpdateRPath (bdj4locatebdj3)
   macUpdateRPath (bdj4main)
   macUpdateRPath (bdj4marquee)
   macUpdateRPath (bdj4mobmq)
   macUpdateRPath (bdj4player)
   macUpdateRPath (bdj4playerui)
   macUpdateRPath (bdj4rc)
-  macUpdateRPath (bdj4cli)
-  macUpdateRPath (bdj4installer)
-  macUpdateRPath (bdj4locatebdj3)
-  macUpdateRPath (bdj4info)
+  macUpdateRPath (bdj4updater)
   macUpdateRPath (check_all)
 endif()

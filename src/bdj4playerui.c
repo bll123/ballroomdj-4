@@ -171,7 +171,7 @@ main (int argc, char *argv[])
   procutilCatchSignal (pluiSigHandler, SIGINT);
   procutilDefaultSignal (SIGTERM);
 #if _define_SIGCHLD
-  procutilDefaultSignal (SIGCHLD);
+  procutilIgnoreSignal (SIGCHLD);
 #endif
 
   plui.dbgflags = bdj4startup (argc, argv, &plui.musicdb,
@@ -389,7 +389,7 @@ pluiActivate (GApplication *app, gpointer userdata)
   gtk_box_pack_end (GTK_BOX (hbox), plui->clock, FALSE, FALSE, 0);
   snprintf (tbuff, sizeof (tbuff),
       "label { color: shade(%s,0.6); }",
-      (char *) bdjoptGetStr (OPT_P_UI_ACCENT_COL));
+      bdjoptGetStr (OPT_P_UI_ACCENT_COL));
   uiutilsSetCss (plui->clock, tbuff);
 
   /* CONTEXT: menu selection: options for the player */

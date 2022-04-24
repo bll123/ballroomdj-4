@@ -53,7 +53,7 @@ sed -n -e '/^RATING/ {n;p}' -e 's,^,..,' $fn >> $TMP
 fn=../templates/genres.txt
 sed -n -e '/^GENRE/ {n;p}' -e 's,^,..,' $fn >> $TMP
 fn=../templates/levels.txt
-sed -n -e '/^LABEL/ {n;p}' -e 's,^,..,' $fn >> $TMP
+sed -n -e '/^LEVEL/ {n;p}' -e 's,^,..,' $fn >> $TMP
 fn=../templates/status.txt
 sed -n -e '/^STATUS/ {n;p}' -e 's,^,..,' $fn >> $TMP
 fn=../templates/bdjconfig.txt.p

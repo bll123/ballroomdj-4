@@ -68,7 +68,6 @@ typedef struct {
   uiutilstextbox_t  *dbstatus;
   nlist_t         *dblist;
   nlist_t         *dbhelp;
-  int             dbupdstarted;
   /* gtk stuff */
   GtkApplication  *app;
   GtkWidget       *window;
@@ -117,6 +116,8 @@ static void     manageSigHandler (int sig);
 /* update database */
 static void     manageDbChg (GtkSpinButton *sb, gpointer udata);
 static void     manageDbStart (GtkButton *b, gpointer udata);
+static void     manageDbProgressMsg (manageui_t *manage, char *args);
+static void     manageDbStatusMsg (manageui_t *manage, char *args);
 
 
 static int gKillReceived = 0;
@@ -155,7 +156,6 @@ main (int argc, char *argv[])
   manage.musicqManageIdx = MUSICQ_A;
   manage.dblist = NULL;
   manage.dbhelp = NULL;
-  manage.dbupdstarted = false;
 
   for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
     manage.processes [i] = NULL;
@@ -167,7 +167,7 @@ main (int argc, char *argv[])
   procutilCatchSignal (manageSigHandler, SIGINT);
   procutilDefaultSignal (SIGTERM);
 #if _define_SIGCHLD
-  procutilDefaultSignal (SIGCHLD);
+  procutilIgnoreSignal (SIGCHLD);
 #endif
 
   manage.dbgflags = bdj4startup (argc, argv, &manage.musicdb,
@@ -569,26 +569,6 @@ manageMainLoop (void *tmanage)
   uimusicqMainLoop (manage->slmusicq);
   uisongselMainLoop (manage->slsongsel);
 
-  if (manage->dbupdstarted) {
-    char    tbuff [MAXPATHLEN];
-    char    *rval;
-    double  progval;
-
-    rval = fgets (tbuff, sizeof (tbuff), stdin);
-    if (rval != NULL) {
-      if (strncmp ("END", tbuff, 3) == 0) {
-        manage->dbupdstarted = false;
-      } else if (strncmp ("PROG ", tbuff, 5) == 0) {
-        if (sscanf (tbuff, "PROG %lf", &progval) == 1) {
-          uiutilsProgressBarSet (manage->dbpbar, progval);
-        }
-      } else {
-        uiutilsTextBoxAppendStr (manage->dbstatus, tbuff);
-        uiutilsTextBoxScrollToEnd (manage->dbstatus);
-      }
-    }
-  }
-
   if (gKillReceived) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
     progstateShutdownProcess (manage->progstate);
@@ -690,6 +670,18 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           logProcEnd (LOG_PROC, "manageProcessMsg", "req-exit");
           return 1;
         }
+        case MSG_DB_PROGRESS: {
+          manageDbProgressMsg (manage, args);
+          break;
+        }
+        case MSG_DB_STATUS_MSG: {
+          manageDbStatusMsg (manage, args);
+          break;
+        }
+        case MSG_DB_FINISH: {
+          connDisconnect (manage->conn, ROUTE_DBUPDATE);
+          break;
+        }
         default: {
           break;
         }
@@ -762,7 +754,6 @@ manageDbStart (GtkButton *b, gpointer udata)
   char        *targv [10];
   int         targc = 0;
   char        tbuff [MAXPATHLEN];
-  char        tmp [40];
 
   pathbldMakePath (tbuff, sizeof (tbuff),
       "bdj4dbupdate", sysvarsGetStr (SV_OS_EXEC_EXT), PATHBLD_MP_EXECDIR);
@@ -794,10 +785,30 @@ manageDbStart (GtkButton *b, gpointer udata)
   }
 
   targv [targc++] = "--progress";
-  targv [targc++] = "--debug";
-  snprintf (tmp, sizeof (tmp), "%ld", bdjoptGetNum (OPT_G_DEBUGLVL));
-  targv [targc++] = tmp;
   targv [targc++] = NULL;
-  manage->dbupdstarted = true;
-  osProcessPipe (targv, OS_PROC_NONE, NULL, 0);
+  uiutilsProgressBarSet (manage->dbpbar, 0.0);
+  osProcessStart (targv, OS_PROC_DETACH, NULL, NULL);
 }
+
+static void
+manageDbProgressMsg (manageui_t *manage, char *args)
+{
+  double    progval;
+
+  if (strncmp ("END", args, 3) == 0) {
+    uiutilsProgressBarSet (manage->dbpbar, 100.0);
+  } else {
+    if (sscanf (args, "PROG %lf", &progval) == 1) {
+      uiutilsProgressBarSet (manage->dbpbar, progval);
+    }
+  }
+}
+
+static void
+manageDbStatusMsg (manageui_t *manage, char *args)
+{
+  uiutilsTextBoxAppendStr (manage->dbstatus, args);
+  uiutilsTextBoxAppendStr (manage->dbstatus, "\n");
+  uiutilsTextBoxScrollToEnd (manage->dbstatus);
+}
+

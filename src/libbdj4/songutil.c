@@ -26,7 +26,7 @@ songFullFileName (char *sfname)
     strlcpy (tname, sfname, MAXPATHLEN);
   } else {
     snprintf (tname, MAXPATHLEN, "%s/%s",
-        (char *) bdjoptGetStr (OPT_M_DIR_MUSIC), sfname);
+        bdjoptGetStr (OPT_M_DIR_MUSIC), sfname);
   }
   return tname;
 }

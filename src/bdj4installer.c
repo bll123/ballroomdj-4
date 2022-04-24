@@ -61,6 +61,7 @@ typedef enum {
   INST_CONVERT_WAIT,
   INST_CONVERT_FINISH,
   INST_CREATE_SHORTCUT,
+  INST_UPDATE_PROCESS,
   INST_VLC_CHECK,
   INST_VLC_DOWNLOAD,
   INST_VLC_INSTALL,
@@ -153,6 +154,7 @@ static void installerConvertStart (installer_t *installer);
 static void installerConvert (installer_t *installer);
 static void installerConvertFinish (installer_t *installer);
 static void installerCreateShortcut (installer_t *installer);
+static void installerUpdateProcess (installer_t *installer);
 static void installerVLCCheck (installer_t *installer);
 static void installerVLCDownload (installer_t *installer);
 static void installerVLCInstall (installer_t *installer);
@@ -664,6 +666,10 @@ installerMainLoop (void *udata)
       installerCreateShortcut (installer);
       break;
     }
+    case INST_UPDATE_PROCESS: {
+      installerUpdateProcess (installer);
+      break;
+    }
     case INST_VLC_CHECK: {
       installerVLCCheck (installer);
       break;
@@ -929,11 +935,8 @@ installerCheckTarget (installer_t *installer, const char *dir)
 
   installerSetrundir (installer, dir);
 
-  if (isWindows ()) {
-    snprintf (tbuff, sizeof (tbuff), "%s/bin/bdj4.exe", installer->rundir);
-  } else {
-    snprintf (tbuff, sizeof (tbuff), "%s/bin/bdj4", installer->rundir);
-  }
+  snprintf (tbuff, sizeof (tbuff), "%s/bin/bdj4%s",
+      installer->rundir, sysvarsGetStr (SV_OS_EXEC_EXT));
   exists = fileopFileExists (tbuff);
   if (exists) {
     installer->newinstall = false;
@@ -1301,16 +1304,16 @@ installerCopyTemplates (installer_t *installer)
       snprintf (tbuff, sizeof (tbuff), "%.*s", (int) pi->blen, pi->basename);
       if (pathInfoExtCheck (pi, ".g")) {
         snprintf (to, sizeof (to), "data/%s", tbuff);
-      }
-      if (pathInfoExtCheck (pi, ".p")) {
-        snprintf (to, sizeof (to), "data/profiles/%s", tbuff);
-      }
-      if (pathInfoExtCheck (pi, ".m")) {
+      } else if (pathInfoExtCheck (pi, ".p")) {
+        snprintf (to, sizeof (to), "data/profile00/%s", tbuff);
+      } else if (pathInfoExtCheck (pi, ".m")) {
         snprintf (to, sizeof (to), "data/%s/%s", installer->hostname, tbuff);
-      }
-      if (pathInfoExtCheck (pi, ".mp")) {
-        snprintf (to, sizeof (to), "data/%s/profiles/%s",
+      } else if (pathInfoExtCheck (pi, ".mp")) {
+        snprintf (to, sizeof (to), "data/%s/profile00/%s",
             installer->hostname, tbuff);
+      } else {
+        /* one of the localized versions */
+        continue;
       }
     } else if (pathInfoExtCheck (pi, ".txt") ||
         pathInfoExtCheck (pi, ".sequence") ||
@@ -1339,7 +1342,7 @@ installerCopyTemplates (installer_t *installer)
       snprintf (from, sizeof (from), "%s/templates/%s",
           installer->rundir, tbuff);
       if (strncmp (pi->basename, "ds-", 3) == 0) {
-        snprintf (to, sizeof (to), "data/profiles/%s", tbuff);
+        snprintf (to, sizeof (to), "data/profile00/%s", tbuff);
       } else {
         snprintf (to, sizeof (to), "data/%s", tbuff);
       }
@@ -1586,6 +1589,31 @@ installerCreateShortcut (installer_t *installer)
         installer->rundir);
     system (buff);
   }
+
+  /* CONTEXT: installer: status message */
+  snprintf (buff, sizeof (buff), _("Updating %s."), BDJ4_LONG_NAME);
+  installerDisplayText (installer, "-- ", buff);
+  installer->instState = INST_UPDATE_PROCESS;
+}
+
+static void
+installerUpdateProcess (installer_t *installer)
+{
+  char  tbuff [MAXPATHLEN];
+  char  *targv [10];
+  int   targc = 0;
+
+  snprintf (tbuff, sizeof (tbuff), "%s/bin/bdj4%s",
+      installer->rundir, sysvarsGetStr (SV_OS_EXEC_EXT));
+  targv [targc++] = tbuff;
+  targv [targc++] = "--bdj4updater";
+  /* only need to run the 'newinstall' update process when the template */
+  /* files have been copied */
+  if (installer->newinstall) {
+    targv [targc++] = "--newinstall";
+  }
+  targv [targc++] = NULL;
+  osProcessStart (targv, OS_PROC_WAIT, NULL, NULL);
 
   installer->instState = INST_VLC_CHECK;
 }

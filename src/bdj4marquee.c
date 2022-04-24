@@ -173,7 +173,7 @@ main (int argc, char *argv[])
   procutilCatchSignal (marqueeSigHandler, SIGINT);
   procutilDefaultSignal (SIGTERM);
 #if _define_SIGCHLD
-  procutilDefaultSignal (SIGCHLD);
+  procutilIgnoreSignal (SIGCHLD);
 #endif
 
   flags = BDJ4_INIT_NO_DB_LOAD | BDJ4_INIT_NO_DATAFILE_LOAD;
@@ -352,7 +352,7 @@ marqueeActivate (GApplication *app, gpointer userdata)
   gtk_widget_set_can_focus (marquee->danceLab, FALSE);
   snprintf (tbuff, sizeof (tbuff),
       "label { color: %s; }",
-      (char *) bdjoptGetStr (OPT_P_MQ_ACCENT_COL));
+      bdjoptGetStr (OPT_P_MQ_ACCENT_COL));
   uiutilsSetCss (marquee->danceLab, tbuff);
   gtk_box_pack_start (GTK_BOX (hbox), marquee->danceLab,
       TRUE, TRUE, 0);
@@ -363,7 +363,7 @@ marqueeActivate (GApplication *app, gpointer userdata)
   gtk_widget_set_can_focus (marquee->countdownTimerLab, FALSE);
   snprintf (tbuff, sizeof (tbuff),
       "label { color: %s; }",
-      (char *) bdjoptGetStr (OPT_P_MQ_ACCENT_COL));
+      bdjoptGetStr (OPT_P_MQ_ACCENT_COL));
   uiutilsSetCss (marquee->countdownTimerLab, tbuff);
   gtk_box_pack_end (GTK_BOX (hbox), marquee->countdownTimerLab,
       FALSE, FALSE, 0);
@@ -403,7 +403,7 @@ marqueeActivate (GApplication *app, gpointer userdata)
   gtk_widget_set_margin_top (marquee->sep, 2);
   snprintf (tbuff, sizeof (tbuff),
       "separator { min-height: 4px; background-color: %s; }",
-      (char *) bdjoptGetStr (OPT_P_MQ_ACCENT_COL));
+      bdjoptGetStr (OPT_P_MQ_ACCENT_COL));
   uiutilsSetCss (marquee->sep, tbuff);
   gtk_box_pack_end (GTK_BOX (vbox), marquee->sep, TRUE, FALSE, 0);
 

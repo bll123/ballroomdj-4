@@ -6,6 +6,15 @@
  *      rebuild and replace the database in its entirety
  *    - check-for-new
  *      check for new files and changes and add them.
+ *    - writetags
+ *      write db tags to the audio files
+ *    - updfromtags
+ *      update db from tags in audio files.
+ *      this is the same as checknew, except that all audio files tags
+ *      are loaded and updated in the database.
+ *      so the processing is similar to a rebuild, but using the old database.
+ *    - reorganize
+ *      use the organization settings to reorg the files.
  *
  */
 
@@ -70,11 +79,12 @@ typedef struct {
   dbidx_t           filesSkipped;         // any sort of skip
   dbidx_t           filesSent;
   dbidx_t           filesProcessed;       // processed + skipped = count
-  dbidx_t           countAlready;
+  dbidx_t           countInDatabase;
   dbidx_t           countBad;
   dbidx_t           countNew;
   dbidx_t           countNullData;
   dbidx_t           countNoTags;
+  dbidx_t           countUpdated;
   dbidx_t           countSaved;
   mstime_t          starttm;
   bool              rebuild : 1;
@@ -82,6 +92,9 @@ typedef struct {
   bool              progress : 1;
   bool              updfromtags : 1;
   bool              writetags : 1;
+  bool              reorganize : 1;
+  bool              newdatabase : 1;
+  bool              newaudiofile : 1;
 } dbupdate_t;
 
 #define FNAMES_SENT_PER_ITER  30
@@ -117,17 +130,21 @@ main (int argc, char *argv[])
   dbupdate.fileCount = 0;
   dbupdate.filesSkipped = 0;
   dbupdate.filesSent = 0;
-  dbupdate.countAlready = 0;
+  dbupdate.countInDatabase = 0;
   dbupdate.countBad = 0;
   dbupdate.countNew = 0;
   dbupdate.countNullData = 0;
   dbupdate.countNoTags = 0;
+  dbupdate.countUpdated = 0;
   dbupdate.countSaved = 0;
   dbupdate.rebuild = false;
   dbupdate.checknew = false;
   dbupdate.progress = false;
   dbupdate.updfromtags = false;
   dbupdate.writetags = false;
+  dbupdate.reorganize = false;
+  dbupdate.newdatabase = false;
+  dbupdate.newaudiofile = false;
   mstimeset (&dbupdate.outputTimer, 0);
 
   dbupdate.progstate = progstateInit ("dbupdate");
@@ -177,6 +194,15 @@ main (int argc, char *argv[])
   }
   if ((dbupdate.dbflags & BDJ4_DB_REBUILD) == BDJ4_DB_REBUILD) {
     dbupdate.rebuild = true;
+  }
+  if ((dbupdate.dbflags & BDJ4_DB_UPD_FROM_TAGS) == BDJ4_DB_UPD_FROM_TAGS) {
+    dbupdate.updfromtags = true;
+  }
+  if ((dbupdate.dbflags & BDJ4_DB_WRITE_TAGS) == BDJ4_DB_WRITE_TAGS) {
+    dbupdate.writetags = true;
+  }
+  if ((dbupdate.dbflags & BDJ4_DB_REORG) == BDJ4_DB_REORG) {
+    dbupdate.reorganize = true;
   }
   if ((dbupdate.dbflags & BDJ4_DB_PROGRESS) == BDJ4_DB_PROGRESS) {
     dbupdate.progress = true;
@@ -259,9 +285,17 @@ dbupdateProcessing (void *udata)
   }
 
   if (dbupdate->state == DB_UPD_INIT) {
-    /* for a rebuild, open up a new database, and then just do all */
-    /* the normal processing */
+    char  dbfname [MAXPATHLEN];
+
     if (dbupdate->rebuild) {
+      dbupdate->newdatabase = true;
+    }
+
+    pathbldMakePath (dbfname, sizeof (dbfname),
+        MUSICDB_FNAME, MUSICDB_EXT, PATHBLD_MP_NONE);
+    datafileBackup (dbfname, 4);
+
+    if (dbupdate->newdatabase) {
       char  tbuff [MAXPATHLEN];
 
       pathbldMakePath (tbuff, sizeof (tbuff),
@@ -270,12 +304,15 @@ dbupdateProcessing (void *udata)
       dbupdate->nmusicdb = dbOpen (tbuff);
       assert (dbupdate->nmusicdb != NULL);
       dbStartBatch (dbupdate->nmusicdb);
+    } else {
+      dbStartBatch (dbupdate->musicdb);
     }
-
     dbupdate->state = DB_UPD_PREP;
   }
 
   if (dbupdate->state == DB_UPD_PREP) {
+    char  tbuff [100];
+
     mstimestart (&dbupdate->starttm);
 
     dbupdateOutputProgress (dbupdate);
@@ -291,9 +328,8 @@ dbupdateProcessing (void *udata)
     logMsg (LOG_DBG, LOG_IMPORTANT, "  %d files found", dbupdate->fileCount);
 
     /* message to manageui */
-    fprintf (stdout, _("%d files found"), dbupdate->fileCount);
-    fprintf (stdout, "\n");
-    fflush (stdout);
+    snprintf (tbuff, sizeof (tbuff), _("%d files found"), dbupdate->fileCount);
+    connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
 
     slistStartIterator (dbupdate->fileList, &dbupdate->filelistIterIdx);
     dbupdate->state = DB_UPD_SEND;
@@ -307,8 +343,12 @@ dbupdateProcessing (void *udata)
     while ((fn =
         slistIterateKey (dbupdate->fileList, &dbupdate->filelistIterIdx)) != NULL) {
 
-      /* check to see if the file is already in the database */
-      if (dbupdate->checknew && fn != NULL) {
+      /* check to see if the audio file is already in the database */
+      /* this is done for all modes except for rebuild */
+      /* 'checknew' skips any processing for an audio file */
+      /* that is already present */
+      dbupdate->newaudiofile = true;
+      if (! dbupdate->rebuild && fn != NULL) {
         char  *p;
 
         p = fn;
@@ -316,16 +356,26 @@ dbupdateProcessing (void *udata)
           p += dbupdate->musicdirlen + 1;
         }
         if (dbGetByName (dbupdate->musicdb, p) != NULL) {
-          logMsg (LOG_DBG, LOG_DBUPDATE, "  already");
-          ++dbupdate->filesSkipped;
-          ++dbupdate->countAlready;
-          ++count;
-          dbupdateOutputProgress (dbupdate);
-          if (count > FNAMES_SENT_PER_ITER) {
-            break;
+          dbupdate->newaudiofile = false;
+
+          logMsg (LOG_DBG, LOG_DBUPDATE, "  in-database");
+          ++dbupdate->countInDatabase;
+
+          /* if doing a checknew, no need for further processing */
+          if (dbupdate->checknew) {
+            ++dbupdate->filesSkipped;
+            dbupdateOutputProgress (dbupdate);
+            ++count;
+            if (count > FNAMES_SENT_PER_ITER) {
+              break;
+            }
+            continue;
           }
-          continue;
         }
+      }
+
+      if (dbupdate->newaudiofile) {
+        ++dbupdate->countNew;
       }
 
       rc = regexec (&dbupdate->fnregex, fn, 0, NULL, 0);
@@ -342,7 +392,6 @@ dbupdateProcessing (void *udata)
 
       connSendMessage (dbupdate->conn, ROUTE_DBTAG, MSG_DB_FILE_CHK, fn);
       ++dbupdate->filesSent;
-      ++dbupdate->countNew;
       ++count;
       if (count > FNAMES_SENT_PER_ITER) {
         break;
@@ -367,20 +416,39 @@ dbupdateProcessing (void *udata)
   }
 
   if (dbupdate->state == DB_UPD_FINISH) {
-    if (dbupdate->rebuild) {
+    char  tbuff [MAXPATHLEN];
+    char  dbfname [MAXPATHLEN];
+
+    pathbldMakePath (tbuff, sizeof (tbuff),
+        MUSICDB_TMP_FNAME, MUSICDB_EXT, PATHBLD_MP_NONE);
+    pathbldMakePath (dbfname, sizeof (dbfname),
+        MUSICDB_FNAME, MUSICDB_EXT, PATHBLD_MP_NONE);
+
+    if (dbupdate->newdatabase) {
       dbEndBatch (dbupdate->nmusicdb);
-      /* rename the database files */
+      dbClose (dbupdate->nmusicdb);
+      dbupdate->nmusicdb = NULL;
+      /* rename the database file */
+      filemanipMove (tbuff, dbfname);
+    } else {
+      dbEndBatch (dbupdate->musicdb);
     }
 
     dbupdateOutputProgress (dbupdate);
-    fprintf (stdout, _("Complete"));
-    fprintf (stdout, "\n");
-    fprintf (stdout, "%s : %u\n", _("Total Files"), dbupdate->fileCount);
-    fprintf (stdout, "%s : %u\n", _("Loaded from Database"), dbupdate->countAlready);
-    fprintf (stdout, "%s : %u\n", _("Bad files"), dbupdate->countBad);
-    fprintf (stdout, "%s : %u\n", _("New Files"), dbupdate->countNew);
-    fprintf (stdout, "%s : %u\n", _("Saved"), dbupdate->countSaved);
-    fflush (stdout);
+    connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG,
+        _("Complete"));
+    snprintf (tbuff, sizeof (tbuff), "%s : %u", _("Total Files"), dbupdate->fileCount);
+    connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
+    snprintf (tbuff, sizeof (tbuff), "%s : %u", _("Loaded from Database"), dbupdate->countInDatabase);
+    connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
+    snprintf (tbuff, sizeof (tbuff), "%s : %u", _("Bad files"), dbupdate->countBad);
+    connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
+    snprintf (tbuff, sizeof (tbuff), "%s : %u", _("New Files"), dbupdate->countNew);
+    connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
+    snprintf (tbuff, sizeof (tbuff), "%s : %u", _("Updated"), dbupdate->countUpdated);
+    connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
+    snprintf (tbuff, sizeof (tbuff), "%s : %u", _("Saved"), dbupdate->countSaved);
+    connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
 
     logMsg (LOG_DBG, LOG_IMPORTANT, "-- finish: %ld ms",
         mstimeend (&dbupdate->starttm));
@@ -388,15 +456,16 @@ dbupdateProcessing (void *udata)
     logMsg (LOG_DBG, LOG_IMPORTANT, "  skipped: %u", dbupdate->filesSkipped);
     logMsg (LOG_DBG, LOG_IMPORTANT, "     sent: %u", dbupdate->filesSent);
     logMsg (LOG_DBG, LOG_IMPORTANT, "processed: %u", dbupdate->filesProcessed);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "  already: %u", dbupdate->countAlready);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "    in-db: %u", dbupdate->countInDatabase);
     logMsg (LOG_DBG, LOG_IMPORTANT, "      bad: %u", dbupdate->countBad);
     logMsg (LOG_DBG, LOG_IMPORTANT, "      new: %u", dbupdate->countNew);
     logMsg (LOG_DBG, LOG_IMPORTANT, "     null: %u", dbupdate->countNullData);
     logMsg (LOG_DBG, LOG_IMPORTANT, "  no tags: %u", dbupdate->countNoTags);
     logMsg (LOG_DBG, LOG_IMPORTANT, "    saved: %u", dbupdate->countSaved);
 
-    fprintf (stdout, "END\n");
-    fflush (stdout);
+    connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_PROGRESS, "END");
+    connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_FINISH, NULL);
+    connDisconnect (dbupdate->conn, ROUTE_MANAGEUI);
 
     return 1;
   }
@@ -441,9 +510,13 @@ dbupdateConnectingCallback (void *tdbupdate, programstate_t programState)
     if (! connIsConnected (dbupdate->conn, ROUTE_DBTAG)) {
       connConnect (dbupdate->conn, ROUTE_DBTAG);
     }
+    if (! connIsConnected (dbupdate->conn, ROUTE_MANAGEUI)) {
+      connConnect (dbupdate->conn, ROUTE_MANAGEUI);
+    }
   }
 
-  if (connIsConnected (dbupdate->conn, ROUTE_DBTAG)) {
+  if (connIsConnected (dbupdate->conn, ROUTE_DBTAG) &&
+      connIsConnected (dbupdate->conn, ROUTE_MANAGEUI)) {
     rc = true;
   }
 
@@ -459,7 +532,8 @@ dbupdateHandshakeCallback (void *tdbupdate, programstate_t programState)
 
   logProcBegin (LOG_PROC, "dbupdateHandshakeCallback");
 
-  if (connHaveHandshake (dbupdate->conn, ROUTE_DBTAG)) {
+  if (connHaveHandshake (dbupdate->conn, ROUTE_DBTAG) &&
+      connHaveHandshake (dbupdate->conn, ROUTE_MANAGEUI)) {
     rc = true;
   }
   logProcEnd (LOG_PROC, "dbupdateHandshakeCallback", "");
@@ -553,8 +627,16 @@ dbupdateProcessTagData (dbupdate_t *dbupdate, char *args)
 
   /* the dbWrite() procedure will set the FILE tag */
   relfname = slistGetStr (dbupdate->fileList, ffn);
-//  dbWrite (relfname, tagdata);
-  ++dbupdate->countSaved;
+  if (dbupdate->newdatabase) {
+    dbWrite (dbupdate->nmusicdb, relfname, tagdata);
+  } else {
+    dbWrite (dbupdate->musicdb, relfname, tagdata);
+  }
+  if (dbupdate->newaudiofile) {
+    ++dbupdate->countSaved;
+  } else {
+    ++dbupdate->countUpdated;
+  }
 
   slistFree (tagdata);
   ++dbupdate->filesProcessed;
@@ -570,14 +652,15 @@ static void
 dbupdateOutputProgress (dbupdate_t *dbupdate)
 {
   double    dval;
+  char      tbuff [40];
 
   if (! dbupdate->progress) {
     return;
   }
 
   if (dbupdate->fileCount == 0) {
-    fprintf (stdout, "PROG 0.00\n");
-    fflush (stdout);
+    connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_PROGRESS,
+        "PROG 0.00");
     return;
   }
 
@@ -591,6 +674,6 @@ dbupdateOutputProgress (dbupdate_t *dbupdate)
   dval = ((double) dbupdate->filesProcessed +
       (double) dbupdate->filesSkipped) /
       (double) dbupdate->fileCount;
-  fprintf (stdout, "PROG %.2f\n", dval);
-  fflush (stdout);
+  snprintf (tbuff, sizeof (tbuff), "PROG %.2f", dval);
+  connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_PROGRESS, tbuff);
 }

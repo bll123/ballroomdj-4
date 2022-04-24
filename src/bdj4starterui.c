@@ -195,7 +195,7 @@ main (int argc, char *argv[])
   procutilCatchSignal (starterSigHandler, SIGINT);
   procutilDefaultSignal (SIGTERM);
 #if _define_SIGCHLD
-  procutilDefaultSignal (SIGCHLD);
+  procutilIgnoreSignal (SIGCHLD);
 #endif
 
   flags = BDJ4_INIT_NO_DB_LOAD | BDJ4_INIT_NO_DATAFILE_LOAD;
@@ -1079,7 +1079,7 @@ starterCreateSupportDialog (GtkButton *b, gpointer udata)
   widget = uiutilsCreateLabel ("");
   gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
   snprintf (tbuff, sizeof (tbuff),
-      "label { color: %s; }", (char *) bdjoptGetStr (OPT_P_UI_ACCENT_COL));
+      "label { color: %s; }", bdjoptGetStr (OPT_P_UI_ACCENT_COL));
   uiutilsSetCss (widget, tbuff);
   starter->supportStatus = widget;
 

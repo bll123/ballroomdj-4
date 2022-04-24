@@ -4,14 +4,18 @@ msgid ""
 msgstr ""
 "Project-Id-Version: BDJ4 4.0.0\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
-"POT-Creation-Date: 2022-04-22\n"
-"PO-Revision-Date: 2022-04-22\n"
+"POT-Creation-Date: 2022-04-24\n"
+"PO-Revision-Date: 2022-04-24\n"
 "Last-Translator: marimo\n"
 "Language-Team: dutch\n"
 "Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#, c-format
+msgid "%d files found"
+msgstr ""
 
 #. CONTEXT: configuration ui window title
 #, c-format
@@ -179,6 +183,9 @@ msgstr "BPM"
 
 msgid "Bachata"
 msgstr "Bachata"
+
+msgid "Bad files"
+msgstr ""
 
 msgid "Ballroom Dance"
 msgstr "Ballroom dans"
@@ -557,6 +564,9 @@ msgstr "Niveau"
 msgid "Listing Font"
 msgstr ""
 
+msgid "Loaded from Database"
+msgstr "Geladen vanuit database"
+
 #. CONTEXT: mobile marquee: use local router
 msgid "Local"
 msgstr ""
@@ -585,7 +595,6 @@ msgstr "MPM"
 msgid "Manage"
 msgstr ""
 
-#. CONTEXT: The window title for the marquee
 #. CONTEXT: menu selection: marquee related options
 msgid "Marquee"
 msgstr "Marquee"
@@ -673,6 +682,9 @@ msgstr ""
 #. CONTEXT: config: dance name that is set when adding a new dance
 msgid "New Dance"
 msgstr ""
+
+msgid "New Files"
+msgstr "Nieuwe bestanden"
 
 #. CONTEXT: config: genre name that is set when adding a new genre
 msgid "New Genre"
@@ -946,6 +958,9 @@ msgstr "Salsa"
 msgid "Samba"
 msgstr "Samba"
 
+msgid "Saved"
+msgstr "Opgeslagen"
+
 #. CONTEXT: installer: status message
 msgid "Saving install location."
 msgstr ""
@@ -981,6 +996,11 @@ msgstr "Verzend Support bericht"
 #. CONTEXT: starterui: support: status message
 #, c-format
 msgid "Sending %s"
+msgstr ""
+
+#. CONTEXT: starterui: support: status message
+#, c-format
+msgid "Sending %s Information"
 msgstr ""
 
 #. CONTEXT: starterui: support: status message
@@ -1124,6 +1144,9 @@ msgstr "Pauze omschakelen"
 msgid "Toggle Repeat"
 msgstr ""
 
+msgid "Total Files"
+msgstr "Totaal aantal bestanden"
+
 msgid "Track"
 msgstr "Track"
 
@@ -1153,9 +1176,17 @@ msgstr "Database bijwerken"
 msgid "Update from Audio File Tags"
 msgstr ""
 
+msgid "Updated"
+msgstr ""
+
 msgid ""
 "Updates the audio file tags with the information from the BallroomDJ "
 "database."
+msgstr ""
+
+#. CONTEXT: installer: status message
+#, c-format
+msgid "Updating %s."
 msgstr ""
 
 #. CONTEXT: installer: message indicating the action that will be taken

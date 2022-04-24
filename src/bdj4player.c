@@ -159,7 +159,7 @@ main (int argc, char *argv[])
   procutilCatchSignal (playerSigHandler, SIGINT);
   procutilDefaultSignal (SIGTERM);
 #if _define_SIGCHLD
-  procutilDefaultSignal (SIGCHLD);
+  procutilIgnoreSignal (SIGCHLD);
 #endif
 
   playerData.currentSong = NULL;

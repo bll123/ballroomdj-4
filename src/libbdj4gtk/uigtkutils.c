@@ -84,6 +84,9 @@ uiutilsSetUIFont (char *uifont)
   int             sz = 0;
 
   logProcBegin (LOG_PROC, "uiutilsSetUIFont");
+  if (uifont == NULL || ! *uifont) {
+    return;
+  }
 
   strlcpy (wbuff, uifont, MAXPATHLEN);
   if (uifont != NULL && *uifont) {

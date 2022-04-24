@@ -5,7 +5,7 @@ count
 ..3
 KEY
 ..0
-LABEL
+LEVEL
 ..Gemakkelijk
 DEFAULT
 ..0
@@ -13,7 +13,7 @@ WEIGHT
 ..50
 KEY
 ..1
-LABEL
+LEVEL
 ..Standaard
 DEFAULT
 ..1
@@ -21,7 +21,7 @@ WEIGHT
 ..40
 KEY
 ..2
-LABEL
+LEVEL
 ..Geavanceerd
 DEFAULT
 ..0

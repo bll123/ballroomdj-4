@@ -26,6 +26,7 @@
 #include "dance.h"
 #include "dancesel.h"
 #include "filedata.h"
+#include "fileop.h"
 #include "lock.h"
 #include "log.h"
 #include "musicdb.h"
@@ -269,7 +270,9 @@ mainClosingCallback (void *tmaindata, programstate_t programState)
   }
 
   script = bdjoptGetStr (OPT_M_SHUTDOWNSCRIPT);
-  if (script != NULL && *script) {
+  if (script != NULL &&
+      *script &&
+      fileopFileExists (script)) {
     char  *targv [2];
 
     targv [0] = script;
@@ -499,7 +502,9 @@ mainListeningCallback (void *tmaindata, programstate_t programState)
     char          *script;
 
     script = bdjoptGetStr (OPT_M_STARTUPSCRIPT);
-    if (script != NULL && *script) {
+    if (script != NULL &&
+        *script &&
+        fileopFileExists (script)) {
       char  *targv [2];
 
       targv [0] = script;

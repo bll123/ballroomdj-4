@@ -549,7 +549,7 @@ main (int argc, char *argv[])
   procutilCatchSignal (confuiSigHandler, SIGINT);
   procutilDefaultSignal (SIGTERM);
 #if _define_SIGCHLD
-  procutilDefaultSignal (SIGCHLD);
+  procutilIgnoreSignal (SIGCHLD);
 #endif
 
   flags = BDJ4_INIT_NO_DB_LOAD;

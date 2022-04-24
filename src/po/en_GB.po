@@ -4,14 +4,18 @@ msgid ""
 msgstr ""
 "Project-Id-Version: BDJ4 4.0.0\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
-"POT-Creation-Date: 2022-04-22\n"
-"PO-Revision-Date: 2022-04-22\n"
+"POT-Creation-Date: 2022-04-24\n"
+"PO-Revision-Date: 2022-04-24\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/gb\n"
 "Language: en\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#, c-format
+msgid "%d files found"
+msgstr ""
 
 #. CONTEXT: configuration ui window title
 #, c-format
@@ -178,6 +182,9 @@ msgid "BPM"
 msgstr ""
 
 msgid "Bachata"
+msgstr ""
+
+msgid "Bad files"
 msgstr ""
 
 msgid "Ballroom Dance"
@@ -557,6 +564,9 @@ msgstr ""
 msgid "Listing Font"
 msgstr ""
 
+msgid "Loaded from Database"
+msgstr ""
+
 #. CONTEXT: mobile marquee: use local router
 msgid "Local"
 msgstr ""
@@ -585,7 +595,6 @@ msgstr ""
 msgid "Manage"
 msgstr ""
 
-#. CONTEXT: The window title for the marquee
 #. CONTEXT: menu selection: marquee related options
 msgid "Marquee"
 msgstr ""
@@ -672,6 +681,9 @@ msgstr ""
 
 #. CONTEXT: config: dance name that is set when adding a new dance
 msgid "New Dance"
+msgstr ""
+
+msgid "New Files"
 msgstr ""
 
 #. CONTEXT: config: genre name that is set when adding a new genre
@@ -946,6 +958,9 @@ msgstr ""
 msgid "Samba"
 msgstr ""
 
+msgid "Saved"
+msgstr ""
+
 #. CONTEXT: installer: status message
 msgid "Saving install location."
 msgstr ""
@@ -981,6 +996,11 @@ msgstr ""
 #. CONTEXT: starterui: support: status message
 #, c-format
 msgid "Sending %s"
+msgstr ""
+
+#. CONTEXT: starterui: support: status message
+#, c-format
+msgid "Sending %s Information"
 msgstr ""
 
 #. CONTEXT: starterui: support: status message
@@ -1124,6 +1144,9 @@ msgstr ""
 msgid "Toggle Repeat"
 msgstr ""
 
+msgid "Total Files"
+msgstr ""
+
 msgid "Track"
 msgstr ""
 
@@ -1153,9 +1176,17 @@ msgstr ""
 msgid "Update from Audio File Tags"
 msgstr ""
 
+msgid "Updated"
+msgstr ""
+
 msgid ""
 "Updates the audio file tags with the information from the BallroomDJ "
 "database."
+msgstr ""
+
+#. CONTEXT: installer: status message
+#, c-format
+msgid "Updating %s."
 msgstr ""
 
 #. CONTEXT: installer: message indicating the action that will be taken

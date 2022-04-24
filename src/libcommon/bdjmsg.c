@@ -90,8 +90,10 @@ static bdjmsgtxt_t msgtxt [MSG_MAX] = {
   [MSG_MARQUEE_IS_MAX] = { "MARQUEE_IS_MAX" },
   [MSG_MARQUEE_FONT_SIZES] = { "MARQUEE_FONT_SIZES" },
   [MSG_DB_FILE_TAGS] = { "DB_FILE_TAGS" },
-  [MSG_DB_STATUS] = { "DB_STATUS" },
+  [MSG_DB_PROGRESS] = { "DB_PROGRESS" },
+  [MSG_DB_STATUS_MSG] = { "DB_STATUS_MSG" },
   [MSG_DB_FILE_CHK] = { "DB_FILE_CHK" },
+  [MSG_DB_FINISH] = { "DB_FINISH" },
 };
 
 size_t

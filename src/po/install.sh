@@ -183,7 +183,7 @@ while read -r line; do
   mksub $fn $TMP $locale $pofile
 
   fn=${TMPLDIR}/levels.txt
-  sed -n -e '/^LABEL/ {n;p}' $fn > $TMP
+  sed -n -e '/^LEVEL/ {n;p}' $fn > $TMP
   mksub $fn $TMP $locale $pofile
 
   fn=${TMPLDIR}/status.txt

@@ -196,7 +196,7 @@ bdjoptFree (void)
 }
 
 
-void *
+char *
 bdjoptGetStr (ssize_t idx)
 {
   void      *value = NULL;
@@ -290,25 +290,27 @@ bdjoptSave (void)
 void
 bdjoptConvBPM (datafileconv_t *conv)
 {
-  bdjbpm_t   sbpm = BPM_BPM;
+  bdjbpm_t   nbpm = BPM_BPM;
+  char       *sval = NULL;
 
   conv->allocated = false;
   if (conv->valuetype == VALUE_STR) {
     conv->valuetype = VALUE_NUM;
 
     if (strcmp (conv->u.str, "BPM") == 0) {
-      sbpm = BPM_BPM;
+      nbpm = BPM_BPM;
     }
     if (strcmp (conv->u.str, "MPM") == 0) {
-      sbpm = BPM_MPM;
+      nbpm = BPM_MPM;
     }
-    conv->u.num = sbpm;
+    conv->u.num = nbpm;
   } else if (conv->valuetype == VALUE_NUM) {
     conv->valuetype = VALUE_STR;
     switch (conv->u.num) {
-      case BPM_BPM: { conv->u.str = "BPM"; break; }
-      case BPM_MPM: { conv->u.str = "MPM"; break; }
+      case BPM_BPM: { sval = "BPM"; break; }
+      case BPM_MPM: { sval = "MPM"; break; }
     }
+    conv->u.str = sval;
   }
 }
 

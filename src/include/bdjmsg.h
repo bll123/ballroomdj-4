@@ -100,7 +100,9 @@ typedef enum {
 
   /* to/from dbudpate */
   MSG_DB_FILE_TAGS,         // args: filename, tag data
-  MSG_DB_STATUS,            // args: status / percentage
+  MSG_DB_PROGRESS,          // args: % complete
+  MSG_DB_STATUS_MSG,        // args: status message
+  MSG_DB_FINISH,            //
   /* to dbtag */
   MSG_DB_FILE_CHK,          // args: filename to check
 

@@ -71,8 +71,9 @@ main (int argc, char * argv[])
     { "bdj4info",       no_argument,        NULL,   13 },
     { "bdj4starterui",  no_argument,        NULL,   14 },
     { "bdj4dbupdate",   no_argument,        NULL,   15 },
-    /* cli */
-    { "forcestop",      no_argument,        NULL,   0 },
+    { "bdj4updater",    no_argument,        NULL,   16 },
+    /* bdj4updater */
+    { "newinstall",     no_argument,        NULL,   0 },
     /* used by installer */
     { "unpackdir",      required_argument,  NULL,   'u' },
     { "reinstall",      no_argument,        NULL,   'r' },
@@ -190,6 +191,12 @@ main (int argc, char * argv[])
       }
       case 15: {
         prog = "bdj4dbupdate";
+        ++validargs;
+        break;
+      }
+      case 16: {
+        prog = "bdj4updater";
+        nodetach = true;
         ++validargs;
         break;
       }
