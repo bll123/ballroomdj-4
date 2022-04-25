@@ -1313,6 +1313,7 @@ installerCopyTemplates (installer_t *installer)
             installer->hostname, tbuff);
       } else {
         /* one of the localized versions */
+        free (pi);
         continue;
       }
     } else if (pathInfoExtCheck (pi, ".txt") ||
@@ -1348,6 +1349,7 @@ installerCopyTemplates (installer_t *installer)
       }
     } else {
       /* uknown extension, probably a localized file */
+      free (pi);
       continue;
     }
 
@@ -1609,7 +1611,7 @@ installerUpdateProcess (installer_t *installer)
   targv [targc++] = "--bdj4updater";
   /* only need to run the 'newinstall' update process when the template */
   /* files have been copied */
-  if (installer->newinstall) {
+  if (installer->newinstall || installer->reinstall) {
     targv [targc++] = "--newinstall";
   }
   targv [targc++] = NULL;

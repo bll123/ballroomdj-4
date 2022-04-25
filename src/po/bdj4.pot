@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-04-24 10:24-0700\n"
+"POT-Creation-Date: 2022-04-24 18:04-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -510,7 +510,8 @@ msgid "Hide Marquee on Start"
 msgstr ""
 
 #. CONTEXT: config: dances: high BPM (or MPM) setting
-msgid "High BPM"
+#, c-format
+msgid "High %s"
 msgstr ""
 
 #. CONTEXT: installer: command line interface
@@ -587,8 +588,8 @@ msgstr ""
 msgid "Logarithmic"
 msgstr ""
 
-#. CONTEXT: config: dances: low BPM (or MPM) setting
-msgid "Low BPM"
+#, c-format
+msgid "Low %s"
 msgstr ""
 
 #. CONTEXT: MPM: measures per minute (aka bars per minute)

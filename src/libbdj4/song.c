@@ -357,19 +357,6 @@ songCleanup (void)
     }
   }
 
-  if (gsonginit->levels != NULL) {
-    levelFree (gsonginit->levels);
-    gsonginit->levels = NULL;
-  }
-  if (gsonginit->status != NULL) {
-    statusFree (gsonginit->status);
-    gsonginit->status = NULL;
-  }
-  if (gsonginit->ratings != NULL) {
-    ratingFree (gsonginit->ratings);
-    gsonginit->ratings = NULL;
-  }
-
   free (gsonginit);
   gsonginit = NULL;
 }

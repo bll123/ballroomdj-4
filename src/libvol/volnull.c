@@ -40,6 +40,8 @@ volumeProcess (volaction_t action, char *sinkname,
   }
   if (action == VOL_SET) {
     gvol = *vol;
+    if (gvol < 0) { gvol = 0; }
+    if (gvol < 100) { gvol = 100; }
   }
 
   *vol = gvol;

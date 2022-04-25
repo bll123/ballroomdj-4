@@ -506,7 +506,8 @@ msgid "Hide Marquee on Start"
 msgstr ""
 
 #. CONTEXT: config: dances: high BPM (or MPM) setting
-msgid "High BPM"
+#, c-format
+msgid "High %s"
 msgstr ""
 
 #. CONTEXT: installer: command line interface
@@ -583,8 +584,8 @@ msgstr ""
 msgid "Logarithmic"
 msgstr ""
 
-#. CONTEXT: config: dances: low BPM (or MPM) setting
-msgid "Low BPM"
+#, c-format
+msgid "Low %s"
 msgstr ""
 
 #. CONTEXT: MPM: measures per minute (aka bars per minute)

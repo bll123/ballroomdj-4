@@ -852,8 +852,6 @@ static tagdefinfo_t   tagdefinfo = {
 void
 tagdefInit (void)
 {
-  datafileconv_t    conv;
-
   if (tagdefinfo.initialized) {
     return;
   }
@@ -888,13 +886,11 @@ tagdefInit (void)
   tagdefs [TAG_UPDATETIME].displayname = _("Last Updated");
   tagdefs [TAG_VOLUMEADJUSTPERC].displayname = _("Volume Adjustment");
 
-  tagdefs [TAG_BPM].displayname = _("BPM");
-
-  conv.valuetype = VALUE_NUM;
-  conv.u.num = bdjoptGetNum (OPT_G_BPM);
-  if (conv.u.num >= 0) {
-    bdjoptConvBPM (&conv);
-    tagdefs [TAG_BPM].displayname = _(conv.u.str);
+  if (bdjoptGetNum (OPT_G_BPM) == BPM_BPM) {
+    tagdefs [TAG_BPM].displayname = _("BPM");
+  }
+  if (bdjoptGetNum (OPT_G_BPM) == BPM_MPM) {
+    tagdefs [TAG_BPM].displayname = _("MPM");
   }
 
   tagdefinfo.taglookup = slistAlloc ("tagdef", LIST_UNORDERED, NULL);

@@ -67,6 +67,7 @@ dnctypesConv (datafileconv_t *conv)
 {
   dnctype_t       *dnctypes;
   ssize_t         num;
+  char            *sval;
 
   dnctypes = bdjvarsdfGet (BDJVDF_DANCE_TYPES);
 
@@ -85,10 +86,11 @@ dnctypesConv (datafileconv_t *conv)
     count = 0;
     while ((val = slistIterateKey (dnctypes->dnctypes, &iteridx)) != NULL) {
       if (count == conv->u.num) {
-        conv->u.str = val;
+        sval = val;
         break;
       }
       ++count;
     }
+    conv->u.str = sval;
   }
 }

@@ -8,6 +8,7 @@
 #include <assert.h>
 
 #include "bdj4.h"
+#include "bdj4intl.h"
 #include "bdjopt.h"
 #include "datafile.h"
 #include "pathbld.h"
@@ -170,7 +171,6 @@ bdjoptInit (void)
 
   bdjopt->df = df;
   bdjopt->bdjoptList = datafileGetList (df);
-
 }
 
 void
@@ -194,7 +194,6 @@ bdjoptFree (void)
   }
   bdjopt = NULL;
 }
-
 
 char *
 bdjoptGetStr (ssize_t idx)

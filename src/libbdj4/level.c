@@ -81,6 +81,9 @@ levelFree (level_t *level)
     if (level->df != NULL) {
       datafileFree (level->df);
     }
+    if (level->defaultName != NULL) {
+      free (level->defaultName);
+    }
     free (level);
   }
 }

@@ -111,7 +111,6 @@ static datafilekey_t starteruidfkeys [STARTERUI_KEY_MAX] = {
 #define SUPPORT_BUFF_SZ         (10*1024*1024)
 #define LOOP_DELAY              5
 
-static bool     starterConnectingCallback (void *udata, programstate_t programState);
 static bool     starterStoppingCallback (void *udata, programstate_t programState);
 static bool     starterClosingCallback (void *udata, programstate_t programState);
 static void     starterActivate (GApplication *app, gpointer userdata);
@@ -164,8 +163,6 @@ main (int argc, char *argv[])
 
 
   starter.progstate = progstateInit ("starterui");
-  progstateSetCallback (starter.progstate, STATE_CONNECTING,
-      starterConnectingCallback, &starter);
   progstateSetCallback (starter.progstate, STATE_STOPPING,
       starterStoppingCallback, &starter);
   progstateSetCallback (starter.progstate, STATE_CLOSING,
@@ -248,13 +245,10 @@ main (int argc, char *argv[])
 /* internal routines */
 
 static bool
-starterConnectingCallback (void *udata, programstate_t programState)
+starterStoppingCallback (void *udata, programstate_t programState)
 {
-  startui_t *starter = udata;
-
-  /* the starter process only need to re-try a connection if it */
-  /* had crashed.  these connections are not possible during normal */
-  /* startup */
+  startui_t   *starter = udata;
+  gint        x, y;
 
   if (starter->processes [ROUTE_PLAYERUI] != NULL &&
       ! connIsConnected (starter->conn, ROUTE_PLAYERUI)) {
@@ -268,15 +262,6 @@ starterConnectingCallback (void *udata, programstate_t programState)
       ! connIsConnected (starter->conn, ROUTE_CONFIGUI)) {
     connConnect (starter->conn, ROUTE_CONFIGUI);
   }
-
-  return true;
-}
-
-static bool
-starterStoppingCallback (void *udata, programstate_t programState)
-{
-  startui_t   *starter = udata;
-  gint        x, y;
 
   gtk_window_get_size (GTK_WINDOW (starter->window), &x, &y);
   nlistSetNum (starter->options, STARTERUI_SIZE_X, x);
@@ -1304,14 +1289,17 @@ starterStopAllProcesses (GtkMenuItem *mi, gpointer udata)
     connConnect (starter->conn, ROUTE_PLAYERUI);
   }
   connSendMessage (starter->conn, ROUTE_PLAYERUI, MSG_EXIT_REQUEST, NULL);
+
   if (! connIsConnected (starter->conn, ROUTE_MANAGEUI)) {
     connConnect (starter->conn, ROUTE_MANAGEUI);
   }
   connSendMessage (starter->conn, ROUTE_MANAGEUI, MSG_EXIT_REQUEST, NULL);
+
   if (! connIsConnected (starter->conn, ROUTE_CONFIGUI)) {
     connConnect (starter->conn, ROUTE_CONFIGUI);
   }
   connSendMessage (starter->conn, ROUTE_CONFIGUI, MSG_EXIT_REQUEST, NULL);
+
   logMsg (LOG_DBG, LOG_IMPORTANT, "sleeping");
   fprintf (stderr, "sleeping\n");
   mssleep (1000);

@@ -876,6 +876,7 @@ confuiActivate (GApplication *app, gpointer userdata)
   char          tbuff [MAXPATHLEN];
   gint          x, y;
   ssize_t       val;
+  char          *bpmstr;
 
   logProcBegin (LOG_PROC, "confuiActivate");
 
@@ -1284,14 +1285,18 @@ confuiActivate (GApplication *app, gpointer userdata)
       "changed", G_CALLBACK (confuiDanceEntryChg), confui);
 
   /* CONTEXT: config: dances: low BPM (or MPM) setting */
-  widget = confuiMakeItemSpinboxInt (confui, dvbox, sg, _("Low BPM"),
+  val = bdjoptGetNum (OPT_G_BPM);
+  bpmstr = val == BPM_BPM ? _("BPM") : _("MPM");
+  snprintf (tbuff, sizeof (tbuff), _("Low %s"), bpmstr);
+  widget = confuiMakeItemSpinboxInt (confui, dvbox, sg, tbuff,
       CONFUI_SPINBOX_DANCE_LOW_BPM, -1, 10, 500, 0);
   g_object_set_data (G_OBJECT (widget), "confuididx",
       GUINT_TO_POINTER (DANCE_LOW_BPM));
   g_signal_connect (widget, "value-changed", G_CALLBACK (confuiDanceSpinboxChg), confui);
 
   /* CONTEXT: config: dances: high BPM (or MPM) setting */
-  widget = confuiMakeItemSpinboxInt (confui, dvbox, sg, _("High BPM"),
+  snprintf (tbuff, sizeof (tbuff), _("High %s"), bpmstr);
+  widget = confuiMakeItemSpinboxInt (confui, dvbox, sg, tbuff,
       CONFUI_SPINBOX_DANCE_HIGH_BPM, -1, 10, 500, 0);
   g_object_set_data (G_OBJECT (widget), "confuididx",
       GUINT_TO_POINTER (DANCE_HIGH_BPM));
@@ -2981,6 +2986,7 @@ confuiUpdateOrgExamples (configui_t *confui, char *pathfmt)
 
   logProcBegin (LOG_PROC, "confuiUpdateOrgExamples");
   org = orgAlloc (pathfmt);
+  assert (org != NULL);
 
   data = "FILE\n..none\nDISC\n..1\nTRACKNUMBER\n..1\nALBUM\n..Smooth\nALBUMARTIST\n..Santana\nARTIST\n..Santana\nDANCE\n..Cha Cha\nGENRE\n..Ballroom Dance\nTITLE\n..Smooth\n";
   widget = confui->uiitem [CONFUI_WIDGET_AO_EXAMPLE_1].u.widget;
@@ -3012,6 +3018,7 @@ confuiUpdateOrgExample (configui_t *config, org_t *org, char *data, GtkWidget *w
   logProcBegin (LOG_PROC, "confuiUpdateOrgExample");
   tdata = strdup (data);
   song = songAlloc ();
+  assert (song != NULL);
   songParse (song, tdata, 0);
   disp = orgMakeSongPath (org, song);
   gtk_label_set_text (GTK_LABEL (widget), disp);
@@ -4077,6 +4084,12 @@ confuiDanceSave (configui_t *confui)
   dance_t   *dances;
 
   logProcBegin (LOG_PROC, "confuiDanceSave");
+
+  if (confui->tables [CONFUI_ID_DANCE].changed == false) {
+    logProcEnd (LOG_PROC, "confuiTableSave", "not-changed");
+    return;
+  }
+
   dances = bdjvarsdfGet (BDJVDF_DANCES);
   /* the data is already saved in the dance list; just re-use it */
   danceSave (dances, dances->dances);
