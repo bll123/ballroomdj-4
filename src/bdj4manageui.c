@@ -343,6 +343,8 @@ manageClosingCallback (void *udata, programstate_t programState)
 
   connFree (manage->conn);
 
+  uiutilsTextBoxFree (manage->dbhelpdisp);
+  uiutilsTextBoxFree (manage->dbstatus);
   uiplayerFree (manage->slplayer);
   uimusicqFree (manage->slmusicq);
   uisongselFree (manage->slsongsel);

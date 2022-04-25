@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: BDJ4 4.0.0\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
-"POT-Creation-Date: 2022-04-24\n"
-"PO-Revision-Date: 2022-04-24\n"
+"POT-Creation-Date: 2022-04-25\n"
+"PO-Revision-Date: 2022-04-25\n"
 "Last-Translator: marimo\n"
 "Language-Team: dutch\n"
 "Language: nl\n"
@@ -659,6 +659,7 @@ msgid "Music Folder"
 msgstr "Muziek Map"
 
 #. CONTEXT: display settings for: music manager
+#. CONTEXT: name of song selection tab
 msgid "Music Manager"
 msgstr "Muziek Manager"
 
@@ -973,6 +974,7 @@ msgstr "Zoeken"
 #. CONTEXT: config: display settings: button: add the selected field
 #. CONTEXT: actions associated with the select folder dialog
 #. CONTEXT: actions associated with the select file dialog
+#. CONTEXT: select a song to be added to the song list
 msgid "Select"
 msgstr "Selecteer"
 

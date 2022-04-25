@@ -291,6 +291,7 @@ starterClosingCallback (void *udata, programstate_t programState)
     gtk_widget_destroy (starter->window);
   }
 
+  uiutilsTextBoxFree (starter->supporttb);
   uiutilsSpinboxTextFree (&starter->profilesel);
 
   pathbldMakePath (fn, sizeof (fn),

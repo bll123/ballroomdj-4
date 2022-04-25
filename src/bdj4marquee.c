@@ -277,6 +277,7 @@ marqueeClosingCallback (void *udata, programstate_t programState)
       "marquee", ".txt", PATHBLD_MP_USEIDX);
   datafileSaveKeyVal ("marquee", fn, mqdfkeys, MQ_KEY_MAX, marquee->options);
 
+  sockhCloseServer (marquee->sockserver);
   bdj4shutdown (ROUTE_MARQUEE, NULL);
   connFree (marquee->conn);
 

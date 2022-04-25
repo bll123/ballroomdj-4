@@ -48,6 +48,14 @@ uiutilsTextBoxCreate (void)
 }
 
 void
+uiutilsTextBoxFree (uiutilstextbox_t *tb)
+{
+  if (tb != NULL) {
+    free (tb);
+  }
+}
+
+void
 uiutilsTextBoxSetReadonly (uiutilstextbox_t *tb)
 {
   gtk_widget_set_can_focus (tb->textbox, FALSE);

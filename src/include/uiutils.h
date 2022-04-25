@@ -155,6 +155,7 @@ void        uiutilsLinkSet (GtkWidget *widget, char *label, char *uri);
 
 /* uigtktextbox.c */
 uiutilstextbox_t  *uiutilsTextBoxCreate (void);
+void  uiutilsTextBoxFree (uiutilstextbox_t *tb);
 char  *uiutilsTextBoxGetValue (uiutilstextbox_t *tb);
 void  uiutilsTextBoxSetReadonly (uiutilstextbox_t *tb);
 void  uiutilsTextBoxScrollToEnd (uiutilstextbox_t *tb);
