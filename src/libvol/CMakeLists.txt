@@ -3,11 +3,10 @@ cmake_minimum_required (VERSION 3.18)
 include (../utils/bdj4macros.cmake)
 
 add_library (libbdj4vol SHARED
-  volume.c
+  volume.c ../dylib.c
 )
 target_link_libraries (libbdj4vol
   libbdj4common
-  libdylib
   m
 )
 

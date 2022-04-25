@@ -158,7 +158,7 @@ uimusicqMoveTopProcess (uimusicq_t *uimusicq)
 
   uimusicqMusicQueueSetSelected (uimusicq, ci, UIMUSICQ_SEL_TOP);
 
-  snprintf (tbuff, sizeof (tbuff), "%d%c%lu", ci, MSG_ARGS_RS, idx);
+  snprintf (tbuff, sizeof (tbuff), "%d%c%zu", ci, MSG_ARGS_RS, idx);
   connSendMessage (uimusicq->conn, ROUTE_MAIN,
       MSG_MUSICQ_MOVE_TOP, tbuff);
   logProcEnd (LOG_PROC, "uimusicqMoveTopProcess", "");
@@ -183,7 +183,7 @@ uimusicqMoveUpProcess (uimusicq_t *uimusicq)
   }
 
   uimusicqMusicQueueSetSelected (uimusicq, ci, UIMUSICQ_SEL_PREV);
-  snprintf (tbuff, sizeof (tbuff), "%d%c%lu", ci, MSG_ARGS_RS, idx);
+  snprintf (tbuff, sizeof (tbuff), "%d%c%zu", ci, MSG_ARGS_RS, idx);
   connSendMessage (uimusicq->conn, ROUTE_MAIN,
       MSG_MUSICQ_MOVE_UP, tbuff);
   if (uimusicq->ui [ci].repeatTimer == 0) {
@@ -212,7 +212,7 @@ uimusicqMoveDownProcess (uimusicq_t *uimusicq)
   }
 
   uimusicqMusicQueueSetSelected (uimusicq, ci, UIMUSICQ_SEL_NEXT);
-  snprintf (tbuff, sizeof (tbuff), "%d%c%lu", ci, MSG_ARGS_RS, idx);
+  snprintf (tbuff, sizeof (tbuff), "%d%c%zu", ci, MSG_ARGS_RS, idx);
   connSendMessage (uimusicq->conn, ROUTE_MAIN,
       MSG_MUSICQ_MOVE_DOWN, tbuff);
 
@@ -241,7 +241,7 @@ uimusicqTogglePauseProcess (uimusicq_t *uimusicq)
 
   ci = uimusicq->musicqManageIdx;
 
-  snprintf (tbuff, sizeof (tbuff), "%d%c%lu", ci, MSG_ARGS_RS, idx);
+  snprintf (tbuff, sizeof (tbuff), "%d%c%zu", ci, MSG_ARGS_RS, idx);
   connSendMessage (uimusicq->conn, ROUTE_MAIN,
       MSG_MUSICQ_TOGGLE_PAUSE, tbuff);
   logProcEnd (LOG_PROC, "uimusicqTogglePauseProcess", "");
@@ -265,7 +265,7 @@ uimusicqRemoveProcess (uimusicq_t *uimusicq)
 
   ci = uimusicq->musicqManageIdx;
 
-  snprintf (tbuff, sizeof (tbuff), "%d%c%lu", ci, MSG_ARGS_RS, idx);
+  snprintf (tbuff, sizeof (tbuff), "%d%c%zu", ci, MSG_ARGS_RS, idx);
   connSendMessage (uimusicq->conn, ROUTE_MAIN,
       MSG_MUSICQ_REMOVE, tbuff);
   logProcEnd (LOG_PROC, "uimusicqRemoveProcess", "");
@@ -324,7 +324,7 @@ uimusicqQueueDanceProcess (uimusicq_t *uimusicq, ssize_t idx)
   ci = uimusicq->musicqManageIdx;
 
   if (idx >= 0) {
-    snprintf (tbuff, sizeof (tbuff), "%d%c%lu", ci, MSG_ARGS_RS, idx);
+    snprintf (tbuff, sizeof (tbuff), "%d%c%zu", ci, MSG_ARGS_RS, idx);
     connSendMessage (uimusicq->conn, ROUTE_MAIN, MSG_QUEUE_DANCE, tbuff);
   }
   logProcEnd (LOG_PROC, "uimusicqQueueDanceProcess", "");

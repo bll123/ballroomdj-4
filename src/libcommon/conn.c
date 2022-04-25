@@ -143,8 +143,7 @@ connSendMessage (conn_t *conn, bdjmsgroute_t route,
   if (route >= ROUTE_MAX) {
     return;
   }
-  if (socketInvalid (conn [route].sock) ||
-     conn [route].sock < 0) {
+  if (socketInvalid (conn [route].sock)) {
     return;
   }
 

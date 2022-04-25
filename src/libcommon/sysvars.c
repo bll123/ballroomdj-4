@@ -134,7 +134,6 @@ sysvarsInit (const char *argv0)
 #endif
 
 
-  strlcpy (sysvars [SV_OS_EXEC_EXT], "", SV_MAX_SZ);
 #if _lib_uname
   rc = uname (&ubuf);
   assert (rc == 0);
@@ -142,6 +141,7 @@ sysvarsInit (const char *argv0)
   strlcpy (sysvars [SV_OSDISP], ubuf.sysname, SV_MAX_SZ);
   strlcpy (sysvars [SV_OSVERS], ubuf.version, SV_MAX_SZ);
   strlcpy (sysvars [SV_OSBUILD], "", SV_MAX_SZ);
+  strlcpy (sysvars [SV_OS_EXEC_EXT], "", SV_MAX_SZ);
 #endif
 #if _lib_RtlGetVersion
   NTSTATUS RtlGetVersion (PRTL_OSVERSIONINFOEXW lpVersionInformation);

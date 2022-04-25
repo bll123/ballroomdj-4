@@ -9,16 +9,13 @@ add_library (libbdj4ui SHARED
   osuilinuxutils.c
   osuimacutils.m
   osuiwinutils.c
-  uimusicq.c
-  uiplayer.c
-  uisongsel.c
   uiutils.c
 )
 target_include_directories (libbdj4ui
   PUBLIC ${GTK_INCLUDE_DIRS}
 )
 target_link_libraries (libbdj4ui
-  libbdj4 libbdj4common
+  libbdj4gtk libbdj4 libbdj4common
   ${GTK_LDFLAGS}
   m
 )

@@ -60,7 +60,6 @@ target_include_directories (libwebsrv
   PRIVATE "${MONGOOSE_INC_DIR}"
 )
 add_library (liblocatebdj3 STATIC locatebdj3.c)
-add_library (libdylib STATIC dylib.c)
 
 add_library (libbdj4launcher STATIC
   libcommon/filedata.c
@@ -76,6 +75,7 @@ add_subdirectory (libpli)
 add_subdirectory (libvol)
 add_subdirectory (libbdj4ui)
 add_subdirectory (libbdj4gtk)
+add_subdirectory (libbdj4uigtk)
 
 add_executable (bdj4locatebdj3 bdj4locatebdj3.c)
 target_link_libraries (bdj4locatebdj3
@@ -264,7 +264,7 @@ addWinSockLibrary (bdj4starterui)
 
 add_executable (bdj4playerui bdj4playerui.c)
 target_link_libraries (bdj4playerui
-  libbdj4ui libbdj4gtk libbdj4 libbdj4common
+  libbdj4uigtk libbdj4ui libbdj4gtk libbdj4 libbdj4common
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}
   m
@@ -274,7 +274,7 @@ addWinSockLibrary (bdj4playerui)
 
 add_executable (bdj4manageui bdj4manageui.c)
 target_link_libraries (bdj4manageui
-  libbdj4ui libbdj4gtk libbdj4 libbdj4common
+  libbdj4uigtk libbdj4ui libbdj4gtk libbdj4 libbdj4common
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}
   m
