@@ -1060,6 +1060,10 @@ playerSeek (playerdata_t *playerData, ssize_t reqpos)
   ssize_t       seekpos;
   prepqueue_t   *pq = playerData->currentSong;
 
+  if (pq == NULL) {
+    return;
+  }
+
   /* if duration is adjusted for speed, so is reqpos                */
   /* need to change it back to something the player will understand */
   /* the 'playTimeStart' position is already relative to songstart  */
