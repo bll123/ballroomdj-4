@@ -482,8 +482,13 @@ uiplayerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 
   logProcBegin (LOG_PROC, "uiplayerProcessMsg");
 
+  logMsg (LOG_DBG, LOG_MSGS, "uiplayer: got: from:%d/%s route:%d/%s msg:%d/%s args:%s",
+      routefrom, msgRouteDebugText (routefrom),
+      route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
+
   switch (route) {
     case ROUTE_NONE:
+    case ROUTE_MANAGEUI:
     case ROUTE_PLAYERUI: {
       switch (msg) {
         case MSG_PLAYER_STATE: {
@@ -664,7 +669,7 @@ uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args)
 
   /* repeat */
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
-  if (uiplayer->repeatImg != NULL) {
+  if (p != NULL && uiplayer->repeatImg != NULL) {
     uiplayer->repeatLock = true;
     if (atol (p)) {
       pathbldMakePath (tbuff, sizeof (tbuff), "button_repeat", ".svg",

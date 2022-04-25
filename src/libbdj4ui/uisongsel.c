@@ -89,7 +89,6 @@ uisongselInit (conn_t *conn, musicdb_t *musicdb,
 void
 uisongselFree (uisongsel_t *uisongsel)
 {
-
   logProcBegin (LOG_PROC, "uisongselFree");
 
   if (uisongsel != NULL) {
@@ -348,5 +347,3 @@ uisongselCreateGenreList (uisongsel_t *uisongsel)
       _("All Genres"));
   logProcEnd (LOG_PROC, "uisongselCreateGenreList", "");
 }
-
-

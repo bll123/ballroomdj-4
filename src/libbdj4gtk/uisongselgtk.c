@@ -558,8 +558,9 @@ uisongselScrollEvent (GtkWidget* tv, GdkEventScroll *event, gpointer udata)
   if (event->direction == GDK_SCROLL_UP) {
     --uisongsel->idxStart;
   }
-  g_signal_emit_by_name (GTK_RANGE (uiw->songselScrollbar),
-      "change-value", NULL, (double) uisongsel->idxStart, uisongsel, NULL);
+  /* using g_signal_emit_by_name causes memory corruption */
+  uisongselScroll (GTK_RANGE (uiw->songselScrollbar), 0,
+      (double) uisongsel->idxStart, uisongsel);
 
   logProcEnd (LOG_PROC, "uisongselScrollEvent", "");
   return TRUE;
@@ -608,8 +609,8 @@ uisongselProcessTreeSize (GtkWidget* w, GtkAllocation* allocation,
 
     /* force a redraw */
     gtk_adjustment_set_value (adjustment, 0.0);
-    g_signal_emit_by_name (GTK_RANGE (uiw->songselScrollbar),
-        "change-value", NULL, 0.0, uisongsel, NULL);
+    /* using g_signal_emit_by_name causes memory corruption */
+    uisongselScroll (GTK_RANGE (uiw->songselScrollbar), 0, 0.0, uisongsel);
 
     adjustment = gtk_range_get_adjustment (GTK_RANGE (uiw->songselScrollbar));
     /* the step increment does not work correctly with smooth scrolling */
@@ -623,8 +624,9 @@ uisongselProcessTreeSize (GtkWidget* w, GtkAllocation* allocation,
     logMsg (LOG_DBG, LOG_SONGSEL, "populate: tree size change");
     uisongselPopulateData (uisongsel);
 
-    g_signal_emit_by_name (GTK_RANGE (uiw->songselScrollbar),
-        "change-value", NULL, (double) uisongsel->idxStart, uisongsel, NULL);
+    /* using g_signal_emit_by_name causes memory corruption */
+    uisongselScroll (GTK_RANGE (uiw->songselScrollbar), 0,
+        (double) uisongsel->idxStart, uisongsel);
   }
   logProcEnd (LOG_PROC, "uisongselProcessTreeSize", "");
 }

@@ -1822,6 +1822,7 @@ mainSendPlayerStatus (maindata_t *mainData, char *playerResp)
 
   strlcat (rbuff, " }", sizeof (rbuff));
 
+
   connSendMessage (mainData->conn, ROUTE_REMCTRL, MSG_PLAYER_STATUS_DATA, rbuff);
   connSendMessage (mainData->conn, ROUTE_PLAYERUI, MSG_PLAYER_STATUS_DATA, statusbuff);
   connSendMessage (mainData->conn, ROUTE_MANAGEUI, MSG_PLAYER_STATUS_DATA, statusbuff);

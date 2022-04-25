@@ -100,6 +100,7 @@ uimusicqProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 
   switch (route) {
     case ROUTE_NONE:
+    case ROUTE_MANAGEUI:
     case ROUTE_PLAYERUI: {
       switch (msg) {
         case MSG_MUSIC_QUEUE_DATA: {

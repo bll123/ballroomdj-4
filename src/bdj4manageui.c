@@ -653,7 +653,8 @@ static int
 manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     bdjmsgmsg_t msg, char *args, void *udata)
 {
-  manageui_t       *manage = udata;
+  manageui_t  *manage = udata;
+  char        *targs;
 
   logProcBegin (LOG_PROC, "manageProcessMsg");
 
@@ -661,10 +662,12 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
       routefrom, msgRouteDebugText (routefrom),
       route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
 
+  targs = strdup (args);
   uiplayerProcessMsg (routefrom, route, msg, args, manage->slplayer);
-  uiplayerProcessMsg (routefrom, route, msg, args, manage->mmplayer);
+  uiplayerProcessMsg (routefrom, route, msg, targs, manage->mmplayer);
   uimusicqProcessMsg (routefrom, route, msg, args, manage->slmusicq);
-  uimusicqProcessMsg (routefrom, route, msg, args, manage->mmmusicq);
+  uimusicqProcessMsg (routefrom, route, msg, targs, manage->mmmusicq);
+  free (targs);
 
   switch (route) {
     case ROUTE_NONE:
