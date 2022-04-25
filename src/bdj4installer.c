@@ -167,7 +167,7 @@ static void installerMutagenInstall (installer_t *installer);
 static void installerCleanup (installer_t *installer);
 static void installerDisplayText (installer_t *installer, char *pfx, char *txt);
 static void installerScrollToEnd (GtkWidget *w, GtkAllocation *retAllocSize, gpointer udata);;
-static void installerGetTargetFname (installer_t *installer, char *buff, size_t len);
+static void installerGetTargetSaveFname (installer_t *installer, char *buff, size_t len);
 static void installerGetBDJ3Fname (installer_t *installer, char *buff, size_t len);
 static void installerTemplateCopy (char *from, char *to);
 static void installerSetrundir (installer_t *installer, const char *dir);
@@ -292,13 +292,21 @@ main (int argc, char *argv[])
   strlcpy (installer.hostname, sysvarsGetStr (SV_HOSTNAME),
       sizeof (installer.hostname));
 
-  installerGetTargetFname (&installer, tbuff, sizeof (tbuff));
+  installerGetTargetSaveFname (&installer, tbuff, sizeof (tbuff));
   fh = fileopOpen (tbuff, "r");
   if (fh != NULL) {
     /* installer.target is pointing at buff */
     fgets (buff, sizeof (buff), fh);
     stringTrim (buff);
     fclose (fh);
+  }
+
+  /* target is not set, choose a proper default */
+  if (! *installer.target) {
+    char  *home;
+
+    home = sysvarsGetStr (SV_HOME);
+    snprintf (buff, sizeof (buff), "%s/%s", home, BDJ4_NAME);
   }
 
   /* this only works if the installer.target is pointing at an existing */
@@ -1086,7 +1094,7 @@ installerSaveTargetDir (installer_t *installer)
   }
   fileopMakeDir (tbuff);
 
-  installerGetTargetFname (installer, tbuff, sizeof (tbuff));
+  installerGetTargetSaveFname (installer, tbuff, sizeof (tbuff));
 
   fh = fileopOpen (tbuff, "w");
   if (fh != NULL) {
@@ -1111,6 +1119,7 @@ installerCopyStart (installer_t *installer)
 {
   /* CONTEXT: installer: status message */
   installerDisplayText (installer, "-- ", _("Copying files."));
+  installerDisplayText (installer, "   ", _("Please wait..."));
 
   /* the unpackdir is not necessarily the same as the current dir */
   /* on mac os, they are different */
@@ -1863,7 +1872,7 @@ installerMutagenInstall (installer_t *installer)
   if (installer->pythoninstalled) {
     char  *tptr;
 
-    tptr = sysvarsGetStr (SV_PYTHON_PIP_PATH);
+    tptr = sysvarsGetStr (SV_PATH_PYTHON_PIP);
     if (tptr != NULL && *tptr) {
       pipnm = tptr;
     }
@@ -1932,7 +1941,7 @@ installerScrollToEnd (GtkWidget *w, GtkAllocation *retAllocSize, gpointer udata)
 }
 
 static void
-installerGetTargetFname (installer_t *installer, char *buff, size_t sz)
+installerGetTargetSaveFname (installer_t *installer, char *buff, size_t sz)
 {
   if (isWindows ()) {
     snprintf (buff, sz, "%s/AppData/Roaming/BDJ4/%s",
@@ -2078,7 +2087,7 @@ installerCheckPackages (installer_t *installer)
   char  tbuff [MAXPATHLEN];
   char  *tmp;
 
-  tmp = sysvarsGetStr (SV_VLC_PATH);
+  tmp = sysvarsGetStr (SV_PATH_VLC);
 
   if (*tmp) {
     /* CONTEXT: installer: display of package status */
@@ -2096,7 +2105,7 @@ installerCheckPackages (installer_t *installer)
     installer->vlcinstalled = false;
   }
 
-  tmp = sysvarsGetStr (SV_PYTHON_PATH);
+  tmp = sysvarsGetStr (SV_PATH_PYTHON);
 
   if (*tmp) {
     /* CONTEXT: installer: display of package status */

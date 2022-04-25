@@ -39,13 +39,13 @@ audiotagReadTags (char *ffn)
   char        * data;
   char        * targv [5];
 
-  targv [0] = sysvarsGetStr (SV_PYTHON_PATH);
+  targv [0] = sysvarsGetStr (SV_PATH_PYTHON);
   targv [1] = sysvarsGetStr (SV_PYTHON_MUTAGEN);
   targv [2] = ffn;
   targv [3] = NULL;
 
   data = malloc (AUDIOTAG_TAG_BUFF_SIZE);
-  osProcessPipe (targv, OS_PROC_WAIT, data, AUDIOTAG_TAG_BUFF_SIZE);
+  osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, data, AUDIOTAG_TAG_BUFF_SIZE);
   return data;
 }
 

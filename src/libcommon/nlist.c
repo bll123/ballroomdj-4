@@ -194,7 +194,11 @@ nlistGetNum (nlist_t *list, nlistidx_t lidx)
 {
   ssize_t         value = LIST_VALUE_INVALID;
   listkey_t       key;
-  nlistidx_t       idx;
+  nlistidx_t      idx;
+
+  if (list == NULL) {
+    return LIST_VALUE_INVALID;
+  }
 
   key.idx = lidx;
   idx = listGetIdx (list, &key);
@@ -212,6 +216,10 @@ nlistGetDouble (nlist_t *list, nlistidx_t lidx)
   listkey_t      key;
   nlistidx_t      idx;
 
+  if (list == NULL) {
+    return LIST_DOUBLE_INVALID;
+  }
+
   key.idx = lidx;
   idx = listGetIdx (list, &key);
   if (idx >= 0) {
@@ -227,6 +235,10 @@ nlistGetList (nlist_t *list, nlistidx_t lidx)
   void            *value = NULL;
   listkey_t       key;
   nlistidx_t      idx;
+
+  if (list == NULL) {
+    return NULL;
+  }
 
   key.idx = lidx;
   idx = listGetIdx (list, &key);

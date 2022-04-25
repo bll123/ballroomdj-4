@@ -181,6 +181,7 @@ main (int argc, char *argv[])
   starter.supportInFname = NULL;
   starter.supportOutFname = NULL;
   starter.webclient = NULL;
+  starter.supporttb = NULL;
 
   for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
     starter.processes [i] = NULL;
@@ -291,7 +292,9 @@ starterClosingCallback (void *udata, programstate_t programState)
     gtk_widget_destroy (starter->window);
   }
 
-  uiutilsTextBoxFree (starter->supporttb);
+  if (starter->supporttb != NULL) {
+    uiutilsTextBoxFree (starter->supporttb);
+  }
   uiutilsSpinboxTextFree (&starter->profilesel);
 
   pathbldMakePath (fn, sizeof (fn),

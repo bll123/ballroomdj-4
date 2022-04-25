@@ -9,8 +9,6 @@
 #include <ctype.h>
 #include <math.h>
 
-#include <gtk/gtk.h>
-
 #include "bdjvarsdf.h"
 #include "dance.h"
 #include "log.h"

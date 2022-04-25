@@ -55,6 +55,11 @@ main (int argc, char *argv [])
     }
   }
 
+  if (! isbdj4) {
+    fprintf (stderr, "not started with launcher\n");
+    exit (1);
+  }
+
   sysvarsInit (argv [0]);
   localeInit ();
   bdjoptInit ();

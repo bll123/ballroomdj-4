@@ -564,3 +564,43 @@ osSetEnv (const char *name, const char *value)
 
 #pragma GCC diagnostic pop
 #pragma clang diagnostic pop
+
+
+char *
+osRegistryGet (char *key, char *name)
+{
+  char    *rval = NULL;
+
+#if _lib_RegOpenKeyEx
+  DWORD   dwRet;
+  HKEY    hkey;
+  LSTATUS rc;
+  unsigned char buff [512];
+  DWORD   len = 512;
+
+  *buff = '\0';
+
+  rc = RegOpenKeyEx (
+      HKEY_CURRENT_USER,
+      key,
+      0,
+      KEY_QUERY_VALUE,
+      &hkey
+      );
+
+  dwRet = RegQueryValueEx (
+      hkey,
+      name,
+      NULL,
+      NULL,
+      buff,
+      &len
+      );
+
+  rval = strdup (buff);
+
+  RegCloseKey (hkey);
+#endif
+
+  return rval;
+}

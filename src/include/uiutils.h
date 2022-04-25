@@ -2,6 +2,7 @@
 #define INC_UIUTILS_H
 
 #include <stdbool.h>
+#include <gtk/gtk.h>
 
 #include "nlist.h"
 #include "slist.h"

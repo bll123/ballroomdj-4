@@ -308,7 +308,6 @@ install (TARGETS
 
 if (APPLE)
   macUpdateRPath (bdj4)
-  macUpdateRPath (bdj4cli)
   macUpdateRPath (bdj4dbupdate)
   macUpdateRPath (bdj4g)
   macUpdateRPath (bdj4info)

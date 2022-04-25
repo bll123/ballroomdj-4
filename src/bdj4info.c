@@ -16,6 +16,38 @@
 int
 main (int argc, char *argv [])
 {
+  int     c = 0;
+  int     option_index = 0;
+  bool    isbdj4 = false;
+
+  static struct option bdj_options [] = {
+    { "bdj4info",   no_argument,        NULL,   0 },
+    { "bdj4",       no_argument,        NULL,   'B' },
+    /* ignored */
+    { "nodetach",     no_argument,      NULL,   0 },
+    { "debugself",    no_argument,      NULL,   0 },
+    { "msys",         no_argument,      NULL,   0 },
+    { "theme",        required_argument,NULL,   0 },
+    { NULL,         0,                  NULL,   0 }
+  };
+
+  while ((c = getopt_long_only (argc, argv, "g:r:u:", bdj_options, &option_index)) != -1) {
+    switch (c) {
+      case 'B': {
+        isbdj4 = true;
+        break;
+      }
+      default: {
+        break;
+      }
+    }
+  }
+
+  if (! isbdj4) {
+    fprintf (stderr, "not started with launcher\n");
+    exit (1);
+  }
+
   sysvarsInit (argv [0]);
   localeInit ();
 

@@ -111,8 +111,8 @@
      borderopacity="1.0"
      id="base"
      inkscape:current-layer="layer1"
-     inkscape:cx="9"
-     inkscape:cy="8.9791183"
+     inkscape:cx="9.0000002"
+     inkscape:cy="8.9791185"
      inkscape:guide-bbox="true"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
@@ -138,16 +138,13 @@
      inkscape:groupmode="layer"
      inkscape:label="Layer 1"
      transform="translate(-5.4503245,-439.18771)">
-    <text
-       xml:space="preserve"
-       style="font-size:27.6475px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;stroke-width:1.03678;fill:#ffa600;fill-opacity:1"
-       x="54.965942"
-       y="765.18561"
-       id="text1707"><tspan
-         sodipodi:role="line"
-         id="tspan1705"
-         style="font-size:27.6475px;stroke-width:1.03678;fill:#ffa600;fill-opacity:1"
-         x="54.965942"
-         y="765.18561">+</tspan></text>
+    <g
+       aria-label="+"
+       id="text1707"
+       style="font-size:27.6475px;line-height:1.25;letter-spacing:0px;word-spacing:0px;fill:#ffa600;stroke-width:1.03678">
+      <path
+         d="m 67.682712,747.85192 v 7.51937 h 7.519364 v 2.29495 h -7.519364 v 7.51937 h -2.267959 v -7.51937 h -7.519364 v -2.29495 h 7.519364 v -7.51937 z"
+         id="path833" />
+    </g>
   </g>
 </svg>

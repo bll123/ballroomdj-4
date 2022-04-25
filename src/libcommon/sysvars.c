@@ -57,7 +57,6 @@ static sysvarsdesc_t sysvarsdesc [SV_MAX] = {
   [SV_CA_FILE] = { "CA-File" },
   [SV_FORUM_HOST] = { "Host-Forum" },
   [SV_FORUM_URI] = { "URI-Forum" },
-  [SV_GETCONF_PATH] = { "Path-getconf" },
   [SV_HOME] = { "Path-Home" },
   [SV_HOSTNAME] = { "Hostname" },
   [SV_LOCALE] = { "Locale" },
@@ -67,23 +66,25 @@ static sysvarsdesc_t sysvarsdesc [SV_MAX] = {
   [SV_MOBMQ_URL] = { "Mobmq-URL" },
   [SV_OSBUILD] = { "OS-Build" },
   [SV_OSDISP] = { "OS-Display" },
+  [SV_OS_EXEC_EXT] = { "OS-Exec_ext" },
   [SV_OSNAME] = { "OS-Name" },
   [SV_OSVERS] = { "OS-Version" },
-  [SV_OS_EXEC_EXT] = { "OS-Exec_ext" },
+  [SV_PATH_GETCONF] = { "Path-getconf" },
+  [SV_PATH_PYTHON] = { "Path-python" },
+  [SV_PATH_PYTHON_PIP] = { "Path-pip" },
+  [SV_PATH_VLC] = { "Path-vlc" },
+  [SV_PATH_XDGUSERDIR] = { "Path-xdg-user-dir" },
   [SV_PYTHON_DOT_VERSION] = { "Version-Python-Dot" },
   [SV_PYTHON_MUTAGEN] = { "Path-mutagen" },
-  [SV_PYTHON_PATH] = { "Path-python" },
-  [SV_PYTHON_PIP_PATH] = { "Path-pip" },
   [SV_PYTHON_VERSION] = { "Version-Python" },
   [SV_SHLIB_EXT] = { "Sharedlib-Extension" },
   [SV_SUPPORT_HOST] = { "Host-Support" },
-  [SV_SUPPORT_URI] = { "URI-Support" },
   [SV_SUPPORTMSG_HOST] = { "Host-Support-Msg" },
   [SV_SUPPORTMSG_URI] = { "URI-Support-Msg" },
-  [SV_USER] = { "User" },
-  [SV_USER_MUNGE] = { "User-Munge" },
+  [SV_SUPPORT_URI] = { "URI-Support" },
   [SV_USER_AGENT] = { "User-Agent" },
-  [SV_VLC_PATH] = { "Path-vlc" },
+  [SV_USER_MUNGE] = { "User-Munge" },
+  [SV_USER] = { "User" },
   [SV_WEB_HOST] = { "Host-Web" },
 };
 
@@ -342,9 +343,10 @@ sysvarsInit (const char *argv0)
       "%s/%s ( https://ballroomdj.org/ )", BDJ4_NAME,
       sysvars [SV_BDJ4_VERSION]);
 
-  strlcpy (sysvars [SV_PYTHON_PATH], "", SV_MAX_SZ);
-  strlcpy (sysvars [SV_PYTHON_PIP_PATH], "", SV_MAX_SZ);
-  strlcpy (sysvars [SV_GETCONF_PATH], "", SV_MAX_SZ);
+  strlcpy (sysvars [SV_PATH_PYTHON], "", SV_MAX_SZ);
+  strlcpy (sysvars [SV_PATH_PYTHON_PIP], "", SV_MAX_SZ);
+  strlcpy (sysvars [SV_PATH_GETCONF], "", SV_MAX_SZ);
+  strlcpy (sysvars [SV_PATH_XDGUSERDIR], "", SV_MAX_SZ);
   strlcpy (sysvars [SV_TEMP_A], "", SV_MAX_SZ);
 
   tptr = strdup (getenv ("PATH"));
@@ -358,16 +360,20 @@ sysvarsInit (const char *argv0)
     pathNormPath (tbuff, sizeof (tbuff));
     stringTrimChar (tbuff, '/');
 
-    if (*sysvars [SV_PYTHON_PIP_PATH] == '\0') {
-      checkForFile (tbuff, SV_PYTHON_PIP_PATH, "pip3", "pip", NULL);
+    if (*sysvars [SV_PATH_PYTHON_PIP] == '\0') {
+      checkForFile (tbuff, SV_PATH_PYTHON_PIP, "pip3", "pip", NULL);
     }
 
-    if (*sysvars [SV_PYTHON_PATH] == '\0') {
-      checkForFile (tbuff, SV_PYTHON_PATH, "python3", "python", NULL);
+    if (*sysvars [SV_PATH_PYTHON] == '\0') {
+      checkForFile (tbuff, SV_PATH_PYTHON, "python3", "python", NULL);
     }
 
-    if (*sysvars [SV_GETCONF_PATH] == '\0') {
-      checkForFile (tbuff, SV_GETCONF_PATH, "getconf", NULL);
+    if (*sysvars [SV_PATH_GETCONF] == '\0') {
+      checkForFile (tbuff, SV_PATH_GETCONF, "getconf", NULL);
+    }
+
+    if (*sysvars [SV_PATH_XDGUSERDIR] == '\0') {
+      checkForFile (tbuff, SV_PATH_XDGUSERDIR, "xdg-user-dir", NULL);
     }
 
     if (*sysvars [SV_TEMP_A] == '\0') {
@@ -378,7 +384,7 @@ sysvarsInit (const char *argv0)
   }
   free (tptr);
 
-  strlcpy (sysvars [SV_VLC_PATH], "", SV_MAX_SZ);
+  strlcpy (sysvars [SV_PATH_VLC], "", SV_MAX_SZ);
   if (isWindows ()) {
     strlcpy (tbuff, "C:/Program Files/VideoLAN/VLC", sizeof (tbuff));
   }
@@ -389,7 +395,7 @@ sysvarsInit (const char *argv0)
     strlcpy (tbuff, "/usr/lib/x86_64-linux-gnu/libvlc.so.5", sizeof (tbuff));
   }
   if (fileopIsDirectory (tbuff) || fileopFileExists (tbuff)) {
-    strlcpy (sysvars [SV_VLC_PATH], tbuff, SV_MAX_SZ);
+    strlcpy (sysvars [SV_PATH_VLC], tbuff, SV_MAX_SZ);
   }
 
   if (strcmp (sysvars [SV_OSNAME], "darwin") == 0) {
@@ -429,11 +435,11 @@ sysvarsInit (const char *argv0)
     }
   }
 
-  if (*sysvars [SV_PYTHON_PATH]) {
+  if (*sysvars [SV_PATH_PYTHON]) {
     char    *data;
     int     j;
 
-    data = svRunProgram (sysvars [SV_PYTHON_PATH], "--version");
+    data = svRunProgram (sysvars [SV_PATH_PYTHON], "--version");
 
     p = NULL;
     if (data != NULL) {
@@ -503,7 +509,7 @@ sysvarsInit (const char *argv0)
       lsysvars [SVL_NUM_PROC] = atoi (tptr);
     }
   } else {
-    tptr = svRunProgram (sysvars [SV_GETCONF_PATH], "_NPROCESSORS_ONLN");
+    tptr = svRunProgram (sysvars [SV_PATH_GETCONF], "_NPROCESSORS_ONLN");
     if (tptr != NULL) {
       lsysvars [SVL_NUM_PROC] = atoi (tptr);
     }
@@ -636,18 +642,12 @@ checkForFile (char *path, int idx, ...)
 static char *
 svRunProgram (char *prog, char *arg)
 {
-  char    *targv [3];
   char    *data;
   char    tbuff [100];
 
-  targv [0] = prog;
-  targv [1] = arg;
-  targv [2] = NULL;
   snprintf (tbuff, sizeof (tbuff), "%s-%d-%d.txt",
       SV_TMP_FILE, getpid(), gtmpcount++);
-  osProcessStart (targv, OS_PROC_WAIT, NULL, tbuff);
-  data = filedataReadAll (tbuff, NULL);
-  fileopDelete (tbuff);
+  data = filedataGetProgOutput (prog, arg, tbuff);
   return data;
 }
 

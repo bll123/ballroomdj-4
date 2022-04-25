@@ -4,7 +4,7 @@
 AUDIOSINK
 ..
 DIRMUSIC
-../home/music/m
+..
 PLAYER
 ..libplivlc
 SHUTDOWNSCRIPT

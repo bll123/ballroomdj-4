@@ -56,17 +56,6 @@ if [[ $tag == windows ]]; then
   cp -f packages/zstd*/LICENSE ${licdir}/zstd.LICENSE
 fi
 
-# create manifests
-
-echo "-- building software"
-echo "   === currently off ==="
-# (
-#   cd src
-#   make distclean
-#   make > ../tmp/pkg-build.log 2>&1
-#   make tclean > /dev/null 2>&1
-# )
-
 (cd src; make tclean > /dev/null 2>&1)
 
 # the .po files will be built on linux; the sync to the other
@@ -147,7 +136,7 @@ _HERE_
   mv -f ${nm}.n ${nm}
 
   nm=templates/bdjconfig.txt.p
-  sed -e '/UITHEME/ { n ; s/.*/..Windows-10-Dark/ }' ${nm} > ${nm}.n
+  sed -e '/UI_THEME/ { n ; s/.*/..Windows-10-Dark/ }' ${nm} > ${nm}.n
   mv -f ${nm}.n ${nm}
 fi # is windows
 

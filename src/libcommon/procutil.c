@@ -117,7 +117,7 @@ procutilStart (const char *fn, ssize_t profile, ssize_t loglvl,
 
   process->processHandle = NULL;
   flags = OS_PROC_DETACH;
-  if ((procutilflag & PROCUTIL_NO_DETACH) == PROCUTIL_NO_DETACH) {
+  if ((procutilflag & PROCUTIL_NO_DETACH) != PROCUTIL_NO_DETACH) {
     flags = OS_PROC_NONE;
   }
   process->pid = osProcessStart (targv, flags, &process->processHandle, NULL);

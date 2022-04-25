@@ -50,9 +50,10 @@ pid_t         osProcessPipe (char *targv[], int flags, char *rbuff, size_t sz);
 void          * osToFSFilename (const char *fname);
 char          * osFromFSFilename (const void *fname);
 dirhandle_t   * osDirOpen (const char *dir);
-char *        osDirIterate (dirhandle_t *dirh);
+char          * osDirIterate (dirhandle_t *dirh);
 void          osDirClose (dirhandle_t *dirh);
 int           osSetEnv (const char *name, const char *value);
+char          *osRegistryGet (char *key, char *name);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 }
