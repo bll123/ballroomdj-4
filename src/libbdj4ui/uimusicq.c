@@ -12,7 +12,6 @@
 #include "log.h"
 #include "musicq.h"
 #include "playlist.h"
-#include "progstate.h"
 #include "tagdef.h"
 #include "uimusicq.h"
 #include "uiutils.h"
@@ -22,7 +21,7 @@ static int    uimusicqMoveUpRepeat (void *udata);
 static int    uimusicqMoveDownRepeat (void *udata);
 
 uimusicq_t *
-uimusicqInit (progstate_t *progstate, conn_t *conn, musicdb_t *musicdb,
+uimusicqInit (conn_t *conn, musicdb_t *musicdb,
     dispsel_t *dispsel,
     int uimusicqflags, dispselsel_t dispselType)
 {
@@ -34,7 +33,6 @@ uimusicqInit (progstate_t *progstate, conn_t *conn, musicdb_t *musicdb,
   uimusicq = malloc (sizeof (uimusicq_t));
   assert (uimusicq != NULL);
 
-  uimusicq->progstate = progstate;
   uimusicq->conn = conn;
   uimusicq->dispsel = dispsel;
   uimusicq->musicdb = musicdb;

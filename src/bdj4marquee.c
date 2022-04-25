@@ -87,6 +87,7 @@ typedef struct {
   bool            mqIconifyAction : 1;
   bool            setPrior : 1;
   bool            mqShowInfo : 1;
+  bool            hideonstart : 1;
 } marquee_t;
 
 #define MARQUEE_EXIT_WAIT_COUNT   20
@@ -134,6 +135,7 @@ main (int argc, char *argv[])
   char            *mqfont;
   char            tbuff [MAXPATHLEN];
   int             flags;
+  int             startflags;
 
 
   marquee.progstate = progstateInit ("marquee");
@@ -166,6 +168,7 @@ main (int argc, char *argv[])
   marquee.setPrior = false;
   marquee.marginTotal = 0;
   marquee.fontAdjustment = 0.0;
+  marquee.hideonstart = false;
 
 #if _define_SIGHUP
   procutilCatchSignal (marqueeSigHandler, SIGHUP);
@@ -177,7 +180,11 @@ main (int argc, char *argv[])
 #endif
 
   flags = BDJ4_INIT_NO_DB_LOAD | BDJ4_INIT_NO_DATAFILE_LOAD;
-  bdj4startup (argc, argv, NULL, "mq", ROUTE_MARQUEE, flags);
+  startflags = bdj4startup (argc, argv, NULL, "mq", ROUTE_MARQUEE, flags);
+  if (bdjoptGetNum (OPT_P_HIDE_MARQUEE_ON_START) ||
+     (startflags & BDJ4_INIT_HIDE_MARQUEE) == BDJ4_INIT_HIDE_MARQUEE) {
+    marquee.hideonstart = true;
+  }
 
   listenPort = bdjvarsGetNum (BDJVL_MARQUEE_PORT);
   marquee.mqLen = bdjoptGetNum (OPT_P_MQQLEN);
@@ -421,7 +428,7 @@ marqueeActivate (GApplication *app, gpointer userdata)
 
   marqueeSetFont (marquee, nlistGetNum (marquee->options, MQ_FONT_SZ));
 
-  if (bdjoptGetNum (OPT_P_HIDE_MARQUEE_ON_START)) {
+  if (marquee->hideonstart) {
     gtk_window_iconify (GTK_WINDOW (window));
     marquee->isIconified = true;
   }
@@ -539,7 +546,7 @@ marqueeProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 
   logProcBegin (LOG_PROC, "marqueeProcessMsg");
 
-  logMsg (LOG_DBG, LOG_MSGS, "got: from:%ld/%s route:%ld/%s msg:%ld/%s args:%s",
+  logMsg (LOG_DBG, LOG_MSGS, "got: from:%d/%s route:%d/%s msg:%d/%s args:%s",
       routefrom, msgRouteDebugText (routefrom),
       route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
 

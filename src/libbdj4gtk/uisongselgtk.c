@@ -51,7 +51,6 @@ typedef struct {
   int               lastTreeSize;
   double            lastRowHeight;
   int               maxRows;
-  int               songselflags;
 } uisongselgtk_t;
 
 static void uisongselInitializeStore (uisongsel_t *uisongsel);
@@ -99,7 +98,6 @@ uisongselUIInit (uisongsel_t *uisongsel)
   uiw->lastRowHeight = 0.0;
   uiw->maxRows = 0;
   uisongsel->uiWidgetData = uiw;
-
 }
 
 void
@@ -120,6 +118,7 @@ uisongselActivate (uisongsel_t *uisongsel, GtkWidget *parentwin)
   GtkWidget         *widget;
   GtkAdjustment     *adjustment;
   slist_t           *sellist;
+  char              tbuff [200];
 
   logProcBegin (LOG_PROC, "uisongselActivate");
 
@@ -139,9 +138,17 @@ uisongselActivate (uisongsel_t *uisongsel, GtkWidget *parentwin)
   gtk_box_pack_start (GTK_BOX (uiw->vbox), hbox,
       FALSE, FALSE, 0);
 
-  if ((uisongsel->songselflags & UISONGSEL_FLAGS_NO_Q_BUTTON) != UISONGSEL_FLAGS_NO_Q_BUTTON) {
-    /* CONTEXT: queue a song to be played */
-    widget = uiutilsCreateButton (_("Queue"), NULL,
+  if (uisongsel->dispselType == DISP_SEL_SONGSEL ||
+      uisongsel->dispselType == DISP_SEL_REQUEST) {
+    if (uisongsel->dispselType == DISP_SEL_REQUEST) {
+      /* CONTEXT: queue a song to be played */
+      strlcpy (tbuff, _("Queue"), sizeof (tbuff));
+    }
+    if (uisongsel->dispselType == DISP_SEL_SONGSEL) {
+      /* CONTEXT: select a song to be added to the song list */
+      strlcpy (tbuff, _("Select"), sizeof (tbuff));
+    }
+    widget = uiutilsCreateButton (tbuff, NULL,
         uisongselQueueProcessSignal, uisongsel);
     gtk_box_pack_start (GTK_BOX (hbox), widget,
         FALSE, FALSE, 0);

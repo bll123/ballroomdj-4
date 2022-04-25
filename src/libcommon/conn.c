@@ -83,12 +83,12 @@ connConnect (conn_t *conn, bdjmsgroute_t route)
     return;
   }
 
-  if (conn [route].sock == INVALID_SOCKET &&
+  if (socketInvalid (conn [route].sock) &&
       connports [route] != 0) {
     conn [route].sock = sockConnect (connports [route], &err, 1000);
   }
 
-  if (conn [route].sock != INVALID_SOCKET) {
+  if (! socketInvalid (conn [route].sock)) {
     sockhSendMessage (conn [route].sock, conn [route].routefrom, route,
         MSG_HANDSHAKE, NULL);
     conn [route].connected = true;
@@ -102,7 +102,7 @@ connDisconnect (conn_t *conn, bdjmsgroute_t route)
     return;
   }
 
-  if (conn [route].sock != INVALID_SOCKET) {
+  if (! socketInvalid (conn [route].sock)) {
     sockhSendMessage (conn [route].sock, conn [route].routefrom, route,
         MSG_SOCKET_CLOSE, NULL);
     sockClose (conn [route].sock);
@@ -143,7 +143,8 @@ connSendMessage (conn_t *conn, bdjmsgroute_t route,
   if (route >= ROUTE_MAX) {
     return;
   }
-  if (conn [route].sock == INVALID_SOCKET) {
+  if (socketInvalid (conn [route].sock) ||
+     conn [route].sock < 0) {
     return;
   }
 
@@ -210,4 +211,3 @@ connHaveHandshake (conn_t *conn, bdjmsgroute_t route)
 
   return conn [route].handshake;
 }
-

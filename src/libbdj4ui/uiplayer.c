@@ -105,7 +105,6 @@ uiplayerActivate (uiplayer_t *uiplayer)
 {
   char            tbuff [MAXPATHLEN];
   GtkWidget       *image = NULL;
-  GtkAdjustment   *adjustment = NULL;
   GtkWidget       *hbox;
   GtkWidget       *tbox;
   GtkWidget       *widget;
@@ -225,17 +224,8 @@ uiplayerActivate (uiplayer_t *uiplayer)
   gtk_size_group_add_widget (sgB, uiplayer->speedDisplayLab);
 
   /* size group C */
-  adjustment = gtk_adjustment_new (0.0, 70.0, 130.0, 0.1, 1.0, 0.0);
-  uiplayer->speedScale = gtk_scale_new (GTK_ORIENTATION_HORIZONTAL, adjustment);
-  assert (uiplayer->speedScale != NULL);
-  gtk_widget_set_size_request (uiplayer->speedScale, 200, 5);
-  gtk_scale_set_draw_value (GTK_SCALE (uiplayer->speedScale), FALSE);
-  gtk_scale_set_has_origin (GTK_SCALE (uiplayer->speedScale), TRUE);
-  gtk_range_set_value (GTK_RANGE (uiplayer->speedScale), 100.0);
-  uiutilsSetCss (uiplayer->speedScale,
-      "scale, trough { min-height: 5px; }");
-  gtk_box_pack_end (GTK_BOX (hbox), uiplayer->speedScale,
-      FALSE, FALSE, 0);
+  uiplayer->speedScale = uiutilsCreateScale (70.0, 130.0, 0.1, 1.0, 100.0);
+  gtk_box_pack_end (GTK_BOX (hbox), uiplayer->speedScale, FALSE, FALSE, 0);
   gtk_size_group_add_widget (sgC, uiplayer->speedScale);
   g_signal_connect (uiplayer->speedScale, "change-value", G_CALLBACK (uiplayerSpeedProcess), uiplayer);
 
@@ -295,17 +285,8 @@ uiplayerActivate (uiplayer_t *uiplayer)
       FALSE, FALSE, 0);
 
   /* size group C */
-  adjustment = gtk_adjustment_new (0.0, 0.0, 180000.0, 100.0, 1000.0, 0.0);
-  uiplayer->seekScale = gtk_scale_new (GTK_ORIENTATION_HORIZONTAL, adjustment);
-  assert (uiplayer->seekScale != NULL);
-  gtk_widget_set_size_request (uiplayer->seekScale, 200, 5);
-  gtk_scale_set_draw_value (GTK_SCALE (uiplayer->seekScale), FALSE);
-  gtk_scale_set_has_origin (GTK_SCALE (uiplayer->seekScale), TRUE);
-  gtk_range_set_value (GTK_RANGE (uiplayer->seekScale), 0.0);
-  uiutilsSetCss (uiplayer->seekScale,
-      "scale, trough { min-height: 5px; }");
-  gtk_box_pack_end (GTK_BOX (hbox), uiplayer->seekScale,
-      FALSE, FALSE, 0);
+  uiplayer->seekScale = uiutilsCreateScale (0.0, 180000.0, 100.0, 1000.0, 0.0);
+  gtk_box_pack_end (GTK_BOX (hbox), uiplayer->seekScale, FALSE, FALSE, 0);
   gtk_size_group_add_widget (sgC, uiplayer->seekScale);
   g_signal_connect (uiplayer->seekScale, "change-value", G_CALLBACK (uiplayerSeekProcess), uiplayer);
 
@@ -415,17 +396,8 @@ uiplayerActivate (uiplayer_t *uiplayer)
   gtk_size_group_add_widget (sgB, uiplayer->volumeDisplayLab);
 
   /* size group C */
-  adjustment = gtk_adjustment_new (0.0, 0.0, 100.0, 0.1, 1.0, 0.0);
-  uiplayer->volumeScale = gtk_scale_new (GTK_ORIENTATION_HORIZONTAL, adjustment);
-  assert (uiplayer->volumeScale != NULL);
-  gtk_widget_set_size_request (uiplayer->volumeScale, 200, 5);
-  gtk_scale_set_draw_value (GTK_SCALE (uiplayer->volumeScale), FALSE);
-  gtk_scale_set_has_origin (GTK_SCALE (uiplayer->volumeScale), TRUE);
-  gtk_range_set_value (GTK_RANGE (uiplayer->volumeScale), 0.0);
-  uiutilsSetCss (uiplayer->volumeScale,
-      "scale, trough { min-height: 5px; }");
-  gtk_box_pack_end (GTK_BOX (hbox), uiplayer->volumeScale,
-      FALSE, FALSE, 0);
+  uiplayer->volumeScale = uiutilsCreateScale (0.0, 100.0, 0.1, 1.0, 0.0);
+  gtk_box_pack_end (GTK_BOX (hbox), uiplayer->volumeScale, FALSE, FALSE, 0);
   gtk_size_group_add_widget (sgC, uiplayer->volumeScale);
   g_signal_connect (uiplayer->volumeScale, "change-value", G_CALLBACK (uiplayerVolumeProcess), uiplayer);
 
@@ -896,6 +868,7 @@ uiplayerSpeedProcess (GtkRange *range, GtkScrollType *scroll, gdouble value, gpo
   }
   uiplayer->speedLock = true;
   mstimeset (&uiplayer->speedLockTimeout, UIPLAYER_LOCK_TIME_WAIT);
+  value = uiutilsScaleEnforceMax (uiplayer->speedScale, value);
   snprintf (tbuff, sizeof (tbuff), "%3.0f", value);
   gtk_label_set_label (GTK_LABEL (uiplayer->speedDisplayLab), tbuff);
   logProcEnd (LOG_PROC, "uiplayerSpeedProcess", "");
@@ -917,6 +890,8 @@ uiplayerSeekProcess (GtkRange *range, GtkScrollType *scroll, gdouble value, gpoi
   }
   uiplayer->seekLock = true;
   mstimeset (&uiplayer->seekLockTimeout, UIPLAYER_LOCK_TIME_WAIT);
+
+  value = uiutilsScaleEnforceMax (uiplayer->seekScale, value);
   position = (ssize_t) round (value);
 
   tmutilToMS (position, tbuff, sizeof (tbuff));
@@ -942,6 +917,8 @@ uiplayerVolumeProcess (GtkRange *range, GtkScrollType *scroll, gdouble value, gp
   }
   uiplayer->volumeLock = true;
   mstimeset (&uiplayer->volumeLockTimeout, UIPLAYER_LOCK_TIME_WAIT);
+
+  value = uiutilsScaleEnforceMax (uiplayer->volumeScale, value);
   snprintf (tbuff, sizeof (tbuff), "%3.0f", value);
   gtk_label_set_label (GTK_LABEL (uiplayer->volumeDisplayLab), tbuff);
   logProcEnd (LOG_PROC, "uiplayerVolumeProcess", "");

@@ -122,7 +122,7 @@ sockhProcessMain (sockserver_t *sockserver, sockProcessMsg_t msgProc,
       logMsg (LOG_DBG, LOG_SOCKET, "got message: %s", rval);
 
       msgDecode (msgbuff, &routefrom, &route, &msg, args, sizeof (args));
-      logMsg (LOG_DBG, LOG_SOCKET, "got: route:%ld/%s msg:%ld/%s args:%s",
+      logMsg (LOG_DBG, LOG_SOCKET, "got: route:%d/%s msg:%d/%s args:%s",
           route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
       switch (msg) {
         case MSG_NULL: {

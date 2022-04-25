@@ -63,6 +63,7 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
     { "profile",      required_argument,NULL,   'p' },
     { "debug",        required_argument,NULL,   'd' },
     { "startlog",     no_argument,      NULL,   's' },
+    { "hidemarquee",  no_argument,      NULL,   'h' },
     /* debug options */
     { "nostart",      no_argument,      NULL,   'n' },
     { "nomarquee",    no_argument,      NULL,   'm' },
@@ -139,6 +140,10 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
       }
       case 's': {
         startlog = true;
+        break;
+      }
+      case 'h': {
+        flags |= BDJ4_INIT_HIDE_MARQUEE;
         break;
       }
       default: {

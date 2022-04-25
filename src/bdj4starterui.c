@@ -754,7 +754,7 @@ starterStartPlayer (GtkButton *b, gpointer udata)
 
   starterCheckProfile (starter);
   starter->processes [ROUTE_PLAYERUI] = procutilStartProcess (
-      ROUTE_PLAYERUI, "bdj4playerui", PROCUTIL_DETACH);
+      ROUTE_PLAYERUI, "bdj4playerui", PROCUTIL_DETACH, NULL);
 }
 
 static void
@@ -764,7 +764,7 @@ starterStartManage (GtkButton *b, gpointer udata)
 
   starterCheckProfile (starter);
   starter->processes [ROUTE_MANAGEUI] = procutilStartProcess (
-      ROUTE_MANAGEUI, "bdj4manageui", PROCUTIL_DETACH);
+      ROUTE_MANAGEUI, "bdj4manageui", PROCUTIL_DETACH, NULL);
 }
 
 static void
@@ -774,7 +774,7 @@ starterStartRaffleGames (GtkButton *b, gpointer udata)
 
 //  starterCheckProfile (starter);
 //  starter->processes [ROUTE_RAFFLE] = procutilStartProcess (
-//      ROUTE_RAFFLE, "bdj4raffle");
+//      ROUTE_RAFFLE, "bdj4raffle", NULL);
 }
 
 static void
@@ -784,7 +784,7 @@ starterStartConfig (GtkButton *b, gpointer udata)
 
   starterCheckProfile (starter);
   starter->processes [ROUTE_CONFIGUI] = procutilStartProcess (
-      ROUTE_CONFIGUI, "bdj4configui", PROCUTIL_DETACH);
+      ROUTE_CONFIGUI, "bdj4configui", PROCUTIL_DETACH, NULL);
 }
 
 static void

@@ -14,6 +14,7 @@ add_library (libbdj4gtk SHARED
   uigtklink.c
   uigtknotebook.c
   uigtkpbar.c
+  uigtkscale.c
   uigtkspinbox.c
   uigtktextbox.c
   uigtktreeview.c

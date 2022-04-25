@@ -23,17 +23,18 @@ typedef struct {
 
 int         procutilExists (procutil_t *process);
 procutil_t  * procutilStart (const char *fn, ssize_t profile, ssize_t loglvl,
-                int detachflag);
+    int detachflag, char *aargs []);
 int         procutilKill (procutil_t *process, bool force);
 void        procutilTerminate (pid_t pid, bool force);
 void        procutilFree (procutil_t *process);
 void        procutilCatchSignal (void (*sigHandler)(int), int signal);
 void        procutilIgnoreSignal (int signal);
 void        procutilDefaultSignal (int signal);
-procutil_t  * procutilStartProcess (bdjmsgroute_t route, char *fname, int detachflag);
+procutil_t  * procutilStartProcess (bdjmsgroute_t route, char *fname,
+    int detachflag, char *aargs []);
 void        procutilStopProcess (procutil_t *process, conn_t *conn,
-                bdjmsgroute_t route, bool force);
+    bdjmsgroute_t route, bool force);
 void        procutilForceStop (procutil_t *process, int flags,
-                bdjmsgroute_t route);
+    bdjmsgroute_t route);
 
 #endif /* INC_procutil_H */

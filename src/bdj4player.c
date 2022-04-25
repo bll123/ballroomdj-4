@@ -306,7 +306,7 @@ playerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
   logProcBegin (LOG_PROC, "playerProcessMsg");
   playerData = (playerdata_t *) udata;
 
-  logMsg (LOG_DBG, LOG_MSGS, "got: from:%ld/%s route:%ld/%s msg:%ld/%s args:%s",
+  logMsg (LOG_DBG, LOG_MSGS, "got: from:%d/%s route:%d/%s msg:%d/%s args:%s",
       routefrom, msgRouteDebugText (routefrom),
       route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
 
@@ -1006,6 +1006,8 @@ playerSendPauseAtEndState (playerdata_t *playerData)
   snprintf (tbuff, sizeof (tbuff), "%d", playerData->pauseAtEnd);
   connSendMessage (playerData->conn, ROUTE_PLAYERUI,
       MSG_PLAY_PAUSEATEND_STATE, tbuff);
+  connSendMessage (playerData->conn, ROUTE_MANAGEUI,
+      MSG_PLAY_PAUSEATEND_STATE, tbuff);
 }
 
 static void
@@ -1321,6 +1323,8 @@ playerSetPlayerState (playerdata_t *playerData, playerstate_t pstate)
   connSendMessage (playerData->conn, ROUTE_MAIN,
       MSG_PLAYER_STATE, tbuff);
   connSendMessage (playerData->conn, ROUTE_PLAYERUI,
+      MSG_PLAYER_STATE, tbuff);
+  connSendMessage (playerData->conn, ROUTE_MANAGEUI,
       MSG_PLAYER_STATE, tbuff);
   /* any time there is a change of player state, send the status */
   playerSendStatus (playerData);

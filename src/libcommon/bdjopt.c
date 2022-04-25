@@ -27,14 +27,13 @@ static bdjopt_t   *bdjopt = NULL;
 static datafilekey_t bdjoptglobaldfkeys[] = {
   { "AUTOORGANIZE",       OPT_G_AUTOORGANIZE,       VALUE_NUM, convBoolean, -1 },
   { "BPM",                OPT_G_BPM,                VALUE_NUM, bdjoptConvBPM, -1 },
-  { "CHANGESPACE",        OPT_G_AO_CHANGESPACE,     VALUE_NUM, convBoolean, -1 },
   { "DEBUGLVL",           OPT_G_DEBUGLVL,           VALUE_NUM, NULL, -1 },
   { "ITUNESSUPPORT",      OPT_G_ITUNESSUPPORT,      VALUE_NUM, convBoolean, -1 },
   { "LOADDANCEFROMGENRE", OPT_G_LOADDANCEFROMGENRE, VALUE_NUM, convBoolean, -1 },
-  { "MUSICDIRDFLT",       OPT_G_MUSICDIRDFLT,       VALUE_STR, NULL, -1 },
   { "PATHFMT",            OPT_G_AO_PATHFMT,         VALUE_STR, NULL, -1 },
   { "PLAYERQLEN",         OPT_G_PLAYERQLEN,         VALUE_NUM, NULL, -1 },
   { "REMCONTROLHTML",     OPT_G_REMCONTROLHTML,     VALUE_STR, NULL, -1 },
+  { "REMOVESPACE",        OPT_G_AO_REMOVE_SPACE,    VALUE_NUM, convBoolean, -1 },
   { "WRITETAGS",          OPT_G_WRITETAGS,          VALUE_NUM, bdjoptConvWriteTags, -1 },
 };
 #define BDJOPT_GLOBAL_DFKEY_COUNT (sizeof (bdjoptglobaldfkeys) / sizeof (datafilekey_t))

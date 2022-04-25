@@ -74,12 +74,13 @@ procutilExists (procutil_t *process)
 }
 
 procutil_t *
-procutilStart (const char *fn, ssize_t profile, ssize_t loglvl, int procutilflag)
+procutilStart (const char *fn, ssize_t profile, ssize_t loglvl,
+    int procutilflag, char *aargs [])
 {
   procutil_t  * process;
   char        sprof [40];
   char        sloglvl [40];
-  char        * targv [15];
+  char        * targv [30];
   int         idx;
   int         flags;
 
@@ -101,6 +102,17 @@ procutilStart (const char *fn, ssize_t profile, ssize_t loglvl, int procutilflag
   targv [idx++] = "--debug";
   targv [idx++] = sloglvl;
   targv [idx++] = "--bdj4";
+
+  if (aargs != NULL) {
+    char    *p;
+    int     aidx;
+
+    aidx = 0;
+    while ((p = aargs [aidx++]) != NULL) {
+      targv [idx++] = p;
+    }
+  }
+
   targv [idx++] = NULL;
 
   process->processHandle = NULL;
@@ -226,7 +238,8 @@ procutilDefaultSignal (int sig)
 /* these next three routines are for management of processes */
 
 procutil_t *
-procutilStartProcess (bdjmsgroute_t route, char *fname, int detachflag)
+procutilStartProcess (bdjmsgroute_t route, char *fname, int detachflag,
+    char *aargs [])
 {
   char      tbuff [MAXPATHLEN];
   procutil_t *process = NULL;
@@ -237,7 +250,7 @@ procutilStartProcess (bdjmsgroute_t route, char *fname, int detachflag)
   pathbldMakePath (tbuff, sizeof (tbuff),
       fname, sysvarsGetStr (SV_OS_EXEC_EXT), PATHBLD_MP_EXECDIR);
   process = procutilStart (tbuff, sysvarsGetNum (SVL_BDJIDX),
-      bdjoptGetNum (OPT_G_DEBUGLVL), detachflag);
+      bdjoptGetNum (OPT_G_DEBUGLVL), detachflag, aargs);
   if (isWindows ()) {
     logMsg (LOG_DBG, LOG_BASIC, "PATH=%s\n", getenv ("PATH"));
   }

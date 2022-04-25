@@ -9,7 +9,6 @@
 #include "level.h"
 #include "musicdb.h"
 #include "nlist.h"
-#include "progstate.h"
 #include "rating.h"
 #include "songfilter.h"
 #include "sortopt.h"
@@ -25,13 +24,8 @@ enum {
   FILTER_DISP_MAX,
 };
 
-enum {
-  UISONGSEL_FLAGS_NONE        = 0x00,
-  UISONGSEL_FLAGS_NO_Q_BUTTON = 0x01,
-};
-
 typedef struct {
-  progstate_t       *progstate;
+  unsigned long     junk;       // something is trashing this first value
   conn_t            *conn;
   ssize_t           idxStart;
   ilistidx_t        danceIdx;
@@ -47,7 +41,6 @@ typedef struct {
   musicdb_t         *musicdb;
   dispselsel_t      dispselType;
   double            dfilterCount;
-  int               songselflags;
   /* filter data */
   uiutilsdropdown_t sortbysel;
   uiutilsdropdown_t filterdancesel;
@@ -64,9 +57,9 @@ typedef struct {
 } uisongsel_t;
 
 /* uisongsel.c */
-uisongsel_t * uisongselInit (progstate_t *progstate, conn_t *conn,
+uisongsel_t * uisongselInit (conn_t *conn,
     musicdb_t *musicdb, dispsel_t *dispsel, nlist_t *opts,
-    songfilterpb_t filterFlags, int songselflags, dispselsel_t dispselType);
+    songfilterpb_t filterFlags, dispselsel_t dispselType);
 void  uisongselFree (uisongsel_t *uisongsel);
 void  uisongselMainLoop (uisongsel_t *uisongsel);
 void  uisongselFilterDanceProcess (uisongsel_t *uisongsel, ssize_t idx);

@@ -396,6 +396,7 @@ static void     confuiMobmqPortChg (GtkSpinButton *sb, gpointer udata);
 static bool     confuiMobmqNameChg (void *edata, void *udata);
 static bool     confuiMobmqTitleChg (void *edata, void *udata);
 static void     confuiUpdateRemctrlQrcode (configui_t *confui);
+static gboolean confuiRemoveSpaceChg (GtkSwitch *sw, gboolean value, gpointer udata);
 static gboolean confuiRemctrlChg (GtkSwitch *sw, gboolean value, gpointer udata);
 static void     confuiRemctrlPortChg (GtkSpinButton *sb, gpointer udata);
 static char     * confuiMakeQRCodeFile (configui_t *confui, char *title, char *uri);
@@ -1203,9 +1204,10 @@ confuiActivate (GApplication *app, gpointer userdata)
       bdjoptGetNum (OPT_G_AUTOORGANIZE));
 
   /* CONTEXT: config: remove spaces when renaming audio files */
-  confuiMakeItemSwitch (confui, vbox, sg, _("Remove Spaces"),
-      CONFUI_WIDGET_AO_CHG_SPACE, OPT_G_AO_CHANGESPACE,
-      bdjoptGetNum (OPT_G_AO_CHANGESPACE));
+  widget = confuiMakeItemSwitch (confui, vbox, sg, _("Remove Spaces"),
+      CONFUI_WIDGET_AO_CHG_SPACE, OPT_G_AO_REMOVE_SPACE,
+      bdjoptGetNum (OPT_G_AO_REMOVE_SPACE));
+  g_signal_connect (widget, "state-set", G_CALLBACK (confuiRemoveSpaceChg), confui);
 
   /* edit dances */
   vbox = confuiMakeNotebookTab (confui, confui->notebook,
@@ -1613,7 +1615,7 @@ confuiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 
   logProcBegin (LOG_PROC, "confuiProcessMsg");
 
-  logMsg (LOG_DBG, LOG_MSGS, "got: from:%ld/%s route:%ld/%s msg:%ld/%s args:%s",
+  logMsg (LOG_DBG, LOG_MSGS, "got: from:%d/%s route:%d/%s msg:%d/%s args:%s",
       routefrom, msgRouteDebugText (routefrom),
       route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
 
@@ -2733,6 +2735,7 @@ confuiOrgPathSelect (GtkTreeView *tv, GtkTreePath *path,
 
   logProcBegin (LOG_PROC, "confuiOrgPathSelect");
   sval = confuiComboboxSelect (confui, path, CONFUI_COMBOBOX_AO_PATHFMT);
+  bdjoptSetStr (OPT_G_AO_PATHFMT, sval);
   confuiUpdateOrgExamples (confui, sval);
   logProcEnd (LOG_PROC, "confuiOrgPathSelect", "");
 }
@@ -2902,6 +2905,18 @@ confuiUpdateRemctrlQrcode (configui_t *confui)
     free (qruri);
   }
   logProcEnd (LOG_PROC, "confuiUpdateRemctrlQrcode", "");
+}
+
+static gboolean
+confuiRemoveSpaceChg (GtkSwitch *sw, gboolean value, gpointer udata)
+{
+  configui_t  *confui = udata;
+
+  logProcBegin (LOG_PROC, "confuiRemoveSpaceChg");
+  bdjoptSetNum (OPT_G_AO_REMOVE_SPACE, value);
+  confuiUpdateOrgExamples (confui, bdjoptGetStr (OPT_G_AO_PATHFMT));
+  logProcEnd (LOG_PROC, "confuiRemoveSpaceChg", "");
+  return FALSE;
 }
 
 static gboolean

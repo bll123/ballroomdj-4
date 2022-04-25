@@ -35,9 +35,9 @@ static datafilekey_t filterdisplaydfkeys [FILTER_DISP_MAX] = {
 static void uisongselSongfilterSetDance (uisongsel_t *uisongsel, ssize_t idx);
 
 uisongsel_t *
-uisongselInit (progstate_t *progstate, conn_t *conn, musicdb_t *musicdb,
+uisongselInit (conn_t *conn, musicdb_t *musicdb,
     dispsel_t *dispsel, nlist_t *options,
-    songfilterpb_t filterFlags, int songselflags, dispselsel_t dispselType)
+    songfilterpb_t filterFlags, dispselsel_t dispselType)
 {
   uisongsel_t   *uisongsel;
   char          tbuff [MAXPATHLEN];
@@ -47,10 +47,10 @@ uisongselInit (progstate_t *progstate, conn_t *conn, musicdb_t *musicdb,
   uisongsel = malloc (sizeof (uisongsel_t));
   assert (uisongsel != NULL);
 
+  uisongsel->junk = 0xaabbccdd;
   uisongsel->ratings = bdjvarsdfGet (BDJVDF_RATINGS);
   uisongsel->levels = bdjvarsdfGet (BDJVDF_LEVELS);
   uisongsel->status = bdjvarsdfGet (BDJVDF_STATUS);
-  uisongsel->progstate = progstate;
   uisongsel->conn = conn;
   uisongsel->dispsel = dispsel;
   uisongsel->musicdb = musicdb;

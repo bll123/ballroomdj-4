@@ -195,6 +195,11 @@ GtkWidget * uiutilsCreateMainWindow (GApplication *app, char *title,
     char *imagenm, void *cb, void *udata);
 GtkWidget * uiutilsCreateScrolledWindow (void);
 
+/* uigtkscale.c */
+GtkWidget * uiutilsCreateScale (double lower, double upper,
+    double stepinc, double pageinc, double initvalue);
+double    uiutilsScaleEnforceMax (GtkWidget *scale, double value);
+
 /* uigtkutils.c */
 void  uiutilsCleanup (void);
 void  uiutilsSetCss (GtkWidget *w, char *style);

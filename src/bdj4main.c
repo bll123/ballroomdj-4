@@ -59,7 +59,7 @@ typedef struct {
   progstate_t       *progstate;
   procutil_t        *processes [ROUTE_MAX];
   conn_t            *conn;
-  int               dbgflags;
+  int               startflags;
   musicdb_t         *musicdb;
   slist_t           *playlistCache;
   queue_t           *playlistQueue [MUSICQ_MAX];
@@ -106,7 +106,7 @@ static void     mainMusicqMove (maindata_t *mainData, char *args, mainmove_t dir
 static void     mainMusicqMoveTop (maindata_t *mainData, char *args);
 static void     mainMusicqClear (maindata_t *mainData, char *args);
 static void     mainMusicqRemove (maindata_t *mainData, char *args);
-static void     mainMusicqInsert (maindata_t *mainData, char *args);
+static void     mainMusicqInsert (maindata_t *mainData, bdjmsgroute_t route, char *args);
 static void     mainMusicqSetPlayback (maindata_t *mainData, char *args);
 static void     mainMusicqSwitch (maindata_t *mainData, musicqidx_t newidx);
 static void     mainPlaybackBegin (maindata_t *mainData);
@@ -176,7 +176,7 @@ main (int argc, char *argv[])
   procutilIgnoreSignal (SIGCHLD);
 #endif
 
-  mainData.dbgflags = bdj4startup (argc, argv, &mainData.musicdb,
+  mainData.startflags = bdj4startup (argc, argv, &mainData.musicdb,
       "m", ROUTE_MAIN, BDJ4_INIT_NONE);
   logProcBegin (LOG_PROC, "main");
 
@@ -409,7 +409,7 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_MUSICQ_INSERT: {
-          mainMusicqInsert (mainData, args);
+          mainMusicqInsert (mainData, routefrom, args);
           break;
         }
         case MSG_MUSICQ_SET_PLAYBACK: {
@@ -494,11 +494,11 @@ mainListeningCallback (void *tmaindata, programstate_t programState)
   logProcBegin (LOG_PROC, "mainListeningCallback");
 
   flags = PROCUTIL_DETACH;
-  if ((mainData->dbgflags & BDJ4_INIT_NO_DETACH) == BDJ4_INIT_NO_DETACH) {
+  if ((mainData->startflags & BDJ4_INIT_NO_DETACH) == BDJ4_INIT_NO_DETACH) {
     flags = PROCUTIL_NO_DETACH;
   }
 
-  if ((mainData->dbgflags & BDJ4_INIT_NO_START) != BDJ4_INIT_NO_START) {
+  if ((mainData->startflags & BDJ4_INIT_NO_START) != BDJ4_INIT_NO_START) {
     char          *script;
 
     script = bdjoptGetStr (OPT_M_STARTUPSCRIPT);
@@ -513,14 +513,14 @@ mainListeningCallback (void *tmaindata, programstate_t programState)
     }
 
     mainData->processes [ROUTE_PLAYER] = procutilStartProcess (
-        ROUTE_PLAYER, "bdj4player", flags);
+        ROUTE_PLAYER, "bdj4player", flags, NULL);
     if (bdjoptGetNum (OPT_P_MOBILEMARQUEE) != MOBILEMQ_OFF) {
       mainData->processes [ROUTE_MOBILEMQ] = procutilStartProcess (
-          ROUTE_MOBILEMQ, "bdj4mobmq", flags);
+          ROUTE_MOBILEMQ, "bdj4mobmq", flags, NULL);
     }
     if (bdjoptGetNum (OPT_P_REMOTECONTROL)) {
       mainData->processes [ROUTE_REMCTRL] = procutilStartProcess (
-          ROUTE_REMCTRL, "bdj4rc", flags);
+          ROUTE_REMCTRL, "bdj4rc", flags, NULL);
     }
   }
 
@@ -528,10 +528,18 @@ mainListeningCallback (void *tmaindata, programstate_t programState)
   theme = bdjoptGetStr (OPT_MP_MQ_THEME);
   osSetEnv ("GTK_THEME", theme);
 
-  if ((mainData->dbgflags & BDJ4_INIT_NO_START) != BDJ4_INIT_NO_START &&
-      (mainData->dbgflags & BDJ4_INIT_NO_MARQUEE) != BDJ4_INIT_NO_MARQUEE) {
+  if ((mainData->startflags & BDJ4_INIT_NO_START) != BDJ4_INIT_NO_START &&
+      (mainData->startflags & BDJ4_INIT_NO_MARQUEE) != BDJ4_INIT_NO_MARQUEE) {
+    char  *targv [2];
+    int   idx = 0;
+
+    if ((mainData->startflags & BDJ4_INIT_HIDE_MARQUEE) == BDJ4_INIT_HIDE_MARQUEE) {
+      targv [idx++] = "--hidemarquee";
+    }
+    targv [idx++] = NULL;
+
     mainData->processes [ROUTE_MARQUEE] = procutilStartProcess (
-        ROUTE_MARQUEE, "bdj4marquee", flags);
+        ROUTE_MARQUEE, "bdj4marquee", flags, targv);
   }
 
   logProcEnd (LOG_PROC, "mainListeningCallback", "");
@@ -548,7 +556,7 @@ mainConnectingCallback (void *tmaindata, programstate_t programState)
 
   logProcBegin (LOG_PROC, "mainConnectingCallback");
 
-  if ((mainData->dbgflags & BDJ4_INIT_NO_START) != BDJ4_INIT_NO_START) {
+  if ((mainData->startflags & BDJ4_INIT_NO_START) != BDJ4_INIT_NO_START) {
     if (! connIsConnected (mainData->conn, ROUTE_PLAYER)) {
       connConnect (mainData->conn, ROUTE_PLAYER);
     }
@@ -562,7 +570,7 @@ mainConnectingCallback (void *tmaindata, programstate_t programState)
         connConnect (mainData->conn, ROUTE_REMCTRL);
       }
     }
-    if ((mainData->dbgflags & BDJ4_INIT_NO_MARQUEE) != BDJ4_INIT_NO_MARQUEE) {
+    if ((mainData->startflags & BDJ4_INIT_NO_MARQUEE) != BDJ4_INIT_NO_MARQUEE) {
       if (! connIsConnected (mainData->conn, ROUTE_MARQUEE)) {
         connConnect (mainData->conn, ROUTE_MARQUEE);
       }
@@ -1386,7 +1394,7 @@ mainMusicqRemove (maindata_t *mainData, char *args)
 }
 
 static void
-mainMusicqInsert (maindata_t *mainData, char *args)
+mainMusicqInsert (maindata_t *mainData, bdjmsgroute_t routefrom, char *args)
 {
   int       mi;
   char      *tokstr = NULL;
@@ -1423,8 +1431,7 @@ mainMusicqInsert (maindata_t *mainData, char *args)
     }
     if (loc > 0) {
       snprintf (tbuff, sizeof (tbuff), "%zd", loc);
-      connSendMessage (mainData->conn, ROUTE_PLAYERUI,
-          MSG_SONG_SELECT, tbuff);
+      connSendMessage (mainData->conn, routefrom, MSG_SONG_SELECT, tbuff);
     }
   }
   logProcEnd (LOG_PROC, "mainMusicqInsert", "");
@@ -1817,6 +1824,7 @@ mainSendPlayerStatus (maindata_t *mainData, char *playerResp)
 
   connSendMessage (mainData->conn, ROUTE_REMCTRL, MSG_PLAYER_STATUS_DATA, rbuff);
   connSendMessage (mainData->conn, ROUTE_PLAYERUI, MSG_PLAYER_STATUS_DATA, statusbuff);
+  connSendMessage (mainData->conn, ROUTE_MANAGEUI, MSG_PLAYER_STATUS_DATA, statusbuff);
   connSendMessage (mainData->conn, ROUTE_MARQUEE, MSG_MARQUEE_TIMER, timerbuff);
   logProcEnd (LOG_PROC, "mainSendPlayerStatus", "");
 }
@@ -1885,6 +1893,7 @@ mainSendMusicqStatus (maindata_t *mainData, char *rbuff, size_t siz)
   strlcpy (statusbuff, tbuff, sizeof (statusbuff));
 
   connSendMessage (mainData->conn, ROUTE_PLAYERUI, MSG_MUSICQ_STATUS_DATA, statusbuff);
+  connSendMessage (mainData->conn, ROUTE_MANAGEUI, MSG_MUSICQ_STATUS_DATA, statusbuff);
   logProcEnd (LOG_PROC, "mainSendMusicqStatus", "");
 }
 

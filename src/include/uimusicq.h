@@ -7,7 +7,6 @@
 #include "conn.h"
 #include "dispsel.h"
 #include "musicq.h"
-#include "progstate.h"
 #include "uiutils.h"
 
 enum {
@@ -40,7 +39,6 @@ typedef struct {
 typedef struct {
   int             musicqPlayIdx;    // needed for clear queue
   int             musicqManageIdx;
-  progstate_t     *progstate;
   conn_t          *conn;
   dispsel_t       *dispsel;
   musicdb_t       *musicdb;
@@ -64,7 +62,7 @@ typedef struct {
 } musicqupdate_t;
 
 /* uimusicq.c */
-uimusicq_t  * uimusicqInit (progstate_t *progstate, conn_t *conn,
+uimusicq_t  * uimusicqInit (conn_t *conn,
     musicdb_t *musicdb, dispsel_t *dispsel,
     int uimusicqflags, dispselsel_t dispselType);
 void  uimusicqFree (uimusicq_t *uimusicq);

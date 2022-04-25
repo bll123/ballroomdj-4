@@ -35,14 +35,13 @@ typedef enum {
  */
 
 typedef enum {
-  OPT_G_AO_CHANGESPACE,           //   d s
+  OPT_G_AO_REMOVE_SPACE,          //   d s
   OPT_G_AO_PATHFMT,               //   d s
   OPT_G_AUTOORGANIZE,             //   d s
   OPT_G_BPM,                      // u d s
   OPT_G_DEBUGLVL,                 // u d s
   OPT_G_ITUNESSUPPORT,            //   d s
   OPT_G_LOADDANCEFROMGENRE,       //   d s
-  OPT_G_MUSICDIRDFLT,
   OPT_G_PLAYERQLEN,               // u d s
   OPT_G_REMCONTROLHTML,           //   d s
   OPT_G_WRITETAGS,                //   d s

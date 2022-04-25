@@ -204,12 +204,12 @@ main (int argc, char *argv[])
   }
 
   plui.uiplayer = uiplayerInit (plui.progstate, plui.conn, plui.musicdb);
-  plui.uimusicq = uimusicqInit (plui.progstate, plui.conn, plui.musicdb,
+  plui.uimusicq = uimusicqInit (plui.conn, plui.musicdb,
       plui.dispsel,
       UIMUSICQ_FLAGS_NONE, DISP_SEL_MUSICQ);
-  plui.uisongsel = uisongselInit (plui.progstate, plui.conn, plui.musicdb,
+  plui.uisongsel = uisongselInit (plui.conn, plui.musicdb,
       plui.dispsel, plui.options,
-      SONG_FILTER_FOR_PLAYBACK, UISONGSEL_FLAGS_NONE, DISP_SEL_REQUEST);
+      SONG_FILTER_FOR_PLAYBACK, DISP_SEL_REQUEST);
 
   /* register these after calling the sub-window initialization */
   /* then these will be run last, after the other closing callbacks */
@@ -456,7 +456,7 @@ pluiActivate (GApplication *app, gpointer userdata)
   plui->setPlaybackButton = widget;
 
   /* music queue tab */
-  widget = uimusicqActivate (plui->uimusicq, plui->window, 0);
+  widget = uimusicqActivate (plui->uimusicq, plui->window, MUSICQ_A);
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   str = bdjoptGetStr (OPT_P_QUEUE_NAME_A);
   tabLabel = gtk_label_new (str);
@@ -470,7 +470,7 @@ pluiActivate (GApplication *app, gpointer userdata)
   gtk_widget_show_all (hbox);
 
   /* queue B tab */
-  widget = uimusicqActivate (plui->uimusicq, plui->window, 1);
+  widget = uimusicqActivate (plui->uimusicq, plui->window, MUSICQ_B);
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   str = bdjoptGetStr (OPT_P_QUEUE_NAME_B);
   tabLabel = gtk_label_new (str);
@@ -590,7 +590,7 @@ pluiListeningCallback (void *udata, programstate_t programState)
 
   if (! lockExists (lockName (ROUTE_MANAGEUI), PATHBLD_MP_USEIDX)) {
     plui->processes [ROUTE_MAIN] = procutilStartProcess (
-        ROUTE_MAIN, "bdj4main", flags);
+        ROUTE_MAIN, "bdj4main", flags, NULL);
   }
   logProcEnd (LOG_PROC, "pluiListeningCallback", "");
   return true;
@@ -653,7 +653,7 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 
   logProcBegin (LOG_PROC, "pluiProcessMsg");
 
-  logMsg (LOG_DBG, LOG_MSGS, "got: from:%ld/%s route:%ld/%s msg:%ld/%s args:%s",
+  logMsg (LOG_DBG, LOG_MSGS, "got: from:%d/%s route:%d/%s msg:%d/%s args:%s",
       routefrom, msgRouteDebugText (routefrom),
       route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
 

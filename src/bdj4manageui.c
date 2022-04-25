@@ -218,25 +218,23 @@ main (int argc, char *argv[])
 
   manage.slplayer = uiplayerInit (manage.progstate, manage.conn,
       manage.musicdb);
-  manage.slmusicq = uimusicqInit (manage.progstate, manage.conn,
+  manage.slmusicq = uimusicqInit (manage.conn,
       manage.musicdb, manage.dispsel,
       UIMUSICQ_FLAGS_NO_QUEUE | UIMUSICQ_FLAGS_NO_TOGGLE_PAUSE,
       DISP_SEL_SONGLIST);
-  manage.slsongsel = uisongselInit (manage.progstate, manage.conn,
+  manage.slsongsel = uisongselInit (manage.conn,
       manage.musicdb, manage.dispsel, manage.options,
-      SONG_FILTER_FOR_SELECTION, UISONGSEL_FLAGS_NO_Q_BUTTON,
-      DISP_SEL_SONGSEL);
+      SONG_FILTER_FOR_SELECTION, DISP_SEL_SONGSEL);
 
   manage.mmplayer = uiplayerInit (manage.progstate, manage.conn,
       manage.musicdb);
-  manage.mmmusicq = uimusicqInit (manage.progstate, manage.conn,
+  manage.mmmusicq = uimusicqInit (manage.conn,
       manage.musicdb, manage.dispsel,
       UIMUSICQ_FLAGS_NO_QUEUE | UIMUSICQ_FLAGS_NO_TOGGLE_PAUSE,
       DISP_SEL_SONGLIST);
-  manage.mmsongsel = uisongselInit (manage.progstate, manage.conn,
+  manage.mmsongsel = uisongselInit (manage.conn,
       manage.musicdb, manage.dispsel, manage.options,
-      SONG_FILTER_FOR_SELECTION, UISONGSEL_FLAGS_NO_Q_BUTTON,
-      DISP_SEL_SONGSEL);
+      SONG_FILTER_FOR_SELECTION, DISP_SEL_MM);
 
   /* register these after calling the sub-window initialization */
   /* then these will be run last, after the other closing callbacks */
@@ -352,6 +350,9 @@ manageClosingCallback (void *udata, programstate_t programState)
   uimusicqFree (manage->mmmusicq);
   uisongselFree (manage->mmsongsel);
   uiutilsCleanup ();
+  if (manage->dblist != NULL) {
+    nlistFree (manage->dblist);
+  }
   if (manage->dbhelp != NULL) {
     nlistFree (manage->dbhelp);
   }
@@ -369,7 +370,7 @@ manageActivate (GApplication *app, gpointer userdata)
   GtkWidget           *hbox;
   GtkWidget           *vbox;
   GtkWidget           *slqueueb;
-  GtkWidget           *mmqueuea;
+//  GtkWidget           *mmqueuea;
   GtkWidget           *mmqueueb;
   uiutilstextbox_t    *tb;
   char                imgbuff [MAXPATHLEN];
@@ -409,14 +410,14 @@ manageActivate (GApplication *app, gpointer userdata)
   gtk_box_pack_start (GTK_BOX (vbox), manage->notebook, TRUE, TRUE, 0);
 
   /* song list editor: music queue tab */
-  widget = uimusicqActivate (manage->slmusicq, manage->window, 0);
+  widget = uimusicqActivate (manage->slmusicq, manage->window, MUSICQ_A);
   /* CONTEXT: name of song list editor tab */
   tabLabel = uiutilsCreateLabel (_("Song List"));
   uiutilsNotebookAppendPage (manage->notebook, widget, tabLabel);
 
   /* song list editor: queue b tab */
-  /* always hidden */
-  widget = uimusicqActivate (manage->slmusicq, manage->window, 1);
+  /* always hidden : used to play the music */
+  widget = uimusicqActivate (manage->slmusicq, manage->window, MUSICQ_B);
   /* this tab is never shown */
   tabLabel = uiutilsCreateLabel ("Queue B");
   uiutilsNotebookAppendPage (manage->notebook, widget, tabLabel);
@@ -435,7 +436,7 @@ manageActivate (GApplication *app, gpointer userdata)
   uiutilsNotebookAppendPage (manage->mainnotebook, vbox, tabLabel);
 
   /* music manager: player */
-  widget = uiplayerActivate (manage->slplayer);
+  widget = uiplayerActivate (manage->mmplayer);
   gtk_widget_set_hexpand (widget, TRUE);
   gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
 
@@ -443,23 +444,26 @@ manageActivate (GApplication *app, gpointer userdata)
   gtk_box_pack_start (GTK_BOX (vbox), manage->notebook, TRUE, TRUE, 0);
 
   /* these tabs are never shown */
+#if 0
   /* music manager: music queue tab */
-  widget = uimusicqActivate (manage->slmusicq, manage->window, 0);
+  /* ### might not need this tab */
+  widget = uimusicqActivate (manage->mmmusicq, manage->window, MUSICQ_A);
   tabLabel = uiutilsCreateLabel ("Queue A");
   uiutilsNotebookAppendPage (manage->notebook, widget, tabLabel);
   mmqueuea = widget;
+#endif
 
   /* music manager: queue b tab */
-  /* always hidden */
-  widget = uimusicqActivate (manage->slmusicq, manage->window, 1);
+  /* always hidden : used to play the music */
+  widget = uimusicqActivate (manage->mmmusicq, manage->window, MUSICQ_B);
   tabLabel = uiutilsCreateLabel ("Queue B");
   uiutilsNotebookAppendPage (manage->notebook, widget, tabLabel);
   mmqueueb = widget;
 
   /* music manager: song selection tab*/
-  widget = uisongselActivate (manage->slsongsel, manage->window);
+  widget = uisongselActivate (manage->mmsongsel, manage->window);
   /* CONTEXT: name of song selection tab */
-  tabLabel = uiutilsCreateLabel (_("Song Selection"));
+  tabLabel = uiutilsCreateLabel (_("Music Manager"));
   uiutilsNotebookAppendPage (manage->notebook, widget, tabLabel);
 
   /* update database */
@@ -523,7 +527,7 @@ manageActivate (GApplication *app, gpointer userdata)
 
   gtk_widget_show_all (manage->window);
   gtk_widget_hide (slqueueb);
-  gtk_widget_hide (mmqueuea);
+//  gtk_widget_hide (mmqueuea);
   gtk_widget_hide (mmqueueb);
 
   x = nlistGetNum (manage->options, PLUI_POSITION_X);
@@ -566,8 +570,11 @@ manageMainLoop (void *tmanage)
   }
 
   uiplayerMainLoop (manage->slplayer);
+  uiplayerMainLoop (manage->mmplayer);
   uimusicqMainLoop (manage->slmusicq);
+  uimusicqMainLoop (manage->mmmusicq);
   uisongselMainLoop (manage->slsongsel);
+  uisongselMainLoop (manage->mmsongsel);
 
   if (gKillReceived) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
@@ -589,8 +596,12 @@ manageListeningCallback (void *udata, programstate_t programState)
   }
 
   if (! lockExists (lockName (ROUTE_PLAYERUI), PATHBLD_MP_USEIDX)) {
+    char *targv [2];
+
+    targv [0] = "--hidemarquee";
+    targv [1] = NULL;
     manage->processes [ROUTE_MAIN] = procutilStartProcess (
-        ROUTE_MAIN, "bdj4main", flags);
+        ROUTE_MAIN, "bdj4main", flags, targv);
   }
   logProcEnd (LOG_PROC, "manageListeningCallback", "");
   return true;
@@ -651,7 +662,9 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
       route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
 
   uiplayerProcessMsg (routefrom, route, msg, args, manage->slplayer);
+  uiplayerProcessMsg (routefrom, route, msg, args, manage->mmplayer);
   uimusicqProcessMsg (routefrom, route, msg, args, manage->slmusicq);
+  uimusicqProcessMsg (routefrom, route, msg, args, manage->mmmusicq);
 
   switch (route) {
     case ROUTE_NONE:

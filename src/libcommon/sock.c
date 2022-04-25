@@ -137,7 +137,7 @@ sockServer (uint16_t listenPort, int *err)
 void
 sockClose (Sock_t sock)
 {
-  if (!socketInvalid (sock) && sock > 2) {
+  if (! socketInvalid (sock) && sock > 2) {
     close (sock);
     --sockCount;
   }
@@ -217,7 +217,7 @@ sockCheck (sockinfo_t *sockinfo)
   struct timeval    tv;
 
   if (sockinfo == NULL) {
-    return 0;
+    return INVALID_SOCKET;
   }
 
   FD_ZERO (&(sockinfo->readfds));
@@ -432,7 +432,12 @@ sockRead (Sock_t sock, size_t *rlen)
 int
 sockWriteStr (Sock_t sock, char *data, size_t len)
 {
-  int rc = sockWriteBinary (sock, data, len + 1);
+  int   rc;
+
+  if (socketInvalid (sock)) {
+    return 0;
+  }
+  rc = sockWriteBinary (sock, data, len + 1);
   return rc;
 }
 
@@ -441,6 +446,10 @@ sockWriteBinary (Sock_t sock, char *data, size_t dlen)
 {
   uint32_t    len;
   ssize_t     rc;
+
+  if (socketInvalid (sock)) {
+    return -1;
+  }
 
   len = (uint32_t) dlen;
   len = htonl (len);
@@ -474,6 +483,10 @@ sockReadData (Sock_t sock, char *data, size_t len)
   ssize_t       rc;
   mstime_t      mi;
   ssize_t       timeout;
+
+  if (socketInvalid (sock)) {
+    return -1;
+  }
 
   timeout = (ssize_t) (len * SOCK_READ_TIMEOUT);
   mstimestart (&mi);
@@ -538,6 +551,10 @@ sockWriteData (Sock_t sock, char *data, size_t len)
   Sock_t        sval;
   ssize_t       rc;
 
+  if (socketInvalid (sock)) {
+    return -1;
+  }
+
   logProcBegin (LOG_PROC, "sockWriteData");
   logMsg (LOG_DBG, LOG_SOCKET, "want to send: %zd bytes", len);
   /* ugh.  the write() call blocks on a non-blocking socket.  sigh. */
@@ -593,6 +610,10 @@ sockFlush (Sock_t sock)
   int       count;
   ssize_t   rc;
 
+  if (socketInvalid (sock)) {
+    return;
+  }
+
   count = 0;
   rc = recv (sock, data, len, 0);
   if (rc < 0) {
@@ -644,6 +665,9 @@ sockCanWrite (Sock_t sock)
   struct timeval    tv;
   int               rc;
 
+  if (socketInvalid (sock)) {
+    return INVALID_SOCKET;
+  }
 
   FD_ZERO (&readfds);
   FD_ZERO (&writefds);
@@ -662,7 +686,7 @@ sockCanWrite (Sock_t sock)
 #if _lib_WSAGetLastError
     logMsg (LOG_DBG, LOG_SOCKET, "select: wsa last-error:%d", WSAGetLastError());
 #endif
-    return -1;
+    return INVALID_SOCKET;
   }
   if (FD_ISSET (sock, &writefds) && ! FD_ISSET(sock, &readfds)) {
     return sock;
@@ -677,6 +701,10 @@ sockSetNonblocking (Sock_t sock)
 #if _lib_fcntl
   int         flags;
   int         rc;
+
+  if (socketInvalid (sock)) {
+    return -1;
+  }
 
   flags = fcntl (sock, F_GETFL, 0);
   if (flags < 0) {
@@ -701,39 +729,6 @@ sockSetNonblocking (Sock_t sock)
 #endif
   return 0;
 }
-
-#if 0
-
-static int
-sockSetBlocking (Sock_t sock)
-{
-#if _lib_fcntl
-  int         flags;
-  int         rc;
-
-  flags = fcntl (sock, F_GETFL, 0);
-  if (flags < 0) {
-    logError ("fcntl-get");
-    return -1;
-  }
-  flags &= ~O_NONBLOCK;
-  rc = fcntl (sock, F_SETFL, flags);
-  if (rc != 0) {
-    logError ("fcntl-set");
-    return -1;
-  }
-#endif
-#if _lib_ioctlsocket
-  unsigned long flag = 1;
-  if (ioctlsocket (sock, FIOBIO, &flag) < 0) {
-    logError ("ioctlsocket");
-  }
-#endif
-  return 0;
-}
-
-#endif
-
 
 static void
 sockInit (void)
@@ -766,6 +761,10 @@ sockSetOptions (Sock_t sock, int *err)
 {
   int                 opt = 1;
   int                 rc;
+
+  if (socketInvalid (sock)) {
+    return INVALID_SOCKET;
+  }
 
   rc = setsockopt (sock, SOL_SOCKET, SO_REUSEADDR, (const char *) &opt, sizeof (opt));
   if (rc != 0) {

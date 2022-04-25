@@ -492,7 +492,7 @@ dbupdateListeningCallback (void *tdbupdate, programstate_t programState)
 
   if ((dbupdate->dbflags & BDJ4_INIT_NO_START) != BDJ4_INIT_NO_START) {
     dbupdate->processes [ROUTE_DBTAG] = procutilStartProcess (
-        ROUTE_PLAYER, "bdj4dbtag", flags);
+        ROUTE_PLAYER, "bdj4dbtag", flags, NULL);
   }
 
   logProcEnd (LOG_PROC, "dbupdateListeningCallback", "");
