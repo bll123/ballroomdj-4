@@ -42,6 +42,7 @@
 #include "sysvars.h"
 #include "tmutil.h"
 #include "uiutils.h"
+#include "webclient.h"
 
 /* installation states */
 typedef enum {
@@ -70,6 +71,7 @@ typedef enum {
   INST_PYTHON_INSTALL,
   INST_MUTAGEN_CHECK,
   INST_MUTAGEN_INSTALL,
+  INST_REGISTER,
   INST_FINISH,
 } installstate_t;
 
@@ -163,6 +165,7 @@ static void installerPythonDownload (installer_t *installer);
 static void installerPythonInstall (installer_t *installer);
 static void installerMutagenCheck (installer_t *installer);
 static void installerMutagenInstall (installer_t *installer);
+static void installerRegister (installer_t *installer);
 
 static void installerCleanup (installer_t *installer);
 static void installerDisplayText (installer_t *installer, char *pfx, char *txt);
@@ -708,6 +711,10 @@ installerMainLoop (void *udata)
     }
     case INST_MUTAGEN_INSTALL: {
       installerMutagenInstall (installer);
+      break;
+    }
+    case INST_REGISTER: {
+      installerRegister (installer);
       break;
     }
     case INST_FINISH: {
@@ -1884,6 +1891,53 @@ installerMutagenInstall (installer_t *installer)
   snprintf (tbuff, sizeof (tbuff), _("%s installed."), "Mutagen");
   installerDisplayText (installer, "-- ", tbuff);
   installerCheckPackages (installer);
+
+  /* CONTEXT: installer: status message */
+  snprintf (tbuff, sizeof (tbuff), _("Registering %s."), BDJ4_NAME);
+  installerDisplayText (installer, "-- ", tbuff);
+  installer->delayCount = 0;
+  installer->delayState = INST_REGISTER;
+  installer->instState = INST_DELAY;
+}
+
+static void
+installerRegister (installer_t *installer)
+{
+  webclient_t   *webclient;
+  char          uri [200];
+  char          tbuff [2048];
+
+  if (strcmp (sysvarsGetStr (SV_USER), "bll") == 0 &&
+      strcmp (sysvarsGetStr (SV_BDJ4_RELEASELEVEL), "") != 0) {
+    return;
+  }
+
+  webclient = webclientAlloc (installer, NULL);
+  snprintf (uri, sizeof (uri), "%s/%s",
+      sysvarsGetStr (SV_SUPPORTMSG_HOST), sysvarsGetStr (SV_REGISTER_URI));
+  snprintf (tbuff, sizeof (tbuff),
+      "key=%s&version=%s&build=%s&builddate=%s&releaselevel=%s"
+      "&osname=%s&osdisp=%s&osvers=%s&osbuild=%s&pythonvers=%s"
+      "&user=%s&host=%s&new=%d&overwrite=%d&update=%d&convert=%d",
+      "9873453",
+      sysvarsGetStr (SV_BDJ4_VERSION),
+      sysvarsGetStr (SV_BDJ4_BUILD),
+      sysvarsGetStr (SV_BDJ4_BUILDDATE),
+      sysvarsGetStr (SV_BDJ4_RELEASELEVEL),
+      sysvarsGetStr (SV_OSNAME),
+      sysvarsGetStr (SV_OSDISP),
+      sysvarsGetStr (SV_OSVERS),
+      sysvarsGetStr (SV_OSBUILD),
+      sysvarsGetStr (SV_PYTHON_DOT_VERSION),
+      sysvarsGetStr (SV_USER),
+      sysvarsGetStr (SV_HOSTNAME),
+      installer->newinstall,
+      installer->reinstall,
+      ! installer->newinstall && ! installer->reinstall,
+      installer->convprocess
+      );
+  webclientPost (webclient, uri, tbuff);
+  webclientClose (webclient);
   installer->instState = INST_FINISH;
 }
 

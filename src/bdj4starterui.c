@@ -138,7 +138,6 @@ static void     starterSupportMsgHandler (GtkDialog *d, gint responseid, gpointe
 static void     starterSendFilesInit (startui_t *starter, char *dir);
 static void     starterSendFiles (startui_t *starter);
 static void     starterSendFile (startui_t *starter, char *origfn, char *fn);
-static void     starterSendFileCallback (void *userdata, char *resp, size_t len);
 
 static void     starterCompressFile (char *infn, char *outfn);
 static z_stream * starterGzipInit (char *out, int outsz);
@@ -522,7 +521,7 @@ starterMainLoop (void *tstarter)
       snprintf (starter->ident, sizeof (starter->ident), "%s-%s-%s",
           sysvarsGetStr (SV_USER_MUNGE), datestr, tmstr);
 
-      starter->webclient = webclientAlloc (starter, starterSendFileCallback);
+      starter->webclient = webclientAlloc (starter, NULL);
       /* CONTEXT: starterui: support: status message */
       snprintf (tbuff, sizeof (tbuff), _("Sending Support Message"));
       uiutilsLabelSetText (starter->supportStatus, tbuff);
@@ -1172,12 +1171,6 @@ starterSendFile (startui_t *starter, char *origfn, char *fn)
   query [6] = NULL;
   webclientUploadFile (starter->webclient, uri, query, fn);
   fileopDelete (fn);
-}
-
-static void
-starterSendFileCallback (void *userdata, char *resp, size_t len)
-{
-  return;
 }
 
 static void

@@ -2778,7 +2778,7 @@ confuiUpdateMobmqQrcode (configui_t *confui)
   if (type == MOBILEMQ_INTERNET) {
     tag = bdjoptGetStr (OPT_P_MOBILEMQTAG);
     snprintf (uri, sizeof (uri), "%s%s?v=1&tag=%s",
-        sysvarsGetStr (SV_MOBMQ_HOST), sysvarsGetStr (SV_MOBMQ_URL),
+        sysvarsGetStr (SV_MOBMQ_HOST), sysvarsGetStr (SV_MOBMQ_URI),
         tag);
   }
   if (type == MOBILEMQ_LOCAL) {

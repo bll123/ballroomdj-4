@@ -833,8 +833,8 @@ mainSendMobileMarqueeData (maindata_t *mainData)
       mainData->mobmqUserkey = filedataReadAll (tbuff, NULL);
     }
 
-    snprintf (tbuff, sizeof (tbuff),
-        "%s/marquee4.php", sysvarsGetStr (SV_MOBMQ_HOST));
+    snprintf (tbuff, sizeof (tbuff), "%s/%s",
+        sysvarsGetStr (SV_MOBMQ_HOST), sysvarsGetStr (SV_MOBMQ_POST_URI));
     snprintf (qbuff, sizeof (qbuff), "v=2&mqdata=%s&key=%s&tag=%s",
         jbuff, "93457645", tag);
     if (mainData->mobmqUserkey != NULL) {

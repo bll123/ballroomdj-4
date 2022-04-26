@@ -180,7 +180,9 @@ webclientCallback (char *ptr, size_t size, size_t nmemb, void *userdata)
 {
   webclient_t     *webclient = userdata;
 
-  webclient->callback (webclient->userdata, ptr, nmemb);
+  if (webclient->callback != NULL) {
+    webclient->callback (webclient->userdata, ptr, nmemb);
+  }
   return nmemb;
 }
 

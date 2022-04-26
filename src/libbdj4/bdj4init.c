@@ -222,6 +222,17 @@ bdj4shutdown (bdjmsgroute_t route, musicdb_t *musicdb)
   mstime_t       mt;
 
   logProcBegin (LOG_PROC, "bdj4shutdown");
+
+  if (strcmp (sysvarsGetStr (SV_BDJ4_RELEASELEVEL), "alpha") == 0) {
+    char    tbuff [MAXPATHLEN];
+
+    pathbldMakePath (tbuff, sizeof (tbuff),
+        "core", "", PATHBLD_MP_MAINDIR);
+    if (fileopFileExists (tbuff)) {
+      fprintf (stderr, "== core file exists\n");
+    }
+  }
+
   mstimestart (&mt);
   bdjoptFree ();
   if (musicdb != NULL) {

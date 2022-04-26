@@ -62,8 +62,9 @@ static sysvarsdesc_t sysvarsdesc [SV_MAX] = {
   [SV_LOCALE] = { "Locale" },
   [SV_LOCALE_SHORT] = { "Locale-Short" },
   [SV_LOCALE_SYSTEM] = { "Locale-System" },
-  [SV_MOBMQ_HOST] = { "Mobmq-Host" },
-  [SV_MOBMQ_URL] = { "Mobmq-URL" },
+  [SV_MOBMQ_HOST] = { "Host-Mobmq" },
+  [SV_MOBMQ_URI] = { "URI-Mobmq" },
+  [SV_MOBMQ_POST_URI] = { "URI-Mobmq-Post" },
   [SV_OSBUILD] = { "OS-Build" },
   [SV_OSDISP] = { "OS-Display" },
   [SV_OS_EXEC_EXT] = { "OS-Exec_ext" },
@@ -77,6 +78,7 @@ static sysvarsdesc_t sysvarsdesc [SV_MAX] = {
   [SV_PYTHON_DOT_VERSION] = { "Version-Python-Dot" },
   [SV_PYTHON_MUTAGEN] = { "Path-mutagen" },
   [SV_PYTHON_VERSION] = { "Version-Python" },
+  [SV_REGISTER_URI] = { "URI-Register" },
   [SV_SHLIB_EXT] = { "Sharedlib-Extension" },
   [SV_SUPPORT_HOST] = { "Host-Support" },
   [SV_SUPPORTMSG_HOST] = { "Host-Support-Msg" },
@@ -266,7 +268,8 @@ sysvarsInit (const char *argv0)
   strlcpy (sysvars [SV_SHLIB_EXT], SHLIB_EXT, SV_MAX_SZ);
 
   strlcpy (sysvars [SV_MOBMQ_HOST], "https://ballroomdj.org", SV_MAX_SZ);
-  strlcpy (sysvars [SV_MOBMQ_URL], "/marquee4.html", SV_MAX_SZ);
+  strlcpy (sysvars [SV_MOBMQ_URI], "/marquee4.html", SV_MAX_SZ);
+  strlcpy (sysvars [SV_MOBMQ_POST_URI], "/marquee4.php", SV_MAX_SZ);
 
   strlcpy (sysvars [SV_WEB_HOST], "https://ballroomdj4.sourceforge.io", SV_MAX_SZ);
   strlcpy (sysvars [SV_FORUM_HOST], "https://ballroomdj.org", SV_MAX_SZ);
@@ -275,6 +278,7 @@ sysvarsInit (const char *argv0)
   strlcpy (sysvars [SV_SUPPORT_URI], "/p/ballroomdj4/tickets/", SV_MAX_SZ);
   strlcpy (sysvars [SV_SUPPORTMSG_HOST], "https://ballroomdj.org", SV_MAX_SZ);
   strlcpy (sysvars [SV_SUPPORTMSG_URI], "/bdj4support.php", SV_MAX_SZ);
+  strlcpy (sysvars [SV_REGISTER_URI], "/bdj4register.php", SV_MAX_SZ);
 
   for (size_t i = 0; i < CACERT_FILE_COUNT; ++i) {
     if (fileopFileExists (cacertFiles [i])) {
