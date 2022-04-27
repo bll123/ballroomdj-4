@@ -34,7 +34,6 @@
 #include "log.h"
 #include "osutils.h"
 #include "pathbld.h"
-#include "procutil.h"
 #include "progstate.h"
 #include "sock.h"
 #include "sockh.h"

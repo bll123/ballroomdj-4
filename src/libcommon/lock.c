@@ -13,11 +13,11 @@
 
 #include "bdj4.h"
 #include "sysvars.h"
-#include "procutil.h"
 #include "tmutil.h"
 #include "lock.h"
 #include "fileop.h"
 #include "pathbld.h"
+#include "procutil.h"
 
 static char *locknames [ROUTE_MAX] = {
   [ROUTE_NONE] = "none",

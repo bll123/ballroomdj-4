@@ -42,7 +42,6 @@
 #include "osutils.h"
 #include "pathbld.h"
 #include "pathutil.h"
-#include "procutil.h"
 #include "progstate.h"
 #include "rating.h"
 #include "slist.h"

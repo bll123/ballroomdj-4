@@ -127,7 +127,6 @@ connCheckAll (conn_t *conn)
 
   for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
     if (conn [i].connected) {
-fprintf (stderr, "%d still connected\n", i);
       rc = false;
       break;
     }

@@ -31,7 +31,6 @@
 #include "osuiutils.h"
 #include "osutils.h"
 #include "pathbld.h"
-#include "procutil.h"
 #include "progstate.h"
 #include "slist.h"
 #include "sock.h"
