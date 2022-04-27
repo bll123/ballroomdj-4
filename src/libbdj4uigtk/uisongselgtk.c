@@ -127,8 +127,6 @@ uisongselActivate (uisongsel_t *uisongsel, GtkWidget *parentwin)
 
   uiw->vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   assert (uiw->vbox != NULL);
-  g_object_set_data (G_OBJECT (uiw->vbox),
-      "bdj4tabtype", GUINT_TO_POINTER (UI_TAB_SONGSEL));
   gtk_widget_set_hexpand (uiw->vbox, TRUE);
   gtk_widget_set_vexpand (uiw->vbox, TRUE);
 

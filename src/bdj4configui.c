@@ -300,9 +300,8 @@ typedef struct {
   char              *localip;
   int               dbgflags;
   confuiitem_t      uiitem [CONFUI_ITEM_MAX];
-  int               tabcount;
   confuiident_t     tablecurr;
-  confuiident_t     *tableidents;
+  uiutilsnbtabid_t  *nbtabid;
   slist_t           *listingtaglist;
   dispsel_t         *dispsel;
   int               stopwaitcount;
@@ -491,9 +490,8 @@ main (int argc, char *argv[])
       confuiHandshakeCallback, &confui);
   confui.sockserver = NULL;
   confui.window = NULL;
-  confui.tabcount = 0;
   confui.tablecurr = CONFUI_ID_NONE;
-  confui.tableidents = NULL;
+  confui.nbtabid = uiutilsNotebookIDInit ();
   confui.dispsel = NULL;
   confui.listingtaglist = NULL;
   confui.localip = NULL;
@@ -840,8 +838,8 @@ confuiClosingCallback (void *udata, programstate_t programState)
     nlistFree (confui->options);
   }
   datafileFree (confui->optiondf);
-  if (confui->tableidents != NULL) {
-    free (confui->tableidents);
+  if (confui->nbtabid != NULL) {
+    uiutilsNotebookIDFree (confui->nbtabid);
   }
   if (confui->listingtaglist != NULL) {
     slistFree (confui->listingtaglist);
@@ -1978,11 +1976,7 @@ confuiMakeNotebookTab (configui_t *confui, GtkWidget *nb, char *txt, int id)
   gtk_widget_set_margin_start (vbox, 4);
   gtk_widget_set_margin_end (vbox, 4);
   uiutilsNotebookAppendPage (nb, vbox, tablabel);
-
-  confui->tableidents = realloc (confui->tableidents,
-      sizeof (int) * (confui->tabcount + 1));
-  confui->tableidents [confui->tabcount] = id;
-  ++confui->tabcount;
+  uiutilsNotebookIDAdd (confui->nbtabid, id);
 
   logProcEnd (LOG_PROC, "confuiMakeNotebookTab", "");
   return vbox;
@@ -3351,19 +3345,24 @@ confuiSwitchTable (GtkNotebook *nb, GtkWidget *page, guint pagenum, gpointer uda
 {
   configui_t        *confui = udata;
   GtkWidget         *tree;
+  confuiident_t     newid;
 
   logProcBegin (LOG_PROC, "confuiSwitchTable");
-  if (pagenum >= (unsigned int) confui->tabcount) {
+fprintf (stderr, "switch: %d\n", pagenum);
+  if ((newid = (confuiident_t) uiutilsNotebookIDGet (confui->nbtabid, pagenum)) < 0) {
     logProcEnd (LOG_PROC, "confuiSwitchTable", "bad-pagenum");
     return;
   }
 
-  if (confui->tablecurr == confui->tableidents [pagenum]) {
-    logProcEnd (LOG_PROC, "confuiSwitchTable", "same-page");
+fprintf (stderr, "tablecurr: %d\n", confui->tablecurr);
+fprintf (stderr, "newid: %d\n", newid);
+  if (confui->tablecurr == newid) {
+    logProcEnd (LOG_PROC, "confuiSwitchTable", "same-id");
     return;
   }
 
-  confui->tablecurr = confui->tableidents [pagenum];
+  confui->tablecurr = (confuiident_t) uiutilsNotebookIDGet (
+      confui->nbtabid, pagenum);
 
   if (confui->tablecurr == CONFUI_ID_MOBILE_MQ) {
     confuiUpdateMobmqQrcode (confui);

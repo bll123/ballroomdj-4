@@ -24,6 +24,11 @@ enum {
   UIUTILS_DROPDOWN_COL_MAX,
 };
 
+typedef struct {
+  int     tabcount;
+  int     *tabids;
+} uiutilsnbtabid_t;
+
 typedef char * (*uiutilsspinboxdisp_t)(void *, int);
 
 typedef struct {
@@ -86,6 +91,10 @@ extern int uiutilsBaseMarginSz;
 /* uiutils.c */
 /* generic ui helper routines */
 void  uiutilsCreateDanceList (uiutilsdropdown_t *dancesel, char *selectLabel);
+uiutilsnbtabid_t * uiutilsNotebookIDInit (void);
+void uiutilsNotebookIDFree (uiutilsnbtabid_t *nbtabid);
+void uiutilsNotebookIDAdd (uiutilsnbtabid_t *nbtabid, int id);
+int uiutilsNotebookIDGet (uiutilsnbtabid_t *nbtabid, int idx);
 
 /* uigtklabel.c */
 GtkWidget * uiutilsCreateLabel (char *label);

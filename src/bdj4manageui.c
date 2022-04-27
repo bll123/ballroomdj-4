@@ -362,8 +362,10 @@ manageActivate (GApplication *app, gpointer userdata)
   *imgbuff = '\0';
 
   /* CONTEXT: management ui window title */
+  pathbldMakePath (imgbuff, sizeof (imgbuff),
+      "bdj4_icon", ".svg", PATHBLD_MP_IMGDIR);
   snprintf (tbuff, sizeof (tbuff), _("%s Management"), BDJ4_NAME);
-  manage->window = uiutilsCreateMainWindow (app, tbuff, NULL,
+  manage->window = uiutilsCreateMainWindow (app, tbuff, imgbuff,
       manageCloseWin, manage);
 
   vbox = uiutilsCreateVertBox ();

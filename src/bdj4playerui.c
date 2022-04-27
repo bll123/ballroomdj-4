@@ -57,6 +57,7 @@ typedef struct {
   int             marqueeFontSizeFS;
   mstime_t        marqueeFontSizeCheck;
   int             stopwaitcount;
+  uiutilsnbtabid_t *nbtabid;
   /* gtk stuff */
   GtkApplication  *app;
   GtkWidget       *window;
@@ -159,6 +160,7 @@ main (int argc, char *argv[])
   plui.marqueeFontSizeFS = 60;
   mstimeset (&plui.marqueeFontSizeCheck, 3600000);
   plui.stopwaitcount = 0;
+  plui.nbtabid = uiutilsNotebookIDInit ();
 
   osSetStandardSignals (pluiSigHandler);
 
@@ -301,6 +303,9 @@ pluiClosingCallback (void *udata, programstate_t programState)
   bdj4shutdown (ROUTE_PLAYERUI, plui->musicdb);
   dispselFree (plui->dispsel);
 
+  if (plui->nbtabid != NULL) {
+    uiutilsNotebookIDFree (plui->nbtabid);
+  }
   if (plui->options != datafileGetList (plui->optiondf)) {
     nlistFree (plui->options);
   }
@@ -438,38 +443,29 @@ pluiActivate (GApplication *app, gpointer userdata)
   g_signal_connect (widget, "clicked", G_CALLBACK (pluiProcessSetPlaybackQueue), plui);
   plui->setPlaybackButton = widget;
 
-  /* music queue tab */
-  widget = uimusicqActivate (plui->uimusicq, plui->window, MUSICQ_A);
-  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
-  str = bdjoptGetStr (OPT_P_QUEUE_NAME_A);
-  tabLabel = gtk_label_new (str);
-  gtk_box_pack_start (GTK_BOX (hbox), tabLabel, FALSE, FALSE, 1);
-  plui->musicqImage [MUSICQ_A] = gtk_image_new ();
-  gtk_image_set_from_pixbuf (GTK_IMAGE (plui->musicqImage [MUSICQ_A]), plui->ledonImg);
-  gtk_widget_set_margin_start (plui->musicqImage [MUSICQ_A], 2);
-  gtk_box_pack_start (GTK_BOX (hbox), plui->musicqImage [MUSICQ_A], FALSE, FALSE, 0);
+  for (musicqidx_t i = 0; i < MUSICQ_MAX; ++i) {
+    /* music queue tab */
+    widget = uimusicqActivate (plui->uimusicq, plui->window, i);
+    hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+    str = bdjoptGetStr (OPT_P_QUEUE_NAME_A + i);
+    tabLabel = gtk_label_new (str);
+    gtk_box_pack_start (GTK_BOX (hbox), tabLabel, FALSE, FALSE, 1);
+    plui->musicqImage [i] = gtk_image_new ();
+    gtk_image_set_from_pixbuf (GTK_IMAGE (plui->musicqImage [i]), plui->ledoffImg);
+    gtk_widget_set_margin_start (plui->musicqImage [i], 2);
+    gtk_box_pack_start (GTK_BOX (hbox), plui->musicqImage [i], FALSE, FALSE, 0);
 
-  uiutilsNotebookAppendPage (plui->notebook, widget, hbox);
-  gtk_widget_show_all (hbox);
-
-  /* queue B tab */
-  widget = uimusicqActivate (plui->uimusicq, plui->window, MUSICQ_B);
-  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
-  str = bdjoptGetStr (OPT_P_QUEUE_NAME_B);
-  tabLabel = gtk_label_new (str);
-  gtk_box_pack_start (GTK_BOX (hbox), tabLabel, FALSE, FALSE, 1);
-  plui->musicqImage [MUSICQ_B] = gtk_image_new ();
-  gtk_image_set_from_pixbuf (GTK_IMAGE (plui->musicqImage [MUSICQ_B]), plui->ledoffImg);
-  gtk_widget_set_margin_start (plui->musicqImage [MUSICQ_B], 2);
-  gtk_box_pack_start (GTK_BOX (hbox), plui->musicqImage [MUSICQ_B], FALSE, FALSE, 0);
-  uiutilsNotebookAppendPage (plui->notebook, widget, hbox);
-  gtk_widget_show_all (hbox);
+    uiutilsNotebookAppendPage (plui->notebook, widget, hbox);
+    uiutilsNotebookIDAdd (plui->nbtabid, UI_TAB_MUSICQ);
+    gtk_widget_show_all (hbox);
+  }
 
   /* request tab */
   widget = uisongselActivate (plui->uisongsel, plui->window);
   /* CONTEXT: name of request tab */
   tabLabel = gtk_label_new (_("Request"));
   uiutilsNotebookAppendPage (plui->notebook, widget, tabLabel);
+  uiutilsNotebookIDAdd (plui->nbtabid, UI_TAB_SONGSEL);
 
   x = nlistGetNum (plui->options, PLUI_SIZE_X);
   y = nlistGetNum (plui->options, PLUI_SIZE_Y);
@@ -487,6 +483,7 @@ pluiActivate (GApplication *app, gpointer userdata)
       "bdj4_icon", ".png", PATHBLD_MP_IMGDIR);
   osuiSetIcon (imgbuff);
 
+  pluiSetPlaybackQueue (plui, MUSICQ_A);
   pluiSetExtraQueues (plui);
 
   logProcEnd (LOG_PROC, "pluiActivate", "");
@@ -730,17 +727,15 @@ pluiSetSwitchPage (playerui_t *plui, int pagenum)
   logProcBegin (LOG_PROC, "pluiSetSwitchPage");
 
   page = gtk_notebook_get_nth_page (GTK_NOTEBOOK (plui->notebook), pagenum);
-  tabid = GPOINTER_TO_UINT (g_object_get_data (G_OBJECT (page), "bdj4tabtype"));
+  tabid = uiutilsNotebookIDGet (plui->nbtabid, pagenum);
 
-  /* note that his design requires that the music queues be the first */
-  /* set of tabs in the notebook */
+  gtk_widget_hide (plui->setPlaybackButton);
   if (tabid == UI_TAB_MUSICQ) {
     plui->musicqManageIdx = pagenum;
     uimusicqSetManageIdx (plui->uimusicq, pagenum);
-    gtk_widget_show (plui->setPlaybackButton);
-  } else {
-    /* must be a UI_TAB_SONGSEL */
-    gtk_widget_hide (plui->setPlaybackButton);
+    if (nlistGetNum (plui->options, PLUI_SHOW_EXTRA_QUEUES)) {
+      gtk_widget_show (plui->setPlaybackButton);
+    }
   }
   logProcEnd (LOG_PROC, "pluiSetSwitchPage", "");
   return;
@@ -764,12 +759,12 @@ pluiSetPlaybackQueue (playerui_t  *plui, musicqidx_t newQueue)
   logProcBegin (LOG_PROC, "pluiSetPlaybackQueue");
   if (nlistGetNum (plui->options, PLUI_SHOW_EXTRA_QUEUES)) {
     plui->musicqPlayIdx = newQueue;
-    if (plui->musicqPlayIdx == MUSICQ_A) {
-      gtk_image_set_from_pixbuf (GTK_IMAGE (plui->musicqImage [MUSICQ_A]), plui->ledonImg);
-      gtk_image_set_from_pixbuf (GTK_IMAGE (plui->musicqImage [MUSICQ_B]), plui->ledoffImg);
-    } else {
-      gtk_image_set_from_pixbuf (GTK_IMAGE (plui->musicqImage [MUSICQ_A]), plui->ledoffImg);
-      gtk_image_set_from_pixbuf (GTK_IMAGE (plui->musicqImage [MUSICQ_B]), plui->ledonImg);
+    for (musicqidx_t i = 0; i < MUSICQ_MAX; ++i) {
+      if (plui->musicqPlayIdx == i) {
+        gtk_image_set_from_pixbuf (GTK_IMAGE (plui->musicqImage [i]), plui->ledonImg);
+      } else {
+        gtk_image_set_from_pixbuf (GTK_IMAGE (plui->musicqImage [i]), plui->ledoffImg);
+      }
     }
   }
   /* if showextraqueues is off, reject any attempt to switch playback. */
@@ -835,14 +830,17 @@ pluiSetExtraQueues (playerui_t *plui)
     return;
   }
 
+  // ### to loop through all pages and set the ones that are musicq types
+  // ### excepting the first.
   page = gtk_notebook_get_nth_page (GTK_NOTEBOOK (plui->notebook), MUSICQ_B);
   gtk_widget_set_visible (page,
       nlistGetNum (plui->options, PLUI_SHOW_EXTRA_QUEUES));
 
   pagenum = gtk_notebook_get_current_page (GTK_NOTEBOOK (plui->notebook));
   page = gtk_notebook_get_nth_page (GTK_NOTEBOOK (plui->notebook), pagenum);
-  tabid = GPOINTER_TO_UINT (g_object_get_data (G_OBJECT (page), "bdj4tabtype"));
-  if (tabid == UI_TAB_MUSICQ) {
+  tabid = uiutilsNotebookIDGet (plui->nbtabid, pagenum);
+  if (tabid == UI_TAB_MUSICQ &&
+      nlistGetNum (plui->options, PLUI_SHOW_EXTRA_QUEUES)) {
     gtk_widget_show (plui->setPlaybackButton);
   } else {
     gtk_widget_hide (plui->setPlaybackButton);
