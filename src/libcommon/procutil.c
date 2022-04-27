@@ -131,6 +131,18 @@ procutilStart (const char *fn, ssize_t profile, ssize_t loglvl,
 }
 
 void
+procutilFreeAll (procutil_t *processes [ROUTE_MAX])
+{
+  logProcBegin (LOG_PROC, "procutilFreeAll");
+  for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
+    if (processes [i] != NULL) {
+      procutilFree (processes [i]);
+    }
+  }
+  logProcEnd (LOG_PROC, "procutilFreeAll", "");
+}
+
+void
 procutilFree (procutil_t *process)
 {
   if (process != NULL) {
@@ -267,6 +279,18 @@ procutilStartProcess (bdjmsgroute_t route, char *fname, int detachflag,
 }
 
 void
+procutilStopAllProcess (procutil_t *processes [ROUTE_MAX], conn_t *conn, bool force)
+{
+  logProcBegin (LOG_PROC, "procutilStopAllProcess");
+  for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
+    if (processes [i] != NULL) {
+      procutilStopProcess (processes [i], conn, i, force);
+    }
+  }
+  logProcEnd (LOG_PROC, "procutilStopAllProcess", "");
+}
+
+void
 procutilStopProcess (procutil_t *process, conn_t *conn,
     bdjmsgroute_t route, bool force)
 {
@@ -284,6 +308,25 @@ procutilStopProcess (procutil_t *process, conn_t *conn,
     procutilForceStop (process, PATHBLD_MP_USEIDX, route);
   }
   logProcEnd (LOG_PROC, "procutilStopProcess", "");
+}
+
+void
+procutilCloseProcess (procutil_t *process, conn_t *conn,
+    bdjmsgroute_t route)
+{
+  logProcBegin (LOG_PROC, "procutilCloseProcess");
+  if (process == NULL) {
+    logProcEnd (LOG_PROC, "procutilCloseProcess", "null");
+    return;
+  }
+
+  if (! process->started) {
+    logProcEnd (LOG_PROC, "procutilCloseProcess", "not-started");
+    return;
+  }
+  connDisconnect (conn, route);
+  process->started = false;
+  logProcEnd (LOG_PROC, "procutilCloseProcess", "");
 }
 
 void

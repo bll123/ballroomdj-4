@@ -81,26 +81,45 @@ if [[ $platform == windows ]]; then
   #       libiconv-2.dll => /mingw64/bin/libiconv-2.dll (0x7ff8837e0000)
 
   echo "-- copying .dll files"
+  PBIN=plocal/bin
+  # gspawn helpers are required for the link button to work.
+  # librsvg is the SVG library
+  # gdbus
+  exelist="
+      /mingw64/bin/gspawn-win64-helper.exe
+      /mingw64/bin/gspawn-win64-helper-console.exe
+      /mingw64/bin/librsvg-2-2.dll
+      /mingw64/bin/gdbus.exe
+      "
+  for fn in $exelist; do
+    bfn=$(basename $fn)
+    if [[ ! -f $fn ]]; then
+      echo "** $fn does not exist **"
+    fi
+    if [[ $fn -nt $PBIN/$bfn ]]; then
+      cp -pf $fn $PBIN
+    fi
+  done
+
   dlllistfn=tmp/dll-list.txt
   > $dlllistfn
 
-  for fn in bin/*.exe /mingw64/bin/gdbus.exe /mingw64/bin/librsvg-2-2.dll ; do
+  for fn in bin/*.exe $exelist ; do
     ldd $fn |
       grep mingw |
       sed -e 's,.*=> ,,' -e 's,\.dll .*,.dll,' >> $dlllistfn
   done
   for fn in $(sort -u $dlllistfn); do
     bfn=$(basename $fn)
-    if [[ $fn -nt $bfn ]]; then
-      cp -pf $fn plocal/bin
+    if [[ $fn -nt $PBIN/$bfn ]]; then
+      cp -pf $fn $PBIN
     fi
   done
   rm -f $dlllistfn
 
   # stage the other required gtk files.
 
-  cp -f /mingw64/bin/librsvg-2-2.dll plocal/bin
-  cp -f /mingw64/bin/gdbus.exe plocal/bin
+  # various gtk stuff
   cp -rf /mingw64/lib/gdk-pixbuf-2.0 plocal/lib
   cp -rf /mingw64/lib/girepository-1.0 plocal/lib
   mkdir -p plocal/share/icons

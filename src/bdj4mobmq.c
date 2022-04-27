@@ -120,7 +120,7 @@ main (int argc, char *argv[])
   sockhMainLoop (listenPort, mobmqProcessMsg, mobmqProcessing, &mobmqData);
 
   while (progstateShutdownProcess (mobmqData.progstate) != STATE_CLOSED) {
-    ;
+    mssleep (50);
   }
   progstateFree (mobmqData.progstate);
   logEnd ();

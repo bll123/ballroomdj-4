@@ -127,7 +127,7 @@ main (int argc, char *argv[])
   sockhMainLoop (listenPort, remctrlProcessMsg, remctrlProcessing, &remctrlData);
 
   while (progstateShutdownProcess (remctrlData.progstate) != STATE_CLOSED) {
-    ;
+    mssleep (50);
   }
   progstateFree (remctrlData.progstate);
   logEnd ();

@@ -10,10 +10,12 @@
 
 #include <curl/curl.h>
 
+#include "bdj4.h"
 #include "log.h"
 #include "filedata.h"
 #include "fileop.h"
 #include "sysvars.h"
+#include "tmutil.h"
 #include "webclient.h"
 
 enum {
@@ -21,9 +23,13 @@ enum {
   INIT_CLIENT,
 };
 
+static void   webclientInit (webclient_t *webclient);
+static void   webclientInitResp (webclient_t *webclient);
 static size_t webclientCallback (char *ptr, size_t size,
     size_t nmemb, void *userdata);
 static size_t webclientNullCallback (char *ptr, size_t size,
+    size_t nmemb, void *userdata);
+static size_t webclientDownloadCallback (char *ptr, size_t size,
     size_t nmemb, void *userdata);
 static int webclientDebugCallback (CURL *curl, curl_infotype type, char *data,
     size_t size, void *userptr);
@@ -41,33 +47,73 @@ webclientAlloc (void *userdata, webclientcb_t callback)
   webclient->userdata = userdata;
   webclient->callback = callback;
   webclient->curl = NULL;
+  webclient->dlSize = 0;
+  webclient->dlChunks = 0;
+  webclient->dlFH = NULL;
+  webclient->resp = NULL;
+  webclient->respAllocated = 0;
+  webclient->respSize = 0;
 
   if (! initialized) {
     curl_global_init (CURL_GLOBAL_ALL);
     initialized = INIT_CLIENT;
   }
-  webclient->curl = curl_easy_init ();
-  assert (webclient->curl != NULL);
-  if (logCheck (LOG_DBG, LOG_WEBCLIENT)) {
-    curl_easy_setopt (webclient->curl, CURLOPT_DEBUGFUNCTION, webclientDebugCallback);
-    curl_easy_setopt (webclient->curl, CURLOPT_VERBOSE, 1);
-  }
-  curl_easy_setopt (webclient->curl, CURLOPT_FOLLOWLOCATION, 1);
-  curl_easy_setopt (webclient->curl, CURLOPT_TCP_KEEPALIVE, 1);
-  curl_easy_setopt (webclient->curl, CURLOPT_WRITEDATA, webclient);
-  curl_easy_setopt (webclient->curl, CURLOPT_WRITEFUNCTION, webclientCallback);
-  webclientSetUserAgent (webclient->curl);
-
+  webclientInit (webclient);
   return webclient;
+}
+
+void
+webclientGet (webclient_t *webclient, char *uri)
+{
+  webclientInitResp (webclient);
+  curl_easy_setopt (webclient->curl, CURLOPT_URL, uri);
+  curl_easy_setopt (webclient->curl, CURLOPT_HTTPGET, 1L);
+  curl_easy_perform (webclient->curl);
+  if (webclient->callback != NULL) {
+    webclient->callback (webclient->userdata, webclient->resp, webclient->respSize);
+  }
 }
 
 void
 webclientPost (webclient_t *webclient, char *uri, char *query)
 {
+  webclientInitResp (webclient);
   curl_easy_setopt (webclient->curl, CURLOPT_URL, uri);
   curl_easy_setopt (webclient->curl, CURLOPT_POST, 1L);
   curl_easy_setopt (webclient->curl, CURLOPT_POSTFIELDS, query);
   curl_easy_perform (webclient->curl);
+  if (webclient->callback != NULL) {
+    webclient->callback (webclient->userdata, webclient->resp, webclient->respSize);
+  }
+}
+
+void
+webclientDownload (webclient_t *webclient, char *uri, char *outfile)
+{
+  FILE    *fh;
+  time_t  tm;
+
+  webclient->dlSize = 0;
+  webclient->dlChunks = 0;
+  mstimeset (&webclient->dlStart, 0);
+  fh = fopen (outfile, "wb");
+  if (fh == NULL) {
+    logMsg (LOG_DBG, LOG_IMPORTANT, "download: unable to open %s %d %s\n",
+        outfile, errno, strerror (errno));
+    return;
+  }
+  webclient->dlFH = fh;
+  curl_easy_setopt (webclient->curl, CURLOPT_URL, uri);
+  curl_easy_setopt (webclient->curl, CURLOPT_HTTPGET, 1L);
+  curl_easy_setopt (webclient->curl, CURLOPT_WRITEFUNCTION, webclientDownloadCallback);
+  curl_easy_perform (webclient->curl);
+  fclose (fh);
+  webclient->dlFH = NULL;
+  tm = mstimeend (&webclient->dlStart);
+  logMsg (LOG_DBG, LOG_MAIN, "%s : %zd bytes; %zd msec; %zd chunks; %.1f b/s",
+      outfile, webclient->dlSize, tm, webclient->dlChunks,
+      (double) webclient->dlSize / (double) tm);
+  curl_easy_setopt (webclient->curl, CURLOPT_WRITEFUNCTION, webclientCallback);
 }
 
 void
@@ -94,6 +140,7 @@ webclientUploadFile (webclient_t *webclient, char *uri,
     return;
   }
 
+  webclientInitResp (webclient);
   mime = curl_mime_init (webclient->curl);
 
   count = 0;
@@ -112,6 +159,9 @@ webclientUploadFile (webclient_t *webclient, char *uri,
   curl_easy_setopt (webclient->curl, CURLOPT_URL, uri);
   curl_easy_setopt (webclient->curl, CURLOPT_MIMEPOST, mime);
   curl_easy_perform (webclient->curl);
+  if (webclient->callback != NULL) {
+    webclient->callback (webclient->userdata, webclient->resp, webclient->respSize);
+  }
 
   curl_mime_free (mime);
 
@@ -131,9 +181,14 @@ void
 webclientClose (webclient_t *webclient)
 {
   if (webclient != NULL) {
+    if (webclient->resp != NULL) {
+      free (webclient->resp);
+    }
+    webclient->resp = NULL;
     if (webclient->curl != NULL) {
       curl_easy_cleanup (webclient->curl);
     }
+    webclient->curl = NULL;
     if (initialized == INIT_CLIENT) {
       curl_global_cleanup ();
     }
@@ -145,51 +200,97 @@ webclientClose (webclient_t *webclient)
 char *
 webclientGetLocalIP (void)
 {
+  webclient_t   *webclient;
   char  *tip;
   char  *ip;
-  CURL  *curl;
+  char  tbuff [MAXPATHLEN];
 
-  if (initialized == INIT_NONE) {
-    curl_global_init (CURL_GLOBAL_ALL);
-  }
-  curl = curl_easy_init ();
-  curl_easy_setopt (curl, CURLOPT_URL, "https://ballroomdj.org/bdj4version.txt");
-  curl_easy_setopt (curl, CURLOPT_FOLLOWLOCATION, 1);
-  curl_easy_setopt (curl, CURLOPT_WRITEDATA, NULL);
-  curl_easy_setopt (curl, CURLOPT_WRITEFUNCTION, webclientNullCallback);
-  webclientSetUserAgent (curl);
-  if (logCheck (LOG_DBG, LOG_WEBCLIENT)) {
-    curl_easy_setopt (curl, CURLOPT_DEBUGFUNCTION, webclientDebugCallback);
-    curl_easy_setopt (curl, CURLOPT_VERBOSE, 1);
-  }
-  curl_easy_perform (curl);
-  curl_easy_getinfo (curl, CURLINFO_LOCAL_IP, &tip);
+  webclient = webclientAlloc (NULL, NULL);
+  snprintf (tbuff, sizeof (tbuff), "%s/%s",
+      sysvarsGetStr (SV_WEB_HOST), sysvarsGetStr (SV_WEB_VERSION_FILE));
+  curl_easy_setopt (webclient->curl, CURLOPT_URL, tbuff);
+  curl_easy_setopt (webclient->curl, CURLOPT_WRITEDATA, NULL);
+  curl_easy_setopt (webclient->curl, CURLOPT_WRITEFUNCTION, webclientNullCallback);
+  curl_easy_perform (webclient->curl);
+  curl_easy_getinfo (webclient->curl, CURLINFO_LOCAL_IP, &tip);
   ip = strdup (tip);
-  curl_easy_cleanup (curl);
+  curl_easy_cleanup (webclient->curl);
   if (initialized == INIT_NONE) {
     curl_global_cleanup ();
   }
+  free (webclient);
 
   return ip;
 }
 
 /* internal routines */
 
+static void
+webclientInit (webclient_t *webclient)
+{
+  webclient->curl = curl_easy_init ();
+  assert (webclient->curl != NULL);
+  if (logCheck (LOG_DBG, LOG_WEBCLIENT)) {
+    curl_easy_setopt (webclient->curl, CURLOPT_DEBUGFUNCTION, webclientDebugCallback);
+    curl_easy_setopt (webclient->curl, CURLOPT_VERBOSE, 1);
+  }
+  curl_easy_setopt (webclient->curl, CURLOPT_FOLLOWLOCATION, 1);
+  curl_easy_setopt (webclient->curl, CURLOPT_TCP_KEEPALIVE, 1);
+  curl_easy_setopt (webclient->curl, CURLOPT_WRITEDATA, webclient);
+  curl_easy_setopt (webclient->curl, CURLOPT_WRITEFUNCTION, webclientCallback);
+  curl_easy_setopt (webclient->curl, CURLOPT_BUFFERSIZE, 512L * 1024L);
+  curl_easy_setopt (webclient->curl, CURLOPT_ACCEPT_ENCODING, "");
+  if (isWindows ()) {
+    curl_easy_setopt (webclient->curl, CURLOPT_CAINFO, sysvarsGetStr (SV_CA_FILE));
+  }
+  webclientSetUserAgent (webclient->curl);
+}
+
+static void
+webclientInitResp (webclient_t *webclient)
+{
+  if (webclient == NULL) {
+    return;
+  }
+
+  if (webclient->resp != NULL) {
+    webclient->respSize = 0;
+    *webclient->resp = '\0';
+  }
+}
+
 static size_t
 webclientCallback (char *ptr, size_t size, size_t nmemb, void *userdata)
 {
   webclient_t     *webclient = userdata;
+  size_t          nsz = size * nmemb;
 
-  if (webclient->callback != NULL) {
-    webclient->callback (webclient->userdata, ptr, nmemb);
+  while (webclient->respSize + nsz >= webclient->respAllocated) {
+    webclient->respAllocated += WEB_RESP_SZ;
+    webclient->resp = realloc (webclient->resp, webclient->respAllocated);
   }
-  return nmemb;
+  memcpy (webclient->resp + webclient->respSize, ptr, nsz);
+  webclient->respSize += nsz;
+  webclient->resp [webclient->respSize] = '\0';
+  return nsz;
 }
 
 static size_t
 webclientNullCallback (char *ptr, size_t size, size_t nmemb, void *userdata)
 {
-  return nmemb;
+  return size * nmemb;
+}
+
+static size_t
+webclientDownloadCallback (char *ptr, size_t size, size_t nmemb, void *userdata)
+{
+  webclient_t *webclient = userdata;
+  size_t  w;
+
+  w = fwrite (ptr, size, nmemb, webclient->dlFH);
+  webclient->dlSize += w;
+  webclient->dlChunks += 1;
+  return w;
 }
 
 static int
@@ -199,9 +300,15 @@ webclientDebugCallback (CURL *curl, curl_infotype type, char *data,
   char    *p;
   char    *tokstr;
   char    *tag;
+  char    *tdata;
 
   if (type == CURLINFO_SSL_DATA_OUT ||
       type == CURLINFO_SSL_DATA_IN) {
+    return 0;
+  }
+
+  if (type == CURLINFO_DATA_OUT ||
+      type == CURLINFO_DATA_IN) {
     return 0;
   }
 
@@ -233,11 +340,15 @@ webclientDebugCallback (CURL *curl, curl_infotype type, char *data,
     }
   }
 
-  p = strtok_r (data, "\r\n", &tokstr);
-  while (p != NULL && p < data + size) {
+  tdata = malloc (size + 1);
+  memcpy (tdata, data, size);
+  tdata [size] = '\0';
+  p = strtok_r (tdata, "\r\n", &tokstr);
+  while (p != NULL && p < tdata + size) {
     logMsg (LOG_DBG, LOG_WEBCLIENT, "curl: %s: %s", tag, p);
     p = strtok_r (NULL, "\r\n", &tokstr);
   }
+  free (tdata);
   return 0;
 }
 

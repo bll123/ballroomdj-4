@@ -102,9 +102,10 @@ uiutilsSetUIFont (char *uifont)
     }
 
     tcss = gtk_css_provider_new ();
-    snprintf (tbuff, sizeof (tbuff), "* { font-family: '%s'; }", wbuff);
+    snprintf (tbuff, sizeof (tbuff), "* { font-family: '%s'; } ", wbuff);
     if (sz > 0) {
-      snprintf (wbuff, sizeof (wbuff), " * { font-size: %dpt; }", sz);
+      snprintf (wbuff, sizeof (wbuff), " * { font-size: %dpt; } ", sz);
+      strlcat (tbuff, wbuff, MAXPATHLEN);
       sz -= 2;
       snprintf (wbuff, sizeof (wbuff), " menuitem label { font-size: %dpt; }", sz);
       strlcat (tbuff, wbuff, MAXPATHLEN);

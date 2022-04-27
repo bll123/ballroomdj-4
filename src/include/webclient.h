@@ -2,7 +2,6 @@
 #define INC_WEBCLIENT_H
 
 #include <stdbool.h>
-
 #include <curl/curl.h>
 
 typedef void (*webclientcb_t)(void *userdata, char *resp, size_t len);
@@ -11,10 +10,21 @@ typedef struct {
   void            *userdata;
   webclientcb_t   callback;
   CURL            *curl;
+  size_t          dlSize;
+  size_t          dlChunks;
+  mstime_t        dlStart;
+  FILE            *dlFH;
+  char            *resp;
+  size_t          respAllocated;
+  size_t          respSize;
 } webclient_t;
 
+#define WEB_RESP_SZ   (512*1024)
+
 webclient_t *webclientAlloc (void *userdata, webclientcb_t cb);
+void        webclientGet (webclient_t *webclient, char *uri);
 void        webclientPost (webclient_t *webclient, char *uri, char *query);
+void        webclientDownload (webclient_t *webclient, char *uri, char *outfile);
 void        webclientUploadFile (webclient_t *webclient, char *uri,
     char *query [], char *fn);
 void        webclientClose (webclient_t *webclient);

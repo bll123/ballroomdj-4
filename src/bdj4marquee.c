@@ -219,7 +219,7 @@ main (int argc, char *argv[])
       &marquee.app, marqueeActivate, &marquee);
 
   while (progstateShutdownProcess (marquee.progstate) != STATE_CLOSED) {
-    mssleep (10);
+    mssleep (50);
   }
   progstateFree (marquee.progstate);
   logEnd ();

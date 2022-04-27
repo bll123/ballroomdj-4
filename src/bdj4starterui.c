@@ -54,6 +54,8 @@ typedef enum {
   START_STATE_SUPPORT_SEND_FILE,
 } startstate_t;
 
+#define MAX_WEB_RESP_SZ   2048
+
 typedef struct {
   progstate_t     *progstate;
   char            *locknm;
@@ -76,6 +78,8 @@ typedef struct {
   char            *supportOutFname;
   webclient_t     *webclient;
   char            ident [80];
+  char            latestversion [40];
+  char            *webresponse;
   /* gtk stuff */
   uiutilsspinbox_t  profilesel;
   GtkApplication    *app;
@@ -112,6 +116,7 @@ static datafilekey_t starteruidfkeys [STARTERUI_KEY_MAX] = {
 #define LOOP_DELAY              5
 
 static bool     starterStoppingCallback (void *udata, programstate_t programState);
+static bool     starterStopWaitCallback (void *udata, programstate_t programState);
 static bool     starterClosingCallback (void *udata, programstate_t programState);
 static void     starterActivate (GApplication *app, gpointer userdata);
 gboolean        starterMainLoop  (void *tstarter);
@@ -124,7 +129,6 @@ static void     starterStartPlayer (GtkButton *b, gpointer udata);
 static void     starterStartManage (GtkButton *b, gpointer udata);
 static void     starterStartConfig (GtkButton *b, gpointer udata);
 static void     starterStartRaffleGames (GtkButton *b, gpointer udata);
-static void     starterProcessSupport (GtkButton *b, gpointer udata);
 static void     starterProcessExit (GtkButton *b, gpointer udata);
 
 static void     starterGetProfiles (startui_t *starter);
@@ -132,6 +136,7 @@ static char     * starterSetProfile (void *udata, int idx);
 static void     starterCheckProfile (startui_t *starter);
 
 static void     starterProcessSupport (GtkButton *b, gpointer udata);
+static void     starterWebResponseCallback (void *userdata, char *resp, size_t len);
 static void     starterSupportResponseHandler (GtkDialog *d, gint responseid, gpointer udata);
 static void     starterCreateSupportDialog (GtkButton *b, gpointer udata);
 static void     starterSupportMsgHandler (GtkDialog *d, gint responseid, gpointer udata);
@@ -164,6 +169,8 @@ main (int argc, char *argv[])
   starter.progstate = progstateInit ("starterui");
   progstateSetCallback (starter.progstate, STATE_STOPPING,
       starterStoppingCallback, &starter);
+  progstateSetCallback (starter.progstate, STATE_STOP_WAIT,
+      starterStopWaitCallback, &starter);
   progstateSetCallback (starter.progstate, STATE_CLOSING,
       starterClosingCallback, &starter);
   starter.sockserver = NULL;
@@ -181,6 +188,8 @@ main (int argc, char *argv[])
   starter.supportOutFname = NULL;
   starter.webclient = NULL;
   starter.supporttb = NULL;
+  strcpy (starter.ident, "");
+  strcpy (starter.latestversion, "");
 
   for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
     starter.processes [i] = NULL;
@@ -233,7 +242,7 @@ main (int argc, char *argv[])
       &starter.app, starterActivate, &starter);
 
   while (progstateShutdownProcess (starter.progstate) != STATE_CLOSED) {
-    ;
+    mssleep (50);
   }
 
   progstateFree (starter.progstate);
@@ -270,15 +279,20 @@ starterStoppingCallback (void *udata, programstate_t programState)
   nlistSetNum (starter->options, STARTERUI_POSITION_X, x);
   nlistSetNum (starter->options, STARTERUI_POSITION_Y, y);
 
-  for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
-    if (starter->processes [i] != NULL) {
-      procutilStopProcess (starter->processes [i], starter->conn, i, false);
-    }
-  }
+  procutilStopAllProcess (starter->processes, starter->conn, false);
 
   gdone = 1;
-  connDisconnectAll (starter->conn);
   return true;
+}
+
+static bool
+starterStopWaitCallback (void *udata, programstate_t programState)
+{
+  startui_t   *starter = udata;
+  bool        rc = false;
+
+  rc = connCheckAll (starter->conn);
+  return rc;
 }
 
 static bool
@@ -291,6 +305,13 @@ starterClosingCallback (void *udata, programstate_t programState)
     gtk_widget_destroy (starter->window);
   }
 
+  procutilStopAllProcess (starter->processes, starter->conn, true);
+  procutilFreeAll (starter->processes);
+
+  bdj4shutdown (ROUTE_STARTERUI, NULL);
+  connDisconnectAll (starter->conn);
+  connFree (starter->conn);
+
   if (starter->supporttb != NULL) {
     uiutilsTextBoxFree (starter->supporttb);
   }
@@ -300,7 +321,6 @@ starterClosingCallback (void *udata, programstate_t programState)
       "starterui", ".txt", PATHBLD_MP_USEIDX);
   datafileSaveKeyVal ("starterui", fn, starteruidfkeys, STARTERUI_KEY_MAX, starter->options);
 
-  connFree (starter->conn);
   sockhCloseServer (starter->sockserver);
   nlistFree (starter->dispProfileList);
   nlistFree (starter->profileIdxMap);
@@ -314,16 +334,6 @@ starterClosingCallback (void *udata, programstate_t programState)
     slistFree (starter->supportFileList);
   }
 
-  bdj4shutdown (ROUTE_STARTERUI, NULL);
-
-  /* give the other processes some time to shut down */
-  mssleep (200);
-  for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
-    if (starter->processes [i] != NULL) {
-      procutilStopProcess (starter->processes [i], starter->conn, i, true);
-      procutilFree (starter->processes [i]);
-    }
-  }
   return true;
 }
 
@@ -517,11 +527,13 @@ starterMainLoop (void *tstarter)
       char        tmstr [40];
 
       tmutilDstamp (datestr, sizeof (datestr));
-      tmutilTstamp (tmstr, sizeof (tmstr));
+      tmutilShortTstamp (tmstr, sizeof (tmstr));
       snprintf (starter->ident, sizeof (starter->ident), "%s-%s-%s",
           sysvarsGetStr (SV_USER_MUNGE), datestr, tmstr);
 
-      starter->webclient = webclientAlloc (starter, NULL);
+      if (starter->webclient == NULL) {
+        starter->webclient = webclientAlloc (starter, starterWebResponseCallback);
+      }
       /* CONTEXT: starterui: support: status message */
       snprintf (tbuff, sizeof (tbuff), _("Sending Support Message"));
       uiutilsLabelSetText (starter->supportStatus, tbuff);
@@ -543,8 +555,8 @@ starterMainLoop (void *tstarter)
       strlcpy (tbuff, "support.txt", sizeof (tbuff));
       fh = fopen (tbuff, "w");
       if (fh != NULL) {
-        fprintf (fh, " Ident: %s\n", starter->ident);
-        fprintf (fh, " E-Mail: %s\n", email);
+        fprintf (fh, " Ident  : %s\n", starter->ident);
+        fprintf (fh, " E-Mail : %s\n", email);
         fprintf (fh, " Subject: %s\n", subj);
         fprintf (fh, " Message:\n%s\n", msg);
         fclose (fh);
@@ -702,6 +714,11 @@ starterProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           connConnectResponse (starter->conn, routefrom);
           break;
         }
+        case MSG_SOCKET_CLOSE: {
+          procutilCloseProcess (starter->processes [routefrom],
+              starter->conn, routefrom);
+          break;
+        }
         case MSG_EXIT_REQUEST: {
           logMsg (LOG_SESS, LOG_IMPORTANT, "got exit request");
           gKillReceived = 0;
@@ -799,8 +816,22 @@ starterProcessSupport (GtkButton *b, gpointer udata)
   GtkWidget     *hbox;
   GtkWidget     *widget;
   GtkWidget     *dialog;
+  GtkSizeGroup  *sg;
   char          tbuff [MAXPATHLEN];
   char          uri [MAXPATHLEN];
+  char          *builddate;
+  char          *rlslvl;
+
+  if (*starter->latestversion == '\0') {
+    if (starter->webclient == NULL) {
+      starter->webclient = webclientAlloc (starter, starterWebResponseCallback);
+    }
+    snprintf (uri, sizeof (uri), "%s/%s",
+        sysvarsGetStr (SV_WEB_HOST), sysvarsGetStr (SV_WEB_VERSION_FILE));
+    webclientGet (starter->webclient, uri);
+    strlcpy (starter->latestversion, starter->webresponse, sizeof (starter->latestversion));
+    stringTrim (starter->latestversion);
+  }
 
   dialog = gtk_dialog_new_with_buttons (
       /* CONTEXT: title for the support dialog */
@@ -816,18 +847,53 @@ starterProcessSupport (GtkButton *b, gpointer udata)
   content = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
   uiutilsWidgetSetAllMargins (content, uiutilsBaseMarginSz * 2);
 
+  sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+
   vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   assert (vbox != NULL);
   gtk_widget_set_hexpand (vbox, FALSE);
   gtk_widget_set_vexpand (vbox, FALSE);
   gtk_container_add (GTK_CONTAINER (content), vbox);
 
-  /* line 1 */
+  /* begin line */
+  hbox = uiutilsCreateHorizBox ();
+  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+
+  /* CONTEXT: starterui: basic support dialog, version display*/
+  snprintf (tbuff, sizeof (tbuff), _("%s Version"), BDJ4_NAME);
+  widget = uiutilsCreateColonLabel (tbuff);
+  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+  gtk_size_group_add_widget (sg, widget);
+
+  builddate = sysvarsGetStr (SV_BDJ4_BUILDDATE);
+  rlslvl = sysvarsGetStr (SV_BDJ4_RELEASELEVEL);
+  if (strcmp (rlslvl, "") == 0) {
+    builddate = "";
+  }
+  snprintf (tbuff, sizeof (tbuff), "%s %s %s",
+      sysvarsGetStr (SV_BDJ4_VERSION), builddate, rlslvl);
+  widget = uiutilsCreateLabel (tbuff);
+  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+
+  /* begin line */
+  hbox = uiutilsCreateHorizBox ();
+  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+
+  /* CONTEXT: starterui: basic support dialog, latest version display*/
+  widget = uiutilsCreateColonLabel (_("Latest Version"));
+  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+  gtk_size_group_add_widget (sg, widget);
+
+  widget = uiutilsCreateLabel (starter->latestversion);
+  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+
+  /* begin line */
   /* CONTEXT: starterui: basic support dialog, listing support options */
   widget = uiutilsCreateColonLabel (_("Support options"));
   gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
+  gtk_size_group_add_widget (sg, widget);
 
-  /* line 2 */
+  /* begin line */
   snprintf (uri, sizeof (uri), "%s%s",
       sysvarsGetStr (SV_FORUM_HOST), sysvarsGetStr (SV_FORUM_URI));
   /* CONTEXT: starterui: basic support dialog: support option */
@@ -835,23 +901,25 @@ starterProcessSupport (GtkButton *b, gpointer udata)
   widget = uiutilsCreateLink (tbuff, uri);
   gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
 
-  /* line 3 */
+  /* begin line */
   snprintf (uri, sizeof (uri), "%s%s",
-      sysvarsGetStr (SV_SUPPORT_HOST), sysvarsGetStr (SV_SUPPORT_URI));
+      sysvarsGetStr (SV_TICKET_HOST), sysvarsGetStr (SV_TICKET_URI));
   /* CONTEXT: starterui: basic support dialog: support option */
   snprintf (tbuff, sizeof (tbuff), _("%s Support Tickets"), BDJ4_NAME);
   widget = uiutilsCreateLink (tbuff, uri);
   gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
 
-  /* line 4 */
+  /* begin line */
+  hbox = uiutilsCreateHorizBox ();
+  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+
   /* CONTEXT: starterui: basic support dialog: button: support option */
   widget = uiutilsCreateButton (_("Send Support Message"), NULL,
       starterCreateSupportDialog, starter);
-  gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 
   /* the dialog doesn't have any space above the buttons */
-  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
-  assert (hbox != NULL);
+  hbox = uiutilsCreateHorizBox ();
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
 
   widget = uiutilsCreateLabel (" ");
@@ -1171,6 +1239,15 @@ starterSendFile (startui_t *starter, char *origfn, char *fn)
   query [6] = NULL;
   webclientUploadFile (starter->webclient, uri, query, fn);
   fileopDelete (fn);
+}
+
+static void
+starterWebResponseCallback (void *userdata, char *resp, size_t len)
+{
+  startui_t *starter = userdata;
+
+  starter->webresponse = resp;
+  return;
 }
 
 static void

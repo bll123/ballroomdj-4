@@ -41,16 +41,17 @@ typedef enum {
   SV_PYTHON_VERSION,      // 3.10.2 => 310
   SV_SHLIB_EXT,
   SV_REGISTER_URI,
-  SV_SUPPORT_HOST,
   SV_SUPPORTMSG_HOST,
   SV_SUPPORTMSG_URI,
-  SV_SUPPORT_URI,
+  SV_TICKET_HOST,
+  SV_TICKET_URI,
   SV_TEMP_A,
   SV_TEMP_B,
   SV_USER,
   SV_USER_AGENT,
   SV_USER_MUNGE,
   SV_WEB_HOST,
+  SV_WEB_VERSION_FILE,
   SV_MAX
 } sysvarkey_t;
 
@@ -66,6 +67,7 @@ typedef enum {
 #define SV_TMP_FILE "tmpsysvars"
 
 void    sysvarsInit (const char *);
+void    sysvarsCheckPaths (void);
 char    * sysvarsGetStr (sysvarkey_t idx);
 ssize_t sysvarsGetNum (sysvarlkey_t idx);
 void    sysvarsSetStr (sysvarkey_t, const char *value);

@@ -108,6 +108,7 @@ static bool     dbupdateListeningCallback (void *tdbupdate, programstate_t progr
 static bool     dbupdateConnectingCallback (void *tdbupdate, programstate_t programState);
 static bool     dbupdateHandshakeCallback (void *tdbupdate, programstate_t programState);
 static bool     dbupdateStoppingCallback (void *tdbupdate, programstate_t programState);
+static bool     dbupdateStopWaitCallback (void *tdbupdate, programstate_t programState);
 static bool     dbupdateClosingCallback (void *tdbupdate, programstate_t programState);
 static void     dbupdateProcessTagData (dbupdate_t *dbupdate, char *args);
 static void     dbupdateSigHandler (int sig);
@@ -157,6 +158,8 @@ main (int argc, char *argv[])
       dbupdateHandshakeCallback, &dbupdate);
   progstateSetCallback (dbupdate.progstate, STATE_STOPPING,
       dbupdateStoppingCallback, &dbupdate);
+  progstateSetCallback (dbupdate.progstate, STATE_STOP_WAIT,
+      dbupdateStopWaitCallback, &dbupdate);
   progstateSetCallback (dbupdate.progstate, STATE_CLOSING,
       dbupdateClosingCallback, &dbupdate);
 
@@ -215,7 +218,7 @@ main (int argc, char *argv[])
   sockhMainLoop (listenPort, dbupdateProcessMsg, dbupdateProcessing, &dbupdate);
 
   while (progstateShutdownProcess (dbupdate.progstate) != STATE_CLOSED) {
-    ;
+    mssleep (50);
   }
   progstateFree (dbupdate.progstate);
 
@@ -244,7 +247,8 @@ dbupdateProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_SOCKET_CLOSE: {
-          connDisconnect (dbupdate->conn, routefrom);
+          procutilCloseProcess (dbupdate->processes [routefrom],
+              dbupdate->conn, routefrom);
           break;
         }
         case MSG_EXIT_REQUEST: {
@@ -548,15 +552,24 @@ dbupdateStoppingCallback (void *tdbupdate, programstate_t programState)
 
   logProcBegin (LOG_PROC, "dbupdateStoppingCallback");
 
-  for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
-    if (dbupdate->processes [i] != NULL) {
-      procutilStopProcess (dbupdate->processes [i], dbupdate->conn, i, false);
-    }
-  }
-  mssleep (200);
+  procutilStopAllProcess (dbupdate->processes, dbupdate->conn, false);
 
   logProcEnd (LOG_PROC, "dbupdateStoppingCallback", "");
   return true;
+}
+
+static bool
+dbupdateStopWaitCallback (void *tdbupdate, programstate_t programState)
+{
+  dbupdate_t  *dbupdate = tdbupdate;
+  bool        rc = false;
+
+  logProcBegin (LOG_PROC, "dbupdateStopWaitCallback");
+
+  rc = connCheckAll (dbupdate->conn);
+
+  logProcEnd (LOG_PROC, "dbupdateStopWaitCallback", "");
+  return rc;
 }
 
 static bool
@@ -571,17 +584,12 @@ dbupdateClosingCallback (void *tdbupdate, programstate_t programState)
     dbClose (dbupdate->nmusicdb);
   }
 
-  /* give the other processes some time to shut down */
-  mssleep (200);
-  for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
-    if (dbupdate->processes [i] != NULL) {
-      procutilStopProcess (dbupdate->processes [i], dbupdate->conn, i, true);
-      procutilFree (dbupdate->processes [i]);
-    }
-  }
+  procutilStopAllProcess (dbupdate->processes, dbupdate->conn, true);
+  procutilFreeAll (dbupdate->processes);
 
   regfree (&dbupdate->fnregex);
   slistFree (dbupdate->fileList);
+  connDisconnectAll (dbupdate->conn);
   connFree (dbupdate->conn);
 
   logProcEnd (LOG_PROC, "dbupdateClosingCallback", "");

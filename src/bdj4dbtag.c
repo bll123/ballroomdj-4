@@ -137,7 +137,7 @@ main (int argc, char *argv[])
   sockhMainLoop (listenPort, dbtagProcessMsg, dbtagProcessing, &dbtag);
 
   while (progstateShutdownProcess (dbtag.progstate) != STATE_CLOSED) {
-    ;
+    mssleep (50);
   }
   progstateFree (dbtag.progstate);
 

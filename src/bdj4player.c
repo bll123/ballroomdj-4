@@ -246,7 +246,7 @@ main (int argc, char *argv[])
   sockhMainLoop (listenPort, playerProcessMsg, playerProcessing, &playerData);
 
   while (progstateShutdownProcess (playerData.progstate) != STATE_CLOSED) {
-    ;
+    mssleep (50);
   }
   progstateFree (playerData.progstate);
   logEnd ();

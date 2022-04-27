@@ -121,6 +121,22 @@ connDisconnectAll (conn_t *conn)
   }
 }
 
+bool
+connCheckAll (conn_t *conn)
+{
+  bool      rc = true;
+
+  for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
+    if (conn [i].connected) {
+fprintf (stderr, "%d still connected\n", i);
+      rc = false;
+      break;
+    }
+  }
+
+  return rc;
+}
+
 void
 connProcessHandshake (conn_t *conn, bdjmsgroute_t routefrom)
 {

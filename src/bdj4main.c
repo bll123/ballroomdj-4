@@ -87,6 +87,7 @@ static bool     mainListeningCallback (void *tmaindata, programstate_t programSt
 static bool     mainConnectingCallback (void *tmaindata, programstate_t programState);
 static bool     mainHandshakeCallback (void *tmaindata, programstate_t programState);
 static bool     mainStoppingCallback (void *tmaindata, programstate_t programState);
+static bool     mainStopWaitCallback (void *tmaindata, programstate_t programState);
 static bool     mainClosingCallback (void *tmaindata, programstate_t programState);
 static void     mainSendMusicQueueData (maindata_t *mainData, int musicqidx);
 static void     mainSendMarqueeData (maindata_t *mainData);
@@ -143,6 +144,8 @@ main (int argc, char *argv[])
       mainHandshakeCallback, &mainData);
   progstateSetCallback (mainData.progstate, STATE_STOPPING,
       mainStoppingCallback, &mainData);
+  progstateSetCallback (mainData.progstate, STATE_STOP_WAIT,
+      mainStopWaitCallback, &mainData);
   progstateSetCallback (mainData.progstate, STATE_CLOSING,
       mainClosingCallback, &mainData);
 
@@ -198,7 +201,7 @@ main (int argc, char *argv[])
   sockhMainLoop (listenPort, mainProcessMsg, mainProcessing, &mainData);
 
   while (progstateShutdownProcess (mainData.progstate) != STATE_CLOSED) {
-    ;
+    mssleep (50);
   }
   progstateFree (mainData.progstate);
 
@@ -216,15 +219,24 @@ mainStoppingCallback (void *tmaindata, programstate_t programState)
 
   logProcBegin (LOG_PROC, "mainStoppingCallback");
 
-  for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
-    if (mainData->processes [i] != NULL) {
-      procutilStopProcess (mainData->processes [i], mainData->conn, i, false);
-    }
-  }
-  mssleep (200);
+  procutilStopAllProcess (mainData->processes, mainData->conn, false);
 
   logProcEnd (LOG_PROC, "mainStoppingCallback", "");
   return true;
+}
+
+static bool
+mainStopWaitCallback (void *tmaindata, programstate_t programState)
+{
+  maindata_t  *mainData = tmaindata;
+  bool        rc = false;
+
+  logProcBegin (LOG_PROC, "mainStopWaitCallback");
+
+  rc = connCheckAll (mainData->conn);
+
+  logProcEnd (LOG_PROC, "mainStopWaitCallback", "");
+  return rc;
 }
 
 static bool
@@ -260,14 +272,8 @@ mainClosingCallback (void *tmaindata, programstate_t programState)
     nlistFree (mainData->danceCounts);
   }
 
-  /* give the other processes some time to shut down */
-  mssleep (200);
-  for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
-    if (mainData->processes [i] != NULL) {
-      procutilStopProcess (mainData->processes [i], mainData->conn, i, true);
-      procutilFree (mainData->processes [i]);
-    }
-  }
+  procutilStopAllProcess (mainData->processes, mainData->conn, true);
+  procutilFreeAll (mainData->processes);
 
   script = bdjoptGetStr (OPT_M_SHUTDOWNSCRIPT);
   if (script != NULL &&
@@ -281,6 +287,7 @@ mainClosingCallback (void *tmaindata, programstate_t programState)
   }
 
   bdj4shutdown (ROUTE_MAIN, mainData->musicdb);
+  connDisconnectAll (mainData->conn);
   connFree (mainData->conn);
 
   logProcEnd (LOG_PROC, "mainClosingCallback", "");
@@ -312,7 +319,8 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_SOCKET_CLOSE: {
-          connDisconnect (mainData->conn, routefrom);
+          procutilCloseProcess (mainData->processes [routefrom],
+              mainData->conn, routefrom);
           break;
         }
         case MSG_EXIT_REQUEST: {

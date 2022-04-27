@@ -339,6 +339,7 @@ static datafilekey_t configuidfkeys [CONFUI_KEY_MAX] = {
 
 static bool     confuiHandshakeCallback (void *udata, programstate_t programState);
 static bool     confuiStoppingCallback (void *udata, programstate_t programState);
+static bool     confuiStopWaitCallback (void *udata, programstate_t programState);
 static bool     confuiClosingCallback (void *udata, programstate_t programState);
 static void     confuiActivate (GApplication *app, gpointer userdata);
 gboolean        confuiMainLoop  (void *tconfui);
@@ -724,6 +725,8 @@ main (int argc, char *argv[])
   /* then these will be run last, after the other closing callbacks */
   progstateSetCallback (confui.progstate, STATE_STOPPING,
       confuiStoppingCallback, &confui);
+  progstateSetCallback (confui.progstate, STATE_STOP_WAIT,
+      confuiStopWaitCallback, &confui);
   progstateSetCallback (confui.progstate, STATE_CLOSING,
       confuiClosingCallback, &confui);
 
@@ -740,7 +743,7 @@ main (int argc, char *argv[])
       &confui.app, confuiActivate, &confui);
 
   while (progstateShutdownProcess (confui.progstate) != STATE_CLOSED) {
-    ;
+    mssleep (50);
   }
   progstateFree (confui.progstate);
   orgoptFree (orgopt);
@@ -778,16 +781,23 @@ confuiStoppingCallback (void *udata, programstate_t programState)
       "configui", ".txt", PATHBLD_MP_USEIDX);
   datafileSaveKeyVal ("configui", fn, configuidfkeys, CONFUI_KEY_MAX, confui->options);
 
-  for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
-    if (confui->processes [i] != NULL) {
-      procutilStopProcess (confui->processes [i], confui->conn, i, false);
-    }
-  }
+  procutilStopAllProcess (confui->processes, confui->conn, false);
 
   gdone = 1;
-  connDisconnectAll (confui->conn);
   logProcEnd (LOG_PROC, "confuiStoppingCallback", "");
   return true;
+}
+
+static bool
+confuiStopWaitCallback (void *udata, programstate_t programState)
+{
+  configui_t  * confui = udata;
+  bool        rc = false;
+
+  logProcBegin (LOG_PROC, "confuiStopWaitCallback");
+  rc = connCheckAll (confui->conn);
+  logProcEnd (LOG_PROC, "confuiStopWaitCallback", "");
+  return rc;
 }
 
 static bool
@@ -848,13 +858,10 @@ confuiClosingCallback (void *udata, programstate_t programState)
 
   /* give the other processes some time to shut down */
   mssleep (200);
-  for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
-    if (confui->processes [i] != NULL) {
-      procutilStopProcess (confui->processes [i], confui->conn, i, true);
-      procutilFree (confui->processes [i]);
-    }
-  }
+  procutilStopAllProcess (confui->processes, confui->conn, true);
+  procutilFreeAll (confui->processes);
 
+  connDisconnectAll (confui->conn);
   connFree (confui->conn);
   uiutilsCleanup ();
 
@@ -1626,6 +1633,11 @@ confuiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_HANDSHAKE: {
           connProcessHandshake (confui->conn, routefrom);
           connConnectResponse (confui->conn, routefrom);
+          break;
+        }
+        case MSG_SOCKET_CLOSE: {
+          procutilCloseProcess (confui->processes [routefrom],
+              confui->conn, routefrom);
           break;
         }
         case MSG_EXIT_REQUEST: {
@@ -2983,7 +2995,8 @@ confuiMakeQRCodeFile (configui_t *confui, char *title, char *uri)
   fh = fopen (tbuff, "w");
   fwrite (ndata, dlen, 1, fh);
   fclose (fh);
-  snprintf (qruri, MAXPATHLEN, "file://%s/%s",
+  /* windows requires an extra slash in front, and it doesn't hurt on linux */
+  snprintf (qruri, MAXPATHLEN, "file:///%s/%s",
       sysvarsGetStr (SV_BDJ4DATATOPDIR), tbuff);
 
   free (data);

@@ -68,4 +68,29 @@ if [[ $tag == linux ]]; then
     bll123@frs.sourceforge.net:/home/frs/project/ballroomdj4/
 fi
 
+server=web.sourceforge.net
+port=22
+project=ballroomdj4
+# ${remuser}@web.sourceforge.net:/home/project-web/${project}/htdocs
+wwwpath=/home/project-web/${project}/htdocs
+ssh="ssh -p $port"
+export ssh
+echo -n "Remote Password: "
+read -s SSHPASS
+echo ""
+export SSHPASS
+
+echo "## updating version file"
+VERFILE=bdj4version.txt
+. ../VERSION.txt
+if [[ $RELEASELEVEL != "" ]]; then
+  bd=$BUILDDATE
+fi
+echo "$VERSION $bd $RELEASELEVEL" > $VERFILE
+for f in $VERFILE; do
+  sshpass -e rsync -e "$ssh" -aS \
+      $f ${remuser}@${server}:${wwwpath}
+done
+rm -f $VERFILE
+
 exit 0

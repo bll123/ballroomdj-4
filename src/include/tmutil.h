@@ -24,6 +24,7 @@ bool      mstimeCheck (mstime_t *tm);
 char      *tmutilDstamp (char *, size_t);
 char      * tmutilDisp (char *buff, size_t max);
 char      *tmutilTstamp (char *, size_t);
+char      *tmutilShortTstamp (char *, size_t);
 char      *tmutilToMS (ssize_t ms, char *buff, size_t max);
 char      *tmutilToMSD (ssize_t ms, char *buff, size_t max);
 char      * tmutilToDateHM (ssize_t ms, char *buff, size_t max);

@@ -80,14 +80,15 @@ static sysvarsdesc_t sysvarsdesc [SV_MAX] = {
   [SV_PYTHON_VERSION] = { "Version-Python" },
   [SV_REGISTER_URI] = { "URI-Register" },
   [SV_SHLIB_EXT] = { "Sharedlib-Extension" },
-  [SV_SUPPORT_HOST] = { "Host-Support" },
   [SV_SUPPORTMSG_HOST] = { "Host-Support-Msg" },
   [SV_SUPPORTMSG_URI] = { "URI-Support-Msg" },
-  [SV_SUPPORT_URI] = { "URI-Support" },
+  [SV_TICKET_HOST] = { "Host-Support" },
+  [SV_TICKET_URI] = { "URI-Support" },
   [SV_USER_AGENT] = { "User-Agent" },
   [SV_USER_MUNGE] = { "User-Munge" },
   [SV_USER] = { "User" },
   [SV_WEB_HOST] = { "Host-Web" },
+  [SV_WEB_VERSION_FILE] = { "URI-Version-File" },
 };
 
 static sysvarsdesc_t sysvarsldesc [SVL_MAX] = {
@@ -109,6 +110,8 @@ static char *cacertFiles [] = {
   "/opt/local/etc/openssl/cert.pem",
   "/usr/local/etc/openssl/cert.pem",
   "http/curl-ca-bundle.crt",
+  "templates/curl-ca-bundle.crt",
+  "plocal/etc/ssl/cert.pem",
 };
 #define CACERT_FILE_COUNT (sizeof (cacertFiles) / sizeof (char *))
 
@@ -124,8 +127,6 @@ sysvarsInit (const char *argv0)
   char          tcwd [SV_MAX_SZ+1];
   char          buff [SV_MAX_SZ+1];
   char          *tptr;
-  char          *tsep;
-  char          *tokstr;
   char          *p;
   size_t        dlen;
 #if _lib_uname
@@ -272,10 +273,11 @@ sysvarsInit (const char *argv0)
   strlcpy (sysvars [SV_MOBMQ_POST_URI], "/marquee4.php", SV_MAX_SZ);
 
   strlcpy (sysvars [SV_WEB_HOST], "https://ballroomdj4.sourceforge.io", SV_MAX_SZ);
+  strlcpy (sysvars [SV_WEB_VERSION_FILE], "bdj4version.txt", SV_MAX_SZ);
   strlcpy (sysvars [SV_FORUM_HOST], "https://ballroomdj.org", SV_MAX_SZ);
   strlcpy (sysvars [SV_FORUM_URI], "/forum/index.php", SV_MAX_SZ);
-  strlcpy (sysvars [SV_SUPPORT_HOST], "https://sourceforge.net", SV_MAX_SZ);
-  strlcpy (sysvars [SV_SUPPORT_URI], "/p/ballroomdj4/tickets/", SV_MAX_SZ);
+  strlcpy (sysvars [SV_TICKET_HOST], "https://sourceforge.net", SV_MAX_SZ);
+  strlcpy (sysvars [SV_TICKET_URI], "/p/ballroomdj4/tickets/", SV_MAX_SZ);
   strlcpy (sysvars [SV_SUPPORTMSG_HOST], "https://ballroomdj.org", SV_MAX_SZ);
   strlcpy (sysvars [SV_SUPPORTMSG_URI], "/bdj4support.php", SV_MAX_SZ);
   strlcpy (sysvars [SV_REGISTER_URI], "/bdj4register.php", SV_MAX_SZ);
@@ -284,6 +286,14 @@ sysvarsInit (const char *argv0)
     if (fileopFileExists (cacertFiles [i])) {
       strlcpy (sysvars [SV_CA_FILE], cacertFiles [i], SV_MAX_SZ);
       break;
+    }
+    if (*cacertFiles [i] != '/') {
+      snprintf (tbuff, sizeof (tbuff), "%s/%s",
+        sysvars [SV_BDJ4MAINDIR], cacertFiles [i]);
+      if (fileopFileExists (tbuff)) {
+        strlcpy (sysvars [SV_CA_FILE], tbuff, SV_MAX_SZ);
+        break;
+      }
     }
   }
 
@@ -347,60 +357,7 @@ sysvarsInit (const char *argv0)
       "%s/%s ( https://ballroomdj.org/ )", BDJ4_NAME,
       sysvars [SV_BDJ4_VERSION]);
 
-  strlcpy (sysvars [SV_PATH_PYTHON], "", SV_MAX_SZ);
-  strlcpy (sysvars [SV_PATH_PYTHON_PIP], "", SV_MAX_SZ);
-  strlcpy (sysvars [SV_PATH_GETCONF], "", SV_MAX_SZ);
-  strlcpy (sysvars [SV_PATH_XDGUSERDIR], "", SV_MAX_SZ);
-  strlcpy (sysvars [SV_TEMP_A], "", SV_MAX_SZ);
-
-  tptr = strdup (getenv ("PATH"));
-  tsep = ":";
-  if (isWindows ()) {
-    tsep = ";";
-  }
-  p = strtok_r (tptr, tsep, &tokstr);
-  while (p != NULL) {
-    strlcpy (tbuff, p, sizeof (tbuff));
-    pathNormPath (tbuff, sizeof (tbuff));
-    stringTrimChar (tbuff, '/');
-
-    if (*sysvars [SV_PATH_PYTHON_PIP] == '\0') {
-      checkForFile (tbuff, SV_PATH_PYTHON_PIP, "pip3", "pip", NULL);
-    }
-
-    if (*sysvars [SV_PATH_PYTHON] == '\0') {
-      checkForFile (tbuff, SV_PATH_PYTHON, "python3", "python", NULL);
-    }
-
-    if (*sysvars [SV_PATH_GETCONF] == '\0') {
-      checkForFile (tbuff, SV_PATH_GETCONF, "getconf", NULL);
-    }
-
-    if (*sysvars [SV_PATH_XDGUSERDIR] == '\0') {
-      checkForFile (tbuff, SV_PATH_XDGUSERDIR, "xdg-user-dir", NULL);
-    }
-
-    if (*sysvars [SV_TEMP_A] == '\0') {
-      checkForFile (tbuff, SV_TEMP_A, "sw_vers", NULL);
-    }
-
-    p = strtok_r (NULL, tsep, &tokstr);
-  }
-  free (tptr);
-
-  strlcpy (sysvars [SV_PATH_VLC], "", SV_MAX_SZ);
-  if (isWindows ()) {
-    strlcpy (tbuff, "C:/Program Files/VideoLAN/VLC", sizeof (tbuff));
-  }
-  if (isMacOS ()) {
-    strlcpy (tbuff, "/Applications/VLC.app/Contents/MacOS/lib/", sizeof (tbuff));
-  }
-  if (isLinux ()) {
-    strlcpy (tbuff, "/usr/lib/x86_64-linux-gnu/libvlc.so.5", sizeof (tbuff));
-  }
-  if (fileopIsDirectory (tbuff) || fileopFileExists (tbuff)) {
-    strlcpy (sysvars [SV_PATH_VLC], tbuff, SV_MAX_SZ);
-  }
+  sysvarsCheckPaths ();
 
   if (strcmp (sysvars [SV_OSNAME], "darwin") == 0) {
     char *data;
@@ -467,7 +424,11 @@ sysvarsInit (const char *argv0)
           sysvars [SV_PYTHON_VERSION][j] = '\0';
         }
       } /* found the first '.' */
-    } /* found the '3' starting the python version */
+    } else {
+      /* possibly the windows store version that is not installed */
+      /* clear the path */
+      strcpy (sysvars [SV_PATH_PYTHON], "");
+    }
     free (data);
   } /* if python was found */
 
@@ -525,6 +486,78 @@ sysvarsInit (const char *argv0)
 
   if (strcmp (sysvars [SV_BDJ4_RELEASELEVEL], "alpha") == 0) {
     enable_core_dump ();
+  }
+}
+
+void
+sysvarsCheckPaths (void)
+{
+  char    *tptr;
+  char    *p;
+  char    *tsep;
+  char    *tokstr;
+  char    tbuff [MAXPATHLEN];
+
+  strlcpy (sysvars [SV_PATH_PYTHON], "", SV_MAX_SZ);
+  strlcpy (sysvars [SV_PATH_PYTHON_PIP], "", SV_MAX_SZ);
+  strlcpy (sysvars [SV_PATH_GETCONF], "", SV_MAX_SZ);
+  strlcpy (sysvars [SV_PATH_XDGUSERDIR], "", SV_MAX_SZ);
+  strlcpy (sysvars [SV_TEMP_A], "", SV_MAX_SZ);
+
+  tptr = strdup (getenv ("PATH"));
+  tsep = ":";
+  if (isWindows ()) {
+    tsep = ";";
+  }
+  p = strtok_r (tptr, tsep, &tokstr);
+  while (p != NULL) {
+    if (strstr (p, "WindowsApps") != NULL) {
+      /* the windows python does not have a regular path for the pip3 user */
+      /* installed scripts */
+      p = strtok_r (NULL, tsep, &tokstr);
+      continue;
+    }
+
+    strlcpy (tbuff, p, sizeof (tbuff));
+    pathNormPath (tbuff, sizeof (tbuff));
+    stringTrimChar (tbuff, '/');
+
+    if (*sysvars [SV_PATH_PYTHON_PIP] == '\0') {
+      checkForFile (tbuff, SV_PATH_PYTHON_PIP, "pip3", "pip", NULL);
+    }
+
+    if (*sysvars [SV_PATH_PYTHON] == '\0') {
+      checkForFile (tbuff, SV_PATH_PYTHON, "python3", "python", NULL);
+    }
+
+    if (*sysvars [SV_PATH_GETCONF] == '\0') {
+      checkForFile (tbuff, SV_PATH_GETCONF, "getconf", NULL);
+    }
+
+    if (*sysvars [SV_PATH_XDGUSERDIR] == '\0') {
+      checkForFile (tbuff, SV_PATH_XDGUSERDIR, "xdg-user-dir", NULL);
+    }
+
+    if (*sysvars [SV_TEMP_A] == '\0') {
+      checkForFile (tbuff, SV_TEMP_A, "sw_vers", NULL);
+    }
+
+    p = strtok_r (NULL, tsep, &tokstr);
+  }
+  free (tptr);
+
+  strlcpy (sysvars [SV_PATH_VLC], "", SV_MAX_SZ);
+  if (isWindows ()) {
+    strlcpy (tbuff, "C:/Program Files/VideoLAN/VLC", sizeof (tbuff));
+  }
+  if (isMacOS ()) {
+    strlcpy (tbuff, "/Applications/VLC.app/Contents/MacOS/lib/", sizeof (tbuff));
+  }
+  if (isLinux ()) {
+    strlcpy (tbuff, "/usr/lib/x86_64-linux-gnu/libvlc.so.5", sizeof (tbuff));
+  }
+  if (fileopIsDirectory (tbuff) || fileopFileExists (tbuff)) {
+    strlcpy (sysvars [SV_PATH_VLC], tbuff, SV_MAX_SZ);
   }
 }
 
@@ -695,3 +728,4 @@ svGetLinuxOSInfo (char *fn)
 
   return rc;
 }
+

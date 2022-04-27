@@ -21,6 +21,7 @@ uint16_t  connPort (conn_t *conn, bdjmsgroute_t route);
 void      connConnect (conn_t *conn, bdjmsgroute_t route);
 void      connDisconnect (conn_t *conn, bdjmsgroute_t route);
 void      connDisconnectAll (conn_t *conn);
+bool      connCheckAll (conn_t *conn);
 void      connProcessHandshake (conn_t *conn, bdjmsgroute_t routefrom);
 void      connSendMessage (conn_t *conn, bdjmsgroute_t route,
               bdjmsgmsg_t msg, char *args);

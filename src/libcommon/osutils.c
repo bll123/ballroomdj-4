@@ -597,7 +597,7 @@ osRegistryGet (char *key, char *name)
       &len
       );
 
-  rval = strdup (buff);
+  rval = strdup ((char *) buff);
 
   RegCloseKey (hkey);
 #endif

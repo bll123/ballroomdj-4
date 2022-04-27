@@ -71,6 +71,9 @@ typedef enum {
   INST_PYTHON_INSTALL,
   INST_MUTAGEN_CHECK,
   INST_MUTAGEN_INSTALL,
+  INST_UPDATE_CA_FILE_INIT,
+  INST_UPDATE_CA_FILE,
+  INST_REGISTER_INIT,
   INST_REGISTER,
   INST_FINISH,
 } installstate_t;
@@ -91,6 +94,9 @@ typedef struct {
   int             delayMax;
   int             delayCount;
   installstate_t  delayState;
+  webclient_t     *webclient;
+  char            *webresponse;
+  size_t          webresplen;
   /* conversion */
   char            *bdj3loc;
   char            *tclshloc;
@@ -165,6 +171,9 @@ static void installerPythonDownload (installer_t *installer);
 static void installerPythonInstall (installer_t *installer);
 static void installerMutagenCheck (installer_t *installer);
 static void installerMutagenInstall (installer_t *installer);
+static void installerUpdateCAFileInit (installer_t *installer);
+static void installerUpdateCAFile (installer_t *installer);
+static void installerRegisterInit (installer_t *installer);
 static void installerRegister (installer_t *installer);
 
 static void installerCleanup (installer_t *installer);
@@ -178,6 +187,7 @@ static void installerVLCGetVersion (installer_t *installer);
 static void installerPythonGetVersion (installer_t *installer);
 static void installerCleanFiles (char *fname);
 static void installerCheckPackages (installer_t *installer);
+static void installerWebResponseCallback (void *userdata, char *resp, size_t len);
 
 int
 main (int argc, char *argv[])
@@ -247,6 +257,9 @@ main (int argc, char *argv[])
   installer.dispTextView = NULL;
   getcwd (installer.currdir, sizeof (installer.currdir));
   mstimeset (&installer.validateTimer, 3600000);
+  installer.webclient = NULL;
+  strcpy (installer.vlcversion, "");
+  strcpy (installer.pyversion, "");
 
   uiutilsEntryInit (&installer.targetEntry, 80, MAXPATHLEN);
   uiutilsEntryInit (&installer.bdj3locEntry, 80, MAXPATHLEN);
@@ -359,18 +372,6 @@ main (int argc, char *argv[])
     }
   }
 
-  if (installer.freetarget && installer.target != NULL) {
-    free (installer.target);
-  }
-  if (installer.freebdj3loc && installer.bdj3loc != NULL) {
-    free (installer.bdj3loc);
-  }
-  if (installer.convlist != NULL) {
-    slistFree (installer.convlist);
-  }
-  if (installer.tclshloc != NULL) {
-    free (installer.tclshloc);
-  }
   installerCleanup (&installer);
   logEnd ();
   return status;
@@ -644,7 +645,8 @@ installerMainLoop (void *udata)
     case INST_CREATE_DIRS: {
       installerCreateDirs (installer);
 
-      logStartAppend ("bdj4installer", "in", LOG_IMPORTANT);
+      logStartAppend ("bdj4installer", "in",
+          LOG_IMPORTANT | LOG_BASIC | LOG_MAIN);
       logMsg (LOG_INSTALL, LOG_IMPORTANT, "target: %s", installer->target);
 
       break;
@@ -711,6 +713,18 @@ installerMainLoop (void *udata)
     }
     case INST_MUTAGEN_INSTALL: {
       installerMutagenInstall (installer);
+      break;
+    }
+    case INST_UPDATE_CA_FILE_INIT: {
+      installerUpdateCAFileInit (installer);
+      break;
+    }
+    case INST_UPDATE_CA_FILE: {
+      installerUpdateCAFile (installer);
+      break;
+    }
+    case INST_REGISTER_INIT: {
+      installerRegisterInit (installer);
       break;
     }
     case INST_REGISTER: {
@@ -1299,16 +1313,16 @@ installerCopyTemplates (installer_t *installer)
     }
 
     pi = pathInfo (fname);
-    if (pathInfoExtCheck (pi, ".crt")) {
-      free (pi);
-      continue;
-    }
     if (pathInfoExtCheck (pi, ".html")) {
       free (pi);
       continue;
     }
 
-    if (pathInfoExtCheck (pi, ".svg")) {
+    if (pathInfoExtCheck (pi, ".crt")) {
+      snprintf (from, sizeof (from), "%s/templates/%s",
+          installer->rundir, fname);
+      snprintf (to, sizeof (to), "http/%s", fname);
+    } else if (pathInfoExtCheck (pi, ".svg")) {
       snprintf (from, sizeof (from), "%s/templates/%s",
           installer->rundir, fname);
       snprintf (to, sizeof (to), "%s/img/%s",
@@ -1694,13 +1708,8 @@ installerVLCDownload (installer_t *installer)
         "https://get.videolan.org/vlc/last/macosx/%s",
         installer->dlfname);
   }
-  if (*url) {
-    char    *ua;
-
-    ua = sysvarsGetStr (SV_USER_AGENT);
-    snprintf (tbuff, sizeof (tbuff), "curl --location --remote-name "
-        "--silent --user-agent \"%s\" %s", ua, url);
-    system (tbuff);
+  if (*url && *installer->vlcversion) {
+    webclientDownload (installer->webclient, url, installer->dlfname);
   }
 
   if (fileopFileExists (installer->dlfname)) {
@@ -1804,13 +1813,8 @@ installerPythonDownload (installer_t *installer)
         "https://www.python.org/ftp/python/%s/%s",
         installer->pyversion, installer->dlfname);
   }
-  if (*url) {
-    char *ua;
-
-    ua = sysvarsGetStr (SV_USER_AGENT);
-    snprintf (tbuff, sizeof (tbuff), "curl --location --remote-name "
-        "--silent --user-agent \"%s\" %s", ua, url);
-    system (tbuff);
+  if (*url && *installer->pyversion) {
+    webclientDownload (installer->webclient, url, installer->dlfname);
   }
 
   if (fileopFileExists (installer->dlfname)) {
@@ -1853,6 +1857,15 @@ installerMutagenCheck (installer_t *installer)
 {
   char  tbuff [MAXPATHLEN];
 
+  if (! installer->pythoninstalled) {
+    if (isWindows ()) {
+      installer->instState = INST_UPDATE_CA_FILE_INIT;
+    } else {
+      installer->instState = INST_REGISTER_INIT;
+    }
+    return;
+  }
+
   if (chdir (installer->datatopdir)) {
     fprintf (stderr, "Unable to set working dir: %s\n", installer->datatopdir);
     installerDisplayText (installer, "", _("Error: Unable to set working folder."));
@@ -1891,28 +1904,86 @@ installerMutagenInstall (installer_t *installer)
   snprintf (tbuff, sizeof (tbuff), _("%s installed."), "Mutagen");
   installerDisplayText (installer, "-- ", tbuff);
   installerCheckPackages (installer);
+  if (isWindows ()) {
+    installer->instState = INST_UPDATE_CA_FILE_INIT;
+  } else {
+    installer->instState = INST_REGISTER_INIT;
+  }
+}
+
+static void
+installerUpdateCAFileInit (installer_t *installer)
+{
+  char    tbuff [200];
+
+  if (chdir (installer->datatopdir)) {
+    fprintf (stderr, "Unable to set working dir: %s\n", installer->datatopdir);
+    installerDisplayText (installer, "", _("Error: Unable to set working folder."));
+    installerDisplayText (installer, " * ", _("Installation aborted."));
+    installer->instState = INST_BEGIN;
+    return;
+  }
 
   /* CONTEXT: installer: status message */
-  snprintf (tbuff, sizeof (tbuff), _("Registering %s."), BDJ4_NAME);
+  snprintf (tbuff, sizeof (tbuff), _("Updating certificates."));
   installerDisplayText (installer, "-- ", tbuff);
   installer->delayCount = 0;
-  installer->delayState = INST_REGISTER;
+  installer->delayState = INST_UPDATE_CA_FILE;
   installer->instState = INST_DELAY;
+}
+
+static void
+installerUpdateCAFile (installer_t *installer)
+{
+  if (installer->webclient == NULL) {
+    installer->webclient = webclientAlloc (installer, installerWebResponseCallback);
+  }
+  webclientDownload (installer->webclient,
+      "https://curl.se/ca/cacert.pem", "http/curl-ca-bundle.crt");
+
+  installer->instState = INST_REGISTER_INIT;
+}
+
+static void
+installerRegisterInit (installer_t *installer)
+{
+  char    tbuff [200];
+
+  if (chdir (installer->datatopdir)) {
+    fprintf (stderr, "Unable to set working dir: %s\n", installer->datatopdir);
+    installerDisplayText (installer, "", _("Error: Unable to set working folder."));
+    installerDisplayText (installer, " * ", _("Installation aborted."));
+    installer->instState = INST_BEGIN;
+    return;
+  }
+
+  if (strcmp (sysvarsGetStr (SV_USER), "bll") == 0 &&
+      strcmp (sysvarsGetStr (SV_BDJ4_RELEASELEVEL), "") != 0) {
+    /* no need to translate */
+    snprintf (tbuff, sizeof (tbuff), "Registeration Skipped.");
+    installerDisplayText (installer, "-- ", tbuff);
+    installer->instState = INST_FINISH;
+  } else {
+    /* CONTEXT: installer: status message */
+    snprintf (tbuff, sizeof (tbuff), _("Registering %s."), BDJ4_NAME);
+    installerDisplayText (installer, "-- ", tbuff);
+    installer->delayCount = 0;
+    installer->delayState = INST_REGISTER;
+    installer->instState = INST_DELAY;
+  }
 }
 
 static void
 installerRegister (installer_t *installer)
 {
-  webclient_t   *webclient;
   char          uri [200];
   char          tbuff [2048];
 
-  if (strcmp (sysvarsGetStr (SV_USER), "bll") == 0 &&
-      strcmp (sysvarsGetStr (SV_BDJ4_RELEASELEVEL), "") != 0) {
-    return;
+  installer->webresponse = NULL;
+  installer->webresplen = 0;
+  if (installer->webclient == NULL) {
+    installer->webclient = webclientAlloc (installer, installerWebResponseCallback);
   }
-
-  webclient = webclientAlloc (installer, NULL);
   snprintf (uri, sizeof (uri), "%s/%s",
       sysvarsGetStr (SV_SUPPORTMSG_HOST), sysvarsGetStr (SV_REGISTER_URI));
   snprintf (tbuff, sizeof (tbuff),
@@ -1936,8 +2007,8 @@ installerRegister (installer_t *installer)
       ! installer->newinstall && ! installer->reinstall,
       installer->convprocess
       );
-  webclientPost (webclient, uri, tbuff);
-  webclientClose (webclient);
+  webclientPost (installer->webclient, uri, tbuff);
+
   installer->instState = INST_FINISH;
 }
 
@@ -1948,6 +2019,23 @@ installerCleanup (installer_t *installer)
 {
   char  buff [MAXPATHLEN];
   char  *targv [10];
+
+  if (installer->freetarget && installer->target != NULL) {
+    free (installer->target);
+  }
+  if (installer->freebdj3loc && installer->bdj3loc != NULL) {
+    free (installer->bdj3loc);
+  }
+  if (installer->convlist != NULL) {
+    slistFree (installer->convlist);
+  }
+  if (installer->tclshloc != NULL) {
+    free (installer->tclshloc);
+  }
+
+  if (installer->webclient != NULL) {
+    webclientClose (installer->webclient);
+  }
 
   if (! fileopIsDirectory (installer->unpackdir)) {
     return;
@@ -2059,55 +2147,49 @@ installerSetrundir (installer_t *installer, const char *dir)
 static void
 installerVLCGetVersion (installer_t *installer)
 {
-  char      *data;
   char      *p;
   char      *e;
-  char      *ua;
-  char      *tmpfile = "tmp/vlcvers.txt";
-  char      tbuff [MAXPATHLEN];
 
   *installer->vlcversion = '\0';
-  ua = sysvarsGetStr (SV_USER_AGENT);
-  snprintf (tbuff, sizeof (tbuff),
-      "curl --silent --user-agent \"%s\" -o %s "
-      "http://get.videolan.org/vlc/last/macosx/",
-      ua, tmpfile);
-  system (tbuff);
-  if (fileopFileExists (tmpfile)) {
-    data = filedataReadAll (tmpfile, NULL);
+  installer->webresponse = NULL;
+  if (installer->webclient == NULL) {
+    installer->webclient = webclientAlloc (installer, installerWebResponseCallback);
+  }
+  webclientGet (installer->webclient, "http://get.videolan.org/vlc/last/macosx/");
 
+  if (installer->webresponse != NULL) {
+    char *srchvlc = "vlc-";
     /* vlc-3.0.16-intel64.dmg */
-    p = strstr (data, "vlc-");
-    p += 4;
-    e = strstr (p, "-");
-    strlcpy (installer->vlcversion, p, e - p + 1);
+    p = strstr (installer->webresponse, srchvlc);
+    if (p != NULL) {
+      p += strlen (srchvlc);
+      e = strstr (p, "-");
+      strlcpy (installer->vlcversion, p, e - p + 1);
+    }
   }
 }
 
 static void
 installerPythonGetVersion (installer_t *installer)
 {
-  char      *data;
   char      *p;
   char      *e;
-  char      *ua;
-  char      *tmpfile = "tmp/pyvers.txt";
-  char      tbuff [MAXPATHLEN];
 
   *installer->pyversion = '\0';
-  ua = sysvarsGetStr (SV_USER_AGENT);
-  snprintf (tbuff, sizeof (tbuff),
-      "curl --silent --user-agent \"%s\" -o %s "
-      "https://www.python.org/downloads/windows/",
-      ua, tmpfile);
-  system (tbuff);
-  if (fileopFileExists (tmpfile)) {
-    data = filedataReadAll (tmpfile, NULL);
+  installer->webresponse = NULL;
+  if (installer->webclient == NULL) {
+    installer->webclient = webclientAlloc (installer, installerWebResponseCallback);
+  }
+  webclientGet (installer->webclient, "https://www.python.org/downloads/windows/");
 
-    p = strstr (data, "Release - Python ");
-    p += 17;
-    e = strstr (p, "<");
-    strlcpy (installer->pyversion, p, e - p + 1);
+  if (installer->webresponse != NULL) {
+    char *srchpy = "Release - Python ";
+    p = strstr (installer->webresponse, srchpy);
+    if (p != NULL) {
+      p += strlen (srchpy);
+      e = strstr (p, "<");
+      strlcpy (installer->pyversion, p, e - p + 1);
+    }
   }
 }
 
@@ -2140,6 +2222,8 @@ installerCheckPackages (installer_t *installer)
 {
   char  tbuff [MAXPATHLEN];
   char  *tmp;
+
+  sysvarsCheckPaths ();
 
   tmp = sysvarsGetStr (SV_PATH_VLC);
 
@@ -2199,3 +2283,14 @@ installerCheckPackages (installer_t *installer)
     }
   }
 }
+
+static void
+installerWebResponseCallback (void *userdata, char *resp, size_t len)
+{
+  installer_t *installer = userdata;
+
+  installer->webresponse = resp;
+  installer->webresplen = len;
+  return;
+}
+

@@ -98,6 +98,7 @@ static bool     pluiListeningCallback (void *udata, programstate_t programState)
 static bool     pluiConnectingCallback (void *udata, programstate_t programState);
 static bool     pluiHandshakeCallback (void *udata, programstate_t programState);
 static bool     pluiStoppingCallback (void *udata, programstate_t programState);
+static bool     pluiStopWaitCallback (void *udata, programstate_t programState);
 static bool     pluiClosingCallback (void *udata, programstate_t programState);
 static void     pluiActivate (GApplication *app, gpointer userdata);
 gboolean        pluiMainLoop  (void *tplui);
@@ -215,6 +216,8 @@ main (int argc, char *argv[])
   /* then these will be run last, after the other closing callbacks */
   progstateSetCallback (plui.progstate, STATE_STOPPING,
       pluiStoppingCallback, &plui);
+  progstateSetCallback (plui.progstate, STATE_STOP_WAIT,
+      pluiStopWaitCallback, &plui);
   progstateSetCallback (plui.progstate, STATE_CLOSING,
       pluiClosingCallback, &plui);
 
@@ -232,7 +235,7 @@ main (int argc, char *argv[])
       &plui.app, pluiActivate, &plui);
 
   while (progstateShutdownProcess (plui.progstate) != STATE_CLOSED) {
-    ;
+    mssleep (50);
   }
 
   progstateFree (plui.progstate);
@@ -273,9 +276,32 @@ pluiStoppingCallback (void *udata, programstate_t programState)
   }
 
   gdone = 1;
-  connDisconnectAll (plui->conn);
   logProcEnd (LOG_PROC, "pluiStoppingCallback", "");
   return true;
+}
+
+static bool
+pluiStopWaitCallback (void *udata, programstate_t programState)
+{
+  playerui_t  * plui = udata;
+  bool        rc = true;
+
+  logProcBegin (LOG_PROC, "pluiStopWaitCallback");
+
+  for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
+    if (i == ROUTE_MAIN &&
+        lockExists (lockName (ROUTE_MANAGEUI), PATHBLD_MP_USEIDX)) {
+      continue;
+    }
+    if (connIsConnected (plui->conn, i)) {
+fprintf (stderr, "playerui: %d still connected\n", i);
+      rc = false;
+      break;
+    }
+  }
+
+  logProcEnd (LOG_PROC, "pluiStopWaitCallback", "");
+  return rc;
 }
 
 static bool
@@ -311,8 +337,6 @@ pluiClosingCallback (void *udata, programstate_t programState)
   }
   datafileFree (plui->optiondf);
 
-  /* give the other processes some time to shut down */
-  mssleep (200);
   for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
     if (i == ROUTE_MAIN &&
         lockExists (lockName (ROUTE_MANAGEUI), PATHBLD_MP_USEIDX)) {
@@ -324,6 +348,7 @@ pluiClosingCallback (void *udata, programstate_t programState)
     }
   }
 
+  connDisconnectAll (plui->conn);
   connFree (plui->conn);
 
   uiplayerFree (plui->uiplayer);
@@ -667,6 +692,11 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_HANDSHAKE: {
           connProcessHandshake (plui->conn, routefrom);
           connConnectResponse (plui->conn, routefrom);
+          break;
+        }
+        case MSG_SOCKET_CLOSE: {
+          procutilCloseProcess (plui->processes [routefrom],
+              plui->conn, routefrom);
           break;
         }
         case MSG_EXIT_REQUEST: {

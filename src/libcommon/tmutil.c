@@ -123,7 +123,7 @@ tmutilDstamp (char *buff, size_t max)
 #else
   tp = localtime (&s);
 #endif
-  strftime (buff, max, "%F", tp);
+  strftime (buff, max, "%Y-%m-%d", tp);
   return buff;
 }
 
@@ -145,7 +145,7 @@ tmutilDisp (char *buff, size_t max)
 #else
   tp = localtime (&s);
 #endif
-  strftime (buff, max, "%A %F %r", tp);
+  strftime (buff, max, "%A %Y-%m-%d %H:%M", tp);
   return buff;
 }
 
@@ -174,6 +174,29 @@ tmutilTstamp (char *buff, size_t max)
   strftime (buff, max, "%H:%M:%S", tp);
   snprintf (tbuff, sizeof (tbuff), ".%03zd", m);
   strlcat (buff, tbuff, max);
+  return buff;
+}
+
+char *
+tmutilShortTstamp (char *buff, size_t max)
+{
+  struct timeval    curr;
+  struct tm         *tp;
+  time_t            s;
+#if _lib_localtime_r
+  struct tm         t;
+#endif
+
+
+  gettimeofday (&curr, NULL);
+  s = curr.tv_sec;
+#if _lib_localtime_r
+  localtime_r (&s, &t);
+  tp = &t;
+#else
+  tp = localtime (&s);
+#endif
+  strftime (buff, max, "%H%M", tp);
   return buff;
 }
 
@@ -217,7 +240,7 @@ tmutilToDateHM (ssize_t ms, char *buff, size_t max)
 #else
   tp = localtime (&s);
 #endif
-  strftime (buff, max, "%F %H:%M", tp);
+  strftime (buff, max, "%Y-%m-%d %H:%M", tp);
   return buff;
 }
 

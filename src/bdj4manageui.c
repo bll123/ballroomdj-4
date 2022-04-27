@@ -106,6 +106,7 @@ static bool     manageListeningCallback (void *udata, programstate_t programStat
 static bool     manageConnectingCallback (void *udata, programstate_t programState);
 static bool     manageHandshakeCallback (void *udata, programstate_t programState);
 static bool     manageStoppingCallback (void *udata, programstate_t programState);
+static bool     manageStopWaitCallback (void *udata, programstate_t programState);
 static bool     manageClosingCallback (void *udata, programstate_t programState);
 static void     manageActivate (GApplication *app, gpointer userdata);
 gboolean        manageMainLoop  (void *tmanage);
@@ -240,6 +241,8 @@ main (int argc, char *argv[])
   /* then these will be run last, after the other closing callbacks */
   progstateSetCallback (manage.progstate, STATE_STOPPING,
       manageStoppingCallback, &manage);
+  progstateSetCallback (manage.progstate, STATE_STOP_WAIT,
+      manageStopWaitCallback, &manage);
   progstateSetCallback (manage.progstate, STATE_CLOSING,
       manageClosingCallback, &manage);
 
@@ -256,7 +259,7 @@ main (int argc, char *argv[])
       &manage.app, manageActivate, &manage);
 
   while (progstateShutdownProcess (manage.progstate) != STATE_CLOSED) {
-    ;
+    mssleep (50);
   }
 
   progstateFree (manage.progstate);
@@ -297,9 +300,32 @@ manageStoppingCallback (void *udata, programstate_t programState)
   }
 
   gdone = 1;
-  connDisconnectAll (manage->conn);
   logProcEnd (LOG_PROC, "manageStoppingCallback", "");
   return true;
+}
+
+static bool
+manageStopWaitCallback (void *udata, programstate_t programState)
+{
+  manageui_t  * manage = udata;
+  bool        rc = true;
+
+  logProcBegin (LOG_PROC, "manageStopWaitCallback");
+
+  for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
+    if (i == ROUTE_MAIN &&
+        lockExists (lockName (ROUTE_PLAYERUI), PATHBLD_MP_USEIDX)) {
+      continue;
+    }
+    if (connIsConnected (manage->conn, i)) {
+fprintf (stderr, "manageui: %d still connected\n", i);
+      rc = false;
+      break;
+    }
+  }
+
+  logProcEnd (LOG_PROC, "manageStopWaitCallback", "");
+  return rc;
 }
 
 static bool
@@ -328,8 +354,6 @@ manageClosingCallback (void *udata, programstate_t programState)
   }
   datafileFree (manage->optiondf);
 
-  /* give the other processes some time to shut down */
-  mssleep (200);
   for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
     if (i == ROUTE_MAIN &&
         lockExists (lockName (ROUTE_PLAYERUI), PATHBLD_MP_USEIDX)) {
@@ -341,6 +365,7 @@ manageClosingCallback (void *udata, programstate_t programState)
     }
   }
 
+  connDisconnectAll (manage->conn);
   connFree (manage->conn);
 
   uiutilsTextBoxFree (manage->dbhelpdisp);
@@ -678,6 +703,11 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_HANDSHAKE: {
           connProcessHandshake (manage->conn, routefrom);
           connConnectResponse (manage->conn, routefrom);
+          break;
+        }
+        case MSG_SOCKET_CLOSE: {
+          procutilCloseProcess (manage->processes [routefrom],
+              manage->conn, routefrom);
           break;
         }
         case MSG_EXIT_REQUEST: {

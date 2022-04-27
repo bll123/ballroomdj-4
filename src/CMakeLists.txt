@@ -147,6 +147,7 @@ target_link_libraries (bdj4
 )
 if (WIN32)
   target_sources (bdj4 PRIVATE launcher.o)
+  target_compile_options (bdj4 PRIVATE -mwindows)
 endif()
 # for gethostname
 addWinSockLibrary (bdj4)

@@ -237,6 +237,10 @@ foreach path [list {} profiles $mpath $mppath] {
         puts $ofh "..$value"
       }
 
+      if { $path eq "" } {
+        puts $ofh DEBUGLVL
+        puts $ofh "..11"
+      }
       if { $path eq "profiles" } {
         puts $ofh INSERT_LOC
         puts $ofh "..6"

@@ -52,6 +52,11 @@ msgstr ""
 msgid "%s Support Tickets"
 msgstr ""
 
+#. CONTEXT: starterui: basic support dialog, version display
+#, c-format
+msgid "%s Version"
+msgstr ""
+
 #. CONTEXT: installer: status message
 #, c-format
 msgid "%s installed."
@@ -513,6 +518,10 @@ msgstr "Trefwoord"
 #. CONTEXT: when the database entry was last updated
 msgid "Last Updated"
 msgstr "Laatst bijgewerkt"
+
+#. CONTEXT: starterui: basic support dialog, latest version display
+msgid "Latest Version"
+msgstr ""
 
 #. CONTEXT: config: level: title of the level name column
 msgid "Level"
@@ -1090,6 +1099,11 @@ msgstr ""
 #. CONTEXT: installer: status message
 #, c-format
 msgid "Updating %s."
+msgstr ""
+
+#. CONTEXT: installer: status message
+#, c-format
+msgid "Updating certificates."
 msgstr ""
 
 #. CONTEXT: installer: message indicating the action that will be taken
