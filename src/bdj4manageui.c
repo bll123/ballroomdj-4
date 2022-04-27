@@ -361,9 +361,9 @@ manageActivate (GApplication *app, gpointer userdata)
   logProcBegin (LOG_PROC, "manageActivate");
   *imgbuff = '\0';
 
-  /* CONTEXT: management ui window title */
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", ".svg", PATHBLD_MP_IMGDIR);
+  /* CONTEXT: management ui window title */
   snprintf (tbuff, sizeof (tbuff), _("%s Management"), BDJ4_NAME);
   manage->window = uiutilsCreateMainWindow (app, tbuff, imgbuff,
       manageCloseWin, manage);
