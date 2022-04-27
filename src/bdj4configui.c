@@ -35,6 +35,7 @@
 #include "localeutil.h"
 #include "lock.h"
 #include "log.h"
+#include "musicq.h"
 #include "nlist.h"
 #include "orgopt.h"
 #include "orgutil.h"
@@ -93,6 +94,8 @@ enum {
   CONFUI_ENTRY_MUSIC_DIR,
   CONFUI_ENTRY_PROFILE_NAME,
   CONFUI_ENTRY_COMPLETE_MSG,
+  /* the queue name identifiers must be in sequence */
+  /* the number of queue names must match MUSICQ_MAX */
   CONFUI_ENTRY_QUEUE_NM_A,
   CONFUI_ENTRY_QUEUE_NM_B,
   CONFUI_ENTRY_RC_PASS,
@@ -1020,14 +1023,12 @@ confuiActivate (GApplication *app, gpointer userdata)
   confuiMakeItemEntry (confui, vbox, sg, _("Completion Message"),
       CONFUI_ENTRY_COMPLETE_MSG, OPT_P_COMPLETE_MSG,
       bdjoptGetStr (OPT_P_COMPLETE_MSG));
-  /* CONTEXT: config: The name of the first music queue (main) */
-  confuiMakeItemEntry (confui, vbox, sg, _("Queue A Name"),
-      CONFUI_ENTRY_QUEUE_NM_A, OPT_P_QUEUE_NAME_A,
-      bdjoptGetStr (OPT_P_QUEUE_NAME_A));
-  /* CONTEXT: config: The name of the second music queue */
-  confuiMakeItemEntry (confui, vbox, sg, _("Queue B Name"),
-      CONFUI_ENTRY_QUEUE_NM_B, OPT_P_QUEUE_NAME_B,
-      bdjoptGetStr (OPT_P_QUEUE_NAME_B));
+  for (musicqidx_t i = 0; i < MUSICQ_MAX; ++i) {
+    /* CONTEXT: config: The name of the music queue */
+    confuiMakeItemEntry (confui, vbox, sg, _("Queue A Name"),
+        CONFUI_ENTRY_QUEUE_NM_A + i, OPT_P_QUEUE_NAME_A + i,
+        bdjoptGetStr (OPT_P_QUEUE_NAME_A + i));
+  }
 
   /* marquee options */
   vbox = confuiMakeNotebookTab (confui, confui->notebook,
@@ -3348,14 +3349,11 @@ confuiSwitchTable (GtkNotebook *nb, GtkWidget *page, guint pagenum, gpointer uda
   confuiident_t     newid;
 
   logProcBegin (LOG_PROC, "confuiSwitchTable");
-fprintf (stderr, "switch: %d\n", pagenum);
   if ((newid = (confuiident_t) uiutilsNotebookIDGet (confui->nbtabid, pagenum)) < 0) {
     logProcEnd (LOG_PROC, "confuiSwitchTable", "bad-pagenum");
     return;
   }
 
-fprintf (stderr, "tablecurr: %d\n", confui->tablecurr);
-fprintf (stderr, "newid: %d\n", newid);
   if (confui->tablecurr == newid) {
     logProcEnd (LOG_PROC, "confuiSwitchTable", "same-id");
     return;

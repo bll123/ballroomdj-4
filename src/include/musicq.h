@@ -8,6 +8,8 @@
 typedef enum {
   MUSICQ_A,
   MUSICQ_B,
+  /* if the number of music queues is changed, bdjopt.h and bdj4configui.c */
+  /* must be updated */
   MUSICQ_MAX,
   MUSICQ_CURRENT,
 } musicqidx_t;

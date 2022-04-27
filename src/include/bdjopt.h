@@ -76,7 +76,8 @@ typedef enum {
   OPT_P_MQQLEN,                   // u d s
   OPT_P_MQ_SHOW_INFO,             // u d s
   OPT_P_PROFILENAME,              // u d s
-  /* the queue names identifiers must be in sequence */
+  /* the queue name identifiers must be in sequence */
+  /* the number of queue names must match MUSICQ_MAX */
   OPT_P_QUEUE_NAME_A,             // u d s
   OPT_P_QUEUE_NAME_B,             // u d s
   OPT_P_REMCONTROLPASS,           // u d s

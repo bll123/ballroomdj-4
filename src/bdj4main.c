@@ -162,7 +162,7 @@ main (int argc, char *argv[])
   mainData.switchQueueWhenEmpty = false;
   mainData.finished = false;
   mainData.stopwaitcount = 0;
-  for (int i = 0; i < MUSICQ_MAX; ++i) {
+  for (musicqidx_t i = 0; i < MUSICQ_MAX; ++i) {
     mainData.playlistQueue [i] = NULL;
     mainData.musicqChanged [i] = false;
     mainData.marqueeChanged [i] = false;
@@ -185,8 +185,9 @@ main (int argc, char *argv[])
   mainData.gap = bdjoptGetNum (OPT_P_GAP);
   mainData.playlistCache = slistAlloc ("playlist-list", LIST_ORDERED,
       playlistFree);
-  mainData.playlistQueue [MUSICQ_A] = queueAlloc (NULL);
-  mainData.playlistQueue [MUSICQ_B] = queueAlloc (NULL);
+  for (musicqidx_t i = 0; i < MUSICQ_MAX; ++i) {
+    mainData.playlistQueue [i] = queueAlloc (NULL);
+  }
   mainData.musicQueue = musicqAlloc ();
   mainDanceCountsInit (&mainData);
   mainData.announceList = slistAlloc ("announcements", LIST_ORDERED, NULL);
@@ -250,11 +251,10 @@ mainClosingCallback (void *tmaindata, programstate_t programState)
   if (mainData->playlistCache != NULL) {
     slistFree (mainData->playlistCache);
   }
-  if (mainData->playlistQueue [MUSICQ_A] != NULL) {
-    queueFree (mainData->playlistQueue [MUSICQ_A]);
-  }
-  if (mainData->playlistQueue [MUSICQ_B] != NULL) {
-    queueFree (mainData->playlistQueue [MUSICQ_B]);
+  for (musicqidx_t i = 0; i < MUSICQ_MAX; ++i) {
+    if (mainData->playlistQueue [i] != NULL) {
+      queueFree (mainData->playlistQueue [i]);
+    }
   }
   if (mainData->musicQueue != NULL) {
     musicqFree (mainData->musicQueue);

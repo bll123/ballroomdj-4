@@ -451,7 +451,7 @@ pluiActivate (GApplication *app, gpointer userdata)
     tabLabel = gtk_label_new (str);
     gtk_box_pack_start (GTK_BOX (hbox), tabLabel, FALSE, FALSE, 1);
     plui->musicqImage [i] = gtk_image_new ();
-    gtk_image_set_from_pixbuf (GTK_IMAGE (plui->musicqImage [i]), plui->ledoffImg);
+    gtk_image_set_from_pixbuf (GTK_IMAGE (plui->musicqImage [i]), plui->ledonImg);
     gtk_widget_set_margin_start (plui->musicqImage [i], 2);
     gtk_box_pack_start (GTK_BOX (hbox), plui->musicqImage [i], FALSE, FALSE, 0);
 
@@ -813,6 +813,7 @@ pluiToggleExtraQueues (GtkWidget *mi, gpointer udata)
   val = ! val;
   nlistSetNum (plui->options, PLUI_SHOW_EXTRA_QUEUES, val);
   pluiSetExtraQueues (plui);
+  pluiSetPlaybackQueue (plui, plui->musicqPlayIdx);
   logProcEnd (LOG_PROC, "pluiToggleExtraQueues", "");
 }
 
