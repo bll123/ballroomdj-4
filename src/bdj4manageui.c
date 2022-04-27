@@ -155,14 +155,7 @@ main (int argc, char *argv[])
   manage.dblist = NULL;
   manage.dbhelp = NULL;
 
-#if _define_SIGHUP
-  procutilCatchSignal (manageSigHandler, SIGHUP);
-#endif
-  procutilCatchSignal (manageSigHandler, SIGINT);
-  procutilDefaultSignal (SIGTERM);
-#if _define_SIGCHLD
-  procutilIgnoreSignal (SIGCHLD);
-#endif
+  osSetStandardSignals (manageSigHandler);
 
   bdj4startup (argc, argv, &manage.musicdb,
       "mu", ROUTE_MANAGEUI, BDJ4_INIT_NONE);

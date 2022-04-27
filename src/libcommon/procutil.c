@@ -4,11 +4,11 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <sys/types.h>
-#include <signal.h>
 #include <string.h>
 #include <errno.h>
 #include <unistd.h>
 #include <assert.h>
+#include <signal.h>
 
 #if _hdr_winsock2
 # pragma clang diagnostic push
@@ -197,54 +197,6 @@ procutilTerminate (pid_t pid, bool force)
   process.hasHandle = false;
   process.pid = pid;
   procutilKill (&process, force);
-}
-
-void
-procutilCatchSignal (void (*sigHandler)(int), int sig)
-{
-#if _lib_sigaction
-  struct sigaction    sigact;
-  struct sigaction    oldact;
-
-  memset (&sigact, '\0', sizeof (sigact));
-  sigact.sa_handler = sigHandler;
-  sigaction (sig, &sigact, &oldact);
-#endif
-#if ! _lib_sigaction && _lib_signal
-  signal (sig, sigHandler);
-#endif
-}
-
-void
-procutilIgnoreSignal (int sig)
-{
-#if _lib_sigaction
-  struct sigaction    sigact;
-  struct sigaction    oldact;
-
-  memset (&sigact, '\0', sizeof (sigact));
-  sigact.sa_handler = SIG_IGN;
-  sigaction (sig, &sigact, &oldact);
-#endif
-#if _lib_signal
-  signal (sig, SIG_IGN);
-#endif
-}
-
-void
-procutilDefaultSignal (int sig)
-{
-#if _lib_sigaction
-  struct sigaction    sigact;
-  struct sigaction    oldact;
-
-  memset (&sigact, '\0', sizeof (sigact));
-  sigact.sa_handler = SIG_DFL;
-  sigaction (sig, &sigact, &oldact);
-#endif
-#if _lib_signal
-  signal (sig, SIG_DFL);
-#endif
 }
 
 /* these next three routines are for management of processes */

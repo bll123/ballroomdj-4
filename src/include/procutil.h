@@ -28,9 +28,6 @@ int         procutilKill (procutil_t *process, bool force);
 void        procutilTerminate (pid_t pid, bool force);
 void        procutilFreeAll (procutil_t *processes [ROUTE_MAX]);
 void        procutilFree (procutil_t *process);
-void        procutilCatchSignal (void (*sigHandler)(int), int signal);
-void        procutilIgnoreSignal (int signal);
-void        procutilDefaultSignal (int signal);
 procutil_t  * procutilStartProcess (bdjmsgroute_t route, char *fname,
     int detachflag, char *aargs []);
 void        procutilStopAllProcess (procutil_t *processes [ROUTE_MAX],

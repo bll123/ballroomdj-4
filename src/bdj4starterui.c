@@ -201,14 +201,7 @@ main (int argc, char *argv[])
     starter.processes [i] = NULL;
   }
 
-#if _define_SIGHUP
-  procutilCatchSignal (starterSigHandler, SIGHUP);
-#endif
-  procutilCatchSignal (starterSigHandler, SIGINT);
-  procutilDefaultSignal (SIGTERM);
-#if _define_SIGCHLD
-  procutilIgnoreSignal (SIGCHLD);
-#endif
+  osSetStandardSignals (starterSigHandler);
 
   flags = BDJ4_INIT_NO_DB_LOAD | BDJ4_INIT_NO_DATAFILE_LOAD;
   bdj4startup (argc, argv, NULL, "st", ROUTE_STARTERUI, flags);

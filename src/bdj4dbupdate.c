@@ -27,7 +27,6 @@
 #include <string.h>
 #include <errno.h>
 #include <assert.h>
-#include <signal.h>
 #include <regex.h>
 
 #include "audiotag.h"
@@ -45,6 +44,7 @@
 #include "level.h"
 #include "log.h"
 #include "musicdb.h"
+#include "osutils.h"
 #include "pathbld.h"
 #include "progstate.h"
 #include "procutil.h"
@@ -169,14 +169,7 @@ main (int argc, char *argv[])
     dbupdate.processes [i] = NULL;
   }
 
-#if _define_SIGHUP
-  procutilCatchSignal (dbupdateSigHandler, SIGHUP);
-#endif
-  procutilCatchSignal (dbupdateSigHandler, SIGINT);
-  procutilCatchSignal (dbupdateSigHandler, SIGTERM);
-#if _define_SIGCHLD
-  procutilIgnoreSignal (SIGCHLD);
-#endif
+  osSetStandardSignals (dbupdateSigHandler);
 
   flags = BDJ4_INIT_NONE;
   dbupdate.dbflags = bdj4startup (argc, argv, &dbupdate.musicdb,

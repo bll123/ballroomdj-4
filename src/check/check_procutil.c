@@ -11,6 +11,7 @@
 
 #include "bdj4.h"
 #include "check_bdj.h"
+#include "osutils.h"
 #include "pathbld.h"
 #include "procutil.h"
 #include "sysvars.h"
@@ -53,7 +54,7 @@ START_TEST(procutil_start)
   /* if the signal is not ignored, the process goes into a zombie state */
   /* and still exists */
 #if _define_SIGCHLD
-  procutilIgnoreSignal (SIGCHLD);
+  osIgnoreSignal (SIGCHLD);
 #endif
   /* abuse the --profile argument to pass the seconds to sleep */
   process = procutilStart (tbuff, 5, 0, PROCUTIL_NO_DETACH, NULL);
@@ -87,7 +88,7 @@ START_TEST(procutil_kill)
   /* if the signal is not ignored, the process goes into a zombie state */
   /* and still exists */
 #if _define_SIGCHLD
-  procutilIgnoreSignal (SIGCHLD);
+  osIgnoreSignal (SIGCHLD);
 #endif
   /* abuse the --profile argument to pass the seconds to sleep */
   process = procutilStart (tbuff, 60, 0, PROCUTIL_NO_DETACH, NULL);

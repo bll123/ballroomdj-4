@@ -18,7 +18,6 @@
 #include <unistd.h>
 #include <time.h>
 #include <math.h>
-#include <signal.h>
 
 #include "bdj4.h"
 #include "bdj4init.h"
@@ -153,14 +152,7 @@ main (int argc, char *argv[])
   uint16_t        listenPort;
   int             flags;
 
-#if _define_SIGHUP
-  procutilCatchSignal (playerSigHandler, SIGHUP);
-#endif
-  procutilCatchSignal (playerSigHandler, SIGINT);
-  procutilDefaultSignal (SIGTERM);
-#if _define_SIGCHLD
-  procutilIgnoreSignal (SIGCHLD);
-#endif
+  osSetStandardSignals (playerSigHandler);
 
   playerData.currentSong = NULL;
   playerData.fadeCount = 0;

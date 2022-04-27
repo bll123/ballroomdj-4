@@ -54,6 +54,10 @@ char          * osDirIterate (dirhandle_t *dirh);
 void          osDirClose (dirhandle_t *dirh);
 int           osSetEnv (const char *name, const char *value);
 char          *osRegistryGet (char *key, char *name);
+void          osSetStandardSignals (void (*sigHandler)(int));
+void          osCatchSignal (void (*sigHandler)(int), int signal);
+void          osIgnoreSignal (int signal);
+void          osDefaultSignal (int signal);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 }

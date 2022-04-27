@@ -13,7 +13,6 @@
 #include <stdbool.h>
 #include <string.h>
 #include <errno.h>
-#include <signal.h>
 
 #include "bdj4.h"
 #include "bdj4init.h"
@@ -172,14 +171,7 @@ main (int argc, char *argv[])
     mainData.processes [i] = NULL;
   }
 
-#if _define_SIGHUP
-  procutilCatchSignal (mainSigHandler, SIGHUP);
-#endif
-  procutilCatchSignal (mainSigHandler, SIGINT);
-  procutilCatchSignal (mainSigHandler, SIGTERM);
-#if _define_SIGCHLD
-  procutilIgnoreSignal (SIGCHLD);
-#endif
+  osSetStandardSignals (mainSigHandler);
 
   mainData.startflags = bdj4startup (argc, argv, &mainData.musicdb,
       "m", ROUTE_MAIN, BDJ4_INIT_NONE);

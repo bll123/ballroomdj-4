@@ -39,6 +39,7 @@
 #include "orgopt.h"
 #include "orgutil.h"
 #include "osuiutils.h"
+#include "osutils.h"
 #include "pathbld.h"
 #include "pathutil.h"
 #include "procutil.h"
@@ -542,14 +543,7 @@ main (int argc, char *argv[])
   uiutilsEntryInit (&confui.uiitem [CONFUI_ENTRY_MM_NAME].u.entry, 10, 40);
   uiutilsEntryInit (&confui.uiitem [CONFUI_ENTRY_MM_TITLE].u.entry, 20, 100);
 
-#if _define_SIGHUP
-  procutilCatchSignal (confuiSigHandler, SIGHUP);
-#endif
-  procutilCatchSignal (confuiSigHandler, SIGINT);
-  procutilDefaultSignal (SIGTERM);
-#if _define_SIGCHLD
-  procutilIgnoreSignal (SIGCHLD);
-#endif
+  osSetStandardSignals (confuiSigHandler);
 
   flags = BDJ4_INIT_NO_DB_LOAD;
   confui.dbgflags = bdj4startup (argc, argv, NULL,

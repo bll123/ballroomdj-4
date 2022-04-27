@@ -8,7 +8,6 @@
 #include <errno.h>
 #include <assert.h>
 #include <getopt.h>
-#include <signal.h>
 #include <sys/time.h> // for mongoose
 #include <dirent.h> // for mongoose
 
@@ -33,6 +32,7 @@
 #include "conn.h"
 #include "lock.h"
 #include "log.h"
+#include "osutils.h"
 #include "pathbld.h"
 #include "procutil.h"
 #include "progstate.h"
@@ -75,11 +75,7 @@ main (int argc, char *argv[])
   char            *tval;
   int             flags;
 
-#if _define_SIGHUP
-  procutilCatchSignal (mobmqSigHandler, SIGHUP);
-#endif
-  procutilCatchSignal (mobmqSigHandler, SIGINT);
-  procutilDefaultSignal (SIGTERM);
+  osSetStandardSignals (mobmqSigHandler);
 
   flags = BDJ4_INIT_NO_DB_LOAD | BDJ4_INIT_NO_DATAFILE_LOAD;
   bdj4startup (argc, argv, NULL, "mm", ROUTE_MOBILEMQ, flags);

@@ -10,6 +10,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <signal.h>
 
 #if _hdr_fcntl
 # include <fcntl.h>
@@ -604,3 +605,65 @@ osRegistryGet (char *key, char *name)
 
   return rval;
 }
+
+void
+osSetStandardSignals (void (*sigHandler)(int))
+{
+#if _define_SIGHUP
+  osCatchSignal (sigHandler, SIGHUP);
+#endif
+  osCatchSignal (sigHandler, SIGINT);
+  osDefaultSignal (SIGTERM);
+#if _define_SIGCHLD
+  osIgnoreSignal (SIGCHLD);
+#endif
+}
+
+void
+osCatchSignal (void (*sigHandler)(int), int sig)
+{
+#if _lib_sigaction
+  struct sigaction    sigact;
+  struct sigaction    oldact;
+
+  memset (&sigact, '\0', sizeof (sigact));
+  sigact.sa_handler = sigHandler;
+  sigaction (sig, &sigact, &oldact);
+#endif
+#if ! _lib_sigaction && _lib_signal
+  signal (sig, sigHandler);
+#endif
+}
+
+void
+osIgnoreSignal (int sig)
+{
+#if _lib_sigaction
+  struct sigaction    sigact;
+  struct sigaction    oldact;
+
+  memset (&sigact, '\0', sizeof (sigact));
+  sigact.sa_handler = SIG_IGN;
+  sigaction (sig, &sigact, &oldact);
+#endif
+#if _lib_signal
+  signal (sig, SIG_IGN);
+#endif
+}
+
+void
+osDefaultSignal (int sig)
+{
+#if _lib_sigaction
+  struct sigaction    sigact;
+  struct sigaction    oldact;
+
+  memset (&sigact, '\0', sizeof (sigact));
+  sigact.sa_handler = SIG_DFL;
+  sigaction (sig, &sigact, &oldact);
+#endif
+#if _lib_signal
+  signal (sig, SIG_DFL);
+#endif
+}
+

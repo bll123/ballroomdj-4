@@ -12,7 +12,6 @@
 #include <stdbool.h>
 #include <string.h>
 #include <errno.h>
-#include <signal.h>
 #include <getopt.h>
 #include <pthread.h>
 
@@ -27,6 +26,7 @@
 #include "conn.h"
 #include "lock.h"
 #include "log.h"
+#include "osutils.h"
 #include "pathbld.h"
 #include "progstate.h"
 #include "procutil.h"
@@ -89,14 +89,7 @@ main (int argc, char *argv[])
   uint16_t    listenPort;
   int         flags;
 
-#if _define_SIGHUP
-  procutilCatchSignal (dbtagSigHandler, SIGHUP);
-#endif
-  procutilCatchSignal (dbtagSigHandler, SIGINT);
-  procutilCatchSignal (dbtagSigHandler, SIGTERM);
-#if _define_SIGCHLD
-  procutilIgnoreSignal (SIGCHLD);
-#endif
+  osSetStandardSignals (dbtagSigHandler);
 
   flags = BDJ4_INIT_NO_DB_LOAD | BDJ4_INIT_NO_DATAFILE_LOAD;
   bdj4startup (argc, argv, NULL, "dt", ROUTE_DBTAG, flags);

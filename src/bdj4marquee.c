@@ -170,14 +170,7 @@ main (int argc, char *argv[])
   marquee.fontAdjustment = 0.0;
   marquee.hideonstart = false;
 
-#if _define_SIGHUP
-  procutilCatchSignal (marqueeSigHandler, SIGHUP);
-#endif
-  procutilCatchSignal (marqueeSigHandler, SIGINT);
-  procutilDefaultSignal (SIGTERM);
-#if _define_SIGCHLD
-  procutilIgnoreSignal (SIGCHLD);
-#endif
+  osSetStandardSignals (marqueeSigHandler);
 
   flags = BDJ4_INIT_NO_DB_LOAD | BDJ4_INIT_NO_DATAFILE_LOAD;
   startflags = bdj4startup (argc, argv, NULL, "mq", ROUTE_MARQUEE, flags);

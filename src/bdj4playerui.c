@@ -29,6 +29,7 @@
 #include "log.h"
 #include "musicq.h"
 #include "osuiutils.h"
+#include "osutils.h"
 #include "pathbld.h"
 #include "procutil.h"
 #include "progstate.h"
@@ -160,14 +161,7 @@ main (int argc, char *argv[])
   mstimeset (&plui.marqueeFontSizeCheck, 3600000);
   plui.stopwaitcount = 0;
 
-#if _define_SIGHUP
-  procutilCatchSignal (pluiSigHandler, SIGHUP);
-#endif
-  procutilCatchSignal (pluiSigHandler, SIGINT);
-  procutilDefaultSignal (SIGTERM);
-#if _define_SIGCHLD
-  procutilIgnoreSignal (SIGCHLD);
-#endif
+  osSetStandardSignals (pluiSigHandler);
 
   plui.dbgflags = bdj4startup (argc, argv, &plui.musicdb,
       "pu", ROUTE_PLAYERUI, BDJ4_INIT_NONE);
