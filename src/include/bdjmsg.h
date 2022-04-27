@@ -84,6 +84,10 @@ typedef enum {
   MSG_SONG_SELECT,          // args: queue number, position
   MSG_FINISHED,             // also sent to marquee
 
+  /* to/from starterui */
+  MSG_START_MAIN,           // arg: true for --hidemarquee
+  MSG_STOP_MAIN,
+
   /* to/from web servers */
   MSG_DANCE_LIST_DATA,      // args: html option list
   MSG_GET_DANCE_LIST,

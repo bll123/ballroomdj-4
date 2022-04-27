@@ -45,7 +45,6 @@
 typedef struct {
   progstate_t     *progstate;
   char            *locknm;
-  procutil_t      *processes [ROUTE_MAX];
   conn_t          *conn;
   sockserver_t    *sockserver;
   musicdb_t       *musicdb;
@@ -57,6 +56,7 @@ typedef struct {
   int             marqueeFontSize;
   int             marqueeFontSizeFS;
   mstime_t        marqueeFontSizeCheck;
+  int             stopwaitcount;
   /* gtk stuff */
   GtkApplication  *app;
   GtkWidget       *window;
@@ -94,7 +94,6 @@ static datafilekey_t playeruidfkeys [] = {
 
 #define PLUI_EXIT_WAIT_COUNT      20
 
-static bool     pluiListeningCallback (void *udata, programstate_t programState);
 static bool     pluiConnectingCallback (void *udata, programstate_t programState);
 static bool     pluiHandshakeCallback (void *udata, programstate_t programState);
 static bool     pluiStoppingCallback (void *udata, programstate_t programState);
@@ -144,8 +143,6 @@ main (int argc, char *argv[])
   plui.notebook = NULL;
   plui.marqueeFontSizeDialog = NULL;
   plui.progstate = progstateInit ("playerui");
-  progstateSetCallback (plui.progstate, STATE_LISTENING,
-      pluiListeningCallback, &plui);
   progstateSetCallback (plui.progstate, STATE_CONNECTING,
       pluiConnectingCallback, &plui);
   progstateSetCallback (plui.progstate, STATE_WAIT_HANDSHAKE,
@@ -161,10 +158,7 @@ main (int argc, char *argv[])
   plui.marqueeFontSize = 36;
   plui.marqueeFontSizeFS = 60;
   mstimeset (&plui.marqueeFontSizeCheck, 3600000);
-
-  for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
-    plui.processes [i] = NULL;
-  }
+  plui.stopwaitcount = 0;
 
 #if _define_SIGHUP
   procutilCatchSignal (pluiSigHandler, SIGHUP);
@@ -253,6 +247,8 @@ pluiStoppingCallback (void *udata, programstate_t programState)
   gint          x, y;
 
   logProcBegin (LOG_PROC, "pluiStoppingCallback");
+  connSendMessage (plui->conn, ROUTE_STARTERUI, MSG_STOP_MAIN, NULL);
+
   gtk_window_get_size (GTK_WINDOW (plui->window), &x, &y);
   nlistSetNum (plui->options, PLUI_SIZE_X, x);
   nlistSetNum (plui->options, PLUI_SIZE_Y, y);
@@ -260,21 +256,7 @@ pluiStoppingCallback (void *udata, programstate_t programState)
   nlistSetNum (plui->options, PLUI_POSITION_X, x);
   nlistSetNum (plui->options, PLUI_POSITION_Y, y);
 
-  /* the player may not have started main */
-  if (plui->processes [ROUTE_MAIN] == NULL &&
-      ! lockExists (lockName (ROUTE_MANAGEUI), PATHBLD_MP_USEIDX)) {
-    connSendMessage (plui->conn, ROUTE_MAIN, MSG_EXIT_REQUEST, NULL);
-  }
-  for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
-    if (i == ROUTE_MAIN &&
-        lockExists (lockName (ROUTE_MANAGEUI), PATHBLD_MP_USEIDX)) {
-      continue;
-    }
-    if (plui->processes [i] != NULL) {
-      procutilStopProcess (plui->processes [i], plui->conn, i, false);
-    }
-  }
-
+  connDisconnectAll (plui->conn);
   gdone = 1;
   logProcEnd (LOG_PROC, "pluiStoppingCallback", "");
   return true;
@@ -288,15 +270,11 @@ pluiStopWaitCallback (void *udata, programstate_t programState)
 
   logProcBegin (LOG_PROC, "pluiStopWaitCallback");
 
-  for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
-    if (i == ROUTE_MAIN &&
-        lockExists (lockName (ROUTE_MANAGEUI), PATHBLD_MP_USEIDX)) {
-      continue;
-    }
-    if (connIsConnected (plui->conn, i)) {
-fprintf (stderr, "playerui: %d still connected\n", i);
-      rc = false;
-      break;
+  rc = connCheckAll (plui->conn);
+  if (rc == false) {
+    ++plui->stopwaitcount;
+    if (plui->stopwaitcount > STOP_WAIT_COUNT_MAX) {
+      rc = true;
     }
   }
 
@@ -327,8 +305,6 @@ pluiClosingCallback (void *udata, programstate_t programState)
     g_object_unref (plui->ledoffImg);
   }
 
-  sockhCloseServer (plui->sockserver);
-
   bdj4shutdown (ROUTE_PLAYERUI, plui->musicdb);
   dispselFree (plui->dispsel);
 
@@ -337,18 +313,7 @@ pluiClosingCallback (void *udata, programstate_t programState)
   }
   datafileFree (plui->optiondf);
 
-  for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
-    if (i == ROUTE_MAIN &&
-        lockExists (lockName (ROUTE_MANAGEUI), PATHBLD_MP_USEIDX)) {
-      continue;
-    }
-    if (plui->processes [i] != NULL) {
-      procutilStopProcess (plui->processes [i], plui->conn, i, true);
-      procutilFree (plui->processes [i]);
-    }
-  }
-
-  connDisconnectAll (plui->conn);
+  sockhCloseServer (plui->sockserver);
   connFree (plui->conn);
 
   uiplayerFree (plui->uiplayer);
@@ -602,26 +567,6 @@ pluiClock (void *tplui)
 
 
 static bool
-pluiListeningCallback (void *udata, programstate_t programState)
-{
-  playerui_t    *plui = udata;
-  int           flags;
-
-  logProcBegin (LOG_PROC, "pluiListeningCallback");
-  flags = PROCUTIL_DETACH;
-  if ((plui->dbgflags & BDJ4_INIT_NO_DETACH) == BDJ4_INIT_NO_DETACH) {
-    flags = PROCUTIL_NO_DETACH;
-  }
-
-  if (! lockExists (lockName (ROUTE_MANAGEUI), PATHBLD_MP_USEIDX)) {
-    plui->processes [ROUTE_MAIN] = procutilStartProcess (
-        ROUTE_MAIN, "bdj4main", flags, NULL);
-  }
-  logProcEnd (LOG_PROC, "pluiListeningCallback", "");
-  return true;
-}
-
-static bool
 pluiConnectingCallback (void *udata, programstate_t programState)
 {
   playerui_t   *plui = udata;
@@ -629,6 +574,9 @@ pluiConnectingCallback (void *udata, programstate_t programState)
 
   logProcBegin (LOG_PROC, "pluiConnectingCallback");
 
+  if (! connIsConnected (plui->conn, ROUTE_STARTERUI)) {
+    connConnect (plui->conn, ROUTE_STARTERUI);
+  }
   if (! connIsConnected (plui->conn, ROUTE_MAIN)) {
     connConnect (plui->conn, ROUTE_MAIN);
   }
@@ -639,9 +587,8 @@ pluiConnectingCallback (void *udata, programstate_t programState)
     connConnect (plui->conn, ROUTE_MARQUEE);
   }
 
-  if (connIsConnected (plui->conn, ROUTE_MAIN) &&
-      connIsConnected (plui->conn, ROUTE_PLAYER) &&
-      connIsConnected (plui->conn, ROUTE_MARQUEE)) {
+  if (connIsConnected (plui->conn, ROUTE_STARTERUI)) {
+    connSendMessage (plui->conn, ROUTE_STARTERUI, MSG_START_MAIN, "0");
     rc = true;
   }
 
@@ -657,7 +604,18 @@ pluiHandshakeCallback (void *udata, programstate_t programState)
 
   logProcBegin (LOG_PROC, "pluiHandshakeCallback");
 
-  if (connHaveHandshake (plui->conn, ROUTE_MAIN) &&
+  if (! connIsConnected (plui->conn, ROUTE_MAIN)) {
+    connConnect (plui->conn, ROUTE_MAIN);
+  }
+  if (! connIsConnected (plui->conn, ROUTE_PLAYER)) {
+    connConnect (plui->conn, ROUTE_PLAYER);
+  }
+  if (! connIsConnected (plui->conn, ROUTE_MARQUEE)) {
+    connConnect (plui->conn, ROUTE_MARQUEE);
+  }
+
+  if (connHaveHandshake (plui->conn, ROUTE_STARTERUI) &&
+      connHaveHandshake (plui->conn, ROUTE_MAIN) &&
       connHaveHandshake (plui->conn, ROUTE_PLAYER) &&
       connHaveHandshake (plui->conn, ROUTE_MARQUEE)) {
     pluiSetPlayWhenQueued (plui);
@@ -695,8 +653,7 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_SOCKET_CLOSE: {
-          procutilCloseProcess (plui->processes [routefrom],
-              plui->conn, routefrom);
+          connDisconnect (plui->conn, routefrom);
           break;
         }
         case MSG_EXIT_REQUEST: {

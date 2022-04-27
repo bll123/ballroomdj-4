@@ -73,6 +73,7 @@ typedef struct {
   ssize_t           gap;
   webclient_t       *webclient;
   char              *mobmqUserkey;
+  int               stopwaitcount;
   bool              musicqChanged [MUSICQ_MAX];
   bool              marqueeChanged [MUSICQ_MAX];
   bool              playWhenQueued : 1;
@@ -161,6 +162,7 @@ main (int argc, char *argv[])
   mainData.playWhenQueued = true;
   mainData.switchQueueWhenEmpty = false;
   mainData.finished = false;
+  mainData.stopwaitcount = 0;
   for (int i = 0; i < MUSICQ_MAX; ++i) {
     mainData.playlistQueue [i] = NULL;
     mainData.musicqChanged [i] = false;
@@ -220,7 +222,7 @@ mainStoppingCallback (void *tmaindata, programstate_t programState)
   logProcBegin (LOG_PROC, "mainStoppingCallback");
 
   procutilStopAllProcess (mainData->processes, mainData->conn, false);
-
+  connDisconnectAll (mainData->conn);
   logProcEnd (LOG_PROC, "mainStoppingCallback", "");
   return true;
 }
@@ -234,6 +236,12 @@ mainStopWaitCallback (void *tmaindata, programstate_t programState)
   logProcBegin (LOG_PROC, "mainStopWaitCallback");
 
   rc = connCheckAll (mainData->conn);
+  if (rc == false) {
+    ++mainData->stopwaitcount;
+    if (mainData->stopwaitcount > STOP_WAIT_COUNT_MAX) {
+      rc = true;
+    }
+  }
 
   logProcEnd (LOG_PROC, "mainStopWaitCallback", "");
   return rc;
@@ -287,7 +295,6 @@ mainClosingCallback (void *tmaindata, programstate_t programState)
   }
 
   bdj4shutdown (ROUTE_MAIN, mainData->musicdb);
-  connDisconnectAll (mainData->conn);
   connFree (mainData->conn);
 
   logProcEnd (LOG_PROC, "mainClosingCallback", "");
@@ -321,6 +328,7 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_SOCKET_CLOSE: {
           procutilCloseProcess (mainData->processes [routefrom],
               mainData->conn, routefrom);
+          connDisconnect (mainData->conn, routefrom);
           break;
         }
         case MSG_EXIT_REQUEST: {

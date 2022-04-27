@@ -89,6 +89,7 @@ typedef struct {
   dbidx_t           countUpdated;
   dbidx_t           countSaved;
   mstime_t          starttm;
+  int               stopwaitcount;
   bool              rebuild : 1;
   bool              checknew : 1;
   bool              progress : 1;
@@ -139,6 +140,7 @@ main (int argc, char *argv[])
   dbupdate.countNoTags = 0;
   dbupdate.countUpdated = 0;
   dbupdate.countSaved = 0;
+  dbupdate.stopwaitcount = 0;
   dbupdate.rebuild = false;
   dbupdate.checknew = false;
   dbupdate.progress = false;
@@ -249,6 +251,7 @@ dbupdateProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_SOCKET_CLOSE: {
           procutilCloseProcess (dbupdate->processes [routefrom],
               dbupdate->conn, routefrom);
+          connDisconnect (dbupdate->conn, routefrom);
           break;
         }
         case MSG_EXIT_REQUEST: {
@@ -553,6 +556,7 @@ dbupdateStoppingCallback (void *tdbupdate, programstate_t programState)
   logProcBegin (LOG_PROC, "dbupdateStoppingCallback");
 
   procutilStopAllProcess (dbupdate->processes, dbupdate->conn, false);
+  connDisconnectAll (dbupdate->conn);
 
   logProcEnd (LOG_PROC, "dbupdateStoppingCallback", "");
   return true;
@@ -567,6 +571,12 @@ dbupdateStopWaitCallback (void *tdbupdate, programstate_t programState)
   logProcBegin (LOG_PROC, "dbupdateStopWaitCallback");
 
   rc = connCheckAll (dbupdate->conn);
+  if (rc == false) {
+    ++dbupdate->stopwaitcount;
+    if (dbupdate->stopwaitcount > STOP_WAIT_COUNT_MAX) {
+      rc = true;
+    }
+  }
 
   logProcEnd (LOG_PROC, "dbupdateStopWaitCallback", "");
   return rc;
@@ -589,7 +599,6 @@ dbupdateClosingCallback (void *tdbupdate, programstate_t programState)
 
   regfree (&dbupdate->fnregex);
   slistFree (dbupdate->fileList);
-  connDisconnectAll (dbupdate->conn);
   connFree (dbupdate->conn);
 
   logProcEnd (LOG_PROC, "dbupdateClosingCallback", "");

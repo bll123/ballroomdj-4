@@ -80,6 +80,8 @@ typedef struct {
   char            ident [80];
   char            latestversion [40];
   char            *webresponse;
+  int             mainstarted;
+  int             stopwaitcount;
   /* gtk stuff */
   uiutilsspinbox_t  profilesel;
   GtkApplication    *app;
@@ -122,6 +124,8 @@ static void     starterActivate (GApplication *app, gpointer userdata);
 gboolean        starterMainLoop  (void *tstarter);
 static int      starterProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
                     bdjmsgmsg_t msg, char *args, void *udata);
+static void     starterStartMain (startui_t *starter, bdjmsgroute_t routefrom, char *args);
+static void     starterStopMain (startui_t *starter);
 static gboolean starterCloseWin (GtkWidget *window, GdkEvent *event, gpointer userdata);
 static void     starterSigHandler (int sig);
 
@@ -190,6 +194,8 @@ main (int argc, char *argv[])
   starter.supporttb = NULL;
   strcpy (starter.ident, "");
   strcpy (starter.latestversion, "");
+  starter.mainstarted = 0;
+  starter.stopwaitcount = 0;
 
   for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
     starter.processes [i] = NULL;
@@ -259,6 +265,14 @@ starterStoppingCallback (void *udata, programstate_t programState)
   startui_t   *starter = udata;
   gint        x, y;
 
+  if (starter->mainstarted) {
+    if (! connIsConnected (starter->conn, ROUTE_MAIN)) {
+      connConnect (starter->conn, ROUTE_MAIN);
+    }
+    procutilStopProcess (starter->processes [ROUTE_MAIN],
+        starter->conn, ROUTE_MAIN, false);
+  }
+
   if (starter->processes [ROUTE_PLAYERUI] != NULL &&
       ! connIsConnected (starter->conn, ROUTE_PLAYERUI)) {
     connConnect (starter->conn, ROUTE_PLAYERUI);
@@ -292,6 +306,12 @@ starterStopWaitCallback (void *udata, programstate_t programState)
   bool        rc = false;
 
   rc = connCheckAll (starter->conn);
+  if (rc == false) {
+    ++starter->stopwaitcount;
+    if (starter->stopwaitcount > STOP_WAIT_COUNT_MAX) {
+      rc = true;
+    }
+  }
   return rc;
 }
 
@@ -305,11 +325,13 @@ starterClosingCallback (void *udata, programstate_t programState)
     gtk_widget_destroy (starter->window);
   }
 
+  connDisconnectAll (starter->conn);
   procutilStopAllProcess (starter->processes, starter->conn, true);
   procutilFreeAll (starter->processes);
 
   bdj4shutdown (ROUTE_STARTERUI, NULL);
-  connDisconnectAll (starter->conn);
+
+  sockhCloseServer (starter->sockserver);
   connFree (starter->conn);
 
   if (starter->supporttb != NULL) {
@@ -321,7 +343,6 @@ starterClosingCallback (void *udata, programstate_t programState)
       "starterui", ".txt", PATHBLD_MP_USEIDX);
   datafileSaveKeyVal ("starterui", fn, starteruidfkeys, STARTERUI_KEY_MAX, starter->options);
 
-  sockhCloseServer (starter->sockserver);
   nlistFree (starter->dispProfileList);
   nlistFree (starter->profileIdxMap);
   if (starter->optiondf != NULL) {
@@ -702,8 +723,9 @@ starterProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 
   logProcBegin (LOG_PROC, "starterProcessMsg");
 
-  logMsg (LOG_DBG, LOG_MSGS, "got: from %d route: %d msg:%d args:%s",
-      routefrom, route, msg, args);
+  logMsg (LOG_DBG, LOG_MSGS, "got: from:%ld/%s route:%ld/%s msg:%ld/%s args:%s",
+      routefrom, msgRouteDebugText (routefrom),
+      route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
 
   switch (route) {
     case ROUTE_NONE:
@@ -717,6 +739,7 @@ starterProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_SOCKET_CLOSE: {
           procutilCloseProcess (starter->processes [routefrom],
               starter->conn, routefrom);
+          connDisconnect (starter->conn, routefrom);
           break;
         }
         case MSG_EXIT_REQUEST: {
@@ -726,6 +749,14 @@ starterProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           progstateShutdownProcess (starter->progstate);
           logProcEnd (LOG_PROC, "starterProcessMsg", "req-exit");
           return 1;
+        }
+        case MSG_START_MAIN: {
+          starterStartMain (starter, routefrom, args);
+          break;
+        }
+        case MSG_STOP_MAIN: {
+          starterStopMain (starter);
+          break;
         }
         default: {
           break;
@@ -744,6 +775,45 @@ starterProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
   }
   return gKillReceived;
+}
+
+static void
+starterStartMain (startui_t *starter, bdjmsgroute_t routefrom, char *args)
+{
+  int   flags;
+  char  *targv [2];
+  int   targc = 0;
+
+  if (starter->mainstarted == 0) {
+    flags = PROCUTIL_DETACH;
+    if (atoi (args)) {
+      targv [targc++] = "--hidemarquee";
+    }
+    targv [targc++] = NULL;
+
+    starter->processes [ROUTE_MAIN] = procutilStartProcess (
+        ROUTE_MAIN, "bdj4main", flags, targv);
+  }
+  if (! connIsConnected (starter->conn, ROUTE_MAIN)) {
+    connConnect (starter->conn, ROUTE_MAIN);
+  }
+  ++starter->mainstarted;
+}
+
+
+static void
+starterStopMain (startui_t *starter)
+{
+  if (starter->mainstarted) {
+    if (! connIsConnected (starter->conn, ROUTE_MAIN)) {
+      connConnect (starter->conn, ROUTE_MAIN);
+    }
+    --starter->mainstarted;
+    if (starter->mainstarted == 0) {
+      procutilStopProcess (starter->processes [ROUTE_MAIN],
+          starter->conn, ROUTE_MAIN, false);
+    }
+  }
 }
 
 

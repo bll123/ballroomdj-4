@@ -295,7 +295,6 @@ enum {
 typedef struct {
   progstate_t       *progstate;
   char              *locknm;
-  procutil_t        *processes [ROUTE_MAX];
   conn_t            *conn;
   sockserver_t      *sockserver;
   char              *localip;
@@ -306,6 +305,7 @@ typedef struct {
   confuiident_t     *tableidents;
   slist_t           *listingtaglist;
   dispsel_t         *dispsel;
+  int               stopwaitcount;
   /* gtk stuff */
   GtkApplication    *app;
   GtkWidget         *window;
@@ -497,6 +497,7 @@ main (int argc, char *argv[])
   confui.dispsel = NULL;
   confui.listingtaglist = NULL;
   confui.localip = NULL;
+  confui.stopwaitcount = 0;
   for (int i = 0; i < CONFUI_ID_TABLE_MAX; ++i) {
     confui.tables [i].tree = NULL;
     confui.tables [i].radiorow = 0;
@@ -508,10 +509,6 @@ main (int argc, char *argv[])
     confui.tables [i].savelist = NULL;
     confui.tables [i].listcreatefunc = NULL;
     confui.tables [i].savefunc = NULL;
-  }
-
-  for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
-    confui.processes [i] = NULL;
   }
 
   for (int i = 0; i < CONFUI_ITEM_MAX; ++i) {
@@ -781,7 +778,7 @@ confuiStoppingCallback (void *udata, programstate_t programState)
       "configui", ".txt", PATHBLD_MP_USEIDX);
   datafileSaveKeyVal ("configui", fn, configuidfkeys, CONFUI_KEY_MAX, confui->options);
 
-  procutilStopAllProcess (confui->processes, confui->conn, false);
+  connDisconnectAll (confui->conn);
 
   gdone = 1;
   logProcEnd (LOG_PROC, "confuiStoppingCallback", "");
@@ -794,9 +791,13 @@ confuiStopWaitCallback (void *udata, programstate_t programState)
   configui_t  * confui = udata;
   bool        rc = false;
 
-  logProcBegin (LOG_PROC, "confuiStopWaitCallback");
   rc = connCheckAll (confui->conn);
-  logProcEnd (LOG_PROC, "confuiStopWaitCallback", "");
+  if (rc == false) {
+    ++confui->stopwaitcount;
+    if (confui->stopwaitcount > STOP_WAIT_COUNT_MAX) {
+      rc = true;
+    }
+  }
   return rc;
 }
 
@@ -853,15 +854,9 @@ confuiClosingCallback (void *udata, programstate_t programState)
     slistFree (confui->listingtaglist);
   }
 
-  sockhCloseServer (confui->sockserver);
   bdj4shutdown (ROUTE_CONFIGUI, NULL);
 
-  /* give the other processes some time to shut down */
-  mssleep (200);
-  procutilStopAllProcess (confui->processes, confui->conn, true);
-  procutilFreeAll (confui->processes);
-
-  connDisconnectAll (confui->conn);
+  sockhCloseServer (confui->sockserver);
   connFree (confui->conn);
   uiutilsCleanup ();
 
@@ -1636,8 +1631,7 @@ confuiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_SOCKET_CLOSE: {
-          procutilCloseProcess (confui->processes [routefrom],
-              confui->conn, routefrom);
+          connDisconnect (confui->conn, routefrom);
           break;
         }
         case MSG_EXIT_REQUEST: {

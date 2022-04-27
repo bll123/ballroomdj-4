@@ -54,14 +54,13 @@ enum {
 typedef struct {
   progstate_t     *progstate;
   char            *locknm;
-  procutil_t      *processes [ROUTE_MAX];
   conn_t          *conn;
   sockserver_t    *sockserver;
   musicdb_t       *musicdb;
   musicqidx_t     musicqPlayIdx;
   musicqidx_t     musicqManageIdx;
   dispsel_t       *dispsel;
-  int             dbgflags;
+  int             stopwaitcount;
   /* update database */
   uiutilsspinbox_t  dbspinbox;
   uiutilstextbox_t  *dbhelpdisp;
@@ -102,7 +101,6 @@ static datafilekey_t manageuidfkeys [] = {
 
 #define MANAGE_EXIT_WAIT_COUNT      20
 
-static bool     manageListeningCallback (void *udata, programstate_t programState);
 static bool     manageConnectingCallback (void *udata, programstate_t programState);
 static bool     manageHandshakeCallback (void *udata, programstate_t programState);
 static bool     manageStoppingCallback (void *udata, programstate_t programState);
@@ -139,8 +137,6 @@ main (int argc, char *argv[])
   manage.mainnotebook = NULL;
   manage.notebook = NULL;
   manage.progstate = progstateInit ("manageui");
-  progstateSetCallback (manage.progstate, STATE_LISTENING,
-      manageListeningCallback, &manage);
   progstateSetCallback (manage.progstate, STATE_CONNECTING,
       manageConnectingCallback, &manage);
   progstateSetCallback (manage.progstate, STATE_WAIT_HANDSHAKE,
@@ -155,12 +151,9 @@ main (int argc, char *argv[])
   manage.mmsongsel = NULL;
   manage.musicqPlayIdx = MUSICQ_B;
   manage.musicqManageIdx = MUSICQ_A;
+  manage.stopwaitcount = 0;
   manage.dblist = NULL;
   manage.dbhelp = NULL;
-
-  for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
-    manage.processes [i] = NULL;
-  }
 
 #if _define_SIGHUP
   procutilCatchSignal (manageSigHandler, SIGHUP);
@@ -171,7 +164,7 @@ main (int argc, char *argv[])
   procutilIgnoreSignal (SIGCHLD);
 #endif
 
-  manage.dbgflags = bdj4startup (argc, argv, &manage.musicdb,
+  bdj4startup (argc, argv, &manage.musicdb,
       "mu", ROUTE_MANAGEUI, BDJ4_INIT_NONE);
   logProcBegin (LOG_PROC, "manageui");
 
@@ -277,6 +270,8 @@ manageStoppingCallback (void *udata, programstate_t programState)
   gint          x, y;
 
   logProcBegin (LOG_PROC, "manageStoppingCallback");
+  connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_STOP_MAIN, NULL);
+
   gtk_window_get_size (GTK_WINDOW (manage->window), &x, &y);
   nlistSetNum (manage->options, PLUI_SIZE_X, x);
   nlistSetNum (manage->options, PLUI_SIZE_Y, y);
@@ -284,21 +279,7 @@ manageStoppingCallback (void *udata, programstate_t programState)
   nlistSetNum (manage->options, PLUI_POSITION_X, x);
   nlistSetNum (manage->options, PLUI_POSITION_Y, y);
 
-  /* the manager may not have started main */
-  if (manage->processes [ROUTE_MAIN] == NULL &&
-      ! lockExists (lockName (ROUTE_PLAYERUI), PATHBLD_MP_USEIDX)) {
-    connSendMessage (manage->conn, ROUTE_MAIN, MSG_EXIT_REQUEST, NULL);
-  }
-  for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
-    if (i == ROUTE_MAIN &&
-        lockExists (lockName (ROUTE_PLAYERUI), PATHBLD_MP_USEIDX)) {
-      continue;
-    }
-    if (manage->processes [i] != NULL) {
-      procutilStopProcess (manage->processes [i], manage->conn, i, false);
-    }
-  }
-
+  connDisconnectAll (manage->conn);
   gdone = 1;
   logProcEnd (LOG_PROC, "manageStoppingCallback", "");
   return true;
@@ -311,19 +292,13 @@ manageStopWaitCallback (void *udata, programstate_t programState)
   bool        rc = true;
 
   logProcBegin (LOG_PROC, "manageStopWaitCallback");
-
-  for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
-    if (i == ROUTE_MAIN &&
-        lockExists (lockName (ROUTE_PLAYERUI), PATHBLD_MP_USEIDX)) {
-      continue;
-    }
-    if (connIsConnected (manage->conn, i)) {
-fprintf (stderr, "manageui: %d still connected\n", i);
-      rc = false;
-      break;
+  rc = connCheckAll (manage->conn);
+  if (rc == false) {
+    ++manage->stopwaitcount;
+    if (manage->stopwaitcount > STOP_WAIT_COUNT_MAX) {
+      rc = true;
     }
   }
-
   logProcEnd (LOG_PROC, "manageStopWaitCallback", "");
   return rc;
 }
@@ -344,8 +319,6 @@ manageClosingCallback (void *udata, programstate_t programState)
       "manageui", ".txt", PATHBLD_MP_USEIDX);
   datafileSaveKeyVal ("manageui", fn, manageuidfkeys, MANAGEUI_DFKEY_COUNT, manage->options);
 
-  sockhCloseServer (manage->sockserver);
-
   bdj4shutdown (ROUTE_MANAGEUI, manage->musicdb);
   dispselFree (manage->dispsel);
 
@@ -354,18 +327,7 @@ manageClosingCallback (void *udata, programstate_t programState)
   }
   datafileFree (manage->optiondf);
 
-  for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
-    if (i == ROUTE_MAIN &&
-        lockExists (lockName (ROUTE_PLAYERUI), PATHBLD_MP_USEIDX)) {
-      continue;
-    }
-    if (manage->processes [i] != NULL) {
-      procutilStopProcess (manage->processes [i], manage->conn, i, true);
-      procutilFree (manage->processes [i]);
-    }
-  }
-
-  connDisconnectAll (manage->conn);
+  sockhCloseServer (manage->sockserver);
   connFree (manage->conn);
 
   uiutilsTextBoxFree (manage->dbhelpdisp);
@@ -611,30 +573,6 @@ manageMainLoop (void *tmanage)
 }
 
 static bool
-manageListeningCallback (void *udata, programstate_t programState)
-{
-  manageui_t    *manage = udata;
-  int           flags;
-
-  logProcBegin (LOG_PROC, "manageListeningCallback");
-  flags = PROCUTIL_DETACH;
-  if ((manage->dbgflags & BDJ4_INIT_NO_DETACH) == BDJ4_INIT_NO_DETACH) {
-    flags = PROCUTIL_NO_DETACH;
-  }
-
-  if (! lockExists (lockName (ROUTE_PLAYERUI), PATHBLD_MP_USEIDX)) {
-    char *targv [2];
-
-    targv [0] = "--hidemarquee";
-    targv [1] = NULL;
-    manage->processes [ROUTE_MAIN] = procutilStartProcess (
-        ROUTE_MAIN, "bdj4main", flags, targv);
-  }
-  logProcEnd (LOG_PROC, "manageListeningCallback", "");
-  return true;
-}
-
-static bool
 manageConnectingCallback (void *udata, programstate_t programState)
 {
   manageui_t   *manage = udata;
@@ -642,6 +580,9 @@ manageConnectingCallback (void *udata, programstate_t programState)
 
   logProcBegin (LOG_PROC, "manageConnectingCallback");
 
+  if (! connIsConnected (manage->conn, ROUTE_STARTERUI)) {
+    connConnect (manage->conn, ROUTE_STARTERUI);
+  }
   if (! connIsConnected (manage->conn, ROUTE_MAIN)) {
     connConnect (manage->conn, ROUTE_MAIN);
   }
@@ -649,8 +590,8 @@ manageConnectingCallback (void *udata, programstate_t programState)
     connConnect (manage->conn, ROUTE_PLAYER);
   }
 
-  if (connIsConnected (manage->conn, ROUTE_MAIN) &&
-      connIsConnected (manage->conn, ROUTE_PLAYER)) {
+  if (connIsConnected (manage->conn, ROUTE_STARTERUI)) {
+    connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_START_MAIN, "1");
     rc = true;
   }
 
@@ -666,7 +607,15 @@ manageHandshakeCallback (void *udata, programstate_t programState)
 
   logProcBegin (LOG_PROC, "manageHandshakeCallback");
 
-  if (connHaveHandshake (manage->conn, ROUTE_MAIN) &&
+  if (! connIsConnected (manage->conn, ROUTE_MAIN)) {
+    connConnect (manage->conn, ROUTE_MAIN);
+  }
+  if (! connIsConnected (manage->conn, ROUTE_PLAYER)) {
+    connConnect (manage->conn, ROUTE_PLAYER);
+  }
+
+  if (connHaveHandshake (manage->conn, ROUTE_STARTERUI) &&
+      connHaveHandshake (manage->conn, ROUTE_MAIN) &&
       connHaveHandshake (manage->conn, ROUTE_PLAYER)) {
     progstateLogTime (manage->progstate, "time-to-start-gui");
     rc = true;
@@ -706,8 +655,7 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_SOCKET_CLOSE: {
-          procutilCloseProcess (manage->processes [routefrom],
-              manage->conn, routefrom);
+          connDisconnect (manage->conn, routefrom);
           break;
         }
         case MSG_EXIT_REQUEST: {
