@@ -15,6 +15,15 @@
 #include "sock.h"
 #include "sockh.h"
 
+typedef struct conn {
+  Sock_t        sock;
+  uint16_t      port;
+  bdjmsgroute_t routefrom;
+  bool          handshake : 1;
+  bool          connected : 1;
+} conn_t;
+
+static bool     initialized = false;
 static uint16_t connports [ROUTE_MAX];
 
 /* note that connInit() must be called after bdjvarsInit() */
@@ -28,19 +37,22 @@ connInit (bdjmsgroute_t routefrom)
 
   assert (bdjvarsIsInitialized() == true);
 
-  connports [ROUTE_NONE] = 0;
-  connports [ROUTE_MAIN] = bdjvarsGetNum (BDJVL_MAIN_PORT);
-  connports [ROUTE_PLAYERUI] = bdjvarsGetNum (BDJVL_PLAYERUI_PORT);
-  connports [ROUTE_MANAGEUI] = bdjvarsGetNum (BDJVL_MANAGEUI_PORT);
-  connports [ROUTE_CONFIGUI] = bdjvarsGetNum (BDJVL_CONFIGUI_PORT);
-  connports [ROUTE_PLAYER] = bdjvarsGetNum (BDJVL_PLAYER_PORT);
-  connports [ROUTE_MOBILEMQ] = bdjvarsGetNum (BDJVL_MOBILEMQ_PORT);
-  connports [ROUTE_REMCTRL] = bdjvarsGetNum (BDJVL_REMCTRL_PORT);
-  connports [ROUTE_MARQUEE] = bdjvarsGetNum (BDJVL_MARQUEE_PORT);
-  connports [ROUTE_STARTERUI] = bdjvarsGetNum (BDJVL_STARTERUI_PORT);
-  connports [ROUTE_DBUPDATE] = bdjvarsGetNum (BDJVL_DBUPDATE_PORT);
-  connports [ROUTE_DBTAG] = bdjvarsGetNum (BDJVL_DBTAG_PORT);
-  connports [ROUTE_RAFFLE] = bdjvarsGetNum (BDJVL_RAFFLE_PORT);
+  if (! initialized) {
+    connports [ROUTE_NONE] = 0;
+    connports [ROUTE_MAIN] = bdjvarsGetNum (BDJVL_MAIN_PORT);
+    connports [ROUTE_PLAYERUI] = bdjvarsGetNum (BDJVL_PLAYERUI_PORT);
+    connports [ROUTE_MANAGEUI] = bdjvarsGetNum (BDJVL_MANAGEUI_PORT);
+    connports [ROUTE_CONFIGUI] = bdjvarsGetNum (BDJVL_CONFIGUI_PORT);
+    connports [ROUTE_PLAYER] = bdjvarsGetNum (BDJVL_PLAYER_PORT);
+    connports [ROUTE_MOBILEMQ] = bdjvarsGetNum (BDJVL_MOBILEMQ_PORT);
+    connports [ROUTE_REMCTRL] = bdjvarsGetNum (BDJVL_REMCTRL_PORT);
+    connports [ROUTE_MARQUEE] = bdjvarsGetNum (BDJVL_MARQUEE_PORT);
+    connports [ROUTE_STARTERUI] = bdjvarsGetNum (BDJVL_STARTERUI_PORT);
+    connports [ROUTE_DBUPDATE] = bdjvarsGetNum (BDJVL_DBUPDATE_PORT);
+    connports [ROUTE_DBTAG] = bdjvarsGetNum (BDJVL_DBTAG_PORT);
+    connports [ROUTE_RAFFLE] = bdjvarsGetNum (BDJVL_RAFFLE_PORT);
+    initialized = true;
+  }
 
   for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
     conn [i].sock = INVALID_SOCKET;
@@ -183,20 +195,6 @@ connConnectResponse (conn_t *conn, bdjmsgroute_t route)
       ! connIsConnected (conn, route)) {
     connConnect (conn, route);
   }
-}
-
-
-void
-connClearHandshake (conn_t *conn, bdjmsgroute_t route)
-{
-  if (conn == NULL) {
-    return;
-  }
-  if (route >= ROUTE_MAX) {
-    return;
-  }
-
-  conn [route].handshake = false;
 }
 
 inline bool

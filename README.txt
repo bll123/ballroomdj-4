@@ -2,20 +2,10 @@ BDJ4 4.0.0
 
 BallroomDJ 4 is currently under development.
 
-Alpha Release: 20220420
-
-This release represents a working player user interface.
-It should be usable with a BallroomDJ 3 installation.
-
-The song selection filter dialog will change in the future.
-Several of the currently displayed selections will be hidden by default.
+Alpha Release: 20220427
 
 Alpha releases are mostly untested works in progress.
-
-This alpha release will not work without a BallroomDJ 3 installation.
-
-It contains only the player interface and configuration.
-No music or playlist management is present.
+This alpha release will mostly not work without a BallroomDJ 3 installation.
 
 Alpha releases may not reflect what the final product will look like,
 and may not reflect what features will be present in the final product.
@@ -24,6 +14,13 @@ Anything can and will change.
 
 There are no instructions yet.  If you want to try this, ask on the
 forum for help.
+
+This release represents a working player user interface.
+It should be usable with a BallroomDJ 3 installation.
+
+This release contains the player user interface and configuration interface.
+The management interface is present, but only portions of the database
+udpate are working.
 
 Leave your feedback, thoughts and ruminations at :
       https://ballroomdj.org/forum/viewforum.php?f=26

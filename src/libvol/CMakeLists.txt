@@ -7,6 +7,7 @@ add_library (libbdj4vol SHARED
 )
 target_link_libraries (libbdj4vol
   libbdj4common
+  ${CMAKE_DL_LIBS}
   m
 )
 
@@ -40,7 +41,6 @@ target_link_libraries (libvolwin
 add_executable (voltest voltest.c)
 target_link_libraries (voltest
   libbdj4vol libbdj4common
-  ${CMAKE_DL_LIBS}
   m
 )
 

@@ -7,27 +7,107 @@
 #include "sock.h"
 #include "bdjmsg.h"
 
-typedef struct {
-  Sock_t        sock;
-  uint16_t      port;
-  bdjmsgroute_t routefrom;
-  bool          handshake : 1;
-  bool          connected : 1;
-} conn_t;
+typedef struct conn conn_t;
 
+/**
+ * Initialize a connection.
+ *
+ * bdjvars must be initialized before initializing a connection.
+ *
+ * @param[in] routefrom The route that is sending messages.
+ * @return conn_t array.
+ */
 conn_t    * connInit (bdjmsgroute_t routefrom);
+
+/**
+ * Free a connection.
+ *
+ * All connections are invalid afterwards.
+ *
+ * @param[in] conn The connection type returned from connInit().
+ */
 void      connFree (conn_t *conn);
+
+/**
+ * Get the port number used for a connection.
+ * @param[in] conn The connection.
+ * @return port number
+ */
 uint16_t  connPort (conn_t *conn, bdjmsgroute_t route);
+
+/**
+ * Connect to a route.
+ *
+ * Sends a handshake message.
+ *
+ * @param[in] conn The connection.
+ * @param[in] route The route number to connect to.
+ */
 void      connConnect (conn_t *conn, bdjmsgroute_t route);
+
+/**
+ * Disconnect from a route.
+ *
+ * @param[in] conn The connection.
+ * @param[in] route The route number to connect to.
+ */
 void      connDisconnect (conn_t *conn, bdjmsgroute_t route);
+
+/**
+ * Disconnect from all connections.
+ * @param[in] conn The connection.
+ */
 void      connDisconnectAll (conn_t *conn);
+
+/**
+ * Check and see if there are any connections active.
+ * @param[in] conn The connection.
+ * @return true if all connections are disconnected.  false otherwise.
+ */
 bool      connCheckAll (conn_t *conn);
+/**
+ * Called on receipt of a handshake message to update the connection.
+ * @param[in] conn The connection.
+ * @param[in] routefrom The route sending the handshake.
+ */
 void      connProcessHandshake (conn_t *conn, bdjmsgroute_t routefrom);
+
+/**
+ * Send a message.
+ * @param[in] conn The connection.
+ * @param[in] route The route to send the message to.
+ * @param[in] msg The message.
+ * @param[in] args Any arguments to the message or NULL.
+ */
 void      connSendMessage (conn_t *conn, bdjmsgroute_t route,
               bdjmsgmsg_t msg, char *args);
+
+/**
+ * Make sure there is an outbound connection active.
+ *
+ * Generally used upon receipt of a handshake message.
+ *
+ * @param[in] conn The connection.
+ * @param[in] route The incoming route.
+ */
 void      connConnectResponse (conn_t *conn, bdjmsgroute_t route);
-void      connClearHandshake (conn_t *conn, bdjmsgroute_t route);
+
+/**
+ * Check and see if a connection is active.
+ *
+ * @param[in] conn The connection.
+ * @param[in] route The outgoing route.
+ * @return true if connected.
+ */
 bool      connIsConnected (conn_t *conn, bdjmsgroute_t route);
+
+/**
+ * Check and see if a handshake has been received.
+ *
+ * @param[in] conn The connection.
+ * @param[in] route The outgoing route.
+ * @return true if a handshake has been received.
+ */
 bool      connHaveHandshake (conn_t *conn, bdjmsgroute_t route);
 
 #endif /* INC_CONN_H */

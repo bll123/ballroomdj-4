@@ -78,6 +78,9 @@ add_subdirectory (libbdj4gtk)
 add_subdirectory (libbdj4uigtk)
 
 add_executable (bdj4locatebdj3 bdj4locatebdj3.c)
+if (WIN32)
+  target_compile_options (bdj4locatebdj3 PRIVATE -municode)
+endif()
 target_link_libraries (bdj4locatebdj3
   liblocatebdj3
   libbdj4fileop
@@ -85,18 +88,30 @@ target_link_libraries (bdj4locatebdj3
 )
 
 add_executable (bdj4info bdj4info.c)
+if (WIN32)
+  target_compile_options (bdj4info PRIVATE -municode)
+endif()
 target_link_libraries (bdj4info
   libbdj4common
 )
 addIntlLibrary (bdj4info)
 
 add_executable (bdj4tags bdj4tags.c)
+if (WIN32)
+  target_compile_options (bdj4tags PRIVATE -municode)
+endif()
 target_link_libraries (bdj4tags
   libbdj4common libbdj4
 )
 addIntlLibrary (bdj4tags)
 
 add_executable (bdj4updater bdj4updater.c)
+if (WIN32)
+  target_compile_options (bdj4updater PRIVATE -municode)
+endif()
+if (WIN32)
+  target_compile_options (bdj4updater PRIVATE -mwindows)
+endif()
 target_link_libraries (bdj4updater
   libbdj4common libbdj4
 )
@@ -117,6 +132,9 @@ if (WIN32)
 endif()
 
 add_executable (bdj4se bdj4se.c)
+if (WIN32)
+  target_compile_options (bdj4se PRIVATE -municode)
+endif()
 target_link_libraries (bdj4se
   libbdj4fileop
   libbdj4string
@@ -140,24 +158,33 @@ if (WIN32)
 endif()
 
 add_executable (bdj4 bdj4.c)
+if (WIN32)
+  target_compile_options (bdj4 PRIVATE -municode)
+endif()
+if (WIN32)
+  target_sources (bdj4 PRIVATE launcher.o)
+  target_compile_options (bdj4 PRIVATE -mwindows)
+endif()
 target_link_libraries (bdj4
   libbdj4launcher
   libbdj4fileop
   libbdj4string
 )
-if (WIN32)
-  target_sources (bdj4 PRIVATE launcher.o)
-  target_compile_options (bdj4 PRIVATE -mwindows)
-endif()
 # for gethostname
 addWinSockLibrary (bdj4)
 addWinNtdllLibrary (bdj4)
 
 # this is only used on macos
 add_executable (bdj4g bdj4.c)
+if (WIN32)
+  target_compile_options (bdj4g PRIVATE -municode)
+endif()
 target_include_directories (bdj4g
   PUBLIC ${GTK_INCLUDE_DIRS}
 )
+if (WIN32)
+  target_compile_options (bdj4g PRIVATE -mwindows)
+endif()
 target_compile_options (bdj4g PRIVATE -DBDJ4_GUI_LAUNCHER=1)
 target_link_libraries (bdj4g
   libbdj4launcher
@@ -169,6 +196,12 @@ addWinSockLibrary (bdj4g)
 addWinNtdllLibrary (bdj4g)
 
 add_executable (bdj4dbupdate bdj4dbupdate.c)
+if (WIN32)
+  target_compile_options (bdj4dbupdate PRIVATE -municode)
+endif()
+if (WIN32)
+  target_compile_options (bdj4dbupdate PRIVATE -mwindows)
+endif()
 target_link_libraries (bdj4dbupdate
   libbdj4 libbdj4common
   m
@@ -180,28 +213,42 @@ addIntlLibrary (bdj4dbupdate)
 addWinSockLibrary (bdj4dbupdate)
 
 add_executable (bdj4dbtag bdj4dbtag.c)
+if (WIN32)
+  target_compile_options (bdj4dbtag PRIVATE -municode)
+endif()
 target_link_libraries (bdj4dbtag
   libbdj4 libbdj4common
   m
 )
+if (WIN32)
+  target_compile_options (bdj4dbtag PRIVATE -mwindows)
+endif()
 target_compile_options (bdj4dbtag PRIVATE -pthread)
 target_link_options (bdj4dbtag PRIVATE -pthread)
 addIntlLibrary (bdj4dbtag)
 addWinSockLibrary (bdj4dbtag)
 
 add_executable (bdj4main bdj4main.c)
+if (WIN32)
+  target_compile_options (bdj4main PRIVATE -municode)
+endif()
 target_link_libraries (bdj4main
   libbdj4 libbdj4common
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   m
 )
+if (WIN32)
+  target_compile_options (bdj4main PRIVATE -mwindows)
+endif()
 addIntlLibrary (bdj4main)
 addWinSockLibrary (bdj4main)
 
 add_executable (bdj4player bdj4player.c)
+if (WIN32)
+  target_compile_options (bdj4player PRIVATE -municode)
+endif()
 target_link_libraries (bdj4player
   libbdj4pli libbdj4vol libbdj4 libbdj4common
-  ${CMAKE_DL_LIBS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   m
 )
@@ -212,6 +259,12 @@ add_executable(bdj4mobmq bdj4mobmq.c)
 target_include_directories (bdj4mobmq
   PRIVATE "${MONGOOSE_INC_DIR}"
 )
+if (WIN32)
+  target_compile_options (bdj4mobmq PRIVATE -municode)
+endif()
+if (WIN32)
+  target_compile_options (bdj4mobmq PRIVATE -mwindows)
+endif()
 target_link_libraries (bdj4mobmq
   libwebsrv libmongoose
   libbdj4 libbdj4common
@@ -224,6 +277,12 @@ add_executable(bdj4rc bdj4rc.c)
 target_include_directories (bdj4rc
   PRIVATE "${MONGOOSE_INC_DIR}"
 )
+if (WIN32)
+  target_compile_options (bdj4rc PRIVATE -municode)
+endif()
+if (WIN32)
+  target_compile_options (bdj4rc PRIVATE -mwindows)
+endif()
 target_link_libraries (bdj4rc
   libwebsrv libmongoose
   libbdj4 libbdj4common
@@ -233,6 +292,12 @@ target_link_libraries (bdj4rc
 addWinSockLibrary (bdj4rc)
 
 add_executable (bdj4marquee bdj4marquee.c)
+if (WIN32)
+  target_compile_options (bdj4marquee PRIVATE -municode)
+endif()
+if (WIN32)
+  target_compile_options (bdj4marquee PRIVATE -mwindows)
+endif()
 target_link_libraries (bdj4marquee
   libbdj4ui libbdj4gtk libbdj4 libbdj4common
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
@@ -243,6 +308,9 @@ addIntlLibrary (bdj4marquee)
 addWinSockLibrary (bdj4marquee)
 
 add_executable (bdj4installer bdj4installer.c)
+if (WIN32)
+  target_compile_options (bdj4installer PRIVATE -municode)
+endif()
 target_link_libraries (bdj4installer
   liblocatebdj3
   libbdj4ui libbdj4gtk libbdj4 libbdj4common
@@ -253,6 +321,12 @@ target_link_libraries (bdj4installer
 addIntlLibrary (bdj4installer)
 
 add_executable (bdj4starterui bdj4starterui.c)
+if (WIN32)
+  target_compile_options (bdj4starterui PRIVATE -municode)
+endif()
+if (WIN32)
+  target_compile_options (bdj4starterui PRIVATE -mwindows)
+endif()
 target_link_libraries (bdj4starterui
   libbdj4ui libbdj4gtk libbdj4common
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
@@ -264,6 +338,12 @@ addIntlLibrary (bdj4starterui)
 addWinSockLibrary (bdj4starterui)
 
 add_executable (bdj4playerui bdj4playerui.c)
+if (WIN32)
+  target_compile_options (bdj4playerui PRIVATE -municode)
+endif()
+if (WIN32)
+  target_compile_options (bdj4playerui PRIVATE -mwindows)
+endif()
 target_link_libraries (bdj4playerui
   libbdj4uigtk libbdj4ui libbdj4gtk libbdj4 libbdj4common
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
@@ -274,6 +354,12 @@ addIntlLibrary (bdj4playerui)
 addWinSockLibrary (bdj4playerui)
 
 add_executable (bdj4manageui bdj4manageui.c)
+if (WIN32)
+  target_compile_options (bdj4manageui PRIVATE -municode)
+endif()
+if (WIN32)
+  target_compile_options (bdj4manageui PRIVATE -mwindows)
+endif()
 target_link_libraries (bdj4manageui
   libbdj4uigtk libbdj4ui libbdj4gtk libbdj4 libbdj4common
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
@@ -284,6 +370,12 @@ addIntlLibrary (bdj4manageui)
 addWinSockLibrary (bdj4manageui)
 
 add_executable (bdj4configui bdj4configui.c)
+if (WIN32)
+  target_compile_options (bdj4configui PRIVATE -municode)
+endif()
+if (WIN32)
+  target_compile_options (bdj4configui PRIVATE -mwindows)
+endif()
 target_link_libraries (bdj4configui
   libbdj4ui libbdj4gtk libbdj4vol libbdj4 libbdj4common
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
@@ -324,3 +416,4 @@ if (APPLE)
   macUpdateRPath (bdj4updater)
   macUpdateRPath (check_all)
 endif()
+

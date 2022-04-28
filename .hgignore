@@ -4,6 +4,8 @@ syntax: regexp
 ^data/
 ^bin/
 ^dev/
+# for the time being, ignore this (doxygen output)
+^doxygen/
 ^http/
 ^licenses/
 ^locale/locales.txt$
