@@ -19,6 +19,7 @@
 #include "log.h"
 #include "rating.h"
 #include "song.h"
+#include "songutil.h"
 #include "slist.h"
 #include "status.h"
 #include "tagdef.h"
@@ -274,17 +275,15 @@ songChangeFavorite (song_t *song)
 bool
 songAudioFileExists (song_t *song)
 {
-  char      tbuff [MAXPATHLEN];
   char      *sfname;
+  char      *ffn;
+  bool      exists = false;
 
   sfname = songGetStr (song, TAG_FILE);
-  if (sfname [0] == '/' || (sfname [1] == ':' && sfname [2] == '/')) {
-    strlcpy (tbuff, sfname, MAXPATHLEN);
-  } else {
-    snprintf (tbuff, sizeof (tbuff), "%s/%s",
-        bdjoptGetStr (OPT_M_DIR_MUSIC), sfname);
-  }
-  return fileopFileExists (tbuff);
+  ffn = songFullFileName (sfname);
+  exists = fileopFileExists (ffn);
+  free (ffn);
+  return exists;
 }
 
 void

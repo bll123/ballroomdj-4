@@ -125,12 +125,14 @@ foreach path [list {} profiles $mpath $mppath] {
         if { $key eq "VARIOUS" } { continue }
         if { $key eq "PAUSEMSG" } { continue }
 
-        if { $key eq "version" } { set value 1 }
-
         if { $key eq "DONEMSG" } { set key "COMPLETEMSG" }
         if { $key eq "SHOWBPM" } { set key "BPM" }
         if { $key eq "PLAYERQLEN0" } { set key "PLAYERQLEN" }
         if { $key eq "MUSICDIR" } { set key DIRMUSIC }
+
+        if { $key eq "version" } { set value 1 }
+
+        if { $key eq "AUTOORGANIZE" } { set value no }
         if { $key eq "UIFONT" } {
           regsub -all "\{" $value {} value
           regsub -all "\}" $value {} value

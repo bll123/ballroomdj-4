@@ -44,6 +44,7 @@
 #include "level.h"
 #include "log.h"
 #include "musicdb.h"
+#include "orgutil.h"
 #include "osutils.h"
 #include "pathbld.h"
 #include "progstate.h"
@@ -74,6 +75,7 @@ typedef struct {
   char              *musicdir;
   size_t            musicdirlen;
   mstime_t          outputTimer;
+  org_t             *org;
   slist_t           *fileList;
   slistidx_t        filelistIterIdx;
   bdjregex_t        *badfnregex;
@@ -87,7 +89,6 @@ typedef struct {
   dbidx_t           countNullData;
   dbidx_t           countNoTags;
   dbidx_t           countUpdated;
-  dbidx_t           countSaved;
   mstime_t          starttm;
   int               stopwaitcount;
   bool              rebuild : 1;
@@ -138,7 +139,6 @@ main (int argc, char *argv[])
   dbupdate.countNullData = 0;
   dbupdate.countNoTags = 0;
   dbupdate.countUpdated = 0;
-  dbupdate.countSaved = 0;
   dbupdate.stopwaitcount = 0;
   dbupdate.rebuild = false;
   dbupdate.checknew = false;
@@ -149,6 +149,7 @@ main (int argc, char *argv[])
   dbupdate.newdatabase = false;
   dbupdate.newaudiofile = false;
   mstimeset (&dbupdate.outputTimer, 0);
+  dbupdate.org = NULL;
 
   dbupdate.progstate = progstateInit ("dbupdate");
   progstateSetCallback (dbupdate.progstate, STATE_LISTENING,
@@ -175,9 +176,11 @@ main (int argc, char *argv[])
       "db", ROUTE_DBUPDATE, flags);
   logProcBegin (LOG_PROC, "dbupdate");
 
+  dbupdate.org = orgAlloc (bdjoptGetStr (OPT_G_AO_PATHFMT));
+
   /* any file with a double quote or backslash is rejected */
   /* on windows, only the double quote is rejected */
-  p = "[\"\\]";
+  p = "[\"\\\\]";
   if (isWindows ()) {
     p = "[\"]";
   }
@@ -369,10 +372,6 @@ dbupdateProcessing (void *udata)
         }
       }
 
-      if (dbupdate->newaudiofile) {
-        ++dbupdate->countNew;
-      }
-
       if (regexMatch (dbupdate->badfnregex, fn)) {
         ++dbupdate->filesSkipped;
         ++dbupdate->countBad;
@@ -430,13 +429,12 @@ dbupdateProcessing (void *udata)
     connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
     snprintf (tbuff, sizeof (tbuff), "%s : %u", _("Loaded from Database"), dbupdate->countInDatabase);
     connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
-    snprintf (tbuff, sizeof (tbuff), "%s : %u", _("Bad files"), dbupdate->countBad);
+    snprintf (tbuff, sizeof (tbuff), "%s : %u", _("Bad files"),
+        dbupdate->countBad + dbupdate->countNullData + dbupdate->countNoTags);
     connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
     snprintf (tbuff, sizeof (tbuff), "%s : %u", _("New Files"), dbupdate->countNew);
     connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
     snprintf (tbuff, sizeof (tbuff), "%s : %u", _("Updated"), dbupdate->countUpdated);
-    connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
-    snprintf (tbuff, sizeof (tbuff), "%s : %u", _("Saved"), dbupdate->countSaved);
     connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
 
     logMsg (LOG_DBG, LOG_IMPORTANT, "-- finish: %ld ms",
@@ -450,7 +448,6 @@ dbupdateProcessing (void *udata)
     logMsg (LOG_DBG, LOG_IMPORTANT, "      new: %u", dbupdate->countNew);
     logMsg (LOG_DBG, LOG_IMPORTANT, "     null: %u", dbupdate->countNullData);
     logMsg (LOG_DBG, LOG_IMPORTANT, "  no tags: %u", dbupdate->countNoTags);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "    saved: %u", dbupdate->countSaved);
 
     connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_PROGRESS, "END");
     connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_FINISH, NULL);
@@ -597,6 +594,9 @@ dbupdateClosingCallback (void *tdbupdate, programstate_t programState)
   procutilStopAllProcess (dbupdate->processes, dbupdate->conn, true);
   procutilFreeAll (dbupdate->processes);
 
+  if (dbupdate->org != NULL) {
+    orgFree (dbupdate->org);
+  }
   if (dbupdate->badfnregex != NULL) {
     regexFree (dbupdate->badfnregex);
   }
@@ -615,12 +615,14 @@ dbupdateProcessTagData (dbupdate_t *dbupdate, char *args)
   char      *relfname;
   char      *data;
   char      *tokstr;
+  slistidx_t orgiteridx;
+  int       tagkey;
 
 
   ffn = strtok_r (args, MSG_ARGS_RS_STR, &tokstr);
   data = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   if (data == NULL) {
-// ### fix : need to get what is possible from the pathname
+    /* complete failure */
     logMsg (LOG_DBG, LOG_DBUPDATE, "  null data");
     ++dbupdate->countNullData;
     ++dbupdate->filesProcessed;
@@ -629,11 +631,17 @@ dbupdateProcessTagData (dbupdate_t *dbupdate, char *args)
 
   tagdata = audiotagParseData (ffn, data);
   if (slistGetCount (tagdata) == 0) {
-// ### fix : need to get what is possible from the pathname
+    /* if there is not even a duration, then file is no good */
+    /* probably not an audio file */
     logMsg (LOG_DBG, LOG_DBUPDATE, "  no tags");
     ++dbupdate->countNoTags;
+    ++dbupdate->filesProcessed;
+    return;
   }
 
+  if (strncmp (ffn, dbupdate->musicdir, dbupdate->musicdirlen) == 0) {
+    relfname = ffn + dbupdate->musicdirlen + 1;
+  }
   if (logCheck (LOG_DBG, LOG_DBUPDATE)) {
     slistidx_t  iteridx;
     char        *tag, *data;
@@ -645,6 +653,28 @@ dbupdateProcessTagData (dbupdate_t *dbupdate, char *args)
     }
   }
 
+  /* unfortunately, this slows the database rebuild down ...*/
+  /* use the regex to parse the filename and process */
+  /* the data that is found there. */
+  logMsg (LOG_DBG, LOG_DBUPDATE, "parsed:");
+  orgStartIterator (dbupdate->org, &orgiteridx);
+  while ((tagkey = orgIterateTagKey (dbupdate->org, &orgiteridx)) >= 0) {
+    char  *val;
+
+    val = slistGetStr (tagdata, tagdefs [tagkey].tag);
+    if (val != NULL && *val) {
+      /* this tag already exists in the tagdata, keep it */
+      logMsg (LOG_DBG, LOG_DBUPDATE, "  keep existing %s", tagdefs [tagkey].tag);
+      continue;
+    }
+
+    val = orgGetFromPath (dbupdate->org, relfname, tagkey);
+    if (val != NULL && *val) {
+      slistSetStr (tagdata, tagdefs [tagkey].tag, val);
+      logMsg (LOG_DBG, LOG_DBUPDATE, "  %s : %s", tagdefs [tagkey].tag, val);
+    }
+  }
+
   /* the dbWrite() procedure will set the FILE tag */
   relfname = slistGetStr (dbupdate->fileList, ffn);
   if (dbupdate->newdatabase) {
@@ -653,7 +683,7 @@ dbupdateProcessTagData (dbupdate_t *dbupdate, char *args)
     dbWrite (dbupdate->musicdb, relfname, tagdata);
   }
   if (dbupdate->newaudiofile) {
-    ++dbupdate->countSaved;
+    ++dbupdate->countNew;
   } else {
     ++dbupdate->countUpdated;
   }

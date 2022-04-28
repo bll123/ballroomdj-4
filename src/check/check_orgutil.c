@@ -30,13 +30,21 @@ char *orgpaths [] = {
 
 char *testpatha [] = {
   "Waltz/The Last Waltz.mp3",
-  "Waltz/The First Waltz.flac",
+  "Waltz/The Last Waltz.flac",
   NULL,
 };
 char *testpathb [] = {
+  "Waltz/Artist - The Last Waltz.mp3",
+  "Waltz/Artist - The Last Waltz.flac",
+  NULL,
+};
+char *testpathc [] = {
   "Ballroom_Dance/Various/White_Owl/01.松居慶子_-_White_Owl.mp3",
-  "Unknown/Various/The_Ultimate_Ballroom_Album_3/2-03.Starlight_(Waltz,_29mpm).mp3"
+  "Unknown/Various/The_Ultimate_Ballroom_Album_3/2-03.Starlight_(Waltz,_29mpm).mp3",
   "Classical/Secret_Garden/Dreamcatcher/04.Dreamcatcher.mp3",
+  "Unknown/Various/The_Ultimate_Ballroom_Album_3/03.Starlight_(Waltz,_29mpm).mp3",
+  "Unknown/Various/The_Ultimate_Ballroom_Album_3/Starlight_(Waltz,_29mpm).mp3",
+  "/home/music/m/Anime/Evan_Call/VIOLET_EVERGARDEN_Automemories/01.Theme_of_Violet_Evergarden.mp3",
   NULL,
 };
 
@@ -58,16 +66,35 @@ START_TEST(orgutil_regex)
 {
   int       i = 0;
   org_t     *org;
-  char      *path = "{%DANCE%/}{%TITLE%}";
+  char      *path;
   char      *val;
+
+  path = "{%DANCE%/}{%TITLE%}";
 
   org = orgAlloc (path);
   ck_assert_ptr_nonnull (org);
+  i = 0;
   while (testpatha [i] != NULL) {
     val = orgGetFromPath (org, testpatha [i], TAG_DANCE);
     ck_assert_str_eq (val, "Waltz");
     val = orgGetFromPath (org, testpatha [i], TAG_TITLE);
-    ck_assert_ptr_nonnull (org);
+    ck_assert_str_eq (val, "The Last Waltz");
+    ++i;
+  }
+  orgFree (org);
+
+  path = "{%DANCE%/}{%ARTIST% - }{%TITLE%}";
+
+  org = orgAlloc (path);
+  ck_assert_ptr_nonnull (org);
+  i = 0;
+  while (testpathb [i] != NULL) {
+    val = orgGetFromPath (org, testpathb [i], TAG_DANCE);
+    ck_assert_str_eq (val, "Waltz");
+    val = orgGetFromPath (org, testpathb [i], TAG_ARTIST);
+    ck_assert_str_eq (val, "Artist");
+    val = orgGetFromPath (org, testpathb [i], TAG_TITLE);
+    ck_assert_str_eq (val, "The Last Waltz");
     ++i;
   }
   orgFree (org);
@@ -76,8 +103,21 @@ START_TEST(orgutil_regex)
 
   org = orgAlloc (path);
   ck_assert_ptr_nonnull (org);
-  while (testpathb [i] != NULL) {
-    val = orgGetFromPath (org, testpathb [i], TAG_TITLE);
+  i = 0;
+  while (testpathc [i] != NULL) {
+    val = orgGetFromPath (org, testpathc [i], TAG_GENRE);
+    if (i == 5) {
+      ck_assert_str_eq (val, "Anime");
+    }
+    val = orgGetFromPath (org, testpathc [i], TAG_ALBUMARTIST);
+    if (i == 5) {
+      ck_assert_str_eq (val, "Evan_Call");
+    }
+    val = orgGetFromPath (org, testpathc [i], TAG_ALBUM);
+    if (i == 5) {
+      ck_assert_str_eq (val, "VIOLET_EVERGARDEN_Automemories");
+    }
+    val = orgGetFromPath (org, testpathc [i], TAG_TITLE);
     if (i == 0) {
       ck_assert_str_eq (val, "松居慶子_-_White_Owl");
     }
@@ -87,19 +127,34 @@ START_TEST(orgutil_regex)
     if (i == 2) {
       ck_assert_str_eq (val, "Dreamcatcher");
     }
-    val = orgGetFromPath (org, testpathb [i], TAG_DISCNUMBER);
-    if (i == 1) {
-      ck_assert_str_eq (val, "2");
+    if (i == 3 || i == 4) {
+      ck_assert_str_eq (val, "Starlight_(Waltz,_29mpm)");
     }
-    val = orgGetFromPath (org, testpathb [i], TAG_TRACKNUMBER);
+    if (i == 5) {
+      ck_assert_str_eq (val, "Theme_of_Violet_Evergarden");
+    }
+    val = orgGetFromPath (org, testpathc [i], TAG_DISCNUMBER);
+    if (i == 1) {
+      ck_assert_int_eq (atoi(val), 2);
+    }
+    val = orgGetFromPath (org, testpathc [i], TAG_TRACKNUMBER);
     if (i == 0) {
-      ck_assert_str_eq (val, "1");
+      ck_assert_int_eq (atoi(val), 1);
     }
     if (i == 1) {
-      ck_assert_str_eq (val, "3");
+      ck_assert_int_eq (atoi(val), 3);
     }
     if (i == 2) {
-      ck_assert_str_eq (val, "4");
+      ck_assert_int_eq (atoi(val), 4);
+    }
+    if (i == 3) {
+      ck_assert_int_eq (atoi(val), 3);
+    }
+    if (i == 4) {
+      ck_assert_int_eq (atoi(val), 1);
+    }
+    if (i == 5) {
+      ck_assert_int_eq (atoi(val), 1);
     }
     ++i;
   }

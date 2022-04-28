@@ -75,6 +75,8 @@ typedef struct org {
   int           rxlen;
   bool          havealbumartist : 1;
   bool          haveartist : 1;
+  bool          havedance : 1;
+  bool          havetitle : 1;
 } org_t;
 
 typedef struct {
@@ -82,6 +84,7 @@ typedef struct {
   orgkey_t        orgkey;
   tagdefkey_t     tagkey;
   dfConvFunc_t    convFunc;
+  bool            isoptional;
 } orginfo_t;
 
 #define ORG_FIRST_GRP 1
@@ -108,8 +111,11 @@ orgAlloc (char *orgpath)
   assert (org != NULL);
   org->havealbumartist = false;
   org->haveartist = false;
+  org->havedance = false;
+  org->havetitle = false;
   org->orgparsed = slistAlloc ("orgpath", LIST_UNORDERED, free);
-  strlcpy (org->regexstr, "^", sizeof (org->regexstr));
+  /* do not anchor to the beginning -- it may be a full path */
+  strlcpy (org->regexstr, "", sizeof (org->regexstr));
   org->cachepath = NULL;
   org->rxdata = NULL;
 
@@ -130,6 +136,7 @@ orgAlloc (char *orgpath)
       orginfo->orgkey = ORG_TEXT;
       orginfo->tagkey = 0;
       orginfo->convFunc = NULL;
+      orginfo->isoptional = false;
 
       /* just do a brute force search... the parse should only be done once */
       for (orgkey_t i = 0; i < ORG_MAX_KEY; ++i) {
@@ -142,6 +149,12 @@ orgAlloc (char *orgpath)
           }
           if (orginfo->orgkey == ORG_ARTIST) {
             org->haveartist = true;
+          }
+          if (orginfo->orgkey == ORG_DANCE) {
+            org->havedance = true;
+          }
+          if (orginfo->orgkey == ORG_TITLE) {
+            org->havetitle = true;
           }
           break;
         }
@@ -158,6 +171,7 @@ orgAlloc (char *orgpath)
         if (orginfo->orgkey == ORG_TRACKNUM ||
             orginfo->orgkey == ORG_TRACKNUM0 ||
             orginfo->orgkey == ORG_DISC) {
+          orginfo->isoptional = true;
           isnumeric = true;
         }
         haveorgkey = true;
@@ -168,6 +182,9 @@ orgAlloc (char *orgpath)
     }
 
     /* attach the regex for this group */
+    if (isnumeric) {
+      strlcat (org->regexstr, "(", sizeof (org->regexstr));
+    }
     if (*tfirst) {
       char *tmp;
       tmp = regexEscape (tfirst);
@@ -183,7 +200,7 @@ orgAlloc (char *orgpath)
       if (len > 0 && tlast [len-1] == '/') {
         strlcat (org->regexstr, "([^/]*)", sizeof (org->regexstr));
       } else {
-        strlcat (org->regexstr, "(.*?)", sizeof (org->regexstr));
+        strlcat (org->regexstr, "([^/]*)", sizeof (org->regexstr));
       }
     }
     if (*tlast) {
@@ -192,11 +209,17 @@ orgAlloc (char *orgpath)
       strlcat (org->regexstr, tmp, sizeof (org->regexstr));
       free (tmp);
     }
+    if (isnumeric) {
+      /* numeric groups are optional */
+      strlcat (org->regexstr, ")?", sizeof (org->regexstr));
+    }
 
     ++grpcount;
     p = strtok_r (NULL, "{}", &tokstr);
   }
   strlcat (org->regexstr, "\\.[a-zA-Z0-9]+$", sizeof (org->regexstr));
+//fprintf (stderr, "path: %s\n", orgpath);
+//fprintf (stderr, "regexstr: %s\n", org->regexstr);
   org->rx = regexInit (org->regexstr);
   free (tvalue);
 
@@ -234,6 +257,7 @@ orgGetFromPath (org_t *org, const char *path, tagdefkey_t tagkey)
 {
   slistidx_t  iteridx;
   orginfo_t   *orginfo;
+  int         inc;
 
   if (org == NULL) {
     return NULL;
@@ -249,6 +273,7 @@ orgGetFromPath (org_t *org, const char *path, tagdefkey_t tagkey)
     org->rxdata = regexGet (org->rx, path);
     org->rxlen = 0;
     while (org->rxdata [c] != NULL) {
+//fprintf (stderr, "%d %s\n", c, org->rxdata [c]);
       ++c;
     }
     org->rxlen = c;
@@ -259,12 +284,28 @@ orgGetFromPath (org_t *org, const char *path, tagdefkey_t tagkey)
   }
 
   slistStartIterator (org->orgparsed, &iteridx);
+  inc = 0;
   while ((orginfo = slistIterateValueData (org->orgparsed, &iteridx)) != NULL) {
-    if (orginfo->tagkey == tagkey) {
-      if (orginfo->groupnum >= org->rxlen) {
+    if (orginfo->isoptional) {
+      ++inc;
+    }
+
+    if (orginfo->orgkey != ORG_TEXT && orginfo->tagkey == tagkey) {
+      int   idx;
+      char  *val;
+
+      idx = orginfo->groupnum + inc;
+      if (idx >= org->rxlen) {
         return NULL;
       }
-      return org->rxdata [orginfo->groupnum];
+      val = org->rxdata [idx];
+      if (tagkey == TAG_DISCNUMBER ||
+          tagkey == TAG_TRACKNUMBER) {
+        if (val == NULL || ! *val) {
+          val = "1";
+        }
+      }
+      return val;
     }
   }
 
@@ -410,6 +451,35 @@ orgMakeSongPath (org_t *org, song_t *song)
 
   p = strdup (tbuff);
   return p;
+}
+
+inline bool
+orgHaveDance (org_t *org)
+{
+  if (org == NULL) {
+    return false;
+  }
+  return org->havedance;
+}
+
+void
+orgStartIterator (org_t *org, slistidx_t *iteridx)
+{
+  slistStartIterator (org->orgparsed, iteridx);
+}
+
+int
+orgIterateTagKey (org_t *org, slistidx_t *iteridx)
+{
+  orginfo_t   *orginfo;
+
+  while ((orginfo = slistIterateValueData (org->orgparsed, iteridx)) != NULL) {
+    if (orginfo->orgkey != ORG_TEXT) {
+      return orginfo->tagkey;
+    }
+  }
+
+  return -1;
 }
 
 /* internal routines */

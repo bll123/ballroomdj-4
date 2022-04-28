@@ -118,7 +118,7 @@ audiotagParseTags (slist_t *tagdata, char *data, int tagtype)
   haveduration = false;
   rewrite = false;
   while (tstr != NULL) {
-    logMsg (LOG_DBG, LOG_DBUPDATE, "%s", tstr);
+    logMsg (LOG_DBG, LOG_DBUPDATE, "raw: %s", tstr);
     skip = false;
     if (count == 1) {
       p = strstr (tstr, "seconds");
