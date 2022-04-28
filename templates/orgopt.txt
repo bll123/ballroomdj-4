@@ -1,8 +1,23 @@
 # BDJ4 organization options
+#
 # recognized keywords:
-#   ALBUM ALBUMARTIST ARTIST COMPOSER DANCE DISC GENRE TITLE
+#   ALBUM ALBUMARTIST ARTIST COMPOSER CONDUCTOR DANCE DISC GENRE TITLE
 #   TRACKNUMBER TRACKNUMBER0
+#
 # {} groups text : if the keyword is empty, the entire group is ignored.
+#
+# Special rules:
+#   If the albumartist is empty, it is replaced with the artist.
+#
+#   If both albumartist and artist are present in the organization path
+#     and they are the same, then the artist group is omitted.
+#
+#   The conductor and composer are only included if the genre is marked
+#     as classical.
+#
+#   If the composer is the same as the albumartist or the artist, then
+#     the composer group is omitted.
+#
 # version 1
 {%ALBUM%/}{%ALBUMARTIST%/}{%TRACKNUMBER% - }{%TITLE%}
 {%ALBUM%/}{%ARTIST%/}{%TRACKNUMBER% - }{%TITLE%}

@@ -36,8 +36,9 @@ target_include_directories (libbdj4
   PUBLIC "${CURL_INCLUDE_DIRS}"
 )
 target_link_libraries (libbdj4
-  libbdj4common
+  libbdjregex libbdj4common
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
+  ${GLIB_LDFLAGS}
   m
 )
 if (APPLE)

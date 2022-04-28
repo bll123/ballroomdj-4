@@ -18,6 +18,7 @@ enum {
   BDJ4_DB_REORG                 = 0x0200,
   BDJ4_DB_UPD_FROM_TAGS         = 0x0400,
   BDJ4_DB_WRITE_TAGS            = 0x0800,
+  BDJ4_CLI                      = 0x1000,
 };
 
 int bdj4startup (int argc, char *argv[], musicdb_t **musicdb,

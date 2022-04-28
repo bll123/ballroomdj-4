@@ -58,7 +58,7 @@ listFree (void *tlist)
 
   if (list != NULL) {
     if (list->readCacheHits > 0 || list->writeCacheHits > 0) {
-      logMsg (LOG_DBG, LOG_MAIN, "list %s: cache read:%ld write:%ld",
+      logMsg (LOG_DBG, LOG_LIST, "list %s: cache read:%ld write:%ld",
           list->name, list->readCacheHits, list->writeCacheHits);
     }
     if (list->data != NULL) {

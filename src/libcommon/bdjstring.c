@@ -106,4 +106,4 @@ istrlen (const char *str)
   return len;
 }
 
-void      stringTrim (char *s);
+

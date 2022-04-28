@@ -64,6 +64,7 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
     { "debug",        required_argument,NULL,   'd' },
     { "startlog",     no_argument,      NULL,   's' },
     { "hidemarquee",  no_argument,      NULL,   'h' },
+    { "cli"       ,   no_argument,      NULL,   'c' },
     /* debug options */
     { "nostart",      no_argument,      NULL,   'n' },
     { "nomarquee",    no_argument,      NULL,   'm' },
@@ -107,6 +108,10 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
       }
       case 'W': {
         flags |= BDJ4_DB_WRITE_TAGS;
+        break;
+      }
+      case 'c': {
+        flags |= BDJ4_CLI;
         break;
       }
       case 'd': {

@@ -27,7 +27,6 @@
 #include <string.h>
 #include <errno.h>
 #include <assert.h>
-#include <regex.h>
 
 #include "audiotag.h"
 #include "bdj4.h"
@@ -35,6 +34,7 @@
 #include "bdj4intl.h"
 #include "bdjmsg.h"
 #include "bdjopt.h"
+#include "bdjregex.h"
 #include "bdjstring.h"
 #include "bdjvarsdf.h"
 #include "bdjvars.h"
@@ -67,7 +67,7 @@ typedef struct {
   progstate_t       *progstate;
   procutil_t        *processes [ROUTE_MAX];
   conn_t            *conn;
-  int               dbflags;
+  int               startflags;
   int               state;
   musicdb_t         *musicdb;
   musicdb_t         *nmusicdb;
@@ -76,7 +76,7 @@ typedef struct {
   mstime_t          outputTimer;
   slist_t           *fileList;
   slistidx_t        filelistIterIdx;
-  regex_t           fnregex;
+  bdjregex_t        *badfnregex;
   dbidx_t           fileCount;            // total from reading dir
   dbidx_t           filesSkipped;         // any sort of skip
   dbidx_t           filesSent;
@@ -123,7 +123,6 @@ main (int argc, char *argv[])
   dbupdate_t    dbupdate;
   uint16_t      listenPort;
   int           flags;
-  int           rc;
   char          *p;
 
   dbupdate.state = DB_UPD_INIT;
@@ -172,38 +171,34 @@ main (int argc, char *argv[])
   osSetStandardSignals (dbupdateSigHandler);
 
   flags = BDJ4_INIT_NONE;
-  dbupdate.dbflags = bdj4startup (argc, argv, &dbupdate.musicdb,
+  dbupdate.startflags = bdj4startup (argc, argv, &dbupdate.musicdb,
       "db", ROUTE_DBUPDATE, flags);
   logProcBegin (LOG_PROC, "dbupdate");
 
-  p = "[\"\\:]";
+  /* any file with a double quote or backslash is rejected */
+  /* on windows, only the double quote is rejected */
+  p = "[\"\\]";
   if (isWindows ()) {
     p = "[\"]";
   }
-  rc = regcomp (&dbupdate.fnregex, p, REG_NOSUB);
-  if (rc != 0) {
-    char    ebuff [200];
+  dbupdate.badfnregex = regexInit (p);
 
-    regerror (rc, &dbupdate.fnregex, ebuff, sizeof (ebuff));
-    logMsg (LOG_DBG, LOG_IMPORTANT, "regcomp failed: %d %s", rc, ebuff);
-  }
-
-  if ((dbupdate.dbflags & BDJ4_DB_CHECK_NEW) == BDJ4_DB_CHECK_NEW) {
+  if ((dbupdate.startflags & BDJ4_DB_CHECK_NEW) == BDJ4_DB_CHECK_NEW) {
     dbupdate.checknew = true;
   }
-  if ((dbupdate.dbflags & BDJ4_DB_REBUILD) == BDJ4_DB_REBUILD) {
+  if ((dbupdate.startflags & BDJ4_DB_REBUILD) == BDJ4_DB_REBUILD) {
     dbupdate.rebuild = true;
   }
-  if ((dbupdate.dbflags & BDJ4_DB_UPD_FROM_TAGS) == BDJ4_DB_UPD_FROM_TAGS) {
+  if ((dbupdate.startflags & BDJ4_DB_UPD_FROM_TAGS) == BDJ4_DB_UPD_FROM_TAGS) {
     dbupdate.updfromtags = true;
   }
-  if ((dbupdate.dbflags & BDJ4_DB_WRITE_TAGS) == BDJ4_DB_WRITE_TAGS) {
+  if ((dbupdate.startflags & BDJ4_DB_WRITE_TAGS) == BDJ4_DB_WRITE_TAGS) {
     dbupdate.writetags = true;
   }
-  if ((dbupdate.dbflags & BDJ4_DB_REORG) == BDJ4_DB_REORG) {
+  if ((dbupdate.startflags & BDJ4_DB_REORG) == BDJ4_DB_REORG) {
     dbupdate.reorganize = true;
   }
-  if ((dbupdate.dbflags & BDJ4_DB_PROGRESS) == BDJ4_DB_PROGRESS) {
+  if ((dbupdate.startflags & BDJ4_DB_PROGRESS) == BDJ4_DB_PROGRESS) {
     dbupdate.progress = true;
   }
 
@@ -339,7 +334,6 @@ dbupdateProcessing (void *udata)
   if (dbupdate->state == DB_UPD_SEND) {
     int     count = 0;
     char    *fn;
-    int     rc;
 
     while ((fn =
         slistIterateKey (dbupdate->fileList, &dbupdate->filelistIterIdx)) != NULL) {
@@ -379,16 +373,10 @@ dbupdateProcessing (void *udata)
         ++dbupdate->countNew;
       }
 
-      rc = regexec (&dbupdate->fnregex, fn, 0, NULL, 0);
-      if (rc == 0) {
+      if (regexMatch (dbupdate->badfnregex, fn)) {
         ++dbupdate->filesSkipped;
         ++dbupdate->countBad;
         continue;
-      } else if (rc != REG_NOMATCH) {
-        char    ebuff [200];
-
-        regerror (rc, &dbupdate->fnregex, ebuff, sizeof (ebuff));
-        logMsg (LOG_DBG, LOG_IMPORTANT, "regexec failed: %d %s", rc, ebuff);
       }
 
       connSendMessage (dbupdate->conn, ROUTE_DBTAG, MSG_DB_FILE_CHK, fn);
@@ -486,11 +474,11 @@ dbupdateListeningCallback (void *tdbupdate, programstate_t programState)
   logProcBegin (LOG_PROC, "dbupdateListeningCallback");
 
   flags = PROCUTIL_DETACH;
-  if ((dbupdate->dbflags & BDJ4_INIT_NO_DETACH) == BDJ4_INIT_NO_DETACH) {
+  if ((dbupdate->startflags & BDJ4_INIT_NO_DETACH) == BDJ4_INIT_NO_DETACH) {
     flags = PROCUTIL_NO_DETACH;
   }
 
-  if ((dbupdate->dbflags & BDJ4_INIT_NO_START) != BDJ4_INIT_NO_START) {
+  if ((dbupdate->startflags & BDJ4_INIT_NO_START) != BDJ4_INIT_NO_START) {
     dbupdate->processes [ROUTE_DBTAG] = procutilStartProcess (
         ROUTE_PLAYER, "bdj4dbtag", flags, NULL);
   }
@@ -503,22 +491,32 @@ static bool
 dbupdateConnectingCallback (void *tdbupdate, programstate_t programState)
 {
   dbupdate_t    *dbupdate = tdbupdate;
+  int           c = 0;
   bool          rc = false;
 
   logProcBegin (LOG_PROC, "dbupdateConnectingCallback");
 
-  if ((dbupdate->dbflags & BDJ4_INIT_NO_START) != BDJ4_INIT_NO_START) {
+  if ((dbupdate->startflags & BDJ4_INIT_NO_START) != BDJ4_INIT_NO_START) {
     if (! connIsConnected (dbupdate->conn, ROUTE_DBTAG)) {
       connConnect (dbupdate->conn, ROUTE_DBTAG);
     }
-    if (! connIsConnected (dbupdate->conn, ROUTE_MANAGEUI)) {
-      connConnect (dbupdate->conn, ROUTE_MANAGEUI);
+    if ((dbupdate->startflags & BDJ4_CLI) != BDJ4_CLI) {
+      if (! connIsConnected (dbupdate->conn, ROUTE_MANAGEUI)) {
+        connConnect (dbupdate->conn, ROUTE_MANAGEUI);
+      }
     }
   }
 
-  if (connIsConnected (dbupdate->conn, ROUTE_DBTAG) &&
-      connIsConnected (dbupdate->conn, ROUTE_MANAGEUI)) {
-    rc = true;
+  if (connIsConnected (dbupdate->conn, ROUTE_DBTAG)) {
+    ++c;
+  }
+  if (connIsConnected (dbupdate->conn, ROUTE_MANAGEUI)) {
+    ++c;
+  }
+  if ((dbupdate->startflags & BDJ4_CLI) == BDJ4_CLI) {
+    if (c == 1) { rc = true; }
+  } else {
+    if (c == 2) { rc = true; }
   }
 
   logProcEnd (LOG_PROC, "dbupdateConnectingCallback", "");
@@ -529,14 +527,23 @@ static bool
 dbupdateHandshakeCallback (void *tdbupdate, programstate_t programState)
 {
   dbupdate_t    *dbupdate = tdbupdate;
+  int           c = 0;
   bool          rc = false;
 
   logProcBegin (LOG_PROC, "dbupdateHandshakeCallback");
 
-  if (connHaveHandshake (dbupdate->conn, ROUTE_DBTAG) &&
-      connHaveHandshake (dbupdate->conn, ROUTE_MANAGEUI)) {
-    rc = true;
+  if (connHaveHandshake (dbupdate->conn, ROUTE_DBTAG)) {
+    ++c;
   }
+  if (connHaveHandshake (dbupdate->conn, ROUTE_MANAGEUI)) {
+    ++c;
+  }
+  if ((dbupdate->startflags & BDJ4_CLI) == BDJ4_CLI) {
+    if (c == 1) { rc = true; }
+  } else {
+    if (c == 2) { rc = true; }
+  }
+
   logProcEnd (LOG_PROC, "dbupdateHandshakeCallback", "");
   return rc;
 }
@@ -590,7 +597,9 @@ dbupdateClosingCallback (void *tdbupdate, programstate_t programState)
   procutilStopAllProcess (dbupdate->processes, dbupdate->conn, true);
   procutilFreeAll (dbupdate->processes);
 
-  regfree (&dbupdate->fnregex);
+  if (dbupdate->badfnregex != NULL) {
+    regexFree (dbupdate->badfnregex);
+  }
   slistFree (dbupdate->fileList);
   connFree (dbupdate->conn);
 

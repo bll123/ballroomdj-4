@@ -84,6 +84,7 @@ main (int argc, char * argv[])
     { "ignorelock",     no_argument,        NULL,   0 },
     { "startlog",       no_argument,        NULL,   0 },
     { "nostart",        no_argument,        NULL,   0 },
+    { "cli",            no_argument,        NULL,   'c' },
     /* this process */
     { "debugself",      no_argument,        NULL,   'D' },
     { "nodetach",       no_argument,        NULL,   'N' },
@@ -203,6 +204,10 @@ main (int argc, char * argv[])
         prog = "bdj4tags";
         nodetach = true;
         ++validargs;
+        break;
+      }
+      case 'c': {
+        forcenodetach = true;
         break;
       }
       case 'd': {

@@ -29,13 +29,13 @@ include_directories (
 )
 
 # This seems to work on linux.
-# cmake uses '@rpath' on macos -- does not.
+# cmake uses '@rpath' on macos -- does not work.
 SET (CMAKE_SKIP_BUILD_RPATH FALSE)
 SET (CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
 
 set (SHLIB_EXT ${CMAKE_SHARED_LIBRARY_SUFFIX})
-set (MONGOOSE_INC_DIR ../packages/mongoose)
-set (MONGOOSE_SRC ../packages/mongoose/mongoose.c)
+set (MONGOOSE_INC_DIR ${PROJECT_SOURCE_DIR}/../packages/mongoose)
+set (MONGOOSE_SRC ${PROJECT_SOURCE_DIR}/../packages/mongoose/mongoose.c)
 
 # does all the configuration
 include (utils/bdj4config.cmake)
@@ -54,13 +54,6 @@ add_library (libbdj4fileop STATIC
   libcommon/osutils.c
   libcommon/tmutil.c
 )
-add_library (libmongoose STATIC ${MONGOOSE_SRC})
-add_library (libwebsrv STATIC websrv.c)
-target_include_directories (libwebsrv
-  PRIVATE "${MONGOOSE_INC_DIR}"
-)
-add_library (liblocatebdj3 STATIC locatebdj3.c)
-
 add_library (libbdj4launcher STATIC
   libcommon/filedata.c
   libcommon/osnetutils.c
@@ -69,6 +62,12 @@ add_library (libbdj4launcher STATIC
   libcommon/sysvars.c
 )
 
+# static libraries for build
+add_subdirectory (libbdjregex)
+add_subdirectory (libdylib)
+add_subdirectory (liblocbdj3)
+add_subdirectory (libwebsrv)
+# shared libraries that ship
 add_subdirectory (libcommon)
 add_subdirectory (libbdj4)
 add_subdirectory (libpli)
@@ -203,7 +202,7 @@ if (WIN32)
   target_compile_options (bdj4dbupdate PRIVATE -mwindows)
 endif()
 target_link_libraries (bdj4dbupdate
-  libbdj4 libbdj4common
+  libbdjregex libbdj4 libbdj4common
   m
 )
 if (WIN32)
@@ -266,7 +265,7 @@ if (WIN32)
   target_compile_options (bdj4mobmq PRIVATE -mwindows)
 endif()
 target_link_libraries (bdj4mobmq
-  libwebsrv libmongoose
+  libwebsrv
   libbdj4 libbdj4common
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   m
@@ -284,7 +283,7 @@ if (WIN32)
   target_compile_options (bdj4rc PRIVATE -mwindows)
 endif()
 target_link_libraries (bdj4rc
-  libwebsrv libmongoose
+  libwebsrv
   libbdj4 libbdj4common
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   m

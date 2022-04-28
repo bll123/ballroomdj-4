@@ -15,7 +15,9 @@
 #include "bdj4.h"
 #include "bdj4intl.h"
 #include "bdjopt.h"
+#include "bdjregex.h"
 #include "bdjstring.h"
+#include "bdjvarsdf.h"
 #include "dance.h"
 #include "datafile.h"
 #include "genre.h"
@@ -24,6 +26,22 @@
 #include "song.h"
 #include "sysvars.h"
 #include "tagdef.h"
+
+typedef enum {
+  ORG_TEXT,
+  ORG_ALBUM,
+  ORG_ALBUMARTIST,
+  ORG_ARTIST,
+  ORG_COMPOSER,
+  ORG_CONDUCTOR,
+  ORG_DANCE,
+  ORG_DISC,
+  ORG_GENRE,
+  ORG_TITLE,
+  ORG_TRACKNUM,
+  ORG_TRACKNUM0,
+  ORG_MAX_KEY,
+} orgkey_t;
 
 typedef struct {
   char            *name;
@@ -47,6 +65,18 @@ orglookup_t orglookup [ORG_MAX_KEY] = {
   { "TRACKNUMBER0",ORG_TRACKNUM0,  TAG_TRACKNUMBER, NULL, },
 };
 
+typedef struct org {
+  char          *orgpath;
+  char          regexstr [200];
+  bdjregex_t    *rx;
+  slist_t       *orgparsed;
+  const char    *cachepath;
+  char          **rxdata;
+  int           rxlen;
+  bool          havealbumartist : 1;
+  bool          haveartist : 1;
+} org_t;
+
 typedef struct {
   int             groupnum;
   orgkey_t        orgkey;
@@ -64,21 +94,35 @@ orgAlloc (char *orgpath)
   org_t         *org;
   char          *tvalue;
   char          *p;
+  char          *tfirst;
+  char          *tlast;
   char          *tokstr;
   char          *tokstrB;
   int           grpcount;
   orginfo_t     *orginfo;
+  bool          haveorgkey;
+  bool          isnumeric;
+
 
   org = malloc (sizeof (org_t));
   assert (org != NULL);
-
+  org->havealbumartist = false;
+  org->haveartist = false;
   org->orgparsed = slistAlloc ("orgpath", LIST_UNORDERED, free);
+  strlcpy (org->regexstr, "^", sizeof (org->regexstr));
+  org->cachepath = NULL;
+  org->rxdata = NULL;
 
   tvalue = strdup (orgpath);
   grpcount = ORG_FIRST_GRP;
   p = strtok_r (tvalue, "{}", &tokstr);
 
   while (p != NULL) {
+    haveorgkey = false;
+    isnumeric = false;
+    tfirst = "";
+    tlast = "";
+
     p = strtok_r (p, "%", &tokstrB);
     while (p != NULL) {
       orginfo = malloc (sizeof (orginfo_t));
@@ -93,17 +137,67 @@ orgAlloc (char *orgpath)
           orginfo->orgkey = orglookup [i].orgkey;
           orginfo->tagkey = orglookup [i].tagkey;
           orginfo->convFunc = orglookup [i].convFunc;
+          if (orginfo->orgkey == ORG_ALBUMARTIST) {
+            org->havealbumartist = true;
+          }
+          if (orginfo->orgkey == ORG_ARTIST) {
+            org->haveartist = true;
+          }
           break;
         }
+      }
+
+      if (orginfo->orgkey == ORG_TEXT) {
+        if (haveorgkey) {
+          tlast = p;
+        } else {
+          tfirst = p;
+        }
+      } else {
+        /* numerics */
+        if (orginfo->orgkey == ORG_TRACKNUM ||
+            orginfo->orgkey == ORG_TRACKNUM0 ||
+            orginfo->orgkey == ORG_DISC) {
+          isnumeric = true;
+        }
+        haveorgkey = true;
       }
 
       slistSetData (org->orgparsed, p, orginfo);
       p = strtok_r (NULL, "%", &tokstrB);
     }
 
+    /* attach the regex for this group */
+    if (*tfirst) {
+      char *tmp;
+      tmp = regexEscape (tfirst);
+      strlcat (org->regexstr, tmp, sizeof (org->regexstr));
+      free (tmp);
+    }
+    if (isnumeric) {
+      strlcat (org->regexstr, "([0-9]+)", sizeof (org->regexstr));
+    } else {
+      size_t    len;
+
+      len = strlen (tlast);
+      if (len > 0 && tlast [len-1] == '/') {
+        strlcat (org->regexstr, "([^/]*)", sizeof (org->regexstr));
+      } else {
+        strlcat (org->regexstr, "(.*?)", sizeof (org->regexstr));
+      }
+    }
+    if (*tlast) {
+      char  *tmp;
+      tmp = regexEscape (tlast);
+      strlcat (org->regexstr, tmp, sizeof (org->regexstr));
+      free (tmp);
+    }
+
     ++grpcount;
     p = strtok_r (NULL, "{}", &tokstr);
   }
+  strlcat (org->regexstr, "\\.[a-zA-Z0-9]+$", sizeof (org->regexstr));
+  org->rx = regexInit (org->regexstr);
   free (tvalue);
 
   return org;
@@ -113,6 +207,12 @@ void
 orgFree (org_t *org)
 {
   if (org != NULL) {
+    if (org->rx != NULL) {
+      regexFree (org->rx);
+    }
+    if (org->rxdata != NULL) {
+      free (org->rxdata);
+    }
     if (org->orgparsed != NULL) {
       slistFree (org->orgparsed);
     }
@@ -127,6 +227,48 @@ orgGetList (org_t *org)
     return NULL;
   }
   return org->orgparsed;
+}
+
+char *
+orgGetFromPath (org_t *org, const char *path, tagdefkey_t tagkey)
+{
+  slistidx_t  iteridx;
+  orginfo_t   *orginfo;
+
+  if (org == NULL) {
+    return NULL;
+  }
+
+  if (org->cachepath == NULL || strcmp (org->cachepath, path) != 0) {
+    int   c = 0;
+
+    if (org->rxdata != NULL) {
+      free (org->rxdata);
+    }
+    org->cachepath = path;
+    org->rxdata = regexGet (org->rx, path);
+    org->rxlen = 0;
+    while (org->rxdata [c] != NULL) {
+      ++c;
+    }
+    org->rxlen = c;
+  }
+
+  if (org->rxdata == NULL) {
+    return NULL;
+  }
+
+  slistStartIterator (org->orgparsed, &iteridx);
+  while ((orginfo = slistIterateValueData (org->orgparsed, &iteridx)) != NULL) {
+    if (orginfo->tagkey == tagkey) {
+      if (orginfo->groupnum >= org->rxlen) {
+        return NULL;
+      }
+      return org->rxdata [orginfo->groupnum];
+    }
+  }
+
+  return NULL;
 }
 
 char *
@@ -193,6 +335,18 @@ orgMakeSongPath (org_t *org, song_t *song)
         doclean = true;
       }
 
+      /* rule:  if both albumartist and artist are present and the */
+      /*        albumartist is the same as the artist, clear the artist. */
+      if (orginfo->orgkey == ORG_ARTIST &&
+          org->havealbumartist &&
+          org->haveartist) {
+        tp = songGetStr (song, TAG_ALBUMARTIST);
+        if (tp != NULL && strcmp (p, tp) == 0) {
+          p = "";
+        }
+      }
+
+      /* rule:  if the albumartist is empty replace it with the artist */
       if (orginfo->orgkey == ORG_ALBUMARTIST) {
         /* if the albumartist is empty, replace it with the artist */
         if (p == NULL || *p == '\0') {
@@ -201,6 +355,23 @@ orgMakeSongPath (org_t *org, song_t *song)
         }
       }
 
+      /* rule:  only use the composer/conductor groups if the genre is classical */
+      if (orginfo->orgkey == ORG_COMPOSER ||
+          orginfo->orgkey == ORG_CONDUCTOR) {
+        ilistidx_t  genreidx;
+        int         clflag;
+        genre_t     *genres;
+
+        genreidx = songGetNum (song, TAG_GENRE);
+        genres = bdjvarsdfGet (BDJVDF_GENRES);
+        clflag = genreGetClassicalFlag (genres, genreidx);
+        if (! clflag) {
+          p = "";
+        }
+      }
+
+      /* rule:  the composer group is cleared if the computer matches the */
+      /*        albumartist or the artist. */
       if (orginfo->orgkey == ORG_COMPOSER) {
         /* if the composer is the same as the albumartist or artist */
         /* leave it empty */

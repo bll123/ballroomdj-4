@@ -3,9 +3,10 @@ cmake_minimum_required (VERSION 3.18)
 include (../utils/bdj4macros.cmake)
 
 add_library (libbdj4pli SHARED
-  pli.c ../dylib.c
+  pli.c
 )
 target_link_libraries (libbdj4pli
+  libdylib
   libbdj4common
   m
 )
