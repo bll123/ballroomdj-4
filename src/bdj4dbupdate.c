@@ -3,16 +3,17 @@
  *  updates the database.
  *  there are various modes.
  *    - rebuild
- *      rebuild and replace the database in its entirety
+ *      rebuild and replace the database in its entirety.
  *    - check-for-new
  *      check for new files and changes and add them.
- *    - writetags
- *      write db tags to the audio files
  *    - updfromtags
  *      update db from tags in audio files.
  *      this is the same as checknew, except that all audio files tags
  *      are loaded and updated in the database.
- *      so the processing is similar to a rebuild, but using the old database.
+ *      so the processing is similar to a rebuild, but using the
+ *      existing database and updating the records in the database.
+ *    - writetags
+ *      write db tags to the audio files
  *    - reorganize
  *      use the organization settings to reorg the files.
  *
@@ -53,6 +54,7 @@
 #include "rafile.h"
 #include "slist.h"
 #include "sockh.h"
+#include "song.h"
 #include "sysvars.h"
 #include "tagdef.h"
 #include "tmutil.h"
@@ -101,7 +103,6 @@ typedef struct {
   bool              writetags : 1;
   bool              reorganize : 1;
   bool              newdatabase : 1;
-  bool              newaudiofile : 1;
 } dbupdate_t;
 
 #define FNAMES_SENT_PER_ITER  30
@@ -118,6 +119,7 @@ static bool     dbupdateClosingCallback (void *tdbupdate, programstate_t program
 static void     dbupdateProcessTagData (dbupdate_t *dbupdate, char *args);
 static void     dbupdateSigHandler (int sig);
 static void     dbupdateOutputProgress (dbupdate_t *dbupdate);
+static char *   dbupdateGetRelativePath (dbupdate_t *dbupdate, char *fn);
 
 static int  gKillReceived = 0;
 
@@ -152,7 +154,6 @@ main (int argc, char *argv[])
   dbupdate.writetags = false;
   dbupdate.reorganize = false;
   dbupdate.newdatabase = false;
-  dbupdate.newaudiofile = false;
   mstimeset (&dbupdate.outputTimer, 0);
   dbupdate.org = NULL;
 
@@ -364,21 +365,16 @@ dbupdateProcessing (void *udata)
       /* this is done for all modes except for rebuild */
       /* 'checknew' skips any processing for an audio file */
       /* that is already present */
-      dbupdate->newaudiofile = true;
       if (! dbupdate->rebuild && fn != NULL) {
         char  *p;
 
-        p = fn;
-        if (strncmp (fn, dbupdate->musicdir, dbupdate->musicdirlen) == 0) {
-          p += dbupdate->musicdirlen + 1;
-        }
+        p = dbupdateGetRelativePath (dbupdate, fn);
         if (dbGetByName (dbupdate->musicdb, p) != NULL) {
-          dbupdate->newaudiofile = false;
-
           logMsg (LOG_DBG, LOG_DBUPDATE, "  in-database");
           ++dbupdate->countInDatabase;
 
           /* if doing a checknew, no need for further processing */
+          /* the file exists, don't change the file or the database */
           if (dbupdate->checknew) {
             ++dbupdate->filesSkipped;
             dbupdateOutputProgress (dbupdate);
@@ -643,6 +639,10 @@ dbupdateProcessTagData (dbupdate_t *dbupdate, char *args)
   char      *tokstr;
   slistidx_t orgiteridx;
   int       tagkey;
+  char      *p;
+  dbidx_t   rrn;
+  musicdb_t *currdb;
+  song_t    *song = NULL;
 
 
   ffn = strtok_r (args, MSG_ARGS_RS_STR, &tokstr);
@@ -704,14 +704,23 @@ dbupdateProcessTagData (dbupdate_t *dbupdate, char *args)
     }
   }
 
+  rrn = MUSICDB_ENTRY_NEW;
+  if (! dbupdate->rebuild) {
+    p = dbupdateGetRelativePath (dbupdate, ffn);
+    song = dbGetByName (dbupdate->musicdb, p);
+    if (song != NULL) {
+      rrn = songGetNum (song, TAG_RRN);
+    }
+  }
+
   /* the dbWrite() procedure will set the FILE tag */
   relfname = slistGetStr (dbupdate->fileList, ffn);
+  currdb = dbupdate->musicdb;
   if (dbupdate->newdatabase) {
-    dbWrite (dbupdate->nmusicdb, relfname, tagdata);
-  } else {
-    dbWrite (dbupdate->musicdb, relfname, tagdata);
+    currdb = dbupdate->nmusicdb;
   }
-  if (dbupdate->newaudiofile) {
+  dbWrite (currdb, relfname, tagdata, rrn);
+  if (rrn == MUSICDB_ENTRY_NEW) {
     ++dbupdate->countNew;
   } else {
     ++dbupdate->countUpdated;
@@ -755,4 +764,17 @@ dbupdateOutputProgress (dbupdate_t *dbupdate)
       (double) dbupdate->fileCount;
   snprintf (tbuff, sizeof (tbuff), "PROG %.2f", dval);
   connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_PROGRESS, tbuff);
+}
+
+static char *
+dbupdateGetRelativePath (dbupdate_t *dbupdate, char *fn)
+{
+  char    *p;
+
+  p = fn;
+  if (strncmp (fn, dbupdate->musicdir, dbupdate->musicdirlen) == 0) {
+    p += dbupdate->musicdirlen + 1;
+  }
+
+  return p;
 }

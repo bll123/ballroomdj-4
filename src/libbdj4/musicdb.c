@@ -19,6 +19,15 @@
 #include "songutil.h"
 #include "tagdef.h"
 
+typedef struct musicdb {
+  dbidx_t       count;
+  nlist_t       *songs;
+  nlist_t       *danceCounts;  // used by main for automatic playlists
+  dbidx_t       danceCount;
+  rafile_t      *radb;
+  char          *fn;
+} musicdb_t;
+
 musicdb_t *
 dbOpen (char *fn)
 {
@@ -199,14 +208,14 @@ dbGetByIdx (musicdb_t *musicdb, dbidx_t idx)
 }
 
 void
-dbWrite (musicdb_t *musicdb, char *fn, slist_t *tagList)
+dbWrite (musicdb_t *musicdb, char *fn, slist_t *tagList, dbidx_t rrn)
 {
   slistidx_t    iteridx;
   char          *tag;
   char          *data;
   char          tbuff [RAFILE_REC_SIZE];
   char          tmp [40];
-  dbidx_t       rrn;
+  dbidx_t       newrrn = 0;
 
   if (musicdb == NULL) {
     return;
@@ -216,7 +225,10 @@ dbWrite (musicdb_t *musicdb, char *fn, slist_t *tagList)
   }
 
   snprintf (tbuff, sizeof (tbuff), "FILE\n..%s\n", fn);
-  rrn = raGetNextRRN (musicdb->radb);
+  newrrn = rrn;
+  if (rrn == MUSICDB_ENTRY_NEW) {
+    newrrn = raGetNextRRN (musicdb->radb);
+  }
   slistStartIterator (tagList, &iteridx);
   while ((tag = slistIterateKey (tagList, &iteridx)) != NULL) {
     if (strcmp (tag, "FILE") == 0) {
@@ -232,10 +244,10 @@ dbWrite (musicdb_t *musicdb, char *fn, slist_t *tagList)
   strlcat (tbuff, "RRN", sizeof (tbuff));
   strlcat (tbuff, "\n", sizeof (tbuff));
   strlcat (tbuff, "..", sizeof (tbuff));
-  snprintf (tmp, sizeof (tmp), "%d", rrn);
+  snprintf (tmp, sizeof (tmp), "%d", newrrn);
   strlcat (tbuff, tmp, sizeof (tbuff));
   strlcat (tbuff, "\n", sizeof (tbuff));
-  raWrite (musicdb->radb, RAFILE_NEW, tbuff);
+  raWrite (musicdb->radb, rrn, tbuff);
 }
 
 void

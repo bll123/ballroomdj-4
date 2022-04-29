@@ -201,7 +201,9 @@ main (int argc, char *argv[])
   }
 
   marquee.sockserver = sockhStartServer (listenPort);
-  g_timeout_add (UI_MAIN_LOOP_TIMER, marqueeMainLoop, &marquee);
+  /* try a longer main loop timer */
+  /* the responsiveness of the marquee on windows seems poor */
+  g_timeout_add (UI_MAIN_LOOP_TIMER * 2, marqueeMainLoop, &marquee);
 
   uiutilsInitUILog ();
   gtk_init (&argc, NULL);
