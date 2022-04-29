@@ -23,6 +23,7 @@ sockhMainLoop (uint16_t listenPort, sockProcessMsg_t msgProc,
   int           tdone = 0;
   sockserver_t  *sockserver;
   char          args [BDJMSG_MAX];
+  Sock_t        msgsock = INVALID_SOCKET;
 
   sockserver = sockhStartServer (listenPort);
 
@@ -39,7 +40,11 @@ sockhMainLoop (uint16_t listenPort, sockProcessMsg_t msgProc,
       tdone = msgProc (ROUTE_NONE, ROUTE_NONE, MSG_EXIT_REQUEST, args, userData);
       ++done;
     }
-    mssleep (SOCKH_MAINLOOP_TIMEOUT);
+    msgsock = sockCheck (sockserver->si);
+    /* if there is more data, don't sleep */
+    if (socketInvalid (msgsock)) {
+      mssleep (SOCKH_MAINLOOP_TIMEOUT);
+    }
   } /* wait for a message */
 
   sockhCloseServer (sockserver);

@@ -70,7 +70,7 @@ typedef struct org {
   char          regexstr [200];
   bdjregex_t    *rx;
   slist_t       *orgparsed;
-  const char    *cachepath;
+  char          cachepath [MAXPATHLEN];
   char          **rxdata;
   int           rxlen;
   bool          havealbumartist : 1;
@@ -116,7 +116,7 @@ orgAlloc (char *orgpath)
   org->orgparsed = slistAlloc ("orgpath", LIST_UNORDERED, free);
   /* do not anchor to the beginning -- it may be a full path */
   strlcpy (org->regexstr, "", sizeof (org->regexstr));
-  org->cachepath = NULL;
+  *org->cachepath = '\0';
   org->rxdata = NULL;
 
   tvalue = strdup (orgpath);
@@ -263,13 +263,13 @@ orgGetFromPath (org_t *org, const char *path, tagdefkey_t tagkey)
     return NULL;
   }
 
-  if (org->cachepath == NULL || strcmp (org->cachepath, path) != 0) {
+  if (strcmp (org->cachepath, path) != 0) {
     int   c = 0;
 
     if (org->rxdata != NULL) {
       free (org->rxdata);
     }
-    org->cachepath = path;
+    strlcpy (org->cachepath, path, sizeof (org->cachepath));
     org->rxdata = regexGet (org->rx, path);
     org->rxlen = 0;
     while (org->rxdata [c] != NULL) {

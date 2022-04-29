@@ -59,6 +59,9 @@ typedef struct {
   conn_t            *conn;
   char              *locknm;
   int               numActiveThreads;
+  dbidx_t           received;
+  dbidx_t           sent;
+  dbidx_t           maxqueuelen;
   queue_t           *fileQueue;
   int               maxThreads;
   dbthread_t        *threads;
@@ -110,6 +113,9 @@ main (int argc, char *argv[])
     dbtag.threads [i].data = NULL;
   }
   dbtag.fileQueue = queueAlloc (free);
+  dbtag.received = 0;
+  dbtag.sent = 0;
+  dbtag.maxqueuelen = 0;
 
   progstateSetCallback (dbtag.progstate, STATE_CONNECTING,
       dbtagConnectingCallback, &dbtag);
@@ -192,6 +198,7 @@ dbtagProcessing (void *udata)
 {
   dbtag_t       * dbtag = NULL;
   char          sbuff [BDJMSG_MAX_ARGS];
+  dbidx_t       count;
 
   dbtag = (dbtag_t *) udata;
 
@@ -208,6 +215,7 @@ dbtagProcessing (void *udata)
       pthread_join (dbtag->threads [i].thread, NULL);
       snprintf (sbuff, sizeof (sbuff), "%s%c%s",
           dbtag->threads [i].fn, MSG_ARGS_RS, dbtag->threads [i].data);
+      ++dbtag->sent;
       connSendMessage (dbtag->conn, ROUTE_DBUPDATE, MSG_DB_FILE_TAGS, sbuff);
       if (dbtag->threads [i].fn != NULL) {
         free (dbtag->threads [i].fn);
@@ -222,45 +230,53 @@ dbtagProcessing (void *udata)
     }
   }
 
-  while (queueGetCount (dbtag->fileQueue) > 0 &&
-      dbtag->numActiveThreads < dbtag->maxThreads) {
-    ++dbtag->iterations;
-    if (dbtag->iterations > dbtag->maxThreads) {
-      dbtag->threadActiveSum += dbtag->numActiveThreads;
+  if (dbtag->running) {
+    count = queueGetCount (dbtag->fileQueue);
+    if (count > dbtag->maxqueuelen) {
+      dbtag->maxqueuelen = count;
     }
-    for (int i = 0; i < dbtag->maxThreads; ++i) {
-      if (dbtag->threads [i].state == DBTAG_T_STATE_INIT) {
-        char    *fn;
+    while (queueGetCount (dbtag->fileQueue) > 0 &&
+        dbtag->numActiveThreads < dbtag->maxThreads) {
+      ++dbtag->iterations;
+      if (dbtag->iterations > dbtag->maxThreads) {
+        dbtag->threadActiveSum += dbtag->numActiveThreads;
+      }
+      for (int i = 0; i < dbtag->maxThreads; ++i) {
+        if (dbtag->threads [i].state == DBTAG_T_STATE_INIT) {
+          char    *fn;
 
-        fn = queuePop (dbtag->fileQueue);
-        if (fn == NULL) {
-          break;
-        }
+          fn = queuePop (dbtag->fileQueue);
+          if (fn == NULL) {
+            break;
+          }
 
-        dbtag->threads [i].state = DBTAG_T_STATE_ACTIVE;
-        ++dbtag->numActiveThreads;
-        if (dbtag->threads [i].fn != NULL) {
-          free (dbtag->threads [i].fn);
-          dbtag->threads [i].fn = NULL;
+          dbtag->threads [i].state = DBTAG_T_STATE_ACTIVE;
+          ++dbtag->numActiveThreads;
+          if (dbtag->threads [i].fn != NULL) {
+            free (dbtag->threads [i].fn);
+            dbtag->threads [i].fn = NULL;
+          }
+          /* fn is already allocated */
+          dbtag->threads [i].fn = fn;
+          logMsg (LOG_DBG, LOG_DBUPDATE, "process: %s", fn);
+          ++gcount;
+          dbtag->threads [i].count = gcount;
+          pthread_create (&dbtag->threads [i].thread, NULL, dbtagProcessFile, &dbtag->threads [i]);
         }
-        /* fn is already allocated */
-        dbtag->threads [i].fn = fn;
-        logMsg (LOG_DBG, LOG_DBUPDATE, "process: %s", fn);
-        ++gcount;
-        dbtag->threads [i].count = gcount;
-        pthread_create (&dbtag->threads [i].thread, NULL, dbtagProcessFile, &dbtag->threads [i]);
       }
     }
-  }
 
-  if (dbtag->running &&
-      queueGetCount (dbtag->fileQueue) == 0 &&
-      dbtag->numActiveThreads == 0) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "queue empty: %ld ms", mstimeend (&dbtag->starttm));
-    logMsg (LOG_DBG, LOG_IMPORTANT, "average num threads active: %.2f",
-        (double) dbtag->threadActiveSum /
-        (double) (dbtag->iterations - dbtag->maxThreads));
-    dbtag->running = false;
+    if (queueGetCount (dbtag->fileQueue) == 0 &&
+        dbtag->numActiveThreads == 0) {
+      logMsg (LOG_DBG, LOG_IMPORTANT, "-- queue empty: %ld ms", mstimeend (&dbtag->starttm));
+      logMsg (LOG_DBG, LOG_IMPORTANT, "     received: %ld", dbtag->received);
+      logMsg (LOG_DBG, LOG_IMPORTANT, "         sent: %ld", dbtag->sent);
+      logMsg (LOG_DBG, LOG_IMPORTANT, "max queue len: %ld", dbtag->maxqueuelen);
+      logMsg (LOG_DBG, LOG_IMPORTANT, "average num threads active: %.2f",
+          (double) dbtag->threadActiveSum /
+          (double) (dbtag->iterations - dbtag->maxThreads));
+      dbtag->running = false;
+    }
   }
 
   if (gKillReceived) {
@@ -338,6 +354,7 @@ dbtagProcessFileMsg (dbtag_t *dbtag, char *args)
     dbtag->running = true;
     mstimestart (&dbtag->starttm);
   }
+  ++dbtag->received;
   queuePush (dbtag->fileQueue, strdup (args));
 }
 

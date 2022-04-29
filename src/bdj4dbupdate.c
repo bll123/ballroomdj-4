@@ -47,6 +47,7 @@
 #include "orgutil.h"
 #include "osutils.h"
 #include "pathbld.h"
+#include "pathutil.h"
 #include "progstate.h"
 #include "procutil.h"
 #include "rafile.h"
@@ -82,13 +83,15 @@ typedef struct {
   dbidx_t           fileCount;            // total from reading dir
   dbidx_t           filesSkipped;         // any sort of skip
   dbidx_t           filesSent;
+  dbidx_t           filesReceived;
   dbidx_t           filesProcessed;       // processed + skipped = count
   dbidx_t           countInDatabase;
-  dbidx_t           countBad;
   dbidx_t           countNew;
+  dbidx_t           countUpdated;
+  dbidx_t           countBad;
+  dbidx_t           countNonAudio;
   dbidx_t           countNullData;
   dbidx_t           countNoTags;
-  dbidx_t           countUpdated;
   mstime_t          starttm;
   int               stopwaitcount;
   bool              rebuild : 1;
@@ -133,9 +136,11 @@ main (int argc, char *argv[])
   dbupdate.fileCount = 0;
   dbupdate.filesSkipped = 0;
   dbupdate.filesSent = 0;
+  dbupdate.filesReceived = 0;
   dbupdate.countInDatabase = 0;
-  dbupdate.countBad = 0;
   dbupdate.countNew = 0;
+  dbupdate.countBad = 0;
+  dbupdate.countNonAudio = 0;
   dbupdate.countNullData = 0;
   dbupdate.countNoTags = 0;
   dbupdate.countUpdated = 0;
@@ -335,11 +340,25 @@ dbupdateProcessing (void *udata)
   }
 
   if (dbupdate->state == DB_UPD_SEND) {
-    int     count = 0;
-    char    *fn;
+    int         count = 0;
+    char        *fn;
+    pathinfo_t  *pi;
 
     while ((fn =
         slistIterateKey (dbupdate->fileList, &dbupdate->filelistIterIdx)) != NULL) {
+
+      pi = pathInfo (fn);
+      /* fast skip of some known file extensions that might show up */
+      if (pathInfoExtCheck (pi, ".jpg") ||
+          pathInfoExtCheck (pi, ".png") ||
+          pathInfoExtCheck (pi, ".bak") ||
+          pathInfoExtCheck (pi, ".txt") ||
+          pathInfoExtCheck (pi, ".svg")) {
+        ++dbupdate->filesSkipped;
+        ++dbupdate->countNonAudio;
+        continue;
+      }
+      pathInfoFree (pi);
 
       /* check to see if the audio file is already in the database */
       /* this is done for all modes except for rebuild */
@@ -397,6 +416,10 @@ dbupdateProcessing (void *udata)
   if (dbupdate->state == DB_UPD_SEND ||
       dbupdate->state == DB_UPD_PROCESS) {
     dbupdateOutputProgress (dbupdate);
+    logMsg (LOG_DBG, LOG_DBUPDATE, "progress: %ld+%ld(%ld) >= %ld\n",
+        dbupdate->filesProcessed, dbupdate->filesSkipped,
+        dbupdate->filesProcessed + dbupdate->filesSkipped,
+        dbupdate->fileCount);
     if (dbupdate->filesProcessed + dbupdate->filesSkipped >=
         dbupdate->fileCount) {
       dbupdate->state = DB_UPD_FINISH;
@@ -429,12 +452,13 @@ dbupdateProcessing (void *udata)
     connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
     snprintf (tbuff, sizeof (tbuff), "%s : %u", _("Loaded from Database"), dbupdate->countInDatabase);
     connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
-    snprintf (tbuff, sizeof (tbuff), "%s : %u", _("Bad files"),
-        dbupdate->countBad + dbupdate->countNullData + dbupdate->countNoTags);
-    connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
     snprintf (tbuff, sizeof (tbuff), "%s : %u", _("New Files"), dbupdate->countNew);
     connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
     snprintf (tbuff, sizeof (tbuff), "%s : %u", _("Updated"), dbupdate->countUpdated);
+    connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
+    snprintf (tbuff, sizeof (tbuff), "%s : %u", _("Other Files"),
+        dbupdate->countBad + dbupdate->countNullData +
+        dbupdate->countNoTags + dbupdate->countNonAudio);
     connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
 
     logMsg (LOG_DBG, LOG_IMPORTANT, "-- finish: %ld ms",
@@ -444,10 +468,12 @@ dbupdateProcessing (void *udata)
     logMsg (LOG_DBG, LOG_IMPORTANT, "     sent: %u", dbupdate->filesSent);
     logMsg (LOG_DBG, LOG_IMPORTANT, "processed: %u", dbupdate->filesProcessed);
     logMsg (LOG_DBG, LOG_IMPORTANT, "    in-db: %u", dbupdate->countInDatabase);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "      bad: %u", dbupdate->countBad);
     logMsg (LOG_DBG, LOG_IMPORTANT, "      new: %u", dbupdate->countNew);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "  updated: %u", dbupdate->countUpdated);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "      bad: %u", dbupdate->countBad);
     logMsg (LOG_DBG, LOG_IMPORTANT, "     null: %u", dbupdate->countNullData);
     logMsg (LOG_DBG, LOG_IMPORTANT, "  no tags: %u", dbupdate->countNoTags);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "not-audio: %u", dbupdate->countNonAudio);
 
     connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_PROGRESS, "END");
     connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_FINISH, NULL);
@@ -621,6 +647,9 @@ dbupdateProcessTagData (dbupdate_t *dbupdate, char *args)
 
   ffn = strtok_r (args, MSG_ARGS_RS_STR, &tokstr);
   data = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
+
+  logMsg (LOG_DBG, LOG_DBUPDATE, "__ process %s\n", ffn);
+
   if (data == NULL) {
     /* complete failure */
     logMsg (LOG_DBG, LOG_DBUPDATE, "  null data");
@@ -656,7 +685,7 @@ dbupdateProcessTagData (dbupdate_t *dbupdate, char *args)
   /* unfortunately, this slows the database rebuild down ...*/
   /* use the regex to parse the filename and process */
   /* the data that is found there. */
-  logMsg (LOG_DBG, LOG_DBUPDATE, "parsed:");
+  logMsg (LOG_DBG, LOG_DBUPDATE, "regex-parse:");
   orgStartIterator (dbupdate->org, &orgiteridx);
   while ((tagkey = orgIterateTagKey (dbupdate->org, &orgiteridx)) >= 0) {
     char  *val;
