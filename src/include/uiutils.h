@@ -92,7 +92,7 @@ typedef struct {
 
 enum {
   UIUTILS_BASE_MARGIN_SZ = 2,
-  UI_MAIN_LOOP_TIMER  = 20,
+  UI_MAIN_LOOP_TIMER  = 25,
 };
 
 extern datafilekey_t filterdisplaydfkeys [];

@@ -117,10 +117,14 @@ END_TEST
 static Sock_t
 connectWait (void)
 {
-  int       err;
-  Sock_t    c;
+  int       connerr;
+  Sock_t    c = INVALID_SOCKET;
 
-  c = sockConnect (gport, &err, 3000);
+  c = sockConnect (gport, &connerr, c);
+  while (connerr == SOCK_CONN_IN_PROGRESS) {
+    mssleep (20);
+    c = sockConnect (gport, &connerr, c);
+  }
   gclsock = -1;
   if (socketInvalid (c)) { gthreadrc = 1; }
   gclsock = c;
@@ -352,10 +356,11 @@ START_TEST(sock_write_read)
   si = NULL;
   gport = 32706;
   gthreadrc = 0;
+  memset (datab, 'a', 4096);
+
 #if _lib_pthread_create
   pthread_create (&thread, NULL, connectWrite, NULL);
 #endif
-  memset (datab, 'a', 4096);
 
   l = sockServer (32706, &err);
   ck_assert_int_gt (l, 2);
@@ -373,9 +378,10 @@ START_TEST(sock_write_read)
   ck_assert_int_eq (socketInvalid (r), 0);
   ck_assert_int_ne (l, r);
 
-  mssleep (30); /* give time for client to write */
+  mssleep (200); /* give time for client to write */
 
   ndata = sockRead (r, &len);
+
   ck_assert_ptr_nonnull (ndata);
   if (ndata != NULL) {
     ck_assert_int_eq (strlen (ndata) + 1, len);
@@ -384,9 +390,10 @@ START_TEST(sock_write_read)
     free (ndata);
   }
 
-  mssleep (30); /* give time for client to write */
+  mssleep (200); /* give time for client to write */
 
   ndata = sockRead (r, &len);
+
   ck_assert_ptr_nonnull (ndata);
   ck_assert_int_eq (len, 4096);
   if (ndata != NULL) {
@@ -443,9 +450,10 @@ START_TEST(sock_write_read_buff)
   ck_assert_int_eq (socketInvalid (r), 0);
   ck_assert_int_ne (l, r);
 
-  mssleep (30); /* time for client to write */
+  mssleep (200); /* time for client to write */
 
   ndata = sockReadBuff (r, &len, buff, sizeof(buff));
+
   ck_assert_ptr_nonnull (ndata);
   if (ndata != NULL) {
     ck_assert_int_eq (strlen (ndata) + 1, len);
@@ -502,6 +510,7 @@ START_TEST(sock_write_read_buff_fail)
   ck_assert_int_ne (l, r);
 
   ndata = sockReadBuff (r, &len, buff, sizeof(buff));
+
   ck_assert_ptr_null (ndata);
   ck_assert_int_eq (len, 0);
   mssleep (200);
@@ -565,6 +574,7 @@ START_TEST(sock_write_check_read)
   }
   ck_assert_int_eq (rc, r);
   ndata = sockRead (r, &len);
+
   ck_assert_ptr_nonnull (ndata);
   if (ndata != NULL) {
     ck_assert_int_eq (strlen (ndata) + 1, len);
@@ -582,6 +592,7 @@ START_TEST(sock_write_check_read)
   }
   ck_assert_int_eq (rc, r);
   ndata = sockRead (r, &len);
+
   ck_assert_ptr_nonnull (ndata);
   if (ndata != NULL) {
     ck_assert_int_eq (len, 4096);
@@ -650,6 +661,7 @@ START_TEST(sock_close)
   }
   if (rc > 0) {
     ndata = sockRead (r, &len);
+
     ck_assert_ptr_null (ndata);
     if (ndata != NULL) {
       free (ndata);
@@ -719,6 +731,7 @@ START_TEST(sock_write_close)
   }
   ck_assert_int_eq (rc, r);
   ndata = sockRead (r, &len);
+
   ck_assert_ptr_nonnull (ndata);
   if (ndata != NULL) {
     free (ndata);
@@ -733,6 +746,7 @@ START_TEST(sock_write_close)
   }
   ck_assert_int_eq (rc, r);
   ndata = sockRead (r, &len);
+
   ck_assert_ptr_nonnull (ndata);
   if (ndata != NULL) {
     free (ndata);

@@ -288,92 +288,101 @@ sockAccept (Sock_t lsock, int *err)
 }
 
 Sock_t
-sockConnect (uint16_t connPort, int *err, ssize_t timeout)
+sockConnect (uint16_t connPort, int *connerr, Sock_t clsock)
 {
   struct sockaddr_in  raddr;
   int                 rc;
-  int                 count;
-  mstime_t            mi;
   int                 typ;
-  Sock_t              clsock;
-  time_t              m;
+  int                 err;
 
 
   if (! sockInitialized) {
     sockInit ();
   }
 
-  typ = SOCK_STREAM;
-#if _define_SOCK_CLOEXEC
-  typ |= SOCK_CLOEXEC;
-#endif
-  clsock = socket (AF_INET, typ, 0);
-  if (socketInvalid (clsock)) {
-    *err = errno;
-    logError ("connect");
-#if _lib_WSAGetLastError
-    logMsg (LOG_DBG, LOG_SOCKET, "socket: wsa last-error:%d", WSAGetLastError());
-#endif
-    return INVALID_SOCKET;
-  }
-  if (sockSetNonblocking (clsock) < 0) {
-    *err = errno;
-    close (clsock);
-    return INVALID_SOCKET;
-  }
+  if (clsock == INVALID_SOCKET) {
 
-  clsock = sockSetOptions (clsock, err);
+    typ = SOCK_STREAM;
+#if _define_SOCK_CLOEXEC
+    typ |= SOCK_CLOEXEC;
+#endif
+    clsock = socket (AF_INET, typ, 0);
+
+    if (socketInvalid (clsock)) {
+      *connerr = SOCK_CONN_FAIL;
+      logError ("connect");
+#if _lib_WSAGetLastError
+      logMsg (LOG_DBG, LOG_SOCKET, "socket: wsa last-error:%d", WSAGetLastError());
+#endif
+      return INVALID_SOCKET;
+    }
+
+    if (sockSetNonblocking (clsock) < 0) {
+      *connerr = SOCK_CONN_FAIL;
+      close (clsock);
+      return INVALID_SOCKET;
+    }
+
+    clsock = sockSetOptions (clsock, &err);
+    if (err != 0) {
+      *connerr = SOCK_CONN_FAIL;
+      close (clsock);
+      return INVALID_SOCKET;
+    }
+  }
 
   memset (&raddr, 0, sizeof (struct sockaddr_in));
   raddr.sin_family = AF_INET;
   raddr.sin_addr.s_addr = inet_addr ("127.0.0.1");
   raddr.sin_port = htons (connPort);
+
   rc = connect (clsock, (struct sockaddr *) &raddr, sizeof (struct sockaddr_in));
-  count = 1;
-  mstimestart (&mi);
-  while (rc != 0) {
-    *err = errno;
-#if _lib_WSAGetLastError
-    if (WSAGetLastError() == WSAEWOULDBLOCK) {
-      errno = EWOULDBLOCK;
-      *err = errno;
-    }
-#endif
-    if (*err != EINPROGRESS && *err != EAGAIN && *err != EINTR && *err != EWOULDBLOCK) {
-      if (*err != ECONNREFUSED) {
-        logError ("connect");
-#if _lib_WSAGetLastError
-        logMsg (LOG_DBG, LOG_SOCKET, "connect: wsa last-error:%d", WSAGetLastError());
-#endif
-      }
-      close (clsock);
-      return INVALID_SOCKET;
-    }
-    m = mstimeend (&mi);
-    if (m > timeout) {
-      logMsg (LOG_DBG, LOG_SOCKET, "timeout on connect");
-      return INVALID_SOCKET;
-    }
-    mssleep (5);
-    rc = connect (clsock, (struct sockaddr *) &raddr, sizeof (struct sockaddr_in));
-
-    /* the system may finish the connection on its own, in which case   */
-    /* the next call returns EISCONN                                    */
-
-    if (rc < 0 && errno == EISCONN) {
-      *err = 0;
-      rc = 0;
-    }
-#if _lib_WSAGetLastError
-    if (WSAGetLastError() == WSAEISCONN) {
-      *err = 0;
-      rc = 0;
-    }
-#endif
-    ++count;
+  if (rc == 0) {
+    *connerr = SOCK_CONN_OK;
+  } else {
+    err = errno;
   }
 
-  logMsg (LOG_DBG, LOG_SOCKET, "Connected to port:%d sock:%zd %d tries", connPort, (size_t) clsock, count);
+  /* the system may finish the connection on its own, in which case   */
+  /* the next call to connect returns EISCONN */
+  if (rc < 0 && errno == EISCONN) {
+    err = 0;
+    *connerr = SOCK_CONN_OK;
+    rc = 0;
+  }
+#if _lib_WSAGetLastError
+  if (WSAGetLastError() == WSAEISCONN) {
+    err = 0;
+    *connerr = SOCK_CONN_OK;
+    rc = 0;
+  }
+#endif
+
+  if (rc < 0) {
+    *connerr = SOCK_CONN_ERROR;
+
+#if _lib_WSAGetLastError
+    if (WSAGetLastError() == WSAEWOULDBLOCK) {
+      *connerr = SOCK_CONN_IN_PROGRESS;
+      errno = EWOULDBLOCK;
+      err = EWOULDBLOCK;
+    }
+#endif
+    if (err == EINPROGRESS || err == EAGAIN || err == EINTR || err == EWOULDBLOCK) {
+      *connerr = SOCK_CONN_IN_PROGRESS;
+      /* leave the socket open */
+    } else {
+      logError ("connect");
+#if _lib_WSAGetLastError
+      logMsg (LOG_DBG, LOG_SOCKET, "connect: wsa last-error:%d", WSAGetLastError());
+#endif
+      close (clsock);
+      clsock = INVALID_SOCKET;
+    }
+    return clsock;
+  }
+
+  logMsg (LOG_DBG, LOG_SOCKET, "Connected to port:%d sock:%zd", connPort, (size_t) clsock);
   ++sockCount;
   return clsock;
 }

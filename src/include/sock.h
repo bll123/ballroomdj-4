@@ -52,6 +52,13 @@ typedef struct {
   Sock_t          *socklist;
 } sockinfo_t;
 
+enum {
+  SOCK_CONN_OK,
+  SOCK_CONN_IN_PROGRESS,
+  SOCK_CONN_FAIL,
+  SOCK_CONN_ERROR,
+};
+
 #define SOCK_READ_TIMEOUT   2
 #define SOCK_WRITE_TIMEOUT  2
 
@@ -66,7 +73,7 @@ void          sockRemoveCheck (sockinfo_t *, Sock_t);
 void          sockFreeCheck (sockinfo_t *);
 Sock_t        sockCheck (sockinfo_t *);
 Sock_t        sockAccept (Sock_t, int *);
-Sock_t        sockConnect (uint16_t port, int *, ssize_t);
+Sock_t        sockConnect (uint16_t port, int *, int);
 char *        sockRead (Sock_t, size_t *);
 char *        sockReadBuff (Sock_t, size_t *, char *data, size_t dlen);
 int           sockWriteStr (Sock_t, char *s, size_t slen);
