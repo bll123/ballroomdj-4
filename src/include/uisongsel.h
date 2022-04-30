@@ -16,7 +16,6 @@
 #include "uiutils.h"
 
 typedef struct {
-  unsigned long     junk;       // something is trashing this first value
   conn_t            *conn;
   ssize_t           idxStart;
   ilistidx_t        danceIdx;

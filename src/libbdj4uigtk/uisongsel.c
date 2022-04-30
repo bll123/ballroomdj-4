@@ -39,7 +39,6 @@ uisongselInit (conn_t *conn, musicdb_t *musicdb,
   uisongsel = malloc (sizeof (uisongsel_t));
   assert (uisongsel != NULL);
 
-  uisongsel->junk = 0xaabbccdd;
   uisongsel->ratings = bdjvarsdfGet (BDJVDF_RATINGS);
   uisongsel->levels = bdjvarsdfGet (BDJVDF_LEVELS);
   uisongsel->status = bdjvarsdfGet (BDJVDF_STATUS);

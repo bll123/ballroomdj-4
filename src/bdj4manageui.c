@@ -39,6 +39,7 @@
 #include "tmutil.h"
 #include "uimusicq.h"
 #include "uiplayer.h"
+#include "uisongedit.h"
 #include "uisongsel.h"
 #include "uiutils.h"
 
@@ -77,10 +78,12 @@ typedef struct {
   uiplayer_t      *slplayer;
   uimusicq_t      *slmusicq;
   uisongsel_t     *slsongsel;
+  uisongedit_t    *slsongedit;
   /* music manager ui */
   uiplayer_t      *mmplayer;
   uimusicq_t      *mmmusicq;
   uisongsel_t     *mmsongsel;
+  uisongedit_t    *mmsongedit;
   /* options */
   datafile_t      *optiondf;
   nlist_t         *options;
@@ -145,9 +148,11 @@ main (int argc, char *argv[])
   manage.slplayer = NULL;
   manage.slmusicq = NULL;
   manage.slsongsel = NULL;
+  manage.slsongedit = NULL;
   manage.mmplayer = NULL;
   manage.mmmusicq = NULL;
   manage.mmsongsel = NULL;
+  manage.mmsongedit = NULL;
   manage.musicqPlayIdx = MUSICQ_B;
   manage.musicqManageIdx = MUSICQ_A;
   manage.stopwaitcount = 0;
@@ -211,6 +216,8 @@ main (int argc, char *argv[])
   manage.slsongsel = uisongselInit (manage.conn,
       manage.musicdb, manage.dispsel, manage.options,
       SONG_FILTER_FOR_SELECTION, DISP_SEL_SONGSEL);
+  manage.slsongedit = uisongeditInit (manage.conn,
+      manage.musicdb, manage.dispsel, manage.options);
 
   manage.mmplayer = uiplayerInit (manage.progstate, manage.conn,
       manage.musicdb);
@@ -221,6 +228,8 @@ main (int argc, char *argv[])
   manage.mmsongsel = uisongselInit (manage.conn,
       manage.musicdb, manage.dispsel, manage.options,
       SONG_FILTER_FOR_SELECTION, DISP_SEL_MM);
+  manage.mmsongedit = uisongeditInit (manage.conn,
+      manage.musicdb, manage.dispsel, manage.options);
 
   /* register these after calling the sub-window initialization */
   /* then these will be run last, after the other closing callbacks */
@@ -327,9 +336,11 @@ manageClosingCallback (void *udata, programstate_t programState)
   uiplayerFree (manage->slplayer);
   uimusicqFree (manage->slmusicq);
   uisongselFree (manage->slsongsel);
+  uisongeditFree (manage->slsongedit);
   uiplayerFree (manage->mmplayer);
   uimusicqFree (manage->mmmusicq);
   uisongselFree (manage->mmsongsel);
+  uisongeditFree (manage->mmsongedit);
   uiutilsCleanup ();
   if (manage->dblist != NULL) {
     nlistFree (manage->dblist);
@@ -401,8 +412,7 @@ manageActivate (GApplication *app, gpointer userdata)
   uiutilsNotebookAppendPage (manage->notebook, widget, tabLabel);
 
   /* song list editor song editor tab */
-  // widget = uisongselActivate (manage->mmsongsel, manage->window);
-  widget = NULL;
+  widget = uisongeditActivate (manage->slsongedit, manage->window);
   /* CONTEXT: name of song editor tab */
   tabLabel = uiutilsCreateLabel (_("Song Editor"));
   uiutilsNotebookAppendPage (manage->notebook, widget, tabLabel);
@@ -428,8 +438,7 @@ manageActivate (GApplication *app, gpointer userdata)
   uiutilsNotebookAppendPage (manage->notebook, widget, tabLabel);
 
   /* music manager: song editor tab */
-  // widget = uisongselActivate (manage->mmsongsel, manage->window);
-  widget = NULL;
+  widget = uisongeditActivate (manage->mmsongedit, manage->window);
   /* CONTEXT: name of song editor tab */
   tabLabel = uiutilsCreateLabel (_("Song Editor"));
   uiutilsNotebookAppendPage (manage->notebook, widget, tabLabel);

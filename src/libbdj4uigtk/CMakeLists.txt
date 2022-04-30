@@ -3,10 +3,12 @@ cmake_minimum_required (VERSION 3.18)
 include (../utils/bdj4macros.cmake)
 
 add_library (libbdj4uigtk SHARED
-  uiplayer.c
-  uisongsel.c
   uimusicq.c
   uimusicqgtk.c
+  uiplayer.c
+  uisongedit.c
+  uisongeditgtk.c
+  uisongsel.c
   uisongselgtk.c
 )
 target_include_directories (libbdj4uigtk
