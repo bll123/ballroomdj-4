@@ -331,22 +331,20 @@ marqueeActivate (GApplication *app, gpointer userdata)
   marquee->marginTotal = 20;
 
   marquee->pbar = uiutilsCreateProgressBar (bdjoptGetStr (OPT_P_MQ_ACCENT_COL));
-  gtk_box_pack_start (GTK_BOX (marquee->vbox), marquee->pbar, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (marquee->vbox, marquee->pbar);
 
   vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 5);
   gtk_widget_set_margin_start (marquee->vbox, 10);
   gtk_widget_set_margin_end (marquee->vbox, 10);
   gtk_widget_set_hexpand (marquee->vbox, TRUE);
-  gtk_box_pack_start (GTK_BOX (marquee->vbox), vbox,
-      FALSE, FALSE, 0);
+  uiutilsBoxPackStart (marquee->vbox, vbox);
 
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 5);
   gtk_widget_set_halign (hbox, GTK_ALIGN_FILL);
   gtk_widget_set_hexpand (hbox, TRUE);
   gtk_widget_set_margin_end (hbox, 0);
   gtk_widget_set_margin_start (hbox, 0);
-  gtk_box_pack_start (GTK_BOX (vbox), hbox,
-      FALSE, FALSE, 0);
+  uiutilsBoxPackStart (vbox, hbox);
 
   /* CONTEXT: marquee: displayed when nothing is set to be played */
   marquee->danceLab = uiutilsCreateLabel (_("Not Playing"));
@@ -357,8 +355,7 @@ marqueeActivate (GApplication *app, gpointer userdata)
       "label { color: %s; }",
       bdjoptGetStr (OPT_P_MQ_ACCENT_COL));
   uiutilsSetCss (marquee->danceLab, tbuff);
-  gtk_box_pack_start (GTK_BOX (hbox), marquee->danceLab,
-      TRUE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (hbox), marquee->danceLab, TRUE, TRUE, 0);
 
   marquee->countdownTimerLab = uiutilsCreateLabel ("0:00");
   gtk_label_set_max_width_chars (GTK_LABEL (marquee->countdownTimerLab), 6);
@@ -376,8 +373,7 @@ marqueeActivate (GApplication *app, gpointer userdata)
   gtk_widget_set_hexpand (hbox, TRUE);
   gtk_widget_set_margin_end (hbox, 0);
   gtk_widget_set_margin_start (hbox, 0);
-  gtk_box_pack_start (GTK_BOX (vbox), hbox,
-      FALSE, FALSE, 0);
+  uiutilsBoxPackStart (vbox, hbox);
   marquee->infoBox = hbox;
 
   marquee->infoArtistLab = uiutilsCreateLabel ("");
@@ -385,22 +381,20 @@ marqueeActivate (GApplication *app, gpointer userdata)
   gtk_widget_set_hexpand (hbox, TRUE);
   gtk_widget_set_can_focus (marquee->infoArtistLab, FALSE);
   gtk_label_set_ellipsize (GTK_LABEL (marquee->infoArtistLab), PANGO_ELLIPSIZE_END);
-  gtk_box_pack_start (GTK_BOX (hbox), marquee->infoArtistLab,
-      FALSE, FALSE, 0);
+  uiutilsBoxPackStart (hbox, marquee->infoArtistLab);
 
   marquee->infoSepLab = uiutilsCreateLabel ("");
   gtk_widget_set_halign (marquee->infoSepLab, GTK_ALIGN_START);
   gtk_widget_set_hexpand (hbox, FALSE);
   gtk_widget_set_can_focus (marquee->infoSepLab, FALSE);
-  gtk_box_pack_start (GTK_BOX (hbox), marquee->infoSepLab,
-      FALSE, FALSE, 0);
+  uiutilsBoxPackStart (hbox, marquee->infoSepLab);
 
   marquee->infoTitleLab = uiutilsCreateLabel ("");
   gtk_widget_set_halign (marquee->infoTitleLab, GTK_ALIGN_START);
   gtk_widget_set_hexpand (hbox, TRUE);
   gtk_widget_set_can_focus (marquee->infoTitleLab, FALSE);
   gtk_label_set_ellipsize (GTK_LABEL (marquee->infoTitleLab), PANGO_ELLIPSIZE_END);
-  gtk_box_pack_start (GTK_BOX (hbox), marquee->infoTitleLab, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (hbox, marquee->infoTitleLab);
 
   marquee->sep = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
   gtk_widget_set_margin_top (marquee->sep, 2);
@@ -418,8 +412,7 @@ marqueeActivate (GApplication *app, gpointer userdata)
     gtk_widget_set_hexpand (marquee->marqueeLabs [i], TRUE);
     gtk_widget_set_margin_end (marquee->marqueeLabs [i], 10);
     gtk_widget_set_can_focus (marquee->marqueeLabs [i], FALSE);
-    gtk_box_pack_start (GTK_BOX (marquee->vbox),
-        marquee->marqueeLabs [i], FALSE, FALSE, 0);
+    uiutilsBoxPackStart (marquee->vbox, marquee->marqueeLabs [i]);
   }
 
   marqueeSetFont (marquee, nlistGetNum (marquee->options, MQ_FONT_SZ));

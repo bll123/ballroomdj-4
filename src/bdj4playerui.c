@@ -368,10 +368,10 @@ pluiActivate (GApplication *app, gpointer userdata)
   /* menu */
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   gtk_widget_set_hexpand (hbox, TRUE);
-  gtk_box_pack_start (GTK_BOX (plui->vbox), hbox, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (plui->vbox, hbox);
 
   menubar = gtk_menu_bar_new ();
-  gtk_box_pack_start (GTK_BOX (hbox), menubar, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (hbox, menubar);
 
   plui->clock = uiutilsCreateLabel ("");
   gtk_box_pack_end (GTK_BOX (hbox), plui->clock, FALSE, FALSE, 0);
@@ -427,8 +427,7 @@ pluiActivate (GApplication *app, gpointer userdata)
   /* player */
   widget = uiplayerActivate (plui->uiplayer);
   gtk_widget_set_hexpand (widget, TRUE);
-  gtk_box_pack_start (GTK_BOX (plui->vbox), widget,
-      FALSE, FALSE, 0);
+  uiutilsBoxPackStart (plui->vbox, widget);
 
   plui->notebook = uiutilsCreateNotebook ();
   gtk_box_pack_start (GTK_BOX (plui->vbox), plui->notebook, TRUE, TRUE, 0);
@@ -449,11 +448,11 @@ pluiActivate (GApplication *app, gpointer userdata)
     hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
     str = bdjoptGetStr (OPT_P_QUEUE_NAME_A + i);
     tabLabel = gtk_label_new (str);
-    gtk_box_pack_start (GTK_BOX (hbox), tabLabel, FALSE, FALSE, 1);
+    uiutilsBoxPackStart (hbox, tabLabel);
     plui->musicqImage [i] = gtk_image_new ();
     gtk_image_set_from_pixbuf (GTK_IMAGE (plui->musicqImage [i]), plui->ledonImg);
     gtk_widget_set_margin_start (plui->musicqImage [i], 2);
-    gtk_box_pack_start (GTK_BOX (hbox), plui->musicqImage [i], FALSE, FALSE, 0);
+    uiutilsBoxPackStart (hbox, plui->musicqImage [i]);
 
     uiutilsNotebookAppendPage (plui->notebook, widget, hbox);
     uiutilsNotebookIDAdd (plui->nbtabid, UI_TAB_MUSICQ);
@@ -936,26 +935,26 @@ pluiCreateMarqueeFontSizeDialog (playerui_t *plui)
 
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   assert (hbox != NULL);
-  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (vbox, hbox);
 
   /* CONTEXT: marquee font size dialog: the font size selector */
   widget = uiutilsCreateColonLabel (_("Font Size"));
-  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (hbox, widget);
 
   plui->marqueeSpinBox = uiutilsSpinboxIntCreate ();
   uiutilsSpinboxSet (plui->marqueeSpinBox, 10.0, 300.0);
   uiutilsSpinboxSetValue (plui->marqueeSpinBox, 36.0);
-  gtk_box_pack_start (GTK_BOX (hbox), plui->marqueeSpinBox, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (hbox, plui->marqueeSpinBox);
   g_signal_connect (plui->marqueeSpinBox, "value-changed",
       G_CALLBACK (pluiMarqueeFontSizeChg), plui);
 
   /* the dialog doesn't have any space above the buttons */
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   assert (hbox != NULL);
-  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (vbox, hbox);
 
   widget = uiutilsCreateLabel ("");
-  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (hbox, widget);
 
   g_signal_connect (plui->marqueeFontSizeDialog, "response",
       G_CALLBACK (pluiMarqueeFontSizeDialogResponse), plui);

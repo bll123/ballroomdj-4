@@ -382,10 +382,10 @@ starterActivate (GApplication *app, gpointer userdata)
 
   hbox = uiutilsCreateHorizBox ();
   gtk_widget_set_margin_top (hbox, 8);
-  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (vbox, hbox);
 
   menubar = gtk_menu_bar_new ();
-  gtk_box_pack_start (GTK_BOX (hbox), menubar, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (hbox, menubar);
 
   menuitem = gtk_menu_item_new_with_label (_("Actions"));
   gtk_menu_shell_append (GTK_MENU_SHELL (menubar), menuitem);
@@ -402,12 +402,12 @@ starterActivate (GApplication *app, gpointer userdata)
   /* main display */
   hbox = uiutilsCreateHorizBox ();
   gtk_widget_set_margin_top (hbox, 8);
-  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (vbox, hbox);
 
   /* CONTEXT: starter: profile to be used when starting BDJ4 */
   widget = uiutilsCreateColonLabel (_("Profile"));
   gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
-  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (hbox, widget);
 
   widget = uiutilsSpinboxTextCreate (&starter->profilesel, starter);
   uiutilsSpinboxTextSet (&starter->profilesel, starter->currprofile,
@@ -415,13 +415,14 @@ starterActivate (GApplication *app, gpointer userdata)
       starter->maxProfileWidth, starter->dispProfileList, starterSetProfile);
   gtk_widget_set_margin_start (widget, 8);
   gtk_widget_set_halign (widget, GTK_ALIGN_FILL);
-  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (hbox, widget);
 
   hbox = uiutilsCreateHorizBox ();
-  gtk_box_pack_start (GTK_BOX (vbox), hbox, TRUE, FALSE, 0);
+  gtk_widget_set_hexpand (hbox, TRUE);
+  uiutilsBoxPackStart (vbox, hbox);
 
   bvbox = uiutilsCreateVertBox ();
-  gtk_box_pack_start (GTK_BOX (hbox), bvbox, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (hbox, bvbox);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
      "bdj4_icon", ".svg", PATHBLD_MP_IMGDIR);
@@ -430,14 +431,14 @@ starterActivate (GApplication *app, gpointer userdata)
   widget = gtk_image_new_from_pixbuf (image);
   assert (widget != NULL);
   gtk_widget_set_hexpand (widget, TRUE);
-  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (hbox, widget);
 
   /* CONTEXT: button: starts the player user interface */
   widget = uiutilsCreateButton (_("Player"), NULL, starterStartPlayer, starter);
   gtk_widget_set_margin_top (widget, 4);
   gtk_widget_set_halign (widget, GTK_ALIGN_START);
   gtk_size_group_add_widget (sg, widget);
-  gtk_box_pack_start (GTK_BOX (bvbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (bvbox, widget);
   widget = gtk_bin_get_child (GTK_BIN (widget));
   gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
 
@@ -446,7 +447,7 @@ starterActivate (GApplication *app, gpointer userdata)
   gtk_widget_set_margin_top (widget, 4);
   gtk_widget_set_halign (widget, GTK_ALIGN_START);
   gtk_size_group_add_widget (sg, widget);
-  gtk_box_pack_start (GTK_BOX (bvbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (bvbox, widget);
   widget = gtk_bin_get_child (GTK_BIN (widget));
   gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
 
@@ -455,7 +456,7 @@ starterActivate (GApplication *app, gpointer userdata)
   gtk_widget_set_margin_top (widget, 4);
   gtk_widget_set_halign (widget, GTK_ALIGN_START);
   gtk_size_group_add_widget (sg, widget);
-  gtk_box_pack_start (GTK_BOX (bvbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (bvbox, widget);
   widget = gtk_bin_get_child (GTK_BIN (widget));
   gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
 
@@ -464,7 +465,7 @@ starterActivate (GApplication *app, gpointer userdata)
   gtk_widget_set_margin_top (widget, 4);
   gtk_widget_set_halign (widget, GTK_ALIGN_START);
   gtk_size_group_add_widget (sg, widget);
-  gtk_box_pack_start (GTK_BOX (bvbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (bvbox, widget);
   widget = gtk_bin_get_child (GTK_BIN (widget));
   gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
 
@@ -473,7 +474,7 @@ starterActivate (GApplication *app, gpointer userdata)
   gtk_widget_set_margin_top (widget, 4);
   gtk_widget_set_halign (widget, GTK_ALIGN_START);
   gtk_size_group_add_widget (sg, widget);
-  gtk_box_pack_start (GTK_BOX (bvbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (bvbox, widget);
   widget = gtk_bin_get_child (GTK_BIN (widget));
   gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
 
@@ -482,7 +483,7 @@ starterActivate (GApplication *app, gpointer userdata)
   gtk_widget_set_margin_top (widget, 4);
   gtk_widget_set_halign (widget, GTK_ALIGN_START);
   gtk_size_group_add_widget (sg, widget);
-  gtk_box_pack_start (GTK_BOX (bvbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (bvbox, widget);
   widget = gtk_bin_get_child (GTK_BIN (widget));
   gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
 
@@ -920,12 +921,12 @@ starterProcessSupport (GtkButton *b, gpointer udata)
 
   /* begin line */
   hbox = uiutilsCreateHorizBox ();
-  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (vbox, hbox);
 
   /* CONTEXT: starterui: basic support dialog, version display*/
   snprintf (tbuff, sizeof (tbuff), _("%s Version"), BDJ4_NAME);
   widget = uiutilsCreateColonLabel (tbuff);
-  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (hbox, widget);
   gtk_size_group_add_widget (sg, widget);
 
   builddate = sysvarsGetStr (SV_BDJ4_BUILDDATE);
@@ -936,24 +937,24 @@ starterProcessSupport (GtkButton *b, gpointer udata)
   snprintf (tbuff, sizeof (tbuff), "%s %s %s",
       sysvarsGetStr (SV_BDJ4_VERSION), builddate, rlslvl);
   widget = uiutilsCreateLabel (tbuff);
-  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (hbox, widget);
 
   /* begin line */
   hbox = uiutilsCreateHorizBox ();
-  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (vbox, hbox);
 
   /* CONTEXT: starterui: basic support dialog, latest version display*/
   widget = uiutilsCreateColonLabel (_("Latest Version"));
-  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (hbox, widget);
   gtk_size_group_add_widget (sg, widget);
 
   widget = uiutilsCreateLabel (starter->latestversion);
-  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (hbox, widget);
 
   /* begin line */
   /* CONTEXT: starterui: basic support dialog, listing support options */
   widget = uiutilsCreateColonLabel (_("Support options"));
-  gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (vbox, widget);
   gtk_size_group_add_widget (sg, widget);
 
   /* begin line */
@@ -962,7 +963,7 @@ starterProcessSupport (GtkButton *b, gpointer udata)
   /* CONTEXT: starterui: basic support dialog: support option */
   snprintf (tbuff, sizeof (tbuff), _("%s Forums"), BDJ4_NAME);
   widget = uiutilsCreateLink (tbuff, uri);
-  gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (vbox, widget);
 
   /* begin line */
   snprintf (uri, sizeof (uri), "%s%s",
@@ -970,23 +971,23 @@ starterProcessSupport (GtkButton *b, gpointer udata)
   /* CONTEXT: starterui: basic support dialog: support option */
   snprintf (tbuff, sizeof (tbuff), _("%s Support Tickets"), BDJ4_NAME);
   widget = uiutilsCreateLink (tbuff, uri);
-  gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (vbox, widget);
 
   /* begin line */
   hbox = uiutilsCreateHorizBox ();
-  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (vbox, hbox);
 
   /* CONTEXT: starterui: basic support dialog: button: support option */
   widget = uiutilsCreateButton (_("Send Support Message"), NULL,
       starterCreateSupportDialog, starter);
-  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (hbox, widget);
 
   /* the dialog doesn't have any space above the buttons */
   hbox = uiutilsCreateHorizBox ();
-  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (vbox, hbox);
 
   widget = uiutilsCreateLabel (" ");
-  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (hbox, widget);
 
   g_signal_connect (dialog, "response",
       G_CALLBACK (starterSupportResponseHandler), starter);
@@ -1146,57 +1147,57 @@ starterCreateSupportDialog (GtkButton *b, gpointer udata)
   /* line 1 */
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   assert (hbox != NULL);
-  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (vbox, hbox);
 
   /* CONTEXT: sending support message: user's e-mail address */
   widget = uiutilsCreateColonLabel (_("E-Mail Address"));
-  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (hbox, widget);
   gtk_size_group_add_widget (sg, widget);
 
   uiutilsEntryInit (&starter->supportemail, 50, 100);
   widget = uiutilsEntryCreate (&starter->supportemail);
-  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (hbox, widget);
 
   /* line 2 */
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   assert (hbox != NULL);
-  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (vbox, hbox);
 
   /* CONTEXT: sending support message: subject of message */
   widget = uiutilsCreateColonLabel (_("Subject"));
-  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (hbox, widget);
   gtk_size_group_add_widget (sg, widget);
 
   uiutilsEntryInit (&starter->supportsubject, 50, 100);
   widget = uiutilsEntryCreate (&starter->supportsubject);
-  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (hbox, widget);
 
   /* line 3 */
   /* CONTEXT: sending support message: message */
   widget = uiutilsCreateColonLabel (_("Message"));
-  gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (vbox, widget);
 
   /* line 4 */
   tb = uiutilsTextBoxCreate ();
   uiutilsTextBoxSetHeight (tb, 200);
-  gtk_box_pack_start (GTK_BOX (vbox), tb->scw, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (vbox, tb->scw);
   starter->supporttb = tb;
 
   /* line 5 */
   /* CONTEXT: sending support message: checkbox: option to send data files */
   widget = uiutilsCreateCheckButton (_("Attach Data Files"), 0);
-  gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (vbox, widget);
   starter->supportSendFiles = widget;
 
   /* line 6 */
   /* CONTEXT: sending support message: checkbox: option to send database */
   widget = uiutilsCreateCheckButton (_("Attach Database"), 0);
-  gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (vbox, widget);
   starter->supportSendDB = widget;
 
   /* line 7 */
   widget = uiutilsCreateLabel ("");
-  gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (vbox, widget);
   snprintf (tbuff, sizeof (tbuff),
       "label { color: %s; }", bdjoptGetStr (OPT_P_UI_ACCENT_COL));
   uiutilsSetCss (widget, tbuff);

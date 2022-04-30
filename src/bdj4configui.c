@@ -1135,12 +1135,12 @@ confuiActivate (GApplication *app, gpointer userdata)
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   gtk_widget_set_halign (hbox, GTK_ALIGN_START);
   gtk_widget_set_vexpand (hbox, FALSE);
-  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (vbox, hbox);
 
   widget = uiutilsCreateScrolledWindow ();
   gtk_scrolled_window_set_min_content_height (GTK_SCROLLED_WINDOW (widget), 200);
   gtk_widget_set_vexpand (widget, TRUE);
-  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (hbox, widget);
 
   tree = uiutilsCreateTreeView ();
   uiutilsSetCss (tree,
@@ -1159,22 +1159,22 @@ confuiActivate (GApplication *app, gpointer userdata)
   gtk_widget_set_margin_end (dvbox, 8);
   gtk_widget_set_margin_top (dvbox, 128);
   gtk_widget_set_valign (dvbox, GTK_ALIGN_START);
-  gtk_box_pack_start (GTK_BOX (hbox), dvbox, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (hbox, dvbox);
 
   /* CONTEXT: config: display settings: button: add the selected field */
   widget = uiutilsCreateButton (_("Select"), "button_right",
       confuiDispSelect, confui);
-  gtk_box_pack_start (GTK_BOX (dvbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (dvbox, widget);
 
   /* CONTEXT: config: display settings: button: remove the selected field */
   widget = uiutilsCreateButton (_("Remove"), "button_left",
       confuiDispRemove, confui);
-  gtk_box_pack_start (GTK_BOX (dvbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (dvbox, widget);
 
   widget = uiutilsCreateScrolledWindow ();
   gtk_scrolled_window_set_min_content_height (GTK_SCROLLED_WINDOW (widget), 200);
   gtk_widget_set_vexpand (widget, TRUE);
-  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (hbox, widget);
 
   tree = uiutilsCreateTreeView ();
   uiutilsSetCss (tree,
@@ -1193,17 +1193,17 @@ confuiActivate (GApplication *app, gpointer userdata)
   gtk_widget_set_margin_end (dvbox, 8);
   gtk_widget_set_margin_top (dvbox, 128);
   gtk_widget_set_valign (dvbox, GTK_ALIGN_START);
-  gtk_box_pack_start (GTK_BOX (hbox), dvbox, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (hbox, dvbox);
 
   /* CONTEXT: config: display settings: button: move the selected field up */
   widget = uiutilsCreateButton (_("Move Up"), "button_up",
       confuiTableMoveUp, confui);
-  gtk_box_pack_start (GTK_BOX (dvbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (dvbox, widget);
 
   /* CONTEXT: config: display settings: button: move the selected field down */
   widget = uiutilsCreateButton (_("Move Down"), "button_down",
       confuiTableMoveDown, confui);
-  gtk_box_pack_start (GTK_BOX (dvbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (dvbox, widget);
 
   /* call this after both tree views have been instantiated */
   confuiCreateTagListingTable (confui);
@@ -1280,7 +1280,7 @@ confuiActivate (GApplication *app, gpointer userdata)
 
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   gtk_widget_set_halign (hbox, GTK_ALIGN_START);
-  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (vbox, hbox);
 
   confuiMakeItemTable (confui, hbox, CONFUI_ID_DANCE, CONFUI_TABLE_NO_UP_DOWN);
   confui->tables [CONFUI_ID_DANCE].savefunc = confuiDanceSave;
@@ -1291,7 +1291,7 @@ confuiActivate (GApplication *app, gpointer userdata)
   dvbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   gtk_widget_set_vexpand (dvbox, FALSE);
   gtk_widget_set_margin_start (dvbox, 16);
-  gtk_box_pack_start (GTK_BOX (hbox), dvbox, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (hbox, dvbox);
 
   /* CONTEXT: config: dances: the name of the dance */
   confuiMakeItemEntry (confui, dvbox, sg, _("Dance"),
@@ -1382,11 +1382,11 @@ confuiActivate (GApplication *app, gpointer userdata)
 
   /* CONTEXT: config: dance ratings: information on how to order the ratings */
   widget = uiutilsCreateLabel (_("Order from the lowest rating to the highest rating."));
-  gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (vbox, widget);
 
   /* CONTEXT: config: dance ratings: information on how to edit a rating entry */
   widget = uiutilsCreateLabel (_("Double click on a field to edit."));
-  gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (vbox, widget);
 
   confuiMakeItemTable (confui, vbox, CONFUI_ID_RATINGS, CONFUI_TABLE_KEEP_FIRST);
   confui->tables [CONFUI_ID_RATINGS].listcreatefunc = confuiRatingListCreate;
@@ -1403,7 +1403,7 @@ confuiActivate (GApplication *app, gpointer userdata)
 
   /* CONTEXT: config: status: information on how to edit a status entry */
   widget = uiutilsCreateLabel (_("Double click on a field to edit."));
-  gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (vbox, widget);
 
   confuiMakeItemTable (confui, vbox, CONFUI_ID_STATUS,
       CONFUI_TABLE_KEEP_FIRST | CONFUI_TABLE_KEEP_LAST);
@@ -1421,11 +1421,11 @@ confuiActivate (GApplication *app, gpointer userdata)
       G_CALLBACK (confuiSwitchTable), confui);
 
   widget = uiutilsCreateLabel (_("Order from easiest to most advanced."));
-  gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (vbox, widget);
 
   /* CONTEXT: config: dance levels: information on how to edit a level entry */
   widget = uiutilsCreateLabel (_("Double click on a field to edit."));
-  gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (vbox, widget);
 
   confuiMakeItemTable (confui, vbox, CONFUI_ID_LEVELS, CONFUI_TABLE_NONE);
   confui->tables [CONFUI_ID_LEVELS].togglecol = CONFUI_LEVEL_COL_DEFAULT;
@@ -1443,7 +1443,7 @@ confuiActivate (GApplication *app, gpointer userdata)
 
   /* CONTEXT: config: genres: information on how to edit a genre entry */
   widget = uiutilsCreateLabel (_("Double click on a field to edit."));
-  gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (vbox, widget);
 
   confuiMakeItemTable (confui, vbox, CONFUI_ID_GENRES, CONFUI_TABLE_NONE);
   confui->tables [CONFUI_ID_GENRES].togglecol = CONFUI_GENRE_COL_CLASSICAL;
@@ -2068,8 +2068,8 @@ confuiMakeItemEntry (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg,
   hbox = confuiMakeItemLabel (vbox, sg, txt);
   widget = uiutilsEntryCreate (&confui->uiitem [widx].u.entry);
   gtk_widget_set_margin_start (widget, 8);
-  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (hbox, widget);
+  uiutilsBoxPackStart (vbox, hbox);
   if (disp != NULL) {
     uiutilsEntrySetValue (&confui->uiitem [widx].u.entry, disp);
   } else {
@@ -2097,7 +2097,7 @@ confuiMakeItemEntryChooser (configui_t *confui, GtkWidget *vbox,
   gtk_button_set_image (GTK_BUTTON (widget), image);
   gtk_button_set_always_show_image (GTK_BUTTON (widget), TRUE);
   gtk_widget_set_margin_start (widget, 0);
-  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (hbox, widget);
   confui->uiitem [widx].bdjoptIdx = bdjoptIdx;
   logProcEnd (LOG_PROC, "confuiMakeItemEntryChooser", "");
 }
@@ -2119,8 +2119,8 @@ confuiMakeItemCombobox (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg,
       confui->uiitem [widx].list, NULL);
   uiutilsDropDownSelectionSetStr (&confui->uiitem [widx].u.dropdown, value);
   gtk_widget_set_margin_start (widget, 8);
-  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (hbox, widget);
+  uiutilsBoxPackStart (vbox, hbox);
   confui->uiitem [widx].bdjoptIdx = bdjoptIdx;
   logProcEnd (LOG_PROC, "confuiMakeItemCombobox", "");
   return hbox;
@@ -2136,8 +2136,8 @@ confuiMakeItemLink (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg,
   logProcBegin (LOG_PROC, "confuiMakeItemLink");
   hbox = confuiMakeItemLabel (vbox, sg, txt);
   widget = gtk_link_button_new (disp);
-  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (hbox, widget);
+  uiutilsBoxPackStart (vbox, hbox);
   confui->uiitem [widx].u.widget = widget;
   logProcEnd (LOG_PROC, "confuiMakeItemLink", "");
 }
@@ -2159,8 +2159,8 @@ confuiMakeItemFontButton (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg,
     widget = gtk_font_button_new ();
   }
   gtk_widget_set_margin_start (widget, 8);
-  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (hbox, widget);
+  uiutilsBoxPackStart (vbox, hbox);
   confui->uiitem [widx].u.widget = widget;
   confui->uiitem [widx].bdjoptIdx = bdjoptIdx;
   logProcEnd (LOG_PROC, "confuiMakeItemFontButton", "");
@@ -2186,8 +2186,8 @@ confuiMakeItemColorButton (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg
     widget = gtk_color_button_new ();
   }
   gtk_widget_set_margin_start (widget, 8);
-  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (hbox, widget);
+  uiutilsBoxPackStart (vbox, hbox);
   confui->uiitem [widx].u.widget = widget;
   confui->uiitem [widx].bdjoptIdx = bdjoptIdx;
   logProcEnd (LOG_PROC, "confuiMakeItemColorButton", "");
@@ -2227,8 +2227,8 @@ confuiMakeItemSpinboxText (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg
       nlistGetCount (list), maxWidth, list, NULL);
   uiutilsSpinboxTextSetValue (&confui->uiitem [widx].u.spinbox, value);
   gtk_widget_set_margin_start (widget, 8);
-  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (hbox, widget);
+  uiutilsBoxPackStart (vbox, hbox);
   confui->uiitem [widx].bdjoptIdx = bdjoptIdx;
 
   logProcEnd (LOG_PROC, "confuiMakeItemSpinboxText", "");
@@ -2250,8 +2250,8 @@ confuiMakeItemSpinboxTime (configui_t *confui, GtkWidget *vbox,
   widget = uiutilsSpinboxTimeCreate (&confui->uiitem [widx].u.spinbox, confui);
   uiutilsSpinboxTimeSetValue (&confui->uiitem [widx].u.spinbox, value);
   gtk_widget_set_margin_start (widget, 8);
-  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (hbox, widget);
+  uiutilsBoxPackStart (vbox, hbox);
   confui->uiitem [widx].bdjoptIdx = bdjoptIdx;
   logProcEnd (LOG_PROC, "confuiMakeItemSpinboxTime", "");
 }
@@ -2272,8 +2272,8 @@ confuiMakeItemSpinboxInt (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg,
   uiutilsSpinboxSet (widget, (double) min, (double) max);
   uiutilsSpinboxSetValue (widget, (double) value);
   gtk_widget_set_margin_start (widget, 8);
-  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (hbox, widget);
+  uiutilsBoxPackStart (vbox, hbox);
   confui->uiitem [widx].u.widget = widget;
   confui->uiitem [widx].bdjoptIdx = bdjoptIdx;
   logProcEnd (LOG_PROC, "confuiMakeItemSpinboxInt", "");
@@ -2296,8 +2296,8 @@ confuiMakeItemSpinboxDouble (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *
   uiutilsSpinboxSet (widget, min, max);
   uiutilsSpinboxSetValue (widget, value);
   gtk_widget_set_margin_start (widget, 8);
-  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (hbox, widget);
+  uiutilsBoxPackStart (vbox, hbox);
   confui->uiitem [widx].u.widget = widget;
   confui->uiitem [widx].bdjoptIdx = bdjoptIdx;
   logProcEnd (LOG_PROC, "confuiMakeItemSpinboxDouble", "");
@@ -2317,8 +2317,8 @@ confuiMakeItemSwitch (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg,
   hbox = confuiMakeItemLabel (vbox, sg, txt);
   widget = uiutilsCreateSwitch (value);
   gtk_widget_set_margin_start (widget, 8);
-  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (hbox, widget);
+  uiutilsBoxPackStart (vbox, hbox);
   confui->uiitem [widx].u.widget = widget;
   confui->uiitem [widx].bdjoptIdx = bdjoptIdx;
   logProcEnd (LOG_PROC, "confuiMakeItemSwitch", "");
@@ -2339,8 +2339,8 @@ confuiMakeItemLabelDisp (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg,
   hbox = confuiMakeItemLabel (vbox, sg, txt);
   widget = uiutilsCreateLabel ("");
   gtk_widget_set_margin_start (widget, 8);
-  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (hbox, widget);
+  uiutilsBoxPackStart (vbox, hbox);
   confui->uiitem [widx].u.widget = widget;
   confui->uiitem [widx].bdjoptIdx = bdjoptIdx;
   logProcEnd (LOG_PROC, "confuiMakeItemLabelDisp", "");
@@ -2359,7 +2359,7 @@ confuiMakeItemCheckButton (configui_t *confui, GtkWidget *vbox, GtkSizeGroup *sg
   confui->uiitem [widx].outtype = CONFUI_OUT_BOOL;
   widget = uiutilsCreateCheckButton (txt, value);
   gtk_widget_set_margin_start (widget, 8);
-  gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (vbox, widget);
   confui->uiitem [widx].u.widget = widget;
   confui->uiitem [widx].bdjoptIdx = bdjoptIdx;
   logProcEnd (LOG_PROC, "confuiMakeItemCheckButton", "");
@@ -2378,7 +2378,7 @@ confuiMakeItemLabel (GtkWidget *vbox, GtkSizeGroup *sg, char *txt)
   } else {
     widget = uiutilsCreateColonLabel (txt);
   }
-  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (hbox, widget);
   gtk_size_group_add_widget (sg, widget);
   logProcEnd (LOG_PROC, "confuiMakeItemLabel", "");
   return hbox;
@@ -2399,11 +2399,11 @@ confuiMakeItemTable (configui_t *confui, GtkWidget *vbox, confuiident_t id,
   gtk_widget_set_halign (mhbox, GTK_ALIGN_START);
   gtk_widget_set_margin_top (mhbox, 4);
   gtk_widget_set_hexpand (mhbox, TRUE);
-  gtk_box_pack_start (GTK_BOX (vbox), mhbox, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (vbox, mhbox);
 
   widget = uiutilsCreateScrolledWindow ();
   gtk_scrolled_window_set_min_content_height (GTK_SCROLLED_WINDOW (widget), 200);
-  gtk_box_pack_start (GTK_BOX (mhbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (mhbox, widget);
 
   tree = uiutilsCreateTreeView ();
   confui->tables [id].tree = tree;
@@ -2417,29 +2417,29 @@ confuiMakeItemTable (configui_t *confui, GtkWidget *vbox, confuiident_t id,
   gtk_widget_set_margin_top (bvbox, 2);
   gtk_widget_set_margin_start (bvbox, 8);
   gtk_widget_set_valign (bvbox, GTK_ALIGN_CENTER);
-  gtk_box_pack_start (GTK_BOX (mhbox), bvbox, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (mhbox, bvbox);
 
   if ((flags & CONFUI_TABLE_NO_UP_DOWN) != CONFUI_TABLE_NO_UP_DOWN) {
     /* CONTEXT: config: table edit: button: move selection up */
     widget = uiutilsCreateButton (_("Move Up"), "button_up",
         confuiTableMoveUp, confui);
-    gtk_box_pack_start (GTK_BOX (bvbox), widget, FALSE, FALSE, 0);
+    uiutilsBoxPackStart (bvbox, widget);
 
     /* CONTEXT: config: table edit: button: move selection down */
     widget = uiutilsCreateButton (_("Move Down"), "button_down",
         confuiTableMoveDown, confui);
-    gtk_box_pack_start (GTK_BOX (bvbox), widget, FALSE, FALSE, 0);
+    uiutilsBoxPackStart (bvbox, widget);
   }
 
   /* CONTEXT: config: table edit: button: delete selection */
   widget = uiutilsCreateButton (_("Delete"), "button_remove",
       confuiTableRemove, confui);
-  gtk_box_pack_start (GTK_BOX (bvbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (bvbox, widget);
 
   /* CONTEXT: config: table edit: button: add new selection */
   widget = uiutilsCreateButton (_("Add New"), "button_add",
       confuiTableAdd, confui);
-  gtk_box_pack_start (GTK_BOX (bvbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (bvbox, widget);
 
   logProcEnd (LOG_PROC, "confuiMakeItemTable", "");
   return vbox;

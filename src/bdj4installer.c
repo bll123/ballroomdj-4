@@ -415,33 +415,33 @@ installerActivate (GApplication *app, gpointer udata)
   widget = uiutilsCreateLabel (
       /* CONTEXT: installer */
       _("Enter the destination folder where BDJ4 will be installed."));
-  gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (vbox, widget);
 
   widget = uiutilsEntryCreate (&installer->targetEntry);
   uiutilsEntrySetValue (&installer->targetEntry, installer->target);
   gtk_widget_set_halign (widget, GTK_ALIGN_FILL);
   gtk_widget_set_hexpand (widget, TRUE);
-  gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (vbox, widget);
 
   g_signal_connect (installer->targetEntry.entry, "changed",
       G_CALLBACK (installerValidateStart), installer);
 
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
   gtk_widget_set_hexpand (hbox, TRUE);
-  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (vbox, hbox);
 
   /* CONTEXT: installer: overwrite the previous BDJ4 installation */
   installer->reinstWidget = gtk_check_button_new_with_label (_("Overwrite"));
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (installer->reinstWidget),
       installer->reinstall);
-  gtk_box_pack_start (GTK_BOX (hbox), installer->reinstWidget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (hbox, installer->reinstWidget);
   g_signal_connect (installer->reinstWidget, "toggled",
       G_CALLBACK (installerCheckDir), installer);
 
   installer->feedbackMsg = uiutilsCreateLabel ("");
   uiutilsSetCss (installer->feedbackMsg,
       "label { color: #ffa600; }");
-  gtk_box_pack_start (GTK_BOX (hbox), installer->feedbackMsg, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (hbox, installer->feedbackMsg);
 
   widget = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
   gtk_widget_set_margin_top (widget, 2);
@@ -454,32 +454,32 @@ installerActivate (GApplication *app, gpointer udata)
       /* CONTEXT: installer */
       _("Enter the folder where %s is installed."), BDJ3_NAME);
   widget = uiutilsCreateLabel (tbuff);
-  gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (vbox, widget);
 
   widget = uiutilsCreateLabel (
       /* CONTEXT: installer */
       _("If there is no BallroomDJ 3 installation, leave the entry blank."));
-  gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (vbox, widget);
 
   widget = uiutilsCreateLabel (
       /* CONTEXT: installer */
       _("The conversion process will only run for new installations and for re-installations."));
-  gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (vbox, widget);
 
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
   gtk_widget_set_hexpand (hbox, TRUE);
-  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (vbox, hbox);
 
   /* CONTEXT: installer: label for entry field asking for BDJ3 location */
   snprintf (tbuff, sizeof (tbuff), _("%s Location"), BDJ3_NAME);
   widget = uiutilsCreateColonLabel (tbuff);
-  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (hbox, widget);
 
   widget = uiutilsEntryCreate (&installer->bdj3locEntry);
   uiutilsEntrySetValue (&installer->bdj3locEntry, installer->bdj3loc);
   gtk_widget_set_halign (widget, GTK_ALIGN_FILL);
   gtk_widget_set_hexpand (widget, TRUE);
-  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (hbox, widget);
   g_signal_connect (installer->bdj3locEntry.entry, "changed",
       G_CALLBACK (installerValidateStart), installer);
 
@@ -488,23 +488,23 @@ installerActivate (GApplication *app, gpointer udata)
   gtk_button_set_image (GTK_BUTTON (widget), image);
   gtk_button_set_always_show_image (GTK_BUTTON (widget), TRUE);
   gtk_widget_set_margin_start (widget, 0);
-  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (hbox, widget);
 
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
   gtk_widget_set_hexpand (hbox, TRUE);
-  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (vbox, hbox);
 
   /* CONTEXT: installer: convert the BallroomDJ 3 installation */
   snprintf (tbuff, sizeof (tbuff), _("Convert %s"), BDJ3_NAME);
   installer->convWidget = gtk_check_button_new_with_label (tbuff);
-  gtk_box_pack_start (GTK_BOX (hbox), installer->convWidget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (hbox, installer->convWidget);
   g_signal_connect (installer->convWidget, "toggled",
       G_CALLBACK (installerCheckConvert), installer);
 
   installer->convFeedbackMsg = uiutilsCreateLabel ("");
   uiutilsSetCss (installer->convFeedbackMsg,
       "label { color: #ffa600; }");
-  gtk_box_pack_start (GTK_BOX (hbox), installer->convFeedbackMsg, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (hbox, installer->convFeedbackMsg);
 
   /* VLC status */
 
@@ -512,55 +512,55 @@ installerActivate (GApplication *app, gpointer udata)
   gtk_widget_set_margin_top (widget, 2);
   uiutilsSetCss (widget,
       "separator { min-height: 4px; background-color: #733000; }");
-  gtk_box_pack_start (GTK_BOX (vbox), widget, TRUE, FALSE, 0);
+  uiutilsBoxPackStart (vbox, widget);
 
   sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
   gtk_widget_set_hexpand (hbox, TRUE);
-  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (vbox, hbox);
 
   widget = uiutilsCreateColonLabel ("VLC");
-  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (hbox, widget);
   gtk_size_group_add_widget (sg, widget);
 
   installer->vlcMsg = uiutilsCreateLabel ("");
   uiutilsSetCss (installer->vlcMsg,
       "label { color: #ffa600; }");
-  gtk_box_pack_start (GTK_BOX (hbox), installer->vlcMsg, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (hbox, installer->vlcMsg);
 
   /* python status */
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
   gtk_widget_set_hexpand (hbox, TRUE);
-  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (vbox, hbox);
 
   widget = uiutilsCreateColonLabel ("Python");
-  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (hbox, widget);
   gtk_size_group_add_widget (sg, widget);
 
   installer->pythonMsg = uiutilsCreateLabel ("");
   uiutilsSetCss (installer->pythonMsg,
       "label { color: #ffa600; }");
-  gtk_box_pack_start (GTK_BOX (hbox), installer->pythonMsg, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (hbox, installer->pythonMsg);
 
   /* mutagen status */
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
   gtk_widget_set_hexpand (hbox, TRUE);
-  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (vbox, hbox);
 
   widget = uiutilsCreateColonLabel ("Mutagen");
-  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (hbox, widget);
   gtk_size_group_add_widget (sg, widget);
 
   installer->mutagenMsg = uiutilsCreateLabel ("");
   uiutilsSetCss (installer->mutagenMsg,
       "label { color: #ffa600; }");
-  gtk_box_pack_start (GTK_BOX (hbox), installer->mutagenMsg, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (hbox, installer->mutagenMsg);
 
   /* button box */
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
   gtk_widget_set_hexpand (hbox, TRUE);
-  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (vbox, hbox);
 
   widget = uiutilsCreateButton (_("Exit"), NULL, installerExit, installer);
   gtk_box_pack_end (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
@@ -571,7 +571,7 @@ installerActivate (GApplication *app, gpointer udata)
 
   scwidget = uiutilsCreateScrolledWindow ();
   gtk_scrolled_window_set_min_content_height (GTK_SCROLLED_WINDOW (scwidget), 150);
-  gtk_box_pack_start (GTK_BOX (vbox), scwidget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (vbox, scwidget);
 
   installer->dispBuffer = gtk_text_buffer_new (NULL);
   installer->dispTextView = gtk_text_view_new_with_buffer (installer->dispBuffer);

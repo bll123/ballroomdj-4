@@ -371,8 +371,7 @@ manageActivate (GApplication *app, gpointer userdata)
 
   manage->mainnotebook = uiutilsCreateNotebook ();
   gtk_notebook_set_tab_pos (GTK_NOTEBOOK (manage->mainnotebook), GTK_POS_LEFT);
-  gtk_box_pack_start (GTK_BOX (vbox), manage->mainnotebook,
-      FALSE, FALSE, 0);
+  uiutilsBoxPackStart (vbox, manage->mainnotebook);
 
   /* song list editor */
   vbox = uiutilsCreateVertBox ();
@@ -384,7 +383,7 @@ manageActivate (GApplication *app, gpointer userdata)
   /* song list editor: player */
   widget = uiplayerActivate (manage->slplayer);
   gtk_widget_set_hexpand (widget, TRUE);
-  gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (vbox, widget);
 
   manage->notebook = uiutilsCreateNotebook ();
   gtk_box_pack_start (GTK_BOX (vbox), manage->notebook, TRUE, TRUE, 0);
@@ -417,7 +416,7 @@ manageActivate (GApplication *app, gpointer userdata)
   /* music manager: player */
   widget = uiplayerActivate (manage->mmplayer);
   gtk_widget_set_hexpand (widget, TRUE);
-  gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (vbox, widget);
 
   manage->notebook = uiutilsCreateNotebook ();
   gtk_box_pack_start (GTK_BOX (vbox), manage->notebook, TRUE, TRUE, 0);
@@ -444,11 +443,11 @@ manageActivate (GApplication *app, gpointer userdata)
   tb = uiutilsTextBoxCreate ();
   uiutilsTextBoxSetReadonly (tb);
   uiutilsTextBoxSetHeight (tb, 70);
-  gtk_box_pack_start (GTK_BOX (vbox), tb->scw, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (vbox, tb->scw);
   manage->dbhelpdisp = tb;
 
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
-  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (vbox, hbox);
 
   widget = uiutilsSpinboxTextCreate (&manage->dbspinbox, manage);
   /* currently hard-coded at 30 chars */
@@ -456,20 +455,20 @@ manageActivate (GApplication *app, gpointer userdata)
       nlistGetCount (manage->dblist), 30, manage->dblist, NULL);
   uiutilsSpinboxTextSetValue (&manage->dbspinbox, 0);
   g_signal_connect (widget, "value-changed", G_CALLBACK (manageDbChg), manage);
-  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (hbox, widget);
 
   widget = uiutilsCreateButton (_("Start"), NULL, manageDbStart, manage);
-  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (hbox, widget);
 
   widget = uiutilsCreateProgressBar (bdjoptGetStr (OPT_P_UI_ACCENT_COL));
-  gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (vbox, widget);
   manage->dbpbar = widget;
 
   tb = uiutilsTextBoxCreate ();
   uiutilsTextBoxSetReadonly (tb);
   uiutilsTextBoxDarken (tb);
   uiutilsTextBoxSetHeight (tb, 300);
-  gtk_box_pack_start (GTK_BOX (vbox), tb->scw, FALSE, FALSE, 0);
+  uiutilsBoxPackStart (vbox, tb->scw);
   manage->dbstatus = tb;
 
   /* playlist management */

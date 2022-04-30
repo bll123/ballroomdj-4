@@ -193,6 +193,8 @@ void  uiutilsNotebookSetActionWidget (GtkWidget *notebook, GtkWidget *widget, Gt
 /* uigtkbox.c */
 GtkWidget *uiutilsCreateVertBox (void);
 GtkWidget *uiutilsCreateHorizBox (void);
+void uiutilsBoxPackStart (GtkWidget *box, GtkWidget *widget);
+void uiutilsBoxPackEnd (GtkWidget *box, GtkWidget *widget);
 
 /* uigtkpbar.c */
 GtkWidget * uiutilsCreateProgressBar (char *color);

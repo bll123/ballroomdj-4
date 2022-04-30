@@ -85,14 +85,12 @@ uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
   assert (hbox != NULL);
   gtk_widget_set_margin_top (hbox, 2);
   gtk_widget_set_hexpand (hbox, TRUE);
-  gtk_box_pack_start (GTK_BOX (uimusicq->ui [ci].box), hbox,
-      FALSE, FALSE, 0);
+  uiutilsBoxPackStart (uimusicq->ui [ci].box, hbox);
 
   /* CONTEXT: button: move the selected song to the top of the queue */
   widget = uiutilsCreateButton (_("Move to Top"), "button_movetop",
       uimusicqMoveTopProcessSignal, uimusicq);
-  gtk_box_pack_start (GTK_BOX (hbox), widget,
-      FALSE, FALSE, 0);
+  uiutilsBoxPackStart (hbox, widget);
 
   /* CONTEXT: button: move the selected song up in the queue */
   widget = uiutilsCreateButton (_("Move Up"), "button_up",
@@ -101,8 +99,7 @@ uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
       G_CALLBACK (uimusicqMoveUpProcessSignal), uimusicq);
   g_signal_connect (widget, "released",
       G_CALLBACK (uimusicqStopRepeatSignal), uimusicq);
-  gtk_box_pack_start (GTK_BOX (hbox), widget,
-      FALSE, FALSE, 0);
+  uiutilsBoxPackStart (hbox, widget);
 
   /* CONTEXT: button: move the selected song down in the queue */
   widget = uiutilsCreateButton (_("Move Down"), "button_down",
@@ -111,22 +108,20 @@ uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
       G_CALLBACK (uimusicqMoveDownProcessSignal), uimusicq);
   g_signal_connect (widget, "released",
       G_CALLBACK (uimusicqStopRepeatSignal), uimusicq);
-  gtk_box_pack_start (GTK_BOX (hbox), widget,
-      FALSE, FALSE, 0);
+  uiutilsBoxPackStart (hbox, widget);
 
   if ((uimusicq->uimusicqflags & UIMUSICQ_FLAGS_NO_TOGGLE_PAUSE) !=
       UIMUSICQ_FLAGS_NO_TOGGLE_PAUSE) {
     /* CONTEXT: button: set playback to pause after the selected song is played (toggle) */
     widget = uiutilsCreateButton (_("Toggle Pause"), "button_pause",
         uimusicqTogglePauseProcessSignal, uimusicq);
-    gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+    uiutilsBoxPackStart (hbox, widget);
   }
 
   /* CONTEXT: button: remove the song from the queue */
   widget = uiutilsCreateButton (_("Remove from queue"), "button_audioremove",
       uimusicqRemoveProcessSignal, uimusicq);
-  gtk_box_pack_start (GTK_BOX (hbox), widget,
-      FALSE, FALSE, 0);
+  uiutilsBoxPackStart (hbox, widget);
 
   // ### TODO create code to handle this.
   if ((uimusicq->uimusicqflags & UIMUSICQ_FLAGS_NO_QUEUE) != UIMUSICQ_FLAGS_NO_QUEUE) {
@@ -160,8 +155,7 @@ uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
   /* musicq tree view */
 
   widget = uiutilsCreateScrolledWindow ();
-  gtk_box_pack_start (GTK_BOX (uimusicq->ui [ci].box), widget,
-      FALSE, FALSE, 0);
+  uiutilsBoxPackStart (uimusicq->ui [ci].box, widget);
 
   uimusicq->ui [ci].musicqTree = uiutilsCreateTreeView ();
   assert (uimusicq->ui [ci].musicqTree != NULL);
