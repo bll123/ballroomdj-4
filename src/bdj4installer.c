@@ -567,13 +567,11 @@ installerActivate (GApplication *app, gpointer udata)
 
   /* CONTEXT: installer: start the installation process */
   widget = uiutilsCreateButton (_("Install"), NULL, installerInstall, installer);
-  gtk_box_pack_end (GTK_BOX (hbox), widget,
-      FALSE, FALSE, 0);
+  gtk_box_pack_end (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 
   scwidget = uiutilsCreateScrolledWindow ();
   gtk_scrolled_window_set_min_content_height (GTK_SCROLLED_WINDOW (scwidget), 150);
-  gtk_box_pack_start (GTK_BOX (vbox), scwidget,
-      FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (vbox), scwidget, FALSE, FALSE, 0);
 
   installer->dispBuffer = gtk_text_buffer_new (NULL);
   installer->dispTextView = gtk_text_view_new_with_buffer (installer->dispBuffer);
@@ -953,7 +951,9 @@ installerInstall (GtkButton *b, gpointer udata)
 {
   installer_t *installer = udata;
 
-  installer->instState = INST_INIT;
+  if (installer->instState == INST_BEGIN) {
+    installer->instState = INST_INIT;
+  }
 }
 
 static bool

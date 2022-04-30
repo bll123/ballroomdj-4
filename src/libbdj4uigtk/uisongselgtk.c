@@ -16,7 +16,9 @@
 #include "bdjstring.h"
 #include "bdjopt.h"
 #include "bdj4playerui.h"
+#include "conn.h"
 #include "log.h"
+#include "musicq.h"
 #include "nlist.h"
 #include "songfilter.h"
 #include "uisongsel.h"
@@ -48,6 +50,8 @@ typedef struct {
   GtkTreeViewColumn   *favColumn;
   GtkWidget           *filterDialog;
   GtkWidget           *statusPlayable;
+  GtkWidget           *queueButton;
+  GtkWidget           *selectButton;
   /* other data */
   int               lastTreeSize;
   double            lastRowHeight;
@@ -96,6 +100,8 @@ uisongselUIInit (uisongsel_t *uisongsel)
   uiw->favColumn = NULL;
   uiw->filterDialog = NULL;
   uiw->statusPlayable = NULL;
+  uiw->queueButton = NULL;
+  uiw->selectButton = NULL;
   uiw->lastTreeSize = 0;
   uiw->lastRowHeight = 0.0;
   uiw->maxRows = 0;
@@ -136,20 +142,38 @@ uisongselActivate (uisongsel_t *uisongsel, GtkWidget *parentwin)
   gtk_box_pack_start (GTK_BOX (uiw->vbox), hbox,
       FALSE, FALSE, 0);
 
+  if (uisongsel->dispselType == DISP_SEL_SONGSEL) {
+    /* CONTEXT: select a song to be added to the song list */
+    strlcpy (tbuff, _("Select"), sizeof (tbuff));
+    widget = uiutilsCreateButton (tbuff, NULL,
+        uisongselQueueProcessSignal, uisongsel);
+    gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+    uiw->selectButton = widget;
+  }
+
   if (uisongsel->dispselType == DISP_SEL_SONGSEL ||
-      uisongsel->dispselType == DISP_SEL_REQUEST) {
+      uisongsel->dispselType == DISP_SEL_REQUEST ||
+      uisongsel->dispselType == DISP_SEL_MM) {
     if (uisongsel->dispselType == DISP_SEL_REQUEST) {
       /* CONTEXT: queue a song to be played */
       strlcpy (tbuff, _("Queue"), sizeof (tbuff));
     }
-    if (uisongsel->dispselType == DISP_SEL_SONGSEL) {
-      /* CONTEXT: select a song to be added to the song list */
-      strlcpy (tbuff, _("Select"), sizeof (tbuff));
+    if (uisongsel->dispselType == DISP_SEL_SONGSEL ||
+        uisongsel->dispselType == DISP_SEL_MM) {
+      /* CONTEXT: play the selected song */
+      strlcpy (tbuff, _("Play"), sizeof (tbuff));
     }
     widget = uiutilsCreateButton (tbuff, NULL,
         uisongselQueueProcessSignal, uisongsel);
-    gtk_box_pack_start (GTK_BOX (hbox), widget,
-        FALSE, FALSE, 0);
+    gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+
+    /* only set the queue button for songsel and mm */
+    /* if the queue button matches, the current song will be cleared */
+    /* and the song will be queued to musicq B (the hidden queue) */
+    if (uisongsel->dispselType == DISP_SEL_SONGSEL ||
+        uisongsel->dispselType == DISP_SEL_MM) {
+      uiw->queueButton = widget;
+    }
   }
 
   widget = uiutilsComboboxCreate (parentwin,
@@ -400,13 +424,14 @@ uisongselCreateRows (uisongsel_t *uisongsel)
 static void
 uisongselQueueProcessSignal (GtkButton *b, gpointer udata)
 {
-  uisongselgtk_t      * uiw;
+  uisongselgtk_t    * uiw;
   uisongsel_t       * uisongsel = udata;
   GtkTreeSelection  * sel;
   GtkTreeModel      * model = NULL;
   GtkTreeIter       iter;
   int               count;
   gulong            dbidx;
+  musicqidx_t       mqidx = MUSICQ_CURRENT;
 
   logProcBegin (LOG_PROC, "uisongselQueueProcessSignal");
 
@@ -420,7 +445,16 @@ uisongselQueueProcessSignal (GtkButton *b, gpointer udata)
   gtk_tree_selection_get_selected (sel, &model, &iter);
   gtk_tree_model_get (model, &iter, SONGSEL_COL_DBIDX, &dbidx, -1);
 
-  uisongselQueueProcess (uisongsel, dbidx);
+  if (GTK_WIDGET (b) == uiw->queueButton) {
+    /* clear any playing song */
+    connSendMessage (uisongsel->conn, ROUTE_PLAYER, MSG_PLAY_NEXTSONG, NULL);
+    /* and queue to the hidden music queue */
+    mqidx = MUSICQ_B;
+  }
+  if (GTK_WIDGET (b) == uiw->selectButton) {
+    mqidx = MUSICQ_A;
+  }
+  uisongselQueueProcess (uisongsel, dbidx, mqidx);
 
   logProcEnd (LOG_PROC, "uisongselQueueProcessSignal", "");
   return;

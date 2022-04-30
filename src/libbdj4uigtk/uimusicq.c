@@ -42,10 +42,12 @@ uimusicqInit (conn_t *conn, musicdb_t *musicdb,
   uimusicq->dispList = NULL;
   uimusicq->workList = NULL;
   for (int i = 0; i < MUSICQ_MAX; ++i) {
+    uimusicq->ui [i].active = false;
     uimusicq->ui [i].repeatTimer = 0;
     uiutilsDropDownInit (&uimusicq->ui [i].playlistsel);
     uiutilsDropDownInit (&uimusicq->ui [i].dancesel);
     uimusicq->ui [i].selPathStr = NULL;
+    uimusicq->ui [i].musicqTree = NULL;
     mstimeset (&uimusicq->ui [i].rowChangeTimer, 3600000);
   }
   uimusicq->musicqManageIdx = MUSICQ_A;

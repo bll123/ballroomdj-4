@@ -56,7 +56,7 @@ void  uisongselFree (uisongsel_t *uisongsel);
 void  uisongselMainLoop (uisongsel_t *uisongsel);
 void  uisongselFilterDanceProcess (uisongsel_t *uisongsel, ssize_t idx);
 void  uisongselDanceSelect (uisongsel_t *uisongsel, ssize_t idx);
-void  uisongselQueueProcess (uisongsel_t *uisongsel, dbidx_t dbidx);
+void  uisongselQueueProcess (uisongsel_t *uisongsel, dbidx_t dbidx, musicqidx_t mqidx);
 void  uisongselChangeFavorite (uisongsel_t *uisongsel, dbidx_t dbidx);
 void  uisongselApplySongFilter (uisongsel_t *uisongsel);
 void  uisongselInitFilterDisplay (uisongsel_t *uisongsel);

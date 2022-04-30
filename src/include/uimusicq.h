@@ -25,6 +25,7 @@ enum {
 #define UIMUSICQ_REPEAT_TIME 250
 
 typedef struct {
+  bool              active;
   guint             repeatTimer;
   /* music queue tab */
   GtkWidget         *box;

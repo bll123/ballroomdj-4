@@ -350,9 +350,6 @@ manageActivate (GApplication *app, gpointer userdata)
   GtkWidget           *widget;
   GtkWidget           *hbox;
   GtkWidget           *vbox;
-  GtkWidget           *slqueueb;
-//  GtkWidget           *mmqueuea;
-  GtkWidget           *mmqueueb;
   uiutilstextbox_t    *tb;
   char                imgbuff [MAXPATHLEN];
   char                tbuff [MAXPATHLEN];
@@ -398,18 +395,17 @@ manageActivate (GApplication *app, gpointer userdata)
   tabLabel = uiutilsCreateLabel (_("Song List"));
   uiutilsNotebookAppendPage (manage->notebook, widget, tabLabel);
 
-  /* song list editor: queue b tab */
-  /* always hidden : used to play the music */
-  widget = uimusicqActivate (manage->slmusicq, manage->window, MUSICQ_B);
-  /* this tab is never shown */
-  tabLabel = uiutilsCreateLabel ("Queue B");
-  uiutilsNotebookAppendPage (manage->notebook, widget, tabLabel);
-  slqueueb = widget;
-
   /* song list editor: song selection tab*/
   widget = uisongselActivate (manage->slsongsel, manage->window);
   /* CONTEXT: name of song selection tab */
   tabLabel = uiutilsCreateLabel (_("Song Selection"));
+  uiutilsNotebookAppendPage (manage->notebook, widget, tabLabel);
+
+  /* song list editor song editor tab */
+  // widget = uisongselActivate (manage->mmsongsel, manage->window);
+  widget = NULL;
+  /* CONTEXT: name of song editor tab */
+  tabLabel = uiutilsCreateLabel (_("Song Editor"));
   uiutilsNotebookAppendPage (manage->notebook, widget, tabLabel);
 
   /* music manager */
@@ -426,27 +422,17 @@ manageActivate (GApplication *app, gpointer userdata)
   manage->notebook = uiutilsCreateNotebook ();
   gtk_box_pack_start (GTK_BOX (vbox), manage->notebook, TRUE, TRUE, 0);
 
-  /* these tabs are never shown */
-#if 0
-  /* music manager: music queue tab */
-  /* ### might not need this tab */
-  widget = uimusicqActivate (manage->mmmusicq, manage->window, MUSICQ_A);
-  tabLabel = uiutilsCreateLabel ("Queue A");
-  uiutilsNotebookAppendPage (manage->notebook, widget, tabLabel);
-  mmqueuea = widget;
-#endif
-
-  /* music manager: queue b tab */
-  /* always hidden : used to play the music */
-  widget = uimusicqActivate (manage->mmmusicq, manage->window, MUSICQ_B);
-  tabLabel = uiutilsCreateLabel ("Queue B");
-  uiutilsNotebookAppendPage (manage->notebook, widget, tabLabel);
-  mmqueueb = widget;
-
   /* music manager: song selection tab*/
   widget = uisongselActivate (manage->mmsongsel, manage->window);
   /* CONTEXT: name of song selection tab */
   tabLabel = uiutilsCreateLabel (_("Music Manager"));
+  uiutilsNotebookAppendPage (manage->notebook, widget, tabLabel);
+
+  /* music manager: song editor tab */
+  // widget = uisongselActivate (manage->mmsongsel, manage->window);
+  widget = NULL;
+  /* CONTEXT: name of song editor tab */
+  tabLabel = uiutilsCreateLabel (_("Song Editor"));
   uiutilsNotebookAppendPage (manage->notebook, widget, tabLabel);
 
   /* update database */
@@ -509,9 +495,6 @@ manageActivate (GApplication *app, gpointer userdata)
   gtk_window_set_default_size (GTK_WINDOW (manage->window), x, y);
 
   gtk_widget_show_all (manage->window);
-  gtk_widget_hide (slqueueb);
-//  gtk_widget_hide (mmqueuea);
-  gtk_widget_hide (mmqueueb);
 
   x = nlistGetNum (manage->options, PLUI_POSITION_X);
   y = nlistGetNum (manage->options, PLUI_POSITION_Y);
@@ -615,6 +598,8 @@ manageHandshakeCallback (void *udata, programstate_t programState)
     rc = true;
   }
 
+  connSendMessage (manage->conn, ROUTE_MAIN, MSG_QUEUE_PLAY_ON_ADD, "1");
+  connSendMessage (manage->conn, ROUTE_MAIN, MSG_MUSICQ_SET_PLAYBACK, "1");
   logProcEnd (LOG_PROC, "manageHandshakeCallback", "");
   return rc;
 }

@@ -161,16 +161,15 @@ uisongselDanceSelect (uisongsel_t *uisongsel, ssize_t idx)
 }
 
 void
-uisongselQueueProcess (uisongsel_t *uisongsel, dbidx_t dbidx)
+uisongselQueueProcess (uisongsel_t *uisongsel, dbidx_t dbidx, musicqidx_t mqidx)
 {
   ssize_t insloc;
   char    tbuff [MAXPATHLEN];
 
   insloc = bdjoptGetNum (OPT_P_INSERT_LOCATION);
-  snprintf (tbuff, sizeof (tbuff), "%d%c%zd%c%d", MUSICQ_CURRENT,
+  snprintf (tbuff, sizeof (tbuff), "%d%c%zd%c%d", mqidx,
       MSG_ARGS_RS, insloc, MSG_ARGS_RS, dbidx);
-  connSendMessage (uisongsel->conn, ROUTE_MAIN,
-      MSG_MUSICQ_INSERT, tbuff);
+  connSendMessage (uisongsel->conn, ROUTE_MAIN, MSG_MUSICQ_INSERT, tbuff);
 }
 
 void

@@ -475,9 +475,6 @@ static void   confuiCreateTagListingDisp (configui_t *confui);
 static void   confuiDispSelect (GtkButton *b, gpointer udata);
 static void   confuiDispRemove (GtkButton *b, gpointer udata);
 
-/* filter settings */
-
-
 static int gKillReceived = 0;
 static int gdone = 0;
 
@@ -1211,10 +1208,10 @@ confuiActivate (GApplication *app, gpointer userdata)
   /* call this after both tree views have been instantiated */
   confuiCreateTagListingTable (confui);
 
-  /* filter settings */
+  /* filter display */
   vbox = confuiMakeNotebookTab (confui, confui->notebook,
       /* CONTEXT: config: song filter display settings */
-      _("Filter Settings"), CONFUI_ID_FILTER);
+      _("Filter Display"), CONFUI_ID_FILTER);
   sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
   val = nlistGetNum (confui->filterDisplaySel, FILTER_DISP_GENRE);

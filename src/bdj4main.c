@@ -673,6 +673,7 @@ mainSendMusicQueueData (maindata_t *mainData, int musicqidx)
   }
 
   connSendMessage (mainData->conn, ROUTE_PLAYERUI, MSG_MUSIC_QUEUE_DATA, sbuff);
+  connSendMessage (mainData->conn, ROUTE_MANAGEUI, MSG_MUSIC_QUEUE_DATA, sbuff);
   logProcEnd (LOG_PROC, "mainSendMusicQueueData", "");
 }
 
@@ -1424,6 +1425,8 @@ mainMusicqInsert (maindata_t *mainData, bdjmsgroute_t routefrom, char *args)
   idx = atol (p);
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   dbidx = atol (p);
+fprintf (stderr, "insert q:%d loc:%d dbidx:%d\n", mi, idx, dbidx);
+fprintf (stderr, "manageidx: %d playidx: %d \n", mainData->musicqManageIdx, mainData->musicqPlayIdx);
 
   song = dbGetByIdx (mainData->musicdb, dbidx);
 
