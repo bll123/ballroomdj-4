@@ -15,7 +15,7 @@ target_include_directories (libbdj4ui
   PUBLIC ${GTK_INCLUDE_DIRS}
 )
 target_link_libraries (libbdj4ui
-  libbdj4gtk libbdj4 libbdj4common
+  libuigtk3 libbdj4 libbdj4common
   ${GTK_LDFLAGS}
   m
 )

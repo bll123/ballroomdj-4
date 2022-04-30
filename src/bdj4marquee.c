@@ -322,9 +322,8 @@ marqueeActivate (GApplication *app, gpointer userdata)
 
   marquee->window = window;
 
-  marquee->vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 5);
-  gtk_widget_set_margin_top (marquee->vbox, 10);
-  gtk_widget_set_margin_bottom (marquee->vbox, 10);
+  marquee->vbox = uiutilsCreateVertBox ();
+  uiutilsWidgetSetAllMargins (marquee->vbox, 10);
   gtk_container_add (GTK_CONTAINER (window), marquee->vbox);
   gtk_widget_set_hexpand (marquee->vbox, TRUE);
   gtk_widget_set_vexpand (marquee->vbox, TRUE);
@@ -333,17 +332,14 @@ marqueeActivate (GApplication *app, gpointer userdata)
   marquee->pbar = uiutilsCreateProgressBar (bdjoptGetStr (OPT_P_MQ_ACCENT_COL));
   uiutilsBoxPackStart (marquee->vbox, marquee->pbar);
 
-  vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 5);
-  gtk_widget_set_margin_start (marquee->vbox, 10);
-  gtk_widget_set_margin_end (marquee->vbox, 10);
+  vbox = uiutilsCreateVertBox ();
+  uiutilsWidgetSetAllMargins (marquee->vbox, 10);
   gtk_widget_set_hexpand (marquee->vbox, TRUE);
   uiutilsBoxPackStart (marquee->vbox, vbox);
 
-  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 5);
+  hbox = uiutilsCreateHorizBox ();
   gtk_widget_set_halign (hbox, GTK_ALIGN_FILL);
   gtk_widget_set_hexpand (hbox, TRUE);
-  gtk_widget_set_margin_end (hbox, 0);
-  gtk_widget_set_margin_start (hbox, 0);
   uiutilsBoxPackStart (vbox, hbox);
 
   /* CONTEXT: marquee: displayed when nothing is set to be played */
@@ -367,11 +363,9 @@ marqueeActivate (GApplication *app, gpointer userdata)
   uiutilsSetCss (marquee->countdownTimerLab, tbuff);
   uiutilsBoxPackEnd (hbox, marquee->countdownTimerLab);
 
-  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 5);
+  hbox = uiutilsCreateHorizBox ();
   gtk_widget_set_halign (hbox, GTK_ALIGN_FILL);
   gtk_widget_set_hexpand (hbox, TRUE);
-  gtk_widget_set_margin_end (hbox, 0);
-  gtk_widget_set_margin_start (hbox, 0);
   uiutilsBoxPackStart (vbox, hbox);
   marquee->infoBox = hbox;
 

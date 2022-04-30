@@ -2,7 +2,7 @@ cmake_minimum_required (VERSION 3.18)
 
 include (../utils/bdj4macros.cmake)
 
-add_library (libbdj4gtk SHARED
+add_library (libuigtk3 SHARED
   uigtkbox.c
   uigtkbutton.c
   uigtkdialog.c
@@ -20,18 +20,18 @@ add_library (libbdj4gtk SHARED
   uigtkutils.c
   uigtkwindow.c
 )
-target_include_directories (libbdj4gtk
+target_include_directories (libuigtk3
   PUBLIC ${GTK_INCLUDE_DIRS}
 )
-target_link_libraries (libbdj4gtk
+target_link_libraries (libuigtk3
   libbdj4 libbdj4common
   ${GTK_LDFLAGS}
   m
 )
-addIntlLibrary (libbdj4gtk)
-addWinSockLibrary (libbdj4gtk)
+addIntlLibrary (libuigtk3)
+addWinSockLibrary (libuigtk3)
 
 install (TARGETS
-  libbdj4gtk
+  libuigtk3
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )

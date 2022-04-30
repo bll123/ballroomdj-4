@@ -73,7 +73,7 @@ add_subdirectory (libbdj4)
 add_subdirectory (libpli)
 add_subdirectory (libvol)
 add_subdirectory (libbdj4ui)
-add_subdirectory (libbdj4gtk)
+add_subdirectory (libuigtk3)
 add_subdirectory (libbdj4uigtk)
 
 add_executable (bdj4locatebdj3 bdj4locatebdj3.c)
@@ -298,7 +298,7 @@ if (WIN32)
   target_compile_options (bdj4marquee PRIVATE -mwindows)
 endif()
 target_link_libraries (bdj4marquee
-  libbdj4ui libbdj4gtk libbdj4 libbdj4common
+  libbdj4ui libuigtk3 libbdj4 libbdj4common
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}
   m
@@ -312,7 +312,7 @@ if (WIN32)
 endif()
 target_link_libraries (bdj4installer
   liblocatebdj3
-  libbdj4ui libbdj4gtk libbdj4 libbdj4common
+  libbdj4ui libuigtk3 libbdj4 libbdj4common
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}
   m
@@ -327,7 +327,7 @@ if (WIN32)
   target_compile_options (bdj4starterui PRIVATE -mwindows)
 endif()
 target_link_libraries (bdj4starterui
-  libbdj4ui libbdj4gtk libbdj4common
+  libbdj4ui libuigtk3 libbdj4common
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}
   z
@@ -344,7 +344,7 @@ if (WIN32)
   target_compile_options (bdj4playerui PRIVATE -mwindows)
 endif()
 target_link_libraries (bdj4playerui
-  libbdj4uigtk libbdj4ui libbdj4gtk libbdj4 libbdj4common
+  libbdj4uigtk libbdj4ui libuigtk3 libbdj4 libbdj4common
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}
   m
@@ -360,7 +360,7 @@ if (WIN32)
   target_compile_options (bdj4manageui PRIVATE -mwindows)
 endif()
 target_link_libraries (bdj4manageui
-  libbdj4uigtk libbdj4ui libbdj4gtk libbdj4 libbdj4common
+  libbdj4uigtk libbdj4ui libuigtk3 libbdj4 libbdj4common
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}
   m
@@ -376,7 +376,7 @@ if (WIN32)
   target_compile_options (bdj4configui PRIVATE -mwindows)
 endif()
 target_link_libraries (bdj4configui
-  libbdj4ui libbdj4gtk libbdj4vol libbdj4 libbdj4common
+  libbdj4ui libuigtk3 libbdj4vol libbdj4 libbdj4common
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}
   m
@@ -388,7 +388,7 @@ add_subdirectory (check)
 
 install (TARGETS
   libbdj4common libbdj4
-  libbdj4gtk
+  libuigtk3
   bdj4 bdj4g
   bdj4se bdj4installer bdj4updater
   bdj4locatebdj3 bdj4info bdj4tags
