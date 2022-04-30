@@ -83,6 +83,7 @@ void  uimusicqQueueDanceProcess (uimusicq_t *uimusicq, ssize_t idx);
 void  uimusicqQueuePlaylistProcess (uimusicq_t *uimusicq, ssize_t idx);
 void  uimusicqCreatePlaylistList (uimusicq_t *uimusicq);
 int   uimusicqMusicQueueDataParse (uimusicq_t *uimusicq, char * args);
+void  uimusicqMusicQueueDataFree (uimusicq_t *uimusicq);
 
 /* uimusicqgtk.c */
 GtkWidget * uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci);

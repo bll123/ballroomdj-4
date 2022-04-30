@@ -27,6 +27,7 @@ procutil_t  * procutilStart (const char *fn, ssize_t profile, ssize_t loglvl,
 int         procutilKill (procutil_t *process, bool force);
 void        procutilTerminate (pid_t pid, bool force);
 void        procutilFreeAll (procutil_t *processes [ROUTE_MAX]);
+void        procutilFreeRoute (procutil_t *processes [ROUTE_MAX], bdjmsgroute_t route);
 void        procutilFree (procutil_t *process);
 procutil_t  * procutilStartProcess (bdjmsgroute_t route, char *fname,
     int detachflag, char *aargs []);

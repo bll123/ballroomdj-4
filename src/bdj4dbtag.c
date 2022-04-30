@@ -275,6 +275,7 @@ dbtagProcessing (void *udata)
       logMsg (LOG_DBG, LOG_IMPORTANT, "average num threads active: %.2f",
           (double) dbtag->threadActiveSum /
           (double) (dbtag->iterations - dbtag->maxThreads));
+      progstateShutdownProcess (dbtag->progstate);
       dbtag->running = false;
     }
   }

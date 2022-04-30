@@ -414,6 +414,19 @@ uimusicqMusicQueueDataParse (uimusicq_t *uimusicq, char *args)
   return ci;
 }
 
+void
+uimusicqMusicQueueDataFree (uimusicq_t *uimusicq)
+{
+  if (uimusicq->dispList != NULL) {
+    nlistFree (uimusicq->dispList);
+    uimusicq->dispList = NULL;
+  }
+  if (uimusicq->uniqueList != NULL) {
+    nlistFree (uimusicq->uniqueList);
+    uimusicq->uniqueList = NULL;
+  }
+}
+
 /* internal routines */
 
 static int

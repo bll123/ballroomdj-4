@@ -449,6 +449,7 @@ uimusicqProcessMusicQueueDataNew (uimusicq_t *uimusicq, char * args)
   ci = uimusicqMusicQueueDataParse (uimusicq, args);
   if (! uimusicq->ui [ci].active) {
     logProcEnd (LOG_PROC, "uimusicqProcessMusicQueueData", "not-active");
+    uimusicqMusicQueueDataFree (uimusicq);
     return;
   }
 
@@ -498,10 +499,7 @@ uimusicqProcessMusicQueueDataNew (uimusicq_t *uimusicq, char * args)
   gtk_tree_view_set_model (GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree), GTK_TREE_MODEL (store));
 
   g_object_unref (G_OBJECT (store));
-  nlistFree (uimusicq->dispList);
-  nlistFree (uimusicq->uniqueList);
-  uimusicq->dispList = NULL;
-  uimusicq->uniqueList = NULL;
+  uimusicqMusicQueueDataFree (uimusicq);
   logProcEnd (LOG_PROC, "uimusicqProcessMusicQueueDataNew", "");
 }
 
@@ -524,6 +522,7 @@ uimusicqProcessMusicQueueDataUpdate (uimusicq_t *uimusicq, char * args)
   ci = uimusicqMusicQueueDataParse (uimusicq, args);
   if (! uimusicq->ui [ci].active) {
     logProcEnd (LOG_PROC, "uimusicqProcessMusicQueueData", "not-active");
+    uimusicqMusicQueueDataFree (uimusicq);
     return;
   }
 
@@ -535,6 +534,7 @@ uimusicqProcessMusicQueueDataUpdate (uimusicq_t *uimusicq, char * args)
 
   if (model == NULL) {
     logProcEnd (LOG_PROC, "uimusicqProcessMusicQueueDataUpdate", "null-model");
+    uimusicqMusicQueueDataFree (uimusicq);
     return;
   }
 
@@ -610,10 +610,7 @@ uimusicqProcessMusicQueueDataUpdate (uimusicq_t *uimusicq, char * args)
     }
   }
 
-  nlistFree (uimusicq->dispList);
-  nlistFree (uimusicq->uniqueList);
-  uimusicq->dispList = NULL;
-  uimusicq->uniqueList = NULL;
+  uimusicqMusicQueueDataFree (uimusicq);
   logProcEnd (LOG_PROC, "uimusicqProcessMusicQueueDataUpdate", "");
 }
 

@@ -248,6 +248,7 @@ dbupdateProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_SOCKET_CLOSE: {
           procutilCloseProcess (dbupdate->processes [routefrom],
               dbupdate->conn, routefrom);
+          procutilFreeRoute (dbupdate->processes, routefrom);
           connDisconnect (dbupdate->conn, routefrom);
           break;
         }

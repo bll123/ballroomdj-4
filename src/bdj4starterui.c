@@ -258,7 +258,7 @@ starterStoppingCallback (void *udata, programstate_t programState)
   startui_t   *starter = udata;
   gint        x, y;
 
-  if (starter->mainstarted) {
+  if (starter->mainstarted > 0) {
     if (! connIsConnected (starter->conn, ROUTE_MAIN)) {
       connConnect (starter->conn, ROUTE_MAIN);
     }
@@ -733,6 +733,8 @@ starterProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_SOCKET_CLOSE: {
           procutilCloseProcess (starter->processes [routefrom],
               starter->conn, routefrom);
+          procutilFreeRoute (starter->processes, routefrom);
+          starter->processes [routefrom] = NULL;
           connDisconnect (starter->conn, routefrom);
           break;
         }

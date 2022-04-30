@@ -320,6 +320,7 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_SOCKET_CLOSE: {
           procutilCloseProcess (mainData->processes [routefrom],
               mainData->conn, routefrom);
+          procutilFreeRoute (mainData->processes, routefrom);
           connDisconnect (mainData->conn, routefrom);
           break;
         }
@@ -1425,8 +1426,6 @@ mainMusicqInsert (maindata_t *mainData, bdjmsgroute_t routefrom, char *args)
   idx = atol (p);
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   dbidx = atol (p);
-fprintf (stderr, "insert q:%d loc:%d dbidx:%d\n", mi, idx, dbidx);
-fprintf (stderr, "manageidx: %d playidx: %d \n", mainData->musicqManageIdx, mainData->musicqPlayIdx);
 
   song = dbGetByIdx (mainData->musicdb, dbidx);
 

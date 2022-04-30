@@ -136,10 +136,20 @@ procutilFreeAll (procutil_t *processes [ROUTE_MAX])
   logProcBegin (LOG_PROC, "procutilFreeAll");
   for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
     if (processes [i] != NULL) {
-      procutilFree (processes [i]);
+      procutilFreeRoute (processes, i);
     }
   }
   logProcEnd (LOG_PROC, "procutilFreeAll", "");
+}
+
+void
+procutilFreeRoute (procutil_t *processes [ROUTE_MAX], bdjmsgroute_t route)
+{
+  if (route >= ROUTE_MAX) {
+    return;
+  }
+  procutilFree (processes [route]);
+  processes [route] = NULL;
 }
 
 void
