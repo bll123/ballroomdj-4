@@ -524,8 +524,10 @@ playlistSetSongFilter (playlist_t *pl)
 
 
   logMsg (LOG_DBG, LOG_SONGSEL, "initializing song filter");
-  pl->songfilter = songfilterAlloc (SONG_FILTER_FOR_PLAYBACK);
+  pl->songfilter = songfilterAlloc ();
   assert (pl->songfilter != NULL);
+  songfilterSetNum (pl->songfilter, SONG_FILTER_STATUS_PLAYABLE,
+      SONG_FILTER_FOR_PLAYBACK);
 
   plRating = nlistGetNum (pl->plinfo, PLAYLIST_RATING);
   if (plRating != LIST_VALUE_INVALID) {

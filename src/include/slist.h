@@ -26,6 +26,7 @@ void      *slistGetData (slist_t *, char *sidx);
 char      *slistGetStr (slist_t *, char *sidx);
 void      *slistGetDataByIdx (slist_t *, slistidx_t idx);
 ssize_t   slistGetNumByIdx (slist_t *list, slistidx_t idx);
+char *    slistGetKeyByIdx (slist_t *list, slistidx_t lidx);
 ssize_t   slistGetNum (slist_t *, char *sidx);
 double    slistGetDouble (slist_t *, char *sidx);
 int       slistGetMaxKeyWidth (slist_t *);

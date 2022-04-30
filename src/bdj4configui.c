@@ -80,6 +80,7 @@ typedef enum {
   CONFUI_OUT_NUM,
   CONFUI_OUT_BOOL,
   CONFUI_OUT_DEBUG,
+  CONFUI_OUT_CB,
 } confuiouttype_t;
 
 enum {
@@ -129,6 +130,11 @@ enum {
   CONFUI_WIDGET_AO_CHG_SPACE,
   CONFUI_WIDGET_AUTO_ORGANIZE,
   CONFUI_WIDGET_DB_LOAD_FROM_GENRE,
+  CONFUI_WIDGET_FILTER_GENRE,
+  CONFUI_WIDGET_FILTER_DANCELEVEL,
+  CONFUI_WIDGET_FILTER_STATUS,
+  CONFUI_WIDGET_FILTER_FAVORITE,
+  CONFUI_WIDGET_FILTER_STATUS_PLAYABLE,
   /* the debug enums must be in numeric order */
   CONFUI_WIDGET_DEBUG_1,
   CONFUI_WIDGET_DEBUG_2,
@@ -196,6 +202,7 @@ typedef enum {
   CONFUI_ID_DISP_SEL_LIST,
   CONFUI_ID_DISP_SEL_TABLE,
   CONFUI_ID_TABLE_MAX,
+  CONFUI_ID_FILTER,
   CONFUI_ID_NONE,
   CONFUI_ID_MOBILE_MQ,
   CONFUI_ID_REM_CONTROL,
@@ -308,6 +315,9 @@ typedef struct {
   slist_t           *listingtaglist;
   dispsel_t         *dispsel;
   int               stopwaitcount;
+  datafile_t        *filterDisplayDf;
+  nlist_t           *filterDisplaySel;
+  nlist_t           *filterLookup;
   /* gtk stuff */
   GtkApplication    *app;
   GtkWidget         *window;
@@ -464,6 +474,9 @@ static void   confuiCreateTagTableDisp (configui_t *confui);
 static void   confuiCreateTagListingDisp (configui_t *confui);
 static void   confuiDispSelect (GtkButton *b, gpointer udata);
 static void   confuiDispRemove (GtkButton *b, gpointer udata);
+
+/* filter settings */
+
 
 static int gKillReceived = 0;
 static int gdone = 0;
@@ -695,6 +708,20 @@ main (int argc, char *argv[])
   nlistSetStr (tlist, MOBILEMQ_INTERNET, _("Internet"));
   confui.uiitem [CONFUI_SPINBOX_MOBILE_MQ].list = tlist;
 
+  pathbldMakePath (tbuff, sizeof (tbuff),
+      "ds-songfilter", ".txt", PATHBLD_MP_USEIDX);
+  confui.filterDisplayDf = datafileAllocParse ("cu-filter",
+      DFTYPE_KEY_VAL, tbuff, filterdisplaydfkeys, FILTER_DISP_MAX, DATAFILE_NO_LOOKUP);
+  confui.filterDisplaySel = datafileGetList (confui.filterDisplayDf);
+  llist = nlistAlloc ("cu-filter-out", LIST_ORDERED, free);
+  nlistStartIterator (confui.filterDisplaySel, &iteridx);
+  nlistSetNum (llist, CONFUI_WIDGET_FILTER_GENRE, FILTER_DISP_GENRE);
+  nlistSetNum (llist, CONFUI_WIDGET_FILTER_DANCELEVEL, FILTER_DISP_DANCELEVEL);
+  nlistSetNum (llist, CONFUI_WIDGET_FILTER_STATUS, FILTER_DISP_STATUS);
+  nlistSetNum (llist, CONFUI_WIDGET_FILTER_FAVORITE, FILTER_DISP_FAVORITE);
+  nlistSetNum (llist, CONFUI_WIDGET_FILTER_STATUS_PLAYABLE, FILTER_DISP_STATUSPLAYABLE);
+  confui.filterLookup = llist;
+
   listenPort = bdjvarsGetNum (BDJVL_CONFIGUI_PORT);
   confui.conn = connInit (ROUTE_CONFIGUI);
 
@@ -770,7 +797,13 @@ confuiStoppingCallback (void *udata, programstate_t programState)
 
   pathbldMakePath (fn, sizeof (fn),
       "configui", ".txt", PATHBLD_MP_USEIDX);
-  datafileSaveKeyVal ("configui", fn, configuidfkeys, CONFUI_KEY_MAX, confui->options);
+  datafileSaveKeyVal ("configui", fn, configuidfkeys,
+      CONFUI_KEY_MAX, confui->options);
+
+  pathbldMakePath (fn, sizeof (fn),
+      "ds-songfilter", ".txt", PATHBLD_MP_USEIDX);
+  datafileSaveKeyVal ("ds-songfilter", fn, filterdisplaydfkeys,
+      FILTER_DISP_MAX, confui->filterDisplaySel);
 
   connDisconnectAll (confui->conn);
 
@@ -833,6 +866,12 @@ confuiClosingCallback (void *udata, programstate_t programState)
     confui->uiitem [i].list = NULL;
   }
 
+  if (confui->filterDisplayDf != NULL) {
+    datafileFree (confui->filterDisplayDf);
+  }
+  if (confui->filterLookup != NULL) {
+    nlistFree (confui->filterLookup);
+  }
   dispselFree (confui->dispsel);
   if (confui->localip != NULL) {
     free (confui->localip);
@@ -1171,6 +1210,37 @@ confuiActivate (GApplication *app, gpointer userdata)
 
   /* call this after both tree views have been instantiated */
   confuiCreateTagListingTable (confui);
+
+  /* filter settings */
+  vbox = confuiMakeNotebookTab (confui, confui->notebook,
+      /* CONTEXT: config: song filter display settings */
+      _("Filter Settings"), CONFUI_ID_FILTER);
+  sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+
+  val = nlistGetNum (confui->filterDisplaySel, FILTER_DISP_GENRE);
+  confuiMakeItemCheckButton (confui, vbox, sg, _("Genre"),
+      CONFUI_WIDGET_FILTER_GENRE, -1, val);
+  confui->uiitem [CONFUI_WIDGET_FILTER_GENRE].outtype = CONFUI_OUT_CB;
+
+  val = nlistGetNum (confui->filterDisplaySel, FILTER_DISP_DANCELEVEL);
+  confuiMakeItemCheckButton (confui, vbox, sg, _("Dance Level"),
+      CONFUI_WIDGET_FILTER_DANCELEVEL, -1, val);
+  confui->uiitem [CONFUI_WIDGET_FILTER_DANCELEVEL].outtype = CONFUI_OUT_CB;
+
+  val = nlistGetNum (confui->filterDisplaySel, FILTER_DISP_STATUS);
+  confuiMakeItemCheckButton (confui, vbox, sg, _("Status"),
+      CONFUI_WIDGET_FILTER_STATUS, -1, val);
+  confui->uiitem [CONFUI_WIDGET_FILTER_STATUS].outtype = CONFUI_OUT_CB;
+
+  val = nlistGetNum (confui->filterDisplaySel, FILTER_DISP_FAVORITE);
+  confuiMakeItemCheckButton (confui, vbox, sg, _("Favorite"),
+      CONFUI_WIDGET_FILTER_FAVORITE, -1, val);
+  confui->uiitem [CONFUI_WIDGET_FILTER_FAVORITE].outtype = CONFUI_OUT_CB;
+
+  val = nlistGetNum (confui->filterDisplaySel, FILTER_DISP_STATUSPLAYABLE);
+  confuiMakeItemCheckButton (confui, vbox, sg, _("Playable Status"),
+      CONFUI_WIDGET_FILTER_STATUS_PLAYABLE, -1, val);
+  confui->uiitem [CONFUI_WIDGET_FILTER_STATUS_PLAYABLE].outtype = CONFUI_OUT_CB;
 
   /* organization */
   vbox = confuiMakeNotebookTab (confui, confui->notebook,
@@ -1804,6 +1874,11 @@ confuiPopulateOptions (configui_t *confui)
       }
       case CONFUI_OUT_BOOL: {
         bdjoptSetNum (confui->uiitem [i].bdjoptIdx, nval);
+        break;
+      }
+      case CONFUI_OUT_CB: {
+        nlistSetNum (confui->filterDisplaySel,
+            nlistGetNum (confui->filterLookup, i), nval);
         break;
       }
       case CONFUI_OUT_DEBUG: {
@@ -3031,6 +3106,9 @@ confuiUpdateOrgExample (configui_t *config, org_t *org, char *data, GtkWidget *w
   assert (song != NULL);
   songParse (song, tdata, 0);
   disp = orgMakeSongPath (org, song);
+  if (isWindows ()) {
+    pathWinPath (disp, strlen (disp));
+  }
   gtk_label_set_text (GTK_LABEL (widget), disp);
   songFree (song);
   free (disp);

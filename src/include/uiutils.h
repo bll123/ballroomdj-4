@@ -10,6 +10,15 @@
 #include "tmutil.h"
 
 enum {
+  FILTER_DISP_GENRE,
+  FILTER_DISP_DANCELEVEL,
+  FILTER_DISP_STATUS,
+  FILTER_DISP_FAVORITE,
+  FILTER_DISP_STATUSPLAYABLE,
+  FILTER_DISP_MAX,
+};
+
+enum {
   UI_TAB_MUSICQ,
   UI_TAB_SONGSEL,
   UI_TAB_SONGEDIT,
@@ -86,6 +95,7 @@ enum {
   UI_MAIN_LOOP_TIMER  = 20,
 };
 
+extern datafilekey_t filterdisplaydfkeys [];
 extern int uiutilsBaseMarginSz;
 
 /* uiutils.c */
@@ -211,6 +221,10 @@ GtkWidget * uiutilsCreateScale (double lower, double upper,
     double stepinc, double pageinc, double initvalue);
 double    uiutilsScaleEnforceMax (GtkWidget *scale, double value);
 
+/* uigtkswitch.c */
+GtkWidget * uiutilsCreateSwitch (int value);
+void uiutilsSwitchSetValue (GtkWidget *w, int value);
+
 /* uigtkutils.c */
 void  uiutilsCleanup (void);
 void  uiutilsSetCss (GtkWidget *w, char *style);
@@ -221,7 +235,6 @@ int   uiutilsCreateApplication (int argc, char *argv [],
 void  uiutilsGetForegroundColor (GtkWidget *widget, char *buff, size_t sz);
 void  uiutilsWidgetSetAllMargins (GtkWidget *widget, int margin);
 
-GtkWidget * uiutilsCreateSwitch (int value);
 GtkWidget * uiutilsCreateCheckButton (const char *txt, int value);
 
 

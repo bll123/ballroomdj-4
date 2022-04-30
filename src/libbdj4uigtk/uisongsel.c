@@ -24,20 +24,12 @@
 #include "uisongsel.h"
 #include "uiutils.h"
 
-static datafilekey_t filterdisplaydfkeys [FILTER_DISP_MAX] = {
-  { "DANCELEVEL",     FILTER_DISP_DANCELEVEL,      VALUE_NUM, convBoolean, -1 },
-  { "FAVORITE",       FILTER_DISP_FAVORITE,        VALUE_NUM, convBoolean, -1 },
-  { "GENRE",          FILTER_DISP_GENRE,           VALUE_NUM, convBoolean, -1 },
-  { "STATUS",         FILTER_DISP_STATUS,          VALUE_NUM, convBoolean, -1 },
-  { "STATUSPLAYABLE", FILTER_DISP_STATUSPLAYABLE,  VALUE_NUM, convBoolean, -1 },
-};
-
 static void uisongselSongfilterSetDance (uisongsel_t *uisongsel, ssize_t idx);
 
 uisongsel_t *
 uisongselInit (conn_t *conn, musicdb_t *musicdb,
     dispsel_t *dispsel, nlist_t *options,
-    songfilterpb_t filterFlags, dispselsel_t dispselType)
+    songfilterpb_t pbflag, dispselsel_t dispselType)
 {
   uisongsel_t   *uisongsel;
   char          tbuff [MAXPATHLEN];
@@ -60,6 +52,7 @@ uisongselInit (conn_t *conn, musicdb_t *musicdb,
   uisongsel->idxStart = 0;
   uisongsel->danceIdx = -1;
   uisongsel->dfilterCount = (double) dbCount (musicdb);
+  uisongsel->dfltpbflag = pbflag;
   uiutilsDropDownInit (&uisongsel->dancesel);
   uiutilsDropDownInit (&uisongsel->sortbysel);
   uiutilsEntryInit (&uisongsel->searchentry, 30, 100);
@@ -69,7 +62,7 @@ uisongselInit (conn_t *conn, musicdb_t *musicdb,
   uiutilsSpinboxTextInit (&uisongsel->filterlevelsel);
   uiutilsSpinboxTextInit (&uisongsel->filterstatussel);
   uiutilsSpinboxTextInit (&uisongsel->filterfavoritesel);
-  uisongsel->songfilter = songfilterAlloc (filterFlags);
+  uisongsel->songfilter = songfilterAlloc ();
   songfilterSetSort (uisongsel->songfilter,
       nlistGetStr (options, SONGSEL_SORT_BY));
   uisongsel->sortopt = sortoptAlloc ();

@@ -15,15 +15,6 @@
 #include "status.h"
 #include "uiutils.h"
 
-enum {
-  FILTER_DISP_GENRE,
-  FILTER_DISP_DANCELEVEL,
-  FILTER_DISP_STATUS,
-  FILTER_DISP_FAVORITE,
-  FILTER_DISP_STATUSPLAYABLE,
-  FILTER_DISP_MAX,
-};
-
 typedef struct {
   unsigned long     junk;       // something is trashing this first value
   conn_t            *conn;
@@ -42,6 +33,7 @@ typedef struct {
   dispselsel_t      dispselType;
   double            dfilterCount;
   /* filter data */
+  songfilterpb_t    dfltpbflag;
   uiutilsdropdown_t sortbysel;
   uiutilsdropdown_t filterdancesel;
   uiutilsdropdown_t filtergenresel;
@@ -59,7 +51,7 @@ typedef struct {
 /* uisongsel.c */
 uisongsel_t * uisongselInit (conn_t *conn,
     musicdb_t *musicdb, dispsel_t *dispsel, nlist_t *opts,
-    songfilterpb_t filterFlags, dispselsel_t dispselType);
+    songfilterpb_t pbflag, dispselsel_t dispselType);
 void  uisongselFree (uisongsel_t *uisongsel);
 void  uisongselMainLoop (uisongsel_t *uisongsel);
 void  uisongselFilterDanceProcess (uisongsel_t *uisongsel, ssize_t idx);

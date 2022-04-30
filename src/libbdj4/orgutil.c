@@ -27,42 +27,25 @@
 #include "sysvars.h"
 #include "tagdef.h"
 
-typedef enum {
-  ORG_TEXT,
-  ORG_ALBUM,
-  ORG_ALBUMARTIST,
-  ORG_ARTIST,
-  ORG_COMPOSER,
-  ORG_CONDUCTOR,
-  ORG_DANCE,
-  ORG_DISC,
-  ORG_GENRE,
-  ORG_TITLE,
-  ORG_TRACKNUM,
-  ORG_TRACKNUM0,
-  ORG_MAX_KEY,
-} orgkey_t;
-
 typedef struct {
   char            *name;
-  orgkey_t        orgkey;
   tagdefkey_t     tagkey;
   dfConvFunc_t    convFunc;
 } orglookup_t;
 
 orglookup_t orglookup [ORG_MAX_KEY] = {
-  { "--",         ORG_TEXT,       -1,         NULL, },  // not used here
-  { "ALBUM",      ORG_ALBUM,      TAG_ALBUM,  NULL, },
-  { "ALBUMARTIST", ORG_ALBUMARTIST, TAG_ALBUMARTIST, NULL, },
-  { "ARTIST",     ORG_ARTIST,     TAG_ARTIST, NULL, },
-  { "COMPOSER",   ORG_COMPOSER,   TAG_COMPOSER, NULL, },
-  { "CONDUCTOR",  ORG_CONDUCTOR,  TAG_CONDUCTOR, NULL, },
-  { "DANCE",      ORG_DANCE,      TAG_DANCE,  danceConvDance },
-  { "DISC",       ORG_DISC,       TAG_DISCNUMBER, NULL, },
-  { "GENRE",      ORG_GENRE,      TAG_GENRE,  genreConv },
-  { "TITLE",      ORG_TITLE,      TAG_TITLE,  NULL, },
-  { "TRACKNUMBER",ORG_TRACKNUM,   TAG_TRACKNUMBER, NULL, },
-  { "TRACKNUMBER0",ORG_TRACKNUM0,  TAG_TRACKNUMBER, NULL, },
+  [ORG_TEXT]        = { "--",           -1,               NULL, },// not used
+  [ORG_ALBUM]       = { "ALBUM",        TAG_ALBUM,        NULL, },
+  [ORG_ALBUMARTIST] = { "ALBUMARTIST",  TAG_ALBUMARTIST,  NULL, },
+  [ORG_ARTIST]      = { "ARTIST",       TAG_ARTIST,       NULL, },
+  [ORG_COMPOSER]    = { "COMPOSER",     TAG_COMPOSER,     NULL, },
+  [ORG_CONDUCTOR]   = { "CONDUCTOR",    TAG_CONDUCTOR,    NULL, },
+  [ORG_DANCE]       = { "DANCE",        TAG_DANCE,        danceConvDance },
+  [ORG_DISC]        = { "DISC",         TAG_DISCNUMBER,   NULL, },
+  [ORG_GENRE]       = { "GENRE",        TAG_GENRE,        genreConv },
+  [ORG_TITLE]       = { "TITLE",        TAG_TITLE,        NULL, },
+  [ORG_TRACKNUM]    = { "TRACKNUMBER",  TAG_TRACKNUMBER,  NULL, },
+  [ORG_TRACKNUM0]   = { "TRACKNUMBER0", TAG_TRACKNUMBER,  NULL, },
 };
 
 typedef struct org {
@@ -141,7 +124,7 @@ orgAlloc (char *orgpath)
       /* just do a brute force search... the parse should only be done once */
       for (orgkey_t i = 0; i < ORG_MAX_KEY; ++i) {
         if (strcmp (orglookup [i].name, p) == 0) {
-          orginfo->orgkey = orglookup [i].orgkey;
+          orginfo->orgkey = i;
           orginfo->tagkey = orglookup [i].tagkey;
           orginfo->convFunc = orglookup [i].convFunc;
           if (orginfo->orgkey == ORG_ALBUMARTIST) {
@@ -481,6 +464,43 @@ orgIterateTagKey (org_t *org, slistidx_t *iteridx)
 
   return -1;
 }
+
+int
+orgIterateOrgKey (org_t *org, slistidx_t *iteridx)
+{
+  orginfo_t   *orginfo;
+
+  while ((orginfo = slistIterateValueData (org->orgparsed, iteridx)) != NULL) {
+    return orginfo->orgkey;
+  }
+
+  return -1;
+}
+
+int
+orgGetTagKey (int orgkey)
+{
+  if (orgkey < 0) {
+    return -1;
+  }
+  return orglookup [orgkey].tagkey;
+}
+
+char *
+orgGetText (org_t *org, slistidx_t idx)
+{
+  orginfo_t *orginfo;
+
+  orginfo = slistGetDataByIdx (org->orgparsed, idx);
+  if (orginfo == NULL) {
+    return NULL;
+  }
+  if (orginfo->orgkey != ORG_TEXT) {
+    return NULL;
+  }
+  return slistGetKeyByIdx (org->orgparsed, idx);
+}
+
 
 /* internal routines */
 

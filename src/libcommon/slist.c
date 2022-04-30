@@ -164,6 +164,19 @@ slistGetNumByIdx (slist_t *list, slistidx_t lidx)
   return listGetNumByIdx (list, lidx);
 }
 
+char *
+slistGetKeyByIdx (slist_t *list, slistidx_t lidx)
+{
+  if (list == NULL) {
+    return NULL;
+  }
+  if (lidx < 0 || lidx >= list->count) {
+    return NULL;
+  }
+
+  return list->data [lidx].key.strkey;
+}
+
 ssize_t
 slistGetNum (slist_t *list, char *sidx)
 {

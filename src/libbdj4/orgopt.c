@@ -20,8 +20,10 @@
 #include "orgopt.h"
 #include "orgutil.h"
 #include "pathbld.h"
+#include "pathutil.h"
 #include "song.h"
 #include "slist.h"
+#include "sysvars.h"
 #include "tagdef.h"
 
 orgopt_t *
@@ -60,29 +62,31 @@ orgoptAlloc (void)
     org_t       *org;
     slist_t     *parsedlist;
     slistidx_t  piteridx;
+    int         orgkey;
+    int         tagkey;
 
     org = orgAlloc (value);
     parsedlist = orgGetList (org);
 
     dispstr [0] = '\0';
-    slistStartIterator (parsedlist, &piteridx);
-    while ((p = slistIterateKey (parsedlist, &piteridx)) != NULL) {
-      int tagidx;
-
-      tagidx = tagdefLookup (p);
-      if (tagidx >= 0) {
-        if (tagdefs [tagidx].isOrgTag) {
-          strlcat (dispstr, tagdefs [tagidx].displayname, sizeof (dispstr));
-        }
-      } else if (strcmp (p, "TRACKNUMBER0") == 0) {
-        strlcat (dispstr, "0", sizeof (dispstr));
-        strlcat (dispstr, tagdefs [TAG_TRACKNUMBER].displayname, sizeof (dispstr));
-      } else {
+    orgStartIterator (org, &piteridx);
+    while ((orgkey = orgIterateOrgKey (org, &piteridx)) >= 0) {
+      if (orgkey == ORG_TEXT) {
         /* leading or trailing characters */
+        p = orgGetText (org, piteridx);
         strlcat (dispstr, p, sizeof (dispstr));
+      } else {
+        tagkey = orgGetTagKey (orgkey);
+        strlcat (dispstr, tagdefs [tagkey].displayname, sizeof (dispstr));
+        if (orgkey == ORG_TRACKNUM0) {
+          strlcat (dispstr, "0", sizeof (dispstr));
+        }
       }
     }
 
+    if (isWindows ()) {
+      pathWinPath (dispstr, sizeof (dispstr));
+    }
     slistSetStr (list, dispstr, value);
     orgFree (org);
   }

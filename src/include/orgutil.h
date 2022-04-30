@@ -5,6 +5,22 @@
 #include "song.h"
 #include "tagdef.h"
 
+typedef enum {
+  ORG_ALBUM,
+  ORG_ALBUMARTIST,
+  ORG_ARTIST,
+  ORG_COMPOSER,
+  ORG_CONDUCTOR,
+  ORG_DANCE,
+  ORG_DISC,
+  ORG_GENRE,
+  ORG_TEXT,
+  ORG_TITLE,
+  ORG_TRACKNUM,
+  ORG_TRACKNUM0,
+  ORG_MAX_KEY,
+} orgkey_t;
+
 typedef struct org org_t;
 
 org_t   * orgAlloc (char *orgpath);
@@ -15,7 +31,8 @@ char    * orgMakeSongPath (org_t *org, song_t *song);
 bool    orgHaveDance (org_t *org);
 void    orgStartIterator (org_t *org, slistidx_t *iteridx);
 int     orgIterateTagKey (org_t *org, slistidx_t *iteridx);
-
-
+int     orgIterateOrgKey (org_t *org, slistidx_t *iteridx);
+int     orgGetTagKey (int orgkey);
+char *  orgGetText (org_t *org, slistidx_t idx);
 
 #endif /* INC_ORGUTIL_H */

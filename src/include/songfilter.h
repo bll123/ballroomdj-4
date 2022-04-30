@@ -23,15 +23,14 @@ enum {
 };
 
 typedef enum {
-  SONG_FILTER_FOR_PLAYBACK,
-  SONG_FILTER_FOR_SELECTION,
+  SONG_FILTER_FOR_SELECTION = 0,
+  SONG_FILTER_FOR_PLAYBACK = 1,
 } songfilterpb_t;
 
 typedef struct {
   char        *sortselection;
   void        *datafilter [SONG_FILTER_MAX];
   nlistidx_t  numfilter [SONG_FILTER_MAX];
-  bool        forplayback;
   bool        inuse [SONG_FILTER_MAX];
   /* indexed by the sort string; points to the internal index */
   slist_t     *sortList;
@@ -39,7 +38,7 @@ typedef struct {
   nlist_t     *indexList;
 } songfilter_t;
 
-songfilter_t  * songfilterAlloc (songfilterpb_t pbflag);
+songfilter_t  * songfilterAlloc (void);
 void          songfilterFree (songfilter_t *sf);
 void          songfilterReset (songfilter_t *sf);
 void          songfilterSetSort (songfilter_t *sf, char *sortselection);

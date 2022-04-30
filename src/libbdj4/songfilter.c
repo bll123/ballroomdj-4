@@ -46,6 +46,7 @@ songfilteridx_t valueTypeLookup [SONG_FILTER_MAX] = {
   { SONG_FILTER_RATING,     SONG_FILTER_NUM },
   { SONG_FILTER_SEARCH,     SONG_FILTER_STR },
   { SONG_FILTER_STATUS,     SONG_FILTER_NUM },
+  { SONG_FILTER_STATUS_PLAYABLE, SONG_FILTER_NUM },
 };
 
 #define SONG_FILTER_SORT_UNSORTED "UNSORTED"
@@ -57,7 +58,7 @@ static void songfilterMakeSortKey (songfilter_t *sf, slist_t *songselParsed,
 static slist_t *songfilterParseSortKey (songfilter_t *sf);
 
 songfilter_t *
-songfilterAlloc (songfilterpb_t pbflag)
+songfilterAlloc (void)
 {
   songfilter_t    *sf;
 
@@ -72,7 +73,6 @@ songfilterAlloc (songfilterpb_t pbflag)
   }
   sf->indexList = NULL;
   sf->sortList = NULL;
-  sf->forplayback = pbflag;
   songfilterReset (sf);
 
   return sf;
@@ -345,7 +345,7 @@ songfilterFilterSong (songfilter_t *sf, song_t *song)
 
   /* if the filter is for playback, check to make sure the song's status */
   /* is marked as playable */
-  if (sf->forplayback == SONG_FILTER_FOR_PLAYBACK) {
+  if (sf->inuse [SONG_FILTER_STATUS_PLAYABLE]) {
     status_t      *status;
     listidx_t     sstatus;
 
