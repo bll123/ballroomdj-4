@@ -180,13 +180,12 @@ uisongselActivate (uisongsel_t *uisongsel, GtkWidget *parentwin)
       &uisongsel->dancesel, uisongsel);
   /* CONTEXT: filter: all dances are selected */
   uiutilsCreateDanceList (&uisongsel->dancesel, _("All Dances"));
-  gtk_box_pack_end (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackEnd (hbox, widget);
 
   /* CONTEXT: a button that starts the filters (narrowing down song selections) dialog */
   widget = uiutilsCreateButton (_("Filters"), NULL,
       uisongselFilterDialog, uisongsel);
-  gtk_box_pack_end (GTK_BOX (hbox), widget,
-      FALSE, FALSE, 0);
+  uiutilsBoxPackEnd (hbox, widget);
 
   hbox = uiutilsCreateHorizBox ();
   gtk_widget_set_vexpand (hbox, TRUE);
@@ -198,8 +197,7 @@ uisongselActivate (uisongsel_t *uisongsel, GtkWidget *parentwin)
   gtk_widget_set_vexpand (uiw->songselScrollbar, TRUE);
   uiutilsSetCss (uiw->songselScrollbar,
       "scrollbar, scrollbar slider { min-width: 9px; } ");
-  gtk_box_pack_end (GTK_BOX (hbox), uiw->songselScrollbar,
-      FALSE, FALSE, 0);
+  uiutilsBoxPackEnd (hbox, uiw->songselScrollbar);
   g_signal_connect (uiw->songselScrollbar, "change-value",
       G_CALLBACK (uisongselScroll), uisongsel);
 

@@ -128,13 +128,13 @@ uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
     /* CONTEXT: button: request playback of a song external to BDJ4 (not in the database) */
     widget = uiutilsCreateButton (_("Request External"), NULL,
         NULL, uimusicq);
-    gtk_box_pack_end (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+    uiutilsBoxPackEnd (hbox, widget);
 
     widget = uiutilsDropDownCreate (parentwin,
         /* CONTEXT: button: queue a playlist for playback */
         _("Queue Playlist"), uimusicqQueuePlaylistProcessSignal,
         &uimusicq->ui [ci].playlistsel, uimusicq);
-    gtk_box_pack_end (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+    uiutilsBoxPackEnd (hbox, widget);
     uimusicqCreatePlaylistList (uimusicq);
 
     widget = uiutilsDropDownCreate (parentwin,
@@ -142,14 +142,14 @@ uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
         _("Queue Dance"), uimusicqQueueDanceProcessSignal,
         &uimusicq->ui [ci].dancesel, uimusicq);
     uiutilsCreateDanceList (&uimusicq->ui [ci].dancesel, NULL);
-    gtk_box_pack_end (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+    uiutilsBoxPackEnd (hbox, widget);
   }
 
   if (uimusicq->dispselType == DISP_SEL_MUSICQ) {
     /* CONTEXT: button: clear the queue */
     widget = uiutilsCreateButton (_("Clear Queue"), NULL,
         uimusicqClearQueueProcessSignal, uimusicq);
-    gtk_box_pack_end (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+    uiutilsBoxPackEnd (hbox, widget);
   }
 
   /* musicq tree view */

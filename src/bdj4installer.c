@@ -563,11 +563,11 @@ installerActivate (GApplication *app, gpointer udata)
   uiutilsBoxPackStart (vbox, hbox);
 
   widget = uiutilsCreateButton (_("Exit"), NULL, installerExit, installer);
-  gtk_box_pack_end (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackEnd (hbox, widget);
 
   /* CONTEXT: installer: start the installation process */
   widget = uiutilsCreateButton (_("Install"), NULL, installerInstall, installer);
-  gtk_box_pack_end (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackEnd (hbox, widget);
 
   scwidget = uiutilsCreateScrolledWindow ();
   gtk_scrolled_window_set_min_content_height (GTK_SCROLLED_WINDOW (scwidget), 150);

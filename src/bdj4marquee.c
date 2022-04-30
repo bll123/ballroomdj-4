@@ -365,8 +365,7 @@ marqueeActivate (GApplication *app, gpointer userdata)
       "label { color: %s; }",
       bdjoptGetStr (OPT_P_MQ_ACCENT_COL));
   uiutilsSetCss (marquee->countdownTimerLab, tbuff);
-  gtk_box_pack_end (GTK_BOX (hbox), marquee->countdownTimerLab,
-      FALSE, FALSE, 0);
+  uiutilsBoxPackEnd (hbox, marquee->countdownTimerLab);
 
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 5);
   gtk_widget_set_halign (hbox, GTK_ALIGN_FILL);

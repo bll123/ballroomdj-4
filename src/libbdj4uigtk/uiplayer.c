@@ -203,7 +203,7 @@ uiplayerActivate (uiplayer_t *uiplayer)
 
   /* size group A */
   widget = uiutilsCreateLabel ("%");
-  gtk_box_pack_end (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackEnd (hbox, widget);
   gtk_size_group_add_widget (sgA, widget);
 
   /* size group B */
@@ -212,13 +212,12 @@ uiplayerActivate (uiplayer_t *uiplayer)
   gtk_widget_set_size_request (uiplayer->speedDisplayLab, 24, -1);
   gtk_widget_set_halign (uiplayer->speedDisplayLab, GTK_ALIGN_END);
   gtk_label_set_xalign (GTK_LABEL (uiplayer->speedDisplayLab), 1.0);
-  gtk_box_pack_end (GTK_BOX (hbox), uiplayer->speedDisplayLab,
-      FALSE, FALSE, 0);
+  uiutilsBoxPackEnd (hbox, uiplayer->speedDisplayLab);
   gtk_size_group_add_widget (sgB, uiplayer->speedDisplayLab);
 
   /* size group C */
   uiplayer->speedScale = uiutilsCreateScale (70.0, 130.0, 0.1, 1.0, 100.0);
-  gtk_box_pack_end (GTK_BOX (hbox), uiplayer->speedScale, FALSE, FALSE, 0);
+  uiutilsBoxPackEnd (hbox, uiplayer->speedScale);
   gtk_size_group_add_widget (sgC, uiplayer->speedScale);
   g_signal_connect (uiplayer->speedScale, "change-value", G_CALLBACK (uiplayerSpeedProcess), uiplayer);
 
@@ -227,7 +226,7 @@ uiplayerActivate (uiplayer_t *uiplayer)
   widget = uiutilsCreateColonLabel (_("Speed"));
   gtk_widget_set_halign (widget, GTK_ALIGN_END);
   gtk_label_set_xalign (GTK_LABEL (widget), 1.0);
-  gtk_box_pack_end (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackEnd (hbox, widget);
   gtk_size_group_add_widget (sgD, widget);
 
   /* position controls / display */
@@ -262,7 +261,7 @@ uiplayerActivate (uiplayer_t *uiplayer)
 
   /* size group A */
   widget = uiutilsCreateLabel ("");
-  gtk_box_pack_end (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackEnd (hbox, widget);
   gtk_size_group_add_widget (sgA, widget);
 
   /* size group B */
@@ -271,19 +270,18 @@ uiplayerActivate (uiplayer_t *uiplayer)
   gtk_widget_set_size_request (uiplayer->seekDisplayLab, 40, -1);
   gtk_widget_set_halign (uiplayer->seekDisplayLab, GTK_ALIGN_END);
   gtk_size_group_add_widget (sgB, uiplayer->seekDisplayLab);
-  gtk_box_pack_end (GTK_BOX (hbox), uiplayer->seekDisplayLab,
-      FALSE, FALSE, 0);
+  uiutilsBoxPackEnd (hbox, uiplayer->seekDisplayLab);
 
   /* size group C */
   uiplayer->seekScale = uiutilsCreateScale (0.0, 180000.0, 100.0, 1000.0, 0.0);
-  gtk_box_pack_end (GTK_BOX (hbox), uiplayer->seekScale, FALSE, FALSE, 0);
+  uiutilsBoxPackEnd (hbox, uiplayer->seekScale);
   gtk_size_group_add_widget (sgC, uiplayer->seekScale);
   g_signal_connect (uiplayer->seekScale, "change-value", G_CALLBACK (uiplayerSeekProcess), uiplayer);
 
   /* size group D */
   /* CONTEXT: the current position of the song during song playback */
   widget = uiutilsCreateColonLabel (_("Position"));
-  gtk_box_pack_end (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackEnd (hbox, widget);
   gtk_widget_set_halign (widget, GTK_ALIGN_END);
   gtk_label_set_xalign (GTK_LABEL (widget), 1.0);
   gtk_size_group_add_widget (sgD, widget);
@@ -367,7 +365,7 @@ uiplayerActivate (uiplayer_t *uiplayer)
 
   /* size group A */
   widget = uiutilsCreateLabel ("%");
-  gtk_box_pack_end (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackEnd (hbox, widget);
   gtk_size_group_add_widget (sgA, widget);
 
   /* size group B */
@@ -376,20 +374,19 @@ uiplayerActivate (uiplayer_t *uiplayer)
   gtk_widget_set_size_request (uiplayer->volumeDisplayLab, 24, -1);
   gtk_widget_set_halign (uiplayer->volumeDisplayLab, GTK_ALIGN_END);
   gtk_label_set_xalign (GTK_LABEL (uiplayer->volumeDisplayLab), 1.0);
-  gtk_box_pack_end (GTK_BOX (hbox), uiplayer->volumeDisplayLab,
-      FALSE, FALSE, 0);
+  uiutilsBoxPackEnd (hbox, uiplayer->volumeDisplayLab);
   gtk_size_group_add_widget (sgB, uiplayer->volumeDisplayLab);
 
   /* size group C */
   uiplayer->volumeScale = uiutilsCreateScale (0.0, 100.0, 0.1, 1.0, 0.0);
-  gtk_box_pack_end (GTK_BOX (hbox), uiplayer->volumeScale, FALSE, FALSE, 0);
+  uiutilsBoxPackEnd (hbox, uiplayer->volumeScale);
   gtk_size_group_add_widget (sgC, uiplayer->volumeScale);
   g_signal_connect (uiplayer->volumeScale, "change-value", G_CALLBACK (uiplayerVolumeProcess), uiplayer);
 
   /* size group D */
   /* CONTEXT: The current volume of the song */
   widget = uiutilsCreateColonLabel (_("Volume"));
-  gtk_box_pack_end (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+  uiutilsBoxPackEnd (hbox, widget);
   gtk_widget_set_halign (widget, GTK_ALIGN_END);
   gtk_label_set_xalign (GTK_LABEL (widget), 1.0);
   gtk_size_group_add_widget (sgD, widget);

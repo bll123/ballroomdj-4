@@ -374,7 +374,7 @@ pluiActivate (GApplication *app, gpointer userdata)
   uiutilsBoxPackStart (hbox, menubar);
 
   plui->clock = uiutilsCreateLabel ("");
-  gtk_box_pack_end (GTK_BOX (hbox), plui->clock, FALSE, FALSE, 0);
+  uiutilsBoxPackEnd (hbox, plui->clock);
   snprintf (tbuff, sizeof (tbuff),
       "label { color: shade(%s,0.6); }",
       bdjoptGetStr (OPT_P_UI_ACCENT_COL));
