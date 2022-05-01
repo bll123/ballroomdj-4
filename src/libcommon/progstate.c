@@ -21,6 +21,21 @@ enum {
   PS_USERDATA,
 };
 
+/* for debugging */
+static char *progstatetext [] = {
+  [STATE_NOT_RUNNING] = "not_running",
+  [STATE_INITIALIZING] = "initializing",
+  [STATE_LISTENING] = "listening",
+  [STATE_CONNECTING] = "connecting",
+  [STATE_WAIT_HANDSHAKE] = "wait_handshake",
+  [STATE_INITIALIZE_DATA] = "initialize_data",
+  [STATE_RUNNING] = "running",
+  [STATE_STOPPING] = "stopping",
+  [STATE_STOP_WAIT] = "stop_wait",
+  [STATE_CLOSING] = "closing",
+  [STATE_CLOSED] = "closed",
+};
+
 static programstate_t progstateProcessLoop (progstate_t *progstate,
     programstate_t finalState);
 
@@ -172,7 +187,8 @@ progstateProcessLoop (progstate_t *progstate, programstate_t finalState)
     if (progstate->programState != finalState) {
       ++progstate->programState;
     }
-    logMsg (LOG_DBG, LOG_MAIN, "program state: %d", progstate->programState);
+    logMsg (LOG_DBG, LOG_MAIN, "program state: %d %s",
+        progstate->programState, progstatetext [progstate->programState]);
   }
   return progstate->programState;
 }

@@ -257,6 +257,12 @@ procutilStopProcess (procutil_t *process, conn_t *conn,
     bdjmsgroute_t route, bool force)
 {
   logProcBegin (LOG_PROC, "procutilStopProcess");
+
+  if (process == NULL) {
+    logProcEnd (LOG_PROC, "procutilStopProcess", "null");
+    return;
+  }
+
   if (! force) {
     if (! process->started) {
       logProcEnd (LOG_PROC, "procutilStopProcess", "not-started");

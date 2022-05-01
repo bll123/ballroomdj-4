@@ -55,6 +55,7 @@ void      connDisconnect (conn_t *conn, bdjmsgroute_t route);
 
 /**
  * Disconnect from all connections.
+ *
  * @param[in] conn The connection.
  */
 void      connDisconnectAll (conn_t *conn);
@@ -65,15 +66,26 @@ void      connDisconnectAll (conn_t *conn);
  * @return true if all connections are disconnected.  false otherwise.
  */
 bool      connCheckAll (conn_t *conn);
+
 /**
  * Called on receipt of a handshake message to update the connection.
+ *
  * @param[in] conn The connection.
  * @param[in] routefrom The route sending the handshake.
  */
 void      connProcessHandshake (conn_t *conn, bdjmsgroute_t routefrom);
 
 /**
+ * Check for received handshakes w/o outgoing connections and makes
+ * the connection to finish the full handshake protocol.
+ *
+ * @param[in] conn The connection.
+ */
+void      connProcessUnconnected (conn_t *conn);
+
+/**
  * Send a message.
+ *
  * @param[in] conn The connection.
  * @param[in] route The route to send the message to.
  * @param[in] msg The message.
@@ -81,16 +93,6 @@ void      connProcessHandshake (conn_t *conn, bdjmsgroute_t routefrom);
  */
 void      connSendMessage (conn_t *conn, bdjmsgroute_t route,
               bdjmsgmsg_t msg, char *args);
-
-/**
- * Make sure there is an outbound connection active.
- *
- * Generally used upon receipt of a handshake message.
- *
- * @param[in] conn The connection.
- * @param[in] route The incoming route.
- */
-void      connConnectResponse (conn_t *conn, bdjmsgroute_t route);
 
 /**
  * Check and see if a connection is active.

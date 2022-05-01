@@ -213,7 +213,6 @@ mobmqProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
       switch (msg) {
         case MSG_HANDSHAKE: {
           connProcessHandshake (mobmqData->conn, routefrom);
-          connConnectResponse (mobmqData->conn, routefrom);
           break;
         }
         case MSG_EXIT_REQUEST: {
@@ -258,6 +257,8 @@ mobmqProcessing (void *udata)
     }
     return gKillReceived;
   }
+
+  connProcessUnconnected (mobmqData->conn);
 
   websrvProcess (websrv);
 

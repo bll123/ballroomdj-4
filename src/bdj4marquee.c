@@ -456,6 +456,8 @@ marqueeMainLoop (void *tmarquee)
     return cont;
   }
 
+  connProcessUnconnected (marquee->conn);
+
   if (marquee->unMaximize == 1) {
     marqueeSetNotMaximizeFinish (marquee);
     marquee->unMaximize = 0;
@@ -538,7 +540,6 @@ marqueeProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
       switch (msg) {
         case MSG_HANDSHAKE: {
           connProcessHandshake (marquee->conn, routefrom);
-          connConnectResponse (marquee->conn, routefrom);
           break;
         }
         case MSG_EXIT_REQUEST: {

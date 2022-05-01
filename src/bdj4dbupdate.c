@@ -242,7 +242,6 @@ dbupdateProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
       switch (msg) {
         case MSG_HANDSHAKE: {
           connProcessHandshake (dbupdate->conn, routefrom);
-          connConnectResponse (dbupdate->conn, routefrom);
           break;
         }
         case MSG_SOCKET_CLOSE: {
@@ -289,6 +288,8 @@ dbupdateProcessing (void *udata)
     }
     return gKillReceived;
   }
+
+  connProcessUnconnected (dbupdate->conn);
 
   if (dbupdate->state == DB_UPD_INIT) {
     char  dbfname [MAXPATHLEN];

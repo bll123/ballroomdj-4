@@ -89,7 +89,6 @@ sockServer (uint16_t listenPort, int *err)
     logError ("socket:");
 #if _lib_WSAGetLastError
     logMsg (LOG_ERR, LOG_SOCKET, "socket: wsa last-error: %d", WSAGetLastError() );
-    logMsg (LOG_DBG, LOG_SOCKET, "socket: wsa last-error: %d", WSAGetLastError() );
 #endif
     return INVALID_SOCKET;
   }
@@ -293,7 +292,9 @@ sockConnect (uint16_t connPort, int *connerr, Sock_t clsock)
   struct sockaddr_in  raddr;
   int                 rc;
   int                 typ;
-  int                 err;
+  int                 err = 0;
+  bool                existing = false;
+  bool                already = false;
 
 
   if (! sockInitialized) {
@@ -301,7 +302,6 @@ sockConnect (uint16_t connPort, int *connerr, Sock_t clsock)
   }
 
   if (clsock == INVALID_SOCKET) {
-
     typ = SOCK_STREAM;
 #if _define_SOCK_CLOEXEC
     typ |= SOCK_CLOEXEC;
@@ -329,14 +329,28 @@ sockConnect (uint16_t connPort, int *connerr, Sock_t clsock)
       close (clsock);
       return INVALID_SOCKET;
     }
+  } else {
+    struct sockaddr paddr;
+    socklen_t       paddrlen = sizeof (struct sockaddr);
+
+    existing = true;
+    rc = getpeername (clsock, &paddr, &paddrlen);
+    if (rc == 0) {
+      already = true;
+      rc = 0;
+      err = 0;
+    }
   }
 
-  memset (&raddr, 0, sizeof (struct sockaddr_in));
-  raddr.sin_family = AF_INET;
-  raddr.sin_addr.s_addr = inet_addr ("127.0.0.1");
-  raddr.sin_port = htons (connPort);
+  if (! already) {
+    memset (&raddr, 0, sizeof (struct sockaddr_in));
+    raddr.sin_family = AF_INET;
+    raddr.sin_addr.s_addr = inet_addr ("127.0.0.1");
+    raddr.sin_port = htons (connPort);
 
-  rc = connect (clsock, (struct sockaddr *) &raddr, sizeof (struct sockaddr_in));
+    rc = connect (clsock, (struct sockaddr *) &raddr, sizeof (struct sockaddr_in));
+  }
+
   if (rc == 0) {
     *connerr = SOCK_CONN_OK;
   } else {
@@ -345,7 +359,7 @@ sockConnect (uint16_t connPort, int *connerr, Sock_t clsock)
 
   /* the system may finish the connection on its own, in which case   */
   /* the next call to connect returns EISCONN */
-  if (rc < 0 && errno == EISCONN) {
+  if (rc < 0 && (errno == EISCONN || errno == EALREADY)) {
     err = 0;
     *connerr = SOCK_CONN_OK;
     rc = 0;
@@ -372,10 +386,13 @@ sockConnect (uint16_t connPort, int *connerr, Sock_t clsock)
       *connerr = SOCK_CONN_IN_PROGRESS;
       /* leave the socket open */
     } else {
-      logError ("connect");
+      /* conn refused is a normal response */
+      if (err != ECONNREFUSED) {
+        logError ("connect");
 #if _lib_WSAGetLastError
-      logMsg (LOG_DBG, LOG_SOCKET, "connect: wsa last-error:%d", WSAGetLastError());
+        logMsg (LOG_DBG, LOG_SOCKET, "connect: wsa last-error:%d", WSAGetLastError());
 #endif
+      }
       close (clsock);
       clsock = INVALID_SOCKET;
     }

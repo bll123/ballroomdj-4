@@ -308,7 +308,6 @@ playerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
       switch (msg) {
         case MSG_HANDSHAKE: {
           connProcessHandshake (playerData->conn, routefrom);
-          connConnectResponse (playerData->conn, routefrom);
           break;
         }
         case MSG_SOCKET_CLOSE: {
@@ -431,6 +430,8 @@ playerProcessing (void *udata)
     }
     return gKillReceived;
   }
+
+  connProcessUnconnected (playerData->conn);
 
   if (mstimeCheck (&playerData->statusCheck)) {
     /* the playerSendStatus() routine will set the statusCheck var */

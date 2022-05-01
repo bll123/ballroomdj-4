@@ -1648,6 +1648,8 @@ confuiMainLoop (void *tconfui)
     return cont;
   }
 
+  connProcessUnconnected (confui->conn);
+
   for (int i = CONFUI_COMBOBOX_MAX + 1; i < CONFUI_ENTRY_MAX; ++i) {
     uiutilsEntryValidate (&confui->uiitem [i].u.entry);
   }
@@ -1686,7 +1688,6 @@ confuiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
       switch (msg) {
         case MSG_HANDSHAKE: {
           connProcessHandshake (confui->conn, routefrom);
-          connConnectResponse (confui->conn, routefrom);
           break;
         }
         case MSG_SOCKET_CLOSE: {

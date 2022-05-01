@@ -482,9 +482,6 @@ pluiActivate (GApplication *app, gpointer userdata)
       "bdj4_icon", ".png", PATHBLD_MP_IMGDIR);
   osuiSetIcon (imgbuff);
 
-  pluiSetPlaybackQueue (plui, MUSICQ_A);
-  pluiSetExtraQueues (plui);
-
   logProcEnd (LOG_PROC, "pluiActivate", "");
 }
 
@@ -512,6 +509,8 @@ pluiMainLoop (void *tplui)
     }
     return cont;
   }
+
+  connProcessUnconnected (plui->conn);
 
   if (mstimeCheck (&plui->marqueeFontSizeCheck)) {
     char        tbuff [40];
@@ -603,12 +602,19 @@ pluiHandshakeCallback (void *udata, programstate_t programState)
     connConnect (plui->conn, ROUTE_MARQUEE);
   }
 
+  if (connHaveHandshake (plui->conn, ROUTE_MAIN) &&
+      ! connIsConnected (plui->conn, ROUTE_MARQUEE)) {
+    connSendMessage (plui->conn, ROUTE_MAIN, MSG_START_MARQUEE, NULL);
+  }
+
   if (connHaveHandshake (plui->conn, ROUTE_STARTERUI) &&
       connHaveHandshake (plui->conn, ROUTE_MAIN) &&
       connHaveHandshake (plui->conn, ROUTE_PLAYER) &&
       connHaveHandshake (plui->conn, ROUTE_MARQUEE)) {
     pluiSetPlayWhenQueued (plui);
     pluiSetSwitchQueue (plui);
+    pluiSetPlaybackQueue (plui, MUSICQ_A);
+    pluiSetExtraQueues (plui);
     progstateLogTime (plui->progstate, "time-to-start-gui");
     rc = true;
   }
@@ -638,7 +644,6 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
       switch (msg) {
         case MSG_HANDSHAKE: {
           connProcessHandshake (plui->conn, routefrom);
-          connConnectResponse (plui->conn, routefrom);
           break;
         }
         case MSG_SOCKET_CLOSE: {

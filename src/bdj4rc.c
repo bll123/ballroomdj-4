@@ -302,7 +302,6 @@ remctrlProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
       switch (msg) {
         case MSG_HANDSHAKE: {
           connProcessHandshake (remctrlData->conn, routefrom);
-          connConnectResponse (remctrlData->conn, routefrom);
           break;
         }
         case MSG_EXIT_REQUEST: {
@@ -354,6 +353,8 @@ remctrlProcessing (void *udata)
     }
     return gKillReceived;
   }
+
+  connProcessUnconnected (remctrlData->conn);
 
   websrvProcess (websrv);
 

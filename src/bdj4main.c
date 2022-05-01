@@ -86,6 +86,7 @@ static int      mainProcessing (void *udata);
 static bool     mainListeningCallback (void *tmaindata, programstate_t programState);
 static bool     mainConnectingCallback (void *tmaindata, programstate_t programState);
 static bool     mainHandshakeCallback (void *tmaindata, programstate_t programState);
+static void     mainStartMarquee (maindata_t *mainData);
 static bool     mainStoppingCallback (void *tmaindata, programstate_t programState);
 static bool     mainStopWaitCallback (void *tmaindata, programstate_t programState);
 static bool     mainClosingCallback (void *tmaindata, programstate_t programState);
@@ -314,7 +315,6 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
       switch (msg) {
         case MSG_HANDSHAKE: {
           connProcessHandshake (mainData->conn, routefrom);
-          connConnectResponse (mainData->conn, routefrom);
           break;
         }
         case MSG_SOCKET_CLOSE: {
@@ -443,6 +443,10 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           mainSendPlayerStatus (mainData, args);
           break;
         }
+        case MSG_START_MARQUEE: {
+          mainStartMarquee (mainData);
+          break;
+        }
         default: {
           break;
         }
@@ -472,6 +476,13 @@ mainProcessing (void *udata)
     return gKillReceived;
   }
 
+  connProcessUnconnected (mainData->conn);
+
+  if (mainData->processes [ROUTE_MARQUEE] != NULL &&
+      ! connIsConnected (mainData->conn, ROUTE_MARQUEE)) {
+    connConnect (mainData->conn, ROUTE_MARQUEE);
+  }
+
   for (int i = 0; i < MUSICQ_MAX; ++i) {
     if (mainData->musicqChanged [i]) {
       mainSendMusicQueueData (mainData, i);
@@ -497,7 +508,6 @@ static bool
 mainListeningCallback (void *tmaindata, programstate_t programState)
 {
   maindata_t    *mainData = tmaindata;
-  char          *theme;
   int           flags;
 
   logProcBegin (LOG_PROC, "mainListeningCallback");
@@ -533,22 +543,9 @@ mainListeningCallback (void *tmaindata, programstate_t programState)
     }
   }
 
-  /* set the GTK theme for the marquee */
-  theme = bdjoptGetStr (OPT_MP_MQ_THEME);
-  osSetEnv ("GTK_THEME", theme);
-
   if ((mainData->startflags & BDJ4_INIT_NO_START) != BDJ4_INIT_NO_START &&
       (mainData->startflags & BDJ4_INIT_NO_MARQUEE) != BDJ4_INIT_NO_MARQUEE) {
-    char  *targv [2];
-    int   idx = 0;
-
-    if ((mainData->startflags & BDJ4_INIT_HIDE_MARQUEE) == BDJ4_INIT_HIDE_MARQUEE) {
-      targv [idx++] = "--hidemarquee";
-    }
-    targv [idx++] = NULL;
-
-    mainData->processes [ROUTE_MARQUEE] = procutilStartProcess (
-        ROUTE_MARQUEE, "bdj4marquee", flags, targv);
+    mainStartMarquee (mainData);
   }
 
   logProcEnd (LOG_PROC, "mainListeningCallback", "");
@@ -602,9 +599,11 @@ mainConnectingCallback (void *tmaindata, programstate_t programState)
       ++connCount;
     }
   }
-  ++connMax;
-  if (connIsConnected (mainData->conn, ROUTE_MARQUEE)) {
-    ++connCount;
+  if ((mainData->startflags & BDJ4_INIT_NO_MARQUEE) != BDJ4_INIT_NO_MARQUEE) {
+    ++connMax;
+    if (connIsConnected (mainData->conn, ROUTE_MARQUEE)) {
+      ++connCount;
+    }
   }
 
   if (connCount == connMax) {
@@ -629,6 +628,37 @@ mainHandshakeCallback (void *tmaindata, programstate_t programState)
   logProcEnd (LOG_PROC, "mainHandshakeCallback", "");
   return rc;
 }
+
+static void
+mainStartMarquee (maindata_t *mainData)
+{
+  char  *theme;
+  char  *targv [2];
+  int   idx = 0;
+  int           flags;
+
+  if (mainData->processes [ROUTE_MARQUEE] != NULL) {
+    return;
+  }
+
+  /* set the GTK theme for the marquee */
+  theme = bdjoptGetStr (OPT_MP_MQ_THEME);
+  osSetEnv ("GTK_THEME", theme);
+
+  if ((mainData->startflags & BDJ4_INIT_HIDE_MARQUEE) == BDJ4_INIT_HIDE_MARQUEE) {
+    targv [idx++] = "--hidemarquee";
+  }
+  targv [idx++] = NULL;
+
+  flags = PROCUTIL_DETACH;
+  if ((mainData->startflags & BDJ4_INIT_NO_DETACH) == BDJ4_INIT_NO_DETACH) {
+    flags = PROCUTIL_NO_DETACH;
+  }
+
+  mainData->processes [ROUTE_MARQUEE] = procutilStartProcess (
+      ROUTE_MARQUEE, "bdj4marquee", flags, targv);
+}
+
 
 static void
 mainSendMusicQueueData (maindata_t *mainData, int musicqidx)

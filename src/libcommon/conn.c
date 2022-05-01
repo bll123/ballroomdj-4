@@ -97,12 +97,12 @@ connConnect (conn_t *conn, bdjmsgroute_t route)
     return;
   }
 
-  if (socketInvalid (conn [route].sock) &&
-      connports [route] != 0) {
+  if (connports [route] != 0 && ! conn [route].connected) {
     conn [route].sock = sockConnect (connports [route], &connerr, conn [route].sock);
     if (connerr != SOCK_CONN_OK && connerr != SOCK_CONN_IN_PROGRESS) {
       conn [route].sock = INVALID_SOCKET;
     }
+    conn [route].connretries += 1;
   }
 
   if (connerr == SOCK_CONN_OK &&
@@ -110,8 +110,6 @@ connConnect (conn_t *conn, bdjmsgroute_t route)
     sockhSendMessage (conn [route].sock, conn [route].routefrom, route,
         MSG_HANDSHAKE, NULL);
     conn [route].connected = true;
-  } else {
-    conn [route].connretries += 1;
   }
 }
 
@@ -167,6 +165,16 @@ connProcessHandshake (conn_t *conn, bdjmsgroute_t routefrom)
 }
 
 void
+connProcessUnconnected (conn_t *conn)
+{
+  for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
+    if (conn [i].handshake && ! conn [i].connected) {
+      connConnect (conn, i);
+    }
+  }
+}
+
+void
 connSendMessage (conn_t *conn, bdjmsgroute_t route,
     bdjmsgmsg_t msg, char *args)
 {
@@ -190,19 +198,6 @@ connSendMessage (conn_t *conn, bdjmsgroute_t route,
     conn [route].sock = INVALID_SOCKET;
     conn [route].connected = false;
     conn [route].handshake = false;
-  }
-}
-
-void
-connConnectResponse (conn_t *conn, bdjmsgroute_t route)
-{
-  if (conn == NULL) {
-    return;
-  }
-
-  if (connHaveHandshake (conn, route) &&
-      ! connIsConnected (conn, route)) {
-    connConnect (conn, route);
   }
 }
 

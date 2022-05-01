@@ -124,7 +124,7 @@ static void     starterActivate (GApplication *app, gpointer userdata);
 gboolean        starterMainLoop  (void *tstarter);
 static int      starterProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
                     bdjmsgmsg_t msg, char *args, void *udata);
-static void     starterStartMain (startui_t *starter, bdjmsgroute_t routefrom, char *args);
+static void     starterStartMain (startui_t *starter, char *args);
 static void     starterStopMain (startui_t *starter);
 static gboolean starterCloseWin (GtkWidget *window, GdkEvent *event, gpointer userdata);
 static void     starterSigHandler (int sig);
@@ -259,9 +259,6 @@ starterStoppingCallback (void *udata, programstate_t programState)
   gint        x, y;
 
   if (starter->mainstarted > 0) {
-    if (! connIsConnected (starter->conn, ROUTE_MAIN)) {
-      connConnect (starter->conn, ROUTE_MAIN);
-    }
     procutilStopProcess (starter->processes [ROUTE_MAIN],
         starter->conn, ROUTE_MAIN, false);
   }
@@ -525,6 +522,13 @@ starterMainLoop (void *tstarter)
     return cont;
   }
 
+  if (starter->mainstarted &&
+      ! connIsConnected (starter->conn, ROUTE_MAIN)) {
+    connConnect (starter->conn, ROUTE_MAIN);
+  }
+
+  connProcessUnconnected (starter->conn);
+
   switch (starter->startState) {
     case START_STATE_NONE: {
       break;
@@ -727,7 +731,6 @@ starterProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
       switch (msg) {
         case MSG_HANDSHAKE: {
           connProcessHandshake (starter->conn, routefrom);
-          connConnectResponse (starter->conn, routefrom);
           break;
         }
         case MSG_SOCKET_CLOSE: {
@@ -747,7 +750,7 @@ starterProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           return 1;
         }
         case MSG_START_MAIN: {
-          starterStartMain (starter, routefrom, args);
+          starterStartMain (starter, args);
           break;
         }
         case MSG_STOP_MAIN: {
@@ -774,7 +777,7 @@ starterProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 }
 
 static void
-starterStartMain (startui_t *starter, bdjmsgroute_t routefrom, char *args)
+starterStartMain (startui_t *starter, char *args)
 {
   int   flags;
   char  *targv [2];
@@ -783,15 +786,12 @@ starterStartMain (startui_t *starter, bdjmsgroute_t routefrom, char *args)
   if (starter->mainstarted == 0) {
     flags = PROCUTIL_DETACH;
     if (atoi (args)) {
-      targv [targc++] = "--hidemarquee";
+      targv [targc++] = "--nomarquee";
     }
     targv [targc++] = NULL;
 
     starter->processes [ROUTE_MAIN] = procutilStartProcess (
         ROUTE_MAIN, "bdj4main", flags, targv);
-  }
-  if (! connIsConnected (starter->conn, ROUTE_MAIN)) {
-    connConnect (starter->conn, ROUTE_MAIN);
   }
   ++starter->mainstarted;
 }
@@ -801,9 +801,6 @@ static void
 starterStopMain (startui_t *starter)
 {
   if (starter->mainstarted) {
-    if (! connIsConnected (starter->conn, ROUTE_MAIN)) {
-      connConnect (starter->conn, ROUTE_MAIN);
-    }
     --starter->mainstarted;
     if (starter->mainstarted == 0) {
       procutilStopProcess (starter->processes [ROUTE_MAIN],
@@ -1457,11 +1454,11 @@ starterStopAllProcesses (GtkMenuItem *mi, gpointer udata)
   }
 
   /* send the exit request to main */
-  logMsg (LOG_DBG, LOG_IMPORTANT, "send exit request to main");
-  fprintf (stderr, "send exit request to main\n");
   if (! connIsConnected (starter->conn, ROUTE_MAIN)) {
     connConnect (starter->conn, ROUTE_MAIN);
   }
+  logMsg (LOG_DBG, LOG_IMPORTANT, "send exit request to main");
+  fprintf (stderr, "send exit request to main\n");
   connSendMessage (starter->conn, ROUTE_MAIN, MSG_EXIT_REQUEST, NULL);
   logMsg (LOG_DBG, LOG_IMPORTANT, "sleeping");
   fprintf (stderr, "sleeping\n");

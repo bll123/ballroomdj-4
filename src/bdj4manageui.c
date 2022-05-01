@@ -543,6 +543,8 @@ manageMainLoop (void *tmanage)
     return cont;
   }
 
+  connProcessUnconnected (manage->conn);
+
   uiplayerMainLoop (manage->slplayer);
   uiplayerMainLoop (manage->mmplayer);
   uimusicqMainLoop (manage->slmusicq);
@@ -602,12 +604,12 @@ manageHandshakeCallback (void *udata, programstate_t programState)
   if (connHaveHandshake (manage->conn, ROUTE_STARTERUI) &&
       connHaveHandshake (manage->conn, ROUTE_MAIN) &&
       connHaveHandshake (manage->conn, ROUTE_PLAYER)) {
+    connSendMessage (manage->conn, ROUTE_MAIN, MSG_QUEUE_PLAY_ON_ADD, "1");
+    connSendMessage (manage->conn, ROUTE_MAIN, MSG_MUSICQ_SET_PLAYBACK, "1");
     progstateLogTime (manage->progstate, "time-to-start-gui");
     rc = true;
   }
 
-  connSendMessage (manage->conn, ROUTE_MAIN, MSG_QUEUE_PLAY_ON_ADD, "1");
-  connSendMessage (manage->conn, ROUTE_MAIN, MSG_MUSICQ_SET_PLAYBACK, "1");
   logProcEnd (LOG_PROC, "manageHandshakeCallback", "");
   return rc;
 }
@@ -638,7 +640,6 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
       switch (msg) {
         case MSG_HANDSHAKE: {
           connProcessHandshake (manage->conn, routefrom);
-          connConnectResponse (manage->conn, routefrom);
           break;
         }
         case MSG_SOCKET_CLOSE: {

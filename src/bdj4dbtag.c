@@ -161,7 +161,6 @@ dbtagProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
       switch (msg) {
         case MSG_HANDSHAKE: {
           connProcessHandshake (dbtag->conn, routefrom);
-          connConnectResponse (dbtag->conn, routefrom);
           break;
         }
         case MSG_SOCKET_CLOSE: {
@@ -209,6 +208,8 @@ dbtagProcessing (void *udata)
     }
     return gKillReceived;
   }
+
+  connProcessUnconnected (dbtag->conn);
 
   for (int i = 0; i < dbtag->maxThreads; ++i) {
     if (dbtag->threads [i].state == DBTAG_T_STATE_HAVE_DATA) {
