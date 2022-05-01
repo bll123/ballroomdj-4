@@ -21,6 +21,7 @@ typedef struct {
   bool      hasHandle : 1;
 } procutil_t;
 
+void        procutilInitProcesses (procutil_t *processes [ROUTE_MAX]);
 int         procutilExists (procutil_t *process);
 procutil_t  * procutilStart (const char *fn, ssize_t profile, ssize_t loglvl,
     int detachflag, char *aargs []);

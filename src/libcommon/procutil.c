@@ -36,6 +36,14 @@
 static HANDLE procutilGetProcessHandle (pid_t pid, DWORD procaccess);
 #endif
 
+void
+procutilInitProcesses (procutil_t *processes [ROUTE_MAX])
+{
+  for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
+    processes [i] = NULL;
+  }
+}
+
 /* returns 0 if process exists */
 int
 procutilExists (procutil_t *process)

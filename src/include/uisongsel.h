@@ -51,8 +51,11 @@ typedef struct {
 uisongsel_t * uisongselInit (conn_t *conn,
     musicdb_t *musicdb, dispsel_t *dispsel, nlist_t *opts,
     songfilterpb_t pbflag, dispselsel_t dispselType);
+void  uisongselSetDatabase (uisongsel_t *uisongsel, musicdb_t *musicdb);
 void  uisongselFree (uisongsel_t *uisongsel);
 void  uisongselMainLoop (uisongsel_t *uisongsel);
+int   uisongselProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
+    bdjmsgmsg_t msg, char *args, void *udata);
 void  uisongselFilterDanceProcess (uisongsel_t *uisongsel, ssize_t idx);
 void  uisongselDanceSelect (uisongsel_t *uisongsel, ssize_t idx);
 void  uisongselQueueProcess (uisongsel_t *uisongsel, dbidx_t dbidx, musicqidx_t mqidx);

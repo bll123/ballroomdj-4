@@ -31,6 +31,7 @@
 #include "osutils.h"
 #include "osuiutils.h"
 #include "pathbld.h"
+#include "procutil.h"
 #include "progstate.h"
 #include "slist.h"
 #include "sock.h"
@@ -53,6 +54,7 @@ enum {
 
 typedef struct {
   progstate_t     *progstate;
+  procutil_t      *processes [ROUTE_MAX];
   char            *locknm;
   conn_t          *conn;
   sockserver_t    *sockserver;
@@ -158,6 +160,8 @@ main (int argc, char *argv[])
   manage.stopwaitcount = 0;
   manage.dblist = NULL;
   manage.dbhelp = NULL;
+
+  procutilInitProcesses (manage.processes);
 
   osSetStandardSignals (manageSigHandler);
 
@@ -280,6 +284,7 @@ manageStoppingCallback (void *udata, programstate_t programState)
   nlistSetNum (manage->options, PLUI_POSITION_X, x);
   nlistSetNum (manage->options, PLUI_POSITION_Y, y);
 
+  procutilStopAllProcess (manage->processes, manage->conn, false);
   connDisconnectAll (manage->conn);
   gdone = 1;
   logProcEnd (LOG_PROC, "manageStoppingCallback", "");
@@ -315,6 +320,9 @@ manageClosingCallback (void *udata, programstate_t programState)
   if (GTK_IS_WIDGET (manage->window)) {
     gtk_widget_destroy (manage->window);
   }
+
+  procutilStopAllProcess (manage->processes, manage->conn, true);
+  procutilFreeAll (manage->processes);
 
   pathbldMakePath (fn, sizeof (fn),
       "manageui", ".txt", PATHBLD_MP_USEIDX);
@@ -567,6 +575,8 @@ manageConnectingCallback (void *udata, programstate_t programState)
 
   logProcBegin (LOG_PROC, "manageConnectingCallback");
 
+  connProcessUnconnected (manage->conn);
+
   if (! connIsConnected (manage->conn, ROUTE_STARTERUI)) {
     connConnect (manage->conn, ROUTE_STARTERUI);
   }
@@ -593,6 +603,8 @@ manageHandshakeCallback (void *udata, programstate_t programState)
   bool          rc = false;
 
   logProcBegin (LOG_PROC, "manageHandshakeCallback");
+
+  connProcessUnconnected (manage->conn);
 
   if (! connIsConnected (manage->conn, ROUTE_MAIN)) {
     connConnect (manage->conn, ROUTE_MAIN);
@@ -623,16 +635,9 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 
   logProcBegin (LOG_PROC, "manageProcessMsg");
 
-  logMsg (LOG_DBG, LOG_MSGS, "got: from:%ld/%s route:%ld/%s msg:%ld/%s args:%s",
+  logMsg (LOG_DBG, LOG_MSGS, "got: from:%d/%s route:%d/%s msg:%d/%s args:%s",
       routefrom, msgRouteDebugText (routefrom),
       route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
-
-  targs = strdup (args);
-  uiplayerProcessMsg (routefrom, route, msg, args, manage->slplayer);
-  uiplayerProcessMsg (routefrom, route, msg, targs, manage->mmplayer);
-  uimusicqProcessMsg (routefrom, route, msg, args, manage->slmusicq);
-  uimusicqProcessMsg (routefrom, route, msg, targs, manage->mmmusicq);
-  free (targs);
 
   switch (route) {
     case ROUTE_NONE:
@@ -663,7 +668,23 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_DB_FINISH: {
-          connDisconnect (manage->conn, ROUTE_DBUPDATE);
+          procutilCloseProcess (manage->processes [routefrom],
+              manage->conn, ROUTE_DBUPDATE);
+          procutilFreeRoute (manage->processes, routefrom);
+          connDisconnect (manage->conn, routefrom);
+          /* the database has been updated, tell the other processes to */
+          /* reload it, and reload it ourselves */
+          connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_DATABASE_UPDATE, NULL);
+          manage->musicdb = bdj4ReloadDatabase (manage->musicdb);
+          uiplayerSetDatabase (manage->slplayer, manage->musicdb);
+          uiplayerSetDatabase (manage->mmplayer, manage->musicdb);
+          uisongselSetDatabase (manage->slsongsel, manage->musicdb);
+          uisongselSetDatabase (manage->mmsongsel, manage->musicdb);
+          uimusicqSetDatabase (manage->slmusicq, manage->musicdb);
+          uimusicqSetDatabase (manage->mmmusicq, manage->musicdb);
+          /* force a database update message */
+          routefrom = ROUTE_MANAGEUI;
+          msg = MSG_DATABASE_UPDATE;
           break;
         }
         default: {
@@ -676,6 +697,16 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
       break;
     }
   }
+
+  /* due to the db update message, these must be applied afterwards */
+  targs = strdup (args);
+  uiplayerProcessMsg (routefrom, route, msg, args, manage->slplayer);
+  uiplayerProcessMsg (routefrom, route, msg, targs, manage->mmplayer);
+  uisongselProcessMsg (routefrom, route, msg, args, manage->slsongsel);
+  uisongselProcessMsg (routefrom, route, msg, targs, manage->mmsongsel);
+  uimusicqProcessMsg (routefrom, route, msg, args, manage->slmusicq);
+  uimusicqProcessMsg (routefrom, route, msg, targs, manage->mmmusicq);
+  free (targs);
 
   if (gKillReceived) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
@@ -741,8 +772,6 @@ manageDbStart (GtkButton *b, gpointer udata)
 
   pathbldMakePath (tbuff, sizeof (tbuff),
       "bdj4dbupdate", sysvarsGetStr (SV_OS_EXEC_EXT), PATHBLD_MP_EXECDIR);
-  targv [targc++] = tbuff;
-  targv [targc++] = "--bdj4";
 
   nval = uiutilsSpinboxTextGetValue (&manage->dbspinbox);
   switch (nval) {
@@ -770,8 +799,10 @@ manageDbStart (GtkButton *b, gpointer udata)
 
   targv [targc++] = "--progress";
   targv [targc++] = NULL;
+
   uiutilsProgressBarSet (manage->dbpbar, 0.0);
-  osProcessStart (targv, OS_PROC_DETACH, NULL, NULL);
+  manage->processes [ROUTE_DBUPDATE] = procutilStartProcess (
+      ROUTE_DBUPDATE, "bdj4dbupdate", OS_PROC_DETACH, targv);
 }
 
 static void

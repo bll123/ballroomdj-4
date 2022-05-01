@@ -295,6 +295,8 @@ dbtagConnectingCallback (void *tdbtag, programstate_t programState)
 
   logProcBegin (LOG_PROC, "dbtagConnectingCallback");
 
+  connProcessUnconnected (dbtag->conn);
+
   if (! connIsConnected (dbtag->conn, ROUTE_DBUPDATE)) {
     connConnect (dbtag->conn, ROUTE_DBUPDATE);
   }
@@ -314,6 +316,8 @@ dbtagHandshakeCallback (void *tdbtag, programstate_t programState)
   bool          rc = false;
 
   logProcBegin (LOG_PROC, "dbtagHandshakeCallback");
+
+  connProcessUnconnected (dbtag->conn);
 
   if (connHaveHandshake (dbtag->conn, ROUTE_DBUPDATE)) {
     rc = true;

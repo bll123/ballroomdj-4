@@ -274,6 +274,8 @@ mobmqConnectingCallback (void *tmmdata, programstate_t programState)
   mobmqdata_t   *mobmqData = tmmdata;
   bool          rc = false;
 
+  connProcessUnconnected (mobmqData->conn);
+
   if (! connIsConnected (mobmqData->conn, ROUTE_MAIN)) {
     connConnect (mobmqData->conn, ROUTE_MAIN);
   }
@@ -290,6 +292,8 @@ mobmqHandshakeCallback (void *tmmdata, programstate_t programState)
 {
   mobmqdata_t   *mobmqData = tmmdata;
   bool          rc = false;
+
+  connProcessUnconnected (mobmqData->conn);
 
   if (connHaveHandshake (mobmqData->conn, ROUTE_MAIN)) {
     rc = true;

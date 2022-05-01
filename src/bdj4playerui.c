@@ -575,6 +575,8 @@ pluiConnectingCallback (void *udata, programstate_t programState)
     connConnect (plui->conn, ROUTE_MARQUEE);
   }
 
+  connProcessUnconnected (plui->conn);
+
   if (connIsConnected (plui->conn, ROUTE_STARTERUI)) {
     connSendMessage (plui->conn, ROUTE_STARTERUI, MSG_START_MAIN, "0");
     rc = true;
@@ -601,6 +603,8 @@ pluiHandshakeCallback (void *udata, programstate_t programState)
   if (! connIsConnected (plui->conn, ROUTE_MARQUEE)) {
     connConnect (plui->conn, ROUTE_MARQUEE);
   }
+
+  connProcessUnconnected (plui->conn);
 
   if (connHaveHandshake (plui->conn, ROUTE_MAIN) &&
       ! connIsConnected (plui->conn, ROUTE_MARQUEE)) {
@@ -635,9 +639,6 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
       routefrom, msgRouteDebugText (routefrom),
       route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
 
-  uiplayerProcessMsg (routefrom, route, msg, args, plui->uiplayer);
-  uimusicqProcessMsg (routefrom, route, msg, args, plui->uimusicq);
-
   switch (route) {
     case ROUTE_NONE:
     case ROUTE_PLAYERUI: {
@@ -670,6 +671,13 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           pluisetMarqueeFontSizes (plui, args);
           break;
         }
+        case MSG_DATABASE_UPDATE: {
+          plui->musicdb = bdj4ReloadDatabase (plui->musicdb);
+          uiplayerSetDatabase (plui->uiplayer, plui->musicdb);
+          uisongselSetDatabase (plui->uisongsel, plui->musicdb);
+          uimusicqSetDatabase (plui->uimusicq, plui->musicdb);
+          break;
+        }
         default: {
           break;
         }
@@ -680,6 +688,11 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
       break;
     }
   }
+
+  /* due to the db update message, these must be applied afterwards */
+  uiplayerProcessMsg (routefrom, route, msg, args, plui->uiplayer);
+  uisongselProcessMsg (routefrom, route, msg, args, plui->uisongsel);
+  uimusicqProcessMsg (routefrom, route, msg, args, plui->uimusicq);
 
   if (gKillReceived) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");

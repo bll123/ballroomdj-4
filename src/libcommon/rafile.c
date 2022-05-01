@@ -1,6 +1,5 @@
 #include "config.h"
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -127,7 +126,8 @@ raEndBatch (rafile_t *rafile)
 int
 raWrite (rafile_t *rafile, rafileidx_t rrn, char *data)
 {
-  size_t len = strlen (data);
+  size_t  len = strlen (data);
+  bool    isnew = false;
 
   logProcBegin (LOG_PROC, "raWrite");
   /* leave one byte for the terminating null */
@@ -138,6 +138,7 @@ raWrite (rafile_t *rafile, rafileidx_t rrn, char *data)
 
   raLock (rafile);
   if (rrn == RAFILE_NEW) {
+    isnew = true;
     ++rafile->count;
     rrn = rafile->count;
     raWriteHeader (rafile, rafile->version);
@@ -147,10 +148,18 @@ raWrite (rafile_t *rafile, rafileidx_t rrn, char *data)
       raWriteHeader (rafile, rafile->version);
     }
   }
-  fseek (rafile->fh, RRN_TO_OFFSET (rrn), SEEK_SET);
-  fwrite (ranulls, RAFILE_REC_SIZE, 1, rafile->fh);
+  if (! isnew) {
+    fseek (rafile->fh, RRN_TO_OFFSET (rrn), SEEK_SET);
+    fwrite (ranulls, RAFILE_REC_SIZE, 1, rafile->fh);
+  }
   fseek (rafile->fh, RRN_TO_OFFSET (rrn), SEEK_SET);
   fwrite (data, len, 1, rafile->fh);
+  if (isnew) {
+    /* write one null byte to the next record so */
+    /* that the last record has a size and is readable */
+    fseek (rafile->fh, RRN_TO_OFFSET (rrn + 1), SEEK_SET);
+    fwrite (ranulls, 1, 1, rafile->fh);
+  }
   fflush (rafile->fh);
   raUnlock (rafile);
   logProcEnd (LOG_PROC, "raWrite", "");

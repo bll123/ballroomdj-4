@@ -162,7 +162,7 @@ main (int argc, char *argv[])
   mstimestart (&playerData.playTimeStart);
   playerData.playTimePlayed = 0;
   playerData.playRequest = queueAlloc (free);
-  mstimeset (&playerData.statusCheck, 0);
+  mstimeset (&playerData.statusCheck, 3600000);
   playerData.pli = NULL;
   playerData.prepQueue = queueAlloc (playerPrepQueueFree);
   playerData.prepRequestQueue = queueAlloc (playerPrepQueueFree);
@@ -400,6 +400,10 @@ playerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_SONG_PLAY: {
           playerSongPlay (playerData, args);
+          break;
+        }
+        case MSG_MAIN_READY: {
+          mstimeset (&playerData->statusCheck, 0);
           break;
         }
         default: {
@@ -667,6 +671,8 @@ playerConnectingCallback (void *tpdata, programstate_t programState)
   playerdata_t  *playerData = tpdata;
   bool          rc = false;
 
+  connProcessUnconnected (playerData->conn);
+
   if (! connIsConnected (playerData->conn, ROUTE_MAIN)) {
     connConnect (playerData->conn, ROUTE_MAIN);
   }
@@ -683,6 +689,8 @@ playerHandshakeCallback (void *tpdata, programstate_t programState)
 {
   playerdata_t  *playerData = tpdata;
   bool          rc = false;
+
+  connProcessUnconnected (playerData->conn);
 
   if (connHaveHandshake (playerData->conn, ROUTE_MAIN)) {
     rc = true;

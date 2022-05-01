@@ -197,9 +197,7 @@ main (int argc, char *argv[])
   starter.mainstarted = 0;
   starter.stopwaitcount = 0;
 
-  for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
-    starter.processes [i] = NULL;
-  }
+  procutilInitProcesses (starter.processes);
 
   osSetStandardSignals (starterSigHandler);
 
@@ -721,7 +719,7 @@ starterProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 
   logProcBegin (LOG_PROC, "starterProcessMsg");
 
-  logMsg (LOG_DBG, LOG_MSGS, "got: from:%ld/%s route:%ld/%s msg:%ld/%s args:%s",
+  logMsg (LOG_DBG, LOG_MSGS, "got: from:%d/%s route:%d/%s msg:%d/%s args:%s",
       routefrom, msgRouteDebugText (routefrom),
       route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
 
@@ -755,6 +753,11 @@ starterProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_STOP_MAIN: {
           starterStopMain (starter);
+          break;
+        }
+        case MSG_DATABASE_UPDATE: {
+          connSendMessage (starter->conn, ROUTE_MAIN, msg, NULL);
+          connSendMessage (starter->conn, ROUTE_PLAYERUI, msg, NULL);
           break;
         }
         default: {

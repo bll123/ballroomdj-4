@@ -1666,6 +1666,8 @@ confuiHandshakeCallback (void *udata, programstate_t programState)
 {
   configui_t   *confui = udata;
 
+  connProcessUnconnected (confui->conn);
+
   progstateLogTime (confui->progstate, "time-to-start-gui");
   return true;
 }

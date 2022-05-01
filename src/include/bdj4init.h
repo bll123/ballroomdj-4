@@ -23,6 +23,7 @@ enum {
 
 int bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
     char *tag, bdjmsgroute_t route, int flags);
+musicdb_t * bdj4ReloadDatabase (musicdb_t *musicdb);
 void bdj4shutdown (bdjmsgroute_t route, musicdb_t *musicdb);
 
 #endif /* INC_BDJ4INIT_H */

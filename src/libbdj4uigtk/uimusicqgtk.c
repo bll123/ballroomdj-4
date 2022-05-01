@@ -332,11 +332,17 @@ uimusicqProcessMusicQueueData (uimusicq_t *uimusicq, char * args)
     return;
   }
 
+  if (uimusicq->dispselType == DISP_SEL_SONGLIST) {
+    logProcEnd (LOG_PROC, "uimusicqProcessMusicQueueData", "song-list");
+    return;
+  }
+
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree));
   if (model == NULL) {
     uimusicqProcessMusicQueueDataNew (uimusicq, args);
   } else {
-    uimusicqProcessMusicQueueDataUpdate (uimusicq, args);
+    uimusicqProcessMusicQueueDataNew (uimusicq, args);
+//    uimusicqProcessMusicQueueDataUpdate (uimusicq, args);
   }
   logProcEnd (LOG_PROC, "uimusicqProcessMusicQueueData", "");
 }

@@ -58,6 +58,12 @@ uimusicqInit (conn_t *conn, musicdb_t *musicdb,
 }
 
 void
+uimusicqSetDatabase (uimusicq_t *uimusicq, musicdb_t *musicdb)
+{
+  uimusicq->musicdb = musicdb;
+}
+
+void
 uimusicqFree (uimusicq_t *uimusicq)
 {
   logProcBegin (LOG_PROC, "uimusicqFree");

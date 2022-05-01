@@ -79,6 +79,12 @@ uisongselInit (conn_t *conn, musicdb_t *musicdb,
 }
 
 void
+uisongselSetDatabase (uisongsel_t *uisongsel, musicdb_t *musicdb)
+{
+  uisongsel->musicdb = musicdb;
+}
+
+void
 uisongselFree (uisongsel_t *uisongsel)
 {
   logProcBegin (LOG_PROC, "uisongselFree");
@@ -111,6 +117,37 @@ void
 uisongselMainLoop (uisongsel_t *uisongsel)
 {
   return;
+}
+
+int
+uisongselProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
+    bdjmsgmsg_t msg, char *args, void *udata)
+{
+  uisongsel_t    *uisongsel = udata;
+
+
+  switch (route) {
+    case ROUTE_NONE:
+    case ROUTE_MANAGEUI:
+    case ROUTE_PLAYERUI: {
+      switch (msg) {
+        case MSG_DATABASE_UPDATE: {
+          /* re-filter the display */
+          uisongselFilterDanceProcess (uisongsel, uisongsel->danceIdx);
+          break;
+        }
+        default: {
+          break;
+        }
+      }
+      break;
+    }
+    default: {
+      break;
+    }
+  }
+
+  return 0;
 }
 
 void

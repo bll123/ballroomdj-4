@@ -91,6 +91,12 @@ uiplayerInit (progstate_t *progstate, conn_t *conn, musicdb_t *musicdb)
 }
 
 void
+uiplayerSetDatabase (uiplayer_t *uiplayer, musicdb_t *musicdb)
+{
+  uiplayer->musicdb = musicdb;
+}
+
+void
 uiplayerFree (uiplayer_t *uiplayer)
 {
   logProcBegin (LOG_PROC, "uiplayerFree");

@@ -221,6 +221,24 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
   return flags;
 }
 
+musicdb_t *
+bdj4ReloadDatabase (musicdb_t *musicdb)
+{
+  mstime_t    dbmt;
+  char        tbuff [MAXPATHLEN];
+
+  mstimestart (&dbmt);
+  if (musicdb != NULL) {
+    dbClose (musicdb);
+  }
+  logMsg (LOG_DBG, LOG_IMPORTANT, "Database read: started");
+  pathbldMakePath (tbuff, sizeof (tbuff),
+      MUSICDB_FNAME, MUSICDB_EXT, PATHBLD_MP_NONE);
+  musicdb = dbOpen (tbuff);
+  logMsg (LOG_DBG, LOG_IMPORTANT, "Database read: %ld items in %ld ms", dbCount(musicdb), mstimeend (&dbmt));
+  return musicdb;
+}
+
 void
 bdj4shutdown (bdjmsgroute_t route, musicdb_t *musicdb)
 {

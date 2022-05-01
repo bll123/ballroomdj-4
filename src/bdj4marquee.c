@@ -481,6 +481,8 @@ marqueeConnectingCallback (void *udata, programstate_t programState)
 
   logProcBegin (LOG_PROC, "marqueeConnectingCallback");
 
+  connProcessUnconnected (marquee->conn);
+
   if (! connIsConnected (marquee->conn, ROUTE_MAIN)) {
     connConnect (marquee->conn, ROUTE_MAIN);
   }
@@ -504,6 +506,8 @@ marqueeHandshakeCallback (void *udata, programstate_t programState)
   bool        rc = false;
 
   logProcBegin (LOG_PROC, "marqueeHandshakeCallback");
+
+  connProcessUnconnected (marquee->conn);
 
   if (connHaveHandshake (marquee->conn, ROUTE_MAIN) &&
       connHaveHandshake (marquee->conn, ROUTE_PLAYERUI)) {

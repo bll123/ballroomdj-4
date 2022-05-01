@@ -66,6 +66,7 @@ typedef struct {
 uimusicq_t  * uimusicqInit (conn_t *conn,
     musicdb_t *musicdb, dispsel_t *dispsel,
     int uimusicqflags, dispselsel_t dispselType);
+void  uimusicqSetDatabase (uimusicq_t *uimusicq, musicdb_t *musicdb);
 void  uimusicqFree (uimusicq_t *uimusicq);
 void  uimusicqMainLoop (uimusicq_t *uimuiscq);
 int   uimusicqProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,

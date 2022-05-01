@@ -28,6 +28,8 @@ typedef enum {
   MSG_EXIT_REQUEST,         // standard shutdown
   MSG_HANDSHAKE,
   MSG_SOCKET_CLOSE,
+  MSG_DATABASE_UPDATE,      // send by manageui to starterui,
+                            // then sent by starterui to playerui, main.
 
   /* to main */
   MSG_GET_STATUS,           // get main/player status
@@ -66,6 +68,7 @@ typedef enum {
   MSG_SONG_PLAY,            // args: song fname
   MSG_SONG_PREP,            // args: song fname, duration, song-start
                             //    song-end, volume-adjustment-perc, gap
+  MSG_MAIN_READY,           // the main process is ready to receive msgs
 
   /* from player */
   MSG_PLAY_PAUSEATEND_STATE,// args: 0/1
@@ -79,7 +82,7 @@ typedef enum {
   MSG_PLAYER_STATE,         // args: player state
   MSG_PLAYER_STATUS_DATA,   // response to get_status; to main
 
-  /* to/from ui */
+  /* to/from manageui/playerui */
   MSG_MUSIC_QUEUE_DATA,
   MSG_QUEUE_SWITCH,         // args: queue number
   MSG_SONG_SELECT,          // args: queue number, position

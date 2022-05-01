@@ -171,9 +171,7 @@ main (int argc, char *argv[])
   progstateSetCallback (dbupdate.progstate, STATE_CLOSING,
       dbupdateClosingCallback, &dbupdate);
 
-  for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
-    dbupdate.processes [i] = NULL;
-  }
+  procutilInitProcesses (dbupdate.processes);
 
   osSetStandardSignals (dbupdateSigHandler);
 
@@ -517,6 +515,8 @@ dbupdateConnectingCallback (void *tdbupdate, programstate_t programState)
 
   logProcBegin (LOG_PROC, "dbupdateConnectingCallback");
 
+  connProcessUnconnected (dbupdate->conn);
+
   if ((dbupdate->startflags & BDJ4_INIT_NO_START) != BDJ4_INIT_NO_START) {
     if (! connIsConnected (dbupdate->conn, ROUTE_DBTAG)) {
       connConnect (dbupdate->conn, ROUTE_DBTAG);
@@ -552,6 +552,8 @@ dbupdateHandshakeCallback (void *tdbupdate, programstate_t programState)
   bool          rc = false;
 
   logProcBegin (LOG_PROC, "dbupdateHandshakeCallback");
+
+  connProcessUnconnected (dbupdate->conn);
 
   if (connHaveHandshake (dbupdate->conn, ROUTE_DBTAG)) {
     ++c;

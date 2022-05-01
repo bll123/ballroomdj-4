@@ -19,7 +19,8 @@ typedef struct conn {
   Sock_t        sock;
   uint16_t      port;
   bdjmsgroute_t routefrom;
-  int           connretries;
+  bool          handshakesent : 1;
+  bool          handshakerecv : 1;
   bool          handshake : 1;
   bool          connected : 1;
 } conn_t;
@@ -59,9 +60,10 @@ connInit (bdjmsgroute_t routefrom)
     conn [i].sock = INVALID_SOCKET;
     conn [i].port = 0;
     conn [i].routefrom = routefrom;
-    conn [i].connected = false;
-    conn [i].connretries = 0;
+    conn [i].handshakesent = false;
+    conn [i].handshakerecv = false;
     conn [i].handshake = false;
+    conn [i].connected = false;
   }
 
   return conn;
@@ -74,8 +76,9 @@ connFree (conn_t *conn)
     for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
       conn [i].sock = INVALID_SOCKET;
       conn [i].port = 0;
-      conn [i].connretries = 0;
       conn [i].connected = false;
+      conn [i].handshakesent = false;
+      conn [i].handshakerecv = false;
       conn [i].handshake = false;
     }
     free (conn);
@@ -102,13 +105,16 @@ connConnect (conn_t *conn, bdjmsgroute_t route)
     if (connerr != SOCK_CONN_OK && connerr != SOCK_CONN_IN_PROGRESS) {
       conn [route].sock = INVALID_SOCKET;
     }
-    conn [route].connretries += 1;
   }
 
   if (connerr == SOCK_CONN_OK &&
       ! socketInvalid (conn [route].sock)) {
     sockhSendMessage (conn [route].sock, conn [route].routefrom, route,
         MSG_HANDSHAKE, NULL);
+    conn [route].handshakesent = true;
+    if (conn [route].handshakerecv) {
+      conn [route].handshake = true;
+    }
     conn [route].connected = true;
   }
 }
@@ -120,7 +126,7 @@ connDisconnect (conn_t *conn, bdjmsgroute_t route)
     return;
   }
 
-  if (! socketInvalid (conn [route].sock)) {
+  if (conn [route].connected) {
     sockhSendMessage (conn [route].sock, conn [route].routefrom, route,
         MSG_SOCKET_CLOSE, NULL);
     sockClose (conn [route].sock);
@@ -128,6 +134,8 @@ connDisconnect (conn_t *conn, bdjmsgroute_t route)
 
   conn [route].sock = INVALID_SOCKET;
   conn [route].connected = false;
+  conn [route].handshakesent = false;
+  conn [route].handshakerecv = false;
   conn [route].handshake = false;
 }
 
@@ -155,20 +163,23 @@ connCheckAll (conn_t *conn)
 }
 
 void
-connProcessHandshake (conn_t *conn, bdjmsgroute_t routefrom)
+connProcessHandshake (conn_t *conn, bdjmsgroute_t route)
 {
-  if (routefrom >= ROUTE_MAX) {
+  if (route >= ROUTE_MAX) {
     return;
   }
 
-  conn [routefrom].handshake = true;
+  conn [route].handshakerecv = true;
+  if (conn [route].handshakesent) {
+    conn [route].handshake = true;
+  }
 }
 
 void
 connProcessUnconnected (conn_t *conn)
 {
   for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
-    if (conn [i].handshake && ! conn [i].connected) {
+    if (conn [i].handshakerecv && ! conn [i].connected) {
       connConnect (conn, i);
     }
   }
@@ -187,6 +198,16 @@ connSendMessage (conn_t *conn, bdjmsgroute_t route,
     return;
   }
   if (socketInvalid (conn [route].sock)) {
+    /* generally, this means the connection hasn't been made yet. */
+    logMsg (LOG_DBG, LOG_IMPORTANT, "msg not sent: bad socket from:%d/%s route:%d/%s msg:%d/%s args:%s",
+        conn [route].routefrom, msgRouteDebugText (conn [route].routefrom),
+        route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
+    return;
+  }
+  if (! conn [route].connected) {
+    logMsg (LOG_DBG, LOG_IMPORTANT, "msg not sent: not connected from:%d/%s route:%d/%s msg:%d/%s args:%s",
+        conn [route].routefrom, msgRouteDebugText (conn [route].routefrom),
+        route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
     return;
   }
 
@@ -197,6 +218,8 @@ connSendMessage (conn_t *conn, bdjmsgroute_t route,
     sockClose (conn [route].sock);
     conn [route].sock = INVALID_SOCKET;
     conn [route].connected = false;
+    conn [route].handshakesent = false;
+    conn [route].handshakerecv = false;
     conn [route].handshake = false;
   }
 }

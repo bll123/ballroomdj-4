@@ -378,6 +378,8 @@ remctrlConnectingCallback (void *udata, programstate_t programState)
     connConnect (remctrlData->conn, ROUTE_PLAYER);
   }
 
+  connProcessUnconnected (remctrlData->conn);
+
   if (connIsConnected (remctrlData->conn, ROUTE_MAIN) &&
       connIsConnected (remctrlData->conn, ROUTE_PLAYER)) {
     rc = true;
@@ -391,6 +393,8 @@ remctrlHandshakeCallback (void *udata, programstate_t programState)
 {
   remctrldata_t   *remctrlData = udata;
   bool            rc = false;
+
+  connProcessUnconnected (remctrlData->conn);
 
   if (connHaveHandshake (remctrlData->conn, ROUTE_MAIN) &&
       connHaveHandshake (remctrlData->conn, ROUTE_PLAYER)) {
