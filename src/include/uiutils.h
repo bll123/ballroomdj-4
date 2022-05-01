@@ -107,9 +107,9 @@ void uiutilsNotebookIDAdd (uiutilsnbtabid_t *nbtabid, int id);
 int uiutilsNotebookIDGet (uiutilsnbtabid_t *nbtabid, int idx);
 
 /* uigtklabel.c */
-GtkWidget * uiutilsCreateLabel (char *label);
-GtkWidget * uiutilsCreateColonLabel (char *label);
-void        uiutilsLabelSetText (GtkWidget *label, char *text);
+GtkWidget * uiutilsCreateLabel (const char *label);
+GtkWidget * uiutilsCreateColonLabel (const char *label);
+void        uiutilsLabelSetText (GtkWidget *label, const char *text);
 
 /* uigtkbutton.c */
 GtkWidget * uiutilsCreateButton (char *title, char *imagenm,
@@ -238,6 +238,5 @@ void  uiutilsGetForegroundColor (GtkWidget *widget, char *buff, size_t sz);
 void  uiutilsWidgetSetAllMargins (GtkWidget *widget, int margin);
 
 GtkWidget * uiutilsCreateCheckButton (const char *txt, int value);
-
 
 #endif /* INC_UIUTILS_H */

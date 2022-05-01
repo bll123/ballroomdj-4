@@ -15,7 +15,7 @@
 #include "uiutils.h"
 
 GtkWidget *
-uiutilsCreateLabel (char *label)
+uiutilsCreateLabel (const char *label)
 {
   GtkWidget *widget;
 
@@ -32,7 +32,7 @@ uiutilsCreateLabel (char *label)
 }
 
 GtkWidget *
-uiutilsCreateColonLabel (char *label)
+uiutilsCreateColonLabel (const char *label)
 {
   GtkWidget *widget;
   char      tbuff [100];
@@ -50,7 +50,7 @@ uiutilsCreateColonLabel (char *label)
 }
 
 void
-uiutilsLabelSetText (GtkWidget *widget, char *text)
+uiutilsLabelSetText (GtkWidget *widget, const char *text)
 {
   gtk_label_set_text (GTK_LABEL (widget), text);
 }

@@ -37,6 +37,7 @@ foreach {key data} $Dance {
     if { $k eq "count" } { continue }
     if { $k eq "ann" } { set k ANNOUNCE }
     if { $v eq "rhythm" } { set v latin }
+    if { $v eq "smooth" } { set v standard }
     puts $fh [string toupper $k]
     puts $fh "..$v"
   }

@@ -30,6 +30,7 @@ add_library (libbdj4 SHARED
   status.c
   tagdef.c
   templateutil.c
+  validate.c
   webclient.c
 )
 target_include_directories (libbdj4

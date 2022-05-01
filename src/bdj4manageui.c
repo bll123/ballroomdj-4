@@ -76,6 +76,7 @@ typedef struct {
   GtkWidget       *vbox;
   GtkWidget       *notebook;
   GtkWidget       *dbpbar;
+  GtkWidget       *statusMsg;
   /* song list ui major elements */
   uiplayer_t      *slplayer;
   uimusicq_t      *slmusicq;
@@ -365,6 +366,7 @@ static void
 manageActivate (GApplication *app, gpointer userdata)
 {
   manageui_t          *manage = userdata;
+  GtkWidget           *menubar;
   GtkWidget           *tabLabel;
   GtkWidget           *widget;
   GtkWidget           *hbox;
@@ -387,6 +389,21 @@ manageActivate (GApplication *app, gpointer userdata)
   vbox = uiutilsCreateVertBox ();
   uiutilsWidgetSetAllMargins (vbox, 4);
   gtk_container_add (GTK_CONTAINER (manage->window), vbox);
+
+  hbox = uiutilsCreateHorizBox ();
+  gtk_widget_set_margin_top (hbox, 8);
+  uiutilsBoxPackStart (vbox, hbox);
+
+  widget = uiutilsCreateLabel ("");
+  uiutilsBoxPackEnd (hbox, widget);
+  snprintf (tbuff, sizeof (tbuff),
+      "label { color: %s; }",
+      bdjoptGetStr (OPT_P_UI_ACCENT_COL));
+  uiutilsSetCss (widget, tbuff);
+  manage->statusMsg = widget;
+
+  menubar = gtk_menu_bar_new ();
+  uiutilsBoxPackStart (hbox, menubar);
 
   manage->mainnotebook = uiutilsCreateNotebook ();
   gtk_notebook_set_tab_pos (GTK_NOTEBOOK (manage->mainnotebook), GTK_POS_LEFT);
