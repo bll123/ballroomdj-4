@@ -123,6 +123,7 @@ void uiutilsMenuClear (uiutilsmenu_t *menu);
 GtkWidget * uiutilsCreateLabel (const char *label);
 GtkWidget * uiutilsCreateColonLabel (const char *label);
 void        uiutilsLabelSetText (GtkWidget *label, const char *text);
+void        uiutilsLabelSetEllipsizeOn (GtkWidget *widget);
 
 /* uigtkbutton.c */
 GtkWidget * uiutilsCreateButton (char *title, char *imagenm,

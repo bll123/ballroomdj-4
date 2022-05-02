@@ -25,13 +25,13 @@ macro (macUpdateRPath name)
       POST_BUILD
       COMMAND
         ${CMAKE_INSTALL_NAME_TOOL} -change
-            "@rpath/libbdj4common.dylib"
-            "@executable_path/libbdj4common.dylib"
+            "@rpath/libbdj4.dylib"
+            "@executable_path/libbdj4.dylib"
             $<TARGET_FILE:${name}>
       COMMAND
         ${CMAKE_INSTALL_NAME_TOOL} -change
-            "@rpath/libbdj4.dylib"
-            "@executable_path/libbdj4.dylib"
+            "@rpath/libbdj4common.dylib"
+            "@executable_path/libbdj4common.dylib"
             $<TARGET_FILE:${name}>
       COMMAND
         ${CMAKE_INSTALL_NAME_TOOL} -change
@@ -40,13 +40,23 @@ macro (macUpdateRPath name)
             $<TARGET_FILE:${name}>
       COMMAND
         ${CMAKE_INSTALL_NAME_TOOL} -change
+            "@rpath/libbdj4ui.dylib"
+            "@executable_path/libbdj4ui.dylib"
+            $<TARGET_FILE:${name}>
+      COMMAND
+        ${CMAKE_INSTALL_NAME_TOOL} -change
+            "@rpath/libbdj4uigtk.dylib"
+            "@executable_path/libbdj4uigtk.dylib"
+            $<TARGET_FILE:${name}>
+      COMMAND
+        ${CMAKE_INSTALL_NAME_TOOL} -change
             "@rpath/libbdj4vol.dylib"
             "@executable_path/libbdj4vol.dylib"
             $<TARGET_FILE:${name}>
       COMMAND
         ${CMAKE_INSTALL_NAME_TOOL} -change
-            "@rpath/libbdj4ui.dylib"
-            "@executable_path/libbdj4ui.dylib"
+            "@rpath/libuigtk3.dylib"
+            "@executable_path/libuigtk3.dylib"
             $<TARGET_FILE:${name}>
       VERBATIM
   )

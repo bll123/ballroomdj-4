@@ -387,8 +387,6 @@ addWinSockLibrary (bdj4configui)
 add_subdirectory (check)
 
 install (TARGETS
-  libbdj4common libbdj4
-  libuigtk3
   bdj4 bdj4g
   bdj4se bdj4installer bdj4updater
   bdj4locatebdj3 bdj4info bdj4tags
@@ -400,19 +398,22 @@ install (TARGETS
 
 if (APPLE)
   macUpdateRPath (bdj4)
-  macUpdateRPath (bdj4dbupdate)
   macUpdateRPath (bdj4g)
-  macUpdateRPath (bdj4info)
   macUpdateRPath (bdj4installer)
-  macUpdateRPath (bdj4locatebdj3)
-  macUpdateRPath (bdj4main)
-  macUpdateRPath (bdj4marquee)
-  macUpdateRPath (bdj4mobmq)
-  macUpdateRPath (bdj4player)
-  macUpdateRPath (bdj4playerui)
-  macUpdateRPath (bdj4rc)
-  macUpdateRPath (bdj4tags)
   macUpdateRPath (bdj4updater)
-  macUpdateRPath (check_all)
+  macUpdateRPath (bdj4locatebdj3)
+  macUpdateRPath (bdj4info)
+  macUpdateRPath (bdj4tags)
+  macUpdateRPath (bdj4dbupdate)
+  macUpdateRPath (bdj4dbtag)
+  macUpdateRPath (bdj4main)
+  macUpdateRPath (bdj4player)
+  macUpdateRPath (bdj4mobmq)
+  macUpdateRPath (bdj4rc)
+  macUpdateRPath (bdj4marquee)
+  macUpdateRPath (bdj4starterui)
+  macUpdateRPath (bdj4playerui)
+  macUpdateRPath (bdj4manageui)
+  macUpdateRPath (bdj4configui)
 endif()
 

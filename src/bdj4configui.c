@@ -3475,7 +3475,6 @@ confuiSwitchTable (GtkNotebook *nb, GtkWidget *page, guint pagenum, gpointer uda
     logProcEnd (LOG_PROC, "confuiSwitchTable", "bad-pagenum");
     return;
   }
-fprintf (stderr, "confui: switch: %d %d\n", pagenum, newid);
 
   if (confui->tablecurr == newid) {
     logProcEnd (LOG_PROC, "confuiSwitchTable", "same-id");

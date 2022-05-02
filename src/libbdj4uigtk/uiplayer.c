@@ -192,16 +192,21 @@ uiplayerActivate (uiplayer_t *uiplayer)
   gtk_widget_set_margin_start (widget, 0);
   uiutilsBoxPackStart (hbox, widget);
 
-  uiplayer->artistLab = uiutilsCreateLabel ("");
-  gtk_widget_set_margin_start (uiplayer->artistLab, 0);
-  uiutilsBoxPackStart (hbox, uiplayer->artistLab);
+  widget = uiutilsCreateLabel ("");
+  gtk_widget_set_margin_start (widget, 0);
+  uiutilsLabelSetEllipsizeOn (widget);
+  uiutilsBoxPackStart (hbox, widget);
+  uiplayer->artistLab = widget;
 
   widget = uiutilsCreateLabel (" : ");
   gtk_widget_set_margin_start (widget, 0);
   uiutilsBoxPackStart (hbox, widget);
 
-  uiplayer->titleLab = uiutilsCreateLabel ("");
-  uiutilsBoxPackStart (hbox, uiplayer->titleLab);
+  widget = uiutilsCreateLabel ("");
+  gtk_widget_set_margin_start (widget, 0);
+  uiutilsLabelSetEllipsizeOn (widget);
+  uiutilsBoxPackStart (hbox, widget);
+  uiplayer->titleLab = widget;
 
   widget = uiutilsCreateLabel ("");
   gtk_widget_set_hexpand (widget, TRUE);

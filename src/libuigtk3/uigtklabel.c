@@ -52,3 +52,9 @@ uiutilsLabelSetText (GtkWidget *widget, const char *text)
 {
   gtk_label_set_text (GTK_LABEL (widget), text);
 }
+
+void
+uiutilsLabelSetEllipsizeOn (GtkWidget *widget)
+{
+  gtk_label_set_ellipsize (GTK_LABEL (widget), PANGO_ELLIPSIZE_END);
+}

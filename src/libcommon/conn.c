@@ -94,7 +94,7 @@ connPort (conn_t *conn, bdjmsgroute_t route)
 void
 connConnect (conn_t *conn, bdjmsgroute_t route)
 {
-  int         connerr;
+  int         connerr = SOCK_CONN_OK;
 
   if (route >= ROUTE_MAX) {
     return;

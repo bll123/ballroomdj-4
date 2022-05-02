@@ -1050,10 +1050,12 @@ starterGetProfiles (startui_t *starter)
         dflist = datafileGetList (df);
         pname = nlistGetStr (dflist, OPT_P_PROFILENAME);
       }
-      len = strlen (pname);
-      max = len > max ? len : max;
-      nlistSetStr (starter->dispProfileList, count, pname);
-      nlistSetNum (starter->profileIdxMap, count, i);
+      if (pname != NULL) {
+        len = strlen (pname);
+        max = len > max ? len : max;
+        nlistSetStr (starter->dispProfileList, count, pname);
+        nlistSetNum (starter->profileIdxMap, count, i);
+      }
       if (i != starter->currprofile) {
         datafileFree (df);
       }

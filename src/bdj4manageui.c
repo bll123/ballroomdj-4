@@ -1046,6 +1046,10 @@ manageSonglistMenu (manageui_t *manage)
     menuitem = gtk_menu_item_new_with_label (_("Mix"));
     gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
 
+    /* CONTEXT: menu selection: song list: actions menu: truncate the song list */
+    menuitem = gtk_menu_item_new_with_label (_("Truncate"));
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
+
     menuitem = uiutilsMenuAddItem (manage->menubar,
         /* CONTEXT: menu selection: export actions for song list */
         &manage->slmenu, _("Export"));
