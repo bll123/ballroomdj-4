@@ -727,7 +727,12 @@ mainSendMusicQueueData (maindata_t *mainData, int musicqidx)
   }
 
   connSendMessage (mainData->conn, ROUTE_PLAYERUI, MSG_MUSIC_QUEUE_DATA, sbuff);
-  connSendMessage (mainData->conn, ROUTE_MANAGEUI, MSG_MUSIC_QUEUE_DATA, sbuff);
+
+  /* if the playerui is active, don't send the musicq data to the manageui. */
+  /* the data would overwrite the song list. should not be running both. */
+  if (! connHaveHandshake (mainData->conn, ROUTE_PLAYERUI)) {
+    connSendMessage (mainData->conn, ROUTE_MANAGEUI, MSG_MUSIC_QUEUE_DATA, sbuff);
+  }
   logProcEnd (LOG_PROC, "mainSendMusicQueueData", "");
 }
 

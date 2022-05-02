@@ -10,6 +10,7 @@ add_library (libuigtk3 SHARED
   uigtkentry.c
   uigtklabel.c
   uigtklink.c
+  uigtkmenu.c
   uigtknotebook.c
   uigtkpbar.c
   uigtkscale.c

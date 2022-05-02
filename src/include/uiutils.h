@@ -10,6 +10,18 @@
 #include "tmutil.h"
 
 enum {
+  UIUTILS_BASE_MARGIN_SZ = 2,
+  UI_MAIN_LOOP_TIMER  = 25,
+  UIUTILS_MENU_MAX = 5,
+};
+
+typedef struct {
+  int             menucount;
+  GtkWidget       *menuitem [UIUTILS_MENU_MAX];
+  bool            initialized : 1;
+} uiutilsmenu_t;
+
+enum {
   FILTER_DISP_GENRE,
   FILTER_DISP_DANCELEVEL,
   FILTER_DISP_STATUS,
@@ -90,11 +102,6 @@ typedef struct {
   const char  *mimetype;
 } uiutilsselect_t;
 
-enum {
-  UIUTILS_BASE_MARGIN_SZ = 2,
-  UI_MAIN_LOOP_TIMER  = 25,
-};
-
 extern datafilekey_t filterdisplaydfkeys [];
 extern int uiutilsBaseMarginSz;
 
@@ -105,6 +112,12 @@ uiutilsnbtabid_t * uiutilsNotebookIDInit (void);
 void uiutilsNotebookIDFree (uiutilsnbtabid_t *nbtabid);
 void uiutilsNotebookIDAdd (uiutilsnbtabid_t *nbtabid, int id);
 int uiutilsNotebookIDGet (uiutilsnbtabid_t *nbtabid, int idx);
+
+/* uigtkmenu.c */
+void uiutilsMenuInit (uiutilsmenu_t *menu);
+GtkWidget * uiutilsMenuAddItem (GtkWidget *menubar, uiutilsmenu_t *menu, const char *txt);
+void uiutilsMenuDisplay (uiutilsmenu_t *menu);
+void uiutilsMenuClear (uiutilsmenu_t *menu);
 
 /* uigtklabel.c */
 GtkWidget * uiutilsCreateLabel (const char *label);

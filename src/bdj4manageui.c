@@ -45,6 +45,17 @@
 #include "uiutils.h"
 
 enum {
+  MANAGE_TAB_OTHER,
+  MANAGE_TAB_MAIN_SL,
+  MANAGE_TAB_MM,
+  MANAGE_TAB_PLMGMT,
+  MANAGE_TAB_EDITSEQ,
+  MANAGE_TAB_FILEMGR,
+  MANAGE_TAB_SONGLIST,
+  MANAGE_TAB_SONGEDIT,
+};
+
+enum {
   MANAGE_DB_CHECK_NEW,
   MANAGE_DB_REORGANIZE,
   MANAGE_DB_UPD_FROM_TAGS,
@@ -52,7 +63,9 @@ enum {
   MANAGE_DB_REBUILD,
 };
 
-typedef struct {
+typedef struct manage manageui_t;
+
+typedef struct manage {
   progstate_t     *progstate;
   procutil_t      *processes [ROUTE_MAX];
   char            *locknm;
@@ -67,14 +80,25 @@ typedef struct {
   uiutilsspinbox_t  dbspinbox;
   uiutilstextbox_t  *dbhelpdisp;
   uiutilstextbox_t  *dbstatus;
-  nlist_t         *dblist;
-  nlist_t         *dbhelp;
+  nlist_t           *dblist;
+  nlist_t           *dbhelp;
+  /* notebook tab handling */
+  int               sllasttab;
+  int               mmlasttab;
+  uiutilsmenu_t     *currmenu;
+  uiutilsmenu_t     slmenu;
+  uiutilsmenu_t     songeditmenu;
+  uiutilsnbtabid_t  *mainnbtabid;
+  uiutilsnbtabid_t  *slnbtabid;
+  uiutilsnbtabid_t  *mmnbtabid;
   /* gtk stuff */
   GtkApplication  *app;
+  GtkWidget       *menubar;
   GtkWidget       *window;
   GtkWidget       *mainnotebook;
+  GtkWidget       *slnotebook;
+  GtkWidget       *mmnotebook;
   GtkWidget       *vbox;
-  GtkWidget       *notebook;
   GtkWidget       *dbpbar;
   GtkWidget       *statusMsg;
   /* song list ui major elements */
@@ -90,6 +114,9 @@ typedef struct {
   /* options */
   datafile_t      *optiondf;
   nlist_t         *options;
+  /* flags */
+  bool            insonglist : 1;
+  bool            inmm : 1;
 } manageui_t;
 
 /* re-use the plui enums so that the songsel filter enums can also be used */
@@ -122,6 +149,10 @@ static void     manageDbChg (GtkSpinButton *sb, gpointer udata);
 static void     manageDbStart (GtkButton *b, gpointer udata);
 static void     manageDbProgressMsg (manageui_t *manage, char *args);
 static void     manageDbStatusMsg (manageui_t *manage, char *args);
+static void     manageSwitchPage (GtkNotebook *nb, GtkWidget *page,
+    guint pagenum, gpointer udata);
+static void     manageSonglistMenu (manageui_t *manage);
+static void     manageSongEditMenu (manageui_t *manage);
 
 
 static int gKillReceived = 0;
@@ -140,7 +171,6 @@ main (int argc, char *argv[])
 
 
   manage.mainnotebook = NULL;
-  manage.notebook = NULL;
   manage.progstate = progstateInit ("manageui");
   progstateSetCallback (manage.progstate, STATE_CONNECTING,
       manageConnectingCallback, &manage);
@@ -161,6 +191,14 @@ main (int argc, char *argv[])
   manage.stopwaitcount = 0;
   manage.dblist = NULL;
   manage.dbhelp = NULL;
+  manage.currmenu = NULL;
+  manage.sllasttab = MANAGE_TAB_SONGLIST;
+  manage.mmlasttab = MANAGE_TAB_OTHER;
+  uiutilsMenuInit (&manage.slmenu);
+  uiutilsMenuInit (&manage.songeditmenu);
+  manage.mainnbtabid = uiutilsNotebookIDInit ();
+  manage.slnbtabid = uiutilsNotebookIDInit ();
+  manage.mmnbtabid = uiutilsNotebookIDInit ();
 
   procutilInitProcesses (manage.processes);
 
@@ -332,6 +370,15 @@ manageClosingCallback (void *udata, programstate_t programState)
   bdj4shutdown (ROUTE_MANAGEUI, manage->musicdb);
   dispselFree (manage->dispsel);
 
+  if (manage->mainnbtabid != NULL) {
+    uiutilsNotebookIDFree (manage->mainnbtabid);
+  }
+  if (manage->slnbtabid != NULL) {
+    uiutilsNotebookIDFree (manage->slnbtabid);
+  }
+  if (manage->mmnbtabid != NULL) {
+    uiutilsNotebookIDFree (manage->mmnbtabid);
+  }
   if (manage->options != datafileGetList (manage->optiondf)) {
     nlistFree (manage->options);
   }
@@ -367,6 +414,7 @@ manageActivate (GApplication *app, gpointer userdata)
 {
   manageui_t          *manage = userdata;
   GtkWidget           *menubar;
+  GtkWidget           *notebook;
   GtkWidget           *tabLabel;
   GtkWidget           *widget;
   GtkWidget           *hbox;
@@ -404,6 +452,7 @@ manageActivate (GApplication *app, gpointer userdata)
 
   menubar = gtk_menu_bar_new ();
   uiutilsBoxPackStart (hbox, menubar);
+  manage->menubar = menubar;
 
   manage->mainnotebook = uiutilsCreateNotebook ();
   gtk_notebook_set_tab_pos (GTK_NOTEBOOK (manage->mainnotebook), GTK_POS_LEFT);
@@ -415,64 +464,80 @@ manageActivate (GApplication *app, gpointer userdata)
 
   tabLabel = uiutilsCreateLabel (_("Edit Song Lists"));
   uiutilsNotebookAppendPage (manage->mainnotebook, vbox, tabLabel);
+  uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_SONGLIST);
 
   /* song list editor: player */
   widget = uiplayerActivate (manage->slplayer);
   gtk_widget_set_hexpand (widget, TRUE);
   uiutilsBoxPackStart (vbox, widget);
 
-  manage->notebook = uiutilsCreateNotebook ();
-  gtk_box_pack_start (GTK_BOX (vbox), manage->notebook, TRUE, TRUE, 0);
+  notebook = uiutilsCreateNotebook ();
+  gtk_box_pack_start (GTK_BOX (vbox), notebook, TRUE, TRUE, 0);
+  manage->slnotebook = notebook;
 
   /* song list editor: music queue tab */
   widget = uimusicqActivate (manage->slmusicq, manage->window, MUSICQ_A);
   /* CONTEXT: name of song list editor tab */
   tabLabel = uiutilsCreateLabel (_("Song List"));
-  uiutilsNotebookAppendPage (manage->notebook, widget, tabLabel);
+  uiutilsNotebookAppendPage (notebook, widget, tabLabel);
+  uiutilsNotebookIDAdd (manage->slnbtabid, MANAGE_TAB_SONGLIST);
 
   /* song list editor: song selection tab*/
   widget = uisongselActivate (manage->slsongsel, manage->window);
   /* CONTEXT: name of song selection tab */
   tabLabel = uiutilsCreateLabel (_("Song Selection"));
-  uiutilsNotebookAppendPage (manage->notebook, widget, tabLabel);
+  uiutilsNotebookAppendPage (notebook, widget, tabLabel);
+  uiutilsNotebookIDAdd (manage->slnbtabid, MANAGE_TAB_OTHER);
 
   /* song list editor song editor tab */
   widget = uisongeditActivate (manage->slsongedit, manage->window);
   /* CONTEXT: name of song editor tab */
   tabLabel = uiutilsCreateLabel (_("Song Editor"));
-  uiutilsNotebookAppendPage (manage->notebook, widget, tabLabel);
+  uiutilsNotebookAppendPage (notebook, widget, tabLabel);
+  uiutilsNotebookIDAdd (manage->slnbtabid, MANAGE_TAB_SONGEDIT);
 
   /* music manager */
   vbox = uiutilsCreateVertBox ();
   uiutilsWidgetSetAllMargins (vbox, 4);
   tabLabel = uiutilsCreateLabel (_("Music Manager"));
   uiutilsNotebookAppendPage (manage->mainnotebook, vbox, tabLabel);
+  uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_MM);
 
   /* music manager: player */
   widget = uiplayerActivate (manage->mmplayer);
   gtk_widget_set_hexpand (widget, TRUE);
   uiutilsBoxPackStart (vbox, widget);
 
-  manage->notebook = uiutilsCreateNotebook ();
-  gtk_box_pack_start (GTK_BOX (vbox), manage->notebook, TRUE, TRUE, 0);
+  g_signal_connect (notebook, "switch-page",
+      G_CALLBACK (manageSwitchPage), manage);
+
+  notebook = uiutilsCreateNotebook ();
+  gtk_box_pack_start (GTK_BOX (vbox), notebook, TRUE, TRUE, 0);
+  manage->mmnotebook = notebook;
 
   /* music manager: song selection tab*/
   widget = uisongselActivate (manage->mmsongsel, manage->window);
   /* CONTEXT: name of song selection tab */
   tabLabel = uiutilsCreateLabel (_("Music Manager"));
-  uiutilsNotebookAppendPage (manage->notebook, widget, tabLabel);
+  uiutilsNotebookAppendPage (notebook, widget, tabLabel);
+  uiutilsNotebookIDAdd (manage->mmnbtabid, MANAGE_TAB_OTHER);
 
   /* music manager: song editor tab */
   widget = uisongeditActivate (manage->mmsongedit, manage->window);
   /* CONTEXT: name of song editor tab */
   tabLabel = uiutilsCreateLabel (_("Song Editor"));
-  uiutilsNotebookAppendPage (manage->notebook, widget, tabLabel);
+  uiutilsNotebookAppendPage (notebook, widget, tabLabel);
+  uiutilsNotebookIDAdd (manage->mmnbtabid, MANAGE_TAB_SONGEDIT);
+
+  g_signal_connect (notebook, "switch-page",
+      G_CALLBACK (manageSwitchPage), manage);
 
   /* update database */
   vbox = uiutilsCreateVertBox ();
   uiutilsWidgetSetAllMargins (vbox, 4);
   tabLabel = uiutilsCreateLabel (_("Update Database"));
   uiutilsNotebookAppendPage (manage->mainnotebook, vbox, tabLabel);
+  uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_OTHER);
 
   tb = uiutilsTextBoxCreate ();
   uiutilsTextBoxSetReadonly (tb);
@@ -510,22 +575,28 @@ manageActivate (GApplication *app, gpointer userdata)
   uiutilsWidgetSetAllMargins (vbox, 4);
   tabLabel = uiutilsCreateLabel (_("Playlist Management"));
   uiutilsNotebookAppendPage (manage->mainnotebook, vbox, tabLabel);
+  uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_PLMGMT);
 
   /* edit sequences */
   vbox = uiutilsCreateVertBox ();
   uiutilsWidgetSetAllMargins (vbox, 4);
   tabLabel = uiutilsCreateLabel (_("Edit Sequences"));
   uiutilsNotebookAppendPage (manage->mainnotebook, vbox, tabLabel);
+  uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_EDITSEQ);
 
   /* file manager */
   vbox = uiutilsCreateVertBox ();
   uiutilsWidgetSetAllMargins (vbox, 4);
   tabLabel = uiutilsCreateLabel (_("File Manager"));
   uiutilsNotebookAppendPage (manage->mainnotebook, vbox, tabLabel);
+  uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_FILEMGR);
 
   x = nlistGetNum (manage->options, PLUI_SIZE_X);
   y = nlistGetNum (manage->options, PLUI_SIZE_Y);
   gtk_window_set_default_size (GTK_WINDOW (manage->window), x, y);
+
+  g_signal_connect (manage->mainnotebook, "switch-page",
+      G_CALLBACK (manageSwitchPage), manage);
 
   gtk_widget_show_all (manage->window);
 
@@ -842,5 +913,212 @@ manageDbStatusMsg (manageui_t *manage, char *args)
   uiutilsTextBoxAppendStr (manage->dbstatus, args);
   uiutilsTextBoxAppendStr (manage->dbstatus, "\n");
   uiutilsTextBoxScrollToEnd (manage->dbstatus);
+}
+
+static void
+manageSwitchPage (GtkNotebook *nb, GtkWidget *page, guint pagenum,
+    gpointer udata)
+{
+  manageui_t  *manage = udata;
+  int         id;
+  bool        mainnb = false;
+  bool        slnb = false;
+  bool        mmnb = false;
+  uiutilsnbtabid_t  *nbtabid = NULL;
+
+  if (nb == GTK_NOTEBOOK (manage->mainnotebook)) {
+    nbtabid = manage->mainnbtabid;
+    mainnb = true;
+  }
+  if (nb == GTK_NOTEBOOK (manage->slnotebook)) {
+    nbtabid = manage->slnbtabid;
+    slnb = true;
+  }
+  if (nb == GTK_NOTEBOOK (manage->mmnotebook)) {
+    nbtabid = manage->mmnbtabid;
+    mmnb = true;
+  }
+  if (nbtabid == NULL) {
+    return;
+  }
+
+  id = uiutilsNotebookIDGet (nbtabid, pagenum);
+
+  if (manage->currmenu != NULL) {
+    bool clear = true;
+
+    /* handle startup issue */
+    if (manage->insonglist && mmnb) {
+      clear = false;
+    }
+    if (clear) {
+      uiutilsMenuClear (manage->currmenu);
+    }
+  }
+
+  if (slnb) {
+    manage->sllasttab = id;
+  }
+  if (mmnb) {
+    manage->mmlasttab = id;
+  }
+  if (mainnb) {
+    manage->insonglist = true;
+    manage->inmm = true;
+  }
+  if (mainnb && id == MANAGE_TAB_SONGLIST) {
+    slnb = true;
+    id = manage->sllasttab;
+  }
+  if (mainnb && id == MANAGE_TAB_MM) {
+    mmnb = true;
+    id = manage->mmlasttab;
+  }
+
+  switch (id) {
+    case MANAGE_TAB_MAIN_SL: {
+      manage->insonglist = true;
+      break;
+    }
+    case MANAGE_TAB_SONGLIST: {
+      manageSonglistMenu (manage);
+      break;
+    }
+    case MANAGE_TAB_MM: {
+      manage->inmm = true;
+      break;
+    }
+    case MANAGE_TAB_SONGEDIT: {
+      manageSongEditMenu (manage);
+      break;
+    }
+    case MANAGE_TAB_PLMGMT: {
+      break;
+    }
+    case MANAGE_TAB_EDITSEQ: {
+      break;
+    }
+    case MANAGE_TAB_FILEMGR: {
+      break;
+    }
+    case MANAGE_TAB_OTHER: {
+      /* do nothing */
+      break;
+    }
+  }
+}
+
+static void
+manageSonglistMenu (manageui_t *manage)
+{
+  char      tbuff [200];
+  GtkWidget *menu;
+  GtkWidget *menuitem;
+
+  if (! manage->slmenu.initialized) {
+    menuitem = uiutilsMenuAddItem (manage->menubar,
+        /* CONTEXT: menu selection: song list: edit menu */
+        &manage->slmenu, _("Edit"));
+
+    menu = gtk_menu_new ();
+    gtk_menu_item_set_submenu (GTK_MENU_ITEM (menuitem), menu);
+
+    /* CONTEXT: menu selection: song list: edit menu: load */
+    menuitem = gtk_menu_item_new_with_label (_("Load"));
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
+
+    /* CONTEXT: menu selection: song list: edit menu: create copy */
+    menuitem = gtk_menu_item_new_with_label (_("Create Copy"));
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
+
+    /* CONTEXT: menu selection: song list: edit menu: start new song list */
+    menuitem = gtk_menu_item_new_with_label (_("Start New Song List"));
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
+
+    menuitem = uiutilsMenuAddItem (manage->menubar,
+        /* CONTEXT: menu selection: actions for song list */
+        &manage->slmenu,_("Actions"));
+
+    menu = gtk_menu_new ();
+    gtk_menu_item_set_submenu (GTK_MENU_ITEM (menuitem), menu);
+
+    /* CONTEXT: menu selection: song list: actions menu: rearrange the songs and create a new mix */
+    menuitem = gtk_menu_item_new_with_label (_("Mix"));
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
+
+    menuitem = uiutilsMenuAddItem (manage->menubar,
+        /* CONTEXT: menu selection: export actions for song list */
+        &manage->slmenu, _("Export"));
+
+    menu = gtk_menu_new ();
+    gtk_menu_item_set_submenu (GTK_MENU_ITEM (menuitem), menu);
+
+    /* CONTEXT: menu selection: song list: export: export as m3u */
+    menuitem = gtk_menu_item_new_with_label (_("Export as M3U Playlist"));
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
+
+    /* CONTEXT: menu selection: song list: export: export as m3u8 */
+    menuitem = gtk_menu_item_new_with_label (_("Export as M3U8 Playlist"));
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
+
+    /* CONTEXT: menu selection: song list: export: export for ballroomdj */
+    snprintf (tbuff, sizeof (tbuff), _("Export for %s"), BDJ4_NAME);
+    menuitem = gtk_menu_item_new_with_label (tbuff);
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
+
+    menuitem = uiutilsMenuAddItem (manage->menubar,
+        /* CONTEXT: menu selection: import actions for song list */
+        &manage->slmenu, _("Import"));
+
+    menu = gtk_menu_new ();
+    gtk_menu_item_set_submenu (GTK_MENU_ITEM (menuitem), menu);
+
+    /* CONTEXT: menu selection: song list: import: import m3u */
+    menuitem = gtk_menu_item_new_with_label (_("Import M3U"));
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
+
+    /* CONTEXT: menu selection: song list: import: import from ballroomdj */
+    snprintf (tbuff, sizeof (tbuff), _("Import from %s"), BDJ4_NAME);
+    menuitem = gtk_menu_item_new_with_label (tbuff);
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
+
+    manage->slmenu.initialized = true;
+  }
+
+  uiutilsMenuDisplay (&manage->slmenu);
+  manage->currmenu = &manage->slmenu;
+}
+
+static void
+manageSongEditMenu (manageui_t *manage)
+{
+  GtkWidget *menu;
+  GtkWidget *menuitem;
+
+  if (! manage->songeditmenu.initialized) {
+    menuitem = uiutilsMenuAddItem (manage->menubar,
+        /* CONTEXT: menu selection: actions for song editor */
+        &manage->songeditmenu,_("Actions"));
+
+    menu = gtk_menu_new ();
+    gtk_menu_item_set_submenu (GTK_MENU_ITEM (menuitem), menu);
+
+    /* CONTEXT: menu selection: song edit: edit all */
+    menuitem = gtk_menu_item_new_with_label (_("Edit All"));
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
+
+    /* CONTEXT: menu selection: song edit: apply edit all */
+    menuitem = gtk_menu_item_new_with_label (_("Apply Edit All"));
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
+
+    /* CONTEXT: menu selection: song edit: cancel edit all */
+    menuitem = gtk_menu_item_new_with_label (_("Cancel Edit All"));
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
+
+    manage->songeditmenu.initialized = true;
+  }
+
+  uiutilsMenuDisplay (&manage->songeditmenu);
+  manage->currmenu = &manage->songeditmenu;
 }
 

@@ -82,7 +82,9 @@ START_TEST(rafile_write)
   raClose (rafile);
   rc = stat (RAFN, &statbuf);
   ck_assert_int_eq (rc, 0);
-  ck_assert_int_eq (statbuf.st_size, RRN_TO_OFFSET(4L));
+  /* rawrite writes a single byte at the end so that the last record */
+  /* has a size */
+  ck_assert_int_eq (statbuf.st_size, RRN_TO_OFFSET(4L) + 1);
 }
 END_TEST
 

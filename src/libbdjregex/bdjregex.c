@@ -47,10 +47,13 @@ regexFree (bdjregex_t *rx)
 char *
 regexEscape (const char *str)
 {
+  char    *p;
+
   if (str == NULL) {
     return NULL;
   }
-  return g_regex_escape_string (str, -1);
+  p = g_regex_escape_string (str, -1);
+  return p;
 }
 
 bool
@@ -76,3 +79,8 @@ regexGet (bdjregex_t *rx, const char *str)
   return val;
 }
 
+void
+regexGetFree (char **val)
+{
+  g_strfreev (val);
+}

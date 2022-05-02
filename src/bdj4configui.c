@@ -2551,8 +2551,11 @@ confuiLoadHTMLList (configui_t *confui)
   slistStartIterator (list, &iteridx);
   count = 0;
   while ((key = slistIterateKey (list, &iteridx)) != NULL) {
+    char    *tstr;
+
     data = slistGetStr (list, key);
-    if (strcmp (data, bdjoptGetStr (OPT_G_REMCONTROLHTML)) == 0) {
+    tstr = bdjoptGetStr (OPT_G_REMCONTROLHTML);
+    if (tstr != NULL && strcmp (data, bdjoptGetStr (OPT_G_REMCONTROLHTML)) == 0) {
       confui->uiitem [CONFUI_SPINBOX_RC_HTML_TEMPLATE].listidx = count;
     }
     nlistSetStr (tlist, count, key);
@@ -2805,7 +2808,9 @@ confuiOrgPathSelect (GtkTreeView *tv, GtkTreePath *path,
 
   logProcBegin (LOG_PROC, "confuiOrgPathSelect");
   sval = confuiComboboxSelect (confui, path, CONFUI_COMBOBOX_AO_PATHFMT);
-  bdjoptSetStr (OPT_G_AO_PATHFMT, sval);
+  if (sval != NULL && *sval) {
+    bdjoptSetStr (OPT_G_AO_PATHFMT, sval);
+  }
   confuiUpdateOrgExamples (confui, sval);
   logProcEnd (LOG_PROC, "confuiOrgPathSelect", "");
 }
@@ -3077,6 +3082,10 @@ confuiUpdateOrgExamples (configui_t *confui, char *pathfmt)
   org_t     *org;
   GtkWidget *widget;
 
+  if (pathfmt == NULL) {
+    return;
+  }
+
   logProcBegin (LOG_PROC, "confuiUpdateOrgExamples");
   org = orgAlloc (pathfmt);
   assert (org != NULL);
@@ -3107,6 +3116,10 @@ confuiUpdateOrgExample (configui_t *config, org_t *org, char *data, GtkWidget *w
   song_t    *song;
   char      *tdata;
   char      *disp;
+
+  if (data == NULL || org == NULL) {
+    return;
+  }
 
   logProcBegin (LOG_PROC, "confuiUpdateOrgExample");
   tdata = strdup (data);
@@ -3462,6 +3475,7 @@ confuiSwitchTable (GtkNotebook *nb, GtkWidget *page, guint pagenum, gpointer uda
     logProcEnd (LOG_PROC, "confuiSwitchTable", "bad-pagenum");
     return;
   }
+fprintf (stderr, "confui: switch: %d %d\n", pagenum, newid);
 
   if (confui->tablecurr == newid) {
     logProcEnd (LOG_PROC, "confuiSwitchTable", "same-id");

@@ -90,6 +90,10 @@ orgAlloc (char *orgpath)
   bool          isnumeric;
 
 
+  if (orgpath == NULL) {
+    return NULL;
+  }
+
   org = malloc (sizeof (org_t));
   assert (org != NULL);
   org->havealbumartist = false;
@@ -217,7 +221,7 @@ orgFree (org_t *org)
       regexFree (org->rx);
     }
     if (org->rxdata != NULL) {
-      free (org->rxdata);
+      regexGetFree (org->rxdata);
     }
     if (org->orgparsed != NULL) {
       slistFree (org->orgparsed);
@@ -250,7 +254,7 @@ orgGetFromPath (org_t *org, const char *path, tagdefkey_t tagkey)
     int   c = 0;
 
     if (org->rxdata != NULL) {
-      free (org->rxdata);
+      regexGetFree (org->rxdata);
     }
     strlcpy (org->cachepath, path, sizeof (org->cachepath));
     org->rxdata = regexGet (org->rx, path);

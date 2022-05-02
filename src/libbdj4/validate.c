@@ -52,6 +52,14 @@ validate (const char *str, int valflags)
       valstr = _("%s: Spaces are not allowed");
     }
   }
+  if ((valflags & VAL_NO_SLASHES) == VAL_NO_SLASHES) {
+    if (str != NULL &&
+      (strstr (str, "/") != NULL ||
+      strstr (str, "\\") != NULL)) {
+      /* CONTEXT: validation: slashes ( / and \\ ) are not allowed  */
+      valstr = _("%s: Slashes are not allowed");
+    }
+  }
   if ((valflags & VAL_NUMERIC) == VAL_NUMERIC) {
     rx = regexInit (valregex [VAL_REGEX_NUMERIC].regex);
     if (str != NULL && ! regexMatch (rx, str)) {
