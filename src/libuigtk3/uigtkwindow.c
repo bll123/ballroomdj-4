@@ -15,7 +15,7 @@
 #include "uiutils.h"
 
 GtkWidget *
-uiutilsCreateMainWindow (GApplication *app, char *title, char *imagenm,
+uiutilsCreateMainWindow (char *title, char *imagenm,
     void *deletecb, void *udata)
 {
   GtkWidget *window;
@@ -23,13 +23,14 @@ uiutilsCreateMainWindow (GApplication *app, char *title, char *imagenm,
 
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   assert (window != NULL);
-  gtk_window_set_application (GTK_WINDOW (window), GTK_APPLICATION (app));
   gtk_window_set_type_hint (GTK_WINDOW (window), GDK_WINDOW_TYPE_HINT_NORMAL);
   if (imagenm != NULL) {
     gtk_window_set_default_icon_from_file (imagenm, &gerr);
   }
   gtk_window_set_title (GTK_WINDOW (window), title);
-  g_signal_connect (window, "delete-event", G_CALLBACK (deletecb), udata);
+  if (deletecb != NULL) {
+    g_signal_connect (window, "delete-event", G_CALLBACK (deletecb), udata);
+  }
 
   return window;
 }

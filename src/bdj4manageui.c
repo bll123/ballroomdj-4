@@ -92,7 +92,6 @@ typedef struct manage {
   uiutilsnbtabid_t  *slnbtabid;
   uiutilsnbtabid_t  *mmnbtabid;
   /* gtk stuff */
-  GtkApplication  *app;
   GtkWidget       *menubar;
   GtkWidget       *window;
   GtkWidget       *mainnotebook;
@@ -138,7 +137,7 @@ static bool     manageHandshakeCallback (void *udata, programstate_t programStat
 static bool     manageStoppingCallback (void *udata, programstate_t programState);
 static bool     manageStopWaitCallback (void *udata, programstate_t programState);
 static bool     manageClosingCallback (void *udata, programstate_t programState);
-static void     manageActivate (GApplication *app, gpointer userdata);
+static void     manageBuildUI (manageui_t *manage);
 gboolean        manageMainLoop  (void *tmanage);
 static int      manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
                     bdjmsgmsg_t msg, char *args, void *udata);
@@ -292,8 +291,8 @@ main (int argc, char *argv[])
 
   g_timeout_add (UI_MAIN_LOOP_TIMER, manageMainLoop, &manage);
 
-  status = uiutilsCreateApplication (0, NULL, "manageui",
-      &manage.app, manageActivate, &manage);
+  manageBuildUI (&manage);
+  gtk_main ();
 
   while (progstateShutdownProcess (manage.progstate) != STATE_CLOSED) {
     mssleep (50);
@@ -410,9 +409,8 @@ manageClosingCallback (void *udata, programstate_t programState)
 }
 
 static void
-manageActivate (GApplication *app, gpointer userdata)
+manageBuildUI (manageui_t *manage)
 {
-  manageui_t          *manage = userdata;
   GtkWidget           *menubar;
   GtkWidget           *notebook;
   GtkWidget           *tabLabel;
@@ -424,14 +422,14 @@ manageActivate (GApplication *app, gpointer userdata)
   char                tbuff [MAXPATHLEN];
   gint                x, y;
 
-  logProcBegin (LOG_PROC, "manageActivate");
+  logProcBegin (LOG_PROC, "manageBuildUI");
   *imgbuff = '\0';
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", ".svg", PATHBLD_MP_IMGDIR);
   /* CONTEXT: management ui window title */
   snprintf (tbuff, sizeof (tbuff), _("%s Management"), BDJ4_NAME);
-  manage->window = uiutilsCreateMainWindow (app, tbuff, imgbuff,
+  manage->window = uiutilsCreateMainWindow (tbuff, imgbuff,
       manageCloseWin, manage);
 
   vbox = uiutilsCreateVertBox ();
@@ -467,7 +465,7 @@ manageActivate (GApplication *app, gpointer userdata)
   uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_SONGLIST);
 
   /* song list editor: player */
-  widget = uiplayerActivate (manage->slplayer);
+  widget = uiplayerBuildUI (manage->slplayer);
   gtk_widget_set_hexpand (widget, TRUE);
   uiutilsBoxPackStart (vbox, widget);
 
@@ -476,21 +474,21 @@ manageActivate (GApplication *app, gpointer userdata)
   manage->slnotebook = notebook;
 
   /* song list editor: music queue tab */
-  widget = uimusicqActivate (manage->slmusicq, manage->window, MUSICQ_A);
+  widget = uimusicqBuildUI (manage->slmusicq, manage->window, MUSICQ_A);
   /* CONTEXT: name of song list editor tab */
   tabLabel = uiutilsCreateLabel (_("Song List"));
   uiutilsNotebookAppendPage (notebook, widget, tabLabel);
   uiutilsNotebookIDAdd (manage->slnbtabid, MANAGE_TAB_SONGLIST);
 
   /* song list editor: song selection tab*/
-  widget = uisongselActivate (manage->slsongsel, manage->window);
+  widget = uisongselBuildUI (manage->slsongsel, manage->window);
   /* CONTEXT: name of song selection tab */
   tabLabel = uiutilsCreateLabel (_("Song Selection"));
   uiutilsNotebookAppendPage (notebook, widget, tabLabel);
   uiutilsNotebookIDAdd (manage->slnbtabid, MANAGE_TAB_OTHER);
 
   /* song list editor song editor tab */
-  widget = uisongeditActivate (manage->slsongedit, manage->window);
+  widget = uisongeditBuildUI (manage->slsongedit, manage->window);
   /* CONTEXT: name of song editor tab */
   tabLabel = uiutilsCreateLabel (_("Song Editor"));
   uiutilsNotebookAppendPage (notebook, widget, tabLabel);
@@ -504,7 +502,7 @@ manageActivate (GApplication *app, gpointer userdata)
   uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_MM);
 
   /* music manager: player */
-  widget = uiplayerActivate (manage->mmplayer);
+  widget = uiplayerBuildUI (manage->mmplayer);
   gtk_widget_set_hexpand (widget, TRUE);
   uiutilsBoxPackStart (vbox, widget);
 
@@ -516,14 +514,14 @@ manageActivate (GApplication *app, gpointer userdata)
   manage->mmnotebook = notebook;
 
   /* music manager: song selection tab*/
-  widget = uisongselActivate (manage->mmsongsel, manage->window);
+  widget = uisongselBuildUI (manage->mmsongsel, manage->window);
   /* CONTEXT: name of song selection tab */
   tabLabel = uiutilsCreateLabel (_("Music Manager"));
   uiutilsNotebookAppendPage (notebook, widget, tabLabel);
   uiutilsNotebookIDAdd (manage->mmnbtabid, MANAGE_TAB_OTHER);
 
   /* music manager: song editor tab */
-  widget = uisongeditActivate (manage->mmsongedit, manage->window);
+  widget = uisongeditBuildUI (manage->mmsongedit, manage->window);
   /* CONTEXT: name of song editor tab */
   tabLabel = uiutilsCreateLabel (_("Song Editor"));
   uiutilsNotebookAppendPage (notebook, widget, tabLabel);
@@ -609,9 +607,8 @@ manageActivate (GApplication *app, gpointer userdata)
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", ".png", PATHBLD_MP_IMGDIR);
   osuiSetIcon (imgbuff);
-  manageDbChg (NULL, manage);
 
-  logProcEnd (LOG_PROC, "manageActivate", "");
+  logProcEnd (LOG_PROC, "manageBuildUI", "");
 }
 
 gboolean
@@ -626,7 +623,7 @@ manageMainLoop (void *tmanage)
     ++gdone;
   }
   if (gdone > MANAGE_EXIT_WAIT_COUNT) {
-    g_application_quit (G_APPLICATION (manage->app));
+    gtk_main_quit ();
     cont = FALSE;
   }
 
@@ -707,6 +704,7 @@ manageHandshakeCallback (void *udata, programstate_t programState)
     connSendMessage (manage->conn, ROUTE_MAIN, MSG_QUEUE_PLAY_ON_ADD, "1");
     connSendMessage (manage->conn, ROUTE_MAIN, MSG_MUSICQ_SET_PLAYBACK, "1");
     progstateLogTime (manage->progstate, "time-to-start-gui");
+    manageDbChg (NULL, manage);
     rc = true;
   }
 

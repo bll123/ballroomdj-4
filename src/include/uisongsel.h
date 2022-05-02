@@ -75,7 +75,7 @@ void  uisongselCreateGenreList (uisongsel_t *uisongsel);
 /* uisongselgtk.c */
 void      uisongselUIInit (uisongsel_t *uisongsel);
 void      uisongselUIFree (uisongsel_t *uisongsel);
-GtkWidget * uisongselActivate (uisongsel_t *uisongsel, GtkWidget *parentwin);
+GtkWidget * uisongselBuildUI (uisongsel_t *uisongsel, GtkWidget *parentwin);
 void      uisongselClearData (uisongsel_t *uisongsel);
 void      uisongselPopulateData (uisongsel_t *uisongsel);
 void      uisongselSetFavoriteForeground (uisongsel_t *uisongsel, char *color);

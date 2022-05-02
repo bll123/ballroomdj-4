@@ -132,29 +132,6 @@ uiutilsInitUILog (void)
   g_log_set_writer_func (uiutilsGtkLogger, NULL, NULL);
 }
 
-int
-uiutilsCreateApplication (int argc, char *argv [],
-    char *tag, GtkApplication **app, void *activateFunc, void *udata)
-{
-  int             status;
-  char            tbuff [80];
-
-  logProcBegin (LOG_PROC, "uiutilsCreateApplication");
-
-  snprintf (tbuff, sizeof (tbuff), "org.bdj4.BDJ4.%s", tag);
-  *app = gtk_application_new (tbuff, G_APPLICATION_NON_UNIQUE);
-
-  g_signal_connect (*app, "activate", G_CALLBACK (activateFunc), udata);
-
-  /* gtk messes up the locale setting somehow; a re-bind is necessary */
-  localeInit ();
-
-  status = g_application_run (G_APPLICATION (*app), argc, argv);
-
-  logProcEnd (LOG_PROC, "uiutilsCreateApplication", "");
-  return status;
-}
-
 GtkWidget *
 uiutilsCreateCheckButton (const char *txt, int value)
 {

@@ -11,15 +11,14 @@
 #include "bdjstring.h"
 #include "tmutil.h"
 
-
-static void     listFreeItem (list_t *, ssize_t);
-static void     listInsert (list_t *, ssize_t loc, listitem_t *item);
-static void     listReplace (list_t *, ssize_t, listitem_t *item);
-static int      listBinarySearch (const list_t *, listkey_t *key, ssize_t *);
+static void     listFreeItem (list_t *, listidx_t);
+static void     listInsert (list_t *, listidx_t loc, listitem_t *item);
+static void     listReplace (list_t *, listidx_t, listitem_t *item);
+static int      listBinarySearch (const list_t *, listkey_t *key, listidx_t *);
 static int      idxCompare (listidx_t, listidx_t);
 static int      listCompare (const list_t *, listkey_t *a, listkey_t *b);
-static void     merge (list_t *, ssize_t, ssize_t, ssize_t);
-static void     mergeSort (list_t *, ssize_t, ssize_t);
+static void     merge (list_t *, listidx_t, listidx_t, listidx_t);
+static void     mergeSort (list_t *, listidx_t, listidx_t);
 
 list_t *
 listAlloc (char *name, listorder_t ordered, listFree_t valueFreeHook)
@@ -62,7 +61,7 @@ listFree (void *tlist)
           list->name, list->readCacheHits, list->writeCacheHits);
     }
     if (list->data != NULL) {
-      for (ssize_t i = 0; i < list->count; ++i) {
+      for (listidx_t i = 0; i < list->count; ++i) {
         listFreeItem (list, i);
       }
       free (list->data);
@@ -86,7 +85,7 @@ listFree (void *tlist)
 }
 
 inline void
-listSetVersion (list_t *list, ssize_t version)
+listSetVersion (list_t *list, listidx_t version)
 {
   if (list == NULL) {
     return;
@@ -95,7 +94,7 @@ listSetVersion (list_t *list, ssize_t version)
 }
 
 void
-listSetSize (list_t *list, ssize_t siz)
+listSetSize (list_t *list, listidx_t siz)
 {
   if (list == NULL) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "listsetsize: null list");
@@ -103,7 +102,7 @@ listSetSize (list_t *list, ssize_t siz)
   }
 
   if (siz > list->allocCount) {
-    ssize_t   tsiz;
+    listidx_t   tsiz;
 
     tsiz = list->allocCount;
     list->allocCount = siz;
@@ -196,7 +195,7 @@ listDeleteByIdx (list_t *list, listidx_t idx)
   listFreeItem (list, idx);
   list->count -= 1;
   if (copycount > 0) {
-    for (ssize_t i = idx; i < list->count; ++i) {
+    for (listidx_t i = idx; i < list->count; ++i) {
        memcpy (list->data + i, list->data + i + 1, sizeof (listitem_t));
     }
   }
@@ -317,7 +316,7 @@ listGetIdx (list_t *list, listkey_t *key)
       ridx = idx;
     }
   } else if (list->replace) {
-    for (ssize_t i = 0; i < list->count; ++i) {
+    for (listidx_t i = 0; i < list->count; ++i) {
       if (list->keytype == LIST_KEY_STR) {
         if (strcmp (list->data [i].key.strkey, key->strkey) == 0) {
           ridx = i;
@@ -397,7 +396,7 @@ listSet (list_t *list, listitem_t *item)
 /* internal routines */
 
 static void
-listFreeItem (list_t *list, ssize_t idx)
+listFreeItem (list_t *list, listidx_t idx)
 {
   listitem_t    *dp;
 
@@ -437,9 +436,9 @@ listFreeItem (list_t *list, ssize_t idx)
 }
 
 static void
-listInsert (list_t *list, ssize_t loc, listitem_t *item)
+listInsert (list_t *list, listidx_t loc, listitem_t *item)
 {
-  ssize_t      copycount;
+  listidx_t      copycount;
 
   ++list->count;
   if (list->count > list->allocCount) {
@@ -455,7 +454,7 @@ listInsert (list_t *list, ssize_t loc, listitem_t *item)
 
   copycount = list->count - (loc + 1);
   if (copycount > 0) {
-    for (ssize_t i = copycount - 1; i >= 0; --i) {
+    for (listidx_t i = copycount - 1; i >= 0; --i) {
        memcpy (list->data + loc + 1 + i, list->data + loc + i, sizeof (listitem_t));
     }
   }
@@ -463,7 +462,7 @@ listInsert (list_t *list, ssize_t loc, listitem_t *item)
 }
 
 static void
-listReplace (list_t *list, ssize_t loc, listitem_t *item)
+listReplace (list_t *list, listidx_t loc, listitem_t *item)
 {
   assert (list->data != NULL);
   assert ((list->count > 0 && loc < list->count) ||
@@ -507,7 +506,7 @@ listCompare (const list_t *list, listkey_t *a, listkey_t *b)
 
 /* returns the location after as a negative number if not found */
 static int
-listBinarySearch (const list_t *list, listkey_t *key, ssize_t *loc)
+listBinarySearch (const list_t *list, listkey_t *key, listidx_t *loc)
 {
   listidx_t     l = 0;
   listidx_t     r = list->count - 1;
@@ -521,7 +520,7 @@ listBinarySearch (const list_t *list, listkey_t *key, ssize_t *loc)
 
     rc = listCompare (list, &list->data [m].key, key);
     if (rc == 0) {
-      *loc = (ssize_t) m;
+      *loc = (listidx_t) m;
       return 0;
     }
 
@@ -534,7 +533,7 @@ listBinarySearch (const list_t *list, listkey_t *key, ssize_t *loc)
     }
   }
 
-  *loc = (ssize_t) rm;
+  *loc = (listidx_t) rm;
   return -1;
 }
 
@@ -544,9 +543,9 @@ listBinarySearch (const list_t *list, listkey_t *key, ssize_t *loc)
  */
 
 static void
-merge (list_t *list, ssize_t start, ssize_t mid, ssize_t end)
+merge (list_t *list, listidx_t start, listidx_t mid, listidx_t end)
 {
-  ssize_t      start2 = mid + 1;
+  listidx_t      start2 = mid + 1;
   listitem_t  value;
 
   int rc = listCompare (list, &list->data [mid].key, &list->data [start2].key);
@@ -559,7 +558,7 @@ merge (list_t *list, ssize_t start, ssize_t mid, ssize_t end)
     if (rc <= 0) {
       start++;
     } else {
-      ssize_t       index;
+      listidx_t       index;
 
 
       value = list->data [start2];
@@ -579,10 +578,10 @@ merge (list_t *list, ssize_t start, ssize_t mid, ssize_t end)
 }
 
 static void
-mergeSort (list_t *list, ssize_t l, ssize_t r)
+mergeSort (list_t *list, listidx_t l, listidx_t r)
 {
   if (list->count > 0 && l < r) {
-    ssize_t m = l + (r - l) / 2;
+    listidx_t m = l + (r - l) / 2;
     mergeSort (list, l, m);
     mergeSort (list, m + 1, r);
     merge (list, l, m, r);

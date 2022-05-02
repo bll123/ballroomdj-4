@@ -36,7 +36,6 @@ typedef struct {
   /* tree views */
   GtkWidget         *musicqTree;
   char              *selPathStr;
-  mstime_t          rowChangeTimer;
 } uimusicqui_t;
 
 typedef struct {
@@ -89,7 +88,7 @@ int   uimusicqMusicQueueDataParse (uimusicq_t *uimusicq, char * args);
 void  uimusicqMusicQueueDataFree (uimusicq_t *uimusicq);
 
 /* uimusicqgtk.c */
-GtkWidget * uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci);
+GtkWidget * uimusicqBuildUI (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci);
 void      uimusicqSetSelection (uimusicq_t *uimusicq, char *pathstr);
 ssize_t   uimusicqGetSelection (uimusicq_t *uimusicq);
 void      uimusicqMusicQueueSetSelected (uimusicq_t *uimusicq, int ci, int which);

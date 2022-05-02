@@ -49,7 +49,6 @@ uimusicqInit (conn_t *conn, musicdb_t *musicdb,
     uiutilsDropDownInit (&uimusicq->ui [i].dancesel);
     uimusicq->ui [i].selPathStr = NULL;
     uimusicq->ui [i].musicqTree = NULL;
-    mstimeset (&uimusicq->ui [i].rowChangeTimer, 3600000);
     uiutilsEntryInit (&uimusicq->ui [i].slname, 20, 40);
   }
   uimusicq->musicqManageIdx = MUSICQ_A;
@@ -86,18 +85,9 @@ uimusicqFree (uimusicq_t *uimusicq)
 void
 uimusicqMainLoop (uimusicq_t *uimusicq)
 {
-  int           ci;
+//  int           ci;
 
-  ci = uimusicq->musicqManageIdx;
-
-  /* macos loses the selection after it is moved.  reset it. */
-  /* fortunately, it seems to only need to be reset once. */
-  if (mstimeCheck (&uimusicq->ui [ci].rowChangeTimer)) {
-    if (uimusicq->ui [ci].selPathStr != NULL) {
-      uimusicqSetSelection (uimusicq, uimusicq->ui [ci].selPathStr);
-    }
-    mstimeset (&uimusicq->ui [ci].rowChangeTimer, 3600000);
-  }
+//  ci = uimusicq->musicqManageIdx;
 
   return;
 }

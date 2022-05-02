@@ -48,7 +48,7 @@ static void   uimusicqSetMusicqDisplay (uimusicq_t *uimusicq,
     GtkListStore *store, GtkTreeIter *iter, song_t *song);
 
 GtkWidget *
-uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
+uimusicqBuildUI (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
 {
   int                   tci;
   char                  tbuff [MAXPATHLEN];
@@ -60,7 +60,7 @@ uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
   slist_t               *sellist;
 
 
-  logProcBegin (LOG_PROC, "uimusicqActivate");
+  logProcBegin (LOG_PROC, "uimusicqBuildUI");
 
   /* temporary */
   tci = uimusicq->musicqManageIdx;
@@ -202,7 +202,7 @@ uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
 
   uimusicq->musicqManageIdx = tci;
 
-  logProcEnd (LOG_PROC, "uimusicqActivate", "");
+  logProcEnd (LOG_PROC, "uimusicqBuildUI", "");
   return uimusicq->ui [ci].box;
 }
 
@@ -320,9 +320,6 @@ uimusicqMusicQueueSetSelected (uimusicq_t *uimusicq, int ci, int which)
     gtk_tree_selection_select_iter (sel, &iter);
     path = gtk_tree_model_get_path (model, &iter);
     uimusicq->ui [ci].selPathStr = gtk_tree_path_to_string (path);
-    /* macos loses the selection */
-    /* set a timer to re-select it */
-    mstimeset (&uimusicq->ui [ci].rowChangeTimer, 50);
 
     if (GTK_IS_TREE_VIEW (uimusicq->ui [ci].musicqTree)) {
       gtk_tree_view_scroll_to_cell (GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree),
@@ -503,10 +500,10 @@ uimusicqProcessMusicQueueDataNew (uimusicq_t *uimusicq, char * args)
     gtk_list_store_set (store, &iter,
         MUSICQ_COL_ELLIPSIZE, PANGO_ELLIPSIZE_END,
         MUSICQ_COL_FONT, listingFont,
-        MUSICQ_COL_IDX, musicqupdate->idx,
-        MUSICQ_COL_UNIQUE_IDX, musicqupdate->uniqueidx,
-        MUSICQ_COL_DBIDX, musicqupdate->dbidx,
-        MUSICQ_COL_DISP_IDX, musicqupdate->dispidx,
+        MUSICQ_COL_IDX, (gulong) musicqupdate->idx,
+        MUSICQ_COL_UNIQUE_IDX, (gulong) musicqupdate->uniqueidx,
+        MUSICQ_COL_DBIDX, (gulong) musicqupdate->dbidx,
+        MUSICQ_COL_DISP_IDX, (gulong) musicqupdate->dispidx,
         MUSICQ_COL_PAUSEIND, pixbuf,
         -1);
 

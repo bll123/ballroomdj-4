@@ -105,7 +105,6 @@ typedef struct {
   uiutilsentry_t  targetEntry;
   uiutilsentry_t  bdj3locEntry;
   /* gtk */
-  GtkApplication  *app;
   GtkWidget       *window;
   GtkWidget       *reinstWidget;
   GtkWidget       *feedbackMsg;
@@ -134,7 +133,7 @@ typedef struct {
 #define CONV_TEMP_FILE "tmp/bdj4convout.txt"
 #define BDJ3_LOC_FILE "install/bdj3loc.txt"
 
-static void installerActivate (GApplication *app, gpointer udata);
+static void installerBuildUI (installer_t *installer);
 static int  installerMainLoop (void *udata);
 static void installerExit (GtkButton *b, gpointer udata);
 static void installerCheckDir (GtkButton *b, gpointer udata);
@@ -193,7 +192,6 @@ int
 main (int argc, char *argv[])
 {
   installer_t   installer;
-  int           status;
   char          tbuff [512];
   char          buff [MAXPATHLEN];
   char          bdj3buff [MAXPATHLEN];
@@ -230,7 +228,6 @@ main (int argc, char *argv[])
   installer.convidx = 0;
   installer.convlist = NULL;
   installer.tclshloc = NULL;
-  installer.app = NULL;
   installer.window = NULL;
   installer.currdir [0] = '\0';
   installer.newinstall = true;
@@ -244,7 +241,6 @@ main (int argc, char *argv[])
   installer.inSetConvert = false;
   installer.delayMax = 10;
   installer.delayCount = 0;
-  installer.app = NULL;
   installer.window = NULL;
   installer.reinstWidget = NULL;
   installer.feedbackMsg = NULL;
@@ -360,11 +356,10 @@ main (int argc, char *argv[])
 
   if (installer.guienabled) {
     g_timeout_add (UI_MAIN_LOOP_TIMER * 5, installerMainLoop, &installer);
-    status = uiutilsCreateApplication (0, NULL, "installer",
-        &installer.app, installerActivate, &installer);
+    installerBuildUI (&installer);
+    gtk_main ();
   } else {
     installer.delayMax = 5;
-    status = 0;
     installer.instState = INST_INIT;
     while (installer.instState != INST_BEGIN) {
       installerMainLoop (&installer);
@@ -374,32 +369,29 @@ main (int argc, char *argv[])
 
   installerCleanup (&installer);
   logEnd ();
-  return status;
+  return 0;
 }
 
 static void
-installerActivate (GApplication *app, gpointer udata)
+installerBuildUI (installer_t *installer)
 {
-  installer_t   *installer = udata;
   GtkWidget     *window;
   GtkWidget     *vbox;
   GtkWidget     *hbox;
   GtkWidget     *widget;
   GtkWidget     *scwidget;
   GtkWidget     *image;
-  GError        *gerr = NULL;
   GtkSizeGroup  *sg;
   char          tbuff [100];
+  char          imgbuff [MAXPATHLEN];
 
 
-  window = gtk_application_window_new (GTK_APPLICATION (app));
 
-  gtk_window_set_type_hint (GTK_WINDOW (window), GDK_WINDOW_TYPE_HINT_NORMAL);
-  gtk_window_set_focus_on_map (GTK_WINDOW (window), FALSE);
+  strlcpy (imgbuff, "img/bdj4_icon_inst.svg", sizeof (imgbuff));
   /* CONTEXT: installer: window title */
   snprintf (tbuff, sizeof (tbuff), _("%s Installer"), BDJ4_NAME);
-  gtk_window_set_title (GTK_WINDOW (window), tbuff);
-  gtk_window_set_default_icon_from_file ("img/bdj4_icon_inst.svg", &gerr);
+// ### close window handler
+  window = uiutilsCreateMainWindow (tbuff, imgbuff, NULL, installer);
   gtk_window_set_default_size (GTK_WINDOW (window), 1000, 600);
   installer->window = window;
 
@@ -938,7 +930,7 @@ installerExit (GtkButton *b, gpointer udata)
   installer_t   *installer = udata;
 
   if (installer->guienabled) {
-    g_application_quit (G_APPLICATION (installer->app));
+    gtk_main_quit ();
   } else {
     installer->instState = INST_FINISH;
   }

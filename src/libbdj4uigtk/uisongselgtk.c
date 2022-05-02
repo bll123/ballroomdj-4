@@ -118,7 +118,7 @@ uisongselUIFree (uisongsel_t *uisongsel)
 }
 
 GtkWidget *
-uisongselActivate (uisongsel_t *uisongsel, GtkWidget *parentwin)
+uisongselBuildUI (uisongsel_t *uisongsel, GtkWidget *parentwin)
 {
   uisongselgtk_t    *uiw;
   GtkWidget         *hbox;
@@ -128,7 +128,7 @@ uisongselActivate (uisongsel_t *uisongsel, GtkWidget *parentwin)
   slist_t           *sellist;
   char              tbuff [200];
 
-  logProcBegin (LOG_PROC, "uisongselActivate");
+  logProcBegin (LOG_PROC, "uisongselBuildUI");
 
   uiw = uisongsel->uiWidgetData;
   uiw->parentwin = parentwin;
@@ -252,7 +252,7 @@ uisongselActivate (uisongsel_t *uisongsel, GtkWidget *parentwin)
   g_signal_connect (uiw->songselTree, "size-allocate",
       G_CALLBACK (uisongselProcessTreeSize), uisongsel);
 
-  logProcEnd (LOG_PROC, "uisongselActivate", "");
+  logProcEnd (LOG_PROC, "uisongselBuildUI", "");
   return uiw->vbox;
 }
 

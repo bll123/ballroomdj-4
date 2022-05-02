@@ -28,6 +28,7 @@
 #include "lock.h"
 #include "log.h"
 #include "nlist.h"
+#include "osuiutils.h"
 #include "osutils.h"
 #include "pathbld.h"
 #include "procutil.h"
@@ -84,7 +85,6 @@ typedef struct {
   int             stopwaitcount;
   /* gtk stuff */
   uiutilsspinbox_t  profilesel;
-  GtkApplication    *app;
   GtkWidget         *window;
   GtkWidget         *supportDialog;
   GtkWidget         *supportSendFiles;
@@ -120,7 +120,7 @@ static datafilekey_t starteruidfkeys [STARTERUI_KEY_MAX] = {
 static bool     starterStoppingCallback (void *udata, programstate_t programState);
 static bool     starterStopWaitCallback (void *udata, programstate_t programState);
 static bool     starterClosingCallback (void *udata, programstate_t programState);
-static void     starterActivate (GApplication *app, gpointer userdata);
+static void     starterBuildUI (startui_t *starter);
 gboolean        starterMainLoop  (void *tstarter);
 static int      starterProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
                     bdjmsgmsg_t msg, char *args, void *udata);
@@ -235,8 +235,8 @@ main (int argc, char *argv[])
 
   g_timeout_add (UI_MAIN_LOOP_TIMER, starterMainLoop, &starter);
 
-  status = uiutilsCreateApplication (0, NULL, "starterui",
-      &starter.app, starterActivate, &starter);
+  starterBuildUI (&starter);
+  gtk_main ();
 
   while (progstateShutdownProcess (starter.progstate) != STATE_CLOSED) {
     mssleep (50);
@@ -347,9 +347,8 @@ starterClosingCallback (void *udata, programstate_t programState)
 }
 
 static void
-starterActivate (GApplication *app, gpointer userdata)
+starterBuildUI (startui_t  *starter)
 {
-  startui_t           *starter = userdata;
   GtkWidget           *widget;
   GtkWidget           *menubar;
   GtkWidget           *menu;
@@ -368,7 +367,7 @@ starterActivate (GApplication *app, gpointer userdata)
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", ".svg", PATHBLD_MP_IMGDIR);
-  starter->window = uiutilsCreateMainWindow (app, BDJ4_LONG_NAME, imgbuff,
+  starter->window = uiutilsCreateMainWindow (BDJ4_LONG_NAME, imgbuff,
       starterCloseWin, starter);
 
   vbox = uiutilsCreateVertBox ();
@@ -489,6 +488,10 @@ starterActivate (GApplication *app, gpointer userdata)
     gtk_window_move (GTK_WINDOW (starter->window), x, y);
   }
 
+  pathbldMakePath (imgbuff, sizeof (imgbuff),
+      "bdj4_icon", ".png", PATHBLD_MP_IMGDIR);
+  osuiSetIcon (imgbuff);
+
   gtk_widget_show_all (starter->window);
 }
 
@@ -508,7 +511,7 @@ starterMainLoop (void *tstarter)
     ++gdone;
   }
   if (gdone > STARTER_EXIT_WAIT_COUNT) {
-    g_application_quit (G_APPLICATION (starter->app));
+    gtk_main_quit ();
     cont = FALSE;
   }
 
@@ -602,7 +605,7 @@ starterMainLoop (void *tstarter)
 
       pathbldMakePath (prog, sizeof (prog),
           "bdj4info", sysvarsGetStr (SV_OS_EXEC_EXT), PATHBLD_MP_EXECDIR);
-      strlcpy (arg, "--bdj4", MAXPATHLEN);
+      strlcpy (arg, "--bdj4", sizeof (arg));
       strlcpy (tbuff, "bdj4info.txt", sizeof (tbuff));
       targv [targc++] = prog;
       targv [targc++] = arg;

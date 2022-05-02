@@ -107,7 +107,7 @@ uiplayerFree (uiplayer_t *uiplayer)
 }
 
 GtkWidget *
-uiplayerActivate (uiplayer_t *uiplayer)
+uiplayerBuildUI (uiplayer_t *uiplayer)
 {
   char            tbuff [MAXPATHLEN];
   GtkWidget       *image = NULL;
@@ -120,7 +120,7 @@ uiplayerActivate (uiplayer_t *uiplayer)
   GtkSizeGroup    *sgD;
   GtkSizeGroup    *sgE;
 
-  logProcBegin (LOG_PROC, "uiplayerActivate");
+  logProcBegin (LOG_PROC, "uiplayerBuildUI");
 
   sgA = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
   sgB = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
@@ -402,7 +402,7 @@ uiplayerActivate (uiplayer_t *uiplayer)
   gtk_label_set_xalign (GTK_LABEL (widget), 1.0);
   gtk_size_group_add_widget (sgD, widget);
 
-  logProcEnd (LOG_PROC, "uiplayerActivate", "");
+  logProcEnd (LOG_PROC, "uiplayerBuildUI", "");
   return uiplayer->vbox;
 }
 

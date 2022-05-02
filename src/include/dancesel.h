@@ -30,7 +30,7 @@ typedef struct {
   double        logValue;
 } dancesel_t;
 
-typedef ilistidx_t (*danceselHistory_t)(void *userdata, ssize_t idx);
+typedef ilistidx_t (*danceselHistory_t)(void *userdata, ilistidx_t idx);
 
 dancesel_t      *danceselAlloc (nlist_t *countList);
 void            danceselFree (dancesel_t *dancesel);

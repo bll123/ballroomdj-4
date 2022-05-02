@@ -59,7 +59,6 @@ typedef struct {
   int             stopwaitcount;
   uiutilsnbtabid_t *nbtabid;
   /* gtk stuff */
-  GtkApplication  *app;
   GtkWidget       *window;
   GtkWidget       *vbox;
   GtkWidget       *clock;
@@ -100,7 +99,7 @@ static bool     pluiHandshakeCallback (void *udata, programstate_t programState)
 static bool     pluiStoppingCallback (void *udata, programstate_t programState);
 static bool     pluiStopWaitCallback (void *udata, programstate_t programState);
 static bool     pluiClosingCallback (void *udata, programstate_t programState);
-static void     pluiActivate (GApplication *app, gpointer userdata);
+static void     pluiBuildUI (playerui_t *plui);
 gboolean        pluiMainLoop  (void *tplui);
 gboolean        pluiClock (void *tplui);
 static int      pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
@@ -220,8 +219,8 @@ main (int argc, char *argv[])
   g_timeout_add (UI_MAIN_LOOP_TIMER, pluiMainLoop, &plui);
   g_timeout_add (200, pluiClock, &plui);
 
-  status = uiutilsCreateApplication (0, NULL, "playerui",
-      &plui.app, pluiActivate, &plui);
+  pluiBuildUI (&plui);
+  gtk_main ();
 
   while (progstateShutdownProcess (plui.progstate) != STATE_CLOSED) {
     mssleep (50);
@@ -324,9 +323,8 @@ pluiClosingCallback (void *udata, programstate_t programState)
 }
 
 static void
-pluiActivate (GApplication *app, gpointer userdata)
+pluiBuildUI (playerui_t *plui)
 {
-  playerui_t          *plui = userdata;
   GtkWidget           *tabLabel;
   GtkWidget           *widget;
   GtkWidget           *image;
@@ -339,7 +337,7 @@ pluiActivate (GApplication *app, gpointer userdata)
   char                tbuff [MAXPATHLEN];
   gint                x, y;
 
-  logProcBegin (LOG_PROC, "pluiActivate");
+  logProcBegin (LOG_PROC, "pluiBuildUI");
 
   pathbldMakePath (tbuff, sizeof (tbuff),  "led_off", ".svg",
       PATHBLD_MP_IMGDIR);
@@ -354,7 +352,7 @@ pluiActivate (GApplication *app, gpointer userdata)
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", ".svg", PATHBLD_MP_IMGDIR);
-  plui->window = uiutilsCreateMainWindow (app,
+  plui->window = uiutilsCreateMainWindow (
       bdjoptGetStr (OPT_P_PROFILENAME), imgbuff,
       pluiCloseWin, plui);
 
@@ -425,7 +423,7 @@ pluiActivate (GApplication *app, gpointer userdata)
       G_CALLBACK (pluiMarqueeFontSizeDialog), plui);
 
   /* player */
-  widget = uiplayerActivate (plui->uiplayer);
+  widget = uiplayerBuildUI (plui->uiplayer);
   gtk_widget_set_hexpand (widget, TRUE);
   uiutilsBoxPackStart (plui->vbox, widget);
 
@@ -444,7 +442,7 @@ pluiActivate (GApplication *app, gpointer userdata)
 
   for (musicqidx_t i = 0; i < MUSICQ_MAX; ++i) {
     /* music queue tab */
-    widget = uimusicqActivate (plui->uimusicq, plui->window, i);
+    widget = uimusicqBuildUI (plui->uimusicq, plui->window, i);
     hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
     str = bdjoptGetStr (OPT_P_QUEUE_NAME_A + i);
     tabLabel = gtk_label_new (str);
@@ -460,7 +458,7 @@ pluiActivate (GApplication *app, gpointer userdata)
   }
 
   /* request tab */
-  widget = uisongselActivate (plui->uisongsel, plui->window);
+  widget = uisongselBuildUI (plui->uisongsel, plui->window);
   /* CONTEXT: name of request tab */
   tabLabel = gtk_label_new (_("Request"));
   uiutilsNotebookAppendPage (plui->notebook, widget, tabLabel);
@@ -482,7 +480,7 @@ pluiActivate (GApplication *app, gpointer userdata)
       "bdj4_icon", ".png", PATHBLD_MP_IMGDIR);
   osuiSetIcon (imgbuff);
 
-  logProcEnd (LOG_PROC, "pluiActivate", "");
+  logProcEnd (LOG_PROC, "pluiBuildUI", "");
 }
 
 gboolean
@@ -497,7 +495,7 @@ pluiMainLoop (void *tplui)
     ++gdone;
   }
   if (gdone > PLUI_EXIT_WAIT_COUNT) {
-    g_application_quit (G_APPLICATION (plui->app));
+    gtk_main_quit ();
     cont = FALSE;
   }
 

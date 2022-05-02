@@ -413,7 +413,7 @@ datafileParseMerge (list_t *datalist, char *data, char *name,
         nikey++;
       }
       key = atol (tvalstr);
-      snprintf (temp, sizeof (temp), "%s-item-%zd", name, nikey);
+      snprintf (temp, sizeof (temp), "%s-item-%d", name, nikey);
       itemList = nlistAlloc (temp, LIST_ORDERED, free);
       continue;
     }
@@ -601,7 +601,7 @@ datafileSaveIndirect (char *tag, char *fn, datafilekey_t *dfkeys,
   ilistStartIterator (list, &iteridx);
 
   fprintf (fh, "version\n..1\n");
-  fprintf (fh, "count\n..%zd\n", count);
+  fprintf (fh, "count\n..%d\n", count);
 
   count = 0;
   while ((key = ilistIterateKey (list, &iteridx)) >= 0) {

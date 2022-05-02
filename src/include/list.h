@@ -1,9 +1,10 @@
 #ifndef INC_LIST_H
 #define INC_LIST_H
 
+#include <stdint.h>
 #include <stdbool.h>
 
-typedef ssize_t listidx_t;
+typedef int32_t listidx_t;
 
 typedef enum {
   LIST_KEY_STR,
@@ -51,9 +52,9 @@ typedef struct {
 
 typedef struct {
   char            *name;
-  ssize_t         version;
-  ssize_t         count;
-  ssize_t         allocCount;
+  listidx_t       version;
+  listidx_t       count;
+  listidx_t       allocCount;
   int             maxKeyWidth;
   int             maxDataWidth;
   keytype_t       keytype;
@@ -77,11 +78,11 @@ typedef struct {
 list_t      *listAlloc (char *name, listorder_t ordered,
                 listFree_t valueFreeHook);
 void        listFree (void *list);
-ssize_t     listGetVersion (list_t *list);
-ssize_t     listGetCount (list_t *list);
+listidx_t     listGetVersion (list_t *list);
+listidx_t     listGetCount (list_t *list);
 listidx_t   listGetIdx (list_t *list, listkey_t *key);
-void        listSetSize (list_t *list, ssize_t size);
-void        listSetVersion (list_t *list, ssize_t version);
+void        listSetSize (list_t *list, listidx_t size);
+void        listSetVersion (list_t *list, listidx_t version);
 void        listSet (list_t *list, listitem_t *item);
 void        *listGetData (list_t *list, char *keystr);
 void        *listGetDataByIdx (list_t *list, listidx_t idx);

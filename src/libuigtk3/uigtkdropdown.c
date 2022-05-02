@@ -273,7 +273,7 @@ uiutilsDropDownSetNumList (uiutilsdropdown_t *dropdown, slist_t *list,
 }
 
 void
-uiutilsDropDownSelectionSetNum (uiutilsdropdown_t *dropdown, ssize_t idx)
+uiutilsDropDownSelectionSetNum (uiutilsdropdown_t *dropdown, nlistidx_t idx)
 {
   ssize_t        internalidx;
 

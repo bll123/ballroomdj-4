@@ -228,7 +228,7 @@ char  *uiutilsSelectDirDialog (uiutilsselect_t *selectdata);
 char  *uiutilsSelectFileDialog (uiutilsselect_t *selectdata);
 
 /* uigtkwindow.c */
-GtkWidget * uiutilsCreateMainWindow (GApplication *app, char *title,
+GtkWidget * uiutilsCreateMainWindow (char *title,
     char *imagenm, void *cb, void *udata);
 GtkWidget * uiutilsCreateScrolledWindow (void);
 
@@ -246,8 +246,6 @@ void  uiutilsCleanup (void);
 void  uiutilsSetCss (GtkWidget *w, char *style);
 void  uiutilsSetUIFont (char *uifont);
 void  uiutilsInitUILog (void);
-int   uiutilsCreateApplication (int argc, char *argv [],
-    char *tag, GtkApplication **app, void *activateFunc, void *udata);
 void  uiutilsGetForegroundColor (GtkWidget *widget, char *buff, size_t sz);
 void  uiutilsWidgetSetAllMargins (GtkWidget *widget, int margin);
 

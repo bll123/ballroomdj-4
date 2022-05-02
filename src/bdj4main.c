@@ -117,7 +117,7 @@ static void     mainMusicQueuePlay (maindata_t *mainData);
 static void     mainMusicQueueFinish (maindata_t *mainData);
 static void     mainMusicQueueNext (maindata_t *mainData);
 static bool     mainCheckMusicQueue (song_t *song, void *tdata);
-static ssize_t  mainMusicQueueHistory (void *mainData, ssize_t idx);
+static ilistidx_t mainMusicQueueHistory (void *mainData, ilistidx_t idx);
 static void     mainSendDanceList (maindata_t *mainData, bdjmsgroute_t route);
 static void     mainSendPlaylistList (maindata_t *mainData, bdjmsgroute_t route);
 static void     mainSendPlayerStatus (maindata_t *mainData, char *playerResp);
@@ -714,7 +714,7 @@ mainSendMusicQueueData (maindata_t *mainData, int musicqidx)
       snprintf (tbuff, sizeof (tbuff), "%d%c", uniqueidx, MSG_ARGS_RS);
       strlcat (sbuff, tbuff, sizeof (sbuff));
       dbidx = songGetNum (song, TAG_DBIDX);
-      snprintf (tbuff, sizeof (tbuff), "%zd%c", dbidx, MSG_ARGS_RS);
+      snprintf (tbuff, sizeof (tbuff), "%d%c", dbidx, MSG_ARGS_RS);
       strlcat (sbuff, tbuff, sizeof (sbuff));
       flags = musicqGetFlags (mainData->musicQueue, musicqidx, i);
       pflag = false;
@@ -1725,8 +1725,8 @@ mainCheckMusicQueue (song_t *song, void *tdata)
   return true;
 }
 
-static ssize_t
-mainMusicQueueHistory (void *tmaindata, ssize_t idx)
+static ilistidx_t
+mainMusicQueueHistory (void *tmaindata, ilistidx_t idx)
 {
   maindata_t    *mainData = tmaindata;
   ilistidx_t    didx;
@@ -1751,7 +1751,7 @@ mainSendDanceList (maindata_t *mainData, bdjmsgroute_t route)
 {
   dance_t       *dances;
   slist_t       *danceList;
-  slistidx_t     idx;
+  slistidx_t    idx;
   char          *dancenm;
   char          tbuff [200];
   char          rbuff [3096];
@@ -1766,7 +1766,7 @@ mainSendDanceList (maindata_t *mainData, bdjmsgroute_t route)
   slistStartIterator (danceList, &iteridx);
   while ((dancenm = slistIterateKey (danceList, &iteridx)) != NULL) {
     idx = slistGetNum (danceList, dancenm);
-    snprintf (tbuff, sizeof (tbuff), "%zd%c%s%c",
+    snprintf (tbuff, sizeof (tbuff), "%d%c%s%c",
         idx, MSG_ARGS_RS, dancenm, MSG_ARGS_RS);
     strlcat (rbuff, tbuff, sizeof (rbuff));
   }

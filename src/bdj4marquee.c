@@ -57,7 +57,6 @@ static datafilekey_t mqdfkeys [MQ_KEY_MAX] = {
 };
 
 typedef struct {
-  GtkApplication  *app;
   progstate_t     *progstate;
   char            *locknm;
   conn_t          *conn;
@@ -98,7 +97,7 @@ static bool     marqueeConnectingCallback (void *udata, programstate_t programSt
 static bool     marqueeHandshakeCallback (void *udata, programstate_t programState);
 static bool     marqueeStoppingCallback (void *udata, programstate_t programState);
 static bool     marqueeClosingCallback (void *udata, programstate_t programState);
-static void     marqueeActivate (GApplication *app, gpointer userdata);
+static void     marqueeBuildUI (marquee_t *marquee);
 gboolean        marqueeMainLoop  (void *tmarquee);
 static int      marqueeProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
                     bdjmsgmsg_t msg, char *args, void *udata);
@@ -208,8 +207,8 @@ main (int argc, char *argv[])
   mqfont = bdjoptGetStr (OPT_MP_MQFONT);
   uiutilsSetUIFont (mqfont);
 
-  status = uiutilsCreateApplication (0, NULL, "marquee",
-      &marquee.app, marqueeActivate, &marquee);
+  marqueeBuildUI (&marquee);
+  gtk_main ();
 
   while (progstateShutdownProcess (marquee.progstate) != STATE_CLOSED) {
     mssleep (50);
@@ -291,22 +290,21 @@ marqueeClosingCallback (void *udata, programstate_t programState)
 }
 
 static void
-marqueeActivate (GApplication *app, gpointer userdata)
+marqueeBuildUI (marquee_t *marquee)
 {
   char      imgbuff [MAXPATHLEN];
   char      tbuff [MAXPATHLEN];
-  marquee_t *marquee = userdata;
   GtkWidget *window;
   GtkWidget *hbox;
   GtkWidget *vbox;
   gint      x, y;
 
-  logProcBegin (LOG_PROC, "marqueeActivate");
+  logProcBegin (LOG_PROC, "marqueeBuildUI");
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon_marquee", ".svg", PATHBLD_MP_IMGDIR);
 
-  window = uiutilsCreateMainWindow (app, _("Marquee"), imgbuff,
+  window = uiutilsCreateMainWindow (_("Marquee"), imgbuff,
       marqueeCloseWin, marquee);
   g_signal_connect (window, "button-press-event", G_CALLBACK (marqueeToggleFullscreen), marquee);
   g_signal_connect (window, "window-state-event", G_CALLBACK (marqueeWinState), marquee);
@@ -428,7 +426,7 @@ marqueeActivate (GApplication *app, gpointer userdata)
       "bdj4_icon_marquee", ".png", PATHBLD_MP_IMGDIR);
   osuiSetIcon (imgbuff);
 
-  logProcEnd (LOG_PROC, "marqueeActivate", "");
+  logProcEnd (LOG_PROC, "marqueeBuildUI", "");
 }
 
 gboolean
@@ -443,7 +441,7 @@ marqueeMainLoop (void *tmarquee)
     ++gdone;
   }
   if (gdone > MARQUEE_EXIT_WAIT_COUNT) {
-    g_application_quit (G_APPLICATION (marquee->app));
+    gtk_main_quit ();
     cont = FALSE;
   }
 

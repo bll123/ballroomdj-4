@@ -25,7 +25,7 @@ void  uisongeditMainLoop (uisongedit_t *uisongedit);
 /* uisongeditgtk.c */
 void      uisongeditUIInit (uisongedit_t *uisongedit);
 void      uisongeditUIFree (uisongedit_t *uisongedit);
-GtkWidget * uisongeditActivate (uisongedit_t *uisongedit, GtkWidget *parentwin);
+GtkWidget * uisongeditBuildUI (uisongedit_t *uisongedit, GtkWidget *parentwin);
 
 #endif /* INC_UISONGEDIT_H */
 

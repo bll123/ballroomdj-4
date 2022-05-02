@@ -321,7 +321,6 @@ typedef struct {
   nlist_t           *filterDisplaySel;
   nlist_t           *filterLookup;
   /* gtk stuff */
-  GtkApplication    *app;
   GtkWidget         *window;
   GtkWidget         *vbox;
   GtkWidget         *notebook;
@@ -356,7 +355,7 @@ static bool     confuiHandshakeCallback (void *udata, programstate_t programStat
 static bool     confuiStoppingCallback (void *udata, programstate_t programState);
 static bool     confuiStopWaitCallback (void *udata, programstate_t programState);
 static bool     confuiClosingCallback (void *udata, programstate_t programState);
-static void     confuiActivate (GApplication *app, gpointer userdata);
+static void     confuiBuildUI (configui_t *confui);
 gboolean        confuiMainLoop  (void *tconfui);
 static int      confuiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
                     bdjmsgmsg_t msg, char *args, void *udata);
@@ -761,8 +760,8 @@ main (int argc, char *argv[])
 
   g_timeout_add (UI_MAIN_LOOP_TIMER, confuiMainLoop, &confui);
 
-  status = uiutilsCreateApplication (0, NULL, "configui",
-      &confui.app, confuiActivate, &confui);
+  confuiBuildUI (&confui);
+  gtk_main ();
 
   while (progstateShutdownProcess (confui.progstate) != STATE_CLOSED) {
     mssleep (50);
@@ -902,9 +901,8 @@ confuiClosingCallback (void *udata, programstate_t programState)
 }
 
 static void
-confuiActivate (GApplication *app, gpointer userdata)
+confuiBuildUI (configui_t *confui)
 {
-  configui_t    *confui = userdata;
   GtkWidget     *menubar;
   GtkWidget     *vbox;
   GtkWidget     *widget;
@@ -919,13 +917,13 @@ confuiActivate (GApplication *app, gpointer userdata)
   ssize_t       val;
   char          *bpmstr;
 
-  logProcBegin (LOG_PROC, "confuiActivate");
+  logProcBegin (LOG_PROC, "confuiBuildUI");
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon_config", ".svg", PATHBLD_MP_IMGDIR);
   /* CONTEXT: configuration ui window title */
   snprintf (tbuff, sizeof (tbuff), _("%s Configuration"), BDJ4_NAME);
-  confui->window = uiutilsCreateMainWindow (app, tbuff, imgbuff,
+  confui->window = uiutilsCreateMainWindow (tbuff, imgbuff,
       confuiCloseWin, confui);
 
   confui->vbox = uiutilsCreateVertBox ();
@@ -1613,10 +1611,10 @@ confuiActivate (GApplication *app, gpointer userdata)
   }
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
-      "bdj4_icon", ".png", PATHBLD_MP_IMGDIR);
+      "bdj4_icon_config", ".png", PATHBLD_MP_IMGDIR);
   osuiSetIcon (imgbuff);
 
-  logProcEnd (LOG_PROC, "confuiActivate", "");
+  logProcEnd (LOG_PROC, "confuiBuildUI", "");
 }
 
 gboolean
@@ -1631,7 +1629,7 @@ confuiMainLoop (void *tconfui)
     ++gdone;
   }
   if (gdone > CONFUI_EXIT_WAIT_COUNT) {
-    g_application_quit (G_APPLICATION (confui->app));
+    gtk_main_quit ();
     cont = FALSE;
   }
 

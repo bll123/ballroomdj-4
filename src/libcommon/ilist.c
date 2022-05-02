@@ -309,7 +309,7 @@ ilistSetDataItem (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx,
 
   datalist = nlistGetList (list, ikey);
   if (datalist == NULL) {
-    snprintf (tbuff, sizeof (tbuff), "%s-item-%zd", list->name, ikey);
+    snprintf (tbuff, sizeof (tbuff), "%s-item-%d", list->name, ikey);
     datalist = nlistAlloc (tbuff, LIST_ORDERED, NULL);
     nlistSetList (list, ikey, datalist);
   }

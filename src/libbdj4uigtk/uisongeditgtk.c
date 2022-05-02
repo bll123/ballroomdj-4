@@ -49,14 +49,14 @@ uisongeditUIFree (uisongedit_t *uisongedit)
 }
 
 GtkWidget *
-uisongeditActivate (uisongedit_t *uisongedit, GtkWidget *parentwin)
+uisongeditBuildUI (uisongedit_t *uisongedit, GtkWidget *parentwin)
 {
   uisongeditgtk_t    *uiw;
   GtkWidget         *hbox;
   GtkWidget         *lcol;
   GtkWidget         *rcol;
 
-  logProcBegin (LOG_PROC, "uisongeditActivate");
+  logProcBegin (LOG_PROC, "uisongeditBuildUI");
 
   uiw = uisongedit->uiWidgetData;
   uiw->parentwin = parentwin;
@@ -82,7 +82,7 @@ uisongeditActivate (uisongedit_t *uisongedit, GtkWidget *parentwin)
 
   uisongeditAddDisplay (uisongedit, rcol, DISP_SEL_SONGEDIT_B);
 
-  logProcEnd (LOG_PROC, "uisongeditActivate", "");
+  logProcEnd (LOG_PROC, "uisongeditBuildUI", "");
   return uiw->vbox;
 }
 

@@ -56,7 +56,7 @@ typedef struct {
 uiplayer_t  * uiplayerInit (progstate_t *progstate, conn_t *conn, musicdb_t *musicdb);
 void        uiplayerSetDatabase (uiplayer_t *uiplayer, musicdb_t *musicdb);
 void        uiplayerFree (uiplayer_t *uiplayer);
-GtkWidget   * uiplayerActivate (uiplayer_t *uiplayer);
+GtkWidget   * uiplayerBuildUI (uiplayer_t *uiplayer);
 void        uiplayerMainLoop (uiplayer_t *uiplayer);
 int         uiplayerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
                 bdjmsgmsg_t msg, char *args, void *udata);
