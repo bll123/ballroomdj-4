@@ -145,6 +145,17 @@ uimusicqActivate (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
     uiutilsBoxPackEnd (hbox, widget);
   }
 
+  if (uimusicq->dispselType == DISP_SEL_SONGLIST) {
+    widget = uiutilsEntryCreate (&uimusicq->ui [ci].slname);
+    snprintf (tbuff, sizeof (tbuff),
+        "entry { color: %s; }",
+        bdjoptGetStr (OPT_P_UI_ACCENT_COL));
+    uiutilsSetCss (widget, tbuff);
+    /* CONTEXT: song list: default name for a new song list */
+    uiutilsEntrySetValue (&uimusicq->ui [ci].slname, _("New Song List"));
+    uiutilsBoxPackEnd (hbox, widget);
+  }
+
   if (uimusicq->dispselType == DISP_SEL_MUSICQ) {
     /* CONTEXT: button: clear the queue */
     widget = uiutilsCreateButton (_("Clear Queue"), NULL,
@@ -211,11 +222,13 @@ uimusicqSetSelection (uimusicq_t *uimusicq, char *pathstr)
   }
 
   path = gtk_tree_path_new_from_string (pathstr);
-  if (path != NULL) {
+  if (path != NULL &&
+      GTK_IS_TREE_VIEW (uimusicq->ui [ci].musicqTree)) {
     gtk_tree_view_set_cursor (GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree),
         path, NULL, FALSE);
-    gtk_tree_view_scroll_to_cell (GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree),
-        path, NULL, FALSE, 0.0, 0.0);
+    uimusicqMusicQueueSetSelected (uimusicq, ci, UIMUSICQ_SEL_CURR);
+  }
+  if (path != NULL) {
     gtk_tree_path_free (path);
   }
   logProcEnd (LOG_PROC, "uimusicqSetSelection", "");
@@ -283,6 +296,10 @@ uimusicqMusicQueueSetSelected (uimusicq_t *uimusicq, int ci, int which)
   gtk_tree_selection_get_selected (sel, &model, &iter);
 
   switch (which) {
+    case UIMUSICQ_SEL_CURR: {
+      valid = true;
+      break;
+    }
     case UIMUSICQ_SEL_PREV: {
       valid = gtk_tree_model_iter_previous (model, &iter);
       break;

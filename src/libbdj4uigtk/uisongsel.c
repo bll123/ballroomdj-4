@@ -202,7 +202,11 @@ uisongselQueueProcess (uisongsel_t *uisongsel, dbidx_t dbidx, musicqidx_t mqidx)
   ssize_t insloc;
   char    tbuff [MAXPATHLEN];
 
-  insloc = bdjoptGetNum (OPT_P_INSERT_LOCATION);
+  if (uisongsel->dispselType == DISP_SEL_SONGSEL) {
+    insloc = 99;
+  } else {
+    insloc = bdjoptGetNum (OPT_P_INSERT_LOCATION);
+  }
   snprintf (tbuff, sizeof (tbuff), "%d%c%zd%c%d", mqidx,
       MSG_ARGS_RS, insloc, MSG_ARGS_RS, dbidx);
   connSendMessage (uisongsel->conn, ROUTE_MAIN, MSG_MUSICQ_INSERT, tbuff);

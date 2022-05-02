@@ -376,7 +376,7 @@ starterActivate (GApplication *app, gpointer userdata)
   gtk_container_add (GTK_CONTAINER (starter->window), vbox);
 
   hbox = uiutilsCreateHorizBox ();
-  gtk_widget_set_margin_top (hbox, 8);
+  gtk_widget_set_margin_top (hbox, uiutilsBaseMarginSz * 4);
   uiutilsBoxPackStart (vbox, hbox);
 
   menubar = gtk_menu_bar_new ();
@@ -396,7 +396,7 @@ starterActivate (GApplication *app, gpointer userdata)
 
   /* main display */
   hbox = uiutilsCreateHorizBox ();
-  gtk_widget_set_margin_top (hbox, 8);
+  gtk_widget_set_margin_top (hbox, uiutilsBaseMarginSz * 4);
   uiutilsBoxPackStart (vbox, hbox);
 
   /* CONTEXT: starter: profile to be used when starting BDJ4 */
@@ -408,7 +408,7 @@ starterActivate (GApplication *app, gpointer userdata)
   uiutilsSpinboxTextSet (&starter->profilesel, starter->currprofile,
       nlistGetCount (starter->dispProfileList),
       starter->maxProfileWidth, starter->dispProfileList, starterSetProfile);
-  gtk_widget_set_margin_start (widget, 8);
+  gtk_widget_set_margin_start (widget, uiutilsBaseMarginSz * 4);
   gtk_widget_set_halign (widget, GTK_ALIGN_FILL);
   uiutilsBoxPackStart (hbox, widget);
 
@@ -426,11 +426,12 @@ starterActivate (GApplication *app, gpointer userdata)
   widget = gtk_image_new_from_pixbuf (image);
   assert (widget != NULL);
   gtk_widget_set_hexpand (widget, TRUE);
+  uiutilsWidgetSetAllMargins (widget, uiutilsBaseMarginSz * 10);
   uiutilsBoxPackStart (hbox, widget);
 
   /* CONTEXT: button: starts the player user interface */
   widget = uiutilsCreateButton (_("Player"), NULL, starterStartPlayer, starter);
-  gtk_widget_set_margin_top (widget, 4);
+  gtk_widget_set_margin_top (widget, uiutilsBaseMarginSz * 2);
   gtk_widget_set_halign (widget, GTK_ALIGN_START);
   gtk_size_group_add_widget (sg, widget);
   uiutilsBoxPackStart (bvbox, widget);
@@ -439,7 +440,7 @@ starterActivate (GApplication *app, gpointer userdata)
 
   /* CONTEXT: button: starts the management user interface */
   widget = uiutilsCreateButton (_("Manage"), NULL, starterStartManage, starter);
-  gtk_widget_set_margin_top (widget, 4);
+  gtk_widget_set_margin_top (widget, uiutilsBaseMarginSz * 2);
   gtk_widget_set_halign (widget, GTK_ALIGN_START);
   gtk_size_group_add_widget (sg, widget);
   uiutilsBoxPackStart (bvbox, widget);
@@ -448,7 +449,7 @@ starterActivate (GApplication *app, gpointer userdata)
 
   /* CONTEXT: button: starts the configuration user interface */
   widget = uiutilsCreateButton (_("Configure"), NULL, starterStartConfig, starter);
-  gtk_widget_set_margin_top (widget, 4);
+  gtk_widget_set_margin_top (widget, uiutilsBaseMarginSz * 2);
   gtk_widget_set_halign (widget, GTK_ALIGN_START);
   gtk_size_group_add_widget (sg, widget);
   uiutilsBoxPackStart (bvbox, widget);
@@ -457,7 +458,7 @@ starterActivate (GApplication *app, gpointer userdata)
 
   /* CONTEXT: button: support : starts raffle games  */
   widget = uiutilsCreateButton (_("Raffle Games"), NULL, starterStartRaffleGames, starter);
-  gtk_widget_set_margin_top (widget, 4);
+  gtk_widget_set_margin_top (widget, uiutilsBaseMarginSz * 2);
   gtk_widget_set_halign (widget, GTK_ALIGN_START);
   gtk_size_group_add_widget (sg, widget);
   uiutilsBoxPackStart (bvbox, widget);
@@ -466,7 +467,7 @@ starterActivate (GApplication *app, gpointer userdata)
 
   /* CONTEXT: button: support : support information */
   widget = uiutilsCreateButton (_("Support"), NULL, starterProcessSupport, starter);
-  gtk_widget_set_margin_top (widget, 4);
+  gtk_widget_set_margin_top (widget, uiutilsBaseMarginSz * 2);
   gtk_widget_set_halign (widget, GTK_ALIGN_START);
   gtk_size_group_add_widget (sg, widget);
   uiutilsBoxPackStart (bvbox, widget);
@@ -475,7 +476,7 @@ starterActivate (GApplication *app, gpointer userdata)
 
   /* CONTEXT: button: exits BDJ4 */
   widget = uiutilsCreateButton (_("Exit"), NULL, starterProcessExit, starter);
-  gtk_widget_set_margin_top (widget, 4);
+  gtk_widget_set_margin_top (widget, uiutilsBaseMarginSz * 2);
   gtk_widget_set_halign (widget, GTK_ALIGN_START);
   gtk_size_group_add_widget (sg, widget);
   uiutilsBoxPackStart (bvbox, widget);

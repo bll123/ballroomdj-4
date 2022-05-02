@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <assert.h>
 
+#include "bdj4intl.h"
 #include "conn.h"
 #include "dispsel.h"
 #include "log.h"
@@ -49,6 +50,7 @@ uimusicqInit (conn_t *conn, musicdb_t *musicdb,
     uimusicq->ui [i].selPathStr = NULL;
     uimusicq->ui [i].musicqTree = NULL;
     mstimeset (&uimusicq->ui [i].rowChangeTimer, 3600000);
+    uiutilsEntryInit (&uimusicq->ui [i].slname, 20, 40);
   }
   uimusicq->musicqManageIdx = MUSICQ_A;
   uimusicq->musicqPlayIdx = MUSICQ_A;
@@ -74,6 +76,7 @@ uimusicqFree (uimusicq_t *uimusicq)
       }
       uiutilsDropDownFree (&uimusicq->ui [i].playlistsel);
       uiutilsDropDownFree (&uimusicq->ui [i].dancesel);
+      uiutilsEntryFree (&uimusicq->ui [i].slname);
     }
     free (uimusicq);
   }

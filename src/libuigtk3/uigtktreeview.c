@@ -127,11 +127,11 @@ uiutilsSetDisplayColumns (GtkListStore *store, GtkTreeIter *iter,
         str = favorite->spanStr;
       } else {
         str = uiutilsMakeDisplayStr (song, tagidx, &allocated);
-        if (allocated) {
-          free (str);
-        }
       }
       gtk_list_store_set (store, iter, col++, str, -1);
+      if (allocated) {
+        free (str);
+      }
     } else {
       num = songGetNum (song, tagidx);
       val = (ssize_t) num;

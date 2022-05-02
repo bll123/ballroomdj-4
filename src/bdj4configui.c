@@ -1148,7 +1148,7 @@ confuiActivate (GApplication *app, gpointer userdata)
   vbox = confuiMakeNotebookTab (confui, confui->notebook,
       /* CONTEXT: config: change which fields are displayed in different contexts */
       _("Display Settings"), CONFUI_ID_DISP_SEL_LIST);
-  gtk_widget_set_vexpand (vbox, TRUE);
+  gtk_widget_set_valign (vbox, GTK_ALIGN_START);
   sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
   /* CONTEXT: config: display settings: which set of display settings to update */

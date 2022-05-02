@@ -11,6 +11,7 @@
 
 enum {
   UIMUSICQ_SEL_NONE,
+  UIMUSICQ_SEL_CURR,
   UIMUSICQ_SEL_PREV,
   UIMUSICQ_SEL_NEXT,
   UIMUSICQ_SEL_TOP,
@@ -31,6 +32,7 @@ typedef struct {
   GtkWidget         *box;
   uiutilsdropdown_t dancesel;
   uiutilsdropdown_t playlistsel;
+  uiutilsentry_t    slname;
   /* tree views */
   GtkWidget         *musicqTree;
   char              *selPathStr;
