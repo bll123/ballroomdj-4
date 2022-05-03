@@ -23,6 +23,21 @@ typedef enum {
   PARSE_KEYVALUE
 } parsetype_t;
 
+typedef struct parseinfo {
+  char        **strdata;
+  ssize_t     allocCount;
+  ssize_t     count;
+} parseinfo_t;
+
+typedef struct datafile {
+  char            *name;
+  char            *fname;
+  datafiletype_t  dftype;
+  list_t          *data;
+  list_t          *lookup;
+  long            version;
+} datafile_t;
+
 static ssize_t  parse (parseinfo_t *pi, char *data, parsetype_t parsetype);
 static void     datafileFreeInternal (datafile_t *df);
 static bool     datafileCheckDfkeys (char *name, datafilekey_t *dfkeys, ssize_t dfkeycount);
@@ -764,6 +779,32 @@ datafileDumpKeyVal (char *tag, datafilekey_t *dfkeys,
   }
 }
 
+/* for debugging only */
+
+inline datafiletype_t
+datafileGetType (datafile_t *df)
+{
+  return df->dftype;
+}
+
+inline char *
+datafileGetFname (datafile_t *df)
+{
+  return df->fname;
+}
+
+inline list_t *
+datafileGetData (datafile_t *df)
+{
+  return df->data;
+}
+
+inline listidx_t
+parseGetAllocCount (parseinfo_t *pi)
+{
+  return pi->allocCount;
+}
+
 /* internal parse routines */
 
 static ssize_t
@@ -971,4 +1012,3 @@ datafileDumpItem (char *tag, char *name, dfConvFunc_t convFunc,
     }
   }
 }
-

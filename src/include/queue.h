@@ -3,20 +3,9 @@
 
 typedef void (*queueFree_t)(void *);
 
-typedef struct queuenode {
-  void              *data;
-  struct queuenode  *prev;
-  struct queuenode  *next;
-} queuenode_t;
+typedef struct queuenode queuenode_t;
 
-typedef struct {
-  ssize_t       count;
-  queuenode_t   *iteratorNode;
-  queuenode_t   *currentNode;
-  queuenode_t   *head;
-  queuenode_t   *tail;
-  queueFree_t   freeHook;
-} queue_t;
+typedef struct queue queue_t;
 
 queue_t *queueAlloc (queueFree_t freeHook);
 void    queueFree (queue_t *q);

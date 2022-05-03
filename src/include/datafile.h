@@ -30,20 +30,9 @@ typedef enum {
   DFTYPE_MAX,
 } datafiletype_t;
 
-typedef struct {
-  char        **strdata;
-  ssize_t     allocCount;
-  ssize_t     count;
-} parseinfo_t;
+typedef struct parseinfo parseinfo_t;
 
-typedef struct {
-  char            *name;
-  char            *fname;
-  datafiletype_t  dftype;
-  list_t          *data;
-  list_t          *lookup;
-  long            version;
-} datafile_t;
+typedef struct datafile datafile_t;
 
 typedef struct {
   valuetype_t   valuetype;
@@ -100,5 +89,12 @@ void          datafileSaveKeyVal (char *tag, char *fn, datafilekey_t *dfkeys, ss
 void          datafileSaveIndirect (char *tag, char *fn, datafilekey_t *dfkeys, ssize_t count, nlist_t *list);
 void          datafileSaveList (char *tag, char *fn, slist_t *list);
 void          datafileDumpKeyVal (char *tag, datafilekey_t *dfkeys, ssize_t dfkeycount, nlist_t *list);
+
+/* for debugging only */
+datafiletype_t datafileGetType (datafile_t *df);
+char *datafileGetFname (datafile_t *df);
+list_t *datafileGetData (datafile_t *df);
+listidx_t parseGetAllocCount (parseinfo_t *pi);
+
 
 #endif /* INC_DATAFILE_H */

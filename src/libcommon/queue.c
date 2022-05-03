@@ -11,6 +11,21 @@
 #include "log.h"
 #include "queue.h"
 
+typedef struct queuenode {
+  void              *data;
+  struct queuenode  *prev;
+  struct queuenode  *next;
+} queuenode_t;
+
+typedef struct queue {
+  ssize_t       count;
+  queuenode_t   *iteratorNode;
+  queuenode_t   *currentNode;
+  queuenode_t   *head;
+  queuenode_t   *tail;
+  queueFree_t   freeHook;
+} queue_t;
+
 static void * queueRemove (queue_t *q, queuenode_t *node);
 
 queue_t *
