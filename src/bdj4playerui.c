@@ -46,7 +46,6 @@ typedef struct {
   progstate_t     *progstate;
   char            *locknm;
   conn_t          *conn;
-  sockserver_t    *sockserver;
   musicdb_t       *musicdb;
   musicqidx_t     musicqPlayIdx;
   musicqidx_t     musicqManageIdx;
@@ -100,7 +99,7 @@ static bool     pluiStoppingCallback (void *udata, programstate_t programState);
 static bool     pluiStopWaitCallback (void *udata, programstate_t programState);
 static bool     pluiClosingCallback (void *udata, programstate_t programState);
 static void     pluiBuildUI (playerui_t *plui);
-gboolean        pluiMainLoop  (void *tplui);
+static int      pluiMainLoop  (void *tplui);
 gboolean        pluiClock (void *tplui);
 static int      pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
                     bdjmsgmsg_t msg, char *args, void *udata);
@@ -147,7 +146,6 @@ main (int argc, char *argv[])
       pluiConnectingCallback, &plui);
   progstateSetCallback (plui.progstate, STATE_WAIT_HANDSHAKE,
       pluiHandshakeCallback, &plui);
-  plui.sockserver = NULL;
   plui.window = NULL;
   plui.uiplayer = NULL;
   plui.uimusicq = NULL;
@@ -209,22 +207,15 @@ main (int argc, char *argv[])
   progstateSetCallback (plui.progstate, STATE_CLOSING,
       pluiClosingCallback, &plui);
 
-  plui.sockserver = sockhStartServer (listenPort);
-
   uiutilsInitUILog ();
   gtk_init (&argc, NULL);
   uifont = bdjoptGetStr (OPT_MP_UIFONT);
   uiutilsSetUIFont (uifont);
 
-  g_timeout_add (UI_MAIN_LOOP_TIMER, pluiMainLoop, &plui);
   g_timeout_add (200, pluiClock, &plui);
 
   pluiBuildUI (&plui);
-  gtk_main ();
-
-  while (progstateShutdownProcess (plui.progstate) != STATE_CLOSED) {
-    mssleep (50);
-  }
+  sockhMainLoop (listenPort, pluiProcessMsg, pluiMainLoop, &plui);
 
   progstateFree (plui.progstate);
   logProcEnd (LOG_PROC, "playerui", "");
@@ -310,7 +301,6 @@ pluiClosingCallback (void *udata, programstate_t programState)
   }
   datafileFree (plui->optiondf);
 
-  sockhCloseServer (plui->sockserver);
   connFree (plui->conn);
 
   uiplayerFree (plui->uiplayer);
@@ -483,29 +473,32 @@ pluiBuildUI (playerui_t *plui)
   logProcEnd (LOG_PROC, "pluiBuildUI", "");
 }
 
-gboolean
+static int
 pluiMainLoop (void *tplui)
 {
-  playerui_t   *plui = tplui;
-  int         tdone = 0;
-  gboolean    cont = TRUE;
+  playerui_t  *plui = tplui;
+  int         stop = FALSE;
 
-  tdone = sockhProcessMain (plui->sockserver, pluiProcessMsg, plui);
-  if (tdone || gdone) {
-    ++gdone;
-  }
   if (gdone > PLUI_EXIT_WAIT_COUNT) {
-    gtk_main_quit ();
-    cont = FALSE;
+    stop = TRUE;
+  }
+
+  while (! stop && gtk_events_pending ()) {
+    gtk_main_iteration_do (FALSE);
+  }
+
+  if (gdone) {
+    ++gdone;
   }
 
   if (! progstateIsRunning (plui->progstate)) {
     progstateProcess (plui->progstate);
-    if (gKillReceived) {
+    if (! gdone && gKillReceived) {
       logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
       progstateShutdownProcess (plui->progstate);
+      gKillReceived = 0;
     }
-    return cont;
+    return stop;
   }
 
   connProcessUnconnected (plui->conn);
@@ -528,11 +521,12 @@ pluiMainLoop (void *tplui)
   uimusicqMainLoop (plui->uimusicq);
   uisongselMainLoop (plui->uisongsel);
 
-  if (gKillReceived) {
+  if (! gdone && gKillReceived) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
     progstateShutdownProcess (plui->progstate);
+    gKillReceived = 0;
   }
-  return cont;
+  return stop;
 }
 
 gboolean
@@ -545,7 +539,7 @@ pluiClock (void *tplui)
     gtk_label_set_text (GTK_LABEL (plui->clock),
         tmutilDisp (tbuff, sizeof (tbuff)));
   }
-  if (gKillReceived) {
+  if (gdone || gKillReceived) {
     return FALSE;
   }
   return TRUE;

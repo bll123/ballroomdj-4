@@ -60,7 +60,6 @@ typedef struct {
   progstate_t     *progstate;
   char            *locknm;
   conn_t          *conn;
-  sockserver_t    *sockserver;
   datafile_t      *optiondf;
   nlist_t         *options;
   GtkWidget       *window;
@@ -98,7 +97,7 @@ static bool     marqueeHandshakeCallback (void *udata, programstate_t programSta
 static bool     marqueeStoppingCallback (void *udata, programstate_t programState);
 static bool     marqueeClosingCallback (void *udata, programstate_t programState);
 static void     marqueeBuildUI (marquee_t *marquee);
-gboolean        marqueeMainLoop  (void *tmarquee);
+static int      marqueeMainLoop  (void *tmarquee);
 static int      marqueeProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
                     bdjmsgmsg_t msg, char *args, void *udata);
 static gboolean marqueeCloseWin (GtkWidget *window, GdkEvent *event, gpointer userdata);
@@ -147,7 +146,6 @@ main (int argc, char *argv[])
   progstateSetCallback (marquee.progstate, STATE_CLOSING,
       marqueeClosingCallback, &marquee);
 
-  marquee.sockserver = NULL;
   marquee.window = NULL;
   marquee.pbar = NULL;
   marquee.danceLab = NULL;
@@ -199,20 +197,14 @@ main (int argc, char *argv[])
     nlistSetNum (marquee.options, MQ_FONT_SZ_FS, 60);
   }
 
-  marquee.sockserver = sockhStartServer (listenPort);
-  g_timeout_add (UI_MAIN_LOOP_TIMER, marqueeMainLoop, &marquee);
-
   uiutilsInitUILog ();
   gtk_init (&argc, NULL);
   mqfont = bdjoptGetStr (OPT_MP_MQFONT);
   uiutilsSetUIFont (mqfont);
 
   marqueeBuildUI (&marquee);
-  gtk_main ();
+  sockhMainLoop (listenPort, marqueeProcessMsg, marqueeMainLoop, &marquee);
 
-  while (progstateShutdownProcess (marquee.progstate) != STATE_CLOSED) {
-    mssleep (50);
-  }
   progstateFree (marquee.progstate);
   logEnd ();
   return status;
@@ -247,6 +239,7 @@ marqueeStoppingCallback (void *udata, programstate_t programState)
   }
 
   connDisconnectAll (marquee->conn);
+  gdone = 1;
   logProcEnd (LOG_PROC, "marqueeStoppingCallback", "");
   return true;
 }
@@ -271,7 +264,6 @@ marqueeClosingCallback (void *udata, programstate_t programState)
 
   bdj4shutdown (ROUTE_MARQUEE, NULL);
 
-  sockhCloseServer (marquee->sockserver);
   connDisconnectAll (marquee->conn);
   connFree (marquee->conn);
 
@@ -429,29 +421,32 @@ marqueeBuildUI (marquee_t *marquee)
   logProcEnd (LOG_PROC, "marqueeBuildUI", "");
 }
 
-gboolean
+static int
 marqueeMainLoop (void *tmarquee)
 {
   marquee_t   *marquee = tmarquee;
-  int         tdone = 0;
-  gboolean    cont = TRUE;
+  int         stop = FALSE;
 
-  tdone = sockhProcessMain (marquee->sockserver, marqueeProcessMsg, marquee);
-  if (tdone || gdone) {
-    ++gdone;
-  }
   if (gdone > MARQUEE_EXIT_WAIT_COUNT) {
-    gtk_main_quit ();
-    cont = FALSE;
+    stop = TRUE;
+  }
+
+  while (! stop && gtk_events_pending ()) {
+    gtk_main_iteration_do (FALSE);
+  }
+
+  if (gdone) {
+    ++gdone;
   }
 
   if (! progstateIsRunning (marquee->progstate)) {
     progstateProcess (marquee->progstate);
-    if (gKillReceived) {
+    if (! gdone && gKillReceived) {
       logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
-      cont = FALSE;
+      progstateShutdownProcess (marquee->progstate);
+      gKillReceived = 0;
     }
-    return cont;
+    return stop;
   }
 
   connProcessUnconnected (marquee->conn);
@@ -464,11 +459,12 @@ marqueeMainLoop (void *tmarquee)
     --marquee->unMaximize;
   }
 
-  if (gKillReceived) {
+  if (! gdone && gKillReceived) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
-    cont = FALSE;
+    progstateShutdownProcess (marquee->progstate);
+    gKillReceived = 0;
   }
-  return cont;
+  return stop;
 }
 
 static bool

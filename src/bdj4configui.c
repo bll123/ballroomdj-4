@@ -308,7 +308,6 @@ typedef struct {
   progstate_t       *progstate;
   char              *locknm;
   conn_t            *conn;
-  sockserver_t      *sockserver;
   char              *localip;
   int               dbgflags;
   confuiitem_t      uiitem [CONFUI_ITEM_MAX];
@@ -356,7 +355,7 @@ static bool     confuiStoppingCallback (void *udata, programstate_t programState
 static bool     confuiStopWaitCallback (void *udata, programstate_t programState);
 static bool     confuiClosingCallback (void *udata, programstate_t programState);
 static void     confuiBuildUI (configui_t *confui);
-gboolean        confuiMainLoop  (void *tconfui);
+static int      confuiMainLoop  (void *tconfui);
 static int      confuiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
                     bdjmsgmsg_t msg, char *args, void *udata);
 static gboolean confuiCloseWin (GtkWidget *window, GdkEvent *event, gpointer userdata);
@@ -505,7 +504,6 @@ main (int argc, char *argv[])
   confui.progstate = progstateInit ("configui");
   progstateSetCallback (confui.progstate, STATE_WAIT_HANDSHAKE,
       confuiHandshakeCallback, &confui);
-  confui.sockserver = NULL;
   confui.window = NULL;
   confui.tablecurr = CONFUI_ID_NONE;
   confui.nbtabid = uiutilsNotebookIDInit ();
@@ -751,21 +749,14 @@ main (int argc, char *argv[])
   progstateSetCallback (confui.progstate, STATE_CLOSING,
       confuiClosingCallback, &confui);
 
-  confui.sockserver = sockhStartServer (listenPort);
-
   uiutilsInitUILog ();
   gtk_init (&argc, NULL);
   uifont = bdjoptGetStr (OPT_MP_UIFONT);
   uiutilsSetUIFont (uifont);
 
-  g_timeout_add (UI_MAIN_LOOP_TIMER, confuiMainLoop, &confui);
-
   confuiBuildUI (&confui);
-  gtk_main ();
+  sockhMainLoop (listenPort, confuiProcessMsg, confuiMainLoop, &confui);
 
-  while (progstateShutdownProcess (confui.progstate) != STATE_CLOSED) {
-    mssleep (50);
-  }
   progstateFree (confui.progstate);
   orgoptFree (orgopt);
 
@@ -892,7 +883,6 @@ confuiClosingCallback (void *udata, programstate_t programState)
 
   bdj4shutdown (ROUTE_CONFIGUI, NULL);
 
-  sockhCloseServer (confui->sockserver);
   connFree (confui->conn);
   uiutilsCleanup ();
 
@@ -1617,29 +1607,32 @@ confuiBuildUI (configui_t *confui)
   logProcEnd (LOG_PROC, "confuiBuildUI", "");
 }
 
-gboolean
+static int
 confuiMainLoop (void *tconfui)
 {
-  configui_t   *confui = tconfui;
-  int         tdone = 0;
-  gboolean    cont = TRUE;
+  configui_t    *confui = tconfui;
+  int           stop = FALSE;
 
-  tdone = sockhProcessMain (confui->sockserver, confuiProcessMsg, confui);
-  if (tdone || gdone) {
-    ++gdone;
-  }
   if (gdone > CONFUI_EXIT_WAIT_COUNT) {
-    gtk_main_quit ();
-    cont = FALSE;
+    stop = TRUE;
+  }
+
+  while (! stop && gtk_events_pending ()) {
+    gtk_main_iteration_do (FALSE);
+  }
+
+  if (gdone) {
+    ++gdone;
   }
 
   if (! progstateIsRunning (confui->progstate)) {
     progstateProcess (confui->progstate);
-    if (gKillReceived) {
+    if (! gdone && gKillReceived) {
       logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
       progstateShutdownProcess (confui->progstate);
+      gKillReceived = 0;
     }
-    return cont;
+    return stop;
   }
 
   connProcessUnconnected (confui->conn);
@@ -1648,11 +1641,12 @@ confuiMainLoop (void *tconfui)
     uiutilsEntryValidate (&confui->uiitem [i].u.entry);
   }
 
-  if (gKillReceived) {
+  if (! gdone && gKillReceived) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
     progstateShutdownProcess (confui->progstate);
+    gKillReceived = 0;
   }
-  return cont;
+  return stop;
 }
 
 static bool

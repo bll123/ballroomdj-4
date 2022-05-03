@@ -70,7 +70,6 @@ typedef struct manage {
   procutil_t      *processes [ROUTE_MAX];
   char            *locknm;
   conn_t          *conn;
-  sockserver_t    *sockserver;
   musicdb_t       *musicdb;
   musicqidx_t     musicqPlayIdx;
   musicqidx_t     musicqManageIdx;
@@ -138,7 +137,7 @@ static bool     manageStoppingCallback (void *udata, programstate_t programState
 static bool     manageStopWaitCallback (void *udata, programstate_t programState);
 static bool     manageClosingCallback (void *udata, programstate_t programState);
 static void     manageBuildUI (manageui_t *manage);
-gboolean        manageMainLoop  (void *tmanage);
+static int      manageMainLoop  (void *tmanage);
 static int      manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
                     bdjmsgmsg_t msg, char *args, void *udata);
 static gboolean manageCloseWin (GtkWidget *window, GdkEvent *event, gpointer userdata);
@@ -175,7 +174,6 @@ main (int argc, char *argv[])
       manageConnectingCallback, &manage);
   progstateSetCallback (manage.progstate, STATE_WAIT_HANDSHAKE,
       manageHandshakeCallback, &manage);
-  manage.sockserver = NULL;
   manage.window = NULL;
   manage.slplayer = NULL;
   manage.slmusicq = NULL;
@@ -282,21 +280,13 @@ main (int argc, char *argv[])
   progstateSetCallback (manage.progstate, STATE_CLOSING,
       manageClosingCallback, &manage);
 
-  manage.sockserver = sockhStartServer (listenPort);
-
   uiutilsInitUILog ();
   gtk_init (&argc, NULL);
   uifont = bdjoptGetStr (OPT_MP_UIFONT);
   uiutilsSetUIFont (uifont);
 
-  g_timeout_add (UI_MAIN_LOOP_TIMER, manageMainLoop, &manage);
-
   manageBuildUI (&manage);
-  gtk_main ();
-
-  while (progstateShutdownProcess (manage.progstate) != STATE_CLOSED) {
-    mssleep (50);
-  }
+  sockhMainLoop (listenPort, manageProcessMsg, manageMainLoop, &manage);
 
   progstateFree (manage.progstate);
   logProcEnd (LOG_PROC, "manageui", "");
@@ -383,7 +373,6 @@ manageClosingCallback (void *udata, programstate_t programState)
   }
   datafileFree (manage->optiondf);
 
-  sockhCloseServer (manage->sockserver);
   connFree (manage->conn);
 
   uiutilsTextBoxFree (manage->dbhelpdisp);
@@ -611,29 +600,32 @@ manageBuildUI (manageui_t *manage)
   logProcEnd (LOG_PROC, "manageBuildUI", "");
 }
 
-gboolean
+static int
 manageMainLoop (void *tmanage)
 {
   manageui_t   *manage = tmanage;
-  int         tdone = 0;
-  gboolean    cont = TRUE;
+  int         stop = 0;
 
-  tdone = sockhProcessMain (manage->sockserver, manageProcessMsg, manage);
-  if (tdone || gdone) {
-    ++gdone;
-  }
   if (gdone > MANAGE_EXIT_WAIT_COUNT) {
-    gtk_main_quit ();
-    cont = FALSE;
+    stop = TRUE;
+  }
+
+  while (! stop && gtk_events_pending ()) {
+    gtk_main_iteration_do (FALSE);
+  }
+
+  if (gdone) {
+    ++gdone;
   }
 
   if (! progstateIsRunning (manage->progstate)) {
     progstateProcess (manage->progstate);
-    if (gKillReceived) {
+    if (! gdone && gKillReceived) {
       logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
       progstateShutdownProcess (manage->progstate);
+      gKillReceived = 0;
     }
-    return cont;
+    return stop;
   }
 
   connProcessUnconnected (manage->conn);
@@ -645,11 +637,12 @@ manageMainLoop (void *tmanage)
   uisongselMainLoop (manage->slsongsel);
   uisongselMainLoop (manage->mmsongsel);
 
-  if (gKillReceived) {
+  if (! gdone && gKillReceived) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
     progstateShutdownProcess (manage->progstate);
+    gKillReceived = 0;
   }
-  return cont;
+  return stop;
 }
 
 static bool

@@ -6,9 +6,9 @@
 #include "sock.h"
 #include "bdjmsg.h"
 
-typedef int (*sockProcessMsg_t)(bdjmsgroute_t routefrom, bdjmsgroute_t routeto,
+typedef int (*sockhProcessMsg_t)(bdjmsgroute_t routefrom, bdjmsgroute_t routeto,
     bdjmsgmsg_t msg, char *args, void *userdata);
-typedef int (*sockOtherProcessing_t)(void *);
+typedef int (*sockhProcessFunc_t)(void *);
 
 typedef struct {
   sockinfo_t      *si;
@@ -18,14 +18,14 @@ typedef struct {
 #define SOCKH_MAINLOOP_TIMEOUT   5
 #define SOCKH_EXIT_WAIT_COUNT    20
 
-void          sockhMainLoop (uint16_t listenPort, sockProcessMsg_t msgProc,
-                  sockOtherProcessing_t otherProc, void *userData);
+void          sockhMainLoop (uint16_t listenPort, sockhProcessMsg_t msgFunc,
+                  sockhProcessFunc_t processFunc, void *userData);
 sockserver_t  * sockhStartServer (uint16_t listenPort);
 void          sockhCloseServer (sockserver_t *sockserver);
 int           sockhProcessMain (sockserver_t *sockserver,
-                  sockProcessMsg_t msgProc, void *userData);
-void          sockhCheck (uint16_t listenPort, sockProcessMsg_t msgProc,
-                  sockOtherProcessing_t, void *userData);
+                  sockhProcessMsg_t msgProc, void *userData);
+void          sockhCheck (uint16_t listenPort, sockhProcessMsg_t msgProc,
+                  sockhProcessFunc_t, void *userData);
 int           sockhSendMessage (Sock_t sock, bdjmsgroute_t routefrom,
                   bdjmsgroute_t route, bdjmsgmsg_t msg, char *args);
 void          sockhRequestClose (sockinfo_t *sockinfo);

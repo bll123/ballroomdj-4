@@ -347,7 +347,7 @@ main (int argc, char *argv[])
     if (isWindows ()) {
       char *uifont;
 
-      uifont = "Arial 11";
+      uifont = "Arial 12";
       uiutilsSetUIFont (uifont);
     }
   }
@@ -355,16 +355,14 @@ main (int argc, char *argv[])
   installerCheckPackages (&installer);
 
   if (installer.guienabled) {
-    g_timeout_add (UI_MAIN_LOOP_TIMER * 5, installerMainLoop, &installer);
     installerBuildUI (&installer);
-    gtk_main ();
-  } else {
-    installer.delayMax = 5;
-    installer.instState = INST_INIT;
-    while (installer.instState != INST_BEGIN) {
-      installerMainLoop (&installer);
-      mssleep (50);
-    }
+  }
+
+  installer.delayMax = 5;
+  installer.instState = INST_INIT;
+  while (installer.instState != INST_BEGIN) {
+    installerMainLoop (&installer);
+    mssleep (50);
   }
 
   installerCleanup (&installer);
@@ -593,6 +591,12 @@ static int
 installerMainLoop (void *udata)
 {
   installer_t *installer = udata;
+
+  if (installer->guienabled) {
+    while (gtk_events_pending ()) {
+      gtk_main_iteration_do (FALSE);
+    }
+  }
 
   if (mstimeCheck (&installer->validateTimer)) {
     installerValidateDir (installer);

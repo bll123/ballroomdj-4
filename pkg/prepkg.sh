@@ -147,24 +147,46 @@ _HERE_
   # fix other windows specific stuff
 
   nm=templates/bdjconfig.txt.g
-  sed -e 's/libvolpa/libvolwin/' ${nm} > ${nm}.n
-  mv -f ${nm}.n ${nm}
+  for fn in ${nm}*; do
+    sed -e 's/libvolpa/libvolwin/' ${fn} > ${fn}.n
+    mv -f ${fn}.n ${fn}
+  done
 
   nm=templates/bdjconfig.txt.mp
   sed -e '/UIFONT/ { n ; s/.*/..Arial 11/ }' ${nm} > ${nm}.n
   mv -f ${nm}.n ${nm}
 
   nm=templates/bdjconfig.txt.p
-  sed -e '/UI_THEME/ { n ; s/.*/..Windows-10-Dark/ }' ${nm} > ${nm}.n
-  mv -f ${nm}.n ${nm}
+  for fn in ${nm}*; do
+    sed -e '/UI_THEME/ { n ; s/.*/..Windows-10-Dark/ }' ${fn} > ${fn}.n
+    mv -f ${fn}.n ${fn}
+  done
 fi # is windows
 
 if [[ $systype == Darwin ]]; then
   # fix darwin specific stuff
 
-  nm=templates/bdjconfig.txt.g
-  sed -e 's/libvolpa/libvolmac/' ${nm} > ${nm}.n
+  nm=templates/bdjconfig.txt.p
+  for fn in ${nm}*; do
+    sed -e '/UI_THEME/ { n ; s/.*/..Windows-10-Dark/ }' ${fn} > ${fn}.n
+    mv -f ${fn}.n ${fn}
+  done
+
+  nm=templates/bdjconfig.txt.p
+  for fn in ${nm}*; do
+    sed -e '/UI_THEME/ { n ; s/.*/..macOS-Mojave-dark/ }' ${fn} > ${fn}.n
+    mv -f ${fn}.n ${fn}
+  done
+
+  nm=templates/bdjconfig.txt.mp
+  sed -e '/UIFONT/ { n ; s/.*/..Arial 12/ }' ${nm} > ${nm}.n
   mv -f ${nm}.n ${nm}
+
+  nm=templates/bdjconfig.txt.g
+  for fn in ${nm}*; do
+    sed -e 's/libvolpa/libvolmac/' ${fn} > ${fn}.n
+    mv -f ${fn}.n ${fn}
+  done
 fi
 
 exit 0

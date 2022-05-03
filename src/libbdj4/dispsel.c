@@ -14,19 +14,14 @@
 #include "slist.h"
 #include "tagdef.h"
 
-typedef struct {
-  dispselsel_t  seltype;
-  char          *fname;
-} dispselmap_t;
-
-dispselmap_t dispselmap [DISP_SEL_MAX] = {
-  { DISP_SEL_MM,          "ds-mm" },
-  { DISP_SEL_MUSICQ,      "ds-musicq" },
-  { DISP_SEL_REQUEST,     "ds-request" },
-  { DISP_SEL_SONGEDIT_A,  "ds-songedit-a" },
-  { DISP_SEL_SONGEDIT_B,  "ds-songedit-b" },
-  { DISP_SEL_SONGLIST,    "ds-songlist" },
-  { DISP_SEL_SONGSEL,     "ds-songsel" },
+static char *dispselmap [DISP_SEL_MAX] = {
+  [DISP_SEL_MM] = "ds-mm",
+  [DISP_SEL_MUSICQ] = "ds-musicq",
+  [DISP_SEL_REQUEST] = "ds-request",
+  [DISP_SEL_SONGEDIT_A] = "ds-songedit-a",
+  [DISP_SEL_SONGEDIT_B] = "ds-songedit-b",
+  [DISP_SEL_SONGLIST] = "ds-songlist",
+  [DISP_SEL_SONGSEL] = "ds-songsel",
 };
 
 static void dispselCreateList (dispsel_t *dispsel, slist_t *tlist, int selidx);
@@ -48,14 +43,14 @@ dispselAlloc (void)
     dispsel->name [i] = NULL;
 
     pathbldMakePath (fn, sizeof (fn),
-        dispselmap [i].fname, ".txt", PATHBLD_MP_USEIDX);
+        dispselmap [i], ".txt", PATHBLD_MP_USEIDX);
     if (! fileopFileExists (fn)) {
       fprintf (stderr, "%s does not exist\n", fn);
       continue;
     }
     dispsel->name [i] = strdup (fn);
 
-    dispsel->df [i] = datafileAllocParse (dispselmap [i].fname,
+    dispsel->df [i] = datafileAllocParse (dispselmap [i],
         DFTYPE_LIST, fn, NULL, 0, DATAFILE_NO_LOOKUP);
     tlist = datafileGetList (dispsel->df [i]);
 
@@ -107,7 +102,7 @@ dispselSave (dispsel_t *dispsel, dispselsel_t idx, slist_t *list)
     return;
   }
 
-  datafileSaveList (dispselmap [idx].fname, dispsel->name [idx], list);
+  datafileSaveList (dispselmap [idx], dispsel->name [idx], list);
   dispselCreateList (dispsel, list, idx);
 }
 

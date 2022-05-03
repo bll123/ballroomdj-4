@@ -600,20 +600,20 @@ uimusicqProcessMusicQueueDataUpdate (uimusicq_t *uimusicq, char * args)
       gtk_list_store_set (GTK_LIST_STORE (model), &iter,
           MUSICQ_COL_ELLIPSIZE, 1,
           MUSICQ_COL_FONT, listingFont,
-          MUSICQ_COL_IDX, musicqupdate->idx,
-          MUSICQ_COL_DISP_IDX, musicqupdate->dispidx,
-          MUSICQ_COL_UNIQUE_IDX, musicqupdate->uniqueidx,
-          MUSICQ_COL_DBIDX, musicqupdate->dbidx,
+          MUSICQ_COL_IDX, (gulong) musicqupdate->idx,
+          MUSICQ_COL_DISP_IDX, (gulong) musicqupdate->dispidx,
+          MUSICQ_COL_UNIQUE_IDX, (gulong) musicqupdate->uniqueidx,
+          MUSICQ_COL_DBIDX, (gulong) musicqupdate->dbidx,
           MUSICQ_COL_PAUSEIND, pixbuf,
           -1);
       uimusicqSetMusicqDisplay (uimusicq, GTK_LIST_STORE (model), &iter, song);
     } else {
       /* all data must be updated */
       gtk_list_store_set (GTK_LIST_STORE (model), &iter,
-          MUSICQ_COL_IDX, musicqupdate->idx,
-          MUSICQ_COL_DISP_IDX, musicqupdate->dispidx,
-          MUSICQ_COL_UNIQUE_IDX, musicqupdate->uniqueidx,
-          MUSICQ_COL_DBIDX, musicqupdate->dbidx,
+          MUSICQ_COL_IDX, (gulong) musicqupdate->idx,
+          MUSICQ_COL_DISP_IDX, (gulong) musicqupdate->dispidx,
+          MUSICQ_COL_UNIQUE_IDX, (gulong) musicqupdate->uniqueidx,
+          MUSICQ_COL_DBIDX, (gulong) musicqupdate->dbidx,
           MUSICQ_COL_PAUSEIND, pixbuf,
           -1);
       uimusicqSetMusicqDisplay (uimusicq, GTK_LIST_STORE (model), &iter, song);

@@ -62,7 +62,6 @@ typedef struct {
   char            *locknm;
   procutil_t      *processes [ROUTE_MAX];
   conn_t          *conn;
-  sockserver_t    *sockserver;
   nlist_t         *dispProfileList;
   nlist_t         *profileIdxMap;
   ssize_t         currprofile;
@@ -177,7 +176,6 @@ main (int argc, char *argv[])
       starterStopWaitCallback, &starter);
   progstateSetCallback (starter.progstate, STATE_CLOSING,
       starterClosingCallback, &starter);
-  starter.sockserver = NULL;
   starter.window = NULL;
   starter.maxProfileWidth = 0;
   starter.dispProfileList = NULL;
@@ -226,21 +224,13 @@ main (int argc, char *argv[])
     nlistSetNum (starter.options, STARTERUI_SIZE_Y, 800);
   }
 
-  starter.sockserver = sockhStartServer (listenPort);
-
   uiutilsInitUILog ();
   gtk_init (&argc, NULL);
   uifont = bdjoptGetStr (OPT_MP_UIFONT);
   uiutilsSetUIFont (uifont);
 
-  g_timeout_add (UI_MAIN_LOOP_TIMER, starterMainLoop, &starter);
-
   starterBuildUI (&starter);
-  gtk_main ();
-
-  while (progstateShutdownProcess (starter.progstate) != STATE_CLOSED) {
-    mssleep (50);
-  }
+  sockhMainLoop (listenPort, starterProcessMsg, starterMainLoop, &starter);
 
   progstateFree (starter.progstate);
   logProcEnd (LOG_PROC, "starterui", "");
@@ -319,7 +309,6 @@ starterClosingCallback (void *udata, programstate_t programState)
 
   bdj4shutdown (ROUTE_STARTERUI, NULL);
 
-  sockhCloseServer (starter->sockserver);
   connFree (starter->conn);
 
   if (starter->supporttb != NULL) {
@@ -495,33 +484,36 @@ starterBuildUI (startui_t  *starter)
   gtk_widget_show_all (starter->window);
 }
 
-gboolean
+int
 starterMainLoop (void *tstarter)
 {
   startui_t   *starter = tstarter;
-  int         tdone = 0;
-  gboolean    cont = TRUE;
+  int         stop = FALSE;
   /* support message handling */
   char        tbuff [MAXPATHLEN];
   char        ofn [MAXPATHLEN];
 
 
-  tdone = sockhProcessMain (starter->sockserver, starterProcessMsg, starter);
-  if (tdone || gdone) {
-    ++gdone;
-  }
   if (gdone > STARTER_EXIT_WAIT_COUNT) {
-    gtk_main_quit ();
-    cont = FALSE;
+    stop = TRUE;
+  }
+
+  while (! stop && gtk_events_pending ()) {
+    gtk_main_iteration_do (FALSE);
+  }
+
+  if (gdone) {
+    ++gdone;
   }
 
   if (! progstateIsRunning (starter->progstate)) {
     progstateProcess (starter->progstate);
-    if (gKillReceived) {
+    if (! gdone && gKillReceived) {
       logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
       progstateShutdownProcess (starter->progstate);
+      gKillReceived = 0;
     }
-    return cont;
+    return stop;
   }
 
   if (starter->mainstarted &&
@@ -708,11 +700,12 @@ starterMainLoop (void *tstarter)
     }
   }
 
-  if (gKillReceived) {
+  if (! gdone && gKillReceived) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
     progstateShutdownProcess (starter->progstate);
+    gKillReceived = 0;
   }
-  return cont;
+  return stop;
 }
 
 static int

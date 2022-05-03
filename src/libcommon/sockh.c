@@ -16,8 +16,8 @@
 #include "bdjmsg.h"
 
 void
-sockhMainLoop (uint16_t listenPort, sockProcessMsg_t msgProc,
-            sockOtherProcessing_t otherProc, void *userData)
+sockhMainLoop (uint16_t listenPort, sockhProcessMsg_t msgFunc,
+            sockhProcessFunc_t processFunc, void *userData)
 {
   int           done = 0;
   int           tdone = 0;
@@ -28,16 +28,16 @@ sockhMainLoop (uint16_t listenPort, sockProcessMsg_t msgProc,
   sockserver = sockhStartServer (listenPort);
 
   while (done < SOCKH_EXIT_WAIT_COUNT) {
-    tdone = sockhProcessMain (sockserver, msgProc, userData);
+    tdone = sockhProcessMain (sockserver, msgFunc, userData);
     if (tdone || done) {
       /* wait for close messages to come in */
       ++done;
     }
 
-    tdone = otherProc (userData);
+    tdone = processFunc (userData);
     if (tdone) {
       args [0] = '\0';
-      tdone = msgProc (ROUTE_NONE, ROUTE_NONE, MSG_EXIT_REQUEST, args, userData);
+      tdone = msgFunc (ROUTE_NONE, ROUTE_NONE, MSG_EXIT_REQUEST, args, userData);
       ++done;
     }
     msgsock = sockCheck (sockserver->si);
@@ -82,7 +82,7 @@ sockhCloseServer (sockserver_t *sockserver)
 }
 
 int
-sockhProcessMain (sockserver_t *sockserver, sockProcessMsg_t msgProc,
+sockhProcessMain (sockserver_t *sockserver, sockhProcessMsg_t msgFunc,
     void *userData)
 {
   Sock_t      msgsock = INVALID_SOCKET;
@@ -137,11 +137,11 @@ sockhProcessMain (sockserver_t *sockserver, sockProcessMsg_t msgProc,
           logMsg (LOG_DBG, LOG_SOCKET, "got: close socket");
           sockRemoveCheck (sockserver->si, msgsock);
           /* the caller will close the socket */
-          done = msgProc (routefrom, route, msg, args, userData);
+          done = msgFunc (routefrom, route, msg, args, userData);
           break;
         }
         default: {
-          done = msgProc (routefrom, route, msg, args, userData);
+          done = msgFunc (routefrom, route, msg, args, userData);
         }
       } /* switch */
     } /* msg from client */

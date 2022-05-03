@@ -196,9 +196,6 @@ main (int argc, char *argv[])
   listenPort = bdjvarsGetNum (BDJVL_MAIN_PORT);
   sockhMainLoop (listenPort, mainProcessMsg, mainProcessing, &mainData);
 
-  while (progstateShutdownProcess (mainData.progstate) != STATE_CLOSED) {
-    mssleep (50);
-  }
   progstateFree (mainData.progstate);
 
   logProcEnd (LOG_PROC, "main", "");
