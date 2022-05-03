@@ -1,6 +1,5 @@
 #include "config.h"
 
-
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
@@ -20,6 +19,13 @@ enum {
   PS_SUCCESS,
   PS_USERDATA,
 };
+
+typedef struct progstate {
+  programstate_t      programState;
+  ilist_t             *callbacks [STATE_MAX];
+  mstime_t            tm;
+  char                *progtag;
+} progstate_t;
 
 /* for debugging */
 static char *progstatetext [] = {

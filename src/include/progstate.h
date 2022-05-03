@@ -21,12 +21,7 @@ typedef enum {
 
 typedef bool (*progstateCallback_t)(void *userdata, programstate_t programState);
 
-typedef struct {
-  programstate_t      programState;
-  ilist_t             *callbacks [STATE_MAX];
-  mstime_t            tm;
-  char                *progtag;
-} progstate_t;
+typedef struct progstate progstate_t;
 
 progstate_t     * progstateInit (char *progtag);
 void            progstateFree (progstate_t *progstate);
