@@ -136,9 +136,9 @@ uiutilsSetDisplayColumns (GtkListStore *store, GtkTreeIter *iter,
       num = songGetNum (song, tagidx);
       val = (ssize_t) num;
       if (val != LIST_VALUE_INVALID) {
-        gtk_list_store_set (store, iter, col++, num, -1);
+        gtk_list_store_set (store, iter, col++, (gulong) num, -1);
       } else {
-        gtk_list_store_set (store, iter, col++, 0, -1);
+        gtk_list_store_set (store, iter, col++, (gulong) 0, -1);
       }
     }
   }

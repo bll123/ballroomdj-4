@@ -317,9 +317,9 @@ uisongselPopulateData (uisongsel_t *uisongsel)
         gtk_list_store_set (GTK_LIST_STORE (model), &iter,
             SONGSEL_COL_ELLIPSIZE, PANGO_ELLIPSIZE_END,
             SONGSEL_COL_FONT, listingFont,
-            SONGSEL_COL_IDX, idx,
-            SONGSEL_COL_SORTIDX, idx,
-            SONGSEL_COL_DBIDX, dbidx,
+            SONGSEL_COL_IDX, (gulong) idx,
+            SONGSEL_COL_SORTIDX, (gulong) idx,
+            SONGSEL_COL_DBIDX, (gulong) dbidx,
             SONGSEL_COL_FAV_COLOR, color,
             -1);
 
