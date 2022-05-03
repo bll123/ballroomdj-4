@@ -393,13 +393,13 @@ installerBuildUI (installer_t *installer)
   gtk_window_set_default_size (GTK_WINDOW (window), 1000, 600);
   installer->window = window;
 
-  vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 2);
+  vbox = uiutilsCreateVertBox ();
   gtk_widget_set_margin_top (vbox, 20);
   gtk_widget_set_margin_bottom (vbox, 10);
   gtk_widget_set_margin_start (vbox, 10);
   gtk_widget_set_margin_end (vbox, 10);
-  gtk_widget_set_hexpand (vbox, TRUE);
-  gtk_widget_set_vexpand (vbox, TRUE);
+  uiutilsWidgetExpandHoriz (vbox);
+  uiutilsWidgetExpandVert (vbox);
   gtk_container_add (GTK_CONTAINER (window), vbox);
 
   widget = uiutilsCreateLabel (
@@ -409,15 +409,15 @@ installerBuildUI (installer_t *installer)
 
   widget = uiutilsEntryCreate (&installer->targetEntry);
   uiutilsEntrySetValue (&installer->targetEntry, installer->target);
-  gtk_widget_set_halign (widget, GTK_ALIGN_FILL);
-  gtk_widget_set_hexpand (widget, TRUE);
+  uiutilsWidgetAlignHorizFill (widget);
+  uiutilsWidgetExpandHoriz (widget);
   uiutilsBoxPackStart (vbox, widget);
 
   g_signal_connect (installer->targetEntry.entry, "changed",
       G_CALLBACK (installerValidateStart), installer);
 
-  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
-  gtk_widget_set_hexpand (hbox, TRUE);
+  hbox = uiutilsCreateHorizBox ();
+  uiutilsWidgetExpandHoriz (hbox);
   uiutilsBoxPackStart (vbox, hbox);
 
   /* CONTEXT: installer: overwrite the previous BDJ4 installation */
@@ -456,8 +456,8 @@ installerBuildUI (installer_t *installer)
       _("The conversion process will only run for new installations and for re-installations."));
   uiutilsBoxPackStart (vbox, widget);
 
-  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
-  gtk_widget_set_hexpand (hbox, TRUE);
+  hbox = uiutilsCreateHorizBox ();
+  uiutilsWidgetExpandHoriz (hbox);
   uiutilsBoxPackStart (vbox, hbox);
 
   /* CONTEXT: installer: label for entry field asking for BDJ3 location */
@@ -467,8 +467,8 @@ installerBuildUI (installer_t *installer)
 
   widget = uiutilsEntryCreate (&installer->bdj3locEntry);
   uiutilsEntrySetValue (&installer->bdj3locEntry, installer->bdj3loc);
-  gtk_widget_set_halign (widget, GTK_ALIGN_FILL);
-  gtk_widget_set_hexpand (widget, TRUE);
+  uiutilsWidgetAlignHorizFill (widget);
+  uiutilsWidgetExpandHoriz (widget);
   uiutilsBoxPackStart (hbox, widget);
   g_signal_connect (installer->bdj3locEntry.entry, "changed",
       G_CALLBACK (installerValidateStart), installer);
@@ -480,8 +480,8 @@ installerBuildUI (installer_t *installer)
   gtk_widget_set_margin_start (widget, 0);
   uiutilsBoxPackStart (hbox, widget);
 
-  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
-  gtk_widget_set_hexpand (hbox, TRUE);
+  hbox = uiutilsCreateHorizBox ();
+  uiutilsWidgetExpandHoriz (hbox);
   uiutilsBoxPackStart (vbox, hbox);
 
   /* CONTEXT: installer: convert the BallroomDJ 3 installation */
@@ -506,8 +506,8 @@ installerBuildUI (installer_t *installer)
 
   sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
-  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
-  gtk_widget_set_hexpand (hbox, TRUE);
+  hbox = uiutilsCreateHorizBox ();
+  uiutilsWidgetExpandHoriz (hbox);
   uiutilsBoxPackStart (vbox, hbox);
 
   widget = uiutilsCreateColonLabel ("VLC");
@@ -520,8 +520,8 @@ installerBuildUI (installer_t *installer)
   uiutilsBoxPackStart (hbox, installer->vlcMsg);
 
   /* python status */
-  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
-  gtk_widget_set_hexpand (hbox, TRUE);
+  hbox = uiutilsCreateHorizBox ();
+  uiutilsWidgetExpandHoriz (hbox);
   uiutilsBoxPackStart (vbox, hbox);
 
   widget = uiutilsCreateColonLabel ("Python");
@@ -534,8 +534,8 @@ installerBuildUI (installer_t *installer)
   uiutilsBoxPackStart (hbox, installer->pythonMsg);
 
   /* mutagen status */
-  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
-  gtk_widget_set_hexpand (hbox, TRUE);
+  hbox = uiutilsCreateHorizBox ();
+  uiutilsWidgetExpandHoriz (hbox);
   uiutilsBoxPackStart (vbox, hbox);
 
   widget = uiutilsCreateColonLabel ("Mutagen");
@@ -548,8 +548,8 @@ installerBuildUI (installer_t *installer)
   uiutilsBoxPackStart (hbox, installer->mutagenMsg);
 
   /* button box */
-  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
-  gtk_widget_set_hexpand (hbox, TRUE);
+  hbox = uiutilsCreateHorizBox ();
+  uiutilsWidgetExpandHoriz (hbox);
   uiutilsBoxPackStart (vbox, hbox);
 
   widget = uiutilsCreateButton (_("Exit"), NULL, installerExit, installer);
@@ -567,18 +567,18 @@ installerBuildUI (installer_t *installer)
   installer->dispTextView = gtk_text_view_new_with_buffer (installer->dispBuffer);
   gtk_widget_set_size_request (installer->dispTextView, -1, 400);
   gtk_widget_set_can_focus (installer->dispTextView, FALSE);
-  gtk_widget_set_halign (installer->dispTextView, GTK_ALIGN_FILL);
-  gtk_widget_set_valign (installer->dispTextView, GTK_ALIGN_START);
-  gtk_widget_set_hexpand (installer->dispTextView, TRUE);
-  gtk_widget_set_vexpand (installer->dispTextView, TRUE);
+  uiutilsWidgetAlignHorizFill (installer->dispTextView);
+  uiutilsWidgetAlignVertStart (installer->dispTextView);
+  uiutilsWidgetExpandHoriz (installer->dispTextView);
+  uiutilsWidgetExpandVert (installer->dispTextView);
   gtk_container_add (GTK_CONTAINER (scwidget), installer->dispTextView);
   g_signal_connect (installer->dispTextView,
       "size-allocate", G_CALLBACK (installerScrollToEnd), installer);
 
   /* push the text view to the top */
-  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+  hbox = uiutilsCreateHorizBox ();
   assert (hbox != NULL);
-  gtk_widget_set_vexpand (hbox, TRUE);
+  uiutilsWidgetExpandVert (hbox);
   gtk_box_pack_start (GTK_BOX (vbox), hbox, TRUE, TRUE, 0);
 
   gtk_widget_show_all (window);

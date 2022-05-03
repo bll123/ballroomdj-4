@@ -436,7 +436,7 @@ manageBuildUI (manageui_t *manage)
   uiutilsSetCss (widget, tbuff);
   manage->statusMsg = widget;
 
-  menubar = gtk_menu_bar_new ();
+  menubar = uiutilsCreateMenubar ();
   uiutilsBoxPackStart (hbox, menubar);
   manage->menubar = menubar;
 
@@ -454,7 +454,7 @@ manageBuildUI (manageui_t *manage)
 
   /* song list editor: player */
   widget = uiplayerBuildUI (manage->slplayer);
-  gtk_widget_set_hexpand (widget, TRUE);
+  uiutilsWidgetExpandHoriz (widget);
   uiutilsBoxPackStart (vbox, widget);
 
   notebook = uiutilsCreateNotebook ();
@@ -491,7 +491,7 @@ manageBuildUI (manageui_t *manage)
 
   /* music manager: player */
   widget = uiplayerBuildUI (manage->mmplayer);
-  gtk_widget_set_hexpand (widget, TRUE);
+  uiutilsWidgetExpandHoriz (widget);
   uiutilsBoxPackStart (vbox, widget);
 
   g_signal_connect (notebook, "switch-page",
@@ -531,7 +531,7 @@ manageBuildUI (manageui_t *manage)
   uiutilsBoxPackStart (vbox, tb->scw);
   manage->dbhelpdisp = tb;
 
-  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+  hbox = uiutilsCreateHorizBox ();
   uiutilsBoxPackStart (vbox, hbox);
 
   widget = uiutilsSpinboxTextCreate (&manage->dbspinbox, manage);
@@ -965,13 +965,11 @@ manageSwitchPage (GtkNotebook *nb, GtkWidget *page, guint pagenum,
     /* force menu selection */
     slnb = true;
     id = manage->sllasttab;
-fprintf (stderr, "force sl tab %d\n", id);
   }
   if (mainnb && id == MANAGE_TAB_MAIN_MM) {
     /* force menu selection */
     mmnb = true;
     id = manage->mmlasttab;
-fprintf (stderr, "force mm tab %d\n", id);
   }
 
   switch (id) {
@@ -982,12 +980,10 @@ fprintf (stderr, "force mm tab %d\n", id);
       break;
     }
     case MANAGE_TAB_SONGLIST: {
-fprintf (stderr, "set sl menu\n");
       manageSonglistMenu (manage);
       break;
     }
     case MANAGE_TAB_SONGEDIT: {
-fprintf (stderr, "set songedit menu\n");
       manageSongEditMenu (manage);
       break;
     }
@@ -1022,13 +1018,16 @@ manageSonglistMenu (manageui_t *manage)
     menu = uiutilsCreateSubMenu (menuitem);
 
     /* CONTEXT: menu selection: song list: edit menu: load */
-    menuitem = uiutilsCreateMenuItem (menu, _("Load"));
+    menuitem = uiutilsMenuCreateItem (menu, _("Load"), NULL, NULL);
+    uiutilsWidgetDisable (menuitem);
 
     /* CONTEXT: menu selection: song list: edit menu: create copy */
-    menuitem = uiutilsCreateMenuItem (menu, _("Create Copy"));
+    menuitem = uiutilsMenuCreateItem (menu, _("Create Copy"), NULL, NULL);
+    uiutilsWidgetDisable (menuitem);
 
     /* CONTEXT: menu selection: song list: edit menu: start new song list */
-    menuitem = uiutilsCreateMenuItem (menu, _("Start New Song List"));
+    menuitem = uiutilsMenuCreateItem (menu, _("Start New Song List"), NULL, NULL);
+    uiutilsWidgetDisable (menuitem);
 
     menuitem = uiutilsMenuAddMainItem (manage->menubar,
         /* CONTEXT: menu selection: actions for song list */
@@ -1037,10 +1036,12 @@ manageSonglistMenu (manageui_t *manage)
     menu = uiutilsCreateSubMenu (menuitem);
 
     /* CONTEXT: menu selection: song list: actions menu: rearrange the songs and create a new mix */
-    menuitem = uiutilsCreateMenuItem (menu, _("Mix"));
+    menuitem = uiutilsMenuCreateItem (menu, _("Mix"), NULL, NULL);
+    uiutilsWidgetDisable (menuitem);
 
     /* CONTEXT: menu selection: song list: actions menu: truncate the song list */
-    menuitem = uiutilsCreateMenuItem (menu, _("Truncate"));
+    menuitem = uiutilsMenuCreateItem (menu, _("Truncate"), NULL, NULL);
+    uiutilsWidgetDisable (menuitem);
 
     menuitem = uiutilsMenuAddMainItem (manage->menubar,
         /* CONTEXT: menu selection: export actions for song list */
@@ -1049,14 +1050,17 @@ manageSonglistMenu (manageui_t *manage)
     menu = uiutilsCreateSubMenu (menuitem);
 
     /* CONTEXT: menu selection: song list: export: export as m3u */
-    menuitem = uiutilsCreateMenuItem (menu, _("Export as M3U Playlist"));
+    menuitem = uiutilsMenuCreateItem (menu, _("Export as M3U Playlist"), NULL, NULL);
+    uiutilsWidgetDisable (menuitem);
 
     /* CONTEXT: menu selection: song list: export: export as m3u8 */
-    menuitem = uiutilsCreateMenuItem (menu, _("Export as M3U8 Playlist"));
+    menuitem = uiutilsMenuCreateItem (menu, _("Export as M3U8 Playlist"), NULL, NULL);
+    uiutilsWidgetDisable (menuitem);
 
     /* CONTEXT: menu selection: song list: export: export for ballroomdj */
     snprintf (tbuff, sizeof (tbuff), _("Export for %s"), BDJ4_NAME);
-    menuitem = uiutilsCreateMenuItem (menu, tbuff);
+    menuitem = uiutilsMenuCreateItem (menu, tbuff, NULL, NULL);
+    uiutilsWidgetDisable (menuitem);
 
     menuitem = uiutilsMenuAddMainItem (manage->menubar,
         /* CONTEXT: menu selection: import actions for song list */
@@ -1065,11 +1069,13 @@ manageSonglistMenu (manageui_t *manage)
     menu = uiutilsCreateSubMenu (menuitem);
 
     /* CONTEXT: menu selection: song list: import: import m3u */
-    menuitem = uiutilsCreateMenuItem (menu, _("Import M3U"));
+    menuitem = uiutilsMenuCreateItem (menu, _("Import M3U"), NULL, NULL);
+    uiutilsWidgetDisable (menuitem);
 
     /* CONTEXT: menu selection: song list: import: import from ballroomdj */
     snprintf (tbuff, sizeof (tbuff), _("Import from %s"), BDJ4_NAME);
-    menuitem = uiutilsCreateMenuItem (menu, tbuff);
+    menuitem = uiutilsMenuCreateItem (menu, tbuff, NULL, NULL);
+    uiutilsWidgetDisable (menuitem);
 
     manage->slmenu.initialized = true;
   }
@@ -1092,13 +1098,16 @@ manageSongEditMenu (manageui_t *manage)
     menu = uiutilsCreateSubMenu (menuitem);
 
     /* CONTEXT: menu selection: song edit: edit all */
-    menuitem = uiutilsCreateMenuItem (menu, _("Edit All"));
+    menuitem = uiutilsMenuCreateItem (menu, _("Edit All"), NULL, NULL);
+    uiutilsWidgetDisable (menuitem);
 
     /* CONTEXT: menu selection: song edit: apply edit all */
-    menuitem = uiutilsCreateMenuItem (menu, _("Apply Edit All"));
+    menuitem = uiutilsMenuCreateItem (menu, _("Apply Edit All"), NULL, NULL);
+    uiutilsWidgetDisable (menuitem);
 
     /* CONTEXT: menu selection: song edit: cancel edit all */
-    menuitem = uiutilsCreateMenuItem (menu, _("Cancel Edit All"));
+    menuitem = uiutilsMenuCreateItem (menu, _("Cancel Edit All"), NULL, NULL);
+    uiutilsWidgetDisable (menuitem);
 
     manage->songeditmenu.initialized = true;
   }

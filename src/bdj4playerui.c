@@ -346,7 +346,7 @@ pluiBuildUI (playerui_t *plui)
       bdjoptGetStr (OPT_P_PROFILENAME), imgbuff,
       pluiCloseWin, plui);
 
-  plui->vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+  plui->vbox = uiutilsCreateVertBox ();
   gtk_container_add (GTK_CONTAINER (plui->window), plui->vbox);
   gtk_widget_set_margin_top (plui->vbox, 4);
   gtk_widget_set_margin_bottom (plui->vbox, 4);
@@ -354,11 +354,11 @@ pluiBuildUI (playerui_t *plui)
   gtk_widget_set_margin_end (plui->vbox, 4);
 
   /* menu */
-  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
-  gtk_widget_set_hexpand (hbox, TRUE);
+  hbox = uiutilsCreateHorizBox ();
+  uiutilsWidgetExpandHoriz (hbox);
   uiutilsBoxPackStart (plui->vbox, hbox);
 
-  menubar = gtk_menu_bar_new ();
+  menubar = uiutilsCreateMenubar ();
   uiutilsBoxPackStart (hbox, menubar);
 
   plui->clock = uiutilsCreateLabel ("");
@@ -369,52 +369,37 @@ pluiBuildUI (playerui_t *plui)
   uiutilsSetCss (plui->clock, tbuff);
 
   /* CONTEXT: menu selection: options for the player */
-  menuitem = gtk_menu_item_new_with_label (_("Options"));
-  gtk_menu_shell_append (GTK_MENU_SHELL (menubar), menuitem);
+  menuitem = uiutilsMenuCreateItem (menubar, _("Options"), NULL, NULL);
 
-  menu = gtk_menu_new ();
-  gtk_menu_item_set_submenu (GTK_MENU_ITEM (menuitem), menu);
+  menu = uiutilsCreateSubMenu (menuitem);
 
   /* CONTEXT: menu checkbox: start playback when a dance or playlist is queued */
-  menuitem = gtk_check_menu_item_new_with_label (_("Play When Queued"));
-  gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (menuitem),
-      nlistGetNum (plui->options, PLUI_PLAY_WHEN_QUEUED));
-  gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
-  g_signal_connect (menuitem, "toggled",
-      G_CALLBACK (pluiTogglePlayWhenQueued), plui);
+  menuitem = uiutilsMenuCreateCheckbox (menu, _("Play When Queued"),
+      nlistGetNum (plui->options, PLUI_PLAY_WHEN_QUEUED),
+      pluiTogglePlayWhenQueued, plui);
 
   /* CONTEXT: menu checkbox: show the extra queues (in addition to the main music queue) */
-  menuitem = gtk_check_menu_item_new_with_label (_("Show Extra Queues"));
-  gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (menuitem),
-      nlistGetNum (plui->options, PLUI_SHOW_EXTRA_QUEUES));
-  gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
-  g_signal_connect (menuitem, "toggled",
-      G_CALLBACK (pluiToggleExtraQueues), plui);
+  menuitem = uiutilsMenuCreateCheckbox (menu, _("Show Extra Queues"),
+      nlistGetNum (plui->options, PLUI_SHOW_EXTRA_QUEUES),
+      pluiToggleExtraQueues, plui);
 
   /* CONTEXT: menu checkbox: when a queue is emptied, switch playback to the other queue */
-  menuitem = gtk_check_menu_item_new_with_label (_("Switch Queue When Empty"));
-  gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (menuitem),
-      nlistGetNum (plui->options, PLUI_SWITCH_QUEUE_WHEN_EMPTY));
-  gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
-  g_signal_connect (menuitem, "toggled",
-      G_CALLBACK (pluiToggleSwitchQueue), plui);
+  menuitem = uiutilsMenuCreateCheckbox (menu, _("Switch Queue When Empty"),
+      nlistGetNum (plui->options, PLUI_SWITCH_QUEUE_WHEN_EMPTY),
+      pluiToggleSwitchQueue, plui);
 
   /* CONTEXT: menu selection: marquee related options */
-  menuitem = gtk_menu_item_new_with_label (_("Marquee"));
-  gtk_menu_shell_append (GTK_MENU_SHELL (menubar), menuitem);
+  menuitem = uiutilsMenuCreateItem (menubar, _("Marquee"), NULL, NULL);
 
-  menu = gtk_menu_new ();
-  gtk_menu_item_set_submenu (GTK_MENU_ITEM (menuitem), menu);
+  menu = uiutilsCreateSubMenu (menuitem);
 
   /* CONTEXT: menu selection: marquee: change the marquee font size */
-  menuitem = gtk_menu_item_new_with_label (_("Font Size"));
-  gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
-  g_signal_connect (menuitem, "activate",
-      G_CALLBACK (pluiMarqueeFontSizeDialog), plui);
+  menuitem = uiutilsMenuCreateItem (menu, _("Font Size"),
+      pluiMarqueeFontSizeDialog, plui);
 
   /* player */
   widget = uiplayerBuildUI (plui->uiplayer);
-  gtk_widget_set_hexpand (widget, TRUE);
+  uiutilsWidgetExpandHoriz (widget);
   uiutilsBoxPackStart (plui->vbox, widget);
 
   plui->notebook = uiutilsCreateNotebook ();
@@ -433,7 +418,7 @@ pluiBuildUI (playerui_t *plui)
   for (musicqidx_t i = 0; i < MUSICQ_MAX; ++i) {
     /* music queue tab */
     widget = uimusicqBuildUI (plui->uimusicq, plui->window, i);
-    hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+    hbox = uiutilsCreateHorizBox ();
     str = bdjoptGetStr (OPT_P_QUEUE_NAME_A + i);
     tabLabel = gtk_label_new (str);
     uiutilsBoxPackStart (hbox, tabLabel);
@@ -937,13 +922,11 @@ pluiCreateMarqueeFontSizeDialog (playerui_t *plui)
 
   content = gtk_dialog_get_content_area (GTK_DIALOG (plui->marqueeFontSizeDialog));
 
-  vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+  vbox = uiutilsCreateVertBox ();
   assert (vbox != NULL);
-  gtk_widget_set_hexpand (vbox, FALSE);
-  gtk_widget_set_vexpand (vbox, FALSE);
   gtk_container_add (GTK_CONTAINER (content), vbox);
 
-  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+  hbox = uiutilsCreateHorizBox ();
   assert (hbox != NULL);
   uiutilsBoxPackStart (vbox, hbox);
 
@@ -959,7 +942,7 @@ pluiCreateMarqueeFontSizeDialog (playerui_t *plui)
       G_CALLBACK (pluiMarqueeFontSizeChg), plui);
 
   /* the dialog doesn't have any space above the buttons */
-  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+  hbox = uiutilsCreateHorizBox ();
   assert (hbox != NULL);
   uiutilsBoxPackStart (vbox, hbox);
 

@@ -37,6 +37,22 @@ static GLogWriterOutput uiutilsGtkLogger (GLogLevelFlags logLevel,
 int uiutilsBaseMarginSz = UIUTILS_BASE_MARGIN_SZ;
 
 void
+uiutilsUIInitialize (void)
+{
+  int argc = 0;
+  uiutilsInitUILog ();
+  gtk_init (&argc, NULL);
+}
+
+void
+uiutilsUIProcessEvents (void)
+{
+  while (gtk_events_pending ()) {
+    gtk_main_iteration_do (FALSE);
+  }
+}
+
+void
 uiutilsCleanup (void)
 {
   if (cssdata != NULL) {
@@ -126,7 +142,7 @@ uiutilsSetUIFont (char *uifont)
   logProcEnd (LOG_PROC, "uiutilsSetUIFont", "");
 }
 
-void
+inline void
 uiutilsInitUILog (void)
 {
   g_log_set_writer_func (uiutilsGtkLogger, NULL, NULL);
@@ -162,13 +178,91 @@ uiutilsGetForegroundColor (GtkWidget *widget, char *buff, size_t sz)
       (int) round (gcolor.blue * 255.0));
 }
 
-void
+inline void
+uiutilsWidgetDisable (GtkWidget *widget)
+{
+  gtk_widget_set_sensitive (widget, FALSE);
+}
+
+inline void
+uiutilsWidgetEnable (GtkWidget *widget)
+{
+  gtk_widget_set_sensitive (widget, TRUE);
+}
+
+inline void
+uiutilsWidgetExpandHoriz (GtkWidget *widget)
+{
+  gtk_widget_set_hexpand (widget, TRUE);
+}
+
+inline void
+uiutilsWidgetExpandVert (GtkWidget *widget)
+{
+  gtk_widget_set_vexpand (widget, TRUE);
+}
+
+inline void
 uiutilsWidgetSetAllMargins (GtkWidget *widget, int margin)
 {
   gtk_widget_set_margin_top (widget, margin);
   gtk_widget_set_margin_bottom (widget, margin);
   gtk_widget_set_margin_start (widget, margin);
   gtk_widget_set_margin_end (widget, margin);
+}
+
+inline void
+uiutilsWidgetAlignHorizFill (GtkWidget *widget)
+{
+  gtk_widget_set_halign (widget, GTK_ALIGN_FILL);
+}
+
+inline void
+uiutilsWidgetAlignHorizStart (GtkWidget *widget)
+{
+  gtk_widget_set_halign (widget, GTK_ALIGN_START);
+}
+
+inline void
+uiutilsWidgetAlignHorizEnd (GtkWidget *widget)
+{
+  gtk_widget_set_halign (widget, GTK_ALIGN_END);
+}
+
+inline void
+uiutilsWidgetAlignVertFill (GtkWidget *widget)
+{
+  gtk_widget_set_valign (widget, GTK_ALIGN_FILL);
+}
+
+inline void
+uiutilsWidgetAlignVertStart (GtkWidget *widget)
+{
+  gtk_widget_set_valign (widget, GTK_ALIGN_START);
+}
+
+inline void
+uiutilsWidgetDisableFocus (GtkWidget *widget)
+{
+  gtk_widget_set_can_focus (widget, FALSE);
+}
+
+inline void
+uiutilsWidgetHide (GtkWidget *widget)
+{
+  gtk_widget_hide (widget);
+}
+
+inline void
+uiutilsWidgetShow (GtkWidget *widget)
+{
+  gtk_widget_show (widget);
+}
+
+inline void
+uiutilsWidgetShowAll (GtkWidget *widget)
+{
+  gtk_widget_show_all (widget);
 }
 
 /* internal routines */

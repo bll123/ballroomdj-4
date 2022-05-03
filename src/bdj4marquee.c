@@ -197,8 +197,7 @@ main (int argc, char *argv[])
     nlistSetNum (marquee.options, MQ_FONT_SZ_FS, 60);
   }
 
-  uiutilsInitUILog ();
-  gtk_init (&argc, NULL);
+  uiutilsUIInitialize ();
   mqfont = bdjoptGetStr (OPT_MP_MQFONT);
   uiutilsSetUIFont (mqfont);
 
@@ -226,12 +225,12 @@ marqueeStoppingCallback (void *udata, programstate_t programState)
     return false;
   }
 
-  if (gtk_window_is_maximized (GTK_WINDOW (marquee->window))) {
+  if (uiutilsWindowIsMaximized (marquee->window)) {
     logProcEnd (LOG_PROC, "marqueeStoppingCallback", "is-maximized-b");
     return false;
   }
 
-  gtk_window_get_size (GTK_WINDOW (marquee->window), &x, &y);
+  uiutilsWindowGetSize (marquee->window, &x, &y);
   nlistSetNum (marquee->options, MQ_SIZE_X, x);
   nlistSetNum (marquee->options, MQ_SIZE_Y, y);
   if (! marquee->isIconified) {
@@ -254,9 +253,7 @@ marqueeClosingCallback (void *udata, programstate_t programState)
 
   /* these are moved here so that the window can be un-maximized and */
   /* the size/position saved */
-  if (GTK_IS_WIDGET (marquee->window)) {
-    gtk_widget_destroy (marquee->window);
-  }
+  uiutilsCloseMainWindow (marquee->window);
 
   pathbldMakePath (fn, sizeof (fn),
       "marquee", ".txt", PATHBLD_MP_USEIDX);
@@ -303,20 +300,20 @@ marqueeBuildUI (marquee_t *marquee)
   g_signal_connect (window, "map-event", G_CALLBACK (marqueeWinMapped), marquee);
   /* the backdrop window state must be intercepted */
   g_signal_connect (window, "state-flags-changed", G_CALLBACK (marqueeStateChg), marquee);
-  gtk_window_set_focus_on_map (GTK_WINDOW (window), FALSE);
+  uiutilsWindowNoFocusOnStartup (window);
   marquee->window = window;
 
   x = nlistGetNum (marquee->options, MQ_SIZE_X);
   y = nlistGetNum (marquee->options, MQ_SIZE_Y);
-  gtk_window_set_default_size (GTK_WINDOW (window), x, y);
+  uiutilsWindowSetDefaultSize (window, x, y);
 
   marquee->window = window;
 
   marquee->vbox = uiutilsCreateVertBox ();
   uiutilsWidgetSetAllMargins (marquee->vbox, 10);
-  gtk_container_add (GTK_CONTAINER (window), marquee->vbox);
-  gtk_widget_set_hexpand (marquee->vbox, TRUE);
-  gtk_widget_set_vexpand (marquee->vbox, TRUE);
+  uiutilsBoxPackInWindow (window, marquee->vbox);
+  uiutilsWidgetExpandHoriz (marquee->vbox);
+  uiutilsWidgetExpandVert (marquee->vbox);
   marquee->marginTotal = 20;
 
   marquee->pbar = uiutilsCreateProgressBar (bdjoptGetStr (OPT_P_MQ_ACCENT_COL));
@@ -324,29 +321,28 @@ marqueeBuildUI (marquee_t *marquee)
 
   vbox = uiutilsCreateVertBox ();
   uiutilsWidgetSetAllMargins (marquee->vbox, 10);
-  gtk_widget_set_hexpand (marquee->vbox, TRUE);
+  uiutilsWidgetExpandHoriz (marquee->vbox);
   uiutilsBoxPackStart (marquee->vbox, vbox);
 
   hbox = uiutilsCreateHorizBox ();
-  gtk_widget_set_halign (hbox, GTK_ALIGN_FILL);
-  gtk_widget_set_hexpand (hbox, TRUE);
+  uiutilsWidgetAlignHorizFill (hbox);
+  uiutilsWidgetExpandHoriz (hbox);
   uiutilsBoxPackStart (vbox, hbox);
 
   /* CONTEXT: marquee: displayed when nothing is set to be played */
   marquee->danceLab = uiutilsCreateLabel (_("Not Playing"));
-  gtk_widget_set_halign (marquee->danceLab, GTK_ALIGN_START);
-  gtk_widget_set_hexpand (marquee->danceLab, TRUE);
-  gtk_widget_set_can_focus (marquee->danceLab, FALSE);
+  uiutilsWidgetAlignHorizStart (marquee->danceLab);
+  uiutilsWidgetDisableFocus (marquee->danceLab);
   snprintf (tbuff, sizeof (tbuff),
       "label { color: %s; }",
       bdjoptGetStr (OPT_P_MQ_ACCENT_COL));
   uiutilsSetCss (marquee->danceLab, tbuff);
-  gtk_box_pack_start (GTK_BOX (hbox), marquee->danceLab, TRUE, TRUE, 0);
+  uiutilsBoxPackStart (hbox, marquee->danceLab);
 
   marquee->countdownTimerLab = uiutilsCreateLabel ("0:00");
-  gtk_label_set_max_width_chars (GTK_LABEL (marquee->countdownTimerLab), 6);
-  gtk_widget_set_halign (marquee->countdownTimerLab, GTK_ALIGN_END);
-  gtk_widget_set_can_focus (marquee->countdownTimerLab, FALSE);
+  uiutilsLabelSetMaxWidth (marquee->countdownTimerLab, 6);
+  uiutilsWidgetAlignHorizEnd (marquee->countdownTimerLab);
+  uiutilsWidgetDisableFocus (marquee->countdownTimerLab);
   snprintf (tbuff, sizeof (tbuff),
       "label { color: %s; }",
       bdjoptGetStr (OPT_P_MQ_ACCENT_COL));
@@ -354,61 +350,61 @@ marqueeBuildUI (marquee_t *marquee)
   uiutilsBoxPackEnd (hbox, marquee->countdownTimerLab);
 
   hbox = uiutilsCreateHorizBox ();
-  gtk_widget_set_halign (hbox, GTK_ALIGN_FILL);
-  gtk_widget_set_hexpand (hbox, TRUE);
+  uiutilsWidgetAlignHorizFill (hbox);
+  uiutilsWidgetExpandHoriz (hbox);
   uiutilsBoxPackStart (vbox, hbox);
   marquee->infoBox = hbox;
 
   marquee->infoArtistLab = uiutilsCreateLabel ("");
-  gtk_widget_set_halign (marquee->infoArtistLab, GTK_ALIGN_START);
-  gtk_widget_set_hexpand (hbox, TRUE);
-  gtk_widget_set_can_focus (marquee->infoArtistLab, FALSE);
-  gtk_label_set_ellipsize (GTK_LABEL (marquee->infoArtistLab), PANGO_ELLIPSIZE_END);
+  uiutilsWidgetAlignHorizStart (marquee->infoArtistLab);
+  uiutilsWidgetExpandHoriz (hbox);
+  uiutilsWidgetDisableFocus (marquee->infoArtistLab);
+  uiutilsLabelEllipsizeOn (marquee->infoArtistLab);
   uiutilsBoxPackStart (hbox, marquee->infoArtistLab);
 
   marquee->infoSepLab = uiutilsCreateLabel ("");
-  gtk_widget_set_halign (marquee->infoSepLab, GTK_ALIGN_START);
-  gtk_widget_set_hexpand (hbox, FALSE);
-  gtk_widget_set_can_focus (marquee->infoSepLab, FALSE);
+  uiutilsWidgetAlignHorizStart (marquee->infoSepLab);
+  uiutilsWidgetDisableFocus (marquee->infoSepLab);
   uiutilsBoxPackStart (hbox, marquee->infoSepLab);
 
   marquee->infoTitleLab = uiutilsCreateLabel ("");
-  gtk_widget_set_halign (marquee->infoTitleLab, GTK_ALIGN_START);
-  gtk_widget_set_hexpand (hbox, TRUE);
-  gtk_widget_set_can_focus (marquee->infoTitleLab, FALSE);
-  gtk_label_set_ellipsize (GTK_LABEL (marquee->infoTitleLab), PANGO_ELLIPSIZE_END);
+  uiutilsWidgetAlignHorizStart (marquee->infoTitleLab);
+  uiutilsWidgetExpandHoriz (hbox);
+  uiutilsWidgetDisableFocus (marquee->infoTitleLab);
+  uiutilsLabelEllipsizeOn (marquee->infoTitleLab);
   uiutilsBoxPackStart (hbox, marquee->infoTitleLab);
 
   marquee->sep = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
+  uiutilsWidgetExpandHoriz (marquee->sep);
   gtk_widget_set_margin_top (marquee->sep, 2);
   snprintf (tbuff, sizeof (tbuff),
       "separator { min-height: 4px; background-color: %s; }",
       bdjoptGetStr (OPT_P_MQ_ACCENT_COL));
   uiutilsSetCss (marquee->sep, tbuff);
-  gtk_box_pack_end (GTK_BOX (vbox), marquee->sep, TRUE, FALSE, 0);
+  uiutilsBoxPackEnd (vbox, marquee->sep);
 
   marquee->marqueeLabs = malloc (sizeof (GtkWidget *) * marquee->mqLen);
 
   for (int i = 0; i < marquee->mqLen; ++i) {
     marquee->marqueeLabs [i] = uiutilsCreateLabel ("");
-    gtk_widget_set_halign (marquee->marqueeLabs [i], GTK_ALIGN_START);
-    gtk_widget_set_hexpand (marquee->marqueeLabs [i], TRUE);
+    uiutilsWidgetAlignHorizStart (marquee->marqueeLabs [i]);
+    uiutilsWidgetExpandHoriz (marquee->marqueeLabs [i]);
     gtk_widget_set_margin_end (marquee->marqueeLabs [i], 10);
-    gtk_widget_set_can_focus (marquee->marqueeLabs [i], FALSE);
+    uiutilsWidgetDisableFocus (marquee->marqueeLabs [i]);
     uiutilsBoxPackStart (marquee->vbox, marquee->marqueeLabs [i]);
   }
 
   marqueeSetFont (marquee, nlistGetNum (marquee->options, MQ_FONT_SZ));
 
   if (marquee->hideonstart) {
-    gtk_window_iconify (GTK_WINDOW (window));
+    uiutilsWindowIconify (window);
     marquee->isIconified = true;
   }
 
   if (! marquee->mqShowInfo) {
-    gtk_widget_hide (marquee->infoBox);
+    uiutilsWidgetHide (marquee->infoBox);
   }
-  gtk_widget_show_all (window);
+  uiutilsWidgetShowAll (window);
 
   marqueeMoveWindow (marquee);
 
@@ -431,8 +427,8 @@ marqueeMainLoop (void *tmarquee)
     stop = TRUE;
   }
 
-  while (! stop && gtk_events_pending ()) {
-    gtk_main_iteration_do (FALSE);
+  if (! stop) {
+    uiutilsUIProcessEvents ();
   }
 
   if (gdone) {
@@ -595,7 +591,7 @@ marqueeCloseWin (GtkWidget *window, GdkEvent *event, gpointer userdata)
   if (! gdone) {
     marqueeSaveWindowPosition (marquee);
 
-    gtk_window_iconify (GTK_WINDOW (window));
+    uiutilsWindowIconify (window);
     marquee->mqIconifyAction = true;
     marquee->isIconified = true;
     logProcEnd (LOG_PROC, "marqueeCloseWin", "user-close-win");
@@ -639,9 +635,9 @@ marqueeSetMaximized (marquee_t *marquee)
   marquee->isMaximized = true;
   if (! isWindows()) {
     /* does not work on windows platforms */
-    gtk_window_set_decorated (GTK_WINDOW (marquee->window), FALSE);
+    uiutilsWindowDisableDecorations (marquee->window);
   }
-  gtk_window_maximize (GTK_WINDOW (marquee->window));
+  uiutilsWindowMaximize (marquee->window);
   marqueeSetFont (marquee, nlistGetNum (marquee->options, MQ_FONT_SZ_FS));
   marqueeSendMaximizeState (marquee);
 }
@@ -665,10 +661,10 @@ static void
 marqueeSetNotMaximizeFinish (marquee_t *marquee)
 {
   marquee->setPrior = true;
-  gtk_window_unmaximize (GTK_WINDOW (marquee->window));
+  uiutilsWindowUnMaximize (marquee->window);
   if (! isWindows()) {
     /* does not work on windows platforms */
-    gtk_window_set_decorated (GTK_WINDOW (marquee->window), TRUE);
+    uiutilsWindowEnableDecorations (marquee->window);
   }
   marqueeSendMaximizeState (marquee);
   logProcEnd (LOG_PROC, "marqueeSetNotMaximized", "");
@@ -749,7 +745,7 @@ marqueeSaveWindowPosition (marquee_t *marquee)
 {
   gint  x, y;
 
-  gtk_window_get_position (GTK_WINDOW (marquee->window), &x, &y);
+  uiutilsWindowGetPosition (marquee->window, &x, &y);
   nlistSetNum (marquee->options, MQ_POSITION_X, x);
   nlistSetNum (marquee->options, MQ_POSITION_Y, y);
 }
@@ -762,7 +758,7 @@ marqueeMoveWindow (marquee_t *marquee)
   x = nlistGetNum (marquee->options, MQ_POSITION_X);
   y = nlistGetNum (marquee->options, MQ_POSITION_Y);
   if (x != -1 && y != -1) {
-    gtk_window_move (GTK_WINDOW (marquee->window), x, y);
+    uiutilsWindowMove (marquee->window, x, y);
   }
 }
 
@@ -813,7 +809,7 @@ marqueePopulate (marquee_t *marquee, char *args)
   logProcBegin (LOG_PROC, "marqueePopulate");
 
   if (! marquee->mqShowInfo) {
-    gtk_widget_hide (marquee->infoBox);
+    uiutilsWidgetHide (marquee->infoBox);
   }
 
   p = strtok_r (args, MSG_ARGS_RS_STR, &tokptr);
@@ -824,7 +820,7 @@ marqueePopulate (marquee_t *marquee, char *args)
     if (p != NULL && *p != '\0') {
       ++showsep;
     }
-    gtk_label_set_label (GTK_LABEL (marquee->infoArtistLab), p);
+    uiutilsLabelSetText (marquee->infoArtistLab, p);
   }
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokptr);
@@ -835,14 +831,14 @@ marqueePopulate (marquee_t *marquee, char *args)
     if (p != NULL && *p != '\0') {
       ++showsep;
     }
-    gtk_label_set_label (GTK_LABEL (marquee->infoTitleLab), p);
+    uiutilsLabelSetText (marquee->infoTitleLab, p);
   }
 
   if (marquee->infoSepLab != NULL) {
     if (showsep == 2) {
-      gtk_label_set_label (GTK_LABEL (marquee->infoSepLab), " / ");
+      uiutilsLabelSetText (marquee->infoSepLab, "/ ");
     } else {
-      gtk_label_set_label (GTK_LABEL (marquee->infoSepLab), "");
+      uiutilsLabelSetText (marquee->infoSepLab, "");
     }
   }
 
@@ -851,14 +847,14 @@ marqueePopulate (marquee_t *marquee, char *args)
   if (p != NULL && *p == MSG_ARGS_EMPTY) {
     p = "";
   }
-  gtk_label_set_label (GTK_LABEL (marquee->danceLab), p);
+  uiutilsLabelSetText (marquee->danceLab, p);
 
   for (int i = 0; i < marquee->mqLen; ++i) {
     p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokptr);
     if (p != NULL && *p != MSG_ARGS_EMPTY) {
-      gtk_label_set_label (GTK_LABEL (marquee->marqueeLabs [i]), p);
+      uiutilsLabelSetText (marquee->marqueeLabs [i], p);
     } else {
-      gtk_label_set_label (GTK_LABEL (marquee->marqueeLabs [i]), "");
+      uiutilsLabelSetText (marquee->marqueeLabs [i], "");
     }
   }
   logProcEnd (LOG_PROC, "marqueePopulate", "");
@@ -887,7 +883,7 @@ marqueeSetTimer (marquee_t *marquee, char *args)
 
   timeleft = dur - played;
   tmutilToMS (timeleft, tbuff, sizeof (tbuff));
-  gtk_label_set_label (GTK_LABEL (marquee->countdownTimerLab), tbuff);
+  uiutilsLabelSetText (marquee->countdownTimerLab, tbuff);
 
   ddur = (double) dur;
   dplayed = (double) played;
@@ -946,11 +942,11 @@ marqueeDisplayCompletion (marquee_t *marquee)
   char  *disp;
 
   disp = bdjoptGetStr (OPT_P_COMPLETE_MSG);
-  gtk_label_set_label (GTK_LABEL (marquee->infoArtistLab), "");
-  gtk_label_set_label (GTK_LABEL (marquee->infoSepLab), "");
-  gtk_label_set_label (GTK_LABEL (marquee->infoTitleLab), disp);
+  uiutilsLabelSetText (marquee->infoArtistLab, "");
+  uiutilsLabelSetText (marquee->infoSepLab, "");
+  uiutilsLabelSetText (marquee->infoTitleLab, disp);
 
   if (! marquee->mqShowInfo) {
-    gtk_widget_show_all (marquee->infoBox);
+    uiutilsWidgetShowAll (marquee->infoBox);
   }
 }

@@ -128,20 +128,19 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   sgD = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
   sgE = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
-  uiplayer->vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+  uiplayer->vbox = uiutilsCreateVertBox ();
   assert (uiplayer->vbox != NULL);
-  gtk_widget_set_hexpand (uiplayer->vbox, TRUE);
-  gtk_widget_set_vexpand (uiplayer->vbox, FALSE);
+  uiutilsWidgetExpandHoriz (uiplayer->vbox);
 
   /* song display */
 
-  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+  hbox = uiutilsCreateHorizBox ();
   assert (hbox != NULL);
-  gtk_widget_set_hexpand (hbox, TRUE);
+  uiutilsWidgetExpandHoriz (hbox);
   uiutilsBoxPackStart (uiplayer->vbox, hbox);
 
   /* size group E */
-  tbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+  tbox = uiutilsCreateHorizBox ();
   assert (tbox != NULL);
   uiutilsBoxPackStart (hbox, tbox);
   gtk_size_group_add_widget (sgE, tbox);
@@ -194,7 +193,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
 
   widget = uiutilsCreateLabel ("");
   gtk_widget_set_margin_start (widget, 0);
-  uiutilsLabelSetEllipsizeOn (widget);
+  uiutilsLabelEllipsizeOn (widget);
   uiutilsBoxPackStart (hbox, widget);
   uiplayer->artistLab = widget;
 
@@ -204,12 +203,12 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
 
   widget = uiutilsCreateLabel ("");
   gtk_widget_set_margin_start (widget, 0);
-  uiutilsLabelSetEllipsizeOn (widget);
+  uiutilsLabelEllipsizeOn (widget);
   uiutilsBoxPackStart (hbox, widget);
   uiplayer->titleLab = widget;
 
   widget = uiutilsCreateLabel ("");
-  gtk_widget_set_hexpand (widget, TRUE);
+  uiutilsWidgetExpandHoriz (widget);
   uiutilsBoxPackStart (hbox, widget);
 
   /* size group A */
@@ -242,9 +241,9 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
 
   /* position controls / display */
 
-  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+  hbox = uiutilsCreateHorizBox ();
   assert (hbox != NULL);
-  gtk_widget_set_hexpand (hbox, TRUE);
+  uiutilsWidgetExpandHoriz (hbox);
   uiutilsBoxPackStart (uiplayer->vbox, hbox);
 
   /* size group E */
@@ -267,7 +266,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiutilsBoxPackStart (hbox, uiplayer->durationLab);
 
   widget = uiutilsCreateLabel ("");
-  gtk_widget_set_hexpand (widget, TRUE);
+  uiutilsWidgetExpandHoriz (widget);
   uiutilsBoxPackStart (hbox, widget);
 
   /* size group A */
@@ -299,9 +298,9 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
 
   /* main controls */
 
-  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+  hbox = uiutilsCreateHorizBox ();
   assert (hbox != NULL);
-  gtk_widget_set_hexpand (hbox, TRUE);
+  uiutilsWidgetExpandHoriz (hbox);
   uiutilsBoxPackStart (uiplayer->vbox, hbox);
 
   /* size group E */
@@ -604,13 +603,13 @@ uiplayerProcessPlayerState (uiplayer_t *uiplayer, int playerState)
 
   uiplayer->playerState = playerState;
   if (playerState == PL_STATE_IN_FADEOUT) {
-    gtk_widget_set_sensitive (uiplayer->volumeScale, FALSE);
-    gtk_widget_set_sensitive (uiplayer->seekScale, FALSE);
-    gtk_widget_set_sensitive (uiplayer->speedScale, FALSE);
+    uiutilsWidgetDisable (uiplayer->volumeScale);
+    uiutilsWidgetDisable (uiplayer->seekScale);
+    uiutilsWidgetDisable (uiplayer->speedScale);
   } else {
-    gtk_widget_set_sensitive (uiplayer->volumeScale, TRUE);
-    gtk_widget_set_sensitive (uiplayer->seekScale, TRUE);
-    gtk_widget_set_sensitive (uiplayer->speedScale, TRUE);
+    uiutilsWidgetEnable (uiplayer->volumeScale);
+    uiutilsWidgetEnable (uiplayer->seekScale);
+    uiutilsWidgetEnable (uiplayer->speedScale);
   }
 
   switch (playerState) {

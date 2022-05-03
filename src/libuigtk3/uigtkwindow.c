@@ -34,6 +34,82 @@ uiutilsCreateMainWindow (char *title, char *imagenm,
 
   return window;
 }
+
+void
+uiutilsCloseMainWindow (GtkWidget *window)
+{
+  if (GTK_IS_WIDGET (window)) {
+    gtk_widget_destroy (window);
+  }
+}
+
+inline bool
+uiutilsWindowIsMaximized (GtkWidget *window)
+{
+  return (bool) gtk_window_is_maximized (GTK_WINDOW (window));
+}
+
+inline void
+uiutilsWindowIconify (GtkWidget *window)
+{
+  gtk_window_iconify (GTK_WINDOW (window));
+}
+
+inline void
+uiutilsWindowMaximize (GtkWidget *window)
+{
+  gtk_window_maximize (GTK_WINDOW (window));
+}
+
+inline void
+uiutilsWindowUnMaximize (GtkWidget *window)
+{
+  gtk_window_unmaximize (GTK_WINDOW (window));
+}
+
+inline void
+uiutilsWindowDisableDecorations (GtkWidget *window)
+{
+  gtk_window_set_decorated (GTK_WINDOW (window), FALSE);
+}
+
+inline void
+uiutilsWindowEnableDecorations (GtkWidget *window)
+{
+  gtk_window_set_decorated (GTK_WINDOW (window), TRUE);
+}
+
+inline void
+uiutilsWindowGetSize (GtkWidget *window, int *x, int *y)
+{
+  gtk_window_get_size (GTK_WINDOW (window), x, y);
+}
+
+inline void
+uiutilsWindowSetDefaultSize (GtkWidget *window, int x, int y)
+{
+  gtk_window_set_default_size (GTK_WINDOW (window), x, y);
+}
+
+inline void
+uiutilsWindowGetPosition (GtkWidget *window, int *x, int *y)
+{
+  gtk_window_get_position (GTK_WINDOW (window), x, y);
+}
+
+inline void
+uiutilsWindowMove (GtkWidget *window, int x, int y)
+{
+  gtk_window_move (GTK_WINDOW (window), x, y);
+}
+
+inline void
+uiutilsWindowNoFocusOnStartup (GtkWidget *window)
+{
+  gtk_window_set_focus_on_map (GTK_WINDOW (window), FALSE);
+}
+
+
 GtkWidget *
 uiutilsCreateScrolledWindow (void)
 {

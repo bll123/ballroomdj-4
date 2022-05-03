@@ -134,11 +134,11 @@ uisongselBuildUI (uisongsel_t *uisongsel, GtkWidget *parentwin)
   uiw->parentwin = parentwin;
 
   uiw->vbox = uiutilsCreateVertBox ();
-  gtk_widget_set_hexpand (uiw->vbox, TRUE);
+  uiutilsWidgetExpandHoriz (uiw->vbox);
   gtk_widget_set_vexpand (uiw->vbox, TRUE);
 
   hbox = uiutilsCreateHorizBox ();
-  gtk_widget_set_hexpand (hbox, TRUE);
+  uiutilsWidgetExpandHoriz (hbox);
   uiutilsBoxPackStart (uiw->vbox, hbox);
 
   if (uisongsel->dispselType == DISP_SEL_SONGSEL) {
@@ -213,8 +213,8 @@ uisongselBuildUI (uisongsel_t *uisongsel, GtkWidget *parentwin)
   assert (uiw->songselTree != NULL);
 
   gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (uiw->songselTree), TRUE);
-  gtk_widget_set_halign (uiw->songselTree, GTK_ALIGN_FILL);
-  gtk_widget_set_hexpand (uiw->songselTree, TRUE);
+  uiutilsWidgetAlignHorizFill (uiw->songselTree);
+  uiutilsWidgetExpandHoriz (uiw->songselTree);
   gtk_widget_set_vexpand (uiw->songselTree, TRUE);
 
   adjustment = gtk_scrollable_get_vadjustment (GTK_SCROLLABLE (uiw->songselTree));
@@ -698,7 +698,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
   uiutilsWidgetSetAllMargins (content, uiutilsBaseMarginSz * 2);
 
   vbox = uiutilsCreateVertBox ();
-  gtk_widget_set_hexpand (vbox, FALSE);
+  uiutilsWidgetExpandHoriz (vbox);
   gtk_widget_set_vexpand (vbox, FALSE);
   gtk_container_add (GTK_CONTAINER (content), vbox);
 
@@ -726,8 +726,8 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
   gtk_size_group_add_widget (sgA, widget);
 
   widget = uiutilsEntryCreate (&uisongsel->searchentry);
-  gtk_widget_set_halign (widget, GTK_ALIGN_START);
-  gtk_widget_set_hexpand (widget, TRUE);
+  uiutilsWidgetAlignHorizStart (widget);
+  uiutilsWidgetExpandHoriz (widget);
   uiutilsBoxPackStart (hbox, widget);
 
   /* genre */

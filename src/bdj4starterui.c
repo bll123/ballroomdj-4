@@ -367,20 +367,16 @@ starterBuildUI (startui_t  *starter)
   gtk_widget_set_margin_top (hbox, uiutilsBaseMarginSz * 4);
   uiutilsBoxPackStart (vbox, hbox);
 
-  menubar = gtk_menu_bar_new ();
+  menubar = uiutilsCreateMenubar ();
   uiutilsBoxPackStart (hbox, menubar);
 
-  menuitem = gtk_menu_item_new_with_label (_("Actions"));
-  gtk_menu_shell_append (GTK_MENU_SHELL (menubar), menuitem);
+  menuitem = uiutilsMenuCreateItem (menubar, _("Actions"), NULL, NULL);
 
-  menu = gtk_menu_new ();
-  gtk_menu_item_set_submenu (GTK_MENU_ITEM (menuitem), menu);
+  menu = uiutilsCreateSubMenu (menuitem);
 
   snprintf (tbuff, sizeof (tbuff), _("Stop All %s Processes"), BDJ4_NAME);
-  menuitem = gtk_menu_item_new_with_label (tbuff);
-  gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
-  g_signal_connect (menuitem, "activate",
-      G_CALLBACK (starterStopAllProcesses), starter);
+  menuitem = uiutilsMenuCreateItem (menu, tbuff,
+      starterStopAllProcesses, starter);
 
   /* main display */
   hbox = uiutilsCreateHorizBox ();
@@ -397,11 +393,11 @@ starterBuildUI (startui_t  *starter)
       nlistGetCount (starter->dispProfileList),
       starter->maxProfileWidth, starter->dispProfileList, starterSetProfile);
   gtk_widget_set_margin_start (widget, uiutilsBaseMarginSz * 4);
-  gtk_widget_set_halign (widget, GTK_ALIGN_FILL);
+  uiutilsWidgetAlignHorizFill (widget);
   uiutilsBoxPackStart (hbox, widget);
 
   hbox = uiutilsCreateHorizBox ();
-  gtk_widget_set_hexpand (hbox, TRUE);
+  uiutilsWidgetExpandHoriz (hbox);
   uiutilsBoxPackStart (vbox, hbox);
 
   bvbox = uiutilsCreateVertBox ();
@@ -413,14 +409,14 @@ starterBuildUI (startui_t  *starter)
   assert (image != NULL);
   widget = gtk_image_new_from_pixbuf (image);
   assert (widget != NULL);
-  gtk_widget_set_hexpand (widget, TRUE);
+  uiutilsWidgetExpandHoriz (widget);
   uiutilsWidgetSetAllMargins (widget, uiutilsBaseMarginSz * 10);
   uiutilsBoxPackStart (hbox, widget);
 
   /* CONTEXT: button: starts the player user interface */
   widget = uiutilsCreateButton (_("Player"), NULL, starterStartPlayer, starter);
   gtk_widget_set_margin_top (widget, uiutilsBaseMarginSz * 2);
-  gtk_widget_set_halign (widget, GTK_ALIGN_START);
+  uiutilsWidgetAlignHorizStart (widget);
   gtk_size_group_add_widget (sg, widget);
   uiutilsBoxPackStart (bvbox, widget);
   widget = gtk_bin_get_child (GTK_BIN (widget));
@@ -429,7 +425,7 @@ starterBuildUI (startui_t  *starter)
   /* CONTEXT: button: starts the management user interface */
   widget = uiutilsCreateButton (_("Manage"), NULL, starterStartManage, starter);
   gtk_widget_set_margin_top (widget, uiutilsBaseMarginSz * 2);
-  gtk_widget_set_halign (widget, GTK_ALIGN_START);
+  uiutilsWidgetAlignHorizStart (widget);
   gtk_size_group_add_widget (sg, widget);
   uiutilsBoxPackStart (bvbox, widget);
   widget = gtk_bin_get_child (GTK_BIN (widget));
@@ -438,7 +434,7 @@ starterBuildUI (startui_t  *starter)
   /* CONTEXT: button: starts the configuration user interface */
   widget = uiutilsCreateButton (_("Configure"), NULL, starterStartConfig, starter);
   gtk_widget_set_margin_top (widget, uiutilsBaseMarginSz * 2);
-  gtk_widget_set_halign (widget, GTK_ALIGN_START);
+  uiutilsWidgetAlignHorizStart (widget);
   gtk_size_group_add_widget (sg, widget);
   uiutilsBoxPackStart (bvbox, widget);
   widget = gtk_bin_get_child (GTK_BIN (widget));
@@ -446,8 +442,9 @@ starterBuildUI (startui_t  *starter)
 
   /* CONTEXT: button: support : starts raffle games  */
   widget = uiutilsCreateButton (_("Raffle Games"), NULL, starterStartRaffleGames, starter);
+  uiutilsWidgetDisable (widget);
   gtk_widget_set_margin_top (widget, uiutilsBaseMarginSz * 2);
-  gtk_widget_set_halign (widget, GTK_ALIGN_START);
+  uiutilsWidgetAlignHorizStart (widget);
   gtk_size_group_add_widget (sg, widget);
   uiutilsBoxPackStart (bvbox, widget);
   widget = gtk_bin_get_child (GTK_BIN (widget));
@@ -456,7 +453,7 @@ starterBuildUI (startui_t  *starter)
   /* CONTEXT: button: support : support information */
   widget = uiutilsCreateButton (_("Support"), NULL, starterProcessSupport, starter);
   gtk_widget_set_margin_top (widget, uiutilsBaseMarginSz * 2);
-  gtk_widget_set_halign (widget, GTK_ALIGN_START);
+  uiutilsWidgetAlignHorizStart (widget);
   gtk_size_group_add_widget (sg, widget);
   uiutilsBoxPackStart (bvbox, widget);
   widget = gtk_bin_get_child (GTK_BIN (widget));
@@ -465,7 +462,7 @@ starterBuildUI (startui_t  *starter)
   /* CONTEXT: button: exits BDJ4 */
   widget = uiutilsCreateButton (_("Exit"), NULL, starterProcessExit, starter);
   gtk_widget_set_margin_top (widget, uiutilsBaseMarginSz * 2);
-  gtk_widget_set_halign (widget, GTK_ALIGN_START);
+  uiutilsWidgetAlignHorizStart (widget);
   gtk_size_group_add_widget (sg, widget);
   uiutilsBoxPackStart (bvbox, widget);
   widget = gtk_bin_get_child (GTK_BIN (widget));
@@ -912,10 +909,8 @@ starterProcessSupport (GtkButton *b, gpointer udata)
 
   sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
-  vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+  vbox = uiutilsCreateVertBox ();
   assert (vbox != NULL);
-  gtk_widget_set_hexpand (vbox, FALSE);
-  gtk_widget_set_vexpand (vbox, FALSE);
   gtk_container_add (GTK_CONTAINER (content), vbox);
 
   /* begin line */
@@ -1139,14 +1134,12 @@ starterCreateSupportDialog (GtkButton *b, gpointer udata)
 
   sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
-  vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+  vbox = uiutilsCreateVertBox ();
   assert (vbox != NULL);
-  gtk_widget_set_hexpand (vbox, FALSE);
-  gtk_widget_set_vexpand (vbox, FALSE);
   gtk_container_add (GTK_CONTAINER (content), vbox);
 
   /* line 1 */
-  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+  hbox = uiutilsCreateHorizBox ();
   assert (hbox != NULL);
   uiutilsBoxPackStart (vbox, hbox);
 
@@ -1160,7 +1153,7 @@ starterCreateSupportDialog (GtkButton *b, gpointer udata)
   uiutilsBoxPackStart (hbox, widget);
 
   /* line 2 */
-  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+  hbox = uiutilsCreateHorizBox ();
   assert (hbox != NULL);
   uiutilsBoxPackStart (vbox, hbox);
 

@@ -32,6 +32,12 @@ uiutilsCreateHorizBox (void)
   return box;
 }
 
+void
+uiutilsBoxPackInWindow (GtkWidget *window, GtkWidget *box)
+{
+  gtk_container_add (GTK_CONTAINER (window), box);
+}
+
 inline void
 uiutilsBoxPackStart (GtkWidget *box, GtkWidget *widget)
 {

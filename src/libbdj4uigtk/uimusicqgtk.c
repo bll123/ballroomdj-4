@@ -76,15 +76,15 @@ uimusicqBuildUI (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
   image = gtk_image_new_from_file (tbuff);
   uimusicq->pauseImg = gtk_image_get_pixbuf (GTK_IMAGE (image));
 
-  uimusicq->ui [ci].box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+  uimusicq->ui [ci].box = uiutilsCreateVertBox ();
   assert (uimusicq->ui [ci].box != NULL);
-  gtk_widget_set_hexpand (uimusicq->ui [ci].box, TRUE);
-  gtk_widget_set_vexpand (uimusicq->ui [ci].box, TRUE);
+  uiutilsWidgetExpandHoriz (uimusicq->ui [ci].box);
+  uiutilsWidgetExpandVert (uimusicq->ui [ci].box);
 
-  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+  hbox = uiutilsCreateHorizBox ();
   assert (hbox != NULL);
   gtk_widget_set_margin_top (hbox, 2);
-  gtk_widget_set_hexpand (hbox, TRUE);
+  uiutilsWidgetExpandHoriz (hbox);
   uiutilsBoxPackStart (uimusicq->ui [ci].box, hbox);
 
   /* CONTEXT: button: move the selected song to the top of the queue */
@@ -128,6 +128,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
     /* CONTEXT: button: request playback of a song external to BDJ4 (not in the database) */
     widget = uiutilsCreateButton (_("Request External"), NULL,
         NULL, uimusicq);
+    uiutilsWidgetDisable (widget);
     uiutilsBoxPackEnd (hbox, widget);
 
     widget = uiutilsDropDownCreate (parentwin,
@@ -171,9 +172,9 @@ uimusicqBuildUI (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
   uimusicq->ui [ci].musicqTree = uiutilsCreateTreeView ();
   assert (uimusicq->ui [ci].musicqTree != NULL);
   gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree), TRUE);
-  gtk_widget_set_halign (uimusicq->ui [ci].musicqTree, GTK_ALIGN_FILL);
-  gtk_widget_set_hexpand (uimusicq->ui [ci].musicqTree, TRUE);
-  gtk_widget_set_vexpand (uimusicq->ui [ci].musicqTree, TRUE);
+  uiutilsWidgetAlignHorizFill (uimusicq->ui [ci].musicqTree);
+  uiutilsWidgetExpandHoriz (uimusicq->ui [ci].musicqTree);
+  uiutilsWidgetExpandVert (uimusicq->ui [ci].musicqTree);
   gtk_container_add (GTK_CONTAINER (widget), uimusicq->ui [ci].musicqTree);
 
   renderer = gtk_cell_renderer_text_new ();

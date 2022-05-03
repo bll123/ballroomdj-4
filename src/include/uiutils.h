@@ -116,7 +116,10 @@ int uiutilsNotebookIDGet (uiutilsnbtabid_t *nbtabid, int idx);
 /* uigtkmenu.c */
 GtkWidget * uiutilsCreateMenubar (void);
 GtkWidget * uiutilsCreateSubMenu (GtkWidget *menuitem);
-GtkWidget * uiutilsCreateMenuItem (GtkWidget *menu, const char *txt);
+GtkWidget * uiutilsMenuCreateItem (GtkWidget *menu, const char *txt,
+    void *activateAction, void *udata);
+GtkWidget * uiutilsMenuCreateCheckbox (GtkWidget *menu, const char *txt,
+    int active, void *toggleAction, void *udata);
 void uiutilsMenuInit (uiutilsmenu_t *menu);
 GtkWidget * uiutilsMenuAddMainItem (GtkWidget *menubar, uiutilsmenu_t *menu, const char *txt);
 void uiutilsMenuDisplay (uiutilsmenu_t *menu);
@@ -126,7 +129,8 @@ void uiutilsMenuClear (uiutilsmenu_t *menu);
 GtkWidget * uiutilsCreateLabel (const char *label);
 GtkWidget * uiutilsCreateColonLabel (const char *label);
 void        uiutilsLabelSetText (GtkWidget *label, const char *text);
-void        uiutilsLabelSetEllipsizeOn (GtkWidget *widget);
+void        uiutilsLabelEllipsizeOn (GtkWidget *widget);
+void        uiutilsLabelSetMaxWidth (GtkWidget *widget, int width);
 
 /* uigtkbutton.c */
 GtkWidget * uiutilsCreateButton (char *title, char *imagenm,
@@ -210,6 +214,7 @@ void  uiutilsNotebookSetActionWidget (GtkWidget *notebook, GtkWidget *widget, Gt
 /* uigtkbox.c */
 GtkWidget *uiutilsCreateVertBox (void);
 GtkWidget *uiutilsCreateHorizBox (void);
+void uiutilsBoxPackInWindow (GtkWidget *window, GtkWidget *box);
 void uiutilsBoxPackStart (GtkWidget *box, GtkWidget *widget);
 void uiutilsBoxPackEnd (GtkWidget *box, GtkWidget *widget);
 
@@ -233,6 +238,18 @@ char  *uiutilsSelectFileDialog (uiutilsselect_t *selectdata);
 /* uigtkwindow.c */
 GtkWidget * uiutilsCreateMainWindow (char *title,
     char *imagenm, void *cb, void *udata);
+void uiutilsCloseMainWindow (GtkWidget *window);
+bool uiutilsWindowIsMaximized (GtkWidget *window);
+void uiutilsWindowIconify (GtkWidget *window);
+void uiutilsWindowMaximize (GtkWidget *window);
+void uiutilsWindowUnMaximize (GtkWidget *window);
+void uiutilsWindowDisableDecorations (GtkWidget *window);
+void uiutilsWindowEnableDecorations (GtkWidget *window);
+void uiutilsWindowGetSize (GtkWidget *window, int *x, int *y);
+void uiutilsWindowSetDefaultSize (GtkWidget *window, int x, int y);
+void uiutilsWindowGetPosition (GtkWidget *window, int *x, int *y);
+void uiutilsWindowMove (GtkWidget *window, int x, int y);
+void uiutilsWindowNoFocusOnStartup (GtkWidget *window);
 GtkWidget * uiutilsCreateScrolledWindow (void);
 
 /* uigtkscale.c */
@@ -245,11 +262,26 @@ GtkWidget * uiutilsCreateSwitch (int value);
 void uiutilsSwitchSetValue (GtkWidget *w, int value);
 
 /* uigtkutils.c */
+void  uiutilsUIInitialize (void);
+void  uiutilsUIProcessEvents (void);
 void  uiutilsCleanup (void);
 void  uiutilsSetCss (GtkWidget *w, char *style);
 void  uiutilsSetUIFont (char *uifont);
 void  uiutilsInitUILog (void);
 void  uiutilsGetForegroundColor (GtkWidget *widget, char *buff, size_t sz);
+void  uiutilsWidgetDisable (GtkWidget *widget);
+void  uiutilsWidgetEnable (GtkWidget *widget);
+void  uiutilsWidgetExpandHoriz (GtkWidget *widget);
+void  uiutilsWidgetExpandVert (GtkWidget *widget);
+void  uiutilsWidgetAlignHorizFill (GtkWidget *widget);
+void  uiutilsWidgetAlignHorizStart (GtkWidget *widget);
+void  uiutilsWidgetAlignHorizEnd (GtkWidget *widget);
+void  uiutilsWidgetAlignVertFill (GtkWidget *widget);
+void  uiutilsWidgetAlignVertStart (GtkWidget *widget);
+void  uiutilsWidgetDisableFocus (GtkWidget *widget);
+void  uiutilsWidgetHide (GtkWidget *widget);
+void  uiutilsWidgetShow (GtkWidget *widget);
+void  uiutilsWidgetShowAll (GtkWidget *widget);
 void  uiutilsWidgetSetAllMargins (GtkWidget *widget, int margin);
 
 GtkWidget * uiutilsCreateCheckButton (const char *txt, int value);

@@ -47,14 +47,20 @@ uiutilsCreateColonLabel (const char *label)
   return widget;
 }
 
-void
+inline void
 uiutilsLabelSetText (GtkWidget *widget, const char *text)
 {
   gtk_label_set_text (GTK_LABEL (widget), text);
 }
 
-void
-uiutilsLabelSetEllipsizeOn (GtkWidget *widget)
+inline void
+uiutilsLabelEllipsizeOn (GtkWidget *widget)
 {
   gtk_label_set_ellipsize (GTK_LABEL (widget), PANGO_ELLIPSIZE_END);
+}
+
+inline void
+uiutilsLabelSetMaxWidth (GtkWidget *widget, int width)
+{
+  gtk_label_set_max_width_chars (GTK_LABEL (widget), width);
 }

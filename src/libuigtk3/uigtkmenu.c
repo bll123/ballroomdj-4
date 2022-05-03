@@ -31,12 +31,33 @@ uiutilsCreateSubMenu (GtkWidget *menuitem)
 }
 
 GtkWidget *
-uiutilsCreateMenuItem (GtkWidget *menu, const char *txt)
+uiutilsMenuCreateItem (GtkWidget *menu, const char *txt,
+    void *activateAction, void *udata)
 {
   GtkWidget *menuitem;
 
   menuitem = gtk_menu_item_new_with_label (txt);
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
+  if (activateAction != NULL) {
+    g_signal_connect (menuitem, "activate",
+        G_CALLBACK (activateAction), udata);
+  }
+
+  return menuitem;
+}
+
+GtkWidget *
+uiutilsMenuCreateCheckbox (GtkWidget *menu, const char *txt, int active,
+    void *toggleAction, void *udata)
+{
+  GtkWidget *menuitem;
+
+  menuitem = gtk_check_menu_item_new_with_label (txt);
+  gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (menuitem), active);
+  gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
+  if (toggleAction != NULL) {
+    g_signal_connect (menuitem, "toggled", G_CALLBACK (toggleAction), udata);
+  }
   return menuitem;
 }
 

@@ -931,7 +931,7 @@ confuiBuildUI (configui_t *confui)
   uiutilsSetCss (widget, tbuff);
   confui->statusMsg = widget;
 
-  menubar = gtk_menu_bar_new ();
+  menubar = uiutilsCreateMenubar ();
   uiutilsBoxPackStart (hbox, menubar);
 
   confui->notebook = uiutilsCreateNotebook ();
@@ -1136,7 +1136,7 @@ confuiBuildUI (configui_t *confui)
   vbox = confuiMakeNotebookTab (confui, confui->notebook,
       /* CONTEXT: config: change which fields are displayed in different contexts */
       _("Display Settings"), CONFUI_ID_DISP_SEL_LIST);
-  gtk_widget_set_valign (vbox, GTK_ALIGN_START);
+  uiutilsWidgetAlignVertStart (vbox);
   sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
   /* CONTEXT: config: display settings: which set of display settings to update */
@@ -1145,12 +1145,12 @@ confuiBuildUI (configui_t *confui)
   g_signal_connect (widget, "value-changed", G_CALLBACK (confuiDispSettingChg), confui);
 
   hbox = uiutilsCreateHorizBox ();
-  gtk_widget_set_halign (hbox, GTK_ALIGN_START);
+  uiutilsWidgetAlignHorizStart (hbox);
   uiutilsBoxPackStart (vbox, hbox);
 
   widget = uiutilsCreateScrolledWindow ();
   gtk_scrolled_window_set_min_content_height (GTK_SCROLLED_WINDOW (widget), 200);
-  gtk_widget_set_vexpand (widget, TRUE);
+  uiutilsWidgetExpandVert (widget);
   uiutilsBoxPackStart (hbox, widget);
 
   tree = uiutilsCreateTreeView ();
@@ -1161,15 +1161,14 @@ confuiBuildUI (configui_t *confui)
   confui->tables [CONFUI_ID_DISP_SEL_LIST].flags = CONFUI_TABLE_NONE;
   gtk_widget_set_margin_start (tree, 16);
   gtk_widget_set_margin_top (tree, 16);
-  gtk_widget_set_vexpand (tree, TRUE);
+  uiutilsWidgetExpandVert (tree);
   gtk_container_add (GTK_CONTAINER (widget), tree);
 
-  dvbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
-  gtk_widget_set_vexpand (dvbox, FALSE);
+  dvbox = uiutilsCreateVertBox ();
   gtk_widget_set_margin_start (dvbox, 8);
   gtk_widget_set_margin_end (dvbox, 8);
   gtk_widget_set_margin_top (dvbox, 128);
-  gtk_widget_set_valign (dvbox, GTK_ALIGN_START);
+  uiutilsWidgetAlignVertStart (dvbox);
   uiutilsBoxPackStart (hbox, dvbox);
 
   /* CONTEXT: config: display settings: button: add the selected field */
@@ -1184,7 +1183,7 @@ confuiBuildUI (configui_t *confui)
 
   widget = uiutilsCreateScrolledWindow ();
   gtk_scrolled_window_set_min_content_height (GTK_SCROLLED_WINDOW (widget), 200);
-  gtk_widget_set_vexpand (widget, TRUE);
+  uiutilsWidgetExpandVert (widget);
   uiutilsBoxPackStart (hbox, widget);
 
   tree = uiutilsCreateTreeView ();
@@ -1195,15 +1194,14 @@ confuiBuildUI (configui_t *confui)
   confui->tables [CONFUI_ID_DISP_SEL_TABLE].flags = CONFUI_TABLE_NONE;
   gtk_widget_set_margin_start (tree, 16);
   gtk_widget_set_margin_top (tree, 16);
-  gtk_widget_set_vexpand (tree, TRUE);
+  uiutilsWidgetExpandVert (tree);
   gtk_container_add (GTK_CONTAINER (widget), tree);
 
-  dvbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
-  gtk_widget_set_vexpand (dvbox, FALSE);
+  dvbox = uiutilsCreateVertBox ();
   gtk_widget_set_margin_start (dvbox, 8);
   gtk_widget_set_margin_end (dvbox, 8);
   gtk_widget_set_margin_top (dvbox, 128);
-  gtk_widget_set_valign (dvbox, GTK_ALIGN_START);
+  uiutilsWidgetAlignVertStart (dvbox);
   uiutilsBoxPackStart (hbox, dvbox);
 
   /* CONTEXT: config: display settings: button: move the selected field up */
@@ -1287,8 +1285,8 @@ confuiBuildUI (configui_t *confui)
       _("Edit Dances"), CONFUI_ID_DANCE);
   sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
-  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
-  gtk_widget_set_halign (hbox, GTK_ALIGN_START);
+  hbox = uiutilsCreateHorizBox ();
+  uiutilsWidgetAlignHorizStart (hbox);
   uiutilsBoxPackStart (vbox, hbox);
 
   confuiMakeItemTable (confui, hbox, CONFUI_ID_DANCE, CONFUI_TABLE_NO_UP_DOWN);
@@ -1297,8 +1295,7 @@ confuiBuildUI (configui_t *confui)
   g_signal_connect (confui->tables [CONFUI_ID_DANCE].tree, "row-activated",
       G_CALLBACK (confuiDanceSelect), confui);
 
-  dvbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
-  gtk_widget_set_vexpand (dvbox, FALSE);
+  dvbox = uiutilsCreateVertBox ();
   gtk_widget_set_margin_start (dvbox, 16);
   uiutilsBoxPackStart (hbox, dvbox);
 
@@ -1511,6 +1508,12 @@ confuiBuildUI (configui_t *confui)
       _("Debug Options"), CONFUI_ID_NONE);
   sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
+  hbox = uiutilsCreateHorizBox ();
+  uiutilsBoxPackStart (vbox, hbox);
+
+  vbox = uiutilsCreateVertBox ();
+  uiutilsBoxPackStart (hbox, vbox);
+
   val = bdjoptGetNum (OPT_G_DEBUGLVL);
   confuiMakeItemCheckButton (confui, vbox, sg, "Important",
       CONFUI_WIDGET_DEBUG_1, -1,
@@ -1551,6 +1554,10 @@ confuiBuildUI (configui_t *confui)
   confuiMakeItemCheckButton (confui, vbox, sg, "Database",
       CONFUI_WIDGET_DEBUG_512, -1,
       (val & 512));
+
+  vbox = uiutilsCreateVertBox ();
+  uiutilsBoxPackStart (hbox, vbox);
+
   confui->uiitem [CONFUI_WIDGET_DEBUG_512].outtype = CONFUI_OUT_DEBUG;
   confuiMakeItemCheckButton (confui, vbox, sg, "Random Access File",
       CONFUI_WIDGET_DEBUG_1024, -1,
@@ -2034,7 +2041,7 @@ confuiMakeNotebookTab (configui_t *confui, GtkWidget *nb, char *txt, int id)
   tablabel = uiutilsCreateLabel (txt);
   gtk_widget_set_margin_top (tablabel, 0);
   gtk_widget_set_margin_start (tablabel, 0);
-  vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+  vbox = uiutilsCreateVertBox ();
   gtk_widget_set_margin_top (vbox, 4);
   gtk_widget_set_margin_bottom (vbox, 4);
   gtk_widget_set_margin_start (vbox, 4);
@@ -2368,7 +2375,7 @@ confuiMakeItemLabel (GtkWidget *vbox, GtkSizeGroup *sg, const char *txt)
   GtkWidget   *widget;
 
   logProcBegin (LOG_PROC, "confuiMakeItemLabel");
-  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+  hbox = uiutilsCreateHorizBox ();
   if (*txt == '\0') {
     widget = uiutilsCreateLabel (txt);
   } else {
@@ -2390,11 +2397,11 @@ confuiMakeItemTable (configui_t *confui, GtkWidget *vbox, confuiident_t id,
   GtkWidget   *tree;
 
   logProcBegin (LOG_PROC, "confuiMakeItemTable");
-  mhbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+  mhbox = uiutilsCreateHorizBox ();
   assert (mhbox != NULL);
-  gtk_widget_set_halign (mhbox, GTK_ALIGN_START);
+  uiutilsWidgetAlignHorizStart (mhbox);
   gtk_widget_set_margin_top (mhbox, 4);
-  gtk_widget_set_hexpand (mhbox, TRUE);
+  uiutilsWidgetExpandHoriz (mhbox);
   uiutilsBoxPackStart (vbox, mhbox);
 
   widget = uiutilsCreateScrolledWindow ();
@@ -2408,7 +2415,7 @@ confuiMakeItemTable (configui_t *confui, GtkWidget *vbox, confuiident_t id,
   gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (tree), TRUE);
   gtk_container_add (GTK_CONTAINER (widget), tree);
 
-  bvbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+  bvbox = uiutilsCreateVertBox ();
   assert (bvbox != NULL);
   gtk_widget_set_margin_top (bvbox, 2);
   gtk_widget_set_margin_start (bvbox, 8);
