@@ -342,9 +342,8 @@ main (int argc, char *argv[])
   }
 
   if (installer.guienabled) {
-    gtk_init (&argc, NULL);
-    uiutilsInitUILog ();
-    if (isWindows ()) {
+    uiutilsUIInitialize ();
+    if (isWindows () || isMacOS ()) {
       char *uifont;
 
       uifont = "Arial 12";
@@ -390,7 +389,7 @@ installerBuildUI (installer_t *installer)
   snprintf (tbuff, sizeof (tbuff), _("%s Installer"), BDJ4_NAME);
 // ### close window handler
   window = uiutilsCreateMainWindow (tbuff, imgbuff, NULL, installer);
-  gtk_window_set_default_size (GTK_WINDOW (window), 1000, 600);
+  uiutilsWindowSetDefaultSize (window, 1000, 600);
   installer->window = window;
 
   vbox = uiutilsCreateVertBox ();
@@ -400,7 +399,7 @@ installerBuildUI (installer_t *installer)
   gtk_widget_set_margin_end (vbox, 10);
   uiutilsWidgetExpandHoriz (vbox);
   uiutilsWidgetExpandVert (vbox);
-  gtk_container_add (GTK_CONTAINER (window), vbox);
+  uiutilsBoxPackInWindow (window, vbox);
 
   widget = uiutilsCreateLabel (
       /* CONTEXT: installer */
@@ -566,12 +565,12 @@ installerBuildUI (installer_t *installer)
   installer->dispBuffer = gtk_text_buffer_new (NULL);
   installer->dispTextView = gtk_text_view_new_with_buffer (installer->dispBuffer);
   gtk_widget_set_size_request (installer->dispTextView, -1, 400);
-  gtk_widget_set_can_focus (installer->dispTextView, FALSE);
+  uiutilsWidgetDisableFocus (installer->dispTextView);
   uiutilsWidgetAlignHorizFill (installer->dispTextView);
   uiutilsWidgetAlignVertStart (installer->dispTextView);
   uiutilsWidgetExpandHoriz (installer->dispTextView);
   uiutilsWidgetExpandVert (installer->dispTextView);
-  gtk_container_add (GTK_CONTAINER (scwidget), installer->dispTextView);
+  uiutilsBoxPackInWindow (scwidget, installer->dispTextView);
   g_signal_connect (installer->dispTextView,
       "size-allocate", G_CALLBACK (installerScrollToEnd), installer);
 
@@ -581,7 +580,7 @@ installerBuildUI (installer_t *installer)
   uiutilsWidgetExpandVert (hbox);
   gtk_box_pack_start (GTK_BOX (vbox), hbox, TRUE, TRUE, 0);
 
-  gtk_widget_show_all (window);
+  uiutilsWidgetShowAll (window);
 
   installerDisplayConvert (installer);
   installerCheckPackages (installer);

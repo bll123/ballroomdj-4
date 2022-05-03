@@ -224,7 +224,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, GtkWidget *parentwin)
       GTK_EVENT_CONTROLLER_SCROLL_VERTICAL |
       GTK_EVENT_CONTROLLER_SCROLL_DISCRETE);
   gtk_widget_add_events (uiw->songselTree, GDK_SCROLL_MASK);
-  gtk_container_add (GTK_CONTAINER (widget), uiw->songselTree);
+  uiutilsBoxPackInWindow (widget, uiw->songselTree);
   g_signal_connect (uiw->songselTree, "row-activated",
       G_CALLBACK (uisongselCheckFavChgSignal), uisongsel);
   g_signal_connect (uiw->songselTree, "scroll-event",
@@ -473,13 +473,11 @@ uisongselFilterDialog (GtkButton *b, gpointer udata)
   if (uiw->statusPlayable != NULL) {
     uiutilsSwitchSetValue (uiw->statusPlayable, uisongsel->dfltpbflag);
   }
-  gtk_widget_show_all (uiw->filterDialog);
+  uiutilsWidgetShowAll (uiw->filterDialog);
 
   x = nlistGetNum (uisongsel->options, SONGSEL_FILTER_POSITION_X);
   y = nlistGetNum (uisongsel->options, SONGSEL_FILTER_POSITION_Y);
-  if (x != -1 && y != -1) {
-    gtk_window_move (GTK_WINDOW (uiw->filterDialog), x, y);
-  }
+  uiutilsWindowMove (uiw->filterDialog, x, y);
   logProcEnd (LOG_PROC, "uisongselFilterDialog", "");
 }
 
@@ -700,7 +698,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
   vbox = uiutilsCreateVertBox ();
   uiutilsWidgetExpandHoriz (vbox);
   gtk_widget_set_vexpand (vbox, FALSE);
-  gtk_container_add (GTK_CONTAINER (content), vbox);
+  uiutilsBoxPackInWindow (content, vbox);
 
   /* sort-by : always available */
   hbox = uiutilsCreateHorizBox ();
@@ -889,7 +887,7 @@ uisongselFilterResponseHandler (GtkDialog *d, gint responseid, gpointer udata)
 
   switch (responseid) {
     case GTK_RESPONSE_DELETE_EVENT: {
-      gtk_window_get_position (GTK_WINDOW (uiw->filterDialog), &x, &y);
+      uiutilsWindowGetPosition (uiw->filterDialog, &x, &y);
       nlistSetNum (uisongsel->options, SONGSEL_FILTER_POSITION_X, x);
       nlistSetNum (uisongsel->options, SONGSEL_FILTER_POSITION_Y, y);
 
@@ -903,7 +901,7 @@ uisongselFilterResponseHandler (GtkDialog *d, gint responseid, gpointer udata)
       nlistSetNum (uisongsel->options, SONGSEL_FILTER_POSITION_Y, y);
 
       songfilterReset (uisongsel->songfilter);
-      gtk_widget_hide (uiw->filterDialog);
+      uiutilsWidgetHide (uiw->filterDialog);
       break;
     }
     case GTK_RESPONSE_APPLY: {

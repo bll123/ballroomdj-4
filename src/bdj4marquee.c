@@ -757,9 +757,7 @@ marqueeMoveWindow (marquee_t *marquee)
 
   x = nlistGetNum (marquee->options, MQ_POSITION_X);
   y = nlistGetNum (marquee->options, MQ_POSITION_Y);
-  if (x != -1 && y != -1) {
-    uiutilsWindowMove (marquee->window, x, y);
-  }
+  uiutilsWindowMove (marquee->window, x, y);
 }
 
 static void

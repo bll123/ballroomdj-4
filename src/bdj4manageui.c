@@ -279,8 +279,7 @@ main (int argc, char *argv[])
   progstateSetCallback (manage.progstate, STATE_CLOSING,
       manageClosingCallback, &manage);
 
-  uiutilsInitUILog ();
-  gtk_init (&argc, NULL);
+  uiutilsUIInitialize ();
   uifont = bdjoptGetStr (OPT_MP_UIFONT);
   uiutilsSetUIFont (uifont);
 
@@ -304,10 +303,10 @@ manageStoppingCallback (void *udata, programstate_t programState)
   logProcBegin (LOG_PROC, "manageStoppingCallback");
   connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_STOP_MAIN, NULL);
 
-  gtk_window_get_size (GTK_WINDOW (manage->window), &x, &y);
+  uiutilsWindowGetSize (manage->window, &x, &y);
   nlistSetNum (manage->options, PLUI_SIZE_X, x);
   nlistSetNum (manage->options, PLUI_SIZE_Y, y);
-  gtk_window_get_position (GTK_WINDOW (manage->window), &x, &y);
+  uiutilsWindowGetPosition (manage->window, &x, &y);
   nlistSetNum (manage->options, PLUI_POSITION_X, x);
   nlistSetNum (manage->options, PLUI_POSITION_Y, y);
 
@@ -344,9 +343,7 @@ manageClosingCallback (void *udata, programstate_t programState)
 
   logProcBegin (LOG_PROC, "manageClosingCallback");
 
-  if (GTK_IS_WIDGET (manage->window)) {
-    gtk_widget_destroy (manage->window);
-  }
+  uiutilsCloseMainWindow (manage->window);
 
   procutilStopAllProcess (manage->processes, manage->conn, true);
   procutilFreeAll (manage->processes);
@@ -422,7 +419,7 @@ manageBuildUI (manageui_t *manage)
 
   vbox = uiutilsCreateVertBox ();
   uiutilsWidgetSetAllMargins (vbox, 4);
-  gtk_container_add (GTK_CONTAINER (manage->window), vbox);
+  uiutilsBoxPackInWindow (manage->window, vbox);
 
   hbox = uiutilsCreateHorizBox ();
   gtk_widget_set_margin_top (hbox, 8);
@@ -579,18 +576,16 @@ manageBuildUI (manageui_t *manage)
 
   x = nlistGetNum (manage->options, PLUI_SIZE_X);
   y = nlistGetNum (manage->options, PLUI_SIZE_Y);
-  gtk_window_set_default_size (GTK_WINDOW (manage->window), x, y);
+  uiutilsWindowSetDefaultSize (manage->window, x, y);
 
   g_signal_connect (manage->mainnotebook, "switch-page",
       G_CALLBACK (manageSwitchPage), manage);
 
-  gtk_widget_show_all (manage->window);
+  uiutilsWidgetShowAll (manage->window);
 
   x = nlistGetNum (manage->options, PLUI_POSITION_X);
   y = nlistGetNum (manage->options, PLUI_POSITION_Y);
-  if (x != -1 && y != -1) {
-    gtk_window_move (GTK_WINDOW (manage->window), x, y);
-  }
+  uiutilsWindowMove (manage->window, x, y);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", ".png", PATHBLD_MP_IMGDIR);

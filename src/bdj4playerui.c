@@ -207,8 +207,7 @@ main (int argc, char *argv[])
   progstateSetCallback (plui.progstate, STATE_CLOSING,
       pluiClosingCallback, &plui);
 
-  uiutilsInitUILog ();
-  gtk_init (&argc, NULL);
+  uiutilsUIInitialize ();
   uifont = bdjoptGetStr (OPT_MP_UIFONT);
   uiutilsSetUIFont (uifont);
 
@@ -234,10 +233,10 @@ pluiStoppingCallback (void *udata, programstate_t programState)
   logProcBegin (LOG_PROC, "pluiStoppingCallback");
   connSendMessage (plui->conn, ROUTE_STARTERUI, MSG_STOP_MAIN, NULL);
 
-  gtk_window_get_size (GTK_WINDOW (plui->window), &x, &y);
+  uiutilsWindowGetSize (plui->window, &x, &y);
   nlistSetNum (plui->options, PLUI_SIZE_X, x);
   nlistSetNum (plui->options, PLUI_SIZE_Y, y);
-  gtk_window_get_position (GTK_WINDOW (plui->window), &x, &y);
+  uiutilsWindowGetPosition (plui->window, &x, &y);
   nlistSetNum (plui->options, PLUI_POSITION_X, x);
   nlistSetNum (plui->options, PLUI_POSITION_Y, y);
 
@@ -275,9 +274,7 @@ pluiClosingCallback (void *udata, programstate_t programState)
 
   logProcBegin (LOG_PROC, "pluiClosingCallback");
 
-  if (GTK_IS_WIDGET (plui->window)) {
-    gtk_widget_destroy (plui->window);
-  }
+  uiutilsCloseMainWindow (plui->window);
 
   pathbldMakePath (fn, sizeof (fn),
       "playerui", ".txt", PATHBLD_MP_USEIDX);
@@ -347,7 +344,7 @@ pluiBuildUI (playerui_t *plui)
       pluiCloseWin, plui);
 
   plui->vbox = uiutilsCreateVertBox ();
-  gtk_container_add (GTK_CONTAINER (plui->window), plui->vbox);
+  uiutilsBoxPackInWindow (plui->window, plui->vbox);
   gtk_widget_set_margin_top (plui->vbox, 4);
   gtk_widget_set_margin_bottom (plui->vbox, 4);
   gtk_widget_set_margin_start (plui->vbox, 4);
@@ -411,7 +408,7 @@ pluiBuildUI (playerui_t *plui)
   gtk_button_set_label (GTK_BUTTON (widget), "Set Queue for Playback");
   gtk_widget_set_margin_start (widget, 2);
   uiutilsNotebookSetActionWidget (plui->notebook, widget, GTK_PACK_END);
-  gtk_widget_show_all (widget);
+  uiutilsWidgetShowAll (widget);
   g_signal_connect (widget, "clicked", G_CALLBACK (pluiProcessSetPlaybackQueue), plui);
   plui->setPlaybackButton = widget;
 
@@ -429,7 +426,7 @@ pluiBuildUI (playerui_t *plui)
 
     uiutilsNotebookAppendPage (plui->notebook, widget, hbox);
     uiutilsNotebookIDAdd (plui->nbtabid, UI_TAB_MUSICQ);
-    gtk_widget_show_all (hbox);
+    uiutilsWidgetShowAll (hbox);
   }
 
   /* request tab */
@@ -441,15 +438,13 @@ pluiBuildUI (playerui_t *plui)
 
   x = nlistGetNum (plui->options, PLUI_SIZE_X);
   y = nlistGetNum (plui->options, PLUI_SIZE_Y);
-  gtk_window_set_default_size (GTK_WINDOW (plui->window), x, y);
+  uiutilsWindowSetDefaultSize (plui->window, x, y);
 
-  gtk_widget_show_all (plui->window);
+  uiutilsWidgetShowAll (plui->window);
 
   x = nlistGetNum (plui->options, PLUI_POSITION_X);
   y = nlistGetNum (plui->options, PLUI_POSITION_Y);
-  if (x != -1 && y != -1) {
-    gtk_window_move (GTK_WINDOW (plui->window), x, y);
-  }
+  uiutilsWindowMove (plui->window, x, y);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", ".png", PATHBLD_MP_IMGDIR);
@@ -723,12 +718,12 @@ pluiSetSwitchPage (playerui_t *plui, int pagenum)
   page = gtk_notebook_get_nth_page (GTK_NOTEBOOK (plui->notebook), pagenum);
   tabid = uiutilsNotebookIDGet (plui->nbtabid, pagenum);
 
-  gtk_widget_hide (plui->setPlaybackButton);
+  uiutilsWidgetHide (plui->setPlaybackButton);
   if (tabid == UI_TAB_MUSICQ) {
     plui->musicqManageIdx = pagenum;
     uimusicqSetManageIdx (plui->uimusicq, pagenum);
     if (nlistGetNum (plui->options, PLUI_SHOW_EXTRA_QUEUES)) {
-      gtk_widget_show (plui->setPlaybackButton);
+      uiutilsWidgetShow (plui->setPlaybackButton);
     }
   }
   logProcEnd (LOG_PROC, "pluiSetSwitchPage", "");
@@ -836,9 +831,9 @@ pluiSetExtraQueues (playerui_t *plui)
   tabid = uiutilsNotebookIDGet (plui->nbtabid, pagenum);
   if (tabid == UI_TAB_MUSICQ &&
       nlistGetNum (plui->options, PLUI_SHOW_EXTRA_QUEUES)) {
-    gtk_widget_show (plui->setPlaybackButton);
+    uiutilsWidgetShow (plui->setPlaybackButton);
   } else {
-    gtk_widget_hide (plui->setPlaybackButton);
+    uiutilsWidgetHide (plui->setPlaybackButton);
   }
   logProcEnd (LOG_PROC, "pluiSetExtraQueues", "");
 }
@@ -892,7 +887,7 @@ pluiMarqueeFontSizeDialog (GtkMenuItem *mi, gpointer udata)
       GTK_SPIN_BUTTON (plui->marqueeSpinBox));
   gtk_adjustment_set_value (adjustment, (double) sz);
 
-  gtk_widget_show_all (plui->marqueeFontSizeDialog);
+  uiutilsWidgetShowAll (plui->marqueeFontSizeDialog);
 
   logProcEnd (LOG_PROC, "pluiMarqueeFontSizeDialog", "");
 }
@@ -924,7 +919,7 @@ pluiCreateMarqueeFontSizeDialog (playerui_t *plui)
 
   vbox = uiutilsCreateVertBox ();
   assert (vbox != NULL);
-  gtk_container_add (GTK_CONTAINER (content), vbox);
+  uiutilsBoxPackInWindow (content, vbox);
 
   hbox = uiutilsCreateHorizBox ();
   assert (hbox != NULL);
@@ -965,7 +960,7 @@ pluiMarqueeFontSizeDialogResponse (GtkDialog *d, gint responseid, gpointer udata
       break;
     }
     case GTK_RESPONSE_CLOSE: {
-      gtk_widget_hide (plui->marqueeFontSizeDialog);
+      uiutilsWidgetHide (plui->marqueeFontSizeDialog);
       break;
     }
   }

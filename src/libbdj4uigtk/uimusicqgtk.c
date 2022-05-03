@@ -175,7 +175,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
   uiutilsWidgetAlignHorizFill (uimusicq->ui [ci].musicqTree);
   uiutilsWidgetExpandHoriz (uimusicq->ui [ci].musicqTree);
   uiutilsWidgetExpandVert (uimusicq->ui [ci].musicqTree);
-  gtk_container_add (GTK_CONTAINER (widget), uimusicq->ui [ci].musicqTree);
+  uiutilsBoxPackInWindow (widget, uimusicq->ui [ci].musicqTree);
 
   renderer = gtk_cell_renderer_text_new ();
   gtk_cell_renderer_set_alignment (renderer, 1.0, 0.5);

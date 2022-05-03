@@ -100,7 +100,9 @@ uiutilsWindowGetPosition (GtkWidget *window, int *x, int *y)
 inline void
 uiutilsWindowMove (GtkWidget *window, int x, int y)
 {
-  gtk_window_move (GTK_WINDOW (window), x, y);
+  if (x != -1 && y != -1) {
+    gtk_window_move (GTK_WINDOW (window), x, y);
+  }
 }
 
 inline void

@@ -749,8 +749,7 @@ main (int argc, char *argv[])
   progstateSetCallback (confui.progstate, STATE_CLOSING,
       confuiClosingCallback, &confui);
 
-  uiutilsInitUILog ();
-  gtk_init (&argc, NULL);
+  uiutilsUIInitialize ();
   uifont = bdjoptGetStr (OPT_MP_UIFONT);
   uiutilsSetUIFont (uifont);
 
@@ -782,10 +781,10 @@ confuiStoppingCallback (void *udata, programstate_t programState)
     confuiTableSave (confui, i);
   }
 
-  gtk_window_get_size (GTK_WINDOW (confui->window), &x, &y);
+  uiutilsWindowGetSize (confui->window, &x, &y);
   nlistSetNum (confui->options, CONFUI_SIZE_X, x);
   nlistSetNum (confui->options, CONFUI_SIZE_Y, y);
-  gtk_window_get_position (GTK_WINDOW (confui->window), &x, &y);
+  uiutilsWindowGetPosition (confui->window, &x, &y);
   nlistSetNum (confui->options, CONFUI_POSITION_X, x);
   nlistSetNum (confui->options, CONFUI_POSITION_Y, y);
 
@@ -829,9 +828,7 @@ confuiClosingCallback (void *udata, programstate_t programState)
 
   logProcBegin (LOG_PROC, "confuiClosingCallback");
 
-  if (GTK_IS_WIDGET (confui->window)) {
-    gtk_widget_destroy (confui->window);
-  }
+  uiutilsCloseMainWindow (confui->window);
 
   for (int i = CONFUI_BEGIN + 1; i < CONFUI_COMBOBOX_MAX; ++i) {
     uiutilsDropDownFree (&confui->uiitem [i].u.dropdown);
@@ -1597,15 +1594,13 @@ confuiBuildUI (configui_t *confui)
 
   x = nlistGetNum (confui->options, CONFUI_SIZE_X);
   y = nlistGetNum (confui->options, CONFUI_SIZE_Y);
-  gtk_window_set_default_size (GTK_WINDOW (confui->window), x, y);
+  uiutilsWindowSetDefaultSize (confui->window, x, y);
 
-  gtk_widget_show_all (confui->window);
+  uiutilsWidgetShowAll (confui->window);
 
   x = nlistGetNum (confui->options, CONFUI_POSITION_X);
   y = nlistGetNum (confui->options, CONFUI_POSITION_Y);
-  if (x != -1 && y != -1) {
-    gtk_window_move (GTK_WINDOW (confui->window), x, y);
-  }
+  uiutilsWindowMove (confui->window, x, y);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon_config", ".png", PATHBLD_MP_IMGDIR);

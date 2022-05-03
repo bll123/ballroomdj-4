@@ -224,8 +224,7 @@ main (int argc, char *argv[])
     nlistSetNum (starter.options, STARTERUI_SIZE_Y, 800);
   }
 
-  uiutilsInitUILog ();
-  gtk_init (&argc, NULL);
+  uiutilsUIInitialize ();
   uifont = bdjoptGetStr (OPT_MP_UIFONT);
   uiutilsSetUIFont (uifont);
 
@@ -264,10 +263,10 @@ starterStoppingCallback (void *udata, programstate_t programState)
     connConnect (starter->conn, ROUTE_CONFIGUI);
   }
 
-  gtk_window_get_size (GTK_WINDOW (starter->window), &x, &y);
+  uiutilsWindowGetSize (starter->window, &x, &y);
   nlistSetNum (starter->options, STARTERUI_SIZE_X, x);
   nlistSetNum (starter->options, STARTERUI_SIZE_Y, y);
-  gtk_window_get_position (GTK_WINDOW (starter->window), &x, &y);
+  uiutilsWindowGetPosition (starter->window, &x, &y);
   nlistSetNum (starter->options, STARTERUI_POSITION_X, x);
   nlistSetNum (starter->options, STARTERUI_POSITION_Y, y);
 
@@ -299,9 +298,7 @@ starterClosingCallback (void *udata, programstate_t programState)
   startui_t   *starter = udata;
   char        fn [MAXPATHLEN];
 
-  if (GTK_IS_WIDGET (starter->window)) {
-    gtk_widget_destroy (starter->window);
-  }
+  uiutilsCloseMainWindow (starter->window);
 
   connDisconnectAll (starter->conn);
   procutilStopAllProcess (starter->processes, starter->conn, true);
@@ -361,7 +358,7 @@ starterBuildUI (startui_t  *starter)
 
   vbox = uiutilsCreateVertBox ();
   uiutilsWidgetSetAllMargins (vbox, uiutilsBaseMarginSz * 2);
-  gtk_container_add (GTK_CONTAINER (starter->window), vbox);
+  uiutilsBoxPackInWindow (starter->window, vbox);
 
   hbox = uiutilsCreateHorizBox ();
   gtk_widget_set_margin_top (hbox, uiutilsBaseMarginSz * 4);
@@ -470,15 +467,13 @@ starterBuildUI (startui_t  *starter)
 
   x = nlistGetNum (starter->options, STARTERUI_POSITION_X);
   y = nlistGetNum (starter->options, STARTERUI_POSITION_Y);
-  if (x != -1 && y != -1) {
-    gtk_window_move (GTK_WINDOW (starter->window), x, y);
-  }
+  uiutilsWindowMove (starter->window, x, y);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", ".png", PATHBLD_MP_IMGDIR);
   osuiSetIcon (imgbuff);
 
-  gtk_widget_show_all (starter->window);
+  uiutilsWidgetShowAll (starter->window);
 }
 
 int
@@ -911,7 +906,7 @@ starterProcessSupport (GtkButton *b, gpointer udata)
 
   vbox = uiutilsCreateVertBox ();
   assert (vbox != NULL);
-  gtk_container_add (GTK_CONTAINER (content), vbox);
+  uiutilsBoxPackInWindow (content, vbox);
 
   /* begin line */
   hbox = uiutilsCreateHorizBox ();
@@ -985,7 +980,7 @@ starterProcessSupport (GtkButton *b, gpointer udata)
 
   g_signal_connect (dialog, "response",
       G_CALLBACK (starterSupportResponseHandler), starter);
-  gtk_widget_show_all (dialog);
+  uiutilsWidgetShowAll (dialog);
 }
 
 
@@ -1127,7 +1122,7 @@ starterCreateSupportDialog (GtkButton *b, gpointer udata)
       GTK_RESPONSE_APPLY,
       NULL
       );
-  gtk_window_set_default_size (GTK_WINDOW (dialog), -1, 400);
+  uiutilsWindowSetDefaultSize (dialog, -1, 400);
 
   content = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
   uiutilsWidgetSetAllMargins (content, uiutilsBaseMarginSz * 2);
@@ -1136,7 +1131,7 @@ starterCreateSupportDialog (GtkButton *b, gpointer udata)
 
   vbox = uiutilsCreateVertBox ();
   assert (vbox != NULL);
-  gtk_container_add (GTK_CONTAINER (content), vbox);
+  uiutilsBoxPackInWindow (content, vbox);
 
   /* line 1 */
   hbox = uiutilsCreateHorizBox ();
@@ -1199,7 +1194,7 @@ starterCreateSupportDialog (GtkButton *b, gpointer udata)
 
   g_signal_connect (dialog, "response",
       G_CALLBACK (starterSupportMsgHandler), starter);
-  gtk_widget_show_all (dialog);
+  uiutilsWidgetShowAll (dialog);
   starter->supportDialog = dialog;
 }
 
