@@ -86,17 +86,8 @@ xgettext -s -d bdj4 \
     --no-location \
     --keyword=_ \
     --flag=_:1:pass-c-format \
-    bdj4*.c libbdj4/tagdef.c libbdj4ui/*.c libbdj4gtk/*.c $TMP \
+    *.c */*.c \
     -p po -o bdj4.pot
-
-#xgettext -s -j -d bdj4 \
-#    --language=C \
-#    --add-comments=CONTEXT: \
-#    --no-location \
-#    --keyword=_ \
-#    --flag=_:1:pass-c-format \
-#    $TMP \
-#    -o bdj4.pot
 
 rm -f $TMP
 

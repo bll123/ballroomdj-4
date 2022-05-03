@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-04-27 12:45-0700\n"
+"POT-Creation-Date: 2022-05-03 11:36-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -76,6 +76,26 @@ msgstr ""
 msgid "%s is not installed"
 msgstr ""
 
+#. CONTEXT: validation: spaces are not allowed
+#, c-format
+msgid "%s must be numeric."
+msgstr ""
+
+#. CONTEXT: validation: a value must be set
+#, c-format
+msgid "%s must be set."
+msgstr ""
+
+#. CONTEXT: validation: slashes ( / and \\ ) are not allowed
+#, c-format
+msgid "%s: Slashes are not allowed"
+msgstr ""
+
+#. CONTEXT: validation: spaces are not allowed
+#, c-format
+msgid "%s: Spaces are not allowed"
+msgstr ""
+
 #. CONTEXT: dance time signature
 msgid "2/4"
 msgstr ""
@@ -97,6 +117,8 @@ msgstr ""
 msgid "Accent Colour"
 msgstr ""
 
+#. CONTEXT: menu selection: actions for song list
+#. CONTEXT: menu selection: actions for song editor
 msgid "Actions"
 msgstr ""
 
@@ -113,12 +135,43 @@ msgstr ""
 msgid "Album Artist"
 msgstr ""
 
+#. CONTEXT: filter: all dances are selected
+#. CONTEXT: a filter: all dances are selected
+msgid "All Dances"
+msgstr ""
+
+#. CONTEXT: a filter: all genres are displayed in the song selection
+msgid "All Genres"
+msgstr ""
+
+#. CONTEXT: a filter: all dance levels are displayed in the song selection
+#. CONTEXT: a filter: all dance levels will be listed
+msgid "All Levels"
+msgstr ""
+
+#. CONTEXT: a filter: all dance ratings are displayed in the song selection
+#. CONTEXT: a filter: all dance ratings will be listed
+msgid "All Ratings"
+msgstr ""
+
 #. CONTEXT: write tags: write all tags (BDJ and standard) to the audio file
 msgid "All Tags"
 msgstr ""
 
 #. CONTEXT: config: dances: play the selected announcement before the dance is played
 msgid "Announcement"
+msgstr ""
+
+#. CONTEXT: a filter: all statuses are displayed in the song selection
+msgid "Any Status"
+msgstr ""
+
+#. CONTEXT: action button for the filter dialog
+msgid "Apply"
+msgstr ""
+
+#. CONTEXT: menu selection: song edit: apply edit all
+msgid "Apply Edit All"
 msgstr ""
 
 msgid "Argentine Tango"
@@ -166,14 +219,15 @@ msgstr ""
 msgid "Bachata"
 msgstr ""
 
-msgid "Bad files"
-msgstr ""
-
 msgid "Ballroom Dance"
 msgstr ""
 
 #. CONTEXT: tooltip for desktop icon
 msgid "Ballroom Music Player"
+msgstr ""
+
+#. CONTEXT: menu selection: song edit: cancel edit all
+msgid "Cancel Edit All"
 msgstr ""
 
 msgid "Cha Cha"
@@ -199,12 +253,14 @@ msgstr ""
 msgid "Clear & Play"
 msgstr ""
 
+#. CONTEXT: button: clear the queue
 msgid "Clear Queue"
 msgstr ""
 
 #. CONTEXT: marquee font size dialog: action button
 #. CONTEXT: action button for the support dialog
 #. CONTEXT: action button for the support message dialog
+#. CONTEXT: action button for the filter dialog
 msgid "Close"
 msgstr ""
 
@@ -250,6 +306,10 @@ msgstr ""
 msgid "Copying template files."
 msgstr ""
 
+#. CONTEXT: menu selection: song list: edit menu: create copy
+msgid "Create Copy"
+msgstr ""
+
 #. CONTEXT: installer: status message
 msgid "Creating folder structure."
 msgstr ""
@@ -259,12 +319,15 @@ msgid "Creating shortcut."
 msgstr ""
 
 #. CONTEXT: config: dances: the name of the dance
+#. CONTEXT: a filter: select the dance displayed in the song selection
 msgid "Dance"
 msgstr ""
 
+#. CONTEXT: a filter: select the dance level displayed in the song selection
 msgid "Dance Level"
 msgstr ""
 
+#. CONTEXT: a filter: select the dance rating displayed in the song selection
 msgid "Dance Rating"
 msgstr ""
 
@@ -333,6 +396,14 @@ msgid "E-Mail Address"
 msgstr ""
 
 msgid "Easy"
+msgstr ""
+
+#. CONTEXT: menu selection: song list: edit menu
+msgid "Edit"
+msgstr ""
+
+#. CONTEXT: menu selection: song edit: edit all
+msgid "Edit All"
 msgstr ""
 
 #. CONTEXT: config: edit the dance table
@@ -405,6 +476,24 @@ msgstr ""
 msgid "Exit"
 msgstr ""
 
+#. CONTEXT: menu selection: export actions for song list
+msgid "Export"
+msgstr ""
+
+#. CONTEXT: menu selection: song list: export: export as m3u
+msgid "Export as M3U Playlist"
+msgstr ""
+
+#. CONTEXT: menu selection: song list: export: export as m3u8
+msgid "Export as M3U8 Playlist"
+msgstr ""
+
+#. CONTEXT: menu selection: song list: export: export for ballroomdj
+#, c-format
+msgid "Export for %s"
+msgstr ""
+
+#. CONTEXT: button: fade out the song and stop playing it
 msgid "Fade"
 msgstr ""
 
@@ -420,10 +509,23 @@ msgstr ""
 msgid "Fade Type"
 msgstr ""
 
+#. CONTEXT: a filter: select the 'favorite' displayed in the song selection
 msgid "Favorite"
 msgstr ""
 
 msgid "File Manager"
+msgstr ""
+
+#. CONTEXT: config: song filter display settings
+msgid "Filter Display"
+msgstr ""
+
+#. CONTEXT: title for the filter dialog
+msgid "Filter Songs"
+msgstr ""
+
+#. CONTEXT: a button that starts the filters (narrowing down song selections) dialog
+msgid "Filters"
 msgstr ""
 
 msgid "Folder already exists."
@@ -450,6 +552,7 @@ msgid "General Options"
 msgstr ""
 
 #. CONTEXT: config: genre: title of the genre name column
+#. CONTEXT: a filter: select the genre displayed in the song selection
 msgid "Genre"
 msgstr ""
 
@@ -483,6 +586,19 @@ msgstr ""
 
 #. CONTEXT: installer
 msgid "If there is no BallroomDJ 3 installation, leave the entry blank."
+msgstr ""
+
+#. CONTEXT: menu selection: import actions for song list
+msgid "Import"
+msgstr ""
+
+#. CONTEXT: menu selection: song list: import: import m3u
+msgid "Import M3U"
+msgstr ""
+
+#. CONTEXT: menu selection: song list: import: import from ballroomdj
+#, c-format
+msgid "Import from %s"
 msgstr ""
 
 #. CONTEXT: installer: start the installation process
@@ -533,6 +649,10 @@ msgstr ""
 
 #. CONTEXT: config: the font to use for the queues and song lists
 msgid "Listing Font"
+msgstr ""
+
+#. CONTEXT: menu selection: song list: edit menu: load
+msgid "Load"
 msgstr ""
 
 msgid "Loaded from Database"
@@ -597,6 +717,10 @@ msgstr ""
 msgid "Message"
 msgstr ""
 
+#. CONTEXT: menu selection: song list: actions menu: rearrange the songs and create a new mix
+msgid "Mix"
+msgstr ""
+
 #. CONTEXT: config: options associated with the mobile marquee
 #. CONTEXT: config: set mobile marquee mode (off/local/internet)
 #. CONTEXT: config: qr code: title display for mobile marquee
@@ -610,12 +734,18 @@ msgstr ""
 
 #. CONTEXT: config: display settings: button: move the selected field down
 #. CONTEXT: config: table edit: button: move selection down
+#. CONTEXT: button: move the selected song down in the queue
 msgid "Move Down"
 msgstr ""
 
 #. CONTEXT: config: display settings: button: move the selected field up
 #. CONTEXT: config: table edit: button: move selection up
+#. CONTEXT: button: move the selected song up in the queue
 msgid "Move Up"
+msgstr ""
+
+#. CONTEXT: button: move the selected song to the top of the queue
+msgid "Move to Top"
 msgstr ""
 
 #. CONTEXT: config: the music folder where the user store their music
@@ -669,10 +799,15 @@ msgstr ""
 msgid "New Rating"
 msgstr ""
 
+#. CONTEXT: song list: default name for a new song list
+msgid "New Song List"
+msgstr ""
+
 #. CONTEXT: config: status name that is set when adding a new status
 msgid "New Status"
 msgstr ""
 
+#. CONTEXT: button: start playing the next song (immediate)
 msgid "Next Song"
 msgstr ""
 
@@ -716,6 +851,9 @@ msgstr ""
 msgid "Organisation Path"
 msgstr ""
 
+msgid "Other Files"
+msgstr ""
+
 #. CONTEXT: installer: overwrite the previous BDJ4 installation
 msgid "Overwrite"
 msgstr ""
@@ -733,7 +871,15 @@ msgstr ""
 msgid "Password"
 msgstr ""
 
+msgid "Pause"
+msgstr ""
+
 msgid "Pause at End"
+msgstr ""
+
+#. CONTEXT: button: play or pause the song
+#. CONTEXT: play the selected song
+msgid "Play"
 msgstr ""
 
 #. CONTEXT: menu checkbox: start playback when a dance or playlist is queued
@@ -745,6 +891,10 @@ msgstr ""
 
 #. CONTEXT: config: status: title of the "playable" column
 msgid "Play?"
+msgstr ""
+
+#. CONTEXT: a filter: have a status that are marked as playable
+msgid "Playable Status"
 msgstr ""
 
 #. CONTEXT: config: which player interface to use
@@ -768,6 +918,10 @@ msgstr ""
 #. CONTEXT: config: remote control: the port to use for remote control
 #. CONTEXT: config: the port to use for the mobile marquee
 msgid "Port"
+msgstr ""
+
+#. CONTEXT: the current position of the song during song playback
+msgid "Position"
 msgstr ""
 
 #. CONTEXT: installer: command line interface:
@@ -798,26 +952,31 @@ msgstr ""
 msgid "Quarter Sine Wave"
 msgstr ""
 
+#. CONTEXT: queue a song to be played
 msgid "Queue"
 msgstr ""
 
 msgid "Queue 5"
 msgstr ""
 
-#. CONTEXT: config: The name of the first music queue (main)
+#. CONTEXT: config: The name of the music queue
 msgid "Queue A Name"
 msgstr ""
 
 msgid "Queue B"
 msgstr ""
 
-#. CONTEXT: config: The name of the second music queue
-msgid "Queue B Name"
+#. CONTEXT: button: queue a dance for playback
+msgid "Queue Dance"
 msgstr ""
 
 #. CONTEXT: config: the length of the music queue to display
 #. CONTEXT: config: the length of the queue displayed on the marquee
 msgid "Queue Length"
+msgstr ""
+
+#. CONTEXT: button: queue a playlist for playback
+msgid "Queue Playlist"
 msgstr ""
 
 msgid "Quickstep"
@@ -847,6 +1006,10 @@ msgstr ""
 msgid "Remove Spaces"
 msgstr ""
 
+#. CONTEXT: button: remove the song from the queue
+msgid "Remove from queue"
+msgstr ""
+
 msgid "Renames the audio files based on the organization settings."
 msgstr ""
 
@@ -871,8 +1034,20 @@ msgstr ""
 msgid "Request"
 msgstr ""
 
+#. CONTEXT: button: request playback of a song external to BDJ4 (not in the database)
+msgid "Request External"
+msgstr ""
+
 #. CONTEXT: config: where to insert a requested song into the music queue
 msgid "Request Insert Location"
+msgstr ""
+
+#. CONTEXT: action button for the filter dialog
+msgid "Reset"
+msgstr ""
+
+#. CONTEXT: button: return to the beginning of the song
+msgid "Return to beginning of song"
 msgstr ""
 
 msgid "Rock"
@@ -892,14 +1067,16 @@ msgstr ""
 msgid "Samba"
 msgstr ""
 
-msgid "Saved"
-msgstr ""
-
 #. CONTEXT: installer: status message
 msgid "Saving install location."
 msgstr ""
 
+#. CONTEXT: a filter: filter the song selection with a search for text
+msgid "Search"
+msgstr ""
+
 #. CONTEXT: config: display settings: button: add the selected field
+#. CONTEXT: select a song to be added to the song list
 #. CONTEXT: actions associated with the select folder dialog
 #. CONTEXT: actions associated with the select file dialog
 msgid "Select"
@@ -953,6 +1130,10 @@ msgstr ""
 msgid "Skipping conversion."
 msgstr ""
 
+#. CONTEXT: name of song editor tab
+msgid "Song Editor"
+msgstr ""
+
 #. CONTEXT: display settings for: song editor column 1
 msgid "Song Editor - Column 1"
 msgstr ""
@@ -977,7 +1158,12 @@ msgstr ""
 msgid "Song Start"
 msgstr ""
 
+#. CONTEXT: a filter: select the method to sort the song selection display
+msgid "Sort by"
+msgstr ""
+
 #. CONTEXT: config: dances: the speed of the dance (fast/normal/slow)
+#. CONTEXT: the current speed for song playback
 msgid "Speed"
 msgstr ""
 
@@ -985,6 +1171,10 @@ msgid "Speed Adjustment"
 msgstr ""
 
 msgid "Start"
+msgstr ""
+
+#. CONTEXT: menu selection: song list: edit menu: start new song list
+msgid "Start New Song List"
 msgstr ""
 
 #. CONTEXT: installer: status message
@@ -996,6 +1186,7 @@ msgid "Startup Script"
 msgstr ""
 
 #. CONTEXT: config: status: title of the status name column
+#. CONTEXT: a filter: select the status displayed in the song selection
 msgid "Status"
 msgstr ""
 
@@ -1060,6 +1251,14 @@ msgstr ""
 msgid "Title"
 msgstr ""
 
+#. CONTEXT: button: set playback to pause after the selected song is played (toggle)
+msgid "Toggle Pause"
+msgstr ""
+
+#. CONTEXT: button: toggle the repeat song on and off
+msgid "Toggle Repeat"
+msgstr ""
+
 msgid "Total Files"
 msgstr ""
 
@@ -1068,6 +1267,10 @@ msgstr ""
 
 #. CONTEXT: fade-out type
 msgid "Triangle"
+msgstr ""
+
+#. CONTEXT: menu selection: song list: actions menu: truncate the song list
+msgid "Truncate"
 msgstr ""
 
 #. CONTEXT: config: dances: the type of the dance (club/latin/standard)
@@ -1125,6 +1328,10 @@ msgid "User Interface"
 msgstr ""
 
 msgid "Viennese Waltz"
+msgstr ""
+
+#. CONTEXT: The current volume of the song
+msgid "Volume"
 msgstr ""
 
 msgid "Volume Adjustment"
