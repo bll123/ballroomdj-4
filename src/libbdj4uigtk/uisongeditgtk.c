@@ -26,7 +26,7 @@ typedef struct {
 } uisongeditgtk_t;
 
 static void uisongeditAddDisplay (uisongedit_t *songedit, GtkWidget *col, int dispsel);
-static void uisongeditAddItem (GtkWidget * hbox, GtkSizeGroup *sg, int tagkey);
+static void uisongeditAddItem (GtkWidget * hbox, UIWidget *sg, int tagkey);
 
 void
 uisongeditUIInit (uisongedit_t *uisongedit)
@@ -95,10 +95,10 @@ uisongeditAddDisplay (uisongedit_t *uisongedit, GtkWidget *col, int dispsel)
   GtkWidget     *hbox;
   char          *keystr;
   slistidx_t    dsiteridx;
-  GtkSizeGroup  *sg;
+  UIWidget      sg;
 
   sellist = dispselGetList (uisongedit->dispsel, dispsel);
-  sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+  uiutilsCreateSizeGroupHoriz (&sg);
 
   slistStartIterator (sellist, &dsiteridx);
   while ((keystr = slistIterateKey (sellist, &dsiteridx)) != NULL) {
@@ -108,12 +108,12 @@ uisongeditAddDisplay (uisongedit_t *uisongedit, GtkWidget *col, int dispsel)
 
     hbox = uiutilsCreateHorizBox ();
     uiutilsBoxPackStart (col, hbox);
-    uisongeditAddItem (hbox, sg, tagkey);
+    uisongeditAddItem (hbox, &sg, tagkey);
   }
 }
 
 static void
-uisongeditAddItem (GtkWidget * hbox, GtkSizeGroup *sg, int tagkey)
+uisongeditAddItem (GtkWidget * hbox, UIWidget *sg, int tagkey)
 {
   GtkWidget     *widget;
 
@@ -126,7 +126,7 @@ uisongeditAddItem (GtkWidget * hbox, GtkSizeGroup *sg, int tagkey)
 
   widget = uiutilsCreateColonLabel (tagdefs [tagkey].displayname);
   uiutilsBoxPackStart (hbox, widget);
-  gtk_size_group_add_widget (sg, widget);
+  uiutilsSizeGroupAdd (sg, widget);
 
   switch (tagkey) {
     /* entry box */

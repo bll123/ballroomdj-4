@@ -378,7 +378,7 @@ installerBuildUI (installer_t *installer)
   GtkWidget     *widget;
   GtkWidget     *scwidget;
   GtkWidget     *image;
-  GtkSizeGroup  *sg;
+  UIWidget      sg;
   char          tbuff [100];
   char          imgbuff [MAXPATHLEN];
 
@@ -503,7 +503,7 @@ installerBuildUI (installer_t *installer)
       "separator { min-height: 4px; background-color: #733000; }");
   uiutilsBoxPackStart (vbox, widget);
 
-  sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+  uiutilsCreateSizeGroupHoriz (&sg);
 
   hbox = uiutilsCreateHorizBox ();
   uiutilsWidgetExpandHoriz (hbox);
@@ -511,7 +511,7 @@ installerBuildUI (installer_t *installer)
 
   widget = uiutilsCreateColonLabel ("VLC");
   uiutilsBoxPackStart (hbox, widget);
-  gtk_size_group_add_widget (sg, widget);
+  uiutilsSizeGroupAdd (&sg, widget);
 
   installer->vlcMsg = uiutilsCreateLabel ("");
   uiutilsSetCss (installer->vlcMsg,
@@ -525,7 +525,7 @@ installerBuildUI (installer_t *installer)
 
   widget = uiutilsCreateColonLabel ("Python");
   uiutilsBoxPackStart (hbox, widget);
-  gtk_size_group_add_widget (sg, widget);
+  uiutilsSizeGroupAdd (&sg, widget);
 
   installer->pythonMsg = uiutilsCreateLabel ("");
   uiutilsSetCss (installer->pythonMsg,
@@ -539,7 +539,7 @@ installerBuildUI (installer_t *installer)
 
   widget = uiutilsCreateColonLabel ("Mutagen");
   uiutilsBoxPackStart (hbox, widget);
-  gtk_size_group_add_widget (sg, widget);
+  uiutilsSizeGroupAdd (&sg, widget);
 
   installer->mutagenMsg = uiutilsCreateLabel ("");
   uiutilsSetCss (installer->mutagenMsg,

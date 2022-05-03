@@ -665,7 +665,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
   GtkWidget     *vbox;
   GtkWidget     *hbox;
   GtkWidget     *widget;
-  GtkSizeGroup  *sgA;
+  UIWidget      sg;
   int           max;
   int           len;
 
@@ -673,7 +673,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
 
   uiw = uisongsel->uiWidgetData;
 
-  sgA = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+  uiutilsCreateSizeGroupHoriz (&sg);
 
   uiw->filterDialog = gtk_dialog_new_with_buttons (
       /* CONTEXT: title for the filter dialog */
@@ -707,7 +707,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
   /* CONTEXT: a filter: select the method to sort the song selection display */
   widget = uiutilsCreateColonLabel (_("Sort by"));
   uiutilsBoxPackStart (hbox, widget);
-  gtk_size_group_add_widget (sgA, widget);
+  uiutilsSizeGroupAdd (&sg, widget);
 
   widget = uiutilsComboboxCreate (uiw->filterDialog,
       "", uisongselSortBySelectHandler, &uisongsel->sortbysel, uisongsel);
@@ -721,7 +721,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
   /* CONTEXT: a filter: filter the song selection with a search for text */
   widget = uiutilsCreateColonLabel (_("Search"));
   uiutilsBoxPackStart (hbox, widget);
-  gtk_size_group_add_widget (sgA, widget);
+  uiutilsSizeGroupAdd (&sg, widget);
 
   widget = uiutilsEntryCreate (&uisongsel->searchentry);
   uiutilsWidgetAlignHorizStart (widget);
@@ -736,7 +736,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
     /* CONTEXT: a filter: select the genre displayed in the song selection */
     widget = uiutilsCreateColonLabel (_("Genre"));
     uiutilsBoxPackStart (hbox, widget);
-    gtk_size_group_add_widget (sgA, widget);
+    uiutilsSizeGroupAdd (&sg, widget);
 
     widget = uiutilsComboboxCreate (uiw->filterDialog,
         "", uisongselGenreSelectHandler,
@@ -752,7 +752,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
   /* CONTEXT: a filter: select the dance displayed in the song selection */
   widget = uiutilsCreateColonLabel (_("Dance"));
   uiutilsBoxPackStart (hbox, widget);
-  gtk_size_group_add_widget (sgA, widget);
+  uiutilsSizeGroupAdd (&sg, widget);
 
   widget = uiutilsComboboxCreate (uiw->filterDialog,
       "", uisongselDanceSelectSignal,
@@ -768,7 +768,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
   /* CONTEXT: a filter: select the dance rating displayed in the song selection */
   widget = uiutilsCreateColonLabel (_("Dance Rating"));
   uiutilsBoxPackStart (hbox, widget);
-  gtk_size_group_add_widget (sgA, widget);
+  uiutilsSizeGroupAdd (&sg, widget);
 
   widget = uiutilsSpinboxTextCreate (&uisongsel->filterratingsel, uisongsel);
   max = ratingGetMaxWidth (uisongsel->ratings);
@@ -790,7 +790,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
     /* CONTEXT: a filter: select the dance level displayed in the song selection */
     widget = uiutilsCreateColonLabel (_("Dance Level"));
     uiutilsBoxPackStart (hbox, widget);
-    gtk_size_group_add_widget (sgA, widget);
+    uiutilsSizeGroupAdd (&sg, widget);
 
     widget = uiutilsSpinboxTextCreate (&uisongsel->filterlevelsel, uisongsel);
     max = levelGetMaxWidth (uisongsel->levels);
@@ -813,7 +813,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
     /* CONTEXT: a filter: select the status displayed in the song selection */
     widget = uiutilsCreateColonLabel (_("Status"));
     uiutilsBoxPackStart (hbox, widget);
-    gtk_size_group_add_widget (sgA, widget);
+    uiutilsSizeGroupAdd (&sg, widget);
 
     widget = uiutilsSpinboxTextCreate (&uisongsel->filterstatussel, uisongsel);
     max = statusGetMaxWidth (uisongsel->status);
@@ -836,7 +836,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
     /* CONTEXT: a filter: select the 'favorite' displayed in the song selection */
     widget = uiutilsCreateColonLabel (_("Favorite"));
     uiutilsBoxPackStart (hbox, widget);
-    gtk_size_group_add_widget (sgA, widget);
+    uiutilsSizeGroupAdd (&sg, widget);
 
     widget = uiutilsSpinboxTextCreate (&uisongsel->filterfavoritesel, uisongsel);
     uiutilsSpinboxTextSet (&uisongsel->filterfavoritesel, 0,
@@ -852,7 +852,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
     /* CONTEXT: a filter: have a status that are marked as playable */
     widget = uiutilsCreateColonLabel (_("Playable Status"));
     uiutilsBoxPackStart (hbox, widget);
-    gtk_size_group_add_widget (sgA, widget);
+    uiutilsSizeGroupAdd (&sg, widget);
 
     widget = uiutilsCreateSwitch (uisongsel->dfltpbflag);
     uiutilsBoxPackStart (hbox, widget);

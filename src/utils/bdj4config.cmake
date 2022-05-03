@@ -34,6 +34,10 @@ pkg_check_modules (GLIB glib-2.0)
 pkg_check_modules (CHECK check)
 pkg_check_modules (PA libpulse)
 
+add_compile_options (-DUI_USE_GTK3)
+add_compile_options (-DGDK_DISABLE_DEPRECATED)
+add_compile_options (-DGTK_DISABLE_DEPRECATED)
+
 add_compile_options (-fPIC)
 
 add_compile_options (-Wall)
@@ -46,9 +50,6 @@ add_compile_options (-Wmissing-prototypes)
 add_compile_options (-Wformat)
 add_compile_options (-Wformat-security)
 add_compile_options (-Werror=format-security)
-
-add_compile_options (-DGDK_DISABLE_DEPRECATED)
-add_compile_options (-DGTK_DISABLE_DEPRECATED)
 
 if (CMAKE_C_COMPILER_ID STREQUAL "GNU")
   add_compile_options (-Wno-unused-but-set-variable)

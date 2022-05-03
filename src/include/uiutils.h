@@ -2,16 +2,24 @@
 #define INC_UIUTILS_H
 
 #include <stdbool.h>
-#include <gtk/gtk.h>
+#ifdef UI_USE_GTK3
+# include <gtk/gtk.h>
+#endif
 
 #include "nlist.h"
 #include "slist.h"
 #include "song.h"
 #include "tmutil.h"
 
+typedef union {
+#ifdef UI_USE_GTK3
+  GtkWidget     *widget;
+  GtkSizeGroup  *sg;
+#endif
+} UIWidget;
+
 enum {
   UIUTILS_BASE_MARGIN_SZ = 2,
-  UI_MAIN_LOOP_TIMER  = 30,
   UIUTILS_MENU_MAX = 5,
 };
 
@@ -260,6 +268,10 @@ double    uiutilsScaleEnforceMax (GtkWidget *scale, double value);
 /* uigtkswitch.c */
 GtkWidget * uiutilsCreateSwitch (int value);
 void uiutilsSwitchSetValue (GtkWidget *w, int value);
+
+/* uigtksizegrp.c */
+void uiutilsCreateSizeGroupHoriz (UIWidget *);
+void uiutilsSizeGroupAdd (UIWidget *uiw, GtkWidget *widget);
 
 /* uigtkutils.c */
 void  uiutilsUIInitialize (void);

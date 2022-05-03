@@ -14,6 +14,7 @@ add_library (libuigtk3 SHARED
   uigtknotebook.c
   uigtkpbar.c
   uigtkscale.c
+  uigtksizegrp.c
   uigtkspinbox.c
   uigtkswitch.c
   uigtktextbox.c
