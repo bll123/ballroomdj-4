@@ -455,7 +455,7 @@ manageBuildUI (manageui_t *manage)
   uiutilsBoxPackStart (vbox, widget);
 
   notebook = uiutilsCreateNotebook ();
-  gtk_box_pack_start (GTK_BOX (vbox), notebook, TRUE, TRUE, 0);
+  uiutilsBoxPackStart (vbox, notebook);
   manage->slnotebook = notebook;
 
   /* song list editor: music queue tab */
@@ -495,7 +495,7 @@ manageBuildUI (manageui_t *manage)
       G_CALLBACK (manageSwitchPage), manage);
 
   notebook = uiutilsCreateNotebook ();
-  gtk_box_pack_start (GTK_BOX (vbox), notebook, TRUE, TRUE, 0);
+  uiutilsBoxPackStart (vbox, notebook);
   manage->mmnotebook = notebook;
 
   /* music manager: song selection tab*/
@@ -604,8 +604,8 @@ manageMainLoop (void *tmanage)
     stop = TRUE;
   }
 
-  while (! stop && gtk_events_pending ()) {
-    gtk_main_iteration_do (FALSE);
+  if (! stop) {
+    uiutilsUIProcessEvents ();
   }
 
   if (gdone) {

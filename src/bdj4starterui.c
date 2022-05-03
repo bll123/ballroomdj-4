@@ -490,8 +490,8 @@ starterMainLoop (void *tstarter)
     stop = TRUE;
   }
 
-  while (! stop && gtk_events_pending ()) {
-    gtk_main_iteration_do (FALSE);
+  if (! stop) {
+    uiutilsUIProcessEvents ();
   }
 
   if (gdone) {

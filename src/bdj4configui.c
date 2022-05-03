@@ -914,10 +914,13 @@ confuiBuildUI (configui_t *confui)
       confuiCloseWin, confui);
 
   confui->vbox = uiutilsCreateVertBox ();
+  uiutilsWidgetExpandHoriz (confui->vbox);
+  uiutilsWidgetExpandVert (confui->vbox);
   uiutilsWidgetSetAllMargins (confui->vbox, 4);
-  gtk_container_add (GTK_CONTAINER (confui->window), confui->vbox);
+  uiutilsBoxPackInWindow (confui->window, confui->vbox);
 
   hbox = uiutilsCreateHorizBox ();
+  uiutilsWidgetExpandHoriz (hbox);
   uiutilsBoxPackStart (confui->vbox, hbox);
 
   widget = uiutilsCreateLabel ("");
@@ -932,9 +935,9 @@ confuiBuildUI (configui_t *confui)
   uiutilsBoxPackStart (hbox, menubar);
 
   confui->notebook = uiutilsCreateNotebook ();
-  gtk_notebook_set_tab_pos (GTK_NOTEBOOK (confui->notebook), GTK_POS_LEFT);
   assert (confui->notebook != NULL);
-  gtk_box_pack_start (GTK_BOX (confui->vbox), confui->notebook, TRUE, TRUE, 0);
+  gtk_notebook_set_tab_pos (GTK_NOTEBOOK (confui->notebook), GTK_POS_LEFT);
+  uiutilsBoxPackStart (confui->vbox, confui->notebook);
 
   /* general options */
   vbox = confuiMakeNotebookTab (confui, confui->notebook,
@@ -1133,7 +1136,6 @@ confuiBuildUI (configui_t *confui)
   vbox = confuiMakeNotebookTab (confui, confui->notebook,
       /* CONTEXT: config: change which fields are displayed in different contexts */
       _("Display Settings"), CONFUI_ID_DISP_SEL_LIST);
-  uiutilsWidgetAlignVertStart (vbox);
   sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
   /* CONTEXT: config: display settings: which set of display settings to update */
@@ -1619,8 +1621,8 @@ confuiMainLoop (void *tconfui)
     stop = TRUE;
   }
 
-  while (! stop && gtk_events_pending ()) {
-    gtk_main_iteration_do (FALSE);
+  if (! stop) {
+    uiutilsUIProcessEvents ();
   }
 
   if (gdone) {
@@ -2034,13 +2036,11 @@ confuiMakeNotebookTab (configui_t *confui, GtkWidget *nb, char *txt, int id)
 
   logProcBegin (LOG_PROC, "confuiMakeNotebookTab");
   tablabel = uiutilsCreateLabel (txt);
-  gtk_widget_set_margin_top (tablabel, 0);
-  gtk_widget_set_margin_start (tablabel, 0);
+  uiutilsWidgetSetAllMargins (tablabel, 0);
   vbox = uiutilsCreateVertBox ();
-  gtk_widget_set_margin_top (vbox, 4);
-  gtk_widget_set_margin_bottom (vbox, 4);
-  gtk_widget_set_margin_start (vbox, 4);
-  gtk_widget_set_margin_end (vbox, 4);
+  uiutilsWidgetExpandHoriz (vbox);
+  uiutilsWidgetExpandVert (vbox);
+  uiutilsWidgetSetAllMargins (vbox, uiutilsBaseMarginSz * 2);
   uiutilsNotebookAppendPage (nb, vbox, tablabel);
   uiutilsNotebookIDAdd (confui->nbtabid, id);
 

@@ -436,7 +436,7 @@ installerBuildUI (installer_t *installer)
   gtk_widget_set_margin_top (widget, 2);
   uiutilsSetCss (widget,
       "separator { min-height: 4px; background-color: #733000; }");
-  gtk_box_pack_start (GTK_BOX (vbox), widget, TRUE, FALSE, 0);
+  uiutilsBoxPackStart (vbox, widget);
 
   /* conversion process */
   snprintf (tbuff, sizeof (tbuff),
@@ -578,7 +578,7 @@ installerBuildUI (installer_t *installer)
   hbox = uiutilsCreateHorizBox ();
   assert (hbox != NULL);
   uiutilsWidgetExpandVert (hbox);
-  gtk_box_pack_start (GTK_BOX (vbox), hbox, TRUE, TRUE, 0);
+  uiutilsBoxPackStart (vbox, hbox);
 
   uiutilsWidgetShowAll (window);
 
@@ -592,9 +592,7 @@ installerMainLoop (void *udata)
   installer_t *installer = udata;
 
   if (installer->guienabled) {
-    while (gtk_events_pending ()) {
-      gtk_main_iteration_do (FALSE);
-    }
+    uiutilsUIProcessEvents ();
   }
 
   if (mstimeCheck (&installer->validateTimer)) {
@@ -770,7 +768,7 @@ installerValidateDir (installer_t *installer)
   dir = uiutilsEntryGetValue (&installer->targetEntry);
   installer->reinstall = gtk_toggle_button_get_active (
       GTK_TOGGLE_BUTTON (installer->reinstWidget));
-  gtk_label_set_text (GTK_LABEL (installer->feedbackMsg), "");
+  uiutilsLabelSetText (installer->feedbackMsg, "");
 
   exists = fileopIsDirectory (dir);
   if (exists) {
@@ -779,23 +777,23 @@ installerValidateDir (installer_t *installer)
       if (installer->reinstall) {
         /* CONTEXT: installer: message indicating the action that will be taken */
         snprintf (tbuff, sizeof (tbuff), _("Overwriting existing %s installation."), BDJ4_NAME);
-        gtk_label_set_text (GTK_LABEL (installer->feedbackMsg), tbuff);
+        uiutilsLabelSetText (installer->feedbackMsg, tbuff);
         installerSetConvert (installer, TRUE);
       } else {
         /* CONTEXT: installer: message indicating the action that will be taken */
         snprintf (tbuff, sizeof (tbuff), _("Updating existing %s installation."), BDJ4_NAME);
-        gtk_label_set_text (GTK_LABEL (installer->feedbackMsg), tbuff);
+        uiutilsLabelSetText (installer->feedbackMsg, tbuff);
         installerSetConvert (installer, FALSE);
       }
     } else {
       /* CONTEXT: installer: the selected folder exists and is not a BDJ4 installation */
-      gtk_label_set_text (GTK_LABEL (installer->feedbackMsg), _("Error: Folder already exists."));
+      uiutilsLabelSetText (installer->feedbackMsg, _("Error: Folder already exists."));
       installerSetConvert (installer, FALSE);
     }
   } else {
     /* CONTEXT: installer: message indicating the action that will be taken */
     snprintf (tbuff, sizeof (tbuff), _("New %s installation."), BDJ4_NAME);
-    gtk_label_set_text (GTK_LABEL (installer->feedbackMsg), tbuff);
+    uiutilsLabelSetText (installer->feedbackMsg, tbuff);
     installerSetConvert (installer, TRUE);
   }
 
@@ -834,7 +832,7 @@ installerValidateStart (GtkEditable *e, gpointer udata)
   }
 
   /* if the user is typing, clear the message */
-  gtk_label_set_text (GTK_LABEL (installer->feedbackMsg), "");
+  uiutilsLabelSetText (installer->feedbackMsg, "");
   gtk_entry_set_icon_from_icon_name (GTK_ENTRY (installer->bdj3locEntry.entry),
       GTK_ENTRY_ICON_SECONDARY, NULL);
   mstimeset (&installer->validateTimer, 500);
@@ -919,11 +917,11 @@ installerDisplayConvert (installer_t *installer)
   if (nval) {
     /* CONTEXT: installer: message indicating the conversion action that will be taken */
     tptr = _("Conversion will be processed");
-    gtk_label_set_text (GTK_LABEL (installer->convFeedbackMsg), tptr);
+    uiutilsLabelSetText (installer->convFeedbackMsg, tptr);
   } else {
     /* CONTEXT: installer: message indicating the conversion action that will be taken */
     tptr = _("No conversion.");
-    gtk_label_set_text (GTK_LABEL (installer->convFeedbackMsg), tptr);
+    uiutilsLabelSetText (installer->convFeedbackMsg, tptr);
   }
 }
 
@@ -1077,7 +1075,7 @@ installerInstInit (installer_t *installer)
 
       /* do not allow an overwrite of an existing directory that is not bdj4 */
       if (installer->guienabled) {
-        gtk_label_set_text (GTK_LABEL (installer->feedbackMsg), _("Folder already exists."));
+        uiutilsLabelSetText (installer->feedbackMsg, _("Folder already exists."));
       }
 
       /* CONTEXT: installer: command line interface: the selected folder exists and is not a BDJ4 installation */
@@ -2226,14 +2224,14 @@ installerCheckPackages (installer_t *installer)
     /* CONTEXT: installer: display of package status */
     snprintf (tbuff, sizeof (tbuff), _("%s is installed"), "VLC");
     if (installer->vlcMsg != NULL) {
-      gtk_label_set_text (GTK_LABEL (installer->vlcMsg), tbuff);
+      uiutilsLabelSetText (installer->vlcMsg, tbuff);
     }
     installer->vlcinstalled = true;
   } else {
     /* CONTEXT: installer: display of package status */
     snprintf (tbuff, sizeof (tbuff), _("%s is not installed"), "VLC");
     if (installer->vlcMsg != NULL) {
-      gtk_label_set_text (GTK_LABEL (installer->vlcMsg), tbuff);
+      uiutilsLabelSetText (installer->vlcMsg, tbuff);
     }
     installer->vlcinstalled = false;
   }
@@ -2244,19 +2242,19 @@ installerCheckPackages (installer_t *installer)
     /* CONTEXT: installer: display of package status */
     snprintf (tbuff, sizeof (tbuff), _("%s is installed"), "Python");
     if (installer->pythonMsg != NULL) {
-      gtk_label_set_text (GTK_LABEL (installer->pythonMsg), tbuff);
+      uiutilsLabelSetText (installer->pythonMsg, tbuff);
     }
     installer->pythoninstalled = true;
   } else {
     /* CONTEXT: installer: display of package status */
     snprintf (tbuff, sizeof (tbuff), _("%s is not installed"), "Python");
     if (installer->pythonMsg != NULL) {
-      gtk_label_set_text (GTK_LABEL (installer->pythonMsg), tbuff);
+      uiutilsLabelSetText (installer->pythonMsg, tbuff);
     }
     /* CONTEXT: installer: display of package status */
     snprintf (tbuff, sizeof (tbuff), _("%s is not installed"), "Mutagen");
     if (installer->mutagenMsg != NULL) {
-      gtk_label_set_text (GTK_LABEL (installer->mutagenMsg), tbuff);
+      uiutilsLabelSetText (installer->mutagenMsg, tbuff);
     }
     installer->pythoninstalled = false;
   }
@@ -2267,13 +2265,13 @@ installerCheckPackages (installer_t *installer)
       /* CONTEXT: installer: display of package status */
       snprintf (tbuff, sizeof (tbuff), _("%s is installed"), "Mutagen");
       if (installer->mutagenMsg != NULL) {
-        gtk_label_set_text (GTK_LABEL (installer->mutagenMsg), tbuff);
+        uiutilsLabelSetText (installer->mutagenMsg, tbuff);
       }
     } else {
       /* CONTEXT: installer: display of package status */
       snprintf (tbuff, sizeof (tbuff), _("%s is not installed"), "Mutagen");
       if (installer->mutagenMsg != NULL) {
-        gtk_label_set_text (GTK_LABEL (installer->mutagenMsg), tbuff);
+        uiutilsLabelSetText (installer->mutagenMsg, tbuff);
       }
     }
   }

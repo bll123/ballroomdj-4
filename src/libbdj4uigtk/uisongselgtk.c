@@ -189,7 +189,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, GtkWidget *parentwin)
 
   hbox = uiutilsCreateHorizBox ();
   gtk_widget_set_vexpand (hbox, TRUE);
-  gtk_box_pack_start (GTK_BOX (uiw->vbox), hbox, TRUE, TRUE, 0);
+  uiutilsBoxPackStart (uiw->vbox, hbox);
 
   adjustment = gtk_adjustment_new (0.0, 0.0, uisongsel->dfilterCount, 1.0, 10.0, 10.0);
   uiw->songselScrollbar = gtk_scrollbar_new (GTK_ORIENTATION_VERTICAL, adjustment);
@@ -203,7 +203,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, GtkWidget *parentwin)
 
   vbox = uiutilsCreateVertBox ();
   gtk_widget_set_vexpand (hbox, TRUE);
-  gtk_box_pack_start (GTK_BOX (hbox), vbox, TRUE, TRUE, 0);
+  uiutilsBoxPackStart (hbox, vbox);
 
   widget = uiutilsCreateScrolledWindow ();
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (widget), GTK_POLICY_NEVER, GTK_POLICY_EXTERNAL);

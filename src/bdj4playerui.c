@@ -345,10 +345,7 @@ pluiBuildUI (playerui_t *plui)
 
   plui->vbox = uiutilsCreateVertBox ();
   uiutilsBoxPackInWindow (plui->window, plui->vbox);
-  gtk_widget_set_margin_top (plui->vbox, 4);
-  gtk_widget_set_margin_bottom (plui->vbox, 4);
-  gtk_widget_set_margin_start (plui->vbox, 4);
-  gtk_widget_set_margin_end (plui->vbox, 4);
+  uiutilsWidgetSetAllMargins (plui->vbox, uiutilsBaseMarginSz * 2);
 
   /* menu */
   hbox = uiutilsCreateHorizBox ();
@@ -400,7 +397,7 @@ pluiBuildUI (playerui_t *plui)
   uiutilsBoxPackStart (plui->vbox, widget);
 
   plui->notebook = uiutilsCreateNotebook ();
-  gtk_box_pack_start (GTK_BOX (plui->vbox), plui->notebook, TRUE, TRUE, 0);
+  uiutilsBoxPackStart (plui->vbox, plui->notebook);
   g_signal_connect (plui->notebook, "switch-page", G_CALLBACK (pluiSwitchPage), plui);
 
   widget = gtk_button_new ();
@@ -463,8 +460,8 @@ pluiMainLoop (void *tplui)
     stop = TRUE;
   }
 
-  while (! stop && gtk_events_pending ()) {
-    gtk_main_iteration_do (FALSE);
+  if (! stop) {
+    uiutilsUIProcessEvents ();
   }
 
   if (gdone) {
@@ -516,7 +513,7 @@ pluiClock (void *tplui)
   char        tbuff [100];
 
   if (plui->clock != NULL) {
-    gtk_label_set_text (GTK_LABEL (plui->clock),
+    uiutilsLabelSetText (plui->clock,
         tmutilDisp (tbuff, sizeof (tbuff)));
   }
   if (gdone || gKillReceived) {

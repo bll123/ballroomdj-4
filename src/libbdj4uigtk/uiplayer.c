@@ -684,7 +684,7 @@ uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args)
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   if (! uiplayer->volumeLock) {
     snprintf (tbuff, sizeof (tbuff), "%3s", p);
-    gtk_label_set_label (GTK_LABEL (uiplayer->volumeDisplayLab), p);
+    uiutilsLabelSetText (uiplayer->volumeDisplayLab, p);
     dval = atof (p);
     gtk_range_set_value (GTK_RANGE (uiplayer->volumeScale), dval);
   }
@@ -693,7 +693,7 @@ uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args)
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   if (! uiplayer->speedLock) {
     snprintf (tbuff, sizeof (tbuff), "%3s", p);
-    gtk_label_set_label (GTK_LABEL (uiplayer->speedDisplayLab), p);
+    uiutilsLabelSetText (uiplayer->speedDisplayLab, p);
     dval = atof (p);
     gtk_range_set_value (GTK_RANGE (uiplayer->speedScale), dval);
   }
@@ -711,18 +711,18 @@ uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args)
   dur = atol (p);
   if (ddur > 0.0 && dur != uiplayer->lastdur) {
     tmutilToMS (dur, tbuff, sizeof (tbuff));
-    gtk_label_set_label (GTK_LABEL (uiplayer->durationLab), tbuff);
+    uiutilsLabelSetText (uiplayer->durationLab, tbuff);
     gtk_range_set_range (GTK_RANGE (uiplayer->seekScale), 0.0, ddur);
     uiplayer->lastdur = dur;
   }
 
   if (! uiplayer->seekLock) {
     tmutilToMS (position, tbuff, sizeof (tbuff));
-    gtk_label_set_label (GTK_LABEL (uiplayer->seekDisplayLab), tbuff);
+    uiutilsLabelSetText (uiplayer->seekDisplayLab, tbuff);
 
     timeleft = dur - position;
     tmutilToMS (timeleft, tbuff, sizeof (tbuff));
-    gtk_label_set_label (GTK_LABEL (uiplayer->countdownTimerLab), tbuff);
+    uiutilsLabelSetText (uiplayer->countdownTimerLab, tbuff);
 
     if (ddur == 0.0) {
       gtk_range_set_value (GTK_RANGE (uiplayer->seekScale), 0.0);
@@ -764,19 +764,19 @@ uiplayerProcessMusicqStatusData (uiplayer_t *uiplayer, char *args)
   if (uiplayer->danceLab != NULL) {
     danceIdx = songGetNum (song, TAG_DANCE);
     data = danceGetStr (dances, danceIdx, DANCE_DANCE);
-    gtk_label_set_label (GTK_LABEL (uiplayer->danceLab), data);
+    uiutilsLabelSetText (uiplayer->danceLab, data);
   }
 
   /* artist */
   if (uiplayer->artistLab != NULL) {
     data = songGetStr (song, TAG_ARTIST);
-    gtk_label_set_label (GTK_LABEL (uiplayer->artistLab), data);
+    uiutilsLabelSetText (uiplayer->artistLab, data);
   }
 
   /* title */
   if (uiplayer->titleLab != NULL) {
     data = songGetStr (song, TAG_TITLE);
-    gtk_label_set_label (GTK_LABEL (uiplayer->titleLab), data);
+    uiutilsLabelSetText (uiplayer->titleLab, data);
   }
   logProcEnd (LOG_PROC, "uiplayerProcessMusicqStatusData", "");
 }
@@ -867,7 +867,7 @@ uiplayerSpeedProcess (GtkRange *range, GtkScrollType *scroll, gdouble value, gpo
   mstimeset (&uiplayer->speedLockTimeout, UIPLAYER_LOCK_TIME_WAIT);
   value = uiutilsScaleEnforceMax (uiplayer->speedScale, value);
   snprintf (tbuff, sizeof (tbuff), "%3.0f", value);
-  gtk_label_set_label (GTK_LABEL (uiplayer->speedDisplayLab), tbuff);
+  uiutilsLabelSetText (uiplayer->speedDisplayLab, tbuff);
   logProcEnd (LOG_PROC, "uiplayerSpeedProcess", "");
   return FALSE;
 }
@@ -892,11 +892,11 @@ uiplayerSeekProcess (GtkRange *range, GtkScrollType *scroll, gdouble value, gpoi
   position = (ssize_t) round (value);
 
   tmutilToMS (position, tbuff, sizeof (tbuff));
-  gtk_label_set_label (GTK_LABEL (uiplayer->seekDisplayLab), tbuff);
+  uiutilsLabelSetText (uiplayer->seekDisplayLab, tbuff);
 
   timeleft = uiplayer->lastdur - position;
   tmutilToMSD (timeleft, tbuff, sizeof (tbuff));
-  gtk_label_set_label (GTK_LABEL (uiplayer->countdownTimerLab), tbuff);
+  uiutilsLabelSetText (uiplayer->countdownTimerLab, tbuff);
   logProcEnd (LOG_PROC, "uiplayerSeekProcess", "");
   return FALSE;
 }
@@ -917,7 +917,7 @@ uiplayerVolumeProcess (GtkRange *range, GtkScrollType *scroll, gdouble value, gp
 
   value = uiutilsScaleEnforceMax (uiplayer->volumeScale, value);
   snprintf (tbuff, sizeof (tbuff), "%3.0f", value);
-  gtk_label_set_label (GTK_LABEL (uiplayer->volumeDisplayLab), tbuff);
+  uiutilsLabelSetText (uiplayer->volumeDisplayLab, tbuff);
   logProcEnd (LOG_PROC, "uiplayerVolumeProcess", "");
   return FALSE;
 }
@@ -925,7 +925,7 @@ uiplayerVolumeProcess (GtkRange *range, GtkScrollType *scroll, gdouble value, gp
 static void
 uiplayerClearDisplay (uiplayer_t *uiplayer)
 {
-  gtk_label_set_label (GTK_LABEL (uiplayer->danceLab), "");
-  gtk_label_set_label (GTK_LABEL (uiplayer->artistLab), "");
-  gtk_label_set_label (GTK_LABEL (uiplayer->titleLab), "");
+  uiutilsLabelSetText (uiplayer->danceLab, "");
+  uiutilsLabelSetText (uiplayer->artistLab, "");
+  uiutilsLabelSetText (uiplayer->titleLab, "");
 }
