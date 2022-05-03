@@ -40,6 +40,7 @@ sockhMainLoop (uint16_t listenPort, sockhProcessMsg_t msgFunc,
       tdone = msgFunc (ROUTE_NONE, ROUTE_NONE, MSG_EXIT_REQUEST, args, userData);
       ++done;
     }
+
     msgsock = sockCheck (sockserver->si);
     /* if there is more data, don't sleep */
     if (socketInvalid (msgsock)) {

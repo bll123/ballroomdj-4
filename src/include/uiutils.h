@@ -114,8 +114,11 @@ void uiutilsNotebookIDAdd (uiutilsnbtabid_t *nbtabid, int id);
 int uiutilsNotebookIDGet (uiutilsnbtabid_t *nbtabid, int idx);
 
 /* uigtkmenu.c */
+GtkWidget * uiutilsCreateMenubar (void);
+GtkWidget * uiutilsCreateSubMenu (GtkWidget *menuitem);
+GtkWidget * uiutilsCreateMenuItem (GtkWidget *menu, const char *txt);
 void uiutilsMenuInit (uiutilsmenu_t *menu);
-GtkWidget * uiutilsMenuAddItem (GtkWidget *menubar, uiutilsmenu_t *menu, const char *txt);
+GtkWidget * uiutilsMenuAddMainItem (GtkWidget *menubar, uiutilsmenu_t *menu, const char *txt);
 void uiutilsMenuDisplay (uiutilsmenu_t *menu);
 void uiutilsMenuClear (uiutilsmenu_t *menu);
 

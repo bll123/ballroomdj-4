@@ -11,6 +11,35 @@
 #include "log.h"
 #include "uiutils.h"
 
+GtkWidget *
+uiutilsCreateMenubar (void)
+{
+  GtkWidget *menubar;
+
+  menubar = gtk_menu_bar_new ();
+  return menubar;
+}
+
+GtkWidget *
+uiutilsCreateSubMenu (GtkWidget *menuitem)
+{
+  GtkWidget *menu;
+
+  menu = gtk_menu_new ();
+  gtk_menu_item_set_submenu (GTK_MENU_ITEM (menuitem), menu);
+  return menu;
+}
+
+GtkWidget *
+uiutilsCreateMenuItem (GtkWidget *menu, const char *txt)
+{
+  GtkWidget *menuitem;
+
+  menuitem = gtk_menu_item_new_with_label (txt);
+  gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
+  return menuitem;
+}
+
 void
 uiutilsMenuInit (uiutilsmenu_t *menu)
 {
@@ -22,7 +51,7 @@ uiutilsMenuInit (uiutilsmenu_t *menu)
 }
 
 GtkWidget *
-uiutilsMenuAddItem (GtkWidget *menubar, uiutilsmenu_t *menu, const char *txt)
+uiutilsMenuAddMainItem (GtkWidget *menubar, uiutilsmenu_t *menu, const char *txt)
 {
   int   i;
 

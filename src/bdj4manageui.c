@@ -47,7 +47,7 @@
 enum {
   MANAGE_TAB_OTHER,
   MANAGE_TAB_MAIN_SL,
-  MANAGE_TAB_MM,
+  MANAGE_TAB_MAIN_MM,
   MANAGE_TAB_PLMGMT,
   MANAGE_TAB_EDITSEQ,
   MANAGE_TAB_FILEMGR,
@@ -82,6 +82,7 @@ typedef struct manage {
   nlist_t           *dblist;
   nlist_t           *dbhelp;
   /* notebook tab handling */
+  int               mainlasttab;
   int               sllasttab;
   int               mmlasttab;
   uiutilsmenu_t     *currmenu;
@@ -112,9 +113,6 @@ typedef struct manage {
   /* options */
   datafile_t      *optiondf;
   nlist_t         *options;
-  /* flags */
-  bool            insonglist : 1;
-  bool            inmm : 1;
 } manageui_t;
 
 /* re-use the plui enums so that the songsel filter enums can also be used */
@@ -189,6 +187,7 @@ main (int argc, char *argv[])
   manage.dblist = NULL;
   manage.dbhelp = NULL;
   manage.currmenu = NULL;
+  manage.mainlasttab = MANAGE_TAB_MAIN_SL;
   manage.sllasttab = MANAGE_TAB_SONGLIST;
   manage.mmlasttab = MANAGE_TAB_OTHER;
   uiutilsMenuInit (&manage.slmenu);
@@ -451,7 +450,7 @@ manageBuildUI (manageui_t *manage)
 
   tabLabel = uiutilsCreateLabel (_("Edit Song Lists"));
   uiutilsNotebookAppendPage (manage->mainnotebook, vbox, tabLabel);
-  uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_SONGLIST);
+  uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_MAIN_SL);
 
   /* song list editor: player */
   widget = uiplayerBuildUI (manage->slplayer);
@@ -488,7 +487,7 @@ manageBuildUI (manageui_t *manage)
   uiutilsWidgetSetAllMargins (vbox, 4);
   tabLabel = uiutilsCreateLabel (_("Music Manager"));
   uiutilsNotebookAppendPage (manage->mainnotebook, vbox, tabLabel);
-  uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_MM);
+  uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_MAIN_MM);
 
   /* music manager: player */
   widget = uiplayerBuildUI (manage->mmplayer);
@@ -917,6 +916,8 @@ manageSwitchPage (GtkNotebook *nb, GtkWidget *page, guint pagenum,
   bool        mmnb = false;
   uiutilsnbtabid_t  *nbtabid = NULL;
 
+  /* need to know which notebook is selected so that the correct id value */
+  /* can be retrieved */
   if (nb == GTK_NOTEBOOK (manage->mainnotebook)) {
     nbtabid = manage->mainnbtabid;
     mainnb = true;
@@ -939,7 +940,10 @@ manageSwitchPage (GtkNotebook *nb, GtkWidget *page, guint pagenum,
     bool clear = true;
 
     /* handle startup issue */
-    if (manage->insonglist && mmnb) {
+    if (manage->mainlasttab == id && id == MANAGE_TAB_MAIN_SL) {
+      clear = false;
+    }
+    if (manage->mainlasttab == MANAGE_TAB_MAIN_SL && mmnb) {
       clear = false;
     }
     if (clear) {
@@ -947,39 +951,43 @@ manageSwitchPage (GtkNotebook *nb, GtkWidget *page, guint pagenum,
     }
   }
 
+  if (mainnb) {
+    manage->mainlasttab = id;
+  }
   if (slnb) {
     manage->sllasttab = id;
   }
   if (mmnb) {
     manage->mmlasttab = id;
   }
-  if (mainnb) {
-    manage->insonglist = true;
-    manage->inmm = true;
-  }
-  if (mainnb && id == MANAGE_TAB_SONGLIST) {
+
+  if (mainnb && id == MANAGE_TAB_MAIN_SL) {
+    /* force menu selection */
     slnb = true;
     id = manage->sllasttab;
+fprintf (stderr, "force sl tab %d\n", id);
   }
-  if (mainnb && id == MANAGE_TAB_MM) {
+  if (mainnb && id == MANAGE_TAB_MAIN_MM) {
+    /* force menu selection */
     mmnb = true;
     id = manage->mmlasttab;
+fprintf (stderr, "force mm tab %d\n", id);
   }
 
   switch (id) {
     case MANAGE_TAB_MAIN_SL: {
-      manage->insonglist = true;
+      break;
+    }
+    case MANAGE_TAB_MAIN_MM: {
       break;
     }
     case MANAGE_TAB_SONGLIST: {
+fprintf (stderr, "set sl menu\n");
       manageSonglistMenu (manage);
       break;
     }
-    case MANAGE_TAB_MM: {
-      manage->inmm = true;
-      break;
-    }
     case MANAGE_TAB_SONGEDIT: {
+fprintf (stderr, "set songedit menu\n");
       manageSongEditMenu (manage);
       break;
     }
@@ -1007,75 +1015,61 @@ manageSonglistMenu (manageui_t *manage)
   GtkWidget *menuitem;
 
   if (! manage->slmenu.initialized) {
-    menuitem = uiutilsMenuAddItem (manage->menubar,
+    menuitem = uiutilsMenuAddMainItem (manage->menubar,
         /* CONTEXT: menu selection: song list: edit menu */
         &manage->slmenu, _("Edit"));
 
-    menu = gtk_menu_new ();
-    gtk_menu_item_set_submenu (GTK_MENU_ITEM (menuitem), menu);
+    menu = uiutilsCreateSubMenu (menuitem);
 
     /* CONTEXT: menu selection: song list: edit menu: load */
-    menuitem = gtk_menu_item_new_with_label (_("Load"));
-    gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
+    menuitem = uiutilsCreateMenuItem (menu, _("Load"));
 
     /* CONTEXT: menu selection: song list: edit menu: create copy */
-    menuitem = gtk_menu_item_new_with_label (_("Create Copy"));
-    gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
+    menuitem = uiutilsCreateMenuItem (menu, _("Create Copy"));
 
     /* CONTEXT: menu selection: song list: edit menu: start new song list */
-    menuitem = gtk_menu_item_new_with_label (_("Start New Song List"));
-    gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
+    menuitem = uiutilsCreateMenuItem (menu, _("Start New Song List"));
 
-    menuitem = uiutilsMenuAddItem (manage->menubar,
+    menuitem = uiutilsMenuAddMainItem (manage->menubar,
         /* CONTEXT: menu selection: actions for song list */
         &manage->slmenu,_("Actions"));
 
-    menu = gtk_menu_new ();
-    gtk_menu_item_set_submenu (GTK_MENU_ITEM (menuitem), menu);
+    menu = uiutilsCreateSubMenu (menuitem);
 
     /* CONTEXT: menu selection: song list: actions menu: rearrange the songs and create a new mix */
-    menuitem = gtk_menu_item_new_with_label (_("Mix"));
-    gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
+    menuitem = uiutilsCreateMenuItem (menu, _("Mix"));
 
     /* CONTEXT: menu selection: song list: actions menu: truncate the song list */
-    menuitem = gtk_menu_item_new_with_label (_("Truncate"));
-    gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
+    menuitem = uiutilsCreateMenuItem (menu, _("Truncate"));
 
-    menuitem = uiutilsMenuAddItem (manage->menubar,
+    menuitem = uiutilsMenuAddMainItem (manage->menubar,
         /* CONTEXT: menu selection: export actions for song list */
         &manage->slmenu, _("Export"));
 
-    menu = gtk_menu_new ();
-    gtk_menu_item_set_submenu (GTK_MENU_ITEM (menuitem), menu);
+    menu = uiutilsCreateSubMenu (menuitem);
 
     /* CONTEXT: menu selection: song list: export: export as m3u */
-    menuitem = gtk_menu_item_new_with_label (_("Export as M3U Playlist"));
-    gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
+    menuitem = uiutilsCreateMenuItem (menu, _("Export as M3U Playlist"));
 
     /* CONTEXT: menu selection: song list: export: export as m3u8 */
-    menuitem = gtk_menu_item_new_with_label (_("Export as M3U8 Playlist"));
-    gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
+    menuitem = uiutilsCreateMenuItem (menu, _("Export as M3U8 Playlist"));
 
     /* CONTEXT: menu selection: song list: export: export for ballroomdj */
     snprintf (tbuff, sizeof (tbuff), _("Export for %s"), BDJ4_NAME);
-    menuitem = gtk_menu_item_new_with_label (tbuff);
-    gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
+    menuitem = uiutilsCreateMenuItem (menu, tbuff);
 
-    menuitem = uiutilsMenuAddItem (manage->menubar,
+    menuitem = uiutilsMenuAddMainItem (manage->menubar,
         /* CONTEXT: menu selection: import actions for song list */
         &manage->slmenu, _("Import"));
 
-    menu = gtk_menu_new ();
-    gtk_menu_item_set_submenu (GTK_MENU_ITEM (menuitem), menu);
+    menu = uiutilsCreateSubMenu (menuitem);
 
     /* CONTEXT: menu selection: song list: import: import m3u */
-    menuitem = gtk_menu_item_new_with_label (_("Import M3U"));
-    gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
+    menuitem = uiutilsCreateMenuItem (menu, _("Import M3U"));
 
     /* CONTEXT: menu selection: song list: import: import from ballroomdj */
     snprintf (tbuff, sizeof (tbuff), _("Import from %s"), BDJ4_NAME);
-    menuitem = gtk_menu_item_new_with_label (tbuff);
-    gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
+    menuitem = uiutilsCreateMenuItem (menu, tbuff);
 
     manage->slmenu.initialized = true;
   }
@@ -1091,24 +1085,20 @@ manageSongEditMenu (manageui_t *manage)
   GtkWidget *menuitem;
 
   if (! manage->songeditmenu.initialized) {
-    menuitem = uiutilsMenuAddItem (manage->menubar,
+    menuitem = uiutilsMenuAddMainItem (manage->menubar,
         /* CONTEXT: menu selection: actions for song editor */
         &manage->songeditmenu,_("Actions"));
 
-    menu = gtk_menu_new ();
-    gtk_menu_item_set_submenu (GTK_MENU_ITEM (menuitem), menu);
+    menu = uiutilsCreateSubMenu (menuitem);
 
     /* CONTEXT: menu selection: song edit: edit all */
-    menuitem = gtk_menu_item_new_with_label (_("Edit All"));
-    gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
+    menuitem = uiutilsCreateMenuItem (menu, _("Edit All"));
 
     /* CONTEXT: menu selection: song edit: apply edit all */
-    menuitem = gtk_menu_item_new_with_label (_("Apply Edit All"));
-    gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
+    menuitem = uiutilsCreateMenuItem (menu, _("Apply Edit All"));
 
     /* CONTEXT: menu selection: song edit: cancel edit all */
-    menuitem = gtk_menu_item_new_with_label (_("Cancel Edit All"));
-    gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
+    menuitem = uiutilsCreateMenuItem (menu, _("Cancel Edit All"));
 
     manage->songeditmenu.initialized = true;
   }
