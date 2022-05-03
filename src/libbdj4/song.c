@@ -26,6 +26,10 @@
 
 #include "orgutil.h"
 
+typedef struct song {
+  nlist_t      *songInfo;
+} song_t;
+
   /* must be sorted in ascii order */
 static datafilekey_t songdfkeys [] = {
   { "ADJUSTFLAGS",          TAG_ADJUSTFLAGS,          VALUE_STR, NULL, -1 },

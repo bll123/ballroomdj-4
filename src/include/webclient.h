@@ -6,18 +6,7 @@
 
 typedef void (*webclientcb_t)(void *userdata, char *resp, size_t len);
 
-typedef struct {
-  void            *userdata;
-  webclientcb_t   callback;
-  CURL            *curl;
-  size_t          dlSize;
-  size_t          dlChunks;
-  mstime_t        dlStart;
-  FILE            *dlFH;
-  char            *resp;
-  size_t          respAllocated;
-  size_t          respSize;
-} webclient_t;
+typedef struct webclient webclient_t;
 
 #define WEB_RESP_SZ   (512*1024)
 

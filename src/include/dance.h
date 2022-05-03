@@ -32,12 +32,7 @@ typedef enum {
   DANCE_TIMESIG_MAX,
 } dancetimesig_t;
 
-typedef struct {
-  datafile_t      *df;
-  ilist_t         *dances;
-  slist_t         *danceList;
-  char            *path;
-} dance_t;
+typedef struct dance dance_t;
 
 dance_t       *danceAlloc (void);
 void          danceFree (dance_t *);

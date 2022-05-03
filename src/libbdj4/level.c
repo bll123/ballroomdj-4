@@ -17,6 +17,15 @@
 #include "pathbld.h"
 #include "slist.h"
 
+typedef struct level {
+  datafile_t  *df;
+  ilist_t     *level;
+  int         maxWidth;
+  char        *path;
+  char        *defaultName;
+  int         defaultKey;
+} level_t;
+
   /* must be sorted in ascii order */
 static datafilekey_t leveldfkeys [LEVEL_KEY_MAX] = {
   { "DEFAULT",  LEVEL_DEFAULT_FLAG, VALUE_NUM, convBoolean, -1 },

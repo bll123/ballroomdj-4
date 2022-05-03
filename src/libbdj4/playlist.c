@@ -30,6 +30,24 @@
 #include "status.h"
 #include "tagdef.h"
 
+typedef struct playlist {
+  char          *name;
+  musicdb_t     *musicdb;
+  datafile_t    *plinfodf;
+  datafile_t    *pldancesdf;
+  songlist_t    *songlist;
+  songfilter_t  *songfilter;
+  sequence_t    *sequence;
+  songsel_t     *songsel;
+  dancesel_t    *dancesel;
+  nlist_t       *plinfo;
+  ilist_t       *pldances;
+  nlist_t       *countList;
+  int           manualIdx;
+  int           count;
+  nlistidx_t    seqiteridx;
+} playlist_t;
+
 static void     plConvType (datafileconv_t *conv);
 
 /* must be sorted in ascii order */

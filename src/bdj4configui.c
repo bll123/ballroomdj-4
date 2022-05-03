@@ -4224,7 +4224,7 @@ confuiDanceSave (configui_t *confui)
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
   /* the data is already saved in the dance list; just re-use it */
-  danceSave (dances, dances->dances);
+  danceSave (dances, NULL);
   logProcEnd (LOG_PROC, "confuiDanceSave", "");
 }
 

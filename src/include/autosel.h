@@ -20,10 +20,7 @@ typedef enum {
   AUTOSEL_KEY_MAX
 } autoselkey_t;
 
-typedef struct {
-  datafile_t      *df;
-  nlist_t         *autosel;
-} autosel_t;
+typedef struct autosel autosel_t;
 
 autosel_t     *autoselAlloc (void);
 void          autoselFree (autosel_t *);

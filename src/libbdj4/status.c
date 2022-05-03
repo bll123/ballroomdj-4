@@ -17,6 +17,13 @@
 #include "slist.h"
 #include "status.h"
 
+typedef struct status {
+  datafile_t  *df;
+  ilist_t     *status;
+  int         maxWidth;
+  char        *path;
+} status_t;
+
   /* must be sorted in ascii order */
 static datafilekey_t statusdfkeys [STATUS_KEY_MAX] = {
   { "PLAYFLAG",   STATUS_PLAY_FLAG,   VALUE_NUM, convBoolean, -1 },

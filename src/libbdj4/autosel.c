@@ -14,6 +14,11 @@
 #include "nlist.h"
 #include "pathbld.h"
 
+typedef struct autosel {
+  datafile_t      *df;
+  nlist_t         *autosel;
+} autosel_t;
+
 static datafilekey_t autoseldfkeys [AUTOSEL_KEY_MAX] = {
   { "begincount",     AUTOSEL_BEG_COUNT,        VALUE_NUM,    NULL, -1 },
   { "beginfast",      AUTOSEL_BEG_FAST,         VALUE_DOUBLE, NULL, -1 },

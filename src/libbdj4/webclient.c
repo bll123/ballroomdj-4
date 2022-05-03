@@ -23,6 +23,19 @@ enum {
   INIT_CLIENT,
 };
 
+typedef struct webclient {
+  void            *userdata;
+  webclientcb_t   callback;
+  CURL            *curl;
+  size_t          dlSize;
+  size_t          dlChunks;
+  mstime_t        dlStart;
+  FILE            *dlFH;
+  char            *resp;
+  size_t          respAllocated;
+  size_t          respSize;
+} webclient_t;
+
 static void   webclientInit (webclient_t *webclient);
 static void   webclientInitResp (webclient_t *webclient);
 static size_t webclientCallback (char *ptr, size_t size,

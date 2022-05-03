@@ -14,6 +14,12 @@
 #include "log.h"
 #include "songlist.h"
 
+typedef struct songlist {
+  datafile_t      *df;
+  ilist_t         *songlist;
+  char            *fname;
+} songlist_t;
+
   /* must be sorted in ascii order */
 static datafilekey_t songlistdfkeys [SONGLIST_KEY_MAX] = {
   { "DANCE",    SONGLIST_DANCE,     VALUE_NUM, danceConvDance, SONGLIST_DANCESTR },

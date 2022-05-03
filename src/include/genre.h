@@ -11,12 +11,7 @@ typedef enum {
   GENRE_KEY_MAX
 } genrekey_t;
 
-typedef struct {
-  datafile_t  *df;
-  ilist_t     *genre;
-  slist_t     *genreList;   // for drop-downs
-  char        *path;
-} genre_t;
+typedef struct genre genre_t;
 
 genre_t   *genreAlloc (void);
 void      genreFree (genre_t *);

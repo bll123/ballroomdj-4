@@ -4,10 +4,7 @@
 #include "datafile.h"
 #include "slist.h"
 
-typedef struct {
-  datafile_t      *df;
-  slist_t         *sortoptList;
-} sortopt_t;
+typedef struct sortopt sortopt_t;
 
 sortopt_t     *sortoptAlloc (void);
 void          sortoptFree (sortopt_t *);

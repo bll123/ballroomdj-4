@@ -16,6 +16,11 @@
 #include "pathbld.h"
 #include "slist.h"
 
+typedef struct dnctype {
+  datafile_t  *df;
+  slist_t     *dnctypes;
+} dnctype_t;
+
 dnctype_t *
 dnctypesAlloc (void)
 {

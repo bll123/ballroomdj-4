@@ -14,6 +14,12 @@
 #include "slist.h"
 #include "tagdef.h"
 
+typedef struct dispsel {
+  char          *name [DISP_SEL_MAX];
+  datafile_t    *df [DISP_SEL_MAX];
+  slist_t       *dispsel [DISP_SEL_MAX];
+} dispsel_t;
+
 static char *dispselmap [DISP_SEL_MAX] = {
   [DISP_SEL_MM] = "ds-mm",
   [DISP_SEL_MUSICQ] = "ds-musicq",

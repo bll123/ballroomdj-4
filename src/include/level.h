@@ -11,14 +11,7 @@ typedef enum {
   LEVEL_KEY_MAX
 } levelkey_t;
 
-typedef struct {
-  datafile_t  *df;
-  ilist_t     *level;
-  int         maxWidth;
-  char        *path;
-  char        *defaultName;
-  int         defaultKey;
-} level_t;
+typedef struct level level_t;
 
 level_t     *levelAlloc (void);
 void        levelFree (level_t *);

@@ -10,12 +10,7 @@ typedef enum {
   RATING_KEY_MAX
 } ratingkey_t;
 
-typedef struct {
-  datafile_t        *df;
-  ilist_t           *rating;
-  char              *path;
-  int               maxWidth;
-} rating_t;
+typedef struct rating rating_t;
 
 #define RATING_UNRATED_IDX 0
 

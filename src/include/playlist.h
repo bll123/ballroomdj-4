@@ -50,23 +50,7 @@ typedef enum {
   PLTYPE_SEQ,
 } pltype_t;
 
-typedef struct {
-  char          *name;
-  musicdb_t     *musicdb;
-  datafile_t    *plinfodf;
-  datafile_t    *pldancesdf;
-  songlist_t    *songlist;
-  songfilter_t  *songfilter;
-  sequence_t    *sequence;
-  songsel_t     *songsel;
-  dancesel_t    *dancesel;
-  nlist_t       *plinfo;
-  ilist_t       *pldances;
-  nlist_t       *countList;
-  int           manualIdx;
-  int           count;
-  nlistidx_t    seqiteridx;
-} playlist_t;
+typedef struct playlist playlist_t;
 
 #define VALID_SONG_ATTEMPTS   40
 

@@ -4,10 +4,7 @@
 #include "datafile.h"
 #include "slist.h"
 
-typedef struct {
-  datafile_t  *df;
-  slist_t     *dnctypes;
-} dnctype_t;
+typedef struct dnctype dnctype_t;
 
 dnctype_t     *dnctypesAlloc (void);
 void          dnctypesFree (dnctype_t *);

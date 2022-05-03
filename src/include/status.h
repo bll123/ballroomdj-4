@@ -10,12 +10,7 @@ typedef enum {
   STATUS_KEY_MAX
 } statuskey_t;
 
-typedef struct {
-  datafile_t  *df;
-  ilist_t     *status;
-  int         maxWidth;
-  char        *path;
-} status_t;
+typedef struct status status_t;
 
 status_t    * statusAlloc (void);
 void        statusFree (status_t *);

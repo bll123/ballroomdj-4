@@ -17,6 +17,13 @@
 #include "rating.h"
 #include "slist.h"
 
+typedef struct rating {
+  datafile_t        *df;
+  ilist_t           *rating;
+  char              *path;
+  int               maxWidth;
+} rating_t;
+
   /* must be sorted in ascii order */
 static datafilekey_t ratingdfkeys [RATING_KEY_MAX] = {
   { "RATING", RATING_RATING, VALUE_STR, NULL, -1 },

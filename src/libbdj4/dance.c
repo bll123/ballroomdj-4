@@ -18,6 +18,13 @@
 #include "pathbld.h"
 #include "slist.h"
 
+typedef struct dance {
+  datafile_t      *df;
+  ilist_t         *dances;
+  slist_t         *danceList;
+  char            *path;
+} dance_t;
+
 static void danceConvSpeed (datafileconv_t *conv);
 static void danceConvTimeSig (datafileconv_t *conv);
 
@@ -204,6 +211,12 @@ danceConvDance (datafileconv_t *conv)
 void
 danceSave (dance_t *dances, ilist_t *list)
 {
+  if (dances == NULL) {
+    return;
+  }
+  if (list == NULL) {
+    list = dances->dances;
+  }
   datafileSaveIndirect ("dance", dances->path, dancedfkeys,
       DANCE_KEY_MAX, list);
 }

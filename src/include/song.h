@@ -15,7 +15,7 @@ typedef enum {
   SONG_FAVORITE_MAX,
 } songfavorite_t;
 
-typedef struct {
+typedef struct songfavoriteinfo {
   songfavorite_t      idx;
   char                *dispStr;
   char                *color;
@@ -29,9 +29,7 @@ typedef enum {
   SONG_ADJUST_SPEED   = 0x0004,
 } songadjust_t;
 
-typedef struct {
-  nlist_t      *songInfo;
-} song_t;
+typedef struct song song_t;
 
 song_t *  songAlloc (void);
 void      songFree (void *);

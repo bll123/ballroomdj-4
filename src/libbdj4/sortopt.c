@@ -17,6 +17,11 @@
 #include "sortopt.h"
 #include "tagdef.h"
 
+typedef struct sortopt {
+  datafile_t      *df;
+  slist_t         *sortoptList;
+} sortopt_t;
+
 sortopt_t *
 sortoptAlloc (void)
 {

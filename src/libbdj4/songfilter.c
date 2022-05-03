@@ -28,6 +28,17 @@ enum {
   SONG_FILTER_NUM,
 };
 
+typedef struct songfilter {
+  char        *sortselection;
+  void        *datafilter [SONG_FILTER_MAX];
+  nlistidx_t  numfilter [SONG_FILTER_MAX];
+  bool        inuse [SONG_FILTER_MAX];
+  /* indexed by the sort string; points to the internal index */
+  slist_t     *sortList;
+  /* indexed by the internal index; points to the database index */
+  nlist_t     *indexList;
+} songfilter_t;
+
 typedef struct {
   int     filterType;
   int     valueType;

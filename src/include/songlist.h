@@ -12,11 +12,7 @@ typedef enum {
   SONGLIST_KEY_MAX
 } songlistkey_t;
 
-typedef struct {
-  datafile_t      *df;
-  ilist_t         *songlist;
-  char            *fname;
-} songlist_t;
+typedef struct songlist songlist_t;
 
 songlist_t *  songlistAlloc (char *);
 void          songlistFree (songlist_t *);

@@ -17,6 +17,13 @@
 #include "pathbld.h"
 #include "slist.h"
 
+typedef struct genre {
+  datafile_t  *df;
+  ilist_t     *genre;
+  slist_t     *genreList;   // for drop-downs
+  char        *path;
+} genre_t;
+
   /* must be sorted in ascii order */
 static datafilekey_t genredfkeys [GENRE_KEY_MAX] = {
   { "CLASSICAL",  GENRE_CLASSICAL_FLAG, VALUE_NUM, convBoolean, -1 },
