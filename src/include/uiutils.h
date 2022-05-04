@@ -285,6 +285,9 @@ void  uiutilsWidgetDisable (GtkWidget *widget);
 void  uiutilsWidgetEnable (GtkWidget *widget);
 void  uiutilsWidgetExpandHoriz (GtkWidget *widget);
 void  uiutilsWidgetExpandVert (GtkWidget *widget);
+void  uiutilsWidgetSetAllMargins (GtkWidget *widget, int margin);
+void  uiutilsWidgetSetMarginTop (GtkWidget *widget, int margin);
+void  uiutilsWidgetSetMarginStart (GtkWidget *widget, int margin);
 void  uiutilsWidgetAlignHorizFill (GtkWidget *widget);
 void  uiutilsWidgetAlignHorizStart (GtkWidget *widget);
 void  uiutilsWidgetAlignHorizEnd (GtkWidget *widget);
@@ -294,7 +297,6 @@ void  uiutilsWidgetDisableFocus (GtkWidget *widget);
 void  uiutilsWidgetHide (GtkWidget *widget);
 void  uiutilsWidgetShow (GtkWidget *widget);
 void  uiutilsWidgetShowAll (GtkWidget *widget);
-void  uiutilsWidgetSetAllMargins (GtkWidget *widget, int margin);
 
 GtkWidget * uiutilsCreateCheckButton (const char *txt, int value);
 

@@ -84,6 +84,7 @@ static void     dbtagSigHandler (int sig);
 
 static int  gKillReceived = 0;
 static int  gcount = 0;
+static int  gdone = 0;
 
 int
 main (int argc, char *argv[])
@@ -135,9 +136,6 @@ main (int argc, char *argv[])
   listenPort = bdjvarsGetNum (BDJVL_DBTAG_PORT);
   sockhMainLoop (listenPort, dbtagProcessMsg, dbtagProcessing, &dbtag);
 
-  while (progstateShutdownProcess (dbtag.progstate) != STATE_CLOSED) {
-    mssleep (50);
-  }
   progstateFree (dbtag.progstate);
 
   logProcEnd (LOG_PROC, "dbtag", "");
@@ -169,7 +167,6 @@ dbtagProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_EXIT_REQUEST: {
           logMsg (LOG_SESS, LOG_IMPORTANT, "got exit request");
-          gKillReceived = 0;
           progstateShutdownProcess (dbtag->progstate);
           logProcEnd (LOG_PROC, "dbtagProcessMsg", "req-exit");
           return 1;
@@ -195,21 +192,30 @@ dbtagProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 static int
 dbtagProcessing (void *udata)
 {
-  dbtag_t       * dbtag = NULL;
+  dbtag_t       * dbtag = udata;
   char          sbuff [BDJMSG_MAX_ARGS];
   dbidx_t       count;
+  int           stop = false;
 
-  dbtag = (dbtag_t *) udata;
 
-  if (! progstateIsRunning (dbtag->progstate)) {
-    progstateProcess (dbtag->progstate);
-    if (gKillReceived) {
-      logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
-    }
-    return gKillReceived;
+  if (gdone > EXIT_WAIT_COUNT) {
+    stop = true;
+  }
+
+  if (gdone) {
+    ++gdone;
   }
 
   connProcessUnconnected (dbtag->conn);
+
+  if (! progstateIsRunning (dbtag->progstate)) {
+    progstateProcess (dbtag->progstate);
+    if (! gdone && gKillReceived) {
+      progstateShutdownProcess (dbtag->progstate);
+      logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
+    }
+    return stop;
+  }
 
   for (int i = 0; i < dbtag->maxThreads; ++i) {
     if (dbtag->threads [i].state == DBTAG_T_STATE_HAVE_DATA) {
@@ -281,10 +287,11 @@ dbtagProcessing (void *udata)
     }
   }
 
-  if (gKillReceived) {
+  if (! gdone && gKillReceived) {
+    progstateShutdownProcess (dbtag->progstate);
     logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
   }
-  return gKillReceived;
+  return stop;
 }
 
 static bool

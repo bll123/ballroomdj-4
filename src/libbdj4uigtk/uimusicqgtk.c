@@ -83,7 +83,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
 
   hbox = uiutilsCreateHorizBox ();
   assert (hbox != NULL);
-  gtk_widget_set_margin_top (hbox, 2);
+  uiutilsWidgetSetMarginTop (hbox, uiutilsBaseMarginSz);
   uiutilsWidgetExpandHoriz (hbox);
   uiutilsBoxPackStart (uimusicq->ui [ci].box, hbox);
 

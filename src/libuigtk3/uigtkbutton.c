@@ -26,8 +26,8 @@ uiutilsCreateButton (char *title, char *imagenm,
 
   widget = gtk_button_new ();
   assert (widget != NULL);
-  gtk_widget_set_margin_top (widget, 2);
-  gtk_widget_set_margin_start (widget, 2);
+  gtk_widget_set_margin_top (widget, uiutilsBaseMarginSz);
+  gtk_widget_set_margin_start (widget, uiutilsBaseMarginSz);
   if (imagenm != NULL) {
     GtkWidget   *image;
     char        tbuff [MAXPATHLEN];

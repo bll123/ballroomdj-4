@@ -76,6 +76,7 @@ typedef enum {
   INST_REGISTER_INIT,
   INST_REGISTER,
   INST_FINISH,
+  INST_EXIT,
 } installstate_t;
 
 typedef struct {
@@ -355,11 +356,12 @@ main (int argc, char *argv[])
 
   if (installer.guienabled) {
     installerBuildUI (&installer);
+  } else {
+    installer.delayMax = 5;
+    installer.instState = INST_INIT;
   }
 
-  installer.delayMax = 5;
-  installer.instState = INST_INIT;
-  while (installer.instState != INST_BEGIN) {
+  while (installer.instState != INST_EXIT) {
     installerMainLoop (&installer);
     mssleep (50);
   }
@@ -393,10 +395,8 @@ installerBuildUI (installer_t *installer)
   installer->window = window;
 
   vbox = uiutilsCreateVertBox ();
-  gtk_widget_set_margin_top (vbox, 20);
-  gtk_widget_set_margin_bottom (vbox, 10);
-  gtk_widget_set_margin_start (vbox, 10);
-  gtk_widget_set_margin_end (vbox, 10);
+  uiutilsWidgetSetAllMargins (vbox, 10);
+  uiutilsWidgetSetMarginTop (vbox, 20);
   uiutilsWidgetExpandHoriz (vbox);
   uiutilsWidgetExpandVert (vbox);
   uiutilsBoxPackInWindow (window, vbox);
@@ -433,7 +433,7 @@ installerBuildUI (installer_t *installer)
   uiutilsBoxPackStart (hbox, installer->feedbackMsg);
 
   widget = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
-  gtk_widget_set_margin_top (widget, 2);
+  uiutilsWidgetSetMarginTop (widget, uiutilsBaseMarginSz);
   uiutilsSetCss (widget,
       "separator { min-height: 4px; background-color: #733000; }");
   uiutilsBoxPackStart (vbox, widget);
@@ -476,7 +476,7 @@ installerBuildUI (installer_t *installer)
   image = gtk_image_new_from_icon_name ("folder", GTK_ICON_SIZE_BUTTON);
   gtk_button_set_image (GTK_BUTTON (widget), image);
   gtk_button_set_always_show_image (GTK_BUTTON (widget), TRUE);
-  gtk_widget_set_margin_start (widget, 0);
+  uiutilsWidgetSetMarginStart (widget, 0);
   uiutilsBoxPackStart (hbox, widget);
 
   hbox = uiutilsCreateHorizBox ();
@@ -498,7 +498,7 @@ installerBuildUI (installer_t *installer)
   /* VLC status */
 
   widget = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
-  gtk_widget_set_margin_top (widget, 2);
+  uiutilsWidgetSetMarginTop (widget, uiutilsBaseMarginSz);
   uiutilsSetCss (widget,
       "separator { min-height: 4px; background-color: #733000; }");
   uiutilsBoxPackStart (vbox, widget);
@@ -725,7 +725,14 @@ installerMainLoop (void *udata)
     case INST_FINISH: {
       /* CONTEXT: installer */
       installerDisplayText (installer, "## ",  _("Installation complete."));
-      installer->instState = INST_BEGIN;
+      if (installer->guienabled) {
+        installer->instState = INST_BEGIN;
+      } else {
+        installer->instState = INST_EXIT;
+      }
+      break;
+    }
+    case INST_EXIT: {
       break;
     }
   }
@@ -930,12 +937,7 @@ installerExit (GtkButton *b, gpointer udata)
 {
   installer_t   *installer = udata;
 
-  if (installer->guienabled) {
-    gtk_main_quit ();
-  } else {
-    installer->instState = INST_FINISH;
-  }
-
+  installer->instState = INST_EXIT;
   return;
 }
 
@@ -1953,7 +1955,7 @@ installerRegisterInit (installer_t *installer)
   if (strcmp (sysvarsGetStr (SV_USER), "bll") == 0 &&
       strcmp (sysvarsGetStr (SV_BDJ4_RELEASELEVEL), "") != 0) {
     /* no need to translate */
-    snprintf (tbuff, sizeof (tbuff), "Registeration Skipped.");
+    snprintf (tbuff, sizeof (tbuff), "Registration Skipped.");
     installerDisplayText (installer, "-- ", tbuff);
     installer->instState = INST_FINISH;
   } else {

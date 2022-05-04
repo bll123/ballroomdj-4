@@ -64,7 +64,8 @@ static int      mobmqProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 static int      mobmqProcessing (void *udata);
 static void     mobmqSigHandler (int sig);
 
-static int            gKillReceived = 0;
+static int  gKillReceived = 0;
+static int  gdone = 0;
 
 int
 main (int argc, char *argv[])
@@ -114,9 +115,6 @@ main (int argc, char *argv[])
   listenPort = bdjvarsGetNum (BDJVL_MOBILEMQ_PORT);
   sockhMainLoop (listenPort, mobmqProcessMsg, mobmqProcessing, &mobmqData);
 
-  while (progstateShutdownProcess (mobmqData.progstate) != STATE_CLOSED) {
-    mssleep (50);
-  }
   progstateFree (mobmqData.progstate);
   logEnd ();
   return 0;
@@ -130,6 +128,7 @@ mobmqStoppingCallback (void *tmmdata, programstate_t programState)
   mobmqdata_t   *mobmqData = tmmdata;
 
   connDisconnectAll (mobmqData->conn);
+  gdone = 1;
   return true;
 }
 
@@ -217,7 +216,6 @@ mobmqProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_EXIT_REQUEST: {
           logMsg (LOG_SESS, LOG_IMPORTANT, "got exit request");
-          gKillReceived = 0;
           progstateShutdownProcess (mobmqData->progstate);
           return 1;
         }
@@ -248,24 +246,35 @@ mobmqProcessing (void *udata)
 {
   mobmqdata_t     *mobmqData = udata;
   websrv_t        *websrv = mobmqData->websrv;
+  int           stop = false;
 
 
-  if (! progstateIsRunning (mobmqData->progstate)) {
-    progstateProcess (mobmqData->progstate);
-    if (gKillReceived) {
-      logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
-    }
-    return gKillReceived;
+  if (gdone > EXIT_WAIT_COUNT) {
+    stop = true;
+  }
+
+  if (gdone) {
+    ++gdone;
   }
 
   connProcessUnconnected (mobmqData->conn);
 
+  if (! progstateIsRunning (mobmqData->progstate)) {
+    progstateProcess (mobmqData->progstate);
+    if (! gdone && gKillReceived) {
+      progstateShutdownProcess (mobmqData->progstate);
+      logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
+    }
+    return stop;
+  }
+
   websrvProcess (websrv);
 
-  if (gKillReceived) {
+  if (! gdone && gKillReceived) {
+    progstateShutdownProcess (mobmqData->progstate);
     logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
   }
-  return gKillReceived;
+  return stop;
 }
 
 static bool

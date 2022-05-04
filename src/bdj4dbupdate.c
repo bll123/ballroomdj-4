@@ -122,6 +122,8 @@ static void     dbupdateOutputProgress (dbupdate_t *dbupdate);
 static char *   dbupdateGetRelativePath (dbupdate_t *dbupdate, char *fn);
 
 static int  gKillReceived = 0;
+static int  gdone = 0;
+
 
 int
 main (int argc, char *argv[])
@@ -214,9 +216,6 @@ main (int argc, char *argv[])
   listenPort = bdjvarsGetNum (BDJVL_DBUPDATE_PORT);
   sockhMainLoop (listenPort, dbupdateProcessMsg, dbupdateProcessing, &dbupdate);
 
-  while (progstateShutdownProcess (dbupdate.progstate) != STATE_CLOSED) {
-    mssleep (50);
-  }
   progstateFree (dbupdate.progstate);
 
   logProcEnd (LOG_PROC, "dbupdate", "");
@@ -251,7 +250,6 @@ dbupdateProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_EXIT_REQUEST: {
           logMsg (LOG_SESS, LOG_IMPORTANT, "got exit request");
-          gKillReceived = 0;
           progstateShutdownProcess (dbupdate->progstate);
           logProcEnd (LOG_PROC, "dbupdateProcessMsg", "req-exit");
           return 1;
@@ -278,16 +276,27 @@ static int
 dbupdateProcessing (void *udata)
 {
   dbupdate_t  *dbupdate = (dbupdate_t *) udata;
+  int           stop = false;
+
+
+  if (gdone > EXIT_WAIT_COUNT) {
+    stop = true;
+  }
+
+  if (gdone) {
+    ++gdone;
+  }
+
+  connProcessUnconnected (dbupdate->conn);
 
   if (! progstateIsRunning (dbupdate->progstate)) {
     progstateProcess (dbupdate->progstate);
-    if (gKillReceived) {
+    if (! gdone && gKillReceived) {
+      progstateShutdownProcess (dbupdate->progstate);
       logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
     }
     return gKillReceived;
   }
-
-  connProcessUnconnected (dbupdate->conn);
 
   if (dbupdate->state == DB_UPD_INIT) {
     char  dbfname [MAXPATHLEN];
@@ -478,10 +487,11 @@ dbupdateProcessing (void *udata)
     return 1;
   }
 
-  if (gKillReceived) {
+  if (! gdone && gKillReceived) {
+    progstateShutdownProcess (dbupdate->progstate);
     logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
   }
-  return gKillReceived;
+  return stop;
 }
 
 static bool
@@ -580,7 +590,7 @@ dbupdateStoppingCallback (void *tdbupdate, programstate_t programState)
 
   procutilStopAllProcess (dbupdate->processes, dbupdate->conn, false);
   connDisconnectAll (dbupdate->conn);
-
+  gdone = 1;
   logProcEnd (LOG_PROC, "dbupdateStoppingCallback", "");
   return true;
 }

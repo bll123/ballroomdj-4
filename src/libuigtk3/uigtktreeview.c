@@ -24,10 +24,7 @@ uiutilsCreateTreeView (void)
   GtkTreeSelection  *sel;
 
   tree = gtk_tree_view_new ();
-  gtk_widget_set_margin_start (tree, 4);
-  gtk_widget_set_margin_end (tree, 4);
-  gtk_widget_set_margin_top (tree, 4);
-  gtk_widget_set_margin_bottom (tree, 4);
+  uiutilsWidgetSetAllMargins (tree, uiutilsBaseMarginSz * 2);
   gtk_tree_view_set_enable_search (GTK_TREE_VIEW (tree), FALSE);
   gtk_tree_view_set_activate_on_single_click (GTK_TREE_VIEW (tree), TRUE);
   gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (tree), FALSE);

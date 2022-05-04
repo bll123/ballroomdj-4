@@ -34,7 +34,7 @@ typedef struct {
 } orglookup_t;
 
 orglookup_t orglookup [ORG_MAX_KEY] = {
-  [ORG_TEXT]        = { "--",           -1,               NULL, },// not used
+  [ORG_TEXT]        = { "--",           -1,               NULL, }, // not used
   [ORG_ALBUM]       = { "ALBUM",        TAG_ALBUM,        NULL, },
   [ORG_ALBUMARTIST] = { "ALBUMARTIST",  TAG_ALBUMARTIST,  NULL, },
   [ORG_ARTIST]      = { "ARTIST",       TAG_ARTIST,       NULL, },

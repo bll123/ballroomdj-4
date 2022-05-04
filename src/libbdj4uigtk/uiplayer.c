@@ -158,7 +158,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
 
   gtk_image_set_from_pixbuf (GTK_IMAGE (uiplayer->statusImg), uiplayer->stopImg);
   gtk_widget_set_size_request (uiplayer->statusImg, 18, -1);
-  gtk_widget_set_margin_start (uiplayer->statusImg, 2);
+  uiutilsWidgetSetMarginStart (uiplayer->statusImg, uiutilsBaseMarginSz);
   uiutilsBoxPackStart (tbox, uiplayer->statusImg);
 
   pathbldMakePath (tbuff, sizeof (tbuff), "button_play", ".svg",
@@ -181,28 +181,28 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   assert (uiplayer->repeatImg != NULL);
   gtk_image_clear (GTK_IMAGE (uiplayer->repeatImg));
   gtk_widget_set_size_request (uiplayer->repeatImg, 18, -1);
-  gtk_widget_set_margin_start (uiplayer->repeatImg, 2);
+  uiutilsWidgetSetMarginStart (uiplayer->repeatImg, uiutilsBaseMarginSz);
   uiutilsBoxPackStart (tbox, uiplayer->repeatImg);
 
   uiplayer->danceLab = uiutilsCreateLabel ("");
   uiutilsBoxPackStart (hbox, uiplayer->danceLab);
 
   widget = uiutilsCreateLabel (" : ");
-  gtk_widget_set_margin_start (widget, 0);
+  uiutilsWidgetSetMarginStart (widget, 0);
   uiutilsBoxPackStart (hbox, widget);
 
   widget = uiutilsCreateLabel ("");
-  gtk_widget_set_margin_start (widget, 0);
+  uiutilsWidgetSetMarginStart (widget, 0);
   uiutilsLabelEllipsizeOn (widget);
   uiutilsBoxPackStart (hbox, widget);
   uiplayer->artistLab = widget;
 
   widget = uiutilsCreateLabel (" : ");
-  gtk_widget_set_margin_start (widget, 0);
+  uiutilsWidgetSetMarginStart (widget, 0);
   uiutilsBoxPackStart (hbox, widget);
 
   widget = uiutilsCreateLabel ("");
-  gtk_widget_set_margin_start (widget, 0);
+  uiutilsWidgetSetMarginStart (widget, 0);
   uiutilsLabelEllipsizeOn (widget);
   uiutilsBoxPackStart (hbox, widget);
   uiplayer->titleLab = widget;
@@ -257,7 +257,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiutilsBoxPackStart (hbox, uiplayer->countdownTimerLab);
 
   widget = uiutilsCreateLabel (" / ");
-  gtk_widget_set_margin_start (widget, 0);
+  uiutilsWidgetSetMarginStart (widget, 0);
   uiutilsBoxPackStart (hbox, widget);
 
   uiplayer->durationLab = uiutilsCreateLabel (" 3:00");
@@ -321,8 +321,8 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
 
   uiplayer->repeatButton = gtk_toggle_button_new ();
   assert (uiplayer->repeatButton != NULL);
-  gtk_widget_set_margin_top (uiplayer->repeatButton, 2);
-  gtk_widget_set_margin_start (uiplayer->repeatButton, 2);
+  uiutilsWidgetSetMarginTop (uiplayer->repeatButton, uiutilsBaseMarginSz);
+  uiutilsWidgetSetMarginStart (uiplayer->repeatButton, uiutilsBaseMarginSz);
 
   pathbldMakePath (tbuff, sizeof (tbuff), "button_repeat", ".svg",
       PATHBLD_MP_IMGDIR);
@@ -348,8 +348,8 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   /* CONTEXT: button: pause at the end of the song (toggle) */
   gtk_button_set_label (GTK_BUTTON (uiplayer->pauseatendButton),
       _("Pause at End"));
-  gtk_widget_set_margin_top (uiplayer->pauseatendButton, 2);
-  gtk_widget_set_margin_start (uiplayer->pauseatendButton, 2);
+  uiutilsWidgetSetMarginTop (uiplayer->pauseatendButton, uiutilsBaseMarginSz);
+  uiutilsWidgetSetMarginStart (uiplayer->pauseatendButton, uiutilsBaseMarginSz);
 
   pathbldMakePath (tbuff, sizeof (tbuff), "led_off", ".svg",
       PATHBLD_MP_IMGDIR);

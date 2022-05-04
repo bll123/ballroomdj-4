@@ -2,7 +2,7 @@
 version
 ..1
 count
-..20
+..14
 KEY
 ..0
 DANCE
@@ -10,7 +10,7 @@ DANCE
 TYPE
 ..standaard
 SPEED
-..normaal
+..normal
 TAGS
 ..tango club
 LOWBPM
@@ -28,7 +28,7 @@ DANCE
 TYPE
 ..latin
 SPEED
-..normaal
+..normal
 TAGS
 ..club
 LOWBPM
@@ -46,7 +46,7 @@ DANCE
 TYPE
 ..latin
 SPEED
-..normaal
+..normal
 TAGS
 ..
 LOWBPM
@@ -64,7 +64,7 @@ DANCE
 TYPE
 ..standaard
 SPEED
-..normaal
+..normal
 TAGS
 ..
 LOWBPM
@@ -82,7 +82,7 @@ DANCE
 TYPE
 ..latin
 SPEED
-..snel
+..fast
 TAGS
 ..swing
 LOWBPM
@@ -100,7 +100,7 @@ DANCE
 TYPE
 ..latin
 SPEED
-..normaal
+..normal
 TAGS
 ..
 LOWBPM
@@ -118,7 +118,7 @@ DANCE
 TYPE
 ..standaard
 SPEED
-..snel
+..fast
 TAGS
 ..
 LOWBPM
@@ -136,7 +136,7 @@ DANCE
 TYPE
 ..latin
 SPEED
-..normaal
+..normal
 TAGS
 ..rumba
 LOWBPM
@@ -154,7 +154,7 @@ DANCE
 TYPE
 ..latin
 SPEED
-..snel
+..fast
 TAGS
 ..salsa club
 LOWBPM
@@ -172,7 +172,7 @@ DANCE
 TYPE
 ..latin
 SPEED
-..normaal
+..normal
 TAGS
 ..
 LOWBPM
@@ -190,7 +190,7 @@ DANCE
 TYPE
 ..standaard
 SPEED
-..normaal
+..normal
 TAGS
 ..tango
 LOWBPM
@@ -208,7 +208,7 @@ DANCE
 TYPE
 ..standaard
 SPEED
-..snel
+..fast
 TAGS
 ..waltz
 LOWBPM
@@ -226,7 +226,7 @@ DANCE
 TYPE
 ..standaard
 SPEED
-..normaal
+..normal
 TAGS
 ..waltz
 LOWBPM
@@ -244,7 +244,7 @@ DANCE
 TYPE
 ..club
 SPEED
-..normaal
+..normal
 TAGS
 ..swing club
 LOWBPM

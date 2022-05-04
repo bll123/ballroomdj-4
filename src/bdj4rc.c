@@ -72,7 +72,8 @@ static void     remctrlProcessDanceList (remctrldata_t *remctrlData, char *dance
 static void     remctrlProcessPlaylistList (remctrldata_t *remctrlData, char *playlistList);
 static void     remctrlSigHandler (int sig);
 
-static int            gKillReceived = 0;
+static int  gKillReceived = 0;
+static int  gdone = 0;
 
 int
 main (int argc, char *argv[])
@@ -121,9 +122,6 @@ main (int argc, char *argv[])
   listenPort = bdjvarsGetNum (BDJVL_REMCTRL_PORT);
   sockhMainLoop (listenPort, remctrlProcessMsg, remctrlProcessing, &remctrlData);
 
-  while (progstateShutdownProcess (remctrlData.progstate) != STATE_CLOSED) {
-    mssleep (50);
-  }
   progstateFree (remctrlData.progstate);
   logEnd ();
 
@@ -138,6 +136,7 @@ remctrlStoppingCallback (void *udata, programstate_t programState)
   remctrldata_t   *remctrlData = udata;
 
   connDisconnectAll (remctrlData->conn);
+  gdone = 1;
   return true;
 }
 
@@ -306,7 +305,6 @@ remctrlProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_EXIT_REQUEST: {
           logMsg (LOG_SESS, LOG_IMPORTANT, "got exit request");
-          gKillReceived = 0;
           progstateShutdownProcess (remctrlData->progstate);
           return 1;
         }
@@ -342,26 +340,37 @@ remctrlProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 static int
 remctrlProcessing (void *udata)
 {
-  remctrldata_t     *remctrlData = udata;
-  websrv_t        *websrv = remctrlData->websrv;
+  remctrldata_t *remctrlData = udata;
+  websrv_t      *websrv = remctrlData->websrv;
+  int           stop = false;
 
 
-  if (! progstateIsRunning (remctrlData->progstate)) {
-    progstateProcess (remctrlData->progstate);
-    if (gKillReceived) {
-      logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
-    }
-    return gKillReceived;
+  if (gdone > EXIT_WAIT_COUNT) {
+    stop = true;
+  }
+
+  if (gdone) {
+    ++gdone;
   }
 
   connProcessUnconnected (remctrlData->conn);
 
+  if (! progstateIsRunning (remctrlData->progstate)) {
+    progstateProcess (remctrlData->progstate);
+    if (! gdone && gKillReceived) {
+      progstateShutdownProcess (remctrlData->progstate);
+      logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
+    }
+    return stop;
+  }
+
   websrvProcess (websrv);
 
-  if (gKillReceived) {
+  if (! gdone && gKillReceived) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
+    progstateShutdownProcess (remctrlData->progstate);
   }
-  return gKillReceived;
+  return stop;
 }
 
 static bool

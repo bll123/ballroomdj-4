@@ -2,7 +2,7 @@
 version
 ..1
 count
-..20
+..14
 KEY
 ..0
 DANCE

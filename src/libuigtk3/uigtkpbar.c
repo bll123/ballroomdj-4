@@ -23,8 +23,8 @@ uiutilsCreateProgressBar (char *color)
   widget = gtk_progress_bar_new ();
   gtk_widget_set_halign (widget, GTK_ALIGN_FILL);
   gtk_widget_set_hexpand (widget, TRUE);
-  gtk_widget_set_margin_start (widget, UIUTILS_BASE_MARGIN_SZ);
-  gtk_widget_set_margin_top (widget, UIUTILS_BASE_MARGIN_SZ);
+  gtk_widget_set_margin_start (widget, uiutilsBaseMarginSz);
+  gtk_widget_set_margin_top (widget, uiutilsBaseMarginSz);
   snprintf (tbuff, sizeof (tbuff),
       "progress, trough { min-height: 25px; } progressbar > trough > progress { background-color: %s; }",
       color);

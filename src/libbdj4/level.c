@@ -71,7 +71,7 @@ levelAlloc ()
       level->maxWidth = len;
     }
     nval = ilistGetNum (level->level, key, LEVEL_DEFAULT_FLAG);
-    if (nval) {
+    if (nval && val != NULL) {
       level->defaultName = strdup (val);
       level->defaultKey = nval;
     }

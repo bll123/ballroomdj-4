@@ -73,7 +73,7 @@ void          sockRemoveCheck (sockinfo_t *, Sock_t);
 void          sockFreeCheck (sockinfo_t *);
 Sock_t        sockCheck (sockinfo_t *);
 Sock_t        sockAccept (Sock_t, int *);
-Sock_t        sockConnect (uint16_t port, int *, int);
+Sock_t        sockConnect (uint16_t port, int *connerr, Sock_t clsock);
 char *        sockRead (Sock_t, size_t *);
 char *        sockReadBuff (Sock_t, size_t *, char *data, size_t dlen);
 int           sockWriteStr (Sock_t, char *s, size_t slen);

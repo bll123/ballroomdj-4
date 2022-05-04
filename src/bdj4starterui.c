@@ -112,7 +112,6 @@ static datafilekey_t starteruidfkeys [STARTERUI_KEY_MAX] = {
   { "STARTERUI_SIZE_Y",    STARTERUI_SIZE_Y,        VALUE_NUM, NULL, -1 },
 };
 
-#define STARTER_EXIT_WAIT_COUNT 20
 #define SUPPORT_BUFF_SZ         (10*1024*1024)
 #define LOOP_DELAY              5
 
@@ -361,7 +360,7 @@ starterBuildUI (startui_t  *starter)
   uiutilsBoxPackInWindow (starter->window, vbox);
 
   hbox = uiutilsCreateHorizBox ();
-  gtk_widget_set_margin_top (hbox, uiutilsBaseMarginSz * 4);
+  uiutilsWidgetSetMarginTop (hbox, uiutilsBaseMarginSz * 4);
   uiutilsBoxPackStart (vbox, hbox);
 
   menubar = uiutilsCreateMenubar ();
@@ -377,7 +376,7 @@ starterBuildUI (startui_t  *starter)
 
   /* main display */
   hbox = uiutilsCreateHorizBox ();
-  gtk_widget_set_margin_top (hbox, uiutilsBaseMarginSz * 4);
+  uiutilsWidgetSetMarginTop (hbox, uiutilsBaseMarginSz * 4);
   uiutilsBoxPackStart (vbox, hbox);
 
   /* CONTEXT: starter: profile to be used when starting BDJ4 */
@@ -389,7 +388,7 @@ starterBuildUI (startui_t  *starter)
   uiutilsSpinboxTextSet (&starter->profilesel, starter->currprofile,
       nlistGetCount (starter->dispProfileList),
       starter->maxProfileWidth, starter->dispProfileList, starterSetProfile);
-  gtk_widget_set_margin_start (widget, uiutilsBaseMarginSz * 4);
+  uiutilsWidgetSetMarginStart (widget, uiutilsBaseMarginSz * 4);
   uiutilsWidgetAlignHorizFill (widget);
   uiutilsBoxPackStart (hbox, widget);
 
@@ -412,7 +411,7 @@ starterBuildUI (startui_t  *starter)
 
   /* CONTEXT: button: starts the player user interface */
   widget = uiutilsCreateButton (_("Player"), NULL, starterStartPlayer, starter);
-  gtk_widget_set_margin_top (widget, uiutilsBaseMarginSz * 2);
+  uiutilsWidgetSetMarginTop (widget, uiutilsBaseMarginSz * 2);
   uiutilsWidgetAlignHorizStart (widget);
   uiutilsSizeGroupAdd (&sg, widget);
   uiutilsBoxPackStart (bvbox, widget);
@@ -421,7 +420,7 @@ starterBuildUI (startui_t  *starter)
 
   /* CONTEXT: button: starts the management user interface */
   widget = uiutilsCreateButton (_("Manage"), NULL, starterStartManage, starter);
-  gtk_widget_set_margin_top (widget, uiutilsBaseMarginSz * 2);
+  uiutilsWidgetSetMarginTop (widget, uiutilsBaseMarginSz * 2);
   uiutilsWidgetAlignHorizStart (widget);
   uiutilsSizeGroupAdd (&sg, widget);
   uiutilsBoxPackStart (bvbox, widget);
@@ -430,7 +429,7 @@ starterBuildUI (startui_t  *starter)
 
   /* CONTEXT: button: starts the configuration user interface */
   widget = uiutilsCreateButton (_("Configure"), NULL, starterStartConfig, starter);
-  gtk_widget_set_margin_top (widget, uiutilsBaseMarginSz * 2);
+  uiutilsWidgetSetMarginTop (widget, uiutilsBaseMarginSz * 2);
   uiutilsWidgetAlignHorizStart (widget);
   uiutilsSizeGroupAdd (&sg, widget);
   uiutilsBoxPackStart (bvbox, widget);
@@ -440,7 +439,7 @@ starterBuildUI (startui_t  *starter)
   /* CONTEXT: button: support : starts raffle games  */
   widget = uiutilsCreateButton (_("Raffle Games"), NULL, starterStartRaffleGames, starter);
   uiutilsWidgetDisable (widget);
-  gtk_widget_set_margin_top (widget, uiutilsBaseMarginSz * 2);
+  uiutilsWidgetSetMarginTop (widget, uiutilsBaseMarginSz * 2);
   uiutilsWidgetAlignHorizStart (widget);
   uiutilsSizeGroupAdd (&sg, widget);
   uiutilsBoxPackStart (bvbox, widget);
@@ -449,7 +448,7 @@ starterBuildUI (startui_t  *starter)
 
   /* CONTEXT: button: support : support information */
   widget = uiutilsCreateButton (_("Support"), NULL, starterProcessSupport, starter);
-  gtk_widget_set_margin_top (widget, uiutilsBaseMarginSz * 2);
+  uiutilsWidgetSetMarginTop (widget, uiutilsBaseMarginSz * 2);
   uiutilsWidgetAlignHorizStart (widget);
   uiutilsSizeGroupAdd (&sg, widget);
   uiutilsBoxPackStart (bvbox, widget);
@@ -458,7 +457,7 @@ starterBuildUI (startui_t  *starter)
 
   /* CONTEXT: button: exits BDJ4 */
   widget = uiutilsCreateButton (_("Exit"), NULL, starterProcessExit, starter);
-  gtk_widget_set_margin_top (widget, uiutilsBaseMarginSz * 2);
+  uiutilsWidgetSetMarginTop (widget, uiutilsBaseMarginSz * 2);
   uiutilsWidgetAlignHorizStart (widget);
   uiutilsSizeGroupAdd (&sg, widget);
   uiutilsBoxPackStart (bvbox, widget);
@@ -486,7 +485,7 @@ starterMainLoop (void *tstarter)
   char        ofn [MAXPATHLEN];
 
 
-  if (gdone > STARTER_EXIT_WAIT_COUNT) {
+  if (gdone > EXIT_WAIT_COUNT) {
     stop = TRUE;
   }
 
@@ -497,6 +496,8 @@ starterMainLoop (void *tstarter)
   if (gdone) {
     ++gdone;
   }
+
+  connProcessUnconnected (starter->conn);
 
   if (! progstateIsRunning (starter->progstate)) {
     progstateProcess (starter->progstate);
@@ -512,8 +513,6 @@ starterMainLoop (void *tstarter)
       ! connIsConnected (starter->conn, ROUTE_MAIN)) {
     connConnect (starter->conn, ROUTE_MAIN);
   }
-
-  connProcessUnconnected (starter->conn);
 
   switch (starter->startState) {
     case START_STATE_NONE: {

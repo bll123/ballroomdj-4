@@ -129,6 +129,7 @@ static void     mainSendFinished (maindata_t *mainData);
 
 static long globalCounter = 0;
 static int  gKillReceived = 0;
+static int  gdone;
 
 int
 main (int argc, char *argv[])
@@ -214,6 +215,7 @@ mainStoppingCallback (void *tmaindata, programstate_t programState)
 
   procutilStopAllProcess (mainData->processes, mainData->conn, false);
   connDisconnectAll (mainData->conn);
+  gdone = 1;
   logProcEnd (LOG_PROC, "mainStoppingCallback", "");
   return true;
 }
@@ -465,19 +467,27 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 static int
 mainProcessing (void *udata)
 {
-  maindata_t      *mainData = NULL;
+  maindata_t  *mainData = udata;
+  int         stop = false;
 
-  mainData = (maindata_t *) udata;
+  if (gdone > EXIT_WAIT_COUNT) {
+    stop = true;
+  }
 
-  if (! progstateIsRunning (mainData->progstate)) {
-    progstateProcess (mainData->progstate);
-    if (gKillReceived) {
-      logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
-    }
-    return gKillReceived;
+  if (gdone) {
+    ++gdone;
   }
 
   connProcessUnconnected (mainData->conn);
+
+  if (! progstateIsRunning (mainData->progstate)) {
+    progstateProcess (mainData->progstate);
+    if (! gdone && gKillReceived) {
+      progstateShutdownProcess (mainData->progstate);
+      logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
+    }
+    return stop;
+  }
 
   if (mainData->processes [ROUTE_MARQUEE] != NULL &&
       ! connIsConnected (mainData->conn, ROUTE_MARQUEE)) {
@@ -499,10 +509,11 @@ mainProcessing (void *udata)
     mainData->marqueeChanged [mainData->musicqPlayIdx] = false;
   }
 
-  if (gKillReceived) {
+  if (! gdone && gKillReceived) {
+    progstateShutdownProcess (mainData->progstate);
     logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
   }
-  return gKillReceived;
+  return stop;
 }
 
 static bool

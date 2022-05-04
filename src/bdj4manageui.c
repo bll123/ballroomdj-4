@@ -127,8 +127,6 @@ static datafilekey_t manageuidfkeys [] = {
 };
 #define MANAGEUI_DFKEY_COUNT (sizeof (manageuidfkeys) / sizeof (datafilekey_t))
 
-#define MANAGE_EXIT_WAIT_COUNT      20
-
 static bool     manageConnectingCallback (void *udata, programstate_t programState);
 static bool     manageHandshakeCallback (void *udata, programstate_t programState);
 static bool     manageStoppingCallback (void *udata, programstate_t programState);
@@ -422,7 +420,7 @@ manageBuildUI (manageui_t *manage)
   uiutilsBoxPackInWindow (manage->window, vbox);
 
   hbox = uiutilsCreateHorizBox ();
-  gtk_widget_set_margin_top (hbox, 8);
+  uiutilsWidgetSetMarginTop (hbox, uiutilsBaseMarginSz * 4);
   uiutilsBoxPackStart (vbox, hbox);
 
   widget = uiutilsCreateLabel ("");
@@ -600,7 +598,7 @@ manageMainLoop (void *tmanage)
   manageui_t   *manage = tmanage;
   int         stop = 0;
 
-  if (gdone > MANAGE_EXIT_WAIT_COUNT) {
+  if (gdone > EXIT_WAIT_COUNT) {
     stop = TRUE;
   }
 
@@ -612,6 +610,8 @@ manageMainLoop (void *tmanage)
     ++gdone;
   }
 
+  connProcessUnconnected (manage->conn);
+
   if (! progstateIsRunning (manage->progstate)) {
     progstateProcess (manage->progstate);
     if (! gdone && gKillReceived) {
@@ -621,8 +621,6 @@ manageMainLoop (void *tmanage)
     }
     return stop;
   }
-
-  connProcessUnconnected (manage->conn);
 
   uiplayerMainLoop (manage->slplayer);
   uiplayerMainLoop (manage->mmplayer);

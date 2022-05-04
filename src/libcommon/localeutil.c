@@ -36,42 +36,16 @@ localeInit (void)
   setlocale (LC_ALL, "");
 
   /* these will be incorrect for windows */
-  sysvarsSetStr (SV_LOCALE_SYSTEM, setlocale (LC_ALL, NULL));
+
+  sysvarsSetStr (SV_LOCALE_SYSTEM, osGetLocale (tbuff, sizeof (tbuff)));
   snprintf (tbuff, sizeof (tbuff), "%-.5s", sysvarsGetStr (SV_LOCALE_SYSTEM));
+  /* windows uses en-US rather than en_US */
+  tbuff [2] = '_';
   sysvarsSetStr (SV_LOCALE, tbuff);
   snprintf (tbuff, sizeof (tbuff), "%-.2s", sysvarsGetStr (SV_LOCALE_SYSTEM));
   sysvarsSetStr (SV_LOCALE_SHORT, tbuff);
 
   strlcpy (lbuff, sysvarsGetStr (SV_LOCALE), sizeof (lbuff));
-
-  /* if SV_LOCALE_SET is true, the locale was already loaded from the */
-  /* data/locale.txt file, and there is no need to do the windows processing */
-  if (isWindows () && sysvarsGetNum (SVL_LOCALE_SET) == 0) {
-    datafile_t  *df;
-    slist_t     *list;
-    char        *val;
-
-    strlcpy (lbuff, setlocale (LOC_LC_MESSAGES, NULL), sizeof (lbuff));
-
-    /* windows has non-standard names; convert them */
-    pathbldMakePath (tbuff, sizeof (tbuff),
-        "locale-win", ".txt", PATHBLD_MP_LOCALEDIR);
-    df = datafileAllocParse ("locale-win", DFTYPE_KEY_VAL, tbuff,
-        NULL, 0, DATAFILE_NO_LOOKUP);
-    list = datafileGetList (df);
-    val = slistGetStr (list, lbuff);
-    if (val != NULL) {
-      strlcpy (lbuff, val, sizeof (lbuff));
-    }
-    datafileFree (df);
-
-    /* the sysvars variables must be reset */
-
-    snprintf (tbuff, sizeof (tbuff), "%-.5s", lbuff);
-    sysvarsSetStr (SV_LOCALE, tbuff);
-    snprintf (tbuff, sizeof (tbuff), "%-.2s", lbuff);
-    sysvarsSetStr (SV_LOCALE_SHORT, tbuff);
-  }
 
   if (isWindows ()) {
     if (atof (sysvarsGetStr (SV_OSVERS)) >= 10.0) {

@@ -88,7 +88,6 @@ typedef struct {
   bool            hideonstart : 1;
 } marquee_t;
 
-#define MARQUEE_EXIT_WAIT_COUNT   20
 #define INFO_LAB_HEIGHT_ADJUST    0.85
 #define MARQUEE_UNMAX_WAIT_COUNT  3
 
@@ -376,7 +375,7 @@ marqueeBuildUI (marquee_t *marquee)
 
   marquee->sep = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
   uiutilsWidgetExpandHoriz (marquee->sep);
-  gtk_widget_set_margin_top (marquee->sep, 2);
+  uiutilsWidgetSetMarginTop (marquee->sep, uiutilsBaseMarginSz);
   snprintf (tbuff, sizeof (tbuff),
       "separator { min-height: 4px; background-color: %s; }",
       bdjoptGetStr (OPT_P_MQ_ACCENT_COL));
@@ -423,7 +422,7 @@ marqueeMainLoop (void *tmarquee)
   marquee_t   *marquee = tmarquee;
   int         stop = FALSE;
 
-  if (gdone > MARQUEE_EXIT_WAIT_COUNT) {
+  if (gdone > EXIT_WAIT_COUNT) {
     stop = TRUE;
   }
 
@@ -435,17 +434,16 @@ marqueeMainLoop (void *tmarquee)
     ++gdone;
   }
 
+  connProcessUnconnected (marquee->conn);
+
   if (! progstateIsRunning (marquee->progstate)) {
     progstateProcess (marquee->progstate);
     if (! gdone && gKillReceived) {
       logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
       progstateShutdownProcess (marquee->progstate);
-      gKillReceived = 0;
     }
     return stop;
   }
-
-  connProcessUnconnected (marquee->conn);
 
   if (marquee->unMaximize == 1) {
     marqueeSetNotMaximizeFinish (marquee);
@@ -458,7 +456,6 @@ marqueeMainLoop (void *tmarquee)
   if (! gdone && gKillReceived) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
     progstateShutdownProcess (marquee->progstate);
-    gKillReceived = 0;
   }
   return stop;
 }
@@ -538,8 +535,6 @@ marqueeProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_EXIT_REQUEST: {
           logMsg (LOG_SESS, LOG_IMPORTANT, "got exit request");
-          gKillReceived = 0;
-          logMsg (LOG_DBG, LOG_MSGS, "got: req-exit");
           progstateShutdownProcess (marquee->progstate);
           logProcEnd (LOG_PROC, "marqueeProcessMsg", "req-exit");
           return 1;

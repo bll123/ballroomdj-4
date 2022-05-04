@@ -11,6 +11,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <signal.h>
+#include <locale.h>
 
 #if _hdr_fcntl
 # include <fcntl.h>
@@ -667,3 +668,20 @@ osDefaultSignal (int sig)
 #endif
 }
 
+/* windows setlocale() returns the old style long locale name */
+char *
+osGetLocale (char *buff, size_t sz)
+{
+#if _lib_GetSystemDefaultLocaleName
+  wchar_t locbuff [LOCALE_NAME_MAX_LENGTH];
+  char    *tbuff;
+
+  GetSystemDefaultLocaleName (locbuff, LOCALE_NAME_MAX_LENGTH);
+  tbuff = osFromFSFilename (locbuff);
+  strlcpy (buff, tbuff, sz);
+  free (tbuff);
+#else
+  strlcpy (buff, setlocale (LC_ALL, NULL), sz);
+#endif
+  return buff;
+}

@@ -24,8 +24,8 @@ uiutilsCreateSwitch (int value)
   widget = gtk_switch_new ();
   assert (widget != NULL);
   gtk_switch_set_active (GTK_SWITCH (widget), value);
-  gtk_widget_set_margin_top (widget, 2);
-  gtk_widget_set_margin_start (widget, 2);
+  gtk_widget_set_margin_top (widget, uiutilsBaseMarginSz);
+  gtk_widget_set_margin_start (widget, uiutilsBaseMarginSz);
   gtk_widget_set_valign (widget, GTK_ALIGN_CENTER);
   logProcEnd (LOG_PROC, "uiutilsCreateSwitch", "");
   return widget;

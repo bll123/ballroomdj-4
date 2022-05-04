@@ -157,8 +157,8 @@ uiutilsCreateCheckButton (const char *txt, int value)
 
   widget = gtk_check_button_new_with_label (txt);
   assert (widget != NULL);
-  gtk_widget_set_margin_top (widget, 2);
-  gtk_widget_set_margin_start (widget, 2);
+  gtk_widget_set_margin_top (widget, uiutilsBaseMarginSz);
+  gtk_widget_set_margin_start (widget, uiutilsBaseMarginSz);
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), value);
   logProcEnd (LOG_PROC, "uiutilsCreateCheckButton", "");
   return widget;
@@ -210,6 +210,19 @@ uiutilsWidgetSetAllMargins (GtkWidget *widget, int margin)
   gtk_widget_set_margin_start (widget, margin);
   gtk_widget_set_margin_end (widget, margin);
 }
+
+void
+uiutilsWidgetSetMarginTop (GtkWidget *widget, int margin)
+{
+  gtk_widget_set_margin_top (widget, margin);
+}
+
+void
+uiutilsWidgetSetMarginStart (GtkWidget *widget, int margin)
+{
+  gtk_widget_set_margin_start (widget, margin);
+}
+
 
 inline void
 uiutilsWidgetAlignHorizFill (GtkWidget *widget)

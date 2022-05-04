@@ -369,8 +369,8 @@ uiutilsDropDownButtonCreate (char *title, uiutilsdropdown_t *dropdown)
     snprintf (tbuff, sizeof (tbuff), "- %s  ", title);
   }
   gtk_button_set_label (GTK_BUTTON (widget), tbuff);
-  gtk_widget_set_margin_top (widget, 2);
-  gtk_widget_set_margin_start (widget, 2);
+  gtk_widget_set_margin_top (widget, uiutilsBaseMarginSz);
+  gtk_widget_set_margin_start (widget, uiutilsBaseMarginSz);
 
   pathbldMakePath (tbuff, sizeof (tbuff), "button_down_small", ".svg",
       PATHBLD_MP_IMGDIR);

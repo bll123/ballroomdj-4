@@ -6,22 +6,6 @@
 #include "slist.h"
 #include "ilist.h"
 
-/*
- * The datafilekey_t table is used to convert string keys to long keys.
- *
- * list : simple list
- *    key only or key/value.
- *    ( sequence ( discards and rebuilds ), sortopt )
- * indirect : list (key : long) -> list (key : long/string)
- *    These datafiles have an ordering key, with data associated with
- *    each key. e.g.
- *    0 : dance Waltz rating Good; 1 : dance Tango rating Great
- *    ( dance, genre, rating, level, playlist dances, songlist )
- * key/val : key : long -> value
- *    These always have a datafilekey_t table.
- *    ( autosel, bdjopt/bdjconfig, playlist info, music db (manually built) )
- *
- */
 typedef enum {
   DFTYPE_NONE,
   DFTYPE_LIST,
@@ -47,6 +31,22 @@ typedef struct {
 
 typedef void (*dfConvFunc_t)(datafileconv_t *);
 
+/*
+ * The datafilekey_t table is used to convert string keys to long keys.
+ *
+ * list : simple list
+ *    key only or key/value.
+ *    ( sequence ( discards and rebuilds ), sortopt )
+ * indirect : list (key : long) -> list (key : long/string)
+ *    These datafiles have an ordering key, with data associated with
+ *    each key. e.g.
+ *    0 : dance Waltz rating Good; 1 : dance Tango rating Great
+ *    ( dance, genre, rating, level, playlist dances, songlist )
+ * key/val : key : long -> value
+ *    These always have a datafilekey_t table.
+ *    ( autosel, bdjopt/bdjconfig, playlist info, music db (manually built) )
+ *
+ */
 typedef struct {
   char            *name;
   ssize_t         itemkey;

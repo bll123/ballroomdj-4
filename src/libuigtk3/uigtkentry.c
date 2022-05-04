@@ -51,8 +51,8 @@ uiutilsEntryCreate (uiutilsentry_t *entry)
   gtk_entry_set_width_chars (GTK_ENTRY (entry->entry), entry->entrySize);
   gtk_entry_set_max_length (GTK_ENTRY (entry->entry), entry->maxSize);
   gtk_entry_set_input_purpose (GTK_ENTRY (entry->entry), GTK_INPUT_PURPOSE_FREE_FORM);
-  gtk_widget_set_margin_top (entry->entry, 2);
-  gtk_widget_set_margin_start (entry->entry, 2);
+  gtk_widget_set_margin_top (entry->entry, uiutilsBaseMarginSz);
+  gtk_widget_set_margin_start (entry->entry, uiutilsBaseMarginSz);
   gtk_widget_set_halign (entry->entry, GTK_ALIGN_START);
   gtk_widget_set_hexpand (entry->entry, FALSE);
 

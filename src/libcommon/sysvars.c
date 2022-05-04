@@ -96,7 +96,6 @@ static sysvarsdesc_t sysvarsldesc [SVL_MAX] = {
   [SVL_BASEPORT] = { "Base-Port" },
   [SVL_OSBITS] = { "OS-Bits" },
   [SVL_NUM_PROC] = { "Number-of-Processors" },
-  [SVL_LOCALE_SET] = { "Locale-Set" },
 };
 
 #define SV_MAX_SZ   512
@@ -303,7 +302,6 @@ sysvarsInit (const char *argv0)
   /* localeinit will also convert the windows names to something normal */
   strlcpy (sysvars [SV_LOCALE_SYSTEM], "en_GB.UTF-8", SV_MAX_SZ);
   strlcpy (sysvars [SV_LOCALE], "en_GB", SV_MAX_SZ);
-  lsysvars [SVL_LOCALE_SET] = 0;
 
   snprintf (buff, sizeof (buff), "%s/locale.txt", sysvars [SV_BDJ4DATADIR]);
   if (fileopFileExists (buff)) {
@@ -314,7 +312,6 @@ sysvarsInit (const char *argv0)
     stringTrim (tbuff);
     fclose (fh);
     if (*tbuff) {
-      lsysvars [SVL_LOCALE_SET] = 1;
       strlcpy (sysvars [SV_LOCALE], tbuff, SV_MAX_SZ);
     }
   }

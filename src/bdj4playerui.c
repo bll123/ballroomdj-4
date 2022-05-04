@@ -57,6 +57,7 @@ typedef struct {
   mstime_t        marqueeFontSizeCheck;
   int             stopwaitcount;
   uiutilsnbtabid_t *nbtabid;
+  mstime_t        clockCheck;
   /* gtk stuff */
   GtkWidget       *window;
   GtkWidget       *vbox;
@@ -91,8 +92,6 @@ static datafilekey_t playeruidfkeys [] = {
 };
 #define PLAYERUI_DFKEY_COUNT (sizeof (playeruidfkeys) / sizeof (datafilekey_t))
 
-#define PLUI_EXIT_WAIT_COUNT      20
-
 static bool     pluiConnectingCallback (void *udata, programstate_t programState);
 static bool     pluiHandshakeCallback (void *udata, programstate_t programState);
 static bool     pluiStoppingCallback (void *udata, programstate_t programState);
@@ -100,7 +99,7 @@ static bool     pluiStopWaitCallback (void *udata, programstate_t programState);
 static bool     pluiClosingCallback (void *udata, programstate_t programState);
 static void     pluiBuildUI (playerui_t *plui);
 static int      pluiMainLoop  (void *tplui);
-gboolean        pluiClock (void *tplui);
+static void     pluiClock (playerui_t *plui);
 static int      pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
                     bdjmsgmsg_t msg, char *args, void *udata);
 static gboolean pluiCloseWin (GtkWidget *window, GdkEvent *event, gpointer userdata);
@@ -156,6 +155,7 @@ main (int argc, char *argv[])
   plui.marqueeFontSize = 36;
   plui.marqueeFontSizeFS = 60;
   mstimeset (&plui.marqueeFontSizeCheck, 3600000);
+  mstimeset (&plui.clockCheck, 0);
   plui.stopwaitcount = 0;
   plui.nbtabid = uiutilsNotebookIDInit ();
 
@@ -210,8 +210,6 @@ main (int argc, char *argv[])
   uiutilsUIInitialize ();
   uifont = bdjoptGetStr (OPT_MP_UIFONT);
   uiutilsSetUIFont (uifont);
-
-  g_timeout_add (200, pluiClock, &plui);
 
   pluiBuildUI (&plui);
   sockhMainLoop (listenPort, pluiProcessMsg, pluiMainLoop, &plui);
@@ -403,7 +401,7 @@ pluiBuildUI (playerui_t *plui)
   widget = gtk_button_new ();
   assert (widget != NULL);
   gtk_button_set_label (GTK_BUTTON (widget), "Set Queue for Playback");
-  gtk_widget_set_margin_start (widget, 2);
+  uiutilsWidgetSetMarginStart (widget, uiutilsBaseMarginSz);
   uiutilsNotebookSetActionWidget (plui->notebook, widget, GTK_PACK_END);
   uiutilsWidgetShowAll (widget);
   g_signal_connect (widget, "clicked", G_CALLBACK (pluiProcessSetPlaybackQueue), plui);
@@ -418,7 +416,7 @@ pluiBuildUI (playerui_t *plui)
     uiutilsBoxPackStart (hbox, tabLabel);
     plui->musicqImage [i] = gtk_image_new ();
     gtk_image_set_from_pixbuf (GTK_IMAGE (plui->musicqImage [i]), plui->ledonImg);
-    gtk_widget_set_margin_start (plui->musicqImage [i], 2);
+    uiutilsWidgetSetMarginStart (plui->musicqImage [i], uiutilsBaseMarginSz);
     uiutilsBoxPackStart (hbox, plui->musicqImage [i]);
 
     uiutilsNotebookAppendPage (plui->notebook, widget, hbox);
@@ -456,7 +454,7 @@ pluiMainLoop (void *tplui)
   playerui_t  *plui = tplui;
   int         stop = FALSE;
 
-  if (gdone > PLUI_EXIT_WAIT_COUNT) {
+  if (gdone > EXIT_WAIT_COUNT) {
     stop = TRUE;
   }
 
@@ -466,6 +464,10 @@ pluiMainLoop (void *tplui)
 
   if (gdone) {
     ++gdone;
+  }
+
+  if (! stop && mstimeCheck (&plui->clockCheck)) {
+    pluiClock (plui);
   }
 
   if (! progstateIsRunning (plui->progstate)) {
@@ -506,20 +508,15 @@ pluiMainLoop (void *tplui)
   return stop;
 }
 
-gboolean
-pluiClock (void *tplui)
+static void
+pluiClock (playerui_t *plui)
 {
-  playerui_t  *plui = tplui;
   char        tbuff [100];
 
   if (plui->clock != NULL) {
-    uiutilsLabelSetText (plui->clock,
-        tmutilDisp (tbuff, sizeof (tbuff)));
+    uiutilsLabelSetText (plui->clock, tmutilDisp (tbuff, sizeof (tbuff)));
+    mstimeset (&plui->clockCheck, 200);
   }
-  if (gdone || gKillReceived) {
-    return FALSE;
-  }
-  return TRUE;
 }
 
 

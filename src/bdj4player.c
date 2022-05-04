@@ -102,9 +102,10 @@ typedef struct {
   bool            stopPlaying : 1;
 } playerdata_t;
 
-#define FADEIN_TIMESLICE      100
-#define FADEOUT_TIMESLICE     250
-
+enum {
+  FADEIN_TIMESLICE = 100,
+  FADEOUT_TIMESLICE = 250,
+};
 
 static void     playerCheckSystemVolume (playerdata_t *playerData);
 static int      playerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
@@ -142,7 +143,8 @@ static void     playerSetCheckTimes (playerdata_t *playerData, prepqueue_t *pq);
 static void     playerSetPlayerState (playerdata_t *playerData, playerstate_t pstate);
 static void     playerSendStatus (playerdata_t *playerData);
 
-static int      gKillReceived = 0;
+static int  gKillReceived = 0;
+static int  gdone = 0;
 
 int
 main (int argc, char *argv[])
@@ -236,9 +238,6 @@ main (int argc, char *argv[])
   listenPort = bdjvarsGetNum (BDJVL_PLAYER_PORT);
   sockhMainLoop (listenPort, playerProcessMsg, playerProcessing, &playerData);
 
-  while (progstateShutdownProcess (playerData.progstate) != STATE_CLOSED) {
-    mssleep (50);
-  }
   progstateFree (playerData.progstate);
   logEnd ();
   return 0;
@@ -252,6 +251,7 @@ playerStoppingCallback (void *tpdata, programstate_t programState)
   playerdata_t    *playerData = tpdata;
 
   connDisconnectAll (playerData->conn);
+  gdone = 1;
   return true;
 }
 
@@ -424,18 +424,27 @@ playerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 static int
 playerProcessing (void *udata)
 {
-  playerdata_t      *playerData = udata;;
+  playerdata_t  *playerData = udata;
+  int           stop = false;
 
+  if (gdone > EXIT_WAIT_COUNT) {
+    stop = true;
+  }
 
-  if (! progstateIsRunning (playerData->progstate)) {
-    progstateProcess (playerData->progstate);
-    if (gKillReceived) {
-      logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
-    }
-    return gKillReceived;
+  if (gdone) {
+    ++gdone;
   }
 
   connProcessUnconnected (playerData->conn);
+
+  if (! progstateIsRunning (playerData->progstate)) {
+    progstateProcess (playerData->progstate);
+    if (! gdone && gKillReceived) {
+      progstateShutdownProcess (playerData->progstate);
+      logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
+    }
+    return stop;
+  }
 
   if (mstimeCheck (&playerData->statusCheck)) {
     /* the playerSendStatus() routine will set the statusCheck var */
@@ -659,10 +668,11 @@ playerProcessing (void *udata)
     playerProcessPrepRequest (playerData);
   }
 
-  if (gKillReceived) {
+  if (! gdone && gKillReceived) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
+    progstateShutdownProcess (playerData->progstate);
   }
-  return gKillReceived;
+  return stop;
 }
 
 static bool

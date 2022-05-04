@@ -249,7 +249,8 @@ danceAdd (dance_t *dances, char *name)
 static void
 danceConvSpeed (datafileconv_t *conv)
 {
-  nlistidx_t       idx;
+  nlistidx_t  idx;
+  char        *sval;
 
   conv->allocated = false;
   if (conv->valuetype == VALUE_STR) {
@@ -258,7 +259,14 @@ danceConvSpeed (datafileconv_t *conv)
     conv->u.num = dancespeeddfkeys [idx].itemkey;
   } else if (conv->valuetype == VALUE_NUM) {
     conv->valuetype = VALUE_STR;
-    conv->u.str = dancespeeddfkeys [conv->u.num].name;
+    sval = dancespeeddfkeys [1].name;  // unknown -> normal
+    for (int i = 0; i < DANCE_SPEED_MAX; ++i) {
+      if (conv->u.num == dancespeeddfkeys [i].itemkey) {
+        sval = dancespeeddfkeys [i].name;
+        break;
+      }
+    }
+    conv->u.str = sval;
   }
 }
 

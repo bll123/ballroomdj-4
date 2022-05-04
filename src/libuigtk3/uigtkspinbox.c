@@ -51,8 +51,8 @@ uiutilsSpinboxTextCreate (uiutilsspinbox_t *spinbox, void *udata)
   spinbox->spinbox = gtk_spin_button_new (NULL, 0.0, 0);
   gtk_spin_button_set_increments (GTK_SPIN_BUTTON (spinbox->spinbox), 1.0, 1.0);
   gtk_spin_button_set_wrap (GTK_SPIN_BUTTON (spinbox->spinbox), TRUE);
-  gtk_widget_set_margin_top (spinbox->spinbox, 2);
-  gtk_widget_set_margin_start (spinbox->spinbox, 2);
+  gtk_widget_set_margin_top (spinbox->spinbox, uiutilsBaseMarginSz);
+  gtk_widget_set_margin_start (spinbox->spinbox, uiutilsBaseMarginSz);
   g_signal_connect (spinbox->spinbox, "output",
       G_CALLBACK (uiutilsSpinboxTextDisplay), spinbox);
   g_signal_connect (spinbox->spinbox, "input",
@@ -122,8 +122,8 @@ uiutilsSpinboxTimeCreate (uiutilsspinbox_t *spinbox, void *udata)
   gtk_spin_button_set_increments (GTK_SPIN_BUTTON (spinbox->spinbox), 5000.0, 60000.0);
   gtk_spin_button_set_range (GTK_SPIN_BUTTON (spinbox->spinbox), 0.0, 600000.0);
   gtk_spin_button_set_wrap (GTK_SPIN_BUTTON (spinbox->spinbox), FALSE);
-  gtk_widget_set_margin_top (spinbox->spinbox, 2);
-  gtk_widget_set_margin_start (spinbox->spinbox, 2);
+  gtk_widget_set_margin_top (spinbox->spinbox, uiutilsBaseMarginSz);
+  gtk_widget_set_margin_start (spinbox->spinbox, uiutilsBaseMarginSz);
   g_signal_connect (spinbox->spinbox, "output",
       G_CALLBACK (uiutilsSpinboxTimeDisplay), spinbox);
   g_signal_connect (spinbox->spinbox, "input",
@@ -158,8 +158,8 @@ uiutilsSpinboxIntCreate (void)
   spinbox = gtk_spin_button_new (NULL, 0.0, 0);
   gtk_spin_button_set_increments (GTK_SPIN_BUTTON (spinbox), 1.0, 5.0);
   gtk_spin_button_set_wrap (GTK_SPIN_BUTTON (spinbox), FALSE);
-  gtk_widget_set_margin_top (spinbox, 2);
-  gtk_widget_set_margin_start (spinbox, 2);
+  gtk_widget_set_margin_top (spinbox, uiutilsBaseMarginSz);
+  gtk_widget_set_margin_start (spinbox, uiutilsBaseMarginSz);
   logProcEnd (LOG_PROC, "uiutilsSpinboxIntCreate", "");
   return spinbox;
 }
@@ -173,8 +173,8 @@ uiutilsSpinboxDoubleCreate (void)
   spinbox = gtk_spin_button_new (NULL, 0.0, 1);
   gtk_spin_button_set_increments (GTK_SPIN_BUTTON (spinbox), 0.1, 5.0);
   gtk_spin_button_set_wrap (GTK_SPIN_BUTTON (spinbox), FALSE);
-  gtk_widget_set_margin_top (spinbox, 2);
-  gtk_widget_set_margin_start (spinbox, 2);
+  gtk_widget_set_margin_top (spinbox, uiutilsBaseMarginSz);
+  gtk_widget_set_margin_start (spinbox, uiutilsBaseMarginSz);
   logProcEnd (LOG_PROC, "uiutilsSpinboxDoubleCreate", "");
   return spinbox;
 }
