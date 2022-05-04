@@ -1654,8 +1654,12 @@ mainMusicQueuePlay (maindata_t *mainData)
         mainData->marqueeChanged [mainData->musicqPlayIdx] = true;
       }
     } else {
-      mainData->finished = true;
-      mainData->marqueeChanged [mainData->musicqPlayIdx] = true;
+      if (mainData->playerState == PL_STATE_IN_FADEOUT ||
+          mainData->playerState == PL_STATE_IN_GAP ||
+          mainData->playerState == PL_STATE_STOPPED) {
+        mainData->finished = true;
+        mainData->marqueeChanged [mainData->musicqPlayIdx] = true;
+      }
     }
   } /* if the song was null and the queue is empty */
 

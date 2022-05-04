@@ -703,9 +703,11 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 
   logProcBegin (LOG_PROC, "manageProcessMsg");
 
-  logMsg (LOG_DBG, LOG_MSGS, "got: from:%d/%s route:%d/%s msg:%d/%s args:%s",
-      routefrom, msgRouteDebugText (routefrom),
-      route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
+  if (msg != MSG_PLAYER_STATUS_DATA) {
+    logMsg (LOG_DBG, LOG_MSGS, "got: from:%d/%s route:%d/%s msg:%d/%s args:%s",
+        routefrom, msgRouteDebugText (routefrom),
+        route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
+  }
 
   switch (route) {
     case ROUTE_NONE:

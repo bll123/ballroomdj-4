@@ -475,9 +475,11 @@ uiplayerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 
   logProcBegin (LOG_PROC, "uiplayerProcessMsg");
 
-  logMsg (LOG_DBG, LOG_MSGS, "uiplayer: got: from:%d/%s route:%d/%s msg:%d/%s args:%s",
-      routefrom, msgRouteDebugText (routefrom),
-      route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
+  if (msg != MSG_PLAYER_STATUS_DATA) {
+    logMsg (LOG_DBG, LOG_MSGS, "uiplayer: got: from:%d/%s route:%d/%s msg:%d/%s args:%s",
+        routefrom, msgRouteDebugText (routefrom),
+        route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
+  }
 
   switch (route) {
     case ROUTE_NONE:

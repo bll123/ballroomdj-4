@@ -208,13 +208,13 @@ connSendMessage (conn_t *conn, bdjmsgroute_t route,
   }
   if (socketInvalid (conn [route].sock)) {
     /* generally, this means the connection hasn't been made yet. */
-    logMsg (LOG_DBG, LOG_IMPORTANT, "msg not sent: bad socket from:%d/%s route:%d/%s msg:%d/%s args:%s",
+    logMsg (LOG_DBG, LOG_MSGS, "msg not sent: bad socket from:%d/%s route:%d/%s msg:%d/%s args:%s",
         conn [route].routefrom, msgRouteDebugText (conn [route].routefrom),
         route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
     return;
   }
   if (! conn [route].connected) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "msg not sent: not connected from:%d/%s route:%d/%s msg:%d/%s args:%s",
+    logMsg (LOG_DBG, LOG_MSGS, "msg not sent: not connected from:%d/%s route:%d/%s msg:%d/%s args:%s",
         conn [route].routefrom, msgRouteDebugText (conn [route].routefrom),
         route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
     return;
