@@ -285,7 +285,7 @@ dbupdateProcessing (void *udata)
       progstateShutdownProcess (dbupdate->progstate);
       logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
     }
-    return gKillReceived;
+    return stop;
   }
 
   connProcessUnconnected (dbupdate->conn);
