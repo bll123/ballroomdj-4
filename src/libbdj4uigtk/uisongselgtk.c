@@ -41,7 +41,15 @@ enum {
 
 #define STORE_ROWS     60
 
+enum {
+  SONGSEL_BUTTON_SELECT,
+  SONGSEL_BUTTON_QUEUE,
+  SONGSEL_BUTTON_FILTER,
+  SONGSEL_BUTTON_MAX,
+};
+
 typedef struct {
+  UIWidget    buttons [SONGSEL_BUTTON_MAX];
   GtkWidget           *parentwin;
   GtkWidget           *vbox;
   GtkWidget           *songselTree;
@@ -62,8 +70,8 @@ typedef struct {
 static void uisongselInitializeStore (uisongsel_t *uisongsel);
 static void uisongselCreateRows (uisongsel_t *uisongsel);
 
-static void uisongselQueueProcessSignal (GtkButton *b, gpointer udata);
-static void uisongselFilterDialog (GtkButton *b, gpointer udata);
+static void uisongselQueueProcessSignal (UIWidget *uiwidget, void *udata);
+static void uisongselFilterDialog (UIWidget *uiwidget, void *udata);
 static void uisongselFilterDanceSignal (GtkTreeView *tv, GtkTreePath *path,
     GtkTreeViewColumn *column, gpointer udata);
 static gboolean uisongselScroll (GtkRange *range, GtkScrollType scrolltype,
@@ -146,8 +154,8 @@ uisongselBuildUI (uisongsel_t *uisongsel, GtkWidget *parentwin)
   if (uisongsel->dispselType == DISP_SEL_SONGSEL) {
     /* CONTEXT: select a song to be added to the song list */
     strlcpy (tbuff, _("Select"), sizeof (tbuff));
-    widget = uiutilsCreateButton (tbuff, NULL,
-        uisongselQueueProcessSignal, uisongsel);
+    widget = uiutilsCreateButton (&uiw->buttons [SONGSEL_BUTTON_SELECT],
+        tbuff, NULL, uisongselQueueProcessSignal, uisongsel);
     uiutilsBoxPackStart (hbox, widget);
     uiw->selectButton = widget;
   }
@@ -164,8 +172,8 @@ uisongselBuildUI (uisongsel_t *uisongsel, GtkWidget *parentwin)
       /* CONTEXT: play the selected song */
       strlcpy (tbuff, _("Play"), sizeof (tbuff));
     }
-    widget = uiutilsCreateButton (tbuff, NULL,
-        uisongselQueueProcessSignal, uisongsel);
+    widget = uiutilsCreateButton (&uiw->buttons [SONGSEL_BUTTON_QUEUE],
+        tbuff, NULL, uisongselQueueProcessSignal, uisongsel);
     uiutilsBoxPackStart (hbox, widget);
 
     /* only set the queue button for songsel and mm */
@@ -185,8 +193,8 @@ uisongselBuildUI (uisongsel_t *uisongsel, GtkWidget *parentwin)
   uiutilsBoxPackEnd (hbox, widget);
 
   /* CONTEXT: a button that starts the filters (narrowing down song selections) dialog */
-  widget = uiutilsCreateButton (_("Filters"), NULL,
-      uisongselFilterDialog, uisongsel);
+  widget = uiutilsCreateButton (&uiw->buttons [SONGSEL_BUTTON_FILTER],
+      _("Filters"), NULL, uisongselFilterDialog, uisongsel);
   uiutilsBoxPackEnd (hbox, widget);
 
   hbox = uiutilsCreateHorizBox ();
@@ -419,10 +427,10 @@ uisongselCreateRows (uisongsel_t *uisongsel)
 }
 
 static void
-uisongselQueueProcessSignal (GtkButton *b, gpointer udata)
+uisongselQueueProcessSignal (UIWidget *uiwidget, void *udata)
 {
-  uisongselgtk_t    * uiw;
   uisongsel_t       * uisongsel = udata;
+  uisongselgtk_t    * uiw;
   GtkTreeSelection  * sel;
   GtkTreeModel      * model = NULL;
   GtkTreeIter       iter;
@@ -442,13 +450,13 @@ uisongselQueueProcessSignal (GtkButton *b, gpointer udata)
   gtk_tree_selection_get_selected (sel, &model, &iter);
   gtk_tree_model_get (model, &iter, SONGSEL_COL_DBIDX, &dbidx, -1);
 
-  if (GTK_WIDGET (b) == uiw->queueButton) {
+  if (uiwidget->widget == uiw->queueButton) {
     /* clear any playing song */
     connSendMessage (uisongsel->conn, ROUTE_PLAYER, MSG_PLAY_NEXTSONG, NULL);
     /* and queue to the hidden music queue */
     mqidx = MUSICQ_B;
   }
-  if (GTK_WIDGET (b) == uiw->selectButton) {
+  if (uiwidget->widget == uiw->selectButton) {
     mqidx = MUSICQ_A;
   }
   uisongselQueueProcess (uisongsel, dbidx, mqidx);
@@ -458,7 +466,7 @@ uisongselQueueProcessSignal (GtkButton *b, gpointer udata)
 }
 
 static void
-uisongselFilterDialog (GtkButton *b, gpointer udata)
+uisongselFilterDialog (UIWidget *uiwidget, void *udata)
 {
   uisongselgtk_t      * uiw;
   uisongsel_t * uisongsel = udata;
@@ -586,8 +594,8 @@ uisongselScrollEvent (GtkWidget* tv, GdkEventScroll *event, gpointer udata)
   if (event->direction == GDK_SCROLL_UP) {
     --uisongsel->idxStart;
   }
-  /* using g_signal_emit_by_name causes memory corruption */
-  uisongselScroll (GTK_RANGE (uiw->songselScrollbar), 0,
+
+  uisongselScroll (GTK_RANGE (uiw->songselScrollbar), GTK_SCROLL_JUMP,
       (double) uisongsel->idxStart, uisongsel);
 
   logProcEnd (LOG_PROC, "uisongselScrollEvent", "");
@@ -600,12 +608,14 @@ uisongselProcessTreeSize (GtkWidget* w, GtkAllocation* allocation,
 {
   uisongselgtk_t  *uiw;
   uisongsel_t   *uisongsel = udata;
+  slist_t           *sellist;
   GtkAdjustment *adjustment;
   double        ps;
 
   logProcBegin (LOG_PROC, "uisongselProcessTreeSize");
 
   uiw = uisongsel->uiWidgetData;
+  sellist = dispselGetList (uisongsel->dispsel, uisongsel->dispselType);
 
   if (allocation->height != uiw->lastTreeSize) {
     if (allocation->height < 200) {
@@ -634,11 +644,6 @@ uisongselProcessTreeSize (GtkWidget* w, GtkAllocation* allocation,
     ++uiw->maxRows;
     logMsg (LOG_DBG, LOG_IMPORTANT, "max-rows:%d", uiw->maxRows);
 
-    /* force a redraw */
-    gtk_adjustment_set_value (adjustment, 0.0);
-    /* using g_signal_emit_by_name causes memory corruption */
-    uisongselScroll (GTK_RANGE (uiw->songselScrollbar), 0, 0.0, uisongsel);
-
     adjustment = gtk_range_get_adjustment (GTK_RANGE (uiw->songselScrollbar));
     /* the step increment does not work correctly with smooth scrolling */
     /* and it appears there's no easy way to turn smooth scrolling off */
@@ -651,8 +656,7 @@ uisongselProcessTreeSize (GtkWidget* w, GtkAllocation* allocation,
     logMsg (LOG_DBG, LOG_SONGSEL, "populate: tree size change");
     uisongselPopulateData (uisongsel);
 
-    /* using g_signal_emit_by_name causes memory corruption */
-    uisongselScroll (GTK_RANGE (uiw->songselScrollbar), 0,
+    uisongselScroll (GTK_RANGE (uiw->songselScrollbar), GTK_SCROLL_JUMP,
         (double) uisongsel->idxStart, uisongsel);
   }
   logProcEnd (LOG_PROC, "uisongselProcessTreeSize", "");

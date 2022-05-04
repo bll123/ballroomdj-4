@@ -538,7 +538,8 @@ manageBuildUI (manageui_t *manage)
   g_signal_connect (widget, "value-changed", G_CALLBACK (manageDbChg), manage);
   uiutilsBoxPackStart (hbox, widget);
 
-  widget = uiutilsCreateButton (_("Start"), NULL, manageDbStart, manage);
+  widget = uiutilsCreateButton (NULL, _("Start"), NULL,
+      manageDbStart, manage);
   uiutilsBoxPackStart (hbox, widget);
 
   widget = uiutilsCreateProgressBar (bdjoptGetStr (OPT_P_UI_ACCENT_COL));

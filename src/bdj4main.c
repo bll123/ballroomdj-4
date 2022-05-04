@@ -890,8 +890,7 @@ mainSendMobileMarqueeData (maindata_t *mainData)
   }
   strlcat (jbuff, " }", sizeof (jbuff));
 
-  connSendMessage (mainData->conn, ROUTE_MOBILEMQ,
-      MSG_MARQUEE_DATA, jbuff);
+  connSendMessage (mainData->conn, ROUTE_MOBILEMQ, MSG_MARQUEE_DATA, jbuff);
 
   if (bdjoptGetNum (OPT_P_MOBILEMARQUEE) == MOBILEMQ_LOCAL) {
     logProcEnd (LOG_PROC, "mainSendMobileMarqueeData", "is-local");

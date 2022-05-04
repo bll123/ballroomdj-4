@@ -16,9 +16,11 @@
 #include "pathbld.h"
 #include "uiutils.h"
 
+static void uiutilsButtonClickHandler (GtkButton *b, gpointer udata);
+
 GtkWidget *
-uiutilsCreateButton (char *title, char *imagenm,
-    void *clickCallback, void *udata)
+uiutilsCreateButton (UIWidget *uiwidget, char *title, char *imagenm,
+    void *cb, void *udata)
 {
   GtkWidget   *widget;
 
@@ -42,11 +44,25 @@ uiutilsCreateButton (char *title, char *imagenm,
   } else {
     gtk_button_set_label (GTK_BUTTON (widget), title);
   }
-  if (clickCallback != NULL) {
-    g_signal_connect (widget, "clicked", G_CALLBACK (clickCallback), udata);
+  if (cb != NULL) {
+    if (uiwidget != NULL) {
+      uiwidget->widget = widget;
+      uiwidget->cb.cb = cb;
+      uiwidget->cb.udata = udata;
+      g_signal_connect (widget, "clicked", G_CALLBACK (uiutilsButtonClickHandler), uiwidget);
+    } else {
+      g_signal_connect (widget, "clicked", G_CALLBACK (cb), udata);
+    }
   }
 
   logProcEnd (LOG_PROC, "uiutilsCreateButton", "");
   return widget;
 }
 
+static void
+uiutilsButtonClickHandler (GtkButton *b, gpointer udata)
+{
+  UIWidget  *uiwidget = udata;
+
+  uiwidget->cb.cb (uiwidget, uiwidget->cb.udata);
+}

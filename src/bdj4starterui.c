@@ -57,6 +57,17 @@ typedef enum {
 
 #define MAX_WEB_RESP_SZ   2048
 
+enum {
+  START_BUTTON_PLAYER,
+  START_BUTTON_MANAGE,
+  START_BUTTON_CONFIG,
+  START_BUTTON_RAFFLE,
+  START_BUTTON_SUPPORT,
+  START_BUTTON_EXIT,
+  START_BUTTON_SEND_SUPPORT,
+  START_BUTTON_MAX,
+};
+
 typedef struct {
   progstate_t     *progstate;
   char            *locknm;
@@ -82,6 +93,7 @@ typedef struct {
   char            *webresponse;
   int             mainstarted;
   int             stopwaitcount;
+  UIWidget        buttons [START_BUTTON_MAX];
   /* gtk stuff */
   uiutilsspinbox_t  profilesel;
   GtkWidget         *window;
@@ -127,7 +139,8 @@ static void     starterStopMain (startui_t *starter);
 static gboolean starterCloseWin (GtkWidget *window, GdkEvent *event, gpointer userdata);
 static void     starterSigHandler (int sig);
 
-static void     starterStartPlayer (GtkButton *b, gpointer udata);
+//static void     starterStartPlayer (GtkButton *b, gpointer udata);
+static void     starterStartPlayer (UIWidget *uiwidget, void *udata);
 static void     starterStartManage (GtkButton *b, gpointer udata);
 static void     starterStartConfig (GtkButton *b, gpointer udata);
 static void     starterStartRaffleGames (GtkButton *b, gpointer udata);
@@ -418,7 +431,8 @@ starterBuildUI (startui_t  *starter)
   uiutilsBoxPackStart (hbox, widget);
 
   /* CONTEXT: button: starts the player user interface */
-  widget = uiutilsCreateButton (_("Player"), NULL, starterStartPlayer, starter);
+  widget = uiutilsCreateButton (&starter->buttons [START_BUTTON_PLAYER],
+      _("Player"), NULL, starterStartPlayer, starter);
   uiutilsWidgetSetMarginTop (widget, uiutilsBaseMarginSz * 2);
   uiutilsWidgetAlignHorizStart (widget);
   uiutilsSizeGroupAdd (&sg, widget);
@@ -427,7 +441,8 @@ starterBuildUI (startui_t  *starter)
   gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
 
   /* CONTEXT: button: starts the management user interface */
-  widget = uiutilsCreateButton (_("Manage"), NULL, starterStartManage, starter);
+  widget = uiutilsCreateButton (&starter->buttons [START_BUTTON_MANAGE],
+      _("Manage"), NULL, starterStartManage, starter);
   uiutilsWidgetSetMarginTop (widget, uiutilsBaseMarginSz * 2);
   uiutilsWidgetAlignHorizStart (widget);
   uiutilsSizeGroupAdd (&sg, widget);
@@ -436,7 +451,8 @@ starterBuildUI (startui_t  *starter)
   gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
 
   /* CONTEXT: button: starts the configuration user interface */
-  widget = uiutilsCreateButton (_("Configure"), NULL, starterStartConfig, starter);
+  widget = uiutilsCreateButton (&starter->buttons [START_BUTTON_CONFIG],
+      _("Configure"), NULL, starterStartConfig, starter);
   uiutilsWidgetSetMarginTop (widget, uiutilsBaseMarginSz * 2);
   uiutilsWidgetAlignHorizStart (widget);
   uiutilsSizeGroupAdd (&sg, widget);
@@ -445,7 +461,8 @@ starterBuildUI (startui_t  *starter)
   gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
 
   /* CONTEXT: button: support : starts raffle games  */
-  widget = uiutilsCreateButton (_("Raffle Games"), NULL, starterStartRaffleGames, starter);
+  widget = uiutilsCreateButton (&starter->buttons [START_BUTTON_RAFFLE],
+      _("Raffle Games"), NULL, starterStartRaffleGames, starter);
   uiutilsWidgetDisable (widget);
   uiutilsWidgetSetMarginTop (widget, uiutilsBaseMarginSz * 2);
   uiutilsWidgetAlignHorizStart (widget);
@@ -455,7 +472,8 @@ starterBuildUI (startui_t  *starter)
   gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
 
   /* CONTEXT: button: support : support information */
-  widget = uiutilsCreateButton (_("Support"), NULL, starterProcessSupport, starter);
+  widget = uiutilsCreateButton (&starter->buttons [START_BUTTON_SUPPORT],
+      _("Support"), NULL, starterProcessSupport, starter);
   uiutilsWidgetSetMarginTop (widget, uiutilsBaseMarginSz * 2);
   uiutilsWidgetAlignHorizStart (widget);
   uiutilsSizeGroupAdd (&sg, widget);
@@ -464,7 +482,8 @@ starterBuildUI (startui_t  *starter)
   gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
 
   /* CONTEXT: button: exits BDJ4 */
-  widget = uiutilsCreateButton (_("Exit"), NULL, starterProcessExit, starter);
+  widget = uiutilsCreateButton (&starter->buttons [START_BUTTON_EXIT],
+      _("Exit"), NULL, starterProcessExit, starter);
   uiutilsWidgetSetMarginTop (widget, uiutilsBaseMarginSz * 2);
   uiutilsWidgetAlignHorizStart (widget);
   uiutilsSizeGroupAdd (&sg, widget);
@@ -824,7 +843,8 @@ starterSigHandler (int sig)
 }
 
 static void
-starterStartPlayer (GtkButton *b, gpointer udata)
+//starterStartPlayer (GtkButton *b, gpointer udata)
+starterStartPlayer (UIWidget *uiwidget, void *udata)
 {
   startui_t      *starter = udata;
 
@@ -968,8 +988,8 @@ starterProcessSupport (GtkButton *b, gpointer udata)
   uiutilsBoxPackStart (vbox, hbox);
 
   /* CONTEXT: starterui: basic support dialog: button: support option */
-  widget = uiutilsCreateButton (_("Send Support Message"), NULL,
-      starterCreateSupportDialog, starter);
+  widget = uiutilsCreateButton (&starter->buttons [START_BUTTON_SEND_SUPPORT],
+      _("Send Support Message"), NULL, starterCreateSupportDialog, starter);
   uiutilsBoxPackStart (hbox, widget);
 
   /* the dialog doesn't have any space above the buttons */

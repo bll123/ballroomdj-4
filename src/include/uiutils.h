@@ -11,11 +11,23 @@
 #include "song.h"
 #include "tmutil.h"
 
-typedef union {
+typedef struct uiwidgetst UIWidget;
+
+typedef void (*uiutilscbfunc_t)(UIWidget *uiwidget, void *udata);
+
+typedef struct {
+  uiutilscbfunc_t cb;
+  void            *udata;
+} uiutilscb_t;
+
+typedef struct uiwidgetst {
 #ifdef UI_USE_GTK3
-  GtkWidget     *widget;
-  GtkSizeGroup  *sg;
+  union {
+    GtkWidget     *widget;
+    GtkSizeGroup  *sg;
+  };
 #endif
+  uiutilscb_t   cb;
 } UIWidget;
 
 enum {
@@ -141,8 +153,8 @@ void        uiutilsLabelEllipsizeOn (GtkWidget *widget);
 void        uiutilsLabelSetMaxWidth (GtkWidget *widget, int width);
 
 /* uigtkbutton.c */
-GtkWidget * uiutilsCreateButton (char *title, char *imagenm,
-    void *clickCallback, void *udata);
+GtkWidget * uiutilsCreateButton (UIWidget *uiwidget, char *title,
+    char *imagenm, void *cb, void *udata);
 
 /* uigtkentry.c */
 void uiutilsEntryInit (uiutilsentry_t *entry, int entrySize, int maxSize);
@@ -238,6 +250,7 @@ GtkTreeViewColumn * uiutilsAddDisplayColumns (GtkWidget *tree,
 GType *     uiutilsAddDisplayTypes (GType *types, slist_t *sellist, int *col);
 void        uiutilsSetDisplayColumns (GtkListStore *store, GtkTreeIter *iter,
     slist_t *sellist, song_t *song, int col);
+
 
 /* uigtkdialog.c */
 char  *uiutilsSelectDirDialog (uiutilsselect_t *selectdata);

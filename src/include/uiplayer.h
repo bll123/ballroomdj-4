@@ -7,12 +7,22 @@
 #include "bdj4.h"
 #include "conn.h"
 #include "progstate.h"
+#include "uiutils.h"
+
+enum {
+  UIPLAYER_BUTTON_FADE,
+  UIPLAYER_BUTTON_PLAYPAUSE,
+  UIPLAYER_BUTTON_BEGSONG,
+  UIPLAYER_BUTTON_NEXTSONG,
+  UIPLAYER_BUTTON_MAX,
+};
 
 typedef struct {
   progstate_t     *progstate;
   conn_t          *conn;
   playerstate_t   playerState;
   musicdb_t       *musicdb;
+  UIWidget        buttons [UIPLAYER_BUTTON_MAX];
   /* song display */
   GtkWidget       *vbox;
   GtkWidget       *statusImg;

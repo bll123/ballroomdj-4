@@ -309,14 +309,14 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiutilsSizeGroupAdd (&sgE, widget);
 
   /* CONTEXT: button: fade out the song and stop playing it */
-  widget = uiutilsCreateButton (_("Fade"), NULL,
-      uiplayerFadeProcess, uiplayer);
+  widget = uiutilsCreateButton (&uiplayer->buttons [UIPLAYER_BUTTON_FADE],
+      _("Fade"), NULL, uiplayerFadeProcess, uiplayer);
   uiutilsBoxPackStart (hbox, widget);
 
   /* CONTEXT: button: play or pause the song */
   snprintf (tbuff, sizeof (tbuff), "%s / %s", _("Play"), _("Pause"));
-  widget = uiutilsCreateButton (tbuff, "button_playpause",
-      uiplayerPlayPauseProcess, uiplayer);
+  widget = uiutilsCreateButton (&uiplayer->buttons [UIPLAYER_BUTTON_PLAYPAUSE],
+      tbuff, "button_playpause", uiplayerPlayPauseProcess, uiplayer);
   uiutilsBoxPackStart (hbox, widget);
 
   uiplayer->repeatButton = gtk_toggle_button_new ();
@@ -334,13 +334,14 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   g_signal_connect (uiplayer->repeatButton, "toggled", G_CALLBACK (uiplayerRepeatProcess), uiplayer);
 
   /* CONTEXT: button: return to the beginning of the song */
-  widget = uiutilsCreateButton (_("Return to beginning of song"),
-      "button_begin", uiplayerSongBeginProcess, uiplayer);
+  widget = uiutilsCreateButton (&uiplayer->buttons [UIPLAYER_BUTTON_BEGSONG],
+      _("Return to beginning of song"), "button_begin",
+      uiplayerSongBeginProcess, uiplayer);
   uiutilsBoxPackStart (hbox, widget);
 
   /* CONTEXT: button: start playing the next song (immediate) */
-  widget = uiutilsCreateButton (_("Next Song"), "button_nextsong",
-      uiplayerNextSongProcess, uiplayer);
+  widget = uiutilsCreateButton (&uiplayer->buttons [UIPLAYER_BUTTON_NEXTSONG],
+      _("Next Song"), "button_nextsong", uiplayerNextSongProcess, uiplayer);
   uiutilsBoxPackStart (hbox, widget);
 
   uiplayer->pauseatendButton = gtk_toggle_button_new ();

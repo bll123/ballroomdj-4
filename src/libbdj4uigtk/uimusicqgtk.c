@@ -88,12 +88,12 @@ uimusicqBuildUI (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
   uiutilsBoxPackStart (uimusicq->ui [ci].box, hbox);
 
   /* CONTEXT: button: move the selected song to the top of the queue */
-  widget = uiutilsCreateButton (_("Move to Top"), "button_movetop",
+  widget = uiutilsCreateButton (NULL, _("Move to Top"), "button_movetop",
       uimusicqMoveTopProcessSignal, uimusicq);
   uiutilsBoxPackStart (hbox, widget);
 
   /* CONTEXT: button: move the selected song up in the queue */
-  widget = uiutilsCreateButton (_("Move Up"), "button_up",
+  widget = uiutilsCreateButton (NULL, _("Move Up"), "button_up",
       NULL, uimusicq);
   g_signal_connect (widget, "pressed",
       G_CALLBACK (uimusicqMoveUpProcessSignal), uimusicq);
@@ -102,7 +102,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
   uiutilsBoxPackStart (hbox, widget);
 
   /* CONTEXT: button: move the selected song down in the queue */
-  widget = uiutilsCreateButton (_("Move Down"), "button_down",
+  widget = uiutilsCreateButton (NULL, _("Move Down"), "button_down",
       NULL, uimusicq);
   g_signal_connect (widget, "pressed",
       G_CALLBACK (uimusicqMoveDownProcessSignal), uimusicq);
@@ -113,20 +113,20 @@ uimusicqBuildUI (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
   if ((uimusicq->uimusicqflags & UIMUSICQ_FLAGS_NO_TOGGLE_PAUSE) !=
       UIMUSICQ_FLAGS_NO_TOGGLE_PAUSE) {
     /* CONTEXT: button: set playback to pause after the selected song is played (toggle) */
-    widget = uiutilsCreateButton (_("Toggle Pause"), "button_pause",
+    widget = uiutilsCreateButton (NULL, _("Toggle Pause"), "button_pause",
         uimusicqTogglePauseProcessSignal, uimusicq);
     uiutilsBoxPackStart (hbox, widget);
   }
 
   /* CONTEXT: button: remove the song from the queue */
-  widget = uiutilsCreateButton (_("Remove from queue"), "button_audioremove",
+  widget = uiutilsCreateButton (NULL, _("Remove from queue"), "button_audioremove",
       uimusicqRemoveProcessSignal, uimusicq);
   uiutilsBoxPackStart (hbox, widget);
 
   // ### TODO create code to handle this.
   if ((uimusicq->uimusicqflags & UIMUSICQ_FLAGS_NO_QUEUE) != UIMUSICQ_FLAGS_NO_QUEUE) {
     /* CONTEXT: button: request playback of a song external to BDJ4 (not in the database) */
-    widget = uiutilsCreateButton (_("Request External"), NULL,
+    widget = uiutilsCreateButton (NULL, _("Request External"), NULL,
         NULL, uimusicq);
     uiutilsWidgetDisable (widget);
     uiutilsBoxPackEnd (hbox, widget);
@@ -159,7 +159,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
 
   if (uimusicq->dispselType == DISP_SEL_MUSICQ) {
     /* CONTEXT: button: clear the queue */
-    widget = uiutilsCreateButton (_("Clear Queue"), NULL,
+    widget = uiutilsCreateButton (NULL, _("Clear Queue"), NULL,
         uimusicqClearQueueProcessSignal, uimusicq);
     uiutilsBoxPackEnd (hbox, widget);
   }
@@ -196,8 +196,8 @@ uimusicqBuildUI (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
   gtk_tree_view_append_column (GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree), column);
 
   sellist = dispselGetList (uimusicq->dispsel, uimusicq->dispselType);
-  uiutilsAddDisplayColumns (uimusicq->ui [ci].musicqTree, sellist, MUSICQ_COL_MAX,
-      MUSICQ_COL_FONT, MUSICQ_COL_ELLIPSIZE);
+  uiutilsAddDisplayColumns (uimusicq->ui [ci].musicqTree, sellist,
+      MUSICQ_COL_MAX, MUSICQ_COL_FONT, MUSICQ_COL_ELLIPSIZE);
 
   gtk_tree_view_set_model (GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree), NULL);
 

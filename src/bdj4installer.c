@@ -472,7 +472,8 @@ installerBuildUI (installer_t *installer)
   g_signal_connect (installer->bdj3locEntry.entry, "changed",
       G_CALLBACK (installerValidateStart), installer);
 
-  widget = uiutilsCreateButton ("", NULL, installerSelectDirDialog, installer);
+  widget = uiutilsCreateButton (NULL, "", NULL,
+      installerSelectDirDialog, installer);
   image = gtk_image_new_from_icon_name ("folder", GTK_ICON_SIZE_BUTTON);
   gtk_button_set_image (GTK_BUTTON (widget), image);
   gtk_button_set_always_show_image (GTK_BUTTON (widget), TRUE);
@@ -551,11 +552,13 @@ installerBuildUI (installer_t *installer)
   uiutilsWidgetExpandHoriz (hbox);
   uiutilsBoxPackStart (vbox, hbox);
 
-  widget = uiutilsCreateButton (_("Exit"), NULL, installerExit, installer);
+  widget = uiutilsCreateButton (NULL, _("Exit"), NULL,
+      installerExit, installer);
   uiutilsBoxPackEnd (hbox, widget);
 
   /* CONTEXT: installer: start the installation process */
-  widget = uiutilsCreateButton (_("Install"), NULL, installerInstall, installer);
+  widget = uiutilsCreateButton (NULL, _("Install"), NULL,
+      installerInstall, installer);
   uiutilsBoxPackEnd (hbox, widget);
 
   scwidget = uiutilsCreateScrolledWindow ();
