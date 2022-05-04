@@ -434,8 +434,6 @@ marqueeMainLoop (void *tmarquee)
     ++gdone;
   }
 
-  connProcessUnconnected (marquee->conn);
-
   if (! progstateIsRunning (marquee->progstate)) {
     progstateProcess (marquee->progstate);
     if (! gdone && gKillReceived) {
@@ -444,6 +442,8 @@ marqueeMainLoop (void *tmarquee)
     }
     return stop;
   }
+
+  connProcessUnconnected (marquee->conn);
 
   if (marquee->unMaximize == 1) {
     marqueeSetNotMaximizeFinish (marquee);

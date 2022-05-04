@@ -610,8 +610,6 @@ manageMainLoop (void *tmanage)
     ++gdone;
   }
 
-  connProcessUnconnected (manage->conn);
-
   if (! progstateIsRunning (manage->progstate)) {
     progstateProcess (manage->progstate);
     if (! gdone && gKillReceived) {
@@ -621,6 +619,8 @@ manageMainLoop (void *tmanage)
     }
     return stop;
   }
+
+  connProcessUnconnected (manage->conn);
 
   uiplayerMainLoop (manage->slplayer);
   uiplayerMainLoop (manage->mmplayer);

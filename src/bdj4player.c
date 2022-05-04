@@ -435,8 +435,6 @@ playerProcessing (void *udata)
     ++gdone;
   }
 
-  connProcessUnconnected (playerData->conn);
-
   if (! progstateIsRunning (playerData->progstate)) {
     progstateProcess (playerData->progstate);
     if (! gdone && gKillReceived) {
@@ -445,6 +443,8 @@ playerProcessing (void *udata)
     }
     return stop;
   }
+
+  connProcessUnconnected (playerData->conn);
 
   if (mstimeCheck (&playerData->statusCheck)) {
     /* the playerSendStatus() routine will set the statusCheck var */

@@ -497,8 +497,6 @@ starterMainLoop (void *tstarter)
     ++gdone;
   }
 
-  connProcessUnconnected (starter->conn);
-
   if (! progstateIsRunning (starter->progstate)) {
     progstateProcess (starter->progstate);
     if (! gdone && gKillReceived) {
@@ -508,6 +506,8 @@ starterMainLoop (void *tstarter)
     }
     return stop;
   }
+
+  connProcessUnconnected (starter->conn);
 
   if (starter->mainstarted &&
       ! connIsConnected (starter->conn, ROUTE_MAIN)) {

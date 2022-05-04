@@ -257,8 +257,6 @@ mobmqProcessing (void *udata)
     ++gdone;
   }
 
-  connProcessUnconnected (mobmqData->conn);
-
   if (! progstateIsRunning (mobmqData->progstate)) {
     progstateProcess (mobmqData->progstate);
     if (! gdone && gKillReceived) {
@@ -267,6 +265,8 @@ mobmqProcessing (void *udata)
     }
     return stop;
   }
+
+  connProcessUnconnected (mobmqData->conn);
 
   websrvProcess (websrv);
 

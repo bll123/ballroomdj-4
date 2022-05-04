@@ -353,8 +353,6 @@ remctrlProcessing (void *udata)
     ++gdone;
   }
 
-  connProcessUnconnected (remctrlData->conn);
-
   if (! progstateIsRunning (remctrlData->progstate)) {
     progstateProcess (remctrlData->progstate);
     if (! gdone && gKillReceived) {
@@ -363,6 +361,8 @@ remctrlProcessing (void *udata)
     }
     return stop;
   }
+
+  connProcessUnconnected (remctrlData->conn);
 
   websrvProcess (websrv);
 

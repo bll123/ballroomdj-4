@@ -287,8 +287,6 @@ dbupdateProcessing (void *udata)
     ++gdone;
   }
 
-  connProcessUnconnected (dbupdate->conn);
-
   if (! progstateIsRunning (dbupdate->progstate)) {
     progstateProcess (dbupdate->progstate);
     if (! gdone && gKillReceived) {
@@ -297,6 +295,8 @@ dbupdateProcessing (void *udata)
     }
     return gKillReceived;
   }
+
+  connProcessUnconnected (dbupdate->conn);
 
   if (dbupdate->state == DB_UPD_INIT) {
     char  dbfname [MAXPATHLEN];

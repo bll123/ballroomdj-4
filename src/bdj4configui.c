@@ -1627,8 +1627,6 @@ confuiMainLoop (void *tconfui)
     ++gdone;
   }
 
-  connProcessUnconnected (confui->conn);
-
   if (! progstateIsRunning (confui->progstate)) {
     progstateProcess (confui->progstate);
     if (! gdone && gKillReceived) {
@@ -1638,6 +1636,8 @@ confuiMainLoop (void *tconfui)
     }
     return stop;
   }
+
+  connProcessUnconnected (confui->conn);
 
   for (int i = CONFUI_COMBOBOX_MAX + 1; i < CONFUI_ENTRY_MAX; ++i) {
     uiutilsEntryValidate (&confui->uiitem [i].u.entry);

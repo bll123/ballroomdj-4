@@ -478,8 +478,6 @@ mainProcessing (void *udata)
     ++gdone;
   }
 
-  connProcessUnconnected (mainData->conn);
-
   if (! progstateIsRunning (mainData->progstate)) {
     progstateProcess (mainData->progstate);
     if (! gdone && gKillReceived) {
@@ -488,6 +486,8 @@ mainProcessing (void *udata)
     }
     return stop;
   }
+
+  connProcessUnconnected (mainData->conn);
 
   if (mainData->processes [ROUTE_MARQUEE] != NULL &&
       ! connIsConnected (mainData->conn, ROUTE_MARQUEE)) {

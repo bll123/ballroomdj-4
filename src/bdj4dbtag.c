@@ -206,8 +206,6 @@ dbtagProcessing (void *udata)
     ++gdone;
   }
 
-  connProcessUnconnected (dbtag->conn);
-
   if (! progstateIsRunning (dbtag->progstate)) {
     progstateProcess (dbtag->progstate);
     if (! gdone && gKillReceived) {
@@ -216,6 +214,8 @@ dbtagProcessing (void *udata)
     }
     return stop;
   }
+
+  connProcessUnconnected (dbtag->conn);
 
   for (int i = 0; i < dbtag->maxThreads; ++i) {
     if (dbtag->threads [i].state == DBTAG_T_STATE_HAVE_DATA) {

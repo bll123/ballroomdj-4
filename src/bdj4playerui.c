@@ -480,8 +480,6 @@ pluiMainLoop (void *tplui)
     return stop;
   }
 
-  connProcessUnconnected (plui->conn);
-
   if (mstimeCheck (&plui->marqueeFontSizeCheck)) {
     char        tbuff [40];
     int         sz;
@@ -495,6 +493,8 @@ pluiMainLoop (void *tplui)
     connSendMessage (plui->conn, ROUTE_MARQUEE, MSG_MARQUEE_SET_FONT_SZ, tbuff);
     mstimeset (&plui->marqueeFontSizeCheck, 3600000);
   }
+
+  connProcessUnconnected (plui->conn);
 
   uiplayerMainLoop (plui->uiplayer);
   uimusicqMainLoop (plui->uimusicq);
@@ -515,7 +515,7 @@ pluiClock (playerui_t *plui)
 
   if (plui->clock != NULL) {
     uiutilsLabelSetText (plui->clock, tmutilDisp (tbuff, sizeof (tbuff)));
-    mstimeset (&plui->clockCheck, 200);
+    mstimeset (&plui->clockCheck, 1000);
   }
 }
 
