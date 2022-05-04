@@ -67,6 +67,11 @@ fi
 sshpass -e rsync -v -e ssh bdj4-${VERSION}-installer-${tag}${datetag}${rlstag}${sfx} \
   bll123@frs.sourceforge.net:/home/frs/project/ballroomdj4/
 
+if [[ $tag == macos ]]; then
+  sshpass -e rsync rsync -v -e ssh install/macos-pre-install.sh \
+      bll123@frs.sourceforge.net:/home/frs/project/ballroomdj4/
+fi
+
 if [[ $tag == linux ]]; then
   sshpass -e rsync rsync -v -e ssh README.txt \
       bll123@frs.sourceforge.net:/home/frs/project/ballroomdj4/

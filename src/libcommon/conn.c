@@ -103,19 +103,24 @@ connConnect (conn_t *conn, bdjmsgroute_t route)
   if (connports [route] != 0 && ! conn [route].connected) {
     conn [route].sock = sockConnect (connports [route], &connerr, conn [route].sock);
     if (connerr != SOCK_CONN_OK && connerr != SOCK_CONN_IN_PROGRESS) {
+      sockClose (conn [route].sock);
       conn [route].sock = INVALID_SOCKET;
     }
   }
 
   if (connerr == SOCK_CONN_OK &&
       ! socketInvalid (conn [route].sock)) {
-    sockhSendMessage (conn [route].sock, conn [route].routefrom, route,
-        MSG_HANDSHAKE, NULL);
-    conn [route].handshakesent = true;
-    if (conn [route].handshakerecv) {
-      conn [route].handshake = true;
+    if (sockhSendMessage (conn [route].sock, conn [route].routefrom, route,
+        MSG_HANDSHAKE, NULL) < 0) {
+      sockClose (conn [route].sock);
+      conn [route].sock = INVALID_SOCKET;
+    } else {
+      conn [route].handshakesent = true;
+      if (conn [route].handshakerecv) {
+        conn [route].handshake = true;
+      }
+      conn [route].connected = true;
     }
-    conn [route].connected = true;
   }
 }
 

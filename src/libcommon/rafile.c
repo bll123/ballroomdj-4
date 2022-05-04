@@ -272,7 +272,7 @@ raLock (rafile_t *rafile)
 
   logProcBegin (LOG_PROC, "raLock");
   if (rafile->inbatch) {
-    logProcEnd (LOG_PROC, "raLock", "in-batch");
+    logProcEnd (LOG_PROC, "raLock", "is-in-batch");
     return;
   }
 
@@ -297,7 +297,7 @@ raUnlock (rafile_t *rafile)
 {
   logProcBegin (LOG_PROC, "raUnlock");
   if (rafile->inbatch) {
-    logProcEnd (LOG_PROC, "raUnlock", "in-batch");
+    logProcEnd (LOG_PROC, "raUnlock", "is-in-batch");
     return;
   }
 

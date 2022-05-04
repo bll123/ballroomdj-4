@@ -157,6 +157,10 @@ dbtagProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 
   dbtag = (dbtag_t *) udata;
 
+  logMsg (LOG_DBG, LOG_MSGS, "got: from:%d/%s route:%d/%s msg:%d/%s args:%s",
+      routefrom, msgRouteDebugText (routefrom),
+      route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
+
   switch (route) {
     case ROUTE_NONE:
     case ROUTE_DBTAG: {
