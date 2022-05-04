@@ -80,6 +80,9 @@ uiutilsAddDisplayColumns (GtkWidget *tree, slist_t *sellist, int col,
       if (tagidx == TAG_TITLE) {
         gtk_tree_view_column_set_min_width (column, 200);
       }
+      if (tagidx == TAG_ARTIST) {
+        gtk_tree_view_column_set_min_width (column, 100);
+      }
       gtk_tree_view_column_add_attribute (column, renderer,
           "ellipsize", ellipsizeCol);
       gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_AUTOSIZE);

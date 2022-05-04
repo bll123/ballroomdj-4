@@ -52,6 +52,7 @@ typedef struct {
   GtkWidget           *statusPlayable;
   GtkWidget           *queueButton;
   GtkWidget           *selectButton;
+  GtkWidget           *scrolledwin;
   /* other data */
   int               lastTreeSize;
   double            lastRowHeight;
@@ -73,6 +74,8 @@ static gboolean uisongselScrollEvent (GtkWidget* tv, GdkEventScroll *event,
     gpointer udata);
 static void uisongselProcessTreeSize (GtkWidget* w, GtkAllocation* allocation,
     gpointer user_data);
+static void uisongselScrollWinContResize (GtkWidget* w,
+    GtkAllocation* allocation, gpointer udata);
 static void uisongselCreateFilterDialog (uisongsel_t *uisongsel);
 static void uisongselFilterResponseHandler (GtkDialog *d, gint responseid,
     gpointer udata);
@@ -122,7 +125,6 @@ uisongselBuildUI (uisongsel_t *uisongsel, GtkWidget *parentwin)
 {
   uisongselgtk_t    *uiw;
   GtkWidget         *hbox;
-  GtkWidget         *vbox;
   GtkWidget         *widget;
   GtkAdjustment     *adjustment;
   slist_t           *sellist;
@@ -135,7 +137,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, GtkWidget *parentwin)
 
   uiw->vbox = uiutilsCreateVertBox ();
   uiutilsWidgetExpandHoriz (uiw->vbox);
-  gtk_widget_set_vexpand (uiw->vbox, TRUE);
+  uiutilsWidgetExpandVert (uiw->vbox);
 
   hbox = uiutilsCreateHorizBox ();
   uiutilsWidgetExpandHoriz (hbox);
@@ -188,34 +190,34 @@ uisongselBuildUI (uisongsel_t *uisongsel, GtkWidget *parentwin)
   uiutilsBoxPackEnd (hbox, widget);
 
   hbox = uiutilsCreateHorizBox ();
-  gtk_widget_set_vexpand (hbox, TRUE);
+  uiutilsWidgetExpandHoriz (hbox);
+  uiutilsWidgetExpandVert (hbox);
   uiutilsBoxPackStart (uiw->vbox, hbox);
 
   adjustment = gtk_adjustment_new (0.0, 0.0, uisongsel->dfilterCount, 1.0, 10.0, 10.0);
   uiw->songselScrollbar = gtk_scrollbar_new (GTK_ORIENTATION_VERTICAL, adjustment);
   assert (uiw->songselScrollbar != NULL);
-  gtk_widget_set_vexpand (uiw->songselScrollbar, TRUE);
+  uiutilsWidgetExpandVert (uiw->songselScrollbar);
   uiutilsSetCss (uiw->songselScrollbar,
       "scrollbar, scrollbar slider { min-width: 9px; } ");
   uiutilsBoxPackEnd (hbox, uiw->songselScrollbar);
   g_signal_connect (uiw->songselScrollbar, "change-value",
       G_CALLBACK (uisongselScroll), uisongsel);
 
-  vbox = uiutilsCreateVertBox ();
-  gtk_widget_set_vexpand (hbox, TRUE);
-  uiutilsBoxPackStart (hbox, vbox);
+  g_signal_connect (hbox, "size-allocate",
+      G_CALLBACK (uisongselScrollWinContResize), uisongsel);
 
   widget = uiutilsCreateScrolledWindow ();
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (widget), GTK_POLICY_NEVER, GTK_POLICY_EXTERNAL);
-  uiutilsBoxPackStart (vbox, widget);
+  uiutilsBoxPackStart (hbox, widget);
+  uiw->scrolledwin = widget;
 
   uiw->songselTree = uiutilsCreateTreeView ();
   assert (uiw->songselTree != NULL);
-
-  gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (uiw->songselTree), TRUE);
   uiutilsWidgetAlignHorizFill (uiw->songselTree);
   uiutilsWidgetExpandHoriz (uiw->songselTree);
-  gtk_widget_set_vexpand (uiw->songselTree, TRUE);
+  uiutilsWidgetExpandVert (uiw->songselTree);
+  gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (uiw->songselTree), TRUE);
 
   adjustment = gtk_scrollable_get_vadjustment (GTK_SCROLLABLE (uiw->songselTree));
   gtk_adjustment_set_upper (adjustment, uisongsel->dfilterCount);
@@ -617,7 +619,6 @@ uisongselProcessTreeSize (GtkWidget* w, GtkAllocation* allocation,
     adjustment = gtk_scrollable_get_vadjustment (GTK_SCROLLABLE (uiw->songselTree));
     ps = gtk_adjustment_get_page_size (adjustment);
 
-
     if (uiw->lastRowHeight == 0.0) {
       double      u, hpr;
 
@@ -655,6 +656,31 @@ uisongselProcessTreeSize (GtkWidget* w, GtkAllocation* allocation,
         (double) uisongsel->idxStart, uisongsel);
   }
   logProcEnd (LOG_PROC, "uisongselProcessTreeSize", "");
+}
+
+static void
+uisongselScrollWinContResize (GtkWidget* w, GtkAllocation* allocation,
+    gpointer udata)
+{
+  uisongsel_t   *uisongsel = udata;
+  uisongselgtk_t  *uiw;
+  int           width;
+
+  logProcBegin (LOG_PROC, "uisongselScrollWinContResize");
+
+  uiw = uisongsel->uiWidgetData;
+
+  if (allocation->width < 200) {
+    logProcEnd (LOG_PROC, "uisongselScrollWinContResize", "small-alloc-height");
+    return;
+  }
+
+  width = gtk_widget_get_allocated_width (uiw->songselScrollbar);
+  if (width < 0) { width = 15; }
+  gtk_widget_set_size_request (uiw->scrolledwin,
+      allocation->width - width, -1);
+
+  logProcEnd (LOG_PROC, "uisongselScrollWinContResize", "");
 }
 
 static void
@@ -696,8 +722,6 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
   uiutilsWidgetSetAllMargins (content, uiutilsBaseMarginSz * 2);
 
   vbox = uiutilsCreateVertBox ();
-  uiutilsWidgetExpandHoriz (vbox);
-  gtk_widget_set_vexpand (vbox, FALSE);
   uiutilsBoxPackInWindow (content, vbox);
 
   /* sort-by : always available */

@@ -750,6 +750,13 @@ mainSendMarqueeData (maindata_t *mainData)
 
   logProcBegin (LOG_PROC, "mainSendMarqueeData");
 
+  if (mainData->playerState == PL_STATE_STOPPED &&
+      mainData->finished) {
+    mainSendFinished (mainData);
+    mainData->finished = false;
+    return;
+  }
+
   if (! mainData->marqueestarted) {
     logProcEnd (LOG_PROC, "mainSendMarqueeData", "not-started");
     return;
@@ -787,13 +794,6 @@ mainSendMarqueeData (maindata_t *mainData)
 
   connSendMessage (mainData->conn, ROUTE_MARQUEE,
       MSG_MARQUEE_DATA, sbuff);
-
-  if (mainData->playerState == PL_STATE_STOPPED &&
-      mainData->finished) {
-    mainSendFinished (mainData);
-    mainData->finished = false;
-    return;
-  }
 
   logProcEnd (LOG_PROC, "mainSendMarqueeData", "");
 }
@@ -1652,8 +1652,12 @@ mainMusicQueuePlay (maindata_t *mainData)
       } else {
         /* there is no music to play; tell the player to clear its display */
         mainData->finished = true;
+        mainData->marqueeChanged [mainData->musicqPlayIdx] = true;
       }
-    } /* switch on empty? */
+    } else {
+      mainData->finished = true;
+      mainData->marqueeChanged [mainData->musicqPlayIdx] = true;
+    }
   } /* if the song was null and the queue is empty */
 
   /* this handles the user-selected play button when the song is paused */
@@ -1663,6 +1667,7 @@ mainMusicQueuePlay (maindata_t *mainData)
     logMsg (LOG_DBG, LOG_MAIN, "player is paused, send play msg");
     connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_PLAY_PLAY, NULL);
   }
+
   logProcEnd (LOG_PROC, "mainMusicQueuePlay", "");
 }
 

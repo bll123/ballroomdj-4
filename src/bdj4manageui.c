@@ -498,6 +498,7 @@ manageBuildUI (manageui_t *manage)
 
   /* music manager: song selection tab*/
   widget = uisongselBuildUI (manage->mmsongsel, manage->window);
+  uiutilsWidgetExpandHoriz (widget);
   /* CONTEXT: name of song selection tab */
   tabLabel = uiutilsCreateLabel (_("Music Manager"));
   uiutilsNotebookAppendPage (notebook, widget, tabLabel);
