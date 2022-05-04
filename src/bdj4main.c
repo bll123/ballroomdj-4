@@ -129,7 +129,6 @@ static void     mainSendFinished (maindata_t *mainData);
 
 static long globalCounter = 0;
 static int  gKillReceived = 0;
-static int  gdone;
 
 int
 main (int argc, char *argv[])
@@ -196,9 +195,8 @@ main (int argc, char *argv[])
 
   listenPort = bdjvarsGetNum (BDJVL_MAIN_PORT);
   sockhMainLoop (listenPort, mainProcessMsg, mainProcessing, &mainData);
-
+  connFree (mainData.conn);
   progstateFree (mainData.progstate);
-
   logProcEnd (LOG_PROC, "main", "");
   logEnd ();
   return 0;
@@ -214,8 +212,7 @@ mainStoppingCallback (void *tmaindata, programstate_t programState)
   logProcBegin (LOG_PROC, "mainStoppingCallback");
 
   procutilStopAllProcess (mainData->processes, mainData->conn, false);
-  connDisconnectAll (mainData->conn);
-  gdone = 1;
+  connDisconnect (mainData->conn, ROUTE_STARTERUI);
   logProcEnd (LOG_PROC, "mainStoppingCallback", "");
   return true;
 }
@@ -234,6 +231,10 @@ mainStopWaitCallback (void *tmaindata, programstate_t programState)
     if (mainData->stopwaitcount > STOP_WAIT_COUNT_MAX) {
       rc = true;
     }
+  }
+
+  if (rc) {
+    connDisconnectAll (mainData->conn);
   }
 
   logProcEnd (LOG_PROC, "mainStopWaitCallback", "");
@@ -287,7 +288,6 @@ mainClosingCallback (void *tmaindata, programstate_t programState)
   }
 
   bdj4shutdown (ROUTE_MAIN, mainData->musicdb);
-  connFree (mainData->conn);
 
   logProcEnd (LOG_PROC, "mainClosingCallback", "");
   return true;
@@ -302,11 +302,11 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
   mainData = (maindata_t *) udata;
 
   /* this just reduces the amount of stuff in the log */
-//  if (msg != MSG_MUSICQ_STATUS_DATA && msg != MSG_PLAYER_STATUS_DATA) {
+  if (msg != MSG_MUSICQ_STATUS_DATA && msg != MSG_PLAYER_STATUS_DATA) {
     logMsg (LOG_DBG, LOG_MSGS, "got: from:%d/%s route:%d/%s msg:%d/%s args:%s",
         routefrom, msgRouteDebugText (routefrom),
         route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
-//  }
+  }
 
   switch (route) {
     case ROUTE_NONE:
@@ -327,8 +327,7 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           logMsg (LOG_SESS, LOG_IMPORTANT, "got exit request");
           gKillReceived = 0;
           progstateShutdownProcess (mainData->progstate);
-          logProcEnd (LOG_PROC, "mainProcessMsg", "req-exit");
-          return 1;
+          break;
         }
         case MSG_PLAYLIST_CLEARPLAY: {
           mainQueueClear (mainData, args);
@@ -470,17 +469,12 @@ mainProcessing (void *udata)
   maindata_t  *mainData = udata;
   int         stop = false;
 
-  if (gdone > EXIT_WAIT_COUNT) {
-    stop = true;
-  }
-
-  if (gdone) {
-    ++gdone;
-  }
-
   if (! progstateIsRunning (mainData->progstate)) {
     progstateProcess (mainData->progstate);
-    if (! gdone && gKillReceived) {
+    if (progstateCurrState (mainData->progstate) == STATE_CLOSED) {
+      stop = true;
+    }
+    if (gKillReceived) {
       progstateShutdownProcess (mainData->progstate);
       logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
     }
@@ -509,7 +503,7 @@ mainProcessing (void *udata)
     mainData->marqueeChanged [mainData->musicqPlayIdx] = false;
   }
 
-  if (! gdone && gKillReceived) {
+  if (gKillReceived) {
     progstateShutdownProcess (mainData->progstate);
     logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
   }

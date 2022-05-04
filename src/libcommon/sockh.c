@@ -22,22 +22,17 @@ sockhMainLoop (uint16_t listenPort, sockhProcessMsg_t msgFunc,
   int           done = 0;
   int           tdone = 0;
   sockserver_t  *sockserver;
-  char          args [BDJMSG_MAX];
   Sock_t        msgsock = INVALID_SOCKET;
 
   sockserver = sockhStartServer (listenPort);
 
-  while (done < SOCKH_EXIT_WAIT_COUNT) {
+  while (! done) {
     tdone = sockhProcessMain (sockserver, msgFunc, userData);
-    if (tdone || done) {
-      /* wait for close messages to come in */
+    if (tdone) {
       ++done;
     }
-
     tdone = processFunc (userData);
     if (tdone) {
-      args [0] = '\0';
-      tdone = msgFunc (ROUTE_NONE, ROUTE_NONE, MSG_EXIT_REQUEST, args, userData);
       ++done;
     }
 

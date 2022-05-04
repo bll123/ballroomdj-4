@@ -277,7 +277,6 @@ procutilStopProcess (procutil_t *process, conn_t *conn,
       return;
     }
     connSendMessage (conn, route, MSG_EXIT_REQUEST, NULL);
-    connDisconnect (conn, route);
     process->started = false;
   }
   if (force) {
@@ -300,7 +299,6 @@ procutilCloseProcess (procutil_t *process, conn_t *conn,
     logProcEnd (LOG_PROC, "procutilCloseProcess", "not-started");
     return;
   }
-  connDisconnect (conn, route);
   process->started = false;
   logProcEnd (LOG_PROC, "procutilCloseProcess", "");
 }

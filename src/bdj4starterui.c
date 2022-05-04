@@ -155,7 +155,6 @@ static void     starterStopAllProcesses (GtkMenuItem *mi, gpointer udata);
 static int      starterCountProcesses (startui_t *starter);
 
 static int gKillReceived = 0;
-static int gdone = 0;
 
 int
 main (int argc, char *argv[])
@@ -229,7 +228,7 @@ main (int argc, char *argv[])
 
   starterBuildUI (&starter);
   sockhMainLoop (listenPort, starterProcessMsg, starterMainLoop, &starter);
-
+  connFree (starter.conn);
   progstateFree (starter.progstate);
   logProcEnd (LOG_PROC, "starterui", "");
   logEnd ();
@@ -244,9 +243,11 @@ starterStoppingCallback (void *udata, programstate_t programState)
   startui_t   *starter = udata;
   gint        x, y;
 
+  logProcBegin (LOG_PROC, "starterStoppingCallback");
   if (starter->mainstarted > 0) {
     procutilStopProcess (starter->processes [ROUTE_MAIN],
         starter->conn, ROUTE_MAIN, false);
+    starter->mainstarted = false;
   }
 
   if (starter->processes [ROUTE_PLAYERUI] != NULL &&
@@ -271,7 +272,7 @@ starterStoppingCallback (void *udata, programstate_t programState)
 
   procutilStopAllProcess (starter->processes, starter->conn, false);
 
-  gdone = 1;
+  logProcEnd (LOG_PROC, "starterStoppingCallback", "");
   return true;
 }
 
@@ -281,6 +282,7 @@ starterStopWaitCallback (void *udata, programstate_t programState)
   startui_t   *starter = udata;
   bool        rc = false;
 
+  logProcBegin (LOG_PROC, "starterStopWaitCallback");
   rc = connCheckAll (starter->conn);
   if (rc == false) {
     ++starter->stopwaitcount;
@@ -288,6 +290,12 @@ starterStopWaitCallback (void *udata, programstate_t programState)
       rc = true;
     }
   }
+
+  if (rc) {
+    connDisconnectAll (starter->conn);
+  }
+
+  logProcEnd (LOG_PROC, "starterStopWaitCallback", "");
   return rc;
 }
 
@@ -297,15 +305,13 @@ starterClosingCallback (void *udata, programstate_t programState)
   startui_t   *starter = udata;
   char        fn [MAXPATHLEN];
 
+  logProcBegin (LOG_PROC, "starterClosingCallback");
   uiutilsCloseMainWindow (starter->window);
 
-  connDisconnectAll (starter->conn);
   procutilStopAllProcess (starter->processes, starter->conn, true);
   procutilFreeAll (starter->processes);
 
   bdj4shutdown (ROUTE_STARTERUI, NULL);
-
-  connFree (starter->conn);
 
   if (starter->supporttb != NULL) {
     uiutilsTextBoxFree (starter->supporttb);
@@ -328,6 +334,7 @@ starterClosingCallback (void *udata, programstate_t programState)
     slistFree (starter->supportFileList);
   }
 
+  logProcEnd (LOG_PROC, "starterClosingCallback", "");
   return true;
 }
 
@@ -348,6 +355,7 @@ starterBuildUI (startui_t  *starter)
   char                tbuff [MAXPATHLEN];
   int                 x, y;
 
+  logProcBegin (LOG_PROC, "starterBuildUI");
   uiutilsCreateSizeGroupHoriz (&sg);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
@@ -473,6 +481,7 @@ starterBuildUI (startui_t  *starter)
   osuiSetIcon (imgbuff);
 
   uiutilsWidgetShowAll (starter->window);
+  logProcEnd (LOG_PROC, "starterBuildUI", "");
 }
 
 int
@@ -485,21 +494,16 @@ starterMainLoop (void *tstarter)
   char        ofn [MAXPATHLEN];
 
 
-  if (gdone > EXIT_WAIT_COUNT) {
-    stop = TRUE;
-  }
-
   if (! stop) {
     uiutilsUIProcessEvents ();
   }
 
-  if (gdone) {
-    ++gdone;
-  }
-
   if (! progstateIsRunning (starter->progstate)) {
     progstateProcess (starter->progstate);
-    if (! gdone && gKillReceived) {
+    if (progstateCurrState (starter->progstate) == STATE_CLOSED) {
+      stop = true;
+    }
+    if (gKillReceived) {
       logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
       progstateShutdownProcess (starter->progstate);
       gKillReceived = 0;
@@ -691,7 +695,7 @@ starterMainLoop (void *tstarter)
     }
   }
 
-  if (! gdone && gKillReceived) {
+  if (gKillReceived) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
     progstateShutdownProcess (starter->progstate);
     gKillReceived = 0;
@@ -729,11 +733,9 @@ starterProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_EXIT_REQUEST: {
           logMsg (LOG_SESS, LOG_IMPORTANT, "got exit request");
-          gKillReceived = 0;
-          logMsg (LOG_DBG, LOG_MSGS, "got: req-exit");
           progstateShutdownProcess (starter->progstate);
-          logProcEnd (LOG_PROC, "starterProcessMsg", "req-exit");
-          return 1;
+          gKillReceived = 0;
+          break;
         }
         case MSG_START_MAIN: {
           starterStartMain (starter, args);
@@ -806,7 +808,7 @@ starterCloseWin (GtkWidget *window, GdkEvent *event, gpointer userdata)
 {
   startui_t   *starter = userdata;
 
-  if (! gdone) {
+  if (progstateCurrState (starter->progstate) <= STATE_RUNNING) {
     progstateShutdownProcess (starter->progstate);
     logMsg (LOG_DBG, LOG_MSGS, "got: close win request");
     return TRUE;
@@ -1000,7 +1002,10 @@ starterSupportResponseHandler (GtkDialog *d, gint responseid, gpointer udata)
 static void
 starterProcessExit (GtkButton *b, gpointer udata)
 {
-  gdone = 1;
+  startui_t *starter = udata;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "user exit request");
+  progstateShutdownProcess (starter->progstate);
 }
 
 static void
@@ -1559,6 +1564,7 @@ starterCountProcesses (startui_t *starter)
   pid_t         pid;
   int           count;
 
+  logProcBegin (LOG_PROC, "starterCountProcesses");
   count = 0;
   for (route = ROUTE_NONE + 1; route < ROUTE_MAX; ++route) {
     locknm = lockName (route);
@@ -1568,5 +1574,6 @@ starterCountProcesses (startui_t *starter)
     }
   }
 
+  logProcEnd (LOG_PROC, "starterCountProcesses", "");
   return count;
 }

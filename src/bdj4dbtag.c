@@ -58,6 +58,7 @@ typedef struct {
   procutil_t        *processes [ROUTE_MAX];
   conn_t            *conn;
   char              *locknm;
+  int               stopwaitcount;
   int               numActiveThreads;
   dbidx_t           received;
   dbidx_t           sent;
@@ -77,6 +78,7 @@ static int      dbtagProcessing (void *udata);
 static bool     dbtagConnectingCallback (void *tdbtag, programstate_t programState);
 static bool     dbtagHandshakeCallback (void *tdbtag, programstate_t programState);
 static bool     dbtagStoppingCallback (void *tdbtag, programstate_t programState);
+static bool     dbtagStopWaitCallback (void *tdbtag, programstate_t programState);
 static bool     dbtagClosingCallback (void *tdbtag, programstate_t programState);
 static void     dbtagProcessFileMsg (dbtag_t *dbtag, char *args);
 static void     * dbtagProcessFile (void *tdbthread);
@@ -84,7 +86,6 @@ static void     dbtagSigHandler (int sig);
 
 static int  gKillReceived = 0;
 static int  gcount = 0;
-static int  gdone = 0;
 
 int
 main (int argc, char *argv[])
@@ -106,6 +107,7 @@ main (int argc, char *argv[])
   dbtag.iterations = 0;
   dbtag.threadActiveSum = 0;
   dbtag.progstate = progstateInit ("dbtag");
+  dbtag.stopwaitcount = 0;
   for (int i = 0; i < dbtag.maxThreads; ++i) {
     dbtag.threads [i].state = DBTAG_T_STATE_INIT;
     dbtag.threads [i].idx = i;
@@ -124,6 +126,8 @@ main (int argc, char *argv[])
       dbtagHandshakeCallback, &dbtag);
   progstateSetCallback (dbtag.progstate, STATE_STOPPING,
       dbtagStoppingCallback, &dbtag);
+  progstateSetCallback (dbtag.progstate, STATE_STOP_WAIT,
+      dbtagStopWaitCallback, &dbtag);
   progstateSetCallback (dbtag.progstate, STATE_CLOSING,
       dbtagClosingCallback, &dbtag);
 
@@ -135,7 +139,7 @@ main (int argc, char *argv[])
 
   listenPort = bdjvarsGetNum (BDJVL_DBTAG_PORT);
   sockhMainLoop (listenPort, dbtagProcessMsg, dbtagProcessing, &dbtag);
-
+  connFree (dbtag.conn);
   progstateFree (dbtag.progstate);
 
   logProcEnd (LOG_PROC, "dbtag", "");
@@ -168,8 +172,7 @@ dbtagProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_EXIT_REQUEST: {
           logMsg (LOG_SESS, LOG_IMPORTANT, "got exit request");
           progstateShutdownProcess (dbtag->progstate);
-          logProcEnd (LOG_PROC, "dbtagProcessMsg", "req-exit");
-          return 1;
+          break;
         }
         case MSG_DB_FILE_CHK: {
           dbtagProcessFileMsg (dbtag, args);
@@ -198,17 +201,12 @@ dbtagProcessing (void *udata)
   int           stop = false;
 
 
-  if (gdone > EXIT_WAIT_COUNT) {
-    stop = true;
-  }
-
-  if (gdone) {
-    ++gdone;
-  }
-
   if (! progstateIsRunning (dbtag->progstate)) {
     progstateProcess (dbtag->progstate);
-    if (! gdone && gKillReceived) {
+    if (progstateCurrState (dbtag->progstate) == STATE_CLOSED) {
+      stop = true;
+    }
+    if (gKillReceived) {
       progstateShutdownProcess (dbtag->progstate);
       logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
     }
@@ -287,7 +285,7 @@ dbtagProcessing (void *udata)
     }
   }
 
-  if (! gdone && gKillReceived) {
+  if (gKillReceived) {
     progstateShutdownProcess (dbtag->progstate);
     logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
   }
@@ -339,9 +337,33 @@ dbtagStoppingCallback (void *tdbtag, programstate_t programState)
   dbtag_t    *dbtag = tdbtag;
 
   logProcBegin (LOG_PROC, "dbtagStoppingCallback");
-  connDisconnectAll (dbtag->conn);
+  connDisconnect (dbtag->conn, ROUTE_DBUPDATE);
   logProcEnd (LOG_PROC, "dbtagStoppingCallback", "");
   return true;
+}
+
+static bool
+dbtagStopWaitCallback (void *tdbtag, programstate_t programState)
+{
+  dbtag_t   *dbtag = tdbtag;
+  bool      rc = false;
+
+  logProcBegin (LOG_PROC, "dbtagStopWaitCallback");
+
+  rc = connCheckAll (dbtag->conn);
+  if (rc == false) {
+    ++dbtag->stopwaitcount;
+    if (dbtag->stopwaitcount > STOP_WAIT_COUNT_MAX) {
+      rc = true;
+    }
+  }
+
+  if (rc) {
+    connDisconnectAll (dbtag->conn);
+  }
+
+  logProcEnd (LOG_PROC, "dbtagStopWaitCallback", "");
+  return rc;
 }
 
 static bool
@@ -354,7 +376,6 @@ dbtagClosingCallback (void *tdbtag, programstate_t programState)
 
   free (dbtag->threads);
   queueFree (dbtag->fileQueue);
-  connFree (dbtag->conn);
 
   logProcEnd (LOG_PROC, "dbtagClosingCallback", "");
   return true;

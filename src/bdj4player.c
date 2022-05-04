@@ -144,7 +144,6 @@ static void     playerSetPlayerState (playerdata_t *playerData, playerstate_t ps
 static void     playerSendStatus (playerdata_t *playerData);
 
 static int  gKillReceived = 0;
-static int  gdone = 0;
 
 int
 main (int argc, char *argv[])
@@ -237,7 +236,7 @@ main (int argc, char *argv[])
 
   listenPort = bdjvarsGetNum (BDJVL_PLAYER_PORT);
   sockhMainLoop (listenPort, playerProcessMsg, playerProcessing, &playerData);
-
+  connFree (playerData.conn);
   progstateFree (playerData.progstate);
   logEnd ();
   return 0;
@@ -251,7 +250,6 @@ playerStoppingCallback (void *tpdata, programstate_t programState)
   playerdata_t    *playerData = tpdata;
 
   connDisconnectAll (playerData->conn);
-  gdone = 1;
   return true;
 }
 
@@ -282,8 +280,6 @@ playerClosingCallback (void *tpdata, programstate_t programState)
   if (playerData->playRequest != NULL) {
     queueFree (playerData->playRequest);
   }
-
-  connFree (playerData->conn);
 
   return true;
 }
@@ -317,10 +313,8 @@ playerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_EXIT_REQUEST: {
           logMsg (LOG_SESS, LOG_IMPORTANT, "got exit request");
           gKillReceived = 0;
-          logMsg (LOG_DBG, LOG_MSGS, "got: req-exit");
           progstateShutdownProcess (playerData->progstate);
-          logProcEnd (LOG_PROC, "playerProcessMsg", "req-exit");
-          return 1;
+          break;
         }
         case MSG_PLAY_PAUSE: {
           logMsg (LOG_DBG, LOG_MSGS, "got: pause:");
@@ -427,17 +421,12 @@ playerProcessing (void *udata)
   playerdata_t  *playerData = udata;
   int           stop = false;
 
-  if (gdone > EXIT_WAIT_COUNT) {
-    stop = true;
-  }
-
-  if (gdone) {
-    ++gdone;
-  }
-
   if (! progstateIsRunning (playerData->progstate)) {
     progstateProcess (playerData->progstate);
-    if (! gdone && gKillReceived) {
+    if (progstateCurrState (playerData->progstate) == STATE_CLOSED) {
+      stop = true;
+    }
+    if (gKillReceived) {
       progstateShutdownProcess (playerData->progstate);
       logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
     }
@@ -668,7 +657,7 @@ playerProcessing (void *udata)
     playerProcessPrepRequest (playerData);
   }
 
-  if (! gdone && gKillReceived) {
+  if (gKillReceived) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
     progstateShutdownProcess (playerData->progstate);
   }

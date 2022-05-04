@@ -45,6 +45,7 @@
 typedef struct {
   conn_t          *conn;
   progstate_t     *progstate;
+  int             stopwaitcount;
   char            *locknm;
   uint16_t        port;
   char            *user;
@@ -62,6 +63,7 @@ static bool     remctrlConnectingCallback (void *udata, programstate_t programSt
 static bool     remctrlHandshakeCallback (void *udata, programstate_t programState);
 static bool     remctrlInitDataCallback (void *udata, programstate_t programState);
 static bool     remctrlStoppingCallback (void *udata, programstate_t programState);
+static bool     remctrlStopWaitCallback (void *udata, programstate_t programState);
 static bool     remctrlClosingCallback (void *udata, programstate_t programState);
 static void     remctrlEventHandler (struct mg_connection *c, int ev,
                     void *ev_data, void *userdata);
@@ -73,7 +75,6 @@ static void     remctrlProcessPlaylistList (remctrldata_t *remctrlData, char *pl
 static void     remctrlSigHandler (int sig);
 
 static int  gKillReceived = 0;
-static int  gdone = 0;
 
 int
 main (int argc, char *argv[])
@@ -103,6 +104,7 @@ main (int argc, char *argv[])
   remctrlData.port = bdjoptGetNum (OPT_P_REMCONTROLPORT);
   remctrlData.progstate = progstateInit ("remctrl");
   remctrlData.websrv = NULL;
+  remctrlData.stopwaitcount = 0;
 
   progstateSetCallback (remctrlData.progstate, STATE_CONNECTING,
       remctrlConnectingCallback, &remctrlData);
@@ -112,6 +114,8 @@ main (int argc, char *argv[])
       remctrlInitDataCallback, &remctrlData);
   progstateSetCallback (remctrlData.progstate, STATE_STOPPING,
       remctrlStoppingCallback, &remctrlData);
+  progstateSetCallback (remctrlData.progstate, STATE_STOP_WAIT,
+      remctrlStopWaitCallback, &remctrlData);
   progstateSetCallback (remctrlData.progstate, STATE_CLOSING,
       remctrlClosingCallback, &remctrlData);
 
@@ -121,7 +125,7 @@ main (int argc, char *argv[])
 
   listenPort = bdjvarsGetNum (BDJVL_REMCTRL_PORT);
   sockhMainLoop (listenPort, remctrlProcessMsg, remctrlProcessing, &remctrlData);
-
+  connFree (remctrlData.conn);
   progstateFree (remctrlData.progstate);
   logEnd ();
 
@@ -135,9 +139,32 @@ remctrlStoppingCallback (void *udata, programstate_t programState)
 {
   remctrldata_t   *remctrlData = udata;
 
-  connDisconnectAll (remctrlData->conn);
-  gdone = 1;
+  connDisconnect (remctrlData->conn, ROUTE_MAIN);
   return true;
+}
+
+static bool
+remctrlStopWaitCallback (void *tremctrl, programstate_t programState)
+{
+  remctrldata_t *remctrl = tremctrl;
+  bool          rc = false;
+
+  logProcBegin (LOG_PROC, "remctrlStopWaitCallback");
+
+  rc = connCheckAll (remctrl->conn);
+  if (rc == false) {
+    ++remctrl->stopwaitcount;
+    if (remctrl->stopwaitcount > STOP_WAIT_COUNT_MAX) {
+      rc = true;
+    }
+  }
+
+  if (rc) {
+    connDisconnectAll (remctrl->conn);
+  }
+
+  logProcEnd (LOG_PROC, "remctrlStopWaitCallback", "");
+  return rc;
 }
 
 static bool
@@ -163,8 +190,6 @@ remctrlClosingCallback (void *udata, programstate_t programState)
   if (*remctrlData->playlistList) {
     free (remctrlData->playlistList);
   }
-
-  connFree (remctrlData->conn);
 
   return true;
 }
@@ -306,7 +331,7 @@ remctrlProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_EXIT_REQUEST: {
           logMsg (LOG_SESS, LOG_IMPORTANT, "got exit request");
           progstateShutdownProcess (remctrlData->progstate);
-          return 1;
+          break;
         }
         case MSG_DANCE_LIST_DATA: {
           remctrlProcessDanceList (remctrlData, args);
@@ -345,17 +370,12 @@ remctrlProcessing (void *udata)
   int           stop = false;
 
 
-  if (gdone > EXIT_WAIT_COUNT) {
-    stop = true;
-  }
-
-  if (gdone) {
-    ++gdone;
-  }
-
   if (! progstateIsRunning (remctrlData->progstate)) {
     progstateProcess (remctrlData->progstate);
-    if (! gdone && gKillReceived) {
+    if (progstateCurrState (remctrlData->progstate) == STATE_CLOSED) {
+      stop = true;
+    }
+    if (gKillReceived) {
       progstateShutdownProcess (remctrlData->progstate);
       logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
     }
@@ -366,7 +386,7 @@ remctrlProcessing (void *udata)
 
   websrvProcess (websrv);
 
-  if (! gdone && gKillReceived) {
+  if (gKillReceived) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
     progstateShutdownProcess (remctrlData->progstate);
   }

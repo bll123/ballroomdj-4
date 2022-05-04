@@ -226,7 +226,7 @@ datafileAllocParse (char *name, datafiletype_t dftype, char *fname,
 
 
   logProcBegin (LOG_PROC, "datafileAllocParse");
-  logMsg (LOG_DBG, LOG_BASIC, "datafile alloc/parse %s", fname);
+  logMsg (LOG_DBG, LOG_BASIC | LOG_DATAFILE, "datafile alloc/parse %s", fname);
   df = datafileAlloc (name);
   if (df != NULL) {
     char *ddata = datafileLoad (df, dftype, fname);
@@ -269,7 +269,7 @@ datafileLoad (datafile_t *df, datafiletype_t dftype, char *fname)
   char    *data;
 
   logProcBegin (LOG_PROC, "datafileLoad");
-  logMsg (LOG_DBG, LOG_BASIC, "datafile load %s", fname);
+  logMsg (LOG_DBG, LOG_BASIC | LOG_DATAFILE, "datafile load %s", fname);
   df->dftype = dftype;
   if (df->fname == NULL) {
     df->fname = strdup (fname);
@@ -910,7 +910,7 @@ datafileCheckDfkeys (char *name, datafilekey_t *dfkeys, ssize_t dfkeycount)
   for (ssize_t i = 0; i < dfkeycount; ++i) {
     if (strcmp (dfkeys [i].name, last) <= 0) {
       fprintf (stderr, "datafile: %s dfkey out of order: %s\n", name, dfkeys [i].name);
-      logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: datafile: %s dfkey out of order: %s", name, dfkeys [i].name);
+      logMsg (LOG_DBG, LOG_IMPORTANT | LOG_DATAFILE, "ERR: datafile: %s dfkey out of order: %s", name, dfkeys [i].name);
       ok = false;
     }
     last = dfkeys [i].name;

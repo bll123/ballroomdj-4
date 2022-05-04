@@ -44,6 +44,7 @@
 typedef struct {
   conn_t          *conn;
   progstate_t     *progstate;
+  int             stopwaitcount;
   char            *locknm;
   uint16_t        port;
   bdjmobilemq_t   type;
@@ -56,6 +57,7 @@ typedef struct {
 static bool     mobmqConnectingCallback (void *tmmdata, programstate_t programState);
 static bool     mobmqHandshakeCallback (void *tmmdata, programstate_t programState);
 static bool     mobmqStoppingCallback (void *tmmdata, programstate_t programState);
+static bool     mobmqStopWaitCallback (void *tmmdata, programstate_t programState);
 static bool     mobmqClosingCallback (void *tmmdata, programstate_t programState);
 static void     mobmqEventHandler (struct mg_connection *c, int ev,
                     void *ev_data, void *userdata);
@@ -65,7 +67,6 @@ static int      mobmqProcessing (void *udata);
 static void     mobmqSigHandler (int sig);
 
 static int  gKillReceived = 0;
-static int  gdone = 0;
 
 int
 main (int argc, char *argv[])
@@ -94,6 +95,8 @@ main (int argc, char *argv[])
       mobmqHandshakeCallback, &mobmqData);
   progstateSetCallback (mobmqData.progstate, STATE_STOPPING,
       mobmqStoppingCallback, &mobmqData);
+  progstateSetCallback (mobmqData.progstate, STATE_STOP_WAIT,
+      mobmqStopWaitCallback, &mobmqData);
   progstateSetCallback (mobmqData.progstate, STATE_CLOSING,
       mobmqClosingCallback, &mobmqData);
   mobmqData.port = bdjoptGetNum (OPT_P_MOBILEMQPORT);
@@ -109,12 +112,13 @@ main (int argc, char *argv[])
   }
   mobmqData.websrv = NULL;
   mobmqData.marqueeData = NULL;
+  mobmqData.stopwaitcount = 0;
 
   mobmqData.websrv = websrvInit (mobmqData.port, mobmqEventHandler, &mobmqData);
 
   listenPort = bdjvarsGetNum (BDJVL_MOBILEMQ_PORT);
   sockhMainLoop (listenPort, mobmqProcessMsg, mobmqProcessing, &mobmqData);
-
+  connFree (mobmqData.conn);
   progstateFree (mobmqData.progstate);
   logEnd ();
   return 0;
@@ -127,9 +131,32 @@ mobmqStoppingCallback (void *tmmdata, programstate_t programState)
 {
   mobmqdata_t   *mobmqData = tmmdata;
 
-  connDisconnectAll (mobmqData->conn);
-  gdone = 1;
+  connDisconnect (mobmqData->conn, ROUTE_MAIN);
   return true;
+}
+
+static bool
+mobmqStopWaitCallback (void *tmobmq, programstate_t programState)
+{
+  mobmqdata_t *mobmq = tmobmq;
+  bool        rc = false;
+
+  logProcBegin (LOG_PROC, "mobmqStopWaitCallback");
+
+  rc = connCheckAll (mobmq->conn);
+  if (rc == false) {
+    ++mobmq->stopwaitcount;
+    if (mobmq->stopwaitcount > STOP_WAIT_COUNT_MAX) {
+      rc = true;
+    }
+  }
+
+  if (rc) {
+    connDisconnectAll (mobmq->conn);
+  }
+
+  logProcEnd (LOG_PROC, "mobmqStopWaitCallback", "");
+  return rc;
 }
 
 static bool
@@ -149,8 +176,6 @@ mobmqClosingCallback (void *tmmdata, programstate_t programState)
   if (mobmqData->marqueeData != NULL) {
     free (mobmqData->marqueeData);
   }
-
-  connFree (mobmqData->conn);
 
   return true;
 }
@@ -217,7 +242,7 @@ mobmqProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_EXIT_REQUEST: {
           logMsg (LOG_SESS, LOG_IMPORTANT, "got exit request");
           progstateShutdownProcess (mobmqData->progstate);
-          return 1;
+          break;
         }
         case MSG_MARQUEE_DATA: {
           if (mobmqData->marqueeData != NULL) {
@@ -249,17 +274,12 @@ mobmqProcessing (void *udata)
   int           stop = false;
 
 
-  if (gdone > EXIT_WAIT_COUNT) {
-    stop = true;
-  }
-
-  if (gdone) {
-    ++gdone;
-  }
-
   if (! progstateIsRunning (mobmqData->progstate)) {
     progstateProcess (mobmqData->progstate);
-    if (! gdone && gKillReceived) {
+    if (progstateCurrState (mobmqData->progstate) == STATE_CLOSED) {
+      stop = true;
+    }
+    if (gKillReceived) {
       progstateShutdownProcess (mobmqData->progstate);
       logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
     }
@@ -270,7 +290,7 @@ mobmqProcessing (void *udata)
 
   websrvProcess (websrv);
 
-  if (! gdone && gKillReceived) {
+  if (gKillReceived) {
     progstateShutdownProcess (mobmqData->progstate);
     logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
   }

@@ -122,8 +122,6 @@ static void     dbupdateOutputProgress (dbupdate_t *dbupdate);
 static char *   dbupdateGetRelativePath (dbupdate_t *dbupdate, char *fn);
 
 static int  gKillReceived = 0;
-static int  gdone = 0;
-
 
 int
 main (int argc, char *argv[])
@@ -215,7 +213,7 @@ main (int argc, char *argv[])
 
   listenPort = bdjvarsGetNum (BDJVL_DBUPDATE_PORT);
   sockhMainLoop (listenPort, dbupdateProcessMsg, dbupdateProcessing, &dbupdate);
-
+  connFree (dbupdate.conn);
   progstateFree (dbupdate.progstate);
 
   logProcEnd (LOG_PROC, "dbupdate", "");
@@ -251,8 +249,7 @@ dbupdateProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_EXIT_REQUEST: {
           logMsg (LOG_SESS, LOG_IMPORTANT, "got exit request");
           progstateShutdownProcess (dbupdate->progstate);
-          logProcEnd (LOG_PROC, "dbupdateProcessMsg", "req-exit");
-          return 1;
+          break;
         }
         case MSG_DB_FILE_TAGS: {
           dbupdateProcessTagData (dbupdate, args);
@@ -279,17 +276,12 @@ dbupdateProcessing (void *udata)
   int           stop = false;
 
 
-  if (gdone > EXIT_WAIT_COUNT) {
-    stop = true;
-  }
-
-  if (gdone) {
-    ++gdone;
-  }
-
   if (! progstateIsRunning (dbupdate->progstate)) {
     progstateProcess (dbupdate->progstate);
-    if (! gdone && gKillReceived) {
+    if (progstateCurrState (dbupdate->progstate) == STATE_CLOSED) {
+      stop = true;
+    }
+    if (gKillReceived) {
       progstateShutdownProcess (dbupdate->progstate);
       logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
     }
@@ -484,10 +476,11 @@ dbupdateProcessing (void *udata)
     connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_FINISH, NULL);
     connDisconnect (dbupdate->conn, ROUTE_MANAGEUI);
 
-    return 1;
+    progstateShutdownProcess (dbupdate->progstate);
+    return stop;
   }
 
-  if (! gdone && gKillReceived) {
+  if (gKillReceived) {
     progstateShutdownProcess (dbupdate->progstate);
     logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
   }
@@ -589,8 +582,7 @@ dbupdateStoppingCallback (void *tdbupdate, programstate_t programState)
   logProcBegin (LOG_PROC, "dbupdateStoppingCallback");
 
   procutilStopAllProcess (dbupdate->processes, dbupdate->conn, false);
-  connDisconnectAll (dbupdate->conn);
-  gdone = 1;
+  connDisconnect (dbupdate->conn, ROUTE_MANAGEUI);
   logProcEnd (LOG_PROC, "dbupdateStoppingCallback", "");
   return true;
 }
@@ -609,6 +601,10 @@ dbupdateStopWaitCallback (void *tdbupdate, programstate_t programState)
     if (dbupdate->stopwaitcount > STOP_WAIT_COUNT_MAX) {
       rc = true;
     }
+  }
+
+  if (rc) {
+    connDisconnectAll (dbupdate->conn);
   }
 
   logProcEnd (LOG_PROC, "dbupdateStopWaitCallback", "");
@@ -637,7 +633,6 @@ dbupdateClosingCallback (void *tdbupdate, programstate_t programState)
     regexFree (dbupdate->badfnregex);
   }
   slistFree (dbupdate->fileList);
-  connFree (dbupdate->conn);
 
   logProcEnd (LOG_PROC, "dbupdateClosingCallback", "");
   return true;

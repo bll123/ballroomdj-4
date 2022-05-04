@@ -42,8 +42,7 @@ static char *progstatetext [] = {
   [STATE_CLOSED] = "closed",
 };
 
-static programstate_t progstateProcessLoop (progstate_t *progstate,
-    programstate_t finalState);
+static programstate_t progstateProcessLoop (progstate_t *progstate);
 
 progstate_t *
 progstateInit (char *progtag)
@@ -97,13 +96,13 @@ progstateProcess (progstate_t *progstate)
   programstate_t      state;
 
 
-  if (progstate->programState > STATE_RUNNING) {
-    return progstate->programState;
-  }
-
-  state = progstateProcessLoop (progstate, STATE_RUNNING);
+  state = progstateProcessLoop (progstate);
   if (state == STATE_RUNNING) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "%s running: time-to-start: %ld ms",
+        progstate->progtag, mstimeend (&progstate->tm));
+  }
+  if (state == STATE_CLOSED) {
+    logMsg (LOG_SESS, LOG_IMPORTANT, "%s closed: time-to-end: %ld ms",
         progstate->progtag, mstimeend (&progstate->tm));
   }
   return state;
@@ -112,19 +111,12 @@ progstateProcess (progstate_t *progstate)
 programstate_t
 progstateShutdownProcess (progstate_t *progstate)
 {
-  programstate_t      state;
-
   if (progstate->programState < STATE_STOPPING) {
     progstate->programState = STATE_STOPPING;
     mstimestart (&progstate->tm);
   }
 
-  state = progstateProcessLoop (progstate, STATE_CLOSED);
-  if (state == STATE_CLOSED) {
-    logMsg (LOG_SESS, LOG_IMPORTANT, "%s closed: time-to-end: %ld ms",
-        progstate->progtag, mstimeend (&progstate->tm));
-  }
-  return state;
+  return progstate->programState;
 }
 
 inline bool
@@ -155,7 +147,7 @@ progstateLogTime (progstate_t *progstate, char *label)
 /* internal routines */
 
 static programstate_t
-progstateProcessLoop (progstate_t *progstate, programstate_t finalState)
+progstateProcessLoop (progstate_t *progstate)
 {
   bool                  success = true;
   bool                  tsuccess;
@@ -165,11 +157,14 @@ progstateProcessLoop (progstate_t *progstate, programstate_t finalState)
 
   /* skip over empty states */
   while (ilistGetCount (progstate->callbacks [progstate->programState]) == 0 &&
-      progstate->programState != finalState) {
+      progstate->programState != STATE_RUNNING &&
+      progstate->programState != STATE_CLOSED) {
     ++progstate->programState;
   }
   count = ilistGetCount (progstate->callbacks [progstate->programState]);
   if (count > 0) {
+    logMsg (LOG_DBG, LOG_MAIN, "found callback for: %d %s",
+        progstate->programState, progstatetext [progstate->programState]);
     for (ilistidx_t ikey = 0; ikey < count; ++ikey) {
       tsuccess = ilistGetNum (progstate->callbacks [progstate->programState],
           ikey, PS_SUCCESS);
@@ -184,13 +179,16 @@ progstateProcessLoop (progstate_t *progstate, programstate_t finalState)
         if (! tsuccess) {
           /* if any one callback in the list is not finished, */
           /* stay in this state */
+          logMsg (LOG_DBG, LOG_MAIN, "callback not finished: %d %s",
+              progstate->programState, progstatetext [progstate->programState]);
           success = false;
         }
       }
     }
   }
   if (success) {
-    if (progstate->programState != finalState) {
+    if (progstate->programState != STATE_RUNNING &&
+        progstate->programState != STATE_CLOSED) {
       ++progstate->programState;
     }
     logMsg (LOG_DBG, LOG_MAIN, "program state: %d %s",

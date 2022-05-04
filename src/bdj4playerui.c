@@ -125,7 +125,6 @@ static void     pluisetMarqueeFontSizes (playerui_t *plui, char *args);
 
 
 static int gKillReceived = 0;
-static int gdone = 0;
 
 int
 main (int argc, char *argv[])
@@ -213,7 +212,7 @@ main (int argc, char *argv[])
 
   pluiBuildUI (&plui);
   sockhMainLoop (listenPort, pluiProcessMsg, pluiMainLoop, &plui);
-
+  connFree (plui.conn);
   progstateFree (plui.progstate);
   logProcEnd (LOG_PROC, "playerui", "");
   logEnd ();
@@ -238,8 +237,7 @@ pluiStoppingCallback (void *udata, programstate_t programState)
   nlistSetNum (plui->options, PLUI_POSITION_X, x);
   nlistSetNum (plui->options, PLUI_POSITION_Y, y);
 
-  connDisconnectAll (plui->conn);
-  gdone = 1;
+  connDisconnect (plui->conn, ROUTE_STARTERUI);
   logProcEnd (LOG_PROC, "pluiStoppingCallback", "");
   return true;
 }
@@ -258,6 +256,10 @@ pluiStopWaitCallback (void *udata, programstate_t programState)
     if (plui->stopwaitcount > STOP_WAIT_COUNT_MAX) {
       rc = true;
     }
+  }
+
+  if (rc) {
+    connDisconnectAll (plui->conn);
   }
 
   logProcEnd (LOG_PROC, "pluiStopWaitCallback", "");
@@ -295,8 +297,6 @@ pluiClosingCallback (void *udata, programstate_t programState)
     nlistFree (plui->options);
   }
   datafileFree (plui->optiondf);
-
-  connFree (plui->conn);
 
   uiplayerFree (plui->uiplayer);
   uimusicqFree (plui->uimusicq);
@@ -454,30 +454,25 @@ pluiMainLoop (void *tplui)
   playerui_t  *plui = tplui;
   int         stop = FALSE;
 
-  if (gdone > EXIT_WAIT_COUNT) {
-    stop = TRUE;
-  }
-
   if (! stop) {
     uiutilsUIProcessEvents ();
   }
 
-  if (gdone) {
-    ++gdone;
-  }
-
-  if (! stop && mstimeCheck (&plui->clockCheck)) {
-    pluiClock (plui);
-  }
-
   if (! progstateIsRunning (plui->progstate)) {
     progstateProcess (plui->progstate);
-    if (! gdone && gKillReceived) {
+    if (progstateCurrState (plui->progstate) == STATE_CLOSED) {
+      stop = true;
+    }
+    if (gKillReceived) {
       logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
       progstateShutdownProcess (plui->progstate);
       gKillReceived = 0;
     }
     return stop;
+  }
+
+  if (mstimeCheck (&plui->clockCheck)) {
+    pluiClock (plui);
   }
 
   if (mstimeCheck (&plui->marqueeFontSizeCheck)) {
@@ -500,7 +495,7 @@ pluiMainLoop (void *tplui)
   uimusicqMainLoop (plui->uimusicq);
   uisongselMainLoop (plui->uisongsel);
 
-  if (! gdone && gKillReceived) {
+  if (gKillReceived) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
     progstateShutdownProcess (plui->progstate);
     gKillReceived = 0;
@@ -620,10 +615,8 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_EXIT_REQUEST: {
           logMsg (LOG_SESS, LOG_IMPORTANT, "got exit request");
           gKillReceived = 0;
-          logMsg (LOG_DBG, LOG_MSGS, "got: req-exit");
           progstateShutdownProcess (plui->progstate);
-          logProcEnd (LOG_PROC, "pluiProcessMsg", "req-exit");
-          return 1;
+          break;
         }
         case MSG_QUEUE_SWITCH: {
           pluiSetPlaybackQueue (plui, atoi (args));
@@ -674,7 +667,7 @@ pluiCloseWin (GtkWidget *window, GdkEvent *event, gpointer userdata)
   playerui_t   *plui = userdata;
 
   logProcBegin (LOG_PROC, "pluiCloseWin");
-  if (! gdone) {
+  if (progstateCurrState (plui->progstate) <= STATE_RUNNING) {
     progstateShutdownProcess (plui->progstate);
     logMsg (LOG_DBG, LOG_MSGS, "got: close win request");
     logProcEnd (LOG_PROC, "pluiCloseWin", "not-done");

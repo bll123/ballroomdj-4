@@ -477,7 +477,6 @@ static void   confuiDispSelect (GtkButton *b, gpointer udata);
 static void   confuiDispRemove (GtkButton *b, gpointer udata);
 
 static int gKillReceived = 0;
-static int gdone = 0;
 
 int
 main (int argc, char *argv[])
@@ -753,7 +752,7 @@ main (int argc, char *argv[])
 
   confuiBuildUI (&confui);
   sockhMainLoop (listenPort, confuiProcessMsg, confuiMainLoop, &confui);
-
+  connFree (confui.conn);
   progstateFree (confui.progstate);
   orgoptFree (orgopt);
 
@@ -796,9 +795,8 @@ confuiStoppingCallback (void *udata, programstate_t programState)
   datafileSaveKeyVal ("ds-songfilter", fn, filterdisplaydfkeys,
       FILTER_DISP_MAX, confui->filterDisplaySel);
 
-  connDisconnectAll (confui->conn);
+  connDisconnect (confui->conn, ROUTE_STARTERUI);
 
-  gdone = 1;
   logProcEnd (LOG_PROC, "confuiStoppingCallback", "");
   return true;
 }
@@ -816,6 +814,11 @@ confuiStopWaitCallback (void *udata, programstate_t programState)
       rc = true;
     }
   }
+
+  if (rc) {
+    connDisconnectAll (confui->conn);
+  }
+
   return rc;
 }
 
@@ -878,7 +881,6 @@ confuiClosingCallback (void *udata, programstate_t programState)
 
   bdj4shutdown (ROUTE_CONFIGUI, NULL);
 
-  connFree (confui->conn);
   uiutilsCleanup ();
 
   logProcEnd (LOG_PROC, "confuiClosingCallback", "");
@@ -1615,21 +1617,16 @@ confuiMainLoop (void *tconfui)
   configui_t    *confui = tconfui;
   int           stop = FALSE;
 
-  if (gdone > EXIT_WAIT_COUNT) {
-    stop = TRUE;
-  }
-
   if (! stop) {
     uiutilsUIProcessEvents ();
   }
 
-  if (gdone) {
-    ++gdone;
-  }
-
   if (! progstateIsRunning (confui->progstate)) {
     progstateProcess (confui->progstate);
-    if (! gdone && gKillReceived) {
+    if (progstateCurrState (confui->progstate) == STATE_CLOSED) {
+      stop = true;
+    }
+    if (gKillReceived) {
       logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
       progstateShutdownProcess (confui->progstate);
       gKillReceived = 0;
@@ -1643,7 +1640,7 @@ confuiMainLoop (void *tconfui)
     uiutilsEntryValidate (&confui->uiitem [i].u.entry);
   }
 
-  if (! gdone && gKillReceived) {
+  if (gKillReceived) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
     progstateShutdownProcess (confui->progstate);
     gKillReceived = 0;
@@ -1689,10 +1686,8 @@ confuiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_EXIT_REQUEST: {
           logMsg (LOG_SESS, LOG_IMPORTANT, "got exit request");
           gKillReceived = 0;
-          logMsg (LOG_DBG, LOG_MSGS, "got: req-exit");
           progstateShutdownProcess (confui->progstate);
-          logProcEnd (LOG_PROC, "confuiProcessMsg", "req-exit");
-          return 1;
+          break;
         }
         default: {
           break;
@@ -1719,7 +1714,7 @@ confuiCloseWin (GtkWidget *window, GdkEvent *event, gpointer userdata)
   configui_t   *confui = userdata;
 
   logProcBegin (LOG_PROC, "confuiCloseWin");
-  if (! gdone) {
+  if (progstateCurrState (confui->progstate) <= STATE_RUNNING) {
     progstateShutdownProcess (confui->progstate);
     logMsg (LOG_DBG, LOG_MSGS, "got: close win request");
     logProcEnd (LOG_PROC, "confuiCloseWin", "not-done");
@@ -3987,14 +3982,16 @@ confuiTableToggle (GtkCellRendererToggle *renderer, gchar *spath, gpointer udata
   model = gtk_tree_view_get_model (
       GTK_TREE_VIEW (confui->tables [confui->tablecurr].tree));
   path = gtk_tree_path_new_from_string (spath);
-  if (gtk_tree_model_get_iter (model, &iter, path) == FALSE) {
-    logProcEnd (LOG_PROC, "confuiTableToggle", "no model/iter");
-    return;
+  if (path != NULL) {
+    if (gtk_tree_model_get_iter (model, &iter, path) == FALSE) {
+      logProcEnd (LOG_PROC, "confuiTableToggle", "no model/iter");
+      return;
+    }
+    col = confui->tables [confui->tablecurr].togglecol;
+    gtk_tree_model_get (model, &iter, col, &val, -1);
+    gtk_list_store_set (GTK_LIST_STORE (model), &iter, col, !val, -1);
+    gtk_tree_path_free (path);
   }
-  gtk_tree_path_free (path);
-  col = confui->tables [confui->tablecurr].togglecol;
-  gtk_tree_model_get (model, &iter, col, &val, -1);
-  gtk_list_store_set (GTK_LIST_STORE (model), &iter, col, !val, -1);
   confui->tables [confui->tablecurr].changed = true;
   logProcEnd (LOG_PROC, "confuiTableToggle", "");
 }
@@ -4290,6 +4287,10 @@ confuiDanceSelect (GtkTreeView *tv, GtkTreePath *path,
 
   logProcBegin (LOG_PROC, "confuiDanceSelect");
   model = gtk_tree_view_get_model (tv);
+  if (path == NULL) {
+    return;
+  }
+
   if (! gtk_tree_model_get_iter (model, &iter, path)) {
     logProcEnd (LOG_PROC, "confuiDanceSelect", "no model/iter");
     return;

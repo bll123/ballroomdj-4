@@ -150,7 +150,6 @@ static void     manageSongEditMenu (manageui_t *manage);
 
 
 static int gKillReceived = 0;
-static int gdone = 0;
 
 int
 main (int argc, char *argv[])
@@ -283,7 +282,7 @@ main (int argc, char *argv[])
 
   manageBuildUI (&manage);
   sockhMainLoop (listenPort, manageProcessMsg, manageMainLoop, &manage);
-
+  connFree (manage.conn);
   progstateFree (manage.progstate);
   logProcEnd (LOG_PROC, "manageui", "");
   logEnd ();
@@ -309,8 +308,7 @@ manageStoppingCallback (void *udata, programstate_t programState)
   nlistSetNum (manage->options, PLUI_POSITION_Y, y);
 
   procutilStopAllProcess (manage->processes, manage->conn, false);
-  connDisconnectAll (manage->conn);
-  gdone = 1;
+  connDisconnect (manage->conn, ROUTE_STARTERUI);
   logProcEnd (LOG_PROC, "manageStoppingCallback", "");
   return true;
 }
@@ -328,6 +326,10 @@ manageStopWaitCallback (void *udata, programstate_t programState)
     if (manage->stopwaitcount > STOP_WAIT_COUNT_MAX) {
       rc = true;
     }
+  }
+
+  if (rc) {
+    connDisconnectAll (manage->conn);
   }
   logProcEnd (LOG_PROC, "manageStopWaitCallback", "");
   return rc;
@@ -366,8 +368,6 @@ manageClosingCallback (void *udata, programstate_t programState)
     nlistFree (manage->options);
   }
   datafileFree (manage->optiondf);
-
-  connFree (manage->conn);
 
   uiutilsTextBoxFree (manage->dbhelpdisp);
   uiutilsTextBoxFree (manage->dbstatus);
@@ -598,21 +598,16 @@ manageMainLoop (void *tmanage)
   manageui_t   *manage = tmanage;
   int         stop = 0;
 
-  if (gdone > EXIT_WAIT_COUNT) {
-    stop = TRUE;
-  }
-
   if (! stop) {
     uiutilsUIProcessEvents ();
   }
 
-  if (gdone) {
-    ++gdone;
-  }
-
   if (! progstateIsRunning (manage->progstate)) {
     progstateProcess (manage->progstate);
-    if (! gdone && gKillReceived) {
+    if (progstateCurrState (manage->progstate) == STATE_CLOSED) {
+      stop = true;
+    }
+    if (gKillReceived) {
       logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
       progstateShutdownProcess (manage->progstate);
       gKillReceived = 0;
@@ -629,7 +624,7 @@ manageMainLoop (void *tmanage)
   uisongselMainLoop (manage->slsongsel);
   uisongselMainLoop (manage->mmsongsel);
 
-  if (! gdone && gKillReceived) {
+  if (gKillReceived) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
     progstateShutdownProcess (manage->progstate);
     gKillReceived = 0;
@@ -725,10 +720,8 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_EXIT_REQUEST: {
           logMsg (LOG_SESS, LOG_IMPORTANT, "got exit request");
           gKillReceived = 0;
-          logMsg (LOG_DBG, LOG_MSGS, "got: req-exit");
           progstateShutdownProcess (manage->progstate);
-          logProcEnd (LOG_PROC, "manageProcessMsg", "req-exit");
-          return 1;
+          break;
         }
         case MSG_DB_PROGRESS: {
           manageDbProgressMsg (manage, args);
@@ -793,7 +786,7 @@ manageCloseWin (GtkWidget *window, GdkEvent *event, gpointer userdata)
   manageui_t   *manage = userdata;
 
   logProcBegin (LOG_PROC, "manageCloseWin");
-  if (! gdone) {
+  if (progstateCurrState (manage->progstate) <= STATE_RUNNING) {
     progstateShutdownProcess (manage->progstate);
     logMsg (LOG_DBG, LOG_MSGS, "got: close win request");
     logProcEnd (LOG_PROC, "manageCloseWin", "not-done");

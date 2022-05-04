@@ -122,6 +122,10 @@ connConnect (conn_t *conn, bdjmsgroute_t route)
 void
 connDisconnect (conn_t *conn, bdjmsgroute_t route)
 {
+  if (conn == NULL) {
+    return;
+  }
+
   if (route >= ROUTE_MAX) {
     return;
   }

@@ -60,6 +60,7 @@ typedef struct {
   progstate_t     *progstate;
   char            *locknm;
   conn_t          *conn;
+  int             stopwaitcount;
   datafile_t      *optiondf;
   nlist_t         *options;
   GtkWidget       *window;
@@ -94,6 +95,7 @@ typedef struct {
 static bool     marqueeConnectingCallback (void *udata, programstate_t programState);
 static bool     marqueeHandshakeCallback (void *udata, programstate_t programState);
 static bool     marqueeStoppingCallback (void *udata, programstate_t programState);
+static bool     marqueeStopWaitCallback (void *udata, programstate_t programState);
 static bool     marqueeClosingCallback (void *udata, programstate_t programState);
 static void     marqueeBuildUI (marquee_t *marquee);
 static int      marqueeMainLoop  (void *tmarquee);
@@ -121,7 +123,6 @@ static void marqueeSetFont (marquee_t *marquee, int sz);
 static void marqueeDisplayCompletion (marquee_t *marquee);
 
 static int gKillReceived = 0;
-static int gdone = 0;
 
 int
 main (int argc, char *argv[])
@@ -142,6 +143,8 @@ main (int argc, char *argv[])
       marqueeHandshakeCallback, &marquee);
   progstateSetCallback (marquee.progstate, STATE_STOPPING,
       marqueeStoppingCallback, &marquee);
+  progstateSetCallback (marquee.progstate, STATE_STOP_WAIT,
+      marqueeStopWaitCallback, &marquee);
   progstateSetCallback (marquee.progstate, STATE_CLOSING,
       marqueeClosingCallback, &marquee);
 
@@ -165,6 +168,7 @@ main (int argc, char *argv[])
   marquee.marginTotal = 0;
   marquee.fontAdjustment = 0.0;
   marquee.hideonstart = false;
+  marquee.stopwaitcount = 0;
 
   osSetStandardSignals (marqueeSigHandler);
 
@@ -202,7 +206,7 @@ main (int argc, char *argv[])
 
   marqueeBuildUI (&marquee);
   sockhMainLoop (listenPort, marqueeProcessMsg, marqueeMainLoop, &marquee);
-
+  connFree (marquee.conn);
   progstateFree (marquee.progstate);
   logEnd ();
   return status;
@@ -236,10 +240,33 @@ marqueeStoppingCallback (void *udata, programstate_t programState)
     marqueeSaveWindowPosition (marquee);
   }
 
-  connDisconnectAll (marquee->conn);
-  gdone = 1;
+  connDisconnect (marquee->conn, ROUTE_MAIN);
   logProcEnd (LOG_PROC, "marqueeStoppingCallback", "");
   return true;
+}
+
+static bool
+marqueeStopWaitCallback (void *tmarquee, programstate_t programState)
+{
+  marquee_t   *marquee = tmarquee;
+  bool        rc = false;
+
+  logProcBegin (LOG_PROC, "marqueeStopWaitCallback");
+
+  rc = connCheckAll (marquee->conn);
+  if (rc == false) {
+    ++marquee->stopwaitcount;
+    if (marquee->stopwaitcount > STOP_WAIT_COUNT_MAX) {
+      rc = true;
+    }
+  }
+
+  if (rc) {
+    connDisconnectAll (marquee->conn);
+  }
+
+  logProcEnd (LOG_PROC, "marqueeStopWaitCallback", "");
+  return rc;
 }
 
 static bool
@@ -261,7 +288,6 @@ marqueeClosingCallback (void *udata, programstate_t programState)
   bdj4shutdown (ROUTE_MARQUEE, NULL);
 
   connDisconnectAll (marquee->conn);
-  connFree (marquee->conn);
 
   if (marquee->marqueeLabs != NULL) {
     free (marquee->marqueeLabs);
@@ -422,21 +448,16 @@ marqueeMainLoop (void *tmarquee)
   marquee_t   *marquee = tmarquee;
   int         stop = FALSE;
 
-  if (gdone > EXIT_WAIT_COUNT) {
-    stop = TRUE;
-  }
-
   if (! stop) {
     uiutilsUIProcessEvents ();
   }
 
-  if (gdone) {
-    ++gdone;
-  }
-
   if (! progstateIsRunning (marquee->progstate)) {
     progstateProcess (marquee->progstate);
-    if (! gdone && gKillReceived) {
+    if (progstateCurrState (marquee->progstate) == STATE_CLOSED) {
+      stop = true;
+    }
+    if (gKillReceived) {
       logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
       progstateShutdownProcess (marquee->progstate);
     }
@@ -453,7 +474,7 @@ marqueeMainLoop (void *tmarquee)
     --marquee->unMaximize;
   }
 
-  if (! gdone && gKillReceived) {
+  if (gKillReceived) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
     progstateShutdownProcess (marquee->progstate);
   }
@@ -536,8 +557,7 @@ marqueeProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_EXIT_REQUEST: {
           logMsg (LOG_SESS, LOG_IMPORTANT, "got exit request");
           progstateShutdownProcess (marquee->progstate);
-          logProcEnd (LOG_PROC, "marqueeProcessMsg", "req-exit");
-          return 1;
+          break;
         }
         case MSG_MARQUEE_DATA: {
           marqueePopulate (marquee, args);
@@ -583,8 +603,10 @@ marqueeCloseWin (GtkWidget *window, GdkEvent *event, gpointer userdata)
 
   logProcBegin (LOG_PROC, "marqueeCloseWin");
 
-  if (! gdone) {
-    marqueeSaveWindowPosition (marquee);
+  if (progstateCurrState (marquee->progstate) <= STATE_RUNNING) {
+    if (! marquee->isMaximized && ! marquee->isIconified) {
+      marqueeSaveWindowPosition (marquee);
+    }
 
     uiutilsWindowIconify (window);
     marquee->mqIconifyAction = true;

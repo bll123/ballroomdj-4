@@ -15,8 +15,9 @@ typedef struct {
   Sock_t          listenSock;
 } sockserver_t;
 
-#define SOCKH_MAINLOOP_TIMEOUT   5
-#define SOCKH_EXIT_WAIT_COUNT    20
+enum {
+  SOCKH_MAINLOOP_TIMEOUT = 5,
+};
 
 void          sockhMainLoop (uint16_t listenPort, sockhProcessMsg_t msgFunc,
                   sockhProcessFunc_t processFunc, void *userData);
