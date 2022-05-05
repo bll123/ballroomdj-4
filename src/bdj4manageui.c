@@ -110,6 +110,7 @@ typedef struct manage {
   uiutilsnbtabid_t  *slnbtabid;
   uiutilsnbtabid_t  *mmnbtabid;
   /* file selection dialog */
+  GtkWidget         *selfiledialog;
   GtkWidget         *selfiletree;
   manageselfilecb_t selfilecb;
   /* gtk stuff */
@@ -180,6 +181,8 @@ static void     manageSwitchPage (GtkNotebook *nb, GtkWidget *page,
 static void     manageSelectFileDialog (manageui_t *manage, int flags);
 static GtkWidget * manageCreateSelectFileDialog (manageui_t *manage,
     slist_t *filelist, const char *filetype, manageselfilecb_t cb);
+static void manageSelectFileSelect (GtkTreeView* tv, GtkTreePath* path,
+    GtkTreeViewColumn* column, gpointer udata);
 static void manageSelectFileResponseHandler (GtkDialog *d, gint responseid,
     gpointer udata);
 
@@ -1294,6 +1297,8 @@ manageCreateSelectFileDialog (manageui_t *manage,
 
   logProcBegin (LOG_PROC, "manageCreateSelectFileDialog");
 
+  manage->selfilecb = cb;
+
   /* CONTEXT: file select dialog, title of window: select <file-type> */
   snprintf (tbuff, sizeof (tbuff), _("Select %s"), filetype);
   dialog = gtk_dialog_new_with_buttons (
@@ -1308,8 +1313,7 @@ manageCreateSelectFileDialog (manageui_t *manage,
       GTK_RESPONSE_APPLY,
       NULL
       );
-
-  manage->selfilecb = cb;
+  manage->selfiledialog = dialog;
 
   content = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
   uiutilsWidgetSetAllMargins (content, uiutilsBaseMarginSz * 2);
@@ -1323,6 +1327,7 @@ manageCreateSelectFileDialog (manageui_t *manage,
   uiutilsBoxPackStart (vbox, scwin);
 
   widget = uiutilsCreateTreeView ();
+  gtk_tree_view_set_activate_on_single_click (GTK_TREE_VIEW (widget), FALSE);
   uiutilsWidgetAlignHorizFill (widget);
   uiutilsWidgetExpandHoriz (widget);
   manage->selfiletree = widget;
@@ -1358,6 +1363,9 @@ manageCreateSelectFileDialog (manageui_t *manage,
   gtk_tree_view_set_model (GTK_TREE_VIEW (widget), GTK_TREE_MODEL (store));
   g_object_unref (store);
 
+  g_signal_connect (widget, "row-activated",
+      G_CALLBACK (manageSelectFileSelect), manage);
+
   uiutilsBoxPackInWindow (scwin, widget);
 
   /* the dialog doesn't have any space above the buttons */
@@ -1372,6 +1380,16 @@ manageCreateSelectFileDialog (manageui_t *manage,
   logProcEnd (LOG_PROC, "manageCreateSelectFileDialog", "");
 
   return dialog;
+}
+
+static void
+manageSelectFileSelect (GtkTreeView* tv, GtkTreePath* path,
+    GtkTreeViewColumn* column, gpointer udata)
+{
+  manageui_t  *manage = udata;
+
+  manageSelectFileResponseHandler (GTK_DIALOG (manage->selfiledialog),
+      GTK_RESPONSE_APPLY, manage);
 }
 
 static void
