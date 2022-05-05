@@ -36,7 +36,7 @@ uiutilsCreateMainWindow (char *title, char *imagenm,
 }
 
 void
-uiutilsCloseMainWindow (GtkWidget *window)
+uiutilsCloseWindow (GtkWidget *window)
 {
   if (GTK_IS_WIDGET (window)) {
     gtk_widget_destroy (window);

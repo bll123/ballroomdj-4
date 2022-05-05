@@ -319,7 +319,7 @@ starterClosingCallback (void *udata, programstate_t programState)
   char        fn [MAXPATHLEN];
 
   logProcBegin (LOG_PROC, "starterClosingCallback");
-  uiutilsCloseMainWindow (starter->window);
+  uiutilsCloseWindow (starter->window);
 
   procutilStopAllProcess (starter->processes, starter->conn, true);
   procutilFreeAll (starter->processes);

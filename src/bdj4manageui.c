@@ -24,6 +24,7 @@
 #include "conn.h"
 #include "datafile.h"
 #include "dispsel.h"
+#include "fileop.h"
 #include "localeutil.h"
 #include "lock.h"
 #include "log.h"
@@ -31,6 +32,7 @@
 #include "osutils.h"
 #include "osuiutils.h"
 #include "pathbld.h"
+#include "playlist.h"
 #include "procutil.h"
 #include "progstate.h"
 #include "slist.h"
@@ -63,6 +65,14 @@ enum {
   MANAGE_DB_REBUILD,
 };
 
+enum {
+  MANAGE_F_ALL,
+  MANAGE_F_SONGLIST,
+  MANAGE_F_PLAYLIST,
+  MANAGE_F_SEQUENCE,
+};
+
+
 typedef struct manage manageui_t;
 
 typedef struct manage {
@@ -91,6 +101,7 @@ typedef struct manage {
   uiutilsnbtabid_t  *mainnbtabid;
   uiutilsnbtabid_t  *slnbtabid;
   uiutilsnbtabid_t  *mmnbtabid;
+  uiutilsdropdown_t filedd;
   /* gtk stuff */
   GtkWidget       *menubar;
   GtkWidget       *window;
@@ -119,6 +130,8 @@ typedef struct manage {
 static datafilekey_t manageuidfkeys [] = {
   { "FILTER_POS_X",     SONGSEL_FILTER_POSITION_X,  VALUE_NUM, NULL, -1 },
   { "FILTER_POS_Y",     SONGSEL_FILTER_POSITION_Y,  VALUE_NUM, NULL, -1 },
+  { "MNG_SELFILE_POS_X",MANAGE_SELFILE_POSITION_X,  VALUE_NUM, NULL, -1 },
+  { "MNG_SELFILE_POS_Y",MANAGE_SELFILE_POSITION_Y,  VALUE_NUM, NULL, -1 },
   { "PLUI_POS_X",       PLUI_POSITION_X,            VALUE_NUM, NULL, -1 },
   { "PLUI_POS_Y",       PLUI_POSITION_Y,            VALUE_NUM, NULL, -1 },
   { "PLUI_SIZE_X",      PLUI_SIZE_X,                VALUE_NUM, NULL, -1 },
@@ -143,10 +156,21 @@ static void     manageDbChg (GtkSpinButton *sb, gpointer udata);
 static void     manageDbStart (GtkButton *b, gpointer udata);
 static void     manageDbProgressMsg (manageui_t *manage, char *args);
 static void     manageDbStatusMsg (manageui_t *manage, char *args);
+/* song editor */
+static void     manageSongEditMenu (manageui_t *manage);
+/* song list */
+static void     manageSonglistMenu (manageui_t *manage);
+static void     manageSongListLoad (GtkMenuItem *mi, gpointer udata);
+/* general */
 static void     manageSwitchPage (GtkNotebook *nb, GtkWidget *page,
     guint pagenum, gpointer udata);
-static void     manageSonglistMenu (manageui_t *manage);
-static void     manageSongEditMenu (manageui_t *manage);
+static void     manageSelectFileDialog (manageui_t *manage, int flags);
+static GtkWidget * manageCreateSelectFileDialog (manageui_t *manage,
+    slist_t *filelist, const char *filetype);
+static void     manageSelectFileHandler (GtkTreeView *tv, GtkTreePath *path,
+    GtkTreeViewColumn *column, gpointer udata);
+static void manageSelectFileResponseHandler (GtkDialog *d, gint responseid,
+    gpointer udata);
 
 
 static int gKillReceived = 0;
@@ -241,6 +265,8 @@ main (int argc, char *argv[])
     nlistSetNum (manage.options, PLUI_SIZE_X, 1000);
     nlistSetNum (manage.options, PLUI_SIZE_Y, 600);
     nlistSetStr (manage.options, SONGSEL_SORT_BY, "TITLE");
+    nlistSetNum (manage.options, MANAGE_SELFILE_POSITION_X, -1);
+    nlistSetNum (manage.options, MANAGE_SELFILE_POSITION_Y, -1);
   }
 
   manage.slplayer = uiplayerInit (manage.progstate, manage.conn,
@@ -343,7 +369,7 @@ manageClosingCallback (void *udata, programstate_t programState)
 
   logProcBegin (LOG_PROC, "manageClosingCallback");
 
-  uiutilsCloseMainWindow (manage->window);
+  uiutilsCloseWindow (manage->window);
 
   procutilStopAllProcess (manage->processes, manage->conn, true);
   procutilFreeAll (manage->processes);
@@ -895,6 +921,133 @@ manageDbStatusMsg (manageui_t *manage, char *args)
   uiutilsTextBoxScrollToEnd (manage->dbstatus);
 }
 
+/* song editor */
+
+static void
+manageSongEditMenu (manageui_t *manage)
+{
+  GtkWidget *menu;
+  GtkWidget *menuitem;
+
+  if (! manage->songeditmenu.initialized) {
+    menuitem = uiutilsMenuAddMainItem (manage->menubar,
+        /* CONTEXT: menu selection: actions for song editor */
+        &manage->songeditmenu,_("Actions"));
+
+    menu = uiutilsCreateSubMenu (menuitem);
+
+    /* CONTEXT: menu selection: song edit: edit all */
+    menuitem = uiutilsMenuCreateItem (menu, _("Edit All"), NULL, NULL);
+    uiutilsWidgetDisable (menuitem);
+
+    /* CONTEXT: menu selection: song edit: apply edit all */
+    menuitem = uiutilsMenuCreateItem (menu, _("Apply Edit All"), NULL, NULL);
+    uiutilsWidgetDisable (menuitem);
+
+    /* CONTEXT: menu selection: song edit: cancel edit all */
+    menuitem = uiutilsMenuCreateItem (menu, _("Cancel Edit All"), NULL, NULL);
+    uiutilsWidgetDisable (menuitem);
+
+    manage->songeditmenu.initialized = true;
+  }
+
+  uiutilsMenuDisplay (&manage->songeditmenu);
+  manage->currmenu = &manage->songeditmenu;
+}
+
+/* song list */
+
+static void
+manageSonglistMenu (manageui_t *manage)
+{
+  char      tbuff [200];
+  GtkWidget *menu;
+  GtkWidget *menuitem;
+
+  if (! manage->slmenu.initialized) {
+    menuitem = uiutilsMenuAddMainItem (manage->menubar,
+        /* CONTEXT: menu selection: song list: edit menu */
+        &manage->slmenu, _("Edit"));
+
+    menu = uiutilsCreateSubMenu (menuitem);
+
+    /* CONTEXT: menu selection: song list: edit menu: load */
+    menuitem = uiutilsMenuCreateItem (menu, _("Load"),
+        manageSongListLoad, manage);
+
+    /* CONTEXT: menu selection: song list: edit menu: create copy */
+    menuitem = uiutilsMenuCreateItem (menu, _("Create Copy"), NULL, NULL);
+    uiutilsWidgetDisable (menuitem);
+
+    /* CONTEXT: menu selection: song list: edit menu: start new song list */
+    menuitem = uiutilsMenuCreateItem (menu, _("Start New Song List"), NULL, NULL);
+    uiutilsWidgetDisable (menuitem);
+
+    menuitem = uiutilsMenuAddMainItem (manage->menubar,
+        /* CONTEXT: menu selection: actions for song list */
+        &manage->slmenu,_("Actions"));
+
+    menu = uiutilsCreateSubMenu (menuitem);
+
+    /* CONTEXT: menu selection: song list: actions menu: rearrange the songs and create a new mix */
+    menuitem = uiutilsMenuCreateItem (menu, _("Mix"), NULL, NULL);
+    uiutilsWidgetDisable (menuitem);
+
+    /* CONTEXT: menu selection: song list: actions menu: truncate the song list */
+    menuitem = uiutilsMenuCreateItem (menu, _("Truncate"), NULL, NULL);
+    uiutilsWidgetDisable (menuitem);
+
+    menuitem = uiutilsMenuAddMainItem (manage->menubar,
+        /* CONTEXT: menu selection: export actions for song list */
+        &manage->slmenu, _("Export"));
+
+    menu = uiutilsCreateSubMenu (menuitem);
+
+    /* CONTEXT: menu selection: song list: export: export as m3u */
+    menuitem = uiutilsMenuCreateItem (menu, _("Export as M3U Playlist"), NULL, NULL);
+    uiutilsWidgetDisable (menuitem);
+
+    /* CONTEXT: menu selection: song list: export: export as m3u8 */
+    menuitem = uiutilsMenuCreateItem (menu, _("Export as M3U8 Playlist"), NULL, NULL);
+    uiutilsWidgetDisable (menuitem);
+
+    /* CONTEXT: menu selection: song list: export: export for ballroomdj */
+    snprintf (tbuff, sizeof (tbuff), _("Export for %s"), BDJ4_NAME);
+    menuitem = uiutilsMenuCreateItem (menu, tbuff, NULL, NULL);
+    uiutilsWidgetDisable (menuitem);
+
+    menuitem = uiutilsMenuAddMainItem (manage->menubar,
+        /* CONTEXT: menu selection: import actions for song list */
+        &manage->slmenu, _("Import"));
+
+    menu = uiutilsCreateSubMenu (menuitem);
+
+    /* CONTEXT: menu selection: song list: import: import m3u */
+    menuitem = uiutilsMenuCreateItem (menu, _("Import M3U"), NULL, NULL);
+    uiutilsWidgetDisable (menuitem);
+
+    /* CONTEXT: menu selection: song list: import: import from ballroomdj */
+    snprintf (tbuff, sizeof (tbuff), _("Import from %s"), BDJ4_NAME);
+    menuitem = uiutilsMenuCreateItem (menu, tbuff, NULL, NULL);
+    uiutilsWidgetDisable (menuitem);
+
+    manage->slmenu.initialized = true;
+  }
+
+  uiutilsMenuDisplay (&manage->slmenu);
+  manage->currmenu = &manage->slmenu;
+}
+
+static void
+manageSongListLoad (GtkMenuItem *mi, gpointer udata)
+{
+  manageui_t  *manage = udata;
+
+  manageSelectFileDialog (manage, MANAGE_F_SONGLIST);
+}
+
+/* general */
+
 static void
 manageSwitchPage (GtkNotebook *nb, GtkWidget *page, guint pagenum,
     gpointer udata)
@@ -994,115 +1147,145 @@ manageSwitchPage (GtkNotebook *nb, GtkWidget *page, guint pagenum,
 }
 
 static void
-manageSonglistMenu (manageui_t *manage)
+manageSelectFileDialog (manageui_t *manage, int flags)
 {
-  char      tbuff [200];
-  GtkWidget *menu;
-  GtkWidget *menuitem;
+  slist_t     *plList;
+  slist_t     *filelist;
+  slistidx_t  piteridx;
+  char        *dispnm;
+  char        *fn;
+  char        tbuff [MAXPATHLEN];
+  int         x, y;
+  GtkWidget   *dialog;
 
-  if (! manage->slmenu.initialized) {
-    menuitem = uiutilsMenuAddMainItem (manage->menubar,
-        /* CONTEXT: menu selection: song list: edit menu */
-        &manage->slmenu, _("Edit"));
+  logProcBegin (LOG_PROC, "manageSelectFileDialog");
+  filelist = slistAlloc ("filelist", LIST_UNORDERED, free);
 
-    menu = uiutilsCreateSubMenu (menuitem);
-
-    /* CONTEXT: menu selection: song list: edit menu: load */
-    menuitem = uiutilsMenuCreateItem (menu, _("Load"), NULL, NULL);
-    uiutilsWidgetDisable (menuitem);
-
-    /* CONTEXT: menu selection: song list: edit menu: create copy */
-    menuitem = uiutilsMenuCreateItem (menu, _("Create Copy"), NULL, NULL);
-    uiutilsWidgetDisable (menuitem);
-
-    /* CONTEXT: menu selection: song list: edit menu: start new song list */
-    menuitem = uiutilsMenuCreateItem (menu, _("Start New Song List"), NULL, NULL);
-    uiutilsWidgetDisable (menuitem);
-
-    menuitem = uiutilsMenuAddMainItem (manage->menubar,
-        /* CONTEXT: menu selection: actions for song list */
-        &manage->slmenu,_("Actions"));
-
-    menu = uiutilsCreateSubMenu (menuitem);
-
-    /* CONTEXT: menu selection: song list: actions menu: rearrange the songs and create a new mix */
-    menuitem = uiutilsMenuCreateItem (menu, _("Mix"), NULL, NULL);
-    uiutilsWidgetDisable (menuitem);
-
-    /* CONTEXT: menu selection: song list: actions menu: truncate the song list */
-    menuitem = uiutilsMenuCreateItem (menu, _("Truncate"), NULL, NULL);
-    uiutilsWidgetDisable (menuitem);
-
-    menuitem = uiutilsMenuAddMainItem (manage->menubar,
-        /* CONTEXT: menu selection: export actions for song list */
-        &manage->slmenu, _("Export"));
-
-    menu = uiutilsCreateSubMenu (menuitem);
-
-    /* CONTEXT: menu selection: song list: export: export as m3u */
-    menuitem = uiutilsMenuCreateItem (menu, _("Export as M3U Playlist"), NULL, NULL);
-    uiutilsWidgetDisable (menuitem);
-
-    /* CONTEXT: menu selection: song list: export: export as m3u8 */
-    menuitem = uiutilsMenuCreateItem (menu, _("Export as M3U8 Playlist"), NULL, NULL);
-    uiutilsWidgetDisable (menuitem);
-
-    /* CONTEXT: menu selection: song list: export: export for ballroomdj */
-    snprintf (tbuff, sizeof (tbuff), _("Export for %s"), BDJ4_NAME);
-    menuitem = uiutilsMenuCreateItem (menu, tbuff, NULL, NULL);
-    uiutilsWidgetDisable (menuitem);
-
-    menuitem = uiutilsMenuAddMainItem (manage->menubar,
-        /* CONTEXT: menu selection: import actions for song list */
-        &manage->slmenu, _("Import"));
-
-    menu = uiutilsCreateSubMenu (menuitem);
-
-    /* CONTEXT: menu selection: song list: import: import m3u */
-    menuitem = uiutilsMenuCreateItem (menu, _("Import M3U"), NULL, NULL);
-    uiutilsWidgetDisable (menuitem);
-
-    /* CONTEXT: menu selection: song list: import: import from ballroomdj */
-    snprintf (tbuff, sizeof (tbuff), _("Import from %s"), BDJ4_NAME);
-    menuitem = uiutilsMenuCreateItem (menu, tbuff, NULL, NULL);
-    uiutilsWidgetDisable (menuitem);
-
-    manage->slmenu.initialized = true;
+  plList = playlistGetPlaylistList ();
+  slistStartIterator (plList, &piteridx);
+  while ((dispnm = slistIterateKey (plList, &piteridx)) != NULL) {
+    fn = slistGetStr (plList, dispnm);
+    if ((flags & MANAGE_F_SONGLIST) == MANAGE_F_SONGLIST) {
+      pathbldMakePath (tbuff, sizeof (tbuff),
+          fn, ".songlist", PATHBLD_MP_NONE);
+    }
+    if ((flags & MANAGE_F_PLAYLIST) == MANAGE_F_PLAYLIST) {
+      pathbldMakePath (tbuff, sizeof (tbuff),
+          fn, ".pl", PATHBLD_MP_NONE);
+    }
+    if ((flags & MANAGE_F_SEQUENCE) == MANAGE_F_SEQUENCE) {
+      pathbldMakePath (tbuff, sizeof (tbuff),
+          fn, ".seq", PATHBLD_MP_NONE);
+    }
+    if (fileopFileExists (tbuff)) {
+      slistSetStr (filelist, dispnm, fn);
+    }
   }
+  slistSort (filelist);
 
-  uiutilsMenuDisplay (&manage->slmenu);
-  manage->currmenu = &manage->slmenu;
+  uiutilsDropDownInit (&manage->filedd);
+  /* CONTEXT: what type of file to select  */
+  uiutilsDropDownSelectionSetNum (&manage->filedd, -1);
+
+  /* CONTEXT: what type of file to load */
+  dialog = manageCreateSelectFileDialog (manage, filelist, _("Song List"));
+  uiutilsWidgetShowAll (dialog);
+
+  x = nlistGetNum (manage->options, MANAGE_SELFILE_POSITION_X);
+  y = nlistGetNum (manage->options, MANAGE_SELFILE_POSITION_Y);
+  uiutilsWindowMove (dialog, x, y);
+  logProcEnd (LOG_PROC, "manageSelectFileDialog", "");
+}
+
+static GtkWidget *
+manageCreateSelectFileDialog (manageui_t *manage,
+    slist_t *filelist, const char *filetype)
+{
+  GtkWidget     *dialog;
+  GtkWidget     *content;
+  GtkWidget     *vbox;
+  GtkWidget     *hbox;
+  GtkWidget     *widget;
+  char          tbuff [200];
+
+  logProcBegin (LOG_PROC, "manageCreateSelectFileDialog");
+
+  /* CONTEXT: file select dialog, title of window: select <file-type> */
+  snprintf (tbuff, sizeof (tbuff), _("Select %s"), filetype);
+  dialog = gtk_dialog_new_with_buttons (
+      tbuff,
+      GTK_WINDOW (manage->window),
+      GTK_DIALOG_DESTROY_WITH_PARENT,
+      /* CONTEXT: action button for the file select dialog */
+      _("Close"),
+      GTK_RESPONSE_CLOSE,
+      /* CONTEXT: action button for the file select dialog */
+      _("Select"),
+      GTK_RESPONSE_APPLY,
+      NULL
+      );
+
+  content = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
+  uiutilsWidgetSetAllMargins (content, uiutilsBaseMarginSz * 2);
+
+  vbox = uiutilsCreateVertBox ();
+  uiutilsBoxPackInWindow (content, vbox);
+
+  widget = uiutilsComboboxCreate (dialog,
+      "", manageSelectFileHandler, &manage->filedd, manage);
+  uiutilsDropDownSetList (&manage->filedd, filelist, NULL);
+  uiutilsBoxPackStart (vbox, widget);
+
+  /* the dialog doesn't have any space above the buttons */
+  hbox = uiutilsCreateHorizBox ();
+  uiutilsBoxPackStart (vbox, hbox);
+
+  widget = uiutilsCreateLabel (" ");
+  uiutilsBoxPackStart (hbox, widget);
+
+  g_signal_connect (dialog, "response",
+      G_CALLBACK (manageSelectFileResponseHandler), manage);
+  logProcEnd (LOG_PROC, "manageCreateSelectFileDialog", "");
+
+  return dialog;
 }
 
 static void
-manageSongEditMenu (manageui_t *manage)
+manageSelectFileHandler (GtkTreeView *tv, GtkTreePath *path,
+    GtkTreeViewColumn *column, gpointer udata)
 {
-  GtkWidget *menu;
-  GtkWidget *menuitem;
+  manageui_t  *manage = udata;
+  slistidx_t  idx;
 
-  if (! manage->songeditmenu.initialized) {
-    menuitem = uiutilsMenuAddMainItem (manage->menubar,
-        /* CONTEXT: menu selection: actions for song editor */
-        &manage->songeditmenu,_("Actions"));
-
-    menu = uiutilsCreateSubMenu (menuitem);
-
-    /* CONTEXT: menu selection: song edit: edit all */
-    menuitem = uiutilsMenuCreateItem (menu, _("Edit All"), NULL, NULL);
-    uiutilsWidgetDisable (menuitem);
-
-    /* CONTEXT: menu selection: song edit: apply edit all */
-    menuitem = uiutilsMenuCreateItem (menu, _("Apply Edit All"), NULL, NULL);
-    uiutilsWidgetDisable (menuitem);
-
-    /* CONTEXT: menu selection: song edit: cancel edit all */
-    menuitem = uiutilsMenuCreateItem (menu, _("Cancel Edit All"), NULL, NULL);
-    uiutilsWidgetDisable (menuitem);
-
-    manage->songeditmenu.initialized = true;
-  }
-
-  uiutilsMenuDisplay (&manage->songeditmenu);
-  manage->currmenu = &manage->songeditmenu;
+  idx = uiutilsDropDownSelectionGet (&manage->filedd, path);
 }
 
+static void
+manageSelectFileResponseHandler (GtkDialog *d, gint responseid,
+    gpointer udata)
+{
+  manageui_t  *manage = udata;
+  gint        x, y;
+
+  switch (responseid) {
+    case GTK_RESPONSE_DELETE_EVENT: {
+      uiutilsWindowGetPosition (GTK_WIDGET (d), &x, &y);
+      nlistSetNum (manage->options, MANAGE_SELFILE_POSITION_X, x);
+      nlistSetNum (manage->options, MANAGE_SELFILE_POSITION_Y, y);
+      break;
+    }
+    case GTK_RESPONSE_CLOSE: {
+      uiutilsWindowGetPosition (GTK_WIDGET (d), &x, &y);
+      nlistSetNum (manage->options, MANAGE_SELFILE_POSITION_X, x);
+      nlistSetNum (manage->options, MANAGE_SELFILE_POSITION_Y, y);
+      uiutilsCloseWindow (GTK_WIDGET (d));
+      break;
+    }
+    case GTK_RESPONSE_APPLY: {
+//      uiutilsDropDownSelectionSetNum (&manage->dancesel, manage->danceIdx);
+      break;
+    }
+  }
+
+  uiutilsDropDownFree (&manage->filedd);
+}

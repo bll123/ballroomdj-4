@@ -274,7 +274,7 @@ pluiClosingCallback (void *udata, programstate_t programState)
 
   logProcBegin (LOG_PROC, "pluiClosingCallback");
 
-  uiutilsCloseMainWindow (plui->window);
+  uiutilsCloseWindow (plui->window);
 
   pathbldMakePath (fn, sizeof (fn),
       "playerui", ".txt", PATHBLD_MP_USEIDX);

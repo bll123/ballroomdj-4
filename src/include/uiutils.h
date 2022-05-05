@@ -204,9 +204,9 @@ GtkWidget * uiutilsComboboxCreate (GtkWidget *parentwin,
 ssize_t uiutilsDropDownSelectionGet (uiutilsdropdown_t *dropdown,
     GtkTreePath *path);
 void uiutilsDropDownSetList (uiutilsdropdown_t *dropdown, slist_t *list,
-    char *selectLabel);
+    const char *selectLabel);
 void uiutilsDropDownSetNumList (uiutilsdropdown_t *dropdown, slist_t *list,
-    char *selectLabel);
+    const char *selectLabel);
 void uiutilsDropDownSelectionSetNum (uiutilsdropdown_t *dropdown, nlistidx_t idx);
 void uiutilsDropDownSelectionSetStr (uiutilsdropdown_t *dropdown, char *stridx);
 
@@ -259,7 +259,7 @@ char  *uiutilsSelectFileDialog (uiutilsselect_t *selectdata);
 /* uigtkwindow.c */
 GtkWidget * uiutilsCreateMainWindow (char *title,
     char *imagenm, void *cb, void *udata);
-void uiutilsCloseMainWindow (GtkWidget *window);
+void uiutilsCloseWindow (GtkWidget *window);
 bool uiutilsWindowIsMaximized (GtkWidget *window);
 void uiutilsWindowIconify (GtkWidget *window);
 void uiutilsWindowMaximize (GtkWidget *window);

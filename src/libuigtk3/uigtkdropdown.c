@@ -130,7 +130,7 @@ uiutilsDropDownSelectionGet (uiutilsdropdown_t *dropdown, GtkTreePath *path)
 
 void
 uiutilsDropDownSetList (uiutilsdropdown_t *dropdown, slist_t *list,
-    char *selectLabel)
+    const char *selectLabel)
 {
   char              *strval;
   char              *dispval;
@@ -159,7 +159,7 @@ uiutilsDropDownSetList (uiutilsdropdown_t *dropdown, slist_t *list,
         UIUTILS_DROPDOWN_COL_IDX, (gulong) -1,
         UIUTILS_DROPDOWN_COL_STR, "",
         UIUTILS_DROPDOWN_COL_DISP, tbuff,
-        UIUTILS_DROPDOWN_COL_SB_PAD, "    ",
+        UIUTILS_DROPDOWN_COL_SB_PAD, "      ",
         -1);
     slistSetNum (dropdown->strIndexMap, "", internalidx++);
   }
@@ -177,7 +177,7 @@ uiutilsDropDownSetList (uiutilsdropdown_t *dropdown, slist_t *list,
         UIUTILS_DROPDOWN_COL_IDX, (gulong) internalidx,
         UIUTILS_DROPDOWN_COL_STR, strval,
         UIUTILS_DROPDOWN_COL_DISP, tbuff,
-        UIUTILS_DROPDOWN_COL_SB_PAD, "    ",
+        UIUTILS_DROPDOWN_COL_SB_PAD, "      ",
         -1);
     ++internalidx;
   }
@@ -202,7 +202,7 @@ uiutilsDropDownSetList (uiutilsdropdown_t *dropdown, slist_t *list,
 
 void
 uiutilsDropDownSetNumList (uiutilsdropdown_t *dropdown, slist_t *list,
-    char *selectLabel)
+    const char *selectLabel)
 {
   char              *dispval;
   GtkTreeIter       iter;

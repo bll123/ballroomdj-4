@@ -829,7 +829,7 @@ confuiClosingCallback (void *udata, programstate_t programState)
 
   logProcBegin (LOG_PROC, "confuiClosingCallback");
 
-  uiutilsCloseMainWindow (confui->window);
+  uiutilsCloseWindow (confui->window);
 
   for (int i = CONFUI_BEGIN + 1; i < CONFUI_COMBOBOX_MAX; ++i) {
     uiutilsDropDownFree (&confui->uiitem [i].u.dropdown);

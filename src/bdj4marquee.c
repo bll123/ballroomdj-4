@@ -279,7 +279,7 @@ marqueeClosingCallback (void *udata, programstate_t programState)
 
   /* these are moved here so that the window can be un-maximized and */
   /* the size/position saved */
-  uiutilsCloseMainWindow (marquee->window);
+  uiutilsCloseWindow (marquee->window);
 
   pathbldMakePath (fn, sizeof (fn),
       "marquee", ".txt", PATHBLD_MP_USEIDX);
