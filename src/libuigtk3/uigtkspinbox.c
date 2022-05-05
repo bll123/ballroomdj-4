@@ -88,12 +88,26 @@ uiutilsSpinboxTextSet (uiutilsspinbox_t *spinbox, int min, int count,
 }
 
 int
-uiutilsSpinboxTextGetValue (uiutilsspinbox_t *spinbox)
+uiutilsSpinboxTextGetIdx (uiutilsspinbox_t *spinbox)
 {
   int val;
 
   val = (int) uiutilsSpinboxGetValue (spinbox->spinbox);
   return val;
+}
+
+int
+uiutilsSpinboxTextGetValue (uiutilsspinbox_t *spinbox)
+{
+  int val;
+  int nval;
+
+  val = (int) uiutilsSpinboxGetValue (spinbox->spinbox);
+  nval = val;
+  if (spinbox->list != NULL) {
+    nval = nlistGetKeyByIdx (spinbox->list, val);
+  }
+  return nval;
 }
 
 void

@@ -132,8 +132,7 @@ uiutilsCreateScrolledWindow (void)
   gtk_scrolled_window_set_min_content_height (GTK_SCROLLED_WINDOW (widget), 400);
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (widget), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
   gtk_widget_set_hexpand (widget, TRUE);
-//  gtk_widget_set_vexpand (widget, FALSE);
-  gtk_widget_set_vexpand (widget, TRUE);
+  gtk_widget_set_vexpand (widget, FALSE);
   twidget = gtk_scrolled_window_get_vscrollbar (GTK_SCROLLED_WINDOW (widget));
   uiutilsSetCss (twidget,
       "scrollbar, scrollbar slider { min-width: 9px; } ");

@@ -601,7 +601,6 @@ main (int argc, char *argv[])
   volumeFree (volume);
 
   tlist = nlistAlloc ("cu-writetags", LIST_UNORDERED, free);
-  /* order these in the same order as defined in bdjopt.h */
   /* CONTEXT: write tags: do not write any tags to the audio file */
   nlistSetStr (tlist, WRITE_TAGS_NONE, _("Don't Write"));
   /* CONTEXT: write tags: only write BDJ tags to the audio file */
@@ -611,7 +610,6 @@ main (int argc, char *argv[])
   confui.uiitem [CONFUI_SPINBOX_WRITE_AUDIO_FILE_TAGS].list = tlist;
 
   tlist = nlistAlloc ("cu-bpm", LIST_UNORDERED, free);
-  /* order these in the same order as defined in bdjopt.h */
   /* CONTEXT: BPM: beats per minute (not bars per minute) */
   nlistSetStr (tlist, BPM_BPM, _("BPM"));
   /* CONTEXT: MPM: measures per minute (aka bars per minute) */
@@ -619,7 +617,6 @@ main (int argc, char *argv[])
   confui.uiitem [CONFUI_SPINBOX_BPM].list = tlist;
 
   tlist = nlistAlloc ("cu-fadetype", LIST_UNORDERED, free);
-  /* order these in the same order as defined in bdjopt.h */
   /* CONTEXT: fade-out type */
   nlistSetStr (tlist, FADETYPE_TRIANGLE, _("Triangle"));
   /* CONTEXT: fade-out type */
@@ -633,7 +630,6 @@ main (int argc, char *argv[])
   confui.uiitem [CONFUI_SPINBOX_FADE_TYPE].list = tlist;
 
   tlist = nlistAlloc ("cu-dance-speed", LIST_UNORDERED, free);
-  /* order these in the same order as defined in dance.h */
   /* CONTEXT: dance speed */
   nlistSetStr (tlist, DANCE_SPEED_SLOW, _("slow"));
   /* CONTEXT: dance speed */
@@ -643,7 +639,6 @@ main (int argc, char *argv[])
   confui.uiitem [CONFUI_SPINBOX_DANCE_SPEED].list = tlist;
 
   tlist = nlistAlloc ("cu-dance-time-sig", LIST_UNORDERED, free);
-  /* order these in the same order as defined in dance.h */
   /* CONTEXT: dance time signature */
   nlistSetStr (tlist, DANCE_TIMESIG_24, _("2/4"));
   /* CONTEXT: dance time signature */
@@ -655,21 +650,26 @@ main (int argc, char *argv[])
   confui.uiitem [CONFUI_SPINBOX_DANCE_TIME_SIG].list = tlist;
 
   tlist = nlistAlloc ("cu-display-settings", LIST_UNORDERED, free);
-  /* CONTEXT: display settings for: music manager */
-  nlistSetStr (tlist, DISP_SEL_MM, _("Music Manager"));
   /* CONTEXT: display settings for: music queue */
   nlistSetStr (tlist, DISP_SEL_MUSICQ, _("Music Queue"));
   /* CONTEXT: display settings for: requests */
   nlistSetStr (tlist, DISP_SEL_REQUEST, _("Request"));
-  /* CONTEXT: display settings for: song editor column 1 */
-  nlistSetStr (tlist, DISP_SEL_SONGEDIT_A, _("Song Editor - Column 1"));
-  /* CONTEXT: display settings for: song editor column 2 */
-  nlistSetStr (tlist, DISP_SEL_SONGEDIT_B, _("Song Editor - Column 2"));
   /* CONTEXT: display settings for: song list */
   nlistSetStr (tlist, DISP_SEL_SONGLIST, _("Song List"));
   /* CONTEXT: display settings for: song selection */
   nlistSetStr (tlist, DISP_SEL_SONGSEL, _("Song Selection"));
+  /* CONTEXT: display settings for: easy song list */
+  nlistSetStr (tlist, DISP_SEL_EZSONGLIST, _("Easy Song List"));
+  /* CONTEXT: display settings for: easy song selection */
+  nlistSetStr (tlist, DISP_SEL_EZSONGSEL, _("Easy Song Selection"));
+  /* CONTEXT: display settings for: music manager */
+  nlistSetStr (tlist, DISP_SEL_MM, _("Music Manager"));
+  /* CONTEXT: display settings for: song editor column 1 */
+  nlistSetStr (tlist, DISP_SEL_SONGEDIT_A, _("Song Editor - Column 1"));
+  /* CONTEXT: display settings for: song editor column 2 */
+  nlistSetStr (tlist, DISP_SEL_SONGEDIT_B, _("Song Editor - Column 2"));
   confui.uiitem [CONFUI_SPINBOX_DISP_SEL].list = tlist;
+  confui.uiitem [CONFUI_SPINBOX_DISP_SEL].listidx = 0;
 
   confuiLoadHTMLList (&confui);
   confuiLoadVolIntfcList (&confui);
@@ -696,7 +696,6 @@ main (int argc, char *argv[])
   confui.uiitem [CONFUI_SPINBOX_MQ_THEME].sblookuplist = tlist;
 
   tlist = nlistAlloc ("cu-mob-mq", LIST_UNORDERED, free);
-  /* order these in the same order as defined in bdjopt.h */
   /* CONTEXT: mobile marquee: off */
   nlistSetStr (tlist, MOBILEMQ_OFF, _("Off"));
   /* CONTEXT: mobile marquee: use local router */
@@ -1735,6 +1734,8 @@ confuiPopulateOptions (configui_t *confui)
 {
   const char  *sval;
   ssize_t     nval;
+  nlistidx_t  tval;
+  nlistidx_t  selidx;
   double      dval;
   confuibasetype_t basetype;
   confuiouttype_t outtype;
@@ -1932,7 +1933,9 @@ confuiPopulateOptions (configui_t *confui)
     }
   } /* for each item */
 
-  confuiDispSaveTable (confui, confui->uiitem [CONFUI_SPINBOX_DISP_SEL].listidx);
+  selidx = nlistGetNum (confui->uiitem [CONFUI_SPINBOX_DISP_SEL].list,
+      confui->uiitem [CONFUI_SPINBOX_DISP_SEL].listidx);
+  confuiDispSaveTable (confui, selidx);
 
   bdjoptSetNum (OPT_G_DEBUGLVL, debug);
   logProcEnd (LOG_PROC, "confuiPopulateOptions", "");
@@ -4531,15 +4534,16 @@ static void
 confuiDispSettingChg (GtkSpinButton *sb, gpointer udata)
 {
   configui_t  *confui = udata;
-  int         nval;
-  int         oval;
+  int         nidx;
+  int         oselidx;
 
 
-  oval = confui->uiitem [CONFUI_SPINBOX_DISP_SEL].listidx;
-  nval = uiutilsSpinboxTextGetValue (&confui->uiitem [CONFUI_SPINBOX_DISP_SEL].u.spinbox);
-  confui->uiitem [CONFUI_SPINBOX_DISP_SEL].listidx = nval;
+  oselidx = nlistGetNum (confui->uiitem [CONFUI_SPINBOX_DISP_SEL].list,
+      confui->uiitem [CONFUI_SPINBOX_DISP_SEL].listidx);
+  nidx = uiutilsSpinboxTextGetIdx (&confui->uiitem [CONFUI_SPINBOX_DISP_SEL].u.spinbox);
+  confui->uiitem [CONFUI_SPINBOX_DISP_SEL].listidx = nidx;
 
-  confuiDispSaveTable (confui, oval);
+  confuiDispSaveTable (confui, oselidx);
   confuiCreateTagTableDisp (confui);
   confuiCreateTagListingDisp (confui);
 }
@@ -4586,11 +4590,12 @@ confuiCreateTagTableDisp (configui_t *confui)
   char          *keystr;
   slistidx_t    seliteridx;
   dispselsel_t  selidx;
+  int           tidx;
   slist_t       *sellist;
   dispsel_t     *dispsel;
 
 
-  selidx = confui->uiitem [CONFUI_SPINBOX_DISP_SEL].listidx;
+  selidx = uiutilsSpinboxTextGetValue (&confui->uiitem [CONFUI_SPINBOX_DISP_SEL].u.spinbox);
   dispsel = confui->dispsel;
   sellist = dispselGetList (dispsel, selidx);
 
@@ -4638,7 +4643,7 @@ confuiCreateTagListingDisp (configui_t *confui)
   int           count;
 
 
-  selidx = confui->uiitem [CONFUI_SPINBOX_DISP_SEL].listidx;
+  selidx = uiutilsSpinboxTextGetValue (&confui->uiitem [CONFUI_SPINBOX_DISP_SEL].u.spinbox);
 
   tree = confui->tables [CONFUI_ID_DISP_SEL_LIST].tree;
 

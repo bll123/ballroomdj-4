@@ -27,6 +27,7 @@ void      *nlistGetData (nlist_t *, nlistidx_t idx);
 char      *nlistGetStr (nlist_t *, nlistidx_t idx);
 void      *nlistGetDataByIdx (nlist_t *, nlistidx_t idx);
 ssize_t   nlistGetNumByIdx (nlist_t *list, nlistidx_t idx);
+nlistidx_t  nlistGetKeyByIdx (nlist_t *list, nlistidx_t idx);
 ssize_t   nlistGetNum (nlist_t *, nlistidx_t idx);
 double    nlistGetDouble (nlist_t *, nlistidx_t idx);
 nlist_t   *nlistGetList (nlist_t *, nlistidx_t idx);

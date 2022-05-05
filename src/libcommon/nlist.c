@@ -189,6 +189,19 @@ nlistGetNumByIdx (nlist_t *list, nlistidx_t lidx)
   return listGetNumByIdx (list, lidx);
 }
 
+inline nlistidx_t
+nlistGetKeyByIdx (nlist_t *list, nlistidx_t lidx)
+{
+  if (list == NULL) {
+    return LIST_LOC_INVALID;
+  }
+  if (lidx < 0 || lidx >= list->count) {
+    return LIST_LOC_INVALID;
+  }
+
+  return list->data [lidx].key.idx;
+}
+
 ssize_t
 nlistGetNum (nlist_t *list, nlistidx_t lidx)
 {

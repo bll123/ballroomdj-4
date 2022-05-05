@@ -21,6 +21,8 @@ typedef struct dispsel {
 } dispsel_t;
 
 static char *dispselmap [DISP_SEL_MAX] = {
+  [DISP_SEL_EZSONGLIST] = "ds-ezsonglist",
+  [DISP_SEL_EZSONGSEL] = "ds-ezsongsel",
   [DISP_SEL_MM] = "ds-mm",
   [DISP_SEL_MUSICQ] = "ds-musicq",
   [DISP_SEL_REQUEST] = "ds-request",

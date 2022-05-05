@@ -18,9 +18,10 @@ enum {
 };
 
 enum {
-  UIMUSICQ_FLAGS_NONE             = 0x00,
-  UIMUSICQ_FLAGS_NO_QUEUE         = 0x01,
-  UIMUSICQ_FLAGS_NO_TOGGLE_PAUSE  = 0x02,
+  UIMUSICQ_FLAGS_NONE             = 0x0000,
+  UIMUSICQ_FLAGS_NO_QUEUE         = 0x0001,
+  UIMUSICQ_FLAGS_NO_TOGGLE_PAUSE  = 0x0002,
+  UIMUSICQ_FLAGS_NO_REMOVE        = 0x0004,
 };
 
 #define UIMUSICQ_REPEAT_TIME 250
@@ -95,6 +96,7 @@ void      uimusicqSetSelection (uimusicq_t *uimusicq, char *pathstr);
 ssize_t   uimusicqGetSelection (uimusicq_t *uimusicq);
 void      uimusicqMusicQueueSetSelected (uimusicq_t *uimusicq, int ci, int which);
 void      uimusicqProcessMusicQueueData (uimusicq_t *uimusicq, char * args);
+void      uimusicqRemoveProcessSignal (GtkButton *b, gpointer udata);
 
 #endif /* INC_UIMUSICQ_H */
 

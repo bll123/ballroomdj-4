@@ -127,6 +127,14 @@ typedef struct manage {
   uimusicq_t      *slmusicq;
   uisongsel_t     *slsongsel;
   uisongedit_t    *slsongedit;
+  uimusicq_t      *slezmusicq;
+  uisongsel_t     *slezsongsel;
+  GtkWidget       *slezmusicqtabwidget;
+  GtkWidget       *slezmusicqwidget;
+  GtkWidget       *slezsongselwidget;
+  GtkWidget       *slmusicqtabwidget;
+  GtkWidget       *slsongseltabwidget;
+  GtkWidget       *ezvboxwidget;
   /* music manager ui */
   uiplayer_t      *mmplayer;
   uimusicq_t      *mmmusicq;
@@ -139,6 +147,7 @@ typedef struct manage {
 
 /* re-use the plui enums so that the songsel filter enums can also be used */
 static datafilekey_t manageuidfkeys [] = {
+  { "EASY_SONGLIST",    MANAGE_EASY_SONGLIST,       VALUE_NUM, convBoolean, -1 },
   { "FILTER_POS_X",     SONGSEL_FILTER_POSITION_X,  VALUE_NUM, NULL, -1 },
   { "FILTER_POS_Y",     SONGSEL_FILTER_POSITION_Y,  VALUE_NUM, NULL, -1 },
   { "MNG_SELFILE_POS_X",MANAGE_SELFILE_POSITION_X,  VALUE_NUM, NULL, -1 },
@@ -171,10 +180,14 @@ static void     manageDbStatusMsg (manageui_t *manage, char *args);
 static void     manageSongEditMenu (manageui_t *manage);
 /* song list */
 static void     manageSonglistMenu (manageui_t *manage);
-static void     manageSongListLoad (GtkMenuItem *mi, gpointer udata);
-static void     manageSongListCopy (GtkMenuItem *mi, gpointer udata);
-static void     manageSongListTruncate (GtkMenuItem *mi, gpointer udata);
-static void     manageSongListLoadFile (manageui_t *manage, const char *fn);
+static void     manageSonglistLoad (GtkMenuItem *mi, gpointer udata);
+static void     manageSonglistCopy (GtkMenuItem *mi, gpointer udata);
+static void     manageSonglistTruncate (GtkMenuItem *mi, gpointer udata);
+static void     manageSonglistLoadFile (manageui_t *manage, const char *fn);
+static void     manageToggleEasySonglist (GtkWidget *mi, gpointer udata);
+static void     manageSetEasySonglist (manageui_t *manage);
+static void     manageEasySongListContResize (GtkWidget* w,
+    GtkAllocation* allocation, gpointer udata);
 /* general */
 static void     manageSwitchPage (GtkNotebook *nb, GtkWidget *page,
     guint pagenum, gpointer udata);
@@ -212,6 +225,8 @@ main (int argc, char *argv[])
   manage.slmusicq = NULL;
   manage.slsongsel = NULL;
   manage.slsongedit = NULL;
+  manage.slezmusicq = NULL;
+  manage.slezsongsel = NULL;
   manage.mmplayer = NULL;
   manage.mmmusicq = NULL;
   manage.mmsongsel = NULL;
@@ -282,22 +297,34 @@ main (int argc, char *argv[])
     nlistSetStr (manage.options, SONGSEL_SORT_BY, "TITLE");
     nlistSetNum (manage.options, MANAGE_SELFILE_POSITION_X, -1);
     nlistSetNum (manage.options, MANAGE_SELFILE_POSITION_Y, -1);
+    nlistSetNum (manage.options, MANAGE_EASY_SONGLIST, true);
   }
 
   manage.slplayer = uiplayerInit (manage.progstate, manage.conn,
       manage.musicdb);
   manage.slmusicq = uimusicqInit (manage.conn,
       manage.musicdb, manage.dispsel,
-      UIMUSICQ_FLAGS_NO_QUEUE | UIMUSICQ_FLAGS_NO_TOGGLE_PAUSE,
+      UIMUSICQ_FLAGS_NO_QUEUE | UIMUSICQ_FLAGS_NO_TOGGLE_PAUSE |
+          UIMUSICQ_FLAGS_NO_REMOVE,
       DISP_SEL_SONGLIST);
   manage.slsongsel = uisongselInit (manage.conn,
       manage.musicdb, manage.dispsel, manage.options,
       SONG_FILTER_FOR_SELECTION, DISP_SEL_SONGSEL);
   manage.slsongedit = uisongeditInit (manage.conn,
       manage.musicdb, manage.dispsel, manage.options);
+  manage.slezmusicq = uimusicqInit (manage.conn,
+      manage.musicdb, manage.dispsel,
+      UIMUSICQ_FLAGS_NO_QUEUE | UIMUSICQ_FLAGS_NO_TOGGLE_PAUSE |
+          UIMUSICQ_FLAGS_NO_REMOVE,
+      DISP_SEL_EZSONGLIST);
+  manage.slezsongsel = uisongselInit (manage.conn,
+      manage.musicdb, manage.dispsel, manage.options,
+      SONG_FILTER_FOR_SELECTION, DISP_SEL_EZSONGSEL);
 
   uimusicqSetPlayIdx (manage.slmusicq, manage.musicqPlayIdx);
+  uimusicqSetPlayIdx (manage.slezmusicq, manage.musicqPlayIdx);
   uimusicqSetManageIdx (manage.slmusicq, manage.musicqManageIdx);
+  uimusicqSetManageIdx (manage.slezmusicq, manage.musicqManageIdx);
 
   manage.mmplayer = uiplayerInit (manage.progstate, manage.conn,
       manage.musicdb);
@@ -421,6 +448,8 @@ manageClosingCallback (void *udata, programstate_t programState)
   uiplayerFree (manage->slplayer);
   uimusicqFree (manage->slmusicq);
   uisongselFree (manage->slsongsel);
+  uimusicqFree (manage->slezmusicq);
+  uisongselFree (manage->slezsongsel);
   uisongeditFree (manage->slsongedit);
   uiplayerFree (manage->mmplayer);
   uimusicqFree (manage->mmmusicq);
@@ -503,12 +532,50 @@ manageBuildUI (manageui_t *manage)
   uiutilsBoxPackStart (vbox, notebook);
   manage->slnotebook = notebook;
 
+  /* song list editor: easy song list tab */
+  hbox = uiutilsCreateHorizBox ();
+  /* CONTEXT: name of easy song list/song selection tab */
+  tabLabel = uiutilsCreateLabel (_("Song List"));
+  uiutilsNotebookAppendPage (notebook, hbox, tabLabel);
+  uiutilsNotebookIDAdd (manage->slnbtabid, MANAGE_TAB_SONGLIST);
+  manage->slezmusicqtabwidget = hbox;
+
+  widget = uimusicqBuildUI (manage->slezmusicq, manage->window, MUSICQ_A);
+  uiutilsBoxPackStart (hbox, widget);
+  manage->slezmusicqwidget = widget;
+
+  vbox = uiutilsCreateVertBox ();
+  uiutilsWidgetSetAllMargins (vbox, uiutilsBaseMarginSz * 4);
+  uiutilsWidgetSetMarginTop (vbox, uiutilsBaseMarginSz * 64);
+  uiutilsBoxPackStart (hbox, vbox);
+  manage->ezvboxwidget = vbox;
+
+  /* CONTEXT: config: display settings: button: add the selected song to the song list */
+  widget = uiutilsCreateButton (NULL, _("Select"), "button_left",
+      uisongselQueueProcessSignal, manage->slezsongsel);
+  uiutilsBoxPackStart (vbox, widget);
+// ### need to set this widget value within uisongselgtk.c so that
+// ### ussqps can do a comparison and put the song in the proper music queue.
+
+  /* CONTEXT: button: remove the song from the queue */
+  widget = uiutilsCreateButton (NULL, _("Remove from queue"), "button_remove",
+      uimusicqRemoveProcessSignal, manage->slezmusicq);
+  uiutilsBoxPackStart (vbox, widget);
+
+  widget = uisongselBuildUI (manage->slezsongsel, manage->window);
+  uiutilsBoxPackStart (hbox, widget);
+  manage->slezsongselwidget = widget;
+
+  g_signal_connect (hbox, "size-allocate",
+      G_CALLBACK (manageEasySongListContResize), manage);
+
   /* song list editor: music queue tab */
   widget = uimusicqBuildUI (manage->slmusicq, manage->window, MUSICQ_A);
-  /* CONTEXT: name of song list editor tab */
+  /* CONTEXT: name of easy song list tab */
   tabLabel = uiutilsCreateLabel (_("Song List"));
   uiutilsNotebookAppendPage (notebook, widget, tabLabel);
   uiutilsNotebookIDAdd (manage->slnbtabid, MANAGE_TAB_SONGLIST);
+  manage->slmusicqtabwidget = widget;
 
   /* song list editor: song selection tab*/
   widget = uisongselBuildUI (manage->slsongsel, manage->window);
@@ -516,6 +583,7 @@ manageBuildUI (manageui_t *manage)
   tabLabel = uiutilsCreateLabel (_("Song Selection"));
   uiutilsNotebookAppendPage (notebook, widget, tabLabel);
   uiutilsNotebookIDAdd (manage->slnbtabid, MANAGE_TAB_OTHER);
+  manage->slsongseltabwidget = widget;
 
   /* song list editor song editor tab */
   widget = uisongeditBuildUI (manage->slsongedit, manage->window);
@@ -667,10 +735,12 @@ manageMainLoop (void *tmanage)
   connProcessUnconnected (manage->conn);
 
   uiplayerMainLoop (manage->slplayer);
-  uiplayerMainLoop (manage->mmplayer);
   uimusicqMainLoop (manage->slmusicq);
-  uimusicqMainLoop (manage->mmmusicq);
   uisongselMainLoop (manage->slsongsel);
+  uimusicqMainLoop (manage->slezmusicq);
+  uisongselMainLoop (manage->slezsongsel);
+  uiplayerMainLoop (manage->mmplayer);
+  uimusicqMainLoop (manage->mmmusicq);
   uisongselMainLoop (manage->mmsongsel);
 
   if (gKillReceived) {
@@ -732,8 +802,10 @@ manageHandshakeCallback (void *udata, programstate_t programState)
       connHaveHandshake (manage->conn, ROUTE_PLAYER)) {
     connSendMessage (manage->conn, ROUTE_MAIN, MSG_QUEUE_PLAY_ON_ADD, "1");
     connSendMessage (manage->conn, ROUTE_MAIN, MSG_MUSICQ_SET_PLAYBACK, "1");
+    connSendMessage (manage->conn, ROUTE_MAIN, MSG_QUEUE_SWITCH_EMPTY, "0");
     progstateLogTime (manage->progstate, "time-to-start-gui");
     manageDbChg (NULL, manage);
+    manageSetEasySonglist (manage);
     rc = true;
   }
 
@@ -816,10 +888,12 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
   /* due to the db update message, these must be applied afterwards */
   targs = strdup (args);
   uiplayerProcessMsg (routefrom, route, msg, args, manage->slplayer);
-  uiplayerProcessMsg (routefrom, route, msg, targs, manage->mmplayer);
+  uisongselProcessMsg (routefrom, route, msg, args, manage->slezsongsel);
+  uimusicqProcessMsg (routefrom, route, msg, args, manage->slezmusicq);
   uisongselProcessMsg (routefrom, route, msg, args, manage->slsongsel);
-  uisongselProcessMsg (routefrom, route, msg, targs, manage->mmsongsel);
   uimusicqProcessMsg (routefrom, route, msg, args, manage->slmusicq);
+  uiplayerProcessMsg (routefrom, route, msg, targs, manage->mmplayer);
+  uisongselProcessMsg (routefrom, route, msg, targs, manage->mmsongsel);
   uimusicqProcessMsg (routefrom, route, msg, targs, manage->mmmusicq);
   free (targs);
 
@@ -987,6 +1061,17 @@ manageSonglistMenu (manageui_t *manage)
 
   if (! manage->slmenu.initialized) {
     menuitem = uiutilsMenuAddMainItem (manage->menubar,
+        /* CONTEXT: menu selection: song list: options menu */
+        &manage->slmenu, _("Options"));
+
+    menu = uiutilsCreateSubMenu (menuitem);
+
+    /* CONTEXT: menu checkbox: easy song list editor */
+    menuitem = uiutilsMenuCreateCheckbox (menu, _("Easy Song List Editor"),
+        nlistGetNum (manage->options, MANAGE_EASY_SONGLIST),
+        manageToggleEasySonglist, manage);
+
+    menuitem = uiutilsMenuAddMainItem (manage->menubar,
         /* CONTEXT: menu selection: song list: edit menu */
         &manage->slmenu, _("Edit"));
 
@@ -994,11 +1079,11 @@ manageSonglistMenu (manageui_t *manage)
 
     /* CONTEXT: menu selection: song list: edit menu: load */
     menuitem = uiutilsMenuCreateItem (menu, _("Load"),
-        manageSongListLoad, manage);
+        manageSonglistLoad, manage);
 
     /* CONTEXT: menu selection: song list: edit menu: create copy */
     menuitem = uiutilsMenuCreateItem (menu, _("Create Copy"),
-        manageSongListCopy, manage);
+        manageSonglistCopy, manage);
 
     /* CONTEXT: menu selection: song list: edit menu: start new song list */
     menuitem = uiutilsMenuCreateItem (menu, _("Start New Song List"), NULL, NULL);
@@ -1016,7 +1101,7 @@ manageSonglistMenu (manageui_t *manage)
 
     /* CONTEXT: menu selection: song list: actions menu: truncate the song list */
     menuitem = uiutilsMenuCreateItem (menu, _("Truncate"),
-        manageSongListTruncate, manage);
+        manageSonglistTruncate, manage);
 
     menuitem = uiutilsMenuAddMainItem (manage->menubar,
         /* CONTEXT: menu selection: export actions for song list */
@@ -1060,7 +1145,7 @@ manageSonglistMenu (manageui_t *manage)
 }
 
 static void
-manageSongListLoad (GtkMenuItem *mi, gpointer udata)
+manageSonglistLoad (GtkMenuItem *mi, gpointer udata)
 {
   manageui_t  *manage = udata;
 
@@ -1068,7 +1153,7 @@ manageSongListLoad (GtkMenuItem *mi, gpointer udata)
 }
 
 static void
-manageSongListCopy (GtkMenuItem *mi, gpointer udata)
+manageSonglistCopy (GtkMenuItem *mi, gpointer udata)
 {
   manageui_t  *manage = udata;
   const char  *oname;
@@ -1081,7 +1166,7 @@ manageSongListCopy (GtkMenuItem *mi, gpointer udata)
 }
 
 static void
-manageSongListTruncate (GtkMenuItem *mi, gpointer udata)
+manageSonglistTruncate (GtkMenuItem *mi, gpointer udata)
 {
   manageui_t  *manage = udata;
 
@@ -1089,7 +1174,7 @@ manageSongListTruncate (GtkMenuItem *mi, gpointer udata)
 }
 
 static void
-manageSongListLoadFile (manageui_t *manage, const char *fn)
+manageSonglistLoadFile (manageui_t *manage, const char *fn)
 {
   char  tbuff [200];
 
@@ -1106,6 +1191,61 @@ manageSongListLoadFile (manageui_t *manage, const char *fn)
   /* setting the selection will not work, as the tree view has not been */
   /* instantiated */
   // ### could do this on a timer.
+}
+
+static void
+manageToggleEasySonglist (GtkWidget *mi, gpointer udata)
+{
+  manageui_t  *manage = udata;
+  int         val;
+
+  val = nlistGetNum (manage->options, MANAGE_EASY_SONGLIST);
+  val = ! val;
+  nlistSetNum (manage->options, MANAGE_EASY_SONGLIST, val);
+  manageSetEasySonglist (manage);
+}
+
+static void
+manageSetEasySonglist (manageui_t *manage)
+{
+  int     val;
+
+  val = nlistGetNum (manage->options, MANAGE_EASY_SONGLIST);
+  if (val) {
+    uiutilsWidgetHide (manage->slmusicqtabwidget);
+    uiutilsWidgetHide (manage->slsongseltabwidget);
+    uiutilsWidgetShowAll (manage->slezmusicqtabwidget);
+  } else {
+    uiutilsWidgetShowAll (manage->slmusicqtabwidget);
+    uiutilsWidgetShowAll (manage->slsongseltabwidget);
+    uiutilsWidgetHide (manage->slezmusicqtabwidget);
+  }
+}
+
+
+static void
+manageEasySongListContResize (GtkWidget* w, GtkAllocation* allocation,
+    gpointer udata)
+{
+  manageui_t *manage = udata;
+  int        width;
+  int        nwidth;
+
+  logProcBegin (LOG_PROC, "manageEasySongListContResize");
+
+  if (allocation->width < 200) {
+    logProcEnd (LOG_PROC, "manageEasySongListContResize", "small-alloc-height");
+    return;
+  }
+
+  width = gtk_widget_get_allocated_width (manage->ezvboxwidget);
+  if (width < 0) { width = 36; }
+  nwidth = (allocation->width - width -
+      ((uiutilsBaseMarginSz * 2) * 4) - 4) / 2;
+  gtk_widget_set_size_request (manage->slezmusicqwidget, nwidth, -1);
+  gtk_widget_set_size_request (manage->slezsongselwidget, nwidth, -1);
+
+  logProcEnd (LOG_PROC, "manageEasySongListContResize", "");
 }
 
 /* general */
@@ -1231,7 +1371,7 @@ manageSelectFileDialog (manageui_t *manage, int flags)
     if ((flags & MANAGE_F_SONGLIST) == MANAGE_F_SONGLIST) {
       pathbldMakePath (tbuff, sizeof (tbuff),
           fn, ".songlist", PATHBLD_MP_DATA);
-      cb = manageSongListLoadFile;
+      cb = manageSonglistLoadFile;
     }
     if ((flags & MANAGE_F_PLAYLIST) == MANAGE_F_PLAYLIST) {
       pathbldMakePath (tbuff, sizeof (tbuff),

@@ -175,6 +175,7 @@ void uiutilsSpinboxTextFree (uiutilsspinbox_t *spinbox);
 GtkWidget * uiutilsSpinboxTextCreate (uiutilsspinbox_t *spinbox, void *udata);
 void uiutilsSpinboxTextSet (uiutilsspinbox_t *spinbox, int min, int count,
     int maxWidth, slist_t *list, uiutilsspinboxdisp_t textGetProc);
+int   uiutilsSpinboxTextGetIdx (uiutilsspinbox_t *spinbox);
 int   uiutilsSpinboxTextGetValue (uiutilsspinbox_t *spinbox);
 void  uiutilsSpinboxTextSetValue (uiutilsspinbox_t *spinbox, int ivalue);
 

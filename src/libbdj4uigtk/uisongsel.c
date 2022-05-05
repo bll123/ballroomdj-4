@@ -202,7 +202,8 @@ uisongselQueueProcess (uisongsel_t *uisongsel, dbidx_t dbidx, musicqidx_t mqidx)
   ssize_t insloc;
   char    tbuff [MAXPATHLEN];
 
-  if (uisongsel->dispselType == DISP_SEL_SONGSEL) {
+  if (uisongsel->dispselType == DISP_SEL_SONGSEL ||
+      uisongsel->dispselType == DISP_SEL_EZSONGSEL) {
     insloc = 99;
   } else {
     insloc = bdjoptGetNum (OPT_P_INSERT_LOCATION);

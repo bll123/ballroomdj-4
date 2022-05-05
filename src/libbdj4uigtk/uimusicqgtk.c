@@ -35,7 +35,6 @@ static void   uimusicqMoveTopProcessSignal (GtkButton *b, gpointer udata);
 static void   uimusicqMoveUpProcessSignal (GtkButton *b, gpointer udata);
 static void   uimusicqMoveDownProcessSignal (GtkButton *b, gpointer udata);
 static void   uimusicqTogglePauseProcessSignal (GtkButton *b, gpointer udata);
-static void   uimusicqRemoveProcessSignal (GtkButton *b, gpointer udata);
 static void   uimusicqStopRepeatSignal (GtkButton *b, gpointer udata);
 static void   uimusicqClearQueueProcessSignal (GtkButton *b, gpointer udata);
 static void   uimusicqQueueDanceProcessSignal (GtkTreeView *tv, GtkTreePath *path, GtkTreeViewColumn *column, gpointer udata);
@@ -118,18 +117,21 @@ uimusicqBuildUI (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
     uiutilsBoxPackStart (hbox, widget);
   }
 
-  /* CONTEXT: button: remove the song from the queue */
-  widget = uiutilsCreateButton (NULL, _("Remove from queue"), "button_audioremove",
-      uimusicqRemoveProcessSignal, uimusicq);
-  uiutilsBoxPackStart (hbox, widget);
+  if ((uimusicq->uimusicqflags & UIMUSICQ_FLAGS_NO_REMOVE) !=
+      UIMUSICQ_FLAGS_NO_REMOVE) {
+    /* CONTEXT: button: remove the song from the queue */
+    widget = uiutilsCreateButton (NULL, _("Remove from queue"), "button_audioremove",
+        uimusicqRemoveProcessSignal, uimusicq);
+    uiutilsBoxPackStart (hbox, widget);
+  }
 
-  // ### TODO create code to handle this.
   if ((uimusicq->uimusicqflags & UIMUSICQ_FLAGS_NO_QUEUE) != UIMUSICQ_FLAGS_NO_QUEUE) {
     /* CONTEXT: button: request playback of a song external to BDJ4 (not in the database) */
     widget = uiutilsCreateButton (NULL, _("Request External"), NULL,
         NULL, uimusicq);
     uiutilsWidgetDisable (widget);
     uiutilsBoxPackEnd (hbox, widget);
+  // ### TODO create code to handle the request external button
 
     widget = uiutilsDropDownCreate (parentwin,
         /* CONTEXT: button: queue a playlist for playback */
@@ -146,7 +148,8 @@ uimusicqBuildUI (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
     uiutilsBoxPackEnd (hbox, widget);
   }
 
-  if (uimusicq->dispselType == DISP_SEL_SONGLIST) {
+  if (uimusicq->dispselType == DISP_SEL_SONGLIST ||
+      uimusicq->dispselType == DISP_SEL_EZSONGLIST) {
     widget = uiutilsEntryCreate (&uimusicq->ui [ci].slname);
     snprintf (tbuff, sizeof (tbuff),
         "entry { color: %s; }",
@@ -356,6 +359,14 @@ uimusicqProcessMusicQueueData (uimusicq_t *uimusicq, char * args)
   logProcEnd (LOG_PROC, "uimusicqProcessMusicQueueData", "");
 }
 
+void
+uimusicqRemoveProcessSignal (GtkButton *b, gpointer udata)
+{
+  uimusicq_t    *uimusicq = udata;
+
+  uimusicqRemoveProcess (uimusicq);
+}
+
 /* internal routines */
 
 static void
@@ -390,14 +401,6 @@ uimusicqTogglePauseProcessSignal (GtkButton *b, gpointer udata)
   uimusicq_t    *uimusicq = udata;
 
   uimusicqTogglePauseProcess (uimusicq);
-}
-
-static void
-uimusicqRemoveProcessSignal (GtkButton *b, gpointer udata)
-{
-  uimusicq_t    *uimusicq = udata;
-
-  uimusicqRemoveProcess (uimusicq);
 }
 
 static void
@@ -523,7 +526,6 @@ static void
 uimusicqProcessMusicQueueDataUpdate (uimusicq_t *uimusicq, char * args)
 {
   int               ci;
-  unsigned long     tlong;
   GtkTreeModel      *model;
   GtkTreeIter       iter;
   GtkTreeRowReference *rowref;

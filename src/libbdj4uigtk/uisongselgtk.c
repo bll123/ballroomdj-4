@@ -70,7 +70,6 @@ typedef struct {
 static void uisongselInitializeStore (uisongsel_t *uisongsel);
 static void uisongselCreateRows (uisongsel_t *uisongsel);
 
-static void uisongselQueueProcessSignal (UIWidget *uiwidget, void *udata);
 static void uisongselFilterDialog (UIWidget *uiwidget, void *udata);
 static void uisongselFilterDanceSignal (GtkTreeView *tv, GtkTreePath *path,
     GtkTreeViewColumn *column, gpointer udata);
@@ -151,7 +150,8 @@ uisongselBuildUI (uisongsel_t *uisongsel, GtkWidget *parentwin)
   uiutilsWidgetExpandHoriz (hbox);
   uiutilsBoxPackStart (uiw->vbox, hbox);
 
-  if (uisongsel->dispselType == DISP_SEL_SONGSEL) {
+  if (uisongsel->dispselType == DISP_SEL_SONGSEL ||
+      uisongsel->dispselType == DISP_SEL_EZSONGSEL) {
     /* CONTEXT: select a song to be added to the song list */
     strlcpy (tbuff, _("Select"), sizeof (tbuff));
     widget = uiutilsCreateButton (&uiw->buttons [SONGSEL_BUTTON_SELECT],
@@ -161,6 +161,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, GtkWidget *parentwin)
   }
 
   if (uisongsel->dispselType == DISP_SEL_SONGSEL ||
+      uisongsel->dispselType == DISP_SEL_EZSONGSEL ||
       uisongsel->dispselType == DISP_SEL_REQUEST ||
       uisongsel->dispselType == DISP_SEL_MM) {
     if (uisongsel->dispselType == DISP_SEL_REQUEST) {
@@ -168,6 +169,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, GtkWidget *parentwin)
       strlcpy (tbuff, _("Queue"), sizeof (tbuff));
     }
     if (uisongsel->dispselType == DISP_SEL_SONGSEL ||
+        uisongsel->dispselType == DISP_SEL_EZSONGSEL ||
         uisongsel->dispselType == DISP_SEL_MM) {
       /* CONTEXT: play the selected song */
       strlcpy (tbuff, _("Play"), sizeof (tbuff));
@@ -180,6 +182,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, GtkWidget *parentwin)
     /* if the queue button matches, the current song will be cleared */
     /* and the song will be queued to musicq B (the hidden queue) */
     if (uisongsel->dispselType == DISP_SEL_SONGSEL ||
+        uisongsel->dispselType == DISP_SEL_EZSONGSEL ||
         uisongsel->dispselType == DISP_SEL_MM) {
       uiw->queueButton = widget;
     }
@@ -367,6 +370,42 @@ uisongselSetFavoriteForeground (uisongsel_t *uisongsel, char *color)
   }
 }
 
+void
+uisongselQueueProcessSignal (UIWidget *uiwidget, void *udata)
+{
+  uisongsel_t       * uisongsel = udata;
+  uisongselgtk_t    * uiw;
+  GtkTreeSelection  * sel;
+  GtkTreeModel      * model = NULL;
+  GtkTreeIter       iter;
+  int               count;
+  gulong            dbidx;
+  musicqidx_t       mqidx = MUSICQ_CURRENT;
+
+  logProcBegin (LOG_PROC, "uisongselQueueProcessSignal");
+
+  uiw = uisongsel->uiWidgetData;
+  sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (uiw->songselTree));
+  count = gtk_tree_selection_count_selected_rows (sel);
+
+  gtk_tree_selection_get_selected (sel, &model, &iter);
+  gtk_tree_model_get (model, &iter, SONGSEL_COL_DBIDX, &dbidx, -1);
+
+  if (uiwidget->widget == uiw->queueButton) {
+    /* clear any playing song */
+    connSendMessage (uisongsel->conn, ROUTE_PLAYER, MSG_PLAY_NEXTSONG, NULL);
+    /* and queue to the hidden music queue */
+    mqidx = MUSICQ_B;
+  }
+  if (uiwidget->widget == uiw->selectButton) {
+    mqidx = MUSICQ_A;
+  }
+  uisongselQueueProcess (uisongsel, dbidx, mqidx);
+
+  logProcEnd (LOG_PROC, "uisongselQueueProcessSignal", "");
+  return;
+}
+
 /* internal routines */
 
 static void
@@ -424,45 +463,6 @@ uisongselCreateRows (uisongsel_t *uisongsel)
   uisongsel->dfilterCount = (double) songfilterProcess (
       uisongsel->songfilter, uisongsel->musicdb);
   logProcEnd (LOG_PROC, "uisongselCreateRows", "");
-}
-
-static void
-uisongselQueueProcessSignal (UIWidget *uiwidget, void *udata)
-{
-  uisongsel_t       * uisongsel = udata;
-  uisongselgtk_t    * uiw;
-  GtkTreeSelection  * sel;
-  GtkTreeModel      * model = NULL;
-  GtkTreeIter       iter;
-  int               count;
-  gulong            dbidx;
-  musicqidx_t       mqidx = MUSICQ_CURRENT;
-
-  logProcBegin (LOG_PROC, "uisongselQueueProcessSignal");
-
-  uiw = uisongsel->uiWidgetData;
-  sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (uiw->songselTree));
-  count = gtk_tree_selection_count_selected_rows (sel);
-  if (count != 1) {
-    logProcEnd (LOG_PROC, "uisongselQueueProcess", "count != 1");
-    return;
-  }
-  gtk_tree_selection_get_selected (sel, &model, &iter);
-  gtk_tree_model_get (model, &iter, SONGSEL_COL_DBIDX, &dbidx, -1);
-
-  if (uiwidget->widget == uiw->queueButton) {
-    /* clear any playing song */
-    connSendMessage (uisongsel->conn, ROUTE_PLAYER, MSG_PLAY_NEXTSONG, NULL);
-    /* and queue to the hidden music queue */
-    mqidx = MUSICQ_B;
-  }
-  if (uiwidget->widget == uiw->selectButton) {
-    mqidx = MUSICQ_A;
-  }
-  uisongselQueueProcess (uisongsel, dbidx, mqidx);
-
-  logProcEnd (LOG_PROC, "uisongselQueueProcessSignal", "");
-  return;
 }
 
 static void
