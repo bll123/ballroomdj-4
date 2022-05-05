@@ -171,6 +171,8 @@ static void     manageSongEditMenu (manageui_t *manage);
 /* song list */
 static void     manageSonglistMenu (manageui_t *manage);
 static void     manageSongListLoad (GtkMenuItem *mi, gpointer udata);
+static void     manageSongListCopy (GtkMenuItem *mi, gpointer udata);
+static void     manageSongListTruncate (GtkMenuItem *mi, gpointer udata);
 static void     manageSongListLoadFile (manageui_t *manage, const char *fn);
 /* general */
 static void     manageSwitchPage (GtkNotebook *nb, GtkWidget *page,
@@ -992,8 +994,8 @@ manageSonglistMenu (manageui_t *manage)
         manageSongListLoad, manage);
 
     /* CONTEXT: menu selection: song list: edit menu: create copy */
-    menuitem = uiutilsMenuCreateItem (menu, _("Create Copy"), NULL, NULL);
-    uiutilsWidgetDisable (menuitem);
+    menuitem = uiutilsMenuCreateItem (menu, _("Create Copy"),
+        manageSongListCopy, manage);
 
     /* CONTEXT: menu selection: song list: edit menu: start new song list */
     menuitem = uiutilsMenuCreateItem (menu, _("Start New Song List"), NULL, NULL);
@@ -1010,8 +1012,8 @@ manageSonglistMenu (manageui_t *manage)
     uiutilsWidgetDisable (menuitem);
 
     /* CONTEXT: menu selection: song list: actions menu: truncate the song list */
-    menuitem = uiutilsMenuCreateItem (menu, _("Truncate"), NULL, NULL);
-    uiutilsWidgetDisable (menuitem);
+    menuitem = uiutilsMenuCreateItem (menu, _("Truncate"),
+        manageSongListTruncate, manage);
 
     menuitem = uiutilsMenuAddMainItem (manage->menubar,
         /* CONTEXT: menu selection: export actions for song list */
@@ -1060,6 +1062,27 @@ manageSongListLoad (GtkMenuItem *mi, gpointer udata)
   manageui_t  *manage = udata;
 
   manageSelectFileDialog (manage, MANAGE_F_SONGLIST);
+}
+
+static void
+manageSongListCopy (GtkMenuItem *mi, gpointer udata)
+{
+  manageui_t  *manage = udata;
+  const char  *oname;
+  char        tbuff [200];
+
+  // ### if there's something in the song list, save it first.
+  oname = uimusicqGetSonglistName (manage->slmusicq);
+  snprintf (tbuff, sizeof (tbuff), _("Copy of %s"), oname);
+  uimusicqSetSonglistName (manage->slmusicq, tbuff);
+}
+
+static void
+manageSongListTruncate (GtkMenuItem *mi, gpointer udata)
+{
+  manageui_t  *manage = udata;
+
+  uimusicqClearQueueProcess (manage->slmusicq);
 }
 
 static void

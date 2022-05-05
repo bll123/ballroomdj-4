@@ -435,6 +435,17 @@ uimusicqSetSonglistName (uimusicq_t *uimusicq, const char *nm)
   uiutilsEntrySetValue (&uimusicq->ui [ci].slname, nm);
 }
 
+const char *
+uimusicqGetSonglistName (uimusicq_t *uimusicq)
+{
+  int         ci;
+  const char  *val;
+
+  ci = uimusicq->musicqManageIdx;
+  val = uiutilsEntryGetValue (&uimusicq->ui [ci].slname);
+  return val;
+}
+
 /* internal routines */
 
 static int

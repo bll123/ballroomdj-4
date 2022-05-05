@@ -87,6 +87,7 @@ void  uimusicqCreatePlaylistList (uimusicq_t *uimusicq);
 int   uimusicqMusicQueueDataParse (uimusicq_t *uimusicq, char * args);
 void  uimusicqMusicQueueDataFree (uimusicq_t *uimusicq);
 void  uimusicqSetSonglistName (uimusicq_t *uimusicq, const char *nm);
+const char * uimusicqGetSonglistName (uimusicq_t *uimusicq);
 
 /* uimusicqgtk.c */
 GtkWidget * uimusicqBuildUI (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci);
