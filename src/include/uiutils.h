@@ -162,7 +162,7 @@ void uiutilsEntryFree (uiutilsentry_t *entry);
 GtkWidget * uiutilsEntryCreate (uiutilsentry_t *entry);
 GtkWidget * uiutilsEntryGetWidget (uiutilsentry_t *entry);
 const char * uiutilsEntryGetValue (uiutilsentry_t *entry);
-void uiutilsEntrySetValue (uiutilsentry_t *entry, char *value);
+void uiutilsEntrySetValue (uiutilsentry_t *entry, const char *value);
 void uiutilsEntrySetValidate (uiutilsentry_t *entry,
     uiutilsentryval_t valfunc, void *udata);
 bool uiutilsEntryValidate (uiutilsentry_t *entry);
@@ -250,6 +250,7 @@ GtkTreeViewColumn * uiutilsAddDisplayColumns (GtkWidget *tree,
 GType *     uiutilsAddDisplayTypes (GType *types, slist_t *sellist, int *col);
 void        uiutilsSetDisplayColumns (GtkListStore *store, GtkTreeIter *iter,
     slist_t *sellist, song_t *song, int col);
+int uiutilsTreeViewGetSelection (GtkWidget *tree, GtkTreeModel **model, GtkTreeIter *iter);
 
 
 /* uigtkdialog.c */

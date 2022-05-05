@@ -415,7 +415,6 @@ static char     * confuiMakeQRCodeFile (configui_t *confui, char *title, char *u
 static void     confuiUpdateOrgExamples (configui_t *confui, char *pathfmt);
 static void     confuiUpdateOrgExample (configui_t *config, org_t *org, char *data, GtkWidget *widget);
 static char     * confuiGetLocalIP (configui_t *confui);
-static int      confuiGetSelectionIter (GtkWidget *tree, GtkTreeModel **model, GtkTreeIter *iter);
 static void     confuiSetStatusMsg (configui_t *confui, const char *msg);
 static int      confuiLocateWidgetIdx (configui_t *confui, void *wpointer);
 
@@ -3139,21 +3138,6 @@ confuiGetLocalIP (configui_t *confui)
   return confui->localip;
 }
 
-static int
-confuiGetSelectionIter (GtkWidget *tree, GtkTreeModel **model, GtkTreeIter *iter)
-{
-  GtkTreeSelection  *sel;
-  int               count;
-
-  sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (tree));
-  count = gtk_tree_selection_count_selected_rows (sel);
-  if (count == 1) {
-    gtk_tree_selection_get_selected (sel, model, iter);
-  }
-  return count;
-}
-
-
 static void
 confuiSetStatusMsg (configui_t *confui, const char *msg)
 {
@@ -3285,7 +3269,7 @@ confuiTableRemove (GtkButton *b, gpointer udata)
   logProcBegin (LOG_PROC, "confuiTableRemove");
   tree = confui->tables [confui->tablecurr].tree;
   flags = confui->tables [confui->tablecurr].flags;
-  count = confuiGetSelectionIter (tree, &model, &iter);
+  count = uiutilsTreeViewGetSelection (tree, &model, &iter);
   if (count != 1) {
     logProcEnd (LOG_PROC, "confuiTableRemove", "no-selection");
     return;
@@ -3315,7 +3299,7 @@ confuiTableRemove (GtkButton *b, gpointer udata)
     GtkTreeIter   iter;
 
     tree = confui->tables [confui->tablecurr].tree;
-    confuiGetSelectionIter (tree, &model, &iter);
+    uiutilsTreeViewGetSelection (tree, &model, &iter);
     gtk_tree_model_get (model, &iter, CONFUI_DANCE_COL_DANCE_IDX, &idx, -1);
     dances = bdjvarsdfGet (BDJVDF_DANCES);
     danceDelete (dances, idx);
@@ -3332,7 +3316,7 @@ confuiTableRemove (GtkButton *b, gpointer udata)
     GtkTreeIter iter;
 
     tree = confui->tables [confui->tablecurr].tree;
-    confuiGetSelectionIter (tree, &model, &iter);
+    uiutilsTreeViewGetSelection (tree, &model, &iter);
     path = gtk_tree_model_get_path (model, &iter);
     confuiDanceSelect (GTK_TREE_VIEW (tree), path, NULL, confui);
   }
@@ -3508,7 +3492,7 @@ confuiTableSetDefaultSelection (configui_t *confui, GtkWidget *tree)
   GtkTreeModel      *model;
 
 
-  count = confuiGetSelectionIter (tree, &model, &iter);
+  count = uiutilsTreeViewGetSelection (tree, &model, &iter);
   if (count != 1) {
     GtkTreePath   *path;
 
@@ -4376,7 +4360,7 @@ confuiDanceEntryChg (GtkEditable *e, gpointer udata)
 
   tree = confui->tables [CONFUI_ID_DANCE].tree;
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (tree));
-  count = confuiGetSelectionIter (tree, &model, &iter);
+  count = uiutilsTreeViewGetSelection (tree, &model, &iter);
   if (count != 1) {
     logProcEnd (LOG_PROC, "confuiDanceEntryChg", "no-selection");
     return;
@@ -4431,7 +4415,7 @@ confuiDanceSpinboxChg (GtkSpinButton *sb, gpointer udata)
   nval = (ssize_t) value;
 
   tree = confui->tables [CONFUI_ID_DANCE].tree;
-  count = confuiGetSelectionIter (tree, &model, &iter);
+  count = uiutilsTreeViewGetSelection (tree, &model, &iter);
   if (count != 1) {
     logProcEnd (LOG_PROC, "confuiDanceSpinboxChg", "no-selection");
     return;
@@ -4662,7 +4646,7 @@ confuiCreateTagListingDisp (configui_t *confui)
   tablemodel = gtk_tree_view_get_model (GTK_TREE_VIEW (tabletree));
 
   /* get the current selection for the listing display */
-  count = confuiGetSelectionIter (tree, &model, &iter);
+  count = uiutilsTreeViewGetSelection (tree, &model, &iter);
   if (count == 1) {
     path = gtk_tree_model_get_path (model, &iter);
   }
@@ -4734,7 +4718,7 @@ confuiDispSelect (GtkButton *b, gpointer udata)
   int           count;
 
   tree = confui->tables [CONFUI_ID_DISP_SEL_LIST].tree;
-  count = confuiGetSelectionIter (tree, &model, &iter);
+  count = uiutilsTreeViewGetSelection (tree, &model, &iter);
 
   if (count == 1) {
     char          *str;
@@ -4774,7 +4758,7 @@ confuiDispRemove (GtkButton *b, gpointer udata)
   int           count;
 
   tree = confui->tables [CONFUI_ID_DISP_SEL_TABLE].tree;
-  count = confuiGetSelectionIter (tree, &model, &iter);
+  count = uiutilsTreeViewGetSelection (tree, &model, &iter);
 
   if (count == 1) {
     gtk_list_store_remove (GTK_LIST_STORE (model), &iter);

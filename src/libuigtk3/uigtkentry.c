@@ -76,7 +76,7 @@ uiutilsEntryGetValue (uiutilsentry_t *entry)
 }
 
 void
-uiutilsEntrySetValue (uiutilsentry_t *entry, char *value)
+uiutilsEntrySetValue (uiutilsentry_t *entry, const char *value)
 {
   gtk_entry_buffer_set_text (entry->buffer, value, -1);
 }

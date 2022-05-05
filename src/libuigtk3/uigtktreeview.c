@@ -169,6 +169,20 @@ uiutilsAddDisplayTypes (GType *types, slist_t *sellist, int *col)
   return types;
 }
 
+int
+uiutilsTreeViewGetSelection (GtkWidget *tree, GtkTreeModel **model, GtkTreeIter *iter)
+{
+  GtkTreeSelection  *sel;
+  int               count;
+
+  sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (tree));
+  count = gtk_tree_selection_count_selected_rows (sel);
+  if (count == 1) {
+    gtk_tree_selection_get_selected (sel, model, iter);
+  }
+  return count;
+}
+
 /* internal routines */
 
 static valuetype_t

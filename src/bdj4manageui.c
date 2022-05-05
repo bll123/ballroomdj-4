@@ -79,8 +79,9 @@ enum {
   MANAGE_F_SEQUENCE,
 };
 
-
 typedef struct manage manageui_t;
+
+typedef void (*manageselfilecb_t)(manageui_t *manage, const char *fname);
 
 typedef struct manage {
   progstate_t     *progstate;
@@ -108,6 +109,9 @@ typedef struct manage {
   uiutilsnbtabid_t  *mainnbtabid;
   uiutilsnbtabid_t  *slnbtabid;
   uiutilsnbtabid_t  *mmnbtabid;
+  /* file selection dialog */
+  GtkWidget         *selfiletree;
+  manageselfilecb_t selfilecb;
   /* gtk stuff */
   GtkWidget       *menubar;
   GtkWidget       *window;
@@ -167,12 +171,13 @@ static void     manageSongEditMenu (manageui_t *manage);
 /* song list */
 static void     manageSonglistMenu (manageui_t *manage);
 static void     manageSongListLoad (GtkMenuItem *mi, gpointer udata);
+static void     manageSongListLoadFile (manageui_t *manage, const char *fn);
 /* general */
 static void     manageSwitchPage (GtkNotebook *nb, GtkWidget *page,
     guint pagenum, gpointer udata);
 static void     manageSelectFileDialog (manageui_t *manage, int flags);
 static GtkWidget * manageCreateSelectFileDialog (manageui_t *manage,
-    slist_t *filelist, const char *filetype);
+    slist_t *filelist, const char *filetype, manageselfilecb_t cb);
 static void manageSelectFileResponseHandler (GtkDialog *d, gint responseid,
     gpointer udata);
 
@@ -220,6 +225,7 @@ main (int argc, char *argv[])
   manage.mainnbtabid = uiutilsNotebookIDInit ();
   manage.slnbtabid = uiutilsNotebookIDInit ();
   manage.mmnbtabid = uiutilsNotebookIDInit ();
+  manage.selfilecb = NULL;
 
   procutilInitProcesses (manage.processes);
 
@@ -285,6 +291,9 @@ main (int argc, char *argv[])
   manage.slsongedit = uisongeditInit (manage.conn,
       manage.musicdb, manage.dispsel, manage.options);
 
+  uimusicqSetPlayIdx (manage.slmusicq, manage.musicqPlayIdx);
+  uimusicqSetManageIdx (manage.slmusicq, manage.musicqManageIdx);
+
   manage.mmplayer = uiplayerInit (manage.progstate, manage.conn,
       manage.musicdb);
   manage.mmmusicq = uimusicqInit (manage.conn,
@@ -296,6 +305,9 @@ main (int argc, char *argv[])
       SONG_FILTER_FOR_SELECTION, DISP_SEL_MM);
   manage.mmsongedit = uisongeditInit (manage.conn,
       manage.musicdb, manage.dispsel, manage.options);
+
+  uimusicqSetPlayIdx (manage.mmmusicq, manage.musicqPlayIdx);
+  uimusicqSetManageIdx (manage.mmmusicq, manage.musicqManageIdx);
 
   /* register these after calling the sub-window initialization */
   /* then these will be run last, after the other closing callbacks */
@@ -1050,6 +1062,26 @@ manageSongListLoad (GtkMenuItem *mi, gpointer udata)
   manageSelectFileDialog (manage, MANAGE_F_SONGLIST);
 }
 
+static void
+manageSongListLoadFile (manageui_t *manage, const char *fn)
+{
+  char  tbuff [200];
+
+  // ### if there's something in the song list, save it first.
+  /* truncate from the first selection */
+  uimusicqSetSelection (manage->slmusicq, "0");
+  uimusicqClearQueueProcess (manage->slmusicq);
+
+  snprintf (tbuff, sizeof (tbuff), "%d%c%s",
+      manage->musicqManageIdx, MSG_ARGS_RS, fn);
+  connSendMessage (manage->conn, ROUTE_MAIN, MSG_QUEUE_PLAYLIST, tbuff);
+
+  uimusicqSetSonglistName (manage->slmusicq, fn);
+  /* setting the selection will not work, as the tree view has not been */
+  /* instantiated */
+  // ### could do this on a timer.
+}
+
 /* general */
 
 static void
@@ -1161,6 +1193,7 @@ manageSelectFileDialog (manageui_t *manage, int flags)
   char        tbuff [MAXPATHLEN];
   int         x, y;
   GtkWidget   *dialog;
+  manageselfilecb_t cb;
 
   logProcBegin (LOG_PROC, "manageSelectFileDialog");
   filelist = slistAlloc ("filelist", LIST_UNORDERED, free);
@@ -1172,14 +1205,17 @@ manageSelectFileDialog (manageui_t *manage, int flags)
     if ((flags & MANAGE_F_SONGLIST) == MANAGE_F_SONGLIST) {
       pathbldMakePath (tbuff, sizeof (tbuff),
           fn, ".songlist", PATHBLD_MP_DATA);
+      cb = manageSongListLoadFile;
     }
     if ((flags & MANAGE_F_PLAYLIST) == MANAGE_F_PLAYLIST) {
       pathbldMakePath (tbuff, sizeof (tbuff),
           fn, ".pl", PATHBLD_MP_DATA);
+//      cb = managePlaylistLoadFile;
     }
     if ((flags & MANAGE_F_SEQUENCE) == MANAGE_F_SEQUENCE) {
       pathbldMakePath (tbuff, sizeof (tbuff),
           fn, ".seq", PATHBLD_MP_DATA);
+//      cb = manageSequenceLoadFile;
     }
     if (fileopFileExists (tbuff)) {
       slistSetStr (filelist, dispnm, fn);
@@ -1205,7 +1241,7 @@ manageSelectFileDialog (manageui_t *manage, int flags)
   slistSort (filelist);
 
   /* CONTEXT: what type of file to load */
-  dialog = manageCreateSelectFileDialog (manage, filelist, _("Song List"));
+  dialog = manageCreateSelectFileDialog (manage, filelist, _("Song List"), cb);
   uiutilsWidgetShowAll (dialog);
 
   x = nlistGetNum (manage->options, MANAGE_SELFILE_POSITION_X);
@@ -1216,7 +1252,7 @@ manageSelectFileDialog (manageui_t *manage, int flags)
 
 static GtkWidget *
 manageCreateSelectFileDialog (manageui_t *manage,
-    slist_t *filelist, const char *filetype)
+    slist_t *filelist, const char *filetype, manageselfilecb_t cb)
 {
   GtkWidget     *dialog;
   GtkWidget     *content;
@@ -1250,6 +1286,8 @@ manageCreateSelectFileDialog (manageui_t *manage,
       NULL
       );
 
+  manage->selfilecb = cb;
+
   content = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
   uiutilsWidgetSetAllMargins (content, uiutilsBaseMarginSz * 2);
 
@@ -1264,6 +1302,7 @@ manageCreateSelectFileDialog (manageui_t *manage,
   widget = uiutilsCreateTreeView ();
   uiutilsWidgetAlignHorizFill (widget);
   uiutilsWidgetExpandHoriz (widget);
+  manage->selfiletree = widget;
 
   store = gtk_list_store_new (MNG_SELFILE_COL_MAX,
       G_TYPE_STRING, G_TYPE_STRING);
@@ -1313,37 +1352,43 @@ manageCreateSelectFileDialog (manageui_t *manage,
 }
 
 static void
-manageSelectFileHandler (GtkTreeView *tv, GtkTreePath *path,
-    GtkTreeViewColumn *column, gpointer udata)
-{
-//  manageui_t  *manage = udata;
-//  slistidx_t  idx;
-
-}
-
-static void
 manageSelectFileResponseHandler (GtkDialog *d, gint responseid,
     gpointer udata)
 {
-  manageui_t  *manage = udata;
-  gint        x, y;
+  manageui_t    *manage = udata;
+  gint          x, y;
+  char          *str;
+  GtkTreeModel  *model;
+  GtkTreeIter   iter;
+  int           count;
+
+  uiutilsWindowGetPosition (GTK_WIDGET (d), &x, &y);
+  nlistSetNum (manage->options, MANAGE_SELFILE_POSITION_X, x);
+  nlistSetNum (manage->options, MANAGE_SELFILE_POSITION_Y, y);
 
   switch (responseid) {
     case GTK_RESPONSE_DELETE_EVENT: {
-      uiutilsWindowGetPosition (GTK_WIDGET (d), &x, &y);
-      nlistSetNum (manage->options, MANAGE_SELFILE_POSITION_X, x);
-      nlistSetNum (manage->options, MANAGE_SELFILE_POSITION_Y, y);
+      manage->selfilecb = NULL;
       break;
     }
     case GTK_RESPONSE_CLOSE: {
-      uiutilsWindowGetPosition (GTK_WIDGET (d), &x, &y);
-      nlistSetNum (manage->options, MANAGE_SELFILE_POSITION_X, x);
-      nlistSetNum (manage->options, MANAGE_SELFILE_POSITION_Y, y);
       uiutilsCloseWindow (GTK_WIDGET (d));
+      manage->selfilecb = NULL;
       break;
     }
     case GTK_RESPONSE_APPLY: {
-//      uiutilsDropDownSelectionSetNum (&manage->dancesel, manage->danceIdx);
+      count = uiutilsTreeViewGetSelection (manage->selfiletree, &model, &iter);
+      if (count != 1) {
+        break;
+      }
+
+      gtk_tree_model_get (model, &iter, MNG_SELFILE_COL_DISP, &str, -1);
+      uiutilsCloseWindow (GTK_WIDGET (d));
+      if (manage->selfilecb != NULL) {
+        manage->selfilecb (manage, str);
+      }
+      free (str);
+      manage->selfilecb = NULL;
       break;
     }
   }

@@ -426,6 +426,15 @@ uimusicqMusicQueueDataFree (uimusicq_t *uimusicq)
   }
 }
 
+void
+uimusicqSetSonglistName (uimusicq_t *uimusicq, const char *nm)
+{
+  int   ci;
+
+  ci = uimusicq->musicqManageIdx;
+  uiutilsEntrySetValue (&uimusicq->ui [ci].slname, nm);
+}
+
 /* internal routines */
 
 static int
