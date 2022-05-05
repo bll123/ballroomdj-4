@@ -636,7 +636,7 @@ starterMainLoop (void *tstarter)
       }
 
       pathbldMakePath (tbuff, sizeof (tbuff),
-          "", "", PATHBLD_MP_NONE);
+          "", "", PATHBLD_MP_DATA);
       starterSendFilesInit (starter, tbuff);
       starter->startState = START_STATE_SUPPORT_SEND_FILE;
       starter->nextState = START_STATE_SUPPORT_SEND_FILES_B;

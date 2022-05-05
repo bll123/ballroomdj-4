@@ -39,7 +39,7 @@ orgoptAlloc (void)
   char          path [MAXPATHLEN];
 
   pathbldMakePath (path, sizeof (path),
-      "orgopt", ".txt", PATHBLD_MP_NONE);
+      "orgopt", ".txt", PATHBLD_MP_DATA);
 
   tagdefInit ();
 

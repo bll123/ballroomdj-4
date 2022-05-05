@@ -277,11 +277,11 @@ raLock (rafile_t *rafile)
   }
 
   /* the music database may be shared across multiple processes */
-  rc = lockAcquire (RAFILE_LOCK_FN, PATHBLD_MP_NONE);
+  rc = lockAcquire (RAFILE_LOCK_FN, PATHBLD_MP_TMPDIR);
   count = 0;
   while (rc < 0 && count < 10) {
     mssleep (50);
-    rc = lockAcquire (RAFILE_LOCK_FN, PATHBLD_MP_NONE);
+    rc = lockAcquire (RAFILE_LOCK_FN, PATHBLD_MP_TMPDIR);
     ++count;
   }
   if (rc < 0 && count >= 10) {
@@ -301,7 +301,7 @@ raUnlock (rafile_t *rafile)
     return;
   }
 
-  lockRelease (RAFILE_LOCK_FN, PATHBLD_MP_NONE);
+  lockRelease (RAFILE_LOCK_FN, PATHBLD_MP_TMPDIR);
   rafile->locked = 0;
   logProcEnd (LOG_PROC, "raUnlock", "");
 }

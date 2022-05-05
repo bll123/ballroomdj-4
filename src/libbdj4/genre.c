@@ -39,7 +39,7 @@ genreAlloc (void)
   ilistidx_t    iteridx;
   char          fname [MAXPATHLEN];
 
-  pathbldMakePath (fname, sizeof (fname), "genres", ".txt", PATHBLD_MP_NONE);
+  pathbldMakePath (fname, sizeof (fname), "genres", ".txt", PATHBLD_MP_DATA);
   if (! fileopFileExists (fname)) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: genre: missing %s", fname);
     return NULL;

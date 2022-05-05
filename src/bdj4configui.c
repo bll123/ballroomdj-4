@@ -1885,7 +1885,7 @@ confuiPopulateOptions (configui_t *confui)
       snprintf (tbuff, sizeof (tbuff), "%.2s", sval);
       sysvarsSetStr (SV_LOCALE_SHORT, tbuff);
       pathbldMakePath (tbuff, sizeof (tbuff),
-          "locale", ".txt", PATHBLD_MP_NONE);
+          "locale", ".txt", PATHBLD_MP_DATA);
       fileopDelete (tbuff);
 
       /* if the set locale does not match the system or default locale */
@@ -1913,7 +1913,7 @@ confuiPopulateOptions (configui_t *confui)
       FILE    *fh;
 
       pathbldMakePath (tbuff, sizeof (tbuff),
-          "theme", ".txt", PATHBLD_MP_NONE);
+          "theme", ".txt", PATHBLD_MP_DATA);
       fh = fopen (tbuff, "w");
       sval = bdjoptGetStr (confui->uiitem [i].bdjoptIdx);
       if (sval != NULL) {

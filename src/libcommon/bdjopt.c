@@ -116,22 +116,22 @@ bdjoptInit (void)
 
   /* global */
   pathbldMakePath (path, sizeof (path), BDJ_CONFIG_BASEFN,
-      BDJ_CONFIG_EXT, PATHBLD_MP_NONE);
+      BDJ_CONFIG_EXT, PATHBLD_MP_DATA);
   bdjopt->globalFname = strdup (path);
 
   /* profile */
   pathbldMakePath (path, sizeof (path), BDJ_CONFIG_BASEFN,
-      BDJ_CONFIG_EXT, PATHBLD_MP_USEIDX);
+      BDJ_CONFIG_EXT, PATHBLD_MP_USEIDX | PATHBLD_MP_DATA);
   bdjopt->profileFname = strdup (path);
 
   /* per machine */
   pathbldMakePath (path, sizeof (path), BDJ_CONFIG_BASEFN,
-      BDJ_CONFIG_EXT, PATHBLD_MP_HOSTNAME);
+      BDJ_CONFIG_EXT, PATHBLD_MP_HOSTNAME | PATHBLD_MP_DATA);
   bdjopt->machineFname = strdup (path);
 
   /* per machine per profile */
   pathbldMakePath (path, sizeof (path), BDJ_CONFIG_BASEFN,
-      BDJ_CONFIG_EXT, PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
+      BDJ_CONFIG_EXT, PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX | PATHBLD_MP_DATA);
   bdjopt->machineProfileFname = strdup (path);
 
   if (! fileopFileExists (bdjopt->profileFname)) {
@@ -250,7 +250,7 @@ bdjoptCreateDirectories (void)
 {
   char      path [MAXPATHLEN];
 
-  pathbldMakePath (path, sizeof (path), "", "", PATHBLD_MP_NONE);
+  pathbldMakePath (path, sizeof (path), "", "", PATHBLD_MP_DATA);
   fileopMakeDir (path);
   pathbldMakePath (path, sizeof (path), "", "", PATHBLD_MP_USEIDX);
   fileopMakeDir (path);
@@ -413,7 +413,7 @@ bdjoptCreateNewConfigs (void)
   /* global */
   sysvarsSetNum (SVL_BDJIDX, 0);
   pathbldMakePath (path, sizeof (path),
-      BDJ_CONFIG_BASEFN, BDJ_CONFIG_EXT, PATHBLD_MP_NONE);
+      BDJ_CONFIG_BASEFN, BDJ_CONFIG_EXT, PATHBLD_MP_DATA);
   sysvarsSetNum (SVL_BDJIDX, bdjopt->currprofile);
   filemanipCopy (path, bdjopt->globalFname);
 

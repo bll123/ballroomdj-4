@@ -32,6 +32,7 @@
 #include "osutils.h"
 #include "osuiutils.h"
 #include "pathbld.h"
+#include "pathutil.h"
 #include "playlist.h"
 #include "procutil.h"
 #include "progstate.h"
@@ -55,6 +56,12 @@ enum {
   MANAGE_TAB_FILEMGR,
   MANAGE_TAB_SONGLIST,
   MANAGE_TAB_SONGEDIT,
+};
+
+enum {
+  MNG_SELFILE_COL_DISP,
+  MNG_SELFILE_COL_SB_PAD,
+  MNG_SELFILE_COL_MAX,
 };
 
 enum {
@@ -101,7 +108,6 @@ typedef struct manage {
   uiutilsnbtabid_t  *mainnbtabid;
   uiutilsnbtabid_t  *slnbtabid;
   uiutilsnbtabid_t  *mmnbtabid;
-  uiutilsdropdown_t filedd;
   /* gtk stuff */
   GtkWidget       *menubar;
   GtkWidget       *window;
@@ -167,8 +173,6 @@ static void     manageSwitchPage (GtkNotebook *nb, GtkWidget *page,
 static void     manageSelectFileDialog (manageui_t *manage, int flags);
 static GtkWidget * manageCreateSelectFileDialog (manageui_t *manage,
     slist_t *filelist, const char *filetype);
-static void     manageSelectFileHandler (GtkTreeView *tv, GtkTreePath *path,
-    GtkTreeViewColumn *column, gpointer udata);
 static void manageSelectFileResponseHandler (GtkDialog *d, gint responseid,
     gpointer udata);
 
@@ -1167,25 +1171,38 @@ manageSelectFileDialog (manageui_t *manage, int flags)
     fn = slistGetStr (plList, dispnm);
     if ((flags & MANAGE_F_SONGLIST) == MANAGE_F_SONGLIST) {
       pathbldMakePath (tbuff, sizeof (tbuff),
-          fn, ".songlist", PATHBLD_MP_NONE);
+          fn, ".songlist", PATHBLD_MP_DATA);
     }
     if ((flags & MANAGE_F_PLAYLIST) == MANAGE_F_PLAYLIST) {
       pathbldMakePath (tbuff, sizeof (tbuff),
-          fn, ".pl", PATHBLD_MP_NONE);
+          fn, ".pl", PATHBLD_MP_DATA);
     }
     if ((flags & MANAGE_F_SEQUENCE) == MANAGE_F_SEQUENCE) {
       pathbldMakePath (tbuff, sizeof (tbuff),
-          fn, ".seq", PATHBLD_MP_NONE);
+          fn, ".seq", PATHBLD_MP_DATA);
     }
     if (fileopFileExists (tbuff)) {
       slistSetStr (filelist, dispnm, fn);
     }
   }
-  slistSort (filelist);
 
-  uiutilsDropDownInit (&manage->filedd);
-  /* CONTEXT: what type of file to select  */
-  uiutilsDropDownSelectionSetNum (&manage->filedd, -1);
+  /* the raffle songs songlist has no associated playlist */
+  if ((flags & MANAGE_F_SONGLIST) == MANAGE_F_SONGLIST) {
+    pathbldMakePath (tbuff, sizeof (tbuff),
+        _("Raffle Songs"), ".songlist", PATHBLD_MP_DATA);
+    if (fileopFileExists (tbuff)) {
+      pathinfo_t  *pi;
+      char        tmp [MAXPATHLEN];
+
+      pi = pathInfo (tbuff);
+      strlcpy (tmp, pi->basename, pi->blen + 1);
+      tmp [pi->blen] = '\0';
+      slistSetStr (filelist, tmp, tmp);
+      pathInfoFree (pi);
+    }
+  }
+
+  slistSort (filelist);
 
   /* CONTEXT: what type of file to load */
   dialog = manageCreateSelectFileDialog (manage, filelist, _("Song List"));
@@ -1205,8 +1222,16 @@ manageCreateSelectFileDialog (manageui_t *manage,
   GtkWidget     *content;
   GtkWidget     *vbox;
   GtkWidget     *hbox;
+  GtkWidget     *scwin;
   GtkWidget     *widget;
   char          tbuff [200];
+  GtkListStore  *store;
+  GtkTreeIter   iter;
+  slistidx_t    fliteridx;
+  char          *disp;
+  GtkCellRenderer   *renderer = NULL;
+  GtkTreeViewColumn *column = NULL;
+
 
   logProcBegin (LOG_PROC, "manageCreateSelectFileDialog");
 
@@ -1231,10 +1256,47 @@ manageCreateSelectFileDialog (manageui_t *manage,
   vbox = uiutilsCreateVertBox ();
   uiutilsBoxPackInWindow (content, vbox);
 
-  widget = uiutilsComboboxCreate (dialog,
-      "", manageSelectFileHandler, &manage->filedd, manage);
-  uiutilsDropDownSetList (&manage->filedd, filelist, NULL);
-  uiutilsBoxPackStart (vbox, widget);
+  scwin = uiutilsCreateScrolledWindow ();
+  gtk_scrolled_window_set_min_content_height (GTK_SCROLLED_WINDOW (scwin), 200);
+  uiutilsWidgetExpandVert (scwin);
+  uiutilsBoxPackStart (vbox, scwin);
+
+  widget = uiutilsCreateTreeView ();
+  uiutilsWidgetAlignHorizFill (widget);
+  uiutilsWidgetExpandHoriz (widget);
+
+  store = gtk_list_store_new (MNG_SELFILE_COL_MAX,
+      G_TYPE_STRING, G_TYPE_STRING);
+  assert (store != NULL);
+
+  slistStartIterator (filelist, &fliteridx);
+  while ((disp = slistIterateKey (filelist, &fliteridx)) != NULL) {
+    gtk_list_store_append (store, &iter);
+    gtk_list_store_set (store, &iter,
+        MNG_SELFILE_COL_DISP, disp,
+        MNG_SELFILE_COL_SB_PAD, "    ",
+        -1);
+  }
+
+  renderer = gtk_cell_renderer_text_new ();
+  column = gtk_tree_view_column_new_with_attributes ("", renderer,
+      "text", MNG_SELFILE_COL_DISP,
+      NULL);
+  gtk_tree_view_column_set_title (column, "");
+  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
+  gtk_tree_view_append_column (GTK_TREE_VIEW (widget), column);
+
+  column = gtk_tree_view_column_new_with_attributes ("", renderer,
+      "text", MNG_SELFILE_COL_SB_PAD,
+      NULL);
+  gtk_tree_view_column_set_title (column, "");
+  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_FIXED);
+  gtk_tree_view_append_column (GTK_TREE_VIEW (widget), column);
+
+  gtk_tree_view_set_model (GTK_TREE_VIEW (widget), GTK_TREE_MODEL (store));
+  g_object_unref (store);
+
+  uiutilsBoxPackInWindow (scwin, widget);
 
   /* the dialog doesn't have any space above the buttons */
   hbox = uiutilsCreateHorizBox ();
@@ -1254,10 +1316,9 @@ static void
 manageSelectFileHandler (GtkTreeView *tv, GtkTreePath *path,
     GtkTreeViewColumn *column, gpointer udata)
 {
-  manageui_t  *manage = udata;
-  slistidx_t  idx;
+//  manageui_t  *manage = udata;
+//  slistidx_t  idx;
 
-  idx = uiutilsDropDownSelectionGet (&manage->filedd, path);
 }
 
 static void
@@ -1286,6 +1347,4 @@ manageSelectFileResponseHandler (GtkDialog *d, gint responseid,
       break;
     }
   }
-
-  uiutilsDropDownFree (&manage->filedd);
 }

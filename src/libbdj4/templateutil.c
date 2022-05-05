@@ -75,7 +75,7 @@ templateFileCopy (const char *fromfn, const char *tofn)
   char    to [MAXPATHLEN];
 
   pathbldMakePath (from, sizeof (from), fromfn, "", PATHBLD_MP_TEMPLATEDIR);
-  pathbldMakePath (to, sizeof (to), tofn, "", PATHBLD_MP_NONE);
+  pathbldMakePath (to, sizeof (to), tofn, "", PATHBLD_MP_DATA);
   templateCopy (from, to, NULL);
 }
 

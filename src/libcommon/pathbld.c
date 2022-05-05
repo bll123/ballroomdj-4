@@ -20,7 +20,13 @@ pathbldMakePath (char *buff, size_t buffsz,
 
   *profpath = '\0';
 
-  dirprefix = sysvarsGetStr (SV_BDJ4DATADIR);
+  dirprefix = "";
+  /* MP_USEIDX and MP_HOSTNAME imply the data directory */
+  if ((flags & PATHBLD_MP_DATA) == PATHBLD_MP_DATA ||
+      (flags & PATHBLD_MP_USEIDX) == PATHBLD_MP_USEIDX ||
+      (flags & PATHBLD_MP_HOSTNAME) == PATHBLD_MP_HOSTNAME) {
+    dirprefix = sysvarsGetStr (SV_BDJ4DATADIR);
+  }
   if ((flags & PATHBLD_MP_TMPDIR) == PATHBLD_MP_TMPDIR) {
     dirprefix = sysvarsGetStr (SV_BDJ4TMPDIR);
   }
@@ -49,8 +55,8 @@ pathbldMakePath (char *buff, size_t buffsz,
 
   if ((flags & PATHBLD_MP_USEIDX) == PATHBLD_MP_USEIDX) {
     if ((flags & PATHBLD_MP_TMPDIR) == PATHBLD_MP_TMPDIR) {
-      /* if the tmp dir is being used, there is no pre-made directory */
-      /* use a prefix */
+      /* if the tmp dir is being used, there is no prefix directory */
+      /* use a filename prefix */
       snprintf (profpath, sizeof (profpath), "l%02zd-", sysvarsGetNum (SVL_BDJIDX));
     } else {
       snprintf (profpath, sizeof (profpath), "profile%02zd/", sysvarsGetNum (SVL_BDJIDX));

@@ -30,7 +30,7 @@ sequenceAlloc (char *fname)
   datafileconv_t  conv;
 
 
-  pathbldMakePath (fn, sizeof (fn), fname, ".sequence", PATHBLD_MP_NONE);
+  pathbldMakePath (fn, sizeof (fn), fname, ".sequence", PATHBLD_MP_DATA);
   if (! fileopFileExists (fn)) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: sequence: missing %s", fname);
     return NULL;

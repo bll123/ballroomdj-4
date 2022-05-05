@@ -302,14 +302,14 @@ dbupdateProcessing (void *udata)
     }
 
     pathbldMakePath (dbfname, sizeof (dbfname),
-        MUSICDB_FNAME, MUSICDB_EXT, PATHBLD_MP_NONE);
+        MUSICDB_FNAME, MUSICDB_EXT, PATHBLD_MP_DATA);
     datafileBackup (dbfname, 4);
 
     if (dbupdate->newdatabase) {
       char  tbuff [MAXPATHLEN];
 
       pathbldMakePath (tbuff, sizeof (tbuff),
-          MUSICDB_TMP_FNAME, MUSICDB_EXT, PATHBLD_MP_NONE);
+          MUSICDB_TMP_FNAME, MUSICDB_EXT, PATHBLD_MP_DATA);
       fileopDelete (tbuff);
       dbupdate->nmusicdb = dbOpen (tbuff);
       assert (dbupdate->nmusicdb != NULL);
@@ -432,9 +432,9 @@ dbupdateProcessing (void *udata)
     char  dbfname [MAXPATHLEN];
 
     pathbldMakePath (tbuff, sizeof (tbuff),
-        MUSICDB_TMP_FNAME, MUSICDB_EXT, PATHBLD_MP_NONE);
+        MUSICDB_TMP_FNAME, MUSICDB_EXT, PATHBLD_MP_DATA);
     pathbldMakePath (dbfname, sizeof (dbfname),
-        MUSICDB_FNAME, MUSICDB_EXT, PATHBLD_MP_NONE);
+        MUSICDB_FNAME, MUSICDB_EXT, PATHBLD_MP_DATA);
 
     if (dbupdate->newdatabase) {
       dbEndBatch (dbupdate->nmusicdb);
