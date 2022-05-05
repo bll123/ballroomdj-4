@@ -1540,11 +1540,13 @@ static void
 mainMusicqSwitch (maindata_t *mainData, musicqidx_t newMusicqIdx)
 {
   song_t        *song;
+  musicqidx_t   oldplayidx;
 
   logProcBegin (LOG_PROC, "mainMusicqSwitch");
 
 
-  mainData->musicqManageIdx = mainData->musicqPlayIdx;
+  oldplayidx = mainData->musicqPlayIdx;
+  mainData->musicqManageIdx = oldplayidx;
   mainData->musicqPlayIdx = newMusicqIdx;
   /* manage idx is pointing to the previous musicq play idx */
   musicqPushHeadEmpty (mainData->musicQueue, mainData->musicqManageIdx);
@@ -1559,8 +1561,9 @@ mainMusicqSwitch (maindata_t *mainData, musicqidx_t newMusicqIdx)
     musicqPop (mainData->musicQueue, mainData->musicqPlayIdx);
   }
 
-  /* and the new musicq has changed */
-  mainSendMusicqStatus (mainData, NULL, 0);
+  /* and both musicq's have changed */
+  mainSendMusicqStatus (mainData, NULL, oldplayidx);
+  mainSendMusicqStatus (mainData, NULL, mainData->musicqPlayIdx);
   mainData->musicqChanged [mainData->musicqPlayIdx] = true;
   mainData->marqueeChanged [mainData->musicqPlayIdx] = true;
   logProcEnd (LOG_PROC, "mainMusicqSwitch", "");

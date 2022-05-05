@@ -586,11 +586,6 @@ uimusicqProcessMusicQueueDataUpdate (uimusicq_t *uimusicq, char * args)
       pixbuf = uimusicq->pauseImg;
     }
 
-    if (valid) {
-      gtk_tree_model_get (model, &iter, MUSICQ_COL_UNIQUE_IDX, &tlong, -1);
-      musicqupdate->uniqueidx = tlong;
-    }
-
     song = dbGetByIdx (uimusicq->musicdb, musicqupdate->dbidx);
 
     /* there's no need to determine if the entry is new or not    */
