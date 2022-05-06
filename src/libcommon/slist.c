@@ -153,28 +153,28 @@ slistGetStr (slist_t *list, char *sidx)
 }
 
 inline void *
-slistGetDataByIdx (slist_t *list, slistidx_t lidx)
+slistGetDataByIdx (slist_t *list, slistidx_t idx)
 {
-  return listGetDataByIdx (list, lidx);
+  return listGetDataByIdx (list, idx);
 }
 
 inline ssize_t
-slistGetNumByIdx (slist_t *list, slistidx_t lidx)
+slistGetNumByIdx (slist_t *list, slistidx_t idx)
 {
-  return listGetNumByIdx (list, lidx);
+  return listGetNumByIdx (list, idx);
 }
 
 char *
-slistGetKeyByIdx (slist_t *list, slistidx_t lidx)
+slistGetKeyByIdx (slist_t *list, slistidx_t idx)
 {
   if (list == NULL) {
     return NULL;
   }
-  if (lidx < 0 || lidx >= list->count) {
+  if (idx < 0 || idx >= list->count) {
     return NULL;
   }
 
-  return list->data [lidx].key.strkey;
+  return list->data [idx].key.strkey;
 }
 
 ssize_t

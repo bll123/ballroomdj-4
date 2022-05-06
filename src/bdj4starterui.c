@@ -73,8 +73,6 @@ typedef struct {
   char            *locknm;
   procutil_t      *processes [ROUTE_MAX];
   conn_t          *conn;
-  nlist_t         *dispProfileList;
-  nlist_t         *profileIdxMap;
   ssize_t         currprofile;
   ssize_t         newprofile;
   int             maxProfileWidth;
@@ -147,7 +145,7 @@ static void     starterStartConfig (GtkButton *b, gpointer udata);
 static void     starterStartRaffleGames (GtkButton *b, gpointer udata);
 static void     starterProcessExit (GtkButton *b, gpointer udata);
 
-static void     starterGetProfiles (startui_t *starter);
+static nlist_t  * starterGetProfiles (startui_t *starter);
 static char     * starterSetProfile (void *udata, int idx);
 static void     starterCheckProfile (startui_t *starter);
 
@@ -190,8 +188,6 @@ main (int argc, char *argv[])
       starterClosingCallback, &starter);
   starter.window = NULL;
   starter.maxProfileWidth = 0;
-  starter.dispProfileList = NULL;
-  starter.profileIdxMap = NULL;
   starter.startState = START_STATE_NONE;
   starter.nextState = START_STATE_NONE;
   starter.delayState = START_STATE_NONE;
@@ -215,8 +211,6 @@ main (int argc, char *argv[])
   bdj4startup (argc, argv, NULL, "st", ROUTE_STARTERUI, flags);
   logProcBegin (LOG_PROC, "starterui");
 
-  /* get the profile list after bdjopt has been initialized */
-  starterGetProfiles (&starter);
   uiutilsSpinboxTextInit (&starter.profilesel);
 
   listenPort = bdjvarsGetNum (BDJVL_STARTERUI_PORT);
@@ -336,8 +330,6 @@ starterClosingCallback (void *udata, programstate_t programState)
       "starterui", ".txt", PATHBLD_MP_USEIDX);
   datafileSaveKeyVal ("starterui", fn, starteruidfkeys, STARTERUI_KEY_MAX, starter->options);
 
-  nlistFree (starter->dispProfileList);
-  nlistFree (starter->profileIdxMap);
   if (starter->optiondf != NULL) {
     datafileFree (starter->optiondf);
   }
@@ -368,6 +360,7 @@ starterBuildUI (startui_t  *starter)
   char                imgbuff [MAXPATHLEN];
   char                tbuff [MAXPATHLEN];
   int                 x, y;
+  nlist_t             *tlist;
 
   logProcBegin (LOG_PROC, "starterBuildUI");
   uiutilsCreateSizeGroupHoriz (&sg);
@@ -406,10 +399,12 @@ starterBuildUI (startui_t  *starter)
   gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
   uiutilsBoxPackStart (hbox, widget);
 
+  /* get the profile list after bdjopt has been initialized */
+  tlist = starterGetProfiles (starter);
   widget = uiutilsSpinboxTextCreate (&starter->profilesel, starter);
   uiutilsSpinboxTextSet (&starter->profilesel, starter->currprofile,
-      nlistGetCount (starter->dispProfileList),
-      starter->maxProfileWidth, starter->dispProfileList, starterSetProfile);
+      nlistGetCount (tlist), starter->maxProfileWidth,
+      tlist, starterSetProfile);
   uiutilsWidgetSetMarginStart (widget, uiutilsBaseMarginSz * 4);
   uiutilsWidgetAlignHorizFill (widget);
   uiutilsBoxPackStart (hbox, widget);
@@ -1038,7 +1033,7 @@ starterProcessExit (GtkButton *b, gpointer udata)
   progstateShutdownProcess (starter->progstate);
 }
 
-static void
+static nlist_t *
 starterGetProfiles (startui_t *starter)
 {
   char        tbuff [MAXPATHLEN];
@@ -1049,12 +1044,12 @@ starterGetProfiles (startui_t *starter)
   nlist_t     *dflist;
   char        *pname;
   int         availidx = -1;
+  nlist_t     *proflist;
 
   starter->newprofile = -1;
   starter->currprofile = sysvarsGetNum (SVL_BDJIDX);
 
-  starter->dispProfileList = nlistAlloc ("profile-list", LIST_ORDERED, free);
-  starter->profileIdxMap = nlistAlloc ("profile-map", LIST_ORDERED, NULL);
+  proflist = nlistAlloc ("profile-list", LIST_ORDERED, free);
   max = 0;
 
   count = 0;
@@ -1074,8 +1069,7 @@ starterGetProfiles (startui_t *starter)
       if (pname != NULL) {
         len = strlen (pname);
         max = len > max ? len : max;
-        nlistSetStr (starter->dispProfileList, count, pname);
-        nlistSetNum (starter->profileIdxMap, count, i);
+        nlistSetStr (proflist, i, pname);
       }
       if (i != starter->currprofile) {
         datafileFree (df);
@@ -1087,13 +1081,13 @@ starterGetProfiles (startui_t *starter)
   }
 
   /* CONTEXT: starter: creating a new profile */
-  nlistSetStr (starter->dispProfileList, count, _("New Profile"));
-  nlistSetNum (starter->profileIdxMap, count, availidx);
+  nlistSetStr (proflist, availidx, _("New Profile"));
   starter->newprofile = availidx;
-  len = strlen (nlistGetStr (starter->dispProfileList, count));
+  len = strlen (nlistGetStr (proflist, count));
   max = len > max ? len : max;
   starter->maxProfileWidth = (int) max;
   sysvarsSetNum (SVL_BDJIDX, starter->currprofile);
+  return proflist;
 }
 
 static char *
@@ -1103,9 +1097,9 @@ starterSetProfile (void *udata, int idx)
   char      *disp;
   int       profidx;
 
-  profidx = nlistGetNum (starter->profileIdxMap, idx);
+  profidx = uiutilsSpinboxTextGetValue (&starter->profilesel);
   sysvarsSetNum (SVL_BDJIDX, profidx);
-  disp = nlistGetStr (starter->dispProfileList, idx);
+  disp = nlistGetStr (starter->profilesel.list, profidx);
   return disp;
 }
 

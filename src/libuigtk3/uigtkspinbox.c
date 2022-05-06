@@ -61,6 +61,7 @@ uiutilsSpinboxTextCreate (uiutilsspinbox_t *spinbox, void *udata)
   /* for some reason, if the selection background color alone is set, the */
   /* text color temporarily becomes white on light colored themes */
   /* the text color must be set also */
+  /* these changes are to make the spinbox read-only */
   uiutilsSetCss (spinbox->spinbox,
       "spinbutton { caret-color: @theme_base_color; } "
       "selection { background-color: @theme_base_color; color: @theme_text_color; }"
@@ -113,7 +114,10 @@ uiutilsSpinboxTextGetValue (uiutilsspinbox_t *spinbox)
 void
 uiutilsSpinboxTextSetValue (uiutilsspinbox_t *spinbox, int value)
 {
-  uiutilsSpinboxSetValue (spinbox->spinbox, (double) value);
+  nlistidx_t    idx;
+
+  idx = nlistGetIdx (spinbox->list, value);
+  uiutilsSpinboxSetValue (spinbox->spinbox, (double) idx);
 }
 
 void

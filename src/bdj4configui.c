@@ -554,7 +554,7 @@ main (int argc, char *argv[])
   }
 
   uiutilsEntryInit (&confui.uiitem [CONFUI_ENTRY_DANCE_TAGS].u.entry, 30, 100);
-  uiutilsEntryInit (&confui.uiitem [CONFUI_ENTRY_DANCE_ANNOUNCEMENT].u.entry, 50, 200);
+  uiutilsEntryInit (&confui.uiitem [CONFUI_ENTRY_DANCE_ANNOUNCEMENT].u.entry, 30, 300);
   uiutilsEntryInit (&confui.uiitem [CONFUI_ENTRY_DANCE_DANCE].u.entry, 30, 50);
   uiutilsEntryInit (&confui.uiitem [CONFUI_ENTRY_MUSIC_DIR].u.entry, 50, 300);
   uiutilsEntryInit (&confui.uiitem [CONFUI_ENTRY_PROFILE_NAME].u.entry, 20, 30);
@@ -684,7 +684,7 @@ main (int argc, char *argv[])
   /* CONTEXT: display settings for: song editor column 2 */
   nlistSetStr (tlist, DISP_SEL_SONGEDIT_B, _("Song Editor - Column 2"));
   confui.uiitem [CONFUI_SPINBOX_DISP_SEL].list = tlist;
-  confui.uiitem [CONFUI_SPINBOX_DISP_SEL].listidx = 0;
+  confui.uiitem [CONFUI_SPINBOX_DISP_SEL].listidx = DISP_SEL_MUSICQ;
 
   confuiLoadHTMLList (&confui);
   confuiLoadVolIntfcList (&confui);
@@ -2085,8 +2085,8 @@ confuiPopulateOptions (configui_t *confui)
     }
   } /* for each item */
 
-  selidx = nlistGetNum (confui->uiitem [CONFUI_SPINBOX_DISP_SEL].list,
-      confui->uiitem [CONFUI_SPINBOX_DISP_SEL].listidx);
+  selidx = uiutilsSpinboxTextGetValue (
+      &confui->uiitem [CONFUI_SPINBOX_DISP_SEL].u.spinbox);
   confuiDispSaveTable (confui, selidx);
 
   bdjoptSetNum (OPT_G_DEBUGLVL, debug);
@@ -4687,14 +4687,14 @@ static void
 confuiDispSettingChg (GtkSpinButton *sb, gpointer udata)
 {
   configui_t  *confui = udata;
-  int         nidx;
   int         oselidx;
+  int         nselidx;
 
 
-  oselidx = nlistGetNum (confui->uiitem [CONFUI_SPINBOX_DISP_SEL].list,
-      confui->uiitem [CONFUI_SPINBOX_DISP_SEL].listidx);
-  nidx = uiutilsSpinboxTextGetIdx (&confui->uiitem [CONFUI_SPINBOX_DISP_SEL].u.spinbox);
-  confui->uiitem [CONFUI_SPINBOX_DISP_SEL].listidx = nidx;
+  oselidx = confui->uiitem [CONFUI_SPINBOX_DISP_SEL].listidx;
+  nselidx = uiutilsSpinboxTextGetValue (
+      &confui->uiitem [CONFUI_SPINBOX_DISP_SEL].u.spinbox);
+  confui->uiitem [CONFUI_SPINBOX_DISP_SEL].listidx = nselidx;
 
   confuiDispSaveTable (confui, oselidx);
   confuiCreateTagTableDisp (confui);
@@ -4747,7 +4747,8 @@ confuiCreateTagTableDisp (configui_t *confui)
   dispsel_t     *dispsel;
 
 
-  selidx = uiutilsSpinboxTextGetValue (&confui->uiitem [CONFUI_SPINBOX_DISP_SEL].u.spinbox);
+  selidx = uiutilsSpinboxTextGetValue (
+      &confui->uiitem [CONFUI_SPINBOX_DISP_SEL].u.spinbox);
   dispsel = confui->dispsel;
   sellist = dispselGetList (dispsel, selidx);
 

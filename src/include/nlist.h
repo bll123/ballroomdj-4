@@ -15,16 +15,17 @@ ssize_t   nlistGetCount (nlist_t *list);
 void      nlistSetSize (nlist_t *, ssize_t);
 void      nlistSetFreeHook (nlist_t *, nlistFree_t valueFreeHook);
   /* set routines */
-void      nlistSetData (nlist_t *, nlistidx_t idx, void *data);
-void      nlistSetStr (nlist_t *, nlistidx_t idx, const char *data);
-void      nlistSetNum (nlist_t *, nlistidx_t idx, ssize_t lval);
-void      nlistSetDouble (nlist_t *, nlistidx_t idx, double dval);
-void      nlistSetList (nlist_t *list, nlistidx_t lidx, nlist_t *data);
-void      nlistIncrement (nlist_t *, nlistidx_t idx);
-void      nlistDecrement (nlist_t *, nlistidx_t idx);
+void      nlistSetData (nlist_t *, nlistidx_t lkey, void *data);
+void      nlistSetStr (nlist_t *, nlistidx_t lkey, const char *data);
+void      nlistSetNum (nlist_t *, nlistidx_t lkey, ssize_t lval);
+void      nlistSetDouble (nlist_t *, nlistidx_t lkey, double dval);
+void      nlistSetList (nlist_t *list, nlistidx_t lkey, nlist_t *data);
+void      nlistIncrement (nlist_t *, nlistidx_t lkey);
+void      nlistDecrement (nlist_t *, nlistidx_t lkey);
   /* get routines */
-void      *nlistGetData (nlist_t *, nlistidx_t idx);
-char      *nlistGetStr (nlist_t *, nlistidx_t idx);
+void      *nlistGetData (nlist_t *, nlistidx_t lkey);
+char      *nlistGetStr (nlist_t *, nlistidx_t lkey);
+nlistidx_t  nlistGetIdx (nlist_t *list, nlistidx_t idx);
 void      *nlistGetDataByIdx (nlist_t *, nlistidx_t idx);
 ssize_t   nlistGetNumByIdx (nlist_t *list, nlistidx_t idx);
 nlistidx_t  nlistGetKeyByIdx (nlist_t *list, nlistidx_t idx);

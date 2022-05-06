@@ -56,22 +56,22 @@ nlistSetFreeHook (nlist_t *list, listFree_t valueFreeHook)
 }
 
 void
-nlistSetData (nlist_t *list, nlistidx_t lidx, void *data)
+nlistSetData (nlist_t *list, nlistidx_t lkey, void *data)
 {
   listitem_t    item;
 
-  item.key.idx = lidx;
+  item.key.idx = lkey;
   item.valuetype = VALUE_DATA;
   item.value.data = data;
   listSet (list, &item);
 }
 
 void
-nlistSetStr (nlist_t *list, nlistidx_t lidx, const char *data)
+nlistSetStr (nlist_t *list, nlistidx_t lkey, const char *data)
 {
   listitem_t    item;
 
-  item.key.idx = lidx;
+  item.key.idx = lkey;
   item.valuetype = VALUE_STR;
   item.value.data = NULL;
   if (data != NULL) {
@@ -81,78 +81,78 @@ nlistSetStr (nlist_t *list, nlistidx_t lidx, const char *data)
 }
 
 void
-nlistSetNum (nlist_t *list, nlistidx_t lidx, ssize_t data)
+nlistSetNum (nlist_t *list, nlistidx_t lkey, ssize_t data)
 {
   listitem_t    item;
 
-  item.key.idx = lidx;
+  item.key.idx = lkey;
   item.valuetype = VALUE_NUM;
   item.value.num = data;
   listSet (list, &item);
 }
 
 void
-nlistSetDouble (nlist_t *list, nlistidx_t lidx, double data)
+nlistSetDouble (nlist_t *list, nlistidx_t lkey, double data)
 {
   listitem_t    item;
 
-  item.key.idx = lidx;
+  item.key.idx = lkey;
   item.valuetype = VALUE_DOUBLE;
   item.value.dval = data;
   listSet (list, &item);
 }
 
 void
-nlistSetList (nlist_t *list, nlistidx_t lidx, nlist_t *data)
+nlistSetList (nlist_t *list, nlistidx_t lkey, nlist_t *data)
 {
   listitem_t    item;
 
-  item.key.idx = lidx;
+  item.key.idx = lkey;
   item.valuetype = VALUE_LIST;
   item.value.data = data;
   listSet (list, &item);
 }
 
 void
-nlistIncrement (nlist_t *list, nlistidx_t lidx)
+nlistIncrement (nlist_t *list, nlistidx_t lkey)
 {
   listitem_t      item;
   nlistidx_t      idx;
   ssize_t         value = 0;
 
-  item.key.idx = lidx;
+  item.key.idx = lkey;
   idx = listGetIdx (list, &item.key);
   if (idx >= 0) {
     value = list->data [idx].value.num;
   }
   ++value;
-  item.key.idx = lidx;
+  item.key.idx = lkey;
   item.valuetype = VALUE_NUM;
   item.value.num = value;
   listSet (list, &item);
 }
 
 void
-nlistDecrement (nlist_t *list, nlistidx_t lidx)
+nlistDecrement (nlist_t *list, nlistidx_t lkey)
 {
   listitem_t      item;
   nlistidx_t      idx;
   ssize_t         value = 0;
 
-  item.key.idx = lidx;
+  item.key.idx = lkey;
   idx = listGetIdx (list, &item.key);
   if (idx >= 0) {
     value = list->data [idx].value.num;
   }
   --value;
-  item.key.idx = lidx;
+  item.key.idx = lkey;
   item.valuetype = VALUE_NUM;
   item.value.num = value;
   listSet (list, &item);
 }
 
 void *
-nlistGetData (nlist_t *list, nlistidx_t lidx)
+nlistGetData (nlist_t *list, nlistidx_t lkey)
 {
   void        *value = NULL;
   listkey_t   key;
@@ -162,44 +162,62 @@ nlistGetData (nlist_t *list, nlistidx_t lidx)
     return NULL;
   }
 
-  key.idx = lidx;
+  key.idx = lkey;
   idx = listGetIdx (list, &key);
   if (idx >= 0) {
     value = (char *) list->data [idx].value.data;
   }
-  logMsg (LOG_DBG, LOG_LIST, "list:%s key:%ld idx:%ld", list->name, lidx, idx);
+  logMsg (LOG_DBG, LOG_LIST, "list:%s key:%ld idx:%ld", list->name, lkey, idx);
   return value;
 }
 
 char *
-nlistGetStr (nlist_t *list, nlistidx_t lidx)
+nlistGetStr (nlist_t *list, nlistidx_t lkey)
 {
-  return nlistGetData (list, lidx);
+  return nlistGetData (list, lkey);
+}
+
+nlistidx_t
+nlistGetIdx (nlist_t *list, nlistidx_t lkey)
+{
+  listkey_t   key;
+  nlistidx_t  idx;
+
+  if (list == NULL) {
+    return LIST_LOC_INVALID;
+  }
+  if (lkey < 0 || lkey >= list->count) {
+    return LIST_LOC_INVALID;
+  }
+
+  key.idx = lkey;
+  idx = listGetIdx (list, &key);
+  return idx;
 }
 
 inline void *
-nlistGetDataByIdx (nlist_t *list, nlistidx_t lidx)
+nlistGetDataByIdx (nlist_t *list, nlistidx_t idx)
 {
-  return listGetDataByIdx (list, lidx);
+  return listGetDataByIdx (list, idx);
 }
 
 inline ssize_t
-nlistGetNumByIdx (nlist_t *list, nlistidx_t lidx)
+nlistGetNumByIdx (nlist_t *list, nlistidx_t idx)
 {
-  return listGetNumByIdx (list, lidx);
+  return listGetNumByIdx (list, idx);
 }
 
 inline nlistidx_t
-nlistGetKeyByIdx (nlist_t *list, nlistidx_t lidx)
+nlistGetKeyByIdx (nlist_t *list, nlistidx_t idx)
 {
   if (list == NULL) {
     return LIST_LOC_INVALID;
   }
-  if (lidx < 0 || lidx >= list->count) {
+  if (idx < 0 || idx >= list->count) {
     return LIST_LOC_INVALID;
   }
 
-  return list->data [lidx].key.idx;
+  return list->data [idx].key.idx;
 }
 
 ssize_t

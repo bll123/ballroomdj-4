@@ -21,7 +21,7 @@ foreach fn [list orgopt.txt] {
   file copy -force templates/$fn $nfn
 }
 
-set fnlist [glob -directory templates ds*.txt]
+set fnlist [glob -directory templates ds-*.txt]
 set proflist [glob -directory [file join $datatopdir data] profile*]
 foreach prof $proflist {
   foreach fn $fnlist {
