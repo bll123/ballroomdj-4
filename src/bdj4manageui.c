@@ -552,7 +552,7 @@ manageBuildUI (manageui_t *manage)
 
   /* CONTEXT: config: display settings: button: add the selected song to the song list */
   widget = uiutilsCreateButton (NULL, _("Select"), "button_left",
-      uisongselQueueProcessSignal, manage->slezsongsel);
+      uisongselQueueProcessSelectHandler, manage->slezsongsel);
   uiutilsBoxPackStart (vbox, widget);
 // ### need to set this widget value within uisongselgtk.c so that
 // ### ussqps can do a comparison and put the song in the proper music queue.
@@ -888,10 +888,10 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
   /* due to the db update message, these must be applied afterwards */
   targs = strdup (args);
   uiplayerProcessMsg (routefrom, route, msg, args, manage->slplayer);
+  uimusicqProcessMsg (routefrom, route, msg, args, manage->slmusicq);
+  uisongselProcessMsg (routefrom, route, msg, args, manage->slsongsel);
   uisongselProcessMsg (routefrom, route, msg, args, manage->slezsongsel);
   uimusicqProcessMsg (routefrom, route, msg, args, manage->slezmusicq);
-  uisongselProcessMsg (routefrom, route, msg, args, manage->slsongsel);
-  uimusicqProcessMsg (routefrom, route, msg, args, manage->slmusicq);
   uiplayerProcessMsg (routefrom, route, msg, targs, manage->mmplayer);
   uisongselProcessMsg (routefrom, route, msg, targs, manage->mmsongsel);
   uimusicqProcessMsg (routefrom, route, msg, targs, manage->mmmusicq);

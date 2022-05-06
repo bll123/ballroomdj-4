@@ -79,7 +79,7 @@ GtkWidget * uisongselBuildUI (uisongsel_t *uisongsel, GtkWidget *parentwin);
 void      uisongselClearData (uisongsel_t *uisongsel);
 void      uisongselPopulateData (uisongsel_t *uisongsel);
 void      uisongselSetFavoriteForeground (uisongsel_t *uisongsel, char *color);
-void      uisongselQueueProcessSignal (UIWidget *uiwidget, void *udata);
+void      uisongselQueueProcessSelectHandler (UIWidget *uiwidget, void *udata);
 
 #endif /* INC_UISONGSEL_H */
 

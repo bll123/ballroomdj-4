@@ -104,6 +104,8 @@ typedef struct {
   uiutilstextbox_t  *supporttb;
   uiutilsentry_t    supportsubject;
   uiutilsentry_t    supportemail;
+  GtkWidget         *playeruibutton;
+  GtkWidget         *manageuibutton;
   /* options */
   datafile_t      *optiondf;
   nlist_t         *options;
@@ -139,9 +141,8 @@ static void     starterStopMain (startui_t *starter);
 static gboolean starterCloseWin (GtkWidget *window, GdkEvent *event, gpointer userdata);
 static void     starterSigHandler (int sig);
 
-//static void     starterStartPlayer (GtkButton *b, gpointer udata);
-static void     starterStartPlayer (UIWidget *uiwidget, void *udata);
-static void     starterStartManage (GtkButton *b, gpointer udata);
+static void     starterStartPlayerui (UIWidget *uiwidget, void *udata);
+static void     starterStartManageui (GtkButton *b, gpointer udata);
 static void     starterStartConfig (GtkButton *b, gpointer udata);
 static void     starterStartRaffleGames (GtkButton *b, gpointer udata);
 static void     starterProcessExit (GtkButton *b, gpointer udata);
@@ -432,20 +433,22 @@ starterBuildUI (startui_t  *starter)
 
   /* CONTEXT: button: starts the player user interface */
   widget = uiutilsCreateButton (&starter->buttons [START_BUTTON_PLAYER],
-      _("Player"), NULL, starterStartPlayer, starter);
+      _("Player"), NULL, starterStartPlayerui, starter);
   uiutilsWidgetSetMarginTop (widget, uiutilsBaseMarginSz * 2);
   uiutilsWidgetAlignHorizStart (widget);
   uiutilsSizeGroupAdd (&sg, widget);
+  starter->playeruibutton = widget;
   uiutilsBoxPackStart (bvbox, widget);
   widget = gtk_bin_get_child (GTK_BIN (widget));
   gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
 
   /* CONTEXT: button: starts the management user interface */
   widget = uiutilsCreateButton (&starter->buttons [START_BUTTON_MANAGE],
-      _("Manage"), NULL, starterStartManage, starter);
+      _("Manage"), NULL, starterStartManageui, starter);
   uiutilsWidgetSetMarginTop (widget, uiutilsBaseMarginSz * 2);
   uiutilsWidgetAlignHorizStart (widget);
   uiutilsSizeGroupAdd (&sg, widget);
+  starter->manageuibutton = widget;
   uiutilsBoxPackStart (bvbox, widget);
   widget = gtk_bin_get_child (GTK_BIN (widget));
   gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
@@ -743,6 +746,12 @@ starterProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_SOCKET_CLOSE: {
+          if (routefrom == ROUTE_PLAYERUI) {
+            uiutilsWidgetEnable (starter->manageuibutton);
+          }
+          if (routefrom == ROUTE_MANAGEUI) {
+            uiutilsWidgetEnable (starter->playeruibutton);
+          }
           procutilCloseProcess (starter->processes [routefrom],
               starter->conn, routefrom);
           procutilFreeRoute (starter->processes, routefrom);
@@ -843,24 +852,25 @@ starterSigHandler (int sig)
 }
 
 static void
-//starterStartPlayer (GtkButton *b, gpointer udata)
-starterStartPlayer (UIWidget *uiwidget, void *udata)
+starterStartPlayerui (UIWidget *uiwidget, void *udata)
 {
   startui_t      *starter = udata;
 
   starterCheckProfile (starter);
   starter->processes [ROUTE_PLAYERUI] = procutilStartProcess (
       ROUTE_PLAYERUI, "bdj4playerui", PROCUTIL_DETACH, NULL);
+  uiutilsWidgetDisable (starter->manageuibutton);
 }
 
 static void
-starterStartManage (GtkButton *b, gpointer udata)
+starterStartManageui (GtkButton *b, gpointer udata)
 {
   startui_t      *starter = udata;
 
   starterCheckProfile (starter);
   starter->processes [ROUTE_MANAGEUI] = procutilStartProcess (
       ROUTE_MANAGEUI, "bdj4manageui", PROCUTIL_DETACH, NULL);
+  uiutilsWidgetDisable (starter->playeruibutton);
 }
 
 static void

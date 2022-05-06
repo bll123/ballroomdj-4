@@ -123,8 +123,11 @@ int
 uisongselProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     bdjmsgmsg_t msg, char *args, void *udata)
 {
-  uisongsel_t    *uisongsel = udata;
+  uisongsel_t   *uisongsel = udata;
+  bool          disp = false;
 
+  /* if a message is added that has arguments, then the args var */
+  /* needs to be strdup'd (see uimusicq.c) */
 
   switch (route) {
     case ROUTE_NONE:
@@ -134,6 +137,7 @@ uisongselProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_DATABASE_UPDATE: {
           /* re-filter the display */
           uisongselFilterDanceProcess (uisongsel, uisongsel->danceIdx);
+          disp = true;
           break;
         }
         default: {
@@ -145,6 +149,12 @@ uisongselProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     default: {
       break;
     }
+  }
+
+  if (disp) {
+    logMsg (LOG_DBG, LOG_MSGS, "uisongsel (%d): got: from:%d/%s route:%d/%s msg:%d/%s args:%s",
+        uisongsel->dispselType, routefrom, msgRouteDebugText (routefrom),
+        route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
   }
 
   return 0;

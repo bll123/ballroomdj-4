@@ -472,13 +472,12 @@ uiplayerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     bdjmsgmsg_t msg, char *args, void *udata)
 {
   uiplayer_t    *uiplayer = udata;
+  bool          disp = false;
+  char          *targs = NULL;
 
   logProcBegin (LOG_PROC, "uiplayerProcessMsg");
-
-  if (msg != MSG_PLAYER_STATUS_DATA) {
-    logMsg (LOG_DBG, LOG_MSGS, "uiplayer: got: from:%d/%s route:%d/%s msg:%d/%s args:%s",
-        routefrom, msgRouteDebugText (routefrom),
-        route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
+  if (args != NULL) {
+    targs = strdup (args);
   }
 
   switch (route) {
@@ -487,23 +486,28 @@ uiplayerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     case ROUTE_PLAYERUI: {
       switch (msg) {
         case MSG_PLAYER_STATE: {
-          uiplayerProcessPlayerState (uiplayer, atol (args));
+          uiplayerProcessPlayerState (uiplayer, atol (targs));
+          disp = true;
           break;
         }
         case MSG_PLAY_PAUSEATEND_STATE: {
-          uiplayerProcessPauseatend (uiplayer, atol (args));
+          uiplayerProcessPauseatend (uiplayer, atol (targs));
+          disp = true;
           break;
         }
         case MSG_PLAYER_STATUS_DATA: {
-          uiplayerProcessPlayerStatusData (uiplayer, args);
+          uiplayerProcessPlayerStatusData (uiplayer, targs);
+          // disp = true;
           break;
         }
         case MSG_MUSICQ_STATUS_DATA: {
-          uiplayerProcessMusicqStatusData (uiplayer, args);
+          uiplayerProcessMusicqStatusData (uiplayer, targs);
+          disp = true;
           break;
         }
         case MSG_FINISHED: {
           uiplayerClearDisplay (uiplayer);
+          disp = true;
           break;
         }
         default: {
@@ -515,6 +519,15 @@ uiplayerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     default: {
       break;
     }
+  }
+
+  if (disp) {
+    logMsg (LOG_DBG, LOG_MSGS, "uiplayer: got: from:%d/%s route:%d/%s msg:%d/%s args:%s",
+        routefrom, msgRouteDebugText (routefrom),
+        route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
+  }
+  if (args != NULL) {
+    free (targs);
   }
 
   logProcEnd (LOG_PROC, "uiplayerProcessMsg", "");
