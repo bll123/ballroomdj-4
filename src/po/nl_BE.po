@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: BDJ4 4.0.0\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
-"POT-Creation-Date: 2022-05-03\n"
-"PO-Revision-Date: 2022-05-03\n"
+"POT-Creation-Date: 2022-05-06\n"
+"PO-Revision-Date: 2022-05-06\n"
 "Last-Translator: marimo\n"
 "Language-Team: dutch\n"
 "Language: nl\n"
@@ -113,8 +113,8 @@ msgstr ""
 msgid "Accent Colour"
 msgstr ""
 
-#. CONTEXT: menu selection: actions for song list
 #. CONTEXT: menu selection: actions for song editor
+#. CONTEXT: menu selection: actions for song list
 msgid "Actions"
 msgstr "Acties"
 
@@ -253,6 +253,7 @@ msgstr ""
 msgid "Clear Queue"
 msgstr ""
 
+#. CONTEXT: action button for the file select dialog
 #. CONTEXT: marquee font size dialog: action button
 #. CONTEXT: action button for the support dialog
 #. CONTEXT: action button for the support message dialog
@@ -273,7 +274,6 @@ msgstr "Componist"
 msgid "Conductor"
 msgstr "Uitvoerend artiest"
 
-#. CONTEXT: button: starts the configuration user interface
 msgid "Configure"
 msgstr ""
 
@@ -292,6 +292,10 @@ msgstr ""
 
 #. CONTEXT: installer: status message
 msgid "Copy finished."
+msgstr ""
+
+#, c-format
+msgid "Copy of %s"
 msgstr ""
 
 #. CONTEXT: installer: status message
@@ -394,6 +398,18 @@ msgstr "E-mailadres"
 msgid "Easy"
 msgstr "Gemakkelijk"
 
+#. CONTEXT: display settings for: easy song list
+msgid "Easy Song List"
+msgstr ""
+
+#. CONTEXT: menu checkbox: easy song list editor
+msgid "Easy Song List Editor"
+msgstr ""
+
+#. CONTEXT: display settings for: easy song selection
+msgid "Easy Song Selection"
+msgstr ""
+
 #. CONTEXT: menu selection: song list: edit menu
 msgid "Edit"
 msgstr "Bewerken"
@@ -468,7 +484,6 @@ msgstr ""
 msgid "Examples"
 msgstr "Voorbeelden"
 
-#. CONTEXT: button: exits BDJ4
 msgid "Exit"
 msgstr "Afsluiten"
 
@@ -489,7 +504,6 @@ msgstr ""
 msgid "Export for %s"
 msgstr "Export voor %s"
 
-#. CONTEXT: button: fade out the song and stop playing it
 msgid "Fade"
 msgstr "Fade"
 
@@ -520,7 +534,6 @@ msgstr ""
 msgid "Filter Songs"
 msgstr ""
 
-#. CONTEXT: a button that starts the filters (narrowing down song selections) dialog
 msgid "Filters"
 msgstr ""
 
@@ -678,7 +691,6 @@ msgstr "Lage %s"
 msgid "MPM"
 msgstr "MPM"
 
-#. CONTEXT: button: starts the management user interface
 msgid "Manage"
 msgstr ""
 
@@ -803,7 +815,6 @@ msgstr ""
 msgid "New Status"
 msgstr ""
 
-#. CONTEXT: button: start playing the next song (immediate)
 msgid "Next Song"
 msgstr "Volgende nummer"
 
@@ -828,6 +839,7 @@ msgstr "Notities"
 msgid "Off"
 msgstr "Uit"
 
+#. CONTEXT: menu selection: song list: options menu
 #. CONTEXT: menu selection: options for the player
 msgid "Options"
 msgstr "Opties"
@@ -894,7 +906,6 @@ msgid "Playable Status"
 msgstr ""
 
 #. CONTEXT: config: which player interface to use
-#. CONTEXT: button: starts the player user interface
 msgid "Player"
 msgstr "Speler"
 
@@ -978,9 +989,11 @@ msgstr ""
 msgid "Quickstep"
 msgstr "Quickstep"
 
-#. CONTEXT: button: support : starts raffle games
 msgid "Raffle Games"
 msgstr "Loterij spellen"
+
+msgid "Raffle Songs"
+msgstr "Loterij liedjes"
 
 #. CONTEXT: config: rating: title of the rating name column
 msgid "Rating"
@@ -995,15 +1008,12 @@ msgid "Registering %s."
 msgstr ""
 
 #. CONTEXT: config: display settings: button: remove the selected field
+#. CONTEXT: button: remove the song from the queue
 msgid "Remove"
 msgstr "Verwijderen"
 
 #. CONTEXT: config: remove spaces when renaming audio files
 msgid "Remove Spaces"
-msgstr ""
-
-#. CONTEXT: button: remove the song from the queue
-msgid "Remove from queue"
 msgstr ""
 
 msgid "Renames the audio files based on the organization settings."
@@ -1042,7 +1052,6 @@ msgstr ""
 msgid "Reset"
 msgstr "Resetten"
 
-#. CONTEXT: button: return to the beginning of the song
 msgid "Return to beginning of song"
 msgstr ""
 
@@ -1072,11 +1081,18 @@ msgid "Search"
 msgstr "Zoeken"
 
 #. CONTEXT: config: display settings: button: add the selected field
+#. CONTEXT: config: display settings: button: add the selected song to the song list
+#. CONTEXT: action button for the file select dialog
 #. CONTEXT: select a song to be added to the song list
 #. CONTEXT: actions associated with the select folder dialog
 #. CONTEXT: actions associated with the select file dialog
 msgid "Select"
 msgstr "Selecteer"
+
+#. CONTEXT: file select dialog, title of window: select <file-type>
+#, c-format
+msgid "Select %s"
+msgstr ""
 
 #. CONTEXT: installer: label for entry field for BDJ3 location
 #, c-format
@@ -1091,7 +1107,6 @@ msgstr "Selecteer bestand"
 msgid "Select Music Folder Location"
 msgstr ""
 
-#. CONTEXT: starterui: basic support dialog: button: support option
 #. CONTEXT: action button for the support message dialog
 msgid "Send Support Message"
 msgstr "Verzend Support bericht"
@@ -1142,7 +1157,9 @@ msgid "Song End"
 msgstr "Song Einde"
 
 #. CONTEXT: display settings for: song list
-#. CONTEXT: name of song list editor tab
+#. CONTEXT: name of easy song list/song selection tab
+#. CONTEXT: name of easy song list tab
+#. CONTEXT: what type of file to load
 msgid "Song List"
 msgstr "Songlijst"
 
@@ -1194,7 +1211,6 @@ msgstr ""
 msgid "Subject"
 msgstr "Onderwerp"
 
-#. CONTEXT: button: support : support information
 #. CONTEXT: title for the support dialog
 msgid "Support"
 msgstr "Support"

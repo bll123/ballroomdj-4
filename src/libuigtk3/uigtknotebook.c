@@ -43,3 +43,9 @@ uiutilsNotebookSetActionWidget (GtkWidget *notebook, GtkWidget *widget, GtkPackT
 {
   gtk_notebook_set_action_widget (GTK_NOTEBOOK (notebook), widget, pack);
 }
+
+void
+uiutilsNotebookSetPage (GtkWidget *notebook, int pagenum)
+{
+  gtk_notebook_set_current_page (GTK_NOTEBOOK (notebook), pagenum);
+}

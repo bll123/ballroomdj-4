@@ -231,6 +231,7 @@ void  uiutilsTextBoxSetHeight (uiutilstextbox_t *tb, int h);
 GtkWidget * uiutilsCreateNotebook (void);
 void  uiutilsNotebookAppendPage (GtkWidget *notebook, GtkWidget *widget, GtkWidget *label);
 void  uiutilsNotebookSetActionWidget (GtkWidget *notebook, GtkWidget *widget, GtkPackType pack);
+void  uiutilsNotebookSetPage (GtkWidget *notebook, int pagenum);
 
 /* uigtkbox.c */
 GtkWidget *uiutilsCreateVertBox (void);

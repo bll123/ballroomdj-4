@@ -303,8 +303,7 @@ main (int argc, char *argv[])
       manage.musicdb);
   manage.slmusicq = uimusicqInit (manage.conn,
       manage.musicdb, manage.dispsel,
-      UIMUSICQ_FLAGS_NO_QUEUE | UIMUSICQ_FLAGS_NO_TOGGLE_PAUSE |
-          UIMUSICQ_FLAGS_NO_REMOVE,
+      UIMUSICQ_FLAGS_NO_QUEUE | UIMUSICQ_FLAGS_NO_TOGGLE_PAUSE,
       DISP_SEL_SONGLIST);
   manage.slsongsel = uisongselInit (manage.conn,
       manage.musicdb, manage.dispsel, manage.options,
@@ -313,8 +312,7 @@ main (int argc, char *argv[])
       manage.musicdb, manage.dispsel, manage.options);
   manage.slezmusicq = uimusicqInit (manage.conn,
       manage.musicdb, manage.dispsel,
-      UIMUSICQ_FLAGS_NO_QUEUE | UIMUSICQ_FLAGS_NO_TOGGLE_PAUSE |
-          UIMUSICQ_FLAGS_NO_REMOVE,
+      UIMUSICQ_FLAGS_NO_QUEUE | UIMUSICQ_FLAGS_NO_TOGGLE_PAUSE,
       DISP_SEL_EZSONGLIST);
   manage.slezsongsel = uisongselInit (manage.conn,
       manage.musicdb, manage.dispsel, manage.options,
@@ -607,11 +605,6 @@ manageBuildUISongListEditor (manageui_t *manage)
   /* CONTEXT: config: display settings: button: add the selected song to the song list */
   widget = uiutilsCreateButton (NULL, _("Select"), "button_left",
       uisongselQueueProcessSelectHandler, manage->slezsongsel);
-  uiutilsBoxPackStart (vbox, widget);
-
-  /* CONTEXT: button: remove the song from the queue */
-  widget = uiutilsCreateButton (NULL, _("Remove from queue"), "button_remove",
-      uimusicqRemoveProcessSignal, manage->slezmusicq);
   uiutilsBoxPackStart (vbox, widget);
 
   widget = uisongselBuildUI (manage->slezsongsel, manage->window);
@@ -1239,18 +1232,15 @@ manageSetEasySonglist (manageui_t *manage)
   if (val) {
     uiutilsWidgetHide (manage->slmusicqtabwidget);
     uiutilsWidgetHide (manage->slsongseltabwidget);
+    uiutilsWidgetShowAll (manage->slezmusicqtabwidget);
+    uiutilsNotebookSetPage (manage->slnotebook, 0);
   } else {
     uiutilsWidgetHide (manage->slezmusicqtabwidget);
-  }
-
-  if (val) {
-    uiutilsWidgetShowAll (manage->slezmusicqtabwidget);
-  } else {
     uiutilsWidgetShowAll (manage->slmusicqtabwidget);
     uiutilsWidgetShowAll (manage->slsongseltabwidget);
+    uiutilsNotebookSetPage (manage->slnotebook, 1);
   }
 }
-
 
 /* general */
 

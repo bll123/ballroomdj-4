@@ -120,7 +120,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
   if ((uimusicq->uimusicqflags & UIMUSICQ_FLAGS_NO_REMOVE) !=
       UIMUSICQ_FLAGS_NO_REMOVE) {
     /* CONTEXT: button: remove the song from the queue */
-    widget = uiutilsCreateButton (NULL, _("Remove from queue"), "button_audioremove",
+    widget = uiutilsCreateButton (NULL, _("Remove"), "button_audioremove",
         uimusicqRemoveProcessSignal, uimusicq);
     uiutilsBoxPackStart (hbox, widget);
   }
