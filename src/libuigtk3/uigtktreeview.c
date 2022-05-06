@@ -183,6 +183,15 @@ uiutilsTreeViewGetSelection (GtkWidget *tree, GtkTreeModel **model, GtkTreeIter 
   return count;
 }
 
+void
+uiutilsTreeViewAllowMultiple (GtkWidget *tree)
+{
+  GtkTreeSelection  *sel;
+  sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (tree));
+  gtk_tree_selection_set_mode (sel, GTK_SELECTION_MULTIPLE);
+}
+
+
 /* internal routines */
 
 static valuetype_t

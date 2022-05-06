@@ -246,13 +246,14 @@ void        uiutilsProgressBarSet (GtkWidget *pb, double val);
 
 /* uigtktreeview.c */
 GtkWidget * uiutilsCreateTreeView (void);
-GType       * uiutilsAppendType (GType *types, int *ncol, int type);
+GType * uiutilsAppendType (GType *types, int *ncol, int type);
 GtkTreeViewColumn * uiutilsAddDisplayColumns (GtkWidget *tree,
     slist_t *sellist, int col, int fontcol, int ellipsizeCol);
-GType *     uiutilsAddDisplayTypes (GType *types, slist_t *sellist, int *col);
-void        uiutilsSetDisplayColumns (GtkListStore *store, GtkTreeIter *iter,
+GType * uiutilsAddDisplayTypes (GType *types, slist_t *sellist, int *col);
+void  uiutilsSetDisplayColumns (GtkListStore *store, GtkTreeIter *iter,
     slist_t *sellist, song_t *song, int col);
-int uiutilsTreeViewGetSelection (GtkWidget *tree, GtkTreeModel **model, GtkTreeIter *iter);
+int   uiutilsTreeViewGetSelection (GtkWidget *tree, GtkTreeModel **model, GtkTreeIter *iter);
+void  uiutilsTreeViewAllowMultiple (GtkWidget *tree);
 
 
 /* uigtkdialog.c */
