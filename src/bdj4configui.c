@@ -190,7 +190,8 @@ typedef struct {
   } u;
   int               listidx;        // for combobox, spinbox
   nlist_t           *list;
-  nlist_t           *sblookuplist;
+  nlist_t           *sblookuplist;  // used when the display and the value
+                                    //    are different
   int               danceidx;       // for dance edit
   GtkWidget         *widget;
 } confuiitem_t;
@@ -706,9 +707,7 @@ main (int argc, char *argv[])
     ++count;
   }
   confui.uiitem [CONFUI_SPINBOX_UI_THEME].list = tlist;
-  confui.uiitem [CONFUI_SPINBOX_UI_THEME].sblookuplist = tlist;
   confui.uiitem [CONFUI_SPINBOX_MQ_THEME].list = tlist;
-  confui.uiitem [CONFUI_SPINBOX_MQ_THEME].sblookuplist = tlist;
 
   tlist = nlistAlloc ("cu-mob-mq", LIST_UNORDERED, free);
   /* CONTEXT: mobile marquee: off */
@@ -854,18 +853,14 @@ confuiClosingCallback (void *udata, programstate_t programState)
 
   for (int i = CONFUI_ENTRY_MAX + 1; i < CONFUI_SPINBOX_MAX; ++i) {
     uiutilsSpinboxTextFree (&confui->uiitem [i].u.spinbox);
-    /* the mq and ui-theme share both list and sblookuplist */
-    /* ui-theme > mq-theme */
+    /* the mq and ui-theme share the list */
     if (i == CONFUI_SPINBOX_UI_THEME) {
       continue;
     }
     if (confui->uiitem [i].list != NULL) {
       nlistFree (confui->uiitem [i].list);
     }
-    /* mq-theme and dance-type share the list and sblookuplist */
-    if (i != CONFUI_SPINBOX_MQ_THEME &&
-        i != CONFUI_SPINBOX_DANCE_TYPE &&
-        confui->uiitem [i].sblookuplist != NULL) {
+    if (confui->uiitem [i].sblookuplist != NULL) {
       nlistFree (confui->uiitem [i].sblookuplist);
     }
     confui->uiitem [i].list = NULL;
@@ -1920,6 +1915,9 @@ confuiPopulateOptions (configui_t *confui)
         if (confui->uiitem [i].sblookuplist != NULL) {
           sval = nlistGetStr (confui->uiitem [i].sblookuplist, nval);
           outtype = CONFUI_OUT_STR;
+        } else if (confui->uiitem [i].list != NULL) {
+          sval = nlistGetStr (confui->uiitem [i].list, nval);
+          outtype = CONFUI_OUT_STR;
         }
         break;
       }
@@ -2904,7 +2902,6 @@ confuiLoadDanceTypeList (configui_t *confui)
   }
 
   confui->uiitem [CONFUI_SPINBOX_DANCE_TYPE].list = tlist;
-  confui->uiitem [CONFUI_SPINBOX_DANCE_TYPE].sblookuplist = tlist;
   logProcEnd (LOG_PROC, "confuiLoadDanceTypeList", "");
 }
 
