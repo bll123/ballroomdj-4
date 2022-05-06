@@ -170,6 +170,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
   /* musicq tree view */
 
   widget = uiutilsCreateScrolledWindow ();
+  uiutilsWidgetExpandHoriz (widget);
   uiutilsBoxPackStart (uimusicq->ui [ci].box, widget);
 
   uimusicq->ui [ci].musicqTree = uiutilsCreateTreeView ();

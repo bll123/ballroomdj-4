@@ -130,8 +130,6 @@ typedef struct manage {
   uimusicq_t      *slezmusicq;
   uisongsel_t     *slezsongsel;
   GtkWidget       *slezmusicqtabwidget;
-  GtkWidget       *slezmusicqwidget;
-  GtkWidget       *slezsongselwidget;
   GtkWidget       *slmusicqtabwidget;
   GtkWidget       *slsongseltabwidget;
   GtkWidget       *ezvboxwidget;
@@ -166,6 +164,9 @@ static bool     manageStoppingCallback (void *udata, programstate_t programState
 static bool     manageStopWaitCallback (void *udata, programstate_t programState);
 static bool     manageClosingCallback (void *udata, programstate_t programState);
 static void     manageBuildUI (manageui_t *manage);
+static void     manageBuildUISongListEditor (manageui_t *manage);
+static void     manageBuildUIMusicManager (manageui_t *manage);
+static void     manageBuildUIUpdateDatabase (manageui_t *manage);
 static int      manageMainLoop  (void *tmanage);
 static int      manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
                     bdjmsgmsg_t msg, char *args, void *udata);
@@ -186,8 +187,6 @@ static void     manageSonglistTruncate (GtkMenuItem *mi, gpointer udata);
 static void     manageSonglistLoadFile (manageui_t *manage, const char *fn);
 static void     manageToggleEasySonglist (GtkWidget *mi, gpointer udata);
 static void     manageSetEasySonglist (manageui_t *manage);
-static void     manageEasySongListContResize (GtkWidget* w,
-    GtkAllocation* allocation, gpointer udata);
 /* general */
 static void     manageSwitchPage (GtkNotebook *nb, GtkWidget *page,
     guint pagenum, gpointer udata);
@@ -471,12 +470,10 @@ static void
 manageBuildUI (manageui_t *manage)
 {
   GtkWidget           *menubar;
-  GtkWidget           *notebook;
   GtkWidget           *tabLabel;
   GtkWidget           *widget;
   GtkWidget           *hbox;
   GtkWidget           *vbox;
-  uiutilstextbox_t    *tb;
   char                imgbuff [MAXPATHLEN];
   char                tbuff [MAXPATHLEN];
   gint                x, y;
@@ -515,158 +512,9 @@ manageBuildUI (manageui_t *manage)
   gtk_notebook_set_tab_pos (GTK_NOTEBOOK (manage->mainnotebook), GTK_POS_LEFT);
   uiutilsBoxPackStart (vbox, manage->mainnotebook);
 
-  /* song list editor */
-  vbox = uiutilsCreateVertBox ();
-  uiutilsWidgetSetAllMargins (vbox, 4);
-
-  tabLabel = uiutilsCreateLabel (_("Edit Song Lists"));
-  uiutilsNotebookAppendPage (manage->mainnotebook, vbox, tabLabel);
-  uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_MAIN_SL);
-
-  /* song list editor: player */
-  widget = uiplayerBuildUI (manage->slplayer);
-  uiutilsWidgetExpandHoriz (widget);
-  uiutilsBoxPackStart (vbox, widget);
-
-  notebook = uiutilsCreateNotebook ();
-  uiutilsBoxPackStart (vbox, notebook);
-  manage->slnotebook = notebook;
-
-  /* song list editor: easy song list tab */
-  hbox = uiutilsCreateHorizBox ();
-  /* CONTEXT: name of easy song list/song selection tab */
-  tabLabel = uiutilsCreateLabel (_("Song List"));
-  uiutilsNotebookAppendPage (notebook, hbox, tabLabel);
-  uiutilsNotebookIDAdd (manage->slnbtabid, MANAGE_TAB_SONGLIST);
-  manage->slezmusicqtabwidget = hbox;
-
-  widget = uimusicqBuildUI (manage->slezmusicq, manage->window, MUSICQ_A);
-  uiutilsBoxPackStart (hbox, widget);
-  manage->slezmusicqwidget = widget;
-
-  vbox = uiutilsCreateVertBox ();
-  uiutilsWidgetSetAllMargins (vbox, uiutilsBaseMarginSz * 4);
-  uiutilsWidgetSetMarginTop (vbox, uiutilsBaseMarginSz * 64);
-  uiutilsBoxPackStart (hbox, vbox);
-  manage->ezvboxwidget = vbox;
-
-  /* CONTEXT: config: display settings: button: add the selected song to the song list */
-  widget = uiutilsCreateButton (NULL, _("Select"), "button_left",
-      uisongselQueueProcessSelectHandler, manage->slezsongsel);
-  uiutilsBoxPackStart (vbox, widget);
-// ### need to set this widget value within uisongselgtk.c so that
-// ### ussqps can do a comparison and put the song in the proper music queue.
-
-  /* CONTEXT: button: remove the song from the queue */
-  widget = uiutilsCreateButton (NULL, _("Remove from queue"), "button_remove",
-      uimusicqRemoveProcessSignal, manage->slezmusicq);
-  uiutilsBoxPackStart (vbox, widget);
-
-  widget = uisongselBuildUI (manage->slezsongsel, manage->window);
-  uiutilsBoxPackStart (hbox, widget);
-  manage->slezsongselwidget = widget;
-
-  g_signal_connect (hbox, "size-allocate",
-      G_CALLBACK (manageEasySongListContResize), manage);
-
-  /* song list editor: music queue tab */
-  widget = uimusicqBuildUI (manage->slmusicq, manage->window, MUSICQ_A);
-  /* CONTEXT: name of easy song list tab */
-  tabLabel = uiutilsCreateLabel (_("Song List"));
-  uiutilsNotebookAppendPage (notebook, widget, tabLabel);
-  uiutilsNotebookIDAdd (manage->slnbtabid, MANAGE_TAB_SONGLIST);
-  manage->slmusicqtabwidget = widget;
-
-  /* song list editor: song selection tab*/
-  widget = uisongselBuildUI (manage->slsongsel, manage->window);
-  /* CONTEXT: name of song selection tab */
-  tabLabel = uiutilsCreateLabel (_("Song Selection"));
-  uiutilsNotebookAppendPage (notebook, widget, tabLabel);
-  uiutilsNotebookIDAdd (manage->slnbtabid, MANAGE_TAB_OTHER);
-  manage->slsongseltabwidget = widget;
-
-  /* song list editor song editor tab */
-  widget = uisongeditBuildUI (manage->slsongedit, manage->window);
-  /* CONTEXT: name of song editor tab */
-  tabLabel = uiutilsCreateLabel (_("Song Editor"));
-  uiutilsNotebookAppendPage (notebook, widget, tabLabel);
-  uiutilsNotebookIDAdd (manage->slnbtabid, MANAGE_TAB_SONGEDIT);
-
-  /* music manager */
-  vbox = uiutilsCreateVertBox ();
-  uiutilsWidgetSetAllMargins (vbox, 4);
-  tabLabel = uiutilsCreateLabel (_("Music Manager"));
-  uiutilsNotebookAppendPage (manage->mainnotebook, vbox, tabLabel);
-  uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_MAIN_MM);
-
-  /* music manager: player */
-  widget = uiplayerBuildUI (manage->mmplayer);
-  uiutilsWidgetExpandHoriz (widget);
-  uiutilsBoxPackStart (vbox, widget);
-
-  g_signal_connect (notebook, "switch-page",
-      G_CALLBACK (manageSwitchPage), manage);
-
-  notebook = uiutilsCreateNotebook ();
-  uiutilsBoxPackStart (vbox, notebook);
-  manage->mmnotebook = notebook;
-
-  /* music manager: song selection tab*/
-  widget = uisongselBuildUI (manage->mmsongsel, manage->window);
-  uiutilsWidgetExpandHoriz (widget);
-  /* CONTEXT: name of song selection tab */
-  tabLabel = uiutilsCreateLabel (_("Music Manager"));
-  uiutilsNotebookAppendPage (notebook, widget, tabLabel);
-  uiutilsNotebookIDAdd (manage->mmnbtabid, MANAGE_TAB_OTHER);
-
-  /* music manager: song editor tab */
-  widget = uisongeditBuildUI (manage->mmsongedit, manage->window);
-  /* CONTEXT: name of song editor tab */
-  tabLabel = uiutilsCreateLabel (_("Song Editor"));
-  uiutilsNotebookAppendPage (notebook, widget, tabLabel);
-  uiutilsNotebookIDAdd (manage->mmnbtabid, MANAGE_TAB_SONGEDIT);
-
-  g_signal_connect (notebook, "switch-page",
-      G_CALLBACK (manageSwitchPage), manage);
-
-  /* update database */
-  vbox = uiutilsCreateVertBox ();
-  uiutilsWidgetSetAllMargins (vbox, 4);
-  tabLabel = uiutilsCreateLabel (_("Update Database"));
-  uiutilsNotebookAppendPage (manage->mainnotebook, vbox, tabLabel);
-  uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_OTHER);
-
-  tb = uiutilsTextBoxCreate ();
-  uiutilsTextBoxSetReadonly (tb);
-  uiutilsTextBoxSetHeight (tb, 70);
-  uiutilsBoxPackStart (vbox, tb->scw);
-  manage->dbhelpdisp = tb;
-
-  hbox = uiutilsCreateHorizBox ();
-  uiutilsBoxPackStart (vbox, hbox);
-
-  widget = uiutilsSpinboxTextCreate (&manage->dbspinbox, manage);
-  /* currently hard-coded at 30 chars */
-  uiutilsSpinboxTextSet (&manage->dbspinbox, 0,
-      nlistGetCount (manage->dblist), 30, manage->dblist, NULL);
-  uiutilsSpinboxTextSetValue (&manage->dbspinbox, 0);
-  g_signal_connect (widget, "value-changed", G_CALLBACK (manageDbChg), manage);
-  uiutilsBoxPackStart (hbox, widget);
-
-  widget = uiutilsCreateButton (NULL, _("Start"), NULL,
-      manageDbStart, manage);
-  uiutilsBoxPackStart (hbox, widget);
-
-  widget = uiutilsCreateProgressBar (bdjoptGetStr (OPT_P_UI_ACCENT_COL));
-  uiutilsBoxPackStart (vbox, widget);
-  manage->dbpbar = widget;
-
-  tb = uiutilsTextBoxCreate ();
-  uiutilsTextBoxSetReadonly (tb);
-  uiutilsTextBoxDarken (tb);
-  uiutilsTextBoxSetHeight (tb, 300);
-  uiutilsBoxPackStart (vbox, tb->scw);
-  manage->dbstatus = tb;
+  manageBuildUISongListEditor (manage);
+  manageBuildUIMusicManager (manage);
+  manageBuildUIUpdateDatabase (manage);
 
   /* playlist management */
   vbox = uiutilsCreateVertBox ();
@@ -708,6 +556,183 @@ manageBuildUI (manageui_t *manage)
 
   logProcEnd (LOG_PROC, "manageBuildUI", "");
 }
+
+static void
+manageBuildUISongListEditor (manageui_t *manage)
+{
+  GtkWidget           *vbox;
+  GtkWidget           *hbox;
+  GtkWidget           *tabLabel;
+  GtkWidget           *widget;
+  GtkWidget           *notebook;
+
+  /* song list editor */
+  vbox = uiutilsCreateVertBox ();
+  uiutilsWidgetSetAllMargins (vbox, 4);
+
+  tabLabel = uiutilsCreateLabel (_("Edit Song Lists"));
+  uiutilsNotebookAppendPage (manage->mainnotebook, vbox, tabLabel);
+  uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_MAIN_SL);
+
+  /* song list editor: player */
+  widget = uiplayerBuildUI (manage->slplayer);
+  uiutilsWidgetExpandHoriz (widget);
+  uiutilsBoxPackStart (vbox, widget);
+
+  notebook = uiutilsCreateNotebook ();
+  uiutilsBoxPackStart (vbox, notebook);
+  manage->slnotebook = notebook;
+
+  /* song list editor: easy song list tab */
+  widget = uiutilsCreateHorizBox ();
+
+  /* CONTEXT: name of easy song list/song selection tab */
+  tabLabel = uiutilsCreateLabel (_("Song List"));
+  uiutilsNotebookAppendPage (notebook, widget, tabLabel);
+  uiutilsNotebookIDAdd (manage->slnbtabid, MANAGE_TAB_SONGLIST);
+  manage->slezmusicqtabwidget = widget;
+
+  hbox = uiutilsCreateHorizBox ();
+  uiutilsBoxPackStartExpand (widget, hbox);
+
+  widget = uimusicqBuildUI (manage->slezmusicq, manage->window, MUSICQ_A);
+  uiutilsBoxPackStartExpand (hbox, widget);
+
+  vbox = uiutilsCreateVertBox ();
+  uiutilsWidgetSetAllMargins (vbox, uiutilsBaseMarginSz * 4);
+  uiutilsWidgetSetMarginTop (vbox, uiutilsBaseMarginSz * 64);
+  uiutilsBoxPackStart (hbox, vbox);
+  manage->ezvboxwidget = vbox;
+
+  /* CONTEXT: config: display settings: button: add the selected song to the song list */
+  widget = uiutilsCreateButton (NULL, _("Select"), "button_left",
+      uisongselQueueProcessSelectHandler, manage->slezsongsel);
+  uiutilsBoxPackStart (vbox, widget);
+
+  /* CONTEXT: button: remove the song from the queue */
+  widget = uiutilsCreateButton (NULL, _("Remove from queue"), "button_remove",
+      uimusicqRemoveProcessSignal, manage->slezmusicq);
+  uiutilsBoxPackStart (vbox, widget);
+
+  widget = uisongselBuildUI (manage->slezsongsel, manage->window);
+  uiutilsBoxPackStartExpand (hbox, widget);
+
+  /* song list editor: music queue tab */
+  widget = uimusicqBuildUI (manage->slmusicq, manage->window, MUSICQ_A);
+  /* CONTEXT: name of easy song list tab */
+  tabLabel = uiutilsCreateLabel (_("Song List"));
+  uiutilsNotebookAppendPage (notebook, widget, tabLabel);
+  uiutilsNotebookIDAdd (manage->slnbtabid, MANAGE_TAB_SONGLIST);
+  manage->slmusicqtabwidget = widget;
+
+  /* song list editor: song selection tab*/
+  widget = uisongselBuildUI (manage->slsongsel, manage->window);
+  /* CONTEXT: name of song selection tab */
+  tabLabel = uiutilsCreateLabel (_("Song Selection"));
+  uiutilsNotebookAppendPage (notebook, widget, tabLabel);
+  uiutilsNotebookIDAdd (manage->slnbtabid, MANAGE_TAB_OTHER);
+  manage->slsongseltabwidget = widget;
+
+  /* song list editor song editor tab */
+  widget = uisongeditBuildUI (manage->slsongedit, manage->window);
+  /* CONTEXT: name of song editor tab */
+  tabLabel = uiutilsCreateLabel (_("Song Editor"));
+  uiutilsNotebookAppendPage (notebook, widget, tabLabel);
+  uiutilsNotebookIDAdd (manage->slnbtabid, MANAGE_TAB_SONGEDIT);
+}
+
+static void
+manageBuildUIMusicManager (manageui_t *manage)
+{
+  GtkWidget           *vbox;
+  GtkWidget           *tabLabel;
+  GtkWidget           *widget;
+  GtkWidget           *notebook;
+
+  /* music manager */
+  vbox = uiutilsCreateVertBox ();
+  uiutilsWidgetSetAllMargins (vbox, 4);
+  tabLabel = uiutilsCreateLabel (_("Music Manager"));
+  uiutilsNotebookAppendPage (manage->mainnotebook, vbox, tabLabel);
+  uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_MAIN_MM);
+
+  /* music manager: player */
+  widget = uiplayerBuildUI (manage->mmplayer);
+  uiutilsWidgetExpandHoriz (widget);
+  uiutilsBoxPackStart (vbox, widget);
+
+  notebook = uiutilsCreateNotebook ();
+  uiutilsBoxPackStart (vbox, notebook);
+  manage->mmnotebook = notebook;
+
+  /* music manager: song selection tab*/
+  widget = uisongselBuildUI (manage->mmsongsel, manage->window);
+  uiutilsWidgetExpandHoriz (widget);
+  /* CONTEXT: name of song selection tab */
+  tabLabel = uiutilsCreateLabel (_("Music Manager"));
+  uiutilsNotebookAppendPage (notebook, widget, tabLabel);
+  uiutilsNotebookIDAdd (manage->mmnbtabid, MANAGE_TAB_OTHER);
+
+  /* music manager: song editor tab */
+  widget = uisongeditBuildUI (manage->mmsongedit, manage->window);
+  /* CONTEXT: name of song editor tab */
+  tabLabel = uiutilsCreateLabel (_("Song Editor"));
+  uiutilsNotebookAppendPage (notebook, widget, tabLabel);
+  uiutilsNotebookIDAdd (manage->mmnbtabid, MANAGE_TAB_SONGEDIT);
+
+  g_signal_connect (notebook, "switch-page",
+      G_CALLBACK (manageSwitchPage), manage);
+}
+
+static void
+manageBuildUIUpdateDatabase (manageui_t *manage)
+{
+  GtkWidget           *vbox;
+  GtkWidget           *hbox;
+  GtkWidget           *tabLabel;
+  GtkWidget           *widget;
+  uiutilstextbox_t    *tb;
+
+  /* update database */
+  vbox = uiutilsCreateVertBox ();
+  uiutilsWidgetSetAllMargins (vbox, 4);
+  tabLabel = uiutilsCreateLabel (_("Update Database"));
+  uiutilsNotebookAppendPage (manage->mainnotebook, vbox, tabLabel);
+  uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_OTHER);
+
+  tb = uiutilsTextBoxCreate ();
+  uiutilsTextBoxSetReadonly (tb);
+  uiutilsTextBoxSetHeight (tb, 70);
+  uiutilsBoxPackStart (vbox, tb->scw);
+  manage->dbhelpdisp = tb;
+
+  hbox = uiutilsCreateHorizBox ();
+  uiutilsBoxPackStart (vbox, hbox);
+
+  widget = uiutilsSpinboxTextCreate (&manage->dbspinbox, manage);
+  /* currently hard-coded at 30 chars */
+  uiutilsSpinboxTextSet (&manage->dbspinbox, 0,
+      nlistGetCount (manage->dblist), 30, manage->dblist, NULL);
+  uiutilsSpinboxTextSetValue (&manage->dbspinbox, 0);
+  g_signal_connect (widget, "value-changed", G_CALLBACK (manageDbChg), manage);
+  uiutilsBoxPackStart (hbox, widget);
+
+  widget = uiutilsCreateButton (NULL, _("Start"), NULL,
+      manageDbStart, manage);
+  uiutilsBoxPackStart (hbox, widget);
+
+  widget = uiutilsCreateProgressBar (bdjoptGetStr (OPT_P_UI_ACCENT_COL));
+  uiutilsBoxPackStart (vbox, widget);
+  manage->dbpbar = widget;
+
+  tb = uiutilsTextBoxCreate ();
+  uiutilsTextBoxSetReadonly (tb);
+  uiutilsTextBoxDarken (tb);
+  uiutilsTextBoxSetHeight (tb, 300);
+  uiutilsBoxPackStart (vbox, tb->scw);
+  manage->dbstatus = tb;
+}
+
 
 static int
 manageMainLoop (void *tmanage)
@@ -1214,39 +1239,18 @@ manageSetEasySonglist (manageui_t *manage)
   if (val) {
     uiutilsWidgetHide (manage->slmusicqtabwidget);
     uiutilsWidgetHide (manage->slsongseltabwidget);
+  } else {
+    uiutilsWidgetHide (manage->slezmusicqtabwidget);
+  }
+
+  if (val) {
     uiutilsWidgetShowAll (manage->slezmusicqtabwidget);
   } else {
     uiutilsWidgetShowAll (manage->slmusicqtabwidget);
     uiutilsWidgetShowAll (manage->slsongseltabwidget);
-    uiutilsWidgetHide (manage->slezmusicqtabwidget);
   }
 }
 
-
-static void
-manageEasySongListContResize (GtkWidget* w, GtkAllocation* allocation,
-    gpointer udata)
-{
-  manageui_t *manage = udata;
-  int        width;
-  int        nwidth;
-
-  logProcBegin (LOG_PROC, "manageEasySongListContResize");
-
-  if (allocation->width < 200) {
-    logProcEnd (LOG_PROC, "manageEasySongListContResize", "small-alloc-height");
-    return;
-  }
-
-  width = gtk_widget_get_allocated_width (manage->ezvboxwidget);
-  if (width < 0) { width = 36; }
-  nwidth = (allocation->width - width -
-      ((uiutilsBaseMarginSz * 2) * 4) - 4) / 2;
-  gtk_widget_set_size_request (manage->slezmusicqwidget, nwidth, -1);
-  gtk_widget_set_size_request (manage->slezsongselwidget, nwidth, -1);
-
-  logProcEnd (LOG_PROC, "manageEasySongListContResize", "");
-}
 
 /* general */
 

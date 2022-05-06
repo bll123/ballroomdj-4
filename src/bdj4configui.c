@@ -353,6 +353,21 @@ static bool     confuiStoppingCallback (void *udata, programstate_t programState
 static bool     confuiStopWaitCallback (void *udata, programstate_t programState);
 static bool     confuiClosingCallback (void *udata, programstate_t programState);
 static void     confuiBuildUI (configui_t *confui);
+static void     confuiBuildUIGeneral (configui_t *confui);
+static void     confuiBuildUIPlayer (configui_t *confui);
+static void     confuiBuildUIMarquee (configui_t *confui);
+static void     confuiBuildUIUserInterface (configui_t *confui);
+static void     confuiBuildUIDispSettings (configui_t *confui);
+static void     confuiBuildUIFilterDisplay (configui_t *confui);
+static void     confuiBuildUIOrganization (configui_t *confui);
+static void     confuiBuildUIEditDances (configui_t *confui);
+static void     confuiBuildUIEditRatings (configui_t *confui);
+static void     confuiBuildUIEditStatus (configui_t *confui);
+static void     confuiBuildUIEditLevels (configui_t *confui);
+static void     confuiBuildUIEditGenres (configui_t *confui);
+static void     confuiBuildUIMobileRemoteControl (configui_t *confui);
+static void     confuiBuildUIMobileMarquee (configui_t *confui);
+static void     confuiBuildUIDebugOptions (configui_t *confui);
 static int      confuiMainLoop  (void *tconfui);
 static int      confuiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
                     bdjmsgmsg_t msg, char *args, void *udata);
@@ -889,18 +904,11 @@ static void
 confuiBuildUI (configui_t *confui)
 {
   GtkWidget     *menubar;
-  GtkWidget     *vbox;
   GtkWidget     *widget;
-  GtkWidget     *tree;
-  GtkWidget     *image;
-  UIWidget      sg;
-  GtkWidget     *dvbox;
   GtkWidget     *hbox;
   char          imgbuff [MAXPATHLEN];
   char          tbuff [MAXPATHLEN];
   gint          x, y;
-  ssize_t       val;
-  char          *bpmstr;
 
   logProcBegin (LOG_PROC, "confuiBuildUI");
 
@@ -936,6 +944,49 @@ confuiBuildUI (configui_t *confui)
   assert (confui->notebook != NULL);
   gtk_notebook_set_tab_pos (GTK_NOTEBOOK (confui->notebook), GTK_POS_LEFT);
   uiutilsBoxPackStart (confui->vbox, confui->notebook);
+
+  confuiBuildUIGeneral (confui);
+  confuiBuildUIPlayer (confui);
+  confuiBuildUIMarquee (confui);
+  confuiBuildUIUserInterface (confui);
+  confuiBuildUIDispSettings (confui);
+  confuiBuildUIFilterDisplay (confui);
+  confuiBuildUIOrganization (confui);
+  confuiBuildUIEditDances (confui);
+  confuiBuildUIEditRatings (confui);
+  confuiBuildUIEditStatus (confui);
+  confuiBuildUIEditLevels (confui);
+  confuiBuildUIEditGenres (confui);
+  confuiBuildUIMobileRemoteControl (confui);
+  confuiBuildUIMobileMarquee (confui);
+  confuiBuildUIDebugOptions (confui);
+
+  g_signal_connect (confui->notebook, "switch-page",
+      G_CALLBACK (confuiSwitchTable), confui);
+
+  x = nlistGetNum (confui->options, CONFUI_SIZE_X);
+  y = nlistGetNum (confui->options, CONFUI_SIZE_Y);
+  uiutilsWindowSetDefaultSize (confui->window, x, y);
+
+  uiutilsWidgetShowAll (confui->window);
+
+  x = nlistGetNum (confui->options, CONFUI_POSITION_X);
+  y = nlistGetNum (confui->options, CONFUI_POSITION_Y);
+  uiutilsWindowMove (confui->window, x, y);
+
+  pathbldMakePath (imgbuff, sizeof (imgbuff),
+      "bdj4_icon_config", ".png", PATHBLD_MP_IMGDIR);
+  osuiSetIcon (imgbuff);
+
+  logProcEnd (LOG_PROC, "confuiBuildUI", "");
+}
+
+static void
+confuiBuildUIGeneral (configui_t *confui)
+{
+  GtkWidget     *vbox;
+  UIWidget      sg;
+  char          tbuff [MAXPATHLEN];
 
   /* general options */
   vbox = confuiMakeNotebookTab (confui, confui->notebook,
@@ -998,6 +1049,16 @@ confuiBuildUI (configui_t *confui)
       bdjoptGetStr (OPT_M_SHUTDOWNSCRIPT), confuiSelectShutdown);
   uiutilsEntrySetValidate (&confui->uiitem [CONFUI_ENTRY_SHUTDOWN].u.entry,
       uiutilsEntryValidateFile, confui);
+}
+
+static void
+confuiBuildUIPlayer (configui_t *confui)
+{
+  GtkWidget     *vbox;
+  GtkWidget     *widget;
+  GtkWidget     *image;
+  UIWidget      sg;
+  char          tbuff [MAXPATHLEN];
 
   /* player options */
   vbox = confuiMakeNotebookTab (confui, confui->notebook,
@@ -1070,6 +1131,13 @@ confuiBuildUI (configui_t *confui)
         CONFUI_ENTRY_QUEUE_NM_A + i, OPT_P_QUEUE_NAME_A + i,
         bdjoptGetStr (OPT_P_QUEUE_NAME_A + i));
   }
+}
+
+static void
+confuiBuildUIMarquee (configui_t *confui)
+{
+  GtkWidget     *vbox;
+  UIWidget      sg;
 
   /* marquee options */
   vbox = confuiMakeNotebookTab (confui, confui->notebook,
@@ -1106,6 +1174,13 @@ confuiBuildUI (configui_t *confui)
   confuiMakeItemSwitch (confui, vbox, &sg, _("Hide Marquee on Start"),
       CONFUI_WIDGET_HIDE_MARQUEE_ON_START, OPT_P_HIDE_MARQUEE_ON_START,
       bdjoptGetNum (OPT_P_HIDE_MARQUEE_ON_START));
+}
+
+static void
+confuiBuildUIUserInterface (configui_t *confui)
+{
+  GtkWidget     *vbox;
+  UIWidget      sg;
 
   /* user interface */
   vbox = confuiMakeNotebookTab (confui, confui->notebook,
@@ -1129,6 +1204,17 @@ confuiBuildUI (configui_t *confui)
   confuiMakeItemColorButton (confui, vbox, &sg, _("Accent Colour"),
       CONFUI_WIDGET_UI_ACCENT_COLOR, OPT_P_UI_ACCENT_COL,
       bdjoptGetStr (OPT_P_UI_ACCENT_COL));
+}
+
+static void
+confuiBuildUIDispSettings (configui_t *confui)
+{
+  GtkWidget     *vbox;
+  GtkWidget     *hbox;
+  GtkWidget     *widget;
+  GtkWidget     *dvbox;
+  GtkWidget     *tree;
+  UIWidget      sg;
 
   /* display settings */
   vbox = confuiMakeNotebookTab (confui, confui->notebook,
@@ -1142,8 +1228,7 @@ confuiBuildUI (configui_t *confui)
   g_signal_connect (widget, "value-changed", G_CALLBACK (confuiDispSettingChg), confui);
 
   hbox = uiutilsCreateHorizBox ();
-  uiutilsWidgetAlignHorizStart (hbox);
-  uiutilsBoxPackStart (vbox, hbox);
+  uiutilsBoxPackStartExpand (vbox, hbox);
 
   widget = uiutilsCreateScrolledWindow ();
   gtk_scrolled_window_set_min_content_height (GTK_SCROLLED_WINDOW (widget), 200);
@@ -1211,6 +1296,14 @@ confuiBuildUI (configui_t *confui)
 
   /* call this after both tree views have been instantiated */
   confuiCreateTagListingTable (confui);
+}
+
+static void
+confuiBuildUIFilterDisplay (configui_t *confui)
+{
+  GtkWidget     *vbox;
+  UIWidget      sg;
+  nlistidx_t    val;
 
   /* filter display */
   vbox = confuiMakeNotebookTab (confui, confui->notebook,
@@ -1242,6 +1335,14 @@ confuiBuildUI (configui_t *confui)
   confuiMakeItemCheckButton (confui, vbox, &sg, _("Playable Status"),
       CONFUI_WIDGET_FILTER_STATUS_PLAYABLE, -1, val);
   confui->uiitem [CONFUI_WIDGET_FILTER_STATUS_PLAYABLE].outtype = CONFUI_OUT_CB;
+}
+
+static void
+confuiBuildUIOrganization (configui_t *confui)
+{
+  GtkWidget     *vbox;
+  GtkWidget     *widget;
+  UIWidget      sg;
 
   /* organization */
   vbox = confuiMakeNotebookTab (confui, confui->notebook,
@@ -1273,6 +1374,19 @@ confuiBuildUI (configui_t *confui)
       CONFUI_WIDGET_AO_REMOVE_SPACE, OPT_G_AO_REMOVE_SPACE,
       bdjoptGetNum (OPT_G_AO_REMOVE_SPACE));
   g_signal_connect (widget, "state-set", G_CALLBACK (confuiRemoveSpaceChg), confui);
+}
+
+static void
+confuiBuildUIEditDances (configui_t *confui)
+{
+  GtkWidget     *vbox;
+  GtkWidget     *hbox;
+  GtkWidget     *widget;
+  GtkWidget     *dvbox;
+  UIWidget      sg;
+  char          *bpmstr;
+  char          tbuff [MAXPATHLEN];
+  nlistidx_t    val;
 
   /* edit dances */
   vbox = confuiMakeNotebookTab (confui, confui->notebook,
@@ -1352,6 +1466,14 @@ confuiBuildUI (configui_t *confui)
       CONFUI_SPINBOX_DANCE_TIME_SIG, -1, 0);
   confui->uiitem [CONFUI_SPINBOX_DANCE_TIME_SIG].danceidx = DANCE_TIMESIG;
   g_signal_connect (widget, "value-changed", G_CALLBACK (confuiDanceSpinboxChg), confui);
+}
+
+static void
+confuiBuildUIEditRatings (configui_t *confui)
+{
+  GtkWidget     *vbox;
+  GtkWidget     *widget;
+  UIWidget      sg;
 
   /* edit ratings */
   vbox = confuiMakeNotebookTab (confui, confui->notebook,
@@ -1371,6 +1493,14 @@ confuiBuildUI (configui_t *confui)
   confui->tables [CONFUI_ID_RATINGS].listcreatefunc = confuiRatingListCreate;
   confui->tables [CONFUI_ID_RATINGS].savefunc = confuiRatingSave;
   confuiCreateRatingTable (confui);
+}
+
+static void
+confuiBuildUIEditStatus (configui_t *confui)
+{
+  GtkWidget     *vbox;
+  GtkWidget     *widget;
+  UIWidget      sg;
 
   /* edit status */
   vbox = confuiMakeNotebookTab (confui, confui->notebook,
@@ -1388,6 +1518,14 @@ confuiBuildUI (configui_t *confui)
   confui->tables [CONFUI_ID_STATUS].listcreatefunc = confuiStatusListCreate;
   confui->tables [CONFUI_ID_STATUS].savefunc = confuiStatusSave;
   confuiCreateStatusTable (confui);
+}
+
+static void
+confuiBuildUIEditLevels (configui_t *confui)
+{
+  GtkWidget     *vbox;
+  GtkWidget     *widget;
+  UIWidget      sg;
 
   /* edit levels */
   vbox = confuiMakeNotebookTab (confui, confui->notebook,
@@ -1407,6 +1545,14 @@ confuiBuildUI (configui_t *confui)
   confui->tables [CONFUI_ID_LEVELS].listcreatefunc = confuiLevelListCreate;
   confui->tables [CONFUI_ID_LEVELS].savefunc = confuiLevelSave;
   confuiCreateLevelTable (confui);
+}
+
+static void
+confuiBuildUIEditGenres (configui_t *confui)
+{
+  GtkWidget     *vbox;
+  GtkWidget     *widget;
+  UIWidget      sg;
 
   /* edit genres */
   vbox = confuiMakeNotebookTab (confui, confui->notebook,
@@ -1423,6 +1569,14 @@ confuiBuildUI (configui_t *confui)
   confui->tables [CONFUI_ID_GENRES].listcreatefunc = confuiGenreListCreate;
   confui->tables [CONFUI_ID_GENRES].savefunc = confuiGenreSave;
   confuiCreateGenreTable (confui);
+}
+
+static void
+confuiBuildUIMobileRemoteControl (configui_t *confui)
+{
+  GtkWidget     *vbox;
+  GtkWidget     *widget;
+  UIWidget      sg;
 
   /* mobile remote control */
   vbox = confuiMakeNotebookTab (confui, confui->notebook,
@@ -1460,6 +1614,14 @@ confuiBuildUI (configui_t *confui)
   /* CONTEXT: config: remote control: the link to display the QR code for remote control */
   confuiMakeItemLink (confui, vbox, &sg, _("QR Code"),
       CONFUI_WIDGET_RC_QR_CODE, "");
+}
+
+static void
+confuiBuildUIMobileMarquee (configui_t *confui)
+{
+  GtkWidget     *vbox;
+  GtkWidget     *widget;
+  UIWidget      sg;
 
   /* mobile marquee */
   vbox = confuiMakeNotebookTab (confui, confui->notebook,
@@ -1496,6 +1658,15 @@ confuiBuildUI (configui_t *confui)
   /* CONTEXT: config: mobile marquee: the link to display the QR code for the mobile marquee */
   confuiMakeItemLink (confui, vbox, &sg, _("QR Code"),
       CONFUI_WIDGET_MMQ_QR_CODE, "");
+}
+
+static void
+confuiBuildUIDebugOptions (configui_t *confui)
+{
+  GtkWidget     *vbox;
+  GtkWidget     *hbox;
+  UIWidget      sg;
+  nlistidx_t    val;
 
   /* debug options */
   vbox = confuiMakeNotebookTab (confui, confui->notebook,
@@ -1588,26 +1759,8 @@ confuiBuildUI (configui_t *confui)
       CONFUI_WIDGET_DEBUG_131072, -1,
       (val & 131072));
   confui->uiitem [CONFUI_WIDGET_DEBUG_131072].outtype = CONFUI_OUT_DEBUG;
-
-  g_signal_connect (confui->notebook, "switch-page",
-      G_CALLBACK (confuiSwitchTable), confui);
-
-  x = nlistGetNum (confui->options, CONFUI_SIZE_X);
-  y = nlistGetNum (confui->options, CONFUI_SIZE_Y);
-  uiutilsWindowSetDefaultSize (confui->window, x, y);
-
-  uiutilsWidgetShowAll (confui->window);
-
-  x = nlistGetNum (confui->options, CONFUI_POSITION_X);
-  y = nlistGetNum (confui->options, CONFUI_POSITION_Y);
-  uiutilsWindowMove (confui->window, x, y);
-
-  pathbldMakePath (imgbuff, sizeof (imgbuff),
-      "bdj4_icon_config", ".png", PATHBLD_MP_IMGDIR);
-  osuiSetIcon (imgbuff);
-
-  logProcEnd (LOG_PROC, "confuiBuildUI", "");
 }
+
 
 static int
 confuiMainLoop (void *tconfui)
@@ -1734,7 +1887,6 @@ confuiPopulateOptions (configui_t *confui)
 {
   const char  *sval;
   ssize_t     nval;
-  nlistidx_t  tval;
   nlistidx_t  selidx;
   double      dval;
   confuibasetype_t basetype;
@@ -2393,10 +2545,11 @@ confuiMakeItemTable (configui_t *confui, GtkWidget *vbox, confuiident_t id,
   uiutilsWidgetAlignHorizStart (mhbox);
   uiutilsWidgetSetMarginTop (mhbox, uiutilsBaseMarginSz * 2);
   uiutilsWidgetExpandHoriz (mhbox);
-  uiutilsBoxPackStart (vbox, mhbox);
+  uiutilsBoxPackStartExpand (vbox, mhbox);
 
   widget = uiutilsCreateScrolledWindow ();
   gtk_scrolled_window_set_min_content_height (GTK_SCROLLED_WINDOW (widget), 200);
+  uiutilsWidgetExpandVert (widget);
   uiutilsBoxPackStart (mhbox, widget);
 
   tree = uiutilsCreateTreeView ();
@@ -4590,7 +4743,6 @@ confuiCreateTagTableDisp (configui_t *confui)
   char          *keystr;
   slistidx_t    seliteridx;
   dispselsel_t  selidx;
-  int           tidx;
   slist_t       *sellist;
   dispsel_t     *dispsel;
 

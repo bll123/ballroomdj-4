@@ -82,8 +82,6 @@ static gboolean uisongselScrollEvent (GtkWidget* tv, GdkEventScroll *event,
     gpointer udata);
 static void uisongselProcessTreeSize (GtkWidget* w, GtkAllocation* allocation,
     gpointer user_data);
-static void uisongselScrollWinContResize (GtkWidget* w,
-    GtkAllocation* allocation, gpointer udata);
 static void uisongselCreateFilterDialog (uisongsel_t *uisongsel);
 static void uisongselFilterResponseHandler (GtkDialog *d, gint responseid,
     gpointer udata);
@@ -131,6 +129,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, GtkWidget *parentwin)
 {
   uisongselgtk_t    *uiw;
   GtkWidget         *hbox;
+  GtkWidget         *vbox;
   GtkWidget         *widget;
   GtkAdjustment     *adjustment;
   slist_t           *sellist;
@@ -192,9 +191,10 @@ uisongselBuildUI (uisongsel_t *uisongsel, GtkWidget *parentwin)
   uiutilsBoxPackEnd (hbox, widget);
 
   hbox = uiutilsCreateHorizBox ();
-  uiutilsWidgetExpandHoriz (hbox);
-  uiutilsWidgetExpandVert (hbox);
-  uiutilsBoxPackStart (uiw->vbox, hbox);
+  uiutilsBoxPackStartExpand (uiw->vbox, hbox);
+
+  vbox = uiutilsCreateVertBox ();
+  uiutilsBoxPackStartExpand (hbox, vbox);
 
   adjustment = gtk_adjustment_new (0.0, 0.0, uisongsel->dfilterCount, 1.0, 10.0, 10.0);
   uiw->songselScrollbar = gtk_scrollbar_new (GTK_ORIENTATION_VERTICAL, adjustment);
@@ -206,12 +206,10 @@ uisongselBuildUI (uisongsel_t *uisongsel, GtkWidget *parentwin)
   g_signal_connect (uiw->songselScrollbar, "change-value",
       G_CALLBACK (uisongselScroll), uisongsel);
 
-  g_signal_connect (hbox, "size-allocate",
-      G_CALLBACK (uisongselScrollWinContResize), uisongsel);
-
   widget = uiutilsCreateScrolledWindow ();
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (widget), GTK_POLICY_NEVER, GTK_POLICY_EXTERNAL);
-  uiutilsBoxPackStart (hbox, widget);
+  uiutilsWidgetExpandHoriz (widget);
+  uiutilsBoxPackStart (vbox, widget);
   uiw->scrolledwin = widget;
 
   uiw->songselTree = uiutilsCreateTreeView ();
@@ -675,31 +673,6 @@ uisongselProcessTreeSize (GtkWidget* w, GtkAllocation* allocation,
         (double) uisongsel->idxStart, uisongsel);
   }
   logProcEnd (LOG_PROC, "uisongselProcessTreeSize", "");
-}
-
-static void
-uisongselScrollWinContResize (GtkWidget* w, GtkAllocation* allocation,
-    gpointer udata)
-{
-  uisongsel_t   *uisongsel = udata;
-  uisongselgtk_t  *uiw;
-  int           width;
-
-  logProcBegin (LOG_PROC, "uisongselScrollWinContResize");
-
-  uiw = uisongsel->uiWidgetData;
-
-  if (allocation->width < 200) {
-    logProcEnd (LOG_PROC, "uisongselScrollWinContResize", "small-alloc-height");
-    return;
-  }
-
-  width = gtk_widget_get_allocated_width (uiw->songselScrollbar);
-  if (width < 0) { width = 15; }
-  gtk_widget_set_size_request (uiw->scrolledwin,
-      allocation->width - width, -1);
-
-  logProcEnd (LOG_PROC, "uisongselScrollWinContResize", "");
 }
 
 static void
