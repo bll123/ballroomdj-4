@@ -561,8 +561,7 @@ installerBuildUI (installer_t *installer)
       installerInstall, installer);
   uiutilsBoxPackEnd (hbox, widget);
 
-  scwidget = uiutilsCreateScrolledWindow ();
-  gtk_scrolled_window_set_min_content_height (GTK_SCROLLED_WINDOW (scwidget), 150);
+  scwidget = uiutilsCreateScrolledWindow (200);
   uiutilsBoxPackStart (vbox, scwidget);
 
   installer->dispBuffer = gtk_text_buffer_new (NULL);

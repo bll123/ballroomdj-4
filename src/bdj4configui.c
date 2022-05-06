@@ -1225,8 +1225,7 @@ confuiBuildUIDispSettings (configui_t *confui)
   hbox = uiutilsCreateHorizBox ();
   uiutilsBoxPackStartExpand (vbox, hbox);
 
-  widget = uiutilsCreateScrolledWindow ();
-  gtk_scrolled_window_set_min_content_height (GTK_SCROLLED_WINDOW (widget), 200);
+  widget = uiutilsCreateScrolledWindow (300);
   uiutilsWidgetExpandVert (widget);
   uiutilsBoxPackStart (hbox, widget);
 
@@ -1257,8 +1256,7 @@ confuiBuildUIDispSettings (configui_t *confui)
       confuiDispRemove, confui);
   uiutilsBoxPackStart (dvbox, widget);
 
-  widget = uiutilsCreateScrolledWindow ();
-  gtk_scrolled_window_set_min_content_height (GTK_SCROLLED_WINDOW (widget), 200);
+  widget = uiutilsCreateScrolledWindow (300);
   uiutilsWidgetExpandVert (widget);
   uiutilsBoxPackStart (hbox, widget);
 
@@ -1390,8 +1388,7 @@ confuiBuildUIEditDances (configui_t *confui)
   uiutilsCreateSizeGroupHoriz (&sg);
 
   hbox = uiutilsCreateHorizBox ();
-  uiutilsWidgetAlignHorizStart (hbox);
-  uiutilsBoxPackStart (vbox, hbox);
+  uiutilsBoxPackStartExpand (vbox, hbox);
 
   confuiMakeItemTable (confui, hbox, CONFUI_ID_DANCE, CONFUI_TABLE_NO_UP_DOWN);
   confui->tables [CONFUI_ID_DANCE].savefunc = confuiDanceSave;
@@ -1467,6 +1464,7 @@ static void
 confuiBuildUIEditRatings (configui_t *confui)
 {
   GtkWidget     *vbox;
+  GtkWidget     *hbox;
   GtkWidget     *widget;
   UIWidget      sg;
 
@@ -1484,7 +1482,10 @@ confuiBuildUIEditRatings (configui_t *confui)
   widget = uiutilsCreateLabel (_("Double click on a field to edit."));
   uiutilsBoxPackStart (vbox, widget);
 
-  confuiMakeItemTable (confui, vbox, CONFUI_ID_RATINGS, CONFUI_TABLE_KEEP_FIRST);
+  hbox = uiutilsCreateHorizBox ();
+  uiutilsBoxPackStartExpand (vbox, hbox);
+
+  confuiMakeItemTable (confui, hbox, CONFUI_ID_RATINGS, CONFUI_TABLE_KEEP_FIRST);
   confui->tables [CONFUI_ID_RATINGS].listcreatefunc = confuiRatingListCreate;
   confui->tables [CONFUI_ID_RATINGS].savefunc = confuiRatingSave;
   confuiCreateRatingTable (confui);
@@ -1494,6 +1495,7 @@ static void
 confuiBuildUIEditStatus (configui_t *confui)
 {
   GtkWidget     *vbox;
+  GtkWidget     *hbox;
   GtkWidget     *widget;
   UIWidget      sg;
 
@@ -1507,7 +1509,10 @@ confuiBuildUIEditStatus (configui_t *confui)
   widget = uiutilsCreateLabel (_("Double click on a field to edit."));
   uiutilsBoxPackStart (vbox, widget);
 
-  confuiMakeItemTable (confui, vbox, CONFUI_ID_STATUS,
+  hbox = uiutilsCreateHorizBox ();
+  uiutilsBoxPackStartExpand (vbox, hbox);
+
+  confuiMakeItemTable (confui, hbox, CONFUI_ID_STATUS,
       CONFUI_TABLE_KEEP_FIRST | CONFUI_TABLE_KEEP_LAST);
   confui->tables [CONFUI_ID_STATUS].togglecol = CONFUI_STATUS_COL_PLAY_FLAG;
   confui->tables [CONFUI_ID_STATUS].listcreatefunc = confuiStatusListCreate;
@@ -1519,6 +1524,7 @@ static void
 confuiBuildUIEditLevels (configui_t *confui)
 {
   GtkWidget     *vbox;
+  GtkWidget     *hbox;
   GtkWidget     *widget;
   UIWidget      sg;
 
@@ -1535,7 +1541,10 @@ confuiBuildUIEditLevels (configui_t *confui)
   widget = uiutilsCreateLabel (_("Double click on a field to edit."));
   uiutilsBoxPackStart (vbox, widget);
 
-  confuiMakeItemTable (confui, vbox, CONFUI_ID_LEVELS, CONFUI_TABLE_NONE);
+  hbox = uiutilsCreateHorizBox ();
+  uiutilsBoxPackStartExpand (vbox, hbox);
+
+  confuiMakeItemTable (confui, hbox, CONFUI_ID_LEVELS, CONFUI_TABLE_NONE);
   confui->tables [CONFUI_ID_LEVELS].togglecol = CONFUI_LEVEL_COL_DEFAULT;
   confui->tables [CONFUI_ID_LEVELS].listcreatefunc = confuiLevelListCreate;
   confui->tables [CONFUI_ID_LEVELS].savefunc = confuiLevelSave;
@@ -1546,6 +1555,7 @@ static void
 confuiBuildUIEditGenres (configui_t *confui)
 {
   GtkWidget     *vbox;
+  GtkWidget     *hbox;
   GtkWidget     *widget;
   UIWidget      sg;
 
@@ -1559,7 +1569,10 @@ confuiBuildUIEditGenres (configui_t *confui)
   widget = uiutilsCreateLabel (_("Double click on a field to edit."));
   uiutilsBoxPackStart (vbox, widget);
 
-  confuiMakeItemTable (confui, vbox, CONFUI_ID_GENRES, CONFUI_TABLE_NONE);
+  hbox = uiutilsCreateHorizBox ();
+  uiutilsBoxPackStartExpand (vbox, hbox);
+
+  confuiMakeItemTable (confui, hbox, CONFUI_ID_GENRES, CONFUI_TABLE_NONE);
   confui->tables [CONFUI_ID_GENRES].togglecol = CONFUI_GENRE_COL_CLASSICAL;
   confui->tables [CONFUI_ID_GENRES].listcreatefunc = confuiGenreListCreate;
   confui->tables [CONFUI_ID_GENRES].savefunc = confuiGenreSave;
@@ -2540,13 +2553,10 @@ confuiMakeItemTable (configui_t *confui, GtkWidget *vbox, confuiident_t id,
   logProcBegin (LOG_PROC, "confuiMakeItemTable");
   mhbox = uiutilsCreateHorizBox ();
   assert (mhbox != NULL);
-  uiutilsWidgetAlignHorizStart (mhbox);
   uiutilsWidgetSetMarginTop (mhbox, uiutilsBaseMarginSz * 2);
-  uiutilsWidgetExpandHoriz (mhbox);
-  uiutilsBoxPackStartExpand (vbox, mhbox);
+  uiutilsBoxPackStart (vbox, mhbox);
 
-  widget = uiutilsCreateScrolledWindow ();
-  gtk_scrolled_window_set_min_content_height (GTK_SCROLLED_WINDOW (widget), 200);
+  widget = uiutilsCreateScrolledWindow (300);
   uiutilsWidgetExpandVert (widget);
   uiutilsBoxPackStart (mhbox, widget);
 

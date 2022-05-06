@@ -21,8 +21,7 @@
 static void     uiutilsDropDownWindowShow (GtkButton *b, gpointer udata);
 static gboolean uiutilsDropDownClose (GtkWidget *w,
     GdkEventFocus *event, gpointer udata);
-static GtkWidget * uiutilsDropDownButtonCreate (char *title,
-    uiutilsdropdown_t *dropdown);
+static GtkWidget * uiutilsDropDownButtonCreate (uiutilsdropdown_t *dropdown);
 static void uiutilsDropDownWindowCreate (uiutilsdropdown_t *dropdown,
     void *processSelectionCallback, void *udata);
 static void uiutilsDropDownSelectionSet (uiutilsdropdown_t *dropdown,
@@ -32,6 +31,7 @@ void
 uiutilsDropDownInit (uiutilsdropdown_t *dropdown)
 {
   logProcBegin (LOG_PROC, "uiutilsDropDownInit");
+  dropdown->title = NULL;
   dropdown->parentwin = NULL;
   dropdown->button = NULL;
   dropdown->window = NULL;
@@ -51,6 +51,9 @@ uiutilsDropDownFree (uiutilsdropdown_t *dropdown)
 {
   logProcBegin (LOG_PROC, "uiutilsDropDownFree");
   if (dropdown != NULL) {
+    if (dropdown->title != NULL) {
+      free (dropdown->title);
+    }
     if (dropdown->strSelection != NULL) {
       free (dropdown->strSelection);
     }
@@ -71,7 +74,8 @@ uiutilsDropDownCreate (GtkWidget *parentwin,
 {
   logProcBegin (LOG_PROC, "uiutilsDropDownCreate");
   dropdown->parentwin = parentwin;
-  dropdown->button = uiutilsDropDownButtonCreate (title, dropdown);
+  dropdown->title = strdup (title);
+  dropdown->button = uiutilsDropDownButtonCreate (dropdown);
   uiutilsDropDownWindowCreate (dropdown, processSelectionCallback, udata);
   logProcEnd (LOG_PROC, "uiutilsDropDownCreate", "");
   return dropdown->button;
@@ -95,6 +99,7 @@ uiutilsDropDownSelectionGet (uiutilsdropdown_t *dropdown, GtkTreePath *path)
   GtkTreeModel  *model = NULL;
   gulong        idx = 0;
   int32_t       idx32;
+  char          tbuff [100];
 
   logProcBegin (LOG_PROC, "uiutilsDropDownSelectionGet");
 
@@ -114,6 +119,7 @@ uiutilsDropDownSelectionGet (uiutilsdropdown_t *dropdown, GtkTreePath *path)
       char  *p;
 
       gtk_tree_model_get (model, &iter, UIUTILS_DROPDOWN_COL_DISP, &p, -1);
+      snprintf (tbuff, sizeof (tbuff), "%-*s", dropdown->maxwidth, p);
       gtk_button_set_label (GTK_BUTTON (dropdown->button), p);
       free (p);
     }
@@ -151,9 +157,15 @@ uiutilsDropDownSetList (uiutilsdropdown_t *dropdown, slist_t *list,
   dropdown->strIndexMap = slistAlloc ("uiutils-str-index", LIST_ORDERED, NULL);
   internalidx = 0;
 
+  dropdown->maxwidth = slistGetMaxKeyWidth (list);
+
+  if (! dropdown->iscombobox) {
+    gtk_button_set_label (GTK_BUTTON (dropdown->button), dropdown->title);
+  }
+
   if (dropdown->iscombobox && selectLabel != NULL) {
     snprintf (tbuff, sizeof (tbuff), "%-*s",
-        slistGetMaxKeyWidth (list), selectLabel);
+        dropdown->maxwidth, selectLabel);
     gtk_list_store_append (store, &iter);
     gtk_list_store_set (store, &iter,
         UIUTILS_DROPDOWN_COL_IDX, (gulong) -1,
@@ -172,7 +184,7 @@ uiutilsDropDownSetList (uiutilsdropdown_t *dropdown, slist_t *list,
 
     gtk_list_store_append (store, &iter);
     snprintf (tbuff, sizeof (tbuff), "%-*s",
-        slistGetMaxKeyWidth (list), dispval);
+        dropdown->maxwidth, dispval);
     gtk_list_store_set (store, &iter,
         UIUTILS_DROPDOWN_COL_IDX, (gulong) internalidx,
         UIUTILS_DROPDOWN_COL_STR, strval,
@@ -223,9 +235,15 @@ uiutilsDropDownSetNumList (uiutilsdropdown_t *dropdown, slist_t *list,
   dropdown->numIndexMap = nlistAlloc ("uiutils-num-index", LIST_ORDERED, NULL);
   internalidx = 0;
 
+  dropdown->maxwidth = slistGetMaxKeyWidth (list);
+
+  if (! dropdown->iscombobox) {
+    gtk_button_set_label (GTK_BUTTON (dropdown->button), dropdown->title);
+  }
+
   if (dropdown->iscombobox && selectLabel != NULL) {
     snprintf (tbuff, sizeof (tbuff), "%-*s",
-        slistGetMaxKeyWidth (list), selectLabel);
+        dropdown->maxwidth, selectLabel);
     gtk_list_store_append (store, &iter);
     gtk_list_store_set (store, &iter,
         UIUTILS_DROPDOWN_COL_IDX, (gulong) -1,
@@ -354,7 +372,7 @@ uiutilsDropDownClose (GtkWidget *w, GdkEventFocus *event, gpointer udata)
 }
 
 static GtkWidget *
-uiutilsDropDownButtonCreate (char *title, uiutilsdropdown_t *dropdown)
+uiutilsDropDownButtonCreate (uiutilsdropdown_t *dropdown)
 {
   GtkWidget   *widget;
   GtkWidget   *image;
@@ -364,11 +382,6 @@ uiutilsDropDownButtonCreate (char *title, uiutilsdropdown_t *dropdown)
 
   widget = gtk_button_new ();
   assert (widget != NULL);
-  strlcpy (tbuff, title, MAXPATHLEN);
-  if (dropdown->iscombobox) {
-    snprintf (tbuff, sizeof (tbuff), "- %s  ", title);
-  }
-  gtk_button_set_label (GTK_BUTTON (widget), tbuff);
   gtk_widget_set_margin_top (widget, uiutilsBaseMarginSz);
   gtk_widget_set_margin_start (widget, uiutilsBaseMarginSz);
 
@@ -392,6 +405,7 @@ uiutilsDropDownWindowCreate (uiutilsdropdown_t *dropdown,
     void *processSelectionCallback, void *udata)
 {
   GtkWidget         *scwin;
+  GtkWidget         *vbox;
   GtkWidget         *twidget;
   GtkTreeSelection  *sel;
 
@@ -413,16 +427,21 @@ uiutilsDropDownWindowCreate (uiutilsdropdown_t *dropdown,
   g_signal_connect (G_OBJECT (dropdown->window),
       "focus-out-event", G_CALLBACK (uiutilsDropDownClose), dropdown);
 
-  scwin = uiutilsCreateScrolledWindow ();
-  gtk_scrolled_window_set_max_content_height (GTK_SCROLLED_WINDOW (scwin), 400);
-  /* setting the min content height limits the scrolled window to that height */
-  /* https://stackoverflow.com/questions/65449889/gtk-scrolledwindow-max-content-width-height-does-not-work-with-textview */
+  twidget = uiutilsCreateVertBox ();
+  gtk_widget_set_hexpand (twidget, TRUE);
+  gtk_widget_set_vexpand (twidget, TRUE);
+  gtk_container_add (GTK_CONTAINER (dropdown->window), twidget);
+
+  vbox = uiutilsCreateVertBox ();
+  uiutilsBoxPackStartExpand (twidget, vbox);
+
+  scwin = uiutilsCreateScrolledWindow (300);
   gtk_widget_set_hexpand (scwin, TRUE);
   gtk_widget_set_vexpand (scwin, FALSE);
   twidget = gtk_scrolled_window_get_vscrollbar (GTK_SCROLLED_WINDOW (scwin));
   uiutilsSetCss (twidget,
       "scrollbar, scrollbar slider { min-width: 9px; } ");
-  gtk_container_add (GTK_CONTAINER (dropdown->window), scwin);
+  uiutilsBoxPackStart (vbox, scwin);
 
   dropdown->tree = gtk_tree_view_new ();
   assert (dropdown->tree != NULL);
@@ -447,7 +466,7 @@ uiutilsDropDownSelectionSet (uiutilsdropdown_t *dropdown, ssize_t internalidx)
   GtkTreePath   *path;
   GtkTreeModel  *model;
   GtkTreeIter   iter;
-  char          tbuff [40];
+  char          tbuff [100];
   char          *p;
 
   logProcBegin (LOG_PROC, "uiutilsDropDownSelectionSet");
@@ -473,7 +492,8 @@ uiutilsDropDownSelectionSet (uiutilsdropdown_t *dropdown, ssize_t internalidx)
       gtk_tree_model_get_iter (model, &iter, path);
       gtk_tree_model_get (model, &iter, UIUTILS_DROPDOWN_COL_DISP, &p, -1);
       if (p != NULL) {
-        gtk_button_set_label (GTK_BUTTON (dropdown->button), p);
+        snprintf (tbuff, sizeof (tbuff), "%-*s", dropdown->maxwidth, p);
+        gtk_button_set_label (GTK_BUTTON (dropdown->button), tbuff);
       }
     }
   }

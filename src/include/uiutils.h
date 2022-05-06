@@ -73,6 +73,7 @@ typedef struct {
 typedef char * (*uiutilsspinboxdisp_t)(void *, int);
 
 typedef struct {
+  char          *title;
   GtkWidget     *parentwin;
   GtkWidget     *button;
   GtkWidget     *window;
@@ -81,6 +82,7 @@ typedef struct {
   slist_t       *strIndexMap;
   gulong        closeHandlerId;
   char          *strSelection;
+  int           maxwidth;
   bool          open : 1;
   bool          iscombobox : 1;
 } uiutilsdropdown_t;
@@ -216,7 +218,7 @@ GtkWidget * uiutilsCreateLink (char *label, char *uri);
 void        uiutilsLinkSet (GtkWidget *widget, char *label, char *uri);
 
 /* uigtktextbox.c */
-uiutilstextbox_t  *uiutilsTextBoxCreate (void);
+uiutilstextbox_t  *uiutilsTextBoxCreate (int height);
 void  uiutilsTextBoxFree (uiutilstextbox_t *tb);
 char  *uiutilsTextBoxGetValue (uiutilstextbox_t *tb);
 void  uiutilsTextBoxSetReadonly (uiutilstextbox_t *tb);
@@ -276,7 +278,7 @@ void uiutilsWindowSetDefaultSize (GtkWidget *window, int x, int y);
 void uiutilsWindowGetPosition (GtkWidget *window, int *x, int *y);
 void uiutilsWindowMove (GtkWidget *window, int x, int y);
 void uiutilsWindowNoFocusOnStartup (GtkWidget *window);
-GtkWidget * uiutilsCreateScrolledWindow (void);
+GtkWidget * uiutilsCreateScrolledWindow (int minheight);
 
 /* uigtkscale.c */
 GtkWidget * uiutilsCreateScale (double lower, double upper,

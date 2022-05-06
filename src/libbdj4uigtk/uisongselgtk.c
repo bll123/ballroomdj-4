@@ -209,7 +209,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, GtkWidget *parentwin)
   g_signal_connect (uiw->songselScrollbar, "change-value",
       G_CALLBACK (uisongselScroll), uisongsel);
 
-  widget = uiutilsCreateScrolledWindow ();
+  widget = uiutilsCreateScrolledWindow (400);
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (widget), GTK_POLICY_NEVER, GTK_POLICY_EXTERNAL);
   uiutilsWidgetExpandHoriz (widget);
   uiutilsBoxPackStart (vbox, widget);
@@ -757,7 +757,6 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
 
   widget = uiutilsEntryCreate (&uisongsel->searchentry);
   uiutilsWidgetAlignHorizStart (widget);
-  uiutilsWidgetExpandHoriz (widget);
   uiutilsBoxPackStart (hbox, widget);
 
   /* genre */

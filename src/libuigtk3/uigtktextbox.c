@@ -15,7 +15,7 @@
 #include "uiutils.h"
 
 uiutilstextbox_t *
-uiutilsTextBoxCreate (void)
+uiutilsTextBoxCreate (int height)
 {
   GtkWidget         *scw;
   uiutilstextbox_t  *tb;
@@ -26,8 +26,7 @@ uiutilsTextBoxCreate (void)
   tb->textbox = NULL;
   tb->buffer = NULL;
 
-  scw = uiutilsCreateScrolledWindow ();
-  gtk_scrolled_window_set_min_content_height (GTK_SCROLLED_WINDOW (scw), 60);
+  scw = uiutilsCreateScrolledWindow (height);
 
   tb->buffer = gtk_text_buffer_new (NULL);
   tb->textbox = gtk_text_view_new_with_buffer (tb->buffer);

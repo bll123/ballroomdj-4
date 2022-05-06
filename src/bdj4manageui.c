@@ -693,7 +693,7 @@ manageBuildUIUpdateDatabase (manageui_t *manage)
   uiutilsNotebookAppendPage (manage->mainnotebook, vbox, tabLabel);
   uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_OTHER);
 
-  tb = uiutilsTextBoxCreate ();
+  tb = uiutilsTextBoxCreate (60);
   uiutilsTextBoxSetReadonly (tb);
   uiutilsTextBoxSetHeight (tb, 70);
   uiutilsBoxPackStart (vbox, tb->scw);
@@ -718,7 +718,7 @@ manageBuildUIUpdateDatabase (manageui_t *manage)
   uiutilsBoxPackStart (vbox, widget);
   manage->dbpbar = widget;
 
-  tb = uiutilsTextBoxCreate ();
+  tb = uiutilsTextBoxCreate (100);
   uiutilsTextBoxSetReadonly (tb);
   uiutilsTextBoxDarken (tb);
   uiutilsTextBoxSetHeight (tb, 300);
@@ -1455,8 +1455,7 @@ manageCreateSelectFileDialog (manageui_t *manage,
   vbox = uiutilsCreateVertBox ();
   uiutilsBoxPackInWindow (content, vbox);
 
-  scwin = uiutilsCreateScrolledWindow ();
-  gtk_scrolled_window_set_min_content_height (GTK_SCROLLED_WINDOW (scwin), 200);
+  scwin = uiutilsCreateScrolledWindow (250);
   uiutilsWidgetExpandVert (scwin);
   uiutilsBoxPackStart (vbox, scwin);
 

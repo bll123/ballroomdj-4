@@ -1195,8 +1195,7 @@ starterCreateSupportDialog (GtkButton *b, gpointer udata)
   uiutilsBoxPackStart (vbox, widget);
 
   /* line 4 */
-  tb = uiutilsTextBoxCreate ();
-  uiutilsTextBoxSetHeight (tb, 200);
+  tb = uiutilsTextBoxCreate (200);
   uiutilsBoxPackStart (vbox, tb->scw);
   starter->supporttb = tb;
 
