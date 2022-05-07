@@ -579,11 +579,6 @@ orgutilClean (char *target, const char *from, size_t sz)
           skip = true;
         }
       }
-      if (! skip && bdjoptGetNum (OPT_G_AO_REMOVE_SPACE)) {
-        if (*tstr == ' ') {
-          skip = true;
-        }
-      }
 
       if (skip) {
         tstr += mlen;

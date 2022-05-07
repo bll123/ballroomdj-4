@@ -1307,18 +1307,15 @@ manageSonglistSave (manageui_t *manage)
   pathbldMakePath (onm, sizeof (onm),
       name, ".songlist", PATHBLD_MP_DATA);
   strlcat (onm, ".n", sizeof (onm));
-fprintf (stderr, "save to %s\n", onm);
 
   uimusicqSave (manage->slmusicq, onm);
 
   pathbldMakePath (nnm, sizeof (nnm),
       name, ".songlist", PATHBLD_MP_DATA);
   if (! manage->slbackupcreated) {
-fprintf (stderr, "backup %s\n", nnm);
     filemanipBackup (nnm, 1);
     manage->slbackupcreated = true;
   }
-fprintf (stderr, "rename to %s\n", nnm);
   filemanipMove (onm, nnm);
 
   // ### if there is no playlist file, create one.

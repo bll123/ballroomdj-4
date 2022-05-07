@@ -124,6 +124,8 @@ foreach path [list {} profiles $mpath $mppath] {
         if { $key eq "SHOWCLASSICAL" } { continue }
         if { $key eq "VARIOUS" } { continue }
         if { $key eq "PAUSEMSG" } { continue }
+        if { $key eq "CHANGESPACE" } { continue }
+        if { $key eq "MUSICDIRDFLT" } { continue }
 
         if { $key eq "DONEMSG" } { set key "COMPLETEMSG" }
         if { $key eq "SHOWBPM" } { set key "BPM" }
@@ -132,6 +134,7 @@ foreach path [list {} profiles $mpath $mppath] {
 
         if { $key eq "version" } { set value 1 }
 
+        if { $key eq "WRITETAGS" } { set value NONE }
         if { $key eq "AUTOORGANIZE" } { set value no }
         if { $key eq "UIFONT" } {
           regsub -all "\{" $value {} value
@@ -251,7 +254,7 @@ foreach path [list {} profiles $mpath $mppath] {
         puts $ofh UI_ACCENT_COL
         puts $ofh "..#ffa600"
         puts $ofh HIDEMARQUEEONSTART
-        puts $ofh "..1"
+        puts $ofh "..yes"
       }
       if { $path eq $mpath } {
         puts $ofh VOLUME

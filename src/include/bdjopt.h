@@ -35,7 +35,6 @@ typedef enum {
  */
 
 typedef enum {
-  OPT_G_AO_REMOVE_SPACE,          //   d s
   OPT_G_AO_PATHFMT,               //   d s
   OPT_G_AUTOORGANIZE,             //   d s
   OPT_G_BPM,                      // u d s
