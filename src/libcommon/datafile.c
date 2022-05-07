@@ -219,7 +219,7 @@ datafileAlloc (char *name)
 }
 
 datafile_t *
-datafileAllocParse (char *name, datafiletype_t dftype, char *fname,
+datafileAllocParse (char *name, datafiletype_t dftype, const char *fname,
     datafilekey_t *dfkeys, ssize_t dfkeycount, listidx_t lookupKey)
 {
   datafile_t      *df;
@@ -264,7 +264,7 @@ datafileFree (void *tdf)
 }
 
 char *
-datafileLoad (datafile_t *df, datafiletype_t dftype, char *fname)
+datafileLoad (datafile_t *df, datafiletype_t dftype, const char *fname)
 {
   char    *data;
 
@@ -455,7 +455,8 @@ datafileParseMerge (list_t *datalist, char *data, char *name,
 
           vt = conv.valuetype;
           if (vt == VALUE_NUM) {
-            if (conv.u.num == LIST_VALUE_INVALID && dfkeys [idx].backupKey != -1) {
+            if (conv.u.num == LIST_VALUE_INVALID &&
+                dfkeys [idx].backupKey > DATAFILE_NO_BACKUPKEY) {
               logMsg (LOG_DBG, LOG_DATAFILE, "invalid value; backup key %ld set data to %s", dfkeys [idx].backupKey, tvalstr);
               if (dftype == DFTYPE_INDIRECT) {
                 nlistSetStr (itemList, dfkeys [idx].backupKey, tvalstr);
@@ -627,6 +628,10 @@ datafileSaveIndirect (char *tag, char *fn, datafilekey_t *dfkeys,
     datafileSaveItem (fh, "KEY", NULL, &conv);
 
     for (ssize_t i = 0; i < dfkeycount; ++i) {
+      if (dfkeys [i].backupKey == DATAFILE_NO_WRITE) {
+        continue;
+      }
+
       vt = dfkeys [i].valuetype;
       conv.valuetype = vt;
 

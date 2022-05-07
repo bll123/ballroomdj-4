@@ -22,7 +22,7 @@ static void ilistSetDataItem (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx,
 /* key/value list, keyed by a ilistidx_t */
 
 ilist_t *
-ilistAlloc (char *name, ilistorder_t ordered)
+ilistAlloc (const char *name, ilistorder_t ordered)
 {
   ilist_t    *list;
 

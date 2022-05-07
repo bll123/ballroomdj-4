@@ -22,13 +22,13 @@ typedef struct songlist {
   /* must be sorted in ascii order */
 static datafilekey_t songlistdfkeys [SONGLIST_KEY_MAX] = {
   { "DANCE",    SONGLIST_DANCE,     VALUE_NUM, danceConvDance, SONGLIST_DANCESTR },
-  { "DANCESTR", SONGLIST_DANCESTR,  VALUE_STR, NULL, -1 },
-  { "FILE",     SONGLIST_FILE,      VALUE_STR, NULL, -1 },
-  { "TITLE",    SONGLIST_TITLE,     VALUE_STR, NULL, -1 },
+  { "DANCESTR", SONGLIST_DANCESTR,  VALUE_STR, NULL, DATAFILE_NO_WRITE },
+  { "FILE",     SONGLIST_FILE,      VALUE_STR, NULL, DATAFILE_NO_BACKUPKEY },
+  { "TITLE",    SONGLIST_TITLE,     VALUE_STR, NULL, DATAFILE_NO_BACKUPKEY },
 };
 
 songlist_t *
-songlistAlloc (char *fname)
+songlistAlloc (const char *fname)
 {
   songlist_t    *sl;
 
@@ -55,7 +55,7 @@ songlistAlloc (char *fname)
 }
 
 songlist_t *
-songlistCreate (char *fname)
+songlistCreate (const char *fname)
 {
   songlist_t    *sl;
 

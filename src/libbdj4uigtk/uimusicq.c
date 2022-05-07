@@ -491,7 +491,6 @@ void
 uimusicqSave (uimusicq_t *uimusicq, const char *fname)
 {
   char        tbuff [MAXPATHLEN];
-  char        nfn [MAXPATHLEN];
   nlistidx_t  iteridx;
   dbidx_t     dbidx;
   songlist_t  *songlist;

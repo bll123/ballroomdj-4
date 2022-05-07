@@ -9,7 +9,7 @@ typedef listidx_t   ilistidx_t;
 typedef listorder_t ilistorder_t;
 
   /* keyed by a ilistidx_t */
-ilist_t   *ilistAlloc (char *name, ilistorder_t);
+ilist_t   *ilistAlloc (const char *name, ilistorder_t);
 void      ilistFree (void * list);
 int       ilistGetVersion (ilist_t *list);
 ilistidx_t   ilistGetCount (ilist_t *list);

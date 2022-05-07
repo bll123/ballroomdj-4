@@ -75,7 +75,7 @@ typedef struct {
   /*
    * simple lists only store a list of data.
    */
-list_t      *listAlloc (char *name, listorder_t ordered,
+list_t      *listAlloc (const char *name, listorder_t ordered,
                 listFree_t valueFreeHook);
 void        listFree (void *list);
 listidx_t     listGetVersion (list_t *list);

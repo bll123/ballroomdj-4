@@ -56,6 +56,8 @@ typedef struct {
 } datafilekey_t;
 
 #define DATAFILE_NO_LOOKUP -1
+#define DATAFILE_NO_BACKUPKEY -1
+#define DATAFILE_NO_WRITE -2
 
 parseinfo_t * parseInit (void);
 void          parseFree (parseinfo_t *);
@@ -68,10 +70,10 @@ void          convMS (datafileconv_t *conv);
 
 datafile_t *  datafileAlloc (char *name);
 datafile_t *  datafileAllocParse (char *name, datafiletype_t dftype,
-                  char *fname, datafilekey_t *dfkeys, ssize_t dfkeycount,
+                  const char *fname, datafilekey_t *dfkeys, ssize_t dfkeycount,
                   listidx_t lookupKey);
 void          datafileFree (void *);
-char *        datafileLoad (datafile_t *df, datafiletype_t dftype, char *fname);
+char *        datafileLoad (datafile_t *df, datafiletype_t dftype, const char *fname);
 list_t        *datafileParse (char *data, char *name, datafiletype_t dftype,
                   datafilekey_t *dfkeys, ssize_t dfkeycount,
                   listidx_t lookupKey, list_t **lookup);

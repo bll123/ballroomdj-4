@@ -21,7 +21,7 @@ static void     merge (list_t *, listidx_t, listidx_t, listidx_t);
 static void     mergeSort (list_t *, listidx_t, listidx_t);
 
 list_t *
-listAlloc (char *name, listorder_t ordered, listFree_t valueFreeHook)
+listAlloc (const char *name, listorder_t ordered, listFree_t valueFreeHook)
 {
   list_t    *list;
 
