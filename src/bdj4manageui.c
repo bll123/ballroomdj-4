@@ -135,6 +135,7 @@ typedef struct manage {
   GtkWidget       *slsongseltabwidget;
   GtkWidget       *ezvboxwidget;
   char            *sloldname;
+  bool            slbackupcreated;
   /* music manager ui */
   uiplayer_t      *mmplayer;
   uimusicq_t      *mmmusicq;
@@ -250,6 +251,7 @@ main (int argc, char *argv[])
   manage.mmnbtabid = uiutilsNotebookIDInit ();
   manage.selfilecb = NULL;
   manage.sloldname = NULL;
+  manage.slbackupcreated = NULL;
 
   procutilInitProcesses (manage.processes);
 
@@ -1193,6 +1195,7 @@ manageSonglistCopy (GtkMenuItem *mi, gpointer udata)
   oname = uimusicqGetSonglistName (manage->slmusicq);
   snprintf (tbuff, sizeof (tbuff), _("Copy of %s"), oname);
   manageSetSonglistName (manage, tbuff);
+  manage->slbackupcreated = false;
 }
 
 static void
@@ -1219,6 +1222,7 @@ manageSonglistLoadFile (manageui_t *manage, const char *fn)
   connSendMessage (manage->conn, ROUTE_MAIN, MSG_QUEUE_PLAYLIST, tbuff);
 
   manageSetSonglistName (manage, fn);
+  manage->slbackupcreated = false;
 }
 
 static void
@@ -1300,7 +1304,24 @@ manageSonglistSave (manageui_t *manage)
     filemanipRenameAll (onm, nnm);
   }
 
-//  uimusicqSave (manage->slmusicq, name);
+  pathbldMakePath (onm, sizeof (onm),
+      name, ".songlist", PATHBLD_MP_DATA);
+  strlcat (onm, ".n", sizeof (onm));
+fprintf (stderr, "save to %s\n", onm);
+
+  uimusicqSave (manage->slmusicq, onm);
+
+  pathbldMakePath (nnm, sizeof (nnm),
+      name, ".songlist", PATHBLD_MP_DATA);
+  if (! manage->slbackupcreated) {
+fprintf (stderr, "backup %s\n", nnm);
+    filemanipBackup (nnm, 1);
+    manage->slbackupcreated = true;
+  }
+fprintf (stderr, "rename to %s\n", nnm);
+  filemanipMove (onm, nnm);
+
+  // ### if there is no playlist file, create one.
 }
 
 /* general */

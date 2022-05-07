@@ -1,6 +1,5 @@
 #include "config.h"
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -124,4 +123,10 @@ songlistSetStr (songlist_t *sl, ilistidx_t ikey, ilistidx_t lidx, const char *sv
 void
 songlistSave (songlist_t *sl)
 {
+  if (sl == NULL) {
+    return;
+  }
+
+  datafileSaveIndirect ("songlist", sl->fname, songlistdfkeys,
+      SONGLIST_KEY_MAX, sl->songlist);
 }

@@ -488,7 +488,7 @@ uimusicqGetCount (uimusicq_t *uimusicq)
 }
 
 void
-uimusicqSave (uimusicq_t *uimusicq, const char *name)
+uimusicqSave (uimusicq_t *uimusicq, const char *fname)
 {
   char        tbuff [MAXPATHLEN];
   char        nfn [MAXPATHLEN];
@@ -498,13 +498,11 @@ uimusicqSave (uimusicq_t *uimusicq, const char *name)
   song_t      *song;
   ilistidx_t  key;
 
-  snprintf (tbuff, sizeof (tbuff), "save-%s", name);
+  snprintf (tbuff, sizeof (tbuff), "save-%s", fname);
   uimusicq->savelist = nlistAlloc (tbuff, LIST_UNORDERED, NULL);
   uimusicqIterate (uimusicq, uimusicqSaveListCallback, MUSICQ_A);
 
-  pathbldMakePath (tbuff, sizeof (tbuff),
-      name, ".tmp", PATHBLD_MP_DATA);
-  songlist = songlistCreate (tbuff);
+  songlist = songlistCreate (fname);
 
   nlistStartIterator (uimusicq->savelist, &iteridx);
   key = 0;
@@ -518,14 +516,6 @@ uimusicqSave (uimusicq_t *uimusicq, const char *name)
   }
 
   songlistSave (songlist);
-
-  pathbldMakePath (nfn, sizeof (nfn),
-      name, ".songlist", PATHBLD_MP_DATA);
-  filemanipBackup (tbuff, 1);
-  filemanipMove (tbuff, nfn);
-
-  // ### if there is no playlist file, create one.
-
   songlistFree (songlist);
   nlistFree (uimusicq->savelist);
   uimusicq->savelist = NULL;
