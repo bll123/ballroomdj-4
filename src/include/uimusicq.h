@@ -42,6 +42,7 @@ typedef struct {
 typedef struct {
   int             musicqPlayIdx;    // needed for clear queue
   int             musicqManageIdx;
+  long            count;
   conn_t          *conn;
   dispsel_t       *dispsel;
   musicdb_t       *musicdb;
@@ -89,6 +90,8 @@ int   uimusicqMusicQueueDataParse (uimusicq_t *uimusicq, char * args);
 void  uimusicqMusicQueueDataFree (uimusicq_t *uimusicq);
 void  uimusicqSetSonglistName (uimusicq_t *uimusicq, const char *nm);
 const char * uimusicqGetSonglistName (uimusicq_t *uimusicq);
+void uimusicqPeerSonglistName (uimusicq_t *targetq, uimusicq_t *sourceq);
+long uimusicqGetCount (uimusicq_t *musicq);
 
 /* uimusicqgtk.c */
 GtkWidget * uimusicqBuildUI (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci);

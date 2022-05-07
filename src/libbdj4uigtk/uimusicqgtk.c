@@ -155,8 +155,6 @@ uimusicqBuildUI (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
         "entry { color: %s; }",
         bdjoptGetStr (OPT_P_UI_ACCENT_COL));
     uiutilsSetCss (widget, tbuff);
-    /* CONTEXT: song list: default name for a new song list */
-    uiutilsEntrySetValue (&uimusicq->ui [ci].slname, _("New Song List"));
     uiutilsBoxPackEnd (hbox, widget);
   }
 
@@ -492,6 +490,7 @@ uimusicqProcessMusicQueueDataNew (uimusicq_t *uimusicq, char * args)
   assert (store != NULL);
   free (musicqstoretypes);
 
+  uimusicq->count = nlistGetCount (uimusicq->dispList);
   nlistStartIterator (uimusicq->dispList, &iteridx);
   while ((musicqupdate = nlistIterateValueData (uimusicq->dispList, &iteridx)) != NULL) {
     song = dbGetByIdx (uimusicq->musicdb, musicqupdate->dbidx);
@@ -579,6 +578,7 @@ uimusicqProcessMusicQueueDataUpdate (uimusicq_t *uimusicq, char * args)
 
   valid = gtk_tree_model_get_iter_first (model, &iter);
 
+  uimusicq->count = nlistGetCount (uimusicq->dispList);
   nlistStartIterator (uimusicq->dispList, &iteridx);
   while ((musicqupdate = nlistIterateValueData (uimusicq->dispList, &iteridx)) != NULL) {
     song_t        *song;

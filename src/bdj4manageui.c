@@ -25,6 +25,7 @@
 #include "datafile.h"
 #include "dispsel.h"
 #include "fileop.h"
+#include "filemanip.h"
 #include "localeutil.h"
 #include "lock.h"
 #include "log.h"
@@ -133,6 +134,7 @@ typedef struct manage {
   GtkWidget       *slmusicqtabwidget;
   GtkWidget       *slsongseltabwidget;
   GtkWidget       *ezvboxwidget;
+  char            *sloldname;
   /* music manager ui */
   uiplayer_t      *mmplayer;
   uimusicq_t      *mmmusicq;
@@ -187,6 +189,8 @@ static void     manageSonglistTruncate (GtkMenuItem *mi, gpointer udata);
 static void     manageSonglistLoadFile (manageui_t *manage, const char *fn);
 static void     manageToggleEasySonglist (GtkWidget *mi, gpointer udata);
 static void     manageSetEasySonglist (manageui_t *manage);
+static void     manageSonglistSave (manageui_t *manage);
+static void     manageSetSonglistName (manageui_t *manage, const char *nm);
 /* general */
 static void     manageSwitchPage (GtkNotebook *nb, GtkWidget *page,
     guint pagenum, gpointer udata);
@@ -245,6 +249,7 @@ main (int argc, char *argv[])
   manage.slnbtabid = uiutilsNotebookIDInit ();
   manage.mmnbtabid = uiutilsNotebookIDInit ();
   manage.selfilecb = NULL;
+  manage.sloldname = NULL;
 
   procutilInitProcesses (manage.processes);
 
@@ -370,6 +375,8 @@ manageStoppingCallback (void *udata, programstate_t programState)
 
   logProcBegin (LOG_PROC, "manageStoppingCallback");
   connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_STOP_MAIN, NULL);
+
+  manageSonglistSave (manage);
 
   uiutilsWindowGetSize (manage->window, &x, &y);
   nlistSetNum (manage->options, PLUI_SIZE_X, x);
@@ -632,6 +639,8 @@ manageBuildUISongListEditor (manageui_t *manage)
   tabLabel = uiutilsCreateLabel (_("Song Editor"));
   uiutilsNotebookAppendPage (notebook, widget, tabLabel);
   uiutilsNotebookIDAdd (manage->slnbtabid, MANAGE_TAB_SONGEDIT);
+
+  uimusicqPeerSonglistName (manage->slmusicq, manage->slezmusicq);
 }
 
 static void
@@ -824,6 +833,8 @@ manageHandshakeCallback (void *udata, programstate_t programState)
     progstateLogTime (manage->progstate, "time-to-start-gui");
     manageDbChg (NULL, manage);
     manageSetEasySonglist (manage);
+    /* CONTEXT: song list: default name for a new song list */
+    manageSetSonglistName (manage, _("New Song List"));
     rc = true;
   }
 
@@ -1177,10 +1188,11 @@ manageSonglistCopy (GtkMenuItem *mi, gpointer udata)
   const char  *oname;
   char        tbuff [200];
 
-  // ### if there's something in the song list, save it first.
+  manageSonglistSave (manage);
+
   oname = uimusicqGetSonglistName (manage->slmusicq);
   snprintf (tbuff, sizeof (tbuff), _("Copy of %s"), oname);
-  uimusicqSetSonglistName (manage->slmusicq, tbuff);
+  manageSetSonglistName (manage, tbuff);
 }
 
 static void
@@ -1196,7 +1208,8 @@ manageSonglistLoadFile (manageui_t *manage, const char *fn)
 {
   char  tbuff [200];
 
-  // ### if there's something in the song list, save it first.
+  manageSonglistSave (manage);
+
   /* truncate from the first selection */
   uimusicqSetSelection (manage->slmusicq, "0");
   uimusicqClearQueueProcess (manage->slmusicq);
@@ -1205,10 +1218,7 @@ manageSonglistLoadFile (manageui_t *manage, const char *fn)
       manage->musicqManageIdx, MSG_ARGS_RS, fn);
   connSendMessage (manage->conn, ROUTE_MAIN, MSG_QUEUE_PLAYLIST, tbuff);
 
-  uimusicqSetSonglistName (manage->slmusicq, fn);
-  /* setting the selection will not work, as the tree view has not been */
-  /* instantiated */
-  // ### could do this on a timer.
+  manageSetSonglistName (manage, fn);
 }
 
 static void
@@ -1242,6 +1252,57 @@ manageSetEasySonglist (manageui_t *manage)
   }
 }
 
+static void
+manageSetSonglistName (manageui_t *manage, const char *nm)
+{
+  uimusicqSetSonglistName (manage->slmusicq, nm);
+  if (manage->sloldname != NULL) {
+    free (manage->sloldname);
+  }
+  manage->sloldname = strdup (nm);
+}
+
+static void
+manageSonglistSave (manageui_t *manage)
+{
+  const char  *name;
+  char        onm [MAXPATHLEN];
+  char        nnm [MAXPATHLEN];
+
+  if (manage->sloldname == NULL) {
+    return;
+  }
+
+  if (uimusicqGetCount (manage->slmusicq) <= 0) {
+    return;
+  }
+
+  name = uimusicqGetSonglistName (manage->slmusicq);
+
+  // ### validate the name.
+
+  /* the song list has been renamed */
+  if (strcmp (manage->sloldname, name) != 0) {
+    pathbldMakePath (onm, sizeof (onm),
+        manage->sloldname, ".songlist", PATHBLD_MP_DATA);
+    pathbldMakePath (nnm, sizeof (nnm),
+        name, ".songlist", PATHBLD_MP_DATA);
+    filemanipRenameAll (onm, nnm);
+    pathbldMakePath (onm, sizeof (onm),
+        manage->sloldname, ".pl", PATHBLD_MP_DATA);
+    pathbldMakePath (nnm, sizeof (nnm),
+        name, ".pl", PATHBLD_MP_DATA);
+    filemanipRenameAll (onm, nnm);
+    pathbldMakePath (onm, sizeof (onm),
+        manage->sloldname, ".pldances", PATHBLD_MP_DATA);
+    pathbldMakePath (nnm, sizeof (nnm),
+        name, ".pldances", PATHBLD_MP_DATA);
+    filemanipRenameAll (onm, nnm);
+  }
+
+//  uimusicqSave (manage->slmusicq, name);
+}
+
 /* general */
 
 static void
@@ -1272,6 +1333,8 @@ manageSwitchPage (GtkNotebook *nb, GtkWidget *page, guint pagenum,
   if (nbtabid == NULL) {
     return;
   }
+
+  manageSonglistSave (manage);
 
   id = uiutilsNotebookIDGet (nbtabid, pagenum);
 

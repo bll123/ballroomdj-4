@@ -162,6 +162,7 @@ GtkWidget * uiutilsCreateButton (UIWidget *uiwidget, char *title,
 void uiutilsEntryInit (uiutilsentry_t *entry, int entrySize, int maxSize);
 void uiutilsEntryFree (uiutilsentry_t *entry);
 GtkWidget * uiutilsEntryCreate (uiutilsentry_t *entry);
+void uiutilsEntryPeerBuffer (uiutilsentry_t *targetentry, uiutilsentry_t *sourceentry);
 GtkWidget * uiutilsEntryGetWidget (uiutilsentry_t *entry);
 const char * uiutilsEntryGetValue (uiutilsentry_t *entry);
 void uiutilsEntrySetValue (uiutilsentry_t *entry, const char *value);

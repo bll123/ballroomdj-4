@@ -179,6 +179,154 @@ START_TEST(filemanip_recursive_dirlist)
 END_TEST
 
 
+START_TEST(filemanip_backup)
+{
+  FILE      *fh;
+  int       rc;
+  char      buff [10];
+
+  char *ofn = "tmp/abc.txt";
+  char *ofn0a = "tmp/abc.txt.0";
+  char *ofn0 = "tmp/abc.txt.bak.0";
+  char *ofn1 = "tmp/abc.txt.bak.1";
+  char *ofn2 = "tmp/abc.txt.bak.2";
+  char *ofn3 = "tmp/abc.txt.bak.3";
+  unlink (ofn);
+  unlink (ofn0a);
+  unlink (ofn0);
+  unlink (ofn1);
+  unlink (ofn2);
+  unlink (ofn3);
+
+  fh = fopen (ofn, "w");
+  ck_assert_ptr_nonnull (fh);
+  fprintf (fh, "1\n");
+  fclose (fh);
+
+  rc = fileopFileExists (ofn);
+  ck_assert_int_ne (rc, 0);
+  rc = fileopFileExists (ofn0a);
+  ck_assert_int_eq (rc, 0);
+  rc = fileopFileExists (ofn0);
+  ck_assert_int_eq (rc, 0);
+  rc = fileopFileExists (ofn1);
+  ck_assert_int_eq (rc, 0);
+  rc = fileopFileExists (ofn2);
+  ck_assert_int_eq (rc, 0);
+  rc = fileopFileExists (ofn3);
+  ck_assert_int_eq (rc, 0);
+
+  filemanipBackup (ofn, 2);
+
+  rc = fileopFileExists (ofn);
+  ck_assert_int_ne (rc, 0);
+  rc = fileopFileExists (ofn0a);
+  ck_assert_int_eq (rc, 0);
+  rc = fileopFileExists (ofn0);
+  ck_assert_int_eq (rc, 0);
+  rc = fileopFileExists (ofn1);
+  ck_assert_int_ne (rc, 0);
+  rc = fileopFileExists (ofn2);
+  ck_assert_int_eq (rc, 0);
+  rc = fileopFileExists (ofn3);
+  ck_assert_int_eq (rc, 0);
+
+  fh = fopen (ofn, "r");
+  ck_assert_ptr_nonnull (fh);
+  fgets (buff, 2, fh);
+  fclose (fh);
+  ck_assert_str_eq (buff, "1");
+
+  fh = fopen (ofn1, "r");
+  ck_assert_ptr_nonnull (fh);
+  fgets (buff, 2, fh);
+  fclose (fh);
+  ck_assert_str_eq (buff, "1");
+
+  fh = fopen (ofn, "w");
+  ck_assert_ptr_nonnull (fh);
+  fprintf (fh, "2\n");
+  fclose (fh);
+
+  filemanipBackup (ofn, 2);
+
+  rc = fileopFileExists (ofn);
+  ck_assert_int_ne (rc, 0);
+  rc = fileopFileExists (ofn0a);
+  ck_assert_int_eq (rc, 0);
+  rc = fileopFileExists (ofn0);
+  ck_assert_int_eq (rc, 0);
+  rc = fileopFileExists (ofn1);
+  ck_assert_int_ne (rc, 0);
+  rc = fileopFileExists (ofn2);
+  ck_assert_int_ne (rc, 0);
+  rc = fileopFileExists (ofn3);
+  ck_assert_int_eq (rc, 0);
+
+  fh = fopen (ofn, "r");
+  ck_assert_ptr_nonnull (fh);
+  fgets (buff, 2, fh);
+  fclose (fh);
+  ck_assert_str_eq (buff, "2");
+
+  fh = fopen (ofn1, "r");
+  ck_assert_ptr_nonnull (fh);
+  fgets (buff, 2, fh);
+  fclose (fh);
+  ck_assert_str_eq (buff, "2");
+
+  fh = fopen (ofn2, "r");
+  ck_assert_ptr_nonnull (fh);
+  fgets (buff, 2, fh);
+  fclose (fh);
+  ck_assert_str_eq (buff, "1");
+
+  fh = fopen (ofn, "w");
+  ck_assert_ptr_nonnull (fh);
+  fprintf (fh, "3\n");
+  fclose (fh);
+
+  filemanipBackup (ofn, 2);
+
+  rc = fileopFileExists (ofn);
+  ck_assert_int_ne (rc, 0);
+  rc = fileopFileExists (ofn0a);
+  ck_assert_int_eq (rc, 0);
+  rc = fileopFileExists (ofn0);
+  ck_assert_int_eq (rc, 0);
+  rc = fileopFileExists (ofn1);
+  ck_assert_int_ne (rc, 0);
+  rc = fileopFileExists (ofn2);
+  ck_assert_int_ne (rc, 0);
+  rc = fileopFileExists (ofn3);
+  ck_assert_int_eq (rc, 0);
+
+  fh = fopen (ofn, "r");
+  ck_assert_ptr_nonnull (fh);
+  fgets (buff, 2, fh);
+  fclose (fh);
+  ck_assert_str_eq (buff, "3");
+
+  fh = fopen (ofn1, "r");
+  ck_assert_ptr_nonnull (fh);
+  fgets (buff, 2, fh);
+  fclose (fh);
+  ck_assert_str_eq (buff, "3");
+
+  fh = fopen (ofn2, "r");
+  ck_assert_ptr_nonnull (fh);
+  fgets (buff, 2, fh);
+  fclose (fh);
+  ck_assert_str_eq (buff, "2");
+
+  unlink (ofn);
+  unlink (ofn0a);
+  unlink (ofn0);
+  unlink (ofn1);
+  unlink (ofn2);
+}
+END_TEST
+
 Suite *
 filemanip_suite (void)
 {
@@ -192,6 +340,7 @@ filemanip_suite (void)
   tcase_add_test (tc, filemanip_del_dir);
   tcase_add_test (tc, filemanip_basic_dirlist);
   tcase_add_test (tc, filemanip_recursive_dirlist);
+  tcase_add_test (tc, filemanip_backup);
   suite_add_tcase (s, tc);
   return s;
 }

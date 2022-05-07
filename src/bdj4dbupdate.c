@@ -303,7 +303,7 @@ dbupdateProcessing (void *udata)
 
     pathbldMakePath (dbfname, sizeof (dbfname),
         MUSICDB_FNAME, MUSICDB_EXT, PATHBLD_MP_DATA);
-    datafileBackup (dbfname, 4);
+    filemanipBackup (dbfname, 4);
 
     if (dbupdate->newdatabase) {
       char  tbuff [MAXPATHLEN];

@@ -2125,7 +2125,7 @@ installerTemplateCopy (char *from, char *to)
       from = tbuff;
     }
   }
-  datafileBackup (to, 1);
+  filemanipBackup (to, 1);
   filemanipCopy (from, to);
 }
 

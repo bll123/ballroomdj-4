@@ -726,29 +726,6 @@ datafileSetData (datafile_t *df, void *data)
 }
 
 void
-datafileBackup (char *fname, int count)
-{
-  char      ofn [MAXPATHLEN];
-  char      nfn [MAXPATHLEN];
-
-  for (int i = count; i >= 1; --i) {
-    snprintf (nfn, sizeof (nfn), "%s.bak.%d", fname, i);
-    snprintf (ofn, sizeof (ofn), "%s.bak.%d", fname, i - 1);
-    if (i - 1 == 0) {
-      strlcpy (ofn, fname, sizeof (ofn));
-    }
-    if (fileopFileExists (ofn)) {
-      if ((i - 1) != 0) {
-        filemanipMove (ofn, nfn);
-      } else {
-        filemanipCopy (ofn, nfn);
-      }
-    }
-  }
-  return;
-}
-
-void
 datafileDumpKeyVal (char *tag, datafilekey_t *dfkeys,
     ssize_t dfkeycount, nlist_t *list)
 {
@@ -925,7 +902,7 @@ datafileSavePrep (char *fn, char *tag)
   char    tbuff [100];
 
 
-  datafileBackup (fn, 1);
+  filemanipBackup (fn, 1);
   fh = fileopOpen (fn, "w");
 
   if (fh == NULL) {

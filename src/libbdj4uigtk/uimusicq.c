@@ -36,6 +36,7 @@ uimusicqInit (conn_t *conn, musicdb_t *musicdb,
 
   uimusicq->conn = conn;
   uimusicq->dispsel = dispsel;
+  uimusicq->count = 0;
   uimusicq->musicdb = musicdb;
   uimusicq->dispselType = dispselType;
   uimusicq->uimusicqflags = uimusicqflags;
@@ -461,6 +462,24 @@ uimusicqGetSonglistName (uimusicq_t *uimusicq)
   val = uiutilsEntryGetValue (&uimusicq->ui [ci].slname);
   return val;
 }
+
+void
+uimusicqPeerSonglistName (uimusicq_t *targetq, uimusicq_t *sourceq)
+{
+  uiutilsEntryPeerBuffer (&targetq->ui [MUSICQ_A].slname,
+      &sourceq->ui [MUSICQ_A].slname);
+}
+
+long
+uimusicqGetCount (uimusicq_t *musicq)
+{
+  if (musicq == NULL) {
+    return 0;
+  }
+
+  return musicq->count;
+}
+
 
 /* internal routines */
 

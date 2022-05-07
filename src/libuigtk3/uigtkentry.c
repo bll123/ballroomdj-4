@@ -60,6 +60,13 @@ uiutilsEntryCreate (uiutilsentry_t *entry)
   return entry->entry;
 }
 
+void
+uiutilsEntryPeerBuffer (uiutilsentry_t *targetentry, uiutilsentry_t *sourceentry)
+{
+  gtk_entry_set_buffer (GTK_ENTRY (targetentry->entry), sourceentry->buffer);
+  targetentry->buffer = sourceentry->buffer;
+}
+
 GtkWidget *
 uiutilsEntryGetWidget (uiutilsentry_t *entry)
 {

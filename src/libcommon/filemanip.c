@@ -31,7 +31,7 @@
 #endif
 
 int
-filemanipMove (char *fname, char *nfn)
+filemanipMove (const char *fname, const char *nfn)
 {
   int       rc = -1;
 
@@ -94,7 +94,7 @@ filemanipCopy (const char *fname, const char *nfn)
 /* windows has had symlinks for ages, but they require either */
 /* admin permission, or have the machine in developer mode */
 int
-filemanipLinkCopy (char *fname, char *nfn)
+filemanipLinkCopy (const char *fname, const char *nfn)
 {
   int       rc = -1;
 
@@ -109,7 +109,7 @@ filemanipLinkCopy (char *fname, char *nfn)
 }
 
 slist_t *
-filemanipBasicDirList (char *dirname, char *extension)
+filemanipBasicDirList (const char *dirname, const char *extension)
 {
   dirhandle_t   *dh;
   char          *fname;
@@ -164,7 +164,7 @@ filemanipBasicDirList (char *dirname, char *extension)
 }
 
 slist_t *
-filemanipRecursiveDirList (char *dirname, int flags)
+filemanipRecursiveDirList (const char *dirname, int flags)
 {
   dirhandle_t   *dh;
   char          *fname;
@@ -277,4 +277,49 @@ filemanipDeleteDir (const char *dirname)
   rmdir (dirname);
 #endif
 }
+
+void
+filemanipBackup (const char *fname, int count)
+{
+  char      ofn [MAXPATHLEN];
+  char      nfn [MAXPATHLEN];
+
+  for (int i = count; i >= 1; --i) {
+    snprintf (nfn, sizeof (nfn), "%s.bak.%d", fname, i);
+    snprintf (ofn, sizeof (ofn), "%s.bak.%d", fname, i - 1);
+    if (i - 1 == 0) {
+      strlcpy (ofn, fname, sizeof (ofn));
+    }
+    if (fileopFileExists (ofn)) {
+      if ((i - 1) != 0) {
+        filemanipMove (ofn, nfn);
+      } else {
+        filemanipCopy (ofn, nfn);
+      }
+    }
+  }
+  return;
+}
+
+void
+filemanipRenameAll (const char *ofname, const char *nfname)
+{
+  char      ofn [MAXPATHLEN];
+  char      nfn [MAXPATHLEN];
+  int       count = 10;
+
+  for (int i = count; i >= 1; --i) {
+    snprintf (ofn, sizeof (ofn), "%s.bak.%d", ofname, i);
+    if (fileopFileExists (ofn)) {
+      snprintf (nfn, sizeof (nfn), "%s.bak.%d", nfname, i);
+      filemanipMove (ofn, nfn);
+    }
+  }
+  if (fileopFileExists (ofname)) {
+    filemanipMove (ofname, nfname);
+  }
+  return;
+}
+
+
 
