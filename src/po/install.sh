@@ -265,7 +265,6 @@ while read -r line; do
     mv -f automatic.pl.${locale} ${automatic}.pl.${locale}
     mv -f automatic.pldances.${locale} ${automatic}.pldances.${locale}
     mv -f standardrounds.pl.${locale} ${standardrounds}.pl.${locale}
-    sed -e "s/^..standardrounds/..${standardrounds}/" ${standardrounds}.pl.${locale} > $TMP
     mv -f $TMP ${standardrounds}.pl.${locale}
     mv -f standardrounds.pldances.${locale} ${standardrounds}.pldances.${locale}
     mv -f standardrounds.sequence.${locale} ${standardrounds}.sequence.${locale}

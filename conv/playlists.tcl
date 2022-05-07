@@ -41,12 +41,22 @@ foreach {fn} $flist {
     if { $key eq "version"} { continue }
 
     set tkey [string toupper $key]
+
+    if { $tkey eq "MANUALLIST" && $value ne {} } {
+      set pltype Manual
+    }
+    if { $tkey eq "SEQUENCE" && $value ne {} } {
+      set pltype Sequence
+    }
+
     if { $tkey eq "REQUIREDKEYWORDS" } { continue }
     if { $tkey eq "STOPWAIT" } { continue }
     if { $tkey eq "STOPAFTERWAIT" } { continue }
     if { $tkey eq "STOPTYPE" } { continue }
     if { $tkey eq "RESUME" } { continue }
     if { $tkey eq "UNRATEDOK" } { continue }
+    if { $tkey eq "MANUALLIST" } { continue }
+    if { $tkey eq "SEQUENCE" } { continue }
     if { $tkey eq "STATUSOK" } {
       # USESTATUS
       continue
@@ -55,20 +65,8 @@ foreach {fn} $flist {
     if { $tkey eq "HIGHDANCELEVEL" } { set key DANCELEVELHIGH }
     if { $tkey eq "LOWDANCELEVEL" } { set key DANCELEVELLOW }
 
-    if { $tkey eq "MANUALLIST" && $value eq "None" } {
-      set value {}
-    }
-    if { $tkey eq "MANUALLIST" && $value ne {} } {
-      set pltype Manual
-    }
-    if { $tkey eq "SEQUENCE" && $value eq "None" } {
-      set value {}
-    }
     if { $tkey eq "GAP" && $value ne {} } {
       set value [expr {int ($value * 1000)}]
-    }
-    if { $tkey eq "SEQUENCE" && $value ne {} } {
-      set pltype Sequence
     }
     if { $tkey eq "VERSION" } { set key version }
 

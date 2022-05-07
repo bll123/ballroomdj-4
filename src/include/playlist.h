@@ -21,12 +21,10 @@ typedef enum {
   PLAYLIST_GAP,                   //
   PLAYLIST_LEVEL_HIGH,            //
   PLAYLIST_LEVEL_LOW,             //
-  PLAYLIST_MANUAL_LIST_NAME,      //
   PLAYLIST_MAX_PLAY_TIME,         //
   PLAYLIST_MQ_MESSAGE,
   PLAYLIST_PAUSE_EACH_SONG,
   PLAYLIST_RATING,                //
-  PLAYLIST_SEQ_NAME,              //
   PLAYLIST_STOP_AFTER,            //
   PLAYLIST_STOP_TIME,             //
   PLAYLIST_TYPE,                  //

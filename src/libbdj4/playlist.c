@@ -57,12 +57,10 @@ static datafilekey_t playlistdfkeys [] = {
   { "DANCELEVELLOW",  PLAYLIST_LEVEL_LOW, VALUE_NUM, levelConv, -1 },
   { "DANCERATING",    PLAYLIST_RATING, VALUE_NUM, ratingConv, -1 },
   { "GAP",            PLAYLIST_GAP, VALUE_NUM, NULL, -1 },
-  { "MANUALLIST",     PLAYLIST_MANUAL_LIST_NAME, VALUE_STR, NULL, -1 },
   { "MAXPLAYTIME",    PLAYLIST_MAX_PLAY_TIME, VALUE_NUM, NULL, -1 },
   { "MQMESSAGE",      PLAYLIST_MQ_MESSAGE, VALUE_STR, NULL, -1 },
   { "PAUSEEACHSONG",  PLAYLIST_PAUSE_EACH_SONG, VALUE_NUM, convBoolean, -1 },
   { "PLAYANNOUNCE",   PLAYLIST_ANNOUNCE, VALUE_NUM, convBoolean, -1 },
-  { "SEQUENCE",       PLAYLIST_SEQ_NAME, VALUE_STR, NULL, -1 },
   { "STOPAFTER",      PLAYLIST_STOP_AFTER, VALUE_NUM, NULL, -1 },
   { "STOPTIME",       PLAYLIST_STOP_TIME, VALUE_NUM, NULL, -1 },
   { "TYPE",           PLAYLIST_TYPE, VALUE_NUM, plConvType, -1 },
@@ -222,9 +220,8 @@ playlistLoad (playlist_t *pl, char *fname)
   type = (pltype_t) nlistGetNum (pl->plinfo, PLAYLIST_TYPE);
 
   if (type == PLTYPE_MANUAL) {
-    char *slfname = nlistGetStr (pl->plinfo, PLAYLIST_MANUAL_LIST_NAME);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "manual: load songlist %s", slfname);
-    pathbldMakePath (tfn, sizeof (tfn), slfname, ".songlist", PATHBLD_MP_DATA);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "manual: load songlist %s", fname);
+    pathbldMakePath (tfn, sizeof (tfn), fname, ".songlist", PATHBLD_MP_DATA);
     if (! fileopFileExists (tfn)) {
       logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Missing songlist %s", tfn);
       playlistFree (pl);
@@ -239,17 +236,16 @@ playlistLoad (playlist_t *pl, char *fname)
   }
 
   if (type == PLTYPE_SEQ) {
-    char *seqfname = nlistGetStr (pl->plinfo, PLAYLIST_SEQ_NAME);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "sequence: load sequence %s", seqfname);
-    pathbldMakePath (tfn, sizeof (tfn), seqfname, ".sequence", PATHBLD_MP_DATA);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "sequence: load sequence %s", fname);
+    pathbldMakePath (tfn, sizeof (tfn), fname, ".sequence", PATHBLD_MP_DATA);
     if (! fileopFileExists (tfn)) {
       logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Missing sequence %s", tfn);
       playlistFree (pl);
       return -1;
     }
-    pl->sequence = sequenceAlloc (seqfname);
+    pl->sequence = sequenceAlloc (fname);
     if (pl->sequence == NULL) {
-      logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Bad sequence %s", seqfname);
+      logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Bad sequence %s", fname);
       playlistFree (pl);
       return -1;
     }
@@ -280,12 +276,10 @@ playlistCreate (playlist_t *pl, char *plfname, pltype_t type, char *ofname)
   nlistSetNum (pl->plinfo, PLAYLIST_GAP, 1000);
   nlistSetNum (pl->plinfo, PLAYLIST_LEVEL_HIGH, levelGetMax (levels));
   nlistSetNum (pl->plinfo, PLAYLIST_LEVEL_LOW, 0);
-  nlistSetStr (pl->plinfo, PLAYLIST_MANUAL_LIST_NAME, NULL);
   nlistSetNum (pl->plinfo, PLAYLIST_MAX_PLAY_TIME, 0);
   nlistSetStr (pl->plinfo, PLAYLIST_MQ_MESSAGE, NULL);
   nlistSetNum (pl->plinfo, PLAYLIST_PAUSE_EACH_SONG, 0);
   nlistSetNum (pl->plinfo, PLAYLIST_RATING, 0);
-  nlistSetStr (pl->plinfo, PLAYLIST_SEQ_NAME, NULL);
   nlistSetNum (pl->plinfo, PLAYLIST_TYPE, type);
   nlistSetNum (pl->plinfo, PLAYLIST_STOP_AFTER, 0);
   nlistSetNum (pl->plinfo, PLAYLIST_STOP_TIME, LIST_VALUE_INVALID);
@@ -295,11 +289,9 @@ playlistCreate (playlist_t *pl, char *plfname, pltype_t type, char *ofname)
     ofname = plfname;
   }
   if (type == PLTYPE_MANUAL) {
-    nlistSetStr (pl->plinfo, PLAYLIST_MANUAL_LIST_NAME, strdup (ofname));
     pl->songlist = songlistAlloc (ofname);
   }
   if (type == PLTYPE_SEQ) {
-    nlistSetStr (pl->plinfo, PLAYLIST_SEQ_NAME, strdup (ofname));
     pl->sequence = sequenceAlloc (ofname);
   }
 
