@@ -55,12 +55,29 @@ songlistAlloc (char *fname)
   return sl;
 }
 
+songlist_t *
+songlistCreate (char *fname)
+{
+  songlist_t    *sl;
+
+  sl = malloc (sizeof (songlist_t));
+  assert (sl != NULL);
+  sl->df = NULL;
+  sl->songlist = NULL;
+  sl->fname = strdup (fname);
+  sl->songlist = ilistAlloc (fname, LIST_ORDERED);
+  return sl;
+}
+
 void
 songlistFree (songlist_t *sl)
 {
   if (sl != NULL) {
     if (sl->df != NULL) {
       datafileFree (sl->df);
+    }
+    if (sl->df == NULL && sl->songlist != NULL) {
+      ilistFree (sl->songlist);
     }
     if (sl->fname != NULL) {
       free (sl->fname);
@@ -78,4 +95,33 @@ songlistGetNext (songlist_t *sl, ilistidx_t ikey, ilistidx_t lidx)
   }
 
   return ilistGetStr (sl->songlist, ikey, lidx);
+}
+
+void
+songlistSetNum (songlist_t *sl, ilistidx_t ikey, ilistidx_t lidx, ilistidx_t val)
+{
+  if (sl == NULL) {
+    return;
+  }
+  if (sl->songlist == NULL) {
+    return;
+  }
+  ilistSetNum (sl->songlist, ikey, lidx, val);
+}
+
+void
+songlistSetStr (songlist_t *sl, ilistidx_t ikey, ilistidx_t lidx, const char *sval)
+{
+  if (sl == NULL) {
+    return;
+  }
+  if (sl->songlist == NULL) {
+    return;
+  }
+  ilistSetStr (sl->songlist, ikey, lidx, sval);
+}
+
+void
+songlistSave (songlist_t *sl)
+{
 }

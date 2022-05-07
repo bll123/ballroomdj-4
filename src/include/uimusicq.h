@@ -7,6 +7,7 @@
 #include "conn.h"
 #include "dispsel.h"
 #include "musicq.h"
+#include "nlist.h"
 #include "uiutils.h"
 
 enum {
@@ -39,7 +40,11 @@ typedef struct {
   char              *selPathStr;
 } uimusicqui_t;
 
-typedef struct {
+typedef struct uimusicq uimusicq_t;
+
+typedef void (*uimusicqiteratecb_t)(uimusicq_t *uimusicq, dbidx_t dbidx);
+
+typedef struct uimusicq {
   int             musicqPlayIdx;    // needed for clear queue
   int             musicqManageIdx;
   long            count;
@@ -55,6 +60,9 @@ typedef struct {
   nlist_t         *uniqueList;
   nlist_t         *dispList;
   nlist_t         *workList;
+  /* temporary for save */
+  uimusicqiteratecb_t iteratecb;
+  nlist_t         *savelist;
 } uimusicq_t;
 
 typedef struct {
@@ -90,8 +98,9 @@ int   uimusicqMusicQueueDataParse (uimusicq_t *uimusicq, char * args);
 void  uimusicqMusicQueueDataFree (uimusicq_t *uimusicq);
 void  uimusicqSetSonglistName (uimusicq_t *uimusicq, const char *nm);
 const char * uimusicqGetSonglistName (uimusicq_t *uimusicq);
-void uimusicqPeerSonglistName (uimusicq_t *targetq, uimusicq_t *sourceq);
-long uimusicqGetCount (uimusicq_t *musicq);
+void uimusicqPeerSonglistName (uimusicq_t *targetqueue, uimusicq_t *sourcequeue);
+long uimusicqGetCount (uimusicq_t *uimusicq);
+void uimusicqSave (uimusicq_t *uimusicq, const char *name);
 
 /* uimusicqgtk.c */
 GtkWidget * uimusicqBuildUI (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci);
@@ -100,6 +109,7 @@ ssize_t   uimusicqGetSelection (uimusicq_t *uimusicq);
 void      uimusicqMusicQueueSetSelected (uimusicq_t *uimusicq, int ci, int which);
 void      uimusicqProcessMusicQueueData (uimusicq_t *uimusicq, char * args);
 void      uimusicqRemoveProcessSignal (GtkButton *b, gpointer udata);
+void      uimusicqIterate (uimusicq_t *uimusicq, uimusicqiteratecb_t cb, musicqidx_t mqidx);
 
 #endif /* INC_UIMUSICQ_H */
 

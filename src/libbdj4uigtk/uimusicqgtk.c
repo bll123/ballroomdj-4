@@ -45,6 +45,8 @@ static int    uimusicqMusicQueueDataFindRemovals (GtkTreeModel *model,
     GtkTreePath *path, GtkTreeIter *iter, gpointer udata);
 static void   uimusicqSetMusicqDisplay (uimusicq_t *uimusicq,
     GtkListStore *store, GtkTreeIter *iter, song_t *song);
+static int    uimusicqIterateCallback (GtkTreeModel *model,
+    GtkTreePath *path, GtkTreeIter *iter, gpointer udata);
 
 GtkWidget *
 uimusicqBuildUI (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
@@ -366,6 +368,16 @@ uimusicqRemoveProcessSignal (GtkButton *b, gpointer udata)
   uimusicqRemoveProcess (uimusicq);
 }
 
+void
+uimusicqIterate (uimusicq_t *uimusicq, uimusicqiteratecb_t cb, musicqidx_t mqidx)
+{
+  GtkTreeModel  *model;
+
+  uimusicq->iteratecb = cb;
+  model = gtk_tree_view_get_model (GTK_TREE_VIEW (uimusicq->ui [mqidx].musicqTree));
+  gtk_tree_model_foreach (model, uimusicqIterateCallback, uimusicq);
+}
+
 /* internal routines */
 
 static void
@@ -657,4 +669,16 @@ uimusicqSetMusicqDisplay (uimusicq_t *uimusicq, GtkListStore *store,
 
   sellist = dispselGetList (uimusicq->dispsel, uimusicq->dispselType);
   uiutilsSetDisplayColumns (store, iter, sellist, song, MUSICQ_COL_MAX);
+}
+
+static int
+uimusicqIterateCallback (GtkTreeModel *model,
+    GtkTreePath *path, GtkTreeIter *iter, gpointer udata)
+{
+  uimusicq_t  *uimusicq = udata;
+  gulong      dbidx;
+
+  gtk_tree_model_get (model, iter, MUSICQ_COL_DBIDX, &dbidx, -1);
+  uimusicq->iteratecb (uimusicq, dbidx);
+  return FALSE;
 }

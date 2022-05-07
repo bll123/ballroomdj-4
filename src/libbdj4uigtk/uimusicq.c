@@ -10,8 +10,12 @@
 #include "bdj4intl.h"
 #include "conn.h"
 #include "dispsel.h"
+#include "fileop.h"
+#include "filemanip.h"
 #include "log.h"
 #include "musicq.h"
+#include "nlist.h"
+#include "pathbld.h"
 #include "playlist.h"
 #include "tagdef.h"
 #include "uimusicq.h"
@@ -20,6 +24,7 @@
 static void   uimusicqProcessSongSelect (uimusicq_t *uimusicq, char * args);
 static int    uimusicqMoveUpRepeat (void *udata);
 static int    uimusicqMoveDownRepeat (void *udata);
+static void   uimusicqSaveListCallback (uimusicq_t *uimusicq, dbidx_t dbidx);
 
 uimusicq_t *
 uimusicqInit (conn_t *conn, musicdb_t *musicdb,
@@ -54,6 +59,8 @@ uimusicqInit (conn_t *conn, musicdb_t *musicdb,
   }
   uimusicq->musicqManageIdx = MUSICQ_A;
   uimusicq->musicqPlayIdx = MUSICQ_A;
+  uimusicq->iteratecb = NULL;
+  uimusicq->savelist = NULL;
 
   logProcEnd (LOG_PROC, "uimusicqInit", "");
   return uimusicq;
@@ -471,15 +478,58 @@ uimusicqPeerSonglistName (uimusicq_t *targetq, uimusicq_t *sourceq)
 }
 
 long
-uimusicqGetCount (uimusicq_t *musicq)
+uimusicqGetCount (uimusicq_t *uimusicq)
 {
-  if (musicq == NULL) {
+  if (uimusicq == NULL) {
     return 0;
   }
 
-  return musicq->count;
+  return uimusicq->count;
 }
 
+void
+uimusicqSave (uimusicq_t *uimusicq, const char *name)
+{
+  char        tbuff [MAXPATHLEN];
+  char        nfn [MAXPATHLEN];
+  nlistidx_t  iteridx;
+  dbidx_t     dbidx;
+  songlist_t  *songlist;
+  song_t      *song;
+  ilistidx_t  key;
+
+  snprintf (tbuff, sizeof (tbuff), "save-%s", name);
+  uimusicq->savelist = nlistAlloc (tbuff, LIST_UNORDERED, NULL);
+  uimusicqIterate (uimusicq, uimusicqSaveListCallback, MUSICQ_A);
+
+  pathbldMakePath (tbuff, sizeof (tbuff),
+      name, ".tmp", PATHBLD_MP_DATA);
+  songlist = songlistCreate (tbuff);
+
+  nlistStartIterator (uimusicq->savelist, &iteridx);
+  key = 0;
+  while ((dbidx = nlistIterateKey (uimusicq->savelist, &iteridx)) >= 0) {
+    song = dbGetByIdx (uimusicq->musicdb, dbidx);
+
+    songlistSetStr (songlist, key, SONGLIST_FILE, songGetStr (song, TAG_FILE));
+    songlistSetStr (songlist, key, SONGLIST_TITLE, songGetStr (song, TAG_TITLE));
+    songlistSetNum (songlist, key, SONGLIST_DANCE, songGetNum (song, TAG_DANCE));
+    ++key;
+  }
+
+  songlistSave (songlist);
+
+  pathbldMakePath (nfn, sizeof (nfn),
+      name, ".songlist", PATHBLD_MP_DATA);
+  filemanipBackup (tbuff, 1);
+  filemanipMove (tbuff, nfn);
+
+  // ### if there is no playlist file, create one.
+
+  songlistFree (songlist);
+  nlistFree (uimusicq->savelist);
+  uimusicq->savelist = NULL;
+}
 
 /* internal routines */
 
@@ -507,4 +557,10 @@ uimusicqProcessSongSelect (uimusicq_t *uimusicq, char * args)
   uimusicqSetSelection (uimusicq, args);
 }
 
+
+static void
+uimusicqSaveListCallback (uimusicq_t *uimusicq, dbidx_t dbidx)
+{
+  nlistSetNum (uimusicq->savelist, dbidx, 0);
+}
 

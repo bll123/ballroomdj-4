@@ -14,8 +14,12 @@ typedef enum {
 
 typedef struct songlist songlist_t;
 
-songlist_t *  songlistAlloc (char *);
-void          songlistFree (songlist_t *);
-char          *songlistGetNext (songlist_t *, ilistidx_t idx, ilistidx_t key);
+songlist_t * songlistAlloc (char *);
+void songlistFree (songlist_t *);
+songlist_t * songlistCreate (char *fname);
+char *songlistGetNext (songlist_t *, ilistidx_t idx, ilistidx_t key);
+void songlistSetNum (songlist_t *sl, ilistidx_t ikey, ilistidx_t lidx, ilistidx_t val);
+void songlistSetStr (songlist_t *sl, ilistidx_t ikey, ilistidx_t lidx, const char *sval);
+void songlistSave (songlist_t *sl);
 
 #endif /* INC_SONGLIST_H */
