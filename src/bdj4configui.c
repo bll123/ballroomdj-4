@@ -731,7 +731,7 @@ main (int argc, char *argv[])
       -1);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
-      "ds-songfilter", ".txt", PATHBLD_MP_USEIDX);
+      "ds-songfilter", BDJ4_CONFIG_EXT, PATHBLD_MP_USEIDX);
   confui.filterDisplayDf = datafileAllocParse ("cu-filter",
       DFTYPE_KEY_VAL, tbuff, filterdisplaydfkeys, FILTER_DISP_MAX, DATAFILE_NO_LOOKUP);
   confui.filterDisplaySel = datafileGetList (confui.filterDisplayDf);
@@ -748,7 +748,7 @@ main (int argc, char *argv[])
   confui.conn = connInit (ROUTE_CONFIGUI);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
-      "configui", ".txt", PATHBLD_MP_USEIDX);
+      "configui", BDJ4_CONFIG_EXT, PATHBLD_MP_USEIDX);
   confui.optiondf = datafileAllocParse ("configui-opt", DFTYPE_KEY_VAL, tbuff,
       configuidfkeys, CONFUI_KEY_MAX, DATAFILE_NO_LOOKUP);
   confui.options = datafileGetList (confui.optiondf);
@@ -810,12 +810,12 @@ confuiStoppingCallback (void *udata, programstate_t programState)
   nlistSetNum (confui->options, CONFUI_POSITION_Y, y);
 
   pathbldMakePath (fn, sizeof (fn),
-      "configui", ".txt", PATHBLD_MP_USEIDX);
+      "configui", BDJ4_CONFIG_EXT, PATHBLD_MP_USEIDX);
   datafileSaveKeyVal ("configui", fn, configuidfkeys,
       CONFUI_KEY_MAX, confui->options);
 
   pathbldMakePath (fn, sizeof (fn),
-      "ds-songfilter", ".txt", PATHBLD_MP_USEIDX);
+      "ds-songfilter", BDJ4_CONFIG_EXT, PATHBLD_MP_USEIDX);
   datafileSaveKeyVal ("ds-songfilter", fn, filterdisplaydfkeys,
       FILTER_DISP_MAX, confui->filterDisplaySel);
 
@@ -2064,7 +2064,7 @@ confuiPopulateOptions (configui_t *confui)
       snprintf (tbuff, sizeof (tbuff), "%.2s", sval);
       sysvarsSetStr (SV_LOCALE_SHORT, tbuff);
       pathbldMakePath (tbuff, sizeof (tbuff),
-          "locale", ".txt", PATHBLD_MP_DATA);
+          "locale", BDJ4_CONFIG_EXT, PATHBLD_MP_DATA);
       fileopDelete (tbuff);
 
       /* if the set locale does not match the system or default locale */
@@ -2092,7 +2092,7 @@ confuiPopulateOptions (configui_t *confui)
       FILE    *fh;
 
       pathbldMakePath (tbuff, sizeof (tbuff),
-          "theme", ".txt", PATHBLD_MP_DATA);
+          "theme", BDJ4_CONFIG_EXT, PATHBLD_MP_DATA);
       fh = fopen (tbuff, "w");
       sval = bdjoptGetStr (confui->uiitem [i].bdjoptIdx);
       if (sval != NULL) {
@@ -2719,7 +2719,7 @@ confuiLoadHTMLList (configui_t *confui)
   llist = nlistAlloc ("cu-html-list-l", LIST_ORDERED, free);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
-      "html-list", ".txt", PATHBLD_MP_TEMPLATEDIR);
+      "html-list", BDJ4_CONFIG_EXT, PATHBLD_MP_TEMPLATEDIR);
   df = datafileAllocParse ("conf-html-list", DFTYPE_KEY_VAL, tbuff,
       NULL, 0, DATAFILE_NO_LOOKUP);
   list = datafileGetList (df);
@@ -2770,7 +2770,7 @@ confuiLoadVolIntfcList (configui_t *confui)
   llist = nlistAlloc ("cu-volintfc-list-l", LIST_ORDERED, free);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
-      "volintfc", ".txt", PATHBLD_MP_TEMPLATEDIR);
+      "volintfc", BDJ4_CONFIG_EXT, PATHBLD_MP_TEMPLATEDIR);
   df = datafileAllocParse ("conf-volintfc-list", DFTYPE_INDIRECT, tbuff,
       dfkeys, CONFUI_VOL_MAX, DATAFILE_NO_LOOKUP);
   list = datafileGetList (df);
@@ -2825,7 +2825,7 @@ confuiLoadPlayerIntfcList (configui_t *confui)
   llist = nlistAlloc ("cu-playerintfc-list-l", LIST_ORDERED, free);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
-      "playerintfc", ".txt", PATHBLD_MP_TEMPLATEDIR);
+      "playerintfc", BDJ4_CONFIG_EXT, PATHBLD_MP_TEMPLATEDIR);
   df = datafileAllocParse ("conf-playerintfc-list", DFTYPE_INDIRECT, tbuff,
       dfkeys, CONFUI_PLAYER_MAX, DATAFILE_NO_LOOKUP);
   list = datafileGetList (df);
@@ -2875,7 +2875,7 @@ confuiLoadLocaleList (configui_t *confui)
   llist = nlistAlloc ("cu-locale-list-l", LIST_ORDERED, free);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
-      "locales", ".txt", PATHBLD_MP_LOCALEDIR);
+      "locales", BDJ4_CONFIG_EXT, PATHBLD_MP_LOCALEDIR);
   df = datafileAllocParse ("conf-locale-list", DFTYPE_KEY_VAL, tbuff,
       NULL, 0, DATAFILE_NO_LOOKUP);
   list = datafileGetList (df);

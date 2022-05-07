@@ -359,7 +359,7 @@ main (int argc, char * argv[])
 
   if (! havetheme) {
     pathbldMakePath (buff, sizeof (buff),
-        "theme", ".txt", PATHBLD_MP_DATA);
+        "theme", BDJ4_CONFIG_EXT, PATHBLD_MP_DATA);
     if (fileopFileExists (buff)) {
       fh = fopen (buff, "r");
       fgets (buff, sizeof (buff), fh);

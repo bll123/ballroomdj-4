@@ -185,7 +185,7 @@ main (int argc, char *argv[])
   marquee.conn = connInit (ROUTE_MARQUEE);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
-      "marquee", ".txt", PATHBLD_MP_USEIDX);
+      "marquee", BDJ4_CONFIG_EXT, PATHBLD_MP_USEIDX);
   marquee.optiondf = datafileAllocParse ("marquee-opt", DFTYPE_KEY_VAL, tbuff,
       mqdfkeys, MQ_KEY_MAX, DATAFILE_NO_LOOKUP);
   marquee.options = datafileGetList (marquee.optiondf);
@@ -282,7 +282,7 @@ marqueeClosingCallback (void *udata, programstate_t programState)
   uiutilsCloseWindow (marquee->window);
 
   pathbldMakePath (fn, sizeof (fn),
-      "marquee", ".txt", PATHBLD_MP_USEIDX);
+      "marquee", BDJ4_CONFIG_EXT, PATHBLD_MP_USEIDX);
   datafileSaveKeyVal ("marquee", fn, mqdfkeys, MQ_KEY_MAX, marquee->options);
 
   bdj4shutdown (ROUTE_MARQUEE, NULL);

@@ -1343,10 +1343,10 @@ installerCopyTemplates (installer_t *installer)
         free (pi);
         continue;
       }
-    } else if (pathInfoExtCheck (pi, ".txt") ||
-        pathInfoExtCheck (pi, ".sequence") ||
-        pathInfoExtCheck (pi, ".pldances") ||
-        pathInfoExtCheck (pi, ".pl") ) {
+    } else if (pathInfoExtCheck (pi, BDJ4_CONFIG_EXT) ||
+        pathInfoExtCheck (pi, BDJ4_SEQUENCE_EXT) ||
+        pathInfoExtCheck (pi, BDJ4_PL_DANCE_EXT) ||
+        pathInfoExtCheck (pi, BDJ4_PLAYLIST_EXT) ) {
 
       renamelist = NULL;
       if (strncmp (pi->basename, "automatic", pi->blen) == 0) {

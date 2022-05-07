@@ -91,7 +91,7 @@ templateDisplaySettingsCopy (void)
 
   pathbldMakePath (tbuff, sizeof (tbuff), "", "", PATHBLD_MP_TEMPLATEDIR);
 
-  dirlist = filemanipBasicDirList (tbuff, ".txt");
+  dirlist = filemanipBasicDirList (tbuff, BDJ4_CONFIG_EXT);
   slistStartIterator (dirlist, &iteridx);
   while ((fname = slistIterateKey (dirlist, &iteridx)) != NULL) {
     if (strncmp (fname, "ds-", 3) != 0) {

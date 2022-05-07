@@ -161,7 +161,8 @@ playlistLoad (playlist_t *pl, char *fname)
   ilistidx_t    iteridx;
 
 
-  pathbldMakePath (tfn, sizeof (tfn), fname, ".pl", PATHBLD_MP_DATA);
+  pathbldMakePath (tfn, sizeof (tfn), fname,
+      BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
   if (pl == NULL) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Null playlist %s", tfn);
     return -1;
@@ -182,7 +183,8 @@ playlistLoad (playlist_t *pl, char *fname)
   pl->plinfo = datafileGetList (pl->plinfodf);
   nlistDumpInfo (pl->plinfo);
 
-  pathbldMakePath (tfn, sizeof (tfn), fname, ".pldances", PATHBLD_MP_DATA);
+  pathbldMakePath (tfn, sizeof (tfn), fname,
+      BDJ4_PL_DANCE_EXT, PATHBLD_MP_DATA);
   if (! fileopFileExists (tfn)) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Missing playlist-dance %s", tfn);
     playlistFree (pl);
@@ -221,7 +223,8 @@ playlistLoad (playlist_t *pl, char *fname)
 
   if (type == PLTYPE_MANUAL) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "manual: load songlist %s", fname);
-    pathbldMakePath (tfn, sizeof (tfn), fname, ".songlist", PATHBLD_MP_DATA);
+    pathbldMakePath (tfn, sizeof (tfn), fname,
+        BDJ4_SONGLIST_EXT, PATHBLD_MP_DATA);
     if (! fileopFileExists (tfn)) {
       logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Missing songlist %s", tfn);
       playlistFree (pl);
@@ -237,7 +240,8 @@ playlistLoad (playlist_t *pl, char *fname)
 
   if (type == PLTYPE_SEQ) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "sequence: load sequence %s", fname);
-    pathbldMakePath (tfn, sizeof (tfn), fname, ".sequence", PATHBLD_MP_DATA);
+    pathbldMakePath (tfn, sizeof (tfn), fname,
+        BDJ4_SEQUENCE_EXT, PATHBLD_MP_DATA);
     if (! fileopFileExists (tfn)) {
       logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Missing sequence %s", tfn);
       playlistFree (pl);
@@ -494,7 +498,7 @@ playlistGetPlaylistList (void)
   pnlist = slistAlloc ("playlistlist", LIST_ORDERED, free);
 
   pathbldMakePath (tfn, sizeof (tfn), "", "", PATHBLD_MP_DATA);
-  filelist = filemanipBasicDirList (tfn, ".pl");
+  filelist = filemanipBasicDirList (tfn, BDJ4_PLAYLIST_EXT);
 
   slistStartIterator (filelist, &iteridx);
   while ((tplfnm = slistIterateKey (filelist, &iteridx)) != NULL) {

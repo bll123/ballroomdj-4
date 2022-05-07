@@ -170,7 +170,7 @@ main (int argc, char *argv[])
   plui.conn = connInit (ROUTE_PLAYERUI);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
-      "playerui", ".txt", PATHBLD_MP_USEIDX);
+      "playerui", BDJ4_CONFIG_EXT, PATHBLD_MP_USEIDX);
   plui.optiondf = datafileAllocParse ("playerui-opt", DFTYPE_KEY_VAL, tbuff,
       playeruidfkeys, PLAYERUI_DFKEY_COUNT, DATAFILE_NO_LOOKUP);
   plui.options = datafileGetList (plui.optiondf);
@@ -277,7 +277,7 @@ pluiClosingCallback (void *udata, programstate_t programState)
   uiutilsCloseWindow (plui->window);
 
   pathbldMakePath (fn, sizeof (fn),
-      "playerui", ".txt", PATHBLD_MP_USEIDX);
+      "playerui", BDJ4_CONFIG_EXT, PATHBLD_MP_USEIDX);
   datafileSaveKeyVal ("playerui", fn, playeruidfkeys, PLAYERUI_DFKEY_COUNT, plui->options);
 
   if (G_IS_OBJECT (plui->ledonImg)) {

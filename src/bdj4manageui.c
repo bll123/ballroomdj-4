@@ -287,7 +287,7 @@ main (int argc, char *argv[])
   manage.conn = connInit (ROUTE_MANAGEUI);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
-      "manageui", ".txt", PATHBLD_MP_USEIDX);
+      "manageui", BDJ4_CONFIG_EXT, PATHBLD_MP_USEIDX);
   manage.optiondf = datafileAllocParse ("manageui-opt", DFTYPE_KEY_VAL, tbuff,
       manageuidfkeys, MANAGEUI_DFKEY_COUNT, DATAFILE_NO_LOOKUP);
   manage.options = datafileGetList (manage.optiondf);
@@ -429,7 +429,7 @@ manageClosingCallback (void *udata, programstate_t programState)
   procutilFreeAll (manage->processes);
 
   pathbldMakePath (fn, sizeof (fn),
-      "manageui", ".txt", PATHBLD_MP_USEIDX);
+      "manageui", BDJ4_CONFIG_EXT, PATHBLD_MP_USEIDX);
   datafileSaveKeyVal ("manageui", fn, manageuidfkeys, MANAGEUI_DFKEY_COUNT, manage->options);
 
   bdj4shutdown (ROUTE_MANAGEUI, manage->musicdb);
@@ -1288,36 +1288,38 @@ manageSonglistSave (manageui_t *manage)
   /* the song list has been renamed */
   if (strcmp (manage->sloldname, name) != 0) {
     pathbldMakePath (onm, sizeof (onm),
-        manage->sloldname, ".songlist", PATHBLD_MP_DATA);
+        manage->sloldname, BDJ4_SONGLIST_EXT, PATHBLD_MP_DATA);
     pathbldMakePath (nnm, sizeof (nnm),
-        name, ".songlist", PATHBLD_MP_DATA);
+        name, BDJ4_SONGLIST_EXT, PATHBLD_MP_DATA);
     filemanipRenameAll (onm, nnm);
     pathbldMakePath (onm, sizeof (onm),
-        manage->sloldname, ".pl", PATHBLD_MP_DATA);
+        manage->sloldname, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
     pathbldMakePath (nnm, sizeof (nnm),
-        name, ".pl", PATHBLD_MP_DATA);
+        name, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
     filemanipRenameAll (onm, nnm);
     pathbldMakePath (onm, sizeof (onm),
-        manage->sloldname, ".pldances", PATHBLD_MP_DATA);
+        manage->sloldname, BDJ4_PL_DANCE_EXT, PATHBLD_MP_DATA);
     pathbldMakePath (nnm, sizeof (nnm),
-        name, ".pldances", PATHBLD_MP_DATA);
+        name, BDJ4_PL_DANCE_EXT, PATHBLD_MP_DATA);
     filemanipRenameAll (onm, nnm);
   }
 
   pathbldMakePath (onm, sizeof (onm),
-      name, ".songlist", PATHBLD_MP_DATA);
+      name, BDJ4_SONGLIST_EXT, PATHBLD_MP_DATA);
   strlcat (onm, ".n", sizeof (onm));
 
   uimusicqSave (manage->slmusicq, onm);
 
   pathbldMakePath (nnm, sizeof (nnm),
-      name, ".songlist", PATHBLD_MP_DATA);
+      name, BDJ4_SONGLIST_EXT, PATHBLD_MP_DATA);
   if (! manage->slbackupcreated) {
     filemanipBackup (nnm, 1);
     manage->slbackupcreated = true;
   }
   filemanipMove (onm, nnm);
 
+  pathbldMakePath (nnm, sizeof (nnm),
+      name, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
   // ### if there is no playlist file, create one.
 }
 
@@ -1445,17 +1447,17 @@ manageSelectFileDialog (manageui_t *manage, int flags)
     fn = slistGetStr (plList, dispnm);
     if ((flags & MANAGE_F_SONGLIST) == MANAGE_F_SONGLIST) {
       pathbldMakePath (tbuff, sizeof (tbuff),
-          fn, ".songlist", PATHBLD_MP_DATA);
+          fn, BDJ4_SONGLIST_EXT, PATHBLD_MP_DATA);
       cb = manageSonglistLoadFile;
     }
     if ((flags & MANAGE_F_PLAYLIST) == MANAGE_F_PLAYLIST) {
       pathbldMakePath (tbuff, sizeof (tbuff),
-          fn, ".pl", PATHBLD_MP_DATA);
+          fn, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
 //      cb = managePlaylistLoadFile;
     }
     if ((flags & MANAGE_F_SEQUENCE) == MANAGE_F_SEQUENCE) {
       pathbldMakePath (tbuff, sizeof (tbuff),
-          fn, ".seq", PATHBLD_MP_DATA);
+          fn, BDJ4_SEQUENCE_EXT, PATHBLD_MP_DATA);
 //      cb = manageSequenceLoadFile;
     }
     if (fileopFileExists (tbuff)) {
@@ -1466,7 +1468,7 @@ manageSelectFileDialog (manageui_t *manage, int flags)
   /* the raffle songs songlist has no associated playlist */
   if ((flags & MANAGE_F_SONGLIST) == MANAGE_F_SONGLIST) {
     pathbldMakePath (tbuff, sizeof (tbuff),
-        _("Raffle Songs"), ".songlist", PATHBLD_MP_DATA);
+        _("Raffle Songs"), BDJ4_SONGLIST_EXT, PATHBLD_MP_DATA);
     if (fileopFileExists (tbuff)) {
       pathinfo_t  *pi;
       char        tmp [MAXPATHLEN];

@@ -51,7 +51,7 @@ dispselAlloc (void)
     dispsel->name [i] = NULL;
 
     pathbldMakePath (fn, sizeof (fn),
-        dispselmap [i], ".txt", PATHBLD_MP_USEIDX);
+        dispselmap [i], BDJ4_CONFIG_EXT, PATHBLD_MP_USEIDX);
     if (! fileopFileExists (fn)) {
       fprintf (stderr, "%s does not exist\n", fn);
       continue;

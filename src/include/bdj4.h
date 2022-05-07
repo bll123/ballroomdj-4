@@ -24,4 +24,12 @@ enum {
 #define BDJ4_NAME       "BDJ4"
 #define BDJ3_NAME       "BallroomDJ 3"
 
+#define BDJ4_PLAYLIST_EXT ".pl"
+#define BDJ4_PL_DANCE_EXT ".pldances"
+#define BDJ4_CONFIG_EXT   ".txt"
+#define BDJ4_DB_EXT       ".dat"
+#define BDJ4_SONGLIST_EXT ".songlist"
+#define BDJ4_SEQUENCE_EXT ".sequence"
+
+
 #endif /* INC_BDJ4_H */

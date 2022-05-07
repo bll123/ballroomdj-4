@@ -27,7 +27,8 @@ dnctypesAlloc (void)
   dnctype_t *dnctypes;
   char      fname [MAXPATHLEN];
 
-  pathbldMakePath (fname, sizeof (fname), "dancetypes", ".txt", PATHBLD_MP_DATA);
+  pathbldMakePath (fname, sizeof (fname), "dancetypes",
+      BDJ4_CONFIG_EXT, PATHBLD_MP_DATA);
   if (! fileopFileExists (fname)) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: dnctypes: missing %s", fname);
     return NULL;

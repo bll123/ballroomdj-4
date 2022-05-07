@@ -67,7 +67,7 @@ uisongselInit (conn_t *conn, musicdb_t *musicdb,
   uisongsel->sortopt = sortoptAlloc ();
 
   pathbldMakePath (tbuff, sizeof (tbuff),
-      "ds-songfilter", ".txt", PATHBLD_MP_USEIDX);
+      "ds-songfilter", BDJ4_CONFIG_EXT, PATHBLD_MP_USEIDX);
   uisongsel->filterDisplayDf = datafileAllocParse ("uisongsel-filter",
       DFTYPE_KEY_VAL, tbuff, filterdisplaydfkeys, FILTER_DISP_MAX, DATAFILE_NO_LOOKUP);
   uisongsel->filterDisplaySel = datafileGetList (uisongsel->filterDisplayDf);
