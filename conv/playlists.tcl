@@ -42,10 +42,10 @@ foreach {fn} $flist {
 
     set tkey [string toupper $key]
 
-    if { $tkey eq "MANUALLIST" && $value ne {} } {
+    if { $tkey eq "MANUALLIST" && $value ne {} && $value ne {None} } {
       set pltype Manual
     }
-    if { $tkey eq "SEQUENCE" && $value ne {} } {
+    if { $tkey eq "SEQUENCE" && $value ne {} && $value ne {None} } {
       set pltype Sequence
     }
 
