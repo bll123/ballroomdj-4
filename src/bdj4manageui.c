@@ -1312,15 +1312,25 @@ manageSonglistSave (manageui_t *manage)
 
   pathbldMakePath (nnm, sizeof (nnm),
       name, BDJ4_SONGLIST_EXT, PATHBLD_MP_DATA);
+fprintf (stderr, "- manual: %s\n", nnm);
   if (! manage->slbackupcreated) {
     filemanipBackup (nnm, 1);
     manage->slbackupcreated = true;
   }
   filemanipMove (onm, nnm);
 
-  pathbldMakePath (nnm, sizeof (nnm),
+  pathbldMakePath (onm, sizeof (onm),
       name, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
-  // ### if there is no playlist file, create one.
+fprintf (stderr, "- pl-chk: %s\n", onm);
+  if (! fileopFileExists (onm))
+  {
+    playlist_t    *pl;
+
+    pl = playlistAlloc (manage->musicdb);
+    playlistCreate (pl, name, PLTYPE_MANUAL, nnm);
+    playlistSave (pl);
+    playlistFree (pl);
+  }
 }
 
 /* general */

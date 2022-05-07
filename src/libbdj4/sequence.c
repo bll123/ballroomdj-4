@@ -18,7 +18,7 @@
 #include "slist.h"
 
 sequence_t *
-sequenceAlloc (char *fname)
+sequenceAlloc (const char *fname)
 {
   sequence_t    *sequence;
   slist_t       *tlist;

@@ -28,7 +28,7 @@ typedef enum {
   PLAYLIST_STOP_AFTER,            //
   PLAYLIST_STOP_TIME,             //
   PLAYLIST_TYPE,                  //
-  PLAYLIST_USE_STATUS,            //
+  PLAYLIST_STATUS_PLAYABLE,
   PLAYLIST_KEY_MAX,
 } playlistkey_t;
 
@@ -54,25 +54,26 @@ typedef struct playlist playlist_t;
 
 typedef bool (*playlistCheck_t)(song_t *, void *);
 
-playlist_t    *playlistAlloc (musicdb_t *musicdb);
-int           playlistLoad (playlist_t *pl, char *);
-void          playlistCreate (playlist_t *pl, char *plfname, pltype_t type, char *ofname);
-void          playlistFree (void *);
-char          *playlistGetName (playlist_t *pl);
-ssize_t       playlistGetConfigNum (playlist_t *pl, playlistkey_t key);
-void          playlistSetConfigNum (playlist_t *pl, playlistkey_t key, ssize_t value);
-ssize_t       playlistGetDanceNum (playlist_t *pl, ilistidx_t dancekey,
-                  pldancekey_t key);
-void          playlistSetDanceCount (playlist_t *pl, ilistidx_t dancekey,
-                  ssize_t value);
-song_t        *playlistGetNextSong (playlist_t *pl,
-                  nlist_t *danceCounts,
-                  ssize_t priorCount, playlistCheck_t checkProc,
-                  danceselHistory_t historyProc, void *userdata);
-slist_t       *playlistGetPlaylistList (void);
-bool          playlistFilterSong (dbidx_t dbidx, song_t *song,
-                  void *tplaylist);
-void          playlistAddCount (playlist_t *, song_t *song);
-void          playlistAddPlayed (playlist_t *, song_t *song);
+playlist_t *playlistAlloc (musicdb_t *musicdb);
+int       playlistLoad (playlist_t *pl, char *);
+void      playlistCreate (playlist_t *pl, const char *plfname, pltype_t type,
+    const char *suppfname);
+void      playlistFree (void *);
+char      *playlistGetName (playlist_t *pl);
+ssize_t   playlistGetConfigNum (playlist_t *pl, playlistkey_t key);
+void      playlistSetConfigNum (playlist_t *pl, playlistkey_t key, ssize_t value);
+ssize_t   playlistGetDanceNum (playlist_t *pl, ilistidx_t dancekey,
+    pldancekey_t key);
+void      playlistSetDanceCount (playlist_t *pl, ilistidx_t dancekey,
+    ssize_t value);
+song_t    *playlistGetNextSong (playlist_t *pl, nlist_t *danceCounts,
+    ssize_t priorCount, playlistCheck_t checkProc,
+    danceselHistory_t historyProc, void *userdata);
+slist_t   *playlistGetPlaylistList (void);
+bool      playlistFilterSong (dbidx_t dbidx, song_t *song,
+    void *tplaylist);
+void      playlistAddCount (playlist_t *, song_t *song);
+void      playlistAddPlayed (playlist_t *, song_t *song);
+void      playlistSave (playlist_t *);
 
 #endif /* INC_PLAYLIST_H */

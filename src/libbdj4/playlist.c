@@ -51,7 +51,7 @@ typedef struct playlist {
 static void     plConvType (datafileconv_t *conv);
 
 /* must be sorted in ascii order */
-static datafilekey_t playlistdfkeys [] = {
+static datafilekey_t playlistdfkeys [PLAYLIST_KEY_MAX] = {
   { "ALLOWEDKEYWORDS",PLAYLIST_ALLOWED_KEYWORDS, VALUE_LIST, convTextList, -1 },
   { "DANCELEVELHIGH", PLAYLIST_LEVEL_HIGH, VALUE_NUM, levelConv, -1 },
   { "DANCELEVELLOW",  PLAYLIST_LEVEL_LOW, VALUE_NUM, levelConv, -1 },
@@ -61,18 +61,18 @@ static datafilekey_t playlistdfkeys [] = {
   { "MQMESSAGE",      PLAYLIST_MQ_MESSAGE, VALUE_STR, NULL, -1 },
   { "PAUSEEACHSONG",  PLAYLIST_PAUSE_EACH_SONG, VALUE_NUM, convBoolean, -1 },
   { "PLAYANNOUNCE",   PLAYLIST_ANNOUNCE, VALUE_NUM, convBoolean, -1 },
+  { "STATUSPLAYABLE", PLAYLIST_STATUS_PLAYABLE, VALUE_NUM, convBoolean, -1 },
   { "STOPAFTER",      PLAYLIST_STOP_AFTER, VALUE_NUM, NULL, -1 },
   { "STOPTIME",       PLAYLIST_STOP_TIME, VALUE_NUM, NULL, -1 },
   { "TYPE",           PLAYLIST_TYPE, VALUE_NUM, plConvType, -1 },
 };
-#define PL_DFKEY_COUNT (sizeof (playlistdfkeys) / sizeof (datafilekey_t))
 
 /* must be sorted in ascii order */
 static datafilekey_t playlistdancedfkeys [PLDANCE_KEY_MAX] = {
   { "BPMHIGH",        PLDANCE_BPM_HIGH,     VALUE_NUM, NULL, -1 },
   { "BPMLOW",         PLDANCE_BPM_LOW,      VALUE_NUM, NULL, -1 },
   { "COUNT",          PLDANCE_COUNT,        VALUE_NUM, NULL, -1 },
-  { "DANCE",          PLDANCE_DANCE,        VALUE_DATA, danceConvDance, -1 },
+  { "DANCE",          PLDANCE_DANCE,        VALUE_NUM, danceConvDance, -1 },
   { "MAXPLAYTIME",    PLDANCE_MAXPLAYTIME,  VALUE_NUM, NULL, -1 },
   { "SELECTED",       PLDANCE_SELECTED,     VALUE_NUM, convBoolean, -1 },
 };
@@ -163,6 +163,7 @@ playlistLoad (playlist_t *pl, char *fname)
 
   pathbldMakePath (tfn, sizeof (tfn), fname,
       BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
+fprintf (stderr, "pl-load: %s %s\n", fname, tfn);
   if (pl == NULL) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Null playlist %s", tfn);
     return -1;
@@ -174,7 +175,7 @@ playlistLoad (playlist_t *pl, char *fname)
 
   pl->name = strdup (fname);
   pl->plinfodf = datafileAllocParse ("playlist-pl", DFTYPE_KEY_VAL, tfn,
-      playlistdfkeys, PL_DFKEY_COUNT, DATAFILE_NO_LOOKUP);
+      playlistdfkeys, PLAYLIST_KEY_MAX, DATAFILE_NO_LOOKUP);
   if (! fileopFileExists (tfn)) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Bad playlist-pl %s", tfn);
     playlistFree (pl);
@@ -260,7 +261,8 @@ playlistLoad (playlist_t *pl, char *fname)
 }
 
 void
-playlistCreate (playlist_t *pl, char *plfname, pltype_t type, char *ofname)
+playlistCreate (playlist_t *pl, const char *plfname, pltype_t type,
+    const char *suppfname)
 {
   char          tbuff [40];
   ilistidx_t    didx;
@@ -270,6 +272,7 @@ playlistCreate (playlist_t *pl, char *plfname, pltype_t type, char *ofname)
 
 
   levels = bdjvarsdfGet (BDJVDF_LEVELS);
+fprintf (stderr, "pl-create: %s\n", plfname);
 
   pl->name = strdup (plfname);
   snprintf (tbuff, sizeof (tbuff), "plinfo-c-%s", plfname);
@@ -289,15 +292,16 @@ playlistCreate (playlist_t *pl, char *plfname, pltype_t type, char *ofname)
   nlistSetNum (pl->plinfo, PLAYLIST_STOP_TIME, LIST_VALUE_INVALID);
   nlistSort (pl->plinfo);
 
-  if (ofname == NULL) {
-    ofname = plfname;
+  if (suppfname == NULL) {
+    suppfname = plfname;
   }
   if (type == PLTYPE_MANUAL) {
-    pl->songlist = songlistAlloc (ofname);
+    pl->songlist = songlistAlloc (suppfname);
   }
   if (type == PLTYPE_SEQ) {
-    pl->sequence = sequenceAlloc (ofname);
+    pl->sequence = sequenceAlloc (suppfname);
   }
+fprintf (stderr, "- pl-c suppfname: %s\n", suppfname);
 
   snprintf (tbuff, sizeof (tbuff), "pldance-c-%s", plfname);
   pl->pldances = ilistAlloc (tbuff, LIST_ORDERED);
@@ -519,6 +523,68 @@ playlistGetPlaylistList (void)
   return pnlist;
 }
 
+void
+playlistAddCount (playlist_t *pl, song_t *song)
+{
+  pltype_t      type;
+  ilistidx_t     danceIdx;
+
+
+  type = (pltype_t) nlistGetNum (pl->plinfo, PLAYLIST_TYPE);
+
+  /* only the automatic playlists need to track which dances have been played */
+  if (type != PLTYPE_AUTO) {
+    return;
+  }
+
+  logProcBegin (LOG_PROC, "playlistAddCount");
+  danceIdx = songGetNum (song, TAG_DANCE);
+  if (pl->dancesel != NULL) {
+    danceselAddCount (pl->dancesel, danceIdx);
+  }
+  logProcEnd (LOG_PROC, "playAddCount", "");
+}
+
+void
+playlistAddPlayed (playlist_t *pl, song_t *song)
+{
+  pltype_t      type;
+  ilistidx_t     danceIdx;
+
+
+  type = (pltype_t) nlistGetNum (pl->plinfo, PLAYLIST_TYPE);
+
+  /* only the automatic playlists need to track which dances have been played */
+  if (type != PLTYPE_AUTO) {
+    return;
+  }
+
+  logProcBegin (LOG_PROC, "playlistAddPlayed");
+  danceIdx = songGetNum (song, TAG_DANCE);
+  if (pl->dancesel != NULL) {
+    danceselAddPlayed (pl->dancesel, danceIdx);
+  }
+  logProcEnd (LOG_PROC, "playAddPlayed", "");
+}
+
+void
+playlistSave (playlist_t *pl)
+{
+  char  tfn [MAXPATHLEN];
+
+fprintf (stderr, "- pl-save: name: %s\n", pl->name);
+  pathbldMakePath (tfn, sizeof (tfn), pl->name,
+      BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
+fprintf (stderr, "- pl-save: pl-name: %s\n", tfn);
+  datafileSaveKeyVal ("playlist", tfn, playlistdfkeys,
+      PLAYLIST_KEY_MAX, pl->plinfo);
+
+  pathbldMakePath (tfn, sizeof (tfn), pl->name,
+      BDJ4_PL_DANCE_EXT, PATHBLD_MP_DATA);
+fprintf (stderr, "- pl-save: d-name: %s\n", tfn);
+  datafileSaveIndirect ("playlist", tfn, playlistdancedfkeys,
+      PLDANCE_KEY_MAX, pl->pldances);
+}
 
 /* internal routines */
 
@@ -599,56 +665,15 @@ plConvType (datafileconv_t *conv)
     }
     conv->u.num = num;
   } else if (conv->valuetype == VALUE_NUM) {
+    char    *sval;
+
     switch (conv->u.num) {
-      case PLTYPE_MANUAL: { conv->u.str = "Manual"; break; }
-      case PLTYPE_AUTO: { conv->u.str = "Automatic"; break; }
-      case PLTYPE_SEQ: { conv->u.str = "Sequence"; break; }
+      case PLTYPE_MANUAL: { sval = "Manual"; break; }
+      case PLTYPE_AUTO: { sval = "Automatic"; break; }
+      case PLTYPE_SEQ: { sval = "Sequence"; break; }
     }
+    conv->u.str = sval;
   }
-}
-
-void
-playlistAddCount (playlist_t *pl, song_t *song)
-{
-  pltype_t      type;
-  ilistidx_t     danceIdx;
-
-
-  type = (pltype_t) nlistGetNum (pl->plinfo, PLAYLIST_TYPE);
-
-  /* only the automatic playlists need to track which dances have been played */
-  if (type != PLTYPE_AUTO) {
-    return;
-  }
-
-  logProcBegin (LOG_PROC, "playlistAddCount");
-  danceIdx = songGetNum (song, TAG_DANCE);
-  if (pl->dancesel != NULL) {
-    danceselAddCount (pl->dancesel, danceIdx);
-  }
-  logProcEnd (LOG_PROC, "playAddCount", "");
-}
-
-void
-playlistAddPlayed (playlist_t *pl, song_t *song)
-{
-  pltype_t      type;
-  ilistidx_t     danceIdx;
-
-
-  type = (pltype_t) nlistGetNum (pl->plinfo, PLAYLIST_TYPE);
-
-  /* only the automatic playlists need to track which dances have been played */
-  if (type != PLTYPE_AUTO) {
-    return;
-  }
-
-  logProcBegin (LOG_PROC, "playlistAddPlayed");
-  danceIdx = songGetNum (song, TAG_DANCE);
-  if (pl->dancesel != NULL) {
-    danceselAddPlayed (pl->dancesel, danceIdx);
-  }
-  logProcEnd (LOG_PROC, "playAddPlayed", "");
 }
 
 static void
