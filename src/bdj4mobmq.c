@@ -213,9 +213,9 @@ mobmqEventHandler (struct mg_connection *c, int ev, void *ev_data, void *userdat
         mg_http_match_uri (hm, "#.crt") ||
         mg_http_match_uri (hm, "#.pem") ||
         mg_http_match_uri (hm, "#.csr")) {
-      mg_http_reply (c, 403, "%s", "Forbidden");
+      mg_http_reply (c, 403, NULL, "%s", "Forbidden");
     } else {
-      mg_http_reply (c, 403, "%s", "Forbidden");
+      mg_http_reply (c, 403, NULL, "%s", "Forbidden");
     }
   }
 }
