@@ -520,7 +520,7 @@ manageBuildUI (manageui_t *manage)
 
   manage->mainnotebook = uiutilsCreateNotebook ();
   gtk_notebook_set_tab_pos (GTK_NOTEBOOK (manage->mainnotebook), GTK_POS_LEFT);
-  uiutilsBoxPackStart (vbox, manage->mainnotebook);
+  uiutilsBoxPackStartExpand (vbox, manage->mainnotebook);
 
   manageBuildUISongListEditor (manage);
   manageBuildUIMusicManager (manage);
@@ -590,7 +590,7 @@ manageBuildUISongListEditor (manageui_t *manage)
   uiutilsBoxPackStart (vbox, widget);
 
   notebook = uiutilsCreateNotebook ();
-  uiutilsBoxPackStart (vbox, notebook);
+  uiutilsBoxPackStartExpand (vbox, notebook);
   manage->slnotebook = notebook;
 
   /* song list editor: easy song list tab */
@@ -669,7 +669,7 @@ manageBuildUIMusicManager (manageui_t *manage)
   uiutilsBoxPackStart (vbox, widget);
 
   notebook = uiutilsCreateNotebook ();
-  uiutilsBoxPackStart (vbox, notebook);
+  uiutilsBoxPackStartExpand (vbox, notebook);
   manage->mmnotebook = notebook;
 
   /* music manager: song selection tab*/

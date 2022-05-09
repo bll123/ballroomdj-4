@@ -954,7 +954,7 @@ confuiBuildUI (configui_t *confui)
   confui->notebook = uiutilsCreateNotebook ();
   assert (confui->notebook != NULL);
   gtk_notebook_set_tab_pos (GTK_NOTEBOOK (confui->notebook), GTK_POS_LEFT);
-  uiutilsBoxPackStart (confui->vbox, confui->notebook);
+  uiutilsBoxPackStartExpand (confui->vbox, confui->notebook);
 
   confuiBuildUIGeneral (confui);
   confuiBuildUIPlayer (confui);

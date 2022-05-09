@@ -395,7 +395,7 @@ pluiBuildUI (playerui_t *plui)
   uiutilsBoxPackStart (plui->vbox, widget);
 
   plui->notebook = uiutilsCreateNotebook ();
-  uiutilsBoxPackStart (plui->vbox, plui->notebook);
+  uiutilsBoxPackStartExpand (plui->vbox, plui->notebook);
   g_signal_connect (plui->notebook, "switch-page", G_CALLBACK (pluiSwitchPage), plui);
 
   widget = gtk_button_new ();
