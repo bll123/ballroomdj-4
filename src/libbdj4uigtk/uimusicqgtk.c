@@ -77,111 +77,111 @@ uimusicqBuildUI (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
   image = gtk_image_new_from_file (tbuff);
   uimusicq->pauseImg = gtk_image_get_pixbuf (GTK_IMAGE (image));
 
-  uimusicq->ui [ci].box = uiutilsCreateVertBox ();
+  uimusicq->ui [ci].box = uiCreateVertBox ();
   assert (uimusicq->ui [ci].box != NULL);
-  uiutilsWidgetExpandHoriz (uimusicq->ui [ci].box);
-  uiutilsWidgetExpandVert (uimusicq->ui [ci].box);
+  uiWidgetExpandHoriz (uimusicq->ui [ci].box);
+  uiWidgetExpandVert (uimusicq->ui [ci].box);
 
-  hbox = uiutilsCreateHorizBox ();
+  hbox = uiCreateHorizBox ();
   assert (hbox != NULL);
-  uiutilsWidgetSetMarginTop (hbox, uiutilsBaseMarginSz);
-  uiutilsWidgetExpandHoriz (hbox);
-  uiutilsBoxPackStart (uimusicq->ui [ci].box, hbox);
+  uiWidgetSetMarginTop (hbox, uiBaseMarginSz);
+  uiWidgetExpandHoriz (hbox);
+  uiBoxPackStart (uimusicq->ui [ci].box, hbox);
 
   /* CONTEXT: button: move the selected song to the top of the queue */
-  widget = uiutilsCreateButton (NULL, _("Move to Top"), "button_movetop",
+  widget = uiCreateButton (NULL, _("Move to Top"), "button_movetop",
       uimusicqMoveTopProcessSignal, uimusicq);
-  uiutilsBoxPackStart (hbox, widget);
+  uiBoxPackStart (hbox, widget);
 
   /* CONTEXT: button: move the selected song up in the queue */
-  widget = uiutilsCreateButton (NULL, _("Move Up"), "button_up",
+  widget = uiCreateButton (NULL, _("Move Up"), "button_up",
       NULL, uimusicq);
   g_signal_connect (widget, "pressed",
       G_CALLBACK (uimusicqMoveUpProcessSignal), uimusicq);
   g_signal_connect (widget, "released",
       G_CALLBACK (uimusicqStopRepeatSignal), uimusicq);
-  uiutilsBoxPackStart (hbox, widget);
+  uiBoxPackStart (hbox, widget);
 
   /* CONTEXT: button: move the selected song down in the queue */
-  widget = uiutilsCreateButton (NULL, _("Move Down"), "button_down",
+  widget = uiCreateButton (NULL, _("Move Down"), "button_down",
       NULL, uimusicq);
   g_signal_connect (widget, "pressed",
       G_CALLBACK (uimusicqMoveDownProcessSignal), uimusicq);
   g_signal_connect (widget, "released",
       G_CALLBACK (uimusicqStopRepeatSignal), uimusicq);
-  uiutilsBoxPackStart (hbox, widget);
+  uiBoxPackStart (hbox, widget);
 
   if ((uimusicq->uimusicqflags & UIMUSICQ_FLAGS_NO_TOGGLE_PAUSE) !=
       UIMUSICQ_FLAGS_NO_TOGGLE_PAUSE) {
     /* CONTEXT: button: set playback to pause after the selected song is played (toggle) */
-    widget = uiutilsCreateButton (NULL, _("Toggle Pause"), "button_pause",
+    widget = uiCreateButton (NULL, _("Toggle Pause"), "button_pause",
         uimusicqTogglePauseProcessSignal, uimusicq);
-    uiutilsBoxPackStart (hbox, widget);
+    uiBoxPackStart (hbox, widget);
   }
 
   if ((uimusicq->uimusicqflags & UIMUSICQ_FLAGS_NO_REMOVE) !=
       UIMUSICQ_FLAGS_NO_REMOVE) {
     /* CONTEXT: button: remove the song from the queue */
-    widget = uiutilsCreateButton (NULL, _("Remove"), "button_audioremove",
+    widget = uiCreateButton (NULL, _("Remove"), "button_audioremove",
         uimusicqRemoveProcessSignal, uimusicq);
-    uiutilsBoxPackStart (hbox, widget);
+    uiBoxPackStart (hbox, widget);
   }
 
   if ((uimusicq->uimusicqflags & UIMUSICQ_FLAGS_NO_QUEUE) != UIMUSICQ_FLAGS_NO_QUEUE) {
     /* CONTEXT: button: request playback of a song external to BDJ4 (not in the database) */
-    widget = uiutilsCreateButton (NULL, _("Request External"), NULL,
+    widget = uiCreateButton (NULL, _("Request External"), NULL,
         NULL, uimusicq);
-    uiutilsWidgetDisable (widget);
-    uiutilsBoxPackEnd (hbox, widget);
+    uiWidgetDisable (widget);
+    uiBoxPackEnd (hbox, widget);
   // ### TODO create code to handle the request external button
 
-    widget = uiutilsDropDownCreate (parentwin,
+    widget = uiDropDownCreate (parentwin,
         /* CONTEXT: button: queue a playlist for playback */
         _("Queue Playlist"), uimusicqQueuePlaylistProcessSignal,
         &uimusicq->ui [ci].playlistsel, uimusicq);
-    uiutilsBoxPackEnd (hbox, widget);
+    uiBoxPackEnd (hbox, widget);
     uimusicqCreatePlaylistList (uimusicq);
 
-    widget = uiutilsDropDownCreate (parentwin,
+    widget = uiDropDownCreate (parentwin,
         /* CONTEXT: button: queue a dance for playback */
         _("Queue Dance"), uimusicqQueueDanceProcessSignal,
         &uimusicq->ui [ci].dancesel, uimusicq);
     uiutilsCreateDanceList (&uimusicq->ui [ci].dancesel, NULL);
-    uiutilsBoxPackEnd (hbox, widget);
+    uiBoxPackEnd (hbox, widget);
   }
 
   if (uimusicq->dispselType == DISP_SEL_SONGLIST ||
       uimusicq->dispselType == DISP_SEL_EZSONGLIST) {
-    widget = uiutilsEntryCreate (&uimusicq->ui [ci].slname);
+    widget = uiEntryCreate (&uimusicq->ui [ci].slname);
     snprintf (tbuff, sizeof (tbuff),
         "entry { color: %s; }",
         bdjoptGetStr (OPT_P_UI_ACCENT_COL));
-    uiutilsSetCss (widget, tbuff);
-    uiutilsBoxPackEnd (hbox, widget);
+    uiSetCss (widget, tbuff);
+    uiBoxPackEnd (hbox, widget);
   }
 
   if (uimusicq->dispselType == DISP_SEL_MUSICQ) {
     /* CONTEXT: button: clear the queue */
-    widget = uiutilsCreateButton (NULL, _("Clear Queue"), NULL,
+    widget = uiCreateButton (NULL, _("Clear Queue"), NULL,
         uimusicqClearQueueProcessSignal, uimusicq);
-    uiutilsBoxPackEnd (hbox, widget);
+    uiBoxPackEnd (hbox, widget);
   }
 
   /* musicq tree view */
 
-  widget = uiutilsCreateScrolledWindow (400);
-  uiutilsWidgetExpandHoriz (widget);
-  uiutilsBoxPackStartExpand (uimusicq->ui [ci].box, widget);
+  widget = uiCreateScrolledWindow (400);
+  uiWidgetExpandHoriz (widget);
+  uiBoxPackStartExpand (uimusicq->ui [ci].box, widget);
 
-  uimusicq->ui [ci].musicqTree = uiutilsCreateTreeView ();
+  uimusicq->ui [ci].musicqTree = uiCreateTreeView ();
   assert (uimusicq->ui [ci].musicqTree != NULL);
   uimusicq->ui [ci].sel = gtk_tree_view_get_selection (
       GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree));
   gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree), TRUE);
-  uiutilsWidgetAlignHorizFill (uimusicq->ui [ci].musicqTree);
-  uiutilsWidgetExpandHoriz (uimusicq->ui [ci].musicqTree);
-  uiutilsWidgetExpandVert (uimusicq->ui [ci].musicqTree);
-  uiutilsBoxPackInWindow (widget, uimusicq->ui [ci].musicqTree);
+  uiWidgetAlignHorizFill (uimusicq->ui [ci].musicqTree);
+  uiWidgetExpandHoriz (uimusicq->ui [ci].musicqTree);
+  uiWidgetExpandVert (uimusicq->ui [ci].musicqTree);
+  uiBoxPackInWindow (widget, uimusicq->ui [ci].musicqTree);
 
   renderer = gtk_cell_renderer_text_new ();
   gtk_cell_renderer_set_alignment (renderer, 1.0, 0.5);
@@ -202,7 +202,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
   gtk_tree_view_append_column (GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree), column);
 
   sellist = dispselGetList (uimusicq->dispsel, uimusicq->dispselType);
-  uiutilsAddDisplayColumns (uimusicq->ui [ci].musicqTree, sellist,
+  uiAddDisplayColumns (uimusicq->ui [ci].musicqTree, sellist,
       MUSICQ_COL_MAX, MUSICQ_COL_FONT, MUSICQ_COL_ELLIPSIZE);
 
   gtk_tree_view_set_model (GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree), NULL);
@@ -436,7 +436,7 @@ uimusicqQueueDanceProcessSignal (GtkTreeView *tv, GtkTreePath *path,
   int           ci;
 
   ci = uimusicq->musicqManageIdx;
-  idx = uiutilsDropDownSelectionGet (&uimusicq->ui [ci].dancesel, path);
+  idx = uiDropDownSelectionGet (&uimusicq->ui [ci].dancesel, path);
   uimusicqQueueDanceProcess (uimusicq, idx);
 }
 
@@ -449,7 +449,7 @@ uimusicqQueuePlaylistProcessSignal (GtkTreeView *tv, GtkTreePath *path,
   int           ci;
 
   ci = uimusicq->musicqManageIdx;
-  idx = uiutilsDropDownSelectionGet (&uimusicq->ui [ci].playlistsel, path);
+  idx = uiDropDownSelectionGet (&uimusicq->ui [ci].playlistsel, path);
   uimusicqQueuePlaylistProcess (uimusicq, idx);
 }
 
@@ -493,7 +493,7 @@ uimusicqProcessMusicQueueDataNew (uimusicq_t *uimusicq, char * args)
   musicqstoretypes [musicqcolcount++] = GDK_TYPE_PIXBUF;
 
   sellist = dispselGetList (uimusicq->dispsel, uimusicq->dispselType);
-  musicqstoretypes = uiutilsAddDisplayTypes (musicqstoretypes, sellist, &musicqcolcount);
+  musicqstoretypes = uiAddDisplayTypes (musicqstoretypes, sellist, &musicqcolcount);
 
   store = gtk_list_store_newv (musicqcolcount, musicqstoretypes);
   assert (store != NULL);
@@ -665,7 +665,7 @@ uimusicqSetMusicqDisplay (uimusicq_t *uimusicq, GtkListStore *store,
   slist_t     *sellist;
 
   sellist = dispselGetList (uimusicq->dispsel, uimusicq->dispselType);
-  uiutilsSetDisplayColumns (store, iter, sellist, song, MUSICQ_COL_MAX);
+  uiSetDisplayColumns (store, iter, sellist, song, MUSICQ_COL_MAX);
 }
 
 static int

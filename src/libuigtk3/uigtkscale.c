@@ -15,7 +15,7 @@
 #include "uiutils.h"
 
 GtkWidget *
-uiutilsCreateScale (double lower, double upper,
+uiCreateScale (double lower, double upper,
     double stepinc, double pageinc, double initvalue)
 {
   GtkWidget     *scale;
@@ -28,12 +28,12 @@ uiutilsCreateScale (double lower, double upper,
   gtk_scale_set_draw_value (GTK_SCALE (scale), FALSE);
   gtk_scale_set_has_origin (GTK_SCALE (scale), TRUE);
   gtk_range_set_value (GTK_RANGE (scale), initvalue);
-  uiutilsSetCss (scale, "scale, trough { min-height: 5px; }");
+  uiSetCss (scale, "scale, trough { min-height: 5px; }");
   return scale;
 }
 
 double
-uiutilsScaleEnforceMax (GtkWidget *scale, double value)
+uiScaleEnforceMax (GtkWidget *scale, double value)
 {
   GtkAdjustment   *adjustment;
   double          max;

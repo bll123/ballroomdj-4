@@ -14,17 +14,17 @@
 #include "tagdef.h"
 #include "uiutils.h"
 
-static valuetype_t uiutilsDetermineValueType (int tagidx);
-static char  * uiutilsMakeDisplayStr (song_t *song, int tagidx, int *allocflag);
+static valuetype_t uiDetermineValueType (int tagidx);
+static char  * uiMakeDisplayStr (song_t *song, int tagidx, int *allocflag);
 
 GtkWidget *
-uiutilsCreateTreeView (void)
+uiCreateTreeView (void)
 {
   GtkWidget         *tree;
   GtkTreeSelection  *sel;
 
   tree = gtk_tree_view_new ();
-  uiutilsWidgetSetAllMargins (tree, uiutilsBaseMarginSz * 2);
+  uiWidgetSetAllMargins (tree, uiBaseMarginSz * 2);
   gtk_tree_view_set_enable_search (GTK_TREE_VIEW (tree), FALSE);
   gtk_tree_view_set_activate_on_single_click (GTK_TREE_VIEW (tree), TRUE);
   gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (tree), FALSE);
@@ -37,7 +37,7 @@ uiutilsCreateTreeView (void)
 }
 
 GType *
-uiutilsAppendType (GType *types, int *ncol, int type)
+uiAppendType (GType *types, int *ncol, int type)
 {
   ++(*ncol);
   types = realloc (types, *ncol * sizeof (GType));
@@ -47,7 +47,7 @@ uiutilsAppendType (GType *types, int *ncol, int type)
 }
 
 GtkTreeViewColumn *
-uiutilsAddDisplayColumns (GtkWidget *tree, slist_t *sellist, int col,
+uiAddDisplayColumns (GtkWidget *tree, slist_t *sellist, int col,
     int fontcol, int ellipsizeCol)
 {
   slistidx_t  seliteridx;
@@ -103,7 +103,7 @@ uiutilsAddDisplayColumns (GtkWidget *tree, slist_t *sellist, int col,
 }
 
 void
-uiutilsSetDisplayColumns (GtkListStore *store, GtkTreeIter *iter,
+uiSetDisplayColumns (GtkListStore *store, GtkTreeIter *iter,
     slist_t *sellist, song_t *song, int col)
 {
   slistidx_t    seliteridx;
@@ -118,7 +118,7 @@ uiutilsSetDisplayColumns (GtkListStore *store, GtkTreeIter *iter,
     ssize_t     val;
     int         allocated = 0;
 
-    vt = uiutilsDetermineValueType (tagidx);
+    vt = uiDetermineValueType (tagidx);
     if (vt == VALUE_STR) {
       songfavoriteinfo_t  * favorite;
 
@@ -126,7 +126,7 @@ uiutilsSetDisplayColumns (GtkListStore *store, GtkTreeIter *iter,
         favorite = songGetFavoriteData (song);
         str = favorite->spanStr;
       } else {
-        str = uiutilsMakeDisplayStr (song, tagidx, &allocated);
+        str = uiMakeDisplayStr (song, tagidx, &allocated);
       }
       gtk_list_store_set (store, iter, col++, str, -1);
       if (allocated) {
@@ -146,7 +146,7 @@ uiutilsSetDisplayColumns (GtkListStore *store, GtkTreeIter *iter,
 
 
 GType *
-uiutilsAddDisplayTypes (GType *types, slist_t *sellist, int *col)
+uiAddDisplayTypes (GType *types, slist_t *sellist, int *col)
 {
   slistidx_t    seliteridx;
   int           tagidx;
@@ -156,21 +156,21 @@ uiutilsAddDisplayTypes (GType *types, slist_t *sellist, int *col)
     valuetype_t vt;
     int         type;
 
-    vt = uiutilsDetermineValueType (tagidx);
+    vt = uiDetermineValueType (tagidx);
     if (vt == VALUE_NUM) {
       type = G_TYPE_ULONG;
     }
     if (vt == VALUE_STR) {
       type = G_TYPE_STRING;
     }
-    types = uiutilsAppendType (types, col, type);
+    types = uiAppendType (types, col, type);
   }
 
   return types;
 }
 
 int
-uiutilsTreeViewGetSelection (GtkWidget *tree, GtkTreeModel **model, GtkTreeIter *iter)
+uiTreeViewGetSelection (GtkWidget *tree, GtkTreeModel **model, GtkTreeIter *iter)
 {
   GtkTreeSelection  *sel;
   int               count;
@@ -184,7 +184,7 @@ uiutilsTreeViewGetSelection (GtkWidget *tree, GtkTreeModel **model, GtkTreeIter 
 }
 
 void
-uiutilsTreeViewAllowMultiple (GtkWidget *tree)
+uiTreeViewAllowMultiple (GtkWidget *tree)
 {
   GtkTreeSelection  *sel;
   sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (tree));
@@ -195,7 +195,7 @@ uiutilsTreeViewAllowMultiple (GtkWidget *tree)
 /* internal routines */
 
 static valuetype_t
-uiutilsDetermineValueType (int tagidx)
+uiDetermineValueType (int tagidx)
 {
   valuetype_t   vt;
 
@@ -209,7 +209,7 @@ uiutilsDetermineValueType (int tagidx)
 
 
 static char *
-uiutilsMakeDisplayStr (song_t *song, int tagidx, int *allocated)
+uiMakeDisplayStr (song_t *song, int tagidx, int *allocated)
 {
   valuetype_t     vt;
   dfConvFunc_t    convfunc;

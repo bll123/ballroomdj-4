@@ -39,7 +39,7 @@ typedef struct {
   int             menucount;
   GtkWidget       *menuitem [UIUTILS_MENU_MAX];
   bool            initialized : 1;
-} uiutilsmenu_t;
+} uimenu_t;
 
 enum {
   UI_TAB_MUSICQ,
@@ -61,7 +61,7 @@ typedef struct {
   int     *tabids;
 } uiutilsnbtabid_t;
 
-typedef char * (*uiutilsspinboxdisp_t)(void *, int);
+typedef char * (*uispinboxdisp_t)(void *, int);
 
 typedef struct {
   char          *title;
@@ -77,13 +77,13 @@ typedef struct {
   int           maxwidth;
   bool          open : 1;
   bool          iscombobox : 1;
-} uiutilsdropdown_t;
+} uidropdown_t;
 
 typedef struct {
   GtkWidget     *scw;
   GtkWidget     *textbox;
   GtkTextBuffer *buffer;
-} uiutilstextbox_t;
+} uitextbox_t;
 
 typedef bool (*uiutilsentryval_t)(void *entry, void *udata);
 
@@ -95,18 +95,18 @@ typedef struct {
   uiutilsentryval_t validateFunc;
   mstime_t        validateTimer;
   void            *udata;
-} uiutilsentry_t;
+} uientry_t;
 
 typedef struct {
   GtkWidget             *spinbox;
   int                   curridx;
-  uiutilsspinboxdisp_t  textGetProc;
+  uispinboxdisp_t  textGetProc;
   void                  *udata;
   int                   maxWidth;
   slist_t               *list;
   bool                  indisp : 1;
   bool                  changed : 1;
-} uiutilsspinbox_t;
+} uispinbox_t;
 
 typedef struct {
   char        *label;
@@ -114,203 +114,203 @@ typedef struct {
   const char  *startpath;
   const char  *mimefiltername;
   const char  *mimetype;
-} uiutilsselect_t;
+} uiselect_t;
 
 extern datafilekey_t filterdisplaydfkeys [];
-extern int uiutilsBaseMarginSz;
+extern int uiBaseMarginSz;
 
 /* uiutils.c */
 /* generic ui helper routines */
-void  uiutilsCreateDanceList (uiutilsdropdown_t *dancesel, char *selectLabel);
+void  uiutilsCreateDanceList (uidropdown_t *dancesel, char *selectLabel);
 uiutilsnbtabid_t * uiutilsNotebookIDInit (void);
 void uiutilsNotebookIDFree (uiutilsnbtabid_t *nbtabid);
 void uiutilsNotebookIDAdd (uiutilsnbtabid_t *nbtabid, int id);
 int uiutilsNotebookIDGet (uiutilsnbtabid_t *nbtabid, int idx);
 
 /* uigtkmenu.c */
-GtkWidget * uiutilsCreateMenubar (void);
-GtkWidget * uiutilsCreateSubMenu (GtkWidget *menuitem);
-GtkWidget * uiutilsMenuCreateItem (GtkWidget *menu, const char *txt,
+GtkWidget * uiCreateMenubar (void);
+GtkWidget * uiCreateSubMenu (GtkWidget *menuitem);
+GtkWidget * uiMenuCreateItem (GtkWidget *menu, const char *txt,
     void *activateAction, void *udata);
-GtkWidget * uiutilsMenuCreateCheckbox (GtkWidget *menu, const char *txt,
+GtkWidget * uiMenuCreateCheckbox (GtkWidget *menu, const char *txt,
     int active, void *toggleAction, void *udata);
-void uiutilsMenuInit (uiutilsmenu_t *menu);
-GtkWidget * uiutilsMenuAddMainItem (GtkWidget *menubar, uiutilsmenu_t *menu, const char *txt);
-void uiutilsMenuDisplay (uiutilsmenu_t *menu);
-void uiutilsMenuClear (uiutilsmenu_t *menu);
+void uiMenuInit (uimenu_t *menu);
+GtkWidget * uiMenuAddMainItem (GtkWidget *menubar, uimenu_t *menu, const char *txt);
+void uiMenuDisplay (uimenu_t *menu);
+void uiMenuClear (uimenu_t *menu);
 
 /* uigtklabel.c */
-GtkWidget * uiutilsCreateLabel (const char *label);
-GtkWidget * uiutilsCreateColonLabel (const char *label);
-void        uiutilsLabelSetText (GtkWidget *label, const char *text);
-void        uiutilsLabelEllipsizeOn (GtkWidget *widget);
-void        uiutilsLabelSetMaxWidth (GtkWidget *widget, int width);
+GtkWidget * uiCreateLabel (const char *label);
+GtkWidget * uiCreateColonLabel (const char *label);
+void        uiLabelSetText (GtkWidget *label, const char *text);
+void        uiLabelEllipsizeOn (GtkWidget *widget);
+void        uiLabelSetMaxWidth (GtkWidget *widget, int width);
 
 /* uigtkbutton.c */
-GtkWidget * uiutilsCreateButton (UIWidget *uiwidget, char *title,
+GtkWidget * uiCreateButton (UIWidget *uiwidget, char *title,
     char *imagenm, void *cb, void *udata);
 
 /* uigtkentry.c */
-void uiutilsEntryInit (uiutilsentry_t *entry, int entrySize, int maxSize);
-void uiutilsEntryFree (uiutilsentry_t *entry);
-GtkWidget * uiutilsEntryCreate (uiutilsentry_t *entry);
-void uiutilsEntryPeerBuffer (uiutilsentry_t *targetentry, uiutilsentry_t *sourceentry);
-GtkWidget * uiutilsEntryGetWidget (uiutilsentry_t *entry);
-const char * uiutilsEntryGetValue (uiutilsentry_t *entry);
-void uiutilsEntrySetValue (uiutilsentry_t *entry, const char *value);
-void uiutilsEntrySetValidate (uiutilsentry_t *entry,
+void uiEntryInit (uientry_t *entry, int entrySize, int maxSize);
+void uiEntryFree (uientry_t *entry);
+GtkWidget * uiEntryCreate (uientry_t *entry);
+void uiEntryPeerBuffer (uientry_t *targetentry, uientry_t *sourceentry);
+GtkWidget * uiEntryGetWidget (uientry_t *entry);
+const char * uiEntryGetValue (uientry_t *entry);
+void uiEntrySetValue (uientry_t *entry, const char *value);
+void uiEntrySetValidate (uientry_t *entry,
     uiutilsentryval_t valfunc, void *udata);
-bool uiutilsEntryValidate (uiutilsentry_t *entry);
-bool uiutilsEntryValidateDir (void *edata, void *udata);
-bool uiutilsEntryValidateFile (void *edata, void *udata);
+bool uiEntryValidate (uientry_t *entry);
+bool uiEntryValidateDir (void *edata, void *udata);
+bool uiEntryValidateFile (void *edata, void *udata);
 
 /* uigtkspinbox.c */
-void uiutilsSpinboxTextInit (uiutilsspinbox_t *spinbox);
-void uiutilsSpinboxTextFree (uiutilsspinbox_t *spinbox);
-GtkWidget * uiutilsSpinboxTextCreate (uiutilsspinbox_t *spinbox, void *udata);
-void uiutilsSpinboxTextSet (uiutilsspinbox_t *spinbox, int min, int count,
-    int maxWidth, slist_t *list, uiutilsspinboxdisp_t textGetProc);
-int   uiutilsSpinboxTextGetIdx (uiutilsspinbox_t *spinbox);
-int   uiutilsSpinboxTextGetValue (uiutilsspinbox_t *spinbox);
-void  uiutilsSpinboxTextSetValue (uiutilsspinbox_t *spinbox, int ivalue);
+void uiSpinboxTextInit (uispinbox_t *spinbox);
+void uiSpinboxTextFree (uispinbox_t *spinbox);
+GtkWidget * uiSpinboxTextCreate (uispinbox_t *spinbox, void *udata);
+void uiSpinboxTextSet (uispinbox_t *spinbox, int min, int count,
+    int maxWidth, slist_t *list, uispinboxdisp_t textGetProc);
+int   uiSpinboxTextGetIdx (uispinbox_t *spinbox);
+int   uiSpinboxTextGetValue (uispinbox_t *spinbox);
+void  uiSpinboxTextSetValue (uispinbox_t *spinbox, int ivalue);
 
-GtkWidget * uiutilsSpinboxIntCreate (void);
-GtkWidget * uiutilsSpinboxDoubleCreate (void);
+GtkWidget * uiSpinboxIntCreate (void);
+GtkWidget * uiSpinboxDoubleCreate (void);
 
-void  uiutilsSpinboxSet (GtkWidget *spinbox, double min, double max);
-double uiutilsSpinboxGetValue (GtkWidget *spinbox);
-void  uiutilsSpinboxSetValue (GtkWidget *spinbox, double ivalue);
-bool  uiutilsSpinboxIsChanged (uiutilsspinbox_t *spinbox);
+void  uiSpinboxSet (GtkWidget *spinbox, double min, double max);
+double uiSpinboxGetValue (GtkWidget *spinbox);
+void  uiSpinboxSetValue (GtkWidget *spinbox, double ivalue);
+bool  uiSpinboxIsChanged (uispinbox_t *spinbox);
 
-void  uiutilsSpinboxTimeInit (uiutilsspinbox_t *spinbox);
-void  uiutilsSpinboxTimeFree (uiutilsspinbox_t *spinbox);
-GtkWidget * uiutilsSpinboxTimeCreate (uiutilsspinbox_t *spinbox, void *udata);
-ssize_t uiutilsSpinboxTimeGetValue (uiutilsspinbox_t *spinbox);
-void  uiutilsSpinboxTimeSetValue (uiutilsspinbox_t *spinbox, ssize_t value);
+void  uiSpinboxTimeInit (uispinbox_t *spinbox);
+void  uiSpinboxTimeFree (uispinbox_t *spinbox);
+GtkWidget * uiSpinboxTimeCreate (uispinbox_t *spinbox, void *udata);
+ssize_t uiSpinboxTimeGetValue (uispinbox_t *spinbox);
+void  uiSpinboxTimeSetValue (uispinbox_t *spinbox, ssize_t value);
 
 /* uigtkdropdown.c */
-void uiutilsDropDownInit (uiutilsdropdown_t *dropdown);
-void uiutilsDropDownFree (uiutilsdropdown_t *dropdown);
-GtkWidget * uiutilsDropDownCreate (GtkWidget *parentwin,
+void uiDropDownInit (uidropdown_t *dropdown);
+void uiDropDownFree (uidropdown_t *dropdown);
+GtkWidget * uiDropDownCreate (GtkWidget *parentwin,
     char *title, void *processSelectionCallback,
-    uiutilsdropdown_t *dropdown, void *udata);
-GtkWidget * uiutilsComboboxCreate (GtkWidget *parentwin,
+    uidropdown_t *dropdown, void *udata);
+GtkWidget * uiComboboxCreate (GtkWidget *parentwin,
     char *title, void *processSelectionCallback,
-    uiutilsdropdown_t *dropdown, void *udata);
-ssize_t uiutilsDropDownSelectionGet (uiutilsdropdown_t *dropdown,
+    uidropdown_t *dropdown, void *udata);
+ssize_t uiDropDownSelectionGet (uidropdown_t *dropdown,
     GtkTreePath *path);
-void uiutilsDropDownSetList (uiutilsdropdown_t *dropdown, slist_t *list,
+void uiDropDownSetList (uidropdown_t *dropdown, slist_t *list,
     const char *selectLabel);
-void uiutilsDropDownSetNumList (uiutilsdropdown_t *dropdown, slist_t *list,
+void uiDropDownSetNumList (uidropdown_t *dropdown, slist_t *list,
     const char *selectLabel);
-void uiutilsDropDownSelectionSetNum (uiutilsdropdown_t *dropdown, nlistidx_t idx);
-void uiutilsDropDownSelectionSetStr (uiutilsdropdown_t *dropdown, char *stridx);
+void uiDropDownSelectionSetNum (uidropdown_t *dropdown, nlistidx_t idx);
+void uiDropDownSelectionSetStr (uidropdown_t *dropdown, char *stridx);
 
 /* uigtklink.c */
-GtkWidget * uiutilsCreateLink (char *label, char *uri);
-void        uiutilsLinkSet (GtkWidget *widget, char *label, char *uri);
+GtkWidget * uiCreateLink (char *label, char *uri);
+void        uiLinkSet (GtkWidget *widget, char *label, char *uri);
 
 /* uigtktextbox.c */
-uiutilstextbox_t  *uiutilsTextBoxCreate (int height);
-void  uiutilsTextBoxFree (uiutilstextbox_t *tb);
-char  *uiutilsTextBoxGetValue (uiutilstextbox_t *tb);
-void  uiutilsTextBoxSetReadonly (uiutilstextbox_t *tb);
-void  uiutilsTextBoxScrollToEnd (uiutilstextbox_t *tb);
-void  uiutilsTextBoxAppendStr (uiutilstextbox_t *tb, const char *str);
-void  uiutilsTextBoxSetValue (uiutilstextbox_t *tb, const char *str);
-void  uiutilsTextBoxDarken (uiutilstextbox_t *tb);
-void  uiutilsTextBoxVertExpand (uiutilstextbox_t *tb);
-void  uiutilsTextBoxSetHeight (uiutilstextbox_t *tb, int h);
+uitextbox_t  *uiTextBoxCreate (int height);
+void  uiTextBoxFree (uitextbox_t *tb);
+char  *uiTextBoxGetValue (uitextbox_t *tb);
+void  uiTextBoxSetReadonly (uitextbox_t *tb);
+void  uiTextBoxScrollToEnd (uitextbox_t *tb);
+void  uiTextBoxAppendStr (uitextbox_t *tb, const char *str);
+void  uiTextBoxSetValue (uitextbox_t *tb, const char *str);
+void  uiTextBoxDarken (uitextbox_t *tb);
+void  uiTextBoxVertExpand (uitextbox_t *tb);
+void  uiTextBoxSetHeight (uitextbox_t *tb, int h);
 
 /* uigtknotebook.c */
-GtkWidget * uiutilsCreateNotebook (void);
-void  uiutilsNotebookAppendPage (GtkWidget *notebook, GtkWidget *widget, GtkWidget *label);
-void  uiutilsNotebookSetActionWidget (GtkWidget *notebook, GtkWidget *widget, GtkPackType pack);
-void  uiutilsNotebookSetPage (GtkWidget *notebook, int pagenum);
+GtkWidget * uiCreateNotebook (void);
+void  uiNotebookAppendPage (GtkWidget *notebook, GtkWidget *widget, GtkWidget *label);
+void  uiNotebookSetActionWidget (GtkWidget *notebook, GtkWidget *widget, GtkPackType pack);
+void  uiNotebookSetPage (GtkWidget *notebook, int pagenum);
 
 /* uigtkbox.c */
-GtkWidget *uiutilsCreateVertBox (void);
-GtkWidget *uiutilsCreateHorizBox (void);
-void uiutilsBoxPackInWindow (GtkWidget *window, GtkWidget *box);
-void uiutilsBoxPackStart (GtkWidget *box, GtkWidget *widget);
-void uiutilsBoxPackStartExpand (GtkWidget *box, GtkWidget *widget);
-void uiutilsBoxPackEnd (GtkWidget *box, GtkWidget *widget);
+GtkWidget *uiCreateVertBox (void);
+GtkWidget *uiCreateHorizBox (void);
+void uiBoxPackInWindow (GtkWidget *window, GtkWidget *box);
+void uiBoxPackStart (GtkWidget *box, GtkWidget *widget);
+void uiBoxPackStartExpand (GtkWidget *box, GtkWidget *widget);
+void uiBoxPackEnd (GtkWidget *box, GtkWidget *widget);
 
 /* uigtkpbar.c */
-GtkWidget * uiutilsCreateProgressBar (char *color);
-void        uiutilsProgressBarSet (GtkWidget *pb, double val);
+GtkWidget * uiCreateProgressBar (char *color);
+void        uiProgressBarSet (GtkWidget *pb, double val);
 
 /* uigtktreeview.c */
-GtkWidget * uiutilsCreateTreeView (void);
-GType * uiutilsAppendType (GType *types, int *ncol, int type);
-GtkTreeViewColumn * uiutilsAddDisplayColumns (GtkWidget *tree,
+GtkWidget * uiCreateTreeView (void);
+GType * uiAppendType (GType *types, int *ncol, int type);
+GtkTreeViewColumn * uiAddDisplayColumns (GtkWidget *tree,
     slist_t *sellist, int col, int fontcol, int ellipsizeCol);
-GType * uiutilsAddDisplayTypes (GType *types, slist_t *sellist, int *col);
-void  uiutilsSetDisplayColumns (GtkListStore *store, GtkTreeIter *iter,
+GType * uiAddDisplayTypes (GType *types, slist_t *sellist, int *col);
+void  uiSetDisplayColumns (GtkListStore *store, GtkTreeIter *iter,
     slist_t *sellist, song_t *song, int col);
-int   uiutilsTreeViewGetSelection (GtkWidget *tree, GtkTreeModel **model, GtkTreeIter *iter);
-void  uiutilsTreeViewAllowMultiple (GtkWidget *tree);
+int   uiTreeViewGetSelection (GtkWidget *tree, GtkTreeModel **model, GtkTreeIter *iter);
+void  uiTreeViewAllowMultiple (GtkWidget *tree);
 
 
 /* uigtkdialog.c */
-char  *uiutilsSelectDirDialog (uiutilsselect_t *selectdata);
-char  *uiutilsSelectFileDialog (uiutilsselect_t *selectdata);
+char  *uiSelectDirDialog (uiselect_t *selectdata);
+char  *uiSelectFileDialog (uiselect_t *selectdata);
 
 /* uigtkwindow.c */
-GtkWidget * uiutilsCreateMainWindow (char *title,
+GtkWidget * uiCreateMainWindow (char *title,
     char *imagenm, void *cb, void *udata);
-void uiutilsCloseWindow (GtkWidget *window);
-bool uiutilsWindowIsMaximized (GtkWidget *window);
-void uiutilsWindowIconify (GtkWidget *window);
-void uiutilsWindowMaximize (GtkWidget *window);
-void uiutilsWindowUnMaximize (GtkWidget *window);
-void uiutilsWindowDisableDecorations (GtkWidget *window);
-void uiutilsWindowEnableDecorations (GtkWidget *window);
-void uiutilsWindowGetSize (GtkWidget *window, int *x, int *y);
-void uiutilsWindowSetDefaultSize (GtkWidget *window, int x, int y);
-void uiutilsWindowGetPosition (GtkWidget *window, int *x, int *y);
-void uiutilsWindowMove (GtkWidget *window, int x, int y);
-void uiutilsWindowNoFocusOnStartup (GtkWidget *window);
-GtkWidget * uiutilsCreateScrolledWindow (int minheight);
+void uiCloseWindow (GtkWidget *window);
+bool uiWindowIsMaximized (GtkWidget *window);
+void uiWindowIconify (GtkWidget *window);
+void uiWindowMaximize (GtkWidget *window);
+void uiWindowUnMaximize (GtkWidget *window);
+void uiWindowDisableDecorations (GtkWidget *window);
+void uiWindowEnableDecorations (GtkWidget *window);
+void uiWindowGetSize (GtkWidget *window, int *x, int *y);
+void uiWindowSetDefaultSize (GtkWidget *window, int x, int y);
+void uiWindowGetPosition (GtkWidget *window, int *x, int *y);
+void uiWindowMove (GtkWidget *window, int x, int y);
+void uiWindowNoFocusOnStartup (GtkWidget *window);
+GtkWidget * uiCreateScrolledWindow (int minheight);
 
 /* uigtkscale.c */
-GtkWidget * uiutilsCreateScale (double lower, double upper,
+GtkWidget * uiCreateScale (double lower, double upper,
     double stepinc, double pageinc, double initvalue);
-double    uiutilsScaleEnforceMax (GtkWidget *scale, double value);
+double    uiScaleEnforceMax (GtkWidget *scale, double value);
 
 /* uigtkswitch.c */
-GtkWidget * uiutilsCreateSwitch (int value);
-void uiutilsSwitchSetValue (GtkWidget *w, int value);
+GtkWidget * uiCreateSwitch (int value);
+void uiSwitchSetValue (GtkWidget *w, int value);
 
 /* uigtksizegrp.c */
-void uiutilsCreateSizeGroupHoriz (UIWidget *);
-void uiutilsSizeGroupAdd (UIWidget *uiw, GtkWidget *widget);
+void uiCreateSizeGroupHoriz (UIWidget *);
+void uiSizeGroupAdd (UIWidget *uiw, GtkWidget *widget);
 
 /* uigtkutils.c */
-void  uiutilsUIInitialize (void);
-void  uiutilsUIProcessEvents (void);
-void  uiutilsCleanup (void);
-void  uiutilsSetCss (GtkWidget *w, char *style);
-void  uiutilsSetUIFont (char *uifont);
-void  uiutilsInitUILog (void);
-void  uiutilsGetForegroundColor (GtkWidget *widget, char *buff, size_t sz);
-void  uiutilsWidgetDisable (GtkWidget *widget);
-void  uiutilsWidgetEnable (GtkWidget *widget);
-void  uiutilsWidgetExpandHoriz (GtkWidget *widget);
-void  uiutilsWidgetExpandVert (GtkWidget *widget);
-void  uiutilsWidgetSetAllMargins (GtkWidget *widget, int margin);
-void  uiutilsWidgetSetMarginTop (GtkWidget *widget, int margin);
-void  uiutilsWidgetSetMarginStart (GtkWidget *widget, int margin);
-void  uiutilsWidgetAlignHorizFill (GtkWidget *widget);
-void  uiutilsWidgetAlignHorizStart (GtkWidget *widget);
-void  uiutilsWidgetAlignHorizEnd (GtkWidget *widget);
-void  uiutilsWidgetAlignVertFill (GtkWidget *widget);
-void  uiutilsWidgetAlignVertStart (GtkWidget *widget);
-void  uiutilsWidgetDisableFocus (GtkWidget *widget);
-void  uiutilsWidgetHide (GtkWidget *widget);
-void  uiutilsWidgetShow (GtkWidget *widget);
-void  uiutilsWidgetShowAll (GtkWidget *widget);
+void  uiUIInitialize (void);
+void  uiUIProcessEvents (void);
+void  uiCleanup (void);
+void  uiSetCss (GtkWidget *w, char *style);
+void  uiSetUIFont (char *uifont);
+void  uiInitUILog (void);
+void  uiGetForegroundColor (GtkWidget *widget, char *buff, size_t sz);
+void  uiWidgetDisable (GtkWidget *widget);
+void  uiWidgetEnable (GtkWidget *widget);
+void  uiWidgetExpandHoriz (GtkWidget *widget);
+void  uiWidgetExpandVert (GtkWidget *widget);
+void  uiWidgetSetAllMargins (GtkWidget *widget, int margin);
+void  uiWidgetSetMarginTop (GtkWidget *widget, int margin);
+void  uiWidgetSetMarginStart (GtkWidget *widget, int margin);
+void  uiWidgetAlignHorizFill (GtkWidget *widget);
+void  uiWidgetAlignHorizStart (GtkWidget *widget);
+void  uiWidgetAlignHorizEnd (GtkWidget *widget);
+void  uiWidgetAlignVertFill (GtkWidget *widget);
+void  uiWidgetAlignVertStart (GtkWidget *widget);
+void  uiWidgetDisableFocus (GtkWidget *widget);
+void  uiWidgetHide (GtkWidget *widget);
+void  uiWidgetShow (GtkWidget *widget);
+void  uiWidgetShowAll (GtkWidget *widget);
 
-GtkWidget * uiutilsCreateCheckButton (const char *txt, int value);
+GtkWidget * uiCreateCheckButton (const char *txt, int value);
 
 #endif /* INC_UIUTILS_H */

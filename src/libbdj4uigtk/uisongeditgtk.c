@@ -61,24 +61,24 @@ uisongeditBuildUI (uisongedit_t *uisongedit, GtkWidget *parentwin)
   uiw = uisongedit->uiWidgetData;
   uiw->parentwin = parentwin;
 
-  uiw->vbox = uiutilsCreateVertBox ();
-  uiutilsWidgetExpandHoriz (uiw->vbox);
+  uiw->vbox = uiCreateVertBox ();
+  uiWidgetExpandHoriz (uiw->vbox);
 
-  hbox = uiutilsCreateHorizBox ();
-  uiutilsWidgetExpandHoriz (hbox);
-  uiutilsWidgetAlignHorizFill (hbox);
-  uiutilsBoxPackStart (uiw->vbox, hbox);
+  hbox = uiCreateHorizBox ();
+  uiWidgetExpandHoriz (hbox);
+  uiWidgetAlignHorizFill (hbox);
+  uiBoxPackStart (uiw->vbox, hbox);
 
-  lcol = uiutilsCreateVertBox ();
-  uiutilsWidgetAlignHorizStart (lcol);
-  uiutilsBoxPackStart (hbox, lcol);
+  lcol = uiCreateVertBox ();
+  uiWidgetAlignHorizStart (lcol);
+  uiBoxPackStart (hbox, lcol);
 
   uisongeditAddDisplay (uisongedit, lcol, DISP_SEL_SONGEDIT_A);
 
-  rcol = uiutilsCreateVertBox ();
-  uiutilsWidgetAlignHorizStart (rcol);
-  uiutilsWidgetExpandHoriz (rcol);
-  uiutilsBoxPackStart (hbox, rcol);
+  rcol = uiCreateVertBox ();
+  uiWidgetAlignHorizStart (rcol);
+  uiWidgetExpandHoriz (rcol);
+  uiBoxPackStart (hbox, rcol);
 
   uisongeditAddDisplay (uisongedit, rcol, DISP_SEL_SONGEDIT_B);
 
@@ -98,7 +98,7 @@ uisongeditAddDisplay (uisongedit_t *uisongedit, GtkWidget *col, int dispsel)
   UIWidget      sg;
 
   sellist = dispselGetList (uisongedit->dispsel, dispsel);
-  uiutilsCreateSizeGroupHoriz (&sg);
+  uiCreateSizeGroupHoriz (&sg);
 
   slistStartIterator (sellist, &dsiteridx);
   while ((keystr = slistIterateKey (sellist, &dsiteridx)) != NULL) {
@@ -106,8 +106,8 @@ uisongeditAddDisplay (uisongedit_t *uisongedit, GtkWidget *col, int dispsel)
 
     tagkey = slistGetNum (sellist, keystr);
 
-    hbox = uiutilsCreateHorizBox ();
-    uiutilsBoxPackStart (col, hbox);
+    hbox = uiCreateHorizBox ();
+    uiBoxPackStart (col, hbox);
     uisongeditAddItem (hbox, &sg, tagkey);
   }
 }
@@ -124,9 +124,9 @@ uisongeditAddItem (GtkWidget * hbox, UIWidget *sg, int tagkey)
     return;
   }
 
-  widget = uiutilsCreateColonLabel (tagdefs [tagkey].displayname);
-  uiutilsBoxPackStart (hbox, widget);
-  uiutilsSizeGroupAdd (sg, widget);
+  widget = uiCreateColonLabel (tagdefs [tagkey].displayname);
+  uiBoxPackStart (hbox, widget);
+  uiSizeGroupAdd (sg, widget);
 
   switch (tagkey) {
     /* entry box */

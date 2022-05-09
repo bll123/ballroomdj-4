@@ -38,17 +38,17 @@ typedef struct {
   GtkWidget         *filterDialog;
   GtkWidget         *statusPlayable;
   songfilterpb_t    dfltpbflag;
-  uiutilsdropdown_t sortbysel;
-  uiutilsdropdown_t filterdancesel;
-  uiutilsdropdown_t filtergenresel;
-  uiutilsentry_t    searchentry;
-  uiutilsspinbox_t  filterratingsel;
-  uiutilsspinbox_t  filterlevelsel;
-  uiutilsspinbox_t  filterstatussel;
-  uiutilsspinbox_t  filterfavoritesel;
+  uidropdown_t sortbysel;
+  uidropdown_t filterdancesel;
+  uidropdown_t filtergenresel;
+  uientry_t    searchentry;
+  uispinbox_t  filterratingsel;
+  uispinbox_t  filterlevelsel;
+  uispinbox_t  filterstatussel;
+  uispinbox_t  filterfavoritesel;
   time_t            filterApplied;
   /* song selection tab */
-  uiutilsdropdown_t dancesel;
+  uidropdown_t dancesel;
   /* widget data */
   void              *uiWidgetData;
 } uisongsel_t;

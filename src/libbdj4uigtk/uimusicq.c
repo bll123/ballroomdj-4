@@ -51,11 +51,11 @@ uimusicqInit (conn_t *conn, musicdb_t *musicdb,
   for (int i = 0; i < MUSICQ_MAX; ++i) {
     uimusicq->ui [i].active = false;
     uimusicq->ui [i].repeatTimer = 0;
-    uiutilsDropDownInit (&uimusicq->ui [i].playlistsel);
-    uiutilsDropDownInit (&uimusicq->ui [i].dancesel);
+    uiDropDownInit (&uimusicq->ui [i].playlistsel);
+    uiDropDownInit (&uimusicq->ui [i].dancesel);
     uimusicq->ui [i].selPathStr = NULL;
     uimusicq->ui [i].musicqTree = NULL;
-    uiutilsEntryInit (&uimusicq->ui [i].slname, 20, 40);
+    uiEntryInit (&uimusicq->ui [i].slname, 20, 40);
   }
   uimusicq->musicqManageIdx = MUSICQ_A;
   uimusicq->musicqPlayIdx = MUSICQ_A;
@@ -81,9 +81,9 @@ uimusicqFree (uimusicq_t *uimusicq)
       if (uimusicq->ui [i].selPathStr != NULL) {
         free (uimusicq->ui [i].selPathStr);
       }
-      uiutilsDropDownFree (&uimusicq->ui [i].playlistsel);
-      uiutilsDropDownFree (&uimusicq->ui [i].dancesel);
-      uiutilsEntryFree (&uimusicq->ui [i].slname);
+      uiDropDownFree (&uimusicq->ui [i].playlistsel);
+      uiDropDownFree (&uimusicq->ui [i].dancesel);
+      uiEntryFree (&uimusicq->ui [i].slname);
     }
     free (uimusicq);
   }
@@ -386,7 +386,7 @@ uimusicqCreatePlaylistList (uimusicq_t *uimusicq)
   ci = uimusicq->musicqManageIdx;
 
   plList = playlistGetPlaylistList ();
-  uiutilsDropDownSetList (&uimusicq->ui [ci].playlistsel, plList, NULL);
+  uiDropDownSetList (&uimusicq->ui [ci].playlistsel, plList, NULL);
   slistFree (plList);
   logProcEnd (LOG_PROC, "uimusicqCreatePlaylistList", "");
 }
@@ -456,7 +456,7 @@ uimusicqSetSonglistName (uimusicq_t *uimusicq, const char *nm)
   int   ci;
 
   ci = uimusicq->musicqManageIdx;
-  uiutilsEntrySetValue (&uimusicq->ui [ci].slname, nm);
+  uiEntrySetValue (&uimusicq->ui [ci].slname, nm);
 }
 
 const char *
@@ -466,14 +466,14 @@ uimusicqGetSonglistName (uimusicq_t *uimusicq)
   const char  *val;
 
   ci = uimusicq->musicqManageIdx;
-  val = uiutilsEntryGetValue (&uimusicq->ui [ci].slname);
+  val = uiEntryGetValue (&uimusicq->ui [ci].slname);
   return val;
 }
 
 void
 uimusicqPeerSonglistName (uimusicq_t *targetq, uimusicq_t *sourceq)
 {
-  uiutilsEntryPeerBuffer (&targetq->ui [MUSICQ_A].slname,
+  uiEntryPeerBuffer (&targetq->ui [MUSICQ_A].slname,
       &sourceq->ui [MUSICQ_A].slname);
 }
 

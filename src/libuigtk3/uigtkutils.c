@@ -31,21 +31,21 @@
 static char **cssdata = NULL;
 static int  csscount = 0;
 
-static GLogWriterOutput uiutilsGtkLogger (GLogLevelFlags logLevel,
+static GLogWriterOutput uiGtkLogger (GLogLevelFlags logLevel,
     const GLogField* fields, gsize n_fields, gpointer udata);
 
-int uiutilsBaseMarginSz = UIUTILS_BASE_MARGIN_SZ;
+int uiBaseMarginSz = UIUTILS_BASE_MARGIN_SZ;
 
 void
-uiutilsUIInitialize (void)
+uiUIInitialize (void)
 {
   int argc = 0;
-  uiutilsInitUILog ();
+  uiInitUILog ();
   gtk_init (&argc, NULL);
 }
 
 void
-uiutilsUIProcessEvents (void)
+uiUIProcessEvents (void)
 {
   while (gtk_events_pending ()) {
     gtk_main_iteration_do (FALSE);
@@ -53,7 +53,7 @@ uiutilsUIProcessEvents (void)
 }
 
 void
-uiutilsCleanup (void)
+uiCleanup (void)
 {
   if (cssdata != NULL) {
     for (int i = 0; i < csscount; ++i) {
@@ -68,12 +68,12 @@ uiutilsCleanup (void)
 }
 
 void
-uiutilsSetCss (GtkWidget *w, char *style)
+uiSetCss (GtkWidget *w, char *style)
 {
   GtkCssProvider  *tcss;
   char            *tstyle;
 
-  logProcBegin (LOG_PROC, "uiutilsSetCss");
+  logProcBegin (LOG_PROC, "uiSetCss");
 
   tcss = gtk_css_provider_new ();
   tstyle = strdup (style);
@@ -86,11 +86,11 @@ uiutilsSetCss (GtkWidget *w, char *style)
       gtk_widget_get_style_context (w),
       GTK_STYLE_PROVIDER (tcss),
       GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-  logProcEnd (LOG_PROC, "uiutilsSetCss", "");
+  logProcEnd (LOG_PROC, "uiSetCss", "");
 }
 
 void
-uiutilsSetUIFont (char *uifont)
+uiSetUIFont (char *uifont)
 {
   GtkCssProvider  *tcss;
   GdkScreen       *screen;
@@ -99,7 +99,7 @@ uiutilsSetUIFont (char *uifont)
   char            *p;
   int             sz = 0;
 
-  logProcBegin (LOG_PROC, "uiutilsSetUIFont");
+  logProcBegin (LOG_PROC, "uiSetUIFont");
   if (uifont == NULL || ! *uifont) {
     return;
   }
@@ -139,33 +139,33 @@ uiutilsSetUIFont (char *uifont)
           GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
     }
   }
-  logProcEnd (LOG_PROC, "uiutilsSetUIFont", "");
+  logProcEnd (LOG_PROC, "uiSetUIFont", "");
 }
 
 inline void
-uiutilsInitUILog (void)
+uiInitUILog (void)
 {
-  g_log_set_writer_func (uiutilsGtkLogger, NULL, NULL);
+  g_log_set_writer_func (uiGtkLogger, NULL, NULL);
 }
 
 GtkWidget *
-uiutilsCreateCheckButton (const char *txt, int value)
+uiCreateCheckButton (const char *txt, int value)
 {
   GtkWidget   *widget;
 
-  logProcBegin (LOG_PROC, "uiutilsCreateCheckButton");
+  logProcBegin (LOG_PROC, "uiCreateCheckButton");
 
   widget = gtk_check_button_new_with_label (txt);
   assert (widget != NULL);
-  gtk_widget_set_margin_top (widget, uiutilsBaseMarginSz);
-  gtk_widget_set_margin_start (widget, uiutilsBaseMarginSz);
+  gtk_widget_set_margin_top (widget, uiBaseMarginSz);
+  gtk_widget_set_margin_start (widget, uiBaseMarginSz);
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), value);
-  logProcEnd (LOG_PROC, "uiutilsCreateCheckButton", "");
+  logProcEnd (LOG_PROC, "uiCreateCheckButton", "");
   return widget;
 }
 
 void
-uiutilsGetForegroundColor (GtkWidget *widget, char *buff, size_t sz)
+uiGetForegroundColor (GtkWidget *widget, char *buff, size_t sz)
 {
   GdkRGBA         gcolor;
   GtkStyleContext *context;
@@ -179,31 +179,31 @@ uiutilsGetForegroundColor (GtkWidget *widget, char *buff, size_t sz)
 }
 
 inline void
-uiutilsWidgetDisable (GtkWidget *widget)
+uiWidgetDisable (GtkWidget *widget)
 {
   gtk_widget_set_sensitive (widget, FALSE);
 }
 
 inline void
-uiutilsWidgetEnable (GtkWidget *widget)
+uiWidgetEnable (GtkWidget *widget)
 {
   gtk_widget_set_sensitive (widget, TRUE);
 }
 
 inline void
-uiutilsWidgetExpandHoriz (GtkWidget *widget)
+uiWidgetExpandHoriz (GtkWidget *widget)
 {
   gtk_widget_set_hexpand (widget, TRUE);
 }
 
 inline void
-uiutilsWidgetExpandVert (GtkWidget *widget)
+uiWidgetExpandVert (GtkWidget *widget)
 {
   gtk_widget_set_vexpand (widget, TRUE);
 }
 
 inline void
-uiutilsWidgetSetAllMargins (GtkWidget *widget, int margin)
+uiWidgetSetAllMargins (GtkWidget *widget, int margin)
 {
   gtk_widget_set_margin_top (widget, margin);
   gtk_widget_set_margin_bottom (widget, margin);
@@ -212,68 +212,68 @@ uiutilsWidgetSetAllMargins (GtkWidget *widget, int margin)
 }
 
 void
-uiutilsWidgetSetMarginTop (GtkWidget *widget, int margin)
+uiWidgetSetMarginTop (GtkWidget *widget, int margin)
 {
   gtk_widget_set_margin_top (widget, margin);
 }
 
 void
-uiutilsWidgetSetMarginStart (GtkWidget *widget, int margin)
+uiWidgetSetMarginStart (GtkWidget *widget, int margin)
 {
   gtk_widget_set_margin_start (widget, margin);
 }
 
 
 inline void
-uiutilsWidgetAlignHorizFill (GtkWidget *widget)
+uiWidgetAlignHorizFill (GtkWidget *widget)
 {
   gtk_widget_set_halign (widget, GTK_ALIGN_FILL);
 }
 
 inline void
-uiutilsWidgetAlignHorizStart (GtkWidget *widget)
+uiWidgetAlignHorizStart (GtkWidget *widget)
 {
   gtk_widget_set_halign (widget, GTK_ALIGN_START);
 }
 
 inline void
-uiutilsWidgetAlignHorizEnd (GtkWidget *widget)
+uiWidgetAlignHorizEnd (GtkWidget *widget)
 {
   gtk_widget_set_halign (widget, GTK_ALIGN_END);
 }
 
 inline void
-uiutilsWidgetAlignVertFill (GtkWidget *widget)
+uiWidgetAlignVertFill (GtkWidget *widget)
 {
   gtk_widget_set_valign (widget, GTK_ALIGN_FILL);
 }
 
 inline void
-uiutilsWidgetAlignVertStart (GtkWidget *widget)
+uiWidgetAlignVertStart (GtkWidget *widget)
 {
   gtk_widget_set_valign (widget, GTK_ALIGN_START);
 }
 
 inline void
-uiutilsWidgetDisableFocus (GtkWidget *widget)
+uiWidgetDisableFocus (GtkWidget *widget)
 {
   gtk_widget_set_can_focus (widget, FALSE);
 }
 
 inline void
-uiutilsWidgetHide (GtkWidget *widget)
+uiWidgetHide (GtkWidget *widget)
 {
   gtk_widget_hide (widget);
 }
 
 inline void
-uiutilsWidgetShow (GtkWidget *widget)
+uiWidgetShow (GtkWidget *widget)
 {
   gtk_widget_show (widget);
 }
 
 inline void
-uiutilsWidgetShowAll (GtkWidget *widget)
+uiWidgetShowAll (GtkWidget *widget)
 {
   gtk_widget_show_all (widget);
 }
@@ -281,7 +281,7 @@ uiutilsWidgetShowAll (GtkWidget *widget)
 /* internal routines */
 
 static GLogWriterOutput
-uiutilsGtkLogger (GLogLevelFlags logLevel,
+uiGtkLogger (GLogLevelFlags logLevel,
     const GLogField* fields,
     gsize n_fields,
     gpointer udata)

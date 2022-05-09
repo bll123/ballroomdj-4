@@ -13,7 +13,7 @@
 #include "uiutils.h"
 
 inline void
-uiutilsCreateSizeGroupHoriz (UIWidget *uiw)
+uiCreateSizeGroupHoriz (UIWidget *uiw)
 {
   GtkSizeGroup  *sg;
 
@@ -22,7 +22,7 @@ uiutilsCreateSizeGroupHoriz (UIWidget *uiw)
 }
 
 inline void
-uiutilsSizeGroupAdd (UIWidget *uiw, GtkWidget *widget)
+uiSizeGroupAdd (UIWidget *uiw, GtkWidget *widget)
 {
   gtk_size_group_add_widget (uiw->sg, widget);
 }

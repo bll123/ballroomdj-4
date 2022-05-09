@@ -19,12 +19,12 @@
 #include "tmutil.h"
 #include "uiutils.h"
 
-static void uiutilsEntryValidateStart (GtkEditable *e, gpointer udata);
+static void uiEntryValidateStart (GtkEditable *e, gpointer udata);
 
 void
-uiutilsEntryInit (uiutilsentry_t *entry, int entrySize, int maxSize)
+uiEntryInit (uientry_t *entry, int entrySize, int maxSize)
 {
-  logProcBegin (LOG_PROC, "uiutilsEntryInit");
+  logProcBegin (LOG_PROC, "uiEntryInit");
   entry->entrySize = entrySize;
   entry->maxSize = maxSize;
   entry->buffer = NULL;
@@ -32,49 +32,49 @@ uiutilsEntryInit (uiutilsentry_t *entry, int entrySize, int maxSize)
   entry->validateFunc = NULL;
   entry->udata = NULL;
   mstimeset (&entry->validateTimer, 3600000);
-  logProcEnd (LOG_PROC, "uiutilsEntryInit", "");
+  logProcEnd (LOG_PROC, "uiEntryInit", "");
 }
 
 
 void
-uiutilsEntryFree (uiutilsentry_t *entry)
+uiEntryFree (uientry_t *entry)
 {
   ;
 }
 
 GtkWidget *
-uiutilsEntryCreate (uiutilsentry_t *entry)
+uiEntryCreate (uientry_t *entry)
 {
-  logProcBegin (LOG_PROC, "uiutilsEntryCreate");
+  logProcBegin (LOG_PROC, "uiEntryCreate");
   entry->buffer = gtk_entry_buffer_new (NULL, -1);
   entry->entry = gtk_entry_new_with_buffer (entry->buffer);
   gtk_entry_set_width_chars (GTK_ENTRY (entry->entry), entry->entrySize);
   gtk_entry_set_max_length (GTK_ENTRY (entry->entry), entry->maxSize);
   gtk_entry_set_input_purpose (GTK_ENTRY (entry->entry), GTK_INPUT_PURPOSE_FREE_FORM);
-  gtk_widget_set_margin_top (entry->entry, uiutilsBaseMarginSz);
-  gtk_widget_set_margin_start (entry->entry, uiutilsBaseMarginSz);
+  gtk_widget_set_margin_top (entry->entry, uiBaseMarginSz);
+  gtk_widget_set_margin_start (entry->entry, uiBaseMarginSz);
   gtk_widget_set_halign (entry->entry, GTK_ALIGN_START);
   gtk_widget_set_hexpand (entry->entry, FALSE);
 
-  logProcEnd (LOG_PROC, "uiutilsEntryCreate", "");
+  logProcEnd (LOG_PROC, "uiEntryCreate", "");
   return entry->entry;
 }
 
 void
-uiutilsEntryPeerBuffer (uiutilsentry_t *targetentry, uiutilsentry_t *sourceentry)
+uiEntryPeerBuffer (uientry_t *targetentry, uientry_t *sourceentry)
 {
   gtk_entry_set_buffer (GTK_ENTRY (targetentry->entry), sourceentry->buffer);
   targetentry->buffer = sourceentry->buffer;
 }
 
 GtkWidget *
-uiutilsEntryGetWidget (uiutilsentry_t *entry)
+uiEntryGetWidget (uientry_t *entry)
 {
   return entry->entry;
 }
 
 const char *
-uiutilsEntryGetValue (uiutilsentry_t *entry)
+uiEntryGetValue (uientry_t *entry)
 {
   const char  *value;
 
@@ -83,25 +83,25 @@ uiutilsEntryGetValue (uiutilsentry_t *entry)
 }
 
 void
-uiutilsEntrySetValue (uiutilsentry_t *entry, const char *value)
+uiEntrySetValue (uientry_t *entry, const char *value)
 {
   gtk_entry_buffer_set_text (entry->buffer, value, -1);
 }
 
 void
-uiutilsEntrySetValidate (uiutilsentry_t *entry, uiutilsentryval_t valfunc, void *udata)
+uiEntrySetValidate (uientry_t *entry, uiutilsentryval_t valfunc, void *udata)
 {
   entry->validateFunc = valfunc;
   entry->udata = udata;
   g_signal_connect (entry->entry, "changed",
-      G_CALLBACK (uiutilsEntryValidateStart), entry);
+      G_CALLBACK (uiEntryValidateStart), entry);
   if (entry->validateFunc != NULL) {
     mstimeset (&entry->validateTimer, 3600000);
   }
 }
 
 bool
-uiutilsEntryValidate (uiutilsentry_t *entry)
+uiEntryValidate (uientry_t *entry)
 {
   bool  rc;
 
@@ -125,9 +125,9 @@ uiutilsEntryValidate (uiutilsentry_t *entry)
 }
 
 bool
-uiutilsEntryValidateDir (void *edata, void *udata)
+uiEntryValidateDir (void *edata, void *udata)
 {
-  uiutilsentry_t    *entry = edata;
+  uientry_t    *entry = edata;
   bool              rc;
   const char        *dir;
   char              tbuff [MAXPATHLEN];
@@ -148,9 +148,9 @@ uiutilsEntryValidateDir (void *edata, void *udata)
 }
 
 bool
-uiutilsEntryValidateFile (void *edata, void *udata)
+uiEntryValidateFile (void *edata, void *udata)
 {
-  uiutilsentry_t    *entry = edata;
+  uientry_t    *entry = edata;
   bool              rc;
   const char        *fn;
   char              tbuff [MAXPATHLEN];
@@ -177,9 +177,9 @@ uiutilsEntryValidateFile (void *edata, void *udata)
 /* internal routines */
 
 static void
-uiutilsEntryValidateStart (GtkEditable *e, gpointer udata)
+uiEntryValidateStart (GtkEditable *e, gpointer udata)
 {
-  uiutilsentry_t  *entry = udata;
+  uientry_t  *entry = udata;
 
   gtk_entry_set_icon_from_icon_name (GTK_ENTRY (entry->entry),
       GTK_ENTRY_ICON_SECONDARY, NULL);

@@ -140,21 +140,21 @@ uisongselBuildUI (uisongsel_t *uisongsel, GtkWidget *parentwin)
   uiw = uisongsel->uiWidgetData;
   uisongsel->window = parentwin;
 
-  uiw->vbox = uiutilsCreateVertBox ();
-  uiutilsWidgetExpandHoriz (uiw->vbox);
-  uiutilsWidgetExpandVert (uiw->vbox);
+  uiw->vbox = uiCreateVertBox ();
+  uiWidgetExpandHoriz (uiw->vbox);
+  uiWidgetExpandVert (uiw->vbox);
 
-  hbox = uiutilsCreateHorizBox ();
-  uiutilsWidgetExpandHoriz (hbox);
-  uiutilsBoxPackStart (uiw->vbox, hbox);
+  hbox = uiCreateHorizBox ();
+  uiWidgetExpandHoriz (hbox);
+  uiBoxPackStart (uiw->vbox, hbox);
 
   if (uisongsel->dispselType == DISP_SEL_SONGSEL ||
       uisongsel->dispselType == DISP_SEL_EZSONGSEL) {
     /* CONTEXT: select a song to be added to the song list */
     strlcpy (tbuff, _("Select"), sizeof (tbuff));
-    widget = uiutilsCreateButton (&uiw->buttons [SONGSEL_BUTTON_SELECT],
+    widget = uiCreateButton (&uiw->buttons [SONGSEL_BUTTON_SELECT],
         tbuff, NULL, uisongselQueueProcessSelectHandler, uisongsel);
-    uiutilsBoxPackStart (hbox, widget);
+    uiBoxPackStart (hbox, widget);
   }
 
   if (uisongsel->dispselType == DISP_SEL_SONGSEL ||
@@ -164,7 +164,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, GtkWidget *parentwin)
     if (uisongsel->dispselType == DISP_SEL_REQUEST) {
       /* CONTEXT: queue a song to be played */
       strlcpy (tbuff, _("Queue"), sizeof (tbuff));
-      widget = uiutilsCreateButton (&uiw->buttons [SONGSEL_BUTTON_QUEUE],
+      widget = uiCreateButton (&uiw->buttons [SONGSEL_BUTTON_QUEUE],
           tbuff, NULL, uisongselQueueProcessQueueHandler, uisongsel);
     }
     if (uisongsel->dispselType == DISP_SEL_SONGSEL ||
@@ -172,58 +172,58 @@ uisongselBuildUI (uisongsel_t *uisongsel, GtkWidget *parentwin)
         uisongsel->dispselType == DISP_SEL_MM) {
       /* CONTEXT: play the selected song */
       strlcpy (tbuff, _("Play"), sizeof (tbuff));
-      widget = uiutilsCreateButton (&uiw->buttons [SONGSEL_BUTTON_QUEUE],
+      widget = uiCreateButton (&uiw->buttons [SONGSEL_BUTTON_QUEUE],
           tbuff, NULL, uisongselQueueProcessPlayHandler, uisongsel);
     }
-    uiutilsBoxPackStart (hbox, widget);
+    uiBoxPackStart (hbox, widget);
   }
 
-  widget = uiutilsComboboxCreate (parentwin,
+  widget = uiComboboxCreate (parentwin,
       "", uisongselFilterDanceSignal,
       &uisongsel->dancesel, uisongsel);
   /* CONTEXT: filter: all dances are selected */
   uiutilsCreateDanceList (&uisongsel->dancesel, _("All Dances"));
-  uiutilsBoxPackEnd (hbox, widget);
+  uiBoxPackEnd (hbox, widget);
 
   /* CONTEXT: a button that starts the filters (narrowing down song selections) dialog */
-  widget = uiutilsCreateButton (&uiw->buttons [SONGSEL_BUTTON_FILTER],
+  widget = uiCreateButton (&uiw->buttons [SONGSEL_BUTTON_FILTER],
       _("Filters"), NULL, uisongselFilterDialog, uisongsel);
-  uiutilsBoxPackEnd (hbox, widget);
+  uiBoxPackEnd (hbox, widget);
 
-  hbox = uiutilsCreateHorizBox ();
-  uiutilsWidgetExpandVert (uiw->vbox);
-  uiutilsBoxPackStartExpand (uiw->vbox, hbox);
+  hbox = uiCreateHorizBox ();
+  uiWidgetExpandVert (uiw->vbox);
+  uiBoxPackStartExpand (uiw->vbox, hbox);
 
-  vbox = uiutilsCreateVertBox ();
-  uiutilsBoxPackStartExpand (hbox, vbox);
+  vbox = uiCreateVertBox ();
+  uiBoxPackStartExpand (hbox, vbox);
 
   tupper = uisongsel->dfilterCount;
   adjustment = gtk_adjustment_new (0.0, 0.0, tupper, 1.0, 10.0, 10.0);
   uiw->songselScrollbar = gtk_scrollbar_new (GTK_ORIENTATION_VERTICAL, adjustment);
   assert (uiw->songselScrollbar != NULL);
-  uiutilsWidgetExpandVert (uiw->songselScrollbar);
-  uiutilsSetCss (uiw->songselScrollbar,
+  uiWidgetExpandVert (uiw->songselScrollbar);
+  uiSetCss (uiw->songselScrollbar,
       "scrollbar, scrollbar slider { min-width: 9px; } ");
-  uiutilsBoxPackEnd (hbox, uiw->songselScrollbar);
+  uiBoxPackEnd (hbox, uiw->songselScrollbar);
   g_signal_connect (uiw->songselScrollbar, "change-value",
       G_CALLBACK (uisongselScroll), uisongsel);
 
-  widget = uiutilsCreateScrolledWindow (400);
+  widget = uiCreateScrolledWindow (400);
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (widget), GTK_POLICY_NEVER, GTK_POLICY_EXTERNAL);
-  uiutilsWidgetExpandHoriz (widget);
-  uiutilsBoxPackStartExpand (vbox, widget);
+  uiWidgetExpandHoriz (widget);
+  uiBoxPackStartExpand (vbox, widget);
   uiw->scrolledwin = widget;
 
-  uiw->songselTree = uiutilsCreateTreeView ();
+  uiw->songselTree = uiCreateTreeView ();
   assert (uiw->songselTree != NULL);
-  uiutilsWidgetAlignHorizFill (uiw->songselTree);
-  uiutilsWidgetExpandHoriz (uiw->songselTree);
-  uiutilsWidgetExpandVert (uiw->songselTree);
+  uiWidgetAlignHorizFill (uiw->songselTree);
+  uiWidgetExpandHoriz (uiw->songselTree);
+  uiWidgetExpandVert (uiw->songselTree);
   gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (uiw->songselTree), TRUE);
   /* for song list editing, multiple selections are valid */
   if (uisongsel->dispselType == DISP_SEL_SONGSEL ||
       uisongsel->dispselType == DISP_SEL_EZSONGSEL) {
-    uiutilsTreeViewAllowMultiple (uiw->songselTree);
+    uiTreeViewAllowMultiple (uiw->songselTree);
   }
   g_signal_connect (uiw->songselTree, "key-press-event",
       G_CALLBACK (uisongselKeyEvent), uisongsel);
@@ -241,7 +241,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, GtkWidget *parentwin)
       GTK_EVENT_CONTROLLER_SCROLL_VERTICAL |
       GTK_EVENT_CONTROLLER_SCROLL_DISCRETE);
   gtk_widget_add_events (uiw->songselTree, GDK_SCROLL_MASK);
-  uiutilsBoxPackInWindow (widget, uiw->songselTree);
+  uiBoxPackInWindow (widget, uiw->songselTree);
   g_signal_connect (uiw->songselTree, "row-activated",
       G_CALLBACK (uisongselCheckFavChgSignal), uisongsel);
   g_signal_connect (uiw->songselTree, "scroll-event",
@@ -251,7 +251,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, GtkWidget *parentwin)
       GTK_EVENT_CONTROLLER_SCROLL_VERTICAL);
 
   sellist = dispselGetList (uisongsel->dispsel, uisongsel->dispselType);
-  uiw->favColumn = uiutilsAddDisplayColumns (
+  uiw->favColumn = uiAddDisplayColumns (
       uiw->songselTree, sellist, SONGSEL_COL_MAX,
       SONGSEL_COL_FONT, SONGSEL_COL_ELLIPSIZE);
 
@@ -264,7 +264,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, GtkWidget *parentwin)
   logMsg (LOG_DBG, LOG_SONGSEL, "populate: initial");
   uisongselPopulateData (uisongsel);
 
-  uiutilsDropDownSelectionSetNum (&uisongsel->dancesel, -1);
+  uiDropDownSelectionSetNum (&uisongsel->dancesel, -1);
 
   g_signal_connect (uiw->songselTree, "size-allocate",
       G_CALLBACK (uisongselProcessTreeSize), uisongsel);
@@ -336,7 +336,7 @@ uisongselPopulateData (uisongsel_t *uisongsel)
         favorite = songGetFavoriteData (song);
         color = favorite->color;
         if (strcmp (color, "") == 0) {
-          uiutilsGetForegroundColor (uiw->songselTree, tmp, sizeof (tmp));
+          uiGetForegroundColor (uiw->songselTree, tmp, sizeof (tmp));
           color = tmp;
         }
 
@@ -350,7 +350,7 @@ uisongselPopulateData (uisongsel_t *uisongsel)
             -1);
 
         sellist = dispselGetList (uisongsel->dispsel, uisongsel->dispselType);
-        uiutilsSetDisplayColumns (
+        uiSetDisplayColumns (
             GTK_LIST_STORE (model), &iter, sellist,
             song, SONGSEL_COL_MAX);
       }
@@ -374,12 +374,12 @@ uisongselSetFavoriteForeground (uisongsel_t *uisongsel, char *color)
   if (strcmp (color, "") != 0) {
     snprintf (tbuff, sizeof (tbuff),
         "spinbutton { color: %s; } ", color);
-    uiutilsSetCss (uisongsel->filterfavoritesel.spinbox, tbuff);
+    uiSetCss (uisongsel->filterfavoritesel.spinbox, tbuff);
   } else {
-    uiutilsGetForegroundColor (uiw->songselTree, tmp, sizeof (tmp));
+    uiGetForegroundColor (uiw->songselTree, tmp, sizeof (tmp));
     snprintf (tbuff, sizeof (tbuff),
         "spinbutton { color: %s; } ", tmp);
-    uiutilsSetCss (uisongsel->filterfavoritesel.spinbox, tbuff);
+    uiSetCss (uisongsel->filterfavoritesel.spinbox, tbuff);
   }
 }
 
@@ -469,7 +469,7 @@ uisongselInitializeStore (uisongsel_t *uisongsel)
   songselstoretypes [colcount++] = G_TYPE_STRING,
 
   sellist = dispselGetList (uisongsel->dispsel, uisongsel->dispselType);
-  songselstoretypes = uiutilsAddDisplayTypes (songselstoretypes, sellist, &colcount);
+  songselstoretypes = uiAddDisplayTypes (songselstoretypes, sellist, &colcount);
   store = gtk_list_store_newv (colcount, songselstoretypes);
   assert (store != NULL);
   free (songselstoretypes);

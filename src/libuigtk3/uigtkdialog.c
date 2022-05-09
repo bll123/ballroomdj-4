@@ -16,7 +16,7 @@
 #include "uiutils.h"
 
 char *
-uiutilsSelectDirDialog (uiutilsselect_t *selectdata)
+uiSelectDirDialog (uiselect_t *selectdata)
 {
   GtkFileChooserNative  *widget = NULL;
   gint                  res;
@@ -43,7 +43,7 @@ uiutilsSelectDirDialog (uiutilsselect_t *selectdata)
 }
 
 char *
-uiutilsSelectFileDialog (uiutilsselect_t *selectdata)
+uiSelectFileDialog (uiselect_t *selectdata)
 {
   GtkFileChooserNative  *widget = NULL;
   gint                  res;

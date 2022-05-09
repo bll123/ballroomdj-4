@@ -12,7 +12,7 @@
 #include "uiutils.h"
 
 GtkWidget *
-uiutilsCreateMenubar (void)
+uiCreateMenubar (void)
 {
   GtkWidget *menubar;
 
@@ -21,7 +21,7 @@ uiutilsCreateMenubar (void)
 }
 
 GtkWidget *
-uiutilsCreateSubMenu (GtkWidget *menuitem)
+uiCreateSubMenu (GtkWidget *menuitem)
 {
   GtkWidget *menu;
 
@@ -31,7 +31,7 @@ uiutilsCreateSubMenu (GtkWidget *menuitem)
 }
 
 GtkWidget *
-uiutilsMenuCreateItem (GtkWidget *menu, const char *txt,
+uiMenuCreateItem (GtkWidget *menu, const char *txt,
     void *activateAction, void *udata)
 {
   GtkWidget *menuitem;
@@ -47,7 +47,7 @@ uiutilsMenuCreateItem (GtkWidget *menu, const char *txt,
 }
 
 GtkWidget *
-uiutilsMenuCreateCheckbox (GtkWidget *menu, const char *txt, int active,
+uiMenuCreateCheckbox (GtkWidget *menu, const char *txt, int active,
     void *toggleAction, void *udata)
 {
   GtkWidget *menuitem;
@@ -62,7 +62,7 @@ uiutilsMenuCreateCheckbox (GtkWidget *menu, const char *txt, int active,
 }
 
 void
-uiutilsMenuInit (uiutilsmenu_t *menu)
+uiMenuInit (uimenu_t *menu)
 {
   menu->initialized = false;
   menu->menucount = 0;
@@ -72,7 +72,7 @@ uiutilsMenuInit (uiutilsmenu_t *menu)
 }
 
 GtkWidget *
-uiutilsMenuAddMainItem (GtkWidget *menubar, uiutilsmenu_t *menu, const char *txt)
+uiMenuAddMainItem (GtkWidget *menubar, uimenu_t *menu, const char *txt)
 {
   int   i;
 
@@ -89,7 +89,7 @@ uiutilsMenuAddMainItem (GtkWidget *menubar, uiutilsmenu_t *menu, const char *txt
 }
 
 void
-uiutilsMenuDisplay (uiutilsmenu_t *menu)
+uiMenuDisplay (uimenu_t *menu)
 {
   for (int i = 0; i < menu->menucount; ++i) {
     gtk_widget_show_all (menu->menuitem [i]);
@@ -97,7 +97,7 @@ uiutilsMenuDisplay (uiutilsmenu_t *menu)
 }
 
 void
-uiutilsMenuClear (uiutilsmenu_t *menu)
+uiMenuClear (uimenu_t *menu)
 {
   for (int i = 0; i < menu->menucount; ++i) {
     gtk_widget_hide (menu->menuitem [i]);

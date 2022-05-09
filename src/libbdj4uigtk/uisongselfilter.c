@@ -54,13 +54,13 @@ uisongselFilterDialog (UIWidget *uiwidget, void *udata)
 
   uisongselInitFilterDisplay (uisongsel);
   if (uisongsel->statusPlayable != NULL) {
-    uiutilsSwitchSetValue (uisongsel->statusPlayable, uisongsel->dfltpbflag);
+    uiSwitchSetValue (uisongsel->statusPlayable, uisongsel->dfltpbflag);
   }
-  uiutilsWidgetShowAll (uisongsel->filterDialog);
+  uiWidgetShowAll (uisongsel->filterDialog);
 
   x = nlistGetNum (uisongsel->options, SONGSEL_FILTER_POSITION_X);
   y = nlistGetNum (uisongsel->options, SONGSEL_FILTER_POSITION_Y);
-  uiutilsWindowMove (uisongsel->filterDialog, x, y);
+  uiWindowMove (uisongsel->filterDialog, x, y);
   logProcEnd (LOG_PROC, "uisongselFilterDialog", "");
 }
 
@@ -71,7 +71,7 @@ uisongselFilterDanceSignal (GtkTreeView *tv, GtkTreePath *path,
   uisongsel_t *uisongsel = udata;
   ssize_t     idx;
 
-  idx = uiutilsDropDownSelectionGet (&uisongsel->dancesel, path);
+  idx = uiDropDownSelectionGet (&uisongsel->dancesel, path);
   uisongselFilterDanceProcess (uisongsel, idx);
   return;
 }
@@ -91,7 +91,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
 
   logProcBegin (LOG_PROC, "uisongselCreateFilterDialog");
 
-  uiutilsCreateSizeGroupHoriz (&sg);
+  uiCreateSizeGroupHoriz (&sg);
 
   uisongsel->filterDialog = gtk_dialog_new_with_buttons (
       /* CONTEXT: title for the filter dialog */
@@ -111,175 +111,175 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
       );
 
   content = gtk_dialog_get_content_area (GTK_DIALOG (uisongsel->filterDialog));
-  uiutilsWidgetSetAllMargins (content, uiutilsBaseMarginSz * 2);
+  uiWidgetSetAllMargins (content, uiBaseMarginSz * 2);
 
-  vbox = uiutilsCreateVertBox ();
-  uiutilsBoxPackInWindow (content, vbox);
+  vbox = uiCreateVertBox ();
+  uiBoxPackInWindow (content, vbox);
 
   /* sort-by : always available */
-  hbox = uiutilsCreateHorizBox ();
-  uiutilsBoxPackStart (vbox, hbox);
+  hbox = uiCreateHorizBox ();
+  uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: a filter: select the method to sort the song selection display */
-  widget = uiutilsCreateColonLabel (_("Sort by"));
-  uiutilsBoxPackStart (hbox, widget);
-  uiutilsSizeGroupAdd (&sg, widget);
+  widget = uiCreateColonLabel (_("Sort by"));
+  uiBoxPackStart (hbox, widget);
+  uiSizeGroupAdd (&sg, widget);
 
-  widget = uiutilsComboboxCreate (uisongsel->filterDialog,
+  widget = uiComboboxCreate (uisongsel->filterDialog,
       "", uisongselSortBySelectHandler, &uisongsel->sortbysel, uisongsel);
   uisongselCreateSortByList (uisongsel);
-  uiutilsBoxPackStart (hbox, widget);
+  uiBoxPackStart (hbox, widget);
 
   /* search : always available */
-  hbox = uiutilsCreateHorizBox ();
-  uiutilsBoxPackStart (vbox, hbox);
+  hbox = uiCreateHorizBox ();
+  uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: a filter: filter the song selection with a search for text */
-  widget = uiutilsCreateColonLabel (_("Search"));
-  uiutilsBoxPackStart (hbox, widget);
-  uiutilsSizeGroupAdd (&sg, widget);
+  widget = uiCreateColonLabel (_("Search"));
+  uiBoxPackStart (hbox, widget);
+  uiSizeGroupAdd (&sg, widget);
 
-  widget = uiutilsEntryCreate (&uisongsel->searchentry);
-  uiutilsWidgetAlignHorizStart (widget);
-  uiutilsBoxPackStart (hbox, widget);
+  widget = uiEntryCreate (&uisongsel->searchentry);
+  uiWidgetAlignHorizStart (widget);
+  uiBoxPackStart (hbox, widget);
 
   /* genre */
   if (songfilterCheckSelection (uisongsel->songfilter, FILTER_DISP_GENRE)) {
-    hbox = uiutilsCreateHorizBox ();
-    uiutilsBoxPackStart (vbox, hbox);
+    hbox = uiCreateHorizBox ();
+    uiBoxPackStart (vbox, hbox);
 
     /* CONTEXT: a filter: select the genre displayed in the song selection */
-    widget = uiutilsCreateColonLabel (_("Genre"));
-    uiutilsBoxPackStart (hbox, widget);
-    uiutilsSizeGroupAdd (&sg, widget);
+    widget = uiCreateColonLabel (_("Genre"));
+    uiBoxPackStart (hbox, widget);
+    uiSizeGroupAdd (&sg, widget);
 
-    widget = uiutilsComboboxCreate (uisongsel->filterDialog,
+    widget = uiComboboxCreate (uisongsel->filterDialog,
         "", uisongselGenreSelectHandler,
         &uisongsel->filtergenresel, uisongsel);
     uisongselCreateGenreList (uisongsel);
-    uiutilsBoxPackStart (hbox, widget);
+    uiBoxPackStart (hbox, widget);
   }
 
   /* dance : always available */
-  hbox = uiutilsCreateHorizBox ();
-  uiutilsBoxPackStart (vbox, hbox);
+  hbox = uiCreateHorizBox ();
+  uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: a filter: select the dance displayed in the song selection */
-  widget = uiutilsCreateColonLabel (_("Dance"));
-  uiutilsBoxPackStart (hbox, widget);
-  uiutilsSizeGroupAdd (&sg, widget);
+  widget = uiCreateColonLabel (_("Dance"));
+  uiBoxPackStart (hbox, widget);
+  uiSizeGroupAdd (&sg, widget);
 
-  widget = uiutilsComboboxCreate (uisongsel->filterDialog,
+  widget = uiComboboxCreate (uisongsel->filterDialog,
       "", uisongselDanceSelectSignal,
       &uisongsel->filterdancesel, uisongsel);
   /* CONTEXT: a filter: all dances are selected */
   uiutilsCreateDanceList (&uisongsel->filterdancesel, _("All Dances"));
-  uiutilsBoxPackStart (hbox, widget);
+  uiBoxPackStart (hbox, widget);
 
   /* rating : always available */
-  hbox = uiutilsCreateHorizBox ();
-  uiutilsBoxPackStart (vbox, hbox);
+  hbox = uiCreateHorizBox ();
+  uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: a filter: select the dance rating displayed in the song selection */
-  widget = uiutilsCreateColonLabel (_("Dance Rating"));
-  uiutilsBoxPackStart (hbox, widget);
-  uiutilsSizeGroupAdd (&sg, widget);
+  widget = uiCreateColonLabel (_("Dance Rating"));
+  uiBoxPackStart (hbox, widget);
+  uiSizeGroupAdd (&sg, widget);
 
-  widget = uiutilsSpinboxTextCreate (&uisongsel->filterratingsel, uisongsel);
+  widget = uiSpinboxTextCreate (&uisongsel->filterratingsel, uisongsel);
   max = ratingGetMaxWidth (uisongsel->ratings);
   /* CONTEXT: a filter: all dance ratings will be listed */
   len = istrlen (_("All Ratings"));
   if (len > max) {
     max = len;
   }
-  uiutilsSpinboxTextSet (&uisongsel->filterratingsel, -1,
+  uiSpinboxTextSet (&uisongsel->filterratingsel, -1,
       ratingGetCount (uisongsel->ratings),
       max, NULL, uisongselRatingGet);
-  uiutilsBoxPackStart (hbox, widget);
+  uiBoxPackStart (hbox, widget);
 
   /* level */
   if (songfilterCheckSelection (uisongsel->songfilter, FILTER_DISP_DANCELEVEL)) {
-    hbox = uiutilsCreateHorizBox ();
-    uiutilsBoxPackStart (vbox, hbox);
+    hbox = uiCreateHorizBox ();
+    uiBoxPackStart (vbox, hbox);
 
     /* CONTEXT: a filter: select the dance level displayed in the song selection */
-    widget = uiutilsCreateColonLabel (_("Dance Level"));
-    uiutilsBoxPackStart (hbox, widget);
-    uiutilsSizeGroupAdd (&sg, widget);
+    widget = uiCreateColonLabel (_("Dance Level"));
+    uiBoxPackStart (hbox, widget);
+    uiSizeGroupAdd (&sg, widget);
 
-    widget = uiutilsSpinboxTextCreate (&uisongsel->filterlevelsel, uisongsel);
+    widget = uiSpinboxTextCreate (&uisongsel->filterlevelsel, uisongsel);
     max = levelGetMaxWidth (uisongsel->levels);
     /* CONTEXT: a filter: all dance levels will be listed */
     len = istrlen (_("All Levels"));
     if (len > max) {
       max = len;
     }
-    uiutilsSpinboxTextSet (&uisongsel->filterlevelsel, -1,
+    uiSpinboxTextSet (&uisongsel->filterlevelsel, -1,
         levelGetCount (uisongsel->levels),
         max, NULL, uisongselLevelGet);
-    uiutilsBoxPackStart (hbox, widget);
+    uiBoxPackStart (hbox, widget);
   }
 
   /* status */
   if (songfilterCheckSelection (uisongsel->songfilter, FILTER_DISP_STATUS)) {
-    hbox = uiutilsCreateHorizBox ();
-    uiutilsBoxPackStart (vbox, hbox);
+    hbox = uiCreateHorizBox ();
+    uiBoxPackStart (vbox, hbox);
 
     /* CONTEXT: a filter: select the status displayed in the song selection */
-    widget = uiutilsCreateColonLabel (_("Status"));
-    uiutilsBoxPackStart (hbox, widget);
-    uiutilsSizeGroupAdd (&sg, widget);
+    widget = uiCreateColonLabel (_("Status"));
+    uiBoxPackStart (hbox, widget);
+    uiSizeGroupAdd (&sg, widget);
 
-    widget = uiutilsSpinboxTextCreate (&uisongsel->filterstatussel, uisongsel);
+    widget = uiSpinboxTextCreate (&uisongsel->filterstatussel, uisongsel);
     max = statusGetMaxWidth (uisongsel->status);
     /* CONTEXT: a filter: all statuses are displayed in the song selection */
     len = istrlen (_("Any Status"));
     if (len > max) {
       max = len;
     }
-    uiutilsSpinboxTextSet (&uisongsel->filterstatussel, -1,
+    uiSpinboxTextSet (&uisongsel->filterstatussel, -1,
         statusGetCount (uisongsel->status),
         max, NULL, uisongselStatusGet);
-    uiutilsBoxPackStart (hbox, widget);
+    uiBoxPackStart (hbox, widget);
   }
 
   /* favorite */
   if (songfilterCheckSelection (uisongsel->songfilter, FILTER_DISP_FAVORITE)) {
-    hbox = uiutilsCreateHorizBox ();
-    uiutilsBoxPackStart (vbox, hbox);
+    hbox = uiCreateHorizBox ();
+    uiBoxPackStart (vbox, hbox);
 
     /* CONTEXT: a filter: select the 'favorite' displayed in the song selection */
-    widget = uiutilsCreateColonLabel (_("Favorite"));
-    uiutilsBoxPackStart (hbox, widget);
-    uiutilsSizeGroupAdd (&sg, widget);
+    widget = uiCreateColonLabel (_("Favorite"));
+    uiBoxPackStart (hbox, widget);
+    uiSizeGroupAdd (&sg, widget);
 
-    widget = uiutilsSpinboxTextCreate (&uisongsel->filterfavoritesel, uisongsel);
-    uiutilsSpinboxTextSet (&uisongsel->filterfavoritesel, 0,
+    widget = uiSpinboxTextCreate (&uisongsel->filterfavoritesel, uisongsel);
+    uiSpinboxTextSet (&uisongsel->filterfavoritesel, 0,
         SONG_FAVORITE_MAX, 1, NULL, uisongselFavoriteGet);
-    uiutilsBoxPackStart (hbox, widget);
+    uiBoxPackStart (hbox, widget);
   }
 
   /* status playable */
   if (songfilterCheckSelection (uisongsel->songfilter, FILTER_DISP_STATUSPLAYABLE)) {
-    hbox = uiutilsCreateHorizBox ();
-    uiutilsBoxPackStart (vbox, hbox);
+    hbox = uiCreateHorizBox ();
+    uiBoxPackStart (vbox, hbox);
 
     /* CONTEXT: a filter: have a status that are marked as playable */
-    widget = uiutilsCreateColonLabel (_("Playable Status"));
-    uiutilsBoxPackStart (hbox, widget);
-    uiutilsSizeGroupAdd (&sg, widget);
+    widget = uiCreateColonLabel (_("Playable Status"));
+    uiBoxPackStart (hbox, widget);
+    uiSizeGroupAdd (&sg, widget);
 
-    widget = uiutilsCreateSwitch (uisongsel->dfltpbflag);
-    uiutilsBoxPackStart (hbox, widget);
+    widget = uiCreateSwitch (uisongsel->dfltpbflag);
+    uiBoxPackStart (hbox, widget);
     uisongsel->statusPlayable = widget;
   }
 
   /* the dialog doesn't have any space above the buttons */
-  hbox = uiutilsCreateHorizBox ();
-  uiutilsBoxPackStart (vbox, hbox);
+  hbox = uiCreateHorizBox ();
+  uiBoxPackStart (vbox, hbox);
 
-  widget = uiutilsCreateLabel (" ");
-  uiutilsBoxPackStart (hbox, widget);
+  widget = uiCreateLabel (" ");
+  uiBoxPackStart (hbox, widget);
 
   g_signal_connect (uisongsel->filterDialog, "response",
       G_CALLBACK (uisongselFilterResponseHandler), uisongsel);
@@ -296,7 +296,7 @@ uisongselFilterResponseHandler (GtkDialog *d, gint responseid, gpointer udata)
 
   switch (responseid) {
     case GTK_RESPONSE_DELETE_EVENT: {
-      uiutilsWindowGetPosition (uisongsel->filterDialog, &x, &y);
+      uiWindowGetPosition (uisongsel->filterDialog, &x, &y);
       nlistSetNum (uisongsel->options, SONGSEL_FILTER_POSITION_X, x);
       nlistSetNum (uisongsel->options, SONGSEL_FILTER_POSITION_Y, y);
 
@@ -308,20 +308,20 @@ uisongselFilterResponseHandler (GtkDialog *d, gint responseid, gpointer udata)
       nlistSetNum (uisongsel->options, SONGSEL_FILTER_POSITION_X, x);
       nlistSetNum (uisongsel->options, SONGSEL_FILTER_POSITION_Y, y);
 
-      uiutilsWidgetHide (uisongsel->filterDialog);
+      uiWidgetHide (uisongsel->filterDialog);
       break;
     }
     case GTK_RESPONSE_APPLY: {
-      uiutilsDropDownSelectionSetNum (&uisongsel->dancesel, uisongsel->danceIdx);
+      uiDropDownSelectionSetNum (&uisongsel->dancesel, uisongsel->danceIdx);
       break;
     }
     case RESPONSE_RESET: {
       songfilterReset (uisongsel->songfilter);
       uisongsel->danceIdx = -1;
-      uiutilsDropDownSelectionSetNum (&uisongsel->dancesel, -1);
+      uiDropDownSelectionSetNum (&uisongsel->dancesel, -1);
       uisongselInitFilterDisplay (uisongsel);
       if (uisongsel->statusPlayable != NULL) {
-        uiutilsSwitchSetValue (uisongsel->statusPlayable, uisongsel->dfltpbflag);
+        uiSwitchSetValue (uisongsel->statusPlayable, uisongsel->dfltpbflag);
       }
       break;
     }
@@ -339,7 +339,7 @@ uisongselFilterUpdate (uisongsel_t *uisongsel)
 
 
   /* search : always active */
-  searchstr = uiutilsEntryGetValue (&uisongsel->searchentry);
+  searchstr = uiEntryGetValue (&uisongsel->searchentry);
   if (searchstr != NULL && strlen (searchstr) > 0) {
     songfilterSetData (uisongsel->songfilter, SONG_FILTER_SEARCH, (void *) searchstr);
   } else {
@@ -347,7 +347,7 @@ uisongselFilterUpdate (uisongsel_t *uisongsel)
   }
 
   /* dance rating : always active */
-  idx = uiutilsSpinboxTextGetValue (&uisongsel->filterratingsel);
+  idx = uiSpinboxTextGetValue (&uisongsel->filterratingsel);
   if (idx >= 0) {
     songfilterSetNum (uisongsel->songfilter, SONG_FILTER_RATING, idx);
   } else {
@@ -356,7 +356,7 @@ uisongselFilterUpdate (uisongsel_t *uisongsel)
 
   /* dance level */
   if (songfilterCheckSelection (uisongsel->songfilter, FILTER_DISP_DANCELEVEL)) {
-    idx = uiutilsSpinboxTextGetValue (&uisongsel->filterlevelsel);
+    idx = uiSpinboxTextGetValue (&uisongsel->filterlevelsel);
     if (idx >= 0) {
       songfilterSetNum (uisongsel->songfilter, SONG_FILTER_LEVEL_LOW, idx);
       songfilterSetNum (uisongsel->songfilter, SONG_FILTER_LEVEL_HIGH, idx);
@@ -368,7 +368,7 @@ uisongselFilterUpdate (uisongsel_t *uisongsel)
 
   /* status */
   if (songfilterCheckSelection (uisongsel->songfilter, FILTER_DISP_STATUS)) {
-    idx = uiutilsSpinboxTextGetValue (&uisongsel->filterstatussel);
+    idx = uiSpinboxTextGetValue (&uisongsel->filterstatussel);
     if (idx >= 0) {
       songfilterSetNum (uisongsel->songfilter, SONG_FILTER_STATUS, idx);
     } else {
@@ -378,7 +378,7 @@ uisongselFilterUpdate (uisongsel_t *uisongsel)
 
   /* favorite */
   if (songfilterCheckSelection (uisongsel->songfilter, FILTER_DISP_FAVORITE)) {
-    idx = uiutilsSpinboxTextGetValue (&uisongsel->filterfavoritesel);
+    idx = uiSpinboxTextGetValue (&uisongsel->filterfavoritesel);
     if (idx != SONG_FAVORITE_NONE) {
       songfilterSetNum (uisongsel->songfilter, SONG_FILTER_FAVORITE, idx);
     } else {
@@ -408,7 +408,7 @@ uisongselSortBySelectHandler (GtkTreeView *tv, GtkTreePath *path,
   uisongsel_t *uisongsel = udata;
   ssize_t     idx;
 
-  idx = uiutilsDropDownSelectionGet (&uisongsel->sortbysel, path);
+  idx = uiDropDownSelectionGet (&uisongsel->sortbysel, path);
   uisongselSortBySelect (uisongsel, idx);
 }
 
@@ -419,7 +419,7 @@ uisongselGenreSelectHandler (GtkTreeView *tv, GtkTreePath *path,
   uisongsel_t *uisongsel = udata;
   ssize_t     idx;
 
-  idx = uiutilsDropDownSelectionGet (&uisongsel->filtergenresel, path);
+  idx = uiDropDownSelectionGet (&uisongsel->filtergenresel, path);
   uisongselGenreSelect (uisongsel, idx);
 }
 
@@ -430,7 +430,7 @@ uisongselDanceSelectSignal (GtkTreeView *tv, GtkTreePath *path,
   uisongsel_t *uisongsel = udata;
   ssize_t     idx;
 
-  idx = uiutilsDropDownSelectionGet (&uisongsel->filterdancesel, path);
+  idx = uiDropDownSelectionGet (&uisongsel->filterdancesel, path);
   uisongselDanceSelect (uisongsel, idx);
 }
 

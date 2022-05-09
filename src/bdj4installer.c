@@ -103,8 +103,8 @@ typedef struct {
   char            *tclshloc;
   slist_t         *convlist;
   slistidx_t      convidx;
-  uiutilsentry_t  targetEntry;
-  uiutilsentry_t  bdj3locEntry;
+  uientry_t  targetEntry;
+  uientry_t  bdj3locEntry;
   /* gtk */
   GtkWidget       *window;
   GtkWidget       *reinstWidget;
@@ -258,8 +258,8 @@ main (int argc, char *argv[])
   strcpy (installer.vlcversion, "");
   strcpy (installer.pyversion, "");
 
-  uiutilsEntryInit (&installer.targetEntry, 80, MAXPATHLEN);
-  uiutilsEntryInit (&installer.bdj3locEntry, 80, MAXPATHLEN);
+  uiEntryInit (&installer.targetEntry, 80, MAXPATHLEN);
+  uiEntryInit (&installer.bdj3locEntry, 80, MAXPATHLEN);
 
   while ((c = getopt_long_only (argc, argv, "g:r:u:", bdj_options, &option_index)) != -1) {
     switch (c) {
@@ -343,12 +343,12 @@ main (int argc, char *argv[])
   }
 
   if (installer.guienabled) {
-    uiutilsUIInitialize ();
+    uiUIInitialize ();
     if (isWindows () || isMacOS ()) {
       char *uifont;
 
       uifont = "Arial 12";
-      uiutilsSetUIFont (uifont);
+      uiSetUIFont (uifont);
     }
   }
 
@@ -390,199 +390,199 @@ installerBuildUI (installer_t *installer)
   /* CONTEXT: installer: window title */
   snprintf (tbuff, sizeof (tbuff), _("%s Installer"), BDJ4_NAME);
 // ### close window handler
-  window = uiutilsCreateMainWindow (tbuff, imgbuff, NULL, installer);
-  uiutilsWindowSetDefaultSize (window, 1000, 600);
+  window = uiCreateMainWindow (tbuff, imgbuff, NULL, installer);
+  uiWindowSetDefaultSize (window, 1000, 600);
   installer->window = window;
 
-  vbox = uiutilsCreateVertBox ();
-  uiutilsWidgetSetAllMargins (vbox, 10);
-  uiutilsWidgetSetMarginTop (vbox, 20);
-  uiutilsWidgetExpandHoriz (vbox);
-  uiutilsWidgetExpandVert (vbox);
-  uiutilsBoxPackInWindow (window, vbox);
+  vbox = uiCreateVertBox ();
+  uiWidgetSetAllMargins (vbox, 10);
+  uiWidgetSetMarginTop (vbox, 20);
+  uiWidgetExpandHoriz (vbox);
+  uiWidgetExpandVert (vbox);
+  uiBoxPackInWindow (window, vbox);
 
-  widget = uiutilsCreateLabel (
+  widget = uiCreateLabel (
       /* CONTEXT: installer */
       _("Enter the destination folder where BDJ4 will be installed."));
-  uiutilsBoxPackStart (vbox, widget);
+  uiBoxPackStart (vbox, widget);
 
-  widget = uiutilsEntryCreate (&installer->targetEntry);
-  uiutilsEntrySetValue (&installer->targetEntry, installer->target);
-  uiutilsWidgetAlignHorizFill (widget);
-  uiutilsWidgetExpandHoriz (widget);
-  uiutilsBoxPackStart (vbox, widget);
+  widget = uiEntryCreate (&installer->targetEntry);
+  uiEntrySetValue (&installer->targetEntry, installer->target);
+  uiWidgetAlignHorizFill (widget);
+  uiWidgetExpandHoriz (widget);
+  uiBoxPackStart (vbox, widget);
 
   g_signal_connect (installer->targetEntry.entry, "changed",
       G_CALLBACK (installerValidateStart), installer);
 
-  hbox = uiutilsCreateHorizBox ();
-  uiutilsWidgetExpandHoriz (hbox);
-  uiutilsBoxPackStart (vbox, hbox);
+  hbox = uiCreateHorizBox ();
+  uiWidgetExpandHoriz (hbox);
+  uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: installer: overwrite the previous BDJ4 installation */
   installer->reinstWidget = gtk_check_button_new_with_label (_("Overwrite"));
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (installer->reinstWidget),
       installer->reinstall);
-  uiutilsBoxPackStart (hbox, installer->reinstWidget);
+  uiBoxPackStart (hbox, installer->reinstWidget);
   g_signal_connect (installer->reinstWidget, "toggled",
       G_CALLBACK (installerCheckDir), installer);
 
-  installer->feedbackMsg = uiutilsCreateLabel ("");
-  uiutilsSetCss (installer->feedbackMsg,
+  installer->feedbackMsg = uiCreateLabel ("");
+  uiSetCss (installer->feedbackMsg,
       "label { color: #ffa600; }");
-  uiutilsBoxPackStart (hbox, installer->feedbackMsg);
+  uiBoxPackStart (hbox, installer->feedbackMsg);
 
   widget = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
-  uiutilsWidgetSetMarginTop (widget, uiutilsBaseMarginSz);
-  uiutilsSetCss (widget,
+  uiWidgetSetMarginTop (widget, uiBaseMarginSz);
+  uiSetCss (widget,
       "separator { min-height: 4px; background-color: #733000; }");
-  uiutilsBoxPackStart (vbox, widget);
+  uiBoxPackStart (vbox, widget);
 
   /* conversion process */
   snprintf (tbuff, sizeof (tbuff),
       /* CONTEXT: installer */
       _("Enter the folder where %s is installed."), BDJ3_NAME);
-  widget = uiutilsCreateLabel (tbuff);
-  uiutilsBoxPackStart (vbox, widget);
+  widget = uiCreateLabel (tbuff);
+  uiBoxPackStart (vbox, widget);
 
-  widget = uiutilsCreateLabel (
+  widget = uiCreateLabel (
       /* CONTEXT: installer */
       _("If there is no BallroomDJ 3 installation, leave the entry blank."));
-  uiutilsBoxPackStart (vbox, widget);
+  uiBoxPackStart (vbox, widget);
 
-  widget = uiutilsCreateLabel (
+  widget = uiCreateLabel (
       /* CONTEXT: installer */
       _("The conversion process will only run for new installations and for re-installations."));
-  uiutilsBoxPackStart (vbox, widget);
+  uiBoxPackStart (vbox, widget);
 
-  hbox = uiutilsCreateHorizBox ();
-  uiutilsWidgetExpandHoriz (hbox);
-  uiutilsBoxPackStart (vbox, hbox);
+  hbox = uiCreateHorizBox ();
+  uiWidgetExpandHoriz (hbox);
+  uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: installer: label for entry field asking for BDJ3 location */
   snprintf (tbuff, sizeof (tbuff), _("%s Location"), BDJ3_NAME);
-  widget = uiutilsCreateColonLabel (tbuff);
-  uiutilsBoxPackStart (hbox, widget);
+  widget = uiCreateColonLabel (tbuff);
+  uiBoxPackStart (hbox, widget);
 
-  widget = uiutilsEntryCreate (&installer->bdj3locEntry);
-  uiutilsEntrySetValue (&installer->bdj3locEntry, installer->bdj3loc);
-  uiutilsWidgetAlignHorizFill (widget);
-  uiutilsWidgetExpandHoriz (widget);
-  uiutilsBoxPackStart (hbox, widget);
+  widget = uiEntryCreate (&installer->bdj3locEntry);
+  uiEntrySetValue (&installer->bdj3locEntry, installer->bdj3loc);
+  uiWidgetAlignHorizFill (widget);
+  uiWidgetExpandHoriz (widget);
+  uiBoxPackStart (hbox, widget);
   g_signal_connect (installer->bdj3locEntry.entry, "changed",
       G_CALLBACK (installerValidateStart), installer);
 
-  widget = uiutilsCreateButton (NULL, "", NULL,
+  widget = uiCreateButton (NULL, "", NULL,
       installerSelectDirDialog, installer);
   image = gtk_image_new_from_icon_name ("folder", GTK_ICON_SIZE_BUTTON);
   gtk_button_set_image (GTK_BUTTON (widget), image);
   gtk_button_set_always_show_image (GTK_BUTTON (widget), TRUE);
-  uiutilsWidgetSetMarginStart (widget, 0);
-  uiutilsBoxPackStart (hbox, widget);
+  uiWidgetSetMarginStart (widget, 0);
+  uiBoxPackStart (hbox, widget);
 
-  hbox = uiutilsCreateHorizBox ();
-  uiutilsWidgetExpandHoriz (hbox);
-  uiutilsBoxPackStart (vbox, hbox);
+  hbox = uiCreateHorizBox ();
+  uiWidgetExpandHoriz (hbox);
+  uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: installer: convert the BallroomDJ 3 installation */
   snprintf (tbuff, sizeof (tbuff), _("Convert %s"), BDJ3_NAME);
   installer->convWidget = gtk_check_button_new_with_label (tbuff);
-  uiutilsBoxPackStart (hbox, installer->convWidget);
+  uiBoxPackStart (hbox, installer->convWidget);
   g_signal_connect (installer->convWidget, "toggled",
       G_CALLBACK (installerCheckConvert), installer);
 
-  installer->convFeedbackMsg = uiutilsCreateLabel ("");
-  uiutilsSetCss (installer->convFeedbackMsg,
+  installer->convFeedbackMsg = uiCreateLabel ("");
+  uiSetCss (installer->convFeedbackMsg,
       "label { color: #ffa600; }");
-  uiutilsBoxPackStart (hbox, installer->convFeedbackMsg);
+  uiBoxPackStart (hbox, installer->convFeedbackMsg);
 
   /* VLC status */
 
   widget = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
-  uiutilsWidgetSetMarginTop (widget, uiutilsBaseMarginSz);
-  uiutilsSetCss (widget,
+  uiWidgetSetMarginTop (widget, uiBaseMarginSz);
+  uiSetCss (widget,
       "separator { min-height: 4px; background-color: #733000; }");
-  uiutilsBoxPackStart (vbox, widget);
+  uiBoxPackStart (vbox, widget);
 
-  uiutilsCreateSizeGroupHoriz (&sg);
+  uiCreateSizeGroupHoriz (&sg);
 
-  hbox = uiutilsCreateHorizBox ();
-  uiutilsWidgetExpandHoriz (hbox);
-  uiutilsBoxPackStart (vbox, hbox);
+  hbox = uiCreateHorizBox ();
+  uiWidgetExpandHoriz (hbox);
+  uiBoxPackStart (vbox, hbox);
 
-  widget = uiutilsCreateColonLabel ("VLC");
-  uiutilsBoxPackStart (hbox, widget);
-  uiutilsSizeGroupAdd (&sg, widget);
+  widget = uiCreateColonLabel ("VLC");
+  uiBoxPackStart (hbox, widget);
+  uiSizeGroupAdd (&sg, widget);
 
-  installer->vlcMsg = uiutilsCreateLabel ("");
-  uiutilsSetCss (installer->vlcMsg,
+  installer->vlcMsg = uiCreateLabel ("");
+  uiSetCss (installer->vlcMsg,
       "label { color: #ffa600; }");
-  uiutilsBoxPackStart (hbox, installer->vlcMsg);
+  uiBoxPackStart (hbox, installer->vlcMsg);
 
   /* python status */
-  hbox = uiutilsCreateHorizBox ();
-  uiutilsWidgetExpandHoriz (hbox);
-  uiutilsBoxPackStart (vbox, hbox);
+  hbox = uiCreateHorizBox ();
+  uiWidgetExpandHoriz (hbox);
+  uiBoxPackStart (vbox, hbox);
 
-  widget = uiutilsCreateColonLabel ("Python");
-  uiutilsBoxPackStart (hbox, widget);
-  uiutilsSizeGroupAdd (&sg, widget);
+  widget = uiCreateColonLabel ("Python");
+  uiBoxPackStart (hbox, widget);
+  uiSizeGroupAdd (&sg, widget);
 
-  installer->pythonMsg = uiutilsCreateLabel ("");
-  uiutilsSetCss (installer->pythonMsg,
+  installer->pythonMsg = uiCreateLabel ("");
+  uiSetCss (installer->pythonMsg,
       "label { color: #ffa600; }");
-  uiutilsBoxPackStart (hbox, installer->pythonMsg);
+  uiBoxPackStart (hbox, installer->pythonMsg);
 
   /* mutagen status */
-  hbox = uiutilsCreateHorizBox ();
-  uiutilsWidgetExpandHoriz (hbox);
-  uiutilsBoxPackStart (vbox, hbox);
+  hbox = uiCreateHorizBox ();
+  uiWidgetExpandHoriz (hbox);
+  uiBoxPackStart (vbox, hbox);
 
-  widget = uiutilsCreateColonLabel ("Mutagen");
-  uiutilsBoxPackStart (hbox, widget);
-  uiutilsSizeGroupAdd (&sg, widget);
+  widget = uiCreateColonLabel ("Mutagen");
+  uiBoxPackStart (hbox, widget);
+  uiSizeGroupAdd (&sg, widget);
 
-  installer->mutagenMsg = uiutilsCreateLabel ("");
-  uiutilsSetCss (installer->mutagenMsg,
+  installer->mutagenMsg = uiCreateLabel ("");
+  uiSetCss (installer->mutagenMsg,
       "label { color: #ffa600; }");
-  uiutilsBoxPackStart (hbox, installer->mutagenMsg);
+  uiBoxPackStart (hbox, installer->mutagenMsg);
 
   /* button box */
-  hbox = uiutilsCreateHorizBox ();
-  uiutilsWidgetExpandHoriz (hbox);
-  uiutilsBoxPackStart (vbox, hbox);
+  hbox = uiCreateHorizBox ();
+  uiWidgetExpandHoriz (hbox);
+  uiBoxPackStart (vbox, hbox);
 
-  widget = uiutilsCreateButton (NULL, _("Exit"), NULL,
+  widget = uiCreateButton (NULL, _("Exit"), NULL,
       installerExit, installer);
-  uiutilsBoxPackEnd (hbox, widget);
+  uiBoxPackEnd (hbox, widget);
 
   /* CONTEXT: installer: start the installation process */
-  widget = uiutilsCreateButton (NULL, _("Install"), NULL,
+  widget = uiCreateButton (NULL, _("Install"), NULL,
       installerInstall, installer);
-  uiutilsBoxPackEnd (hbox, widget);
+  uiBoxPackEnd (hbox, widget);
 
-  scwidget = uiutilsCreateScrolledWindow (200);
-  uiutilsBoxPackStartExpand (vbox, scwidget);
+  scwidget = uiCreateScrolledWindow (200);
+  uiBoxPackStartExpand (vbox, scwidget);
 
   installer->dispBuffer = gtk_text_buffer_new (NULL);
   installer->dispTextView = gtk_text_view_new_with_buffer (installer->dispBuffer);
   gtk_widget_set_size_request (installer->dispTextView, -1, 400);
-  uiutilsWidgetDisableFocus (installer->dispTextView);
-  uiutilsWidgetAlignHorizFill (installer->dispTextView);
-  uiutilsWidgetAlignVertStart (installer->dispTextView);
-  uiutilsWidgetExpandHoriz (installer->dispTextView);
-  uiutilsWidgetExpandVert (installer->dispTextView);
-  uiutilsBoxPackInWindow (scwidget, installer->dispTextView);
+  uiWidgetDisableFocus (installer->dispTextView);
+  uiWidgetAlignHorizFill (installer->dispTextView);
+  uiWidgetAlignVertStart (installer->dispTextView);
+  uiWidgetExpandHoriz (installer->dispTextView);
+  uiWidgetExpandVert (installer->dispTextView);
+  uiBoxPackInWindow (scwidget, installer->dispTextView);
   g_signal_connect (installer->dispTextView,
       "size-allocate", G_CALLBACK (installerScrollToEnd), installer);
 
   /* push the text view to the top */
-  hbox = uiutilsCreateHorizBox ();
+  hbox = uiCreateHorizBox ();
   assert (hbox != NULL);
-  uiutilsWidgetExpandVert (hbox);
-  uiutilsBoxPackStart (vbox, hbox);
+  uiWidgetExpandVert (hbox);
+  uiBoxPackStart (vbox, hbox);
 
-  uiutilsWidgetShowAll (window);
+  uiWidgetShowAll (window);
 
   installerDisplayConvert (installer);
   installerCheckPackages (installer);
@@ -594,7 +594,7 @@ installerMainLoop (void *udata)
   installer_t *installer = udata;
 
   if (installer->guienabled) {
-    uiutilsUIProcessEvents ();
+    uiUIProcessEvents ();
   }
 
   if (mstimeCheck (&installer->validateTimer)) {
@@ -774,10 +774,10 @@ installerValidateDir (installer_t *installer)
     return;
   }
 
-  dir = uiutilsEntryGetValue (&installer->targetEntry);
+  dir = uiEntryGetValue (&installer->targetEntry);
   installer->reinstall = gtk_toggle_button_get_active (
       GTK_TOGGLE_BUTTON (installer->reinstWidget));
-  uiutilsLabelSetText (installer->feedbackMsg, "");
+  uiLabelSetText (installer->feedbackMsg, "");
 
   exists = fileopIsDirectory (dir);
   if (exists) {
@@ -786,23 +786,23 @@ installerValidateDir (installer_t *installer)
       if (installer->reinstall) {
         /* CONTEXT: installer: message indicating the action that will be taken */
         snprintf (tbuff, sizeof (tbuff), _("Overwriting existing %s installation."), BDJ4_NAME);
-        uiutilsLabelSetText (installer->feedbackMsg, tbuff);
+        uiLabelSetText (installer->feedbackMsg, tbuff);
         installerSetConvert (installer, TRUE);
       } else {
         /* CONTEXT: installer: message indicating the action that will be taken */
         snprintf (tbuff, sizeof (tbuff), _("Updating existing %s installation."), BDJ4_NAME);
-        uiutilsLabelSetText (installer->feedbackMsg, tbuff);
+        uiLabelSetText (installer->feedbackMsg, tbuff);
         installerSetConvert (installer, FALSE);
       }
     } else {
       /* CONTEXT: installer: the selected folder exists and is not a BDJ4 installation */
-      uiutilsLabelSetText (installer->feedbackMsg, _("Error: Folder already exists."));
+      uiLabelSetText (installer->feedbackMsg, _("Error: Folder already exists."));
       installerSetConvert (installer, FALSE);
     }
   } else {
     /* CONTEXT: installer: message indicating the action that will be taken */
     snprintf (tbuff, sizeof (tbuff), _("New %s installation."), BDJ4_NAME);
-    uiutilsLabelSetText (installer->feedbackMsg, tbuff);
+    uiLabelSetText (installer->feedbackMsg, tbuff);
     installerSetConvert (installer, TRUE);
   }
 
@@ -813,7 +813,7 @@ installerValidateDir (installer_t *installer)
     return;
   }
 
-  fn = uiutilsEntryGetValue (&installer->bdj3locEntry);
+  fn = uiEntryGetValue (&installer->bdj3locEntry);
   if (*fn == '\0' || strcmp (fn, "-") == 0 || locationcheck (fn)) {
     locok = true;
   }
@@ -841,7 +841,7 @@ installerValidateStart (GtkEditable *e, gpointer udata)
   }
 
   /* if the user is typing, clear the message */
-  uiutilsLabelSetText (installer->feedbackMsg, "");
+  uiLabelSetText (installer->feedbackMsg, "");
   gtk_entry_set_icon_from_icon_name (GTK_ENTRY (installer->bdj3locEntry.entry),
       GTK_ENTRY_ICON_SECONDARY, NULL);
   mstimeset (&installer->validateTimer, 500);
@@ -852,22 +852,22 @@ installerSelectDirDialog (GtkButton *b, gpointer udata)
 {
   installer_t     *installer = udata;
   char            *fn = NULL;
-  uiutilsselect_t selectdata;
+  uiselect_t selectdata;
   char            tbuff [100];
 
   /* CONTEXT: installer: label for entry field for BDJ3 location */
   snprintf (tbuff, sizeof (tbuff), _("Select %s Location"), BDJ3_NAME);
   selectdata.label = tbuff;
   selectdata.window = installer->window;
-  selectdata.startpath = uiutilsEntryGetValue (&installer->bdj3locEntry);
-  fn = uiutilsSelectDirDialog (&selectdata);
+  selectdata.startpath = uiEntryGetValue (&installer->bdj3locEntry);
+  fn = uiSelectDirDialog (&selectdata);
   if (fn != NULL) {
     if (installer->bdj3loc != NULL && installer->freebdj3loc) {
       free (installer->bdj3loc);
     }
     installer->bdj3loc = fn;
     installer->freebdj3loc = true;
-    uiutilsEntrySetValue (&installer->bdj3locEntry, fn);
+    uiEntrySetValue (&installer->bdj3locEntry, fn);
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected loc: %s", installer->bdj3loc);
   }
 }
@@ -926,11 +926,11 @@ installerDisplayConvert (installer_t *installer)
   if (nval) {
     /* CONTEXT: installer: message indicating the conversion action that will be taken */
     tptr = _("Conversion will be processed");
-    uiutilsLabelSetText (installer->convFeedbackMsg, tptr);
+    uiLabelSetText (installer->convFeedbackMsg, tptr);
   } else {
     /* CONTEXT: installer: message indicating the conversion action that will be taken */
     tptr = _("No conversion.");
-    uiutilsLabelSetText (installer->convFeedbackMsg, tptr);
+    uiLabelSetText (installer->convFeedbackMsg, tptr);
   }
 }
 
@@ -979,13 +979,13 @@ installerSetPaths (installer_t *installer)
   if (installer->target != NULL && installer->freetarget) {
     free (installer->target);
   }
-  installer->target = strdup (uiutilsEntryGetValue (&installer->targetEntry));
+  installer->target = strdup (uiEntryGetValue (&installer->targetEntry));
   installer->freetarget = true;
 
   if (installer->bdj3loc != NULL && installer->freebdj3loc) {
     free (installer->bdj3loc);
   }
-  installer->bdj3loc = strdup (uiutilsEntryGetValue (&installer->bdj3locEntry));
+  installer->bdj3loc = strdup (uiEntryGetValue (&installer->bdj3locEntry));
   installer->freebdj3loc = true;
 }
 
@@ -1079,7 +1079,7 @@ installerInstInit (installer_t *installer)
 
       /* do not allow an overwrite of an existing directory that is not bdj4 */
       if (installer->guienabled) {
-        uiutilsLabelSetText (installer->feedbackMsg, _("Folder already exists."));
+        uiLabelSetText (installer->feedbackMsg, _("Folder already exists."));
       }
 
       /* CONTEXT: installer: command line interface: the selected folder exists and is not a BDJ4 installation */
@@ -2228,14 +2228,14 @@ installerCheckPackages (installer_t *installer)
     /* CONTEXT: installer: display of package status */
     snprintf (tbuff, sizeof (tbuff), _("%s is installed"), "VLC");
     if (installer->vlcMsg != NULL) {
-      uiutilsLabelSetText (installer->vlcMsg, tbuff);
+      uiLabelSetText (installer->vlcMsg, tbuff);
     }
     installer->vlcinstalled = true;
   } else {
     /* CONTEXT: installer: display of package status */
     snprintf (tbuff, sizeof (tbuff), _("%s is not installed"), "VLC");
     if (installer->vlcMsg != NULL) {
-      uiutilsLabelSetText (installer->vlcMsg, tbuff);
+      uiLabelSetText (installer->vlcMsg, tbuff);
     }
     installer->vlcinstalled = false;
   }
@@ -2246,19 +2246,19 @@ installerCheckPackages (installer_t *installer)
     /* CONTEXT: installer: display of package status */
     snprintf (tbuff, sizeof (tbuff), _("%s is installed"), "Python");
     if (installer->pythonMsg != NULL) {
-      uiutilsLabelSetText (installer->pythonMsg, tbuff);
+      uiLabelSetText (installer->pythonMsg, tbuff);
     }
     installer->pythoninstalled = true;
   } else {
     /* CONTEXT: installer: display of package status */
     snprintf (tbuff, sizeof (tbuff), _("%s is not installed"), "Python");
     if (installer->pythonMsg != NULL) {
-      uiutilsLabelSetText (installer->pythonMsg, tbuff);
+      uiLabelSetText (installer->pythonMsg, tbuff);
     }
     /* CONTEXT: installer: display of package status */
     snprintf (tbuff, sizeof (tbuff), _("%s is not installed"), "Mutagen");
     if (installer->mutagenMsg != NULL) {
-      uiutilsLabelSetText (installer->mutagenMsg, tbuff);
+      uiLabelSetText (installer->mutagenMsg, tbuff);
     }
     installer->pythoninstalled = false;
   }
@@ -2269,13 +2269,13 @@ installerCheckPackages (installer_t *installer)
       /* CONTEXT: installer: display of package status */
       snprintf (tbuff, sizeof (tbuff), _("%s is installed"), "Mutagen");
       if (installer->mutagenMsg != NULL) {
-        uiutilsLabelSetText (installer->mutagenMsg, tbuff);
+        uiLabelSetText (installer->mutagenMsg, tbuff);
       }
     } else {
       /* CONTEXT: installer: display of package status */
       snprintf (tbuff, sizeof (tbuff), _("%s is not installed"), "Mutagen");
       if (installer->mutagenMsg != NULL) {
-        uiutilsLabelSetText (installer->mutagenMsg, tbuff);
+        uiLabelSetText (installer->mutagenMsg, tbuff);
       }
     }
   }

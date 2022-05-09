@@ -212,9 +212,9 @@ main (int argc, char *argv[])
   progstateSetCallback (plui.progstate, STATE_CLOSING,
       pluiClosingCallback, &plui);
 
-  uiutilsUIInitialize ();
+  uiUIInitialize ();
   uifont = bdjoptGetStr (OPT_MP_UIFONT);
-  uiutilsSetUIFont (uifont);
+  uiSetUIFont (uifont);
 
   pluiBuildUI (&plui);
   sockhMainLoop (listenPort, pluiProcessMsg, pluiMainLoop, &plui);
@@ -236,10 +236,10 @@ pluiStoppingCallback (void *udata, programstate_t programState)
   logProcBegin (LOG_PROC, "pluiStoppingCallback");
   connSendMessage (plui->conn, ROUTE_STARTERUI, MSG_STOP_MAIN, NULL);
 
-  uiutilsWindowGetSize (plui->window, &x, &y);
+  uiWindowGetSize (plui->window, &x, &y);
   nlistSetNum (plui->options, PLUI_SIZE_X, x);
   nlistSetNum (plui->options, PLUI_SIZE_Y, y);
-  uiutilsWindowGetPosition (plui->window, &x, &y);
+  uiWindowGetPosition (plui->window, &x, &y);
   nlistSetNum (plui->options, PLUI_POSITION_X, x);
   nlistSetNum (plui->options, PLUI_POSITION_Y, y);
 
@@ -280,7 +280,7 @@ pluiClosingCallback (void *udata, programstate_t programState)
 
   logProcBegin (LOG_PROC, "pluiClosingCallback");
 
-  uiutilsCloseWindow (plui->window);
+  uiCloseWindow (plui->window);
 
   pathbldMakePath (fn, sizeof (fn),
       "playerui", BDJ4_CONFIG_EXT, PATHBLD_MP_USEIDX);
@@ -307,7 +307,7 @@ pluiClosingCallback (void *udata, programstate_t programState)
   uiplayerFree (plui->uiplayer);
   uimusicqFree (plui->uimusicq);
   uisongselFree (plui->uisongsel);
-  uiutilsCleanup ();
+  uiCleanup ();
 
   logProcEnd (LOG_PROC, "pluiClosingCallback", "");
   return true;
@@ -343,109 +343,109 @@ pluiBuildUI (playerui_t *plui)
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", ".svg", PATHBLD_MP_IMGDIR);
-  plui->window = uiutilsCreateMainWindow (
+  plui->window = uiCreateMainWindow (
       bdjoptGetStr (OPT_P_PROFILENAME), imgbuff,
       pluiCloseWin, plui);
 
-  plui->vbox = uiutilsCreateVertBox ();
-  uiutilsBoxPackInWindow (plui->window, plui->vbox);
-  uiutilsWidgetSetAllMargins (plui->vbox, uiutilsBaseMarginSz * 2);
+  plui->vbox = uiCreateVertBox ();
+  uiBoxPackInWindow (plui->window, plui->vbox);
+  uiWidgetSetAllMargins (plui->vbox, uiBaseMarginSz * 2);
 
   /* menu */
-  hbox = uiutilsCreateHorizBox ();
-  uiutilsWidgetExpandHoriz (hbox);
-  uiutilsBoxPackStart (plui->vbox, hbox);
+  hbox = uiCreateHorizBox ();
+  uiWidgetExpandHoriz (hbox);
+  uiBoxPackStart (plui->vbox, hbox);
 
-  menubar = uiutilsCreateMenubar ();
-  uiutilsBoxPackStart (hbox, menubar);
+  menubar = uiCreateMenubar ();
+  uiBoxPackStart (hbox, menubar);
 
-  plui->clock = uiutilsCreateLabel ("");
-  uiutilsBoxPackEnd (hbox, plui->clock);
+  plui->clock = uiCreateLabel ("");
+  uiBoxPackEnd (hbox, plui->clock);
   snprintf (tbuff, sizeof (tbuff),
       "label { color: shade(%s,0.6); }",
       bdjoptGetStr (OPT_P_UI_ACCENT_COL));
-  uiutilsSetCss (plui->clock, tbuff);
+  uiSetCss (plui->clock, tbuff);
 
   /* CONTEXT: menu selection: options for the player */
-  menuitem = uiutilsMenuCreateItem (menubar, _("Options"), NULL, NULL);
+  menuitem = uiMenuCreateItem (menubar, _("Options"), NULL, NULL);
 
-  menu = uiutilsCreateSubMenu (menuitem);
+  menu = uiCreateSubMenu (menuitem);
 
   /* CONTEXT: menu checkbox: start playback when a dance or playlist is queued */
-  menuitem = uiutilsMenuCreateCheckbox (menu, _("Play When Queued"),
+  menuitem = uiMenuCreateCheckbox (menu, _("Play When Queued"),
       nlistGetNum (plui->options, PLUI_PLAY_WHEN_QUEUED),
       pluiTogglePlayWhenQueued, plui);
 
   /* CONTEXT: menu checkbox: show the extra queues (in addition to the main music queue) */
-  menuitem = uiutilsMenuCreateCheckbox (menu, _("Show Extra Queues"),
+  menuitem = uiMenuCreateCheckbox (menu, _("Show Extra Queues"),
       nlistGetNum (plui->options, PLUI_SHOW_EXTRA_QUEUES),
       pluiToggleExtraQueues, plui);
 
   /* CONTEXT: menu checkbox: when a queue is emptied, switch playback to the other queue */
-  menuitem = uiutilsMenuCreateCheckbox (menu, _("Switch Queue When Empty"),
+  menuitem = uiMenuCreateCheckbox (menu, _("Switch Queue When Empty"),
       nlistGetNum (plui->options, PLUI_SWITCH_QUEUE_WHEN_EMPTY),
       pluiToggleSwitchQueue, plui);
 
   /* CONTEXT: menu selection: marquee related options */
-  menuitem = uiutilsMenuCreateItem (menubar, _("Marquee"), NULL, NULL);
+  menuitem = uiMenuCreateItem (menubar, _("Marquee"), NULL, NULL);
 
-  menu = uiutilsCreateSubMenu (menuitem);
+  menu = uiCreateSubMenu (menuitem);
 
   /* CONTEXT: menu selection: marquee: change the marquee font size */
-  menuitem = uiutilsMenuCreateItem (menu, _("Font Size"),
+  menuitem = uiMenuCreateItem (menu, _("Font Size"),
       pluiMarqueeFontSizeDialog, plui);
 
   /* player */
   widget = uiplayerBuildUI (plui->uiplayer);
-  uiutilsWidgetExpandHoriz (widget);
-  uiutilsBoxPackStart (plui->vbox, widget);
+  uiWidgetExpandHoriz (widget);
+  uiBoxPackStart (plui->vbox, widget);
 
-  plui->notebook = uiutilsCreateNotebook ();
-  uiutilsBoxPackStartExpand (plui->vbox, plui->notebook);
+  plui->notebook = uiCreateNotebook ();
+  uiBoxPackStartExpand (plui->vbox, plui->notebook);
   g_signal_connect (plui->notebook, "switch-page", G_CALLBACK (pluiSwitchPage), plui);
 
   widget = gtk_button_new ();
   assert (widget != NULL);
   gtk_button_set_label (GTK_BUTTON (widget), "Set Queue for Playback");
-  uiutilsWidgetSetMarginStart (widget, uiutilsBaseMarginSz);
-  uiutilsNotebookSetActionWidget (plui->notebook, widget, GTK_PACK_END);
-  uiutilsWidgetShowAll (widget);
+  uiWidgetSetMarginStart (widget, uiBaseMarginSz);
+  uiNotebookSetActionWidget (plui->notebook, widget, GTK_PACK_END);
+  uiWidgetShowAll (widget);
   g_signal_connect (widget, "clicked", G_CALLBACK (pluiProcessSetPlaybackQueue), plui);
   plui->setPlaybackButton = widget;
 
   for (musicqidx_t i = 0; i < MUSICQ_MAX; ++i) {
     /* music queue tab */
     widget = uimusicqBuildUI (plui->uimusicq, plui->window, i);
-    hbox = uiutilsCreateHorizBox ();
+    hbox = uiCreateHorizBox ();
     str = bdjoptGetStr (OPT_P_QUEUE_NAME_A + i);
     tabLabel = gtk_label_new (str);
-    uiutilsBoxPackStart (hbox, tabLabel);
+    uiBoxPackStart (hbox, tabLabel);
     plui->musicqImage [i] = gtk_image_new ();
     gtk_image_set_from_pixbuf (GTK_IMAGE (plui->musicqImage [i]), plui->ledonImg);
-    uiutilsWidgetSetMarginStart (plui->musicqImage [i], uiutilsBaseMarginSz);
-    uiutilsBoxPackStart (hbox, plui->musicqImage [i]);
+    uiWidgetSetMarginStart (plui->musicqImage [i], uiBaseMarginSz);
+    uiBoxPackStart (hbox, plui->musicqImage [i]);
 
-    uiutilsNotebookAppendPage (plui->notebook, widget, hbox);
+    uiNotebookAppendPage (plui->notebook, widget, hbox);
     uiutilsNotebookIDAdd (plui->nbtabid, UI_TAB_MUSICQ);
-    uiutilsWidgetShowAll (hbox);
+    uiWidgetShowAll (hbox);
   }
 
   /* request tab */
   widget = uisongselBuildUI (plui->uisongsel, plui->window);
   /* CONTEXT: name of request tab */
   tabLabel = gtk_label_new (_("Request"));
-  uiutilsNotebookAppendPage (plui->notebook, widget, tabLabel);
+  uiNotebookAppendPage (plui->notebook, widget, tabLabel);
   uiutilsNotebookIDAdd (plui->nbtabid, UI_TAB_SONGSEL);
 
   x = nlistGetNum (plui->options, PLUI_SIZE_X);
   y = nlistGetNum (plui->options, PLUI_SIZE_Y);
-  uiutilsWindowSetDefaultSize (plui->window, x, y);
+  uiWindowSetDefaultSize (plui->window, x, y);
 
-  uiutilsWidgetShowAll (plui->window);
+  uiWidgetShowAll (plui->window);
 
   x = nlistGetNum (plui->options, PLUI_POSITION_X);
   y = nlistGetNum (plui->options, PLUI_POSITION_Y);
-  uiutilsWindowMove (plui->window, x, y);
+  uiWindowMove (plui->window, x, y);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", ".png", PATHBLD_MP_IMGDIR);
@@ -461,7 +461,7 @@ pluiMainLoop (void *tplui)
   int         stop = FALSE;
 
   if (! stop) {
-    uiutilsUIProcessEvents ();
+    uiUIProcessEvents ();
   }
 
   if (! progstateIsRunning (plui->progstate)) {
@@ -515,7 +515,7 @@ pluiClock (playerui_t *plui)
   char        tbuff [100];
 
   if (plui->clock != NULL) {
-    uiutilsLabelSetText (plui->clock, tmutilDisp (tbuff, sizeof (tbuff)));
+    uiLabelSetText (plui->clock, tmutilDisp (tbuff, sizeof (tbuff)));
     mstimeset (&plui->clockCheck, 1000);
   }
 }
@@ -711,12 +711,12 @@ pluiSetSwitchPage (playerui_t *plui, int pagenum)
   page = gtk_notebook_get_nth_page (GTK_NOTEBOOK (plui->notebook), pagenum);
   tabid = uiutilsNotebookIDGet (plui->nbtabid, pagenum);
 
-  uiutilsWidgetHide (plui->setPlaybackButton);
+  uiWidgetHide (plui->setPlaybackButton);
   if (tabid == UI_TAB_MUSICQ) {
     plui->musicqManageIdx = pagenum;
     uimusicqSetManageIdx (plui->uimusicq, pagenum);
     if (nlistGetNum (plui->options, PLUI_SHOW_EXTRA_QUEUES)) {
-      uiutilsWidgetShow (plui->setPlaybackButton);
+      uiWidgetShow (plui->setPlaybackButton);
     }
   }
   logProcEnd (LOG_PROC, "pluiSetSwitchPage", "");
@@ -824,9 +824,9 @@ pluiSetExtraQueues (playerui_t *plui)
   tabid = uiutilsNotebookIDGet (plui->nbtabid, pagenum);
   if (tabid == UI_TAB_MUSICQ &&
       nlistGetNum (plui->options, PLUI_SHOW_EXTRA_QUEUES)) {
-    uiutilsWidgetShow (plui->setPlaybackButton);
+    uiWidgetShow (plui->setPlaybackButton);
   } else {
-    uiutilsWidgetHide (plui->setPlaybackButton);
+    uiWidgetHide (plui->setPlaybackButton);
   }
   logProcEnd (LOG_PROC, "pluiSetExtraQueues", "");
 }
@@ -880,7 +880,7 @@ pluiMarqueeFontSizeDialog (GtkMenuItem *mi, gpointer udata)
       GTK_SPIN_BUTTON (plui->marqueeSpinBox));
   gtk_adjustment_set_value (adjustment, (double) sz);
 
-  uiutilsWidgetShowAll (plui->marqueeFontSizeDialog);
+  uiWidgetShowAll (plui->marqueeFontSizeDialog);
 
   logProcEnd (LOG_PROC, "pluiMarqueeFontSizeDialog", "");
 }
@@ -910,32 +910,32 @@ pluiCreateMarqueeFontSizeDialog (playerui_t *plui)
 
   content = gtk_dialog_get_content_area (GTK_DIALOG (plui->marqueeFontSizeDialog));
 
-  vbox = uiutilsCreateVertBox ();
+  vbox = uiCreateVertBox ();
   assert (vbox != NULL);
-  uiutilsBoxPackInWindow (content, vbox);
+  uiBoxPackInWindow (content, vbox);
 
-  hbox = uiutilsCreateHorizBox ();
+  hbox = uiCreateHorizBox ();
   assert (hbox != NULL);
-  uiutilsBoxPackStart (vbox, hbox);
+  uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: marquee font size dialog: the font size selector */
-  widget = uiutilsCreateColonLabel (_("Font Size"));
-  uiutilsBoxPackStart (hbox, widget);
+  widget = uiCreateColonLabel (_("Font Size"));
+  uiBoxPackStart (hbox, widget);
 
-  plui->marqueeSpinBox = uiutilsSpinboxIntCreate ();
-  uiutilsSpinboxSet (plui->marqueeSpinBox, 10.0, 300.0);
-  uiutilsSpinboxSetValue (plui->marqueeSpinBox, 36.0);
-  uiutilsBoxPackStart (hbox, plui->marqueeSpinBox);
+  plui->marqueeSpinBox = uiSpinboxIntCreate ();
+  uiSpinboxSet (plui->marqueeSpinBox, 10.0, 300.0);
+  uiSpinboxSetValue (plui->marqueeSpinBox, 36.0);
+  uiBoxPackStart (hbox, plui->marqueeSpinBox);
   g_signal_connect (plui->marqueeSpinBox, "value-changed",
       G_CALLBACK (pluiMarqueeFontSizeChg), plui);
 
   /* the dialog doesn't have any space above the buttons */
-  hbox = uiutilsCreateHorizBox ();
+  hbox = uiCreateHorizBox ();
   assert (hbox != NULL);
-  uiutilsBoxPackStart (vbox, hbox);
+  uiBoxPackStart (vbox, hbox);
 
-  widget = uiutilsCreateLabel ("");
-  uiutilsBoxPackStart (hbox, widget);
+  widget = uiCreateLabel ("");
+  uiBoxPackStart (hbox, widget);
 
   g_signal_connect (plui->marqueeFontSizeDialog, "response",
       G_CALLBACK (pluiMarqueeFontSizeDialogResponse), plui);
@@ -953,7 +953,7 @@ pluiMarqueeFontSizeDialogResponse (GtkDialog *d, gint responseid, gpointer udata
       break;
     }
     case GTK_RESPONSE_CLOSE: {
-      uiutilsWidgetHide (plui->marqueeFontSizeDialog);
+      uiWidgetHide (plui->marqueeFontSizeDialog);
       break;
     }
   }

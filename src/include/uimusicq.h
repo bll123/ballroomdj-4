@@ -32,9 +32,9 @@ typedef struct {
   guint             repeatTimer;
   /* music queue tab */
   GtkWidget         *box;
-  uiutilsdropdown_t dancesel;
-  uiutilsdropdown_t playlistsel;
-  uiutilsentry_t    slname;
+  uidropdown_t dancesel;
+  uidropdown_t playlistsel;
+  uientry_t    slname;
   /* tree views */
   GtkWidget         *musicqTree;
   GtkTreeSelection  *sel;

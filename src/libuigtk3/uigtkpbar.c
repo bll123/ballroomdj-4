@@ -15,7 +15,7 @@
 #include "uiutils.h"
 
 GtkWidget *
-uiutilsCreateProgressBar (char *color)
+uiCreateProgressBar (char *color)
 {
   GtkWidget *widget;
   char      tbuff [200];
@@ -23,17 +23,17 @@ uiutilsCreateProgressBar (char *color)
   widget = gtk_progress_bar_new ();
   gtk_widget_set_halign (widget, GTK_ALIGN_FILL);
   gtk_widget_set_hexpand (widget, TRUE);
-  gtk_widget_set_margin_start (widget, uiutilsBaseMarginSz);
-  gtk_widget_set_margin_top (widget, uiutilsBaseMarginSz);
+  gtk_widget_set_margin_start (widget, uiBaseMarginSz);
+  gtk_widget_set_margin_top (widget, uiBaseMarginSz);
   snprintf (tbuff, sizeof (tbuff),
       "progress, trough { min-height: 25px; } progressbar > trough > progress { background-color: %s; }",
       color);
-  uiutilsSetCss (widget, tbuff);
+  uiSetCss (widget, tbuff);
   return widget;
 }
 
 void
-uiutilsProgressBarSet (GtkWidget *pb, double val)
+uiProgressBarSet (GtkWidget *pb, double val)
 {
   gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (pb), val);
 }

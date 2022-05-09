@@ -94,15 +94,15 @@ typedef struct {
   nlist_t         *proflist;
   UIWidget        buttons [START_BUTTON_MAX];
   /* gtk stuff */
-  uiutilsspinbox_t  profilesel;
+  uispinbox_t  profilesel;
   GtkWidget         *window;
   GtkWidget         *supportDialog;
   GtkWidget         *supportSendFiles;
   GtkWidget         *supportSendDB;
   GtkWidget         *supportStatus;
-  uiutilstextbox_t  *supporttb;
-  uiutilsentry_t    supportsubject;
-  uiutilsentry_t    supportemail;
+  uitextbox_t  *supporttb;
+  uientry_t    supportsubject;
+  uientry_t    supportemail;
   GtkWidget         *playeruibutton;
   GtkWidget         *manageuibutton;
   /* options */
@@ -213,7 +213,7 @@ main (int argc, char *argv[])
   bdj4startup (argc, argv, NULL, "st", ROUTE_STARTERUI, flags);
   logProcBegin (LOG_PROC, "starterui");
 
-  uiutilsSpinboxTextInit (&starter.profilesel);
+  uiSpinboxTextInit (&starter.profilesel);
 
   listenPort = bdjvarsGetNum (BDJVL_STARTERUI_PORT);
   starter.conn = connInit (ROUTE_STARTERUI);
@@ -232,9 +232,9 @@ main (int argc, char *argv[])
     nlistSetNum (starter.options, STARTERUI_SIZE_Y, 800);
   }
 
-  uiutilsUIInitialize ();
+  uiUIInitialize ();
   uifont = bdjoptGetStr (OPT_MP_UIFONT);
-  uiutilsSetUIFont (uifont);
+  uiSetUIFont (uifont);
 
   starterBuildUI (&starter);
   sockhMainLoop (listenPort, starterProcessMsg, starterMainLoop, &starter);
@@ -273,10 +273,10 @@ starterStoppingCallback (void *udata, programstate_t programState)
     connConnect (starter->conn, ROUTE_CONFIGUI);
   }
 
-  uiutilsWindowGetSize (starter->window, &x, &y);
+  uiWindowGetSize (starter->window, &x, &y);
   nlistSetNum (starter->options, STARTERUI_SIZE_X, x);
   nlistSetNum (starter->options, STARTERUI_SIZE_Y, y);
-  uiutilsWindowGetPosition (starter->window, &x, &y);
+  uiWindowGetPosition (starter->window, &x, &y);
   nlistSetNum (starter->options, STARTERUI_POSITION_X, x);
   nlistSetNum (starter->options, STARTERUI_POSITION_Y, y);
 
@@ -316,7 +316,7 @@ starterClosingCallback (void *udata, programstate_t programState)
   char        fn [MAXPATHLEN];
 
   logProcBegin (LOG_PROC, "starterClosingCallback");
-  uiutilsCloseWindow (starter->window);
+  uiCloseWindow (starter->window);
 
   procutilStopAllProcess (starter->processes, starter->conn, true);
   procutilFreeAll (starter->processes);
@@ -324,9 +324,9 @@ starterClosingCallback (void *udata, programstate_t programState)
   bdj4shutdown (ROUTE_STARTERUI, NULL);
 
   if (starter->supporttb != NULL) {
-    uiutilsTextBoxFree (starter->supporttb);
+    uiTextBoxFree (starter->supporttb);
   }
-  uiutilsSpinboxTextFree (&starter->profilesel);
+  uiSpinboxTextFree (&starter->profilesel);
 
   pathbldMakePath (fn, sizeof (fn),
       "starterui", BDJ4_CONFIG_EXT, PATHBLD_MP_USEIDX);
@@ -367,58 +367,58 @@ starterBuildUI (startui_t  *starter)
   int                 x, y;
 
   logProcBegin (LOG_PROC, "starterBuildUI");
-  uiutilsCreateSizeGroupHoriz (&sg);
+  uiCreateSizeGroupHoriz (&sg);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", ".svg", PATHBLD_MP_IMGDIR);
-  starter->window = uiutilsCreateMainWindow (BDJ4_LONG_NAME, imgbuff,
+  starter->window = uiCreateMainWindow (BDJ4_LONG_NAME, imgbuff,
       starterCloseWin, starter);
 
-  vbox = uiutilsCreateVertBox ();
-  uiutilsWidgetSetAllMargins (vbox, uiutilsBaseMarginSz * 2);
-  uiutilsBoxPackInWindow (starter->window, vbox);
+  vbox = uiCreateVertBox ();
+  uiWidgetSetAllMargins (vbox, uiBaseMarginSz * 2);
+  uiBoxPackInWindow (starter->window, vbox);
 
-  hbox = uiutilsCreateHorizBox ();
-  uiutilsWidgetSetMarginTop (hbox, uiutilsBaseMarginSz * 4);
-  uiutilsBoxPackStart (vbox, hbox);
+  hbox = uiCreateHorizBox ();
+  uiWidgetSetMarginTop (hbox, uiBaseMarginSz * 4);
+  uiBoxPackStart (vbox, hbox);
 
-  menubar = uiutilsCreateMenubar ();
-  uiutilsBoxPackStart (hbox, menubar);
+  menubar = uiCreateMenubar ();
+  uiBoxPackStart (hbox, menubar);
 
-  menuitem = uiutilsMenuCreateItem (menubar, _("Actions"), NULL, NULL);
+  menuitem = uiMenuCreateItem (menubar, _("Actions"), NULL, NULL);
 
-  menu = uiutilsCreateSubMenu (menuitem);
+  menu = uiCreateSubMenu (menuitem);
 
   snprintf (tbuff, sizeof (tbuff), _("Stop All %s Processes"), BDJ4_NAME);
-  menuitem = uiutilsMenuCreateItem (menu, tbuff,
+  menuitem = uiMenuCreateItem (menu, tbuff,
       starterStopAllProcesses, starter);
 
   /* main display */
-  hbox = uiutilsCreateHorizBox ();
-  uiutilsWidgetSetMarginTop (hbox, uiutilsBaseMarginSz * 4);
-  uiutilsBoxPackStart (vbox, hbox);
+  hbox = uiCreateHorizBox ();
+  uiWidgetSetMarginTop (hbox, uiBaseMarginSz * 4);
+  uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: starter: profile to be used when starting BDJ4 */
-  widget = uiutilsCreateColonLabel (_("Profile"));
+  widget = uiCreateColonLabel (_("Profile"));
   gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
-  uiutilsBoxPackStart (hbox, widget);
+  uiBoxPackStart (hbox, widget);
 
   /* get the profile list after bdjopt has been initialized */
   starter->proflist = starterGetProfiles (starter);
-  widget = uiutilsSpinboxTextCreate (&starter->profilesel, starter);
-  uiutilsSpinboxTextSet (&starter->profilesel, starter->currprofile,
+  widget = uiSpinboxTextCreate (&starter->profilesel, starter);
+  uiSpinboxTextSet (&starter->profilesel, starter->currprofile,
       nlistGetCount (starter->proflist), starter->maxProfileWidth,
       starter->proflist, starterSetProfile);
-  uiutilsWidgetSetMarginStart (widget, uiutilsBaseMarginSz * 4);
-  uiutilsWidgetAlignHorizFill (widget);
-  uiutilsBoxPackStart (hbox, widget);
+  uiWidgetSetMarginStart (widget, uiBaseMarginSz * 4);
+  uiWidgetAlignHorizFill (widget);
+  uiBoxPackStart (hbox, widget);
 
-  hbox = uiutilsCreateHorizBox ();
-  uiutilsWidgetExpandHoriz (hbox);
-  uiutilsBoxPackStart (vbox, hbox);
+  hbox = uiCreateHorizBox ();
+  uiWidgetExpandHoriz (hbox);
+  uiBoxPackStart (vbox, hbox);
 
-  bvbox = uiutilsCreateVertBox ();
-  uiutilsBoxPackStart (hbox, bvbox);
+  bvbox = uiCreateVertBox ();
+  uiBoxPackStart (hbox, bvbox);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
      "bdj4_icon", ".svg", PATHBLD_MP_IMGDIR);
@@ -426,82 +426,82 @@ starterBuildUI (startui_t  *starter)
   assert (image != NULL);
   widget = gtk_image_new_from_pixbuf (image);
   assert (widget != NULL);
-  uiutilsWidgetExpandHoriz (widget);
-  uiutilsWidgetSetAllMargins (widget, uiutilsBaseMarginSz * 10);
-  uiutilsBoxPackStart (hbox, widget);
+  uiWidgetExpandHoriz (widget);
+  uiWidgetSetAllMargins (widget, uiBaseMarginSz * 10);
+  uiBoxPackStart (hbox, widget);
 
   /* CONTEXT: button: starts the player user interface */
-  widget = uiutilsCreateButton (&starter->buttons [START_BUTTON_PLAYER],
+  widget = uiCreateButton (&starter->buttons [START_BUTTON_PLAYER],
       _("Player"), NULL, starterStartPlayerui, starter);
-  uiutilsWidgetSetMarginTop (widget, uiutilsBaseMarginSz * 2);
-  uiutilsWidgetAlignHorizStart (widget);
-  uiutilsSizeGroupAdd (&sg, widget);
+  uiWidgetSetMarginTop (widget, uiBaseMarginSz * 2);
+  uiWidgetAlignHorizStart (widget);
+  uiSizeGroupAdd (&sg, widget);
   starter->playeruibutton = widget;
-  uiutilsBoxPackStart (bvbox, widget);
+  uiBoxPackStart (bvbox, widget);
   widget = gtk_bin_get_child (GTK_BIN (widget));
   gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
 
   /* CONTEXT: button: starts the management user interface */
-  widget = uiutilsCreateButton (&starter->buttons [START_BUTTON_MANAGE],
+  widget = uiCreateButton (&starter->buttons [START_BUTTON_MANAGE],
       _("Manage"), NULL, starterStartManageui, starter);
-  uiutilsWidgetSetMarginTop (widget, uiutilsBaseMarginSz * 2);
-  uiutilsWidgetAlignHorizStart (widget);
-  uiutilsSizeGroupAdd (&sg, widget);
+  uiWidgetSetMarginTop (widget, uiBaseMarginSz * 2);
+  uiWidgetAlignHorizStart (widget);
+  uiSizeGroupAdd (&sg, widget);
   starter->manageuibutton = widget;
-  uiutilsBoxPackStart (bvbox, widget);
+  uiBoxPackStart (bvbox, widget);
   widget = gtk_bin_get_child (GTK_BIN (widget));
   gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
 
   /* CONTEXT: button: starts the configuration user interface */
-  widget = uiutilsCreateButton (&starter->buttons [START_BUTTON_CONFIG],
+  widget = uiCreateButton (&starter->buttons [START_BUTTON_CONFIG],
       _("Configure"), NULL, starterStartConfig, starter);
-  uiutilsWidgetSetMarginTop (widget, uiutilsBaseMarginSz * 2);
-  uiutilsWidgetAlignHorizStart (widget);
-  uiutilsSizeGroupAdd (&sg, widget);
-  uiutilsBoxPackStart (bvbox, widget);
+  uiWidgetSetMarginTop (widget, uiBaseMarginSz * 2);
+  uiWidgetAlignHorizStart (widget);
+  uiSizeGroupAdd (&sg, widget);
+  uiBoxPackStart (bvbox, widget);
   widget = gtk_bin_get_child (GTK_BIN (widget));
   gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
 
   /* CONTEXT: button: support : starts raffle games  */
-  widget = uiutilsCreateButton (&starter->buttons [START_BUTTON_RAFFLE],
+  widget = uiCreateButton (&starter->buttons [START_BUTTON_RAFFLE],
       _("Raffle Games"), NULL, starterStartRaffleGames, starter);
-  uiutilsWidgetDisable (widget);
-  uiutilsWidgetSetMarginTop (widget, uiutilsBaseMarginSz * 2);
-  uiutilsWidgetAlignHorizStart (widget);
-  uiutilsSizeGroupAdd (&sg, widget);
-  uiutilsBoxPackStart (bvbox, widget);
+  uiWidgetDisable (widget);
+  uiWidgetSetMarginTop (widget, uiBaseMarginSz * 2);
+  uiWidgetAlignHorizStart (widget);
+  uiSizeGroupAdd (&sg, widget);
+  uiBoxPackStart (bvbox, widget);
   widget = gtk_bin_get_child (GTK_BIN (widget));
   gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
 
   /* CONTEXT: button: support : support information */
-  widget = uiutilsCreateButton (&starter->buttons [START_BUTTON_SUPPORT],
+  widget = uiCreateButton (&starter->buttons [START_BUTTON_SUPPORT],
       _("Support"), NULL, starterProcessSupport, starter);
-  uiutilsWidgetSetMarginTop (widget, uiutilsBaseMarginSz * 2);
-  uiutilsWidgetAlignHorizStart (widget);
-  uiutilsSizeGroupAdd (&sg, widget);
-  uiutilsBoxPackStart (bvbox, widget);
+  uiWidgetSetMarginTop (widget, uiBaseMarginSz * 2);
+  uiWidgetAlignHorizStart (widget);
+  uiSizeGroupAdd (&sg, widget);
+  uiBoxPackStart (bvbox, widget);
   widget = gtk_bin_get_child (GTK_BIN (widget));
   gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
 
   /* CONTEXT: button: exits BDJ4 */
-  widget = uiutilsCreateButton (&starter->buttons [START_BUTTON_EXIT],
+  widget = uiCreateButton (&starter->buttons [START_BUTTON_EXIT],
       _("Exit"), NULL, starterProcessExit, starter);
-  uiutilsWidgetSetMarginTop (widget, uiutilsBaseMarginSz * 2);
-  uiutilsWidgetAlignHorizStart (widget);
-  uiutilsSizeGroupAdd (&sg, widget);
-  uiutilsBoxPackStart (bvbox, widget);
+  uiWidgetSetMarginTop (widget, uiBaseMarginSz * 2);
+  uiWidgetAlignHorizStart (widget);
+  uiSizeGroupAdd (&sg, widget);
+  uiBoxPackStart (bvbox, widget);
   widget = gtk_bin_get_child (GTK_BIN (widget));
   gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
 
   x = nlistGetNum (starter->options, STARTERUI_POSITION_X);
   y = nlistGetNum (starter->options, STARTERUI_POSITION_Y);
-  uiutilsWindowMove (starter->window, x, y);
+  uiWindowMove (starter->window, x, y);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", ".png", PATHBLD_MP_IMGDIR);
   osuiSetIcon (imgbuff);
 
-  uiutilsWidgetShowAll (starter->window);
+  uiWidgetShowAll (starter->window);
   logProcEnd (LOG_PROC, "starterBuildUI", "");
 }
 
@@ -516,7 +516,7 @@ starterMainLoop (void *tstarter)
 
 
   if (! stop) {
-    uiutilsUIProcessEvents ();
+    uiUIProcessEvents ();
   }
 
   if (! progstateIsRunning (starter->progstate)) {
@@ -565,7 +565,7 @@ starterMainLoop (void *tstarter)
       }
       /* CONTEXT: starterui: support: status message */
       snprintf (tbuff, sizeof (tbuff), _("Sending Support Message"));
-      uiutilsLabelSetText (starter->supportStatus, tbuff);
+      uiLabelSetText (starter->supportStatus, tbuff);
       starter->delayCount = 0;
       starter->delayState = START_STATE_SUPPORT_SEND_MSG;
       starter->startState = START_STATE_DELAY;
@@ -577,9 +577,9 @@ starterMainLoop (void *tstarter)
       char        *msg;
       FILE        *fh;
 
-      email = uiutilsEntryGetValue (&starter->supportemail);
-      subj = uiutilsEntryGetValue (&starter->supportsubject);
-      msg = uiutilsTextBoxGetValue (starter->supporttb);
+      email = uiEntryGetValue (&starter->supportemail);
+      subj = uiEntryGetValue (&starter->supportsubject);
+      msg = uiTextBoxGetValue (starter->supporttb);
 
       strlcpy (tbuff, "support.txt", sizeof (tbuff));
       fh = fopen (tbuff, "w");
@@ -599,7 +599,7 @@ starterMainLoop (void *tstarter)
 
       /* CONTEXT: starterui: support: status message */
       snprintf (tbuff, sizeof (tbuff), _("Sending %s Information"), BDJ4_NAME);
-      uiutilsLabelSetText (starter->supportStatus, tbuff);
+      uiLabelSetText (starter->supportStatus, tbuff);
       starter->delayCount = 0;
       starter->delayState = START_STATE_SUPPORT_SEND_INFO;
       starter->startState = START_STATE_DELAY;
@@ -679,7 +679,7 @@ starterMainLoop (void *tstarter)
       }
       /* CONTEXT: starterui: support: status message */
       snprintf (tbuff, sizeof (tbuff), _("Sending %s"), "data/musicdb.dat");
-      uiutilsLabelSetText (starter->supportStatus, tbuff);
+      uiLabelSetText (starter->supportStatus, tbuff);
       starter->delayCount = 0;
       starter->delayState = START_STATE_SUPPORT_SEND_DB;
       starter->startState = START_STATE_DELAY;
@@ -702,8 +702,8 @@ starterMainLoop (void *tstarter)
     case START_STATE_SUPPORT_FINISH: {
       webclientClose (starter->webclient);
       gtk_widget_destroy (GTK_WIDGET (starter->supportDialog));
-      uiutilsEntryFree (&starter->supportsubject);
-      uiutilsEntryFree (&starter->supportemail);
+      uiEntryFree (&starter->supportsubject);
+      uiEntryFree (&starter->supportemail);
       starter->startState = START_STATE_NONE;
       break;
     }
@@ -746,10 +746,10 @@ starterProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_SOCKET_CLOSE: {
           if (routefrom == ROUTE_PLAYERUI) {
-            uiutilsWidgetEnable (starter->manageuibutton);
+            uiWidgetEnable (starter->manageuibutton);
           }
           if (routefrom == ROUTE_MANAGEUI) {
-            uiutilsWidgetEnable (starter->playeruibutton);
+            uiWidgetEnable (starter->playeruibutton);
           }
           procutilCloseProcess (starter->processes [routefrom],
               starter->conn, routefrom);
@@ -858,7 +858,7 @@ starterStartPlayerui (UIWidget *uiwidget, void *udata)
   starterCheckProfile (starter);
   starter->processes [ROUTE_PLAYERUI] = procutilStartProcess (
       ROUTE_PLAYERUI, "bdj4playerui", PROCUTIL_DETACH, NULL);
-  uiutilsWidgetDisable (starter->manageuibutton);
+  uiWidgetDisable (starter->manageuibutton);
 }
 
 static void
@@ -869,7 +869,7 @@ starterStartManageui (GtkButton *b, gpointer udata)
   starterCheckProfile (starter);
   starter->processes [ROUTE_MANAGEUI] = procutilStartProcess (
       ROUTE_MANAGEUI, "bdj4manageui", PROCUTIL_DETACH, NULL);
-  uiutilsWidgetDisable (starter->playeruibutton);
+  uiWidgetDisable (starter->playeruibutton);
 }
 
 static void
@@ -930,23 +930,23 @@ starterProcessSupport (GtkButton *b, gpointer udata)
       );
 
   content = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
-  uiutilsWidgetSetAllMargins (content, uiutilsBaseMarginSz * 2);
+  uiWidgetSetAllMargins (content, uiBaseMarginSz * 2);
 
-  uiutilsCreateSizeGroupHoriz (&sg);
+  uiCreateSizeGroupHoriz (&sg);
 
-  vbox = uiutilsCreateVertBox ();
+  vbox = uiCreateVertBox ();
   assert (vbox != NULL);
-  uiutilsBoxPackInWindow (content, vbox);
+  uiBoxPackInWindow (content, vbox);
 
   /* begin line */
-  hbox = uiutilsCreateHorizBox ();
-  uiutilsBoxPackStart (vbox, hbox);
+  hbox = uiCreateHorizBox ();
+  uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: starterui: basic support dialog, version display*/
   snprintf (tbuff, sizeof (tbuff), _("%s Version"), BDJ4_NAME);
-  widget = uiutilsCreateColonLabel (tbuff);
-  uiutilsBoxPackStart (hbox, widget);
-  uiutilsSizeGroupAdd (&sg, widget);
+  widget = uiCreateColonLabel (tbuff);
+  uiBoxPackStart (hbox, widget);
+  uiSizeGroupAdd (&sg, widget);
 
   builddate = sysvarsGetStr (SV_BDJ4_BUILDDATE);
   rlslvl = sysvarsGetStr (SV_BDJ4_RELEASELEVEL);
@@ -955,62 +955,62 @@ starterProcessSupport (GtkButton *b, gpointer udata)
   }
   snprintf (tbuff, sizeof (tbuff), "%s %s %s",
       sysvarsGetStr (SV_BDJ4_VERSION), builddate, rlslvl);
-  widget = uiutilsCreateLabel (tbuff);
-  uiutilsBoxPackStart (hbox, widget);
+  widget = uiCreateLabel (tbuff);
+  uiBoxPackStart (hbox, widget);
 
   /* begin line */
-  hbox = uiutilsCreateHorizBox ();
-  uiutilsBoxPackStart (vbox, hbox);
+  hbox = uiCreateHorizBox ();
+  uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: starterui: basic support dialog, latest version display*/
-  widget = uiutilsCreateColonLabel (_("Latest Version"));
-  uiutilsBoxPackStart (hbox, widget);
-  uiutilsSizeGroupAdd (&sg, widget);
+  widget = uiCreateColonLabel (_("Latest Version"));
+  uiBoxPackStart (hbox, widget);
+  uiSizeGroupAdd (&sg, widget);
 
-  widget = uiutilsCreateLabel (starter->latestversion);
-  uiutilsBoxPackStart (hbox, widget);
+  widget = uiCreateLabel (starter->latestversion);
+  uiBoxPackStart (hbox, widget);
 
   /* begin line */
   /* CONTEXT: starterui: basic support dialog, listing support options */
-  widget = uiutilsCreateColonLabel (_("Support options"));
-  uiutilsBoxPackStart (vbox, widget);
-  uiutilsSizeGroupAdd (&sg, widget);
+  widget = uiCreateColonLabel (_("Support options"));
+  uiBoxPackStart (vbox, widget);
+  uiSizeGroupAdd (&sg, widget);
 
   /* begin line */
   snprintf (uri, sizeof (uri), "%s%s",
       sysvarsGetStr (SV_FORUM_HOST), sysvarsGetStr (SV_FORUM_URI));
   /* CONTEXT: starterui: basic support dialog: support option */
   snprintf (tbuff, sizeof (tbuff), _("%s Forums"), BDJ4_NAME);
-  widget = uiutilsCreateLink (tbuff, uri);
-  uiutilsBoxPackStart (vbox, widget);
+  widget = uiCreateLink (tbuff, uri);
+  uiBoxPackStart (vbox, widget);
 
   /* begin line */
   snprintf (uri, sizeof (uri), "%s%s",
       sysvarsGetStr (SV_TICKET_HOST), sysvarsGetStr (SV_TICKET_URI));
   /* CONTEXT: starterui: basic support dialog: support option */
   snprintf (tbuff, sizeof (tbuff), _("%s Support Tickets"), BDJ4_NAME);
-  widget = uiutilsCreateLink (tbuff, uri);
-  uiutilsBoxPackStart (vbox, widget);
+  widget = uiCreateLink (tbuff, uri);
+  uiBoxPackStart (vbox, widget);
 
   /* begin line */
-  hbox = uiutilsCreateHorizBox ();
-  uiutilsBoxPackStart (vbox, hbox);
+  hbox = uiCreateHorizBox ();
+  uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: starterui: basic support dialog: button: support option */
-  widget = uiutilsCreateButton (&starter->buttons [START_BUTTON_SEND_SUPPORT],
+  widget = uiCreateButton (&starter->buttons [START_BUTTON_SEND_SUPPORT],
       _("Send Support Message"), NULL, starterCreateSupportDialog, starter);
-  uiutilsBoxPackStart (hbox, widget);
+  uiBoxPackStart (hbox, widget);
 
   /* the dialog doesn't have any space above the buttons */
-  hbox = uiutilsCreateHorizBox ();
-  uiutilsBoxPackStart (vbox, hbox);
+  hbox = uiCreateHorizBox ();
+  uiBoxPackStart (vbox, hbox);
 
-  widget = uiutilsCreateLabel (" ");
-  uiutilsBoxPackStart (hbox, widget);
+  widget = uiCreateLabel (" ");
+  uiBoxPackStart (hbox, widget);
 
   g_signal_connect (dialog, "response",
       G_CALLBACK (starterSupportResponseHandler), starter);
-  uiutilsWidgetShowAll (dialog);
+  uiWidgetShowAll (dialog);
 }
 
 
@@ -1101,7 +1101,7 @@ starterSetProfile (void *udata, int idx)
   char      *disp;
   int       profidx;
 
-  profidx = uiutilsSpinboxTextGetValue (&starter->profilesel);
+  profidx = uiSpinboxTextGetValue (&starter->profilesel);
   sysvarsSetNum (SVL_BDJIDX, profidx);
   disp = nlistGetStr (starter->profilesel.list, profidx);
   return disp;
@@ -1138,7 +1138,7 @@ starterCreateSupportDialog (GtkButton *b, gpointer udata)
   GtkWidget     *widget;
   GtkWidget     *dialog;
   UIWidget      sg;
-  uiutilstextbox_t *tb;
+  uitextbox_t *tb;
   char          tbuff [200];
 
   dialog = gtk_dialog_new_with_buttons (
@@ -1154,78 +1154,78 @@ starterCreateSupportDialog (GtkButton *b, gpointer udata)
       GTK_RESPONSE_APPLY,
       NULL
       );
-  uiutilsWindowSetDefaultSize (dialog, -1, 400);
+  uiWindowSetDefaultSize (dialog, -1, 400);
 
   content = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
-  uiutilsWidgetSetAllMargins (content, uiutilsBaseMarginSz * 2);
+  uiWidgetSetAllMargins (content, uiBaseMarginSz * 2);
 
-  uiutilsCreateSizeGroupHoriz (&sg);
+  uiCreateSizeGroupHoriz (&sg);
 
-  vbox = uiutilsCreateVertBox ();
+  vbox = uiCreateVertBox ();
   assert (vbox != NULL);
-  uiutilsBoxPackInWindow (content, vbox);
+  uiBoxPackInWindow (content, vbox);
 
   /* line 1 */
-  hbox = uiutilsCreateHorizBox ();
+  hbox = uiCreateHorizBox ();
   assert (hbox != NULL);
-  uiutilsBoxPackStart (vbox, hbox);
+  uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: sending support message: user's e-mail address */
-  widget = uiutilsCreateColonLabel (_("E-Mail Address"));
-  uiutilsBoxPackStart (hbox, widget);
-  uiutilsSizeGroupAdd (&sg, widget);
+  widget = uiCreateColonLabel (_("E-Mail Address"));
+  uiBoxPackStart (hbox, widget);
+  uiSizeGroupAdd (&sg, widget);
 
-  uiutilsEntryInit (&starter->supportemail, 50, 100);
-  widget = uiutilsEntryCreate (&starter->supportemail);
-  uiutilsBoxPackStart (hbox, widget);
+  uiEntryInit (&starter->supportemail, 50, 100);
+  widget = uiEntryCreate (&starter->supportemail);
+  uiBoxPackStart (hbox, widget);
 
   /* line 2 */
-  hbox = uiutilsCreateHorizBox ();
+  hbox = uiCreateHorizBox ();
   assert (hbox != NULL);
-  uiutilsBoxPackStart (vbox, hbox);
+  uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: sending support message: subject of message */
-  widget = uiutilsCreateColonLabel (_("Subject"));
-  uiutilsBoxPackStart (hbox, widget);
-  uiutilsSizeGroupAdd (&sg, widget);
+  widget = uiCreateColonLabel (_("Subject"));
+  uiBoxPackStart (hbox, widget);
+  uiSizeGroupAdd (&sg, widget);
 
-  uiutilsEntryInit (&starter->supportsubject, 50, 100);
-  widget = uiutilsEntryCreate (&starter->supportsubject);
-  uiutilsBoxPackStart (hbox, widget);
+  uiEntryInit (&starter->supportsubject, 50, 100);
+  widget = uiEntryCreate (&starter->supportsubject);
+  uiBoxPackStart (hbox, widget);
 
   /* line 3 */
   /* CONTEXT: sending support message: message */
-  widget = uiutilsCreateColonLabel (_("Message"));
-  uiutilsBoxPackStart (vbox, widget);
+  widget = uiCreateColonLabel (_("Message"));
+  uiBoxPackStart (vbox, widget);
 
   /* line 4 */
-  tb = uiutilsTextBoxCreate (200);
-  uiutilsBoxPackStart (vbox, tb->scw);
+  tb = uiTextBoxCreate (200);
+  uiBoxPackStart (vbox, tb->scw);
   starter->supporttb = tb;
 
   /* line 5 */
   /* CONTEXT: sending support message: checkbox: option to send data files */
-  widget = uiutilsCreateCheckButton (_("Attach Data Files"), 0);
-  uiutilsBoxPackStart (vbox, widget);
+  widget = uiCreateCheckButton (_("Attach Data Files"), 0);
+  uiBoxPackStart (vbox, widget);
   starter->supportSendFiles = widget;
 
   /* line 6 */
   /* CONTEXT: sending support message: checkbox: option to send database */
-  widget = uiutilsCreateCheckButton (_("Attach Database"), 0);
-  uiutilsBoxPackStart (vbox, widget);
+  widget = uiCreateCheckButton (_("Attach Database"), 0);
+  uiBoxPackStart (vbox, widget);
   starter->supportSendDB = widget;
 
   /* line 7 */
-  widget = uiutilsCreateLabel ("");
-  uiutilsBoxPackStart (vbox, widget);
+  widget = uiCreateLabel ("");
+  uiBoxPackStart (vbox, widget);
   snprintf (tbuff, sizeof (tbuff),
       "label { color: %s; }", bdjoptGetStr (OPT_P_UI_ACCENT_COL));
-  uiutilsSetCss (widget, tbuff);
+  uiSetCss (widget, tbuff);
   starter->supportStatus = widget;
 
   g_signal_connect (dialog, "response",
       G_CALLBACK (starterSupportMsgHandler), starter);
-  uiutilsWidgetShowAll (dialog);
+  uiWidgetShowAll (dialog);
   starter->supportDialog = dialog;
 }
 
@@ -1302,7 +1302,7 @@ starterSendFiles (startui_t *starter)
   starter->supportOutFname = strdup (ofn);
   /* CONTEXT: starterui: support: status message */
   snprintf (tbuff, sizeof (tbuff), _("Sending %s"), ifn);
-  uiutilsLabelSetText (starter->supportStatus, tbuff);
+  uiLabelSetText (starter->supportStatus, tbuff);
 }
 
 static void

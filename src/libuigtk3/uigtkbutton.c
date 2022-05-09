@@ -16,20 +16,20 @@
 #include "pathbld.h"
 #include "uiutils.h"
 
-static void uiutilsButtonClickHandler (GtkButton *b, gpointer udata);
+static void uiButtonClickHandler (GtkButton *b, gpointer udata);
 
 GtkWidget *
-uiutilsCreateButton (UIWidget *uiwidget, char *title, char *imagenm,
+uiCreateButton (UIWidget *uiwidget, char *title, char *imagenm,
     void *cb, void *udata)
 {
   GtkWidget   *widget;
 
-  logProcBegin (LOG_PROC, "uiutilsCreateButton");
+  logProcBegin (LOG_PROC, "uiCreateButton");
 
   widget = gtk_button_new ();
   assert (widget != NULL);
-  gtk_widget_set_margin_top (widget, uiutilsBaseMarginSz);
-  gtk_widget_set_margin_start (widget, uiutilsBaseMarginSz);
+  gtk_widget_set_margin_top (widget, uiBaseMarginSz);
+  gtk_widget_set_margin_start (widget, uiBaseMarginSz);
   if (imagenm != NULL) {
     GtkWidget   *image;
     char        tbuff [MAXPATHLEN];
@@ -49,18 +49,18 @@ uiutilsCreateButton (UIWidget *uiwidget, char *title, char *imagenm,
       uiwidget->widget = widget;
       uiwidget->cb.cb = cb;
       uiwidget->cb.udata = udata;
-      g_signal_connect (widget, "clicked", G_CALLBACK (uiutilsButtonClickHandler), uiwidget);
+      g_signal_connect (widget, "clicked", G_CALLBACK (uiButtonClickHandler), uiwidget);
     } else {
       g_signal_connect (widget, "clicked", G_CALLBACK (cb), udata);
     }
   }
 
-  logProcEnd (LOG_PROC, "uiutilsCreateButton", "");
+  logProcEnd (LOG_PROC, "uiCreateButton", "");
   return widget;
 }
 
 static void
-uiutilsButtonClickHandler (GtkButton *b, gpointer udata)
+uiButtonClickHandler (GtkButton *b, gpointer udata)
 {
   UIWidget  *uiwidget = udata;
 

@@ -15,7 +15,7 @@
 #include "uiutils.h"
 
 GtkWidget *
-uiutilsCreateVertBox (void)
+uiCreateVertBox (void)
 {
   GtkWidget *box;
 
@@ -24,7 +24,7 @@ uiutilsCreateVertBox (void)
 }
 
 GtkWidget *
-uiutilsCreateHorizBox (void)
+uiCreateHorizBox (void)
 {
   GtkWidget *box;
 
@@ -33,25 +33,25 @@ uiutilsCreateHorizBox (void)
 }
 
 void
-uiutilsBoxPackInWindow (GtkWidget *window, GtkWidget *box)
+uiBoxPackInWindow (GtkWidget *window, GtkWidget *box)
 {
   gtk_container_add (GTK_CONTAINER (window), box);
 }
 
 inline void
-uiutilsBoxPackStart (GtkWidget *box, GtkWidget *widget)
+uiBoxPackStart (GtkWidget *box, GtkWidget *widget)
 {
   gtk_box_pack_start (GTK_BOX (box), widget, FALSE, FALSE, 0);
 }
 
 inline void
-uiutilsBoxPackStartExpand (GtkWidget *box, GtkWidget *widget)
+uiBoxPackStartExpand (GtkWidget *box, GtkWidget *widget)
 {
   gtk_box_pack_start (GTK_BOX (box), widget, TRUE, TRUE, 0);
 }
 
 inline void
-uiutilsBoxPackEnd (GtkWidget *box, GtkWidget *widget)
+uiBoxPackEnd (GtkWidget *box, GtkWidget *widget)
 {
   gtk_box_pack_end (GTK_BOX (box), widget, FALSE, FALSE, 0);
 }

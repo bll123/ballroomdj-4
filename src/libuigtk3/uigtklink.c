@@ -15,7 +15,7 @@
 #include "uiutils.h"
 
 GtkWidget *
-uiutilsCreateLink (char *label, char *uri)
+uiCreateLink (char *label, char *uri)
 {
   GtkWidget *widget;
   GtkWidget *lwidget;
@@ -29,7 +29,7 @@ uiutilsCreateLink (char *label, char *uri)
 }
 
 void
-uiutilsLinkSet (GtkWidget *widget, char *label, char *uri)
+uiLinkSet (GtkWidget *widget, char *label, char *uri)
 {
   gtk_link_button_set_uri (GTK_LINK_BUTTON (widget), uri);
   gtk_button_set_label (GTK_BUTTON (widget), label);

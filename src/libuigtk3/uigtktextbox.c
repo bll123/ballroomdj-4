@@ -14,24 +14,24 @@
 #include "log.h"
 #include "uiutils.h"
 
-uiutilstextbox_t *
-uiutilsTextBoxCreate (int height)
+uitextbox_t *
+uiTextBoxCreate (int height)
 {
   GtkWidget         *scw;
-  uiutilstextbox_t  *tb;
+  uitextbox_t  *tb;
 
-  tb = malloc (sizeof (uiutilstextbox_t));
+  tb = malloc (sizeof (uitextbox_t));
   assert (tb != NULL);
   tb->scw = NULL;
   tb->textbox = NULL;
   tb->buffer = NULL;
 
-  scw = uiutilsCreateScrolledWindow (height);
+  scw = uiCreateScrolledWindow (height);
 
   tb->buffer = gtk_text_buffer_new (NULL);
   tb->textbox = gtk_text_view_new_with_buffer (tb->buffer);
   gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (tb->textbox), GTK_WRAP_WORD);
-  uiutilsWidgetSetAllMargins (tb->textbox, uiutilsBaseMarginSz * 2);
+  uiWidgetSetAllMargins (tb->textbox, uiBaseMarginSz * 2);
   gtk_widget_set_size_request (tb->textbox, -1, -1);
   gtk_widget_set_halign (tb->textbox, GTK_ALIGN_FILL);
   gtk_widget_set_valign (tb->textbox, GTK_ALIGN_START);
@@ -44,7 +44,7 @@ uiutilsTextBoxCreate (int height)
 }
 
 void
-uiutilsTextBoxFree (uiutilstextbox_t *tb)
+uiTextBoxFree (uitextbox_t *tb)
 {
   if (tb != NULL) {
     free (tb);
@@ -52,13 +52,13 @@ uiutilsTextBoxFree (uiutilstextbox_t *tb)
 }
 
 void
-uiutilsTextBoxSetReadonly (uiutilstextbox_t *tb)
+uiTextBoxSetReadonly (uitextbox_t *tb)
 {
   gtk_widget_set_can_focus (tb->textbox, FALSE);
 }
 
 char *
-uiutilsTextBoxGetValue (uiutilstextbox_t *tb)
+uiTextBoxGetValue (uitextbox_t *tb)
 {
   GtkTextIter   siter;
   GtkTextIter   eiter;
@@ -71,7 +71,7 @@ uiutilsTextBoxGetValue (uiutilstextbox_t *tb)
 }
 
 void
-uiutilsTextBoxScrollToEnd (uiutilstextbox_t *tb)
+uiTextBoxScrollToEnd (uitextbox_t *tb)
 {
   GtkTextIter iter;
 
@@ -81,7 +81,7 @@ uiutilsTextBoxScrollToEnd (uiutilstextbox_t *tb)
 }
 
 void
-uiutilsTextBoxAppendStr (uiutilstextbox_t *tb, const char *str)
+uiTextBoxAppendStr (uitextbox_t *tb, const char *str)
 {
   GtkTextIter eiter;
 
@@ -90,7 +90,7 @@ uiutilsTextBoxAppendStr (uiutilstextbox_t *tb, const char *str)
 }
 
 void
-uiutilsTextBoxSetValue (uiutilstextbox_t *tb, const char *str)
+uiTextBoxSetValue (uitextbox_t *tb, const char *str)
 {
   GtkTextIter siter;
   GtkTextIter eiter;
@@ -104,14 +104,14 @@ uiutilsTextBoxSetValue (uiutilstextbox_t *tb, const char *str)
 
 /* this does not handle any selected text */
 void
-uiutilsTextBoxDarken (uiutilstextbox_t *tb)
+uiTextBoxDarken (uitextbox_t *tb)
 {
-  uiutilsSetCss (tb->textbox,
+  uiSetCss (tb->textbox,
       "textview text { background-color: shade(@theme_base_color,0.8); } ");
 }
 
 void
-uiutilsTextBoxVertExpand (uiutilstextbox_t *tb)
+uiTextBoxVertExpand (uitextbox_t *tb)
 {
   gtk_widget_set_vexpand (tb->scw, TRUE);
   gtk_widget_set_valign (tb->textbox, GTK_ALIGN_FILL);
@@ -119,7 +119,7 @@ uiutilsTextBoxVertExpand (uiutilstextbox_t *tb)
 }
 
 void
-uiutilsTextBoxSetHeight (uiutilstextbox_t *tb, int h)
+uiTextBoxSetHeight (uitextbox_t *tb, int h)
 {
   gtk_widget_set_size_request (tb->textbox, -1, h);
 }

@@ -15,37 +15,37 @@
 #include "uiutils.h"
 
 GtkWidget *
-uiutilsCreateNotebook (void)
+uiCreateNotebook (void)
 {
   GtkWidget   *widget;
 
   widget = gtk_notebook_new ();
   assert (widget != NULL);
   gtk_notebook_set_show_border (GTK_NOTEBOOK (widget), TRUE);
-  gtk_widget_set_margin_top (widget, uiutilsBaseMarginSz * 2);
+  gtk_widget_set_margin_top (widget, uiBaseMarginSz * 2);
   gtk_widget_set_hexpand (widget, TRUE);
   gtk_widget_set_vexpand (widget, FALSE);
   gtk_notebook_set_tab_pos (GTK_NOTEBOOK (widget), GTK_POS_TOP);
-  uiutilsSetCss (widget,
+  uiSetCss (widget,
       "notebook tab:checked { background-color: shade(@theme_base_color,0.6); }");
   return widget;
 }
 
 void
-uiutilsNotebookAppendPage (GtkWidget *notebook, GtkWidget *widget,
+uiNotebookAppendPage (GtkWidget *notebook, GtkWidget *widget,
     GtkWidget *labelwidget)
 {
   gtk_notebook_append_page (GTK_NOTEBOOK (notebook), widget, labelwidget);
 }
 
 void
-uiutilsNotebookSetActionWidget (GtkWidget *notebook, GtkWidget *widget, GtkPackType pack)
+uiNotebookSetActionWidget (GtkWidget *notebook, GtkWidget *widget, GtkPackType pack)
 {
   gtk_notebook_set_action_widget (GTK_NOTEBOOK (notebook), widget, pack);
 }
 
 void
-uiutilsNotebookSetPage (GtkWidget *notebook, int pagenum)
+uiNotebookSetPage (GtkWidget *notebook, int pagenum)
 {
   gtk_notebook_set_current_page (GTK_NOTEBOOK (notebook), pagenum);
 }

@@ -200,9 +200,9 @@ main (int argc, char *argv[])
     nlistSetNum (marquee.options, MQ_FONT_SZ_FS, 60);
   }
 
-  uiutilsUIInitialize ();
+  uiUIInitialize ();
   mqfont = bdjoptGetStr (OPT_MP_MQFONT);
-  uiutilsSetUIFont (mqfont);
+  uiSetUIFont (mqfont);
 
   marqueeBuildUI (&marquee);
   sockhMainLoop (listenPort, marqueeProcessMsg, marqueeMainLoop, &marquee);
@@ -228,12 +228,12 @@ marqueeStoppingCallback (void *udata, programstate_t programState)
     return false;
   }
 
-  if (uiutilsWindowIsMaximized (marquee->window)) {
+  if (uiWindowIsMaximized (marquee->window)) {
     logProcEnd (LOG_PROC, "marqueeStoppingCallback", "is-maximized-b");
     return false;
   }
 
-  uiutilsWindowGetSize (marquee->window, &x, &y);
+  uiWindowGetSize (marquee->window, &x, &y);
   nlistSetNum (marquee->options, MQ_SIZE_X, x);
   nlistSetNum (marquee->options, MQ_SIZE_Y, y);
   if (! marquee->isIconified) {
@@ -279,7 +279,7 @@ marqueeClosingCallback (void *udata, programstate_t programState)
 
   /* these are moved here so that the window can be un-maximized and */
   /* the size/position saved */
-  uiutilsCloseWindow (marquee->window);
+  uiCloseWindow (marquee->window);
 
   pathbldMakePath (fn, sizeof (fn),
       "marquee", BDJ4_CONFIG_EXT, PATHBLD_MP_USEIDX);
@@ -318,118 +318,118 @@ marqueeBuildUI (marquee_t *marquee)
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon_marquee", ".svg", PATHBLD_MP_IMGDIR);
 
-  window = uiutilsCreateMainWindow (_("Marquee"), imgbuff,
+  window = uiCreateMainWindow (_("Marquee"), imgbuff,
       marqueeCloseWin, marquee);
   g_signal_connect (window, "button-press-event", G_CALLBACK (marqueeToggleFullscreen), marquee);
   g_signal_connect (window, "window-state-event", G_CALLBACK (marqueeWinState), marquee);
   g_signal_connect (window, "map-event", G_CALLBACK (marqueeWinMapped), marquee);
   /* the backdrop window state must be intercepted */
   g_signal_connect (window, "state-flags-changed", G_CALLBACK (marqueeStateChg), marquee);
-  uiutilsWindowNoFocusOnStartup (window);
+  uiWindowNoFocusOnStartup (window);
   marquee->window = window;
 
   x = nlistGetNum (marquee->options, MQ_SIZE_X);
   y = nlistGetNum (marquee->options, MQ_SIZE_Y);
-  uiutilsWindowSetDefaultSize (window, x, y);
+  uiWindowSetDefaultSize (window, x, y);
 
   marquee->window = window;
 
-  marquee->vbox = uiutilsCreateVertBox ();
-  uiutilsWidgetSetAllMargins (marquee->vbox, 10);
-  uiutilsBoxPackInWindow (window, marquee->vbox);
-  uiutilsWidgetExpandHoriz (marquee->vbox);
-  uiutilsWidgetExpandVert (marquee->vbox);
+  marquee->vbox = uiCreateVertBox ();
+  uiWidgetSetAllMargins (marquee->vbox, 10);
+  uiBoxPackInWindow (window, marquee->vbox);
+  uiWidgetExpandHoriz (marquee->vbox);
+  uiWidgetExpandVert (marquee->vbox);
   marquee->marginTotal = 20;
 
-  marquee->pbar = uiutilsCreateProgressBar (bdjoptGetStr (OPT_P_MQ_ACCENT_COL));
-  uiutilsBoxPackStart (marquee->vbox, marquee->pbar);
+  marquee->pbar = uiCreateProgressBar (bdjoptGetStr (OPT_P_MQ_ACCENT_COL));
+  uiBoxPackStart (marquee->vbox, marquee->pbar);
 
-  vbox = uiutilsCreateVertBox ();
-  uiutilsWidgetSetAllMargins (marquee->vbox, 10);
-  uiutilsWidgetExpandHoriz (marquee->vbox);
-  uiutilsBoxPackStart (marquee->vbox, vbox);
+  vbox = uiCreateVertBox ();
+  uiWidgetSetAllMargins (marquee->vbox, 10);
+  uiWidgetExpandHoriz (marquee->vbox);
+  uiBoxPackStart (marquee->vbox, vbox);
 
-  hbox = uiutilsCreateHorizBox ();
-  uiutilsWidgetAlignHorizFill (hbox);
-  uiutilsWidgetExpandHoriz (hbox);
-  uiutilsBoxPackStart (vbox, hbox);
+  hbox = uiCreateHorizBox ();
+  uiWidgetAlignHorizFill (hbox);
+  uiWidgetExpandHoriz (hbox);
+  uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: marquee: displayed when nothing is set to be played */
-  marquee->danceLab = uiutilsCreateLabel (_("Not Playing"));
-  uiutilsWidgetAlignHorizStart (marquee->danceLab);
-  uiutilsWidgetDisableFocus (marquee->danceLab);
+  marquee->danceLab = uiCreateLabel (_("Not Playing"));
+  uiWidgetAlignHorizStart (marquee->danceLab);
+  uiWidgetDisableFocus (marquee->danceLab);
   snprintf (tbuff, sizeof (tbuff),
       "label { color: %s; }",
       bdjoptGetStr (OPT_P_MQ_ACCENT_COL));
-  uiutilsSetCss (marquee->danceLab, tbuff);
-  uiutilsBoxPackStart (hbox, marquee->danceLab);
+  uiSetCss (marquee->danceLab, tbuff);
+  uiBoxPackStart (hbox, marquee->danceLab);
 
-  marquee->countdownTimerLab = uiutilsCreateLabel ("0:00");
-  uiutilsLabelSetMaxWidth (marquee->countdownTimerLab, 6);
-  uiutilsWidgetAlignHorizEnd (marquee->countdownTimerLab);
-  uiutilsWidgetDisableFocus (marquee->countdownTimerLab);
+  marquee->countdownTimerLab = uiCreateLabel ("0:00");
+  uiLabelSetMaxWidth (marquee->countdownTimerLab, 6);
+  uiWidgetAlignHorizEnd (marquee->countdownTimerLab);
+  uiWidgetDisableFocus (marquee->countdownTimerLab);
   snprintf (tbuff, sizeof (tbuff),
       "label { color: %s; }",
       bdjoptGetStr (OPT_P_MQ_ACCENT_COL));
-  uiutilsSetCss (marquee->countdownTimerLab, tbuff);
-  uiutilsBoxPackEnd (hbox, marquee->countdownTimerLab);
+  uiSetCss (marquee->countdownTimerLab, tbuff);
+  uiBoxPackEnd (hbox, marquee->countdownTimerLab);
 
-  hbox = uiutilsCreateHorizBox ();
-  uiutilsWidgetAlignHorizFill (hbox);
-  uiutilsWidgetExpandHoriz (hbox);
-  uiutilsBoxPackStart (vbox, hbox);
+  hbox = uiCreateHorizBox ();
+  uiWidgetAlignHorizFill (hbox);
+  uiWidgetExpandHoriz (hbox);
+  uiBoxPackStart (vbox, hbox);
   marquee->infoBox = hbox;
 
-  marquee->infoArtistLab = uiutilsCreateLabel ("");
-  uiutilsWidgetAlignHorizStart (marquee->infoArtistLab);
-  uiutilsWidgetExpandHoriz (hbox);
-  uiutilsWidgetDisableFocus (marquee->infoArtistLab);
-  uiutilsLabelEllipsizeOn (marquee->infoArtistLab);
-  uiutilsBoxPackStart (hbox, marquee->infoArtistLab);
+  marquee->infoArtistLab = uiCreateLabel ("");
+  uiWidgetAlignHorizStart (marquee->infoArtistLab);
+  uiWidgetExpandHoriz (hbox);
+  uiWidgetDisableFocus (marquee->infoArtistLab);
+  uiLabelEllipsizeOn (marquee->infoArtistLab);
+  uiBoxPackStart (hbox, marquee->infoArtistLab);
 
-  marquee->infoSepLab = uiutilsCreateLabel ("");
-  uiutilsWidgetAlignHorizStart (marquee->infoSepLab);
-  uiutilsWidgetDisableFocus (marquee->infoSepLab);
-  uiutilsBoxPackStart (hbox, marquee->infoSepLab);
+  marquee->infoSepLab = uiCreateLabel ("");
+  uiWidgetAlignHorizStart (marquee->infoSepLab);
+  uiWidgetDisableFocus (marquee->infoSepLab);
+  uiBoxPackStart (hbox, marquee->infoSepLab);
 
-  marquee->infoTitleLab = uiutilsCreateLabel ("");
-  uiutilsWidgetAlignHorizStart (marquee->infoTitleLab);
-  uiutilsWidgetExpandHoriz (hbox);
-  uiutilsWidgetDisableFocus (marquee->infoTitleLab);
-  uiutilsLabelEllipsizeOn (marquee->infoTitleLab);
-  uiutilsBoxPackStart (hbox, marquee->infoTitleLab);
+  marquee->infoTitleLab = uiCreateLabel ("");
+  uiWidgetAlignHorizStart (marquee->infoTitleLab);
+  uiWidgetExpandHoriz (hbox);
+  uiWidgetDisableFocus (marquee->infoTitleLab);
+  uiLabelEllipsizeOn (marquee->infoTitleLab);
+  uiBoxPackStart (hbox, marquee->infoTitleLab);
 
   marquee->sep = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
-  uiutilsWidgetExpandHoriz (marquee->sep);
-  uiutilsWidgetSetMarginTop (marquee->sep, uiutilsBaseMarginSz);
+  uiWidgetExpandHoriz (marquee->sep);
+  uiWidgetSetMarginTop (marquee->sep, uiBaseMarginSz);
   snprintf (tbuff, sizeof (tbuff),
       "separator { min-height: 4px; background-color: %s; }",
       bdjoptGetStr (OPT_P_MQ_ACCENT_COL));
-  uiutilsSetCss (marquee->sep, tbuff);
-  uiutilsBoxPackEnd (vbox, marquee->sep);
+  uiSetCss (marquee->sep, tbuff);
+  uiBoxPackEnd (vbox, marquee->sep);
 
   marquee->marqueeLabs = malloc (sizeof (GtkWidget *) * marquee->mqLen);
 
   for (int i = 0; i < marquee->mqLen; ++i) {
-    marquee->marqueeLabs [i] = uiutilsCreateLabel ("");
-    uiutilsWidgetAlignHorizStart (marquee->marqueeLabs [i]);
-    uiutilsWidgetExpandHoriz (marquee->marqueeLabs [i]);
+    marquee->marqueeLabs [i] = uiCreateLabel ("");
+    uiWidgetAlignHorizStart (marquee->marqueeLabs [i]);
+    uiWidgetExpandHoriz (marquee->marqueeLabs [i]);
     gtk_widget_set_margin_end (marquee->marqueeLabs [i], 10);
-    uiutilsWidgetDisableFocus (marquee->marqueeLabs [i]);
-    uiutilsBoxPackStart (marquee->vbox, marquee->marqueeLabs [i]);
+    uiWidgetDisableFocus (marquee->marqueeLabs [i]);
+    uiBoxPackStart (marquee->vbox, marquee->marqueeLabs [i]);
   }
 
   marqueeSetFont (marquee, nlistGetNum (marquee->options, MQ_FONT_SZ));
 
   if (marquee->hideonstart) {
-    uiutilsWindowIconify (window);
+    uiWindowIconify (window);
     marquee->isIconified = true;
   }
 
   if (! marquee->mqShowInfo) {
-    uiutilsWidgetHide (marquee->infoBox);
+    uiWidgetHide (marquee->infoBox);
   }
-  uiutilsWidgetShowAll (window);
+  uiWidgetShowAll (window);
 
   marqueeMoveWindow (marquee);
 
@@ -449,7 +449,7 @@ marqueeMainLoop (void *tmarquee)
   int         stop = FALSE;
 
   if (! stop) {
-    uiutilsUIProcessEvents ();
+    uiUIProcessEvents ();
   }
 
   if (! progstateIsRunning (marquee->progstate)) {
@@ -608,7 +608,7 @@ marqueeCloseWin (GtkWidget *window, GdkEvent *event, gpointer userdata)
       marqueeSaveWindowPosition (marquee);
     }
 
-    uiutilsWindowIconify (window);
+    uiWindowIconify (window);
     marquee->mqIconifyAction = true;
     marquee->isIconified = true;
     logProcEnd (LOG_PROC, "marqueeCloseWin", "user-close-win");
@@ -652,9 +652,9 @@ marqueeSetMaximized (marquee_t *marquee)
   marquee->isMaximized = true;
   if (! isWindows()) {
     /* does not work on windows platforms */
-    uiutilsWindowDisableDecorations (marquee->window);
+    uiWindowDisableDecorations (marquee->window);
   }
-  uiutilsWindowMaximize (marquee->window);
+  uiWindowMaximize (marquee->window);
   marqueeSetFont (marquee, nlistGetNum (marquee->options, MQ_FONT_SZ_FS));
   marqueeSendMaximizeState (marquee);
 }
@@ -678,10 +678,10 @@ static void
 marqueeSetNotMaximizeFinish (marquee_t *marquee)
 {
   marquee->setPrior = true;
-  uiutilsWindowUnMaximize (marquee->window);
+  uiWindowUnMaximize (marquee->window);
   if (! isWindows()) {
     /* does not work on windows platforms */
-    uiutilsWindowEnableDecorations (marquee->window);
+    uiWindowEnableDecorations (marquee->window);
   }
   marqueeSendMaximizeState (marquee);
   logProcEnd (LOG_PROC, "marqueeSetNotMaximized", "");
@@ -762,7 +762,7 @@ marqueeSaveWindowPosition (marquee_t *marquee)
 {
   gint  x, y;
 
-  uiutilsWindowGetPosition (marquee->window, &x, &y);
+  uiWindowGetPosition (marquee->window, &x, &y);
   nlistSetNum (marquee->options, MQ_POSITION_X, x);
   nlistSetNum (marquee->options, MQ_POSITION_Y, y);
 }
@@ -774,7 +774,7 @@ marqueeMoveWindow (marquee_t *marquee)
 
   x = nlistGetNum (marquee->options, MQ_POSITION_X);
   y = nlistGetNum (marquee->options, MQ_POSITION_Y);
-  uiutilsWindowMove (marquee->window, x, y);
+  uiWindowMove (marquee->window, x, y);
 }
 
 static void
@@ -824,7 +824,7 @@ marqueePopulate (marquee_t *marquee, char *args)
   logProcBegin (LOG_PROC, "marqueePopulate");
 
   if (! marquee->mqShowInfo) {
-    uiutilsWidgetHide (marquee->infoBox);
+    uiWidgetHide (marquee->infoBox);
   }
 
   p = strtok_r (args, MSG_ARGS_RS_STR, &tokptr);
@@ -835,7 +835,7 @@ marqueePopulate (marquee_t *marquee, char *args)
     if (p != NULL && *p != '\0') {
       ++showsep;
     }
-    uiutilsLabelSetText (marquee->infoArtistLab, p);
+    uiLabelSetText (marquee->infoArtistLab, p);
   }
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokptr);
@@ -846,14 +846,14 @@ marqueePopulate (marquee_t *marquee, char *args)
     if (p != NULL && *p != '\0') {
       ++showsep;
     }
-    uiutilsLabelSetText (marquee->infoTitleLab, p);
+    uiLabelSetText (marquee->infoTitleLab, p);
   }
 
   if (marquee->infoSepLab != NULL) {
     if (showsep == 2) {
-      uiutilsLabelSetText (marquee->infoSepLab, "/ ");
+      uiLabelSetText (marquee->infoSepLab, "/ ");
     } else {
-      uiutilsLabelSetText (marquee->infoSepLab, "");
+      uiLabelSetText (marquee->infoSepLab, "");
     }
   }
 
@@ -862,14 +862,14 @@ marqueePopulate (marquee_t *marquee, char *args)
   if (p != NULL && *p == MSG_ARGS_EMPTY) {
     p = "";
   }
-  uiutilsLabelSetText (marquee->danceLab, p);
+  uiLabelSetText (marquee->danceLab, p);
 
   for (int i = 0; i < marquee->mqLen; ++i) {
     p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokptr);
     if (p != NULL && *p != MSG_ARGS_EMPTY) {
-      uiutilsLabelSetText (marquee->marqueeLabs [i], p);
+      uiLabelSetText (marquee->marqueeLabs [i], p);
     } else {
-      uiutilsLabelSetText (marquee->marqueeLabs [i], "");
+      uiLabelSetText (marquee->marqueeLabs [i], "");
     }
   }
   logProcEnd (LOG_PROC, "marqueePopulate", "");
@@ -898,7 +898,7 @@ marqueeSetTimer (marquee_t *marquee, char *args)
 
   timeleft = dur - played;
   tmutilToMS (timeleft, tbuff, sizeof (tbuff));
-  uiutilsLabelSetText (marquee->countdownTimerLab, tbuff);
+  uiLabelSetText (marquee->countdownTimerLab, tbuff);
 
   ddur = (double) dur;
   dplayed = (double) played;
@@ -957,11 +957,11 @@ marqueeDisplayCompletion (marquee_t *marquee)
   char  *disp;
 
   disp = bdjoptGetStr (OPT_P_COMPLETE_MSG);
-  uiutilsLabelSetText (marquee->infoArtistLab, "");
-  uiutilsLabelSetText (marquee->infoSepLab, "");
-  uiutilsLabelSetText (marquee->infoTitleLab, disp);
+  uiLabelSetText (marquee->infoArtistLab, "");
+  uiLabelSetText (marquee->infoSepLab, "");
+  uiLabelSetText (marquee->infoTitleLab, disp);
 
   if (! marquee->mqShowInfo) {
-    uiutilsWidgetShowAll (marquee->infoBox);
+    uiWidgetShowAll (marquee->infoBox);
   }
 }
