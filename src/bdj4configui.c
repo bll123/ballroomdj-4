@@ -3426,7 +3426,7 @@ confuiTableMove (configui_t *confui, int dir)
     return;
   }
   gtk_tree_selection_get_selected (
-      confui->tables [confui->tablecurr].sel, &model, &iter);
+      confui->tables [CONFUI_ID_DISP_SEL_TABLE].sel, &model, &iter);
 
   path = gtk_tree_model_get_path (model, &iter);
   pathstr = gtk_tree_path_to_string (path);

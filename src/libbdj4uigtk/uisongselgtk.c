@@ -64,7 +64,6 @@ typedef struct {
   int               lastTreeSize;
   double            lastRowHeight;
   int               maxRows;
-  int               mqidx;    // queue process handler
   nlist_t           *selectedList;
   bool              controlPressed : 1;
   bool              shiftPressed : 1;
@@ -74,8 +73,6 @@ typedef struct {
 static void uisongselQueueProcessQueueHandler (UIWidget *uiwidget, void *udata);
 static void uisongselQueueProcessPlayHandler (UIWidget *uiwidget, void *udata);
 static void uisongselQueueProcessHandler (UIWidget *uiwidget, void *udata, musicqidx_t mqidx);
-static void uisongselQueueProcessHandlerCallback (GtkTreeModel *model,
-    GtkTreePath *path, GtkTreeIter *iter, gpointer udata);
 static void uisongselInitializeStore (uisongsel_t *uisongsel);
 static void uisongselCreateRows (uisongsel_t *uisongsel);
 
@@ -452,31 +449,18 @@ uisongselQueueProcessHandler (UIWidget *uiwidget, void *udata, musicqidx_t mqidx
 {
   uisongsel_t       * uisongsel = udata;
   uisongselgtk_t    * uiw;
+  nlistidx_t        iteridx;
+  dbidx_t           dbidx;
 
   logProcBegin (LOG_PROC, "uisongselQueueProcessHandler");
   uiw = uisongsel->uiWidgetData;
-  uiw->mqidx = mqidx;
-  gtk_tree_selection_selected_foreach (uiw->sel,
-      uisongselQueueProcessHandlerCallback, uisongsel);
+  nlistStartIterator (uiw->selectedList, &iteridx);
+  while ((dbidx = nlistIterateValueNum (uiw->selectedList, &iteridx)) >= 0) {
+    uisongselQueueProcess (uisongsel, dbidx, mqidx);
+  }
   logProcEnd (LOG_PROC, "uisongselQueueProcessHandler", "");
   return;
 }
-
-static void
-uisongselQueueProcessHandlerCallback (GtkTreeModel *model,
-    GtkTreePath *path, GtkTreeIter *iter, gpointer udata)
-{
-  uisongsel_t       * uisongsel = udata;
-  uisongselgtk_t    * uiw;
-  gulong            dbidx;
-
-  logProcBegin (LOG_PROC, "uisongselQueueProcessHandlerCallback");
-  uiw = uisongsel->uiWidgetData;
-  gtk_tree_model_get (model, iter, SONGSEL_COL_DBIDX, &dbidx, -1);
-  uisongselQueueProcess (uisongsel, dbidx, uiw->mqidx);
-  logProcEnd (LOG_PROC, "uisongselQueueProcessHandlerCallback", "");
-}
-
 
 static void
 uisongselInitializeStore (uisongsel_t *uisongsel)
@@ -1196,7 +1180,7 @@ uisongselSelChanged (GtkTreeSelection *sel, gpointer udata)
     while ((idx = nlistIterateKey (uiw->selectedList, &iteridx)) >= 0) {
       if (idx < uisongsel->idxStart ||
           idx > uisongsel->idxStart + uiw->maxRows - 1) {
-        nlistSetNum (tlist, idx, 0);
+        nlistSetNum (tlist, idx, nlistGetNum (uiw->selectedList, idx));
       }
     }
     nlistFree (uiw->selectedList);
@@ -1214,10 +1198,12 @@ uisongselProcessSelection (GtkTreeModel *model,
   uisongsel_t       *uisongsel = udata;
   uisongselgtk_t    *uiw;
   gulong            idx;
+  gulong            dbidx;
 
   uiw = uisongsel->uiWidgetData;
 
   gtk_tree_model_get (model, iter, SONGSEL_COL_IDX, &idx, -1);
-  nlistSetNum (uiw->selectedList, idx, 0);
+  gtk_tree_model_get (model, iter, SONGSEL_COL_DBIDX, &dbidx, -1);
+  nlistSetNum (uiw->selectedList, idx, dbidx);
 }
 
