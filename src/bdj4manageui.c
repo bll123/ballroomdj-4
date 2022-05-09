@@ -435,6 +435,9 @@ manageClosingCallback (void *udata, programstate_t programState)
   bdj4shutdown (ROUTE_MANAGEUI, manage->musicdb);
   dispselFree (manage->dispsel);
 
+  if (manage->sloldname != NULL) {
+    free (manage->sloldname);
+  }
   if (manage->mainnbtabid != NULL) {
     uiutilsNotebookIDFree (manage->mainnbtabid);
   }
@@ -1312,7 +1315,6 @@ manageSonglistSave (manageui_t *manage)
 
   pathbldMakePath (nnm, sizeof (nnm),
       name, BDJ4_SONGLIST_EXT, PATHBLD_MP_DATA);
-fprintf (stderr, "- manual: %s\n", nnm);
   if (! manage->slbackupcreated) {
     filemanipBackup (nnm, 1);
     manage->slbackupcreated = true;
@@ -1321,7 +1323,6 @@ fprintf (stderr, "- manual: %s\n", nnm);
 
   pathbldMakePath (onm, sizeof (onm),
       name, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
-fprintf (stderr, "- pl-chk: %s\n", onm);
   if (! fileopFileExists (onm))
   {
     playlist_t    *pl;

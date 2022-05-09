@@ -37,6 +37,7 @@ typedef struct {
   uiutilsentry_t    slname;
   /* tree views */
   GtkWidget         *musicqTree;
+  GtkTreeSelection  *sel;
   char              *selPathStr;
 } uimusicqui_t;
 

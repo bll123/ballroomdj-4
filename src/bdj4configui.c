@@ -248,6 +248,7 @@ enum {
 
 typedef struct {
   GtkWidget *tree;
+  GtkTreeSelection  *sel;
   int       radiorow;
   int       togglecol;
   int       flags;
@@ -444,7 +445,7 @@ static void   confuiTableMove (configui_t *confui, int dir);
 static void   confuiTableRemove (GtkButton *b, gpointer udata);
 static void   confuiTableAdd (GtkButton *b, gpointer udata);
 static void   confuiSwitchTable (GtkNotebook *nb, GtkWidget *page, guint pagenum, gpointer udata);
-static void   confuiTableSetDefaultSelection (configui_t *confui, GtkWidget *tree);
+static void   confuiTableSetDefaultSelection (configui_t *confui, GtkWidget *tree, GtkTreeSelection *sel);
 static void   confuiCreateDanceTable (configui_t *confui);
 static void   confuiDanceSet (GtkListStore *store, GtkTreeIter *iter, char *dancedisp, ilistidx_t key);
 static void   confuiCreateRatingTable (configui_t *confui);
@@ -528,6 +529,7 @@ main (int argc, char *argv[])
   confui.stopwaitcount = 0;
   for (int i = 0; i < CONFUI_ID_TABLE_MAX; ++i) {
     confui.tables [i].tree = NULL;
+    confui.tables [i].sel = NULL;
     confui.tables [i].radiorow = 0;
     confui.tables [i].togglecol = -1;
     confui.tables [i].flags = CONFUI_TABLE_NONE;
@@ -1254,6 +1256,8 @@ confuiBuildUIDispSettings (configui_t *confui)
       "treeview { background-color: shade(@theme_base_color,0.8); } "
       "treeview:selected { background-color: @theme_selected_bg_color; } ");
   confui->tables [CONFUI_ID_DISP_SEL_LIST].tree = tree;
+  confui->tables [CONFUI_ID_DISP_SEL_LIST].sel =
+      gtk_tree_view_get_selection (GTK_TREE_VIEW (tree));
   confui->tables [CONFUI_ID_DISP_SEL_LIST].flags = CONFUI_TABLE_NONE;
   uiutilsWidgetSetMarginStart (tree, uiutilsBaseMarginSz * 8);
   uiutilsWidgetSetMarginTop (tree, uiutilsBaseMarginSz * 8);
@@ -1285,6 +1289,8 @@ confuiBuildUIDispSettings (configui_t *confui)
       "treeview { background-color: shade(@theme_base_color,0.8); } "
       "treeview:selected { background-color: @theme_selected_bg_color; } ");
   confui->tables [CONFUI_ID_DISP_SEL_TABLE].tree = tree;
+  confui->tables [CONFUI_ID_DISP_SEL_TABLE].sel =
+      gtk_tree_view_get_selection (GTK_TREE_VIEW (tree));
   confui->tables [CONFUI_ID_DISP_SEL_TABLE].flags = CONFUI_TABLE_NONE;
   uiutilsWidgetSetMarginStart (tree, uiutilsBaseMarginSz * 8);
   uiutilsWidgetSetMarginTop (tree, uiutilsBaseMarginSz * 8);
@@ -2586,6 +2592,8 @@ confuiMakeItemTable (configui_t *confui, GtkWidget *vbox, confuiident_t id,
 
   tree = uiutilsCreateTreeView ();
   confui->tables [id].tree = tree;
+  confui->tables [id].sel =
+      gtk_tree_view_get_selection (GTK_TREE_VIEW (tree));
   confui->tables [id].flags = flags;
   uiutilsWidgetSetMarginStart (tree, uiutilsBaseMarginSz * 8);
   gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (tree), TRUE);
@@ -3393,7 +3401,6 @@ confuiTableMoveDown (GtkButton *b, gpointer udata)
 static void
 confuiTableMove (configui_t *confui, int dir)
 {
-  GtkTreeSelection  *sel;
   GtkWidget         *tree;
   GtkTreeModel      *model;
   GtkTreeIter       iter;
@@ -3412,13 +3419,14 @@ confuiTableMove (configui_t *confui, int dir)
   }
   flags = confui->tables [confui->tablecurr].flags;
 
-  sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (tree));
-  count = gtk_tree_selection_count_selected_rows (sel);
+  count = gtk_tree_selection_count_selected_rows (
+      confui->tables [confui->tablecurr].sel);
   if (count != 1) {
     logProcEnd (LOG_PROC, "confuiTableMove", "no-selection");
     return;
   }
-  gtk_tree_selection_get_selected (sel, &model, &iter);
+  gtk_tree_selection_get_selected (
+      confui->tables [confui->tablecurr].sel, &model, &iter);
 
   path = gtk_tree_model_get_path (model, &iter);
   pathstr = gtk_tree_path_to_string (path);
@@ -3539,7 +3547,6 @@ static void
 confuiTableAdd (GtkButton *b, gpointer udata)
 {
   configui_t        *confui = udata;
-  GtkTreeSelection  *sel = NULL;
   GtkWidget         *tree = NULL;
   GtkTreeModel      *model = NULL;
   GtkTreeIter       iter;
@@ -3559,17 +3566,14 @@ confuiTableAdd (GtkButton *b, gpointer udata)
   tree = confui->tables [confui->tablecurr].tree;
   flags = confui->tables [confui->tablecurr].flags;
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (tree));
-  sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (tree));
-  if (sel != NULL) {
-    count = gtk_tree_selection_count_selected_rows (sel);
-    if (count != 1) {
-      titer = NULL;
-    } else {
-      gtk_tree_selection_get_selected (sel, &model, &iter);
-      titer = &iter;
-    }
-  } else {
+  count = gtk_tree_selection_count_selected_rows (
+      confui->tables [confui->tablecurr].sel);
+  if (count != 1) {
     titer = NULL;
+  } else {
+    gtk_tree_selection_get_selected (
+        confui->tables [confui->tablecurr].sel, &model, &iter);
+    titer = &iter;
   }
 
   if (titer != NULL) {
@@ -3637,7 +3641,8 @@ confuiTableAdd (GtkButton *b, gpointer udata)
   }
 
   path = gtk_tree_model_get_path (model, &niter);
-  gtk_tree_view_set_cursor (GTK_TREE_VIEW (tree), path, NULL, FALSE);
+  gtk_tree_selection_select_path (
+      confui->tables [confui->tablecurr].sel, path);
   if (confui->tablecurr == CONFUI_ID_DANCE) {
     confuiDanceSelect (GTK_TREE_VIEW (tree), path, NULL, confui);
   }
@@ -3692,13 +3697,15 @@ confuiSwitchTable (GtkNotebook *nb, GtkWidget *page, guint pagenum, gpointer uda
 
   tree = confui->tables [confui->tablecurr].tree;
 
-  confuiTableSetDefaultSelection (confui, tree);
+  confuiTableSetDefaultSelection (confui, tree,
+      confui->tables [confui->tablecurr].sel);
 
   logProcEnd (LOG_PROC, "confuiSwitchTable", "");
 }
 
 static void
-confuiTableSetDefaultSelection (configui_t *confui, GtkWidget *tree)
+confuiTableSetDefaultSelection (configui_t *confui, GtkWidget *tree,
+    GtkTreeSelection *sel)
 {
   int               count;
   GtkTreeIter       iter;
@@ -3711,12 +3718,14 @@ confuiTableSetDefaultSelection (configui_t *confui, GtkWidget *tree)
 
     path = gtk_tree_path_new_from_string ("0");
     if (path != NULL) {
-      gtk_tree_view_set_cursor (GTK_TREE_VIEW (tree), path, NULL, FALSE);
+      gtk_tree_selection_select_path (sel, path);
     }
     if (confui->tablecurr == CONFUI_ID_DANCE) {
       confuiDanceSelect (GTK_TREE_VIEW (tree), path, NULL, confui);
     }
-    gtk_tree_path_free (path);
+    if (path != NULL) {
+      gtk_tree_path_free (path);
+    }
   }
 }
 
@@ -4840,7 +4849,8 @@ confuiCreateTagTableDisp (configui_t *confui)
   gtk_tree_view_set_model (GTK_TREE_VIEW (tree), GTK_TREE_MODEL (store));
   g_object_unref (store);
 
-  confuiTableSetDefaultSelection (confui, tree);
+  confuiTableSetDefaultSelection (confui, tree,
+      confui->tables [CONFUI_ID_DISP_SEL_TABLE].sel);
 }
 
 
@@ -4926,9 +4936,11 @@ confuiCreateTagListingDisp (configui_t *confui)
   g_object_unref (store);
 
   if (count == 1) {
-    gtk_tree_view_set_cursor (GTK_TREE_VIEW (tree), path, NULL, FALSE);
+    gtk_tree_selection_select_path (
+        confui->tables [CONFUI_ID_DISP_SEL_LIST].sel, path);
   }
-  confuiTableSetDefaultSelection (confui, tree);
+  confuiTableSetDefaultSelection (confui, tree,
+      confui->tables [CONFUI_ID_DISP_SEL_LIST].sel);
 }
 
 static void
@@ -4964,7 +4976,8 @@ confuiDispSelect (GtkButton *b, gpointer udata)
         -1);
 
     path = gtk_tree_model_get_path (tablemodel, &iter);
-    gtk_tree_view_set_cursor (GTK_TREE_VIEW (tabletree), path, NULL, FALSE);
+    gtk_tree_selection_select_path (
+        confui->tables [CONFUI_ID_DISP_SEL_TABLE].sel, path);
 
     confui->tables [CONFUI_ID_DISP_SEL_TABLE].changed = true;
     confuiCreateTagListingDisp (confui);

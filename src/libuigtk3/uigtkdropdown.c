@@ -36,6 +36,7 @@ uiutilsDropDownInit (uiutilsdropdown_t *dropdown)
   dropdown->button = NULL;
   dropdown->window = NULL;
   dropdown->tree = NULL;
+  dropdown->sel = NULL;
   dropdown->closeHandlerId = 0;
   dropdown->strSelection = NULL;
   dropdown->strIndexMap = NULL;
@@ -407,7 +408,6 @@ uiutilsDropDownWindowCreate (uiutilsdropdown_t *dropdown,
   GtkWidget         *scwin;
   GtkWidget         *vbox;
   GtkWidget         *twidget;
-  GtkTreeSelection  *sel;
 
   logProcBegin (LOG_PROC, "uiutilsDropDownWindowCreate");
 
@@ -448,10 +448,10 @@ uiutilsDropDownWindowCreate (uiutilsdropdown_t *dropdown,
   if (G_IS_OBJECT (dropdown->tree)) {
     g_object_ref_sink (G_OBJECT (dropdown->tree));
   }
+  dropdown->sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (dropdown->tree));
   gtk_tree_view_set_activate_on_single_click (GTK_TREE_VIEW (dropdown->tree), TRUE);
   gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (dropdown->tree), FALSE);
-  sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (dropdown->tree));
-  gtk_tree_selection_set_mode (sel, GTK_SELECTION_SINGLE);
+  gtk_tree_selection_set_mode (dropdown->sel, GTK_SELECTION_SINGLE);
   gtk_widget_set_hexpand (dropdown->tree, TRUE);
   gtk_widget_set_vexpand (dropdown->tree, TRUE);
   gtk_container_add (GTK_CONTAINER (scwin), dropdown->tree);
@@ -486,7 +486,7 @@ uiutilsDropDownSelectionSet (uiutilsdropdown_t *dropdown, ssize_t internalidx)
   snprintf (tbuff, sizeof (tbuff), "%zd", internalidx);
   path = gtk_tree_path_new_from_string (tbuff);
   if (path != NULL) {
-    gtk_tree_view_set_cursor (GTK_TREE_VIEW (dropdown->tree), path, NULL, FALSE);
+    gtk_tree_selection_select_path (dropdown->sel, path);
     model = gtk_tree_view_get_model (GTK_TREE_VIEW (dropdown->tree));
     if (model != NULL) {
       gtk_tree_model_get_iter (model, &iter, path);

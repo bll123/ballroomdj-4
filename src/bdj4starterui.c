@@ -91,6 +91,7 @@ typedef struct {
   char            *webresponse;
   int             mainstarted;
   int             stopwaitcount;
+  nlist_t         *proflist;
   UIWidget        buttons [START_BUTTON_MAX];
   /* gtk stuff */
   uiutilsspinbox_t  profilesel;
@@ -202,6 +203,7 @@ main (int argc, char *argv[])
   strcpy (starter.latestversion, "");
   starter.mainstarted = 0;
   starter.stopwaitcount = 0;
+  starter.proflist = NULL;
 
   procutilInitProcesses (starter.processes);
 
@@ -339,6 +341,9 @@ starterClosingCallback (void *udata, programstate_t programState)
   if (starter->supportFileList != NULL) {
     slistFree (starter->supportFileList);
   }
+  if (starter->proflist != NULL) {
+    nlistFree (starter->proflist);
+  }
 
   logProcEnd (LOG_PROC, "starterClosingCallback", "");
   return true;
@@ -360,7 +365,6 @@ starterBuildUI (startui_t  *starter)
   char                imgbuff [MAXPATHLEN];
   char                tbuff [MAXPATHLEN];
   int                 x, y;
-  nlist_t             *tlist;
 
   logProcBegin (LOG_PROC, "starterBuildUI");
   uiutilsCreateSizeGroupHoriz (&sg);
@@ -400,11 +404,11 @@ starterBuildUI (startui_t  *starter)
   uiutilsBoxPackStart (hbox, widget);
 
   /* get the profile list after bdjopt has been initialized */
-  tlist = starterGetProfiles (starter);
+  starter->proflist = starterGetProfiles (starter);
   widget = uiutilsSpinboxTextCreate (&starter->profilesel, starter);
   uiutilsSpinboxTextSet (&starter->profilesel, starter->currprofile,
-      nlistGetCount (tlist), starter->maxProfileWidth,
-      tlist, starterSetProfile);
+      nlistGetCount (starter->proflist), starter->maxProfileWidth,
+      starter->proflist, starterSetProfile);
   uiutilsWidgetSetMarginStart (widget, uiutilsBaseMarginSz * 4);
   uiutilsWidgetAlignHorizFill (widget);
   uiutilsBoxPackStart (hbox, widget);

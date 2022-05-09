@@ -78,6 +78,7 @@ typedef struct {
   GtkWidget     *button;
   GtkWidget     *window;
   GtkWidget     *tree;
+  GtkTreeSelection  *sel;
   nlist_t       *numIndexMap;
   slist_t       *strIndexMap;
   gulong        closeHandlerId;

@@ -175,6 +175,8 @@ uimusicqBuildUI (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
 
   uimusicq->ui [ci].musicqTree = uiutilsCreateTreeView ();
   assert (uimusicq->ui [ci].musicqTree != NULL);
+  uimusicq->ui [ci].sel = gtk_tree_view_get_selection (
+      GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree));
   gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree), TRUE);
   uiutilsWidgetAlignHorizFill (uimusicq->ui [ci].musicqTree);
   uiutilsWidgetExpandHoriz (uimusicq->ui [ci].musicqTree);
@@ -229,8 +231,7 @@ uimusicqSetSelection (uimusicq_t *uimusicq, char *pathstr)
   path = gtk_tree_path_new_from_string (pathstr);
   if (path != NULL &&
       GTK_IS_TREE_VIEW (uimusicq->ui [ci].musicqTree)) {
-    gtk_tree_view_set_cursor (GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree),
-        path, NULL, FALSE);
+    gtk_tree_selection_select_path (uimusicq->ui [ci].sel, path);
     uimusicqMusicQueueSetSelected (uimusicq, ci, UIMUSICQ_SEL_CURR);
   }
   if (path != NULL) {
@@ -244,7 +245,6 @@ ssize_t
 uimusicqGetSelection (uimusicq_t *uimusicq)
 {
   int               ci;
-  GtkTreeSelection  *sel;
   GtkTreeIter       iter;
   GtkTreeModel      *model;
   ssize_t           idx;
@@ -260,14 +260,14 @@ uimusicqGetSelection (uimusicq_t *uimusicq)
     return -1;
   }
 
-  sel = gtk_tree_view_get_selection (
+  uimusicq->ui [ci].sel = gtk_tree_view_get_selection (
       GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree));
-  count = gtk_tree_selection_count_selected_rows (sel);
+  count = gtk_tree_selection_count_selected_rows (uimusicq->ui [ci].sel);
   if (count != 1) {
     logProcEnd (LOG_PROC, "uimusicqGetSelection", "count != 1");
     return -1;
   }
-  gtk_tree_selection_get_selected (sel, &model, &iter);
+  gtk_tree_selection_get_selected (uimusicq->ui [ci].sel, &model, &iter);
   gtk_tree_model_get (model, &iter, MUSICQ_COL_IDX, &tidx, -1);
   idx = tidx;
 
@@ -280,7 +280,6 @@ uimusicqMusicQueueSetSelected (uimusicq_t *uimusicq, int ci, int which)
 {
   GtkTreeModel      *model;
   gboolean          valid;
-  GtkTreeSelection  *sel;
   GtkTreeIter       iter;
   gint              count;
 
@@ -291,14 +290,12 @@ uimusicqMusicQueueSetSelected (uimusicq_t *uimusicq, int ci, int which)
     return;
   }
 
-  sel = gtk_tree_view_get_selection (
-      GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree));
-  count = gtk_tree_selection_count_selected_rows (sel);
+  count = gtk_tree_selection_count_selected_rows (uimusicq->ui [ci].sel);
   if (count != 1) {
     logProcEnd (LOG_PROC, "uimusicqMusicQueueSetSelected", "count != 1");
     return;
   }
-  gtk_tree_selection_get_selected (sel, &model, &iter);
+  gtk_tree_selection_get_selected (uimusicq->ui [ci].sel, &model, &iter);
 
   switch (which) {
     case UIMUSICQ_SEL_CURR: {
@@ -322,7 +319,7 @@ uimusicqMusicQueueSetSelected (uimusicq_t *uimusicq, int ci, int which)
   if (valid) {
     GtkTreePath *path;
 
-    gtk_tree_selection_select_iter (sel, &iter);
+    gtk_tree_selection_select_iter (uimusicq->ui [ci].sel, &iter);
     path = gtk_tree_model_get_path (model, &iter);
     uimusicq->ui [ci].selPathStr = gtk_tree_path_to_string (path);
 

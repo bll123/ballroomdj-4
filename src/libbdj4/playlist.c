@@ -163,7 +163,6 @@ playlistLoad (playlist_t *pl, char *fname)
 
   pathbldMakePath (tfn, sizeof (tfn), fname,
       BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
-fprintf (stderr, "pl-load: %s %s\n", fname, tfn);
   if (pl == NULL) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Null playlist %s", tfn);
     return -1;
@@ -272,7 +271,6 @@ playlistCreate (playlist_t *pl, const char *plfname, pltype_t type,
 
 
   levels = bdjvarsdfGet (BDJVDF_LEVELS);
-fprintf (stderr, "pl-create: %s\n", plfname);
 
   pl->name = strdup (plfname);
   snprintf (tbuff, sizeof (tbuff), "plinfo-c-%s", plfname);
@@ -280,7 +278,7 @@ fprintf (stderr, "pl-create: %s\n", plfname);
   nlistSetSize (pl->plinfo, PLAYLIST_KEY_MAX);
   nlistSetStr (pl->plinfo, PLAYLIST_ALLOWED_KEYWORDS, NULL);
   nlistSetNum (pl->plinfo, PLAYLIST_ANNOUNCE, 0);
-  nlistSetNum (pl->plinfo, PLAYLIST_GAP, 1000);
+  nlistSetNum (pl->plinfo, PLAYLIST_GAP, 0);
   nlistSetNum (pl->plinfo, PLAYLIST_LEVEL_HIGH, levelGetMax (levels));
   nlistSetNum (pl->plinfo, PLAYLIST_LEVEL_LOW, 0);
   nlistSetNum (pl->plinfo, PLAYLIST_MAX_PLAY_TIME, 0);
@@ -290,6 +288,7 @@ fprintf (stderr, "pl-create: %s\n", plfname);
   nlistSetNum (pl->plinfo, PLAYLIST_TYPE, type);
   nlistSetNum (pl->plinfo, PLAYLIST_STOP_AFTER, 0);
   nlistSetNum (pl->plinfo, PLAYLIST_STOP_TIME, LIST_VALUE_INVALID);
+  nlistSetNum (pl->plinfo, PLAYLIST_STATUS_PLAYABLE, 1);
   nlistSort (pl->plinfo);
 
   if (suppfname == NULL) {
@@ -301,7 +300,6 @@ fprintf (stderr, "pl-create: %s\n", plfname);
   if (type == PLTYPE_SEQ) {
     pl->sequence = sequenceAlloc (suppfname);
   }
-fprintf (stderr, "- pl-c suppfname: %s\n", suppfname);
 
   snprintf (tbuff, sizeof (tbuff), "pldance-c-%s", plfname);
   pl->pldances = ilistAlloc (tbuff, LIST_ORDERED);
@@ -572,16 +570,13 @@ playlistSave (playlist_t *pl)
 {
   char  tfn [MAXPATHLEN];
 
-fprintf (stderr, "- pl-save: name: %s\n", pl->name);
   pathbldMakePath (tfn, sizeof (tfn), pl->name,
       BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
-fprintf (stderr, "- pl-save: pl-name: %s\n", tfn);
   datafileSaveKeyVal ("playlist", tfn, playlistdfkeys,
       PLAYLIST_KEY_MAX, pl->plinfo);
 
   pathbldMakePath (tfn, sizeof (tfn), pl->name,
       BDJ4_PL_DANCE_EXT, PATHBLD_MP_DATA);
-fprintf (stderr, "- pl-save: d-name: %s\n", tfn);
   datafileSaveIndirect ("playlist", tfn, playlistdancedfkeys,
       PLDANCE_KEY_MAX, pl->pldances);
 }
@@ -667,6 +662,7 @@ plConvType (datafileconv_t *conv)
   } else if (conv->valuetype == VALUE_NUM) {
     char    *sval;
 
+    conv->valuetype = VALUE_STR;
     switch (conv->u.num) {
       case PLTYPE_MANUAL: { sval = "Manual"; break; }
       case PLTYPE_AUTO: { sval = "Automatic"; break; }

@@ -49,6 +49,7 @@ uisongselInit (conn_t *conn, musicdb_t *musicdb,
   uisongsel->filterDisplaySel = NULL;
   uisongsel->options = options;
   uisongsel->idxStart = 0;
+  uisongsel->oldIdxStart = 0;
   uisongsel->danceIdx = -1;
   uisongsel->dfilterCount = (double) dbCount (musicdb);
   uisongsel->dfltpbflag = pbflag;

@@ -18,6 +18,7 @@
 typedef struct {
   conn_t            *conn;
   ssize_t           idxStart;
+  ssize_t           oldIdxStart;
   ilistidx_t        danceIdx;
   songfilter_t      *songfilter;
   rating_t          *ratings;
