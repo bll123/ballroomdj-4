@@ -40,6 +40,7 @@
 #include "slist.h"
 #include "sock.h"
 #include "sockh.h"
+#include "songfilter.h"
 #include "sysvars.h"
 #include "tmutil.h"
 #include "uimusicq.h"
@@ -136,6 +137,8 @@ typedef struct manage {
   GtkWidget       *ezvboxwidget;
   char            *sloldname;
   bool            slbackupcreated;
+  songfilter_t    *slsongfilter;
+  songfilter_t    *mmsongfilter;
   /* music manager ui */
   uiplayer_t      *mmplayer;
   uimusicq_t      *mmmusicq;
@@ -202,7 +205,7 @@ static void manageSelectFileSelect (GtkTreeView* tv, GtkTreePath* path,
     GtkTreeViewColumn* column, gpointer udata);
 static void manageSelectFileResponseHandler (GtkDialog *d, gint responseid,
     gpointer udata);
-
+static void manageInitializeSongFilter (manageui_t *manage, nlist_t *options);
 
 static int gKillReceived = 0;
 
@@ -252,6 +255,8 @@ main (int argc, char *argv[])
   manage.selfilecb = NULL;
   manage.sloldname = NULL;
   manage.slbackupcreated = NULL;
+  manage.slsongfilter = NULL;
+  manage.mmsongfilter = NULL;
 
   procutilInitProcesses (manage.processes);
 
@@ -306,24 +311,30 @@ main (int argc, char *argv[])
     nlistSetNum (manage.options, MANAGE_EASY_SONGLIST, true);
   }
 
+  manage.slsongfilter = songfilterAlloc ();
+  manage.mmsongfilter = songfilterAlloc ();
+  manageInitializeSongFilter (&manage, manage.options);
+
   manage.slplayer = uiplayerInit (manage.progstate, manage.conn,
       manage.musicdb);
   manage.slmusicq = uimusicqInit (manage.conn,
       manage.musicdb, manage.dispsel,
       UIMUSICQ_FLAGS_NO_QUEUE | UIMUSICQ_FLAGS_NO_TOGGLE_PAUSE,
       DISP_SEL_SONGLIST);
-  manage.slsongsel = uisongselInit (manage.conn,
+  manage.slsongsel = uisongselInit ("m-ss", manage.conn,
       manage.musicdb, manage.dispsel, manage.options,
       SONG_FILTER_FOR_SELECTION, DISP_SEL_SONGSEL);
+  uisongselInitializeSongFilter (manage.slsongsel, manage.slsongfilter);
   manage.slsongedit = uisongeditInit (manage.conn,
       manage.musicdb, manage.dispsel, manage.options);
   manage.slezmusicq = uimusicqInit (manage.conn,
       manage.musicdb, manage.dispsel,
       UIMUSICQ_FLAGS_NO_QUEUE | UIMUSICQ_FLAGS_NO_TOGGLE_PAUSE,
       DISP_SEL_EZSONGLIST);
-  manage.slezsongsel = uisongselInit (manage.conn,
+  manage.slezsongsel = uisongselInit ("m-ez", manage.conn,
       manage.musicdb, manage.dispsel, manage.options,
       SONG_FILTER_FOR_SELECTION, DISP_SEL_EZSONGSEL);
+  uisongselInitializeSongFilter (manage.slezsongsel, manage.slsongfilter);
 
   uimusicqSetPlayIdx (manage.slmusicq, manage.musicqPlayIdx);
   uimusicqSetPlayIdx (manage.slezmusicq, manage.musicqPlayIdx);
@@ -336,9 +347,10 @@ main (int argc, char *argv[])
       manage.musicdb, manage.dispsel,
       UIMUSICQ_FLAGS_NO_QUEUE | UIMUSICQ_FLAGS_NO_TOGGLE_PAUSE,
       DISP_SEL_SONGLIST);
-  manage.mmsongsel = uisongselInit (manage.conn,
+  manage.mmsongsel = uisongselInit ("m-mm", manage.conn,
       manage.musicdb, manage.dispsel, manage.options,
       SONG_FILTER_FOR_SELECTION, DISP_SEL_MM);
+  uisongselInitializeSongFilter (manage.mmsongsel, manage.mmsongfilter);
   manage.mmsongedit = uisongeditInit (manage.conn,
       manage.musicdb, manage.dispsel, manage.options);
 
@@ -435,6 +447,12 @@ manageClosingCallback (void *udata, programstate_t programState)
   bdj4shutdown (ROUTE_MANAGEUI, manage->musicdb);
   dispselFree (manage->dispsel);
 
+  if (manage->slsongfilter != NULL) {
+    songfilterFree (manage->slsongfilter);
+  }
+  if (manage->mmsongfilter != NULL) {
+    songfilterFree (manage->mmsongfilter);
+  }
   if (manage->sloldname != NULL) {
     free (manage->sloldname);
   }
@@ -1674,4 +1692,13 @@ manageSelectFileResponseHandler (GtkDialog *d, gint responseid,
       break;
     }
   }
+}
+
+static void
+manageInitializeSongFilter (manageui_t *manage, nlist_t *options)
+{
+  songfilterSetSort (manage->slsongfilter,
+      nlistGetStr (options, SONGSEL_SORT_BY));
+  songfilterSetSort (manage->mmsongfilter,
+      nlistGetStr (options, SONGSEL_SORT_BY));
 }

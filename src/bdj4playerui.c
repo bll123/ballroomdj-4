@@ -58,6 +58,7 @@ typedef struct {
   int             stopwaitcount;
   uiutilsnbtabid_t *nbtabid;
   mstime_t        clockCheck;
+  songfilter_t    *songfilter;
   /* gtk stuff */
   GtkWidget       *window;
   GtkWidget       *vbox;
@@ -122,6 +123,7 @@ static void     pluiMarqueeFontSizeDialogResponse (GtkDialog *d, gint responseid
 static void     pluiMarqueeFontSizeChg (GtkSpinButton *fb, gpointer udata);
 static void     pluisetMarqueeIsMaximized (playerui_t *plui, char *args);
 static void     pluisetMarqueeFontSizes (playerui_t *plui, char *args);
+static void     pluiInitializeSongFilter (playerui_t *plui, nlist_t *options);
 
 
 static int gKillReceived = 0;
@@ -157,6 +159,7 @@ main (int argc, char *argv[])
   mstimeset (&plui.clockCheck, 0);
   plui.stopwaitcount = 0;
   plui.nbtabid = uiutilsNotebookIDInit ();
+  plui.songfilter = NULL;
 
   osSetStandardSignals (pluiSigHandler);
 
@@ -189,13 +192,16 @@ main (int argc, char *argv[])
     nlistSetStr (plui.options, SONGSEL_SORT_BY, "TITLE");
   }
 
+  plui.songfilter = songfilterAlloc ();
+  pluiInitializeSongFilter (&plui, plui.options);
+
   plui.uiplayer = uiplayerInit (plui.progstate, plui.conn, plui.musicdb);
   plui.uimusicq = uimusicqInit (plui.conn, plui.musicdb,
-      plui.dispsel,
-      UIMUSICQ_FLAGS_NONE, DISP_SEL_MUSICQ);
-  plui.uisongsel = uisongselInit (plui.conn, plui.musicdb,
+      plui.dispsel, UIMUSICQ_FLAGS_NONE, DISP_SEL_MUSICQ);
+  plui.uisongsel = uisongselInit ("plui-req", plui.conn, plui.musicdb,
       plui.dispsel, plui.options,
       SONG_FILTER_FOR_PLAYBACK, DISP_SEL_REQUEST);
+  uisongselInitializeSongFilter (plui.uisongsel, plui.songfilter);
 
   /* register these after calling the sub-window initialization */
   /* then these will be run last, after the other closing callbacks */
@@ -992,3 +998,9 @@ pluisetMarqueeFontSizes (playerui_t *plui, char *args)
   plui->marqueeFontSizeFS = atoi (p);
 }
 
+static void
+pluiInitializeSongFilter (playerui_t *plui, nlist_t *options)
+{
+  songfilterSetSort (plui->songfilter,
+      nlistGetStr (options, SONGSEL_SORT_BY));
+}

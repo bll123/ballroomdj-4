@@ -300,6 +300,7 @@ listGetIdx (list_t *list, listkey_t *key)
     /* check the cache */
   if (list->locCache >= 0L) {
     if ((list->keytype == LIST_KEY_STR &&
+         key->strkey != NULL &&
          strcmp (key->strkey, list->keyCache.strkey) == 0) ||
         (list->keytype == LIST_KEY_NUM &&
          key->idx == list->keyCache.idx)) {

@@ -10,6 +10,7 @@ add_library (libbdj4uigtk SHARED
   uisongeditgtk.c
   uisongsel.c
   uisongselgtk.c
+  uisongselfilter.c
 )
 target_include_directories (libbdj4uigtk
   PUBLIC ${GTK_INCLUDE_DIRS}

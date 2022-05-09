@@ -49,6 +49,7 @@
 #include "slist.h"
 #include "sock.h"
 #include "sockh.h"
+#include "songfilter.h"
 #include "status.h"
 #include "sysvars.h"
 #include "tagdef.h"

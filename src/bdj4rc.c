@@ -481,6 +481,9 @@ remctrlProcessDanceList (remctrldata_t *remctrlData, char *danceList)
     dstr = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   }
 
+  if (*remctrlData->danceList) {
+    free (remctrlData->danceList);
+  }
   remctrlData->danceList = strdup (obuff);
 }
 
@@ -505,6 +508,9 @@ remctrlProcessPlaylistList (remctrldata_t *remctrlData, char *playlistList)
     plnm = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   }
 
+  if (*remctrlData->playlistList) {
+    free (remctrlData->playlistList);
+  }
   remctrlData->playlistList = strdup (obuff);
 }
 

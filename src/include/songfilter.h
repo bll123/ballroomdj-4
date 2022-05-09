@@ -2,7 +2,9 @@
 #define INC_SONGFILTER_H
 
 #include <stdbool.h>
+#include <sys/types.h>
 
+#include "datafile.h"
 #include "musicdb.h"
 #include "nlist.h"
 
@@ -10,6 +12,7 @@ enum {
   SONG_FILTER_BPM_HIGH,
   SONG_FILTER_BPM_LOW,
   SONG_FILTER_DANCE,
+  SONG_FILTER_DANCE_IDX,
   SONG_FILTER_FAVORITE,
   SONG_FILTER_GENRE,
   SONG_FILTER_KEYWORD,
@@ -22,16 +25,28 @@ enum {
   SONG_FILTER_MAX,
 };
 
+enum {
+  FILTER_DISP_GENRE,
+  FILTER_DISP_DANCELEVEL,
+  FILTER_DISP_STATUS,
+  FILTER_DISP_FAVORITE,
+  FILTER_DISP_STATUSPLAYABLE,
+  FILTER_DISP_MAX,
+};
+
 typedef enum {
   SONG_FILTER_FOR_SELECTION = 0,
   SONG_FILTER_FOR_PLAYBACK = 1,
 } songfilterpb_t;
 
 typedef struct songfilter songfilter_t;
+extern datafilekey_t filterdisplaydfkeys [FILTER_DISP_MAX];
 
 songfilter_t  * songfilterAlloc (void);
 void          songfilterFree (songfilter_t *sf);
 void          songfilterReset (songfilter_t *sf);
+bool          songfilterCheckSelection (songfilter_t *sf, int type);
+bool          songfilterIsChanged (songfilter_t *sf, time_t tm);
 void          songfilterSetSort (songfilter_t *sf, char *sortselection);
 void          songfilterClear (songfilter_t *sf, int filterType);
 void          songfilterSetData (songfilter_t *sf, int filterType, void *value);

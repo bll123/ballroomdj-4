@@ -15,14 +15,6 @@
 #include "log.h"
 #include "uiutils.h"
 
-datafilekey_t filterdisplaydfkeys [FILTER_DISP_MAX] = {
-  { "DANCELEVEL",     FILTER_DISP_DANCELEVEL,      VALUE_NUM, convBoolean, -1 },
-  { "FAVORITE",       FILTER_DISP_FAVORITE,        VALUE_NUM, convBoolean, -1 },
-  { "GENRE",          FILTER_DISP_GENRE,           VALUE_NUM, convBoolean, -1 },
-  { "STATUS",         FILTER_DISP_STATUS,          VALUE_NUM, convBoolean, -1 },
-  { "STATUSPLAYABLE", FILTER_DISP_STATUSPLAYABLE,  VALUE_NUM, convBoolean, -1 },
-};
-
 void
 uiutilsCreateDanceList (uiutilsdropdown_t *dropdown, char *selectLabel)
 {
