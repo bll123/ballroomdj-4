@@ -813,7 +813,7 @@ uiplayerPlayPauseProcess (GtkButton *b, gpointer udata)
   uiplayer_t      *uiplayer = udata;
 
   logProcBegin (LOG_PROC, "uiplayerPlayPauseProcess");
-  connSendMessage (uiplayer->conn, ROUTE_MAIN, MSG_PLAY_PLAYPAUSE, NULL);
+  connSendMessage (uiplayer->conn, ROUTE_MAIN, MSG_CMD_PLAYPAUSE, NULL);
   logProcEnd (LOG_PROC, "uiplayerPlayPauseProcess", "");
 }
 

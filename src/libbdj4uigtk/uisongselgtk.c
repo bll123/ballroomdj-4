@@ -49,7 +49,7 @@ enum {
 };
 
 typedef struct {
-  UIWidget    buttons [SONGSEL_BUTTON_MAX];
+  UIWidget            buttons [SONGSEL_BUTTON_MAX];
   GtkWidget           *parentwin;
   GtkWidget           *vbox;
   GtkWidget           *songselTree;
@@ -430,16 +430,23 @@ uisongselQueueProcessQueueHandler (UIWidget *uiwidget, void *udata)
   return;
 }
 
-inline static void
+static void
 uisongselQueueProcessPlayHandler (UIWidget *uiwidget, void *udata)
 {
-  uisongsel_t       * uisongsel = udata;
-  musicqidx_t       mqidx;
+  uisongsel_t     * uisongsel = udata;
+  uisongselgtk_t  * uiw;
+  musicqidx_t     mqidx;
+  char            tmp [20];
 
-  /* clear any playing song */
-  connSendMessage (uisongsel->conn, ROUTE_PLAYER, MSG_PLAY_NEXTSONG, NULL);
-  /* and queue to the hidden music queue */
+  uiw = uisongsel->uiWidgetData;
+
   mqidx = MUSICQ_B;
+  /* clear the queue; start index is 1 */
+  snprintf (tmp, sizeof (tmp), "%d%c%d", mqidx, MSG_ARGS_RS, 1);
+  connSendMessage (uisongsel->conn, ROUTE_MAIN, MSG_QUEUE_CLEAR, tmp);
+  /* clear any playing song via main */
+  connSendMessage (uisongsel->conn, ROUTE_MAIN, MSG_CMD_NEXTSONG, NULL);
+  /* queue to the hidden music queue */
   uisongselQueueProcessHandler (uiwidget, udata, mqidx);
   return;
 }
@@ -447,10 +454,10 @@ uisongselQueueProcessPlayHandler (UIWidget *uiwidget, void *udata)
 static void
 uisongselQueueProcessHandler (UIWidget *uiwidget, void *udata, musicqidx_t mqidx)
 {
-  uisongsel_t       * uisongsel = udata;
-  uisongselgtk_t    * uiw;
-  nlistidx_t        iteridx;
-  dbidx_t           dbidx;
+  uisongsel_t     * uisongsel = udata;
+  uisongselgtk_t  * uiw;
+  nlistidx_t      iteridx;
+  dbidx_t         dbidx;
 
   logProcBegin (LOG_PROC, "uisongselQueueProcessHandler");
   uiw = uisongsel->uiWidgetData;

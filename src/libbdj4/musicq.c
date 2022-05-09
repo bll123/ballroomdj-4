@@ -397,6 +397,15 @@ musicqClear (musicq_t *musicq, musicqidx_t musicqidx, ssize_t startIdx)
   ssize_t       dur;
 
   logProcBegin (LOG_PROC, "musicqClear");
+  if (musicq == NULL) {
+    logProcEnd (LOG_PROC, "musicqClear", "bad-ptr");
+    return;
+  }
+  if (musicq->q [musicqidx] == NULL) {
+    logProcEnd (LOG_PROC, "musicqClear", "bad-ptr-b");
+    return;
+  }
+
   if (startIdx < 1 || startIdx >= queueGetCount (musicq->q [musicqidx])) {
     logProcEnd (LOG_PROC, "musicqClear", "bad-idx");
     return;

@@ -606,7 +606,7 @@ uimusicqProcessMusicQueueDataUpdate (uimusicq_t *uimusicq, char * args)
     if (! valid) {
       gtk_list_store_append (GTK_LIST_STORE (model), &iter);
       gtk_list_store_set (GTK_LIST_STORE (model), &iter,
-          MUSICQ_COL_ELLIPSIZE, 1,
+          MUSICQ_COL_ELLIPSIZE, PANGO_ELLIPSIZE_END,
           MUSICQ_COL_FONT, listingFont,
           MUSICQ_COL_IDX, (gulong) musicqupdate->idx,
           MUSICQ_COL_DISP_IDX, (gulong) musicqupdate->dispidx,

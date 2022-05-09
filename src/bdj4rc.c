@@ -254,7 +254,7 @@ remctrlEventHandler (struct mg_connection *c, int ev,
             ROUTE_PLAYER, MSG_PLAY_PAUSEATEND, NULL);
       } else if (strcmp (querystr, "play") == 0) {
         connSendMessage (remctrlData->conn,
-            ROUTE_MAIN, MSG_PLAY_PLAYPAUSE, "0");
+            ROUTE_MAIN, MSG_CMD_PLAYPAUSE, "0");
       } else if (strcmp (querystr, "playlistclearplay") == 0) {
         connSendMessage (remctrlData->conn,
             ROUTE_MAIN, MSG_PLAYLIST_CLEARPLAY, tbuff);
@@ -299,10 +299,9 @@ remctrlEventHandler (struct mg_connection *c, int ev,
         mg_http_match_uri (hm, "#.crt") ||
         mg_http_match_uri (hm, "#.pem") ||
         mg_http_match_uri (hm, "#.csr")) {
-      mg_http_reply (c, 404, NULL, "");
+      mg_http_reply (c, 403, "%s", "Forbidden");
     } else {
-      struct mg_http_serve_opts opts = { .root_dir = sysvarsGetStr (SV_BDJ4HTTPDIR) };
-      mg_http_serve_dir (c, hm, &opts);
+      mg_http_reply (c, 403, "%s", "Forbidden");
     }
   }
 }

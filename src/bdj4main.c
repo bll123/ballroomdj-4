@@ -364,11 +364,22 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           mainData->switchQueueWhenEmpty = atoi (args);
           break;
         }
-        case MSG_PLAY_PLAY: {
+        case MSG_CMD_PLAY: {
           mainMusicQueuePlay (mainData);
           break;
         }
-        case MSG_PLAY_PLAYPAUSE: {
+        case MSG_CMD_NEXTSONG: {
+          int   currlen;
+
+          currlen = musicqGetLen (mainData->musicQueue, mainData->musicqPlayIdx);
+          if (currlen > 0) {
+            connSendMessage (mainData->conn, ROUTE_PLAYER,
+                MSG_PLAY_NEXTSONG, NULL);
+          } else {
+          }
+          break;
+        }
+        case MSG_CMD_PLAYPAUSE: {
           if (mainData->playerState == PL_STATE_PLAYING ||
               mainData->playerState == PL_STATE_IN_FADEOUT) {
             connSendMessage (mainData->conn, ROUTE_PLAYER,

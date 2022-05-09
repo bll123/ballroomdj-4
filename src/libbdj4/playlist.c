@@ -160,6 +160,9 @@ playlistLoad (playlist_t *pl, char *fname)
   ilistidx_t    didx;
   ilistidx_t    iteridx;
 
+  if (fname == NULL) {
+    return -1;
+  }
 
   pathbldMakePath (tfn, sizeof (tfn), fname,
       BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
