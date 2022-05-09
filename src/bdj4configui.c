@@ -1242,10 +1242,12 @@ confuiBuildUIDispSettings (configui_t *confui)
 
   /* CONTEXT: config: display settings: which set of display settings to update */
   widget = confuiMakeItemSpinboxText (confui, vbox, &sg, _("Display"),
-      CONFUI_SPINBOX_DISP_SEL, -1, CONFUI_OUT_NUM, 0);
+      CONFUI_SPINBOX_DISP_SEL, -1, CONFUI_OUT_NUM,
+      confui->uiitem [CONFUI_SPINBOX_DISP_SEL].listidx);
   g_signal_connect (widget, "value-changed", G_CALLBACK (confuiDispSettingChg), confui);
 
   hbox = uiCreateHorizBox ();
+  uiWidgetAlignHorizStart (hbox);
   uiBoxPackStartExpand (vbox, hbox);
 
   widget = uiCreateScrolledWindow (300);
@@ -1952,9 +1954,6 @@ confuiPopulateOptions (configui_t *confui)
             sval = nlistGetStr (confui->uiitem [i].displist, nval);
           }
         }
-        if (outtype == CONFUI_OUT_NUM) {
-          nval = nlistGetNum (confui->uiitem [i].sbkeylist, nval);
-        }
         break;
       }
       case CONFUI_SPINBOX_NUM: {
@@ -2372,11 +2371,13 @@ confuiMakeItemColorButton (configui_t *confui, GtkWidget *vbox, UIWidget *sg,
 
 static GtkWidget *
 confuiMakeItemSpinboxText (configui_t *confui, GtkWidget *vbox, UIWidget *sg,
-    char *txt, int widx, int bdjoptIdx, confuiouttype_t outtype, ssize_t value)
+    char *txt, int widx, int bdjoptIdx,
+    confuiouttype_t outtype, ssize_t value)
 {
   GtkWidget   *hbox;
   GtkWidget   *widget;
   nlist_t     *list;
+  nlist_t     *keylist;
   size_t      maxWidth;
   int         sbidx = 0;
 
@@ -2389,6 +2390,10 @@ confuiMakeItemSpinboxText (configui_t *confui, GtkWidget *vbox, UIWidget *sg,
   confui->uiitem [widx].widget = widget;
 
   list = confui->uiitem [widx].displist;
+  keylist = confui->uiitem [widx].sbkeylist;
+  if (outtype == CONFUI_OUT_STR) {
+    keylist = NULL;
+  }
   maxWidth = 0;
   if (list != NULL) {
     nlistidx_t    iteridx;
@@ -2406,7 +2411,9 @@ confuiMakeItemSpinboxText (configui_t *confui, GtkWidget *vbox, UIWidget *sg,
   }
 
   uiSpinboxTextSet (&confui->uiitem [widx].u.spinbox, 0,
-      nlistGetCount (list), maxWidth, list, NULL);
+      nlistGetCount (list), maxWidth, list, keylist, NULL);
+  /* makeitemspinboxtext is called with the actual key value */
+  /* this needs to be converted into the spinbox index */
   sbidx = value;
   if (outtype == CONFUI_OUT_NUM) {
     sbidx = nlistGetNum (confui->uiitem [widx].sbidxlist, value);

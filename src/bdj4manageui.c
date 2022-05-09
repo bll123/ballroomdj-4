@@ -738,7 +738,8 @@ manageBuildUIUpdateDatabase (manageui_t *manage)
   widget = uiSpinboxTextCreate (&manage->dbspinbox, manage);
   /* currently hard-coded at 30 chars */
   uiSpinboxTextSet (&manage->dbspinbox, 0,
-      nlistGetCount (manage->dblist), 30, manage->dblist, NULL);
+      nlistGetCount (manage->dblist), 30,
+      manage->dblist, NULL, NULL);
   uiSpinboxTextSetValue (&manage->dbspinbox, MANAGE_DB_CHECK_NEW);
   g_signal_connect (widget, "value-changed", G_CALLBACK (manageDbChg), manage);
   uiBoxPackStart (hbox, widget);

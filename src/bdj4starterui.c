@@ -408,7 +408,7 @@ starterBuildUI (startui_t  *starter)
   widget = uiSpinboxTextCreate (&starter->profilesel, starter);
   uiSpinboxTextSet (&starter->profilesel, starter->currprofile,
       nlistGetCount (starter->proflist), starter->maxProfileWidth,
-      starter->proflist, starterSetProfile);
+      starter->proflist, NULL, starterSetProfile);
   uiWidgetSetMarginStart (widget, uiBaseMarginSz * 4);
   uiWidgetAlignHorizFill (widget);
   uiBoxPackStart (hbox, widget);

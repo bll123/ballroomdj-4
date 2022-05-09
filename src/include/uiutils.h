@@ -104,6 +104,7 @@ typedef struct {
   void                  *udata;
   int                   maxWidth;
   slist_t               *list;
+  nlist_t               *keylist;
   bool                  indisp : 1;
   bool                  changed : 1;
 } uispinbox_t;
@@ -169,7 +170,7 @@ void uiSpinboxTextInit (uispinbox_t *spinbox);
 void uiSpinboxTextFree (uispinbox_t *spinbox);
 GtkWidget * uiSpinboxTextCreate (uispinbox_t *spinbox, void *udata);
 void uiSpinboxTextSet (uispinbox_t *spinbox, int min, int count,
-    int maxWidth, slist_t *list, uispinboxdisp_t textGetProc);
+    int maxWidth, slist_t *list, nlist_t *keylist, uispinboxdisp_t textGetProc);
 int   uiSpinboxTextGetIdx (uispinbox_t *spinbox);
 int   uiSpinboxTextGetValue (uispinbox_t *spinbox);
 void  uiSpinboxTextSetValue (uispinbox_t *spinbox, int ivalue);

@@ -74,7 +74,8 @@ uiSpinboxTextCreate (uispinbox_t *spinbox, void *udata)
 
 void
 uiSpinboxTextSet (uispinbox_t *spinbox, int min, int count,
-    int maxWidth, slist_t *list, uispinboxdisp_t textGetProc)
+    int maxWidth, slist_t *list, nlist_t *keylist,
+    uispinboxdisp_t textGetProc)
 {
   logProcBegin (LOG_PROC, "uiSpinboxTextSet");
   uiSpinboxSet (spinbox->spinbox, (double) min, (double) (count - 1));
@@ -84,6 +85,7 @@ uiSpinboxTextSet (uispinbox_t *spinbox, int min, int count,
   gtk_entry_set_width_chars (GTK_ENTRY (spinbox->spinbox), spinbox->maxWidth + 2);
   gtk_entry_set_max_width_chars (GTK_ENTRY (spinbox->spinbox), spinbox->maxWidth + 2);
   spinbox->list = list;
+  spinbox->keylist = keylist;
   spinbox->textGetProc = textGetProc;
   logProcEnd (LOG_PROC, "uiSpinboxTextSet", "");
 }
@@ -105,8 +107,8 @@ uiSpinboxTextGetValue (uispinbox_t *spinbox)
 
   val = (int) uiSpinboxGetValue (spinbox->spinbox);
   nval = val;
-  if (spinbox->list != NULL) {
-    nval = nlistGetKeyByIdx (spinbox->list, val);
+  if (spinbox->keylist != NULL) {
+    nval = nlistGetNum (spinbox->keylist, val);
   }
   return nval;
 }

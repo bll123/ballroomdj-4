@@ -194,7 +194,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
   }
   uiSpinboxTextSet (&uisongsel->filterratingsel, -1,
       ratingGetCount (uisongsel->ratings),
-      max, NULL, uisongselRatingGet);
+      max, NULL, NULL, uisongselRatingGet);
   uiBoxPackStart (hbox, widget);
 
   /* level */
@@ -216,7 +216,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
     }
     uiSpinboxTextSet (&uisongsel->filterlevelsel, -1,
         levelGetCount (uisongsel->levels),
-        max, NULL, uisongselLevelGet);
+        max, NULL, NULL, uisongselLevelGet);
     uiBoxPackStart (hbox, widget);
   }
 
@@ -239,7 +239,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
     }
     uiSpinboxTextSet (&uisongsel->filterstatussel, -1,
         statusGetCount (uisongsel->status),
-        max, NULL, uisongselStatusGet);
+        max, NULL, NULL, uisongselStatusGet);
     uiBoxPackStart (hbox, widget);
   }
 
@@ -255,7 +255,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
 
     widget = uiSpinboxTextCreate (&uisongsel->filterfavoritesel, uisongsel);
     uiSpinboxTextSet (&uisongsel->filterfavoritesel, 0,
-        SONG_FAVORITE_MAX, 1, NULL, uisongselFavoriteGet);
+        SONG_FAVORITE_MAX, 1, NULL, NULL, uisongselFavoriteGet);
     uiBoxPackStart (hbox, widget);
   }
 
