@@ -263,7 +263,7 @@ main (int argc, char *argv[])
 
   manage.dispsel = dispselAlloc ();
   uiutilsSpinboxTextInit (&manage.dbspinbox);
-  tlist = nlistAlloc ("db-action", LIST_UNORDERED, free);
+  tlist = nlistAlloc ("db-action", LIST_ORDERED, free);
   hlist = nlistAlloc ("db-action-help", LIST_ORDERED, free);
   nlistSetStr (tlist, MANAGE_DB_CHECK_NEW, _("Check For New"));
   nlistSetStr (hlist, MANAGE_DB_CHECK_NEW,
@@ -707,6 +707,7 @@ manageBuildUIUpdateDatabase (manageui_t *manage)
   uiutilsNotebookAppendPage (manage->mainnotebook, vbox, tabLabel);
   uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_OTHER);
 
+  /* help display */
   tb = uiutilsTextBoxCreate (60);
   uiutilsTextBoxSetReadonly (tb);
   uiutilsTextBoxSetHeight (tb, 70);
@@ -732,11 +733,11 @@ manageBuildUIUpdateDatabase (manageui_t *manage)
   uiutilsBoxPackStart (vbox, widget);
   manage->dbpbar = widget;
 
-  tb = uiutilsTextBoxCreate (100);
+  tb = uiutilsTextBoxCreate (200);
   uiutilsTextBoxSetReadonly (tb);
   uiutilsTextBoxDarken (tb);
   uiutilsTextBoxSetHeight (tb, 300);
-  uiutilsBoxPackStart (vbox, tb->scw);
+  uiutilsBoxPackStartExpand (vbox, tb->scw);
   manage->dbstatus = tb;
 }
 
@@ -893,16 +894,22 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
               manage->conn, ROUTE_DBUPDATE);
           procutilFreeRoute (manage->processes, routefrom);
           connDisconnect (manage->conn, routefrom);
-          /* the database has been updated, tell the other processes to */
-          /* reload it, and reload it ourselves */
-          connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_DATABASE_UPDATE, NULL);
+
           manage->musicdb = bdj4ReloadDatabase (manage->musicdb);
+
           uiplayerSetDatabase (manage->slplayer, manage->musicdb);
           uiplayerSetDatabase (manage->mmplayer, manage->musicdb);
           uisongselSetDatabase (manage->slsongsel, manage->musicdb);
+          uisongselSetDatabase (manage->slezsongsel, manage->musicdb);
           uisongselSetDatabase (manage->mmsongsel, manage->musicdb);
           uimusicqSetDatabase (manage->slmusicq, manage->musicdb);
+          uimusicqSetDatabase (manage->slezmusicq, manage->musicdb);
           uimusicqSetDatabase (manage->mmmusicq, manage->musicdb);
+
+          /* the database has been updated, tell the other processes to */
+          /* reload it, and reload it ourselves */
+          connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_DATABASE_UPDATE, NULL);
+
           /* force a database update message */
           routefrom = ROUTE_MANAGEUI;
           msg = MSG_DATABASE_UPDATE;
@@ -989,6 +996,7 @@ manageDbStart (GtkButton *b, gpointer udata)
 {
   manageui_t  *manage = udata;
   int         nval;
+  char        *sval = NULL;
   char        *targv [10];
   int         targc = 0;
   char        tbuff [MAXPATHLEN];
@@ -997,6 +1005,12 @@ manageDbStart (GtkButton *b, gpointer udata)
       "bdj4dbupdate", sysvarsGetStr (SV_OS_EXEC_EXT), PATHBLD_MP_EXECDIR);
 
   nval = uiutilsSpinboxTextGetValue (&manage->dbspinbox);
+
+  sval = nlistGetStr (manage->dblist, nval);
+  uiutilsTextBoxAppendStr (manage->dbstatus, "-- ");
+  uiutilsTextBoxAppendStr (manage->dbstatus, sval);
+  uiutilsTextBoxAppendStr (manage->dbstatus, "\n");
+
   switch (nval) {
     case MANAGE_DB_CHECK_NEW: {
       targv [targc++] = "--checknew";
@@ -1551,7 +1565,7 @@ manageCreateSelectFileDialog (manageui_t *manage,
 
   scwin = uiutilsCreateScrolledWindow (250);
   uiutilsWidgetExpandVert (scwin);
-  uiutilsBoxPackStart (vbox, scwin);
+  uiutilsBoxPackStartExpand (vbox, scwin);
 
   widget = uiutilsCreateTreeView ();
   gtk_tree_view_set_activate_on_single_click (GTK_TREE_VIEW (widget), FALSE);

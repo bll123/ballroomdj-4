@@ -90,6 +90,7 @@ static void uisongselProcessTreeSize (GtkWidget* w, GtkAllocation* allocation,
 static void uisongselCreateFilterDialog (uisongsel_t *uisongsel);
 static void uisongselFilterResponseHandler (GtkDialog *d, gint responseid,
     gpointer udata);
+static void uisongselFilterApply (uisongsel_t *uisongsel);
 
 static void uisongselSortBySelectHandler (GtkTreeView *tv, GtkTreePath *path,
     GtkTreeViewColumn *column, gpointer udata);
@@ -216,6 +217,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, GtkWidget *parentwin)
   uiutilsBoxPackEnd (hbox, widget);
 
   hbox = uiutilsCreateHorizBox ();
+  uiutilsWidgetExpandVert (uiw->vbox);
   uiutilsBoxPackStartExpand (uiw->vbox, hbox);
 
   vbox = uiutilsCreateVertBox ();
@@ -235,7 +237,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, GtkWidget *parentwin)
   widget = uiutilsCreateScrolledWindow (400);
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (widget), GTK_POLICY_NEVER, GTK_POLICY_EXTERNAL);
   uiutilsWidgetExpandHoriz (widget);
-  uiutilsBoxPackStart (vbox, widget);
+  uiutilsBoxPackStartExpand (vbox, widget);
   uiw->scrolledwin = widget;
 
   uiw->songselTree = uiutilsCreateTreeView ();
@@ -981,9 +983,6 @@ uisongselFilterResponseHandler (GtkDialog *d, gint responseid, gpointer udata)
 {
   uisongselgtk_t  *uiw;
   uisongsel_t   *uisongsel = udata;
-  const char    *searchstr;
-  int           idx;
-  int           nval;
   gint          x, y;
 
   logProcBegin (LOG_PROC, "uisongselFilterResponseHandler");
@@ -996,7 +995,6 @@ uisongselFilterResponseHandler (GtkDialog *d, gint responseid, gpointer udata)
       nlistSetNum (uisongsel->options, SONGSEL_FILTER_POSITION_X, x);
       nlistSetNum (uisongsel->options, SONGSEL_FILTER_POSITION_Y, y);
 
-      songfilterReset (uisongsel->songfilter);
       uiw->filterDialog = NULL;
       break;
     }
@@ -1005,7 +1003,6 @@ uisongselFilterResponseHandler (GtkDialog *d, gint responseid, gpointer udata)
       nlistSetNum (uisongsel->options, SONGSEL_FILTER_POSITION_X, x);
       nlistSetNum (uisongsel->options, SONGSEL_FILTER_POSITION_Y, y);
 
-      songfilterReset (uisongsel->songfilter);
       uiutilsWidgetHide (uiw->filterDialog);
       break;
     }
@@ -1024,6 +1021,20 @@ uisongselFilterResponseHandler (GtkDialog *d, gint responseid, gpointer udata)
       break;
     }
   }
+
+  uisongselFilterApply (uisongsel);
+}
+
+void
+uisongselFilterApply (uisongsel_t *uisongsel)
+{
+  uisongselgtk_t  *uiw;
+  const char    *searchstr;
+  int           idx;
+  int           nval;
+
+
+  uiw = uisongsel->uiWidgetData;
 
   /* search : always active */
   searchstr = uiutilsEntryGetValue (&uisongsel->searchentry);

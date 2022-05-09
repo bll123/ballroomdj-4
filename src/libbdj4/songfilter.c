@@ -231,6 +231,9 @@ songfilterProcess (songfilter_t *sf, musicdb_t *musicdb)
   if (sf == NULL) {
     return 0;
   }
+  if (musicdb == NULL) {
+    return 0;
+  }
 
   if (sf->sortList != NULL) {
     slistFree (sf->sortList);

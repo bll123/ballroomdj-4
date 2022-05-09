@@ -1249,7 +1249,7 @@ confuiBuildUIDispSettings (configui_t *confui)
 
   widget = uiutilsCreateScrolledWindow (300);
   uiutilsWidgetExpandVert (widget);
-  uiutilsBoxPackStart (hbox, widget);
+  uiutilsBoxPackStartExpand (hbox, widget);
 
   tree = uiutilsCreateTreeView ();
   uiutilsSetCss (tree,
@@ -1282,7 +1282,7 @@ confuiBuildUIDispSettings (configui_t *confui)
 
   widget = uiutilsCreateScrolledWindow (300);
   uiutilsWidgetExpandVert (widget);
-  uiutilsBoxPackStart (hbox, widget);
+  uiutilsBoxPackStartExpand (hbox, widget);
 
   tree = uiutilsCreateTreeView ();
   uiutilsSetCss (tree,
@@ -2588,7 +2588,7 @@ confuiMakeItemTable (configui_t *confui, GtkWidget *vbox, confuiident_t id,
 
   widget = uiutilsCreateScrolledWindow (300);
   uiutilsWidgetExpandVert (widget);
-  uiutilsBoxPackStart (mhbox, widget);
+  uiutilsBoxPackStartExpand (mhbox, widget);
 
   tree = uiutilsCreateTreeView ();
   confui->tables [id].tree = tree;

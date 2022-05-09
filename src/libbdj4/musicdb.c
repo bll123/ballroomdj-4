@@ -253,6 +253,13 @@ dbWrite (musicdb_t *musicdb, char *fn, slist_t *tagList, dbidx_t rrn)
 void
 dbStartIterator (musicdb_t *musicdb, slistidx_t *iteridx)
 {
+  if (musicdb == NULL) {
+    return;
+  }
+  if (musicdb->songs == NULL) {
+    return;
+  }
+
   slistStartIterator (musicdb->songs, iteridx);
 }
 
@@ -260,6 +267,10 @@ song_t *
 dbIterate (musicdb_t *musicdb, dbidx_t *idx, slistidx_t *iteridx)
 {
   song_t    *song;
+
+  if (musicdb == NULL) {
+    return NULL;
+  }
 
   song = slistIterateValueData (musicdb->songs, iteridx);
   *idx = slistIterateGetIdx (musicdb->songs, iteridx);

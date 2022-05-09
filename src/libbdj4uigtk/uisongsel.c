@@ -137,7 +137,7 @@ uisongselProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
       switch (msg) {
         case MSG_DATABASE_UPDATE: {
           /* re-filter the display */
-          uisongselFilterDanceProcess (uisongsel, uisongsel->danceIdx);
+          uisongselApplySongFilter (uisongsel);
           disp = true;
           break;
         }

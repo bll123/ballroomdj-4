@@ -441,7 +441,7 @@ uiutilsDropDownWindowCreate (uiutilsdropdown_t *dropdown,
   twidget = gtk_scrolled_window_get_vscrollbar (GTK_SCROLLED_WINDOW (scwin));
   uiutilsSetCss (twidget,
       "scrollbar, scrollbar slider { min-width: 9px; } ");
-  uiutilsBoxPackStart (vbox, scwin);
+  uiutilsBoxPackStartExpand (vbox, scwin);
 
   dropdown->tree = gtk_tree_view_new ();
   assert (dropdown->tree != NULL);

@@ -562,7 +562,7 @@ installerBuildUI (installer_t *installer)
   uiutilsBoxPackEnd (hbox, widget);
 
   scwidget = uiutilsCreateScrolledWindow (200);
-  uiutilsBoxPackStart (vbox, scwidget);
+  uiutilsBoxPackStartExpand (vbox, scwidget);
 
   installer->dispBuffer = gtk_text_buffer_new (NULL);
   installer->dispTextView = gtk_text_view_new_with_buffer (installer->dispBuffer);
