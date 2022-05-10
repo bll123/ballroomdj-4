@@ -1397,6 +1397,8 @@ playerSendStatus (playerdata_t *playerData)
       }
       case PL_STATE_MAX: {
         /* this would be an error */
+        logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: invalid player state");
+        playstate = "stop";
         break;
       }
     }

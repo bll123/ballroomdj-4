@@ -11,8 +11,10 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include <execinfo.h>
 #include <signal.h>
+#if _hdr_execinfo
+# include <execinfo.h>
+#endif
 
 #include "bdj4.h"
 #include "log.h"
@@ -212,9 +214,9 @@ logBacktraceHandler (int sig)
   for (size_t i = 0; i < size; ++i) {
     if (syslogs [LOG_ERR] != NULL) {
       syslogs [LOG_ERR]->level |= LOG_IMPORTANT;
-      rlogVarMsg (LOG_ERR, LOG_IMPORTANT, "", 0, "%s", out [i]);
+      rlogVarMsg (LOG_ERR, LOG_IMPORTANT, "", 0, "bt: %2ld: %s", i, out [i]);
     } else {
-      fprintf (stderr, "%s\n", out [i]);
+      fprintf (stderr, "bt: %2ld: %s\n", i, out [i]);
     }
   }
   free (out);

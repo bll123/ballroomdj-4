@@ -85,7 +85,10 @@ if (BDJ4_BUILD STREQUAL "Debug")
 endif()
 
 add_compile_options (-g)
-add_link_options (-g -rdynamic)
+add_link_options (-g)
+if (NOT WIN32)
+  add_link_options (-rdynamic)
+endif()
 
 set (BDJ4_NO_FORTIFY F)
 
@@ -181,6 +184,7 @@ set (CMAKE_REQUIRED_INCLUDES
 check_include_file (alsa/asoundlib.h _hdr_alsa_asoundlib)
 check_include_file (arpa/inet.h _hdr_arpa_inet)
 check_include_file (dlfcn.h _hdr_dlfcn)
+check_include_file (execinfo.h _hdr_execinfo)
 check_include_file (endpointvolume.h _hdr_endpointvolume)
 check_include_file (fcntl.h _hdr_fcntl)
 check_include_file (io.h _hdr_io)

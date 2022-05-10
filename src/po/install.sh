@@ -26,7 +26,7 @@ function mksub {
   while read -r line; do
     nl=$(echo $line |
       sed -e 's,^\.\.,,' -e 's,^,msgid ",' -e 's,$,",')
-    xl=$(sed -n "\~^${nl}$~ {n;p}" $pofile)
+    xl=$(sed -n "\~^${nl}$~ {n;p;}" $pofile)
     case $xl in
       ""|msgstr\ \"\")
         continue
@@ -61,7 +61,7 @@ function mkhtmlsub {
         continue
         ;;
     esac
-    xl=$(sed -n "\~msgid .${nl}.~ {n;p}" $pofile)
+    xl=$(sed -n "\~msgid .${nl}.~ {n;p;}" $pofile)
     case $xl in
       ""|msgstr\ \"\")
         continue
@@ -91,7 +91,7 @@ function mkimgsub {
         continue
         ;;
     esac
-    xl=$(sed -n "\~msgid .${nl}.~ {n;p}" $pofile)
+    xl=$(sed -n "\~msgid .${nl}.~ {n;p;}" $pofile)
     case $xl in
       ""|msgstr\ \"\")
         continue
@@ -163,43 +163,43 @@ while read -r line; do
 
   fn=${TMPLDIR}/bdjconfig.txt.p
   # may also need pause msg and done msg in the future
-  sed -n -e '/^QUEUE_NAME_[AB]/ {n;p}' $fn > $TMP
+  sed -n -e '/^QUEUE_NAME_[AB]/ {n;p;}' $fn > $TMP
   mksub $fn $TMP $locale $pofile
 
   fn=${TMPLDIR}/dances.txt
-  sed -n -e '/^DANCE/ {n;p}' $fn > $TMP
-  sed -n -e '/^TYPE/ {n;p}' $fn >> $TMP
-  sed -n -e '/^SPEED/ {n;p}' $fn >> $TMP
+  sed -n -e '/^DANCE/ {n;p;}' $fn > $TMP
+  sed -n -e '/^TYPE/ {n;p;}' $fn >> $TMP
+  sed -n -e '/^SPEED/ {n;p;}' $fn >> $TMP
   sort -u $TMP > $TMP.n
   mv -f $TMP.n $TMP
   mksub $fn $TMP $locale $pofile
 
   fn=${TMPLDIR}/ratings.txt
-  sed -n -e '/^RATING/ {n;p}' $fn > $TMP
+  sed -n -e '/^RATING/ {n;p;}' $fn > $TMP
   mksub $fn $TMP $locale $pofile
 
   fn=${TMPLDIR}/genres.txt
-  sed -n -e '/^GENRE/ {n;p}' $fn > $TMP
+  sed -n -e '/^GENRE/ {n;p;}' $fn > $TMP
   mksub $fn $TMP $locale $pofile
 
   fn=${TMPLDIR}/levels.txt
-  sed -n -e '/^LEVEL/ {n;p}' $fn > $TMP
+  sed -n -e '/^LEVEL/ {n;p;}' $fn > $TMP
   mksub $fn $TMP $locale $pofile
 
   fn=${TMPLDIR}/status.txt
-  sed -n -e '/^STATUS/ {n;p}' $fn > $TMP
+  sed -n -e '/^STATUS/ {n;p;}' $fn > $TMP
   mksub $fn $TMP $locale $pofile
 
   for fn in ${TMPLDIR}/*.pldances; do
-    sed -n -e '/^DANCE/ {n;p}' $fn > $TMP
+    sed -n -e '/^DANCE/ {n;p;}' $fn > $TMP
     sort -u $TMP > $TMP.n
     mv -f $TMP.n $TMP
     mksub $fn $TMP $locale $pofile
   done
 
   for fn in ${TMPLDIR}/*.pl; do
-    sed -n -e '/^DANCERATING/ {n;p}' $fn > $TMP
-    sed -n -e '/^DANCELEVEL/ {n;p}' $fn >> $TMP
+    sed -n -e '/^DANCERATING/ {n;p;}' $fn > $TMP
+    sed -n -e '/^DANCELEVEL/ {n;p;}' $fn >> $TMP
     sort -u $TMP > $TMP.n
     mv -f $TMP.n $TMP
     mksub $fn $TMP $locale $pofile
@@ -247,7 +247,7 @@ while read -r line; do
     for txt in automatic standardrounds queuedance; do
       ttxt=$txt
       if [[ $ttxt == queuedance ]]; then ttxt="QueueDance"; fi
-      xl=$(sed -n "\~msgid .${ttxt}.~ {n;p}" $pofile)
+      xl=$(sed -n "\~msgid .${ttxt}.~ {n;p;}" $pofile)
       case $xl in
         ""|msgstr\ \"\")
           continue
