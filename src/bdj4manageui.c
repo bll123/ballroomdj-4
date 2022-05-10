@@ -1356,8 +1356,8 @@ manageSonglistSave (manageui_t *manage)
 
   pathbldMakePath (onm, sizeof (onm),
       name, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
-  if (! fileopFileExists (onm))
-  {
+  if (! fileopFileExists (onm) &&
+      strcmp (name, _("Raffle Songs")) != 0) {
     playlist_t    *pl;
 
     pl = playlistAlloc (manage->musicdb);
@@ -1472,12 +1472,7 @@ manageSwitchPage (GtkNotebook *nb, GtkWidget *page, guint pagenum,
 static void
 manageSelectFileDialog (manageui_t *manage, int flags)
 {
-  slist_t     *plList;
   slist_t     *filelist;
-  slistidx_t  piteridx;
-  char        *dispnm;
-  char        *fn;
-  char        tbuff [MAXPATHLEN];
   int         x, y;
   GtkWidget   *dialog;
   manageselfilecb_t cb;
