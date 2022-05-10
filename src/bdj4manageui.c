@@ -1475,7 +1475,7 @@ manageSelectFileDialog (manageui_t *manage, int flags)
   slist_t     *filelist;
   int         x, y;
   GtkWidget   *dialog;
-  manageselfilecb_t cb;
+  manageselfilecb_t cb = NULL;
   int         pltype;
 
   logProcBegin (LOG_PROC, "manageSelectFileDialog");
@@ -1495,12 +1495,14 @@ manageSelectFileDialog (manageui_t *manage, int flags)
   filelist = playlistGetPlaylistList (pltype);
 
   /* CONTEXT: what type of file to load */
-  dialog = manageCreateSelectFileDialog (manage, filelist, _("Song List"), cb);
-  uiWidgetShowAll (dialog);
+  if (cb != NULL) {
+    dialog = manageCreateSelectFileDialog (manage, filelist, _("Song List"), cb);
+    uiWidgetShowAll (dialog);
 
-  x = nlistGetNum (manage->options, MANAGE_SELFILE_POSITION_X);
-  y = nlistGetNum (manage->options, MANAGE_SELFILE_POSITION_Y);
-  uiWindowMove (dialog, x, y);
+    x = nlistGetNum (manage->options, MANAGE_SELFILE_POSITION_X);
+    y = nlistGetNum (manage->options, MANAGE_SELFILE_POSITION_Y);
+    uiWindowMove (dialog, x, y);
+  }
   logProcEnd (LOG_PROC, "manageSelectFileDialog", "");
 }
 

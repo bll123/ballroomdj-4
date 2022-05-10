@@ -24,13 +24,16 @@ if (isset($_FILES['upfile']['name']) &&
   $fn = $dir . '/' . $_POST['origfn'];
   $fdata = file_get_contents ($tfn);
   $fdata = base64_decode ($fdata);
-  mkdir (dirname ($fn));
-  unlink ($fn . '.gz');
-  file_put_contents ($fn . '.gz', $fdata);
-  unlink ($tfn);
-  unlink ($fn);
+  if (! file_exists ($fn)) {
+    mkdir (dirname ($fn));
+  }
+  $gzfn = $fn . '.gz';
+  if (file_exists ($gzfn)) { unlink ($gzfn); }
+  file_put_contents ($gzfn, $fdata);
+  if (file_exists ($tfn)) { unlink ($tfn); }
+  if (file_exists ($fn)) { unlink ($fn); }
   system ("gzip -d $fn.gz");
-  unlink ($fn . '.gz');
+  if (file_exists ($gzfn)) { unlink ($gzfn); }
 
   if ($base == 'support.txt') {
     $msg = file_get_contents ($fn);

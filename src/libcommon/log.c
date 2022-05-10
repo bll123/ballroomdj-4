@@ -214,7 +214,7 @@ logBacktraceHandler (int sig)
   for (size_t i = 0; i < size; ++i) {
     if (syslogs [LOG_ERR] != NULL) {
       syslogs [LOG_ERR]->level |= LOG_IMPORTANT;
-      rlogVarMsg (LOG_ERR, LOG_IMPORTANT, "", 0, "bt: %2ld: %s", i, out [i]);
+      rlogVarMsg (LOG_ERR, LOG_IMPORTANT, "bt", 0, "bt: %2ld: %s", i, out [i]);
     } else {
       fprintf (stderr, "bt: %2ld: %s\n", i, out [i]);
     }

@@ -367,6 +367,9 @@ main (int argc, char * argv[])
       fclose (fh);
       osSetEnv ("GTK_THEME", buff);
     }
+    if (isinstaller && isWindows ()) {
+      osSetEnv ("GTK_THEME", buff);
+    }
   }
 
   /* launch the program */

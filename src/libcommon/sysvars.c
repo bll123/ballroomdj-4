@@ -322,7 +322,8 @@ sysvarsInit (const char *argv0)
   strlcpy (sysvars [SV_LOCALE_SHORT], buff, SV_MAX_SZ);
 
   strlcpy (sysvars [SV_BDJ4_VERSION], "unknown", SV_MAX_SZ);
-  if (fileopFileExists ("VERSION.txt")) {
+  snprintf (buff, sizeof (buff), "%s/VERSION.txt", sysvars [SV_BDJ4MAINDIR]);
+  if (fileopFileExists (buff)) {
     char    *data;
     char    *tokptr;
     char    *tokptrb;
@@ -330,7 +331,7 @@ sysvarsInit (const char *argv0)
     char    *vnm;
     char    *p;
 
-    data = filedataReadAll ("VERSION.txt", NULL);
+    data = filedataReadAll (buff, NULL);
     tp = strtok_r (data, "\r\n", &tokptr);
     while (tp != NULL) {
       vnm = strtok_r (tp, "=", &tokptrb);

@@ -93,6 +93,8 @@ typedef struct {
   char            vlcversion [40];
   char            pyversion [40];
   char            dlfname [MAXPATHLEN];
+  char            oldversion [MAXPATHLEN];
+  char            bdj3version [MAXPATHLEN];
   int             delayMax;
   int             delayCount;
   installstate_t  delayState;
@@ -104,8 +106,8 @@ typedef struct {
   char            *tclshloc;
   slist_t         *convlist;
   slistidx_t      convidx;
-  uientry_t  targetEntry;
-  uientry_t  bdj3locEntry;
+  uientry_t       targetEntry;
+  uientry_t       bdj3locEntry;
   /* gtk */
   GtkWidget       *window;
   GtkWidget       *reinstWidget;
@@ -258,6 +260,8 @@ main (int argc, char *argv[])
   installer.webclient = NULL;
   strcpy (installer.vlcversion, "");
   strcpy (installer.pyversion, "");
+  strcpy (installer.oldversion, "");
+  strcpy (installer.bdj3version, "");
 
   uiEntryInit (&installer.targetEntry, 80, MAXPATHLEN);
   uiEntryInit (&installer.bdj3locEntry, 80, MAXPATHLEN);
@@ -430,7 +434,7 @@ installerBuildUI (installer_t *installer)
 
   installer->feedbackMsg = uiCreateLabel ("");
   uiSetCss (installer->feedbackMsg,
-      "label { color: #ffa600; }");
+      "label { color: #b16400; }");
   uiBoxPackStart (hbox, installer->feedbackMsg);
 
   widget = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
@@ -494,7 +498,7 @@ installerBuildUI (installer_t *installer)
 
   installer->convFeedbackMsg = uiCreateLabel ("");
   uiSetCss (installer->convFeedbackMsg,
-      "label { color: #ffa600; }");
+      "label { color: #b16400; }");
   uiBoxPackStart (hbox, installer->convFeedbackMsg);
 
   /* VLC status */
@@ -517,7 +521,7 @@ installerBuildUI (installer_t *installer)
 
   installer->vlcMsg = uiCreateLabel ("");
   uiSetCss (installer->vlcMsg,
-      "label { color: #ffa600; }");
+      "label { color: #b16400; }");
   uiBoxPackStart (hbox, installer->vlcMsg);
 
   /* python status */
@@ -531,7 +535,7 @@ installerBuildUI (installer_t *installer)
 
   installer->pythonMsg = uiCreateLabel ("");
   uiSetCss (installer->pythonMsg,
-      "label { color: #ffa600; }");
+      "label { color: #b16400; }");
   uiBoxPackStart (hbox, installer->pythonMsg);
 
   /* mutagen status */
@@ -545,7 +549,7 @@ installerBuildUI (installer_t *installer)
 
   installer->mutagenMsg = uiCreateLabel ("");
   uiSetCss (installer->mutagenMsg,
-      "label { color: #ffa600; }");
+      "label { color: #b16400; }");
   uiBoxPackStart (hbox, installer->mutagenMsg);
 
   /* button box */
@@ -1127,8 +1131,33 @@ installerSaveTargetDir (installer_t *installer)
 static void
 installerMakeTarget (installer_t *installer)
 {
+  char    tbuff [MAXPATHLEN];
+  char    *data;
+  char    *p;
+  char    *tp;
+  char    *tokptr;
+  char    *tokptrb;
+  char    *vnm;
+
   fileopMakeDir (installer->target);
   fileopMakeDir (installer->rundir);
+
+  *installer->oldversion = '\0';
+  snprintf (tbuff, sizeof (tbuff), "%s/VERSION.txt",
+      installer->target);
+  if (fileopFileExists (tbuff)) {
+    data = filedataReadAll (tbuff, NULL);
+    tp = strtok_r (data, "\r\n", &tokptr);
+    while (tp != NULL) {
+      vnm = strtok_r (tp, "=", &tokptrb);
+      p = strtok_r (NULL, "=", &tokptrb);
+      strlcat (installer->oldversion, p, sizeof (installer->oldversion));
+      stringTrim (installer->oldversion);
+      strlcat (installer->oldversion, " ", sizeof (installer->oldversion));
+      tp = strtok_r (NULL, "\r\n", &tokptr);
+    }
+    free (data);
+  }
 
   installer->instState = INST_COPY_START;
 }
@@ -1441,9 +1470,16 @@ installerCopyTemplates (installer_t *installer)
 static void
 installerConvertStart (installer_t *installer)
 {
-  char  tbuff [MAXPATHLEN];
-  char  *locs [15];
-  int   locidx = 0;
+  char    tbuff [MAXPATHLEN];
+  char    *locs [15];
+  int     locidx = 0;
+  char    *data;
+  char    *p;
+  char    *tp;
+  char    *tokptr;
+  char    *tokptrb;
+  char    *vnm;
+
 
   if (! installer->convprocess) {
     installer->instState = INST_CREATE_SHORTCUT;
@@ -1497,6 +1533,28 @@ installerConvertStart (installer_t *installer)
     installerDisplayText (installer, " * ", _("Installation aborted."));
     installer->instState = INST_BEGIN;
     return;
+  }
+
+  *installer->bdj3version = '\0';
+  snprintf (tbuff, sizeof (tbuff), "%s/VERSION.txt",
+      installer->bdj3loc);
+fprintf (stderr, "bdj3-vers: %s\n", tbuff);
+  if (fileopFileExists (tbuff)) {
+    data = filedataReadAll (tbuff, NULL);
+    tp = strtok_r (data, "\r\n", &tokptr);
+    while (tp != NULL) {
+      vnm = strtok_r (tp, "=", &tokptrb);
+      p = strtok_r (NULL, "=", &tokptrb);
+fprintf (stderr, "vnm:%s:\n", vnm);
+fprintf (stderr, "p:%s:\n", p);
+      if (strcmp (vnm, "VERSION") == 0) {
+        strlcat (installer->bdj3version, p, sizeof (installer->bdj3version));
+        stringTrim (installer->bdj3version);
+        break;
+      }
+      tp = strtok_r (NULL, "\r\n", &tokptr);
+    }
+    free (data);
   }
 
   /* CONTEXT: installer: status message */
@@ -2002,10 +2060,15 @@ installerRegister (installer_t *installer)
   snprintf (uri, sizeof (uri), "%s/%s",
       sysvarsGetStr (SV_SUPPORTMSG_HOST), sysvarsGetStr (SV_REGISTER_URI));
   snprintf (tbuff, sizeof (tbuff),
-      "key=%s&version=%s&build=%s&builddate=%s&releaselevel=%s"
-      "&osname=%s&osdisp=%s&osvers=%s&osbuild=%s&pythonvers=%s"
-      "&user=%s&host=%s&new=%d&overwrite=%d&update=%d&convert=%d",
-      "9873453",
+      "key=%s"
+      "&version=%s&build=%s&builddate=%s&releaselevel=%s"
+      "&osname=%s&osdisp=%s&osvers=%s&osbuild=%s"
+      "&pythonvers=%s"
+      "&user=%s&host=%s"
+      "&systemlocale=%s&locale=%s"
+      "&bdj3version=%s&oldversion=%s"
+      "&new=%d&overwrite=%d&update=%d&convert=%d",
+      "9873453",  // key
       sysvarsGetStr (SV_BDJ4_VERSION),
       sysvarsGetStr (SV_BDJ4_BUILD),
       sysvarsGetStr (SV_BDJ4_BUILDDATE),
@@ -2017,6 +2080,10 @@ installerRegister (installer_t *installer)
       sysvarsGetStr (SV_PYTHON_DOT_VERSION),
       sysvarsGetStr (SV_USER),
       sysvarsGetStr (SV_HOSTNAME),
+      sysvarsGetStr (SV_LOCALE_SYSTEM),
+      sysvarsGetStr (SV_LOCALE),
+      installer->bdj3version,
+      installer->oldversion,
       installer->newinstall,
       installer->reinstall,
       ! installer->newinstall && ! installer->reinstall,

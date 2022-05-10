@@ -15,13 +15,13 @@ $date = date ('Y-m-d H:m');
 
 $str = '';
 $str .= "===BEGIN\n";
-$str .= "ip\n" . $ip . "\n";
-$str .= "date\n" . $date . "\n";
+$str .= "-ip\n" . $ip . "\n";
+$str .= "-date\n" . $date . "\n";
 foreach ($_POST as $key => $value) {
   if ($key == 'key') {
     continue;
   }
-  $str .= $key . "\n";
+  $str .= "-" . $key . "\n";
   $str .= $value . "\n";
 }
 $str .= "===END\n";
