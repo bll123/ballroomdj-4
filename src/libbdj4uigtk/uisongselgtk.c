@@ -79,7 +79,8 @@ static gboolean uisongselScroll (GtkRange *range, GtkScrollType scrolltype,
     gdouble value, gpointer udata);
 static gboolean uisongselScrollEvent (GtkWidget* tv, GdkEventScroll *event,
     gpointer udata);
-static void uisongselScrollClearSelection (GtkTreeModel *model,
+static void uisongselClearAllSelections (uisongsel_t *uisongsel);
+static void uisongselClearSelection (GtkTreeModel *model,
     GtkTreePath *path, GtkTreeIter *iter, gpointer udata);
 static gboolean uisongselKeyEvent (GtkWidget *w, GdkEventKey *event, gpointer udata);
 static void uisongselSelChanged (GtkTreeSelection *sel, gpointer udata);
@@ -386,11 +387,21 @@ uisongselSetFavoriteForeground (uisongsel_t *uisongsel, char *color)
 inline void
 uisongselQueueProcessSelectHandler (UIWidget *uiwidget, void *udata)
 {
+  uisongsel_t       *uisongsel = udata;
+  uisongselgtk_t    * uiw;
   musicqidx_t       mqidx;
+  nlist_t           *tlist;
 
   /* queue to the song list */
   mqidx = MUSICQ_A;
   uisongselQueueProcessHandler (uiwidget, udata, mqidx);
+  /* clear the selected list */
+  uiw = uisongsel->uiWidgetData;
+  nlistFree (uiw->selectedList);
+  tlist = nlistAlloc ("selected-list", LIST_ORDERED, NULL);
+  uiw->selectedList = tlist;
+  /* clear any selections on the tree */
+  uisongselClearAllSelections (uisongsel);
   return;
 }
 
@@ -593,6 +604,8 @@ uisongselProcessTreeSize (GtkWidget* w, GtkAllocation* allocation,
 
     uisongselScroll (GTK_RANGE (uiw->songselScrollbar), GTK_SCROLL_JUMP,
         (double) uisongsel->idxStart, uisongsel);
+    /* neither queue_draw nor queue_resize on the tree */
+    /* do not help with the redraw issue */
   }
   logProcEnd (LOG_PROC, "uisongselProcessTreeSize", "");
 }
@@ -626,8 +639,7 @@ uisongselScroll (GtkRange *range, GtkScrollType scrolltype,
   uiw->inscroll = true;
 
   /* clear the current selections */
-  gtk_tree_selection_selected_foreach (uiw->sel,
-      uisongselScrollClearSelection, uisongsel);
+  uisongselClearAllSelections (uisongsel);
 
   logMsg (LOG_DBG, LOG_SONGSEL, "populate: scroll");
   uisongselPopulateData (uisongsel);
@@ -661,8 +673,8 @@ uisongselScroll (GtkRange *range, GtkScrollType scrolltype,
 static gboolean
 uisongselScrollEvent (GtkWidget* tv, GdkEventScroll *event, gpointer udata)
 {
-  uisongselgtk_t  *uiw;
   uisongsel_t     *uisongsel = udata;
+  uisongselgtk_t  *uiw;
   nlistidx_t      tval;
 
   logProcBegin (LOG_PROC, "uisongselScrollEvent");
@@ -706,7 +718,17 @@ uisongselScrollEvent (GtkWidget* tv, GdkEventScroll *event, gpointer udata)
 }
 
 static void
-uisongselScrollClearSelection (GtkTreeModel *model,
+uisongselClearAllSelections (uisongsel_t *uisongsel)
+{
+  uisongselgtk_t  *uiw;
+
+  uiw = uisongsel->uiWidgetData;
+  gtk_tree_selection_selected_foreach (uiw->sel,
+      uisongselClearSelection, uisongsel);
+}
+
+static void
+uisongselClearSelection (GtkTreeModel *model,
     GtkTreePath *path, GtkTreeIter *iter, gpointer udata)
 {
   uisongsel_t       *uisongsel = udata;

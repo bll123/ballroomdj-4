@@ -48,6 +48,13 @@ typedef enum {
   PLTYPE_SEQ,
 } pltype_t;
 
+enum {
+  PL_LIST_NORMAL = 1,   // excludes the special QueueDance playlist
+  PL_LIST_ALL,
+  PL_LIST_MANUAL,
+  PL_LIST_SEQUENCE,
+};
+
 typedef struct playlist playlist_t;
 
 #define VALID_SONG_ATTEMPTS   40
@@ -69,7 +76,7 @@ void      playlistSetDanceCount (playlist_t *pl, ilistidx_t dancekey,
 song_t    *playlistGetNextSong (playlist_t *pl, nlist_t *danceCounts,
     ssize_t priorCount, playlistCheck_t checkProc,
     danceselHistory_t historyProc, void *userdata);
-slist_t   *playlistGetPlaylistList (void);
+slist_t   *playlistGetPlaylistList (int flag);
 bool      playlistFilterSong (dbidx_t dbidx, song_t *song,
     void *tplaylist);
 void      playlistAddCount (playlist_t *, song_t *song);

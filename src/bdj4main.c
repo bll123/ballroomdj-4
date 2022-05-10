@@ -1814,7 +1814,7 @@ mainSendPlaylistList (maindata_t *mainData, bdjmsgroute_t route)
 
   logProcBegin (LOG_PROC, "mainSendPlaylistList");
 
-  plList = playlistGetPlaylistList ();
+  plList = playlistGetPlaylistList (PL_LIST_NORMAL);
 
   rbuff [0] = '\0';
   slistStartIterator (plList, &iteridx);

@@ -1481,51 +1481,23 @@ manageSelectFileDialog (manageui_t *manage, int flags)
   int         x, y;
   GtkWidget   *dialog;
   manageselfilecb_t cb;
+  int         pltype;
 
   logProcBegin (LOG_PROC, "manageSelectFileDialog");
-  filelist = slistAlloc ("filelist", LIST_UNORDERED, free);
-
-  plList = playlistGetPlaylistList ();
-  slistStartIterator (plList, &piteridx);
-  while ((dispnm = slistIterateKey (plList, &piteridx)) != NULL) {
-    fn = slistGetStr (plList, dispnm);
-    if ((flags & MANAGE_F_SONGLIST) == MANAGE_F_SONGLIST) {
-      pathbldMakePath (tbuff, sizeof (tbuff),
-          fn, BDJ4_SONGLIST_EXT, PATHBLD_MP_DATA);
-      cb = manageSonglistLoadFile;
-    }
-    if ((flags & MANAGE_F_PLAYLIST) == MANAGE_F_PLAYLIST) {
-      pathbldMakePath (tbuff, sizeof (tbuff),
-          fn, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
-//      cb = managePlaylistLoadFile;
-    }
-    if ((flags & MANAGE_F_SEQUENCE) == MANAGE_F_SEQUENCE) {
-      pathbldMakePath (tbuff, sizeof (tbuff),
-          fn, BDJ4_SEQUENCE_EXT, PATHBLD_MP_DATA);
-//      cb = manageSequenceLoadFile;
-    }
-    if (fileopFileExists (tbuff)) {
-      slistSetStr (filelist, dispnm, fn);
-    }
-  }
-
-  /* the raffle songs songlist has no associated playlist */
+  pltype = PL_LIST_NORMAL;
   if ((flags & MANAGE_F_SONGLIST) == MANAGE_F_SONGLIST) {
-    pathbldMakePath (tbuff, sizeof (tbuff),
-        _("Raffle Songs"), BDJ4_SONGLIST_EXT, PATHBLD_MP_DATA);
-    if (fileopFileExists (tbuff)) {
-      pathinfo_t  *pi;
-      char        tmp [MAXPATHLEN];
-
-      pi = pathInfo (tbuff);
-      strlcpy (tmp, pi->basename, pi->blen + 1);
-      tmp [pi->blen] = '\0';
-      slistSetStr (filelist, tmp, tmp);
-      pathInfoFree (pi);
-    }
+    cb = manageSonglistLoadFile;
+    pltype = PL_LIST_MANUAL;
   }
-
-  slistSort (filelist);
+  if ((flags & MANAGE_F_PLAYLIST) == MANAGE_F_PLAYLIST) {
+//      cb = managePlaylistLoadFile;
+    pltype = PL_LIST_ALL;
+  }
+  if ((flags & MANAGE_F_SEQUENCE) == MANAGE_F_SEQUENCE) {
+//      cb = manageSequenceLoadFile;
+    pltype = PL_LIST_SEQUENCE;
+  }
+  filelist = playlistGetPlaylistList (pltype);
 
   /* CONTEXT: what type of file to load */
   dialog = manageCreateSelectFileDialog (manage, filelist, _("Song List"), cb);

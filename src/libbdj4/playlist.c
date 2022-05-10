@@ -7,6 +7,7 @@
 #include <assert.h>
 
 #include "bdj4.h"
+#include "bdj4intl.h"
 #include "bdjvarsdf.h"
 #include "dance.h"
 #include "datafile.h"
@@ -488,34 +489,40 @@ playlistGetNextSong (playlist_t *pl, nlist_t *danceCounts,
 }
 
 slist_t *
-playlistGetPlaylistList (void)
+playlistGetPlaylistList (int flag)
 {
   char        *tplfnm;
   char        tfn [MAXPATHLEN];
   slist_t     *filelist;
   slist_t     *pnlist;
-  playlist_t  *pl;
   pathinfo_t  *pi;
   slistidx_t  iteridx;
-  int         rc;
+  char        *ext = NULL;
 
 
   pnlist = slistAlloc ("playlistlist", LIST_ORDERED, free);
 
   pathbldMakePath (tfn, sizeof (tfn), "", "", PATHBLD_MP_DATA);
-  filelist = filemanipBasicDirList (tfn, BDJ4_PLAYLIST_EXT);
+  ext = BDJ4_PLAYLIST_EXT;
+  if (flag == PL_LIST_MANUAL) {
+    ext = BDJ4_SONGLIST_EXT;
+  }
+  if (flag == PL_LIST_SEQUENCE) {
+    ext = BDJ4_SEQUENCE_EXT;
+  }
+  filelist = filemanipBasicDirList (tfn, ext);
 
   slistStartIterator (filelist, &iteridx);
   while ((tplfnm = slistIterateKey (filelist, &iteridx)) != NULL) {
     pi = pathInfo (tplfnm);
-    strlcpy (tfn, pi->basename, MAXPATHLEN);
+    strlcpy (tfn, pi->basename, pi->blen + 1);
     tfn [pi->blen] = '\0';
-    pl = playlistAlloc (NULL);
-    rc = playlistLoad (pl, tfn);
-    if (rc == 0) {
-      slistSetStr (pnlist, pl->name, tfn);
+
+    if (flag == PL_LIST_NORMAL &&
+        strcmp (tfn, _("QueueDance")) == 0) {
+      continue;
     }
-    playlistFree (pl);
+    slistSetStr (pnlist, tfn, tfn);
     pathInfoFree (pi);
   }
 
