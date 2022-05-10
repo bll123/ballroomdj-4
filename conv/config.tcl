@@ -275,17 +275,13 @@ foreach path [list {} profiles $mpath $mppath] {
         puts $ofh "..${value}"
 
         puts $ofh UI_THEME
-        set value Adwaita-dark
+        set value Adwaita-dark  # just something as a default
         if { $::tcl_platform(os) eq "Linux" } {
-          # have to figure out which systems this works on
-          set value [exec gsettings get org.gnome.desktop.interface gtk-theme]
-          regsub -all {'} $value {} value
-          if { $value eq "" } {
-            set value Adwaita-dark
-          }
+          # use the default
+          set value {}
         }
         if { $::tcl_platform(platform) eq "windows" } { set value Windows-10-Dark }
-        if { $::tcl_platform(os) eq "Darwin" } { set value MacOS-Dark }
+        if { $::tcl_platform(os) eq "Darwin" } { set value macOS-Mojave-dark }
         puts $ofh "..${value}"
         set tfh [open [file join $datatopdir data theme.txt] w]
         puts $tfh "${value}"

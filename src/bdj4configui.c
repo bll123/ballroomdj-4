@@ -419,6 +419,7 @@ static void     confuiLoadPlayerIntfcList (configui_t *confui);
 static void     confuiLoadLocaleList (configui_t *confui);
 static void     confuiLoadDanceTypeList (configui_t *confui);
 static void     confuiLoadTagList (configui_t *confui);
+static void     confuiLoadThemeList (configui_t *confui);
 static gboolean confuiFadeTypeTooltip (GtkWidget *, gint, gint, gboolean, GtkTooltip *, void *);
 static void     confuiOrgPathSelect (GtkTreeView *tv, GtkTreePath *path,
     GtkTreeViewColumn *column, gpointer udata);
@@ -706,22 +707,7 @@ main (int argc, char *argv[])
   confuiLoadLocaleList (&confui);
   confuiLoadDanceTypeList (&confui);
   confuiLoadTagList (&confui);
-
-  tlist = confuiGetThemeList ();
-  nlistStartIterator (tlist, &iteridx);
-  count = 0;
-  while ((p = nlistIterateValueData (tlist, &iteridx)) != NULL) {
-    if (strcmp (p, bdjoptGetStr (OPT_MP_MQ_THEME)) == 0) {
-      confui.uiitem [CONFUI_SPINBOX_MQ_THEME].listidx = count;
-    }
-    if (strcmp (p, bdjoptGetStr (OPT_MP_UI_THEME)) == 0) {
-      confui.uiitem [CONFUI_SPINBOX_UI_THEME].listidx = count;
-    }
-    ++count;
-  }
-  /* the theme list is ordered */
-  confui.uiitem [CONFUI_SPINBOX_UI_THEME].displist = tlist;
-  confui.uiitem [CONFUI_SPINBOX_MQ_THEME].displist = tlist;
+  confuiLoadThemeList (&confui);
 
   confuiSpinboxTextInitDataNum (&confui, "cu-mob-mq",
       CONFUI_SPINBOX_MOBILE_MQ,
@@ -2093,18 +2079,23 @@ confuiPopulateOptions (configui_t *confui)
       bdjoptSetStr (confui->uiitem [i].bdjoptIdx, tbuff);
     }
 
-    if (i == CONFUI_SPINBOX_UI_THEME &&
-        themechanged) {
+    if (i == CONFUI_SPINBOX_UI_THEME && themechanged) {
       FILE    *fh;
 
+      sval = bdjoptGetStr (confui->uiitem [i].bdjoptIdx);
       pathbldMakePath (tbuff, sizeof (tbuff),
           "theme", BDJ4_CONFIG_EXT, PATHBLD_MP_DATA);
-      fh = fopen (tbuff, "w");
-      sval = bdjoptGetStr (confui->uiitem [i].bdjoptIdx);
-      if (sval != NULL) {
-        fprintf (fh, "%s\n", sval);
+      /* if the theme name is the same as the current default theme */
+      /* don't write out the theme file.  want to use the default */
+      if (strcmp (sval, sysvarsGetStr (SV_THEME_DEFAULT)) != 0) {
+        fh = fopen (tbuff, "w");
+        if (sval != NULL) {
+          fprintf (fh, "%s\n", sval);
+        }
+        fclose (fh);
+      } else {
+        fileopDelete (tbuff);
       }
-      fclose (fh);
     }
 
     if (i == CONFUI_WIDGET_UI_ACCENT_COLOR &&
@@ -2979,6 +2970,43 @@ confuiLoadTagList (configui_t *confui)
 
   confui->listingtaglist = llist;
   logProcEnd (LOG_PROC, "confuiLoadTagList", "");
+}
+
+static void
+confuiLoadThemeList (configui_t *confui)
+{
+  nlist_t     *tlist;
+  nlistidx_t  iteridx;
+  int         count;
+  bool        usesys = false;
+  char        *p;
+
+  p = bdjoptGetStr (OPT_MP_UI_THEME);
+  /* use the system default if the ui theme is empty */
+  if (! *p) {
+    usesys = true;
+  }
+
+  tlist = confuiGetThemeList ();
+  nlistStartIterator (tlist, &iteridx);
+  count = 0;
+  while ((p = nlistIterateValueData (tlist, &iteridx)) != NULL) {
+    if (strcmp (p, bdjoptGetStr (OPT_MP_MQ_THEME)) == 0) {
+      confui->uiitem [CONFUI_SPINBOX_MQ_THEME].listidx = count;
+    }
+    if (! usesys &&
+        strcmp (p, bdjoptGetStr (OPT_MP_UI_THEME)) == 0) {
+      confui->uiitem [CONFUI_SPINBOX_UI_THEME].listidx = count;
+    }
+    if (usesys &&
+        strcmp (p, sysvarsGetStr (SV_THEME_DEFAULT)) == 0) {
+      confui->uiitem [CONFUI_SPINBOX_UI_THEME].listidx = count;
+    }
+    ++count;
+  }
+  /* the theme list is ordered */
+  confui->uiitem [CONFUI_SPINBOX_UI_THEME].displist = tlist;
+  confui->uiitem [CONFUI_SPINBOX_MQ_THEME].displist = tlist;
 }
 
 

@@ -71,6 +71,7 @@ static sysvarsdesc_t sysvarsdesc [SV_MAX] = {
   [SV_OSNAME] = { "OS-Name" },
   [SV_OSVERS] = { "OS-Version" },
   [SV_PATH_GETCONF] = { "Path-getconf" },
+  [SV_PATH_GSETTINGS] = { "Path-gsettings" },
   [SV_PATH_PYTHON] = { "Path-python" },
   [SV_PATH_PYTHON_PIP] = { "Path-pip" },
   [SV_PATH_VLC] = { "Path-vlc" },
@@ -82,6 +83,7 @@ static sysvarsdesc_t sysvarsdesc [SV_MAX] = {
   [SV_SHLIB_EXT] = { "Sharedlib-Extension" },
   [SV_SUPPORTMSG_HOST] = { "Host-Support-Msg" },
   [SV_SUPPORTMSG_URI] = { "URI-Support-Msg" },
+  [SV_THEME_DEFAULT] = { "Theme-default" },
   [SV_TICKET_HOST] = { "Host-Support" },
   [SV_TICKET_URI] = { "URI-Support" },
   [SV_USER_AGENT] = { "User-Agent" },
@@ -102,7 +104,6 @@ static sysvarsdesc_t sysvarsldesc [SVL_MAX] = {
 
 static char       sysvars [SV_MAX][SV_MAX_SZ];
 static ssize_t    lsysvars [SVL_MAX];
-static int        gtmpcount = 0;
 
 static char *cacertFiles [] = {
   "/etc/ssl/certs/ca-certificates.crt",
@@ -116,8 +117,9 @@ static char *cacertFiles [] = {
 
 static void enable_core_dump (void);
 static void checkForFile (char *path, int idx, ...);
-static char * svRunProgram (char *prog, char *arg);
+static char * svRunProgram (char *prog, ...);
 static bool svGetLinuxOSInfo (char *fn);
+static void svGetLinuxDefaultTheme (void);
 
 void
 sysvarsInit (const char *argv0)
@@ -360,7 +362,7 @@ sysvarsInit (const char *argv0)
     char *data;
 
     strlcpy (sysvars [SV_OSDISP], "MacOS", SV_MAX_SZ);
-    data = svRunProgram (sysvars [SV_TEMP_A], "-productVersion");
+    data = svRunProgram (sysvars [SV_TEMP_A], "-productVersion", NULL);
     stringTrim (data);
     strlcpy (sysvars [SV_OSVERS], data, SV_MAX_SZ);
     if (data != NULL) {
@@ -391,13 +393,19 @@ sysvarsInit (const char *argv0)
     if (! svGetLinuxOSInfo (fna)) {
       svGetLinuxOSInfo (fnb);
     }
+
+    /* gtk cannot seem to retrieve the properties from settings */
+    /* so run the gsettings program to get the info */
+    if (*sysvars [SV_PATH_GSETTINGS]) {
+      svGetLinuxDefaultTheme ();
+    }
   }
 
   if (*sysvars [SV_PATH_PYTHON]) {
     char    *data;
     int     j;
 
-    data = svRunProgram (sysvars [SV_PATH_PYTHON], "--version");
+    data = svRunProgram (sysvars [SV_PATH_PYTHON], "--version", NULL);
 
     p = NULL;
     if (data != NULL) {
@@ -471,7 +479,7 @@ sysvarsInit (const char *argv0)
       lsysvars [SVL_NUM_PROC] = atoi (tptr);
     }
   } else {
-    tptr = svRunProgram (sysvars [SV_PATH_GETCONF], "_NPROCESSORS_ONLN");
+    tptr = svRunProgram (sysvars [SV_PATH_GETCONF], "_NPROCESSORS_ONLN", NULL);
     if (tptr != NULL) {
       lsysvars [SVL_NUM_PROC] = atoi (tptr);
     }
@@ -495,9 +503,10 @@ sysvarsCheckPaths (void)
   char    *tokstr;
   char    tbuff [MAXPATHLEN];
 
+  strlcpy (sysvars [SV_PATH_GETCONF], "", SV_MAX_SZ);
+  strlcpy (sysvars [SV_PATH_GSETTINGS], "", SV_MAX_SZ);
   strlcpy (sysvars [SV_PATH_PYTHON], "", SV_MAX_SZ);
   strlcpy (sysvars [SV_PATH_PYTHON_PIP], "", SV_MAX_SZ);
-  strlcpy (sysvars [SV_PATH_GETCONF], "", SV_MAX_SZ);
   strlcpy (sysvars [SV_PATH_XDGUSERDIR], "", SV_MAX_SZ);
   strlcpy (sysvars [SV_TEMP_A], "", SV_MAX_SZ);
 
@@ -529,6 +538,10 @@ sysvarsCheckPaths (void)
 
     if (*sysvars [SV_PATH_GETCONF] == '\0') {
       checkForFile (tbuff, SV_PATH_GETCONF, "getconf", NULL);
+    }
+
+    if (*sysvars [SV_PATH_GSETTINGS] == '\0') {
+      checkForFile (tbuff, SV_PATH_GSETTINGS, "gsettings", NULL);
     }
 
     if (*sysvars [SV_PATH_XDGUSERDIR] == '\0') {
@@ -674,15 +687,25 @@ checkForFile (char *path, int idx, ...)
 }
 
 static char *
-svRunProgram (char *prog, char *arg)
+svRunProgram (char *prog, ...)
 {
-  char    *data;
-  char    tbuff [100];
+  char    data [2048];
+  char    *arg;
+  char    *targv [10];
+  int     targc;
 
-  snprintf (tbuff, sizeof (tbuff), "%s-%d-%d.txt",
-      SV_TMP_FILE, getpid(), gtmpcount++);
-  data = filedataGetProgOutput (prog, arg, tbuff);
-  return data;
+  va_list   valist;
+  va_start (valist, prog);
+
+  targc = 0;
+  targv [targc++] = prog;
+  while ((arg = va_arg (valist, char *)) != NULL) {
+    targv [targc++] = arg;
+  }
+  targv [targc++] = NULL;
+
+  osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, data, sizeof (data));
+  return strdup (data);
 }
 
 static bool
@@ -724,5 +747,20 @@ svGetLinuxOSInfo (char *fn)
   }
 
   return rc;
+}
+
+static void
+svGetLinuxDefaultTheme (void)
+{
+  char    *tptr;
+
+  tptr = svRunProgram (sysvars [SV_PATH_GSETTINGS], "get", "org.gnome.desktop.interface", "gtk-theme", NULL);
+  if (tptr != NULL) {
+    /* gsettings puts quotes around the data */
+    stringTrim (tptr);
+    stringTrimChar (tptr, '\'');
+    strlcpy (sysvars [SV_THEME_DEFAULT], tptr + 1, SV_MAX_SZ);
+  }
+  free (tptr);
 }
 
