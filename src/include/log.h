@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#include "bdj4.h"
 #include "fileutil.h"
 
 typedef uint32_t   loglevel_t;
@@ -28,6 +29,7 @@ typedef uint32_t   loglevel_t;
 #define LOG_WEBSRV      0x00008000  // 32768
 #define LOG_WEBCLIENT   0x00010000  // 65536
 #define LOG_DBUPDATE    0x00020000  // 131072
+#define LOG_PROGSTATE   0x00040000  // 262144
 #define LOG_ALL         0xFFFFFFFF
 
 typedef enum {
@@ -80,5 +82,7 @@ void        logStart (const char *processnm,
 void        logStartAppend (const char *processnm,
                 const char *processtag, loglevel_t level);
 void        logEnd (void);
+void        logBacktraceHandler (int sig);
+char *      plstateDebugText (playerstate_t plstate);
 
 #endif /* INC_BDJLOG_H */

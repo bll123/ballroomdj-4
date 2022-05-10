@@ -163,7 +163,7 @@ progstateProcessLoop (progstate_t *progstate)
   }
   count = ilistGetCount (progstate->callbacks [progstate->programState]);
   if (count > 0) {
-    logMsg (LOG_DBG, LOG_MAIN, "found callback for: %d %s",
+    logMsg (LOG_DBG, LOG_PROGSTATE, "found callback for: %d %s",
         progstate->programState, progstatetext [progstate->programState]);
     for (ilistidx_t ikey = 0; ikey < count; ++ikey) {
       tsuccess = ilistGetNum (progstate->callbacks [progstate->programState],
@@ -179,7 +179,7 @@ progstateProcessLoop (progstate_t *progstate)
         if (! tsuccess) {
           /* if any one callback in the list is not finished, */
           /* stay in this state */
-          logMsg (LOG_DBG, LOG_MAIN, "callback not finished: %d %s",
+          logMsg (LOG_DBG, LOG_PROGSTATE, "callback not finished: %d %s",
               progstate->programState, progstatetext [progstate->programState]);
           success = false;
         }
@@ -191,7 +191,7 @@ progstateProcessLoop (progstate_t *progstate)
         progstate->programState != STATE_CLOSED) {
       ++progstate->programState;
     }
-    logMsg (LOG_DBG, LOG_MAIN, "program state: %d %s",
+    logMsg (LOG_DBG, LOG_PROGSTATE, "program state: %d %s",
         progstate->programState, progstatetext [progstate->programState]);
   }
   return progstate->programState;

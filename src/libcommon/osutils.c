@@ -613,7 +613,6 @@ osSetStandardSignals (void (*sigHandler)(int))
 #if _define_SIGHUP
   osCatchSignal (sigHandler, SIGHUP);
 #endif
-  osCatchSignal (sigHandler, SIGINT);
   osDefaultSignal (SIGTERM);
 #if _define_SIGCHLD
   osIgnoreSignal (SIGCHLD);
@@ -685,3 +684,4 @@ osGetLocale (char *buff, size_t sz)
 #endif
   return buff;
 }
+

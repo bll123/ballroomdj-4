@@ -57,7 +57,8 @@ listFree (void *tlist)
 
   if (list != NULL) {
     if (list->readCacheHits > 0 || list->writeCacheHits > 0) {
-      logMsg (LOG_DBG, LOG_LIST, "list %s: cache read:%ld write:%ld",
+      logMsg (LOG_DBG, LOG_LIST,
+          "list %s: cache read:%ld write:%ld",
           list->name, list->readCacheHits, list->writeCacheHits);
     }
     if (list->data != NULL) {
@@ -213,7 +214,7 @@ listSort (list_t *list)
   mergeSort (list, 0, list->count - 1);
   elapsed = mstimeend (&tm);
   if (elapsed > 0) {
-    logMsg (LOG_DBG, LOG_BASIC, "sort of %s took %ld ms", list->name, elapsed);
+    logMsg (LOG_DBG, LOG_LIST, "sort of %s took %ld ms", list->name, elapsed);
   }
 }
 
@@ -223,10 +224,10 @@ listStartIterator (list_t *list, listidx_t *iteridx)
   *iteridx = -1;
 }
 
-void
+inline void
 listDumpInfo (list_t *list)
 {
-  logMsg (LOG_DBG, LOG_BASIC, "list: %s count: %ld key:%d ordered:%d",
+  logMsg (LOG_DBG, LOG_LIST, "list: %s count: %ld key:%d ordered:%d",
       list->name, list->count, list->keytype, list->ordered);
 }
 
@@ -297,7 +298,7 @@ listGetIdx (list_t *list, listkey_t *key)
     return LIST_LOC_INVALID;
   }
 
-    /* check the cache */
+  /* check the cache */
   if (list->locCache >= 0L) {
     if ((list->keytype == LIST_KEY_STR &&
          key->strkey != NULL &&

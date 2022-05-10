@@ -375,7 +375,8 @@ playerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           playerData->pauseAtEnd = false;
           playerSendPauseAtEndState (playerData);
           playerSetPlayerState (playerData, PL_STATE_STOPPED);
-          logMsg (LOG_DBG, LOG_BASIC, "pl state: stopped (msg-req)");
+          logMsg (LOG_DBG, LOG_BASIC, "pl state: (msg-req) %d/%s",
+              playerData->playerState, plstateDebugText (playerData->playerState));
           break;
         }
         case MSG_PLAY_SONG_BEGIN: {
@@ -451,7 +452,8 @@ playerProcessing (void *udata)
     if (mstimeCheck (&playerData->gapFinishTime)) {
       playerData->inGap = false;
       playerSetPlayerState (playerData, PL_STATE_STOPPED);
-      logMsg (LOG_DBG, LOG_BASIC, "pl state: stopped (gap finish)");
+      logMsg (LOG_DBG, LOG_BASIC, "pl state: (gap finish) %d/%s",
+          playerData->playerState, plstateDebugText (playerData->playerState));
     }
   }
 
@@ -496,7 +498,8 @@ playerProcessing (void *udata)
     pliStartPlayback (playerData->pli, pq->songstart, pq->speed);
     playerData->currentSpeed = pq->speed;
     playerSetPlayerState (playerData, PL_STATE_LOADING);
-    logMsg (LOG_DBG, LOG_BASIC, "pl state: loading");
+    logMsg (LOG_DBG, LOG_BASIC, "pl state: %d/%s",
+        playerData->playerState, plstateDebugText (playerData->playerState));
   }
 
   if (playerData->playerState == PL_STATE_LOADING) {
@@ -527,7 +530,8 @@ playerProcessing (void *udata)
       }
 
       playerSetPlayerState (playerData, PL_STATE_PLAYING);
-      logMsg (LOG_DBG, LOG_BASIC, "pl state: playing");
+      logMsg (LOG_DBG, LOG_BASIC, "pl state: %d/%s",
+          playerData->playerState, plstateDebugText (playerData->playerState));
 
       if (pq->announce == PREP_SONG) {
         connSendMessage (playerData->conn, ROUTE_MAIN,
@@ -597,7 +601,8 @@ playerProcessing (void *udata)
             playerSetPlayerState (playerData, PL_STATE_STOPPED);
             if (! playerData->repeat) {
               /* let the main know we're done with this song. */
-              logMsg (LOG_DBG, LOG_BASIC, "pl state: stopped (pause at end)");
+              logMsg (LOG_DBG, LOG_BASIC, "pl state: (pause at end) %d/%s",
+                  playerData->playerState, plstateDebugText (playerData->playerState));
               connSendMessage (playerData->conn, ROUTE_MAIN,
                   MSG_PLAYBACK_STOP, NULL);
             }
@@ -633,14 +638,16 @@ playerProcessing (void *udata)
 
         if (playerData->gap > 0) {
           playerSetPlayerState (playerData, PL_STATE_IN_GAP);
-          logMsg (LOG_DBG, LOG_BASIC, "pl state: in gap");
+          logMsg (LOG_DBG, LOG_BASIC, "pl state: %d/%s",
+              playerData->playerState, plstateDebugText (playerData->playerState));
           volumeSet (playerData->volume, playerData->currentSink, 0);
           logMsg (LOG_DBG, LOG_MAIN, "gap set volume: %d", 0);
           playerData->inGap = true;
           mstimeset (&playerData->gapFinishTime, playerData->gap);
         } else {
           playerSetPlayerState (playerData, PL_STATE_STOPPED);
-          logMsg (LOG_DBG, LOG_BASIC, "pl state: stopped (no gap)");
+          logMsg (LOG_DBG, LOG_BASIC, "pl state: (no gap) %d/%s",
+              playerData->playerState, plstateDebugText (playerData->playerState));
         }
       } /* has stopped */
     } /* time to check...*/
@@ -708,7 +715,7 @@ playerCheckSystemVolume (playerdata_t *playerData)
     return;
   }
   tvol = volumeGet (playerData->volume, playerData->currentSink);
-  logMsg (LOG_DBG, LOG_MAIN, "get volume: %d", tvol);
+  // logMsg (LOG_DBG, LOG_MAIN, "get volume: %d", tvol);
   if (tvol != playerData->currentVolume) {
     playerData->realVolume = tvol;
     playerData->currentVolume = tvol;
@@ -912,7 +919,8 @@ playerPause (playerdata_t *playerData)
     pliPause (playerData->pli);
     /* set the play time after restarting the player */
     playerData->playTimePlayed += mstimeend (&playerData->playTimeStart);
-    logMsg (LOG_DBG, LOG_BASIC, "pl state: paused");
+    logMsg (LOG_DBG, LOG_BASIC, "pl state: %d/%s",
+        playerData->playerState, plstateDebugText (playerData->playerState));
     if (playerData->inFadeIn) {
       playerData->inFade = false;
       playerData->inFadeIn = false;
@@ -944,7 +952,8 @@ playerPlay (playerdata_t *playerData)
       playerSetCheckTimes (playerData, pq);
       /* set the state and send the status last */
       playerSetPlayerState (playerData, PL_STATE_PLAYING);
-      logMsg (LOG_DBG, LOG_BASIC, "pl state: playing (msg-req)");
+      logMsg (LOG_DBG, LOG_BASIC, "pl state: (msg-req) %d/%s",
+          playerData->playerState, plstateDebugText (playerData->playerState));
     }
   }
 }
@@ -974,7 +983,8 @@ playerNextSong (playerdata_t *playerData)
       /* tell vlc to stop */
       pliStop (playerData->pli);
       playerSetPlayerState (playerData, PL_STATE_STOPPED);
-      logMsg (LOG_DBG, LOG_BASIC, "pl state: stopped (was paused; next-song)");
+      logMsg (LOG_DBG, LOG_BASIC, "pl state: (was paused; next-song) %d/%s",
+          playerData->playerState, plstateDebugText (playerData->playerState));
       /* and have main advance to the next song */
       connSendMessage (playerData->conn, ROUTE_MAIN,
           MSG_PLAYBACK_STOP, NULL);
@@ -1287,7 +1297,8 @@ playerStartFadeOut (playerdata_t *playerData)
   logMsg (LOG_DBG, LOG_MAIN, "fade: samples: %ld", playerData->fadeCount);
   playerFadeVolSet (playerData);
   playerSetPlayerState (playerData, PL_STATE_IN_FADEOUT);
-  logMsg (LOG_DBG, LOG_BASIC, "pl state: in fadeout");
+  logMsg (LOG_DBG, LOG_BASIC, "pl state: %d/%s",
+      playerData->playerState, plstateDebugText (playerData->playerState));
 }
 
 
@@ -1382,6 +1393,10 @@ playerSendStatus (playerdata_t *playerData)
       }
       case PL_STATE_PAUSED: {
         playstate = "pause";
+        break;
+      }
+      case PL_STATE_MAX: {
+        /* this would be an error */
         break;
       }
     }

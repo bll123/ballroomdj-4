@@ -436,7 +436,8 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_PLAYER_STATE: {
           mainData->playerState = (playerstate_t) atol (args);
-          logMsg (LOG_DBG, LOG_MSGS, "got: player-state: %d", mainData->playerState);
+          logMsg (LOG_DBG, LOG_MSGS, "got: player-state: %d/%s",
+              mainData->playerState, plstateDebugText (mainData->playerState));
           mainData->marqueeChanged [mainData->musicqPlayIdx] = true;
           break;
         }
@@ -763,6 +764,7 @@ mainSendMarqueeData (maindata_t *mainData)
 
   if (mainData->playerState == PL_STATE_STOPPED &&
       mainData->finished) {
+    logMsg (LOG_DBG, LOG_MAIN, "sending finished");
     mainSendFinished (mainData);
     mainData->finished = false;
     return;
@@ -1615,10 +1617,11 @@ mainMusicQueuePlay (maindata_t *mainData)
 
   mainData->musicqManageIdx = mainData->musicqPlayIdx;
 
-  logMsg (LOG_DBG, LOG_BASIC, "playerState: %d", mainData->playerState);
+  logMsg (LOG_DBG, LOG_BASIC, "playerState: %d/%s",
+      mainData->playerState, plstateDebugText (mainData->playerState));
 
   /* grab a song out of the music queue and start playing */
-  logMsg (LOG_DBG, LOG_MAIN, "player is stopped/in-fadeout/in-gap, get song, start");
+  logMsg (LOG_DBG, LOG_MAIN, "player sent a finish; get song, start");
   song = musicqGetCurrent (mainData->musicQueue, mainData->musicqPlayIdx);
   if (song != NULL) {
     flags = musicqGetFlags (mainData->musicQueue, mainData->musicqPlayIdx, 0);
@@ -1664,6 +1667,7 @@ mainMusicQueuePlay (maindata_t *mainData)
         mainMusicQueuePlay (mainData);
       } else {
         /* there is no music to play; tell the player to clear its display */
+        logMsg (LOG_DBG, LOG_MAIN, "sqwe:true no music to play: finished <= true");
         mainData->finished = true;
         mainData->marqueeChanged [mainData->musicqPlayIdx] = true;
       }
@@ -1671,6 +1675,7 @@ mainMusicQueuePlay (maindata_t *mainData)
       if (mainData->playerState == PL_STATE_IN_FADEOUT ||
           mainData->playerState == PL_STATE_IN_GAP ||
           mainData->playerState == PL_STATE_STOPPED) {
+        logMsg (LOG_DBG, LOG_MAIN, "no more songs in queue : finished <= true");
         mainData->finished = true;
         mainData->marqueeChanged [mainData->musicqPlayIdx] = true;
       }

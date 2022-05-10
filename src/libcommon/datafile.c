@@ -226,7 +226,7 @@ datafileAllocParse (char *name, datafiletype_t dftype, const char *fname,
 
 
   logProcBegin (LOG_PROC, "datafileAllocParse");
-  logMsg (LOG_DBG, LOG_BASIC | LOG_DATAFILE, "datafile alloc/parse %s", fname);
+  logMsg (LOG_DBG, LOG_DATAFILE, "datafile alloc/parse %s", fname);
   df = datafileAlloc (name);
   if (df != NULL) {
     char *ddata = datafileLoad (df, dftype, fname);
@@ -269,7 +269,7 @@ datafileLoad (datafile_t *df, datafiletype_t dftype, const char *fname)
   char    *data;
 
   logProcBegin (LOG_PROC, "datafileLoad");
-  logMsg (LOG_DBG, LOG_BASIC | LOG_DATAFILE, "datafile load %s", fname);
+  logMsg (LOG_DBG, LOG_MAIN | LOG_DATAFILE, "datafile load %s", fname);
   df->dftype = dftype;
   if (df->fname == NULL) {
     df->fname = strdup (fname);
@@ -549,7 +549,7 @@ datafileParseMerge (list_t *datalist, char *data, char *name,
     slistStartIterator (*lookup, &iteridx);
     while ((tkeystr = slistIterateKey (*lookup, &iteridx)) != NULL) {
       lval = slistGetNum (*lookup, tkeystr);
-      logMsg (LOG_DBG, LOG_DATAFILE | LOG_BASIC,
+      logMsg (LOG_DBG, LOG_DATAFILE,
           "%s: %s / %zd", name, tkeystr, lval);
     }
   }

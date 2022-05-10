@@ -158,7 +158,7 @@ dbLoad (musicdb_t *musicdb)
   while ((dkey = nlistIterateKey (musicdb->danceCounts, &iteridx)) >= 0) {
     dbidx_t count = nlistGetNum (musicdb->danceCounts, dkey);
     if (count > 0) {
-      logMsg (LOG_DBG, LOG_BASIC, "db-load: dance: %zd count: %ld", dkey, count);
+      logMsg (LOG_DBG, LOG_DB, "db-load: dance: %zd count: %ld", dkey, count);
     }
   }
 

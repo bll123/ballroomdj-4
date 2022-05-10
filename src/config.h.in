@@ -66,6 +66,7 @@
 #cmakedefine01 _lib_WSAStartup
 
 /* other functions */
+#cmakedefine01 _lib_backtrace
 #cmakedefine01 _lib_bind_textdomain_codeset
 #cmakedefine01 _lib_dlopen
 #cmakedefine01 _lib_drand48
