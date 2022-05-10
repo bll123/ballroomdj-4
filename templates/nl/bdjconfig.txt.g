@@ -15,6 +15,6 @@ PATHFMT
 PLAYERQLEN
 ..70
 REMCONTROLHTML
-..bdj-flex-dark.html.nl
+..nl/bdj-flex-dark.html
 WRITETAGS
 ..NONE

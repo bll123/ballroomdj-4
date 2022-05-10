@@ -41,7 +41,7 @@ function mksub {
     sedcmd+="-e '\~^${line}\$~ s~.*~${xl}~' "
   done < $tempf
 
-  eval sed ${sedcmd} $tmpl > $tmpl.$locale
+  eval sed ${sedcmd} "$tmpl" > "${TMPLDIR}/${locale}/$(basename ${tmpl})"
   set +o noglob
 }
 
@@ -71,7 +71,7 @@ function mkhtmlsub {
     sedcmd+="-e '\~value=\"${nl}\"~ s~value=\"${nl}\"~value=\"${xl}\"~' "
   done < $tempf
 
-  eval sed ${sedcmd} $tmpl > $tmpl.$locale
+  eval sed ${sedcmd} "$tmpl" > "${TMPLDIR}/${locale}/$(basename ${tmpl})"
   set +o noglob
 }
 
@@ -101,7 +101,7 @@ function mkimgsub {
     sedcmd+="-e '\~aria-label=\"${nl}\"~ s~aria-label=\"${nl}\"~aria-label=\"${xl}\"~' "
   done < $tempf
 
-  eval sed ${sedcmd} $tmpl > $tmpl.$locale
+  eval sed ${sedcmd} "$tmpl" > "${TMPLDIR}/${locale}/$(basename ${tmpl})"
   set +o noglob
 }
 
@@ -235,14 +235,14 @@ while read -r line; do
   mv -f $TMP.n $TMP
   mkimgsub $fn $TMP $locale $pofile
 
+  # these are used by the installer to locate the localized name
+  # of the playlists.
   ATMP=${INSTDIR}/localized-auto.txt
   SRTMP=${INSTDIR}/localized-sr.txt
   QDTMP=${INSTDIR}/localized-qd.txt
-  RSTMP=${INSTDIR}/localized-rs.txt
   > $ATMP
   > $SRTMP
   > $QDTMP
-  > $RSTMP
   if [[ $pofile != en_US.po && $pofile != en_GB.po ]]; then
     for txt in automatic standardrounds queuedance; do
       ttxt=$txt
@@ -269,25 +269,34 @@ while read -r line; do
     echo $locale >> $QDTMP
     echo "..${queuedance}" >> $QDTMP
 
-    cd ${TMPLDIR}
-    mv -f automatic.pl.${locale} ${automatic}.pl.${locale}
-    mv -f automatic.pldances.${locale} ${automatic}.pldances.${locale}
-    mv -f standardrounds.pl.${locale} ${standardrounds}.pl.${locale}
-    mv -f standardrounds.pldances.${locale} ${standardrounds}.pldances.${locale}
-    mv -f standardrounds.sequence.${locale} ${standardrounds}.sequence.${locale}
-    if [[ -f queuedance.pl.${locale} ]]; then
-      mv -f queuedance.pl.${locale} ${queuedance}.pl.${locale}
-      mv -f queuedance.pldances.${locale} ${queuedance}.pldances.${locale}
+    cd ${TMPLDIR}/${locale}
+
+    if [[ -f automatic.pl ]]; then
+      mv -f automatic.pl "${automatic}.pl"
+      mv -f automatic.pldances "${automatic}.pldances"
     fi
-    for fn in *.html.${locale}; do
+
+    if [[ -f standardrounds.pl ]]; then
+      mv -f standardrounds.pl "${standardrounds}.pl"
+      mv -f standardrounds.pldances "${standardrounds}.pldances"
+      mv -f standardrounds.sequence "${standardrounds}.sequence"
+    fi
+
+    if [[ -f QueueDance.pl ]]; then
+      mv -f QueueDance.pl "${queuedance}.pl"
+      mv -f QueueDance.pldances "${queuedance}.pldances"
+    fi
+
+    for fn in *.html; do
       case $fn in
         mobilemq.html|qrcode.html)
           continue
           ;;
       esac
-      sed -e "s/English/${langdesc}/" $fn > $fn.n
-      mv -f $fn.n $fn
+      sed -e "s/English/${langdesc}/" "$fn" > "$fn.n"
+      mv -f "$fn.n" "$fn"
     done
+
     cd $cwd
   fi
 done < complete.txt

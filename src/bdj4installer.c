@@ -1243,7 +1243,6 @@ installerCopyTemplates (installer_t *installer)
   datafile_t      *srdf;
   datafile_t      *qddf;
   datafile_t      *autodf;
-  char            localesfx [20];
   slist_t         *renamelist;
 
 
@@ -1263,7 +1262,6 @@ installerCopyTemplates (installer_t *installer)
     return;
   }
 
-  snprintf (localesfx, sizeof (localesfx), ".%s", sysvarsGetStr (SV_LOCALE_SHORT));
   renamelist = NULL;
 
   snprintf (tbuff, sizeof (tbuff), "%s/install/%s", installer->rundir,
@@ -2117,18 +2115,20 @@ installerGetBDJ3Fname (installer_t *installer, char *buff, size_t sz)
 static void
 installerTemplateCopy (char *from, char *to)
 {
-  char      localesfx [20];
+  char      *localetmpldir;
   char      tbuff [MAXPATHLEN];
 
-  snprintf (localesfx, sizeof (localesfx), ".%s", sysvarsGetStr (SV_LOCALE));
-  strlcpy (tbuff, from, MAXPATHLEN);
-  strlcat (tbuff, localesfx, MAXPATHLEN);
+  localetmpldir = sysvarsGetStr (SV_LOCALE);
+  strlcpy (tbuff, localetmpldir, sizeof (tbuff));
+  strlcat (tbuff, "/", sizeof (tbuff));
+  strlcat (tbuff, from, sizeof (tbuff));
   if (fileopFileExists (tbuff)) {
     from = tbuff;
   } else {
-    snprintf (localesfx, sizeof (localesfx), ".%s", sysvarsGetStr (SV_LOCALE_SHORT));
-    strlcpy (tbuff, from, MAXPATHLEN);
-    strlcat (tbuff, localesfx, MAXPATHLEN);
+    localetmpldir = sysvarsGetStr (SV_LOCALE_SHORT);
+    strlcpy (tbuff, localetmpldir, sizeof (tbuff));
+    strlcat (tbuff, "/", sizeof (tbuff));
+    strlcat (tbuff, from, MAXPATHLEN);
     if (fileopFileExists (tbuff)) {
       from = tbuff;
     }

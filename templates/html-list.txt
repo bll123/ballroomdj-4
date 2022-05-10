@@ -1,12 +1,12 @@
 English Flex Dark
 ..bdj-flex-dark.html
-Nederlands Flex Dark
-..bdj-flex-dark.html.nl
 English Flex
 ..bdj-flex.html
-Nederlands Flex
-..bdj-flex.html.nl
 English HTML 5
 ..bdj.html
+Nederlands Flex Dark
+..nl/bdj-flex-dark.html
+Nederlands Flex
+..nl/bdj-flex.html
 Nederlands HTML 5
-..bdj.html.nl
+..nl/bdj.html
