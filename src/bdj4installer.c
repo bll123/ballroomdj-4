@@ -1419,6 +1419,16 @@ installerCopyTemplates (installer_t *installer)
   }
   system (tbuff);
 
+  if (isMacOS ()) {
+    snprintf (from, sizeof (from), "../Applications/BDJ4.app/Contents/MacOS/plocal/share/themes/macOS-Mojave-dark");
+    snprintf (to, sizeof (to), "%s/.themes/macOS-Mojave-dark", installer->home);
+    filemanipLinkCopy (from, to);
+
+    snprintf (from, sizeof (from), "../Applications/BDJ4.app/Contents/MacOS/plocal/share/themes/macOS-Mojave-light");
+    snprintf (to, sizeof (to), "%s/.themes/macOS-Mojave-light", installer->home);
+    filemanipLinkCopy (from, to);
+  }
+
   datafileFree (srdf);
   datafileFree (autodf);
   datafileFree (qddf);

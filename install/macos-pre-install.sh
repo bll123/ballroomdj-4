@@ -60,15 +60,22 @@ fi
 test -f $cltinstpath && rm -f $cltinstpath
 
 # not sure if there's a way to determine the latest python version
-# this needs to be fixed
+# this needs to be fixed.
 pyver=310
 
+skipmpinst=F
 case $vers in
   1[3456789]*)
     mp_os_nm=$vers
     mp_os_vers=$vers
-    # this will fail to install macports.
-    # the script needs to be updated for a new version.
+    echo "This script has no knowledge of this version of MacOS (too new)."
+    echo "If macports is already installed, the script can continue."
+    echo "Continue? "
+    gr=$(getresponse)
+    if [[ $gr != Y ]]; then
+      exit 1
+    fi
+    skipmpinst=T
     ;;
   12*)
     mp_os_nm=Monterey
@@ -97,31 +104,33 @@ case $vers in
     ;;
 esac
 
-mp_installed=F
-if [[ -d /opt/local && \
-    -d /opt/local/share/macports && \
-    -f /opt/local/bin/port ]]; then
-  mp_installed=T
-fi
+if [[ $skipmpinst == F ]]; then
+  mp_installed=F
+  if [[ -d /opt/local && \
+      -d /opt/local/share/macports && \
+      -f /opt/local/bin/port ]]; then
+    mp_installed=T
+  fi
 
-if [[ $mp_installed == F ]]; then
-  echo "-- MacPorts is not installed"
+  if [[ $mp_installed == F ]]; then
+    echo "-- MacPorts is not installed"
 
-  url=https://github.com/macports/macports-base/releases
-  # find the current version
-  mp_tag=$(curl --include --head --silent \
-    ${url}/latest |
-    grep '^.ocation:' |
-    sed -e 's,.*/,,' -e 's,\r$,,')
-  mp_vers=$(echo ${mp_tag} | sed -e 's,^v,,')
+    url=https://github.com/macports/macports-base/releases
+    # find the current version
+    mp_tag=$(curl --include --head --silent \
+      ${url}/latest |
+      grep '^.ocation:' |
+      sed -e 's,.*/,,' -e 's,\r$,,')
+    mp_vers=$(echo ${mp_tag} | sed -e 's,^v,,')
 
-  url=https://github.com/macports/macports-base/releases/download
-  pkgnm=MacPorts-${mp_vers}-${mp_os_vers}-${mp_os_nm}.pkg
-  echo "-- Downloading MacPorts"
-  curl -JOL ${url}/${mp_tag}/${pkgnm}
-  echo "-- Installing MacPorts using sudo"
-  sudo installer -pkg ${pkgnm} -target /Applications
-  rm -f ${pkgnm}
+    url=https://github.com/macports/macports-base/releases/download
+    pkgnm=MacPorts-${mp_vers}-${mp_os_vers}-${mp_os_nm}.pkg
+    echo "-- Downloading MacPorts"
+    curl -JOL ${url}/${mp_tag}/${pkgnm}
+    echo "-- Installing MacPorts using sudo"
+    sudo installer -pkg ${pkgnm} -target /Applications
+    rm -f ${pkgnm}
+  fi
 fi
 
 echo "-- Running MacPorts 'port selfupdate' with sudo"
@@ -131,6 +140,7 @@ sudo port upgrade outdated
 
 echo "-- Installing packages needed by BDJ4"
 sudo port install gtk3 +quartz -x11
+sudo port install adwaita-icon-theme
 sudo port install ffmpeg +nonfree -x11
 sudo port install python${pyver} py${pyver}-pip py${pyver}-wheel
 sudo port select --set python python${pyver}
@@ -144,5 +154,8 @@ if [[ -z "$(port -q list inactive)" ]]; then
 n
 _HERE_
 fi
+
+echo "-- Updating the GTK icon cache"
+sudo /opt/local/bin/gtk-update-icon-cache-3.0
 
 exit 0

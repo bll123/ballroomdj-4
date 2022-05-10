@@ -13,6 +13,7 @@
 #include "fileop.h"
 #include "check_bdj.h"
 #include "slist.h"
+#include "sysvars.h"
 
 START_TEST(filemanip_copy)
 {
@@ -144,15 +145,28 @@ START_TEST(filemanip_recursive_dirlist)
   slist_t   *slist;
   slistidx_t  iteridx;
   char      *fn;
+  int       num = 3;
 
   char *dafn = "tmp/abc";
   char *fafn = "tmp/abc/abc.txt";
   char *dbfn = "tmp/abc/def";
   char *fbfn = "tmp/abc/def/def.txt";
   char *dcfn = "tmp/abc/ghi";
+  char *ddfn = "tmp/abc/jkl";
   char *fcfn = "tmp/abc/ghi/ghi.txt";
+  char *fdfn = "tmp/abc/ghi/jkl.txt";
+
+  sysvarsInit ("check_filemanip");
+
+  filemanipDeleteDir (dafn);
+
   fileopMakeDir (dbfn);
   fileopMakeDir (dcfn);
+  if (! isWindows ()) {
+    filemanipLinkCopy ("ghi", ddfn);
+    filemanipLinkCopy ("ghi.txt", fdfn);
+    num = 6;
+  }
   fh = fopen (fafn, "w");
   fclose (fh);
   fh = fopen (fbfn, "w");
@@ -162,7 +176,8 @@ START_TEST(filemanip_recursive_dirlist)
 
   slist = filemanipRecursiveDirList (dafn, FILEMANIP_FILES);
 
-  ck_assert_int_eq (slistGetCount (slist), 3);
+
+  ck_assert_int_eq (slistGetCount (slist), num);
   /* the list is unordered; for checks, sort it */
   slistSort (slist);
   slistStartIterator (slist, &iteridx);
@@ -172,8 +187,16 @@ START_TEST(filemanip_recursive_dirlist)
   ck_assert_str_eq (fn, "tmp/abc/def/def.txt");
   fn = slistIterateKey (slist, &iteridx);
   ck_assert_str_eq (fn, "tmp/abc/ghi/ghi.txt");
+  if (! isWindows ()) {
+    fn = slistIterateKey (slist, &iteridx);
+    ck_assert_str_eq (fn, "tmp/abc/ghi/jkl.txt");
+    fn = slistIterateKey (slist, &iteridx);
+    ck_assert_str_eq (fn, "tmp/abc/jkl/ghi.txt");
+    fn = slistIterateKey (slist, &iteridx);
+    ck_assert_str_eq (fn, "tmp/abc/jkl/jkl.txt");
+  }
 
-  filemanipDeleteDir (dafn);
+//  filemanipDeleteDir (dafn);
   slistFree (slist);
 }
 END_TEST

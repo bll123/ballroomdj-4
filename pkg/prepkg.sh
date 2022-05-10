@@ -153,7 +153,8 @@ _HERE_
   done
 
   nm=templates/bdjconfig.txt.mp
-  sed -e '/UIFONT/ { n ; s/.*/..Arial 11/ ; }' ${nm} > ${nm}.n
+  sed -e '/UIFONT/ { n ; s/.*/..Arial 12/ ; }' \
+      -e '/LISTINGFONT/ { n ; s/.*/..Arial 11/ ; }' ${nm} > ${nm}.n
   mv -f ${nm}.n ${nm}
 
   nm=templates/bdjconfig.txt.p
@@ -179,7 +180,8 @@ if [[ $systype == Darwin ]]; then
   done
 
   nm=templates/bdjconfig.txt.mp
-  sed -e '/UIFONT/ { n ; s/.*/..Arial 12/ ; }' ${nm} > ${nm}.n
+  sed -e '/UIFONT/ { n ; s/.*/..Arial 12/ ; }' \
+      -e '/LISTINGFONT/ { n ; s/.*/..Arial 11/ ; }' ${nm} > ${nm}.n
   mv -f ${nm}.n ${nm}
 
   nm=templates/bdjconfig.txt.g

@@ -84,7 +84,7 @@ main (int argc, char *argv [])
         bdjoptSetStr (OPT_M_VOLUME_INTFC, "libvolwin");
       }
       if (isMacOS ()) {
-        bdjoptSetStr (OPT_M_VOLUME_INTFC, "libvolmv");
+        bdjoptSetStr (OPT_M_VOLUME_INTFC, "libvolmac");
       }
       if (isLinux ()) {
         bdjoptSetStr (OPT_M_VOLUME_INTFC, "libvolpa");
@@ -153,6 +153,9 @@ main (int argc, char *argv [])
             strlcat (tbuff, data + 13, sizeof (tbuff));
           }
         }
+      }
+      if (isMacOS ()) {
+        snprintf (tbuff, sizeof (tbuff), "%s/Music", home);
       }
       pathNormPath (tbuff, sizeof (tbuff));
       bdjoptSetStr (OPT_M_DIR_MUSIC, tbuff);

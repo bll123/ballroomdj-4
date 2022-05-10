@@ -2652,6 +2652,11 @@ confuiGetThemeList (void)
     count = nlistGetCount (themelist);
     nlistSetStr (themelist, count, "Adwaita");
   } else {
+    /* for macos */
+    filelist = filemanipRecursiveDirList ("/opt/local/share/themes", FILEMANIP_DIRS);
+    confuiGetThemeNames (themelist, filelist);
+    slistFree (filelist);
+
     filelist = filemanipRecursiveDirList ("/usr/share/themes", FILEMANIP_DIRS);
     confuiGetThemeNames (themelist, filelist);
     slistFree (filelist);

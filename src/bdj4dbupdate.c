@@ -447,8 +447,6 @@ dbupdateProcessing (void *udata)
     }
 
     dbupdateOutputProgress (dbupdate);
-    connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG,
-        _("Complete"));
     snprintf (tbuff, sizeof (tbuff), "%s : %u", _("Total Files"), dbupdate->fileCount);
     connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
     snprintf (tbuff, sizeof (tbuff), "%s : %u", _("Loaded from Database"), dbupdate->countInDatabase);
@@ -460,6 +458,9 @@ dbupdateProcessing (void *udata)
     snprintf (tbuff, sizeof (tbuff), "%s : %u", _("Other Files"),
         dbupdate->countBad + dbupdate->countNullData +
         dbupdate->countNoTags + dbupdate->countNonAudio);
+    connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
+
+    snprintf (tbuff, sizeof (tbuff), "-- %s", _("Complete"));
     connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
 
     logMsg (LOG_DBG, LOG_IMPORTANT, "-- finish: %ld ms",
