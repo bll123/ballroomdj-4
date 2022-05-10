@@ -9,10 +9,10 @@ ANNOUNCE
 ..
 DANCE
 ..Argentijnse Tango
-HIGHBPM
-..128
 LOWBPM
 ..120
+HIGHBPM
+..128
 SPEED
 ..normaal
 TAGS

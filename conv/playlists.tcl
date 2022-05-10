@@ -19,10 +19,11 @@ try {
 }
 
 foreach {fn} $flist {
-  set nfn [file join $datatopdir data [file rootname [file tail $fn]].pl]
-#  puts "   - [file tail $fn] : [file rootname [file tail $fn]].pl"
+  set basename [file rootname [file tail $fn]]
+  set nfn [file join $datatopdir data ${basename}.pl]
+  #  puts "   - [file tail $fn] : ${basename}.pl"
   set ifh [open $fn r]
-  set dfn [file join data [file rootname [file tail $fn]].pldances]
+  set dfn [file join data ${basename}.pldances]
   set ofh [open $nfn w]
   set dfh [open $dfn w]
   puts $ofh "# BDJ4 playlist settings"
@@ -33,7 +34,7 @@ foreach {fn} $flist {
   puts $dfh "# [clock format [clock seconds] -gmt 1]"
   puts $dfh "version"
   puts $dfh "..1"
-  set pltype Automatic
+  set pltype automatic
   set keyidx 0
   while { [gets $ifh line] >= 0 } {
     regexp {^([^:]*):(.*)$} $line all key value
@@ -43,10 +44,10 @@ foreach {fn} $flist {
     set tkey [string toupper $key]
 
     if { $tkey eq "MANUALLIST" && $value ne {} && $value ne {None} } {
-      set pltype Manual
+      set pltype manual
     }
     if { $tkey eq "SEQUENCE" && $value ne {} && $value ne {None} } {
-      set pltype Sequence
+      set pltype sequence
     }
 
     if { $tkey eq "REQUIREDKEYWORDS" } { continue }
@@ -123,4 +124,13 @@ foreach {fn} $flist {
   puts $ofh "..$pltype"
   close $ifh
   close $ofh
+
+  if { $basename eq "Quick Play" } {
+    set ofn [file join $datatopdir data ${basename}.pl]
+    set nfn [file join $datatopdir data QueueDance.pl]
+    file rename -force $ofn $nfn
+    set ofn [file join $datatopdir data ${basename}.pldances]
+    set nfn [file join $datatopdir data QueueDance.pldances]
+    file rename -force $ofn $nfn
+  }
 }

@@ -22,4 +22,4 @@ DANCELEVELLOW
 DANCELEVELHIGH
 ..Advanced
 TYPE
-..Automatic
+..automatic

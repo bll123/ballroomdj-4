@@ -1,10 +1,10 @@
-# BDJ4 playlist settings
+# BDJ4 queuedance
 ALLOWEDKEYWORDS
 ..
 DANCERATING
-..Good
+..Great
 GAP
-..3000
+..
 MAXPLAYTIME
 ..
 MQMESSAGE
@@ -12,7 +12,7 @@ MQMESSAGE
 PAUSEEACHSONG
 ..no
 PLAYANNOUNCE
-..yes
+..no
 STOPAFTER
 ..0
 STOPTIME
@@ -20,6 +20,6 @@ STOPTIME
 DANCELEVELLOW
 ..Easy
 DANCELEVELHIGH
-..Advanced
+..Normal
 TYPE
-..sequence
+..automatic

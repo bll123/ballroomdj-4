@@ -70,6 +70,10 @@ echo "// CONTEXT: The name of the 'automatic' playlist file" >> $TMP
 echo "..automatic" >> $TMP
 echo "// CONTEXT: The name of the 'standardrounds' playlist file" >> $TMP
 echo "..standardrounds" >> $TMP
+echo "// CONTEXT: The name of the 'queuedance' playlist file" >> $TMP
+echo "..QueueDance" >> $TMP
+echo "// CONTEXT: The name of the 'raffle songs' playlist file" >> $TMP
+echo "..Raffle Songs" >> $TMP
 
 # linux desktop shortcut
 echo "// CONTEXT: tooltip for desktop icon" >> $TMP

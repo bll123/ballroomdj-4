@@ -275,7 +275,7 @@ foreach path [list {} profiles $mpath $mppath] {
         puts $ofh "..${value}"
 
         puts $ofh UI_THEME
-        set value Adwaita-dark  # just something as a default
+        set value Adwaita-dark  ; # just something as a default
         if { $::tcl_platform(os) eq "Linux" } {
           # use the default
           set value {}

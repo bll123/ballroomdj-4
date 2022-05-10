@@ -655,10 +655,10 @@ plConvType (datafileconv_t *conv)
 
     conv->valuetype = VALUE_NUM;
     num = PLTYPE_MANUAL;
-    if (strcmp (conv->u.str, "Automatic") == 0) {
+    if (strcmp (conv->u.str, "automatic") == 0) {
       num = PLTYPE_AUTO;
     }
-    if (strcmp (conv->u.str, "Sequence") == 0) {
+    if (strcmp (conv->u.str, "sequence") == 0) {
       num = PLTYPE_SEQ;
     }
     conv->u.num = num;
@@ -667,9 +667,9 @@ plConvType (datafileconv_t *conv)
 
     conv->valuetype = VALUE_STR;
     switch (conv->u.num) {
-      case PLTYPE_MANUAL: { sval = "Manual"; break; }
-      case PLTYPE_AUTO: { sval = "Automatic"; break; }
-      case PLTYPE_SEQ: { sval = "Sequence"; break; }
+      case PLTYPE_MANUAL: { sval = "manual"; break; }
+      case PLTYPE_AUTO: { sval = "automatic"; break; }
+      case PLTYPE_SEQ: { sval = "sequence"; break; }
     }
     conv->u.str = sval;
   }

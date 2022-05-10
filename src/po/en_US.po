@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: BDJ4 4.0.0\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
-"POT-Creation-Date: 2022-05-06\n"
-"PO-Revision-Date: 2022-05-06\n"
+"POT-Creation-Date: 2022-05-10\n"
+"PO-Revision-Date: 2022-05-10\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/gb\n"
 "Language: en\n"
@@ -131,8 +131,8 @@ msgstr ""
 msgid "Album Artist"
 msgstr ""
 
-#. CONTEXT: filter: all dances are selected
 #. CONTEXT: a filter: all dances are selected
+#. CONTEXT: filter: all dances are selected
 msgid "All Dances"
 msgstr ""
 
@@ -207,7 +207,6 @@ msgstr "Auto Organize"
 msgid "BDJ Tags Only"
 msgstr ""
 
-#. CONTEXT: BPM: beats per minute (not bars per minute)
 #. CONTEXT: config: Whether to display BPM as BPM or MPM
 msgid "BPM"
 msgstr ""
@@ -687,7 +686,6 @@ msgstr ""
 msgid "Low %s"
 msgstr ""
 
-#. CONTEXT: MPM: measures per minute (aka bars per minute)
 msgid "MPM"
 msgstr ""
 
@@ -986,12 +984,17 @@ msgstr ""
 msgid "Queue Playlist"
 msgstr ""
 
+#. CONTEXT: The name of the 'queuedance' playlist file
+msgid "QueueDance"
+msgstr ""
+
 msgid "Quickstep"
 msgstr ""
 
 msgid "Raffle Games"
 msgstr ""
 
+#. CONTEXT: The name of the 'raffle songs' playlist file
 msgid "Raffle Songs"
 msgstr ""
 
@@ -1010,10 +1013,6 @@ msgstr ""
 #. CONTEXT: config: display settings: button: remove the selected field
 #. CONTEXT: button: remove the song from the queue
 msgid "Remove"
-msgstr ""
-
-#. CONTEXT: config: remove spaces when renaming audio files
-msgid "Remove Spaces"
 msgstr ""
 
 msgid "Renames the audio files based on the organization settings."

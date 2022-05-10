@@ -1241,6 +1241,7 @@ installerCopyTemplates (installer_t *installer)
   slistidx_t      iteridx;
   pathinfo_t      *pi;
   datafile_t      *srdf;
+  datafile_t      *qddf;
   datafile_t      *autodf;
   char            localesfx [20];
   slist_t         *renamelist;
@@ -1272,6 +1273,10 @@ installerCopyTemplates (installer_t *installer)
   snprintf (tbuff, sizeof (tbuff), "%s/install/%s", installer->rundir,
       "localized-auto.txt");
   autodf = datafileAllocParse ("loc-sr", DFTYPE_KEY_VAL,
+      tbuff, NULL, 0, DATAFILE_NO_LOOKUP);
+  snprintf (tbuff, sizeof (tbuff), "%s/install/%s", installer->rundir,
+      "localized-qd.txt");
+  qddf = datafileAllocParse ("loc-qd", DFTYPE_KEY_VAL,
       tbuff, NULL, 0, DATAFILE_NO_LOOKUP);
 
   snprintf (tbuff, sizeof (tbuff), "%s/templates", installer->rundir);
@@ -1354,6 +1359,9 @@ installerCopyTemplates (installer_t *installer)
       }
       if (strncmp (pi->basename, "standardrounds", pi->blen) == 0) {
         renamelist = datafileGetList (srdf);
+      }
+      if (strncmp (pi->basename, "QueueDance", pi->blen) == 0) {
+        renamelist = datafileGetList (qddf);
       }
 
       strlcpy (tbuff, fname, sizeof (tbuff));

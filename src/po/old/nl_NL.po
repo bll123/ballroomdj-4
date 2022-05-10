@@ -3105,3 +3105,5 @@ msgstr "Muziek Map"
 msgid "Music Queue"
 msgstr "Muziekwachtrij"
 
+msgid "QueueDance"
+msgstr "wachtrijendans"

@@ -237,11 +237,17 @@ while read -r line; do
 
   ATMP=${INSTDIR}/localized-auto.txt
   SRTMP=${INSTDIR}/localized-sr.txt
+  QDTMP=${INSTDIR}/localized-qd.txt
+  RSTMP=${INSTDIR}/localized-rs.txt
   > $ATMP
   > $SRTMP
+  > $QDTMP
+  > $RSTMP
   if [[ $pofile != en_US.po && $pofile != en_GB.po ]]; then
-    for txt in automatic standardrounds; do
-      xl=$(sed -n "\~msgid .${txt}.~ {n;p}" $pofile)
+    for txt in automatic standardrounds queuedance; do
+      ttxt=$txt
+      if [[ $ttxt == queuedance ]]; then ttxt="QueueDance"; fi
+      xl=$(sed -n "\~msgid .${ttxt}.~ {n;p}" $pofile)
       case $xl in
         ""|msgstr\ \"\")
           continue
@@ -251,7 +257,7 @@ while read -r line; do
       if [[ $xl == "" ]]; then
         xl=$txt
       fi
-      eval $txt="$xl"
+      eval $txt="\"$xl\""
     done
 
     cwd=$(pwd)
@@ -260,14 +266,19 @@ while read -r line; do
     echo "..${automatic}" >> $ATMP
     echo $locale >> $SRTMP
     echo "..${standardrounds}" >> $SRTMP
+    echo $locale >> $QDTMP
+    echo "..${queuedance}" >> $QDTMP
 
     cd ${TMPLDIR}
     mv -f automatic.pl.${locale} ${automatic}.pl.${locale}
     mv -f automatic.pldances.${locale} ${automatic}.pldances.${locale}
     mv -f standardrounds.pl.${locale} ${standardrounds}.pl.${locale}
-    mv -f $TMP ${standardrounds}.pl.${locale}
     mv -f standardrounds.pldances.${locale} ${standardrounds}.pldances.${locale}
     mv -f standardrounds.sequence.${locale} ${standardrounds}.sequence.${locale}
+    if [[ -f queuedance.pl.${locale} ]]; then
+      mv -f queuedance.pl.${locale} ${queuedance}.pl.${locale}
+      mv -f queuedance.pldances.${locale} ${queuedance}.pldances.${locale}
+    fi
     for fn in *.html.${locale}; do
       case $fn in
         mobilemq.html|qrcode.html)

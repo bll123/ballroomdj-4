@@ -433,7 +433,7 @@ http://danielstern.ca/range.css/#/
         <div class="linebox">
           <input class="stretch grow wb" type="submit"
               onclick="javascript:bdj.sendDanceCmd('queue');"
-              name="queue" value="Wachtrij" msgstr "" msgstr "" msgstr "Wachtrij B" msgstr "" msgstr "Wachtrij lengte" msgstr "">
+              name="queue" value="Wachtrij" msgstr "" msgstr "" msgstr "Wachtrij B" msgstr "" msgstr "Wachtrij lengte" msgstr "" msgstr "wachtrijendans">
         </div>
         <div class="linebox">
           <input class="stretch grow wb" type="submit"
@@ -457,7 +457,7 @@ http://danielstern.ca/range.css/#/
             name="plclearplay" value="Clear & Play">
           <input class="stretch grow wb" type="submit"
             onclick="javascript:bdj.sendPLCmd('playlistqueue');"
-            name="plqueue" value="Wachtrij" msgstr "" msgstr "" msgstr "Wachtrij B" msgstr "" msgstr "Wachtrij lengte" msgstr "">
+            name="plqueue" value="Wachtrij" msgstr "" msgstr "" msgstr "Wachtrij B" msgstr "" msgstr "Wachtrij lengte" msgstr "" msgstr "wachtrijendans">
         </div>
     </div>
   </div>

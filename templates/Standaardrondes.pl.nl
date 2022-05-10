@@ -22,4 +22,4 @@ DANCELEVELLOW
 DANCELEVELHIGH
 ..Geavanceerd
 TYPE
-..Sequence
+..sequence
