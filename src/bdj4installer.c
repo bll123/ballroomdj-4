@@ -27,6 +27,7 @@
 #include "bdj4.h"
 #include "bdj4intl.h"
 #include "bdjopt.h"
+#include "bdjregex.h"
 #include "bdjstring.h"
 #include "datafile.h"
 #include "filedata.h"
@@ -181,7 +182,7 @@ static void installerDisplayText (installer_t *installer, char *pfx, char *txt);
 static void installerScrollToEnd (GtkWidget *w, GtkAllocation *retAllocSize, gpointer udata);;
 static void installerGetTargetSaveFname (installer_t *installer, char *buff, size_t len);
 static void installerGetBDJ3Fname (installer_t *installer, char *buff, size_t len);
-static void installerTemplateCopy (char *from, char *to);
+static void installerTemplateCopy (const char *dir, const char *from, const char *to);
 static void installerSetrundir (installer_t *installer, const char *dir);
 static void installerVLCGetVersion (installer_t *installer);
 static void installerPythonGetVersion (installer_t *installer);
@@ -640,8 +641,8 @@ installerMainLoop (void *udata)
 
       logStartAppend ("bdj4installer", "in",
           LOG_IMPORTANT | LOG_BASIC | LOG_MAIN);
+      logMsg (LOG_INSTALL, LOG_IMPORTANT, "=== installer started");
       logMsg (LOG_INSTALL, LOG_IMPORTANT, "target: %s", installer->target);
-
       break;
     }
     case INST_CLEAN: {
@@ -1233,6 +1234,7 @@ installerCleanOldFiles (installer_t *installer)
 static void
 installerCopyTemplates (installer_t *installer)
 {
+  char            dir [MAXPATHLEN];
   char            from [MAXPATHLEN];
   char            to [MAXPATHLEN];
   char            tbuff [MAXPATHLEN];
@@ -1264,18 +1266,20 @@ installerCopyTemplates (installer_t *installer)
 
   renamelist = NULL;
 
-  snprintf (tbuff, sizeof (tbuff), "%s/install/%s", installer->rundir,
-      "localized-sr.txt");
+  snprintf (tbuff, sizeof (tbuff), "%s/install/%s",
+      installer->rundir, "localized-sr.txt");
   srdf = datafileAllocParse ("loc-sr", DFTYPE_KEY_VAL,
       tbuff, NULL, 0, DATAFILE_NO_LOOKUP);
-  snprintf (tbuff, sizeof (tbuff), "%s/install/%s", installer->rundir,
-      "localized-auto.txt");
+  snprintf (tbuff, sizeof (tbuff), "%s/install/%s",
+      installer->rundir, "localized-auto.txt");
   autodf = datafileAllocParse ("loc-sr", DFTYPE_KEY_VAL,
       tbuff, NULL, 0, DATAFILE_NO_LOOKUP);
-  snprintf (tbuff, sizeof (tbuff), "%s/install/%s", installer->rundir,
-      "localized-qd.txt");
+  snprintf (tbuff, sizeof (tbuff), "%s/install/%s",
+      installer->rundir, "localized-qd.txt");
   qddf = datafileAllocParse ("loc-qd", DFTYPE_KEY_VAL,
       tbuff, NULL, 0, DATAFILE_NO_LOOKUP);
+
+  snprintf (dir, sizeof (dir), "%s/templates", installer->rundir);
 
   snprintf (tbuff, sizeof (tbuff), "%s/templates", installer->rundir);
   dirlist = filemanipBasicDirList (tbuff, NULL);
@@ -1298,17 +1302,15 @@ installerCopyTemplates (installer_t *installer)
     }
 
     if (strcmp (fname, "bdj-flex-dark.html") == 0) {
-      snprintf (from, sizeof (from), "%s/templates/%s",
-          installer->rundir, fname);
+      snprintf (from, sizeof (from), "%s", fname);
       snprintf (to, sizeof (to), "http/bdj4remote.html");
-      installerTemplateCopy (from, to);
+      installerTemplateCopy (dir, from, to);
       continue;
     }
     if (strcmp (fname, "mobilemq.html") == 0) {
-      snprintf (from, sizeof (from), "%s/templates/%s",
-          installer->rundir, fname);
+      snprintf (from, sizeof (from), "%s", fname);
       snprintf (to, sizeof (to), "http/%s", fname);
-      installerTemplateCopy (from, to);
+      installerTemplateCopy (dir, from, to);
       continue;
     }
 
@@ -1319,17 +1321,14 @@ installerCopyTemplates (installer_t *installer)
     }
 
     if (pathInfoExtCheck (pi, ".crt")) {
-      snprintf (from, sizeof (from), "%s/templates/%s",
-          installer->rundir, fname);
+      snprintf (from, sizeof (from), "%s", fname);
       snprintf (to, sizeof (to), "http/%s", fname);
     } else if (pathInfoExtCheck (pi, ".svg")) {
-      snprintf (from, sizeof (from), "%s/templates/%s",
-          installer->rundir, fname);
+      snprintf (from, sizeof (from), "%s", fname);
       snprintf (to, sizeof (to), "%s/img/%s",
           installer->rundir, fname);
     } else if (strncmp (fname, "bdjconfig", 9) == 0) {
-      snprintf (from, sizeof (from), "%s/templates/%s",
-          installer->rundir, fname);
+      snprintf (from, sizeof (from), "%s", fname);
 
       snprintf (tbuff, sizeof (tbuff), "%.*s", (int) pi->blen, pi->basename);
       if (pathInfoExtCheck (pi, ".g")) {
@@ -1373,8 +1372,7 @@ installerCopyTemplates (installer_t *installer)
         }
       }
 
-      snprintf (from, sizeof (from), "%s/templates/%s",
-          installer->rundir, tbuff);
+      snprintf (from, sizeof (from), "%s", tbuff);
       if (strncmp (pi->basename, "ds-", 3) == 0) {
         snprintf (to, sizeof (to), "data/profile00/%s", tbuff);
       } else {
@@ -1386,40 +1384,44 @@ installerCopyTemplates (installer_t *installer)
       continue;
     }
 
-    installerTemplateCopy (from, to);
+    installerTemplateCopy (dir, from, to);
 
     free (pi);
   }
   slistFree (dirlist);
 
-  snprintf (from, sizeof (from), "%s/img/favicon.ico", installer->rundir);
+  snprintf (dir, sizeof (dir), "%s/img", installer->rundir);
+
+  strlcpy (from, "favicon.ico", sizeof (from));
   snprintf (to, sizeof (to), "http/favicon.ico");
-  installerTemplateCopy (from, to);
+  installerTemplateCopy (dir, from, to);
 
-  snprintf (from, sizeof (from), "%s/img/led_on.svg", installer->rundir);
+  strlcpy (from, "led_on.svg", sizeof (from));
   snprintf (to, sizeof (to), "http/led_on.svg");
-  installerTemplateCopy (from, to);
+  installerTemplateCopy (dir, from, to);
 
-  snprintf (from, sizeof (from), "%s/img/led_off.svg", installer->rundir);
+  strlcpy (from, "led_off.svg", sizeof (from));
   snprintf (to, sizeof (to), "http/led_off.svg");
-  installerTemplateCopy (from, to);
+  installerTemplateCopy (dir, from, to);
 
-  snprintf (from, sizeof (from), "%s/img/ballroomdj4.svg", installer->rundir);
+  strlcpy (from, "ballroomdj4.svg", sizeof (from));
   snprintf (to, sizeof (to), "http/ballroomdj4.svg");
-  installerTemplateCopy (from, to);
+  installerTemplateCopy (dir, from, to);
 
   snprintf (from, sizeof (from), "%s/img/mrc", installer->rundir);
   snprintf (to, sizeof (to), "http/mrc");
+  *tbuff = '\0';
   if (isWindows ()) {
     snprintf (tbuff, sizeof (tbuff), "robocopy /e /j /dcopy:DAT /timfix /njh /njs /np /ndl /nfl \"%s\" \"%s\"",
         from, to);
-    system (tbuff);
   } else {
     snprintf (tbuff, sizeof (tbuff), "cp -r '%s' '%s'", from, "http");
   }
+  system (tbuff);
 
   datafileFree (srdf);
   datafileFree (autodf);
+  datafileFree (qddf);
 
   installer->instState = INST_CONVERT_START;
 }
@@ -2113,26 +2115,33 @@ installerGetBDJ3Fname (installer_t *installer, char *buff, size_t sz)
 }
 
 static void
-installerTemplateCopy (char *from, char *to)
+installerTemplateCopy (const char *dir, const char *from, const char *to)
 {
   char      *localetmpldir;
   char      tbuff [MAXPATHLEN];
 
   localetmpldir = sysvarsGetStr (SV_LOCALE);
-  strlcpy (tbuff, localetmpldir, sizeof (tbuff));
-  strlcat (tbuff, "/", sizeof (tbuff));
-  strlcat (tbuff, from, sizeof (tbuff));
+  snprintf (tbuff, sizeof (tbuff), "%s/%s/%s",
+      dir, localetmpldir, from);
+  logMsg (LOG_INSTALL, LOG_MAIN, "check file: %s", tbuff);
   if (fileopFileExists (tbuff)) {
+    logMsg (LOG_INSTALL, LOG_MAIN, "   found");
     from = tbuff;
   } else {
     localetmpldir = sysvarsGetStr (SV_LOCALE_SHORT);
-    strlcpy (tbuff, localetmpldir, sizeof (tbuff));
-    strlcat (tbuff, "/", sizeof (tbuff));
-    strlcat (tbuff, from, MAXPATHLEN);
+    snprintf (tbuff, sizeof (tbuff), "%s/%s/%s",
+        dir, localetmpldir, from);
+    logMsg (LOG_INSTALL, LOG_MAIN, "check file: %s", tbuff);
     if (fileopFileExists (tbuff)) {
+      logMsg (LOG_INSTALL, LOG_MAIN, "   found");
+      from = tbuff;
+    } else {
+      snprintf (tbuff, sizeof (tbuff), "%s/%s", dir, from);
       from = tbuff;
     }
   }
+  logMsg (LOG_INSTALL, LOG_IMPORTANT, "- copy file: %s", from);
+  logMsg (LOG_INSTALL, LOG_IMPORTANT, "         to: %s", to);
   filemanipBackup (to, 1);
   filemanipCopy (from, to);
 }
