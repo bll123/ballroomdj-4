@@ -9,6 +9,14 @@ add_library (libbdj4ui SHARED
   osuilinuxutils.c
   osuimacutils.m
   osuiwinutils.c
+  uimusicq.c
+  uimusicqgtk.c
+  uiplayer.c
+  uisongedit.c
+  uisongeditgtk.c
+  uisongsel.c
+  uisongselfilter.c
+  uisongselgtk.c
   uiutils.c
 )
 target_include_directories (libbdj4ui

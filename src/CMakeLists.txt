@@ -74,7 +74,6 @@ add_subdirectory (libpli)
 add_subdirectory (libvol)
 add_subdirectory (libbdj4ui)
 add_subdirectory (libuigtk3)
-add_subdirectory (libbdj4uigtk)
 
 add_executable (bdj4locatebdj3 bdj4locatebdj3.c)
 if (WIN32)
@@ -344,7 +343,7 @@ if (WIN32)
   target_compile_options (bdj4playerui PRIVATE -mwindows)
 endif()
 target_link_libraries (bdj4playerui
-  libbdj4uigtk libbdj4ui libuigtk3 libbdj4 libbdj4common
+  libbdj4ui libuigtk3 libbdj4 libbdj4common
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}
   m
@@ -360,7 +359,7 @@ if (WIN32)
   target_compile_options (bdj4manageui PRIVATE -mwindows)
 endif()
 target_link_libraries (bdj4manageui
-  libbdj4uigtk libbdj4ui libuigtk3 libbdj4 libbdj4common
+  libbdj4ui libuigtk3 libbdj4 libbdj4common
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}
   m

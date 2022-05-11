@@ -30,6 +30,8 @@ foreach ($darr as $line) {
     $adata[$fver]['-osdisp'] = $data['-osdisp'];
     $adata[$fver]['-date'] = $data['-date'];
     $adata[$fver]['-pythonvers'] = $data['-pythonvers'];
+    $adata[$fver]['-locale'] = $data['-locale'];
+    $adata[$fver]['-systemlocale'] = $data['-systemlocale'];
     $adata[$fver]['-oldversion'] = $data['-oldversion'];
     $adata[$fver]['-bdj3version'] = $data['-bdj3version'];
     $adata[$fver]['-new'] = $data['-new'];
@@ -49,6 +51,8 @@ foreach ($darr as $line) {
     unset ($data);
     $data['-bdj3version'] = '';
     $data['-oldversion'] = '';
+    $data['-locale'] = '';
+    $data['-systemlocale'] = '';
     $in = 1;
   }
 }
@@ -131,6 +135,8 @@ $html .= <<<_HERE_
       <th align="left">Country</th>
       <th align="left">OS</th>
       <th align="left">Python-Vers</th>
+      <th align="left">Sys-Locale</th>
+      <th align="left">Locale</th>
       <th align="left">New</th>
       <th align="left">Overwrite</th>
       <th align="left">Upgrade</th>
@@ -148,6 +154,8 @@ foreach ($adata as $vkey => $tdata) {
   $html .= "      <td align=\"left\">${tdata['-country']}</td>";
   $html .= "      <td align=\"left\">${tdata['-osdisp']}</td>";
   $html .= "      <td align=\"right\">${tdata['-pythonvers']}</td>";
+  $html .= "      <td align=\"right\">${tdata['-systemlocale']}</td>";
+  $html .= "      <td align=\"right\">${tdata['-locale']}</td>";
   $html .= "      <td align=\"right\">${tdata['-new']}</td>";
   $html .= "      <td align=\"right\">${tdata['-overwrite']}</td>";
   $html .= "      <td align=\"right\">${tdata['-upgrade']}</td>";
