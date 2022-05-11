@@ -10,11 +10,11 @@
 #include "uiutils.h"
 
 enum {
-  UIPLAYER_BUTTON_FADE,
-  UIPLAYER_BUTTON_PLAYPAUSE,
-  UIPLAYER_BUTTON_BEGSONG,
-  UIPLAYER_BUTTON_NEXTSONG,
-  UIPLAYER_BUTTON_MAX,
+  UIPLAYER_CALLBACK_FADE,
+  UIPLAYER_CALLBACK_PLAYPAUSE,
+  UIPLAYER_CALLBACK_BEGSONG,
+  UIPLAYER_CALLBACK_NEXTSONG,
+  UIPLAYER_CALLBACK_MAX,
 };
 
 typedef struct {
@@ -22,7 +22,7 @@ typedef struct {
   conn_t          *conn;
   playerstate_t   playerState;
   musicdb_t       *musicdb;
-  UIWidget        buttons [UIPLAYER_BUTTON_MAX];
+  UICallback      callbacks [UIPLAYER_CALLBACK_MAX];
   /* song display */
   GtkWidget       *vbox;
   GtkWidget       *statusImg;

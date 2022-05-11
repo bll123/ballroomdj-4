@@ -42,7 +42,7 @@ static void uisongselDanceSelectSignal (GtkTreeView *tv, GtkTreePath *path,
     GtkTreeViewColumn *column, gpointer udata);
 
 void
-uisongselFilterDialog (UIWidget *uiwidget, void *udata)
+uisongselFilterDialog (void *udata)
 {
   uisongsel_t * uisongsel = udata;
   gint        x, y;

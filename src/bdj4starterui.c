@@ -58,14 +58,14 @@ typedef enum {
 #define MAX_WEB_RESP_SZ   2048
 
 enum {
-  START_BUTTON_PLAYER,
-  START_BUTTON_MANAGE,
-  START_BUTTON_CONFIG,
-  START_BUTTON_RAFFLE,
-  START_BUTTON_SUPPORT,
-  START_BUTTON_EXIT,
-  START_BUTTON_SEND_SUPPORT,
-  START_BUTTON_MAX,
+  START_CALLBACK_PLAYER,
+  START_CALLBACK_MANAGE,
+  START_CALLBACK_CONFIG,
+  START_CALLBACK_RAFFLE,
+  START_CALLBACK_SUPPORT,
+  START_CALLBACK_EXIT,
+  START_CALLBACK_SEND_SUPPORT,
+  START_CALLBACK_MAX,
 };
 
 typedef struct {
@@ -92,7 +92,7 @@ typedef struct {
   int             mainstarted;
   int             stopwaitcount;
   nlist_t         *proflist;
-  UIWidget        buttons [START_BUTTON_MAX];
+  UICallback      callbacks [START_CALLBACK_MAX];
   /* gtk stuff */
   uispinbox_t  profilesel;
   GtkWidget         *window;
@@ -140,20 +140,20 @@ static void     starterStopMain (startui_t *starter);
 static gboolean starterCloseWin (GtkWidget *window, GdkEvent *event, gpointer userdata);
 static void     starterSigHandler (int sig);
 
-static void     starterStartPlayerui (UIWidget *uiwidget, void *udata);
-static void     starterStartManageui (GtkButton *b, gpointer udata);
-static void     starterStartConfig (GtkButton *b, gpointer udata);
-static void     starterStartRaffleGames (GtkButton *b, gpointer udata);
-static void     starterProcessExit (GtkButton *b, gpointer udata);
+static void     starterStartPlayerui (void *udata);
+static void     starterStartManageui (void *udata);
+static void     starterStartConfig (void *udata);
+static void     starterStartRaffleGames (void *udata);
+static void     starterProcessExit (void *udata);
 
 static nlist_t  * starterGetProfiles (startui_t *starter);
 static char     * starterSetProfile (void *udata, int idx);
 static void     starterCheckProfile (startui_t *starter);
 
-static void     starterProcessSupport (GtkButton *b, gpointer udata);
+static void     starterProcessSupport (void *udata);
 static void     starterWebResponseCallback (void *userdata, char *resp, size_t len);
 static void     starterSupportResponseHandler (GtkDialog *d, gint responseid, gpointer udata);
-static void     starterCreateSupportDialog (GtkButton *b, gpointer udata);
+static void     starterCreateSupportDialog (void *udata);
 static void     starterSupportMsgHandler (GtkDialog *d, gint responseid, gpointer udata);
 static void     starterSendFilesInit (startui_t *starter, char *dir);
 static void     starterSendFiles (startui_t *starter);
@@ -352,6 +352,7 @@ starterClosingCallback (void *udata, programstate_t programState)
 static void
 starterBuildUI (startui_t  *starter)
 {
+  UIWidget            uiwidget;
   GtkWidget           *widget;
   GtkWidget           *menubar;
   GtkWidget           *menu;
@@ -431,9 +432,12 @@ starterBuildUI (startui_t  *starter)
   uiWidgetSetAllMargins (widget, uiBaseMarginSz * 10);
   uiBoxPackStart (hbox, widget);
 
-  widget = uiCreateButton (&starter->buttons [START_BUTTON_PLAYER],
+  uiutilsUICallbackInit (&starter->callbacks [START_CALLBACK_PLAYER],
+      starterStartPlayerui, starter);
+  widget = uiCreateButton (&uiwidget,
+      &starter->callbacks [START_CALLBACK_PLAYER],
       /* CONTEXT: button: starts the player user interface */
-      _("Player"), NULL, starterStartPlayerui, starter);
+      _("Player"), NULL, NULL, NULL);
   uiWidgetSetMarginTop (widget, uiBaseMarginSz * 2);
   uiWidgetAlignHorizStart (widget);
   uiSizeGroupAdd (&sg, widget);
@@ -441,9 +445,12 @@ starterBuildUI (startui_t  *starter)
   uiBoxPackStart (bvbox, widget);
   uiButtonAlignLeft (widget);
 
-  widget = uiCreateButton (&starter->buttons [START_BUTTON_MANAGE],
+  uiutilsUICallbackInit (&starter->callbacks [START_CALLBACK_MANAGE],
+      starterStartManageui, starter);
+  widget = uiCreateButton (&uiwidget,
+      &starter->callbacks [START_CALLBACK_MANAGE],
       /* CONTEXT: button: starts the management user interface */
-      _("Manage"), NULL, starterStartManageui, starter);
+      _("Manage"), NULL, NULL, NULL);
   uiWidgetSetMarginTop (widget, uiBaseMarginSz * 2);
   uiWidgetAlignHorizStart (widget);
   uiSizeGroupAdd (&sg, widget);
@@ -451,18 +458,24 @@ starterBuildUI (startui_t  *starter)
   uiBoxPackStart (bvbox, widget);
   uiButtonAlignLeft (widget);
 
-  widget = uiCreateButton (&starter->buttons [START_BUTTON_CONFIG],
+  uiutilsUICallbackInit (&starter->callbacks [START_CALLBACK_CONFIG],
+      starterStartConfig, starter);
+  widget = uiCreateButton (&uiwidget,
+      &starter->callbacks [START_CALLBACK_CONFIG],
       /* CONTEXT: button: starts the configuration user interface */
-      _("Configure"), NULL, starterStartConfig, starter);
+      _("Configure"), NULL, NULL, NULL);
   uiWidgetSetMarginTop (widget, uiBaseMarginSz * 2);
   uiWidgetAlignHorizStart (widget);
   uiSizeGroupAdd (&sg, widget);
   uiBoxPackStart (bvbox, widget);
   uiButtonAlignLeft (widget);
 
-  widget = uiCreateButton (&starter->buttons [START_BUTTON_RAFFLE],
+  uiutilsUICallbackInit (&starter->callbacks [START_CALLBACK_RAFFLE],
+      starterStartRaffleGames, starter);
+  widget = uiCreateButton (&uiwidget,
+      &starter->callbacks [START_CALLBACK_RAFFLE],
       /* CONTEXT: button: support : starts raffle games  */
-      _("Raffle Games"), NULL, starterStartRaffleGames, starter);
+      _("Raffle Games"), NULL, NULL, NULL);
   uiWidgetDisable (widget);
   uiWidgetSetMarginTop (widget, uiBaseMarginSz * 2);
   uiWidgetAlignHorizStart (widget);
@@ -470,18 +483,24 @@ starterBuildUI (startui_t  *starter)
   uiBoxPackStart (bvbox, widget);
   uiButtonAlignLeft (widget);
 
-  widget = uiCreateButton (&starter->buttons [START_BUTTON_SUPPORT],
+  uiutilsUICallbackInit (&starter->callbacks [START_CALLBACK_SUPPORT],
+      starterProcessSupport, starter);
+  widget = uiCreateButton (&uiwidget,
+      &starter->callbacks [START_CALLBACK_SUPPORT],
       /* CONTEXT: button: support : support information */
-      _("Support"), NULL, starterProcessSupport, starter);
+      _("Support"), NULL, NULL, NULL);
   uiWidgetSetMarginTop (widget, uiBaseMarginSz * 2);
   uiWidgetAlignHorizStart (widget);
   uiSizeGroupAdd (&sg, widget);
   uiBoxPackStart (bvbox, widget);
   uiButtonAlignLeft (widget);
 
-  widget = uiCreateButton (&starter->buttons [START_BUTTON_EXIT],
+  uiutilsUICallbackInit (&starter->callbacks [START_CALLBACK_EXIT],
+      starterProcessExit, starter);
+  widget = uiCreateButton (&uiwidget,
+      &starter->callbacks [START_CALLBACK_EXIT],
       /* CONTEXT: button: exits BDJ4 (exits everything) */
-      _("Exit"), NULL, starterProcessExit, starter);
+      _("Exit"), NULL, NULL, NULL);
   uiWidgetSetMarginTop (widget, uiBaseMarginSz * 2);
   uiWidgetAlignHorizStart (widget);
   uiSizeGroupAdd (&sg, widget);
@@ -843,7 +862,7 @@ starterSigHandler (int sig)
 }
 
 static void
-starterStartPlayerui (UIWidget *uiwidget, void *udata)
+starterStartPlayerui (void *udata)
 {
   startui_t      *starter = udata;
 
@@ -854,7 +873,7 @@ starterStartPlayerui (UIWidget *uiwidget, void *udata)
 }
 
 static void
-starterStartManageui (GtkButton *b, gpointer udata)
+starterStartManageui (void *udata)
 {
   startui_t      *starter = udata;
 
@@ -865,7 +884,7 @@ starterStartManageui (GtkButton *b, gpointer udata)
 }
 
 static void
-starterStartRaffleGames (GtkButton *b, gpointer udata)
+starterStartRaffleGames (void *udata)
 {
 //  startui_t      *starter = udata;
 
@@ -875,7 +894,7 @@ starterStartRaffleGames (GtkButton *b, gpointer udata)
 }
 
 static void
-starterStartConfig (GtkButton *b, gpointer udata)
+starterStartConfig (void *udata)
 {
   startui_t      *starter = udata;
 
@@ -885,9 +904,10 @@ starterStartConfig (GtkButton *b, gpointer udata)
 }
 
 static void
-starterProcessSupport (GtkButton *b, gpointer udata)
+starterProcessSupport (void *udata)
 {
   startui_t     *starter = udata;
+  UIWidget      uiwidget;
   GtkWidget     *content;
   GtkWidget     *vbox;
   GtkWidget     *hbox;
@@ -988,9 +1008,12 @@ starterProcessSupport (GtkButton *b, gpointer udata)
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
-  widget = uiCreateButton (&starter->buttons [START_BUTTON_SEND_SUPPORT],
+  uiutilsUICallbackInit (&starter->callbacks [START_CALLBACK_SEND_SUPPORT],
+      starterCreateSupportDialog, starter);
+  widget = uiCreateButton (&uiwidget,
+      &starter->callbacks [START_CALLBACK_SEND_SUPPORT],
       /* CONTEXT: starterui: basic support dialog: button: support option */
-      _("Send Support Message"), NULL, starterCreateSupportDialog, starter);
+      _("Send Support Message"), NULL, NULL, NULL);
   uiBoxPackStart (hbox, widget);
 
   /* the dialog doesn't have any space above the buttons */
@@ -1021,7 +1044,7 @@ starterSupportResponseHandler (GtkDialog *d, gint responseid, gpointer udata)
 }
 
 static void
-starterProcessExit (GtkButton *b, gpointer udata)
+starterProcessExit (void *udata)
 {
   startui_t *starter = udata;
 
@@ -1121,7 +1144,7 @@ starterCheckProfile (startui_t *starter)
 
 
 static void
-starterCreateSupportDialog (GtkButton *b, gpointer udata)
+starterCreateSupportDialog (void *udata)
 {
   startui_t     *starter = udata;
   GtkWidget     *content;

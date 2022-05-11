@@ -20,8 +20,8 @@
 static void uiButtonClickHandler (GtkButton *b, gpointer udata);
 
 GtkWidget *
-uiCreateButton (UIWidget *uiwidget, char *title, char *imagenm,
-    void *cb, void *udata)
+uiCreateButton (UIWidget *uiwidget, UICallback *uicb,
+    char *title, char *imagenm, void *cb, void *udata)
 {
   GtkWidget   *widget;
 
@@ -45,15 +45,11 @@ uiCreateButton (UIWidget *uiwidget, char *title, char *imagenm,
   } else {
     gtk_button_set_label (GTK_BUTTON (widget), title);
   }
+  if (uicb != NULL) {
+    g_signal_connect (widget, "clicked", G_CALLBACK (uiButtonClickHandler), uicb);
+  }
   if (cb != NULL) {
-    if (uiwidget != NULL) {
-      uiwidget->widget = widget;
-      uiwidget->cb.cb = cb;
-      uiwidget->cb.udata = udata;
-      g_signal_connect (widget, "clicked", G_CALLBACK (uiButtonClickHandler), uiwidget);
-    } else {
-      g_signal_connect (widget, "clicked", G_CALLBACK (cb), udata);
-    }
+    g_signal_connect (widget, "clicked", G_CALLBACK (cb), udata);
   }
 
   logProcEnd (LOG_PROC, "uiCreateButton", "");
@@ -70,8 +66,8 @@ uiButtonAlignLeft (GtkWidget *widget)
 static void
 uiButtonClickHandler (GtkButton *b, gpointer udata)
 {
-  UIWidget  *uiwidget = udata;
+  UICallback *uicb = udata;
 
-  uiwidget->cb.cb (uiwidget, uiwidget->cb.udata);
+  uicb->cb (uicb->udata);
 }
 

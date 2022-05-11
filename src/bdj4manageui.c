@@ -648,7 +648,7 @@ manageBuildUISongListEditor (manageui_t *manage)
   manage->ezvboxwidget = vbox;
 
   /* CONTEXT: config: button: add the selected songs to the song list */
-  widget = uiCreateButton (NULL, _("Select"), "button_left",
+  widget = uiCreateButton (NULL, NULL, _("Select"), "button_left",
       uisongselQueueProcessSelectHandler, manage->slezsongsel);
   uiBoxPackStart (vbox, widget);
 
@@ -762,7 +762,7 @@ manageBuildUIUpdateDatabase (manageui_t *manage)
   uiBoxPackStart (hbox, widget);
 
   /* CONTEXT: update database: button to start the database update process */
-  widget = uiCreateButton (NULL, _("Start"), NULL,
+  widget = uiCreateButton (NULL, NULL, _("Start"), NULL,
       manageDbStart, manage);
   uiBoxPackStart (hbox, widget);
 

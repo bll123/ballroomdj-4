@@ -38,12 +38,12 @@ static void     uiplayerProcessPauseatend (uiplayer_t *uiplayer, int on);
 static void     uiplayerProcessPlayerState (uiplayer_t *uiplayer, int playerState);
 static void     uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args);
 static void     uiplayerProcessMusicqStatusData (uiplayer_t *uiplayer, char *args);
-static void     uiplayerFadeProcess (GtkButton *b, gpointer udata);
-static void     uiplayerPlayPauseProcess (GtkButton *b, gpointer udata);
-static void     uiplayerRepeatProcess (GtkButton *b, gpointer udata);
-static void     uiplayerSongBeginProcess (GtkButton *b, gpointer udata);
-static void     uiplayerNextSongProcess (GtkButton *b, gpointer udata);
-static void     uiplayerPauseatendProcess (GtkButton *b, gpointer udata);
+static void     uiplayerFadeProcess (void *udata);
+static void     uiplayerPlayPauseProcess (void *udata);
+static void     uiplayerRepeatProcess (void *udata);
+static void     uiplayerSongBeginProcess (void *udata);
+static void     uiplayerNextSongProcess (void *udata);
+static void     uiplayerPauseatendProcess (void *udata);
 static gboolean uiplayerSpeedProcess (GtkRange *range, GtkScrollType *scroll, gdouble value, gpointer udata);
 static gboolean uiplayerSeekProcess (GtkRange *range, GtkScrollType *scroll, gdouble value, gpointer udata);
 static gboolean uiplayerVolumeProcess (GtkRange *range, GtkScrollType *scroll, gdouble value, gpointer udata);
@@ -110,6 +110,7 @@ GtkWidget *
 uiplayerBuildUI (uiplayer_t *uiplayer)
 {
   char            tbuff [MAXPATHLEN];
+  UIWidget        uiwidget;
   GtkWidget       *image = NULL;
   GtkWidget       *hbox;
   GtkWidget       *tbox;
@@ -308,16 +309,22 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiBoxPackStart (hbox, widget);
   uiSizeGroupAdd (&sgE, widget);
 
-  widget = uiCreateButton (&uiplayer->buttons [UIPLAYER_BUTTON_FADE],
+  uiutilsUICallbackInit (&uiplayer->callbacks [UIPLAYER_CALLBACK_FADE],
+      uiplayerFadeProcess, uiplayer);
+  uiCreateButton (&uiwidget,
+      &uiplayer->callbacks [UIPLAYER_CALLBACK_FADE],
       /* CONTEXT: button: fade out the song and stop playing it */
-      _("Fade"), NULL, uiplayerFadeProcess, uiplayer);
-  uiBoxPackStart (hbox, widget);
+      _("Fade"), NULL, NULL, NULL);
+  uiBoxPackStart (hbox, uiwidget.widget);
 
   /* CONTEXT: button: play or pause the song */
   snprintf (tbuff, sizeof (tbuff), "%s / %s", _("Play"), _("Pause"));
-  widget = uiCreateButton (&uiplayer->buttons [UIPLAYER_BUTTON_PLAYPAUSE],
-      tbuff, "button_playpause", uiplayerPlayPauseProcess, uiplayer);
-  uiBoxPackStart (hbox, widget);
+  uiutilsUICallbackInit (&uiplayer->callbacks [UIPLAYER_CALLBACK_PLAYPAUSE],
+      uiplayerPlayPauseProcess, uiplayer);
+  uiCreateButton (&uiwidget,
+      &uiplayer->callbacks [UIPLAYER_CALLBACK_PLAYPAUSE],
+      tbuff, "button_playpause", NULL, NULL);
+  uiBoxPackStart (hbox, uiwidget.widget);
 
   pathbldMakePath (tbuff, sizeof (tbuff), "button_repeat", ".svg",
       PATHBLD_MP_IMGDIR);
@@ -328,16 +335,21 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiBoxPackStart (hbox, uiplayer->repeatButton);
   g_signal_connect (uiplayer->repeatButton, "toggled", G_CALLBACK (uiplayerRepeatProcess), uiplayer);
 
-  widget = uiCreateButton (&uiplayer->buttons [UIPLAYER_BUTTON_BEGSONG],
-      /* CONTEXT: button: tooltip: return to the beginning of the song */
-      _("Return to beginning of song"), "button_begin",
+  uiutilsUICallbackInit (&uiplayer->callbacks [UIPLAYER_CALLBACK_BEGSONG],
       uiplayerSongBeginProcess, uiplayer);
-  uiBoxPackStart (hbox, widget);
+  uiCreateButton (&uiwidget,
+      &uiplayer->callbacks [UIPLAYER_CALLBACK_BEGSONG],
+      /* CONTEXT: button: tooltip: return to the beginning of the song */
+      _("Return to beginning of song"), "button_begin", NULL, NULL);
+  uiBoxPackStart (hbox, uiwidget.widget);
 
-  widget = uiCreateButton (&uiplayer->buttons [UIPLAYER_BUTTON_NEXTSONG],
+  uiutilsUICallbackInit (&uiplayer->callbacks [UIPLAYER_CALLBACK_NEXTSONG],
+      uiplayerNextSongProcess, uiplayer);
+  uiCreateButton (&uiwidget,
+      &uiplayer->callbacks [UIPLAYER_CALLBACK_NEXTSONG],
       /* CONTEXT: button: tooltip: start playing the next song (immediate) */
-      _("Next Song"), "button_nextsong", uiplayerNextSongProcess, uiplayer);
-  uiBoxPackStart (hbox, widget);
+      _("Next Song"), "button_nextsong", NULL, NULL);
+  uiBoxPackStart (hbox, uiwidget.widget);
 
   pathbldMakePath (tbuff, sizeof (tbuff), "led_on", ".svg",
       PATHBLD_MP_IMGDIR);
@@ -776,7 +788,7 @@ uiplayerProcessMusicqStatusData (uiplayer_t *uiplayer, char *args)
 }
 
 static void
-uiplayerFadeProcess (GtkButton *b, gpointer udata)
+uiplayerFadeProcess (void *udata)
 {
   uiplayer_t      *uiplayer = udata;
 
@@ -786,7 +798,7 @@ uiplayerFadeProcess (GtkButton *b, gpointer udata)
 }
 
 static void
-uiplayerPlayPauseProcess (GtkButton *b, gpointer udata)
+uiplayerPlayPauseProcess (void *udata)
 {
   uiplayer_t      *uiplayer = udata;
 
@@ -796,7 +808,7 @@ uiplayerPlayPauseProcess (GtkButton *b, gpointer udata)
 }
 
 static void
-uiplayerRepeatProcess (GtkButton *b, gpointer udata)
+uiplayerRepeatProcess (void *udata)
 {
   uiplayer_t      *uiplayer = udata;
 
@@ -812,7 +824,7 @@ uiplayerRepeatProcess (GtkButton *b, gpointer udata)
 }
 
 static void
-uiplayerSongBeginProcess (GtkButton *b, gpointer udata)
+uiplayerSongBeginProcess (void *udata)
 {
   uiplayer_t      *uiplayer = udata;
 
@@ -822,7 +834,7 @@ uiplayerSongBeginProcess (GtkButton *b, gpointer udata)
 }
 
 static void
-uiplayerNextSongProcess (GtkButton *b, gpointer udata)
+uiplayerNextSongProcess (void *udata)
 {
   uiplayer_t      *uiplayer = udata;
 
@@ -832,7 +844,7 @@ uiplayerNextSongProcess (GtkButton *b, gpointer udata)
 }
 
 static void
-uiplayerPauseatendProcess (GtkButton *b, gpointer udata)
+uiplayerPauseatendProcess (void *udata)
 {
   uiplayer_t      *uiplayer = udata;
 

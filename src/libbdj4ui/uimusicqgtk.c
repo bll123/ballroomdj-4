@@ -90,12 +90,12 @@ uimusicqBuildUI (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
   uiBoxPackStart (uimusicq->ui [ci].box, hbox);
 
   /* CONTEXT: button: move the selected song to the top of the queue */
-  widget = uiCreateButton (NULL, _("Move to Top"), "button_movetop",
+  widget = uiCreateButton (NULL, NULL, _("Move to Top"), "button_movetop",
       uimusicqMoveTopProcessSignal, uimusicq);
   uiBoxPackStart (hbox, widget);
 
   /* CONTEXT: button: move the selected song up in the queue */
-  widget = uiCreateButton (NULL, _("Move Up"), "button_up",
+  widget = uiCreateButton (NULL, NULL, _("Move Up"), "button_up",
       NULL, uimusicq);
   g_signal_connect (widget, "pressed",
       G_CALLBACK (uimusicqMoveUpProcessSignal), uimusicq);
@@ -104,7 +104,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
   uiBoxPackStart (hbox, widget);
 
   /* CONTEXT: button: move the selected song down in the queue */
-  widget = uiCreateButton (NULL, _("Move Down"), "button_down",
+  widget = uiCreateButton (NULL, NULL, _("Move Down"), "button_down",
       NULL, uimusicq);
   g_signal_connect (widget, "pressed",
       G_CALLBACK (uimusicqMoveDownProcessSignal), uimusicq);
@@ -115,7 +115,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
   if ((uimusicq->uimusicqflags & UIMUSICQ_FLAGS_NO_TOGGLE_PAUSE) !=
       UIMUSICQ_FLAGS_NO_TOGGLE_PAUSE) {
     /* CONTEXT: button: set playback to pause after the selected song is played (toggle) */
-    widget = uiCreateButton (NULL, _("Toggle Pause"), "button_pause",
+    widget = uiCreateButton (NULL, NULL, _("Toggle Pause"), "button_pause",
         uimusicqTogglePauseProcessSignal, uimusicq);
     uiBoxPackStart (hbox, widget);
   }
@@ -123,14 +123,14 @@ uimusicqBuildUI (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
   if ((uimusicq->uimusicqflags & UIMUSICQ_FLAGS_NO_REMOVE) !=
       UIMUSICQ_FLAGS_NO_REMOVE) {
     /* CONTEXT: button: remove the song from the queue */
-    widget = uiCreateButton (NULL, _("Remove"), "button_audioremove",
+    widget = uiCreateButton (NULL, NULL, _("Remove"), "button_audioremove",
         uimusicqRemoveProcessSignal, uimusicq);
     uiBoxPackStart (hbox, widget);
   }
 
   if ((uimusicq->uimusicqflags & UIMUSICQ_FLAGS_NO_QUEUE) != UIMUSICQ_FLAGS_NO_QUEUE) {
     /* CONTEXT: button: request playback of a song external to BDJ4 (not in the database) */
-    widget = uiCreateButton (NULL, _("Request External"), NULL,
+    widget = uiCreateButton (NULL, NULL, _("Request External"), NULL,
         NULL, uimusicq);
     uiWidgetDisable (widget);
     uiBoxPackEnd (hbox, widget);
@@ -163,7 +163,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
 
   if (uimusicq->dispselType == DISP_SEL_MUSICQ) {
     /* CONTEXT: button: clear the queue */
-    widget = uiCreateButton (NULL, _("Clear Queue"), NULL,
+    widget = uiCreateButton (NULL, NULL, _("Clear Queue"), NULL,
         uimusicqClearQueueProcessSignal, uimusicq);
     uiBoxPackEnd (hbox, widget);
   }

@@ -472,7 +472,7 @@ installerBuildUI (installer_t *installer)
   g_signal_connect (installer->bdj3locEntry.entry, "changed",
       G_CALLBACK (installerValidateStart), installer);
 
-  widget = uiCreateButton (NULL, "", NULL,
+  widget = uiCreateButton (NULL, NULL, "", NULL,
       installerSelectDirDialog, installer);
   image = gtk_image_new_from_icon_name ("folder", GTK_ICON_SIZE_BUTTON);
   gtk_button_set_image (GTK_BUTTON (widget), image);
@@ -553,12 +553,12 @@ installerBuildUI (installer_t *installer)
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: exits the installer */
-  widget = uiCreateButton (NULL, _("Exit"), NULL,
+  widget = uiCreateButton (NULL, NULL, _("Exit"), NULL,
       installerExit, installer);
   uiBoxPackEnd (hbox, widget);
 
   /* CONTEXT: installer: start the installation process */
-  widget = uiCreateButton (NULL, _("Install"), NULL,
+  widget = uiCreateButton (NULL, NULL, _("Install"), NULL,
       installerInstall, installer);
   uiBoxPackEnd (hbox, widget);
 

@@ -11,23 +11,20 @@
 #include "slist.h"
 #include "tmutil.h"
 
-typedef struct uiwidgetst UIWidget;
-
-typedef void (*uiutilscbfunc_t)(UIWidget *uiwidget, void *udata);
+typedef void (*UICallbackFunc)(void *udata);
 
 typedef struct {
-  uiutilscbfunc_t cb;
+  UICallbackFunc cb;
   void            *udata;
-} uiutilscb_t;
+} UICallback;
 
-typedef struct uiwidgetst {
+typedef struct {
 #ifdef UI_USE_GTK3
   union {
     GtkWidget     *widget;
     GtkSizeGroup  *sg;
   };
 #endif
-  uiutilscb_t   cb;
 } UIWidget;
 
 enum {
@@ -127,5 +124,6 @@ void uiutilsNotebookIDFree (uiutilsnbtabid_t *nbtabid);
 void uiutilsNotebookIDAdd (uiutilsnbtabid_t *nbtabid, int id);
 int uiutilsNotebookIDGet (uiutilsnbtabid_t *nbtabid, int idx);
 void uiutilsUIWidgetInit (UIWidget *uiwidget);
+void uiutilsUICallbackInit (UICallback *uicb, UICallbackFunc cb, void *udata);
 
 #endif /* INC_UIUTILS_H */

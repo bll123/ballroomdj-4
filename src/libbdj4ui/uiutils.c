@@ -79,3 +79,10 @@ uiutilsUIWidgetInit (UIWidget *uiwidget)
 {
   uiwidget->widget = NULL;
 }
+
+void
+uiutilsUICallbackInit (UICallback *uicb, UICallbackFunc cb, void *udata)
+{
+  uicb->cb = cb;
+  uicb->udata = udata;
+}

@@ -1262,12 +1262,12 @@ confuiBuildUIDispSettings (configui_t *confui)
   uiBoxPackStart (hbox, dvbox);
 
   /* CONTEXT: configuration: display settings: button: add the selected field */
-  widget = uiCreateButton (NULL, _("Select"), "button_right",
+  widget = uiCreateButton (NULL, NULL, _("Select"), "button_right",
       confuiDispSelect, confui);
   uiBoxPackStart (dvbox, widget);
 
   /* CONTEXT: configuration: display settings: button: remove the selected field */
-  widget = uiCreateButton (NULL, _("Remove"), "button_left",
+  widget = uiCreateButton (NULL, NULL, _("Remove"), "button_left",
       confuiDispRemove, confui);
   uiBoxPackStart (dvbox, widget);
 
@@ -1295,12 +1295,12 @@ confuiBuildUIDispSettings (configui_t *confui)
   uiBoxPackStart (hbox, dvbox);
 
   /* CONTEXT: configuration: display settings: button: move the selected field up */
-  widget = uiCreateButton (NULL, _("Move Up"), "button_up",
+  widget = uiCreateButton (NULL, NULL, _("Move Up"), "button_up",
       confuiTableMoveUp, confui);
   uiBoxPackStart (dvbox, widget);
 
   /* CONTEXT: configuration: display settings: button: move the selected field down */
-  widget = uiCreateButton (NULL, _("Move Down"), "button_down",
+  widget = uiCreateButton (NULL, NULL, _("Move Down"), "button_down",
       confuiTableMoveDown, confui);
   uiBoxPackStart (dvbox, widget);
 
@@ -2263,7 +2263,7 @@ confuiMakeItemEntryChooser (configui_t *confui, GtkWidget *vbox,
   logProcBegin (LOG_PROC, "confuiMakeItemEntryChooser");
   hbox = confuiMakeItemEntry (confui, vbox, sg, txt, widx, bdjoptIdx, disp);
 
-  widget = uiCreateButton (NULL, "", NULL,
+  widget = uiCreateButton (NULL, NULL, "", NULL,
       dialogFunc, confui);
   image = gtk_image_new_from_icon_name ("folder", GTK_ICON_SIZE_BUTTON);
   gtk_button_set_image (GTK_BUTTON (widget), image);
@@ -2613,23 +2613,23 @@ confuiMakeItemTable (configui_t *confui, GtkWidget *vbox, confuiident_t id,
 
   if ((flags & CONFUI_TABLE_NO_UP_DOWN) != CONFUI_TABLE_NO_UP_DOWN) {
     /* CONTEXT: configuration: table edit: button: move selection up */
-    widget = uiCreateButton (NULL, _("Move Up"), "button_up",
+    widget = uiCreateButton (NULL, NULL, _("Move Up"), "button_up",
         confuiTableMoveUp, confui);
     uiBoxPackStart (bvbox, widget);
 
     /* CONTEXT: configuration: table edit: button: move selection down */
-    widget = uiCreateButton (NULL, _("Move Down"), "button_down",
+    widget = uiCreateButton (NULL, NULL, _("Move Down"), "button_down",
         confuiTableMoveDown, confui);
     uiBoxPackStart (bvbox, widget);
   }
 
   /* CONTEXT: configuration: table edit: button: delete selection */
-  widget = uiCreateButton (NULL, _("Delete"), "button_remove",
+  widget = uiCreateButton (NULL, NULL, _("Delete"), "button_remove",
       confuiTableRemove, confui);
   uiBoxPackStart (bvbox, widget);
 
   /* CONTEXT: configuration: table edit: button: add new selection */
-  widget = uiCreateButton (NULL, _("Add New"), "button_add",
+  widget = uiCreateButton (NULL, NULL, _("Add New"), "button_add",
       confuiTableAdd, confui);
   uiBoxPackStart (bvbox, widget);
 

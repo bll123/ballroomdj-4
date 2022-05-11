@@ -32,8 +32,8 @@ void        uiLabelEllipsizeOn (GtkWidget *widget);
 void        uiLabelSetMaxWidth (GtkWidget *widget, int width);
 
 /* uigtkbutton.c */
-GtkWidget * uiCreateButton (UIWidget *uiwidget, char *title,
-    char *imagenm, void *cb, void *udata);
+GtkWidget * uiCreateButton (UIWidget *uiwidget, UICallback *uicb,
+    char *title, char *imagenm, void *cb, void *udata);
 void uiButtonAlignLeft (GtkWidget *widget);
 
 /* uigtkentry.c */
