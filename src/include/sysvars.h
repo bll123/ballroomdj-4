@@ -9,6 +9,7 @@ typedef enum {
   SV_BDJ4EXECDIR,     // main + /bin
   SV_BDJ4HTTPDIR,     // http
   SV_BDJ4IMGDIR,      // main + /img
+  SV_BDJ4INSTDIR,     // main + /install
   SV_BDJ4LOCALEDIR,   // main + /locale
   SV_BDJ4MAINDIR,     // path to the main directory above bin/, etc.
   SV_BDJ4_RELEASELEVEL,

@@ -27,13 +27,13 @@
 #include "bdj4.h"
 #include "bdj4intl.h"
 #include "bdjopt.h"
-#include "bdjregex.h"
 #include "bdjstring.h"
 #include "datafile.h"
 #include "filedata.h"
 #include "fileop.h"
 #include "filemanip.h"
 #include "fileutil.h"
+#include "instutils.h"
 #include "localeutil.h"
 #include "locatebdj3.h"
 #include "log.h"
@@ -56,7 +56,6 @@ typedef enum {
   INST_COPY_FILES,
   INST_CHDIR,
   INST_CREATE_DIRS,
-  INST_CLEAN,
   INST_COPY_TEMPLATES,
   INST_CONVERT_START,
   INST_CONVERT,
@@ -188,7 +187,6 @@ static void installerTemplateCopy (const char *dir, const char *from, const char
 static void installerSetrundir (installer_t *installer, const char *dir);
 static void installerVLCGetVersion (installer_t *installer);
 static void installerPythonGetVersion (installer_t *installer);
-static void installerCleanFiles (char *fname);
 static void installerCheckPackages (installer_t *installer);
 static void installerWebResponseCallback (void *userdata, char *resp, size_t len);
 
@@ -648,10 +646,6 @@ installerMainLoop (void *udata)
           LOG_IMPORTANT | LOG_BASIC | LOG_MAIN);
       logMsg (LOG_INSTALL, LOG_IMPORTANT, "=== installer started");
       logMsg (LOG_INSTALL, LOG_IMPORTANT, "target: %s", installer->target);
-      break;
-    }
-    case INST_CLEAN: {
-      installerCleanOldFiles (installer);
       break;
     }
     case INST_COPY_TEMPLATES: {
@@ -1243,27 +1237,8 @@ installerCreateDirs (installer_t *installer)
   fileopMakeDir ("tmp");
   fileopMakeDir ("http");
 
-  installer->instState = INST_CLEAN;
-}
-
-static void
-installerCleanOldFiles (installer_t *installer)
-{
-  /* CONTEXT: installer: status message */
-  installerDisplayText (installer, "-- ", _("Cleaning old files."));
-
-  if (chdir (installer->rundir)) {
-    fprintf (stderr, "Unable to set working dir: %s\n", installer->rundir);
-    installerDisplayText (installer, "", _("Error: Unable to set working folder."));
-    installerDisplayText (installer, " * ", _("Installation aborted."));
-    installer->instState = INST_BEGIN;
-    return;
-  }
-
-  installerCleanFiles ("install/cleanuplist.txt");
   installer->instState = INST_COPY_TEMPLATES;
 }
-
 
 static void
 installerCopyTemplates (installer_t *installer)
@@ -2292,30 +2267,6 @@ installerPythonGetVersion (installer_t *installer)
       e = strstr (p, "<");
       strlcpy (installer->pyversion, p, e - p + 1);
     }
-  }
-}
-
-static void
-installerCleanFiles (char *fname)
-{
-  FILE    *fh;
-  char    tbuff [MAXPATHLEN];
-
-  fh = fileopOpen (fname, "r");
-  if (fh != NULL) {
-    while (fgets (tbuff, sizeof (tbuff), fh) != NULL) {
-      stringTrim (tbuff);
-      stringTrimChar (tbuff, '/');
-
-      if (fileopIsDirectory (tbuff)) {
-        filemanipDeleteDir (tbuff);
-      } else {
-        if (fileopFileExists (tbuff)) {
-          fileopDelete (tbuff);
-        }
-      }
-    }
-    fclose (fh);
   }
 }
 

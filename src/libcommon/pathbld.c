@@ -52,6 +52,9 @@ pathbldMakePath (char *buff, size_t buffsz,
       dirprefix = sysvarsGetStr (SV_BDJ4IMGDIR);
     }
   }
+  if ((flags & PATHBLD_MP_INSTDIR) == PATHBLD_MP_INSTDIR) {
+    dirprefix = sysvarsGetStr (SV_BDJ4INSTDIR);
+  }
 
   if ((flags & PATHBLD_MP_USEIDX) == PATHBLD_MP_USEIDX) {
     if ((flags & PATHBLD_MP_TMPDIR) == PATHBLD_MP_TMPDIR) {

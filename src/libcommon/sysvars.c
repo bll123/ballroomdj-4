@@ -48,6 +48,7 @@ static sysvarsdesc_t sysvarsdesc [SV_MAX] = {
   [SV_BDJ4EXECDIR] = { "Dir-Exec" },
   [SV_BDJ4HTTPDIR] = { "Dir-Http" },
   [SV_BDJ4IMGDIR] = { "Dir-Image" },
+  [SV_BDJ4INSTDIR] = { "Dir-Install" },
   [SV_BDJ4LOCALEDIR] = { "Dir-Locale" },
   [SV_BDJ4MAINDIR] = { "Dir-Main" },
   [SV_BDJ4_RELEASELEVEL] = { "BDJ4-Release-Level" },
@@ -257,6 +258,9 @@ sysvarsInit (const char *argv0)
 
   strlcpy (sysvars [SV_BDJ4IMGDIR], sysvars [SV_BDJ4MAINDIR], SV_MAX_SZ);
   strlcat (sysvars [SV_BDJ4IMGDIR], "/img", SV_MAX_SZ);
+
+  strlcpy (sysvars [SV_BDJ4INSTDIR], sysvars [SV_BDJ4MAINDIR], SV_MAX_SZ);
+  strlcat (sysvars [SV_BDJ4INSTDIR], "/install", SV_MAX_SZ);
 
   strlcpy (sysvars [SV_BDJ4LOCALEDIR], sysvars [SV_BDJ4MAINDIR], SV_MAX_SZ);
   strlcat (sysvars [SV_BDJ4LOCALEDIR], "/locale", SV_MAX_SZ);

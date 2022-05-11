@@ -27,8 +27,8 @@ pathInfo (const char *path)
   pathinfo_t    *pi = NULL;
   ssize_t       pos;
   ssize_t       last;
-  int           chkforext;
-  int           trailingslash;
+  bool          chkforext = true;
+  bool          trailingslash = false;
 
 
   pi = malloc (sizeof (pathinfo_t));
@@ -44,8 +44,8 @@ pathInfo (const char *path)
   pi->elen = 0;
 
   last = (ssize_t) strlen (path) - 1;
-  chkforext = 1;
-  trailingslash = 0;
+  chkforext = true;
+  trailingslash = false;
   pos = 0;
 
   for (ssize_t i = last; i >= 0; --i) {
@@ -53,8 +53,8 @@ pathInfo (const char *path)
       pos = i + 1;
       if (pos >= last) {
         /* no extension, continue back to find the basename */
-        chkforext = 0;
-        trailingslash = 1;
+        chkforext = false;
+        trailingslash = true;
         continue;
       }
       break;
@@ -62,7 +62,7 @@ pathInfo (const char *path)
     if (chkforext && path [i] == '.') {
       pi->extension = &path [i];
       pi->elen = (size_t) (last - i + 1);
-      chkforext = 0;
+      chkforext = false;
     }
   }
   if (pos > last) {

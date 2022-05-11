@@ -1,0 +1,18 @@
+#
+# :main
+#   set the base directory to the main directory
+# :data
+#   set the base directory to the main directory
+# filename or directory name
+# regular expression pattern (contains a '*', '$' or '[')
+#
+
+:main
+
+templates/.*\.nl$
+templates/.*\.en_US$
+bin/libbdj4uigtk\..*
+
+
+
+

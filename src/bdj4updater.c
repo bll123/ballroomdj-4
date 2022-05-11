@@ -18,15 +18,22 @@
 
 #include "bdj4.h"
 #include "bdjopt.h"
+#include "bdjregex.h"
 #include "bdjstring.h"
 #include "filedata.h"
+#include "filemanip.h"
+#include "fileop.h"
 #include "localeutil.h"
 #include "osutils.h"
 #include "pathbld.h"
 #include "pathutil.h"
+#include "slist.h"
 #include "sysvars.h"
 
 #define UPDATER_TMP_FILE "tmpupdater.txt"
+
+static void updaterCleanFiles (void);
+static void updaterCleanRegex (const char *basedir, const char *pattern);
 
 int
 main (int argc, char *argv [])
@@ -164,5 +171,110 @@ main (int argc, char *argv [])
     bdjoptSave ();
   }
 
+  updaterCleanFiles ();
+
   return 0;
+}
+
+static void
+updaterCleanFiles (void)
+{
+  FILE    *fh;
+  char    dfn [MAXPATHLEN];
+  char    fname [MAXPATHLEN];
+  char    tfn [MAXPATHLEN];
+  char    *basedir;
+
+  pathbldMakePath (fname, sizeof (fname),
+      "cleanuplist", BDJ4_CONFIG_EXT, PATHBLD_MP_INSTDIR);
+
+  fh = fileopOpen (fname, "r");
+  if (fh != NULL) {
+    while (fgets (dfn, sizeof (dfn), fh) != NULL) {
+      if (*dfn == '#') {
+        continue;
+      }
+
+      stringTrim (dfn);
+      stringTrimChar (dfn, '/');
+
+      if (*dfn == '\0') {
+        continue;
+      }
+
+      if (strcmp (dfn, ":main") == 0) {
+        basedir = sysvarsGetStr (SV_BDJ4MAINDIR);
+        continue;
+      }
+      if (strcmp (dfn, ":data") == 0) {
+        basedir = sysvarsGetStr (SV_BDJ4DATATOPDIR);
+        continue;
+      }
+
+      if (strstr (dfn, "*") != NULL ||
+          strstr (dfn, "$") != NULL ||
+          strstr (dfn, "[") != NULL) {
+        updaterCleanRegex (basedir, dfn);
+        continue;
+      }
+
+      strlcpy (tfn, basedir, sizeof (tfn));
+      strlcat (tfn, dfn, sizeof (tfn));
+
+      if (fileopIsDirectory (tfn)) {
+        filemanipDeleteDir (tfn);
+      } else {
+        if (fileopFileExists (tfn)) {
+          fileopDelete (tfn);
+        }
+      }
+    }
+    fclose (fh);
+  }
+}
+
+static void
+updaterCleanRegex (const char *basedir, const char *pattern)
+{
+  char        tdir [MAXPATHLEN];
+  char        tmp [MAXPATHLEN];
+  slist_t     *filelist;
+  slistidx_t  iteridx;
+  char        *fn;
+  size_t      len;
+  int         dlen;
+  bdjregex_t  *rx;
+
+  strlcpy (tdir, basedir, sizeof (tdir));
+
+  dlen = 0;
+  len = strlen (pattern);
+  for (ssize_t i = len - 1; i >= 0; --i) {
+    if (pattern [i] == '/') {
+      dlen = i;
+    }
+  }
+
+  if (dlen > 0) {
+    memcpy (tmp, pattern, dlen);
+    tmp [dlen] = '\0';
+    strlcat (tdir, "/", sizeof (tdir));
+    strlcat (tdir, tmp, sizeof (tdir));
+  }
+
+  if (dlen > 0) { ++dlen; }
+  rx = regexInit (pattern + dlen);
+
+  filelist = filemanipBasicDirList (tdir, NULL);
+  slistStartIterator (filelist, &iteridx);
+  while ((fn = slistIterateKey (filelist, &iteridx)) != NULL) {
+    if (regexMatch (rx, fn)) {
+      strlcpy (tmp, tdir, sizeof (tmp));
+      strlcat (tmp, "/", sizeof (tmp));
+      strlcat (tmp, fn, sizeof (tmp));
+      fileopDelete (tmp);
+    }
+  }
+
+  regexFree (rx);
 }
