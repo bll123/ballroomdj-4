@@ -518,13 +518,13 @@ playlistGetPlaylistList (int flag)
     strlcpy (tfn, pi->basename, pi->blen + 1);
     tfn [pi->blen] = '\0';
 
+    pathInfoFree (pi);
     if (flag == PL_LIST_NORMAL &&
         /* CONTEXT: the name for the special playlist used for the 'queue dance' button */
         strcmp (tfn, _("QueueDance")) == 0) {
       continue;
     }
     slistSetStr (pnlist, tfn, tfn);
-    pathInfoFree (pi);
   }
 
   slistFree (filelist);

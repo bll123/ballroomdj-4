@@ -303,6 +303,9 @@ pluiClosingCallback (void *udata, programstate_t programState)
   if (plui->options != datafileGetList (plui->optiondf)) {
     nlistFree (plui->options);
   }
+  if (plui->songfilter != NULL) {
+    songfilterFree (plui->songfilter);
+  }
   datafileFree (plui->optiondf);
 
   uiplayerFree (plui->uiplayer);

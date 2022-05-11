@@ -291,7 +291,7 @@ logInit (void)
     for (logidx_t idx = LOG_ERR; idx < LOG_MAX; ++idx) {
       syslogs [idx] = NULL;
     }
-    osCatchSignal (logBacktraceHandler, SIGSEGV);
+//    osCatchSignal (logBacktraceHandler, SIGSEGV);
     initialized = 1;
   }
 }

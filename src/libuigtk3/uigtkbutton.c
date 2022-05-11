@@ -53,6 +53,9 @@ uiCreateButton (UIWidget *uiwidget, UICallback *uicb,
   }
 
   logProcEnd (LOG_PROC, "uiCreateButton", "");
+  if (uiwidget != NULL) {
+    uiwidget->widget = widget;
+  }
   return widget;
 }
 
@@ -67,6 +70,13 @@ static void
 uiButtonClickHandler (GtkButton *b, gpointer udata)
 {
   UICallback *uicb = udata;
+
+  if (uicb == NULL) {
+    return;
+  }
+  if (uicb->cb == NULL) {
+    return;
+  }
 
   uicb->cb (uicb->udata);
 }

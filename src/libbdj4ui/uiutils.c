@@ -77,12 +77,19 @@ uiutilsNotebookIDGet (uiutilsnbtabid_t *nbtabid, int idx)
 void
 uiutilsUIWidgetInit (UIWidget *uiwidget)
 {
+  if (uiwidget == NULL) {
+    return;
+  }
   uiwidget->widget = NULL;
 }
 
 void
 uiutilsUICallbackInit (UICallback *uicb, UICallbackFunc cb, void *udata)
 {
+  if (uicb == NULL) {
+    return;
+  }
+
   uicb->cb = cb;
   uicb->udata = udata;
 }
