@@ -25,7 +25,7 @@ Installation:
   MacOS:
     The BallroomDJ 4 installer will not work on MacOS without step (a).
 
-    a) Download the linux-pre-install.sh script from:
+    a) Download the macos-pre-install.sh script from:
           https://sourceforge.net/projects/ballroomdj4/files/macos-pre-install.sh/download
       and run it.
       This script uses sudo to install the required packages (from MacPorts).

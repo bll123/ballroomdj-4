@@ -35,11 +35,13 @@ case $systype in
     tag=win64
     platform=windows
     sfx=.exe
+    echo "sshpass is currently broken in msys2 "
     ;;
   MINGW32*)
     tag=win32
     platform=windows
     sfx=.exe
+    echo "sshpass is currently broken in msys2 "
     ;;
 esac
 
@@ -68,14 +70,14 @@ sshpass -e rsync -v -e ssh bdj4-${VERSION}-installer-${tag}${datetag}${rlstag}${
   bll123@frs.sourceforge.net:/home/frs/project/ballroomdj4/
 
 if [[ $tag == macos ]]; then
-  sshpass -e rsync rsync -v -e ssh install/macos-pre-install.sh \
+  sshpass -e rsync -v -e ssh install/macos-pre-install.sh \
       bll123@frs.sourceforge.net:/home/frs/project/ballroomdj4/
 fi
 
 if [[ $tag == linux ]]; then
-  sshpass -e rsync rsync -v -e ssh README.txt \
+  sshpass -e rsync -v -e ssh README.txt \
       bll123@frs.sourceforge.net:/home/frs/project/ballroomdj4/
-  sshpass -e rsync rsync -v -e ssh install/linux-pre-install.sh \
+  sshpass -e rsync -v -e ssh install/linux-pre-install.sh \
       bll123@frs.sourceforge.net:/home/frs/project/ballroomdj4/
 
   server=web.sourceforge.net
