@@ -78,8 +78,16 @@ typedef enum {
   INST_EXIT,
 } installstate_t;
 
+enum {
+  INST_CALLBACK_SELECT_DIR,
+  INST_CALLBACK_EXIT,
+  INST_CALLBACK_INSTALL,
+  INST_CALLBACK_MAX,
+};
+
 typedef struct {
   installstate_t  instState;
+  UICallback      callbacks [INST_CALLBACK_MAX];
   char            *home;
   char            *target;
   char            hostname [MAXPATHLEN];
@@ -137,15 +145,15 @@ typedef struct {
 
 static void installerBuildUI (installer_t *installer);
 static int  installerMainLoop (void *udata);
-static void installerExit (GtkButton *b, gpointer udata);
+static void installerExit (void *udata);
 static void installerCheckDir (GtkButton *b, gpointer udata);
-static void installerSelectDirDialog (GtkButton *b, gpointer udata);
+static void installerSelectDirDialog (void *udata);
 static void installerValidateDir (installer_t *installer);
 static void installerValidateStart (GtkEditable *e, gpointer udata);
 static void installerCheckConvert (GtkButton *b, gpointer udata);
 static void installerSetConvert (installer_t *installer, int val);
 static void installerDisplayConvert (installer_t *installer);
-static void installerInstall (GtkButton *b, gpointer udata);
+static void installerInstall (void *udata);
 static bool installerCheckTarget (installer_t *installer, const char *dir);
 static void installerSetPaths (installer_t *installer);
 
@@ -375,6 +383,7 @@ main (int argc, char *argv[])
 static void
 installerBuildUI (installer_t *installer)
 {
+  UIWidget      uiwidget;
   GtkWidget     *window;
   GtkWidget     *vbox;
   GtkWidget     *hbox;
@@ -472,8 +481,11 @@ installerBuildUI (installer_t *installer)
   g_signal_connect (installer->bdj3locEntry.entry, "changed",
       G_CALLBACK (installerValidateStart), installer);
 
-  widget = uiCreateButton (NULL, NULL, "", NULL,
+  uiutilsUICallbackInit (&installer->callbacks [INST_CALLBACK_SELECT_DIR],
       installerSelectDirDialog, installer);
+  widget = uiCreateButton (&uiwidget,
+      &installer->callbacks [INST_CALLBACK_SELECT_DIR],
+      "", NULL, NULL, NULL);
   image = gtk_image_new_from_icon_name ("folder", GTK_ICON_SIZE_BUTTON);
   gtk_button_set_image (GTK_BUTTON (widget), image);
   gtk_button_set_always_show_image (GTK_BUTTON (widget), TRUE);
@@ -552,14 +564,20 @@ installerBuildUI (installer_t *installer)
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
-  /* CONTEXT: exits the installer */
-  widget = uiCreateButton (NULL, NULL, _("Exit"), NULL,
+  uiutilsUICallbackInit (&installer->callbacks [INST_CALLBACK_EXIT],
       installerExit, installer);
+  widget = uiCreateButton (&uiwidget,
+      &installer->callbacks [INST_CALLBACK_EXIT],
+      /* CONTEXT: exits the installer */
+      _("Exit"), NULL, NULL, NULL);
   uiBoxPackEnd (hbox, widget);
 
-  /* CONTEXT: installer: start the installation process */
-  widget = uiCreateButton (NULL, NULL, _("Install"), NULL,
+  uiutilsUICallbackInit (&installer->callbacks [INST_CALLBACK_SELECT_DIR],
       installerInstall, installer);
+  widget = uiCreateButton (&uiwidget,
+      &installer->callbacks [INST_CALLBACK_SELECT_DIR],
+      /* CONTEXT: installer: start the installation process */
+      _("Install"), NULL, NULL, NULL);
   uiBoxPackEnd (hbox, widget);
 
   scwidget = uiCreateScrolledWindow (200);
@@ -844,7 +862,7 @@ installerValidateStart (GtkEditable *e, gpointer udata)
 }
 
 static void
-installerSelectDirDialog (GtkButton *b, gpointer udata)
+installerSelectDirDialog (void *udata)
 {
   installer_t     *installer = udata;
   char            *fn = NULL;
@@ -928,7 +946,7 @@ installerDisplayConvert (installer_t *installer)
 }
 
 static void
-installerExit (GtkButton *b, gpointer udata)
+installerExit (void *udata)
 {
   installer_t   *installer = udata;
 
@@ -937,7 +955,7 @@ installerExit (GtkButton *b, gpointer udata)
 }
 
 static void
-installerInstall (GtkButton *b, gpointer udata)
+installerInstall (void *udata)
 {
   installer_t *installer = udata;
 

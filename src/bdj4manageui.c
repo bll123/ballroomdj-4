@@ -82,6 +82,12 @@ enum {
   MANAGE_F_SEQUENCE,
 };
 
+enum {
+  MANAGE_CALLBACK_EZ_SELECT,
+  MANAGE_CALLBACK_DB_START,
+  MANAGE_CALLBACK_MAX,
+};
+
 typedef struct manage manageui_t;
 
 typedef void (*manageselfilecb_t)(manageui_t *manage, const char *fname);
@@ -91,6 +97,7 @@ typedef struct manage {
   procutil_t      *processes [ROUTE_MAX];
   char            *locknm;
   conn_t          *conn;
+  UICallback      callbacks [MANAGE_CALLBACK_MAX];
   musicdb_t       *musicdb;
   musicqidx_t     musicqPlayIdx;
   musicqidx_t     musicqManageIdx;
@@ -181,7 +188,7 @@ static gboolean manageCloseWin (GtkWidget *window, GdkEvent *event, gpointer use
 static void     manageSigHandler (int sig);
 /* update database */
 static void     manageDbChg (GtkSpinButton *sb, gpointer udata);
-static void     manageDbStart (GtkButton *b, gpointer udata);
+static void     manageDbStart (void *udata);
 static void     manageDbProgressMsg (manageui_t *manage, char *args);
 static void     manageDbStatusMsg (manageui_t *manage, char *args);
 /* song editor */
@@ -602,6 +609,7 @@ manageBuildUI (manageui_t *manage)
 static void
 manageBuildUISongListEditor (manageui_t *manage)
 {
+  UIWidget            uiwidget;
   GtkWidget           *vbox;
   GtkWidget           *hbox;
   GtkWidget           *tabLabel;
@@ -647,9 +655,12 @@ manageBuildUISongListEditor (manageui_t *manage)
   uiBoxPackStart (hbox, vbox);
   manage->ezvboxwidget = vbox;
 
-  /* CONTEXT: config: button: add the selected songs to the song list */
-  widget = uiCreateButton (NULL, NULL, _("Select"), "button_left",
+  uiutilsUICallbackInit (&manage->callbacks [MANAGE_CALLBACK_EZ_SELECT],
       uisongselQueueProcessSelectHandler, manage->slezsongsel);
+  widget = uiCreateButton (&uiwidget,
+      &manage->callbacks [MANAGE_CALLBACK_EZ_SELECT],
+      /* CONTEXT: config: button: add the selected songs to the song list */
+      _("Select"), "button_left", NULL, NULL);
   uiBoxPackStart (vbox, widget);
 
   widget = uisongselBuildUI (manage->slezsongsel, manage->window);
@@ -728,6 +739,7 @@ manageBuildUIMusicManager (manageui_t *manage)
 static void
 manageBuildUIUpdateDatabase (manageui_t *manage)
 {
+  UIWidget            uiwidget;
   GtkWidget           *vbox;
   GtkWidget           *hbox;
   GtkWidget           *tabLabel;
@@ -761,8 +773,12 @@ manageBuildUIUpdateDatabase (manageui_t *manage)
   g_signal_connect (widget, "value-changed", G_CALLBACK (manageDbChg), manage);
   uiBoxPackStart (hbox, widget);
 
-  /* CONTEXT: update database: button to start the database update process */
-  widget = uiCreateButton (NULL, NULL, _("Start"), NULL,
+  uiutilsUICallbackInit (&manage->callbacks [MANAGE_CALLBACK_DB_START],
+      manageDbStart, manage);
+  widget = uiCreateButton (&uiwidget,
+      &manage->callbacks [MANAGE_CALLBACK_DB_START],
+      /* CONTEXT: update database: button to start the database update process */
+      _("Start"), NULL,
       manageDbStart, manage);
   uiBoxPackStart (hbox, widget);
 
@@ -1029,7 +1045,7 @@ manageDbChg (GtkSpinButton *sb, gpointer udata)
 }
 
 static void
-manageDbStart (GtkButton *b, gpointer udata)
+manageDbStart (void *udata)
 {
   manageui_t  *manage = udata;
   int         nval;
