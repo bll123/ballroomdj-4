@@ -21,7 +21,7 @@
 #include "songfilter.h"
 #include "uimusicq.h"
 #include "uisongsel.h"
-#include "uiutils.h"
+#include "ui.h"
 
 static void uisongselSongfilterSetDance (uisongsel_t *uisongsel, ssize_t idx);
 

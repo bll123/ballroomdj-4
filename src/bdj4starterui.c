@@ -36,7 +36,7 @@
 #include "sockh.h"
 #include "sysvars.h"
 #include "templateutil.h"
-#include "uiutils.h"
+#include "ui.h"
 #include "webclient.h"
 
 typedef enum {
@@ -402,7 +402,6 @@ starterBuildUI (startui_t  *starter)
 
   /* CONTEXT: starter: profile to be used when starting BDJ4 */
   widget = uiCreateColonLabel (_("Profile"));
-  gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
   uiBoxPackStart (hbox, widget);
 
   /* get the profile list after bdjopt has been initialized */
@@ -440,8 +439,7 @@ starterBuildUI (startui_t  *starter)
   uiSizeGroupAdd (&sg, widget);
   starter->playeruibutton = widget;
   uiBoxPackStart (bvbox, widget);
-  widget = gtk_bin_get_child (GTK_BIN (widget));
-  gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
+  uiButtonAlignLeft (widget);
 
   widget = uiCreateButton (&starter->buttons [START_BUTTON_MANAGE],
       /* CONTEXT: button: starts the management user interface */
@@ -451,8 +449,7 @@ starterBuildUI (startui_t  *starter)
   uiSizeGroupAdd (&sg, widget);
   starter->manageuibutton = widget;
   uiBoxPackStart (bvbox, widget);
-  widget = gtk_bin_get_child (GTK_BIN (widget));
-  gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
+  uiButtonAlignLeft (widget);
 
   widget = uiCreateButton (&starter->buttons [START_BUTTON_CONFIG],
       /* CONTEXT: button: starts the configuration user interface */
@@ -461,8 +458,7 @@ starterBuildUI (startui_t  *starter)
   uiWidgetAlignHorizStart (widget);
   uiSizeGroupAdd (&sg, widget);
   uiBoxPackStart (bvbox, widget);
-  widget = gtk_bin_get_child (GTK_BIN (widget));
-  gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
+  uiButtonAlignLeft (widget);
 
   widget = uiCreateButton (&starter->buttons [START_BUTTON_RAFFLE],
       /* CONTEXT: button: support : starts raffle games  */
@@ -472,8 +468,7 @@ starterBuildUI (startui_t  *starter)
   uiWidgetAlignHorizStart (widget);
   uiSizeGroupAdd (&sg, widget);
   uiBoxPackStart (bvbox, widget);
-  widget = gtk_bin_get_child (GTK_BIN (widget));
-  gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
+  uiButtonAlignLeft (widget);
 
   widget = uiCreateButton (&starter->buttons [START_BUTTON_SUPPORT],
       /* CONTEXT: button: support : support information */
@@ -482,8 +477,7 @@ starterBuildUI (startui_t  *starter)
   uiWidgetAlignHorizStart (widget);
   uiSizeGroupAdd (&sg, widget);
   uiBoxPackStart (bvbox, widget);
-  widget = gtk_bin_get_child (GTK_BIN (widget));
-  gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
+  uiButtonAlignLeft (widget);
 
   widget = uiCreateButton (&starter->buttons [START_BUTTON_EXIT],
       /* CONTEXT: button: exits BDJ4 (exits everything) */
@@ -492,8 +486,7 @@ starterBuildUI (startui_t  *starter)
   uiWidgetAlignHorizStart (widget);
   uiSizeGroupAdd (&sg, widget);
   uiBoxPackStart (bvbox, widget);
-  widget = gtk_bin_get_child (GTK_BIN (widget));
-  gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
+  uiButtonAlignLeft (widget);
 
   x = nlistGetNum (starter->options, STARTERUI_POSITION_X);
   y = nlistGetNum (starter->options, STARTERUI_POSITION_Y);
@@ -632,8 +625,7 @@ starterMainLoop (void *tstarter)
     case START_STATE_SUPPORT_SEND_FILES_A: {
       bool        sendfiles;
 
-      sendfiles = gtk_toggle_button_get_active (
-            GTK_TOGGLE_BUTTON (starter->supportSendFiles));
+      sendfiles = uiToggleButtonIsActive (starter->supportSendFiles);
       if (! sendfiles) {
         starter->startState = START_STATE_SUPPORT_SEND_DB_PRE;
         break;
@@ -673,8 +665,7 @@ starterMainLoop (void *tstarter)
     case START_STATE_SUPPORT_SEND_DB_PRE: {
       bool        senddb;
 
-      senddb = gtk_toggle_button_get_active (
-            GTK_TOGGLE_BUTTON (starter->supportSendDB));
+      senddb = uiToggleButtonIsActive (starter->supportSendDB);
       if (! senddb) {
         starter->startState = START_STATE_SUPPORT_FINISH;
         break;
@@ -690,8 +681,7 @@ starterMainLoop (void *tstarter)
     case START_STATE_SUPPORT_SEND_DB: {
       bool        senddb;
 
-      senddb = gtk_toggle_button_get_active (
-            GTK_TOGGLE_BUTTON (starter->supportSendDB));
+      senddb = uiToggleButtonIsActive (starter->supportSendDB);
       if (senddb) {
         strlcpy (tbuff, "data/musicdb.dat", sizeof (tbuff));
         pathbldMakePath (ofn, sizeof (ofn),

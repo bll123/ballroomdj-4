@@ -14,6 +14,7 @@
 #include "bdj4.h"
 #include "log.h"
 #include "pathbld.h"
+#include "ui.h"
 #include "uiutils.h"
 
 static void uiButtonClickHandler (GtkButton *b, gpointer udata);
@@ -59,6 +60,13 @@ uiCreateButton (UIWidget *uiwidget, char *title, char *imagenm,
   return widget;
 }
 
+void
+uiButtonAlignLeft (GtkWidget *widget)
+{
+  widget = gtk_bin_get_child (GTK_BIN (widget));
+  gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
+}
+
 static void
 uiButtonClickHandler (GtkButton *b, gpointer udata)
 {
@@ -66,3 +74,4 @@ uiButtonClickHandler (GtkButton *b, gpointer udata)
 
   uiwidget->cb.cb (uiwidget, uiwidget->cb.udata);
 }
+

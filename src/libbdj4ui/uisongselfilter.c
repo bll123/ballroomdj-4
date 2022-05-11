@@ -21,6 +21,7 @@
 #include "nlist.h"
 #include "songfilter.h"
 #include "uisongsel.h"
+#include "ui.h"
 #include "uiutils.h"
 
 enum {

@@ -18,7 +18,7 @@
 #include "slist.h"
 #include "tagdef.h"
 #include "uisongedit.h"
-#include "uiutils.h"
+#include "ui.h"
 
 typedef struct {
   GtkWidget           *parentwin;

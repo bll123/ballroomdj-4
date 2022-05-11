@@ -41,7 +41,7 @@
 #include "slist.h"
 #include "sysvars.h"
 #include "tmutil.h"
-#include "uiutils.h"
+#include "ui.h"
 #include "webclient.h"
 
 /* installation states */

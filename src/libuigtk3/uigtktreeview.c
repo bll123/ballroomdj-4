@@ -12,6 +12,7 @@
 #include <gtk/gtk.h>
 
 #include "tagdef.h"
+#include "ui.h"
 #include "uiutils.h"
 
 static valuetype_t uiDetermineValueType (int tagidx);

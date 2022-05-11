@@ -13,6 +13,7 @@
 #include "dance.h"
 #include "datafile.h"
 #include "log.h"
+#include "ui.h"
 #include "uiutils.h"
 
 void

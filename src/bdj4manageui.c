@@ -43,6 +43,7 @@
 #include "songfilter.h"
 #include "sysvars.h"
 #include "tmutil.h"
+#include "ui.h"
 #include "uimusicq.h"
 #include "uiplayer.h"
 #include "uisongedit.h"

@@ -18,6 +18,7 @@ add_library (libuigtk3 SHARED
   uigtkspinbox.c
   uigtkswitch.c
   uigtktextbox.c
+  uigtktoggle.c
   uigtktreeview.c
   uigtkutils.c
   uigtkwindow.c

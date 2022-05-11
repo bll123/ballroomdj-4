@@ -15,6 +15,7 @@
 #include "bdjstring.h"
 #include "log.h"
 #include "pathbld.h"
+#include "ui.h"
 #include "uiutils.h"
 
 /* drop-down/combobox handling */

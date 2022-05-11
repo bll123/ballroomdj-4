@@ -23,7 +23,7 @@
 #include "song.h"
 #include "tagdef.h"
 #include "uiplayer.h"
-#include "uiutils.h"
+#include "ui.h"
 
 /* there are all sorts of latency issues making the sliders work nicely */
 /* it will take at least 100ms and at most 200ms for the message to get */

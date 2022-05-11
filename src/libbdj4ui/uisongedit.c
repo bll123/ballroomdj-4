@@ -15,7 +15,7 @@
 #include "bdjopt.h"
 #include "log.h"
 #include "uisongedit.h"
-#include "uiutils.h"
+#include "ui.h"
 
 uisongedit_t *
 uisongeditInit (conn_t *conn, musicdb_t *musicdb,

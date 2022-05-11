@@ -34,7 +34,7 @@
 #include "sysvars.h"
 #include "tagdef.h"
 #include "tmutil.h"
-#include "uiutils.h"
+#include "ui.h"
 
 enum {
   MQ_POSITION_X,

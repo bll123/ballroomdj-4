@@ -55,6 +55,7 @@
 #include "tagdef.h"
 #include "templateutil.h"
 #include "tmutil.h"
+#include "ui.h"
 #include "uiutils.h"
 #include "validate.h"
 #include "volume.h"

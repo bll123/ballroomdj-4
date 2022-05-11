@@ -12,6 +12,7 @@
 #include <gtk/gtk.h>
 
 #include "log.h"
+#include "ui.h"
 #include "uiutils.h"
 
 static gint uiSpinboxInput (GtkSpinButton *sb, gdouble *newval, gpointer udata);

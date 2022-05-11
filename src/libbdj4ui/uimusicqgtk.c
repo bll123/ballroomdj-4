@@ -15,6 +15,7 @@
 #include "musicdb.h"
 #include "pathbld.h"
 #include "uimusicq.h"
+#include "ui.h"
 #include "uiutils.h"
 
 enum {

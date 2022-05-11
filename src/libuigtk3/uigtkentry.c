@@ -17,6 +17,7 @@
 #include "log.h"
 #include "pathutil.h"
 #include "tmutil.h"
+#include "ui.h"
 #include "uiutils.h"
 
 static void uiEntryValidateStart (GtkEditable *e, gpointer udata);

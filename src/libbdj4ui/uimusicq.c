@@ -19,7 +19,7 @@
 #include "playlist.h"
 #include "tagdef.h"
 #include "uimusicq.h"
-#include "uiutils.h"
+#include "ui.h"
 
 static void   uimusicqProcessSongSelect (uimusicq_t *uimusicq, char * args);
 static int    uimusicqMoveUpRepeat (void *udata);
