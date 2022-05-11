@@ -270,20 +270,30 @@ main (int argc, char *argv[])
   uiSpinboxTextInit (&manage.dbspinbox);
   tlist = nlistAlloc ("db-action", LIST_ORDERED, free);
   hlist = nlistAlloc ("db-action-help", LIST_ORDERED, free);
+  /* CONTEXT: database update: check for new audio files */
   nlistSetStr (tlist, MANAGE_DB_CHECK_NEW, _("Check For New"));
   nlistSetStr (hlist, MANAGE_DB_CHECK_NEW,
-      _("Checks for new files."));
+      /* CONTEXT: database update: check for new: help text */
+      _("Checks for new audio files."));
+  /* CONTEXT: database update: reorganize : renames audio files based on organization settings */
   nlistSetStr (tlist, MANAGE_DB_REORGANIZE, _("Reorganize"));
   nlistSetStr (hlist, MANAGE_DB_REORGANIZE,
+      /* CONTEXT: database update: reorganize : help text */
       _("Renames the audio files based on the organization settings."));
+  /* CONTEXT: database update: updates the database using the tags from the audio files */
   nlistSetStr (tlist, MANAGE_DB_UPD_FROM_TAGS, _("Update from Audio File Tags"));
   nlistSetStr (hlist, MANAGE_DB_UPD_FROM_TAGS,
+      /* CONTEXT: database update: update from audio file tags: help text */
       _("Replaces the information in the BallroomDJ database with the audio file tag information."));
+  /* CONTEXT: database update: writes the tags in the database to the audio files */
   nlistSetStr (tlist, MANAGE_DB_WRITE_TAGS, _("Write Tags to Audio Files"));
   nlistSetStr (hlist, MANAGE_DB_WRITE_TAGS,
+      /* CONTEXT: database update: write tags to audio files: help text */
       _("Updates the audio file tags with the information from the BallroomDJ database."));
+  /* CONTEXT: database update: rebuilds the database */
   nlistSetStr (tlist, MANAGE_DB_REBUILD, _("Rebuild Database"));
   nlistSetStr (hlist, MANAGE_DB_REBUILD,
+      /* CONTEXT: database update: rebuild: help text */
       _("Replaces the BallroomDJ database in its entirety. All changes to the database will be lost."));
   manage.dblist = tlist;
   manage.dbhelp = hlist;
@@ -511,7 +521,7 @@ manageBuildUI (manageui_t *manage)
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", ".svg", PATHBLD_MP_IMGDIR);
-  /* CONTEXT: management ui window title */
+  /* CONTEXT: management user interface window title */
   snprintf (tbuff, sizeof (tbuff), _("%s Management"), BDJ4_NAME);
   manage->window = uiCreateMainWindow (tbuff, imgbuff,
       manageCloseWin, manage);
@@ -547,6 +557,7 @@ manageBuildUI (manageui_t *manage)
   /* playlist management */
   vbox = uiCreateVertBox ();
   uiWidgetSetAllMargins (vbox, 4);
+  /* CONTEXT: notebook tab title: playlist management */
   tabLabel = uiCreateLabel (_("Playlist Management"));
   uiNotebookAppendPage (manage->mainnotebook, vbox, tabLabel);
   uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_PLMGMT);
@@ -554,6 +565,7 @@ manageBuildUI (manageui_t *manage)
   /* edit sequences */
   vbox = uiCreateVertBox ();
   uiWidgetSetAllMargins (vbox, 4);
+  /* CONTEXT: notebook tab title: edit sequences */
   tabLabel = uiCreateLabel (_("Edit Sequences"));
   uiNotebookAppendPage (manage->mainnotebook, vbox, tabLabel);
   uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_EDITSEQ);
@@ -561,6 +573,7 @@ manageBuildUI (manageui_t *manage)
   /* file manager */
   vbox = uiCreateVertBox ();
   uiWidgetSetAllMargins (vbox, 4);
+  /* CONTEXT: notebook tab title: file manager */
   tabLabel = uiCreateLabel (_("File Manager"));
   uiNotebookAppendPage (manage->mainnotebook, vbox, tabLabel);
   uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_FILEMGR);
@@ -598,6 +611,7 @@ manageBuildUISongListEditor (manageui_t *manage)
   vbox = uiCreateVertBox ();
   uiWidgetSetAllMargins (vbox, 4);
 
+  /* CONTEXT: notebook tab title: edit song lists (manual playlists) */
   tabLabel = uiCreateLabel (_("Edit Song Lists"));
   uiNotebookAppendPage (manage->mainnotebook, vbox, tabLabel);
   uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_MAIN_SL);
@@ -614,7 +628,7 @@ manageBuildUISongListEditor (manageui_t *manage)
   /* song list editor: easy song list tab */
   widget = uiCreateHorizBox ();
 
-  /* CONTEXT: name of easy song list/song selection tab */
+  /* CONTEXT: name of easy song list song selection tab */
   tabLabel = uiCreateLabel (_("Song List"));
   uiNotebookAppendPage (notebook, widget, tabLabel);
   uiutilsNotebookIDAdd (manage->slnbtabid, MANAGE_TAB_SONGLIST);
@@ -632,7 +646,7 @@ manageBuildUISongListEditor (manageui_t *manage)
   uiBoxPackStart (hbox, vbox);
   manage->ezvboxwidget = vbox;
 
-  /* CONTEXT: config: display settings: button: add the selected song to the song list */
+  /* CONTEXT: config: button: add the selected songs to the song list */
   widget = uiCreateButton (NULL, _("Select"), "button_left",
       uisongselQueueProcessSelectHandler, manage->slezsongsel);
   uiBoxPackStart (vbox, widget);
@@ -642,7 +656,7 @@ manageBuildUISongListEditor (manageui_t *manage)
 
   /* song list editor: music queue tab */
   widget = uimusicqBuildUI (manage->slmusicq, manage->window, MUSICQ_A);
-  /* CONTEXT: name of easy song list tab */
+  /* CONTEXT: name of easy song list notebook tab */
   tabLabel = uiCreateLabel (_("Song List"));
   uiNotebookAppendPage (notebook, widget, tabLabel);
   uiutilsNotebookIDAdd (manage->slnbtabid, MANAGE_TAB_SONGLIST);
@@ -650,7 +664,7 @@ manageBuildUISongListEditor (manageui_t *manage)
 
   /* song list editor: song selection tab*/
   widget = uisongselBuildUI (manage->slsongsel, manage->window);
-  /* CONTEXT: name of song selection tab */
+  /* CONTEXT: name of song selection notebook tab */
   tabLabel = uiCreateLabel (_("Song Selection"));
   uiNotebookAppendPage (notebook, widget, tabLabel);
   uiutilsNotebookIDAdd (manage->slnbtabid, MANAGE_TAB_OTHER);
@@ -658,7 +672,7 @@ manageBuildUISongListEditor (manageui_t *manage)
 
   /* song list editor song editor tab */
   widget = uisongeditBuildUI (manage->slsongedit, manage->window);
-  /* CONTEXT: name of song editor tab */
+  /* CONTEXT: name of song editor notebook tab */
   tabLabel = uiCreateLabel (_("Song Editor"));
   uiNotebookAppendPage (notebook, widget, tabLabel);
   uiutilsNotebookIDAdd (manage->slnbtabid, MANAGE_TAB_SONGEDIT);
@@ -677,6 +691,7 @@ manageBuildUIMusicManager (manageui_t *manage)
   /* music manager */
   vbox = uiCreateVertBox ();
   uiWidgetSetAllMargins (vbox, 4);
+  /* CONTEXT: name of music manager notebook tab */
   tabLabel = uiCreateLabel (_("Music Manager"));
   uiNotebookAppendPage (manage->mainnotebook, vbox, tabLabel);
   uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_MAIN_MM);
@@ -693,14 +708,14 @@ manageBuildUIMusicManager (manageui_t *manage)
   /* music manager: song selection tab*/
   widget = uisongselBuildUI (manage->mmsongsel, manage->window);
   uiWidgetExpandHoriz (widget);
-  /* CONTEXT: name of song selection tab */
+  /* CONTEXT: name of song selection notebook tab */
   tabLabel = uiCreateLabel (_("Music Manager"));
   uiNotebookAppendPage (notebook, widget, tabLabel);
   uiutilsNotebookIDAdd (manage->mmnbtabid, MANAGE_TAB_OTHER);
 
   /* music manager: song editor tab */
   widget = uisongeditBuildUI (manage->mmsongedit, manage->window);
-  /* CONTEXT: name of song editor tab */
+  /* CONTEXT: name of song editor notebook tab */
   tabLabel = uiCreateLabel (_("Song Editor"));
   uiNotebookAppendPage (notebook, widget, tabLabel);
   uiutilsNotebookIDAdd (manage->mmnbtabid, MANAGE_TAB_SONGEDIT);
@@ -721,6 +736,7 @@ manageBuildUIUpdateDatabase (manageui_t *manage)
   /* update database */
   vbox = uiCreateVertBox ();
   uiWidgetSetAllMargins (vbox, 4);
+  /* CONTEXT: notebook tab title: update database */
   tabLabel = uiCreateLabel (_("Update Database"));
   uiNotebookAppendPage (manage->mainnotebook, vbox, tabLabel);
   uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_OTHER);
@@ -744,6 +760,7 @@ manageBuildUIUpdateDatabase (manageui_t *manage)
   g_signal_connect (widget, "value-changed", G_CALLBACK (manageDbChg), manage);
   uiBoxPackStart (hbox, widget);
 
+  /* CONTEXT: update database: button to start the database update process */
   widget = uiCreateButton (NULL, _("Start"), NULL,
       manageDbStart, manage);
   uiBoxPackStart (hbox, widget);
@@ -1098,15 +1115,15 @@ manageSongEditMenu (manageui_t *manage)
 
     menu = uiCreateSubMenu (menuitem);
 
-    /* CONTEXT: menu selection: song edit: edit all */
+    /* CONTEXT: menu selection: song editor: edit all */
     menuitem = uiMenuCreateItem (menu, _("Edit All"), NULL, NULL);
     uiWidgetDisable (menuitem);
 
-    /* CONTEXT: menu selection: song edit: apply edit all */
+    /* CONTEXT: menu selection: song editor: apply edit all */
     menuitem = uiMenuCreateItem (menu, _("Apply Edit All"), NULL, NULL);
     uiWidgetDisable (menuitem);
 
-    /* CONTEXT: menu selection: song edit: cancel edit all */
+    /* CONTEXT: menu selection: song editor: cancel edit all */
     menuitem = uiMenuCreateItem (menu, _("Cancel Edit All"), NULL, NULL);
     uiWidgetDisable (menuitem);
 
@@ -1229,6 +1246,7 @@ manageSonglistCopy (GtkMenuItem *mi, gpointer udata)
   manageSonglistSave (manage);
 
   oname = uimusicqGetSonglistName (manage->slmusicq);
+  /* CONTEXT: song list: the new song list name after 'create copy' (e.g. "Copy of DJ-2022-04") */
   snprintf (tbuff, sizeof (tbuff), _("Copy of %s"), oname);
   manageSetSonglistName (manage, tbuff);
   manage->slbackupcreated = false;
@@ -1357,6 +1375,7 @@ manageSonglistSave (manageui_t *manage)
   pathbldMakePath (onm, sizeof (onm),
       name, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
   if (! fileopFileExists (onm) &&
+      /* CONTEXT: name of the special song list for raffle songs */
       strcmp (name, _("Raffle Songs")) != 0) {
     playlist_t    *pl;
 
@@ -1496,6 +1515,7 @@ manageSelectFileDialog (manageui_t *manage, int flags)
 
   /* CONTEXT: what type of file to load */
   if (cb != NULL) {
+    /* CONTEXT: file type for the file selection dialog (song list) */
     dialog = manageCreateSelectFileDialog (manage, filelist, _("Song List"), cb);
     uiWidgetShowAll (dialog);
 
@@ -1535,10 +1555,10 @@ manageCreateSelectFileDialog (manageui_t *manage,
       tbuff,
       GTK_WINDOW (manage->window),
       GTK_DIALOG_DESTROY_WITH_PARENT,
-      /* CONTEXT: action button for the file select dialog */
+      /* CONTEXT: file select dialog: closes the dialog */
       _("Close"),
       GTK_RESPONSE_CLOSE,
-      /* CONTEXT: action button for the file select dialog */
+      /* CONTEXT: file select dialog: selects the file */
       _("Select"),
       GTK_RESPONSE_APPLY,
       NULL

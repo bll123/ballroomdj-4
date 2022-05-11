@@ -308,8 +308,8 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiBoxPackStart (hbox, widget);
   uiSizeGroupAdd (&sgE, widget);
 
-  /* CONTEXT: button: fade out the song and stop playing it */
   widget = uiCreateButton (&uiplayer->buttons [UIPLAYER_BUTTON_FADE],
+      /* CONTEXT: button: fade out the song and stop playing it */
       _("Fade"), NULL, uiplayerFadeProcess, uiplayer);
   uiBoxPackStart (hbox, widget);
 
@@ -328,26 +328,26 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
       PATHBLD_MP_IMGDIR);
   image = gtk_image_new_from_file (tbuff);
   gtk_button_set_image (GTK_BUTTON (uiplayer->repeatButton), image);
-  /* CONTEXT: button: toggle the repeat song on and off */
+  /* CONTEXT: button: tooltip: toggle the repeat song on and off */
   gtk_widget_set_tooltip_text (uiplayer->repeatButton, _("Toggle Repeat"));
   uiBoxPackStart (hbox, uiplayer->repeatButton);
   g_signal_connect (uiplayer->repeatButton, "toggled", G_CALLBACK (uiplayerRepeatProcess), uiplayer);
 
-  /* CONTEXT: button: return to the beginning of the song */
   widget = uiCreateButton (&uiplayer->buttons [UIPLAYER_BUTTON_BEGSONG],
+      /* CONTEXT: button: tooltip: return to the beginning of the song */
       _("Return to beginning of song"), "button_begin",
       uiplayerSongBeginProcess, uiplayer);
   uiBoxPackStart (hbox, widget);
 
-  /* CONTEXT: button: start playing the next song (immediate) */
   widget = uiCreateButton (&uiplayer->buttons [UIPLAYER_BUTTON_NEXTSONG],
+      /* CONTEXT: button: tooltip: start playing the next song (immediate) */
       _("Next Song"), "button_nextsong", uiplayerNextSongProcess, uiplayer);
   uiBoxPackStart (hbox, widget);
 
   uiplayer->pauseatendButton = gtk_toggle_button_new ();
   assert (uiplayer->pauseatendButton != NULL);
-  /* CONTEXT: button: pause at the end of the song (toggle) */
   gtk_button_set_label (GTK_BUTTON (uiplayer->pauseatendButton),
+      /* CONTEXT: button: pause at the end of the song (toggle) */
       _("Pause at End"));
   uiWidgetSetMarginTop (uiplayer->pauseatendButton, uiBaseMarginSz);
   uiWidgetSetMarginStart (uiplayer->pauseatendButton, uiBaseMarginSz);

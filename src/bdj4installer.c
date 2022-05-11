@@ -407,7 +407,7 @@ installerBuildUI (installer_t *installer)
   uiBoxPackInWindow (window, vbox);
 
   widget = uiCreateLabel (
-      /* CONTEXT: installer */
+      /* CONTEXT: installer: where BDJ4 gets installed */
       _("Enter the destination folder where BDJ4 will be installed."));
   uiBoxPackStart (vbox, widget);
 
@@ -424,7 +424,7 @@ installerBuildUI (installer_t *installer)
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
-  /* CONTEXT: installer: overwrite the previous BDJ4 installation */
+  /* CONTEXT: installer: checkbox: overwrite the previous BDJ4 installation */
   installer->reinstWidget = gtk_check_button_new_with_label (_("Overwrite"));
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (installer->reinstWidget),
       installer->reinstall);
@@ -445,18 +445,18 @@ installerBuildUI (installer_t *installer)
 
   /* conversion process */
   snprintf (tbuff, sizeof (tbuff),
-      /* CONTEXT: installer */
+      /* CONTEXT: installer: asking where BallroomDJ 3 is installed */
       _("Enter the folder where %s is installed."), BDJ3_NAME);
   widget = uiCreateLabel (tbuff);
   uiBoxPackStart (vbox, widget);
 
   widget = uiCreateLabel (
-      /* CONTEXT: installer */
+      /* CONTEXT: installer: instructions */
       _("If there is no BallroomDJ 3 installation, leave the entry blank."));
   uiBoxPackStart (vbox, widget);
 
   widget = uiCreateLabel (
-      /* CONTEXT: installer */
+      /* CONTEXT: installer: instructions */
       _("The conversion process will only run for new installations and for re-installations."));
   uiBoxPackStart (vbox, widget);
 
@@ -489,7 +489,7 @@ installerBuildUI (installer_t *installer)
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
-  /* CONTEXT: installer: convert the BallroomDJ 3 installation */
+  /* CONTEXT: installer: checkbox: convert the BallroomDJ 3 installation */
   snprintf (tbuff, sizeof (tbuff), _("Convert %s"), BDJ3_NAME);
   installer->convWidget = gtk_check_button_new_with_label (tbuff);
   uiBoxPackStart (hbox, installer->convWidget);
@@ -557,6 +557,7 @@ installerBuildUI (installer_t *installer)
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
+  /* CONTEXT: exits the installer */
   widget = uiCreateButton (NULL, _("Exit"), NULL,
       installerExit, installer);
   uiBoxPackEnd (hbox, widget);
@@ -730,7 +731,7 @@ installerMainLoop (void *udata)
       break;
     }
     case INST_FINISH: {
-      /* CONTEXT: installer */
+      /* CONTEXT: installer: status message */
       installerDisplayText (installer, "## ",  _("Installation complete."));
       if (installer->guienabled) {
         installer->instState = INST_BEGIN;
@@ -1027,7 +1028,7 @@ installerInstInit (installer_t *installer)
     /* CONTEXT: installer: command line interface: asking for the BDJ4 destination */
     printf (_("Enter the destination folder."));
     printf ("\n");
-    /* CONTEXT: installer: command line interface: */
+    /* CONTEXT: installer: command line interface: instructions */
     printf (_("Press 'Enter' to select the default."));
     printf ("\n");
     printf ("[%s] : ", installer->target);
@@ -1068,7 +1069,7 @@ installerInstInit (installer_t *installer)
       if (*tbuff != '\0') {
         if (strncmp (tbuff, "Y", 1) != 0 &&
             strncmp (tbuff, "y", 1) != 0) {
-          /* CONTEXT: installer: command line interface: */
+          /* CONTEXT: installer: command line interface: status message */
           printf (" * %s", _("Installation aborted."));
           printf ("\n");
           fflush (stdout);
@@ -1079,11 +1080,12 @@ installerInstInit (installer_t *installer)
     }
 
     if (! exists) {
-      /* CONTEXT: installer: command line interface: */
+      /* CONTEXT: installer: command line interface: indicating action */
       printf (_("New %s installation."), BDJ4_NAME);
 
       /* do not allow an overwrite of an existing directory that is not bdj4 */
       if (installer->guienabled) {
+        /* CONTEXT: installer: command line interface: status message */
         uiLabelSetText (installer->feedbackMsg, _("Folder already exists."));
       }
 
@@ -1091,6 +1093,7 @@ installerInstInit (installer_t *installer)
       snprintf (tbuff, sizeof (tbuff), _("Error: Folder %s already exists."),
           installer->target);
       installerDisplayText (installer, "", tbuff);
+      /* CONTEXT: installer: command line interface: status message */
       installerDisplayText (installer, " * ", _("Installation aborted."));
       installer->instState = INST_BEGIN;
       return;
@@ -1167,6 +1170,7 @@ installerCopyStart (installer_t *installer)
 {
   /* CONTEXT: installer: status message */
   installerDisplayText (installer, "-- ", _("Copying files."));
+  /* CONTEXT: installer: status message */
   installerDisplayText (installer, "   ", _("Please wait..."));
 
   /* the unpackdir is not necessarily the same as the current dir */
@@ -1175,6 +1179,7 @@ installerCopyStart (installer_t *installer)
     fprintf (stderr, "Unable to set working dir: %s\n", installer->unpackdir);
     /* CONTEXT: installer: failure message */
     installerDisplayText (installer, "", _("Error: Unable to set working folder."));
+    /* CONTEXT: installer: status message */
     installerDisplayText (installer, " * ", _("Installation aborted."));
     installer->instState = INST_BEGIN;
     return;
@@ -1494,16 +1499,16 @@ installerConvertStart (installer_t *installer)
 
   if (! installer->guienabled) {
     tbuff [0] = '\0';
-    /* CONTEXT: installer: command line interface */
+    /* CONTEXT: installer: command line interface: prompt for BDJ3 location */
     printf (_("Enter the folder where %s is installed."), BDJ3_NAME);
     printf ("\n");
-    /* CONTEXT: installer: command line interface */
+    /* CONTEXT: installer: command line interface: instructions */
     printf (_("The conversion process will only run for new installations and for re-installs."));
     printf ("\n");
     /* CONTEXT: installer: command line interface: accept BDJ3 location default */
     printf (_("Press 'Enter' to select the default."));
     printf ("\n");
-    /* CONTEXT: installer: command line interface */
+    /* CONTEXT: installer: command line interface: instructions */
     printf (_("If there is no %s installation, enter a single '-'."), BDJ3_NAME);
     printf ("\n");
     /* CONTEXT: installer: command line interface: BDJ3 location prompt */
@@ -1607,6 +1612,7 @@ fprintf (stderr, "p:%s:\n", p);
     /* CONTEXT: installer: failure message */
     snprintf (tbuff, sizeof (tbuff), _("Unable to locate %s."), "tclsh");
     installerDisplayText (installer, "   ", tbuff);
+    /* CONTEXT: installer: status message */
     installerDisplayText (installer, "   ", _("Skipping conversion."));
     installer->instState = INST_CREATE_SHORTCUT;
     return;
@@ -1751,6 +1757,7 @@ installerVLCCheck (installer_t *installer)
     installer->instState = INST_DELAY;
   } else {
     snprintf (tbuff, sizeof (tbuff),
+        /* CONTEXT: installer: status message */
         _("Unable to determine %s version."), "VLC");
     installerDisplayText (installer, "-- ", tbuff);
     installer->instState = INST_PYTHON_CHECK;
@@ -1789,11 +1796,13 @@ installerVLCDownload (installer_t *installer)
     /* CONTEXT: installer: status message */
     snprintf (tbuff, sizeof (tbuff), _("Installing %s."), "VLC");
     installerDisplayText (installer, "-- ", tbuff);
+    /* CONTEXT: installer: status message */
     installerDisplayText (installer, "   ", _("Please wait..."));
     installer->delayCount = 0;
     installer->delayState = INST_VLC_INSTALL;
     installer->instState = INST_DELAY;
   } else {
+    /* CONTEXT: installer: status message */
     snprintf (tbuff, sizeof (tbuff), _("Download of %s failed."), "VLC");
     installerDisplayText (installer, "-- ", tbuff);
     installer->instState = INST_PYTHON_CHECK;
@@ -1856,6 +1865,7 @@ installerPythonCheck (installer_t *installer)
     installer->instState = INST_DELAY;
   } else {
     snprintf (tbuff, sizeof (tbuff),
+        /* CONTEXT: installer: status message */
         _("Unable to determine %s version."), "Python");
     installerDisplayText (installer, "-- ", tbuff);
     installer->instState = INST_MUTAGEN_CHECK;
@@ -1894,11 +1904,13 @@ installerPythonDownload (installer_t *installer)
     /* CONTEXT: installer: status message */
     snprintf (tbuff, sizeof (tbuff), _("Installing %s."), "Python");
     installerDisplayText (installer, "-- ", tbuff);
+    /* CONTEXT: installer: status message */
     installerDisplayText (installer, "   ", _("Please wait..."));
     installer->delayCount = 0;
     installer->delayState = INST_PYTHON_INSTALL;
     installer->instState = INST_DELAY;
   } else {
+    /* CONTEXT: installer: status message */
     snprintf (tbuff, sizeof (tbuff), _("Download of %s failed."), "Python");
     installerDisplayText (installer, "-- ", tbuff);
     installer->instState = INST_MUTAGEN_CHECK;
@@ -1916,7 +1928,6 @@ installerPythonInstall (installer_t *installer)
     }
     system (tbuff);
     installerValidateDir (installer);
-    /* CONTEXT: installer: status message */
     snprintf (tbuff, sizeof (tbuff), _("%s installed."), "Python");
     installerDisplayText (installer, "-- ", tbuff);
   }
@@ -1950,6 +1961,7 @@ installerMutagenCheck (installer_t *installer)
   /* CONTEXT: installer: status message */
   snprintf (tbuff, sizeof (tbuff), _("Installing %s."), "Mutagen");
   installerDisplayText (installer, "-- ", tbuff);
+  /* CONTEXT: installer: status message */
   installerDisplayText (installer, "   ", _("Please wait..."));
   installer->delayCount = 0;
   installer->delayState = INST_MUTAGEN_INSTALL;
@@ -1973,7 +1985,6 @@ installerMutagenInstall (installer_t *installer)
   snprintf (tbuff, sizeof (tbuff),
       "%s --quiet install --user --upgrade mutagen", pipnm);
   system (tbuff);
-  /* CONTEXT: installer: status message */
   snprintf (tbuff, sizeof (tbuff), _("%s installed."), "Mutagen");
   installerDisplayText (installer, "-- ", tbuff);
   installerCheckPackages (installer);
@@ -2337,19 +2348,16 @@ installerCheckPackages (installer_t *installer)
   tmp = sysvarsGetStr (SV_PATH_PYTHON);
 
   if (*tmp) {
-    /* CONTEXT: installer: display of package status */
     snprintf (tbuff, sizeof (tbuff), _("%s is installed"), "Python");
     if (installer->pythonMsg != NULL) {
       uiLabelSetText (installer->pythonMsg, tbuff);
     }
     installer->pythoninstalled = true;
   } else {
-    /* CONTEXT: installer: display of package status */
     snprintf (tbuff, sizeof (tbuff), _("%s is not installed"), "Python");
     if (installer->pythonMsg != NULL) {
       uiLabelSetText (installer->pythonMsg, tbuff);
     }
-    /* CONTEXT: installer: display of package status */
     snprintf (tbuff, sizeof (tbuff), _("%s is not installed"), "Mutagen");
     if (installer->mutagenMsg != NULL) {
       uiLabelSetText (installer->mutagenMsg, tbuff);
@@ -2360,13 +2368,11 @@ installerCheckPackages (installer_t *installer)
   if (installer->pythoninstalled) {
     tmp = sysvarsGetStr (SV_PYTHON_MUTAGEN);
     if (*tmp) {
-      /* CONTEXT: installer: display of package status */
       snprintf (tbuff, sizeof (tbuff), _("%s is installed"), "Mutagen");
       if (installer->mutagenMsg != NULL) {
         uiLabelSetText (installer->mutagenMsg, tbuff);
       }
     } else {
-      /* CONTEXT: installer: display of package status */
       snprintf (tbuff, sizeof (tbuff), _("%s is not installed"), "Mutagen");
       if (installer->mutagenMsg != NULL) {
         uiLabelSetText (installer->mutagenMsg, tbuff);

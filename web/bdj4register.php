@@ -5,11 +5,20 @@ if (! isset($_POST['key']) || $_POST['key'] != '9873453') {
   exit (0);
 }
 if (! isset($_POST['version'])) {
-  echo "NG: no versoin";
+  echo "NG: no version";
   exit (0);
 }
 
-$ip = $_SERVER['REMOTE_ADDR'];
+function getip () {
+  if (! empty ($_SERVER ['HTTP_CLIENT_IP'])) {
+    return $_SERVER ['HTTP_CLIENT_IP'];
+  } else if ( !empty ($_SERVER ['HTTP_X_FORWARDED_FOR'])) {
+    return $_SERVER ['HTTP_X_FORWARDED_FOR'];
+  }
+  return $_SERVER ['REMOTE_ADDR'];
+}
+
+$ip = getip ();
 $ofile = 'bdj4info.txt';
 $date = date ('Y-m-d H:m');
 

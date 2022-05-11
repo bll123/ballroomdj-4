@@ -64,14 +64,14 @@ validate (const char *str, int valflags)
     rx = regexInit (valregex [VAL_REGEX_NUMERIC].regex);
     if (str != NULL && ! regexMatch (rx, str)) {
       /* CONTEXT: validation: spaces are not allowed  */
-      valstr = _("%s must be numeric.");
+      valstr = _("%s: Spaces are not allowed.");
     }
     regexFree (rx);
   }
   if ((valflags & VAL_FLOAT) == VAL_FLOAT) {
     rx = regexInit (valregex [VAL_REGEX_FLOAT].regex);
     if (str != NULL && ! regexMatch (rx, str)) {
-      /* CONTEXT: validation: spaces are not allowed  */
+      /* CONTEXT: validation: must be a numeric value */
       valstr = _("%s must be numeric.");
     }
     regexFree (rx);

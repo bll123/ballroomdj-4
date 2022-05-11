@@ -381,7 +381,7 @@ pluiBuildUI (playerui_t *plui)
       nlistGetNum (plui->options, PLUI_SHOW_EXTRA_QUEUES),
       pluiToggleExtraQueues, plui);
 
-  /* CONTEXT: menu checkbox: when a queue is emptied, switch playback to the other queue */
+  /* CONTEXT: menu checkbox: when a queue is emptied, switch playback to the next queue */
   menuitem = uiMenuCreateCheckbox (menu, _("Switch Queue When Empty"),
       nlistGetNum (plui->options, PLUI_SWITCH_QUEUE_WHEN_EMPTY),
       pluiToggleSwitchQueue, plui);
@@ -432,7 +432,7 @@ pluiBuildUI (playerui_t *plui)
 
   /* request tab */
   widget = uisongselBuildUI (plui->uisongsel, plui->window);
-  /* CONTEXT: name of request tab */
+  /* CONTEXT: name of request tab : lists the songs in the database */
   tabLabel = gtk_label_new (_("Request"));
   uiNotebookAppendPage (plui->notebook, widget, tabLabel);
   uiutilsNotebookIDAdd (plui->nbtabid, UI_TAB_SONGSEL);

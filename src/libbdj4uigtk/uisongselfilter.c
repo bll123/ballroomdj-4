@@ -98,13 +98,13 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
       _("Filter Songs"),
       GTK_WINDOW (uisongsel->window),
       GTK_DIALOG_DESTROY_WITH_PARENT,
-      /* CONTEXT: action button for the filter dialog */
+      /* CONTEXT: filter dialog: closes the dialog */
       _("Close"),
       GTK_RESPONSE_CLOSE,
-      /* CONTEXT: action button for the filter dialog */
+      /* CONTEXT: filter dialog: resets the selections */
       _("Reset"),
       RESPONSE_RESET,
-      /* CONTEXT: action button for the filter dialog */
+      /* CONTEXT: filter dialog: applies the selections */
       _("Apply"),
       GTK_RESPONSE_APPLY,
       NULL
@@ -264,7 +264,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
     hbox = uiCreateHorizBox ();
     uiBoxPackStart (vbox, hbox);
 
-    /* CONTEXT: a filter: have a status that are marked as playable */
+    /* CONTEXT: a filter: the song status is marked as playable */
     widget = uiCreateColonLabel (_("Playable Status"));
     uiBoxPackStart (hbox, widget);
     uiSizeGroupAdd (&sg, widget);

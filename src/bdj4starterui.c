@@ -385,10 +385,12 @@ starterBuildUI (startui_t  *starter)
   menubar = uiCreateMenubar ();
   uiBoxPackStart (hbox, menubar);
 
+  /* CONTEXT: action menu for the starter user interface */
   menuitem = uiMenuCreateItem (menubar, _("Actions"), NULL, NULL);
 
   menu = uiCreateSubMenu (menuitem);
 
+  /* CONTEXT: menu item: stop all BDJ4 processes */
   snprintf (tbuff, sizeof (tbuff), _("Stop All %s Processes"), BDJ4_NAME);
   menuitem = uiMenuCreateItem (menu, tbuff,
       starterStopAllProcesses, starter);
@@ -430,8 +432,8 @@ starterBuildUI (startui_t  *starter)
   uiWidgetSetAllMargins (widget, uiBaseMarginSz * 10);
   uiBoxPackStart (hbox, widget);
 
-  /* CONTEXT: button: starts the player user interface */
   widget = uiCreateButton (&starter->buttons [START_BUTTON_PLAYER],
+      /* CONTEXT: button: starts the player user interface */
       _("Player"), NULL, starterStartPlayerui, starter);
   uiWidgetSetMarginTop (widget, uiBaseMarginSz * 2);
   uiWidgetAlignHorizStart (widget);
@@ -441,8 +443,8 @@ starterBuildUI (startui_t  *starter)
   widget = gtk_bin_get_child (GTK_BIN (widget));
   gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
 
-  /* CONTEXT: button: starts the management user interface */
   widget = uiCreateButton (&starter->buttons [START_BUTTON_MANAGE],
+      /* CONTEXT: button: starts the management user interface */
       _("Manage"), NULL, starterStartManageui, starter);
   uiWidgetSetMarginTop (widget, uiBaseMarginSz * 2);
   uiWidgetAlignHorizStart (widget);
@@ -452,8 +454,8 @@ starterBuildUI (startui_t  *starter)
   widget = gtk_bin_get_child (GTK_BIN (widget));
   gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
 
-  /* CONTEXT: button: starts the configuration user interface */
   widget = uiCreateButton (&starter->buttons [START_BUTTON_CONFIG],
+      /* CONTEXT: button: starts the configuration user interface */
       _("Configure"), NULL, starterStartConfig, starter);
   uiWidgetSetMarginTop (widget, uiBaseMarginSz * 2);
   uiWidgetAlignHorizStart (widget);
@@ -462,8 +464,8 @@ starterBuildUI (startui_t  *starter)
   widget = gtk_bin_get_child (GTK_BIN (widget));
   gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
 
-  /* CONTEXT: button: support : starts raffle games  */
   widget = uiCreateButton (&starter->buttons [START_BUTTON_RAFFLE],
+      /* CONTEXT: button: support : starts raffle games  */
       _("Raffle Games"), NULL, starterStartRaffleGames, starter);
   uiWidgetDisable (widget);
   uiWidgetSetMarginTop (widget, uiBaseMarginSz * 2);
@@ -473,8 +475,8 @@ starterBuildUI (startui_t  *starter)
   widget = gtk_bin_get_child (GTK_BIN (widget));
   gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
 
-  /* CONTEXT: button: support : support information */
   widget = uiCreateButton (&starter->buttons [START_BUTTON_SUPPORT],
+      /* CONTEXT: button: support : support information */
       _("Support"), NULL, starterProcessSupport, starter);
   uiWidgetSetMarginTop (widget, uiBaseMarginSz * 2);
   uiWidgetAlignHorizStart (widget);
@@ -483,8 +485,8 @@ starterBuildUI (startui_t  *starter)
   widget = gtk_bin_get_child (GTK_BIN (widget));
   gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
 
-  /* CONTEXT: button: exits BDJ4 */
   widget = uiCreateButton (&starter->buttons [START_BUTTON_EXIT],
+      /* CONTEXT: button: exits BDJ4 (exits everything) */
       _("Exit"), NULL, starterProcessExit, starter);
   uiWidgetSetMarginTop (widget, uiBaseMarginSz * 2);
   uiWidgetAlignHorizStart (widget);
@@ -923,7 +925,7 @@ starterProcessSupport (GtkButton *b, gpointer udata)
       _("Support"),
       GTK_WINDOW (starter->window),
       GTK_DIALOG_DESTROY_WITH_PARENT,
-      /* CONTEXT: action button for the support dialog */
+      /* CONTEXT: support dialog: closes the dialog */
       _("Close"),
       GTK_RESPONSE_CLOSE,
       NULL
@@ -942,7 +944,7 @@ starterProcessSupport (GtkButton *b, gpointer udata)
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
-  /* CONTEXT: starterui: basic support dialog, version display*/
+  /* CONTEXT: starterui: basic support dialog, version display */
   snprintf (tbuff, sizeof (tbuff), _("%s Version"), BDJ4_NAME);
   widget = uiCreateColonLabel (tbuff);
   uiBoxPackStart (hbox, widget);
@@ -962,7 +964,7 @@ starterProcessSupport (GtkButton *b, gpointer udata)
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
-  /* CONTEXT: starterui: basic support dialog, latest version display*/
+  /* CONTEXT: starterui: basic support dialog, latest version display */
   widget = uiCreateColonLabel (_("Latest Version"));
   uiBoxPackStart (hbox, widget);
   uiSizeGroupAdd (&sg, widget);
@@ -971,7 +973,7 @@ starterProcessSupport (GtkButton *b, gpointer udata)
   uiBoxPackStart (hbox, widget);
 
   /* begin line */
-  /* CONTEXT: starterui: basic support dialog, listing support options */
+  /* CONTEXT: starterui: basic support dialog, list of support options */
   widget = uiCreateColonLabel (_("Support options"));
   uiBoxPackStart (vbox, widget);
   uiSizeGroupAdd (&sg, widget);
@@ -996,8 +998,8 @@ starterProcessSupport (GtkButton *b, gpointer udata)
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
-  /* CONTEXT: starterui: basic support dialog: button: support option */
   widget = uiCreateButton (&starter->buttons [START_BUTTON_SEND_SUPPORT],
+      /* CONTEXT: starterui: basic support dialog: button: support option */
       _("Send Support Message"), NULL, starterCreateSupportDialog, starter);
   uiBoxPackStart (hbox, widget);
 
@@ -1084,7 +1086,7 @@ starterGetProfiles (startui_t *starter)
     }
   }
 
-  /* CONTEXT: starter: creating a new profile */
+  /* CONTEXT: starter: selection to create a new profile */
   nlistSetStr (proflist, availidx, _("New Profile"));
   starter->newprofile = availidx;
   len = strlen (nlistGetStr (proflist, count));
@@ -1146,10 +1148,10 @@ starterCreateSupportDialog (GtkButton *b, gpointer udata)
       _("Support Message"),
       GTK_WINDOW (starter->window),
       GTK_DIALOG_DESTROY_WITH_PARENT,
-      /* CONTEXT: action button for the support message dialog */
+      /* CONTEXT: support message dialog: closes the dialog */
       _("Close"),
       GTK_RESPONSE_CLOSE,
-      /* CONTEXT: action button for the support message dialog */
+      /* CONTEXT: support message dialog: sends the support message */
       _("Send Support Message"),
       GTK_RESPONSE_APPLY,
       NULL
@@ -1194,7 +1196,7 @@ starterCreateSupportDialog (GtkButton *b, gpointer udata)
   uiBoxPackStart (hbox, widget);
 
   /* line 3 */
-  /* CONTEXT: sending support message: message */
+  /* CONTEXT: sending support message: message text */
   widget = uiCreateColonLabel (_("Message"));
   uiBoxPackStart (vbox, widget);
 

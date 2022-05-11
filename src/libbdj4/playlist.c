@@ -519,6 +519,7 @@ playlistGetPlaylistList (int flag)
     tfn [pi->blen] = '\0';
 
     if (flag == PL_LIST_NORMAL &&
+        /* CONTEXT: the name for the special playlist used for the 'queue dance' button */
         strcmp (tfn, _("QueueDance")) == 0) {
       continue;
     }

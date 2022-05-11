@@ -338,6 +338,7 @@ dbupdateProcessing (void *udata)
     logMsg (LOG_DBG, LOG_IMPORTANT, "  %d files found", dbupdate->fileCount);
 
     /* message to manageui */
+    /* CONTEXT: database update: status message */
     snprintf (tbuff, sizeof (tbuff), _("%d files found"), dbupdate->fileCount);
     connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
 
@@ -447,19 +448,25 @@ dbupdateProcessing (void *udata)
     }
 
     dbupdateOutputProgress (dbupdate);
+    /* CONTEXT: database update: status message: total number of files found */
     snprintf (tbuff, sizeof (tbuff), "%s : %u", _("Total Files"), dbupdate->fileCount);
     connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
+    /* CONTEXT: database update: status message: files found in the database */
     snprintf (tbuff, sizeof (tbuff), "%s : %u", _("Loaded from Database"), dbupdate->countInDatabase);
     connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
+    /* CONTEXT: database update: status message: new files saved to the databse */
     snprintf (tbuff, sizeof (tbuff), "%s : %u", _("New Files"), dbupdate->countNew);
     connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
+    /* CONTEXT: database update: status message: number of files updated in the database */
     snprintf (tbuff, sizeof (tbuff), "%s : %u", _("Updated"), dbupdate->countUpdated);
     connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
+    /* CONTEXT: database update: status message: other files that cannot be processed */
     snprintf (tbuff, sizeof (tbuff), "%s : %u", _("Other Files"),
         dbupdate->countBad + dbupdate->countNullData +
         dbupdate->countNoTags + dbupdate->countNonAudio);
     connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
 
+    /* CONTEXT: database update: status message */
     snprintf (tbuff, sizeof (tbuff), "-- %s", _("Complete"));
     connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
 

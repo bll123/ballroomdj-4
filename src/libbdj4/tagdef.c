@@ -857,39 +857,67 @@ tagdefInit (void)
   }
   tagdefinfo.initialized = true;
 
+  /* CONTEXT: title: audio file modification time */
   tagdefs [TAG_AFMODTIME].displayname = _("Audio File Date");
+  /* CONTEXT: title: album */
   tagdefs [TAG_ALBUM].displayname = _("Album");
+  /* CONTEXT: title: album artist */
   tagdefs [TAG_ALBUMARTIST].displayname = _("Album Artist");
+  /* CONTEXT: title: artist */
   tagdefs [TAG_ARTIST].displayname = _("Artist");
+  /* CONTEXT: title: composer */
   tagdefs [TAG_COMPOSER].displayname = _("Composer");
+  /* CONTEXT: title: conductor */
   tagdefs [TAG_CONDUCTOR].displayname = _("Conductor");
+  /* CONTEXT: title: dance */
   tagdefs [TAG_DANCE].displayname = _("Dance");
+  /* CONTEXT: title: dance level */
   tagdefs [TAG_DANCELEVEL].displayname = _("Dance Level");
+  /* CONTEXT: title: dance rating */
   tagdefs [TAG_DANCERATING].displayname = _("Dance Rating");
+  /* CONTEXT: title: date */
   tagdefs [TAG_DATE].displayname = _("Date");
+  /* CONTEXT: title: date added to the database */
   tagdefs [TAG_DBADDDATE].displayname = _("Date Added");
+  /* CONTEXT: title: disc number */
   tagdefs [TAG_DISCNUMBER].displayname = _("Disc");
+  /* CONTEXT: title: duration of the song */
   tagdefs [TAG_DURATION].displayname = _("Duration");
+  /* CONTEXT: title: favorite marker */
   tagdefs [TAG_FAVORITE].displayname = _("Favorite");
+  /* CONTEXT: title: genre */
   tagdefs [TAG_GENRE].displayname = _("Genre");
+  /* CONTEXT: title: keyword (used to filter out songs) */
   tagdefs [TAG_KEYWORD].displayname = _("Keyword");
+  /* CONTEXT: title: marquee display (alternate display for the marquee, replaces dance) */
   tagdefs [TAG_MQDISPLAY].displayname = _("Marquee Display");
+  /* CONTEXT: title: notes */
   tagdefs [TAG_NOTES].displayname = _("Notes");
+  /* CONTEXT: title: time to end the song */
   tagdefs [TAG_SONGEND].displayname = _("Song End");
+  /* CONTEXT: title: time to start the song */
   tagdefs [TAG_SONGSTART].displayname = _("Song Start");
+  /* CONTEXT: title: speed adjustment for playback */
   tagdefs [TAG_SPEEDADJUSTMENT].displayname = _("Speed Adjustment");
+  /* CONTEXT: title: status */
   tagdefs [TAG_STATUS].displayname = _("Status");
+  /* CONTEXT: title: tags (for use by the user) */
   tagdefs [TAG_TAGS].displayname = _("Tags");
+  /* CONTEXT: title: title */
   tagdefs [TAG_TITLE].displayname = _("Title");
+  /* CONTEXT: title: track number */
   tagdefs [TAG_TRACKNUMBER].displayname = _("Track");
   /* CONTEXT: when the database entry was last updated */
   tagdefs [TAG_UPDATETIME].displayname = _("Last Updated");
+  /* CONTEXT: title: volume adjustment for playback */
   tagdefs [TAG_VOLUMEADJUSTPERC].displayname = _("Volume Adjustment");
 
   if (bdjoptGetNum (OPT_G_BPM) == BPM_BPM) {
+    /* CONTEXT: title: beats per minute */
     tagdefs [TAG_BPM].displayname = _("BPM");
   }
   if (bdjoptGetNum (OPT_G_BPM) == BPM_MPM) {
+    /* CONTEXT: title: measures per minute */
     tagdefs [TAG_BPM].displayname = _("MPM");
   }
 

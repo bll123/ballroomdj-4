@@ -318,6 +318,7 @@ marqueeBuildUI (marquee_t *marquee)
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon_marquee", ".svg", PATHBLD_MP_IMGDIR);
 
+  /* CONTEXT: marquee window title */
   window = uiCreateMainWindow (_("Marquee"), imgbuff,
       marqueeCloseWin, marquee);
   g_signal_connect (window, "button-press-event", G_CALLBACK (marqueeToggleFullscreen), marquee);

@@ -608,7 +608,7 @@ main (int argc, char *argv[])
   volumeGetSinkList (volume, "", &sinklist);
   tlist = nlistAlloc ("cu-audio-out", LIST_ORDERED, free);
   llist = nlistAlloc ("cu-audio-out-l", LIST_ORDERED, free);
-  /* CONTEXT: audio: The default audio sink (output) */
+  /* CONTEXT: audio: The default audio sink (audio output) */
   nlistSetStr (tlist, 0, _("Default"));
   nlistSetStr (llist, 0, "default");
   confui.uiitem [CONFUI_SPINBOX_AUDIO_OUTPUT].listidx = 0;
@@ -626,11 +626,11 @@ main (int argc, char *argv[])
 
   confuiSpinboxTextInitDataNum (&confui, "cu-audio-file-tags",
       CONFUI_SPINBOX_WRITE_AUDIO_FILE_TAGS,
-      /* CONTEXT: write tags: do not write any tags to the audio file */
+      /* CONTEXT: write audio file tags: do not write any tags to the audio file */
       WRITE_TAGS_NONE, _("Don't Write"),
-      /* CONTEXT: write tags: only write BDJ tags to the audio file */
+      /* CONTEXT: write audio file tags: only write BDJ tags to the audio file */
       WRITE_TAGS_BDJ_ONLY, _("BDJ Tags Only"),
-      /* CONTEXT: write tags: write all tags (BDJ and standard) to the audio file */
+      /* CONTEXT: write audio file tags: write all tags (BDJ and standard) to the audio file */
       WRITE_TAGS_ALL, _("All Tags"),
       -1);
 
@@ -912,7 +912,7 @@ confuiBuildUI (configui_t *confui)
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon_config", ".svg", PATHBLD_MP_IMGDIR);
-  /* CONTEXT: configuration ui window title */
+  /* CONTEXT: configuration user interface window title */
   snprintf (tbuff, sizeof (tbuff), _("%s Configuration"), BDJ4_NAME);
   confui->window = uiCreateMainWindow (tbuff, imgbuff,
       confuiCloseWin, confui);
@@ -988,7 +988,7 @@ confuiBuildUIGeneral (configui_t *confui)
 
   /* general options */
   vbox = confuiMakeNotebookTab (confui, confui->notebook,
-      /* CONTEXT: config: general options that apply to everything */
+      /* CONTEXT: configuration: general options that apply to everything */
       _("General Options"), CONFUI_ID_NONE);
   uiCreateSizeGroupHoriz (&sg);
 
@@ -997,52 +997,53 @@ confuiBuildUIGeneral (configui_t *confui)
     pathWinPath (tbuff, sizeof (tbuff));
   }
 
-  /* CONTEXT: config: the music folder where the user store their music */
+  /* CONTEXT: configuration: the music folder where the user store their music */
   confuiMakeItemEntryChooser (confui, vbox, &sg, _("Music Folder"),
       CONFUI_ENTRY_MUSIC_DIR, OPT_M_DIR_MUSIC,
       tbuff, confuiSelectMusicDir);
   uiEntrySetValidate (&confui->uiitem [CONFUI_ENTRY_MUSIC_DIR].u.entry,
       uiEntryValidateDir, confui);
 
-  /* CONTEXT: config: the name of this profile */
+  /* CONTEXT: configuration: the name of this profile */
   confuiMakeItemEntry (confui, vbox, &sg, _("Profile Name"),
       CONFUI_ENTRY_PROFILE_NAME, OPT_P_PROFILENAME,
       bdjoptGetStr (OPT_P_PROFILENAME));
 
-  /* CONTEXT: config: Whether to display BPM as BPM or MPM */
+  /* CONTEXT: configuration: Whether to display BPM as BPM or MPM */
   confuiMakeItemSpinboxText (confui, vbox, &sg, _("BPM"),
       CONFUI_SPINBOX_BPM, OPT_G_BPM,
       CONFUI_OUT_NUM, bdjoptGetNum (OPT_G_BPM));
 
   /* database */
-  /* CONTEXT: config: which audio tags will be written to the audio file */
+  /* CONTEXT: configuration: which audio tags will be written to the audio file */
   confuiMakeItemSpinboxText (confui, vbox, &sg, _("Write Audio File Tags"),
       CONFUI_SPINBOX_WRITE_AUDIO_FILE_TAGS, OPT_G_WRITETAGS,
       CONFUI_OUT_NUM, bdjoptGetNum (OPT_G_WRITETAGS));
   confuiMakeItemSwitch (confui, vbox, &sg,
+      /* CONTEXT: checkbox: the database will load the dance from the audio file genre tag */
       _("Database Loads Dance From Genre"),
       CONFUI_WIDGET_DB_LOAD_FROM_GENRE, OPT_G_LOADDANCEFROMGENRE,
       bdjoptGetNum (OPT_G_LOADDANCEFROMGENRE));
   confuiMakeItemSwitch (confui, vbox, &sg,
-      /* CONTEXT: config: enable itunes support */
+      /* CONTEXT: configuration: enable itunes support */
       _("Enable iTunes Support"),
       CONFUI_WIDGET_ENABLE_ITUNES, OPT_G_ITUNESSUPPORT,
       bdjoptGetNum (OPT_G_ITUNESSUPPORT));
 
   /* bdj4 */
-  /* CONTEXT: config: the locale to use (e.g. English or Nederlands */
+  /* CONTEXT: configuration: the locale to use (e.g. English or Nederlands) */
   confuiMakeItemSpinboxText (confui, vbox, &sg, _("Locale"),
       CONFUI_SPINBOX_LOCALE, -1,
       CONFUI_OUT_STR, confui->uiitem [CONFUI_SPINBOX_LOCALE].listidx);
 
-  /* CONTEXT: config: the startup script to run before starting the player.  Used on Linux. */
+  /* CONTEXT: configuration: the startup script to run before starting the player.  Used on Linux. */
   confuiMakeItemEntryChooser (confui, vbox, &sg, _("Startup Script"),
       CONFUI_ENTRY_STARTUP, OPT_M_STARTUPSCRIPT,
       bdjoptGetStr (OPT_M_STARTUPSCRIPT), confuiSelectStartup);
   uiEntrySetValidate (&confui->uiitem [CONFUI_ENTRY_STARTUP].u.entry,
       uiEntryValidateFile, confui);
 
-  /* CONTEXT: config: the shutdown script to run before starting the player.  Used on Linux. */
+  /* CONTEXT: configuration: the shutdown script to run before starting the player.  Used on Linux. */
   confuiMakeItemEntryChooser (confui, vbox, &sg, _("Shutdown Script"),
       CONFUI_ENTRY_SHUTDOWN, OPT_M_SHUTDOWNSCRIPT,
       bdjoptGetStr (OPT_M_SHUTDOWNSCRIPT), confuiSelectShutdown);
@@ -1061,40 +1062,40 @@ confuiBuildUIPlayer (configui_t *confui)
 
   /* player options */
   vbox = confuiMakeNotebookTab (confui, confui->notebook,
-      /* CONTEXT: config: options associated with the player */
+      /* CONTEXT: configuration: options associated with the player */
       _("Player Options"), CONFUI_ID_NONE);
   uiCreateSizeGroupHoriz (&sg);
 
-  /* CONTEXT: config: which player interface to use */
+  /* CONTEXT: configuration: which player interface to use */
   confuiMakeItemSpinboxText (confui, vbox, &sg, _("Player"),
       CONFUI_SPINBOX_PLAYER, OPT_M_PLAYER_INTFC,
       CONFUI_OUT_STR, confui->uiitem [CONFUI_SPINBOX_PLAYER].listidx);
 
-  /* CONTEXT: config: which audio interface to use */
+  /* CONTEXT: configuration: which audio interface to use */
   confuiMakeItemSpinboxText (confui, vbox, &sg, _("Audio"),
       CONFUI_SPINBOX_VOL_INTFC, OPT_M_VOLUME_INTFC,
       CONFUI_OUT_STR, confui->uiitem [CONFUI_SPINBOX_VOL_INTFC].listidx);
 
-  /* CONTEXT: config: which audio sink (output) to use */
+  /* CONTEXT: configuration: which audio sink (output) to use */
   confuiMakeItemSpinboxText (confui, vbox, &sg, _("Audio Output"),
       CONFUI_SPINBOX_AUDIO_OUTPUT, OPT_M_AUDIOSINK,
       CONFUI_OUT_STR, confui->uiitem [CONFUI_SPINBOX_AUDIO_OUTPUT].listidx);
 
-  /* CONTEXT: config: the volume used when starting the player */
+  /* CONTEXT: configuration: the volume used when starting the player */
   confuiMakeItemSpinboxInt (confui, vbox, &sg, _("Default Volume"),
       CONFUI_WIDGET_DEFAULT_VOL, OPT_P_DEFAULTVOLUME,
       10, 100, bdjoptGetNum (OPT_P_DEFAULTVOLUME));
 
-  /* CONTEXT: config: the amount of time to do a volume fade-in when playing a song */
+  /* CONTEXT: configuration: the amount of time to do a volume fade-in when playing a song */
   confuiMakeItemSpinboxDouble (confui, vbox, &sg, _("Fade In Time"),
       CONFUI_WIDGET_FADE_IN_TIME, OPT_P_FADEINTIME,
       0.0, 2.0, (double) bdjoptGetNum (OPT_P_FADEINTIME) / 1000.0);
-  /* CONTEXT: config: the amount of time to do a volume fade-out when playing a song */
+  /* CONTEXT: configuration: the amount of time to do a volume fade-out when playing a song */
   confuiMakeItemSpinboxDouble (confui, vbox, &sg, _("Fade Out Time"),
       CONFUI_WIDGET_FADE_OUT_TIME, OPT_P_FADEOUTTIME,
       0.0, 10.0, (double) bdjoptGetNum (OPT_P_FADEOUTTIME) / 1000.0);
 
-  /* CONTEXT: config: the type of fade */
+  /* CONTEXT: configuration: the type of fade */
   widget = confuiMakeItemSpinboxText (confui, vbox, &sg, _("Fade Type"),
       CONFUI_SPINBOX_FADE_TYPE, OPT_P_FADETYPE,
       CONFUI_OUT_NUM, bdjoptGetNum (OPT_P_FADETYPE));
@@ -1107,29 +1108,29 @@ confuiBuildUIPlayer (configui_t *confui)
   gtk_widget_set_has_tooltip (widget, TRUE);
   g_signal_connect (widget, "query-tooltip", G_CALLBACK (confuiFadeTypeTooltip), confui);
 
-  /* CONTEXT: config: the amount of time to wait inbetween songs */
+  /* CONTEXT: configuration: the amount of time to wait inbetween songs */
   confuiMakeItemSpinboxDouble (confui, vbox, &sg, _("Gap Between Songs"),
       CONFUI_WIDGET_GAP, OPT_P_GAP,
       0.0, 60.0, (double) bdjoptGetNum (OPT_P_GAP) / 1000.0);
-  /* CONTEXT: config: the maximum amount of time to play a song */
+  /* CONTEXT: configuration: the maximum amount of time to play a song */
   confuiMakeItemSpinboxTime (confui, vbox, &sg, _("Maximum Play Time"),
       CONFUI_SPINBOX_MAX_PLAY_TIME, OPT_P_MAXPLAYTIME,
       bdjoptGetNum (OPT_P_MAXPLAYTIME));
-  /* CONTEXT: config: the length of the music queue to display */
+  /* CONTEXT: configuration: the length of the music queue to display */
   confuiMakeItemSpinboxInt (confui, vbox, &sg, _("Queue Length"),
       CONFUI_WIDGET_PL_QUEUE_LEN, OPT_G_PLAYERQLEN,
       20, 400, bdjoptGetNum (OPT_G_PLAYERQLEN));
-  /* CONTEXT: config: where to insert a requested song into the music queue */
+  /* CONTEXT: configuration: where to insert a requested song into the music queue */
   confuiMakeItemSpinboxInt (confui, vbox, &sg, _("Request Insert Location"),
       CONFUI_WIDGET_INSERT_LOC, OPT_P_INSERT_LOCATION,
       1, 10, bdjoptGetNum (OPT_P_INSERT_LOCATION));
 
-  /* CONTEXT: config: The completion message displayed on the marquee when a playlist is finished */
+  /* CONTEXT: configuration: The completion message displayed on the marquee when a playlist is finished */
   confuiMakeItemEntry (confui, vbox, &sg, _("Completion Message"),
       CONFUI_ENTRY_COMPLETE_MSG, OPT_P_COMPLETE_MSG,
       bdjoptGetStr (OPT_P_COMPLETE_MSG));
   for (musicqidx_t i = 0; i < MUSICQ_MAX; ++i) {
-    /* CONTEXT: config: The name of the music queue */
+    /* CONTEXT: configuration: The name of the music queue */
     confuiMakeItemEntry (confui, vbox, &sg, _("Queue A Name"),
         CONFUI_ENTRY_QUEUE_NM_A + i, OPT_P_QUEUE_NAME_A + i,
         bdjoptGetStr (OPT_P_QUEUE_NAME_A + i));
@@ -1144,36 +1145,36 @@ confuiBuildUIMarquee (configui_t *confui)
 
   /* marquee options */
   vbox = confuiMakeNotebookTab (confui, confui->notebook,
-      /* CONTEXT: config: options associated with the marquee */
+      /* CONTEXT: configuration: options associated with the marquee */
       _("Marquee Options"), CONFUI_ID_NONE);
   uiCreateSizeGroupHoriz (&sg);
 
-  /* CONTEXT: config: The theme to use for the marquee display */
+  /* CONTEXT: configuration: The theme to use for the marquee display */
   confuiMakeItemSpinboxText (confui, vbox, &sg, _("Marquee Theme"),
       CONFUI_SPINBOX_MQ_THEME, OPT_MP_MQ_THEME,
       CONFUI_OUT_STR, confui->uiitem [CONFUI_SPINBOX_MQ_THEME].listidx);
 
-  /* CONTEXT: config: The font to use for the marquee display */
+  /* CONTEXT: configuration: The font to use for the marquee display */
   confuiMakeItemFontButton (confui, vbox, &sg, _("Marquee Font"),
       CONFUI_WIDGET_MQ_FONT, OPT_MP_MQFONT,
       bdjoptGetStr (OPT_MP_MQFONT));
 
-  /* CONTEXT: config: the length of the queue displayed on the marquee */
+  /* CONTEXT: configuration: the length of the queue displayed on the marquee */
   confuiMakeItemSpinboxInt (confui, vbox, &sg, _("Queue Length"),
       CONFUI_WIDGET_MQ_QUEUE_LEN, OPT_P_MQQLEN,
       1, 20, bdjoptGetNum (OPT_P_MQQLEN));
 
-  /* CONTEXT: config: marquee: show the song information (artist/title) on the marquee */
+  /* CONTEXT: configuration: marquee: show the song information (artist/title) on the marquee */
   confuiMakeItemSwitch (confui, vbox, &sg, _("Show Song Information"),
       CONFUI_WIDGET_MQ_SHOW_SONG_INFO, OPT_P_MQ_SHOW_INFO,
       bdjoptGetNum (OPT_P_MQ_SHOW_INFO));
 
-  /* CONTEXT: config: marquee: the accent color used for the marquee */
+  /* CONTEXT: configuration: marquee: the accent color used for the marquee */
   confuiMakeItemColorButton (confui, vbox, &sg, _("Accent Colour"),
       CONFUI_WIDGET_MQ_ACCENT_COLOR, OPT_P_MQ_ACCENT_COL,
       bdjoptGetStr (OPT_P_MQ_ACCENT_COL));
 
-  /* CONTEXT: config: marquee: minimize the marquee when the player is started */
+  /* CONTEXT: configuration: marquee: minimize the marquee when the player is started */
   confuiMakeItemSwitch (confui, vbox, &sg, _("Hide Marquee on Start"),
       CONFUI_WIDGET_HIDE_MARQUEE_ON_START, OPT_P_HIDE_MARQUEE_ON_START,
       bdjoptGetNum (OPT_P_HIDE_MARQUEE_ON_START));
@@ -1187,24 +1188,24 @@ confuiBuildUIUserInterface (configui_t *confui)
 
   /* user interface */
   vbox = confuiMakeNotebookTab (confui, confui->notebook,
-      /* CONTEXT: config: options associated with the user interface */
+      /* CONTEXT: configuration: options associated with the user interface */
       _("User Interface"), CONFUI_ID_NONE);
   uiCreateSizeGroupHoriz (&sg);
 
-  /* CONTEXT: config: the theme to use for the user interface */
+  /* CONTEXT: configuration: the theme to use for the user interface */
   confuiMakeItemSpinboxText (confui, vbox, &sg, _("Theme"),
       CONFUI_SPINBOX_UI_THEME, OPT_MP_UI_THEME,
       CONFUI_OUT_STR, confui->uiitem [CONFUI_SPINBOX_UI_THEME].listidx);
 
-  /* CONTEXT: config: the font to use for the user interface */
+  /* CONTEXT: configuration: the font to use for the user interface */
   confuiMakeItemFontButton (confui, vbox, &sg, _("Font"),
       CONFUI_WIDGET_UI_FONT, OPT_MP_UIFONT,
       bdjoptGetStr (OPT_MP_UIFONT));
-  /* CONTEXT: config: the font to use for the queues and song lists */
+  /* CONTEXT: configuration: the font to use for the queues and song lists */
   confuiMakeItemFontButton (confui, vbox, &sg, _("Listing Font"),
       CONFUI_WIDGET_UI_LISTING_FONT, OPT_MP_LISTING_FONT,
       bdjoptGetStr (OPT_MP_LISTING_FONT));
-  /* CONTEXT: config: the accent color to use for the user interface */
+  /* CONTEXT: configuration: the accent color to use for the user interface */
   confuiMakeItemColorButton (confui, vbox, &sg, _("Accent Colour"),
       CONFUI_WIDGET_UI_ACCENT_COLOR, OPT_P_UI_ACCENT_COL,
       bdjoptGetStr (OPT_P_UI_ACCENT_COL));
@@ -1222,11 +1223,11 @@ confuiBuildUIDispSettings (configui_t *confui)
 
   /* display settings */
   vbox = confuiMakeNotebookTab (confui, confui->notebook,
-      /* CONTEXT: config: change which fields are displayed in different contexts */
+      /* CONTEXT: configuration: change which fields are displayed in different contexts */
       _("Display Settings"), CONFUI_ID_DISP_SEL_LIST);
   uiCreateSizeGroupHoriz (&sg);
 
-  /* CONTEXT: config: display settings: which set of display settings to update */
+  /* CONTEXT: configuration: display settings: which set of display settings to update */
   widget = confuiMakeItemSpinboxText (confui, vbox, &sg, _("Display"),
       CONFUI_SPINBOX_DISP_SEL, -1, CONFUI_OUT_NUM,
       confui->uiitem [CONFUI_SPINBOX_DISP_SEL].listidx);
@@ -1259,12 +1260,12 @@ confuiBuildUIDispSettings (configui_t *confui)
   uiWidgetAlignVertStart (dvbox);
   uiBoxPackStart (hbox, dvbox);
 
-  /* CONTEXT: config: display settings: button: add the selected field */
+  /* CONTEXT: configuration: display settings: button: add the selected field */
   widget = uiCreateButton (NULL, _("Select"), "button_right",
       confuiDispSelect, confui);
   uiBoxPackStart (dvbox, widget);
 
-  /* CONTEXT: config: display settings: button: remove the selected field */
+  /* CONTEXT: configuration: display settings: button: remove the selected field */
   widget = uiCreateButton (NULL, _("Remove"), "button_left",
       confuiDispRemove, confui);
   uiBoxPackStart (dvbox, widget);
@@ -1292,12 +1293,12 @@ confuiBuildUIDispSettings (configui_t *confui)
   uiWidgetAlignVertStart (dvbox);
   uiBoxPackStart (hbox, dvbox);
 
-  /* CONTEXT: config: display settings: button: move the selected field up */
+  /* CONTEXT: configuration: display settings: button: move the selected field up */
   widget = uiCreateButton (NULL, _("Move Up"), "button_up",
       confuiTableMoveUp, confui);
   uiBoxPackStart (dvbox, widget);
 
-  /* CONTEXT: config: display settings: button: move the selected field down */
+  /* CONTEXT: configuration: display settings: button: move the selected field down */
   widget = uiCreateButton (NULL, _("Move Down"), "button_down",
       confuiTableMoveDown, confui);
   uiBoxPackStart (dvbox, widget);
@@ -1315,31 +1316,36 @@ confuiBuildUIFilterDisplay (configui_t *confui)
 
   /* filter display */
   vbox = confuiMakeNotebookTab (confui, confui->notebook,
-      /* CONTEXT: config: song filter display settings */
+      /* CONTEXT: configuration: song filter display settings */
       _("Filter Display"), CONFUI_ID_FILTER);
   uiCreateSizeGroupHoriz (&sg);
 
   val = nlistGetNum (confui->filterDisplaySel, FILTER_DISP_GENRE);
+  /* CONTEXT: configuration: filter display: checkbox: genre */
   confuiMakeItemCheckButton (confui, vbox, &sg, _("Genre"),
       CONFUI_WIDGET_FILTER_GENRE, -1, val);
   confui->uiitem [CONFUI_WIDGET_FILTER_GENRE].outtype = CONFUI_OUT_CB;
 
   val = nlistGetNum (confui->filterDisplaySel, FILTER_DISP_DANCELEVEL);
+  /* CONTEXT: configuration: filter display: checkbox: dance level */
   confuiMakeItemCheckButton (confui, vbox, &sg, _("Dance Level"),
       CONFUI_WIDGET_FILTER_DANCELEVEL, -1, val);
   confui->uiitem [CONFUI_WIDGET_FILTER_DANCELEVEL].outtype = CONFUI_OUT_CB;
 
   val = nlistGetNum (confui->filterDisplaySel, FILTER_DISP_STATUS);
+  /* CONTEXT: configuration: filter display: checkbox: status */
   confuiMakeItemCheckButton (confui, vbox, &sg, _("Status"),
       CONFUI_WIDGET_FILTER_STATUS, -1, val);
   confui->uiitem [CONFUI_WIDGET_FILTER_STATUS].outtype = CONFUI_OUT_CB;
 
   val = nlistGetNum (confui->filterDisplaySel, FILTER_DISP_FAVORITE);
+  /* CONTEXT: configuration: filter display: checkbox: favorite selection */
   confuiMakeItemCheckButton (confui, vbox, &sg, _("Favorite"),
       CONFUI_WIDGET_FILTER_FAVORITE, -1, val);
   confui->uiitem [CONFUI_WIDGET_FILTER_FAVORITE].outtype = CONFUI_OUT_CB;
 
   val = nlistGetNum (confui->filterDisplaySel, FILTER_DISP_STATUSPLAYABLE);
+  /* CONTEXT: configuration: filter display: checkbox: status is playable */
   confuiMakeItemCheckButton (confui, vbox, &sg, _("Playable Status"),
       CONFUI_WIDGET_FILTER_STATUS_PLAYABLE, -1, val);
   confui->uiitem [CONFUI_WIDGET_FILTER_STATUS_PLAYABLE].outtype = CONFUI_OUT_CB;
@@ -1353,15 +1359,15 @@ confuiBuildUIOrganization (configui_t *confui)
 
   /* organization */
   vbox = confuiMakeNotebookTab (confui, confui->notebook,
-      /* CONTEXT: config: options associated with how audio files are organized */
+      /* CONTEXT: configuration: options associated with how audio files are organized */
       _("Organisation"), CONFUI_ID_ORGANIZATION);
   uiCreateSizeGroupHoriz (&sg);
 
-  /* CONTEXT: config: the audio file organization path */
+  /* CONTEXT: configuration: the audio file organization path */
   confuiMakeItemCombobox (confui, vbox, &sg, _("Organisation Path"),
       CONFUI_COMBOBOX_AO_PATHFMT, OPT_G_AO_PATHFMT,
       confuiOrgPathSelect, bdjoptGetStr (OPT_G_AO_PATHFMT));
-  /* CONTEXT: config: examples displayed for the audio file organization path */
+  /* CONTEXT: configuration: examples displayed for the audio file organization path */
   confuiMakeItemLabelDisp (confui, vbox, &sg, _("Examples"),
       CONFUI_WIDGET_AO_EXAMPLE_1, -1);
   confuiMakeItemLabelDisp (confui, vbox, &sg, "",
@@ -1371,7 +1377,7 @@ confuiBuildUIOrganization (configui_t *confui)
   confuiMakeItemLabelDisp (confui, vbox, &sg, "",
       CONFUI_WIDGET_AO_EXAMPLE_4, -1);
 
-  /* CONTEXT: config: when automatic organization is enabled */
+  /* CONTEXT: configuration: checkbox: is automatic organization enabled */
   confuiMakeItemSwitch (confui, vbox, &sg, _("Auto Organise"),
       CONFUI_WIDGET_AUTO_ORGANIZE, OPT_G_AUTOORGANIZE,
       bdjoptGetNum (OPT_G_AUTOORGANIZE));
@@ -1391,7 +1397,7 @@ confuiBuildUIEditDances (configui_t *confui)
 
   /* edit dances */
   vbox = confuiMakeNotebookTab (confui, confui->notebook,
-      /* CONTEXT: config: edit the dance table */
+      /* CONTEXT: configuration: edit the dance table */
       _("Edit Dances"), CONFUI_ID_DANCE);
   uiCreateSizeGroupHoriz (&sg);
 
@@ -1408,33 +1414,33 @@ confuiBuildUIEditDances (configui_t *confui)
   uiWidgetSetMarginStart (dvbox, uiBaseMarginSz * 8);
   uiBoxPackStart (hbox, dvbox);
 
-  /* CONTEXT: config: dances: the name of the dance */
+  /* CONTEXT: configuration: dances: the name of the dance */
   confuiMakeItemEntry (confui, dvbox, &sg, _("Dance"),
       CONFUI_ENTRY_DANCE_DANCE, -1, "");
   confui->uiitem [CONFUI_ENTRY_DANCE_DANCE].danceidx = DANCE_DANCE;
   g_signal_connect (confui->uiitem [CONFUI_ENTRY_DANCE_DANCE].u.entry.entry,
       "changed", G_CALLBACK (confuiDanceEntryChg), confui);
 
-  /* CONTEXT: config: dances: the type of the dance (club/latin/standard) */
+  /* CONTEXT: configuration: dances: the type of the dance (club/latin/standard) */
   widget = confuiMakeItemSpinboxText (confui, dvbox, &sg, _("Type"),
       CONFUI_SPINBOX_DANCE_TYPE, -1, CONFUI_OUT_NUM, 0);
   confui->uiitem [CONFUI_SPINBOX_DANCE_TYPE].danceidx = DANCE_TYPE;
   g_signal_connect (widget, "value-changed", G_CALLBACK (confuiDanceSpinboxChg), confui);
 
-  /* CONTEXT: config: dances: the speed of the dance (fast/normal/slow) */
+  /* CONTEXT: configuration: dances: the speed of the dance (fast/normal/slow) */
   widget = confuiMakeItemSpinboxText (confui, dvbox, &sg, _("Speed"),
       CONFUI_SPINBOX_DANCE_SPEED, -1, CONFUI_OUT_NUM, 0);
   confui->uiitem [CONFUI_SPINBOX_DANCE_SPEED].danceidx = DANCE_SPEED;
   g_signal_connect (widget, "value-changed", G_CALLBACK (confuiDanceSpinboxChg), confui);
 
-  /* CONTEXT: config: dances: tags associated with the dance */
+  /* CONTEXT: configuration: dances: tags associated with the dance */
   confuiMakeItemEntry (confui, dvbox, &sg, _("Tags"),
       CONFUI_ENTRY_DANCE_TAGS, -1, "");
   confui->uiitem [CONFUI_ENTRY_DANCE_TAGS].danceidx = DANCE_TAGS;
   g_signal_connect (confui->uiitem [CONFUI_ENTRY_DANCE_TAGS].u.entry.entry,
       "changed", G_CALLBACK (confuiDanceEntryChg), confui);
 
-  /* CONTEXT: config: dances: play the selected announcement before the dance is played */
+  /* CONTEXT: configuration: dances: play the selected announcement before the dance is played */
   confuiMakeItemEntryChooser (confui, dvbox, &sg, _("Announcement"),
       CONFUI_ENTRY_DANCE_ANNOUNCEMENT, -1, "",
       confuiSelectAnnouncement);
@@ -1445,23 +1451,23 @@ confuiBuildUIEditDances (configui_t *confui)
   g_signal_connect (confui->uiitem [CONFUI_ENTRY_DANCE_ANNOUNCEMENT].u.entry.entry,
       "changed", G_CALLBACK (confuiDanceEntryChg), confui);
 
-  /* CONTEXT: config: dances: low BPM (or MPM) setting */
   val = bdjoptGetNum (OPT_G_BPM);
   bpmstr = val == BPM_BPM ? _("BPM") : _("MPM");
+  /* CONTEXT: configuration: dances: low BPM (or MPM) setting */
   snprintf (tbuff, sizeof (tbuff), _("Low %s"), bpmstr);
   widget = confuiMakeItemSpinboxInt (confui, dvbox, &sg, tbuff,
       CONFUI_SPINBOX_DANCE_LOW_BPM, -1, 10, 500, 0);
   confui->uiitem [CONFUI_SPINBOX_DANCE_LOW_BPM].danceidx = DANCE_LOW_BPM;
   g_signal_connect (widget, "value-changed", G_CALLBACK (confuiDanceSpinboxChg), confui);
 
-  /* CONTEXT: config: dances: high BPM (or MPM) setting */
+  /* CONTEXT: configuration: dances: high BPM (or MPM) setting */
   snprintf (tbuff, sizeof (tbuff), _("High %s"), bpmstr);
   widget = confuiMakeItemSpinboxInt (confui, dvbox, &sg, tbuff,
       CONFUI_SPINBOX_DANCE_HIGH_BPM, -1, 10, 500, 0);
   confui->uiitem [CONFUI_SPINBOX_DANCE_HIGH_BPM].danceidx = DANCE_HIGH_BPM;
   g_signal_connect (widget, "value-changed", G_CALLBACK (confuiDanceSpinboxChg), confui);
 
-  /* CONTEXT: config: dances: time signature for the dance */
+  /* CONTEXT: configuration: dances: time signature for the dance */
   widget = confuiMakeItemSpinboxText (confui, dvbox, &sg, _("Time Signature"),
       CONFUI_SPINBOX_DANCE_TIME_SIG, -1, CONFUI_OUT_NUM, 0);
   confui->uiitem [CONFUI_SPINBOX_DANCE_TIME_SIG].danceidx = DANCE_TIMESIG;
@@ -1478,15 +1484,15 @@ confuiBuildUIEditRatings (configui_t *confui)
 
   /* edit ratings */
   vbox = confuiMakeNotebookTab (confui, confui->notebook,
-      /* CONTEXT: config: edit the dance ratings table */
+      /* CONTEXT: configuration: edit the dance ratings table */
       _("Edit Ratings"), CONFUI_ID_RATINGS);
   uiCreateSizeGroupHoriz (&sg);
 
-  /* CONTEXT: config: dance ratings: information on how to order the ratings */
+  /* CONTEXT: configuration: dance ratings: information on how to order the ratings */
   widget = uiCreateLabel (_("Order from the lowest rating to the highest rating."));
   uiBoxPackStart (vbox, widget);
 
-  /* CONTEXT: config: dance ratings: information on how to edit a rating entry */
+  /* CONTEXT: configuration: dance ratings: information on how to edit a rating entry */
   widget = uiCreateLabel (_("Double click on a field to edit."));
   uiBoxPackStart (vbox, widget);
 
@@ -1509,11 +1515,11 @@ confuiBuildUIEditStatus (configui_t *confui)
 
   /* edit status */
   vbox = confuiMakeNotebookTab (confui, confui->notebook,
-      /* CONTEXT: config: edit status table */
+      /* CONTEXT: configuration: edit status table */
       _("Edit Status"), CONFUI_ID_STATUS);
   uiCreateSizeGroupHoriz (&sg);
 
-  /* CONTEXT: config: status: information on how to edit a status entry */
+  /* CONTEXT: configuration: status: information on how to edit a status entry */
   widget = uiCreateLabel (_("Double click on a field to edit."));
   uiBoxPackStart (vbox, widget);
 
@@ -1538,14 +1544,14 @@ confuiBuildUIEditLevels (configui_t *confui)
 
   /* edit levels */
   vbox = confuiMakeNotebookTab (confui, confui->notebook,
-      /* CONTEXT: config: edit dance levels table */
+      /* CONTEXT: configuration: edit dance levels table */
       _("Edit Levels"), CONFUI_ID_LEVELS);
   uiCreateSizeGroupHoriz (&sg);
 
   widget = uiCreateLabel (_("Order from easiest to most advanced."));
   uiBoxPackStart (vbox, widget);
 
-  /* CONTEXT: config: dance levels: information on how to edit a level entry */
+  /* CONTEXT: configuration: dance levels: information on how to edit a level entry */
   widget = uiCreateLabel (_("Double click on a field to edit."));
   uiBoxPackStart (vbox, widget);
 
@@ -1569,11 +1575,11 @@ confuiBuildUIEditGenres (configui_t *confui)
 
   /* edit genres */
   vbox = confuiMakeNotebookTab (confui, confui->notebook,
-      /* CONTEXT: config: edit genres table */
+      /* CONTEXT: configuration: edit genres table */
       _("Edit Genres"), CONFUI_ID_GENRES);
   uiCreateSizeGroupHoriz (&sg);
 
-  /* CONTEXT: config: genres: information on how to edit a genre entry */
+  /* CONTEXT: configuration: genres: information on how to edit a genre entry */
   widget = uiCreateLabel (_("Double click on a field to edit."));
   uiBoxPackStart (vbox, widget);
 
@@ -1596,38 +1602,38 @@ confuiBuildUIMobileRemoteControl (configui_t *confui)
 
   /* mobile remote control */
   vbox = confuiMakeNotebookTab (confui, confui->notebook,
-      /* CONTEXT: config: options associated with mobile remote control */
+      /* CONTEXT: configuration: options associated with mobile remote control */
       _("Mobile Remote Control"), CONFUI_ID_REM_CONTROL);
   uiCreateSizeGroupHoriz (&sg);
 
-  /* CONTEXT: config: remote control: enable/disable */
+  /* CONTEXT: configuration: remote control: checkbox: enable/disable */
   widget = confuiMakeItemSwitch (confui, vbox, &sg, _("Enable Remote Control"),
       CONFUI_WIDGET_RC_ENABLE, OPT_P_REMOTECONTROL,
       bdjoptGetNum (OPT_P_REMOTECONTROL));
   g_signal_connect (widget, "state-set", G_CALLBACK (confuiRemctrlChg), confui);
 
-  /* CONTEXT: config: remote control: the HTML template to use */
+  /* CONTEXT: configuration: remote control: the HTML template to use */
   confuiMakeItemSpinboxText (confui, vbox, &sg, _("HTML Template"),
       CONFUI_SPINBOX_RC_HTML_TEMPLATE, OPT_G_REMCONTROLHTML,
       CONFUI_OUT_STR, confui->uiitem [CONFUI_SPINBOX_RC_HTML_TEMPLATE].listidx);
 
-  /* CONTEXT: config: remote control: the user ID for sign-on to remote control */
+  /* CONTEXT: configuration: remote control: the user ID for sign-on to remote control */
   confuiMakeItemEntry (confui, vbox, &sg, _("User ID"),
       CONFUI_ENTRY_RC_USER_ID,  OPT_P_REMCONTROLUSER,
       bdjoptGetStr (OPT_P_REMCONTROLUSER));
 
-  /* CONTEXT: config: remote control: the password for sign-on to remote control */
+  /* CONTEXT: configuration: remote control: the password for sign-on to remote control */
   confuiMakeItemEntry (confui, vbox, &sg, _("Password"),
       CONFUI_ENTRY_RC_PASS, OPT_P_REMCONTROLPASS,
       bdjoptGetStr (OPT_P_REMCONTROLPASS));
 
-  /* CONTEXT: config: remote control: the port to use for remote control */
+  /* CONTEXT: configuration: remote control: the port to use for remote control */
   widget = confuiMakeItemSpinboxInt (confui, vbox, &sg, _("Port"),
       CONFUI_WIDGET_RC_PORT, OPT_P_REMCONTROLPORT,
       8000, 30000, bdjoptGetNum (OPT_P_REMCONTROLPORT));
   g_signal_connect (widget, "value-changed", G_CALLBACK (confuiRemctrlPortChg), confui);
 
-  /* CONTEXT: config: remote control: the link to display the QR code for remote control */
+  /* CONTEXT: configuration: remote control: the link to display the QR code for remote control */
   confuiMakeItemLink (confui, vbox, &sg, _("QR Code"),
       CONFUI_WIDGET_RC_QR_CODE, "");
 }
@@ -1641,37 +1647,37 @@ confuiBuildUIMobileMarquee (configui_t *confui)
 
   /* mobile marquee */
   vbox = confuiMakeNotebookTab (confui, confui->notebook,
-      /* CONTEXT: config: options associated with the mobile marquee */
+      /* CONTEXT: configuration: options associated with the mobile marquee */
       _("Mobile Marquee"), CONFUI_ID_MOBILE_MQ);
   uiCreateSizeGroupHoriz (&sg);
 
-  /* CONTEXT: config: set mobile marquee mode (off/local/internet) */
+  /* CONTEXT: configuration: set mobile marquee mode (off/local/internet) */
   widget = confuiMakeItemSpinboxText (confui, vbox, &sg, _("Mobile Marquee"),
       CONFUI_SPINBOX_MOBILE_MQ, OPT_P_MOBILEMARQUEE,
       CONFUI_OUT_NUM, bdjoptGetNum (OPT_P_MOBILEMARQUEE));
   g_signal_connect (widget, "value-changed", G_CALLBACK (confuiMobmqTypeChg), confui);
 
-  /* CONTEXT: config: the port to use for the mobile marquee */
+  /* CONTEXT: configuration: the port to use for the mobile marquee */
   widget = confuiMakeItemSpinboxInt (confui, vbox, &sg, _("Port"),
       CONFUI_WIDGET_MMQ_PORT, OPT_P_MOBILEMQPORT,
       8000, 30000, bdjoptGetNum (OPT_P_MOBILEMQPORT));
   g_signal_connect (widget, "value-changed", G_CALLBACK (confuiMobmqPortChg), confui);
 
-  /* CONTEXT: config: the name to use for the mobile marquee internet mode */
+  /* CONTEXT: configuration: the name to use for the mobile marquee internet mode */
   confuiMakeItemEntry (confui, vbox, &sg, _("Name"),
       CONFUI_ENTRY_MM_NAME, OPT_P_MOBILEMQTAG,
       bdjoptGetStr (OPT_P_MOBILEMQTAG));
   uiEntrySetValidate (&confui->uiitem [CONFUI_ENTRY_MM_NAME].u.entry,
       confuiMobmqNameChg, confui);
 
-  /* CONTEXT: config: the title to display on the mobile marquee */
+  /* CONTEXT: configuration: the title to display on the mobile marquee */
   confuiMakeItemEntry (confui, vbox, &sg, _("Title"),
       CONFUI_ENTRY_MM_TITLE, OPT_P_MOBILEMQTITLE,
       bdjoptGetStr (OPT_P_MOBILEMQTITLE));
   uiEntrySetValidate (&confui->uiitem [CONFUI_ENTRY_MM_TITLE].u.entry,
       confuiMobmqTitleChg, confui);
 
-  /* CONTEXT: config: mobile marquee: the link to display the QR code for the mobile marquee */
+  /* CONTEXT: configuration: mobile marquee: the link to display the QR code for the mobile marquee */
   confuiMakeItemLink (confui, vbox, &sg, _("QR Code"),
       CONFUI_WIDGET_MMQ_QR_CODE, "");
 }
@@ -1686,7 +1692,7 @@ confuiBuildUIDebugOptions (configui_t *confui)
 
   /* debug options */
   vbox = confuiMakeNotebookTab (confui, confui->notebook,
-      /* CONTEXT: config: debug options that can be turned on and off */
+      /* CONTEXT: configuration: debug options that can be turned on and off */
       _("Debug Options"), CONFUI_ID_NONE);
   uiCreateSizeGroupHoriz (&sg);
 
@@ -2126,7 +2132,7 @@ confuiSelectMusicDir (GtkButton *b, gpointer udata)
   uiselect_t       selectdata;
 
   logProcBegin (LOG_PROC, "confuiSelectMusicDir");
-  /* CONTEXT: config: folder selection dialog: window title */
+  /* CONTEXT: configuration: folder selection dialog: window title */
   selectdata.label = _("Select Music Folder Location");
   selectdata.window = confui->window;
   selectdata.startpath = bdjoptGetStr (OPT_M_DIR_MUSIC);
@@ -2170,7 +2176,7 @@ confuiSelectAnnouncement (GtkButton *b, gpointer udata)
 
   logProcBegin (LOG_PROC, "confuiSelectAnnouncement");
   confuiSelectFileDialog (confui, CONFUI_ENTRY_DANCE_ANNOUNCEMENT,
-      /* CONTEXT: config: announcement selection dialog: audio file filter */
+      /* CONTEXT: configuration: announcement selection dialog: audio file filter */
       bdjoptGetStr (OPT_M_DIR_MUSIC), _("Audio Files"), "audio/*");
   logProcEnd (LOG_PROC, "confuiSelectAnnouncement", "");
 }
@@ -2183,7 +2189,7 @@ confuiSelectFileDialog (configui_t *confui, int widx, char *startpath,
   uiselect_t       selectdata;
 
   logProcBegin (LOG_PROC, "confuiSelectFileDialog");
-  /* CONTEXT: config: file selection dialog: window title */
+  /* CONTEXT: configuration: file selection dialog: window title */
   selectdata.label = _("Select File");
   selectdata.window = confui->window;
   selectdata.startpath = startpath;
@@ -2606,23 +2612,23 @@ confuiMakeItemTable (configui_t *confui, GtkWidget *vbox, confuiident_t id,
   uiBoxPackStart (mhbox, bvbox);
 
   if ((flags & CONFUI_TABLE_NO_UP_DOWN) != CONFUI_TABLE_NO_UP_DOWN) {
-    /* CONTEXT: config: table edit: button: move selection up */
+    /* CONTEXT: configuration: table edit: button: move selection up */
     widget = uiCreateButton (NULL, _("Move Up"), "button_up",
         confuiTableMoveUp, confui);
     uiBoxPackStart (bvbox, widget);
 
-    /* CONTEXT: config: table edit: button: move selection down */
+    /* CONTEXT: configuration: table edit: button: move selection down */
     widget = uiCreateButton (NULL, _("Move Down"), "button_down",
         confuiTableMoveDown, confui);
     uiBoxPackStart (bvbox, widget);
   }
 
-  /* CONTEXT: config: table edit: button: delete selection */
+  /* CONTEXT: configuration: table edit: button: delete selection */
   widget = uiCreateButton (NULL, _("Delete"), "button_remove",
       confuiTableRemove, confui);
   uiBoxPackStart (bvbox, widget);
 
-  /* CONTEXT: config: table edit: button: add new selection */
+  /* CONTEXT: configuration: table edit: button: add new selection */
   widget = uiCreateButton (NULL, _("Add New"), "button_add",
       confuiTableAdd, confui);
   uiBoxPackStart (bvbox, widget);
@@ -3086,6 +3092,7 @@ confuiUpdateMobmqQrcode (configui_t *confui)
     tag = bdjoptGetStr (OPT_P_MOBILEMQTAG);
     valstr = validate (tag, VAL_NOT_EMPTY | VAL_NO_SPACES);
     if (valstr != NULL) {
+      /* CONTEXT: mobile marquee: the name to use for internet routing */
       snprintf (tbuff, sizeof (tbuff), valstr, _("Name"));
       confuiSetStatusMsg (confui, tbuff);
     }
@@ -3102,7 +3109,7 @@ confuiUpdateMobmqQrcode (configui_t *confui)
   }
 
   if (type != MOBILEMQ_OFF) {
-    /* CONTEXT: config: qr code: title display for mobile marquee */
+    /* CONTEXT: configuration: qr code: title display for mobile marquee */
     qruri = confuiMakeQRCodeFile (confui, _("Mobile Marquee"), uri);
   }
 
@@ -3206,7 +3213,7 @@ confuiUpdateRemctrlQrcode (configui_t *confui)
   }
 
   if (onoff == 1) {
-    /* CONTEXT: config: qr code: title display for mobile remote control */
+    /* CONTEXT: configuration: qr code: title display for mobile remote control */
     qruri = confuiMakeQRCodeFile (confui, _("Mobile Remote Control"), uri);
   }
 
@@ -3645,33 +3652,33 @@ confuiTableAdd (GtkButton *b, gpointer udata)
       ilistidx_t  dkey;
 
       dances = bdjvarsdfGet (BDJVDF_DANCES);
-      /* CONTEXT: config: dance name that is set when adding a new dance */
+      /* CONTEXT: configuration: dance name that is set when adding a new dance */
       dkey = danceAdd (dances, _("New Dance"));
-      /* CONTEXT: config: dance name that is set when adding a new dance */
+      /* CONTEXT: configuration: dance name that is set when adding a new dance */
       confuiDanceSet (GTK_LIST_STORE (model), &niter, _("New Dance"), dkey);
       break;
     }
 
     case CONFUI_ID_GENRES: {
-      /* CONTEXT: config: genre name that is set when adding a new genre */
+      /* CONTEXT: configuration: genre name that is set when adding a new genre */
       confuiGenreSet (GTK_LIST_STORE (model), &niter, TRUE, _("New Genre"), 0);
       break;
     }
 
     case CONFUI_ID_RATINGS: {
-      /* CONTEXT: config: rating name that is set when adding a new rating */
+      /* CONTEXT: configuration: rating name that is set when adding a new rating */
       confuiRatingSet (GTK_LIST_STORE (model), &niter, TRUE, _("New Rating"), 0);
       break;
     }
 
     case CONFUI_ID_LEVELS: {
-      /* CONTEXT: config: level name that is set when adding a new level */
+      /* CONTEXT: configuration: level name that is set when adding a new level */
       confuiLevelSet (GTK_LIST_STORE (model), &niter, TRUE, _("New Level"), 0, 0);
       break;
     }
 
     case CONFUI_ID_STATUS: {
-      /* CONTEXT: config: status name that is set when adding a new status */
+      /* CONTEXT: configuration: status name that is set when adding a new status */
       confuiStatusSet (GTK_LIST_STORE (model), &niter, TRUE, _("New Status"), 0);
       break;
     }
@@ -3890,7 +3897,7 @@ confuiCreateRatingTable (configui_t *confui)
       "editable", CONFUI_RATING_COL_R_EDITABLE,
       NULL);
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
-  /* CONTEXT: config: rating: title of the rating name column */
+  /* CONTEXT: configuration: rating: title of the rating name column */
   gtk_tree_view_column_set_title (column, _("Rating"));
   g_signal_connect (renderer, "edited", G_CALLBACK (confuiTableEditText), confui);
   gtk_tree_view_append_column (GTK_TREE_VIEW (tree), column);
@@ -3906,7 +3913,7 @@ confuiCreateRatingTable (configui_t *confui)
       "digits", CONFUI_RATING_COL_DIGITS,
       NULL);
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
-  /* CONTEXT: config: rating: title of the weight column */
+  /* CONTEXT: configuration: rating: title of the weight column */
   gtk_tree_view_column_set_title (column, _("Weight"));
   g_signal_connect (renderer, "edited", G_CALLBACK (confuiTableEditSpinbox), confui);
   gtk_tree_view_append_column (GTK_TREE_VIEW (tree), column);
@@ -3987,7 +3994,7 @@ confuiCreateStatusTable (configui_t *confui)
       "editable", CONFUI_STATUS_COL_EDITABLE,
       NULL);
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
-  /* CONTEXT: config: status: title of the status name column */
+  /* CONTEXT: configuration: status: title of the status name column */
   gtk_tree_view_column_set_title (column, _("Status"));
   g_signal_connect (renderer, "edited", G_CALLBACK (confuiTableEditText), confui);
   gtk_tree_view_append_column (GTK_TREE_VIEW (tree), column);
@@ -3999,7 +4006,7 @@ confuiCreateStatusTable (configui_t *confui)
       "active", CONFUI_STATUS_COL_PLAY_FLAG,
       NULL);
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
-  /* CONTEXT: config: status: title of the "playable" column */
+  /* CONTEXT: configuration: status: title of the "playable" column */
   gtk_tree_view_column_set_title (column, _("Play?"));
   gtk_tree_view_append_column (GTK_TREE_VIEW (tree), column);
 
@@ -4072,7 +4079,7 @@ confuiCreateLevelTable (configui_t *confui)
       "editable", CONFUI_LEVEL_COL_EDITABLE,
       NULL);
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
-  /* CONTEXT: config: level: title of the level name column */
+  /* CONTEXT: configuration: level: title of the level name column */
   gtk_tree_view_column_set_title (column, _("Level"));
   g_signal_connect (renderer, "edited", G_CALLBACK (confuiTableEditText), confui);
   gtk_tree_view_append_column (GTK_TREE_VIEW (tree), column);
@@ -4088,7 +4095,7 @@ confuiCreateLevelTable (configui_t *confui)
       "digits", CONFUI_LEVEL_COL_DIGITS,
       NULL);
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
-  /* CONTEXT: config: level: title of the weight column */
+  /* CONTEXT: configuration: level: title of the weight column */
   gtk_tree_view_column_set_title (column, _("Weight"));
   g_signal_connect (renderer, "edited", G_CALLBACK (confuiTableEditSpinbox), confui);
   gtk_tree_view_append_column (GTK_TREE_VIEW (tree), column);
@@ -4101,7 +4108,7 @@ confuiCreateLevelTable (configui_t *confui)
       "active", CONFUI_LEVEL_COL_DEFAULT,
       NULL);
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
-  /* CONTEXT: config: level: title of the default selection column */
+  /* CONTEXT: configuration: level: title of the default selection column */
   gtk_tree_view_column_set_title (column, _("Default"));
   gtk_tree_view_append_column (GTK_TREE_VIEW (tree), column);
 
@@ -4174,7 +4181,7 @@ confuiCreateGenreTable (configui_t *confui)
       "editable", CONFUI_GENRE_COL_EDITABLE,
       NULL);
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
-  /* CONTEXT: config: genre: title of the genre name column */
+  /* CONTEXT: configuration: genre: title of the genre name column */
   gtk_tree_view_column_set_title (column, _("Genre"));
   g_signal_connect (renderer, "edited", G_CALLBACK (confuiTableEditText), confui);
   gtk_tree_view_append_column (GTK_TREE_VIEW (tree), column);
@@ -4186,7 +4193,7 @@ confuiCreateGenreTable (configui_t *confui)
       "active", CONFUI_GENRE_COL_CLASSICAL,
       NULL);
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
-  /* CONTEXT: config: genre: title of the classical setting column */
+  /* CONTEXT: configuration: genre: title of the classical setting column */
   gtk_tree_view_column_set_title (column, _("Classical?"));
   gtk_tree_view_append_column (GTK_TREE_VIEW (tree), column);
 

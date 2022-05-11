@@ -171,7 +171,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, GtkWidget *parentwin)
     if (uisongsel->dispselType == DISP_SEL_SONGSEL ||
         uisongsel->dispselType == DISP_SEL_EZSONGSEL ||
         uisongsel->dispselType == DISP_SEL_MM) {
-      /* CONTEXT: play the selected song */
+      /* CONTEXT: play the selected songs */
       strlcpy (tbuff, _("Play"), sizeof (tbuff));
       widget = uiCreateButton (&uiw->buttons [SONGSEL_BUTTON_QUEUE],
           tbuff, NULL, uisongselQueueProcessPlayHandler, uisongsel);
@@ -186,8 +186,8 @@ uisongselBuildUI (uisongsel_t *uisongsel, GtkWidget *parentwin)
   uiutilsCreateDanceList (&uisongsel->dancesel, _("All Dances"));
   uiBoxPackEnd (hbox, widget);
 
-  /* CONTEXT: a button that starts the filters (narrowing down song selections) dialog */
   widget = uiCreateButton (&uiw->buttons [SONGSEL_BUTTON_FILTER],
+      /* CONTEXT: a button that starts the filters (narrowing down song selections) dialog */
       _("Filters"), NULL, uisongselFilterDialog, uisongsel);
   uiBoxPackEnd (hbox, widget);
 
