@@ -333,11 +333,13 @@ static void
 bdjoptConvFadeType (datafileconv_t *conv)
 {
   bdjfadetype_t   fadetype = FADETYPE_TRIANGLE;
+  char            *sval;
 
   conv->allocated = false;
   if (conv->valuetype == VALUE_STR) {
     conv->valuetype = VALUE_NUM;
 
+    fadetype = FADETYPE_TRIANGLE;
     if (strcmp (conv->u.str, "quartersine") == 0) {
       fadetype = FADETYPE_QUARTER_SINE;
     }
@@ -353,25 +355,29 @@ bdjoptConvFadeType (datafileconv_t *conv)
     conv->u.num = fadetype;
   } else if (conv->valuetype == VALUE_NUM) {
     conv->valuetype = VALUE_STR;
+    sval = "triangle";
     switch (conv->u.num) {
-      case FADETYPE_TRIANGLE: { conv->u.str = "triangle"; break; }
-      case FADETYPE_QUARTER_SINE: { conv->u.str = "quartersine"; break; }
-      case FADETYPE_HALF_SINE: { conv->u.str = "halfsine"; break; }
-      case FADETYPE_LOGARITHMIC: { conv->u.str = "logarithmic"; break; }
-      case FADETYPE_INVERTED_PARABOLA: { conv->u.str = "invertedparabola"; break; }
+      case FADETYPE_TRIANGLE: { sval = "triangle"; break; }
+      case FADETYPE_QUARTER_SINE: { sval = "quartersine"; break; }
+      case FADETYPE_HALF_SINE: { sval = "halfsine"; break; }
+      case FADETYPE_LOGARITHMIC: { sval = "logarithmic"; break; }
+      case FADETYPE_INVERTED_PARABOLA: { sval = "invertedparabola"; break; }
     }
+    conv->u.str = sval;
   }
 }
 
 static void
 bdjoptConvWriteTags (datafileconv_t *conv)
 {
-  bdjwritetags_t   wtag = WRITE_TAGS_NONE;
+  bdjwritetags_t  wtag = WRITE_TAGS_NONE;
+  char            *sval;
 
   conv->allocated = false;
   if (conv->valuetype == VALUE_STR) {
     conv->valuetype = VALUE_NUM;
 
+    wtag = WRITE_TAGS_NONE;
     if (strcmp (conv->u.str, "NONE") == 0) {
       wtag = WRITE_TAGS_NONE;
     }
@@ -384,11 +390,13 @@ bdjoptConvWriteTags (datafileconv_t *conv)
     conv->u.num = wtag;
   } else if (conv->valuetype == VALUE_NUM) {
     conv->valuetype = VALUE_STR;
+    sval = "NONE";
     switch (conv->u.num) {
-      case WRITE_TAGS_ALL: { conv->u.str = "ALL"; break; }
-      case WRITE_TAGS_BDJ_ONLY: { conv->u.str = "BDJ"; break; }
-      case WRITE_TAGS_NONE: { conv->u.str = "NONE"; break; }
+      case WRITE_TAGS_ALL: { sval = "ALL"; break; }
+      case WRITE_TAGS_BDJ_ONLY: { sval = "BDJ"; break; }
+      case WRITE_TAGS_NONE: { sval = "NONE"; break; }
     }
+    conv->u.str = sval;
   }
 }
 
@@ -441,12 +449,14 @@ bdjoptCreateNewConfigs (void)
 static void
 bdjoptConvMobileMq (datafileconv_t *conv)
 {
-  bdjmobilemq_t   val = MOBILEMQ_OFF;
+  bdjmobilemq_t val = MOBILEMQ_OFF;
+  char          *sval;
 
   conv->allocated = false;
   if (conv->valuetype == VALUE_STR) {
     conv->valuetype = VALUE_NUM;
 
+    val = MOBILEMQ_OFF;
     if (strcmp (conv->u.str, "off") == 0) {
       val = MOBILEMQ_OFF;
     }
@@ -459,11 +469,13 @@ bdjoptConvMobileMq (datafileconv_t *conv)
     conv->u.num = val;
   } else if (conv->valuetype == VALUE_NUM) {
     conv->valuetype = VALUE_STR;
+    sval = "off";
     switch (conv->u.num) {
-      case MOBILEMQ_OFF: { conv->u.str = "off"; break; }
-      case MOBILEMQ_LOCAL: { conv->u.str = "local"; break; }
-      case MOBILEMQ_INTERNET: { conv->u.str = "internet"; break; }
+      case MOBILEMQ_OFF: { sval = "off"; break; }
+      case MOBILEMQ_LOCAL: { sval = "local"; break; }
+      case MOBILEMQ_INTERNET: { sval = "internet"; break; }
     }
+    conv->u.str = sval;
   }
 }
 

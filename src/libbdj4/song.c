@@ -310,7 +310,11 @@ songConvFavorite (datafileconv_t *conv)
     }
   } else if (conv->valuetype == VALUE_NUM) {
     conv->valuetype = VALUE_STR;
-    conv->u.str = favoritedfkeys [conv->u.num].name;
+    idx = conv->u.num;
+    if (idx < 0 || idx >= SONG_FAVORITE_MAX) {
+      idx = SONG_FAVORITE_NONE;
+    }
+    conv->u.str = favoritedfkeys [idx].name;
   }
 }
 

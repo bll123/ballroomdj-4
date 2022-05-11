@@ -674,6 +674,7 @@ plConvType (datafileconv_t *conv)
     char    *sval;
 
     conv->valuetype = VALUE_STR;
+    sval = "manual";
     switch (conv->u.num) {
       case PLTYPE_MANUAL: { sval = "manual"; break; }
       case PLTYPE_AUTO: { sval = "automatic"; break; }

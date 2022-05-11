@@ -183,12 +183,18 @@ convMS (datafileconv_t *conv)
     char      *tokstr;
 
     conv->valuetype = VALUE_NUM;
-    tstr = strdup (conv->u.str);
     num = 0;
-    p = strtok_r (tstr, ":", &tokstr);
-    num += atoi (p) * 60;
-    p = strtok_r (NULL, ":", &tokstr);
-    num += atoi (p);
+    if (conv->u.str != NULL) {
+      tstr = strdup (conv->u.str);
+      p = strtok_r (tstr, ":", &tokstr);
+      if (p != NULL) {
+        num += atoi (p) * 60;
+        p = strtok_r (NULL, ":", &tokstr);
+        if (p != NULL) {
+          num += atoi (p);
+        }
+      }
+    }
     conv->u.num = num;
     free (tstr);
   } else if (conv->valuetype == VALUE_NUM) {

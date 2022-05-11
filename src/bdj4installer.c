@@ -33,7 +33,6 @@
 #include "fileop.h"
 #include "filemanip.h"
 #include "fileutil.h"
-#include "instutils.h"
 #include "localeutil.h"
 #include "locatebdj3.h"
 #include "log.h"
@@ -158,7 +157,6 @@ static void installerCopyStart (installer_t *installer);
 static void installerCopyFiles (installer_t *installer);
 static void installerChangeDir (installer_t *installer);
 static void installerCreateDirs (installer_t *installer);
-static void installerCleanOldFiles (installer_t *installer);
 static void installerCopyTemplates (installer_t *installer);
 static void installerConvertStart (installer_t *installer);
 static void installerConvert (installer_t *installer);
