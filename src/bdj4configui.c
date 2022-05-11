@@ -1983,8 +1983,7 @@ confuiPopulateOptions (configui_t *confui)
         break;
       }
       case CONFUI_CHECK_BUTTON: {
-        nval = gtk_toggle_button_get_active (
-            GTK_TOGGLE_BUTTON (confui->uiitem [i].widget));
+        nval = uiToggleButtonIsActive (confui->uiitem [i].widget);
         break;
       }
       case CONFUI_COMBOBOX: {

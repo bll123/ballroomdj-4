@@ -196,9 +196,14 @@ void  uiWidgetDisableFocus (GtkWidget *widget);
 void  uiWidgetHide (GtkWidget *widget);
 void  uiWidgetShow (GtkWidget *widget);
 void  uiWidgetShowAll (GtkWidget *widget);
+GtkWidget *uiImageFromFile (const char *fn);
 
 /* uigtktoggle.c */
 GtkWidget * uiCreateCheckButton (const char *txt, int value);
+GtkWidget * uiCreateToggleButton (const char *txt, const char *imgname,
+    const char *tooltiptxt, GtkWidget *image, int value);
+void uiToggleButtonSetImage (GtkWidget *widget, GtkWidget *image);
 bool uiToggleButtonIsActive (GtkWidget *widget);
+void uiToggleButtonSetState (GtkWidget *widget, int state);
 
 #endif /* INC_UI_H */

@@ -421,8 +421,7 @@ installerBuildUI (installer_t *installer)
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: installer: checkbox: overwrite the previous BDJ4 installation */
-  installer->reinstWidget = gtk_check_button_new_with_label (_("Overwrite"));
-  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (installer->reinstWidget),
+  installer->reinstWidget = uiCreateCheckButton (_("Overwrite"),
       installer->reinstall);
   uiBoxPackStart (hbox, installer->reinstWidget);
   g_signal_connect (installer->reinstWidget, "toggled",
@@ -773,8 +772,7 @@ installerValidateDir (installer_t *installer)
   }
 
   dir = uiEntryGetValue (&installer->targetEntry);
-  installer->reinstall = gtk_toggle_button_get_active (
-      GTK_TOGGLE_BUTTON (installer->reinstWidget));
+  installer->reinstall = uiToggleButtonIsActive (installer->reinstWidget);
   uiLabelSetText (installer->feedbackMsg, "");
 
   exists = fileopIsDirectory (dir);
@@ -890,8 +888,7 @@ installerSetConvert (installer_t *installer, int val)
     return;
   }
 
-  gtk_toggle_button_set_active (
-      GTK_TOGGLE_BUTTON (installer->convWidget), val);
+  uiToggleButtonSetState (installer->convWidget, val);
 }
 
 static void
@@ -905,16 +902,14 @@ installerDisplayConvert (installer_t *installer)
     return;
   }
 
-  nval = gtk_toggle_button_get_active (
-      GTK_TOGGLE_BUTTON (installer->convWidget));
+  nval = uiToggleButtonIsActive (installer->convWidget);
 
   installer->inSetConvert = true;
 
   if (strcmp (installer->bdj3loc, "-") == 0 ||
       *installer->bdj3loc == '\0') {
     nval = 0;
-    gtk_toggle_button_set_active (
-        GTK_TOGGLE_BUTTON (installer->convWidget), nval);
+    uiToggleButtonSetState (installer->convWidget, nval);
   }
 
   installer->inSetConvert = false;
@@ -1011,8 +1006,7 @@ installerInstInit (installer_t *installer)
   }
 
   if (installer->guienabled) {
-    installer->reinstall = gtk_toggle_button_get_active (
-        GTK_TOGGLE_BUTTON (installer->reinstWidget));
+    installer->reinstall = uiToggleButtonIsActive (installer->reinstWidget);
   }
 
   if (! installer->guienabled) {

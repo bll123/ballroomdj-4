@@ -319,17 +319,12 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
       tbuff, "button_playpause", uiplayerPlayPauseProcess, uiplayer);
   uiBoxPackStart (hbox, widget);
 
-  uiplayer->repeatButton = gtk_toggle_button_new ();
-  assert (uiplayer->repeatButton != NULL);
-  uiWidgetSetMarginTop (uiplayer->repeatButton, uiBaseMarginSz);
-  uiWidgetSetMarginStart (uiplayer->repeatButton, uiBaseMarginSz);
-
   pathbldMakePath (tbuff, sizeof (tbuff), "button_repeat", ".svg",
       PATHBLD_MP_IMGDIR);
-  image = gtk_image_new_from_file (tbuff);
-  gtk_button_set_image (GTK_BUTTON (uiplayer->repeatButton), image);
-  /* CONTEXT: button: tooltip: toggle the repeat song on and off */
-  gtk_widget_set_tooltip_text (uiplayer->repeatButton, _("Toggle Repeat"));
+  uiplayer->repeatButton = uiCreateToggleButton ("",
+      /* CONTEXT: button: tooltip: toggle the repeat song on and off */
+      tbuff, _("Toggle Repeat"), NULL, 0);
+  assert (uiplayer->repeatButton != NULL);
   uiBoxPackStart (hbox, uiplayer->repeatButton);
   g_signal_connect (uiplayer->repeatButton, "toggled", G_CALLBACK (uiplayerRepeatProcess), uiplayer);
 
@@ -344,31 +339,18 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
       _("Next Song"), "button_nextsong", uiplayerNextSongProcess, uiplayer);
   uiBoxPackStart (hbox, widget);
 
-  uiplayer->pauseatendButton = gtk_toggle_button_new ();
-  assert (uiplayer->pauseatendButton != NULL);
-  gtk_button_set_label (GTK_BUTTON (uiplayer->pauseatendButton),
-      /* CONTEXT: button: pause at the end of the song (toggle) */
-      _("Pause at End"));
-  uiWidgetSetMarginTop (uiplayer->pauseatendButton, uiBaseMarginSz);
-  uiWidgetSetMarginStart (uiplayer->pauseatendButton, uiBaseMarginSz);
+  pathbldMakePath (tbuff, sizeof (tbuff), "led_on", ".svg",
+      PATHBLD_MP_IMGDIR);
+  uiplayer->ledonImg = uiImageFromFile (tbuff);
 
   pathbldMakePath (tbuff, sizeof (tbuff), "led_off", ".svg",
       PATHBLD_MP_IMGDIR);
-  uiplayer->ledoffImg = gtk_image_new_from_file (tbuff);
-  if (G_IS_OBJECT (uiplayer->ledoffImg)) {
-    g_object_ref_sink (G_OBJECT (uiplayer->ledoffImg));
-  }
+  uiplayer->ledoffImg = uiImageFromFile (tbuff);
 
-  pathbldMakePath (tbuff, sizeof (tbuff), "led_on", ".svg",
-      PATHBLD_MP_IMGDIR);
-  uiplayer->ledonImg = gtk_image_new_from_file (tbuff);
-  if (G_IS_OBJECT (uiplayer->ledonImg)) {
-    g_object_ref_sink (G_OBJECT (uiplayer->ledonImg));
-  }
-
-  gtk_button_set_image (GTK_BUTTON (uiplayer->pauseatendButton), uiplayer->ledoffImg);
-  gtk_button_set_image_position (GTK_BUTTON (uiplayer->pauseatendButton), GTK_POS_RIGHT);
-  gtk_button_set_always_show_image (GTK_BUTTON (uiplayer->pauseatendButton), TRUE);
+  /* CONTEXT: button: pause at the end of the song (toggle) */
+  uiplayer->pauseatendButton = uiCreateToggleButton (_("Pause at End"),
+      NULL, NULL, uiplayer->ledoffImg, 0);
+  assert (uiplayer->pauseatendButton != NULL);
   uiBoxPackStart (hbox, uiplayer->pauseatendButton);
   g_signal_connect (uiplayer->pauseatendButton, "toggled", G_CALLBACK (uiplayerPauseatendProcess), uiplayer);
 
@@ -597,11 +579,11 @@ uiplayerProcessPauseatend (uiplayer_t *uiplayer, int on)
   uiplayer->pauseatendLock = true;
 
   if (on) {
-    gtk_button_set_image (GTK_BUTTON (uiplayer->pauseatendButton), uiplayer->ledonImg);
-    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (uiplayer->pauseatendButton), TRUE);
+    uiToggleButtonSetImage (uiplayer->pauseatendButton, uiplayer->ledonImg);
+    uiToggleButtonSetState (uiplayer->pauseatendButton, TRUE);
   } else {
-    gtk_button_set_image (GTK_BUTTON (uiplayer->pauseatendButton), uiplayer->ledoffImg);
-    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (uiplayer->pauseatendButton), FALSE);
+    uiToggleButtonSetImage (uiplayer->pauseatendButton, uiplayer->ledoffImg);
+    uiToggleButtonSetState (uiplayer->pauseatendButton, FALSE);
   }
   uiplayer->pauseatendLock = false;
   logProcEnd (LOG_PROC, "uiplayerProcessPauseatend", "");
@@ -684,10 +666,10 @@ uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args)
           PATHBLD_MP_IMGDIR);
       gtk_image_clear (GTK_IMAGE (uiplayer->repeatImg));
       gtk_image_set_from_file (GTK_IMAGE (uiplayer->repeatImg), tbuff);
-      gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (uiplayer->repeatButton), TRUE);
+      uiToggleButtonSetState (uiplayer->repeatButton, TRUE);
     } else {
       gtk_image_clear (GTK_IMAGE (uiplayer->repeatImg));
-      gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (uiplayer->repeatButton), FALSE);
+      uiToggleButtonSetState (uiplayer->repeatButton, FALSE);
     }
     uiplayer->repeatLock = false;
   }

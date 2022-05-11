@@ -263,6 +263,18 @@ uiWidgetShowAll (GtkWidget *widget)
   gtk_widget_show_all (widget);
 }
 
+GtkWidget *
+uiImageFromFile (const char *fn)
+{
+  GtkWidget *image;
+
+  image = gtk_image_new_from_file (fn);
+  if (G_IS_OBJECT (image)) {
+    g_object_ref_sink (G_OBJECT (image));
+  }
+  return image;
+}
+
 /* internal routines */
 
 static GLogWriterOutput
