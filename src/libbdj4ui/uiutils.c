@@ -74,3 +74,8 @@ uiutilsNotebookIDGet (uiutilsnbtabid_t *nbtabid, int idx)
   return nbtabid->tabids [idx];
 }
 
+void
+uiutilsUIWidgetInit (UIWidget *uiwidget)
+{
+  uiwidget->widget = NULL;
+}

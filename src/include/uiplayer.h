@@ -53,8 +53,8 @@ typedef struct {
   GdkPixbuf       *playImg;
   GdkPixbuf       *stopImg;
   GdkPixbuf       *pauseImg;
-  GtkWidget       *ledoffImg;
-  GtkWidget       *ledonImg;
+  UIWidget        ledoffImg;
+  UIWidget        ledonImg;
   /* volume controls / display */
   GtkWidget       *volumeScale;
   bool            volumeLock;

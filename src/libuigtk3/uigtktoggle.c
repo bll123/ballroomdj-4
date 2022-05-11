@@ -31,9 +31,10 @@ uiCreateCheckButton (const char *txt, int value)
 
 GtkWidget *
 uiCreateToggleButton (const char *txt, const char *imgname,
-    const char *tooltiptxt, GtkWidget *image, int value)
+    const char *tooltiptxt, UIWidget *image, int value)
 {
   GtkWidget   *widget;
+  GtkWidget   *imagewidget = NULL;
 
   logProcBegin (LOG_PROC, "uiCreateToggleButton");
 
@@ -43,10 +44,13 @@ uiCreateToggleButton (const char *txt, const char *imgname,
   gtk_widget_set_margin_start (widget, uiBaseMarginSz);
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), value);
   if (imgname != NULL) {
-    image = gtk_image_new_from_file (imgname);
+    imagewidget = gtk_image_new_from_file (imgname);
   }
   if (image != NULL) {
-    gtk_button_set_image (GTK_BUTTON (widget), image);
+    imagewidget = image->widget;
+  }
+  if (imagewidget != NULL) {
+    gtk_button_set_image (GTK_BUTTON (widget), imagewidget);
   }
   if (txt != NULL && (imgname != NULL || image != NULL)) {
     gtk_button_set_image_position (GTK_BUTTON (widget), GTK_POS_RIGHT);
@@ -60,9 +64,9 @@ uiCreateToggleButton (const char *txt, const char *imgname,
 }
 
 void
-uiToggleButtonSetImage (GtkWidget *widget, GtkWidget *image)
+uiToggleButtonSetImage (GtkWidget *widget, UIWidget *image)
 {
-  gtk_button_set_image (GTK_BUTTON (widget), image);
+  gtk_button_set_image (GTK_BUTTON (widget), image->widget);
 }
 
 bool

@@ -263,8 +263,8 @@ uiWidgetShowAll (GtkWidget *widget)
   gtk_widget_show_all (widget);
 }
 
-GtkWidget *
-uiImageFromFile (const char *fn)
+void
+uiImageFromFile (UIWidget *uiwidget, const char *fn)
 {
   GtkWidget *image;
 
@@ -272,7 +272,16 @@ uiImageFromFile (const char *fn)
   if (G_IS_OBJECT (image)) {
     g_object_ref_sink (G_OBJECT (image));
   }
-  return image;
+  uiwidget->widget = image;
+}
+
+void
+uiImageFree (UIWidget *uiwidget)
+{
+  if (G_IS_OBJECT (uiwidget->widget)) {
+    g_object_unref (G_OBJECT (uiwidget->widget));
+  }
+  uiwidget->widget = NULL;
 }
 
 /* internal routines */

@@ -126,5 +126,6 @@ uiutilsnbtabid_t * uiutilsNotebookIDInit (void);
 void uiutilsNotebookIDFree (uiutilsnbtabid_t *nbtabid);
 void uiutilsNotebookIDAdd (uiutilsnbtabid_t *nbtabid, int id);
 int uiutilsNotebookIDGet (uiutilsnbtabid_t *nbtabid, int idx);
+void uiutilsUIWidgetInit (UIWidget *uiwidget);
 
 #endif /* INC_UIUTILS_H */

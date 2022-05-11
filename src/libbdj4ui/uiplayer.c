@@ -78,8 +78,8 @@ uiplayerInit (progstate_t *progstate, conn_t *conn, musicdb_t *musicdb)
   uiplayer->playImg = NULL;
   uiplayer->stopImg = NULL;
   uiplayer->pauseImg = NULL;
-  uiplayer->ledoffImg = NULL;
-  uiplayer->ledonImg = NULL;
+  uiutilsUIWidgetInit (&uiplayer->ledoffImg);
+  uiutilsUIWidgetInit (&uiplayer->ledonImg);
   uiplayer->volumeScale = NULL;
   uiplayer->volumeDisplayLab = NULL;
 
@@ -341,15 +341,15 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
 
   pathbldMakePath (tbuff, sizeof (tbuff), "led_on", ".svg",
       PATHBLD_MP_IMGDIR);
-  uiplayer->ledonImg = uiImageFromFile (tbuff);
+  uiImageFromFile (&uiplayer->ledonImg, tbuff);
 
   pathbldMakePath (tbuff, sizeof (tbuff), "led_off", ".svg",
       PATHBLD_MP_IMGDIR);
-  uiplayer->ledoffImg = uiImageFromFile (tbuff);
+  uiImageFromFile (&uiplayer->ledoffImg, tbuff);
 
   /* CONTEXT: button: pause at the end of the song (toggle) */
   uiplayer->pauseatendButton = uiCreateToggleButton (_("Pause at End"),
-      NULL, NULL, uiplayer->ledoffImg, 0);
+      NULL, NULL, &uiplayer->ledoffImg, 0);
   assert (uiplayer->pauseatendButton != NULL);
   uiBoxPackStart (hbox, uiplayer->pauseatendButton);
   g_signal_connect (uiplayer->pauseatendButton, "toggled", G_CALLBACK (uiplayerPauseatendProcess), uiplayer);
@@ -557,12 +557,8 @@ uiplayerClosingCallback (void *udata, programstate_t programState)
   if (G_IS_OBJECT (uiplayer->pauseImg)) {
     g_object_unref (G_OBJECT (uiplayer->pauseImg));
   }
-  if (G_IS_OBJECT (uiplayer->ledonImg)) {
-    g_object_unref (G_OBJECT (uiplayer->ledonImg));
-  }
-  if (G_IS_OBJECT (uiplayer->ledoffImg)) {
-    g_object_unref (G_OBJECT (uiplayer->ledoffImg));
-  }
+  uiImageFree (&uiplayer->ledonImg);
+  uiImageFree (&uiplayer->ledoffImg);
   logProcEnd (LOG_PROC, "uiplayerClosingCallback", "");
   return true;
 }
@@ -579,10 +575,10 @@ uiplayerProcessPauseatend (uiplayer_t *uiplayer, int on)
   uiplayer->pauseatendLock = true;
 
   if (on) {
-    uiToggleButtonSetImage (uiplayer->pauseatendButton, uiplayer->ledonImg);
+    uiToggleButtonSetImage (uiplayer->pauseatendButton, &uiplayer->ledonImg);
     uiToggleButtonSetState (uiplayer->pauseatendButton, TRUE);
   } else {
-    uiToggleButtonSetImage (uiplayer->pauseatendButton, uiplayer->ledoffImg);
+    uiToggleButtonSetImage (uiplayer->pauseatendButton, &uiplayer->ledoffImg);
     uiToggleButtonSetState (uiplayer->pauseatendButton, FALSE);
   }
   uiplayer->pauseatendLock = false;
