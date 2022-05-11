@@ -86,7 +86,6 @@ typedef struct {
   mstime_t        volumeTimeCheck;
   ssize_t         gap;
   mstime_t        gapFinishTime;
-  ssize_t         fadeType;
   ssize_t         fadeinTime;
   ssize_t         fadeoutTime;
   long            fadeCount;
@@ -191,7 +190,6 @@ main (int argc, char *argv[])
 
   playerData.conn = connInit (ROUTE_PLAYER);
 
-  playerData.fadeType = bdjoptGetNum (OPT_P_FADETYPE);
   playerData.fadeinTime = bdjoptGetNum (OPT_P_FADEINTIME);
   playerData.fadeoutTime = bdjoptGetNum (OPT_P_FADEOUTTIME);
 
@@ -1258,17 +1256,20 @@ static double
 calcFadeIndex (playerdata_t *playerData)
 {
   double      findex;
+  int         fadetype;
 
   double index = (double) playerData->fadeCount;
   double range = (double) playerData->fadeSamples;
 
   findex = fmax(0.0, fmin (1.0, index / range));
-  switch (playerData->fadeType) {
-    case FADETYPE_TRIANGLE: {
-      break;
-    }
+
+  fadetype = FADETYPE_QUARTER_SINE;
+  switch (fadetype) {
     case FADETYPE_QUARTER_SINE: {
       findex = sin (findex * M_PI / 2.0);
+      break;
+    }
+    case FADETYPE_TRIANGLE: {
       break;
     }
     case FADETYPE_HALF_SINE: {

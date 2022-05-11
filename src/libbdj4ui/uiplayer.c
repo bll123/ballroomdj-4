@@ -40,10 +40,10 @@ static void     uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *arg
 static void     uiplayerProcessMusicqStatusData (uiplayer_t *uiplayer, char *args);
 static void     uiplayerFadeProcess (void *udata);
 static void     uiplayerPlayPauseProcess (void *udata);
-static void     uiplayerRepeatProcess (void *udata);
+static void     uiplayerRepeatProcess (GtkButton *b, void *udata);
 static void     uiplayerSongBeginProcess (void *udata);
 static void     uiplayerNextSongProcess (void *udata);
-static void     uiplayerPauseatendProcess (void *udata);
+static void     uiplayerPauseatendProcess (GtkButton *b, void *udata);
 static gboolean uiplayerSpeedProcess (GtkRange *range, GtkScrollType *scroll, gdouble value, gpointer udata);
 static gboolean uiplayerSeekProcess (GtkRange *range, GtkScrollType *scroll, gdouble value, gpointer udata);
 static gboolean uiplayerVolumeProcess (GtkRange *range, GtkScrollType *scroll, gdouble value, gpointer udata);
@@ -62,8 +62,8 @@ uiplayerInit (progstate_t *progstate, conn_t *conn, musicdb_t *musicdb)
   uiplayer->musicdb = musicdb;
 
   uiplayer->vbox = NULL;
-  uiplayer->statusImg = NULL;
-  uiplayer->repeatImg = NULL;
+  uiutilsUIWidgetInit (&uiplayer->statusImg);
+  uiutilsUIWidgetInit (&uiplayer->repeatImg);
   uiplayer->danceLab = NULL;
   uiplayer->artistLab = NULL;
   uiplayer->titleLab = NULL;
@@ -75,9 +75,10 @@ uiplayerInit (progstate_t *progstate, conn_t *conn, musicdb_t *musicdb)
   uiplayer->seekDisplayLab = NULL;
   uiplayer->repeatButton = NULL;
   uiplayer->pauseatendButton = NULL;
-  uiplayer->playImg = NULL;
-  uiplayer->stopImg = NULL;
-  uiplayer->pauseImg = NULL;
+  uiutilsUIWidgetInit (&uiplayer->playPixbuf);
+  uiutilsUIWidgetInit (&uiplayer->stopPixbuf);
+  uiutilsUIWidgetInit (&uiplayer->pausePixbuf);
+  uiutilsUIWidgetInit (&uiplayer->repeatPixbuf);
   uiutilsUIWidgetInit (&uiplayer->ledoffImg);
   uiutilsUIWidgetInit (&uiplayer->ledonImg);
   uiplayer->volumeScale = NULL;
@@ -111,7 +112,6 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
 {
   char            tbuff [MAXPATHLEN];
   UIWidget        uiwidget;
-  GtkWidget       *image = NULL;
   GtkWidget       *hbox;
   GtkWidget       *tbox;
   GtkWidget       *widget;
@@ -146,44 +146,42 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiBoxPackStart (hbox, tbox);
   uiSizeGroupAdd (&sgE, tbox);
 
-  uiplayer->statusImg = gtk_image_new ();
-  assert (uiplayer->statusImg != NULL);
+  uiImageNew (&uiplayer->statusImg);
 
   pathbldMakePath (tbuff, sizeof (tbuff), "button_stop", ".svg",
       PATHBLD_MP_IMGDIR);
-  image = gtk_image_new_from_file (tbuff);
-  uiplayer->stopImg = gtk_image_get_pixbuf (GTK_IMAGE (image));
-  if (G_IS_OBJECT (uiplayer->stopImg)) {
-    g_object_ref_sink (G_OBJECT (uiplayer->stopImg));
-  }
+  uiImageFromFile (&uiplayer->stopPixbuf, tbuff);
+  uiImageGetPixbuf (&uiplayer->stopPixbuf);
+  uiWidgetMakePersistent (&uiplayer->stopPixbuf);
 
-  gtk_image_set_from_pixbuf (GTK_IMAGE (uiplayer->statusImg), uiplayer->stopImg);
-  gtk_widget_set_size_request (uiplayer->statusImg, 18, -1);
-  uiWidgetSetMarginStart (uiplayer->statusImg, uiBaseMarginSz);
-  uiBoxPackStart (tbox, uiplayer->statusImg);
+  uiImageSetFromPixbuf (&uiplayer->statusImg, &uiplayer->stopPixbuf);
+  uiWidgetSetSizeRequest (&uiplayer->statusImg, 18, -1);
+  uiWidgetSetMarginStart (uiplayer->statusImg.widget, uiBaseMarginSz);
+  uiBoxPackStart (tbox, uiplayer->statusImg.widget);
 
   pathbldMakePath (tbuff, sizeof (tbuff), "button_play", ".svg",
       PATHBLD_MP_IMGDIR);
-  image = gtk_image_new_from_file (tbuff);
-  uiplayer->playImg = gtk_image_get_pixbuf (GTK_IMAGE (image));
-  if (G_IS_OBJECT (uiplayer->playImg)) {
-    g_object_ref_sink (G_OBJECT (uiplayer->playImg));
-  }
+  uiImageFromFile (&uiplayer->playPixbuf, tbuff);
+  uiImageGetPixbuf (&uiplayer->playPixbuf);
+  uiWidgetMakePersistent (&uiplayer->playPixbuf);
 
   pathbldMakePath (tbuff, sizeof (tbuff), "button_pause", ".svg",
       PATHBLD_MP_IMGDIR);
-  image = gtk_image_new_from_file (tbuff);
-  uiplayer->pauseImg = gtk_image_get_pixbuf (GTK_IMAGE (image));
-  if (G_IS_OBJECT (uiplayer->pauseImg)) {
-    g_object_ref_sink (G_OBJECT (uiplayer->pauseImg));
-  }
+  uiImageFromFile (&uiplayer->pausePixbuf, tbuff);
+  uiImageGetPixbuf (&uiplayer->pausePixbuf);
+  uiWidgetMakePersistent (&uiplayer->pausePixbuf);
 
-  uiplayer->repeatImg = gtk_image_new ();
-  assert (uiplayer->repeatImg != NULL);
-  gtk_image_clear (GTK_IMAGE (uiplayer->repeatImg));
-  gtk_widget_set_size_request (uiplayer->repeatImg, 18, -1);
-  uiWidgetSetMarginStart (uiplayer->repeatImg, uiBaseMarginSz);
-  uiBoxPackStart (tbox, uiplayer->repeatImg);
+  pathbldMakePath (tbuff, sizeof (tbuff), "button_repeat", ".svg",
+      PATHBLD_MP_IMGDIR);
+  uiImageFromFile (&uiplayer->repeatPixbuf, tbuff);
+  uiImageGetPixbuf (&uiplayer->repeatPixbuf);
+  uiWidgetMakePersistent (&uiplayer->repeatPixbuf);
+
+  uiImageNew (&uiplayer->repeatImg);
+  uiImageClear (&uiplayer->repeatImg);
+  uiWidgetSetSizeRequest (&uiplayer->repeatImg, 18, -1);
+  uiWidgetSetMarginStart (uiplayer->repeatImg.widget, uiBaseMarginSz);
+  uiBoxPackStart (tbox, uiplayer->repeatImg.widget);
 
   uiplayer->danceLab = uiCreateLabel ("");
   uiBoxPackStart (hbox, uiplayer->danceLab);
@@ -354,10 +352,12 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   pathbldMakePath (tbuff, sizeof (tbuff), "led_on", ".svg",
       PATHBLD_MP_IMGDIR);
   uiImageFromFile (&uiplayer->ledonImg, tbuff);
+  uiWidgetMakePersistent (&uiplayer->ledonImg);
 
   pathbldMakePath (tbuff, sizeof (tbuff), "led_off", ".svg",
       PATHBLD_MP_IMGDIR);
   uiImageFromFile (&uiplayer->ledoffImg, tbuff);
+  uiWidgetMakePersistent (&uiplayer->ledoffImg);
 
   /* CONTEXT: button: pause at the end of the song (toggle) */
   uiplayer->pauseatendButton = uiCreateToggleButton (_("Pause at End"),
@@ -560,17 +560,12 @@ uiplayerClosingCallback (void *udata, programstate_t programState)
   uiplayer_t      *uiplayer = udata;
 
   logProcBegin (LOG_PROC, "uiplayerClosingCallback");
-  if (G_IS_OBJECT (uiplayer->stopImg)) {
-    g_object_unref (G_OBJECT (uiplayer->stopImg));
-  }
-  if (G_IS_OBJECT (uiplayer->playImg)) {
-    g_object_unref (G_OBJECT (uiplayer->playImg));
-  }
-  if (G_IS_OBJECT (uiplayer->pauseImg)) {
-    g_object_unref (G_OBJECT (uiplayer->pauseImg));
-  }
-  uiImageFree (&uiplayer->ledonImg);
-  uiImageFree (&uiplayer->ledoffImg);
+  uiWidgetClearPersistent (&uiplayer->stopPixbuf);
+  uiWidgetClearPersistent (&uiplayer->playPixbuf);
+  uiWidgetClearPersistent (&uiplayer->pausePixbuf);
+  uiWidgetClearPersistent (&uiplayer->repeatPixbuf);
+  uiWidgetClearPersistent (&uiplayer->ledonImg);
+  uiWidgetClearPersistent (&uiplayer->ledoffImg);
   logProcEnd (LOG_PROC, "uiplayerClosingCallback", "");
   return true;
 }
@@ -602,11 +597,6 @@ uiplayerProcessPlayerState (uiplayer_t *uiplayer, int playerState)
 {
   logProcBegin (LOG_PROC, "uiplayerProcessPlayerState");
 
-  if (uiplayer->statusImg == NULL) {
-    logProcEnd (LOG_PROC, "uiplayerProcessPlayerState", "no-status-img");
-    return;
-  }
-
   uiplayer->playerState = playerState;
   if (playerState == PL_STATE_IN_FADEOUT) {
     uiWidgetDisable (uiplayer->volumeScale);
@@ -621,26 +611,26 @@ uiplayerProcessPlayerState (uiplayer_t *uiplayer, int playerState)
   switch (playerState) {
     case PL_STATE_UNKNOWN:
     case PL_STATE_STOPPED: {
-      gtk_image_clear (GTK_IMAGE (uiplayer->statusImg));
-      gtk_image_set_from_pixbuf (GTK_IMAGE (uiplayer->statusImg), uiplayer->stopImg);
+      uiImageClear (&uiplayer->statusImg);
+      uiImageSetFromPixbuf (&uiplayer->statusImg, &uiplayer->stopPixbuf);
       break;
     }
     case PL_STATE_LOADING:
     case PL_STATE_IN_FADEOUT:
     case PL_STATE_IN_GAP:
     case PL_STATE_PLAYING: {
-      gtk_image_clear (GTK_IMAGE (uiplayer->statusImg));
-      gtk_image_set_from_pixbuf (GTK_IMAGE (uiplayer->statusImg), uiplayer->playImg);
+      uiImageClear (&uiplayer->statusImg);
+      uiImageSetFromPixbuf (&uiplayer->statusImg, &uiplayer->playPixbuf);
       break;
     }
     case PL_STATE_PAUSED: {
-      gtk_image_clear (GTK_IMAGE (uiplayer->statusImg));
-      gtk_image_set_from_pixbuf (GTK_IMAGE (uiplayer->statusImg), uiplayer->pauseImg);
+      uiImageClear (&uiplayer->statusImg);
+      uiImageSetFromPixbuf (&uiplayer->statusImg, &uiplayer->pausePixbuf);
       break;
     }
     default: {
-      gtk_image_clear (GTK_IMAGE (uiplayer->statusImg));
-      gtk_image_set_from_pixbuf (GTK_IMAGE (uiplayer->statusImg), uiplayer->stopImg);
+      uiImageClear (&uiplayer->statusImg);
+      uiImageSetFromPixbuf (&uiplayer->statusImg, &uiplayer->stopPixbuf);
       break;
     }
   }
@@ -667,16 +657,14 @@ uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args)
 
   /* repeat */
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
-  if (p != NULL && uiplayer->repeatImg != NULL) {
+  if (p != NULL) {
     uiplayer->repeatLock = true;
     if (atol (p)) {
-      pathbldMakePath (tbuff, sizeof (tbuff), "button_repeat", ".svg",
-          PATHBLD_MP_IMGDIR);
-      gtk_image_clear (GTK_IMAGE (uiplayer->repeatImg));
-      gtk_image_set_from_file (GTK_IMAGE (uiplayer->repeatImg), tbuff);
+      uiImageClear (&uiplayer->repeatImg);
+      uiImageSetFromPixbuf (&uiplayer->repeatImg, &uiplayer->repeatPixbuf);
       uiToggleButtonSetState (uiplayer->repeatButton, TRUE);
     } else {
-      gtk_image_clear (GTK_IMAGE (uiplayer->repeatImg));
+      uiImageClear (&uiplayer->repeatImg);
       uiToggleButtonSetState (uiplayer->repeatButton, FALSE);
     }
     uiplayer->repeatLock = false;
@@ -808,7 +796,7 @@ uiplayerPlayPauseProcess (void *udata)
 }
 
 static void
-uiplayerRepeatProcess (void *udata)
+uiplayerRepeatProcess (GtkButton *b, void *udata)
 {
   uiplayer_t      *uiplayer = udata;
 
@@ -844,7 +832,7 @@ uiplayerNextSongProcess (void *udata)
 }
 
 static void
-uiplayerPauseatendProcess (void *udata)
+uiplayerPauseatendProcess (GtkButton *b, void *udata)
 {
   uiplayer_t      *uiplayer = udata;
 

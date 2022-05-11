@@ -70,6 +70,7 @@ foreach path [list {} profiles $mpath $mppath] {
         if { $key eq "DEBUGON" } { continue }
         if { $key eq "ENABLEIMGPLAYER" } { continue }
         if { $key eq "FONTSIZE" } { continue }
+        if { $key eq "FADETYPE" } { continue }
         if { $key eq "HOST" } { continue }
         if { $key eq "INSTPASSWORD" } { continue }
         if { $key eq "MQCLOCKFONTSIZE" } { continue }

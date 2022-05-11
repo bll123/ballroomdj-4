@@ -55,7 +55,7 @@ typedef struct uimusicq {
   dispselsel_t    dispselType;
   int             uimusicqflags;
   GtkWidget       *parentwin;
-  GdkPixbuf       *pauseImg;
+  UIWidget        pausePixbuf;
   uimusicqui_t    ui [MUSICQ_MAX];
   /* temporary stuff used for music queue update processing */
   nlist_t         *uniqueList;

@@ -17,7 +17,6 @@
 #include "nlist.h"
 #include "sysvars.h"
 
-static void bdjoptConvFadeType (datafileconv_t *conv);
 static void bdjoptConvWriteTags (datafileconv_t *conv);
 static void bdjoptCreateNewConfigs (void);
 static void bdjoptConvMobileMq (datafileconv_t *conv);
@@ -42,7 +41,6 @@ datafilekey_t bdjoptprofiledfkeys[] = {
   { "DEFAULTVOLUME",        OPT_P_DEFAULTVOLUME,        VALUE_NUM, NULL, -1 },
   { "FADEINTIME",           OPT_P_FADEINTIME,           VALUE_NUM, NULL, -1 },
   { "FADEOUTTIME",          OPT_P_FADEOUTTIME,          VALUE_NUM, NULL, -1 },
-  { "FADETYPE",             OPT_P_FADETYPE,             VALUE_NUM, bdjoptConvFadeType, -1 },
   { "GAP",                  OPT_P_GAP,                  VALUE_NUM, NULL, -1 },
   { "HIDEMARQUEEONSTART",   OPT_P_HIDE_MARQUEE_ON_START,VALUE_NUM, convBoolean, -1 },
   { "INSERT_LOC",           OPT_P_INSERT_LOCATION,      VALUE_NUM, NULL, -1 },
@@ -328,44 +326,6 @@ bdjoptDump (void)
 }
 
 /* internal routines */
-
-static void
-bdjoptConvFadeType (datafileconv_t *conv)
-{
-  bdjfadetype_t   fadetype = FADETYPE_TRIANGLE;
-  char            *sval;
-
-  conv->allocated = false;
-  if (conv->valuetype == VALUE_STR) {
-    conv->valuetype = VALUE_NUM;
-
-    fadetype = FADETYPE_TRIANGLE;
-    if (strcmp (conv->u.str, "quartersine") == 0) {
-      fadetype = FADETYPE_QUARTER_SINE;
-    }
-    if (strcmp (conv->u.str, "halfsine") == 0) {
-      fadetype = FADETYPE_HALF_SINE;;
-    }
-    if (strcmp (conv->u.str, "logarithmic") == 0) {
-      fadetype = FADETYPE_LOGARITHMIC;
-    }
-    if (strcmp (conv->u.str, "invertedparabola") == 0) {
-      fadetype = FADETYPE_INVERTED_PARABOLA;
-    }
-    conv->u.num = fadetype;
-  } else if (conv->valuetype == VALUE_NUM) {
-    conv->valuetype = VALUE_STR;
-    sval = "triangle";
-    switch (conv->u.num) {
-      case FADETYPE_TRIANGLE: { sval = "triangle"; break; }
-      case FADETYPE_QUARTER_SINE: { sval = "quartersine"; break; }
-      case FADETYPE_HALF_SINE: { sval = "halfsine"; break; }
-      case FADETYPE_LOGARITHMIC: { sval = "logarithmic"; break; }
-      case FADETYPE_INVERTED_PARABOLA: { sval = "invertedparabola"; break; }
-    }
-    conv->u.str = sval;
-  }
-}
 
 static void
 bdjoptConvWriteTags (datafileconv_t *conv)

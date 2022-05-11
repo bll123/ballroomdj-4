@@ -25,8 +25,8 @@ typedef struct {
   UICallback      callbacks [UIPLAYER_CALLBACK_MAX];
   /* song display */
   GtkWidget       *vbox;
-  GtkWidget       *statusImg;
-  GtkWidget       *repeatImg;
+  UIWidget        statusImg;
+  UIWidget        repeatImg;
   GtkWidget       *danceLab;
   GtkWidget       *artistLab;
   GtkWidget       *titleLab;
@@ -50,9 +50,10 @@ typedef struct {
   bool            repeatLock;
   GtkWidget       *pauseatendButton;
   bool            pauseatendLock;
-  GdkPixbuf       *playImg;
-  GdkPixbuf       *stopImg;
-  GdkPixbuf       *pauseImg;
+  UIWidget        playPixbuf;
+  UIWidget        stopPixbuf;
+  UIWidget        pausePixbuf;
+  UIWidget        repeatPixbuf;
   UIWidget        ledoffImg;
   UIWidget        ledonImg;
   /* volume controls / display */

@@ -41,6 +41,7 @@ enum {
 enum {
   SONGSEL_CALLBACK_SELECT,
   SONGSEL_CALLBACK_QUEUE,
+  SONGSEL_CALLBACK_PLAY,
   SONGSEL_CALLBACK_FILTER,
   SONGSEL_CALLBACK_MAX,
 };
@@ -174,7 +175,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, GtkWidget *parentwin)
       uiutilsUICallbackInit (&uiw->callbacks [SONGSEL_CALLBACK_QUEUE],
           uisongselQueueProcessQueueHandler, uisongsel);
       uiCreateButton (&uiwidget,
-          &uiw->callbacks [SONGSEL_CALLBACK_SELECT],
+          &uiw->callbacks [SONGSEL_CALLBACK_QUEUE],
           tbuff, NULL, NULL, NULL);
     }
     if (uisongsel->dispselType == DISP_SEL_SONGSEL ||
@@ -182,10 +183,10 @@ uisongselBuildUI (uisongsel_t *uisongsel, GtkWidget *parentwin)
         uisongsel->dispselType == DISP_SEL_MM) {
       /* CONTEXT: play the selected songs */
       strlcpy (tbuff, _("Play"), sizeof (tbuff));
-      uiutilsUICallbackInit (&uiw->callbacks [SONGSEL_CALLBACK_QUEUE],
+      uiutilsUICallbackInit (&uiw->callbacks [SONGSEL_CALLBACK_PLAY],
           uisongselQueueProcessPlayHandler, uisongsel);
       uiCreateButton (&uiwidget,
-          &uiw->callbacks [SONGSEL_CALLBACK_SELECT],
+          &uiw->callbacks [SONGSEL_CALLBACK_PLAY],
           tbuff, NULL, NULL, NULL);
     }
     uiBoxPackStart (hbox, uiwidget.widget);

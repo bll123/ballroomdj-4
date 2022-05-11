@@ -332,7 +332,6 @@ typedef struct {
   GtkWidget         *notebook;
   GtkWidget         *statusMsg;
   confuitable_t     tables [CONFUI_ID_TABLE_MAX];
-  GtkWidget         *fadetypeImage;
   /* options */
   datafile_t        *optiondf;
   nlist_t           *options;
@@ -421,7 +420,6 @@ static void     confuiLoadLocaleList (configui_t *confui);
 static void     confuiLoadDanceTypeList (configui_t *confui);
 static void     confuiLoadTagList (configui_t *confui);
 static void     confuiLoadThemeList (configui_t *confui);
-static gboolean confuiFadeTypeTooltip (GtkWidget *, gint, gint, gboolean, GtkTooltip *, void *);
 static void     confuiOrgPathSelect (GtkTreeView *tv, GtkTreePath *path,
     GtkTreeViewColumn *column, gpointer udata);
 static char     * confuiComboboxSelect (configui_t *confui, GtkTreePath *path, int widx);
@@ -641,20 +639,6 @@ main (int argc, char *argv[])
       BPM_BPM, ("BPM"),
       /* CONTEXT: MPM: measures per minute (aka bars per minute) */
       BPM_MPM, ("MPM"),
-      -1);
-
-  confuiSpinboxTextInitDataNum (&confui, "cu-fadetype",
-      CONFUI_SPINBOX_FADE_TYPE,
-      /* CONTEXT: fade-out type */
-      FADETYPE_TRIANGLE, _("Triangle"),
-      /* CONTEXT: fade-out type */
-      FADETYPE_QUARTER_SINE, _("Quarter Sine Wave"),
-      /* CONTEXT: fade-out type */
-      FADETYPE_HALF_SINE, _("Half Sine Wave"),
-      /* CONTEXT: fade-out type */
-      FADETYPE_LOGARITHMIC, _("Logarithmic"),
-      /* CONTEXT: fade-out type */
-      FADETYPE_INVERTED_PARABOLA, _("Inverted Parabola"),
       -1);
 
   confuiSpinboxTextInitDataNum (&confui, "cu-dance-speed",
@@ -1056,10 +1040,7 @@ static void
 confuiBuildUIPlayer (configui_t *confui)
 {
   GtkWidget     *vbox;
-  GtkWidget     *widget;
-  GtkWidget     *image;
   UIWidget      sg;
-  char          tbuff [MAXPATHLEN];
 
   /* player options */
   vbox = confuiMakeNotebookTab (confui, confui->notebook,
@@ -1095,19 +1076,6 @@ confuiBuildUIPlayer (configui_t *confui)
   confuiMakeItemSpinboxDouble (confui, vbox, &sg, _("Fade Out Time"),
       CONFUI_WIDGET_FADE_OUT_TIME, OPT_P_FADEOUTTIME,
       0.0, 10.0, (double) bdjoptGetNum (OPT_P_FADEOUTTIME) / 1000.0);
-
-  /* CONTEXT: configuration: the type of fade */
-  widget = confuiMakeItemSpinboxText (confui, vbox, &sg, _("Fade Type"),
-      CONFUI_SPINBOX_FADE_TYPE, OPT_P_FADETYPE,
-      CONFUI_OUT_NUM, bdjoptGetNum (OPT_P_FADETYPE));
-  pathbldMakePath (tbuff, sizeof (tbuff),  "fades", ".svg",
-      PATHBLD_MP_IMGDIR);
-  image = gtk_image_new_from_file (tbuff);
-  uiWidgetSetAllMargins (image, uiBaseMarginSz);
-  gtk_widget_set_size_request (image, 275, -1);
-  confui->fadetypeImage = image;
-  gtk_widget_set_has_tooltip (widget, TRUE);
-  g_signal_connect (widget, "query-tooltip", G_CALLBACK (confuiFadeTypeTooltip), confui);
 
   /* CONTEXT: configuration: the amount of time to wait inbetween songs */
   confuiMakeItemSpinboxDouble (confui, vbox, &sg, _("Gap Between Songs"),
@@ -3020,20 +2988,6 @@ confuiLoadThemeList (configui_t *confui)
   confui->uiitem [CONFUI_SPINBOX_MQ_THEME].displist = tlist;
 }
 
-
-static gboolean
-confuiFadeTypeTooltip (GtkWidget *w, gint x, gint y, gboolean kbmode,
-    GtkTooltip *tt, void *udata)
-{
-  configui_t  *confui = udata;
-  GdkPixbuf   *pixbuf;
-
-  logProcBegin (LOG_PROC, "confuiFadeTypeTooltip");
-  pixbuf = gtk_image_get_pixbuf (GTK_IMAGE (confui->fadetypeImage));
-  gtk_tooltip_set_icon (tt, pixbuf);
-  logProcEnd (LOG_PROC, "confuiFadeTypeTooltip", "");
-  return TRUE;
-}
 
 static void
 confuiOrgPathSelect (GtkTreeView *tv, GtkTreePath *path,

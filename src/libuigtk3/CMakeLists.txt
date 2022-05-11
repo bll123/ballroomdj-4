@@ -8,6 +8,7 @@ add_library (libuigtk3 SHARED
   uigtkdialog.c
   uigtkdropdown.c
   uigtkentry.c
+  uigtkimage.c
   uigtklabel.c
   uigtklink.c
   uigtkmenu.c

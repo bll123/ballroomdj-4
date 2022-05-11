@@ -54,7 +54,6 @@ uimusicqBuildUI (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
 {
   int                   tci;
   char                  tbuff [MAXPATHLEN];
-  GtkWidget             *image = NULL;
   GtkWidget             *widget = NULL;
   GtkWidget             *hbox = NULL;
   GtkCellRenderer       *renderer = NULL;
@@ -75,8 +74,9 @@ uimusicqBuildUI (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
   /* want a copy of the pixbuf for this image */
   pathbldMakePath (tbuff, sizeof (tbuff), "button_pause", ".svg",
       PATHBLD_MP_IMGDIR);
-  image = gtk_image_new_from_file (tbuff);
-  uimusicq->pauseImg = gtk_image_get_pixbuf (GTK_IMAGE (image));
+  uiImageFromFile (&uimusicq->pausePixbuf, tbuff);
+  uiImageGetPixbuf (&uimusicq->pausePixbuf);
+  uiWidgetMakePersistent (&uimusicq->pausePixbuf);
 
   uimusicq->ui [ci].box = uiCreateVertBox ();
   assert (uimusicq->ui [ci].box != NULL);
@@ -507,7 +507,7 @@ uimusicqProcessMusicQueueDataNew (uimusicq_t *uimusicq, char * args)
 
     pixbuf = NULL;
     if (musicqupdate->pflag) {
-      pixbuf = uimusicq->pauseImg;
+      pixbuf = uimusicq->pausePixbuf.pixbuf;
     }
 
     gtk_list_store_append (store, &iter);
@@ -596,7 +596,7 @@ uimusicqProcessMusicQueueDataUpdate (uimusicq_t *uimusicq, char * args)
 
     pixbuf = NULL;
     if (musicqupdate->pflag) {
-      pixbuf = uimusicq->pauseImg;
+      pixbuf = uimusicq->pausePixbuf.pixbuf;
     }
 
     song = dbGetByIdx (uimusicq->musicdb, musicqupdate->dbidx);

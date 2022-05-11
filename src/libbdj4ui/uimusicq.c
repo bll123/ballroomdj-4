@@ -61,6 +61,7 @@ uimusicqInit (conn_t *conn, musicdb_t *musicdb,
   uimusicq->musicqPlayIdx = MUSICQ_A;
   uimusicq->iteratecb = NULL;
   uimusicq->savelist = NULL;
+  uiutilsUIWidgetInit (&uimusicq->pausePixbuf);
 
   logProcEnd (LOG_PROC, "uimusicqInit", "");
   return uimusicq;
@@ -87,6 +88,7 @@ uimusicqFree (uimusicq_t *uimusicq)
     }
     free (uimusicq);
   }
+  uiWidgetClearPersistent (&uimusicq->pausePixbuf);
   logProcEnd (LOG_PROC, "uimusicqFree", "");
 }
 

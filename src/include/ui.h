@@ -196,8 +196,14 @@ void  uiWidgetDisableFocus (GtkWidget *widget);
 void  uiWidgetHide (GtkWidget *widget);
 void  uiWidgetShow (GtkWidget *widget);
 void  uiWidgetShowAll (GtkWidget *widget);
+void  uiWidgetMakePersistent (UIWidget *uiwidget);
+void  uiWidgetClearPersistent (UIWidget *uiwidget);
+void  uiWidgetSetSizeRequest (UIWidget *uiwidget, int width, int height);
+
+/* uigtkimage.c */
 void  uiImageFromFile (UIWidget *uiwidget, const char *fn);
-void  uiImageFree (UIWidget *uiwidget);
+void  uiImagePersistentFromFile (UIWidget *uiwidget, const char *fn);
+void  uiImagePersistentFree (UIWidget *uiwidget);
 
 /* uigtktoggle.c */
 GtkWidget * uiCreateCheckButton (const char *txt, int value);
@@ -206,5 +212,13 @@ GtkWidget * uiCreateToggleButton (const char *txt, const char *imgname,
 void uiToggleButtonSetImage (GtkWidget *widget, UIWidget *image);
 bool uiToggleButtonIsActive (GtkWidget *widget);
 void uiToggleButtonSetState (GtkWidget *widget, int state);
+
+/* uigtkimage.c */
+void uiImageNew (UIWidget *uiwidget);
+void uiImageFromFile (UIWidget *uiwidget, const char *fn);
+void uiImageClear (UIWidget *uiwidget);
+void uiImageGetPixbuf (UIWidget *uiwidget);
+void uiImageSetFromPixbuf (UIWidget *uiwidget, UIWidget *uipixbuf);
+
 
 #endif /* INC_UI_H */

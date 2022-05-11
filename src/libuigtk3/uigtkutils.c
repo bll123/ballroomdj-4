@@ -199,12 +199,20 @@ uiWidgetSetAllMargins (GtkWidget *widget, int margin)
 void
 uiWidgetSetMarginTop (GtkWidget *widget, int margin)
 {
+  if (widget == NULL) {
+    return;
+  }
+
   gtk_widget_set_margin_top (widget, margin);
 }
 
 void
 uiWidgetSetMarginStart (GtkWidget *widget, int margin)
 {
+  if (widget == NULL) {
+    return;
+  }
+
   gtk_widget_set_margin_start (widget, margin);
 }
 
@@ -212,77 +220,137 @@ uiWidgetSetMarginStart (GtkWidget *widget, int margin)
 inline void
 uiWidgetAlignHorizFill (GtkWidget *widget)
 {
+  if (widget == NULL) {
+    return;
+  }
+
   gtk_widget_set_halign (widget, GTK_ALIGN_FILL);
 }
 
 inline void
 uiWidgetAlignHorizStart (GtkWidget *widget)
 {
+  if (widget == NULL) {
+    return;
+  }
+
   gtk_widget_set_halign (widget, GTK_ALIGN_START);
 }
 
 inline void
 uiWidgetAlignHorizEnd (GtkWidget *widget)
 {
+  if (widget == NULL) {
+    return;
+  }
+
   gtk_widget_set_halign (widget, GTK_ALIGN_END);
 }
 
 inline void
 uiWidgetAlignVertFill (GtkWidget *widget)
 {
+  if (widget == NULL) {
+    return;
+  }
+
   gtk_widget_set_valign (widget, GTK_ALIGN_FILL);
 }
 
 inline void
 uiWidgetAlignVertStart (GtkWidget *widget)
 {
+  if (widget == NULL) {
+    return;
+  }
+
   gtk_widget_set_valign (widget, GTK_ALIGN_START);
 }
 
 inline void
 uiWidgetDisableFocus (GtkWidget *widget)
 {
+  if (widget == NULL) {
+    return;
+  }
+
   gtk_widget_set_can_focus (widget, FALSE);
 }
 
 inline void
 uiWidgetHide (GtkWidget *widget)
 {
+  if (widget == NULL) {
+    return;
+  }
+
   gtk_widget_hide (widget);
 }
 
 inline void
 uiWidgetShow (GtkWidget *widget)
 {
+  if (widget == NULL) {
+    return;
+  }
+
   gtk_widget_show (widget);
 }
 
 inline void
 uiWidgetShowAll (GtkWidget *widget)
 {
+  if (widget == NULL) {
+    return;
+  }
+
   gtk_widget_show_all (widget);
 }
 
-void
-uiImageFromFile (UIWidget *uiwidget, const char *fn)
-{
-  GtkWidget *image;
 
-  image = gtk_image_new_from_file (fn);
-  if (G_IS_OBJECT (image)) {
-    g_object_ref_sink (G_OBJECT (image));
+inline void
+uiWidgetMakePersistent (UIWidget *uiwidget)
+{
+  if (uiwidget == NULL) {
+    return;
   }
-  uiwidget->widget = image;
+  if (uiwidget->widget == NULL) {
+    return;
+  }
+
+  if (G_IS_OBJECT (uiwidget->widget)) {
+    g_object_ref_sink (G_OBJECT (uiwidget->widget));
+  }
 }
 
-void
-uiImageFree (UIWidget *uiwidget)
+inline void
+uiWidgetClearPersistent (UIWidget *uiwidget)
 {
+  if (uiwidget == NULL) {
+    return;
+  }
+  if (uiwidget->widget == NULL) {
+    return;
+  }
+
   if (G_IS_OBJECT (uiwidget->widget)) {
     g_object_unref (G_OBJECT (uiwidget->widget));
   }
-  uiwidget->widget = NULL;
 }
+
+inline void
+uiWidgetSetSizeRequest (UIWidget *uiwidget, int width, int height)
+{
+  if (uiwidget == NULL) {
+    return;
+  }
+  if (uiwidget->widget == NULL) {
+    return;
+  }
+
+  gtk_widget_set_size_request (uiwidget->widget, width, height);
+}
+
 
 /* internal routines */
 
@@ -304,4 +372,3 @@ uiGtkLogger (GLogLevelFlags logLevel,
 
   return G_LOG_WRITER_HANDLED;
 }
-

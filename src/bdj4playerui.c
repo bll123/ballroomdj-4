@@ -65,10 +65,10 @@ typedef struct {
   GtkWidget       *vbox;
   GtkWidget       *clock;
   GtkWidget       *notebook;
-  GtkWidget       *musicqImage [MUSICQ_MAX];
+  UIWidget        musicqImage [MUSICQ_MAX];
   GtkWidget       *setPlaybackButton;
-  GdkPixbuf       *ledoffImg;
-  GdkPixbuf       *ledonImg;
+  UIWidget        ledoffPixbuf;
+  UIWidget        ledonPixbuf;
   GtkWidget       *marqueeFontSizeDialog;
   GtkWidget       *marqueeSpinBox;
   /* ui major elements */
@@ -287,12 +287,8 @@ pluiClosingCallback (void *udata, programstate_t programState)
       "playerui", BDJ4_CONFIG_EXT, PATHBLD_MP_USEIDX);
   datafileSaveKeyVal ("playerui", fn, playeruidfkeys, PLAYERUI_DFKEY_COUNT, plui->options);
 
-  if (G_IS_OBJECT (plui->ledonImg)) {
-    g_object_unref (plui->ledonImg);
-  }
-  if (G_IS_OBJECT (plui->ledoffImg)) {
-    g_object_unref (plui->ledoffImg);
-  }
+  uiWidgetClearPersistent (&plui->ledonPixbuf);
+  uiWidgetClearPersistent (&plui->ledoffPixbuf);
 
   bdj4shutdown (ROUTE_PLAYERUI, plui->musicdb);
   dispselFree (plui->dispsel);
@@ -322,7 +318,6 @@ pluiBuildUI (playerui_t *plui)
 {
   GtkWidget           *tabLabel;
   GtkWidget           *widget;
-  GtkWidget           *image;
   GtkWidget           *hbox;
   GtkWidget           *menubar;
   GtkWidget           *menu;
@@ -336,14 +331,15 @@ pluiBuildUI (playerui_t *plui)
 
   pathbldMakePath (tbuff, sizeof (tbuff),  "led_off", ".svg",
       PATHBLD_MP_IMGDIR);
-  image = gtk_image_new_from_file (tbuff);
-  plui->ledoffImg = gtk_image_get_pixbuf (GTK_IMAGE (image));
-  g_object_ref (G_OBJECT (plui->ledoffImg));
+  uiImageFromFile (&plui->ledoffPixbuf, tbuff);
+  uiImageGetPixbuf (&plui->ledoffPixbuf);
+  uiWidgetMakePersistent (&plui->ledoffPixbuf);
+
   pathbldMakePath (tbuff, sizeof (tbuff),  "led_on", ".svg",
       PATHBLD_MP_IMGDIR);
-  image = gtk_image_new_from_file (tbuff);
-  plui->ledonImg = gtk_image_get_pixbuf (GTK_IMAGE (image));
-  g_object_ref (G_OBJECT (plui->ledonImg));
+  uiImageFromFile (&plui->ledonPixbuf, tbuff);
+  uiImageGetPixbuf (&plui->ledonPixbuf);
+  uiWidgetMakePersistent (&plui->ledonPixbuf);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", ".svg", PATHBLD_MP_IMGDIR);
@@ -424,10 +420,10 @@ pluiBuildUI (playerui_t *plui)
     str = bdjoptGetStr (OPT_P_QUEUE_NAME_A + i);
     tabLabel = gtk_label_new (str);
     uiBoxPackStart (hbox, tabLabel);
-    plui->musicqImage [i] = gtk_image_new ();
-    gtk_image_set_from_pixbuf (GTK_IMAGE (plui->musicqImage [i]), plui->ledonImg);
-    uiWidgetSetMarginStart (plui->musicqImage [i], uiBaseMarginSz);
-    uiBoxPackStart (hbox, plui->musicqImage [i]);
+    uiImageNew (&plui->musicqImage [i]);
+    uiImageSetFromPixbuf (&plui->musicqImage [i], &plui->ledonPixbuf);
+    uiWidgetSetMarginStart (plui->musicqImage [i].widget, uiBaseMarginSz);
+    uiBoxPackStart (hbox, plui->musicqImage [i].widget);
 
     uiNotebookAppendPage (plui->notebook, widget, hbox);
     uiutilsNotebookIDAdd (plui->nbtabid, UI_TAB_MUSICQ);
@@ -747,9 +743,9 @@ pluiSetPlaybackQueue (playerui_t  *plui, musicqidx_t newQueue)
     plui->musicqPlayIdx = newQueue;
     for (musicqidx_t i = 0; i < MUSICQ_MAX; ++i) {
       if (plui->musicqPlayIdx == i) {
-        gtk_image_set_from_pixbuf (GTK_IMAGE (plui->musicqImage [i]), plui->ledonImg);
+        uiImageSetFromPixbuf (&plui->musicqImage [i], &plui->ledonPixbuf);
       } else {
-        gtk_image_set_from_pixbuf (GTK_IMAGE (plui->musicqImage [i]), plui->ledoffImg);
+        uiImageSetFromPixbuf (&plui->musicqImage [i], &plui->ledoffPixbuf);
       }
     }
   }

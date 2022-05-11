@@ -23,6 +23,7 @@ typedef struct {
   union {
     GtkWidget     *widget;
     GtkSizeGroup  *sg;
+    GdkPixbuf     *pixbuf;
   };
 #endif
 } UIWidget;
