@@ -910,10 +910,10 @@ static void
 starterProcessSupport (void *udata)
 {
   startui_t     *starter = udata;
-  UIWidget      uiwidget;
-  GtkWidget     *content;
   UIWidget      vbox;
   UIWidget      hbox;
+  UIWidget      uiwidget;
+  GtkWidget     *content;
   GtkWidget     *widget;
   GtkWidget     *dialog;
   UIWidget      sg;
@@ -995,16 +995,16 @@ starterProcessSupport (void *udata)
       sysvarsGetStr (SV_FORUM_HOST), sysvarsGetStr (SV_FORUM_URI));
   /* CONTEXT: starterui: basic support dialog: support option */
   snprintf (tbuff, sizeof (tbuff), _("%s Forums"), BDJ4_NAME);
-  widget = uiCreateLink (tbuff, uri);
-  uiBoxPackStartUW (&vbox, widget);
+  uiCreateLink (&uiwidget, tbuff, uri);
+  uiBoxPackStart (&vbox, &uiwidget);
 
   /* begin line */
   snprintf (uri, sizeof (uri), "%s%s",
       sysvarsGetStr (SV_TICKET_HOST), sysvarsGetStr (SV_TICKET_URI));
   /* CONTEXT: starterui: basic support dialog: support option */
   snprintf (tbuff, sizeof (tbuff), _("%s Support Tickets"), BDJ4_NAME);
-  widget = uiCreateLink (tbuff, uri);
-  uiBoxPackStartUW (&vbox, widget);
+  uiCreateLink (&uiwidget, tbuff, uri);
+  uiBoxPackStart (&vbox, &uiwidget);
 
   /* begin line */
   uiCreateHorizBox (&hbox);

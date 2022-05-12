@@ -135,6 +135,7 @@ foreach path [list {} profiles $mpath $mppath] {
 
         if { $key eq "version" } { set value 1 }
 
+        # force these off so that the BDJ3 files will not be affected.
         if { $key eq "WRITETAGS" } { set value NONE }
         if { $key eq "AUTOORGANIZE" } { set value no }
         if { $key eq "UIFONT" } {

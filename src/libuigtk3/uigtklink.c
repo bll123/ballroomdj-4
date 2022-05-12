@@ -15,8 +15,8 @@
 #include "ui.h"
 #include "uiutils.h"
 
-GtkWidget *
-uiCreateLink (char *label, char *uri)
+void
+uiCreateLink (UIWidget *uiwidget, char *label, char *uri)
 {
   GtkWidget *widget;
   GtkWidget *lwidget;
@@ -26,12 +26,12 @@ uiCreateLink (char *label, char *uri)
   gtk_button_set_label (GTK_BUTTON (widget), label);
   lwidget = gtk_bin_get_child (GTK_BIN (widget));
   gtk_label_set_xalign (GTK_LABEL (lwidget), 0.0);
-  return widget;
+  uiwidget->widget = widget;
 }
 
 void
-uiLinkSet (GtkWidget *widget, char *label, char *uri)
+uiLinkSet (UIWidget *uilink, char *label, char *uri)
 {
-  gtk_link_button_set_uri (GTK_LINK_BUTTON (widget), uri);
-  gtk_button_set_label (GTK_BUTTON (widget), label);
+  gtk_link_button_set_uri (GTK_LINK_BUTTON (uilink->widget), uri);
+  gtk_button_set_label (GTK_BUTTON (uilink->widget), label);
 }

@@ -93,8 +93,8 @@ void uiDropDownSelectionSetNum (uidropdown_t *dropdown, nlistidx_t idx);
 void uiDropDownSelectionSetStr (uidropdown_t *dropdown, char *stridx);
 
 /* uigtklink.c */
-GtkWidget * uiCreateLink (char *label, char *uri);
-void        uiLinkSet (GtkWidget *widget, char *label, char *uri);
+void uiCreateLink (UIWidget *uiwidget, char *label, char *uri);
+void uiLinkSet (UIWidget *uilink, char *label, char *uri);
 
 /* uigtktextbox.c */
 uitextbox_t  *uiTextBoxCreate (int height);
