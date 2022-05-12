@@ -102,8 +102,8 @@ typedef struct {
 } playerdata_t;
 
 enum {
-  FADEIN_TIMESLICE = 100,
-  FADEOUT_TIMESLICE = 250,
+  FADEIN_TIMESLICE = 50,
+  FADEOUT_TIMESLICE = 100,
 };
 
 static void     playerCheckSystemVolume (playerdata_t *playerData);
@@ -1279,6 +1279,10 @@ calcFadeIndex (playerdata_t *playerData)
   findex = fmax(0.0, fmin (1.0, index / range));
 
   fadetype = FADETYPE_QUARTER_SINE;
+  if (playerData->inFadeIn) {
+    fadetype = FADETYPE_TRIANGLE;
+  }
+
   switch (fadetype) {
     case FADETYPE_QUARTER_SINE: {
       findex = sin (findex * M_PI / 2.0);
