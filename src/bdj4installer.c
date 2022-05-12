@@ -405,10 +405,10 @@ installerBuildUI (installer_t *installer)
   installer->window = window;
 
   vbox = uiCreateVertBoxWW ();
-  uiWidgetSetAllMargins (vbox, 10);
-  uiWidgetSetMarginTop (vbox, 20);
-  uiWidgetExpandHoriz (vbox);
-  uiWidgetExpandVert (vbox);
+  uiWidgetSetAllMarginsW (vbox, 10);
+  uiWidgetSetMarginTopW (vbox, 20);
+  uiWidgetExpandHorizW (vbox);
+  uiWidgetExpandVertW (vbox);
   uiBoxPackInWindowWW (window, vbox);
 
   widget = uiCreateLabel (
@@ -418,15 +418,15 @@ installerBuildUI (installer_t *installer)
 
   widget = uiEntryCreate (&installer->targetEntry);
   uiEntrySetValue (&installer->targetEntry, installer->target);
-  uiWidgetAlignHorizFill (widget);
-  uiWidgetExpandHoriz (widget);
+  uiWidgetAlignHorizFillW (widget);
+  uiWidgetExpandHorizW (widget);
   uiBoxPackStartWW (vbox, widget);
 
   g_signal_connect (installer->targetEntry.entry, "changed",
       G_CALLBACK (installerValidateStart), installer);
 
   hbox = uiCreateHorizBoxWW ();
-  uiWidgetExpandHoriz (hbox);
+  uiWidgetExpandHorizW (hbox);
   uiBoxPackStartWW (vbox, hbox);
 
   /* CONTEXT: installer: checkbox: overwrite the previous BDJ4 installation */
@@ -442,7 +442,7 @@ installerBuildUI (installer_t *installer)
   uiBoxPackStartWW (hbox, installer->feedbackMsg);
 
   widget = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
-  uiWidgetSetMarginTop (widget, uiBaseMarginSz);
+  uiWidgetSetMarginTopW (widget, uiBaseMarginSz);
   uiSetCss (widget,
       "separator { min-height: 4px; background-color: #733000; }");
   uiBoxPackStartWW (vbox, widget);
@@ -465,7 +465,7 @@ installerBuildUI (installer_t *installer)
   uiBoxPackStartWW (vbox, widget);
 
   hbox = uiCreateHorizBoxWW ();
-  uiWidgetExpandHoriz (hbox);
+  uiWidgetExpandHorizW (hbox);
   uiBoxPackStartWW (vbox, hbox);
 
   /* CONTEXT: installer: label for entry field asking for BDJ3 location */
@@ -475,8 +475,8 @@ installerBuildUI (installer_t *installer)
 
   widget = uiEntryCreate (&installer->bdj3locEntry);
   uiEntrySetValue (&installer->bdj3locEntry, installer->bdj3loc);
-  uiWidgetAlignHorizFill (widget);
-  uiWidgetExpandHoriz (widget);
+  uiWidgetAlignHorizFillW (widget);
+  uiWidgetExpandHorizW (widget);
   uiBoxPackStartWW (hbox, widget);
   g_signal_connect (installer->bdj3locEntry.entry, "changed",
       G_CALLBACK (installerValidateStart), installer);
@@ -489,11 +489,11 @@ installerBuildUI (installer_t *installer)
   image = gtk_image_new_from_icon_name ("folder", GTK_ICON_SIZE_BUTTON);
   gtk_button_set_image (GTK_BUTTON (widget), image);
   gtk_button_set_always_show_image (GTK_BUTTON (widget), TRUE);
-  uiWidgetSetMarginStart (widget, 0);
+  uiWidgetSetMarginStartW (widget, 0);
   uiBoxPackStartWW (hbox, widget);
 
   hbox = uiCreateHorizBoxWW ();
-  uiWidgetExpandHoriz (hbox);
+  uiWidgetExpandHorizW (hbox);
   uiBoxPackStartWW (vbox, hbox);
 
   /* CONTEXT: installer: checkbox: convert the BallroomDJ 3 installation */
@@ -511,7 +511,7 @@ installerBuildUI (installer_t *installer)
   /* VLC status */
 
   widget = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
-  uiWidgetSetMarginTop (widget, uiBaseMarginSz);
+  uiWidgetSetMarginTopW (widget, uiBaseMarginSz);
   uiSetCss (widget,
       "separator { min-height: 4px; background-color: #733000; }");
   uiBoxPackStartWW (vbox, widget);
@@ -519,7 +519,7 @@ installerBuildUI (installer_t *installer)
   uiCreateSizeGroupHoriz (&sg);
 
   hbox = uiCreateHorizBoxWW ();
-  uiWidgetExpandHoriz (hbox);
+  uiWidgetExpandHorizW (hbox);
   uiBoxPackStartWW (vbox, hbox);
 
   widget = uiCreateColonLabel ("VLC");
@@ -533,7 +533,7 @@ installerBuildUI (installer_t *installer)
 
   /* python status */
   hbox = uiCreateHorizBoxWW ();
-  uiWidgetExpandHoriz (hbox);
+  uiWidgetExpandHorizW (hbox);
   uiBoxPackStartWW (vbox, hbox);
 
   widget = uiCreateColonLabel ("Python");
@@ -547,7 +547,7 @@ installerBuildUI (installer_t *installer)
 
   /* mutagen status */
   hbox = uiCreateHorizBoxWW ();
-  uiWidgetExpandHoriz (hbox);
+  uiWidgetExpandHorizW (hbox);
   uiBoxPackStartWW (vbox, hbox);
 
   widget = uiCreateColonLabel ("Mutagen");
@@ -561,7 +561,7 @@ installerBuildUI (installer_t *installer)
 
   /* button box */
   hbox = uiCreateHorizBoxWW ();
-  uiWidgetExpandHoriz (hbox);
+  uiWidgetExpandHorizW (hbox);
   uiBoxPackStartWW (vbox, hbox);
 
   uiutilsUICallbackInit (&installer->callbacks [INST_CALLBACK_EXIT],
@@ -586,11 +586,11 @@ installerBuildUI (installer_t *installer)
   installer->dispBuffer = gtk_text_buffer_new (NULL);
   installer->dispTextView = gtk_text_view_new_with_buffer (installer->dispBuffer);
   gtk_widget_set_size_request (installer->dispTextView, -1, 400);
-  uiWidgetDisableFocus (installer->dispTextView);
-  uiWidgetAlignHorizFill (installer->dispTextView);
-  uiWidgetAlignVertStart (installer->dispTextView);
-  uiWidgetExpandHoriz (installer->dispTextView);
-  uiWidgetExpandVert (installer->dispTextView);
+  uiWidgetDisableFocusW (installer->dispTextView);
+  uiWidgetAlignHorizFillW (installer->dispTextView);
+  uiWidgetAlignVertStartW (installer->dispTextView);
+  uiWidgetExpandHorizW (installer->dispTextView);
+  uiWidgetExpandVertW (installer->dispTextView);
   uiBoxPackInWindowWW (scwidget, installer->dispTextView);
   g_signal_connect (installer->dispTextView,
       "size-allocate", G_CALLBACK (installerScrollToEnd), installer);
@@ -598,10 +598,10 @@ installerBuildUI (installer_t *installer)
   /* push the text view to the top */
   hbox = uiCreateHorizBoxWW ();
   assert (hbox != NULL);
-  uiWidgetExpandVert (hbox);
+  uiWidgetExpandVertW (hbox);
   uiBoxPackStartWW (vbox, hbox);
 
-  uiWidgetShowAll (window);
+  uiWidgetShowAllW (window);
 
   installerDisplayConvert (installer);
   installerCheckPackages (installer);

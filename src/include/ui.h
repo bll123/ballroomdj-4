@@ -126,6 +126,11 @@ void uiBoxPackInWindowWU (GtkWidget *window, UIWidget *uibox);
 void uiBoxPackStartUW (UIWidget *uibox, GtkWidget *widget);
 void uiBoxPackStartExpandUW (UIWidget *uibox, GtkWidget *widget);
 void uiBoxPackEndUW (UIWidget *uibox, GtkWidget *widget);
+/* these routines will be removed at a later date */
+void uiBoxPackStartWU (GtkWidget *box, UIWidget *uiwidget);
+void uiBoxPackStartExpandWU (GtkWidget *box, UIWidget *uiwidget);
+void uiBoxPackEndWU (GtkWidget *box, UIWidget *uiwidget);
+/* these routines will be removed at a later date */
 GtkWidget *uiCreateVertBoxWW (void);
 GtkWidget *uiCreateHorizBoxWW (void);
 void uiBoxPackInWindowWW (GtkWidget *window, GtkWidget *box);
@@ -191,25 +196,50 @@ void  uiSetCss (GtkWidget *w, char *style);
 void  uiSetUIFont (char *uifont);
 void  uiInitUILog (void);
 void  uiGetForegroundColor (GtkWidget *widget, char *buff, size_t sz);
-void  uiWidgetDisable (GtkWidget *widget);
-void  uiWidgetEnable (GtkWidget *widget);
-void  uiWidgetExpandHoriz (GtkWidget *widget);
-void  uiWidgetExpandVert (GtkWidget *widget);
-void  uiWidgetSetAllMargins (GtkWidget *widget, int margin);
-void  uiWidgetSetMarginTop (GtkWidget *widget, int margin);
-void  uiWidgetSetMarginStart (GtkWidget *widget, int margin);
-void  uiWidgetAlignHorizFill (GtkWidget *widget);
-void  uiWidgetAlignHorizStart (GtkWidget *widget);
-void  uiWidgetAlignHorizEnd (GtkWidget *widget);
-void  uiWidgetAlignVertFill (GtkWidget *widget);
-void  uiWidgetAlignVertStart (GtkWidget *widget);
-void  uiWidgetDisableFocus (GtkWidget *widget);
-void  uiWidgetHide (GtkWidget *widget);
-void  uiWidgetShow (GtkWidget *widget);
-void  uiWidgetShowAll (GtkWidget *widget);
-void  uiWidgetMakePersistent (UIWidget *uiwidget);
-void  uiWidgetClearPersistent (UIWidget *uiwidget);
-void  uiWidgetSetSizeRequest (UIWidget *uiwidget, int width, int height);
+/* widget interface */
+void  uiWidgetDisable (UIWidget *uiwidget);
+void  uiWidgetEnable (UIWidget *uiwidget);
+void  uiWidgetExpandHoriz (UIWidget *uiwidget);
+void  uiWidgetExpandVert (UIWidget *uiwidget);
+void  uiWidgetSetAllMargins (UIWidget *uiwidget, int margin);
+void  uiWidgetSetMarginTop (UIWidget *uiwidget, int margin);
+void  uiWidgetSetMarginStart (UIWidget *uiwidget, int margin);
+void  uiWidgetAlignHorizFill (UIWidget *uiwidget);
+void  uiWidgetAlignHorizStart (UIWidget *uiwidget);
+void  uiWidgetAlignHorizEnd (UIWidget *uiwidget);
+void  uiWidgetAlignVertFill (UIWidget *uiwidget);
+void  uiWidgetAlignVertStart (UIWidget *uiwidget);
+void  uiWidgetDisableFocusW (GtkWidget *widget);
+void  uiWidgetHide (UIWidget *uiwidget);
+void  uiWidgetShow (UIWidget *uiwidget);
+void  uiWidgetShowAll (UIWidget *uiwidget);
+void  uiWidgetMakePersistent (UIWidget *uiuiwidget);
+void  uiWidgetClearPersistent (UIWidget *uiuiwidget);
+void  uiWidgetSetSizeRequest (UIWidget *uiuiwidget, int width, int height);
+/* these routines will be removed at a later date */
+void  uiWidgetDisableFocusW (GtkWidget *widget);
+void  uiWidgetHideW (GtkWidget *widget);
+void  uiWidgetShowW (GtkWidget *widget);
+void  uiWidgetShowAllW (GtkWidget *widget);
+void  uiWidgetMakePersistentW (UIWidget *uiwidget);
+void  uiWidgetClearPersistentW (UIWidget *uiwidget);
+void  uiWidgetSetSizeRequestW (UIWidget *uiwidget, int width, int height);
+void  uiWidgetDisableW (GtkWidget *widget);
+void  uiWidgetEnableW (GtkWidget *widget);
+void  uiWidgetExpandHorizW (GtkWidget *widget);
+void  uiWidgetExpandVertW (GtkWidget *widget);
+void  uiWidgetSetAllMarginsW (GtkWidget *widget, int margin);
+void  uiWidgetSetMarginTopW (GtkWidget *widget, int margin);
+void  uiWidgetSetMarginStartW (GtkWidget *widget, int margin);
+void  uiWidgetAlignHorizFillW (GtkWidget *widget);
+void  uiWidgetAlignHorizStartW (GtkWidget *widget);
+void  uiWidgetAlignHorizEndW (GtkWidget *widget);
+void  uiWidgetAlignVertFillW (GtkWidget *widget);
+void  uiWidgetAlignVertStartW (GtkWidget *widget);
+void  uiWidgetDisableFocusW (GtkWidget *widget);
+void  uiWidgetHideW (GtkWidget *widget);
+void  uiWidgetShowW (GtkWidget *widget);
+void  uiWidgetShowAllW (GtkWidget *widget);
 
 /* uigtkimage.c */
 void  uiImageFromFile (UIWidget *uiwidget, const char *fn);
@@ -231,5 +261,8 @@ void uiImageClear (UIWidget *uiwidget);
 void uiImageGetPixbuf (UIWidget *uiwidget);
 void uiImageSetFromPixbuf (UIWidget *uiwidget, UIWidget *uipixbuf);
 
+/* uigtksep.c */
+void uiCreateHorizSeparator (UIWidget *uiwidget);
+void uiSeparatorSetColor (UIWidget *uiwidget, const char *color);
 
 #endif /* INC_UI_H */

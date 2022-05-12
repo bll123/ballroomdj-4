@@ -80,13 +80,13 @@ uimusicqBuildUI (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
 
   uimusicq->ui [ci].box = uiCreateVertBoxWW ();
   assert (uimusicq->ui [ci].box != NULL);
-  uiWidgetExpandHoriz (uimusicq->ui [ci].box);
-  uiWidgetExpandVert (uimusicq->ui [ci].box);
+  uiWidgetExpandHorizW (uimusicq->ui [ci].box);
+  uiWidgetExpandVertW (uimusicq->ui [ci].box);
 
   hbox = uiCreateHorizBoxWW ();
   assert (hbox != NULL);
-  uiWidgetSetMarginTop (hbox, uiBaseMarginSz);
-  uiWidgetExpandHoriz (hbox);
+  uiWidgetSetMarginTopW (hbox, uiBaseMarginSz);
+  uiWidgetExpandHorizW (hbox);
   uiBoxPackStartWW (uimusicq->ui [ci].box, hbox);
 
   /* CONTEXT: button: move the selected song to the top of the queue */
@@ -132,7 +132,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
     /* CONTEXT: button: request playback of a song external to BDJ4 (not in the database) */
     widget = uiCreateButton (NULL, NULL, _("Request External"), NULL,
         NULL, uimusicq);
-    uiWidgetDisable (widget);
+    uiWidgetDisableW (widget);
     uiBoxPackEndWW (hbox, widget);
   // ### TODO create code to handle the request external button
 
@@ -171,7 +171,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
   /* musicq tree view */
 
   widget = uiCreateScrolledWindow (400);
-  uiWidgetExpandHoriz (widget);
+  uiWidgetExpandHorizW (widget);
   uiBoxPackStartExpandWW (uimusicq->ui [ci].box, widget);
 
   uimusicq->ui [ci].musicqTree = uiCreateTreeView ();
@@ -179,9 +179,9 @@ uimusicqBuildUI (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
   uimusicq->ui [ci].sel = gtk_tree_view_get_selection (
       GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree));
   gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (uimusicq->ui [ci].musicqTree), TRUE);
-  uiWidgetAlignHorizFill (uimusicq->ui [ci].musicqTree);
-  uiWidgetExpandHoriz (uimusicq->ui [ci].musicqTree);
-  uiWidgetExpandVert (uimusicq->ui [ci].musicqTree);
+  uiWidgetAlignHorizFillW (uimusicq->ui [ci].musicqTree);
+  uiWidgetExpandHorizW (uimusicq->ui [ci].musicqTree);
+  uiWidgetExpandVertW (uimusicq->ui [ci].musicqTree);
   uiBoxPackInWindowWW (widget, uimusicq->ui [ci].musicqTree);
 
   renderer = gtk_cell_renderer_text_new ();

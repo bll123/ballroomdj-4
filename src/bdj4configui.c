@@ -903,13 +903,13 @@ confuiBuildUI (configui_t *confui)
       confuiCloseWin, confui);
 
   confui->vbox = uiCreateVertBoxWW ();
-  uiWidgetExpandHoriz (confui->vbox);
-  uiWidgetExpandVert (confui->vbox);
-  uiWidgetSetAllMargins (confui->vbox, uiBaseMarginSz * 2);
+  uiWidgetExpandHorizW (confui->vbox);
+  uiWidgetExpandVertW (confui->vbox);
+  uiWidgetSetAllMarginsW (confui->vbox, uiBaseMarginSz * 2);
   uiBoxPackInWindowWW (confui->window, confui->vbox);
 
   hbox = uiCreateHorizBoxWW ();
-  uiWidgetExpandHoriz (hbox);
+  uiWidgetExpandHorizW (hbox);
   uiBoxPackStartWW (confui->vbox, hbox);
 
   widget = uiCreateLabel ("");
@@ -951,7 +951,7 @@ confuiBuildUI (configui_t *confui)
   y = nlistGetNum (confui->options, CONFUI_SIZE_Y);
   uiWindowSetDefaultSize (confui->window, x, y);
 
-  uiWidgetShowAll (confui->window);
+  uiWidgetShowAllW (confui->window);
 
   x = nlistGetNum (confui->options, CONFUI_POSITION_X);
   y = nlistGetNum (confui->options, CONFUI_POSITION_Y);
@@ -1203,11 +1203,11 @@ confuiBuildUIDispSettings (configui_t *confui)
   g_signal_connect (widget, "value-changed", G_CALLBACK (confuiDispSettingChg), confui);
 
   hbox = uiCreateHorizBoxWW ();
-  uiWidgetAlignHorizStart (hbox);
+  uiWidgetAlignHorizStartW (hbox);
   uiBoxPackStartExpandWW (vbox, hbox);
 
   widget = uiCreateScrolledWindow (300);
-  uiWidgetExpandVert (widget);
+  uiWidgetExpandVertW (widget);
   uiBoxPackStartExpandWW (hbox, widget);
 
   tree = uiCreateTreeView ();
@@ -1218,15 +1218,15 @@ confuiBuildUIDispSettings (configui_t *confui)
   confui->tables [CONFUI_ID_DISP_SEL_LIST].sel =
       gtk_tree_view_get_selection (GTK_TREE_VIEW (tree));
   confui->tables [CONFUI_ID_DISP_SEL_LIST].flags = CONFUI_TABLE_NONE;
-  uiWidgetSetMarginStart (tree, uiBaseMarginSz * 8);
-  uiWidgetSetMarginTop (tree, uiBaseMarginSz * 8);
-  uiWidgetExpandVert (tree);
+  uiWidgetSetMarginStartW (tree, uiBaseMarginSz * 8);
+  uiWidgetSetMarginTopW (tree, uiBaseMarginSz * 8);
+  uiWidgetExpandVertW (tree);
   gtk_container_add (GTK_CONTAINER (widget), tree);
 
   dvbox = uiCreateVertBoxWW ();
-  uiWidgetSetAllMargins (dvbox, uiBaseMarginSz * 4);
-  uiWidgetSetMarginTop (dvbox, uiBaseMarginSz * 64);
-  uiWidgetAlignVertStart (dvbox);
+  uiWidgetSetAllMarginsW (dvbox, uiBaseMarginSz * 4);
+  uiWidgetSetMarginTopW (dvbox, uiBaseMarginSz * 64);
+  uiWidgetAlignVertStartW (dvbox);
   uiBoxPackStartWW (hbox, dvbox);
 
   /* CONTEXT: configuration: display settings: button: add the selected field */
@@ -1240,7 +1240,7 @@ confuiBuildUIDispSettings (configui_t *confui)
   uiBoxPackStartWW (dvbox, widget);
 
   widget = uiCreateScrolledWindow (300);
-  uiWidgetExpandVert (widget);
+  uiWidgetExpandVertW (widget);
   uiBoxPackStartExpandWW (hbox, widget);
 
   tree = uiCreateTreeView ();
@@ -1251,15 +1251,15 @@ confuiBuildUIDispSettings (configui_t *confui)
   confui->tables [CONFUI_ID_DISP_SEL_TABLE].sel =
       gtk_tree_view_get_selection (GTK_TREE_VIEW (tree));
   confui->tables [CONFUI_ID_DISP_SEL_TABLE].flags = CONFUI_TABLE_NONE;
-  uiWidgetSetMarginStart (tree, uiBaseMarginSz * 8);
-  uiWidgetSetMarginTop (tree, uiBaseMarginSz * 8);
-  uiWidgetExpandVert (tree);
+  uiWidgetSetMarginStartW (tree, uiBaseMarginSz * 8);
+  uiWidgetSetMarginTopW (tree, uiBaseMarginSz * 8);
+  uiWidgetExpandVertW (tree);
   gtk_container_add (GTK_CONTAINER (widget), tree);
 
   dvbox = uiCreateVertBoxWW ();
-  uiWidgetSetAllMargins (dvbox, uiBaseMarginSz * 4);
-  uiWidgetSetMarginTop (dvbox, uiBaseMarginSz * 64);
-  uiWidgetAlignVertStart (dvbox);
+  uiWidgetSetAllMarginsW (dvbox, uiBaseMarginSz * 4);
+  uiWidgetSetMarginTopW (dvbox, uiBaseMarginSz * 64);
+  uiWidgetAlignVertStartW (dvbox);
   uiBoxPackStartWW (hbox, dvbox);
 
   /* CONTEXT: configuration: display settings: button: move the selected field up */
@@ -1380,7 +1380,7 @@ confuiBuildUIEditDances (configui_t *confui)
       G_CALLBACK (confuiDanceSelect), confui);
 
   dvbox = uiCreateVertBoxWW ();
-  uiWidgetSetMarginStart (dvbox, uiBaseMarginSz * 8);
+  uiWidgetSetMarginStartW (dvbox, uiBaseMarginSz * 8);
   uiBoxPackStartWW (hbox, dvbox);
 
   /* CONTEXT: configuration: dances: the name of the dance */
@@ -2181,11 +2181,11 @@ confuiMakeNotebookTab (configui_t *confui, GtkWidget *nb, char *txt, int id)
 
   logProcBegin (LOG_PROC, "confuiMakeNotebookTab");
   tablabel = uiCreateLabel (txt);
-  uiWidgetSetAllMargins (tablabel, 0);
+  uiWidgetSetAllMarginsW (tablabel, 0);
   vbox = uiCreateVertBoxWW ();
-  uiWidgetExpandHoriz (vbox);
-  uiWidgetExpandVert (vbox);
-  uiWidgetSetAllMargins (vbox, uiBaseMarginSz * 2);
+  uiWidgetExpandHorizW (vbox);
+  uiWidgetExpandVertW (vbox);
+  uiWidgetSetAllMarginsW (vbox, uiBaseMarginSz * 2);
   uiNotebookAppendPage (nb, vbox, tablabel);
   uiutilsNotebookIDAdd (confui->nbtabid, id);
 
@@ -2206,7 +2206,7 @@ confuiMakeItemEntry (configui_t *confui, GtkWidget *vbox, UIWidget *sg,
   hbox = confuiMakeItemLabel (vbox, sg, txt);
   widget = uiEntryCreate (&confui->uiitem [widx].u.entry);
   confui->uiitem [widx].widget = widget;
-  uiWidgetSetMarginStart (widget, uiBaseMarginSz * 4);
+  uiWidgetSetMarginStartW (widget, uiBaseMarginSz * 4);
   uiBoxPackStartWW (hbox, widget);
   uiBoxPackStartWW (vbox, hbox);
   if (disp != NULL) {
@@ -2236,7 +2236,7 @@ confuiMakeItemEntryChooser (configui_t *confui, GtkWidget *vbox,
   image = gtk_image_new_from_icon_name ("folder", GTK_ICON_SIZE_BUTTON);
   gtk_button_set_image (GTK_BUTTON (widget), image);
   gtk_button_set_always_show_image (GTK_BUTTON (widget), TRUE);
-  uiWidgetSetMarginStart (widget, 0);
+  uiWidgetSetMarginStartW (widget, 0);
   uiBoxPackStartWW (hbox, widget);
   confui->uiitem [widx].bdjoptIdx = bdjoptIdx;
   logProcEnd (LOG_PROC, "confuiMakeItemEntryChooser", "");
@@ -2259,7 +2259,7 @@ confuiMakeItemCombobox (configui_t *confui, GtkWidget *vbox, UIWidget *sg,
   uiDropDownSetList (&confui->uiitem [widx].u.dropdown,
       confui->uiitem [widx].displist, NULL);
   uiDropDownSelectionSetStr (&confui->uiitem [widx].u.dropdown, value);
-  uiWidgetSetMarginStart (widget, uiBaseMarginSz * 4);
+  uiWidgetSetMarginStartW (widget, uiBaseMarginSz * 4);
   uiBoxPackStartWW (hbox, widget);
   uiBoxPackStartWW (vbox, hbox);
   confui->uiitem [widx].bdjoptIdx = bdjoptIdx;
@@ -2299,7 +2299,7 @@ confuiMakeItemFontButton (configui_t *confui, GtkWidget *vbox, UIWidget *sg,
   } else {
     widget = gtk_font_button_new ();
   }
-  uiWidgetSetMarginStart (widget, uiBaseMarginSz * 4);
+  uiWidgetSetMarginStartW (widget, uiBaseMarginSz * 4);
   uiBoxPackStartWW (hbox, widget);
   uiBoxPackStartWW (vbox, hbox);
   confui->uiitem [widx].widget = widget;
@@ -2326,7 +2326,7 @@ confuiMakeItemColorButton (configui_t *confui, GtkWidget *vbox, UIWidget *sg,
   } else {
     widget = gtk_color_button_new ();
   }
-  uiWidgetSetMarginStart (widget, uiBaseMarginSz * 4);
+  uiWidgetSetMarginStartW (widget, uiBaseMarginSz * 4);
   uiBoxPackStartWW (hbox, widget);
   uiBoxPackStartWW (vbox, hbox);
   confui->uiitem [widx].widget = widget;
@@ -2384,7 +2384,7 @@ confuiMakeItemSpinboxText (configui_t *confui, GtkWidget *vbox, UIWidget *sg,
     sbidx = nlistGetNum (confui->uiitem [widx].sbidxlist, value);
   }
   uiSpinboxTextSetValue (&confui->uiitem [widx].u.spinbox, (double) sbidx);
-  uiWidgetSetMarginStart (widget, uiBaseMarginSz * 4);
+  uiWidgetSetMarginStartW (widget, uiBaseMarginSz * 4);
   uiBoxPackStartWW (hbox, widget);
   uiBoxPackStartWW (vbox, hbox);
   confui->uiitem [widx].bdjoptIdx = bdjoptIdx;
@@ -2408,7 +2408,7 @@ confuiMakeItemSpinboxTime (configui_t *confui, GtkWidget *vbox,
   widget = uiSpinboxTimeCreate (&confui->uiitem [widx].u.spinbox, confui);
   confui->uiitem [widx].widget = widget;
   uiSpinboxTimeSetValue (&confui->uiitem [widx].u.spinbox, value);
-  uiWidgetSetMarginStart (widget, uiBaseMarginSz * 4);
+  uiWidgetSetMarginStartW (widget, uiBaseMarginSz * 4);
   uiBoxPackStartWW (hbox, widget);
   uiBoxPackStartWW (vbox, hbox);
   confui->uiitem [widx].bdjoptIdx = bdjoptIdx;
@@ -2430,7 +2430,7 @@ confuiMakeItemSpinboxInt (configui_t *confui, GtkWidget *vbox, UIWidget *sg,
   widget = uiSpinboxIntCreate ();
   uiSpinboxSet (widget, (double) min, (double) max);
   uiSpinboxSetValue (widget, (double) value);
-  uiWidgetSetMarginStart (widget, uiBaseMarginSz * 4);
+  uiWidgetSetMarginStartW (widget, uiBaseMarginSz * 4);
   uiBoxPackStartWW (hbox, widget);
   uiBoxPackStartWW (vbox, hbox);
   confui->uiitem [widx].widget = widget;
@@ -2455,7 +2455,7 @@ confuiMakeItemSpinboxDouble (configui_t *confui, GtkWidget *vbox, UIWidget *sg,
   widget = uiSpinboxDoubleCreate ();
   uiSpinboxSet (widget, min, max);
   uiSpinboxSetValue (widget, value);
-  uiWidgetSetMarginStart (widget, uiBaseMarginSz * 4);
+  uiWidgetSetMarginStartW (widget, uiBaseMarginSz * 4);
   uiBoxPackStartWW (hbox, widget);
   uiBoxPackStartWW (vbox, hbox);
   confui->uiitem [widx].widget = widget;
@@ -2476,7 +2476,7 @@ confuiMakeItemSwitch (configui_t *confui, GtkWidget *vbox, UIWidget *sg,
   confui->uiitem [widx].outtype = CONFUI_OUT_BOOL;
   hbox = confuiMakeItemLabel (vbox, sg, txt);
   widget = uiCreateSwitch (value);
-  uiWidgetSetMarginStart (widget, uiBaseMarginSz * 4);
+  uiWidgetSetMarginStartW (widget, uiBaseMarginSz * 4);
   uiBoxPackStartWW (hbox, widget);
   uiBoxPackStartWW (vbox, hbox);
   confui->uiitem [widx].widget = widget;
@@ -2498,7 +2498,7 @@ confuiMakeItemLabelDisp (configui_t *confui, GtkWidget *vbox, UIWidget *sg,
   confui->uiitem [widx].outtype = CONFUI_OUT_NONE;
   hbox = confuiMakeItemLabel (vbox, sg, txt);
   widget = uiCreateLabel ("");
-  uiWidgetSetMarginStart (widget, uiBaseMarginSz * 4);
+  uiWidgetSetMarginStartW (widget, uiBaseMarginSz * 4);
   uiBoxPackStartWW (hbox, widget);
   uiBoxPackStartWW (vbox, hbox);
   confui->uiitem [widx].widget = widget;
@@ -2518,7 +2518,7 @@ confuiMakeItemCheckButton (configui_t *confui, GtkWidget *vbox, UIWidget *sg,
   confui->uiitem [widx].basetype = CONFUI_CHECK_BUTTON;
   confui->uiitem [widx].outtype = CONFUI_OUT_BOOL;
   widget = uiCreateCheckButton (txt, value);
-  uiWidgetSetMarginStart (widget, uiBaseMarginSz * 4);
+  uiWidgetSetMarginStartW (widget, uiBaseMarginSz * 4);
   uiBoxPackStartWW (vbox, widget);
   confui->uiitem [widx].widget = widget;
   confui->uiitem [widx].bdjoptIdx = bdjoptIdx;
@@ -2556,11 +2556,11 @@ confuiMakeItemTable (configui_t *confui, GtkWidget *vbox, confuiident_t id,
   logProcBegin (LOG_PROC, "confuiMakeItemTable");
   mhbox = uiCreateHorizBoxWW ();
   assert (mhbox != NULL);
-  uiWidgetSetMarginTop (mhbox, uiBaseMarginSz * 2);
+  uiWidgetSetMarginTopW (mhbox, uiBaseMarginSz * 2);
   uiBoxPackStartWW (vbox, mhbox);
 
   widget = uiCreateScrolledWindow (300);
-  uiWidgetExpandVert (widget);
+  uiWidgetExpandVertW (widget);
   uiBoxPackStartExpandWW (mhbox, widget);
 
   tree = uiCreateTreeView ();
@@ -2568,15 +2568,15 @@ confuiMakeItemTable (configui_t *confui, GtkWidget *vbox, confuiident_t id,
   confui->tables [id].sel =
       gtk_tree_view_get_selection (GTK_TREE_VIEW (tree));
   confui->tables [id].flags = flags;
-  uiWidgetSetMarginStart (tree, uiBaseMarginSz * 8);
+  uiWidgetSetMarginStartW (tree, uiBaseMarginSz * 8);
   gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (tree), TRUE);
   gtk_container_add (GTK_CONTAINER (widget), tree);
 
   bvbox = uiCreateVertBoxWW ();
   assert (bvbox != NULL);
-  uiWidgetSetAllMargins (bvbox, uiBaseMarginSz * 4);
-  uiWidgetSetMarginTop (bvbox, uiBaseMarginSz * 32);
-  uiWidgetAlignVertStart (bvbox);
+  uiWidgetSetAllMarginsW (bvbox, uiBaseMarginSz * 4);
+  uiWidgetSetMarginTopW (bvbox, uiBaseMarginSz * 32);
+  uiWidgetAlignVertStartW (bvbox);
   uiBoxPackStartWW (mhbox, bvbox);
 
   if ((flags & CONFUI_TABLE_NO_UP_DOWN) != CONFUI_TABLE_NO_UP_DOWN) {

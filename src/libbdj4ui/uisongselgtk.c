@@ -146,11 +146,11 @@ uisongselBuildUI (uisongsel_t *uisongsel, GtkWidget *parentwin)
   uisongsel->window = parentwin;
 
   uiw->vbox = uiCreateVertBoxWW ();
-  uiWidgetExpandHoriz (uiw->vbox);
-  uiWidgetExpandVert (uiw->vbox);
+  uiWidgetExpandHorizW (uiw->vbox);
+  uiWidgetExpandVertW (uiw->vbox);
 
   hbox = uiCreateHorizBoxWW ();
-  uiWidgetExpandHoriz (hbox);
+  uiWidgetExpandHorizW (hbox);
   uiBoxPackStartWW (uiw->vbox, hbox);
 
   if (uisongsel->dispselType == DISP_SEL_SONGSEL ||
@@ -208,7 +208,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, GtkWidget *parentwin)
   uiBoxPackEndWW (hbox, uiwidget.widget);
 
   hbox = uiCreateHorizBoxWW ();
-  uiWidgetExpandVert (uiw->vbox);
+  uiWidgetExpandVertW (uiw->vbox);
   uiBoxPackStartExpandWW (uiw->vbox, hbox);
 
   vbox = uiCreateVertBoxWW ();
@@ -218,7 +218,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, GtkWidget *parentwin)
   adjustment = gtk_adjustment_new (0.0, 0.0, tupper, 1.0, 10.0, 10.0);
   uiw->songselScrollbar = gtk_scrollbar_new (GTK_ORIENTATION_VERTICAL, adjustment);
   assert (uiw->songselScrollbar != NULL);
-  uiWidgetExpandVert (uiw->songselScrollbar);
+  uiWidgetExpandVertW (uiw->songselScrollbar);
   uiSetCss (uiw->songselScrollbar,
       "scrollbar, scrollbar slider { min-width: 9px; } ");
   uiBoxPackEndWW (hbox, uiw->songselScrollbar);
@@ -227,15 +227,15 @@ uisongselBuildUI (uisongsel_t *uisongsel, GtkWidget *parentwin)
 
   widget = uiCreateScrolledWindow (400);
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (widget), GTK_POLICY_NEVER, GTK_POLICY_EXTERNAL);
-  uiWidgetExpandHoriz (widget);
+  uiWidgetExpandHorizW (widget);
   uiBoxPackStartExpandWW (vbox, widget);
   uiw->scrolledwin = widget;
 
   uiw->songselTree = uiCreateTreeView ();
   assert (uiw->songselTree != NULL);
-  uiWidgetAlignHorizFill (uiw->songselTree);
-  uiWidgetExpandHoriz (uiw->songselTree);
-  uiWidgetExpandVert (uiw->songselTree);
+  uiWidgetAlignHorizFillW (uiw->songselTree);
+  uiWidgetExpandHorizW (uiw->songselTree);
+  uiWidgetExpandVertW (uiw->songselTree);
   gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (uiw->songselTree), TRUE);
   /* for song list editing, multiple selections are valid */
   if (uisongsel->dispselType == DISP_SEL_SONGSEL ||

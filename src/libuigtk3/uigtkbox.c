@@ -85,6 +85,26 @@ uiBoxPackEndUW (UIWidget *uibox, GtkWidget *widget)
 
 /* these routines will be removed at a later date */
 
+inline void
+uiBoxPackStartWU (GtkWidget *box, UIWidget *uiwidget)
+{
+  gtk_box_pack_start (GTK_BOX (box), uiwidget->widget, FALSE, FALSE, 0);
+}
+
+inline void
+uiBoxPackStartExpandWU (GtkWidget *box, UIWidget *uiwidget)
+{
+  gtk_box_pack_start (GTK_BOX (box), uiwidget->widget, TRUE, TRUE, 0);
+}
+
+inline void
+uiBoxPackEndWU (GtkWidget *box, UIWidget *uiwidget)
+{
+  gtk_box_pack_end (GTK_BOX (box), uiwidget->widget, FALSE, FALSE, 0);
+}
+
+/* these routines will be removed at a later date */
+
 GtkWidget *
 uiCreateVertBoxWW (void)
 {

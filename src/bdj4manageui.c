@@ -535,11 +535,11 @@ manageBuildUI (manageui_t *manage)
       manageCloseWin, manage);
 
   vbox = uiCreateVertBoxWW ();
-  uiWidgetSetAllMargins (vbox, 4);
+  uiWidgetSetAllMarginsW (vbox, 4);
   uiBoxPackInWindowWW (manage->window, vbox);
 
   hbox = uiCreateHorizBoxWW ();
-  uiWidgetSetMarginTop (hbox, uiBaseMarginSz * 4);
+  uiWidgetSetMarginTopW (hbox, uiBaseMarginSz * 4);
   uiBoxPackStartWW (vbox, hbox);
 
   widget = uiCreateLabel ("");
@@ -564,7 +564,7 @@ manageBuildUI (manageui_t *manage)
 
   /* playlist management */
   vbox = uiCreateVertBoxWW ();
-  uiWidgetSetAllMargins (vbox, 4);
+  uiWidgetSetAllMarginsW (vbox, 4);
   /* CONTEXT: notebook tab title: playlist management */
   tabLabel = uiCreateLabel (_("Playlist Management"));
   uiNotebookAppendPage (manage->mainnotebook, vbox, tabLabel);
@@ -572,7 +572,7 @@ manageBuildUI (manageui_t *manage)
 
   /* edit sequences */
   vbox = uiCreateVertBoxWW ();
-  uiWidgetSetAllMargins (vbox, 4);
+  uiWidgetSetAllMarginsW (vbox, 4);
   /* CONTEXT: notebook tab title: edit sequences */
   tabLabel = uiCreateLabel (_("Edit Sequences"));
   uiNotebookAppendPage (manage->mainnotebook, vbox, tabLabel);
@@ -580,7 +580,7 @@ manageBuildUI (manageui_t *manage)
 
   /* file manager */
   vbox = uiCreateVertBoxWW ();
-  uiWidgetSetAllMargins (vbox, 4);
+  uiWidgetSetAllMarginsW (vbox, 4);
   /* CONTEXT: notebook tab title: file manager */
   tabLabel = uiCreateLabel (_("File Manager"));
   uiNotebookAppendPage (manage->mainnotebook, vbox, tabLabel);
@@ -593,7 +593,7 @@ manageBuildUI (manageui_t *manage)
   g_signal_connect (manage->mainnotebook, "switch-page",
       G_CALLBACK (manageSwitchPage), manage);
 
-  uiWidgetShowAll (manage->window);
+  uiWidgetShowAllW (manage->window);
 
   x = nlistGetNum (manage->options, PLUI_POSITION_X);
   y = nlistGetNum (manage->options, PLUI_POSITION_Y);
@@ -618,7 +618,7 @@ manageBuildUISongListEditor (manageui_t *manage)
 
   /* song list editor */
   vbox = uiCreateVertBoxWW ();
-  uiWidgetSetAllMargins (vbox, 4);
+  uiWidgetSetAllMarginsW (vbox, 4);
 
   /* CONTEXT: notebook tab title: edit song lists (manual playlists) */
   tabLabel = uiCreateLabel (_("Edit Song Lists"));
@@ -627,7 +627,7 @@ manageBuildUISongListEditor (manageui_t *manage)
 
   /* song list editor: player */
   widget = uiplayerBuildUI (manage->slplayer);
-  uiWidgetExpandHoriz (widget);
+  uiWidgetExpandHorizW (widget);
   uiBoxPackStartWW (vbox, widget);
 
   notebook = uiCreateNotebook ();
@@ -650,8 +650,8 @@ manageBuildUISongListEditor (manageui_t *manage)
   uiBoxPackStartExpandWW (hbox, widget);
 
   vbox = uiCreateVertBoxWW ();
-  uiWidgetSetAllMargins (vbox, uiBaseMarginSz * 4);
-  uiWidgetSetMarginTop (vbox, uiBaseMarginSz * 64);
+  uiWidgetSetAllMarginsW (vbox, uiBaseMarginSz * 4);
+  uiWidgetSetMarginTopW (vbox, uiBaseMarginSz * 64);
   uiBoxPackStartWW (hbox, vbox);
   manage->ezvboxwidget = vbox;
 
@@ -702,7 +702,7 @@ manageBuildUIMusicManager (manageui_t *manage)
 
   /* music manager */
   vbox = uiCreateVertBoxWW ();
-  uiWidgetSetAllMargins (vbox, 4);
+  uiWidgetSetAllMarginsW (vbox, 4);
   /* CONTEXT: name of music manager notebook tab */
   tabLabel = uiCreateLabel (_("Music Manager"));
   uiNotebookAppendPage (manage->mainnotebook, vbox, tabLabel);
@@ -710,7 +710,7 @@ manageBuildUIMusicManager (manageui_t *manage)
 
   /* music manager: player */
   widget = uiplayerBuildUI (manage->mmplayer);
-  uiWidgetExpandHoriz (widget);
+  uiWidgetExpandHorizW (widget);
   uiBoxPackStartWW (vbox, widget);
 
   notebook = uiCreateNotebook ();
@@ -719,7 +719,7 @@ manageBuildUIMusicManager (manageui_t *manage)
 
   /* music manager: song selection tab*/
   widget = uisongselBuildUI (manage->mmsongsel, manage->window);
-  uiWidgetExpandHoriz (widget);
+  uiWidgetExpandHorizW (widget);
   /* CONTEXT: name of song selection notebook tab */
   tabLabel = uiCreateLabel (_("Music Manager"));
   uiNotebookAppendPage (notebook, widget, tabLabel);
@@ -748,7 +748,7 @@ manageBuildUIUpdateDatabase (manageui_t *manage)
 
   /* update database */
   vbox = uiCreateVertBoxWW ();
-  uiWidgetSetAllMargins (vbox, 4);
+  uiWidgetSetAllMarginsW (vbox, 4);
   /* CONTEXT: notebook tab title: update database */
   tabLabel = uiCreateLabel (_("Update Database"));
   uiNotebookAppendPage (manage->mainnotebook, vbox, tabLabel);
@@ -1134,15 +1134,15 @@ manageSongEditMenu (manageui_t *manage)
 
     /* CONTEXT: menu selection: song editor: edit all */
     menuitem = uiMenuCreateItem (menu, _("Edit All"), NULL, NULL);
-    uiWidgetDisable (menuitem);
+    uiWidgetDisableW (menuitem);
 
     /* CONTEXT: menu selection: song editor: apply edit all */
     menuitem = uiMenuCreateItem (menu, _("Apply Edit All"), NULL, NULL);
-    uiWidgetDisable (menuitem);
+    uiWidgetDisableW (menuitem);
 
     /* CONTEXT: menu selection: song editor: cancel edit all */
     menuitem = uiMenuCreateItem (menu, _("Cancel Edit All"), NULL, NULL);
-    uiWidgetDisable (menuitem);
+    uiWidgetDisableW (menuitem);
 
     manage->songeditmenu.initialized = true;
   }
@@ -1188,7 +1188,7 @@ manageSonglistMenu (manageui_t *manage)
 
     /* CONTEXT: menu selection: song list: edit menu: start new song list */
     menuitem = uiMenuCreateItem (menu, _("Start New Song List"), NULL, NULL);
-    uiWidgetDisable (menuitem);
+    uiWidgetDisableW (menuitem);
 
     menuitem = uiMenuAddMainItem (manage->menubar,
         /* CONTEXT: menu selection: actions for song list */
@@ -1198,7 +1198,7 @@ manageSonglistMenu (manageui_t *manage)
 
     /* CONTEXT: menu selection: song list: actions menu: rearrange the songs and create a new mix */
     menuitem = uiMenuCreateItem (menu, _("Mix"), NULL, NULL);
-    uiWidgetDisable (menuitem);
+    uiWidgetDisableW (menuitem);
 
     /* CONTEXT: menu selection: song list: actions menu: truncate the song list */
     menuitem = uiMenuCreateItem (menu, _("Truncate"),
@@ -1212,16 +1212,16 @@ manageSonglistMenu (manageui_t *manage)
 
     /* CONTEXT: menu selection: song list: export: export as m3u */
     menuitem = uiMenuCreateItem (menu, _("Export as M3U Playlist"), NULL, NULL);
-    uiWidgetDisable (menuitem);
+    uiWidgetDisableW (menuitem);
 
     /* CONTEXT: menu selection: song list: export: export as m3u8 */
     menuitem = uiMenuCreateItem (menu, _("Export as M3U8 Playlist"), NULL, NULL);
-    uiWidgetDisable (menuitem);
+    uiWidgetDisableW (menuitem);
 
     /* CONTEXT: menu selection: song list: export: export for ballroomdj */
     snprintf (tbuff, sizeof (tbuff), _("Export for %s"), BDJ4_NAME);
     menuitem = uiMenuCreateItem (menu, tbuff, NULL, NULL);
-    uiWidgetDisable (menuitem);
+    uiWidgetDisableW (menuitem);
 
     menuitem = uiMenuAddMainItem (manage->menubar,
         /* CONTEXT: menu selection: import actions for song list */
@@ -1231,12 +1231,12 @@ manageSonglistMenu (manageui_t *manage)
 
     /* CONTEXT: menu selection: song list: import: import m3u */
     menuitem = uiMenuCreateItem (menu, _("Import M3U"), NULL, NULL);
-    uiWidgetDisable (menuitem);
+    uiWidgetDisableW (menuitem);
 
     /* CONTEXT: menu selection: song list: import: import from ballroomdj */
     snprintf (tbuff, sizeof (tbuff), _("Import from %s"), BDJ4_NAME);
     menuitem = uiMenuCreateItem (menu, tbuff, NULL, NULL);
-    uiWidgetDisable (menuitem);
+    uiWidgetDisableW (menuitem);
 
     manage->slmenu.initialized = true;
   }
@@ -1315,14 +1315,14 @@ manageSetEasySonglist (manageui_t *manage)
 
   val = nlistGetNum (manage->options, MANAGE_EASY_SONGLIST);
   if (val) {
-    uiWidgetHide (manage->slmusicqtabwidget);
-    uiWidgetHide (manage->slsongseltabwidget);
-    uiWidgetShowAll (manage->slezmusicqtabwidget);
+    uiWidgetHideW (manage->slmusicqtabwidget);
+    uiWidgetHideW (manage->slsongseltabwidget);
+    uiWidgetShowAllW (manage->slezmusicqtabwidget);
     uiNotebookSetPage (manage->slnotebook, 0);
   } else {
-    uiWidgetHide (manage->slezmusicqtabwidget);
-    uiWidgetShowAll (manage->slmusicqtabwidget);
-    uiWidgetShowAll (manage->slsongseltabwidget);
+    uiWidgetHideW (manage->slezmusicqtabwidget);
+    uiWidgetShowAllW (manage->slmusicqtabwidget);
+    uiWidgetShowAllW (manage->slsongseltabwidget);
     uiNotebookSetPage (manage->slnotebook, 1);
   }
 }
@@ -1534,7 +1534,7 @@ manageSelectFileDialog (manageui_t *manage, int flags)
   if (cb != NULL) {
     /* CONTEXT: file type for the file selection dialog (song list) */
     dialog = manageCreateSelectFileDialog (manage, filelist, _("Song List"), cb);
-    uiWidgetShowAll (dialog);
+    uiWidgetShowAllW (dialog);
 
     x = nlistGetNum (manage->options, MANAGE_SELFILE_POSITION_X);
     y = nlistGetNum (manage->options, MANAGE_SELFILE_POSITION_Y);
@@ -1583,19 +1583,19 @@ manageCreateSelectFileDialog (manageui_t *manage,
   manage->selfiledialog = dialog;
 
   content = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
-  uiWidgetSetAllMargins (content, uiBaseMarginSz * 2);
+  uiWidgetSetAllMarginsW (content, uiBaseMarginSz * 2);
 
   vbox = uiCreateVertBoxWW ();
   uiBoxPackInWindowWW (content, vbox);
 
   scwin = uiCreateScrolledWindow (250);
-  uiWidgetExpandVert (scwin);
+  uiWidgetExpandVertW (scwin);
   uiBoxPackStartExpandWW (vbox, scwin);
 
   widget = uiCreateTreeView ();
   gtk_tree_view_set_activate_on_single_click (GTK_TREE_VIEW (widget), FALSE);
-  uiWidgetAlignHorizFill (widget);
-  uiWidgetExpandHoriz (widget);
+  uiWidgetAlignHorizFillW (widget);
+  uiWidgetExpandHorizW (widget);
   manage->selfiletree = widget;
 
   store = gtk_list_store_new (MNG_SELFILE_COL_MAX,

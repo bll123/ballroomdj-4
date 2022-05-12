@@ -32,7 +32,7 @@ uiTextBoxCreate (int height)
   tb->buffer = gtk_text_buffer_new (NULL);
   tb->textbox = gtk_text_view_new_with_buffer (tb->buffer);
   gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (tb->textbox), GTK_WRAP_WORD);
-  uiWidgetSetAllMargins (tb->textbox, uiBaseMarginSz * 2);
+  uiWidgetSetAllMarginsW (tb->textbox, uiBaseMarginSz * 2);
   gtk_widget_set_size_request (tb->textbox, -1, -1);
   gtk_widget_set_halign (tb->textbox, GTK_ALIGN_FILL);
   gtk_widget_set_valign (tb->textbox, GTK_ALIGN_START);

@@ -62,22 +62,22 @@ uisongeditBuildUI (uisongedit_t *uisongedit, GtkWidget *parentwin)
   uiw->parentwin = parentwin;
 
   uiw->vbox = uiCreateVertBoxWW ();
-  uiWidgetExpandHoriz (uiw->vbox);
+  uiWidgetExpandHorizW (uiw->vbox);
 
   hbox = uiCreateHorizBoxWW ();
-  uiWidgetExpandHoriz (hbox);
-  uiWidgetAlignHorizFill (hbox);
+  uiWidgetExpandHorizW (hbox);
+  uiWidgetAlignHorizFillW (hbox);
   uiBoxPackStartWW (uiw->vbox, hbox);
 
   lcol = uiCreateVertBoxWW ();
-  uiWidgetAlignHorizStart (lcol);
+  uiWidgetAlignHorizStartW (lcol);
   uiBoxPackStartWW (hbox, lcol);
 
   uisongeditAddDisplay (uisongedit, lcol, DISP_SEL_SONGEDIT_A);
 
   rcol = uiCreateVertBoxWW ();
-  uiWidgetAlignHorizStart (rcol);
-  uiWidgetExpandHoriz (rcol);
+  uiWidgetAlignHorizStartW (rcol);
+  uiWidgetExpandHorizW (rcol);
   uiBoxPackStartWW (hbox, rcol);
 
   uisongeditAddDisplay (uisongedit, rcol, DISP_SEL_SONGEDIT_B);

@@ -349,11 +349,11 @@ pluiBuildUI (playerui_t *plui)
 
   plui->vbox = uiCreateVertBoxWW ();
   uiBoxPackInWindowWW (plui->window, plui->vbox);
-  uiWidgetSetAllMargins (plui->vbox, uiBaseMarginSz * 2);
+  uiWidgetSetAllMarginsW (plui->vbox, uiBaseMarginSz * 2);
 
   /* menu */
   hbox = uiCreateHorizBoxWW ();
-  uiWidgetExpandHoriz (hbox);
+  uiWidgetExpandHorizW (hbox);
   uiBoxPackStartWW (plui->vbox, hbox);
 
   menubar = uiCreateMenubar ();
@@ -397,7 +397,7 @@ pluiBuildUI (playerui_t *plui)
 
   /* player */
   widget = uiplayerBuildUI (plui->uiplayer);
-  uiWidgetExpandHoriz (widget);
+  uiWidgetExpandHorizW (widget);
   uiBoxPackStartWW (plui->vbox, widget);
 
   plui->notebook = uiCreateNotebook ();
@@ -407,9 +407,9 @@ pluiBuildUI (playerui_t *plui)
   widget = gtk_button_new ();
   assert (widget != NULL);
   gtk_button_set_label (GTK_BUTTON (widget), "Set Queue for Playback");
-  uiWidgetSetMarginStart (widget, uiBaseMarginSz);
+  uiWidgetSetMarginStartW (widget, uiBaseMarginSz);
   uiNotebookSetActionWidget (plui->notebook, widget, GTK_PACK_END);
-  uiWidgetShowAll (widget);
+  uiWidgetShowAllW (widget);
   g_signal_connect (widget, "clicked", G_CALLBACK (pluiProcessSetPlaybackQueue), plui);
   plui->setPlaybackButton = widget;
 
@@ -422,12 +422,12 @@ pluiBuildUI (playerui_t *plui)
     uiBoxPackStartWW (hbox, tabLabel);
     uiImageNew (&plui->musicqImage [i]);
     uiImageSetFromPixbuf (&plui->musicqImage [i], &plui->ledonPixbuf);
-    uiWidgetSetMarginStart (plui->musicqImage [i].widget, uiBaseMarginSz);
+    uiWidgetSetMarginStartW (plui->musicqImage [i].widget, uiBaseMarginSz);
     uiBoxPackStartWW (hbox, plui->musicqImage [i].widget);
 
     uiNotebookAppendPage (plui->notebook, widget, hbox);
     uiutilsNotebookIDAdd (plui->nbtabid, UI_TAB_MUSICQ);
-    uiWidgetShowAll (hbox);
+    uiWidgetShowAllW (hbox);
   }
 
   /* request tab */
@@ -441,7 +441,7 @@ pluiBuildUI (playerui_t *plui)
   y = nlistGetNum (plui->options, PLUI_SIZE_Y);
   uiWindowSetDefaultSize (plui->window, x, y);
 
-  uiWidgetShowAll (plui->window);
+  uiWidgetShowAllW (plui->window);
 
   x = nlistGetNum (plui->options, PLUI_POSITION_X);
   y = nlistGetNum (plui->options, PLUI_POSITION_Y);
@@ -711,12 +711,12 @@ pluiSetSwitchPage (playerui_t *plui, int pagenum)
   page = gtk_notebook_get_nth_page (GTK_NOTEBOOK (plui->notebook), pagenum);
   tabid = uiutilsNotebookIDGet (plui->nbtabid, pagenum);
 
-  uiWidgetHide (plui->setPlaybackButton);
+  uiWidgetHideW (plui->setPlaybackButton);
   if (tabid == UI_TAB_MUSICQ) {
     plui->musicqManageIdx = pagenum;
     uimusicqSetManageIdx (plui->uimusicq, pagenum);
     if (nlistGetNum (plui->options, PLUI_SHOW_EXTRA_QUEUES)) {
-      uiWidgetShow (plui->setPlaybackButton);
+      uiWidgetShowW (plui->setPlaybackButton);
     }
   }
   logProcEnd (LOG_PROC, "pluiSetSwitchPage", "");
@@ -824,9 +824,9 @@ pluiSetExtraQueues (playerui_t *plui)
   tabid = uiutilsNotebookIDGet (plui->nbtabid, pagenum);
   if (tabid == UI_TAB_MUSICQ &&
       nlistGetNum (plui->options, PLUI_SHOW_EXTRA_QUEUES)) {
-    uiWidgetShow (plui->setPlaybackButton);
+    uiWidgetShowW (plui->setPlaybackButton);
   } else {
-    uiWidgetHide (plui->setPlaybackButton);
+    uiWidgetHideW (plui->setPlaybackButton);
   }
   logProcEnd (LOG_PROC, "pluiSetExtraQueues", "");
 }
@@ -880,7 +880,7 @@ pluiMarqueeFontSizeDialog (GtkMenuItem *mi, gpointer udata)
       GTK_SPIN_BUTTON (plui->marqueeSpinBox));
   gtk_adjustment_set_value (adjustment, (double) sz);
 
-  uiWidgetShowAll (plui->marqueeFontSizeDialog);
+  uiWidgetShowAllW (plui->marqueeFontSizeDialog);
 
   logProcEnd (LOG_PROC, "pluiMarqueeFontSizeDialog", "");
 }
@@ -953,7 +953,7 @@ pluiMarqueeFontSizeDialogResponse (GtkDialog *d, gint responseid, gpointer udata
       break;
     }
     case GTK_RESPONSE_CLOSE: {
-      uiWidgetHide (plui->marqueeFontSizeDialog);
+      uiWidgetHideW (plui->marqueeFontSizeDialog);
       break;
     }
   }

@@ -131,13 +131,13 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
 
   uiplayer->vbox = uiCreateVertBoxWW ();
   assert (uiplayer->vbox != NULL);
-  uiWidgetExpandHoriz (uiplayer->vbox);
+  uiWidgetExpandHorizW (uiplayer->vbox);
 
   /* song display */
 
   hbox = uiCreateHorizBoxWW ();
   assert (hbox != NULL);
-  uiWidgetExpandHoriz (hbox);
+  uiWidgetExpandHorizW (hbox);
   uiBoxPackStartWW (uiplayer->vbox, hbox);
 
   /* size group E */
@@ -156,7 +156,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
 
   uiImageSetFromPixbuf (&uiplayer->statusImg, &uiplayer->stopPixbuf);
   uiWidgetSetSizeRequest (&uiplayer->statusImg, 18, -1);
-  uiWidgetSetMarginStart (uiplayer->statusImg.widget, uiBaseMarginSz);
+  uiWidgetSetMarginStartW (uiplayer->statusImg.widget, uiBaseMarginSz);
   uiBoxPackStartWW (tbox, uiplayer->statusImg.widget);
 
   pathbldMakePath (tbuff, sizeof (tbuff), "button_play", ".svg",
@@ -180,34 +180,34 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiImageNew (&uiplayer->repeatImg);
   uiImageClear (&uiplayer->repeatImg);
   uiWidgetSetSizeRequest (&uiplayer->repeatImg, 18, -1);
-  uiWidgetSetMarginStart (uiplayer->repeatImg.widget, uiBaseMarginSz);
+  uiWidgetSetMarginStartW (uiplayer->repeatImg.widget, uiBaseMarginSz);
   uiBoxPackStartWW (tbox, uiplayer->repeatImg.widget);
 
   uiplayer->danceLab = uiCreateLabel ("");
   uiBoxPackStartWW (hbox, uiplayer->danceLab);
 
   widget = uiCreateLabel (" : ");
-  uiWidgetSetMarginStart (widget, 0);
+  uiWidgetSetMarginStartW (widget, 0);
   uiBoxPackStartWW (hbox, widget);
 
   widget = uiCreateLabel ("");
-  uiWidgetSetMarginStart (widget, 0);
+  uiWidgetSetMarginStartW (widget, 0);
   uiLabelEllipsizeOn (widget);
   uiBoxPackStartWW (hbox, widget);
   uiplayer->artistLab = widget;
 
   widget = uiCreateLabel (" : ");
-  uiWidgetSetMarginStart (widget, 0);
+  uiWidgetSetMarginStartW (widget, 0);
   uiBoxPackStartWW (hbox, widget);
 
   widget = uiCreateLabel ("");
-  uiWidgetSetMarginStart (widget, 0);
+  uiWidgetSetMarginStartW (widget, 0);
   uiLabelEllipsizeOn (widget);
   uiBoxPackStartWW (hbox, widget);
   uiplayer->titleLab = widget;
 
   widget = uiCreateLabel ("");
-  uiWidgetExpandHoriz (widget);
+  uiWidgetExpandHorizW (widget);
   uiBoxPackStartWW (hbox, widget);
 
   /* size group A */
@@ -242,7 +242,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
 
   hbox = uiCreateHorizBoxWW ();
   assert (hbox != NULL);
-  uiWidgetExpandHoriz (hbox);
+  uiWidgetExpandHorizW (hbox);
   uiBoxPackStartWW (uiplayer->vbox, hbox);
 
   /* size group E */
@@ -256,7 +256,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiBoxPackStartWW (hbox, uiplayer->countdownTimerLab);
 
   widget = uiCreateLabel (" / ");
-  uiWidgetSetMarginStart (widget, 0);
+  uiWidgetSetMarginStartW (widget, 0);
   uiBoxPackStartWW (hbox, widget);
 
   uiplayer->durationLab = uiCreateLabel (" 3:00");
@@ -265,7 +265,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiBoxPackStartWW (hbox, uiplayer->durationLab);
 
   widget = uiCreateLabel ("");
-  uiWidgetExpandHoriz (widget);
+  uiWidgetExpandHorizW (widget);
   uiBoxPackStartWW (hbox, widget);
 
   /* size group A */
@@ -299,7 +299,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
 
   hbox = uiCreateHorizBoxWW ();
   assert (hbox != NULL);
-  uiWidgetExpandHoriz (hbox);
+  uiWidgetExpandHorizW (hbox);
   uiBoxPackStartWW (uiplayer->vbox, hbox);
 
   /* size group E */
@@ -599,13 +599,13 @@ uiplayerProcessPlayerState (uiplayer_t *uiplayer, int playerState)
 
   uiplayer->playerState = playerState;
   if (playerState == PL_STATE_IN_FADEOUT) {
-    uiWidgetDisable (uiplayer->volumeScale);
-    uiWidgetDisable (uiplayer->seekScale);
-    uiWidgetDisable (uiplayer->speedScale);
+    uiWidgetDisableW (uiplayer->volumeScale);
+    uiWidgetDisableW (uiplayer->seekScale);
+    uiWidgetDisableW (uiplayer->speedScale);
   } else {
-    uiWidgetEnable (uiplayer->volumeScale);
-    uiWidgetEnable (uiplayer->seekScale);
-    uiWidgetEnable (uiplayer->speedScale);
+    uiWidgetEnableW (uiplayer->volumeScale);
+    uiWidgetEnableW (uiplayer->seekScale);
+    uiWidgetEnableW (uiplayer->speedScale);
   }
 
   switch (playerState) {

@@ -57,7 +57,7 @@ uisongselFilterDialog (void *udata)
   if (uisongsel->statusPlayable != NULL) {
     uiSwitchSetValue (uisongsel->statusPlayable, uisongsel->dfltpbflag);
   }
-  uiWidgetShowAll (uisongsel->filterDialog);
+  uiWidgetShowAllW (uisongsel->filterDialog);
 
   x = nlistGetNum (uisongsel->options, SONGSEL_FILTER_POSITION_X);
   y = nlistGetNum (uisongsel->options, SONGSEL_FILTER_POSITION_Y);
@@ -112,7 +112,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
       );
 
   content = gtk_dialog_get_content_area (GTK_DIALOG (uisongsel->filterDialog));
-  uiWidgetSetAllMargins (content, uiBaseMarginSz * 2);
+  uiWidgetSetAllMarginsW (content, uiBaseMarginSz * 2);
 
   vbox = uiCreateVertBoxWW ();
   uiBoxPackInWindowWW (content, vbox);
@@ -141,7 +141,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
   uiSizeGroupAdd (&sg, widget);
 
   widget = uiEntryCreate (&uisongsel->searchentry);
-  uiWidgetAlignHorizStart (widget);
+  uiWidgetAlignHorizStartW (widget);
   uiBoxPackStartWW (hbox, widget);
 
   /* genre */
@@ -309,7 +309,7 @@ uisongselFilterResponseHandler (GtkDialog *d, gint responseid, gpointer udata)
       nlistSetNum (uisongsel->options, SONGSEL_FILTER_POSITION_X, x);
       nlistSetNum (uisongsel->options, SONGSEL_FILTER_POSITION_Y, y);
 
-      uiWidgetHide (uisongsel->filterDialog);
+      uiWidgetHideW (uisongsel->filterDialog);
       break;
     }
     case GTK_RESPONSE_APPLY: {
