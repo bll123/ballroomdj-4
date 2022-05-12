@@ -15,6 +15,8 @@
 #include "ui.h"
 #include "uiutils.h"
 
+static gboolean uiLinkCallback (GtkLinkButton *lb, gpointer udata);
+
 void
 uiCreateLink (UIWidget *uiwidget, char *label, char *uri)
 {
@@ -42,4 +44,27 @@ uiLinkSet (UIWidget *uilink, char *label, char *uri)
   if (label != NULL) {
     gtk_button_set_label (GTK_BUTTON (uilink->widget), label);
   }
+}
+
+void
+uiLinkSetActivateCallback (UIWidget *uilink, UICallback *uicb)
+{
+  g_signal_connect (uilink->widget, "activate-link",
+      G_CALLBACK (uiLinkCallback), uicb);
+}
+
+static gboolean
+uiLinkCallback (GtkLinkButton *lb, gpointer udata)
+{
+  UICallback *uicb = udata;
+
+  if (uicb == NULL) {
+    return FALSE;
+  }
+  if (uicb->cb == NULL) {
+    return FALSE;
+  }
+
+  uicb->cb (uicb->udata);
+  return TRUE; // stop other link handlers
 }

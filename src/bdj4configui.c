@@ -198,6 +198,8 @@ typedef struct {
   int               danceidx;       // for dance edit
   GtkWidget         *widget;
   UIWidget          uiwidget;
+  UICallback        callback;
+  char              *uri;
 } confuiitem_t;
 
 typedef enum {
@@ -437,6 +439,7 @@ static char     * confuiGetLocalIP (configui_t *confui);
 static void     confuiSetStatusMsg (configui_t *confui, const char *msg);
 static int      confuiLocateWidgetIdx (configui_t *confui, void *wpointer);
 static void     confuiSpinboxTextInitDataNum (configui_t *confui, char *tag, int widx, ...);
+static void     confuiLinkHandler (void *udata);
 
 /* table editing */
 static void   confuiTableMoveUp (GtkButton *b, gpointer udata);
@@ -551,6 +554,8 @@ main (int argc, char *argv[])
     confui.uiitem [i].sbkeylist = NULL;
     confui.uiitem [i].danceidx = DANCE_DANCE;
     uiutilsUIWidgetInit (&confui.uiitem [i].uiwidget);
+    uiutilsUICallbackInit (&confui.uiitem [i].callback, NULL, NULL);
+    confui.uiitem [i].uri = NULL;
 
     if (i > CONFUI_BEGIN && i < CONFUI_COMBOBOX_MAX) {
       uiDropDownInit (&confui.uiitem [i].u.dropdown);
@@ -834,6 +839,12 @@ confuiClosingCallback (void *udata, programstate_t programState)
 
   for (int i = CONFUI_COMBOBOX_MAX + 1; i < CONFUI_ENTRY_MAX; ++i) {
     uiEntryFree (&confui->uiitem [i].u.entry);
+  }
+
+  for (int i = CONFUI_SPINBOX_MAX + 1; i < CONFUI_ITEM_MAX; ++i) {
+    if (confui->uiitem [i].uri != NULL) {
+      free (confui->uiitem [i].uri);
+    }
   }
 
   for (int i = CONFUI_ENTRY_MAX + 1; i < CONFUI_SPINBOX_MAX; ++i) {
@@ -2274,6 +2285,12 @@ confuiMakeItemLink (configui_t *confui, GtkWidget *vbox, UIWidget *sg,
   hbox = confuiMakeItemLabel (vbox, sg, txt);
   uiutilsUIWidgetInit (&uiwidget);
   uiCreateLink (&uiwidget, disp, NULL);
+  if (isMacOS ()) {
+    uiutilsUICallbackInit (&confui->uiitem [widx].callback,
+        confuiLinkHandler, confui);
+    confui->uiitem [widx].uri = NULL;
+    uiLinkSetActivateCallback (&uiwidget, &confui->uiitem [widx].callback);
+  }
   uiBoxPackStartWU (hbox, &uiwidget);
   uiBoxPackStartWW (vbox, hbox);
   uiutilsUIWidgetCopy (&confui->uiitem [widx].uiwidget, &uiwidget);
@@ -3010,7 +3027,7 @@ confuiComboboxSelect (configui_t *confui, GtkTreePath *path, int widx)
 static void
 confuiUpdateMobmqQrcode (configui_t *confui)
 {
-  char          uri [MAXPATHLEN];
+  char          uridisp [MAXPATHLEN];
   char          *qruri = "";
   char          tbuff [MAXPATHLEN];
   char          *tag;
@@ -3025,7 +3042,7 @@ confuiUpdateMobmqQrcode (configui_t *confui)
   confuiSetStatusMsg (confui, "");
   if (type == MOBILEMQ_OFF) {
     *tbuff = '\0';
-    *uri = '\0';
+    *uridisp = '\0';
     qruri = "";
   }
   if (type == MOBILEMQ_INTERNET) {
@@ -3036,7 +3053,7 @@ confuiUpdateMobmqQrcode (configui_t *confui)
       snprintf (tbuff, sizeof (tbuff), valstr, _("Name"));
       confuiSetStatusMsg (confui, tbuff);
     }
-    snprintf (uri, sizeof (uri), "%s%s?v=1&tag=%s",
+    snprintf (uridisp, sizeof (uridisp), "%s%s?v=1&tag=%s",
         sysvarsGetStr (SV_MOBMQ_HOST), sysvarsGetStr (SV_MOBMQ_URI),
         tag);
   }
@@ -3044,17 +3061,21 @@ confuiUpdateMobmqQrcode (configui_t *confui)
     char *ip;
 
     ip = confuiGetLocalIP (confui);
-    snprintf (uri, sizeof (uri), "http://%s:%zd",
+    snprintf (uridisp, sizeof (uridisp), "http://%s:%zd",
         ip, bdjoptGetNum (OPT_P_MOBILEMQPORT));
   }
 
   if (type != MOBILEMQ_OFF) {
     /* CONTEXT: configuration: qr code: title display for mobile marquee */
-    qruri = confuiMakeQRCodeFile (confui, _("Mobile Marquee"), uri);
+    qruri = confuiMakeQRCodeFile (confui, _("Mobile Marquee"), uridisp);
   }
 
   uiwidgetp = &confui->uiitem [CONFUI_WIDGET_MMQ_QR_CODE].uiwidget;
-  uiLinkSet (uiwidgetp, uri, qruri);
+  uiLinkSet (uiwidgetp, uridisp, qruri);
+  if (confui->uiitem [CONFUI_WIDGET_MMQ_QR_CODE].uri != NULL) {
+    free (confui->uiitem [CONFUI_WIDGET_MMQ_QR_CODE].uri);
+  }
+  confui->uiitem [CONFUI_WIDGET_MMQ_QR_CODE].uri = strdup (qruri);
   if (*qruri) {
     free (qruri);
   }
@@ -3128,7 +3149,7 @@ confuiMobmqTitleChg (void *edata, void *udata)
 static void
 confuiUpdateRemctrlQrcode (configui_t *confui)
 {
-  char          uri [MAXPATHLEN];
+  char          uridisp [MAXPATHLEN];
   char          *qruri = "";
   char          tbuff [MAXPATHLEN];
   ssize_t       onoff;
@@ -3140,24 +3161,28 @@ confuiUpdateRemctrlQrcode (configui_t *confui)
 
   if (onoff == 0) {
     *tbuff = '\0';
-    *uri = '\0';
+    *uridisp = '\0';
     qruri = "";
   }
   if (onoff == 1) {
     char *ip;
 
     ip = confuiGetLocalIP (confui);
-    snprintf (uri, sizeof (uri), "http://%s:%zd",
+    snprintf (uridisp, sizeof (uridisp), "http://%s:%zd",
         ip, bdjoptGetNum (OPT_P_REMCONTROLPORT));
   }
 
   if (onoff == 1) {
     /* CONTEXT: configuration: qr code: title display for mobile remote control */
-    qruri = confuiMakeQRCodeFile (confui, _("Mobile Remote Control"), uri);
+    qruri = confuiMakeQRCodeFile (confui, _("Mobile Remote Control"), uridisp);
   }
 
   uiwidgetp = &confui->uiitem [CONFUI_WIDGET_RC_QR_CODE].uiwidget;
-  uiLinkSet (uiwidgetp, uri, qruri);
+  uiLinkSet (uiwidgetp, uridisp, qruri);
+  if (confui->uiitem [CONFUI_WIDGET_RC_QR_CODE].uri != NULL) {
+    free (confui->uiitem [CONFUI_WIDGET_RC_QR_CODE].uri);
+  }
+  confui->uiitem [CONFUI_WIDGET_RC_QR_CODE].uri = strdup (qruri);
   if (*qruri) {
     free (qruri);
   }
@@ -3363,7 +3388,33 @@ confuiSpinboxTextInitDataNum (configui_t *confui, char *tag, int widx, ...)
   va_end (valist);
 }
 
+static void
+confuiLinkHandler (void *udata)
+{
+  configui_t  *confui = udata;
+  char        *uri;
+  char        tmp [200];
+  int         widx = -1;
+
+  if (confui->tablecurr == CONFUI_ID_MOBILE_MQ) {
+    widx = CONFUI_WIDGET_MMQ_QR_CODE;
+  }
+  if (confui->tablecurr == CONFUI_ID_REM_CONTROL) {
+    widx = CONFUI_WIDGET_RC_QR_CODE;
+  }
+  if (widx < 0) {
+    return;
+  }
+
+  uri = confui->uiitem [widx].uri;
+  if (uri != NULL) {
+    snprintf (tmp, sizeof (tmp), "open %s", uri);
+    system (tmp);
+  }
+}
+
 /* table editing */
+
 static void
 confuiTableMoveUp (GtkButton *b, gpointer udata)
 {
@@ -4981,3 +5032,4 @@ confuiDispRemove (GtkButton *b, gpointer udata)
     confuiCreateTagListingDisp (confui);
   }
 }
+

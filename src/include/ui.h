@@ -95,6 +95,7 @@ void uiDropDownSelectionSetStr (uidropdown_t *dropdown, char *stridx);
 /* uigtklink.c */
 void uiCreateLink (UIWidget *uiwidget, char *label, char *uri);
 void uiLinkSet (UIWidget *uilink, char *label, char *uri);
+void uiLinkSetActivateCallback (UIWidget *uilink, UICallback *uicb);
 
 /* uigtktextbox.c */
 uitextbox_t  *uiTextBoxCreate (int height);

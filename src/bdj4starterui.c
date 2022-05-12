@@ -68,6 +68,17 @@ enum {
   START_CALLBACK_MAX,
 };
 
+enum {
+  START_LINK_CB_FORUM,
+  START_LINK_CB_TICKETS,
+  START_LINK_CB_MAX,
+};
+
+typedef struct {
+  UICallback    cb;
+  char          *uri;
+} startlinkcb_t;
+
 typedef struct {
   progstate_t     *progstate;
   char            *locknm;
@@ -93,6 +104,7 @@ typedef struct {
   int             stopwaitcount;
   nlist_t         *proflist;
   UICallback      callbacks [START_CALLBACK_MAX];
+  startlinkcb_t   macoslinkcb [START_LINK_CB_MAX];
   /* gtk stuff */
   uispinbox_t     profilesel;
   GtkWidget       *window;
@@ -167,6 +179,10 @@ static size_t   starterGzipEnd (z_stream *zs);
 static void     starterStopAllProcesses (GtkMenuItem *mi, gpointer udata);
 static int      starterCountProcesses (startui_t *starter);
 
+static void     starterForumLinkHandler (void *udata);
+static void     starterTicketLinkHandler (void *udata);
+static void     starterLinkHandler (void *udata, int cbidx);
+
 static int gKillReceived = 0;
 
 int
@@ -204,6 +220,9 @@ main (int argc, char *argv[])
   starter.mainstarted = 0;
   starter.stopwaitcount = 0;
   starter.proflist = NULL;
+  for (int i = 0; i < START_LINK_CB_MAX; ++i) {
+    starter.macoslinkcb [i].uri = NULL;
+  }
 
   procutilInitProcesses (starter.processes);
 
@@ -332,6 +351,11 @@ starterClosingCallback (void *udata, programstate_t programState)
       "starterui", BDJ4_CONFIG_EXT, PATHBLD_MP_USEIDX);
   datafileSaveKeyVal ("starterui", fn, starteruidfkeys, STARTERUI_KEY_MAX, starter->options);
 
+  for (int i = 0; i < START_LINK_CB_MAX; ++i) {
+    if (starter->macoslinkcb [i].uri != NULL) {
+      free (starter->macoslinkcb [i].uri);
+    }
+  }
   if (starter->optiondf != NULL) {
     datafileFree (starter->optiondf);
   }
@@ -996,6 +1020,13 @@ starterProcessSupport (void *udata)
   /* CONTEXT: starterui: basic support dialog: support option */
   snprintf (tbuff, sizeof (tbuff), _("%s Forums"), BDJ4_NAME);
   uiCreateLink (&uiwidget, tbuff, uri);
+  if (isMacOS ()) {
+    uiutilsUICallbackInit (&starter->macoslinkcb [START_LINK_CB_FORUM].cb,
+        starterForumLinkHandler, starter);
+    starter->macoslinkcb [START_LINK_CB_FORUM].uri = strdup (uri);
+    uiLinkSetActivateCallback (&uiwidget,
+        &starter->macoslinkcb [START_LINK_CB_FORUM].cb);
+  }
   uiBoxPackStart (&vbox, &uiwidget);
 
   /* begin line */
@@ -1004,6 +1035,13 @@ starterProcessSupport (void *udata)
   /* CONTEXT: starterui: basic support dialog: support option */
   snprintf (tbuff, sizeof (tbuff), _("%s Support Tickets"), BDJ4_NAME);
   uiCreateLink (&uiwidget, tbuff, uri);
+  if (isMacOS ()) {
+    uiutilsUICallbackInit (&starter->macoslinkcb [START_LINK_CB_TICKETS].cb,
+        starterTicketLinkHandler, starter);
+    starter->macoslinkcb [START_LINK_CB_TICKETS].uri = strdup (uri);
+    uiLinkSetActivateCallback (&uiwidget,
+        &starter->macoslinkcb [START_LINK_CB_TICKETS].cb);
+  }
   uiBoxPackStart (&vbox, &uiwidget);
 
   /* begin line */
@@ -1621,3 +1659,31 @@ starterCountProcesses (startui_t *starter)
   logProcEnd (LOG_PROC, "starterCountProcesses", "");
   return count;
 }
+
+
+inline static void
+starterForumLinkHandler (void *udata)
+{
+  starterLinkHandler (udata, START_LINK_CB_FORUM);
+}
+
+inline static void
+starterTicketLinkHandler (void *udata)
+{
+  starterLinkHandler (udata, START_LINK_CB_TICKETS);
+}
+
+static void
+starterLinkHandler (void *udata, int cbidx)
+{
+  startui_t *starter = udata;
+  char        *uri;
+  char        tmp [200];
+
+  uri = starter->macoslinkcb [cbidx].uri;
+  if (uri != NULL) {
+    snprintf (tmp, sizeof (tmp), "open %s", uri);
+    system (tmp);
+  }
+}
+

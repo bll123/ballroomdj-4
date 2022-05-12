@@ -1528,15 +1528,12 @@ installerConvertStart (installer_t *installer)
   *installer->bdj3version = '\0';
   snprintf (tbuff, sizeof (tbuff), "%s/VERSION.txt",
       installer->bdj3loc);
-fprintf (stderr, "bdj3-vers: %s\n", tbuff);
   if (fileopFileExists (tbuff)) {
     data = filedataReadAll (tbuff, NULL);
     tp = strtok_r (data, "\r\n", &tokptr);
     while (tp != NULL) {
       vnm = strtok_r (tp, "=", &tokptrb);
       p = strtok_r (NULL, "=", &tokptrb);
-fprintf (stderr, "vnm:%s:\n", vnm);
-fprintf (stderr, "p:%s:\n", p);
       if (strcmp (vnm, "VERSION") == 0) {
         strlcat (installer->bdj3version, p, sizeof (installer->bdj3version));
         stringTrim (installer->bdj3version);
