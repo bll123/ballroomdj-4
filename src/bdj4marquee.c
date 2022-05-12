@@ -64,11 +64,10 @@ typedef struct {
   datafile_t      *optiondf;
   nlist_t         *options;
   GtkWidget       *window;
-  GtkWidget       *vbox;
   GtkWidget       *pbar;
   GtkWidget       *danceLab;
   GtkWidget       *countdownTimerLab;
-  GtkWidget       *infoBox;
+  UIWidget        infoBox;
   GtkWidget       *infoArtistLab;
   GtkWidget       *infoSepLab;
   GtkWidget       *infoTitleLab;
@@ -156,6 +155,7 @@ main (int argc, char *argv[])
   marquee.infoSepLab = NULL;
   marquee.infoTitleLab = NULL;
   uiutilsUIWidgetInit (&marquee.sep);
+  uiutilsUIWidgetInit (&marquee.infoBox);
   marquee.marqueeLabs = NULL;
   marquee.lastHeight = 0;
   marquee.priorSize = 0;
@@ -308,12 +308,16 @@ marqueeBuildUI (marquee_t *marquee)
 {
   char      imgbuff [MAXPATHLEN];
   char      tbuff [MAXPATHLEN];
+  UIWidget  mainvbox;
   GtkWidget *window;
-  GtkWidget *hbox;
-  GtkWidget *vbox;
+  UIWidget  hbox;
+  UIWidget  vbox;
   gint      x, y;
 
   logProcBegin (LOG_PROC, "marqueeBuildUI");
+  uiutilsUIWidgetInit (&mainvbox);
+  uiutilsUIWidgetInit (&vbox);
+  uiutilsUIWidgetInit (&hbox);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon_marquee", ".svg", PATHBLD_MP_IMGDIR);
@@ -335,25 +339,24 @@ marqueeBuildUI (marquee_t *marquee)
 
   marquee->window = window;
 
-  marquee->vbox = uiCreateVertBoxWW ();
-  uiWidgetSetAllMarginsW (marquee->vbox, 10);
-  uiBoxPackInWindowWW (window, marquee->vbox);
-  uiWidgetExpandHorizW (marquee->vbox);
-  uiWidgetExpandVertW (marquee->vbox);
+  uiCreateVertBox (&mainvbox);
+  uiWidgetSetAllMargins (&mainvbox, 10);
+  uiBoxPackInWindowWU (window, &mainvbox);
+  uiWidgetExpandHoriz (&mainvbox);
+  uiWidgetExpandVert (&mainvbox);
   marquee->marginTotal = 20;
 
   marquee->pbar = uiCreateProgressBar (bdjoptGetStr (OPT_P_MQ_ACCENT_COL));
-  uiBoxPackStartWW (marquee->vbox, marquee->pbar);
+  uiBoxPackStartUW (&mainvbox, marquee->pbar);
 
-  vbox = uiCreateVertBoxWW ();
-  uiWidgetSetAllMarginsW (marquee->vbox, 10);
-  uiWidgetExpandHorizW (marquee->vbox);
-  uiBoxPackStartWW (marquee->vbox, vbox);
+  uiCreateVertBox (&vbox);
+  uiWidgetExpandHoriz (&vbox);
+  uiBoxPackStart (&mainvbox, &vbox);
 
-  hbox = uiCreateHorizBoxWW ();
-  uiWidgetAlignHorizFillW (hbox);
-  uiWidgetExpandHorizW (hbox);
-  uiBoxPackStartWW (vbox, hbox);
+  uiCreateHorizBox (&hbox);
+  uiWidgetAlignHorizFill (&hbox);
+  uiWidgetExpandHoriz (&hbox);
+  uiBoxPackStart (&vbox, &hbox);
 
   /* CONTEXT: marquee: displayed when nothing is set to be played */
   marquee->danceLab = uiCreateLabel (_("Not Playing"));
@@ -363,7 +366,7 @@ marqueeBuildUI (marquee_t *marquee)
       "label { color: %s; }",
       bdjoptGetStr (OPT_P_MQ_ACCENT_COL));
   uiSetCss (marquee->danceLab, tbuff);
-  uiBoxPackStartWW (hbox, marquee->danceLab);
+  uiBoxPackStartUW (&hbox, marquee->danceLab);
 
   marquee->countdownTimerLab = uiCreateLabel ("0:00");
   uiLabelSetMaxWidth (marquee->countdownTimerLab, 6);
@@ -373,38 +376,36 @@ marqueeBuildUI (marquee_t *marquee)
       "label { color: %s; }",
       bdjoptGetStr (OPT_P_MQ_ACCENT_COL));
   uiSetCss (marquee->countdownTimerLab, tbuff);
-  uiBoxPackEndWW (hbox, marquee->countdownTimerLab);
+  uiBoxPackEndUW (&hbox, marquee->countdownTimerLab);
 
-  hbox = uiCreateHorizBoxWW ();
-  uiWidgetAlignHorizFillW (hbox);
-  uiWidgetExpandHorizW (hbox);
-  uiBoxPackStartWW (vbox, hbox);
-  marquee->infoBox = hbox;
+  uiCreateHorizBox (&hbox);
+  uiWidgetAlignHorizFill (&hbox);
+  uiWidgetExpandHoriz (&hbox);
+  uiBoxPackStart (&vbox, &hbox);
+  uiutilsUIWidgetCopy (&marquee->infoBox, &hbox);
 
   marquee->infoArtistLab = uiCreateLabel ("");
   uiWidgetAlignHorizStartW (marquee->infoArtistLab);
-  uiWidgetExpandHorizW (hbox);
   uiWidgetDisableFocusW (marquee->infoArtistLab);
   uiLabelEllipsizeOn (marquee->infoArtistLab);
-  uiBoxPackStartWW (hbox, marquee->infoArtistLab);
+  uiBoxPackStartUW (&hbox, marquee->infoArtistLab);
 
   marquee->infoSepLab = uiCreateLabel ("");
   uiWidgetAlignHorizStartW (marquee->infoSepLab);
   uiWidgetDisableFocusW (marquee->infoSepLab);
-  uiBoxPackStartWW (hbox, marquee->infoSepLab);
+  uiBoxPackStartUW (&hbox, marquee->infoSepLab);
 
   marquee->infoTitleLab = uiCreateLabel ("");
   uiWidgetAlignHorizStartW (marquee->infoTitleLab);
-  uiWidgetExpandHorizW (hbox);
   uiWidgetDisableFocusW (marquee->infoTitleLab);
   uiLabelEllipsizeOn (marquee->infoTitleLab);
-  uiBoxPackStartWW (hbox, marquee->infoTitleLab);
+  uiBoxPackStartUW (&hbox, marquee->infoTitleLab);
 
   uiCreateHorizSeparator (&marquee->sep);
   uiSeparatorSetColor (&marquee->sep, bdjoptGetStr (OPT_P_MQ_ACCENT_COL));
   uiWidgetExpandHoriz (&marquee->sep);
   uiWidgetSetMarginTop (&marquee->sep, uiBaseMarginSz);
-  uiBoxPackEndWU (vbox, &marquee->sep);
+  uiBoxPackEnd (&vbox, &marquee->sep);
 
   marquee->marqueeLabs = malloc (sizeof (GtkWidget *) * marquee->mqLen);
 
@@ -412,9 +413,9 @@ marqueeBuildUI (marquee_t *marquee)
     marquee->marqueeLabs [i] = uiCreateLabel ("");
     uiWidgetAlignHorizStartW (marquee->marqueeLabs [i]);
     uiWidgetExpandHorizW (marquee->marqueeLabs [i]);
-    gtk_widget_set_margin_end (marquee->marqueeLabs [i], 10);
+    uiWidgetSetMarginStartW (marquee->marqueeLabs [i], 10);
     uiWidgetDisableFocusW (marquee->marqueeLabs [i]);
-    uiBoxPackStartWW (marquee->vbox, marquee->marqueeLabs [i]);
+    uiBoxPackStartUW (&mainvbox, marquee->marqueeLabs [i]);
   }
 
   marqueeSetFont (marquee, nlistGetNum (marquee->options, MQ_FONT_SZ));
@@ -425,7 +426,7 @@ marqueeBuildUI (marquee_t *marquee)
   }
 
   if (! marquee->mqShowInfo) {
-    uiWidgetHideW (marquee->infoBox);
+    uiWidgetHide (&marquee->infoBox);
   }
   uiWidgetShowAllW (window);
 
@@ -778,10 +779,8 @@ marqueeMoveWindow (marquee_t *marquee)
 static void
 marqueeStateChg (GtkWidget *window, GtkStateType flags, gpointer userdata)
 {
-  logProcBegin (LOG_PROC, "marqueeStateChg");
   /* the marquee is never in a backdrop state */
-  gtk_widget_unset_state_flags (window, GTK_STATE_FLAG_BACKDROP);
-  logProcEnd (LOG_PROC, "marqueeStateChg", "");
+  uiWidgetClearBackdropFlagW (window);
 }
 
 static void
@@ -822,7 +821,7 @@ marqueePopulate (marquee_t *marquee, char *args)
   logProcBegin (LOG_PROC, "marqueePopulate");
 
   if (! marquee->mqShowInfo) {
-    uiWidgetHideW (marquee->infoBox);
+    uiWidgetHide (&marquee->infoBox);
   }
 
   p = strtok_r (args, MSG_ARGS_RS_STR, &tokptr);
@@ -960,6 +959,6 @@ marqueeDisplayCompletion (marquee_t *marquee)
   uiLabelSetText (marquee->infoTitleLab, disp);
 
   if (! marquee->mqShowInfo) {
-    uiWidgetShowAllW (marquee->infoBox);
+    uiWidgetShowAll (&marquee->infoBox);
   }
 }

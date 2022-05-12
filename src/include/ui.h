@@ -196,6 +196,8 @@ void  uiSetCss (GtkWidget *w, char *style);
 void  uiSetUIFont (char *uifont);
 void  uiInitUILog (void);
 void  uiGetForegroundColor (GtkWidget *widget, char *buff, size_t sz);
+
+/* uigtkwidget.c */
 /* widget interface */
 void  uiWidgetDisable (UIWidget *uiwidget);
 void  uiWidgetEnable (UIWidget *uiwidget);
@@ -216,6 +218,7 @@ void  uiWidgetShowAll (UIWidget *uiwidget);
 void  uiWidgetMakePersistent (UIWidget *uiuiwidget);
 void  uiWidgetClearPersistent (UIWidget *uiuiwidget);
 void  uiWidgetSetSizeRequest (UIWidget *uiuiwidget, int width, int height);
+void  uiWidgetClearBackdropFlag (UIWidget *uiwidget);
 /* these routines will be removed at a later date */
 void  uiWidgetDisableFocusW (GtkWidget *widget);
 void  uiWidgetHideW (GtkWidget *widget);
@@ -240,6 +243,7 @@ void  uiWidgetDisableFocusW (GtkWidget *widget);
 void  uiWidgetHideW (GtkWidget *widget);
 void  uiWidgetShowW (GtkWidget *widget);
 void  uiWidgetShowAllW (GtkWidget *widget);
+void  uiWidgetClearBackdropFlagW (GtkWidget *widget);
 
 /* uigtkimage.c */
 void  uiImageFromFile (UIWidget *uiwidget, const char *fn);

@@ -23,6 +23,7 @@ add_library (libuigtk3 SHARED
   uigtktoggle.c
   uigtktreeview.c
   uigtkutils.c
+  uigtkwidget.c
   uigtkwindow.c
 )
 target_include_directories (libuigtk3

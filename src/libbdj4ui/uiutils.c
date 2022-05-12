@@ -74,13 +74,25 @@ uiutilsNotebookIDGet (uiutilsnbtabid_t *nbtabid, int idx)
   return nbtabid->tabids [idx];
 }
 
-void
+inline void
 uiutilsUIWidgetInit (UIWidget *uiwidget)
 {
   if (uiwidget == NULL) {
     return;
   }
   uiwidget->widget = NULL;
+}
+
+inline void
+uiutilsUIWidgetCopy (UIWidget *target, UIWidget *source)
+{
+  if (target == NULL) {
+    return;
+  }
+  if (source == NULL) {
+    return;
+  }
+  memcpy (target, source, sizeof (UIWidget));
 }
 
 void
