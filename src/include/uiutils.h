@@ -68,8 +68,8 @@ typedef struct {
   GtkWidget     *window;
   GtkWidget     *tree;
   GtkTreeSelection  *sel;
-  nlist_t       *numIndexMap;
   slist_t       *strIndexMap;
+  nlist_t       *keylist;
   gulong        closeHandlerId;
   char          *strSelection;
   int           maxwidth;

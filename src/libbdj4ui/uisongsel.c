@@ -165,7 +165,6 @@ uisongselFilterDanceProcess (uisongsel_t *uisongsel, ssize_t idx)
   logProcBegin (LOG_PROC, "uisongselFilterDanceProcess");
 
   uisongselSongfilterSetDance (uisongsel, idx);
-  uiDropDownSelectionSetNum (&uisongsel->filterdancesel, idx);
   uisongselApplySongFilter (uisongsel);
   logProcEnd (LOG_PROC, "uisongselFilterDanceProcess", "");
 }
@@ -197,7 +196,6 @@ void
 uisongselDanceSelect (uisongsel_t *uisongsel, ssize_t idx)
 {
   logProcBegin (LOG_PROC, "uisongselDanceSelect");
-  uisongsel->danceIdx = idx;
   uisongselSongfilterSetDance (uisongsel, idx);
   logProcEnd (LOG_PROC, "uisongselDanceSelect", "");
 }
@@ -237,9 +235,6 @@ void
 uisongselApplySongFilter (uisongsel_t *uisongsel)
 {
   ilistidx_t    idx;
-
-  idx = songfilterGetNum (uisongsel->songfilter, SONG_FILTER_DANCE_IDX);
-  uiDropDownSelectionSetNum (&uisongsel->dancesel, idx);
 
   uisongsel->dfilterCount = (double) songfilterProcess (
       uisongsel->songfilter, uisongsel->musicdb);

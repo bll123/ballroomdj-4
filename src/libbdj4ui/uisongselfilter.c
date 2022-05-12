@@ -73,6 +73,9 @@ uisongselFilterDanceSignal (GtkTreeView *tv, GtkTreePath *path,
   ssize_t     idx;
 
   idx = uiDropDownSelectionGet (&uisongsel->dancesel, path);
+  if (uisongsel->filterDialog != NULL) {
+    uiDropDownSelectionSetNum (&uisongsel->filterdancesel, idx);
+  }
   uisongselFilterDanceProcess (uisongsel, idx);
   return;
 }
@@ -313,13 +316,13 @@ uisongselFilterResponseHandler (GtkDialog *d, gint responseid, gpointer udata)
       break;
     }
     case GTK_RESPONSE_APPLY: {
-      uiDropDownSelectionSetNum (&uisongsel->dancesel, uisongsel->danceIdx);
       break;
     }
     case RESPONSE_RESET: {
       songfilterReset (uisongsel->songfilter);
       uisongsel->danceIdx = -1;
-      uiDropDownSelectionSetNum (&uisongsel->dancesel, -1);
+      uiDropDownSelectionSetNum (&uisongsel->dancesel, uisongsel->danceIdx);
+      uiDropDownSelectionSetNum (&uisongsel->filterdancesel, uisongsel->danceIdx);
       uisongselInitFilterDisplay (uisongsel);
       if (uisongsel->statusPlayable != NULL) {
         uiSwitchSetValue (uisongsel->statusPlayable, uisongsel->dfltpbflag);
@@ -432,6 +435,7 @@ uisongselDanceSelectSignal (GtkTreeView *tv, GtkTreePath *path,
   ssize_t     idx;
 
   idx = uiDropDownSelectionGet (&uisongsel->filterdancesel, path);
+  uiDropDownSelectionSetNum (&uisongsel->dancesel, idx);
   uisongselDanceSelect (uisongsel, idx);
 }
 

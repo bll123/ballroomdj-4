@@ -26,7 +26,7 @@ static GtkWidget * uiDropDownButtonCreate (uidropdown_t *dropdown);
 static void uiDropDownWindowCreate (uidropdown_t *dropdown,
     void *processSelectionCallback, void *udata);
 static void uiDropDownSelectionSet (uidropdown_t *dropdown,
-    ssize_t internalidx);
+    nlistidx_t internalidx);
 
 void
 uiDropDownInit (uidropdown_t *dropdown)
@@ -41,7 +41,7 @@ uiDropDownInit (uidropdown_t *dropdown)
   dropdown->closeHandlerId = 0;
   dropdown->strSelection = NULL;
   dropdown->strIndexMap = NULL;
-  dropdown->numIndexMap = NULL;
+  dropdown->keylist = NULL;
   dropdown->open = false;
   dropdown->iscombobox = false;
   logProcEnd (LOG_PROC, "uiDropDownInit", "");
@@ -62,8 +62,8 @@ uiDropDownFree (uidropdown_t *dropdown)
     if (dropdown->strIndexMap != NULL) {
       slistFree (dropdown->strIndexMap);
     }
-    if (dropdown->numIndexMap != NULL) {
-      nlistFree (dropdown->numIndexMap);
+    if (dropdown->keylist != NULL) {
+      nlistFree (dropdown->keylist);
     }
   }
   logProcEnd (LOG_PROC, "uiDropDownFree", "");
@@ -94,13 +94,14 @@ uiComboboxCreate (GtkWidget *parentwin,
       dropdown, udata);
 }
 
-ssize_t
+nlistidx_t
 uiDropDownSelectionGet (uidropdown_t *dropdown, GtkTreePath *path)
 {
   GtkTreeIter   iter;
   GtkTreeModel  *model = NULL;
   gulong        idx = 0;
   int32_t       idx32;
+  nlistidx_t    retval;
   char          tbuff [100];
 
   logProcBegin (LOG_PROC, "uiDropDownSelectionGet");
@@ -112,6 +113,7 @@ uiDropDownSelectionGet (uidropdown_t *dropdown, GtkTreePath *path)
     /* sets it to a 32-bit value */
     /* want the special -1 index (all items for combobox) */
     idx32 = (int32_t) idx;
+    retval = idx32;
     if (dropdown->strSelection != NULL) {
       free (dropdown->strSelection);
     }
@@ -133,7 +135,7 @@ uiDropDownSelectionGet (uidropdown_t *dropdown, GtkTreePath *path)
   }
 
   logProcEnd (LOG_PROC, "uiDropDownSelectionGet", "");
-  return (ssize_t) idx32;
+  return retval;
 }
 
 void
@@ -148,7 +150,7 @@ uiDropDownSetList (uidropdown_t *dropdown, slist_t *list,
   GtkTreeViewColumn *column = NULL;
   char              tbuff [200];
   ilistidx_t        iteridx;
-  ssize_t           internalidx;
+  nlistidx_t        internalidx;
 
   logProcBegin (LOG_PROC, "uiDropDownSetList");
 
@@ -225,7 +227,7 @@ uiDropDownSetNumList (uidropdown_t *dropdown, slist_t *list,
   GtkTreeViewColumn *column = NULL;
   char              tbuff [200];
   ilistidx_t        iteridx;
-  ssize_t            internalidx;
+  nlistidx_t        internalidx;
   nlistidx_t        idx;
 
   logProcBegin (LOG_PROC, "uiDropDownSetNumList");
@@ -234,7 +236,7 @@ uiDropDownSetNumList (uidropdown_t *dropdown, slist_t *list,
       G_TYPE_ULONG, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
   assert (store != NULL);
 
-  dropdown->numIndexMap = nlistAlloc ("uiutils-num-index", LIST_ORDERED, NULL);
+  dropdown->keylist = nlistAlloc ("uiutils-keylist", LIST_ORDERED, NULL);
   internalidx = 0;
 
   dropdown->maxwidth = slistGetMaxKeyWidth (list);
@@ -253,14 +255,15 @@ uiDropDownSetNumList (uidropdown_t *dropdown, slist_t *list,
         UIUTILS_DROPDOWN_COL_DISP, tbuff,
         UIUTILS_DROPDOWN_COL_SB_PAD, "    ",
         -1);
-    nlistSetNum (dropdown->numIndexMap, -1, internalidx++);
+    nlistSetNum (dropdown->keylist, -1, internalidx);
+    ++internalidx;
   }
 
   slistStartIterator (list, &iteridx);
 
   while ((dispval = slistIterateKey (list, &iteridx)) != NULL) {
     idx = slistGetNum (list, dispval);
-    nlistSetNum (dropdown->numIndexMap, idx, internalidx);
+    nlistSetNum (dropdown->keylist, idx, internalidx);
 
     gtk_list_store_append (store, &iter);
     snprintf (tbuff, sizeof (tbuff), "%-*s",
@@ -295,7 +298,7 @@ uiDropDownSetNumList (uidropdown_t *dropdown, slist_t *list,
 void
 uiDropDownSelectionSetNum (uidropdown_t *dropdown, nlistidx_t idx)
 {
-  ssize_t        internalidx;
+  nlistidx_t    internalidx;
 
   logProcBegin (LOG_PROC, "uiDropDownSelectionSetNum");
 
@@ -304,10 +307,10 @@ uiDropDownSelectionSetNum (uidropdown_t *dropdown, nlistidx_t idx)
     return;
   }
 
-  if (dropdown->numIndexMap == NULL) {
+  if (dropdown->keylist == NULL) {
     internalidx = 0;
   } else {
-    internalidx = nlistGetNum (dropdown->numIndexMap, idx);
+    internalidx = nlistGetNum (dropdown->keylist, idx);
   }
   uiDropDownSelectionSet (dropdown, internalidx);
   logProcEnd (LOG_PROC, "uiDropDownSelectionSetNum", "");
@@ -316,7 +319,7 @@ uiDropDownSelectionSetNum (uidropdown_t *dropdown, nlistidx_t idx)
 void
 uiDropDownSelectionSetStr (uidropdown_t *dropdown, char *stridx)
 {
-  ssize_t        internalidx;
+  nlistidx_t    internalidx;
 
   logProcBegin (LOG_PROC, "uiDropDownSelectionSetStr");
 
@@ -462,7 +465,7 @@ uiDropDownWindowCreate (uidropdown_t *dropdown,
 }
 
 static void
-uiDropDownSelectionSet (uidropdown_t *dropdown, ssize_t internalidx)
+uiDropDownSelectionSet (uidropdown_t *dropdown, nlistidx_t internalidx)
 {
   GtkTreePath   *path;
   GtkTreeModel  *model;
@@ -484,7 +487,7 @@ uiDropDownSelectionSet (uidropdown_t *dropdown, ssize_t internalidx)
   if (internalidx < 0) {
     internalidx = 0;
   }
-  snprintf (tbuff, sizeof (tbuff), "%zd", internalidx);
+  snprintf (tbuff, sizeof (tbuff), "%d", internalidx);
   path = gtk_tree_path_new_from_string (tbuff);
   if (path != NULL) {
     gtk_tree_selection_select_path (dropdown->sel, path);

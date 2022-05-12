@@ -83,8 +83,7 @@ GtkWidget * uiDropDownCreate (GtkWidget *parentwin,
 GtkWidget * uiComboboxCreate (GtkWidget *parentwin,
     char *title, void *processSelectionCallback,
     uidropdown_t *dropdown, void *udata);
-ssize_t uiDropDownSelectionGet (uidropdown_t *dropdown,
-    GtkTreePath *path);
+nlistidx_t uiDropDownSelectionGet (uidropdown_t *dropdown, GtkTreePath *path);
 void uiDropDownSetList (uidropdown_t *dropdown, slist_t *list,
     const char *selectLabel);
 void uiDropDownSetNumList (uidropdown_t *dropdown, slist_t *list,
