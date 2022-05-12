@@ -375,16 +375,16 @@ starterBuildUI (startui_t  *starter)
   starter->window = uiCreateMainWindow (BDJ4_LONG_NAME, imgbuff,
       starterCloseWin, starter);
 
-  vbox = uiCreateVertBox ();
+  vbox = uiCreateVertBoxWW ();
   uiWidgetSetAllMargins (vbox, uiBaseMarginSz * 2);
-  uiBoxPackInWindow (starter->window, vbox);
+  uiBoxPackInWindowWW (starter->window, vbox);
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBoxWW ();
   uiWidgetSetMarginTop (hbox, uiBaseMarginSz * 4);
-  uiBoxPackStart (vbox, hbox);
+  uiBoxPackStartWW (vbox, hbox);
 
   menubar = uiCreateMenubar ();
-  uiBoxPackStart (hbox, menubar);
+  uiBoxPackStartWW (hbox, menubar);
 
   /* CONTEXT: action menu for the starter user interface */
   menuitem = uiMenuCreateItem (menubar, _("Actions"), NULL, NULL);
@@ -397,13 +397,13 @@ starterBuildUI (startui_t  *starter)
       starterStopAllProcesses, starter);
 
   /* main display */
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBoxWW ();
   uiWidgetSetMarginTop (hbox, uiBaseMarginSz * 4);
-  uiBoxPackStart (vbox, hbox);
+  uiBoxPackStartWW (vbox, hbox);
 
   /* CONTEXT: starter: profile to be used when starting BDJ4 */
   widget = uiCreateColonLabel (_("Profile"));
-  uiBoxPackStart (hbox, widget);
+  uiBoxPackStartWW (hbox, widget);
 
   /* get the profile list after bdjopt has been initialized */
   starter->proflist = starterGetProfiles (starter);
@@ -413,14 +413,14 @@ starterBuildUI (startui_t  *starter)
       starter->proflist, NULL, starterSetProfile);
   uiWidgetSetMarginStart (widget, uiBaseMarginSz * 4);
   uiWidgetAlignHorizFill (widget);
-  uiBoxPackStart (hbox, widget);
+  uiBoxPackStartWW (hbox, widget);
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBoxWW ();
   uiWidgetExpandHoriz (hbox);
-  uiBoxPackStart (vbox, hbox);
+  uiBoxPackStartWW (vbox, hbox);
 
-  bvbox = uiCreateVertBox ();
-  uiBoxPackStart (hbox, bvbox);
+  bvbox = uiCreateVertBoxWW ();
+  uiBoxPackStartWW (hbox, bvbox);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
      "bdj4_icon", ".svg", PATHBLD_MP_IMGDIR);
@@ -430,7 +430,7 @@ starterBuildUI (startui_t  *starter)
   assert (widget != NULL);
   uiWidgetExpandHoriz (widget);
   uiWidgetSetAllMargins (widget, uiBaseMarginSz * 10);
-  uiBoxPackStart (hbox, widget);
+  uiBoxPackStartWW (hbox, widget);
 
   uiutilsUICallbackInit (&starter->callbacks [START_CALLBACK_PLAYER],
       starterStartPlayerui, starter);
@@ -442,7 +442,7 @@ starterBuildUI (startui_t  *starter)
   uiWidgetAlignHorizStart (widget);
   uiSizeGroupAdd (&sg, widget);
   starter->playeruibutton = widget;
-  uiBoxPackStart (bvbox, widget);
+  uiBoxPackStartWW (bvbox, widget);
   uiButtonAlignLeft (widget);
 
   uiutilsUICallbackInit (&starter->callbacks [START_CALLBACK_MANAGE],
@@ -455,7 +455,7 @@ starterBuildUI (startui_t  *starter)
   uiWidgetAlignHorizStart (widget);
   uiSizeGroupAdd (&sg, widget);
   starter->manageuibutton = widget;
-  uiBoxPackStart (bvbox, widget);
+  uiBoxPackStartWW (bvbox, widget);
   uiButtonAlignLeft (widget);
 
   uiutilsUICallbackInit (&starter->callbacks [START_CALLBACK_CONFIG],
@@ -467,7 +467,7 @@ starterBuildUI (startui_t  *starter)
   uiWidgetSetMarginTop (widget, uiBaseMarginSz * 2);
   uiWidgetAlignHorizStart (widget);
   uiSizeGroupAdd (&sg, widget);
-  uiBoxPackStart (bvbox, widget);
+  uiBoxPackStartWW (bvbox, widget);
   uiButtonAlignLeft (widget);
 
   uiutilsUICallbackInit (&starter->callbacks [START_CALLBACK_RAFFLE],
@@ -480,7 +480,7 @@ starterBuildUI (startui_t  *starter)
   uiWidgetSetMarginTop (widget, uiBaseMarginSz * 2);
   uiWidgetAlignHorizStart (widget);
   uiSizeGroupAdd (&sg, widget);
-  uiBoxPackStart (bvbox, widget);
+  uiBoxPackStartWW (bvbox, widget);
   uiButtonAlignLeft (widget);
 
   uiutilsUICallbackInit (&starter->callbacks [START_CALLBACK_SUPPORT],
@@ -492,7 +492,7 @@ starterBuildUI (startui_t  *starter)
   uiWidgetSetMarginTop (widget, uiBaseMarginSz * 2);
   uiWidgetAlignHorizStart (widget);
   uiSizeGroupAdd (&sg, widget);
-  uiBoxPackStart (bvbox, widget);
+  uiBoxPackStartWW (bvbox, widget);
   uiButtonAlignLeft (widget);
 
   uiutilsUICallbackInit (&starter->callbacks [START_CALLBACK_EXIT],
@@ -504,7 +504,7 @@ starterBuildUI (startui_t  *starter)
   uiWidgetSetMarginTop (widget, uiBaseMarginSz * 2);
   uiWidgetAlignHorizStart (widget);
   uiSizeGroupAdd (&sg, widget);
-  uiBoxPackStart (bvbox, widget);
+  uiBoxPackStartWW (bvbox, widget);
   uiButtonAlignLeft (widget);
 
   x = nlistGetNum (starter->options, STARTERUI_POSITION_X);
@@ -946,18 +946,18 @@ starterProcessSupport (void *udata)
 
   uiCreateSizeGroupHoriz (&sg);
 
-  vbox = uiCreateVertBox ();
+  vbox = uiCreateVertBoxWW ();
   assert (vbox != NULL);
-  uiBoxPackInWindow (content, vbox);
+  uiBoxPackInWindowWW (content, vbox);
 
   /* begin line */
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox);
+  hbox = uiCreateHorizBoxWW ();
+  uiBoxPackStartWW (vbox, hbox);
 
   /* CONTEXT: starterui: basic support dialog, version display */
   snprintf (tbuff, sizeof (tbuff), _("%s Version"), BDJ4_NAME);
   widget = uiCreateColonLabel (tbuff);
-  uiBoxPackStart (hbox, widget);
+  uiBoxPackStartWW (hbox, widget);
   uiSizeGroupAdd (&sg, widget);
 
   builddate = sysvarsGetStr (SV_BDJ4_BUILDDATE);
@@ -968,24 +968,24 @@ starterProcessSupport (void *udata)
   snprintf (tbuff, sizeof (tbuff), "%s %s %s",
       sysvarsGetStr (SV_BDJ4_VERSION), builddate, rlslvl);
   widget = uiCreateLabel (tbuff);
-  uiBoxPackStart (hbox, widget);
+  uiBoxPackStartWW (hbox, widget);
 
   /* begin line */
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox);
+  hbox = uiCreateHorizBoxWW ();
+  uiBoxPackStartWW (vbox, hbox);
 
   /* CONTEXT: starterui: basic support dialog, latest version display */
   widget = uiCreateColonLabel (_("Latest Version"));
-  uiBoxPackStart (hbox, widget);
+  uiBoxPackStartWW (hbox, widget);
   uiSizeGroupAdd (&sg, widget);
 
   widget = uiCreateLabel (starter->latestversion);
-  uiBoxPackStart (hbox, widget);
+  uiBoxPackStartWW (hbox, widget);
 
   /* begin line */
   /* CONTEXT: starterui: basic support dialog, list of support options */
   widget = uiCreateColonLabel (_("Support options"));
-  uiBoxPackStart (vbox, widget);
+  uiBoxPackStartWW (vbox, widget);
   uiSizeGroupAdd (&sg, widget);
 
   /* begin line */
@@ -994,7 +994,7 @@ starterProcessSupport (void *udata)
   /* CONTEXT: starterui: basic support dialog: support option */
   snprintf (tbuff, sizeof (tbuff), _("%s Forums"), BDJ4_NAME);
   widget = uiCreateLink (tbuff, uri);
-  uiBoxPackStart (vbox, widget);
+  uiBoxPackStartWW (vbox, widget);
 
   /* begin line */
   snprintf (uri, sizeof (uri), "%s%s",
@@ -1002,11 +1002,11 @@ starterProcessSupport (void *udata)
   /* CONTEXT: starterui: basic support dialog: support option */
   snprintf (tbuff, sizeof (tbuff), _("%s Support Tickets"), BDJ4_NAME);
   widget = uiCreateLink (tbuff, uri);
-  uiBoxPackStart (vbox, widget);
+  uiBoxPackStartWW (vbox, widget);
 
   /* begin line */
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox);
+  hbox = uiCreateHorizBoxWW ();
+  uiBoxPackStartWW (vbox, hbox);
 
   uiutilsUICallbackInit (&starter->callbacks [START_CALLBACK_SEND_SUPPORT],
       starterCreateSupportDialog, starter);
@@ -1014,14 +1014,14 @@ starterProcessSupport (void *udata)
       &starter->callbacks [START_CALLBACK_SEND_SUPPORT],
       /* CONTEXT: starterui: basic support dialog: button: support option */
       _("Send Support Message"), NULL, NULL, NULL);
-  uiBoxPackStart (hbox, widget);
+  uiBoxPackStartWW (hbox, widget);
 
   /* the dialog doesn't have any space above the buttons */
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox);
+  hbox = uiCreateHorizBoxWW ();
+  uiBoxPackStartWW (vbox, hbox);
 
   widget = uiCreateLabel (" ");
-  uiBoxPackStart (hbox, widget);
+  uiBoxPackStartWW (hbox, widget);
 
   g_signal_connect (dialog, "response",
       G_CALLBACK (starterSupportResponseHandler), starter);
@@ -1176,63 +1176,63 @@ starterCreateSupportDialog (void *udata)
 
   uiCreateSizeGroupHoriz (&sg);
 
-  vbox = uiCreateVertBox ();
+  vbox = uiCreateVertBoxWW ();
   assert (vbox != NULL);
-  uiBoxPackInWindow (content, vbox);
+  uiBoxPackInWindowWW (content, vbox);
 
   /* line 1 */
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBoxWW ();
   assert (hbox != NULL);
-  uiBoxPackStart (vbox, hbox);
+  uiBoxPackStartWW (vbox, hbox);
 
   /* CONTEXT: sending support message: user's e-mail address */
   widget = uiCreateColonLabel (_("E-Mail Address"));
-  uiBoxPackStart (hbox, widget);
+  uiBoxPackStartWW (hbox, widget);
   uiSizeGroupAdd (&sg, widget);
 
   uiEntryInit (&starter->supportemail, 50, 100);
   widget = uiEntryCreate (&starter->supportemail);
-  uiBoxPackStart (hbox, widget);
+  uiBoxPackStartWW (hbox, widget);
 
   /* line 2 */
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBoxWW ();
   assert (hbox != NULL);
-  uiBoxPackStart (vbox, hbox);
+  uiBoxPackStartWW (vbox, hbox);
 
   /* CONTEXT: sending support message: subject of message */
   widget = uiCreateColonLabel (_("Subject"));
-  uiBoxPackStart (hbox, widget);
+  uiBoxPackStartWW (hbox, widget);
   uiSizeGroupAdd (&sg, widget);
 
   uiEntryInit (&starter->supportsubject, 50, 100);
   widget = uiEntryCreate (&starter->supportsubject);
-  uiBoxPackStart (hbox, widget);
+  uiBoxPackStartWW (hbox, widget);
 
   /* line 3 */
   /* CONTEXT: sending support message: message text */
   widget = uiCreateColonLabel (_("Message"));
-  uiBoxPackStart (vbox, widget);
+  uiBoxPackStartWW (vbox, widget);
 
   /* line 4 */
   tb = uiTextBoxCreate (200);
-  uiBoxPackStart (vbox, tb->scw);
+  uiBoxPackStartWW (vbox, tb->scw);
   starter->supporttb = tb;
 
   /* line 5 */
   /* CONTEXT: sending support message: checkbox: option to send data files */
   widget = uiCreateCheckButton (_("Attach Data Files"), 0);
-  uiBoxPackStart (vbox, widget);
+  uiBoxPackStartWW (vbox, widget);
   starter->supportSendFiles = widget;
 
   /* line 6 */
   /* CONTEXT: sending support message: checkbox: option to send database */
   widget = uiCreateCheckButton (_("Attach Database"), 0);
-  uiBoxPackStart (vbox, widget);
+  uiBoxPackStartWW (vbox, widget);
   starter->supportSendDB = widget;
 
   /* line 7 */
   widget = uiCreateLabel ("");
-  uiBoxPackStart (vbox, widget);
+  uiBoxPackStartWW (vbox, widget);
   snprintf (tbuff, sizeof (tbuff),
       "label { color: %s; }", bdjoptGetStr (OPT_P_UI_ACCENT_COL));
   uiSetCss (widget, tbuff);

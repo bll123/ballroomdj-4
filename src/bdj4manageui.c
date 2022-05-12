@@ -534,16 +534,16 @@ manageBuildUI (manageui_t *manage)
   manage->window = uiCreateMainWindow (tbuff, imgbuff,
       manageCloseWin, manage);
 
-  vbox = uiCreateVertBox ();
+  vbox = uiCreateVertBoxWW ();
   uiWidgetSetAllMargins (vbox, 4);
-  uiBoxPackInWindow (manage->window, vbox);
+  uiBoxPackInWindowWW (manage->window, vbox);
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBoxWW ();
   uiWidgetSetMarginTop (hbox, uiBaseMarginSz * 4);
-  uiBoxPackStart (vbox, hbox);
+  uiBoxPackStartWW (vbox, hbox);
 
   widget = uiCreateLabel ("");
-  uiBoxPackEnd (hbox, widget);
+  uiBoxPackEndWW (hbox, widget);
   snprintf (tbuff, sizeof (tbuff),
       "label { color: %s; }",
       bdjoptGetStr (OPT_P_UI_ACCENT_COL));
@@ -551,19 +551,19 @@ manageBuildUI (manageui_t *manage)
   manage->statusMsg = widget;
 
   menubar = uiCreateMenubar ();
-  uiBoxPackStart (hbox, menubar);
+  uiBoxPackStartWW (hbox, menubar);
   manage->menubar = menubar;
 
   manage->mainnotebook = uiCreateNotebook ();
   gtk_notebook_set_tab_pos (GTK_NOTEBOOK (manage->mainnotebook), GTK_POS_LEFT);
-  uiBoxPackStartExpand (vbox, manage->mainnotebook);
+  uiBoxPackStartExpandWW (vbox, manage->mainnotebook);
 
   manageBuildUISongListEditor (manage);
   manageBuildUIMusicManager (manage);
   manageBuildUIUpdateDatabase (manage);
 
   /* playlist management */
-  vbox = uiCreateVertBox ();
+  vbox = uiCreateVertBoxWW ();
   uiWidgetSetAllMargins (vbox, 4);
   /* CONTEXT: notebook tab title: playlist management */
   tabLabel = uiCreateLabel (_("Playlist Management"));
@@ -571,7 +571,7 @@ manageBuildUI (manageui_t *manage)
   uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_PLMGMT);
 
   /* edit sequences */
-  vbox = uiCreateVertBox ();
+  vbox = uiCreateVertBoxWW ();
   uiWidgetSetAllMargins (vbox, 4);
   /* CONTEXT: notebook tab title: edit sequences */
   tabLabel = uiCreateLabel (_("Edit Sequences"));
@@ -579,7 +579,7 @@ manageBuildUI (manageui_t *manage)
   uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_EDITSEQ);
 
   /* file manager */
-  vbox = uiCreateVertBox ();
+  vbox = uiCreateVertBoxWW ();
   uiWidgetSetAllMargins (vbox, 4);
   /* CONTEXT: notebook tab title: file manager */
   tabLabel = uiCreateLabel (_("File Manager"));
@@ -617,7 +617,7 @@ manageBuildUISongListEditor (manageui_t *manage)
   GtkWidget           *notebook;
 
   /* song list editor */
-  vbox = uiCreateVertBox ();
+  vbox = uiCreateVertBoxWW ();
   uiWidgetSetAllMargins (vbox, 4);
 
   /* CONTEXT: notebook tab title: edit song lists (manual playlists) */
@@ -628,14 +628,14 @@ manageBuildUISongListEditor (manageui_t *manage)
   /* song list editor: player */
   widget = uiplayerBuildUI (manage->slplayer);
   uiWidgetExpandHoriz (widget);
-  uiBoxPackStart (vbox, widget);
+  uiBoxPackStartWW (vbox, widget);
 
   notebook = uiCreateNotebook ();
-  uiBoxPackStartExpand (vbox, notebook);
+  uiBoxPackStartExpandWW (vbox, notebook);
   manage->slnotebook = notebook;
 
   /* song list editor: easy song list tab */
-  widget = uiCreateHorizBox ();
+  widget = uiCreateHorizBoxWW ();
 
   /* CONTEXT: name of easy song list song selection tab */
   tabLabel = uiCreateLabel (_("Song List"));
@@ -643,16 +643,16 @@ manageBuildUISongListEditor (manageui_t *manage)
   uiutilsNotebookIDAdd (manage->slnbtabid, MANAGE_TAB_SONGLIST);
   manage->slezmusicqtabwidget = widget;
 
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStartExpand (widget, hbox);
+  hbox = uiCreateHorizBoxWW ();
+  uiBoxPackStartExpandWW (widget, hbox);
 
   widget = uimusicqBuildUI (manage->slezmusicq, manage->window, MUSICQ_A);
-  uiBoxPackStartExpand (hbox, widget);
+  uiBoxPackStartExpandWW (hbox, widget);
 
-  vbox = uiCreateVertBox ();
+  vbox = uiCreateVertBoxWW ();
   uiWidgetSetAllMargins (vbox, uiBaseMarginSz * 4);
   uiWidgetSetMarginTop (vbox, uiBaseMarginSz * 64);
-  uiBoxPackStart (hbox, vbox);
+  uiBoxPackStartWW (hbox, vbox);
   manage->ezvboxwidget = vbox;
 
   uiutilsUICallbackInit (&manage->callbacks [MANAGE_CALLBACK_EZ_SELECT],
@@ -661,10 +661,10 @@ manageBuildUISongListEditor (manageui_t *manage)
       &manage->callbacks [MANAGE_CALLBACK_EZ_SELECT],
       /* CONTEXT: config: button: add the selected songs to the song list */
       _("Select"), "button_left", NULL, NULL);
-  uiBoxPackStart (vbox, widget);
+  uiBoxPackStartWW (vbox, widget);
 
   widget = uisongselBuildUI (manage->slezsongsel, manage->window);
-  uiBoxPackStartExpand (hbox, widget);
+  uiBoxPackStartExpandWW (hbox, widget);
 
   /* song list editor: music queue tab */
   widget = uimusicqBuildUI (manage->slmusicq, manage->window, MUSICQ_A);
@@ -701,7 +701,7 @@ manageBuildUIMusicManager (manageui_t *manage)
   GtkWidget           *notebook;
 
   /* music manager */
-  vbox = uiCreateVertBox ();
+  vbox = uiCreateVertBoxWW ();
   uiWidgetSetAllMargins (vbox, 4);
   /* CONTEXT: name of music manager notebook tab */
   tabLabel = uiCreateLabel (_("Music Manager"));
@@ -711,10 +711,10 @@ manageBuildUIMusicManager (manageui_t *manage)
   /* music manager: player */
   widget = uiplayerBuildUI (manage->mmplayer);
   uiWidgetExpandHoriz (widget);
-  uiBoxPackStart (vbox, widget);
+  uiBoxPackStartWW (vbox, widget);
 
   notebook = uiCreateNotebook ();
-  uiBoxPackStartExpand (vbox, notebook);
+  uiBoxPackStartExpandWW (vbox, notebook);
   manage->mmnotebook = notebook;
 
   /* music manager: song selection tab*/
@@ -747,7 +747,7 @@ manageBuildUIUpdateDatabase (manageui_t *manage)
   uitextbox_t    *tb;
 
   /* update database */
-  vbox = uiCreateVertBox ();
+  vbox = uiCreateVertBoxWW ();
   uiWidgetSetAllMargins (vbox, 4);
   /* CONTEXT: notebook tab title: update database */
   tabLabel = uiCreateLabel (_("Update Database"));
@@ -758,11 +758,11 @@ manageBuildUIUpdateDatabase (manageui_t *manage)
   tb = uiTextBoxCreate (60);
   uiTextBoxSetReadonly (tb);
   uiTextBoxSetHeight (tb, 70);
-  uiBoxPackStart (vbox, tb->scw);
+  uiBoxPackStartWW (vbox, tb->scw);
   manage->dbhelpdisp = tb;
 
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox);
+  hbox = uiCreateHorizBoxWW ();
+  uiBoxPackStartWW (vbox, hbox);
 
   widget = uiSpinboxTextCreate (&manage->dbspinbox, manage);
   /* currently hard-coded at 30 chars */
@@ -771,7 +771,7 @@ manageBuildUIUpdateDatabase (manageui_t *manage)
       manage->dblist, NULL, NULL);
   uiSpinboxTextSetValue (&manage->dbspinbox, MANAGE_DB_CHECK_NEW);
   g_signal_connect (widget, "value-changed", G_CALLBACK (manageDbChg), manage);
-  uiBoxPackStart (hbox, widget);
+  uiBoxPackStartWW (hbox, widget);
 
   uiutilsUICallbackInit (&manage->callbacks [MANAGE_CALLBACK_DB_START],
       manageDbStart, manage);
@@ -780,17 +780,17 @@ manageBuildUIUpdateDatabase (manageui_t *manage)
       /* CONTEXT: update database: button to start the database update process */
       _("Start"), NULL,
       manageDbStart, manage);
-  uiBoxPackStart (hbox, widget);
+  uiBoxPackStartWW (hbox, widget);
 
   widget = uiCreateProgressBar (bdjoptGetStr (OPT_P_UI_ACCENT_COL));
-  uiBoxPackStart (vbox, widget);
+  uiBoxPackStartWW (vbox, widget);
   manage->dbpbar = widget;
 
   tb = uiTextBoxCreate (200);
   uiTextBoxSetReadonly (tb);
   uiTextBoxDarken (tb);
   uiTextBoxSetHeight (tb, 300);
-  uiBoxPackStartExpand (vbox, tb->scw);
+  uiBoxPackStartExpandWW (vbox, tb->scw);
   manage->dbstatus = tb;
 }
 
@@ -1585,12 +1585,12 @@ manageCreateSelectFileDialog (manageui_t *manage,
   content = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
   uiWidgetSetAllMargins (content, uiBaseMarginSz * 2);
 
-  vbox = uiCreateVertBox ();
-  uiBoxPackInWindow (content, vbox);
+  vbox = uiCreateVertBoxWW ();
+  uiBoxPackInWindowWW (content, vbox);
 
   scwin = uiCreateScrolledWindow (250);
   uiWidgetExpandVert (scwin);
-  uiBoxPackStartExpand (vbox, scwin);
+  uiBoxPackStartExpandWW (vbox, scwin);
 
   widget = uiCreateTreeView ();
   gtk_tree_view_set_activate_on_single_click (GTK_TREE_VIEW (widget), FALSE);
@@ -1632,14 +1632,14 @@ manageCreateSelectFileDialog (manageui_t *manage,
   g_signal_connect (widget, "row-activated",
       G_CALLBACK (manageSelectFileSelect), manage);
 
-  uiBoxPackInWindow (scwin, widget);
+  uiBoxPackInWindowWW (scwin, widget);
 
   /* the dialog doesn't have any space above the buttons */
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox);
+  hbox = uiCreateHorizBoxWW ();
+  uiBoxPackStartWW (vbox, hbox);
 
   widget = uiCreateLabel (" ");
-  uiBoxPackStart (hbox, widget);
+  uiBoxPackStartWW (hbox, widget);
 
   g_signal_connect (dialog, "response",
       G_CALLBACK (manageSelectFileResponseHandler), manage);

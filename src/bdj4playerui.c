@@ -347,20 +347,20 @@ pluiBuildUI (playerui_t *plui)
       bdjoptGetStr (OPT_P_PROFILENAME), imgbuff,
       pluiCloseWin, plui);
 
-  plui->vbox = uiCreateVertBox ();
-  uiBoxPackInWindow (plui->window, plui->vbox);
+  plui->vbox = uiCreateVertBoxWW ();
+  uiBoxPackInWindowWW (plui->window, plui->vbox);
   uiWidgetSetAllMargins (plui->vbox, uiBaseMarginSz * 2);
 
   /* menu */
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBoxWW ();
   uiWidgetExpandHoriz (hbox);
-  uiBoxPackStart (plui->vbox, hbox);
+  uiBoxPackStartWW (plui->vbox, hbox);
 
   menubar = uiCreateMenubar ();
-  uiBoxPackStart (hbox, menubar);
+  uiBoxPackStartWW (hbox, menubar);
 
   plui->clock = uiCreateLabel ("");
-  uiBoxPackEnd (hbox, plui->clock);
+  uiBoxPackEndWW (hbox, plui->clock);
   snprintf (tbuff, sizeof (tbuff),
       "label { color: shade(%s,0.6); }",
       bdjoptGetStr (OPT_P_UI_ACCENT_COL));
@@ -398,10 +398,10 @@ pluiBuildUI (playerui_t *plui)
   /* player */
   widget = uiplayerBuildUI (plui->uiplayer);
   uiWidgetExpandHoriz (widget);
-  uiBoxPackStart (plui->vbox, widget);
+  uiBoxPackStartWW (plui->vbox, widget);
 
   plui->notebook = uiCreateNotebook ();
-  uiBoxPackStartExpand (plui->vbox, plui->notebook);
+  uiBoxPackStartExpandWW (plui->vbox, plui->notebook);
   g_signal_connect (plui->notebook, "switch-page", G_CALLBACK (pluiSwitchPage), plui);
 
   widget = gtk_button_new ();
@@ -416,14 +416,14 @@ pluiBuildUI (playerui_t *plui)
   for (musicqidx_t i = 0; i < MUSICQ_MAX; ++i) {
     /* music queue tab */
     widget = uimusicqBuildUI (plui->uimusicq, plui->window, i);
-    hbox = uiCreateHorizBox ();
+    hbox = uiCreateHorizBoxWW ();
     str = bdjoptGetStr (OPT_P_QUEUE_NAME_A + i);
     tabLabel = gtk_label_new (str);
-    uiBoxPackStart (hbox, tabLabel);
+    uiBoxPackStartWW (hbox, tabLabel);
     uiImageNew (&plui->musicqImage [i]);
     uiImageSetFromPixbuf (&plui->musicqImage [i], &plui->ledonPixbuf);
     uiWidgetSetMarginStart (plui->musicqImage [i].widget, uiBaseMarginSz);
-    uiBoxPackStart (hbox, plui->musicqImage [i].widget);
+    uiBoxPackStartWW (hbox, plui->musicqImage [i].widget);
 
     uiNotebookAppendPage (plui->notebook, widget, hbox);
     uiutilsNotebookIDAdd (plui->nbtabid, UI_TAB_MUSICQ);
@@ -910,32 +910,32 @@ pluiCreateMarqueeFontSizeDialog (playerui_t *plui)
 
   content = gtk_dialog_get_content_area (GTK_DIALOG (plui->marqueeFontSizeDialog));
 
-  vbox = uiCreateVertBox ();
+  vbox = uiCreateVertBoxWW ();
   assert (vbox != NULL);
-  uiBoxPackInWindow (content, vbox);
+  uiBoxPackInWindowWW (content, vbox);
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBoxWW ();
   assert (hbox != NULL);
-  uiBoxPackStart (vbox, hbox);
+  uiBoxPackStartWW (vbox, hbox);
 
   /* CONTEXT: marquee font size dialog: the font size selector */
   widget = uiCreateColonLabel (_("Font Size"));
-  uiBoxPackStart (hbox, widget);
+  uiBoxPackStartWW (hbox, widget);
 
   plui->marqueeSpinBox = uiSpinboxIntCreate ();
   uiSpinboxSet (plui->marqueeSpinBox, 10.0, 300.0);
   uiSpinboxSetValue (plui->marqueeSpinBox, 36.0);
-  uiBoxPackStart (hbox, plui->marqueeSpinBox);
+  uiBoxPackStartWW (hbox, plui->marqueeSpinBox);
   g_signal_connect (plui->marqueeSpinBox, "value-changed",
       G_CALLBACK (pluiMarqueeFontSizeChg), plui);
 
   /* the dialog doesn't have any space above the buttons */
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBoxWW ();
   assert (hbox != NULL);
-  uiBoxPackStart (vbox, hbox);
+  uiBoxPackStartWW (vbox, hbox);
 
   widget = uiCreateLabel ("");
-  uiBoxPackStart (hbox, widget);
+  uiBoxPackStartWW (hbox, widget);
 
   g_signal_connect (plui->marqueeFontSizeDialog, "response",
       G_CALLBACK (pluiMarqueeFontSizeDialogResponse), plui);

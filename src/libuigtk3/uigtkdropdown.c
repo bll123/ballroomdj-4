@@ -428,13 +428,13 @@ uiDropDownWindowCreate (uidropdown_t *dropdown,
   g_signal_connect (G_OBJECT (dropdown->window),
       "focus-out-event", G_CALLBACK (uiDropDownClose), dropdown);
 
-  twidget = uiCreateVertBox ();
+  twidget = uiCreateVertBoxWW ();
   gtk_widget_set_hexpand (twidget, TRUE);
   gtk_widget_set_vexpand (twidget, TRUE);
   gtk_container_add (GTK_CONTAINER (dropdown->window), twidget);
 
-  vbox = uiCreateVertBox ();
-  uiBoxPackStartExpand (twidget, vbox);
+  vbox = uiCreateVertBoxWW ();
+  uiBoxPackStartExpandWW (twidget, vbox);
 
   scwin = uiCreateScrolledWindow (300);
   gtk_widget_set_hexpand (scwin, TRUE);
@@ -442,7 +442,7 @@ uiDropDownWindowCreate (uidropdown_t *dropdown,
   twidget = gtk_scrolled_window_get_vscrollbar (GTK_SCROLLED_WINDOW (scwin));
   uiSetCss (twidget,
       "scrollbar, scrollbar slider { min-width: 9px; } ");
-  uiBoxPackStartExpand (vbox, scwin);
+  uiBoxPackStartExpandWW (vbox, scwin);
 
   dropdown->tree = gtk_tree_view_new ();
   assert (dropdown->tree != NULL);

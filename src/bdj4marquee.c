@@ -335,25 +335,25 @@ marqueeBuildUI (marquee_t *marquee)
 
   marquee->window = window;
 
-  marquee->vbox = uiCreateVertBox ();
+  marquee->vbox = uiCreateVertBoxWW ();
   uiWidgetSetAllMargins (marquee->vbox, 10);
-  uiBoxPackInWindow (window, marquee->vbox);
+  uiBoxPackInWindowWW (window, marquee->vbox);
   uiWidgetExpandHoriz (marquee->vbox);
   uiWidgetExpandVert (marquee->vbox);
   marquee->marginTotal = 20;
 
   marquee->pbar = uiCreateProgressBar (bdjoptGetStr (OPT_P_MQ_ACCENT_COL));
-  uiBoxPackStart (marquee->vbox, marquee->pbar);
+  uiBoxPackStartWW (marquee->vbox, marquee->pbar);
 
-  vbox = uiCreateVertBox ();
+  vbox = uiCreateVertBoxWW ();
   uiWidgetSetAllMargins (marquee->vbox, 10);
   uiWidgetExpandHoriz (marquee->vbox);
-  uiBoxPackStart (marquee->vbox, vbox);
+  uiBoxPackStartWW (marquee->vbox, vbox);
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBoxWW ();
   uiWidgetAlignHorizFill (hbox);
   uiWidgetExpandHoriz (hbox);
-  uiBoxPackStart (vbox, hbox);
+  uiBoxPackStartWW (vbox, hbox);
 
   /* CONTEXT: marquee: displayed when nothing is set to be played */
   marquee->danceLab = uiCreateLabel (_("Not Playing"));
@@ -363,7 +363,7 @@ marqueeBuildUI (marquee_t *marquee)
       "label { color: %s; }",
       bdjoptGetStr (OPT_P_MQ_ACCENT_COL));
   uiSetCss (marquee->danceLab, tbuff);
-  uiBoxPackStart (hbox, marquee->danceLab);
+  uiBoxPackStartWW (hbox, marquee->danceLab);
 
   marquee->countdownTimerLab = uiCreateLabel ("0:00");
   uiLabelSetMaxWidth (marquee->countdownTimerLab, 6);
@@ -373,12 +373,12 @@ marqueeBuildUI (marquee_t *marquee)
       "label { color: %s; }",
       bdjoptGetStr (OPT_P_MQ_ACCENT_COL));
   uiSetCss (marquee->countdownTimerLab, tbuff);
-  uiBoxPackEnd (hbox, marquee->countdownTimerLab);
+  uiBoxPackEndWW (hbox, marquee->countdownTimerLab);
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBoxWW ();
   uiWidgetAlignHorizFill (hbox);
   uiWidgetExpandHoriz (hbox);
-  uiBoxPackStart (vbox, hbox);
+  uiBoxPackStartWW (vbox, hbox);
   marquee->infoBox = hbox;
 
   marquee->infoArtistLab = uiCreateLabel ("");
@@ -386,19 +386,19 @@ marqueeBuildUI (marquee_t *marquee)
   uiWidgetExpandHoriz (hbox);
   uiWidgetDisableFocus (marquee->infoArtistLab);
   uiLabelEllipsizeOn (marquee->infoArtistLab);
-  uiBoxPackStart (hbox, marquee->infoArtistLab);
+  uiBoxPackStartWW (hbox, marquee->infoArtistLab);
 
   marquee->infoSepLab = uiCreateLabel ("");
   uiWidgetAlignHorizStart (marquee->infoSepLab);
   uiWidgetDisableFocus (marquee->infoSepLab);
-  uiBoxPackStart (hbox, marquee->infoSepLab);
+  uiBoxPackStartWW (hbox, marquee->infoSepLab);
 
   marquee->infoTitleLab = uiCreateLabel ("");
   uiWidgetAlignHorizStart (marquee->infoTitleLab);
   uiWidgetExpandHoriz (hbox);
   uiWidgetDisableFocus (marquee->infoTitleLab);
   uiLabelEllipsizeOn (marquee->infoTitleLab);
-  uiBoxPackStart (hbox, marquee->infoTitleLab);
+  uiBoxPackStartWW (hbox, marquee->infoTitleLab);
 
   marquee->sep = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
   uiWidgetExpandHoriz (marquee->sep);
@@ -407,7 +407,7 @@ marqueeBuildUI (marquee_t *marquee)
       "separator { min-height: 4px; background-color: %s; }",
       bdjoptGetStr (OPT_P_MQ_ACCENT_COL));
   uiSetCss (marquee->sep, tbuff);
-  uiBoxPackEnd (vbox, marquee->sep);
+  uiBoxPackEndWW (vbox, marquee->sep);
 
   marquee->marqueeLabs = malloc (sizeof (GtkWidget *) * marquee->mqLen);
 
@@ -417,7 +417,7 @@ marqueeBuildUI (marquee_t *marquee)
     uiWidgetExpandHoriz (marquee->marqueeLabs [i]);
     gtk_widget_set_margin_end (marquee->marqueeLabs [i], 10);
     uiWidgetDisableFocus (marquee->marqueeLabs [i]);
-    uiBoxPackStart (marquee->vbox, marquee->marqueeLabs [i]);
+    uiBoxPackStartWW (marquee->vbox, marquee->marqueeLabs [i]);
   }
 
   marqueeSetFont (marquee, nlistGetNum (marquee->options, MQ_FONT_SZ));

@@ -78,21 +78,21 @@ uimusicqBuildUI (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
   uiImageGetPixbuf (&uimusicq->pausePixbuf);
   uiWidgetMakePersistent (&uimusicq->pausePixbuf);
 
-  uimusicq->ui [ci].box = uiCreateVertBox ();
+  uimusicq->ui [ci].box = uiCreateVertBoxWW ();
   assert (uimusicq->ui [ci].box != NULL);
   uiWidgetExpandHoriz (uimusicq->ui [ci].box);
   uiWidgetExpandVert (uimusicq->ui [ci].box);
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBoxWW ();
   assert (hbox != NULL);
   uiWidgetSetMarginTop (hbox, uiBaseMarginSz);
   uiWidgetExpandHoriz (hbox);
-  uiBoxPackStart (uimusicq->ui [ci].box, hbox);
+  uiBoxPackStartWW (uimusicq->ui [ci].box, hbox);
 
   /* CONTEXT: button: move the selected song to the top of the queue */
   widget = uiCreateButton (NULL, NULL, _("Move to Top"), "button_movetop",
       uimusicqMoveTopProcessSignal, uimusicq);
-  uiBoxPackStart (hbox, widget);
+  uiBoxPackStartWW (hbox, widget);
 
   /* CONTEXT: button: move the selected song up in the queue */
   widget = uiCreateButton (NULL, NULL, _("Move Up"), "button_up",
@@ -101,7 +101,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
       G_CALLBACK (uimusicqMoveUpProcessSignal), uimusicq);
   g_signal_connect (widget, "released",
       G_CALLBACK (uimusicqStopRepeatSignal), uimusicq);
-  uiBoxPackStart (hbox, widget);
+  uiBoxPackStartWW (hbox, widget);
 
   /* CONTEXT: button: move the selected song down in the queue */
   widget = uiCreateButton (NULL, NULL, _("Move Down"), "button_down",
@@ -110,14 +110,14 @@ uimusicqBuildUI (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
       G_CALLBACK (uimusicqMoveDownProcessSignal), uimusicq);
   g_signal_connect (widget, "released",
       G_CALLBACK (uimusicqStopRepeatSignal), uimusicq);
-  uiBoxPackStart (hbox, widget);
+  uiBoxPackStartWW (hbox, widget);
 
   if ((uimusicq->uimusicqflags & UIMUSICQ_FLAGS_NO_TOGGLE_PAUSE) !=
       UIMUSICQ_FLAGS_NO_TOGGLE_PAUSE) {
     /* CONTEXT: button: set playback to pause after the selected song is played (toggle) */
     widget = uiCreateButton (NULL, NULL, _("Toggle Pause"), "button_pause",
         uimusicqTogglePauseProcessSignal, uimusicq);
-    uiBoxPackStart (hbox, widget);
+    uiBoxPackStartWW (hbox, widget);
   }
 
   if ((uimusicq->uimusicqflags & UIMUSICQ_FLAGS_NO_REMOVE) !=
@@ -125,7 +125,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
     /* CONTEXT: button: remove the song from the queue */
     widget = uiCreateButton (NULL, NULL, _("Remove"), "button_audioremove",
         uimusicqRemoveProcessSignal, uimusicq);
-    uiBoxPackStart (hbox, widget);
+    uiBoxPackStartWW (hbox, widget);
   }
 
   if ((uimusicq->uimusicqflags & UIMUSICQ_FLAGS_NO_QUEUE) != UIMUSICQ_FLAGS_NO_QUEUE) {
@@ -133,14 +133,14 @@ uimusicqBuildUI (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
     widget = uiCreateButton (NULL, NULL, _("Request External"), NULL,
         NULL, uimusicq);
     uiWidgetDisable (widget);
-    uiBoxPackEnd (hbox, widget);
+    uiBoxPackEndWW (hbox, widget);
   // ### TODO create code to handle the request external button
 
     widget = uiDropDownCreate (parentwin,
         /* CONTEXT: button: queue a playlist for playback */
         _("Queue Playlist"), uimusicqQueuePlaylistProcessSignal,
         &uimusicq->ui [ci].playlistsel, uimusicq);
-    uiBoxPackEnd (hbox, widget);
+    uiBoxPackEndWW (hbox, widget);
     uimusicqCreatePlaylistList (uimusicq);
 
     widget = uiDropDownCreate (parentwin,
@@ -148,7 +148,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
         _("Queue Dance"), uimusicqQueueDanceProcessSignal,
         &uimusicq->ui [ci].dancesel, uimusicq);
     uiutilsCreateDanceList (&uimusicq->ui [ci].dancesel, NULL);
-    uiBoxPackEnd (hbox, widget);
+    uiBoxPackEndWW (hbox, widget);
   }
 
   if (uimusicq->dispselType == DISP_SEL_SONGLIST ||
@@ -158,21 +158,21 @@ uimusicqBuildUI (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
         "entry { color: %s; }",
         bdjoptGetStr (OPT_P_UI_ACCENT_COL));
     uiSetCss (widget, tbuff);
-    uiBoxPackEnd (hbox, widget);
+    uiBoxPackEndWW (hbox, widget);
   }
 
   if (uimusicq->dispselType == DISP_SEL_MUSICQ) {
     /* CONTEXT: button: clear the queue */
     widget = uiCreateButton (NULL, NULL, _("Clear Queue"), NULL,
         uimusicqClearQueueProcessSignal, uimusicq);
-    uiBoxPackEnd (hbox, widget);
+    uiBoxPackEndWW (hbox, widget);
   }
 
   /* musicq tree view */
 
   widget = uiCreateScrolledWindow (400);
   uiWidgetExpandHoriz (widget);
-  uiBoxPackStartExpand (uimusicq->ui [ci].box, widget);
+  uiBoxPackStartExpandWW (uimusicq->ui [ci].box, widget);
 
   uimusicq->ui [ci].musicqTree = uiCreateTreeView ();
   assert (uimusicq->ui [ci].musicqTree != NULL);
@@ -182,7 +182,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
   uiWidgetAlignHorizFill (uimusicq->ui [ci].musicqTree);
   uiWidgetExpandHoriz (uimusicq->ui [ci].musicqTree);
   uiWidgetExpandVert (uimusicq->ui [ci].musicqTree);
-  uiBoxPackInWindow (widget, uimusicq->ui [ci].musicqTree);
+  uiBoxPackInWindowWW (widget, uimusicq->ui [ci].musicqTree);
 
   renderer = gtk_cell_renderer_text_new ();
   gtk_cell_renderer_set_alignment (renderer, 1.0, 0.5);

@@ -115,12 +115,23 @@ void  uiNotebookSetActionWidget (GtkWidget *notebook, GtkWidget *widget, GtkPack
 void  uiNotebookSetPage (GtkWidget *notebook, int pagenum);
 
 /* uigtkbox.c */
-GtkWidget *uiCreateVertBox (void);
-GtkWidget *uiCreateHorizBox (void);
-void uiBoxPackInWindow (GtkWidget *window, GtkWidget *box);
-void uiBoxPackStart (GtkWidget *box, GtkWidget *widget);
-void uiBoxPackStartExpand (GtkWidget *box, GtkWidget *widget);
-void uiBoxPackEnd (GtkWidget *box, GtkWidget *widget);
+void uiCreateVertBox (UIWidget *uiwidget);
+void uiCreateHorizBox (UIWidget *uiwidget);
+void uiBoxPackInWindow (UIWidget *uiwindow, UIWidget *uibox);
+void uiBoxPackStart (UIWidget *uibox, UIWidget *uiwidget);
+void uiBoxPackStartExpand (UIWidget *uibox, UIWidget *uiwidget);
+void uiBoxPackEnd (UIWidget *uibox, UIWidget *uiwidget);
+/* these routines will be removed at a later date */
+void uiBoxPackInWindowWU (GtkWidget *window, UIWidget *uibox);
+void uiBoxPackStartUW (UIWidget *uibox, GtkWidget *widget);
+void uiBoxPackStartExpandUW (UIWidget *uibox, GtkWidget *widget);
+void uiBoxPackEndUW (UIWidget *uibox, GtkWidget *widget);
+GtkWidget *uiCreateVertBoxWW (void);
+GtkWidget *uiCreateHorizBoxWW (void);
+void uiBoxPackInWindowWW (GtkWidget *window, GtkWidget *box);
+void uiBoxPackStartWW (GtkWidget *box, GtkWidget *widget);
+void uiBoxPackStartExpandWW (GtkWidget *box, GtkWidget *widget);
+void uiBoxPackEndWW (GtkWidget *box, GtkWidget *widget);
 
 /* uigtkpbar.c */
 GtkWidget * uiCreateProgressBar (char *color);

@@ -61,24 +61,24 @@ uisongeditBuildUI (uisongedit_t *uisongedit, GtkWidget *parentwin)
   uiw = uisongedit->uiWidgetData;
   uiw->parentwin = parentwin;
 
-  uiw->vbox = uiCreateVertBox ();
+  uiw->vbox = uiCreateVertBoxWW ();
   uiWidgetExpandHoriz (uiw->vbox);
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBoxWW ();
   uiWidgetExpandHoriz (hbox);
   uiWidgetAlignHorizFill (hbox);
-  uiBoxPackStart (uiw->vbox, hbox);
+  uiBoxPackStartWW (uiw->vbox, hbox);
 
-  lcol = uiCreateVertBox ();
+  lcol = uiCreateVertBoxWW ();
   uiWidgetAlignHorizStart (lcol);
-  uiBoxPackStart (hbox, lcol);
+  uiBoxPackStartWW (hbox, lcol);
 
   uisongeditAddDisplay (uisongedit, lcol, DISP_SEL_SONGEDIT_A);
 
-  rcol = uiCreateVertBox ();
+  rcol = uiCreateVertBoxWW ();
   uiWidgetAlignHorizStart (rcol);
   uiWidgetExpandHoriz (rcol);
-  uiBoxPackStart (hbox, rcol);
+  uiBoxPackStartWW (hbox, rcol);
 
   uisongeditAddDisplay (uisongedit, rcol, DISP_SEL_SONGEDIT_B);
 
@@ -106,8 +106,8 @@ uisongeditAddDisplay (uisongedit_t *uisongedit, GtkWidget *col, int dispsel)
 
     tagkey = slistGetNum (sellist, keystr);
 
-    hbox = uiCreateHorizBox ();
-    uiBoxPackStart (col, hbox);
+    hbox = uiCreateHorizBoxWW ();
+    uiBoxPackStartWW (col, hbox);
     uisongeditAddItem (hbox, &sg, tagkey);
   }
 }
@@ -125,7 +125,7 @@ uisongeditAddItem (GtkWidget * hbox, UIWidget *sg, int tagkey)
   }
 
   widget = uiCreateColonLabel (tagdefs [tagkey].displayname);
-  uiBoxPackStart (hbox, widget);
+  uiBoxPackStartWW (hbox, widget);
   uiSizeGroupAdd (sg, widget);
 
   switch (tagkey) {

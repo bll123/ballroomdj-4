@@ -145,13 +145,13 @@ uisongselBuildUI (uisongsel_t *uisongsel, GtkWidget *parentwin)
   uiw = uisongsel->uiWidgetData;
   uisongsel->window = parentwin;
 
-  uiw->vbox = uiCreateVertBox ();
+  uiw->vbox = uiCreateVertBoxWW ();
   uiWidgetExpandHoriz (uiw->vbox);
   uiWidgetExpandVert (uiw->vbox);
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBoxWW ();
   uiWidgetExpandHoriz (hbox);
-  uiBoxPackStart (uiw->vbox, hbox);
+  uiBoxPackStartWW (uiw->vbox, hbox);
 
   if (uisongsel->dispselType == DISP_SEL_SONGSEL ||
       uisongsel->dispselType == DISP_SEL_EZSONGSEL) {
@@ -162,7 +162,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, GtkWidget *parentwin)
     uiCreateButton (&uiwidget,
         &uiw->callbacks [SONGSEL_CALLBACK_SELECT],
         tbuff, NULL, NULL, NULL);
-    uiBoxPackStart (hbox, uiwidget.widget);
+    uiBoxPackStartWW (hbox, uiwidget.widget);
   }
 
   if (uisongsel->dispselType == DISP_SEL_SONGSEL ||
@@ -189,7 +189,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, GtkWidget *parentwin)
           &uiw->callbacks [SONGSEL_CALLBACK_PLAY],
           tbuff, NULL, NULL, NULL);
     }
-    uiBoxPackStart (hbox, uiwidget.widget);
+    uiBoxPackStartWW (hbox, uiwidget.widget);
   }
 
   widget = uiComboboxCreate (parentwin,
@@ -197,7 +197,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, GtkWidget *parentwin)
       &uisongsel->dancesel, uisongsel);
   /* CONTEXT: filter: all dances are selected */
   uiutilsCreateDanceList (&uisongsel->dancesel, _("All Dances"));
-  uiBoxPackEnd (hbox, widget);
+  uiBoxPackEndWW (hbox, widget);
 
   uiutilsUICallbackInit (&uiw->callbacks [SONGSEL_CALLBACK_FILTER],
       uisongselFilterDialog, uisongsel);
@@ -205,14 +205,14 @@ uisongselBuildUI (uisongsel_t *uisongsel, GtkWidget *parentwin)
       &uiw->callbacks [SONGSEL_CALLBACK_FILTER],
       /* CONTEXT: a button that starts the filters (narrowing down song selections) dialog */
       _("Filters"), NULL, NULL, NULL);
-  uiBoxPackEnd (hbox, uiwidget.widget);
+  uiBoxPackEndWW (hbox, uiwidget.widget);
 
-  hbox = uiCreateHorizBox ();
+  hbox = uiCreateHorizBoxWW ();
   uiWidgetExpandVert (uiw->vbox);
-  uiBoxPackStartExpand (uiw->vbox, hbox);
+  uiBoxPackStartExpandWW (uiw->vbox, hbox);
 
-  vbox = uiCreateVertBox ();
-  uiBoxPackStartExpand (hbox, vbox);
+  vbox = uiCreateVertBoxWW ();
+  uiBoxPackStartExpandWW (hbox, vbox);
 
   tupper = uisongsel->dfilterCount;
   adjustment = gtk_adjustment_new (0.0, 0.0, tupper, 1.0, 10.0, 10.0);
@@ -221,14 +221,14 @@ uisongselBuildUI (uisongsel_t *uisongsel, GtkWidget *parentwin)
   uiWidgetExpandVert (uiw->songselScrollbar);
   uiSetCss (uiw->songselScrollbar,
       "scrollbar, scrollbar slider { min-width: 9px; } ");
-  uiBoxPackEnd (hbox, uiw->songselScrollbar);
+  uiBoxPackEndWW (hbox, uiw->songselScrollbar);
   g_signal_connect (uiw->songselScrollbar, "change-value",
       G_CALLBACK (uisongselScroll), uisongsel);
 
   widget = uiCreateScrolledWindow (400);
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (widget), GTK_POLICY_NEVER, GTK_POLICY_EXTERNAL);
   uiWidgetExpandHoriz (widget);
-  uiBoxPackStartExpand (vbox, widget);
+  uiBoxPackStartExpandWW (vbox, widget);
   uiw->scrolledwin = widget;
 
   uiw->songselTree = uiCreateTreeView ();
@@ -258,7 +258,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, GtkWidget *parentwin)
       GTK_EVENT_CONTROLLER_SCROLL_VERTICAL |
       GTK_EVENT_CONTROLLER_SCROLL_DISCRETE);
   gtk_widget_add_events (uiw->songselTree, GDK_SCROLL_MASK);
-  uiBoxPackInWindow (widget, uiw->songselTree);
+  uiBoxPackInWindowWW (widget, uiw->songselTree);
   g_signal_connect (uiw->songselTree, "row-activated",
       G_CALLBACK (uisongselCheckFavChgSignal), uisongsel);
   g_signal_connect (uiw->songselTree, "scroll-event",
