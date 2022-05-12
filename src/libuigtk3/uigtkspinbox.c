@@ -22,6 +22,23 @@ static char * uiSpinboxTextGetDisp (slist_t *list, int idx);
 
 static gboolean uiuitilsSpinboxTextKeyCallback (GtkWidget *w, GdkEventKey *event, gpointer udata);
 
+bool uiSpinboxTextCheck (uispinbox_t *spinbox, const char *msg);
+
+bool
+uiSpinboxTextCheck (uispinbox_t *spinbox, const char *msg)
+{
+  bool  rc = false;
+  if (spinbox->junka != 0xaabbccdd) {
+    fprintf (stderr, "memory fail A : %s\n", msg);
+    rc = true;
+  }
+  if (spinbox->junkb != 0xddccbbaa) {
+    fprintf (stderr, "memory fail B : %s\n", msg);
+    rc = true;
+  }
+  return rc;
+}
+
 void
 uiSpinboxTextInit (uispinbox_t *spinbox)
 {
@@ -34,6 +51,10 @@ uiSpinboxTextInit (uispinbox_t *spinbox)
   spinbox->changed = false;
   spinbox->maxWidth = 0;
   spinbox->list = NULL;
+  spinbox->keylist = NULL;
+  spinbox->idxlist = NULL;
+  spinbox->junka = 0xaabbccdd;
+  spinbox->junkb = 0xddccbbaa;
   logProcEnd (LOG_PROC, "uiSpinboxTextInit", "");
 }
 
@@ -41,7 +62,11 @@ uiSpinboxTextInit (uispinbox_t *spinbox)
 void
 uiSpinboxTextFree (uispinbox_t *spinbox)
 {
-  ;
+  if (spinbox != NULL) {
+    if (spinbox->idxlist != NULL) {
+      nlistFree (spinbox->idxlist);
+    }
+  }
 }
 
 
@@ -87,6 +112,18 @@ uiSpinboxTextSet (uispinbox_t *spinbox, int min, int count,
   gtk_entry_set_max_width_chars (GTK_ENTRY (spinbox->spinbox), spinbox->maxWidth + 2);
   spinbox->list = list;
   spinbox->keylist = keylist;
+  if (spinbox->keylist != NULL) {
+    nlistidx_t  iteridx;
+    nlistidx_t  sbidx;
+    nlistidx_t  val;
+
+    spinbox->idxlist = nlistAlloc ("sb-idxlist", LIST_ORDERED, NULL);
+    nlistStartIterator (spinbox->keylist, &iteridx);
+    while ((sbidx = nlistIterateKey (spinbox->keylist, &iteridx)) >= 0) {
+      val = nlistGetNum (spinbox->keylist, sbidx);
+      nlistSetNum (spinbox->idxlist, val, sbidx);
+    }
+  }
   spinbox->textGetProc = textGetProc;
   logProcEnd (LOG_PROC, "uiSpinboxTextSet", "");
 }
@@ -103,13 +140,11 @@ uiSpinboxTextGetIdx (uispinbox_t *spinbox)
 int
 uiSpinboxTextGetValue (uispinbox_t *spinbox)
 {
-  int val;
   int nval;
 
-  val = (int) uiSpinboxGetValue (spinbox->spinbox);
-  nval = val;
+  nval = (int) uiSpinboxGetValue (spinbox->spinbox);
   if (spinbox->keylist != NULL) {
-    nval = nlistGetNum (spinbox->keylist, val);
+    nval = nlistGetNum (spinbox->keylist, nval);
   }
   return nval;
 }
@@ -119,7 +154,10 @@ uiSpinboxTextSetValue (uispinbox_t *spinbox, int value)
 {
   nlistidx_t    idx;
 
-  idx = nlistGetIdx (spinbox->list, value);
+  idx = value;
+  if (spinbox->idxlist != NULL) {
+    idx = nlistGetNum (spinbox->idxlist, value);
+  }
   uiSpinboxSetValue (spinbox->spinbox, (double) idx);
 }
 
@@ -358,4 +396,5 @@ uiuitilsSpinboxTextKeyCallback (GtkWidget *w, GdkEventKey *event, gpointer udata
 
   return TRUE;
 }
+
 

@@ -195,8 +195,6 @@ typedef struct {
                                     //    value: display
   nlist_t           *sbkeylist;     // indexed by spinbox index
                                     //    value: key
-  nlist_t           *sbidxlist;     // indexed by key
-                                    //    value: spinbox index
   int               danceidx;       // for dance edit
   GtkWidget         *widget;
 } confuiitem_t;
@@ -550,7 +548,6 @@ main (int argc, char *argv[])
     confui.uiitem [i].listidx = 0;
     confui.uiitem [i].displist = NULL;
     confui.uiitem [i].sbkeylist = NULL;
-    confui.uiitem [i].sbidxlist = NULL;
     confui.uiitem [i].danceidx = DANCE_DANCE;
 
     if (i > CONFUI_BEGIN && i < CONFUI_COMBOBOX_MAX) {
@@ -848,9 +845,6 @@ confuiClosingCallback (void *udata, programstate_t programState)
     }
     if (confui->uiitem [i].sbkeylist != NULL) {
       nlistFree (confui->uiitem [i].sbkeylist);
-    }
-    if (confui->uiitem [i].sbidxlist != NULL) {
-      nlistFree (confui->uiitem [i].sbidxlist);
     }
   }
 
@@ -2344,7 +2338,6 @@ confuiMakeItemSpinboxText (configui_t *confui, GtkWidget *vbox, UIWidget *sg,
   nlist_t     *list;
   nlist_t     *keylist;
   size_t      maxWidth;
-  int         sbidx = 0;
 
   logProcBegin (LOG_PROC, "confuiMakeItemSpinboxText");
 
@@ -2377,13 +2370,7 @@ confuiMakeItemSpinboxText (configui_t *confui, GtkWidget *vbox, UIWidget *sg,
 
   uiSpinboxTextSet (&confui->uiitem [widx].u.spinbox, 0,
       nlistGetCount (list), maxWidth, list, keylist, NULL);
-  /* makeitemspinboxtext is called with the actual key value */
-  /* this needs to be converted into the spinbox index */
-  sbidx = value;
-  if (outtype == CONFUI_OUT_NUM) {
-    sbidx = nlistGetNum (confui->uiitem [widx].sbidxlist, value);
-  }
-  uiSpinboxTextSetValue (&confui->uiitem [widx].u.spinbox, (double) sbidx);
+  uiSpinboxTextSetValue (&confui->uiitem [widx].u.spinbox, value);
   uiWidgetSetMarginStartW (widget, uiBaseMarginSz * 4);
   uiBoxPackStartWW (hbox, widget);
   uiBoxPackStartWW (vbox, hbox);
@@ -2904,7 +2891,6 @@ confuiLoadDanceTypeList (configui_t *confui)
 {
   nlist_t       *tlist = NULL;
   nlist_t       *llist = NULL;
-  nlist_t       *ilist = NULL;
   dnctype_t     *dnctypes;
   slistidx_t    iteridx;
   char          *key;
@@ -2914,7 +2900,6 @@ confuiLoadDanceTypeList (configui_t *confui)
 
   tlist = nlistAlloc ("cu-dance-type", LIST_ORDERED, free);
   llist = nlistAlloc ("cu-dance-type-l", LIST_ORDERED, free);
-  ilist = nlistAlloc ("cu-dance-type-i", LIST_ORDERED, free);
 
   dnctypes = bdjvarsdfGet (BDJVDF_DANCE_TYPES);
   dnctypesStartIterator (dnctypes, &iteridx);
@@ -2922,13 +2907,11 @@ confuiLoadDanceTypeList (configui_t *confui)
   while ((key = dnctypesIterate (dnctypes, &iteridx)) != NULL) {
     nlistSetStr (tlist, count, key);
     nlistSetNum (llist, count, count);
-    nlistSetNum (ilist, count, count);
     ++count;
   }
 
   confui->uiitem [CONFUI_SPINBOX_DANCE_TYPE].displist = tlist;
   confui->uiitem [CONFUI_SPINBOX_DANCE_TYPE].sbkeylist = llist;
-  confui->uiitem [CONFUI_SPINBOX_DANCE_TYPE].sbidxlist = ilist;
   logProcEnd (LOG_PROC, "confuiLoadDanceTypeList", "");
 }
 
@@ -3360,25 +3343,21 @@ confuiSpinboxTextInitDataNum (configui_t *confui, char *tag, int widx, ...)
   int         sbidx;
   nlist_t     *tlist;
   nlist_t     *llist;
-  nlist_t     *ilist;
 
   va_start (valist, widx);
 
   tlist = nlistAlloc (tag, LIST_ORDERED, free);
   llist = nlistAlloc (tag, LIST_ORDERED, free);
-  ilist = nlistAlloc (tag, LIST_ORDERED, free);
   sbidx = 0;
   while ((key = va_arg (valist, nlistidx_t)) != -1) {
     disp = va_arg (valist, char *);
 
     nlistSetStr (tlist, sbidx, disp);
     nlistSetNum (llist, sbidx, key);
-    nlistSetNum (ilist, key, sbidx);
     ++sbidx;
   }
   confui->uiitem [widx].displist = tlist;
   confui->uiitem [widx].sbkeylist = llist;
-  confui->uiitem [widx].sbidxlist = ilist;
 
   va_end (valist);
 }
@@ -4490,7 +4469,6 @@ confuiDanceSelect (GtkTreeView *tv, GtkTreePath *path,
   int           widx;
   char          *sval;
   nlistidx_t    num;
-  int           sbidx;
   slist_t       *slist;
   datafileconv_t conv;
   dance_t       *dances;
@@ -4530,26 +4508,23 @@ confuiDanceSelect (GtkTreeView *tv, GtkTreePath *path,
 
   num = danceGetNum (dances, key, DANCE_HIGH_BPM);
   widx = CONFUI_SPINBOX_DANCE_HIGH_BPM;
-  uiSpinboxTextSetValue (&confui->uiitem [widx].u.spinbox, (double) num);
+  uiSpinboxTextSetValue (&confui->uiitem [widx].u.spinbox, num);
 
   num = danceGetNum (dances, key, DANCE_LOW_BPM);
   widx = CONFUI_SPINBOX_DANCE_LOW_BPM;
-  uiSpinboxTextSetValue (&confui->uiitem [widx].u.spinbox, (double) num);
+  uiSpinboxTextSetValue (&confui->uiitem [widx].u.spinbox, num);
 
   num = danceGetNum (dances, key, DANCE_SPEED);
   widx = CONFUI_SPINBOX_DANCE_SPEED;
-  sbidx = nlistGetNum (confui->uiitem [widx].sbidxlist, num);
-  uiSpinboxTextSetValue (&confui->uiitem [widx].u.spinbox, (double) sbidx);
+  uiSpinboxTextSetValue (&confui->uiitem [widx].u.spinbox, num);
 
   num = danceGetNum (dances, key, DANCE_TIMESIG);
   widx = CONFUI_SPINBOX_DANCE_TIME_SIG;
-  sbidx = nlistGetNum (confui->uiitem [widx].sbidxlist, num);
-  uiSpinboxTextSetValue (&confui->uiitem [widx].u.spinbox, (double) sbidx);
+  uiSpinboxTextSetValue (&confui->uiitem [widx].u.spinbox, num);
 
   num = danceGetNum (dances, key, DANCE_TYPE);
   widx = CONFUI_SPINBOX_DANCE_TYPE;
-  sbidx = nlistGetNum (confui->uiitem [widx].sbidxlist, num);
-  uiSpinboxTextSetValue (&confui->uiitem [widx].u.spinbox, (double) sbidx);
+  uiSpinboxTextSetValue (&confui->uiitem [widx].u.spinbox, num);
   logProcEnd (LOG_PROC, "confuiDanceSelect", "");
 }
 

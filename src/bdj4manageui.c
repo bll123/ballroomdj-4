@@ -779,8 +779,7 @@ manageBuildUIUpdateDatabase (manageui_t *manage)
   widget = uiCreateButton (&uiwidget,
       &manage->callbacks [MANAGE_CALLBACK_DB_START],
       /* CONTEXT: update database: button to start the database update process */
-      _("Start"), NULL,
-      manageDbStart, manage);
+      _("Start"), NULL, NULL, NULL);
   uiBoxPackStartWW (hbox, widget);
 
   uiCreateProgressBar (&manage->dbpbar, bdjoptGetStr (OPT_P_UI_ACCENT_COL));

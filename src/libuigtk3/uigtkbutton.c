@@ -45,6 +45,9 @@ uiCreateButton (UIWidget *uiwidget, UICallback *uicb,
   } else {
     gtk_button_set_label (GTK_BUTTON (widget), title);
   }
+  if (uicb != NULL && cb != NULL) {
+    fprintf (stderr, "ERR: create button: cannot have both callback set\n");
+  }
   if (uicb != NULL) {
     g_signal_connect (widget, "clicked", G_CALLBACK (uiButtonClickHandler), uicb);
   }

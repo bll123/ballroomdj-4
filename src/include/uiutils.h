@@ -102,7 +102,10 @@ typedef struct {
   void                  *udata;
   int                   maxWidth;
   slist_t               *list;
+  long          junka;
   nlist_t               *keylist;
+  long          junkb;
+  nlist_t               *idxlist;
   bool                  indisp : 1;
   bool                  changed : 1;
 } uispinbox_t;
