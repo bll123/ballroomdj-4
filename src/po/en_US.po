@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: BDJ4 4.0.0\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
-"POT-Creation-Date: 2022-05-11\n"
-"PO-Revision-Date: 2022-05-11\n"
+"POT-Creation-Date: 2022-05-12\n"
+"PO-Revision-Date: 2022-05-12\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/gb\n"
 "Language: en\n"
@@ -73,7 +73,6 @@ msgstr ""
 msgid "%s is not installed"
 msgstr ""
 
-#. CONTEXT: validation: spaces are not allowed
 #. CONTEXT: validation: must be a numeric value
 #, c-format
 msgid "%s must be numeric."
@@ -92,6 +91,11 @@ msgstr ""
 #. CONTEXT: validation: spaces are not allowed
 #, c-format
 msgid "%s: Spaces are not allowed"
+msgstr ""
+
+#. CONTEXT: validation: spaces are not allowed
+#, c-format
+msgid "%s: Spaces are not allowed."
 msgstr ""
 
 #. CONTEXT: dance time signature
@@ -249,10 +253,6 @@ msgstr ""
 
 #. CONTEXT: configuration: genre: title of the classical setting column
 msgid "Classical?"
-msgstr ""
-
-#. CONTEXT: installer: status message
-msgid "Cleaning old files."
 msgstr ""
 
 msgid "Clear & Play"
@@ -544,10 +544,6 @@ msgstr ""
 msgid "Fade Out Time"
 msgstr ""
 
-#. CONTEXT: configuration: the type of fade
-msgid "Fade Type"
-msgstr ""
-
 #. CONTEXT: configuration: filter display: checkbox: favorite selection
 #. CONTEXT: title: favorite marker
 #. CONTEXT: a filter: select the 'favorite' displayed in the song selection
@@ -611,10 +607,6 @@ msgstr ""
 msgid "HTML Template"
 msgstr ""
 
-#. CONTEXT: fade-out type
-msgid "Half Sine Wave"
-msgstr ""
-
 #. CONTEXT: configuration: marquee: minimize the marquee when the player is started
 msgid "Hide Marquee on Start"
 msgstr ""
@@ -668,10 +660,6 @@ msgstr ""
 msgid "Internet"
 msgstr ""
 
-#. CONTEXT: fade-out type
-msgid "Inverted Parabola"
-msgstr ""
-
 msgid "Jazz"
 msgstr ""
 
@@ -716,10 +704,6 @@ msgstr ""
 
 #. CONTEXT: installer: status message
 msgid "Located 'tclsh'."
-msgstr ""
-
-#. CONTEXT: fade-out type
-msgid "Logarithmic"
 msgstr ""
 
 #. CONTEXT: configuration: dances: low BPM (or MPM) setting
@@ -1009,10 +993,6 @@ msgstr ""
 msgid "QR Code"
 msgstr ""
 
-#. CONTEXT: fade-out type
-msgid "Quarter Sine Wave"
-msgstr ""
-
 #. CONTEXT: queue a song to be played
 msgid "Queue"
 msgstr ""
@@ -1040,6 +1020,7 @@ msgstr ""
 msgid "Queue Playlist"
 msgstr ""
 
+#. CONTEXT: the name of the special playlist for queueing a dance
 #. CONTEXT: The name of the 'queuedance' playlist file
 #. CONTEXT: the name for the special playlist used for the 'queue dance' button
 msgid "QueueDance"
@@ -1353,10 +1334,6 @@ msgstr ""
 
 #. CONTEXT: title: track number
 msgid "Track"
-msgstr ""
-
-#. CONTEXT: fade-out type
-msgid "Triangle"
 msgstr ""
 
 #. CONTEXT: menu selection: song list: actions menu: truncate the song list

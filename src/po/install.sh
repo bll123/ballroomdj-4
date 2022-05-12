@@ -228,13 +228,6 @@ while read -r line; do
     mkhtmlsub $fn $TMP $locale $pofile
   done
 
-  fn=${TMPLDIR}/fades.svg
-  egrep 'aria-label=' $fn |
-      sed -e 's,.*aria-label=",,' -e 's,".*,,' > $TMP
-  sort -u $TMP > $TMP.n
-  mv -f $TMP.n $TMP
-  mkimgsub $fn $TMP $locale $pofile
-
   # these are used by the installer to locate the localized name
   # of the playlists.
   ATMP=${INSTDIR}/localized-auto.txt
