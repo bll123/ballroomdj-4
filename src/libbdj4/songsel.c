@@ -166,28 +166,6 @@ songselAlloc (musicdb_t *musicdb, list_t *dancelist, songfilter_t *songfilter)
     danceIdx = songGetNum (song, TAG_DANCE);
     songseldance = nlistGetData (songsel->danceSelList, danceIdx);
     if (songseldance == NULL) {
-      logMsg (LOG_DBG, LOG_SONGSEL, "song %zd reject: dance %zd", dbidx, danceIdx);
-      continue;
-    }
-
-    rating = songGetNum (song, TAG_DANCERATING);
-    if (rating < 0) {
-      logMsg (LOG_DBG, LOG_SONGSEL, "song %zd reject: unknown rating", dbidx);
-      continue;
-    }
-    weight = ratingGetWeight (ratings, rating);
-    if (weight == 0) {
-      logMsg (LOG_DBG, LOG_SONGSEL, "song %zd reject: rating weight 0", dbidx);
-      continue;
-    }
-    level = songGetNum (song, TAG_DANCELEVEL);
-    if (level < 0) {
-      logMsg (LOG_DBG, LOG_SONGSEL, "song %zd reject: unknown level", dbidx);
-      continue;
-    }
-    weight = levelGetWeight (levels, level);
-    if (weight == 0) {
-      logMsg (LOG_DBG, LOG_SONGSEL, "song %zd reject: level weight 0", dbidx);
       continue;
     }
 

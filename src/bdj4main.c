@@ -16,6 +16,7 @@
 
 #include "bdj4.h"
 #include "bdj4init.h"
+#include "bdj4intl.h"
 #include "bdjmsg.h"
 #include "bdjopt.h"
 #include "bdjstring.h"
@@ -1006,7 +1007,10 @@ mainQueueDance (maindata_t *mainData, char *args, ssize_t count)
   snprintf (plname, sizeof (plname), "_main_dance_%zd_%ld",
       danceIdx, globalCounter++);
   playlist = playlistAlloc (mainData->musicdb);
-  playlistCreate (playlist, plname, PLTYPE_AUTO, NULL);
+  /* CONTEXT: the name of the special playlist for queueing a dance */
+  if (playlistLoad (playlist, _("QueueDance")) < 0) {
+    playlistCreate (playlist, plname, PLTYPE_AUTO, NULL);
+  }
   playlistSetConfigNum (playlist, PLAYLIST_STOP_AFTER, count);
   /* this will also set 'selected' */
   playlistSetDanceCount (playlist, danceIdx, 1);

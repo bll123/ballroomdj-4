@@ -340,10 +340,15 @@ bool
 songfilterFilterSong (songfilter_t *sf, song_t *song)
 {
   dbidx_t       dbidx;
+  rating_t      *ratings;
+  level_t       *levels;
 
   if (sf == NULL) {
     return false;
   }
+
+  ratings = bdjvarsdfGet (BDJVDF_RATINGS);
+  levels = bdjvarsdfGet (BDJVDF_LEVELS);
 
   dbidx = songGetNum (song, TAG_DBIDX);
 
@@ -354,8 +359,9 @@ songfilterFilterSong (songfilter_t *sf, song_t *song)
     danceIdx = songGetNum (song, TAG_DANCE);
     danceList = sf->datafilter [SONG_FILTER_DANCE];
     if (danceList != NULL && ! ilistExists (danceList, danceIdx)) {
-      logMsg (LOG_DBG, LOG_SONGSEL, "reject: %zd dance %ld", dbidx, danceIdx);
       return false;
+    } else {
+      logMsg (LOG_DBG, LOG_SONGSEL, "dance: ok: %zd %ld", dbidx, danceIdx);
     }
   }
 
@@ -364,7 +370,7 @@ songfilterFilterSong (songfilter_t *sf, song_t *song)
 
     genre = songGetNum (song, TAG_GENRE);
     if (genre != sf->numfilter [SONG_FILTER_GENRE]) {
-      logMsg (LOG_DBG, LOG_SONGSEL, "reject: %zd genre %ld != %ld", dbidx, genre, sf->numfilter [SONG_FILTER_GENRE]);
+      logMsg (LOG_DBG, LOG_SONGSEL, "genre: reject: %zd %ld != %ld", dbidx, genre, sf->numfilter [SONG_FILTER_GENRE]);
       return false;
     }
   }
@@ -374,21 +380,41 @@ songfilterFilterSong (songfilter_t *sf, song_t *song)
   /* use this for both for-playback and not-for-playback */
   if (sf->inuse [SONG_FILTER_RATING]) {
     nlistidx_t    rating;
+    int           weight;
 
     rating = songGetNum (song, TAG_DANCERATING);
+    if (rating < 0) {
+      logMsg (LOG_DBG, LOG_SONGSEL, "rating: reject: %zd unknown %ld", dbidx, rating);
+      return false;
+    }
+    weight = ratingGetWeight (ratings, rating);
+    if (weight == 0) {
+      logMsg (LOG_DBG, LOG_SONGSEL, "rating: reject: %zd %ld weight 0", dbidx, rating);
+      return false;
+    }
     if (rating < sf->numfilter [SONG_FILTER_RATING]) {
-      logMsg (LOG_DBG, LOG_SONGSEL, "reject: %zd rating %ld < %ld", dbidx, rating, sf->numfilter [SONG_FILTER_RATING]);
+      logMsg (LOG_DBG, LOG_SONGSEL, "rating: reject: %zd %ld < %ld", dbidx, rating, sf->numfilter [SONG_FILTER_RATING]);
       return false;
     }
   }
 
   if (sf->inuse [SONG_FILTER_LEVEL_LOW] && sf->inuse [SONG_FILTER_LEVEL_HIGH]) {
     nlistidx_t    level;
+    int           weight;
 
     level = songGetNum (song, TAG_DANCELEVEL);
+    if (level < 0) {
+      logMsg (LOG_DBG, LOG_SONGSEL, "level: reject: %zd unknown %ld", dbidx, level);
+      return false;
+    }
+    weight = levelGetWeight (levels, level);
+    if (weight == 0) {
+      logMsg (LOG_DBG, LOG_SONGSEL, "level: reject: %zd %ld weight 0", dbidx, level);
+      return false;
+    }
     if (level < sf->numfilter [SONG_FILTER_LEVEL_LOW] ||
         level > sf->numfilter [SONG_FILTER_LEVEL_HIGH]) {
-      logMsg (LOG_DBG, LOG_SONGSEL, "reject: %zd level %ld < %ld / > %ld", dbidx, level,
+      logMsg (LOG_DBG, LOG_SONGSEL, "level: reject: %zd %ld < %ld / > %ld", dbidx, level,
           sf->numfilter [SONG_FILTER_LEVEL_LOW], sf->numfilter [SONG_FILTER_LEVEL_HIGH]);
       return false;
     }
@@ -399,7 +425,7 @@ songfilterFilterSong (songfilter_t *sf, song_t *song)
 
     sstatus = songGetNum (song, TAG_STATUS);
     if (sstatus != sf->numfilter [SONG_FILTER_STATUS]) {
-      logMsg (LOG_DBG, LOG_SONGSEL, "reject: %zd status %ld != %ld", dbidx, sstatus, sf->numfilter [SONG_FILTER_STATUS]);
+      logMsg (LOG_DBG, LOG_SONGSEL, "status: reject: %zd %ld != %ld", dbidx, sstatus, sf->numfilter [SONG_FILTER_STATUS]);
       return false;
     }
   }
@@ -409,7 +435,7 @@ songfilterFilterSong (songfilter_t *sf, song_t *song)
 
     fav = songGetNum (song, TAG_FAVORITE);
     if (fav != sf->numfilter [SONG_FILTER_FAVORITE]) {
-      logMsg (LOG_DBG, LOG_SONGSEL, "reject: %zd favorite %ld != %ld", dbidx, fav, sf->numfilter [SONG_FILTER_FAVORITE]);
+      logMsg (LOG_DBG, LOG_SONGSEL, "favorite: reject: %zd %ld != %ld", dbidx, fav, sf->numfilter [SONG_FILTER_FAVORITE]);
       return false;
     }
   }
@@ -469,7 +495,7 @@ songfilterFilterSong (songfilter_t *sf, song_t *song)
 
       idx = slistGetIdx (keywordList, keyword);
       if (slistGetCount (keywordList) > 0 && idx < 0) {
-        logMsg (LOG_DBG, LOG_SONGSEL, "reject: %zd keyword %s not in allowed", dbidx, keyword);
+        logMsg (LOG_DBG, LOG_SONGSEL, "keyword: reject: %zd %s not in allowed", dbidx, keyword);
         return false;
       }
     }

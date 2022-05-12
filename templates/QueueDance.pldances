@@ -8,7 +8,7 @@ DANCE
 SELECTED
 ..0
 COUNT
-..2
+..0
 MAXPLAYTIME
 ..
 BPMLOW
@@ -20,9 +20,9 @@ KEY
 DANCE
 ..Cha Cha
 SELECTED
-..1
+..0
 COUNT
-..5
+..0
 MAXPLAYTIME
 ..
 BPMLOW
@@ -34,9 +34,9 @@ KEY
 DANCE
 ..Foxtrot
 SELECTED
-..1
+..0
 COUNT
-..7
+..0
 MAXPLAYTIME
 ..
 BPMLOW
@@ -48,9 +48,9 @@ KEY
 DANCE
 ..Jive
 SELECTED
-..1
+..0
 COUNT
-..2
+..0
 MAXPLAYTIME
 ..
 BPMLOW
@@ -64,7 +64,7 @@ DANCE
 SELECTED
 ..0
 COUNT
-..4
+..0
 MAXPLAYTIME
 ..
 BPMLOW
@@ -76,9 +76,9 @@ KEY
 DANCE
 ..Quickstep
 SELECTED
-..1
+..0
 COUNT
-..4
+..0
 MAXPLAYTIME
 ..
 BPMLOW
@@ -90,9 +90,9 @@ KEY
 DANCE
 ..Rumba
 SELECTED
-..1
+..0
 COUNT
-..5
+..0
 MAXPLAYTIME
 ..
 BPMLOW
@@ -104,9 +104,9 @@ KEY
 DANCE
 ..Salsa
 SELECTED
-..1
+..0
 COUNT
-..2
+..0
 MAXPLAYTIME
 ..
 BPMLOW
@@ -118,9 +118,9 @@ KEY
 DANCE
 ..Samba
 SELECTED
-..1
+..0
 COUNT
-..3
+..0
 MAXPLAYTIME
 ..
 BPMLOW
@@ -132,9 +132,9 @@ KEY
 DANCE
 ..Tango
 SELECTED
-..1
+..0
 COUNT
-..7
+..0
 MAXPLAYTIME
 ..
 BPMLOW
@@ -146,9 +146,9 @@ KEY
 DANCE
 ..Viennese Waltz
 SELECTED
-..1
+..0
 COUNT
-..3
+..0
 MAXPLAYTIME
 ..15000
 BPMLOW
@@ -160,9 +160,9 @@ KEY
 DANCE
 ..Waltz
 SELECTED
-..1
+..0
 COUNT
-..7
+..0
 MAXPLAYTIME
 ..
 BPMLOW
@@ -174,9 +174,9 @@ KEY
 DANCE
 ..West Coast Swing
 SELECTED
-..1
+..0
 COUNT
-..5
+..0
 MAXPLAYTIME
 ..
 BPMLOW
