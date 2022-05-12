@@ -104,9 +104,9 @@ typedef struct manage {
   dispsel_t       *dispsel;
   int             stopwaitcount;
   /* update database */
-  uispinbox_t  dbspinbox;
-  uitextbox_t  *dbhelpdisp;
-  uitextbox_t  *dbstatus;
+  uispinbox_t     dbspinbox;
+  uitextbox_t     *dbhelpdisp;
+  uitextbox_t     *dbstatus;
   nlist_t           *dblist;
   nlist_t           *dbhelp;
   /* notebook tab handling */
@@ -519,14 +519,16 @@ manageBuildUI (manageui_t *manage)
   GtkWidget           *menubar;
   GtkWidget           *tabLabel;
   GtkWidget           *widget;
-  GtkWidget           *hbox;
   GtkWidget           *vbox;
+  UIWidget            hbox;
+  UIWidget            uivbox;
   char                imgbuff [MAXPATHLEN];
   char                tbuff [MAXPATHLEN];
   gint                x, y;
 
   logProcBegin (LOG_PROC, "manageBuildUI");
   *imgbuff = '\0';
+  uiutilsUIWidgetInit (&uivbox);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", ".svg", PATHBLD_MP_IMGDIR);
@@ -535,16 +537,16 @@ manageBuildUI (manageui_t *manage)
   manage->window = uiCreateMainWindow (tbuff, imgbuff,
       manageCloseWin, manage);
 
-  vbox = uiCreateVertBoxWW ();
-  uiWidgetSetAllMarginsW (vbox, 4);
-  uiBoxPackInWindowWW (manage->window, vbox);
+  uiCreateVertBox (&uivbox);
+  uiWidgetSetAllMargins (&uivbox, 4);
+  uiBoxPackInWindowWU (manage->window, &uivbox);
 
-  hbox = uiCreateHorizBoxWW ();
-  uiWidgetSetMarginTopW (hbox, uiBaseMarginSz * 4);
-  uiBoxPackStartWW (vbox, hbox);
+  uiCreateHorizBox (&hbox);
+  uiWidgetSetMarginTop (&hbox, uiBaseMarginSz * 4);
+  uiBoxPackStart (&uivbox, &hbox);
 
   widget = uiCreateLabel ("");
-  uiBoxPackEndWW (hbox, widget);
+  uiBoxPackEndUW (&hbox, widget);
   snprintf (tbuff, sizeof (tbuff),
       "label { color: %s; }",
       bdjoptGetStr (OPT_P_UI_ACCENT_COL));
@@ -552,12 +554,12 @@ manageBuildUI (manageui_t *manage)
   manage->statusMsg = widget;
 
   menubar = uiCreateMenubar ();
-  uiBoxPackStartWW (hbox, menubar);
+  uiBoxPackStartUW (&hbox, menubar);
   manage->menubar = menubar;
 
   manage->mainnotebook = uiCreateNotebook ();
   gtk_notebook_set_tab_pos (GTK_NOTEBOOK (manage->mainnotebook), GTK_POS_LEFT);
-  uiBoxPackStartExpandWW (vbox, manage->mainnotebook);
+  uiBoxPackStartExpandUW (&uivbox, manage->mainnotebook);
 
   manageBuildUISongListEditor (manage);
   manageBuildUIMusicManager (manage);
@@ -612,12 +614,14 @@ manageBuildUISongListEditor (manageui_t *manage)
 {
   UIWidget            uiwidget;
   GtkWidget           *vbox;
-  GtkWidget           *hbox;
+  UIWidget            hbox;
   GtkWidget           *tabLabel;
   GtkWidget           *widget;
   GtkWidget           *notebook;
 
   /* song list editor */
+  uiutilsUIWidgetInit (&hbox);
+
   vbox = uiCreateVertBoxWW ();
   uiWidgetSetAllMarginsW (vbox, 4);
 
@@ -644,16 +648,16 @@ manageBuildUISongListEditor (manageui_t *manage)
   uiutilsNotebookIDAdd (manage->slnbtabid, MANAGE_TAB_SONGLIST);
   manage->slezmusicqtabwidget = widget;
 
-  hbox = uiCreateHorizBoxWW ();
-  uiBoxPackStartExpandWW (widget, hbox);
+  uiCreateHorizBox (&hbox);
+  uiBoxPackStartExpandWU (widget, &hbox);
 
   widget = uimusicqBuildUI (manage->slezmusicq, manage->window, MUSICQ_A);
-  uiBoxPackStartExpandWW (hbox, widget);
+  uiBoxPackStartExpandUW (&hbox, widget);
 
   vbox = uiCreateVertBoxWW ();
   uiWidgetSetAllMarginsW (vbox, uiBaseMarginSz * 4);
   uiWidgetSetMarginTopW (vbox, uiBaseMarginSz * 64);
-  uiBoxPackStartWW (hbox, vbox);
+  uiBoxPackStartUW (&hbox, vbox);
   manage->ezvboxwidget = vbox;
 
   uiutilsUICallbackInit (&manage->callbacks [MANAGE_CALLBACK_EZ_SELECT],
@@ -665,7 +669,7 @@ manageBuildUISongListEditor (manageui_t *manage)
   uiBoxPackStartWW (vbox, widget);
 
   widget = uisongselBuildUI (manage->slezsongsel, manage->window);
-  uiBoxPackStartExpandWW (hbox, widget);
+  uiBoxPackStartExpandUW (&hbox, widget);
 
   /* song list editor: music queue tab */
   widget = uimusicqBuildUI (manage->slmusicq, manage->window, MUSICQ_A);
@@ -742,7 +746,7 @@ manageBuildUIUpdateDatabase (manageui_t *manage)
 {
   UIWidget            uiwidget;
   GtkWidget           *vbox;
-  GtkWidget           *hbox;
+  UIWidget            hbox;
   GtkWidget           *tabLabel;
   GtkWidget           *widget;
   uitextbox_t    *tb;
@@ -762,8 +766,8 @@ manageBuildUIUpdateDatabase (manageui_t *manage)
   uiBoxPackStartWW (vbox, tb->scw);
   manage->dbhelpdisp = tb;
 
-  hbox = uiCreateHorizBoxWW ();
-  uiBoxPackStartWW (vbox, hbox);
+  uiCreateHorizBox (&hbox);
+  uiBoxPackStartWU (vbox, &hbox);
 
   widget = uiSpinboxTextCreate (&manage->dbspinbox, manage);
   /* currently hard-coded at 30 chars */
@@ -772,7 +776,7 @@ manageBuildUIUpdateDatabase (manageui_t *manage)
       manage->dblist, NULL, NULL);
   uiSpinboxTextSetValue (&manage->dbspinbox, MANAGE_DB_CHECK_NEW);
   g_signal_connect (widget, "value-changed", G_CALLBACK (manageDbChg), manage);
-  uiBoxPackStartWW (hbox, widget);
+  uiBoxPackStartUW (&hbox, widget);
 
   uiutilsUICallbackInit (&manage->callbacks [MANAGE_CALLBACK_DB_START],
       manageDbStart, manage);
@@ -780,7 +784,7 @@ manageBuildUIUpdateDatabase (manageui_t *manage)
       &manage->callbacks [MANAGE_CALLBACK_DB_START],
       /* CONTEXT: update database: button to start the database update process */
       _("Start"), NULL, NULL, NULL);
-  uiBoxPackStartWW (hbox, widget);
+  uiBoxPackStartUW (&hbox, widget);
 
   uiCreateProgressBar (&manage->dbpbar, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
   uiBoxPackStartWU (vbox, &manage->dbpbar);
@@ -1549,7 +1553,7 @@ manageCreateSelectFileDialog (manageui_t *manage,
   GtkWidget     *dialog;
   GtkWidget     *content;
   GtkWidget     *vbox;
-  GtkWidget     *hbox;
+  UIWidget      hbox;
   GtkWidget     *scwin;
   GtkWidget     *widget;
   char          tbuff [200];
@@ -1634,11 +1638,11 @@ manageCreateSelectFileDialog (manageui_t *manage,
   uiBoxPackInWindowWW (scwin, widget);
 
   /* the dialog doesn't have any space above the buttons */
-  hbox = uiCreateHorizBoxWW ();
-  uiBoxPackStartWW (vbox, hbox);
+  uiCreateHorizBox (&hbox);
+  uiBoxPackStartWU (vbox, &hbox);
 
   widget = uiCreateLabel (" ");
-  uiBoxPackStartWW (hbox, widget);
+  uiBoxPackStartUW (&hbox, widget);
 
   g_signal_connect (dialog, "response",
       G_CALLBACK (manageSelectFileResponseHandler), manage);
