@@ -139,8 +139,8 @@ void uiBoxPackStartExpandWW (GtkWidget *box, GtkWidget *widget);
 void uiBoxPackEndWW (GtkWidget *box, GtkWidget *widget);
 
 /* uigtkpbar.c */
-GtkWidget * uiCreateProgressBar (char *color);
-void        uiProgressBarSet (GtkWidget *pb, double val);
+void uiCreateProgressBar (UIWidget *uiwidget, char *color);
+void uiProgressBarSet (UIWidget *uipb, double val);
 
 /* uigtktreeview.c */
 GtkWidget * uiCreateTreeView (void);

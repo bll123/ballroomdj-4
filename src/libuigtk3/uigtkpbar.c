@@ -15,13 +15,14 @@
 #include "ui.h"
 #include "uiutils.h"
 
-GtkWidget *
-uiCreateProgressBar (char *color)
+void
+uiCreateProgressBar (UIWidget *uiwidget, char *color)
 {
   GtkWidget *widget;
   char      tbuff [200];
 
   widget = gtk_progress_bar_new ();
+  uiwidget->widget = widget;
   gtk_widget_set_halign (widget, GTK_ALIGN_FILL);
   gtk_widget_set_hexpand (widget, TRUE);
   gtk_widget_set_margin_start (widget, uiBaseMarginSz);
@@ -30,11 +31,10 @@ uiCreateProgressBar (char *color)
       "progress, trough { min-height: 25px; } progressbar > trough > progress { background-color: %s; }",
       color);
   uiSetCss (widget, tbuff);
-  return widget;
 }
 
 void
-uiProgressBarSet (GtkWidget *pb, double val)
+uiProgressBarSet (UIWidget *uipb, double val)
 {
-  gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (pb), val);
+  gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (uipb->widget), val);
 }

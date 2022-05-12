@@ -130,7 +130,7 @@ typedef struct manage {
   GtkWidget       *slnotebook;
   GtkWidget       *mmnotebook;
   GtkWidget       *vbox;
-  GtkWidget       *dbpbar;
+  UIWidget        dbpbar;
   GtkWidget       *statusMsg;
   /* song list ui major elements */
   uiplayer_t      *slplayer;
@@ -265,6 +265,7 @@ main (int argc, char *argv[])
   manage.slbackupcreated = NULL;
   manage.slsongfilter = NULL;
   manage.mmsongfilter = NULL;
+  uiutilsUIWidgetInit (&manage.dbpbar);
 
   procutilInitProcesses (manage.processes);
 
@@ -782,9 +783,8 @@ manageBuildUIUpdateDatabase (manageui_t *manage)
       manageDbStart, manage);
   uiBoxPackStartWW (hbox, widget);
 
-  widget = uiCreateProgressBar (bdjoptGetStr (OPT_P_UI_ACCENT_COL));
-  uiBoxPackStartWW (vbox, widget);
-  manage->dbpbar = widget;
+  uiCreateProgressBar (&manage->dbpbar, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
+  uiBoxPackStartWU (vbox, &manage->dbpbar);
 
   tb = uiTextBoxCreate (200);
   uiTextBoxSetReadonly (tb);
@@ -1090,7 +1090,7 @@ manageDbStart (void *udata)
   targv [targc++] = "--progress";
   targv [targc++] = NULL;
 
-  uiProgressBarSet (manage->dbpbar, 0.0);
+  uiProgressBarSet (&manage->dbpbar, 0.0);
   manage->processes [ROUTE_DBUPDATE] = procutilStartProcess (
       ROUTE_DBUPDATE, "bdj4dbupdate", OS_PROC_DETACH, targv);
 }
@@ -1101,10 +1101,10 @@ manageDbProgressMsg (manageui_t *manage, char *args)
   double    progval;
 
   if (strncmp ("END", args, 3) == 0) {
-    uiProgressBarSet (manage->dbpbar, 100.0);
+    uiProgressBarSet (&manage->dbpbar, 100.0);
   } else {
     if (sscanf (args, "PROG %lf", &progval) == 1) {
-      uiProgressBarSet (manage->dbpbar, progval);
+      uiProgressBarSet (&manage->dbpbar, progval);
     }
   }
 }

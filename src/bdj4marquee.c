@@ -64,13 +64,13 @@ typedef struct {
   datafile_t      *optiondf;
   nlist_t         *options;
   GtkWidget       *window;
-  GtkWidget       *pbar;
   GtkWidget       *danceLab;
   GtkWidget       *countdownTimerLab;
-  UIWidget        infoBox;
   GtkWidget       *infoArtistLab;
   GtkWidget       *infoSepLab;
   GtkWidget       *infoTitleLab;
+  UIWidget        pbar;
+  UIWidget        infoBox;
   UIWidget        sep;
   GtkWidget       **marqueeLabs;
   int             marginTotal;
@@ -148,12 +148,12 @@ main (int argc, char *argv[])
       marqueeClosingCallback, &marquee);
 
   marquee.window = NULL;
-  marquee.pbar = NULL;
   marquee.danceLab = NULL;
   marquee.countdownTimerLab = NULL;
   marquee.infoArtistLab = NULL;
   marquee.infoSepLab = NULL;
   marquee.infoTitleLab = NULL;
+  uiutilsUIWidgetInit (&marquee.pbar);
   uiutilsUIWidgetInit (&marquee.sep);
   uiutilsUIWidgetInit (&marquee.infoBox);
   marquee.marqueeLabs = NULL;
@@ -346,8 +346,8 @@ marqueeBuildUI (marquee_t *marquee)
   uiWidgetExpandVert (&mainvbox);
   marquee->marginTotal = 20;
 
-  marquee->pbar = uiCreateProgressBar (bdjoptGetStr (OPT_P_MQ_ACCENT_COL));
-  uiBoxPackStartUW (&mainvbox, marquee->pbar);
+  uiCreateProgressBar (&marquee->pbar, bdjoptGetStr (OPT_P_MQ_ACCENT_COL));
+  uiBoxPackStart (&mainvbox, &marquee->pbar);
 
   uiCreateVertBox (&vbox);
   uiWidgetExpandHoriz (&vbox);
@@ -904,7 +904,7 @@ marqueeSetTimer (marquee_t *marquee, char *args)
   } else {
     dratio = 0.0;
   }
-  uiProgressBarSet (marquee->pbar, dratio);
+  uiProgressBarSet (&marquee->pbar, dratio);
   logProcEnd (LOG_PROC, "marqueeSetTimer", "");
 }
 
