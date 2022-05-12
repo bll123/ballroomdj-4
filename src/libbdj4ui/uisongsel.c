@@ -234,8 +234,6 @@ uisongselChangeFavorite (uisongsel_t *uisongsel, dbidx_t dbidx)
 void
 uisongselApplySongFilter (uisongsel_t *uisongsel)
 {
-  ilistidx_t    idx;
-
   uisongsel->dfilterCount = (double) songfilterProcess (
       uisongsel->songfilter, uisongsel->musicdb);
   uisongsel->idxStart = 0;

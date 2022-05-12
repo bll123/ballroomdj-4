@@ -53,7 +53,7 @@ typedef struct {
   ssize_t       speed;
   double        voladjperc;
   ssize_t       gap;
-  ssize_t       announce;
+  ssize_t       announce;  // one of PREP_SONG or PREP_ANNOUNCE
 } prepqueue_t;
 
 typedef struct {
@@ -993,14 +993,10 @@ playerNextSong (playerdata_t *playerData)
       playerSetPlayerState (playerData, PL_STATE_STOPPED);
       logMsg (LOG_DBG, LOG_BASIC, "pl-state: (was paused; next-song) %d/%s",
           playerData->playerState, plstateDebugText (playerData->playerState));
-      /* and have main advance to the next song */
-      connSendMessage (playerData->conn, ROUTE_MAIN,
-          MSG_PLAYBACK_STOP, NULL);
-    } else {
-      /* tell main to go to the next song */
-      connSendMessage (playerData->conn, ROUTE_MAIN,
-          MSG_PLAYBACK_FINISH, NULL);
     }
+    /* tell main to go to the next song */
+    connSendMessage (playerData->conn, ROUTE_MAIN,
+        MSG_PLAYBACK_FINISH, NULL);
   }
 }
 

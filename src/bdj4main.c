@@ -124,7 +124,7 @@ static void     mainSendPlaylistList (maindata_t *mainData, bdjmsgroute_t route)
 static void     mainSendPlayerStatus (maindata_t *mainData, char *playerResp);
 static void     mainSendMusicqStatus (maindata_t *mainData, char *rbuff, size_t siz);
 static void     mainDanceCountsInit (maindata_t *mainData);
-static void     mainParseIntNum (char *args, int *a, ssize_t *b);
+static void     mainParseIntNum (char *args, int *a, ilistidx_t *b);
 static void     mainParseIntStr (char *args, int *a, char **b);
 static void     mainSendFinished (maindata_t *mainData);
 
@@ -996,15 +996,19 @@ mainQueueDance (maindata_t *mainData, char *args, ssize_t count)
   playlist_t      *playlist;
   char            plname [60];
   int             mi;
-  ssize_t         danceIdx;
+  ilistidx_t      danceIdx;
+  ilistidx_t      musicqLen;
 
   logProcBegin (LOG_PROC, "mainQueueDance");
+
+  /* get the musicq length before any songs are added */
+  musicqLen = musicqGetLen (mainData->musicQueue, mainData->musicqPlayIdx);
 
   mainParseIntNum (args, &mi, &danceIdx);
   mainData->musicqManageIdx = mi;
 
-  logMsg (LOG_DBG, LOG_BASIC, "queue dance %d %zd %zd", mi, danceIdx, count);
-  snprintf (plname, sizeof (plname), "_main_dance_%zd_%ld",
+  logMsg (LOG_DBG, LOG_BASIC, "queue dance %d %d %d", mi, danceIdx, count);
+  snprintf (plname, sizeof (plname), "_main_dance_%d_%ld",
       danceIdx, globalCounter++);
   playlist = playlistAlloc (mainData->musicdb);
   /* CONTEXT: the name of the special playlist for queueing a dance */
@@ -1024,7 +1028,9 @@ mainQueueDance (maindata_t *mainData, char *args, ssize_t count)
   mainData->musicqChanged [mi] = true;
   mainSendMusicqStatus (mainData, NULL, 0);
   if (mainData->playWhenQueued &&
-      mainData->musicqPlayIdx == (musicqidx_t) mi) {
+      mainData->musicqPlayIdx == (musicqidx_t) mi &&
+      mainData->playerState == PL_STATE_STOPPED &&
+      musicqLen == 0) {
     mainMusicQueuePlay (mainData);
   }
   logProcEnd (LOG_PROC, "mainQueueDance", "");
@@ -1037,8 +1043,12 @@ mainQueuePlaylist (maindata_t *mainData, char *args)
   playlist_t      *playlist;
   char            *plname;
   int             rc;
+  ilistidx_t      musicqLen;
 
   logProcBegin (LOG_PROC, "mainQueuePlaylist");
+
+  /* get the musicq length before any songs are added */
+  musicqLen = musicqGetLen (mainData->musicQueue, mainData->musicqPlayIdx);
 
   mainParseIntStr (args, &mi, &plname);
   mainData->musicqManageIdx = mi;
@@ -1057,7 +1067,9 @@ mainQueuePlaylist (maindata_t *mainData, char *args)
 
     mainSendMusicqStatus (mainData, NULL, 0);
     if (mainData->playWhenQueued &&
-        mainData->musicqPlayIdx == (musicqidx_t) mi) {
+        mainData->musicqPlayIdx == (musicqidx_t) mi &&
+        mainData->playerState == PL_STATE_STOPPED &&
+        musicqLen == 0) {
       mainMusicQueuePlay (mainData);
     }
   } else {
@@ -1343,8 +1355,8 @@ static void
 mainTogglePause (maindata_t *mainData, char *args)
 {
   int           mi;
-  ssize_t       idx;
-  ssize_t       musicqLen;
+  ilistidx_t    idx;
+  ilistidx_t    musicqLen;
   musicqflag_t  flags;
 
   logProcBegin (LOG_PROC, "mainTogglePause");
@@ -1372,9 +1384,9 @@ static void
 mainMusicqMove (maindata_t *mainData, char *args, mainmove_t direction)
 {
   int           mi;
-  ssize_t       fromidx;
-  ssize_t       toidx;
-  ssize_t       musicqLen;
+  ilistidx_t    fromidx;
+  ilistidx_t    toidx;
+  ilistidx_t    musicqLen;
 
   logProcBegin (LOG_PROC, "mainMusicqMove");
 
@@ -1414,10 +1426,10 @@ mainMusicqMove (maindata_t *mainData, char *args, mainmove_t direction)
 static void
 mainMusicqMoveTop (maindata_t *mainData, char *args)
 {
-  int     mi;
-  ssize_t fromidx;
-  ssize_t toidx;
-  ssize_t musicqLen;
+  int         mi;
+  ilistidx_t  fromidx;
+  ilistidx_t  toidx;
+  ilistidx_t  musicqLen;
 
   logProcBegin (LOG_PROC, "mainMusicqMoveTop");
 
@@ -1446,8 +1458,8 @@ mainMusicqMoveTop (maindata_t *mainData, char *args)
 static void
 mainMusicqClear (maindata_t *mainData, char *args)
 {
-  int     mi;
-  ssize_t idx;
+  int         mi;
+  ilistidx_t  idx;
 
   logProcBegin (LOG_PROC, "mainMusicqClear");
 
@@ -1467,8 +1479,8 @@ mainMusicqClear (maindata_t *mainData, char *args)
 static void
 mainMusicqRemove (maindata_t *mainData, char *args)
 {
-  int     mi;
-  ssize_t idx;
+  int         mi;
+  ilistidx_t  idx;
 
   logProcBegin (LOG_PROC, "mainMusicqRemove");
 
@@ -1745,6 +1757,13 @@ mainMusicQueueNext (maindata_t *mainData)
   }
   mainMusicQueueFill (mainData);
   mainMusicQueuePrep (mainData);
+
+  if (mainData->playerState == PL_STATE_STOPPED ||
+      mainData->playerState == PL_STATE_PAUSED) {
+    if (musicqGetLen (mainData->musicQueue, mainData->musicqPlayIdx) == 0) {
+      mainData->finished = true;
+    }
+  }
   logProcEnd (LOG_PROC, "mainMusicQueueNext", "");
 }
 
@@ -2033,7 +2052,7 @@ mainDanceCountsInit (maindata_t *mainData)
 }
 
 static void
-mainParseIntNum (char *args, int *a, ssize_t *b)
+mainParseIntNum (char *args, int *a, ilistidx_t *b)
 {
   char            *p;
   char            *tokstr;
