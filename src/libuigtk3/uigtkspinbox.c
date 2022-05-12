@@ -22,23 +22,6 @@ static char * uiSpinboxTextGetDisp (slist_t *list, int idx);
 
 static gboolean uiuitilsSpinboxTextKeyCallback (GtkWidget *w, GdkEventKey *event, gpointer udata);
 
-bool uiSpinboxTextCheck (uispinbox_t *spinbox, const char *msg);
-
-bool
-uiSpinboxTextCheck (uispinbox_t *spinbox, const char *msg)
-{
-  bool  rc = false;
-  if (spinbox->junka != 0xaabbccdd) {
-    fprintf (stderr, "memory fail A : %s\n", msg);
-    rc = true;
-  }
-  if (spinbox->junkb != 0xddccbbaa) {
-    fprintf (stderr, "memory fail B : %s\n", msg);
-    rc = true;
-  }
-  return rc;
-}
-
 void
 uiSpinboxTextInit (uispinbox_t *spinbox)
 {
@@ -53,8 +36,6 @@ uiSpinboxTextInit (uispinbox_t *spinbox)
   spinbox->list = NULL;
   spinbox->keylist = NULL;
   spinbox->idxlist = NULL;
-  spinbox->junka = 0xaabbccdd;
-  spinbox->junkb = 0xddccbbaa;
   logProcEnd (LOG_PROC, "uiSpinboxTextInit", "");
 }
 

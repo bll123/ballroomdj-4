@@ -179,7 +179,7 @@ convMS (datafileconv_t *conv)
   conv->allocated = false;
   if (conv->valuetype == VALUE_STR) {
     char      *p;
-    char      *tstr;
+    char      *tstr = NULL;
     char      *tokstr;
 
     conv->valuetype = VALUE_NUM;
@@ -194,9 +194,9 @@ convMS (datafileconv_t *conv)
           num += atoi (p);
         }
       }
+      free (tstr);
     }
     conv->u.num = num;
-    free (tstr);
   } else if (conv->valuetype == VALUE_NUM) {
     conv->valuetype = VALUE_STR;
     tmutilToMS (conv->u.num, tbuff, sizeof (tbuff));
