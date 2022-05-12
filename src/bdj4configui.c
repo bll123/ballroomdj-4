@@ -197,6 +197,7 @@ typedef struct {
                                     //    value: key
   int               danceidx;       // for dance edit
   GtkWidget         *widget;
+  UIWidget          uiwidget;
 } confuiitem_t;
 
 typedef enum {
@@ -549,6 +550,7 @@ main (int argc, char *argv[])
     confui.uiitem [i].displist = NULL;
     confui.uiitem [i].sbkeylist = NULL;
     confui.uiitem [i].danceidx = DANCE_DANCE;
+    uiutilsUIWidgetInit (&confui.uiitem [i].uiwidget);
 
     if (i > CONFUI_BEGIN && i < CONFUI_COMBOBOX_MAX) {
       uiDropDownInit (&confui.uiitem [i].u.dropdown);
@@ -2266,14 +2268,15 @@ confuiMakeItemLink (configui_t *confui, GtkWidget *vbox, UIWidget *sg,
     char *txt, int widx, char *disp)
 {
   GtkWidget   *hbox;
-  GtkWidget   *widget;
+  UIWidget    uiwidget;
 
   logProcBegin (LOG_PROC, "confuiMakeItemLink");
   hbox = confuiMakeItemLabel (vbox, sg, txt);
-  widget = gtk_link_button_new (disp);
-  uiBoxPackStartWW (hbox, widget);
+  uiutilsUIWidgetInit (&uiwidget);
+  uiCreateLink (&uiwidget, disp, NULL);
+  uiBoxPackStartWU (hbox, &uiwidget);
   uiBoxPackStartWW (vbox, hbox);
-  confui->uiitem [widx].widget = widget;
+  uiutilsUIWidgetCopy (&confui->uiitem [widx].uiwidget, &uiwidget);
   logProcEnd (LOG_PROC, "confuiMakeItemLink", "");
 }
 
@@ -3013,7 +3016,7 @@ confuiUpdateMobmqQrcode (configui_t *confui)
   char          *tag;
   const char    *valstr;
   bdjmobilemq_t type;
-  GtkWidget     *widget;
+  UIWidget      *uiwidgetp;
 
   logProcBegin (LOG_PROC, "confuiUpdateMobmqQrcode");
 
@@ -3050,9 +3053,8 @@ confuiUpdateMobmqQrcode (configui_t *confui)
     qruri = confuiMakeQRCodeFile (confui, _("Mobile Marquee"), uri);
   }
 
-  widget = confui->uiitem [CONFUI_WIDGET_MMQ_QR_CODE].widget;
-  gtk_link_button_set_uri (GTK_LINK_BUTTON (widget), qruri);
-  gtk_button_set_label (GTK_BUTTON (widget), uri);
+  uiwidgetp = &confui->uiitem [CONFUI_WIDGET_MMQ_QR_CODE].uiwidget;
+  uiLinkSet (uiwidgetp, uri, qruri);
   if (*qruri) {
     free (qruri);
   }
@@ -3130,7 +3132,7 @@ confuiUpdateRemctrlQrcode (configui_t *confui)
   char          *qruri = "";
   char          tbuff [MAXPATHLEN];
   ssize_t       onoff;
-  GtkWidget     *widget;
+  UIWidget      *uiwidgetp;
 
   logProcBegin (LOG_PROC, "confuiUpdateRemctrlQrcode");
 
@@ -3154,9 +3156,8 @@ confuiUpdateRemctrlQrcode (configui_t *confui)
     qruri = confuiMakeQRCodeFile (confui, _("Mobile Remote Control"), uri);
   }
 
-  widget = confui->uiitem [CONFUI_WIDGET_RC_QR_CODE].widget;
-  gtk_link_button_set_uri (GTK_LINK_BUTTON (widget), qruri);
-  gtk_button_set_label (GTK_BUTTON (widget), uri);
+  uiwidgetp = &confui->uiitem [CONFUI_WIDGET_RC_QR_CODE].uiwidget;
+  uiLinkSet (uiwidgetp, uri, qruri);
   if (*qruri) {
     free (qruri);
   }
