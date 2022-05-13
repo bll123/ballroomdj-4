@@ -45,6 +45,7 @@ static gboolean uiduallistSourceSearch (GtkTreeModel* model,
     GtkTreePath* path, GtkTreeIter* iter, gpointer udata);
 static gboolean uiduallistGetData (GtkTreeModel* model, GtkTreePath* path,
     GtkTreeIter* iter, gpointer udata);
+static void uiduallistSetDefaultSelection (uiduallist_t *duallist, int which);
 
 uiduallist_t *
 uiCreateDualList (UIWidget *mainvbox, int flags,
@@ -231,8 +232,19 @@ uiduallistSet (uiduallist_t *duallist, slist_t *slist, int which)
   char          tmp [40];
 
 
+  if (duallist == NULL) {
+    return;
+  }
+
   if (which >= DUALLIST_TREE_MAX) {
     return;
+  }
+
+  if (which == DUALLIST_TREE_SOURCE) {
+    duallist->sourcelist = slist;
+  }
+  if (which == DUALLIST_TREE_TARGET) {
+    uiduallistSet (duallist, duallist->sourcelist, DUALLIST_TREE_SOURCE);
   }
 
   tree = duallist->trees [which].tree;
@@ -267,13 +279,13 @@ uiduallistSet (uiduallist_t *duallist, slist_t *slist, int which)
       duallist->searchtype = DUALLIST_SEARCH_REMOVE;
       gtk_tree_model_foreach (smodel, uiduallistSourceSearch, duallist);
       snprintf (tmp, sizeof (tmp), "%d", duallist->pos);
-// ### the caller needs to re-populate the source list first.
 // ### get the path/iter for this position
 //      gtk_list_store_remove (GTK_LIST_STORE (smodel), &siter);
     }
   }
 
   gtk_tree_view_set_model (GTK_TREE_VIEW (tree), GTK_TREE_MODEL (store));
+  uiduallistSetDefaultSelection (duallist, which);
   g_object_unref (store);
 }
 
@@ -427,21 +439,25 @@ uiduallistDispRemove (void *udata)
 {
   uiduallist_t  *duallist = udata;
   GtkWidget     *ttree;
+  GtkTreeSelection *tsel;
   GtkTreeModel  *tmodel;
+  GtkTreeIter   piter;
   GtkTreeIter   titer;
+  GtkTreePath   *path;
   int           count;
 
+
   ttree = duallist->trees [DUALLIST_TREE_TARGET].tree;
+  tsel = duallist->trees [DUALLIST_TREE_TARGET].sel;
   count = uiTreeViewGetSelection (ttree, &tmodel, &titer);
 
   if (count == 1) {
     char          *str;
-    glong        tval;
+    long          tval;
     GtkWidget     *stree;
     GtkTreeSelection *ssel;
     GtkTreeModel  *smodel;
     GtkTreeIter   siter;
-    GtkTreePath   *path;
 
     if ((duallist->flags & DUALLIST_FLAGS_PERSISTENT) != DUALLIST_FLAGS_PERSISTENT) {
       stree = duallist->trees [DUALLIST_TREE_SOURCE].tree;
@@ -465,9 +481,27 @@ uiduallistDispRemove (void *udata)
 
       path = gtk_tree_model_get_path (smodel, &siter);
       gtk_tree_selection_select_path (ssel, path);
+      gtk_tree_path_free (path);
+    }
+
+    path = NULL;
+
+    /* only select the previous if the current iter is at the last */
+    memcpy (&piter, &titer, sizeof (GtkTreeIter));
+    if (! gtk_tree_model_iter_next (tmodel, &piter)) {
+      memcpy (&piter, &titer, sizeof (GtkTreeIter));
+      if (gtk_tree_model_iter_previous (tmodel, &piter)) {
+        path = gtk_tree_model_get_path (tmodel, &piter);
+      }
     }
 
     gtk_list_store_remove (GTK_LIST_STORE (tmodel), &titer);
+
+    if (path != NULL) {
+      gtk_tree_selection_select_path (tsel, path);
+      gtk_tree_path_free (path);
+    }
+
     duallist->changed = true;
   }
 }
@@ -510,3 +544,33 @@ uiduallistGetData (GtkTreeModel* model, GtkTreePath* path,
 }
 
 
+static void
+uiduallistSetDefaultSelection (uiduallist_t *duallist, int which)
+{
+  int               count;
+  GtkWidget         *tree;
+  GtkTreeSelection  *sel;
+  GtkTreeIter       iter;
+  GtkTreeModel      *model;
+
+  if (duallist == NULL) {
+    return;
+  }
+  if (which >= DUALLIST_TREE_MAX) {
+    return;
+  }
+
+  tree = duallist->trees [which].tree;
+  sel = duallist->trees [which].sel;
+
+  count = uiTreeViewGetSelection (tree, &model, &iter);
+  if (count != 1) {
+    GtkTreePath   *path;
+
+    path = gtk_tree_path_new_from_string ("0");
+    if (path != NULL) {
+      gtk_tree_selection_select_path (sel, path);
+      gtk_tree_path_free (path);
+    }
+  }
+}

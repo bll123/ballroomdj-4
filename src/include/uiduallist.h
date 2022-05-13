@@ -28,6 +28,7 @@ typedef struct {
   UICallback        movenextcb;
   UICallback        selectcb;
   UICallback        removecb;
+  slist_t           *sourcelist;
   int               flags;
   char              *searchstr;
   int               pos;
