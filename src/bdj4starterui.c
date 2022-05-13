@@ -107,10 +107,10 @@ typedef struct {
   startlinkcb_t   macoslinkcb [START_LINK_CB_MAX];
   /* gtk stuff */
   uispinbox_t     profilesel;
-  GtkWidget       *window;
   GtkWidget       *supportDialog;
   GtkWidget       *supportSendFiles;
   GtkWidget       *supportSendDB;
+  UIWidget        window;
   UIWidget        supportStatus;
   uitextbox_t     *supporttb;
   uientry_t       supportsubject;
@@ -203,7 +203,6 @@ main (int argc, char *argv[])
       starterStopWaitCallback, &starter);
   progstateSetCallback (starter.progstate, STATE_CLOSING,
       starterClosingCallback, &starter);
-  starter.window = NULL;
   starter.maxProfileWidth = 0;
   starter.startState = START_STATE_NONE;
   starter.nextState = START_STATE_NONE;
@@ -223,6 +222,8 @@ main (int argc, char *argv[])
   for (int i = 0; i < START_LINK_CB_MAX; ++i) {
     starter.macoslinkcb [i].uri = NULL;
   }
+  uiutilsUIWidgetInit (&starter.window);
+  uiutilsUIWidgetInit (&starter.supportStatus);
 
   procutilInitProcesses (starter.processes);
 
@@ -292,10 +293,10 @@ starterStoppingCallback (void *udata, programstate_t programState)
     connConnect (starter->conn, ROUTE_CONFIGUI);
   }
 
-  uiWindowGetSizeW (starter->window, &x, &y);
+  uiWindowGetSize (&starter->window, &x, &y);
   nlistSetNum (starter->options, STARTERUI_SIZE_X, x);
   nlistSetNum (starter->options, STARTERUI_SIZE_Y, y);
-  uiWindowGetPositionW (starter->window, &x, &y);
+  uiWindowGetPosition (&starter->window, &x, &y);
   nlistSetNum (starter->options, STARTERUI_POSITION_X, x);
   nlistSetNum (starter->options, STARTERUI_POSITION_Y, y);
 
@@ -335,7 +336,7 @@ starterClosingCallback (void *udata, programstate_t programState)
   char        fn [MAXPATHLEN];
 
   logProcBegin (LOG_PROC, "starterClosingCallback");
-  uiCloseWindowW (starter->window);
+  uiCloseWindow (&starter->window);
 
   procutilStopAllProcess (starter->processes, starter->conn, true);
   procutilFreeAll (starter->processes);
@@ -399,12 +400,12 @@ starterBuildUI (startui_t  *starter)
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", ".svg", PATHBLD_MP_IMGDIR);
-  starter->window = uiCreateMainWindowW (BDJ4_LONG_NAME, imgbuff,
+  uiCreateMainWindow (&starter->window, BDJ4_LONG_NAME, imgbuff,
       starterCloseWin, starter);
 
   uiCreateVertBox (&vbox);
   uiWidgetSetAllMargins (&vbox, uiBaseMarginSz * 2);
-  uiBoxPackInWindowWU (starter->window, &vbox);
+  uiBoxPackInWindow (&starter->window, &vbox);
 
   uiCreateHorizBox (&hbox);
   uiWidgetSetMarginTop (&hbox, uiBaseMarginSz * 4);
@@ -536,13 +537,13 @@ starterBuildUI (startui_t  *starter)
 
   x = nlistGetNum (starter->options, STARTERUI_POSITION_X);
   y = nlistGetNum (starter->options, STARTERUI_POSITION_Y);
-  uiWindowMoveW (starter->window, x, y);
+  uiWindowMove (&starter->window, x, y);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", ".png", PATHBLD_MP_IMGDIR);
   osuiSetIcon (imgbuff);
 
-  uiWidgetShowAllW (starter->window);
+  uiWidgetShowAll (&starter->window);
   logProcEnd (LOG_PROC, "starterBuildUI", "");
 }
 
@@ -960,7 +961,7 @@ starterProcessSupport (void *udata)
   dialog = gtk_dialog_new_with_buttons (
       /* CONTEXT: title for the support dialog */
       _("Support"),
-      GTK_WINDOW (starter->window),
+      GTK_WINDOW (starter->window.widget),
       GTK_DIALOG_DESTROY_WITH_PARENT,
       /* CONTEXT: support dialog: closes the dialog */
       _("Close"),
@@ -1203,7 +1204,7 @@ starterCreateSupportDialog (void *udata)
   dialog = gtk_dialog_new_with_buttons (
       /* CONTEXT: title for the support message dialog */
       _("Support Message"),
-      GTK_WINDOW (starter->window),
+      GTK_WINDOW (starter->window.widget),
       GTK_DIALOG_DESTROY_WITH_PARENT,
       /* CONTEXT: support message dialog: closes the dialog */
       _("Close"),
