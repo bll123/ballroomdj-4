@@ -32,6 +32,7 @@ typedef struct {
   char              *searchstr;
   int               pos;
   int               searchtype;
+  slist_t           *savelist;
   bool              changed : 1;
 } uiduallist_t;
 

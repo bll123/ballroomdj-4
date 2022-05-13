@@ -33,11 +33,13 @@ sequenceAlloc (const char *fname)
   pathbldMakePath (fn, sizeof (fn), fname, BDJ4_SEQUENCE_EXT, PATHBLD_MP_DATA);
   if (! fileopFileExists (fn)) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: sequence: missing %s", fname);
-    return NULL;
+    return false;
   }
 
   sequence = malloc (sizeof (sequence_t));
   assert (sequence != NULL);
+  sequence->name = strdup (fname);
+  sequence->path = strdup (fn);
 
   df = datafileAllocParse ("sequence", DFTYPE_LIST, fn,
       NULL, 0, DATAFILE_NO_LOOKUP);
@@ -57,13 +59,39 @@ sequenceAlloc (const char *fname)
   }
   datafileFree (df);
   nlistDumpInfo (sequence->sequence);
+
   return sequence;
 }
+
+sequence_t *
+sequenceCreate (const char *fname)
+{
+  sequence_t    *sequence;
+  char          fn [MAXPATHLEN];
+
+
+  pathbldMakePath (fn, sizeof (fn), fname, BDJ4_SEQUENCE_EXT, PATHBLD_MP_DATA);
+
+  sequence = malloc (sizeof (sequence_t));
+  assert (sequence != NULL);
+  sequence->name = strdup (fname);
+  sequence->path = strdup (fn);
+
+  sequence->sequence = nlistAlloc ("sequence", LIST_UNORDERED, free);
+  return sequence;
+}
+
 
 void
 sequenceFree (sequence_t *sequence)
 {
   if (sequence != NULL) {
+    if (sequence->path != NULL) {
+      free (sequence->path);
+    }
+    if (sequence->name != NULL) {
+      free (sequence->name);
+    }
     if (sequence->sequence != NULL) {
       nlistFree (sequence->sequence);
     }
@@ -115,4 +143,5 @@ sequenceSave (sequence_t *sequence, slist_t *slist)
     return;
   }
 
+  datafileSaveList ("sequence", sequence->path, slist);
 }

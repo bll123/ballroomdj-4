@@ -6,10 +6,13 @@
 #include "slist.h"
 
 typedef struct {
-  nlist_t          *sequence;
+  nlist_t  *sequence;
+  char     *name;
+  char     *path;
 } sequence_t;
 
 sequence_t    *sequenceAlloc (const char *fname);
+sequence_t    *sequenceCreate (const char *fname);
 void          sequenceFree (sequence_t *sequence);
 nlist_t       *sequenceGetDanceList (sequence_t *sequence);
 void          sequenceStartIterator (sequence_t *sequence, nlistidx_t *idx);

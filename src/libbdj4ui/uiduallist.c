@@ -43,6 +43,8 @@ static void uiduallistDispSelect (void *udata);
 static void uiduallistDispRemove (void *udata);
 static gboolean uiduallistSourceSearch (GtkTreeModel* model,
     GtkTreePath* path, GtkTreeIter* iter, gpointer udata);
+static gboolean uiduallistGetData (GtkTreeModel* model, GtkTreePath* path,
+    GtkTreeIter* iter, gpointer udata);
 
 uiduallist_t *
 uiCreateDualList (UIWidget *mainvbox, int flags,
@@ -67,6 +69,7 @@ uiCreateDualList (UIWidget *mainvbox, int flags,
   duallist->pos = 0;
   duallist->searchtype = DUALLIST_SEARCH_INSERT;
   duallist->searchstr = NULL;
+  duallist->savelist = NULL;
   duallist->changed = false;
 
   uiutilsUICallbackInit (&duallist->moveprevcb, uiduallistMovePrev, duallist);
@@ -297,9 +300,17 @@ uiduallistClearChanged (uiduallist_t *duallist)
 slist_t *
 uiduallistGetList (uiduallist_t *duallist)
 {
-  slist_t *slist;
+  slist_t       *slist;
+  GtkWidget     *ttree;
+  GtkTreeModel  *tmodel;
+
+
+  ttree = duallist->trees [DUALLIST_TREE_TARGET].tree;
+  tmodel = gtk_tree_view_get_model (GTK_TREE_VIEW (ttree));
 
   slist = slistAlloc ("duallist-return", LIST_UNORDERED, NULL);
+  duallist->savelist = slist;
+  gtk_tree_model_foreach (tmodel, uiduallistGetData, duallist);
   return slist;
 }
 
@@ -483,3 +494,19 @@ uiduallistSourceSearch (GtkTreeModel* model, GtkTreePath* path,
   duallist->pos += 1;
   return FALSE; // continue iterating
 }
+
+static gboolean
+uiduallistGetData (GtkTreeModel* model, GtkTreePath* path,
+    GtkTreeIter* iter, gpointer udata)
+{
+  uiduallist_t  *duallist = udata;
+  char          *str;
+  long          tval;
+
+  gtk_tree_model_get (model, iter, DUALLIST_COL_DISP, &str, -1);
+  gtk_tree_model_get (model, iter, DUALLIST_COL_DISP_IDX, &tval, -1);
+  slistSetNum (duallist->savelist, str, tval);
+  return FALSE; // continue iterating
+}
+
+

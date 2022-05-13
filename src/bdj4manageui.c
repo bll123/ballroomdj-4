@@ -438,6 +438,7 @@ manageStoppingCallback (void *udata, programstate_t programState)
   connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_STOP_MAIN, NULL);
 
   manageSonglistSave (manage);
+  manageSequenceSave (manage);
 
   uiWindowGetSizeW (manage->window, &x, &y);
   nlistSetNum (manage->options, PLUI_SIZE_X, x);
@@ -1497,7 +1498,12 @@ manageSwitchPage (GtkNotebook *nb, GtkWidget *page, guint pagenum,
     return;
   }
 
-  manageSonglistSave (manage);
+  if (manage->mainlasttab == MANAGE_TAB_MAIN_SL && mmnb) {
+    manageSonglistSave (manage);
+  }
+  if (manage->mainlasttab == MANAGE_TAB_EDITSEQ) {
+    manageSequenceSave (manage);
+  }
 
   id = uiutilsNotebookIDGet (nbtabid, pagenum);
 
@@ -1846,12 +1852,12 @@ manageSequenceMenu (manageui_t *manage)
         manageSequenceLoad, manage);
 
     /* CONTEXT: menu selection: sequence: edit menu: create copy */
-    menuitem = uiMenuCreateItem (menu, _("Create Copy"), NULL, NULL);
-    uiWidgetDisableW (menuitem);
+    menuitem = uiMenuCreateItem (menu, _("Create Copy"),
+        manageSequenceCopy, manage);
 
     /* CONTEXT: menu selection: sequence: edit menu: start new sequence */
-    menuitem = uiMenuCreateItem (menu, _("Start New Sequence"), NULL, NULL);
-    uiWidgetDisableW (menuitem);
+    menuitem = uiMenuCreateItem (menu, _("Start New Sequence"),
+        manageSequenceNew, manage);
 
     manage->seqmenu.initialized = true;
   }
@@ -1881,20 +1887,22 @@ manageSequenceLoadFile (manageui_t *manage, const char *fn)
   manageSequenceSave (manage);
 
   seq = sequenceAlloc (fn);
-  if (seq != NULL) {
-    dancelist = sequenceGetDanceList (seq);
-    tlist = slistAlloc ("temp-seq", LIST_UNORDERED, NULL);
-    nlistStartIterator (dancelist, &iteridx);
-    while ((didx = nlistIterateKey (dancelist, &iteridx)) >= 0) {
-      dstr = nlistGetStr (dancelist, didx);
-      slistSetNum (tlist, dstr, didx);
-    }
-    uiduallistSet (manage->seqduallist, tlist, DUALLIST_TREE_TARGET);
-    slistFree (tlist);
-
-    manageSetSonglistName (manage, fn);
-    manage->seqbackupcreated = false;
+  if (seq == NULL) {
+    return;
   }
+
+  dancelist = sequenceGetDanceList (seq);
+  tlist = slistAlloc ("temp-seq", LIST_UNORDERED, NULL);
+  nlistStartIterator (dancelist, &iteridx);
+  while ((didx = nlistIterateKey (dancelist, &iteridx)) >= 0) {
+    dstr = nlistGetStr (dancelist, didx);
+    slistSetNum (tlist, dstr, didx);
+  }
+  uiduallistSet (manage->seqduallist, tlist, DUALLIST_TREE_TARGET);
+  slistFree (tlist);
+
+  manageSetSequenceName (manage, fn);
+  manage->seqbackupcreated = false;
 }
 
 static void
@@ -1946,6 +1954,7 @@ manageSequenceSave (manageui_t *manage)
 
   slist = uiduallistGetList (manage->seqduallist);
   if (slistGetCount (slist) <= 0) {
+    slistFree (slist);
     return;
   }
 
@@ -1960,8 +1969,9 @@ manageSequenceSave (manageui_t *manage)
       name, BDJ4_SEQUENCE_EXT, PATHBLD_MP_DATA);
   strlcat (onm, ".n", sizeof (onm));
 
-  seq = sequenceAlloc (name);
+  seq = sequenceCreate (name);
   sequenceSave (seq, slist);
+  sequenceFree (seq);
 
   pathbldMakePath (nnm, sizeof (nnm),
       name, BDJ4_SEQUENCE_EXT, PATHBLD_MP_DATA);
@@ -1972,6 +1982,7 @@ manageSequenceSave (manageui_t *manage)
   filemanipMove (onm, nnm);
 
   manageCheckAndCreatePlaylist (manage, name, nnm, PLTYPE_SEQ);
+  slistFree (slist);
 }
 
 static void
