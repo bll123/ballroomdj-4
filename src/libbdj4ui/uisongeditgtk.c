@@ -126,7 +126,7 @@ uisongeditAddItem (GtkWidget * hbox, UIWidget *sg, int tagkey)
 
   widget = uiCreateColonLabelW (tagdefs [tagkey].displayname);
   uiBoxPackStartWW (hbox, widget);
-  uiSizeGroupAdd (sg, widget);
+  uiSizeGroupAddW (sg, widget);
 
   switch (tagkey) {
     /* entry box */

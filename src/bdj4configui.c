@@ -2546,7 +2546,7 @@ confuiMakeItemLabel (GtkWidget *vbox, UIWidget *sg, const char *txt)
     widget = uiCreateColonLabelW (txt);
   }
   uiBoxPackStartWW (hbox, widget);
-  uiSizeGroupAdd (sg, widget);
+  uiSizeGroupAddW (sg, widget);
   logProcEnd (LOG_PROC, "confuiMakeItemLabel", "");
   return hbox;
 }

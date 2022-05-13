@@ -111,7 +111,7 @@ typedef struct {
   GtkWidget       *supportDialog;
   GtkWidget       *supportSendFiles;
   GtkWidget       *supportSendDB;
-  GtkWidget       *supportStatus;
+  UIWidget        supportStatus;
   uitextbox_t     *supporttb;
   uientry_t       supportsubject;
   uientry_t       supportemail;
@@ -429,8 +429,8 @@ starterBuildUI (startui_t  *starter)
   uiBoxPackStart (&vbox, &hbox);
 
   /* CONTEXT: starter: profile to be used when starting BDJ4 */
-  widget = uiCreateColonLabelW (_("Profile"));
-  uiBoxPackStartUW (&hbox, widget);
+  uiCreateColonLabel (&uiwidget, _("Profile"));
+  uiBoxPackStart (&hbox, &uiwidget);
 
   /* get the profile list after bdjopt has been initialized */
   starter->proflist = starterGetProfiles (starter);
@@ -467,7 +467,7 @@ starterBuildUI (startui_t  *starter)
       _("Player"), NULL, NULL, NULL);
   uiWidgetSetMarginTopW (widget, uiBaseMarginSz * 2);
   uiWidgetAlignHorizStartW (widget);
-  uiSizeGroupAdd (&sg, widget);
+  uiSizeGroupAddW (&sg, widget);
   starter->playeruibutton = widget;
   uiBoxPackStartUW (&bvbox, widget);
   uiButtonAlignLeft (widget);
@@ -480,7 +480,7 @@ starterBuildUI (startui_t  *starter)
       _("Manage"), NULL, NULL, NULL);
   uiWidgetSetMarginTopW (widget, uiBaseMarginSz * 2);
   uiWidgetAlignHorizStartW (widget);
-  uiSizeGroupAdd (&sg, widget);
+  uiSizeGroupAddW (&sg, widget);
   starter->manageuibutton = widget;
   uiBoxPackStartUW (&bvbox, widget);
   uiButtonAlignLeft (widget);
@@ -493,7 +493,7 @@ starterBuildUI (startui_t  *starter)
       _("Configure"), NULL, NULL, NULL);
   uiWidgetSetMarginTopW (widget, uiBaseMarginSz * 2);
   uiWidgetAlignHorizStartW (widget);
-  uiSizeGroupAdd (&sg, widget);
+  uiSizeGroupAddW (&sg, widget);
   uiBoxPackStartUW (&bvbox, widget);
   uiButtonAlignLeft (widget);
 
@@ -506,7 +506,7 @@ starterBuildUI (startui_t  *starter)
   uiWidgetDisableW (widget);
   uiWidgetSetMarginTopW (widget, uiBaseMarginSz * 2);
   uiWidgetAlignHorizStartW (widget);
-  uiSizeGroupAdd (&sg, widget);
+  uiSizeGroupAddW (&sg, widget);
   uiBoxPackStartUW (&bvbox, widget);
   uiButtonAlignLeft (widget);
 
@@ -518,7 +518,7 @@ starterBuildUI (startui_t  *starter)
       _("Support"), NULL, NULL, NULL);
   uiWidgetSetMarginTopW (widget, uiBaseMarginSz * 2);
   uiWidgetAlignHorizStartW (widget);
-  uiSizeGroupAdd (&sg, widget);
+  uiSizeGroupAddW (&sg, widget);
   uiBoxPackStartUW (&bvbox, widget);
   uiButtonAlignLeft (widget);
 
@@ -530,7 +530,7 @@ starterBuildUI (startui_t  *starter)
       _("Exit"), NULL, NULL, NULL);
   uiWidgetSetMarginTopW (widget, uiBaseMarginSz * 2);
   uiWidgetAlignHorizStartW (widget);
-  uiSizeGroupAdd (&sg, widget);
+  uiSizeGroupAddW (&sg, widget);
   uiBoxPackStartUW (&bvbox, widget);
   uiButtonAlignLeft (widget);
 
@@ -606,7 +606,7 @@ starterMainLoop (void *tstarter)
       }
       /* CONTEXT: starterui: support: status message */
       snprintf (tbuff, sizeof (tbuff), _("Sending Support Message"));
-      uiLabelSetTextW (starter->supportStatus, tbuff);
+      uiLabelSetText (&starter->supportStatus, tbuff);
       starter->delayCount = 0;
       starter->delayState = START_STATE_SUPPORT_SEND_MSG;
       starter->startState = START_STATE_DELAY;
@@ -640,7 +640,7 @@ starterMainLoop (void *tstarter)
 
       /* CONTEXT: starterui: support: status message */
       snprintf (tbuff, sizeof (tbuff), _("Sending %s Information"), BDJ4_NAME);
-      uiLabelSetTextW (starter->supportStatus, tbuff);
+      uiLabelSetText (&starter->supportStatus, tbuff);
       starter->delayCount = 0;
       starter->delayState = START_STATE_SUPPORT_SEND_INFO;
       starter->startState = START_STATE_DELAY;
@@ -718,7 +718,7 @@ starterMainLoop (void *tstarter)
       }
       /* CONTEXT: starterui: support: status message */
       snprintf (tbuff, sizeof (tbuff), _("Sending %s"), "data/musicdb.dat");
-      uiLabelSetTextW (starter->supportStatus, tbuff);
+      uiLabelSetText (&starter->supportStatus, tbuff);
       starter->delayCount = 0;
       starter->delayState = START_STATE_SUPPORT_SEND_DB;
       starter->startState = START_STATE_DELAY;
@@ -982,9 +982,9 @@ starterProcessSupport (void *udata)
 
   /* CONTEXT: starterui: basic support dialog, version display */
   snprintf (tbuff, sizeof (tbuff), _("%s Version"), BDJ4_NAME);
-  widget = uiCreateColonLabelW (tbuff);
-  uiBoxPackStartUW (&hbox, widget);
-  uiSizeGroupAdd (&sg, widget);
+  uiCreateColonLabel (&uiwidget, tbuff);
+  uiBoxPackStart (&hbox, &uiwidget);
+  uiSizeGroupAdd (&sg, &uiwidget);
 
   builddate = sysvarsGetStr (SV_BDJ4_BUILDDATE);
   rlslvl = sysvarsGetStr (SV_BDJ4_RELEASELEVEL);
@@ -993,26 +993,26 @@ starterProcessSupport (void *udata)
   }
   snprintf (tbuff, sizeof (tbuff), "%s %s %s",
       sysvarsGetStr (SV_BDJ4_VERSION), builddate, rlslvl);
-  widget = uiCreateLabelW (tbuff);
-  uiBoxPackStartUW (&hbox, widget);
+  uiCreateLabel (&uiwidget, tbuff);
+  uiBoxPackStart (&hbox, &uiwidget);
 
   /* begin line */
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&vbox, &hbox);
 
   /* CONTEXT: starterui: basic support dialog, latest version display */
-  widget = uiCreateColonLabelW (_("Latest Version"));
-  uiBoxPackStartUW (&hbox, widget);
-  uiSizeGroupAdd (&sg, widget);
+  uiCreateColonLabel (&uiwidget, _("Latest Version"));
+  uiBoxPackStart (&hbox, &uiwidget);
+  uiSizeGroupAdd (&sg, &uiwidget);
 
-  widget = uiCreateLabelW (starter->latestversion);
-  uiBoxPackStartUW (&hbox, widget);
+  uiCreateLabel (&uiwidget, starter->latestversion);
+  uiBoxPackStart (&hbox, &uiwidget);
 
   /* begin line */
   /* CONTEXT: starterui: basic support dialog, list of support options */
-  widget = uiCreateColonLabelW (_("Support options"));
-  uiBoxPackStartUW (&vbox, widget);
-  uiSizeGroupAdd (&sg, widget);
+  uiCreateColonLabel (&uiwidget, _("Support options"));
+  uiBoxPackStart (&vbox, &uiwidget);
+  uiSizeGroupAdd (&sg, &uiwidget);
 
   /* begin line */
   snprintf (uri, sizeof (uri), "%s%s",
@@ -1060,8 +1060,8 @@ starterProcessSupport (void *udata)
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&vbox, &hbox);
 
-  widget = uiCreateLabelW (" ");
-  uiBoxPackStartUW (&hbox, widget);
+  uiCreateLabel (&uiwidget, " ");
+  uiBoxPackStart (&hbox, &uiwidget);
 
   g_signal_connect (dialog, "response",
       G_CALLBACK (starterSupportResponseHandler), starter);
@@ -1188,13 +1188,17 @@ starterCreateSupportDialog (void *udata)
 {
   startui_t     *starter = udata;
   GtkWidget     *content;
-  GtkWidget     *vbox;
-  GtkWidget     *hbox;
+  UIWidget      uiwidget;
+  UIWidget      vbox;
+  UIWidget      hbox;
   GtkWidget     *widget;
   GtkWidget     *dialog;
   UIWidget      sg;
   uitextbox_t *tb;
-  char          tbuff [200];
+
+  uiutilsUIWidgetInit (&uiwidget);
+  uiutilsUIWidgetInit (&vbox);
+  uiutilsUIWidgetInit (&hbox);
 
   dialog = gtk_dialog_new_with_buttons (
       /* CONTEXT: title for the support message dialog */
@@ -1216,67 +1220,62 @@ starterCreateSupportDialog (void *udata)
 
   uiCreateSizeGroupHoriz (&sg);
 
-  vbox = uiCreateVertBoxWW ();
-  assert (vbox != NULL);
-  uiBoxPackInWindowWW (content, vbox);
+  uiCreateVertBox (&vbox);
+  uiBoxPackInWindowWU (content, &vbox);
 
   /* line 1 */
-  hbox = uiCreateHorizBoxWW ();
-  assert (hbox != NULL);
-  uiBoxPackStartWW (vbox, hbox);
+  uiCreateHorizBox (&hbox);
+  uiBoxPackStart (&vbox, &hbox);
 
   /* CONTEXT: sending support message: user's e-mail address */
-  widget = uiCreateColonLabelW (_("E-Mail Address"));
-  uiBoxPackStartWW (hbox, widget);
-  uiSizeGroupAdd (&sg, widget);
+  uiCreateColonLabel (&uiwidget, _("E-Mail Address"));
+  uiBoxPackStart (&hbox, &uiwidget);
+  uiSizeGroupAdd (&sg, &uiwidget);
 
   uiEntryInit (&starter->supportemail, 50, 100);
   widget = uiEntryCreate (&starter->supportemail);
-  uiBoxPackStartWW (hbox, widget);
+  uiBoxPackStartUW (&hbox, widget);
 
   /* line 2 */
-  hbox = uiCreateHorizBoxWW ();
-  assert (hbox != NULL);
-  uiBoxPackStartWW (vbox, hbox);
+  uiCreateHorizBox (&hbox);
+  uiBoxPackStart (&vbox, &hbox);
 
   /* CONTEXT: sending support message: subject of message */
-  widget = uiCreateColonLabelW (_("Subject"));
-  uiBoxPackStartWW (hbox, widget);
-  uiSizeGroupAdd (&sg, widget);
+  uiCreateColonLabel (&uiwidget, _("Subject"));
+  uiBoxPackStart (&hbox, &uiwidget);
+  uiSizeGroupAdd (&sg, &uiwidget);
 
   uiEntryInit (&starter->supportsubject, 50, 100);
   widget = uiEntryCreate (&starter->supportsubject);
-  uiBoxPackStartWW (hbox, widget);
+  uiBoxPackStartUW (&hbox, widget);
 
   /* line 3 */
   /* CONTEXT: sending support message: message text */
-  widget = uiCreateColonLabelW (_("Message"));
-  uiBoxPackStartWW (vbox, widget);
+  uiCreateColonLabel (&uiwidget, _("Message"));
+  uiBoxPackStart (&vbox, &uiwidget);
 
   /* line 4 */
   tb = uiTextBoxCreate (200);
-  uiBoxPackStartWW (vbox, tb->scw);
+  uiBoxPackStartUW (&vbox, tb->scw);
   starter->supporttb = tb;
 
   /* line 5 */
   /* CONTEXT: sending support message: checkbox: option to send data files */
   widget = uiCreateCheckButton (_("Attach Data Files"), 0);
-  uiBoxPackStartWW (vbox, widget);
+  uiBoxPackStartUW (&vbox, widget);
   starter->supportSendFiles = widget;
 
   /* line 6 */
   /* CONTEXT: sending support message: checkbox: option to send database */
   widget = uiCreateCheckButton (_("Attach Database"), 0);
-  uiBoxPackStartWW (vbox, widget);
+  uiBoxPackStartUW (&vbox, widget);
   starter->supportSendDB = widget;
 
   /* line 7 */
-  widget = uiCreateLabelW ("");
-  uiBoxPackStartWW (vbox, widget);
-  snprintf (tbuff, sizeof (tbuff),
-      "label { color: %s; }", bdjoptGetStr (OPT_P_UI_ACCENT_COL));
-  uiSetCss (widget, tbuff);
-  starter->supportStatus = widget;
+  uiCreateLabel (&uiwidget, "");
+  uiBoxPackStart (&vbox, &uiwidget);
+  uiLabelSetColor (&uiwidget, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
+  uiutilsUIWidgetCopy (&starter->supportStatus, &uiwidget);
 
   g_signal_connect (dialog, "response",
       G_CALLBACK (starterSupportMsgHandler), starter);
@@ -1357,7 +1356,7 @@ starterSendFiles (startui_t *starter)
   starter->supportOutFname = strdup (ofn);
   /* CONTEXT: starterui: support: status message */
   snprintf (tbuff, sizeof (tbuff), _("Sending %s"), ifn);
-  uiLabelSetTextW (starter->supportStatus, tbuff);
+  uiLabelSetText (&starter->supportStatus, tbuff);
 }
 
 static void

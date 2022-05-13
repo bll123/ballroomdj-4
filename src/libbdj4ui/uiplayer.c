@@ -144,7 +144,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   tbox = uiCreateHorizBoxWW ();
   assert (tbox != NULL);
   uiBoxPackStartWW (hbox, tbox);
-  uiSizeGroupAdd (&sgE, tbox);
+  uiSizeGroupAddW (&sgE, tbox);
 
   uiImageNew (&uiplayer->statusImg);
 
@@ -213,7 +213,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   /* size group A */
   widget = uiCreateLabelW ("%");
   uiBoxPackEndWW (hbox, widget);
-  uiSizeGroupAdd (&sgA, widget);
+  uiSizeGroupAddW (&sgA, widget);
 
   /* size group B */
   uiplayer->speedDisplayLab = uiCreateLabelW ("100");
@@ -222,12 +222,12 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   gtk_widget_set_halign (uiplayer->speedDisplayLab, GTK_ALIGN_END);
   gtk_label_set_xalign (GTK_LABEL (uiplayer->speedDisplayLab), 1.0);
   uiBoxPackEndWW (hbox, uiplayer->speedDisplayLab);
-  uiSizeGroupAdd (&sgB, uiplayer->speedDisplayLab);
+  uiSizeGroupAddW (&sgB, uiplayer->speedDisplayLab);
 
   /* size group C */
   uiplayer->speedScale = uiCreateScale (70.0, 130.0, 0.1, 1.0, 100.0);
   uiBoxPackEndWW (hbox, uiplayer->speedScale);
-  uiSizeGroupAdd (&sgC, uiplayer->speedScale);
+  uiSizeGroupAddW (&sgC, uiplayer->speedScale);
   g_signal_connect (uiplayer->speedScale, "change-value", G_CALLBACK (uiplayerSpeedProcess), uiplayer);
 
   /* size group D */
@@ -236,7 +236,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   gtk_widget_set_halign (widget, GTK_ALIGN_END);
   gtk_label_set_xalign (GTK_LABEL (widget), 1.0);
   uiBoxPackEndWW (hbox, widget);
-  uiSizeGroupAdd (&sgD, widget);
+  uiSizeGroupAddW (&sgD, widget);
 
   /* position controls / display */
 
@@ -248,7 +248,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   /* size group E */
   widget = uiCreateLabelW ("");
   uiBoxPackStartWW (hbox, widget);
-  uiSizeGroupAdd (&sgE, widget);
+  uiSizeGroupAddW (&sgE, widget);
 
   uiplayer->countdownTimerLab = uiCreateLabelW (" 0:00");
   gtk_label_set_xalign (GTK_LABEL (uiplayer->countdownTimerLab), 1.0);
@@ -271,20 +271,20 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   /* size group A */
   widget = uiCreateLabelW ("");
   uiBoxPackEndWW (hbox, widget);
-  uiSizeGroupAdd (&sgA, widget);
+  uiSizeGroupAddW (&sgA, widget);
 
   /* size group B */
   uiplayer->seekDisplayLab = uiCreateLabelW ("3:00");
   assert (uiplayer->seekDisplayLab != NULL);
   gtk_widget_set_size_request (uiplayer->seekDisplayLab, 40, -1);
   gtk_widget_set_halign (uiplayer->seekDisplayLab, GTK_ALIGN_END);
-  uiSizeGroupAdd (&sgB, uiplayer->seekDisplayLab);
+  uiSizeGroupAddW (&sgB, uiplayer->seekDisplayLab);
   uiBoxPackEndWW (hbox, uiplayer->seekDisplayLab);
 
   /* size group C */
   uiplayer->seekScale = uiCreateScale (0.0, 180000.0, 100.0, 1000.0, 0.0);
   uiBoxPackEndWW (hbox, uiplayer->seekScale);
-  uiSizeGroupAdd (&sgC, uiplayer->seekScale);
+  uiSizeGroupAddW (&sgC, uiplayer->seekScale);
   g_signal_connect (uiplayer->seekScale, "change-value", G_CALLBACK (uiplayerSeekProcess), uiplayer);
 
   /* size group D */
@@ -293,7 +293,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiBoxPackEndWW (hbox, widget);
   gtk_widget_set_halign (widget, GTK_ALIGN_END);
   gtk_label_set_xalign (GTK_LABEL (widget), 1.0);
-  uiSizeGroupAdd (&sgD, widget);
+  uiSizeGroupAddW (&sgD, widget);
 
   /* main controls */
 
@@ -305,7 +305,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   /* size group E */
   widget = uiCreateLabelW ("");
   uiBoxPackStartWW (hbox, widget);
-  uiSizeGroupAdd (&sgE, widget);
+  uiSizeGroupAddW (&sgE, widget);
 
   uiutilsUICallbackInit (&uiplayer->callbacks [UIPLAYER_CALLBACK_FADE],
       uiplayerFadeProcess, uiplayer);
@@ -371,7 +371,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   /* size group A */
   widget = uiCreateLabelW ("%");
   uiBoxPackEndWW (hbox, widget);
-  uiSizeGroupAdd (&sgA, widget);
+  uiSizeGroupAddW (&sgA, widget);
 
   /* size group B */
   uiplayer->volumeDisplayLab = uiCreateLabelW ("100");
@@ -380,12 +380,12 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   gtk_widget_set_halign (uiplayer->volumeDisplayLab, GTK_ALIGN_END);
   gtk_label_set_xalign (GTK_LABEL (uiplayer->volumeDisplayLab), 1.0);
   uiBoxPackEndWW (hbox, uiplayer->volumeDisplayLab);
-  uiSizeGroupAdd (&sgB, uiplayer->volumeDisplayLab);
+  uiSizeGroupAddW (&sgB, uiplayer->volumeDisplayLab);
 
   /* size group C */
   uiplayer->volumeScale = uiCreateScale (0.0, 100.0, 0.1, 1.0, 0.0);
   uiBoxPackEndWW (hbox, uiplayer->volumeScale);
-  uiSizeGroupAdd (&sgC, uiplayer->volumeScale);
+  uiSizeGroupAddW (&sgC, uiplayer->volumeScale);
   g_signal_connect (uiplayer->volumeScale, "change-value", G_CALLBACK (uiplayerVolumeProcess), uiplayer);
 
   /* size group D */
@@ -394,7 +394,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiBoxPackEndWW (hbox, widget);
   gtk_widget_set_halign (widget, GTK_ALIGN_END);
   gtk_label_set_xalign (GTK_LABEL (widget), 1.0);
-  uiSizeGroupAdd (&sgD, widget);
+  uiSizeGroupAddW (&sgD, widget);
 
   logProcEnd (LOG_PROC, "uiplayerBuildUI", "");
   return uiplayer->vbox;

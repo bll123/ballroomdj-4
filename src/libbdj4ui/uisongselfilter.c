@@ -127,7 +127,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
   /* CONTEXT: a filter: select the method to sort the song selection display */
   widget = uiCreateColonLabelW (_("Sort by"));
   uiBoxPackStartWW (hbox, widget);
-  uiSizeGroupAdd (&sg, widget);
+  uiSizeGroupAddW (&sg, widget);
 
   widget = uiComboboxCreate (uisongsel->filterDialog,
       "", uisongselSortBySelectHandler, &uisongsel->sortbysel, uisongsel);
@@ -141,7 +141,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
   /* CONTEXT: a filter: filter the song selection with a search for text */
   widget = uiCreateColonLabelW (_("Search"));
   uiBoxPackStartWW (hbox, widget);
-  uiSizeGroupAdd (&sg, widget);
+  uiSizeGroupAddW (&sg, widget);
 
   widget = uiEntryCreate (&uisongsel->searchentry);
   uiWidgetAlignHorizStartW (widget);
@@ -155,7 +155,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
     /* CONTEXT: a filter: select the genre displayed in the song selection */
     widget = uiCreateColonLabelW (_("Genre"));
     uiBoxPackStartWW (hbox, widget);
-    uiSizeGroupAdd (&sg, widget);
+    uiSizeGroupAddW (&sg, widget);
 
     widget = uiComboboxCreate (uisongsel->filterDialog,
         "", uisongselGenreSelectHandler,
@@ -171,7 +171,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
   /* CONTEXT: a filter: select the dance displayed in the song selection */
   widget = uiCreateColonLabelW (_("Dance"));
   uiBoxPackStartWW (hbox, widget);
-  uiSizeGroupAdd (&sg, widget);
+  uiSizeGroupAddW (&sg, widget);
 
   widget = uiComboboxCreate (uisongsel->filterDialog,
       "", uisongselDanceSelectSignal,
@@ -187,7 +187,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
   /* CONTEXT: a filter: select the dance rating displayed in the song selection */
   widget = uiCreateColonLabelW (_("Dance Rating"));
   uiBoxPackStartWW (hbox, widget);
-  uiSizeGroupAdd (&sg, widget);
+  uiSizeGroupAddW (&sg, widget);
 
   widget = uiSpinboxTextCreate (&uisongsel->filterratingsel, uisongsel);
   max = ratingGetMaxWidth (uisongsel->ratings);
@@ -209,7 +209,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
     /* CONTEXT: a filter: select the dance level displayed in the song selection */
     widget = uiCreateColonLabelW (_("Dance Level"));
     uiBoxPackStartWW (hbox, widget);
-    uiSizeGroupAdd (&sg, widget);
+    uiSizeGroupAddW (&sg, widget);
 
     widget = uiSpinboxTextCreate (&uisongsel->filterlevelsel, uisongsel);
     max = levelGetMaxWidth (uisongsel->levels);
@@ -232,7 +232,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
     /* CONTEXT: a filter: select the status displayed in the song selection */
     widget = uiCreateColonLabelW (_("Status"));
     uiBoxPackStartWW (hbox, widget);
-    uiSizeGroupAdd (&sg, widget);
+    uiSizeGroupAddW (&sg, widget);
 
     widget = uiSpinboxTextCreate (&uisongsel->filterstatussel, uisongsel);
     max = statusGetMaxWidth (uisongsel->status);
@@ -255,7 +255,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
     /* CONTEXT: a filter: select the 'favorite' displayed in the song selection */
     widget = uiCreateColonLabelW (_("Favorite"));
     uiBoxPackStartWW (hbox, widget);
-    uiSizeGroupAdd (&sg, widget);
+    uiSizeGroupAddW (&sg, widget);
 
     widget = uiSpinboxTextCreate (&uisongsel->filterfavoritesel, uisongsel);
     uiSpinboxTextSet (&uisongsel->filterfavoritesel, 0,
@@ -271,7 +271,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
     /* CONTEXT: a filter: the song status is marked as playable */
     widget = uiCreateColonLabelW (_("Playable Status"));
     uiBoxPackStartWW (hbox, widget);
-    uiSizeGroupAdd (&sg, widget);
+    uiSizeGroupAddW (&sg, widget);
 
     widget = uiCreateSwitch (uisongsel->dfltpbflag);
     uiBoxPackStartWW (hbox, widget);

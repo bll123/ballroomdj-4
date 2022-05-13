@@ -210,7 +210,9 @@ void uiSwitchSetValue (GtkWidget *w, int value);
 
 /* uigtksizegrp.c */
 void uiCreateSizeGroupHoriz (UIWidget *);
-void uiSizeGroupAdd (UIWidget *uiw, GtkWidget *widget);
+void uiSizeGroupAdd (UIWidget *uiw, UIWidget *uiwidget);
+/* these routines will be removed at a later date */
+void uiSizeGroupAddW (UIWidget *uiw, GtkWidget *widget);
 
 /* uigtkutils.c */
 void  uiUIInitialize (void);

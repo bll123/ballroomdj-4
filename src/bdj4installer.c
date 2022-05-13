@@ -524,7 +524,7 @@ installerBuildUI (installer_t *installer)
 
   widget = uiCreateColonLabelW ("VLC");
   uiBoxPackStartWW (hbox, widget);
-  uiSizeGroupAdd (&sg, widget);
+  uiSizeGroupAddW (&sg, widget);
 
   installer->vlcMsg = uiCreateLabelW ("");
   uiSetCss (installer->vlcMsg,
@@ -538,7 +538,7 @@ installerBuildUI (installer_t *installer)
 
   widget = uiCreateColonLabelW ("Python");
   uiBoxPackStartWW (hbox, widget);
-  uiSizeGroupAdd (&sg, widget);
+  uiSizeGroupAddW (&sg, widget);
 
   installer->pythonMsg = uiCreateLabelW ("");
   uiSetCss (installer->pythonMsg,
@@ -552,7 +552,7 @@ installerBuildUI (installer_t *installer)
 
   widget = uiCreateColonLabelW ("Mutagen");
   uiBoxPackStartWW (hbox, widget);
-  uiSizeGroupAdd (&sg, widget);
+  uiSizeGroupAddW (&sg, widget);
 
   installer->mutagenMsg = uiCreateLabelW ("");
   uiSetCss (installer->mutagenMsg,
