@@ -292,10 +292,10 @@ starterStoppingCallback (void *udata, programstate_t programState)
     connConnect (starter->conn, ROUTE_CONFIGUI);
   }
 
-  uiWindowGetSize (starter->window, &x, &y);
+  uiWindowGetSizeW (starter->window, &x, &y);
   nlistSetNum (starter->options, STARTERUI_SIZE_X, x);
   nlistSetNum (starter->options, STARTERUI_SIZE_Y, y);
-  uiWindowGetPosition (starter->window, &x, &y);
+  uiWindowGetPositionW (starter->window, &x, &y);
   nlistSetNum (starter->options, STARTERUI_POSITION_X, x);
   nlistSetNum (starter->options, STARTERUI_POSITION_Y, y);
 
@@ -335,7 +335,7 @@ starterClosingCallback (void *udata, programstate_t programState)
   char        fn [MAXPATHLEN];
 
   logProcBegin (LOG_PROC, "starterClosingCallback");
-  uiCloseWindow (starter->window);
+  uiCloseWindowW (starter->window);
 
   procutilStopAllProcess (starter->processes, starter->conn, true);
   procutilFreeAll (starter->processes);
@@ -399,7 +399,7 @@ starterBuildUI (startui_t  *starter)
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", ".svg", PATHBLD_MP_IMGDIR);
-  starter->window = uiCreateMainWindow (BDJ4_LONG_NAME, imgbuff,
+  starter->window = uiCreateMainWindowW (BDJ4_LONG_NAME, imgbuff,
       starterCloseWin, starter);
 
   uiCreateVertBox (&vbox);
@@ -536,7 +536,7 @@ starterBuildUI (startui_t  *starter)
 
   x = nlistGetNum (starter->options, STARTERUI_POSITION_X);
   y = nlistGetNum (starter->options, STARTERUI_POSITION_Y);
-  uiWindowMove (starter->window, x, y);
+  uiWindowMoveW (starter->window, x, y);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", ".png", PATHBLD_MP_IMGDIR);
@@ -1209,7 +1209,7 @@ starterCreateSupportDialog (void *udata)
       GTK_RESPONSE_APPLY,
       NULL
       );
-  uiWindowSetDefaultSize (dialog, -1, 400);
+  uiWindowSetDefaultSizeW (dialog, -1, 400);
 
   content = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
   uiWidgetSetAllMarginsW (content, uiBaseMarginSz * 2);

@@ -14,8 +14,105 @@
 #include "ui.h"
 #include "uiutils.h"
 
+void
+uiCreateMainWindow (UIWidget *uiwidget, const char *title,
+    const char *imagenm, void *deletecb, void *udata)
+{
+  GtkWidget   *widget;
+
+  widget = uiCreateMainWindowW (title, imagenm, deletecb, udata);
+  uiwidget->widget = widget;
+}
+
+inline void
+uiCloseWindow (UIWidget *uiwindow)
+{
+  if (GTK_IS_WIDGET (uiwindow->widget)) {
+    gtk_widget_destroy (uiwindow->widget);
+  }
+}
+
+inline bool
+uiWindowIsMaximized (UIWidget *uiwindow)
+{
+  return (bool) gtk_window_is_maximized (GTK_WINDOW (uiwindow->widget));
+}
+
+inline void
+uiWindowIconify (UIWidget *uiwindow)
+{
+  gtk_window_iconify (GTK_WINDOW (uiwindow->widget));
+}
+
+inline void
+uiWindowMaximize (UIWidget *uiwindow)
+{
+  gtk_window_maximize (GTK_WINDOW (uiwindow->widget));
+}
+
+inline void
+uiWindowUnMaximize (UIWidget *uiwindow)
+{
+  gtk_window_unmaximize (GTK_WINDOW (uiwindow->widget));
+}
+
+inline void
+uiWindowDisableDecorations (UIWidget *uiwindow)
+{
+  gtk_window_set_decorated (GTK_WINDOW (uiwindow->widget), FALSE);
+}
+
+inline void
+uiWindowEnableDecorations (UIWidget *uiwindow)
+{
+  gtk_window_set_decorated (GTK_WINDOW (uiwindow->widget), TRUE);
+}
+
+inline void
+uiWindowGetSize (UIWidget *uiwindow, int *x, int *y)
+{
+  gtk_window_get_size (GTK_WINDOW (uiwindow->widget), x, y);
+}
+
+inline void
+uiWindowSetDefaultSize (UIWidget *uiwindow, int x, int y)
+{
+  gtk_window_set_default_size (GTK_WINDOW (uiwindow->widget), x, y);
+}
+
+inline void
+uiWindowGetPosition (UIWidget *uiwindow, int *x, int *y)
+{
+  gtk_window_get_position (GTK_WINDOW (uiwindow->widget), x, y);
+}
+
+inline void
+uiWindowMove (UIWidget *uiwindow, int x, int y)
+{
+  if (x != -1 && y != -1) {
+    gtk_window_move (GTK_WINDOW (uiwindow->widget), x, y);
+  }
+}
+
+inline void
+uiWindowNoFocusOnStartup (UIWidget *uiwindow)
+{
+  gtk_window_set_focus_on_map (GTK_WINDOW (uiwindow->widget), FALSE);
+}
+
+
+void
+uiCreateScrolledWindow (UIWidget *uiwidget, int minheight)
+{
+  GtkWidget   *widget;
+  widget = uiCreateScrolledWindowW (minheight);
+  uiwidget->widget = widget;
+}
+
+/* these routines will be removed at a later date */
+
 GtkWidget *
-uiCreateMainWindow (char *title, char *imagenm,
+uiCreateMainWindowW (const char *title, const char *imagenm,
     void *deletecb, void *udata)
 {
   GtkWidget *window;
@@ -36,8 +133,8 @@ uiCreateMainWindow (char *title, char *imagenm,
   return window;
 }
 
-void
-uiCloseWindow (GtkWidget *window)
+inline void
+uiCloseWindowW (GtkWidget *window)
 {
   if (GTK_IS_WIDGET (window)) {
     gtk_widget_destroy (window);
@@ -45,61 +142,61 @@ uiCloseWindow (GtkWidget *window)
 }
 
 inline bool
-uiWindowIsMaximized (GtkWidget *window)
+uiWindowIsMaximizedW (GtkWidget *window)
 {
   return (bool) gtk_window_is_maximized (GTK_WINDOW (window));
 }
 
 inline void
-uiWindowIconify (GtkWidget *window)
+uiWindowIconifyW (GtkWidget *window)
 {
   gtk_window_iconify (GTK_WINDOW (window));
 }
 
 inline void
-uiWindowMaximize (GtkWidget *window)
+uiWindowMaximizeW (GtkWidget *window)
 {
   gtk_window_maximize (GTK_WINDOW (window));
 }
 
 inline void
-uiWindowUnMaximize (GtkWidget *window)
+uiWindowUnMaximizeW (GtkWidget *window)
 {
   gtk_window_unmaximize (GTK_WINDOW (window));
 }
 
 inline void
-uiWindowDisableDecorations (GtkWidget *window)
+uiWindowDisableDecorationsW (GtkWidget *window)
 {
   gtk_window_set_decorated (GTK_WINDOW (window), FALSE);
 }
 
 inline void
-uiWindowEnableDecorations (GtkWidget *window)
+uiWindowEnableDecorationsW (GtkWidget *window)
 {
   gtk_window_set_decorated (GTK_WINDOW (window), TRUE);
 }
 
 inline void
-uiWindowGetSize (GtkWidget *window, int *x, int *y)
+uiWindowGetSizeW (GtkWidget *window, int *x, int *y)
 {
   gtk_window_get_size (GTK_WINDOW (window), x, y);
 }
 
 inline void
-uiWindowSetDefaultSize (GtkWidget *window, int x, int y)
+uiWindowSetDefaultSizeW (GtkWidget *window, int x, int y)
 {
   gtk_window_set_default_size (GTK_WINDOW (window), x, y);
 }
 
 inline void
-uiWindowGetPosition (GtkWidget *window, int *x, int *y)
+uiWindowGetPositionW (GtkWidget *window, int *x, int *y)
 {
   gtk_window_get_position (GTK_WINDOW (window), x, y);
 }
 
 inline void
-uiWindowMove (GtkWidget *window, int x, int y)
+uiWindowMoveW (GtkWidget *window, int x, int y)
 {
   if (x != -1 && y != -1) {
     gtk_window_move (GTK_WINDOW (window), x, y);
@@ -107,14 +204,14 @@ uiWindowMove (GtkWidget *window, int x, int y)
 }
 
 inline void
-uiWindowNoFocusOnStartup (GtkWidget *window)
+uiWindowNoFocusOnStartupW (GtkWidget *window)
 {
   gtk_window_set_focus_on_map (GTK_WINDOW (window), FALSE);
 }
 
 
 GtkWidget *
-uiCreateScrolledWindow (int minheight)
+uiCreateScrolledWindowW (int minheight)
 {
   GtkWidget   *widget;
   GtkWidget   *twidget;

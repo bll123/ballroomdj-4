@@ -237,10 +237,10 @@ pluiStoppingCallback (void *udata, programstate_t programState)
   logProcBegin (LOG_PROC, "pluiStoppingCallback");
   connSendMessage (plui->conn, ROUTE_STARTERUI, MSG_STOP_MAIN, NULL);
 
-  uiWindowGetSize (plui->window, &x, &y);
+  uiWindowGetSizeW (plui->window, &x, &y);
   nlistSetNum (plui->options, PLUI_SIZE_X, x);
   nlistSetNum (plui->options, PLUI_SIZE_Y, y);
-  uiWindowGetPosition (plui->window, &x, &y);
+  uiWindowGetPositionW (plui->window, &x, &y);
   nlistSetNum (plui->options, PLUI_POSITION_X, x);
   nlistSetNum (plui->options, PLUI_POSITION_Y, y);
 
@@ -281,7 +281,7 @@ pluiClosingCallback (void *udata, programstate_t programState)
 
   logProcBegin (LOG_PROC, "pluiClosingCallback");
 
-  uiCloseWindow (plui->window);
+  uiCloseWindowW (plui->window);
 
   pathbldMakePath (fn, sizeof (fn),
       "playerui", BDJ4_CONFIG_EXT, PATHBLD_MP_USEIDX);
@@ -343,7 +343,7 @@ pluiBuildUI (playerui_t *plui)
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", ".svg", PATHBLD_MP_IMGDIR);
-  plui->window = uiCreateMainWindow (
+  plui->window = uiCreateMainWindowW (
       bdjoptGetStr (OPT_P_PROFILENAME), imgbuff,
       pluiCloseWin, plui);
 
@@ -439,13 +439,13 @@ pluiBuildUI (playerui_t *plui)
 
   x = nlistGetNum (plui->options, PLUI_SIZE_X);
   y = nlistGetNum (plui->options, PLUI_SIZE_Y);
-  uiWindowSetDefaultSize (plui->window, x, y);
+  uiWindowSetDefaultSizeW (plui->window, x, y);
 
   uiWidgetShowAllW (plui->window);
 
   x = nlistGetNum (plui->options, PLUI_POSITION_X);
   y = nlistGetNum (plui->options, PLUI_POSITION_Y);
-  uiWindowMove (plui->window, x, y);
+  uiWindowMoveW (plui->window, x, y);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", ".png", PATHBLD_MP_IMGDIR);

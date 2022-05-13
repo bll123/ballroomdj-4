@@ -61,7 +61,7 @@ uisongselFilterDialog (void *udata)
 
   x = nlistGetNum (uisongsel->options, SONGSEL_FILTER_POSITION_X);
   y = nlistGetNum (uisongsel->options, SONGSEL_FILTER_POSITION_Y);
-  uiWindowMove (uisongsel->filterDialog, x, y);
+  uiWindowMoveW (uisongsel->filterDialog, x, y);
   logProcEnd (LOG_PROC, "uisongselFilterDialog", "");
 }
 
@@ -300,7 +300,7 @@ uisongselFilterResponseHandler (GtkDialog *d, gint responseid, gpointer udata)
 
   switch (responseid) {
     case GTK_RESPONSE_DELETE_EVENT: {
-      uiWindowGetPosition (uisongsel->filterDialog, &x, &y);
+      uiWindowGetPositionW (uisongsel->filterDialog, &x, &y);
       nlistSetNum (uisongsel->options, SONGSEL_FILTER_POSITION_X, x);
       nlistSetNum (uisongsel->options, SONGSEL_FILTER_POSITION_Y, y);
 

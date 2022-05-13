@@ -780,10 +780,10 @@ confuiStoppingCallback (void *udata, programstate_t programState)
     confuiTableSave (confui, i);
   }
 
-  uiWindowGetSize (confui->window, &x, &y);
+  uiWindowGetSizeW (confui->window, &x, &y);
   nlistSetNum (confui->options, CONFUI_SIZE_X, x);
   nlistSetNum (confui->options, CONFUI_SIZE_Y, y);
-  uiWindowGetPosition (confui->window, &x, &y);
+  uiWindowGetPositionW (confui->window, &x, &y);
   nlistSetNum (confui->options, CONFUI_POSITION_X, x);
   nlistSetNum (confui->options, CONFUI_POSITION_Y, y);
 
@@ -831,7 +831,7 @@ confuiClosingCallback (void *udata, programstate_t programState)
 
   logProcBegin (LOG_PROC, "confuiClosingCallback");
 
-  uiCloseWindow (confui->window);
+  uiCloseWindowW (confui->window);
 
   for (int i = CONFUI_BEGIN + 1; i < CONFUI_COMBOBOX_MAX; ++i) {
     uiDropDownFree (&confui->uiitem [i].u.dropdown);
@@ -906,7 +906,7 @@ confuiBuildUI (configui_t *confui)
       "bdj4_icon_config", ".svg", PATHBLD_MP_IMGDIR);
   /* CONTEXT: configuration user interface window title */
   snprintf (tbuff, sizeof (tbuff), _("%s Configuration"), BDJ4_NAME);
-  confui->window = uiCreateMainWindow (tbuff, imgbuff,
+  confui->window = uiCreateMainWindowW (tbuff, imgbuff,
       confuiCloseWin, confui);
 
   confui->vbox = uiCreateVertBoxWW ();
@@ -956,13 +956,13 @@ confuiBuildUI (configui_t *confui)
 
   x = nlistGetNum (confui->options, CONFUI_SIZE_X);
   y = nlistGetNum (confui->options, CONFUI_SIZE_Y);
-  uiWindowSetDefaultSize (confui->window, x, y);
+  uiWindowSetDefaultSizeW (confui->window, x, y);
 
   uiWidgetShowAllW (confui->window);
 
   x = nlistGetNum (confui->options, CONFUI_POSITION_X);
   y = nlistGetNum (confui->options, CONFUI_POSITION_Y);
-  uiWindowMove (confui->window, x, y);
+  uiWindowMoveW (confui->window, x, y);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon_config", ".png", PATHBLD_MP_IMGDIR);
@@ -1213,7 +1213,7 @@ confuiBuildUIDispSettings (configui_t *confui)
   uiWidgetAlignHorizStartW (hbox);
   uiBoxPackStartExpandWW (vbox, hbox);
 
-  widget = uiCreateScrolledWindow (300);
+  widget = uiCreateScrolledWindowW (300);
   uiWidgetExpandVertW (widget);
   uiBoxPackStartExpandWW (hbox, widget);
 
@@ -1246,7 +1246,7 @@ confuiBuildUIDispSettings (configui_t *confui)
       confuiDispRemove, confui);
   uiBoxPackStartWW (dvbox, widget);
 
-  widget = uiCreateScrolledWindow (300);
+  widget = uiCreateScrolledWindowW (300);
   uiWidgetExpandVertW (widget);
   uiBoxPackStartExpandWW (hbox, widget);
 
@@ -2566,7 +2566,7 @@ confuiMakeItemTable (configui_t *confui, GtkWidget *vbox, confuiident_t id,
   uiWidgetSetMarginTopW (mhbox, uiBaseMarginSz * 2);
   uiBoxPackStartWW (vbox, mhbox);
 
-  widget = uiCreateScrolledWindow (300);
+  widget = uiCreateScrolledWindowW (300);
   uiWidgetExpandVertW (widget);
   uiBoxPackStartExpandWW (mhbox, widget);
 

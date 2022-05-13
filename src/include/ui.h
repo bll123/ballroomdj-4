@@ -167,21 +167,37 @@ char  *uiSelectDirDialog (uiselect_t *selectdata);
 char  *uiSelectFileDialog (uiselect_t *selectdata);
 
 /* uigtkwindow.c */
-GtkWidget * uiCreateMainWindow (char *title,
-    char *imagenm, void *cb, void *udata);
-void uiCloseWindow (GtkWidget *window);
-bool uiWindowIsMaximized (GtkWidget *window);
-void uiWindowIconify (GtkWidget *window);
-void uiWindowMaximize (GtkWidget *window);
-void uiWindowUnMaximize (GtkWidget *window);
-void uiWindowDisableDecorations (GtkWidget *window);
-void uiWindowEnableDecorations (GtkWidget *window);
-void uiWindowGetSize (GtkWidget *window, int *x, int *y);
-void uiWindowSetDefaultSize (GtkWidget *window, int x, int y);
-void uiWindowGetPosition (GtkWidget *window, int *x, int *y);
-void uiWindowMove (GtkWidget *window, int x, int y);
-void uiWindowNoFocusOnStartup (GtkWidget *window);
-GtkWidget * uiCreateScrolledWindow (int minheight);
+void uiCreateMainWindow (UIWidget *uiwidget, const char *title,
+    const char *imagenm, void *cb, void *udata);
+void uiCloseWindow (UIWidget *uiwindow);
+bool uiWindowIsMaximized (UIWidget *uiwindow);
+void uiWindowIconify (UIWidget *uiwindow);
+void uiWindowMaximize (UIWidget *uiwindow);
+void uiWindowUnMaximize (UIWidget *uiwindow);
+void uiWindowDisableDecorations (UIWidget *uiwindow);
+void uiWindowEnableDecorations (UIWidget *uiwindow);
+void uiWindowGetSize (UIWidget *uiwindow, int *x, int *y);
+void uiWindowSetDefaultSize (UIWidget *uiwindow, int x, int y);
+void uiWindowGetPosition (UIWidget *uiwindow, int *x, int *y);
+void uiWindowMove (UIWidget *uiwindow, int x, int y);
+void uiWindowNoFocusOnStartup (UIWidget *uiwindow);
+void uiCreateScrolledWindow (UIWidget *uiwindow, int minheight);
+/* these routines will be removed at a later date */
+GtkWidget * uiCreateMainWindowW (const char *title,
+    const char *imagenm, void *cb, void *udata);
+void uiCloseWindowW (GtkWidget *window);
+bool uiWindowIsMaximizedW (GtkWidget *window);
+void uiWindowIconifyW (GtkWidget *window);
+void uiWindowMaximizeW (GtkWidget *window);
+void uiWindowUnMaximizeW (GtkWidget *window);
+void uiWindowDisableDecorationsW (GtkWidget *window);
+void uiWindowEnableDecorationsW (GtkWidget *window);
+void uiWindowGetSizeW (GtkWidget *window, int *x, int *y);
+void uiWindowSetDefaultSizeW (GtkWidget *window, int x, int y);
+void uiWindowGetPositionW (GtkWidget *window, int *x, int *y);
+void uiWindowMoveW (GtkWidget *window, int x, int y);
+void uiWindowNoFocusOnStartupW (GtkWidget *window);
+GtkWidget * uiCreateScrolledWindowW (int minheight);
 
 /* uigtkscale.c */
 GtkWidget * uiCreateScale (double lower, double upper,

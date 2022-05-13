@@ -400,8 +400,8 @@ installerBuildUI (installer_t *installer)
   /* CONTEXT: installer: window title */
   snprintf (tbuff, sizeof (tbuff), _("%s Installer"), BDJ4_NAME);
 // ### close window handler
-  window = uiCreateMainWindow (tbuff, imgbuff, NULL, installer);
-  uiWindowSetDefaultSize (window, 1000, 600);
+  window = uiCreateMainWindowW (tbuff, imgbuff, NULL, installer);
+  uiWindowSetDefaultSizeW (window, 1000, 600);
   installer->window = window;
 
   vbox = uiCreateVertBoxWW ();
@@ -580,7 +580,7 @@ installerBuildUI (installer_t *installer)
       _("Install"), NULL, NULL, NULL);
   uiBoxPackEndWW (hbox, widget);
 
-  scwidget = uiCreateScrolledWindow (200);
+  scwidget = uiCreateScrolledWindowW (200);
   uiBoxPackStartExpandWW (vbox, scwidget);
 
   installer->dispBuffer = gtk_text_buffer_new (NULL);

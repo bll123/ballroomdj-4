@@ -411,10 +411,10 @@ manageStoppingCallback (void *udata, programstate_t programState)
 
   manageSonglistSave (manage);
 
-  uiWindowGetSize (manage->window, &x, &y);
+  uiWindowGetSizeW (manage->window, &x, &y);
   nlistSetNum (manage->options, PLUI_SIZE_X, x);
   nlistSetNum (manage->options, PLUI_SIZE_Y, y);
-  uiWindowGetPosition (manage->window, &x, &y);
+  uiWindowGetPositionW (manage->window, &x, &y);
   nlistSetNum (manage->options, PLUI_POSITION_X, x);
   nlistSetNum (manage->options, PLUI_POSITION_Y, y);
 
@@ -454,7 +454,7 @@ manageClosingCallback (void *udata, programstate_t programState)
 
   logProcBegin (LOG_PROC, "manageClosingCallback");
 
-  uiCloseWindow (manage->window);
+  uiCloseWindowW (manage->window);
 
   procutilStopAllProcess (manage->processes, manage->conn, true);
   procutilFreeAll (manage->processes);
@@ -534,7 +534,7 @@ manageBuildUI (manageui_t *manage)
       "bdj4_icon", ".svg", PATHBLD_MP_IMGDIR);
   /* CONTEXT: management user interface window title */
   snprintf (tbuff, sizeof (tbuff), _("%s Management"), BDJ4_NAME);
-  manage->window = uiCreateMainWindow (tbuff, imgbuff,
+  manage->window = uiCreateMainWindowW (tbuff, imgbuff,
       manageCloseWin, manage);
 
   uiCreateVertBox (&uivbox);
@@ -591,7 +591,7 @@ manageBuildUI (manageui_t *manage)
 
   x = nlistGetNum (manage->options, PLUI_SIZE_X);
   y = nlistGetNum (manage->options, PLUI_SIZE_Y);
-  uiWindowSetDefaultSize (manage->window, x, y);
+  uiWindowSetDefaultSizeW (manage->window, x, y);
 
   g_signal_connect (manage->mainnotebook, "switch-page",
       G_CALLBACK (manageSwitchPage), manage);
@@ -600,7 +600,7 @@ manageBuildUI (manageui_t *manage)
 
   x = nlistGetNum (manage->options, PLUI_POSITION_X);
   y = nlistGetNum (manage->options, PLUI_POSITION_Y);
-  uiWindowMove (manage->window, x, y);
+  uiWindowMoveW (manage->window, x, y);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", ".png", PATHBLD_MP_IMGDIR);
@@ -1541,7 +1541,7 @@ manageSelectFileDialog (manageui_t *manage, int flags)
 
     x = nlistGetNum (manage->options, MANAGE_SELFILE_POSITION_X);
     y = nlistGetNum (manage->options, MANAGE_SELFILE_POSITION_Y);
-    uiWindowMove (dialog, x, y);
+    uiWindowMoveW (dialog, x, y);
   }
   logProcEnd (LOG_PROC, "manageSelectFileDialog", "");
 }
@@ -1591,7 +1591,7 @@ manageCreateSelectFileDialog (manageui_t *manage,
   vbox = uiCreateVertBoxWW ();
   uiBoxPackInWindowWW (content, vbox);
 
-  scwin = uiCreateScrolledWindow (250);
+  scwin = uiCreateScrolledWindowW (250);
   uiWidgetExpandVertW (scwin);
   uiBoxPackStartExpandWW (vbox, scwin);
 
@@ -1672,7 +1672,7 @@ manageSelectFileResponseHandler (GtkDialog *d, gint responseid,
   GtkTreeIter   iter;
   int           count;
 
-  uiWindowGetPosition (GTK_WIDGET (d), &x, &y);
+  uiWindowGetPositionW (GTK_WIDGET (d), &x, &y);
   nlistSetNum (manage->options, MANAGE_SELFILE_POSITION_X, x);
   nlistSetNum (manage->options, MANAGE_SELFILE_POSITION_Y, y);
 
@@ -1682,7 +1682,7 @@ manageSelectFileResponseHandler (GtkDialog *d, gint responseid,
       break;
     }
     case GTK_RESPONSE_CLOSE: {
-      uiCloseWindow (GTK_WIDGET (d));
+      uiCloseWindowW (GTK_WIDGET (d));
       manage->selfilecb = NULL;
       break;
     }
@@ -1693,7 +1693,7 @@ manageSelectFileResponseHandler (GtkDialog *d, gint responseid,
       }
 
       gtk_tree_model_get (model, &iter, MNG_SELFILE_COL_DISP, &str, -1);
-      uiCloseWindow (GTK_WIDGET (d));
+      uiCloseWindowW (GTK_WIDGET (d));
       if (manage->selfilecb != NULL) {
         manage->selfilecb (manage, str);
       }

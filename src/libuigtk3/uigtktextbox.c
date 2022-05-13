@@ -26,7 +26,7 @@ uiTextBoxCreate (int height)
   tb->textbox = NULL;
   tb->buffer = NULL;
 
-  scw = uiCreateScrolledWindow (height);
+  scw = uiCreateScrolledWindowW (height);
 
   tb->buffer = gtk_text_buffer_new (NULL);
   tb->textbox = gtk_text_view_new_with_buffer (tb->buffer);

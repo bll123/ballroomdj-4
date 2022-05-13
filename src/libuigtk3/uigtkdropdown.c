@@ -410,7 +410,7 @@ uiDropDownWindowCreate (uidropdown_t *dropdown,
   vbox = uiCreateVertBoxWW ();
   uiBoxPackStartExpandWW (twidget, vbox);
 
-  scwin = uiCreateScrolledWindow (300);
+  scwin = uiCreateScrolledWindowW (300);
   gtk_widget_set_hexpand (scwin, TRUE);
   gtk_widget_set_vexpand (scwin, FALSE);
   twidget = gtk_scrolled_window_get_vscrollbar (GTK_SCROLLED_WINDOW (scwin));
