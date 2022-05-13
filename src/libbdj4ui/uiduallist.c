@@ -78,8 +78,8 @@ uiCreateDualList (UIWidget *vbox, int flags)
   uiWidgetSetMarginTopW (tree, uiBaseMarginSz * 8);
   uiWidgetExpandVertW (tree);
   uiBoxPackInWindowUW (&uiwidget, tree);
-  duallist->trees [DUALLIST_TREE_LEFT].tree = tree;
-  duallist->trees [DUALLIST_TREE_LEFT].sel =
+  duallist->trees [DUALLIST_TREE_SOURCE].tree = tree;
+  duallist->trees [DUALLIST_TREE_SOURCE].sel =
       gtk_tree_view_get_selection (GTK_TREE_VIEW (tree));
 
   uiCreateVertBox (&dvbox);
@@ -95,7 +95,7 @@ uiCreateDualList (UIWidget *vbox, int flags)
 
   /* CONTEXT: configuration: display settings: button: remove the selected field */
   uiCreateButton (&uiwidget, &duallist->removecb, _("Remove"),
-      "button_left", NULL, NULL);
+      "button_SOURCE", NULL, NULL);
   uiBoxPackStart (&dvbox, &uiwidget);
 
   uiCreateScrolledWindow (&uiwidget, 300);
@@ -110,8 +110,8 @@ uiCreateDualList (UIWidget *vbox, int flags)
   uiWidgetSetMarginTopW (tree, uiBaseMarginSz * 8);
   uiWidgetExpandVertW (tree);
   uiBoxPackInWindowUW (&uiwidget, tree);
-  duallist->trees [DUALLIST_TREE_RIGHT].tree = tree;
-  duallist->trees [DUALLIST_TREE_RIGHT].sel =
+  duallist->trees [DUALLIST_TREE_TARGET].tree = tree;
+  duallist->trees [DUALLIST_TREE_TARGET].sel =
       gtk_tree_view_get_selection (GTK_TREE_VIEW (tree));
 
   uiCreateVertBox (&dvbox);
@@ -196,14 +196,14 @@ static void
 uiduallistMovePrev (void *tduallist)
 {
   uiduallist_t  *duallist = tduallist;
-  uiduallistMove (duallist, DUALLIST_TREE_LEFT, DUALLIST_MOVE_PREV);
+  uiduallistMove (duallist, DUALLIST_TREE_TARGET, DUALLIST_MOVE_PREV);
 }
 
 static void
 uiduallistMoveNext (void *tduallist)
 {
   uiduallist_t  *duallist = tduallist;
-  uiduallistMove (duallist, DUALLIST_TREE_LEFT, DUALLIST_MOVE_NEXT);
+  uiduallistMove (duallist, DUALLIST_TREE_TARGET, DUALLIST_MOVE_NEXT);
 }
 
 static void
@@ -261,8 +261,8 @@ uiduallistDispSelect (void *udata)
   GtkTreeIter       siter;
   int               count;
 
-  stree = duallist->trees [DUALLIST_TREE_RIGHT].tree;
-  ssel = duallist->trees [DUALLIST_TREE_RIGHT].sel;
+  stree = duallist->trees [DUALLIST_TREE_SOURCE].tree;
+  ssel = duallist->trees [DUALLIST_TREE_SOURCE].sel;
 
   count = uiTreeViewGetSelection (stree, &smodel, &siter);
 
@@ -273,8 +273,8 @@ uiduallistDispSelect (void *udata)
     GtkTreeIter   titer;
     GtkTreePath   *path;
 
-    ttree = duallist->trees [DUALLIST_TREE_LEFT].tree;
-    tsel = duallist->trees [DUALLIST_TREE_LEFT].sel;
+    ttree = duallist->trees [DUALLIST_TREE_TARGET].tree;
+    tsel = duallist->trees [DUALLIST_TREE_TARGET].sel;
     tmodel = gtk_tree_view_get_model (GTK_TREE_VIEW (ttree));
 
     gtk_tree_model_get (smodel, &siter, DUALLIST_COL_DISP, &str, -1);
@@ -304,7 +304,7 @@ uiduallistDispRemove (void *udata)
   GtkTreeIter   titer;
   int           count;
 
-  ttree = duallist->trees [DUALLIST_TREE_LEFT].tree;
+  ttree = duallist->trees [DUALLIST_TREE_TARGET].tree;
   count = uiTreeViewGetSelection (ttree, &tmodel, &titer);
 
   if (count == 1) {
@@ -315,9 +315,10 @@ uiduallistDispRemove (void *udata)
     GtkTreeModel      *smodel;
     GtkTreeIter       siter;
     GtkTreePath       *path;
+    int               pos = 0;
 
-    stree = duallist->trees [DUALLIST_TREE_LEFT].tree;
-    ssel = duallist->trees [DUALLIST_TREE_LEFT].sel;
+    stree = duallist->trees [DUALLIST_TREE_SOURCE].tree;
+    ssel = duallist->trees [DUALLIST_TREE_SOURCE].sel;
     smodel = gtk_tree_view_get_model (GTK_TREE_VIEW (stree));
 
     gtk_tree_model_get (tmodel, &titer, DUALLIST_COL_DISP, &str, -1);
@@ -325,7 +326,7 @@ uiduallistDispRemove (void *udata)
 
     // ### need to insert the value into the list in sorted order...
 
-    gtk_list_store_append (GTK_LIST_STORE (smodel), &siter);
+    gtk_list_store_insert (GTK_LIST_STORE (smodel), &siter, pos);
     gtk_list_store_set (GTK_LIST_STORE (smodel), &siter,
         DUALLIST_COL_DISP, str,
         DUALLIST_COL_SB_PAD, "    ",
