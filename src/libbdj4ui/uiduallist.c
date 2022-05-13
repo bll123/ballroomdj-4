@@ -169,6 +169,27 @@ uiduallistSet (uiduallist_t *duallist, slist_t *slist, int which)
   g_object_unref (store);
 }
 
+inline bool
+uiduallistIsChanged (uiduallist_t *duallist)
+{
+  if (duallist == NULL) {
+    return false;
+  }
+
+  return duallist->changed;
+}
+
+inline void
+uiduallistClearChanged (uiduallist_t *duallist)
+{
+  if (duallist == NULL) {
+    return;
+  }
+
+  duallist->changed = false;
+}
+
+
 /* internal routines */
 
 static void
@@ -236,39 +257,40 @@ uiduallistDispSelect (void *udata)
   GtkTreeSelection  *tsel;
   GtkWidget         *stree;
   GtkTreeSelection  *ssel;
-  GtkTreeModel      *model;
-  GtkTreeIter       iter;
-  GtkTreePath       *path;
+  GtkTreeModel      *smodel;
+  GtkTreeIter       siter;
   int               count;
 
   stree = duallist->trees [DUALLIST_TREE_RIGHT].tree;
   ssel = duallist->trees [DUALLIST_TREE_RIGHT].sel;
 
-  count = uiTreeViewGetSelection (stree, &model, &iter);
+  count = uiTreeViewGetSelection (stree, &smodel, &siter);
 
   if (count == 1) {
     char          *str;
     gulong        tval;
     GtkTreeModel  *tmodel;
+    GtkTreeIter   titer;
+    GtkTreePath   *path;
 
     ttree = duallist->trees [DUALLIST_TREE_LEFT].tree;
     tsel = duallist->trees [DUALLIST_TREE_LEFT].sel;
     tmodel = gtk_tree_view_get_model (GTK_TREE_VIEW (ttree));
 
-    gtk_tree_model_get (model, &iter, DUALLIST_COL_DISP, &str, -1);
-    gtk_tree_model_get (model, &iter, DUALLIST_COL_DISP_IDX, &tval, -1);
+    gtk_tree_model_get (smodel, &siter, DUALLIST_COL_DISP, &str, -1);
+    gtk_tree_model_get (smodel, &siter, DUALLIST_COL_DISP_IDX, &tval, -1);
 
-    gtk_list_store_append (GTK_LIST_STORE (tmodel), &iter);
-    gtk_list_store_set (GTK_LIST_STORE (tmodel), &iter,
+    gtk_list_store_append (GTK_LIST_STORE (tmodel), &titer);
+    gtk_list_store_set (GTK_LIST_STORE (tmodel), &titer,
         DUALLIST_COL_DISP, str,
         DUALLIST_COL_SB_PAD, "    ",
         DUALLIST_COL_DISP_IDX, tval,
         -1);
 
-    path = gtk_tree_model_get_path (tmodel, &iter);
+    path = gtk_tree_model_get_path (tmodel, &titer);
     gtk_tree_selection_select_path (tsel, path);
 
-//    confuiCreateTagListingDisp (confui);
+    gtk_list_store_remove (GTK_LIST_STORE (smodel), &siter);
     duallist->changed = true;
   }
 }
@@ -277,17 +299,43 @@ static void
 uiduallistDispRemove (void *udata)
 {
   uiduallist_t  *duallist = udata;
-  GtkWidget     *stree;
-  GtkTreeModel  *model;
-  GtkTreeIter   iter;
+  GtkWidget     *ttree;
+  GtkTreeModel  *tmodel;
+  GtkTreeIter   titer;
   int           count;
 
-  stree = duallist->trees [DUALLIST_TREE_LEFT].tree;
-  count = uiTreeViewGetSelection (stree, &model, &iter);
+  ttree = duallist->trees [DUALLIST_TREE_LEFT].tree;
+  count = uiTreeViewGetSelection (ttree, &tmodel, &titer);
 
   if (count == 1) {
-    gtk_list_store_remove (GTK_LIST_STORE (model), &iter);
-//    confuiCreateTagListingDisp (confui);
+    char              *str;
+    gulong            tval;
+    GtkWidget         *stree;
+    GtkTreeSelection  *ssel;
+    GtkTreeModel      *smodel;
+    GtkTreeIter       siter;
+    GtkTreePath       *path;
+
+    stree = duallist->trees [DUALLIST_TREE_LEFT].tree;
+    ssel = duallist->trees [DUALLIST_TREE_LEFT].sel;
+    smodel = gtk_tree_view_get_model (GTK_TREE_VIEW (stree));
+
+    gtk_tree_model_get (tmodel, &titer, DUALLIST_COL_DISP, &str, -1);
+    gtk_tree_model_get (tmodel, &titer, DUALLIST_COL_DISP_IDX, &tval, -1);
+
+    // ### need to insert the value into the list in sorted order...
+
+    gtk_list_store_append (GTK_LIST_STORE (smodel), &siter);
+    gtk_list_store_set (GTK_LIST_STORE (smodel), &siter,
+        DUALLIST_COL_DISP, str,
+        DUALLIST_COL_SB_PAD, "    ",
+        DUALLIST_COL_DISP_IDX, tval,
+        -1);
+
+    path = gtk_tree_model_get_path (smodel, &siter);
+    gtk_tree_selection_select_path (ssel, path);
+
+    gtk_list_store_remove (GTK_LIST_STORE (tmodel), &titer);
     duallist->changed = true;
   }
 }

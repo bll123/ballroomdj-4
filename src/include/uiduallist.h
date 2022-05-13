@@ -31,5 +31,7 @@ typedef struct {
 
 uiduallist_t * uiCreateDualList (UIWidget *vbox, int flags);
 void uiduallistSet (uiduallist_t *, slist_t *slist, int which);
+bool uiduallistIsChanged (uiduallist_t *duallist);
+void uiduallistClearChanged (uiduallist_t *duallist);
 
 #endif /* INC_UIDUALLIST_H */
