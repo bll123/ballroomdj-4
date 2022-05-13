@@ -9,6 +9,11 @@ enum {
   DUALLIST_TREE_MAX,
 };
 
+enum {
+  DUALLIST_FLAGS_NONE,
+  DUALLIST_FLAGS_MULTIPLE,
+};
+
 typedef struct {
   GtkWidget         *tree;
   GtkTreeSelection  *sel;
@@ -18,11 +23,13 @@ typedef struct {
   uiduallisttree_t  trees [DUALLIST_TREE_MAX];
   UICallback        moveprevcb;
   UICallback        movenextcb;
+  UICallback        selectcb;
+  UICallback        removecb;
+  int               flags;
   bool              changed : 1;
 } uiduallist_t;
 
-uiduallist_t * uiCreateDualList (UIWidget *vbox,
-    UICallback *uiselectcb, UICallback *uiremovecb);
+uiduallist_t * uiCreateDualList (UIWidget *vbox, int flags);
 void uiduallistSet (uiduallist_t *, slist_t *slist, int which);
 
 #endif /* INC_UIDUALLIST_H */

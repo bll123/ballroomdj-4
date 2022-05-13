@@ -33,10 +33,11 @@ enum {
 static void uiduallistMovePrev (void *tduallist);
 static void uiduallistMoveNext (void *tduallist);
 static void uiduallistMove (uiduallist_t *duallist, int which, int dir);
+static void uiduallistDispSelect (void *udata);
+static void uiduallistDispRemove (void *udata);
 
 uiduallist_t *
-uiCreateDualList (UIWidget *vbox,
-    UICallback *uiselectcb, UICallback *uiremovecb)
+uiCreateDualList (UIWidget *vbox, int flags)
 {
   uiduallist_t  *duallist;
   UIWidget      hbox;
@@ -49,9 +50,13 @@ uiCreateDualList (UIWidget *vbox,
     duallist->trees [i].tree = NULL;
     duallist->trees [i].sel = NULL;
   }
+  duallist->flags = flags;
   duallist->changed = false;
+
   uiutilsUICallbackInit (&duallist->moveprevcb, uiduallistMovePrev, duallist);
   uiutilsUICallbackInit (&duallist->movenextcb, uiduallistMoveNext, duallist);
+  uiutilsUICallbackInit (&duallist->selectcb, uiduallistDispSelect, duallist);
+  uiutilsUICallbackInit (&duallist->removecb, uiduallistDispRemove, duallist);
 
   uiutilsUIWidgetInit (&hbox);
   uiutilsUIWidgetInit (&dvbox);
@@ -84,12 +89,12 @@ uiCreateDualList (UIWidget *vbox,
   uiBoxPackStart (&hbox, &dvbox);
 
   /* CONTEXT: configuration: display settings: button: add the selected field */
-  uiCreateButton (&uiwidget, uiselectcb, _("Select"),
+  uiCreateButton (&uiwidget, &duallist->selectcb, _("Select"),
       "button_right", NULL, NULL);
   uiBoxPackStart (&dvbox, &uiwidget);
 
   /* CONTEXT: configuration: display settings: button: remove the selected field */
-  uiCreateButton (&uiwidget, uiremovecb, _("Remove"),
+  uiCreateButton (&uiwidget, &duallist->removecb, _("Remove"),
       "button_left", NULL, NULL);
   uiBoxPackStart (&dvbox, &uiwidget);
 
@@ -164,6 +169,8 @@ uiduallistSet (uiduallist_t *duallist, slist_t *slist, int which)
   g_object_unref (store);
 }
 
+/* internal routines */
+
 static void
 uiduallistMovePrev (void *tduallist)
 {
@@ -178,7 +185,7 @@ uiduallistMoveNext (void *tduallist)
   uiduallistMove (duallist, DUALLIST_TREE_LEFT, DUALLIST_MOVE_NEXT);
 }
 
-void
+static void
 uiduallistMove (uiduallist_t *duallist, int which, int dir)
 {
   GtkWidget         *tree;
@@ -219,5 +226,69 @@ uiduallistMove (uiduallist_t *duallist, int which, int dir)
     }
   }
   duallist->changed = true;
+}
+
+static void
+uiduallistDispSelect (void *udata)
+{
+  uiduallist_t      *duallist = udata;
+  GtkWidget         *ttree;
+  GtkTreeSelection  *tsel;
+  GtkWidget         *stree;
+  GtkTreeSelection  *ssel;
+  GtkTreeModel      *model;
+  GtkTreeIter       iter;
+  GtkTreePath       *path;
+  int               count;
+
+  stree = duallist->trees [DUALLIST_TREE_RIGHT].tree;
+  ssel = duallist->trees [DUALLIST_TREE_RIGHT].sel;
+
+  count = uiTreeViewGetSelection (stree, &model, &iter);
+
+  if (count == 1) {
+    char          *str;
+    gulong        tval;
+    GtkTreeModel  *tmodel;
+
+    ttree = duallist->trees [DUALLIST_TREE_LEFT].tree;
+    tsel = duallist->trees [DUALLIST_TREE_LEFT].sel;
+    tmodel = gtk_tree_view_get_model (GTK_TREE_VIEW (ttree));
+
+    gtk_tree_model_get (model, &iter, DUALLIST_COL_DISP, &str, -1);
+    gtk_tree_model_get (model, &iter, DUALLIST_COL_DISP_IDX, &tval, -1);
+
+    gtk_list_store_append (GTK_LIST_STORE (tmodel), &iter);
+    gtk_list_store_set (GTK_LIST_STORE (tmodel), &iter,
+        DUALLIST_COL_DISP, str,
+        DUALLIST_COL_SB_PAD, "    ",
+        DUALLIST_COL_DISP_IDX, tval,
+        -1);
+
+    path = gtk_tree_model_get_path (tmodel, &iter);
+    gtk_tree_selection_select_path (tsel, path);
+
+//    confuiCreateTagListingDisp (confui);
+    duallist->changed = true;
+  }
+}
+
+static void
+uiduallistDispRemove (void *udata)
+{
+  uiduallist_t  *duallist = udata;
+  GtkWidget     *stree;
+  GtkTreeModel  *model;
+  GtkTreeIter   iter;
+  int           count;
+
+  stree = duallist->trees [DUALLIST_TREE_LEFT].tree;
+  count = uiTreeViewGetSelection (stree, &model, &iter);
+
+  if (count == 1) {
+    gtk_list_store_remove (GTK_LIST_STORE (model), &iter);
+//    confuiCreateTagListingDisp (confui);
+    duallist->changed = true;
+  }
 }
 
