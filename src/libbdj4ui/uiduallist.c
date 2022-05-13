@@ -264,6 +264,7 @@ uiduallistSet (uiduallist_t *duallist, slist_t *slist, int which)
       duallist->searchtype = DUALLIST_SEARCH_REMOVE;
       gtk_tree_model_foreach (smodel, uiduallistSourceSearch, duallist);
       snprintf (tmp, sizeof (tmp), "%d", duallist->pos);
+// ### the caller needs to re-populate the source list first.
 // ### get the path/iter for this position
 //      gtk_list_store_remove (GTK_LIST_STORE (smodel), &siter);
     }
@@ -291,6 +292,15 @@ uiduallistClearChanged (uiduallist_t *duallist)
   }
 
   duallist->changed = false;
+}
+
+slist_t *
+uiduallistGetList (uiduallist_t *duallist)
+{
+  slist_t *slist;
+
+  slist = slistAlloc ("duallist-return", LIST_UNORDERED, NULL);
+  return slist;
 }
 
 
@@ -451,7 +461,7 @@ uiduallistDispRemove (void *udata)
   }
 }
 
-gboolean
+static gboolean
 uiduallistSourceSearch (GtkTreeModel* model, GtkTreePath* path,
     GtkTreeIter* iter, gpointer udata)
 {

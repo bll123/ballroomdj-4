@@ -157,6 +157,7 @@ typedef struct manage {
   /* sequence editor */
   uiduallist_t    *seqduallist;
   uientry_t       seqname;
+  char            *seqoldname;
   /* options */
   datafile_t      *optiondf;
   nlist_t         *options;
@@ -224,6 +225,9 @@ static void manageSelectFileSelect (GtkTreeView* tv, GtkTreePath* path,
 static void manageSelectFileResponseHandler (GtkDialog *d, gint responseid,
     gpointer udata);
 static void manageInitializeSongFilter (manageui_t *manage, nlist_t *options);
+static void manageRenamePlaylistFiles (const char *oldname, const char *newname);
+static void manageCheckAndCreatePlaylist (manageui_t *manage, const char *name,
+    const char *suppfname, pltype_t pltype);
 /* sequence */
 static void     manageSequenceMenu (manageui_t *manage);
 static void     manageSequenceLoad (GtkMenuItem *mi, gpointer udata);
@@ -289,6 +293,7 @@ main (int argc, char *argv[])
   uiutilsUIWidgetInit (&manage.dbpbar);
   manage.seqduallist = NULL;
   uiEntryInit (&manage.seqname, 20, 50);
+  manage.seqoldname = NULL;
 
   procutilInitProcesses (manage.processes);
 
@@ -498,6 +503,9 @@ manageClosingCallback (void *udata, programstate_t programState)
   }
   if (manage->sloldname != NULL) {
     free (manage->sloldname);
+  }
+  if (manage->seqoldname != NULL) {
+    free (manage->seqoldname);
   }
   if (manage->mainnbtabid != NULL) {
     uiutilsNotebookIDFree (manage->mainnbtabid);
@@ -1436,25 +1444,9 @@ manageSonglistSave (manageui_t *manage)
 
   name = uimusicqGetSonglistName (manage->slmusicq);
 
-  // ### validate the name.
-
   /* the song list has been renamed */
   if (strcmp (manage->sloldname, name) != 0) {
-    pathbldMakePath (onm, sizeof (onm),
-        manage->sloldname, BDJ4_SONGLIST_EXT, PATHBLD_MP_DATA);
-    pathbldMakePath (nnm, sizeof (nnm),
-        name, BDJ4_SONGLIST_EXT, PATHBLD_MP_DATA);
-    filemanipRenameAll (onm, nnm);
-    pathbldMakePath (onm, sizeof (onm),
-        manage->sloldname, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
-    pathbldMakePath (nnm, sizeof (nnm),
-        name, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
-    filemanipRenameAll (onm, nnm);
-    pathbldMakePath (onm, sizeof (onm),
-        manage->sloldname, BDJ4_PL_DANCE_EXT, PATHBLD_MP_DATA);
-    pathbldMakePath (nnm, sizeof (nnm),
-        name, BDJ4_PL_DANCE_EXT, PATHBLD_MP_DATA);
-    filemanipRenameAll (onm, nnm);
+    manageRenamePlaylistFiles (manage->sloldname, name);
   }
 
   pathbldMakePath (onm, sizeof (onm),
@@ -1471,18 +1463,7 @@ manageSonglistSave (manageui_t *manage)
   }
   filemanipMove (onm, nnm);
 
-  pathbldMakePath (onm, sizeof (onm),
-      name, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
-  if (! fileopFileExists (onm) &&
-      /* CONTEXT: name of the special song list for raffle songs */
-      strcmp (name, _("Raffle Songs")) != 0) {
-    playlist_t    *pl;
-
-    pl = playlistAlloc (manage->musicdb);
-    playlistCreate (pl, name, PLTYPE_MANUAL, nnm);
-    playlistSave (pl);
-    playlistFree (pl);
-  }
+  manageCheckAndCreatePlaylist (manage, name, nnm, PLTYPE_SEQ);
 }
 
 /* general */
@@ -1793,6 +1774,58 @@ manageInitializeSongFilter (manageui_t *manage, nlist_t *options)
       nlistGetStr (options, SONGSEL_SORT_BY));
 }
 
+
+static void
+manageRenamePlaylistFiles (const char *oldname, const char *newname)
+{
+  char  onm [MAXPATHLEN];
+  char  nnm [MAXPATHLEN];
+
+  pathbldMakePath (onm, sizeof (onm),
+      oldname, BDJ4_SEQUENCE_EXT, PATHBLD_MP_DATA);
+  pathbldMakePath (nnm, sizeof (nnm),
+      newname, BDJ4_SONGLIST_EXT, PATHBLD_MP_DATA);
+  filemanipRenameAll (onm, nnm);
+
+  pathbldMakePath (onm, sizeof (onm),
+      oldname, BDJ4_SONGLIST_EXT, PATHBLD_MP_DATA);
+  pathbldMakePath (nnm, sizeof (nnm),
+      newname, BDJ4_SONGLIST_EXT, PATHBLD_MP_DATA);
+  filemanipRenameAll (onm, nnm);
+
+  pathbldMakePath (onm, sizeof (onm),
+      oldname, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
+  pathbldMakePath (nnm, sizeof (nnm),
+      newname, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
+  filemanipRenameAll (onm, nnm);
+
+  pathbldMakePath (onm, sizeof (onm),
+      oldname, BDJ4_PL_DANCE_EXT, PATHBLD_MP_DATA);
+  pathbldMakePath (nnm, sizeof (nnm),
+      newname, BDJ4_PL_DANCE_EXT, PATHBLD_MP_DATA);
+  filemanipRenameAll (onm, nnm);
+}
+
+static void
+manageCheckAndCreatePlaylist (manageui_t *manage, const char *name,
+    const char *suppfname, pltype_t pltype)
+{
+  char  onm [MAXPATHLEN];
+
+  pathbldMakePath (onm, sizeof (onm),
+      name, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
+  if (! fileopFileExists (onm) &&
+      /* CONTEXT: name of the special song list for raffle songs */
+      strcmp (name, _("Raffle Songs")) != 0) {
+    playlist_t    *pl;
+
+    pl = playlistAlloc (manage->musicdb);
+    playlistCreate (pl, name, pltype, suppfname);
+    playlistSave (pl);
+    playlistFree (pl);
+  }
+}
+
 /* sequence */
 
 static void
@@ -1859,7 +1892,7 @@ manageSequenceLoadFile (manageui_t *manage, const char *fn)
     uiduallistSet (manage->seqduallist, tlist, DUALLIST_TREE_TARGET);
     slistFree (tlist);
 
-//    manageSetSonglistName (manage, fn);
+    manageSetSonglistName (manage, fn);
     manage->seqbackupcreated = false;
   }
 }
@@ -1873,8 +1906,7 @@ manageSequenceCopy (GtkMenuItem *mi, gpointer udata)
 
   manageSequenceSave (manage);
 
-  oname = "";
-//  oname = uimusicqGetSequenceName (manage->slmusicq);
+  oname = uiEntryGetValue (&manage->seqname);
   /* CONTEXT: sequence: the new sequence name after 'create copy' (e.g. "Copy of Saturday Sequence") */
   snprintf (tbuff, sizeof (tbuff), _("Copy of %s"), oname);
   manageSetSequenceName (manage, tbuff);
@@ -1886,6 +1918,7 @@ manageSequenceNew (GtkMenuItem *mi, gpointer udata)
 {
   manageui_t  *manage = udata;
   char        tbuff [200];
+  slist_t     *tlist;
 
   manageSequenceSave (manage);
 
@@ -1893,16 +1926,60 @@ manageSequenceNew (GtkMenuItem *mi, gpointer udata)
   snprintf (tbuff, sizeof (tbuff), _("New Sequence"));
   manageSetSequenceName (manage, tbuff);
   manage->seqbackupcreated = false;
-// ### need to clear the list
+  tlist = slistAlloc ("tmp-sequence", LIST_UNORDERED, NULL);
+  uiduallistSet (manage->seqduallist, tlist, DUALLIST_TREE_TARGET);
+  slistFree (tlist);
 }
 
 static void
 manageSequenceSave (manageui_t *manage)
 {
+  sequence_t  *seq = NULL;
+  slist_t     *slist;
+  char        onm [MAXPATHLEN];
+  char        nnm [MAXPATHLEN];
+  const char  *name;
+
+  if (manage->seqoldname == NULL) {
+    return;
+  }
+
+  slist = uiduallistGetList (manage->seqduallist);
+  if (slistGetCount (slist) <= 0) {
+    return;
+  }
+
+  name = uiEntryGetValue (&manage->seqname);
+
+  /* the song list has been renamed */
+  if (strcmp (manage->seqoldname, name) != 0) {
+    manageRenamePlaylistFiles (manage->seqoldname, name);
+  }
+
+  pathbldMakePath (onm, sizeof (onm),
+      name, BDJ4_SEQUENCE_EXT, PATHBLD_MP_DATA);
+  strlcat (onm, ".n", sizeof (onm));
+
+  seq = sequenceAlloc (name);
+  sequenceSave (seq, slist);
+
+  pathbldMakePath (nnm, sizeof (nnm),
+      name, BDJ4_SEQUENCE_EXT, PATHBLD_MP_DATA);
+  if (! manage->seqbackupcreated) {
+    filemanipBackup (nnm, 1);
+    manage->seqbackupcreated = true;
+  }
+  filemanipMove (onm, nnm);
+
+  manageCheckAndCreatePlaylist (manage, name, nnm, PLTYPE_SEQ);
 }
 
 static void
 manageSetSequenceName (manageui_t *manage, const char *name)
 {
   uiEntrySetValue (&manage->seqname, name);
+  if (manage->seqoldname != NULL) {
+    free (manage->seqoldname);
+  }
+  manage->seqoldname = strdup (name);
 }

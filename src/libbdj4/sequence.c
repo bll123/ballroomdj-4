@@ -108,3 +108,11 @@ sequenceIterate (sequence_t *sequence, nlistidx_t *iteridx)
   return lkey;
 }
 
+void
+sequenceSave (sequence_t *sequence, slist_t *slist)
+{
+  if (slistGetCount (slist) <= 0) {
+    return;
+  }
+
+}

@@ -41,5 +41,6 @@ void uiduallistFree (uiduallist_t *uiduallist);
 void uiduallistSet (uiduallist_t *uiduallist, slist_t *slist, int which);
 bool uiduallistIsChanged (uiduallist_t *duallist);
 void uiduallistClearChanged (uiduallist_t *duallist);
+slist_t * uiduallistGetList (uiduallist_t *duallist);
 
 #endif /* INC_UIDUALLIST_H */

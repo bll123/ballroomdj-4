@@ -3,6 +3,7 @@
 
 #include "datafile.h"
 #include "nlist.h"
+#include "slist.h"
 
 typedef struct {
   nlist_t          *sequence;
@@ -13,5 +14,6 @@ void          sequenceFree (sequence_t *sequence);
 nlist_t       *sequenceGetDanceList (sequence_t *sequence);
 void          sequenceStartIterator (sequence_t *sequence, nlistidx_t *idx);
 nlistidx_t    sequenceIterate (sequence_t *sequence, nlistidx_t *idx);
+void          sequenceSave (sequence_t *sequence, slist_t *slist);
 
 #endif /* INC_SEQUENCE_H */
