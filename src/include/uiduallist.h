@@ -11,8 +11,10 @@ enum {
 };
 
 enum {
-  DUALLIST_FLAGS_NONE,
-  DUALLIST_FLAGS_MULTIPLE,
+  DUALLIST_FLAGS_NONE       = 0x0000,
+  DUALLIST_FLAGS_MULTIPLE   = 0x0001,
+  /* if persistent, the selections are not removed from the source tree */
+  DUALLIST_FLAGS_PERSISTENT = 0x0002,
 };
 
 typedef struct {
@@ -29,6 +31,7 @@ typedef struct {
   int               flags;
   char              *searchstr;
   int               pos;
+  int               searchtype;
   bool              changed : 1;
 } uiduallist_t;
 

@@ -31,6 +31,11 @@ enum {
   DUALLIST_MOVE_NEXT = 1,
 };
 
+enum {
+  DUALLIST_SEARCH_INSERT,
+  DUALLIST_SEARCH_REMOVE,
+};
+
 static void uiduallistMovePrev (void *tduallist);
 static void uiduallistMoveNext (void *tduallist);
 static void uiduallistMove (uiduallist_t *duallist, int which, int dir);
@@ -54,6 +59,9 @@ uiCreateDualList (UIWidget *vbox, int flags)
     duallist->trees [i].sel = NULL;
   }
   duallist->flags = flags;
+  duallist->pos = 0;
+  duallist->searchtype = DUALLIST_SEARCH_INSERT;
+  duallist->searchstr = NULL;
   duallist->changed = false;
 
   uiutilsUICallbackInit (&duallist->moveprevcb, uiduallistMovePrev, duallist);
@@ -98,7 +106,7 @@ uiCreateDualList (UIWidget *vbox, int flags)
 
   /* CONTEXT: configuration: display settings: button: remove the selected field */
   uiCreateButton (&uiwidget, &duallist->removecb, _("Remove"),
-      "button_SOURCE", NULL, NULL);
+      "button_left", NULL, NULL);
   uiBoxPackStart (&dvbox, &uiwidget);
 
   uiCreateScrolledWindow (&uiwidget, 300);
@@ -153,6 +161,7 @@ uiduallistSet (uiduallist_t *duallist, slist_t *slist, int which)
   GtkTreeIter   iter;
   char          *keystr;
   slistidx_t    siteridx;
+  char          tmp [40];
 
 
   if (which >= DUALLIST_TREE_MAX) {
@@ -161,20 +170,39 @@ uiduallistSet (uiduallist_t *duallist, slist_t *slist, int which)
 
   tree = duallist->trees [which].tree;
   store = gtk_list_store_new (DUALLIST_COL_MAX,
-      G_TYPE_STRING, G_TYPE_STRING, G_TYPE_ULONG);
+      G_TYPE_STRING, G_TYPE_STRING, G_TYPE_LONG);
   assert (store != NULL);
 
   slistStartIterator (slist, &siteridx);
   while ((keystr = slistIterateKey (slist, &siteridx)) != NULL) {
-    int val;
+    long    val;
 
     val = slistGetNum (slist, keystr);
     gtk_list_store_append (store, &iter);
     gtk_list_store_set (store, &iter,
         DUALLIST_COL_DISP, keystr,
         DUALLIST_COL_SB_PAD, "    ",
-        DUALLIST_COL_DISP_IDX, (gulong) val,
+        DUALLIST_COL_DISP_IDX, val,
         -1);
+
+    /* if inserting into the target tree, and the peristent flag */
+    /* is not set, remove the matching entries from the source tree */
+    if (which == DUALLIST_TREE_TARGET &&
+        (duallist->flags & DUALLIST_FLAGS_PERSISTENT) != DUALLIST_FLAGS_PERSISTENT) {
+      GtkWidget         *stree;
+      GtkTreeModel      *smodel;
+
+      stree = duallist->trees [DUALLIST_TREE_TARGET].tree;
+      smodel = gtk_tree_view_get_model (GTK_TREE_VIEW (stree));
+
+      duallist->pos = 0;
+      duallist->searchstr = keystr;
+      duallist->searchtype = DUALLIST_SEARCH_REMOVE;
+      gtk_tree_model_foreach (smodel, uiduallistSourceSearch, duallist);
+      snprintf (tmp, sizeof (tmp), "%d", duallist->pos);
+// ### get the path/iter for this position
+//      gtk_list_store_remove (GTK_LIST_STORE (smodel), &siter);
+    }
   }
 
   gtk_tree_view_set_model (GTK_TREE_VIEW (tree), GTK_TREE_MODEL (store));
@@ -280,7 +308,7 @@ uiduallistDispSelect (void *udata)
 
   if (count == 1) {
     char          *str;
-    gulong        tval;
+    glong         tval;
     GtkTreeModel  *tmodel;
     GtkTreeIter   titer;
     GtkTreePath   *path;
@@ -302,7 +330,9 @@ uiduallistDispSelect (void *udata)
     path = gtk_tree_model_get_path (tmodel, &titer);
     gtk_tree_selection_select_path (tsel, path);
 
-    gtk_list_store_remove (GTK_LIST_STORE (smodel), &siter);
+    if ((duallist->flags & DUALLIST_FLAGS_PERSISTENT) != DUALLIST_FLAGS_PERSISTENT) {
+      gtk_list_store_remove (GTK_LIST_STORE (smodel), &siter);
+    }
     duallist->changed = true;
   }
 }
@@ -321,33 +351,36 @@ uiduallistDispRemove (void *udata)
 
   if (count == 1) {
     char          *str;
-    gulong        tval;
+    glong        tval;
     GtkWidget     *stree;
     GtkTreeSelection *ssel;
     GtkTreeModel  *smodel;
     GtkTreeIter   siter;
     GtkTreePath   *path;
 
-    stree = duallist->trees [DUALLIST_TREE_SOURCE].tree;
-    ssel = duallist->trees [DUALLIST_TREE_SOURCE].sel;
-    smodel = gtk_tree_view_get_model (GTK_TREE_VIEW (stree));
+    if ((duallist->flags & DUALLIST_FLAGS_PERSISTENT) != DUALLIST_FLAGS_PERSISTENT) {
+      stree = duallist->trees [DUALLIST_TREE_SOURCE].tree;
+      ssel = duallist->trees [DUALLIST_TREE_SOURCE].sel;
+      smodel = gtk_tree_view_get_model (GTK_TREE_VIEW (stree));
 
-    gtk_tree_model_get (tmodel, &titer, DUALLIST_COL_DISP, &str, -1);
-    gtk_tree_model_get (tmodel, &titer, DUALLIST_COL_DISP_IDX, &tval, -1);
+      gtk_tree_model_get (tmodel, &titer, DUALLIST_COL_DISP, &str, -1);
+      gtk_tree_model_get (tmodel, &titer, DUALLIST_COL_DISP_IDX, &tval, -1);
 
-    duallist->pos = 0;
-    duallist->searchstr = str;
-    gtk_tree_model_foreach (smodel, uiduallistSourceSearch, duallist);
+      duallist->pos = 0;
+      duallist->searchstr = str;
+      duallist->searchtype = DUALLIST_SEARCH_INSERT;
+      gtk_tree_model_foreach (smodel, uiduallistSourceSearch, duallist);
 
-    gtk_list_store_insert (GTK_LIST_STORE (smodel), &siter, duallist->pos);
-    gtk_list_store_set (GTK_LIST_STORE (smodel), &siter,
-        DUALLIST_COL_DISP, str,
-        DUALLIST_COL_SB_PAD, "    ",
-        DUALLIST_COL_DISP_IDX, tval,
-        -1);
+      gtk_list_store_insert (GTK_LIST_STORE (smodel), &siter, duallist->pos);
+      gtk_list_store_set (GTK_LIST_STORE (smodel), &siter,
+          DUALLIST_COL_DISP, str,
+          DUALLIST_COL_SB_PAD, "    ",
+          DUALLIST_COL_DISP_IDX, tval,
+          -1);
 
-    path = gtk_tree_model_get_path (smodel, &siter);
-    gtk_tree_selection_select_path (ssel, path);
+      path = gtk_tree_model_get_path (smodel, &siter);
+      gtk_tree_selection_select_path (ssel, path);
+    }
 
     gtk_list_store_remove (GTK_LIST_STORE (tmodel), &titer);
     duallist->changed = true;
@@ -362,8 +395,15 @@ uiduallistSourceSearch (GtkTreeModel* model, GtkTreePath* path,
   char          *str;
 
   gtk_tree_model_get (model, iter, DUALLIST_COL_DISP, &str, -1);
-  if (istringCompare (duallist->searchstr, str) < 0) {
-    return TRUE;
+  if (duallist->searchtype == DUALLIST_SEARCH_INSERT) {
+    if (istringCompare (duallist->searchstr, str) < 0) {
+      return TRUE;
+    }
+  }
+  if (duallist->searchtype == DUALLIST_SEARCH_REMOVE) {
+    if (istringCompare (duallist->searchstr, str) == 0) {
+      return TRUE;
+    }
   }
 
   duallist->pos += 1;
