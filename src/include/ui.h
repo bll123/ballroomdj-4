@@ -130,6 +130,7 @@ void uiBoxPackStart (UIWidget *uibox, UIWidget *uiwidget);
 void uiBoxPackStartExpand (UIWidget *uibox, UIWidget *uiwidget);
 void uiBoxPackEnd (UIWidget *uibox, UIWidget *uiwidget);
 /* these routines will be removed at a later date */
+void uiBoxPackInWindowUW (UIWidget *uiwindow, GtkWidget *widget);
 void uiBoxPackInWindowWU (GtkWidget *window, UIWidget *uibox);
 void uiBoxPackStartUW (UIWidget *uibox, GtkWidget *widget);
 void uiBoxPackStartExpandUW (UIWidget *uibox, GtkWidget *widget);

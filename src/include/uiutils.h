@@ -21,9 +21,10 @@ typedef struct {
 typedef struct {
 #ifdef UI_USE_GTK3
   union {
-    GtkWidget     *widget;
-    GtkSizeGroup  *sg;
-    GdkPixbuf     *pixbuf;
+    GtkWidget         *widget;
+    GtkSizeGroup      *sg;
+    GdkPixbuf         *pixbuf;
+    GtkTreeSelection  *sel;
   };
 #endif
 } UIWidget;

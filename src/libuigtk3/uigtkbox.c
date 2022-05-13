@@ -32,7 +32,7 @@ uiCreateHorizBox (UIWidget *uiwidget)
   uiwidget->widget = box;
 }
 
-void
+inline void
 uiBoxPackInWindow (UIWidget *uiwindow, UIWidget *uibox)
 {
   gtk_container_add (GTK_CONTAINER (uiwindow->widget), uibox->widget);
@@ -57,6 +57,12 @@ uiBoxPackEnd (UIWidget *uibox, UIWidget *uiwidget)
 }
 
 /* these routines will be removed at a later date */
+
+inline void
+uiBoxPackInWindowUW (UIWidget *uiwindow, GtkWidget *widget)
+{
+  gtk_container_add (GTK_CONTAINER (uiwindow->widget), widget);
+}
 
 void
 uiBoxPackInWindowWU (GtkWidget *window, UIWidget *uibox)
