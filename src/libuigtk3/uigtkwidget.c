@@ -119,7 +119,7 @@ uiWidgetAlignVertStart (UIWidget *uiwidget)
 }
 
 inline void
-uiWidgetDisableWFocus (UIWidget *uiwidget)
+uiWidgetDisableFocus (UIWidget *uiwidget)
 {
   if (uiwidget->widget == NULL) {
     return;
@@ -207,6 +207,17 @@ uiWidgetClearBackdropFlag (UIWidget *uiwidget)
 {
   gtk_widget_unset_state_flags (uiwidget->widget, GTK_STATE_FLAG_BACKDROP);
 }
+
+inline bool
+uiWidgetIsValid (UIWidget *uiwidget)
+{
+  bool    rc = false;
+  if (uiwidget->widget != NULL) {
+    rc = true;
+  }
+  return rc;
+}
+
 
 /* these routines will be removed at a later date */
 

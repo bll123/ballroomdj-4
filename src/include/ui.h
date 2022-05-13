@@ -27,6 +27,8 @@ void uiMenuClear (uimenu_t *menu);
 /* uigtklabel.c */
 void  uiCreateLabel (UIWidget *uiwidget, const char *label);
 void  uiCreateColonLabel (UIWidget *uiwidget, const char *label);
+void  uiLabelSetColor (UIWidget *uilabel, const char *color);
+void  uiLabelSetFont (UIWidget *uilabel, const char *color);
 void  uiLabelSetText (UIWidget *uilabel, const char *text);
 void  uiLabelEllipsizeOn (UIWidget *uiwidget);
 void  uiLabelSetMaxWidth (UIWidget *uiwidget, int width);
@@ -217,7 +219,7 @@ void  uiWidgetAlignHorizStart (UIWidget *uiwidget);
 void  uiWidgetAlignHorizEnd (UIWidget *uiwidget);
 void  uiWidgetAlignVertFill (UIWidget *uiwidget);
 void  uiWidgetAlignVertStart (UIWidget *uiwidget);
-void  uiWidgetDisableFocusW (GtkWidget *widget);
+void  uiWidgetDisableFocus (UIWidget *uiwidget);
 void  uiWidgetHide (UIWidget *uiwidget);
 void  uiWidgetShow (UIWidget *uiwidget);
 void  uiWidgetShowAll (UIWidget *uiwidget);
@@ -225,14 +227,8 @@ void  uiWidgetMakePersistent (UIWidget *uiuiwidget);
 void  uiWidgetClearPersistent (UIWidget *uiuiwidget);
 void  uiWidgetSetSizeRequest (UIWidget *uiuiwidget, int width, int height);
 void  uiWidgetClearBackdropFlag (UIWidget *uiwidget);
+bool  uiWidgetIsValid (UIWidget *uiwidget);
 /* these routines will be removed at a later date */
-void  uiWidgetDisableFocusW (GtkWidget *widget);
-void  uiWidgetHideW (GtkWidget *widget);
-void  uiWidgetShowW (GtkWidget *widget);
-void  uiWidgetShowAllW (GtkWidget *widget);
-void  uiWidgetMakePersistentW (UIWidget *uiwidget);
-void  uiWidgetClearPersistentW (UIWidget *uiwidget);
-void  uiWidgetSetSizeRequestW (UIWidget *uiwidget, int width, int height);
 void  uiWidgetDisableW (GtkWidget *widget);
 void  uiWidgetEnableW (GtkWidget *widget);
 void  uiWidgetExpandHorizW (GtkWidget *widget);
@@ -249,6 +245,9 @@ void  uiWidgetDisableFocusW (GtkWidget *widget);
 void  uiWidgetHideW (GtkWidget *widget);
 void  uiWidgetShowW (GtkWidget *widget);
 void  uiWidgetShowAllW (GtkWidget *widget);
+void  uiWidgetMakePersistentW (UIWidget *uiwidget);
+void  uiWidgetClearPersistentW (UIWidget *uiwidget);
+void  uiWidgetSetSizeRequestW (UIWidget *uiwidget, int width, int height);
 void  uiWidgetClearBackdropFlagW (GtkWidget *widget);
 
 /* uigtkimage.c */

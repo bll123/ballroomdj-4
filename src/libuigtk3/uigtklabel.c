@@ -30,6 +30,32 @@ uiCreateColonLabel (UIWidget *uiwidget, const char *label)
   uiwidget->widget = widget;
 }
 
+void
+uiLabelSetColor (UIWidget *uiwidget, const char *color)
+{
+  char  tbuff [200];
+
+  snprintf (tbuff, sizeof (tbuff),
+      "label { color: %s; }", color);
+  uiSetCss (uiwidget->widget, tbuff);
+}
+
+void
+uiLabelSetFont (UIWidget *uiwidget, const char *font)
+{
+  PangoFontDescription  *font_desc;
+  PangoAttribute        *attr;
+  PangoAttrList         *attrlist;
+
+  attrlist = pango_attr_list_new ();
+  font_desc = pango_font_description_from_string (font);
+  attr = pango_attr_font_desc_new (font_desc);
+  pango_attr_list_insert (attrlist, attr);
+  gtk_label_set_attributes (GTK_LABEL (uiwidget->widget), attrlist);
+  pango_attr_list_unref (attrlist);
+}
+
+
 inline void
 uiLabelSetText (UIWidget *uiwidget, const char *text)
 {
