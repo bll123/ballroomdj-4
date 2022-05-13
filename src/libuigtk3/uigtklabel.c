@@ -9,16 +9,51 @@
 
 #include <gtk/gtk.h>
 
-#include "log.h"
 #include "ui.h"
 #include "uiutils.h"
 
-GtkWidget *
-uiCreateLabel (const char *label)
+void
+uiCreateLabel (UIWidget *uiwidget, const char *label)
 {
   GtkWidget *widget;
 
-  logProcBegin (LOG_PROC, "uiCreateLabel");
+  widget = uiCreateLabelW (label);
+  uiwidget->widget = widget;
+}
+
+void
+uiCreateColonLabel (UIWidget *uiwidget, const char *label)
+{
+  GtkWidget *widget;
+
+  widget = uiCreateColonLabelW (label);
+  uiwidget->widget = widget;
+}
+
+inline void
+uiLabelSetText (UIWidget *uiwidget, const char *text)
+{
+  gtk_label_set_text (GTK_LABEL (uiwidget->widget), text);
+}
+
+inline void
+uiLabelEllipsizeOn (UIWidget *uiwidget)
+{
+  gtk_label_set_ellipsize (GTK_LABEL (uiwidget->widget), PANGO_ELLIPSIZE_END);
+}
+
+inline void
+uiLabelSetMaxWidth (UIWidget *uiwidget, int width)
+{
+  gtk_label_set_max_width_chars (GTK_LABEL (uiwidget->widget), width);
+}
+
+/* these routines will be removed at a later date */
+
+GtkWidget *
+uiCreateLabelW (const char *label)
+{
+  GtkWidget *widget;
 
   widget = gtk_label_new (label);
   assert (widget != NULL);
@@ -26,17 +61,14 @@ uiCreateLabel (const char *label)
   gtk_widget_set_halign (widget, GTK_ALIGN_START);
   gtk_widget_set_margin_top (widget, uiBaseMarginSz);
   gtk_widget_set_margin_start (widget, uiBaseMarginSz);
-  logProcEnd (LOG_PROC, "uiCreateLabel", "");
   return widget;
 }
 
 GtkWidget *
-uiCreateColonLabel (const char *label)
+uiCreateColonLabelW (const char *label)
 {
   GtkWidget *widget;
   char      tbuff [100];
-
-  logProcBegin (LOG_PROC, "uiCreateColonLabel");
 
   snprintf (tbuff, sizeof (tbuff), "%s:", label);
   widget = gtk_label_new (tbuff);
@@ -44,24 +76,23 @@ uiCreateColonLabel (const char *label)
   gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
   gtk_widget_set_margin_top (widget, uiBaseMarginSz);
   gtk_widget_set_margin_start (widget, uiBaseMarginSz);
-  logProcEnd (LOG_PROC, "uiCreateColonLabel", "");
   return widget;
 }
 
 inline void
-uiLabelSetText (GtkWidget *widget, const char *text)
+uiLabelSetTextW (GtkWidget *widget, const char *text)
 {
   gtk_label_set_text (GTK_LABEL (widget), text);
 }
 
 inline void
-uiLabelEllipsizeOn (GtkWidget *widget)
+uiLabelEllipsizeOnW (GtkWidget *widget)
 {
   gtk_label_set_ellipsize (GTK_LABEL (widget), PANGO_ELLIPSIZE_END);
 }
 
 inline void
-uiLabelSetMaxWidth (GtkWidget *widget, int width)
+uiLabelSetMaxWidthW (GtkWidget *widget, int width)
 {
   gtk_label_set_max_width_chars (GTK_LABEL (widget), width);
 }

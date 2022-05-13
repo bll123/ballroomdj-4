@@ -545,7 +545,7 @@ manageBuildUI (manageui_t *manage)
   uiWidgetSetMarginTop (&hbox, uiBaseMarginSz * 4);
   uiBoxPackStart (&uivbox, &hbox);
 
-  widget = uiCreateLabel ("");
+  widget = uiCreateLabelW ("");
   uiBoxPackEndUW (&hbox, widget);
   snprintf (tbuff, sizeof (tbuff),
       "label { color: %s; }",
@@ -569,7 +569,7 @@ manageBuildUI (manageui_t *manage)
   vbox = uiCreateVertBoxWW ();
   uiWidgetSetAllMarginsW (vbox, 4);
   /* CONTEXT: notebook tab title: playlist management */
-  tabLabel = uiCreateLabel (_("Playlist Management"));
+  tabLabel = uiCreateLabelW (_("Playlist Management"));
   uiNotebookAppendPage (manage->mainnotebook, vbox, tabLabel);
   uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_PLMGMT);
 
@@ -577,7 +577,7 @@ manageBuildUI (manageui_t *manage)
   vbox = uiCreateVertBoxWW ();
   uiWidgetSetAllMarginsW (vbox, 4);
   /* CONTEXT: notebook tab title: edit sequences */
-  tabLabel = uiCreateLabel (_("Edit Sequences"));
+  tabLabel = uiCreateLabelW (_("Edit Sequences"));
   uiNotebookAppendPage (manage->mainnotebook, vbox, tabLabel);
   uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_EDITSEQ);
 
@@ -585,7 +585,7 @@ manageBuildUI (manageui_t *manage)
   vbox = uiCreateVertBoxWW ();
   uiWidgetSetAllMarginsW (vbox, 4);
   /* CONTEXT: notebook tab title: file manager */
-  tabLabel = uiCreateLabel (_("File Manager"));
+  tabLabel = uiCreateLabelW (_("File Manager"));
   uiNotebookAppendPage (manage->mainnotebook, vbox, tabLabel);
   uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_FILEMGR);
 
@@ -626,7 +626,7 @@ manageBuildUISongListEditor (manageui_t *manage)
   uiWidgetSetAllMarginsW (vbox, 4);
 
   /* CONTEXT: notebook tab title: edit song lists (manual playlists) */
-  tabLabel = uiCreateLabel (_("Edit Song Lists"));
+  tabLabel = uiCreateLabelW (_("Edit Song Lists"));
   uiNotebookAppendPage (manage->mainnotebook, vbox, tabLabel);
   uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_MAIN_SL);
 
@@ -643,7 +643,7 @@ manageBuildUISongListEditor (manageui_t *manage)
   widget = uiCreateHorizBoxWW ();
 
   /* CONTEXT: name of easy song list song selection tab */
-  tabLabel = uiCreateLabel (_("Song List"));
+  tabLabel = uiCreateLabelW (_("Song List"));
   uiNotebookAppendPage (notebook, widget, tabLabel);
   uiutilsNotebookIDAdd (manage->slnbtabid, MANAGE_TAB_SONGLIST);
   manage->slezmusicqtabwidget = widget;
@@ -674,7 +674,7 @@ manageBuildUISongListEditor (manageui_t *manage)
   /* song list editor: music queue tab */
   widget = uimusicqBuildUI (manage->slmusicq, manage->window, MUSICQ_A);
   /* CONTEXT: name of easy song list notebook tab */
-  tabLabel = uiCreateLabel (_("Song List"));
+  tabLabel = uiCreateLabelW (_("Song List"));
   uiNotebookAppendPage (notebook, widget, tabLabel);
   uiutilsNotebookIDAdd (manage->slnbtabid, MANAGE_TAB_SONGLIST);
   manage->slmusicqtabwidget = widget;
@@ -682,7 +682,7 @@ manageBuildUISongListEditor (manageui_t *manage)
   /* song list editor: song selection tab*/
   widget = uisongselBuildUI (manage->slsongsel, manage->window);
   /* CONTEXT: name of song selection notebook tab */
-  tabLabel = uiCreateLabel (_("Song Selection"));
+  tabLabel = uiCreateLabelW (_("Song Selection"));
   uiNotebookAppendPage (notebook, widget, tabLabel);
   uiutilsNotebookIDAdd (manage->slnbtabid, MANAGE_TAB_OTHER);
   manage->slsongseltabwidget = widget;
@@ -690,7 +690,7 @@ manageBuildUISongListEditor (manageui_t *manage)
   /* song list editor song editor tab */
   widget = uisongeditBuildUI (manage->slsongedit, manage->window);
   /* CONTEXT: name of song editor notebook tab */
-  tabLabel = uiCreateLabel (_("Song Editor"));
+  tabLabel = uiCreateLabelW (_("Song Editor"));
   uiNotebookAppendPage (notebook, widget, tabLabel);
   uiutilsNotebookIDAdd (manage->slnbtabid, MANAGE_TAB_SONGEDIT);
 
@@ -709,7 +709,7 @@ manageBuildUIMusicManager (manageui_t *manage)
   vbox = uiCreateVertBoxWW ();
   uiWidgetSetAllMarginsW (vbox, 4);
   /* CONTEXT: name of music manager notebook tab */
-  tabLabel = uiCreateLabel (_("Music Manager"));
+  tabLabel = uiCreateLabelW (_("Music Manager"));
   uiNotebookAppendPage (manage->mainnotebook, vbox, tabLabel);
   uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_MAIN_MM);
 
@@ -726,14 +726,14 @@ manageBuildUIMusicManager (manageui_t *manage)
   widget = uisongselBuildUI (manage->mmsongsel, manage->window);
   uiWidgetExpandHorizW (widget);
   /* CONTEXT: name of song selection notebook tab */
-  tabLabel = uiCreateLabel (_("Music Manager"));
+  tabLabel = uiCreateLabelW (_("Music Manager"));
   uiNotebookAppendPage (notebook, widget, tabLabel);
   uiutilsNotebookIDAdd (manage->mmnbtabid, MANAGE_TAB_OTHER);
 
   /* music manager: song editor tab */
   widget = uisongeditBuildUI (manage->mmsongedit, manage->window);
   /* CONTEXT: name of song editor notebook tab */
-  tabLabel = uiCreateLabel (_("Song Editor"));
+  tabLabel = uiCreateLabelW (_("Song Editor"));
   uiNotebookAppendPage (notebook, widget, tabLabel);
   uiutilsNotebookIDAdd (manage->mmnbtabid, MANAGE_TAB_SONGEDIT);
 
@@ -755,7 +755,7 @@ manageBuildUIUpdateDatabase (manageui_t *manage)
   vbox = uiCreateVertBoxWW ();
   uiWidgetSetAllMarginsW (vbox, 4);
   /* CONTEXT: notebook tab title: update database */
-  tabLabel = uiCreateLabel (_("Update Database"));
+  tabLabel = uiCreateLabelW (_("Update Database"));
   uiNotebookAppendPage (manage->mainnotebook, vbox, tabLabel);
   uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_OTHER);
 
@@ -1641,7 +1641,7 @@ manageCreateSelectFileDialog (manageui_t *manage,
   uiCreateHorizBox (&hbox);
   uiBoxPackStartWU (vbox, &hbox);
 
-  widget = uiCreateLabel (" ");
+  widget = uiCreateLabelW (" ");
   uiBoxPackStartUW (&hbox, widget);
 
   g_signal_connect (dialog, "response",

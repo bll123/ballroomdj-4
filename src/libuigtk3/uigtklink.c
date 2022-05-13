@@ -11,7 +11,6 @@
 
 #include <gtk/gtk.h>
 
-#include "log.h"
 #include "ui.h"
 #include "uiutils.h"
 

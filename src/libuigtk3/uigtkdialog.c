@@ -12,7 +12,6 @@
 #include <gtk/gtk.h>
 
 #include "bdj4intl.h"
-#include "log.h"
 #include "ui.h"
 #include "uiutils.h"
 

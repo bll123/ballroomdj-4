@@ -919,7 +919,7 @@ confuiBuildUI (configui_t *confui)
   uiWidgetExpandHorizW (hbox);
   uiBoxPackStartWW (confui->vbox, hbox);
 
-  widget = uiCreateLabel ("");
+  widget = uiCreateLabelW ("");
   uiBoxPackEndWW (hbox, widget);
   snprintf (tbuff, sizeof (tbuff),
       "label { color: %s; }",
@@ -1465,11 +1465,11 @@ confuiBuildUIEditRatings (configui_t *confui)
   uiCreateSizeGroupHoriz (&sg);
 
   /* CONTEXT: configuration: dance ratings: information on how to order the ratings */
-  widget = uiCreateLabel (_("Order from the lowest rating to the highest rating."));
+  widget = uiCreateLabelW (_("Order from the lowest rating to the highest rating."));
   uiBoxPackStartWW (vbox, widget);
 
   /* CONTEXT: configuration: dance ratings: information on how to edit a rating entry */
-  widget = uiCreateLabel (_("Double click on a field to edit."));
+  widget = uiCreateLabelW (_("Double click on a field to edit."));
   uiBoxPackStartWW (vbox, widget);
 
   hbox = uiCreateHorizBoxWW ();
@@ -1496,7 +1496,7 @@ confuiBuildUIEditStatus (configui_t *confui)
   uiCreateSizeGroupHoriz (&sg);
 
   /* CONTEXT: configuration: status: information on how to edit a status entry */
-  widget = uiCreateLabel (_("Double click on a field to edit."));
+  widget = uiCreateLabelW (_("Double click on a field to edit."));
   uiBoxPackStartWW (vbox, widget);
 
   hbox = uiCreateHorizBoxWW ();
@@ -1524,11 +1524,11 @@ confuiBuildUIEditLevels (configui_t *confui)
       _("Edit Levels"), CONFUI_ID_LEVELS);
   uiCreateSizeGroupHoriz (&sg);
 
-  widget = uiCreateLabel (_("Order from easiest to most advanced."));
+  widget = uiCreateLabelW (_("Order from easiest to most advanced."));
   uiBoxPackStartWW (vbox, widget);
 
   /* CONTEXT: configuration: dance levels: information on how to edit a level entry */
-  widget = uiCreateLabel (_("Double click on a field to edit."));
+  widget = uiCreateLabelW (_("Double click on a field to edit."));
   uiBoxPackStartWW (vbox, widget);
 
   hbox = uiCreateHorizBoxWW ();
@@ -1556,7 +1556,7 @@ confuiBuildUIEditGenres (configui_t *confui)
   uiCreateSizeGroupHoriz (&sg);
 
   /* CONTEXT: configuration: genres: information on how to edit a genre entry */
-  widget = uiCreateLabel (_("Double click on a field to edit."));
+  widget = uiCreateLabelW (_("Double click on a field to edit."));
   uiBoxPackStartWW (vbox, widget);
 
   hbox = uiCreateHorizBoxWW ();
@@ -2187,7 +2187,7 @@ confuiMakeNotebookTab (configui_t *confui, GtkWidget *nb, char *txt, int id)
   GtkWidget   *vbox;
 
   logProcBegin (LOG_PROC, "confuiMakeNotebookTab");
-  tablabel = uiCreateLabel (txt);
+  tablabel = uiCreateLabelW (txt);
   uiWidgetSetAllMarginsW (tablabel, 0);
   vbox = uiCreateVertBoxWW ();
   uiWidgetExpandHorizW (vbox);
@@ -2504,7 +2504,7 @@ confuiMakeItemLabelDisp (configui_t *confui, GtkWidget *vbox, UIWidget *sg,
   confui->uiitem [widx].basetype = CONFUI_NONE;
   confui->uiitem [widx].outtype = CONFUI_OUT_NONE;
   hbox = confuiMakeItemLabel (vbox, sg, txt);
-  widget = uiCreateLabel ("");
+  widget = uiCreateLabelW ("");
   uiWidgetSetMarginStartW (widget, uiBaseMarginSz * 4);
   uiBoxPackStartWW (hbox, widget);
   uiBoxPackStartWW (vbox, hbox);
@@ -2541,9 +2541,9 @@ confuiMakeItemLabel (GtkWidget *vbox, UIWidget *sg, const char *txt)
   logProcBegin (LOG_PROC, "confuiMakeItemLabel");
   hbox = uiCreateHorizBoxWW ();
   if (*txt == '\0') {
-    widget = uiCreateLabel (txt);
+    widget = uiCreateLabelW (txt);
   } else {
-    widget = uiCreateColonLabel (txt);
+    widget = uiCreateColonLabelW (txt);
   }
   uiBoxPackStartWW (hbox, widget);
   uiSizeGroupAdd (sg, widget);
@@ -3318,7 +3318,7 @@ confuiUpdateOrgExample (configui_t *config, org_t *org, char *data, GtkWidget *w
   if (isWindows ()) {
     pathWinPath (disp, strlen (disp));
   }
-  uiLabelSetText (widget, disp);
+  uiLabelSetTextW (widget, disp);
   songFree (song);
   free (disp);
   free (tdata);
@@ -3342,7 +3342,7 @@ confuiGetLocalIP (configui_t *confui)
 static void
 confuiSetStatusMsg (configui_t *confui, const char *msg)
 {
-  uiLabelSetText (confui->statusMsg, msg);
+  uiLabelSetTextW (confui->statusMsg, msg);
 }
 
 static int

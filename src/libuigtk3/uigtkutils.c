@@ -11,21 +11,9 @@
 
 #include <gtk/gtk.h>
 
-#include "bdj4.h"
-#include "bdj4intl.h"
 #include "bdjstring.h"
-#include "bdjvarsdf.h"
-#include "dance.h"
-#include "fileop.h"
-#include "ilist.h"
-#include "localeutil.h"
-#include "log.h"
-#include "pathbld.h"
-#include "pathutil.h"
-#include "song.h"
+#include "log.h"  // needed for glogwriteroutput
 #include "sysvars.h"
-#include "tagdef.h"
-#include "tmutil.h"
 #include "ui.h"
 #include "uiutils.h"
 
@@ -75,8 +63,6 @@ uiSetCss (GtkWidget *w, char *style)
   GtkCssProvider  *tcss;
   char            *tstyle;
 
-  logProcBegin (LOG_PROC, "uiSetCss");
-
   tcss = gtk_css_provider_new ();
   tstyle = strdup (style);
   ++csscount;
@@ -88,7 +74,6 @@ uiSetCss (GtkWidget *w, char *style)
       gtk_widget_get_style_context (w),
       GTK_STYLE_PROVIDER (tcss),
       GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-  logProcEnd (LOG_PROC, "uiSetCss", "");
 }
 
 void
@@ -96,17 +81,16 @@ uiSetUIFont (char *uifont)
 {
   GtkCssProvider  *tcss;
   GdkScreen       *screen;
-  char            tbuff [MAXPATHLEN];
-  char            wbuff [MAXPATHLEN];
+  char            tbuff [300];
+  char            wbuff [300];
   char            *p;
   int             sz = 0;
 
-  logProcBegin (LOG_PROC, "uiSetUIFont");
   if (uifont == NULL || ! *uifont) {
     return;
   }
 
-  strlcpy (wbuff, uifont, MAXPATHLEN);
+  strlcpy (wbuff, uifont, sizeof (wbuff));
   if (uifont != NULL && *uifont) {
     p = strrchr (wbuff, ' ');
     if (p != NULL) {
@@ -123,10 +107,10 @@ uiSetUIFont (char *uifont)
     snprintf (tbuff, sizeof (tbuff), "* { font-family: '%s'; } ", wbuff);
     if (sz > 0) {
       snprintf (wbuff, sizeof (wbuff), " * { font-size: %dpt; } ", sz);
-      strlcat (tbuff, wbuff, MAXPATHLEN);
+      strlcat (tbuff, wbuff, sizeof (tbuff));
       sz -= 2;
       snprintf (wbuff, sizeof (wbuff), " menuitem label { font-size: %dpt; }", sz);
-      strlcat (tbuff, wbuff, MAXPATHLEN);
+      strlcat (tbuff, wbuff, sizeof (tbuff));
     }
 
     p = strdup (tbuff);
@@ -141,7 +125,6 @@ uiSetUIFont (char *uifont)
           GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
     }
   }
-  logProcEnd (LOG_PROC, "uiSetUIFont", "");
 }
 
 inline void

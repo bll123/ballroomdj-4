@@ -359,7 +359,7 @@ pluiBuildUI (playerui_t *plui)
   menubar = uiCreateMenubar ();
   uiBoxPackStartWW (hbox, menubar);
 
-  plui->clock = uiCreateLabel ("");
+  plui->clock = uiCreateLabelW ("");
   uiBoxPackEndWW (hbox, plui->clock);
   snprintf (tbuff, sizeof (tbuff),
       "label { color: shade(%s,0.6); }",
@@ -515,7 +515,7 @@ pluiClock (playerui_t *plui)
   char        tbuff [100];
 
   if (plui->clock != NULL) {
-    uiLabelSetText (plui->clock, tmutilDisp (tbuff, sizeof (tbuff)));
+    uiLabelSetTextW (plui->clock, tmutilDisp (tbuff, sizeof (tbuff)));
     mstimeset (&plui->clockCheck, 1000);
   }
 }
@@ -919,7 +919,7 @@ pluiCreateMarqueeFontSizeDialog (playerui_t *plui)
   uiBoxPackStartWW (vbox, hbox);
 
   /* CONTEXT: marquee font size dialog: the font size selector */
-  widget = uiCreateColonLabel (_("Font Size"));
+  widget = uiCreateColonLabelW (_("Font Size"));
   uiBoxPackStartWW (hbox, widget);
 
   plui->marqueeSpinBox = uiSpinboxIntCreate ();
@@ -934,7 +934,7 @@ pluiCreateMarqueeFontSizeDialog (playerui_t *plui)
   assert (hbox != NULL);
   uiBoxPackStartWW (vbox, hbox);
 
-  widget = uiCreateLabel ("");
+  widget = uiCreateLabelW ("");
   uiBoxPackStartWW (hbox, widget);
 
   g_signal_connect (plui->marqueeFontSizeDialog, "response",

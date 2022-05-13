@@ -12,7 +12,6 @@
 #include <gtk/gtk.h>
 
 #include "bdj4.h"
-#include "log.h"
 #include "pathbld.h"
 #include "ui.h"
 #include "uiutils.h"
@@ -24,8 +23,6 @@ uiCreateButton (UIWidget *uiwidget, UICallback *uicb,
     char *title, char *imagenm, void *cb, void *udata)
 {
   GtkWidget   *widget;
-
-  logProcBegin (LOG_PROC, "uiCreateButton");
 
   widget = gtk_button_new ();
   assert (widget != NULL);
@@ -55,7 +52,6 @@ uiCreateButton (UIWidget *uiwidget, UICallback *uicb,
     g_signal_connect (widget, "clicked", G_CALLBACK (cb), udata);
   }
 
-  logProcEnd (LOG_PROC, "uiCreateButton", "");
   if (uiwidget != NULL) {
     uiwidget->widget = widget;
   }

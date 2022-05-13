@@ -183,40 +183,40 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiWidgetSetMarginStartW (uiplayer->repeatImg.widget, uiBaseMarginSz);
   uiBoxPackStartWW (tbox, uiplayer->repeatImg.widget);
 
-  uiplayer->danceLab = uiCreateLabel ("");
+  uiplayer->danceLab = uiCreateLabelW ("");
   uiBoxPackStartWW (hbox, uiplayer->danceLab);
 
-  widget = uiCreateLabel (" : ");
+  widget = uiCreateLabelW (" : ");
   uiWidgetSetMarginStartW (widget, 0);
   uiBoxPackStartWW (hbox, widget);
 
-  widget = uiCreateLabel ("");
+  widget = uiCreateLabelW ("");
   uiWidgetSetMarginStartW (widget, 0);
-  uiLabelEllipsizeOn (widget);
+  uiLabelEllipsizeOnW (widget);
   uiBoxPackStartWW (hbox, widget);
   uiplayer->artistLab = widget;
 
-  widget = uiCreateLabel (" : ");
+  widget = uiCreateLabelW (" : ");
   uiWidgetSetMarginStartW (widget, 0);
   uiBoxPackStartWW (hbox, widget);
 
-  widget = uiCreateLabel ("");
+  widget = uiCreateLabelW ("");
   uiWidgetSetMarginStartW (widget, 0);
-  uiLabelEllipsizeOn (widget);
+  uiLabelEllipsizeOnW (widget);
   uiBoxPackStartWW (hbox, widget);
   uiplayer->titleLab = widget;
 
-  widget = uiCreateLabel ("");
+  widget = uiCreateLabelW ("");
   uiWidgetExpandHorizW (widget);
   uiBoxPackStartWW (hbox, widget);
 
   /* size group A */
-  widget = uiCreateLabel ("%");
+  widget = uiCreateLabelW ("%");
   uiBoxPackEndWW (hbox, widget);
   uiSizeGroupAdd (&sgA, widget);
 
   /* size group B */
-  uiplayer->speedDisplayLab = uiCreateLabel ("100");
+  uiplayer->speedDisplayLab = uiCreateLabelW ("100");
   assert (uiplayer->speedDisplayLab != NULL);
   gtk_widget_set_size_request (uiplayer->speedDisplayLab, 24, -1);
   gtk_widget_set_halign (uiplayer->speedDisplayLab, GTK_ALIGN_END);
@@ -232,7 +232,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
 
   /* size group D */
   /* CONTEXT: the current speed for song playback */
-  widget = uiCreateColonLabel (_("Speed"));
+  widget = uiCreateColonLabelW (_("Speed"));
   gtk_widget_set_halign (widget, GTK_ALIGN_END);
   gtk_label_set_xalign (GTK_LABEL (widget), 1.0);
   uiBoxPackEndWW (hbox, widget);
@@ -246,35 +246,35 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiBoxPackStartWW (uiplayer->vbox, hbox);
 
   /* size group E */
-  widget = uiCreateLabel ("");
+  widget = uiCreateLabelW ("");
   uiBoxPackStartWW (hbox, widget);
   uiSizeGroupAdd (&sgE, widget);
 
-  uiplayer->countdownTimerLab = uiCreateLabel (" 0:00");
+  uiplayer->countdownTimerLab = uiCreateLabelW (" 0:00");
   gtk_label_set_xalign (GTK_LABEL (uiplayer->countdownTimerLab), 1.0);
   gtk_widget_set_size_request (uiplayer->countdownTimerLab, 40, -1);
   uiBoxPackStartWW (hbox, uiplayer->countdownTimerLab);
 
-  widget = uiCreateLabel (" / ");
+  widget = uiCreateLabelW (" / ");
   uiWidgetSetMarginStartW (widget, 0);
   uiBoxPackStartWW (hbox, widget);
 
-  uiplayer->durationLab = uiCreateLabel (" 3:00");
+  uiplayer->durationLab = uiCreateLabelW (" 3:00");
   gtk_label_set_xalign (GTK_LABEL (uiplayer->durationLab), 1.0);
   gtk_widget_set_size_request (uiplayer->countdownTimerLab, 40, -1);
   uiBoxPackStartWW (hbox, uiplayer->durationLab);
 
-  widget = uiCreateLabel ("");
+  widget = uiCreateLabelW ("");
   uiWidgetExpandHorizW (widget);
   uiBoxPackStartWW (hbox, widget);
 
   /* size group A */
-  widget = uiCreateLabel ("");
+  widget = uiCreateLabelW ("");
   uiBoxPackEndWW (hbox, widget);
   uiSizeGroupAdd (&sgA, widget);
 
   /* size group B */
-  uiplayer->seekDisplayLab = uiCreateLabel ("3:00");
+  uiplayer->seekDisplayLab = uiCreateLabelW ("3:00");
   assert (uiplayer->seekDisplayLab != NULL);
   gtk_widget_set_size_request (uiplayer->seekDisplayLab, 40, -1);
   gtk_widget_set_halign (uiplayer->seekDisplayLab, GTK_ALIGN_END);
@@ -289,7 +289,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
 
   /* size group D */
   /* CONTEXT: the current position of the song during song playback */
-  widget = uiCreateColonLabel (_("Position"));
+  widget = uiCreateColonLabelW (_("Position"));
   uiBoxPackEndWW (hbox, widget);
   gtk_widget_set_halign (widget, GTK_ALIGN_END);
   gtk_label_set_xalign (GTK_LABEL (widget), 1.0);
@@ -303,7 +303,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiBoxPackStartWW (uiplayer->vbox, hbox);
 
   /* size group E */
-  widget = uiCreateLabel ("");
+  widget = uiCreateLabelW ("");
   uiBoxPackStartWW (hbox, widget);
   uiSizeGroupAdd (&sgE, widget);
 
@@ -369,12 +369,12 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   /* volume controls / display */
 
   /* size group A */
-  widget = uiCreateLabel ("%");
+  widget = uiCreateLabelW ("%");
   uiBoxPackEndWW (hbox, widget);
   uiSizeGroupAdd (&sgA, widget);
 
   /* size group B */
-  uiplayer->volumeDisplayLab = uiCreateLabel ("100");
+  uiplayer->volumeDisplayLab = uiCreateLabelW ("100");
   assert (uiplayer->volumeDisplayLab != NULL);
   gtk_widget_set_size_request (uiplayer->volumeDisplayLab, 24, -1);
   gtk_widget_set_halign (uiplayer->volumeDisplayLab, GTK_ALIGN_END);
@@ -390,7 +390,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
 
   /* size group D */
   /* CONTEXT: The current volume of the song */
-  widget = uiCreateColonLabel (_("Volume"));
+  widget = uiCreateColonLabelW (_("Volume"));
   uiBoxPackEndWW (hbox, widget);
   gtk_widget_set_halign (widget, GTK_ALIGN_END);
   gtk_label_set_xalign (GTK_LABEL (widget), 1.0);
@@ -678,7 +678,7 @@ uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args)
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   if (! uiplayer->volumeLock) {
     snprintf (tbuff, sizeof (tbuff), "%3s", p);
-    uiLabelSetText (uiplayer->volumeDisplayLab, p);
+    uiLabelSetTextW (uiplayer->volumeDisplayLab, p);
     dval = atof (p);
     gtk_range_set_value (GTK_RANGE (uiplayer->volumeScale), dval);
   }
@@ -687,7 +687,7 @@ uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args)
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   if (! uiplayer->speedLock) {
     snprintf (tbuff, sizeof (tbuff), "%3s", p);
-    uiLabelSetText (uiplayer->speedDisplayLab, p);
+    uiLabelSetTextW (uiplayer->speedDisplayLab, p);
     dval = atof (p);
     gtk_range_set_value (GTK_RANGE (uiplayer->speedScale), dval);
   }
@@ -705,18 +705,18 @@ uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args)
   dur = atol (p);
   if (ddur > 0.0 && dur != uiplayer->lastdur) {
     tmutilToMS (dur, tbuff, sizeof (tbuff));
-    uiLabelSetText (uiplayer->durationLab, tbuff);
+    uiLabelSetTextW (uiplayer->durationLab, tbuff);
     gtk_range_set_range (GTK_RANGE (uiplayer->seekScale), 0.0, ddur);
     uiplayer->lastdur = dur;
   }
 
   if (! uiplayer->seekLock) {
     tmutilToMS (position, tbuff, sizeof (tbuff));
-    uiLabelSetText (uiplayer->seekDisplayLab, tbuff);
+    uiLabelSetTextW (uiplayer->seekDisplayLab, tbuff);
 
     timeleft = dur - position;
     tmutilToMS (timeleft, tbuff, sizeof (tbuff));
-    uiLabelSetText (uiplayer->countdownTimerLab, tbuff);
+    uiLabelSetTextW (uiplayer->countdownTimerLab, tbuff);
 
     if (ddur == 0.0) {
       gtk_range_set_value (GTK_RANGE (uiplayer->seekScale), 0.0);
@@ -758,19 +758,19 @@ uiplayerProcessMusicqStatusData (uiplayer_t *uiplayer, char *args)
   if (uiplayer->danceLab != NULL) {
     danceIdx = songGetNum (song, TAG_DANCE);
     data = danceGetStr (dances, danceIdx, DANCE_DANCE);
-    uiLabelSetText (uiplayer->danceLab, data);
+    uiLabelSetTextW (uiplayer->danceLab, data);
   }
 
   /* artist */
   if (uiplayer->artistLab != NULL) {
     data = songGetStr (song, TAG_ARTIST);
-    uiLabelSetText (uiplayer->artistLab, data);
+    uiLabelSetTextW (uiplayer->artistLab, data);
   }
 
   /* title */
   if (uiplayer->titleLab != NULL) {
     data = songGetStr (song, TAG_TITLE);
-    uiLabelSetText (uiplayer->titleLab, data);
+    uiLabelSetTextW (uiplayer->titleLab, data);
   }
   logProcEnd (LOG_PROC, "uiplayerProcessMusicqStatusData", "");
 }
@@ -861,7 +861,7 @@ uiplayerSpeedProcess (GtkRange *range, GtkScrollType *scroll, gdouble value, gpo
   mstimeset (&uiplayer->speedLockTimeout, UIPLAYER_LOCK_TIME_WAIT);
   value = uiScaleEnforceMax (uiplayer->speedScale, value);
   snprintf (tbuff, sizeof (tbuff), "%3.0f", value);
-  uiLabelSetText (uiplayer->speedDisplayLab, tbuff);
+  uiLabelSetTextW (uiplayer->speedDisplayLab, tbuff);
   logProcEnd (LOG_PROC, "uiplayerSpeedProcess", "");
   return FALSE;
 }
@@ -886,11 +886,11 @@ uiplayerSeekProcess (GtkRange *range, GtkScrollType *scroll, gdouble value, gpoi
   position = (ssize_t) round (value);
 
   tmutilToMS (position, tbuff, sizeof (tbuff));
-  uiLabelSetText (uiplayer->seekDisplayLab, tbuff);
+  uiLabelSetTextW (uiplayer->seekDisplayLab, tbuff);
 
   timeleft = uiplayer->lastdur - position;
   tmutilToMSD (timeleft, tbuff, sizeof (tbuff));
-  uiLabelSetText (uiplayer->countdownTimerLab, tbuff);
+  uiLabelSetTextW (uiplayer->countdownTimerLab, tbuff);
   logProcEnd (LOG_PROC, "uiplayerSeekProcess", "");
   return FALSE;
 }
@@ -911,7 +911,7 @@ uiplayerVolumeProcess (GtkRange *range, GtkScrollType *scroll, gdouble value, gp
 
   value = uiScaleEnforceMax (uiplayer->volumeScale, value);
   snprintf (tbuff, sizeof (tbuff), "%3.0f", value);
-  uiLabelSetText (uiplayer->volumeDisplayLab, tbuff);
+  uiLabelSetTextW (uiplayer->volumeDisplayLab, tbuff);
   logProcEnd (LOG_PROC, "uiplayerVolumeProcess", "");
   return FALSE;
 }
@@ -919,7 +919,7 @@ uiplayerVolumeProcess (GtkRange *range, GtkScrollType *scroll, gdouble value, gp
 static void
 uiplayerClearDisplay (uiplayer_t *uiplayer)
 {
-  uiLabelSetText (uiplayer->danceLab, "");
-  uiLabelSetText (uiplayer->artistLab, "");
-  uiLabelSetText (uiplayer->titleLab, "");
+  uiLabelSetTextW (uiplayer->danceLab, "");
+  uiLabelSetTextW (uiplayer->artistLab, "");
+  uiLabelSetTextW (uiplayer->titleLab, "");
 }

@@ -13,7 +13,6 @@
 
 #include "bdj4.h"
 #include "bdjstring.h"
-#include "log.h"
 #include "pathbld.h"
 #include "ui.h"
 #include "uiutils.h"
@@ -31,7 +30,6 @@ static void uiDropDownSelectionSet (uidropdown_t *dropdown,
 void
 uiDropDownInit (uidropdown_t *dropdown)
 {
-  logProcBegin (LOG_PROC, "uiDropDownInit");
   dropdown->title = NULL;
   dropdown->parentwin = NULL;
   dropdown->button = NULL;
@@ -44,14 +42,12 @@ uiDropDownInit (uidropdown_t *dropdown)
   dropdown->keylist = NULL;
   dropdown->open = false;
   dropdown->iscombobox = false;
-  logProcEnd (LOG_PROC, "uiDropDownInit", "");
 }
 
 
 void
 uiDropDownFree (uidropdown_t *dropdown)
 {
-  logProcBegin (LOG_PROC, "uiDropDownFree");
   if (dropdown != NULL) {
     if (dropdown->title != NULL) {
       free (dropdown->title);
@@ -66,7 +62,6 @@ uiDropDownFree (uidropdown_t *dropdown)
       nlistFree (dropdown->keylist);
     }
   }
-  logProcEnd (LOG_PROC, "uiDropDownFree", "");
 }
 
 GtkWidget *
@@ -74,12 +69,10 @@ uiDropDownCreate (GtkWidget *parentwin,
     char *title, void *processSelectionCallback,
     uidropdown_t *dropdown, void *udata)
 {
-  logProcBegin (LOG_PROC, "uiDropDownCreate");
   dropdown->parentwin = parentwin;
   dropdown->title = strdup (title);
   dropdown->button = uiDropDownButtonCreate (dropdown);
   uiDropDownWindowCreate (dropdown, processSelectionCallback, udata);
-  logProcEnd (LOG_PROC, "uiDropDownCreate", "");
   return dropdown->button;
 }
 
@@ -103,8 +96,6 @@ uiDropDownSelectionGet (uidropdown_t *dropdown, GtkTreePath *path)
   int32_t       idx32;
   nlistidx_t    retval;
   char          tbuff [100];
-
-  logProcBegin (LOG_PROC, "uiDropDownSelectionGet");
 
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (dropdown->tree));
   if (gtk_tree_model_get_iter (model, &iter, path)) {
@@ -130,11 +121,9 @@ uiDropDownSelectionGet (uidropdown_t *dropdown, GtkTreePath *path)
     gtk_widget_hide (dropdown->window);
     dropdown->open = false;
   } else {
-    logProcEnd (LOG_PROC, "uiDropDownSelectionGet", "no-iter");
     return -1;
   }
 
-  logProcEnd (LOG_PROC, "uiDropDownSelectionGet", "");
   return retval;
 }
 
@@ -152,7 +141,6 @@ uiDropDownSetList (uidropdown_t *dropdown, slist_t *list,
   ilistidx_t        iteridx;
   nlistidx_t        internalidx;
 
-  logProcBegin (LOG_PROC, "uiDropDownSetList");
 
   store = gtk_list_store_new (UIUTILS_DROPDOWN_COL_MAX,
       G_TYPE_ULONG, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
@@ -213,7 +201,6 @@ uiDropDownSetList (uidropdown_t *dropdown, slist_t *list,
   gtk_tree_view_set_model (GTK_TREE_VIEW (dropdown->tree),
       GTK_TREE_MODEL (store));
   g_object_unref (store);
-  logProcEnd (LOG_PROC, "uiDropDownSetList", "");
 }
 
 void
@@ -229,8 +216,6 @@ uiDropDownSetNumList (uidropdown_t *dropdown, slist_t *list,
   ilistidx_t        iteridx;
   nlistidx_t        internalidx;
   nlistidx_t        idx;
-
-  logProcBegin (LOG_PROC, "uiDropDownSetNumList");
 
   store = gtk_list_store_new (UIUTILS_DROPDOWN_COL_MAX,
       G_TYPE_ULONG, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
@@ -292,7 +277,6 @@ uiDropDownSetNumList (uidropdown_t *dropdown, slist_t *list,
   gtk_tree_view_set_model (GTK_TREE_VIEW (dropdown->tree),
       GTK_TREE_MODEL (store));
   g_object_unref (store);
-  logProcEnd (LOG_PROC, "uiDropDownSetNumList", "");
 }
 
 void
@@ -300,10 +284,8 @@ uiDropDownSelectionSetNum (uidropdown_t *dropdown, nlistidx_t idx)
 {
   nlistidx_t    internalidx;
 
-  logProcBegin (LOG_PROC, "uiDropDownSelectionSetNum");
 
   if (dropdown == NULL) {
-    logProcEnd (LOG_PROC, "uiDropDownSelectionSetNum", "null-dropdown");
     return;
   }
 
@@ -313,7 +295,6 @@ uiDropDownSelectionSetNum (uidropdown_t *dropdown, nlistidx_t idx)
     internalidx = nlistGetNum (dropdown->keylist, idx);
   }
   uiDropDownSelectionSet (dropdown, internalidx);
-  logProcEnd (LOG_PROC, "uiDropDownSelectionSetNum", "");
 }
 
 void
@@ -321,10 +302,8 @@ uiDropDownSelectionSetStr (uidropdown_t *dropdown, char *stridx)
 {
   nlistidx_t    internalidx;
 
-  logProcBegin (LOG_PROC, "uiDropDownSelectionSetStr");
 
   if (dropdown == NULL) {
-    logProcEnd (LOG_PROC, "uiDropDownSelectionSetStr", "null-dropdown");
     return;
   }
 
@@ -337,7 +316,6 @@ uiDropDownSelectionSetStr (uidropdown_t *dropdown, char *stridx)
     }
   }
   uiDropDownSelectionSet (dropdown, internalidx);
-  logProcEnd (LOG_PROC, "uiDropDownSelectionSetStr", "");
 }
 
 /* internal routines */
@@ -349,14 +327,12 @@ uiDropDownWindowShow (GtkButton *b, gpointer udata)
   GtkAllocation     alloc;
   gint              x, y;
 
-  logProcBegin (LOG_PROC, "uiDropDownWindowShow");
 
   gtk_window_get_position (GTK_WINDOW (dropdown->parentwin), &x, &y);
   gtk_widget_get_allocation (dropdown->button, &alloc);
   gtk_widget_show_all (dropdown->window);
   gtk_window_move (GTK_WINDOW (dropdown->window), alloc.x + x + 4, alloc.y + y + 4 + 30);
   dropdown->open = true;
-  logProcEnd (LOG_PROC, "uiDropDownWindowShow", "");
 }
 
 static gboolean
@@ -364,7 +340,6 @@ uiDropDownClose (GtkWidget *w, GdkEventFocus *event, gpointer udata)
 {
   uidropdown_t *dropdown = udata;
 
-  logProcBegin (LOG_PROC, "uiDropDownClose");
 
   if (dropdown->open) {
     gtk_widget_hide (dropdown->window);
@@ -372,7 +347,6 @@ uiDropDownClose (GtkWidget *w, GdkEventFocus *event, gpointer udata)
   }
   gtk_window_present (GTK_WINDOW (dropdown->parentwin));
 
-  logProcEnd (LOG_PROC, "uiDropDownClose", "");
   return FALSE;
 }
 
@@ -383,7 +357,6 @@ uiDropDownButtonCreate (uidropdown_t *dropdown)
   GtkWidget   *image;
   char        tbuff [MAXPATHLEN];
 
-  logProcBegin (LOG_PROC, "uiDropDownButtonCreate");
 
   widget = gtk_button_new ();
   assert (widget != NULL);
@@ -400,7 +373,6 @@ uiDropDownButtonCreate (uidropdown_t *dropdown)
   g_signal_connect (widget, "clicked",
       G_CALLBACK (uiDropDownWindowShow), dropdown);
 
-  logProcEnd (LOG_PROC, "uiDropDownButtonCreate", "");
   return widget;
 }
 
@@ -413,7 +385,6 @@ uiDropDownWindowCreate (uidropdown_t *dropdown,
   GtkWidget         *vbox;
   GtkWidget         *twidget;
 
-  logProcBegin (LOG_PROC, "uiDropDownWindowCreate");
 
   dropdown->window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_attached_to (GTK_WINDOW (dropdown->window), dropdown->button);
@@ -461,7 +432,6 @@ uiDropDownWindowCreate (uidropdown_t *dropdown,
   gtk_container_add (GTK_CONTAINER (scwin), dropdown->tree);
   g_signal_connect (dropdown->tree, "row-activated",
       G_CALLBACK (processSelectionCallback), udata);
-  logProcEnd (LOG_PROC, "uiDropDownWindowCreate", "");
 }
 
 static void
@@ -473,14 +443,11 @@ uiDropDownSelectionSet (uidropdown_t *dropdown, nlistidx_t internalidx)
   char          tbuff [100];
   char          *p;
 
-  logProcBegin (LOG_PROC, "uiDropDownSelectionSet");
 
   if (dropdown == NULL) {
-    logProcEnd (LOG_PROC, "uiDropDownSelectionSet", "null-dropdown");
     return;
   }
   if (dropdown->tree == NULL) {
-    logProcEnd (LOG_PROC, "uiDropDownSelectionSet", "null-tree");
     return;
   }
 
@@ -501,6 +468,5 @@ uiDropDownSelectionSet (uidropdown_t *dropdown, nlistidx_t internalidx)
       }
     }
   }
-  logProcEnd (LOG_PROC, "uiDropDownSelectionSet", "");
 }
 

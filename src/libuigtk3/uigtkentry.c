@@ -14,7 +14,6 @@
 #include "bdj4.h"
 #include "bdjstring.h"
 #include "fileop.h"
-#include "log.h"
 #include "pathutil.h"
 #include "tmutil.h"
 #include "ui.h"
@@ -25,7 +24,6 @@ static void uiEntryValidateStart (GtkEditable *e, gpointer udata);
 void
 uiEntryInit (uientry_t *entry, int entrySize, int maxSize)
 {
-  logProcBegin (LOG_PROC, "uiEntryInit");
   entry->entrySize = entrySize;
   entry->maxSize = maxSize;
   entry->buffer = NULL;
@@ -33,7 +31,6 @@ uiEntryInit (uientry_t *entry, int entrySize, int maxSize)
   entry->validateFunc = NULL;
   entry->udata = NULL;
   mstimeset (&entry->validateTimer, 3600000);
-  logProcEnd (LOG_PROC, "uiEntryInit", "");
 }
 
 
@@ -46,7 +43,6 @@ uiEntryFree (uientry_t *entry)
 GtkWidget *
 uiEntryCreate (uientry_t *entry)
 {
-  logProcBegin (LOG_PROC, "uiEntryCreate");
   entry->buffer = gtk_entry_buffer_new (NULL, -1);
   entry->entry = gtk_entry_new_with_buffer (entry->buffer);
   gtk_entry_set_width_chars (GTK_ENTRY (entry->entry), entry->entrySize);
@@ -57,7 +53,6 @@ uiEntryCreate (uientry_t *entry)
   gtk_widget_set_halign (entry->entry, GTK_ALIGN_START);
   gtk_widget_set_hexpand (entry->entry, FALSE);
 
-  logProcEnd (LOG_PROC, "uiEntryCreate", "");
   return entry->entry;
 }
 

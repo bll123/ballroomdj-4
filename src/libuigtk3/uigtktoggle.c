@@ -9,7 +9,6 @@
 
 #include <gtk/gtk.h>
 
-#include "log.h"
 #include "ui.h"
 #include "uiutils.h"
 
@@ -18,14 +17,11 @@ uiCreateCheckButton (const char *txt, int value)
 {
   GtkWidget   *widget;
 
-  logProcBegin (LOG_PROC, "uiCreateCheckButton");
-
   widget = gtk_check_button_new_with_label (txt);
   assert (widget != NULL);
   gtk_widget_set_margin_top (widget, uiBaseMarginSz);
   gtk_widget_set_margin_start (widget, uiBaseMarginSz);
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), value);
-  logProcEnd (LOG_PROC, "uiCreateCheckButton", "");
   return widget;
 }
 
@@ -35,8 +31,6 @@ uiCreateToggleButton (const char *txt, const char *imgname,
 {
   GtkWidget   *widget;
   GtkWidget   *imagewidget = NULL;
-
-  logProcBegin (LOG_PROC, "uiCreateToggleButton");
 
   widget = gtk_toggle_button_new_with_label (txt);
   assert (widget != NULL);
@@ -59,7 +53,6 @@ uiCreateToggleButton (const char *txt, const char *imgname,
   if (tooltiptxt != NULL) {
     gtk_widget_set_tooltip_text (widget, tooltiptxt);
   }
-  logProcEnd (LOG_PROC, "uiCreateToggleButton", "");
   return widget;
 }
 

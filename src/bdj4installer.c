@@ -411,7 +411,7 @@ installerBuildUI (installer_t *installer)
   uiWidgetExpandVertW (vbox);
   uiBoxPackInWindowWW (window, vbox);
 
-  widget = uiCreateLabel (
+  widget = uiCreateLabelW (
       /* CONTEXT: installer: where BDJ4 gets installed */
       _("Enter the destination folder where BDJ4 will be installed."));
   uiBoxPackStartWW (vbox, widget);
@@ -436,7 +436,7 @@ installerBuildUI (installer_t *installer)
   g_signal_connect (installer->reinstWidget, "toggled",
       G_CALLBACK (installerCheckDir), installer);
 
-  installer->feedbackMsg = uiCreateLabel ("");
+  installer->feedbackMsg = uiCreateLabelW ("");
   uiSetCss (installer->feedbackMsg,
       "label { color: #b16400; }");
   uiBoxPackStartWW (hbox, installer->feedbackMsg);
@@ -451,15 +451,15 @@ installerBuildUI (installer_t *installer)
   snprintf (tbuff, sizeof (tbuff),
       /* CONTEXT: installer: asking where BallroomDJ 3 is installed */
       _("Enter the folder where %s is installed."), BDJ3_NAME);
-  widget = uiCreateLabel (tbuff);
+  widget = uiCreateLabelW (tbuff);
   uiBoxPackStartWW (vbox, widget);
 
-  widget = uiCreateLabel (
+  widget = uiCreateLabelW (
       /* CONTEXT: installer: instructions */
       _("If there is no BallroomDJ 3 installation, leave the entry blank."));
   uiBoxPackStartWW (vbox, widget);
 
-  widget = uiCreateLabel (
+  widget = uiCreateLabelW (
       /* CONTEXT: installer: instructions */
       _("The conversion process will only run for new installations and for re-installations."));
   uiBoxPackStartWW (vbox, widget);
@@ -470,7 +470,7 @@ installerBuildUI (installer_t *installer)
 
   /* CONTEXT: installer: label for entry field asking for BDJ3 location */
   snprintf (tbuff, sizeof (tbuff), _("%s Location"), BDJ3_NAME);
-  widget = uiCreateColonLabel (tbuff);
+  widget = uiCreateColonLabelW (tbuff);
   uiBoxPackStartWW (hbox, widget);
 
   widget = uiEntryCreate (&installer->bdj3locEntry);
@@ -503,7 +503,7 @@ installerBuildUI (installer_t *installer)
   g_signal_connect (installer->convWidget, "toggled",
       G_CALLBACK (installerCheckConvert), installer);
 
-  installer->convFeedbackMsg = uiCreateLabel ("");
+  installer->convFeedbackMsg = uiCreateLabelW ("");
   uiSetCss (installer->convFeedbackMsg,
       "label { color: #b16400; }");
   uiBoxPackStartWW (hbox, installer->convFeedbackMsg);
@@ -522,11 +522,11 @@ installerBuildUI (installer_t *installer)
   uiWidgetExpandHorizW (hbox);
   uiBoxPackStartWW (vbox, hbox);
 
-  widget = uiCreateColonLabel ("VLC");
+  widget = uiCreateColonLabelW ("VLC");
   uiBoxPackStartWW (hbox, widget);
   uiSizeGroupAdd (&sg, widget);
 
-  installer->vlcMsg = uiCreateLabel ("");
+  installer->vlcMsg = uiCreateLabelW ("");
   uiSetCss (installer->vlcMsg,
       "label { color: #b16400; }");
   uiBoxPackStartWW (hbox, installer->vlcMsg);
@@ -536,11 +536,11 @@ installerBuildUI (installer_t *installer)
   uiWidgetExpandHorizW (hbox);
   uiBoxPackStartWW (vbox, hbox);
 
-  widget = uiCreateColonLabel ("Python");
+  widget = uiCreateColonLabelW ("Python");
   uiBoxPackStartWW (hbox, widget);
   uiSizeGroupAdd (&sg, widget);
 
-  installer->pythonMsg = uiCreateLabel ("");
+  installer->pythonMsg = uiCreateLabelW ("");
   uiSetCss (installer->pythonMsg,
       "label { color: #b16400; }");
   uiBoxPackStartWW (hbox, installer->pythonMsg);
@@ -550,11 +550,11 @@ installerBuildUI (installer_t *installer)
   uiWidgetExpandHorizW (hbox);
   uiBoxPackStartWW (vbox, hbox);
 
-  widget = uiCreateColonLabel ("Mutagen");
+  widget = uiCreateColonLabelW ("Mutagen");
   uiBoxPackStartWW (hbox, widget);
   uiSizeGroupAdd (&sg, widget);
 
-  installer->mutagenMsg = uiCreateLabel ("");
+  installer->mutagenMsg = uiCreateLabelW ("");
   uiSetCss (installer->mutagenMsg,
       "label { color: #b16400; }");
   uiBoxPackStartWW (hbox, installer->mutagenMsg);
@@ -791,7 +791,7 @@ installerValidateDir (installer_t *installer)
 
   dir = uiEntryGetValue (&installer->targetEntry);
   installer->reinstall = uiToggleButtonIsActive (installer->reinstWidget);
-  uiLabelSetText (installer->feedbackMsg, "");
+  uiLabelSetTextW (installer->feedbackMsg, "");
 
   exists = fileopIsDirectory (dir);
   if (exists) {
@@ -800,23 +800,23 @@ installerValidateDir (installer_t *installer)
       if (installer->reinstall) {
         /* CONTEXT: installer: message indicating the action that will be taken */
         snprintf (tbuff, sizeof (tbuff), _("Overwriting existing %s installation."), BDJ4_NAME);
-        uiLabelSetText (installer->feedbackMsg, tbuff);
+        uiLabelSetTextW (installer->feedbackMsg, tbuff);
         installerSetConvert (installer, TRUE);
       } else {
         /* CONTEXT: installer: message indicating the action that will be taken */
         snprintf (tbuff, sizeof (tbuff), _("Updating existing %s installation."), BDJ4_NAME);
-        uiLabelSetText (installer->feedbackMsg, tbuff);
+        uiLabelSetTextW (installer->feedbackMsg, tbuff);
         installerSetConvert (installer, FALSE);
       }
     } else {
       /* CONTEXT: installer: the selected folder exists and is not a BDJ4 installation */
-      uiLabelSetText (installer->feedbackMsg, _("Error: Folder already exists."));
+      uiLabelSetTextW (installer->feedbackMsg, _("Error: Folder already exists."));
       installerSetConvert (installer, FALSE);
     }
   } else {
     /* CONTEXT: installer: message indicating the action that will be taken */
     snprintf (tbuff, sizeof (tbuff), _("New %s installation."), BDJ4_NAME);
-    uiLabelSetText (installer->feedbackMsg, tbuff);
+    uiLabelSetTextW (installer->feedbackMsg, tbuff);
     installerSetConvert (installer, TRUE);
   }
 
@@ -855,7 +855,7 @@ installerValidateStart (GtkEditable *e, gpointer udata)
   }
 
   /* if the user is typing, clear the message */
-  uiLabelSetText (installer->feedbackMsg, "");
+  uiLabelSetTextW (installer->feedbackMsg, "");
   gtk_entry_set_icon_from_icon_name (GTK_ENTRY (installer->bdj3locEntry.entry),
       GTK_ENTRY_ICON_SECONDARY, NULL);
   mstimeset (&installer->validateTimer, 500);
@@ -937,11 +937,11 @@ installerDisplayConvert (installer_t *installer)
   if (nval) {
     /* CONTEXT: installer: message indicating the conversion action that will be taken */
     tptr = _("Conversion will be processed");
-    uiLabelSetText (installer->convFeedbackMsg, tptr);
+    uiLabelSetTextW (installer->convFeedbackMsg, tptr);
   } else {
     /* CONTEXT: installer: message indicating the conversion action that will be taken */
     tptr = _("No conversion.");
-    uiLabelSetText (installer->convFeedbackMsg, tptr);
+    uiLabelSetTextW (installer->convFeedbackMsg, tptr);
   }
 }
 
@@ -1090,7 +1090,7 @@ installerInstInit (installer_t *installer)
       /* do not allow an overwrite of an existing directory that is not bdj4 */
       if (installer->guienabled) {
         /* CONTEXT: installer: command line interface: status message */
-        uiLabelSetText (installer->feedbackMsg, _("Folder already exists."));
+        uiLabelSetTextW (installer->feedbackMsg, _("Folder already exists."));
       }
 
       /* CONTEXT: installer: command line interface: the selected folder exists and is not a BDJ4 installation */
@@ -2291,14 +2291,14 @@ installerCheckPackages (installer_t *installer)
     /* CONTEXT: installer: display of package status */
     snprintf (tbuff, sizeof (tbuff), _("%s is installed"), "VLC");
     if (installer->vlcMsg != NULL) {
-      uiLabelSetText (installer->vlcMsg, tbuff);
+      uiLabelSetTextW (installer->vlcMsg, tbuff);
     }
     installer->vlcinstalled = true;
   } else {
     /* CONTEXT: installer: display of package status */
     snprintf (tbuff, sizeof (tbuff), _("%s is not installed"), "VLC");
     if (installer->vlcMsg != NULL) {
-      uiLabelSetText (installer->vlcMsg, tbuff);
+      uiLabelSetTextW (installer->vlcMsg, tbuff);
     }
     installer->vlcinstalled = false;
   }
@@ -2308,17 +2308,17 @@ installerCheckPackages (installer_t *installer)
   if (*tmp) {
     snprintf (tbuff, sizeof (tbuff), _("%s is installed"), "Python");
     if (installer->pythonMsg != NULL) {
-      uiLabelSetText (installer->pythonMsg, tbuff);
+      uiLabelSetTextW (installer->pythonMsg, tbuff);
     }
     installer->pythoninstalled = true;
   } else {
     snprintf (tbuff, sizeof (tbuff), _("%s is not installed"), "Python");
     if (installer->pythonMsg != NULL) {
-      uiLabelSetText (installer->pythonMsg, tbuff);
+      uiLabelSetTextW (installer->pythonMsg, tbuff);
     }
     snprintf (tbuff, sizeof (tbuff), _("%s is not installed"), "Mutagen");
     if (installer->mutagenMsg != NULL) {
-      uiLabelSetText (installer->mutagenMsg, tbuff);
+      uiLabelSetTextW (installer->mutagenMsg, tbuff);
     }
     installer->pythoninstalled = false;
   }
@@ -2328,12 +2328,12 @@ installerCheckPackages (installer_t *installer)
     if (*tmp) {
       snprintf (tbuff, sizeof (tbuff), _("%s is installed"), "Mutagen");
       if (installer->mutagenMsg != NULL) {
-        uiLabelSetText (installer->mutagenMsg, tbuff);
+        uiLabelSetTextW (installer->mutagenMsg, tbuff);
       }
     } else {
       snprintf (tbuff, sizeof (tbuff), _("%s is not installed"), "Mutagen");
       if (installer->mutagenMsg != NULL) {
-        uiLabelSetText (installer->mutagenMsg, tbuff);
+        uiLabelSetTextW (installer->mutagenMsg, tbuff);
       }
     }
   }

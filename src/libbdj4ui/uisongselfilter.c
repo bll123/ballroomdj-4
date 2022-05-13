@@ -125,7 +125,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
   uiBoxPackStartWW (vbox, hbox);
 
   /* CONTEXT: a filter: select the method to sort the song selection display */
-  widget = uiCreateColonLabel (_("Sort by"));
+  widget = uiCreateColonLabelW (_("Sort by"));
   uiBoxPackStartWW (hbox, widget);
   uiSizeGroupAdd (&sg, widget);
 
@@ -139,7 +139,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
   uiBoxPackStartWW (vbox, hbox);
 
   /* CONTEXT: a filter: filter the song selection with a search for text */
-  widget = uiCreateColonLabel (_("Search"));
+  widget = uiCreateColonLabelW (_("Search"));
   uiBoxPackStartWW (hbox, widget);
   uiSizeGroupAdd (&sg, widget);
 
@@ -153,7 +153,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
     uiBoxPackStartWW (vbox, hbox);
 
     /* CONTEXT: a filter: select the genre displayed in the song selection */
-    widget = uiCreateColonLabel (_("Genre"));
+    widget = uiCreateColonLabelW (_("Genre"));
     uiBoxPackStartWW (hbox, widget);
     uiSizeGroupAdd (&sg, widget);
 
@@ -169,7 +169,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
   uiBoxPackStartWW (vbox, hbox);
 
   /* CONTEXT: a filter: select the dance displayed in the song selection */
-  widget = uiCreateColonLabel (_("Dance"));
+  widget = uiCreateColonLabelW (_("Dance"));
   uiBoxPackStartWW (hbox, widget);
   uiSizeGroupAdd (&sg, widget);
 
@@ -185,7 +185,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
   uiBoxPackStartWW (vbox, hbox);
 
   /* CONTEXT: a filter: select the dance rating displayed in the song selection */
-  widget = uiCreateColonLabel (_("Dance Rating"));
+  widget = uiCreateColonLabelW (_("Dance Rating"));
   uiBoxPackStartWW (hbox, widget);
   uiSizeGroupAdd (&sg, widget);
 
@@ -207,7 +207,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
     uiBoxPackStartWW (vbox, hbox);
 
     /* CONTEXT: a filter: select the dance level displayed in the song selection */
-    widget = uiCreateColonLabel (_("Dance Level"));
+    widget = uiCreateColonLabelW (_("Dance Level"));
     uiBoxPackStartWW (hbox, widget);
     uiSizeGroupAdd (&sg, widget);
 
@@ -230,7 +230,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
     uiBoxPackStartWW (vbox, hbox);
 
     /* CONTEXT: a filter: select the status displayed in the song selection */
-    widget = uiCreateColonLabel (_("Status"));
+    widget = uiCreateColonLabelW (_("Status"));
     uiBoxPackStartWW (hbox, widget);
     uiSizeGroupAdd (&sg, widget);
 
@@ -253,7 +253,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
     uiBoxPackStartWW (vbox, hbox);
 
     /* CONTEXT: a filter: select the 'favorite' displayed in the song selection */
-    widget = uiCreateColonLabel (_("Favorite"));
+    widget = uiCreateColonLabelW (_("Favorite"));
     uiBoxPackStartWW (hbox, widget);
     uiSizeGroupAdd (&sg, widget);
 
@@ -269,7 +269,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
     uiBoxPackStartWW (vbox, hbox);
 
     /* CONTEXT: a filter: the song status is marked as playable */
-    widget = uiCreateColonLabel (_("Playable Status"));
+    widget = uiCreateColonLabelW (_("Playable Status"));
     uiBoxPackStartWW (hbox, widget);
     uiSizeGroupAdd (&sg, widget);
 
@@ -282,7 +282,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
   hbox = uiCreateHorizBoxWW ();
   uiBoxPackStartWW (vbox, hbox);
 
-  widget = uiCreateLabel (" ");
+  widget = uiCreateLabelW (" ");
   uiBoxPackStartWW (hbox, widget);
 
   g_signal_connect (uisongsel->filterDialog, "response",

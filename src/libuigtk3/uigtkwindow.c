@@ -11,7 +11,6 @@
 
 #include <gtk/gtk.h>
 
-#include "log.h"
 #include "ui.h"
 #include "uiutils.h"
 
@@ -120,8 +119,6 @@ uiCreateScrolledWindow (int minheight)
   GtkWidget   *widget;
   GtkWidget   *twidget;
 
-  logProcBegin (LOG_PROC, "uiCreateScrolledWindow");
-
   widget = gtk_scrolled_window_new (NULL, NULL);
   uiSetCss (widget,
       "undershoot.top, undershoot.right, "
@@ -141,7 +138,6 @@ uiCreateScrolledWindow (int minheight)
   uiSetCss (twidget,
       "scrollbar, scrollbar slider { min-width: 9px; } ");
 
-  logProcEnd (LOG_PROC, "uiCreateScrolledWindow", "");
   return widget;
 }
 

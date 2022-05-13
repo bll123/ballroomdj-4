@@ -429,7 +429,7 @@ starterBuildUI (startui_t  *starter)
   uiBoxPackStart (&vbox, &hbox);
 
   /* CONTEXT: starter: profile to be used when starting BDJ4 */
-  widget = uiCreateColonLabel (_("Profile"));
+  widget = uiCreateColonLabelW (_("Profile"));
   uiBoxPackStartUW (&hbox, widget);
 
   /* get the profile list after bdjopt has been initialized */
@@ -606,7 +606,7 @@ starterMainLoop (void *tstarter)
       }
       /* CONTEXT: starterui: support: status message */
       snprintf (tbuff, sizeof (tbuff), _("Sending Support Message"));
-      uiLabelSetText (starter->supportStatus, tbuff);
+      uiLabelSetTextW (starter->supportStatus, tbuff);
       starter->delayCount = 0;
       starter->delayState = START_STATE_SUPPORT_SEND_MSG;
       starter->startState = START_STATE_DELAY;
@@ -640,7 +640,7 @@ starterMainLoop (void *tstarter)
 
       /* CONTEXT: starterui: support: status message */
       snprintf (tbuff, sizeof (tbuff), _("Sending %s Information"), BDJ4_NAME);
-      uiLabelSetText (starter->supportStatus, tbuff);
+      uiLabelSetTextW (starter->supportStatus, tbuff);
       starter->delayCount = 0;
       starter->delayState = START_STATE_SUPPORT_SEND_INFO;
       starter->startState = START_STATE_DELAY;
@@ -718,7 +718,7 @@ starterMainLoop (void *tstarter)
       }
       /* CONTEXT: starterui: support: status message */
       snprintf (tbuff, sizeof (tbuff), _("Sending %s"), "data/musicdb.dat");
-      uiLabelSetText (starter->supportStatus, tbuff);
+      uiLabelSetTextW (starter->supportStatus, tbuff);
       starter->delayCount = 0;
       starter->delayState = START_STATE_SUPPORT_SEND_DB;
       starter->startState = START_STATE_DELAY;
@@ -982,7 +982,7 @@ starterProcessSupport (void *udata)
 
   /* CONTEXT: starterui: basic support dialog, version display */
   snprintf (tbuff, sizeof (tbuff), _("%s Version"), BDJ4_NAME);
-  widget = uiCreateColonLabel (tbuff);
+  widget = uiCreateColonLabelW (tbuff);
   uiBoxPackStartUW (&hbox, widget);
   uiSizeGroupAdd (&sg, widget);
 
@@ -993,7 +993,7 @@ starterProcessSupport (void *udata)
   }
   snprintf (tbuff, sizeof (tbuff), "%s %s %s",
       sysvarsGetStr (SV_BDJ4_VERSION), builddate, rlslvl);
-  widget = uiCreateLabel (tbuff);
+  widget = uiCreateLabelW (tbuff);
   uiBoxPackStartUW (&hbox, widget);
 
   /* begin line */
@@ -1001,16 +1001,16 @@ starterProcessSupport (void *udata)
   uiBoxPackStart (&vbox, &hbox);
 
   /* CONTEXT: starterui: basic support dialog, latest version display */
-  widget = uiCreateColonLabel (_("Latest Version"));
+  widget = uiCreateColonLabelW (_("Latest Version"));
   uiBoxPackStartUW (&hbox, widget);
   uiSizeGroupAdd (&sg, widget);
 
-  widget = uiCreateLabel (starter->latestversion);
+  widget = uiCreateLabelW (starter->latestversion);
   uiBoxPackStartUW (&hbox, widget);
 
   /* begin line */
   /* CONTEXT: starterui: basic support dialog, list of support options */
-  widget = uiCreateColonLabel (_("Support options"));
+  widget = uiCreateColonLabelW (_("Support options"));
   uiBoxPackStartUW (&vbox, widget);
   uiSizeGroupAdd (&sg, widget);
 
@@ -1060,7 +1060,7 @@ starterProcessSupport (void *udata)
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&vbox, &hbox);
 
-  widget = uiCreateLabel (" ");
+  widget = uiCreateLabelW (" ");
   uiBoxPackStartUW (&hbox, widget);
 
   g_signal_connect (dialog, "response",
@@ -1226,7 +1226,7 @@ starterCreateSupportDialog (void *udata)
   uiBoxPackStartWW (vbox, hbox);
 
   /* CONTEXT: sending support message: user's e-mail address */
-  widget = uiCreateColonLabel (_("E-Mail Address"));
+  widget = uiCreateColonLabelW (_("E-Mail Address"));
   uiBoxPackStartWW (hbox, widget);
   uiSizeGroupAdd (&sg, widget);
 
@@ -1240,7 +1240,7 @@ starterCreateSupportDialog (void *udata)
   uiBoxPackStartWW (vbox, hbox);
 
   /* CONTEXT: sending support message: subject of message */
-  widget = uiCreateColonLabel (_("Subject"));
+  widget = uiCreateColonLabelW (_("Subject"));
   uiBoxPackStartWW (hbox, widget);
   uiSizeGroupAdd (&sg, widget);
 
@@ -1250,7 +1250,7 @@ starterCreateSupportDialog (void *udata)
 
   /* line 3 */
   /* CONTEXT: sending support message: message text */
-  widget = uiCreateColonLabel (_("Message"));
+  widget = uiCreateColonLabelW (_("Message"));
   uiBoxPackStartWW (vbox, widget);
 
   /* line 4 */
@@ -1271,7 +1271,7 @@ starterCreateSupportDialog (void *udata)
   starter->supportSendDB = widget;
 
   /* line 7 */
-  widget = uiCreateLabel ("");
+  widget = uiCreateLabelW ("");
   uiBoxPackStartWW (vbox, widget);
   snprintf (tbuff, sizeof (tbuff),
       "label { color: %s; }", bdjoptGetStr (OPT_P_UI_ACCENT_COL));
@@ -1357,7 +1357,7 @@ starterSendFiles (startui_t *starter)
   starter->supportOutFname = strdup (ofn);
   /* CONTEXT: starterui: support: status message */
   snprintf (tbuff, sizeof (tbuff), _("Sending %s"), ifn);
-  uiLabelSetText (starter->supportStatus, tbuff);
+  uiLabelSetTextW (starter->supportStatus, tbuff);
 }
 
 static void

@@ -25,11 +25,17 @@ void uiMenuDisplay (uimenu_t *menu);
 void uiMenuClear (uimenu_t *menu);
 
 /* uigtklabel.c */
-GtkWidget * uiCreateLabel (const char *label);
-GtkWidget * uiCreateColonLabel (const char *label);
-void        uiLabelSetText (GtkWidget *label, const char *text);
-void        uiLabelEllipsizeOn (GtkWidget *widget);
-void        uiLabelSetMaxWidth (GtkWidget *widget, int width);
+void  uiCreateLabel (UIWidget *uiwidget, const char *label);
+void  uiCreateColonLabel (UIWidget *uiwidget, const char *label);
+void  uiLabelSetText (UIWidget *uilabel, const char *text);
+void  uiLabelEllipsizeOn (UIWidget *uiwidget);
+void  uiLabelSetMaxWidth (UIWidget *uiwidget, int width);
+/* these routines will be removed at a later date */
+GtkWidget * uiCreateLabelW (const char *label);
+GtkWidget * uiCreateColonLabelW (const char *label);
+void        uiLabelSetTextW (GtkWidget *label, const char *text);
+void        uiLabelEllipsizeOnW (GtkWidget *widget);
+void        uiLabelSetMaxWidthW (GtkWidget *widget, int width);
 
 /* uigtkbutton.c */
 GtkWidget * uiCreateButton (UIWidget *uiwidget, UICallback *uicb,

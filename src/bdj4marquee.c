@@ -359,7 +359,7 @@ marqueeBuildUI (marquee_t *marquee)
   uiBoxPackStart (&vbox, &hbox);
 
   /* CONTEXT: marquee: displayed when nothing is set to be played */
-  marquee->danceLab = uiCreateLabel (_("Not Playing"));
+  marquee->danceLab = uiCreateLabelW (_("Not Playing"));
   uiWidgetAlignHorizStartW (marquee->danceLab);
   uiWidgetDisableFocusW (marquee->danceLab);
   snprintf (tbuff, sizeof (tbuff),
@@ -368,8 +368,8 @@ marqueeBuildUI (marquee_t *marquee)
   uiSetCss (marquee->danceLab, tbuff);
   uiBoxPackStartUW (&hbox, marquee->danceLab);
 
-  marquee->countdownTimerLab = uiCreateLabel ("0:00");
-  uiLabelSetMaxWidth (marquee->countdownTimerLab, 6);
+  marquee->countdownTimerLab = uiCreateLabelW ("0:00");
+  uiLabelSetMaxWidthW (marquee->countdownTimerLab, 6);
   uiWidgetAlignHorizEndW (marquee->countdownTimerLab);
   uiWidgetDisableFocusW (marquee->countdownTimerLab);
   snprintf (tbuff, sizeof (tbuff),
@@ -384,21 +384,21 @@ marqueeBuildUI (marquee_t *marquee)
   uiBoxPackStart (&vbox, &hbox);
   uiutilsUIWidgetCopy (&marquee->infoBox, &hbox);
 
-  marquee->infoArtistLab = uiCreateLabel ("");
+  marquee->infoArtistLab = uiCreateLabelW ("");
   uiWidgetAlignHorizStartW (marquee->infoArtistLab);
   uiWidgetDisableFocusW (marquee->infoArtistLab);
-  uiLabelEllipsizeOn (marquee->infoArtistLab);
+  uiLabelEllipsizeOnW (marquee->infoArtistLab);
   uiBoxPackStartUW (&hbox, marquee->infoArtistLab);
 
-  marquee->infoSepLab = uiCreateLabel ("");
+  marquee->infoSepLab = uiCreateLabelW ("");
   uiWidgetAlignHorizStartW (marquee->infoSepLab);
   uiWidgetDisableFocusW (marquee->infoSepLab);
   uiBoxPackStartUW (&hbox, marquee->infoSepLab);
 
-  marquee->infoTitleLab = uiCreateLabel ("");
+  marquee->infoTitleLab = uiCreateLabelW ("");
   uiWidgetAlignHorizStartW (marquee->infoTitleLab);
   uiWidgetDisableFocusW (marquee->infoTitleLab);
-  uiLabelEllipsizeOn (marquee->infoTitleLab);
+  uiLabelEllipsizeOnW (marquee->infoTitleLab);
   uiBoxPackStartUW (&hbox, marquee->infoTitleLab);
 
   uiCreateHorizSeparator (&marquee->sep);
@@ -410,7 +410,7 @@ marqueeBuildUI (marquee_t *marquee)
   marquee->marqueeLabs = malloc (sizeof (GtkWidget *) * marquee->mqLen);
 
   for (int i = 0; i < marquee->mqLen; ++i) {
-    marquee->marqueeLabs [i] = uiCreateLabel ("");
+    marquee->marqueeLabs [i] = uiCreateLabelW ("");
     uiWidgetAlignHorizStartW (marquee->marqueeLabs [i]);
     uiWidgetExpandHorizW (marquee->marqueeLabs [i]);
     uiWidgetSetMarginStartW (marquee->marqueeLabs [i], 10);
@@ -832,7 +832,7 @@ marqueePopulate (marquee_t *marquee, char *args)
     if (p != NULL && *p != '\0') {
       ++showsep;
     }
-    uiLabelSetText (marquee->infoArtistLab, p);
+    uiLabelSetTextW (marquee->infoArtistLab, p);
   }
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokptr);
@@ -843,14 +843,14 @@ marqueePopulate (marquee_t *marquee, char *args)
     if (p != NULL && *p != '\0') {
       ++showsep;
     }
-    uiLabelSetText (marquee->infoTitleLab, p);
+    uiLabelSetTextW (marquee->infoTitleLab, p);
   }
 
   if (marquee->infoSepLab != NULL) {
     if (showsep == 2) {
-      uiLabelSetText (marquee->infoSepLab, "/ ");
+      uiLabelSetTextW (marquee->infoSepLab, "/ ");
     } else {
-      uiLabelSetText (marquee->infoSepLab, "");
+      uiLabelSetTextW (marquee->infoSepLab, "");
     }
   }
 
@@ -859,14 +859,14 @@ marqueePopulate (marquee_t *marquee, char *args)
   if (p != NULL && *p == MSG_ARGS_EMPTY) {
     p = "";
   }
-  uiLabelSetText (marquee->danceLab, p);
+  uiLabelSetTextW (marquee->danceLab, p);
 
   for (int i = 0; i < marquee->mqLen; ++i) {
     p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokptr);
     if (p != NULL && *p != MSG_ARGS_EMPTY) {
-      uiLabelSetText (marquee->marqueeLabs [i], p);
+      uiLabelSetTextW (marquee->marqueeLabs [i], p);
     } else {
-      uiLabelSetText (marquee->marqueeLabs [i], "");
+      uiLabelSetTextW (marquee->marqueeLabs [i], "");
     }
   }
   logProcEnd (LOG_PROC, "marqueePopulate", "");
@@ -895,7 +895,7 @@ marqueeSetTimer (marquee_t *marquee, char *args)
 
   timeleft = dur - played;
   tmutilToMS (timeleft, tbuff, sizeof (tbuff));
-  uiLabelSetText (marquee->countdownTimerLab, tbuff);
+  uiLabelSetTextW (marquee->countdownTimerLab, tbuff);
 
   ddur = (double) dur;
   dplayed = (double) played;
@@ -954,9 +954,9 @@ marqueeDisplayCompletion (marquee_t *marquee)
   char  *disp;
 
   disp = bdjoptGetStr (OPT_P_COMPLETE_MSG);
-  uiLabelSetText (marquee->infoArtistLab, "");
-  uiLabelSetText (marquee->infoSepLab, "");
-  uiLabelSetText (marquee->infoTitleLab, disp);
+  uiLabelSetTextW (marquee->infoArtistLab, "");
+  uiLabelSetTextW (marquee->infoSepLab, "");
+  uiLabelSetTextW (marquee->infoTitleLab, disp);
 
   if (! marquee->mqShowInfo) {
     uiWidgetShowAll (&marquee->infoBox);

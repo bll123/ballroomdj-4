@@ -11,7 +11,6 @@
 
 #include <gtk/gtk.h>
 
-#include "log.h"
 #include "ui.h"
 #include "uiutils.h"
 
@@ -25,7 +24,6 @@ static gboolean uiuitilsSpinboxTextKeyCallback (GtkWidget *w, GdkEventKey *event
 void
 uiSpinboxTextInit (uispinbox_t *spinbox)
 {
-  logProcBegin (LOG_PROC, "uiSpinboxTextInit");
   spinbox->spinbox = NULL;
   spinbox->curridx = 0;
   spinbox->textGetProc = NULL;
@@ -36,7 +34,6 @@ uiSpinboxTextInit (uispinbox_t *spinbox)
   spinbox->list = NULL;
   spinbox->keylist = NULL;
   spinbox->idxlist = NULL;
-  logProcEnd (LOG_PROC, "uiSpinboxTextInit", "");
 }
 
 
@@ -54,7 +51,6 @@ uiSpinboxTextFree (uispinbox_t *spinbox)
 GtkWidget *
 uiSpinboxTextCreate (uispinbox_t *spinbox, void *udata)
 {
-  logProcBegin (LOG_PROC, "uiSpinboxTextCreate");
   spinbox->spinbox = gtk_spin_button_new (NULL, 0.0, 0);
   gtk_spin_button_set_increments (GTK_SPIN_BUTTON (spinbox->spinbox), 1.0, 1.0);
   gtk_spin_button_set_wrap (GTK_SPIN_BUTTON (spinbox->spinbox), TRUE);
@@ -75,7 +71,6 @@ uiSpinboxTextCreate (uispinbox_t *spinbox, void *udata)
       );
   g_signal_connect (spinbox->spinbox, "key-press-event",
       G_CALLBACK (uiuitilsSpinboxTextKeyCallback), NULL);
-  logProcEnd (LOG_PROC, "uiSpinboxTextCreate", "");
   return spinbox->spinbox;
 }
 
@@ -84,7 +79,6 @@ uiSpinboxTextSet (uispinbox_t *spinbox, int min, int count,
     int maxWidth, slist_t *list, nlist_t *keylist,
     uispinboxdisp_t textGetProc)
 {
-  logProcBegin (LOG_PROC, "uiSpinboxTextSet");
   uiSpinboxSet (spinbox->spinbox, (double) min, (double) (count - 1));
   /* will width in characters be enough for some glyphs? */
   /* certainly not if languages are mixed */
@@ -106,7 +100,6 @@ uiSpinboxTextSet (uispinbox_t *spinbox, int min, int count,
     }
   }
   spinbox->textGetProc = textGetProc;
-  logProcEnd (LOG_PROC, "uiSpinboxTextSet", "");
 }
 
 int
@@ -157,7 +150,6 @@ uiSpinboxTimeFree (uispinbox_t *spinbox)
 GtkWidget *
 uiSpinboxTimeCreate (uispinbox_t *spinbox, void *udata)
 {
-  logProcBegin (LOG_PROC, "uiSpinboxTimeCreate");
   spinbox->spinbox = gtk_spin_button_new (NULL, 0.0, 0);
   gtk_spin_button_set_increments (GTK_SPIN_BUTTON (spinbox->spinbox), 5000.0, 60000.0);
   gtk_spin_button_set_range (GTK_SPIN_BUTTON (spinbox->spinbox), 0.0, 600000.0);
@@ -169,7 +161,6 @@ uiSpinboxTimeCreate (uispinbox_t *spinbox, void *udata)
   g_signal_connect (spinbox->spinbox, "input",
       G_CALLBACK (uiSpinboxInput), spinbox);
   spinbox->udata = udata;
-  logProcEnd (LOG_PROC, "uiSpinboxTimeCreate", "");
   return spinbox->spinbox;
 }
 
@@ -194,13 +185,11 @@ uiSpinboxIntCreate (void)
 {
   GtkWidget   *spinbox;
 
-  logProcBegin (LOG_PROC, "uiSpinboxIntCreate");
   spinbox = gtk_spin_button_new (NULL, 0.0, 0);
   gtk_spin_button_set_increments (GTK_SPIN_BUTTON (spinbox), 1.0, 5.0);
   gtk_spin_button_set_wrap (GTK_SPIN_BUTTON (spinbox), FALSE);
   gtk_widget_set_margin_top (spinbox, uiBaseMarginSz);
   gtk_widget_set_margin_start (spinbox, uiBaseMarginSz);
-  logProcEnd (LOG_PROC, "uiSpinboxIntCreate", "");
   return spinbox;
 }
 
@@ -209,23 +198,19 @@ uiSpinboxDoubleCreate (void)
 {
   GtkWidget   *spinbox;
 
-  logProcBegin (LOG_PROC, "uiSpinboxDoubleCreate");
   spinbox = gtk_spin_button_new (NULL, 0.0, 1);
   gtk_spin_button_set_increments (GTK_SPIN_BUTTON (spinbox), 0.1, 5.0);
   gtk_spin_button_set_wrap (GTK_SPIN_BUTTON (spinbox), FALSE);
   gtk_widget_set_margin_top (spinbox, uiBaseMarginSz);
   gtk_widget_set_margin_start (spinbox, uiBaseMarginSz);
-  logProcEnd (LOG_PROC, "uiSpinboxDoubleCreate", "");
   return spinbox;
 }
 
 void
 uiSpinboxSet (GtkWidget *spinbox, double min, double max)
 {
-  logProcBegin (LOG_PROC, "uiSpinboxSet");
   gtk_spin_button_set_range (GTK_SPIN_BUTTON (spinbox), min, max);
   gtk_spin_button_set_value (GTK_SPIN_BUTTON (spinbox), min);
-  logProcEnd (LOG_PROC, "uiSpinboxSet", "");
 }
 
 
@@ -235,16 +220,13 @@ uiSpinboxGetValue (GtkWidget *spinbox)
   GtkAdjustment     *adjustment;
   gdouble           value;
 
-  logProcBegin (LOG_PROC, "uiSpinboxGetValue");
 
   if (spinbox == NULL) {
-    logProcEnd (LOG_PROC, "uiSpinboxGetValue", "spinbox-null");
     return -1;
   }
 
   adjustment = gtk_spin_button_get_adjustment (GTK_SPIN_BUTTON (spinbox));
   value = gtk_adjustment_get_value (adjustment);
-  logProcEnd (LOG_PROC, "uiSpinboxGetValue", "");
   return value;
 }
 
@@ -253,16 +235,12 @@ uiSpinboxSetValue (GtkWidget *spinbox, double value)
 {
   GtkAdjustment     *adjustment;
 
-  logProcBegin (LOG_PROC, "uiSpinboxSetValue");
-
   if (spinbox == NULL) {
-    logProcEnd (LOG_PROC, "uiSpinboxSetValue", "spinbox-null");
     return;
   }
 
   adjustment = gtk_spin_button_get_adjustment (GTK_SPIN_BUTTON (spinbox));
   gtk_adjustment_set_value (adjustment, value);
-  logProcEnd (LOG_PROC, "uiSpinboxSetValue", "");
 }
 
 bool
@@ -284,13 +262,11 @@ uiSpinboxInput (GtkSpinButton *sb, gdouble *newval, gpointer udata)
   GtkAdjustment     *adjustment;
   gdouble           value;
 
-  logProcBegin (LOG_PROC, "uiSpinboxInput");
 
   adjustment = gtk_spin_button_get_adjustment (GTK_SPIN_BUTTON (spinbox->spinbox));
   value = gtk_adjustment_get_value (adjustment);
   *newval = value;
   spinbox->changed = true;
-  logProcEnd (LOG_PROC, "uiSpinboxInput", "");
   return TRUE;
 }
 
@@ -303,10 +279,8 @@ uiSpinboxTextDisplay (GtkSpinButton *sb, gpointer udata)
   double            value;
   char              tbuff [100];
 
-  logProcBegin (LOG_PROC, "uiSpinboxTextDisplay");
 
   if (spinbox->indisp) {
-    logProcEnd (LOG_PROC, "uiSpinboxTextDisplay", "lock-in-disp");
     return FALSE;
   }
   spinbox->indisp = true;
@@ -325,7 +299,6 @@ uiSpinboxTextDisplay (GtkSpinButton *sb, gpointer udata)
   snprintf (tbuff, sizeof (tbuff), "%-*s", spinbox->maxWidth, disp);
   gtk_entry_set_text (GTK_ENTRY (spinbox->spinbox), tbuff);
   spinbox->indisp = false;
-  logProcEnd (LOG_PROC, "uiSpinboxTextDisplay", "");
   return TRUE;
 }
 
@@ -337,10 +310,8 @@ uiSpinboxTimeDisplay (GtkSpinButton *sb, gpointer udata)
   double            value;
   char              tbuff [100];
 
-  logProcBegin (LOG_PROC, "uiSpinboxTimeDisplay");
 
   if (spinbox->indisp) {
-    logProcEnd (LOG_PROC, "uiSpinboxTimeDisplay", "lock-in-disp");
     return FALSE;
   }
   spinbox->indisp = true;
@@ -352,7 +323,6 @@ uiSpinboxTimeDisplay (GtkSpinButton *sb, gpointer udata)
   tmutilToMS ((ssize_t) value, tbuff, sizeof (tbuff));
   gtk_entry_set_text (GTK_ENTRY (spinbox->spinbox), tbuff);
   spinbox->indisp = false;
-  logProcEnd (LOG_PROC, "uiSpinboxTimeDisplay", "");
   return TRUE;
 }
 
