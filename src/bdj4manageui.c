@@ -105,12 +105,14 @@ typedef struct manage {
   musicqidx_t     musicqManageIdx;
   dispsel_t       *dispsel;
   int             stopwaitcount;
+  UIWidget        statusMsg;
   /* update database */
-  uispinbox_t     dbspinbox;
-  uitextbox_t     *dbhelpdisp;
-  uitextbox_t     *dbstatus;
+  uispinbox_t       dbspinbox;
+  uitextbox_t       *dbhelpdisp;
+  uitextbox_t       *dbstatus;
   nlist_t           *dblist;
   nlist_t           *dbhelp;
+  UIWidget          dbpbar;
   /* notebook tab handling */
   int               mainlasttab;
   int               sllasttab;
@@ -133,8 +135,6 @@ typedef struct manage {
   GtkWidget       *slnotebook;
   GtkWidget       *mmnotebook;
   GtkWidget       *vbox;
-  UIWidget        dbpbar;
-  GtkWidget       *statusMsg;
   /* song list ui major elements */
   uiplayer_t      *slplayer;
   uimusicq_t      *slmusicq;
@@ -226,8 +226,11 @@ static void manageSelectFileResponseHandler (GtkDialog *d, gint responseid,
     gpointer udata);
 static void manageInitializeSongFilter (manageui_t *manage, nlist_t *options);
 static void manageRenamePlaylistFiles (const char *oldname, const char *newname);
+static void manageCopyPlaylistFiles (const char *oldname, const char *newname);
+static void manageSetStatusMsg (manageui_t *manage, const char *msg);
 static void manageCheckAndCreatePlaylist (manageui_t *manage, const char *name,
     const char *suppfname, pltype_t pltype);
+static bool manageCreatePlaylistCopy (manageui_t *manage, const char *oname, const char *newname);
 /* sequence */
 static void     manageSequenceMenu (manageui_t *manage);
 static void     manageSequenceLoad (GtkMenuItem *mi, gpointer udata);
@@ -551,9 +554,9 @@ manageBuildUI (manageui_t *manage)
 {
   GtkWidget           *menubar;
   GtkWidget           *tabLabel;
-  GtkWidget           *widget;
   GtkWidget           *vbox;
   UIWidget            hbox;
+  UIWidget            uiwidget;
   UIWidget            uivbox;
   char                imgbuff [MAXPATHLEN];
   char                tbuff [MAXPATHLEN];
@@ -562,6 +565,8 @@ manageBuildUI (manageui_t *manage)
   logProcBegin (LOG_PROC, "manageBuildUI");
   *imgbuff = '\0';
   uiutilsUIWidgetInit (&uivbox);
+  uiutilsUIWidgetInit (&hbox);
+  uiutilsUIWidgetInit (&uiwidget);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", ".svg", PATHBLD_MP_IMGDIR);
@@ -578,13 +583,10 @@ manageBuildUI (manageui_t *manage)
   uiWidgetSetMarginTop (&hbox, uiBaseMarginSz * 4);
   uiBoxPackStart (&uivbox, &hbox);
 
-  widget = uiCreateLabelW ("");
-  uiBoxPackEndUW (&hbox, widget);
-  snprintf (tbuff, sizeof (tbuff),
-      "label { color: %s; }",
-      bdjoptGetStr (OPT_P_UI_ACCENT_COL));
-  uiSetCss (widget, tbuff);
-  manage->statusMsg = widget;
+  uiCreateLabel (&uiwidget, "");
+  uiLabelSetColor (&uiwidget, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
+  uiBoxPackEnd (&hbox, &uiwidget);
+  uiutilsUIWidgetCopy (&manage->statusMsg, &uiwidget);
 
   menubar = uiCreateMenubar ();
   uiBoxPackStartUW (&hbox, menubar);
@@ -1333,15 +1335,17 @@ manageSonglistCopy (GtkMenuItem *mi, gpointer udata)
 {
   manageui_t  *manage = udata;
   const char  *oname;
-  char        tbuff [200];
+  char        newname [200];
 
   manageSonglistSave (manage);
 
   oname = uimusicqGetSonglistName (manage->slmusicq);
-  /* CONTEXT: song list: the new song list name after 'create copy' (e.g. "Copy of DJ-2022-04") */
-  snprintf (tbuff, sizeof (tbuff), _("Copy of %s"), oname);
-  manageSetSonglistName (manage, tbuff);
-  manage->slbackupcreated = false;
+  /* CONTEXT: the new name after 'create copy' (e.g. "Copy of DJ-2022-04") */
+  snprintf (newname, sizeof (newname), _("Copy of %s"), oname);
+  if (manageCreatePlaylistCopy (manage, oname, newname)) {
+    manageSetSonglistName (manage, newname);
+    manage->slbackupcreated = false;
+  }
 }
 
 static void
@@ -1790,7 +1794,7 @@ manageRenamePlaylistFiles (const char *oldname, const char *newname)
   pathbldMakePath (onm, sizeof (onm),
       oldname, BDJ4_SEQUENCE_EXT, PATHBLD_MP_DATA);
   pathbldMakePath (nnm, sizeof (nnm),
-      newname, BDJ4_SONGLIST_EXT, PATHBLD_MP_DATA);
+      newname, BDJ4_SEQUENCE_EXT, PATHBLD_MP_DATA);
   filemanipRenameAll (onm, nnm);
 
   pathbldMakePath (onm, sizeof (onm),
@@ -1813,6 +1817,31 @@ manageRenamePlaylistFiles (const char *oldname, const char *newname)
 }
 
 static void
+manageCopyPlaylistFiles (const char *oldname, const char *newname)
+{
+  char  onm [MAXPATHLEN];
+  char  nnm [MAXPATHLEN];
+
+  pathbldMakePath (onm, sizeof (onm),
+      oldname, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
+  pathbldMakePath (nnm, sizeof (nnm),
+      newname, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
+  filemanipCopy (onm, nnm);
+
+  pathbldMakePath (onm, sizeof (onm),
+      oldname, BDJ4_PL_DANCE_EXT, PATHBLD_MP_DATA);
+  pathbldMakePath (nnm, sizeof (nnm),
+      newname, BDJ4_PL_DANCE_EXT, PATHBLD_MP_DATA);
+  filemanipCopy (onm, nnm);
+}
+
+static void
+manageSetStatusMsg (manageui_t *manage, const char *msg)
+{
+  uiLabelSetText (&manage->statusMsg, msg);
+}
+
+static void
 manageCheckAndCreatePlaylist (manageui_t *manage, const char *name,
     const char *suppfname, pltype_t pltype)
 {
@@ -1831,6 +1860,28 @@ manageCheckAndCreatePlaylist (manageui_t *manage, const char *name,
     playlistFree (pl);
   }
 }
+
+static bool
+manageCreatePlaylistCopy (manageui_t *manage,
+    const char *oname, const char *newname)
+{
+  char  tbuff [MAXPATHLEN];
+  bool  rc = true;
+
+  pathbldMakePath (tbuff, sizeof (tbuff),
+      newname, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
+  if (fileopFileExists (tbuff)) {
+    /* CONTEXT: failure status message */
+    snprintf (tbuff, sizeof (tbuff), _("Copy already exists."));
+    manageSetStatusMsg (manage, tbuff);
+    rc = false;
+  }
+  if (rc) {
+    manageCopyPlaylistFiles (oname, newname);
+  }
+  return rc;
+}
+
 
 /* sequence */
 
@@ -1910,15 +1961,17 @@ manageSequenceCopy (GtkMenuItem *mi, gpointer udata)
 {
   manageui_t  *manage = udata;
   const char  *oname;
-  char        tbuff [200];
+  char        newname [200];
 
   manageSequenceSave (manage);
 
   oname = uiEntryGetValue (&manage->seqname);
-  /* CONTEXT: sequence: the new sequence name after 'create copy' (e.g. "Copy of Saturday Sequence") */
-  snprintf (tbuff, sizeof (tbuff), _("Copy of %s"), oname);
-  manageSetSequenceName (manage, tbuff);
-  manage->seqbackupcreated = false;
+  /* CONTEXT: the new name after 'create copy' (e.g. "Copy of DJ-2022-04") */
+  snprintf (newname, sizeof (newname), _("Copy of %s"), oname);
+  if (manageCreatePlaylistCopy (manage, oname, newname)) {
+    manageSetSequenceName (manage, newname);
+    manage->seqbackupcreated = false;
+  }
 }
 
 static void
