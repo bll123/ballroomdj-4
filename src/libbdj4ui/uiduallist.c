@@ -13,6 +13,7 @@
 #include <gtk/gtk.h>
 
 #include "bdj4intl.h"
+#include "bdjstring.h"
 #include "slist.h"
 #include "ui.h"
 #include "uiduallist.h"
@@ -35,6 +36,8 @@ static void uiduallistMoveNext (void *tduallist);
 static void uiduallistMove (uiduallist_t *duallist, int which, int dir);
 static void uiduallistDispSelect (void *udata);
 static void uiduallistDispRemove (void *udata);
+static gboolean uiduallistSourceSearch (GtkTreeModel* model,
+    GtkTreePath* path, GtkTreeIter* iter, gpointer udata);
 
 uiduallist_t *
 uiCreateDualList (UIWidget *vbox, int flags)
@@ -132,6 +135,15 @@ uiCreateDualList (UIWidget *vbox, int flags)
 
   return duallist;
 }
+
+void
+uiduallistFree (uiduallist_t *duallist)
+{
+  if (duallist != NULL) {
+    free (duallist);
+  }
+}
+
 
 void
 uiduallistSet (uiduallist_t *duallist, slist_t *slist, int which)
@@ -308,14 +320,13 @@ uiduallistDispRemove (void *udata)
   count = uiTreeViewGetSelection (ttree, &tmodel, &titer);
 
   if (count == 1) {
-    char              *str;
-    gulong            tval;
-    GtkWidget         *stree;
-    GtkTreeSelection  *ssel;
-    GtkTreeModel      *smodel;
-    GtkTreeIter       siter;
-    GtkTreePath       *path;
-    int               pos = 0;
+    char          *str;
+    gulong        tval;
+    GtkWidget     *stree;
+    GtkTreeSelection *ssel;
+    GtkTreeModel  *smodel;
+    GtkTreeIter   siter;
+    GtkTreePath   *path;
 
     stree = duallist->trees [DUALLIST_TREE_SOURCE].tree;
     ssel = duallist->trees [DUALLIST_TREE_SOURCE].sel;
@@ -324,9 +335,11 @@ uiduallistDispRemove (void *udata)
     gtk_tree_model_get (tmodel, &titer, DUALLIST_COL_DISP, &str, -1);
     gtk_tree_model_get (tmodel, &titer, DUALLIST_COL_DISP_IDX, &tval, -1);
 
-    // ### need to insert the value into the list in sorted order...
+    duallist->pos = 0;
+    duallist->searchstr = str;
+    gtk_tree_model_foreach (smodel, uiduallistSourceSearch, duallist);
 
-    gtk_list_store_insert (GTK_LIST_STORE (smodel), &siter, pos);
+    gtk_list_store_insert (GTK_LIST_STORE (smodel), &siter, duallist->pos);
     gtk_list_store_set (GTK_LIST_STORE (smodel), &siter,
         DUALLIST_COL_DISP, str,
         DUALLIST_COL_SB_PAD, "    ",
@@ -341,3 +354,18 @@ uiduallistDispRemove (void *udata)
   }
 }
 
+gboolean
+uiduallistSourceSearch (GtkTreeModel* model, GtkTreePath* path,
+    GtkTreeIter* iter, gpointer udata)
+{
+  uiduallist_t  *duallist = udata;
+  char          *str;
+
+  gtk_tree_model_get (model, iter, DUALLIST_COL_DISP, &str, -1);
+  if (istringCompare (duallist->searchstr, str) < 0) {
+    return TRUE;
+  }
+
+  duallist->pos += 1;
+  return FALSE; // continue iterating
+}
