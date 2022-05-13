@@ -45,13 +45,18 @@ static gboolean uiduallistSourceSearch (GtkTreeModel* model,
     GtkTreePath* path, GtkTreeIter* iter, gpointer udata);
 
 uiduallist_t *
-uiCreateDualList (UIWidget *vbox, int flags)
+uiCreateDualList (UIWidget *mainvbox, int flags,
+    const char *sourcetitle, const char *targettitle)
 {
   uiduallist_t  *duallist;
+  UIWidget      vbox;
   UIWidget      hbox;
   UIWidget      dvbox;
   UIWidget      uiwidget;
   GtkWidget     *tree;
+  GtkListStore  *store;
+  GtkCellRenderer *renderer = NULL;
+  GtkTreeViewColumn *column = NULL;
 
   duallist = malloc (sizeof (uiduallist_t));
   for (int i = 0; i < DUALLIST_TREE_MAX; ++i) {
@@ -69,29 +74,59 @@ uiCreateDualList (UIWidget *vbox, int flags)
   uiutilsUICallbackInit (&duallist->selectcb, uiduallistDispSelect, duallist);
   uiutilsUICallbackInit (&duallist->removecb, uiduallistDispRemove, duallist);
 
+  uiutilsUIWidgetInit (&vbox);
   uiutilsUIWidgetInit (&hbox);
   uiutilsUIWidgetInit (&dvbox);
   uiutilsUIWidgetInit (&uiwidget);
 
   uiCreateHorizBox (&hbox);
   uiWidgetAlignHorizStart (&hbox);
-  uiBoxPackStartExpand (vbox, &hbox);
+  uiBoxPackStartExpand (mainvbox, &hbox);
+
+  uiCreateVertBox (&vbox);
+  uiWidgetSetMarginStart (&vbox, uiBaseMarginSz * 8);
+  uiWidgetSetMarginTop (&vbox, uiBaseMarginSz * 8);
+  uiBoxPackStartExpand (&hbox, &vbox);
+
+  if (sourcetitle != NULL) {
+    uiCreateLabel (&uiwidget, sourcetitle);
+    uiBoxPackStart (&vbox, &uiwidget);
+  }
 
   uiCreateScrolledWindow (&uiwidget, 300);
   uiWidgetExpandVert (&uiwidget);
-  uiBoxPackStartExpand (&hbox, &uiwidget);
+  uiBoxPackStartExpand (&vbox, &uiwidget);
 
   tree = uiCreateTreeView ();
   uiSetCss (tree,
       "treeview { background-color: shade(@theme_base_color,0.8); } "
       "treeview:selected { background-color: @theme_selected_bg_color; } ");
-  uiWidgetSetMarginStartW (tree, uiBaseMarginSz * 8);
-  uiWidgetSetMarginTopW (tree, uiBaseMarginSz * 8);
   uiWidgetExpandVertW (tree);
   uiBoxPackInWindowUW (&uiwidget, tree);
   duallist->trees [DUALLIST_TREE_SOURCE].tree = tree;
   duallist->trees [DUALLIST_TREE_SOURCE].sel =
       gtk_tree_view_get_selection (GTK_TREE_VIEW (tree));
+
+  store = gtk_list_store_new (DUALLIST_COL_MAX,
+      G_TYPE_STRING, G_TYPE_STRING, G_TYPE_LONG);
+  gtk_tree_view_set_model (GTK_TREE_VIEW (tree), GTK_TREE_MODEL (store));
+  g_object_unref (store);
+
+  gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (tree), FALSE);
+
+  renderer = gtk_cell_renderer_text_new ();
+  column = gtk_tree_view_column_new_with_attributes ("", renderer,
+      "text", DUALLIST_COL_DISP,
+      NULL);
+  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
+  gtk_tree_view_append_column (GTK_TREE_VIEW (tree), column);
+
+  renderer = gtk_cell_renderer_text_new ();
+  column = gtk_tree_view_column_new_with_attributes ("", renderer,
+      "text", DUALLIST_COL_SB_PAD,
+      NULL);
+  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
+  gtk_tree_view_append_column (GTK_TREE_VIEW (tree), column);
 
   uiCreateVertBox (&dvbox);
   uiWidgetSetAllMargins (&dvbox, uiBaseMarginSz * 4);
@@ -109,21 +144,50 @@ uiCreateDualList (UIWidget *vbox, int flags)
       "button_left", NULL, NULL);
   uiBoxPackStart (&dvbox, &uiwidget);
 
+  uiCreateVertBox (&vbox);
+  uiWidgetSetMarginStart (&vbox, uiBaseMarginSz * 8);
+  uiWidgetSetMarginTop (&vbox, uiBaseMarginSz * 8);
+  uiBoxPackStartExpand (&hbox, &vbox);
+
+  if (targettitle != NULL) {
+    uiCreateLabel (&uiwidget, targettitle);
+    uiBoxPackStart (&vbox, &uiwidget);
+  }
+
   uiCreateScrolledWindow (&uiwidget, 300);
   uiWidgetExpandVert (&uiwidget);
-  uiBoxPackStartExpand (&hbox, &uiwidget);
+  uiBoxPackStartExpand (&vbox, &uiwidget);
 
   tree = uiCreateTreeView ();
   uiSetCss (tree,
       "treeview { background-color: shade(@theme_base_color,0.8); } "
       "treeview:selected { background-color: @theme_selected_bg_color; } ");
-  uiWidgetSetMarginStartW (tree, uiBaseMarginSz * 8);
-  uiWidgetSetMarginTopW (tree, uiBaseMarginSz * 8);
   uiWidgetExpandVertW (tree);
   uiBoxPackInWindowUW (&uiwidget, tree);
   duallist->trees [DUALLIST_TREE_TARGET].tree = tree;
   duallist->trees [DUALLIST_TREE_TARGET].sel =
       gtk_tree_view_get_selection (GTK_TREE_VIEW (tree));
+
+  store = gtk_list_store_new (DUALLIST_COL_MAX,
+      G_TYPE_STRING, G_TYPE_STRING, G_TYPE_LONG);
+  gtk_tree_view_set_model (GTK_TREE_VIEW (tree), GTK_TREE_MODEL (store));
+  g_object_unref (store);
+
+  gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (tree), FALSE);
+
+  renderer = gtk_cell_renderer_text_new ();
+  column = gtk_tree_view_column_new_with_attributes ("", renderer,
+      "text", DUALLIST_COL_DISP,
+      NULL);
+  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
+  gtk_tree_view_append_column (GTK_TREE_VIEW (tree), column);
+
+  renderer = gtk_cell_renderer_text_new ();
+  column = gtk_tree_view_column_new_with_attributes ("", renderer,
+      "text", DUALLIST_COL_SB_PAD,
+      NULL);
+  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
+  gtk_tree_view_append_column (GTK_TREE_VIEW (tree), column);
 
   uiCreateVertBox (&dvbox);
   uiWidgetSetAllMargins (&dvbox, uiBaseMarginSz * 4);

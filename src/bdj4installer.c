@@ -422,7 +422,7 @@ installerBuildUI (installer_t *installer)
   uiWidgetExpandHorizW (widget);
   uiBoxPackStartWW (vbox, widget);
 
-  g_signal_connect (installer->targetEntry.entry, "changed",
+  g_signal_connect (installer->targetEntry.uientry.widget, "changed",
       G_CALLBACK (installerValidateStart), installer);
 
   hbox = uiCreateHorizBoxWW ();
@@ -478,7 +478,7 @@ installerBuildUI (installer_t *installer)
   uiWidgetAlignHorizFillW (widget);
   uiWidgetExpandHorizW (widget);
   uiBoxPackStartWW (hbox, widget);
-  g_signal_connect (installer->bdj3locEntry.entry, "changed",
+  g_signal_connect (installer->bdj3locEntry.uientry.widget, "changed",
       G_CALLBACK (installerValidateStart), installer);
 
   uiutilsUICallbackInit (&installer->callbacks [INST_CALLBACK_SELECT_DIR],
@@ -833,11 +833,11 @@ installerValidateDir (installer_t *installer)
   }
 
   if (! locok) {
-    gtk_entry_set_icon_from_icon_name (GTK_ENTRY (installer->bdj3locEntry.entry),
+    gtk_entry_set_icon_from_icon_name (GTK_ENTRY (installer->bdj3locEntry.uientry.widget),
         GTK_ENTRY_ICON_SECONDARY, "dialog-error");
     installerSetConvert (installer, FALSE);
   } else {
-    gtk_entry_set_icon_from_icon_name (GTK_ENTRY (installer->bdj3locEntry.entry),
+    gtk_entry_set_icon_from_icon_name (GTK_ENTRY (installer->bdj3locEntry.uientry.widget),
         GTK_ENTRY_ICON_SECONDARY, NULL);
   }
 
@@ -856,7 +856,7 @@ installerValidateStart (GtkEditable *e, gpointer udata)
 
   /* if the user is typing, clear the message */
   uiLabelSetTextW (installer->feedbackMsg, "");
-  gtk_entry_set_icon_from_icon_name (GTK_ENTRY (installer->bdj3locEntry.entry),
+  gtk_entry_set_icon_from_icon_name (GTK_ENTRY (installer->bdj3locEntry.uientry.widget),
       GTK_ENTRY_ICON_SECONDARY, NULL);
   mstimeset (&installer->validateTimer, 500);
 }

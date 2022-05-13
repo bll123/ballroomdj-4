@@ -1394,7 +1394,7 @@ confuiBuildUIEditDances (configui_t *confui)
   confuiMakeItemEntry (confui, dvbox, &sg, _("Dance"),
       CONFUI_ENTRY_DANCE_DANCE, -1, "");
   confui->uiitem [CONFUI_ENTRY_DANCE_DANCE].danceidx = DANCE_DANCE;
-  g_signal_connect (confui->uiitem [CONFUI_ENTRY_DANCE_DANCE].u.entry.entry,
+  g_signal_connect (confui->uiitem [CONFUI_ENTRY_DANCE_DANCE].u.entry.uientry.widget,
       "changed", G_CALLBACK (confuiDanceEntryChg), confui);
 
   /* CONTEXT: configuration: dances: the type of the dance (club/latin/standard) */
@@ -1413,7 +1413,7 @@ confuiBuildUIEditDances (configui_t *confui)
   confuiMakeItemEntry (confui, dvbox, &sg, _("Tags"),
       CONFUI_ENTRY_DANCE_TAGS, -1, "");
   confui->uiitem [CONFUI_ENTRY_DANCE_TAGS].danceidx = DANCE_TAGS;
-  g_signal_connect (confui->uiitem [CONFUI_ENTRY_DANCE_TAGS].u.entry.entry,
+  g_signal_connect (confui->uiitem [CONFUI_ENTRY_DANCE_TAGS].u.entry.uientry.widget,
       "changed", G_CALLBACK (confuiDanceEntryChg), confui);
 
   /* CONTEXT: configuration: dances: play the selected announcement before the dance is played */
@@ -1424,7 +1424,7 @@ confuiBuildUIEditDances (configui_t *confui)
   uiEntrySetValidate (
       &confui->uiitem [CONFUI_ENTRY_DANCE_ANNOUNCEMENT].u.entry,
       confuiDanceValidateAnnouncement, confui);
-  g_signal_connect (confui->uiitem [CONFUI_ENTRY_DANCE_ANNOUNCEMENT].u.entry.entry,
+  g_signal_connect (confui->uiitem [CONFUI_ENTRY_DANCE_ANNOUNCEMENT].u.entry.uientry.widget,
       "changed", G_CALLBACK (confuiDanceEntryChg), confui);
 
   val = bdjoptGetNum (OPT_G_BPM);

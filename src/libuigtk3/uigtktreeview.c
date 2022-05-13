@@ -17,6 +17,7 @@
 
 static valuetype_t uiDetermineValueType (int tagidx);
 static char  * uiMakeDisplayStr (song_t *song, int tagidx, int *allocflag);
+static GType * uiAppendType (GType *types, int *ncol, int type);
 
 GtkWidget *
 uiCreateTreeView (void)
@@ -35,16 +36,6 @@ uiCreateTreeView (void)
   gtk_widget_set_hexpand (tree, FALSE);
   gtk_widget_set_vexpand (tree, FALSE);
   return tree;
-}
-
-GType *
-uiAppendType (GType *types, int *ncol, int type)
-{
-  ++(*ncol);
-  types = realloc (types, *ncol * sizeof (GType));
-  types [*ncol-1] = type;
-
-  return types;
 }
 
 GtkTreeViewColumn *
@@ -236,5 +227,15 @@ uiMakeDisplayStr (song_t *song, int tagidx, int *allocated)
   }
 
   return str;
+}
+
+static GType *
+uiAppendType (GType *types, int *ncol, int type)
+{
+  ++(*ncol);
+  types = realloc (types, *ncol * sizeof (GType));
+  types [*ncol-1] = type;
+
+  return types;
 }
 

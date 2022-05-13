@@ -156,6 +156,7 @@ typedef struct manage {
   uisongedit_t    *mmsongedit;
   /* sequence editor */
   uiduallist_t    *seqduallist;
+  uientry_t       seqname;
   /* options */
   datafile_t      *optiondf;
   nlist_t         *options;
@@ -230,6 +231,7 @@ static void     manageSequenceLoadFile (manageui_t *manage, const char *fn);
 static void     manageSequenceCopy (GtkMenuItem *mi, gpointer udata);
 static void     manageSequenceNew (GtkMenuItem *mi, gpointer udata);
 static void     manageSequenceSave (manageui_t *manage);
+static void     manageSetSequenceName (manageui_t *manage, const char *nm);
 
 
 static int gKillReceived = 0;
@@ -286,6 +288,7 @@ main (int argc, char *argv[])
   manage.mmsongfilter = NULL;
   uiutilsUIWidgetInit (&manage.dbpbar);
   manage.seqduallist = NULL;
+  uiEntryInit (&manage.seqname, 20, 50);
 
   procutilInitProcesses (manage.processes);
 
@@ -486,6 +489,7 @@ manageClosingCallback (void *udata, programstate_t programState)
   bdj4shutdown (ROUTE_MANAGEUI, manage->musicdb);
   dispselFree (manage->dispsel);
 
+  uiEntryFree (&manage->seqname);
   if (manage->slsongfilter != NULL) {
     songfilterFree (manage->slsongfilter);
   }
@@ -815,9 +819,16 @@ static void
 manageBuildUISequence (manageui_t *manage)
 {
   GtkWidget           *tabLabel;
+  GtkWidget           *widget;
   UIWidget            vbox;
+  UIWidget            hbox;
+  UIWidget            uiwidget;
   dance_t             *dances;
   slist_t             *dancelist;
+
+  uiutilsUIWidgetInit (&hbox);
+  uiutilsUIWidgetInit (&vbox);
+  uiutilsUIWidgetInit (&uiwidget);
 
   /* edit sequences */
   uiCreateVertBox (&vbox);
@@ -827,8 +838,23 @@ manageBuildUISequence (manageui_t *manage)
   uiNotebookAppendPage (manage->mainnotebook, vbox.widget, tabLabel);
   uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_EDITSEQ);
 
+  uiCreateHorizBox (&hbox);
+  uiBoxPackStart (&vbox, &hbox);
+
+  /* CONTEXT: sequence editor: label for sequence name */
+  uiCreateColonLabel (&uiwidget, _("Sequence"));
+  uiBoxPackStart (&hbox, &uiwidget);
+
+  widget = uiEntryCreate (&manage->seqname);
+  uiEntrySetColor (&manage->seqname, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
+  /* CONTEXT: sequence: default name for a new sequence */
+  manageSetSequenceName (manage, _("New Sequence"));
+  uiBoxPackStartUW (&hbox, widget);
+
   manage->seqduallist = uiCreateDualList (&vbox,
-      DUALLIST_FLAGS_MULTIPLE | DUALLIST_FLAGS_PERSISTENT);
+      DUALLIST_FLAGS_MULTIPLE | DUALLIST_FLAGS_PERSISTENT,
+      /* CONTEXT: sequence editor: titles for the selection list and the sequence list  */
+      _("Dance"), _("Sequence"));
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
   dancelist = danceGetDanceList (dances);
@@ -1851,7 +1877,7 @@ manageSequenceCopy (GtkMenuItem *mi, gpointer udata)
 //  oname = uimusicqGetSequenceName (manage->slmusicq);
   /* CONTEXT: sequence: the new sequence name after 'create copy' (e.g. "Copy of Saturday Sequence") */
   snprintf (tbuff, sizeof (tbuff), _("Copy of %s"), oname);
-//  manageSetSequenceName (manage, tbuff);
+  manageSetSequenceName (manage, tbuff);
   manage->seqbackupcreated = false;
 }
 
@@ -1863,15 +1889,20 @@ manageSequenceNew (GtkMenuItem *mi, gpointer udata)
 
   manageSequenceSave (manage);
 
-  /* CONTEXT: song list: default name for a new sequence */
+  /* CONTEXT: sequence: default name for a new sequence */
   snprintf (tbuff, sizeof (tbuff), _("New Sequence"));
-//  manageSetSequenceName (manage, tbuff);
+  manageSetSequenceName (manage, tbuff);
   manage->seqbackupcreated = false;
-//  uimusicqSetSelection (manage->slmusicq, "0");
-//  uimusicqClearQueueProcess (manage->slmusicq);
+// ### need to clear the list
 }
 
 static void
 manageSequenceSave (manageui_t *manage)
 {
+}
+
+static void
+manageSetSequenceName (manageui_t *manage, const char *name)
+{
+  uiEntrySetValue (&manage->seqname, name);
 }

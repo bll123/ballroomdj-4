@@ -52,6 +52,7 @@ void uiEntryPeerBuffer (uientry_t *targetentry, uientry_t *sourceentry);
 GtkWidget * uiEntryGetWidget (uientry_t *entry);
 const char * uiEntryGetValue (uientry_t *entry);
 void uiEntrySetValue (uientry_t *entry, const char *value);
+void uiEntrySetColor (uientry_t *entry, const char *color);
 void uiEntrySetValidate (uientry_t *entry,
     uiutilsentryval_t valfunc, void *udata);
 bool uiEntryValidate (uientry_t *entry);
@@ -153,7 +154,6 @@ void uiProgressBarSet (UIWidget *uipb, double val);
 
 /* uigtktreeview.c */
 GtkWidget * uiCreateTreeView (void);
-GType * uiAppendType (GType *types, int *ncol, int type);
 GtkTreeViewColumn * uiAddDisplayColumns (GtkWidget *tree,
     slist_t *sellist, int col, int fontcol, int ellipsizeCol);
 GType * uiAddDisplayTypes (GType *types, slist_t *sellist, int *col);

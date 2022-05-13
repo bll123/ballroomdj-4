@@ -88,7 +88,7 @@ typedef bool (*uiutilsentryval_t)(void *entry, void *udata);
 
 typedef struct {
   GtkEntryBuffer  *buffer;
-  GtkWidget       *entry;
+  UIWidget        uientry;
   int             entrySize;
   int             maxSize;
   uiutilsentryval_t validateFunc;
