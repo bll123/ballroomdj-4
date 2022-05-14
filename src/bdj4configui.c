@@ -56,6 +56,7 @@
 #include "templateutil.h"
 #include "tmutil.h"
 #include "ui.h"
+#include "uiduallist.h"
 #include "uiutils.h"
 #include "validate.h"
 #include "volume.h"
@@ -333,6 +334,7 @@ typedef struct {
   GtkWidget         *notebook;
   GtkWidget         *statusMsg;
   confuitable_t     tables [CONFUI_ID_TABLE_MAX];
+  uiduallist_t      *dispselduallist;
   /* options */
   datafile_t        *optiondf;
   nlist_t           *options;
@@ -490,13 +492,10 @@ static void   confuiDanceSpinboxChg (GtkSpinButton *sb, gpointer udata);
 static bool   confuiDanceValidateAnnouncement (void *edata, void *udata);
 
 /* display settings */
-static void   confuiCreateTagListingTable (configui_t *confui);
 static void   confuiDispSettingChg (GtkSpinButton *sb, gpointer udata);
 static void   confuiDispSaveTable (configui_t *confui, int selidx);
-static void   confuiCreateTagTableDisp (configui_t *confui);
+static void   confuiCreateTagSelectedDisp (configui_t *confui);
 static void   confuiCreateTagListingDisp (configui_t *confui);
-static void   confuiDispSelect (GtkButton *b, gpointer udata);
-static void   confuiDispRemove (GtkButton *b, gpointer udata);
 
 static int gKillReceived = 0;
 
@@ -530,6 +529,7 @@ main (int argc, char *argv[])
   confui.listingtaglist = NULL;
   confui.localip = NULL;
   confui.stopwaitcount = 0;
+  confui.dispselduallist = NULL;
   for (int i = 0; i < CONFUI_ID_TABLE_MAX; ++i) {
     confui.tables [i].tree = NULL;
     confui.tables [i].sel = NULL;
@@ -1191,11 +1191,12 @@ static void
 confuiBuildUIDispSettings (configui_t *confui)
 {
   GtkWidget     *vbox;
-  GtkWidget     *hbox;
   GtkWidget     *widget;
-  GtkWidget     *dvbox;
-  GtkWidget     *tree;
+  UIWidget      uiwidget;
   UIWidget      sg;
+
+  uiutilsUIWidgetInit (&uiwidget);
+  uiutilsUIWidgetInit (&sg);
 
   /* display settings */
   vbox = confuiMakeNotebookTab (confui, confui->notebook,
@@ -1209,78 +1210,14 @@ confuiBuildUIDispSettings (configui_t *confui)
       confui->uiitem [CONFUI_SPINBOX_DISP_SEL].listidx);
   g_signal_connect (widget, "value-changed", G_CALLBACK (confuiDispSettingChg), confui);
 
-  hbox = uiCreateHorizBoxWW ();
-  uiWidgetAlignHorizStartW (hbox);
-  uiBoxPackStartExpandWW (vbox, hbox);
-
-  widget = uiCreateScrolledWindowW (300);
-  uiWidgetExpandVertW (widget);
-  uiBoxPackStartExpandWW (hbox, widget);
-
-  tree = uiCreateTreeView ();
-  uiSetCss (tree,
-      "treeview { background-color: shade(@theme_base_color,0.8); } "
-      "treeview:selected { background-color: @theme_selected_bg_color; } ");
-  confui->tables [CONFUI_ID_DISP_SEL_LIST].tree = tree;
-  confui->tables [CONFUI_ID_DISP_SEL_LIST].sel =
-      gtk_tree_view_get_selection (GTK_TREE_VIEW (tree));
   confui->tables [CONFUI_ID_DISP_SEL_LIST].flags = CONFUI_TABLE_NONE;
-  uiWidgetSetMarginStartW (tree, uiBaseMarginSz * 8);
-  uiWidgetSetMarginTopW (tree, uiBaseMarginSz * 8);
-  uiWidgetExpandVertW (tree);
-  gtk_container_add (GTK_CONTAINER (widget), tree);
-
-  dvbox = uiCreateVertBoxWW ();
-  uiWidgetSetAllMarginsW (dvbox, uiBaseMarginSz * 4);
-  uiWidgetSetMarginTopW (dvbox, uiBaseMarginSz * 64);
-  uiWidgetAlignVertStartW (dvbox);
-  uiBoxPackStartWW (hbox, dvbox);
-
-  /* CONTEXT: configuration: display settings: button: add the selected field */
-  widget = uiCreateButton (NULL, NULL, _("Select"), "button_right",
-      confuiDispSelect, confui);
-  uiBoxPackStartWW (dvbox, widget);
-
-  /* CONTEXT: configuration: display settings: button: remove the selected field */
-  widget = uiCreateButton (NULL, NULL, _("Remove"), "button_left",
-      confuiDispRemove, confui);
-  uiBoxPackStartWW (dvbox, widget);
-
-  widget = uiCreateScrolledWindowW (300);
-  uiWidgetExpandVertW (widget);
-  uiBoxPackStartExpandWW (hbox, widget);
-
-  tree = uiCreateTreeView ();
-  uiSetCss (tree,
-      "treeview { background-color: shade(@theme_base_color,0.8); } "
-      "treeview:selected { background-color: @theme_selected_bg_color; } ");
-  confui->tables [CONFUI_ID_DISP_SEL_TABLE].tree = tree;
-  confui->tables [CONFUI_ID_DISP_SEL_TABLE].sel =
-      gtk_tree_view_get_selection (GTK_TREE_VIEW (tree));
   confui->tables [CONFUI_ID_DISP_SEL_TABLE].flags = CONFUI_TABLE_NONE;
-  uiWidgetSetMarginStartW (tree, uiBaseMarginSz * 8);
-  uiWidgetSetMarginTopW (tree, uiBaseMarginSz * 8);
-  uiWidgetExpandVertW (tree);
-  gtk_container_add (GTK_CONTAINER (widget), tree);
 
-  dvbox = uiCreateVertBoxWW ();
-  uiWidgetSetAllMarginsW (dvbox, uiBaseMarginSz * 4);
-  uiWidgetSetMarginTopW (dvbox, uiBaseMarginSz * 64);
-  uiWidgetAlignVertStartW (dvbox);
-  uiBoxPackStartWW (hbox, dvbox);
+  /* this will get fixed at a later date */
+  uiwidget.widget = vbox;
 
-  /* CONTEXT: configuration: display settings: button: move the selected field up */
-  widget = uiCreateButton (NULL, NULL, _("Move Up"), "button_up",
-      confuiTableMoveUp, confui);
-  uiBoxPackStartWW (dvbox, widget);
-
-  /* CONTEXT: configuration: display settings: button: move the selected field down */
-  widget = uiCreateButton (NULL, NULL, _("Move Down"), "button_down",
-      confuiTableMoveDown, confui);
-  uiBoxPackStartWW (dvbox, widget);
-
-  /* call this after both tree views have been instantiated */
-  confuiCreateTagListingTable (confui);
+  confui->dispselduallist = uiCreateDualList (&uiwidget,
+      DUALLIST_FLAGS_NONE, NULL, NULL);
 }
 
 static void
@@ -3447,10 +3384,11 @@ confuiTableMove (configui_t *confui, int dir)
 
   logProcBegin (LOG_PROC, "confuiTableMove");
   tree = confui->tables [confui->tablecurr].tree;
-  if (confui->tablecurr == CONFUI_ID_DISP_SEL_LIST) {
-    tree = confui->tables [CONFUI_ID_DISP_SEL_TABLE].tree;
-  }
   flags = confui->tables [confui->tablecurr].flags;
+
+  if (tree == NULL) {
+    return;
+  }
 
   count = gtk_tree_selection_count_selected_rows (
       confui->tables [confui->tablecurr].sel);
@@ -3458,14 +3396,18 @@ confuiTableMove (configui_t *confui, int dir)
     logProcEnd (LOG_PROC, "confuiTableMove", "no-selection");
     return;
   }
+
   gtk_tree_selection_get_selected (
-      confui->tables [CONFUI_ID_DISP_SEL_TABLE].sel, &model, &iter);
+      confui->tables [confui->tablecurr].sel, &model, &iter);
 
   path = gtk_tree_model_get_path (model, &iter);
-  pathstr = gtk_tree_path_to_string (path);
-  sscanf (pathstr, "%d", &idx);
-  free (pathstr);
-  gtk_tree_path_free (path);
+  if (path != NULL) {
+    pathstr = gtk_tree_path_to_string (path);
+    sscanf (pathstr, "%d", &idx);
+    free (pathstr);
+    gtk_tree_path_free (path);
+  }
+
   if (idx == 1 &&
       dir == CONFUI_MOVE_PREV &&
       (flags & CONFUI_TABLE_KEEP_FIRST) == CONFUI_TABLE_KEEP_FIRST) {
@@ -3597,6 +3539,11 @@ confuiTableAdd (GtkButton *b, gpointer udata)
   }
 
   tree = confui->tables [confui->tablecurr].tree;
+  if (tree == NULL) {
+    logProcEnd (LOG_PROC, "confuiTableAdd", "no-tree");
+    return;
+  }
+
   flags = confui->tables [confui->tablecurr].flags;
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (tree));
   count = gtk_tree_selection_count_selected_rows (
@@ -3719,8 +3666,9 @@ confuiSwitchTable (GtkNotebook *nb, GtkWidget *page, guint pagenum, gpointer uda
     confuiUpdateOrgExamples (confui, bdjoptGetStr (OPT_G_AO_PATHFMT));
   }
   if (confui->tablecurr == CONFUI_ID_DISP_SEL_LIST) {
-    confuiCreateTagTableDisp (confui);
+    /* be sure to create the listing first */
     confuiCreateTagListingDisp (confui);
+    confuiCreateTagSelectedDisp (confui);
   }
 
   if (confui->tablecurr >= CONFUI_ID_TABLE_MAX) {
@@ -3729,6 +3677,10 @@ confuiSwitchTable (GtkNotebook *nb, GtkWidget *page, guint pagenum, gpointer uda
   }
 
   tree = confui->tables [confui->tablecurr].tree;
+  if (tree == NULL) {
+    logProcEnd (LOG_PROC, "confuiSwitchTable", "no-tree");
+    return;
+  }
 
   confuiTableSetDefaultSelection (confui, tree,
       confui->tables [confui->tablecurr].sel);
@@ -4746,48 +4698,6 @@ confuiDanceValidateAnnouncement (void *edata, void *udata)
 /* display settings */
 
 static void
-confuiCreateTagListingTable (configui_t *confui)
-{
-  GtkWidget     *tree;
-  GtkCellRenderer   *renderer = NULL;
-  GtkTreeViewColumn *column = NULL;
-
-  tree = confui->tables [CONFUI_ID_DISP_SEL_LIST].tree;
-  gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (tree), FALSE);
-
-  renderer = gtk_cell_renderer_text_new ();
-  column = gtk_tree_view_column_new_with_attributes ("", renderer,
-      "text", CONFUI_TAG_COL_TAG,
-      NULL);
-  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
-  gtk_tree_view_append_column (GTK_TREE_VIEW (tree), column);
-
-  renderer = gtk_cell_renderer_text_new ();
-  column = gtk_tree_view_column_new_with_attributes ("", renderer,
-      "text", CONFUI_TAG_COL_SB_PAD,
-      NULL);
-  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
-  gtk_tree_view_append_column (GTK_TREE_VIEW (tree), column);
-
-  tree = confui->tables [CONFUI_ID_DISP_SEL_TABLE].tree;
-  gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (tree), FALSE);
-
-  renderer = gtk_cell_renderer_text_new ();
-  column = gtk_tree_view_column_new_with_attributes ("", renderer,
-      "text", CONFUI_TAG_COL_TAG,
-      NULL);
-  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
-  gtk_tree_view_append_column (GTK_TREE_VIEW (tree), column);
-
-  renderer = gtk_cell_renderer_text_new ();
-  column = gtk_tree_view_column_new_with_attributes ("", renderer,
-      "text", CONFUI_TAG_COL_SB_PAD,
-      NULL);
-  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
-  gtk_tree_view_append_column (GTK_TREE_VIEW (tree), column);
-}
-
-static void
 confuiDispSettingChg (GtkSpinButton *sb, gpointer udata)
 {
   configui_t  *confui = udata;
@@ -4801,51 +4711,41 @@ confuiDispSettingChg (GtkSpinButton *sb, gpointer udata)
   confui->uiitem [CONFUI_SPINBOX_DISP_SEL].listidx = nselidx;
 
   confuiDispSaveTable (confui, oselidx);
-  confuiCreateTagTableDisp (confui);
+  /* be sure to create the listing first */
   confuiCreateTagListingDisp (confui);
+  confuiCreateTagSelectedDisp (confui);
 }
 
 static void
 confuiDispSaveTable (configui_t *confui, int selidx)
 {
   slist_t       *tlist;
-  gboolean      valid;
-  GtkWidget     *tree;
-  GtkTreeModel  *model;
-  GtkTreeIter   iter;
+  slist_t       *nlist;
+  slistidx_t    val;
+  slistidx_t    iteridx;
+  char          *tstr;
 
-
-  if (! confui->tables [CONFUI_ID_DISP_SEL_TABLE].changed) {
+  if (! uiduallistIsChanged (confui->dispselduallist)) {
     return;
   }
 
-  tree = confui->tables [CONFUI_ID_DISP_SEL_TABLE].tree;
-  model = gtk_tree_view_get_model (GTK_TREE_VIEW (tree));
-
-  tlist = slistAlloc ("dispsel-save", LIST_UNORDERED, NULL);
-  valid = gtk_tree_model_get_iter_first (model, &iter);
-  while (valid) {
-    gulong  tval;
-    char    *tag;
-
-    gtk_tree_model_get (model, &iter, CONFUI_TAG_COL_TAG_IDX, &tval, -1);
-    tag = tagdefs [tval].tag;
-    slistSetNum (tlist, tag, 0);
-    valid = gtk_tree_model_iter_next (model, &iter);
+  nlist = slistAlloc ("dispsel-save-tmp", LIST_UNORDERED, NULL);
+  tlist = uiduallistGetList (confui->dispselduallist);
+  slistStartIterator (tlist, &iteridx);
+  while ((val = slistIterateValueNum (tlist, &iteridx)) >= 0) {
+    tstr = tagdefs [val].tag;
+    slistSetNum (nlist, tstr, 0);
   }
 
-  dispselSave (confui->dispsel, selidx, tlist);
+  dispselSave (confui->dispsel, selidx, nlist);
+
   slistFree (tlist);
+  slistFree (nlist);
 }
 
 static void
-confuiCreateTagTableDisp (configui_t *confui)
+confuiCreateTagSelectedDisp (configui_t *confui)
 {
-  GtkWidget     *tree;
-  GtkListStore  *store;
-  GtkTreeIter   iter;
-  char          *keystr;
-  slistidx_t    seliteridx;
   dispselsel_t  selidx;
   slist_t       *sellist;
   dispsel_t     *dispsel;
@@ -4853,183 +4753,22 @@ confuiCreateTagTableDisp (configui_t *confui)
 
   selidx = uiSpinboxTextGetValue (
       &confui->uiitem [CONFUI_SPINBOX_DISP_SEL].u.spinbox);
+
   dispsel = confui->dispsel;
   sellist = dispselGetList (dispsel, selidx);
 
-  tree = confui->tables [CONFUI_ID_DISP_SEL_TABLE].tree;
-
-  store = gtk_list_store_new (CONFUI_TAG_COL_MAX,
-      G_TYPE_STRING, G_TYPE_STRING, G_TYPE_ULONG);
-  assert (store != NULL);
-
-  slistStartIterator (sellist, &seliteridx);
-  while ((keystr = slistIterateKey (sellist, &seliteridx)) != NULL) {
-    int val;
-
-    val = slistGetNum (sellist, keystr);
-    gtk_list_store_append (store, &iter);
-    gtk_list_store_set (store, &iter,
-        CONFUI_TAG_COL_TAG, keystr,
-        CONFUI_TAG_COL_SB_PAD, "    ",
-        CONFUI_TAG_COL_TAG_IDX, val,
-        -1);
-  }
-
-  gtk_tree_view_set_model (GTK_TREE_VIEW (tree), GTK_TREE_MODEL (store));
-  g_object_unref (store);
-
-  confuiTableSetDefaultSelection (confui, tree,
-      confui->tables [CONFUI_ID_DISP_SEL_TABLE].sel);
+  uiduallistSet (confui->dispselduallist, sellist, DUALLIST_TREE_TARGET);
 }
 
 
 static void
 confuiCreateTagListingDisp (configui_t *confui)
 {
-  GtkWidget     *tree;
-  GtkListStore  *store;
-  GtkTreeModel  *model;
-  GtkTreeIter   iter;
-  GtkWidget     *tabletree;
-  GtkTreeModel  *tablemodel;
-  GtkTreeIter   tableiter;
-  GtkTreePath   *path;
-  char          *keystr;
-  slistidx_t    iteridx;
   dispselsel_t  selidx;
-  gboolean      valid;
-  int           count;
-
 
   selidx = uiSpinboxTextGetValue (&confui->uiitem [CONFUI_SPINBOX_DISP_SEL].u.spinbox);
 
-  tree = confui->tables [CONFUI_ID_DISP_SEL_LIST].tree;
-
-  tabletree = confui->tables [CONFUI_ID_DISP_SEL_TABLE].tree;
-  tablemodel = gtk_tree_view_get_model (GTK_TREE_VIEW (tabletree));
-
-  /* get the current selection for the listing display */
-  count = uiTreeViewGetSelection (tree, &model, &iter);
-  if (count == 1) {
-    path = gtk_tree_model_get_path (model, &iter);
-  }
-
-  store = gtk_list_store_new (CONFUI_TAG_COL_MAX,
-      G_TYPE_STRING, G_TYPE_STRING, G_TYPE_ULONG);
-  assert (store != NULL);
-
-  slistStartIterator (confui->listingtaglist, &iteridx);
-  while ((keystr = slistIterateKey (confui->listingtaglist, &iteridx)) != NULL) {
-    int   val;
-    bool  match = false;
-
-    val = slistGetNum (confui->listingtaglist, keystr);
-
-    if (selidx != DISP_SEL_SONGEDIT_A && selidx != DISP_SEL_SONGEDIT_B) {
-      if (tagdefs [val].songEditOnly) {
-        continue;
-      }
-    }
-
-    match = false;
-    /* just do a brute force search; the lists are not long */
-    /* horribly inefficient */
-    valid = gtk_tree_model_get_iter_first (tablemodel, &tableiter);
-    while (valid) {
-      gulong  tval;
-
-      gtk_tree_model_get (tablemodel, &tableiter, CONFUI_TAG_COL_TAG_IDX, &tval, -1);
-
-      if ((int) tval == val) {
-        match = true;
-        break;
-      }
-      valid = gtk_tree_model_iter_next (tablemodel, &tableiter);
-      if (! valid) {
-        break;
-      }
-    }
-    if (match) {
-      continue;
-    }
-
-    gtk_list_store_append (store, &iter);
-    gtk_list_store_set (store, &iter,
-        CONFUI_TAG_COL_TAG, keystr,
-        CONFUI_TAG_COL_SB_PAD, "    ",
-        CONFUI_TAG_COL_TAG_IDX, val,
-        -1);
-  }
-
-  gtk_tree_view_set_model (GTK_TREE_VIEW (tree), GTK_TREE_MODEL (store));
-  g_object_unref (store);
-
-  if (count == 1) {
-    gtk_tree_selection_select_path (
-        confui->tables [CONFUI_ID_DISP_SEL_LIST].sel, path);
-  }
-  confuiTableSetDefaultSelection (confui, tree,
-      confui->tables [CONFUI_ID_DISP_SEL_LIST].sel);
-}
-
-static void
-confuiDispSelect (GtkButton *b, gpointer udata)
-{
-  configui_t    *confui = udata;
-  GtkWidget     *tree;
-  GtkTreeModel  *model;
-  GtkTreeIter   iter;
-  GtkTreePath   *path;
-  int           count;
-
-  tree = confui->tables [CONFUI_ID_DISP_SEL_LIST].tree;
-  count = uiTreeViewGetSelection (tree, &model, &iter);
-
-  if (count == 1) {
-    char          *str;
-    gulong        tval;
-    GtkWidget     *tabletree;
-    GtkTreeModel  *tablemodel;
-
-    tabletree = confui->tables [CONFUI_ID_DISP_SEL_TABLE].tree;
-    tablemodel = gtk_tree_view_get_model (GTK_TREE_VIEW (tabletree));
-
-    gtk_tree_model_get (model, &iter, CONFUI_TAG_COL_TAG, &str, -1);
-    gtk_tree_model_get (model, &iter, CONFUI_TAG_COL_TAG_IDX, &tval, -1);
-
-    gtk_list_store_append (GTK_LIST_STORE (tablemodel), &iter);
-    gtk_list_store_set (GTK_LIST_STORE (tablemodel), &iter,
-        CONFUI_TAG_COL_TAG, str,
-        CONFUI_TAG_COL_SB_PAD, "    ",
-        CONFUI_TAG_COL_TAG_IDX, tval,
-        -1);
-
-    path = gtk_tree_model_get_path (tablemodel, &iter);
-    gtk_tree_selection_select_path (
-        confui->tables [CONFUI_ID_DISP_SEL_TABLE].sel, path);
-
-    confui->tables [CONFUI_ID_DISP_SEL_TABLE].changed = true;
-    confuiCreateTagListingDisp (confui);
-  }
-}
-
-static void
-confuiDispRemove (GtkButton *b, gpointer udata)
-{
-  configui_t    * confui = udata;
-
-  GtkWidget     * tree;
-  GtkTreeModel  * model;
-  GtkTreeIter   iter;
-  int           count;
-
-  tree = confui->tables [CONFUI_ID_DISP_SEL_TABLE].tree;
-  count = uiTreeViewGetSelection (tree, &model, &iter);
-
-  if (count == 1) {
-    gtk_list_store_remove (GTK_LIST_STORE (model), &iter);
-    confui->tables [CONFUI_ID_DISP_SEL_TABLE].changed = true;
-    confuiCreateTagListingDisp (confui);
-  }
+  uiduallistSet (confui->dispselduallist, confui->listingtaglist,
+      DUALLIST_TREE_SOURCE);
 }
 

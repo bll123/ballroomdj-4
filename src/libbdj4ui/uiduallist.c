@@ -243,9 +243,8 @@ uiduallistSet (uiduallist_t *duallist, slist_t *slist, int which)
   if (which == DUALLIST_TREE_SOURCE) {
     duallist->sourcelist = slist;
   }
-  if (which == DUALLIST_TREE_TARGET) {
-    uiduallistSet (duallist, duallist->sourcelist, DUALLIST_TREE_SOURCE);
-  }
+  /* the assumption made is that the source tree has been populated */
+  /* just before the target tree */
 
   tree = duallist->trees [which].tree;
   store = gtk_list_store_new (DUALLIST_COL_MAX,
@@ -264,23 +263,30 @@ uiduallistSet (uiduallist_t *duallist, slist_t *slist, int which)
         DUALLIST_COL_DISP_IDX, val,
         -1);
 
-    /* if inserting into the target tree, and the peristent flag */
+    /* if inserting into the target tree, and the persistent flag */
     /* is not set, remove the matching entries from the source tree */
     if (which == DUALLIST_TREE_TARGET &&
         (duallist->flags & DUALLIST_FLAGS_PERSISTENT) != DUALLIST_FLAGS_PERSISTENT) {
       GtkWidget         *stree;
       GtkTreeModel      *smodel;
+      GtkTreePath       *path;
+      GtkTreeIter       siter;
 
-      stree = duallist->trees [DUALLIST_TREE_TARGET].tree;
+      stree = duallist->trees [DUALLIST_TREE_SOURCE].tree;
       smodel = gtk_tree_view_get_model (GTK_TREE_VIEW (stree));
 
       duallist->pos = 0;
       duallist->searchstr = keystr;
       duallist->searchtype = DUALLIST_SEARCH_REMOVE;
+      /* this is not efficient, but the lists are relatively short */
       gtk_tree_model_foreach (smodel, uiduallistSourceSearch, duallist);
+
       snprintf (tmp, sizeof (tmp), "%d", duallist->pos);
-// ### get the path/iter for this position
-//      gtk_list_store_remove (GTK_LIST_STORE (smodel), &siter);
+      path = gtk_tree_path_new_from_string (tmp);
+      if (gtk_tree_model_get_iter (smodel, &siter, path)) {
+        gtk_list_store_remove (GTK_LIST_STORE (smodel), &siter);
+      }
+      gtk_tree_path_free (path);
     }
   }
 
@@ -358,6 +364,10 @@ uiduallistMove (uiduallist_t *duallist, int which, int dir)
   int               idx;
 
   tree = duallist->trees [which].tree;
+  if (tree == NULL) {
+    return;
+  }
+
   sel = duallist->trees [which].sel;
   count = gtk_tree_selection_count_selected_rows (sel);
   if (count != 1) {
