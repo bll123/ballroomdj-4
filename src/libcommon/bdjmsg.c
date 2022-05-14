@@ -26,6 +26,7 @@ static char *routetxt [ROUTE_MAX] = {
   [ROUTE_RAFFLE] = "RAFFLE",
   [ROUTE_REMCTRL] = "REMCTRL",
   [ROUTE_STARTERUI] = "STARTERUI",
+  [ROUTE_HELPERUI] = "HELPERUI",
 };
 
 /* for debugging */

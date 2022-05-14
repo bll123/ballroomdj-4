@@ -475,7 +475,7 @@ sysvarsInit (const char *argv0)
   }
 
   lsysvars [SVL_BDJIDX] = 0;
-  lsysvars [SVL_BASEPORT] = 35548;
+  lsysvars [SVL_BASEPORT] = 32548;
 
   lsysvars [SVL_NUM_PROC] = 2;
   if (isWindows ()) {

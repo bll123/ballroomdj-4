@@ -20,6 +20,7 @@ typedef enum {
   ROUTE_RAFFLE,
   ROUTE_REMCTRL,
   ROUTE_STARTERUI,
+  ROUTE_HELPERUI,
   ROUTE_MAX,
 } bdjmsgroute_t;
 

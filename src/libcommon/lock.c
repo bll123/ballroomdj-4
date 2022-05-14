@@ -33,6 +33,7 @@ static char *locknames [ROUTE_MAX] = {
   [ROUTE_DBTAG] = "dbtag",
   [ROUTE_MARQUEE] = "marquee",
   [ROUTE_RAFFLE] = "raffle",
+  [ROUTE_HELPERUI] = "helperui",
 };
 
 static pid_t   getPidFromFile (char *);

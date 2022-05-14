@@ -74,6 +74,9 @@ add_subdirectory (libpli)
 add_subdirectory (libvol)
 add_subdirectory (libbdj4ui)
 add_subdirectory (libuigtk3)
+# testing
+add_subdirectory (check)
+
 
 add_executable (bdj4locatebdj3 bdj4locatebdj3.c)
 if (WIN32)
@@ -383,7 +386,22 @@ target_link_libraries (bdj4configui
 addIntlLibrary (bdj4configui)
 addWinSockLibrary (bdj4configui)
 
-add_subdirectory (check)
+add_executable (bdj4helperui bdj4helperui.c)
+if (WIN32)
+  target_compile_options (bdj4helperui PRIVATE -municode)
+endif()
+if (WIN32)
+  target_compile_options (bdj4helperui PRIVATE -mwindows)
+endif()
+target_link_libraries (bdj4helperui
+  libbdj4ui
+  libuigtk3
+  libbdj4 libbdj4common
+  ${GTK_LDFLAGS}
+  m
+)
+addIntlLibrary (bdj4helperui)
+addWinSockLibrary (bdj4helperui)
 
 install (TARGETS
   bdj4 bdj4g
@@ -392,6 +410,7 @@ install (TARGETS
   bdj4dbupdate bdj4dbtag
   bdj4main bdj4player bdj4mobmq bdj4rc bdj4marquee
   bdj4starterui bdj4playerui bdj4manageui bdj4configui
+  bdj4helperui
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
 
@@ -405,6 +424,7 @@ if (APPLE)
   macUpdateRPath (bdj4tags)
   macUpdateRPath (bdj4dbupdate)
   macUpdateRPath (bdj4dbtag)
+  macUpdateRPath (bdj4helperui)
   macUpdateRPath (bdj4main)
   macUpdateRPath (bdj4player)
   macUpdateRPath (bdj4mobmq)
