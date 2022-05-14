@@ -81,7 +81,7 @@ void  uisongselCreateGenreList (uisongsel_t *uisongsel);
 void  uisongselFilterDanceProcess (uisongsel_t *uisongsel, ssize_t idx);
 
 /* uisongselfilter.c */
-void uisongselFilterDialog (void *udata);
+bool uisongselFilterDialog (void *udata);
 void uisongselFilterDanceSignal (GtkTreeView *tv, GtkTreePath *path,
     GtkTreeViewColumn *column, gpointer udata);
 
@@ -92,7 +92,7 @@ GtkWidget * uisongselBuildUI (uisongsel_t *uisongsel, GtkWidget *parentwin);
 void      uisongselClearData (uisongsel_t *uisongsel);
 void      uisongselPopulateData (uisongsel_t *uisongsel);
 void      uisongselSetFavoriteForeground (uisongsel_t *uisongsel, char *color);
-void      uisongselQueueProcessSelectHandler (void *udata);
+bool      uisongselQueueProcessSelectCallback (void *udata);
 
 #endif /* INC_UISONGSEL_H */
 

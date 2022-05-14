@@ -47,7 +47,7 @@ uiWidgetSetAllMargins (UIWidget *uiwidget, int margin)
   gtk_widget_set_margin_end (uiwidget->widget, margin);
 }
 
-void
+inline void
 uiWidgetSetMarginTop (UIWidget *uiwidget, int margin)
 {
   if (uiwidget->widget == NULL) {
@@ -57,7 +57,7 @@ uiWidgetSetMarginTop (UIWidget *uiwidget, int margin)
   gtk_widget_set_margin_top (uiwidget->widget, margin);
 }
 
-void
+inline void
 uiWidgetSetMarginStart (UIWidget *uiwidget, int margin)
 {
   if (uiwidget->widget == NULL) {
@@ -202,7 +202,7 @@ uiWidgetSetSizeRequest (UIWidget *uiwidget, int width, int height)
   gtk_widget_set_size_request (uiwidget->widget, width, height);
 }
 
-void
+inline void
 uiWidgetClearBackdropFlag (UIWidget *uiwidget)
 {
   gtk_widget_unset_state_flags (uiwidget->widget, GTK_STATE_FLAG_BACKDROP);
@@ -254,7 +254,7 @@ uiWidgetSetAllMarginsW (GtkWidget *widget, int margin)
   gtk_widget_set_margin_end (widget, margin);
 }
 
-void
+inline void
 uiWidgetSetMarginTopW (GtkWidget *widget, int margin)
 {
   if (widget == NULL) {
@@ -264,7 +264,7 @@ uiWidgetSetMarginTopW (GtkWidget *widget, int margin)
   gtk_widget_set_margin_top (widget, margin);
 }
 
-void
+inline void
 uiWidgetSetMarginStartW (GtkWidget *widget, int margin)
 {
   if (widget == NULL) {
@@ -365,7 +365,7 @@ uiWidgetShowAllW (GtkWidget *widget)
   gtk_widget_show_all (widget);
 }
 
-void
+inline void
 uiWidgetClearBackdropFlagW (GtkWidget *widget)
 {
   gtk_widget_unset_state_flags (widget, GTK_STATE_FLAG_BACKDROP);

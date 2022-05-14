@@ -66,8 +66,8 @@ typedef struct {
   bool              inscroll : 1;
 } uisongselgtk_t;
 
-static void uisongselQueueProcessQueueHandler (void *udata);
-static void uisongselQueueProcessPlayHandler (void *udata);
+static bool uisongselQueueProcessQueueCallback (void *udata);
+static bool uisongselQueueProcessPlayCallback (void *udata);
 static void uisongselQueueProcessHandler (void *udata, musicqidx_t mqidx);
 static void uisongselInitializeStore (uisongsel_t *uisongsel);
 static void uisongselCreateRows (uisongsel_t *uisongsel);
@@ -158,7 +158,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, GtkWidget *parentwin)
     /* CONTEXT: select a song to be added to the song list */
     strlcpy (tbuff, _("Select"), sizeof (tbuff));
     uiutilsUICallbackInit (&uiw->callbacks [SONGSEL_CALLBACK_SELECT],
-        uisongselQueueProcessSelectHandler, uisongsel);
+        uisongselQueueProcessSelectCallback, uisongsel);
     uiCreateButton (&uiwidget,
         &uiw->callbacks [SONGSEL_CALLBACK_SELECT],
         tbuff, NULL, NULL, NULL);
@@ -173,7 +173,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, GtkWidget *parentwin)
       /* CONTEXT: queue a song to be played */
       strlcpy (tbuff, _("Queue"), sizeof (tbuff));
       uiutilsUICallbackInit (&uiw->callbacks [SONGSEL_CALLBACK_QUEUE],
-          uisongselQueueProcessQueueHandler, uisongsel);
+          uisongselQueueProcessQueueCallback, uisongsel);
       uiCreateButton (&uiwidget,
           &uiw->callbacks [SONGSEL_CALLBACK_QUEUE],
           tbuff, NULL, NULL, NULL);
@@ -184,7 +184,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, GtkWidget *parentwin)
       /* CONTEXT: play the selected songs */
       strlcpy (tbuff, _("Play"), sizeof (tbuff));
       uiutilsUICallbackInit (&uiw->callbacks [SONGSEL_CALLBACK_PLAY],
-          uisongselQueueProcessPlayHandler, uisongsel);
+          uisongselQueueProcessPlayCallback, uisongsel);
       uiCreateButton (&uiwidget,
           &uiw->callbacks [SONGSEL_CALLBACK_PLAY],
           tbuff, NULL, NULL, NULL);
@@ -400,8 +400,8 @@ uisongselSetFavoriteForeground (uisongsel_t *uisongsel, char *color)
   }
 }
 
-inline void
-uisongselQueueProcessSelectHandler (void *udata)
+bool
+uisongselQueueProcessSelectCallback (void *udata)
 {
   uisongsel_t       *uisongsel = udata;
   uisongselgtk_t    * uiw;
@@ -418,23 +418,23 @@ uisongselQueueProcessSelectHandler (void *udata)
   uiw->selectedList = tlist;
   /* clear any selections on the tree */
   uisongselClearAllSelections (uisongsel);
-  return;
+  return UICB_CONT;
 }
 
 /* internal routines */
 
-inline static void
-uisongselQueueProcessQueueHandler (void *udata)
+static bool
+uisongselQueueProcessQueueCallback (void *udata)
 {
   musicqidx_t       mqidx;
 
   mqidx = MUSICQ_CURRENT;
   uisongselQueueProcessHandler (udata, mqidx);
-  return;
+  return UICB_CONT;
 }
 
-static void
-uisongselQueueProcessPlayHandler (void *udata)
+static bool
+uisongselQueueProcessPlayCallback (void *udata)
 {
   uisongsel_t     * uisongsel = udata;
   uisongselgtk_t  * uiw;
@@ -451,7 +451,7 @@ uisongselQueueProcessPlayHandler (void *udata)
   connSendMessage (uisongsel->conn, ROUTE_MAIN, MSG_CMD_NEXTSONG, NULL);
   /* queue to the hidden music queue */
   uisongselQueueProcessHandler (udata, mqidx);
-  return;
+  return UICB_CONT;
 }
 
 static void

@@ -53,24 +53,25 @@ main (int argc, char * argv[])
   FILE      *fh = NULL;
 
   static struct option bdj_options [] = {
-    { "check_all",      no_argument,        NULL,   1 },
     { "bdj4configui",   no_argument,        NULL,   3 },
+    { "bdj4dbupdate",   no_argument,        NULL,   15 },
+    { "bdj4helperui",   no_argument,        NULL,   18 },
+    { "bdj4info",       no_argument,        NULL,   13 },
+    { "bdj4installer",  no_argument,        NULL,   12 },
     { "bdj4main",       no_argument,        NULL,   5 },
-    { "main",           no_argument,        NULL,   5 },
     { "bdj4manageui",   no_argument,        NULL,   6 },
     { "bdj4marquee",    no_argument,        NULL,   7 },
     { "bdj4mobilemq",   no_argument,        NULL,   8 },
     { "bdj4player",     no_argument,        NULL,   9 },
     { "bdj4playerui",   no_argument,        NULL,   10 },
-    { "playerui",       no_argument,        NULL,   10 },
     { "bdj4remctrl",    no_argument,        NULL,   11 },
-    { "bdj4installer",  no_argument,        NULL,   12 },
-    { "installer",      no_argument,        NULL,   12 },
-    { "bdj4info",       no_argument,        NULL,   13 },
     { "bdj4starterui",  no_argument,        NULL,   14 },
-    { "bdj4dbupdate",   no_argument,        NULL,   15 },
-    { "bdj4updater",    no_argument,        NULL,   16 },
     { "bdj4tags",       no_argument,        NULL,   17 },
+    { "bdj4updater",    no_argument,        NULL,   16 },
+    { "check_all",      no_argument,        NULL,   1 },
+    { "installer",      no_argument,        NULL,   12 },
+    { "main",           no_argument,        NULL,   5 },
+    { "playerui",       no_argument,        NULL,   10 },
     /* bdj4updater */
     { "newinstall",     no_argument,        NULL,   0 },
     /* used by installer */
@@ -203,6 +204,11 @@ main (int argc, char * argv[])
       case 17: {
         prog = "bdj4tags";
         nodetach = true;
+        ++validargs;
+        break;
+      }
+      case 18: {
+        prog = "bdj4helperui";
         ++validargs;
         break;
       }

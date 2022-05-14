@@ -11,12 +11,15 @@
 #include "slist.h"
 #include "tmutil.h"
 
-typedef void (*UICallbackFunc)(void *udata);
+typedef bool (*UICallbackFunc)(void *udata);
 
 typedef struct {
   UICallbackFunc cb;
   void            *udata;
 } UICallback;
+
+#define UICB_STOP true
+#define UICB_CONT false
 
 typedef struct {
 #ifdef UI_USE_GTK3
@@ -25,6 +28,7 @@ typedef struct {
     GtkSizeGroup      *sg;
     GdkPixbuf         *pixbuf;
     GtkTreeSelection  *sel;
+    GtkTextBuffer     *buffer;
   };
 #endif
 } UIWidget;
@@ -79,9 +83,9 @@ typedef struct {
 } uidropdown_t;
 
 typedef struct {
-  GtkWidget     *scw;
-  GtkWidget     *textbox;
-  GtkTextBuffer *buffer;
+  UIWidget      scw;
+  UIWidget      textbox;
+  UIWidget      buffer;
 } uitextbox_t;
 
 typedef bool (*uiutilsentryval_t)(void *entry, void *udata);
@@ -129,5 +133,6 @@ int uiutilsNotebookIDGet (uiutilsnbtabid_t *nbtabid, int idx);
 void uiutilsUIWidgetInit (UIWidget *uiwidget);
 void uiutilsUIWidgetCopy (UIWidget *target, UIWidget *source);
 void uiutilsUICallbackInit (UICallback *uicb, UICallbackFunc cb, void *udata);
+bool uiutilsCallbackHandler (UICallback *uicb);
 
 #endif /* INC_UIUTILS_H */

@@ -63,6 +63,7 @@ typedef struct {
   int             stopwaitcount;
   datafile_t      *optiondf;
   nlist_t         *options;
+  UICallback      exitcb;
   UIWidget        window;
   UIWidget        pbar;
   UIWidget        infoBox;
@@ -100,7 +101,7 @@ static void     marqueeBuildUI (marquee_t *marquee);
 static int      marqueeMainLoop  (void *tmarquee);
 static int      marqueeProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
                     bdjmsgmsg_t msg, char *args, void *udata);
-static gboolean marqueeCloseWin (GtkWidget *window, GdkEvent *event, gpointer userdata);
+static bool     marqueeCloseCallback (void *udata);
 static gboolean marqueeToggleFullscreen (GtkWidget *window,
                     GdkEventButton *event, gpointer userdata);
 static void     marqueeSetMaximized (marquee_t *marquee);
@@ -321,9 +322,10 @@ marqueeBuildUI (marquee_t *marquee)
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon_marquee", ".svg", PATHBLD_MP_IMGDIR);
 
-  /* CONTEXT: marquee window title */
-  uiCreateMainWindow (&uiwidget, _("Marquee"), imgbuff,
-      marqueeCloseWin, marquee);
+  uiutilsUICallbackInit (&marquee->exitcb, marqueeCloseCallback, marquee);
+  uiCreateMainWindow (&uiwidget, &marquee->exitcb,
+      /* CONTEXT: marquee window title */
+      _("Marquee"), imgbuff);
   g_signal_connect (uiwidget.widget, "button-press-event", G_CALLBACK (marqueeToggleFullscreen), marquee);
   g_signal_connect (uiwidget.widget, "window-state-event", G_CALLBACK (marqueeWinState), marquee);
   g_signal_connect (uiwidget.widget, "map-event", G_CALLBACK (marqueeWinMapped), marquee);
@@ -592,27 +594,27 @@ marqueeProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 }
 
 
-static gboolean
-marqueeCloseWin (GtkWidget *window, GdkEvent *event, gpointer userdata)
+static bool
+marqueeCloseCallback (void *udata)
 {
-  marquee_t   *marquee = userdata;
+  marquee_t   *marquee = udata;
 
-  logProcBegin (LOG_PROC, "marqueeCloseWin");
+  logProcBegin (LOG_PROC, "marqueeCloseCallback");
 
   if (progstateCurrState (marquee->progstate) <= STATE_RUNNING) {
     if (! marquee->isMaximized && ! marquee->isIconified) {
       marqueeSaveWindowPosition (marquee);
     }
 
-    uiWindowIconifyW (window);
+    uiWindowIconify (&marquee->window);
     marquee->mqIconifyAction = true;
     marquee->isIconified = true;
     logProcEnd (LOG_PROC, "marqueeCloseWin", "user-close-win");
-    return TRUE;
+    return UICB_STOP;
   }
 
-  logProcEnd (LOG_PROC, "marqueeCloseWin", "");
-  return FALSE;
+  logProcEnd (LOG_PROC, "marqueeCloseCallback", "");
+  return UICB_CONT;
 }
 
 static gboolean

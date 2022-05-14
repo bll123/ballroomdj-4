@@ -46,15 +46,16 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
   bool        isbdj4 = false;
 
   static struct option bdj_options [] = {
-    { "bdj4",         no_argument,      NULL,   'B' },
-    { "bdj4main",     no_argument,      NULL,   0 },
-    { "main",         no_argument,      NULL,   0 },
-    { "bdj4playerui", no_argument,      NULL,   0 },
-    { "playerui",     no_argument,      NULL,   0 },
     { "bdj4configui", no_argument,      NULL,   0 },
-    { "bdj4manageui", no_argument,      NULL,   0 },
-    { "bdj4starterui", no_argument,     NULL,   0 },
     { "bdj4dbupdate", no_argument,      NULL,   0 },
+    { "bdj4helperui", no_argument,      NULL,   0 },
+    { "bdj4main",     no_argument,      NULL,   0 },
+    { "bdj4manageui", no_argument,      NULL,   0 },
+    { "bdj4",         no_argument,      NULL,   'B' },
+    { "bdj4playerui", no_argument,      NULL,   0 },
+    { "bdj4starterui", no_argument,     NULL,   0 },
+    { "main",         no_argument,      NULL,   0 },
+    { "playerui",     no_argument,      NULL,   0 },
     /* bdj4 loader options to ignore */
     { "debugself",    no_argument,      NULL,   0 },
     { "msys",         no_argument,      NULL,   0 },

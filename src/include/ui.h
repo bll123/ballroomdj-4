@@ -108,10 +108,12 @@ void uiLinkSetActivateCallback (UIWidget *uilink, UICallback *uicb);
 /* uigtktextbox.c */
 uitextbox_t  *uiTextBoxCreate (int height);
 void  uiTextBoxFree (uitextbox_t *tb);
+UIWidget * uiTextBoxGetScrolledWindow (uitextbox_t *tb);
 char  *uiTextBoxGetValue (uitextbox_t *tb);
 void  uiTextBoxSetReadonly (uitextbox_t *tb);
 void  uiTextBoxScrollToEnd (uitextbox_t *tb);
 void  uiTextBoxAppendStr (uitextbox_t *tb, const char *str);
+void  uiTextBoxAppendBoldStr (uitextbox_t *tb, const char *str);
 void  uiTextBoxSetValue (uitextbox_t *tb, const char *str);
 void  uiTextBoxDarken (uitextbox_t *tb);
 void  uiTextBoxVertExpand (uitextbox_t *tb);
@@ -168,8 +170,8 @@ char  *uiSelectDirDialog (uiselect_t *selectdata);
 char  *uiSelectFileDialog (uiselect_t *selectdata);
 
 /* uigtkwindow.c */
-void uiCreateMainWindow (UIWidget *uiwidget, const char *title,
-    const char *imagenm, void *cb, void *udata);
+void uiCreateMainWindow (UIWidget *uiwidget, UICallback *uicb,
+    const char *title, const char *imagenm);
 void uiCloseWindow (UIWidget *uiwindow);
 bool uiWindowIsMaximized (UIWidget *uiwindow);
 void uiWindowIconify (UIWidget *uiwindow);

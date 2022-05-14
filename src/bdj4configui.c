@@ -441,7 +441,7 @@ static char     * confuiGetLocalIP (configui_t *confui);
 static void     confuiSetStatusMsg (configui_t *confui, const char *msg);
 static int      confuiLocateWidgetIdx (configui_t *confui, void *wpointer);
 static void     confuiSpinboxTextInitDataNum (configui_t *confui, char *tag, int widx, ...);
-static void     confuiLinkHandler (void *udata);
+static bool     confuiLinkCallback (void *udata);
 
 /* table editing */
 static void   confuiTableMoveUp (GtkButton *b, gpointer udata);
@@ -2224,7 +2224,7 @@ confuiMakeItemLink (configui_t *confui, GtkWidget *vbox, UIWidget *sg,
   uiCreateLink (&uiwidget, disp, NULL);
   if (isMacOS ()) {
     uiutilsUICallbackInit (&confui->uiitem [widx].callback,
-        confuiLinkHandler, confui);
+        confuiLinkCallback, confui);
     confui->uiitem [widx].uri = NULL;
     uiLinkSetActivateCallback (&uiwidget, &confui->uiitem [widx].callback);
   }
@@ -3325,8 +3325,8 @@ confuiSpinboxTextInitDataNum (configui_t *confui, char *tag, int widx, ...)
   va_end (valist);
 }
 
-static void
-confuiLinkHandler (void *udata)
+static bool
+confuiLinkCallback (void *udata)
 {
   configui_t  *confui = udata;
   char        *uri;
@@ -3340,14 +3340,16 @@ confuiLinkHandler (void *udata)
     widx = CONFUI_WIDGET_RC_QR_CODE;
   }
   if (widx < 0) {
-    return;
+    return UICB_CONT;
   }
 
   uri = confui->uiitem [widx].uri;
   if (uri != NULL) {
     snprintf (tmp, sizeof (tmp), "open %s", uri);
     system (tmp);
+    return UICB_STOP;
   }
+  return UICB_CONT;
 }
 
 /* table editing */

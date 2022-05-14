@@ -198,7 +198,7 @@ static gboolean manageCloseWin (GtkWidget *window, GdkEvent *event, gpointer use
 static void     manageSigHandler (int sig);
 /* update database */
 static void     manageDbChg (GtkSpinButton *sb, gpointer udata);
-static void     manageDbStart (void *udata);
+static bool     manageDbStart (void *udata);
 static void     manageDbProgressMsg (manageui_t *manage, char *args);
 static void     manageDbStatusMsg (manageui_t *manage, char *args);
 /* song editor */
@@ -690,7 +690,7 @@ manageBuildUISongListEditor (manageui_t *manage)
   manage->ezvboxwidget = vbox;
 
   uiutilsUICallbackInit (&manage->callbacks [MANAGE_CALLBACK_EZ_SELECT],
-      uisongselQueueProcessSelectHandler, manage->slezsongsel);
+      uisongselQueueProcessSelectCallback, manage->slezsongsel);
   widget = uiCreateButton (&uiwidget,
       &manage->callbacks [MANAGE_CALLBACK_EZ_SELECT],
       /* CONTEXT: config: button: add the selected songs to the song list */
@@ -792,7 +792,7 @@ manageBuildUIUpdateDatabase (manageui_t *manage)
   tb = uiTextBoxCreate (60);
   uiTextBoxSetReadonly (tb);
   uiTextBoxSetHeight (tb, 70);
-  uiBoxPackStartWW (vbox, tb->scw);
+  uiBoxPackStartWU (vbox, uiTextBoxGetScrolledWindow (tb));
   manage->dbhelpdisp = tb;
 
   uiCreateHorizBox (&hbox);
@@ -822,7 +822,7 @@ manageBuildUIUpdateDatabase (manageui_t *manage)
   uiTextBoxSetReadonly (tb);
   uiTextBoxDarken (tb);
   uiTextBoxSetHeight (tb, 300);
-  uiBoxPackStartExpandWW (vbox, tb->scw);
+  uiBoxPackStartExpandWU (vbox, uiTextBoxGetScrolledWindow (tb));
   manage->dbstatus = tb;
 }
 
@@ -1121,7 +1121,7 @@ manageDbChg (GtkSpinButton *sb, gpointer udata)
   uiTextBoxSetValue (manage->dbhelpdisp, sval);
 }
 
-static void
+static bool
 manageDbStart (void *udata)
 {
   manageui_t  *manage = udata;
@@ -1170,6 +1170,7 @@ manageDbStart (void *udata)
   uiProgressBarSet (&manage->dbpbar, 0.0);
   manage->processes [ROUTE_DBUPDATE] = procutilStartProcess (
       ROUTE_DBUPDATE, "bdj4dbupdate", OS_PROC_DETACH, targv);
+  return UICB_CONT;
 }
 
 static void

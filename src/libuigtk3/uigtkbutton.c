@@ -65,18 +65,11 @@ uiButtonAlignLeft (GtkWidget *widget)
   gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
 }
 
-static void
+inline static void
 uiButtonClickHandler (GtkButton *b, gpointer udata)
 {
   UICallback *uicb = udata;
 
-  if (uicb == NULL) {
-    return;
-  }
-  if (uicb->cb == NULL) {
-    return;
-  }
-
-  uicb->cb (uicb->udata);
+  uiutilsCallbackHandler (uicb);
 }
 

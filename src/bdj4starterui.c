@@ -149,23 +149,22 @@ static int      starterProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
                     bdjmsgmsg_t msg, char *args, void *udata);
 static void     starterStartMain (startui_t *starter, char *args);
 static void     starterStopMain (startui_t *starter);
-static gboolean starterCloseWin (GtkWidget *window, GdkEvent *event, gpointer userdata);
+static bool     starterCloseCallback (void *udata);
 static void     starterSigHandler (int sig);
 
-static void     starterStartPlayerui (void *udata);
-static void     starterStartManageui (void *udata);
-static void     starterStartConfig (void *udata);
-static void     starterStartRaffleGames (void *udata);
-static void     starterProcessExit (void *udata);
+static bool     starterStartPlayerui (void *udata);
+static bool     starterStartManageui (void *udata);
+static bool     starterStartConfig (void *udata);
+static bool     starterStartRaffleGames (void *udata);
 
 static nlist_t  * starterGetProfiles (startui_t *starter);
 static char     * starterSetProfile (void *udata, int idx);
 static void     starterCheckProfile (startui_t *starter);
 
-static void     starterProcessSupport (void *udata);
+static bool     starterProcessSupport (void *udata);
 static void     starterWebResponseCallback (void *userdata, char *resp, size_t len);
 static void     starterSupportResponseHandler (GtkDialog *d, gint responseid, gpointer udata);
-static void     starterCreateSupportDialog (void *udata);
+static bool     starterCreateSupportDialog (void *udata);
 static void     starterSupportMsgHandler (GtkDialog *d, gint responseid, gpointer udata);
 static void     starterSendFilesInit (startui_t *starter, char *dir);
 static void     starterSendFiles (startui_t *starter);
@@ -179,8 +178,8 @@ static size_t   starterGzipEnd (z_stream *zs);
 static void     starterStopAllProcesses (GtkMenuItem *mi, gpointer udata);
 static int      starterCountProcesses (startui_t *starter);
 
-static void     starterForumLinkHandler (void *udata);
-static void     starterTicketLinkHandler (void *udata);
+static bool     starterForumLinkHandler (void *udata);
+static bool     starterTicketLinkHandler (void *udata);
 static void     starterLinkHandler (void *udata, int cbidx);
 
 static int gKillReceived = 0;
@@ -400,8 +399,11 @@ starterBuildUI (startui_t  *starter)
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", ".svg", PATHBLD_MP_IMGDIR);
-  uiCreateMainWindow (&starter->window, BDJ4_LONG_NAME, imgbuff,
-      starterCloseWin, starter);
+  uiutilsUICallbackInit (&starter->callbacks [START_CALLBACK_EXIT],
+      starterCloseCallback, starter);
+  uiCreateMainWindow (&starter->window,
+      &starter->callbacks [START_CALLBACK_EXIT],
+      BDJ4_LONG_NAME, imgbuff);
 
   uiCreateVertBox (&vbox);
   uiWidgetSetAllMargins (&vbox, uiBaseMarginSz * 2);
@@ -523,8 +525,6 @@ starterBuildUI (startui_t  *starter)
   uiBoxPackStartUW (&bvbox, widget);
   uiButtonAlignLeft (widget);
 
-  uiutilsUICallbackInit (&starter->callbacks [START_CALLBACK_EXIT],
-      starterProcessExit, starter);
   widget = uiCreateButton (&uiwidget,
       &starter->callbacks [START_CALLBACK_EXIT],
       /* CONTEXT: button: exits BDJ4 (exits everything) */
@@ -869,18 +869,17 @@ starterStopMain (startui_t *starter)
 }
 
 
-static gboolean
-starterCloseWin (GtkWidget *window, GdkEvent *event, gpointer userdata)
+static bool
+starterCloseCallback (void *udata)
 {
-  startui_t   *starter = userdata;
+  startui_t   *starter = udata;
 
   if (progstateCurrState (starter->progstate) <= STATE_RUNNING) {
     progstateShutdownProcess (starter->progstate);
     logMsg (LOG_DBG, LOG_MSGS, "got: close win request");
-    return TRUE;
   }
 
-  return FALSE;
+  return UICB_STOP;
 }
 
 static void
@@ -889,7 +888,7 @@ starterSigHandler (int sig)
   gKillReceived = 1;
 }
 
-static void
+static bool
 starterStartPlayerui (void *udata)
 {
   startui_t      *starter = udata;
@@ -898,9 +897,10 @@ starterStartPlayerui (void *udata)
   starter->processes [ROUTE_PLAYERUI] = procutilStartProcess (
       ROUTE_PLAYERUI, "bdj4playerui", PROCUTIL_DETACH, NULL);
   uiWidgetDisableW (starter->manageuibutton);
+  return UICB_CONT;
 }
 
-static void
+static bool
 starterStartManageui (void *udata)
 {
   startui_t      *starter = udata;
@@ -909,9 +909,10 @@ starterStartManageui (void *udata)
   starter->processes [ROUTE_MANAGEUI] = procutilStartProcess (
       ROUTE_MANAGEUI, "bdj4manageui", PROCUTIL_DETACH, NULL);
   uiWidgetDisableW (starter->playeruibutton);
+  return UICB_CONT;
 }
 
-static void
+static bool
 starterStartRaffleGames (void *udata)
 {
 //  startui_t      *starter = udata;
@@ -919,9 +920,10 @@ starterStartRaffleGames (void *udata)
 //  starterCheckProfile (starter);
 //  starter->processes [ROUTE_RAFFLE] = procutilStartProcess (
 //      ROUTE_RAFFLE, "bdj4raffle", NULL);
+  return UICB_CONT;
 }
 
-static void
+static bool
 starterStartConfig (void *udata)
 {
   startui_t      *starter = udata;
@@ -929,9 +931,10 @@ starterStartConfig (void *udata)
   starterCheckProfile (starter);
   starter->processes [ROUTE_CONFIGUI] = procutilStartProcess (
       ROUTE_CONFIGUI, "bdj4configui", PROCUTIL_DETACH, NULL);
+  return UICB_CONT;
 }
 
-static void
+static bool
 starterProcessSupport (void *udata)
 {
   startui_t     *starter = udata;
@@ -1067,6 +1070,7 @@ starterProcessSupport (void *udata)
   g_signal_connect (dialog, "response",
       G_CALLBACK (starterSupportResponseHandler), starter);
   uiWidgetShowAllW (dialog);
+  return UICB_CONT;
 }
 
 
@@ -1082,15 +1086,6 @@ starterSupportResponseHandler (GtkDialog *d, gint responseid, gpointer udata)
       break;
     }
   }
-}
-
-static void
-starterProcessExit (void *udata)
-{
-  startui_t *starter = udata;
-
-  logMsg (LOG_DBG, LOG_IMPORTANT, "user exit request");
-  progstateShutdownProcess (starter->progstate);
 }
 
 static nlist_t *
@@ -1184,7 +1179,7 @@ starterCheckProfile (startui_t *starter)
 }
 
 
-static void
+static bool
 starterCreateSupportDialog (void *udata)
 {
   startui_t     *starter = udata;
@@ -1257,7 +1252,7 @@ starterCreateSupportDialog (void *udata)
 
   /* line 4 */
   tb = uiTextBoxCreate (200);
-  uiBoxPackStartUW (&vbox, tb->scw);
+  uiBoxPackStart (&vbox, uiTextBoxGetScrolledWindow (tb));
   starter->supporttb = tb;
 
   /* line 5 */
@@ -1282,6 +1277,7 @@ starterCreateSupportDialog (void *udata)
       G_CALLBACK (starterSupportMsgHandler), starter);
   uiWidgetShowAllW (dialog);
   starter->supportDialog = dialog;
+  return UICB_CONT;
 }
 
 
@@ -1661,16 +1657,18 @@ starterCountProcesses (startui_t *starter)
 }
 
 
-inline static void
+inline static bool
 starterForumLinkHandler (void *udata)
 {
   starterLinkHandler (udata, START_LINK_CB_FORUM);
+  return UICB_STOP;
 }
 
-inline static void
+inline static bool
 starterTicketLinkHandler (void *udata)
 {
   starterLinkHandler (udata, START_LINK_CB_TICKETS);
+  return UICB_STOP;
 }
 
 static void

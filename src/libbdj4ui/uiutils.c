@@ -105,3 +105,19 @@ uiutilsUICallbackInit (UICallback *uicb, UICallbackFunc cb, void *udata)
   uicb->cb = cb;
   uicb->udata = udata;
 }
+
+bool
+uiutilsCallbackHandler (UICallback *uicb)
+{
+  bool  rc = false;
+
+  if (uicb == NULL) {
+    return rc;
+  }
+  if (uicb->cb == NULL) {
+    return rc;
+  }
+
+  rc = uicb->cb (uicb->udata);
+  return rc;
+}

@@ -41,7 +41,7 @@ static void uisongselGenreSelectHandler (GtkTreeView *tv, GtkTreePath *path,
 static void uisongselDanceSelectSignal (GtkTreeView *tv, GtkTreePath *path,
     GtkTreeViewColumn *column, gpointer udata);
 
-void
+bool
 uisongselFilterDialog (void *udata)
 {
   uisongsel_t * uisongsel = udata;
@@ -63,6 +63,7 @@ uisongselFilterDialog (void *udata)
   y = nlistGetNum (uisongsel->options, SONGSEL_FILTER_POSITION_Y);
   uiWindowMoveW (uisongsel->filterDialog, x, y);
   logProcEnd (LOG_PROC, "uisongselFilterDialog", "");
+  return UICB_CONT;
 }
 
 void

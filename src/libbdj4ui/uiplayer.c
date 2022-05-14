@@ -38,11 +38,11 @@ static void     uiplayerProcessPauseatend (uiplayer_t *uiplayer, int on);
 static void     uiplayerProcessPlayerState (uiplayer_t *uiplayer, int playerState);
 static void     uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args);
 static void     uiplayerProcessMusicqStatusData (uiplayer_t *uiplayer, char *args);
-static void     uiplayerFadeProcess (void *udata);
-static void     uiplayerPlayPauseProcess (void *udata);
-static void     uiplayerRepeatProcess (GtkButton *b, void *udata);
-static void     uiplayerSongBeginProcess (void *udata);
-static void     uiplayerNextSongProcess (void *udata);
+static bool     uiplayerFadeProcess (void *udata);
+static bool     uiplayerPlayPauseProcess (void *udata);
+static bool     uiplayerRepeatProcess (GtkButton *b, void *udata);
+static bool     uiplayerSongBeginProcess (void *udata);
+static bool     uiplayerNextSongProcess (void *udata);
 static void     uiplayerPauseatendProcess (GtkButton *b, void *udata);
 static gboolean uiplayerSpeedProcess (GtkRange *range, GtkScrollType *scroll, gdouble value, gpointer udata);
 static gboolean uiplayerSeekProcess (GtkRange *range, GtkScrollType *scroll, gdouble value, gpointer udata);
@@ -775,7 +775,7 @@ uiplayerProcessMusicqStatusData (uiplayer_t *uiplayer, char *args)
   logProcEnd (LOG_PROC, "uiplayerProcessMusicqStatusData", "");
 }
 
-static void
+static bool
 uiplayerFadeProcess (void *udata)
 {
   uiplayer_t      *uiplayer = udata;
@@ -783,9 +783,10 @@ uiplayerFadeProcess (void *udata)
   logProcBegin (LOG_PROC, "uiplayerFadeProcess");
   connSendMessage (uiplayer->conn, ROUTE_PLAYER, MSG_PLAY_FADE, NULL);
   logProcEnd (LOG_PROC, "uiplayerFadeProcess", "");
+  return UICB_CONT;
 }
 
-static void
+static bool
 uiplayerPlayPauseProcess (void *udata)
 {
   uiplayer_t      *uiplayer = udata;
@@ -793,9 +794,10 @@ uiplayerPlayPauseProcess (void *udata)
   logProcBegin (LOG_PROC, "uiplayerPlayPauseProcess");
   connSendMessage (uiplayer->conn, ROUTE_MAIN, MSG_CMD_PLAYPAUSE, NULL);
   logProcEnd (LOG_PROC, "uiplayerPlayPauseProcess", "");
+  return UICB_CONT;
 }
 
-static void
+static bool
 uiplayerRepeatProcess (GtkButton *b, void *udata)
 {
   uiplayer_t      *uiplayer = udata;
@@ -804,14 +806,15 @@ uiplayerRepeatProcess (GtkButton *b, void *udata)
 
   if (uiplayer->repeatLock) {
     logProcEnd (LOG_PROC, "uiplayerRepeatProcess", "repeat-lock");
-    return;
+    return UICB_CONT;
   }
 
   connSendMessage (uiplayer->conn, ROUTE_PLAYER, MSG_PLAY_REPEAT, NULL);
   logProcEnd (LOG_PROC, "uiplayerRepeatProcess", "");
+  return UICB_CONT;
 }
 
-static void
+static bool
 uiplayerSongBeginProcess (void *udata)
 {
   uiplayer_t      *uiplayer = udata;
@@ -819,9 +822,10 @@ uiplayerSongBeginProcess (void *udata)
   logProcBegin (LOG_PROC, "uiplayerSongBeginProcess");
   connSendMessage (uiplayer->conn, ROUTE_PLAYER, MSG_PLAY_SONG_BEGIN, NULL);
   logProcEnd (LOG_PROC, "uiplayerSongBeginProcess", "");
+  return UICB_CONT;
 }
 
-static void
+static bool
 uiplayerNextSongProcess (void *udata)
 {
   uiplayer_t      *uiplayer = udata;
@@ -829,6 +833,7 @@ uiplayerNextSongProcess (void *udata)
   logProcBegin (LOG_PROC, "uiplayerNextSongProcess");
   connSendMessage (uiplayer->conn, ROUTE_PLAYER, MSG_PLAY_NEXTSONG, NULL);
   logProcEnd (LOG_PROC, "uiplayerNextSongProcess", "");
+  return UICB_CONT;
 }
 
 static void

@@ -27,22 +27,56 @@
 
 typedef struct {
   progstate_t     *progstate;
-  char            *locknm;
   conn_t          *conn;
   UIWidget        window;
-  /* gtk stuff */
+  uitextbox_t     *tb;
+  UICallback      closeCallback;
+  UICallback      nextCallback;
 } helperui_t;
 
+static void     helperInitText (void);
 static bool     helperStoppingCallback (void *udata, programstate_t programState);
 static bool     helperClosingCallback (void *udata, programstate_t programState);
 static void     helperBuildUI (helperui_t *helper);
 gboolean        helperMainLoop  (void *thelper);
 static int      helperProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
                     bdjmsgmsg_t msg, char *args, void *udata);
-static gboolean helperCloseWin (GtkWidget *window, GdkEvent *event, gpointer userdata);
 static void     helperSigHandler (int sig);
+static bool     helperCloseCallback (void *udata);
+static bool     helperNextCallback (void *udata);
 
 static int gKillReceived = 0;
+
+typedef enum {
+  HELP_STATE_INTRO,
+  HELP_STATE_MUSIC_LOC,
+  HELP_STATE_MUSIC_ORG,
+  HELP_STATE_BUILD_DB,
+  HELP_STATE_MAKE_MANUAL_PL,
+  HELP_STATE_PLAY_MANUAL_PL,
+  HELP_STATE_WHERE_SUPPORT,
+  HELP_STATE_MAX,
+} hstate_t;
+
+char *helptitle [HELP_STATE_MAX] = {
+  [HELP_STATE_INTRO] = "",
+  [HELP_STATE_MUSIC_LOC] = "",
+  [HELP_STATE_MUSIC_ORG] = "",
+  [HELP_STATE_BUILD_DB] = "",
+  [HELP_STATE_MAKE_MANUAL_PL] = "",
+  [HELP_STATE_PLAY_MANUAL_PL] = "",
+  [HELP_STATE_WHERE_SUPPORT] = "",
+};
+
+char *helptext [HELP_STATE_MAX] = {
+  [HELP_STATE_INTRO] = "",
+  [HELP_STATE_MUSIC_LOC] = "",
+  [HELP_STATE_MUSIC_ORG] = "",
+  [HELP_STATE_BUILD_DB] = "",
+  [HELP_STATE_MAKE_MANUAL_PL] = "",
+  [HELP_STATE_PLAY_MANUAL_PL] = "",
+  [HELP_STATE_WHERE_SUPPORT] = "",
+};
 
 int
 main (int argc, char *argv[])
@@ -54,12 +88,17 @@ main (int argc, char *argv[])
   int             flags;
 
 
+  helperInitText ();
+
+  helper.tb = NULL;
+  helper.conn = NULL;
+  uiutilsUIWidgetInit (&helper.window);
+
   helper.progstate = progstateInit ("helperui");
   progstateSetCallback (helper.progstate, STATE_STOPPING,
       helperStoppingCallback, &helper);
   progstateSetCallback (helper.progstate, STATE_CLOSING,
       helperClosingCallback, &helper);
-  uiutilsUIWidgetInit (&helper.window);
 
   osSetStandardSignals (helperSigHandler);
 
@@ -104,6 +143,10 @@ helperClosingCallback (void *udata, programstate_t programState)
 
   bdj4shutdown (ROUTE_HELPERUI, NULL);
 
+  if (helper->tb != NULL) {
+    uiTextBoxFree (helper->tb);
+  }
+
   logProcEnd (LOG_PROC, "helperClosingCallback", "");
   return true;
 }
@@ -122,13 +165,34 @@ helperBuildUI (helperui_t  *helper)
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", ".svg", PATHBLD_MP_IMGDIR);
-  uiCreateMainWindow (&helper->window, BDJ4_LONG_NAME, imgbuff,
-      helperCloseWin, helper);
+  uiutilsUICallbackInit (&helper->closeCallback, helperCloseCallback, helper);
+  uiCreateMainWindow (&helper->window, &helper->closeCallback,
+      BDJ4_LONG_NAME, imgbuff);
 
   uiCreateVertBox (&vbox);
   uiWidgetSetAllMargins (&vbox, uiBaseMarginSz * 2);
   uiBoxPackInWindow (&helper->window, &vbox);
 
+  helper->tb = uiTextBoxCreate (300);
+  uiTextBoxVertExpand (helper->tb);
+  uiTextBoxSetReadonly (helper->tb);
+  uiBoxPackStart (&vbox, uiTextBoxGetScrolledWindow (helper->tb));
+
+  uiCreateHorizBox (&hbox);
+  uiBoxPackStart (&vbox, &hbox);
+
+  uiutilsUICallbackInit (&helper->nextCallback, helperNextCallback, helper);
+  uiCreateButton (&uiwidget, &helper->nextCallback,
+      /* CONTEXT: helperui: proceed to the next step */
+      _("Next"), NULL, NULL, NULL);
+  uiBoxPackEnd (&hbox, &uiwidget);
+
+  uiCreateButton (&uiwidget, &helper->closeCallback,
+      /* CONTEXT: helperui: exit the helper */
+      _("Exit"), NULL, NULL, NULL);
+  uiBoxPackEnd (&hbox, &uiwidget);
+
+  uiWindowSetDefaultSize (&helper->window, 800, 300);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", ".png", PATHBLD_MP_IMGDIR);
@@ -222,23 +286,77 @@ helperProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 }
 
 
-static gboolean
-helperCloseWin (GtkWidget *window, GdkEvent *event, gpointer userdata)
-{
-  helperui_t   *helper = userdata;
-
-  if (progstateCurrState (helper->progstate) <= STATE_RUNNING) {
-    progstateShutdownProcess (helper->progstate);
-    logMsg (LOG_DBG, LOG_MSGS, "got: close win request");
-    return TRUE;
-  }
-
-  return FALSE;
-}
-
 static void
 helperSigHandler (int sig)
 {
   gKillReceived = 1;
 }
 
+
+static bool
+helperCloseCallback (void *udata)
+{
+  helperui_t   *helper = udata;
+
+  if (progstateCurrState (helper->progstate) <= STATE_RUNNING) {
+    progstateShutdownProcess (helper->progstate);
+    logMsg (LOG_DBG, LOG_MSGS, "got: close win request");
+  }
+
+  return UICB_STOP;
+}
+
+static bool
+helperNextCallback (void *udata)
+{
+  return UICB_CONT;
+}
+
+static void
+helperInitText (void)
+{
+  helptitle [HELP_STATE_INTRO] =
+      /* CONTEXT: getting started helper: introduction title */
+      _("Introduction");
+  helptitle [HELP_STATE_MUSIC_LOC] =
+      /* CONTEXT: getting started helper: music location title */
+      _("Set the Location of the Music");
+  helptitle [HELP_STATE_MUSIC_ORG] =
+      /* CONTEXT: getting started helper: music organization title */
+      _("How is the Music Organised");
+  helptitle [HELP_STATE_BUILD_DB] =
+      /* CONTEXT: getting started helper: build database title */
+      _("Build the Database for the First Time");
+  helptitle [HELP_STATE_MAKE_MANUAL_PL] =
+      /* CONTEXT: getting started helper: create a manual playlist title */
+      _("Create a Manual Playlist");
+  helptitle [HELP_STATE_PLAY_MANUAL_PL] =
+      /* CONTEXT:getting started helper: play a manual playlist title */
+      _("Play a Manual Playlist");
+  helptitle [HELP_STATE_WHERE_SUPPORT] =
+      /* CONTEXT: getting started helper: getting support title */
+      _("How to get Support");
+
+
+  helptext [HELP_STATE_INTRO] =
+      /* CONTEXT: getting started helper: introduction help text */
+      _("intro");
+  helptext [HELP_STATE_MUSIC_LOC] =
+      /* CONTEXT: getting started helper: music location help text */
+      _("music loc");
+  helptext [HELP_STATE_MUSIC_ORG] =
+      /* CONTEXT: getting started helper: music organization help text */
+      _("music org");
+  helptext [HELP_STATE_BUILD_DB] =
+      /* CONTEXT: getting started helper: build database help text */
+      _("build db");
+  helptext [HELP_STATE_MAKE_MANUAL_PL] =
+      /* CONTEXT: getting started helper: create a manual playlist help text */
+      _("create manual pl");
+  helptext [HELP_STATE_PLAY_MANUAL_PL] =
+      /* CONTEXT: getting started helper: play a manual playlist help text */
+      _("play manual pl");
+  helptext [HELP_STATE_WHERE_SUPPORT] =
+      /* CONTEXT: getting started helper: getting support help text */
+      _("where is support");
+}

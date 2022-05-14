@@ -14,14 +14,29 @@
 #include "ui.h"
 #include "uiutils.h"
 
-void
-uiCreateMainWindow (UIWidget *uiwidget, const char *title,
-    const char *imagenm, void *deletecb, void *udata)
-{
-  GtkWidget   *widget;
+static gboolean uiWindowCloseCallback (GtkWidget *window, GdkEvent *event, gpointer udata);
 
-  widget = uiCreateMainWindowW (title, imagenm, deletecb, udata);
-  uiwidget->widget = widget;
+void
+uiCreateMainWindow (UIWidget *uiwidget, UICallback *uicb,
+    const char *title, const char *imagenm)
+{
+  GtkWidget *window;
+  GError    *gerr = NULL;
+
+  window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+  assert (window != NULL);
+  gtk_window_set_type_hint (GTK_WINDOW (window), GDK_WINDOW_TYPE_HINT_NORMAL);
+  if (imagenm != NULL) {
+    gtk_window_set_icon_from_file (GTK_WINDOW (window), imagenm, &gerr);
+  }
+  if (title != NULL) {
+    gtk_window_set_title (GTK_WINDOW (window), title);
+  }
+  if (uicb != NULL) {
+    g_signal_connect (window, "delete-event", G_CALLBACK (uiWindowCloseCallback), uicb);
+  }
+
+  uiwidget->widget = window;
 }
 
 inline void
@@ -109,6 +124,18 @@ uiCreateScrolledWindow (UIWidget *uiwidget, int minheight)
   uiwidget->widget = widget;
 }
 
+/* internal routines */
+
+inline static gboolean
+uiWindowCloseCallback (GtkWidget *window, GdkEvent *event, gpointer udata)
+{
+  UICallback  *uicb = udata;
+  bool        rc = false;
+
+  rc = uiutilsCallbackHandler (uicb);
+  return rc;
+}
+
 /* these routines will be removed at a later date */
 
 GtkWidget *
@@ -122,7 +149,6 @@ uiCreateMainWindowW (const char *title, const char *imagenm,
   assert (window != NULL);
   gtk_window_set_type_hint (GTK_WINDOW (window), GDK_WINDOW_TYPE_HINT_NORMAL);
   if (imagenm != NULL) {
-//    gtk_window_set_default_icon_from_file (imagenm, &gerr);
     gtk_window_set_icon_from_file (GTK_WINDOW (window), imagenm, &gerr);
   }
   gtk_window_set_title (GTK_WINDOW (window), title);

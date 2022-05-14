@@ -36,11 +36,11 @@ enum {
   DUALLIST_SEARCH_REMOVE,
 };
 
-static void uiduallistMovePrev (void *tduallist);
-static void uiduallistMoveNext (void *tduallist);
+static bool uiduallistMovePrev (void *tduallist);
+static bool uiduallistMoveNext (void *tduallist);
 static void uiduallistMove (uiduallist_t *duallist, int which, int dir);
-static void uiduallistDispSelect (void *udata);
-static void uiduallistDispRemove (void *udata);
+static bool uiduallistDispSelect (void *udata);
+static bool uiduallistDispRemove (void *udata);
 static gboolean uiduallistSourceSearch (GtkTreeModel* model,
     GtkTreePath* path, GtkTreeIter* iter, gpointer udata);
 static gboolean uiduallistGetData (GtkTreeModel* model, GtkTreePath* path,
@@ -335,18 +335,20 @@ uiduallistGetList (uiduallist_t *duallist)
 
 /* internal routines */
 
-static void
+static bool
 uiduallistMovePrev (void *tduallist)
 {
   uiduallist_t  *duallist = tduallist;
   uiduallistMove (duallist, DUALLIST_TREE_TARGET, DUALLIST_MOVE_PREV);
+  return UICB_CONT;
 }
 
-static void
+static bool
 uiduallistMoveNext (void *tduallist)
 {
   uiduallist_t  *duallist = tduallist;
   uiduallistMove (duallist, DUALLIST_TREE_TARGET, DUALLIST_MOVE_NEXT);
+  return UICB_CONT;
 }
 
 static void
@@ -396,7 +398,7 @@ uiduallistMove (uiduallist_t *duallist, int which, int dir)
   duallist->changed = true;
 }
 
-static void
+static bool
 uiduallistDispSelect (void *udata)
 {
   uiduallist_t      *duallist = udata;
@@ -442,9 +444,10 @@ uiduallistDispSelect (void *udata)
     }
     duallist->changed = true;
   }
+  return UICB_CONT;
 }
 
-static void
+static bool
 uiduallistDispRemove (void *udata)
 {
   uiduallist_t  *duallist = udata;
@@ -514,6 +517,7 @@ uiduallistDispRemove (void *udata)
 
     duallist->changed = true;
   }
+  return UICB_CONT;
 }
 
 static gboolean
