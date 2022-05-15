@@ -12,6 +12,11 @@
 #include "song.h"
 #include "uiutils.h"
 
+/* uigeneral.c */
+/* general routines that are called by the ui specific code */
+void uiutilsUIWidgetInit (UIWidget *uiwidget);
+bool uiutilsCallbackHandler (UICallback *uicb);
+
 /* uigtkmenu.c */
 GtkWidget * uiCreateMenubar (void);
 GtkWidget * uiCreateSubMenu (GtkWidget *menuitem);

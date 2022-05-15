@@ -3375,8 +3375,8 @@ confuiTableMove (configui_t *confui, int dir)
   GtkTreeModel      *model;
   GtkTreeIter       iter;
   GtkTreeIter       citer;
-  GtkTreePath       *path;
-  char              *pathstr;
+  GtkTreePath       *path = NULL;
+  char              *pathstr = NULL;
   int               count;
   gboolean          valid;
   int               idx;
@@ -3401,12 +3401,14 @@ confuiTableMove (configui_t *confui, int dir)
       confui->tables [confui->tablecurr].sel, &model, &iter);
 
   path = gtk_tree_model_get_path (model, &iter);
-  if (path != NULL) {
-    pathstr = gtk_tree_path_to_string (path);
-    sscanf (pathstr, "%d", &idx);
-    free (pathstr);
-    gtk_tree_path_free (path);
+  if (path == NULL) {
+    return;
   }
+
+  pathstr = gtk_tree_path_to_string (path);
+  sscanf (pathstr, "%d", &idx);
+  free (pathstr);
+  gtk_tree_path_free (path);
 
   if (idx == 1 &&
       dir == CONFUI_MOVE_PREV &&

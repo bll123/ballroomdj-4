@@ -9,6 +9,8 @@
 #include <errno.h>
 #include <assert.h>
 
+#include "osutils.h"
+
 char *
 osRegistryGet (char *key, char *name)
 {

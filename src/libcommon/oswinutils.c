@@ -9,7 +9,10 @@
 #include <errno.h>
 #include <assert.h>
 
+#include <winsock2.h>
 #include <windows.h>
+
+#include "osutils.h"
 
 char *
 osRegistryGet (char *key, char *name)

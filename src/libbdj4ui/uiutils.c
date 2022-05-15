@@ -75,15 +75,6 @@ uiutilsNotebookIDGet (uiutilsnbtabid_t *nbtabid, int idx)
 }
 
 inline void
-uiutilsUIWidgetInit (UIWidget *uiwidget)
-{
-  if (uiwidget == NULL) {
-    return;
-  }
-  uiwidget->widget = NULL;
-}
-
-inline void
 uiutilsUIWidgetCopy (UIWidget *target, UIWidget *source)
 {
   if (target == NULL) {
@@ -106,18 +97,3 @@ uiutilsUICallbackInit (UICallback *uicb, UICallbackFunc cb, void *udata)
   uicb->udata = udata;
 }
 
-bool
-uiutilsCallbackHandler (UICallback *uicb)
-{
-  bool  rc = false;
-
-  if (uicb == NULL) {
-    return rc;
-  }
-  if (uicb->cb == NULL) {
-    return rc;
-  }
-
-  rc = uicb->cb (uicb->udata);
-  return rc;
-}

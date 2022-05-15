@@ -54,13 +54,17 @@ add_library (libbdj4osutils STATIC
   libcommon/oslinuxutils.c
   libcommon/osmacutils.m
   libcommon/oswinutils.c
+  libcommon/tmutil.c
+)
+target_link_libraries (libbdj4osutils
+  libbdj4string
 )
 add_library (libbdj4fileop STATIC
   libcommon/fileop.c
-  libcommon/tmutil.c
 )
 target_link_libraries (libbdj4fileop
   libbdj4osutils
+  libbdj4string
 )
 add_library (libbdj4launcher STATIC
   libcommon/filedata.c
