@@ -176,7 +176,7 @@ progstateProcessLoop (progstate_t *progstate)
         tsuccess = cb (userdata, progstate->programState);
         ilistSetNum (progstate->callbacks [progstate->programState], ikey,
             PS_SUCCESS, tsuccess);
-        if (! tsuccess) {
+        if (tsuccess == STATE_NOT_FINISH) {
           /* if any one callback in the list is not finished, */
           /* stay in this state */
           logMsg (LOG_DBG, LOG_PROGSTATE, "callback not finished: %d %s",

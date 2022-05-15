@@ -140,30 +140,16 @@ remctrlStoppingCallback (void *udata, programstate_t programState)
   remctrldata_t   *remctrlData = udata;
 
   connDisconnect (remctrlData->conn, ROUTE_MAIN);
-  return true;
+  return STATE_FINISHED;
 }
 
 static bool
 remctrlStopWaitCallback (void *tremctrl, programstate_t programState)
 {
   remctrldata_t *remctrl = tremctrl;
-  bool          rc = false;
+  bool        rc;
 
-  logProcBegin (LOG_PROC, "remctrlStopWaitCallback");
-
-  rc = connCheckAll (remctrl->conn);
-  if (rc == false) {
-    ++remctrl->stopwaitcount;
-    if (remctrl->stopwaitcount > STOP_WAIT_COUNT_MAX) {
-      rc = true;
-    }
-  }
-
-  if (rc) {
-    connDisconnectAll (remctrl->conn);
-  }
-
-  logProcEnd (LOG_PROC, "remctrlStopWaitCallback", "");
+  rc = connWaitClosed (remctrl->conn, &remctrl->stopwaitcount);
   return rc;
 }
 
@@ -191,7 +177,7 @@ remctrlClosingCallback (void *udata, programstate_t programState)
     free (remctrlData->playlistList);
   }
 
-  return true;
+  return STATE_FINISHED;
 }
 
 static void
@@ -396,7 +382,7 @@ static bool
 remctrlConnectingCallback (void *udata, programstate_t programState)
 {
   remctrldata_t   *remctrlData = udata;
-  bool            rc = false;
+  bool            rc = STATE_NOT_FINISH;
 
   if (! connIsConnected (remctrlData->conn, ROUTE_MAIN)) {
     connConnect (remctrlData->conn, ROUTE_MAIN);
@@ -410,7 +396,7 @@ remctrlConnectingCallback (void *udata, programstate_t programState)
 
   if (connIsConnected (remctrlData->conn, ROUTE_MAIN) &&
       connIsConnected (remctrlData->conn, ROUTE_PLAYER)) {
-    rc = true;
+    rc = STATE_FINISHED;
   }
 
   return rc;
@@ -420,13 +406,13 @@ static bool
 remctrlHandshakeCallback (void *udata, programstate_t programState)
 {
   remctrldata_t   *remctrlData = udata;
-  bool            rc = false;
+  bool            rc = STATE_NOT_FINISH;
 
   connProcessUnconnected (remctrlData->conn);
 
   if (connHaveHandshake (remctrlData->conn, ROUTE_MAIN) &&
       connHaveHandshake (remctrlData->conn, ROUTE_PLAYER)) {
-    rc = true;
+    rc = STATE_FINISHED;
   }
 
   return rc;
@@ -437,7 +423,7 @@ static bool
 remctrlInitDataCallback (void *udata, programstate_t programState)
 {
   remctrldata_t   *remctrlData = udata;
-  bool            rc = false;
+  bool            rc = STATE_NOT_FINISH;
 
   if (connHaveHandshake (remctrlData->conn, ROUTE_MAIN)) {
     if (*remctrlData->danceList == '\0' &&
@@ -454,7 +440,7 @@ remctrlInitDataCallback (void *udata, programstate_t programState)
     }
   }
   if (*remctrlData->danceList && *remctrlData->playlistList) {
-    rc = true;
+    rc = STATE_FINISHED;
   }
 
   return rc;

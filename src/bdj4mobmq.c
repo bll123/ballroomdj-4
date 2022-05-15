@@ -132,30 +132,16 @@ mobmqStoppingCallback (void *tmmdata, programstate_t programState)
   mobmqdata_t   *mobmqData = tmmdata;
 
   connDisconnect (mobmqData->conn, ROUTE_MAIN);
-  return true;
+  return STATE_FINISHED;
 }
 
 static bool
 mobmqStopWaitCallback (void *tmobmq, programstate_t programState)
 {
   mobmqdata_t *mobmq = tmobmq;
-  bool        rc = false;
+  bool        rc;
 
-  logProcBegin (LOG_PROC, "mobmqStopWaitCallback");
-
-  rc = connCheckAll (mobmq->conn);
-  if (rc == false) {
-    ++mobmq->stopwaitcount;
-    if (mobmq->stopwaitcount > STOP_WAIT_COUNT_MAX) {
-      rc = true;
-    }
-  }
-
-  if (rc) {
-    connDisconnectAll (mobmq->conn);
-  }
-
-  logProcEnd (LOG_PROC, "mobmqStopWaitCallback", "");
+  rc = connWaitClosed (mobmq->conn, &mobmq->stopwaitcount);
   return rc;
 }
 
@@ -177,7 +163,7 @@ mobmqClosingCallback (void *tmmdata, programstate_t programState)
     free (mobmqData->marqueeData);
   }
 
-  return true;
+  return STATE_FINISHED;
 }
 
 static void
@@ -300,7 +286,7 @@ static bool
 mobmqConnectingCallback (void *tmmdata, programstate_t programState)
 {
   mobmqdata_t   *mobmqData = tmmdata;
-  bool          rc = false;
+  bool          rc = STATE_NOT_FINISH;
 
   connProcessUnconnected (mobmqData->conn);
 
@@ -309,7 +295,7 @@ mobmqConnectingCallback (void *tmmdata, programstate_t programState)
   }
 
   if (connIsConnected (mobmqData->conn, ROUTE_MAIN)) {
-    rc = true;
+    rc = STATE_FINISHED;
   }
 
   return rc;
@@ -319,12 +305,12 @@ static bool
 mobmqHandshakeCallback (void *tmmdata, programstate_t programState)
 {
   mobmqdata_t   *mobmqData = tmmdata;
-  bool          rc = false;
+  bool          rc = STATE_NOT_FINISH;
 
   connProcessUnconnected (mobmqData->conn);
 
   if (connHaveHandshake (mobmqData->conn, ROUTE_MAIN)) {
-    rc = true;
+    rc = STATE_FINISHED;
   }
 
   return rc;

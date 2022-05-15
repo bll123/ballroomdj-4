@@ -226,12 +226,12 @@ marqueeStoppingCallback (void *udata, programstate_t programState)
   if (marquee->isMaximized) {
     marqueeSetNotMaximized (marquee);
     logProcEnd (LOG_PROC, "marqueeStoppingCallback", "is-maximized-a");
-    return false;
+    return STATE_NOT_FINISH;
   }
 
   if (uiWindowIsMaximized (&marquee->window)) {
     logProcEnd (LOG_PROC, "marqueeStoppingCallback", "is-maximized-b");
-    return false;
+    return STATE_NOT_FINISH;
   }
 
   uiWindowGetSize (&marquee->window, &x, &y);
@@ -243,30 +243,16 @@ marqueeStoppingCallback (void *udata, programstate_t programState)
 
   connDisconnect (marquee->conn, ROUTE_MAIN);
   logProcEnd (LOG_PROC, "marqueeStoppingCallback", "");
-  return true;
+  return STATE_FINISHED;
 }
 
 static bool
 marqueeStopWaitCallback (void *tmarquee, programstate_t programState)
 {
   marquee_t   *marquee = tmarquee;
-  bool        rc = false;
+  bool        rc;
 
-  logProcBegin (LOG_PROC, "marqueeStopWaitCallback");
-
-  rc = connCheckAll (marquee->conn);
-  if (rc == false) {
-    ++marquee->stopwaitcount;
-    if (marquee->stopwaitcount > STOP_WAIT_COUNT_MAX) {
-      rc = true;
-    }
-  }
-
-  if (rc) {
-    connDisconnectAll (marquee->conn);
-  }
-
-  logProcEnd (LOG_PROC, "marqueeStopWaitCallback", "");
+  rc = connWaitClosed (marquee->conn, &marquee->stopwaitcount);
   return rc;
 }
 
@@ -301,7 +287,7 @@ marqueeClosingCallback (void *udata, programstate_t programState)
   datafileFree (marquee->optiondf);
 
   logProcEnd (LOG_PROC, "marqueeClosingCallback", "");
-  return true;
+  return STATE_FINISHED;
 }
 
 static void
@@ -483,7 +469,7 @@ static bool
 marqueeConnectingCallback (void *udata, programstate_t programState)
 {
   marquee_t   *marquee = udata;
-  bool        rc = false;
+  bool        rc = STATE_NOT_FINISH;
 
   logProcBegin (LOG_PROC, "marqueeConnectingCallback");
 
@@ -498,7 +484,7 @@ marqueeConnectingCallback (void *udata, programstate_t programState)
 
   if (connIsConnected (marquee->conn, ROUTE_MAIN) &&
       connIsConnected (marquee->conn, ROUTE_PLAYERUI)) {
-    rc = true;
+    rc = STATE_FINISHED;
   }
 
   logProcEnd (LOG_PROC, "marqueeConnectingCallback", "");
@@ -509,7 +495,7 @@ static bool
 marqueeHandshakeCallback (void *udata, programstate_t programState)
 {
   marquee_t   *marquee = udata;
-  bool        rc = false;
+  bool        rc = STATE_NOT_FINISH;
 
   logProcBegin (LOG_PROC, "marqueeHandshakeCallback");
 
@@ -519,13 +505,13 @@ marqueeHandshakeCallback (void *udata, programstate_t programState)
       connHaveHandshake (marquee->conn, ROUTE_PLAYERUI)) {
     char    tbuff [100];
 
-    rc = true;
     snprintf (tbuff, sizeof (tbuff), "%ld%c%ld",
         nlistGetNum (marquee->options, MQ_FONT_SZ),
         MSG_ARGS_RS,
         nlistGetNum (marquee->options, MQ_FONT_SZ_FS));
     connSendMessage (marquee->conn, ROUTE_PLAYERUI,
         MSG_MARQUEE_FONT_SIZES, tbuff);
+    rc = STATE_FINISHED;
   }
 
   logProcEnd (LOG_PROC, "marqueeHandshakeCallback", "");

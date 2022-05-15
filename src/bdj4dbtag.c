@@ -300,7 +300,7 @@ static bool
 dbtagConnectingCallback (void *tdbtag, programstate_t programState)
 {
   dbtag_t *dbtag = tdbtag;
-  bool    rc = false;
+  bool    rc = STATE_NOT_FINISH;
 
   logProcBegin (LOG_PROC, "dbtagConnectingCallback");
 
@@ -311,7 +311,7 @@ dbtagConnectingCallback (void *tdbtag, programstate_t programState)
   }
 
   if (connIsConnected (dbtag->conn, ROUTE_DBUPDATE)) {
-    rc = true;
+    rc = STATE_FINISHED;
   }
 
   logProcEnd (LOG_PROC, "dbtagConnectingCallback", "");
@@ -321,15 +321,15 @@ dbtagConnectingCallback (void *tdbtag, programstate_t programState)
 static bool
 dbtagHandshakeCallback (void *tdbtag, programstate_t programState)
 {
-  dbtag_t    *dbtag = tdbtag;
-  bool          rc = false;
+  dbtag_t *dbtag = tdbtag;
+  bool    rc = STATE_NOT_FINISH;
 
   logProcBegin (LOG_PROC, "dbtagHandshakeCallback");
 
   connProcessUnconnected (dbtag->conn);
 
   if (connHaveHandshake (dbtag->conn, ROUTE_DBUPDATE)) {
-    rc = true;
+    rc = STATE_FINISHED;
   }
   logProcEnd (LOG_PROC, "dbtagHandshakeCallback", "");
   return rc;
@@ -343,30 +343,16 @@ dbtagStoppingCallback (void *tdbtag, programstate_t programState)
   logProcBegin (LOG_PROC, "dbtagStoppingCallback");
   connDisconnect (dbtag->conn, ROUTE_DBUPDATE);
   logProcEnd (LOG_PROC, "dbtagStoppingCallback", "");
-  return true;
+  return STATE_FINISHED;
 }
 
 static bool
 dbtagStopWaitCallback (void *tdbtag, programstate_t programState)
 {
   dbtag_t   *dbtag = tdbtag;
-  bool      rc = false;
+  bool        rc;
 
-  logProcBegin (LOG_PROC, "dbtagStopWaitCallback");
-
-  rc = connCheckAll (dbtag->conn);
-  if (rc == false) {
-    ++dbtag->stopwaitcount;
-    if (dbtag->stopwaitcount > STOP_WAIT_COUNT_MAX) {
-      rc = true;
-    }
-  }
-
-  if (rc) {
-    connDisconnectAll (dbtag->conn);
-  }
-
-  logProcEnd (LOG_PROC, "dbtagStopWaitCallback", "");
+  rc = connWaitClosed (dbtag->conn, &dbtag->stopwaitcount);
   return rc;
 }
 
@@ -382,7 +368,7 @@ dbtagClosingCallback (void *tdbtag, programstate_t programState)
   queueFree (dbtag->fileQueue);
 
   logProcEnd (LOG_PROC, "dbtagClosingCallback", "");
-  return true;
+  return STATE_FINISHED;
 }
 
 static void

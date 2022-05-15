@@ -215,30 +215,16 @@ mainStoppingCallback (void *tmaindata, programstate_t programState)
   procutilStopAllProcess (mainData->processes, mainData->conn, false);
   connDisconnect (mainData->conn, ROUTE_STARTERUI);
   logProcEnd (LOG_PROC, "mainStoppingCallback", "");
-  return true;
+  return STATE_FINISHED;
 }
 
 static bool
 mainStopWaitCallback (void *tmaindata, programstate_t programState)
 {
   maindata_t  *mainData = tmaindata;
-  bool        rc = false;
+  bool        rc;
 
-  logProcBegin (LOG_PROC, "mainStopWaitCallback");
-
-  rc = connCheckAll (mainData->conn);
-  if (rc == false) {
-    ++mainData->stopwaitcount;
-    if (mainData->stopwaitcount > STOP_WAIT_COUNT_MAX) {
-      rc = true;
-    }
-  }
-
-  if (rc) {
-    connDisconnectAll (mainData->conn);
-  }
-
-  logProcEnd (LOG_PROC, "mainStopWaitCallback", "");
+  rc = connWaitClosed (mainData->conn, &mainData->stopwaitcount);
   return rc;
 }
 
@@ -291,7 +277,7 @@ mainClosingCallback (void *tmaindata, programstate_t programState)
   bdj4shutdown (ROUTE_MAIN, mainData->musicdb);
 
   logProcEnd (LOG_PROC, "mainClosingCallback", "");
-  return true;
+  return STATE_FINISHED;
 }
 
 static int
@@ -568,7 +554,7 @@ mainListeningCallback (void *tmaindata, programstate_t programState)
   }
 
   logProcEnd (LOG_PROC, "mainListeningCallback", "");
-  return true;
+  return STATE_FINISHED;
 }
 
 static bool
@@ -577,7 +563,7 @@ mainConnectingCallback (void *tmaindata, programstate_t programState)
   maindata_t    *mainData = tmaindata;
   int           connMax = 0;
   int           connCount = 0;
-  bool          rc = false;
+  bool          rc = STATE_NOT_FINISH;
 
   logProcBegin (LOG_PROC, "mainConnectingCallback");
 
@@ -628,7 +614,7 @@ mainConnectingCallback (void *tmaindata, programstate_t programState)
   }
 
   if (connCount == connMax) {
-    rc = true;
+    rc = STATE_FINISHED;
   }
 
   logProcEnd (LOG_PROC, "mainConnectingCallback", "");
@@ -639,7 +625,7 @@ static bool
 mainHandshakeCallback (void *tmaindata, programstate_t programState)
 {
   maindata_t    *mainData = tmaindata;
-  bool          rc = false;
+  bool          rc = STATE_NOT_FINISH;
   int           conn = 0;
 
   logProcBegin (LOG_PROC, "mainHandshakeCallback");
@@ -660,7 +646,7 @@ mainHandshakeCallback (void *tmaindata, programstate_t programState)
   /* one of manageui and playerui */
   if (conn == 3) {
     connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_MAIN_READY, NULL);
-    rc = true;
+    rc = STATE_FINISHED;
   }
 
   logProcEnd (LOG_PROC, "mainHandshakeCallback", "");

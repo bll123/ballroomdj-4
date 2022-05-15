@@ -23,6 +23,11 @@ typedef bool (*progstateCallback_t)(void *userdata, programstate_t programState)
 
 typedef struct progstate progstate_t;
 
+enum {
+  STATE_NOT_FINISH = 0,
+  STATE_FINISHED = 1,
+};
+
 progstate_t     * progstateInit (char *progtag);
 void            progstateFree (progstate_t *progstate);
 void            progstateSetCallback (progstate_t *progstate,

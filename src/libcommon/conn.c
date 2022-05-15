@@ -12,6 +12,7 @@
 #include "bdjvars.h"
 #include "conn.h"
 #include "log.h"
+#include "progstate.h"
 #include "sock.h"
 #include "sockh.h"
 
@@ -37,7 +38,7 @@ connInit (bdjmsgroute_t routefrom)
   conn = malloc (sizeof (conn_t) * ROUTE_MAX);
   assert (conn != NULL);
 
-  assert (bdjvarsIsInitialized() == true);
+  assert (bdjvarsIsInitialized () == true);
 
   if (! initialized) {
     connports [ROUTE_NONE] = 0;
@@ -259,3 +260,28 @@ connHaveHandshake (conn_t *conn, bdjmsgroute_t route)
 
   return conn [route].handshake;
 }
+
+bool
+connWaitClosed (conn_t *conn, int *stopwaitcount)
+{
+  bool    crc;
+  bool    rc = STATE_NOT_FINISH;
+
+  crc = connCheckAll (conn);
+  if (crc) {
+    rc = STATE_FINISHED;
+  } else {
+    rc = STATE_NOT_FINISH;
+    ++(*stopwaitcount);
+    if (*stopwaitcount > STOP_WAIT_COUNT_MAX) {
+      rc = STATE_FINISHED;
+    }
+  }
+
+  if (rc == STATE_FINISHED) {
+    connDisconnectAll (conn);
+  }
+
+  return rc;
+}
+

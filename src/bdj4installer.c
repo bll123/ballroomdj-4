@@ -141,7 +141,7 @@ typedef struct {
 
 #define INST_HL_COLOR "#b16400"
 
-#define INST_NEW_FILE "data/newinstallation.txt"
+#define INST_NEW_FILE "data/newinstall.txt"
 #define INST_TEMP_FILE  "tmp/bdj4instout.txt"
 #define INST_SAVE_FNAME "installdir.txt"
 #define CONV_TEMP_FILE "tmp/bdj4convout.txt"
@@ -2074,6 +2074,14 @@ installerRegister (installer_t *installer)
       installer->convprocess
       );
   webclientPost (installer->webclient, uri, tbuff);
+
+  /* create the new install flag file on a new install */
+  if (installer->newinstall) {
+    FILE  *fh;
+
+    fh = fopen (INST_NEW_FILE, "w");
+    fclose (fh);
+  }
 
   installer->instState = INST_FINISH;
 }

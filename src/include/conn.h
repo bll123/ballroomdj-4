@@ -112,5 +112,7 @@ bool      connIsConnected (conn_t *conn, bdjmsgroute_t route);
  */
 bool      connHaveHandshake (conn_t *conn, bdjmsgroute_t route);
 
+bool      connWaitClosed (conn_t *conn, int *stopwaitcount);
+
 #endif /* INC_CONN_H */
 

@@ -141,6 +141,7 @@ static datafilekey_t starteruidfkeys [STARTERUI_KEY_MAX] = {
 #define SUPPORT_BUFF_SZ         (10*1024*1024)
 #define LOOP_DELAY              5
 
+static bool     starterInitDataCallback (void *udata, programstate_t programState);
 static bool     starterStoppingCallback (void *udata, programstate_t programState);
 static bool     starterStopWaitCallback (void *udata, programstate_t programState);
 static bool     starterClosingCallback (void *udata, programstate_t programState);
@@ -198,6 +199,8 @@ main (int argc, char *argv[])
 
 
   starter.progstate = progstateInit ("starterui");
+  progstateSetCallback (starter.progstate, STATE_INITIALIZE_DATA,
+      starterInitDataCallback, &starter);
   progstateSetCallback (starter.progstate, STATE_STOPPING,
       starterStoppingCallback, &starter);
   progstateSetCallback (starter.progstate, STATE_STOP_WAIT,
@@ -269,6 +272,27 @@ main (int argc, char *argv[])
 /* internal routines */
 
 static bool
+starterInitDataCallback (void *udata, programstate_t programState)
+{
+  startui_t   *starter = udata;
+  char        tbuff [MAXPATHLEN];
+
+  pathbldMakePath (tbuff, sizeof (tbuff),
+      "newinstall", BDJ4_CONFIG_EXT, PATHBLD_MP_DATA);
+  if (fileopFileExists (tbuff)) {
+    char  *targv [1];
+    int   targc = 0;
+
+    targv [targc++] = NULL;
+    starter->processes [ROUTE_HELPERUI] = procutilStartProcess (
+        ROUTE_HELPERUI, "bdj4helperui", PROCUTIL_DETACH, targv);
+    fileopDelete (tbuff);
+  }
+
+  return STATE_FINISHED;
+}
+
+static bool
 starterStoppingCallback (void *udata, programstate_t programState)
 {
   startui_t   *starter = udata;
@@ -304,29 +328,16 @@ starterStoppingCallback (void *udata, programstate_t programState)
   procutilStopAllProcess (starter->processes, starter->conn, false);
 
   logProcEnd (LOG_PROC, "starterStoppingCallback", "");
-  return true;
+  return STATE_FINISHED;
 }
 
 static bool
 starterStopWaitCallback (void *udata, programstate_t programState)
 {
   startui_t   *starter = udata;
-  bool        rc = false;
+  bool        rc;
 
-  logProcBegin (LOG_PROC, "starterStopWaitCallback");
-  rc = connCheckAll (starter->conn);
-  if (rc == false) {
-    ++starter->stopwaitcount;
-    if (starter->stopwaitcount > STOP_WAIT_COUNT_MAX) {
-      rc = true;
-    }
-  }
-
-  if (rc) {
-    connDisconnectAll (starter->conn);
-  }
-
-  logProcEnd (LOG_PROC, "starterStopWaitCallback", "");
+  rc = connWaitClosed (starter->conn, &starter->stopwaitcount);
   return rc;
 }
 
@@ -372,7 +383,7 @@ starterClosingCallback (void *udata, programstate_t programState)
   }
 
   logProcEnd (LOG_PROC, "starterClosingCallback", "");
-  return true;
+  return STATE_FINISHED;
 }
 
 static void

@@ -800,27 +800,16 @@ confuiStoppingCallback (void *udata, programstate_t programState)
   connDisconnect (confui->conn, ROUTE_STARTERUI);
 
   logProcEnd (LOG_PROC, "confuiStoppingCallback", "");
-  return true;
+  return STATE_FINISHED;
 }
 
 static bool
 confuiStopWaitCallback (void *udata, programstate_t programState)
 {
   configui_t  * confui = udata;
-  bool        rc = false;
+  bool        rc;
 
-  rc = connCheckAll (confui->conn);
-  if (rc == false) {
-    ++confui->stopwaitcount;
-    if (confui->stopwaitcount > STOP_WAIT_COUNT_MAX) {
-      rc = true;
-    }
-  }
-
-  if (rc) {
-    connDisconnectAll (confui->conn);
-  }
-
+  rc = connWaitClosed (confui->conn, &confui->stopwaitcount);
   return rc;
 }
 
@@ -887,7 +876,7 @@ confuiClosingCallback (void *udata, programstate_t programState)
   uiCleanup ();
 
   logProcEnd (LOG_PROC, "confuiClosingCallback", "");
-  return true;
+  return STATE_FINISHED;
 }
 
 static void
@@ -1742,7 +1731,7 @@ confuiHandshakeCallback (void *udata, programstate_t programState)
   connProcessUnconnected (confui->conn);
 
   progstateLogTime (confui->progstate, "time-to-start-gui");
-  return true;
+  return STATE_FINISHED;
 }
 
 static int

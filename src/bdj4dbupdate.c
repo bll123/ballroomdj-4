@@ -518,7 +518,7 @@ dbupdateListeningCallback (void *tdbupdate, programstate_t programState)
   }
 
   logProcEnd (LOG_PROC, "dbupdateListeningCallback", "");
-  return true;
+  return STATE_FINISHED;
 }
 
 static bool
@@ -526,7 +526,7 @@ dbupdateConnectingCallback (void *tdbupdate, programstate_t programState)
 {
   dbupdate_t    *dbupdate = tdbupdate;
   int           c = 0;
-  bool          rc = false;
+  bool          rc = STATE_NOT_FINISH;
 
   logProcBegin (LOG_PROC, "dbupdateConnectingCallback");
 
@@ -550,9 +550,9 @@ dbupdateConnectingCallback (void *tdbupdate, programstate_t programState)
     ++c;
   }
   if ((dbupdate->startflags & BDJ4_CLI) == BDJ4_CLI) {
-    if (c == 1) { rc = true; }
+    if (c == 1) { rc = STATE_FINISHED; }
   } else {
-    if (c == 2) { rc = true; }
+    if (c == 2) { rc = STATE_FINISHED; }
   }
 
   logProcEnd (LOG_PROC, "dbupdateConnectingCallback", "");
@@ -564,7 +564,7 @@ dbupdateHandshakeCallback (void *tdbupdate, programstate_t programState)
 {
   dbupdate_t    *dbupdate = tdbupdate;
   int           c = 0;
-  bool          rc = false;
+  bool          rc = STATE_NOT_FINISH;
 
   logProcBegin (LOG_PROC, "dbupdateHandshakeCallback");
 
@@ -577,9 +577,9 @@ dbupdateHandshakeCallback (void *tdbupdate, programstate_t programState)
     ++c;
   }
   if ((dbupdate->startflags & BDJ4_CLI) == BDJ4_CLI) {
-    if (c == 1) { rc = true; }
+    if (c == 1) { rc = STATE_FINISHED; }
   } else {
-    if (c == 2) { rc = true; }
+    if (c == 2) { rc = STATE_FINISHED; }
   }
 
   logProcEnd (LOG_PROC, "dbupdateHandshakeCallback", "");
@@ -596,30 +596,16 @@ dbupdateStoppingCallback (void *tdbupdate, programstate_t programState)
   procutilStopAllProcess (dbupdate->processes, dbupdate->conn, false);
   connDisconnect (dbupdate->conn, ROUTE_MANAGEUI);
   logProcEnd (LOG_PROC, "dbupdateStoppingCallback", "");
-  return true;
+  return STATE_FINISHED;
 }
 
 static bool
 dbupdateStopWaitCallback (void *tdbupdate, programstate_t programState)
 {
   dbupdate_t  *dbupdate = tdbupdate;
-  bool        rc = false;
+  bool        rc;
 
-  logProcBegin (LOG_PROC, "dbupdateStopWaitCallback");
-
-  rc = connCheckAll (dbupdate->conn);
-  if (rc == false) {
-    ++dbupdate->stopwaitcount;
-    if (dbupdate->stopwaitcount > STOP_WAIT_COUNT_MAX) {
-      rc = true;
-    }
-  }
-
-  if (rc) {
-    connDisconnectAll (dbupdate->conn);
-  }
-
-  logProcEnd (LOG_PROC, "dbupdateStopWaitCallback", "");
+  rc = connWaitClosed (dbupdate->conn, &dbupdate->stopwaitcount);
   return rc;
 }
 
@@ -647,7 +633,7 @@ dbupdateClosingCallback (void *tdbupdate, programstate_t programState)
   slistFree (dbupdate->fileList);
 
   logProcEnd (LOG_PROC, "dbupdateClosingCallback", "");
-  return true;
+  return STATE_FINISHED;
 }
 
 static void

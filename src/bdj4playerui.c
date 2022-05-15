@@ -246,30 +246,16 @@ pluiStoppingCallback (void *udata, programstate_t programState)
 
   connDisconnect (plui->conn, ROUTE_STARTERUI);
   logProcEnd (LOG_PROC, "pluiStoppingCallback", "");
-  return true;
+  return STATE_FINISHED;
 }
 
 static bool
 pluiStopWaitCallback (void *udata, programstate_t programState)
 {
   playerui_t  * plui = udata;
-  bool        rc = true;
+  bool        rc;
 
-  logProcBegin (LOG_PROC, "pluiStopWaitCallback");
-
-  rc = connCheckAll (plui->conn);
-  if (rc == false) {
-    ++plui->stopwaitcount;
-    if (plui->stopwaitcount > STOP_WAIT_COUNT_MAX) {
-      rc = true;
-    }
-  }
-
-  if (rc) {
-    connDisconnectAll (plui->conn);
-  }
-
-  logProcEnd (LOG_PROC, "pluiStopWaitCallback", "");
+  rc = connWaitClosed (plui->conn, &plui->stopwaitcount);
   return rc;
 }
 
@@ -310,7 +296,7 @@ pluiClosingCallback (void *udata, programstate_t programState)
   uiCleanup ();
 
   logProcEnd (LOG_PROC, "pluiClosingCallback", "");
-  return true;
+  return STATE_FINISHED;
 }
 
 static void
@@ -525,7 +511,7 @@ static bool
 pluiConnectingCallback (void *udata, programstate_t programState)
 {
   playerui_t   *plui = udata;
-  bool        rc = false;
+  bool        rc = STATE_NOT_FINISH;
 
   logProcBegin (LOG_PROC, "pluiConnectingCallback");
 
@@ -546,7 +532,7 @@ pluiConnectingCallback (void *udata, programstate_t programState)
 
   if (connIsConnected (plui->conn, ROUTE_STARTERUI)) {
     connSendMessage (plui->conn, ROUTE_STARTERUI, MSG_START_MAIN, "0");
-    rc = true;
+    rc = STATE_FINISHED;
   }
 
   logProcEnd (LOG_PROC, "pluiConnectingCallback", "");
@@ -557,7 +543,7 @@ static bool
 pluiHandshakeCallback (void *udata, programstate_t programState)
 {
   playerui_t   *plui = udata;
-  bool          rc = false;
+  bool          rc = STATE_NOT_FINISH;
 
   logProcBegin (LOG_PROC, "pluiHandshakeCallback");
 
@@ -587,7 +573,7 @@ pluiHandshakeCallback (void *udata, programstate_t programState)
     pluiSetPlaybackQueue (plui, MUSICQ_A);
     pluiSetExtraQueues (plui);
     progstateLogTime (plui->progstate, "time-to-start-gui");
-    rc = true;
+    rc = STATE_FINISHED;
   }
 
   logProcEnd (LOG_PROC, "pluiHandshakeCallback", "");

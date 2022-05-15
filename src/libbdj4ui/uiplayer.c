@@ -551,7 +551,7 @@ uiplayerInitCallback (void *udata, programstate_t programState)
   mstimeset (&uiplayer->volumeLockSend, 3600000);
 
   logProcEnd (LOG_PROC, "uiplayerInitCallback", "");
-  return true;
+  return STATE_FINISHED;
 }
 
 static bool
@@ -567,7 +567,7 @@ uiplayerClosingCallback (void *udata, programstate_t programState)
   uiWidgetClearPersistent (&uiplayer->ledonImg);
   uiWidgetClearPersistent (&uiplayer->ledoffImg);
   logProcEnd (LOG_PROC, "uiplayerClosingCallback", "");
-  return true;
+  return STATE_FINISHED;
 }
 
 static void

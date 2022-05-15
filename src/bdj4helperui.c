@@ -131,7 +131,7 @@ helperStoppingCallback (void *udata, programstate_t programState)
   helperui_t   *helper = udata;
 
   connDisconnectAll (helper->conn);
-  return true;
+  return STATE_FINISHED;
 }
 
 static bool
@@ -152,7 +152,7 @@ helperClosingCallback (void *udata, programstate_t programState)
   }
 
   logProcEnd (LOG_PROC, "helperClosingCallback", "");
-  return true;
+  return STATE_FINISHED;
 }
 
 static void

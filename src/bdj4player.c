@@ -249,7 +249,7 @@ playerStoppingCallback (void *tpdata, programstate_t programState)
   playerdata_t    *playerData = tpdata;
 
   connDisconnectAll (playerData->conn);
-  return true;
+  return STATE_FINISHED;
 }
 
 static bool
@@ -280,7 +280,7 @@ playerClosingCallback (void *tpdata, programstate_t programState)
     queueFree (playerData->playRequest);
   }
 
-  return true;
+  return STATE_FINISHED;
 }
 
 static int
@@ -677,7 +677,7 @@ static bool
 playerConnectingCallback (void *tpdata, programstate_t programState)
 {
   playerdata_t  *playerData = tpdata;
-  bool          rc = false;
+  bool          rc = STATE_NOT_FINISH;
 
   connProcessUnconnected (playerData->conn);
 
@@ -686,7 +686,7 @@ playerConnectingCallback (void *tpdata, programstate_t programState)
   }
 
   if (connIsConnected (playerData->conn, ROUTE_MAIN)) {
-    rc = true;
+    rc = STATE_FINISHED;
   }
 
   return rc;
@@ -696,12 +696,12 @@ static bool
 playerHandshakeCallback (void *tpdata, programstate_t programState)
 {
   playerdata_t  *playerData = tpdata;
-  bool          rc = false;
+  bool          rc = STATE_NOT_FINISH;
 
   connProcessUnconnected (playerData->conn);
 
   if (connHaveHandshake (playerData->conn, ROUTE_MAIN)) {
-    rc = true;
+    rc = STATE_FINISHED;
   }
 
   return rc;
