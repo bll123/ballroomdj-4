@@ -2042,7 +2042,7 @@ installerRegister (installer_t *installer)
     installer->webclient = webclientAlloc (installer, installerWebResponseCallback);
   }
   snprintf (uri, sizeof (uri), "%s/%s",
-      sysvarsGetStr (SV_SUPPORTMSG_HOST), sysvarsGetStr (SV_REGISTER_URI));
+      sysvarsGetStr (SV_HOST_SUPPORTMSG), sysvarsGetStr (SV_URI_REGISTER));
   snprintf (tbuff, sizeof (tbuff),
       "key=%s"
       "&version=%s&build=%s&builddate=%s&releaselevel=%s"

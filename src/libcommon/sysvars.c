@@ -56,16 +56,17 @@ static sysvarsdesc_t sysvarsdesc [SV_MAX] = {
   [SV_BDJ4TMPDIR] = { "Dir-Temp" },
   [SV_BDJ4_VERSION] = { "BDJ4-Version" },
   [SV_CA_FILE] = { "CA-File" },
-  [SV_FORUM_HOST] = { "Host-Forum" },
-  [SV_FORUM_URI] = { "URI-Forum" },
   [SV_HOME] = { "Path-Home" },
+  [SV_HOST_FORUM] = { "Host-Forum" },
+  [SV_HOST_MOBMQ] = { "Host-Mobmq" },
   [SV_HOSTNAME] = { "Hostname" },
+  [SV_HOST_SUPPORTMSG] = { "Host-Support-Msg" },
+  [SV_HOST_TICKET] = { "Host-Support" },
+  [SV_HOST_WEB] = { "Host-Web" },
+  [SV_HOST_WIKI] = { "Host-Wiki" },
   [SV_LOCALE] = { "Locale" },
   [SV_LOCALE_SHORT] = { "Locale-Short" },
   [SV_LOCALE_SYSTEM] = { "Locale-System" },
-  [SV_MOBMQ_HOST] = { "Host-Mobmq" },
-  [SV_MOBMQ_URI] = { "URI-Mobmq" },
-  [SV_MOBMQ_POST_URI] = { "URI-Mobmq-Post" },
   [SV_OSBUILD] = { "OS-Build" },
   [SV_OSDISP] = { "OS-Display" },
   [SV_OS_EXEC_EXT] = { "OS-Exec_ext" },
@@ -80,17 +81,18 @@ static sysvarsdesc_t sysvarsdesc [SV_MAX] = {
   [SV_PYTHON_DOT_VERSION] = { "Version-Python-Dot" },
   [SV_PYTHON_MUTAGEN] = { "Path-mutagen" },
   [SV_PYTHON_VERSION] = { "Version-Python" },
-  [SV_REGISTER_URI] = { "URI-Register" },
   [SV_SHLIB_EXT] = { "Sharedlib-Extension" },
-  [SV_SUPPORTMSG_HOST] = { "Host-Support-Msg" },
-  [SV_SUPPORTMSG_URI] = { "URI-Support-Msg" },
   [SV_THEME_DEFAULT] = { "Theme-default" },
-  [SV_TICKET_HOST] = { "Host-Support" },
-  [SV_TICKET_URI] = { "URI-Support" },
+  [SV_URI_FORUM] = { "URI-Forum" },
+  [SV_URI_MOBMQ_POST] = { "URI-Mobmq-Post" },
+  [SV_URI_MOBMQ] = { "URI-Mobmq" },
+  [SV_URI_REGISTER] = { "URI-Register" },
+  [SV_URI_SUPPORTMSG] = { "URI-Support-Msg" },
+  [SV_URI_TICKET] = { "URI-Support" },
+  [SV_URI_WIKI] = { "URI-Wiki" },
   [SV_USER_AGENT] = { "User-Agent" },
   [SV_USER_MUNGE] = { "User-Munge" },
   [SV_USER] = { "User" },
-  [SV_WEB_HOST] = { "Host-Web" },
   [SV_WEB_VERSION_FILE] = { "URI-Version-File" },
 };
 
@@ -273,19 +275,21 @@ sysvarsInit (const char *argv0)
 
   strlcpy (sysvars [SV_SHLIB_EXT], SHLIB_EXT, SV_MAX_SZ);
 
-  strlcpy (sysvars [SV_MOBMQ_HOST], "https://ballroomdj.org", SV_MAX_SZ);
-  strlcpy (sysvars [SV_MOBMQ_URI], "/marquee4.html", SV_MAX_SZ);
-  strlcpy (sysvars [SV_MOBMQ_POST_URI], "/marquee4.php", SV_MAX_SZ);
+  strlcpy (sysvars [SV_HOST_MOBMQ], "https://ballroomdj.org", SV_MAX_SZ);
+  strlcpy (sysvars [SV_URI_MOBMQ], "/marquee4.html", SV_MAX_SZ);
+  strlcpy (sysvars [SV_URI_MOBMQ_POST], "/marquee4.php", SV_MAX_SZ);
 
-  strlcpy (sysvars [SV_WEB_HOST], "https://ballroomdj4.sourceforge.io", SV_MAX_SZ);
+  strlcpy (sysvars [SV_HOST_WEB], "https://ballroomdj4.sourceforge.io", SV_MAX_SZ);
   strlcpy (sysvars [SV_WEB_VERSION_FILE], "bdj4version.txt", SV_MAX_SZ);
-  strlcpy (sysvars [SV_FORUM_HOST], "https://ballroomdj.org", SV_MAX_SZ);
-  strlcpy (sysvars [SV_FORUM_URI], "/forum/index.php", SV_MAX_SZ);
-  strlcpy (sysvars [SV_TICKET_HOST], "https://sourceforge.net", SV_MAX_SZ);
-  strlcpy (sysvars [SV_TICKET_URI], "/p/ballroomdj4/tickets/", SV_MAX_SZ);
-  strlcpy (sysvars [SV_SUPPORTMSG_HOST], "https://ballroomdj.org", SV_MAX_SZ);
-  strlcpy (sysvars [SV_SUPPORTMSG_URI], "/bdj4support.php", SV_MAX_SZ);
-  strlcpy (sysvars [SV_REGISTER_URI], "/bdj4register.php", SV_MAX_SZ);
+  strlcpy (sysvars [SV_HOST_WIKI], "https://sourceforge.net", SV_MAX_SZ);
+  strlcpy (sysvars [SV_URI_WIKI], "/p/ballroomdj4/wiki/Home", SV_MAX_SZ);
+  strlcpy (sysvars [SV_HOST_FORUM], "https://ballroomdj.org", SV_MAX_SZ);
+  strlcpy (sysvars [SV_URI_FORUM], "/forum/index.php", SV_MAX_SZ);
+  strlcpy (sysvars [SV_HOST_TICKET], "https://sourceforge.net", SV_MAX_SZ);
+  strlcpy (sysvars [SV_URI_TICKET], "/p/ballroomdj4/tickets/", SV_MAX_SZ);
+  strlcpy (sysvars [SV_HOST_SUPPORTMSG], "https://ballroomdj.org", SV_MAX_SZ);
+  strlcpy (sysvars [SV_URI_SUPPORTMSG], "/bdj4support.php", SV_MAX_SZ);
+  strlcpy (sysvars [SV_URI_REGISTER], "/bdj4register.php", SV_MAX_SZ);
 
   for (size_t i = 0; i < CACERT_FILE_COUNT; ++i) {
     if (fileopFileExists (cacertFiles [i])) {

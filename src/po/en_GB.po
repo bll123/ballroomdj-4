@@ -33,6 +33,10 @@ msgstr ""
 msgid "%s Forums"
 msgstr ""
 
+#, c-format
+msgid "%s Helper"
+msgstr ""
+
 #. CONTEXT: installer: window title
 #, c-format
 msgid "%s Installer"

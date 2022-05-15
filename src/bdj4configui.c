@@ -2991,7 +2991,7 @@ confuiUpdateMobmqQrcode (configui_t *confui)
       confuiSetStatusMsg (confui, tbuff);
     }
     snprintf (uridisp, sizeof (uridisp), "%s%s?v=1&tag=%s",
-        sysvarsGetStr (SV_MOBMQ_HOST), sysvarsGetStr (SV_MOBMQ_URI),
+        sysvarsGetStr (SV_HOST_MOBMQ), sysvarsGetStr (SV_URI_MOBMQ),
         tag);
   }
   if (type == MOBILEMQ_LOCAL) {

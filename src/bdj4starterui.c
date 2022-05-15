@@ -69,6 +69,7 @@ enum {
 };
 
 enum {
+  START_LINK_CB_WIKI,
   START_LINK_CB_FORUM,
   START_LINK_CB_TICKETS,
   START_LINK_CB_MAX,
@@ -178,6 +179,7 @@ static size_t   starterGzipEnd (z_stream *zs);
 static void     starterStopAllProcesses (GtkMenuItem *mi, gpointer udata);
 static int      starterCountProcesses (startui_t *starter);
 
+static bool     starterWikiLinkHandler (void *udata);
 static bool     starterForumLinkHandler (void *udata);
 static bool     starterTicketLinkHandler (void *udata);
 static void     starterLinkHandler (void *udata, int cbidx);
@@ -955,7 +957,7 @@ starterProcessSupport (void *udata)
       starter->webclient = webclientAlloc (starter, starterWebResponseCallback);
     }
     snprintf (uri, sizeof (uri), "%s/%s",
-        sysvarsGetStr (SV_WEB_HOST), sysvarsGetStr (SV_WEB_VERSION_FILE));
+        sysvarsGetStr (SV_HOST_WEB), sysvarsGetStr (SV_WEB_VERSION_FILE));
     webclientGet (starter->webclient, uri);
     strlcpy (starter->latestversion, starter->webresponse, sizeof (starter->latestversion));
     stringTrim (starter->latestversion);
@@ -1020,7 +1022,22 @@ starterProcessSupport (void *udata)
 
   /* begin line */
   snprintf (uri, sizeof (uri), "%s%s",
-      sysvarsGetStr (SV_FORUM_HOST), sysvarsGetStr (SV_FORUM_URI));
+      sysvarsGetStr (SV_HOST_WIKI), sysvarsGetStr (SV_URI_WIKI));
+  /* CONTEXT: starterui: basic support dialog: support option */
+  snprintf (tbuff, sizeof (tbuff), _("%s Wiki"), BDJ4_NAME);
+  uiCreateLink (&uiwidget, tbuff, uri);
+  if (isMacOS ()) {
+    uiutilsUICallbackInit (&starter->macoslinkcb [START_LINK_CB_WIKI].cb,
+        starterWikiLinkHandler, starter);
+    starter->macoslinkcb [START_LINK_CB_WIKI].uri = strdup (uri);
+    uiLinkSetActivateCallback (&uiwidget,
+        &starter->macoslinkcb [START_LINK_CB_WIKI].cb);
+  }
+  uiBoxPackStart (&vbox, &uiwidget);
+
+  /* begin line */
+  snprintf (uri, sizeof (uri), "%s%s",
+      sysvarsGetStr (SV_HOST_FORUM), sysvarsGetStr (SV_URI_FORUM));
   /* CONTEXT: starterui: basic support dialog: support option */
   snprintf (tbuff, sizeof (tbuff), _("%s Forums"), BDJ4_NAME);
   uiCreateLink (&uiwidget, tbuff, uri);
@@ -1035,7 +1052,7 @@ starterProcessSupport (void *udata)
 
   /* begin line */
   snprintf (uri, sizeof (uri), "%s%s",
-      sysvarsGetStr (SV_TICKET_HOST), sysvarsGetStr (SV_TICKET_URI));
+      sysvarsGetStr (SV_HOST_TICKET), sysvarsGetStr (SV_URI_TICKET));
   /* CONTEXT: starterui: basic support dialog: support option */
   snprintf (tbuff, sizeof (tbuff), _("%s Support Tickets"), BDJ4_NAME);
   uiCreateLink (&uiwidget, tbuff, uri);
@@ -1364,7 +1381,7 @@ starterSendFile (startui_t *starter, char *origfn, char *fn)
 
   starterCompressFile (origfn, fn);
   snprintf (uri, sizeof (uri), "%s%s",
-      sysvarsGetStr (SV_SUPPORTMSG_HOST), sysvarsGetStr (SV_SUPPORTMSG_URI));
+      sysvarsGetStr (SV_HOST_SUPPORTMSG), sysvarsGetStr (SV_URI_SUPPORTMSG));
   query [0] = "key";
   query [1] = "9034545";
   query [2] = "ident";
@@ -1661,6 +1678,13 @@ inline static bool
 starterForumLinkHandler (void *udata)
 {
   starterLinkHandler (udata, START_LINK_CB_FORUM);
+  return UICB_STOP;
+}
+
+inline static bool
+starterWikiLinkHandler (void *udata)
+{
+  starterLinkHandler (udata, START_LINK_CB_WIKI);
   return UICB_STOP;
 }
 

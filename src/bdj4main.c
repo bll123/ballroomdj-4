@@ -922,7 +922,7 @@ mainSendMobileMarqueeData (maindata_t *mainData)
     }
 
     snprintf (tbuff, sizeof (tbuff), "%s/%s",
-        sysvarsGetStr (SV_MOBMQ_HOST), sysvarsGetStr (SV_MOBMQ_POST_URI));
+        sysvarsGetStr (SV_HOST_MOBMQ), sysvarsGetStr (SV_URI_MOBMQ_POST));
     snprintf (qbuff, sizeof (qbuff), "v=2&mqdata=%s&key=%s&tag=%s",
         jbuff, "93457645", tag);
     if (mainData->mobmqUserkey != NULL) {

@@ -220,7 +220,7 @@ webclientGetLocalIP (void)
 
   webclient = webclientAlloc (NULL, NULL);
   snprintf (tbuff, sizeof (tbuff), "%s/%s",
-      sysvarsGetStr (SV_WEB_HOST), sysvarsGetStr (SV_WEB_VERSION_FILE));
+      sysvarsGetStr (SV_HOST_WEB), sysvarsGetStr (SV_WEB_VERSION_FILE));
   curl_easy_setopt (webclient->curl, CURLOPT_URL, tbuff);
   curl_easy_setopt (webclient->curl, CURLOPT_WRITEDATA, NULL);
   curl_easy_setopt (webclient->curl, CURLOPT_WRITEFUNCTION, webclientNullCallback);
@@ -372,6 +372,6 @@ webclientSetUserAgent (CURL *curl)
 
   snprintf (tbuff, sizeof (tbuff),
       "BDJ4/%s ( %s/ )", sysvarsGetStr (SV_BDJ4_VERSION),
-      sysvarsGetStr (SV_WEB_HOST));
+      sysvarsGetStr (SV_HOST_WEB));
   curl_easy_setopt (curl, CURLOPT_USERAGENT, tbuff);
 }

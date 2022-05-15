@@ -39,6 +39,7 @@ typedef struct {
   ilist_t         *helplist;
   ilistidx_t      helpiter;
   ilistidx_t      helpkey;
+  bool            scrollendflag : 1;
 } helperui_t;
 
 static bool     helperStoppingCallback (void *udata, programstate_t programState);
@@ -81,6 +82,7 @@ main (int argc, char *argv[])
   helper.helpdf = NULL;
   helper.helplist = NULL;
   helper.helpiter = 0;
+  helper.scrollendflag = false;
   uiutilsUIWidgetInit (&helper.window);
 
   helper.progstate = progstateInit ("helperui");
@@ -169,6 +171,7 @@ helperBuildUI (helperui_t  *helper)
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", ".svg", PATHBLD_MP_IMGDIR);
   uiutilsUICallbackInit (&helper->closeCallback, helperCloseCallback, helper);
+  /* CONTEXT: the window title for the BDJ4 helper */
   snprintf (tbuff, sizeof (tbuff), _("%s Helper"), BDJ4_LONG_NAME);
   uiCreateMainWindow (&helper->window, &helper->closeCallback,
       tbuff, imgbuff);
@@ -181,7 +184,7 @@ helperBuildUI (helperui_t  *helper)
   uiTextBoxHorizExpand (helper->tb);
   uiTextBoxVertExpand (helper->tb);
   uiTextBoxSetReadonly (helper->tb);
-  uiBoxPackStart (&vbox, uiTextBoxGetScrolledWindow (helper->tb));
+  uiBoxPackStartExpand (&vbox, uiTextBoxGetScrolledWindow (helper->tb));
 
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&vbox, &hbox);
@@ -216,6 +219,11 @@ helperMainLoop (void *thelper)
 
   if (! stop) {
     uiUIProcessEvents ();
+  }
+
+  if (helper->scrollendflag) {
+    uiTextBoxScrollToEnd (helper->tb);
+    helper->scrollendflag = false;
   }
 
   if (! progstateIsRunning (helper->progstate)) {
@@ -340,7 +348,7 @@ helpDisplay (helperui_t *helper)
     uiTextBoxAppendBoldStr (helper->tb, _(title));
     uiTextBoxAppendStr (helper->tb, "\n\n");
     uiTextBoxAppendStr (helper->tb, ntext);
-    uiTextBoxScrollToEnd (helper->tb);
+    helper->scrollendflag = true;
     free (ntext);
   }
 }
