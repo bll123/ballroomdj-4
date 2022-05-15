@@ -12,6 +12,7 @@
 #include <unistd.h>
 #include <signal.h>
 #include <locale.h>
+#include <stdarg.h>
 
 #if _hdr_fcntl
 # include <fcntl.h>
@@ -113,7 +114,7 @@ osProcessStart (char *targv[], int flags, void **handle, char *outfname)
         }
       }
 
-      rc = execv (targv [0], targv);
+      rc = execv (targv [0], (char * const *) targv);
       if (rc < 0) {
         fprintf (stderr, "unable to execute %s %d %s\n", targv [0], errno, strerror (errno));
         exit (1);
@@ -236,7 +237,7 @@ osProcessStart (char *targv[], int flags, void **handle, char *outfname)
 
 /* creates a pipe for re-direction and grabs the output */
 pid_t
-osProcessPipe (char *targv[], int flags, char *rbuff, size_t sz)
+osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz)
 {
   pid_t   pid;
 
@@ -274,7 +275,7 @@ osProcessPipe (char *targv[], int flags, char *rbuff, size_t sz)
       dup2 (pipefd [1], STDOUT_FILENO);
       dup2 (pipefd [1], STDERR_FILENO);
 
-      rc = execv (targv [0], targv);
+      rc = execv (targv [0], (char * const *) targv);
       if (rc < 0) {
         fprintf (stderr, "unable to execute %s %d %s\n", targv [0], errno, strerror (errno));
         exit (1);
@@ -564,49 +565,6 @@ osSetEnv (const char *name, const char *value)
   return rc;
 }
 
-#pragma GCC diagnostic pop
-#pragma clang diagnostic pop
-
-
-char *
-osRegistryGet (char *key, char *name)
-{
-  char    *rval = NULL;
-
-#if _lib_RegOpenKeyEx
-  DWORD   dwRet;
-  HKEY    hkey;
-  LSTATUS rc;
-  unsigned char buff [512];
-  DWORD   len = 512;
-
-  *buff = '\0';
-
-  rc = RegOpenKeyEx (
-      HKEY_CURRENT_USER,
-      key,
-      0,
-      KEY_QUERY_VALUE,
-      &hkey
-      );
-
-  dwRet = RegQueryValueEx (
-      hkey,
-      name,
-      NULL,
-      NULL,
-      buff,
-      &len
-      );
-
-  rval = strdup ((char *) buff);
-
-  RegCloseKey (hkey);
-#endif
-
-  return rval;
-}
-
 void
 osSetStandardSignals (void (*sigHandler)(int))
 {
@@ -683,5 +641,27 @@ osGetLocale (char *buff, size_t sz)
   strlcpy (buff, setlocale (LC_ALL, NULL), sz);
 #endif
   return buff;
+}
+
+char *
+osRunProgram (const char *prog, ...)
+{
+  char        data [2048];
+  char        *arg;
+  const char  *targv [10];
+  int         targc;
+
+  va_list   valist;
+  va_start (valist, prog);
+
+  targc = 0;
+  targv [targc++] = prog;
+  while ((arg = va_arg (valist, char *)) != NULL) {
+    targv [targc++] = arg;
+  }
+  targv [targc++] = NULL;
+
+  osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, data, sizeof (data));
+  return strdup (data);
 }
 

@@ -41,59 +41,60 @@ typedef struct {
 
 /* for debugging */
 static sysvarsdesc_t sysvarsdesc [SV_MAX] = {
-  [SV_BDJ4_BUILD] = { "BDJ4-Build-Number" },
-  [SV_BDJ4_BUILDDATE] = { "BDJ4-Build-Date" },
-  [SV_BDJ4DATADIR] = { "Dir-Data" },
-  [SV_BDJ4DATATOPDIR] = { "Dir-Data-Top" },
-  [SV_BDJ4EXECDIR] = { "Dir-Exec" },
-  [SV_BDJ4HTTPDIR] = { "Dir-Http" },
-  [SV_BDJ4IMGDIR] = { "Dir-Image" },
-  [SV_BDJ4INSTDIR] = { "Dir-Install" },
-  [SV_BDJ4LOCALEDIR] = { "Dir-Locale" },
-  [SV_BDJ4MAINDIR] = { "Dir-Main" },
-  [SV_BDJ4_RELEASELEVEL] = { "BDJ4-Release-Level" },
-  [SV_BDJ4TEMPLATEDIR] = { "Dir-Template" },
-  [SV_BDJ4TMPDIR] = { "Dir-Temp" },
-  [SV_BDJ4_VERSION] = { "BDJ4-Version" },
-  [SV_CA_FILE] = { "CA-File" },
-  [SV_HOME] = { "Path-Home" },
-  [SV_HOST_FORUM] = { "Host-Forum" },
-  [SV_HOST_MOBMQ] = { "Host-Mobmq" },
-  [SV_HOSTNAME] = { "Hostname" },
-  [SV_HOST_SUPPORTMSG] = { "Host-Support-Msg" },
-  [SV_HOST_TICKET] = { "Host-Support" },
-  [SV_HOST_WEB] = { "Host-Web" },
-  [SV_HOST_WIKI] = { "Host-Wiki" },
-  [SV_LOCALE] = { "Locale" },
-  [SV_LOCALE_SHORT] = { "Locale-Short" },
-  [SV_LOCALE_SYSTEM] = { "Locale-System" },
-  [SV_OSBUILD] = { "OS-Build" },
-  [SV_OSDISP] = { "OS-Display" },
-  [SV_OS_EXEC_EXT] = { "OS-Exec_ext" },
-  [SV_OSNAME] = { "OS-Name" },
-  [SV_OSVERS] = { "OS-Version" },
-  [SV_PATH_GETCONF] = { "Path-getconf" },
-  [SV_PATH_GSETTINGS] = { "Path-gsettings" },
-  [SV_PATH_PYTHON] = { "Path-python" },
-  [SV_PATH_PYTHON_PIP] = { "Path-pip" },
-  [SV_PATH_VLC] = { "Path-vlc" },
-  [SV_PATH_XDGUSERDIR] = { "Path-xdg-user-dir" },
-  [SV_PYTHON_DOT_VERSION] = { "Version-Python-Dot" },
-  [SV_PYTHON_MUTAGEN] = { "Path-mutagen" },
-  [SV_PYTHON_VERSION] = { "Version-Python" },
-  [SV_SHLIB_EXT] = { "Sharedlib-Extension" },
-  [SV_THEME_DEFAULT] = { "Theme-default" },
-  [SV_URI_FORUM] = { "URI-Forum" },
-  [SV_URI_MOBMQ_POST] = { "URI-Mobmq-Post" },
-  [SV_URI_MOBMQ] = { "URI-Mobmq" },
-  [SV_URI_REGISTER] = { "URI-Register" },
-  [SV_URI_SUPPORTMSG] = { "URI-Support-Msg" },
-  [SV_URI_TICKET] = { "URI-Support" },
-  [SV_URI_WIKI] = { "URI-Wiki" },
-  [SV_USER_AGENT] = { "User-Agent" },
-  [SV_USER_MUNGE] = { "User-Munge" },
-  [SV_USER] = { "User" },
-  [SV_WEB_VERSION_FILE] = { "URI-Version-File" },
+  [SV_BDJ4_BUILD] = { "BDJ4_BUILD" },
+  [SV_BDJ4_BUILDDATE] = { "BDJ4_BUILDDATE" },
+  [SV_BDJ4DATADIR] = { "BDJ4DATADIR" },
+  [SV_BDJ4DATATOPDIR] = { "BDJ4DATATOPDIR" },
+  [SV_BDJ4EXECDIR] = { "BDJ4EXECDIR" },
+  [SV_BDJ4HTTPDIR] = { "BDJ4HTTPDIR" },
+  [SV_BDJ4IMGDIR] = { "BDJ4IMGDIR" },
+  [SV_BDJ4INSTDIR] = { "BDJ4INSTDIR" },
+  [SV_BDJ4LOCALEDIR] = { "BDJ4LOCALEDIR" },
+  [SV_BDJ4MAINDIR] = { "BDJ4MAINDIR" },
+  [SV_BDJ4_RELEASELEVEL] = { "BDJ4_RELEASELEVEL" },
+  [SV_BDJ4TEMPLATEDIR] = { "BDJ4TEMPLATEDIR" },
+  [SV_BDJ4TMPDIR] = { "BDJ4TMPDIR" },
+  [SV_BDJ4_VERSION] = { "BDJ4_VERSION" },
+  [SV_CA_FILE] = { "CA_FILE" },
+  [SV_FONT_DEFAULT] = { "FONT_DEFAULT" },
+  [SV_HOME] = { "HOME" },
+  [SV_HOST_FORUM] = { "HOST_FORUM" },
+  [SV_HOST_MOBMQ] = { "HOST_MOBMQ" },
+  [SV_HOSTNAME] = { "HOSTNAME" },
+  [SV_HOST_SUPPORTMSG] = { "HOST_SUPPORTMSG" },
+  [SV_HOST_TICKET] = { "HOST_TICKET" },
+  [SV_HOST_WEB] = { "HOST_WEB" },
+  [SV_HOST_WIKI] = { "HOST_WIKI" },
+  [SV_LOCALE] = { "LOCALE" },
+  [SV_LOCALE_SHORT] = { "LOCALE_SHORT" },
+  [SV_LOCALE_SYSTEM] = { "LOCALE_SYSTEM" },
+  [SV_OSBUILD] = { "OSBUILD" },
+  [SV_OSDISP] = { "OSDISP" },
+  [SV_OS_EXEC_EXT] = { "OS_EXEC_EXT" },
+  [SV_OSNAME] = { "OSNAME" },
+  [SV_OSVERS] = { "OSVERS" },
+  [SV_PATH_GETCONF] = { "PATH_GETCONF" },
+  [SV_PATH_GSETTINGS] = { "PATH_GSETTINGS" },
+  [SV_PATH_PYTHON] = { "PATH_PYTHON" },
+  [SV_PATH_PYTHON_PIP] = { "PATH_PYTHON_PIP" },
+  [SV_PATH_VLC] = { "PATH_VLC" },
+  [SV_PATH_XDGUSERDIR] = { "PATH_XDGUSERDIR" },
+  [SV_PYTHON_DOT_VERSION] = { "PYTHON_DOT_VERSION" },
+  [SV_PYTHON_MUTAGEN] = { "PYTHON_MUTAGEN" },
+  [SV_PYTHON_VERSION] = { "PYTHON_VERSION" },
+  [SV_SHLIB_EXT] = { "SHLIB_EXT" },
+  [SV_THEME_DEFAULT] = { "THEME_DEFAULT" },
+  [SV_URI_FORUM] = { "URI_FORUM" },
+  [SV_URI_MOBMQ_POST] = { "URI_MOBMQ_POST" },
+  [SV_URI_MOBMQ] = { "URI_MOBMQ" },
+  [SV_URI_REGISTER] = { "URI_REGISTER" },
+  [SV_URI_SUPPORTMSG] = { "URI_SUPPORTMSG" },
+  [SV_URI_TICKET] = { "URI_TICKET" },
+  [SV_URI_WIKI] = { "URI_WIKI" },
+  [SV_USER_AGENT] = { "USER_AGENT" },
+  [SV_USER_MUNGE] = { "USER_MUNGE" },
+  [SV_USER] = { "USER" },
+  [SV_WEB_VERSION_FILE] = { "WEB_VERSION_FILE" },
 };
 
 static sysvarsdesc_t sysvarsldesc [SVL_MAX] = {
@@ -120,9 +121,9 @@ static char *cacertFiles [] = {
 
 static void enable_core_dump (void);
 static void checkForFile (char *path, int idx, ...);
-static char * svRunProgram (char *prog, ...);
 static bool svGetLinuxOSInfo (char *fn);
 static void svGetLinuxDefaultTheme (void);
+static void svGetSystemFont (void);
 
 void
 sysvarsInit (const char *argv0)
@@ -371,7 +372,7 @@ sysvarsInit (const char *argv0)
     char *data;
 
     strlcpy (sysvars [SV_OSDISP], "MacOS", SV_MAX_SZ);
-    data = svRunProgram (sysvars [SV_TEMP_A], "-productVersion", NULL);
+    data = osRunProgram (sysvars [SV_TEMP_A], "-productVersion", NULL);
     stringTrim (data);
     strlcpy (sysvars [SV_OSVERS], data, SV_MAX_SZ);
     if (data != NULL) {
@@ -410,11 +411,13 @@ sysvarsInit (const char *argv0)
     }
   }
 
+  svGetSystemFont ();
+
   if (*sysvars [SV_PATH_PYTHON]) {
     char    *data;
     int     j;
 
-    data = svRunProgram (sysvars [SV_PATH_PYTHON], "--version", NULL);
+    data = osRunProgram (sysvars [SV_PATH_PYTHON], "--version", NULL);
 
     p = NULL;
     if (data != NULL) {
@@ -488,7 +491,7 @@ sysvarsInit (const char *argv0)
       lsysvars [SVL_NUM_PROC] = atoi (tptr);
     }
   } else {
-    tptr = svRunProgram (sysvars [SV_PATH_GETCONF], "_NPROCESSORS_ONLN", NULL);
+    tptr = osRunProgram (sysvars [SV_PATH_GETCONF], "_NPROCESSORS_ONLN", NULL);
     if (tptr != NULL) {
       lsysvars [SVL_NUM_PROC] = atoi (tptr);
     }
@@ -695,28 +698,6 @@ checkForFile (char *path, int idx, ...)
   va_end (valist);
 }
 
-static char *
-svRunProgram (char *prog, ...)
-{
-  char    data [2048];
-  char    *arg;
-  char    *targv [10];
-  int     targc;
-
-  va_list   valist;
-  va_start (valist, prog);
-
-  targc = 0;
-  targv [targc++] = prog;
-  while ((arg = va_arg (valist, char *)) != NULL) {
-    targv [targc++] = arg;
-  }
-  targv [targc++] = NULL;
-
-  osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, data, sizeof (data));
-  return strdup (data);
-}
-
 static bool
 svGetLinuxOSInfo (char *fn)
 {
@@ -763,7 +744,8 @@ svGetLinuxDefaultTheme (void)
 {
   char    *tptr;
 
-  tptr = svRunProgram (sysvars [SV_PATH_GSETTINGS], "get", "org.gnome.desktop.interface", "gtk-theme", NULL);
+  tptr = osRunProgram (sysvars [SV_PATH_GSETTINGS], "get",
+      "org.gnome.desktop.interface", "gtk-theme", NULL);
   if (tptr != NULL) {
     /* gsettings puts quotes around the data */
     stringTrim (tptr);
@@ -773,3 +755,14 @@ svGetLinuxDefaultTheme (void)
   free (tptr);
 }
 
+static void
+svGetSystemFont (void)
+{
+  char    *tptr;
+
+  tptr = osGetSystemFont (sysvars [SV_PATH_GSETTINGS]);
+  if (tptr != NULL) {
+    strlcpy (sysvars [SV_FONT_DEFAULT], tptr, SV_MAX_SZ);
+  }
+  free (tptr);
+}

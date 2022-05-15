@@ -357,13 +357,15 @@ main (int argc, char *argv[])
   }
 
   if (installer.guienabled) {
-    uiUIInitialize ();
-    if (isWindows () || isMacOS ()) {
-      char *uifont;
+    char *uifont;
 
+    uiUIInitialize ();
+
+    uifont = sysvarsGetStr (SV_FONT_DEFAULT);
+    if (uifont == NULL || ! *uifont) {
       uifont = "Arial 12";
-      uiSetUIFont (uifont);
     }
+    uiSetUIFont (uifont);
   }
 
   installerCheckPackages (&installer);
@@ -2014,6 +2016,14 @@ installerRegisterInit (installer_t *installer)
     return;
   }
 
+  /* create the new install flag file on a new install */
+  if (installer->newinstall) {
+    FILE  *fh;
+
+    fh = fopen (INST_NEW_FILE, "w");
+    fclose (fh);
+  }
+
   if (strcmp (sysvarsGetStr (SV_USER), "bll") == 0 &&
       strcmp (sysvarsGetStr (SV_BDJ4_RELEASELEVEL), "") != 0) {
     /* no need to translate */
@@ -2074,14 +2084,6 @@ installerRegister (installer_t *installer)
       installer->convprocess
       );
   webclientPost (installer->webclient, uri, tbuff);
-
-  /* create the new install flag file on a new install */
-  if (installer->newinstall) {
-    FILE  *fh;
-
-    fh = fopen (INST_NEW_FILE, "w");
-    fclose (fh);
-  }
 
   installer->instState = INST_FINISH;
 }

@@ -46,19 +46,23 @@ double        dRandom (void);
 void          sRandom (void);
 pid_t         osProcessStart (char *targv[], int flags,
                 void **handle, char *outfname);
-pid_t         osProcessPipe (char *targv[], int flags, char *rbuff, size_t sz);
+pid_t         osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz);
 void          * osToFSFilename (const char *fname);
 char          * osFromFSFilename (const void *fname);
 dirhandle_t   * osDirOpen (const char *dir);
 char          * osDirIterate (dirhandle_t *dirh);
 void          osDirClose (dirhandle_t *dirh);
 int           osSetEnv (const char *name, const char *value);
-char          *osRegistryGet (char *key, char *name);
 void          osSetStandardSignals (void (*sigHandler)(int));
 void          osCatchSignal (void (*sigHandler)(int), int signal);
 void          osIgnoreSignal (int signal);
 void          osDefaultSignal (int signal);
 char          *osGetLocale (char *buff, size_t sz);
+char *        osRunProgram (const char *prog, ...);
+
+/* system specific functions in separate files */
+char          *osRegistryGet (char *key, char *name);
+char          *osGetSystemFont (const char *gsettingspath);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 }

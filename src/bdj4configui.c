@@ -1150,6 +1150,7 @@ confuiBuildUIUserInterface (configui_t *confui)
 {
   GtkWidget     *vbox;
   UIWidget      sg;
+  char          *tstr;
 
   /* user interface */
   vbox = confuiMakeNotebookTab (confui, confui->notebook,
@@ -1162,14 +1163,22 @@ confuiBuildUIUserInterface (configui_t *confui)
       CONFUI_SPINBOX_UI_THEME, OPT_MP_UI_THEME,
       CONFUI_OUT_STR, confui->uiitem [CONFUI_SPINBOX_UI_THEME].listidx);
 
+  tstr = bdjoptGetStr (OPT_MP_UIFONT);
+  if (! *tstr) {
+    tstr = sysvarsGetStr (SV_FONT_DEFAULT);
+  }
   /* CONTEXT: configuration: the font to use for the user interface */
   confuiMakeItemFontButton (confui, vbox, &sg, _("Font"),
-      CONFUI_WIDGET_UI_FONT, OPT_MP_UIFONT,
-      bdjoptGetStr (OPT_MP_UIFONT));
+      CONFUI_WIDGET_UI_FONT, OPT_MP_UIFONT, tstr);
+
+  tstr = bdjoptGetStr (OPT_MP_LISTING_FONT);
+  if (! *tstr) {
+    tstr = sysvarsGetStr (SV_FONT_DEFAULT);
+  }
   /* CONTEXT: configuration: the font to use for the queues and song lists */
   confuiMakeItemFontButton (confui, vbox, &sg, _("Listing Font"),
-      CONFUI_WIDGET_UI_LISTING_FONT, OPT_MP_LISTING_FONT,
-      bdjoptGetStr (OPT_MP_LISTING_FONT));
+      CONFUI_WIDGET_UI_LISTING_FONT, OPT_MP_LISTING_FONT, tstr);
+
   /* CONTEXT: configuration: the accent color to use for the user interface */
   confuiMakeItemColorButton (confui, vbox, &sg, _("Accent Colour"),
       CONFUI_WIDGET_UI_ACCENT_COLOR, OPT_P_UI_ACCENT_COL,

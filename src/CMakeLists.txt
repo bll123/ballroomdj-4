@@ -49,10 +49,18 @@ add_library (libbdj4string STATIC
   libcommon/strlcat.c
   libcommon/strlcpy.c
 )
+add_library (libbdj4osutils STATIC
+  libcommon/osutils.c
+  libcommon/oslinuxutils.c
+  libcommon/osmacutils.m
+  libcommon/oswinutils.c
+)
 add_library (libbdj4fileop STATIC
   libcommon/fileop.c
-  libcommon/osutils.c
   libcommon/tmutil.c
+)
+target_link_libraries (libbdj4fileop
+  libbdj4osutils
 )
 add_library (libbdj4launcher STATIC
   libcommon/filedata.c
@@ -85,6 +93,7 @@ endif()
 target_link_libraries (bdj4locatebdj3
   liblocatebdj3
   libbdj4fileop
+  libbdj4osutils
   libbdj4string
 )
 
@@ -138,6 +147,7 @@ if (WIN32)
 endif()
 target_link_libraries (bdj4se
   libbdj4fileop
+  libbdj4osutils
   libbdj4string
 )
 if (WIN32)
@@ -169,6 +179,7 @@ endif()
 target_link_libraries (bdj4
   libbdj4launcher
   libbdj4fileop
+  libbdj4osutils
   libbdj4string
 )
 # for gethostname
@@ -190,6 +201,7 @@ target_compile_options (bdj4g PRIVATE -DBDJ4_GUI_LAUNCHER=1)
 target_link_libraries (bdj4g
   libbdj4launcher
   libbdj4fileop
+  libbdj4osutils
   libbdj4string
   ${GTK_LDFLAGS}
 )

@@ -453,28 +453,16 @@ manageStoppingCallback (void *udata, programstate_t programState)
   procutilStopAllProcess (manage->processes, manage->conn, false);
   connDisconnect (manage->conn, ROUTE_STARTERUI);
   logProcEnd (LOG_PROC, "manageStoppingCallback", "");
-  return true;
+  return STATE_FINISHED;
 }
 
 static bool
 manageStopWaitCallback (void *udata, programstate_t programState)
 {
   manageui_t  * manage = udata;
-  bool        rc = true;
+  bool        rc;
 
-  logProcBegin (LOG_PROC, "manageStopWaitCallback");
-  rc = connCheckAll (manage->conn);
-  if (rc == false) {
-    ++manage->stopwaitcount;
-    if (manage->stopwaitcount > STOP_WAIT_COUNT_MAX) {
-      rc = true;
-    }
-  }
-
-  if (rc) {
-    connDisconnectAll (manage->conn);
-  }
-  logProcEnd (LOG_PROC, "manageStopWaitCallback", "");
+  rc = connWaitClosed (manage->conn, &manage->stopwaitcount);
   return rc;
 }
 
@@ -546,7 +534,7 @@ manageClosingCallback (void *udata, programstate_t programState)
   }
 
   logProcEnd (LOG_PROC, "manageClosingCallback", "");
-  return true;
+  return STATE_FINISHED;
 }
 
 static void
@@ -918,7 +906,7 @@ static bool
 manageConnectingCallback (void *udata, programstate_t programState)
 {
   manageui_t   *manage = udata;
-  bool        rc = false;
+  bool        rc = STATE_NOT_FINISH;
 
   logProcBegin (LOG_PROC, "manageConnectingCallback");
 
@@ -936,7 +924,7 @@ manageConnectingCallback (void *udata, programstate_t programState)
 
   if (connIsConnected (manage->conn, ROUTE_STARTERUI)) {
     connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_START_MAIN, "1");
-    rc = true;
+    rc = STATE_FINISHED;
   }
 
   logProcEnd (LOG_PROC, "manageConnectingCallback", "");
@@ -947,7 +935,7 @@ static bool
 manageHandshakeCallback (void *udata, programstate_t programState)
 {
   manageui_t   *manage = udata;
-  bool          rc = false;
+  bool        rc = STATE_NOT_FINISH;
 
   logProcBegin (LOG_PROC, "manageHandshakeCallback");
 
@@ -971,7 +959,7 @@ manageHandshakeCallback (void *udata, programstate_t programState)
     manageSetEasySonglist (manage);
     /* CONTEXT: song list: default name for a new song list */
     manageSetSonglistName (manage, _("New Song List"));
-    rc = true;
+    rc = STATE_FINISHED;
   }
 
   logProcEnd (LOG_PROC, "manageHandshakeCallback", "");
@@ -1469,7 +1457,7 @@ manageSonglistSave (manageui_t *manage)
   }
   filemanipMove (onm, nnm);
 
-  manageCheckAndCreatePlaylist (manage, name, nnm, PLTYPE_SEQ);
+  manageCheckAndCreatePlaylist (manage, name, nnm, PLTYPE_MANUAL);
 }
 
 /* general */

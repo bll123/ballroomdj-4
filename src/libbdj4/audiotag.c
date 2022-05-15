@@ -37,7 +37,7 @@ char *
 audiotagReadTags (char *ffn)
 {
   char        * data;
-  char        * targv [5];
+  const char  * targv [5];
 
   targv [0] = sysvarsGetStr (SV_PATH_PYTHON);
   targv [1] = sysvarsGetStr (SV_PYTHON_MUTAGEN);

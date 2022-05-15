@@ -21,6 +21,9 @@ add_library (libbdj4common SHARED
   nlist.c
   osnetutils.c
   osutils.c
+  oslinuxutils.c
+  osmacutils.m
+  oswinutils.c
   pathbld.c
   pathutil.c
   procutil.c

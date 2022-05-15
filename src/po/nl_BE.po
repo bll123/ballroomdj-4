@@ -3,8 +3,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: BDJ4 4.0.0\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
-"POT-Creation-Date: 2022-05-14\n"
-"PO-Revision-Date: 2022-05-14\n"
+"POT-Creation-Date: 2022-05-15\n"
+"PO-Revision-Date: 2022-05-15\n"
 "Last-Translator: marimo\n"
 "Language-Team: dutch\n"
 "Language: nl\n"
@@ -32,6 +32,7 @@ msgstr ""
 msgid "%s Forums"
 msgstr ""
 
+#. CONTEXT: the window title for the BDJ4 helper
 #, c-format
 msgid "%s Helper"
 msgstr ""
@@ -59,6 +60,11 @@ msgstr ""
 #. CONTEXT: starterui: basic support dialog, version display
 #, c-format
 msgid "%s Version"
+msgstr ""
+
+#. CONTEXT: starterui: basic support dialog: support option
+#, c-format
+msgid "%s Wiki"
 msgstr ""
 
 #. CONTEXT: installer: status message
