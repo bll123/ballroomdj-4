@@ -45,78 +45,6 @@ function mkpo {
       bdj4.pot >> ${out}
 }
 
-function extractHelpData {
-  fn=$1
-  ctxt=$2
-  TMP=$3
-
-  intitle=F
-  intextkey=F
-  intext=F
-  export intext
-
-  while read -r line; do
-    case $line in
-      "")
-        ;;
-      KEY)
-        if [[ $intext == T ]]; then
-          helpkeys+=" $textkey"
-          helptext[$textkey]=$(echo -e $text)
-        fi
-        intitle=F
-        intextkey=F
-        intext=F
-        ;;
-      TITLE)
-        intitle=T
-        ;;
-      TEXT)
-        intitle=F
-        intextkey=T
-        text="msgstr \"\"\n"
-        ;;
-      ..*)
-        if [[ $intitle == T ]]; then
-          echo "// CONTEXT: title of a getting started help section" >> $TMP
-          echo $line >> $TMP
-        fi
-        if [[ $intextkey == T ]]; then
-          echo "// CONTEXT: text-key for getting started help section (translate the text, not the key)" >> $TMP
-          echo $line >> $TMP
-          tline=$(echo $line | sed -e 's/^\.\.//')
-          textkey=$tline
-          intextkey=F
-          intext=T
-        fi
-        ;;
-      \#*)
-        if [[ $intext == T ]]; then
-          tline=$(echo $line | sed -e 's/^#//')
-          text+="\"$tline\"\n"
-        fi
-        ;;
-    esac
-  done < $fn
-
-  if [[ $intext == T ]]; then
-    helpkeys+=" $textkey"
-    helptext[$textkey]=$(echo -e $text)
-  fi
-}
-
-function updateHelpText {
-  fn=$1
-
-  # update the help text
-  for hk in $helpkeys; do
-    awk -v HK=$hk -v TEXT="${helptext[$hk]}" -f set-helptext.awk ${fn} \
-      > ${fn}.n
-    mv -f ${fn}.n ${fn}
-  done
-}
-
-
 TMP=potemplates.c
 
 > $TMP
@@ -150,10 +78,6 @@ ctxt="// CONTEXT: name of a music queue"
 sed -n -e "/^QUEUE_NAME_[AB]/ {n;s,^,${ctxt}\n,;p}" $fn >> $TMP
 echo "// CONTEXT: The completion message displayed on the marquee when the playlist is finished." >> $TMP
 sed -n -e '/^COMPLETEMSG/ {n;p}' $fn >> $TMP
-
-ctxt="// CONTEXT: title for a section in the getting started helper "
-fn=../templates/helpdata.txt
-extractHelpData $fn "$ctxt" $TMP
 
 ctxt="// CONTEXT: text from the HTML templates (buttons and labels)"
 egrep 'value=' ../templates/*.html |
@@ -192,7 +116,8 @@ rm -f $TMP
 
 cd po
 
-updateHelpText ${POTFILE}
+awk -f extract-helptext.awk ${POTFILE} > ${POTFILE}.n
+mv -f ${POTFILE}.n ${POTFILE}
 
 mkpo en en_GB.po 'Automatically generated' 'English (GB)' english/gb
 rm -f en_GB.po.old

@@ -247,10 +247,6 @@ msgstr ""
 msgid "Ballroom Music Player"
 msgstr ""
 
-#. CONTEXT: title of a getting started help section
-msgid "Build the Database for the First Time"
-msgstr ""
-
 #. CONTEXT: menu selection: song editor: cancel edit all
 msgid "Cancel Edit All"
 msgstr ""
@@ -352,10 +348,6 @@ msgstr ""
 #. CONTEXT: menu selection: song list: edit menu: create copy
 #. CONTEXT: menu selection: sequence: edit menu: create copy
 msgid "Create Copy"
-msgstr ""
-
-#. CONTEXT: title of a getting started help section
-msgid "Create an Example Playlist"
 msgstr ""
 
 #. CONTEXT: installer: status message
@@ -657,14 +649,6 @@ msgstr ""
 msgid "High %s"
 msgstr ""
 
-#. CONTEXT: title of a getting started help section
-msgid "How is the Music Organized"
-msgstr ""
-
-#. CONTEXT: title of a getting started help section
-msgid "How to get Support"
-msgstr ""
-
 #. CONTEXT: installer: command line interface: instructions
 #, c-format
 msgid "If there is no %s installation, enter a single '-'."
@@ -707,10 +691,6 @@ msgstr ""
 
 #. CONTEXT: mobile marquee: route via the internet
 msgid "Internet"
-msgstr ""
-
-#. CONTEXT: title of a getting started help section
-msgid "Introduction / Getting Started"
 msgstr ""
 
 #. CONTEXT: genre
@@ -1000,10 +980,6 @@ msgstr ""
 msgid "Play When Queued"
 msgstr ""
 
-#. CONTEXT: title of a getting started help section
-msgid "Play a Playlist"
-msgstr ""
-
 #. CONTEXT: text from the HTML templates (buttons and labels)
 msgid "Play/Pause"
 msgstr ""
@@ -1261,10 +1237,6 @@ msgstr ""
 
 #. CONTEXT: sequence editor: label for sequence name
 msgid "Sequence"
-msgstr ""
-
-#. CONTEXT: title of a getting started help section
-msgid "Set the Location of the Music Folder"
 msgstr ""
 
 #. CONTEXT: menu checkbox: show the extra queues (in addition to the main music queue)
@@ -1545,74 +1517,6 @@ msgstr ""
 msgid "fast"
 msgstr ""
 
-#. CONTEXT: text-key for getting started help section (translate the text, not the key)
-msgid "helptext_build_db"
-msgstr ""
-"In order to function, BallroomDJ 4 maintains a database of all of your"
-" Songs. This database must be built for the first time."
-" => Select the 'Manage' button. => In the 'BDJ4 Management' window, select"
-" the 'Update Database' section on the left side of the window."
-" The default selection 'Check for New' is used when you add or remove"
-" songs from your music collection. => Change the selection to"
-" 'Rebuild Database'. => Select the 'Start' button. => Wait for the"
-" database rebuild to finish. => Leave the 'BDJ4 Management' window open."
-
-#. CONTEXT: text-key for getting started help section (translate the text, not the key)
-msgid "helptext_create_playlist"
-msgstr ""
-"=> Select 'Edit Song Lists' on the left side of the 'BDJ4 Management' window."
-" On the right side of the lower section of the window is a list of your"
-" songs. => Select a song by clicking on it. => Now select the left arrow"
-" button in the middle of the lower section. This will add the song you"
-" selected to the song list that is being created. => Select a few"
-" songs and add each of them to the song list. Above the song list is"
-" an editable box with the name 'New Song List' in it. => Click in the"
-" box and change the name of the song list. => Close the 'BDJ4 Management'"
-" window. The song list is automatically saved."
-
-#. CONTEXT: text-key for getting started help section (translate the text, not the key)
-msgid "helptext_get_support"
-msgstr ""
-"To get support, select the 'Support' button. There are links to the"
-" wiki, forums and problem ticketing system. Or use the"
-" 'Send Support Message' button to send a message."
-
-#. CONTEXT: text-key for getting started help section (translate the text, not the key)
-msgid "helptext_intro"
-msgstr ""
-"This utility will walk you through a few steps to help you get started."
-" => Select the 'Next' button to continue on to the next step."
-
-#. CONTEXT: text-key for getting started help section (translate the text, not the key)
-msgid "helptext_music_location"
-msgstr ""
-"The first step is to configure the location of the music folder."
-" => Select the 'Configure' button."
-" In the 'BDJ4 Configuration' window, the 'General Options'"
-" section is displayed."
-" The first item in 'General Options' is the 'Music Folder'."
-" => Change the 'Music Folder' to the location of your music."
-" => Leave the 'BDJ4 Configuration' window open."
-
-#. CONTEXT: text-key for getting started help section (translate the text, not the key)
-msgid "helptext_music_org"
-msgstr ""
-"Setting the organization method is important so that BallroomDJ 4"
-" can determine the information about your songs when the database is built."
-" => Select 'Organization' on the left side of the 'BDJ4 Configuration' window."
-" Many people have their music organized by putting each dance into a"
-" separate folder. This is the default organization: 'Dance/Title'."
-" => Select the organization method you use for your songs in the"
-" 'Organization Path' drop-down. => Close the 'BDJ4 Organization' window."
-
-#. CONTEXT: text-key for getting started help section (translate the text, not the key)
-msgid "helptext_play_playlist"
-msgstr ""
-"Now you will play the playlist that was just created."
-" => Select the 'Player' button. => In the player window, select the"
-" 'Queue Playlist' drop-down. => Select the name of the playlist that"
-" you entered previously."
-
 #. CONTEXT: dance type
 msgid "latin"
 msgstr ""
@@ -1632,3 +1536,107 @@ msgstr ""
 #. CONTEXT: The name of the 'standardrounds' playlist file
 msgid "standardrounds"
 msgstr ""
+
+#. CONTEXT: title of a getting started help section
+msgid "How to get Support"
+msgstr ""
+
+#. CONTEXT: text-key for getting started help section (translate the text, not the key)
+msgid "helptext_get_support"
+msgstr ""
+"To get support, select the 'Support' button. There are links to the"
+" wiki, forums and problem ticketing system. Or use the"
+" 'Send Support Message' button to send a message."
+
+
+#. CONTEXT: title of a getting started help section
+msgid "Build the Database for the First Time"
+msgstr ""
+
+#. CONTEXT: text-key for getting started help section (translate the text, not the key)
+msgid "helptext_build_db"
+msgstr ""
+"In order to function, BallroomDJ 4 maintains a database of all of your"
+" Songs. This database must be built for the first time."
+" => Select the 'Manage' button.  => In the 'BDJ4 Management' window, select"
+" the 'Update Database' section on the left side of the window."
+" The default selection 'Check for New' is used when you add or remove"
+" songs from your music collection. => Change the selection to"
+" 'Rebuild Database'. => Select the 'Start' button. => Wait for the"
+" database rebuild to finish. => Leave the 'BDJ4 Management' window open."
+
+
+#. CONTEXT: title of a getting started help section
+msgid "Create an Example Playlist"
+msgstr ""
+
+#. CONTEXT: text-key for getting started help section (translate the text, not the key)
+msgid "helptext_create_playlist"
+msgstr ""
+"=> Select 'Edit Song Lists' on the left side of the 'BDJ4 Management' window."
+" On the right side of the lower section of the window is a list of your"
+" songs. => Select a song by clicking on it. => Now select the left arrow"
+" button in the middle of the lower section. This will add the song you"
+" selected to the song list that is being created. => Select a few"
+" songs and add each of them to the song list. Above the song list is"
+" an editable box with the name 'New Song List' in it. => Click in the"
+" box and change the name of the song list. => Close the 'BDJ4 Management'"
+" window. The song list is automatically saved."
+
+
+#. CONTEXT: title of a getting started help section
+msgid "Set the Location of the Music Folder"
+msgstr ""
+
+#. CONTEXT: text-key for getting started help section (translate the text, not the key)
+msgid "helptext_music_location"
+msgstr ""
+"The first step is to configure the location of the music folder."
+" => Select the 'Configure' button."
+" In the 'BDJ4 Configuration' window, the 'General Options'"
+" section is displayed."
+" The first item in 'General Options' is the 'Music Folder'."
+" => Change the 'Music Folder' to the location of your music."
+" => Leave the 'BDJ4 Configuration' window open."
+
+
+#. CONTEXT: title of a getting started help section
+msgid "Introduction / Getting Started"
+msgstr ""
+
+#. CONTEXT: text-key for getting started help section (translate the text, not the key)
+msgid "helptext_intro"
+msgstr ""
+"This utility will walk you through a few steps to help you get started."
+" => Select the 'Next' button to continue on to the next step."
+
+
+#. CONTEXT: title of a getting started help section
+msgid "Play a Playlist"
+msgstr ""
+
+#. CONTEXT: text-key for getting started help section (translate the text, not the key)
+msgid "helptext_play_playlist"
+msgstr ""
+"Now you will play the playlist that was just created."
+" => Select the 'Player' button. => In the player window, select the"
+" 'Queue Playlist' drop-down. => Select the name of the playlist that"
+" you entered previously."
+
+
+#. CONTEXT: title of a getting started help section
+msgid "How is the Music Organized"
+msgstr ""
+
+#. CONTEXT: text-key for getting started help section (translate the text, not the key)
+msgid "helptext_music_org"
+msgstr ""
+"Setting the organization method is important so that BallroomDJ 4"
+" can determine the information about your songs when the database is built."
+" => Select 'Organization' on the left side of the 'BDJ4 Configuration' window."
+" Many people have their music organized by putting each dance into a"
+" separate folder.  This is the default organization: 'Dance/Title'."
+" => Select the organization method you use for your songs in the"
+" 'Organization Path' drop-down. => Close the 'BDJ4 Organization' window."
+
+
