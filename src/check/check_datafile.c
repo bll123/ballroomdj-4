@@ -521,7 +521,7 @@ START_TEST(datafile_indirect_lookup)
   listidx_t         key;
   char            *value;
   ilist_t          *list;
-  ssize_t           lval;
+  ssize_t         lval;
   char              *keystr;
   char            *tstr = NULL;
   char            *fn = NULL;
@@ -562,6 +562,8 @@ START_TEST(datafile_indirect_lookup)
   ck_assert_int_eq (key, 1);
   value = ilistGetStr (list, key, 14);
   ck_assert_str_eq (value, "b");
+  lval = ilistGetNum (list, key, 15);
+  ck_assert_int_eq (lval, 1);
   value = ilistGetStr (list, key, 16);
   ck_assert_str_eq (value, "5");
   lval = ilistGetNum (list, key, 17);
@@ -681,6 +683,99 @@ START_TEST(datafile_indirect_lookup)
 }
 END_TEST
 
+START_TEST(datafile_indirect_missing)
+{
+  datafile_t      *df;
+  listidx_t       key;
+  char *          value;
+  ssize_t         lval;
+  char            *tstr = NULL;
+  char            *fn = NULL;
+  FILE            *fh;
+  list_t          *list;
+  ilistidx_t      iteridx;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "=== datafile_indirect_missing");
+  fn = "tmp/dftestb.txt";
+  tstr = strdup ("KEY\n..0\nA\n..a\nB\n..0\n"
+      "KEY\n..1\nA\n..a\n"
+      "KEY\n..2\nA\n..a\nB\n..2\n"
+      "KEY\n..3\nB\n..3\n");
+  fh = fopen (fn, "w");
+  fprintf (fh, "%s", tstr);
+  fclose (fh);
+  free (tstr);
+
+  df = datafileAllocParse ("chk-df-c", DFTYPE_INDIRECT, fn, dfkeyskl, DFKEY_COUNT, DATAFILE_NO_LOOKUP);
+  ck_assert_ptr_nonnull (df);
+  ck_assert_int_eq (datafileGetType (df), DFTYPE_INDIRECT);
+  ck_assert_str_eq (datafileGetFname (df), fn);
+  ck_assert_ptr_nonnull (datafileGetData (df));
+
+  list = datafileGetList (df);
+  ilistStartIterator (list, &iteridx);
+  key = ilistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 0);
+  lval = ilistGetNum (list, key, 15);
+  ck_assert_int_eq (lval, 0);
+
+  key = ilistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 1);
+  value = ilistGetStr (list, key, 14);
+  ck_assert_str_eq (value, "a");
+  lval = ilistGetNum (list, key, 15);
+  ck_assert_int_eq (lval, LIST_VALUE_INVALID);
+
+  key = ilistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 2);
+  lval = ilistGetNum (list, key, 15);
+  ck_assert_int_eq (lval, 2);
+
+  key = ilistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 3);
+  value = ilistGetStr (list, key, 14);
+  ck_assert_ptr_null (value);
+  lval = ilistGetNum (list, key, 15);
+  ck_assert_int_eq (lval, 3);
+
+  key = ilistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, -1);
+
+  key = ilistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 0);
+  value = ilistGetStr (list, key, 14);
+  ck_assert_str_eq (value, "a");
+
+  key = ilistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 1);
+  lval = ilistGetNum (list, key, 15);
+  ck_assert_int_eq (lval, LIST_VALUE_INVALID);
+
+  key = ilistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 2);
+
+  key = ilistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 3);
+  value = ilistGetStr (list, key, 14);
+  ck_assert_ptr_null (value);
+
+  key = ilistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, -1);
+
+  key = ilistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 0);
+  lval = ilistGetNum (list, key, 15);
+  ck_assert_int_eq (lval, 0);
+
+  key = ilistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 1);
+
+  datafileFree (df);
+  unlink (fn);
+}
+END_TEST
+
+
 Suite *
 datafile_suite (void)
 {
@@ -697,6 +792,7 @@ datafile_suite (void)
   tcase_add_test (tc, datafile_keyval_dfkey);
   tcase_add_test (tc, datafile_keyval_df_extra);
   tcase_add_test (tc, datafile_indirect);
+  tcase_add_test (tc, datafile_indirect_missing);
   tcase_add_test (tc, datafile_indirect_lookup);
   suite_add_tcase (s, tc);
   return s;

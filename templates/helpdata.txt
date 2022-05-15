@@ -1,0 +1,85 @@
+# helpdata
+# 2022-5-14
+KEY
+..0
+TITLE
+..Introduction / Getting Started
+TEXT
+..helptext_intro
+#This utility will walk you through a few steps to help you get started.
+# Select the 'Next' button to continue on to the next step.
+KEY
+..1
+TITLE
+..Set the Location of the Music Folder
+TEXT
+..helptext_music_location
+#The first step is to configure the location of the music folder.
+# Select the 'Configure' button.
+# In the 'BDJ4 Configuration' window, the 'General Options'
+# section is displayed.
+# The first item in 'General Options' is the 'Music Folder'.
+# Change the 'Music Folder' to the location of your music.
+# Leave the 'BDJ4 Configuration' window open.
+KEY
+..2
+TITLE
+..How is the Music Organised
+TEXT
+..helptext_music_org
+#Setting the organisation method is important so that BallroomDJ 4
+# can determine the information about your songs when the database is built.
+# Select 'Organisation' on the left side of the 'BDJ4 Configuration' window.
+# Many people have their music organised by putting each dance into a
+# separate folder.  This is the default organisation: 'Dance/Title'.
+# Select the organisation method you use for your songs in the
+# 'Organisation Path' drop-down. Close the 'BDJ4 Organisation' window.
+KEY
+..3
+TITLE
+..Build the Database for the First Time
+TEXT
+..helptext_build_db
+#In order to function, BallroomDJ 4 maintains a database of all of your
+# Songs. This database must be built for the first time.
+# Select the 'Manage' button.  In the 'BDJ4 Management' window, select
+# the 'Update Database' section on the left side of the window.
+# The default selection 'Check for New' is used when you add or remove
+# songs from your music collection. Change the selection to
+# 'Rebuild Database'. Then select the 'Start' button. Wait for the
+# database rebuild to finish. Leave the 'BDJ4 Management' window open.
+KEY
+..4
+TITLE
+..Create an Example Playlist
+TEXT
+..helptext_create_playlist
+#Select 'Edit Song Lists' on the left side of the 'BDJ4 Management' window.
+# On the right side of the lower section of the window is a list of your
+# songs. Select a song by clicking on it. Now select the left arrow
+# button in the middle of the lower section. This will add the song you
+# selected to the song list that is being created. Select a few
+# songs and add echo of them to the song list. Above the song list is
+# an editable box with the name 'New Song List' in it. Click in this
+# box and change the name of the song list. Close the 'BDJ4 Management'
+# window. The song list is automatically saved.
+KEY
+..5
+TITLE
+..Play a Playlist
+TEXT
+..helptext_play_playlist
+#Now you will play the playlist that was just created.
+# Select the 'Player' button. In the player window, select the
+# 'Queue Playlist' drop-down, and select the name of the playlist that
+# you entered previously.
+KEY
+..6
+TITLE
+..How to get Support
+TEXT
+..helptext_get_support
+#To get support, select the 'Support' button. There are links to the
+# wiki, forums and problem ticketing system. Or use the
+# 'Send Support Message' button to send a message.
+

@@ -1301,6 +1301,9 @@ installerCopyTemplates (installer_t *installer)
     if (strcmp (fname, "html-list.txt") == 0) {
       continue;
     }
+    if (strcmp (fname, "helpdata.txt") == 0) {
+      continue;
+    }
     if (strcmp (fname, "volintfc.txt") == 0) {
       continue;
     }

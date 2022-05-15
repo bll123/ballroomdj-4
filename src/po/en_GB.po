@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: BDJ4 4.0.0\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
-"POT-Creation-Date: 2022-05-12\n"
-"PO-Revision-Date: 2022-05-12\n"
+"POT-Creation-Date: 2022-05-14\n"
+"PO-Revision-Date: 2022-05-14\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/gb\n"
 "Language: en\n"
@@ -129,6 +129,7 @@ msgstr ""
 msgid "Add New"
 msgstr ""
 
+#. CONTEXT: dance level
 msgid "Advanced"
 msgstr ""
 
@@ -179,6 +180,7 @@ msgstr ""
 msgid "Apply Edit All"
 msgstr ""
 
+#. CONTEXT: dance
 msgid "Argentine Tango"
 msgstr ""
 
@@ -223,9 +225,11 @@ msgstr ""
 msgid "BPM"
 msgstr ""
 
+#. CONTEXT: dance
 msgid "Bachata"
 msgstr ""
 
+#. CONTEXT: genre
 msgid "Ballroom Dance"
 msgstr ""
 
@@ -233,10 +237,15 @@ msgstr ""
 msgid "Ballroom Music Player"
 msgstr ""
 
+#. CONTEXT: title of a getting started help section
+msgid "Build the Database for the First Time"
+msgstr ""
+
 #. CONTEXT: menu selection: song editor: cancel edit all
 msgid "Cancel Edit All"
 msgstr ""
 
+#. CONTEXT: dance
 msgid "Cha Cha"
 msgstr ""
 
@@ -248,6 +257,7 @@ msgstr ""
 msgid "Checks for new audio files."
 msgstr ""
 
+#. CONTEXT: genre
 msgid "Classical"
 msgstr ""
 
@@ -255,13 +265,16 @@ msgstr ""
 msgid "Classical?"
 msgstr ""
 
+#. CONTEXT: text from the HTML templates (buttons and labels)
 msgid "Clear & Play"
 msgstr ""
 
+#. CONTEXT: text from the HTML templates (buttons and labels)
 #. CONTEXT: button: clear the queue
 msgid "Clear Queue"
 msgstr ""
 
+#. CONTEXT: helperui: close the helper window
 #. CONTEXT: file select dialog: closes the dialog
 #. CONTEXT: marquee font size dialog: action button
 #. CONTEXT: support dialog: closes the dialog
@@ -271,6 +284,7 @@ msgid "Close"
 msgstr ""
 
 #. CONTEXT: database update: status message
+#. CONTEXT: status
 msgid "Complete"
 msgstr ""
 
@@ -303,11 +317,16 @@ msgstr ""
 msgid "Convert %s"
 msgstr ""
 
+#. CONTEXT: failure status message
+#, c-format
+msgid "Copy already exists."
+msgstr ""
+
 #. CONTEXT: installer: status message
 msgid "Copy finished."
 msgstr ""
 
-#. CONTEXT: song list: the new song list name after 'create copy' (e.g. "Copy of DJ-2022-04")
+#. CONTEXT: the new name after 'create copy' (e.g. "Copy of DJ-2022-04")
 #, c-format
 msgid "Copy of %s"
 msgstr ""
@@ -321,7 +340,12 @@ msgid "Copying template files."
 msgstr ""
 
 #. CONTEXT: menu selection: song list: edit menu: create copy
+#. CONTEXT: menu selection: sequence: edit menu: create copy
 msgid "Create Copy"
+msgstr ""
+
+#. CONTEXT: title of a getting started help section
+msgid "Create an Example Playlist"
 msgstr ""
 
 #. CONTEXT: installer: status message
@@ -333,6 +357,7 @@ msgid "Creating shortcut."
 msgstr ""
 
 #. CONTEXT: configuration: dances: the name of the dance
+#. CONTEXT: sequence editor: titles for the selection list and the sequence list
 #. CONTEXT: title: dance
 #. CONTEXT: a filter: select the dance displayed in the song selection
 msgid "Dance"
@@ -419,6 +444,7 @@ msgstr ""
 msgid "E-Mail Address"
 msgstr ""
 
+#. CONTEXT: dance level
 msgid "Easy"
 msgstr ""
 
@@ -435,6 +461,7 @@ msgid "Easy Song Selection"
 msgstr ""
 
 #. CONTEXT: menu selection: song list: edit menu
+#. CONTEXT: menu selection: sequence: edit menu
 msgid "Edit"
 msgstr ""
 
@@ -532,6 +559,7 @@ msgstr ""
 msgid "Export for %s"
 msgstr ""
 
+#. CONTEXT: text from the HTML templates (buttons and labels)
 #. CONTEXT: button: fade out the song and stop playing it
 msgid "Fade"
 msgstr ""
@@ -579,6 +607,7 @@ msgstr ""
 msgid "Font Size"
 msgstr ""
 
+#. CONTEXT: dance
 msgid "Foxtrot"
 msgstr ""
 
@@ -597,9 +626,11 @@ msgstr ""
 msgid "Genre"
 msgstr ""
 
+#. CONTEXT: rating
 msgid "Good"
 msgstr ""
 
+#. CONTEXT: rating
 msgid "Great"
 msgstr ""
 
@@ -614,6 +645,14 @@ msgstr ""
 #. CONTEXT: configuration: dances: high BPM (or MPM) setting
 #, c-format
 msgid "High %s"
+msgstr ""
+
+#. CONTEXT: title of a getting started help section
+msgid "How is the Music Organised"
+msgstr ""
+
+#. CONTEXT: title of a getting started help section
+msgid "How to get Support"
 msgstr ""
 
 #. CONTEXT: installer: command line interface: instructions
@@ -660,9 +699,15 @@ msgstr ""
 msgid "Internet"
 msgstr ""
 
+#. CONTEXT: title of a getting started help section
+msgid "Introduction / Getting Started"
+msgstr ""
+
+#. CONTEXT: genre
 msgid "Jazz"
 msgstr ""
 
+#. CONTEXT: dance
 msgid "Jive"
 msgstr ""
 
@@ -687,6 +732,7 @@ msgid "Listing Font"
 msgstr ""
 
 #. CONTEXT: menu selection: song list: edit menu: load
+#. CONTEXT: menu selection: sequence: edit menu: load
 msgid "Load"
 msgstr ""
 
@@ -767,14 +813,14 @@ msgstr ""
 msgid "Mobile Remote Control"
 msgstr ""
 
-#. CONTEXT: configuration: display settings: button: move the selected field down
 #. CONTEXT: configuration: table edit: button: move selection down
+#. CONTEXT: configuration: display settings: button: move the selected field down
 #. CONTEXT: button: move the selected song down in the queue
 msgid "Move Down"
 msgstr ""
 
-#. CONTEXT: configuration: display settings: button: move the selected field up
 #. CONTEXT: configuration: table edit: button: move selection up
+#. CONTEXT: configuration: display settings: button: move the selected field up
 #. CONTEXT: button: move the selected song up in the queue
 msgid "Move Up"
 msgstr ""
@@ -794,7 +840,7 @@ msgid "Music Manager"
 msgstr ""
 
 #. CONTEXT: display settings for: music queue
-#. CONTEXT: The names of the music queues
+#. CONTEXT: name of a music queue
 msgid "Music Queue"
 msgstr ""
 
@@ -803,6 +849,7 @@ msgstr ""
 msgid "Name"
 msgstr ""
 
+#. CONTEXT: status
 msgid "New"
 msgstr ""
 
@@ -837,7 +884,13 @@ msgstr ""
 msgid "New Rating"
 msgstr ""
 
+#. CONTEXT: sequence: default name for a new sequence
+#, c-format
+msgid "New Sequence"
+msgstr ""
+
 #. CONTEXT: song list: default name for a new song list
+#, c-format
 msgid "New Song List"
 msgstr ""
 
@@ -845,6 +898,11 @@ msgstr ""
 msgid "New Status"
 msgstr ""
 
+#. CONTEXT: helperui: proceed to the next step
+msgid "Next"
+msgstr ""
+
+#. CONTEXT: text from the HTML templates (buttons and labels)
 #. CONTEXT: button: tooltip: start playing the next song (immediate)
 msgid "Next Song"
 msgstr ""
@@ -853,9 +911,11 @@ msgstr ""
 msgid "No conversion."
 msgstr ""
 
+#. CONTEXT: genre
 msgid "None"
 msgstr ""
 
+#. CONTEXT: dance level
 msgid "Normal"
 msgstr ""
 
@@ -905,6 +965,7 @@ msgstr ""
 msgid "Overwriting existing %s installation."
 msgstr ""
 
+#. CONTEXT: dance
 msgid "Paso Doble"
 msgstr ""
 
@@ -915,6 +976,7 @@ msgstr ""
 msgid "Pause"
 msgstr ""
 
+#. CONTEXT: text from the HTML templates (buttons and labels)
 #. CONTEXT: button: pause at the end of the song (toggle)
 msgid "Pause at End"
 msgstr ""
@@ -928,6 +990,11 @@ msgstr ""
 msgid "Play When Queued"
 msgstr ""
 
+#. CONTEXT: title of a getting started help section
+msgid "Play a Playlist"
+msgstr ""
+
+#. CONTEXT: text from the HTML templates (buttons and labels)
 msgid "Play/Pause"
 msgstr ""
 
@@ -957,6 +1024,7 @@ msgstr ""
 msgid "Please wait..."
 msgstr ""
 
+#. CONTEXT: rating
 msgid "Poor"
 msgstr ""
 
@@ -993,10 +1061,12 @@ msgstr ""
 msgid "QR Code"
 msgstr ""
 
+#. CONTEXT: text from the HTML templates (buttons and labels)
 #. CONTEXT: queue a song to be played
 msgid "Queue"
 msgstr ""
 
+#. CONTEXT: text from the HTML templates (buttons and labels)
 msgid "Queue 5"
 msgstr ""
 
@@ -1004,6 +1074,7 @@ msgstr ""
 msgid "Queue A Name"
 msgstr ""
 
+#. CONTEXT: name of a music queue
 msgid "Queue B"
 msgstr ""
 
@@ -1026,6 +1097,7 @@ msgstr ""
 msgid "QueueDance"
 msgstr ""
 
+#. CONTEXT: dance
 msgid "Quickstep"
 msgstr ""
 
@@ -1064,6 +1136,7 @@ msgstr ""
 msgid "Reorganize"
 msgstr ""
 
+#. CONTEXT: text from the HTML templates (buttons and labels)
 msgid "Repeat"
 msgstr ""
 
@@ -1100,9 +1173,11 @@ msgstr ""
 msgid "Return to beginning of song"
 msgstr ""
 
+#. CONTEXT: genre
 msgid "Rock"
 msgstr ""
 
+#. CONTEXT: dance
 msgid "Rumba"
 msgstr ""
 
@@ -1111,9 +1186,11 @@ msgstr ""
 msgid "Running conversion script: %s."
 msgstr ""
 
+#. CONTEXT: dance
 msgid "Salsa"
 msgstr ""
 
+#. CONTEXT: dance
 msgid "Samba"
 msgstr ""
 
@@ -1125,9 +1202,9 @@ msgstr ""
 msgid "Search"
 msgstr ""
 
-#. CONTEXT: configuration: display settings: button: add the selected field
 #. CONTEXT: config: button: add the selected songs to the song list
 #. CONTEXT: file select dialog: selects the file
+#. CONTEXT: configuration: display settings: button: add the selected field
 #. CONTEXT: select a song to be added to the song list
 #. CONTEXT: actions associated with the select folder dialog
 #. CONTEXT: actions associated with the select file dialog
@@ -1170,6 +1247,14 @@ msgstr ""
 #. CONTEXT: starterui: support: status message
 #, c-format
 msgid "Sending Support Message"
+msgstr ""
+
+#. CONTEXT: sequence editor: label for sequence name
+msgid "Sequence"
+msgstr ""
+
+#. CONTEXT: title of a getting started help section
+msgid "Set the Location of the Music Folder"
 msgstr ""
 
 #. CONTEXT: menu checkbox: show the extra queues (in addition to the main music queue)
@@ -1237,6 +1322,10 @@ msgstr ""
 msgid "Start"
 msgstr ""
 
+#. CONTEXT: menu selection: sequence: edit menu: start new sequence
+msgid "Start New Sequence"
+msgstr ""
+
 #. CONTEXT: menu selection: song list: edit menu: start new song list
 msgid "Start New Song List"
 msgstr ""
@@ -1287,6 +1376,7 @@ msgstr ""
 msgid "Tags"
 msgstr ""
 
+#. CONTEXT: dance
 msgid "Tango"
 msgstr ""
 
@@ -1354,6 +1444,7 @@ msgstr ""
 msgid "Unable to locate %s."
 msgstr ""
 
+#. CONTEXT: rating
 msgid "Unrated"
 msgstr ""
 
@@ -1399,6 +1490,7 @@ msgstr ""
 msgid "User Interface"
 msgstr ""
 
+#. CONTEXT: dance
 msgid "Viennese Waltz"
 msgstr ""
 
@@ -1410,6 +1502,7 @@ msgstr ""
 msgid "Volume Adjustment"
 msgstr ""
 
+#. CONTEXT: dance
 msgid "Waltz"
 msgstr ""
 
@@ -1418,6 +1511,7 @@ msgstr ""
 msgid "Weight"
 msgstr ""
 
+#. CONTEXT: dance
 msgid "West Coast Swing"
 msgstr ""
 
@@ -1433,6 +1527,7 @@ msgstr ""
 msgid "automatic"
 msgstr ""
 
+#. CONTEXT: dance type
 msgid "club"
 msgstr ""
 
@@ -1440,6 +1535,75 @@ msgstr ""
 msgid "fast"
 msgstr ""
 
+#. CONTEXT: text-key for getting started help section (translate the text, not the key)
+msgid "helptext_build_db"
+msgstr ""
+"In order to function, BallroomDJ 4 maintains a database of all of your"
+" Songs. This database must be built for the first time."
+" Select the 'Manage' button. In the 'BDJ4 Management' window, select"
+" the 'Update Database' section on the left side of the window."
+" The default selection 'Check for New' is used when you add or remove"
+" songs from your music collection. Change the selection to"
+" 'Rebuild Database'. Then select the 'Start' button. Wait for the"
+" database rebuild to finish. Leave the 'BDJ4 Management' window open."
+
+#. CONTEXT: text-key for getting started help section (translate the text, not the key)
+msgid "helptext_create_playlist"
+msgstr ""
+"Select 'Edit Song Lists' on the left side of the 'BDJ4 Management' window."
+" On the right side of the lower section of the window is a list of your"
+" songs. Select a song by clicking on it. Now select the left arrow"
+" button in the middle of the lower section. This will add the song you"
+" selected to the song list that is being created. Select a few"
+" songs and add echo of them to the song list. Above the song list is"
+" an editable box with the name 'New Song List' in it. Click in this"
+" box and change the name of the song list. Close the 'BDJ4 Management'"
+" window. The song list is automatically saved."
+
+#. CONTEXT: text-key for getting started help section (translate the text, not the key)
+msgid "helptext_get_support"
+msgstr ""
+"To get support, select the 'Support' button. There are links to the"
+" wiki, forums and problem ticketing system. Or use the"
+" 'Send Support Message' button to send a message."
+
+#. CONTEXT: text-key for getting started help section (translate the text, not the key)
+msgid "helptext_intro"
+msgstr ""
+"This utility will walk you through a few steps to help you get started."
+" Select the 'Next' button to continue on to the next step."
+
+#. CONTEXT: text-key for getting started help section (translate the text, not the key)
+msgid "helptext_music_location"
+msgstr ""
+"The first step is to configure the location of the music folder."
+" Select the 'Configure' button."
+" In the 'BDJ4 Configuration' window, the 'General Options'"
+" section is displayed."
+" The first item in 'General Options' is the 'Music Folder'."
+" Change the 'Music Folder' to the location of your music."
+" Leave the 'BDJ4 Configuration' window open."
+
+#. CONTEXT: text-key for getting started help section (translate the text, not the key)
+msgid "helptext_music_org"
+msgstr ""
+"Setting the organisation method is important so that BallroomDJ 4"
+" can determine the information about your songs when the database is built."
+" Select 'Organisation' on the left side of the 'BDJ4 Configuration' window."
+" Many people have their music organised by putting each dance into a"
+" separate folder. This is the default organisation: 'Dance/Title'."
+" Select the organisation method you use for your songs in the"
+" 'Organisation Path' drop-down. Close the 'BDJ4 Organisation' window."
+
+#. CONTEXT: text-key for getting started help section (translate the text, not the key)
+msgid "helptext_play_playlist"
+msgstr ""
+"Now you will play the playlist that was just created."
+" Select the 'Player' button. In the player window, select the"
+" 'Queue Playlist' drop-down, and select the name of the playlist that"
+" you entered previously."
+
+#. CONTEXT: dance type
 msgid "latin"
 msgstr ""
 
@@ -1451,6 +1615,7 @@ msgstr ""
 msgid "slow"
 msgstr ""
 
+#. CONTEXT: dance type
 msgid "standard"
 msgstr ""
 

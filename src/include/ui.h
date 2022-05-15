@@ -116,6 +116,7 @@ void  uiTextBoxAppendStr (uitextbox_t *tb, const char *str);
 void  uiTextBoxAppendBoldStr (uitextbox_t *tb, const char *str);
 void  uiTextBoxSetValue (uitextbox_t *tb, const char *str);
 void  uiTextBoxDarken (uitextbox_t *tb);
+void  uiTextBoxHorizExpand (uitextbox_t *tb);
 void  uiTextBoxVertExpand (uitextbox_t *tb);
 void  uiTextBoxSetHeight (uitextbox_t *tb, int h);
 

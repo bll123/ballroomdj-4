@@ -1,12 +1,13 @@
+#!/usr/bin/gawk
 
 function dumpmsg() {
   if (instr) {
-#print "=== nidline = " nidline;
-#print "=== nmid = " nmid;
-#print "=== msgstr = " $0;
-#print "=== olddata = /" olddata [nmid] "/";
+#print "# -- nidline = " nidline;
+#print "# -- nmid = " nmid;
+#print "# -- msgstr = " $0;
+#print "# -- olddata = /" olddata [nmid] "/";
     if (olddata [nmid] == "") {
-#print "=== is empty";
+#print "# -- is empty";
       gsub (/%/, "%%", nidline);
       printf nidline;
       print "";
@@ -14,7 +15,7 @@ function dumpmsg() {
       printf nstrline;
       print "";
     } else {
-#print "=== not empty";
+#print "# -- not empty";
       gsub (/%/, "%%", nidline);
       printf nidline;
       print "";
@@ -37,6 +38,10 @@ BEGIN {
     inid = 0;
     instr = 0;
   }
+  if ($0 ~ /^# -- /) {
+    # skip debug comments
+    next;
+  }
   if (state == 1) {
     if ($0 ~ /^$/) {
       start = 1;
@@ -58,8 +63,10 @@ BEGIN {
       sub (/^msgstr */, "", tmp);
       gsub (/%/, "%%", tmp);
       olddata [omid] = tmp;
-      sub (/[:.]"$/, "\"", omid);
-      sub (/[:.]"$/, "\"", tmp);
+      if (omid !~ /helptext/) {
+        sub (/[:.]"$/, "\"", omid);
+        sub (/[:.]"$/, "\"", tmp);
+      }
       olddata [omid] = tmp;
     }
     if ($0 ~ /^"/) {
@@ -69,7 +76,7 @@ BEGIN {
       if (instr) {
         tmp = $0;
         gsub (/%/, "%%", tmp);
-        olddata [omid] = olddata [omid] tmp;
+        olddata [omid] = olddata [omid] ORS tmp;
       }
     }
   }

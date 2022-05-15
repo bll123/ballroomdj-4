@@ -16,6 +16,9 @@
 #include "bdjopt.h"
 #include "bdjvars.h"
 #include "conn.h"
+#include "filedata.h"
+#include "datafile.h"
+#include "ilist.h"
 #include "log.h"
 #include "osutils.h"
 #include "osuiutils.h"
@@ -32,9 +35,12 @@ typedef struct {
   uitextbox_t     *tb;
   UICallback      closeCallback;
   UICallback      nextCallback;
+  datafile_t      *helpdf;
+  ilist_t         *helplist;
+  ilistidx_t      helpiter;
+  ilistidx_t      helpkey;
 } helperui_t;
 
-static void     helperInitText (void);
 static bool     helperStoppingCallback (void *udata, programstate_t programState);
 static bool     helperClosingCallback (void *udata, programstate_t programState);
 static void     helperBuildUI (helperui_t *helper);
@@ -44,38 +50,19 @@ static int      helperProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 static void     helperSigHandler (int sig);
 static bool     helperCloseCallback (void *udata);
 static bool     helperNextCallback (void *udata);
+static void     helpDisplay (helperui_t *helper);
 
 static int gKillReceived = 0;
 
-typedef enum {
-  HELP_STATE_INTRO,
-  HELP_STATE_MUSIC_LOC,
-  HELP_STATE_MUSIC_ORG,
-  HELP_STATE_BUILD_DB,
-  HELP_STATE_MAKE_MANUAL_PL,
-  HELP_STATE_PLAY_MANUAL_PL,
-  HELP_STATE_WHERE_SUPPORT,
-  HELP_STATE_MAX,
-} hstate_t;
-
-char *helptitle [HELP_STATE_MAX] = {
-  [HELP_STATE_INTRO] = "",
-  [HELP_STATE_MUSIC_LOC] = "",
-  [HELP_STATE_MUSIC_ORG] = "",
-  [HELP_STATE_BUILD_DB] = "",
-  [HELP_STATE_MAKE_MANUAL_PL] = "",
-  [HELP_STATE_PLAY_MANUAL_PL] = "",
-  [HELP_STATE_WHERE_SUPPORT] = "",
+enum {
+  HELP_TEXT_TITLE,
+  HELP_TEXT_TEXT,
+  HELP_TEXT_MAX,
 };
 
-char *helptext [HELP_STATE_MAX] = {
-  [HELP_STATE_INTRO] = "",
-  [HELP_STATE_MUSIC_LOC] = "",
-  [HELP_STATE_MUSIC_ORG] = "",
-  [HELP_STATE_BUILD_DB] = "",
-  [HELP_STATE_MAKE_MANUAL_PL] = "",
-  [HELP_STATE_PLAY_MANUAL_PL] = "",
-  [HELP_STATE_WHERE_SUPPORT] = "",
+static datafilekey_t helptextdfkeys [HELP_TEXT_MAX] = {
+  { "TEXT",   HELP_TEXT_TEXT,   VALUE_STR, NULL, -1 },
+  { "TITLE",  HELP_TEXT_TITLE,  VALUE_STR, NULL, -1 },
 };
 
 int
@@ -86,12 +73,14 @@ main (int argc, char *argv[])
   helperui_t      helper;
   char            *uifont;
   int             flags;
+  char            tbuff [MAXPATHLEN];
 
-
-  helperInitText ();
 
   helper.tb = NULL;
   helper.conn = NULL;
+  helper.helpdf = NULL;
+  helper.helplist = NULL;
+  helper.helpiter = 0;
   uiutilsUIWidgetInit (&helper.window);
 
   helper.progstate = progstateInit ("helperui");
@@ -109,11 +98,21 @@ main (int argc, char *argv[])
   listenPort = bdjvarsGetNum (BDJVL_HELPERUI_PORT);
   helper.conn = connInit (ROUTE_HELPERUI);
 
+  pathbldMakePath (tbuff, sizeof (tbuff),
+      "helpdata", BDJ4_CONFIG_EXT, PATHBLD_MP_TEMPLATEDIR);
+  helper.helpdf = datafileAllocParse ("helpdata",
+        DFTYPE_INDIRECT, tbuff, helptextdfkeys, HELP_TEXT_MAX,
+        DATAFILE_NO_LOOKUP);
+  helper.helplist = datafileGetList (helper.helpdf);
+  ilistStartIterator (helper.helplist, &helper.helpiter);
+  helper.helpkey = ilistIterateKey (helper.helplist, &helper.helpiter);
+
   uiUIInitialize ();
   uifont = bdjoptGetStr (OPT_MP_UIFONT);
   uiSetUIFont (uifont);
 
   helperBuildUI (&helper);
+  helpDisplay (&helper);
   sockhMainLoop (listenPort, helperProcessMsg, helperMainLoop, &helper);
   connFree (helper.conn);
   progstateFree (helper.progstate);
@@ -146,6 +145,9 @@ helperClosingCallback (void *udata, programstate_t programState)
   if (helper->tb != NULL) {
     uiTextBoxFree (helper->tb);
   }
+  if (helper->helpdf != NULL) {
+    datafileFree (helper->helpdf);
+  }
 
   logProcEnd (LOG_PROC, "helperClosingCallback", "");
   return true;
@@ -157,6 +159,7 @@ helperBuildUI (helperui_t  *helper)
   UIWidget            uiwidget;
   UIWidget            vbox;
   UIWidget            hbox;
+  char                tbuff [MAXPATHLEN];
   char                imgbuff [MAXPATHLEN];
 
   uiutilsUIWidgetInit (&uiwidget);
@@ -166,14 +169,16 @@ helperBuildUI (helperui_t  *helper)
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", ".svg", PATHBLD_MP_IMGDIR);
   uiutilsUICallbackInit (&helper->closeCallback, helperCloseCallback, helper);
+  snprintf (tbuff, sizeof (tbuff), _("%s Helper"), BDJ4_LONG_NAME);
   uiCreateMainWindow (&helper->window, &helper->closeCallback,
-      BDJ4_LONG_NAME, imgbuff);
+      tbuff, imgbuff);
 
   uiCreateVertBox (&vbox);
   uiWidgetSetAllMargins (&vbox, uiBaseMarginSz * 2);
   uiBoxPackInWindow (&helper->window, &vbox);
 
-  helper->tb = uiTextBoxCreate (300);
+  helper->tb = uiTextBoxCreate (400);
+  uiTextBoxHorizExpand (helper->tb);
   uiTextBoxVertExpand (helper->tb);
   uiTextBoxSetReadonly (helper->tb);
   uiBoxPackStart (&vbox, uiTextBoxGetScrolledWindow (helper->tb));
@@ -188,11 +193,11 @@ helperBuildUI (helperui_t  *helper)
   uiBoxPackEnd (&hbox, &uiwidget);
 
   uiCreateButton (&uiwidget, &helper->closeCallback,
-      /* CONTEXT: helperui: exit the helper */
-      _("Exit"), NULL, NULL, NULL);
+      /* CONTEXT: helperui: close the helper window */
+      _("Close"), NULL, NULL, NULL);
   uiBoxPackEnd (&hbox, &uiwidget);
 
-  uiWindowSetDefaultSize (&helper->window, 800, 300);
+  uiWindowSetDefaultSize (&helper->window, 1100, 400);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", ".png", PATHBLD_MP_IMGDIR);
@@ -309,54 +314,34 @@ helperCloseCallback (void *udata)
 static bool
 helperNextCallback (void *udata)
 {
+  helperui_t *helper = udata;
+
+  helper->helpkey = ilistIterateKey (helper->helplist, &helper->helpiter);
+  helpDisplay (helper);
   return UICB_CONT;
 }
 
 static void
-helperInitText (void)
+helpDisplay (helperui_t *helper)
 {
-  helptitle [HELP_STATE_INTRO] =
-      /* CONTEXT: getting started helper: introduction title */
-      _("Introduction");
-  helptitle [HELP_STATE_MUSIC_LOC] =
-      /* CONTEXT: getting started helper: music location title */
-      _("Set the Location of the Music");
-  helptitle [HELP_STATE_MUSIC_ORG] =
-      /* CONTEXT: getting started helper: music organization title */
-      _("How is the Music Organised");
-  helptitle [HELP_STATE_BUILD_DB] =
-      /* CONTEXT: getting started helper: build database title */
-      _("Build the Database for the First Time");
-  helptitle [HELP_STATE_MAKE_MANUAL_PL] =
-      /* CONTEXT: getting started helper: create a manual playlist title */
-      _("Create a Manual Playlist");
-  helptitle [HELP_STATE_PLAY_MANUAL_PL] =
-      /* CONTEXT:getting started helper: play a manual playlist title */
-      _("Play a Manual Playlist");
-  helptitle [HELP_STATE_WHERE_SUPPORT] =
-      /* CONTEXT: getting started helper: getting support title */
-      _("How to get Support");
+  char    *title;
+  char    *text;
+  char    *ttext;
+  char    *ntext;
+  size_t  dlen;
 
-
-  helptext [HELP_STATE_INTRO] =
-      /* CONTEXT: getting started helper: introduction help text */
-      _("intro");
-  helptext [HELP_STATE_MUSIC_LOC] =
-      /* CONTEXT: getting started helper: music location help text */
-      _("music loc");
-  helptext [HELP_STATE_MUSIC_ORG] =
-      /* CONTEXT: getting started helper: music organization help text */
-      _("music org");
-  helptext [HELP_STATE_BUILD_DB] =
-      /* CONTEXT: getting started helper: build database help text */
-      _("build db");
-  helptext [HELP_STATE_MAKE_MANUAL_PL] =
-      /* CONTEXT: getting started helper: create a manual playlist help text */
-      _("create manual pl");
-  helptext [HELP_STATE_PLAY_MANUAL_PL] =
-      /* CONTEXT: getting started helper: play a manual playlist help text */
-      _("play manual pl");
-  helptext [HELP_STATE_WHERE_SUPPORT] =
-      /* CONTEXT: getting started helper: getting support help text */
-      _("where is support");
+  if (helper->helpkey >= 0) {
+    title = ilistGetStr (helper->helplist, helper->helpkey, HELP_TEXT_TITLE);
+    text = ilistGetStr (helper->helplist, helper->helpkey, HELP_TEXT_TEXT);
+    ttext = _(text);
+    dlen = strlen (ttext);
+    ntext = filedataReplace (ttext, &dlen, ". ", ".\n");
+    uiTextBoxAppendStr (helper->tb, "\n\n");
+    uiTextBoxAppendBoldStr (helper->tb, _(title));
+    uiTextBoxAppendStr (helper->tb, "\n\n");
+    uiTextBoxAppendStr (helper->tb, ntext);
+    uiTextBoxScrollToEnd (helper->tb);
+    free (ntext);
+  }
 }
+
