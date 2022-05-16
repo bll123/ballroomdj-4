@@ -88,9 +88,16 @@ typedef struct {
   UIWidget      buffer;
 } uitextbox_t;
 
-typedef bool (*uiutilsentryval_t)(void *entry, void *udata);
+typedef struct uientry uientry_t;
+typedef int (*uiutilsentryval_t)(uientry_t *entry, void *udata);
 
-typedef struct {
+enum {
+  UIENTRY_RESET,
+  UIENTRY_ERROR,
+  UIENTRY_OK,
+};
+
+typedef struct uientry {
   GtkEntryBuffer  *buffer;
   UIWidget        uientry;
   int             entrySize;

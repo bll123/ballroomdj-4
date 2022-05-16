@@ -221,9 +221,11 @@ helperMainLoop (void *thelper)
     uiUIProcessEvents ();
   }
 
-  if (helper->scrollendflag) {
+  if (! stop && helper->scrollendflag) {
     uiTextBoxScrollToEnd (helper->tb);
     helper->scrollendflag = false;
+    uiUIProcessEvents ();
+    return stop;
   }
 
   if (! progstateIsRunning (helper->progstate)) {

@@ -40,10 +40,10 @@ static void     uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *arg
 static void     uiplayerProcessMusicqStatusData (uiplayer_t *uiplayer, char *args);
 static bool     uiplayerFadeProcess (void *udata);
 static bool     uiplayerPlayPauseProcess (void *udata);
-static bool     uiplayerRepeatProcess (GtkButton *b, void *udata);
+static bool     uiplayerRepeatCallback (void *udata);
 static bool     uiplayerSongBeginProcess (void *udata);
 static bool     uiplayerNextSongProcess (void *udata);
-static void     uiplayerPauseatendProcess (GtkButton *b, void *udata);
+static bool     uiplayerPauseatendCallback (void *udata);
 static gboolean uiplayerSpeedProcess (GtkRange *range, GtkScrollType *scroll, gdouble value, gpointer udata);
 static gboolean uiplayerSeekProcess (GtkRange *range, GtkScrollType *scroll, gdouble value, gpointer udata);
 static gboolean uiplayerVolumeProcess (GtkRange *range, GtkScrollType *scroll, gdouble value, gpointer udata);
@@ -60,6 +60,7 @@ uiplayerInit (progstate_t *progstate, conn_t *conn, musicdb_t *musicdb)
   uiplayer->progstate = progstate;
   uiplayer->conn = conn;
   uiplayer->musicdb = musicdb;
+  uiplayer->uibuilt = false;
 
   uiplayer->vbox = NULL;
   uiutilsUIWidgetInit (&uiplayer->statusImg);
@@ -73,8 +74,8 @@ uiplayerInit (progstate_t *progstate, conn_t *conn, musicdb_t *musicdb)
   uiplayer->durationLab = NULL;
   uiplayer->seekScale = NULL;
   uiplayer->seekDisplayLab = NULL;
-  uiplayer->repeatButton = NULL;
-  uiplayer->pauseatendButton = NULL;
+  uiutilsUIWidgetInit (&uiplayer->repeatButton);
+  uiutilsUIWidgetInit (&uiplayer->pauseatendButton);
   uiutilsUIWidgetInit (&uiplayer->playPixbuf);
   uiutilsUIWidgetInit (&uiplayer->stopPixbuf);
   uiutilsUIWidgetInit (&uiplayer->pausePixbuf);
@@ -326,12 +327,12 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
 
   pathbldMakePath (tbuff, sizeof (tbuff), "button_repeat", ".svg",
       PATHBLD_MP_IMGDIR);
-  uiplayer->repeatButton = uiCreateToggleButton ("",
+  uiCreateToggleButton (&uiplayer->repeatButton, "",
       /* CONTEXT: button: tooltip: toggle the repeat song on and off */
       tbuff, _("Toggle Repeat"), NULL, 0);
-  assert (uiplayer->repeatButton != NULL);
-  uiBoxPackStartWW (hbox, uiplayer->repeatButton);
-  g_signal_connect (uiplayer->repeatButton, "toggled", G_CALLBACK (uiplayerRepeatProcess), uiplayer);
+  uiBoxPackStartWU (hbox, &uiplayer->repeatButton);
+  uiutilsUICallbackInit (&uiplayer->repeatcb, uiplayerRepeatCallback, uiplayer);
+  uiToggleButtonSetCallback (&uiplayer->repeatButton, &uiplayer->repeatcb);
 
   uiutilsUICallbackInit (&uiplayer->callbacks [UIPLAYER_CALLBACK_BEGSONG],
       uiplayerSongBeginProcess, uiplayer);
@@ -360,11 +361,11 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiWidgetMakePersistent (&uiplayer->ledoffImg);
 
   /* CONTEXT: button: pause at the end of the song (toggle) */
-  uiplayer->pauseatendButton = uiCreateToggleButton (_("Pause at End"),
+  uiCreateToggleButton (&uiplayer->pauseatendButton, _("Pause at End"),
       NULL, NULL, &uiplayer->ledoffImg, 0);
-  assert (uiplayer->pauseatendButton != NULL);
-  uiBoxPackStartWW (hbox, uiplayer->pauseatendButton);
-  g_signal_connect (uiplayer->pauseatendButton, "toggled", G_CALLBACK (uiplayerPauseatendProcess), uiplayer);
+  uiBoxPackStartWU (hbox, &uiplayer->pauseatendButton);
+  uiutilsUICallbackInit (&uiplayer->pauseatendcb, uiplayerPauseatendCallback, uiplayer);
+  uiToggleButtonSetCallback (&uiplayer->pauseatendButton, &uiplayer->pauseatendcb);
 
   /* volume controls / display */
 
@@ -395,6 +396,8 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   gtk_widget_set_halign (widget, GTK_ALIGN_END);
   gtk_label_set_xalign (GTK_LABEL (widget), 1.0);
   uiSizeGroupAddW (&sgD, widget);
+
+  uiplayer->uibuilt = true;
 
   logProcEnd (LOG_PROC, "uiplayerBuildUI", "");
   return uiplayer->vbox;
@@ -575,18 +578,18 @@ uiplayerProcessPauseatend (uiplayer_t *uiplayer, int on)
 {
   logProcBegin (LOG_PROC, "uiplayerProcessPauseatend");
 
-  if (uiplayer->pauseatendButton == NULL) {
-    logProcEnd (LOG_PROC, "uiplayerProcessPauseatend", "no-pae-button");
+  if (! uiplayer->uibuilt) {
+    logProcEnd (LOG_PROC, "uiplayerProcessPauseatend", "no-ui");
     return;
   }
   uiplayer->pauseatendLock = true;
 
   if (on) {
-    uiToggleButtonSetImage (uiplayer->pauseatendButton, &uiplayer->ledonImg);
-    uiToggleButtonSetState (uiplayer->pauseatendButton, TRUE);
+    uiToggleButtonSetImage (&uiplayer->pauseatendButton, &uiplayer->ledonImg);
+    uiToggleButtonSetState (&uiplayer->pauseatendButton, TRUE);
   } else {
-    uiToggleButtonSetImage (uiplayer->pauseatendButton, &uiplayer->ledoffImg);
-    uiToggleButtonSetState (uiplayer->pauseatendButton, FALSE);
+    uiToggleButtonSetImage (&uiplayer->pauseatendButton, &uiplayer->ledoffImg);
+    uiToggleButtonSetState (&uiplayer->pauseatendButton, FALSE);
   }
   uiplayer->pauseatendLock = false;
   logProcEnd (LOG_PROC, "uiplayerProcessPauseatend", "");
@@ -662,10 +665,10 @@ uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args)
     if (atol (p)) {
       uiImageClear (&uiplayer->repeatImg);
       uiImageSetFromPixbuf (&uiplayer->repeatImg, &uiplayer->repeatPixbuf);
-      uiToggleButtonSetState (uiplayer->repeatButton, TRUE);
+      uiToggleButtonSetState (&uiplayer->repeatButton, TRUE);
     } else {
       uiImageClear (&uiplayer->repeatImg);
-      uiToggleButtonSetState (uiplayer->repeatButton, FALSE);
+      uiToggleButtonSetState (&uiplayer->repeatButton, FALSE);
     }
     uiplayer->repeatLock = false;
   }
@@ -798,19 +801,19 @@ uiplayerPlayPauseProcess (void *udata)
 }
 
 static bool
-uiplayerRepeatProcess (GtkButton *b, void *udata)
+uiplayerRepeatCallback (void *udata)
 {
   uiplayer_t      *uiplayer = udata;
 
-  logProcBegin (LOG_PROC, "uiplayerRepeatProcess");
+  logProcBegin (LOG_PROC, "uiplayerRepeatCallback");
 
   if (uiplayer->repeatLock) {
-    logProcEnd (LOG_PROC, "uiplayerRepeatProcess", "repeat-lock");
+    logProcEnd (LOG_PROC, "uiplayerRepeatCallback", "repeat-lock");
     return UICB_CONT;
   }
 
   connSendMessage (uiplayer->conn, ROUTE_PLAYER, MSG_PLAY_REPEAT, NULL);
-  logProcEnd (LOG_PROC, "uiplayerRepeatProcess", "");
+  logProcEnd (LOG_PROC, "uiplayerRepeatCallback", "");
   return UICB_CONT;
 }
 
@@ -836,19 +839,20 @@ uiplayerNextSongProcess (void *udata)
   return UICB_CONT;
 }
 
-static void
-uiplayerPauseatendProcess (GtkButton *b, void *udata)
+static bool
+uiplayerPauseatendCallback (void *udata)
 {
   uiplayer_t      *uiplayer = udata;
 
-  logProcBegin (LOG_PROC, "uiplayerPauseatendProcess");
+  logProcBegin (LOG_PROC, "uiplayerPauseatendCallback");
 
   if (uiplayer->pauseatendLock) {
-    logProcEnd (LOG_PROC, "uiplayerPauseatendProcess", "pae-lock");
-    return;
+    logProcEnd (LOG_PROC, "uiplayerPauseatendCallback", "pae-lock");
+    return UICB_STOP;
   }
   connSendMessage (uiplayer->conn, ROUTE_PLAYER, MSG_PLAY_PAUSEATEND, NULL);
-  logProcEnd (LOG_PROC, "uiplayerPauseatendProcess", "");
+  logProcEnd (LOG_PROC, "uiplayerPauseatendCallback", "");
+  return UICB_CONT;
 }
 
 static gboolean

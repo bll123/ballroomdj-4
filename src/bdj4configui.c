@@ -429,8 +429,8 @@ static char     * confuiComboboxSelect (configui_t *confui, GtkTreePath *path, i
 static void     confuiUpdateMobmqQrcode (configui_t *confui);
 static void     confuiMobmqTypeChg (GtkSpinButton *sb, gpointer udata);
 static void     confuiMobmqPortChg (GtkSpinButton *sb, gpointer udata);
-static bool     confuiMobmqNameChg (void *edata, void *udata);
-static bool     confuiMobmqTitleChg (void *edata, void *udata);
+static int      confuiMobmqNameChg (uientry_t *entry, void *udata);
+static int      confuiMobmqTitleChg (uientry_t *entry, void *udata);
 static void     confuiUpdateRemctrlQrcode (configui_t *confui);
 static gboolean confuiRemctrlChg (GtkSwitch *sw, gboolean value, gpointer udata);
 static void     confuiRemctrlPortChg (GtkSpinButton *sb, gpointer udata);
@@ -489,7 +489,7 @@ static void   confuiDanceSelect (GtkTreeView *tv, GtkTreePath *path,
     GtkTreeViewColumn *column, gpointer udata);
 static void   confuiDanceEntryChg (GtkEditable *e, gpointer udata);
 static void   confuiDanceSpinboxChg (GtkSpinButton *sb, gpointer udata);
-static bool   confuiDanceValidateAnnouncement (void *edata, void *udata);
+static int    confuiDanceValidateAnnouncement (uientry_t *entry, void *udata);
 
 /* display settings */
 static void   confuiDispSettingChg (GtkSpinButton *sb, gpointer udata);
@@ -1721,7 +1721,7 @@ confuiMainLoop (void *tconfui)
   connProcessUnconnected (confui->conn);
 
   for (int i = CONFUI_COMBOBOX_MAX + 1; i < CONFUI_ENTRY_MAX; ++i) {
-    uiEntryValidate (&confui->uiitem [i].u.entry);
+    uiEntryValidate (&confui->uiitem [i].u.entry, false);
   }
 
   if (gKillReceived) {
@@ -1893,7 +1893,7 @@ confuiPopulateOptions (configui_t *confui)
         break;
       }
       case CONFUI_CHECK_BUTTON: {
-        nval = uiToggleButtonIsActive (confui->uiitem [i].widget);
+        nval = uiToggleButtonIsActive (&confui->uiitem [i].uiwidget);
         break;
       }
       case CONFUI_COMBOBOX: {
@@ -2453,16 +2453,16 @@ static void
 confuiMakeItemCheckButton (configui_t *confui, GtkWidget *vbox, UIWidget *sg,
     const char *txt, int widx, int bdjoptIdx, int value)
 {
-  GtkWidget   *widget;
+  UIWidget    uiwidget;
 
   logProcBegin (LOG_PROC, "confuiMakeItemCheckButton");
 
   confui->uiitem [widx].basetype = CONFUI_CHECK_BUTTON;
   confui->uiitem [widx].outtype = CONFUI_OUT_BOOL;
-  widget = uiCreateCheckButton (txt, value);
-  uiWidgetSetMarginStartW (widget, uiBaseMarginSz * 4);
-  uiBoxPackStartWW (vbox, widget);
-  confui->uiitem [widx].widget = widget;
+  uiCreateCheckButton (&uiwidget, txt, value);
+  uiWidgetSetMarginStart (&uiwidget, uiBaseMarginSz * 4);
+  uiBoxPackStartWU (vbox, &uiwidget);
+  uiutilsUIWidgetCopy (&confui->uiitem [widx].uiwidget, &uiwidget);
   confui->uiitem [widx].bdjoptIdx = bdjoptIdx;
   logProcEnd (LOG_PROC, "confuiMakeItemCheckButton", "");
 }
@@ -3051,10 +3051,9 @@ confuiMobmqPortChg (GtkSpinButton *sb, gpointer udata)
   logProcEnd (LOG_PROC, "confuiMobmqPortChg", "");
 }
 
-static bool
-confuiMobmqNameChg (void *edata, void *udata)
+static int
+confuiMobmqNameChg (uientry_t *entry, void *udata)
 {
-  uientry_t  *entry = edata;
   configui_t    *confui = udata;
   const char      *sval;
 
@@ -3063,13 +3062,12 @@ confuiMobmqNameChg (void *edata, void *udata)
   bdjoptSetStr (OPT_P_MOBILEMQTAG, sval);
   confuiUpdateMobmqQrcode (confui);
   logProcEnd (LOG_PROC, "confuiMobmqNameChg", "");
-  return true;
+  return UIENTRY_OK;
 }
 
-static bool
-confuiMobmqTitleChg (void *edata, void *udata)
+static int
+confuiMobmqTitleChg (uientry_t *entry, void *udata)
 {
-  uientry_t  *entry = edata;
   configui_t      *confui = udata;
   const char      *sval;
 
@@ -3078,7 +3076,7 @@ confuiMobmqTitleChg (void *edata, void *udata)
   bdjoptSetStr (OPT_P_MOBILEMQTITLE, sval);
   confuiUpdateMobmqQrcode (confui);
   logProcEnd (LOG_PROC, "confuiMobmqTitleChg", "");
-  return true;
+  return UIENTRY_OK;
 }
 
 static void
@@ -4646,12 +4644,11 @@ confuiDanceSpinboxChg (GtkSpinButton *sb, gpointer udata)
   logProcEnd (LOG_PROC, "confuiDanceSpinboxChg", "");
 }
 
-static bool
-confuiDanceValidateAnnouncement (void *edata, void *udata)
+static int
+confuiDanceValidateAnnouncement (uientry_t *entry, void *udata)
 {
   configui_t        *confui = udata;
-  uientry_t    *entry = edata;
-  bool              rc;
+  int               rc;
   const char        *fn;
   char              tbuff [MAXPATHLEN];
   char              nfn [MAXPATHLEN];
@@ -4662,12 +4659,12 @@ confuiDanceValidateAnnouncement (void *edata, void *udata)
   musicdir = bdjoptGetStr (OPT_M_DIR_MUSIC);
   mlen = strlen (musicdir);
 
-  rc = false;
+  rc = UIENTRY_ERROR;
   if (entry->buffer != NULL) {
     fn = gtk_entry_buffer_get_text (entry->buffer);
     if (fn == NULL) {
       logProcEnd (LOG_PROC, "confuiDanceValidateAnnouncement", "bad-fn");
-      return rc;
+      return UIENTRY_ERROR;
     }
 
     strlcpy (nfn, fn, sizeof (nfn));
@@ -4678,7 +4675,7 @@ confuiDanceValidateAnnouncement (void *edata, void *udata)
     }
 
     if (*nfn == '\0') {
-      rc = true;
+      rc = UIENTRY_OK;
     } else {
       *tbuff = '\0';
       if (*nfn != '/' && *(nfn + 1) != ':') {
@@ -4687,7 +4684,7 @@ confuiDanceValidateAnnouncement (void *edata, void *udata)
       }
       strlcat (tbuff, nfn, sizeof (tbuff));
       if (fileopFileExists (tbuff)) {
-        rc = true;
+        rc = UIENTRY_OK;
       }
     }
   }

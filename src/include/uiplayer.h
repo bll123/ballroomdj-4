@@ -46,10 +46,12 @@ typedef struct {
   mstime_t        seekLockTimeout;
   mstime_t        seekLockSend;
   /* main controls */
-  GtkWidget       *repeatButton;
   bool            repeatLock;
-  GtkWidget       *pauseatendButton;
   bool            pauseatendLock;
+  UIWidget        repeatButton;
+  UICallback      repeatcb;
+  UIWidget        pauseatendButton;
+  UICallback      pauseatendcb;
   UIWidget        playPixbuf;
   UIWidget        stopPixbuf;
   UIWidget        pausePixbuf;
@@ -62,6 +64,7 @@ typedef struct {
   mstime_t        volumeLockTimeout;
   mstime_t        volumeLockSend;
   GtkWidget       *volumeDisplayLab;
+  bool            uibuilt;
 } uiplayer_t;
 
 uiplayer_t  * uiplayerInit (progstate_t *progstate, conn_t *conn, musicdb_t *musicdb);

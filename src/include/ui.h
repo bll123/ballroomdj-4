@@ -47,22 +47,28 @@ void        uiLabelSetMaxWidthW (GtkWidget *widget, int width);
 /* uigtkbutton.c */
 GtkWidget * uiCreateButton (UIWidget *uiwidget, UICallback *uicb,
     char *title, char *imagenm, void *cb, void *udata);
+void uiButtonSetImage (UIWidget *uiwidget, const char *imagenm, const char *tooltip);
+void uiButtonSetImageIcon (UIWidget *uiwidget, const char *nm);
 void uiButtonAlignLeft (GtkWidget *widget);
 
 /* uigtkentry.c */
 void uiEntryInit (uientry_t *entry, int entrySize, int maxSize);
 void uiEntryFree (uientry_t *entry);
 GtkWidget * uiEntryCreate (uientry_t *entry);
+void uiEntrySetIcon (uientry_t *entry, const char *name);
+void uiEntryClearIcon (uientry_t *entry);
+UIWidget * uiEntryGetUIWidget (uientry_t *entry);
 void uiEntryPeerBuffer (uientry_t *targetentry, uientry_t *sourceentry);
-GtkWidget * uiEntryGetWidget (uientry_t *entry);
 const char * uiEntryGetValue (uientry_t *entry);
 void uiEntrySetValue (uientry_t *entry, const char *value);
 void uiEntrySetColor (uientry_t *entry, const char *color);
 void uiEntrySetValidate (uientry_t *entry,
     uiutilsentryval_t valfunc, void *udata);
-bool uiEntryValidate (uientry_t *entry);
-bool uiEntryValidateDir (void *edata, void *udata);
-bool uiEntryValidateFile (void *edata, void *udata);
+int uiEntryValidate (uientry_t *entry, bool forceflag);
+int uiEntryValidateDir (uientry_t *edata, void *udata);
+int uiEntryValidateFile (uientry_t *edata, void *udata);
+/* these routines will be removed at a later date */
+GtkWidget * uiEntryGetWidget (uientry_t *entry);
 
 /* uigtkspinbox.c */
 void uiSpinboxTextInit (uispinbox_t *spinbox);
@@ -283,12 +289,13 @@ void  uiImagePersistentFromFile (UIWidget *uiwidget, const char *fn);
 void  uiImagePersistentFree (UIWidget *uiwidget);
 
 /* uigtktoggle.c */
-GtkWidget * uiCreateCheckButton (const char *txt, int value);
-GtkWidget * uiCreateToggleButton (const char *txt, const char *imgname,
+void uiCreateCheckButton (UIWidget *uiwidget, const char *txt, int value);
+void uiCreateToggleButton (UIWidget *uiwidget, const char *txt, const char *imgname,
     const char *tooltiptxt, UIWidget *image, int value);
-void uiToggleButtonSetImage (GtkWidget *widget, UIWidget *image);
-bool uiToggleButtonIsActive (GtkWidget *widget);
-void uiToggleButtonSetState (GtkWidget *widget, int state);
+void uiToggleButtonSetCallback (UIWidget *uiwidget, UICallback *uicb);
+void uiToggleButtonSetImage (UIWidget *uiwidget, UIWidget *image);
+bool uiToggleButtonIsActive (UIWidget *uiwidget);
+void uiToggleButtonSetState (UIWidget *uiwidget, int state);
 
 /* uigtkimage.c */
 void uiImageNew (UIWidget *uiwidget);

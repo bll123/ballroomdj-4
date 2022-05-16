@@ -57,20 +57,34 @@ uiEntryCreate (uientry_t *entry)
 }
 
 void
-uiEntryPeerBuffer (uientry_t *targetentry, uientry_t *sourceentry)
+uiEntrySetIcon (uientry_t *entry, const char *name)
 {
-  gtk_entry_set_buffer (GTK_ENTRY (targetentry->uientry.widget), sourceentry->buffer);
-  targetentry->buffer = sourceentry->buffer;
+  gtk_entry_set_icon_from_icon_name (GTK_ENTRY (entry->uientry.widget),
+      GTK_ENTRY_ICON_SECONDARY, name);
 }
 
-GtkWidget *
-uiEntryGetWidget (uientry_t *entry)
+void
+uiEntryClearIcon (uientry_t *entry)
+{
+  gtk_entry_set_icon_from_icon_name (GTK_ENTRY (entry->uientry.widget),
+      GTK_ENTRY_ICON_SECONDARY, NULL);
+}
+
+UIWidget *
+uiEntryGetUIWidget (uientry_t *entry)
 {
   if (entry == NULL) {
     return NULL;
   }
 
-  return entry->uientry.widget;
+  return &entry->uientry;
+}
+
+void
+uiEntryPeerBuffer (uientry_t *targetentry, uientry_t *sourceentry)
+{
+  gtk_entry_set_buffer (GTK_ENTRY (targetentry->uientry.widget), sourceentry->buffer);
+  targetentry->buffer = sourceentry->buffer;
 }
 
 const char *
@@ -115,27 +129,32 @@ uiEntrySetValidate (uientry_t *entry, uiutilsentryval_t valfunc, void *udata)
   g_signal_connect (entry->uientry.widget, "changed",
       G_CALLBACK (uiEntryValidateStart), entry);
   if (entry->validateFunc != NULL) {
-    mstimeset (&entry->validateTimer, 3600000);
+    mstimeset (&entry->validateTimer, 500);
   }
 }
 
-bool
-uiEntryValidate (uientry_t *entry)
+int
+uiEntryValidate (uientry_t *entry, bool forceflag)
 {
-  bool  rc;
+  int   rc;
 
   if (entry->validateFunc == NULL) {
-    return true;
+    return UIENTRY_OK;
   }
-  if (! mstimeCheck (&entry->validateTimer)) {
-    return true;
+  if (forceflag == false &&
+      ! mstimeCheck (&entry->validateTimer)) {
+    return UIENTRY_OK;
   }
 
   rc = entry->validateFunc (entry, entry->udata);
-  if (! rc) {
+  if (rc == UIENTRY_RESET) {
+    mstimeset (&entry->validateTimer, 500);
+  }
+  if (rc == UIENTRY_ERROR) {
     gtk_entry_set_icon_from_icon_name (GTK_ENTRY (entry->uientry.widget),
         GTK_ENTRY_ICON_SECONDARY, "dialog-error");
-  } else {
+  }
+  if (rc == UIENTRY_OK) {
     gtk_entry_set_icon_from_icon_name (GTK_ENTRY (entry->uientry.widget),
         GTK_ENTRY_ICON_SECONDARY, NULL);
   }
@@ -143,22 +162,21 @@ uiEntryValidate (uientry_t *entry)
   return rc;
 }
 
-bool
-uiEntryValidateDir (void *edata, void *udata)
+int
+uiEntryValidateDir (uientry_t *entry, void *udata)
 {
-  uientry_t    *entry = edata;
-  bool              rc;
+  int               rc;
   const char        *dir;
   char              tbuff [MAXPATHLEN];
 
-  rc = false;
+  rc = UIENTRY_ERROR;
   if (entry->buffer != NULL) {
     dir = gtk_entry_buffer_get_text (entry->buffer);
     if (dir != NULL) {
       strlcpy (tbuff, dir, sizeof (tbuff));
       pathNormPath (tbuff, sizeof (tbuff));
       if (fileopIsDirectory (tbuff)) {
-        rc = true;
+        rc = UIENTRY_OK;
       }
     }
   }
@@ -166,31 +184,42 @@ uiEntryValidateDir (void *edata, void *udata)
   return rc;
 }
 
-bool
-uiEntryValidateFile (void *edata, void *udata)
+int
+uiEntryValidateFile (uientry_t *entry, void *udata)
 {
-  uientry_t    *entry = edata;
-  bool              rc;
+  int              rc;
   const char        *fn;
   char              tbuff [MAXPATHLEN];
 
-  rc = false;
+  rc = UIENTRY_ERROR;
   if (entry->buffer != NULL) {
     fn = gtk_entry_buffer_get_text (entry->buffer);
     if (fn != NULL) {
       if (*fn == '\0') {
-        rc = true;
+        rc = UIENTRY_OK;
       } else {
         strlcpy (tbuff, fn, sizeof (tbuff));
         pathNormPath (tbuff, sizeof (tbuff));
         if (fileopFileExists (tbuff)) {
-          rc = true;
+          rc = UIENTRY_OK;
         }
       }
     }
   }
 
   return rc;
+}
+
+/* these routines will be removed at a later date */
+
+GtkWidget *
+uiEntryGetWidget (uientry_t *entry)
+{
+  if (entry == NULL) {
+    return NULL;
+  }
+
+  return entry->uientry.widget;
 }
 
 /* internal routines */
@@ -204,4 +233,3 @@ uiEntryValidateStart (GtkEditable *e, gpointer udata)
       GTK_ENTRY_ICON_SECONDARY, NULL);
   mstimeset (&entry->validateTimer, 500);
 }
-

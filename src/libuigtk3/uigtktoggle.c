@@ -12,8 +12,10 @@
 #include "ui.h"
 #include "uiutils.h"
 
-GtkWidget *
-uiCreateCheckButton (const char *txt, int value)
+static void uiToggleButtonToggleHandler (GtkButton *b, gpointer udata);
+
+void
+uiCreateCheckButton (UIWidget *uiwidget, const char *txt, int value)
 {
   GtkWidget   *widget;
 
@@ -22,12 +24,12 @@ uiCreateCheckButton (const char *txt, int value)
   gtk_widget_set_margin_top (widget, uiBaseMarginSz);
   gtk_widget_set_margin_start (widget, uiBaseMarginSz);
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), value);
-  return widget;
+  uiwidget->widget = widget;
 }
 
-GtkWidget *
-uiCreateToggleButton (const char *txt, const char *imgname,
-    const char *tooltiptxt, UIWidget *image, int value)
+void
+uiCreateToggleButton (UIWidget *uiwidget, const char *txt,
+    const char *imgname, const char *tooltiptxt, UIWidget *image, int value)
 {
   GtkWidget   *widget;
   GtkWidget   *imagewidget = NULL;
@@ -53,23 +55,41 @@ uiCreateToggleButton (const char *txt, const char *imgname,
   if (tooltiptxt != NULL) {
     gtk_widget_set_tooltip_text (widget, tooltiptxt);
   }
-  return widget;
+  uiwidget->widget = widget;
 }
 
 void
-uiToggleButtonSetImage (GtkWidget *widget, UIWidget *image)
+uiToggleButtonSetCallback (UIWidget *uiwidget, UICallback *uicb)
 {
-  gtk_button_set_image (GTK_BUTTON (widget), image->widget);
+  g_signal_connect (uiwidget->widget, "toggled",
+      G_CALLBACK (uiToggleButtonToggleHandler), uicb);
+}
+
+void
+uiToggleButtonSetImage (UIWidget *uiwidget, UIWidget *image)
+{
+  gtk_button_set_image (GTK_BUTTON (uiwidget->widget), image->widget);
 }
 
 bool
-uiToggleButtonIsActive (GtkWidget *widget)
+uiToggleButtonIsActive (UIWidget *uiwidget)
 {
-  return gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (widget));
+  return gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (uiwidget->widget));
 }
 
 void
-uiToggleButtonSetState (GtkWidget *widget, int state)
+uiToggleButtonSetState (UIWidget *uiwidget, int state)
 {
-  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), state);
+  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (uiwidget->widget), state);
 }
+
+/* internal routines */
+
+inline static void
+uiToggleButtonToggleHandler (GtkButton *b, gpointer udata)
+{
+  UICallback *uicb = udata;
+
+  uiutilsCallbackHandler (uicb);
+}
+

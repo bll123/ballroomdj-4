@@ -109,8 +109,8 @@ typedef struct {
   /* gtk stuff */
   uispinbox_t     profilesel;
   GtkWidget       *supportDialog;
-  GtkWidget       *supportSendFiles;
-  GtkWidget       *supportSendDB;
+  UIWidget        supportSendFiles;
+  UIWidget        supportSendDB;
   UIWidget        window;
   UIWidget        supportStatus;
   uitextbox_t     *supporttb;
@@ -228,6 +228,8 @@ main (int argc, char *argv[])
   }
   uiutilsUIWidgetInit (&starter.window);
   uiutilsUIWidgetInit (&starter.supportStatus);
+  uiutilsUIWidgetInit (&starter.supportSendFiles);
+  uiutilsUIWidgetInit (&starter.supportSendDB);
 
   procutilInitProcesses (starter.processes);
 
@@ -685,7 +687,7 @@ starterMainLoop (void *tstarter)
     case START_STATE_SUPPORT_SEND_FILES_A: {
       bool        sendfiles;
 
-      sendfiles = uiToggleButtonIsActive (starter->supportSendFiles);
+      sendfiles = uiToggleButtonIsActive (&starter->supportSendFiles);
       if (! sendfiles) {
         starter->startState = START_STATE_SUPPORT_SEND_DB_PRE;
         break;
@@ -725,7 +727,7 @@ starterMainLoop (void *tstarter)
     case START_STATE_SUPPORT_SEND_DB_PRE: {
       bool        senddb;
 
-      senddb = uiToggleButtonIsActive (starter->supportSendDB);
+      senddb = uiToggleButtonIsActive (&starter->supportSendDB);
       if (! senddb) {
         starter->startState = START_STATE_SUPPORT_FINISH;
         break;
@@ -741,7 +743,7 @@ starterMainLoop (void *tstarter)
     case START_STATE_SUPPORT_SEND_DB: {
       bool        senddb;
 
-      senddb = uiToggleButtonIsActive (starter->supportSendDB);
+      senddb = uiToggleButtonIsActive (&starter->supportSendDB);
       if (senddb) {
         strlcpy (tbuff, "data/musicdb.dat", sizeof (tbuff));
         pathbldMakePath (ofn, sizeof (ofn),
@@ -1280,20 +1282,20 @@ starterCreateSupportDialog (void *udata)
 
   /* line 4 */
   tb = uiTextBoxCreate (200);
-  uiBoxPackStart (&vbox, uiTextBoxGetScrolledWindow (tb));
+  uiTextBoxHorizExpand (tb);
+  uiTextBoxVertExpand (tb);
+  uiBoxPackStartExpand (&vbox, uiTextBoxGetScrolledWindow (tb));
   starter->supporttb = tb;
 
   /* line 5 */
   /* CONTEXT: sending support message: checkbox: option to send data files */
-  widget = uiCreateCheckButton (_("Attach Data Files"), 0);
-  uiBoxPackStartUW (&vbox, widget);
-  starter->supportSendFiles = widget;
+  uiCreateCheckButton (&starter->supportSendFiles, _("Attach Data Files"), 0);
+  uiBoxPackStart (&vbox, &starter->supportSendFiles);
 
   /* line 6 */
   /* CONTEXT: sending support message: checkbox: option to send database */
-  widget = uiCreateCheckButton (_("Attach Database"), 0);
-  uiBoxPackStartUW (&vbox, widget);
-  starter->supportSendDB = widget;
+  uiCreateCheckButton (&starter->supportSendDB, _("Attach Database"), 0);
+  uiBoxPackStart (&vbox, &starter->supportSendDB);
 
   /* line 7 */
   uiCreateLabel (&uiwidget, "");
