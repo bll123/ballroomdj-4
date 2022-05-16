@@ -213,12 +213,6 @@ uiWidgetSetSizeRequest (UIWidget *uiwidget, int width, int height)
   gtk_widget_set_size_request (uiwidget->widget, width, height);
 }
 
-inline void
-uiWidgetClearBackdropFlag (UIWidget *uiwidget)
-{
-  gtk_widget_unset_state_flags (uiwidget->widget, GTK_STATE_FLAG_BACKDROP);
-}
-
 inline bool
 uiWidgetIsValid (UIWidget *uiwidget)
 {
@@ -376,9 +370,4 @@ uiWidgetShowAllW (GtkWidget *widget)
   gtk_widget_show_all (widget);
 }
 
-inline void
-uiWidgetClearBackdropFlagW (GtkWidget *widget)
-{
-  gtk_widget_unset_state_flags (widget, GTK_STATE_FLAG_BACKDROP);
-}
 

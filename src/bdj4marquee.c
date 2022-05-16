@@ -11,8 +11,6 @@
 #include <math.h>
 #include <ctype.h>
 
-#include <gtk/gtk.h>
-
 #include "bdj4.h"
 #include "bdj4init.h"
 #include "bdj4intl.h"
@@ -63,8 +61,11 @@ typedef struct {
   int             stopwaitcount;
   datafile_t      *optiondf;
   nlist_t         *options;
-  UICallback      exitcb;
   UIWidget        window;
+  UICallback      exitcb;
+  UICallback      dclickcb;
+  UICallback      winstatecb;
+  UICallback      winmapcb;
   UIWidget        pbar;
   UIWidget        infoBox;
   UIWidget        sep;
@@ -102,19 +103,15 @@ static int      marqueeMainLoop  (void *tmarquee);
 static int      marqueeProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
                     bdjmsgmsg_t msg, char *args, void *udata);
 static bool     marqueeCloseCallback (void *udata);
-static gboolean marqueeToggleFullscreen (GtkWidget *window,
-                    GdkEventButton *event, gpointer userdata);
+static bool     marqueeToggleFullscreen (void *udata);
 static void     marqueeSetMaximized (marquee_t *marquee);
 static void     marqueeSetNotMaximized (marquee_t *marquee);
 static void     marqueeSetNotMaximizeFinish (marquee_t *marquee);
 static void     marqueeSendMaximizeState (marquee_t *marquee);
-static gboolean marqueeWinState (GtkWidget *window, GdkEventWindowState *event,
-                    gpointer userdata);
-static gboolean marqueeWinMapped (GtkWidget *window, GdkEventAny *event,
-                    gpointer userdata);
+static bool     marqueeWinState (void *udata, int isicon, int ismax);
+static bool     marqueeWinMapped (void *udata);
 static void marqueeSaveWindowPosition (marquee_t *);
 static void marqueeMoveWindow (marquee_t *);
-static void marqueeStateChg (GtkWidget *w, GtkStateType flags, gpointer userdata);
 static void marqueeSigHandler (int sig);
 static void marqueeSetFontSize (marquee_t *marquee, UIWidget *lab, const char *font);
 static void marqueePopulate (marquee_t *marquee, char *args);
@@ -312,12 +309,22 @@ marqueeBuildUI (marquee_t *marquee)
   uiCreateMainWindow (&uiwidget, &marquee->exitcb,
       /* CONTEXT: marquee window title */
       _("Marquee"), imgbuff);
-  g_signal_connect (uiwidget.widget, "button-press-event", G_CALLBACK (marqueeToggleFullscreen), marquee);
-  g_signal_connect (uiwidget.widget, "window-state-event", G_CALLBACK (marqueeWinState), marquee);
-  g_signal_connect (uiwidget.widget, "map-event", G_CALLBACK (marqueeWinMapped), marquee);
-  /* the backdrop window state must be intercepted */
-  g_signal_connect (uiwidget.widget, "state-flags-changed", G_CALLBACK (marqueeStateChg), marquee);
   uiWindowNoFocusOnStartup (&uiwidget);
+
+  uiutilsUICallbackInit (&marquee->dclickcb,
+      marqueeToggleFullscreen, marquee);
+  uiWindowSetDoubleClickCallback (&uiwidget, &marquee->dclickcb);
+
+  uiutilsUIWinStateCallbackInit (&marquee->winstatecb,
+      marqueeWinState, marquee);
+  uiWindowSetWinStateCallback (&uiwidget, &marquee->winstatecb);
+
+  uiutilsUICallbackInit (&marquee->winmapcb,
+      marqueeWinMapped, marquee);
+  uiWindowSetWinStateCallback (&uiwidget, &marquee->winmapcb);
+
+  uiWindowNoDim (&uiwidget);
+
   uiutilsUIWidgetCopy (&marquee->window, &uiwidget);
 
   x = nlistGetNum (marquee->options, MQ_SIZE_X);
@@ -603,17 +610,10 @@ marqueeCloseCallback (void *udata)
   return UICB_CONT;
 }
 
-static gboolean
-marqueeToggleFullscreen (GtkWidget *window, GdkEventButton *event, gpointer userdata)
+static bool
+marqueeToggleFullscreen (void *udata)
 {
-  marquee_t   *marquee = userdata;
-
-  logProcBegin (LOG_PROC, "marqueeToggleFullscreen");
-
-  if (gdk_event_get_event_type ((GdkEvent *) event) != GDK_DOUBLE_BUTTON_PRESS) {
-    logProcEnd (LOG_PROC, "marqueeToggleFullscreen", "no-button-press");
-    return FALSE;
-  }
+  marquee_t   *marquee = udata;
 
   marquee->userDoubleClicked = true;
   if (marquee->isMaximized) {
@@ -622,8 +622,7 @@ marqueeToggleFullscreen (GtkWidget *window, GdkEventButton *event, gpointer user
     marqueeSetMaximized (marquee);
   }
 
-  logProcEnd (LOG_PROC, "marqueeToggleFullscreen", "");
-  return FALSE;
+  return UICB_CONT;
 }
 
 static void
@@ -680,56 +679,54 @@ marqueeSendMaximizeState (marquee_t *marquee)
   connSendMessage (marquee->conn, ROUTE_PLAYERUI, MSG_MARQUEE_IS_MAX, tbuff);
 }
 
-static gboolean
-marqueeWinState (GtkWidget *window, GdkEventWindowState *event, gpointer userdata)
+static bool
+marqueeWinState (void *udata, int isIconified, int isMaximized)
 {
-  marquee_t         *marquee = userdata;
+  marquee_t         *marquee = udata;
 
   logProcBegin (LOG_PROC, "marqueeWinState");
 
-
-  if (event->changed_mask == GDK_WINDOW_STATE_ICONIFIED) {
+  if (isIconified >= 0) {
     if (marquee->mqIconifyAction) {
       marquee->mqIconifyAction = false;
       logProcEnd (LOG_PROC, "marqueeWinState", "close-button");
-      return FALSE;
+      return UICB_CONT;
     }
 
-    if ((event->new_window_state & GDK_WINDOW_STATE_ICONIFIED) !=
-        GDK_WINDOW_STATE_ICONIFIED) {
-      marquee->isIconified = false;
-      marqueeMoveWindow (marquee);
-    } else {
+    if (isIconified) {
       marqueeSaveWindowPosition (marquee);
       marquee->isIconified = true;
+    } else {
+      marquee->isIconified = false;
+      marqueeMoveWindow (marquee);
     }
     logProcEnd (LOG_PROC, "marqueeWinState", "iconified/deiconified");
-    return FALSE;
+    return UICB_CONT;
   }
-  if (event->changed_mask == GDK_WINDOW_STATE_MAXIMIZED) {
+
+  if (isMaximized >= 0) {
     /* if the user double-clicked, this is a known maximize change and */
     /* no processing needs to be done here */
     if (marquee->userDoubleClicked) {
       marquee->userDoubleClicked = false;
       logProcEnd (LOG_PROC, "marqueeWinState", "user-double-clicked");
-      return FALSE;
+      return UICB_CONT;
     }
 
     /* user selected the maximize button */
-    if ((event->new_window_state & GDK_WINDOW_STATE_MAXIMIZED) ==
-        GDK_WINDOW_STATE_MAXIMIZED) {
+    if (isMaximized) {
       marqueeSetMaximized (marquee);
     }
   }
 
   logProcEnd (LOG_PROC, "marqueeWinState", "");
-  return FALSE;
+  return UICB_CONT;
 }
 
-static gboolean
-marqueeWinMapped (GtkWidget *window, GdkEventAny *event, gpointer userdata)
+static bool
+marqueeWinMapped (void *udata)
 {
-  marquee_t         *marquee = userdata;
+  marquee_t         *marquee = udata;
 
   logProcBegin (LOG_PROC, "marqueeWinMapped");
 
@@ -738,7 +735,7 @@ marqueeWinMapped (GtkWidget *window, GdkEventAny *event, gpointer userdata)
   }
 
   logProcEnd (LOG_PROC, "marqueeWinMapped", "");
-  return TRUE;
+  return UICB_STOP;
 }
 
 static void
@@ -759,13 +756,6 @@ marqueeMoveWindow (marquee_t *marquee)
   x = nlistGetNum (marquee->options, MQ_POSITION_X);
   y = nlistGetNum (marquee->options, MQ_POSITION_Y);
   uiWindowMove (&marquee->window, x, y);
-}
-
-static void
-marqueeStateChg (GtkWidget *window, GtkStateType flags, gpointer userdata)
-{
-  /* the marquee is never in a backdrop state */
-  uiWidgetClearBackdropFlagW (window);
 }
 
 static void

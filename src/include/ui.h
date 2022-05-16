@@ -198,6 +198,10 @@ void uiWindowGetPosition (UIWidget *uiwindow, int *x, int *y);
 void uiWindowMove (UIWidget *uiwindow, int x, int y);
 void uiWindowNoFocusOnStartup (UIWidget *uiwindow);
 void uiCreateScrolledWindow (UIWidget *uiwindow, int minheight);
+void uiWindowSetDoubleClickCallback (UIWidget *uiwindow, UICallback *uicb);
+void uiWindowSetWinStateCallback (UIWidget *uiwindow, UICallback *uicb);
+void uiWindowNoDim (UIWidget *uiwidget);
+void uiWindowSetMappedCallback (UIWidget *uiwidget, UICallback *uicb);
 /* these routines will be removed at a later date */
 GtkWidget * uiCreateMainWindowW (const char *title,
     const char *imagenm, void *cb, void *udata);
@@ -265,7 +269,6 @@ void  uiWidgetShowAll (UIWidget *uiwidget);
 void  uiWidgetMakePersistent (UIWidget *uiuiwidget);
 void  uiWidgetClearPersistent (UIWidget *uiuiwidget);
 void  uiWidgetSetSizeRequest (UIWidget *uiuiwidget, int width, int height);
-void  uiWidgetClearBackdropFlag (UIWidget *uiwidget);
 bool  uiWidgetIsValid (UIWidget *uiwidget);
 /* these routines will be removed at a later date */
 void  uiWidgetDisableW (GtkWidget *widget);
@@ -287,7 +290,6 @@ void  uiWidgetShowAllW (GtkWidget *widget);
 void  uiWidgetMakePersistentW (UIWidget *uiwidget);
 void  uiWidgetClearPersistentW (UIWidget *uiwidget);
 void  uiWidgetSetSizeRequestW (UIWidget *uiwidget, int width, int height);
-void  uiWidgetClearBackdropFlagW (GtkWidget *widget);
 
 /* uigtkimage.c */
 void  uiImageFromFile (UIWidget *uiwidget, const char *fn);

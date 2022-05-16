@@ -108,3 +108,14 @@ uiutilsUIScaleCallbackInit (UICallback *uicb, UIScaleCallbackFunc cb, void *udat
   uicb->udata = udata;
 }
 
+void
+uiutilsUIWinStateCallbackInit (UICallback *uicb, UIWinStateCallbackFunc cb, void *udata)
+{
+  if (uicb == NULL) {
+    return;
+  }
+
+  uicb->winstatecb = cb;
+  uicb->udata = udata;
+}
+

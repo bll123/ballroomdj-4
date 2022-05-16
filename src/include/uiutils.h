@@ -13,11 +13,13 @@
 
 typedef bool (*UICallbackFunc)(void *udata);
 typedef bool (*UIScaleCallbackFunc)(void *udata, double value);
+typedef bool (*UIWinStateCallbackFunc)(void *udata, int isIconified, int isMaximized);
 
 typedef struct {
   union {
-    UICallbackFunc      cb;
-    UIScaleCallbackFunc scalecb;
+    UICallbackFunc          cb;
+    UIScaleCallbackFunc     scalecb;
+    UIWinStateCallbackFunc  winstatecb;
   };
   void            *udata;
 } UICallback;
@@ -144,5 +146,6 @@ int uiutilsNotebookIDGet (uiutilsnbtabid_t *nbtabid, int idx);
 void uiutilsUIWidgetCopy (UIWidget *target, UIWidget *source);
 void uiutilsUICallbackInit (UICallback *uicb, UICallbackFunc cb, void *udata);
 void uiutilsUIScaleCallbackInit (UICallback *uicb, UIScaleCallbackFunc cb, void *udata);
+void uiutilsUIWinStateCallbackInit (UICallback *uicb, UIWinStateCallbackFunc cb, void *udata);
 
 #endif /* INC_UIUTILS_H */

@@ -15,6 +15,10 @@
 #include "uiutils.h"
 
 static gboolean uiWindowCloseCallback (GtkWidget *window, GdkEvent *event, gpointer udata);
+static gboolean uiWindowDoubleClickHandler (GtkWidget *window, GdkEventButton *event, gpointer udata);
+static gboolean uiWindowWinStateHandler (GtkWidget *window, GdkEventWindowState *event, gpointer udata);
+static void uiWindowNoDimHandler (GtkWidget *window, GtkStateType flags, gpointer udata);
+static gboolean uiWindowMappedHandler (GtkWidget *window, GdkEventAny *event, gpointer udata);
 
 void
 uiCreateMainWindow (UIWidget *uiwidget, UICallback *uicb,
@@ -124,9 +128,37 @@ uiCreateScrolledWindow (UIWidget *uiwidget, int minheight)
   uiwidget->widget = widget;
 }
 
+void
+uiWindowSetDoubleClickCallback (UIWidget *uiwidget, UICallback *uicb)
+{
+  g_signal_connect (uiwidget->widget, "button-press-event",
+      G_CALLBACK (uiWindowDoubleClickHandler), uicb);
+}
+
+void
+uiWindowSetWinStateCallback (UIWidget *uiwindow, UICallback *uicb)
+{
+  g_signal_connect (uiwindow->widget, "window-state-event",
+      G_CALLBACK (uiWindowWinStateHandler), uicb);
+}
+
+void
+uiWindowNoDim (UIWidget *uiwidget)
+{
+  g_signal_connect (uiwidget->widget, "state-flags-changed",
+      G_CALLBACK (uiWindowNoDimHandler), uiwidget);
+}
+
+void
+uiWindowSetMappedCallback (UIWidget *uiwidget, UICallback *uicb)
+{
+  g_signal_connect (uiwidget->widget, "map-event",
+      G_CALLBACK (uiWindowMappedHandler), uicb);
+}
+
 /* internal routines */
 
-inline static gboolean
+static gboolean
 uiWindowCloseCallback (GtkWidget *window, GdkEvent *event, gpointer udata)
 {
   UICallback  *uicb = udata;
@@ -134,6 +166,79 @@ uiWindowCloseCallback (GtkWidget *window, GdkEvent *event, gpointer udata)
 
   rc = uiutilsCallbackHandler (uicb);
   return rc;
+}
+
+static gboolean
+uiWindowDoubleClickHandler (GtkWidget *window, GdkEventButton *event, gpointer udata)
+{
+  UICallback  *uicb = udata;
+  bool        rc;
+
+  if (gdk_event_get_event_type ((GdkEvent *) event) != GDK_DOUBLE_BUTTON_PRESS) {
+    return UICB_CONT;
+  }
+
+  rc = uiutilsCallbackHandler (uicb);
+  return rc;
+}
+
+static gboolean
+uiWindowWinStateHandler (GtkWidget *window, GdkEventWindowState *event, gpointer udata)
+{
+  UICallback  *uicb = udata;
+  bool        rc;
+  int         isicon = -1;
+  int         ismax = -1;
+  bool        process = false;
+
+  if (uicb == NULL) {
+    return UICB_CONT;
+  }
+  if (uicb->winstatecb == NULL) {
+    return UICB_CONT;
+  }
+
+  if (event->changed_mask == GDK_WINDOW_STATE_ICONIFIED) {
+    isicon = false;
+    if ((event->new_window_state & GDK_WINDOW_STATE_ICONIFIED) ==
+        GDK_WINDOW_STATE_ICONIFIED) {
+      isicon = true;
+    }
+    process = true;
+  }
+  if (event->changed_mask == GDK_WINDOW_STATE_MAXIMIZED) {
+    ismax = false;
+    if ((event->new_window_state & GDK_WINDOW_STATE_MAXIMIZED) ==
+        GDK_WINDOW_STATE_MAXIMIZED) {
+      ismax = true;
+    }
+    process = true;
+  }
+
+  if (! process) {
+    return UICB_CONT;
+  }
+
+  rc = uicb->winstatecb (uicb->udata, isicon, ismax);
+  return rc;
+}
+
+static gboolean
+uiWindowMappedHandler (GtkWidget *window, GdkEventAny *event, gpointer udata)
+{
+  UICallback  *uicb = udata;
+  bool        rc = false;
+
+  rc = uiutilsCallbackHandler (uicb);
+  return rc;
+}
+
+
+static void
+uiWindowNoDimHandler (GtkWidget *window, GtkStateType flags, gpointer udata)
+{
+  /* never in a backdrop state */
+  gtk_widget_unset_state_flags (GTK_WIDGET (window), GTK_STATE_FLAG_BACKDROP);
 }
 
 /* these routines will be removed at a later date */
