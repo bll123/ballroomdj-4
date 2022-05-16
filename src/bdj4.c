@@ -9,7 +9,7 @@
 #include <getopt.h>
 #include <unistd.h>
 
-#if BDJ4_GUI_LAUNCHER
+#if BDJ4_GUI_LAUNCHER && BDJ4_USE_GTK
 # include <gtk/gtk.h>
 #endif
 
@@ -46,6 +46,7 @@ main (int argc, char * argv[])
   bool      forcenodetach = false;
   bool      isinstaller = false;
   bool      usemsys = false;
+  bool      usinggtk = false;
   int       flags;
   char      *targv [BDJ4_LAUNCHER_MAX_ARGS];
   int       targc;
@@ -99,19 +100,22 @@ main (int argc, char * argv[])
     { NULL,             0,                  NULL,   0 }
   };
 
-#if BDJ4_GUI_LAUNCHER
+#if BDJ4_GUI_LAUNCHER && BDJ4_USE_GTK
   /* for macos; turns the launcher into a gui program, then the icon */
   /* shows up in the dock */
   gtk_init (&argc, NULL);
+  usinggtk = true;
 #endif
 
   prog = "bdj4starterui";  // default
 
   sysvarsInit (argv [0]);
 
+#if BDJ4_USE_GTK
   if (getenv ("GTK_THEME") != NULL) {
     havetheme = true;
   }
+#endif
 
   while ((c = getopt_long_only (argc, argv, "p:d:t:", bdj_options, &option_index)) != -1) {
     switch (c) {
@@ -238,7 +242,9 @@ main (int argc, char * argv[])
         break;
       }
       case 't': {
+#if BDJ4_USE_GTK
         osSetEnv ("GTK_THEME", optarg);
+#endif
         havetheme = true;
         break;
       }
@@ -269,7 +275,9 @@ main (int argc, char * argv[])
     }
   }
 
+#if BDJ4_USE_GTK
   osSetEnv ("GTK_CSD", "0");
+#endif
   osSetEnv ("PYTHONIOENCODING", "utf-8");
 
   if (isMacOS ()) {
@@ -296,7 +304,7 @@ main (int argc, char * argv[])
     osSetEnv ("G_FILENAME_ENCODING", "UTF8-MAC");
   }
 
-  if (isWindows ()) {
+  if (isWindows () && usinggtk) {
     char      * pbuff;
     char      * tbuff;
     char      * tmp;
@@ -356,7 +364,9 @@ main (int argc, char * argv[])
       fprintf (stderr, "final PATH=%s\n", getenv ("PATH"));
     }
 
+#if BDJ4_USE_GTK
     osSetEnv ("PANGOCAIRO_BACKEND", "fc");
+#endif
 
     free (pbuff);
     free (tbuff);
@@ -371,19 +381,25 @@ main (int argc, char * argv[])
       fgets (buff, sizeof (buff), fh);
       stringTrim (buff);
       fclose (fh);
+#if BDJ4_USE_GTK
       osSetEnv ("GTK_THEME", buff);
+#endif
     }
     if (isinstaller && isWindows ()) {
+#if BDJ4_USE_GTK
       osSetEnv ("GTK_THEME", buff);
+#endif
     }
   }
 
   /* launch the program */
 
   if (debugself) {
+#if BDJ4_USE_GTK
     fprintf (stderr, "GTK_THEME=%s\n", getenv ("GTK_THEME"));
     fprintf (stderr, "GTK_CSD=%s\n", getenv ("GTK_CSD"));
     fprintf (stderr, "PANGOCAIRO_BACKEND=%s\n", getenv ("PANGOCAIRO_BACKEND"));
+#endif
   }
 
   targc = 0;

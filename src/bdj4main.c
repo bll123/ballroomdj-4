@@ -665,9 +665,11 @@ mainStartMarquee (maindata_t *mainData)
     return;
   }
 
-  /* set the GTK theme for the marquee */
+  /* set the theme for the marquee */
   theme = bdjoptGetStr (OPT_MP_MQ_THEME);
+#if BDJ4_USE_GTK
   osSetEnv ("GTK_THEME", theme);
+#endif
 
   if ((mainData->startflags & BDJ4_INIT_HIDE_MARQUEE) == BDJ4_INIT_HIDE_MARQUEE) {
     targv [idx++] = "--hidemarquee";

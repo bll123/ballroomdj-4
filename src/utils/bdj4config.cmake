@@ -34,7 +34,6 @@ pkg_check_modules (GLIB glib-2.0)
 pkg_check_modules (CHECK check)
 pkg_check_modules (PA libpulse)
 
-add_compile_options (-DUI_USE_GTK3)
 add_compile_options (-DGDK_DISABLE_DEPRECATED)
 add_compile_options (-DGTK_DISABLE_DEPRECATED)
 
@@ -74,14 +73,16 @@ if (CMAKE_C_COMPILER_ID STREQUAL "Clang")
   add_compile_options (-Wno-documentation)
 endif()
 
-if (BDJ4_BUILD STREQUAL "Release")
+if (BDJ4_BUILD STREQUAL "Release-gtk")
   message ("Release Build")
   add_compile_options (-O2)
+  add_compile_options (-DBDJ4_USE_GTK=1)
 endif()
 
-if (BDJ4_BUILD STREQUAL "Debug")
+if (BDJ4_BUILD STREQUAL "Debug-gtk")
   message ("Debug Build")
   add_compile_options (-O0)
+  add_compile_options (-DBDJ4_USE_GTK=1)
 endif()
 
 add_compile_options (-g)

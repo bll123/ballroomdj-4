@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 
-#ifdef UI_USE_GTK3
+#if BDJ4_USE_GTK
 # include <gtk/gtk.h>
 #endif
 
@@ -28,7 +28,7 @@ typedef struct {
 #define UICB_CONT false
 
 typedef struct {
-#ifdef UI_USE_GTK3
+#if BDJ4_USE_GTK
   union {
     GtkWidget         *widget;
     GtkSizeGroup      *sg;

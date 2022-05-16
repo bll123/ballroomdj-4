@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 
-#ifdef UI_USE_GTK3
+#if BDJ4_USE_GTK
 # include <gtk/gtk.h>
 #endif
 

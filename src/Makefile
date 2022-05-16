@@ -13,11 +13,11 @@ CLANGXX = clang++
 .PHONY: build install debug release
 .PHONY: sanitizeaddress sanitizeleak sanitizeundef
 
-debug:
-	BDJ4_BUILD=Debug $(MAKE) cmake
+debug-gtk:
+	BDJ4_BUILD=Debug-gtk $(MAKE) cmake
 
-release:
-	BDJ4_BUILD=Release $(MAKE) cmake
+release-gtk:
+	BDJ4_BUILD=Release-gtk $(MAKE) cmake
 
 sanitizeaddress:
 	BDJ4_BUILD=SanitizeAddress $(MAKE) cmake
@@ -29,7 +29,9 @@ sanitizeleak:
 	BDJ4_BUILD=SanitizeLeak $(MAKE) cmake
 
 sanitizeundef:
-	BDJ4_BUILD=SanitizeUndef $(MAKE) cmake
+	BDJ4_BUILD=SanitizeUndef $(MAKE) cmake-gtk
+
+.PHONY: cmake cmakeclang cmake-unix cmake-windows
 
 cmake:
 	if test $$(uname -s) = Linux; then \
