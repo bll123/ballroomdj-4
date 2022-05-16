@@ -216,9 +216,12 @@ void uiWindowNoFocusOnStartupW (GtkWidget *window);
 GtkWidget * uiCreateScrolledWindowW (int minheight);
 
 /* uigtkscale.c */
-GtkWidget * uiCreateScale (double lower, double upper,
+void    uiCreateScale (UIWidget *uiwidget, double lower, double upper,
     double stepinc, double pageinc, double initvalue);
-double    uiScaleEnforceMax (GtkWidget *scale, double value);
+double  uiScaleEnforceMax (UIWidget *uiscale, double value);
+double  uiScaleGetValue (UIWidget *uiscale);
+void    uiScaleSetValue (UIWidget *uiscale, double value);
+void    uiScaleSetRange (UIWidget *uiscale, double start, double end);
 
 /* uigtkswitch.c */
 GtkWidget * uiCreateSwitch (int value);

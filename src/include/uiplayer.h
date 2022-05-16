@@ -31,7 +31,7 @@ typedef struct {
   UIWidget        artistLab;
   UIWidget        titleLab;
   /* speed controls / display */
-  GtkWidget       *speedScale;
+  UIWidget        speedScale;
   UIWidget        speedDisplayLab;
   bool            speedLock;
   mstime_t        speedLockTimeout;
@@ -39,7 +39,7 @@ typedef struct {
   /* position controls / display */
   UIWidget        countdownTimerLab;
   UIWidget        durationLab;
-  GtkWidget       *seekScale;
+  UIWidget        seekScale;
   UIWidget        seekDisplayLab;
   ssize_t         lastdur;
   bool            seekLock;
@@ -59,7 +59,7 @@ typedef struct {
   UIWidget        ledoffImg;
   UIWidget        ledonImg;
   /* volume controls / display */
-  GtkWidget       *volumeScale;
+  UIWidget        volumeScale;
   bool            volumeLock;
   mstime_t        volumeLockTimeout;
   mstime_t        volumeLockSend;

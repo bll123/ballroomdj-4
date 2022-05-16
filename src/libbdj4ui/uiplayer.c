@@ -72,8 +72,8 @@ uiplayerInit (progstate_t *progstate, conn_t *conn, musicdb_t *musicdb)
   uiutilsUIWidgetInit (&uiplayer->durationLab);
   uiutilsUIWidgetInit (&uiplayer->speedDisplayLab);
   uiutilsUIWidgetInit (&uiplayer->seekDisplayLab);
-  uiplayer->speedScale = NULL;
-  uiplayer->seekScale = NULL;
+  uiutilsUIWidgetInit (&uiplayer->speedScale);
+  uiutilsUIWidgetInit (&uiplayer->seekScale);
   uiutilsUIWidgetInit (&uiplayer->repeatButton);
   uiutilsUIWidgetInit (&uiplayer->pauseatendButton);
   uiutilsUIWidgetInit (&uiplayer->playPixbuf);
@@ -83,7 +83,7 @@ uiplayerInit (progstate_t *progstate, conn_t *conn, musicdb_t *musicdb)
   uiutilsUIWidgetInit (&uiplayer->ledoffImg);
   uiutilsUIWidgetInit (&uiplayer->ledonImg);
   uiutilsUIWidgetInit (&uiplayer->volumeDisplayLab);
-  uiplayer->volumeScale = NULL;
+  uiutilsUIWidgetInit (&uiplayer->volumeScale);
 
   progstateSetCallback (uiplayer->progstate, STATE_CONNECTING, uiplayerInitCallback, uiplayer);
   progstateSetCallback (uiplayer->progstate, STATE_CLOSING, uiplayerClosingCallback, uiplayer);
@@ -219,11 +219,11 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiSizeGroupAdd (&sgB, &uiplayer->speedDisplayLab);
 
   /* size group C */
-  uiplayer->speedScale = uiCreateScale (70.0, 130.0, 0.1, 1.0, 100.0);
-  uiWidgetSetMarginStartW (uiplayer->speedScale, uiBaseMarginSz);
-  uiBoxPackEndUW (&hbox, uiplayer->speedScale);
-  uiSizeGroupAddW (&sgC, uiplayer->speedScale);
-  g_signal_connect (uiplayer->speedScale, "change-value", G_CALLBACK (uiplayerSpeedProcess), uiplayer);
+  uiCreateScale (&uiplayer->speedScale, 70.0, 130.0, 0.1, 1.0, 100.0);
+  uiWidgetSetMarginStart (&uiplayer->speedScale, uiBaseMarginSz);
+  uiBoxPackEnd (&hbox, &uiplayer->speedScale);
+  uiSizeGroupAdd (&sgC, &uiplayer->speedScale);
+  g_signal_connect (uiplayer->speedScale.widget, "change-value", G_CALLBACK (uiplayerSpeedProcess), uiplayer);
 
   /* size group D */
   /* CONTEXT: the current speed for song playback */
@@ -272,11 +272,11 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiBoxPackEnd (&hbox, &uiplayer->seekDisplayLab);
 
   /* size group C */
-  uiplayer->seekScale = uiCreateScale (0.0, 180000.0, 100.0, 1000.0, 0.0);
-  uiWidgetSetMarginStartW (uiplayer->speedScale, uiBaseMarginSz);
-  uiBoxPackEndUW (&hbox, uiplayer->seekScale);
-  uiSizeGroupAddW (&sgC, uiplayer->seekScale);
-  g_signal_connect (uiplayer->seekScale, "change-value", G_CALLBACK (uiplayerSeekProcess), uiplayer);
+  uiCreateScale (&uiplayer->seekScale, 0.0, 180000.0, 100.0, 1000.0, 0.0);
+  uiWidgetSetMarginStart (&uiplayer->seekScale, uiBaseMarginSz);
+  uiBoxPackEnd (&hbox, &uiplayer->seekScale);
+  uiSizeGroupAdd (&sgC, &uiplayer->seekScale);
+  g_signal_connect (uiplayer->seekScale.widget, "change-value", G_CALLBACK (uiplayerSeekProcess), uiplayer);
 
   /* size group D */
   /* CONTEXT: the current position of the song during song playback */
@@ -370,11 +370,11 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiSizeGroupAdd (&sgB, &uiplayer->volumeDisplayLab);
 
   /* size group C */
-  uiplayer->volumeScale = uiCreateScale (0.0, 100.0, 0.1, 1.0, 0.0);
-  uiWidgetSetMarginStartW (uiplayer->speedScale, uiBaseMarginSz);
-  uiBoxPackEndUW (&hbox, uiplayer->volumeScale);
-  uiSizeGroupAddW (&sgC, uiplayer->volumeScale);
-  g_signal_connect (uiplayer->volumeScale, "change-value", G_CALLBACK (uiplayerVolumeProcess), uiplayer);
+  uiCreateScale (&uiplayer->volumeScale, 0.0, 100.0, 0.1, 1.0, 0.0);
+  uiWidgetSetMarginStart (&uiplayer->volumeScale, uiBaseMarginSz);
+  uiBoxPackEnd (&hbox, &uiplayer->volumeScale);
+  uiSizeGroupAdd (&sgC, &uiplayer->volumeScale);
+  g_signal_connect (uiplayer->volumeScale.widget, "change-value", G_CALLBACK (uiplayerVolumeProcess), uiplayer);
 
   /* size group D */
   /* CONTEXT: The current volume of the song */
@@ -402,7 +402,7 @@ uiplayerMainLoop (uiplayer_t *uiplayer)
     double        value;
     char          tbuff [40];
 
-    value = gtk_range_get_value (GTK_RANGE (uiplayer->volumeScale));
+    value = uiScaleGetValue (&uiplayer->volumeScale);
     snprintf (tbuff, sizeof (tbuff), "%.0f", value);
     connSendMessage (uiplayer->conn, ROUTE_PLAYER, MSG_PLAYER_VOLUME, tbuff);
     if (uiplayer->volumeLock) {
@@ -421,7 +421,7 @@ uiplayerMainLoop (uiplayer_t *uiplayer)
     double        value;
     char          tbuff [40];
 
-    value = gtk_range_get_value (GTK_RANGE (uiplayer->speedScale));
+    value = uiScaleGetValue (&uiplayer->speedScale);
     snprintf (tbuff, sizeof (tbuff), "%.0f", value);
     connSendMessage (uiplayer->conn, ROUTE_PLAYER, MSG_PLAY_SPEED, tbuff);
     if (uiplayer->speedLock) {
@@ -440,7 +440,7 @@ uiplayerMainLoop (uiplayer_t *uiplayer)
     double        value;
     char          tbuff [40];
 
-    value = gtk_range_get_value (GTK_RANGE (uiplayer->seekScale));
+    value = uiScaleGetValue (&uiplayer->seekScale);
     snprintf (tbuff, sizeof (tbuff), "%.0f", round (value));
     connSendMessage (uiplayer->conn, ROUTE_PLAYER, MSG_PLAY_SEEK, tbuff);
     if (uiplayer->seekLock) {
@@ -589,13 +589,13 @@ uiplayerProcessPlayerState (uiplayer_t *uiplayer, int playerState)
 
   uiplayer->playerState = playerState;
   if (playerState == PL_STATE_IN_FADEOUT) {
-    uiWidgetDisableW (uiplayer->volumeScale);
-    uiWidgetDisableW (uiplayer->seekScale);
-    uiWidgetDisableW (uiplayer->speedScale);
+    uiWidgetDisable (&uiplayer->volumeScale);
+    uiWidgetDisable (&uiplayer->seekScale);
+    uiWidgetDisable (&uiplayer->speedScale);
   } else {
-    uiWidgetEnableW (uiplayer->volumeScale);
-    uiWidgetEnableW (uiplayer->seekScale);
-    uiWidgetEnableW (uiplayer->speedScale);
+    uiWidgetEnable (&uiplayer->volumeScale);
+    uiWidgetEnable (&uiplayer->seekScale);
+    uiWidgetEnable (&uiplayer->speedScale);
   }
 
   switch (playerState) {
@@ -670,7 +670,7 @@ uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args)
     snprintf (tbuff, sizeof (tbuff), "%3s", p);
     uiLabelSetText (&uiplayer->volumeDisplayLab, p);
     dval = atof (p);
-    gtk_range_set_value (GTK_RANGE (uiplayer->volumeScale), dval);
+    uiScaleSetValue (&uiplayer->volumeScale, dval);
   }
 
   /* speed */
@@ -679,7 +679,7 @@ uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args)
     snprintf (tbuff, sizeof (tbuff), "%3s", p);
     uiLabelSetText (&uiplayer->speedDisplayLab, p);
     dval = atof (p);
-    gtk_range_set_value (GTK_RANGE (uiplayer->speedScale), dval);
+    uiScaleSetValue (&uiplayer->speedScale, dval);
   }
 
   /* playedtime */
@@ -696,7 +696,7 @@ uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args)
   if (ddur > 0.0 && dur != uiplayer->lastdur) {
     tmutilToMS (dur, tbuff, sizeof (tbuff));
     uiLabelSetText (&uiplayer->durationLab, tbuff);
-    gtk_range_set_range (GTK_RANGE (uiplayer->seekScale), 0.0, ddur);
+    uiScaleSetRange (&uiplayer->seekScale, 0.0, ddur);
     uiplayer->lastdur = dur;
   }
 
@@ -709,9 +709,9 @@ uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args)
     uiLabelSetText (&uiplayer->countdownTimerLab, tbuff);
 
     if (ddur == 0.0) {
-      gtk_range_set_value (GTK_RANGE (uiplayer->seekScale), 0.0);
+      uiScaleSetValue (&uiplayer->seekScale, 0.0);
     } else {
-      gtk_range_set_value (GTK_RANGE (uiplayer->seekScale), dval);
+      uiScaleSetValue (&uiplayer->seekScale, dval);
     }
   }
   logProcEnd (LOG_PROC, "uiplayerProcessPlayerStatusData", "");
@@ -853,7 +853,7 @@ uiplayerSpeedProcess (GtkRange *range, GtkScrollType *scroll, gdouble value, gpo
   }
   uiplayer->speedLock = true;
   mstimeset (&uiplayer->speedLockTimeout, UIPLAYER_LOCK_TIME_WAIT);
-  value = uiScaleEnforceMax (uiplayer->speedScale, value);
+  value = uiScaleEnforceMax (&uiplayer->speedScale, value);
   snprintf (tbuff, sizeof (tbuff), "%3.0f", value);
   uiLabelSetText (&uiplayer->speedDisplayLab, tbuff);
   logProcEnd (LOG_PROC, "uiplayerSpeedProcess", "");
@@ -876,7 +876,7 @@ uiplayerSeekProcess (GtkRange *range, GtkScrollType *scroll, gdouble value, gpoi
   uiplayer->seekLock = true;
   mstimeset (&uiplayer->seekLockTimeout, UIPLAYER_LOCK_TIME_WAIT);
 
-  value = uiScaleEnforceMax (uiplayer->seekScale, value);
+  value = uiScaleEnforceMax (&uiplayer->seekScale, value);
   position = (ssize_t) round (value);
 
   tmutilToMS (position, tbuff, sizeof (tbuff));
@@ -903,7 +903,7 @@ uiplayerVolumeProcess (GtkRange *range, GtkScrollType *scroll, gdouble value, gp
   uiplayer->volumeLock = true;
   mstimeset (&uiplayer->volumeLockTimeout, UIPLAYER_LOCK_TIME_WAIT);
 
-  value = uiScaleEnforceMax (uiplayer->volumeScale, value);
+  value = uiScaleEnforceMax (&uiplayer->volumeScale, value);
   snprintf (tbuff, sizeof (tbuff), "%3.0f", value);
   uiLabelSetText (&uiplayer->volumeDisplayLab, tbuff);
   logProcEnd (LOG_PROC, "uiplayerVolumeProcess", "");

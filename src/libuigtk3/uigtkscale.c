@@ -14,8 +14,8 @@
 #include "ui.h"
 #include "uiutils.h"
 
-GtkWidget *
-uiCreateScale (double lower, double upper,
+void
+uiCreateScale (UIWidget *uiwidget, double lower, double upper,
     double stepinc, double pageinc, double initvalue)
 {
   GtkWidget     *scale;
@@ -29,21 +29,42 @@ uiCreateScale (double lower, double upper,
   gtk_scale_set_has_origin (GTK_SCALE (scale), TRUE);
   gtk_range_set_value (GTK_RANGE (scale), initvalue);
   uiSetCss (scale, "scale, trough { min-height: 5px; }");
-  return scale;
+  uiwidget->widget = scale;
 }
 
 double
-uiScaleEnforceMax (GtkWidget *scale, double value)
+uiScaleEnforceMax (UIWidget *uiscale, double value)
 {
   GtkAdjustment   *adjustment;
   double          max;
 
   /* gtk scale's lower limit works, but upper limit is not respected */
-  adjustment = gtk_range_get_adjustment (GTK_RANGE (scale));
+  adjustment = gtk_range_get_adjustment (GTK_RANGE (uiscale->widget));
   max = gtk_adjustment_get_upper (adjustment);
   if (value > max) {
     value = max;
     gtk_adjustment_set_value (adjustment, value);
   }
   return value;
+}
+
+double
+uiScaleGetValue (UIWidget *uiscale)
+{
+  double value;
+
+  value = gtk_range_get_value (GTK_RANGE (uiscale->widget));
+  return value;
+}
+
+void
+uiScaleSetValue (UIWidget *uiscale, double value)
+{
+  gtk_range_set_value (GTK_RANGE (uiscale->widget), value);
+}
+
+void
+uiScaleSetRange (UIWidget *uiscale, double start, double end)
+{
+  gtk_range_set_range (GTK_RANGE (uiscale->widget), start, end);
 }
