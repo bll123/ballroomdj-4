@@ -87,9 +87,11 @@ uiButtonSetImageIcon (UIWidget *uiwidget, const char *nm)
 }
 
 void
-uiButtonAlignLeft (GtkWidget *widget)
+uiButtonAlignLeft (UIWidget *uiwidget)
 {
-  widget = gtk_bin_get_child (GTK_BIN (widget));
+  GtkWidget *widget;
+
+  widget = gtk_bin_get_child (GTK_BIN (uiwidget->widget));
   gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
 }
 

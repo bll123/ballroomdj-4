@@ -49,7 +49,7 @@ GtkWidget * uiCreateButton (UIWidget *uiwidget, UICallback *uicb,
     char *title, char *imagenm, void *cb, void *udata);
 void uiButtonSetImage (UIWidget *uiwidget, const char *imagenm, const char *tooltip);
 void uiButtonSetImageIcon (UIWidget *uiwidget, const char *nm);
-void uiButtonAlignLeft (GtkWidget *widget);
+void uiButtonAlignLeft (UIWidget *widget);
 
 /* uigtkentry.c */
 void uiEntryInit (uientry_t *entry, int entrySize, int maxSize);

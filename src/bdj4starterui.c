@@ -116,8 +116,8 @@ typedef struct {
   uitextbox_t     *supporttb;
   uientry_t       supportsubject;
   uientry_t       supportemail;
-  GtkWidget       *playeruibutton;
-  GtkWidget       *manageuibutton;
+  UIWidget        playeruibutton;
+  UIWidget        manageuibutton;
   /* options */
   datafile_t      *optiondf;
   nlist_t         *options;
@@ -479,76 +479,76 @@ starterBuildUI (startui_t  *starter)
 
   uiutilsUICallbackInit (&starter->callbacks [START_CALLBACK_PLAYER],
       starterStartPlayerui, starter);
-  widget = uiCreateButton (&uiwidget,
+  uiCreateButton (&uiwidget,
       &starter->callbacks [START_CALLBACK_PLAYER],
       /* CONTEXT: button: starts the player user interface */
       _("Player"), NULL, NULL, NULL);
-  uiWidgetSetMarginTopW (widget, uiBaseMarginSz * 2);
-  uiWidgetAlignHorizStartW (widget);
-  uiSizeGroupAddW (&sg, widget);
-  starter->playeruibutton = widget;
-  uiBoxPackStartUW (&bvbox, widget);
-  uiButtonAlignLeft (widget);
+  uiWidgetSetMarginTop (&uiwidget, uiBaseMarginSz * 2);
+  uiWidgetAlignHorizStart (&uiwidget);
+  uiSizeGroupAdd (&sg, &uiwidget);
+  uiutilsUIWidgetCopy (&starter->playeruibutton, &uiwidget);
+  uiBoxPackStart (&bvbox, &uiwidget);
+  uiButtonAlignLeft (&uiwidget);
 
   uiutilsUICallbackInit (&starter->callbacks [START_CALLBACK_MANAGE],
       starterStartManageui, starter);
-  widget = uiCreateButton (&uiwidget,
+  uiCreateButton (&uiwidget,
       &starter->callbacks [START_CALLBACK_MANAGE],
       /* CONTEXT: button: starts the management user interface */
       _("Manage"), NULL, NULL, NULL);
-  uiWidgetSetMarginTopW (widget, uiBaseMarginSz * 2);
-  uiWidgetAlignHorizStartW (widget);
-  uiSizeGroupAddW (&sg, widget);
-  starter->manageuibutton = widget;
-  uiBoxPackStartUW (&bvbox, widget);
-  uiButtonAlignLeft (widget);
+  uiWidgetSetMarginTop (&uiwidget, uiBaseMarginSz * 2);
+  uiWidgetAlignHorizStart (&uiwidget);
+  uiSizeGroupAdd (&sg, &uiwidget);
+  uiutilsUIWidgetCopy (&starter->manageuibutton, &uiwidget);
+  uiBoxPackStart (&bvbox, &uiwidget);
+  uiButtonAlignLeft (&uiwidget);
 
   uiutilsUICallbackInit (&starter->callbacks [START_CALLBACK_CONFIG],
       starterStartConfig, starter);
-  widget = uiCreateButton (&uiwidget,
+  uiCreateButton (&uiwidget,
       &starter->callbacks [START_CALLBACK_CONFIG],
       /* CONTEXT: button: starts the configuration user interface */
       _("Configure"), NULL, NULL, NULL);
-  uiWidgetSetMarginTopW (widget, uiBaseMarginSz * 2);
-  uiWidgetAlignHorizStartW (widget);
-  uiSizeGroupAddW (&sg, widget);
-  uiBoxPackStartUW (&bvbox, widget);
-  uiButtonAlignLeft (widget);
+  uiWidgetSetMarginTop (&uiwidget, uiBaseMarginSz * 2);
+  uiWidgetAlignHorizStart (&uiwidget);
+  uiSizeGroupAdd (&sg, &uiwidget);
+  uiBoxPackStart (&bvbox, &uiwidget);
+  uiButtonAlignLeft (&uiwidget);
 
   uiutilsUICallbackInit (&starter->callbacks [START_CALLBACK_RAFFLE],
       starterStartRaffleGames, starter);
-  widget = uiCreateButton (&uiwidget,
+  uiCreateButton (&uiwidget,
       &starter->callbacks [START_CALLBACK_RAFFLE],
       /* CONTEXT: button: support : starts raffle games  */
       _("Raffle Games"), NULL, NULL, NULL);
-  uiWidgetDisableW (widget);
-  uiWidgetSetMarginTopW (widget, uiBaseMarginSz * 2);
-  uiWidgetAlignHorizStartW (widget);
-  uiSizeGroupAddW (&sg, widget);
-  uiBoxPackStartUW (&bvbox, widget);
-  uiButtonAlignLeft (widget);
+  uiWidgetDisable (&uiwidget);
+  uiWidgetSetMarginTop (&uiwidget, uiBaseMarginSz * 2);
+  uiWidgetAlignHorizStart (&uiwidget);
+  uiSizeGroupAdd (&sg, &uiwidget);
+  uiBoxPackStart (&bvbox, &uiwidget);
+  uiButtonAlignLeft (&uiwidget);
 
   uiutilsUICallbackInit (&starter->callbacks [START_CALLBACK_SUPPORT],
       starterProcessSupport, starter);
-  widget = uiCreateButton (&uiwidget,
+  uiCreateButton (&uiwidget,
       &starter->callbacks [START_CALLBACK_SUPPORT],
       /* CONTEXT: button: support : support information */
       _("Support"), NULL, NULL, NULL);
-  uiWidgetSetMarginTopW (widget, uiBaseMarginSz * 2);
-  uiWidgetAlignHorizStartW (widget);
-  uiSizeGroupAddW (&sg, widget);
-  uiBoxPackStartUW (&bvbox, widget);
-  uiButtonAlignLeft (widget);
+  uiWidgetSetMarginTop (&uiwidget, uiBaseMarginSz * 2);
+  uiWidgetAlignHorizStart (&uiwidget);
+  uiSizeGroupAdd (&sg, &uiwidget);
+  uiBoxPackStart (&bvbox, &uiwidget);
+  uiButtonAlignLeft (&uiwidget);
 
-  widget = uiCreateButton (&uiwidget,
+  uiCreateButton (&uiwidget,
       &starter->callbacks [START_CALLBACK_EXIT],
       /* CONTEXT: button: exits BDJ4 (exits everything) */
       _("Exit"), NULL, NULL, NULL);
-  uiWidgetSetMarginTopW (widget, uiBaseMarginSz * 2);
-  uiWidgetAlignHorizStartW (widget);
-  uiSizeGroupAddW (&sg, widget);
-  uiBoxPackStartUW (&bvbox, widget);
-  uiButtonAlignLeft (widget);
+  uiWidgetSetMarginTop (&uiwidget, uiBaseMarginSz * 2);
+  uiWidgetAlignHorizStart (&uiwidget);
+  uiSizeGroupAdd (&sg, &uiwidget);
+  uiBoxPackStart (&bvbox, &uiwidget);
+  uiButtonAlignLeft (&uiwidget);
 
   x = nlistGetNum (starter->options, STARTERUI_POSITION_X);
   y = nlistGetNum (starter->options, STARTERUI_POSITION_Y);
@@ -800,10 +800,10 @@ starterProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_SOCKET_CLOSE: {
           if (routefrom == ROUTE_PLAYERUI) {
-            uiWidgetEnableW (starter->manageuibutton);
+            uiWidgetEnable (&starter->manageuibutton);
           }
           if (routefrom == ROUTE_MANAGEUI) {
-            uiWidgetEnableW (starter->playeruibutton);
+            uiWidgetEnable (&starter->playeruibutton);
           }
           procutilCloseProcess (starter->processes [routefrom],
               starter->conn, routefrom);
@@ -911,7 +911,7 @@ starterStartPlayerui (void *udata)
   starterCheckProfile (starter);
   starter->processes [ROUTE_PLAYERUI] = procutilStartProcess (
       ROUTE_PLAYERUI, "bdj4playerui", PROCUTIL_DETACH, NULL);
-  uiWidgetDisableW (starter->manageuibutton);
+  uiWidgetDisable (&starter->manageuibutton);
   return UICB_CONT;
 }
 
@@ -923,7 +923,7 @@ starterStartManageui (void *udata)
   starterCheckProfile (starter);
   starter->processes [ROUTE_MANAGEUI] = procutilStartProcess (
       ROUTE_MANAGEUI, "bdj4manageui", PROCUTIL_DETACH, NULL);
-  uiWidgetDisableW (starter->playeruibutton);
+  uiWidgetDisable (&starter->playeruibutton);
   return UICB_CONT;
 }
 
@@ -957,7 +957,6 @@ starterProcessSupport (void *udata)
   UIWidget      hbox;
   UIWidget      uiwidget;
   GtkWidget     *content;
-  GtkWidget     *widget;
   GtkWidget     *dialog;
   UIWidget      sg;
   char          tbuff [MAXPATHLEN];
@@ -1084,11 +1083,11 @@ starterProcessSupport (void *udata)
 
   uiutilsUICallbackInit (&starter->callbacks [START_CALLBACK_SEND_SUPPORT],
       starterCreateSupportDialog, starter);
-  widget = uiCreateButton (&uiwidget,
+  uiCreateButton (&uiwidget,
       &starter->callbacks [START_CALLBACK_SEND_SUPPORT],
       /* CONTEXT: starterui: basic support dialog: button: support option */
       _("Send Support Message"), NULL, NULL, NULL);
-  uiBoxPackStartUW (&hbox, widget);
+  uiBoxPackStart (&hbox, &uiwidget);
 
   /* the dialog doesn't have any space above the buttons */
   uiCreateHorizBox (&hbox);
