@@ -69,6 +69,17 @@ uiWidgetSetMarginStart (UIWidget *uiwidget, int margin)
 
 
 inline void
+uiWidgetSetMarginEnd (UIWidget *uiwidget, int margin)
+{
+  if (uiwidget->widget == NULL) {
+    return;
+  }
+
+  gtk_widget_set_margin_start (uiwidget->widget, margin);
+}
+
+
+inline void
 uiWidgetAlignHorizFill (UIWidget *uiwidget)
 {
   if (uiwidget->widget == NULL) {

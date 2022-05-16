@@ -74,6 +74,12 @@ uiLabelSetMaxWidth (UIWidget *uiwidget, int width)
   gtk_label_set_max_width_chars (GTK_LABEL (uiwidget->widget), width);
 }
 
+inline void
+uiLabelAlignEnd (UIWidget *uiwidget)
+{
+  gtk_label_set_xalign (GTK_LABEL (uiwidget->widget), 1.0);
+}
+
 /* these routines will be removed at a later date */
 
 GtkWidget *

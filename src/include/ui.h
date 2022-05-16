@@ -37,6 +37,7 @@ void  uiLabelSetFont (UIWidget *uilabel, const char *color);
 void  uiLabelSetText (UIWidget *uilabel, const char *text);
 void  uiLabelEllipsizeOn (UIWidget *uiwidget);
 void  uiLabelSetMaxWidth (UIWidget *uiwidget, int width);
+void  uiLabelAlignEnd (UIWidget *uiwidget);
 /* these routines will be removed at a later date */
 GtkWidget * uiCreateLabelW (const char *label);
 GtkWidget * uiCreateColonLabelW (const char *label);
@@ -247,6 +248,7 @@ void  uiWidgetExpandVert (UIWidget *uiwidget);
 void  uiWidgetSetAllMargins (UIWidget *uiwidget, int margin);
 void  uiWidgetSetMarginTop (UIWidget *uiwidget, int margin);
 void  uiWidgetSetMarginStart (UIWidget *uiwidget, int margin);
+void  uiWidgetSetMarginEnd (UIWidget *uiwidget, int margin);
 void  uiWidgetAlignHorizFill (UIWidget *uiwidget);
 void  uiWidgetAlignHorizStart (UIWidget *uiwidget);
 void  uiWidgetAlignHorizEnd (UIWidget *uiwidget);

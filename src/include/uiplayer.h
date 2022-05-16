@@ -27,20 +27,20 @@ typedef struct {
   GtkWidget       *vbox;
   UIWidget        statusImg;
   UIWidget        repeatImg;
-  GtkWidget       *danceLab;
-  GtkWidget       *artistLab;
-  GtkWidget       *titleLab;
+  UIWidget        danceLab;
+  UIWidget        artistLab;
+  UIWidget        titleLab;
   /* speed controls / display */
   GtkWidget       *speedScale;
-  GtkWidget       *speedDisplayLab;
+  UIWidget        speedDisplayLab;
   bool            speedLock;
   mstime_t        speedLockTimeout;
   mstime_t        speedLockSend;
   /* position controls / display */
-  GtkWidget       *countdownTimerLab;
-  GtkWidget       *durationLab;
+  UIWidget        countdownTimerLab;
+  UIWidget        durationLab;
   GtkWidget       *seekScale;
-  GtkWidget       *seekDisplayLab;
+  UIWidget        seekDisplayLab;
   ssize_t         lastdur;
   bool            seekLock;
   mstime_t        seekLockTimeout;
@@ -63,7 +63,7 @@ typedef struct {
   bool            volumeLock;
   mstime_t        volumeLockTimeout;
   mstime_t        volumeLockSend;
-  GtkWidget       *volumeDisplayLab;
+  UIWidget        volumeDisplayLab;
   bool            uibuilt;
 } uiplayer_t;
 
