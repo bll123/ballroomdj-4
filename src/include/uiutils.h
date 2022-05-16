@@ -12,9 +12,13 @@
 #include "tmutil.h"
 
 typedef bool (*UICallbackFunc)(void *udata);
+typedef bool (*UIScaleCallbackFunc)(void *udata, double value);
 
 typedef struct {
-  UICallbackFunc cb;
+  union {
+    UICallbackFunc      cb;
+    UIScaleCallbackFunc scalecb;
+  };
   void            *udata;
 } UICallback;
 
@@ -139,5 +143,6 @@ void uiutilsNotebookIDAdd (uiutilsnbtabid_t *nbtabid, int id);
 int uiutilsNotebookIDGet (uiutilsnbtabid_t *nbtabid, int idx);
 void uiutilsUIWidgetCopy (UIWidget *target, UIWidget *source);
 void uiutilsUICallbackInit (UICallback *uicb, UICallbackFunc cb, void *udata);
+void uiutilsUIScaleCallbackInit (UICallback *uicb, UIScaleCallbackFunc cb, void *udata);
 
 #endif /* INC_UIUTILS_H */

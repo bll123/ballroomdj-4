@@ -218,6 +218,7 @@ GtkWidget * uiCreateScrolledWindowW (int minheight);
 /* uigtkscale.c */
 void    uiCreateScale (UIWidget *uiwidget, double lower, double upper,
     double stepinc, double pageinc, double initvalue);
+void    uiScaleSetCallback (UIWidget *uiscale, UICallback *uicb);
 double  uiScaleEnforceMax (UIWidget *uiscale, double value);
 double  uiScaleGetValue (UIWidget *uiscale);
 void    uiScaleSetValue (UIWidget *uiscale, double value);

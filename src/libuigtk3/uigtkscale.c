@@ -14,6 +14,8 @@
 #include "ui.h"
 #include "uiutils.h"
 
+static gboolean uiScaleChangeValueHandler (GtkRange *range, GtkScrollType *scroll, gdouble value, gpointer udata);
+
 void
 uiCreateScale (UIWidget *uiwidget, double lower, double upper,
     double stepinc, double pageinc, double initvalue)
@@ -30,6 +32,13 @@ uiCreateScale (UIWidget *uiwidget, double lower, double upper,
   gtk_range_set_value (GTK_RANGE (scale), initvalue);
   uiSetCss (scale, "scale, trough { min-height: 5px; }");
   uiwidget->widget = scale;
+}
+
+void
+uiScaleSetCallback (UIWidget *uiscale, UICallback *uicb)
+{
+  g_signal_connect (uiscale->widget, "change-value",
+      G_CALLBACK (uiScaleChangeValueHandler), uicb);
 }
 
 double
@@ -67,4 +76,23 @@ void
 uiScaleSetRange (UIWidget *uiscale, double start, double end)
 {
   gtk_range_set_range (GTK_RANGE (uiscale->widget), start, end);
+}
+
+/* internal routines */
+
+static gboolean
+uiScaleChangeValueHandler (GtkRange *range, GtkScrollType *scroll, gdouble value, gpointer udata)
+{
+  UICallback  *uicb = udata;
+  bool        rc = UICB_STOP;
+
+  if (uicb == NULL) {
+    return rc;
+  }
+  if (uicb->scalecb == NULL) {
+    return rc;
+  }
+
+  rc = uicb->scalecb (uicb->udata, value);
+  return rc;
 }

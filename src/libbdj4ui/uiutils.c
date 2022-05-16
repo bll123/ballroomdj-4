@@ -97,3 +97,14 @@ uiutilsUICallbackInit (UICallback *uicb, UICallbackFunc cb, void *udata)
   uicb->udata = udata;
 }
 
+void
+uiutilsUIScaleCallbackInit (UICallback *uicb, UIScaleCallbackFunc cb, void *udata)
+{
+  if (uicb == NULL) {
+    return;
+  }
+
+  uicb->scalecb = cb;
+  uicb->udata = udata;
+}
+

@@ -308,6 +308,7 @@ pluiBuildUI (playerui_t *plui)
   GtkWidget           *menubar;
   GtkWidget           *menu;
   GtkWidget           *menuitem;
+  UIWidget            *uiwidgetp;
   char                *str;
   char                imgbuff [MAXPATHLEN];
   char                tbuff [MAXPATHLEN];
@@ -382,9 +383,8 @@ pluiBuildUI (playerui_t *plui)
       pluiMarqueeFontSizeDialog, plui);
 
   /* player */
-  widget = uiplayerBuildUI (plui->uiplayer);
-  uiWidgetExpandHorizW (widget);
-  uiBoxPackStartWW (plui->vbox, widget);
+  uiwidgetp = uiplayerBuildUI (plui->uiplayer);
+  uiBoxPackStartWU (plui->vbox, uiwidgetp);
 
   plui->notebook = uiCreateNotebook ();
   uiBoxPackStartExpandWW (plui->vbox, plui->notebook);

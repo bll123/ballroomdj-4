@@ -196,7 +196,7 @@ START_TEST(filemanip_recursive_dirlist)
     ck_assert_str_eq (fn, "tmp/abc/jkl/jkl.txt");
   }
 
-//  filemanipDeleteDir (dafn);
+  filemanipDeleteDir (dafn);
   slistFree (slist);
 }
 END_TEST

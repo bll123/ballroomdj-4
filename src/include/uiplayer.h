@@ -2,7 +2,6 @@
 #define INC_UIPLAYER_H
 
 #include <stdbool.h>
-#include <gtk/gtk.h>
 
 #include "bdj4.h"
 #include "conn.h"
@@ -24,7 +23,7 @@ typedef struct {
   musicdb_t       *musicdb;
   UICallback      callbacks [UIPLAYER_CALLBACK_MAX];
   /* song display */
-  GtkWidget       *vbox;
+  UIWidget        vbox;
   UIWidget        statusImg;
   UIWidget        repeatImg;
   UIWidget        danceLab;
@@ -32,6 +31,7 @@ typedef struct {
   UIWidget        titleLab;
   /* speed controls / display */
   UIWidget        speedScale;
+  UICallback      speedcb;
   UIWidget        speedDisplayLab;
   bool            speedLock;
   mstime_t        speedLockTimeout;
@@ -40,6 +40,7 @@ typedef struct {
   UIWidget        countdownTimerLab;
   UIWidget        durationLab;
   UIWidget        seekScale;
+  UICallback      seekcb;
   UIWidget        seekDisplayLab;
   ssize_t         lastdur;
   bool            seekLock;
@@ -60,6 +61,7 @@ typedef struct {
   UIWidget        ledonImg;
   /* volume controls / display */
   UIWidget        volumeScale;
+  UICallback      volumecb;
   bool            volumeLock;
   mstime_t        volumeLockTimeout;
   mstime_t        volumeLockSend;
@@ -70,7 +72,7 @@ typedef struct {
 uiplayer_t  * uiplayerInit (progstate_t *progstate, conn_t *conn, musicdb_t *musicdb);
 void        uiplayerSetDatabase (uiplayer_t *uiplayer, musicdb_t *musicdb);
 void        uiplayerFree (uiplayer_t *uiplayer);
-GtkWidget   * uiplayerBuildUI (uiplayer_t *uiplayer);
+UIWidget    *uiplayerBuildUI (uiplayer_t *uiplayer);
 void        uiplayerMainLoop (uiplayer_t *uiplayer);
 int         uiplayerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
                 bdjmsgmsg_t msg, char *args, void *udata);

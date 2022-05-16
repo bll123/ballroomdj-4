@@ -632,6 +632,7 @@ manageBuildUISongListEditor (manageui_t *manage)
   UIWidget            uiwidget;
   GtkWidget           *vbox;
   UIWidget            hbox;
+  UIWidget            *uiwidgetp;
   GtkWidget           *tabLabel;
   GtkWidget           *widget;
   GtkWidget           *notebook;
@@ -648,9 +649,8 @@ manageBuildUISongListEditor (manageui_t *manage)
   uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_MAIN_SL);
 
   /* song list editor: player */
-  widget = uiplayerBuildUI (manage->slplayer);
-  uiWidgetExpandHorizW (widget);
-  uiBoxPackStartWW (vbox, widget);
+  uiwidgetp = uiplayerBuildUI (manage->slplayer);
+  uiBoxPackStartWU (vbox, uiwidgetp);
 
   notebook = uiCreateNotebook ();
   uiBoxPackStartExpandWW (vbox, notebook);
@@ -717,6 +717,7 @@ manageBuildUISongListEditor (manageui_t *manage)
 static void
 manageBuildUIMusicManager (manageui_t *manage)
 {
+  UIWidget            *uiwidgetp;
   GtkWidget           *vbox;
   GtkWidget           *tabLabel;
   GtkWidget           *widget;
@@ -731,9 +732,8 @@ manageBuildUIMusicManager (manageui_t *manage)
   uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_MAIN_MM);
 
   /* music manager: player */
-  widget = uiplayerBuildUI (manage->mmplayer);
-  uiWidgetExpandHorizW (widget);
-  uiBoxPackStartWW (vbox, widget);
+  uiwidgetp = uiplayerBuildUI (manage->mmplayer);
+  uiBoxPackStartWU (vbox, uiwidgetp);
 
   notebook = uiCreateNotebook ();
   uiBoxPackStartExpandWW (vbox, notebook);
