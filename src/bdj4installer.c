@@ -12,8 +12,6 @@
 #include <sys/stat.h>
 #include <getopt.h>
 
-#include <gtk/gtk.h>
-
 #if _hdr_winsock2
 # pragma clang diagnostic push
 # pragma clang diagnostic ignored "-Wmissing-declarations"
@@ -116,7 +114,6 @@ typedef struct {
   slistidx_t      convidx;
   uientry_t       targetEntry;
   uientry_t       bdj3locEntry;
-  /* gtk */
   UIWidget        window;
   UIWidget        feedbackMsg;
   UIWidget        convFeedbackMsg;
@@ -391,7 +388,6 @@ installerBuildUI (installer_t *installer)
   UIWidget      hbox;
   UIWidget      uiwidget;
   UIWidget      *uiwidgetp;
-  GtkWidget     *widget;
   UIWidget      sg;
   char          tbuff [100];
   char          imgbuff [MAXPATHLEN];
@@ -561,11 +557,11 @@ installerBuildUI (installer_t *installer)
   uiWidgetExpandHoriz (&hbox);
   uiBoxPackStart (&vbox, &hbox);
 
-  widget = uiCreateButton (&uiwidget,
+  uiCreateButton (&uiwidget,
       &installer->callbacks [INST_CALLBACK_EXIT],
       /* CONTEXT: exits the installer */
       _("Exit"), NULL, NULL, NULL);
-  uiBoxPackEndUW (&hbox, widget);
+  uiBoxPackEnd (&hbox, &uiwidget);
 
   uiutilsUICallbackInit (&installer->callbacks [INST_CALLBACK_SELECT_DIR],
       installerInstallCallback, installer);
