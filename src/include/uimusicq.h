@@ -31,7 +31,7 @@ typedef struct {
   bool              active;
   guint             repeatTimer;
   /* music queue tab */
-  GtkWidget         *box;
+  UIWidget          mainbox;
   uidropdown_t dancesel;
   uidropdown_t playlistsel;
   uientry_t    slname;
@@ -105,7 +105,7 @@ long uimusicqGetCount (uimusicq_t *uimusicq);
 void uimusicqSave (uimusicq_t *uimusicq, const char *name);
 
 /* uimusicqgtk.c */
-GtkWidget * uimusicqBuildUI (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci);
+UIWidget  * uimusicqBuildUI (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci);
 void      uimusicqSetSelection (uimusicq_t *uimusicq, char *pathstr);
 ssize_t   uimusicqGetSelection (uimusicq_t *uimusicq);
 void      uimusicqMusicQueueSetSelected (uimusicq_t *uimusicq, int ci, int which);

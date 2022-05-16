@@ -49,7 +49,7 @@ static void   uimusicqSetMusicqDisplay (uimusicq_t *uimusicq,
 static int    uimusicqIterateCallback (GtkTreeModel *model,
     GtkTreePath *path, GtkTreeIter *iter, gpointer udata);
 
-GtkWidget *
+UIWidget *
 uimusicqBuildUI (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
 {
   int                   tci;
@@ -78,16 +78,15 @@ uimusicqBuildUI (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
   uiImageGetPixbuf (&uimusicq->pausePixbuf);
   uiWidgetMakePersistent (&uimusicq->pausePixbuf);
 
-  uimusicq->ui [ci].box = uiCreateVertBoxWW ();
-  assert (uimusicq->ui [ci].box != NULL);
-  uiWidgetExpandHorizW (uimusicq->ui [ci].box);
-  uiWidgetExpandVertW (uimusicq->ui [ci].box);
+  uiCreateVertBox (&uimusicq->ui [ci].mainbox);
+  uiWidgetExpandHoriz (&uimusicq->ui [ci].mainbox);
+  uiWidgetExpandVert (&uimusicq->ui [ci].mainbox);
 
   hbox = uiCreateHorizBoxWW ();
   assert (hbox != NULL);
   uiWidgetSetMarginTopW (hbox, uiBaseMarginSz);
   uiWidgetExpandHorizW (hbox);
-  uiBoxPackStartWW (uimusicq->ui [ci].box, hbox);
+  uiBoxPackStartUW (&uimusicq->ui [ci].mainbox, hbox);
 
   /* CONTEXT: button: move the selected song to the top of the queue */
   widget = uiCreateButton (NULL, NULL, _("Move to Top"), "button_movetop",
@@ -172,7 +171,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
 
   widget = uiCreateScrolledWindowW (400);
   uiWidgetExpandHorizW (widget);
-  uiBoxPackStartExpandWW (uimusicq->ui [ci].box, widget);
+  uiBoxPackStartExpandUW (&uimusicq->ui [ci].mainbox, widget);
 
   uimusicq->ui [ci].musicqTree = uiCreateTreeView ();
   assert (uimusicq->ui [ci].musicqTree != NULL);
@@ -211,7 +210,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
   uimusicq->musicqManageIdx = tci;
 
   logProcEnd (LOG_PROC, "uimusicqBuildUI", "");
-  return uimusicq->ui [ci].box;
+  return &uimusicq->ui [ci].mainbox;
 }
 
 void

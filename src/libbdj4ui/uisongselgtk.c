@@ -49,7 +49,7 @@ enum {
 typedef struct {
   UICallback          callbacks [SONGSEL_CALLBACK_MAX];
   GtkWidget           *parentwin;
-  GtkWidget           *vbox;
+  UIWidget            vbox;
   GtkWidget           *songselTree;
   GtkTreeSelection    *sel;
   GtkWidget           *songselScrollbar;
@@ -96,7 +96,7 @@ uisongselUIInit (uisongsel_t *uisongsel)
   uisongselgtk_t  *uiw;
 
   uiw = malloc (sizeof (uisongselgtk_t));
-  uiw->vbox = NULL;
+  uiutilsUIWidgetInit (&uiw->vbox);
   uiw->songselTree = NULL;
   uiw->sel = NULL;
   uiw->songselScrollbar = NULL;
@@ -127,7 +127,7 @@ uisongselUIFree (uisongsel_t *uisongsel)
   }
 }
 
-GtkWidget *
+UIWidget *
 uisongselBuildUI (uisongsel_t *uisongsel, GtkWidget *parentwin)
 {
   uisongselgtk_t    *uiw;
@@ -145,13 +145,13 @@ uisongselBuildUI (uisongsel_t *uisongsel, GtkWidget *parentwin)
   uiw = uisongsel->uiWidgetData;
   uisongsel->window = parentwin;
 
-  uiw->vbox = uiCreateVertBoxWW ();
-  uiWidgetExpandHorizW (uiw->vbox);
-  uiWidgetExpandVertW (uiw->vbox);
+  uiCreateVertBox (&uiw->vbox);
+  uiWidgetExpandHoriz (&uiw->vbox);
+  uiWidgetExpandVert (&uiw->vbox);
 
   hbox = uiCreateHorizBoxWW ();
   uiWidgetExpandHorizW (hbox);
-  uiBoxPackStartWW (uiw->vbox, hbox);
+  uiBoxPackStartUW (&uiw->vbox, hbox);
 
   if (uisongsel->dispselType == DISP_SEL_SONGSEL ||
       uisongsel->dispselType == DISP_SEL_EZSONGSEL) {
@@ -208,8 +208,8 @@ uisongselBuildUI (uisongsel_t *uisongsel, GtkWidget *parentwin)
   uiBoxPackEndWW (hbox, uiwidget.widget);
 
   hbox = uiCreateHorizBoxWW ();
-  uiWidgetExpandVertW (uiw->vbox);
-  uiBoxPackStartExpandWW (uiw->vbox, hbox);
+//  uiWidgetExpandVertW (uiw->vbox);
+  uiBoxPackStartExpandUW (&uiw->vbox, hbox);
 
   vbox = uiCreateVertBoxWW ();
   uiBoxPackStartExpandWW (hbox, vbox);
@@ -287,7 +287,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, GtkWidget *parentwin)
       G_CALLBACK (uisongselProcessTreeSize), uisongsel);
 
   logProcEnd (LOG_PROC, "uisongselBuildUI", "");
-  return uiw->vbox;
+  return &uiw->vbox;
 }
 
 void

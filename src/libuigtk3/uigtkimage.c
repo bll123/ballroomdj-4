@@ -31,6 +31,19 @@ uiImageFromFile (UIWidget *uiwidget, const char *fn)
 }
 
 void
+uiImageScaledFromFile (UIWidget *uiwidget, const char *fn, int scale)
+{
+  GdkPixbuf *pixbuf;
+  GtkWidget *image;
+  GError    *gerr = NULL;
+
+  pixbuf = gdk_pixbuf_new_from_file_at_scale (fn, scale, -1, TRUE, &gerr);
+  image = gtk_image_new ();
+  gtk_image_set_from_pixbuf (GTK_IMAGE (image), pixbuf);
+  uiwidget->widget = image;
+}
+
+void
 uiImageClear (UIWidget *uiwidget)
 {
   if (uiwidget == NULL) {

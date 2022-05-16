@@ -919,7 +919,7 @@ confuiBuildUI (configui_t *confui)
   menubar = uiCreateMenubar ();
   uiBoxPackStartWW (hbox, menubar);
 
-  confui->notebook = uiCreateNotebook ();
+  confui->notebook = uiCreateNotebookW ();
   assert (confui->notebook != NULL);
   gtk_notebook_set_tab_pos (GTK_NOTEBOOK (confui->notebook), GTK_POS_LEFT);
   uiBoxPackStartExpandWW (confui->vbox, confui->notebook);
@@ -2128,7 +2128,7 @@ confuiMakeNotebookTab (configui_t *confui, GtkWidget *nb, char *txt, int id)
   uiWidgetExpandHorizW (vbox);
   uiWidgetExpandVertW (vbox);
   uiWidgetSetAllMarginsW (vbox, uiBaseMarginSz * 2);
-  uiNotebookAppendPage (nb, vbox, tablabel);
+  uiNotebookAppendPageW (nb, vbox, tablabel);
   uiutilsNotebookIDAdd (confui->nbtabid, id);
 
   logProcEnd (LOG_PROC, "confuiMakeNotebookTab", "");

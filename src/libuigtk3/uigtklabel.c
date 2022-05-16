@@ -41,6 +41,16 @@ uiLabelSetColor (UIWidget *uiwidget, const char *color)
 }
 
 void
+uiLabelDarkenColor (UIWidget *uiwidget, const char *color)
+{
+  char  tbuff [200];
+
+  snprintf (tbuff, sizeof (tbuff),
+      "label { color: shade(%s,0.6); }", color);
+  uiSetCss (uiwidget->widget, tbuff);
+}
+
+void
 uiLabelSetFont (UIWidget *uiwidget, const char *font)
 {
   PangoFontDescription  *font_desc;

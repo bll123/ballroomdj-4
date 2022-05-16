@@ -399,9 +399,7 @@ starterBuildUI (startui_t  *starter)
   UIWidget            vbox;
   UIWidget            bvbox;
   UIWidget            hbox;
-  GdkPixbuf           *image;
   UIWidget            sg;
-  GError              *gerr = NULL;
   char                imgbuff [MAXPATHLEN];
   char                tbuff [MAXPATHLEN];
   int                 x, y;
@@ -469,13 +467,10 @@ starterBuildUI (startui_t  *starter)
 
   pathbldMakePath (tbuff, sizeof (tbuff),
      "bdj4_icon", ".svg", PATHBLD_MP_IMGDIR);
-  image = gdk_pixbuf_new_from_file_at_scale (tbuff, 128, -1, TRUE, &gerr);
-  assert (image != NULL);
-  widget = gtk_image_new_from_pixbuf (image);
-  assert (widget != NULL);
-  uiWidgetExpandHorizW (widget);
-  uiWidgetSetAllMarginsW (widget, uiBaseMarginSz * 10);
-  uiBoxPackStartUW (&hbox, widget);
+  uiImageScaledFromFile (&uiwidget, tbuff, 128);
+  uiWidgetExpandHoriz (&uiwidget);
+  uiWidgetSetAllMargins (&uiwidget, uiBaseMarginSz * 10);
+  uiBoxPackStart (&hbox, &uiwidget);
 
   uiutilsUICallbackInit (&starter->callbacks [START_CALLBACK_PLAYER],
       starterStartPlayerui, starter);

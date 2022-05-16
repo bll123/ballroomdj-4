@@ -33,7 +33,8 @@ void uiMenuClear (uimenu_t *menu);
 void  uiCreateLabel (UIWidget *uiwidget, const char *label);
 void  uiCreateColonLabel (UIWidget *uiwidget, const char *label);
 void  uiLabelSetColor (UIWidget *uilabel, const char *color);
-void  uiLabelSetFont (UIWidget *uilabel, const char *color);
+void  uiLabelDarkenColor (UIWidget *uilabel, const char *color);
+void  uiLabelSetFont (UIWidget *uilabel, const char *font);
 void  uiLabelSetText (UIWidget *uilabel, const char *text);
 void  uiLabelEllipsizeOn (UIWidget *uiwidget);
 void  uiLabelSetMaxWidth (UIWidget *uiwidget, int width);
@@ -133,10 +134,15 @@ void  uiTextBoxVertExpand (uitextbox_t *tb);
 void  uiTextBoxSetHeight (uitextbox_t *tb, int h);
 
 /* uigtknotebook.c */
-GtkWidget * uiCreateNotebook (void);
-void  uiNotebookAppendPage (GtkWidget *notebook, GtkWidget *widget, GtkWidget *label);
-void  uiNotebookSetActionWidget (GtkWidget *notebook, GtkWidget *widget, GtkPackType pack);
-void  uiNotebookSetPage (GtkWidget *notebook, int pagenum);
+void  uiCreateNotebook (UIWidget *uiwidget);
+void  uiNotebookAppendPage (UIWidget *uinotebook, UIWidget *uiwidget, UIWidget *uilabel);
+void  uiNotebookSetActionWidget (UIWidget *uinotebook, UIWidget *uiwidget);
+void  uiNotebookSetPage (UIWidget *uinotebook, int pagenum);
+/* these routines will be removed at a later date */
+GtkWidget * uiCreateNotebookW (void);
+void  uiNotebookAppendPageW (GtkWidget *notebook, GtkWidget *widget, GtkWidget *label);
+void  uiNotebookSetActionWidgetW (GtkWidget *notebook, GtkWidget *widget, GtkPackType pack);
+void  uiNotebookSetPageW (GtkWidget *notebook, int pagenum);
 
 /* uigtkbox.c */
 void uiCreateVertBox (UIWidget *uiwidget);
@@ -308,6 +314,7 @@ void uiToggleButtonSetState (UIWidget *uiwidget, int state);
 /* uigtkimage.c */
 void uiImageNew (UIWidget *uiwidget);
 void uiImageFromFile (UIWidget *uiwidget, const char *fn);
+void uiImageScaledFromFile (UIWidget *uiwidget, const char *fn, int scale);
 void uiImageClear (UIWidget *uiwidget);
 void uiImageGetPixbuf (UIWidget *uiwidget);
 void uiImageSetFromPixbuf (UIWidget *uiwidget, UIWidget *uipixbuf);

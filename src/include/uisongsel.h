@@ -38,14 +38,14 @@ typedef struct {
   GtkWidget         *filterDialog;
   GtkWidget         *statusPlayable;
   songfilterpb_t    dfltpbflag;
-  uidropdown_t sortbysel;
-  uidropdown_t filterdancesel;
-  uidropdown_t filtergenresel;
-  uientry_t    searchentry;
-  uispinbox_t  filterratingsel;
-  uispinbox_t  filterlevelsel;
-  uispinbox_t  filterstatussel;
-  uispinbox_t  filterfavoritesel;
+  uidropdown_t      sortbysel;
+  uidropdown_t      filterdancesel;
+  uidropdown_t      filtergenresel;
+  uientry_t         searchentry;
+  uispinbox_t       filterratingsel;
+  uispinbox_t       filterlevelsel;
+  uispinbox_t       filterstatussel;
+  uispinbox_t       filterfavoritesel;
   time_t            filterApplied;
   /* song selection tab */
   uidropdown_t dancesel;
@@ -88,7 +88,7 @@ void uisongselFilterDanceSignal (GtkTreeView *tv, GtkTreePath *path,
 /* uisongselgtk.c */
 void      uisongselUIInit (uisongsel_t *uisongsel);
 void      uisongselUIFree (uisongsel_t *uisongsel);
-GtkWidget * uisongselBuildUI (uisongsel_t *uisongsel, GtkWidget *parentwin);
+UIWidget  * uisongselBuildUI (uisongsel_t *uisongsel, GtkWidget *parentwin);
 void      uisongselClearData (uisongsel_t *uisongsel);
 void      uisongselPopulateData (uisongsel_t *uisongsel);
 void      uisongselSetFavoriteForeground (uisongsel_t *uisongsel, char *color);
