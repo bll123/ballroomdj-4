@@ -194,7 +194,7 @@ uiWindowWinStateHandler (GtkWidget *window, GdkEventWindowState *event, gpointer
   if (uicb == NULL) {
     return UICB_CONT;
   }
-  if (uicb->winstatecb == NULL) {
+  if (uicb->intintcb == NULL) {
     return UICB_CONT;
   }
 
@@ -219,7 +219,7 @@ uiWindowWinStateHandler (GtkWidget *window, GdkEventWindowState *event, gpointer
     return UICB_CONT;
   }
 
-  rc = uicb->winstatecb (uicb->udata, isicon, ismax);
+  rc = uicb->intintcb (uicb->udata, isicon, ismax);
   return rc;
 }
 

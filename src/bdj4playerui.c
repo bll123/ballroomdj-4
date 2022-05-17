@@ -57,14 +57,17 @@ typedef struct {
   int             marqueeFontSizeFS;
   mstime_t        marqueeFontSizeCheck;
   int             stopwaitcount;
-  uiutilsnbtabid_t *nbtabid;
   mstime_t        clockCheck;
   songfilter_t    *songfilter;
-  /* gtk stuff */
-  GtkWidget       *window;
+  /* notebook */
+  UIWidget        notebook;
+  UICallback      nbcb;
+  uiutilsnbtabid_t *nbtabid;
+  int             currpage;
+  UIWidget        window;
+  UICallback      closecb;
   UIWidget        vbox;
   UIWidget        clock;
-  UIWidget        notebook;
   UIWidget        musicqImage [MUSICQ_MAX];
   UIWidget        setPlaybackButton;
   UICallback      setpbqcb;
@@ -107,11 +110,10 @@ static int      pluiMainLoop  (void *tplui);
 static void     pluiClock (playerui_t *plui);
 static int      pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
                     bdjmsgmsg_t msg, char *args, void *udata);
-static gboolean pluiCloseWin (GtkWidget *window, GdkEvent *event, gpointer userdata);
+static bool     pluiCloseWin (void *udata);
 static void     pluiSigHandler (int sig);
 /* queue selection handlers */
-static void     pluiSwitchPage (GtkNotebook *nb, GtkWidget *page, guint pagenum, gpointer udata);
-static void     pluiSetSwitchPage (playerui_t *plui, int pagenum);
+static bool     pluiSwitchPage (void *udata, int pagenum);
 static bool     pluiProcessSetPlaybackQueue (void *udata);
 static void     pluiSetPlaybackQueue (playerui_t *plui, musicqidx_t newqueue);
 /* option handlers */
@@ -142,6 +144,7 @@ main (int argc, char *argv[])
   char            tbuff [MAXPATHLEN];
 
 
+  uiutilsUIWidgetInit (&plui.window);
   uiutilsUIWidgetInit (&plui.clock);
   uiutilsUIWidgetInit (&plui.notebook);
   plui.marqueeFontSizeDialog = NULL;
@@ -150,7 +153,6 @@ main (int argc, char *argv[])
       pluiConnectingCallback, &plui);
   progstateSetCallback (plui.progstate, STATE_WAIT_HANDSHAKE,
       pluiHandshakeCallback, &plui);
-  plui.window = NULL;
   plui.uiplayer = NULL;
   plui.uimusicq = NULL;
   plui.uisongsel = NULL;
@@ -165,6 +167,7 @@ main (int argc, char *argv[])
   plui.nbtabid = uiutilsNotebookIDInit ();
   plui.songfilter = NULL;
   plui.uibuilt = false;
+  plui.currpage = 0;
 
   osSetStandardSignals (pluiSigHandler);
 
@@ -241,10 +244,10 @@ pluiStoppingCallback (void *udata, programstate_t programState)
   logProcBegin (LOG_PROC, "pluiStoppingCallback");
   connSendMessage (plui->conn, ROUTE_STARTERUI, MSG_STOP_MAIN, NULL);
 
-  uiWindowGetSizeW (plui->window, &x, &y);
+  uiWindowGetSize (&plui->window, &x, &y);
   nlistSetNum (plui->options, PLUI_SIZE_X, x);
   nlistSetNum (plui->options, PLUI_SIZE_Y, y);
-  uiWindowGetPositionW (plui->window, &x, &y);
+  uiWindowGetPosition (&plui->window, &x, &y);
   nlistSetNum (plui->options, PLUI_POSITION_X, x);
   nlistSetNum (plui->options, PLUI_POSITION_Y, y);
 
@@ -271,7 +274,7 @@ pluiClosingCallback (void *udata, programstate_t programState)
 
   logProcBegin (LOG_PROC, "pluiClosingCallback");
 
-  uiCloseWindowW (plui->window);
+  uiCloseWindow (&plui->window);
 
   pathbldMakePath (fn, sizeof (fn),
       "playerui", BDJ4_CONFIG_EXT, PATHBLD_MP_USEIDX);
@@ -333,12 +336,12 @@ pluiBuildUI (playerui_t *plui)
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", ".svg", PATHBLD_MP_IMGDIR);
-  plui->window = uiCreateMainWindowW (
-      bdjoptGetStr (OPT_P_PROFILENAME), imgbuff,
-      pluiCloseWin, plui);
+  uiutilsUICallbackInit (&plui->closecb, pluiCloseWin, plui);
+  uiCreateMainWindow (&plui->window, &plui->closecb,
+      bdjoptGetStr (OPT_P_PROFILENAME), imgbuff);
 
   uiCreateVertBox (&plui->vbox);
-  uiBoxPackInWindowWU (plui->window, &plui->vbox);
+  uiBoxPackInWindow (&plui->window, &plui->vbox);
   uiWidgetSetAllMargins (&plui->vbox, uiBaseMarginSz * 2);
 
   /* menu */
@@ -388,7 +391,9 @@ pluiBuildUI (playerui_t *plui)
 
   uiCreateNotebook (&plui->notebook);
   uiBoxPackStartExpand (&plui->vbox, &plui->notebook);
-  g_signal_connect (plui->notebook.widget, "switch-page", G_CALLBACK (pluiSwitchPage), plui);
+
+  uiutilsUICallbackIntInit (&plui->nbcb, pluiSwitchPage, plui);
+  uiNotebookSetCallback (&plui->notebook, &plui->nbcb);
 
   uiutilsUICallbackInit (&plui->setpbqcb,
       pluiProcessSetPlaybackQueue, plui);
@@ -402,7 +407,7 @@ pluiBuildUI (playerui_t *plui)
   for (musicqidx_t i = 0; i < MUSICQ_MAX; ++i) {
     /* music queue tab */
 
-    uiwidgetp = uimusicqBuildUI (plui->uimusicq, plui->window, i);
+    uiwidgetp = uimusicqBuildUI (plui->uimusicq, plui->window.widget, i);
     uiCreateHorizBox (&hbox);
     str = bdjoptGetStr (OPT_P_QUEUE_NAME_A + i);
     uiCreateLabel (&uiwidget, str);
@@ -418,7 +423,7 @@ pluiBuildUI (playerui_t *plui)
   }
 
   /* request tab */
-  uiwidgetp = uisongselBuildUI (plui->uisongsel, plui->window);
+  uiwidgetp = uisongselBuildUI (plui->uisongsel, plui->window.widget);
   /* CONTEXT: name of request tab : lists the songs in the database */
   uiCreateLabel (&uiwidget, _("Request"));
   uiNotebookAppendPage (&plui->notebook, uiwidgetp, &uiwidget);
@@ -426,13 +431,13 @@ pluiBuildUI (playerui_t *plui)
 
   x = nlistGetNum (plui->options, PLUI_SIZE_X);
   y = nlistGetNum (plui->options, PLUI_SIZE_Y);
-  uiWindowSetDefaultSizeW (plui->window, x, y);
+  uiWindowSetDefaultSize (&plui->window, x, y);
 
-  uiWidgetShowAllW (plui->window);
+  uiWidgetShowAll (&plui->window);
 
   x = nlistGetNum (plui->options, PLUI_POSITION_X);
   y = nlistGetNum (plui->options, PLUI_POSITION_Y);
-  uiWindowMoveW (plui->window, x, y);
+  uiWindowMove (&plui->window, x, y);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", ".png", PATHBLD_MP_IMGDIR);
@@ -657,21 +662,21 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 }
 
 
-static gboolean
-pluiCloseWin (GtkWidget *window, GdkEvent *event, gpointer userdata)
+static bool
+pluiCloseWin (void *udata)
 {
-  playerui_t   *plui = userdata;
+  playerui_t   *plui = udata;
 
   logProcBegin (LOG_PROC, "pluiCloseWin");
   if (progstateCurrState (plui->progstate) <= STATE_RUNNING) {
     progstateShutdownProcess (plui->progstate);
     logMsg (LOG_DBG, LOG_MSGS, "got: close win request");
     logProcEnd (LOG_PROC, "pluiCloseWin", "not-done");
-    return TRUE;
+    return UICB_STOP;
   }
 
   logProcEnd (LOG_PROC, "pluiCloseWin", "");
-  return FALSE;
+  return UICB_STOP;
 }
 
 static void
@@ -680,25 +685,17 @@ pluiSigHandler (int sig)
   gKillReceived = 1;
 }
 
-static void
-pluiSwitchPage (GtkNotebook *nb, GtkWidget *page, guint pagenum, gpointer udata)
+static bool
+pluiSwitchPage (void *udata, int pagenum)
 {
   playerui_t  *plui = udata;
-
-  logProcBegin (LOG_PROC, "pluiSwitchPage");
-  pluiSetSwitchPage (plui, pagenum);
-  logProcEnd (LOG_PROC, "pluiSwitchPage", "");
-}
-
-static void
-pluiSetSwitchPage (playerui_t *plui, int pagenum)
-{
   int         tabid;
 
-  logProcBegin (LOG_PROC, "pluiSetSwitchPage");
+  logProcBegin (LOG_PROC, "pluiSwitchPage");
 
   tabid = uiutilsNotebookIDGet (plui->nbtabid, pagenum);
 
+  plui->currpage = pagenum;
   uiWidgetHide (&plui->setPlaybackButton);
   if (tabid == UI_TAB_MUSICQ) {
     plui->musicqManageIdx = pagenum;
@@ -707,8 +704,8 @@ pluiSetSwitchPage (playerui_t *plui, int pagenum)
       uiWidgetShow (&plui->setPlaybackButton);
     }
   }
-  logProcEnd (LOG_PROC, "pluiSetSwitchPage", "");
-  return;
+  logProcEnd (LOG_PROC, "pluiSwitchPage", "");
+  return UICB_CONT;
 }
 
 static bool
@@ -723,21 +720,21 @@ pluiProcessSetPlaybackQueue (void *udata)
 }
 
 static void
-pluiSetPlaybackQueue (playerui_t  *plui, musicqidx_t newQueue)
+pluiSetPlaybackQueue (playerui_t *plui, musicqidx_t newQueue)
 {
   char            tbuff [40];
 
   logProcBegin (LOG_PROC, "pluiSetPlaybackQueue");
-  if (nlistGetNum (plui->options, PLUI_SHOW_EXTRA_QUEUES)) {
-    plui->musicqPlayIdx = newQueue;
-    for (musicqidx_t i = 0; i < MUSICQ_MAX; ++i) {
-      if (plui->musicqPlayIdx == i) {
-        uiImageSetFromPixbuf (&plui->musicqImage [i], &plui->ledonPixbuf);
-      } else {
-        uiImageSetFromPixbuf (&plui->musicqImage [i], &plui->ledoffPixbuf);
-      }
+
+  plui->musicqPlayIdx = newQueue;
+  for (musicqidx_t i = 0; i < MUSICQ_MAX; ++i) {
+    if (plui->musicqPlayIdx == i) {
+      uiImageSetFromPixbuf (&plui->musicqImage [i], &plui->ledonPixbuf);
+    } else {
+      uiImageSetFromPixbuf (&plui->musicqImage [i], &plui->ledoffPixbuf);
     }
   }
+
   /* if showextraqueues is off, reject any attempt to switch playback. */
   /* let main know what queue is being used */
   uimusicqSetPlayIdx (plui->uimusicq, plui->musicqPlayIdx);
@@ -783,17 +780,21 @@ pluiToggleExtraQueues (GtkWidget *mi, gpointer udata)
   val = nlistGetNum (plui->options, PLUI_SHOW_EXTRA_QUEUES);
   val = ! val;
   nlistSetNum (plui->options, PLUI_SHOW_EXTRA_QUEUES, val);
+  /* calls the switch page handler, the managed music queue will be set */
   pluiSetExtraQueues (plui);
-  pluiSetPlaybackQueue (plui, plui->musicqPlayIdx);
+  if (! val) {
+    pluiSetPlaybackQueue (plui, MUSICQ_A);
+  }
   logProcEnd (LOG_PROC, "pluiToggleExtraQueues", "");
 }
 
 static void
 pluiSetExtraQueues (playerui_t *plui)
 {
-  GtkWidget       *page;
-  int             pagenum;
   int             tabid;
+  int             pagenum;
+  bool            show;
+  bool            resetcurr = false;
 
   logProcBegin (LOG_PROC, "pluiSetExtraQueues");
   if (! plui->uibuilt) {
@@ -801,21 +802,23 @@ pluiSetExtraQueues (playerui_t *plui)
     return;
   }
 
-  // ### to loop through all pages and set the ones that are musicq types
-  // ### excepting the first.
-  page = gtk_notebook_get_nth_page (GTK_NOTEBOOK (plui->notebook.widget), MUSICQ_B);
-  gtk_widget_set_visible (page,
-      nlistGetNum (plui->options, PLUI_SHOW_EXTRA_QUEUES));
-
-  pagenum = gtk_notebook_get_current_page (GTK_NOTEBOOK (plui->notebook.widget));
-  page = gtk_notebook_get_nth_page (GTK_NOTEBOOK (plui->notebook.widget), pagenum);
-  tabid = uiutilsNotebookIDGet (plui->nbtabid, pagenum);
-  if (tabid == UI_TAB_MUSICQ &&
-      nlistGetNum (plui->options, PLUI_SHOW_EXTRA_QUEUES)) {
-    uiWidgetShow (&plui->setPlaybackButton);
-  } else {
-    uiWidgetHide (&plui->setPlaybackButton);
+  show = nlistGetNum (plui->options, PLUI_SHOW_EXTRA_QUEUES);
+  uiutilsNotebookIDStartIterator (plui->nbtabid, &pagenum);
+  while ((tabid = uiutilsNotebookIDIterate (plui->nbtabid, &pagenum)) >= 0) {
+    if (tabid == UI_TAB_MUSICQ && pagenum > 0) {
+      if (! show && plui->currpage == pagenum) {
+        resetcurr = true;
+      }
+      uiNotebookHideShowPage (&plui->notebook, pagenum, show);
+    }
   }
+  if (resetcurr) {
+    /* the tab currently displayed is being hidden */
+    plui->currpage = 0;
+  }
+  /* make sure the set playback button is in the proper state */
+  /* this will trigger the switch-page event and call pluiSwitchPage() */
+  uiNotebookSetPage (&plui->notebook, plui->currpage);
   logProcEnd (LOG_PROC, "pluiSetExtraQueues", "");
 }
 
@@ -888,7 +891,7 @@ pluiCreateMarqueeFontSizeDialog (playerui_t *plui)
   plui->marqueeFontSizeDialog = gtk_dialog_new_with_buttons (
       /* CONTEXT: marquee font size dialog: window title */
       _("Marquee Font Size"),
-      GTK_WINDOW (plui->window),
+      GTK_WINDOW (plui->window.widget),
       GTK_DIALOG_DESTROY_WITH_PARENT,
       /* CONTEXT: marquee font size dialog: action button */
       _("Close"),

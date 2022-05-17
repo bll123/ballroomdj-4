@@ -222,7 +222,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiWidgetSetMarginStart (&uiplayer->speedScale, uiBaseMarginSz);
   uiBoxPackEnd (&hbox, &uiplayer->speedScale);
   uiSizeGroupAdd (&sgC, &uiplayer->speedScale);
-  uiutilsUIScaleCallbackInit (&uiplayer->speedcb,
+  uiutilsUICallbackDoubleInit (&uiplayer->speedcb,
       uiplayerSpeedCallback, uiplayer);
   uiScaleSetCallback (&uiplayer->speedScale, &uiplayer->speedcb);
 
@@ -277,7 +277,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiWidgetSetMarginStart (&uiplayer->seekScale, uiBaseMarginSz);
   uiBoxPackEnd (&hbox, &uiplayer->seekScale);
   uiSizeGroupAdd (&sgC, &uiplayer->seekScale);
-  uiutilsUIScaleCallbackInit (&uiplayer->seekcb,
+  uiutilsUICallbackDoubleInit (&uiplayer->seekcb,
       uiplayerSeekCallback, uiplayer);
   uiScaleSetCallback (&uiplayer->seekScale, &uiplayer->seekcb);
 
@@ -377,7 +377,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiWidgetSetMarginStart (&uiplayer->volumeScale, uiBaseMarginSz);
   uiBoxPackEnd (&hbox, &uiplayer->volumeScale);
   uiSizeGroupAdd (&sgC, &uiplayer->volumeScale);
-  uiutilsUIScaleCallbackInit (&uiplayer->volumecb,
+  uiutilsUICallbackDoubleInit (&uiplayer->volumecb,
       uiplayerVolumeCallback, uiplayer);
   uiScaleSetCallback (&uiplayer->volumeScale, &uiplayer->volumecb);
 

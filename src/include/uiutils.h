@@ -12,14 +12,16 @@
 #include "tmutil.h"
 
 typedef bool (*UICallbackFunc)(void *udata);
-typedef bool (*UIScaleCallbackFunc)(void *udata, double value);
-typedef bool (*UIWinStateCallbackFunc)(void *udata, int isIconified, int isMaximized);
+typedef bool (*UIDoubleCallbackFunc)(void *udata, double value);
+typedef bool (*UIIntIntCallbackFunc)(void *udata, int a, int b);
+typedef bool (*UIIntCallbackFunc)(void *udata, int value);
 
 typedef struct {
   union {
-    UICallbackFunc          cb;
-    UIScaleCallbackFunc     scalecb;
-    UIWinStateCallbackFunc  winstatecb;
+    UICallbackFunc        cb;
+    UIDoubleCallbackFunc  doublecb;
+    UIIntIntCallbackFunc  intintcb;
+    UIIntCallbackFunc     intcb;
   };
   void            *udata;
 } UICallback;
@@ -142,10 +144,13 @@ void  uiutilsCreateDanceList (uidropdown_t *dancesel, char *selectLabel);
 uiutilsnbtabid_t * uiutilsNotebookIDInit (void);
 void uiutilsNotebookIDFree (uiutilsnbtabid_t *nbtabid);
 void uiutilsNotebookIDAdd (uiutilsnbtabid_t *nbtabid, int id);
-int uiutilsNotebookIDGet (uiutilsnbtabid_t *nbtabid, int idx);
+int  uiutilsNotebookIDGet (uiutilsnbtabid_t *nbtabid, int idx);
+void uiutilsNotebookIDStartIterator (uiutilsnbtabid_t *nbtabid, int *iteridx);
+int  uiutilsNotebookIDIterate (uiutilsnbtabid_t *nbtabid, int *iteridx);
 void uiutilsUIWidgetCopy (UIWidget *target, UIWidget *source);
 void uiutilsUICallbackInit (UICallback *uicb, UICallbackFunc cb, void *udata);
-void uiutilsUIScaleCallbackInit (UICallback *uicb, UIScaleCallbackFunc cb, void *udata);
-void uiutilsUIWinStateCallbackInit (UICallback *uicb, UIWinStateCallbackFunc cb, void *udata);
+void uiutilsUICallbackDoubleInit (UICallback *uicb, UIDoubleCallbackFunc cb, void *udata);
+void uiutilsUICallbackIntIntInit (UICallback *uicb, UIIntIntCallbackFunc cb, void *udata);
+void uiutilsUICallbackIntInit (UICallback *uicb, UIIntCallbackFunc cb, void *udata);
 
 #endif /* INC_UIUTILS_H */

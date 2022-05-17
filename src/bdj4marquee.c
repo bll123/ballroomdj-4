@@ -315,13 +315,13 @@ marqueeBuildUI (marquee_t *marquee)
       marqueeToggleFullscreen, marquee);
   uiWindowSetDoubleClickCallback (&uiwidget, &marquee->dclickcb);
 
-  uiutilsUIWinStateCallbackInit (&marquee->winstatecb,
+  uiutilsUICallbackIntIntInit (&marquee->winstatecb,
       marqueeWinState, marquee);
   uiWindowSetWinStateCallback (&uiwidget, &marquee->winstatecb);
 
   uiutilsUICallbackInit (&marquee->winmapcb,
       marqueeWinMapped, marquee);
-  uiWindowSetWinStateCallback (&uiwidget, &marquee->winmapcb);
+  uiWindowSetMappedCallback (&uiwidget, &marquee->winmapcb);
 
   uiWindowNoDim (&uiwidget);
 

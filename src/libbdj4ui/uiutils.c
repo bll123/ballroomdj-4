@@ -74,6 +74,24 @@ uiutilsNotebookIDGet (uiutilsnbtabid_t *nbtabid, int idx)
   return nbtabid->tabids [idx];
 }
 
+void
+uiutilsNotebookIDStartIterator (uiutilsnbtabid_t *nbtabid, int *iteridx)
+{
+  *iteridx = -1;
+}
+
+int
+uiutilsNotebookIDIterate (uiutilsnbtabid_t *nbtabid, int *iteridx)
+{
+  ++(*iteridx);
+  if (*iteridx >= nbtabid->tabcount) {
+    return -1;
+  }
+  return nbtabid->tabids [*iteridx];
+}
+
+
+
 inline void
 uiutilsUIWidgetCopy (UIWidget *target, UIWidget *source)
 {
@@ -98,24 +116,35 @@ uiutilsUICallbackInit (UICallback *uicb, UICallbackFunc cb, void *udata)
 }
 
 void
-uiutilsUIScaleCallbackInit (UICallback *uicb, UIScaleCallbackFunc cb, void *udata)
+uiutilsUICallbackDoubleInit (UICallback *uicb, UIDoubleCallbackFunc cb, void *udata)
 {
   if (uicb == NULL) {
     return;
   }
 
-  uicb->scalecb = cb;
+  uicb->doublecb = cb;
   uicb->udata = udata;
 }
 
 void
-uiutilsUIWinStateCallbackInit (UICallback *uicb, UIWinStateCallbackFunc cb, void *udata)
+uiutilsUICallbackIntIntInit (UICallback *uicb, UIIntIntCallbackFunc cb, void *udata)
 {
   if (uicb == NULL) {
     return;
   }
 
-  uicb->winstatecb = cb;
+  uicb->intintcb = cb;
+  uicb->udata = udata;
+}
+
+void
+uiutilsUICallbackIntInit (UICallback *uicb, UIIntCallbackFunc cb, void *udata)
+{
+  if (uicb == NULL) {
+    return;
+  }
+
+  uicb->intcb = cb;
   uicb->udata = udata;
 }
 

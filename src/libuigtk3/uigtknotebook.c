@@ -14,6 +14,10 @@
 #include "ui.h"
 #include "uiutils.h"
 
+static void
+uiNotebookSwitchPageHandler (GtkNotebook *nb, GtkWidget *page,
+    guint pagenum, gpointer udata);
+
 void
 uiCreateNotebook (UIWidget *uiwidget)
 {
@@ -49,7 +53,44 @@ uiNotebookSetActionWidget (UIWidget *uinotebook, UIWidget *uiwidget)
 void
 uiNotebookSetPage (UIWidget *uinotebook, int pagenum)
 {
+fprintf (stderr, "set current: %d\n", pagenum);
   gtk_notebook_set_current_page (GTK_NOTEBOOK (uinotebook->widget), pagenum);
+}
+
+void
+uiNotebookHideShowPage (UIWidget *uinotebook, int pagenum, bool show)
+{
+  GtkWidget       *page;
+
+fprintf (stderr, "hide/show: %d (%d)\n", pagenum, show);
+  page = gtk_notebook_get_nth_page (
+      GTK_NOTEBOOK (uinotebook->widget), pagenum);
+  gtk_widget_set_visible (page, show);
+}
+
+void
+uiNotebookSetCallback (UIWidget *uinotebook, UICallback *uicb)
+{
+  g_signal_connect (uinotebook->widget, "switch-page",
+      G_CALLBACK (uiNotebookSwitchPageHandler), uicb);
+}
+
+/* internal routines */
+
+static void
+uiNotebookSwitchPageHandler (GtkNotebook *nb, GtkWidget *page,
+    guint pagenum, gpointer udata)
+{
+  UICallback  *uicb = udata;
+
+  if (uicb == NULL) {
+    return;
+  }
+  if (uicb->intcb == NULL) {
+    return;
+  }
+
+  uicb->intcb (uicb->udata, pagenum);
 }
 
 /* these routines will be removed at a later date */
@@ -89,3 +130,4 @@ uiNotebookSetPageW (GtkWidget *notebook, int pagenum)
 {
   gtk_notebook_set_current_page (GTK_NOTEBOOK (notebook), pagenum);
 }
+

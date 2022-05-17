@@ -89,10 +89,10 @@ uiScaleChangeValueHandler (GtkRange *range, GtkScrollType *scroll, gdouble value
   if (uicb == NULL) {
     return rc;
   }
-  if (uicb->scalecb == NULL) {
+  if (uicb->doublecb == NULL) {
     return rc;
   }
 
-  rc = uicb->scalecb (uicb->udata, value);
+  rc = uicb->doublecb (uicb->udata, value);
   return rc;
 }
