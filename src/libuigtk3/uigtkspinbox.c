@@ -151,6 +151,7 @@ GtkWidget *
 uiSpinboxTimeCreate (uispinbox_t *spinbox, void *udata)
 {
   spinbox->spinbox = gtk_spin_button_new (NULL, 0.0, 0);
+  gtk_entry_set_alignment (GTK_ENTRY (spinbox->spinbox), 1.0);
   gtk_spin_button_set_increments (GTK_SPIN_BUTTON (spinbox->spinbox), 5000.0, 60000.0);
   gtk_spin_button_set_range (GTK_SPIN_BUTTON (spinbox->spinbox), 0.0, 600000.0);
   gtk_spin_button_set_wrap (GTK_SPIN_BUTTON (spinbox->spinbox), FALSE);
@@ -186,6 +187,8 @@ uiSpinboxIntCreate (void)
   GtkWidget   *spinbox;
 
   spinbox = gtk_spin_button_new (NULL, 0.0, 0);
+  gtk_spin_button_set_numeric (GTK_SPIN_BUTTON (spinbox), TRUE);
+  gtk_entry_set_alignment (GTK_ENTRY (spinbox), 1.0);
   gtk_spin_button_set_increments (GTK_SPIN_BUTTON (spinbox), 1.0, 5.0);
   gtk_spin_button_set_wrap (GTK_SPIN_BUTTON (spinbox), FALSE);
   gtk_widget_set_margin_top (spinbox, uiBaseMarginSz);
@@ -199,6 +202,8 @@ uiSpinboxDoubleCreate (void)
   GtkWidget   *spinbox;
 
   spinbox = gtk_spin_button_new (NULL, 0.0, 1);
+  gtk_spin_button_set_numeric (GTK_SPIN_BUTTON (spinbox), TRUE);
+  gtk_entry_set_alignment (GTK_ENTRY (spinbox), 1.0);
   gtk_spin_button_set_increments (GTK_SPIN_BUTTON (spinbox), 0.1, 5.0);
   gtk_spin_button_set_wrap (GTK_SPIN_BUTTON (spinbox), FALSE);
   gtk_widget_set_margin_top (spinbox, uiBaseMarginSz);
@@ -250,6 +255,12 @@ uiSpinboxIsChanged (uispinbox_t *spinbox)
     return false;
   }
   return spinbox->changed;
+}
+
+void
+uiSpinboxAlignRight (uispinbox_t *spinbox)
+{
+  gtk_entry_set_alignment (GTK_ENTRY (spinbox->spinbox), 1.0);
 }
 
 /* internal routines */

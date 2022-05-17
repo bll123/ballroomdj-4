@@ -354,8 +354,10 @@ uiCreateScrolledWindowW (int minheight)
       "{ background-image: none; outline-width: 0; }");
   gtk_scrolled_window_set_overlay_scrolling (GTK_SCROLLED_WINDOW (widget), FALSE);
   gtk_scrolled_window_set_kinetic_scrolling (GTK_SCROLLED_WINDOW (widget), FALSE);
-//  gtk_scrolled_window_set_propagate_natural_width (GTK_SCROLLED_WINDOW (widget), TRUE);
-//  gtk_scrolled_window_set_propagate_natural_height (GTK_SCROLLED_WINDOW (widget), TRUE);
+  /* propagate natural width works well */
+  gtk_scrolled_window_set_propagate_natural_width (GTK_SCROLLED_WINDOW (widget), TRUE);
+  /* propagate natural height does not work, but set it anyways */
+  gtk_scrolled_window_set_propagate_natural_height (GTK_SCROLLED_WINDOW (widget), TRUE);
   /* setting the min content height limits the scrolled window to that height */
   /* https://stackoverflow.com/questions/65449889/gtk-scrolledwindow-max-content-width-height-does-not-work-with-textview */
   gtk_scrolled_window_set_min_content_height (GTK_SCROLLED_WINDOW (widget), minheight);

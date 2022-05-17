@@ -85,7 +85,6 @@ typedef struct {
   nlist_t       *keylist;
   gulong        closeHandlerId;
   char          *strSelection;
-  int           maxwidth;
   bool          open : 1;
   bool          iscombobox : 1;
 } uidropdown_t;

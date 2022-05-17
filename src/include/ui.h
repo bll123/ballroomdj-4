@@ -81,6 +81,7 @@ void uiSpinboxTextSet (uispinbox_t *spinbox, int min, int count,
 int   uiSpinboxTextGetIdx (uispinbox_t *spinbox);
 int   uiSpinboxTextGetValue (uispinbox_t *spinbox);
 void  uiSpinboxTextSetValue (uispinbox_t *spinbox, int ivalue);
+void  uiSpinboxAlignRight (uispinbox_t *spinbox);
 
 GtkWidget * uiSpinboxIntCreate (void);
 GtkWidget * uiSpinboxDoubleCreate (void);

@@ -124,13 +124,13 @@ typedef struct manage {
   uiutilsnbtabid_t  *mainnbtabid;
   uiutilsnbtabid_t  *slnbtabid;
   uiutilsnbtabid_t  *mmnbtabid;
+  UIWidget        window;
+  UICallback      closecb;
   /* file selection dialog */
   GtkWidget         *selfiledialog;
   GtkWidget         *selfiletree;
   manageselfilecb_t selfilecb;
-  /* gtk stuff */
   GtkWidget       *menubar;
-  GtkWidget       *window;
   GtkWidget       *mainnotebook;
   GtkWidget       *slnotebook;
   GtkWidget       *mmnotebook;
@@ -194,7 +194,7 @@ static void     manageBuildUISequence (manageui_t *manage);
 static int      manageMainLoop  (void *tmanage);
 static int      manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
                     bdjmsgmsg_t msg, char *args, void *udata);
-static gboolean manageCloseWin (GtkWidget *window, GdkEvent *event, gpointer userdata);
+static bool     manageCloseWin (void *udata);
 static void     manageSigHandler (int sig);
 /* update database */
 static void     manageDbChg (GtkSpinButton *sb, gpointer udata);
@@ -261,7 +261,7 @@ main (int argc, char *argv[])
       manageConnectingCallback, &manage);
   progstateSetCallback (manage.progstate, STATE_WAIT_HANDSHAKE,
       manageHandshakeCallback, &manage);
-  manage.window = NULL;
+  uiutilsUIWidgetInit (&manage.window);
   manage.slplayer = NULL;
   manage.slmusicq = NULL;
   manage.slsongsel = NULL;
@@ -443,10 +443,10 @@ manageStoppingCallback (void *udata, programstate_t programState)
   manageSonglistSave (manage);
   manageSequenceSave (manage);
 
-  uiWindowGetSizeW (manage->window, &x, &y);
+  uiWindowGetSize (&manage->window, &x, &y);
   nlistSetNum (manage->options, PLUI_SIZE_X, x);
   nlistSetNum (manage->options, PLUI_SIZE_Y, y);
-  uiWindowGetPositionW (manage->window, &x, &y);
+  uiWindowGetPosition (&manage->window, &x, &y);
   nlistSetNum (manage->options, PLUI_POSITION_X, x);
   nlistSetNum (manage->options, PLUI_POSITION_Y, y);
 
@@ -474,7 +474,7 @@ manageClosingCallback (void *udata, programstate_t programState)
 
   logProcBegin (LOG_PROC, "manageClosingCallback");
 
-  uiCloseWindowW (manage->window);
+  uiCloseWindow (&manage->window);
 
   procutilStopAllProcess (manage->processes, manage->conn, true);
   procutilFreeAll (manage->processes);
@@ -560,12 +560,13 @@ manageBuildUI (manageui_t *manage)
       "bdj4_icon", ".svg", PATHBLD_MP_IMGDIR);
   /* CONTEXT: management user interface window title */
   snprintf (tbuff, sizeof (tbuff), _("%s Management"), BDJ4_NAME);
-  manage->window = uiCreateMainWindowW (tbuff, imgbuff,
-      manageCloseWin, manage);
+
+  uiutilsUICallbackInit (&manage->closecb, manageCloseWin, manage);
+  uiCreateMainWindow (&manage->window, &manage->closecb, tbuff, imgbuff);
 
   uiCreateVertBox (&uivbox);
   uiWidgetSetAllMargins (&uivbox, 4);
-  uiBoxPackInWindowWU (manage->window, &uivbox);
+  uiBoxPackInWindow (&manage->window, &uivbox);
 
   uiCreateHorizBox (&hbox);
   uiWidgetSetMarginTop (&hbox, uiBaseMarginSz * 4);
@@ -608,16 +609,16 @@ manageBuildUI (manageui_t *manage)
 
   x = nlistGetNum (manage->options, PLUI_SIZE_X);
   y = nlistGetNum (manage->options, PLUI_SIZE_Y);
-  uiWindowSetDefaultSizeW (manage->window, x, y);
+  uiWindowSetDefaultSize (&manage->window, x, y);
 
   g_signal_connect (manage->mainnotebook, "switch-page",
       G_CALLBACK (manageSwitchPage), manage);
 
-  uiWidgetShowAllW (manage->window);
+  uiWidgetShowAll (&manage->window);
 
   x = nlistGetNum (manage->options, PLUI_POSITION_X);
   y = nlistGetNum (manage->options, PLUI_POSITION_Y);
-  uiWindowMoveW (manage->window, x, y);
+  uiWindowMove (&manage->window, x, y);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", ".png", PATHBLD_MP_IMGDIR);
@@ -668,7 +669,7 @@ manageBuildUISongListEditor (manageui_t *manage)
   uiCreateHorizBox (&hbox);
   uiBoxPackStartExpandWU (widget, &hbox);
 
-  uiwidgetp = uimusicqBuildUI (manage->slezmusicq, manage->window, MUSICQ_A);
+  uiwidgetp = uimusicqBuildUI (manage->slezmusicq, manage->window.widget, MUSICQ_A);
   uiBoxPackStartExpand (&hbox, uiwidgetp);
 
   vbox = uiCreateVertBoxWW ();
@@ -685,11 +686,11 @@ manageBuildUISongListEditor (manageui_t *manage)
       _("Select"), "button_left", NULL, NULL);
   uiBoxPackStartWW (vbox, widget);
 
-  uiwidgetp = uisongselBuildUI (manage->slezsongsel, manage->window);
+  uiwidgetp = uisongselBuildUI (manage->slezsongsel, manage->window.widget);
   uiBoxPackStartExpand (&hbox, uiwidgetp);
 
   /* song list editor: music queue tab */
-  uiwidgetp = uimusicqBuildUI (manage->slmusicq, manage->window, MUSICQ_A);
+  uiwidgetp = uimusicqBuildUI (manage->slmusicq, manage->window.widget, MUSICQ_A);
   /* CONTEXT: name of easy song list notebook tab */
   tabLabel = uiCreateLabelW (_("Song List"));
   uiNotebookAppendPageW (notebook, uiwidgetp->widget, tabLabel);
@@ -697,7 +698,7 @@ manageBuildUISongListEditor (manageui_t *manage)
   manage->slmusicqtabwidget = uiwidgetp->widget;
 
   /* song list editor: song selection tab*/
-  uiwidgetp = uisongselBuildUI (manage->slsongsel, manage->window);
+  uiwidgetp = uisongselBuildUI (manage->slsongsel, manage->window.widget);
   /* CONTEXT: name of song selection notebook tab */
   tabLabel = uiCreateLabelW (_("Song Selection"));
   uiNotebookAppendPageW (notebook, uiwidgetp->widget, tabLabel);
@@ -705,7 +706,7 @@ manageBuildUISongListEditor (manageui_t *manage)
   manage->slsongseltabwidget = uiwidgetp->widget;
 
   /* song list editor song editor tab */
-  widget = uisongeditBuildUI (manage->slsongedit, manage->window);
+  widget = uisongeditBuildUI (manage->slsongedit, manage->window.widget);
   /* CONTEXT: name of song editor notebook tab */
   tabLabel = uiCreateLabelW (_("Song Editor"));
   uiNotebookAppendPageW (notebook, widget, tabLabel);
@@ -740,7 +741,7 @@ manageBuildUIMusicManager (manageui_t *manage)
   manage->mmnotebook = notebook;
 
   /* music manager: song selection tab*/
-  uiwidgetp = uisongselBuildUI (manage->mmsongsel, manage->window);
+  uiwidgetp = uisongselBuildUI (manage->mmsongsel, manage->window.widget);
   uiWidgetExpandHoriz (uiwidgetp);
   /* CONTEXT: name of song selection notebook tab */
   tabLabel = uiCreateLabelW (_("Music Manager"));
@@ -748,7 +749,7 @@ manageBuildUIMusicManager (manageui_t *manage)
   uiutilsNotebookIDAdd (manage->mmnbtabid, MANAGE_TAB_OTHER);
 
   /* music manager: song editor tab */
-  widget = uisongeditBuildUI (manage->mmsongedit, manage->window);
+  widget = uisongeditBuildUI (manage->mmsongedit, manage->window.widget);
   /* CONTEXT: name of song editor notebook tab */
   tabLabel = uiCreateLabelW (_("Song Editor"));
   uiNotebookAppendPageW (notebook, widget, tabLabel);
@@ -777,7 +778,7 @@ manageBuildUIUpdateDatabase (manageui_t *manage)
   uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_OTHER);
 
   /* help display */
-  tb = uiTextBoxCreate (60);
+  tb = uiTextBoxCreate (80);
   uiTextBoxSetReadonly (tb);
   uiTextBoxSetHeight (tb, 70);
   uiBoxPackStartWU (vbox, uiTextBoxGetScrolledWindow (tb));
@@ -1064,21 +1065,21 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 }
 
 
-static gboolean
-manageCloseWin (GtkWidget *window, GdkEvent *event, gpointer userdata)
+static bool
+manageCloseWin (void *udata)
 {
-  manageui_t   *manage = userdata;
+  manageui_t   *manage = udata;
 
   logProcBegin (LOG_PROC, "manageCloseWin");
   if (progstateCurrState (manage->progstate) <= STATE_RUNNING) {
     progstateShutdownProcess (manage->progstate);
     logMsg (LOG_DBG, LOG_MSGS, "got: close win request");
     logProcEnd (LOG_PROC, "manageCloseWin", "not-done");
-    return TRUE;
+    return UICB_STOP;
   }
 
   logProcEnd (LOG_PROC, "manageCloseWin", "");
-  return FALSE;
+  return UICB_STOP;
 }
 
 static void
@@ -1612,8 +1613,9 @@ manageCreateSelectFileDialog (manageui_t *manage,
 {
   GtkWidget     *dialog;
   GtkWidget     *content;
-  GtkWidget     *vbox;
+  UIWidget      vbox;
   UIWidget      hbox;
+  UIWidget      uiwidget;
   GtkWidget     *scwin;
   GtkWidget     *widget;
   char          tbuff [200];
@@ -1633,7 +1635,7 @@ manageCreateSelectFileDialog (manageui_t *manage,
   snprintf (tbuff, sizeof (tbuff), _("Select %s"), filetype);
   dialog = gtk_dialog_new_with_buttons (
       tbuff,
-      GTK_WINDOW (manage->window),
+      GTK_WINDOW (manage->window.widget),
       GTK_DIALOG_DESTROY_WITH_PARENT,
       /* CONTEXT: file select dialog: closes the dialog */
       _("Close"),
@@ -1648,17 +1650,21 @@ manageCreateSelectFileDialog (manageui_t *manage,
   content = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
   uiWidgetSetAllMarginsW (content, uiBaseMarginSz * 2);
 
-  vbox = uiCreateVertBoxWW ();
-  uiBoxPackInWindowWW (content, vbox);
+  uiCreateVertBox (&vbox);
+  uiWidgetExpandVert (&vbox);
+  uiBoxPackInWindowWU (content, &vbox);
 
-  scwin = uiCreateScrolledWindowW (250);
+  scwin = uiCreateScrolledWindowW (200);
+  uiWidgetExpandHorizW (scwin);
   uiWidgetExpandVertW (scwin);
-  uiBoxPackStartExpandWW (vbox, scwin);
+  uiBoxPackStartExpandUW (&vbox, scwin);
 
   widget = uiCreateTreeView ();
   gtk_tree_view_set_activate_on_single_click (GTK_TREE_VIEW (widget), FALSE);
   uiWidgetAlignHorizFillW (widget);
-  uiWidgetExpandHorizW (widget);
+  uiWidgetAlignVertFillW (widget);
+//  uiWidgetExpandHorizW (widget);
+//  uiWidgetExpandVertW (widget);
   manage->selfiletree = widget;
 
   store = gtk_list_store_new (MNG_SELFILE_COL_MAX,
@@ -1670,7 +1676,7 @@ manageCreateSelectFileDialog (manageui_t *manage,
     gtk_list_store_append (store, &iter);
     gtk_list_store_set (store, &iter,
         MNG_SELFILE_COL_DISP, disp,
-        MNG_SELFILE_COL_SB_PAD, "    ",
+        MNG_SELFILE_COL_SB_PAD, "  ",
         -1);
   }
 
@@ -1699,10 +1705,10 @@ manageCreateSelectFileDialog (manageui_t *manage,
 
   /* the dialog doesn't have any space above the buttons */
   uiCreateHorizBox (&hbox);
-  uiBoxPackStartWU (vbox, &hbox);
+  uiBoxPackStart (&vbox, &hbox);
 
-  widget = uiCreateLabelW (" ");
-  uiBoxPackStartUW (&hbox, widget);
+  uiCreateLabel (&uiwidget, " ");
+  uiBoxPackStart (&hbox, &uiwidget);
 
   g_signal_connect (dialog, "response",
       G_CALLBACK (manageSelectFileResponseHandler), manage);

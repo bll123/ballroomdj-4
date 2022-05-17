@@ -53,7 +53,6 @@ uiNotebookSetActionWidget (UIWidget *uinotebook, UIWidget *uiwidget)
 void
 uiNotebookSetPage (UIWidget *uinotebook, int pagenum)
 {
-fprintf (stderr, "set current: %d\n", pagenum);
   gtk_notebook_set_current_page (GTK_NOTEBOOK (uinotebook->widget), pagenum);
 }
 
@@ -62,7 +61,6 @@ uiNotebookHideShowPage (UIWidget *uinotebook, int pagenum, bool show)
 {
   GtkWidget       *page;
 
-fprintf (stderr, "hide/show: %d (%d)\n", pagenum, show);
   page = gtk_notebook_get_nth_page (
       GTK_NOTEBOOK (uinotebook->widget), pagenum);
   gtk_widget_set_visible (page, show);

@@ -114,7 +114,6 @@ uiDropDownSelectionGet (uidropdown_t *dropdown, GtkTreePath *path)
       char  *p;
 
       gtk_tree_model_get (model, &iter, UIUTILS_DROPDOWN_COL_DISP, &p, -1);
-      snprintf (tbuff, sizeof (tbuff), "%-*s", dropdown->maxwidth, p);
       gtk_button_set_label (GTK_BUTTON (dropdown->button), p);
       free (p);
     }
@@ -149,21 +148,17 @@ uiDropDownSetList (uidropdown_t *dropdown, slist_t *list,
   dropdown->strIndexMap = slistAlloc ("uiutils-str-index", LIST_ORDERED, NULL);
   internalidx = 0;
 
-  dropdown->maxwidth = slistGetMaxKeyWidth (list);
-
   if (! dropdown->iscombobox) {
     gtk_button_set_label (GTK_BUTTON (dropdown->button), dropdown->title);
   }
 
   if (dropdown->iscombobox && selectLabel != NULL) {
-    snprintf (tbuff, sizeof (tbuff), "%-*s",
-        dropdown->maxwidth, selectLabel);
     gtk_list_store_append (store, &iter);
     gtk_list_store_set (store, &iter,
         UIUTILS_DROPDOWN_COL_IDX, (gulong) -1,
         UIUTILS_DROPDOWN_COL_STR, "",
-        UIUTILS_DROPDOWN_COL_DISP, tbuff,
-        UIUTILS_DROPDOWN_COL_SB_PAD, "      ",
+        UIUTILS_DROPDOWN_COL_DISP, selectLabel,
+        UIUTILS_DROPDOWN_COL_SB_PAD, "  ",
         -1);
     slistSetNum (dropdown->strIndexMap, "", internalidx++);
   }
@@ -175,13 +170,11 @@ uiDropDownSetList (uidropdown_t *dropdown, slist_t *list,
     slistSetNum (dropdown->strIndexMap, strval, internalidx);
 
     gtk_list_store_append (store, &iter);
-    snprintf (tbuff, sizeof (tbuff), "%-*s",
-        dropdown->maxwidth, dispval);
     gtk_list_store_set (store, &iter,
         UIUTILS_DROPDOWN_COL_IDX, (gulong) internalidx,
         UIUTILS_DROPDOWN_COL_STR, strval,
-        UIUTILS_DROPDOWN_COL_DISP, tbuff,
-        UIUTILS_DROPDOWN_COL_SB_PAD, "      ",
+        UIUTILS_DROPDOWN_COL_DISP, dispval,
+        UIUTILS_DROPDOWN_COL_SB_PAD, "  ",
         -1);
     ++internalidx;
   }
@@ -224,21 +217,17 @@ uiDropDownSetNumList (uidropdown_t *dropdown, slist_t *list,
   dropdown->keylist = nlistAlloc ("uiutils-keylist", LIST_ORDERED, NULL);
   internalidx = 0;
 
-  dropdown->maxwidth = slistGetMaxKeyWidth (list);
-
   if (! dropdown->iscombobox) {
     gtk_button_set_label (GTK_BUTTON (dropdown->button), dropdown->title);
   }
 
   if (dropdown->iscombobox && selectLabel != NULL) {
-    snprintf (tbuff, sizeof (tbuff), "%-*s",
-        dropdown->maxwidth, selectLabel);
     gtk_list_store_append (store, &iter);
     gtk_list_store_set (store, &iter,
         UIUTILS_DROPDOWN_COL_IDX, (gulong) -1,
         UIUTILS_DROPDOWN_COL_STR, "",
-        UIUTILS_DROPDOWN_COL_DISP, tbuff,
-        UIUTILS_DROPDOWN_COL_SB_PAD, "    ",
+        UIUTILS_DROPDOWN_COL_DISP, selectLabel,
+        UIUTILS_DROPDOWN_COL_SB_PAD, "  ",
         -1);
     nlistSetNum (dropdown->keylist, -1, internalidx);
     ++internalidx;
@@ -257,7 +246,7 @@ uiDropDownSetNumList (uidropdown_t *dropdown, slist_t *list,
         UIUTILS_DROPDOWN_COL_IDX, (gulong) idx,
         UIUTILS_DROPDOWN_COL_STR, "",
         UIUTILS_DROPDOWN_COL_DISP, tbuff,
-        UIUTILS_DROPDOWN_COL_SB_PAD, "    ",
+        UIUTILS_DROPDOWN_COL_SB_PAD, "  ",
         -1);
     ++internalidx;
   }
@@ -463,8 +452,7 @@ uiDropDownSelectionSet (uidropdown_t *dropdown, nlistidx_t internalidx)
       gtk_tree_model_get_iter (model, &iter, path);
       gtk_tree_model_get (model, &iter, UIUTILS_DROPDOWN_COL_DISP, &p, -1);
       if (p != NULL) {
-        snprintf (tbuff, sizeof (tbuff), "%-*s", dropdown->maxwidth, p);
-        gtk_button_set_label (GTK_BUTTON (dropdown->button), tbuff);
+        gtk_button_set_label (GTK_BUTTON (dropdown->button), p);
       }
     }
   }
