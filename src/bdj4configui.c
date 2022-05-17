@@ -432,7 +432,7 @@ static gboolean confuiRemctrlChg (GtkSwitch *sw, gboolean value, gpointer udata)
 static void     confuiRemctrlPortChg (GtkSpinButton *sb, gpointer udata);
 static char     * confuiMakeQRCodeFile (configui_t *confui, char *title, char *uri);
 static void     confuiUpdateOrgExamples (configui_t *confui, char *pathfmt);
-static void     confuiUpdateOrgExample (configui_t *config, org_t *org, char *data, GtkWidget *widget);
+static void     confuiUpdateOrgExample (configui_t *config, org_t *org, char *data, UIWidget *uiwidgetp);
 static char     * confuiGetLocalIP (configui_t *confui);
 static void     confuiSetStatusMsg (configui_t *confui, const char *msg);
 static int      confuiLocateWidgetIdx (configui_t *confui, void *wpointer);
@@ -2493,7 +2493,7 @@ confuiMakeItemLabelDisp (configui_t *confui, UIWidget *boxp, UIWidget *sg,
   uiWidgetSetMarginStart (&uiwidget, uiBaseMarginSz * 4);
   uiBoxPackStart (&hbox, &uiwidget);
   uiBoxPackStart (boxp, &hbox);
-  confui->uiitem [widx].widget = uiwidget.widget;
+  uiutilsUIWidgetCopy (&confui->uiitem [widx].uiwidget, &uiwidget);
   confui->uiitem [widx].bdjoptIdx = bdjoptIdx;
   logProcEnd (LOG_PROC, "confuiMakeItemLabelDisp", "");
 }
@@ -3244,7 +3244,7 @@ confuiUpdateOrgExamples (configui_t *confui, char *pathfmt)
 {
   char      *data;
   org_t     *org;
-  GtkWidget *widget;
+  UIWidget  *uiwidgetp;
 
   if (pathfmt == NULL) {
     return;
@@ -3255,27 +3255,27 @@ confuiUpdateOrgExamples (configui_t *confui, char *pathfmt)
   assert (org != NULL);
 
   data = "FILE\n..none\nDISC\n..1\nTRACKNUMBER\n..1\nALBUM\n..Smooth\nALBUMARTIST\n..Santana\nARTIST\n..Santana\nDANCE\n..Cha Cha\nGENRE\n..Ballroom Dance\nTITLE\n..Smooth\n";
-  widget = confui->uiitem [CONFUI_WIDGET_AO_EXAMPLE_1].widget;
-  confuiUpdateOrgExample (confui, org, data, widget);
+  uiwidgetp = &confui->uiitem [CONFUI_WIDGET_AO_EXAMPLE_1].uiwidget;
+  confuiUpdateOrgExample (confui, org, data, uiwidgetp);
 
   data = "FILE\n..none\nDISC\n..1\nTRACKNUMBER\n..2\nALBUM\n..The Ultimate Latin Album 4: Latin Eyes\nALBUMARTIST\n..WRD\nARTIST\n..Gizelle D'Cole\nDANCE\n..Rumba\nGENRE\n..Ballroom Dance\nTITLE\n..Asi\n";
-  widget = confui->uiitem [CONFUI_WIDGET_AO_EXAMPLE_2].widget;
-  confuiUpdateOrgExample (confui, org, data, widget);
+  uiwidgetp = &confui->uiitem [CONFUI_WIDGET_AO_EXAMPLE_2].uiwidget;
+  confuiUpdateOrgExample (confui, org, data, uiwidgetp);
 
   data = "FILE\n..none\nDISC\n..1\nTRACKNUMBER\n..3\nALBUM\n..Shaman\nALBUMARTIST\n..Santana\nARTIST\n..Santana\nDANCE\n..Waltz\nTITLE\n..The Game of Love\nGENRE\n..Latin";
-  widget = confui->uiitem [CONFUI_WIDGET_AO_EXAMPLE_3].widget;
-  confuiUpdateOrgExample (confui, org, data, widget);
+  uiwidgetp = &confui->uiitem [CONFUI_WIDGET_AO_EXAMPLE_3].uiwidget;
+  confuiUpdateOrgExample (confui, org, data, uiwidgetp);
 
   data = "FILE\n..none\nDISC\n..2\nTRACKNUMBER\n..2\nALBUM\n..The Ultimate Latin Album 9: Footloose\nALBUMARTIST\n..\nARTIST\n..Raphael\nDANCE\n..Rumba\nTITLE\n..Ni tú ni yo\nGENRE\n..Latin";
-  widget = confui->uiitem [CONFUI_WIDGET_AO_EXAMPLE_4].widget;
-  confuiUpdateOrgExample (confui, org, data, widget);
+  uiwidgetp = &confui->uiitem [CONFUI_WIDGET_AO_EXAMPLE_4].uiwidget;
+  confuiUpdateOrgExample (confui, org, data, uiwidgetp);
 
   orgFree (org);
   logProcEnd (LOG_PROC, "confuiUpdateOrgExamples", "");
 }
 
 static void
-confuiUpdateOrgExample (configui_t *config, org_t *org, char *data, GtkWidget *widget)
+confuiUpdateOrgExample (configui_t *config, org_t *org, char *data, UIWidget *uiwidgetp)
 {
   song_t    *song;
   char      *tdata;
@@ -3294,7 +3294,7 @@ confuiUpdateOrgExample (configui_t *config, org_t *org, char *data, GtkWidget *w
   if (isWindows ()) {
     pathWinPath (disp, strlen (disp));
   }
-  uiLabelSetTextW (widget, disp);
+  uiLabelSetText (uiwidgetp, disp);
   songFree (song);
   free (disp);
   free (tdata);

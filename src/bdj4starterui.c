@@ -106,7 +106,6 @@ typedef struct {
   nlist_t         *proflist;
   UICallback      callbacks [START_CALLBACK_MAX];
   startlinkcb_t   macoslinkcb [START_LINK_CB_MAX];
-  /* gtk stuff */
   uispinbox_t     profilesel;
   GtkWidget       *supportDialog;
   UIWidget        supportSendFiles;
