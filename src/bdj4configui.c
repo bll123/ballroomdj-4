@@ -330,7 +330,7 @@ typedef struct {
   nlist_t           *filterLookup;
   /* gtk stuff */
   GtkWidget         *window;
-  GtkWidget         *vbox;
+  UIWidget          vbox;
   GtkWidget         *notebook;
   GtkWidget         *statusMsg;
   confuitable_t     tables [CONFUI_ID_TABLE_MAX];
@@ -391,27 +391,23 @@ static void confuiSelectAnnouncement (GtkButton *b, gpointer udata);
 static void confuiSelectFileDialog (configui_t *confui, int widx, char *startpath, char *mimefiltername, char *mimetype);
 
 /* gui */
-static GtkWidget * confuiMakeNotebookTab (configui_t *confui, GtkWidget *notebook, char *txt, int);
-/* makeitementry returns the hbox */
-static GtkWidget * confuiMakeItemEntry (configui_t *confui, GtkWidget *vbox, UIWidget *sg, char *txt, int widx, int bdjoptIdx, char *disp);
-static void confuiMakeItemEntryChooser (configui_t *confui, GtkWidget *vbox, UIWidget *sg, char *txt, int widx, int bdjoptIdx, char *disp, void *dialogFunc);
-/* makeitemcombobox returns the hbox */
-static GtkWidget * confuiMakeItemCombobox (configui_t *confui, GtkWidget *vbox, UIWidget *sg, char *txt, int widx, int bdjoptIdx, void *ddcb, char *value);
-static void confuiMakeItemLink (configui_t *confui, GtkWidget *vbox, UIWidget *sg, char *txt, int widx, char *disp);
-static void confuiMakeItemFontButton (configui_t *confui, GtkWidget *vbox, UIWidget *sg, char *txt, int widx, int bdjoptIdx, char *fontname);
-static void confuiMakeItemColorButton (configui_t *confui, GtkWidget *vbox, UIWidget *sg, char *txt, int widx, int bdjoptIdx, char *color);
-/* makeitemspinboxtext returns the widget */
-static GtkWidget *confuiMakeItemSpinboxText (configui_t *confui, GtkWidget *vbox, UIWidget *sg, char *txt, int widx, int bdjoptIdx, confuiouttype_t outtype, ssize_t value);
-static void confuiMakeItemSpinboxTime (configui_t *confui, GtkWidget *vbox, UIWidget *sg, char *txt, int widx, int bdjoptIdx, ssize_t value);
-/* makeitemspinboxint returns the widget */
-static GtkWidget *confuiMakeItemSpinboxInt (configui_t *confui, GtkWidget *vbox, UIWidget *sg, const char *txt, int widx, int bdjoptIdx, int min, int max, int value);
-static void confuiMakeItemSpinboxDouble (configui_t *confui, GtkWidget *vbox, UIWidget *sg, char *txt, int widx, int bdjoptIdx, double min, double max, double value);
-/* makeitemswitch returns the widget */
-static GtkWidget *confuiMakeItemSwitch (configui_t *confui, GtkWidget *vbox, UIWidget *sg, char *txt, int widx, int bdjoptIdx, int value);
-static GtkWidget *confuiMakeItemLabelDisp (configui_t *confui, GtkWidget *vbox, UIWidget *sg, char *txt, int widx, int bdjoptIdx);
-static void confuiMakeItemCheckButton (configui_t *confui, GtkWidget *vbox, UIWidget *sg, const char *txt, int widx, int bdjoptIdx, int value);
-static GtkWidget * confuiMakeItemLabel (GtkWidget *vbox, UIWidget *sg, const char *txt);
-static GtkWidget * confuiMakeItemTable (configui_t *confui, GtkWidget *vbox, confuiident_t id, int flags);
+static void confuiMakeNotebookTab (UIWidget *boxp, configui_t *confui, GtkWidget *notebook, char *txt, int);
+static void confuiMakeItemEntry (configui_t *confui, UIWidget *boxp, UIWidget *sg, char *txt, int widx, int bdjoptIdx, char *disp);
+static void confuiMakeItemEntryChooser (configui_t *confui, UIWidget *boxp, UIWidget *sg, char *txt, int widx, int bdjoptIdx, char *disp, void *dialogFunc);
+static void confuiMakeItemEntryBasic (configui_t *confui, UIWidget *boxp, UIWidget *sg, char *txt, int widx, int bdjoptIdx, char *disp);
+static void confuiMakeItemCombobox (configui_t *confui, UIWidget *boxp, UIWidget *sg, char *txt, int widx, int bdjoptIdx, void *ddcb, char *value);
+static void confuiMakeItemLink (configui_t *confui, UIWidget *boxp, UIWidget *sg, char *txt, int widx, char *disp);
+static void confuiMakeItemFontButton (configui_t *confui, UIWidget *boxp, UIWidget *sg, char *txt, int widx, int bdjoptIdx, char *fontname);
+static void confuiMakeItemColorButton (configui_t *confui, UIWidget *boxp, UIWidget *sg, char *txt, int widx, int bdjoptIdx, char *color);
+static void confuiMakeItemSpinboxText (configui_t *confui, UIWidget *boxp, UIWidget *sg, char *txt, int widx, int bdjoptIdx, confuiouttype_t outtype, ssize_t value, void *cb);
+static void confuiMakeItemSpinboxTime (configui_t *confui, UIWidget *boxp, UIWidget *sg, char *txt, int widx, int bdjoptIdx, ssize_t value);
+static void confuiMakeItemSpinboxInt (configui_t *confui, UIWidget *boxp, UIWidget *sg, const char *txt, int widx, int bdjoptIdx, int min, int max, int value, void *cb);
+static void confuiMakeItemSpinboxDouble (configui_t *confui, UIWidget *boxp, UIWidget *sg, char *txt, int widx, int bdjoptIdx, double min, double max, double value);
+static void confuiMakeItemSwitch (configui_t *confui, UIWidget *boxp, UIWidget *sg, char *txt, int widx, int bdjoptIdx, int value, void *cb);
+static void confuiMakeItemLabelDisp (configui_t *confui, UIWidget *boxp, UIWidget *sg, char *txt, int widx, int bdjoptIdx);
+static void confuiMakeItemCheckButton (configui_t *confui, UIWidget *boxp, UIWidget *sg, const char *txt, int widx, int bdjoptIdx, int value);
+static void confuiMakeItemLabel (UIWidget *boxp, UIWidget *sg, const char *txt);
+static void confuiMakeItemTable (configui_t *confui, UIWidget *box, confuiident_t id, int flags);
 
 /* misc */
 static nlist_t  * confuiGetThemeList (void);
@@ -884,7 +880,7 @@ confuiBuildUI (configui_t *confui)
 {
   GtkWidget     *menubar;
   GtkWidget     *widget;
-  GtkWidget     *hbox;
+  UIWidget      hbox;
   char          imgbuff [MAXPATHLEN];
   char          tbuff [MAXPATHLEN];
   gint          x, y;
@@ -898,18 +894,18 @@ confuiBuildUI (configui_t *confui)
   confui->window = uiCreateMainWindowW (tbuff, imgbuff,
       confuiCloseWin, confui);
 
-  confui->vbox = uiCreateVertBoxWW ();
-  uiWidgetExpandHorizW (confui->vbox);
-  uiWidgetExpandVertW (confui->vbox);
-  uiWidgetSetAllMarginsW (confui->vbox, uiBaseMarginSz * 2);
-  uiBoxPackInWindowWW (confui->window, confui->vbox);
+  uiCreateVertBox (&confui->vbox);
+  uiWidgetExpandHoriz (&confui->vbox);
+  uiWidgetExpandVert (&confui->vbox);
+  uiWidgetSetAllMargins (&confui->vbox, uiBaseMarginSz * 2);
+  uiBoxPackInWindowWU (confui->window, &confui->vbox);
 
-  hbox = uiCreateHorizBoxWW ();
-  uiWidgetExpandHorizW (hbox);
-  uiBoxPackStartWW (confui->vbox, hbox);
+  uiCreateHorizBox (&hbox);
+  uiWidgetExpandHoriz (&hbox);
+  uiBoxPackStart (&confui->vbox, &hbox);
 
   widget = uiCreateLabelW ("");
-  uiBoxPackEndWW (hbox, widget);
+  uiBoxPackEndUW (&hbox, widget);
   snprintf (tbuff, sizeof (tbuff),
       "label { color: %s; }",
       bdjoptGetStr (OPT_P_UI_ACCENT_COL));
@@ -917,12 +913,12 @@ confuiBuildUI (configui_t *confui)
   confui->statusMsg = widget;
 
   menubar = uiCreateMenubar ();
-  uiBoxPackStartWW (hbox, menubar);
+  uiBoxPackStartUW (&hbox, menubar);
 
   confui->notebook = uiCreateNotebookW ();
   assert (confui->notebook != NULL);
   gtk_notebook_set_tab_pos (GTK_NOTEBOOK (confui->notebook), GTK_POS_LEFT);
-  uiBoxPackStartExpandWW (confui->vbox, confui->notebook);
+  uiBoxPackStartExpandUW (&confui->vbox, confui->notebook);
 
   confuiBuildUIGeneral (confui);
   confuiBuildUIPlayer (confui);
@@ -963,12 +959,14 @@ confuiBuildUI (configui_t *confui)
 static void
 confuiBuildUIGeneral (configui_t *confui)
 {
-  GtkWidget     *vbox;
+  UIWidget      vbox;
   UIWidget      sg;
   char          tbuff [MAXPATHLEN];
 
+  uiCreateVertBox (&vbox);
+
   /* general options */
-  vbox = confuiMakeNotebookTab (confui, confui->notebook,
+  confuiMakeNotebookTab (&vbox, confui, confui->notebook,
       /* CONTEXT: configuration: general options that apply to everything */
       _("General Options"), CONFUI_ID_NONE);
   uiCreateSizeGroupHoriz (&sg);
@@ -979,53 +977,53 @@ confuiBuildUIGeneral (configui_t *confui)
   }
 
   /* CONTEXT: configuration: the music folder where the user store their music */
-  confuiMakeItemEntryChooser (confui, vbox, &sg, _("Music Folder"),
+  confuiMakeItemEntryChooser (confui, &vbox, &sg, _("Music Folder"),
       CONFUI_ENTRY_MUSIC_DIR, OPT_M_DIR_MUSIC,
       tbuff, confuiSelectMusicDir);
   uiEntrySetValidate (&confui->uiitem [CONFUI_ENTRY_MUSIC_DIR].u.entry,
       uiEntryValidateDir, confui);
 
   /* CONTEXT: configuration: the name of this profile */
-  confuiMakeItemEntry (confui, vbox, &sg, _("Profile Name"),
+  confuiMakeItemEntry (confui, &vbox, &sg, _("Profile Name"),
       CONFUI_ENTRY_PROFILE_NAME, OPT_P_PROFILENAME,
       bdjoptGetStr (OPT_P_PROFILENAME));
 
   /* CONTEXT: configuration: Whether to display BPM as BPM or MPM */
-  confuiMakeItemSpinboxText (confui, vbox, &sg, _("BPM"),
+  confuiMakeItemSpinboxText (confui, &vbox, &sg, _("BPM"),
       CONFUI_SPINBOX_BPM, OPT_G_BPM,
-      CONFUI_OUT_NUM, bdjoptGetNum (OPT_G_BPM));
+      CONFUI_OUT_NUM, bdjoptGetNum (OPT_G_BPM), NULL);
 
   /* database */
   /* CONTEXT: configuration: which audio tags will be written to the audio file */
-  confuiMakeItemSpinboxText (confui, vbox, &sg, _("Write Audio File Tags"),
+  confuiMakeItemSpinboxText (confui, &vbox, &sg, _("Write Audio File Tags"),
       CONFUI_SPINBOX_WRITE_AUDIO_FILE_TAGS, OPT_G_WRITETAGS,
-      CONFUI_OUT_NUM, bdjoptGetNum (OPT_G_WRITETAGS));
-  confuiMakeItemSwitch (confui, vbox, &sg,
+      CONFUI_OUT_NUM, bdjoptGetNum (OPT_G_WRITETAGS), NULL);
+  confuiMakeItemSwitch (confui, &vbox, &sg,
       /* CONTEXT: checkbox: the database will load the dance from the audio file genre tag */
       _("Database Loads Dance From Genre"),
       CONFUI_WIDGET_DB_LOAD_FROM_GENRE, OPT_G_LOADDANCEFROMGENRE,
-      bdjoptGetNum (OPT_G_LOADDANCEFROMGENRE));
-  confuiMakeItemSwitch (confui, vbox, &sg,
+      bdjoptGetNum (OPT_G_LOADDANCEFROMGENRE), NULL);
+  confuiMakeItemSwitch (confui, &vbox, &sg,
       /* CONTEXT: configuration: enable itunes support */
       _("Enable iTunes Support"),
       CONFUI_WIDGET_ENABLE_ITUNES, OPT_G_ITUNESSUPPORT,
-      bdjoptGetNum (OPT_G_ITUNESSUPPORT));
+      bdjoptGetNum (OPT_G_ITUNESSUPPORT), NULL);
 
   /* bdj4 */
   /* CONTEXT: configuration: the locale to use (e.g. English or Nederlands) */
-  confuiMakeItemSpinboxText (confui, vbox, &sg, _("Locale"),
+  confuiMakeItemSpinboxText (confui, &vbox, &sg, _("Locale"),
       CONFUI_SPINBOX_LOCALE, -1,
-      CONFUI_OUT_STR, confui->uiitem [CONFUI_SPINBOX_LOCALE].listidx);
+      CONFUI_OUT_STR, confui->uiitem [CONFUI_SPINBOX_LOCALE].listidx, NULL);
 
   /* CONTEXT: configuration: the startup script to run before starting the player.  Used on Linux. */
-  confuiMakeItemEntryChooser (confui, vbox, &sg, _("Startup Script"),
+  confuiMakeItemEntryChooser (confui, &vbox, &sg, _("Startup Script"),
       CONFUI_ENTRY_STARTUP, OPT_M_STARTUPSCRIPT,
       bdjoptGetStr (OPT_M_STARTUPSCRIPT), confuiSelectStartup);
   uiEntrySetValidate (&confui->uiitem [CONFUI_ENTRY_STARTUP].u.entry,
       uiEntryValidateFile, confui);
 
   /* CONTEXT: configuration: the shutdown script to run before starting the player.  Used on Linux. */
-  confuiMakeItemEntryChooser (confui, vbox, &sg, _("Shutdown Script"),
+  confuiMakeItemEntryChooser (confui, &vbox, &sg, _("Shutdown Script"),
       CONFUI_ENTRY_SHUTDOWN, OPT_M_SHUTDOWNSCRIPT,
       bdjoptGetStr (OPT_M_SHUTDOWNSCRIPT), confuiSelectShutdown);
   uiEntrySetValidate (&confui->uiitem [CONFUI_ENTRY_SHUTDOWN].u.entry,
@@ -1035,68 +1033,70 @@ confuiBuildUIGeneral (configui_t *confui)
 static void
 confuiBuildUIPlayer (configui_t *confui)
 {
-  GtkWidget     *vbox;
+  UIWidget      vbox;
   UIWidget      sg;
 
+  uiCreateVertBox (&vbox);
+
   /* player options */
-  vbox = confuiMakeNotebookTab (confui, confui->notebook,
+  confuiMakeNotebookTab (&vbox, confui, confui->notebook,
       /* CONTEXT: configuration: options associated with the player */
       _("Player Options"), CONFUI_ID_NONE);
   uiCreateSizeGroupHoriz (&sg);
 
   /* CONTEXT: configuration: which player interface to use */
-  confuiMakeItemSpinboxText (confui, vbox, &sg, _("Player"),
+  confuiMakeItemSpinboxText (confui, &vbox, &sg, _("Player"),
       CONFUI_SPINBOX_PLAYER, OPT_M_PLAYER_INTFC,
-      CONFUI_OUT_STR, confui->uiitem [CONFUI_SPINBOX_PLAYER].listidx);
+      CONFUI_OUT_STR, confui->uiitem [CONFUI_SPINBOX_PLAYER].listidx, NULL);
 
   /* CONTEXT: configuration: which audio interface to use */
-  confuiMakeItemSpinboxText (confui, vbox, &sg, _("Audio"),
+  confuiMakeItemSpinboxText (confui, &vbox, &sg, _("Audio"),
       CONFUI_SPINBOX_VOL_INTFC, OPT_M_VOLUME_INTFC,
-      CONFUI_OUT_STR, confui->uiitem [CONFUI_SPINBOX_VOL_INTFC].listidx);
+      CONFUI_OUT_STR, confui->uiitem [CONFUI_SPINBOX_VOL_INTFC].listidx, NULL);
 
   /* CONTEXT: configuration: which audio sink (output) to use */
-  confuiMakeItemSpinboxText (confui, vbox, &sg, _("Audio Output"),
+  confuiMakeItemSpinboxText (confui, &vbox, &sg, _("Audio Output"),
       CONFUI_SPINBOX_AUDIO_OUTPUT, OPT_M_AUDIOSINK,
-      CONFUI_OUT_STR, confui->uiitem [CONFUI_SPINBOX_AUDIO_OUTPUT].listidx);
+      CONFUI_OUT_STR, confui->uiitem [CONFUI_SPINBOX_AUDIO_OUTPUT].listidx, NULL);
 
   /* CONTEXT: configuration: the volume used when starting the player */
-  confuiMakeItemSpinboxInt (confui, vbox, &sg, _("Default Volume"),
+  confuiMakeItemSpinboxInt (confui, &vbox, &sg, _("Default Volume"),
       CONFUI_WIDGET_DEFAULT_VOL, OPT_P_DEFAULTVOLUME,
-      10, 100, bdjoptGetNum (OPT_P_DEFAULTVOLUME));
+      10, 100, bdjoptGetNum (OPT_P_DEFAULTVOLUME), NULL);
 
   /* CONTEXT: configuration: the amount of time to do a volume fade-in when playing a song */
-  confuiMakeItemSpinboxDouble (confui, vbox, &sg, _("Fade In Time"),
+  confuiMakeItemSpinboxDouble (confui, &vbox, &sg, _("Fade In Time"),
       CONFUI_WIDGET_FADE_IN_TIME, OPT_P_FADEINTIME,
       0.0, 2.0, (double) bdjoptGetNum (OPT_P_FADEINTIME) / 1000.0);
   /* CONTEXT: configuration: the amount of time to do a volume fade-out when playing a song */
-  confuiMakeItemSpinboxDouble (confui, vbox, &sg, _("Fade Out Time"),
+  confuiMakeItemSpinboxDouble (confui, &vbox, &sg, _("Fade Out Time"),
       CONFUI_WIDGET_FADE_OUT_TIME, OPT_P_FADEOUTTIME,
       0.0, 10.0, (double) bdjoptGetNum (OPT_P_FADEOUTTIME) / 1000.0);
 
   /* CONTEXT: configuration: the amount of time to wait inbetween songs */
-  confuiMakeItemSpinboxDouble (confui, vbox, &sg, _("Gap Between Songs"),
+  confuiMakeItemSpinboxDouble (confui, &vbox, &sg, _("Gap Between Songs"),
       CONFUI_WIDGET_GAP, OPT_P_GAP,
       0.0, 60.0, (double) bdjoptGetNum (OPT_P_GAP) / 1000.0);
   /* CONTEXT: configuration: the maximum amount of time to play a song */
-  confuiMakeItemSpinboxTime (confui, vbox, &sg, _("Maximum Play Time"),
+  confuiMakeItemSpinboxTime (confui, &vbox, &sg, _("Maximum Play Time"),
       CONFUI_SPINBOX_MAX_PLAY_TIME, OPT_P_MAXPLAYTIME,
       bdjoptGetNum (OPT_P_MAXPLAYTIME));
   /* CONTEXT: configuration: the length of the music queue to display */
-  confuiMakeItemSpinboxInt (confui, vbox, &sg, _("Queue Length"),
+  confuiMakeItemSpinboxInt (confui, &vbox, &sg, _("Queue Length"),
       CONFUI_WIDGET_PL_QUEUE_LEN, OPT_G_PLAYERQLEN,
-      20, 400, bdjoptGetNum (OPT_G_PLAYERQLEN));
+      20, 400, bdjoptGetNum (OPT_G_PLAYERQLEN), NULL);
   /* CONTEXT: configuration: where to insert a requested song into the music queue */
-  confuiMakeItemSpinboxInt (confui, vbox, &sg, _("Request Insert Location"),
+  confuiMakeItemSpinboxInt (confui, &vbox, &sg, _("Request Insert Location"),
       CONFUI_WIDGET_INSERT_LOC, OPT_P_INSERT_LOCATION,
-      1, 10, bdjoptGetNum (OPT_P_INSERT_LOCATION));
+      1, 10, bdjoptGetNum (OPT_P_INSERT_LOCATION), NULL);
 
   /* CONTEXT: configuration: The completion message displayed on the marquee when a playlist is finished */
-  confuiMakeItemEntry (confui, vbox, &sg, _("Completion Message"),
+  confuiMakeItemEntry (confui, &vbox, &sg, _("Completion Message"),
       CONFUI_ENTRY_COMPLETE_MSG, OPT_P_COMPLETE_MSG,
       bdjoptGetStr (OPT_P_COMPLETE_MSG));
   for (musicqidx_t i = 0; i < MUSICQ_MAX; ++i) {
     /* CONTEXT: configuration: The name of the music queue */
-    confuiMakeItemEntry (confui, vbox, &sg, _("Queue A Name"),
+    confuiMakeItemEntry (confui, &vbox, &sg, _("Queue A Name"),
         CONFUI_ENTRY_QUEUE_NM_A + i, OPT_P_QUEUE_NAME_A + i,
         bdjoptGetStr (OPT_P_QUEUE_NAME_A + i));
   }
@@ -1105,70 +1105,74 @@ confuiBuildUIPlayer (configui_t *confui)
 static void
 confuiBuildUIMarquee (configui_t *confui)
 {
-  GtkWidget     *vbox;
+  UIWidget      vbox;
   UIWidget      sg;
 
+  uiCreateVertBox (&vbox);
+
   /* marquee options */
-  vbox = confuiMakeNotebookTab (confui, confui->notebook,
+  confuiMakeNotebookTab (&vbox, confui, confui->notebook,
       /* CONTEXT: configuration: options associated with the marquee */
       _("Marquee Options"), CONFUI_ID_NONE);
   uiCreateSizeGroupHoriz (&sg);
 
   /* CONTEXT: configuration: The theme to use for the marquee display */
-  confuiMakeItemSpinboxText (confui, vbox, &sg, _("Marquee Theme"),
+  confuiMakeItemSpinboxText (confui, &vbox, &sg, _("Marquee Theme"),
       CONFUI_SPINBOX_MQ_THEME, OPT_MP_MQ_THEME,
-      CONFUI_OUT_STR, confui->uiitem [CONFUI_SPINBOX_MQ_THEME].listidx);
+      CONFUI_OUT_STR, confui->uiitem [CONFUI_SPINBOX_MQ_THEME].listidx, NULL);
 
   /* CONTEXT: configuration: The font to use for the marquee display */
-  confuiMakeItemFontButton (confui, vbox, &sg, _("Marquee Font"),
+  confuiMakeItemFontButton (confui, &vbox, &sg, _("Marquee Font"),
       CONFUI_WIDGET_MQ_FONT, OPT_MP_MQFONT,
       bdjoptGetStr (OPT_MP_MQFONT));
 
   /* CONTEXT: configuration: the length of the queue displayed on the marquee */
-  confuiMakeItemSpinboxInt (confui, vbox, &sg, _("Queue Length"),
+  confuiMakeItemSpinboxInt (confui, &vbox, &sg, _("Queue Length"),
       CONFUI_WIDGET_MQ_QUEUE_LEN, OPT_P_MQQLEN,
-      1, 20, bdjoptGetNum (OPT_P_MQQLEN));
+      1, 20, bdjoptGetNum (OPT_P_MQQLEN), NULL);
 
   /* CONTEXT: configuration: marquee: show the song information (artist/title) on the marquee */
-  confuiMakeItemSwitch (confui, vbox, &sg, _("Show Song Information"),
+  confuiMakeItemSwitch (confui, &vbox, &sg, _("Show Song Information"),
       CONFUI_WIDGET_MQ_SHOW_SONG_INFO, OPT_P_MQ_SHOW_INFO,
-      bdjoptGetNum (OPT_P_MQ_SHOW_INFO));
+      bdjoptGetNum (OPT_P_MQ_SHOW_INFO), NULL);
 
   /* CONTEXT: configuration: marquee: the accent color used for the marquee */
-  confuiMakeItemColorButton (confui, vbox, &sg, _("Accent Colour"),
+  confuiMakeItemColorButton (confui, &vbox, &sg, _("Accent Colour"),
       CONFUI_WIDGET_MQ_ACCENT_COLOR, OPT_P_MQ_ACCENT_COL,
       bdjoptGetStr (OPT_P_MQ_ACCENT_COL));
 
   /* CONTEXT: configuration: marquee: minimize the marquee when the player is started */
-  confuiMakeItemSwitch (confui, vbox, &sg, _("Hide Marquee on Start"),
+  confuiMakeItemSwitch (confui, &vbox, &sg, _("Hide Marquee on Start"),
       CONFUI_WIDGET_HIDE_MARQUEE_ON_START, OPT_P_HIDE_MARQUEE_ON_START,
-      bdjoptGetNum (OPT_P_HIDE_MARQUEE_ON_START));
+      bdjoptGetNum (OPT_P_HIDE_MARQUEE_ON_START), NULL);
 }
 
 static void
 confuiBuildUIUserInterface (configui_t *confui)
 {
-  GtkWidget     *vbox;
+  UIWidget      vbox;
   UIWidget      sg;
   char          *tstr;
 
+  uiCreateVertBox (&vbox);
+
   /* user interface */
-  vbox = confuiMakeNotebookTab (confui, confui->notebook,
+  confuiMakeNotebookTab (&vbox, confui, confui->notebook,
       /* CONTEXT: configuration: options associated with the user interface */
       _("User Interface"), CONFUI_ID_NONE);
   uiCreateSizeGroupHoriz (&sg);
 
   /* CONTEXT: configuration: the theme to use for the user interface */
-  confuiMakeItemSpinboxText (confui, vbox, &sg, _("Theme"),
+  confuiMakeItemSpinboxText (confui, &vbox, &sg, _("Theme"),
       CONFUI_SPINBOX_UI_THEME, OPT_MP_UI_THEME,
-      CONFUI_OUT_STR, confui->uiitem [CONFUI_SPINBOX_UI_THEME].listidx);
+      CONFUI_OUT_STR, confui->uiitem [CONFUI_SPINBOX_UI_THEME].listidx, NULL);
 
   tstr = bdjoptGetStr (OPT_MP_UIFONT);
   if (! *tstr) {
     tstr = sysvarsGetStr (SV_FONT_DEFAULT);
   }
   /* CONTEXT: configuration: the font to use for the user interface */
-  confuiMakeItemFontButton (confui, vbox, &sg, _("Font"),
+  confuiMakeItemFontButton (confui, &vbox, &sg, _("Font"),
       CONFUI_WIDGET_UI_FONT, OPT_MP_UIFONT, tstr);
 
   tstr = bdjoptGetStr (OPT_MP_LISTING_FONT);
@@ -1176,11 +1180,11 @@ confuiBuildUIUserInterface (configui_t *confui)
     tstr = sysvarsGetStr (SV_FONT_DEFAULT);
   }
   /* CONTEXT: configuration: the font to use for the queues and song lists */
-  confuiMakeItemFontButton (confui, vbox, &sg, _("Listing Font"),
+  confuiMakeItemFontButton (confui, &vbox, &sg, _("Listing Font"),
       CONFUI_WIDGET_UI_LISTING_FONT, OPT_MP_LISTING_FONT, tstr);
 
   /* CONTEXT: configuration: the accent color to use for the user interface */
-  confuiMakeItemColorButton (confui, vbox, &sg, _("Accent Colour"),
+  confuiMakeItemColorButton (confui, &vbox, &sg, _("Accent Colour"),
       CONFUI_WIDGET_UI_ACCENT_COLOR, OPT_P_UI_ACCENT_COL,
       bdjoptGetStr (OPT_P_UI_ACCENT_COL));
 }
@@ -1188,76 +1192,77 @@ confuiBuildUIUserInterface (configui_t *confui)
 static void
 confuiBuildUIDispSettings (configui_t *confui)
 {
-  GtkWidget     *vbox;
-  GtkWidget     *widget;
+  UIWidget      vbox;
   UIWidget      uiwidget;
   UIWidget      sg;
 
   uiutilsUIWidgetInit (&uiwidget);
   uiutilsUIWidgetInit (&sg);
 
+  uiCreateVertBox (&vbox);
+
   /* display settings */
-  vbox = confuiMakeNotebookTab (confui, confui->notebook,
+  confuiMakeNotebookTab (&vbox, confui, confui->notebook,
       /* CONTEXT: configuration: change which fields are displayed in different contexts */
       _("Display Settings"), CONFUI_ID_DISP_SEL_LIST);
   uiCreateSizeGroupHoriz (&sg);
 
   /* CONTEXT: configuration: display settings: which set of display settings to update */
-  widget = confuiMakeItemSpinboxText (confui, vbox, &sg, _("Display"),
+  confuiMakeItemSpinboxText (confui, &vbox, &sg, _("Display"),
       CONFUI_SPINBOX_DISP_SEL, -1, CONFUI_OUT_NUM,
-      confui->uiitem [CONFUI_SPINBOX_DISP_SEL].listidx);
-  g_signal_connect (widget, "value-changed", G_CALLBACK (confuiDispSettingChg), confui);
+      confui->uiitem [CONFUI_SPINBOX_DISP_SEL].listidx,
+      confuiDispSettingChg);
+//  g_signal_connect (widget, "value-changed", G_CALLBACK (confuiDispSettingChg), confui);
 
   confui->tables [CONFUI_ID_DISP_SEL_LIST].flags = CONFUI_TABLE_NONE;
   confui->tables [CONFUI_ID_DISP_SEL_TABLE].flags = CONFUI_TABLE_NONE;
 
-  /* this will get fixed at a later date */
-  uiwidget.widget = vbox;
-
-  confui->dispselduallist = uiCreateDualList (&uiwidget,
+  confui->dispselduallist = uiCreateDualList (&vbox,
       DUALLIST_FLAGS_NONE, NULL, NULL);
 }
 
 static void
 confuiBuildUIFilterDisplay (configui_t *confui)
 {
-  GtkWidget     *vbox;
+  UIWidget      vbox;
   UIWidget      sg;
   nlistidx_t    val;
 
+  uiCreateVertBox (&vbox);
+
   /* filter display */
-  vbox = confuiMakeNotebookTab (confui, confui->notebook,
+  confuiMakeNotebookTab (&vbox, confui, confui->notebook,
       /* CONTEXT: configuration: song filter display settings */
       _("Filter Display"), CONFUI_ID_FILTER);
   uiCreateSizeGroupHoriz (&sg);
 
   val = nlistGetNum (confui->filterDisplaySel, FILTER_DISP_GENRE);
   /* CONTEXT: configuration: filter display: checkbox: genre */
-  confuiMakeItemCheckButton (confui, vbox, &sg, _("Genre"),
+  confuiMakeItemCheckButton (confui, &vbox, &sg, _("Genre"),
       CONFUI_WIDGET_FILTER_GENRE, -1, val);
   confui->uiitem [CONFUI_WIDGET_FILTER_GENRE].outtype = CONFUI_OUT_CB;
 
   val = nlistGetNum (confui->filterDisplaySel, FILTER_DISP_DANCELEVEL);
   /* CONTEXT: configuration: filter display: checkbox: dance level */
-  confuiMakeItemCheckButton (confui, vbox, &sg, _("Dance Level"),
+  confuiMakeItemCheckButton (confui, &vbox, &sg, _("Dance Level"),
       CONFUI_WIDGET_FILTER_DANCELEVEL, -1, val);
   confui->uiitem [CONFUI_WIDGET_FILTER_DANCELEVEL].outtype = CONFUI_OUT_CB;
 
   val = nlistGetNum (confui->filterDisplaySel, FILTER_DISP_STATUS);
   /* CONTEXT: configuration: filter display: checkbox: status */
-  confuiMakeItemCheckButton (confui, vbox, &sg, _("Status"),
+  confuiMakeItemCheckButton (confui, &vbox, &sg, _("Status"),
       CONFUI_WIDGET_FILTER_STATUS, -1, val);
   confui->uiitem [CONFUI_WIDGET_FILTER_STATUS].outtype = CONFUI_OUT_CB;
 
   val = nlistGetNum (confui->filterDisplaySel, FILTER_DISP_FAVORITE);
   /* CONTEXT: configuration: filter display: checkbox: favorite selection */
-  confuiMakeItemCheckButton (confui, vbox, &sg, _("Favorite"),
+  confuiMakeItemCheckButton (confui, &vbox, &sg, _("Favorite"),
       CONFUI_WIDGET_FILTER_FAVORITE, -1, val);
   confui->uiitem [CONFUI_WIDGET_FILTER_FAVORITE].outtype = CONFUI_OUT_CB;
 
   val = nlistGetNum (confui->filterDisplaySel, FILTER_DISP_STATUSPLAYABLE);
   /* CONTEXT: configuration: filter display: checkbox: status is playable */
-  confuiMakeItemCheckButton (confui, vbox, &sg, _("Playable Status"),
+  confuiMakeItemCheckButton (confui, &vbox, &sg, _("Playable Status"),
       CONFUI_WIDGET_FILTER_STATUS_PLAYABLE, -1, val);
   confui->uiitem [CONFUI_WIDGET_FILTER_STATUS_PLAYABLE].outtype = CONFUI_OUT_CB;
 }
@@ -1265,94 +1270,99 @@ confuiBuildUIFilterDisplay (configui_t *confui)
 static void
 confuiBuildUIOrganization (configui_t *confui)
 {
-  GtkWidget     *vbox;
+  UIWidget      vbox;
   UIWidget      sg;
 
+  uiCreateVertBox (&vbox);
+
   /* organization */
-  vbox = confuiMakeNotebookTab (confui, confui->notebook,
+  confuiMakeNotebookTab (&vbox, confui, confui->notebook,
       /* CONTEXT: configuration: options associated with how audio files are organized */
       _("Organisation"), CONFUI_ID_ORGANIZATION);
   uiCreateSizeGroupHoriz (&sg);
 
   /* CONTEXT: configuration: the audio file organization path */
-  confuiMakeItemCombobox (confui, vbox, &sg, _("Organisation Path"),
+  confuiMakeItemCombobox (confui, &vbox, &sg, _("Organisation Path"),
       CONFUI_COMBOBOX_AO_PATHFMT, OPT_G_AO_PATHFMT,
       confuiOrgPathSelect, bdjoptGetStr (OPT_G_AO_PATHFMT));
   /* CONTEXT: configuration: examples displayed for the audio file organization path */
-  confuiMakeItemLabelDisp (confui, vbox, &sg, _("Examples"),
+  confuiMakeItemLabelDisp (confui, &vbox, &sg, _("Examples"),
       CONFUI_WIDGET_AO_EXAMPLE_1, -1);
-  confuiMakeItemLabelDisp (confui, vbox, &sg, "",
+  confuiMakeItemLabelDisp (confui, &vbox, &sg, "",
       CONFUI_WIDGET_AO_EXAMPLE_2, -1);
-  confuiMakeItemLabelDisp (confui, vbox, &sg, "",
+  confuiMakeItemLabelDisp (confui, &vbox, &sg, "",
       CONFUI_WIDGET_AO_EXAMPLE_3, -1);
-  confuiMakeItemLabelDisp (confui, vbox, &sg, "",
+  confuiMakeItemLabelDisp (confui, &vbox, &sg, "",
       CONFUI_WIDGET_AO_EXAMPLE_4, -1);
 
   /* CONTEXT: configuration: checkbox: is automatic organization enabled */
-  confuiMakeItemSwitch (confui, vbox, &sg, _("Auto Organise"),
+  confuiMakeItemSwitch (confui, &vbox, &sg, _("Auto Organise"),
       CONFUI_WIDGET_AUTO_ORGANIZE, OPT_G_AUTOORGANIZE,
-      bdjoptGetNum (OPT_G_AUTOORGANIZE));
+      bdjoptGetNum (OPT_G_AUTOORGANIZE), NULL);
 }
 
 static void
 confuiBuildUIEditDances (configui_t *confui)
 {
-  GtkWidget     *vbox;
-  GtkWidget     *hbox;
-  GtkWidget     *widget;
-  GtkWidget     *dvbox;
+  UIWidget      vbox;
+  UIWidget      hbox;
+  UIWidget      dvbox;
   UIWidget      sg;
   char          *bpmstr;
   char          tbuff [MAXPATHLEN];
   nlistidx_t    val;
 
+  uiCreateVertBox (&vbox);
+
   /* edit dances */
-  vbox = confuiMakeNotebookTab (confui, confui->notebook,
+  confuiMakeNotebookTab (&vbox, confui, confui->notebook,
       /* CONTEXT: configuration: edit the dance table */
       _("Edit Dances"), CONFUI_ID_DANCE);
   uiCreateSizeGroupHoriz (&sg);
 
-  hbox = uiCreateHorizBoxWW ();
-  uiBoxPackStartExpandWW (vbox, hbox);
+  uiCreateHorizBox (&hbox);
+  uiBoxPackStartExpand (&vbox, &hbox);
 
-  confuiMakeItemTable (confui, hbox, CONFUI_ID_DANCE, CONFUI_TABLE_NO_UP_DOWN);
+  confuiMakeItemTable (confui, &hbox, CONFUI_ID_DANCE, CONFUI_TABLE_NO_UP_DOWN);
   confui->tables [CONFUI_ID_DANCE].savefunc = confuiDanceSave;
   confuiCreateDanceTable (confui);
   g_signal_connect (confui->tables [CONFUI_ID_DANCE].tree, "row-activated",
       G_CALLBACK (confuiDanceSelect), confui);
 
-  dvbox = uiCreateVertBoxWW ();
-  uiWidgetSetMarginStartW (dvbox, uiBaseMarginSz * 8);
-  uiBoxPackStartWW (hbox, dvbox);
+  uiCreateVertBox (&dvbox);
+  uiWidgetSetMarginStart (&dvbox, uiBaseMarginSz * 8);
+  uiBoxPackStart (&hbox, &dvbox);
 
   /* CONTEXT: configuration: dances: the name of the dance */
-  confuiMakeItemEntry (confui, dvbox, &sg, _("Dance"),
+  confuiMakeItemEntry (confui, &dvbox, &sg, _("Dance"),
       CONFUI_ENTRY_DANCE_DANCE, -1, "");
   confui->uiitem [CONFUI_ENTRY_DANCE_DANCE].danceidx = DANCE_DANCE;
   g_signal_connect (confui->uiitem [CONFUI_ENTRY_DANCE_DANCE].u.entry.uientry.widget,
       "changed", G_CALLBACK (confuiDanceEntryChg), confui);
 
   /* CONTEXT: configuration: dances: the type of the dance (club/latin/standard) */
-  widget = confuiMakeItemSpinboxText (confui, dvbox, &sg, _("Type"),
-      CONFUI_SPINBOX_DANCE_TYPE, -1, CONFUI_OUT_NUM, 0);
+  confuiMakeItemSpinboxText (confui, &dvbox, &sg, _("Type"),
+      CONFUI_SPINBOX_DANCE_TYPE, -1, CONFUI_OUT_NUM, 0,
+      confuiDanceSpinboxChg);
+//  g_signal_connect (widget, "value-changed", G_CALLBACK (confuiDanceSpinboxChg), confui);
   confui->uiitem [CONFUI_SPINBOX_DANCE_TYPE].danceidx = DANCE_TYPE;
-  g_signal_connect (widget, "value-changed", G_CALLBACK (confuiDanceSpinboxChg), confui);
 
   /* CONTEXT: configuration: dances: the speed of the dance (fast/normal/slow) */
-  widget = confuiMakeItemSpinboxText (confui, dvbox, &sg, _("Speed"),
-      CONFUI_SPINBOX_DANCE_SPEED, -1, CONFUI_OUT_NUM, 0);
+  confuiMakeItemSpinboxText (confui, &dvbox, &sg, _("Speed"),
+      CONFUI_SPINBOX_DANCE_SPEED, -1, CONFUI_OUT_NUM, 0,
+      confuiDanceSpinboxChg);
+//  g_signal_connect (widget, "value-changed", G_CALLBACK (confuiDanceSpinboxChg), confui);
   confui->uiitem [CONFUI_SPINBOX_DANCE_SPEED].danceidx = DANCE_SPEED;
-  g_signal_connect (widget, "value-changed", G_CALLBACK (confuiDanceSpinboxChg), confui);
 
   /* CONTEXT: configuration: dances: tags associated with the dance */
-  confuiMakeItemEntry (confui, dvbox, &sg, _("Tags"),
+  confuiMakeItemEntry (confui, &dvbox, &sg, _("Tags"),
       CONFUI_ENTRY_DANCE_TAGS, -1, "");
   confui->uiitem [CONFUI_ENTRY_DANCE_TAGS].danceidx = DANCE_TAGS;
   g_signal_connect (confui->uiitem [CONFUI_ENTRY_DANCE_TAGS].u.entry.uientry.widget,
       "changed", G_CALLBACK (confuiDanceEntryChg), confui);
 
   /* CONTEXT: configuration: dances: play the selected announcement before the dance is played */
-  confuiMakeItemEntryChooser (confui, dvbox, &sg, _("Announcement"),
+  confuiMakeItemEntryChooser (confui, &dvbox, &sg, _("Announcement"),
       CONFUI_ENTRY_DANCE_ANNOUNCEMENT, -1, "",
       confuiSelectAnnouncement);
   confui->uiitem [CONFUI_ENTRY_DANCE_ANNOUNCEMENT].danceidx = DANCE_ANNOUNCE;
@@ -1366,51 +1376,56 @@ confuiBuildUIEditDances (configui_t *confui)
   bpmstr = val == BPM_BPM ? _("BPM") : _("MPM");
   /* CONTEXT: configuration: dances: low BPM (or MPM) setting */
   snprintf (tbuff, sizeof (tbuff), _("Low %s"), bpmstr);
-  widget = confuiMakeItemSpinboxInt (confui, dvbox, &sg, tbuff,
-      CONFUI_SPINBOX_DANCE_LOW_BPM, -1, 10, 500, 0);
+  confuiMakeItemSpinboxInt (confui, &dvbox, &sg, tbuff,
+      CONFUI_SPINBOX_DANCE_LOW_BPM, -1, 10, 500, 0,
+      confuiDanceSpinboxChg);
+//  g_signal_connect (widget, "value-changed", G_CALLBACK (confuiDanceSpinboxChg), confui);
   confui->uiitem [CONFUI_SPINBOX_DANCE_LOW_BPM].danceidx = DANCE_LOW_BPM;
-  g_signal_connect (widget, "value-changed", G_CALLBACK (confuiDanceSpinboxChg), confui);
 
   /* CONTEXT: configuration: dances: high BPM (or MPM) setting */
   snprintf (tbuff, sizeof (tbuff), _("High %s"), bpmstr);
-  widget = confuiMakeItemSpinboxInt (confui, dvbox, &sg, tbuff,
-      CONFUI_SPINBOX_DANCE_HIGH_BPM, -1, 10, 500, 0);
+  confuiMakeItemSpinboxInt (confui, &dvbox, &sg, tbuff,
+      CONFUI_SPINBOX_DANCE_HIGH_BPM, -1, 10, 500, 0,
+      confuiDanceSpinboxChg);
+//  g_signal_connect (widget, "value-changed", G_CALLBACK (confuiDanceSpinboxChg), confui);
   confui->uiitem [CONFUI_SPINBOX_DANCE_HIGH_BPM].danceidx = DANCE_HIGH_BPM;
-  g_signal_connect (widget, "value-changed", G_CALLBACK (confuiDanceSpinboxChg), confui);
 
   /* CONTEXT: configuration: dances: time signature for the dance */
-  widget = confuiMakeItemSpinboxText (confui, dvbox, &sg, _("Time Signature"),
-      CONFUI_SPINBOX_DANCE_TIME_SIG, -1, CONFUI_OUT_NUM, 0);
+  confuiMakeItemSpinboxText (confui, &dvbox, &sg, _("Time Signature"),
+      CONFUI_SPINBOX_DANCE_TIME_SIG, -1, CONFUI_OUT_NUM, 0,
+      confuiDanceSpinboxChg);
+//  g_signal_connect (widget, "value-changed", G_CALLBACK (confuiDanceSpinboxChg), confui);
   confui->uiitem [CONFUI_SPINBOX_DANCE_TIME_SIG].danceidx = DANCE_TIMESIG;
-  g_signal_connect (widget, "value-changed", G_CALLBACK (confuiDanceSpinboxChg), confui);
 }
 
 static void
 confuiBuildUIEditRatings (configui_t *confui)
 {
-  GtkWidget     *vbox;
-  GtkWidget     *hbox;
+  UIWidget      vbox;
+  UIWidget      hbox;
   GtkWidget     *widget;
   UIWidget      sg;
 
+  uiCreateVertBox (&vbox);
+
   /* edit ratings */
-  vbox = confuiMakeNotebookTab (confui, confui->notebook,
+  confuiMakeNotebookTab (&vbox, confui, confui->notebook,
       /* CONTEXT: configuration: edit the dance ratings table */
       _("Edit Ratings"), CONFUI_ID_RATINGS);
   uiCreateSizeGroupHoriz (&sg);
 
   /* CONTEXT: configuration: dance ratings: information on how to order the ratings */
   widget = uiCreateLabelW (_("Order from the lowest rating to the highest rating."));
-  uiBoxPackStartWW (vbox, widget);
+  uiBoxPackStartUW (&vbox, widget);
 
   /* CONTEXT: configuration: dance ratings: information on how to edit a rating entry */
   widget = uiCreateLabelW (_("Double click on a field to edit."));
-  uiBoxPackStartWW (vbox, widget);
+  uiBoxPackStartUW (&vbox, widget);
 
-  hbox = uiCreateHorizBoxWW ();
-  uiBoxPackStartExpandWW (vbox, hbox);
+  uiCreateHorizBox (&hbox);
+  uiBoxPackStartExpand (&vbox, &hbox);
 
-  confuiMakeItemTable (confui, hbox, CONFUI_ID_RATINGS, CONFUI_TABLE_KEEP_FIRST);
+  confuiMakeItemTable (confui, &hbox, CONFUI_ID_RATINGS, CONFUI_TABLE_KEEP_FIRST);
   confui->tables [CONFUI_ID_RATINGS].listcreatefunc = confuiRatingListCreate;
   confui->tables [CONFUI_ID_RATINGS].savefunc = confuiRatingSave;
   confuiCreateRatingTable (confui);
@@ -1419,25 +1434,27 @@ confuiBuildUIEditRatings (configui_t *confui)
 static void
 confuiBuildUIEditStatus (configui_t *confui)
 {
-  GtkWidget     *vbox;
-  GtkWidget     *hbox;
+  UIWidget      vbox;
+  UIWidget      hbox;
   GtkWidget     *widget;
   UIWidget      sg;
 
+  uiCreateVertBox (&vbox);
+
   /* edit status */
-  vbox = confuiMakeNotebookTab (confui, confui->notebook,
+  confuiMakeNotebookTab (&vbox, confui, confui->notebook,
       /* CONTEXT: configuration: edit status table */
       _("Edit Status"), CONFUI_ID_STATUS);
   uiCreateSizeGroupHoriz (&sg);
 
   /* CONTEXT: configuration: status: information on how to edit a status entry */
   widget = uiCreateLabelW (_("Double click on a field to edit."));
-  uiBoxPackStartWW (vbox, widget);
+  uiBoxPackStartUW (&vbox, widget);
 
-  hbox = uiCreateHorizBoxWW ();
-  uiBoxPackStartExpandWW (vbox, hbox);
+  uiCreateHorizBox (&hbox);
+  uiBoxPackStartExpand (&vbox, &hbox);
 
-  confuiMakeItemTable (confui, hbox, CONFUI_ID_STATUS,
+  confuiMakeItemTable (confui, &hbox, CONFUI_ID_STATUS,
       CONFUI_TABLE_KEEP_FIRST | CONFUI_TABLE_KEEP_LAST);
   confui->tables [CONFUI_ID_STATUS].togglecol = CONFUI_STATUS_COL_PLAY_FLAG;
   confui->tables [CONFUI_ID_STATUS].listcreatefunc = confuiStatusListCreate;
@@ -1448,28 +1465,30 @@ confuiBuildUIEditStatus (configui_t *confui)
 static void
 confuiBuildUIEditLevels (configui_t *confui)
 {
-  GtkWidget     *vbox;
-  GtkWidget     *hbox;
+  UIWidget      vbox;
+  UIWidget      hbox;
   GtkWidget     *widget;
   UIWidget      sg;
 
+  uiCreateVertBox (&vbox);
+
   /* edit levels */
-  vbox = confuiMakeNotebookTab (confui, confui->notebook,
+  confuiMakeNotebookTab (&vbox, confui, confui->notebook,
       /* CONTEXT: configuration: edit dance levels table */
       _("Edit Levels"), CONFUI_ID_LEVELS);
   uiCreateSizeGroupHoriz (&sg);
 
   widget = uiCreateLabelW (_("Order from easiest to most advanced."));
-  uiBoxPackStartWW (vbox, widget);
+  uiBoxPackStartUW (&vbox, widget);
 
   /* CONTEXT: configuration: dance levels: information on how to edit a level entry */
   widget = uiCreateLabelW (_("Double click on a field to edit."));
-  uiBoxPackStartWW (vbox, widget);
+  uiBoxPackStartUW (&vbox, widget);
 
-  hbox = uiCreateHorizBoxWW ();
-  uiBoxPackStartExpandWW (vbox, hbox);
+  uiCreateHorizBox (&hbox);
+  uiBoxPackStartExpand (&vbox, &hbox);
 
-  confuiMakeItemTable (confui, hbox, CONFUI_ID_LEVELS, CONFUI_TABLE_NONE);
+  confuiMakeItemTable (confui, &hbox, CONFUI_ID_LEVELS, CONFUI_TABLE_NONE);
   confui->tables [CONFUI_ID_LEVELS].togglecol = CONFUI_LEVEL_COL_DEFAULT;
   confui->tables [CONFUI_ID_LEVELS].listcreatefunc = confuiLevelListCreate;
   confui->tables [CONFUI_ID_LEVELS].savefunc = confuiLevelSave;
@@ -1479,25 +1498,27 @@ confuiBuildUIEditLevels (configui_t *confui)
 static void
 confuiBuildUIEditGenres (configui_t *confui)
 {
-  GtkWidget     *vbox;
-  GtkWidget     *hbox;
+  UIWidget      vbox;
+  UIWidget      hbox;
   GtkWidget     *widget;
   UIWidget      sg;
 
+  uiCreateVertBox (&vbox);
+
   /* edit genres */
-  vbox = confuiMakeNotebookTab (confui, confui->notebook,
+  confuiMakeNotebookTab (&vbox, confui, confui->notebook,
       /* CONTEXT: configuration: edit genres table */
       _("Edit Genres"), CONFUI_ID_GENRES);
   uiCreateSizeGroupHoriz (&sg);
 
   /* CONTEXT: configuration: genres: information on how to edit a genre entry */
   widget = uiCreateLabelW (_("Double click on a field to edit."));
-  uiBoxPackStartWW (vbox, widget);
+  uiBoxPackStartUW (&vbox, widget);
 
-  hbox = uiCreateHorizBoxWW ();
-  uiBoxPackStartExpandWW (vbox, hbox);
+  uiCreateHorizBox (&hbox);
+  uiBoxPackStartExpand (&vbox, &hbox);
 
-  confuiMakeItemTable (confui, hbox, CONFUI_ID_GENRES, CONFUI_TABLE_NONE);
+  confuiMakeItemTable (confui, &hbox, CONFUI_ID_GENRES, CONFUI_TABLE_NONE);
   confui->tables [CONFUI_ID_GENRES].togglecol = CONFUI_GENRE_COL_CLASSICAL;
   confui->tables [CONFUI_ID_GENRES].listcreatefunc = confuiGenreListCreate;
   confui->tables [CONFUI_ID_GENRES].savefunc = confuiGenreSave;
@@ -1507,188 +1528,196 @@ confuiBuildUIEditGenres (configui_t *confui)
 static void
 confuiBuildUIMobileRemoteControl (configui_t *confui)
 {
-  GtkWidget     *vbox;
-  GtkWidget     *widget;
+  UIWidget      vbox;
   UIWidget      sg;
 
+  uiCreateVertBox (&vbox);
+
   /* mobile remote control */
-  vbox = confuiMakeNotebookTab (confui, confui->notebook,
+  confuiMakeNotebookTab (&vbox, confui, confui->notebook,
       /* CONTEXT: configuration: options associated with mobile remote control */
       _("Mobile Remote Control"), CONFUI_ID_REM_CONTROL);
   uiCreateSizeGroupHoriz (&sg);
 
   /* CONTEXT: configuration: remote control: checkbox: enable/disable */
-  widget = confuiMakeItemSwitch (confui, vbox, &sg, _("Enable Remote Control"),
+  confuiMakeItemSwitch (confui, &vbox, &sg, _("Enable Remote Control"),
       CONFUI_WIDGET_RC_ENABLE, OPT_P_REMOTECONTROL,
-      bdjoptGetNum (OPT_P_REMOTECONTROL));
-  g_signal_connect (widget, "state-set", G_CALLBACK (confuiRemctrlChg), confui);
+      bdjoptGetNum (OPT_P_REMOTECONTROL),
+      confuiRemctrlChg);
+//  g_signal_connect (widget, "state-set", G_CALLBACK (confuiRemctrlChg), confui);
 
   /* CONTEXT: configuration: remote control: the HTML template to use */
-  confuiMakeItemSpinboxText (confui, vbox, &sg, _("HTML Template"),
+  confuiMakeItemSpinboxText (confui, &vbox, &sg, _("HTML Template"),
       CONFUI_SPINBOX_RC_HTML_TEMPLATE, OPT_G_REMCONTROLHTML,
-      CONFUI_OUT_STR, confui->uiitem [CONFUI_SPINBOX_RC_HTML_TEMPLATE].listidx);
+      CONFUI_OUT_STR, confui->uiitem [CONFUI_SPINBOX_RC_HTML_TEMPLATE].listidx, NULL);
 
   /* CONTEXT: configuration: remote control: the user ID for sign-on to remote control */
-  confuiMakeItemEntry (confui, vbox, &sg, _("User ID"),
+  confuiMakeItemEntry (confui, &vbox, &sg, _("User ID"),
       CONFUI_ENTRY_RC_USER_ID,  OPT_P_REMCONTROLUSER,
       bdjoptGetStr (OPT_P_REMCONTROLUSER));
 
   /* CONTEXT: configuration: remote control: the password for sign-on to remote control */
-  confuiMakeItemEntry (confui, vbox, &sg, _("Password"),
+  confuiMakeItemEntry (confui, &vbox, &sg, _("Password"),
       CONFUI_ENTRY_RC_PASS, OPT_P_REMCONTROLPASS,
       bdjoptGetStr (OPT_P_REMCONTROLPASS));
 
   /* CONTEXT: configuration: remote control: the port to use for remote control */
-  widget = confuiMakeItemSpinboxInt (confui, vbox, &sg, _("Port"),
+  confuiMakeItemSpinboxInt (confui, &vbox, &sg, _("Port"),
       CONFUI_WIDGET_RC_PORT, OPT_P_REMCONTROLPORT,
-      8000, 30000, bdjoptGetNum (OPT_P_REMCONTROLPORT));
-  g_signal_connect (widget, "value-changed", G_CALLBACK (confuiRemctrlPortChg), confui);
+      8000, 30000, bdjoptGetNum (OPT_P_REMCONTROLPORT),
+      confuiRemctrlPortChg);
+//  g_signal_connect (widget, "value-changed", G_CALLBACK (confuiRemctrlPortChg), confui);
 
   /* CONTEXT: configuration: remote control: the link to display the QR code for remote control */
-  confuiMakeItemLink (confui, vbox, &sg, _("QR Code"),
+  confuiMakeItemLink (confui, &vbox, &sg, _("QR Code"),
       CONFUI_WIDGET_RC_QR_CODE, "");
 }
 
 static void
 confuiBuildUIMobileMarquee (configui_t *confui)
 {
-  GtkWidget     *vbox;
-  GtkWidget     *widget;
+  UIWidget      vbox;
   UIWidget      sg;
 
+  uiCreateVertBox (&vbox);
+
   /* mobile marquee */
-  vbox = confuiMakeNotebookTab (confui, confui->notebook,
+  confuiMakeNotebookTab (&vbox, confui, confui->notebook,
       /* CONTEXT: configuration: options associated with the mobile marquee */
       _("Mobile Marquee"), CONFUI_ID_MOBILE_MQ);
   uiCreateSizeGroupHoriz (&sg);
 
   /* CONTEXT: configuration: set mobile marquee mode (off/local/internet) */
-  widget = confuiMakeItemSpinboxText (confui, vbox, &sg, _("Mobile Marquee"),
+  confuiMakeItemSpinboxText (confui, &vbox, &sg, _("Mobile Marquee"),
       CONFUI_SPINBOX_MOBILE_MQ, OPT_P_MOBILEMARQUEE,
-      CONFUI_OUT_NUM, bdjoptGetNum (OPT_P_MOBILEMARQUEE));
-  g_signal_connect (widget, "value-changed", G_CALLBACK (confuiMobmqTypeChg), confui);
+      CONFUI_OUT_NUM, bdjoptGetNum (OPT_P_MOBILEMARQUEE),
+      confuiMobmqTypeChg);
+//  g_signal_connect (widget, "value-changed", G_CALLBACK (confuiMobmqTypeChg), confui);
 
   /* CONTEXT: configuration: the port to use for the mobile marquee */
-  widget = confuiMakeItemSpinboxInt (confui, vbox, &sg, _("Port"),
+  confuiMakeItemSpinboxInt (confui, &vbox, &sg, _("Port"),
       CONFUI_WIDGET_MMQ_PORT, OPT_P_MOBILEMQPORT,
-      8000, 30000, bdjoptGetNum (OPT_P_MOBILEMQPORT));
-  g_signal_connect (widget, "value-changed", G_CALLBACK (confuiMobmqPortChg), confui);
+      8000, 30000, bdjoptGetNum (OPT_P_MOBILEMQPORT),
+      confuiMobmqPortChg);
+//  g_signal_connect (widget, "value-changed", G_CALLBACK (confuiMobmqPortChg), confui);
 
   /* CONTEXT: configuration: the name to use for the mobile marquee internet mode */
-  confuiMakeItemEntry (confui, vbox, &sg, _("Name"),
+  confuiMakeItemEntry (confui, &vbox, &sg, _("Name"),
       CONFUI_ENTRY_MM_NAME, OPT_P_MOBILEMQTAG,
       bdjoptGetStr (OPT_P_MOBILEMQTAG));
   uiEntrySetValidate (&confui->uiitem [CONFUI_ENTRY_MM_NAME].u.entry,
       confuiMobmqNameChg, confui);
 
   /* CONTEXT: configuration: the title to display on the mobile marquee */
-  confuiMakeItemEntry (confui, vbox, &sg, _("Title"),
+  confuiMakeItemEntry (confui, &vbox, &sg, _("Title"),
       CONFUI_ENTRY_MM_TITLE, OPT_P_MOBILEMQTITLE,
       bdjoptGetStr (OPT_P_MOBILEMQTITLE));
   uiEntrySetValidate (&confui->uiitem [CONFUI_ENTRY_MM_TITLE].u.entry,
       confuiMobmqTitleChg, confui);
 
   /* CONTEXT: configuration: mobile marquee: the link to display the QR code for the mobile marquee */
-  confuiMakeItemLink (confui, vbox, &sg, _("QR Code"),
+  confuiMakeItemLink (confui, &vbox, &sg, _("QR Code"),
       CONFUI_WIDGET_MMQ_QR_CODE, "");
 }
 
 static void
 confuiBuildUIDebugOptions (configui_t *confui)
 {
-  GtkWidget     *vbox;
-  GtkWidget     *hbox;
+  UIWidget      vbox;
+  UIWidget      hbox;
   UIWidget      sg;
   nlistidx_t    val;
 
+  uiCreateVertBox (&vbox);
+
   /* debug options */
-  vbox = confuiMakeNotebookTab (confui, confui->notebook,
+  confuiMakeNotebookTab (&vbox, confui, confui->notebook,
       /* CONTEXT: configuration: debug options that can be turned on and off */
       _("Debug Options"), CONFUI_ID_NONE);
   uiCreateSizeGroupHoriz (&sg);
 
-  hbox = uiCreateHorizBoxWW ();
-  uiBoxPackStartWW (vbox, hbox);
+  uiCreateHorizBox (&hbox);
+  uiBoxPackStart (&vbox, &hbox);
 
-  vbox = uiCreateVertBoxWW ();
-  uiBoxPackStartWW (hbox, vbox);
+  uiCreateVertBox (&vbox);
+  uiBoxPackStart (&hbox, &vbox);
 
   val = bdjoptGetNum (OPT_G_DEBUGLVL);
-  confuiMakeItemCheckButton (confui, vbox, &sg, "Important",
+  confuiMakeItemCheckButton (confui, &vbox, &sg, "Important",
       CONFUI_WIDGET_DEBUG_1, -1,
       (val & 1));
   confui->uiitem [CONFUI_WIDGET_DEBUG_1].outtype = CONFUI_OUT_DEBUG;
-  confuiMakeItemCheckButton (confui, vbox, &sg, "Basic",
+  confuiMakeItemCheckButton (confui, &vbox, &sg, "Basic",
       CONFUI_WIDGET_DEBUG_2, -1,
       (val & 2));
   confui->uiitem [CONFUI_WIDGET_DEBUG_2].outtype = CONFUI_OUT_DEBUG;
-  confuiMakeItemCheckButton (confui, vbox, &sg, "Messages",
+  confuiMakeItemCheckButton (confui, &vbox, &sg, "Messages",
       CONFUI_WIDGET_DEBUG_4, -1,
       (val & 4));
   confui->uiitem [CONFUI_WIDGET_DEBUG_4].outtype = CONFUI_OUT_DEBUG;
-  confuiMakeItemCheckButton (confui, vbox, &sg, "Main",
+  confuiMakeItemCheckButton (confui, &vbox, &sg, "Main",
       CONFUI_WIDGET_DEBUG_8, -1,
       (val & 8));
   confui->uiitem [CONFUI_WIDGET_DEBUG_8].outtype = CONFUI_OUT_DEBUG;
-  confuiMakeItemCheckButton (confui, vbox, &sg, "List",
+  confuiMakeItemCheckButton (confui, &vbox, &sg, "List",
       CONFUI_WIDGET_DEBUG_16, -1,
       (val & 16));
   confui->uiitem [CONFUI_WIDGET_DEBUG_16].outtype = CONFUI_OUT_DEBUG;
-  confuiMakeItemCheckButton (confui, vbox, &sg, "Song Selection",
+  confuiMakeItemCheckButton (confui, &vbox, &sg, "Song Selection",
       CONFUI_WIDGET_DEBUG_32, -1,
       (val & 32));
   confui->uiitem [CONFUI_WIDGET_DEBUG_32].outtype = CONFUI_OUT_DEBUG;
-  confuiMakeItemCheckButton (confui, vbox, &sg, "Dance Selection",
+  confuiMakeItemCheckButton (confui, &vbox, &sg, "Dance Selection",
       CONFUI_WIDGET_DEBUG_64, -1,
       (val & 64));
   confui->uiitem [CONFUI_WIDGET_DEBUG_64].outtype = CONFUI_OUT_DEBUG;
-  confuiMakeItemCheckButton (confui, vbox, &sg, "Volume",
+  confuiMakeItemCheckButton (confui, &vbox, &sg, "Volume",
       CONFUI_WIDGET_DEBUG_128, -1,
       (val & 128));
   confui->uiitem [CONFUI_WIDGET_DEBUG_128].outtype = CONFUI_OUT_DEBUG;
-  confuiMakeItemCheckButton (confui, vbox, &sg, "Socket",
+  confuiMakeItemCheckButton (confui, &vbox, &sg, "Socket",
       CONFUI_WIDGET_DEBUG_256, -1,
       (val & 256));
   confui->uiitem [CONFUI_WIDGET_DEBUG_256].outtype = CONFUI_OUT_DEBUG;
-  confuiMakeItemCheckButton (confui, vbox, &sg, "Database",
+  confuiMakeItemCheckButton (confui, &vbox, &sg, "Database",
       CONFUI_WIDGET_DEBUG_512, -1,
       (val & 512));
 
-  vbox = uiCreateVertBoxWW ();
-  uiBoxPackStartWW (hbox, vbox);
+  uiCreateVertBox (&vbox);
+  uiBoxPackStart (&hbox, &vbox);
 
   uiCreateSizeGroupHoriz (&sg);
 
   confui->uiitem [CONFUI_WIDGET_DEBUG_512].outtype = CONFUI_OUT_DEBUG;
-  confuiMakeItemCheckButton (confui, vbox, &sg, "Random Access File",
+  confuiMakeItemCheckButton (confui, &vbox, &sg, "Random Access File",
       CONFUI_WIDGET_DEBUG_1024, -1,
       (val & 1024));
   confui->uiitem [CONFUI_WIDGET_DEBUG_1024].outtype = CONFUI_OUT_DEBUG;
-  confuiMakeItemCheckButton (confui, vbox, &sg, "Procedures",
+  confuiMakeItemCheckButton (confui, &vbox, &sg, "Procedures",
       CONFUI_WIDGET_DEBUG_2048, -1,
       (val & 2048));
   confui->uiitem [CONFUI_WIDGET_DEBUG_2048].outtype = CONFUI_OUT_DEBUG;
-  confuiMakeItemCheckButton (confui, vbox, &sg, "Player",
+  confuiMakeItemCheckButton (confui, &vbox, &sg, "Player",
       CONFUI_WIDGET_DEBUG_4096, -1,
       (val & 4096));
   confui->uiitem [CONFUI_WIDGET_DEBUG_4096].outtype = CONFUI_OUT_DEBUG;
-  confuiMakeItemCheckButton (confui, vbox, &sg, "Datafile",
+  confuiMakeItemCheckButton (confui, &vbox, &sg, "Datafile",
       CONFUI_WIDGET_DEBUG_8192, -1,
       (val & 8192));
   confui->uiitem [CONFUI_WIDGET_DEBUG_8192].outtype = CONFUI_OUT_DEBUG;
-  confuiMakeItemCheckButton (confui, vbox, &sg, "Process",
+  confuiMakeItemCheckButton (confui, &vbox, &sg, "Process",
       CONFUI_WIDGET_DEBUG_16384, -1,
       (val & 16384));
   confui->uiitem [CONFUI_WIDGET_DEBUG_16384].outtype = CONFUI_OUT_DEBUG;
-  confuiMakeItemCheckButton (confui, vbox, &sg, "Web Server",
+  confuiMakeItemCheckButton (confui, &vbox, &sg, "Web Server",
       CONFUI_WIDGET_DEBUG_32768, -1,
       (val & 32768));
   confui->uiitem [CONFUI_WIDGET_DEBUG_32768].outtype = CONFUI_OUT_DEBUG;
-  confuiMakeItemCheckButton (confui, vbox, &sg, "Web Client",
+  confuiMakeItemCheckButton (confui, &vbox, &sg, "Web Client",
       CONFUI_WIDGET_DEBUG_65536, -1,
       (val & 65536));
   confui->uiitem [CONFUI_WIDGET_DEBUG_65536].outtype = CONFUI_OUT_DEBUG;
-  confuiMakeItemCheckButton (confui, vbox, &sg, "Database Update",
+  confuiMakeItemCheckButton (confui, &vbox, &sg, "Database Update",
       CONFUI_WIDGET_DEBUG_131072, -1,
       (val & 131072));
   confui->uiitem [CONFUI_WIDGET_DEBUG_131072].outtype = CONFUI_OUT_DEBUG;
@@ -2115,86 +2144,90 @@ confuiSelectFileDialog (configui_t *confui, int widx, char *startpath,
   logProcEnd (LOG_PROC, "confuiSelectFileDialog", "");
 }
 
-static GtkWidget *
-confuiMakeNotebookTab (configui_t *confui, GtkWidget *nb, char *txt, int id)
+static void
+confuiMakeNotebookTab (UIWidget *boxp, configui_t *confui, GtkWidget *nb, char *txt, int id)
 {
   GtkWidget   *tablabel;
-  GtkWidget   *vbox;
 
   logProcBegin (LOG_PROC, "confuiMakeNotebookTab");
   tablabel = uiCreateLabelW (txt);
   uiWidgetSetAllMarginsW (tablabel, 0);
-  vbox = uiCreateVertBoxWW ();
-  uiWidgetExpandHorizW (vbox);
-  uiWidgetExpandVertW (vbox);
-  uiWidgetSetAllMarginsW (vbox, uiBaseMarginSz * 2);
-  uiNotebookAppendPageW (nb, vbox, tablabel);
+  uiWidgetExpandHoriz (boxp);
+  uiWidgetExpandVert (boxp);
+  uiWidgetSetAllMargins (boxp, uiBaseMarginSz * 2);
+  uiNotebookAppendPageW (nb, boxp->widget, tablabel);
   uiutilsNotebookIDAdd (confui->nbtabid, id);
 
   logProcEnd (LOG_PROC, "confuiMakeNotebookTab", "");
-  return vbox;
 }
 
-static GtkWidget *
-confuiMakeItemEntry (configui_t *confui, GtkWidget *vbox, UIWidget *sg,
+static void
+confuiMakeItemEntry (configui_t *confui, UIWidget *boxp, UIWidget *sg,
     char *txt, int widx, int bdjoptIdx, char *disp)
 {
-  GtkWidget   *hbox;
-  GtkWidget   *widget;
+  UIWidget    hbox;
 
   logProcBegin (LOG_PROC, "confuiMakeItemEntry");
+  uiCreateHorizBox (&hbox);
+  confuiMakeItemEntryBasic (confui, &hbox, sg, txt, widx, bdjoptIdx, disp);
+  uiBoxPackStart (boxp, &hbox);
+  logProcEnd (LOG_PROC, "confuiMakeItemEntry", "");
+}
+
+static void
+confuiMakeItemEntryChooser (configui_t *confui, UIWidget *boxp,
+    UIWidget *sg, char *txt, int widx, int bdjoptIdx,
+    char *disp, void *dialogFunc)
+{
+  UIWidget    hbox;
+  GtkWidget   *widget;
+  GtkWidget   *image;
+
+  logProcBegin (LOG_PROC, "confuiMakeItemEntryChooser");
+  uiCreateHorizBox (&hbox);
+  confuiMakeItemEntryBasic (confui, &hbox, sg, txt, widx, bdjoptIdx, disp);
+  widget = uiCreateButton (NULL, NULL, "", NULL, dialogFunc, confui);
+  image = gtk_image_new_from_icon_name ("folder", GTK_ICON_SIZE_BUTTON);
+  gtk_button_set_image (GTK_BUTTON (widget), image);
+  gtk_button_set_always_show_image (GTK_BUTTON (widget), TRUE);
+  uiWidgetSetMarginStartW (widget, 0);
+  uiBoxPackStartUW (&hbox, widget);
+  logProcEnd (LOG_PROC, "confuiMakeItemEntryChooser", "");
+}
+
+static void
+confuiMakeItemEntryBasic (configui_t *confui, UIWidget *boxp, UIWidget *sg,
+    char *txt, int widx, int bdjoptIdx, char *disp)
+{
+  GtkWidget *widget;
+
   confui->uiitem [widx].basetype = CONFUI_ENTRY;
   confui->uiitem [widx].outtype = CONFUI_OUT_STR;
-  hbox = confuiMakeItemLabel (vbox, sg, txt);
+  confuiMakeItemLabel (boxp, sg, txt);
   widget = uiEntryCreate (&confui->uiitem [widx].u.entry);
   confui->uiitem [widx].widget = widget;
   uiWidgetSetMarginStartW (widget, uiBaseMarginSz * 4);
-  uiBoxPackStartWW (hbox, widget);
-  uiBoxPackStartWW (vbox, hbox);
+  uiBoxPackStartUW (boxp, widget);
   if (disp != NULL) {
     uiEntrySetValue (&confui->uiitem [widx].u.entry, disp);
   } else {
     uiEntrySetValue (&confui->uiitem [widx].u.entry, "");
   }
   confui->uiitem [widx].bdjoptIdx = bdjoptIdx;
-  logProcEnd (LOG_PROC, "confuiMakeItemEntry", "");
-  return hbox;
 }
 
 static void
-confuiMakeItemEntryChooser (configui_t *confui, GtkWidget *vbox,
-    UIWidget *sg, char *txt, int widx, int bdjoptIdx,
-    char *disp, void *dialogFunc)
-{
-  GtkWidget   *hbox;
-  GtkWidget   *widget;
-  GtkWidget   *image;
-
-  logProcBegin (LOG_PROC, "confuiMakeItemEntryChooser");
-  hbox = confuiMakeItemEntry (confui, vbox, sg, txt, widx, bdjoptIdx, disp);
-
-  widget = uiCreateButton (NULL, NULL, "", NULL,
-      dialogFunc, confui);
-  image = gtk_image_new_from_icon_name ("folder", GTK_ICON_SIZE_BUTTON);
-  gtk_button_set_image (GTK_BUTTON (widget), image);
-  gtk_button_set_always_show_image (GTK_BUTTON (widget), TRUE);
-  uiWidgetSetMarginStartW (widget, 0);
-  uiBoxPackStartWW (hbox, widget);
-  confui->uiitem [widx].bdjoptIdx = bdjoptIdx;
-  logProcEnd (LOG_PROC, "confuiMakeItemEntryChooser", "");
-}
-
-static GtkWidget *
-confuiMakeItemCombobox (configui_t *confui, GtkWidget *vbox, UIWidget *sg,
+confuiMakeItemCombobox (configui_t *confui, UIWidget *boxp, UIWidget *sg,
     char *txt, int widx, int bdjoptIdx, void *ddcb, char *value)
 {
-  GtkWidget   *hbox;
+  UIWidget    hbox;
   GtkWidget   *widget;
 
   logProcBegin (LOG_PROC, "confuiMakeItemCombobox");
   confui->uiitem [widx].basetype = CONFUI_COMBOBOX;
   confui->uiitem [widx].outtype = CONFUI_OUT_STR;
-  hbox = confuiMakeItemLabel (vbox, sg, txt);
+  uiCreateHorizBox (&hbox);
+  confuiMakeItemLabel (&hbox, sg, txt);
   widget = uiComboboxCreate (confui->window, txt,
       ddcb, &confui->uiitem [widx].u.dropdown, confui);
   confui->uiitem [widx].widget = widget;
@@ -2202,22 +2235,22 @@ confuiMakeItemCombobox (configui_t *confui, GtkWidget *vbox, UIWidget *sg,
       confui->uiitem [widx].displist, NULL);
   uiDropDownSelectionSetStr (&confui->uiitem [widx].u.dropdown, value);
   uiWidgetSetMarginStartW (widget, uiBaseMarginSz * 4);
-  uiBoxPackStartWW (hbox, widget);
-  uiBoxPackStartWW (vbox, hbox);
+  uiBoxPackStartUW (&hbox, widget);
+  uiBoxPackStart (boxp, &hbox);
   confui->uiitem [widx].bdjoptIdx = bdjoptIdx;
   logProcEnd (LOG_PROC, "confuiMakeItemCombobox", "");
-  return hbox;
 }
 
 static void
-confuiMakeItemLink (configui_t *confui, GtkWidget *vbox, UIWidget *sg,
+confuiMakeItemLink (configui_t *confui, UIWidget *boxp, UIWidget *sg,
     char *txt, int widx, char *disp)
 {
-  GtkWidget   *hbox;
+  UIWidget    hbox;
   UIWidget    uiwidget;
 
   logProcBegin (LOG_PROC, "confuiMakeItemLink");
-  hbox = confuiMakeItemLabel (vbox, sg, txt);
+  uiCreateHorizBox (&hbox);
+  confuiMakeItemLabel (&hbox, sg, txt);
   uiutilsUIWidgetInit (&uiwidget);
   uiCreateLink (&uiwidget, disp, NULL);
   if (isMacOS ()) {
@@ -2226,41 +2259,42 @@ confuiMakeItemLink (configui_t *confui, GtkWidget *vbox, UIWidget *sg,
     confui->uiitem [widx].uri = NULL;
     uiLinkSetActivateCallback (&uiwidget, &confui->uiitem [widx].callback);
   }
-  uiBoxPackStartWU (hbox, &uiwidget);
-  uiBoxPackStartWW (vbox, hbox);
+  uiBoxPackStart (&hbox, &uiwidget);
+  uiBoxPackStart (boxp, &hbox);
   uiutilsUIWidgetCopy (&confui->uiitem [widx].uiwidget, &uiwidget);
   logProcEnd (LOG_PROC, "confuiMakeItemLink", "");
 }
 
 static void
-confuiMakeItemFontButton (configui_t *confui, GtkWidget *vbox, UIWidget *sg,
+confuiMakeItemFontButton (configui_t *confui, UIWidget *boxp, UIWidget *sg,
     char *txt, int widx, int bdjoptIdx, char *fontname)
 {
-  GtkWidget   *hbox;
+  UIWidget    hbox;
   GtkWidget   *widget;
 
   logProcBegin (LOG_PROC, "confuiMakeItemFontButton");
   confui->uiitem [widx].basetype = CONFUI_FONT;
   confui->uiitem [widx].outtype = CONFUI_OUT_STR;
-  hbox = confuiMakeItemLabel (vbox, sg, txt);
+  uiCreateHorizBox (&hbox);
+  confuiMakeItemLabel (&hbox, sg, txt);
   if (fontname != NULL && *fontname) {
     widget = gtk_font_button_new_with_font (fontname);
   } else {
     widget = gtk_font_button_new ();
   }
   uiWidgetSetMarginStartW (widget, uiBaseMarginSz * 4);
-  uiBoxPackStartWW (hbox, widget);
-  uiBoxPackStartWW (vbox, hbox);
+  uiBoxPackStartUW (&hbox, widget);
+  uiBoxPackStart (boxp, &hbox);
   confui->uiitem [widx].widget = widget;
   confui->uiitem [widx].bdjoptIdx = bdjoptIdx;
   logProcEnd (LOG_PROC, "confuiMakeItemFontButton", "");
 }
 
 static void
-confuiMakeItemColorButton (configui_t *confui, GtkWidget *vbox, UIWidget *sg,
+confuiMakeItemColorButton (configui_t *confui, UIWidget *boxp, UIWidget *sg,
     char *txt, int widx, int bdjoptIdx, char *color)
 {
-  GtkWidget   *hbox;
+  UIWidget    hbox;
   GtkWidget   *widget;
   GdkRGBA     rgba;
 
@@ -2268,7 +2302,8 @@ confuiMakeItemColorButton (configui_t *confui, GtkWidget *vbox, UIWidget *sg,
 
   confui->uiitem [widx].basetype = CONFUI_COLOR;
   confui->uiitem [widx].outtype = CONFUI_OUT_STR;
-  hbox = confuiMakeItemLabel (vbox, sg, txt);
+  uiCreateHorizBox (&hbox);
+  confuiMakeItemLabel (&hbox, sg, txt);
   if (color != NULL && *color) {
     gdk_rgba_parse (&rgba, color);
     widget = gtk_color_button_new_with_rgba (&rgba);
@@ -2276,19 +2311,19 @@ confuiMakeItemColorButton (configui_t *confui, GtkWidget *vbox, UIWidget *sg,
     widget = gtk_color_button_new ();
   }
   uiWidgetSetMarginStartW (widget, uiBaseMarginSz * 4);
-  uiBoxPackStartWW (hbox, widget);
-  uiBoxPackStartWW (vbox, hbox);
+  uiBoxPackStartUW (&hbox, widget);
+  uiBoxPackStart (boxp, &hbox);
   confui->uiitem [widx].widget = widget;
   confui->uiitem [widx].bdjoptIdx = bdjoptIdx;
   logProcEnd (LOG_PROC, "confuiMakeItemColorButton", "");
 }
 
-static GtkWidget *
-confuiMakeItemSpinboxText (configui_t *confui, GtkWidget *vbox, UIWidget *sg,
+static void
+confuiMakeItemSpinboxText (configui_t *confui, UIWidget *boxp, UIWidget *sg,
     char *txt, int widx, int bdjoptIdx,
-    confuiouttype_t outtype, ssize_t value)
+    confuiouttype_t outtype, ssize_t value, void *cb)
 {
-  GtkWidget   *hbox;
+  UIWidget    hbox;
   GtkWidget   *widget;
   nlist_t     *list;
   nlist_t     *keylist;
@@ -2298,7 +2333,8 @@ confuiMakeItemSpinboxText (configui_t *confui, GtkWidget *vbox, UIWidget *sg,
 
   confui->uiitem [widx].basetype = CONFUI_SPINBOX_TEXT;
   confui->uiitem [widx].outtype = outtype;
-  hbox = confuiMakeItemLabel (vbox, sg, txt);
+  uiCreateHorizBox (&hbox);
+  confuiMakeItemLabel (&hbox, sg, txt);
   widget = uiSpinboxTextCreate (&confui->uiitem [widx].u.spinbox, confui);
   confui->uiitem [widx].widget = widget;
 
@@ -2327,130 +2363,143 @@ confuiMakeItemSpinboxText (configui_t *confui, GtkWidget *vbox, UIWidget *sg,
       nlistGetCount (list), maxWidth, list, keylist, NULL);
   uiSpinboxTextSetValue (&confui->uiitem [widx].u.spinbox, value);
   uiWidgetSetMarginStartW (widget, uiBaseMarginSz * 4);
-  uiBoxPackStartWW (hbox, widget);
-  uiBoxPackStartWW (vbox, hbox);
+  uiBoxPackStartUW (&hbox, widget);
+  uiBoxPackStart (boxp, &hbox);
   confui->uiitem [widx].bdjoptIdx = bdjoptIdx;
 
+  if (cb != NULL) {
+    g_signal_connect (widget, "value-changed", G_CALLBACK (cb), confui);
+  }
   logProcEnd (LOG_PROC, "confuiMakeItemSpinboxText", "");
-  return widget;
 }
 
 static void
-confuiMakeItemSpinboxTime (configui_t *confui, GtkWidget *vbox,
+confuiMakeItemSpinboxTime (configui_t *confui, UIWidget *boxp,
     UIWidget *sg, char *txt, int widx, int bdjoptIdx, ssize_t value)
 {
-  GtkWidget   *hbox;
+  UIWidget    hbox;
   GtkWidget   *widget;
 
   logProcBegin (LOG_PROC, "confuiMakeItemSpinboxTime");
 
   confui->uiitem [widx].basetype = CONFUI_SPINBOX_TIME;
   confui->uiitem [widx].outtype = CONFUI_OUT_NUM;
-  hbox = confuiMakeItemLabel (vbox, sg, txt);
+  uiCreateHorizBox (&hbox);
+  confuiMakeItemLabel (&hbox, sg, txt);
   widget = uiSpinboxTimeCreate (&confui->uiitem [widx].u.spinbox, confui);
   confui->uiitem [widx].widget = widget;
   uiSpinboxTimeSetValue (&confui->uiitem [widx].u.spinbox, value);
   uiWidgetSetMarginStartW (widget, uiBaseMarginSz * 4);
-  uiBoxPackStartWW (hbox, widget);
-  uiBoxPackStartWW (vbox, hbox);
+  uiBoxPackStartUW (&hbox, widget);
+  uiBoxPackStart (boxp, &hbox);
   confui->uiitem [widx].bdjoptIdx = bdjoptIdx;
   logProcEnd (LOG_PROC, "confuiMakeItemSpinboxTime", "");
 }
 
-static GtkWidget *
-confuiMakeItemSpinboxInt (configui_t *confui, GtkWidget *vbox, UIWidget *sg,
-    const char *txt, int widx, int bdjoptIdx, int min, int max, int value)
+static void
+confuiMakeItemSpinboxInt (configui_t *confui, UIWidget *boxp, UIWidget *sg,
+    const char *txt, int widx, int bdjoptIdx, int min, int max, int value,
+    void *cb)
 {
-  GtkWidget   *hbox;
+  UIWidget    hbox;
   GtkWidget   *widget;
 
   logProcBegin (LOG_PROC, "confuiMakeItemSpinboxInt");
 
   confui->uiitem [widx].basetype = CONFUI_SPINBOX_NUM;
   confui->uiitem [widx].outtype = CONFUI_OUT_NUM;
-  hbox = confuiMakeItemLabel (vbox, sg, txt);
+  uiCreateHorizBox (&hbox);
+  confuiMakeItemLabel (&hbox, sg, txt);
   widget = uiSpinboxIntCreate ();
   uiSpinboxSet (widget, (double) min, (double) max);
   uiSpinboxSetValue (widget, (double) value);
   uiWidgetSetMarginStartW (widget, uiBaseMarginSz * 4);
-  uiBoxPackStartWW (hbox, widget);
-  uiBoxPackStartWW (vbox, hbox);
+  uiBoxPackStartUW (&hbox, widget);
+  uiBoxPackStart (boxp, &hbox);
   confui->uiitem [widx].widget = widget;
   confui->uiitem [widx].bdjoptIdx = bdjoptIdx;
 
+  if (cb != NULL) {
+    g_signal_connect (widget, "value-changed", G_CALLBACK (cb), confui);
+  }
   logProcEnd (LOG_PROC, "confuiMakeItemSpinboxInt", "");
-  return widget;
 }
 
 static void
-confuiMakeItemSpinboxDouble (configui_t *confui, GtkWidget *vbox, UIWidget *sg,
+confuiMakeItemSpinboxDouble (configui_t *confui, UIWidget *boxp, UIWidget *sg,
     char *txt, int widx, int bdjoptIdx, double min, double max, double value)
 {
-  GtkWidget   *hbox;
+  UIWidget    hbox;
   GtkWidget   *widget;
 
   logProcBegin (LOG_PROC, "confuiMakeItemSpinboxDouble");
 
   confui->uiitem [widx].basetype = CONFUI_SPINBOX_DOUBLE;
   confui->uiitem [widx].outtype = CONFUI_OUT_DOUBLE;
-  hbox = confuiMakeItemLabel (vbox, sg, txt);
+  uiCreateHorizBox (&hbox);
+  confuiMakeItemLabel (&hbox, sg, txt);
   widget = uiSpinboxDoubleCreate ();
   uiSpinboxSet (widget, min, max);
   uiSpinboxSetValue (widget, value);
   uiWidgetSetMarginStartW (widget, uiBaseMarginSz * 4);
-  uiBoxPackStartWW (hbox, widget);
-  uiBoxPackStartWW (vbox, hbox);
+  uiBoxPackStartUW (&hbox, widget);
+  uiBoxPackStart (boxp, &hbox);
   confui->uiitem [widx].widget = widget;
   confui->uiitem [widx].bdjoptIdx = bdjoptIdx;
   logProcEnd (LOG_PROC, "confuiMakeItemSpinboxDouble", "");
 }
 
-static GtkWidget *
-confuiMakeItemSwitch (configui_t *confui, GtkWidget *vbox, UIWidget *sg,
-    char *txt, int widx, int bdjoptIdx, int value)
+static void
+confuiMakeItemSwitch (configui_t *confui, UIWidget *boxp, UIWidget *sg,
+    char *txt, int widx, int bdjoptIdx, int value, void *cb)
 {
-  GtkWidget   *hbox;
+  UIWidget    hbox;
   GtkWidget   *widget;
 
   logProcBegin (LOG_PROC, "confuiMakeItemSwitch");
 
   confui->uiitem [widx].basetype = CONFUI_SWITCH;
   confui->uiitem [widx].outtype = CONFUI_OUT_BOOL;
-  hbox = confuiMakeItemLabel (vbox, sg, txt);
+  uiCreateHorizBox (&hbox);
+  confuiMakeItemLabel (&hbox, sg, txt);
   widget = uiCreateSwitch (value);
   uiWidgetSetMarginStartW (widget, uiBaseMarginSz * 4);
-  uiBoxPackStartWW (hbox, widget);
-  uiBoxPackStartWW (vbox, hbox);
+  uiBoxPackStartUW (&hbox, widget);
+  uiBoxPackStart (boxp, &hbox);
   confui->uiitem [widx].widget = widget;
   confui->uiitem [widx].bdjoptIdx = bdjoptIdx;
+
+  if (cb != NULL) {
+    g_signal_connect (widget, "state-set", G_CALLBACK (cb), confui);
+  }
+
   logProcEnd (LOG_PROC, "confuiMakeItemSwitch", "");
-  return widget;
 }
 
-static GtkWidget *
-confuiMakeItemLabelDisp (configui_t *confui, GtkWidget *vbox, UIWidget *sg,
+static void
+confuiMakeItemLabelDisp (configui_t *confui, UIWidget *boxp, UIWidget *sg,
     char *txt, int widx, int bdjoptIdx)
 {
-  GtkWidget   *hbox;
-  GtkWidget   *widget;
+  UIWidget    hbox;
+  UIWidget    uiwidget;
 
   logProcBegin (LOG_PROC, "confuiMakeItemLabelDisp");
 
   confui->uiitem [widx].basetype = CONFUI_NONE;
   confui->uiitem [widx].outtype = CONFUI_OUT_NONE;
-  hbox = confuiMakeItemLabel (vbox, sg, txt);
-  widget = uiCreateLabelW ("");
-  uiWidgetSetMarginStartW (widget, uiBaseMarginSz * 4);
-  uiBoxPackStartWW (hbox, widget);
-  uiBoxPackStartWW (vbox, hbox);
-  confui->uiitem [widx].widget = widget;
+  uiCreateHorizBox (&hbox);
+  confuiMakeItemLabel (&hbox, sg, txt);
+  uiCreateLabel (&uiwidget, "");
+  uiWidgetSetMarginStart (&uiwidget, uiBaseMarginSz * 4);
+  uiBoxPackStart (&hbox, &uiwidget);
+  uiBoxPackStart (boxp, &hbox);
+  confui->uiitem [widx].widget = uiwidget.widget;
   confui->uiitem [widx].bdjoptIdx = bdjoptIdx;
   logProcEnd (LOG_PROC, "confuiMakeItemLabelDisp", "");
-  return widget;
 }
 
 static void
-confuiMakeItemCheckButton (configui_t *confui, GtkWidget *vbox, UIWidget *sg,
+confuiMakeItemCheckButton (configui_t *confui, UIWidget *boxp, UIWidget *sg,
     const char *txt, int widx, int bdjoptIdx, int value)
 {
   UIWidget    uiwidget;
@@ -2461,49 +2510,45 @@ confuiMakeItemCheckButton (configui_t *confui, GtkWidget *vbox, UIWidget *sg,
   confui->uiitem [widx].outtype = CONFUI_OUT_BOOL;
   uiCreateCheckButton (&uiwidget, txt, value);
   uiWidgetSetMarginStart (&uiwidget, uiBaseMarginSz * 4);
-  uiBoxPackStartWU (vbox, &uiwidget);
+  uiBoxPackStart (boxp, &uiwidget);
   uiutilsUIWidgetCopy (&confui->uiitem [widx].uiwidget, &uiwidget);
   confui->uiitem [widx].bdjoptIdx = bdjoptIdx;
   logProcEnd (LOG_PROC, "confuiMakeItemCheckButton", "");
 }
 
-static GtkWidget *
-confuiMakeItemLabel (GtkWidget *vbox, UIWidget *sg, const char *txt)
+static void
+confuiMakeItemLabel (UIWidget *boxp, UIWidget *sg, const char *txt)
 {
-  GtkWidget   *hbox;
-  GtkWidget   *widget;
+  UIWidget    uiwidget;
 
   logProcBegin (LOG_PROC, "confuiMakeItemLabel");
-  hbox = uiCreateHorizBoxWW ();
   if (*txt == '\0') {
-    widget = uiCreateLabelW (txt);
+    uiCreateLabel (&uiwidget, txt);
   } else {
-    widget = uiCreateColonLabelW (txt);
+    uiCreateColonLabel (&uiwidget, txt);
   }
-  uiBoxPackStartWW (hbox, widget);
-  uiSizeGroupAddW (sg, widget);
+  uiBoxPackStart (boxp, &uiwidget);
+  uiSizeGroupAdd (sg, &uiwidget);
   logProcEnd (LOG_PROC, "confuiMakeItemLabel", "");
-  return hbox;
 }
 
-static GtkWidget *
-confuiMakeItemTable (configui_t *confui, GtkWidget *vbox, confuiident_t id,
+static void
+confuiMakeItemTable (configui_t *confui, UIWidget *boxp, confuiident_t id,
     int flags)
 {
-  GtkWidget   *mhbox;
-  GtkWidget   *bvbox;
+  UIWidget    mhbox;
+  UIWidget    bvbox;
   GtkWidget   *widget;
   GtkWidget   *tree;
 
   logProcBegin (LOG_PROC, "confuiMakeItemTable");
-  mhbox = uiCreateHorizBoxWW ();
-  assert (mhbox != NULL);
-  uiWidgetSetMarginTopW (mhbox, uiBaseMarginSz * 2);
-  uiBoxPackStartWW (vbox, mhbox);
+  uiCreateHorizBox (&mhbox);
+  uiWidgetSetMarginTop (&mhbox, uiBaseMarginSz * 2);
+  uiBoxPackStart (boxp, &mhbox);
 
   widget = uiCreateScrolledWindowW (300);
   uiWidgetExpandVertW (widget);
-  uiBoxPackStartExpandWW (mhbox, widget);
+  uiBoxPackStartExpandUW (&mhbox, widget);
 
   tree = uiCreateTreeView ();
   confui->tables [id].tree = tree;
@@ -2514,37 +2559,35 @@ confuiMakeItemTable (configui_t *confui, GtkWidget *vbox, confuiident_t id,
   gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (tree), TRUE);
   gtk_container_add (GTK_CONTAINER (widget), tree);
 
-  bvbox = uiCreateVertBoxWW ();
-  assert (bvbox != NULL);
-  uiWidgetSetAllMarginsW (bvbox, uiBaseMarginSz * 4);
-  uiWidgetSetMarginTopW (bvbox, uiBaseMarginSz * 32);
-  uiWidgetAlignVertStartW (bvbox);
-  uiBoxPackStartWW (mhbox, bvbox);
+  uiCreateVertBox (&bvbox);
+  uiWidgetSetAllMargins (&bvbox, uiBaseMarginSz * 4);
+  uiWidgetSetMarginTop (&bvbox, uiBaseMarginSz * 32);
+  uiWidgetAlignVertStart (&bvbox);
+  uiBoxPackStart (&mhbox, &bvbox);
 
   if ((flags & CONFUI_TABLE_NO_UP_DOWN) != CONFUI_TABLE_NO_UP_DOWN) {
     /* CONTEXT: configuration: table edit: button: move selection up */
     widget = uiCreateButton (NULL, NULL, _("Move Up"), "button_up",
         confuiTableMoveUp, confui);
-    uiBoxPackStartWW (bvbox, widget);
+    uiBoxPackStartUW (&bvbox, widget);
 
     /* CONTEXT: configuration: table edit: button: move selection down */
     widget = uiCreateButton (NULL, NULL, _("Move Down"), "button_down",
         confuiTableMoveDown, confui);
-    uiBoxPackStartWW (bvbox, widget);
+    uiBoxPackStartUW (&bvbox, widget);
   }
 
   /* CONTEXT: configuration: table edit: button: delete selection */
   widget = uiCreateButton (NULL, NULL, _("Delete"), "button_remove",
       confuiTableRemove, confui);
-  uiBoxPackStartWW (bvbox, widget);
+  uiBoxPackStartUW (&bvbox, widget);
 
   /* CONTEXT: configuration: table edit: button: add new selection */
   widget = uiCreateButton (NULL, NULL, _("Add New"), "button_add",
       confuiTableAdd, confui);
-  uiBoxPackStartWW (bvbox, widget);
+  uiBoxPackStartUW (&bvbox, widget);
 
   logProcEnd (LOG_PROC, "confuiMakeItemTable", "");
-  return vbox;
 }
 
 static nlist_t *

@@ -397,7 +397,6 @@ pluiBuildUI (playerui_t *plui)
       _("Set Queue for Playback"), NULL, NULL, NULL);
   uiNotebookSetActionWidget (&plui->notebook, &uiwidget);
   uiWidgetShowAll (&uiwidget);
-//  g_signal_connect (widget, "clicked", G_CALLBACK (pluiProcessSetPlaybackQueue), plui);
   uiutilsUIWidgetCopy (&plui->setPlaybackButton, &uiwidget);
 
   for (musicqidx_t i = 0; i < MUSICQ_MAX; ++i) {
@@ -694,12 +693,10 @@ pluiSwitchPage (GtkNotebook *nb, GtkWidget *page, guint pagenum, gpointer udata)
 static void
 pluiSetSwitchPage (playerui_t *plui, int pagenum)
 {
-  GtkWidget   *page;
   int         tabid;
 
   logProcBegin (LOG_PROC, "pluiSetSwitchPage");
 
-  page = gtk_notebook_get_nth_page (GTK_NOTEBOOK (plui->notebook.widget), pagenum);
   tabid = uiutilsNotebookIDGet (plui->nbtabid, pagenum);
 
   uiWidgetHide (&plui->setPlaybackButton);
