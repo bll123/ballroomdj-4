@@ -10,9 +10,11 @@ add_library (libbdj4ui SHARED
   osuimacutils.m
   osuiwinutils.c
   uiduallist.c
+  uilevel.c
   uimusicq.c
   uimusicqgtk.c
   uiplayer.c
+  uirating.c
   uiselectfile.c
   uisongedit.c
   uisongeditgtk.c

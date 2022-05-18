@@ -20,6 +20,8 @@
 #include "pathbld.h"
 #include "playlist.h"
 #include "ui.h"
+#include "uilevel.h"
+#include "uirating.h"
 #include "uiselectfile.h"
 #include "uiutils.h"
 
@@ -28,15 +30,20 @@ typedef struct managepl {
   nlist_t         *options;
   UIWidget        *statusMsg;
   uimenu_t        plmenu;
-  uientry_t       plname;
   char            *ploldname;
   bool            plbackupcreated;
-  UIWidget        uirating;
-  UIWidget        uilowlevel;
-  UIWidget        uihighlevel;
-  UIWidget        uiallowedkeywords;
-  UIWidget        uipltype;
+  uientry_t       plname;
   pltype_t        pltype;
+  uispinbox_t     ratingspinbox;
+  uirating_t      *uirating;
+  UIWidget        uiratingitem;
+  uilevel_t       *uilowlevel;
+  UIWidget        uilowlevelitem;
+  uilevel_t       *uihighlevel;
+  UIWidget        uihighlevelitem;
+  uientry_t       allowedkeywords;
+  UIWidget        uiallowedkeywordsitem;
+  UIWidget        uipltype;
   managepltree_t  *managepltree;
 } managepl_t;
 
@@ -52,6 +59,7 @@ managePlaylistAlloc (UIWidget *window, nlist_t *options, UIWidget *statusMsg)
   managepl_t *managepl;
 
   managepl = malloc (sizeof (managepl_t));
+  uiutilsUIWidgetInit (&managepl->uipltype);
   managepl->ploldname = NULL;
   managepl->plbackupcreated = false;
   uiMenuInit (&managepl->plmenu);
@@ -61,6 +69,14 @@ managePlaylistAlloc (UIWidget *window, nlist_t *options, UIWidget *statusMsg)
   managepl->options = options;
   managepl->pltype = PLTYPE_AUTO;
   managepl->managepltree = NULL;
+  managepl->uirating = NULL;
+  managepl->uilowlevel = NULL;
+  managepl->uihighlevel = NULL;
+  uiutilsUIWidgetInit (&managepl->uiratingitem);
+  uiutilsUIWidgetInit (&managepl->uilowlevelitem);
+  uiutilsUIWidgetInit (&managepl->uihighlevelitem);
+  uiEntryInit (&managepl->allowedkeywords, 20, 50);
+  uiutilsUIWidgetInit (&managepl->uiallowedkeywordsitem);
 
   return managepl;
 }
@@ -76,6 +92,10 @@ managePlaylistFree (managepl_t *managepl)
       managePlaylistTreeFree (managepl->managepltree);
     }
     uiEntryFree (&managepl->plname);
+    uiEntryFree (&managepl->allowedkeywords);
+    uiratingFree (managepl->uirating);
+    uilevelFree (managepl->uilowlevel);
+    uilevelFree (managepl->uihighlevel);
     free (managepl);
   }
 }
@@ -89,11 +109,14 @@ manageBuildUIPlaylist (managepl_t *managepl, UIWidget *vboxp)
   UIWidget            tophbox;
   UIWidget            hbox;
   UIWidget            uiwidget;
+  GtkWidget           *widget;
   UIWidget            sg;
+  UIWidget            sgB;
 
   uiutilsUIWidgetInit (&hbox);
   uiutilsUIWidgetInit (&uiwidget);
   uiCreateSizeGroupHoriz (&sg);
+  uiCreateSizeGroupHoriz (&sgB);
 
   uiWidgetSetAllMargins (vboxp, uiBaseMarginSz * 2);
 
@@ -143,6 +166,9 @@ manageBuildUIPlaylist (managepl_t *managepl, UIWidget *vboxp)
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
 
+//  widget = uiSpinboxTimeCreate ();
+//  uiBoxPackStart (&hbox, &uiwidget);
+
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&lcol, &hbox);
 
@@ -150,6 +176,9 @@ manageBuildUIPlaylist (managepl_t *managepl, UIWidget *vboxp)
   uiCreateColonLabel (&uiwidget, _("Stop At"));
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
+
+//  widget = uiSpinboxTimeCreate ();
+//  uiBoxPackStart (&hbox, &uiwidget);
 
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&lcol, &hbox);
@@ -159,6 +188,10 @@ manageBuildUIPlaylist (managepl_t *managepl, UIWidget *vboxp)
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
 
+  widget = uiSpinboxIntCreate ();
+  uiBoxPackStartUW (&hbox, widget);
+  uiSizeGroupAddW (&sgB, widget);
+
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&lcol, &hbox);
 
@@ -166,6 +199,10 @@ manageBuildUIPlaylist (managepl_t *managepl, UIWidget *vboxp)
   uiCreateColonLabel (&uiwidget, _("Gap"));
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
+
+  widget = uiSpinboxIntCreate ();
+  uiBoxPackStartUW (&hbox, widget);
+  uiSizeGroupAddW (&sgB, widget);
 
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&lcol, &hbox);
@@ -180,40 +217,48 @@ manageBuildUIPlaylist (managepl_t *managepl, UIWidget *vboxp)
 
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&lcol, &hbox);
+  uiutilsUIWidgetCopy (&managepl->uiratingitem, &hbox);
 
   /* CONTEXT: playlist management: Dance Rating */
   uiCreateColonLabel (&uiwidget, _("Dance Rating"));
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
-  uiutilsUIWidgetCopy (&managepl->uirating, &uiwidget);
+
+  managepl->uirating = uiratingSpinboxCreate (&hbox, false);
 
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&lcol, &hbox);
+  uiutilsUIWidgetCopy (&managepl->uilowlevelitem, &hbox);
 
   /* CONTEXT: playlist management: Low Dance Level */
   uiCreateColonLabel (&uiwidget, _("Low Dance Level"));
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
-  uiutilsUIWidgetCopy (&managepl->uilowlevel, &uiwidget);
-  /* can be hidden */
+
+  managepl->uilowlevel = uilevelSpinboxCreate (&hbox, false);
 
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&lcol, &hbox);
+  uiutilsUIWidgetCopy (&managepl->uihighlevelitem, &hbox);
 
   /* CONTEXT: playlist management: High Dance Level */
   uiCreateColonLabel (&uiwidget, _("High Dance Level"));
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
-  uiutilsUIWidgetCopy (&managepl->uihighlevel, &uiwidget);
+
+  managepl->uihighlevel = uilevelSpinboxCreate (&hbox, false);
 
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&lcol, &hbox);
+  uiutilsUIWidgetCopy (&managepl->uiallowedkeywordsitem, &hbox);
 
   /* CONTEXT: playlist management: allowed keywords */
   uiCreateColonLabel (&uiwidget, _("Allowed Keywords"));
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
-  uiutilsUIWidgetCopy (&managepl->uiallowedkeywords, &uiwidget);
+
+  uiEntryCreate (&managepl->allowedkeywords);
+  uiBoxPackStart (&hbox, &managepl->allowedkeywords.uientry);
 
   /* right side to hold the tree */
   uiCreateVertBox (&rcol);

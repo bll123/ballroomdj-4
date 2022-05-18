@@ -23,6 +23,7 @@
 enum {
   MPLTREE_COL_DANCE_SELECT,
   MPLTREE_COL_DANCE,
+  MPLTREE_COL_COUNT,
   MPLTREE_COL_MAXPLAYTIME,
   MPLTREE_COL_LOWBPM,
   MPLTREE_COL_HIGHBPM,
@@ -38,7 +39,7 @@ typedef struct managepltree {
   GtkWidget       *tree;
 } managepltree_t;
 
-static void managePlaylistTreePopulate (managepltree_t *managepltree);
+static void managePlaylistTreeCreate (managepltree_t *managepltree);
 
 managepltree_t *
 managePlaylistTreeAlloc (void)
@@ -93,6 +94,21 @@ manageBuildUIPlaylistTree (managepltree_t *managepltree, UIWidget *vboxp)
   gtk_tree_view_column_set_title (column, _("Dance"));
   gtk_tree_view_append_column (GTK_TREE_VIEW (tree), column);
 
+  renderer = gtk_cell_renderer_spin_new ();
+  gtk_cell_renderer_set_alignment (renderer, 1.0, 0.5);
+  g_object_set_data (G_OBJECT (renderer), "mpltreecolumn",
+      GUINT_TO_POINTER (MPLTREE_COL_COUNT));
+  column = gtk_tree_view_column_new_with_attributes ("", renderer,
+      "text", MPLTREE_COL_COUNT,
+      "editable", MPLTREE_COL_EDITABLE,
+      "adjustment", MPLTREE_COL_ADJUST,
+      "digits", MPLTREE_COL_DIGITS,
+      NULL);
+  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
+  /* CONTEXT: playlist management: count column header */
+  gtk_tree_view_column_set_title (column, _("Count"));
+  gtk_tree_view_append_column (GTK_TREE_VIEW (tree), column);
+
   renderer = gtk_cell_renderer_text_new ();
   column = gtk_tree_view_column_new_with_attributes ("", renderer,
       "text", MPLTREE_COL_MAXPLAYTIME,
@@ -100,7 +116,7 @@ manageBuildUIPlaylistTree (managepltree_t *managepltree, UIWidget *vboxp)
       NULL);
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
   /* CONTEXT: playlist management: max play time column header (keep short) */
-  gtk_tree_view_column_set_title (column, _("Max Play Time"));
+  gtk_tree_view_column_set_title (column, _("Maximum\nPlay Time"));
   gtk_tree_view_append_column (GTK_TREE_VIEW (tree), column);
 
   renderer = gtk_cell_renderer_spin_new ();
@@ -140,11 +156,22 @@ manageBuildUIPlaylistTree (managepltree_t *managepltree, UIWidget *vboxp)
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
   gtk_tree_view_append_column (GTK_TREE_VIEW (tree), column);
 
-  managePlaylistTreePopulate (managepltree);
+  managePlaylistTreeCreate (managepltree);
 }
 
+void
+managePlaylistTreePopulate (managepltree_t *managepltree, playlist_t *pl)
+{
+  dance_t       *dances;
+
+  dances = bdjvarsdfGet (BDJVDF_DANCES);
+
+}
+
+/* internal routines */
+
 static void
-managePlaylistTreePopulate (managepltree_t *managepltree)
+managePlaylistTreeCreate (managepltree_t *managepltree)
 {
   dance_t       *dances;
   GtkTreeIter   iter;
@@ -159,6 +186,7 @@ managePlaylistTreePopulate (managepltree_t *managepltree)
   store = gtk_list_store_new (MPLTREE_COL_MAX,
       G_TYPE_BOOLEAN, // dance select
       G_TYPE_STRING,  // dance
+      G_TYPE_LONG,    // count
       G_TYPE_STRING,  // max play time
       G_TYPE_STRING,  // low bpm
       G_TYPE_STRING,  // high bpm
