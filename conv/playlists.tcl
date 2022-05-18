@@ -58,10 +58,9 @@ foreach {fn} $flist {
     if { $tkey eq "UNRATEDOK" } { continue }
     if { $tkey eq "MANUALLIST" } { continue }
     if { $tkey eq "SEQUENCE" } { continue }
-    if { $tkey eq "STATUSOK" } {
-      # USESTATUS
-      continue
-    }
+    if { $tkey eq "MQMESSAGE" } { continue }
+    if { $tkey eq "PAUSEEACHSONG" } { continue }
+    if { $tkey eq "STATUSOK" } { continue }
 
     if { $tkey eq "HIGHDANCELEVEL" } { set key DANCELEVELHIGH }
     if { $tkey eq "LOWDANCELEVEL" } { set key DANCELEVELLOW }

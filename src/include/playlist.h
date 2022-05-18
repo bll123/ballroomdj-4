@@ -22,13 +22,10 @@ typedef enum {
   PLAYLIST_LEVEL_HIGH,            //
   PLAYLIST_LEVEL_LOW,             //
   PLAYLIST_MAX_PLAY_TIME,         //
-  PLAYLIST_MQ_MESSAGE,
-  PLAYLIST_PAUSE_EACH_SONG,
   PLAYLIST_RATING,                //
   PLAYLIST_STOP_AFTER,            //
   PLAYLIST_STOP_TIME,             //
   PLAYLIST_TYPE,                  //
-  PLAYLIST_STATUS_PLAYABLE,
   PLAYLIST_KEY_MAX,
 } playlistkey_t;
 
