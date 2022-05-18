@@ -86,16 +86,18 @@ void  uiSpinboxAlignRight (uispinbox_t *spinbox);
 GtkWidget * uiSpinboxIntCreate (void);
 GtkWidget * uiSpinboxDoubleCreate (void);
 
-void  uiSpinboxSet (GtkWidget *spinbox, double min, double max);
-double uiSpinboxGetValue (GtkWidget *spinbox);
-void  uiSpinboxSetValue (GtkWidget *spinbox, double ivalue);
-bool  uiSpinboxIsChanged (uispinbox_t *spinbox);
-
 void  uiSpinboxTimeInit (uispinbox_t *spinbox);
 void  uiSpinboxTimeFree (uispinbox_t *spinbox);
 GtkWidget * uiSpinboxTimeCreate (uispinbox_t *spinbox, void *udata);
 ssize_t uiSpinboxTimeGetValue (uispinbox_t *spinbox);
 void  uiSpinboxTimeSetValue (uispinbox_t *spinbox, ssize_t value);
+
+void uiSpinboxSetRange (uispinbox_t *spinbox, long min, long max);
+void uiSpinboxWrap (uispinbox_t *spinbox);
+void  uiSpinboxSet (GtkWidget *spinbox, double min, double max);
+double uiSpinboxGetValue (GtkWidget *spinbox);
+void  uiSpinboxSetValue (GtkWidget *spinbox, double ivalue);
+bool  uiSpinboxIsChanged (uispinbox_t *spinbox);
 
 /* uigtkdropdown.c */
 void uiDropDownInit (uidropdown_t *dropdown);

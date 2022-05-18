@@ -34,7 +34,8 @@ typedef struct managepl {
   bool            plbackupcreated;
   uientry_t       plname;
   pltype_t        pltype;
-  uispinbox_t     ratingspinbox;
+  uispinbox_t     uimaxplaytime;
+  uispinbox_t     uistopat;
   uirating_t      *uirating;
   UIWidget        uiratingitem;
   uilevel_t       *uilowlevel;
@@ -111,12 +112,16 @@ manageBuildUIPlaylist (managepl_t *managepl, UIWidget *vboxp)
   UIWidget            uiwidget;
   GtkWidget           *widget;
   UIWidget            sg;
+  UIWidget            sgA;
   UIWidget            sgB;
+  UIWidget            sgC;
 
   uiutilsUIWidgetInit (&hbox);
   uiutilsUIWidgetInit (&uiwidget);
   uiCreateSizeGroupHoriz (&sg);
+  uiCreateSizeGroupHoriz (&sgA);
   uiCreateSizeGroupHoriz (&sgB);
+  uiCreateSizeGroupHoriz (&sgC);
 
   uiWidgetSetAllMargins (vboxp, uiBaseMarginSz * 2);
 
@@ -166,8 +171,9 @@ manageBuildUIPlaylist (managepl_t *managepl, UIWidget *vboxp)
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
 
-//  widget = uiSpinboxTimeCreate ();
-//  uiBoxPackStart (&hbox, &uiwidget);
+  widget = uiSpinboxTimeCreate (&managepl->uimaxplaytime, managepl);
+  uiBoxPackStartUW (&hbox, widget);
+  uiSizeGroupAddW (&sgA, widget);
 
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&lcol, &hbox);
@@ -177,8 +183,11 @@ manageBuildUIPlaylist (managepl_t *managepl, UIWidget *vboxp)
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
 
-//  widget = uiSpinboxTimeCreate ();
-//  uiBoxPackStart (&hbox, &uiwidget);
+  widget = uiSpinboxTimeCreate (&managepl->uistopat, managepl);
+  uiSpinboxSetRange (&managepl->uistopat, 0, 1440000);
+  uiSpinboxWrap (&managepl->uistopat);
+  uiBoxPackStartUW (&hbox, widget);
+  uiSizeGroupAddW (&sgA, widget);
 
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&lcol, &hbox);
@@ -211,6 +220,9 @@ manageBuildUIPlaylist (managepl_t *managepl, UIWidget *vboxp)
   uiCreateColonLabel (&uiwidget, _("Play Announcements"));
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
+
+  widget = uiCreateSwitch (0);
+  uiBoxPackStartUW (&hbox, widget);
 
   /* automatic and sequenced playlists; keep the widget so these */
   /* can be hidden */

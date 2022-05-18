@@ -153,6 +153,7 @@ uiSpinboxTimeCreate (uispinbox_t *spinbox, void *udata)
   spinbox->spinbox = gtk_spin_button_new (NULL, 0.0, 0);
   gtk_entry_set_alignment (GTK_ENTRY (spinbox->spinbox), 1.0);
   gtk_spin_button_set_increments (GTK_SPIN_BUTTON (spinbox->spinbox), 5000.0, 60000.0);
+  /* this range is for maximum play time */
   gtk_spin_button_set_range (GTK_SPIN_BUTTON (spinbox->spinbox), 0.0, 600000.0);
   gtk_spin_button_set_wrap (GTK_SPIN_BUTTON (spinbox->spinbox), FALSE);
   gtk_widget_set_margin_top (spinbox->spinbox, uiBaseMarginSz);
@@ -179,7 +180,6 @@ uiSpinboxTimeSetValue (uispinbox_t *spinbox, ssize_t value)
 {
   uiSpinboxSetValue (spinbox->spinbox, (double) value);
 }
-
 
 GtkWidget *
 uiSpinboxIntCreate (void)
@@ -210,6 +210,21 @@ uiSpinboxDoubleCreate (void)
   gtk_widget_set_margin_start (spinbox, uiBaseMarginSz);
   return spinbox;
 }
+
+void
+uiSpinboxSetRange (uispinbox_t *spinbox, long min, long max)
+{
+  gtk_spin_button_set_range (GTK_SPIN_BUTTON (spinbox->spinbox),
+      (double) min, (double) max);
+}
+
+
+void
+uiSpinboxWrap (uispinbox_t *spinbox)
+{
+  gtk_spin_button_set_wrap (GTK_SPIN_BUTTON (spinbox->spinbox), TRUE);
+}
+
 
 void
 uiSpinboxSet (GtkWidget *spinbox, double min, double max)
