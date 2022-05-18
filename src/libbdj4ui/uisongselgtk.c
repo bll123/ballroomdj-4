@@ -15,7 +15,7 @@
 #include "bdj4intl.h"
 #include "bdjstring.h"
 #include "bdjopt.h"
-#include "bdj4playerui.h"
+#include "bdj4ui.h"
 #include "conn.h"
 #include "log.h"
 #include "musicq.h"

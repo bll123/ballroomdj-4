@@ -13,6 +13,7 @@ add_library (libbdj4ui SHARED
   uimusicq.c
   uimusicqgtk.c
   uiplayer.c
+  uiselectfile.c
   uisongedit.c
   uisongeditgtk.c
   uisongsel.c

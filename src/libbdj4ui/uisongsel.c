@@ -12,7 +12,7 @@
 
 #include "bdj4.h"
 #include "bdj4intl.h"
-#include "bdj4playerui.h"
+#include "bdj4ui.h"
 #include "bdjopt.h"
 #include "bdjvarsdf.h"
 #include "datafile.h"

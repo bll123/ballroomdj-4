@@ -43,9 +43,11 @@ typedef enum {
 } pldancekey_t;
 
 typedef enum {
+  PLTYPE_NONE,
   PLTYPE_AUTO,
   PLTYPE_MANUAL,
   PLTYPE_SEQ,
+  PLTYPE_ALL,
 } pltype_t;
 
 enum {

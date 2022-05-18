@@ -510,6 +510,9 @@ playlistGetPlaylistList (int flag)
   if (flag == PL_LIST_SEQUENCE) {
     ext = BDJ4_SEQUENCE_EXT;
   }
+  if (flag == PL_LIST_ALL) {
+    ext = BDJ4_PLAYLIST_EXT;
+  }
   filelist = filemanipBasicDirList (tfn, ext);
 
   slistStartIterator (filelist, &iteridx);

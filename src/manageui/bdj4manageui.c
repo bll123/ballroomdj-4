@@ -15,7 +15,7 @@
 #include "bdj4.h"
 #include "bdj4init.h"
 #include "bdj4intl.h"
-#include "bdj4playerui.h"
+#include "bdj4ui.h"
 #include "bdjmsg.h"
 #include "bdjopt.h"
 #include "bdjstring.h"
@@ -29,6 +29,7 @@
 #include "localeutil.h"
 #include "lock.h"
 #include "log.h"
+#include "manageui.h"
 #include "musicq.h"
 #include "osutils.h"
 #include "osuiutils.h"
@@ -45,9 +46,9 @@
 #include "sysvars.h"
 #include "tmutil.h"
 #include "ui.h"
-#include "uiduallist.h"
 #include "uimusicq.h"
 #include "uiplayer.h"
+#include "uiselectfile.h"
 #include "uisongedit.h"
 #include "uisongsel.h"
 #include "uiutils.h"
@@ -64,24 +65,11 @@ enum {
 };
 
 enum {
-  MNG_SELFILE_COL_DISP,
-  MNG_SELFILE_COL_SB_PAD,
-  MNG_SELFILE_COL_MAX,
-};
-
-enum {
   MANAGE_DB_CHECK_NEW,
   MANAGE_DB_REORGANIZE,
   MANAGE_DB_UPD_FROM_TAGS,
   MANAGE_DB_WRITE_TAGS,
   MANAGE_DB_REBUILD,
-};
-
-enum {
-  MANAGE_F_ALL,
-  MANAGE_F_SONGLIST,
-  MANAGE_F_PLAYLIST,
-  MANAGE_F_SEQUENCE,
 };
 
 enum {
@@ -91,8 +79,6 @@ enum {
 };
 
 typedef struct manage manageui_t;
-
-typedef void (*manageselfilecb_t)(manageui_t *manage, const char *fname);
 
 typedef struct manage {
   progstate_t     *progstate;
@@ -120,16 +106,11 @@ typedef struct manage {
   uimenu_t          *currmenu;
   uimenu_t          slmenu;
   uimenu_t          songeditmenu;
-  uimenu_t          seqmenu;
   uiutilsnbtabid_t  *mainnbtabid;
   uiutilsnbtabid_t  *slnbtabid;
   uiutilsnbtabid_t  *mmnbtabid;
   UIWidget        window;
   UICallback      closecb;
-  /* file selection dialog */
-  GtkWidget         *selfiledialog;
-  GtkWidget         *selfiletree;
-  manageselfilecb_t selfilecb;
   GtkWidget       *menubar;
   GtkWidget       *mainnotebook;
   GtkWidget       *slnotebook;
@@ -145,7 +126,6 @@ typedef struct manage {
   GtkWidget       *slezmusicqtabwidget;
   GtkWidget       *slmusicqtabwidget;
   GtkWidget       *slsongseltabwidget;
-  GtkWidget       *ezvboxwidget;
   char            *sloldname;
   songfilter_t    *slsongfilter;
   songfilter_t    *mmsongfilter;
@@ -154,16 +134,13 @@ typedef struct manage {
   uimusicq_t      *mmmusicq;
   uisongsel_t     *mmsongsel;
   uisongedit_t    *mmsongedit;
-  /* sequence editor */
-  uiduallist_t    *seqduallist;
-  uientry_t       seqname;
-  char            *seqoldname;
+  /* sequence */
+  manageseq_t     *manageseq;
   /* options */
   datafile_t      *optiondf;
   nlist_t         *options;
   /* various flags */
   bool            slbackupcreated : 1;
-  bool            seqbackupcreated : 1;
 } manageui_t;
 
 /* re-use the plui enums so that the songsel filter enums can also be used */
@@ -190,7 +167,6 @@ static void     manageBuildUI (manageui_t *manage);
 static void     manageBuildUISongListEditor (manageui_t *manage);
 static void     manageBuildUIMusicManager (manageui_t *manage);
 static void     manageBuildUIUpdateDatabase (manageui_t *manage);
-static void     manageBuildUISequence (manageui_t *manage);
 static int      manageMainLoop  (void *tmanage);
 static int      manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
                     bdjmsgmsg_t msg, char *args, void *udata);
@@ -209,7 +185,7 @@ static void     manageSonglistLoad (GtkMenuItem *mi, gpointer udata);
 static void     manageSonglistCopy (GtkMenuItem *mi, gpointer udata);
 static void     manageSonglistNew (GtkMenuItem *mi, gpointer udata);
 static void     manageSonglistTruncate (GtkMenuItem *mi, gpointer udata);
-static void     manageSonglistLoadFile (manageui_t *manage, const char *fn);
+static void     manageSonglistLoadFile (void *udata, const char *fn);
 static void     manageToggleEasySonglist (GtkWidget *mi, gpointer udata);
 static void     manageSetEasySonglist (manageui_t *manage);
 static void     manageSonglistSave (manageui_t *manage);
@@ -217,29 +193,7 @@ static void     manageSetSonglistName (manageui_t *manage, const char *nm);
 /* general */
 static void     manageSwitchPage (GtkNotebook *nb, GtkWidget *page,
     guint pagenum, gpointer udata);
-static void     manageSelectFileDialog (manageui_t *manage, int flags);
-static GtkWidget * manageCreateSelectFileDialog (manageui_t *manage,
-    slist_t *filelist, const char *filetype, manageselfilecb_t cb);
-static void manageSelectFileSelect (GtkTreeView* tv, GtkTreePath* path,
-    GtkTreeViewColumn* column, gpointer udata);
-static void manageSelectFileResponseHandler (GtkDialog *d, gint responseid,
-    gpointer udata);
 static void manageInitializeSongFilter (manageui_t *manage, nlist_t *options);
-static void manageRenamePlaylistFiles (const char *oldname, const char *newname);
-static void manageCopyPlaylistFiles (const char *oldname, const char *newname);
-static void manageSetStatusMsg (manageui_t *manage, const char *msg);
-static void manageCheckAndCreatePlaylist (manageui_t *manage, const char *name,
-    const char *suppfname, pltype_t pltype);
-static bool manageCreatePlaylistCopy (manageui_t *manage, const char *oname, const char *newname);
-/* sequence */
-static void     manageSequenceMenu (manageui_t *manage);
-static void     manageSequenceLoad (GtkMenuItem *mi, gpointer udata);
-static void     manageSequenceLoadFile (manageui_t *manage, const char *fn);
-static void     manageSequenceCopy (GtkMenuItem *mi, gpointer udata);
-static void     manageSequenceNew (GtkMenuItem *mi, gpointer udata);
-static void     manageSequenceSave (manageui_t *manage);
-static void     manageSetSequenceName (manageui_t *manage, const char *nm);
-
 
 static int gKillReceived = 0;
 
@@ -283,20 +237,15 @@ main (int argc, char *argv[])
   manage.mmlasttab = MANAGE_TAB_OTHER;
   uiMenuInit (&manage.slmenu);
   uiMenuInit (&manage.songeditmenu);
-  uiMenuInit (&manage.seqmenu);
   manage.mainnbtabid = uiutilsNotebookIDInit ();
   manage.slnbtabid = uiutilsNotebookIDInit ();
   manage.mmnbtabid = uiutilsNotebookIDInit ();
-  manage.selfilecb = NULL;
   manage.sloldname = NULL;
   manage.slbackupcreated = false;
-  manage.seqbackupcreated = false;
   manage.slsongfilter = NULL;
   manage.mmsongfilter = NULL;
   uiutilsUIWidgetInit (&manage.dbpbar);
-  manage.seqduallist = NULL;
-  uiEntryInit (&manage.seqname, 20, 50);
-  manage.seqoldname = NULL;
+  manage.manageseq = NULL;   /* allocated within buildui */
 
   procutilInitProcesses (manage.processes);
 
@@ -441,7 +390,7 @@ manageStoppingCallback (void *udata, programstate_t programState)
   connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_STOP_MAIN, NULL);
 
   manageSonglistSave (manage);
-  manageSequenceSave (manage);
+  manageSequenceSave (manage->manageseq);
 
   uiWindowGetSize (&manage->window, &x, &y);
   nlistSetNum (manage->options, PLUI_SIZE_X, x);
@@ -485,8 +434,8 @@ manageClosingCallback (void *udata, programstate_t programState)
 
   bdj4shutdown (ROUTE_MANAGEUI, manage->musicdb);
   dispselFree (manage->dispsel);
+  manageSequenceFree (manage->manageseq);
 
-  uiEntryFree (&manage->seqname);
   if (manage->slsongfilter != NULL) {
     songfilterFree (manage->slsongfilter);
   }
@@ -495,9 +444,6 @@ manageClosingCallback (void *udata, programstate_t programState)
   }
   if (manage->sloldname != NULL) {
     free (manage->sloldname);
-  }
-  if (manage->seqoldname != NULL) {
-    free (manage->seqoldname);
   }
   if (manage->mainnbtabid != NULL) {
     uiutilsNotebookIDFree (manage->mainnbtabid);
@@ -542,17 +488,16 @@ manageBuildUI (manageui_t *manage)
 {
   GtkWidget           *menubar;
   GtkWidget           *tabLabel;
-  GtkWidget           *vbox;
+  UIWidget            vbox;
   UIWidget            hbox;
   UIWidget            uiwidget;
-  UIWidget            uivbox;
   char                imgbuff [MAXPATHLEN];
   char                tbuff [MAXPATHLEN];
   gint                x, y;
 
   logProcBegin (LOG_PROC, "manageBuildUI");
   *imgbuff = '\0';
-  uiutilsUIWidgetInit (&uivbox);
+  uiutilsUIWidgetInit (&vbox);
   uiutilsUIWidgetInit (&hbox);
   uiutilsUIWidgetInit (&uiwidget);
 
@@ -564,13 +509,13 @@ manageBuildUI (manageui_t *manage)
   uiutilsUICallbackInit (&manage->closecb, manageCloseWin, manage);
   uiCreateMainWindow (&manage->window, &manage->closecb, tbuff, imgbuff);
 
-  uiCreateVertBox (&uivbox);
-  uiWidgetSetAllMargins (&uivbox, 4);
-  uiBoxPackInWindow (&manage->window, &uivbox);
+  uiCreateVertBox (&vbox);
+  uiWidgetSetAllMargins (&vbox, 4);
+  uiBoxPackInWindow (&manage->window, &vbox);
 
   uiCreateHorizBox (&hbox);
   uiWidgetSetMarginTop (&hbox, uiBaseMarginSz * 4);
-  uiBoxPackStart (&uivbox, &hbox);
+  uiBoxPackStart (&vbox, &hbox);
 
   uiCreateLabel (&uiwidget, "");
   uiLabelSetColor (&uiwidget, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
@@ -583,28 +528,36 @@ manageBuildUI (manageui_t *manage)
 
   manage->mainnotebook = uiCreateNotebookW ();
   gtk_notebook_set_tab_pos (GTK_NOTEBOOK (manage->mainnotebook), GTK_POS_LEFT);
-  uiBoxPackStartExpandUW (&uivbox, manage->mainnotebook);
+  uiBoxPackStartExpandUW (&vbox, manage->mainnotebook);
 
   manageBuildUISongListEditor (manage);
   manageBuildUIMusicManager (manage);
   manageBuildUIUpdateDatabase (manage);
 
   /* playlist management */
-  vbox = uiCreateVertBoxWW ();
-  uiWidgetSetAllMarginsW (vbox, 4);
+  uiCreateVertBox (&vbox);
+  uiWidgetSetAllMargins (&vbox, uiBaseMarginSz * 2);
   /* CONTEXT: notebook tab title: playlist management */
   tabLabel = uiCreateLabelW (_("Playlist Management"));
-  uiNotebookAppendPageW (manage->mainnotebook, vbox, tabLabel);
+  uiNotebookAppendPageW (manage->mainnotebook, vbox.widget, tabLabel);
   uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_PLMGMT);
 
-  manageBuildUISequence (manage);
+  manage->manageseq = manageSequenceAlloc (&manage->window,
+      manage->options, &manage->statusMsg);
+
+  uiCreateVertBox (&vbox);
+  manageBuildUISequence (manage->manageseq, &vbox);
+  /* CONTEXT: notebook tab title: edit sequences */
+  tabLabel = uiCreateLabelW (_("Edit Sequences"));
+  uiNotebookAppendPageW (manage->mainnotebook, vbox.widget, tabLabel);
+  uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_EDITSEQ);
 
   /* file manager */
-  vbox = uiCreateVertBoxWW ();
-  uiWidgetSetAllMarginsW (vbox, 4);
+  uiCreateVertBox (&vbox);
+  uiWidgetSetAllMargins (&vbox, uiBaseMarginSz * 2);
   /* CONTEXT: notebook tab title: file manager */
   tabLabel = uiCreateLabelW (_("File Manager"));
-  uiNotebookAppendPageW (manage->mainnotebook, vbox, tabLabel);
+  uiNotebookAppendPageW (manage->mainnotebook, vbox.widget, tabLabel);
   uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_FILEMGR);
 
   x = nlistGetNum (manage->options, PLUI_SIZE_X);
@@ -631,7 +584,7 @@ static void
 manageBuildUISongListEditor (manageui_t *manage)
 {
   UIWidget            uiwidget;
-  GtkWidget           *vbox;
+  UIWidget            vbox;
   UIWidget            hbox;
   UIWidget            *uiwidgetp;
   GtkWidget           *tabLabel;
@@ -641,20 +594,20 @@ manageBuildUISongListEditor (manageui_t *manage)
   /* song list editor */
   uiutilsUIWidgetInit (&hbox);
 
-  vbox = uiCreateVertBoxWW ();
-  uiWidgetSetAllMarginsW (vbox, 4);
+  uiCreateVertBox (&vbox);
+  uiWidgetSetAllMargins (&vbox, uiBaseMarginSz * 2);
 
   /* CONTEXT: notebook tab title: edit song lists (manual playlists) */
   tabLabel = uiCreateLabelW (_("Edit Song Lists"));
-  uiNotebookAppendPageW (manage->mainnotebook, vbox, tabLabel);
+  uiNotebookAppendPageW (manage->mainnotebook, vbox.widget, tabLabel);
   uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_MAIN_SL);
 
   /* song list editor: player */
   uiwidgetp = uiplayerBuildUI (manage->slplayer);
-  uiBoxPackStartWU (vbox, uiwidgetp);
+  uiBoxPackStart (&vbox, uiwidgetp);
 
   notebook = uiCreateNotebookW ();
-  uiBoxPackStartExpandWW (vbox, notebook);
+  uiBoxPackStartExpandUW (&vbox, notebook);
   manage->slnotebook = notebook;
 
   /* song list editor: easy song list tab */
@@ -672,11 +625,10 @@ manageBuildUISongListEditor (manageui_t *manage)
   uiwidgetp = uimusicqBuildUI (manage->slezmusicq, manage->window.widget, MUSICQ_A);
   uiBoxPackStartExpand (&hbox, uiwidgetp);
 
-  vbox = uiCreateVertBoxWW ();
-  uiWidgetSetAllMarginsW (vbox, uiBaseMarginSz * 4);
-  uiWidgetSetMarginTopW (vbox, uiBaseMarginSz * 64);
-  uiBoxPackStartUW (&hbox, vbox);
-  manage->ezvboxwidget = vbox;
+  uiCreateVertBox (&vbox);
+  uiWidgetSetAllMargins (&vbox, uiBaseMarginSz * 4);
+  uiWidgetSetMarginTop (&vbox, uiBaseMarginSz * 64);
+  uiBoxPackStart (&hbox, &vbox);
 
   uiutilsUICallbackInit (&manage->callbacks [MANAGE_CALLBACK_EZ_SELECT],
       uisongselQueueProcessSelectCallback, manage->slezsongsel);
@@ -684,7 +636,7 @@ manageBuildUISongListEditor (manageui_t *manage)
       &manage->callbacks [MANAGE_CALLBACK_EZ_SELECT],
       /* CONTEXT: config: button: add the selected songs to the song list */
       _("Select"), "button_left", NULL, NULL);
-  uiBoxPackStartWW (vbox, widget);
+  uiBoxPackStartUW (&vbox, widget);
 
   uiwidgetp = uisongselBuildUI (manage->slezsongsel, manage->window.widget);
   uiBoxPackStartExpand (&hbox, uiwidgetp);
@@ -719,25 +671,25 @@ static void
 manageBuildUIMusicManager (manageui_t *manage)
 {
   UIWidget            *uiwidgetp;
-  GtkWidget           *vbox;
+  UIWidget            vbox;
   GtkWidget           *tabLabel;
   GtkWidget           *widget;
   GtkWidget           *notebook;
 
   /* music manager */
-  vbox = uiCreateVertBoxWW ();
-  uiWidgetSetAllMarginsW (vbox, 4);
+  uiCreateVertBox (&vbox);
+  uiWidgetSetAllMargins (&vbox, uiBaseMarginSz * 2);
   /* CONTEXT: name of music manager notebook tab */
   tabLabel = uiCreateLabelW (_("Music Manager"));
-  uiNotebookAppendPageW (manage->mainnotebook, vbox, tabLabel);
+  uiNotebookAppendPageW (manage->mainnotebook, vbox.widget, tabLabel);
   uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_MAIN_MM);
 
   /* music manager: player */
   uiwidgetp = uiplayerBuildUI (manage->mmplayer);
-  uiBoxPackStartWU (vbox, uiwidgetp);
+  uiBoxPackStart (&vbox, uiwidgetp);
 
   notebook = uiCreateNotebookW ();
-  uiBoxPackStartExpandWW (vbox, notebook);
+  uiBoxPackStartExpandUW (&vbox, notebook);
   manage->mmnotebook = notebook;
 
   /* music manager: song selection tab*/
@@ -763,29 +715,29 @@ static void
 manageBuildUIUpdateDatabase (manageui_t *manage)
 {
   UIWidget            uiwidget;
-  GtkWidget           *vbox;
+  UIWidget            vbox;
   UIWidget            hbox;
   GtkWidget           *tabLabel;
   GtkWidget           *widget;
   uitextbox_t    *tb;
 
   /* update database */
-  vbox = uiCreateVertBoxWW ();
-  uiWidgetSetAllMarginsW (vbox, 4);
+  uiCreateVertBox (&vbox);
+  uiWidgetSetAllMargins (&vbox, uiBaseMarginSz * 2);
   /* CONTEXT: notebook tab title: update database */
   tabLabel = uiCreateLabelW (_("Update Database"));
-  uiNotebookAppendPageW (manage->mainnotebook, vbox, tabLabel);
+  uiNotebookAppendPageW (manage->mainnotebook, vbox.widget, tabLabel);
   uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_OTHER);
 
   /* help display */
   tb = uiTextBoxCreate (80);
   uiTextBoxSetReadonly (tb);
   uiTextBoxSetHeight (tb, 70);
-  uiBoxPackStartWU (vbox, uiTextBoxGetScrolledWindow (tb));
+  uiBoxPackStart (&vbox, uiTextBoxGetScrolledWindow (tb));
   manage->dbhelpdisp = tb;
 
   uiCreateHorizBox (&hbox);
-  uiBoxPackStartWU (vbox, &hbox);
+  uiBoxPackStart (&vbox, &hbox);
 
   widget = uiSpinboxTextCreate (&manage->dbspinbox, manage);
   /* currently hard-coded at 30 chars */
@@ -805,60 +757,14 @@ manageBuildUIUpdateDatabase (manageui_t *manage)
   uiBoxPackStartUW (&hbox, widget);
 
   uiCreateProgressBar (&manage->dbpbar, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
-  uiBoxPackStartWU (vbox, &manage->dbpbar);
+  uiBoxPackStart (&vbox, &manage->dbpbar);
 
   tb = uiTextBoxCreate (200);
   uiTextBoxSetReadonly (tb);
   uiTextBoxDarken (tb);
   uiTextBoxSetHeight (tb, 300);
-  uiBoxPackStartExpandWU (vbox, uiTextBoxGetScrolledWindow (tb));
+  uiBoxPackStartExpand (&vbox, uiTextBoxGetScrolledWindow (tb));
   manage->dbstatus = tb;
-}
-
-static void
-manageBuildUISequence (manageui_t *manage)
-{
-  GtkWidget           *tabLabel;
-  GtkWidget           *widget;
-  UIWidget            vbox;
-  UIWidget            hbox;
-  UIWidget            uiwidget;
-  dance_t             *dances;
-  slist_t             *dancelist;
-
-  uiutilsUIWidgetInit (&hbox);
-  uiutilsUIWidgetInit (&vbox);
-  uiutilsUIWidgetInit (&uiwidget);
-
-  /* edit sequences */
-  uiCreateVertBox (&vbox);
-  uiWidgetSetAllMarginsW (vbox.widget, 4);
-  /* CONTEXT: notebook tab title: edit sequences */
-  tabLabel = uiCreateLabelW (_("Edit Sequences"));
-  uiNotebookAppendPageW (manage->mainnotebook, vbox.widget, tabLabel);
-  uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_EDITSEQ);
-
-  uiCreateHorizBox (&hbox);
-  uiBoxPackStart (&vbox, &hbox);
-
-  /* CONTEXT: sequence editor: label for sequence name */
-  uiCreateColonLabel (&uiwidget, _("Sequence"));
-  uiBoxPackStart (&hbox, &uiwidget);
-
-  widget = uiEntryCreate (&manage->seqname);
-  uiEntrySetColor (&manage->seqname, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
-  /* CONTEXT: sequence: default name for a new sequence */
-  manageSetSequenceName (manage, _("New Sequence"));
-  uiBoxPackStartUW (&hbox, widget);
-
-  manage->seqduallist = uiCreateDualList (&vbox,
-      DUALLIST_FLAGS_MULTIPLE | DUALLIST_FLAGS_PERSISTENT,
-      /* CONTEXT: sequence editor: titles for the selection list and the sequence list  */
-      _("Dance"), _("Sequence"));
-
-  dances = bdjvarsdfGet (BDJVDF_DANCES);
-  dancelist = danceGetDanceList (dances);
-  uiduallistSet (manage->seqduallist, dancelist, DUALLIST_TREE_SOURCE);
 }
 
 static int
@@ -1317,7 +1223,8 @@ manageSonglistLoad (GtkMenuItem *mi, gpointer udata)
 {
   manageui_t  *manage = udata;
 
-  manageSelectFileDialog (manage, MANAGE_F_SONGLIST);
+  selectFileDialog (SELFILE_SONGLIST, &manage->window, manage->options,
+      manage, manageSonglistLoadFile);
 }
 
 static void
@@ -1332,7 +1239,7 @@ manageSonglistCopy (GtkMenuItem *mi, gpointer udata)
   oname = uimusicqGetSonglistName (manage->slmusicq);
   /* CONTEXT: the new name after 'create copy' (e.g. "Copy of DJ-2022-04") */
   snprintf (newname, sizeof (newname), _("Copy of %s"), oname);
-  if (manageCreatePlaylistCopy (manage, oname, newname)) {
+  if (manageCreatePlaylistCopy (&manage->statusMsg, oname, newname)) {
     manageSetSonglistName (manage, newname);
     manage->slbackupcreated = false;
   }
@@ -1363,8 +1270,9 @@ manageSonglistTruncate (GtkMenuItem *mi, gpointer udata)
 }
 
 static void
-manageSonglistLoadFile (manageui_t *manage, const char *fn)
+manageSonglistLoadFile (void *udata, const char *fn)
 {
+  manageui_t  *manage = udata;
   char  tbuff [200];
 
   manageSonglistSave (manage);
@@ -1458,7 +1366,7 @@ manageSonglistSave (manageui_t *manage)
   }
   filemanipMove (onm, nnm);
 
-  manageCheckAndCreatePlaylist (manage, name, nnm, PLTYPE_MANUAL);
+  manageCheckAndCreatePlaylist (name, nnm, PLTYPE_MANUAL);
 }
 
 /* general */
@@ -1496,7 +1404,7 @@ manageSwitchPage (GtkNotebook *nb, GtkWidget *page, guint pagenum,
     manageSonglistSave (manage);
   }
   if (manage->mainlasttab == MANAGE_TAB_EDITSEQ) {
-    manageSequenceSave (manage);
+    manageSequenceSave (manage->manageseq);
   }
 
   id = uiutilsNotebookIDGet (nbtabid, pagenum);
@@ -1556,7 +1464,7 @@ manageSwitchPage (GtkNotebook *nb, GtkWidget *page, guint pagenum,
       break;
     }
     case MANAGE_TAB_EDITSEQ: {
-      manageSequenceMenu (manage);
+      manage->currmenu = manageSequenceMenu (manage->manageseq, manage->menubar);
       break;
     }
     case MANAGE_TAB_FILEMGR: {
@@ -1570,475 +1478,10 @@ manageSwitchPage (GtkNotebook *nb, GtkWidget *page, guint pagenum,
 }
 
 static void
-manageSelectFileDialog (manageui_t *manage, int flags)
-{
-  slist_t     *filelist;
-  int         x, y;
-  GtkWidget   *dialog;
-  manageselfilecb_t cb = NULL;
-  int         pltype;
-
-  logProcBegin (LOG_PROC, "manageSelectFileDialog");
-  pltype = PL_LIST_NORMAL;
-  if ((flags & MANAGE_F_SONGLIST) == MANAGE_F_SONGLIST) {
-    cb = manageSonglistLoadFile;
-    pltype = PL_LIST_MANUAL;
-  }
-  if ((flags & MANAGE_F_PLAYLIST) == MANAGE_F_PLAYLIST) {
-//      cb = managePlaylistLoadFile;
-    pltype = PL_LIST_ALL;
-  }
-  if ((flags & MANAGE_F_SEQUENCE) == MANAGE_F_SEQUENCE) {
-    cb = manageSequenceLoadFile;
-    pltype = PL_LIST_SEQUENCE;
-  }
-  filelist = playlistGetPlaylistList (pltype);
-
-  /* CONTEXT: what type of file to load */
-  if (cb != NULL) {
-    /* CONTEXT: file type for the file selection dialog (song list) */
-    dialog = manageCreateSelectFileDialog (manage, filelist, _("Song List"), cb);
-    uiWidgetShowAllW (dialog);
-
-    x = nlistGetNum (manage->options, MANAGE_SELFILE_POSITION_X);
-    y = nlistGetNum (manage->options, MANAGE_SELFILE_POSITION_Y);
-    uiWindowMoveW (dialog, x, y);
-  }
-  logProcEnd (LOG_PROC, "manageSelectFileDialog", "");
-}
-
-static GtkWidget *
-manageCreateSelectFileDialog (manageui_t *manage,
-    slist_t *filelist, const char *filetype, manageselfilecb_t cb)
-{
-  GtkWidget     *dialog;
-  GtkWidget     *content;
-  UIWidget      vbox;
-  UIWidget      hbox;
-  UIWidget      uiwidget;
-  GtkWidget     *scwin;
-  GtkWidget     *widget;
-  char          tbuff [200];
-  GtkListStore  *store;
-  GtkTreeIter   iter;
-  slistidx_t    fliteridx;
-  char          *disp;
-  GtkCellRenderer   *renderer = NULL;
-  GtkTreeViewColumn *column = NULL;
-
-
-  logProcBegin (LOG_PROC, "manageCreateSelectFileDialog");
-
-  manage->selfilecb = cb;
-
-  /* CONTEXT: file select dialog, title of window: select <file-type> */
-  snprintf (tbuff, sizeof (tbuff), _("Select %s"), filetype);
-  dialog = gtk_dialog_new_with_buttons (
-      tbuff,
-      GTK_WINDOW (manage->window.widget),
-      GTK_DIALOG_DESTROY_WITH_PARENT,
-      /* CONTEXT: file select dialog: closes the dialog */
-      _("Close"),
-      GTK_RESPONSE_CLOSE,
-      /* CONTEXT: file select dialog: selects the file */
-      _("Select"),
-      GTK_RESPONSE_APPLY,
-      NULL
-      );
-  manage->selfiledialog = dialog;
-
-  content = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
-  uiWidgetSetAllMarginsW (content, uiBaseMarginSz * 2);
-
-  uiCreateVertBox (&vbox);
-  uiWidgetExpandVert (&vbox);
-  uiBoxPackInWindowWU (content, &vbox);
-
-  scwin = uiCreateScrolledWindowW (200);
-  uiWidgetExpandHorizW (scwin);
-  uiWidgetExpandVertW (scwin);
-  uiBoxPackStartExpandUW (&vbox, scwin);
-
-  widget = uiCreateTreeView ();
-  gtk_tree_view_set_activate_on_single_click (GTK_TREE_VIEW (widget), FALSE);
-  uiWidgetAlignHorizFillW (widget);
-  uiWidgetAlignVertFillW (widget);
-//  uiWidgetExpandHorizW (widget);
-//  uiWidgetExpandVertW (widget);
-  manage->selfiletree = widget;
-
-  store = gtk_list_store_new (MNG_SELFILE_COL_MAX,
-      G_TYPE_STRING, G_TYPE_STRING);
-  assert (store != NULL);
-
-  slistStartIterator (filelist, &fliteridx);
-  while ((disp = slistIterateKey (filelist, &fliteridx)) != NULL) {
-    gtk_list_store_append (store, &iter);
-    gtk_list_store_set (store, &iter,
-        MNG_SELFILE_COL_DISP, disp,
-        MNG_SELFILE_COL_SB_PAD, "  ",
-        -1);
-  }
-
-  renderer = gtk_cell_renderer_text_new ();
-  column = gtk_tree_view_column_new_with_attributes ("", renderer,
-      "text", MNG_SELFILE_COL_DISP,
-      NULL);
-  gtk_tree_view_column_set_title (column, "");
-  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
-  gtk_tree_view_append_column (GTK_TREE_VIEW (widget), column);
-
-  column = gtk_tree_view_column_new_with_attributes ("", renderer,
-      "text", MNG_SELFILE_COL_SB_PAD,
-      NULL);
-  gtk_tree_view_column_set_title (column, "");
-  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_FIXED);
-  gtk_tree_view_append_column (GTK_TREE_VIEW (widget), column);
-
-  gtk_tree_view_set_model (GTK_TREE_VIEW (widget), GTK_TREE_MODEL (store));
-  g_object_unref (store);
-
-  g_signal_connect (widget, "row-activated",
-      G_CALLBACK (manageSelectFileSelect), manage);
-
-  uiBoxPackInWindowWW (scwin, widget);
-
-  /* the dialog doesn't have any space above the buttons */
-  uiCreateHorizBox (&hbox);
-  uiBoxPackStart (&vbox, &hbox);
-
-  uiCreateLabel (&uiwidget, " ");
-  uiBoxPackStart (&hbox, &uiwidget);
-
-  g_signal_connect (dialog, "response",
-      G_CALLBACK (manageSelectFileResponseHandler), manage);
-  logProcEnd (LOG_PROC, "manageCreateSelectFileDialog", "");
-
-  return dialog;
-}
-
-static void
-manageSelectFileSelect (GtkTreeView* tv, GtkTreePath* path,
-    GtkTreeViewColumn* column, gpointer udata)
-{
-  manageui_t  *manage = udata;
-
-  manageSelectFileResponseHandler (GTK_DIALOG (manage->selfiledialog),
-      GTK_RESPONSE_APPLY, manage);
-}
-
-static void
-manageSelectFileResponseHandler (GtkDialog *d, gint responseid,
-    gpointer udata)
-{
-  manageui_t    *manage = udata;
-  gint          x, y;
-  char          *str;
-  GtkTreeModel  *model;
-  GtkTreeIter   iter;
-  int           count;
-
-  uiWindowGetPositionW (GTK_WIDGET (d), &x, &y);
-  nlistSetNum (manage->options, MANAGE_SELFILE_POSITION_X, x);
-  nlistSetNum (manage->options, MANAGE_SELFILE_POSITION_Y, y);
-
-  switch (responseid) {
-    case GTK_RESPONSE_DELETE_EVENT: {
-      manage->selfilecb = NULL;
-      break;
-    }
-    case GTK_RESPONSE_CLOSE: {
-      uiCloseWindowW (GTK_WIDGET (d));
-      manage->selfilecb = NULL;
-      break;
-    }
-    case GTK_RESPONSE_APPLY: {
-      count = uiTreeViewGetSelection (manage->selfiletree, &model, &iter);
-      if (count != 1) {
-        break;
-      }
-
-      gtk_tree_model_get (model, &iter, MNG_SELFILE_COL_DISP, &str, -1);
-      uiCloseWindowW (GTK_WIDGET (d));
-      if (manage->selfilecb != NULL) {
-        manage->selfilecb (manage, str);
-      }
-      free (str);
-      manage->selfilecb = NULL;
-      break;
-    }
-  }
-}
-
-static void
 manageInitializeSongFilter (manageui_t *manage, nlist_t *options)
 {
   songfilterSetSort (manage->slsongfilter,
       nlistGetStr (options, SONGSEL_SORT_BY));
   songfilterSetSort (manage->mmsongfilter,
       nlistGetStr (options, SONGSEL_SORT_BY));
-}
-
-
-static void
-manageRenamePlaylistFiles (const char *oldname, const char *newname)
-{
-  char  onm [MAXPATHLEN];
-  char  nnm [MAXPATHLEN];
-
-  pathbldMakePath (onm, sizeof (onm),
-      oldname, BDJ4_SEQUENCE_EXT, PATHBLD_MP_DATA);
-  pathbldMakePath (nnm, sizeof (nnm),
-      newname, BDJ4_SEQUENCE_EXT, PATHBLD_MP_DATA);
-  filemanipRenameAll (onm, nnm);
-
-  pathbldMakePath (onm, sizeof (onm),
-      oldname, BDJ4_SONGLIST_EXT, PATHBLD_MP_DATA);
-  pathbldMakePath (nnm, sizeof (nnm),
-      newname, BDJ4_SONGLIST_EXT, PATHBLD_MP_DATA);
-  filemanipRenameAll (onm, nnm);
-
-  pathbldMakePath (onm, sizeof (onm),
-      oldname, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
-  pathbldMakePath (nnm, sizeof (nnm),
-      newname, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
-  filemanipRenameAll (onm, nnm);
-
-  pathbldMakePath (onm, sizeof (onm),
-      oldname, BDJ4_PL_DANCE_EXT, PATHBLD_MP_DATA);
-  pathbldMakePath (nnm, sizeof (nnm),
-      newname, BDJ4_PL_DANCE_EXT, PATHBLD_MP_DATA);
-  filemanipRenameAll (onm, nnm);
-}
-
-static void
-manageCopyPlaylistFiles (const char *oldname, const char *newname)
-{
-  char  onm [MAXPATHLEN];
-  char  nnm [MAXPATHLEN];
-
-  pathbldMakePath (onm, sizeof (onm),
-      oldname, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
-  pathbldMakePath (nnm, sizeof (nnm),
-      newname, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
-  filemanipCopy (onm, nnm);
-
-  pathbldMakePath (onm, sizeof (onm),
-      oldname, BDJ4_PL_DANCE_EXT, PATHBLD_MP_DATA);
-  pathbldMakePath (nnm, sizeof (nnm),
-      newname, BDJ4_PL_DANCE_EXT, PATHBLD_MP_DATA);
-  filemanipCopy (onm, nnm);
-}
-
-static void
-manageSetStatusMsg (manageui_t *manage, const char *msg)
-{
-  uiLabelSetText (&manage->statusMsg, msg);
-}
-
-static void
-manageCheckAndCreatePlaylist (manageui_t *manage, const char *name,
-    const char *suppfname, pltype_t pltype)
-{
-  char  onm [MAXPATHLEN];
-
-  pathbldMakePath (onm, sizeof (onm),
-      name, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
-  if (! fileopFileExists (onm) &&
-      /* CONTEXT: name of the special song list for raffle songs */
-      strcmp (name, _("Raffle Songs")) != 0) {
-    playlist_t    *pl;
-
-    pl = playlistAlloc (manage->musicdb);
-    playlistCreate (pl, name, pltype, suppfname);
-    playlistSave (pl);
-    playlistFree (pl);
-  }
-}
-
-static bool
-manageCreatePlaylistCopy (manageui_t *manage,
-    const char *oname, const char *newname)
-{
-  char  tbuff [MAXPATHLEN];
-  bool  rc = true;
-
-  pathbldMakePath (tbuff, sizeof (tbuff),
-      newname, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
-  if (fileopFileExists (tbuff)) {
-    /* CONTEXT: failure status message */
-    snprintf (tbuff, sizeof (tbuff), _("Copy already exists."));
-    manageSetStatusMsg (manage, tbuff);
-    rc = false;
-  }
-  if (rc) {
-    manageCopyPlaylistFiles (oname, newname);
-  }
-  return rc;
-}
-
-
-/* sequence */
-
-static void
-manageSequenceMenu (manageui_t *manage)
-{
-  GtkWidget *menu;
-  GtkWidget *menuitem;
-
-  if (! manage->seqmenu.initialized) {
-    menuitem = uiMenuAddMainItem (manage->menubar,
-        /* CONTEXT: menu selection: sequence: edit menu */
-        &manage->seqmenu, _("Edit"));
-
-    menu = uiCreateSubMenu (menuitem);
-
-    /* CONTEXT: menu selection: sequence: edit menu: load */
-    menuitem = uiMenuCreateItem (menu, _("Load"),
-        manageSequenceLoad, manage);
-
-    /* CONTEXT: menu selection: sequence: edit menu: create copy */
-    menuitem = uiMenuCreateItem (menu, _("Create Copy"),
-        manageSequenceCopy, manage);
-
-    /* CONTEXT: menu selection: sequence: edit menu: start new sequence */
-    menuitem = uiMenuCreateItem (menu, _("Start New Sequence"),
-        manageSequenceNew, manage);
-
-    manage->seqmenu.initialized = true;
-  }
-
-  uiMenuDisplay (&manage->seqmenu);
-  manage->currmenu = &manage->seqmenu;
-}
-
-static void
-manageSequenceLoad (GtkMenuItem *mi, gpointer udata)
-{
-  manageui_t  *manage = udata;
-
-  manageSelectFileDialog (manage, MANAGE_F_SEQUENCE);
-}
-
-static void
-manageSequenceLoadFile (manageui_t *manage, const char *fn)
-{
-  sequence_t  *seq = NULL;
-  char        *dstr = NULL;
-  nlist_t     *dancelist = NULL;
-  slist_t     *tlist = NULL;
-  nlistidx_t  iteridx;
-  nlistidx_t  didx;
-
-  manageSequenceSave (manage);
-
-  seq = sequenceAlloc (fn);
-  if (seq == NULL) {
-    return;
-  }
-
-  dancelist = sequenceGetDanceList (seq);
-  tlist = slistAlloc ("temp-seq", LIST_UNORDERED, NULL);
-  nlistStartIterator (dancelist, &iteridx);
-  while ((didx = nlistIterateKey (dancelist, &iteridx)) >= 0) {
-    dstr = nlistGetStr (dancelist, didx);
-    slistSetNum (tlist, dstr, didx);
-  }
-  uiduallistSet (manage->seqduallist, tlist, DUALLIST_TREE_TARGET);
-  slistFree (tlist);
-
-  manageSetSequenceName (manage, fn);
-  manage->seqbackupcreated = false;
-}
-
-static void
-manageSequenceCopy (GtkMenuItem *mi, gpointer udata)
-{
-  manageui_t  *manage = udata;
-  const char  *oname;
-  char        newname [200];
-
-  manageSequenceSave (manage);
-
-  oname = uiEntryGetValue (&manage->seqname);
-  /* CONTEXT: the new name after 'create copy' (e.g. "Copy of DJ-2022-04") */
-  snprintf (newname, sizeof (newname), _("Copy of %s"), oname);
-  if (manageCreatePlaylistCopy (manage, oname, newname)) {
-    manageSetSequenceName (manage, newname);
-    manage->seqbackupcreated = false;
-  }
-}
-
-static void
-manageSequenceNew (GtkMenuItem *mi, gpointer udata)
-{
-  manageui_t  *manage = udata;
-  char        tbuff [200];
-  slist_t     *tlist;
-
-  manageSequenceSave (manage);
-
-  /* CONTEXT: sequence: default name for a new sequence */
-  snprintf (tbuff, sizeof (tbuff), _("New Sequence"));
-  manageSetSequenceName (manage, tbuff);
-  manage->seqbackupcreated = false;
-  tlist = slistAlloc ("tmp-sequence", LIST_UNORDERED, NULL);
-  uiduallistSet (manage->seqduallist, tlist, DUALLIST_TREE_TARGET);
-  slistFree (tlist);
-}
-
-static void
-manageSequenceSave (manageui_t *manage)
-{
-  sequence_t  *seq = NULL;
-  slist_t     *slist;
-  char        onm [MAXPATHLEN];
-  char        nnm [MAXPATHLEN];
-  const char  *name;
-
-  if (manage->seqoldname == NULL) {
-    return;
-  }
-
-  slist = uiduallistGetList (manage->seqduallist);
-  if (slistGetCount (slist) <= 0) {
-    slistFree (slist);
-    return;
-  }
-
-  name = uiEntryGetValue (&manage->seqname);
-
-  /* the song list has been renamed */
-  if (strcmp (manage->seqoldname, name) != 0) {
-    manageRenamePlaylistFiles (manage->seqoldname, name);
-  }
-
-  pathbldMakePath (onm, sizeof (onm),
-      name, BDJ4_SEQUENCE_EXT, PATHBLD_MP_DATA);
-  strlcat (onm, ".n", sizeof (onm));
-
-  seq = sequenceCreate (name);
-  sequenceSave (seq, slist);
-  sequenceFree (seq);
-
-  pathbldMakePath (nnm, sizeof (nnm),
-      name, BDJ4_SEQUENCE_EXT, PATHBLD_MP_DATA);
-  if (! manage->seqbackupcreated) {
-    filemanipBackup (nnm, 1);
-    manage->seqbackupcreated = true;
-  }
-  filemanipMove (onm, nnm);
-
-  manageCheckAndCreatePlaylist (manage, name, nnm, PLTYPE_SEQ);
-  slistFree (slist);
-}
-
-static void
-manageSetSequenceName (manageui_t *manage, const char *name)
-{
-  uiEntrySetValue (&manage->seqname, name);
-  if (manage->seqoldname != NULL) {
-    free (manage->seqoldname);
-  }
-  manage->seqoldname = strdup (name);
 }

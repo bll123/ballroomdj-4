@@ -95,7 +95,6 @@ uiDropDownSelectionGet (uidropdown_t *dropdown, GtkTreePath *path)
   gulong        idx = 0;
   int32_t       idx32;
   nlistidx_t    retval;
-  char          tbuff [100];
 
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (dropdown->tree));
   if (gtk_tree_model_get_iter (model, &iter, path)) {
@@ -136,7 +135,6 @@ uiDropDownSetList (uidropdown_t *dropdown, slist_t *list,
   GtkListStore      *store = NULL;
   GtkCellRenderer   *renderer = NULL;
   GtkTreeViewColumn *column = NULL;
-  char              tbuff [200];
   ilistidx_t        iteridx;
   nlistidx_t        internalidx;
 
