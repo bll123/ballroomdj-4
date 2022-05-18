@@ -136,6 +136,7 @@ void  uiTextBoxSetHeight (uitextbox_t *tb, int h);
 
 /* uigtknotebook.c */
 void  uiCreateNotebook (UIWidget *uiwidget);
+void  uiNotebookTabPositionLeft (UIWidget *uiwidget);
 void  uiNotebookAppendPage (UIWidget *uinotebook, UIWidget *uiwidget, UIWidget *uilabel);
 void  uiNotebookSetActionWidget (UIWidget *uinotebook, UIWidget *uiwidget);
 void  uiNotebookSetPage (UIWidget *uinotebook, int pagenum);

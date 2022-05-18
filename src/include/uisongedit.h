@@ -2,11 +2,11 @@
 #define INC_UISONGEDIT_H
 
 #include <stdbool.h>
-#include <gtk/gtk.h>
 
 #include "conn.h"
 #include "dispsel.h"
 #include "musicdb.h"
+#include "uiutils.h"
 
 typedef struct {
   conn_t            *conn;
@@ -25,7 +25,7 @@ void  uisongeditMainLoop (uisongedit_t *uisongedit);
 /* uisongeditgtk.c */
 void      uisongeditUIInit (uisongedit_t *uisongedit);
 void      uisongeditUIFree (uisongedit_t *uisongedit);
-GtkWidget * uisongeditBuildUI (uisongedit_t *uisongedit, GtkWidget *parentwin);
+UIWidget  * uisongeditBuildUI (uisongedit_t *uisongedit, UIWidget *parentwin);
 
 #endif /* INC_UISONGEDIT_H */
 

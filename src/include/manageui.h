@@ -9,11 +9,6 @@
 typedef struct manageseq manageseq_t;
 
 /* managepl.c */
-void manageRenamePlaylistFiles (const char *oldname, const char *newname);
-void manageCheckAndCreatePlaylist (const char *name,
-    const char *suppfname, pltype_t pltype);
-bool manageCreatePlaylistCopy (UIWidget *statusMsg,
-    const char *oname, const char *newname);
 
 /* manageseq.c */
 manageseq_t *manageSequenceAlloc (UIWidget *window, nlist_t *options,
@@ -25,6 +20,11 @@ void manageSequenceSave (manageseq_t *manageseq);
 
 /* managemisc.c */
 void manageSetStatusMsg (UIWidget *statusMsg, const char *msg);
+void manageRenamePlaylistFiles (const char *oldname, const char *newname);
+void manageCheckAndCreatePlaylist (const char *name,
+    const char *suppfname, pltype_t pltype);
+bool manageCreatePlaylistCopy (UIWidget *statusMsg,
+    const char *oname, const char *newname);
 
 
 #endif /* INC_MANAGEUI_H */

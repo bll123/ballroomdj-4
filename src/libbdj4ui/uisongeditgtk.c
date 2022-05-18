@@ -10,8 +10,6 @@
 #include <assert.h>
 #include <math.h>
 
-#include <gtk/gtk.h>
-
 #include "bdj4intl.h"
 #include "conn.h"
 #include "log.h"
@@ -21,12 +19,12 @@
 #include "ui.h"
 
 typedef struct {
-  GtkWidget           *parentwin;
-  GtkWidget           *vbox;
+  UIWidget            *parentwin;
+  UIWidget            vbox;
 } uisongeditgtk_t;
 
-static void uisongeditAddDisplay (uisongedit_t *songedit, GtkWidget *col, int dispsel);
-static void uisongeditAddItem (GtkWidget * hbox, UIWidget *sg, int tagkey);
+static void uisongeditAddDisplay (uisongedit_t *songedit, UIWidget *col, int dispsel);
+static void uisongeditAddItem (UIWidget *hbox, UIWidget *sg, int tagkey);
 
 void
 uisongeditUIInit (uisongedit_t *uisongedit)
@@ -35,7 +33,7 @@ uisongeditUIInit (uisongedit_t *uisongedit)
 
   uiw = malloc (sizeof (uisongeditgtk_t));
   uiw->parentwin = NULL;
-  uiw->vbox = NULL;
+  uiutilsUIWidgetInit (&uiw->vbox);
   uisongedit->uiWidgetData = uiw;
 }
 
@@ -48,51 +46,51 @@ uisongeditUIFree (uisongedit_t *uisongedit)
   }
 }
 
-GtkWidget *
-uisongeditBuildUI (uisongedit_t *uisongedit, GtkWidget *parentwin)
+UIWidget *
+uisongeditBuildUI (uisongedit_t *uisongedit, UIWidget *parentwin)
 {
-  uisongeditgtk_t    *uiw;
-  GtkWidget         *hbox;
-  GtkWidget         *lcol;
-  GtkWidget         *rcol;
+  uisongeditgtk_t   *uiw;
+  UIWidget          hbox;
+  UIWidget          lcol;
+  UIWidget          rcol;
 
   logProcBegin (LOG_PROC, "uisongeditBuildUI");
 
   uiw = uisongedit->uiWidgetData;
   uiw->parentwin = parentwin;
 
-  uiw->vbox = uiCreateVertBoxWW ();
-  uiWidgetExpandHorizW (uiw->vbox);
+  uiCreateVertBox (&uiw->vbox);
+  uiWidgetExpandHoriz (&uiw->vbox);
 
-  hbox = uiCreateHorizBoxWW ();
-  uiWidgetExpandHorizW (hbox);
-  uiWidgetAlignHorizFillW (hbox);
-  uiBoxPackStartWW (uiw->vbox, hbox);
+  uiCreateHorizBox (&hbox);
+  uiWidgetExpandHoriz (&hbox);
+  uiWidgetAlignHorizFill (&hbox);
+  uiBoxPackStart (&uiw->vbox, &hbox);
 
-  lcol = uiCreateVertBoxWW ();
-  uiWidgetAlignHorizStartW (lcol);
-  uiBoxPackStartWW (hbox, lcol);
+  uiCreateVertBox (&lcol);
+  uiWidgetAlignHorizStart (&lcol);
+  uiBoxPackStart (&hbox, &lcol);
 
-  uisongeditAddDisplay (uisongedit, lcol, DISP_SEL_SONGEDIT_A);
+  uisongeditAddDisplay (uisongedit, &lcol, DISP_SEL_SONGEDIT_A);
 
-  rcol = uiCreateVertBoxWW ();
-  uiWidgetAlignHorizStartW (rcol);
-  uiWidgetExpandHorizW (rcol);
-  uiBoxPackStartWW (hbox, rcol);
+  uiCreateVertBox (&rcol);
+  uiWidgetAlignHorizStart (&rcol);
+  uiWidgetExpandHoriz (&rcol);
+  uiBoxPackStart (&hbox, &rcol);
 
-  uisongeditAddDisplay (uisongedit, rcol, DISP_SEL_SONGEDIT_B);
+  uisongeditAddDisplay (uisongedit, &rcol, DISP_SEL_SONGEDIT_B);
 
   logProcEnd (LOG_PROC, "uisongeditBuildUI", "");
-  return uiw->vbox;
+  return &uiw->vbox;
 }
 
 /* internal routines */
 
 static void
-uisongeditAddDisplay (uisongedit_t *uisongedit, GtkWidget *col, int dispsel)
+uisongeditAddDisplay (uisongedit_t *uisongedit, UIWidget *col, int dispsel)
 {
   slist_t       *sellist;
-  GtkWidget     *hbox;
+  UIWidget      hbox;
   char          *keystr;
   slistidx_t    dsiteridx;
   UIWidget      sg;
@@ -106,16 +104,16 @@ uisongeditAddDisplay (uisongedit_t *uisongedit, GtkWidget *col, int dispsel)
 
     tagkey = slistGetNum (sellist, keystr);
 
-    hbox = uiCreateHorizBoxWW ();
-    uiBoxPackStartWW (col, hbox);
-    uisongeditAddItem (hbox, &sg, tagkey);
+    uiCreateHorizBox (&hbox);
+    uiBoxPackStart (col, &hbox);
+    uisongeditAddItem (&hbox, &sg, tagkey);
   }
 }
 
 static void
-uisongeditAddItem (GtkWidget * hbox, UIWidget *sg, int tagkey)
+uisongeditAddItem (UIWidget *hbox, UIWidget *sg, int tagkey)
 {
-  GtkWidget     *widget;
+  UIWidget  uiwidget;
 
   if (tagkey >= TAG_KEY_MAX) {
     return;
@@ -124,9 +122,9 @@ uisongeditAddItem (GtkWidget * hbox, UIWidget *sg, int tagkey)
     return;
   }
 
-  widget = uiCreateColonLabelW (tagdefs [tagkey].displayname);
-  uiBoxPackStartWW (hbox, widget);
-  uiSizeGroupAddW (sg, widget);
+  uiCreateColonLabel (&uiwidget, tagdefs [tagkey].displayname);
+  uiBoxPackStart (hbox, &uiwidget);
+  uiSizeGroupAdd (sg, &uiwidget);
 
   switch (tagkey) {
     /* entry box */

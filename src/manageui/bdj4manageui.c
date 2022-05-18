@@ -65,6 +65,12 @@ enum {
 };
 
 enum {
+  MANAGE_NB_MAIN,
+  MANAGE_NB_SONGLIST,
+  MANAGE_NB_MM,
+};
+
+enum {
   MANAGE_DB_CHECK_NEW,
   MANAGE_DB_REORGANIZE,
   MANAGE_DB_UPD_FROM_TAGS,
@@ -112,10 +118,12 @@ typedef struct manage {
   UIWidget        window;
   UICallback      closecb;
   GtkWidget       *menubar;
-  GtkWidget       *mainnotebook;
-  GtkWidget       *slnotebook;
-  GtkWidget       *mmnotebook;
-  GtkWidget       *vbox;
+  UIWidget        mainnotebook;
+  UICallback      mainnbcb;
+  UIWidget        slnotebook;
+  UICallback      slnbcb;
+  UICallback      mmnbcb;
+//  GtkWidget       *vbox;
   /* song list ui major elements */
   uiplayer_t      *slplayer;
   uimusicq_t      *slmusicq;
@@ -123,9 +131,9 @@ typedef struct manage {
   uisongedit_t    *slsongedit;
   uimusicq_t      *slezmusicq;
   uisongsel_t     *slezsongsel;
-  GtkWidget       *slezmusicqtabwidget;
-  GtkWidget       *slmusicqtabwidget;
-  GtkWidget       *slsongseltabwidget;
+  UIWidget        slezmusicqtabwidget;
+  UIWidget        *slmusicqtabwidget;
+  UIWidget        *slsongseltabwidget;
   char            *sloldname;
   songfilter_t    *slsongfilter;
   songfilter_t    *mmsongfilter;
@@ -191,8 +199,10 @@ static void     manageSetEasySonglist (manageui_t *manage);
 static void     manageSonglistSave (manageui_t *manage);
 static void     manageSetSonglistName (manageui_t *manage, const char *nm);
 /* general */
-static void     manageSwitchPage (GtkNotebook *nb, GtkWidget *page,
-    guint pagenum, gpointer udata);
+static bool     manageSwitchPageMain (void *udata, int pagenum);
+static bool     manageSwitchPageSonglist (void *udata, int pagenum);
+static bool     manageSwitchPageMM (void *udata, int pagenum);
+static void     manageSwitchPage (void *udata, int pagenum, int which);
 static void manageInitializeSongFilter (manageui_t *manage, nlist_t *options);
 
 static int gKillReceived = 0;
@@ -209,12 +219,13 @@ main (int argc, char *argv[])
   nlist_t         *hlist;
 
 
-  manage.mainnotebook = NULL;
   manage.progstate = progstateInit ("manageui");
   progstateSetCallback (manage.progstate, STATE_CONNECTING,
       manageConnectingCallback, &manage);
   progstateSetCallback (manage.progstate, STATE_WAIT_HANDSHAKE,
       manageHandshakeCallback, &manage);
+
+  uiutilsUIWidgetInit (&manage.mainnotebook);
   uiutilsUIWidgetInit (&manage.window);
   manage.slplayer = NULL;
   manage.slmusicq = NULL;
@@ -487,7 +498,6 @@ static void
 manageBuildUI (manageui_t *manage)
 {
   GtkWidget           *menubar;
-  GtkWidget           *tabLabel;
   UIWidget            vbox;
   UIWidget            hbox;
   UIWidget            uiwidget;
@@ -526,9 +536,10 @@ manageBuildUI (manageui_t *manage)
   uiBoxPackStartUW (&hbox, menubar);
   manage->menubar = menubar;
 
-  manage->mainnotebook = uiCreateNotebookW ();
-  gtk_notebook_set_tab_pos (GTK_NOTEBOOK (manage->mainnotebook), GTK_POS_LEFT);
-  uiBoxPackStartExpandUW (&vbox, manage->mainnotebook);
+  uiCreateNotebook (&manage->mainnotebook);
+  uiNotebookTabPositionLeft (&manage->mainnotebook);
+//  gtk_notebook_set_tab_pos (GTK_NOTEBOOK (manage->mainnotebook), GTK_POS_LEFT);
+  uiBoxPackStartExpand (&vbox, &manage->mainnotebook);
 
   manageBuildUISongListEditor (manage);
   manageBuildUIMusicManager (manage);
@@ -538,8 +549,8 @@ manageBuildUI (manageui_t *manage)
   uiCreateVertBox (&vbox);
   uiWidgetSetAllMargins (&vbox, uiBaseMarginSz * 2);
   /* CONTEXT: notebook tab title: playlist management */
-  tabLabel = uiCreateLabelW (_("Playlist Management"));
-  uiNotebookAppendPageW (manage->mainnotebook, vbox.widget, tabLabel);
+  uiCreateLabel (&uiwidget, _("Playlist Management"));
+  uiNotebookAppendPage (&manage->mainnotebook, &vbox, &uiwidget);
   uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_PLMGMT);
 
   manage->manageseq = manageSequenceAlloc (&manage->window,
@@ -548,24 +559,26 @@ manageBuildUI (manageui_t *manage)
   uiCreateVertBox (&vbox);
   manageBuildUISequence (manage->manageseq, &vbox);
   /* CONTEXT: notebook tab title: edit sequences */
-  tabLabel = uiCreateLabelW (_("Edit Sequences"));
-  uiNotebookAppendPageW (manage->mainnotebook, vbox.widget, tabLabel);
+  uiCreateLabel (&uiwidget, _("Edit Sequences"));
+  uiNotebookAppendPage (&manage->mainnotebook, &vbox, &uiwidget);
   uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_EDITSEQ);
 
   /* file manager */
   uiCreateVertBox (&vbox);
   uiWidgetSetAllMargins (&vbox, uiBaseMarginSz * 2);
   /* CONTEXT: notebook tab title: file manager */
-  tabLabel = uiCreateLabelW (_("File Manager"));
-  uiNotebookAppendPageW (manage->mainnotebook, vbox.widget, tabLabel);
+  uiCreateLabel (&uiwidget, _("File Manager"));
+  uiNotebookAppendPage (&manage->mainnotebook, &vbox, &uiwidget);
   uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_FILEMGR);
 
   x = nlistGetNum (manage->options, PLUI_SIZE_X);
   y = nlistGetNum (manage->options, PLUI_SIZE_Y);
   uiWindowSetDefaultSize (&manage->window, x, y);
 
-  g_signal_connect (manage->mainnotebook, "switch-page",
-      G_CALLBACK (manageSwitchPage), manage);
+  uiutilsUICallbackIntInit (&manage->mainnbcb, manageSwitchPageMain, manage);
+  uiNotebookSetCallback (&manage->mainnotebook, &manage->mainnbcb);
+//  g_signal_connect (manage->mainnotebook, "switch-page",
+//      G_CALLBACK (manageSwitchPage), manage);
 
   uiWidgetShowAll (&manage->window);
 
@@ -586,10 +599,9 @@ manageBuildUISongListEditor (manageui_t *manage)
   UIWidget            uiwidget;
   UIWidget            vbox;
   UIWidget            hbox;
+  UIWidget            mainhbox;
   UIWidget            *uiwidgetp;
-  GtkWidget           *tabLabel;
-  GtkWidget           *widget;
-  GtkWidget           *notebook;
+  UIWidget            notebook;
 
   /* song list editor */
   uiutilsUIWidgetInit (&hbox);
@@ -598,29 +610,29 @@ manageBuildUISongListEditor (manageui_t *manage)
   uiWidgetSetAllMargins (&vbox, uiBaseMarginSz * 2);
 
   /* CONTEXT: notebook tab title: edit song lists (manual playlists) */
-  tabLabel = uiCreateLabelW (_("Edit Song Lists"));
-  uiNotebookAppendPageW (manage->mainnotebook, vbox.widget, tabLabel);
+  uiCreateLabel (&uiwidget, _("Edit Song Lists"));
+  uiNotebookAppendPage (&manage->mainnotebook, &vbox, &uiwidget);
   uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_MAIN_SL);
 
   /* song list editor: player */
   uiwidgetp = uiplayerBuildUI (manage->slplayer);
   uiBoxPackStart (&vbox, uiwidgetp);
 
-  notebook = uiCreateNotebookW ();
-  uiBoxPackStartExpandUW (&vbox, notebook);
-  manage->slnotebook = notebook;
+  uiCreateNotebook (&notebook);
+  uiBoxPackStartExpand (&vbox, &notebook);
+  uiutilsUIWidgetCopy (&manage->slnotebook, &notebook);
 
   /* song list editor: easy song list tab */
-  widget = uiCreateHorizBoxWW ();
+  uiCreateHorizBox (&mainhbox);
 
   /* CONTEXT: name of easy song list song selection tab */
-  tabLabel = uiCreateLabelW (_("Song List"));
-  uiNotebookAppendPageW (notebook, widget, tabLabel);
+  uiCreateLabel (&uiwidget, _("Song List"));
+  uiNotebookAppendPage (&notebook, &mainhbox, &uiwidget);
   uiutilsNotebookIDAdd (manage->slnbtabid, MANAGE_TAB_SONGLIST);
-  manage->slezmusicqtabwidget = widget;
+  uiutilsUIWidgetCopy (&manage->slezmusicqtabwidget, &mainhbox);
 
   uiCreateHorizBox (&hbox);
-  uiBoxPackStartExpandWU (widget, &hbox);
+  uiBoxPackStartExpand (&mainhbox, &hbox);
 
   uiwidgetp = uimusicqBuildUI (manage->slezmusicq, manage->window.widget, MUSICQ_A);
   uiBoxPackStartExpand (&hbox, uiwidgetp);
@@ -632,11 +644,11 @@ manageBuildUISongListEditor (manageui_t *manage)
 
   uiutilsUICallbackInit (&manage->callbacks [MANAGE_CALLBACK_EZ_SELECT],
       uisongselQueueProcessSelectCallback, manage->slezsongsel);
-  widget = uiCreateButton (&uiwidget,
+  uiCreateButton (&uiwidget,
       &manage->callbacks [MANAGE_CALLBACK_EZ_SELECT],
       /* CONTEXT: config: button: add the selected songs to the song list */
       _("Select"), "button_left", NULL, NULL);
-  uiBoxPackStartUW (&vbox, widget);
+  uiBoxPackStart (&vbox, &uiwidget);
 
   uiwidgetp = uisongselBuildUI (manage->slezsongsel, manage->window.widget);
   uiBoxPackStartExpand (&hbox, uiwidgetp);
@@ -644,27 +656,32 @@ manageBuildUISongListEditor (manageui_t *manage)
   /* song list editor: music queue tab */
   uiwidgetp = uimusicqBuildUI (manage->slmusicq, manage->window.widget, MUSICQ_A);
   /* CONTEXT: name of easy song list notebook tab */
-  tabLabel = uiCreateLabelW (_("Song List"));
-  uiNotebookAppendPageW (notebook, uiwidgetp->widget, tabLabel);
+  uiCreateLabel (&uiwidget, _("Song List"));
+  uiNotebookAppendPage (&notebook, uiwidgetp, &uiwidget);
   uiutilsNotebookIDAdd (manage->slnbtabid, MANAGE_TAB_SONGLIST);
-  manage->slmusicqtabwidget = uiwidgetp->widget;
+  manage->slmusicqtabwidget = uiwidgetp;
 
   /* song list editor: song selection tab*/
   uiwidgetp = uisongselBuildUI (manage->slsongsel, manage->window.widget);
   /* CONTEXT: name of song selection notebook tab */
-  tabLabel = uiCreateLabelW (_("Song Selection"));
-  uiNotebookAppendPageW (notebook, uiwidgetp->widget, tabLabel);
+  uiCreateLabel (&uiwidget, _("Song Selection"));
+  uiNotebookAppendPage (&notebook, uiwidgetp, &uiwidget);
   uiutilsNotebookIDAdd (manage->slnbtabid, MANAGE_TAB_OTHER);
-  manage->slsongseltabwidget = uiwidgetp->widget;
+  manage->slsongseltabwidget = uiwidgetp;
 
   /* song list editor song editor tab */
-  widget = uisongeditBuildUI (manage->slsongedit, manage->window.widget);
+  uiwidgetp = uisongeditBuildUI (manage->slsongedit, &manage->window);
   /* CONTEXT: name of song editor notebook tab */
-  tabLabel = uiCreateLabelW (_("Song Editor"));
-  uiNotebookAppendPageW (notebook, widget, tabLabel);
+  uiCreateLabel (&uiwidget, _("Song Editor"));
+  uiNotebookAppendPage (&notebook, uiwidgetp, &uiwidget);
   uiutilsNotebookIDAdd (manage->slnbtabid, MANAGE_TAB_SONGEDIT);
 
   uimusicqPeerSonglistName (manage->slmusicq, manage->slezmusicq);
+
+  uiutilsUICallbackIntInit (&manage->slnbcb, manageSwitchPageSonglist, manage);
+  uiNotebookSetCallback (&notebook, &manage->slnbcb);
+//  g_signal_connect (notebook, "switch-page",
+//      G_CALLBACK (manageSwitchPageSonglist), manage);
 }
 
 static void
@@ -672,61 +689,60 @@ manageBuildUIMusicManager (manageui_t *manage)
 {
   UIWidget            *uiwidgetp;
   UIWidget            vbox;
-  GtkWidget           *tabLabel;
-  GtkWidget           *widget;
-  GtkWidget           *notebook;
+  UIWidget            uiwidget;
+  UIWidget            notebook;
 
   /* music manager */
   uiCreateVertBox (&vbox);
   uiWidgetSetAllMargins (&vbox, uiBaseMarginSz * 2);
   /* CONTEXT: name of music manager notebook tab */
-  tabLabel = uiCreateLabelW (_("Music Manager"));
-  uiNotebookAppendPageW (manage->mainnotebook, vbox.widget, tabLabel);
+  uiCreateLabel (&uiwidget, _("Music Manager"));
+  uiNotebookAppendPage (&manage->mainnotebook, &vbox, &uiwidget);
   uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_MAIN_MM);
 
   /* music manager: player */
   uiwidgetp = uiplayerBuildUI (manage->mmplayer);
   uiBoxPackStart (&vbox, uiwidgetp);
 
-  notebook = uiCreateNotebookW ();
-  uiBoxPackStartExpandUW (&vbox, notebook);
-  manage->mmnotebook = notebook;
+  uiCreateNotebook (&notebook);
+  uiBoxPackStartExpand (&vbox, &notebook);
 
   /* music manager: song selection tab*/
   uiwidgetp = uisongselBuildUI (manage->mmsongsel, manage->window.widget);
   uiWidgetExpandHoriz (uiwidgetp);
   /* CONTEXT: name of song selection notebook tab */
-  tabLabel = uiCreateLabelW (_("Music Manager"));
-  uiNotebookAppendPageW (notebook, uiwidgetp->widget, tabLabel);
+  uiCreateLabel (&uiwidget, _("Music Manager"));
+  uiNotebookAppendPage (&notebook, uiwidgetp, &uiwidget);
   uiutilsNotebookIDAdd (manage->mmnbtabid, MANAGE_TAB_OTHER);
 
   /* music manager: song editor tab */
-  widget = uisongeditBuildUI (manage->mmsongedit, manage->window.widget);
+  uiwidgetp = uisongeditBuildUI (manage->mmsongedit, &manage->window);
   /* CONTEXT: name of song editor notebook tab */
-  tabLabel = uiCreateLabelW (_("Song Editor"));
-  uiNotebookAppendPageW (notebook, widget, tabLabel);
+  uiCreateLabel (&uiwidget, _("Song Editor"));
+  uiNotebookAppendPage (&notebook, uiwidgetp, &uiwidget);
   uiutilsNotebookIDAdd (manage->mmnbtabid, MANAGE_TAB_SONGEDIT);
 
-  g_signal_connect (notebook, "switch-page",
-      G_CALLBACK (manageSwitchPage), manage);
+  uiutilsUICallbackIntInit (&manage->mmnbcb, manageSwitchPageMM, manage);
+  uiNotebookSetCallback (&notebook, &manage->mmnbcb);
+//  g_signal_connect (notebook, "switch-page",
+//      G_CALLBACK (manageSwitchPageMM), manage);
 }
 
 static void
 manageBuildUIUpdateDatabase (manageui_t *manage)
 {
-  UIWidget            uiwidget;
-  UIWidget            vbox;
-  UIWidget            hbox;
-  GtkWidget           *tabLabel;
-  GtkWidget           *widget;
+  UIWidget       uiwidget;
+  UIWidget       vbox;
+  UIWidget       hbox;
+  GtkWidget      *widget;
   uitextbox_t    *tb;
 
   /* update database */
   uiCreateVertBox (&vbox);
   uiWidgetSetAllMargins (&vbox, uiBaseMarginSz * 2);
   /* CONTEXT: notebook tab title: update database */
-  tabLabel = uiCreateLabelW (_("Update Database"));
-  uiNotebookAppendPageW (manage->mainnotebook, vbox.widget, tabLabel);
+  uiCreateLabel (&uiwidget, _("Update Database"));
+  uiNotebookAppendPage (&manage->mainnotebook, &vbox, &uiwidget);
   uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_OTHER);
 
   /* help display */
@@ -1308,15 +1324,15 @@ manageSetEasySonglist (manageui_t *manage)
 
   val = nlistGetNum (manage->options, MANAGE_EASY_SONGLIST);
   if (val) {
-    uiWidgetHideW (manage->slmusicqtabwidget);
-    uiWidgetHideW (manage->slsongseltabwidget);
-    uiWidgetShowAllW (manage->slezmusicqtabwidget);
-    uiNotebookSetPageW (manage->slnotebook, 0);
+    uiWidgetShowAll (&manage->slezmusicqtabwidget);
+    uiWidgetHide (manage->slmusicqtabwidget);
+    uiWidgetHide (manage->slsongseltabwidget);
+    uiNotebookSetPage (&manage->slnotebook, 0);
   } else {
-    uiWidgetHideW (manage->slezmusicqtabwidget);
-    uiWidgetShowAllW (manage->slmusicqtabwidget);
-    uiWidgetShowAllW (manage->slsongseltabwidget);
-    uiNotebookSetPageW (manage->slnotebook, 1);
+    uiWidgetHide (&manage->slezmusicqtabwidget);
+    uiWidgetShowAll (manage->slmusicqtabwidget);
+    uiWidgetShowAll (manage->slsongseltabwidget);
+    uiNotebookSetPage (&manage->slnotebook, 1);
   }
 }
 
@@ -1371,9 +1387,29 @@ manageSonglistSave (manageui_t *manage)
 
 /* general */
 
+static bool
+manageSwitchPageMain (void *udata, int pagenum)
+{
+  manageSwitchPage (udata, pagenum, MANAGE_NB_MAIN);
+  return UICB_CONT;
+}
+
+static bool
+manageSwitchPageSonglist (void *udata, int pagenum)
+{
+  manageSwitchPage (udata, pagenum, MANAGE_NB_SONGLIST);
+  return UICB_CONT;
+}
+
+static bool
+manageSwitchPageMM (void *udata, int pagenum)
+{
+  manageSwitchPage (udata, pagenum, MANAGE_NB_MM);
+  return UICB_CONT;
+}
+
 static void
-manageSwitchPage (GtkNotebook *nb, GtkWidget *page, guint pagenum,
-    gpointer udata)
+manageSwitchPage (void *udata, int pagenum, int which)
 {
   manageui_t  *manage = udata;
   int         id;
@@ -1384,15 +1420,16 @@ manageSwitchPage (GtkNotebook *nb, GtkWidget *page, guint pagenum,
 
   /* need to know which notebook is selected so that the correct id value */
   /* can be retrieved */
-  if (nb == GTK_NOTEBOOK (manage->mainnotebook)) {
+  /* how to do this? */
+  if (which == MANAGE_NB_MAIN) {
     nbtabid = manage->mainnbtabid;
     mainnb = true;
   }
-  if (nb == GTK_NOTEBOOK (manage->slnotebook)) {
+  if (which == MANAGE_NB_SONGLIST) {
     nbtabid = manage->slnbtabid;
     slnb = true;
   }
-  if (nb == GTK_NOTEBOOK (manage->mmnotebook)) {
+  if (which == MANAGE_NB_MM) {
     nbtabid = manage->mmnbtabid;
     mmnb = true;
   }

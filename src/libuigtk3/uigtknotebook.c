@@ -36,6 +36,12 @@ uiCreateNotebook (UIWidget *uiwidget)
 }
 
 void
+uiNotebookTabPositionLeft (UIWidget *uiwidget)
+{
+  gtk_notebook_set_tab_pos (GTK_NOTEBOOK (uiwidget->widget), GTK_POS_LEFT);
+}
+
+void
 uiNotebookAppendPage (UIWidget *uinotebook, UIWidget *uiwidget,
     UIWidget *uilabel)
 {
