@@ -12,6 +12,9 @@ if { ! [file exists $bdj3dir] || ! [file isdirectory $bdj3dir] } {
 }
 set datatopdir [lindex $argv 1]
 
+# install the orgopt.txt file.
+# this is always new
+
 foreach fn [list orgopt.txt] {
   set nfn [file join $datatopdir data $fn]
 
@@ -20,6 +23,42 @@ foreach fn [list orgopt.txt] {
   }
   file copy -force templates/$fn $nfn
 }
+
+# get the user's PATHFMT
+set ifh [open [file join $datatopdir data bdjconfig.txt] r]
+set next 0
+while { [gets $ifh line] >= 0 } {
+  if { $next == 1 } {
+    set pathfmt $line
+    break;
+  }
+  if { $line eq "PATHFMT" } {
+    set next 1
+  }
+}
+close $ifh
+regsub {^\.\.} $pathfmt {} pathfmt
+
+# now check and make sure that the user's PATHFMT is in orgopt.txt
+set orgfn [file join $datatopdir data orgopt.txt]
+set ifh [open $orgfn r]
+set ok 0
+while { [gets $ifh line] >= 0 } {
+  if { $line eq $pathfmt } {
+    set ok 1
+  }
+}
+close $ifh
+
+# if not found, add it to orgopt.txt
+if { $ok == 0 } {
+  set fh [open $orgfn a]
+  puts $fh $pathfmt
+  close $fh
+}
+
+# finished with orgopt.txt
+
 
 set fnlist [glob -directory templates ds-*.txt]
 set proflist [glob -directory [file join $datatopdir data] profile*]
@@ -34,4 +73,3 @@ foreach prof $proflist {
 }
 
 exit 0
-

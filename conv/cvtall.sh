@@ -72,10 +72,10 @@ if [[ ! -d conv ]]; then
 fi
 
 "$tclsh" conv/auto-selection.tcl "$bdj3dir" "$datatopdir"
-"$tclsh" conv/config.tcl "$bdj3dir" "$datatopdir"
+"$tclsh" conv/configuration.tcl "$bdj3dir" "$datatopdir"
 "$tclsh" conv/dances.tcl "$bdj3dir" "$datatopdir"
 "$tclsh" conv/dancetypes.tcl "$bdj3dir" "$datatopdir"
-"$tclsh" conv/dbconv.tcl "$bdj3dir" "$datatopdir"
+"$tclsh" conv/database.tcl "$bdj3dir" "$datatopdir"
 "$tclsh" conv/genres.tcl "$bdj3dir" "$datatopdir"
 "$tclsh" conv/levels.tcl "$bdj3dir" "$datatopdir"
 "$tclsh" conv/playlists.tcl "$bdj3dir" "$datatopdir"
@@ -84,7 +84,8 @@ fi
 "$tclsh" conv/songlists.tcl "$bdj3dir" "$datatopdir"
 "$tclsh" conv/sort-options.tcl "$bdj3dir" "$datatopdir"
 "$tclsh" conv/status.tcl "$bdj3dir" "$datatopdir"
-"$tclsh" conv/new.tcl "$bdj3dir" "$datatopdir"
+# do this last
+"$tclsh" conv/z-new.tcl "$bdj3dir" "$datatopdir"
 
 echo "OK"
 

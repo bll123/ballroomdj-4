@@ -234,7 +234,9 @@ foreach path [list {} profiles $mpath $mppath] {
             set value 360000
           }
         }
-        if { $key eq "PATHFMT" } {
+        if { [regexp {PATHFMT$} $key] } {
+          # various is no longer supported, remove the group entirely.
+          regsub -all "{\[^A-Z\]*PVARIOUS\[^A-Z\]*}" $value {} value
           regsub -all {PALBART} $value {%ALBUMARTIST%} value
           regsub -all {PTRACKNUM} $value {PTRACKNUMBER} value
           regsub -all {P([A-Z][A-Z]*0?)} $value {%\1%} value

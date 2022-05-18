@@ -283,13 +283,10 @@ playlistCreate (playlist_t *pl, const char *plfname, pltype_t type,
   nlistSetNum (pl->plinfo, PLAYLIST_LEVEL_HIGH, levelGetMax (levels));
   nlistSetNum (pl->plinfo, PLAYLIST_LEVEL_LOW, 0);
   nlistSetNum (pl->plinfo, PLAYLIST_MAX_PLAY_TIME, 0);
-  nlistSetStr (pl->plinfo, PLAYLIST_MQ_MESSAGE, NULL);
-  nlistSetNum (pl->plinfo, PLAYLIST_PAUSE_EACH_SONG, 0);
   nlistSetNum (pl->plinfo, PLAYLIST_RATING, 0);
   nlistSetNum (pl->plinfo, PLAYLIST_TYPE, type);
   nlistSetNum (pl->plinfo, PLAYLIST_STOP_AFTER, 0);
   nlistSetNum (pl->plinfo, PLAYLIST_STOP_TIME, LIST_VALUE_INVALID);
-  nlistSetNum (pl->plinfo, PLAYLIST_STATUS_PLAYABLE, 1);
   nlistSort (pl->plinfo);
 
   if (suppfname == NULL) {

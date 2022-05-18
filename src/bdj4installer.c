@@ -1511,6 +1511,11 @@ installerConvertStart (installer_t *installer)
   installerDisplayText (installer, "-- ", _("Starting conversion process."));
 
   installer->convlist = filemanipBasicDirList ("conv", ".tcl");
+  /* the sort order doesn't matter, but there's a need to run */
+  /* a check after everything has finished to make sure the user's */
+  /* organization path is in orgopt.txt */
+  /* having a sorted list makes it easy to name something to run last */
+  slistSort (installer->convlist);
   slistStartIterator (installer->convlist, &installer->convidx);
 
   locidx = 0;
