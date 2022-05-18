@@ -1,14 +1,26 @@
 #ifndef INC_MANAGEUI_H
 #define INC_MANAGEUI_H
 
-#include "manageui.h"
 #include "nlist.h"
 #include "playlist.h"
 #include "uiutils.h"
 
 typedef struct manageseq manageseq_t;
+typedef struct managepl managepl_t;
+typedef struct managepltree managepltree_t;
 
 /* managepl.c */
+managepl_t *managePlaylistAlloc (UIWidget *window, nlist_t *options,
+    UIWidget *statusMsg);
+void managePlaylistFree (managepl_t *managepl);
+void manageBuildUIPlaylist (managepl_t *managepl, UIWidget *vboxp);
+uimenu_t *managePlaylistMenu (managepl_t *managepl, GtkWidget *menubar);
+void managePlaylistSave (managepl_t *managepl);
+
+/* managepltree.c */
+managepltree_t *managePlaylistTreeAlloc (void);
+void managePlaylistTreeFree (managepltree_t *managepltree);
+void manageBuildUIPlaylistTree (managepltree_t *managepltree, UIWidget *vboxp);
 
 /* manageseq.c */
 manageseq_t *manageSequenceAlloc (UIWidget *window, nlist_t *options,

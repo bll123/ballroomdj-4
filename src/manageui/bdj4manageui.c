@@ -144,6 +144,8 @@ typedef struct manage {
   uisongedit_t    *mmsongedit;
   /* sequence */
   manageseq_t     *manageseq;
+  /* playlist management */
+  managepl_t      *managepl;
   /* options */
   datafile_t      *optiondf;
   nlist_t         *options;
@@ -257,6 +259,7 @@ main (int argc, char *argv[])
   manage.mmsongfilter = NULL;
   uiutilsUIWidgetInit (&manage.dbpbar);
   manage.manageseq = NULL;   /* allocated within buildui */
+  manage.managepl = NULL;   /* allocated within buildui */
 
   procutilInitProcesses (manage.processes);
 
@@ -402,6 +405,7 @@ manageStoppingCallback (void *udata, programstate_t programState)
 
   manageSonglistSave (manage);
   manageSequenceSave (manage->manageseq);
+  managePlaylistSave (manage->managepl);
 
   uiWindowGetSize (&manage->window, &x, &y);
   nlistSetNum (manage->options, PLUI_SIZE_X, x);
@@ -446,6 +450,7 @@ manageClosingCallback (void *udata, programstate_t programState)
   bdj4shutdown (ROUTE_MANAGEUI, manage->musicdb);
   dispselFree (manage->dispsel);
   manageSequenceFree (manage->manageseq);
+  managePlaylistFree (manage->managepl);
 
   if (manage->slsongfilter != NULL) {
     songfilterFree (manage->slsongfilter);
@@ -545,9 +550,12 @@ manageBuildUI (manageui_t *manage)
   manageBuildUIMusicManager (manage);
   manageBuildUIUpdateDatabase (manage);
 
+  manage->managepl = managePlaylistAlloc (&manage->window,
+      manage->options, &manage->statusMsg);
+
   /* playlist management */
   uiCreateVertBox (&vbox);
-  uiWidgetSetAllMargins (&vbox, uiBaseMarginSz * 2);
+  manageBuildUIPlaylist (manage->managepl, &vbox);
   /* CONTEXT: notebook tab title: playlist management */
   uiCreateLabel (&uiwidget, _("Playlist Management"));
   uiNotebookAppendPage (&manage->mainnotebook, &vbox, &uiwidget);
@@ -1443,6 +1451,9 @@ manageSwitchPage (void *udata, int pagenum, int which)
   if (manage->mainlasttab == MANAGE_TAB_EDITSEQ) {
     manageSequenceSave (manage->manageseq);
   }
+  if (manage->mainlasttab == MANAGE_TAB_PLMGMT) {
+    managePlaylistSave (manage->managepl);
+  }
 
   id = uiutilsNotebookIDGet (nbtabid, pagenum);
 
@@ -1498,6 +1509,7 @@ manageSwitchPage (void *udata, int pagenum, int which)
       break;
     }
     case MANAGE_TAB_PLMGMT: {
+      manage->currmenu = managePlaylistMenu (manage->managepl, manage->menubar);
       break;
     }
     case MANAGE_TAB_EDITSEQ: {

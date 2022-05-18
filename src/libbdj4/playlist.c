@@ -149,7 +149,7 @@ playlistFree (void *tpl)
 }
 
 int
-playlistLoad (playlist_t *pl, char *fname)
+playlistLoad (playlist_t *pl, const char *fname)
 {
   char          tfn [MAXPATHLEN];
   pltype_t      type;

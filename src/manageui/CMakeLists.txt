@@ -6,6 +6,7 @@ add_executable (bdj4manageui
   bdj4manageui.c
   managemisc.c
   managepl.c
+  managepltree.c
   manageseq.c
 )
 if (WIN32)

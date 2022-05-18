@@ -61,7 +61,7 @@ typedef struct playlist playlist_t;
 typedef bool (*playlistCheck_t)(song_t *, void *);
 
 playlist_t *playlistAlloc (musicdb_t *musicdb);
-int       playlistLoad (playlist_t *pl, char *);
+int       playlistLoad (playlist_t *pl, const char *);
 void      playlistCreate (playlist_t *pl, const char *plfname, pltype_t type,
     const char *suppfname);
 void      playlistFree (void *);
