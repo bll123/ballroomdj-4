@@ -1104,7 +1104,6 @@ installerMakeTarget (installer_t *installer)
   char    *tp;
   char    *tokptr;
   char    *tokptrb;
-  char    *vnm;
 
   fileopMakeDir (installer->target);
   fileopMakeDir (installer->rundir);
@@ -1113,16 +1112,37 @@ installerMakeTarget (installer_t *installer)
   snprintf (tbuff, sizeof (tbuff), "%s/VERSION.txt",
       installer->target);
   if (fileopFileExists (tbuff)) {
+    char *nm, *ver, *build, *bdate, *rlvl;
+
     data = filedataReadAll (tbuff, NULL);
     tp = strtok_r (data, "\r\n", &tokptr);
     while (tp != NULL) {
-      vnm = strtok_r (tp, "=", &tokptrb);
+      nm = strtok_r (tp, "=", &tokptrb);
       p = strtok_r (NULL, "=", &tokptrb);
-      strlcat (installer->oldversion, p, sizeof (installer->oldversion));
-      stringTrim (installer->oldversion);
-      strlcat (installer->oldversion, " ", sizeof (installer->oldversion));
+      if (strcmp (nm, "VERSION") == 0) {
+        ver = p;
+      }
+      if (strcmp (nm, "BUILD") == 0) {
+        build = p;
+      }
+      if (strcmp (nm, "BUILDDATE") == 0) {
+        bdate = p;
+      }
+      if (strcmp (nm, "RELEASELEVEL") == 0) {
+        rlvl = p;
+      }
+      stringTrim (p);
       tp = strtok_r (NULL, "\r\n", &tokptr);
     }
+    strlcat (installer->oldversion, ver, sizeof (installer->oldversion));
+    strlcat (installer->oldversion, "-", sizeof (installer->oldversion));
+    if (*rlvl) {
+      strlcat (installer->oldversion, rlvl, sizeof (installer->oldversion));
+      strlcat (installer->oldversion, "-", sizeof (installer->oldversion));
+    }
+    strlcat (installer->oldversion, bdate, sizeof (installer->oldversion));
+    strlcat (installer->oldversion, "-", sizeof (installer->oldversion));
+    strlcat (installer->oldversion, build, sizeof (installer->oldversion));
     free (data);
   }
 

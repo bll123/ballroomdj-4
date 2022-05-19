@@ -1,11 +1,7 @@
 <?php
 
 function acomp ($a, $b) {
-  $rc = (- version_compare ($a['-version'], $b['-version']));
-  if ($rc != 0) {
-    return $rc;
-  }
-  $rc = $a['-date'] <=> $b['-date'];
+  $rc = - version_compare ($a, $b);
   return $rc;
 }
 
@@ -24,8 +20,8 @@ _HERE_;
 $in = 0;
 foreach ($darr as $line) {
   if (preg_match ("/^===END/", $line)) {
-    $fver = $data['-version'] . ' ' . $data['-releaselevel'] .
-        ' ' . $data['-builddate'];
+    $fver = $data['-version'] . '-' . $data['-releaselevel'] .
+        '-' . $data['-builddate'];
     $adata[$fver]['-country'] = geoip_country_code_by_name ($data['-ip']);
     $adata[$fver]['-osdisp'] = $data['-osdisp'];
     $adata[$fver]['-date'] = $data['-date'];
@@ -65,7 +61,7 @@ foreach ($adata as $vkey => $tdata) {
   if (empty ($gdata[$vkey])) {
     $gdata[$vkey]['-new'] = 0;
     $gdata[$vkey]['-overwrite'] = 0;
-    $gdata[$vkey]['-upgrade'] = 0;
+    $gdata[$vkey]['-update'] = 0;
     $gdata[$vkey]['-convert'] = 0;
     $gdata[$vkey]['-country'] = array ();
   }
@@ -75,7 +71,7 @@ foreach ($adata as $vkey => $tdata) {
   $gdata[$vkey]['-country'][$tdata['-country']] += 1;
   $gdata[$vkey]['-new'] += $tdata['-new'];
   $gdata[$vkey]['-overwrite'] += $tdata['-overwrite'];
-  $gdata[$vkey]['-upgrade'] += $tdata['-upgrade'];
+  $gdata[$vkey]['-update'] += $tdata['-update'];
   $gdata[$vkey]['-convert'] += $tdata['-convert'];
 }
 
@@ -108,7 +104,7 @@ $html .= <<<_HERE_
       <th align="left">Version</th>
       <th align="left">New</th>
       <th align="left">Overwrite</th>
-      <th align="left">Upgrade</th>
+      <th align="left">Update</th>
       <th align="left">Convert</th>
     </tr>
 _HERE_;
@@ -116,9 +112,9 @@ _HERE_;
 foreach ($gdata as $vkey => $tdata) {
   $html .= "    <tr>";
   $html .= "      <td align=\"left\">$vkey</td>";
-  $html .= "      <td align=\"left\">${tdata['-new']}</td>";
+  $html .= "      <td align=\"right\">${tdata['-new']}</td>";
   $html .= "      <td align=\"right\">${tdata['-overwrite']}</td>";
-  $html .= "      <td align=\"right\">${tdata['-upgrade']}</td>";
+  $html .= "      <td align=\"right\">${tdata['-update']}</td>";
   $html .= "      <td align=\"right\">${tdata['-convert']}</td>";
   $html .= "    </tr>";
 }
@@ -139,7 +135,7 @@ $html .= <<<_HERE_
       <th align="left">Locale</th>
       <th align="left">New</th>
       <th align="left">Overwrite</th>
-      <th align="left">Upgrade</th>
+      <th align="left">Update</th>
       <th align="left">Convert</th>
       <th align="left">Old-Version</th>
       <th align="left">BDJ3-Version</th>
@@ -158,7 +154,7 @@ foreach ($adata as $vkey => $tdata) {
   $html .= "      <td align=\"right\">${tdata['-locale']}</td>";
   $html .= "      <td align=\"right\">${tdata['-new']}</td>";
   $html .= "      <td align=\"right\">${tdata['-overwrite']}</td>";
-  $html .= "      <td align=\"right\">${tdata['-upgrade']}</td>";
+  $html .= "      <td align=\"right\">${tdata['-update']}</td>";
   $html .= "      <td align=\"right\">${tdata['-convert']}</td>";
   $html .= "      <td align=\"left\">${tdata['-oldversion']}</td>";
   $html .= "      <td align=\"left\">${tdata['-bdj3version']}</td>";
