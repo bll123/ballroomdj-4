@@ -39,5 +39,4 @@ void manageCheckAndCreatePlaylist (const char *name,
 bool manageCreatePlaylistCopy (UIWidget *statusMsg,
     const char *oname, const char *newname);
 
-
 #endif /* INC_MANAGEUI_H */

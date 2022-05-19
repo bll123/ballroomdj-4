@@ -62,7 +62,7 @@ selectFileDialog (int type, UIWidget *window, nlist_t *options,
   playlistSel = PL_LIST_NORMAL; /* excludes queuedance */
   switch (type) {
     case SELFILE_SONGLIST: {
-      playlistSel = PL_LIST_MANUAL;
+      playlistSel = PL_LIST_SONGLIST;
       break;
     }
     case SELFILE_SEQUENCE: {

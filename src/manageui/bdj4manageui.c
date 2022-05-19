@@ -617,7 +617,7 @@ manageBuildUISongListEditor (manageui_t *manage)
   uiCreateVertBox (&vbox);
   uiWidgetSetAllMargins (&vbox, uiBaseMarginSz * 2);
 
-  /* CONTEXT: notebook tab title: edit song lists (manual playlists) */
+  /* CONTEXT: notebook tab title: edit song lists */
   uiCreateLabel (&uiwidget, _("Edit Song Lists"));
   uiNotebookAppendPage (&manage->mainnotebook, &vbox, &uiwidget);
   uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_MAIN_SL);
@@ -1390,7 +1390,7 @@ manageSonglistSave (manageui_t *manage)
   }
   filemanipMove (onm, nnm);
 
-  manageCheckAndCreatePlaylist (name, nnm, PLTYPE_MANUAL);
+  manageCheckAndCreatePlaylist (name, nnm, PLTYPE_SONGLIST);
 }
 
 /* general */

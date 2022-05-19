@@ -42,15 +42,15 @@ typedef enum {
 typedef enum {
   PLTYPE_NONE,
   PLTYPE_AUTO,
-  PLTYPE_MANUAL,
-  PLTYPE_SEQ,
+  PLTYPE_SONGLIST,
+  PLTYPE_SEQUENCE,
   PLTYPE_ALL,
 } pltype_t;
 
 enum {
   PL_LIST_NORMAL = 1,   // excludes the special QueueDance playlist
   PL_LIST_ALL,
-  PL_LIST_MANUAL,
+  PL_LIST_SONGLIST,
   PL_LIST_SEQUENCE,
 };
 

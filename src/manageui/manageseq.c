@@ -186,7 +186,7 @@ manageSequenceSave (manageseq_t *manageseq)
   }
   filemanipMove (onm, nnm);
 
-  manageCheckAndCreatePlaylist (name, nnm, PLTYPE_SEQ);
+  manageCheckAndCreatePlaylist (name, nnm, PLTYPE_SEQUENCE);
   slistFree (slist);
 }
 

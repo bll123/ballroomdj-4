@@ -36,9 +36,14 @@ enum {
 };
 
 typedef struct managepltree {
-  GtkWidget       *tree;
+  GtkWidget         *tree;
+  GtkTreeViewColumn *danceselcol;
+  GtkTreeViewColumn *countcol;
+  GtkTreeViewColumn *lowbpmcol;
+  GtkTreeViewColumn *highbpmcol;
 } managepltree_t;
 
+static void managePlaylistTreeSetColumnVisibility (managepltree_t *managepltree, int pltype);
 static void managePlaylistTreeCreate (managepltree_t *managepltree);
 
 managepltree_t *
@@ -82,6 +87,7 @@ manageBuildUIPlaylistTree (managepltree_t *managepltree, UIWidget *vboxp)
   column = gtk_tree_view_column_new_with_attributes ("", renderer,
       "active", MPLTREE_COL_DANCE_SELECT,
       NULL);
+  managepltree->danceselcol = column;
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
   gtk_tree_view_append_column (GTK_TREE_VIEW (tree), column);
 
@@ -104,6 +110,7 @@ manageBuildUIPlaylistTree (managepltree_t *managepltree, UIWidget *vboxp)
       "adjustment", MPLTREE_COL_ADJUST,
       "digits", MPLTREE_COL_DIGITS,
       NULL);
+  managepltree->countcol = column;
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
   /* CONTEXT: playlist management: count column header */
   gtk_tree_view_column_set_title (column, _("Count"));
@@ -129,6 +136,7 @@ manageBuildUIPlaylistTree (managepltree_t *managepltree, UIWidget *vboxp)
       "adjustment", MPLTREE_COL_ADJUST,
       "digits", MPLTREE_COL_DIGITS,
       NULL);
+  managepltree->lowbpmcol = column;
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
   /* CONTEXT: playlist management: low bpm/mpm column header */
   gtk_tree_view_column_set_title (column, _("Low BPM"));
@@ -144,6 +152,7 @@ manageBuildUIPlaylistTree (managepltree_t *managepltree, UIWidget *vboxp)
       "adjustment", MPLTREE_COL_ADJUST,
       "digits", MPLTREE_COL_DIGITS,
       NULL);
+  managepltree->highbpmcol = column;
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
   /* CONTEXT: playlist management: high bpm/mpm column */
   gtk_tree_view_column_set_title (column, _("High BPM"));
@@ -163,12 +172,80 @@ void
 managePlaylistTreePopulate (managepltree_t *managepltree, playlist_t *pl)
 {
   dance_t       *dances;
+  int           pltype;
+  ilistidx_t    iteridx;
+  ilistidx_t    dkey;
+  GtkTreeModel  *model;
+  GtkTreeIter   iter;
+  int           count;
+  char          tbuff [40];
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
 
+  pltype = playlistGetConfigNum (pl, PLAYLIST_TYPE);
+  managePlaylistTreeSetColumnVisibility (managepltree, pltype);
+
+  model = gtk_tree_view_get_model (GTK_TREE_VIEW (managepltree->tree));
+
+  danceStartIterator (dances, &iteridx);
+  count = 0;
+  while ((dkey = danceIterate (dances, &iteridx)) >= 0) {
+    long  sel, dcount, bpmlow, bpmhigh, mpt;
+
+    sel = playlistGetDanceNum (pl, dkey, PLDANCE_SELECTED);
+    dcount = playlistGetDanceNum (pl, dkey, PLDANCE_COUNT);
+    if (dcount < 0) { dcount = 0; }
+    mpt = playlistGetDanceNum (pl, dkey, PLDANCE_MAXPLAYTIME);
+    if (mpt < 0) { mpt = 0; }
+    bpmlow = playlistGetDanceNum (pl, dkey, PLDANCE_BPM_LOW);
+    if (bpmlow < 0) { bpmlow = 0; }
+    bpmhigh = playlistGetDanceNum (pl, dkey, PLDANCE_BPM_HIGH);
+    if (bpmhigh < 0) { bpmhigh = 0; }
+
+    snprintf (tbuff, sizeof (tbuff), "%d", count);
+    if (gtk_tree_model_get_iter_from_string (model, &iter, tbuff)) {
+      gtk_list_store_set (GTK_LIST_STORE (model), &iter,
+          MPLTREE_COL_DANCE_SELECT, sel,
+          MPLTREE_COL_MAXPLAYTIME, mpt,
+          MPLTREE_COL_COUNT, dcount,
+          MPLTREE_COL_LOWBPM, bpmlow,
+          MPLTREE_COL_HIGHBPM, bpmhigh,
+          -1);
+    }
+    ++count;
+  }
 }
 
+
 /* internal routines */
+
+static void
+managePlaylistTreeSetColumnVisibility (managepltree_t *managepltree, int pltype)
+{
+  switch (pltype) {
+    case PLTYPE_SONGLIST: {
+      gtk_tree_view_column_set_visible (managepltree->danceselcol, FALSE);
+      gtk_tree_view_column_set_visible (managepltree->countcol, FALSE);
+      gtk_tree_view_column_set_visible (managepltree->lowbpmcol, FALSE);
+      gtk_tree_view_column_set_visible (managepltree->highbpmcol, FALSE);
+      break;
+    }
+    case PLTYPE_AUTO: {
+      gtk_tree_view_column_set_visible (managepltree->danceselcol, TRUE);
+      gtk_tree_view_column_set_visible (managepltree->countcol, TRUE);
+      gtk_tree_view_column_set_visible (managepltree->lowbpmcol, TRUE);
+      gtk_tree_view_column_set_visible (managepltree->highbpmcol, TRUE);
+      break;
+    }
+    case PLTYPE_SEQUENCE: {
+      gtk_tree_view_column_set_visible (managepltree->danceselcol, FALSE);
+      gtk_tree_view_column_set_visible (managepltree->countcol, FALSE);
+      gtk_tree_view_column_set_visible (managepltree->lowbpmcol, TRUE);
+      gtk_tree_view_column_set_visible (managepltree->highbpmcol, TRUE);
+      break;
+    }
+  }
+}
 
 static void
 managePlaylistTreeCreate (managepltree_t *managepltree)
@@ -187,9 +264,9 @@ managePlaylistTreeCreate (managepltree_t *managepltree)
       G_TYPE_BOOLEAN, // dance select
       G_TYPE_STRING,  // dance
       G_TYPE_LONG,    // count
-      G_TYPE_STRING,  // max play time
-      G_TYPE_STRING,  // low bpm
-      G_TYPE_STRING,  // high bpm
+      G_TYPE_LONG,    // max play time
+      G_TYPE_LONG,    // low bpm
+      G_TYPE_LONG,    // high bpm
       G_TYPE_STRING,  // pad
       G_TYPE_LONG,    // dance idx
       G_TYPE_LONG,    // editable
@@ -209,7 +286,7 @@ managePlaylistTreeCreate (managepltree_t *managepltree)
     gtk_list_store_set (store, &iter,
         MPLTREE_COL_DANCE_SELECT, 0,
         MPLTREE_COL_DANCE, dancedisp,
-        MPLTREE_COL_MAXPLAYTIME, "",
+        MPLTREE_COL_MAXPLAYTIME, 0,
         MPLTREE_COL_LOWBPM, 0,
         MPLTREE_COL_HIGHBPM, 0,
         MPLTREE_COL_SB_PAD, "  ",

@@ -81,6 +81,12 @@ uilevelGetValue (uilevel_t *uilevel)
   return idx;
 }
 
+void
+uilevelSetValue (uilevel_t *uilevel, int value)
+{
+  uiSpinboxTextSetValue (&uilevel->spinbox, value);
+}
+
 /* internal routines */
 
 static char *

@@ -81,6 +81,12 @@ uiratingGetValue (uirating_t *uirating)
   return idx;
 }
 
+void
+uiratingSetValue (uirating_t *uirating, int value)
+{
+  uiSpinboxTextSetValue (&uirating->spinbox, value);
+}
+
 /* internal routines */
 
 static char *

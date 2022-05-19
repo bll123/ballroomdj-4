@@ -44,7 +44,7 @@ foreach {fn} $flist {
     set tkey [string toupper $key]
 
     if { $tkey eq "MANUALLIST" && $value ne {} && $value ne {None} } {
-      set pltype manual
+      set pltype songlist
     }
     if { $tkey eq "SEQUENCE" && $value ne {} && $value ne {None} } {
       set pltype sequence

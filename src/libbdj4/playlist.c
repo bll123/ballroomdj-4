@@ -44,12 +44,12 @@ typedef struct playlist {
   nlist_t       *plinfo;
   ilist_t       *pldances;
   nlist_t       *countList;
-  int           manualIdx;
+  int           songlistIdx;
   int           count;
   nlistidx_t    seqiteridx;
 } playlist_t;
 
-static void     plConvType (datafileconv_t *conv);
+static void plConvType (datafileconv_t *conv);
 
 /* must be sorted in ascii order */
 static datafilekey_t playlistdfkeys [PLAYLIST_KEY_MAX] = {
@@ -86,7 +86,7 @@ playlistAlloc (musicdb_t *musicdb)
   pl = malloc (sizeof (playlist_t));
   assert (pl != NULL);
   pl->name = NULL;
-  pl->manualIdx = 0;
+  pl->songlistIdx = 0;
   pl->plinfodf = NULL;
   pl->pldancesdf = NULL;
   pl->songlist = NULL;
@@ -222,8 +222,8 @@ playlistLoad (playlist_t *pl, const char *fname)
 
   type = (pltype_t) nlistGetNum (pl->plinfo, PLAYLIST_TYPE);
 
-  if (type == PLTYPE_MANUAL) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "manual: load songlist %s", fname);
+  if (type == PLTYPE_SONGLIST) {
+    logMsg (LOG_DBG, LOG_IMPORTANT, "songlist: load songlist %s", fname);
     pathbldMakePath (tfn, sizeof (tfn), fname,
         BDJ4_SONGLIST_EXT, PATHBLD_MP_DATA);
     if (! fileopFileExists (tfn)) {
@@ -239,7 +239,7 @@ playlistLoad (playlist_t *pl, const char *fname)
     }
   }
 
-  if (type == PLTYPE_SEQ) {
+  if (type == PLTYPE_SEQUENCE) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "sequence: load sequence %s", fname);
     pathbldMakePath (tfn, sizeof (tfn), fname,
         BDJ4_SEQUENCE_EXT, PATHBLD_MP_DATA);
@@ -292,10 +292,10 @@ playlistCreate (playlist_t *pl, const char *plfname, pltype_t type,
   if (suppfname == NULL) {
     suppfname = plfname;
   }
-  if (type == PLTYPE_MANUAL) {
+  if (type == PLTYPE_SONGLIST) {
     pl->songlist = songlistAlloc (suppfname);
   }
-  if (type == PLTYPE_SEQ) {
+  if (type == PLTYPE_SEQUENCE) {
     pl->sequence = sequenceAlloc (suppfname);
   }
 
@@ -368,8 +368,12 @@ playlistSetDanceCount (playlist_t *pl, ilistidx_t danceIdx, ssize_t count)
     return;
   }
 
-  ilistSetNum (pl->pldances, danceIdx, PLDANCE_SELECTED, 1);
   ilistSetNum (pl->pldances, danceIdx, PLDANCE_COUNT, count);
+  if (count > 0) {
+    ilistSetNum (pl->pldances, danceIdx, PLDANCE_SELECTED, 1);
+  } else {
+    ilistSetNum (pl->pldances, danceIdx, PLDANCE_SELECTED, 0);
+  }
   return;
 }
 
@@ -397,7 +401,7 @@ playlistGetNextSong (playlist_t *pl, nlist_t *danceCounts,
     return NULL;
   }
 
-  if (type == PLTYPE_AUTO || type == PLTYPE_SEQ) {
+  if (type == PLTYPE_AUTO || type == PLTYPE_SEQUENCE) {
     ilistidx_t     danceIdx = LIST_VALUE_INVALID;
 
     if (type == PLTYPE_AUTO) {
@@ -416,7 +420,7 @@ playlistGetNextSong (playlist_t *pl, nlist_t *danceCounts,
             pl->countList, pl->songfilter);
       }
     }
-    if (type == PLTYPE_SEQ) {
+    if (type == PLTYPE_SEQUENCE) {
       if (pl->songsel == NULL) {
         playlistSetSongFilter (pl);
         pl->songsel = songselAlloc (pl->musicdb,
@@ -447,8 +451,8 @@ playlistGetNextSong (playlist_t *pl, nlist_t *danceCounts,
       logMsg (LOG_DBG, LOG_BASIC, "sequence: select: %s", sfname);
     }
   }
-  if (type == PLTYPE_MANUAL) {
-    sfname = songlistGetNext (pl->songlist, pl->manualIdx, SONGLIST_FILE);
+  if (type == PLTYPE_SONGLIST) {
+    sfname = songlistGetNext (pl->songlist, pl->songlistIdx, SONGLIST_FILE);
     while (sfname != NULL) {
       song = dbGetByName (pl->musicdb, sfname);
       if (song != NULL && songAudioFileExists (song)) {
@@ -461,7 +465,7 @@ playlistGetNextSong (playlist_t *pl, nlist_t *danceCounts,
         if (tval < 0) {
           tstr = songGetStr (song, TAG_MQDISPLAY);
           if (tstr == NULL) {
-            tstr = songlistGetNext (pl->songlist, pl->manualIdx, SONGLIST_DANCESTR);
+            tstr = songlistGetNext (pl->songlist, pl->songlistIdx, SONGLIST_DANCESTR);
             if (tstr != NULL) {
               songSetStr (song, TAG_MQDISPLAY, tstr);
             }
@@ -470,13 +474,13 @@ playlistGetNextSong (playlist_t *pl, nlist_t *danceCounts,
         break;
       }
       song = NULL;
-      logMsg (LOG_DBG, LOG_IMPORTANT, "manual: missing: %s", sfname);
-      ++pl->manualIdx;
-      sfname = songlistGetNext (pl->songlist, pl->manualIdx, SONGLIST_FILE);
+      logMsg (LOG_DBG, LOG_IMPORTANT, "songlist: missing: %s", sfname);
+      ++pl->songlistIdx;
+      sfname = songlistGetNext (pl->songlist, pl->songlistIdx, SONGLIST_FILE);
     }
-    ++pl->manualIdx;
+    ++pl->songlistIdx;
     ++pl->count;
-    logMsg (LOG_DBG, LOG_BASIC, "manual: select: %s", sfname);
+    logMsg (LOG_DBG, LOG_BASIC, "songlist: select: %s", sfname);
   }
   logProcEnd (LOG_PROC, "playlistGetNextSong", "");
   return song;
@@ -498,7 +502,7 @@ playlistGetPlaylistList (int flag)
 
   pathbldMakePath (tfn, sizeof (tfn), "", "", PATHBLD_MP_DATA);
   ext = BDJ4_PLAYLIST_EXT;
-  if (flag == PL_LIST_MANUAL) {
+  if (flag == PL_LIST_SONGLIST) {
     ext = BDJ4_SONGLIST_EXT;
   }
   if (flag == PL_LIST_SEQUENCE) {
@@ -592,6 +596,36 @@ playlistSave (playlist_t *pl)
 /* internal routines */
 
 static void
+plConvType (datafileconv_t *conv)
+{
+  conv->allocated = false;
+  if (conv->valuetype == VALUE_STR) {
+    ssize_t   num;
+
+    conv->valuetype = VALUE_NUM;
+    num = PLTYPE_SONGLIST;
+    if (strcmp (conv->u.str, "automatic") == 0) {
+      num = PLTYPE_AUTO;
+    }
+    if (strcmp (conv->u.str, "sequence") == 0) {
+      num = PLTYPE_SEQUENCE;
+    }
+    conv->u.num = num;
+  } else if (conv->valuetype == VALUE_NUM) {
+    char    *sval;
+
+    conv->valuetype = VALUE_STR;
+    sval = "songlist";
+    switch (conv->u.num) {
+      case PLTYPE_SONGLIST: { sval = "songlist"; break; }
+      case PLTYPE_AUTO: { sval = "automatic"; break; }
+      case PLTYPE_SEQUENCE: { sval = "sequence"; break; }
+    }
+    conv->u.str = sval;
+  }
+}
+
+static void
 playlistSetSongFilter (playlist_t *pl)
 {
   nlistidx_t    plRating;
@@ -649,36 +683,6 @@ playlistSetSongFilter (playlist_t *pl)
   }
 
   songfilterSetData (pl->songfilter, SONG_FILTER_DANCE, danceList);
-}
-
-static void
-plConvType (datafileconv_t *conv)
-{
-  conv->allocated = false;
-  if (conv->valuetype == VALUE_STR) {
-    ssize_t   num;
-
-    conv->valuetype = VALUE_NUM;
-    num = PLTYPE_MANUAL;
-    if (strcmp (conv->u.str, "automatic") == 0) {
-      num = PLTYPE_AUTO;
-    }
-    if (strcmp (conv->u.str, "sequence") == 0) {
-      num = PLTYPE_SEQ;
-    }
-    conv->u.num = num;
-  } else if (conv->valuetype == VALUE_NUM) {
-    char    *sval;
-
-    conv->valuetype = VALUE_STR;
-    sval = "manual";
-    switch (conv->u.num) {
-      case PLTYPE_MANUAL: { sval = "manual"; break; }
-      case PLTYPE_AUTO: { sval = "automatic"; break; }
-      case PLTYPE_SEQ: { sval = "sequence"; break; }
-    }
-    conv->u.str = sval;
-  }
 }
 
 static void

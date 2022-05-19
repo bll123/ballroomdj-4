@@ -36,6 +36,8 @@ typedef struct managepl {
   pltype_t        pltype;
   uispinbox_t     uimaxplaytime;
   uispinbox_t     uistopat;
+  GtkWidget       *stopafter;
+  GtkWidget       *gap;
   uirating_t      *uirating;
   UIWidget        uiratingitem;
   uilevel_t       *uilowlevel;
@@ -48,11 +50,12 @@ typedef struct managepl {
   managepltree_t  *managepltree;
 } managepl_t;
 
-static void   managePlaylistLoad (GtkMenuItem *mi, gpointer udata);
-static void   managePlaylistCopy (GtkMenuItem *mi, gpointer udata);
-static void   managePlaylistLoadFile (void *udata, const char *fn);
-static void   managePlaylistNew (GtkMenuItem *mi, gpointer udata);
-static void   manageSetPlaylistName (managepl_t *managepl, const char *nm);
+static void managePlaylistTreeSetColumnVisibility (managepltree_t *managepltree, int pltype);
+static void managePlaylistLoad (GtkMenuItem *mi, gpointer udata);
+static void managePlaylistCopy (GtkMenuItem *mi, gpointer udata);
+static void managePlaylistLoadFile (void *udata, const char *fn);
+static void managePlaylistNew (GtkMenuItem *mi, gpointer udata);
+static void manageSetPlaylistName (managepl_t *managepl, const char *nm);
 
 managepl_t *
 managePlaylistAlloc (UIWidget *window, nlist_t *options, UIWidget *statusMsg)
@@ -69,6 +72,8 @@ managePlaylistAlloc (UIWidget *window, nlist_t *options, UIWidget *statusMsg)
   managepl->windowp = window;
   managepl->options = options;
   managepl->pltype = PLTYPE_AUTO;
+  managepl->stopafter = NULL;
+  managepl->gap = NULL;
   managepl->managepltree = NULL;
   managepl->uirating = NULL;
   managepl->uilowlevel = NULL;
@@ -76,7 +81,7 @@ managePlaylistAlloc (UIWidget *window, nlist_t *options, UIWidget *statusMsg)
   uiutilsUIWidgetInit (&managepl->uiratingitem);
   uiutilsUIWidgetInit (&managepl->uilowlevelitem);
   uiutilsUIWidgetInit (&managepl->uihighlevelitem);
-  uiEntryInit (&managepl->allowedkeywords, 20, 50);
+  uiEntryInit (&managepl->allowedkeywords, 15, 50);
   uiutilsUIWidgetInit (&managepl->uiallowedkeywordsitem);
 
   return managepl;
@@ -157,11 +162,11 @@ manageBuildUIPlaylist (managepl_t *managepl, UIWidget *vboxp)
   uiutilsUIWidgetCopy (&managepl->uipltype, &uiwidget);
 
   uiCreateHorizBox (&mainhbox);
-  uiBoxPackStartExpand (vboxp, &mainhbox);
+  uiBoxPackStart (vboxp, &mainhbox);
 
   /* left side */
   uiCreateVertBox (&lcol);
-  uiBoxPackStartExpand (&mainhbox, &lcol);
+  uiBoxPackStart (&mainhbox, &lcol);
 
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&lcol, &hbox);
@@ -200,6 +205,7 @@ manageBuildUIPlaylist (managepl_t *managepl, UIWidget *vboxp)
   widget = uiSpinboxIntCreate ();
   uiBoxPackStartUW (&hbox, widget);
   uiSizeGroupAddW (&sgB, widget);
+  managepl->stopafter = widget;
 
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&lcol, &hbox);
@@ -212,6 +218,7 @@ manageBuildUIPlaylist (managepl_t *managepl, UIWidget *vboxp)
   widget = uiSpinboxIntCreate ();
   uiBoxPackStartUW (&hbox, widget);
   uiSizeGroupAddW (&sgB, widget);
+  managepl->gap = widget;
 
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&lcol, &hbox);
@@ -274,6 +281,7 @@ manageBuildUIPlaylist (managepl_t *managepl, UIWidget *vboxp)
 
   /* right side to hold the tree */
   uiCreateVertBox (&rcol);
+  uiWidgetSetMarginStart (&rcol, uiBaseMarginSz * 8);
   uiBoxPackStartExpand (&mainhbox, &rcol);
 
   managepl->managepltree = managePlaylistTreeAlloc ();
@@ -334,7 +342,7 @@ managePlaylistSave (managepl_t *managepl)
       name, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
   strlcat (onm, ".n", sizeof (onm));
 
-  // ### allocate, create, populate the playlist
+  // ### populate the playlist and save
 
   pathbldMakePath (nnm, sizeof (nnm),
       name, BDJ4_SEQUENCE_EXT, PATHBLD_MP_DATA);
@@ -361,16 +369,52 @@ managePlaylistLoadFile (void *udata, const char *fn)
 {
   managepl_t  *managepl = udata;
   playlist_t  *pl;
+  pltype_t    pltype;
 
   managePlaylistSave (managepl);
 
-  // ### load the playlist
   pl = playlistAlloc (NULL);
   playlistLoad (pl, fn);
 
-  // ### set the data on-screen.
+  pltype = playlistGetConfigNum (pl, PLAYLIST_TYPE);
 
-  // ### hide/show elements as necessary
+  managePlaylistTreePopulate (managepl->managepltree, pl);
+  if (pltype == PLTYPE_SONGLIST) {
+    uiWidgetHide (&managepl->uiratingitem);
+    uiWidgetHide (&managepl->uilowlevelitem);
+    uiWidgetHide (&managepl->uihighlevelitem);
+    uiWidgetHide (&managepl->uiallowedkeywordsitem);
+    /* CONTEXT: playlist management: type of playlist */
+    uiLabelSetText (&managepl->uipltype, _("Song List"));
+  } else {
+    uiWidgetShow (&managepl->uiratingitem);
+    uiWidgetShow (&managepl->uilowlevelitem);
+    uiWidgetShow (&managepl->uihighlevelitem);
+    uiWidgetShow (&managepl->uiallowedkeywordsitem);
+    if (pltype == PLTYPE_SEQUENCE) {
+      /* CONTEXT: playlist management: type of playlist */
+      uiLabelSetText (&managepl->uipltype, _("Sequence"));
+    }
+    if (pltype == PLTYPE_AUTO) {
+      /* CONTEXT: playlist management: type of playlist */
+      uiLabelSetText (&managepl->uipltype, _("Automatic"));
+    }
+  }
+
+  uiSpinboxTimeSetValue (&managepl->uimaxplaytime,
+      playlistGetConfigNum (pl, PLAYLIST_MAX_PLAY_TIME));
+  uiSpinboxTimeSetValue (&managepl->uistopat,
+      playlistGetConfigNum (pl, PLAYLIST_STOP_TIME));
+  uiSpinboxSetValue (managepl->stopafter,
+      playlistGetConfigNum (pl, PLAYLIST_STOP_AFTER));
+  uiSpinboxSetValue (managepl->gap,
+      playlistGetConfigNum (pl, PLAYLIST_GAP));
+  uiratingSetValue (managepl->uirating,
+      playlistGetConfigNum (pl, PLAYLIST_RATING));
+  uilevelSetValue (managepl->uihighlevel,
+      playlistGetConfigNum (pl, PLAYLIST_LEVEL_LOW));
+  uilevelSetValue (managepl->uihighlevel,
+      playlistGetConfigNum (pl, PLAYLIST_LEVEL_HIGH));
 
   manageSetPlaylistName (managepl, fn);
   managepl->plbackupcreated = false;
