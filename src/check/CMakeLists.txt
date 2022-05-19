@@ -20,6 +20,7 @@ add_executable (check_all
   check_slist.c
   check_sock.c
   check_tmutil.c
+  check_validate.c
 )
 target_link_libraries (check_all
   libbdj4 libbdj4common

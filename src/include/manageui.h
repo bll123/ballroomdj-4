@@ -22,6 +22,7 @@ managepltree_t *managePlaylistTreeAlloc (UIWidget *statusMsg);
 void managePlaylistTreeFree (managepltree_t *managepltree);
 void manageBuildUIPlaylistTree (managepltree_t *managepltree, UIWidget *vboxp);
 void managePlaylistTreePopulate (managepltree_t *managepltree, playlist_t *pl);
+bool managePlaylistTreeIsChanged (managepltree_t *managepltree);
 
 /* manageseq.c */
 manageseq_t *manageSequenceAlloc (UIWidget *window, nlist_t *options,

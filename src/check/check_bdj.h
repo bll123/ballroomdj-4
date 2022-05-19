@@ -20,5 +20,6 @@ Suite *     slist_suite (void);
 Suite *     sock_suite (void);
 Suite *     tmutil_suite (void);
 Suite *     orgutil_suite (void);
+Suite *     validate_suite (void);
 
 #endif /* INC_CHECK_BDJ */

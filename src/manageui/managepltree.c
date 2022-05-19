@@ -246,6 +246,12 @@ managePlaylistTreePopulate (managepltree_t *managepltree, playlist_t *pl)
 }
 
 
+bool
+managePlaylistTreeIsChanged (managepltree_t *managepltree)
+{
+  return managepltree->changed;
+}
+
 /* internal routines */
 
 static void
