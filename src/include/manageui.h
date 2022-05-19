@@ -18,7 +18,7 @@ uimenu_t *managePlaylistMenu (managepl_t *managepl, GtkWidget *menubar);
 void managePlaylistSave (managepl_t *managepl);
 
 /* managepltree.c */
-managepltree_t *managePlaylistTreeAlloc (void);
+managepltree_t *managePlaylistTreeAlloc (UIWidget *statusMsg);
 void managePlaylistTreeFree (managepltree_t *managepltree);
 void manageBuildUIPlaylistTree (managepltree_t *managepltree, UIWidget *vboxp);
 void managePlaylistTreePopulate (managepltree_t *managepltree, playlist_t *pl);

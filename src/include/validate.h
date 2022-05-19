@@ -8,6 +8,8 @@ enum {
   VAL_NO_SLASHES  = 0x0004,
   VAL_NUMERIC     = 0x0008,
   VAL_FLOAT       = 0x0010,
+  VAL_HOUR_MIN    = 0x0020,
+  VAL_MIN_SEC     = 0x0040,
 };
 
 const char * validate (const char *str, int flags);

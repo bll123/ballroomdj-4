@@ -50,7 +50,6 @@ typedef struct managepl {
   managepltree_t  *managepltree;
 } managepl_t;
 
-static void managePlaylistTreeSetColumnVisibility (managepltree_t *managepltree, int pltype);
 static void managePlaylistLoad (GtkMenuItem *mi, gpointer udata);
 static void managePlaylistCopy (GtkMenuItem *mi, gpointer udata);
 static void managePlaylistLoadFile (void *udata, const char *fn);
@@ -284,7 +283,7 @@ manageBuildUIPlaylist (managepl_t *managepl, UIWidget *vboxp)
   uiWidgetSetMarginStart (&rcol, uiBaseMarginSz * 8);
   uiBoxPackStartExpand (&mainhbox, &rcol);
 
-  managepl->managepltree = managePlaylistTreeAlloc ();
+  managepl->managepltree = managePlaylistTreeAlloc (managepl->statusMsg);
   manageBuildUIPlaylistTree (managepl->managepltree, &rcol);
 }
 

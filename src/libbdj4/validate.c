@@ -13,6 +13,8 @@
 enum {
   VAL_REGEX_NUMERIC,
   VAL_REGEX_FLOAT,
+  VAL_REGEX_MIN_SEC,
+  VAL_REGEX_HOUR_MIN,
   VAL_REGEX_MAX,
 };
 
@@ -24,6 +26,9 @@ typedef struct {
 static valregex_t valregex [VAL_REGEX_MAX] = {
   [VAL_REGEX_NUMERIC] = { "^ *[0-9]+ *$" },
   [VAL_REGEX_FLOAT]   = { "^ *[0-9]+\\.[0-9]+ *$" },
+  [VAL_REGEX_MIN_SEC]   = { "^ *[0-9]+:[0-5][0-9] *$" },
+  /* americans are likely to type in am/pm */
+  [VAL_REGEX_HOUR_MIN]   = { "^ *([0-9]|[1][0-9]|[2][0-4]):[0-5][0-9](([Aa]|[Pp])[Mm])? *$" },
 };
 
 /**
@@ -73,6 +78,22 @@ validate (const char *str, int valflags)
     if (str != NULL && ! regexMatch (rx, str)) {
       /* CONTEXT: validation: must be a numeric value */
       valstr = _("%s must be numeric.");
+    }
+    regexFree (rx);
+  }
+  if ((valflags & VAL_HOUR_MIN) == VAL_HOUR_MIN) {
+    rx = regexInit (valregex [VAL_REGEX_HOUR_MIN].regex);
+    if (str != NULL && ! regexMatch (rx, str)) {
+      /* CONTEXT: validation: invalid time (hours/minutes) */
+      valstr = _("%s: Invalid time.");
+    }
+    regexFree (rx);
+  }
+  if ((valflags & VAL_MIN_SEC) == VAL_MIN_SEC) {
+    rx = regexInit (valregex [VAL_REGEX_MIN_SEC].regex);
+    if (str != NULL && ! regexMatch (rx, str)) {
+      /* CONTEXT: validation: invalid time (minutes/seconds) */
+      valstr = _("%s: Invalid duration.");
     }
     regexFree (rx);
   }
