@@ -39,12 +39,6 @@ void  uiLabelSetText (UIWidget *uilabel, const char *text);
 void  uiLabelEllipsizeOn (UIWidget *uiwidget);
 void  uiLabelSetMaxWidth (UIWidget *uiwidget, int width);
 void  uiLabelAlignEnd (UIWidget *uiwidget);
-/* these routines will be removed at a later date */
-GtkWidget * uiCreateLabelW (const char *label);
-GtkWidget * uiCreateColonLabelW (const char *label);
-void        uiLabelSetTextW (GtkWidget *label, const char *text);
-void        uiLabelEllipsizeOnW (GtkWidget *widget);
-void        uiLabelSetMaxWidthW (GtkWidget *widget, int width);
 
 /* uigtkbutton.c */
 GtkWidget * uiCreateButton (UIWidget *uiwidget, UICallback *uicb,
