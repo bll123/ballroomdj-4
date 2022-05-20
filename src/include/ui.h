@@ -150,11 +150,6 @@ void  uiNotebookSetActionWidget (UIWidget *uinotebook, UIWidget *uiwidget);
 void  uiNotebookSetPage (UIWidget *uinotebook, int pagenum);
 void  uiNotebookSetCallback (UIWidget *uinotebook, UICallback *uicb);
 void  uiNotebookHideShowPage (UIWidget *uinotebook, int pagenum, bool show);
-/* these routines will be removed at a later date */
-GtkWidget * uiCreateNotebookW (void);
-void  uiNotebookAppendPageW (GtkWidget *notebook, GtkWidget *widget, GtkWidget *label);
-void  uiNotebookSetActionWidgetW (GtkWidget *notebook, GtkWidget *widget, GtkPackType pack);
-void  uiNotebookSetPageW (GtkWidget *notebook, int pagenum);
 
 /* uigtkbox.c */
 void uiCreateVertBox (UIWidget *uiwidget);
