@@ -36,7 +36,7 @@ typedef struct {
   GtkWidget         *window;
   /* filter data */
   GtkWidget         *filterDialog;
-  GtkWidget         *statusPlayable;
+  UIWidget          statusPlayable;
   songfilterpb_t    dfltpbflag;
   uidropdown_t      sortbysel;
   uidropdown_t      filterdancesel;

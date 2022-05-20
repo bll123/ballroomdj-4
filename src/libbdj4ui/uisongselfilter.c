@@ -54,8 +54,9 @@ uisongselFilterDialog (void *udata)
   }
 
   uisongselInitFilterDisplay (uisongsel);
-  if (uisongsel->statusPlayable != NULL) {
-    uiSwitchSetValue (uisongsel->statusPlayable, uisongsel->dfltpbflag);
+// ### fix
+  if (songfilterCheckSelection (uisongsel->songfilter, FILTER_DISP_STATUSPLAYABLE)) {
+    uiSwitchSetValue (&uisongsel->statusPlayable, uisongsel->dfltpbflag);
   }
   uiWidgetShowAllW (uisongsel->filterDialog);
 
@@ -275,9 +276,9 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
     uiBoxPackStart (&hbox, &uiwidget);
     uiSizeGroupAdd (&sg, &uiwidget);
 
-    widget = uiCreateSwitch (uisongsel->dfltpbflag);
-    uiBoxPackStartUW (&hbox, widget);
-    uisongsel->statusPlayable = widget;
+    uiCreateSwitch (&uiwidget, uisongsel->dfltpbflag);
+    uiBoxPackStart (&hbox, &uiwidget);
+    uiutilsUIWidgetCopy (&uisongsel->statusPlayable, &uiwidget);
   }
 
   /* the dialog doesn't have any space above the buttons */
@@ -326,8 +327,8 @@ uisongselFilterResponseHandler (GtkDialog *d, gint responseid, gpointer udata)
       uiDropDownSelectionSetNum (&uisongsel->dancesel, uisongsel->danceIdx);
       uiDropDownSelectionSetNum (&uisongsel->filterdancesel, uisongsel->danceIdx);
       uisongselInitFilterDisplay (uisongsel);
-      if (uisongsel->statusPlayable != NULL) {
-        uiSwitchSetValue (uisongsel->statusPlayable, uisongsel->dfltpbflag);
+      if (songfilterCheckSelection (uisongsel->songfilter, FILTER_DISP_STATUSPLAYABLE)) {
+        uiSwitchSetValue (&uisongsel->statusPlayable, uisongsel->dfltpbflag);
       }
       break;
     }
@@ -393,7 +394,7 @@ uisongselFilterUpdate (uisongsel_t *uisongsel)
   }
 
   if (songfilterCheckSelection (uisongsel->songfilter, FILTER_DISP_STATUSPLAYABLE)) {
-    nval = gtk_switch_get_active (GTK_SWITCH (uisongsel->statusPlayable));
+    nval = uiSwitchGetValue (&uisongsel->statusPlayable);
   } else {
     nval = uisongsel->dfltpbflag;
   }

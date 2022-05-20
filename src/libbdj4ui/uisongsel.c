@@ -47,7 +47,7 @@ uisongselInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
   uisongsel->musicdb = musicdb;
   uisongsel->dispselType = dispselType;
   uisongsel->filterDialog = NULL;
-  uisongsel->statusPlayable = NULL;
+  uiutilsUIWidgetInit (&uisongsel->statusPlayable);
   uisongsel->options = options;
   uisongsel->idxStart = 0;
   uisongsel->oldIdxStart = 0;

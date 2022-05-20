@@ -9,13 +9,11 @@
 #include <ctype.h>
 #include <math.h>
 
-#include <gtk/gtk.h>
-
 #include "ui.h"
 #include "uiutils.h"
 
-GtkWidget *
-uiCreateSwitch (int value)
+void
+uiCreateSwitch (UIWidget *uiwidget, int value)
 {
   GtkWidget   *widget;
 
@@ -25,14 +23,30 @@ uiCreateSwitch (int value)
   gtk_widget_set_margin_top (widget, uiBaseMarginSz);
   gtk_widget_set_margin_start (widget, uiBaseMarginSz);
   gtk_widget_set_valign (widget, GTK_ALIGN_CENTER);
-  return widget;
+  uiwidget->widget = widget;
 }
 
 void
-uiSwitchSetValue (GtkWidget *w, int value)
+uiSwitchSetValue (UIWidget *uiwidget, int value)
 {
-  if (w == NULL) {
+  if (uiwidget == NULL) {
     return;
   }
-  gtk_switch_set_active (GTK_SWITCH (w), value);
+  if (uiwidget->widget == NULL) {
+    return;
+  }
+  gtk_switch_set_active (GTK_SWITCH (uiwidget->widget), value);
 }
+
+int
+uiSwitchGetValue (UIWidget *uiwidget)
+{
+  if (uiwidget == NULL) {
+    return 0;
+  }
+  if (uiwidget->widget == NULL) {
+    return 0;
+  }
+  return gtk_switch_get_active (GTK_SWITCH (uiwidget->widget));
+}
+

@@ -115,7 +115,6 @@ manageBuildUIPlaylist (managepl_t *managepl, UIWidget *vboxp)
   UIWidget            hbox;
   UIWidget            uiwidget;
   UIWidget            *uiwidgetp;
-  GtkWidget           *widget;
   UIWidget            sg;
   UIWidget            sgA;
   UIWidget            sgB;
@@ -230,8 +229,8 @@ manageBuildUIPlaylist (managepl_t *managepl, UIWidget *vboxp)
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
 
-  widget = uiCreateSwitch (0);
-  uiBoxPackStartUW (&hbox, widget);
+  uiCreateSwitch (&uiwidget, 0);
+  uiBoxPackStart (&hbox, &uiwidget);
 
   /* automatic and sequenced playlists; keep the widget so these */
   /* can be hidden */

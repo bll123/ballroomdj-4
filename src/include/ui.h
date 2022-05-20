@@ -242,8 +242,9 @@ void    uiScaleSetValue (UIWidget *uiscale, double value);
 void    uiScaleSetRange (UIWidget *uiscale, double start, double end);
 
 /* uigtkswitch.c */
-GtkWidget * uiCreateSwitch (int value);
-void uiSwitchSetValue (GtkWidget *w, int value);
+void uiCreateSwitch (UIWidget *uiwidget, int value);
+void uiSwitchSetValue (UIWidget *uiwidget, int value);
+int uiSwitchGetValue (UIWidget *uiwidget);
 
 /* uigtksizegrp.c */
 void uiCreateSizeGroupHoriz (UIWidget *);

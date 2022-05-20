@@ -1918,7 +1918,7 @@ confuiPopulateOptions (configui_t *confui)
         break;
       }
       case CONFUI_SWITCH: {
-        nval = gtk_switch_get_active (GTK_SWITCH (confui->uiitem [i].widget));
+        nval = uiSwitchGetValue (&confui->uiitem [i].uiwidget);
         break;
       }
       case CONFUI_CHECK_BUTTON: {
@@ -2467,7 +2467,7 @@ confuiMakeItemSwitch (configui_t *confui, UIWidget *boxp, UIWidget *sg,
     char *txt, int widx, int bdjoptIdx, int value, void *cb)
 {
   UIWidget    hbox;
-  GtkWidget   *widget;
+  UIWidget    uiwidget;
 
   logProcBegin (LOG_PROC, "confuiMakeItemSwitch");
 
@@ -2475,15 +2475,16 @@ confuiMakeItemSwitch (configui_t *confui, UIWidget *boxp, UIWidget *sg,
   confui->uiitem [widx].outtype = CONFUI_OUT_BOOL;
   uiCreateHorizBox (&hbox);
   confuiMakeItemLabel (&hbox, sg, txt);
-  widget = uiCreateSwitch (value);
-  uiWidgetSetMarginStartW (widget, uiBaseMarginSz * 4);
-  uiBoxPackStartUW (&hbox, widget);
+
+  uiCreateSwitch (&uiwidget, value);
+  uiWidgetSetMarginStart (&uiwidget, uiBaseMarginSz * 4);
+  uiBoxPackStart (&hbox, &uiwidget);
   uiBoxPackStart (boxp, &hbox);
-  confui->uiitem [widx].widget = widget;
+  uiutilsUIWidgetCopy (&confui->uiitem [widx].uiwidget, &uiwidget);
   confui->uiitem [widx].bdjoptIdx = bdjoptIdx;
 
   if (cb != NULL) {
-    g_signal_connect (widget, "state-set", G_CALLBACK (cb), confui);
+    g_signal_connect (uiwidget.widget, "state-set", G_CALLBACK (cb), confui);
   }
 
   logProcEnd (LOG_PROC, "confuiMakeItemSwitch", "");
