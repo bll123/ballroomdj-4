@@ -68,6 +68,7 @@ static bool managePlaylistNew (void *udata);
 static void manageSetPlaylistName (managepl_t *managepl, const char *nm);
 static long managePlaylistValMSCallback (void *udata, const char *txt);
 static long managePlaylistValHMCallback (void *udata, const char *txt);
+static void managePlaylistUpdatePlaylist (managepl_t *managepl);
 
 managepl_t *
 managePlaylistAlloc (UIWidget *window, nlist_t *options, UIWidget *statusMsg)
@@ -367,19 +368,8 @@ managePlaylistSave (managepl_t *managepl)
     manageRenamePlaylistFiles (managepl->ploldname, name);
   }
 
-  pathbldMakePath (onm, sizeof (onm),
-      name, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
-  strlcat (onm, ".n", sizeof (onm));
-
-  // ### populate the playlist and save
-
-  pathbldMakePath (nnm, sizeof (nnm),
-      name, BDJ4_SEQUENCE_EXT, PATHBLD_MP_DATA);
-  if (! managepl->plbackupcreated) {
-    filemanipBackup (nnm, 1);
-    managepl->plbackupcreated = true;
-  }
-  filemanipMove (onm, nnm);
+  managePlaylistUpdatePlaylist (managepl);
+  playlistSave (managepl->playlist);
 }
 
 /* internal routines */
@@ -480,6 +470,7 @@ managePlaylistCopy (void *udata)
     manageSetPlaylistName (managepl, newname);
     managepl->plbackupcreated = false;
   }
+
   return UICB_CONT;
 }
 
@@ -558,3 +549,38 @@ managePlaylistValHMCallback (void *udata, const char *txt)
   return value;
 }
 
+static void
+managePlaylistUpdatePlaylist (managepl_t *managepl)
+{
+  playlist_t    *pl;
+  long          tval;
+  const char    *tstr;
+
+  pl = managepl->playlist;
+
+  managePlaylistTreeUpdatePlaylist (managepl->managepltree);
+
+  tval = uiSpinboxGetValue (uiSpinboxGetUIWidget (&managepl->uimaxplaytime));
+  playlistSetConfigNum (pl, PLAYLIST_MAX_PLAY_TIME, tval);
+
+  tval = uiSpinboxGetValue (uiSpinboxGetUIWidget (&managepl->uistopat));
+  playlistSetConfigNum (pl, PLAYLIST_STOP_TIME, tval);
+
+  tval = uiSpinboxGetValue (&managepl->uistopafter);
+  playlistSetConfigNum (pl, PLAYLIST_STOP_AFTER, tval);
+
+  tval = uiSpinboxGetValue (&managepl->uigap);
+  playlistSetConfigNum (pl, PLAYLIST_GAP, tval);
+
+  tval = uiratingGetValue (managepl->uirating);
+  playlistSetConfigNum (pl, PLAYLIST_RATING, tval);
+
+  tval = uilevelGetValue (managepl->uilowlevel);
+  playlistSetConfigNum (pl, PLAYLIST_LEVEL_LOW, tval);
+
+  tval = uilevelGetValue (managepl->uihighlevel);
+  playlistSetConfigNum (pl, PLAYLIST_LEVEL_HIGH, tval);
+
+  tstr = uiEntryGetValue (&managepl->allowedkeywords);
+  playlistSetConfigStr (pl, PLAYLIST_ALLOWED_KEYWORDS, tstr);
+}

@@ -68,6 +68,7 @@ void      playlistFree (void *);
 char      *playlistGetName (playlist_t *pl);
 ssize_t   playlistGetConfigNum (playlist_t *pl, playlistkey_t key);
 void      playlistSetConfigNum (playlist_t *pl, playlistkey_t key, ssize_t value);
+void      playlistSetConfigStr (playlist_t *pl, playlistkey_t key, const char *value);
 ssize_t   playlistGetDanceNum (playlist_t *pl, ilistidx_t dancekey, pldancekey_t key);
 void      playlistSetDanceCount (playlist_t *pl, ilistidx_t dancekey, ssize_t value);
 void      playlistSetDanceNum (playlist_t *pl, ilistidx_t danceIdx, pldancekey_t key, ssize_t value);

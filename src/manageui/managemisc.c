@@ -119,6 +119,18 @@ manageCopyPlaylistFiles (const char *oldname, const char *newname)
   pathbldMakePath (nnm, sizeof (nnm),
       newname, BDJ4_PL_DANCE_EXT, PATHBLD_MP_DATA);
   filemanipCopy (onm, nnm);
+
+  pathbldMakePath (onm, sizeof (onm),
+      oldname, BDJ4_SEQUENCE_EXT, PATHBLD_MP_DATA);
+  pathbldMakePath (nnm, sizeof (nnm),
+      newname, BDJ4_SEQUENCE_EXT, PATHBLD_MP_DATA);
+  filemanipCopy (onm, nnm);
+
+  pathbldMakePath (onm, sizeof (onm),
+      oldname, BDJ4_SONGLIST_EXT, PATHBLD_MP_DATA);
+  pathbldMakePath (nnm, sizeof (nnm),
+      newname, BDJ4_SONGLIST_EXT, PATHBLD_MP_DATA);
+  filemanipCopy (onm, nnm);
 }
 
 

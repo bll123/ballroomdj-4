@@ -288,6 +288,53 @@ managePlaylistTreeIsChanged (managepltree_t *managepltree)
   return managepltree->changed;
 }
 
+void
+managePlaylistTreeUpdatePlaylist (managepltree_t *managepltree)
+{
+  GtkTreeModel    *model;
+  GtkTreeIter     iter;
+  long            tval;
+  char            *tstr;
+  char            tbuff [40];
+  ilistidx_t      dkey;
+  playlist_t      *pl;
+  int             count;
+
+  if (! managepltree->changed) {
+    return;
+  }
+
+  pl = managepltree->playlist;
+
+  /* hide unselected may be on, and only the displayed dances will */
+  /* be updated */
+
+  model = gtk_tree_view_get_model (GTK_TREE_VIEW (managepltree->tree));
+  count = 0;
+  while (1) {
+    snprintf (tbuff, sizeof (tbuff), "%d", count);
+    if (! gtk_tree_model_get_iter_from_string (model, &iter, tbuff)) {
+      break;
+    }
+
+    gtk_tree_model_get (model, &iter, MPLTREE_COL_DANCE_IDX, &tval, -1);
+    dkey = tval;
+    gtk_tree_model_get (model, &iter, MPLTREE_COL_DANCE_SELECT, &tval, -1);
+    playlistSetDanceNum (pl, dkey, PLDANCE_SELECTED, tval);
+    gtk_tree_model_get (model, &iter, MPLTREE_COL_COUNT, &tval, -1);
+    playlistSetDanceNum (pl, dkey, PLDANCE_COUNT, tval);
+    gtk_tree_model_get (model, &iter, MPLTREE_COL_MAXPLAYTIME, &tstr, -1);
+    tval = tmutilStrToMS (tstr);
+    playlistSetDanceNum (pl, dkey, PLDANCE_MAXPLAYTIME, tval);
+    gtk_tree_model_get (model, &iter, MPLTREE_COL_LOWBPM, &tval, -1);
+    playlistSetDanceNum (pl, dkey, PLDANCE_BPM_LOW, tval);
+    gtk_tree_model_get (model, &iter, MPLTREE_COL_HIGHBPM, &tval, -1);
+    playlistSetDanceNum (pl, dkey, PLDANCE_BPM_HIGH, tval);
+
+    ++count;
+  }
+}
+
 /* internal routines */
 
 static void
@@ -463,3 +510,4 @@ managePlaylistTreeHideUnselectedCallback (void *udata)
   managePlaylistTreePopulate (managepltree, managepltree->playlist);
   return UICB_CONT;
 }
+

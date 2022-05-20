@@ -365,6 +365,17 @@ playlistSetConfigNum (playlist_t *pl, playlistkey_t key, ssize_t value)
   return;
 }
 
+void
+playlistSetConfigStr (playlist_t *pl, playlistkey_t key, const char *value)
+{
+  if (pl == NULL || pl->plinfo == NULL) {
+    return;
+  }
+
+  nlistSetStr (pl->plinfo, key, value);
+  return;
+}
+
 ssize_t
 playlistGetDanceNum (playlist_t *pl, ilistidx_t danceIdx, pldancekey_t key)
 {
