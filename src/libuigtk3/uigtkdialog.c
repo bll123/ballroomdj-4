@@ -103,7 +103,6 @@ uiCreateDialog (UIWidget *uiwidget, UIWidget *window,
   gtk_window_set_destroy_with_parent (GTK_WINDOW (dialog), TRUE);
   gtk_window_set_transient_for (GTK_WINDOW (dialog), GTK_WINDOW (window->widget));
   uiwidget->widget = dialog;
-  uiWidgetSetAllMargins (uiwidget, uiBaseMarginSz * 2);
 
   va_start (valist, title);
   while ((label = va_arg (valist, char *)) != NULL) {

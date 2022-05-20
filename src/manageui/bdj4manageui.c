@@ -10,8 +10,6 @@
 #include <unistd.h>
 #include <math.h>
 
-#include <gtk/gtk.h>
-
 #include "bdj4.h"
 #include "bdj4init.h"
 #include "bdj4intl.h"
@@ -1040,15 +1038,13 @@ static void
 manageDbChg (GtkSpinButton *sb, gpointer udata)
 {
   manageui_t      *manage = udata;
-  GtkAdjustment   *adjustment;
   double          value;
   ssize_t         nval;
   char            *sval;
 
   nval = MANAGE_DB_CHECK_NEW;
   if (sb != NULL) {
-    adjustment = gtk_spin_button_get_adjustment (sb);
-    value = gtk_adjustment_get_value (adjustment);
+    value = uiSpinboxTextGetValue (&manage->dbspinbox);
     nval = (ssize_t) value;
   }
 

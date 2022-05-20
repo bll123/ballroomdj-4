@@ -757,6 +757,7 @@ starterMainLoop (void *tstarter)
       webclientClose (starter->webclient);
       uiEntryFree (&starter->supportsubject);
       uiEntryFree (&starter->supportemail);
+      uiDialogDestroy (&starter->supportMsgDialog);
       starter->startState = START_STATE_NONE;
       break;
     }
@@ -981,13 +982,14 @@ starterProcessSupport (void *udata)
       _("Support"),
       /* CONTEXT: support dialog: closes the dialog */
       _("Close"),
-      GTK_RESPONSE_CLOSE,
+      RESPONSE_CLOSE,
       NULL
       );
 
   uiCreateSizeGroupHoriz (&sg);
 
   uiCreateVertBox (&vbox);
+  uiWidgetSetAllMargins (&vbox, uiBaseMarginSz * 2);
   uiDialogPackInDialog (&uidialog, &vbox);
 
   /* begin line */
@@ -1243,6 +1245,7 @@ starterCreateSupportDialog (void *udata)
   uiCreateSizeGroupHoriz (&sg);
 
   uiCreateVertBox (&vbox);
+  uiWidgetSetAllMargins (&vbox, uiBaseMarginSz * 2);
   uiDialogPackInDialog (&uidialog, &vbox);
 
   /* line 1 */

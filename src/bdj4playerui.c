@@ -10,8 +10,6 @@
 #include <unistd.h>
 #include <math.h>
 
-#include <gtk/gtk.h>
-
 #include "bdj4.h"
 #include "bdj4init.h"
 #include "bdj4intl.h"
@@ -82,7 +80,8 @@ typedef struct {
   UICallback      setpbqcb;
   UIWidget        ledoffPixbuf;
   UIWidget        ledonPixbuf;
-  GtkWidget       *marqueeFontSizeDialog;
+  UIWidget        marqueeFontSizeDialog;
+  UICallback      fontszcb;
   UIWidget        marqueeSpinBox;
   /* ui major elements */
   uiplayer_t      *uiplayer;
@@ -93,6 +92,7 @@ typedef struct {
   nlist_t         *options;
   /* flags */
   bool            uibuilt : 1;
+  bool            fontszdialogcreated : 1;
 } playerui_t;
 
 static datafilekey_t playeruidfkeys [] = {
@@ -134,7 +134,7 @@ static bool     pluiToggleSwitchQueue (void *udata);
 static void     pluiSetSwitchQueue (playerui_t *plui);
 static bool     pluiMarqueeFontSizeDialog (void *udata);
 static void     pluiCreateMarqueeFontSizeDialog (playerui_t *plui);
-static void     pluiMarqueeFontSizeDialogResponse (GtkDialog *d, gint responseid, gpointer udata);
+static bool     pluiMarqueeFontSizeDialogResponse (void *udata, int responseid);
 static void     pluiMarqueeFontSizeChg (GtkSpinButton *fb, gpointer udata);
 static void     pluisetMarqueeIsMaximized (playerui_t *plui, char *args);
 static void     pluisetMarqueeFontSizes (playerui_t *plui, char *args);
@@ -156,7 +156,7 @@ main (int argc, char *argv[])
   uiutilsUIWidgetInit (&plui.window);
   uiutilsUIWidgetInit (&plui.clock);
   uiutilsUIWidgetInit (&plui.notebook);
-  plui.marqueeFontSizeDialog = NULL;
+  uiutilsUIWidgetInit (&plui.marqueeFontSizeDialog);
   plui.progstate = progstateInit ("playerui");
   progstateSetCallback (plui.progstate, STATE_CONNECTING,
       pluiConnectingCallback, &plui);
@@ -176,6 +176,7 @@ main (int argc, char *argv[])
   plui.nbtabid = uiutilsNotebookIDInit ();
   plui.songfilter = NULL;
   plui.uibuilt = false;
+  plui.fontszdialogcreated = false;
   plui.currpage = 0;
 
   osSetStandardSignals (pluiSigHandler);
@@ -876,7 +877,7 @@ pluiMarqueeFontSizeDialog (void *udata)
 
   logProcBegin (LOG_PROC, "pluiMarqueeFontSizeDialog");
 
-  if (plui->marqueeFontSizeDialog == NULL) {
+  if (! plui->fontszdialogcreated) {
     pluiCreateMarqueeFontSizeDialog (plui);
   }
 
@@ -887,39 +888,35 @@ pluiMarqueeFontSizeDialog (void *udata)
   }
 
   uiSpinboxSetValue (&plui->marqueeSpinBox, (double) sz);
-  uiWidgetShowAllW (plui->marqueeFontSizeDialog);
+  uiWidgetShowAll (&plui->marqueeFontSizeDialog);
 
   logProcEnd (LOG_PROC, "pluiMarqueeFontSizeDialog", "");
   return UICB_CONT;
 }
 
-
-
 static void
 pluiCreateMarqueeFontSizeDialog (playerui_t *plui)
 {
-  GtkWidget     *content;
   UIWidget      vbox;
   UIWidget      hbox;
   UIWidget      uiwidget;
 
   logProcBegin (LOG_PROC, "pluiCreateMarqueeFontSizeDialog");
 
-  plui->marqueeFontSizeDialog = gtk_dialog_new_with_buttons (
+  uiutilsUICallbackIntInit (&plui->fontszcb,
+      pluiMarqueeFontSizeDialogResponse, plui);
+  uiCreateDialog (&plui->marqueeFontSizeDialog, &plui->window,
+      &plui->fontszcb,
       /* CONTEXT: marquee font size dialog: window title */
       _("Marquee Font Size"),
-      GTK_WINDOW (plui->window.widget),
-      GTK_DIALOG_DESTROY_WITH_PARENT,
       /* CONTEXT: marquee font size dialog: action button */
       _("Close"),
-      GTK_RESPONSE_CLOSE,
+      RESPONSE_CLOSE,
       NULL
       );
 
-  content = gtk_dialog_get_content_area (GTK_DIALOG (plui->marqueeFontSizeDialog));
-
   uiCreateVertBox (&vbox);
-  uiBoxPackInWindowWU (content, &vbox);
+  uiDialogPackInDialog (&plui->marqueeFontSizeDialog, &vbox);
 
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&vbox, &hbox);
@@ -941,27 +938,30 @@ pluiCreateMarqueeFontSizeDialog (playerui_t *plui)
 
   uiCreateLabel (&uiwidget, "");
   uiBoxPackStart (&hbox, &uiwidget);
+  plui->fontszdialogcreated = true;
 
-  g_signal_connect (plui->marqueeFontSizeDialog, "response",
-      G_CALLBACK (pluiMarqueeFontSizeDialogResponse), plui);
+//  g_signal_connect (plui->marqueeFontSizeDialog, "response",
+//      G_CALLBACK (pluiMarqueeFontSizeDialogResponse), plui);
   logProcEnd (LOG_PROC, "pluiCreateMarqueeFontSizeDialog", "");
 }
 
-static void
-pluiMarqueeFontSizeDialogResponse (GtkDialog *d, gint responseid, gpointer udata)
+static bool
+pluiMarqueeFontSizeDialogResponse (void *udata, int responseid)
 {
   playerui_t  *plui = udata;
 
   switch (responseid) {
-    case GTK_RESPONSE_DELETE_EVENT: {
-      plui->marqueeFontSizeDialog = NULL;
+    case RESPONSE_DELETE_WIN: {
+      uiutilsUIWidgetInit (&plui->marqueeFontSizeDialog);
+      plui->fontszdialogcreated = false;
       break;
     }
-    case GTK_RESPONSE_CLOSE: {
-      uiWidgetHideW (plui->marqueeFontSizeDialog);
+    case RESPONSE_CLOSE: {
+      uiWidgetHide (&plui->marqueeFontSizeDialog);
       break;
     }
   }
+  return UICB_CONT;
 }
 
 static void
@@ -969,11 +969,9 @@ pluiMarqueeFontSizeChg (GtkSpinButton *sb, gpointer udata)
 {
   playerui_t  *plui = udata;
   int         fontsz;
-  GtkAdjustment *adjustment;
   double      value;
 
-  adjustment = gtk_spin_button_get_adjustment (sb);
-  value = gtk_adjustment_get_value (adjustment);
+  value = uiSpinboxGetValue (&plui->marqueeSpinBox);
   fontsz = (int) round (value);
   if (plui->marqueeIsMaximized) {
     plui->marqueeFontSizeFS = fontsz;
