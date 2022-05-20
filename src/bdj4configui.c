@@ -386,10 +386,10 @@ static bool     confuiCloseWin (void *udata);
 static void     confuiSigHandler (int sig);
 
 static void confuiPopulateOptions (configui_t *confui);
-static void confuiSelectMusicDir (GtkButton *b, gpointer udata);
-static void confuiSelectStartup (GtkButton *b, gpointer udata);
-static void confuiSelectShutdown (GtkButton *b, gpointer udata);
-static void confuiSelectAnnouncement (GtkButton *b, gpointer udata);
+static bool confuiSelectMusicDir (void *udata);
+static bool confuiSelectStartup (void *udata);
+static bool confuiSelectShutdown (void *udata);
+static bool confuiSelectAnnouncement (void *udata);
 static void confuiSelectFileDialog (configui_t *confui, int widx, char *startpath, char *mimefiltername, char *mimetype);
 
 /* gui */
@@ -2063,12 +2063,12 @@ confuiPopulateOptions (configui_t *confui)
 }
 
 
-static void
-confuiSelectMusicDir (GtkButton *b, gpointer udata)
+static bool
+confuiSelectMusicDir (void *udata)
 {
-  configui_t            *confui = udata;
-  char                  *fn = NULL;
-  uiselect_t       selectdata;
+  configui_t  *confui = udata;
+  char        *fn = NULL;
+  uiselect_t  selectdata;
 
   logProcBegin (LOG_PROC, "confuiSelectMusicDir");
   /* CONTEXT: configuration: folder selection dialog: window title */
@@ -2084,40 +2084,44 @@ confuiSelectMusicDir (GtkButton *b, gpointer udata)
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected loc: %s", fn);
   }
   logProcEnd (LOG_PROC, "confuiSelectMusicDir", "");
+  return UICB_CONT;
 }
 
-static void
-confuiSelectStartup (GtkButton *b, gpointer udata)
+static bool
+confuiSelectStartup (void *udata)
 {
-  configui_t            *confui = udata;
+  configui_t  *confui = udata;
 
   logProcBegin (LOG_PROC, "confuiSelectStartup");
   confuiSelectFileDialog (confui, CONFUI_ENTRY_STARTUP,
       sysvarsGetStr (SV_BDJ4DATATOPDIR), NULL, NULL);
   logProcEnd (LOG_PROC, "confuiSelectStartup", "");
+  return UICB_CONT;
 }
 
-static void
-confuiSelectShutdown (GtkButton *b, gpointer udata)
+static bool
+confuiSelectShutdown (void *udata)
 {
-  configui_t            *confui = udata;
+  configui_t *confui = udata;
 
   logProcBegin (LOG_PROC, "confuiSelectShutdown");
   confuiSelectFileDialog (confui, CONFUI_ENTRY_SHUTDOWN,
       sysvarsGetStr (SV_BDJ4DATATOPDIR), NULL, NULL);
   logProcEnd (LOG_PROC, "confuiSelectShutdown", "");
+  return UICB_CONT;
 }
 
-static void
-confuiSelectAnnouncement (GtkButton *b, gpointer udata)
+static bool
+confuiSelectAnnouncement (void *udata)
 {
-  configui_t            *confui = udata;
+  configui_t *confui = udata;
 
   logProcBegin (LOG_PROC, "confuiSelectAnnouncement");
   confuiSelectFileDialog (confui, CONFUI_ENTRY_DANCE_ANNOUNCEMENT,
       /* CONTEXT: configuration: announcement selection dialog: audio file filter */
       bdjoptGetStr (OPT_M_DIR_MUSIC), _("Audio Files"), "audio/*");
   logProcEnd (LOG_PROC, "confuiSelectAnnouncement", "");
+  return UICB_CONT;
 }
 
 static void
@@ -2180,18 +2184,19 @@ confuiMakeItemEntryChooser (configui_t *confui, UIWidget *boxp,
     char *disp, void *dialogFunc)
 {
   UIWidget    hbox;
-  GtkWidget   *widget;
-  GtkWidget   *image;
+  UIWidget    uiwidget;
 
   logProcBegin (LOG_PROC, "confuiMakeItemEntryChooser");
   uiCreateHorizBox (&hbox);
   confuiMakeItemEntryBasic (confui, &hbox, sg, txt, widx, bdjoptIdx, disp);
-  widget = uiCreateButton (NULL, NULL, "", NULL, dialogFunc, confui);
-  image = gtk_image_new_from_icon_name ("folder", GTK_ICON_SIZE_BUTTON);
-  gtk_button_set_image (GTK_BUTTON (widget), image);
-  gtk_button_set_always_show_image (GTK_BUTTON (widget), TRUE);
-  uiWidgetSetMarginStartW (widget, 0);
-  uiBoxPackStartUW (&hbox, widget);
+  uiutilsUICallbackInit (&confui->uiitem [widx].callback,
+      dialogFunc, confui);
+  uiCreateButton (&uiwidget, &confui->uiitem [widx].callback,
+      "", NULL, NULL, NULL);
+  uiButtonSetImageIcon (&uiwidget, "folder");
+  uiWidgetSetMarginStart (&uiwidget, 0);
+  uiBoxPackStart (&hbox, &uiwidget);
+  uiBoxPackStart (boxp, &hbox);
   logProcEnd (LOG_PROC, "confuiMakeItemEntryChooser", "");
 }
 
