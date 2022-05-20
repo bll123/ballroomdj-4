@@ -329,10 +329,12 @@ typedef struct {
   nlist_t           *filterDisplaySel;
   nlist_t           *filterLookup;
   /* gtk stuff */
-  GtkWidget         *window;
+  UIWidget          window;
+  UICallback        closecb;
   UIWidget          vbox;
-  GtkWidget         *notebook;
-  GtkWidget         *statusMsg;
+  UIWidget          notebook;
+  UICallback        nbcb;
+  UIWidget          statusMsg;
   confuitable_t     tables [CONFUI_ID_TABLE_MAX];
   uiduallist_t      *dispselduallist;
   /* options */
@@ -380,7 +382,7 @@ static void     confuiBuildUIDebugOptions (configui_t *confui);
 static int      confuiMainLoop  (void *tconfui);
 static int      confuiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
                     bdjmsgmsg_t msg, char *args, void *udata);
-static gboolean confuiCloseWin (GtkWidget *window, GdkEvent *event, gpointer userdata);
+static bool     confuiCloseWin (void *udata);
 static void     confuiSigHandler (int sig);
 
 static void confuiPopulateOptions (configui_t *confui);
@@ -391,7 +393,7 @@ static void confuiSelectAnnouncement (GtkButton *b, gpointer udata);
 static void confuiSelectFileDialog (configui_t *confui, int widx, char *startpath, char *mimefiltername, char *mimetype);
 
 /* gui */
-static void confuiMakeNotebookTab (UIWidget *boxp, configui_t *confui, GtkWidget *notebook, char *txt, int);
+static void confuiMakeNotebookTab (UIWidget *boxp, configui_t *confui, UIWidget *notebook, char *txt, int);
 static void confuiMakeItemEntry (configui_t *confui, UIWidget *boxp, UIWidget *sg, char *txt, int widx, int bdjoptIdx, char *disp);
 static void confuiMakeItemEntryChooser (configui_t *confui, UIWidget *boxp, UIWidget *sg, char *txt, int widx, int bdjoptIdx, char *disp, void *dialogFunc);
 static void confuiMakeItemEntryBasic (configui_t *confui, UIWidget *boxp, UIWidget *sg, char *txt, int widx, int bdjoptIdx, char *disp);
@@ -445,7 +447,7 @@ static void   confuiTableMoveDown (GtkButton *b, gpointer udata);
 static void   confuiTableMove (configui_t *confui, int dir);
 static void   confuiTableRemove (GtkButton *b, gpointer udata);
 static void   confuiTableAdd (GtkButton *b, gpointer udata);
-static void   confuiSwitchTable (GtkNotebook *nb, GtkWidget *page, guint pagenum, gpointer udata);
+static bool   confuiSwitchTable (void *udata, int pagenum);
 static void   confuiTableSetDefaultSelection (configui_t *confui, GtkWidget *tree, GtkTreeSelection *sel);
 static void   confuiCreateDanceTable (configui_t *confui);
 static void   confuiDanceSet (GtkListStore *store, GtkTreeIter *iter, char *dancedisp, ilistidx_t key);
@@ -514,11 +516,12 @@ main (int argc, char *argv[])
   int             flags;
 
 
-  confui.notebook = NULL;
   confui.progstate = progstateInit ("configui");
   progstateSetCallback (confui.progstate, STATE_WAIT_HANDSHAKE,
       confuiHandshakeCallback, &confui);
-  confui.window = NULL;
+
+  uiutilsUIWidgetInit (&confui.notebook);
+  uiutilsUIWidgetInit (&confui.window);
   confui.tablecurr = CONFUI_ID_NONE;
   confui.nbtabid = uiutilsNotebookIDInit ();
   confui.dispsel = NULL;
@@ -776,10 +779,10 @@ confuiStoppingCallback (void *udata, programstate_t programState)
     confuiTableSave (confui, i);
   }
 
-  uiWindowGetSizeW (confui->window, &x, &y);
+  uiWindowGetSize (&confui->window, &x, &y);
   nlistSetNum (confui->options, CONFUI_SIZE_X, x);
   nlistSetNum (confui->options, CONFUI_SIZE_Y, y);
-  uiWindowGetPositionW (confui->window, &x, &y);
+  uiWindowGetPosition (&confui->window, &x, &y);
   nlistSetNum (confui->options, CONFUI_POSITION_X, x);
   nlistSetNum (confui->options, CONFUI_POSITION_Y, y);
 
@@ -816,7 +819,7 @@ confuiClosingCallback (void *udata, programstate_t programState)
 
   logProcBegin (LOG_PROC, "confuiClosingCallback");
 
-  uiCloseWindowW (confui->window);
+  uiCloseWindow (&confui->window);
 
   for (int i = CONFUI_BEGIN + 1; i < CONFUI_COMBOBOX_MAX; ++i) {
     uiDropDownFree (&confui->uiitem [i].u.dropdown);
@@ -879,8 +882,8 @@ static void
 confuiBuildUI (configui_t *confui)
 {
   GtkWidget     *menubar;
-  GtkWidget     *widget;
   UIWidget      hbox;
+  UIWidget      uiwidget;
   char          imgbuff [MAXPATHLEN];
   char          tbuff [MAXPATHLEN];
   gint          x, y;
@@ -891,34 +894,30 @@ confuiBuildUI (configui_t *confui)
       "bdj4_icon_config", ".svg", PATHBLD_MP_IMGDIR);
   /* CONTEXT: configuration user interface window title */
   snprintf (tbuff, sizeof (tbuff), _("%s Configuration"), BDJ4_NAME);
-  confui->window = uiCreateMainWindowW (tbuff, imgbuff,
-      confuiCloseWin, confui);
+  uiutilsUICallbackInit (&confui->closecb, confuiCloseWin, confui);
+  uiCreateMainWindow (&confui->window, &confui->closecb, tbuff, imgbuff);
 
   uiCreateVertBox (&confui->vbox);
   uiWidgetExpandHoriz (&confui->vbox);
   uiWidgetExpandVert (&confui->vbox);
   uiWidgetSetAllMargins (&confui->vbox, uiBaseMarginSz * 2);
-  uiBoxPackInWindowWU (confui->window, &confui->vbox);
+  uiBoxPackInWindow (&confui->window, &confui->vbox);
 
   uiCreateHorizBox (&hbox);
   uiWidgetExpandHoriz (&hbox);
   uiBoxPackStart (&confui->vbox, &hbox);
 
-  widget = uiCreateLabelW ("");
-  uiBoxPackEndUW (&hbox, widget);
-  snprintf (tbuff, sizeof (tbuff),
-      "label { color: %s; }",
-      bdjoptGetStr (OPT_P_UI_ACCENT_COL));
-  uiSetCss (widget, tbuff);
-  confui->statusMsg = widget;
+  uiCreateLabel (&uiwidget, "");
+  uiLabelSetColor (&uiwidget, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
+  uiBoxPackEnd (&hbox, &uiwidget);
+  uiutilsUIWidgetCopy (&confui->statusMsg, &uiwidget);
 
   menubar = uiCreateMenubar ();
   uiBoxPackStartUW (&hbox, menubar);
 
-  confui->notebook = uiCreateNotebookW ();
-  assert (confui->notebook != NULL);
-  gtk_notebook_set_tab_pos (GTK_NOTEBOOK (confui->notebook), GTK_POS_LEFT);
-  uiBoxPackStartExpandUW (&confui->vbox, confui->notebook);
+  uiCreateNotebook (&confui->notebook);
+  uiNotebookTabPositionLeft (&confui->notebook);
+  uiBoxPackStartExpand (&confui->vbox, &confui->notebook);
 
   confuiBuildUIGeneral (confui);
   confuiBuildUIPlayer (confui);
@@ -936,18 +935,18 @@ confuiBuildUI (configui_t *confui)
   confuiBuildUIMobileMarquee (confui);
   confuiBuildUIDebugOptions (confui);
 
-  g_signal_connect (confui->notebook, "switch-page",
-      G_CALLBACK (confuiSwitchTable), confui);
+  uiutilsUICallbackIntInit (&confui->nbcb, confuiSwitchTable, confui);
+  uiNotebookSetCallback (&confui->notebook, &confui->nbcb);
 
   x = nlistGetNum (confui->options, CONFUI_SIZE_X);
   y = nlistGetNum (confui->options, CONFUI_SIZE_Y);
-  uiWindowSetDefaultSizeW (confui->window, x, y);
+  uiWindowSetDefaultSize (&confui->window, x, y);
 
-  uiWidgetShowAllW (confui->window);
+  uiWidgetShowAll (&confui->window);
 
   x = nlistGetNum (confui->options, CONFUI_POSITION_X);
   y = nlistGetNum (confui->options, CONFUI_POSITION_Y);
-  uiWindowMoveW (confui->window, x, y);
+  uiWindowMove (&confui->window, x, y);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon_config", ".png", PATHBLD_MP_IMGDIR);
@@ -966,7 +965,7 @@ confuiBuildUIGeneral (configui_t *confui)
   uiCreateVertBox (&vbox);
 
   /* general options */
-  confuiMakeNotebookTab (&vbox, confui, confui->notebook,
+  confuiMakeNotebookTab (&vbox, confui, &confui->notebook,
       /* CONTEXT: configuration: general options that apply to everything */
       _("General Options"), CONFUI_ID_NONE);
   uiCreateSizeGroupHoriz (&sg);
@@ -1040,7 +1039,7 @@ confuiBuildUIPlayer (configui_t *confui)
   uiCreateVertBox (&vbox);
 
   /* player options */
-  confuiMakeNotebookTab (&vbox, confui, confui->notebook,
+  confuiMakeNotebookTab (&vbox, confui, &confui->notebook,
       /* CONTEXT: configuration: options associated with the player */
       _("Player Options"), CONFUI_ID_NONE);
   uiCreateSizeGroupHoriz (&sg);
@@ -1118,7 +1117,7 @@ confuiBuildUIMarquee (configui_t *confui)
   uiCreateVertBox (&vbox);
 
   /* marquee options */
-  confuiMakeNotebookTab (&vbox, confui, confui->notebook,
+  confuiMakeNotebookTab (&vbox, confui, &confui->notebook,
       /* CONTEXT: configuration: options associated with the marquee */
       _("Marquee Options"), CONFUI_ID_NONE);
   uiCreateSizeGroupHoriz (&sg);
@@ -1164,7 +1163,7 @@ confuiBuildUIUserInterface (configui_t *confui)
   uiCreateVertBox (&vbox);
 
   /* user interface */
-  confuiMakeNotebookTab (&vbox, confui, confui->notebook,
+  confuiMakeNotebookTab (&vbox, confui, &confui->notebook,
       /* CONTEXT: configuration: options associated with the user interface */
       _("User Interface"), CONFUI_ID_NONE);
   uiCreateSizeGroupHoriz (&sg);
@@ -1209,7 +1208,7 @@ confuiBuildUIDispSettings (configui_t *confui)
   uiCreateVertBox (&vbox);
 
   /* display settings */
-  confuiMakeNotebookTab (&vbox, confui, confui->notebook,
+  confuiMakeNotebookTab (&vbox, confui, &confui->notebook,
       /* CONTEXT: configuration: change which fields are displayed in different contexts */
       _("Display Settings"), CONFUI_ID_DISP_SEL_LIST);
   uiCreateSizeGroupHoriz (&sg);
@@ -1237,7 +1236,7 @@ confuiBuildUIFilterDisplay (configui_t *confui)
   uiCreateVertBox (&vbox);
 
   /* filter display */
-  confuiMakeNotebookTab (&vbox, confui, confui->notebook,
+  confuiMakeNotebookTab (&vbox, confui, &confui->notebook,
       /* CONTEXT: configuration: song filter display settings */
       _("Filter Display"), CONFUI_ID_FILTER);
   uiCreateSizeGroupHoriz (&sg);
@@ -1282,7 +1281,7 @@ confuiBuildUIOrganization (configui_t *confui)
   uiCreateVertBox (&vbox);
 
   /* organization */
-  confuiMakeNotebookTab (&vbox, confui, confui->notebook,
+  confuiMakeNotebookTab (&vbox, confui, &confui->notebook,
       /* CONTEXT: configuration: options associated with how audio files are organized */
       _("Organisation"), CONFUI_ID_ORGANIZATION);
   uiCreateSizeGroupHoriz (&sg);
@@ -1323,7 +1322,7 @@ confuiBuildUIEditDances (configui_t *confui)
   uiCreateVertBox (&vbox);
 
   /* edit dances */
-  confuiMakeNotebookTab (&vbox, confui, confui->notebook,
+  confuiMakeNotebookTab (&vbox, confui, &confui->notebook,
       /* CONTEXT: configuration: edit the dance table */
       _("Edit Dances"), CONFUI_ID_DANCE);
   uiCreateSizeGroupHoriz (&sg);
@@ -1408,24 +1407,24 @@ confuiBuildUIEditRatings (configui_t *confui)
 {
   UIWidget      vbox;
   UIWidget      hbox;
-  GtkWidget     *widget;
+  UIWidget      uiwidget;
   UIWidget      sg;
 
   uiCreateVertBox (&vbox);
 
   /* edit ratings */
-  confuiMakeNotebookTab (&vbox, confui, confui->notebook,
+  confuiMakeNotebookTab (&vbox, confui, &confui->notebook,
       /* CONTEXT: configuration: edit the dance ratings table */
       _("Edit Ratings"), CONFUI_ID_RATINGS);
   uiCreateSizeGroupHoriz (&sg);
 
   /* CONTEXT: configuration: dance ratings: information on how to order the ratings */
-  widget = uiCreateLabelW (_("Order from the lowest rating to the highest rating."));
-  uiBoxPackStartUW (&vbox, widget);
+  uiCreateLabel (&uiwidget, _("Order from the lowest rating to the highest rating."));
+  uiBoxPackStart (&vbox, &uiwidget);
 
   /* CONTEXT: configuration: dance ratings: information on how to edit a rating entry */
-  widget = uiCreateLabelW (_("Double click on a field to edit."));
-  uiBoxPackStartUW (&vbox, widget);
+  uiCreateLabel (&uiwidget, _("Double click on a field to edit."));
+  uiBoxPackStart (&vbox, &uiwidget);
 
   uiCreateHorizBox (&hbox);
   uiBoxPackStartExpand (&vbox, &hbox);
@@ -1441,20 +1440,20 @@ confuiBuildUIEditStatus (configui_t *confui)
 {
   UIWidget      vbox;
   UIWidget      hbox;
-  GtkWidget     *widget;
+  UIWidget      uiwidget;
   UIWidget      sg;
 
   uiCreateVertBox (&vbox);
 
   /* edit status */
-  confuiMakeNotebookTab (&vbox, confui, confui->notebook,
+  confuiMakeNotebookTab (&vbox, confui, &confui->notebook,
       /* CONTEXT: configuration: edit status table */
       _("Edit Status"), CONFUI_ID_STATUS);
   uiCreateSizeGroupHoriz (&sg);
 
   /* CONTEXT: configuration: status: information on how to edit a status entry */
-  widget = uiCreateLabelW (_("Double click on a field to edit."));
-  uiBoxPackStartUW (&vbox, widget);
+  uiCreateLabel (&uiwidget, _("Double click on a field to edit."));
+  uiBoxPackStart (&vbox, &uiwidget);
 
   uiCreateHorizBox (&hbox);
   uiBoxPackStartExpand (&vbox, &hbox);
@@ -1472,23 +1471,23 @@ confuiBuildUIEditLevels (configui_t *confui)
 {
   UIWidget      vbox;
   UIWidget      hbox;
-  GtkWidget     *widget;
+  UIWidget      uiwidget;
   UIWidget      sg;
 
   uiCreateVertBox (&vbox);
 
   /* edit levels */
-  confuiMakeNotebookTab (&vbox, confui, confui->notebook,
+  confuiMakeNotebookTab (&vbox, confui, &confui->notebook,
       /* CONTEXT: configuration: edit dance levels table */
       _("Edit Levels"), CONFUI_ID_LEVELS);
   uiCreateSizeGroupHoriz (&sg);
 
-  widget = uiCreateLabelW (_("Order from easiest to most advanced."));
-  uiBoxPackStartUW (&vbox, widget);
+  uiCreateLabel (&uiwidget, _("Order from easiest to most advanced."));
+  uiBoxPackStart (&vbox, &uiwidget);
 
   /* CONTEXT: configuration: dance levels: information on how to edit a level entry */
-  widget = uiCreateLabelW (_("Double click on a field to edit."));
-  uiBoxPackStartUW (&vbox, widget);
+  uiCreateLabel (&uiwidget, _("Double click on a field to edit."));
+  uiBoxPackStart (&vbox, &uiwidget);
 
   uiCreateHorizBox (&hbox);
   uiBoxPackStartExpand (&vbox, &hbox);
@@ -1505,20 +1504,20 @@ confuiBuildUIEditGenres (configui_t *confui)
 {
   UIWidget      vbox;
   UIWidget      hbox;
-  GtkWidget     *widget;
+  UIWidget      uiwidget;
   UIWidget      sg;
 
   uiCreateVertBox (&vbox);
 
   /* edit genres */
-  confuiMakeNotebookTab (&vbox, confui, confui->notebook,
+  confuiMakeNotebookTab (&vbox, confui, &confui->notebook,
       /* CONTEXT: configuration: edit genres table */
       _("Edit Genres"), CONFUI_ID_GENRES);
   uiCreateSizeGroupHoriz (&sg);
 
   /* CONTEXT: configuration: genres: information on how to edit a genre entry */
-  widget = uiCreateLabelW (_("Double click on a field to edit."));
-  uiBoxPackStartUW (&vbox, widget);
+  uiCreateLabel (&uiwidget, _("Double click on a field to edit."));
+  uiBoxPackStart (&vbox, &uiwidget);
 
   uiCreateHorizBox (&hbox);
   uiBoxPackStartExpand (&vbox, &hbox);
@@ -1539,7 +1538,7 @@ confuiBuildUIMobileRemoteControl (configui_t *confui)
   uiCreateVertBox (&vbox);
 
   /* mobile remote control */
-  confuiMakeNotebookTab (&vbox, confui, confui->notebook,
+  confuiMakeNotebookTab (&vbox, confui, &confui->notebook,
       /* CONTEXT: configuration: options associated with mobile remote control */
       _("Mobile Remote Control"), CONFUI_ID_REM_CONTROL);
   uiCreateSizeGroupHoriz (&sg);
@@ -1585,7 +1584,7 @@ confuiBuildUIMobileMarquee (configui_t *confui)
   uiCreateVertBox (&vbox);
 
   /* mobile marquee */
-  confuiMakeNotebookTab (&vbox, confui, confui->notebook,
+  confuiMakeNotebookTab (&vbox, confui, &confui->notebook,
       /* CONTEXT: configuration: options associated with the mobile marquee */
       _("Mobile Marquee"), CONFUI_ID_MOBILE_MQ);
   uiCreateSizeGroupHoriz (&sg);
@@ -1632,7 +1631,7 @@ confuiBuildUIDebugOptions (configui_t *confui)
   uiCreateVertBox (&vbox);
 
   /* debug options */
-  confuiMakeNotebookTab (&vbox, confui, confui->notebook,
+  confuiMakeNotebookTab (&vbox, confui, &confui->notebook,
       /* CONTEXT: configuration: debug options that can be turned on and off */
       _("Debug Options"), CONFUI_ID_NONE);
   uiCreateSizeGroupHoriz (&sg);
@@ -1822,21 +1821,21 @@ confuiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 }
 
 
-static gboolean
-confuiCloseWin (GtkWidget *window, GdkEvent *event, gpointer userdata)
+static bool
+confuiCloseWin (void *udata)
 {
-  configui_t   *confui = userdata;
+  configui_t   *confui = udata;
 
   logProcBegin (LOG_PROC, "confuiCloseWin");
   if (progstateCurrState (confui->progstate) <= STATE_RUNNING) {
     progstateShutdownProcess (confui->progstate);
     logMsg (LOG_DBG, LOG_MSGS, "got: close win request");
     logProcEnd (LOG_PROC, "confuiCloseWin", "not-done");
-    return TRUE;
+    return UICB_STOP;
   }
 
   logProcEnd (LOG_PROC, "confuiCloseWin", "");
-  return FALSE;
+  return UICB_STOP;
 }
 
 static void
@@ -2074,7 +2073,7 @@ confuiSelectMusicDir (GtkButton *b, gpointer udata)
   logProcBegin (LOG_PROC, "confuiSelectMusicDir");
   /* CONTEXT: configuration: folder selection dialog: window title */
   selectdata.label = _("Select Music Folder Location");
-  selectdata.window = confui->window;
+  selectdata.window = confui->window.widget;
   selectdata.startpath = bdjoptGetStr (OPT_M_DIR_MUSIC);
   selectdata.mimetype = NULL;
   fn = uiSelectDirDialog (&selectdata);
@@ -2131,7 +2130,7 @@ confuiSelectFileDialog (configui_t *confui, int widx, char *startpath,
   logProcBegin (LOG_PROC, "confuiSelectFileDialog");
   /* CONTEXT: configuration: file selection dialog: window title */
   selectdata.label = _("Select File");
-  selectdata.window = confui->window;
+  selectdata.window = confui->window.widget;
   selectdata.startpath = startpath;
   selectdata.mimefiltername = mimefiltername;
   selectdata.mimetype = mimetype;
@@ -2146,17 +2145,17 @@ confuiSelectFileDialog (configui_t *confui, int widx, char *startpath,
 }
 
 static void
-confuiMakeNotebookTab (UIWidget *boxp, configui_t *confui, GtkWidget *nb, char *txt, int id)
+confuiMakeNotebookTab (UIWidget *boxp, configui_t *confui, UIWidget *nb, char *txt, int id)
 {
-  GtkWidget   *tablabel;
+  UIWidget    uiwidget;
 
   logProcBegin (LOG_PROC, "confuiMakeNotebookTab");
-  tablabel = uiCreateLabelW (txt);
-  uiWidgetSetAllMarginsW (tablabel, 0);
+  uiCreateLabel (&uiwidget, txt);
+  uiWidgetSetAllMargins (&uiwidget, 0);
   uiWidgetExpandHoriz (boxp);
   uiWidgetExpandVert (boxp);
   uiWidgetSetAllMargins (boxp, uiBaseMarginSz * 2);
-  uiNotebookAppendPageW (nb, boxp->widget, tablabel);
+  uiNotebookAppendPage (nb, boxp, &uiwidget);
   uiutilsNotebookIDAdd (confui->nbtabid, id);
 
   logProcEnd (LOG_PROC, "confuiMakeNotebookTab", "");
@@ -2229,7 +2228,7 @@ confuiMakeItemCombobox (configui_t *confui, UIWidget *boxp, UIWidget *sg,
   confui->uiitem [widx].outtype = CONFUI_OUT_STR;
   uiCreateHorizBox (&hbox);
   confuiMakeItemLabel (&hbox, sg, txt);
-  widget = uiComboboxCreate (confui->window, txt,
+  widget = uiComboboxCreate (confui->window.widget, txt,
       ddcb, &confui->uiitem [widx].u.dropdown, confui);
   confui->uiitem [widx].widget = widget;
   uiDropDownSetList (&confui->uiitem [widx].u.dropdown,
@@ -3332,7 +3331,7 @@ confuiGetLocalIP (configui_t *confui)
 static void
 confuiSetStatusMsg (configui_t *confui, const char *msg)
 {
-  uiLabelSetTextW (confui->statusMsg, msg);
+  uiLabelSetText (&confui->statusMsg, msg);
 }
 
 static int
@@ -3690,8 +3689,8 @@ confuiTableAdd (GtkButton *b, gpointer udata)
   logProcEnd (LOG_PROC, "confuiTableAdd", "");
 }
 
-static void
-confuiSwitchTable (GtkNotebook *nb, GtkWidget *page, guint pagenum, gpointer udata)
+static bool
+confuiSwitchTable (void *udata, int pagenum)
 {
   configui_t        *confui = udata;
   GtkWidget         *tree;
@@ -3700,12 +3699,12 @@ confuiSwitchTable (GtkNotebook *nb, GtkWidget *page, guint pagenum, gpointer uda
   logProcBegin (LOG_PROC, "confuiSwitchTable");
   if ((newid = (confuiident_t) uiutilsNotebookIDGet (confui->nbtabid, pagenum)) < 0) {
     logProcEnd (LOG_PROC, "confuiSwitchTable", "bad-pagenum");
-    return;
+    return UICB_STOP;
   }
 
   if (confui->tablecurr == newid) {
     logProcEnd (LOG_PROC, "confuiSwitchTable", "same-id");
-    return;
+    return UICB_CONT;
   }
 
   confuiSetStatusMsg (confui, "");
@@ -3730,19 +3729,20 @@ confuiSwitchTable (GtkNotebook *nb, GtkWidget *page, guint pagenum, gpointer uda
 
   if (confui->tablecurr >= CONFUI_ID_TABLE_MAX) {
     logProcEnd (LOG_PROC, "confuiSwitchTable", "non-table");
-    return;
+    return UICB_CONT;
   }
 
   tree = confui->tables [confui->tablecurr].tree;
   if (tree == NULL) {
     logProcEnd (LOG_PROC, "confuiSwitchTable", "no-tree");
-    return;
+    return UICB_CONT;
   }
 
   confuiTableSetDefaultSelection (confui, tree,
       confui->tables [confui->tablecurr].sel);
 
   logProcEnd (LOG_PROC, "confuiSwitchTable", "");
+  return UICB_CONT;
 }
 
 static void
