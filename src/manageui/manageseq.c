@@ -27,10 +27,18 @@
 #include "uiselectfile.h"
 #include "uiutils.h"
 
+enum {
+  MSEQ_MENU_CB_SEQ_LOAD,
+  MSEQ_MENU_CB_SEQ_COPY,
+  MSEQ_MENU_CB_SEQ_NEW,
+  MSEQ_MENU_CB_MAX,
+};
+
 typedef struct manageseq {
   UIWidget        *windowp;
   nlist_t         *options;
   uimenu_t        seqmenu;
+  UICallback      menucb [MSEQ_MENU_CB_MAX];
   uiduallist_t    *seqduallist;
   uientry_t       seqname;
   UIWidget        *statusMsg;
@@ -38,10 +46,10 @@ typedef struct manageseq {
   bool            seqbackupcreated;
 } manageseq_t;
 
-static void   manageSequenceLoad (GtkMenuItem *mi, gpointer udata);
-static void   manageSequenceCopy (GtkMenuItem *mi, gpointer udata);
+static bool   manageSequenceLoad (void *udata);
+static bool   manageSequenceCopy (void *udata);
 static void   manageSequenceLoadFile (void *udata, const char *fn);
-static void   manageSequenceNew (GtkMenuItem *mi, gpointer udata);
+static bool   manageSequenceNew (void *udata);
 static void   manageSetSequenceName (manageseq_t *manageseq, const char *nm);
 
 manageseq_t *
@@ -113,29 +121,35 @@ manageBuildUISequence (manageseq_t *manageseq, UIWidget *vboxp)
 }
 
 uimenu_t *
-manageSequenceMenu (manageseq_t *manageseq, GtkWidget *menubar)
+manageSequenceMenu (manageseq_t *manageseq, UIWidget *uimenubar)
 {
-  GtkWidget *menu;
-  GtkWidget *menuitem;
+  UIWidget  menu;
+  UIWidget  menuitem;
 
   if (! manageseq->seqmenu.initialized) {
-    menuitem = uiMenuAddMainItem (menubar,
+    uiMenuAddMainItem (uimenubar, &menuitem,
         /* CONTEXT: menu selection: sequence: edit menu */
         &manageseq->seqmenu, _("Edit"));
 
-    menu = uiCreateSubMenu (menuitem);
+    uiCreateSubMenu (&menuitem, &menu);
 
     /* CONTEXT: menu selection: sequence: edit menu: load */
-    menuitem = uiMenuCreateItem (menu, _("Load"),
+    uiutilsUICallbackInit (&manageseq->menucb [MSEQ_MENU_CB_SEQ_LOAD],
         manageSequenceLoad, manageseq);
+    uiMenuCreateItem (&menu, &menuitem, _("Load"),
+        &manageseq->menucb [MSEQ_MENU_CB_SEQ_LOAD]);
 
     /* CONTEXT: menu selection: sequence: edit menu: create copy */
-    menuitem = uiMenuCreateItem (menu, _("Create Copy"),
+    uiutilsUICallbackInit (&manageseq->menucb [MSEQ_MENU_CB_SEQ_COPY],
         manageSequenceCopy, manageseq);
+    uiMenuCreateItem (&menu, &menuitem, _("Create Copy"),
+        &manageseq->menucb [MSEQ_MENU_CB_SEQ_COPY]);
 
     /* CONTEXT: menu selection: sequence: edit menu: start new sequence */
-    menuitem = uiMenuCreateItem (menu, _("Start New Sequence"),
+    uiutilsUICallbackInit (&manageseq->menucb [MSEQ_MENU_CB_SEQ_NEW],
         manageSequenceNew, manageseq);
+    uiMenuCreateItem (&menu, &menuitem, _("Start New Sequence"),
+        &manageseq->menucb [MSEQ_MENU_CB_SEQ_NEW]);
 
     manageseq->seqmenu.initialized = true;
   }
@@ -192,13 +206,14 @@ manageSequenceSave (manageseq_t *manageseq)
 
 /* internal routines */
 
-static void
-manageSequenceLoad (GtkMenuItem *mi, gpointer udata)
+static bool
+manageSequenceLoad (void *udata)
 {
   manageseq_t  *manageseq = udata;
 
   selectFileDialog (SELFILE_SEQUENCE, manageseq->windowp, manageseq->options,
       manageseq, manageSequenceLoadFile);
+  return UICB_CONT;
 }
 
 static void
@@ -233,8 +248,8 @@ manageSequenceLoadFile (void *udata, const char *fn)
   manageseq->seqbackupcreated = false;
 }
 
-static void
-manageSequenceCopy (GtkMenuItem *mi, gpointer udata)
+static bool
+manageSequenceCopy (void *udata)
 {
   manageseq_t *manageseq = udata;
   const char  *oname;
@@ -249,10 +264,11 @@ manageSequenceCopy (GtkMenuItem *mi, gpointer udata)
     manageSetSequenceName (manageseq, newname);
     manageseq->seqbackupcreated = false;
   }
+  return UICB_CONT;
 }
 
-static void
-manageSequenceNew (GtkMenuItem *mi, gpointer udata)
+static bool
+manageSequenceNew (void *udata)
 {
   manageseq_t *manageseq = udata;
   char        tbuff [200];
@@ -267,6 +283,7 @@ manageSequenceNew (GtkMenuItem *mi, gpointer udata)
   tlist = slistAlloc ("tmp-sequence", LIST_UNORDERED, NULL);
   uiduallistSet (manageseq->seqduallist, tlist, DUALLIST_TREE_TARGET);
   slistFree (tlist);
+  return UICB_CONT;
 }
 
 static void

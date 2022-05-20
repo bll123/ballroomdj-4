@@ -43,6 +43,14 @@
 #include "uisongsel.h"
 #include "uiutils.h"
 
+enum {
+  PLUI_MENU_CB_PLAY_QUEUE,
+  PLUI_MENU_CB_EXTRA_QUEUE,
+  PLUI_MENU_CB_SWITCH_QUEUE,
+  PLUI_MENU_CB_MQ_FONT_SZ,
+  PLUI_MENU_CB_MAX,
+};
+
 typedef struct {
   progstate_t     *progstate;
   char            *locknm;
@@ -67,6 +75,7 @@ typedef struct {
   UIWidget        window;
   UICallback      closecb;
   UIWidget        vbox;
+  UICallback      menucb [PLUI_MENU_CB_MAX];
   UIWidget        clock;
   UIWidget        musicqImage [MUSICQ_MAX];
   UIWidget        setPlaybackButton;
@@ -117,13 +126,13 @@ static bool     pluiSwitchPage (void *udata, int pagenum);
 static bool     pluiProcessSetPlaybackQueue (void *udata);
 static void     pluiSetPlaybackQueue (playerui_t *plui, musicqidx_t newqueue);
 /* option handlers */
-static void     pluiTogglePlayWhenQueued (GtkWidget *mi, gpointer udata);
+static bool     pluiTogglePlayWhenQueued (void *udata);
 static void     pluiSetPlayWhenQueued (playerui_t *plui);
-static void     pluiToggleExtraQueues (GtkWidget *mi, gpointer udata);
+static bool     pluiToggleExtraQueues (void *udata);
 static void     pluiSetExtraQueues (playerui_t *plui);
-static void     pluiToggleSwitchQueue (GtkWidget *mi, gpointer udata);
+static bool     pluiToggleSwitchQueue (void *udata);
 static void     pluiSetSwitchQueue (playerui_t *plui);
-static void     pluiMarqueeFontSizeDialog (GtkMenuItem *mi, gpointer udata);
+static bool     pluiMarqueeFontSizeDialog (void *udata);
 static void     pluiCreateMarqueeFontSizeDialog (playerui_t *plui);
 static void     pluiMarqueeFontSizeDialogResponse (GtkDialog *d, gint responseid, gpointer udata);
 static void     pluiMarqueeFontSizeChg (GtkSpinButton *fb, gpointer udata);
@@ -309,16 +318,16 @@ pluiClosingCallback (void *udata, programstate_t programState)
 static void
 pluiBuildUI (playerui_t *plui)
 {
-  GtkWidget           *menubar;
-  GtkWidget           *menu;
-  GtkWidget           *menuitem;
-  UIWidget            hbox;
-  UIWidget            uiwidget;
-  UIWidget            *uiwidgetp;
-  char                *str;
-  char                imgbuff [MAXPATHLEN];
-  char                tbuff [MAXPATHLEN];
-  gint                x, y;
+  UIWidget    menubar;
+  UIWidget    menu;
+  UIWidget    menuitem;
+  UIWidget    hbox;
+  UIWidget    uiwidget;
+  UIWidget    *uiwidgetp;
+  char        *str;
+  char        imgbuff [MAXPATHLEN];
+  char        tbuff [MAXPATHLEN];
+  int         x, y;
 
   logProcBegin (LOG_PROC, "pluiBuildUI");
 
@@ -349,41 +358,49 @@ pluiBuildUI (playerui_t *plui)
   uiWidgetExpandHoriz (&hbox);
   uiBoxPackStart (&plui->vbox, &hbox);
 
-  menubar = uiCreateMenubar ();
-  uiBoxPackStartUW (&hbox, menubar);
+  uiCreateMenubar (&menubar);
+  uiBoxPackStart (&hbox, &menubar);
 
   uiCreateLabel (&plui->clock, "");
   uiBoxPackEnd (&hbox, &plui->clock);
   uiLabelDarkenColor (&plui->clock, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
 
   /* CONTEXT: menu selection: options for the player */
-  menuitem = uiMenuCreateItem (menubar, _("Options"), NULL, NULL);
+  uiMenuCreateItem (&menubar, &menuitem, _("Options"), NULL);
 
-  menu = uiCreateSubMenu (menuitem);
+  uiCreateSubMenu (&menuitem, &menu);
 
   /* CONTEXT: menu checkbox: start playback when a dance or playlist is queued */
-  menuitem = uiMenuCreateCheckbox (menu, _("Play When Queued"),
-      nlistGetNum (plui->options, PLUI_PLAY_WHEN_QUEUED),
+  uiutilsUICallbackInit (&plui->menucb [PLUI_MENU_CB_PLAY_QUEUE],
       pluiTogglePlayWhenQueued, plui);
+  uiMenuCreateCheckbox (&menu, &menuitem, _("Play When Queued"),
+      nlistGetNum (plui->options, PLUI_PLAY_WHEN_QUEUED),
+      &plui->menucb [PLUI_MENU_CB_PLAY_QUEUE]);
 
   /* CONTEXT: menu checkbox: show the extra queues (in addition to the main music queue) */
-  menuitem = uiMenuCreateCheckbox (menu, _("Show Extra Queues"),
-      nlistGetNum (plui->options, PLUI_SHOW_EXTRA_QUEUES),
+  uiutilsUICallbackInit (&plui->menucb [PLUI_MENU_CB_EXTRA_QUEUE],
       pluiToggleExtraQueues, plui);
+  uiMenuCreateCheckbox (&menu, &menuitem, _("Show Extra Queues"),
+      nlistGetNum (plui->options, PLUI_SHOW_EXTRA_QUEUES),
+      &plui->menucb [PLUI_MENU_CB_EXTRA_QUEUE]);
 
   /* CONTEXT: menu checkbox: when a queue is emptied, switch playback to the next queue */
-  menuitem = uiMenuCreateCheckbox (menu, _("Switch Queue When Empty"),
-      nlistGetNum (plui->options, PLUI_SWITCH_QUEUE_WHEN_EMPTY),
+  uiutilsUICallbackInit (&plui->menucb [PLUI_MENU_CB_SWITCH_QUEUE],
       pluiToggleSwitchQueue, plui);
+  uiMenuCreateCheckbox (&menu, &menuitem, _("Switch Queue When Empty"),
+      nlistGetNum (plui->options, PLUI_SWITCH_QUEUE_WHEN_EMPTY),
+      &plui->menucb [PLUI_MENU_CB_SWITCH_QUEUE]);
 
   /* CONTEXT: menu selection: marquee related options */
-  menuitem = uiMenuCreateItem (menubar, _("Marquee"), NULL, NULL);
+  uiMenuCreateItem (&menubar, &menuitem, _("Marquee"), NULL);
 
-  menu = uiCreateSubMenu (menuitem);
+  uiCreateSubMenu (&menuitem, &menu);
 
   /* CONTEXT: menu selection: marquee: change the marquee font size */
-  menuitem = uiMenuCreateItem (menu, _("Font Size"),
+  uiutilsUICallbackInit (&plui->menucb [PLUI_MENU_CB_MQ_FONT_SZ],
       pluiMarqueeFontSizeDialog, plui);
+  uiMenuCreateItem (&menu, &menuitem, _("Font Size"),
+      &plui->menucb [PLUI_MENU_CB_MQ_FONT_SZ]);
 
   /* player */
   uiwidgetp = uiplayerBuildUI (plui->uiplayer);
@@ -743,8 +760,8 @@ pluiSetPlaybackQueue (playerui_t *plui, musicqidx_t newQueue)
   logProcEnd (LOG_PROC, "pluiSetPlaybackQueue", "");
 }
 
-static void
-pluiTogglePlayWhenQueued (GtkWidget *mi, gpointer udata)
+static bool
+pluiTogglePlayWhenQueued (void *udata)
 {
   playerui_t      *plui = udata;
   ssize_t         val;
@@ -755,6 +772,7 @@ pluiTogglePlayWhenQueued (GtkWidget *mi, gpointer udata)
   nlistSetNum (plui->options, PLUI_PLAY_WHEN_QUEUED, val);
   pluiSetPlayWhenQueued (plui);
   logProcEnd (LOG_PROC, "pluiTogglePlayWhenQueued", "");
+  return UICB_CONT;
 }
 
 static void
@@ -770,8 +788,8 @@ pluiSetPlayWhenQueued (playerui_t *plui)
 }
 
 
-static void
-pluiToggleExtraQueues (GtkWidget *mi, gpointer udata)
+static bool
+pluiToggleExtraQueues (void *udata)
 {
   playerui_t      *plui = udata;
   ssize_t         val;
@@ -786,6 +804,7 @@ pluiToggleExtraQueues (GtkWidget *mi, gpointer udata)
     pluiSetPlaybackQueue (plui, MUSICQ_A);
   }
   logProcEnd (LOG_PROC, "pluiToggleExtraQueues", "");
+  return UICB_CONT;
 }
 
 static void
@@ -822,8 +841,8 @@ pluiSetExtraQueues (playerui_t *plui)
   logProcEnd (LOG_PROC, "pluiSetExtraQueues", "");
 }
 
-static void
-pluiToggleSwitchQueue (GtkWidget *mi, gpointer udata)
+static bool
+pluiToggleSwitchQueue (void *udata)
 {
   playerui_t      *plui = udata;
   ssize_t         val;
@@ -834,6 +853,7 @@ pluiToggleSwitchQueue (GtkWidget *mi, gpointer udata)
   nlistSetNum (plui->options, PLUI_SWITCH_QUEUE_WHEN_EMPTY, val);
   pluiSetSwitchQueue (plui);
   logProcEnd (LOG_PROC, "pluiToggleSwitchQueue", "");
+  return UICB_CONT;
 }
 
 static void
@@ -848,8 +868,8 @@ pluiSetSwitchQueue (playerui_t *plui)
   logProcEnd (LOG_PROC, "pluiSetSwitchQueue", "");
 }
 
-static void
-pluiMarqueeFontSizeDialog (GtkMenuItem *mi, gpointer udata)
+static bool
+pluiMarqueeFontSizeDialog (void *udata)
 {
   playerui_t      *plui = udata;
   int             sz;
@@ -870,6 +890,7 @@ pluiMarqueeFontSizeDialog (GtkMenuItem *mi, gpointer udata)
   uiWidgetShowAllW (plui->marqueeFontSizeDialog);
 
   logProcEnd (LOG_PROC, "pluiMarqueeFontSizeDialog", "");
+  return UICB_CONT;
 }
 
 

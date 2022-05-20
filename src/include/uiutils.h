@@ -48,7 +48,7 @@ enum {
 
 typedef struct {
   int             menucount;
-  GtkWidget       *menuitem [UIUTILS_MENU_MAX];
+  UIWidget        menuitem [UIUTILS_MENU_MAX];
   bool            initialized : 1;
 } uimenu_t;
 

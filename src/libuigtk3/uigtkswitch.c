@@ -12,6 +12,8 @@
 #include "ui.h"
 #include "uiutils.h"
 
+static gboolean uiSwitchStateHandler (GtkSwitch *sw, gboolean value, gpointer udata);
+
 void
 uiCreateSwitch (UIWidget *uiwidget, int value)
 {
@@ -50,3 +52,28 @@ uiSwitchGetValue (UIWidget *uiwidget)
   return gtk_switch_get_active (GTK_SWITCH (uiwidget->widget));
 }
 
+void
+uiSwitchSetCallback (UIWidget *uiwidget, UICallback *uicb)
+{
+  g_signal_connect (uiwidget->widget, "state-set",
+      G_CALLBACK (uiSwitchStateHandler), uicb);
+}
+
+/* internal routines */
+
+static gboolean
+uiSwitchStateHandler (GtkSwitch *sw, gboolean value, gpointer udata)
+{
+  UICallback  *uicb = udata;
+  bool        rc;
+
+  if (uicb == NULL) {
+    return UICB_STOP;
+  }
+  if (uicb->intcb == NULL) {
+    return UICB_STOP;
+  }
+
+  rc = uicb->intcb (uicb->udata, value);
+  return rc;
+}

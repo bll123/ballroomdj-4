@@ -25,11 +25,19 @@
 #include "uiselectfile.h"
 #include "uiutils.h"
 
+enum {
+  MPL_MENU_CB_PL_LOAD,
+  MPL_MENU_CB_PL_COPY,
+  MPL_MENU_CB_PL_NEW,
+  MPL_MENU_CB_MAX,
+};
+
 typedef struct managepl {
   UIWidget        *windowp;
   nlist_t         *options;
   UIWidget        *statusMsg;
   uimenu_t        plmenu;
+  UICallback      menucb [MPL_MENU_CB_MAX];
   char            *ploldname;
   bool            plbackupcreated;
   uientry_t       plname;
@@ -50,10 +58,10 @@ typedef struct managepl {
   managepltree_t  *managepltree;
 } managepl_t;
 
-static void managePlaylistLoad (GtkMenuItem *mi, gpointer udata);
-static void managePlaylistCopy (GtkMenuItem *mi, gpointer udata);
+static bool managePlaylistLoad (void *udata);
+static bool managePlaylistCopy (void *udata);
 static void managePlaylistLoadFile (void *udata, const char *fn);
-static void managePlaylistNew (GtkMenuItem *mi, gpointer udata);
+static bool managePlaylistNew (void *udata);
 static void manageSetPlaylistName (managepl_t *managepl, const char *nm);
 
 managepl_t *
@@ -290,29 +298,35 @@ manageBuildUIPlaylist (managepl_t *managepl, UIWidget *vboxp)
 }
 
 uimenu_t *
-managePlaylistMenu (managepl_t *managepl, GtkWidget *menubar)
+managePlaylistMenu (managepl_t *managepl, UIWidget *uimenubar)
 {
-  GtkWidget *menu;
-  GtkWidget *menuitem;
+  UIWidget  menu;
+  UIWidget  menuitem;
 
   if (! managepl->plmenu.initialized) {
-    menuitem = uiMenuAddMainItem (menubar,
+    uiMenuAddMainItem (uimenubar, &menuitem,
         /* CONTEXT: menu selection: sequence: edit menu */
         &managepl->plmenu, _("Edit"));
 
-    menu = uiCreateSubMenu (menuitem);
+    uiCreateSubMenu (&menuitem, &menu);
 
     /* CONTEXT: menu selection: playlist: edit menu: load */
-    menuitem = uiMenuCreateItem (menu, _("Load"),
+    uiutilsUICallbackInit (&managepl->menucb [MPL_MENU_CB_PL_LOAD],
         managePlaylistLoad, managepl);
+    uiMenuCreateItem (&menu, &menuitem, _("Load"),
+        &managepl->menucb [MPL_MENU_CB_PL_LOAD]);
 
     /* CONTEXT: menu selection: playlist: edit menu: create copy */
-    menuitem = uiMenuCreateItem (menu, _("Create Copy"),
+    uiutilsUICallbackInit (&managepl->menucb [MPL_MENU_CB_PL_COPY],
         managePlaylistCopy, managepl);
+    uiMenuCreateItem (&menu, &menuitem, _("Create Copy"),
+        &managepl->menucb [MPL_MENU_CB_PL_COPY]);
 
     /* CONTEXT: menu selection: playlist: edit menu: new automatic sequence */
-    menuitem = uiMenuCreateItem (menu, _("New Automatic Playlist"),
+    uiutilsUICallbackInit (&managepl->menucb [MPL_MENU_CB_PL_NEW],
         managePlaylistNew, managepl);
+    uiMenuCreateItem (&menu, &menuitem, _("New Automatic Playlist"),
+        &managepl->menucb [MPL_MENU_CB_PL_NEW]);
 
     managepl->plmenu.initialized = true;
   }
@@ -356,13 +370,14 @@ managePlaylistSave (managepl_t *managepl)
 
 /* internal routines */
 
-static void
-managePlaylistLoad (GtkMenuItem *mi, gpointer udata)
+static bool
+managePlaylistLoad (void *udata)
 {
   managepl_t  *managepl = udata;
 
   selectFileDialog (SELFILE_PLAYLIST, managepl->windowp, managepl->options,
       managepl, managePlaylistLoadFile);
+  return UICB_CONT;
 }
 
 static void
@@ -421,8 +436,8 @@ managePlaylistLoadFile (void *udata, const char *fn)
   managepl->plbackupcreated = false;
 }
 
-static void
-managePlaylistCopy (GtkMenuItem *mi, gpointer udata)
+static bool
+managePlaylistCopy (void *udata)
 {
   managepl_t *managepl = udata;
   const char  *oname;
@@ -437,10 +452,11 @@ managePlaylistCopy (GtkMenuItem *mi, gpointer udata)
     manageSetPlaylistName (managepl, newname);
     managepl->plbackupcreated = false;
   }
+  return UICB_CONT;
 }
 
-static void
-managePlaylistNew (GtkMenuItem *mi, gpointer udata)
+static bool
+managePlaylistNew (void *udata)
 {
   managepl_t *managepl = udata;
   char        tbuff [200];
@@ -454,6 +470,7 @@ managePlaylistNew (GtkMenuItem *mi, gpointer udata)
   managepl->pltype = PLTYPE_AUTO;
 
   // ### reset everything to defaults
+  return UICB_CONT;
 }
 
 static void

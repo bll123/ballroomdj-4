@@ -14,7 +14,7 @@ managepl_t *managePlaylistAlloc (UIWidget *window, nlist_t *options,
     UIWidget *statusMsg);
 void managePlaylistFree (managepl_t *managepl);
 void manageBuildUIPlaylist (managepl_t *managepl, UIWidget *vboxp);
-uimenu_t *managePlaylistMenu (managepl_t *managepl, GtkWidget *menubar);
+uimenu_t *managePlaylistMenu (managepl_t *managepl, UIWidget *menubar);
 void managePlaylistSave (managepl_t *managepl);
 
 /* managepltree.c */
@@ -29,7 +29,7 @@ manageseq_t *manageSequenceAlloc (UIWidget *window, nlist_t *options,
     UIWidget *statusMsg);
 void manageSequenceFree (manageseq_t *manageseq);
 void manageBuildUISequence (manageseq_t *manageseq, UIWidget *vboxp);
-uimenu_t *manageSequenceMenu (manageseq_t *manageseq, GtkWidget *menubar);
+uimenu_t *manageSequenceMenu (manageseq_t *manageseq, UIWidget *menubar);
 void manageSequenceSave (manageseq_t *manageseq);
 
 /* managemisc.c */

@@ -84,6 +84,24 @@ enum {
   MANAGE_CALLBACK_MAX,
 };
 
+enum {
+  MANAGE_MENU_CB_EZ_SL_EDIT,
+  MANAGE_MENU_CB_SL_LOAD,
+  MANAGE_MENU_CB_SL_COPY,
+  MANAGE_MENU_CB_SL_NEW,
+  MANAGE_MENU_CB_SL_MIX,
+  MANAGE_MENU_CB_SL_TRUNCATE,
+  MANAGE_MENU_CB_SL_EXP_M3U,
+  MANAGE_MENU_CB_SL_EXP_M3U8,
+  MANAGE_MENU_CB_SL_EXP_BDJ,
+  MANAGE_MENU_CB_SL_IMP_M3U,
+  MANAGE_MENU_CB_SL_IMP_BDJ,
+  MANAGE_MENU_CB_START_EDITALL,
+  MANAGE_MENU_CB_APPLY_EDITALL,
+  MANAGE_MENU_CB_CANCEL_EDITALL,
+  MANAGE_MENU_CB_MAX,
+};
+
 typedef struct manage manageui_t;
 
 typedef struct manage {
@@ -117,13 +135,13 @@ typedef struct manage {
   uiutilsnbtabid_t  *mmnbtabid;
   UIWidget        window;
   UICallback      closecb;
-  GtkWidget       *menubar;
+  UIWidget        menubar;
+  UICallback      menucb [MANAGE_MENU_CB_MAX];
   UIWidget        mainnotebook;
   UICallback      mainnbcb;
   UIWidget        slnotebook;
   UICallback      slnbcb;
   UICallback      mmnbcb;
-//  GtkWidget       *vbox;
   /* song list ui major elements */
   uiplayer_t      *slplayer;
   uimusicq_t      *slmusicq;
@@ -191,12 +209,12 @@ static void     manageDbStatusMsg (manageui_t *manage, char *args);
 static void     manageSongEditMenu (manageui_t *manage);
 /* song list */
 static void     manageSonglistMenu (manageui_t *manage);
-static void     manageSonglistLoad (GtkMenuItem *mi, gpointer udata);
-static void     manageSonglistCopy (GtkMenuItem *mi, gpointer udata);
-static void     manageSonglistNew (GtkMenuItem *mi, gpointer udata);
-static void     manageSonglistTruncate (GtkMenuItem *mi, gpointer udata);
+static bool     manageSonglistLoad (void *udata);
+static bool     manageSonglistCopy (void *udata);
+static bool     manageSonglistNew (void *udata);
+static bool     manageSonglistTruncate (void *udata);
 static void     manageSonglistLoadFile (void *udata, const char *fn);
-static void     manageToggleEasySonglist (GtkWidget *mi, gpointer udata);
+static bool     manageToggleEasySonglist (void *udata);
 static void     manageSetEasySonglist (manageui_t *manage);
 static void     manageSonglistSave (manageui_t *manage);
 static void     manageSetSonglistName (manageui_t *manage, const char *nm);
@@ -206,6 +224,7 @@ static bool     manageSwitchPageSonglist (void *udata, int pagenum);
 static bool     manageSwitchPageMM (void *udata, int pagenum);
 static void     manageSwitchPage (void *udata, int pagenum, int which);
 static void manageInitializeSongFilter (manageui_t *manage, nlist_t *options);
+static void manageSetMenuCallback (manageui_t *manage, int midx, UICallbackFunc cb);
 
 static int gKillReceived = 0;
 
@@ -502,7 +521,6 @@ manageClosingCallback (void *udata, programstate_t programState)
 static void
 manageBuildUI (manageui_t *manage)
 {
-  GtkWidget           *menubar;
   UIWidget            vbox;
   UIWidget            hbox;
   UIWidget            uiwidget;
@@ -537,13 +555,11 @@ manageBuildUI (manageui_t *manage)
   uiBoxPackEnd (&hbox, &uiwidget);
   uiutilsUIWidgetCopy (&manage->statusMsg, &uiwidget);
 
-  menubar = uiCreateMenubar ();
-  uiBoxPackStartUW (&hbox, menubar);
-  manage->menubar = menubar;
+  uiCreateMenubar (&manage->menubar);
+  uiBoxPackStart (&hbox, &manage->menubar);
 
   uiCreateNotebook (&manage->mainnotebook);
   uiNotebookTabPositionLeft (&manage->mainnotebook);
-//  gtk_notebook_set_tab_pos (GTK_NOTEBOOK (manage->mainnotebook), GTK_POS_LEFT);
   uiBoxPackStartExpand (&vbox, &manage->mainnotebook);
 
   manageBuildUISongListEditor (manage);
@@ -1119,27 +1135,27 @@ manageDbStatusMsg (manageui_t *manage, char *args)
 static void
 manageSongEditMenu (manageui_t *manage)
 {
-  GtkWidget *menu;
-  GtkWidget *menuitem;
+  UIWidget  menu;
+  UIWidget  menuitem;
 
   if (! manage->songeditmenu.initialized) {
-    menuitem = uiMenuAddMainItem (manage->menubar,
+    uiMenuAddMainItem (&manage->menubar, &menuitem,
         /* CONTEXT: menu selection: actions for song editor */
-        &manage->songeditmenu,_("Actions"));
+        &manage->songeditmenu, _("Actions"));
 
-    menu = uiCreateSubMenu (menuitem);
+    uiCreateSubMenu (&menuitem, &menu);
 
     /* CONTEXT: menu selection: song editor: edit all */
-    menuitem = uiMenuCreateItem (menu, _("Edit All"), NULL, NULL);
-    uiWidgetDisableW (menuitem);
+    uiMenuCreateItem (&menu, &menuitem, _("Edit All"), NULL);
+    uiWidgetDisable (&menuitem);
 
     /* CONTEXT: menu selection: song editor: apply edit all */
-    menuitem = uiMenuCreateItem (menu, _("Apply Edit All"), NULL, NULL);
-    uiWidgetDisableW (menuitem);
+    uiMenuCreateItem (&menu, &menuitem, _("Apply Edit All"), NULL);
+    uiWidgetDisable (&menuitem);
 
     /* CONTEXT: menu selection: song editor: cancel edit all */
-    menuitem = uiMenuCreateItem (menu, _("Cancel Edit All"), NULL, NULL);
-    uiWidgetDisableW (menuitem);
+    uiMenuCreateItem (&menu, &menuitem, _("Cancel Edit All"), NULL);
+    uiWidgetDisable (&menuitem);
 
     manage->songeditmenu.initialized = true;
   }
@@ -1154,86 +1170,93 @@ static void
 manageSonglistMenu (manageui_t *manage)
 {
   char      tbuff [200];
-  GtkWidget *menu;
-  GtkWidget *menuitem;
+  UIWidget  menu;
+  UIWidget  menuitem;
 
   if (! manage->slmenu.initialized) {
-    menuitem = uiMenuAddMainItem (manage->menubar,
+    uiMenuAddMainItem (&manage->menubar, &menuitem,
         /* CONTEXT: menu selection: song list: options menu */
         &manage->slmenu, _("Options"));
 
-    menu = uiCreateSubMenu (menuitem);
+    uiCreateSubMenu (&menuitem, &menu);
 
     /* CONTEXT: menu checkbox: easy song list editor */
-    menuitem = uiMenuCreateCheckbox (menu, _("Easy Song List Editor"),
+    manageSetMenuCallback (manage, MANAGE_MENU_CB_EZ_SL_EDIT,
+        manageToggleEasySonglist);
+    uiMenuCreateCheckbox (&menu, &menuitem, _("Easy Song List Editor"),
         nlistGetNum (manage->options, MANAGE_EASY_SONGLIST),
-        manageToggleEasySonglist, manage);
+        &manage->menucb [MANAGE_MENU_CB_EZ_SL_EDIT]);
 
-    menuitem = uiMenuAddMainItem (manage->menubar,
+    uiMenuAddMainItem (&manage->menubar, &menuitem,
         /* CONTEXT: menu selection: song list: edit menu */
         &manage->slmenu, _("Edit"));
 
-    menu = uiCreateSubMenu (menuitem);
+    uiCreateSubMenu (&menuitem, &menu);
 
     /* CONTEXT: menu selection: song list: edit menu: load */
-    menuitem = uiMenuCreateItem (menu, _("Load"),
-        manageSonglistLoad, manage);
+    manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_LOAD, manageSonglistLoad);
+    uiMenuCreateItem (&menu, &menuitem, _("Load"),
+        &manage->menucb [MANAGE_MENU_CB_SL_LOAD]);
 
     /* CONTEXT: menu selection: song list: edit menu: create copy */
-    menuitem = uiMenuCreateItem (menu, _("Create Copy"),
-        manageSonglistCopy, manage);
+    manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_COPY, manageSonglistCopy);
+    uiMenuCreateItem (&menu, &menuitem, _("Create Copy"),
+        &manage->menucb [MANAGE_MENU_CB_SL_COPY]);
 
     /* CONTEXT: menu selection: song list: edit menu: start new song list */
-    menuitem = uiMenuCreateItem (menu, _("Start New Song List"),
-        manageSonglistNew, manage);
+    manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_NEW, manageSonglistNew);
+    uiMenuCreateItem (&menu, &menuitem, _("Start New Song List"),
+        &manage->menucb [MANAGE_MENU_CB_SL_NEW]);
 
-    menuitem = uiMenuAddMainItem (manage->menubar,
+    uiMenuAddMainItem (&manage->menubar, &menuitem,
         /* CONTEXT: menu selection: actions for song list */
-        &manage->slmenu,_("Actions"));
+        &manage->slmenu, _("Actions"));
 
-    menu = uiCreateSubMenu (menuitem);
+    uiCreateSubMenu (&menuitem, &menu);
 
     /* CONTEXT: menu selection: song list: actions menu: rearrange the songs and create a new mix */
-    menuitem = uiMenuCreateItem (menu, _("Mix"), NULL, NULL);
-    uiWidgetDisableW (menuitem);
+    uiMenuCreateItem (&menu, &menuitem, _("Mix"), NULL);
+    uiWidgetDisable (&menuitem);
 
     /* CONTEXT: menu selection: song list: actions menu: truncate the song list */
-    menuitem = uiMenuCreateItem (menu, _("Truncate"),
-        manageSonglistTruncate, manage);
+    manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_TRUNCATE,
+        manageSonglistTruncate);
+    uiMenuCreateItem (&menu, &menuitem, _("Truncate"),
+        &manage->menucb [MANAGE_MENU_CB_SL_TRUNCATE]);
 
-    menuitem = uiMenuAddMainItem (manage->menubar,
+    uiMenuAddMainItem (&manage->menubar, &menuitem,
         /* CONTEXT: menu selection: export actions for song list */
         &manage->slmenu, _("Export"));
 
-    menu = uiCreateSubMenu (menuitem);
+    uiCreateSubMenu (&menuitem, &menu);
 
     /* CONTEXT: menu selection: song list: export: export as m3u */
-    menuitem = uiMenuCreateItem (menu, _("Export as M3U Playlist"), NULL, NULL);
-    uiWidgetDisableW (menuitem);
+    uiMenuCreateItem (&menu, &menuitem, _("Export as M3U Playlist"), NULL);
+    uiWidgetDisable (&menuitem);
 
     /* CONTEXT: menu selection: song list: export: export as m3u8 */
-    menuitem = uiMenuCreateItem (menu, _("Export as M3U8 Playlist"), NULL, NULL);
-    uiWidgetDisableW (menuitem);
+    uiMenuCreateItem (&menu, &menuitem, _("Export as M3U8 Playlist"), NULL);
+    uiWidgetDisable (&menuitem);
 
     /* CONTEXT: menu selection: song list: export: export for ballroomdj */
     snprintf (tbuff, sizeof (tbuff), _("Export for %s"), BDJ4_NAME);
-    menuitem = uiMenuCreateItem (menu, tbuff, NULL, NULL);
-    uiWidgetDisableW (menuitem);
+    uiMenuCreateItem (&menu, &menuitem, tbuff, NULL);
+    uiWidgetDisable (&menuitem);
 
-    menuitem = uiMenuAddMainItem (manage->menubar,
+    uiMenuAddMainItem (&manage->menubar, &menuitem,
         /* CONTEXT: menu selection: import actions for song list */
         &manage->slmenu, _("Import"));
 
-    menu = uiCreateSubMenu (menuitem);
+    uiCreateSubMenu (&menuitem, &menu);
 
     /* CONTEXT: menu selection: song list: import: import m3u */
-    menuitem = uiMenuCreateItem (menu, _("Import M3U"), NULL, NULL);
-    uiWidgetDisableW (menuitem);
+    uiMenuCreateItem (&menu, &menuitem, _("Import M3U"), NULL);
+    uiWidgetDisable (&menuitem);
 
     /* CONTEXT: menu selection: song list: import: import from ballroomdj */
     snprintf (tbuff, sizeof (tbuff), _("Import from %s"), BDJ4_NAME);
-    menuitem = uiMenuCreateItem (menu, tbuff, NULL, NULL);
-    uiWidgetDisableW (menuitem);
+    uiMenuCreateItem (&menu, &menuitem, tbuff, NULL);
+    uiWidgetDisable (&menuitem);
 
     manage->slmenu.initialized = true;
   }
@@ -1242,17 +1265,18 @@ manageSonglistMenu (manageui_t *manage)
   manage->currmenu = &manage->slmenu;
 }
 
-static void
-manageSonglistLoad (GtkMenuItem *mi, gpointer udata)
+static bool
+manageSonglistLoad (void *udata)
 {
   manageui_t  *manage = udata;
 
   selectFileDialog (SELFILE_SONGLIST, &manage->window, manage->options,
       manage, manageSonglistLoadFile);
+  return UICB_CONT;
 }
 
-static void
-manageSonglistCopy (GtkMenuItem *mi, gpointer udata)
+static bool
+manageSonglistCopy (void *udata)
 {
   manageui_t  *manage = udata;
   const char  *oname;
@@ -1267,10 +1291,11 @@ manageSonglistCopy (GtkMenuItem *mi, gpointer udata)
     manageSetSonglistName (manage, newname);
     manage->slbackupcreated = false;
   }
+  return UICB_CONT;
 }
 
-static void
-manageSonglistNew (GtkMenuItem *mi, gpointer udata)
+static bool
+manageSonglistNew (void *udata)
 {
   manageui_t  *manage = udata;
   char        tbuff [200];
@@ -1283,14 +1308,16 @@ manageSonglistNew (GtkMenuItem *mi, gpointer udata)
   manage->slbackupcreated = false;
   uimusicqSetSelection (manage->slmusicq, "0");
   uimusicqClearQueueProcess (manage->slmusicq);
+  return UICB_CONT;
 }
 
-static void
-manageSonglistTruncate (GtkMenuItem *mi, gpointer udata)
+static bool
+manageSonglistTruncate (void *udata)
 {
   manageui_t  *manage = udata;
 
   uimusicqClearQueueProcess (manage->slmusicq);
+  return UICB_CONT;
 }
 
 static void
@@ -1313,8 +1340,8 @@ manageSonglistLoadFile (void *udata, const char *fn)
   manage->slbackupcreated = false;
 }
 
-static void
-manageToggleEasySonglist (GtkWidget *mi, gpointer udata)
+static bool
+manageToggleEasySonglist (void *udata)
 {
   manageui_t  *manage = udata;
   int         val;
@@ -1323,6 +1350,7 @@ manageToggleEasySonglist (GtkWidget *mi, gpointer udata)
   val = ! val;
   nlistSetNum (manage->options, MANAGE_EASY_SONGLIST, val);
   manageSetEasySonglist (manage);
+  return UICB_CONT;
 }
 
 static void
@@ -1509,11 +1537,11 @@ manageSwitchPage (void *udata, int pagenum, int which)
       break;
     }
     case MANAGE_TAB_PLMGMT: {
-      manage->currmenu = managePlaylistMenu (manage->managepl, manage->menubar);
+      manage->currmenu = managePlaylistMenu (manage->managepl, &manage->menubar);
       break;
     }
     case MANAGE_TAB_EDITSEQ: {
-      manage->currmenu = manageSequenceMenu (manage->manageseq, manage->menubar);
+      manage->currmenu = manageSequenceMenu (manage->manageseq, &manage->menubar);
       break;
     }
     case MANAGE_TAB_FILEMGR: {
@@ -1533,4 +1561,10 @@ manageInitializeSongFilter (manageui_t *manage, nlist_t *options)
       nlistGetStr (options, SONGSEL_SORT_BY));
   songfilterSetSort (manage->mmsongfilter,
       nlistGetStr (options, SONGSEL_SORT_BY));
+}
+
+static void
+manageSetMenuCallback (manageui_t *manage, int midx, UICallbackFunc cb)
+{
+  uiutilsUICallbackInit (&manage->menucb [midx], cb, manage);
 }

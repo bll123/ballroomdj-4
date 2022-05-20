@@ -430,7 +430,7 @@ static void     confuiMobmqPortChg (GtkSpinButton *sb, gpointer udata);
 static int      confuiMobmqNameChg (uientry_t *entry, void *udata);
 static int      confuiMobmqTitleChg (uientry_t *entry, void *udata);
 static void     confuiUpdateRemctrlQrcode (configui_t *confui);
-static gboolean confuiRemctrlChg (GtkSwitch *sw, gboolean value, gpointer udata);
+static bool     confuiRemctrlChg (void *udata, int value);
 static void     confuiRemctrlPortChg (GtkSpinButton *sb, gpointer udata);
 static char     * confuiMakeQRCodeFile (configui_t *confui, char *title, char *uri);
 static void     confuiUpdateOrgExamples (configui_t *confui, char *pathfmt);
@@ -881,7 +881,7 @@ confuiClosingCallback (void *udata, programstate_t programState)
 static void
 confuiBuildUI (configui_t *confui)
 {
-  GtkWidget     *menubar;
+  UIWidget      menubar;
   UIWidget      hbox;
   UIWidget      uiwidget;
   char          imgbuff [MAXPATHLEN];
@@ -912,8 +912,8 @@ confuiBuildUI (configui_t *confui)
   uiBoxPackEnd (&hbox, &uiwidget);
   uiutilsUIWidgetCopy (&confui->statusMsg, &uiwidget);
 
-  menubar = uiCreateMenubar ();
-  uiBoxPackStartUW (&hbox, menubar);
+  uiCreateMenubar (&menubar);
+  uiBoxPackStart (&hbox, &menubar);
 
   uiCreateNotebook (&confui->notebook);
   uiNotebookTabPositionLeft (&confui->notebook);
@@ -2484,7 +2484,9 @@ confuiMakeItemSwitch (configui_t *confui, UIWidget *boxp, UIWidget *sg,
   confui->uiitem [widx].bdjoptIdx = bdjoptIdx;
 
   if (cb != NULL) {
-    g_signal_connect (uiwidget.widget, "state-set", G_CALLBACK (cb), confui);
+    uiutilsUICallbackInit (&confui->uiitem [widx].callback, cb, confui);
+    uiSwitchSetCallback (&uiwidget, &confui->uiitem [widx].callback);
+//    g_signal_connect (uiwidget.widget, "state-set", G_CALLBACK (cb), confui);
   }
 
   logProcEnd (LOG_PROC, "confuiMakeItemSwitch", "");
@@ -3179,8 +3181,8 @@ confuiUpdateRemctrlQrcode (configui_t *confui)
   logProcEnd (LOG_PROC, "confuiUpdateRemctrlQrcode", "");
 }
 
-static gboolean
-confuiRemctrlChg (GtkSwitch *sw, gboolean value, gpointer udata)
+static bool
+confuiRemctrlChg (void *udata, int value)
 {
   configui_t  *confui = udata;
 
@@ -3188,7 +3190,7 @@ confuiRemctrlChg (GtkSwitch *sw, gboolean value, gpointer udata)
   bdjoptSetNum (OPT_P_REMOTECONTROL, value);
   confuiUpdateRemctrlQrcode (confui);
   logProcEnd (LOG_PROC, "confuiRemctrlChg", "");
-  return FALSE;
+  return UICB_CONT;
 }
 
 static void

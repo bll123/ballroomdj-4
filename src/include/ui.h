@@ -18,14 +18,14 @@ void uiutilsUIWidgetInit (UIWidget *uiwidget);
 bool uiutilsCallbackHandler (UICallback *uicb);
 
 /* uigtkmenu.c */
-GtkWidget * uiCreateMenubar (void);
-GtkWidget * uiCreateSubMenu (GtkWidget *menuitem);
-GtkWidget * uiMenuCreateItem (GtkWidget *menu, const char *txt,
-    void *activateAction, void *udata);
-GtkWidget * uiMenuCreateCheckbox (GtkWidget *menu, const char *txt,
-    int active, void *toggleAction, void *udata);
+void uiCreateMenubar (UIWidget *uiwidget);
+void uiCreateSubMenu (UIWidget *uimenuitem, UIWidget *uimenu);
+void uiMenuCreateItem (UIWidget *uimenu, UIWidget *uimenuitem, const char *txt, UICallback *uicb);
+void uiMenuCreateCheckbox (UIWidget *uimenu, UIWidget *uimenuitem,
+    const char *txt, int active, UICallback *uicb);
 void uiMenuInit (uimenu_t *menu);
-GtkWidget * uiMenuAddMainItem (GtkWidget *menubar, uimenu_t *menu, const char *txt);
+void uiMenuAddMainItem (UIWidget *uimenubar, UIWidget *uimenuitem,
+    uimenu_t *menu, const char *txt);
 void uiMenuDisplay (uimenu_t *menu);
 void uiMenuClear (uimenu_t *menu);
 
@@ -245,6 +245,7 @@ void    uiScaleSetRange (UIWidget *uiscale, double start, double end);
 void uiCreateSwitch (UIWidget *uiwidget, int value);
 void uiSwitchSetValue (UIWidget *uiwidget, int value);
 int uiSwitchGetValue (UIWidget *uiwidget);
+void uiSwitchSetCallback (UIWidget *uiwidget, UICallback *uicb);
 
 /* uigtksizegrp.c */
 void uiCreateSizeGroupHoriz (UIWidget *);

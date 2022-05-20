@@ -104,6 +104,7 @@ typedef struct {
   int             mainstarted;
   int             stopwaitcount;
   nlist_t         *proflist;
+  UICallback      menustopallcb;
   UICallback      callbacks [START_CALLBACK_MAX];
   startlinkcb_t   macoslinkcb [START_LINK_CB_MAX];
   uispinbox_t     profilesel;
@@ -176,7 +177,7 @@ static z_stream * starterGzipInit (char *out, int outsz);
 static void     starterGzip (z_stream *zs, const char* in, int insz);
 static size_t   starterGzipEnd (z_stream *zs);
 
-static void     starterStopAllProcesses (GtkMenuItem *mi, gpointer udata);
+static bool     starterStopAllProcesses (void *udata);
 static int      starterCountProcesses (startui_t *starter);
 
 static bool     starterWikiLinkHandler (void *udata);
@@ -392,9 +393,9 @@ starterBuildUI (startui_t  *starter)
 {
   UIWidget            uiwidget;
   UIWidget            *uiwidgetp;
-  GtkWidget           *menubar;
-  GtkWidget           *menu;
-  GtkWidget           *menuitem;
+  UIWidget            menubar;
+  UIWidget            menu;
+  UIWidget            menuitem;
   UIWidget            vbox;
   UIWidget            bvbox;
   UIWidget            hbox;
@@ -425,18 +426,19 @@ starterBuildUI (startui_t  *starter)
   uiWidgetSetMarginTop (&hbox, uiBaseMarginSz * 4);
   uiBoxPackStart (&vbox, &hbox);
 
-  menubar = uiCreateMenubar ();
-  uiBoxPackStartUW (&hbox, menubar);
+  uiCreateMenubar (&menubar);
+  uiBoxPackStart (&hbox, &menubar);
 
   /* CONTEXT: action menu for the starter user interface */
-  menuitem = uiMenuCreateItem (menubar, _("Actions"), NULL, NULL);
+  uiMenuCreateItem (&menubar, &menuitem, _("Actions"), NULL);
 
-  menu = uiCreateSubMenu (menuitem);
+  uiCreateSubMenu (&menuitem, &menu);
 
   /* CONTEXT: menu item: stop all BDJ4 processes */
   snprintf (tbuff, sizeof (tbuff), _("Stop All %s Processes"), BDJ4_NAME);
-  menuitem = uiMenuCreateItem (menu, tbuff,
+  uiutilsUICallbackInit (&starter->menustopallcb,
       starterStopAllProcesses, starter);
+  uiMenuCreateItem (&menu, &menuitem, tbuff, &starter->menustopallcb);
 
   /* main display */
   uiCreateHorizBox (&hbox);
@@ -1496,8 +1498,8 @@ starterGzipEnd (z_stream *zs)
   return olen;
 }
 
-static void
-starterStopAllProcesses (GtkMenuItem *mi, gpointer udata)
+static bool
+starterStopAllProcesses (void *udata)
 {
   startui_t     *starter = udata;
   bdjmsgroute_t route;
@@ -1512,7 +1514,7 @@ starterStopAllProcesses (GtkMenuItem *mi, gpointer udata)
   if (count <= 1) {
     logProcEnd (LOG_PROC, "starterStopAllProcesses", "begin-only-one");
     fprintf (stderr, "done\n");
-    return;
+    return UICB_CONT;
   }
 
   /* send the standard exit request to the main controlling processes first */
@@ -1541,7 +1543,7 @@ starterStopAllProcesses (GtkMenuItem *mi, gpointer udata)
   if (count <= 1) {
     logProcEnd (LOG_PROC, "starterStopAllProcesses", "after-ui");
     fprintf (stderr, "done\n");
-    return;
+    return UICB_CONT;
   }
 
   if (isWindows ()) {
@@ -1564,7 +1566,7 @@ starterStopAllProcesses (GtkMenuItem *mi, gpointer udata)
   if (count <= 1) {
     logProcEnd (LOG_PROC, "starterStopAllProcesses", "after-main");
     fprintf (stderr, "done\n");
-    return;
+    return UICB_CONT;
   }
 
   /* see which lock files exist, and send exit requests to them */
@@ -1592,7 +1594,7 @@ starterStopAllProcesses (GtkMenuItem *mi, gpointer udata)
   if (count <= 0) {
     logProcEnd (LOG_PROC, "starterStopAllProcesses", "after-exit-all");
     fprintf (stderr, "done\n");
-    return;
+    return UICB_CONT;
   }
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "sleeping");
@@ -1621,7 +1623,7 @@ starterStopAllProcesses (GtkMenuItem *mi, gpointer udata)
   if (count <= 0) {
     logProcEnd (LOG_PROC, "starterStopAllProcesses", "after-term");
     fprintf (stderr, "done\n");
-    return;
+    return UICB_CONT;
   }
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "sleeping");
@@ -1656,6 +1658,7 @@ starterStopAllProcesses (GtkMenuItem *mi, gpointer udata)
   }
   fprintf (stderr, "done\n");
   logProcEnd (LOG_PROC, "starterStopAllProcesses", "");
+  return UICB_CONT;
 }
 
 static int

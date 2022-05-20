@@ -11,54 +11,57 @@
 #include "ui.h"
 #include "uiutils.h"
 
-GtkWidget *
-uiCreateMenubar (void)
+static void uiMenuActivateHandler (GtkMenuItem *mi, gpointer udata);
+static void uiMenuToggleHandler (GtkWidget *mi, gpointer udata);
+
+void
+uiCreateMenubar (UIWidget *uiwidget)
 {
   GtkWidget *menubar;
 
   menubar = gtk_menu_bar_new ();
-  return menubar;
+  uiwidget->widget = menubar;
 }
 
-GtkWidget *
-uiCreateSubMenu (GtkWidget *menuitem)
+void
+uiCreateSubMenu (UIWidget *uimenuitem, UIWidget *uimenu)
 {
   GtkWidget *menu;
 
   menu = gtk_menu_new ();
-  gtk_menu_item_set_submenu (GTK_MENU_ITEM (menuitem), menu);
-  return menu;
+  gtk_menu_item_set_submenu (GTK_MENU_ITEM (uimenuitem->widget), menu);
+  uimenu->widget = menu;
 }
 
-GtkWidget *
-uiMenuCreateItem (GtkWidget *menu, const char *txt,
-    void *activateAction, void *udata)
+void
+uiMenuCreateItem (UIWidget *uimenu, UIWidget *uimenuitem,
+    const char *txt, UICallback *uicb)
 {
   GtkWidget *menuitem;
 
   menuitem = gtk_menu_item_new_with_label (txt);
-  gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
-  if (activateAction != NULL) {
+  gtk_menu_shell_append (GTK_MENU_SHELL (uimenu->widget), menuitem);
+  if (uicb != NULL) {
     g_signal_connect (menuitem, "activate",
-        G_CALLBACK (activateAction), udata);
+        G_CALLBACK (uiMenuActivateHandler), uicb);
   }
-
-  return menuitem;
+  uimenuitem->widget = menuitem;
 }
 
-GtkWidget *
-uiMenuCreateCheckbox (GtkWidget *menu, const char *txt, int active,
-    void *toggleAction, void *udata)
+void
+uiMenuCreateCheckbox (UIWidget *uimenu, UIWidget *uimenuitem,
+    const char *txt, int active, UICallback *uicb)
 {
   GtkWidget *menuitem;
 
   menuitem = gtk_check_menu_item_new_with_label (txt);
   gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (menuitem), active);
-  gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
-  if (toggleAction != NULL) {
-    g_signal_connect (menuitem, "toggled", G_CALLBACK (toggleAction), udata);
+  gtk_menu_shell_append (GTK_MENU_SHELL (uimenu->widget), menuitem);
+  if (uicb != NULL) {
+    g_signal_connect (menuitem, "toggled",
+        G_CALLBACK (uiMenuToggleHandler), uicb);
   }
-  return menuitem;
+  uimenuitem->widget = menuitem;
 }
 
 void
@@ -67,32 +70,34 @@ uiMenuInit (uimenu_t *menu)
   menu->initialized = false;
   menu->menucount = 0;
   for (int i = 0; i < UIUTILS_MENU_MAX; ++i) {
-    menu->menuitem [i] = NULL;
+    uiutilsUIWidgetInit (&menu->menuitem [i]);
   }
 }
 
-GtkWidget *
-uiMenuAddMainItem (GtkWidget *menubar, uimenu_t *menu, const char *txt)
+void
+uiMenuAddMainItem (UIWidget *uimenubar, UIWidget *uimenuitem,
+    uimenu_t *menu, const char *txt)
 {
   int   i;
 
   if (menu->menucount >= UIUTILS_MENU_MAX) {
-    return NULL;
+    return;
   }
 
   i = menu->menucount;
   ++menu->menucount;
-  menu->menuitem [i] = gtk_menu_item_new_with_label (txt);
-  gtk_menu_shell_append (GTK_MENU_SHELL (menubar), menu->menuitem [i]);
-  gtk_widget_hide (menu->menuitem [i]);
-  return menu->menuitem [i];
+  uimenuitem->widget = gtk_menu_item_new_with_label (txt);
+  gtk_menu_shell_append (GTK_MENU_SHELL (uimenubar->widget),
+      uimenuitem->widget);
+  uiWidgetHide (uimenuitem);
+  uiutilsUIWidgetCopy (&menu->menuitem [i], uimenuitem);
 }
 
 void
 uiMenuDisplay (uimenu_t *menu)
 {
   for (int i = 0; i < menu->menucount; ++i) {
-    gtk_widget_show_all (menu->menuitem [i]);
+    uiWidgetShowAll (&menu->menuitem [i]);
   }
 }
 
@@ -100,7 +105,20 @@ void
 uiMenuClear (uimenu_t *menu)
 {
   for (int i = 0; i < menu->menucount; ++i) {
-    gtk_widget_hide (menu->menuitem [i]);
+    uiWidgetHide (&menu->menuitem [i]);
   }
 }
 
+static void
+uiMenuActivateHandler (GtkMenuItem *mi, gpointer udata)
+{
+  UICallback    *uicb = udata;
+  uiutilsCallbackHandler (uicb);
+}
+
+static void
+uiMenuToggleHandler (GtkWidget *mi, gpointer udata)
+{
+  UICallback    *uicb = udata;
+  uiutilsCallbackHandler (uicb);
+}
