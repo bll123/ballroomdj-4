@@ -22,12 +22,15 @@
 #include "uirating.h"
 #include "uiselectfile.h"
 #include "uiutils.h"
+#include "validate.h"
 
 enum {
-  MPL_MENU_CB_PL_LOAD,
-  MPL_MENU_CB_PL_COPY,
-  MPL_MENU_CB_PL_NEW,
-  MPL_MENU_CB_MAX,
+  MPL_CB_MENU_PL_LOAD,
+  MPL_CB_MENU_PL_COPY,
+  MPL_CB_MENU_PL_NEW,
+  MPL_CB_MAXPLAYTIME,
+  MPL_CB_STOPAT,
+  MPL_CB_MAX,
 };
 
 typedef struct managepl {
@@ -35,7 +38,7 @@ typedef struct managepl {
   nlist_t         *options;
   UIWidget        *statusMsg;
   uimenu_t        plmenu;
-  UICallback      menucb [MPL_MENU_CB_MAX];
+  UICallback      callbacks [MPL_CB_MAX];
   char            *ploldname;
   bool            plbackupcreated;
   uientry_t       plname;
@@ -61,6 +64,8 @@ static bool managePlaylistCopy (void *udata);
 static void managePlaylistLoadFile (void *udata, const char *fn);
 static bool managePlaylistNew (void *udata);
 static void manageSetPlaylistName (managepl_t *managepl, const char *nm);
+static long managePlaylistValMSCallback (void *udata, const char *txt);
+static long managePlaylistValHMCallback (void *udata, const char *txt);
 
 managepl_t *
 managePlaylistAlloc (UIWidget *window, nlist_t *options, UIWidget *statusMsg)
@@ -181,7 +186,9 @@ manageBuildUIPlaylist (managepl_t *managepl, UIWidget *vboxp)
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
 
-  uiSpinboxTimeCreate (&managepl->uimaxplaytime, managepl);
+  uiutilsUICallbackStrInit (&managepl->callbacks [MPL_CB_MAXPLAYTIME],
+      managePlaylistValMSCallback, managepl);
+  uiSpinboxTimeCreate (&managepl->uimaxplaytime, managepl, &managepl->callbacks [MPL_CB_MAXPLAYTIME]);
   uiwidgetp = uiSpinboxGetUIWidget (&managepl->uimaxplaytime);
   uiBoxPackStart (&hbox, uiwidgetp);
   uiSizeGroupAdd (&sgA, uiwidgetp);
@@ -194,7 +201,10 @@ manageBuildUIPlaylist (managepl_t *managepl, UIWidget *vboxp)
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
 
-  uiSpinboxTimeCreate (&managepl->uistopat, managepl);
+  uiutilsUICallbackStrInit (&managepl->callbacks [MPL_CB_STOPAT],
+      managePlaylistValHMCallback, managepl);
+  uiSpinboxTimeCreate (&managepl->uistopat, managepl,
+      &managepl->callbacks [MPL_CB_STOPAT]);
   uiSpinboxSetRange (&managepl->uistopat, 0, 1440000);
   uiSpinboxWrap (&managepl->uistopat);
   uiwidgetp = uiSpinboxGetUIWidget (&managepl->uistopat);
@@ -309,22 +319,22 @@ managePlaylistMenu (managepl_t *managepl, UIWidget *uimenubar)
     uiCreateSubMenu (&menuitem, &menu);
 
     /* CONTEXT: menu selection: playlist: edit menu: load */
-    uiutilsUICallbackInit (&managepl->menucb [MPL_MENU_CB_PL_LOAD],
+    uiutilsUICallbackInit (&managepl->callbacks [MPL_CB_MENU_PL_LOAD],
         managePlaylistLoad, managepl);
     uiMenuCreateItem (&menu, &menuitem, _("Load"),
-        &managepl->menucb [MPL_MENU_CB_PL_LOAD]);
+        &managepl->callbacks [MPL_CB_MENU_PL_LOAD]);
 
     /* CONTEXT: menu selection: playlist: edit menu: create copy */
-    uiutilsUICallbackInit (&managepl->menucb [MPL_MENU_CB_PL_COPY],
+    uiutilsUICallbackInit (&managepl->callbacks [MPL_CB_MENU_PL_COPY],
         managePlaylistCopy, managepl);
     uiMenuCreateItem (&menu, &menuitem, _("Create Copy"),
-        &managepl->menucb [MPL_MENU_CB_PL_COPY]);
+        &managepl->callbacks [MPL_CB_MENU_PL_COPY]);
 
     /* CONTEXT: menu selection: playlist: edit menu: new automatic sequence */
-    uiutilsUICallbackInit (&managepl->menucb [MPL_MENU_CB_PL_NEW],
+    uiutilsUICallbackInit (&managepl->callbacks [MPL_CB_MENU_PL_NEW],
         managePlaylistNew, managepl);
     uiMenuCreateItem (&menu, &menuitem, _("New Automatic Playlist"),
-        &managepl->menucb [MPL_MENU_CB_PL_NEW]);
+        &managepl->callbacks [MPL_CB_MENU_PL_NEW]);
 
     managepl->plmenu.initialized = true;
   }
@@ -480,3 +490,44 @@ manageSetPlaylistName (managepl_t *managepl, const char *name)
   }
   managepl->ploldname = strdup (name);
 }
+
+static long
+managePlaylistValMSCallback (void *udata, const char *txt)
+{
+  managepl_t  *managepl = udata;
+  const char  *valstr;
+  char        tbuff [200];
+  long        value;
+
+  uiLabelSetText (managepl->statusMsg, "");
+  valstr = validate (txt, VAL_MIN_SEC);
+  if (valstr != NULL) {
+    snprintf (tbuff, sizeof (tbuff), valstr, txt);
+    uiLabelSetText (managepl->statusMsg, tbuff);
+    return -1;
+  }
+
+  value = tmutilStrToMS (txt);
+  return value;
+}
+
+static long
+managePlaylistValHMCallback (void *udata, const char *txt)
+{
+  managepl_t  *managepl = udata;
+  const char  *valstr;
+  char        tbuff [200];
+  long        value;
+
+  uiLabelSetText (managepl->statusMsg, "");
+  valstr = validate (txt, VAL_HOUR_MIN);
+  if (valstr != NULL) {
+    snprintf (tbuff, sizeof (tbuff), valstr, txt);
+    uiLabelSetText (managepl->statusMsg, tbuff);
+    return -1;
+  }
+
+  value = tmutilStrToHM (txt);
+  return value;
+}
+

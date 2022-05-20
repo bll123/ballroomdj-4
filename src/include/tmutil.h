@@ -28,5 +28,7 @@ char      *tmutilShortTstamp (char *, size_t);
 char      *tmutilToMS (ssize_t ms, char *buff, size_t max);
 char      *tmutilToMSD (ssize_t ms, char *buff, size_t max);
 char      * tmutilToDateHM (ssize_t ms, char *buff, size_t max);
+long      tmutilStrToMS (const char *str);
+long      tmutilStrToHM (const char *str);
 
 #endif /* INC_TMUTIL_H */

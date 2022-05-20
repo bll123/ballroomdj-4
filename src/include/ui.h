@@ -82,7 +82,7 @@ void uiSpinboxDoubleCreate (UIWidget *uiwidget);
 
 void  uiSpinboxTimeInit (uispinbox_t *spinbox);
 void  uiSpinboxTimeFree (uispinbox_t *spinbox);
-void uiSpinboxTimeCreate (uispinbox_t *spinbox, void *udata);
+void uiSpinboxTimeCreate (uispinbox_t *spinbox, void *udata, UICallback *convcb);
 ssize_t uiSpinboxTimeGetValue (uispinbox_t *spinbox);
 void  uiSpinboxTimeSetValue (uispinbox_t *spinbox, ssize_t value);
 
@@ -98,7 +98,7 @@ UIWidget * uiSpinboxGetUIWidget (uispinbox_t *spinbox);
 
 /* these routines will be removed at a later date */
 GtkWidget * uiSpinboxTextCreateW (uispinbox_t *spinbox, void *udata);
-GtkWidget * uiSpinboxTimeCreateW (uispinbox_t *spinbox, void *udata);
+GtkWidget * uiSpinboxTimeCreateW (uispinbox_t *spinbox, void *udata, UICallback *convcb);
 GtkWidget * uiSpinboxIntCreateW (void);
 GtkWidget * uiSpinboxDoubleCreateW (void);
 void  uiSpinboxSetW (GtkWidget *spinbox, double min, double max);

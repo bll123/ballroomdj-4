@@ -940,8 +940,6 @@ pluiCreateMarqueeFontSizeDialog (playerui_t *plui)
   uiBoxPackStart (&hbox, &uiwidget);
   plui->fontszdialogcreated = true;
 
-//  g_signal_connect (plui->marqueeFontSizeDialog, "response",
-//      G_CALLBACK (pluiMarqueeFontSizeDialogResponse), plui);
   logProcEnd (LOG_PROC, "pluiCreateMarqueeFontSizeDialog", "");
 }
 

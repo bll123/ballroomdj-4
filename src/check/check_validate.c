@@ -160,6 +160,14 @@ START_TEST(validate_hour_min)
   ck_assert_ptr_null (valstr);
   valstr = validate ("12:00A", VAL_HOUR_MIN);
   ck_assert_ptr_null (valstr);
+  valstr = validate ("12am", VAL_HOUR_MIN);
+  ck_assert_ptr_null (valstr);
+  valstr = validate ("12a", VAL_HOUR_MIN);
+  ck_assert_ptr_null (valstr);
+  valstr = validate ("12 am", VAL_HOUR_MIN);
+  ck_assert_ptr_null (valstr);
+  valstr = validate ("12 a", VAL_HOUR_MIN);
+  ck_assert_ptr_null (valstr);
 }
 END_TEST
 

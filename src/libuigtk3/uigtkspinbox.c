@@ -15,6 +15,7 @@
 #include "uiutils.h"
 
 static gint uiSpinboxInput (GtkSpinButton *sb, gdouble *newval, gpointer udata);
+static gint uiSpinboxTimeInput (GtkSpinButton *sb, gdouble *newval, gpointer udata);
 static gboolean uiSpinboxTextDisplay (GtkSpinButton *sb, gpointer udata);
 static gboolean uiSpinboxTimeDisplay (GtkSpinButton *sb, gpointer udata);
 static char * uiSpinboxTextGetDisp (slist_t *list, int idx);
@@ -25,10 +26,11 @@ void
 uiSpinboxTextInit (uispinbox_t *spinbox)
 {
   uiutilsUIWidgetInit (&spinbox->uispinbox);
+  spinbox->convcb = NULL;
   spinbox->curridx = 0;
   spinbox->textGetProc = NULL;
   spinbox->udata = NULL;
-  spinbox->indisp = false;
+  spinbox->processing = false;
   spinbox->changed = false;
   spinbox->maxWidth = 0;
   spinbox->list = NULL;
@@ -147,8 +149,9 @@ uiSpinboxTimeFree (uispinbox_t *spinbox)
 }
 
 void
-uiSpinboxTimeCreate (uispinbox_t *spinbox, void *udata)
+uiSpinboxTimeCreate (uispinbox_t *spinbox, void *udata, UICallback *convcb)
 {
+  spinbox->convcb = convcb;
   spinbox->uispinbox.widget = gtk_spin_button_new (NULL, 0.0, 0);
   gtk_entry_set_alignment (GTK_ENTRY (spinbox->uispinbox.widget), 1.0);
   gtk_spin_button_set_increments (GTK_SPIN_BUTTON (spinbox->uispinbox.widget), 5000.0, 60000.0);
@@ -160,7 +163,7 @@ uiSpinboxTimeCreate (uispinbox_t *spinbox, void *udata)
   g_signal_connect (spinbox->uispinbox.widget, "output",
       G_CALLBACK (uiSpinboxTimeDisplay), spinbox);
   g_signal_connect (spinbox->uispinbox.widget, "input",
-      G_CALLBACK (uiSpinboxInput), spinbox);
+      G_CALLBACK (uiSpinboxTimeInput), spinbox);
   spinbox->udata = udata;
   return;
 }
@@ -307,16 +310,48 @@ uiSpinboxGetUIWidget (uispinbox_t *spinbox)
 static gint
 uiSpinboxInput (GtkSpinButton *sb, gdouble *newval, gpointer udata)
 {
-  uispinbox_t  *spinbox = udata;
-  GtkAdjustment     *adjustment;
-  gdouble           value;
+  uispinbox_t   *spinbox = udata;
+  GtkAdjustment *adjustment;
+  gdouble       value;
 
 
   adjustment = gtk_spin_button_get_adjustment (GTK_SPIN_BUTTON (spinbox->uispinbox.widget));
   value = gtk_adjustment_get_value (adjustment);
   *newval = value;
   spinbox->changed = true;
-  return TRUE;
+  return UICB_CONVERTED;
+}
+
+static gint
+uiSpinboxTimeInput (GtkSpinButton *sb, gdouble *newval, gpointer udata)
+{
+  uispinbox_t   *spinbox = udata;
+  GtkAdjustment *adjustment;
+  gdouble       value;
+  const char    *newtext;
+  long          newvalue = -1;
+
+  if (spinbox->processing) {
+    return UICB_NO_CONV;
+  }
+  spinbox->processing = true;
+
+  if (spinbox->convcb != NULL) {
+    newtext = gtk_entry_get_text (GTK_ENTRY (spinbox->uispinbox.widget));
+    newvalue = spinbox->convcb->strcb (spinbox->convcb->udata, newtext);
+    if (newvalue < 0) {
+      return UICB_NO_CONV;
+    }
+  }
+  adjustment = gtk_spin_button_get_adjustment (GTK_SPIN_BUTTON (spinbox->uispinbox.widget));
+  value = gtk_adjustment_get_value (adjustment);
+  *newval = value;
+  if (newvalue != -1) {
+    *newval = (double) newvalue;
+  }
+  spinbox->changed = true;
+  spinbox->processing = false;
+  return UICB_CONVERTED;
 }
 
 static gboolean
@@ -329,10 +364,10 @@ uiSpinboxTextDisplay (GtkSpinButton *sb, gpointer udata)
   char              tbuff [100];
 
 
-  if (spinbox->indisp) {
-    return FALSE;
+  if (spinbox->processing) {
+    return UICB_NO_DISP;
   }
-  spinbox->indisp = true;
+  spinbox->processing = true;
 
   *tbuff = '\0';
   adjustment = gtk_spin_button_get_adjustment (
@@ -348,8 +383,8 @@ uiSpinboxTextDisplay (GtkSpinButton *sb, gpointer udata)
   }
   snprintf (tbuff, sizeof (tbuff), "%-*s", spinbox->maxWidth, disp);
   gtk_entry_set_text (GTK_ENTRY (spinbox->uispinbox.widget), tbuff);
-  spinbox->indisp = false;
-  return TRUE;
+  spinbox->processing = false;
+  return UICB_DISPLAYED;
 }
 
 static gboolean
@@ -360,11 +395,10 @@ uiSpinboxTimeDisplay (GtkSpinButton *sb, gpointer udata)
   double            value;
   char              tbuff [100];
 
-
-  if (spinbox->indisp) {
-    return FALSE;
+  if (spinbox->processing) {
+    return UICB_NO_DISP;
   }
-  spinbox->indisp = true;
+  spinbox->processing = true;
 
   *tbuff = '\0';
   adjustment = gtk_spin_button_get_adjustment (GTK_SPIN_BUTTON (spinbox->uispinbox.widget));
@@ -372,8 +406,8 @@ uiSpinboxTimeDisplay (GtkSpinButton *sb, gpointer udata)
   gtk_spin_button_set_value (GTK_SPIN_BUTTON (spinbox->uispinbox.widget), value);
   tmutilToMS ((ssize_t) value, tbuff, sizeof (tbuff));
   gtk_entry_set_text (GTK_ENTRY (spinbox->uispinbox.widget), tbuff);
-  spinbox->indisp = false;
-  return TRUE;
+  spinbox->processing = false;
+  return UICB_DISPLAYED;
 }
 
 static char *
@@ -389,9 +423,17 @@ uiuitilsSpinboxTextKeyCallback (GtkWidget *w, GdkEventKey *event, gpointer udata
 
   gdk_event_get_keyval ((GdkEvent *) event, &keyval);
   if (keyval == GDK_KEY_Up ||
+      keyval == GDK_KEY_KP_Up ||
       keyval == GDK_KEY_Down ||
+      keyval == GDK_KEY_KP_Down ||
       keyval == GDK_KEY_Page_Up ||
-      keyval == GDK_KEY_Page_Down) {
+      keyval == GDK_KEY_KP_Page_Up ||
+      keyval == GDK_KEY_Page_Down ||
+      keyval == GDK_KEY_KP_Page_Down ||
+      keyval == GDK_KEY_Tab ||
+      keyval == GDK_KEY_KP_Tab ||
+      keyval == GDK_KEY_ISO_Left_Tab
+      ) {
     return FALSE;
   }
 
@@ -427,8 +469,9 @@ uiSpinboxTextCreateW (uispinbox_t *spinbox, void *udata)
 }
 
 GtkWidget *
-uiSpinboxTimeCreateW (uispinbox_t *spinbox, void *udata)
+uiSpinboxTimeCreateW (uispinbox_t *spinbox, void *udata, UICallback *convcb)
 {
+  spinbox->convcb = convcb;
   spinbox->uispinbox.widget = gtk_spin_button_new (NULL, 0.0, 0);
   gtk_entry_set_alignment (GTK_ENTRY (spinbox->uispinbox.widget), 1.0);
   gtk_spin_button_set_increments (GTK_SPIN_BUTTON (spinbox->uispinbox.widget), 5000.0, 60000.0);
@@ -440,7 +483,7 @@ uiSpinboxTimeCreateW (uispinbox_t *spinbox, void *udata)
   g_signal_connect (spinbox->uispinbox.widget, "output",
       G_CALLBACK (uiSpinboxTimeDisplay), spinbox);
   g_signal_connect (spinbox->uispinbox.widget, "input",
-      G_CALLBACK (uiSpinboxInput), spinbox);
+      G_CALLBACK (uiSpinboxTimeInput), spinbox);
   spinbox->udata = udata;
   return spinbox->uispinbox.widget;
 }

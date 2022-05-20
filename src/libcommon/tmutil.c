@@ -244,5 +244,74 @@ tmutilToDateHM (ssize_t ms, char *buff, size_t max)
   return buff;
 }
 
+long
+tmutilStrToMS (const char *str)
+{
+  char    *tstr;
+  char    *tokstr;
+  char    *p;
+  long    value;
 
+  tstr = strdup (str);
+  p = strtok_r (tstr, ":.", &tokstr);
+  value = atoi (p);
+  value *= 60;
+  p = strtok_r (NULL, ":.", &tokstr);
+  value += atoi (p);
+
+  free (tstr);
+  value *= 1000;
+  return value;
+}
+
+long
+tmutilStrToHM (const char *str)
+{
+  char    *tstr;
+  char    *tokstr;
+  char    *p;
+  long    value;
+  long    hour;
+  bool    isam = false;
+  bool    ispm = false;
+
+  tstr = strdup (str);
+  p = strtok_r (tstr, ":.", &tokstr);
+  value = atoi (p);
+  hour = value;
+  value *= 60;
+  p = strtok_r (NULL, ":.", &tokstr);
+  if (p != NULL) {
+    /* americans might say: 12am with no colon */
+    value += atoi (p);
+  } else {
+    p = tstr;
+  }
+
+  /* handle americanisms */
+  while (*p) {
+    if (*p == 'a' || *p == 'A') {
+      isam = true;
+      break;
+    }
+    if (*p == 'p' || *p == 'P') {
+      ispm = true;
+      break;
+    }
+    ++p;
+  }
+
+  /* 12am must be changed to 24:00, as 0:00 is the not-set state */
+  if (isam && value == 720) {
+    value *= 2;
+  }
+  if (ispm && hour != 12) {
+    /* add 12 hours */
+    value += 720;
+  }
+
+  free (tstr);
+  value *= 1000;
+  return value;
+}
 

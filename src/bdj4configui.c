@@ -495,6 +495,9 @@ static void   confuiDispSaveTable (configui_t *confui, int selidx);
 static void   confuiCreateTagSelectedDisp (configui_t *confui);
 static void   confuiCreateTagListingDisp (configui_t *confui);
 
+/* misc */
+static long confuiValMSCallback (void *udata, const char *txt);
+
 static int gKillReceived = 0;
 
 int
@@ -2394,7 +2397,11 @@ confuiMakeItemSpinboxTime (configui_t *confui, UIWidget *boxp,
   confui->uiitem [widx].outtype = CONFUI_OUT_NUM;
   uiCreateHorizBox (&hbox);
   confuiMakeItemLabel (&hbox, sg, txt);
-  widget = uiSpinboxTimeCreateW (&confui->uiitem [widx].u.spinbox, confui);
+
+  uiutilsUICallbackStrInit (&confui->uiitem [widx].callback,
+      confuiValMSCallback, confui);
+  widget = uiSpinboxTimeCreateW (&confui->uiitem [widx].u.spinbox, confui,
+      &confui->uiitem [widx].callback);
   confui->uiitem [widx].widget = widget;
   uiSpinboxTimeSetValue (&confui->uiitem [widx].u.spinbox, value);
   uiWidgetSetMarginStartW (widget, uiBaseMarginSz * 4);
@@ -2491,7 +2498,6 @@ confuiMakeItemSwitch (configui_t *confui, UIWidget *boxp, UIWidget *sg,
   if (cb != NULL) {
     uiutilsUICallbackInit (&confui->uiitem [widx].callback, cb, confui);
     uiSwitchSetCallback (&uiwidget, &confui->uiitem [widx].callback);
-//    g_signal_connect (uiwidget.widget, "state-set", G_CALLBACK (cb), confui);
   }
 
   logProcEnd (LOG_PROC, "confuiMakeItemSwitch", "");
@@ -4834,5 +4840,22 @@ confuiCreateTagListingDisp (configui_t *confui)
 
   uiduallistSet (confui->dispselduallist, confui->listingtaglist,
       DUALLIST_TREE_SOURCE);
+}
+
+static long
+confuiValMSCallback (void *udata, const char *txt)
+{
+  configui_t  *confui = udata;
+  const char  *valstr;
+  char        tbuff [200];
+
+  uiLabelSetText (&confui->statusMsg, "");
+  valstr = validate (txt, VAL_MIN_SEC);
+  if (valstr != NULL) {
+    snprintf (tbuff, sizeof (tbuff), valstr, txt);
+    uiLabelSetText (&confui->statusMsg, tbuff);
+  }
+
+  return 0;
 }
 

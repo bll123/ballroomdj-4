@@ -1094,8 +1094,6 @@ starterProcessSupport (void *udata)
   uiCreateLabel (&uiwidget, " ");
   uiBoxPackStart (&hbox, &uiwidget);
 
-//  g_signal_connect (dialog, "response",
-//      G_CALLBACK (starterSupportResponseHandler), starter);
   uiWidgetShowAll (&uidialog);
   uiutilsUIWidgetCopy (&starter->supportDialog, &uidialog);
   return UICB_CONT;
@@ -1302,8 +1300,6 @@ starterCreateSupportDialog (void *udata)
   uiLabelSetColor (&uiwidget, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
   uiutilsUIWidgetCopy (&starter->supportStatus, &uiwidget);
 
-//  g_signal_connect (dialog, "response",
-//      G_CALLBACK (starterSupportMsgHandler), starter);
   uiWidgetShowAll (&uidialog);
   uiutilsUIWidgetCopy (&starter->supportMsgDialog, &uidialog);
   return UICB_CONT;

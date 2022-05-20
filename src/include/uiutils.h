@@ -11,10 +11,11 @@
 #include "slist.h"
 #include "tmutil.h"
 
-typedef bool (*UICallbackFunc)(void *udata);
-typedef bool (*UIDoubleCallbackFunc)(void *udata, double value);
-typedef bool (*UIIntIntCallbackFunc)(void *udata, int a, int b);
-typedef bool (*UIIntCallbackFunc)(void *udata, int value);
+typedef bool  (*UICallbackFunc)(void *udata);
+typedef bool  (*UIDoubleCallbackFunc)(void *udata, double value);
+typedef bool  (*UIIntIntCallbackFunc)(void *udata, int a, int b);
+typedef bool  (*UIIntCallbackFunc)(void *udata, int value);
+typedef long  (*UIStrCallbackFunc)(void *udata, const char *txt);
 
 typedef struct {
   union {
@@ -22,12 +23,17 @@ typedef struct {
     UIDoubleCallbackFunc  doublecb;
     UIIntIntCallbackFunc  intintcb;
     UIIntCallbackFunc     intcb;
+    UIStrCallbackFunc     strcb;
   };
   void            *udata;
 } UICallback;
 
 #define UICB_STOP true
 #define UICB_CONT false
+#define UICB_DISPLAYED true
+#define UICB_NO_DISP false
+#define UICB_NO_CONV false
+#define UICB_CONVERTED true
 
 typedef struct {
 #if BDJ4_USE_GTK
@@ -116,6 +122,7 @@ typedef struct uientry {
 
 typedef struct {
   UIWidget        uispinbox;
+  UICallback      *convcb;
   int             curridx;
   uispinboxdisp_t textGetProc;
   void            *udata;
@@ -123,7 +130,7 @@ typedef struct {
   slist_t         *list;
   nlist_t         *keylist;
   nlist_t         *idxlist;
-  bool            indisp : 1;
+  bool            processing : 1;
   bool            changed : 1;
 } uispinbox_t;
 
@@ -159,5 +166,6 @@ void uiutilsUICallbackInit (UICallback *uicb, UICallbackFunc cb, void *udata);
 void uiutilsUICallbackDoubleInit (UICallback *uicb, UIDoubleCallbackFunc cb, void *udata);
 void uiutilsUICallbackIntIntInit (UICallback *uicb, UIIntIntCallbackFunc cb, void *udata);
 void uiutilsUICallbackIntInit (UICallback *uicb, UIIntCallbackFunc cb, void *udata);
+void uiutilsUICallbackStrInit (UICallback *uicb, UIStrCallbackFunc cb, void *udata);
 
 #endif /* INC_UIUTILS_H */

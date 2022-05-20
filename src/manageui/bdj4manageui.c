@@ -599,8 +599,6 @@ manageBuildUI (manageui_t *manage)
 
   uiutilsUICallbackIntInit (&manage->mainnbcb, manageSwitchPageMain, manage);
   uiNotebookSetCallback (&manage->mainnotebook, &manage->mainnbcb);
-//  g_signal_connect (manage->mainnotebook, "switch-page",
-//      G_CALLBACK (manageSwitchPage), manage);
 
   uiWidgetShowAll (&manage->window);
 
@@ -702,8 +700,6 @@ manageBuildUISongListEditor (manageui_t *manage)
 
   uiutilsUICallbackIntInit (&manage->slnbcb, manageSwitchPageSonglist, manage);
   uiNotebookSetCallback (&notebook, &manage->slnbcb);
-//  g_signal_connect (notebook, "switch-page",
-//      G_CALLBACK (manageSwitchPageSonglist), manage);
 }
 
 static void
@@ -746,8 +742,6 @@ manageBuildUIMusicManager (manageui_t *manage)
 
   uiutilsUICallbackIntInit (&manage->mmnbcb, manageSwitchPageMM, manage);
   uiNotebookSetCallback (&notebook, &manage->mmnbcb);
-//  g_signal_connect (notebook, "switch-page",
-//      G_CALLBACK (manageSwitchPageMM), manage);
 }
 
 static void

@@ -148,3 +148,13 @@ uiutilsUICallbackIntInit (UICallback *uicb, UIIntCallbackFunc cb, void *udata)
   uicb->udata = udata;
 }
 
+void
+uiutilsUICallbackStrInit (UICallback *uicb, UIStrCallbackFunc cb, void *udata)
+{
+  if (uicb == NULL) {
+    return;
+  }
+
+  uicb->strcb = cb;
+  uicb->udata = udata;
+}

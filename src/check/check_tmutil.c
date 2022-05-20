@@ -118,6 +118,31 @@ START_TEST(tmutilToMS_chk)
 }
 END_TEST
 
+START_TEST(tmutil_strtohm)
+{
+  long  value;
+
+  value = tmutilStrToHM ("0:00");
+  ck_assert_int_eq (value, 0);
+  value = tmutilStrToHM ("12:00");
+  ck_assert_int_eq (value, 720000);
+  value = tmutilStrToHM ("12:00a");
+  ck_assert_int_eq (value, 1440000);
+  value = tmutilStrToHM ("12a");
+  ck_assert_int_eq (value, 1440000);
+  value = tmutilStrToHM ("1:45");
+  ck_assert_int_eq (value, 105000);
+  value = tmutilStrToHM ("12p");
+  ck_assert_int_eq (value, 720000);
+  value = tmutilStrToHM ("12:30p");
+  ck_assert_int_eq (value, 750000);
+  value = tmutilStrToHM ("1:30p");
+  ck_assert_int_eq (value, 810000);
+  value = tmutilStrToHM ("12:00p");
+  ck_assert_int_eq (value, 720000);
+}
+END_TEST
+
 Suite *
 tmutil_suite (void)
 {
@@ -133,6 +158,7 @@ tmutil_suite (void)
   tcase_add_test (tc, tmutilDstamp_chk);
   tcase_add_test (tc, tmutilTstamp_chk);
   tcase_add_test (tc, tmutilToMS_chk);
+  tcase_add_test (tc, tmutil_strtohm);
   suite_add_tcase (s, tc);
   return s;
 }
