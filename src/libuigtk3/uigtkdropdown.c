@@ -368,9 +368,9 @@ static void
 uiDropDownWindowCreate (uidropdown_t *dropdown,
     void *processSelectionCallback, void *udata)
 {
-  GtkWidget         *scwin;
-  GtkWidget         *vbox;
-  GtkWidget         *twidget;
+  UIWidget          uiwidget;
+  UIWidget          vbox;
+  UIWidget          uiscwin;
 
 
   dropdown->window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
@@ -389,21 +389,17 @@ uiDropDownWindowCreate (uidropdown_t *dropdown,
   g_signal_connect (G_OBJECT (dropdown->window),
       "focus-out-event", G_CALLBACK (uiDropDownClose), dropdown);
 
-  twidget = uiCreateVertBoxWW ();
-  gtk_widget_set_hexpand (twidget, TRUE);
-  gtk_widget_set_vexpand (twidget, TRUE);
-  gtk_container_add (GTK_CONTAINER (dropdown->window), twidget);
+  uiCreateVertBox (&uiwidget);
+  uiWidgetExpandHoriz (&uiwidget);
+  uiWidgetExpandVert (&uiwidget);
+  uiBoxPackInWindowWU (dropdown->window, &uiwidget);
 
-  vbox = uiCreateVertBoxWW ();
-  uiBoxPackStartExpandWW (twidget, vbox);
+  uiCreateVertBox (&vbox);
+  uiBoxPackStartExpand (&uiwidget, &vbox);
 
-  scwin = uiCreateScrolledWindowW (300);
-  gtk_widget_set_hexpand (scwin, TRUE);
-  gtk_widget_set_vexpand (scwin, FALSE);
-  twidget = gtk_scrolled_window_get_vscrollbar (GTK_SCROLLED_WINDOW (scwin));
-  uiSetCss (twidget,
-      "scrollbar, scrollbar slider { min-width: 9px; } ");
-  uiBoxPackStartExpandWW (vbox, scwin);
+  uiCreateScrolledWindow (&uiscwin, 300);
+  uiWidgetExpandHoriz (&uiscwin);
+  uiBoxPackStartExpand (&vbox, &uiscwin);
 
   dropdown->tree = gtk_tree_view_new ();
   assert (dropdown->tree != NULL);
@@ -416,7 +412,7 @@ uiDropDownWindowCreate (uidropdown_t *dropdown,
   gtk_tree_selection_set_mode (dropdown->sel, GTK_SELECTION_SINGLE);
   gtk_widget_set_hexpand (dropdown->tree, TRUE);
   gtk_widget_set_vexpand (dropdown->tree, TRUE);
-  gtk_container_add (GTK_CONTAINER (scwin), dropdown->tree);
+  uiBoxPackInWindowUW (&uiscwin, dropdown->tree);
   g_signal_connect (dropdown->tree, "row-activated",
       G_CALLBACK (processSelectionCallback), udata);
 }
