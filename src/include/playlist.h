@@ -68,16 +68,14 @@ void      playlistFree (void *);
 char      *playlistGetName (playlist_t *pl);
 ssize_t   playlistGetConfigNum (playlist_t *pl, playlistkey_t key);
 void      playlistSetConfigNum (playlist_t *pl, playlistkey_t key, ssize_t value);
-ssize_t   playlistGetDanceNum (playlist_t *pl, ilistidx_t dancekey,
-    pldancekey_t key);
-void      playlistSetDanceCount (playlist_t *pl, ilistidx_t dancekey,
-    ssize_t value);
+ssize_t   playlistGetDanceNum (playlist_t *pl, ilistidx_t dancekey, pldancekey_t key);
+void      playlistSetDanceCount (playlist_t *pl, ilistidx_t dancekey, ssize_t value);
+void      playlistSetDanceNum (playlist_t *pl, ilistidx_t danceIdx, pldancekey_t key, ssize_t value);
 song_t    *playlistGetNextSong (playlist_t *pl, nlist_t *danceCounts,
     ssize_t priorCount, playlistCheck_t checkProc,
     danceselHistory_t historyProc, void *userdata);
 slist_t   *playlistGetPlaylistList (int flag);
-bool      playlistFilterSong (dbidx_t dbidx, song_t *song,
-    void *tplaylist);
+bool      playlistFilterSong (dbidx_t dbidx, song_t *song, void *tplaylist);
 void      playlistAddCount (playlist_t *, song_t *song);
 void      playlistAddPlayed (playlist_t *, song_t *song);
 void      playlistSave (playlist_t *);

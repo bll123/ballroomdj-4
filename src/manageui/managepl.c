@@ -57,11 +57,13 @@ typedef struct managepl {
   UIWidget        uiallowedkeywordsitem;
   UIWidget        uipltype;
   managepltree_t  *managepltree;
+  playlist_t      *playlist;
 } managepl_t;
 
 static bool managePlaylistLoad (void *udata);
 static bool managePlaylistCopy (void *udata);
 static void managePlaylistLoadFile (void *udata, const char *fn);
+static void managePlaylistUpdateData (managepl_t *managepl);
 static bool managePlaylistNew (void *udata);
 static void manageSetPlaylistName (managepl_t *managepl, const char *nm);
 static long managePlaylistValMSCallback (void *udata, const char *txt);
@@ -93,6 +95,7 @@ managePlaylistAlloc (UIWidget *window, nlist_t *options, UIWidget *statusMsg)
   uiutilsUIWidgetInit (&managepl->uihighlevelitem);
   uiEntryInit (&managepl->allowedkeywords, 15, 50);
   uiutilsUIWidgetInit (&managepl->uiallowedkeywordsitem);
+  managepl->playlist = NULL;
 
   return managepl;
 }
@@ -112,6 +115,9 @@ managePlaylistFree (managepl_t *managepl)
     uiratingFree (managepl->uirating);
     uilevelFree (managepl->uilowlevel);
     uilevelFree (managepl->uihighlevel);
+    if (managepl->playlist != NULL) {
+      playlistFree (managepl->playlist);
+    }
     free (managepl);
   }
 }
@@ -154,7 +160,6 @@ manageBuildUIPlaylist (managepl_t *managepl, UIWidget *vboxp)
   uiEntryCreate (&managepl->plname);
   uiEntrySetColor (&managepl->plname, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
   /* CONTEXT: playlist management: default name for a new playlist */
-  manageSetPlaylistName (managepl, _("New Playlist"));
   uiBoxPackStart (&hbox, &managepl->plname.uientry);
 
   uiCreateHorizBox (&hbox);
@@ -172,7 +177,7 @@ manageBuildUIPlaylist (managepl_t *managepl, UIWidget *vboxp)
   uiutilsUIWidgetCopy (&managepl->uipltype, &uiwidget);
 
   uiCreateHorizBox (&mainhbox);
-  uiBoxPackStart (vboxp, &mainhbox);
+  uiBoxPackStartExpand (vboxp, &mainhbox);
 
   /* left side */
   uiCreateVertBox (&lcol);
@@ -302,7 +307,8 @@ manageBuildUIPlaylist (managepl_t *managepl, UIWidget *vboxp)
   uiBoxPackStartExpand (&mainhbox, &rcol);
 
   managepl->managepltree = managePlaylistTreeAlloc (managepl->statusMsg);
-  manageBuildUIPlaylistTree (managepl->managepltree, &rcol);
+  manageBuildUIPlaylistTree (managepl->managepltree, &rcol, &tophbox);
+  managePlaylistNew (managepl);
 }
 
 uimenu_t *
@@ -393,16 +399,31 @@ managePlaylistLoadFile (void *udata, const char *fn)
 {
   managepl_t  *managepl = udata;
   playlist_t  *pl;
-  pltype_t    pltype;
 
   managePlaylistSave (managepl);
 
   pl = playlistAlloc (NULL);
   playlistLoad (pl, fn);
+  if (managepl->playlist != NULL) {
+    playlistFree (managepl->playlist);
+  }
+  managepl->playlist = pl;
+  manageSetPlaylistName (managepl, fn);
 
+  managePlaylistUpdateData (managepl);
+}
+
+static void
+managePlaylistUpdateData (managepl_t *managepl)
+{
+  pltype_t    pltype;
+  playlist_t  *pl;
+
+  pl = managepl->playlist;
   pltype = playlistGetConfigNum (pl, PLAYLIST_TYPE);
 
   managePlaylistTreePopulate (managepl->managepltree, pl);
+
   if (pltype == PLTYPE_SONGLIST) {
     uiWidgetHide (&managepl->uiratingitem);
     uiWidgetHide (&managepl->uilowlevelitem);
@@ -440,7 +461,6 @@ managePlaylistLoadFile (void *udata, const char *fn)
   uilevelSetValue (managepl->uihighlevel,
       playlistGetConfigNum (pl, PLAYLIST_LEVEL_HIGH));
 
-  manageSetPlaylistName (managepl, fn);
   managepl->plbackupcreated = false;
 }
 
@@ -466,8 +486,9 @@ managePlaylistCopy (void *udata)
 static bool
 managePlaylistNew (void *udata)
 {
-  managepl_t *managepl = udata;
+  managepl_t  *managepl = udata;
   char        tbuff [200];
+  playlist_t  *pl = NULL;
 
   managePlaylistSave (managepl);
 
@@ -475,9 +496,15 @@ managePlaylistNew (void *udata)
   snprintf (tbuff, sizeof (tbuff), _("New Playlist"));
   manageSetPlaylistName (managepl, tbuff);
   managepl->plbackupcreated = false;
-  managepl->pltype = PLTYPE_AUTO;
 
-  // ### reset everything to defaults
+  pl = playlistAlloc (NULL);
+  playlistCreate (pl, tbuff, PLTYPE_AUTO, NULL);
+  if (managepl->playlist != NULL) {
+    playlistFree (managepl->playlist);
+  }
+  managepl->playlist = pl;
+  managePlaylistUpdateData (managepl);
+
   return UICB_CONT;
 }
 

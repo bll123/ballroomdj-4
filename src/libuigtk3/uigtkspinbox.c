@@ -422,6 +422,9 @@ uiuitilsSpinboxTextKeyCallback (GtkWidget *w, GdkEventKey *event, gpointer udata
   guint    keyval;
 
   gdk_event_get_keyval ((GdkEvent *) event, &keyval);
+  /* the up and down arrows are spinbox increment controls */
+  /* page up and down are spinbox increment controls */
+  /* tab and left tab are navigation controls */
   if (keyval == GDK_KEY_Up ||
       keyval == GDK_KEY_KP_Up ||
       keyval == GDK_KEY_Down ||

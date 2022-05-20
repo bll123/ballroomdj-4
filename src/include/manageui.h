@@ -20,7 +20,7 @@ void managePlaylistSave (managepl_t *managepl);
 /* managepltree.c */
 managepltree_t *managePlaylistTreeAlloc (UIWidget *statusMsg);
 void managePlaylistTreeFree (managepltree_t *managepltree);
-void manageBuildUIPlaylistTree (managepltree_t *managepltree, UIWidget *vboxp);
+void manageBuildUIPlaylistTree (managepltree_t *managepltree, UIWidget *vboxp,  UIWidget *tophbox);
 void managePlaylistTreePopulate (managepltree_t *managepltree, playlist_t *pl);
 bool managePlaylistTreeIsChanged (managepltree_t *managepltree);
 

@@ -43,7 +43,11 @@ typedef struct managepltree {
   GtkTreeViewColumn *lowbpmcol;
   GtkTreeViewColumn *highbpmcol;
   UIWidget          *statusMsg;
-  bool              changed;
+  UIWidget          uihideunsel;
+  UICallback        unselcb;
+  playlist_t        *playlist;
+  bool              changed : 1;
+  bool              hideunselected : 1;
 } managepltree_t;
 
 static void managePlaylistTreeSetColumnVisibility (managepltree_t *managepltree, int pltype);
@@ -51,6 +55,7 @@ static void managePlaylistTreeToggleDance (GtkCellRendererToggle *renderer, gcha
 static void managePlaylistTreeEditInt (GtkCellRendererText* r, const gchar* path, const gchar* ntext, gpointer udata);
 static void managePlaylistTreeEditTime (GtkCellRendererText* r, const gchar* spath, const gchar* ntext, gpointer udata);
 static void managePlaylistTreeCreate (managepltree_t *managepltree);
+static bool managePlaylistTreeHideUnselectedCallback (void *udata);
 
 managepltree_t *
 managePlaylistTreeAlloc (UIWidget *statusMsg)
@@ -64,7 +69,9 @@ managePlaylistTreeAlloc (UIWidget *statusMsg)
   managepltree->lowbpmcol = NULL;
   managepltree->highbpmcol = NULL;
   managepltree->changed = false;
+  managepltree->hideunselected = false;
   managepltree->statusMsg = statusMsg;
+  managepltree->playlist = NULL;
   return managepltree;
 }
 
@@ -77,12 +84,25 @@ managePlaylistTreeFree (managepltree_t *managepltree)
 }
 
 void
-manageBuildUIPlaylistTree (managepltree_t *managepltree, UIWidget *vboxp)
+manageBuildUIPlaylistTree (managepltree_t *managepltree, UIWidget *vboxp,
+    UIWidget *tophbox)
 {
+  UIWidget    hbox;
   UIWidget    uiwidget;
   GtkWidget   *tree;
   GtkCellRenderer *renderer = NULL;
   GtkTreeViewColumn *column = NULL;
+
+  uiCreateHorizBox (&hbox);
+  uiBoxPackEnd (tophbox, &hbox);
+
+  /* CONTEXT: playlist management: hide unselected dances */
+  uiCreateCheckButton (&uiwidget, _("Hide Unselected"), 0);
+  uiutilsUICallbackInit (&managepltree->unselcb,
+      managePlaylistTreeHideUnselectedCallback, managepltree);
+  uiToggleButtonSetCallback (&uiwidget, &managepltree->unselcb);
+  uiBoxPackStart (&hbox, &uiwidget);
+  uiutilsUIWidgetCopy (&managepltree->uihideunsel, &uiwidget);
 
   uiCreateScrolledWindow (&uiwidget, 300);
   uiWidgetExpandVert (&uiwidget);
@@ -207,7 +227,15 @@ managePlaylistTreePopulate (managepltree_t *managepltree, playlist_t *pl)
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
 
+  managepltree->playlist = pl;
   pltype = playlistGetConfigNum (pl, PLAYLIST_TYPE);
+
+  if (pltype == PLTYPE_SONGLIST) {
+    uiWidgetDisable (&managepltree->uihideunsel);
+  } else {
+    uiWidgetEnable (&managepltree->uihideunsel);
+  }
+
   managePlaylistTreeSetColumnVisibility (managepltree, pltype);
 
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (managepltree->tree));
@@ -219,6 +247,14 @@ managePlaylistTreePopulate (managepltree_t *managepltree, playlist_t *pl)
     char  mptdisp [40];
 
     sel = playlistGetDanceNum (pl, dkey, PLDANCE_SELECTED);
+
+    if (managepltree->hideunselected && pl != NULL) {
+      if (! sel) {
+        /* don't display this one */
+        continue;
+      }
+    }
+
     dcount = playlistGetDanceNum (pl, dkey, PLDANCE_COUNT);
     if (dcount < 0) { dcount = 0; }
     mpt = playlistGetDanceNum (pl, dkey, PLDANCE_MAXPLAYTIME);
@@ -290,6 +326,7 @@ managePlaylistTreeToggleDance (GtkCellRendererToggle *renderer, gchar *spath, gp
   GtkTreeIter   iter;
   gboolean      val;
   int           col = MPLTREE_COL_DANCE_SELECT;
+  long          dkey;
 
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (managepltree->tree));
   gtk_tree_model_get_iter_from_string (model, &iter, spath);
@@ -297,6 +334,10 @@ managePlaylistTreeToggleDance (GtkCellRendererToggle *renderer, gchar *spath, gp
   gtk_tree_model_get (model, &iter, col, &val, -1);
   val = ! val;
   gtk_list_store_set (GTK_LIST_STORE (model), &iter, col, val, -1);
+
+  /* must update the playlist for hide-unselected */
+  gtk_tree_model_get (model, &iter, MPLTREE_COL_DANCE_IDX, &dkey, -1);
+  playlistSetDanceNum (managepltree->playlist, dkey, PLDANCE_SELECTED, val);
 
   managepltree->changed = true;
 }
@@ -345,7 +386,6 @@ managePlaylistTreeEditTime (GtkCellRendererText* r, const gchar* spath,
   }
 }
 
-
 static void
 managePlaylistTreeCreate (managepltree_t *managepltree)
 {
@@ -382,6 +422,17 @@ managePlaylistTreeCreate (managepltree_t *managepltree)
 
     dancedisp = danceGetStr (dances, key, DANCE_DANCE);
 
+    if (managepltree->hideunselected &&
+        managepltree->playlist != NULL) {
+      int     sel;
+
+      sel = playlistGetDanceNum (managepltree->playlist, key, PLDANCE_SELECTED);
+      if (! sel) {
+        /* don't display this one */
+        continue;
+      }
+    }
+
     gtk_list_store_append (store, &iter);
     adjustment = gtk_adjustment_new (0, 0.0, 200.0, 1.0, 5.0, 0.0);
     gtk_list_store_set (store, &iter,
@@ -402,3 +453,13 @@ managePlaylistTreeCreate (managepltree_t *managepltree)
   g_object_unref (store);
 }
 
+static bool
+managePlaylistTreeHideUnselectedCallback (void *udata)
+{
+  managepltree_t  *managepltree = udata;
+
+  managepltree->hideunselected = ! managepltree->hideunselected;
+  managePlaylistTreeCreate (managepltree);
+  managePlaylistTreePopulate (managepltree, managepltree->playlist);
+  return UICB_CONT;
+}

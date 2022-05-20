@@ -157,6 +157,8 @@ playlistLoad (playlist_t *pl, const char *fname)
   ilistidx_t    tidx;
   ilistidx_t    didx;
   ilistidx_t    iteridx;
+  dance_t       *dances;
+  nlist_t       *tlist;
 
   if (fname == NULL) {
     return -1;
@@ -254,6 +256,21 @@ playlistLoad (playlist_t *pl, const char *fname)
       playlistFree (pl);
       return -1;
     }
+
+    /* reset and set all of the 'selected' flags. */
+    /* this just makes playlist management work better for sequences */
+    dances = bdjvarsdfGet (BDJVDF_DANCES);
+    danceStartIterator (dances, &iteridx);
+    while ((didx = danceIterate (dances, &iteridx)) >= 0) {
+      ilistSetNum (pl->pldances, didx, PLDANCE_SELECTED, 0);
+    }
+    /* the sequence iterator doesn't stop, use the returned dance list */
+    tlist = sequenceGetDanceList (pl->sequence);
+    nlistStartIterator (tlist, &iteridx);
+    while ((didx = nlistIterateKey (tlist, &iteridx)) >= 0) {
+      ilistSetNum (pl->pldances, didx, PLDANCE_SELECTED, 1);
+    }
+
     sequenceStartIterator (pl->sequence, &pl->seqiteridx);
   }
 
@@ -374,6 +391,17 @@ playlistSetDanceCount (playlist_t *pl, ilistidx_t danceIdx, ssize_t count)
   } else {
     ilistSetNum (pl->pldances, danceIdx, PLDANCE_SELECTED, 0);
   }
+  return;
+}
+
+void
+playlistSetDanceNum (playlist_t *pl, ilistidx_t danceIdx, pldancekey_t key, ssize_t value)
+{
+  if (pl == NULL || pl->plinfo == NULL) {
+    return;
+  }
+
+  ilistSetNum (pl->pldances, danceIdx, key, value);
   return;
 }
 
