@@ -2073,7 +2073,7 @@ confuiSelectMusicDir (GtkButton *b, gpointer udata)
   logProcBegin (LOG_PROC, "confuiSelectMusicDir");
   /* CONTEXT: configuration: folder selection dialog: window title */
   selectdata.label = _("Select Music Folder Location");
-  selectdata.window = confui->window.widget;
+  selectdata.window = &confui->window;
   selectdata.startpath = bdjoptGetStr (OPT_M_DIR_MUSIC);
   selectdata.mimetype = NULL;
   fn = uiSelectDirDialog (&selectdata);
@@ -2130,7 +2130,7 @@ confuiSelectFileDialog (configui_t *confui, int widx, char *startpath,
   logProcBegin (LOG_PROC, "confuiSelectFileDialog");
   /* CONTEXT: configuration: file selection dialog: window title */
   selectdata.label = _("Select File");
-  selectdata.window = confui->window.widget;
+  selectdata.window = &confui->window;
   selectdata.startpath = startpath;
   selectdata.mimefiltername = mimefiltername;
   selectdata.mimetype = mimetype;

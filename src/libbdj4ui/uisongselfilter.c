@@ -24,11 +24,6 @@
 #include "ui.h"
 #include "uiutils.h"
 
-enum {
-  RESPONSE_NONE,
-  RESPONSE_RESET,
-};
-
 /* song filter handling */
 static void uisongselCreateFilterDialog (uisongsel_t *uisongsel);
 static void uisongselFilterResponseHandler (GtkDialog *d, gint responseid,

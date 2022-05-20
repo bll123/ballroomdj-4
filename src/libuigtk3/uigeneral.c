@@ -34,3 +34,19 @@ uiutilsCallbackHandler (UICallback *uicb)
   rc = uicb->cb (uicb->udata);
   return rc;
 }
+
+bool
+uiutilsCallbackIntHandler (UICallback *uicb, int value)
+{
+  bool  rc = false;
+
+  if (uicb == NULL) {
+    return 0;
+  }
+  if (uicb->intcb == NULL) {
+    return 0;
+  }
+
+  rc = uicb->intcb (uicb->udata, value);
+  return rc;
+}

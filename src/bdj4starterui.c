@@ -65,6 +65,9 @@ enum {
   START_CALLBACK_SUPPORT,
   START_CALLBACK_EXIT,
   START_CALLBACK_SEND_SUPPORT,
+  START_CALLBACK_MENU_STOP_ALL,
+  START_CALLBACK_SUPPORT_RESP,
+  START_CALLBACK_SUPPORT_MSG_RESP,
   START_CALLBACK_MAX,
 };
 
@@ -104,11 +107,11 @@ typedef struct {
   int             mainstarted;
   int             stopwaitcount;
   nlist_t         *proflist;
-  UICallback      menustopallcb;
   UICallback      callbacks [START_CALLBACK_MAX];
   startlinkcb_t   macoslinkcb [START_LINK_CB_MAX];
   uispinbox_t     profilesel;
-  GtkWidget       *supportDialog;
+  UIWidget        supportDialog;
+  UIWidget        supportMsgDialog;
   UIWidget        supportSendFiles;
   UIWidget        supportSendDB;
   UIWidget        window;
@@ -165,9 +168,9 @@ static void     starterCheckProfile (startui_t *starter);
 
 static bool     starterProcessSupport (void *udata);
 static void     starterWebResponseCallback (void *userdata, char *resp, size_t len);
-static void     starterSupportResponseHandler (GtkDialog *d, gint responseid, gpointer udata);
+static bool     starterSupportResponseHandler (void *udata, int responseid);
 static bool     starterCreateSupportDialog (void *udata);
-static void     starterSupportMsgHandler (GtkDialog *d, gint responseid, gpointer udata);
+static bool     starterSupportMsgHandler (void *udata, int responseid);
 static void     starterSendFilesInit (startui_t *starter, char *dir);
 static void     starterSendFiles (startui_t *starter);
 static void     starterSendFile (startui_t *starter, char *origfn, char *fn);
@@ -436,9 +439,10 @@ starterBuildUI (startui_t  *starter)
 
   /* CONTEXT: menu item: stop all BDJ4 processes */
   snprintf (tbuff, sizeof (tbuff), _("Stop All %s Processes"), BDJ4_NAME);
-  uiutilsUICallbackInit (&starter->menustopallcb,
+  uiutilsUICallbackInit (&starter->callbacks [START_CALLBACK_MENU_STOP_ALL],
       starterStopAllProcesses, starter);
-  uiMenuCreateItem (&menu, &menuitem, tbuff, &starter->menustopallcb);
+  uiMenuCreateItem (&menu, &menuitem, tbuff,
+      &starter->callbacks [START_CALLBACK_MENU_STOP_ALL]);
 
   /* main display */
   uiCreateHorizBox (&hbox);
@@ -752,7 +756,6 @@ starterMainLoop (void *tstarter)
     }
     case START_STATE_SUPPORT_FINISH: {
       webclientClose (starter->webclient);
-      gtk_widget_destroy (GTK_WIDGET (starter->supportDialog));
       uiEntryFree (&starter->supportsubject);
       uiEntryFree (&starter->supportemail);
       starter->startState = START_STATE_NONE;
@@ -953,8 +956,7 @@ starterProcessSupport (void *udata)
   UIWidget      vbox;
   UIWidget      hbox;
   UIWidget      uiwidget;
-  GtkWidget     *content;
-  GtkWidget     *dialog;
+  UIWidget      uidialog;
   UIWidget      sg;
   char          tbuff [MAXPATHLEN];
   char          uri [MAXPATHLEN];
@@ -972,24 +974,22 @@ starterProcessSupport (void *udata)
     stringTrim (starter->latestversion);
   }
 
-  dialog = gtk_dialog_new_with_buttons (
+  uiutilsUICallbackIntInit (&starter->callbacks [START_CALLBACK_SUPPORT_RESP],
+      starterSupportResponseHandler, starter);
+  uiCreateDialog (&uidialog, &starter->window,
+      &starter->callbacks [START_CALLBACK_SUPPORT_RESP],
       /* CONTEXT: title for the support dialog */
       _("Support"),
-      GTK_WINDOW (starter->window.widget),
-      GTK_DIALOG_DESTROY_WITH_PARENT,
       /* CONTEXT: support dialog: closes the dialog */
       _("Close"),
       GTK_RESPONSE_CLOSE,
       NULL
       );
 
-  content = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
-  uiWidgetSetAllMarginsW (content, uiBaseMarginSz * 2);
-
   uiCreateSizeGroupHoriz (&sg);
 
   uiCreateVertBox (&vbox);
-  uiBoxPackInWindowWU (content, &vbox);
+  uiDialogPackInDialog (&uidialog, &vbox);
 
   /* begin line */
   uiCreateHorizBox (&hbox);
@@ -1093,25 +1093,29 @@ starterProcessSupport (void *udata)
   uiCreateLabel (&uiwidget, " ");
   uiBoxPackStart (&hbox, &uiwidget);
 
-  g_signal_connect (dialog, "response",
-      G_CALLBACK (starterSupportResponseHandler), starter);
-  uiWidgetShowAllW (dialog);
+//  g_signal_connect (dialog, "response",
+//      G_CALLBACK (starterSupportResponseHandler), starter);
+  uiWidgetShowAll (&uidialog);
+  uiutilsUIWidgetCopy (&starter->supportDialog, &uidialog);
   return UICB_CONT;
 }
 
 
-static void
-starterSupportResponseHandler (GtkDialog *d, gint responseid, gpointer udata)
+static bool
+starterSupportResponseHandler (void *udata, int responseid)
 {
+  startui_t *starter = udata;
+
   switch (responseid) {
-    case GTK_RESPONSE_DELETE_EVENT: {
+    case RESPONSE_DELETE_WIN: {
       break;
     }
-    case GTK_RESPONSE_CLOSE: {
-      gtk_widget_destroy (GTK_WIDGET (d));
+    case RESPONSE_CLOSE: {
+      uiDialogDestroy (&starter->supportDialog);
       break;
     }
   }
+  return UICB_CONT;
 }
 
 static nlist_t *
@@ -1209,12 +1213,11 @@ static bool
 starterCreateSupportDialog (void *udata)
 {
   startui_t     *starter = udata;
-  GtkWidget     *content;
   UIWidget      uiwidget;
   UIWidget      vbox;
   UIWidget      hbox;
   GtkWidget     *widget;
-  GtkWidget     *dialog;
+  UIWidget      uidialog;
   UIWidget      sg;
   uitextbox_t *tb;
 
@@ -1222,28 +1225,26 @@ starterCreateSupportDialog (void *udata)
   uiutilsUIWidgetInit (&vbox);
   uiutilsUIWidgetInit (&hbox);
 
-  dialog = gtk_dialog_new_with_buttons (
+  uiutilsUICallbackIntInit (&starter->callbacks [START_CALLBACK_SUPPORT_MSG_RESP],
+      starterSupportMsgHandler, starter);
+  uiCreateDialog (&uidialog, &starter->window,
+      &starter->callbacks [START_CALLBACK_SUPPORT_MSG_RESP],
       /* CONTEXT: title for the support message dialog */
       _("Support Message"),
-      GTK_WINDOW (starter->window.widget),
-      GTK_DIALOG_DESTROY_WITH_PARENT,
       /* CONTEXT: support message dialog: closes the dialog */
       _("Close"),
-      GTK_RESPONSE_CLOSE,
+      RESPONSE_CLOSE,
       /* CONTEXT: support message dialog: sends the support message */
       _("Send Support Message"),
-      GTK_RESPONSE_APPLY,
+      RESPONSE_APPLY,
       NULL
       );
-  uiWindowSetDefaultSizeW (dialog, -1, 400);
-
-  content = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
-  uiWidgetSetAllMarginsW (content, uiBaseMarginSz * 2);
+  uiWindowSetDefaultSize (&uidialog, -1, 400);
 
   uiCreateSizeGroupHoriz (&sg);
 
   uiCreateVertBox (&vbox);
-  uiBoxPackInWindowWU (content, &vbox);
+  uiDialogPackInDialog (&uidialog, &vbox);
 
   /* line 1 */
   uiCreateHorizBox (&hbox);
@@ -1299,32 +1300,33 @@ starterCreateSupportDialog (void *udata)
   uiLabelSetColor (&uiwidget, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
   uiutilsUIWidgetCopy (&starter->supportStatus, &uiwidget);
 
-  g_signal_connect (dialog, "response",
-      G_CALLBACK (starterSupportMsgHandler), starter);
-  uiWidgetShowAllW (dialog);
-  starter->supportDialog = dialog;
+//  g_signal_connect (dialog, "response",
+//      G_CALLBACK (starterSupportMsgHandler), starter);
+  uiWidgetShowAll (&uidialog);
+  uiutilsUIWidgetCopy (&starter->supportMsgDialog, &uidialog);
   return UICB_CONT;
 }
 
 
-static void
-starterSupportMsgHandler (GtkDialog *d, gint responseid, gpointer udata)
+static bool
+starterSupportMsgHandler (void *udata, int responseid)
 {
   startui_t   *starter = udata;
 
   switch (responseid) {
-    case GTK_RESPONSE_DELETE_EVENT: {
+    case RESPONSE_DELETE_WIN: {
       break;
     }
-    case GTK_RESPONSE_CLOSE: {
-      gtk_widget_destroy (GTK_WIDGET (d));
+    case RESPONSE_CLOSE: {
+      uiDialogDestroy (&starter->supportMsgDialog);
       break;
     }
-    case GTK_RESPONSE_APPLY: {
+    case RESPONSE_APPLY: {
       starter->startState = START_STATE_SUPPORT_INIT;
       break;
     }
   }
+  return UICB_CONT;
 }
 
 static void

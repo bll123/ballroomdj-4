@@ -86,14 +86,6 @@ uiNotebookSwitchPageHandler (GtkNotebook *nb, GtkWidget *page,
     guint pagenum, gpointer udata)
 {
   UICallback  *uicb = udata;
-
-  if (uicb == NULL) {
-    return;
-  }
-  if (uicb->intcb == NULL) {
-    return;
-  }
-
-  uicb->intcb (uicb->udata, pagenum);
+  uiutilsCallbackIntHandler (uicb, pagenum);
 }
 

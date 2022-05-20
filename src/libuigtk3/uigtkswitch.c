@@ -67,13 +67,6 @@ uiSwitchStateHandler (GtkSwitch *sw, gboolean value, gpointer udata)
   UICallback  *uicb = udata;
   bool        rc;
 
-  if (uicb == NULL) {
-    return UICB_STOP;
-  }
-  if (uicb->intcb == NULL) {
-    return UICB_STOP;
-  }
-
-  rc = uicb->intcb (uicb->udata, value);
+  rc = uiutilsCallbackIntHandler (uicb, value);
   return rc;
 }

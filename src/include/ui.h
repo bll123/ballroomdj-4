@@ -16,6 +16,7 @@
 /* general routines that are called by the ui specific code */
 void uiutilsUIWidgetInit (UIWidget *uiwidget);
 bool uiutilsCallbackHandler (UICallback *uicb);
+bool uiutilsCallbackIntHandler (UICallback *uicb, int value);
 
 /* uigtkmenu.c */
 void uiCreateMenubar (UIWidget *uiwidget);
@@ -194,6 +195,10 @@ void  uiTreeViewAllowMultiple (GtkWidget *tree);
 /* uigtkdialog.c */
 char  *uiSelectDirDialog (uiselect_t *selectdata);
 char  *uiSelectFileDialog (uiselect_t *selectdata);
+void uiCreateDialog (UIWidget *uiwidget, UIWidget *window,
+    UICallback *uicb, const char *title, ...);
+void  uiDialogPackInDialog (UIWidget *uidialog, UIWidget *boxp);
+void  uiDialogDestroy (UIWidget *uidialog);
 
 /* uigtkwindow.c */
 void uiCreateMainWindow (UIWidget *uiwidget, UICallback *uicb,

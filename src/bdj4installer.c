@@ -863,7 +863,7 @@ installerSelectDirDialog (void *udata)
   /* CONTEXT: installer: label for entry field for BDJ3 location */
   snprintf (tbuff, sizeof (tbuff), _("Select %s Location"), BDJ3_NAME);
   selectdata.label = tbuff;
-  selectdata.window = installer->window.widget;
+  selectdata.window = &installer->window;
   selectdata.startpath = uiEntryGetValue (&installer->bdj3locEntry);
   fn = uiSelectDirDialog (&selectdata);
   if (fn != NULL) {

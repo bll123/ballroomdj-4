@@ -650,8 +650,8 @@ osRunProgram (const char *prog, ...)
   char        *arg;
   const char  *targv [10];
   int         targc;
+  va_list     valist;
 
-  va_list   valist;
   va_start (valist, prog);
 
   targc = 0;
@@ -660,6 +660,7 @@ osRunProgram (const char *prog, ...)
     targv [targc++] = arg;
   }
   targv [targc++] = NULL;
+  va_end (valist);
 
   osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, data, sizeof (data));
   return strdup (data);
