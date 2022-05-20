@@ -383,20 +383,15 @@ void
 uisongselSetFavoriteForeground (uisongsel_t *uisongsel, char *color)
 {
   uisongselgtk_t      *uiw;
-  char                tbuff [100];
   char                tmp [40];
 
   uiw = uisongsel->uiWidgetData;
 
   if (strcmp (color, "") != 0) {
-    snprintf (tbuff, sizeof (tbuff),
-        "spinbutton { color: %s; } ", color);
-    uiSetCss (uisongsel->filterfavoritesel.spinbox, tbuff);
+    uiSpinboxSetColor (&uisongsel->filterfavoritesel, color);
   } else {
     uiGetForegroundColor (uiw->songselTree, tmp, sizeof (tmp));
-    snprintf (tbuff, sizeof (tbuff),
-        "spinbutton { color: %s; } ", tmp);
-    uiSetCss (uisongsel->filterfavoritesel.spinbox, tbuff);
+    uiSpinboxSetColor (&uisongsel->filterfavoritesel, tmp);
   }
 }
 

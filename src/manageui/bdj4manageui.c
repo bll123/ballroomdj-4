@@ -763,7 +763,7 @@ manageBuildUIUpdateDatabase (manageui_t *manage)
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&vbox, &hbox);
 
-  widget = uiSpinboxTextCreate (&manage->dbspinbox, manage);
+  widget = uiSpinboxTextCreateW (&manage->dbspinbox, manage);
   /* currently hard-coded at 30 chars */
   uiSpinboxTextSet (&manage->dbspinbox, 0,
       nlistGetCount (manage->dblist), 30,

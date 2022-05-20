@@ -1890,17 +1890,17 @@ confuiPopulateOptions (configui_t *confui)
         break;
       }
       case CONFUI_SPINBOX_NUM: {
-        nval = (ssize_t) uiSpinboxGetValue (confui->uiitem [i].widget);
+        nval = (ssize_t) uiSpinboxGetValueW (confui->uiitem [i].widget);
         break;
       }
       case CONFUI_SPINBOX_DOUBLE: {
-        dval = uiSpinboxGetValue (confui->uiitem [i].widget);
+        dval = uiSpinboxGetValueW (confui->uiitem [i].widget);
         nval = (ssize_t) (dval * 1000.0);
         outtype = CONFUI_OUT_NUM;
         break;
       }
       case CONFUI_SPINBOX_TIME: {
-        nval = (ssize_t) uiSpinboxGetValue (confui->uiitem [i].widget);
+        nval = (ssize_t) uiSpinboxGetValueW (confui->uiitem [i].widget);
         break;
       }
       case CONFUI_COLOR: {
@@ -2336,7 +2336,7 @@ confuiMakeItemSpinboxText (configui_t *confui, UIWidget *boxp, UIWidget *sg,
   confui->uiitem [widx].outtype = outtype;
   uiCreateHorizBox (&hbox);
   confuiMakeItemLabel (&hbox, sg, txt);
-  widget = uiSpinboxTextCreate (&confui->uiitem [widx].u.spinbox, confui);
+  widget = uiSpinboxTextCreateW (&confui->uiitem [widx].u.spinbox, confui);
   confui->uiitem [widx].widget = widget;
   list = confui->uiitem [widx].displist;
   keylist = confui->uiitem [widx].sbkeylist;
@@ -2390,7 +2390,7 @@ confuiMakeItemSpinboxTime (configui_t *confui, UIWidget *boxp,
   confui->uiitem [widx].outtype = CONFUI_OUT_NUM;
   uiCreateHorizBox (&hbox);
   confuiMakeItemLabel (&hbox, sg, txt);
-  widget = uiSpinboxTimeCreate (&confui->uiitem [widx].u.spinbox, confui);
+  widget = uiSpinboxTimeCreateW (&confui->uiitem [widx].u.spinbox, confui);
   confui->uiitem [widx].widget = widget;
   uiSpinboxTimeSetValue (&confui->uiitem [widx].u.spinbox, value);
   uiWidgetSetMarginStartW (widget, uiBaseMarginSz * 4);
@@ -2417,9 +2417,9 @@ confuiMakeItemSpinboxInt (configui_t *confui, UIWidget *boxp, UIWidget *sg,
   confui->uiitem [widx].outtype = CONFUI_OUT_NUM;
   uiCreateHorizBox (&hbox);
   confuiMakeItemLabel (&hbox, sg, txt);
-  widget = uiSpinboxIntCreate ();
-  uiSpinboxSet (widget, (double) min, (double) max);
-  uiSpinboxSetValue (widget, (double) value);
+  widget = uiSpinboxIntCreateW ();
+  uiSpinboxSetW (widget, (double) min, (double) max);
+  uiSpinboxSetValueW (widget, (double) value);
   uiWidgetSetMarginStartW (widget, uiBaseMarginSz * 4);
   if (sgB != NULL) {
     uiSizeGroupAddW (sgB, widget);
@@ -2449,9 +2449,9 @@ confuiMakeItemSpinboxDouble (configui_t *confui, UIWidget *boxp, UIWidget *sg,
   confui->uiitem [widx].outtype = CONFUI_OUT_DOUBLE;
   uiCreateHorizBox (&hbox);
   confuiMakeItemLabel (&hbox, sg, txt);
-  widget = uiSpinboxDoubleCreate ();
-  uiSpinboxSet (widget, min, max);
-  uiSpinboxSetValue (widget, value);
+  widget = uiSpinboxDoubleCreateW ();
+  uiSpinboxSetW (widget, min, max);
+  uiSpinboxSetValueW (widget, value);
   uiWidgetSetMarginStartW (widget, uiBaseMarginSz * 4);
   if (sgB != NULL) {
     uiSizeGroupAddW (sgB, widget);

@@ -115,16 +115,16 @@ typedef struct uientry {
 } uientry_t;
 
 typedef struct {
-  GtkWidget             *spinbox;
-  int                   curridx;
-  uispinboxdisp_t  textGetProc;
-  void                  *udata;
-  int                   maxWidth;
-  slist_t               *list;
-  nlist_t               *keylist;
-  nlist_t               *idxlist;
-  bool                  indisp : 1;
-  bool                  changed : 1;
+  UIWidget        uispinbox;
+  int             curridx;
+  uispinboxdisp_t textGetProc;
+  void            *udata;
+  int             maxWidth;
+  slist_t         *list;
+  nlist_t         *keylist;
+  nlist_t         *idxlist;
+  bool            indisp : 1;
+  bool            changed : 1;
 } uispinbox_t;
 
 typedef struct {

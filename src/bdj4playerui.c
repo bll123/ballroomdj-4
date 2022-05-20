@@ -74,7 +74,7 @@ typedef struct {
   UIWidget        ledoffPixbuf;
   UIWidget        ledonPixbuf;
   GtkWidget       *marqueeFontSizeDialog;
-  GtkWidget       *marqueeSpinBox;
+  UIWidget        marqueeSpinBox;
   /* ui major elements */
   uiplayer_t      *uiplayer;
   uimusicq_t      *uimusicq;
@@ -853,7 +853,6 @@ pluiMarqueeFontSizeDialog (GtkMenuItem *mi, gpointer udata)
 {
   playerui_t      *plui = udata;
   int             sz;
-  GtkAdjustment   *adjustment;
 
   logProcBegin (LOG_PROC, "pluiMarqueeFontSizeDialog");
 
@@ -867,10 +866,7 @@ pluiMarqueeFontSizeDialog (GtkMenuItem *mi, gpointer udata)
     sz = plui->marqueeFontSize;
   }
 
-  adjustment = gtk_spin_button_get_adjustment (
-      GTK_SPIN_BUTTON (plui->marqueeSpinBox));
-  gtk_adjustment_set_value (adjustment, (double) sz);
-
+  uiSpinboxSetValue (&plui->marqueeSpinBox, (double) sz);
   uiWidgetShowAllW (plui->marqueeFontSizeDialog);
 
   logProcEnd (LOG_PROC, "pluiMarqueeFontSizeDialog", "");
@@ -911,11 +907,11 @@ pluiCreateMarqueeFontSizeDialog (playerui_t *plui)
   uiCreateColonLabel (&uiwidget, _("Font Size"));
   uiBoxPackStart (&hbox, &uiwidget);
 
-  plui->marqueeSpinBox = uiSpinboxIntCreate ();
-  uiSpinboxSet (plui->marqueeSpinBox, 10.0, 300.0);
-  uiSpinboxSetValue (plui->marqueeSpinBox, 36.0);
-  uiBoxPackStartUW (&hbox, plui->marqueeSpinBox);
-  g_signal_connect (plui->marqueeSpinBox, "value-changed",
+  uiSpinboxIntCreate (&plui->marqueeSpinBox);
+  uiSpinboxSet (&plui->marqueeSpinBox, 10.0, 300.0);
+  uiSpinboxSetValue (&plui->marqueeSpinBox, 36.0);
+  uiBoxPackStart (&hbox, &plui->marqueeSpinBox);
+  g_signal_connect (plui->marqueeSpinBox.widget, "value-changed",
       G_CALLBACK (pluiMarqueeFontSizeChg), plui);
 
   /* the dialog doesn't have any space above the buttons */

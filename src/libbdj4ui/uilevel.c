@@ -30,7 +30,6 @@ uilevel_t *
 uilevelSpinboxCreate (UIWidget *boxp, bool allflag)
 {
   uilevel_t  *uilevel;
-  GtkWidget   *widget;
   int         maxw;
   int         start;
   int         len;
@@ -41,7 +40,7 @@ uilevelSpinboxCreate (UIWidget *boxp, bool allflag)
   uilevel->allflag = allflag;
   uiSpinboxTextInit (&uilevel->spinbox);
 
-  widget = uiSpinboxTextCreate (&uilevel->spinbox, uilevel);
+  uiSpinboxTextCreate (&uilevel->spinbox, uilevel);
 
   start = 0;
   maxw = levelGetMaxWidth (uilevel->levels);
@@ -57,7 +56,7 @@ uilevelSpinboxCreate (UIWidget *boxp, bool allflag)
       levelGetCount (uilevel->levels),
       maxw, NULL, NULL, uilevelLevelGet);
 
-  uiBoxPackStartUW (boxp, widget);
+  uiBoxPackStart (boxp, uiSpinboxGetUIWidget (&uilevel->spinbox));
 
   return uilevel;
 }

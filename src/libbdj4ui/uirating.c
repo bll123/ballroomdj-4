@@ -30,7 +30,6 @@ uirating_t *
 uiratingSpinboxCreate (UIWidget *boxp, bool allflag)
 {
   uirating_t  *uirating;
-  GtkWidget   *widget;
   int         maxw;
   int         start;
   int         len;
@@ -41,7 +40,7 @@ uiratingSpinboxCreate (UIWidget *boxp, bool allflag)
   uirating->allflag = allflag;
   uiSpinboxTextInit (&uirating->spinbox);
 
-  widget = uiSpinboxTextCreate (&uirating->spinbox, uirating);
+  uiSpinboxTextCreate (&uirating->spinbox, uirating);
 
   start = 0;
   maxw = ratingGetMaxWidth (uirating->ratings);
@@ -57,7 +56,7 @@ uiratingSpinboxCreate (UIWidget *boxp, bool allflag)
       ratingGetCount (uirating->ratings),
       maxw, NULL, NULL, uiratingRatingGet);
 
-  uiBoxPackStartUW (boxp, widget);
+  uiBoxPackStart (boxp, uiSpinboxGetUIWidget (&uirating->spinbox));
 
   return uirating;
 }

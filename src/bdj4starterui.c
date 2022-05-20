@@ -391,7 +391,7 @@ static void
 starterBuildUI (startui_t  *starter)
 {
   UIWidget            uiwidget;
-  GtkWidget           *widget;
+  UIWidget            *uiwidgetp;
   GtkWidget           *menubar;
   GtkWidget           *menu;
   GtkWidget           *menuitem;
@@ -449,13 +449,14 @@ starterBuildUI (startui_t  *starter)
 
   /* get the profile list after bdjopt has been initialized */
   starter->proflist = starterGetProfiles (starter);
-  widget = uiSpinboxTextCreate (&starter->profilesel, starter);
+  uiSpinboxTextCreate (&starter->profilesel, starter);
   uiSpinboxTextSet (&starter->profilesel, starter->currprofile,
       nlistGetCount (starter->proflist), starter->maxProfileWidth,
       starter->proflist, NULL, starterSetProfile);
-  uiWidgetSetMarginStartW (widget, uiBaseMarginSz * 4);
-  uiWidgetAlignHorizFillW (widget);
-  uiBoxPackStartUW (&hbox, widget);
+  uiwidgetp = uiSpinboxGetUIWidget (&starter->profilesel);
+  uiWidgetSetMarginStart (uiwidgetp, uiBaseMarginSz * 4);
+  uiWidgetAlignHorizFill (uiwidgetp);
+  uiBoxPackStart (&hbox, uiwidgetp);
 
   uiCreateHorizBox (&hbox);
   uiWidgetExpandHoriz (&hbox);

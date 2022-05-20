@@ -36,8 +36,8 @@ typedef struct managepl {
   pltype_t        pltype;
   uispinbox_t     uimaxplaytime;
   uispinbox_t     uistopat;
-  GtkWidget       *stopafter;
-  GtkWidget       *gap;
+  UIWidget        uistopafter;
+  UIWidget        uigap;
   uirating_t      *uirating;
   UIWidget        uiratingitem;
   uilevel_t       *uilowlevel;
@@ -71,8 +71,8 @@ managePlaylistAlloc (UIWidget *window, nlist_t *options, UIWidget *statusMsg)
   managepl->windowp = window;
   managepl->options = options;
   managepl->pltype = PLTYPE_AUTO;
-  managepl->stopafter = NULL;
-  managepl->gap = NULL;
+  uiutilsUIWidgetInit (&managepl->uistopafter);
+  uiutilsUIWidgetInit (&managepl->uigap);
   managepl->managepltree = NULL;
   managepl->uirating = NULL;
   managepl->uilowlevel = NULL;
@@ -114,6 +114,7 @@ manageBuildUIPlaylist (managepl_t *managepl, UIWidget *vboxp)
   UIWidget            tophbox;
   UIWidget            hbox;
   UIWidget            uiwidget;
+  UIWidget            *uiwidgetp;
   GtkWidget           *widget;
   UIWidget            sg;
   UIWidget            sgA;
@@ -175,9 +176,10 @@ manageBuildUIPlaylist (managepl_t *managepl, UIWidget *vboxp)
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
 
-  widget = uiSpinboxTimeCreate (&managepl->uimaxplaytime, managepl);
-  uiBoxPackStartUW (&hbox, widget);
-  uiSizeGroupAddW (&sgA, widget);
+  uiSpinboxTimeCreate (&managepl->uimaxplaytime, managepl);
+  uiwidgetp = uiSpinboxGetUIWidget (&managepl->uimaxplaytime);
+  uiBoxPackStart (&hbox, uiwidgetp);
+  uiSizeGroupAdd (&sgA, uiwidgetp);
 
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&lcol, &hbox);
@@ -187,11 +189,12 @@ manageBuildUIPlaylist (managepl_t *managepl, UIWidget *vboxp)
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
 
-  widget = uiSpinboxTimeCreate (&managepl->uistopat, managepl);
+  uiSpinboxTimeCreate (&managepl->uistopat, managepl);
   uiSpinboxSetRange (&managepl->uistopat, 0, 1440000);
   uiSpinboxWrap (&managepl->uistopat);
-  uiBoxPackStartUW (&hbox, widget);
-  uiSizeGroupAddW (&sgA, widget);
+  uiwidgetp = uiSpinboxGetUIWidget (&managepl->uistopat);
+  uiBoxPackStart (&hbox, uiwidgetp);
+  uiSizeGroupAdd (&sgA, uiwidgetp);
 
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&lcol, &hbox);
@@ -201,10 +204,10 @@ manageBuildUIPlaylist (managepl_t *managepl, UIWidget *vboxp)
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
 
-  widget = uiSpinboxIntCreate ();
-  uiBoxPackStartUW (&hbox, widget);
-  uiSizeGroupAddW (&sgB, widget);
-  managepl->stopafter = widget;
+  uiSpinboxIntCreate (&uiwidget);
+  uiBoxPackStart (&hbox, &uiwidget);
+  uiSizeGroupAdd (&sgB, &uiwidget);
+  uiutilsUIWidgetCopy (&managepl->uistopafter, &uiwidget);
 
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&lcol, &hbox);
@@ -214,10 +217,10 @@ manageBuildUIPlaylist (managepl_t *managepl, UIWidget *vboxp)
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
 
-  widget = uiSpinboxIntCreate ();
-  uiBoxPackStartUW (&hbox, widget);
-  uiSizeGroupAddW (&sgB, widget);
-  managepl->gap = widget;
+  uiSpinboxIntCreate (&uiwidget);
+  uiBoxPackStart (&hbox, &uiwidget);
+  uiSizeGroupAdd (&sgB, &uiwidget);
+  uiutilsUIWidgetCopy (&managepl->uigap, &uiwidget);
 
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&lcol, &hbox);
@@ -404,9 +407,9 @@ managePlaylistLoadFile (void *udata, const char *fn)
       playlistGetConfigNum (pl, PLAYLIST_MAX_PLAY_TIME));
   uiSpinboxTimeSetValue (&managepl->uistopat,
       playlistGetConfigNum (pl, PLAYLIST_STOP_TIME));
-  uiSpinboxSetValue (managepl->stopafter,
+  uiSpinboxSetValue (&managepl->uistopafter,
       playlistGetConfigNum (pl, PLAYLIST_STOP_AFTER));
-  uiSpinboxSetValue (managepl->gap,
+  uiSpinboxSetValue (&managepl->uigap,
       playlistGetConfigNum (pl, PLAYLIST_GAP));
   uiratingSetValue (managepl->uirating,
       playlistGetConfigNum (pl, PLAYLIST_RATING));
