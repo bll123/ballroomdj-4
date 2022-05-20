@@ -10,7 +10,6 @@
 #include <unistd.h>
 #include <math.h>
 
-#include <gtk/gtk.h>
 #include <glib.h>
 #include <zlib.h>
 
@@ -301,7 +300,7 @@ static bool
 starterStoppingCallback (void *udata, programstate_t programState)
 {
   startui_t   *starter = udata;
-  gint        x, y;
+  int         x, y;
 
   logProcBegin (LOG_PROC, "starterStoppingCallback");
   if (starter->mainstarted > 0) {

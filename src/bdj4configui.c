@@ -768,7 +768,7 @@ static bool
 confuiStoppingCallback (void *udata, programstate_t programState)
 {
   configui_t    * confui = udata;
-  gint          x, y;
+  int           x, y;
   char          fn [MAXPATHLEN];
 
   logProcBegin (LOG_PROC, "confuiStoppingCallback");
@@ -886,7 +886,7 @@ confuiBuildUI (configui_t *confui)
   UIWidget      uiwidget;
   char          imgbuff [MAXPATHLEN];
   char          tbuff [MAXPATHLEN];
-  gint          x, y;
+  int           x, y;
 
   logProcBegin (LOG_PROC, "confuiBuildUI");
 

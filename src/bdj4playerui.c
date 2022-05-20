@@ -248,7 +248,7 @@ static bool
 pluiStoppingCallback (void *udata, programstate_t programState)
 {
   playerui_t    * plui = udata;
-  gint          x, y;
+  int           x, y;
 
   logProcBegin (LOG_PROC, "pluiStoppingCallback");
   connSendMessage (plui->conn, ROUTE_STARTERUI, MSG_STOP_MAIN, NULL);

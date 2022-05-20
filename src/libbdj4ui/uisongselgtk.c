@@ -360,9 +360,9 @@ uisongselPopulateData (uisongsel_t *uisongsel)
         gtk_list_store_set (GTK_LIST_STORE (model), &iter,
             SONGSEL_COL_ELLIPSIZE, PANGO_ELLIPSIZE_END,
             SONGSEL_COL_FONT, listingFont,
-            SONGSEL_COL_IDX, (gulong) idx,
-            SONGSEL_COL_SORTIDX, (gulong) idx,
-            SONGSEL_COL_DBIDX, (gulong) dbidx,
+            SONGSEL_COL_IDX, (glong) idx,
+            SONGSEL_COL_SORTIDX, (glong) idx,
+            SONGSEL_COL_DBIDX, (glong) dbidx,
             SONGSEL_COL_FAV_COLOR, color,
             -1);
 
@@ -485,9 +485,9 @@ uisongselInitializeStore (uisongsel_t *uisongsel)
   songselstoretypes [colcount++] = G_TYPE_INT;
   songselstoretypes [colcount++] = G_TYPE_STRING;
   /* internal idx/sortidx/dbidx/fav color */
-  songselstoretypes [colcount++] = G_TYPE_ULONG,
-  songselstoretypes [colcount++] = G_TYPE_ULONG,
-  songselstoretypes [colcount++] = G_TYPE_ULONG,
+  songselstoretypes [colcount++] = G_TYPE_LONG,
+  songselstoretypes [colcount++] = G_TYPE_LONG,
+  songselstoretypes [colcount++] = G_TYPE_LONG,
   songselstoretypes [colcount++] = G_TYPE_STRING,
 
   sellist = dispselGetList (uisongsel->dispsel, uisongsel->dispselType);
@@ -528,12 +528,12 @@ static void
 uisongselCheckFavChgSignal (GtkTreeView* tv, GtkTreePath* path,
     GtkTreeViewColumn* column, gpointer udata)
 {
-  uisongselgtk_t      * uiw;
+  uisongselgtk_t    * uiw;
   uisongsel_t       * uisongsel = udata;
   int               count;
   GtkTreeModel      * model = NULL;
   GtkTreeIter       iter;
-  gulong            dbidx;
+  long              dbidx;
 
 
   logProcBegin (LOG_PROC, "uisongselCheckFavChgSignal");
@@ -821,8 +821,8 @@ uisongselProcessSelection (GtkTreeModel *model,
 {
   uisongsel_t       *uisongsel = udata;
   uisongselgtk_t    *uiw;
-  gulong            idx;
-  gulong            dbidx;
+  glong             idx;
+  glong             dbidx;
 
   uiw = uisongsel->uiWidgetData;
 

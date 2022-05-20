@@ -249,7 +249,7 @@ uimusicqGetSelection (uimusicq_t *uimusicq)
   GtkTreeModel      *model;
   ssize_t           idx;
   unsigned long     tidx;
-  gint              count;
+  int               count;
 
 
   logProcBegin (LOG_PROC, "uimusicqGetSelection");
@@ -281,7 +281,7 @@ uimusicqMusicQueueSetSelected (uimusicq_t *uimusicq, int ci, int which)
   GtkTreeModel      *model;
   gboolean          valid;
   GtkTreeIter       iter;
-  gint              count;
+  int               count;
 
 
   logProcBegin (LOG_PROC, "uimusicqMusicQueueSetSelected");

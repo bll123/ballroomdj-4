@@ -216,7 +216,7 @@ static bool
 marqueeStoppingCallback (void *udata, programstate_t programState)
 {
   marquee_t     *marquee = udata;
-  gint          x, y;
+  int           x, y;
 
   logProcBegin (LOG_PROC, "marqueeStoppingCallback");
 
@@ -295,7 +295,7 @@ marqueeBuildUI (marquee_t *marquee)
   UIWidget  mainvbox;
   UIWidget  hbox;
   UIWidget  vbox;
-  gint      x, y;
+  int       x, y;
 
   logProcBegin (LOG_PROC, "marqueeBuildUI");
   uiutilsUIWidgetInit (&mainvbox);
@@ -741,7 +741,7 @@ marqueeWinMapped (void *udata)
 static void
 marqueeSaveWindowPosition (marquee_t *marquee)
 {
-  gint  x, y;
+  int   x, y;
 
   uiWindowGetPosition (&marquee->window, &x, &y);
   nlistSetNum (marquee->options, MQ_POSITION_X, x);
@@ -751,7 +751,7 @@ marqueeSaveWindowPosition (marquee_t *marquee)
 static void
 marqueeMoveWindow (marquee_t *marquee)
 {
-  gint  x, y;
+  int   x, y;
 
   x = nlistGetNum (marquee->options, MQ_POSITION_X);
   y = nlistGetNum (marquee->options, MQ_POSITION_Y);

@@ -215,7 +215,7 @@ static void
 selectFileResponseHandler (GtkDialog *d, gint responseid, gpointer udata)
 {
   uiselectfile_t  *selectfile = udata;
-  gint          x, y;
+  int           x, y;
   char          *str;
   GtkTreeModel  *model;
   GtkTreeIter   iter;

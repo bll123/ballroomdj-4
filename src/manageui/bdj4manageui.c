@@ -417,7 +417,7 @@ static bool
 manageStoppingCallback (void *udata, programstate_t programState)
 {
   manageui_t    * manage = udata;
-  gint          x, y;
+  int           x, y;
 
   logProcBegin (LOG_PROC, "manageStoppingCallback");
   connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_STOP_MAIN, NULL);
@@ -526,7 +526,7 @@ manageBuildUI (manageui_t *manage)
   UIWidget            uiwidget;
   char                imgbuff [MAXPATHLEN];
   char                tbuff [MAXPATHLEN];
-  gint                x, y;
+  int                 x, y;
 
   logProcBegin (LOG_PROC, "manageBuildUI");
   *imgbuff = '\0';

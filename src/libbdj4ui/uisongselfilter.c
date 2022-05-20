@@ -40,7 +40,7 @@ bool
 uisongselFilterDialog (void *udata)
 {
   uisongsel_t * uisongsel = udata;
-  gint        x, y;
+  int         x, y;
 
   logProcBegin (LOG_PROC, "uisongselFilterDialog");
 
@@ -292,7 +292,7 @@ static void
 uisongselFilterResponseHandler (GtkDialog *d, gint responseid, gpointer udata)
 {
   uisongsel_t   *uisongsel = udata;
-  gint          x, y;
+  int           x, y;
 
   logProcBegin (LOG_PROC, "uisongselFilterResponseHandler");
 
