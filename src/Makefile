@@ -150,7 +150,7 @@ eclean:
 tclean:
 	@find .. -name '*~' -print0 | xargs -0 rm -f
 	@find .. -name '*.orig' -print0 | xargs -0 rm -f
-	@-$(RM) -f w ww ../w ../ww po/w ../asan.* ./asan.*
+	@-$(RM) -f w ww ../w ../ww ../*/w ../*/ww po/w ../asan.* ./asan.*
 	@-$(RM) -f ../vlc-log.txt vlc-log.txt
 	@-$(RM) -f ../vgcore.* ../core
 	@-$(RM) -f launcher.rc bdj4_icon.ico

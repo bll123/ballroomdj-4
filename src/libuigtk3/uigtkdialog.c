@@ -44,7 +44,7 @@ uiSelectDirDialog (uiselect_t *selectdata)
     fn = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (widget));
   }
 
-  g_object_unref (widget);
+  gtk_widget_destroy (widget);
   return fn;
 }
 
@@ -85,7 +85,7 @@ uiSelectFileDialog (uiselect_t *selectdata)
     fn = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (widget));
   }
 
-  g_object_unref (widget);
+  gtk_widget_destroy (widget);
   return fn;
 }
 

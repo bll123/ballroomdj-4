@@ -127,7 +127,6 @@ convTextList (datafileconv_t *conv)
   char  *p;
 
   logProcBegin (LOG_PROC, "convTextList");
-  conv->allocated = false;
   if (conv->valuetype == VALUE_STR) {
     char    *tokptr;
     char    *str;

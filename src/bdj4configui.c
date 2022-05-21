@@ -505,33 +505,46 @@ main (int argc, char *argv[])
 {
   int             status = 0;
   uint16_t        listenPort;
-  configui_t      confui;
-  char            *uifont;
-  char            tbuff [MAXPATHLEN];
-  nlist_t         *tlist;
-  nlist_t         *llist;
+  char            *uifont = NULL;
+  nlist_t         *tlist = NULL;
+  nlist_t         *llist = NULL;
   nlistidx_t      iteridx;
   int             count;
-  char            *p;
+  char            *p = NULL;
   volsinklist_t   sinklist;
-  volume_t        *volume;
-  orgopt_t        *orgopt;
+  configui_t      confui;
+  volume_t        *volume = NULL;
+  orgopt_t        *orgopt = NULL;
   int             flags;
+  char            tbuff [MAXPATHLEN];
 
 
   confui.progstate = progstateInit ("configui");
   progstateSetCallback (confui.progstate, STATE_WAIT_HANDSHAKE,
       confuiHandshakeCallback, &confui);
-
-  uiutilsUIWidgetInit (&confui.notebook);
-  uiutilsUIWidgetInit (&confui.window);
+  confui.locknm = NULL;
+  confui.conn = NULL;
+  confui.localip = NULL;
+  confui.dbgflags = 0;
   confui.tablecurr = CONFUI_ID_NONE;
   confui.nbtabid = uiutilsNotebookIDInit ();
-  confui.dispsel = NULL;
   confui.listingtaglist = NULL;
-  confui.localip = NULL;
+  confui.dispsel = NULL;
   confui.stopwaitcount = 0;
+  confui.filterDisplayDf = NULL;
+  confui.filterDisplaySel = NULL;
+  confui.filterLookup = NULL;
+
+  uiutilsUIWidgetInit (&confui.window);
+  uiutilsUICallbackInit (&confui.closecb, NULL, NULL);
+  uiutilsUIWidgetInit (&confui.vbox);
+  uiutilsUIWidgetInit (&confui.notebook);
+  uiutilsUICallbackInit (&confui.nbcb, NULL, NULL);
+  uiutilsUIWidgetInit (&confui.statusMsg);
   confui.dispselduallist = NULL;
+  confui.optiondf = NULL;
+  confui.options = NULL;
+
   for (int i = 0; i < CONFUI_ID_TABLE_MAX; ++i) {
     confui.tables [i].tree = NULL;
     confui.tables [i].sel = NULL;
@@ -852,6 +865,9 @@ confuiClosingCallback (void *udata, programstate_t programState)
     }
   }
 
+  if (confui->dispselduallist != NULL) {
+    uiduallistFree (confui->dispselduallist);
+  }
   if (confui->filterDisplayDf != NULL) {
     datafileFree (confui->filterDisplayDf);
   }
@@ -966,6 +982,7 @@ confuiBuildUIGeneral (configui_t *confui)
   UIWidget      sg;
   char          tbuff [MAXPATHLEN];
 
+  logProcBegin (LOG_PROC, "confuiBuildUIGeneral");
   uiCreateVertBox (&vbox);
 
   /* general options */
@@ -1031,6 +1048,7 @@ confuiBuildUIGeneral (configui_t *confui)
       bdjoptGetStr (OPT_M_SHUTDOWNSCRIPT), confuiSelectShutdown);
   uiEntrySetValidate (&confui->uiitem [CONFUI_ENTRY_SHUTDOWN].u.entry,
       uiEntryValidateFile, confui);
+  logProcEnd (LOG_PROC, "confuiBuildUIGeneral", "");
 }
 
 static void
@@ -1040,6 +1058,7 @@ confuiBuildUIPlayer (configui_t *confui)
   UIWidget      sg;
   UIWidget      sgB;
 
+  logProcBegin (LOG_PROC, "confuiBuildUIPlayer");
   uiCreateVertBox (&vbox);
 
   /* player options */
@@ -1110,6 +1129,7 @@ confuiBuildUIPlayer (configui_t *confui)
         CONFUI_ENTRY_QUEUE_NM_A + i, OPT_P_QUEUE_NAME_A + i,
         bdjoptGetStr (OPT_P_QUEUE_NAME_A + i));
   }
+  logProcEnd (LOG_PROC, "confuiBuildUIPlayer", "");
 }
 
 static void
@@ -1118,6 +1138,7 @@ confuiBuildUIMarquee (configui_t *confui)
   UIWidget      vbox;
   UIWidget      sg;
 
+  logProcBegin (LOG_PROC, "confuiBuildUIMarquee");
   uiCreateVertBox (&vbox);
 
   /* marquee options */
@@ -1155,6 +1176,7 @@ confuiBuildUIMarquee (configui_t *confui)
   confuiMakeItemSwitch (confui, &vbox, &sg, _("Hide Marquee on Start"),
       CONFUI_WIDGET_HIDE_MARQUEE_ON_START, OPT_P_HIDE_MARQUEE_ON_START,
       bdjoptGetNum (OPT_P_HIDE_MARQUEE_ON_START), NULL);
+  logProcEnd (LOG_PROC, "confuiBuildUIMarquee", "");
 }
 
 static void
@@ -1164,6 +1186,7 @@ confuiBuildUIUserInterface (configui_t *confui)
   UIWidget      sg;
   char          *tstr;
 
+  logProcBegin (LOG_PROC, "confuiBuildUIUserInterface");
   uiCreateVertBox (&vbox);
 
   /* user interface */
@@ -1197,6 +1220,7 @@ confuiBuildUIUserInterface (configui_t *confui)
   confuiMakeItemColorButton (confui, &vbox, &sg, _("Accent Colour"),
       CONFUI_WIDGET_UI_ACCENT_COLOR, OPT_P_UI_ACCENT_COL,
       bdjoptGetStr (OPT_P_UI_ACCENT_COL));
+  logProcEnd (LOG_PROC, "confuiBuildUIUserInterface", "");
 }
 
 static void
@@ -1206,6 +1230,7 @@ confuiBuildUIDispSettings (configui_t *confui)
   UIWidget      uiwidget;
   UIWidget      sg;
 
+  logProcBegin (LOG_PROC, "confuiBuildUIDispSettings");
   uiutilsUIWidgetInit (&uiwidget);
   uiutilsUIWidgetInit (&sg);
 
@@ -1228,6 +1253,7 @@ confuiBuildUIDispSettings (configui_t *confui)
 
   confui->dispselduallist = uiCreateDualList (&vbox,
       DUALLIST_FLAGS_NONE, NULL, NULL);
+  logProcEnd (LOG_PROC, "confuiBuildUIDispSettings", "");
 }
 
 static void
@@ -1237,6 +1263,7 @@ confuiBuildUIFilterDisplay (configui_t *confui)
   UIWidget      sg;
   nlistidx_t    val;
 
+  logProcBegin (LOG_PROC, "confuiBuildUIFilterDisplay");
   uiCreateVertBox (&vbox);
 
   /* filter display */
@@ -1274,6 +1301,7 @@ confuiBuildUIFilterDisplay (configui_t *confui)
   confuiMakeItemCheckButton (confui, &vbox, &sg, _("Playable Status"),
       CONFUI_WIDGET_FILTER_STATUS_PLAYABLE, -1, val);
   confui->uiitem [CONFUI_WIDGET_FILTER_STATUS_PLAYABLE].outtype = CONFUI_OUT_CB;
+  logProcEnd (LOG_PROC, "confuiBuildUIFilterDisplay", "");
 }
 
 static void
@@ -1282,6 +1310,7 @@ confuiBuildUIOrganization (configui_t *confui)
   UIWidget      vbox;
   UIWidget      sg;
 
+  logProcBegin (LOG_PROC, "confuiBuildUIOrganization");
   uiCreateVertBox (&vbox);
 
   /* organization */
@@ -1308,6 +1337,7 @@ confuiBuildUIOrganization (configui_t *confui)
   confuiMakeItemSwitch (confui, &vbox, &sg, _("Auto Organise"),
       CONFUI_WIDGET_AUTO_ORGANIZE, OPT_G_AUTOORGANIZE,
       bdjoptGetNum (OPT_G_AUTOORGANIZE), NULL);
+  logProcEnd (LOG_PROC, "confuiBuildUIOrganization", "");
 }
 
 static void
@@ -1323,6 +1353,7 @@ confuiBuildUIEditDances (configui_t *confui)
   char          tbuff [MAXPATHLEN];
   nlistidx_t    val;
 
+  logProcBegin (LOG_PROC, "confuiBuildUIEditDances");
   uiCreateVertBox (&vbox);
 
   /* edit dances */
@@ -1404,6 +1435,7 @@ confuiBuildUIEditDances (configui_t *confui)
       CONFUI_SPINBOX_DANCE_TIME_SIG, -1, CONFUI_OUT_NUM, 0,
       confuiDanceSpinboxChg);
   confui->uiitem [CONFUI_SPINBOX_DANCE_TIME_SIG].danceidx = DANCE_TIMESIG;
+  logProcEnd (LOG_PROC, "confuiBuildUIEditDances", "");
 }
 
 static void
@@ -1414,6 +1446,7 @@ confuiBuildUIEditRatings (configui_t *confui)
   UIWidget      uiwidget;
   UIWidget      sg;
 
+  logProcBegin (LOG_PROC, "confuiBuildUIEditRatings");
   uiCreateVertBox (&vbox);
 
   /* edit ratings */
@@ -1437,6 +1470,7 @@ confuiBuildUIEditRatings (configui_t *confui)
   confui->tables [CONFUI_ID_RATINGS].listcreatefunc = confuiRatingListCreate;
   confui->tables [CONFUI_ID_RATINGS].savefunc = confuiRatingSave;
   confuiCreateRatingTable (confui);
+  logProcEnd (LOG_PROC, "confuiBuildUIEditRatings", "");
 }
 
 static void
@@ -1447,6 +1481,7 @@ confuiBuildUIEditStatus (configui_t *confui)
   UIWidget      uiwidget;
   UIWidget      sg;
 
+  logProcBegin (LOG_PROC, "confuiBuildUIEditStatus");
   uiCreateVertBox (&vbox);
 
   /* edit status */
@@ -1468,6 +1503,7 @@ confuiBuildUIEditStatus (configui_t *confui)
   confui->tables [CONFUI_ID_STATUS].listcreatefunc = confuiStatusListCreate;
   confui->tables [CONFUI_ID_STATUS].savefunc = confuiStatusSave;
   confuiCreateStatusTable (confui);
+  logProcEnd (LOG_PROC, "confuiBuildUIEditStatus", "");
 }
 
 static void
@@ -1478,6 +1514,7 @@ confuiBuildUIEditLevels (configui_t *confui)
   UIWidget      uiwidget;
   UIWidget      sg;
 
+  logProcBegin (LOG_PROC, "confuiBuildUIEditLevels");
   uiCreateVertBox (&vbox);
 
   /* edit levels */
@@ -1501,6 +1538,7 @@ confuiBuildUIEditLevels (configui_t *confui)
   confui->tables [CONFUI_ID_LEVELS].listcreatefunc = confuiLevelListCreate;
   confui->tables [CONFUI_ID_LEVELS].savefunc = confuiLevelSave;
   confuiCreateLevelTable (confui);
+  logProcEnd (LOG_PROC, "confuiBuildUIEditLevels", "");
 }
 
 static void
@@ -1511,6 +1549,7 @@ confuiBuildUIEditGenres (configui_t *confui)
   UIWidget      uiwidget;
   UIWidget      sg;
 
+  logProcBegin (LOG_PROC, "confuiBuildUIEditGenres");
   uiCreateVertBox (&vbox);
 
   /* edit genres */
@@ -1531,6 +1570,7 @@ confuiBuildUIEditGenres (configui_t *confui)
   confui->tables [CONFUI_ID_GENRES].listcreatefunc = confuiGenreListCreate;
   confui->tables [CONFUI_ID_GENRES].savefunc = confuiGenreSave;
   confuiCreateGenreTable (confui);
+  logProcEnd (LOG_PROC, "confuiBuildUIEditGenres", "");
 }
 
 static void
@@ -1539,6 +1579,7 @@ confuiBuildUIMobileRemoteControl (configui_t *confui)
   UIWidget      vbox;
   UIWidget      sg;
 
+  logProcBegin (LOG_PROC, "confuiBuildUIMobileRemoteControl");
   uiCreateVertBox (&vbox);
 
   /* mobile remote control */
@@ -1577,6 +1618,7 @@ confuiBuildUIMobileRemoteControl (configui_t *confui)
   /* CONTEXT: configuration: remote control: the link to display the QR code for remote control */
   confuiMakeItemLink (confui, &vbox, &sg, _("QR Code"),
       CONFUI_WIDGET_RC_QR_CODE, "");
+  logProcEnd (LOG_PROC, "confuiBuildUIMobileRemoteControl", "");
 }
 
 static void
@@ -1585,6 +1627,7 @@ confuiBuildUIMobileMarquee (configui_t *confui)
   UIWidget      vbox;
   UIWidget      sg;
 
+  logProcBegin (LOG_PROC, "confuiBuildUIMobileMarquee");
   uiCreateVertBox (&vbox);
 
   /* mobile marquee */
@@ -1622,6 +1665,7 @@ confuiBuildUIMobileMarquee (configui_t *confui)
   /* CONTEXT: configuration: mobile marquee: the link to display the QR code for the mobile marquee */
   confuiMakeItemLink (confui, &vbox, &sg, _("QR Code"),
       CONFUI_WIDGET_MMQ_QR_CODE, "");
+  logProcEnd (LOG_PROC, "confuiBuildUIMobileMarquee", "");
 }
 
 static void
@@ -1632,6 +1676,7 @@ confuiBuildUIDebugOptions (configui_t *confui)
   UIWidget      sg;
   nlistidx_t    val;
 
+  logProcBegin (LOG_PROC, "confuiBuildUIDebugOptions");
   uiCreateVertBox (&vbox);
 
   /* debug options */
@@ -1725,6 +1770,7 @@ confuiBuildUIDebugOptions (configui_t *confui)
       CONFUI_WIDGET_DEBUG_131072, -1,
       (val & 131072));
   confui->uiitem [CONFUI_WIDGET_DEBUG_131072].outtype = CONFUI_OUT_DEBUG;
+  logProcEnd (LOG_PROC, "confuiBuildUIDebugOptions", "");
 }
 
 
@@ -1770,9 +1816,11 @@ confuiHandshakeCallback (void *udata, programstate_t programState)
 {
   configui_t   *confui = udata;
 
+  logProcBegin (LOG_PROC, "confuiHandshakeCallback");
   connProcessUnconnected (confui->conn);
 
   progstateLogTime (confui->progstate, "time-to-start-gui");
+  logProcEnd (LOG_PROC, "confuiHandshakeCallback", "");
   return STATE_FINISHED;
 }
 
@@ -2082,7 +2130,8 @@ confuiSelectMusicDir (void *udata)
   selectdata.mimetype = NULL;
   fn = uiSelectDirDialog (&selectdata);
   if (fn != NULL) {
-    gtk_entry_buffer_set_text (confui->uiitem [CONFUI_ENTRY_MUSIC_DIR].u.entry.buffer,
+    gtk_entry_buffer_set_text (
+        confui->uiitem [CONFUI_ENTRY_MUSIC_DIR].u.entry.buffer,
         fn, -1);
     free (fn);
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected loc: %s", fn);
@@ -3535,6 +3584,11 @@ confuiTableRemove (GtkButton *b, gpointer udata)
 
   logProcBegin (LOG_PROC, "confuiTableRemove");
   tree = confui->tables [confui->tablecurr].tree;
+
+  if (tree == NULL) {
+    return;
+  }
+
   flags = confui->tables [confui->tablecurr].flags;
   count = uiTreeViewGetSelection (tree, &model, &iter);
   if (count != 1) {
@@ -4728,6 +4782,7 @@ confuiDanceValidateAnnouncement (uientry_t *entry, void *udata)
   size_t            mlen;
 
   logProcBegin (LOG_PROC, "confuiDanceValidateAnnouncement");
+
   musicdir = bdjoptGetStr (OPT_M_DIR_MUSIC);
   mlen = strlen (musicdir);
 
@@ -4761,7 +4816,13 @@ confuiDanceValidateAnnouncement (uientry_t *entry, void *udata)
     }
   }
 
-  confui->tables [confui->tablecurr].changed = true;
+  /* sanitizeaddress creates a buffer underflow error */
+  /* if tablecurr is set to CONFUI_ID_NONE */
+  /* also this validation routine gets called at most any time, but */
+  /* the changed flag should only be set for the edit dance tab */
+  if (confui->tablecurr == CONFUI_ID_DANCE) {
+    confui->tables [confui->tablecurr].changed = true;
+  }
   logProcEnd (LOG_PROC, "confuiDanceValidateAnnouncement", "");
   return rc;
 }
@@ -4775,6 +4836,8 @@ confuiDispSettingChg (GtkSpinButton *sb, gpointer udata)
   int         oselidx;
   int         nselidx;
 
+  logProcBegin (LOG_PROC, "confuiDispSettingChg");
+
 
   oselidx = confui->uiitem [CONFUI_SPINBOX_DISP_SEL].listidx;
   nselidx = uiSpinboxTextGetValue (
@@ -4785,6 +4848,7 @@ confuiDispSettingChg (GtkSpinButton *sb, gpointer udata)
   /* be sure to create the listing first */
   confuiCreateTagListingDisp (confui);
   confuiCreateTagSelectedDisp (confui);
+  logProcEnd (LOG_PROC, "confuiDispSettingChg", "");
 }
 
 static void
@@ -4796,7 +4860,10 @@ confuiDispSaveTable (configui_t *confui, int selidx)
   slistidx_t    iteridx;
   char          *tstr;
 
+  logProcBegin (LOG_PROC, "confuiDispSaveTable");
+
   if (! uiduallistIsChanged (confui->dispselduallist)) {
+    logProcEnd (LOG_PROC, "confuiDispSaveTable", "not-changed");
     return;
   }
 
@@ -4812,6 +4879,7 @@ confuiDispSaveTable (configui_t *confui, int selidx)
 
   slistFree (tlist);
   slistFree (nlist);
+  logProcEnd (LOG_PROC, "confuiDispSaveTable", "");
 }
 
 static void
@@ -4821,6 +4889,8 @@ confuiCreateTagSelectedDisp (configui_t *confui)
   slist_t       *sellist;
   dispsel_t     *dispsel;
 
+  logProcBegin (LOG_PROC, "confuiCreateTagSelectedDisp");
+
 
   selidx = uiSpinboxTextGetValue (
       &confui->uiitem [CONFUI_SPINBOX_DISP_SEL].u.spinbox);
@@ -4829,6 +4899,7 @@ confuiCreateTagSelectedDisp (configui_t *confui)
   sellist = dispselGetList (dispsel, selidx);
 
   uiduallistSet (confui->dispselduallist, sellist, DUALLIST_TREE_TARGET);
+  logProcEnd (LOG_PROC, "confuiCreateTagSelectedDisp", "");
 }
 
 
@@ -4837,10 +4908,13 @@ confuiCreateTagListingDisp (configui_t *confui)
 {
   dispselsel_t  selidx;
 
+  logProcBegin (LOG_PROC, "confuiCreateTagListingDisp");
+
   selidx = uiSpinboxTextGetValue (&confui->uiitem [CONFUI_SPINBOX_DISP_SEL].u.spinbox);
 
   uiduallistSet (confui->dispselduallist, confui->listingtaglist,
       DUALLIST_TREE_SOURCE);
+  logProcEnd (LOG_PROC, "confuiCreateTagListingDisp", "");
 }
 
 static long
@@ -4850,6 +4924,8 @@ confuiValMSCallback (void *udata, const char *txt)
   const char  *valstr;
   char        tbuff [200];
 
+  logProcBegin (LOG_PROC, "confuiValMSCallback");
+
   uiLabelSetText (&confui->statusMsg, "");
   valstr = validate (txt, VAL_MIN_SEC);
   if (valstr != NULL) {
@@ -4857,6 +4933,7 @@ confuiValMSCallback (void *udata, const char *txt)
     uiLabelSetText (&confui->statusMsg, tbuff);
   }
 
+  logProcEnd (LOG_PROC, "confuiValMSCallback", "");
   return 0;
 }
 
