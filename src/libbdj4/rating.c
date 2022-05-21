@@ -133,16 +133,16 @@ ratingConv (datafileconv_t *conv)
   if (conv->valuetype == VALUE_STR) {
     conv->valuetype = VALUE_NUM;
     lookup = datafileGetLookup (rating->df);
-    num = slistGetNum (lookup, conv->u.str);
+    num = slistGetNum (lookup, conv->str);
     if (num == LIST_VALUE_INVALID) {
       /* unknown ratings are dumped into the unrated bucket */
       num = RATING_UNRATED_IDX;
     }
-    conv->u.num = num;
+    conv->num = num;
   } else if (conv->valuetype == VALUE_NUM) {
     conv->valuetype = VALUE_STR;
-    num = conv->u.num;
-    conv->u.str = ilistGetStr (rating->rating, num, RATING_RATING);
+    num = conv->num;
+    conv->str = ilistGetStr (rating->rating, num, RATING_RATING);
   }
 }
 

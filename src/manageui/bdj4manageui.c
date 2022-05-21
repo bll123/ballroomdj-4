@@ -494,16 +494,20 @@ manageClosingCallback (void *udata, programstate_t programState)
 
   uiTextBoxFree (manage->dbhelpdisp);
   uiTextBoxFree (manage->dbstatus);
+
   uiplayerFree (manage->slplayer);
   uimusicqFree (manage->slmusicq);
   uisongselFree (manage->slsongsel);
+  uisongeditFree (manage->slsongedit);
+
   uimusicqFree (manage->slezmusicq);
   uisongselFree (manage->slezsongsel);
-  uisongeditFree (manage->slsongedit);
+
   uiplayerFree (manage->mmplayer);
   uimusicqFree (manage->mmmusicq);
   uisongselFree (manage->mmsongsel);
   uisongeditFree (manage->mmsongedit);
+
   uiCleanup ();
   if (manage->dblist != NULL) {
     nlistFree (manage->dblist);

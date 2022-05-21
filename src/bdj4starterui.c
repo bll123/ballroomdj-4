@@ -359,6 +359,9 @@ starterClosingCallback (void *udata, programstate_t programState)
 
   bdj4shutdown (ROUTE_STARTERUI, NULL);
 
+  if (starter->webclient != NULL) {
+    webclientClose (starter->webclient);
+  }
   if (starter->supporttb != NULL) {
     uiTextBoxFree (starter->supporttb);
   }
@@ -375,6 +378,8 @@ starterClosingCallback (void *udata, programstate_t programState)
   }
   if (starter->optiondf != NULL) {
     datafileFree (starter->optiondf);
+  } else if (starter->options != NULL) {
+    nlistFree (starter->options);
   }
   if (starter->supportDir != NULL) {
     free (starter->supportDir);
@@ -755,6 +760,7 @@ starterMainLoop (void *tstarter)
     }
     case START_STATE_SUPPORT_FINISH: {
       webclientClose (starter->webclient);
+      starter->webclient = NULL;
       uiEntryFree (&starter->supportsubject);
       uiEntryFree (&starter->supportemail);
       uiDialogDestroy (&starter->supportMsgDialog);

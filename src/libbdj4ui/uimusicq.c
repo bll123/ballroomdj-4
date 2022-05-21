@@ -78,6 +78,7 @@ uimusicqFree (uimusicq_t *uimusicq)
 {
   logProcBegin (LOG_PROC, "uimusicqFree");
   if (uimusicq != NULL) {
+    uiWidgetClearPersistent (&uimusicq->pausePixbuf);
     for (int i = 0; i < MUSICQ_MAX; ++i) {
       if (uimusicq->ui [i].selPathStr != NULL) {
         free (uimusicq->ui [i].selPathStr);
@@ -88,7 +89,6 @@ uimusicqFree (uimusicq_t *uimusicq)
     }
     free (uimusicq);
   }
-  uiWidgetClearPersistent (&uimusicq->pausePixbuf);
   logProcEnd (LOG_PROC, "uimusicqFree", "");
 }
 

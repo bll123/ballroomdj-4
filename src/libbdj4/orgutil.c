@@ -354,9 +354,9 @@ orgMakeSongPath (org_t *org, song_t *song)
         if (orginfo->convFunc != NULL) {
           conv.allocated = false;
           conv.valuetype = VALUE_NUM;
-          conv.u.num = val;
+          conv.num = val;
           orginfo->convFunc (&conv);
-          p = conv.u.str;
+          p = conv.str;
         }
       } else {
         p = songGetStr (song, orginfo->tagkey);

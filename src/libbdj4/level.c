@@ -178,16 +178,16 @@ levelConv (datafileconv_t *conv)
     conv->valuetype = VALUE_NUM;
 
     lookup = datafileGetLookup (level->df);
-    num = slistGetNum (lookup, conv->u.str);
-    conv->u.num = num;
-    if (conv->u.num == LIST_VALUE_INVALID) {
+    num = slistGetNum (lookup, conv->str);
+    conv->num = num;
+    if (conv->num == LIST_VALUE_INVALID) {
       /* unknown levels are dumped into bucket 1 */
-      conv->u.num = 1;
+      conv->num = 1;
     }
   } else if (conv->valuetype == VALUE_NUM) {
     conv->valuetype = VALUE_STR;
-    num = conv->u.num;
-    conv->u.str = ilistGetStr (level->level, num, LEVEL_LEVEL);
+    num = conv->num;
+    conv->str = ilistGetStr (level->level, num, LEVEL_LEVEL);
   }
 }
 

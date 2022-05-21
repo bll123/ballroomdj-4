@@ -292,20 +292,20 @@ bdjoptConvBPM (datafileconv_t *conv)
   if (conv->valuetype == VALUE_STR) {
     conv->valuetype = VALUE_NUM;
 
-    if (strcmp (conv->u.str, "BPM") == 0) {
+    if (strcmp (conv->str, "BPM") == 0) {
       nbpm = BPM_BPM;
     }
-    if (strcmp (conv->u.str, "MPM") == 0) {
+    if (strcmp (conv->str, "MPM") == 0) {
       nbpm = BPM_MPM;
     }
-    conv->u.num = nbpm;
+    conv->num = nbpm;
   } else if (conv->valuetype == VALUE_NUM) {
     conv->valuetype = VALUE_STR;
-    switch (conv->u.num) {
+    switch (conv->num) {
       case BPM_BPM: { sval = "BPM"; break; }
       case BPM_MPM: { sval = "MPM"; break; }
     }
-    conv->u.str = sval;
+    conv->str = sval;
   }
 }
 
@@ -338,25 +338,25 @@ bdjoptConvWriteTags (datafileconv_t *conv)
     conv->valuetype = VALUE_NUM;
 
     wtag = WRITE_TAGS_NONE;
-    if (strcmp (conv->u.str, "NONE") == 0) {
+    if (strcmp (conv->str, "NONE") == 0) {
       wtag = WRITE_TAGS_NONE;
     }
-    if (strcmp (conv->u.str, "ALL") == 0) {
+    if (strcmp (conv->str, "ALL") == 0) {
       wtag = WRITE_TAGS_ALL;
     }
-    if (strcmp (conv->u.str, "BDJ") == 0) {
+    if (strcmp (conv->str, "BDJ") == 0) {
       wtag = WRITE_TAGS_BDJ_ONLY;
     }
-    conv->u.num = wtag;
+    conv->num = wtag;
   } else if (conv->valuetype == VALUE_NUM) {
     conv->valuetype = VALUE_STR;
     sval = "NONE";
-    switch (conv->u.num) {
+    switch (conv->num) {
       case WRITE_TAGS_ALL: { sval = "ALL"; break; }
       case WRITE_TAGS_BDJ_ONLY: { sval = "BDJ"; break; }
       case WRITE_TAGS_NONE: { sval = "NONE"; break; }
     }
-    conv->u.str = sval;
+    conv->str = sval;
   }
 }
 
@@ -417,25 +417,25 @@ bdjoptConvMobileMq (datafileconv_t *conv)
     conv->valuetype = VALUE_NUM;
 
     val = MOBILEMQ_OFF;
-    if (strcmp (conv->u.str, "off") == 0) {
+    if (strcmp (conv->str, "off") == 0) {
       val = MOBILEMQ_OFF;
     }
-    if (strcmp (conv->u.str, "local") == 0) {
+    if (strcmp (conv->str, "local") == 0) {
       val = MOBILEMQ_LOCAL;
     }
-    if (strcmp (conv->u.str, "internet") == 0) {
+    if (strcmp (conv->str, "internet") == 0) {
       val = MOBILEMQ_INTERNET;
     }
-    conv->u.num = val;
+    conv->num = val;
   } else if (conv->valuetype == VALUE_NUM) {
     conv->valuetype = VALUE_STR;
     sval = "off";
-    switch (conv->u.num) {
+    switch (conv->num) {
       case MOBILEMQ_OFF: { sval = "off"; break; }
       case MOBILEMQ_LOCAL: { sval = "local"; break; }
       case MOBILEMQ_INTERNET: { sval = "internet"; break; }
     }
-    conv->u.str = sval;
+    conv->str = sval;
   }
 }
 

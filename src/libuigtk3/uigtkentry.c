@@ -138,6 +138,9 @@ uiEntryValidate (uientry_t *entry, bool forceflag)
 {
   int   rc;
 
+  if (entry == NULL) {
+    return UIENTRY_OK;
+  }
   if (entry->validateFunc == NULL) {
     return UIENTRY_OK;
   }

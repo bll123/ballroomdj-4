@@ -26,7 +26,7 @@ typedef struct {
     list_t      *list;
     char        *str;
     double      dval;
-  } u;
+  };
 } datafileconv_t;
 
 typedef void (*dfConvFunc_t)(datafileconv_t *);

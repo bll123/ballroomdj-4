@@ -226,6 +226,7 @@ manageBuildUIPlaylist (managepl_t *managepl, UIWidget *vboxp)
   uiSizeGroupAdd (&sg, &uiwidget);
 
   uiSpinboxIntCreate (&uiwidget);
+  uiSpinboxSet (&uiwidget, 0.0, 500.0);
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sgB, &uiwidget);
   uiutilsUIWidgetCopy (&managepl->uistopafter, &uiwidget);
@@ -239,6 +240,7 @@ manageBuildUIPlaylist (managepl_t *managepl, UIWidget *vboxp)
   uiSizeGroupAdd (&sg, &uiwidget);
 
   uiSpinboxIntCreate (&uiwidget);
+  uiSpinboxSet (&uiwidget, 0.0, 60.0);
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sgB, &uiwidget);
   uiutilsUIWidgetCopy (&managepl->uigap, &uiwidget);
@@ -353,8 +355,6 @@ managePlaylistMenu (managepl_t *managepl, UIWidget *uimenubar)
 void
 managePlaylistSave (managepl_t *managepl)
 {
-  char        onm [MAXPATHLEN];
-  char        nnm [MAXPATHLEN];
   const char  *name;
 
   if (managepl->ploldname == NULL) {
@@ -582,5 +582,5 @@ managePlaylistUpdatePlaylist (managepl_t *managepl)
   playlistSetConfigNum (pl, PLAYLIST_LEVEL_HIGH, tval);
 
   tstr = uiEntryGetValue (&managepl->allowedkeywords);
-  playlistSetConfigStr (pl, PLAYLIST_ALLOWED_KEYWORDS, tstr);
+  playlistSetConfigList (pl, PLAYLIST_ALLOWED_KEYWORDS, tstr);
 }

@@ -52,9 +52,9 @@ sequenceAlloc (const char *fname)
   while ((seqkey = slistIterateKey (tlist, &iteridx)) != NULL) {
     conv.allocated = false;
     conv.valuetype = VALUE_STR;
-    conv.u.str = seqkey;
+    conv.str = seqkey;
     danceConvDance (&conv);
-    lkey = conv.u.num;
+    lkey = conv.num;
     nlistSetStr (sequence->sequence, lkey, seqkey);
   }
   datafileFree (df);

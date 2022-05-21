@@ -199,13 +199,13 @@ danceConvDance (datafileconv_t *conv)
     num = -1;
     lookup = datafileGetLookup (dance->df);
     if (lookup != NULL) {
-      num = slistGetNum (lookup, conv->u.str);
+      num = slistGetNum (lookup, conv->str);
     }
-    conv->u.num = num;
+    conv->num = num;
   } else if (conv->valuetype == VALUE_NUM) {
     conv->valuetype = VALUE_STR;
-    num = conv->u.num;
-    conv->u.str = ilistGetStr (dance->dances, num, DANCE_DANCE);
+    num = conv->num;
+    conv->str = ilistGetStr (dance->dances, num, DANCE_DANCE);
   }
 }
 
@@ -256,18 +256,18 @@ danceConvSpeed (datafileconv_t *conv)
   conv->allocated = false;
   if (conv->valuetype == VALUE_STR) {
     conv->valuetype = VALUE_NUM;
-    idx = dfkeyBinarySearch (dancespeeddfkeys, DANCE_SPEED_MAX, conv->u.str);
-    conv->u.num = dancespeeddfkeys [idx].itemkey;
+    idx = dfkeyBinarySearch (dancespeeddfkeys, DANCE_SPEED_MAX, conv->str);
+    conv->num = dancespeeddfkeys [idx].itemkey;
   } else if (conv->valuetype == VALUE_NUM) {
     conv->valuetype = VALUE_STR;
     sval = dancespeeddfkeys [1].name;  // unknown -> normal
     for (int i = 0; i < DANCE_SPEED_MAX; ++i) {
-      if (conv->u.num == dancespeeddfkeys [i].itemkey) {
+      if (conv->num == dancespeeddfkeys [i].itemkey) {
         sval = dancespeeddfkeys [i].name;
         break;
       }
     }
-    conv->u.str = sval;
+    conv->str = sval;
   }
 }
 
@@ -279,11 +279,11 @@ danceConvTimeSig (datafileconv_t *conv)
   conv->allocated = false;
   if (conv->valuetype == VALUE_STR) {
     conv->valuetype = VALUE_NUM;
-    idx = dfkeyBinarySearch (dancetimesigdfkeys, DANCE_TIMESIG_MAX, conv->u.str);
-    conv->u.num = dancetimesigdfkeys [idx].itemkey;
+    idx = dfkeyBinarySearch (dancetimesigdfkeys, DANCE_TIMESIG_MAX, conv->str);
+    conv->num = dancetimesigdfkeys [idx].itemkey;
   } else if (conv->valuetype == VALUE_NUM) {
     conv->valuetype = VALUE_STR;
-    conv->u.str = dancetimesigdfkeys [conv->u.num].name;
+    conv->str = dancetimesigdfkeys [conv->num].name;
   }
 }
 

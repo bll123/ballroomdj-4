@@ -79,8 +79,8 @@ dnctypesConv (datafileconv_t *conv)
   conv->allocated = false;
   if (conv->valuetype == VALUE_STR) {
     conv->valuetype = VALUE_NUM;
-    num = slistGetIdx (dnctypes->dnctypes, conv->u.str);
-    conv->u.num = num;
+    num = slistGetIdx (dnctypes->dnctypes, conv->str);
+    conv->num = num;
   } else if (conv->valuetype == VALUE_NUM) {
     slistidx_t  iteridx;
     char        *val = NULL;
@@ -94,12 +94,12 @@ dnctypesConv (datafileconv_t *conv)
         /* in case of a bad value */
         sval = val;
       }
-      if (count == conv->u.num) {
+      if (count == conv->num) {
         sval = val;
         break;
       }
       ++count;
     }
-    conv->u.str = sval;
+    conv->str = sval;
   }
 }

@@ -72,6 +72,9 @@ void
 manageSequenceFree (manageseq_t *manageseq)
 {
   if (manageseq != NULL) {
+    if (manageseq->seqduallist != NULL) {
+      uiduallistFree (manageseq->seqduallist);
+    }
     if (manageseq->seqoldname != NULL) {
       free (manageseq->seqoldname);
     }

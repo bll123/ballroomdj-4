@@ -299,13 +299,14 @@ pluiClosingCallback (void *udata, programstate_t programState)
   if (plui->nbtabid != NULL) {
     uiutilsNotebookIDFree (plui->nbtabid);
   }
-  if (plui->options != datafileGetList (plui->optiondf)) {
-    nlistFree (plui->options);
-  }
   if (plui->songfilter != NULL) {
     songfilterFree (plui->songfilter);
   }
-  datafileFree (plui->optiondf);
+  if (plui->optiondf != NULL) {
+    datafileFree (plui->optiondf);
+  } else if (plui->options != NULL) {
+    nlistFree (plui->options);
+  }
 
   uiplayerFree (plui->uiplayer);
   uimusicqFree (plui->uimusicq);

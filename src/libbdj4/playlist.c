@@ -366,13 +366,20 @@ playlistSetConfigNum (playlist_t *pl, playlistkey_t key, ssize_t value)
 }
 
 void
-playlistSetConfigStr (playlist_t *pl, playlistkey_t key, const char *value)
+playlistSetConfigList (playlist_t *pl, playlistkey_t key, const char *value)
 {
+  datafileconv_t  conv;
+
   if (pl == NULL || pl->plinfo == NULL) {
     return;
   }
 
-  nlistSetStr (pl->plinfo, key, value);
+  conv.str = strdup (value);
+  conv.allocated = true;
+  conv.valuetype = VALUE_STR;
+  convTextList (&conv);
+
+  nlistSetList (pl->plinfo, key, conv.list);
   return;
 }
 
@@ -643,24 +650,24 @@ plConvType (datafileconv_t *conv)
 
     conv->valuetype = VALUE_NUM;
     num = PLTYPE_SONGLIST;
-    if (strcmp (conv->u.str, "automatic") == 0) {
+    if (strcmp (conv->str, "automatic") == 0) {
       num = PLTYPE_AUTO;
     }
-    if (strcmp (conv->u.str, "sequence") == 0) {
+    if (strcmp (conv->str, "sequence") == 0) {
       num = PLTYPE_SEQUENCE;
     }
-    conv->u.num = num;
+    conv->num = num;
   } else if (conv->valuetype == VALUE_NUM) {
     char    *sval;
 
     conv->valuetype = VALUE_STR;
     sval = "songlist";
-    switch (conv->u.num) {
+    switch (conv->num) {
       case PLTYPE_SONGLIST: { sval = "songlist"; break; }
       case PLTYPE_AUTO: { sval = "automatic"; break; }
       case PLTYPE_SEQUENCE: { sval = "sequence"; break; }
     }
-    conv->u.str = sval;
+    conv->str = sval;
   }
 }
 

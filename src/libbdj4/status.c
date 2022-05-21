@@ -135,23 +135,23 @@ statusConv (datafileconv_t *conv)
     conv->valuetype = VALUE_NUM;
 
     if (status == NULL) {
-      conv->u.num = 0;
+      conv->num = 0;
       return;
     }
 
     lookup = datafileGetLookup (status->df);
-    num = slistGetNum (lookup, conv->u.str);
-    conv->u.num = num;
+    num = slistGetNum (lookup, conv->str);
+    conv->num = num;
   } else if (conv->valuetype == VALUE_NUM) {
     conv->valuetype = VALUE_STR;
 
-    if (status == NULL || conv->u.num == LIST_VALUE_INVALID) {
-      conv->u.str = "New";
+    if (status == NULL || conv->num == LIST_VALUE_INVALID) {
+      conv->str = "New";
       return;
     }
 
-    num = conv->u.num;
-    conv->u.str = ilistGetStr (status->status, num, STATUS_STATUS);
+    num = conv->num;
+    conv->str = ilistGetStr (status->status, num, STATUS_STATUS);
   }
 }
 

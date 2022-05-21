@@ -218,13 +218,13 @@ uiMakeDisplayStr (song_t *song, int tagidx, int *allocated)
   if (convfunc != NULL) {
     conv.allocated = false;
     if (vt == VALUE_NUM) {
-      conv.u.num = songGetNum (song, tagidx);
+      conv.num = songGetNum (song, tagidx);
     } else if (vt == VALUE_LIST) {
-      conv.u.list = songGetList (song, tagidx);
+      conv.list = songGetList (song, tagidx);
     }
     conv.valuetype = vt;
     convfunc (&conv);
-    str = conv.u.str;
+    str = conv.str;
     *allocated = conv.allocated;
   } else {
     str = songGetStr (song, tagidx);

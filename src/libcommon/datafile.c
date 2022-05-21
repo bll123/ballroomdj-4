@@ -104,19 +104,19 @@ convBoolean (datafileconv_t *conv)
   if (conv->valuetype == VALUE_STR) {
     conv->valuetype = VALUE_NUM;
     num = 0;
-    if (strcmp (conv->u.str, "on") == 0 ||
-        strcmp (conv->u.str, "yes") == 0 ||
-        strcmp (conv->u.str, "1") == 0) {
+    if (strcmp (conv->str, "on") == 0 ||
+        strcmp (conv->str, "yes") == 0 ||
+        strcmp (conv->str, "1") == 0) {
       num = 1;
     }
-    conv->u.num = num;
+    conv->num = num;
   } else if (conv->valuetype == VALUE_NUM) {
     conv->valuetype = VALUE_STR;
 
-    num = conv->u.num;
-    conv->u.str = "no";
+    num = conv->num;
+    conv->str = "no";
     if (num) {
-      conv->u.str = "yes";
+      conv->str = "yes";
     }
   }
 }
@@ -133,20 +133,23 @@ convTextList (datafileconv_t *conv)
     char    *str;
     slist_t *tlist;
 
-    str = conv->u.str;
+    str = conv->str;
 
     conv->valuetype = VALUE_LIST;
     tlist = slistAlloc ("textlist", LIST_ORDERED, NULL);
-    assert (conv->u.list != NULL);
+    assert (conv->list != NULL);
 
-    if (conv->u.str != NULL && *conv->u.str) {
+    if (conv->str != NULL && *conv->str) {
       p = strtok_r (str, " ,;", &tokptr);
       while (p != NULL) {
         slistSetStr (tlist, p, NULL);
         p = strtok_r (NULL, " ,;", &tokptr);
       }
     }
-    conv->u.list = tlist;
+    if (conv->allocated) {
+      free (conv->str);
+    }
+    conv->list = tlist;
     conv->allocated = true;
   } else if (conv->valuetype == VALUE_LIST) {
     slist_t     *list;
@@ -154,7 +157,7 @@ convTextList (datafileconv_t *conv)
     char        tbuff [200];
 
     conv->valuetype = VALUE_STR;
-    list = conv->u.list;
+    list = conv->list;
 
     *tbuff = '\0';
     slistStartIterator (list, &iteridx);
@@ -163,7 +166,7 @@ convTextList (datafileconv_t *conv)
       strlcat (tbuff, " ", sizeof (tbuff));
     }
     stringTrimChar (tbuff, ' ');
-    conv->u.str = strdup (tbuff);
+    conv->str = strdup (tbuff);
     conv->allocated = true;
   }
 
@@ -184,8 +187,8 @@ convMS (datafileconv_t *conv)
 
     conv->valuetype = VALUE_NUM;
     num = 0;
-    if (conv->u.str != NULL) {
-      tstr = strdup (conv->u.str);
+    if (conv->str != NULL) {
+      tstr = strdup (conv->str);
       p = strtok_r (tstr, ":", &tokstr);
       if (p != NULL) {
         num += atoi (p) * 60;
@@ -196,12 +199,12 @@ convMS (datafileconv_t *conv)
       }
       free (tstr);
     }
-    conv->u.num = num;
+    conv->num = num;
   } else if (conv->valuetype == VALUE_NUM) {
     conv->valuetype = VALUE_STR;
-    tmutilToMS (conv->u.num, tbuff, sizeof (tbuff));
+    tmutilToMS (conv->num, tbuff, sizeof (tbuff));
     conv->allocated = true;
-    conv->u.str = strdup (tbuff);
+    conv->str = strdup (tbuff);
   }
 }
 
@@ -456,12 +459,12 @@ datafileParseMerge (list_t *datalist, char *data, char *name,
         if (dfkeys [idx].convFunc != NULL) {
           conv.allocated = false;
           conv.valuetype = VALUE_STR;
-          conv.u.str = tvalstr;
+          conv.str = tvalstr;
           dfkeys [idx].convFunc (&conv);
 
           vt = conv.valuetype;
           if (vt == VALUE_NUM) {
-            if (conv.u.num == LIST_VALUE_INVALID &&
+            if (conv.num == LIST_VALUE_INVALID &&
                 dfkeys [idx].backupKey > DATAFILE_NO_BACKUPKEY) {
               logMsg (LOG_DBG, LOG_DATAFILE, "invalid value; backup key %ld set data to %s", dfkeys [idx].backupKey, tvalstr);
               if (dftype == DFTYPE_INDIRECT) {
@@ -471,7 +474,7 @@ datafileParseMerge (list_t *datalist, char *data, char *name,
                 nlistSetStr (datalist, dfkeys [idx].backupKey, tvalstr);
               }
             } else {
-              lval = conv.u.num;
+              lval = conv.num;
               logMsg (LOG_DBG, LOG_DATAFILE, "converted value: %s to %ld", tvalstr, lval);
             }
           }
@@ -527,7 +530,7 @@ datafileParseMerge (list_t *datalist, char *data, char *name,
         nlistSetDouble (setlist, ikey, dval);
       }
       if (vt == VALUE_LIST) {
-        nlistSetList (setlist, ikey, conv.u.list);
+        nlistSetList (setlist, ikey, conv.list);
       }
 
     }
@@ -586,16 +589,16 @@ datafileSaveKeyVal (char *tag, char *fn, datafilekey_t *dfkeys,
     /* load the data value into the conv structure so that retrieval is */
     /* the same for both non-converted and converted values */
     if (vt == VALUE_NUM) {
-      conv.u.num = nlistGetNum (list, dfkeys [i].itemkey);
+      conv.num = nlistGetNum (list, dfkeys [i].itemkey);
     }
     if (vt == VALUE_STR) {
-      conv.u.str = nlistGetStr (list, dfkeys [i].itemkey);
+      conv.str = nlistGetStr (list, dfkeys [i].itemkey);
     }
     if (vt == VALUE_LIST) {
-      conv.u.list = nlistGetList (list, dfkeys [i].itemkey);
+      conv.list = nlistGetList (list, dfkeys [i].itemkey);
     }
     if (vt == VALUE_DOUBLE) {
-      conv.u.dval = nlistGetDouble (list, dfkeys [i].itemkey);
+      conv.dval = nlistGetDouble (list, dfkeys [i].itemkey);
     }
 
     datafileSaveItem (fh, dfkeys [i].name, dfkeys [i].convFunc, &conv);
@@ -630,7 +633,7 @@ datafileSaveIndirect (char *tag, char *fn, datafilekey_t *dfkeys,
     conv.allocated = false;
     conv.valuetype = VALUE_NUM;
     /* on save, re-order the keys */
-    conv.u.num = count++;
+    conv.num = count++;
     datafileSaveItem (fh, "KEY", NULL, &conv);
 
     for (ssize_t i = 0; i < dfkeycount; ++i) {
@@ -644,16 +647,16 @@ datafileSaveIndirect (char *tag, char *fn, datafilekey_t *dfkeys,
       /* load the data value into the conv structure so that retrieval is */
       /* the same for both non-converted and converted values */
       if (vt == VALUE_NUM) {
-        conv.u.num = ilistGetNum (list, key, dfkeys [i].itemkey);
+        conv.num = ilistGetNum (list, key, dfkeys [i].itemkey);
       }
       if (vt == VALUE_STR) {
-        conv.u.str = ilistGetStr (list, key, dfkeys [i].itemkey);
+        conv.str = ilistGetStr (list, key, dfkeys [i].itemkey);
       }
       if (vt == VALUE_LIST) {
-        conv.u.list = ilistGetList (list, key, dfkeys [i].itemkey);
+        conv.list = ilistGetList (list, key, dfkeys [i].itemkey);
       }
       if (vt == VALUE_DOUBLE) {
-        conv.u.dval = ilistGetDouble (list, key, dfkeys [i].itemkey);
+        conv.dval = ilistGetDouble (list, key, dfkeys [i].itemkey);
       }
 
       datafileSaveItem (fh, dfkeys [i].name, dfkeys [i].convFunc, &conv);
@@ -751,16 +754,16 @@ datafileDumpKeyVal (char *tag, datafilekey_t *dfkeys,
     /* load the data value into the conv structure so that retrieval is */
     /* the same for both non-converted and converted values */
     if (vt == VALUE_NUM) {
-      conv.u.num = nlistGetNum (list, dfkeys [i].itemkey);
+      conv.num = nlistGetNum (list, dfkeys [i].itemkey);
     }
     if (vt == VALUE_STR) {
-      conv.u.str = nlistGetStr (list, dfkeys [i].itemkey);
+      conv.str = nlistGetStr (list, dfkeys [i].itemkey);
     }
     if (vt == VALUE_LIST) {
-      conv.u.list = nlistGetList (list, dfkeys [i].itemkey);
+      conv.list = nlistGetList (list, dfkeys [i].itemkey);
     }
     if (vt == VALUE_DOUBLE) {
-      conv.u.dval = nlistGetDouble (list, dfkeys [i].itemkey);
+      conv.dval = nlistGetDouble (list, dfkeys [i].itemkey);
     }
 
     datafileDumpItem (tag, dfkeys [i].name, dfkeys [i].convFunc, &conv);
@@ -940,27 +943,27 @@ datafileSaveItem (FILE *fh, char *name, dfConvFunc_t convFunc,
 
   fprintf (fh, "%s\n", name);
   if (vt == VALUE_NUM) {
-    if (conv->u.num != LIST_VALUE_INVALID) {
-      fprintf (fh, "..%zd\n", conv->u.num);
+    if (conv->num != LIST_VALUE_INVALID) {
+      fprintf (fh, "..%zd\n", conv->num);
     } else {
       fprintf (fh, "..\n");
     }
   }
   if (vt == VALUE_DOUBLE) {
-    if (conv->u.dval != LIST_DOUBLE_INVALID) {
-      fprintf (fh, "..%.2f\n", conv->u.dval);
+    if (conv->dval != LIST_DOUBLE_INVALID) {
+      fprintf (fh, "..%.2f\n", conv->dval);
     } else {
       fprintf (fh, "..\n");
     }
   }
   if (vt == VALUE_STR) {
-    if (conv->u.str != NULL) {
-      fprintf (fh, "..%s\n", conv->u.str);
+    if (conv->str != NULL) {
+      fprintf (fh, "..%s\n", conv->str);
     } else {
       fprintf (fh, "..\n");
     }
     if (conv->allocated) {
-      free (conv->u.str);
+      free (conv->str);
     }
   }
 }
@@ -979,24 +982,24 @@ datafileDumpItem (char *tag, char *name, dfConvFunc_t convFunc,
 
   fprintf (stdout, "%2s: %-20s ", tag, name);
   if (vt == VALUE_NUM) {
-    if (conv->u.num != LIST_VALUE_INVALID) {
-      fprintf (stdout, "%zd", conv->u.num);
+    if (conv->num != LIST_VALUE_INVALID) {
+      fprintf (stdout, "%zd", conv->num);
     }
     fprintf (stdout, "\n");
   }
   if (vt == VALUE_DOUBLE) {
-    if (conv->u.dval != LIST_DOUBLE_INVALID) {
-      fprintf (stdout, "%.2f", conv->u.dval);
+    if (conv->dval != LIST_DOUBLE_INVALID) {
+      fprintf (stdout, "%.2f", conv->dval);
     }
     fprintf (stdout, "\n");
   }
   if (vt == VALUE_STR) {
-    if (conv->u.str != NULL) {
-      fprintf (stdout, "%s", conv->u.str);
+    if (conv->str != NULL) {
+      fprintf (stdout, "%s", conv->str);
     }
     fprintf (stdout, "\n");
     if (conv->allocated) {
-      free (conv->u.str);
+      free (conv->str);
     }
   }
 }

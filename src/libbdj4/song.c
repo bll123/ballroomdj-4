@@ -298,23 +298,23 @@ songConvFavorite (datafileconv_t *conv)
   conv->allocated = false;
   if (conv->valuetype == VALUE_STR) {
     conv->valuetype = VALUE_NUM;
-    if (conv->u.str == NULL || strcmp (conv->u.str, "") == 0) {
-      conv->u.num = SONG_FAVORITE_NONE;
+    if (conv->str == NULL || strcmp (conv->str, "") == 0) {
+      conv->num = SONG_FAVORITE_NONE;
       return;
     }
-    idx = dfkeyBinarySearch (favoritedfkeys, SONG_FAVORITE_MAX, conv->u.str);
+    idx = dfkeyBinarySearch (favoritedfkeys, SONG_FAVORITE_MAX, conv->str);
     if (idx < 0) {
-      conv->u.num = SONG_FAVORITE_NONE;
+      conv->num = SONG_FAVORITE_NONE;
     } else {
-      conv->u.num = favoritedfkeys [idx].itemkey;
+      conv->num = favoritedfkeys [idx].itemkey;
     }
   } else if (conv->valuetype == VALUE_NUM) {
     conv->valuetype = VALUE_STR;
-    idx = conv->u.num;
+    idx = conv->num;
     if (idx < 0 || idx >= SONG_FAVORITE_MAX) {
       idx = SONG_FAVORITE_NONE;
     }
-    conv->u.str = favoritedfkeys [idx].name;
+    conv->str = favoritedfkeys [idx].name;
   }
 }
 

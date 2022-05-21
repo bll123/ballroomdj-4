@@ -570,17 +570,17 @@ main (int argc, char *argv[])
   uiEntryInit (&confui.uiitem [CONFUI_ENTRY_DANCE_TAGS].u.entry, 30, 100);
   uiEntryInit (&confui.uiitem [CONFUI_ENTRY_DANCE_ANNOUNCEMENT].u.entry, 30, 300);
   uiEntryInit (&confui.uiitem [CONFUI_ENTRY_DANCE_DANCE].u.entry, 30, 50);
+  uiEntryInit (&confui.uiitem [CONFUI_ENTRY_MM_NAME].u.entry, 10, 40);
+  uiEntryInit (&confui.uiitem [CONFUI_ENTRY_MM_TITLE].u.entry, 20, 100);
   uiEntryInit (&confui.uiitem [CONFUI_ENTRY_MUSIC_DIR].u.entry, 50, 300);
   uiEntryInit (&confui.uiitem [CONFUI_ENTRY_PROFILE_NAME].u.entry, 20, 30);
-  uiEntryInit (&confui.uiitem [CONFUI_ENTRY_STARTUP].u.entry, 50, 300);
-  uiEntryInit (&confui.uiitem [CONFUI_ENTRY_SHUTDOWN].u.entry, 50, 300);
   uiEntryInit (&confui.uiitem [CONFUI_ENTRY_COMPLETE_MSG].u.entry, 20, 30);
   uiEntryInit (&confui.uiitem [CONFUI_ENTRY_QUEUE_NM_A].u.entry, 20, 30);
   uiEntryInit (&confui.uiitem [CONFUI_ENTRY_QUEUE_NM_B].u.entry, 20, 30);
-  uiEntryInit (&confui.uiitem [CONFUI_ENTRY_RC_USER_ID].u.entry, 10, 30);
   uiEntryInit (&confui.uiitem [CONFUI_ENTRY_RC_PASS].u.entry, 10, 20);
-  uiEntryInit (&confui.uiitem [CONFUI_ENTRY_MM_NAME].u.entry, 10, 40);
-  uiEntryInit (&confui.uiitem [CONFUI_ENTRY_MM_TITLE].u.entry, 20, 100);
+  uiEntryInit (&confui.uiitem [CONFUI_ENTRY_RC_USER_ID].u.entry, 10, 30);
+  uiEntryInit (&confui.uiitem [CONFUI_ENTRY_STARTUP].u.entry, 50, 300);
+  uiEntryInit (&confui.uiitem [CONFUI_ENTRY_SHUTDOWN].u.entry, 50, 300);
 
   osSetStandardSignals (confuiSigHandler);
 
@@ -862,10 +862,11 @@ confuiClosingCallback (void *udata, programstate_t programState)
   if (confui->localip != NULL) {
     free (confui->localip);
   }
-  if (confui->options != datafileGetList (confui->optiondf)) {
+  if (confui->optiondf != NULL) {
+    datafileFree (confui->optiondf);
+  } else if (confui->options != NULL) {
     nlistFree (confui->options);
   }
-  datafileFree (confui->optiondf);
   if (confui->nbtabid != NULL) {
     uiutilsNotebookIDFree (confui->nbtabid);
   }
@@ -4569,13 +4570,13 @@ confuiDanceSelect (GtkTreeView *tv, GtkTreePath *path,
 
   slist = danceGetList (dances, key, DANCE_TAGS);
   conv.allocated = false;
-  conv.u.list = slist;
+  conv.list = slist;
   conv.valuetype = VALUE_LIST;
   convTextList (&conv);
-  sval = conv.u.str;
+  sval = conv.str;
   widx = CONFUI_ENTRY_DANCE_TAGS;
   uiEntrySetValue (&confui->uiitem [widx].u.entry, sval);
-  free (conv.u.str);
+  free (conv.str);
 
   sval = danceGetStr (dances, key, DANCE_ANNOUNCE);
   widx = CONFUI_ENTRY_DANCE_ANNOUNCEMENT;
@@ -4658,10 +4659,10 @@ confuiDanceEntryChg (GtkEditable *e, gpointer udata)
     slist_t *slist;
 
     conv.allocated = true;
-    conv.u.str = strdup (str);
+    conv.str = strdup (str);
     conv.valuetype = VALUE_STR;
     convTextList (&conv);
-    slist = conv.u.list;
+    slist = conv.list;
     danceSetList (dances, key, didx, slist);
   } else {
     danceSetStr (dances, key, didx, str);

@@ -124,15 +124,15 @@ genreConv (datafileconv_t *conv)
   if (conv->valuetype == VALUE_STR) {
     conv->valuetype = VALUE_NUM;
     lookup = datafileGetLookup (genre->df);
-    num = slistGetNum (lookup, conv->u.str);
-    conv->u.num = num;
+    num = slistGetNum (lookup, conv->str);
+    conv->num = num;
   } else if (conv->valuetype == VALUE_NUM) {
     conv->valuetype = VALUE_STR;
-    if (conv->u.num == LIST_VALUE_INVALID) {
-      conv->u.str = "";
+    if (conv->num == LIST_VALUE_INVALID) {
+      conv->str = "";
     } else {
-      num = conv->u.num;
-      conv->u.str = ilistGetStr (genre->genre, num, GENRE_GENRE);
+      num = conv->num;
+      conv->str = ilistGetStr (genre->genre, num, GENRE_GENRE);
     }
   }
 }
