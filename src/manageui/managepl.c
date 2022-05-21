@@ -58,6 +58,7 @@ typedef struct managepl {
   UIWidget        uipltype;
   managepltree_t  *managepltree;
   playlist_t      *playlist;
+  bool            changed : 1;
 } managepl_t;
 
 static bool managePlaylistLoad (void *udata);
@@ -69,6 +70,8 @@ static void manageSetPlaylistName (managepl_t *managepl, const char *nm);
 static long managePlaylistValMSCallback (void *udata, const char *txt);
 static long managePlaylistValHMCallback (void *udata, const char *txt);
 static void managePlaylistUpdatePlaylist (managepl_t *managepl);
+static bool managePlaylistCheckChanged (managepl_t *managepl);
+static int  managePlaylistAllowedKeywordsChg (uientry_t *e, void *udata);
 
 managepl_t *
 managePlaylistAlloc (UIWidget *window, nlist_t *options, UIWidget *statusMsg)
@@ -97,6 +100,7 @@ managePlaylistAlloc (UIWidget *window, nlist_t *options, UIWidget *statusMsg)
   uiEntryInit (&managepl->allowedkeywords, 15, 50);
   uiutilsUIWidgetInit (&managepl->uiallowedkeywordsitem);
   managepl->playlist = NULL;
+  managepl->changed = false;
 
   return managepl;
 }
@@ -302,6 +306,8 @@ manageBuildUIPlaylist (managepl_t *managepl, UIWidget *vboxp)
   uiSizeGroupAdd (&sg, &uiwidget);
 
   uiEntryCreate (&managepl->allowedkeywords);
+  uiEntrySetValidate (&managepl->allowedkeywords,
+      managePlaylistAllowedKeywordsChg, managepl);
   uiBoxPackStart (&hbox, &managepl->allowedkeywords.uientry);
 
   /* right side to hold the tree */
@@ -311,6 +317,9 @@ manageBuildUIPlaylist (managepl_t *managepl, UIWidget *vboxp)
 
   managepl->managepltree = managePlaylistTreeAlloc (managepl->statusMsg);
   manageBuildUIPlaylistTree (managepl->managepltree, &rcol, &tophbox);
+  uiSpinboxResetChanged (&managepl->uimaxplaytime);
+  uiSpinboxResetChanged (&managepl->uistopat);
+  managepl->changed = false;
   managePlaylistNew (managepl);
 }
 
@@ -366,7 +375,9 @@ managePlaylistSave (managepl_t *managepl)
   /* the playlist has been renamed */
   if (strcmp (managepl->ploldname, name) != 0) {
     manageRenamePlaylistFiles (managepl->ploldname, name);
+    managepl->changed = true;
   }
+  managepl->changed = managePlaylistCheckChanged (managepl);
 
   managePlaylistUpdatePlaylist (managepl);
   playlistSave (managepl->playlist);
@@ -399,8 +410,11 @@ managePlaylistLoadFile (void *udata, const char *fn)
   }
   managepl->playlist = pl;
   manageSetPlaylistName (managepl, fn);
-
   managePlaylistUpdateData (managepl);
+
+  uiSpinboxResetChanged (&managepl->uimaxplaytime);
+  uiSpinboxResetChanged (&managepl->uistopat);
+  managepl->changed = false;
 }
 
 static void
@@ -469,6 +483,9 @@ managePlaylistCopy (void *udata)
   if (manageCreatePlaylistCopy (managepl->statusMsg, oname, newname)) {
     manageSetPlaylistName (managepl, newname);
     managepl->plbackupcreated = false;
+    uiSpinboxResetChanged (&managepl->uimaxplaytime);
+    uiSpinboxResetChanged (&managepl->uistopat);
+    managepl->changed = false;
   }
 
   return UICB_CONT;
@@ -494,6 +511,9 @@ managePlaylistNew (void *udata)
     playlistFree (managepl->playlist);
   }
   managepl->playlist = pl;
+  uiSpinboxResetChanged (&managepl->uimaxplaytime);
+  uiSpinboxResetChanged (&managepl->uistopat);
+  managepl->changed = false;
   managePlaylistUpdateData (managepl);
 
   return UICB_CONT;
@@ -583,4 +603,63 @@ managePlaylistUpdatePlaylist (managepl_t *managepl)
 
   tstr = uiEntryGetValue (&managepl->allowedkeywords);
   playlistSetConfigList (pl, PLAYLIST_ALLOWED_KEYWORDS, tstr);
+}
+
+static bool
+managePlaylistCheckChanged (managepl_t *managepl)
+{
+  playlist_t    *pl;
+  long          tval;
+
+  if (managePlaylistTreeIsChanged (managepl->managepltree)) {
+    managepl->changed = true;
+  }
+
+  if (uiSpinboxIsChanged (&managepl->uimaxplaytime)) {
+    managepl->changed = true;
+  }
+
+  if (uiSpinboxIsChanged (&managepl->uistopat)) {
+    managepl->changed = true;
+  }
+
+  pl = managepl->playlist;
+
+  tval = uiSpinboxGetValue (&managepl->uistopafter);
+  if (tval != playlistGetConfigNum (pl, PLAYLIST_STOP_AFTER)) {
+    managepl->changed = true;
+  }
+
+  tval = uiSpinboxGetValue (&managepl->uigap);
+  if (tval != playlistGetConfigNum (pl, PLAYLIST_GAP)) {
+fprintf (stderr, "pl chg (gap)\n");
+fprintf (stderr, "   %d %d\n", tval, playlistGetConfigNum (pl, PLAYLIST_GAP));
+    managepl->changed = true;
+  }
+
+  tval = uiratingGetValue (managepl->uirating);
+  if (tval != playlistGetConfigNum (pl, PLAYLIST_RATING)) {
+    managepl->changed = true;
+  }
+
+  tval = uilevelGetValue (managepl->uilowlevel);
+  if (tval != playlistGetConfigNum (pl, PLAYLIST_LEVEL_LOW)) {
+    managepl->changed = true;
+  }
+
+  tval = uilevelGetValue (managepl->uihighlevel);
+  if (tval != playlistGetConfigNum (pl, PLAYLIST_LEVEL_HIGH)) {
+    managepl->changed = true;
+  }
+
+  return managepl->changed;
+}
+
+static int
+managePlaylistAllowedKeywordsChg (uientry_t *e, void *udata)
+{
+  managepl_t *managepl = udata;
+
+  managepl->changed = true;
+  return UIENTRY_OK;
 }

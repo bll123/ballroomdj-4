@@ -92,6 +92,7 @@ void uiSpinboxSet (UIWidget *uispinbox, double min, double max);
 double uiSpinboxGetValue (UIWidget *uispinbox);
 void uiSpinboxSetValue (UIWidget *uispinbox, double ivalue);
 bool uiSpinboxIsChanged (uispinbox_t *spinbox);
+void uiSpinboxResetChanged (uispinbox_t *spinbox);
 void uiSpinboxAlignRight (uispinbox_t *spinbox);
 void uiSpinboxSetColor (uispinbox_t *spinbox, const char *color);
 UIWidget * uiSpinboxGetUIWidget (uispinbox_t *spinbox);

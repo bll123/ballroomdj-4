@@ -79,12 +79,14 @@ filemanipCopy (const char *fname, const char *nfn)
     size_t  trc = 0;
 
     data = filedataReadAll (fname, &len);
-    fh = fopen (nfn, "w");
-    if (fh != NULL) {
-      trc = fwrite (data, len, 1, fh);
-      fclose (fh);
+    if (data != NULL) {
+      fh = fopen (nfn, "w");
+      if (fh != NULL) {
+        trc = fwrite (data, len, 1, fh);
+        fclose (fh);
+      }
+      free (data);
     }
-    free (data);
     rc = (trc == 1);
   }
   return rc;

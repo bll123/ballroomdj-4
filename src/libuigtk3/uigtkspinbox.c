@@ -282,6 +282,15 @@ uiSpinboxIsChanged (uispinbox_t *spinbox)
 }
 
 void
+uiSpinboxResetChanged (uispinbox_t *spinbox)
+{
+  if (spinbox == NULL) {
+    return;
+  }
+  spinbox->changed = false;
+}
+
+void
 uiSpinboxAlignRight (uispinbox_t *spinbox)
 {
   gtk_entry_set_alignment (GTK_ENTRY (spinbox->uispinbox.widget), 1.0);

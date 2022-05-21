@@ -65,8 +65,12 @@ foreach {fn} $flist {
     if { $tkey eq "HIGHDANCELEVEL" } { set key DANCELEVELHIGH }
     if { $tkey eq "LOWDANCELEVEL" } { set key DANCELEVELLOW }
 
-    if { $tkey eq "GAP" && $value ne {} } {
-      set value [expr {int ($value * 1000)}]
+    if { $tkey eq "GAP" } {
+      if { $value eq {} } {
+        set value 0
+      } else {
+        set value [expr {int ($value * 1000)}]
+      }
     }
     if { $tkey eq "VERSION" } { set key version }
 
@@ -77,12 +81,14 @@ foreach {fn} $flist {
       puts $dfh "..$key"
       regexp {(\d):(\d*):(\d*):(\d*):(\d*):(\d*)} $value \
           all selected count maxmin maxsec lowbpm highbpm
+      if { $lowbpm eq {} } { set lowbpm 0 }
+      if { $highbpm eq {} } { set highbpm 0 }
       puts $dfh "SELECTED"
       puts $dfh "..$selected"
       puts $dfh "COUNT"
       puts $dfh "..$count"
       puts $dfh "MAXPLAYTIME"
-      set tm {}
+      set tm 0
       if { $maxmin ne {} && $maxsec ne {} } {
         set tm [expr {($maxmin * 60 + $maxsec)*1000}]
       }
@@ -102,6 +108,8 @@ foreach {fn} $flist {
           regsub {^0*} $min {} min
           if { $min eq {} } { set min 0 }
           set value [expr {($hr * 3600 + $min * 60)*1000}]
+        } else {
+          set value 0
         }
       }
       if { $tkey eq "MAXPLAYTIME" } {
@@ -112,6 +120,8 @@ foreach {fn} $flist {
           regsub {^0*} $sec {} sec
           if { $sec eq {} } { set sec 0 }
           set value [expr {($min * 60 + $sec)*1000}]
+        } else {
+          set value 0
         }
       }
       set key [string toupper $key]
