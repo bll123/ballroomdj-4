@@ -76,6 +76,10 @@ uilevelGetValue (uilevel_t *uilevel)
 {
   int   idx;
 
+  if (uilevel == NULL) {
+    return 0;
+  }
+
   idx = uiSpinboxTextGetValue (&uilevel->spinbox);
   return idx;
 }
@@ -83,6 +87,10 @@ uilevelGetValue (uilevel_t *uilevel)
 void
 uilevelSetValue (uilevel_t *uilevel, int value)
 {
+  if (uilevel == NULL) {
+    return;
+  }
+
   uiSpinboxTextSetValue (&uilevel->spinbox, value);
 }
 

@@ -442,7 +442,7 @@ pluiBuildUI (playerui_t *plui)
   }
 
   /* request tab */
-  uiwidgetp = uisongselBuildUI (plui->uisongsel, plui->window.widget);
+  uiwidgetp = uisongselBuildUI (plui->uisongsel, &plui->window);
   /* CONTEXT: name of request tab : lists the songs in the database */
   uiCreateLabel (&uiwidget, _("Request"));
   uiNotebookAppendPage (&plui->notebook, uiwidgetp, &uiwidget);

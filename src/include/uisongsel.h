@@ -15,6 +15,8 @@
 #include "songfilter.h"
 #include "sortopt.h"
 #include "status.h"
+#include "uilevel.h"
+#include "uirating.h"
 #include "uiutils.h"
 
 typedef struct {
@@ -33,17 +35,18 @@ typedef struct {
   musicdb_t         *musicdb;
   dispselsel_t      dispselType;
   double            dfilterCount;
-  GtkWidget         *window;
+  UIWidget          *windowp;
   /* filter data */
-  GtkWidget         *filterDialog;
+  UIWidget          filterDialog;
+  UICallback        filtercb;
   UIWidget          statusPlayable;
   songfilterpb_t    dfltpbflag;
   uidropdown_t      sortbysel;
   uidropdown_t      filterdancesel;
   uidropdown_t      filtergenresel;
   uientry_t         searchentry;
-  uispinbox_t       filterratingsel;
-  uispinbox_t       filterlevelsel;
+  uirating_t        *uirating;
+  uilevel_t         *uilevel;
   uispinbox_t       filterstatussel;
   uispinbox_t       filterfavoritesel;
   time_t            filterApplied;
@@ -88,7 +91,7 @@ void uisongselFilterDanceSignal (GtkTreeView *tv, GtkTreePath *path,
 /* uisongselgtk.c */
 void      uisongselUIInit (uisongsel_t *uisongsel);
 void      uisongselUIFree (uisongsel_t *uisongsel);
-UIWidget  * uisongselBuildUI (uisongsel_t *uisongsel, GtkWidget *parentwin);
+UIWidget  * uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin);
 void      uisongselClearData (uisongsel_t *uisongsel);
 void      uisongselPopulateData (uisongsel_t *uisongsel);
 void      uisongselSetFavoriteForeground (uisongsel_t *uisongsel, char *color);

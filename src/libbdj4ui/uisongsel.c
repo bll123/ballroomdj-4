@@ -38,7 +38,7 @@ uisongselInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
   assert (uisongsel != NULL);
 
   uisongsel->tag = tag;
-  uisongsel->window = NULL;
+  uisongsel->windowp = NULL;
   uisongsel->ratings = bdjvarsdfGet (BDJVDF_RATINGS);
   uisongsel->levels = bdjvarsdfGet (BDJVDF_LEVELS);
   uisongsel->status = bdjvarsdfGet (BDJVDF_STATUS);
@@ -46,7 +46,7 @@ uisongselInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
   uisongsel->dispsel = dispsel;
   uisongsel->musicdb = musicdb;
   uisongsel->dispselType = dispselType;
-  uisongsel->filterDialog = NULL;
+  uiutilsUIWidgetInit (&uisongsel->filterDialog);
   uiutilsUIWidgetInit (&uisongsel->statusPlayable);
   uisongsel->options = options;
   uisongsel->idxStart = 0;
@@ -60,8 +60,8 @@ uisongselInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
   uiEntryInit (&uisongsel->searchentry, 30, 100);
   uiDropDownInit (&uisongsel->filtergenresel);
   uiDropDownInit (&uisongsel->filterdancesel);
-  uiSpinboxTextInit (&uisongsel->filterratingsel);
-  uiSpinboxTextInit (&uisongsel->filterlevelsel);
+  uisongsel->uirating = NULL;
+  uisongsel->uilevel = NULL;
   uiSpinboxTextInit (&uisongsel->filterstatussel);
   uiSpinboxTextInit (&uisongsel->filterfavoritesel);
   uisongsel->songfilter = NULL;
@@ -97,12 +97,14 @@ uisongselFree (uisongsel_t *uisongsel)
     uiEntryFree (&uisongsel->searchentry);
     uiDropDownFree (&uisongsel->filterdancesel);
     uiDropDownFree (&uisongsel->filtergenresel);
-    uiSpinboxTextFree (&uisongsel->filterratingsel);
-    uiSpinboxTextFree (&uisongsel->filterlevelsel);
+    uiratingFree (uisongsel->uirating);
+    uilevelFree (uisongsel->uilevel);
     uiSpinboxTextFree (&uisongsel->filterstatussel);
     uiSpinboxTextFree (&uisongsel->filterfavoritesel);
     sortoptFree (uisongsel->sortopt);
     uisongselUIFree (uisongsel);
+    uiDialogDestroy (&uisongsel->filterDialog);
+    uiutilsUIWidgetInit (&uisongsel->filterDialog);
     free (uisongsel);
   }
 
@@ -263,8 +265,8 @@ uisongselInitFilterDisplay (uisongsel_t *uisongsel)
 
   uiDropDownSelectionSetNum (&uisongsel->filtergenresel, -1);
   uiEntrySetValue (&uisongsel->searchentry, "");
-  uiSpinboxTextSetValue (&uisongsel->filterratingsel, -1);
-  uiSpinboxTextSetValue (&uisongsel->filterlevelsel, -1);
+  uiratingSetValue (uisongsel->uirating, -1);
+  uilevelSetValue (uisongsel->uilevel, -1);
   uiSpinboxTextSetValue (&uisongsel->filterstatussel, -1);
   uiSpinboxTextSetValue (&uisongsel->filterfavoritesel, 0);
   logProcEnd (LOG_PROC, "uisongselInitFilterDisplay", "");

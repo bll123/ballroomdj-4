@@ -632,8 +632,6 @@ managePlaylistCheckChanged (managepl_t *managepl)
 
   tval = uiSpinboxGetValue (&managepl->uigap);
   if (tval != playlistGetConfigNum (pl, PLAYLIST_GAP)) {
-fprintf (stderr, "pl chg (gap)\n");
-fprintf (stderr, "   %d %d\n", tval, playlistGetConfigNum (pl, PLAYLIST_GAP));
     managepl->changed = true;
   }
 

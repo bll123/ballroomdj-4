@@ -129,6 +129,10 @@ uiSpinboxTextSetValue (uispinbox_t *spinbox, int value)
 {
   nlistidx_t    idx;
 
+  if (spinbox == NULL) {
+    return;
+  }
+
   idx = value;
   if (spinbox->idxlist != NULL) {
     idx = nlistGetNum (spinbox->idxlist, value);

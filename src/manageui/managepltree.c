@@ -393,7 +393,6 @@ managePlaylistTreeToggleDance (GtkCellRendererToggle *renderer, gchar *spath, gp
   gtk_tree_model_get (model, &iter, MPLTREE_COL_DANCE_IDX, &dkey, -1);
   playlistSetDanceNum (managepltree->playlist, dkey, PLDANCE_SELECTED, val);
 
-fprintf (stderr, "pl tree chg (td)\n");
   managepltree->changed = true;
 }
 
@@ -412,7 +411,6 @@ managePlaylistTreeEditInt (GtkCellRendererText* r, const gchar* path,
   col = GPOINTER_TO_UINT (g_object_get_data (G_OBJECT (r), "mpltreecolumn"));
   val = atol (ntext);
   gtk_list_store_set (GTK_LIST_STORE (model), &iter, col, val, -1);
-fprintf (stderr, "pl tree chg (ei)\n");
   managepltree->changed = true;
 }
 
@@ -436,7 +434,6 @@ managePlaylistTreeEditTime (GtkCellRendererText* r, const gchar* spath,
   if (valstr == NULL) {
     /* do not need to convert it at this time */
     gtk_list_store_set (GTK_LIST_STORE (model), &iter, col, ntext, -1);
-fprintf (stderr, "pl tree chg (et)\n");
     managepltree->changed = true;
   } else {
     snprintf (tbuff, sizeof (tbuff), valstr, ntext);

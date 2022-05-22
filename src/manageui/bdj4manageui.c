@@ -674,7 +674,7 @@ manageBuildUISongListEditor (manageui_t *manage)
       _("Select"), "button_left", NULL, NULL);
   uiBoxPackStart (&vbox, &uiwidget);
 
-  uiwidgetp = uisongselBuildUI (manage->slezsongsel, manage->window.widget);
+  uiwidgetp = uisongselBuildUI (manage->slezsongsel, &manage->window);
   uiBoxPackStartExpand (&hbox, uiwidgetp);
 
   /* song list editor: music queue tab */
@@ -686,7 +686,7 @@ manageBuildUISongListEditor (manageui_t *manage)
   manage->slmusicqtabwidget = uiwidgetp;
 
   /* song list editor: song selection tab*/
-  uiwidgetp = uisongselBuildUI (manage->slsongsel, manage->window.widget);
+  uiwidgetp = uisongselBuildUI (manage->slsongsel, &manage->window);
   /* CONTEXT: name of song selection notebook tab */
   uiCreateLabel (&uiwidget, _("Song Selection"));
   uiNotebookAppendPage (&notebook, uiwidgetp, &uiwidget);
@@ -730,7 +730,7 @@ manageBuildUIMusicManager (manageui_t *manage)
   uiBoxPackStartExpand (&vbox, &notebook);
 
   /* music manager: song selection tab*/
-  uiwidgetp = uisongselBuildUI (manage->mmsongsel, manage->window.widget);
+  uiwidgetp = uisongselBuildUI (manage->mmsongsel, &manage->window);
   uiWidgetExpandHoriz (uiwidgetp);
   /* CONTEXT: name of song selection notebook tab */
   uiCreateLabel (&uiwidget, _("Music Manager"));

@@ -22,12 +22,13 @@
 #include "songfilter.h"
 #include "uisongsel.h"
 #include "ui.h"
+#include "uilevel.h"
+#include "uirating.h"
 #include "uiutils.h"
 
 /* song filter handling */
 static void uisongselCreateFilterDialog (uisongsel_t *uisongsel);
-static void uisongselFilterResponseHandler (GtkDialog *d, gint responseid,
-    gpointer udata);
+static bool uisongselFilterResponseHandler (void *udata, int responseid);
 static void uisongselFilterUpdate (uisongsel_t *uisongsel);
 static void uisongselSortBySelectHandler (GtkTreeView *tv, GtkTreePath *path,
     GtkTreeViewColumn *column, gpointer udata);
@@ -44,20 +45,17 @@ uisongselFilterDialog (void *udata)
 
   logProcBegin (LOG_PROC, "uisongselFilterDialog");
 
-  if (uisongsel->filterDialog == NULL) {
-    uisongselCreateFilterDialog (uisongsel);
-  }
+  uisongselCreateFilterDialog (uisongsel);
 
   uisongselInitFilterDisplay (uisongsel);
-// ### fix
   if (songfilterCheckSelection (uisongsel->songfilter, FILTER_DISP_STATUSPLAYABLE)) {
     uiSwitchSetValue (&uisongsel->statusPlayable, uisongsel->dfltpbflag);
   }
-  uiWidgetShowAllW (uisongsel->filterDialog);
+  uiWidgetShowAll (&uisongsel->filterDialog);
 
   x = nlistGetNum (uisongsel->options, SONGSEL_FILTER_POSITION_X);
   y = nlistGetNum (uisongsel->options, SONGSEL_FILTER_POSITION_Y);
-  uiWindowMoveW (uisongsel->filterDialog, x, y);
+  uiWindowMove (&uisongsel->filterDialog, x, y);
   logProcEnd (LOG_PROC, "uisongselFilterDialog", "");
   return UICB_CONT;
 }
@@ -70,9 +68,8 @@ uisongselFilterDanceSignal (GtkTreeView *tv, GtkTreePath *path,
   ssize_t     idx;
 
   idx = uiDropDownSelectionGet (&uisongsel->dancesel, path);
-  if (uisongsel->filterDialog != NULL) {
-    uiDropDownSelectionSetNum (&uisongsel->filterdancesel, idx);
-  }
+
+  uiDropDownSelectionSetNum (&uisongsel->filterdancesel, idx);
   uisongselFilterDanceProcess (uisongsel, idx);
   return;
 }
@@ -82,7 +79,6 @@ uisongselFilterDanceSignal (GtkTreeView *tv, GtkTreePath *path,
 static void
 uisongselCreateFilterDialog (uisongsel_t *uisongsel)
 {
-  GtkWidget     *content;
   GtkWidget     *widget;
   UIWidget      vbox;
   UIWidget      hbox;
@@ -95,28 +91,26 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
 
   uiCreateSizeGroupHoriz (&sg);
 
-  uisongsel->filterDialog = gtk_dialog_new_with_buttons (
+  uiutilsUICallbackIntInit (&uisongsel->filtercb,
+      uisongselFilterResponseHandler, uisongsel);
+  uiCreateDialog (&uisongsel->filterDialog, uisongsel->windowp,
+      &uisongsel->filtercb,
       /* CONTEXT: title for the filter dialog */
       _("Filter Songs"),
-      GTK_WINDOW (uisongsel->window),
-      GTK_DIALOG_DESTROY_WITH_PARENT,
       /* CONTEXT: filter dialog: closes the dialog */
       _("Close"),
-      GTK_RESPONSE_CLOSE,
+      RESPONSE_CLOSE,
       /* CONTEXT: filter dialog: resets the selections */
       _("Reset"),
       RESPONSE_RESET,
       /* CONTEXT: filter dialog: applies the selections */
       _("Apply"),
-      GTK_RESPONSE_APPLY,
+      RESPONSE_APPLY,
       NULL
       );
 
-  content = gtk_dialog_get_content_area (GTK_DIALOG (uisongsel->filterDialog));
-  uiWidgetSetAllMarginsW (content, uiBaseMarginSz * 2);
-
   uiCreateVertBox (&vbox);
-  uiBoxPackInWindowWU (content, &vbox);
+  uiDialogPackInDialog (&uisongsel->filterDialog, &vbox);
 
   /* sort-by : always available */
   uiCreateHorizBox (&hbox);
@@ -127,7 +121,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
 
-  widget = uiComboboxCreate (uisongsel->filterDialog,
+  widget = uiComboboxCreate (uisongsel->filterDialog.widget,
       "", uisongselSortBySelectHandler, &uisongsel->sortbysel, uisongsel);
   uisongselCreateSortByList (uisongsel);
   uiBoxPackStartUW (&hbox, widget);
@@ -155,7 +149,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
     uiBoxPackStart (&hbox, &uiwidget);
     uiSizeGroupAdd (&sg, &uiwidget);
 
-    widget = uiComboboxCreate (uisongsel->filterDialog,
+    widget = uiComboboxCreate (uisongsel->filterDialog.widget,
         "", uisongselGenreSelectHandler,
         &uisongsel->filtergenresel, uisongsel);
     uisongselCreateGenreList (uisongsel);
@@ -171,7 +165,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
 
-  widget = uiComboboxCreate (uisongsel->filterDialog,
+  widget = uiComboboxCreate (uisongsel->filterDialog.widget,
       "", uisongselDanceSelectSignal,
       &uisongsel->filterdancesel, uisongsel);
   /* CONTEXT: a filter: all dances are selected */
@@ -187,17 +181,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
 
-  uiSpinboxTextCreate (&uisongsel->filterratingsel, uisongsel);
-  max = ratingGetMaxWidth (uisongsel->ratings);
-  /* CONTEXT: a filter: all dance ratings will be listed */
-  len = istrlen (_("All Ratings"));
-  if (len > max) {
-    max = len;
-  }
-  uiSpinboxTextSet (&uisongsel->filterratingsel, -1,
-      ratingGetCount (uisongsel->ratings),
-      max, NULL, NULL, uisongselRatingGet);
-  uiBoxPackStart (&hbox, uiSpinboxGetUIWidget (&uisongsel->filterratingsel));
+  uisongsel->uirating = uiratingSpinboxCreate (&hbox, true);
 
   /* level */
   if (songfilterCheckSelection (uisongsel->songfilter, FILTER_DISP_DANCELEVEL)) {
@@ -209,17 +193,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
     uiBoxPackStart (&hbox, &uiwidget);
     uiSizeGroupAdd (&sg, &uiwidget);
 
-    uiSpinboxTextCreate (&uisongsel->filterlevelsel, uisongsel);
-    max = levelGetMaxWidth (uisongsel->levels);
-    /* CONTEXT: a filter: all dance levels will be listed */
-    len = istrlen (_("All Levels"));
-    if (len > max) {
-      max = len;
-    }
-    uiSpinboxTextSet (&uisongsel->filterlevelsel, -1,
-        levelGetCount (uisongsel->levels),
-        max, NULL, NULL, uisongselLevelGet);
-    uiBoxPackStart (&hbox, uiSpinboxGetUIWidget (&uisongsel->filterlevelsel));
+    uisongsel->uilevel = uilevelSpinboxCreate (&hbox, true);
   }
 
   /* status */
@@ -283,13 +257,11 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
   uiCreateLabel (&uiwidget, " ");
   uiBoxPackStart (&hbox, &uiwidget);
 
-  g_signal_connect (uisongsel->filterDialog, "response",
-      G_CALLBACK (uisongselFilterResponseHandler), uisongsel);
   logProcEnd (LOG_PROC, "uisongselCreateFilterDialog", "");
 }
 
-static void
-uisongselFilterResponseHandler (GtkDialog *d, gint responseid, gpointer udata)
+static bool
+uisongselFilterResponseHandler (void *udata, int responseid)
 {
   uisongsel_t   *uisongsel = udata;
   int           x, y;
@@ -297,23 +269,24 @@ uisongselFilterResponseHandler (GtkDialog *d, gint responseid, gpointer udata)
   logProcBegin (LOG_PROC, "uisongselFilterResponseHandler");
 
   switch (responseid) {
-    case GTK_RESPONSE_DELETE_EVENT: {
-      uiWindowGetPositionW (uisongsel->filterDialog, &x, &y);
+    case RESPONSE_DELETE_WIN: {
+fprintf (stderr, "ccc\n");
+      uiWindowGetPosition (&uisongsel->filterDialog, &x, &y);
+fprintf (stderr, "ddd\n");
+      nlistSetNum (uisongsel->options, SONGSEL_FILTER_POSITION_X, x);
+      nlistSetNum (uisongsel->options, SONGSEL_FILTER_POSITION_Y, y);
+      uiutilsUIWidgetInit (&uisongsel->filterDialog);
+      break;
+    }
+    case RESPONSE_CLOSE: {
+      uiWindowGetPosition (&uisongsel->filterDialog, &x, &y);
       nlistSetNum (uisongsel->options, SONGSEL_FILTER_POSITION_X, x);
       nlistSetNum (uisongsel->options, SONGSEL_FILTER_POSITION_Y, y);
 
-      uisongsel->filterDialog = NULL;
+      uiWidgetHide (&uisongsel->filterDialog);
       break;
     }
-    case GTK_RESPONSE_CLOSE: {
-      gtk_window_get_position (GTK_WINDOW (uisongsel->filterDialog), &x, &y);
-      nlistSetNum (uisongsel->options, SONGSEL_FILTER_POSITION_X, x);
-      nlistSetNum (uisongsel->options, SONGSEL_FILTER_POSITION_Y, y);
-
-      uiWidgetHideW (uisongsel->filterDialog);
-      break;
-    }
-    case GTK_RESPONSE_APPLY: {
+    case RESPONSE_APPLY: {
       break;
     }
     case RESPONSE_RESET: {
@@ -329,7 +302,10 @@ uisongselFilterResponseHandler (GtkDialog *d, gint responseid, gpointer udata)
     }
   }
 
-  uisongselFilterUpdate (uisongsel);
+  if (responseid != RESPONSE_DELETE_WIN) {
+    uisongselFilterUpdate (uisongsel);
+  }
+  return UICB_CONT;
 }
 
 void
@@ -349,7 +325,7 @@ uisongselFilterUpdate (uisongsel_t *uisongsel)
   }
 
   /* dance rating : always active */
-  idx = uiSpinboxTextGetValue (&uisongsel->filterratingsel);
+  idx = uiratingGetValue (uisongsel->uirating);
   if (idx >= 0) {
     songfilterSetNum (uisongsel->songfilter, SONG_FILTER_RATING, idx);
   } else {
@@ -358,7 +334,7 @@ uisongselFilterUpdate (uisongsel_t *uisongsel)
 
   /* dance level */
   if (songfilterCheckSelection (uisongsel->songfilter, FILTER_DISP_DANCELEVEL)) {
-    idx = uiSpinboxTextGetValue (&uisongsel->filterlevelsel);
+    idx = uilevelGetValue (uisongsel->uilevel);
     if (idx >= 0) {
       songfilterSetNum (uisongsel->songfilter, SONG_FILTER_LEVEL_LOW, idx);
       songfilterSetNum (uisongsel->songfilter, SONG_FILTER_LEVEL_HIGH, idx);

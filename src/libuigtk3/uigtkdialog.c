@@ -129,7 +129,13 @@ uiDialogPackInDialog (UIWidget *uidialog, UIWidget *boxp)
 void
 uiDialogDestroy (UIWidget *uidialog)
 {
-  gtk_widget_destroy (GTK_WIDGET (uidialog->widget));
+  if (uidialog->widget == NULL) {
+    return;
+  }
+
+  if (GTK_IS_WIDGET (uidialog->widget)) {
+    gtk_widget_destroy (GTK_WIDGET (uidialog->widget));
+  }
   uidialog->widget = NULL;
 }
 

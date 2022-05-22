@@ -76,6 +76,10 @@ uiratingGetValue (uirating_t *uirating)
 {
   int   idx;
 
+  if (uirating == NULL) {
+    return 0;
+  }
+
   idx = uiSpinboxTextGetValue (&uirating->spinbox);
   return idx;
 }
@@ -83,6 +87,10 @@ uiratingGetValue (uirating_t *uirating)
 void
 uiratingSetValue (uirating_t *uirating, int value)
 {
+  if (uirating == NULL) {
+    return;
+  }
+
   uiSpinboxTextSetValue (&uirating->spinbox, value);
 }
 

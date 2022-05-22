@@ -48,7 +48,7 @@ enum {
 
 typedef struct {
   UICallback          callbacks [SONGSEL_CALLBACK_MAX];
-  GtkWidget           *parentwin;
+  UIWidget            *parentwin;
   UIWidget            vbox;
   GtkWidget           *songselTree;
   GtkTreeSelection    *sel;
@@ -128,7 +128,7 @@ uisongselUIFree (uisongsel_t *uisongsel)
 }
 
 UIWidget *
-uisongselBuildUI (uisongsel_t *uisongsel, GtkWidget *parentwin)
+uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin)
 {
   uisongselgtk_t    *uiw;
   UIWidget          uiwidget;
@@ -143,7 +143,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, GtkWidget *parentwin)
   logProcBegin (LOG_PROC, "uisongselBuildUI");
 
   uiw = uisongsel->uiWidgetData;
-  uisongsel->window = parentwin;
+  uisongsel->windowp = parentwin;
 
   uiCreateVertBox (&uiw->vbox);
   uiWidgetExpandHoriz (&uiw->vbox);
@@ -192,7 +192,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, GtkWidget *parentwin)
     uiBoxPackStart (&hbox, &uiwidget);
   }
 
-  widget = uiComboboxCreate (parentwin,
+  widget = uiComboboxCreate (parentwin->widget,
       "", uisongselFilterDanceSignal,
       &uisongsel->dancesel, uisongsel);
   /* CONTEXT: filter: all dances are selected */
@@ -208,7 +208,6 @@ uisongselBuildUI (uisongsel_t *uisongsel, GtkWidget *parentwin)
   uiBoxPackEnd (&hbox, &uiwidget);
 
   uiCreateHorizBox (&hbox);
-//  uiWidgetExpandVertW (uiw->vbox);
   uiBoxPackStartExpand (&uiw->vbox, &hbox);
 
   uiCreateVertBox (&vbox);
@@ -399,20 +398,13 @@ bool
 uisongselQueueProcessSelectCallback (void *udata)
 {
   uisongsel_t       *uisongsel = udata;
-  uisongselgtk_t    * uiw;
   musicqidx_t       mqidx;
-  nlist_t           *tlist;
 
   /* queue to the song list */
   mqidx = MUSICQ_A;
-  uisongselQueueProcessHandler (udata, mqidx);
-  /* clear the selected list */
-  uiw = uisongsel->uiWidgetData;
-  nlistFree (uiw->selectedList);
-  tlist = nlistAlloc ("selected-list", LIST_ORDERED, NULL);
-  uiw->selectedList = tlist;
-  /* clear any selections on the tree */
-  uisongselClearAllSelections (uisongsel);
+  uisongselQueueProcessHandler (uisongsel, mqidx);
+  /* don't clear the selected list or the displayed selections */
+  /* it's confusing */
   return UICB_CONT;
 }
 
