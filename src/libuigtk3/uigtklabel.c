@@ -100,3 +100,4 @@ uiLabelAlignEnd (UIWidget *uiwidget)
 {
   gtk_label_set_xalign (GTK_LABEL (uiwidget->widget), 1.0);
 }
+

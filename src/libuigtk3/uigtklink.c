@@ -31,6 +31,7 @@ uiCreateLink (UIWidget *uiwidget, char *label, char *uri)
   }
   lwidget = gtk_bin_get_child (GTK_BIN (widget));
   gtk_label_set_xalign (GTK_LABEL (lwidget), 0.0);
+  gtk_label_set_track_visited_links (GTK_LABEL (lwidget), FALSE);
   uiwidget->widget = widget;
 }
 

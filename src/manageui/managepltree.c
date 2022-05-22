@@ -39,6 +39,7 @@ enum {
 typedef struct managepltree {
   GtkWidget         *tree;
   GtkTreeViewColumn *danceselcol;
+  GtkTreeViewColumn *dancecol;
   GtkTreeViewColumn *countcol;
   GtkTreeViewColumn *lowbpmcol;
   GtkTreeViewColumn *highbpmcol;
@@ -56,6 +57,8 @@ static void managePlaylistTreeEditInt (GtkCellRendererText* r, const gchar* path
 static void managePlaylistTreeEditTime (GtkCellRendererText* r, const gchar* spath, const gchar* ntext, gpointer udata);
 static void managePlaylistTreeCreate (managepltree_t *managepltree);
 static bool managePlaylistTreeHideUnselectedCallback (void *udata);
+static void managePlaylistTreeSelectCheck (GtkTreeView* tv, GtkTreePath* path,
+    GtkTreeViewColumn* column, gpointer udata);
 
 managepltree_t *
 managePlaylistTreeAlloc (UIWidget *statusMsg)
@@ -65,6 +68,7 @@ managePlaylistTreeAlloc (UIWidget *statusMsg)
   managepltree = malloc (sizeof (managepltree_t));
   managepltree->tree = NULL;
   managepltree->danceselcol = NULL;
+  managepltree->dancecol = NULL;
   managepltree->countcol = NULL;
   managepltree->lowbpmcol = NULL;
   managepltree->highbpmcol = NULL;
@@ -114,6 +118,8 @@ manageBuildUIPlaylistTree (managepltree_t *managepltree, UIWidget *vboxp,
   managepltree->tree = tree;
 
   gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (tree), TRUE);
+  g_signal_connect (tree, "row-activated",
+      G_CALLBACK (managePlaylistTreeSelectCheck), managepltree);
 
   renderer = gtk_cell_renderer_toggle_new ();
   column = gtk_tree_view_column_new_with_attributes ("", renderer,
@@ -129,6 +135,7 @@ manageBuildUIPlaylistTree (managepltree_t *managepltree, UIWidget *vboxp,
   column = gtk_tree_view_column_new_with_attributes ("", renderer,
       "text", MPLTREE_COL_DANCE,
       NULL);
+  managepltree->dancecol = column;
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
   /* CONTEXT: playlist management: dance column header */
   gtk_tree_view_column_set_title (column, _("Dance"));
@@ -518,3 +525,23 @@ managePlaylistTreeHideUnselectedCallback (void *udata)
   return UICB_CONT;
 }
 
+static void
+managePlaylistTreeSelectCheck (GtkTreeView* tv, GtkTreePath* path,
+    GtkTreeViewColumn* column, gpointer udata)
+{
+  managepltree_t  *managepltree = udata;
+  GtkTreeModel    *model;
+  GtkTreeIter     iter;
+  gboolean        val;
+  int             col = MPLTREE_COL_DANCE_SELECT;
+
+  if (column != managepltree->dancecol) {
+    return;
+  }
+
+  model = gtk_tree_view_get_model (GTK_TREE_VIEW (managepltree->tree));
+  gtk_tree_model_get_iter (model, &iter, path);
+  gtk_tree_model_get (model, &iter, col, &val, -1);
+  val = ! val;
+  gtk_list_store_set (GTK_LIST_STORE (model), &iter, col, val, -1);
+}
