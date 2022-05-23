@@ -196,8 +196,7 @@ test -d ${stagedir} && rm -rf ${stagedir}
 mkdir -p ${stagedir}
 manfn=install/manifest.txt
 tmpnm=tmp/tfile.dat
-tmpcabpfx=tcab
-tmpcab=tmp/${tmpcabpfx}.cab
+tmpcab=tmp/bdj4-install.cab
 tmpsep=tmp/sep.txt
 tmpmac=tmp/macos
 
@@ -263,12 +262,10 @@ case $systype in
 
     echo "-- creating install package"
     setLibVol $stagedir libvolwin
-set -x
     (
       cd tmp;
-      cmd.exe /c "..\\pkg\\cabdir.bat $(basename ${stagedir}) ${tmpcabpfx}"
+      ../pkg/pkgmakecab.sh
     )
-set +x
     cat bin/bdj4se.exe \
         ${tmpsep} \
         ${tmpcab} \
