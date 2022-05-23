@@ -21,49 +21,44 @@ static void uiDialogResponseHandler (GtkDialog *d, gint responseid, gpointer uda
 char *
 uiSelectDirDialog (uiselect_t *selectdata)
 {
-  GtkWidget *widget = NULL;
+  GtkFileChooserNative *widget = NULL;
   gint      res;
   char      *fn = NULL;
 
-  widget = gtk_file_chooser_dialog_new (
+  widget = gtk_file_chooser_native_new (
       selectdata->label,
       GTK_WINDOW (selectdata->window->widget),
       GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER,
-      /* CONTEXT: action associated with the select folder dialog */
-      _("Close"), GTK_RESPONSE_CANCEL,
-      /* CONTEXT: action associated with the select folder dialog */
-      _("Select"), GTK_RESPONSE_ACCEPT,
-      NULL);
+      /* CONTEXT: actions associated with the select folder dialog */
+      _("Select"), _("Close"));
+
   if (selectdata->startpath != NULL) {
     gtk_file_chooser_set_current_folder (GTK_FILE_CHOOSER (widget),
         selectdata->startpath);
   }
 
-  res = gtk_dialog_run (GTK_DIALOG (widget));
+  res = gtk_native_dialog_run (GTK_NATIVE_DIALOG (widget));
   if (res == GTK_RESPONSE_ACCEPT) {
     fn = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (widget));
   }
 
-  gtk_widget_destroy (widget);
+  g_object_unref (widget);
   return fn;
 }
 
 char *
 uiSelectFileDialog (uiselect_t *selectdata)
 {
-  GtkWidget *widget = NULL;
+  GtkFileChooserNative *widget = NULL;
   gint      res;
   char      *fn = NULL;
 
-  widget = gtk_file_chooser_dialog_new (
+  widget = gtk_file_chooser_native_new (
       selectdata->label,
       GTK_WINDOW (selectdata->window->widget),
       GTK_FILE_CHOOSER_ACTION_OPEN,
-      /* CONTEXT: actions associated with the select file dialog */
-      _("Close"), GTK_RESPONSE_CANCEL,
-      /* CONTEXT: actions associated with the select file dialog */
-      _("Select"), GTK_RESPONSE_ACCEPT,
-      NULL);
+      /* CONTEXT: actions associated with the select folder dialog */
+      _("Select"), _("Close"));
 
   if (selectdata->startpath != NULL) {
     gtk_file_chooser_set_current_folder (GTK_FILE_CHOOSER (widget),
@@ -80,12 +75,12 @@ uiSelectFileDialog (uiselect_t *selectdata)
     gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (widget), ff);
   }
 
-  res = gtk_dialog_run (GTK_DIALOG (widget));
+  res = gtk_native_dialog_run (GTK_NATIVE_DIALOG (widget));
   if (res == GTK_RESPONSE_ACCEPT) {
     fn = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (widget));
   }
 
-  gtk_widget_destroy (widget);
+  g_object_unref (widget);
   return fn;
 }
 

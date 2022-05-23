@@ -20,19 +20,34 @@ START_TEST(filemanip_copy)
   FILE      *fh;
   int       rc;
 
-  char *ofn = "tmp/abc.txt.a";
-  char *nfn = "tmp/abc.txt.b";
+  char *nullfn = "tmp/abc-z.txt";
+  char *ofn = "tmp/abc-a.txt";
+  char *nfn = "tmp/abc-b.txt";
   unlink (ofn);
   unlink (nfn);
+
   fh = fopen (ofn, "w");
   ck_assert_ptr_nonnull (fh);
+  fprintf (fh, "x\n");
   fclose (fh);
+
+  rc = fileopFileExists (nfn);
+  ck_assert_int_eq (rc, 0);
+
   rc = filemanipCopy (ofn, nfn);
   ck_assert_int_eq (rc, 0);
+
   rc = fileopFileExists (ofn);
   ck_assert_int_eq (rc, 1);
   rc = fileopFileExists (nfn);
   ck_assert_int_eq (rc, 1);
+
+  unlink (nfn);
+  rc = filemanipCopy (nullfn, nfn);
+  ck_assert_int_ne (rc, 0);
+  rc = fileopFileExists (nfn);
+  ck_assert_int_eq (rc, 0);
+
   unlink (ofn);
   unlink (nfn);
 }

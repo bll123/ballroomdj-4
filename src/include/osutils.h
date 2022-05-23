@@ -59,6 +59,7 @@ void          osIgnoreSignal (int signal);
 void          osDefaultSignal (int signal);
 char          *osGetLocale (char *buff, size_t sz);
 char *        osRunProgram (const char *prog, ...);
+int           osCreateLink (const char *target, const char *linkpath);
 
 /* system specific functions in separate files */
 char          *osRegistryGet (char *key, char *name);

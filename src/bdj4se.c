@@ -25,14 +25,12 @@ main (int argc, char *argv [])
   struct stat statbuf;
   char        *fn = argv [0];
   FILE        *ifh = NULL;
-  FILE        *zfh = NULL;
-  FILE        *mufh = NULL;
+  FILE        *archivefh = NULL;
   char        *buff = NULL;
   char        tagstr [40];
   char        tbuff [1024];
   char        *tmpdir;
-  char        *mup = NULL;
-  char        *zp = NULL;
+  char        *archivep = NULL;
   char        *p = NULL;
   ssize_t     sz;
   bool        first = true;
@@ -43,7 +41,7 @@ main (int argc, char *argv [])
 
 #if __WINNT__
   isWindows = true;
-  archivenm = "bdj4-install.zip";
+  archivenm = "bdj4-install.cab";
 # if BDJ4_USE_GTK
   osSetEnv ("GTK_THEME", "Windows-10-Dark");
 # endif
@@ -92,18 +90,9 @@ main (int argc, char *argv [])
     tmpdir = "tmp";
   }
 
-  if (isWindows) {
-    snprintf (tbuff, sizeof (tbuff), "%s/%s", tmpdir, "miniunz.exe");
-    mufh = fopen (tbuff, "wb");
-    if (mufh == NULL) {
-      fprintf (stderr, "Unable to open output %s %d %s\n", tbuff, errno, strerror (errno));
-      exit (1);
-    }
-  }
-
   snprintf (tbuff, sizeof (tbuff), "%s/%s", tmpdir, archivenm);
-  zfh = fopen (tbuff, "wb");
-  if (zfh == NULL) {
+  archivefh = fopen (tbuff, "wb");
+  if (archivefh == NULL) {
     fprintf (stderr, "Unable to open output %s %d %s\n", tbuff, errno, strerror (errno));
     exit (1);
   }
@@ -115,48 +104,26 @@ main (int argc, char *argv [])
     p = buff;
 
     if (first) {
-      ssize_t   tsz;
-
-      if (isWindows) {
-        mup = memsrch (buff, sz, tagstr, strlen (tagstr));
-        if (mup == NULL) {
-          fprintf (stderr, "Unable to locate first tag\n");
-          exit (1);
-        }
-        mup += strlen (tagstr);
-        p = mup;
-        ++p;
-      } else {
-        mup = buff;
-      }
-
-      zp = memsrch (p, sz, tagstr, strlen (tagstr));
-      if (zp == NULL) {
+      archivep = memsrch (p, sz, tagstr, strlen (tagstr));
+      if (archivep == NULL) {
         fprintf (stderr, "Unable to locate second tag\n");
         exit (1);
       }
 
-      if (isWindows) {
-        /* calculate the size of the first block */
-        tsz = (zp - mup);
-        tsz = fwrite (mup, 1, tsz, mufh);
-        fclose (mufh);
-      }
-
       /* calculate the size of the second block */
-      zp += strlen (tagstr);
-      p = zp;
-      sz = sz - (zp - buff);
+      archivep += strlen (tagstr);
+      p = archivep;
+      sz = sz - (archivep - buff);
 
       first = false;
     }
 
-    sz = fwrite (p, 1, sz, zfh);
+    sz = fwrite (p, 1, sz, archivefh);
     sz = fread (buff, 1, BUFFSZ, ifh);
   }
 
   fclose (ifh);
-  fclose (zfh);
+  fclose (archivefh);
 
   free (buff);
 
@@ -178,7 +145,7 @@ main (int argc, char *argv [])
   printf ("-- Unpacking archive.\n");
   fflush (stdout);
   if (isWindows) {
-    system (".\\miniunz.exe -o -x bdj4-install.zip > bdj4-unzip.log ");
+    system ("expand bdj4-install.cab -F:* . > bdj4-expand.log ");
   } else {
     system ("tar -x -f bdj4-install.tar.gz");
   }

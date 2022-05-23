@@ -16,6 +16,9 @@ CLANGXX = clang++
 debug-gtk:
 	BDJ4_BUILD=Debug-gtk $(MAKE) cmake
 
+debug-clang-gtk:
+	BDJ4_BUILD=Debug-gtk $(MAKE) cmake
+
 release-gtk:
 	BDJ4_BUILD=Release-gtk $(MAKE) cmake
 
@@ -29,7 +32,7 @@ sanitizeleak:
 	BDJ4_BUILD=SanitizeLeak $(MAKE) cmake
 
 sanitizeundef:
-	BDJ4_BUILD=SanitizeUndef $(MAKE) cmake-gtk
+	BDJ4_BUILD=SanitizeUndef $(MAKE) cmake
 
 .PHONY: cmake cmakeclang cmake-unix cmake-windows
 

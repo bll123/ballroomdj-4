@@ -53,7 +53,6 @@ filemanipCopy (const char *fname, const char *nfn)
   char      tnfn [MAXPATHLEN];
   int       rc = -1;
 
-
   if (isWindows ()) {
     strlcpy (tfname, fname, sizeof (tfname));
     pathWinPath (tfname, sizeof (tfname));
@@ -67,7 +66,7 @@ filemanipCopy (const char *fname, const char *nfn)
       wtnfn = osToFSFilename (tnfn);
 
       rc = CopyFileW (wtfname, wtnfn, 0);
-      rc = (rc == 0);
+      rc = rc != 0 ? 0 : -1;
       free (wtfname);
       free (wtnfn);
     }
@@ -87,7 +86,7 @@ filemanipCopy (const char *fname, const char *nfn)
       }
       free (data);
     }
-    rc = (trc == 1);
+    rc = trc == 1 ? 0 : -1;
   }
   return rc;
 }
@@ -95,6 +94,7 @@ filemanipCopy (const char *fname, const char *nfn)
 /* link if possible, otherwise copy */
 /* windows has had symlinks for ages, but they require either */
 /* admin permission, or have the machine in developer mode */
+/* shell links would be fine probably, but creating them is a hassle */
 int
 filemanipLinkCopy (const char *fname, const char *nfn)
 {
@@ -103,9 +103,7 @@ filemanipLinkCopy (const char *fname, const char *nfn)
   if (isWindows ()) {
     rc = filemanipCopy (fname, nfn);
   } else {
-#if _lib_symlink
-    rc = symlink (fname, nfn);
-#endif
+    osCreateLink (fname, nfn);
   }
   return rc;
 }

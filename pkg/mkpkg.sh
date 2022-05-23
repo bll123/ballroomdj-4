@@ -196,7 +196,8 @@ test -d ${stagedir} && rm -rf ${stagedir}
 mkdir -p ${stagedir}
 manfn=install/manifest.txt
 tmpnm=tmp/tfile.dat
-tmpzip=tmp/tfile.zip
+tmpcabpfx=tcab
+tmpcab=tmp/${tmpcabpfx}.cab
 tmpsep=tmp/sep.txt
 tmpmac=tmp/macos
 
@@ -223,7 +224,7 @@ case $systype in
 
     setLibVol $stagedir libvolpa
     echo "-- creating install package"
-    (cd tmp;tar -c -z -f - $(basename $stagedir)) > ${tmpnm}
+    (cd tmp;tar -c -J -f - $(basename $stagedir)) > ${tmpnm}
     cat bin/bdj4se ${tmpsep} ${tmpnm} > ${nm}
     rm -f ${tmpnm}
     ;;
@@ -248,7 +249,7 @@ case $systype in
 
     setLibVol $stagedir/Contents/MacOS libvolmac
     echo "-- creating install package"
-    (cd tmp;tar -c -z -f - $(basename $stagedir)) > ${tmpnm}
+    (cd tmp;tar -c -J -f - $(basename $stagedir)) > ${tmpnm}
     cat bin/bdj4se ${tmpsep} ${tmpnm} > ${nm}
     rm -f ${tmpnm}
     ;;
@@ -262,14 +263,17 @@ case $systype in
 
     echo "-- creating install package"
     setLibVol $stagedir libvolwin
-    (cd tmp; zip -r ../${tmpzip} $(basename $stagedir) ) > pkg-zip.log 2>&1
+set -x
+    (
+      cd tmp;
+      cmd.exe /c "..\\pkg\\cabdir.bat $(basename ${stagedir}) ${tmpcabpfx}"
+    )
+set +x
     cat bin/bdj4se.exe \
         ${tmpsep} \
-        plocal/bin/miniunz.exe \
-        ${tmpsep} \
-        ${tmpzip} \
+        ${tmpcab} \
         > ${nm}
-    rm -f ${tmpzip} ${tmpsep}
+    rm -f ${tmpcab} ${tmpsep}
     ;;
 esac
 chmod a+rx ${nm}

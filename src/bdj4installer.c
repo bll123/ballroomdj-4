@@ -563,10 +563,10 @@ installerBuildUI (installer_t *installer)
       _("Exit"), NULL, NULL, NULL);
   uiBoxPackEnd (&hbox, &uiwidget);
 
-  uiutilsUICallbackInit (&installer->callbacks [INST_CALLBACK_SELECT_DIR],
+  uiutilsUICallbackInit (&installer->callbacks [INST_CALLBACK_INSTALL],
       installerInstallCallback, installer);
   uiCreateButton (&uiwidget,
-      &installer->callbacks [INST_CALLBACK_SELECT_DIR],
+      &installer->callbacks [INST_CALLBACK_INSTALL],
       /* CONTEXT: installer: start the installation process */
       _("Install"), NULL, NULL, NULL);
   uiBoxPackEnd (&hbox, &uiwidget);

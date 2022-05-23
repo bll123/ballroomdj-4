@@ -47,13 +47,13 @@ esac
 echo "-- copying licenses"
 licdir=licenses
 rm -f ${licdir}/*
-cp -f packages/mongoose/LICENSE ${licdir}/mongoose.LICENSE
+cp -pf packages/mongoose/LICENSE ${licdir}/mongoose.LICENSE
 if [[ $tag == windows ]]; then
-  cp -f packages/libressl*/COPYING ${licdir}/libressl.LICENSE
-  cp -f packages/c-ares*/LICENSE.md ${licdir}/c-ares.LICENSE.md
-  cp -f packages/curl*/COPYING ${licdir}/curl.LICENSE
-  cp -f packages/nghttp*/LICENSE ${licdir}/nghttp2.LICENSE
-  cp -f packages/zstd*/LICENSE ${licdir}/zstd.LICENSE
+  cp -pf packages/libressl*/COPYING ${licdir}/libressl.LICENSE
+  cp -pf packages/c-ares*/LICENSE.md ${licdir}/c-ares.LICENSE.md
+  cp -pf packages/curl*/COPYING ${licdir}/curl.LICENSE
+  cp -pf packages/nghttp*/LICENSE ${licdir}/nghttp2.LICENSE
+  cp -pf packages/zstd*/LICENSE ${licdir}/zstd.LICENSE
 fi
 
 (cd src; make tclean > /dev/null 2>&1)
@@ -68,12 +68,14 @@ fi
 
 ./src/utils/makehtmllist.sh
 
-cp -f templates/*.svg img
+cp -pf templates/*.svg img
 
 # on windows, copy all of the required .dll files to plocal/bin
 # this must be done after the build and before the manifest is created.
 
 if [[ $platform == windows ]]; then
+
+  count=0
 
   # bll@win10-64 MINGW64 ~/bdj4/bin
   # $ ldd bdj4.exe | grep mingw
@@ -97,6 +99,7 @@ if [[ $platform == windows ]]; then
       echo "** $fn does not exist **"
     fi
     if [[ $fn -nt $PBIN/$bfn ]]; then
+      count=$((count+1))
       cp -pf $fn $PBIN
     fi
   done
@@ -112,22 +115,24 @@ if [[ $platform == windows ]]; then
   for fn in $(sort -u $dlllistfn); do
     bfn=$(basename $fn)
     if [[ $fn -nt $PBIN/$bfn ]]; then
+      count=$((count+1))
       cp -pf $fn $PBIN
     fi
   done
   rm -f $dlllistfn
+  echo "   $count files copied."
 
   # stage the other required gtk files.
 
   # various gtk stuff
-  cp -rf /mingw64/lib/gdk-pixbuf-2.0 plocal/lib
-  cp -rf /mingw64/lib/girepository-1.0 plocal/lib
+  cp -prf /mingw64/lib/gdk-pixbuf-2.0 plocal/lib
+  cp -prf /mingw64/lib/girepository-1.0 plocal/lib
   mkdir -p plocal/share/icons
-  cp -rf /mingw64/share/icons/* plocal/share/icons
+  cp -prf /mingw64/share/icons/* plocal/share/icons
   mkdir -p plocal/share/glib-2.0
-  cp -rf /mingw64/share/glib-2.0/schemas plocal/share/glib-2.0
+  cp -prf /mingw64/share/glib-2.0/schemas plocal/share/glib-2.0
   mkdir -p plocal/etc/gtk-3.0
-  cp -f /mingw64/etc/gtk-3.0/im-multipress.conf plocal/etc/gtk-3.0
+  cp -pf /mingw64/etc/gtk-3.0/im-multipress.conf plocal/etc/gtk-3.0
 
   cat > plocal/etc/gtk-3.0/settings.ini <<_HERE_
 [Settings]
@@ -142,7 +147,7 @@ gtk-theme-name = Windows-10-Dark
 _HERE_
 
   mkdir -p plocal/etc/fonts
-  cp -rf /mingw64/etc/fonts plocal/etc
+  cp -prf /mingw64/etc/fonts plocal/etc
 
   # fix other windows specific stuff
 

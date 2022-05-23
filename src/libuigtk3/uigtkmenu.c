@@ -90,7 +90,7 @@ uiMenuAddMainItem (UIWidget *uimenubar, UIWidget *uimenuitem,
   gtk_menu_shell_append (GTK_MENU_SHELL (uimenubar->widget),
       uimenuitem->widget);
   uiWidgetHide (uimenuitem);
-  uiutilsUIWidgetCopy (&menu->menuitem [i], uimenuitem);
+  memcpy (&menu->menuitem [i], uimenuitem, sizeof (UIWidget));
 }
 
 void

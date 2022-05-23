@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-05-16 13:06-0700\n"
+"POT-Creation-Date: 2022-05-22 14:52-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -97,6 +97,16 @@ msgstr ""
 msgid "%s must be set."
 msgstr ""
 
+#. CONTEXT: validation: invalid time (minutes/seconds)
+#, c-format
+msgid "%s: Invalid duration."
+msgstr ""
+
+#. CONTEXT: validation: invalid time (hours/minutes)
+#, c-format
+msgid "%s: Invalid time."
+msgstr ""
+
 #. CONTEXT: validation: slashes ( / and \\ ) are not allowed
 #, c-format
 msgid "%s: Slashes are not allowed"
@@ -133,9 +143,9 @@ msgstr ""
 msgid "Accent Colour"
 msgstr ""
 
+#. CONTEXT: action menu for the starter user interface
 #. CONTEXT: menu selection: actions for song editor
 #. CONTEXT: menu selection: actions for song list
-#. CONTEXT: action menu for the starter user interface
 msgid "Actions"
 msgstr ""
 
@@ -164,18 +174,22 @@ msgstr ""
 msgid "All Genres"
 msgstr ""
 
-#. CONTEXT: a filter: all dance levels are displayed in the song selection
 #. CONTEXT: a filter: all dance levels will be listed
+#. CONTEXT: a filter: all dance levels are displayed in the song selection
 msgid "All Levels"
 msgstr ""
 
-#. CONTEXT: a filter: all dance ratings are displayed in the song selection
 #. CONTEXT: a filter: all dance ratings will be listed
+#. CONTEXT: a filter: all dance ratings are displayed in the song selection
 msgid "All Ratings"
 msgstr ""
 
 #. CONTEXT: write audio file tags: write all tags (BDJ and standard) to the audio file
 msgid "All Tags"
+msgstr ""
+
+#. CONTEXT: playlist management: allowed keywords
+msgid "Allowed Keywords"
 msgstr ""
 
 #. CONTEXT: configuration: dances: play the selected announcement before the dance is played
@@ -228,6 +242,11 @@ msgstr ""
 
 #. CONTEXT: configuration: checkbox: is automatic organization enabled
 msgid "Auto Organise"
+msgstr ""
+
+#. CONTEXT: playlist management: default playlist type
+#. CONTEXT: playlist management: type of playlist
+msgid "Automatic"
 msgstr ""
 
 #. CONTEXT: write audio file tags: only write BDJ tags to the audio file
@@ -285,10 +304,10 @@ msgid "Clear Queue"
 msgstr ""
 
 #. CONTEXT: helperui: close the helper window
-#. CONTEXT: file select dialog: closes the dialog
 #. CONTEXT: marquee font size dialog: action button
 #. CONTEXT: support dialog: closes the dialog
 #. CONTEXT: support message dialog: closes the dialog
+#. CONTEXT: file select dialog: closes the dialog
 #. CONTEXT: filter dialog: closes the dialog
 msgid "Close"
 msgstr ""
@@ -349,8 +368,10 @@ msgstr ""
 msgid "Copying template files."
 msgstr ""
 
-#. CONTEXT: menu selection: song list: edit menu: create copy
-#. CONTEXT: menu selection: sequence: edit menu: create copy
+#. CONTEXT: playlist management: count column header
+msgid "Count"
+msgstr ""
+
 msgid "Create Copy"
 msgstr ""
 
@@ -363,9 +384,10 @@ msgid "Creating shortcut."
 msgstr ""
 
 #. CONTEXT: configuration: dances: the name of the dance
-#. CONTEXT: sequence editor: titles for the selection list and the sequence list
 #. CONTEXT: title: dance
 #. CONTEXT: a filter: select the dance displayed in the song selection
+#. CONTEXT: playlist management: dance column header
+#. CONTEXT: sequence editor: titles for the selection list and the sequence list
 msgid "Dance"
 msgstr ""
 
@@ -377,6 +399,7 @@ msgstr ""
 
 #. CONTEXT: title: dance rating
 #. CONTEXT: a filter: select the dance rating displayed in the song selection
+#. CONTEXT: playlist management: Dance Rating
 msgid "Dance Rating"
 msgstr ""
 
@@ -458,7 +481,6 @@ msgstr ""
 msgid "Easy Song List"
 msgstr ""
 
-#. CONTEXT: menu checkbox: easy song list editor
 msgid "Easy Song List Editor"
 msgstr ""
 
@@ -495,7 +517,7 @@ msgstr ""
 msgid "Edit Sequences"
 msgstr ""
 
-#. CONTEXT: notebook tab title: edit song lists (manual playlists)
+#. CONTEXT: notebook tab title: edit song lists
 msgid "Edit Song Lists"
 msgstr ""
 
@@ -608,13 +630,16 @@ msgstr ""
 msgid "Font"
 msgstr ""
 
-#. CONTEXT: menu selection: marquee: change the marquee font size
 #. CONTEXT: marquee font size dialog: the font size selector
 msgid "Font Size"
 msgstr ""
 
 #. CONTEXT: dance
 msgid "Foxtrot"
+msgstr ""
+
+#. CONTEXT: playlist management: Gap
+msgid "Gap"
 msgstr ""
 
 #. CONTEXT: configuration: the amount of time to wait inbetween songs
@@ -648,9 +673,21 @@ msgstr ""
 msgid "Hide Marquee on Start"
 msgstr ""
 
+#. CONTEXT: playlist management: hide unselected dances
+msgid "Hide Unselected"
+msgstr ""
+
 #. CONTEXT: configuration: dances: high BPM (or MPM) setting
 #, c-format
 msgid "High %s"
+msgstr ""
+
+#. CONTEXT: playlist management: high bpm/mpm column
+msgid "High BPM"
+msgstr ""
+
+#. CONTEXT: playlist management: High Dance Level
+msgid "High Dance Level"
 msgstr ""
 
 #. CONTEXT: installer: command line interface: instructions
@@ -725,8 +762,6 @@ msgstr ""
 msgid "Listing Font"
 msgstr ""
 
-#. CONTEXT: menu selection: song list: edit menu: load
-#. CONTEXT: menu selection: sequence: edit menu: load
 msgid "Load"
 msgstr ""
 
@@ -749,6 +784,14 @@ msgstr ""
 #. CONTEXT: configuration: dances: low BPM (or MPM) setting
 #, c-format
 msgid "Low %s"
+msgstr ""
+
+#. CONTEXT: playlist management: low bpm/mpm column header
+msgid "Low BPM"
+msgstr ""
+
+#. CONTEXT: playlist management: Low Dance Level
+msgid "Low Dance Level"
 msgstr ""
 
 #. CONTEXT: title: measures per minute
@@ -784,7 +827,14 @@ msgstr ""
 msgid "Marquee Theme"
 msgstr ""
 
+#. CONTEXT: playlist management: max play time column header (keep short)
+msgid ""
+"Maximum\n"
+"Play Time"
+msgstr ""
+
 #. CONTEXT: configuration: the maximum amount of time to play a song
+#. CONTEXT: playlist management: maximum play time
 msgid "Maximum Play Time"
 msgstr ""
 
@@ -853,6 +903,9 @@ msgstr ""
 msgid "New %s installation."
 msgstr ""
 
+msgid "New Automatic Playlist"
+msgstr ""
+
 #. CONTEXT: configuration: dance name that is set when adding a new dance
 msgid "New Dance"
 msgstr ""
@@ -867,6 +920,11 @@ msgstr ""
 
 #. CONTEXT: configuration: level name that is set when adding a new level
 msgid "New Level"
+msgstr ""
+
+#. CONTEXT: sequence: default name for a new sequence
+#, c-format
+msgid "New Playlist"
 msgstr ""
 
 #. CONTEXT: starter: selection to create a new profile
@@ -925,8 +983,8 @@ msgstr ""
 msgid "Off"
 msgstr ""
 
-#. CONTEXT: menu selection: song list: options menu
 #. CONTEXT: menu selection: options for the player
+#. CONTEXT: menu selection: song list: options menu
 msgid "Options"
 msgstr ""
 
@@ -980,7 +1038,10 @@ msgstr ""
 msgid "Play"
 msgstr ""
 
-#. CONTEXT: menu checkbox: start playback when a dance or playlist is queued
+#. CONTEXT: playlist management: Play Announcements
+msgid "Play Announcements"
+msgstr ""
+
 msgid "Play When Queued"
 msgstr ""
 
@@ -1006,8 +1067,16 @@ msgstr ""
 msgid "Player Options"
 msgstr ""
 
+#. CONTEXT: playlist management: label for playlist name
+msgid "Playlist"
+msgstr ""
+
 #. CONTEXT: notebook tab title: playlist management
 msgid "Playlist Management"
+msgstr ""
+
+#. CONTEXT: playlist management: label for playlist name
+msgid "Playlist Type"
 msgstr ""
 
 #. CONTEXT: installer: status message
@@ -1072,7 +1141,7 @@ msgstr ""
 msgid "Queue Dance"
 msgstr ""
 
-#. CONTEXT: configuration: the length of the music queue to display
+#. CONTEXT: configuration: the &sgB, of the music queue to display
 #. CONTEXT: configuration: the length of the queue displayed on the marquee
 msgid "Queue Length"
 msgstr ""
@@ -1095,8 +1164,8 @@ msgstr ""
 msgid "Raffle Games"
 msgstr ""
 
-#. CONTEXT: name of the special song list for raffle songs
 #. CONTEXT: The name of the 'raffle songs' playlist file
+#. CONTEXT: name of the special song list for raffle songs
 msgid "Raffle Songs"
 msgstr ""
 
@@ -1192,12 +1261,11 @@ msgstr ""
 msgid "Search"
 msgstr ""
 
-#. CONTEXT: config: button: add the selected songs to the song list
-#. CONTEXT: file select dialog: selects the file
 #. CONTEXT: configuration: display settings: button: add the selected field
+#. CONTEXT: file select dialog: selects the file
 #. CONTEXT: select a song to be added to the song list
 #. CONTEXT: actions associated with the select folder dialog
-#. CONTEXT: actions associated with the select file dialog
+#. CONTEXT: config: button: add the selected songs to the song list
 msgid "Select"
 msgstr ""
 
@@ -1239,11 +1307,15 @@ msgstr ""
 msgid "Sending Support Message"
 msgstr ""
 
+#. CONTEXT: playlist management: type of playlist
 #. CONTEXT: sequence editor: label for sequence name
 msgid "Sequence"
 msgstr ""
 
-#. CONTEXT: menu checkbox: show the extra queues (in addition to the main music queue)
+#. CONTEXT: select the current queue for playback
+msgid "Set Queue for Playback"
+msgstr ""
+
 msgid "Show Extra Queues"
 msgstr ""
 
@@ -1276,9 +1348,10 @@ msgid "Song End"
 msgstr ""
 
 #. CONTEXT: display settings for: song list
+#. CONTEXT: file type for the file selection dialog (song list)
 #. CONTEXT: name of easy song list song selection tab
 #. CONTEXT: name of easy song list notebook tab
-#. CONTEXT: file type for the file selection dialog (song list)
+#. CONTEXT: playlist management: type of playlist
 msgid "Song List"
 msgstr ""
 
@@ -1308,11 +1381,9 @@ msgstr ""
 msgid "Start"
 msgstr ""
 
-#. CONTEXT: menu selection: sequence: edit menu: start new sequence
 msgid "Start New Sequence"
 msgstr ""
 
-#. CONTEXT: menu selection: song list: edit menu: start new song list
 msgid "Start New Song List"
 msgstr ""
 
@@ -1331,9 +1402,17 @@ msgstr ""
 msgid "Status"
 msgstr ""
 
+#. CONTEXT: playlist management: stop after
+msgid "Stop After"
+msgstr ""
+
 #. CONTEXT: menu item: stop all BDJ4 processes
 #, c-format
 msgid "Stop All %s Processes"
+msgstr ""
+
+#. CONTEXT: playlist management: stop at
+msgid "Stop At"
 msgstr ""
 
 #. CONTEXT: sending support message: subject of message
@@ -1353,7 +1432,6 @@ msgstr ""
 msgid "Support options"
 msgstr ""
 
-#. CONTEXT: menu checkbox: when a queue is emptied, switch playback to the next queue
 msgid "Switch Queue When Empty"
 msgstr ""
 
@@ -1412,7 +1490,6 @@ msgstr ""
 msgid "Track"
 msgstr ""
 
-#. CONTEXT: menu selection: song list: actions menu: truncate the song list
 msgid "Truncate"
 msgstr ""
 

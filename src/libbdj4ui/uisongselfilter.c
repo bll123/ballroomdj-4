@@ -10,8 +10,6 @@
 #include <assert.h>
 #include <math.h>
 
-#include <gtk/gtk.h>
-
 #include "bdj4.h"
 #include "bdj4intl.h"
 #include "bdjstring.h"

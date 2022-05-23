@@ -76,361 +76,149 @@ sRandom (void)
 #endif
 }
 
+/* identical on linux and mac os */
+#if _lib_fork
+
 /* handles redirection to a file */
 pid_t
 osProcessStart (char *targv[], int flags, void **handle, char *outfname)
 {
   pid_t       pid;
+  pid_t       tpid;
+  int         rc;
+  int         ostdout;
+  int         ostderr;
 
-#if _lib_fork
-  {
-    pid_t       tpid;
-    int         rc;
-    int         ostdout;
-    int         ostderr;
-
-    /* this may be slower, but it works; speed is not a major issue */
-    tpid = fork ();
-    if (tpid < 0) {
-      return tpid;
-    }
-
-    if (tpid == 0) {
-      /* child */
-      if ((flags & OS_PROC_DETACH) == OS_PROC_DETACH) {
-        setsid ();
-      }
-
-      if (outfname != NULL) {
-        int fd = open (outfname, O_CREAT | O_WRONLY | O_TRUNC, S_IRWXU | S_IRWXG);
-        if (fd < 0) {
-          outfname = NULL;
-        } else {
-          ostdout = dup (STDOUT_FILENO);
-          ostderr = dup (STDERR_FILENO);
-          dup2 (fd, STDOUT_FILENO);
-          dup2 (fd, STDERR_FILENO);
-          close (fd);
-        }
-      }
-
-      rc = execv (targv [0], (char * const *) targv);
-      if (rc < 0) {
-        fprintf (stderr, "unable to execute %s %d %s\n", targv [0], errno, strerror (errno));
-        exit (1);
-      }
-
-      exit (0);
-    }
-
-    pid = tpid;
-    if ((flags & OS_PROC_WAIT) == OS_PROC_WAIT) {
-      waitpid (pid, NULL, 0);
-    }
+  /* this may be slower, but it works; speed is not a major issue */
+  tpid = fork ();
+  if (tpid < 0) {
+    return tpid;
   }
-#endif
 
-#if _lib_CreateProcess
-  {
-    STARTUPINFOW        si;
-    PROCESS_INFORMATION pi;
-    char                tbuff [MAXPATHLEN];
-    char                buff [MAXPATHLEN];
-    int                 idx;
-    int                 val;
-    int                 inherit = FALSE;
-    wchar_t             *wbuff;
-    HANDLE              outhandle = INVALID_HANDLE_VALUE;
-
-    memset (&si, '\0', sizeof (si));
-    si.cb = sizeof (si);
-    memset (&pi, '\0', sizeof (pi));
-
-    if (outfname != NULL) {
-      SECURITY_ATTRIBUTES sao;
-
-      sao.nLength = sizeof (SECURITY_ATTRIBUTES);
-      sao.lpSecurityDescriptor = NULL;
-      sao.bInheritHandle = 1;
-
-      outhandle = CreateFile (outfname,
-        GENERIC_WRITE,
-        FILE_SHARE_READ | FILE_SHARE_WRITE,
-        &sao,
-        CREATE_ALWAYS,
-        FILE_ATTRIBUTE_NORMAL,
-        NULL);
-      si.hStdOutput = outhandle;
-      si.hStdError = outhandle;
-      si.hStdInput = GetStdHandle (STD_INPUT_HANDLE);
-      si.dwFlags |= STARTF_USESTDHANDLES;
-      inherit = TRUE;
-    }
-
-    buff [0] = '\0';
-    idx = 0;
-    while (targv [idx] != NULL) {
-      /* quote everything on windows. the batch files must be adjusted to suit */
-      snprintf (tbuff, sizeof (tbuff), "\"%s\"", targv [idx++]);
-      strlcat (buff, tbuff, MAXPATHLEN);
-      strlcat (buff, " ", MAXPATHLEN);
-    }
-    wbuff = osToFSFilename (buff);
-
-    val = 0;
+  if (tpid == 0) {
+    /* child */
     if ((flags & OS_PROC_DETACH) == OS_PROC_DETACH) {
-      val |= DETACHED_PROCESS;
-      val |= CREATE_NO_WINDOW;
-    }
-
-    /* windows and its stupid space-in-name and quoting issues */
-    /* leave the module name as null, as otherwise it would have to be */
-    /* a non-quoted version.  the command in the command line must be quoted */
-    if (! CreateProcessW (
-        NULL,           // module name
-        wbuff,           // command line
-        NULL,           // process handle
-        NULL,           // hread handle
-        inherit,        // handle inheritance
-        val,            // set to DETACHED_PROCESS
-        NULL,           // parent's environment
-        NULL,           // parent's starting directory
-        &si,            // STARTUPINFO structure
-        &pi )           // PROCESS_INFORMATION structure
-    ) {
-      int err = GetLastError ();
-      fprintf (stderr, "getlasterr: %d\n", err);
-      return -1;
-    }
-
-    pid = pi.dwProcessId;
-    if (handle != NULL) {
-      *handle = pi.hProcess;
-    }
-    CloseHandle (pi.hThread);
-
-    if ((flags & OS_PROC_WAIT) == OS_PROC_WAIT) {
-      WaitForSingleObject (pi.hProcess, INFINITE);
+      setsid ();
     }
 
     if (outfname != NULL) {
-      int         rc;
-      int         count;
-      struct stat statbuf;
-
-      CloseHandle (outhandle);
-      rc = stat (outfname, &statbuf);
-
-      /* windows is mucked up; wait for the redirected output to appear */
-      count = 0;
-      while (rc == 0 && statbuf.st_size == 0 && count < 60) {
-        mssleep (5);
-        rc = stat (outfname, &statbuf);
-        ++count;
+      int fd = open (outfname, O_CREAT | O_WRONLY | O_TRUNC, S_IRWXU | S_IRWXG);
+      if (fd < 0) {
+        outfname = NULL;
+      } else {
+        ostdout = dup (STDOUT_FILENO);
+        ostderr = dup (STDERR_FILENO);
+        dup2 (fd, STDOUT_FILENO);
+        dup2 (fd, STDERR_FILENO);
+        close (fd);
       }
     }
-    free (wbuff);
+
+    rc = execv (targv [0], (char * const *) targv);
+    if (rc < 0) {
+      fprintf (stderr, "unable to execute %s %d %s\n", targv [0], errno, strerror (errno));
+      exit (1);
+    }
+
+    exit (0);
   }
-#endif
+
+  pid = tpid;
+  if ((flags & OS_PROC_WAIT) == OS_PROC_WAIT) {
+    waitpid (pid, NULL, 0);
+  }
+
   return pid;
 }
+
+#endif /* if _lib_fork */
+
+/* identical on linux and mac os */
+#if _lib_fork
 
 /* creates a pipe for re-direction and grabs the output */
 pid_t
 osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz)
 {
   pid_t   pid;
+  int         rc;
+  pid_t       tpid;
+  int         pipefd [2];
+  int         ostdout;
+  int         ostderr;
+  ssize_t     bytesread;
 
-#if _lib_fork
-  {
-    int         rc;
-    pid_t       tpid;
-    int         pipefd [2];
-    int         ostdout;
-    int         ostderr;
-    ssize_t     bytesread;
-
-    if (pipe (pipefd) < 0) {
-      return -1;
-    }
-
-    /* this may be slower, but it works; speed is not a major issue */
-    tpid = fork ();
-    if (tpid < 0) {
-      return tpid;
-    }
-
-    if (tpid == 0) {
-      /* child */
-      /* close any open file descriptors, but not the pipe write side */
-      for (int i = 3; i < 30; ++i) {
-        if (pipefd [1] == i) {
-          continue;
-        }
-        close (i);
-      }
-
-      ostdout = dup (STDOUT_FILENO);
-      ostderr = dup (STDERR_FILENO);
-      dup2 (pipefd [1], STDOUT_FILENO);
-      dup2 (pipefd [1], STDERR_FILENO);
-
-      rc = execv (targv [0], (char * const *) targv);
-      if (rc < 0) {
-        fprintf (stderr, "unable to execute %s %d %s\n", targv [0], errno, strerror (errno));
-        exit (1);
-      }
-
-      exit (0);
-    }
-
-    /* write end of pipe is not needed by parent */
-    close (pipefd [1]);
-
-    pid = tpid;
-    if ((flags & OS_PROC_WAIT) == OS_PROC_WAIT) {
-      waitpid (pid, NULL, 0);
-    }
-
-    if (rbuff != NULL) {
-      /* the application wants all the data in one chunk */
-      bytesread = read (pipefd [0], rbuff, sz);
-      rbuff [sz - 1] = '\0';
-      if (bytesread < (ssize_t) sz) {
-        rbuff [bytesread] = '\0';
-      }
-      close (pipefd [0]);
-    } else {
-      /* set up so the application can read from stdin */
-      close (STDIN_FILENO);
-      dup2 (pipefd [0], STDIN_FILENO);
-    }
+  if (pipe (pipefd) < 0) {
+    return -1;
   }
-#endif
 
-#if _lib_CreateProcess
-  {
-    STARTUPINFOW        si;
-    PROCESS_INFORMATION pi;
-    char                tbuff [MAXPATHLEN];
-    char                buff [MAXPATHLEN];
-    int                 idx;
-    int                 val;
-    wchar_t             *wbuff;
-    HANDLE              handleStdoutRead = INVALID_HANDLE_VALUE;
-    HANDLE              handleStdoutWrite = INVALID_HANDLE_VALUE;
-    HANDLE              handleStdinRead = INVALID_HANDLE_VALUE;
-    HANDLE              handleStdinWrite = INVALID_HANDLE_VALUE;
-    SECURITY_ATTRIBUTES sao;
-    DWORD               bytesRead;
-
-    memset (&si, '\0', sizeof (si));
-    si.cb = sizeof (si);
-    memset (&pi, '\0', sizeof (pi));
-
-    sao.nLength = sizeof (SECURITY_ATTRIBUTES);
-    sao.lpSecurityDescriptor = NULL;
-    sao.bInheritHandle = TRUE;
-
-    if ( ! CreatePipe (&handleStdoutRead, &handleStdoutWrite, &sao, 0) ) {
-      int err = GetLastError ();
-      fprintf (stderr, "createpipe: getlasterr: %d\n", err);
-      return -1;
-    }
-    if ( ! CreatePipe (&handleStdinRead, &handleStdinWrite, &sao, 0) ) {
-      int err = GetLastError ();
-      fprintf (stderr, "createpipe: getlasterr: %d\n", err);
-      return -1;
-    }
-    CloseHandle (handleStdinWrite);
-
-    si.hStdOutput = handleStdoutWrite;
-    si.hStdError = handleStdoutWrite;
-    if (rbuff != NULL) {
-      si.hStdInput = GetStdHandle (STD_INPUT_HANDLE);
-    } else {
-      si.hStdInput = handleStdinRead;
-    }
-    si.dwFlags |= STARTF_USESTDHANDLES;
-
-    buff [0] = '\0';
-    idx = 0;
-    while (targv [idx] != NULL) {
-      /* quote everything on windows. the batch files must be adjusted to suit */
-      snprintf (tbuff, sizeof (tbuff), "\"%s\"", targv [idx++]);
-      strlcat (buff, tbuff, MAXPATHLEN);
-      strlcat (buff, " ", MAXPATHLEN);
-    }
-    wbuff = osToFSFilename (buff);
-
-    val = 0;
-    if ((flags & OS_PROC_DETACH) == OS_PROC_DETACH) {
-      val |= DETACHED_PROCESS;
-      val |= CREATE_NO_WINDOW;
-    }
-
-    /* windows and its stupid space-in-name and quoting issues */
-    /* leave the module name as null, as otherwise it would have to be */
-    /* a non-quoted version.  the command in the command line must be quoted */
-    if (! CreateProcessW (
-        NULL,           // module name
-        wbuff,           // command line
-        NULL,           // process handle
-        NULL,           // hread handle
-        TRUE,           // handle inheritance
-        val,            // set to DETACHED_PROCESS
-        NULL,           // parent's environment
-        NULL,           // parent's starting directory
-        &si,            // STARTUPINFO structure
-        &pi )           // PROCESS_INFORMATION structure
-    ) {
-      int err = GetLastError ();
-      fprintf (stderr, "getlasterr: %d\n", err);
-      return -1;
-    }
-
-    pid = pi.dwProcessId;
-    CloseHandle (pi.hThread);
-
-    if ((flags & OS_PROC_WAIT) == OS_PROC_WAIT) {
-      WaitForSingleObject (pi.hProcess, INFINITE);
-    }
-
-    CloseHandle (handleStdoutWrite);
-
-    if (rbuff != NULL) {
-      /* the application wants all the data in one chunk */
-      ReadFile (handleStdoutRead, rbuff, sz, &bytesRead, NULL);
-      rbuff [bytesRead] = '\0';
-
-      CloseHandle (handleStdoutRead);
-      CloseHandle (pi.hProcess);
-    }
-
-    free (wbuff);
+  /* this may be slower, but it works; speed is not a major issue */
+  tpid = fork ();
+  if (tpid < 0) {
+    return tpid;
   }
-#endif
+
+  if (tpid == 0) {
+    /* child */
+    /* close any open file descriptors, but not the pipe write side */
+    for (int i = 3; i < 30; ++i) {
+      if (pipefd [1] == i) {
+        continue;
+      }
+      close (i);
+    }
+
+    ostdout = dup (STDOUT_FILENO);
+    ostderr = dup (STDERR_FILENO);
+    dup2 (pipefd [1], STDOUT_FILENO);
+    dup2 (pipefd [1], STDERR_FILENO);
+
+    rc = execv (targv [0], (char * const *) targv);
+    if (rc < 0) {
+      fprintf (stderr, "unable to execute %s %d %s\n", targv [0], errno, strerror (errno));
+      exit (1);
+    }
+
+    exit (0);
+  }
+
+  /* write end of pipe is not needed by parent */
+  close (pipefd [1]);
+
+  pid = tpid;
+  if ((flags & OS_PROC_WAIT) == OS_PROC_WAIT) {
+    waitpid (pid, NULL, 0);
+  }
+
+  if (rbuff != NULL) {
+    /* the application wants all the data in one chunk */
+    bytesread = read (pipefd [0], rbuff, sz);
+    rbuff [sz - 1] = '\0';
+    if (bytesread < (ssize_t) sz) {
+      rbuff [bytesread] = '\0';
+    }
+    close (pipefd [0]);
+  } else {
+    /* set up so the application can read from stdin */
+    close (STDIN_FILENO);
+    dup2 (pipefd [0], STDIN_FILENO);
+  }
+
   return pid;
 }
+
+#endif /* if _lib_fork */
+
+
+/* almost a noop on linux and mac os */
+#if ! _lib_MultiByteToWideChar && OS_FS_CHAR_TYPE == char
 
 void *
 osToFSFilename (const char *fname)
 {
   OS_FS_CHAR_TYPE *tfname = NULL;
 
-#if OS_FS_CHAR_TYPE == wchar_t && _lib_MultiByteToWideChar
-  {
-    size_t      len;
-
-    /* the documentation lies; len does not include room for the null byte */
-    len = MultiByteToWideChar (CP_UTF8, 0, fname, strlen (fname), NULL, 0);
-    tfname = malloc ((len + 1) * OS_FS_CHAR_SIZE);
-    MultiByteToWideChar (CP_UTF8, 0, fname, strlen (fname), tfname, len);
-    tfname [len] = L'\0';
-  }
-#else
   tfname = strdup (fname);
-#endif
   assert (tfname != NULL);
   return tfname;
 }
@@ -440,24 +228,12 @@ osFromFSFilename (const void *fname)
 {
   char        *tfname = NULL;
 
-#if OS_FS_CHAR_TYPE == wchar_t && _lib_WideCharToMultiByte
-  {
-    size_t      len;
-    BOOL        used;
-    static char *defChar = "?";
-
-    /* the documentation lies; len does not include room for the null byte */
-    len = WideCharToMultiByte (CP_UTF8, 0, fname, -1, NULL, 0, defChar, &used);
-    tfname = malloc (len + 1);
-    WideCharToMultiByte (CP_UTF8, 0, fname, -1, tfname, len, defChar, &used);
-    tfname [len] = '\0';
-  }
-#else
   tfname = strdup (fname);
-#endif
   assert (tfname != NULL);
   return tfname;
 }
+
+#endif /* not windows */
 
 dirhandle_t *
 osDirOpen (const char *dirname)
@@ -666,3 +442,15 @@ osRunProgram (const char *prog, ...)
   return strdup (data);
 }
 
+#if _lib_symlink
+
+int
+osCreateLink (const char *target, const char *linkpath)
+{
+  int rc;
+
+  rc = symlink (target, linkpath);
+  return rc;
+}
+
+#endif

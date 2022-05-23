@@ -27,14 +27,11 @@ echo -- Starting installer.
 .\bin\bdj4.exe --installer --unpackdir %tdir%\bdj4-install %reinstall% %guidisabled%
 
 echo -- Cleaning temporary files.
-if exist "%tdir%\bdj4-install.zip" (
-  del /q "%tdir%\bdj4-install.zip"
+if exist "%tdir%\bdj4-install.cab" (
+  del /q "%tdir%\bdj4-install.cab"
 )
-if exist "%tdir%\miniunz.exe" (
-  del /q "%tdir%\miniunz.exe"
-)
-if exist "%tdir%\bdj4-unzip.log" (
-  del /q "%tdir%\bdj4-unzip.log"
+if exist "%tdir%\bdj4-expand.log" (
+  del /q "%tdir%\bdj4-expand.log"
 )
 
 exit 0

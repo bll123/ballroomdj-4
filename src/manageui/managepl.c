@@ -144,10 +144,10 @@ manageBuildUIPlaylist (managepl_t *managepl, UIWidget *vboxp)
 
   uiutilsUIWidgetInit (&hbox);
   uiutilsUIWidgetInit (&uiwidget);
-  uiCreateSizeGroupHoriz (&sg);
-  uiCreateSizeGroupHoriz (&sgA);
-  uiCreateSizeGroupHoriz (&sgB);
-  uiCreateSizeGroupHoriz (&sgC);
+  uiCreateSizeGroupHoriz (&sg);   // labels
+  uiCreateSizeGroupHoriz (&sgA);  // time widgets
+  uiCreateSizeGroupHoriz (&sgB);  // numeric widgets
+  uiCreateSizeGroupHoriz (&sgC);  // text widgets
 
   uiWidgetSetAllMargins (vboxp, uiBaseMarginSz * 2);
 
@@ -273,6 +273,7 @@ manageBuildUIPlaylist (managepl_t *managepl, UIWidget *vboxp)
   uiSizeGroupAdd (&sg, &uiwidget);
 
   managepl->uirating = uiratingSpinboxCreate (&hbox, false);
+  uiSizeGroupAdd (&sgC, &hbox);
 
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&lcol, &hbox);
@@ -284,6 +285,7 @@ manageBuildUIPlaylist (managepl_t *managepl, UIWidget *vboxp)
   uiSizeGroupAdd (&sg, &uiwidget);
 
   managepl->uilowlevel = uilevelSpinboxCreate (&hbox, false);
+  uiSizeGroupAdd (&sgC, &hbox);
 
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&lcol, &hbox);
@@ -295,6 +297,7 @@ manageBuildUIPlaylist (managepl_t *managepl, UIWidget *vboxp)
   uiSizeGroupAdd (&sg, &uiwidget);
 
   managepl->uihighlevel = uilevelSpinboxCreate (&hbox, false);
+  uiSizeGroupAdd (&sgC, &hbox);
 
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&lcol, &hbox);

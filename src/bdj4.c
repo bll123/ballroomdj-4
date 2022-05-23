@@ -46,7 +46,6 @@ main (int argc, char * argv[])
   bool      forcenodetach = false;
   bool      isinstaller = false;
   bool      usemsys = false;
-  bool      usinggtk = false;
   int       flags;
   char      *targv [BDJ4_LAUNCHER_MAX_ARGS];
   int       targc;
@@ -104,7 +103,6 @@ main (int argc, char * argv[])
   /* for macos; turns the launcher into a gui program, then the icon */
   /* shows up in the dock */
   gtk_init (&argc, NULL);
-  usinggtk = true;
 #endif
 
   prog = "bdj4starterui";  // default
@@ -304,7 +302,7 @@ main (int argc, char * argv[])
     osSetEnv ("G_FILENAME_ENCODING", "UTF8-MAC");
   }
 
-  if (isWindows () && usinggtk) {
+  if (isWindows ()) {
     char      * pbuff;
     char      * tbuff;
     char      * tmp;
