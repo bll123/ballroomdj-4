@@ -16,6 +16,8 @@ typedef struct {
 } sockserver_t;
 
 enum {
+  SOCKH_CONTINUE = false,
+  SOCKH_STOP = true,
   SOCKH_MAINLOOP_TIMEOUT = 5,
 };
 

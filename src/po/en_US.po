@@ -68,6 +68,11 @@ msgstr ""
 msgid "%s Wiki"
 msgstr ""
 
+#. CONTEXT: installer: message indicating the conversion action that will be taken
+#, c-format
+msgid "%s data will be converted."
+msgstr ""
+
 #. CONTEXT: installer: status message
 #, c-format
 msgid "%s installed."
@@ -136,8 +141,8 @@ msgstr ""
 
 #. CONTEXT: configuration: marquee: the accent color used for the marquee
 #. CONTEXT: configuration: the accent color to use for the user interface
-msgid "Accent Color"
-msgstr ""
+msgid "Accent Colour"
+msgstr "Accent Color"
 
 #. CONTEXT: action menu for the starter user interface
 #. CONTEXT: menu selection: actions for song editor
@@ -237,8 +242,8 @@ msgid "Audio Output"
 msgstr ""
 
 #. CONTEXT: configuration: checkbox: is automatic organization enabled
-msgid "Auto Organize"
-msgstr ""
+msgid "Auto Organise"
+msgstr "Auto Organize"
 
 #. CONTEXT: playlist management: default playlist type
 #. CONTEXT: playlist management: type of playlist
@@ -331,10 +336,6 @@ msgstr ""
 
 #. CONTEXT: installer: status message
 msgid "Conversion complete."
-msgstr ""
-
-#. CONTEXT: installer: message indicating the conversion action that will be taken
-msgid "Conversion will be processed"
 msgstr ""
 
 #. CONTEXT: installer: checkbox: convert the BallroomDJ 3 installation
@@ -956,7 +957,7 @@ msgid "Next Song"
 msgstr ""
 
 #. CONTEXT: installer: message indicating the conversion action that will be taken
-msgid "No conversion."
+msgid "No folder specified."
 msgstr ""
 
 #. CONTEXT: genre
@@ -969,6 +970,11 @@ msgstr ""
 
 #. CONTEXT: marquee: displayed when nothing is set to be played
 msgid "Not Playing"
+msgstr ""
+
+#. CONTEXT: the location entered is not a valid BDJ3 location.
+#, c-format
+msgid "Not a valid %s folder."
 msgstr ""
 
 #. CONTEXT: title: notes
@@ -992,25 +998,15 @@ msgid "Order from the lowest rating to the highest rating."
 msgstr ""
 
 #. CONTEXT: configuration: options associated with how audio files are organized
-msgid "Organization"
-msgstr ""
+msgid "Organisation"
+msgstr "Organization"
 
 #. CONTEXT: configuration: the audio file organization path
-msgid "Organization Path"
-msgstr ""
+msgid "Organisation Path"
+msgstr "Organization Path"
 
 #. CONTEXT: database update: status message: other files that cannot be processed
 msgid "Other Files"
-msgstr ""
-
-#. CONTEXT: installer: checkbox: overwrite the previous BDJ4 installation
-msgid "Overwrite"
-msgstr ""
-
-#. CONTEXT: installer: message indicating the action that will be taken
-#. CONTEXT: installer: command line interface: indicating action
-#, c-format
-msgid "Overwriting existing %s installation."
 msgstr ""
 
 #. CONTEXT: dance
@@ -1167,6 +1163,16 @@ msgstr ""
 
 #. CONTEXT: configuration: rating: title of the rating name column
 msgid "Rating"
+msgstr ""
+
+#. CONTEXT: installer: checkbox: re-install BDJ4
+msgid "Re-Install"
+msgstr ""
+
+#. CONTEXT: installer: message indicating the action that will be taken
+#. CONTEXT: installer: command line interface: indicating action
+#, c-format
+msgid "Re-install %s."
 msgstr ""
 
 #. CONTEXT: database update: rebuilds the database
@@ -1444,6 +1450,10 @@ msgstr ""
 msgid "Thank You Dancers"
 msgstr ""
 
+#. CONTEXT: installer: message indicating the conversion action that will be taken
+msgid "The conversion process will not be run."
+msgstr ""
+
 #. CONTEXT: installer: instructions
 msgid ""
 "The conversion process will only run for new installations and for re-"
@@ -1702,8 +1712,8 @@ msgstr ""
 
 
 #. CONTEXT: title of a getting started help section
-msgid "How is the Music Organized"
-msgstr ""
+msgid "How is the Music Organised"
+msgstr "How is the Music Organized"
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_music_org"

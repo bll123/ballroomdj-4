@@ -141,6 +141,9 @@ uiEntryValidate (uientry_t *entry, bool forceflag)
   if (entry == NULL) {
     return UIENTRY_OK;
   }
+  if (entry->uientry.widget == NULL) {
+    return UIENTRY_OK;
+  }
   if (entry->validateFunc == NULL) {
     return UIENTRY_OK;
   }
@@ -234,5 +237,7 @@ uiEntryValidateStart (GtkEditable *e, gpointer udata)
 
   gtk_entry_set_icon_from_icon_name (GTK_ENTRY (entry->uientry.widget),
       GTK_ENTRY_ICON_SECONDARY, NULL);
-  mstimeset (&entry->validateTimer, 500);
+  if (entry->validateFunc != NULL) {
+    mstimeset (&entry->validateTimer, 500);
+  }
 }

@@ -31,7 +31,12 @@ foreach ($darr as $line) {
     $adata[$fver]['-oldversion'] = $data['-oldversion'];
     $adata[$fver]['-bdj3version'] = $data['-bdj3version'];
     $adata[$fver]['-new'] = $data['-new'];
-    $adata[$fver]['-overwrite'] = $data['-overwrite'];
+    if (isset($data['-overwrite'])) {
+      $adata[$fver]['-reinstall'] = $data['-overwrite'];
+    }
+    if (isset($data['-reinstall'])) {
+      $adata[$fver]['-reinstall'] = $data['-reinstall'];
+    }
     $adata[$fver]['-update'] = $data['-update'];
     $adata[$fver]['-convert'] = $data['-convert'];
     $in = 0;
@@ -60,7 +65,7 @@ $gdata = array ();
 foreach ($adata as $vkey => $tdata) {
   if (empty ($gdata[$vkey])) {
     $gdata[$vkey]['-new'] = 0;
-    $gdata[$vkey]['-overwrite'] = 0;
+    $gdata[$vkey]['-reinstall'] = 0;
     $gdata[$vkey]['-update'] = 0;
     $gdata[$vkey]['-convert'] = 0;
     $gdata[$vkey]['-country'] = array ();
@@ -70,7 +75,7 @@ foreach ($adata as $vkey => $tdata) {
   }
   $gdata[$vkey]['-country'][$tdata['-country']] += 1;
   $gdata[$vkey]['-new'] += $tdata['-new'];
-  $gdata[$vkey]['-overwrite'] += $tdata['-overwrite'];
+  $gdata[$vkey]['-reinstall'] += $tdata['-reinstall'];
   $gdata[$vkey]['-update'] += $tdata['-update'];
   $gdata[$vkey]['-convert'] += $tdata['-convert'];
 }
@@ -103,7 +108,7 @@ $html .= <<<_HERE_
     <tr>
       <th align="left">Version</th>
       <th align="left">New</th>
-      <th align="left">Overwrite</th>
+      <th align="left">Re-Install</th>
       <th align="left">Update</th>
       <th align="left">Convert</th>
     </tr>
@@ -113,7 +118,7 @@ foreach ($gdata as $vkey => $tdata) {
   $html .= "    <tr>";
   $html .= "      <td align=\"left\">$vkey</td>";
   $html .= "      <td align=\"right\">${tdata['-new']}</td>";
-  $html .= "      <td align=\"right\">${tdata['-overwrite']}</td>";
+  $html .= "      <td align=\"right\">${tdata['-reinstall']}</td>";
   $html .= "      <td align=\"right\">${tdata['-update']}</td>";
   $html .= "      <td align=\"right\">${tdata['-convert']}</td>";
   $html .= "    </tr>";
@@ -134,7 +139,7 @@ $html .= <<<_HERE_
       <th align="left">Sys-Locale</th>
       <th align="left">Locale</th>
       <th align="left">New</th>
-      <th align="left">Overwrite</th>
+      <th align="left">Re-Install</th>
       <th align="left">Update</th>
       <th align="left">Convert</th>
       <th align="left">Old-Version</th>
@@ -153,7 +158,7 @@ foreach ($adata as $vkey => $tdata) {
   $html .= "      <td align=\"right\">${tdata['-systemlocale']}</td>";
   $html .= "      <td align=\"right\">${tdata['-locale']}</td>";
   $html .= "      <td align=\"right\">${tdata['-new']}</td>";
-  $html .= "      <td align=\"right\">${tdata['-overwrite']}</td>";
+  $html .= "      <td align=\"right\">${tdata['-reinstall']}</td>";
   $html .= "      <td align=\"right\">${tdata['-update']}</td>";
   $html .= "      <td align=\"right\">${tdata['-convert']}</td>";
   $html .= "      <td align=\"left\">${tdata['-oldversion']}</td>";

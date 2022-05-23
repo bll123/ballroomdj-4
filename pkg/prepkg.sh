@@ -44,7 +44,7 @@ case $systype in
     ;;
 esac
 
-echo "-- copying licenses"
+echo "-- $(date +%T) copying licenses"
 licdir=licenses
 rm -f ${licdir}/*
 cp -pf packages/mongoose/LICENSE ${licdir}/mongoose.LICENSE
@@ -82,7 +82,7 @@ if [[ $platform == windows ]]; then
   #       libintl-8.dll => /mingw64/bin/libintl-8.dll (0x7ff88c570000)
   #       libiconv-2.dll => /mingw64/bin/libiconv-2.dll (0x7ff8837e0000)
 
-  echo "-- copying .dll files"
+  echo "-- $(date +%T) copying .dll files"
   PBIN=plocal/bin
   # gspawn helpers are required for the link button to work.
   # librsvg is the SVG library

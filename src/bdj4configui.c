@@ -498,7 +498,7 @@ static void   confuiCreateTagListingDisp (configui_t *confui);
 /* misc */
 static long confuiValMSCallback (void *udata, const char *txt);
 
-static int gKillReceived = 0;
+static bool gKillReceived = false;
 
 int
 main (int argc, char *argv[])
@@ -1778,7 +1778,7 @@ static int
 confuiMainLoop (void *tconfui)
 {
   configui_t    *confui = tconfui;
-  int           stop = FALSE;
+  int           stop = SOCKH_CONTINUE;
 
   if (! stop) {
     uiUIProcessEvents ();
@@ -1787,12 +1787,12 @@ confuiMainLoop (void *tconfui)
   if (! progstateIsRunning (confui->progstate)) {
     progstateProcess (confui->progstate);
     if (progstateCurrState (confui->progstate) == STATE_CLOSED) {
-      stop = true;
+      stop = SOCKH_STOP;
     }
     if (gKillReceived) {
       logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
       progstateShutdownProcess (confui->progstate);
-      gKillReceived = 0;
+      gKillReceived = false;
     }
     return stop;
   }
@@ -1806,7 +1806,7 @@ confuiMainLoop (void *tconfui)
   if (gKillReceived) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
     progstateShutdownProcess (confui->progstate);
-    gKillReceived = 0;
+    gKillReceived = false;
   }
   return stop;
 }
@@ -1850,7 +1850,7 @@ confuiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_EXIT_REQUEST: {
           logMsg (LOG_SESS, LOG_IMPORTANT, "got exit request");
-          gKillReceived = 0;
+          gKillReceived = false;
           progstateShutdownProcess (confui->progstate);
           break;
         }
@@ -1893,7 +1893,7 @@ confuiCloseWin (void *udata)
 static void
 confuiSigHandler (int sig)
 {
-  gKillReceived = 1;
+  gKillReceived = true;
 }
 
 static void
@@ -2133,8 +2133,8 @@ confuiSelectMusicDir (void *udata)
     gtk_entry_buffer_set_text (
         confui->uiitem [CONFUI_ENTRY_MUSIC_DIR].u.entry.buffer,
         fn, -1);
-    free (fn);
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected loc: %s", fn);
+    free (fn);
   }
   logProcEnd (LOG_PROC, "confuiSelectMusicDir", "");
   return UICB_CONT;

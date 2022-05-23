@@ -224,7 +224,7 @@ static void     manageSwitchPage (void *udata, int pagenum, int which);
 static void manageInitializeSongFilter (manageui_t *manage, nlist_t *options);
 static void manageSetMenuCallback (manageui_t *manage, int midx, UICallbackFunc cb);
 
-static int gKillReceived = 0;
+static int gKillReceived = false;
 
 int
 main (int argc, char *argv[])
@@ -821,7 +821,7 @@ manageMainLoop (void *tmanage)
     if (gKillReceived) {
       logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
       progstateShutdownProcess (manage->progstate);
-      gKillReceived = 0;
+      gKillReceived = false;
     }
     return stop;
   }
@@ -840,7 +840,7 @@ manageMainLoop (void *tmanage)
   if (gKillReceived) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
     progstateShutdownProcess (manage->progstate);
-    gKillReceived = 0;
+    gKillReceived = false;
   }
   return stop;
 }
@@ -938,7 +938,7 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_EXIT_REQUEST: {
           logMsg (LOG_SESS, LOG_IMPORTANT, "got exit request");
-          gKillReceived = 0;
+          gKillReceived = false;
           progstateShutdownProcess (manage->progstate);
           break;
         }
@@ -1027,7 +1027,7 @@ manageCloseWin (void *udata)
 static void
 manageSigHandler (int sig)
 {
-  gKillReceived = 1;
+  gKillReceived = true;
 }
 
 /* update database */

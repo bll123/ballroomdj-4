@@ -189,7 +189,7 @@ static void installerRegisterInit (installer_t *installer);
 static void installerRegister (installer_t *installer);
 
 static void installerCleanup (installer_t *installer);
-static void installerDisplayText (installer_t *installer, char *pfx, char *txt);
+static void installerDisplayText (installer_t *installer, char *pfx, char *txt, bool bold);
 static void installerGetTargetSaveFname (installer_t *installer, char *buff, size_t len);
 static void installerGetBDJ3Fname (installer_t *installer, char *buff, size_t len);
 static void installerTemplateCopy (const char *dir, const char *from, const char *to);
@@ -211,13 +211,16 @@ main (int argc, char *argv[])
   int           option_index = 0;
 
   static struct option bdj_options [] = {
+    { "bdj4installer",no_argument,      NULL,   0 },
     { "installer",  no_argument,        NULL,   0 },
     { "reinstall",  no_argument,        NULL,   'r' },
     { "guidisabled",no_argument,        NULL,   'g' },
+    { "logstderr",  no_argument,        NULL,   'l' },
     { "unpackdir",  required_argument,  NULL,   'u' },
     { "debug",      required_argument,  NULL,   0 },
     { "theme",      required_argument,  NULL,   0 },
     { "debugself",  no_argument,        NULL,   0 },
+    { "nodetach",   no_argument,        NULL,   0 },
     { "bdj4",       no_argument,        NULL,   0 },
     { NULL,         0,                  NULL,   0 }
   };
@@ -270,7 +273,7 @@ main (int argc, char *argv[])
   uiEntryInit (&installer.targetEntry, 80, MAXPATHLEN);
   uiEntryInit (&installer.bdj3locEntry, 80, MAXPATHLEN);
 
-  while ((c = getopt_long_only (argc, argv, "g:r:u:", bdj_options, &option_index)) != -1) {
+  while ((c = getopt_long_only (argc, argv, "g:r:u:l", bdj_options, &option_index)) != -1) {
     switch (c) {
       case 'g': {
         installer.guienabled = false;
@@ -278,6 +281,12 @@ main (int argc, char *argv[])
       }
       case 'r': {
         installer.reinstall = true;
+        break;
+      }
+      case 'l': {
+        logSetLevel (LOG_DBG, LOG_STDERR, "in");
+        logSetLevel (LOG_ERR, LOG_STDERR, "in");
+        logSetLevel (LOG_INSTALL, LOG_STDERR, "in");
         break;
       }
       case 'u': {
@@ -432,8 +441,8 @@ installerBuildUI (installer_t *installer)
   uiWidgetExpandHoriz (&hbox);
   uiBoxPackStart (&vbox, &hbox);
 
-  /* CONTEXT: installer: checkbox: overwrite the previous BDJ4 installation */
-  uiCreateCheckButton (&installer->reinstWidget, _("Overwrite"),
+  /* CONTEXT: installer: checkbox: re-install BDJ4 */
+  uiCreateCheckButton (&installer->reinstWidget, _("Re-Install"),
       installer->reinstall);
   uiBoxPackStart (&hbox, &installer->reinstWidget);
   uiutilsUICallbackInit (&installer->reinstcb, installerCheckDir, installer);
@@ -589,12 +598,12 @@ installerMainLoop (void *udata)
 {
   installer_t *installer = udata;
 
-  uiEntryValidate (&installer->targetEntry, false);
-  uiEntryValidate (&installer->bdj3locEntry, false);
-
   if (installer->guienabled) {
     uiUIProcessEvents ();
   }
+
+  uiEntryValidate (&installer->targetEntry, false);
+  uiEntryValidate (&installer->bdj3locEntry, false);
 
   if (installer->guienabled && installer->scrolltoend) {
     uiTextBoxScrollToEnd (installer->disptb);
@@ -638,7 +647,7 @@ installerMainLoop (void *udata)
     case INST_CREATE_DIRS: {
       installerCreateDirs (installer);
 
-      logStartAppend ("bdj4installer", "in",
+      logStart ("bdj4installer", "in",
           LOG_IMPORTANT | LOG_BASIC | LOG_MAIN);
       logMsg (LOG_INSTALL, LOG_IMPORTANT, "=== installer started");
       logMsg (LOG_INSTALL, LOG_IMPORTANT, "target: %s", installer->target);
@@ -726,7 +735,7 @@ installerMainLoop (void *udata)
     }
     case INST_FINISH: {
       /* CONTEXT: installer: status message */
-      installerDisplayText (installer, "## ",  _("Installation complete."));
+      installerDisplayText (installer, "## ",  _("Installation complete."), true);
       if (installer->guienabled) {
         installer->instState = INST_BEGIN;
       } else {
@@ -747,6 +756,10 @@ installerCheckDir (void *udata)
 {
   installer_t   *installer = udata;
 
+  if (installer->inSetConvert) {
+    return UICB_STOP;
+  }
+
   uiEntryValidate (&installer->targetEntry, true);
   uiEntryValidate (&installer->bdj3locEntry, true);
   return UICB_CONT;
@@ -761,6 +774,7 @@ installerValidateTarget (uientry_t *entry, void *udata)
   bool          changed = false;
   bool          tbool;
   char          tbuff [100];
+  int           rc = UIENTRY_OK;
 
   if (! installer->guienabled) {
     return UIENTRY_ERROR;
@@ -786,7 +800,7 @@ installerValidateTarget (uientry_t *entry, void *udata)
     if (exists) {
       if (installer->reinstall) {
         /* CONTEXT: installer: message indicating the action that will be taken */
-        snprintf (tbuff, sizeof (tbuff), _("Overwriting existing %s installation."), BDJ4_NAME);
+        snprintf (tbuff, sizeof (tbuff), _("Re-install %s."), BDJ4_NAME);
         uiLabelSetText (&installer->feedbackMsg, tbuff);
         if (changed) {
           installerSetConvert (installer, TRUE);
@@ -801,6 +815,7 @@ installerValidateTarget (uientry_t *entry, void *udata)
       /* CONTEXT: installer: the selected folder exists and is not a BDJ4 installation */
       uiLabelSetText (&installer->feedbackMsg, _("Error: Folder already exists."));
       installerSetConvert (installer, FALSE);
+      rc = UIENTRY_ERROR;
     }
   } else {
     /* CONTEXT: installer: message indicating the action that will be taken */
@@ -809,7 +824,10 @@ installerValidateTarget (uientry_t *entry, void *udata)
     installerSetConvert (installer, TRUE);
   }
 
-  return UIENTRY_OK;
+  if (rc == UIENTRY_OK) {
+    installerSetPaths (installer);
+  }
+  return rc;
 }
 
 static int
@@ -818,7 +836,8 @@ installerValidateBDJ3Loc (uientry_t *entry, void *udata)
   installer_t   *installer = udata;
   bool          locok = false;
   const char    *fn;
-  int           rc;
+  char          tbuff [200];
+  int           rc = UIENTRY_OK;
 
   if (! installer->guienabled) {
     return UIENTRY_ERROR;
@@ -832,20 +851,18 @@ installerValidateBDJ3Loc (uientry_t *entry, void *udata)
 
   /* bdj3 location validation */
 
-  if (! installer->convprocess) {
-    return UIENTRY_OK;
-  }
-
   fn = uiEntryGetValue (&installer->bdj3locEntry);
-  if (*fn == '\0' || strcmp (fn, "-") == 0 || locationcheck (fn)) {
+  if (*fn == '\0' || strcmp (fn, "-") == 0 ||
+      locationcheck (fn)) {
     locok = true;
   }
 
   if (! locok) {
     rc = UIENTRY_ERROR;
+    /* CONTEXT: the location entered is not a valid BDJ3 location. */
+    snprintf (tbuff, sizeof (tbuff), _("Not a valid %s folder."), BDJ3_NAME);
+    uiLabelSetText (&installer->convFeedbackMsg, tbuff);
     installerSetConvert (installer, FALSE);
-  } else {
-    rc = UIENTRY_OK;
   }
 
   installerSetPaths (installer);
@@ -881,7 +898,9 @@ installerSelectDirDialog (void *udata)
 static void
 installerSetConvert (installer_t *installer, int val)
 {
+  installer->inSetConvert = true;
   uiToggleButtonSetState (&installer->convWidget, val);
+  installer->inSetConvert = false;
 }
 
 static void
@@ -889,28 +908,36 @@ installerDisplayConvert (installer_t *installer)
 {
   int           nval;
   char          *tptr;
+  char          tbuff [200];
+  bool          nodir = false;
 
   nval = uiToggleButtonIsActive (&installer->convWidget);
 
-  installer->inSetConvert = true;
 
   if (strcmp (installer->bdj3loc, "-") == 0 ||
       *installer->bdj3loc == '\0') {
     nval = 0;
-    uiToggleButtonSetState (&installer->convWidget, nval);
+    nodir = true;
+    installerSetConvert (installer, nval);
   }
 
-  installer->inSetConvert = false;
   installer->convprocess = nval;
 
   if (nval) {
     /* CONTEXT: installer: message indicating the conversion action that will be taken */
-    tptr = _("Conversion will be processed");
-    uiLabelSetText (&installer->convFeedbackMsg, tptr);
+    tptr = _("%s data will be converted.");
+    snprintf (tbuff, sizeof (tbuff), tptr, BDJ3_NAME);
+    uiLabelSetText (&installer->convFeedbackMsg, tbuff);
   } else {
-    /* CONTEXT: installer: message indicating the conversion action that will be taken */
-    tptr = _("No conversion.");
-    uiLabelSetText (&installer->convFeedbackMsg, tptr);
+    if (nodir) {
+      /* CONTEXT: installer: message indicating the conversion action that will be taken */
+      tptr = _("No folder specified.");
+      uiLabelSetText (&installer->convFeedbackMsg, tptr);
+    } else {
+      /* CONTEXT: installer: message indicating the conversion action that will be taken */
+      tptr = _("The conversion process will not be run.");
+      uiLabelSetText (&installer->convFeedbackMsg, tptr);
+    }
   }
 }
 
@@ -968,6 +995,8 @@ installerSetPaths (installer_t *installer)
   }
   installer->bdj3loc = strdup (uiEntryGetValue (&installer->bdj3locEntry));
   installer->freebdj3loc = true;
+
+  installerDisplayConvert (installer);
 }
 
 
@@ -1015,7 +1044,7 @@ installerInstInit (installer_t *installer)
       printf ("\n");
       if (installer->reinstall) {
         /* CONTEXT: installer: command line interface: indicating action */
-        printf (_("Overwriting existing %s installation."), BDJ4_NAME);
+        printf (_("Re-install %s."), BDJ4_NAME);
       } else {
         /* CONTEXT: installer: command line interface: indicating action */
         printf (_("Updating existing %s installation."), BDJ4_NAME);
@@ -1056,9 +1085,9 @@ installerInstInit (installer_t *installer)
       /* CONTEXT: installer: command line interface: the selected folder exists and is not a BDJ4 installation */
       snprintf (tbuff, sizeof (tbuff), _("Error: Folder %s already exists."),
           installer->target);
-      installerDisplayText (installer, "", tbuff);
+      installerDisplayText (installer, "", tbuff, false);
       /* CONTEXT: installer: command line interface: status message */
-      installerDisplayText (installer, " * ", _("Installation aborted."));
+      installerDisplayText (installer, " * ", _("Installation aborted."), false);
       installer->instState = INST_BEGIN;
       return;
     }
@@ -1075,7 +1104,7 @@ installerSaveTargetDir (installer_t *installer)
   FILE  *fh;
 
   /* CONTEXT: installer: status message */
-  installerDisplayText (installer, "-- ", _("Saving install location."));
+  installerDisplayText (installer, "-- ", _("Saving install location."), false);
 
   if (isWindows ()) {
     snprintf (tbuff, sizeof (tbuff), "%s/AppData/Roaming/BDJ4", installer->home);
@@ -1153,18 +1182,18 @@ static void
 installerCopyStart (installer_t *installer)
 {
   /* CONTEXT: installer: status message */
-  installerDisplayText (installer, "-- ", _("Copying files."));
+  installerDisplayText (installer, "-- ", _("Copying files."), false);
   /* CONTEXT: installer: status message */
-  installerDisplayText (installer, "   ", _("Please wait..."));
+  installerDisplayText (installer, "   ", _("Please wait..."), false);
 
   /* the unpackdir is not necessarily the same as the current dir */
   /* on mac os, they are different */
   if (chdir (installer->unpackdir) < 0) {
     fprintf (stderr, "Unable to set working dir: %s\n", installer->unpackdir);
     /* CONTEXT: installer: failure message */
-    installerDisplayText (installer, "", _("Error: Unable to set working folder."));
+    installerDisplayText (installer, "", _("Error: Unable to set working folder."), false);
     /* CONTEXT: installer: status message */
-    installerDisplayText (installer, " * ", _("Installation aborted."));
+    installerDisplayText (installer, " * ", _("Installation aborted."), false);
     installer->instState = INST_BEGIN;
     return;
   }
@@ -1187,7 +1216,7 @@ installerCopyFiles (installer_t *installer)
     system (tbuff);
   }
   /* CONTEXT: installer: status message */
-  installerDisplayText (installer, "   ", _("Copy finished."));
+  installerDisplayText (installer, "   ", _("Copy finished."), false);
   installer->instState = INST_CHDIR;
 }
 
@@ -1205,8 +1234,8 @@ installerChangeDir (installer_t *installer)
 
   if (chdir (installer->datatopdir)) {
     fprintf (stderr, "Unable to set working dir: %s\n", installer->datatopdir);
-    installerDisplayText (installer, "", _("Error: Unable to set working folder."));
-    installerDisplayText (installer, " * ", _("Installation aborted."));
+    installerDisplayText (installer, "", _("Error: Unable to set working folder."), false);
+    installerDisplayText (installer, " * ", _("Installation aborted."), false);
     installer->instState = INST_BEGIN;
     return;
   }
@@ -1218,7 +1247,7 @@ static void
 installerCreateDirs (installer_t *installer)
 {
   /* CONTEXT: installer: status message */
-  installerDisplayText (installer, "-- ", _("Creating folder structure."));
+  installerDisplayText (installer, "-- ", _("Creating folder structure."), false);
 
   /* create the directories that are not included in the distribution */
   fileopMakeDir ("data");
@@ -1253,12 +1282,12 @@ installerCopyTemplates (installer_t *installer)
   }
 
   /* CONTEXT: installer: status message */
-  installerDisplayText (installer, "-- ", _("Copying template files."));
+  installerDisplayText (installer, "-- ", _("Copying template files."), false);
 
   if (chdir (installer->datatopdir)) {
     fprintf (stderr, "Unable to set working dir: %s\n", installer->datatopdir);
-    installerDisplayText (installer, "", _("Error: Unable to set working folder."));
-    installerDisplayText (installer, " * ", _("Installation aborted."));
+    installerDisplayText (installer, "", _("Error: Unable to set working folder."), false);
+    installerDisplayText (installer, " * ", _("Installation aborted."), false);
     installer->instState = INST_BEGIN;
     return;
   }
@@ -1502,8 +1531,8 @@ installerConvertStart (installer_t *installer)
 
   if (chdir (installer->rundir)) {
     fprintf (stderr, "Unable to set working dir: %s\n", installer->rundir);
-    installerDisplayText (installer, "", _("Error: Unable to set working folder."));
-    installerDisplayText (installer, " * ", _("Installation aborted."));
+    installerDisplayText (installer, "", _("Error: Unable to set working folder."), false);
+    installerDisplayText (installer, " * ", _("Installation aborted."), false);
     installer->instState = INST_BEGIN;
     return;
   }
@@ -1528,7 +1557,7 @@ installerConvertStart (installer_t *installer)
   }
 
   /* CONTEXT: installer: status message */
-  installerDisplayText (installer, "-- ", _("Starting conversion process."));
+  installerDisplayText (installer, "-- ", _("Starting conversion process."), false);
 
   installer->convlist = filemanipBasicDirList ("conv", ".tcl");
   /* the sort order doesn't matter, but there's a need to run */
@@ -1571,7 +1600,7 @@ installerConvertStart (installer_t *installer)
       }
       installer->tclshloc = strdup (tbuff);
       /* CONTEXT: installer: status message */
-      installerDisplayText (installer, "   ", _("Located 'tclsh'."));
+      installerDisplayText (installer, "   ", _("Located 'tclsh'."), false);
     }
 
     free (locs [locidx]);
@@ -1581,9 +1610,9 @@ installerConvertStart (installer_t *installer)
   if (installer->tclshloc == NULL) {
     /* CONTEXT: installer: failure message */
     snprintf (tbuff, sizeof (tbuff), _("Unable to locate %s."), "tclsh");
-    installerDisplayText (installer, "   ", tbuff);
+    installerDisplayText (installer, "   ", tbuff, false);
     /* CONTEXT: installer: status message */
-    installerDisplayText (installer, "   ", _("Skipping conversion."));
+    installerDisplayText (installer, "   ", _("Skipping conversion."), false);
     installer->instState = INST_CREATE_SHORTCUT;
     return;
   }
@@ -1607,7 +1636,7 @@ installerConvert (installer_t *installer)
 
   /* CONTEXT: installer: status message */
   snprintf (buffa, sizeof (buffa), _("Running conversion script: %s."), fn);
-  installerDisplayText (installer, "   ", buffa);
+  installerDisplayText (installer, "   ", buffa, false);
 
   targv [0] = installer->tclshloc;
   snprintf (buffa, sizeof (buffa), "conv/%s", fn);
@@ -1627,7 +1656,7 @@ static void
 installerConvertFinish (installer_t *installer)
 {
   /* CONTEXT: installer: status message */
-  installerDisplayText (installer, "   ", _("Conversion complete."));
+  installerDisplayText (installer, "   ", _("Conversion complete."), false);
   installer->instState = INST_CREATE_SHORTCUT;
 }
 
@@ -1638,14 +1667,14 @@ installerCreateShortcut (installer_t *installer)
 
   if (chdir (installer->rundir)) {
     fprintf (stderr, "Unable to set working dir: %s\n", installer->rundir);
-    installerDisplayText (installer, "", _("Error: Unable to set working folder."));
-    installerDisplayText (installer, " * ", _("Installation aborted."));
+    installerDisplayText (installer, "", _("Error: Unable to set working folder."), false);
+    installerDisplayText (installer, " * ", _("Installation aborted."), false);
     installer->instState = INST_BEGIN;
     return;
   }
 
   /* CONTEXT: installer: status message */
-  installerDisplayText (installer, "-- ", _("Creating shortcut."));
+  installerDisplayText (installer, "-- ", _("Creating shortcut."), false);
   if (isWindows ()) {
     if (! chdir ("install")) {
       snprintf (buff, sizeof (buff), ".\\makeshortcut.bat \"%s\"",
@@ -1686,8 +1715,8 @@ installerVLCCheck (installer_t *installer)
 
   if (chdir (installer->datatopdir)) {
     fprintf (stderr, "Unable to set working dir: %s\n", installer->datatopdir);
-    installerDisplayText (installer, "", _("Error: Unable to set working folder."));
-    installerDisplayText (installer, " * ", _("Installation aborted."));
+    installerDisplayText (installer, "", _("Error: Unable to set working folder."), false);
+    installerDisplayText (installer, " * ", _("Installation aborted."), false);
     installer->instState = INST_BEGIN;
     return;
   }
@@ -1696,13 +1725,13 @@ installerVLCCheck (installer_t *installer)
   if (*installer->vlcversion) {
     /* CONTEXT: installer: status message */
     snprintf (tbuff, sizeof (tbuff), _("Downloading %s."), "VLC");
-    installerDisplayText (installer, "-- ", tbuff);
+    installerDisplayText (installer, "-- ", tbuff, false);
     installer->instState = INST_VLC_DOWNLOAD;
   } else {
     snprintf (tbuff, sizeof (tbuff),
         /* CONTEXT: installer: status message */
         _("Unable to determine %s version."), "VLC");
-    installerDisplayText (installer, "-- ", tbuff);
+    installerDisplayText (installer, "-- ", tbuff, false);
     installer->instState = INST_PYTHON_CHECK;
   }
 }
@@ -1738,14 +1767,14 @@ installerVLCDownload (installer_t *installer)
   if (fileopFileExists (installer->dlfname)) {
     /* CONTEXT: installer: status message */
     snprintf (tbuff, sizeof (tbuff), _("Installing %s."), "VLC");
-    installerDisplayText (installer, "-- ", tbuff);
+    installerDisplayText (installer, "-- ", tbuff, false);
     /* CONTEXT: installer: status message */
-    installerDisplayText (installer, "   ", _("Please wait..."));
+    installerDisplayText (installer, "   ", _("Please wait..."), false);
     installer->instState = INST_VLC_INSTALL;
   } else {
     /* CONTEXT: installer: status message */
     snprintf (tbuff, sizeof (tbuff), _("Download of %s failed."), "VLC");
-    installerDisplayText (installer, "-- ", tbuff);
+    installerDisplayText (installer, "-- ", tbuff, false);
     installer->instState = INST_PYTHON_CHECK;
   }
 }
@@ -1765,7 +1794,7 @@ installerVLCInstall (installer_t *installer)
     system (tbuff);
     /* CONTEXT: installer: status message */
     snprintf (tbuff, sizeof (tbuff), _("%s installed."), "VLC");
-    installerDisplayText (installer, "-- ", tbuff);
+    installerDisplayText (installer, "-- ", tbuff, false);
   }
   fileopDelete (installer->dlfname);
   installerCheckPackages (installer);
@@ -1784,8 +1813,8 @@ installerPythonCheck (installer_t *installer)
 
   if (chdir (installer->datatopdir)) {
     fprintf (stderr, "Unable to set working dir: %s\n", installer->datatopdir);
-    installerDisplayText (installer, "", _("Error: Unable to set working folder."));
-    installerDisplayText (installer, " * ", _("Installation aborted."));
+    installerDisplayText (installer, "", _("Error: Unable to set working folder."), false);
+    installerDisplayText (installer, " * ", _("Installation aborted."), false);
     installer->instState = INST_BEGIN;
     return;
   }
@@ -1799,13 +1828,13 @@ installerPythonCheck (installer_t *installer)
   if (*installer->pyversion) {
     /* CONTEXT: installer: status message */
     snprintf (tbuff, sizeof (tbuff), _("Downloading %s."), "Python");
-    installerDisplayText (installer, "-- ", tbuff);
+    installerDisplayText (installer, "-- ", tbuff, false);
     installer->instState = INST_PYTHON_DOWNLOAD;
   } else {
     snprintf (tbuff, sizeof (tbuff),
         /* CONTEXT: installer: status message */
         _("Unable to determine %s version."), "Python");
-    installerDisplayText (installer, "-- ", tbuff);
+    installerDisplayText (installer, "-- ", tbuff, false);
     installer->instState = INST_MUTAGEN_CHECK;
   }
 }
@@ -1841,14 +1870,14 @@ installerPythonDownload (installer_t *installer)
   if (fileopFileExists (installer->dlfname)) {
     /* CONTEXT: installer: status message */
     snprintf (tbuff, sizeof (tbuff), _("Installing %s."), "Python");
-    installerDisplayText (installer, "-- ", tbuff);
+    installerDisplayText (installer, "-- ", tbuff, false);
     /* CONTEXT: installer: status message */
-    installerDisplayText (installer, "   ", _("Please wait..."));
+    installerDisplayText (installer, "   ", _("Please wait..."), false);
     installer->instState = INST_PYTHON_INSTALL;
   } else {
     /* CONTEXT: installer: status message */
     snprintf (tbuff, sizeof (tbuff), _("Download of %s failed."), "Python");
-    installerDisplayText (installer, "-- ", tbuff);
+    installerDisplayText (installer, "-- ", tbuff, false);
     installer->instState = INST_MUTAGEN_CHECK;
   }
 }
@@ -1864,7 +1893,7 @@ installerPythonInstall (installer_t *installer)
     }
     system (tbuff);
     snprintf (tbuff, sizeof (tbuff), _("%s installed."), "Python");
-    installerDisplayText (installer, "-- ", tbuff);
+    installerDisplayText (installer, "-- ", tbuff, false);
   }
   fileopDelete (installer->dlfname);
   installerCheckPackages (installer);
@@ -1887,17 +1916,17 @@ installerMutagenCheck (installer_t *installer)
 
   if (chdir (installer->datatopdir)) {
     fprintf (stderr, "Unable to set working dir: %s\n", installer->datatopdir);
-    installerDisplayText (installer, "", _("Error: Unable to set working folder."));
-    installerDisplayText (installer, " * ", _("Installation aborted."));
+    installerDisplayText (installer, "", _("Error: Unable to set working folder."), false);
+    installerDisplayText (installer, " * ", _("Installation aborted."), false);
     installer->instState = INST_BEGIN;
     return;
   }
 
   /* CONTEXT: installer: status message */
   snprintf (tbuff, sizeof (tbuff), _("Installing %s."), "Mutagen");
-  installerDisplayText (installer, "-- ", tbuff);
+  installerDisplayText (installer, "-- ", tbuff, false);
   /* CONTEXT: installer: status message */
-  installerDisplayText (installer, "   ", _("Please wait..."));
+  installerDisplayText (installer, "   ", _("Please wait..."), false);
   installer->instState = INST_MUTAGEN_INSTALL;
 }
 
@@ -1919,7 +1948,7 @@ installerMutagenInstall (installer_t *installer)
       "%s --quiet install --user --upgrade mutagen", pipnm);
   system (tbuff);
   snprintf (tbuff, sizeof (tbuff), _("%s installed."), "Mutagen");
-  installerDisplayText (installer, "-- ", tbuff);
+  installerDisplayText (installer, "-- ", tbuff, false);
   installerCheckPackages (installer);
   if (isWindows ()) {
     installer->instState = INST_UPDATE_CA_FILE_INIT;
@@ -1935,15 +1964,15 @@ installerUpdateCAFileInit (installer_t *installer)
 
   if (chdir (installer->datatopdir)) {
     fprintf (stderr, "Unable to set working dir: %s\n", installer->datatopdir);
-    installerDisplayText (installer, "", _("Error: Unable to set working folder."));
-    installerDisplayText (installer, " * ", _("Installation aborted."));
+    installerDisplayText (installer, "", _("Error: Unable to set working folder."), false);
+    installerDisplayText (installer, " * ", _("Installation aborted."), false);
     installer->instState = INST_BEGIN;
     return;
   }
 
   /* CONTEXT: installer: status message */
   snprintf (tbuff, sizeof (tbuff), _("Updating certificates."));
-  installerDisplayText (installer, "-- ", tbuff);
+  installerDisplayText (installer, "-- ", tbuff, false);
   installer->instState = INST_UPDATE_CA_FILE;
 }
 
@@ -1966,7 +1995,7 @@ installerUpdateProcessInit (installer_t *installer)
 
   /* CONTEXT: installer: status message */
   snprintf (buff, sizeof (buff), _("Updating %s."), BDJ4_LONG_NAME);
-  installerDisplayText (installer, "-- ", buff);
+  installerDisplayText (installer, "-- ", buff, false);
   installer->instState = INST_UPDATE_PROCESS;
 }
 
@@ -1999,8 +2028,8 @@ installerRegisterInit (installer_t *installer)
 
   if (chdir (installer->datatopdir)) {
     fprintf (stderr, "Unable to set working dir: %s\n", installer->datatopdir);
-    installerDisplayText (installer, "", _("Error: Unable to set working folder."));
-    installerDisplayText (installer, " * ", _("Installation aborted."));
+    installerDisplayText (installer, "", _("Error: Unable to set working folder."), false);
+    installerDisplayText (installer, " * ", _("Installation aborted."), false);
     installer->instState = INST_BEGIN;
     return;
   }
@@ -2017,12 +2046,12 @@ installerRegisterInit (installer_t *installer)
       strcmp (sysvarsGetStr (SV_BDJ4_RELEASELEVEL), "") != 0) {
     /* no need to translate */
     snprintf (tbuff, sizeof (tbuff), "Registration Skipped.");
-    installerDisplayText (installer, "-- ", tbuff);
+    installerDisplayText (installer, "-- ", tbuff, false);
     installer->instState = INST_FINISH;
   } else {
     /* CONTEXT: installer: status message */
     snprintf (tbuff, sizeof (tbuff), _("Registering %s."), BDJ4_NAME);
-    installerDisplayText (installer, "-- ", tbuff);
+    installerDisplayText (installer, "-- ", tbuff, false);
     installer->instState = INST_REGISTER;
   }
 }
@@ -2048,7 +2077,7 @@ installerRegister (installer_t *installer)
       "&user=%s&host=%s"
       "&systemlocale=%s&locale=%s"
       "&bdj3version=%s&oldversion=%s"
-      "&new=%d&overwrite=%d&update=%d&convert=%d",
+      "&new=%d&reinstall=%d&update=%d&convert=%d",
       "9873453",  // key
       sysvarsGetStr (SV_BDJ4_VERSION),
       sysvarsGetStr (SV_BDJ4_BUILD),
@@ -2117,12 +2146,18 @@ installerCleanup (installer_t *installer)
 }
 
 static void
-installerDisplayText (installer_t *installer, char *pfx, char *txt)
+installerDisplayText (installer_t *installer, char *pfx, char *txt, bool bold)
 {
   if (installer->guienabled) {
-    uiTextBoxAppendStr (installer->disptb, pfx);
-    uiTextBoxAppendStr (installer->disptb, txt);
-    uiTextBoxAppendStr (installer->disptb, "\n");
+    if (bold) {
+      uiTextBoxAppendBoldStr (installer->disptb, pfx);
+      uiTextBoxAppendBoldStr (installer->disptb, txt);
+      uiTextBoxAppendBoldStr (installer->disptb, "\n");
+    } else {
+      uiTextBoxAppendStr (installer->disptb, pfx);
+      uiTextBoxAppendStr (installer->disptb, txt);
+      uiTextBoxAppendStr (installer->disptb, "\n");
+    }
     installer->scrolltoend = true;
   } else {
     printf ("%s%s\n", pfx, txt);
@@ -2183,8 +2218,8 @@ installerTemplateCopy (const char *dir, const char *from, const char *to)
       from = tbuff;
     }
   }
-  logMsg (LOG_INSTALL, LOG_IMPORTANT, "- copy file: %s", from);
-  logMsg (LOG_INSTALL, LOG_IMPORTANT, "         to: %s", to);
+  logMsg (LOG_INSTALL, LOG_IMPORTANT, "- copy: %s", from);
+  logMsg (LOG_INSTALL, LOG_IMPORTANT, "    to: %s", to);
   filemanipBackup (to, 1);
   filemanipCopy (from, to);
 }

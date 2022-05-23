@@ -70,6 +70,7 @@ typedef struct {
   int               iterations;
   int               threadActiveSum;
   bool              running : 1;
+  bool              havealldata : 1;
 } dbtag_t;
 
 static int      dbtagProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
@@ -103,6 +104,7 @@ main (int argc, char *argv[])
   dbtag.maxThreads = sysvarsGetNum (SVL_NUM_PROC);
   dbtag.threads = malloc (sizeof (dbthread_t) * dbtag.maxThreads);
   dbtag.running = false;
+  dbtag.havealldata = false;
   dbtag.numActiveThreads = 0;
   dbtag.iterations = 0;
   dbtag.threadActiveSum = 0;
@@ -180,6 +182,10 @@ dbtagProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_DB_FILE_CHK: {
           dbtagProcessFileMsg (dbtag, args);
+          break;
+        }
+        case MSG_DB_ALL_FILES_SENT: {
+          dbtag->havealldata = true;
           break;
         }
         default: {
@@ -276,7 +282,9 @@ dbtagProcessing (void *udata)
     }
 
     if (queueGetCount (dbtag->fileQueue) == 0 &&
-        dbtag->numActiveThreads == 0) {
+        dbtag->numActiveThreads == 0 &&
+        dbtag->havealldata) {
+      connSendMessage (dbtag->conn, ROUTE_DBUPDATE, MSG_DB_TAG_FINISHED, NULL);
       logMsg (LOG_DBG, LOG_IMPORTANT, "-- queue empty: %ld ms", mstimeend (&dbtag->starttm));
       logMsg (LOG_DBG, LOG_IMPORTANT, "     received: %ld", dbtag->received);
       logMsg (LOG_DBG, LOG_IMPORTANT, "         sent: %ld", dbtag->sent);

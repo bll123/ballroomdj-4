@@ -6,6 +6,7 @@ echo -- BDJ4 Installation Startup
 
 set guidisabled=""
 set reinstall=""
+set logstderr=""
 
 :procargs
 if "%1" == "" ( goto endargs )
@@ -14,6 +15,9 @@ if %1 == "--reinstall" (
 )
 if %1 == "--guidisabled" (
   set guidisabled="--guidisabled"
+)
+if %1 == "--logstderr" (
+  set logstderr="--logstderr"
 )
 shift
 goto procargs
@@ -24,7 +28,7 @@ cd %tdir%
 cd bdj4-install
 
 echo -- Starting installer.
-.\bin\bdj4.exe --installer --unpackdir %tdir%\bdj4-install %reinstall% %guidisabled%
+.\bin\bdj4.exe --bdj4installer --unpackdir %tdir%\bdj4-install %reinstall% %guidisabled% %logstderr%
 
 echo -- Cleaning temporary files.
 if exist "%tdir%\bdj4-install.cab" (

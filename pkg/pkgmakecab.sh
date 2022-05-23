@@ -8,16 +8,16 @@ MCDIR=makecab.dir
 MCOUT=bdj4-install.cab
 MCLOG=makecab.log
 
-echo "$(date +%T): begin"
+echo "   $(date +%T): creating directory listing"
 > $FALL
 find bdj4-install -type d -print > $FDIRS
-echo "$(date +%T): dir listing"
+echo "   $(date +%T): creating file list"
 for d in $(cat $FDIRS); do
   echo "=== $d" >> $FALL
   find $d -mindepth 1 -maxdepth 1 -type f -print >> $FALL
 done
-echo "$(date +%T): created file listing"
 
+echo "   $(date +%T): creating .ddf file"
 awk -v CWD=$cwd '
 BEGIN { gsub (/\//, "\\", CWD); }
 
@@ -30,8 +30,8 @@ BEGIN { gsub (/\//, "\\", CWD); }
   }
 }' $FALL \
 > $FLIST
-echo "$(date +%T): created .ddf file"
 
+echo "   $(date +%T): creating cabinet"
 cat > $MCDIR << _HERE_
 .New Cabinet
 .Set DiskDirectory1=.
@@ -55,14 +55,11 @@ cat > $MCDIR << _HERE_
 .set MaxErrors=1
 _HERE_
 
-unix2dos $MCDIR
-unix2dos $FLIST
+unix2dos -q $MCDIR
+unix2dos -q $FLIST
 
-set -x
-# dcwd=$(cygpath -w ${cwd} | sed 's,\\,\\\\,g')
 cmd.exe /c "makecab /V1 /F $MCDIR /f $FLIST > $MCLOG"
 
-echo "$(date +%T): cabinet created"
 rm -f $FDIRS $FALL $FLIST $MCDIR $MCLOG
 
 exit 0

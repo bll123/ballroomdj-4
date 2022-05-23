@@ -37,31 +37,15 @@ static char *playerstatetxt [PL_STATE_MAX] = {
   [PL_STATE_IN_GAP] = "pl-in-gap",
 };
 
-static void         rlogStart (const char *processnm,
-                        const char *processtag, int truncflag,
-                        loglevel_t level);
-static bdjlog_t *   rlogOpen (const char *fn,
-                        const char *processtag, int truncflag);
-static void         logInit (void);
+static void rlogStart (const char *processnm,
+    const char *processtag, int truncflag, loglevel_t level);
+static void rlogOpen (logidx_t idx, const char *fn,
+    const char *processtag, int truncflag);
+static void logInit (void);
 static const char * logTail (const char *fn);
-
 static bdjlog_t *syslogs [LOG_MAX];
-static char *   logbasenm [LOG_MAX];
-static int      initialized = 0;
-
-bdjlog_t *
-logOpen (const char *fn, const char *processtag)
-{
-  bdjlog_t *l = rlogOpen (fn, processtag, 1);
-  return l;
-}
-
-bdjlog_t *
-logOpenAppend (const char *fn, const char *processtag)
-{
-  bdjlog_t *l = rlogOpen (fn, processtag, 0);
-  return l;
-}
+static char * logbasenm [LOG_MAX];
+static int  initialized = 0;
 
 void
 logClose (logidx_t idx)
@@ -123,9 +107,16 @@ rlogVarMsg (logidx_t idx, loglevel_t level,
   size_t        wlen;
 
 
+  logInit ();
+
+  if ((level & LOG_REDIRECT) == LOG_REDIRECT) {
+    idx = LOG_INSTALL;
+  }
+
   if (! logCheck (idx, level)) {
     return;
   }
+
   l = syslogs [idx];
 
   tmutilTstamp (ttm, sizeof (ttm));
@@ -142,27 +133,33 @@ rlogVarMsg (logidx_t idx, loglevel_t level,
   wlen = (size_t) snprintf (wbuff, sizeof (wbuff),
       "%s: %-2s %*s%s %s\n", ttm, l->processTag, l->indent, "", tbuff, tfn);
   wlen = wlen > LOG_MAX_BUFF ? LOG_MAX_BUFF - 1 : wlen;
-  fileWriteShared (&l->fhandle, wbuff, wlen);
+  if ((l->level & LOG_STDERR) == LOG_STDERR) {
+    fprintf (stderr, "%s\n", wbuff);
+  } else {
+    fileWriteShared (&l->fhandle, wbuff, wlen);
+  }
 }
 
 void
-logSetLevel (logidx_t idx, loglevel_t level)
+logSetLevel (logidx_t idx, loglevel_t level, const char *processtag)
 {
-  syslogs [idx]->level = level;
+  logInit ();
+  syslogs [idx]->level |= level;
+  syslogs [idx]->processTag = processtag;
 }
 
-/* these routines act upon all three open logs */
+/* these routines act upon all open logs */
 
 void
 logStart (const char *processnm, const char *processtag, loglevel_t level)
 {
-  rlogStart (processnm, processtag, 1, level);
+  rlogStart (processnm, processtag, FILE_OPEN_TRUNCATE, level);
 }
 
 void
 logStartAppend (const char *processnm, const char *processtag, loglevel_t level)
 {
-  rlogStart (processnm, processtag, 0, level);
+  rlogStart (processnm, processtag, FILE_OPEN_APPEND, level);
 }
 
 void
@@ -183,7 +180,14 @@ logCheck (logidx_t idx, loglevel_t level)
   bdjlog_t      *l;
 
   l = syslogs [idx];
-  if (l == NULL || ! l->opened) {
+
+  if (l == NULL) {
+    return false;
+  }
+  if ((l->level & LOG_STDERR) == LOG_STDERR && ! l->opened) {
+    return true;
+  }
+  if (! l->opened) {
     return false;
   }
   if (! (level & l->level)) {
@@ -236,28 +240,27 @@ rlogStart (const char *processnm, const char *processtag,
   logInit ();
   tmutilDstamp (tdt, sizeof (tdt));
 
-  for (logidx_t idx = LOG_ERR; idx < LOG_MAX; ++idx) {
-    pathbldMakePath (tnm, sizeof (tnm), logbasenm [idx], LOG_EXTENSION,
-        PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
-    syslogs [idx] = rlogOpen (tnm, processtag, truncflag);
-    syslogs [idx]->level = level;
+  for (logidx_t idx = 0; idx < LOG_MAX; ++idx) {
+    pathbldMakePath (tnm, sizeof (tnm), logbasenm [idx], LOG_EXTENSION,          PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
+    rlogOpen (idx, tnm, processtag, truncflag);
+    syslogs [idx]->level |= level;
     if (idx != LOG_INSTALL && idx != LOG_GTK) {
       rlogVarMsg (idx, LOG_IMPORTANT, NULL, 0, "=== %s started %s", processnm, tdt);
     }
   }
 }
 
-static bdjlog_t *
-rlogOpen (const char *fn, const char *processtag, int truncflag)
+static void
+rlogOpen (logidx_t idx, const char *fn, const char *processtag, int truncflag)
 {
   bdjlog_t      *l = NULL;
   int           rc;
   pathinfo_t    *pi;
   char          tbuff [MAXPATHLEN];
 
+  logInit ();
 
-  l = malloc (sizeof (bdjlog_t));
-  assert (l != NULL);
+  l = syslogs [idx];
 
   pi = pathInfo (fn);
   strlcpy (tbuff, pi->dirname, pi->dlen + 1);
@@ -266,22 +269,24 @@ rlogOpen (const char *fn, const char *processtag, int truncflag)
   }
   pathInfoFree (pi);
 
-  l->opened = 0;
-  l->indent = 0;
-  l->level = LOG_IMPORTANT;
   l->processTag = processtag;
+  if (idx == LOG_INSTALL) {
+    /* never truncate the installation log */
+    truncflag = FILE_OPEN_APPEND;
+  }
   rc = fileOpenShared (fn, truncflag, &l->fhandle);
   if (rc < 0) {
     fprintf (stderr, "%s: Unable to open %s %d %s\n",
         processtag, fn, errno, strerror (errno));
   }
   l->opened = 1;
-  return l;
 }
 
 static void
 logInit (void)
 {
+  bdjlog_t      *l = NULL;
+
   if (! initialized) {
     logbasenm [LOG_ERR] = LOG_ERROR_NAME;
     logbasenm [LOG_SESS] = LOG_SESSION_NAME;
@@ -289,7 +294,12 @@ logInit (void)
     logbasenm [LOG_INSTALL] = LOG_INSTALL_NAME;
     logbasenm [LOG_GTK] = LOG_GTK_NAME;
     for (logidx_t idx = LOG_ERR; idx < LOG_MAX; ++idx) {
-      syslogs [idx] = NULL;
+      l = malloc (sizeof (bdjlog_t));
+      l->opened = 0;
+      l->indent = 0;
+      l->level = 0;
+      l->processTag = "unknown";
+      syslogs [idx] = l;
     }
 //    osCatchSignal (logBacktraceHandler, SIGSEGV);
     initialized = 1;

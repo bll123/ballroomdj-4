@@ -268,9 +268,7 @@ uisongselFilterResponseHandler (void *udata, int responseid)
 
   switch (responseid) {
     case RESPONSE_DELETE_WIN: {
-fprintf (stderr, "ccc\n");
       uiWindowGetPosition (&uisongsel->filterDialog, &x, &y);
-fprintf (stderr, "ddd\n");
       nlistSetNum (uisongsel->options, SONGSEL_FILTER_POSITION_X, x);
       nlistSetNum (uisongsel->options, SONGSEL_FILTER_POSITION_Y, y);
       uiutilsUIWidgetInit (&uisongsel->filterDialog);

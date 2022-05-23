@@ -9,18 +9,21 @@
 #include "bdjstring.h"
 #include "pathbld.h"
 #include "sysvars.h"
+#include "tmutil.h"
 
 char *
 pathbldMakePath (char *buff, size_t buffsz,
     const char *base, const char *extension, int flags)
 {
   char      profpath [50];
+  char      dstamp [40];
   char      *dirprefix = "";
 
 
   *profpath = '\0';
+  *dstamp = '\0';
 
-  dirprefix = "";
+  dirprefix = ".";   /* default to current directory if no path specified */
   /* MP_USEIDX and MP_HOSTNAME imply the data directory */
   if ((flags & PATHBLD_MP_DATA) == PATHBLD_MP_DATA ||
       (flags & PATHBLD_MP_USEIDX) == PATHBLD_MP_USEIDX ||
@@ -55,6 +58,9 @@ pathbldMakePath (char *buff, size_t buffsz,
   if ((flags & PATHBLD_MP_INSTDIR) == PATHBLD_MP_INSTDIR) {
     dirprefix = sysvarsGetStr (SV_BDJ4INSTDIR);
   }
+  if ((flags & PATHBLD_MP_DSTAMP) == PATHBLD_MP_DSTAMP) {
+    tmutilDstamp (dstamp, sizeof (dstamp));
+  }
 
   if ((flags & PATHBLD_MP_USEIDX) == PATHBLD_MP_USEIDX) {
     if ((flags & PATHBLD_MP_TMPDIR) == PATHBLD_MP_TMPDIR) {
@@ -66,12 +72,12 @@ pathbldMakePath (char *buff, size_t buffsz,
     }
   }
   if ((flags & PATHBLD_MP_HOSTNAME) == PATHBLD_MP_HOSTNAME) {
-    snprintf (buff, buffsz, "%s/%s/%s%s%s", dirprefix,
-        sysvarsGetStr (SV_HOSTNAME), profpath, base, extension);
+    snprintf (buff, buffsz, "%s/%s/%s%s%s%s", dirprefix,
+        sysvarsGetStr (SV_HOSTNAME), profpath, base, dstamp, extension);
   }
   if ((flags & PATHBLD_MP_HOSTNAME) != PATHBLD_MP_HOSTNAME) {
-    snprintf (buff, buffsz, "%s/%s%s%s", dirprefix,
-        profpath, base, extension);
+    snprintf (buff, buffsz, "%s/%s%s%s%s", dirprefix,
+        profpath, base, dstamp, extension);
   }
   stringTrimChar (buff, '/');
 

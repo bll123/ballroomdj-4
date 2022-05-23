@@ -15,7 +15,7 @@ function copysrcfiles {
       packages/mongoose/mongoose.[ch]"
   dirlist="src conv img install licenses scripts locale pkg templates web wiki"
 
-  echo "-- copying files to $stage"
+  echo "-- $(date +%T) copying files to $stage"
   for f in $filelist; do
     dir=$(dirname ${f})
     test -d ${stage}/${dir} || mkdir -p ${stage}/${dir}
@@ -50,7 +50,7 @@ function copyreleasefiles {
       ;;
   esac
 
-  echo "-- copying files to $stage"
+  echo "-- $(date +%T) copying files to $stage"
   for f in $filelist; do
     dir=$(dirname ${f})
     test -d ${stage}/${dir} || mkdir -p ${stage}/${dir}
@@ -146,7 +146,7 @@ fi
 
 # only rebuild the version.txt file on linux.
 if [[ $tag == linux ]]; then
-  echo "-- updating build number"
+  echo "-- $(date +%T) updating build number"
   BUILD=$(($BUILD+1))
   BUILDDATE=$(date '+%Y%m%d')
   cat > VERSION.txt << _HERE_
@@ -170,7 +170,7 @@ esac
 
 case $systype in
   Linux)
-    echo "-- create source package"
+    echo "-- $(date +%T) create source package"
     stagedir=tmp/${spkgnm}-src
     test -d ${stagedir} && rm -rf ${stagedir}
     mkdir -p ${stagedir}
@@ -178,7 +178,7 @@ case $systype in
 
     copysrcfiles ${systype} ${stagedir}
 
-    echo "-- creating source manifest"
+    echo "-- $(date +%T) creating source manifest"
     touch ${stagedir}/install/manifest.txt
     ./pkg/mkmanifest.sh ${stagedir}
     mv -f install/manifest.txt ${stagedir}/install/manifest.txt
@@ -189,7 +189,7 @@ case $systype in
     ;;
 esac
 
-echo "-- create release package"
+echo "-- $(date +%T) create release package"
 
 stagedir=tmp/${instdir}
 test -d ${stagedir} && rm -rf ${stagedir}
@@ -216,16 +216,16 @@ case $systype in
   Linux)
     copyreleasefiles ${systype} ${stagedir}
 
-    echo "-- creating release manifest"
+    echo "-- $(date +%T) creating release manifest"
     touch ${stagedir}/${manfn}
     ./pkg/mkmanifest.sh ${stagedir}
     mv -f ${manfn} ${stagedir}/install
 
     setLibVol $stagedir libvolpa
-    echo "-- creating install package"
+    echo "-- $(date +%T) creating install package"
     (cd tmp;tar -c -J -f - $(basename $stagedir)) > ${tmpnm}
     cat bin/bdj4se ${tmpsep} ${tmpnm} > ${nm}
-    rm -f ${tmpnm}
+    rm -f ${tmpnm} ${tmpsep}
     ;;
   Darwin)
     mkdir -p ${stagedir}/Contents/MacOS
@@ -241,26 +241,26 @@ case $systype in
     echo -n 'APPLBDJ4' > ${stagedir}/Contents/PkgInfo
     copyreleasefiles ${systype} ${stagedir}/Contents/MacOS
 
-    echo "-- creating release manifest"
+    echo "-- $(date +%T) creating release manifest"
     touch ${stagedir}/Contents/MacOS/${manfn}
     ./pkg/mkmanifest.sh ${stagedir}
     mv -f ${manfn} ${stagedir}/Contents/MacOS/install
 
     setLibVol $stagedir/Contents/MacOS libvolmac
-    echo "-- creating install package"
+    echo "-- $(date +%T) creating install package"
     (cd tmp;tar -c -J -f - $(basename $stagedir)) > ${tmpnm}
     cat bin/bdj4se ${tmpsep} ${tmpnm} > ${nm}
-    rm -f ${tmpnm}
+    rm -f ${tmpnm} ${tmpsep}
     ;;
   MINGW64*|MINGW32*)
     copyreleasefiles ${systype} ${stagedir}
 
-    echo "-- creating release manifest"
+    echo "-- $(date +%T) creating release manifest"
     touch ${stagedir}/${manfn}
     ./pkg/mkmanifest.sh ${stagedir}
     mv -f ${manfn} ${stagedir}/install
 
-    echo "-- creating install package"
+    echo "-- $(date +%T) creating install package"
     setLibVol $stagedir libvolwin
     (
       cd tmp;
@@ -275,7 +275,7 @@ case $systype in
 esac
 chmod a+rx ${nm}
 
-echo "## release package ${nm} created"
+echo "## $(date +%T) release package ${nm} created"
 rm -rf ${stagedir}
 
 exit 0

@@ -11,11 +11,12 @@ typedef enum {
   PATHBLD_MP_LOCALEDIR    = 0x0020,
   PATHBLD_MP_MAINDIR      = 0x0040,
   PATHBLD_MP_MUSICDIR     = 0x0080,
-  PATHBLD_MP_RELATIVE     = 0x0100,   // no absolute path
+  PATHBLD_MP_RELATIVE     = 0x0100,   // no absolute path (img)
   PATHBLD_MP_TEMPLATEDIR  = 0x0200,
   PATHBLD_MP_TMPDIR       = 0x0400,
   PATHBLD_MP_USEIDX       = 0x0800,
   PATHBLD_MP_INSTDIR      = 0x1000,
+  PATHBLD_MP_DSTAMP       = 0x2000,
 } pathbld_mp_t;
 
 #define PATH_PROFILES   "profiles"

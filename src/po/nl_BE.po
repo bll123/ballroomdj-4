@@ -67,6 +67,11 @@ msgstr ""
 msgid "%s Wiki"
 msgstr ""
 
+#. CONTEXT: installer: message indicating the conversion action that will be taken
+#, c-format
+msgid "%s data will be converted."
+msgstr ""
+
 #. CONTEXT: installer: status message
 #, c-format
 msgid "%s installed."
@@ -330,10 +335,6 @@ msgstr ""
 
 #. CONTEXT: installer: status message
 msgid "Conversion complete."
-msgstr ""
-
-#. CONTEXT: installer: message indicating the conversion action that will be taken
-msgid "Conversion will be processed"
 msgstr ""
 
 #. CONTEXT: installer: checkbox: convert the BallroomDJ 3 installation
@@ -955,7 +956,7 @@ msgid "Next Song"
 msgstr "Volgende nummer"
 
 #. CONTEXT: installer: message indicating the conversion action that will be taken
-msgid "No conversion."
+msgid "No folder specified."
 msgstr ""
 
 #. CONTEXT: genre
@@ -968,6 +969,11 @@ msgstr "Standaard"
 
 #. CONTEXT: marquee: displayed when nothing is set to be played
 msgid "Not Playing"
+msgstr ""
+
+#. CONTEXT: the location entered is not a valid BDJ3 location.
+#, c-format
+msgid "Not a valid %s folder."
 msgstr ""
 
 #. CONTEXT: title: notes
@@ -1000,16 +1006,6 @@ msgstr ""
 
 #. CONTEXT: database update: status message: other files that cannot be processed
 msgid "Other Files"
-msgstr ""
-
-#. CONTEXT: installer: checkbox: overwrite the previous BDJ4 installation
-msgid "Overwrite"
-msgstr ""
-
-#. CONTEXT: installer: message indicating the action that will be taken
-#. CONTEXT: installer: command line interface: indicating action
-#, c-format
-msgid "Overwriting existing %s installation."
 msgstr ""
 
 #. CONTEXT: dance
@@ -1167,6 +1163,16 @@ msgstr "Loterij liedjes"
 #. CONTEXT: configuration: rating: title of the rating name column
 msgid "Rating"
 msgstr "Beoordeling"
+
+#. CONTEXT: installer: checkbox: re-install BDJ4
+msgid "Re-Install"
+msgstr ""
+
+#. CONTEXT: installer: message indicating the action that will be taken
+#. CONTEXT: installer: command line interface: indicating action
+#, c-format
+msgid "Re-install %s."
+msgstr "%s opnieuw installeren."
 
 #. CONTEXT: database update: rebuilds the database
 msgid "Rebuild Database"
@@ -1441,6 +1447,10 @@ msgstr "Tango"
 
 #. CONTEXT: The completion message displayed on the marquee when the playlist is finished.
 msgid "Thank You Dancers"
+msgstr ""
+
+#. CONTEXT: installer: message indicating the conversion action that will be taken
+msgid "The conversion process will not be run."
 msgstr ""
 
 #. CONTEXT: installer: instructions

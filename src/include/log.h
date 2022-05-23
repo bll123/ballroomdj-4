@@ -30,6 +30,8 @@ typedef uint32_t   loglevel_t;
 #define LOG_WEBCLIENT   0x00010000  // 65536
 #define LOG_DBUPDATE    0x00020000  // 131072
 #define LOG_PROGSTATE   0x00040000  // 262144
+#define LOG_STDERR      0x00080000  // 524288
+#define LOG_REDIRECT    0x00100000  // 1048576
 #define LOG_ALL         0xFFFFFFFF
 
 typedef enum {
@@ -76,7 +78,7 @@ void        rlogProcEnd (loglevel_t level, const char *tag,
 void        rlogError (const char *msg, int err, const char *fn, int line);
 void        rlogVarMsg (logidx_t, loglevel_t level,
                 const char *fn, int line, const char *fmt, ...);
-void        logSetLevel (logidx_t idx, loglevel_t level);
+void        logSetLevel (logidx_t idx, loglevel_t level, const char *processtag);
 void        logStart (const char *processnm,
                 const char *processtag, loglevel_t level);
 void        logStartAppend (const char *processnm,

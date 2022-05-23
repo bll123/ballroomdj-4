@@ -64,6 +64,7 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
     { "profile",      required_argument,NULL,   'p' },
     { "debug",        required_argument,NULL,   'd' },
     { "startlog",     no_argument,      NULL,   's' },
+    { "logstderr",    no_argument,      NULL,   'l' },
     { "hidemarquee",  no_argument,      NULL,   'h' },
     { "cli"       ,   no_argument,      NULL,   'c' },
     /* debug options */
@@ -85,7 +86,7 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
   sysvarsInit (argv[0]);
   localeInit ();
 
-  while ((c = getopt_long_only (argc, argv, "BCp:d:mnNRs", bdj_options, &option_index)) != -1) {
+  while ((c = getopt_long_only (argc, argv, "BCPOUWcld:p:mnNRsh", bdj_options, &option_index)) != -1) {
     switch (c) {
       case 'B': {
         isbdj4 = true;
@@ -113,6 +114,11 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
       }
       case 'c': {
         flags |= BDJ4_CLI;
+        break;
+      }
+      case 'l': {
+        logSetLevel (LOG_DBG, LOG_STDERR, tag);
+        logSetLevel (LOG_ERR, LOG_STDERR, tag);
         break;
       }
       case 'd': {

@@ -275,6 +275,7 @@ updaterCleanRegex (const char *basedir, const char *pattern)
       fileopDelete (tmp);
     }
   }
+  nlistFree (filelist);
 
   regexFree (rx);
 }

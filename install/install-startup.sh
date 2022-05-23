@@ -40,6 +40,6 @@ while test $# -gt 0; do
 done
 
 echo "-- Starting installer."
-./bin/bdj4 --installer ${guidisabled} --unpackdir "$unpackdir" $reinstall
+./bin/bdj4 --bdj4installer ${guidisabled} --unpackdir "$unpackdir" $reinstall
 
 exit 0

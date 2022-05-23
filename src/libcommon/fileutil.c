@@ -38,7 +38,7 @@ fileOpenShared (const char *fname, int truncflag, filehandle_t *fhandle)
   DWORD     cd;
 
   cd = OPEN_ALWAYS;
-  if (truncflag) {
+  if (truncflag == FILE_OPEN_TRUNCATE) {
     cd = CREATE_ALWAYS;
   }
 
@@ -62,7 +62,7 @@ fileOpenShared (const char *fname, int truncflag, filehandle_t *fhandle)
 # if _define_O_CLOEXEC
   flags |= O_CLOEXEC;
 # endif
-  if (truncflag) {
+  if (truncflag == FILE_OPEN_TRUNCATE) {
     flags |= O_TRUNC;
   }
   fd = open (fname, flags, 0600);

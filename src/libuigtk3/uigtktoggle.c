@@ -74,12 +74,18 @@ uiToggleButtonSetImage (UIWidget *uiwidget, UIWidget *image)
 bool
 uiToggleButtonIsActive (UIWidget *uiwidget)
 {
+  if (uiwidget->widget == NULL) {
+    return 0;
+  }
   return gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (uiwidget->widget));
 }
 
 void
 uiToggleButtonSetState (UIWidget *uiwidget, int state)
 {
+  if (uiwidget->widget == NULL) {
+    return;
+  }
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (uiwidget->widget), state);
 }
 

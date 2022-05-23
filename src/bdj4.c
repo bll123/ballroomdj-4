@@ -84,6 +84,7 @@ main (int argc, char * argv[])
     { "theme",          required_argument,  NULL,   't' },
     { "ignorelock",     no_argument,        NULL,   0 },
     { "startlog",       no_argument,        NULL,   0 },
+    { "logstderr",      no_argument,        NULL,   0 },
     { "nostart",        no_argument,        NULL,   0 },
     { "cli",            no_argument,        NULL,   'c' },
     /* this process */
@@ -382,12 +383,14 @@ main (int argc, char * argv[])
 #if BDJ4_USE_GTK
       osSetEnv ("GTK_THEME", buff);
 #endif
+      havetheme = true;
     }
-    if (isinstaller && isWindows ()) {
+  }
+
+  if (! havetheme && isWindows ()) {
 #if BDJ4_USE_GTK
-      osSetEnv ("GTK_THEME", buff);
+    osSetEnv ("GTK_THEME", "Windows-10-Dark");
 #endif
-    }
   }
 
   /* launch the program */

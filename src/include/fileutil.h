@@ -20,6 +20,11 @@ typedef union {
   int     fd;
 } filehandle_t;
 
+enum {
+  FILE_OPEN_APPEND,
+  FILE_OPEN_TRUNCATE,
+};
+
 int           fileOpenShared (const char *fname, int truncflag,
                   filehandle_t *fileHandle);
 ssize_t       fileWriteShared (filehandle_t *fileHandle, char *data, size_t len);

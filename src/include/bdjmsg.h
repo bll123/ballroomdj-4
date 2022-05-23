@@ -115,8 +115,10 @@ typedef enum {
   MSG_DB_PROGRESS,          // args: % complete
   MSG_DB_STATUS_MSG,        // args: status message
   MSG_DB_FINISH,            //
+  MSG_DB_TAG_FINISHED,      // no more from dbtag
   /* to dbtag */
   MSG_DB_FILE_CHK,          // args: filename to check
+  MSG_DB_ALL_FILES_SENT,    // all filenames sent to dbtag
 
   /* when a new message is added, update: */
   /* bdjmsg.c: debugging information for the msg */

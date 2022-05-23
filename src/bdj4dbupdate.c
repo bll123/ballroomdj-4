@@ -376,8 +376,8 @@ dbupdateProcessing (void *udata)
 
         p = dbupdateGetRelativePath (dbupdate, fn);
         if (dbGetByName (dbupdate->musicdb, p) != NULL) {
-          logMsg (LOG_DBG, LOG_DBUPDATE, "  in-database");
           ++dbupdate->countInDatabase;
+          logMsg (LOG_DBG, LOG_DBUPDATE, "  in-database (%d) ", dbupdate->countInDatabase);
 
           /* if doing a checknew, no need for further processing */
           /* the file exists, don't change the file or the database */
@@ -396,10 +396,12 @@ dbupdateProcessing (void *udata)
       if (regexMatch (dbupdate->badfnregex, fn)) {
         ++dbupdate->filesSkipped;
         ++dbupdate->countBad;
+        logMsg (LOG_DBG, LOG_DBUPDATE, "  bad (%d) ", dbupdate->countBad);
         continue;
       }
 
       connSendMessage (dbupdate->conn, ROUTE_DBTAG, MSG_DB_FILE_CHK, fn);
+      logMsg (LOG_DBG, LOG_DBUPDATE, "  send %s", fn);
       ++dbupdate->filesSent;
       ++count;
       if (count > FNAMES_SENT_PER_ITER) {
@@ -411,6 +413,7 @@ dbupdateProcessing (void *udata)
       logMsg (LOG_DBG, LOG_IMPORTANT, "-- skipped (%d)", dbupdate->filesSkipped);
       logMsg (LOG_DBG, LOG_IMPORTANT, "-- all filenames sent (%d): %ld ms",
           dbupdate->filesSent, mstimeend (&dbupdate->starttm));
+      connSendMessage (dbupdate->conn, ROUTE_DBTAG, MSG_DB_ALL_FILES_SENT, NULL);
       dbupdate->state = DB_UPD_PROCESS;
     }
   }

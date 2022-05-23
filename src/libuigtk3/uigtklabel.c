@@ -80,24 +80,40 @@ uiLabelSetFont (UIWidget *uiwidget, const char *font)
 inline void
 uiLabelSetText (UIWidget *uiwidget, const char *text)
 {
+  if (uiwidget->widget == NULL) {
+    return;
+  }
+
   gtk_label_set_text (GTK_LABEL (uiwidget->widget), text);
 }
 
 inline void
 uiLabelEllipsizeOn (UIWidget *uiwidget)
 {
+  if (uiwidget->widget == NULL) {
+    return;
+  }
+
   gtk_label_set_ellipsize (GTK_LABEL (uiwidget->widget), PANGO_ELLIPSIZE_END);
 }
 
 inline void
 uiLabelSetMaxWidth (UIWidget *uiwidget, int width)
 {
+  if (uiwidget->widget == NULL) {
+    return;
+  }
+
   gtk_label_set_max_width_chars (GTK_LABEL (uiwidget->widget), width);
 }
 
 inline void
 uiLabelAlignEnd (UIWidget *uiwidget)
 {
+  if (uiwidget->widget == NULL) {
+    return;
+  }
+
   gtk_label_set_xalign (GTK_LABEL (uiwidget->widget), 1.0);
 }
 
