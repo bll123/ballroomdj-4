@@ -41,7 +41,8 @@ typedef struct manageseq {
   uientry_t       seqname;
   UIWidget        *statusMsg;
   char            *seqoldname;
-  bool            seqbackupcreated;
+  bool            seqbackupcreated : 1;
+  bool            changed : 1;
 } manageseq_t;
 
 static bool   manageSequenceLoad (void *udata);
@@ -166,6 +167,7 @@ manageSequenceSave (manageseq_t *manageseq)
   slist_t     *slist;
   char        nnm [MAXPATHLEN];
   char        *name;
+  bool        changed = false;
 
   if (manageseq->seqoldname == NULL) {
     return;
@@ -177,11 +179,21 @@ manageSequenceSave (manageseq_t *manageseq)
     return;
   }
 
+  if (uiduallistIsChanged (manageseq->seqduallist)) {
+    changed = true;
+  }
+
   name = strdup (uiEntryGetValue (&manageseq->seqname));
 
   /* the sequence has been renamed */
   if (strcmp (manageseq->seqoldname, name) != 0) {
     manageRenamePlaylistFiles (manageseq->seqoldname, name);
+    changed = true;
+  }
+
+  if (! changed) {
+    slistFree (slist);
+    return;
   }
 
   pathbldMakePath (nnm, sizeof (nnm),
@@ -260,6 +272,7 @@ manageSequenceLoadFile (void *udata, const char *fn)
     slistSetNum (tlist, dstr, didx);
   }
   uiduallistSet (manageseq->seqduallist, tlist, DUALLIST_TREE_TARGET);
+  uiduallistClearChanged (manageseq->seqduallist);
   slistFree (tlist);
 
   manageSetSequenceName (manageseq, fn);
@@ -281,6 +294,7 @@ manageSequenceCopy (void *udata)
   if (manageCreatePlaylistCopy (manageseq->statusMsg, oname, newname)) {
     manageSetSequenceName (manageseq, newname);
     manageseq->seqbackupcreated = false;
+    uiduallistClearChanged (manageseq->seqduallist);
   }
   return UICB_CONT;
 }
@@ -300,6 +314,7 @@ manageSequenceNew (void *udata)
   manageseq->seqbackupcreated = false;
   tlist = slistAlloc ("tmp-sequence", LIST_UNORDERED, NULL);
   uiduallistSet (manageseq->seqduallist, tlist, DUALLIST_TREE_TARGET);
+  uiduallistClearChanged (manageseq->seqduallist);
   slistFree (tlist);
   return UICB_CONT;
 }
