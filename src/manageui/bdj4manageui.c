@@ -55,9 +55,9 @@ enum {
   MANAGE_TAB_OTHER,
   MANAGE_TAB_MAIN_SL,
   MANAGE_TAB_MAIN_MM,
-  MANAGE_TAB_PLMGMT,
-  MANAGE_TAB_EDITSEQ,
-  MANAGE_TAB_FILEMGR,
+  MANAGE_TAB_MAIN_PL,
+  MANAGE_TAB_MAIN_SEQ,
+  MANAGE_TAB_MAIN_FILEMGR,
   MANAGE_TAB_SONGLIST,
   MANAGE_TAB_SONGEDIT,
 };
@@ -220,9 +220,10 @@ static void     manageSetSonglistName (manageui_t *manage, const char *nm);
 static bool     manageSwitchPageMain (void *udata, int pagenum);
 static bool     manageSwitchPageSonglist (void *udata, int pagenum);
 static bool     manageSwitchPageMM (void *udata, int pagenum);
-static void     manageSwitchPage (void *udata, int pagenum, int which);
+static void     manageSwitchPage (manageui_t *manage, int pagenum, int which);
 static void manageInitializeSongFilter (manageui_t *manage, nlist_t *options);
 static void manageSetMenuCallback (manageui_t *manage, int midx, UICallbackFunc cb);
+static void manageSonglistLoadCheck (manageui_t *manage);
 
 static int gKillReceived = false;
 
@@ -577,7 +578,7 @@ manageBuildUI (manageui_t *manage)
   /* CONTEXT: notebook tab title: playlist management */
   uiCreateLabel (&uiwidget, _("Playlist Management"));
   uiNotebookAppendPage (&manage->mainnotebook, &vbox, &uiwidget);
-  uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_PLMGMT);
+  uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_MAIN_PL);
 
   manage->manageseq = manageSequenceAlloc (&manage->window,
       manage->options, &manage->statusMsg);
@@ -587,7 +588,7 @@ manageBuildUI (manageui_t *manage)
   /* CONTEXT: notebook tab title: edit sequences */
   uiCreateLabel (&uiwidget, _("Edit Sequences"));
   uiNotebookAppendPage (&manage->mainnotebook, &vbox, &uiwidget);
-  uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_EDITSEQ);
+  uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_MAIN_SEQ);
 
   /* file manager */
   uiCreateVertBox (&vbox);
@@ -595,7 +596,7 @@ manageBuildUI (manageui_t *manage)
   /* CONTEXT: notebook tab title: file manager */
   uiCreateLabel (&uiwidget, _("File Manager"));
   uiNotebookAppendPage (&manage->mainnotebook, &vbox, &uiwidget);
-  uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_FILEMGR);
+  uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_MAIN_FILEMGR);
 
   x = nlistGetNum (manage->options, PLUI_SIZE_X);
   y = nlistGetNum (manage->options, PLUI_SIZE_Y);
@@ -1369,19 +1370,18 @@ manageSetEasySonglist (manageui_t *manage)
 static void
 manageSetSonglistName (manageui_t *manage, const char *nm)
 {
-  uimusicqSetSonglistName (manage->slmusicq, nm);
   if (manage->sloldname != NULL) {
     free (manage->sloldname);
   }
   manage->sloldname = strdup (nm);
+  uimusicqSetSonglistName (manage->slmusicq, nm);
 }
 
 static void
 manageSonglistSave (manageui_t *manage)
 {
-  const char  *name;
-  char        onm [MAXPATHLEN];
-  char        nnm [MAXPATHLEN];
+  char  *name;
+  char  nnm [MAXPATHLEN];
 
   if (manage->sloldname == NULL) {
     return;
@@ -1391,18 +1391,12 @@ manageSonglistSave (manageui_t *manage)
     return;
   }
 
-  name = uimusicqGetSonglistName (manage->slmusicq);
+  name = strdup (uimusicqGetSonglistName (manage->slmusicq));
 
   /* the song list has been renamed */
   if (strcmp (manage->sloldname, name) != 0) {
     manageRenamePlaylistFiles (manage->sloldname, name);
   }
-
-  pathbldMakePath (onm, sizeof (onm),
-      name, BDJ4_SONGLIST_EXT, PATHBLD_MP_DATA);
-  strlcat (onm, ".n", sizeof (onm));
-
-  uimusicqSave (manage->slmusicq, onm);
 
   pathbldMakePath (nnm, sizeof (nnm),
       name, BDJ4_SONGLIST_EXT, PATHBLD_MP_DATA);
@@ -1410,9 +1404,11 @@ manageSonglistSave (manageui_t *manage)
     filemanipBackup (nnm, 1);
     manage->slbackupcreated = true;
   }
-  filemanipMove (onm, nnm);
 
+  manageSetSonglistName (manage, name);
+  uimusicqSave (manage->slmusicq, nnm);
   manageCheckAndCreatePlaylist (name, nnm, PLTYPE_SONGLIST);
+  free (name);
 }
 
 /* general */
@@ -1420,28 +1416,33 @@ manageSonglistSave (manageui_t *manage)
 static bool
 manageSwitchPageMain (void *udata, int pagenum)
 {
-  manageSwitchPage (udata, pagenum, MANAGE_NB_MAIN);
+  manageui_t  *manage = udata;
+
+  manageSwitchPage (manage, pagenum, MANAGE_NB_MAIN);
   return UICB_CONT;
 }
 
 static bool
 manageSwitchPageSonglist (void *udata, int pagenum)
 {
-  manageSwitchPage (udata, pagenum, MANAGE_NB_SONGLIST);
+  manageui_t  *manage = udata;
+
+  manageSwitchPage (manage, pagenum, MANAGE_NB_SONGLIST);
   return UICB_CONT;
 }
 
 static bool
 manageSwitchPageMM (void *udata, int pagenum)
 {
-  manageSwitchPage (udata, pagenum, MANAGE_NB_MM);
+  manageui_t  *manage = udata;
+
+  manageSwitchPage (manage, pagenum, MANAGE_NB_MM);
   return UICB_CONT;
 }
 
 static void
-manageSwitchPage (void *udata, int pagenum, int which)
+manageSwitchPage (manageui_t *manage, int pagenum, int which)
 {
-  manageui_t  *manage = udata;
   int         id;
   bool        mainnb = false;
   bool        slnb = false;
@@ -1467,14 +1468,16 @@ manageSwitchPage (void *udata, int pagenum, int which)
     return;
   }
 
-  if (manage->mainlasttab == MANAGE_TAB_MAIN_SL && mmnb) {
-    manageSonglistSave (manage);
-  }
-  if (manage->mainlasttab == MANAGE_TAB_EDITSEQ) {
-    manageSequenceSave (manage->manageseq);
-  }
-  if (manage->mainlasttab == MANAGE_TAB_PLMGMT) {
-    managePlaylistSave (manage->managepl);
+  if (mainnb) {
+    if (manage->mainlasttab == MANAGE_TAB_MAIN_SL) {
+      manageSonglistSave (manage);
+    }
+    if (manage->mainlasttab == MANAGE_TAB_MAIN_SEQ) {
+      manageSequenceSave (manage->manageseq);
+    }
+    if (manage->mainlasttab == MANAGE_TAB_MAIN_PL) {
+      managePlaylistSave (manage->managepl);
+    }
   }
 
   id = uiutilsNotebookIDGet (nbtabid, pagenum);
@@ -1504,6 +1507,33 @@ manageSwitchPage (void *udata, int pagenum, int which)
     manage->mmlasttab = id;
   }
 
+  switch (id) {
+    case MANAGE_TAB_MAIN_SL: {
+      manageSonglistLoadCheck (manage);
+      break;
+    }
+    case MANAGE_TAB_MAIN_MM: {
+      break;
+    }
+    case MANAGE_TAB_MAIN_PL: {
+      managePlaylistLoadCheck (manage->managepl);
+      manage->currmenu = managePlaylistMenu (manage->managepl, &manage->menubar);
+      break;
+    }
+    case MANAGE_TAB_MAIN_SEQ: {
+      manageSequenceLoadCheck (manage->manageseq);
+      manage->currmenu = manageSequenceMenu (manage->manageseq, &manage->menubar);
+      break;
+    }
+    case MANAGE_TAB_MAIN_FILEMGR: {
+      break;
+    }
+    default: {
+      /* do nothing (other), (songlist and songedit handled below) */
+      break;
+    }
+  }
+
   if (mainnb && id == MANAGE_TAB_MAIN_SL) {
     /* force menu selection */
     slnb = true;
@@ -1516,12 +1546,6 @@ manageSwitchPage (void *udata, int pagenum, int which)
   }
 
   switch (id) {
-    case MANAGE_TAB_MAIN_SL: {
-      break;
-    }
-    case MANAGE_TAB_MAIN_MM: {
-      break;
-    }
     case MANAGE_TAB_SONGLIST: {
       manageSonglistMenu (manage);
       break;
@@ -1530,19 +1554,7 @@ manageSwitchPage (void *udata, int pagenum, int which)
       manageSongEditMenu (manage);
       break;
     }
-    case MANAGE_TAB_PLMGMT: {
-      manage->currmenu = managePlaylistMenu (manage->managepl, &manage->menubar);
-      break;
-    }
-    case MANAGE_TAB_EDITSEQ: {
-      manage->currmenu = manageSequenceMenu (manage->manageseq, &manage->menubar);
-      break;
-    }
-    case MANAGE_TAB_FILEMGR: {
-      break;
-    }
-    case MANAGE_TAB_OTHER: {
-      /* do nothing */
+    default: {
       break;
     }
   }
@@ -1562,3 +1574,25 @@ manageSetMenuCallback (manageui_t *manage, int midx, UICallbackFunc cb)
 {
   uiutilsUICallbackInit (&manage->menucb [midx], cb, manage);
 }
+
+/* the current songlist may be renamed or deleted. */
+/* check for this and if the songlist has */
+/* disappeared, reset */
+static void
+manageSonglistLoadCheck (manageui_t *manage)
+{
+  const char  *name;
+
+  if (manage->sloldname == NULL) {
+    return;
+  }
+
+  name = uimusicqGetSonglistName (manage->slmusicq);
+
+  if (! managePlaylistExists (name)) {
+    /* make sure no save happens */
+    manage->sloldname = NULL;
+    manageSonglistNew (manage);
+  }
+}
+

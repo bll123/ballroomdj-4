@@ -322,8 +322,8 @@ manageBuildUIPlaylist (managepl_t *managepl, UIWidget *vboxp)
   manageBuildUIPlaylistTree (managepl->managepltree, &rcol, &tophbox);
   uiSpinboxResetChanged (&managepl->uimaxplaytime);
   uiSpinboxResetChanged (&managepl->uistopat);
-  managepl->changed = false;
   managePlaylistNew (managepl);
+  managepl->changed = false;
 }
 
 uimenu_t *
@@ -367,13 +367,13 @@ managePlaylistMenu (managepl_t *managepl, UIWidget *uimenubar)
 void
 managePlaylistSave (managepl_t *managepl)
 {
-  const char  *name;
+  char  *name;
 
   if (managepl->ploldname == NULL) {
     return;
   }
 
-  name = uiEntryGetValue (&managepl->plname);
+  name = strdup (uiEntryGetValue (&managepl->plname));
 
   /* the playlist has been renamed */
   if (strcmp (managepl->ploldname, name) != 0) {
@@ -382,8 +382,31 @@ managePlaylistSave (managepl_t *managepl)
   }
   managepl->changed = managePlaylistCheckChanged (managepl);
 
-  managePlaylistUpdatePlaylist (managepl);
-  playlistSave (managepl->playlist);
+  if (managepl->changed) {
+    manageSetPlaylistName (managepl, name);
+    managePlaylistUpdatePlaylist (managepl);
+    playlistSave (managepl->playlist, name);
+  }
+  free (name);
+}
+
+/* the current playlist may be renamed or deleted. */
+/* check for this and if the playlist has */
+/* disappeared, reset */
+void
+managePlaylistLoadCheck (managepl_t *managepl)
+{
+  const char  *name;
+
+  if (managepl->ploldname == NULL) {
+    return;
+  }
+
+  name = uiEntryGetValue (&managepl->plname);
+
+  if (! managePlaylistExists (name)) {
+    managePlaylistNew (managepl);
+  }
 }
 
 /* internal routines */
@@ -503,7 +526,7 @@ managePlaylistNew (void *udata)
 
   managePlaylistSave (managepl);
 
-  /* CONTEXT: sequence: default name for a new sequence */
+  /* CONTEXT: playlist: default name for a new playlist */
   snprintf (tbuff, sizeof (tbuff), _("New Playlist"));
   manageSetPlaylistName (managepl, tbuff);
   managepl->plbackupcreated = false;
@@ -525,11 +548,11 @@ managePlaylistNew (void *udata)
 static void
 manageSetPlaylistName (managepl_t *managepl, const char *name)
 {
-  uiEntrySetValue (&managepl->plname, name);
   if (managepl->ploldname != NULL) {
     free (managepl->ploldname);
   }
   managepl->ploldname = strdup (name);
+  uiEntrySetValue (&managepl->plname, name);
 }
 
 static long
@@ -664,3 +687,4 @@ managePlaylistAllowedKeywordsChg (uientry_t *e, void *udata)
   managepl->changed = true;
   return UIENTRY_OK;
 }
+

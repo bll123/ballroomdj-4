@@ -624,9 +624,16 @@ playlistAddPlayed (playlist_t *pl, song_t *song)
 }
 
 void
-playlistSave (playlist_t *pl)
+playlistSave (playlist_t *pl, const char *name)
 {
   char  tfn [MAXPATHLEN];
+
+  if (name != NULL) {
+    if (pl->name != NULL) {
+      free (pl->name);
+    }
+    pl->name = strdup (name);
+  }
 
   pathbldMakePath (tfn, sizeof (tfn), pl->name,
       BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);

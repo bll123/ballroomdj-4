@@ -164,9 +164,8 @@ manageSequenceSave (manageseq_t *manageseq)
 {
   sequence_t  *seq = NULL;
   slist_t     *slist;
-  char        onm [MAXPATHLEN];
   char        nnm [MAXPATHLEN];
-  const char  *name;
+  char        *name;
 
   if (manageseq->seqoldname == NULL) {
     return;
@@ -178,20 +177,12 @@ manageSequenceSave (manageseq_t *manageseq)
     return;
   }
 
-  name = uiEntryGetValue (&manageseq->seqname);
+  name = strdup (uiEntryGetValue (&manageseq->seqname));
 
-  /* the song list has been renamed */
+  /* the sequence has been renamed */
   if (strcmp (manageseq->seqoldname, name) != 0) {
     manageRenamePlaylistFiles (manageseq->seqoldname, name);
   }
-
-  pathbldMakePath (onm, sizeof (onm),
-      name, BDJ4_SEQUENCE_EXT, PATHBLD_MP_DATA);
-  strlcat (onm, ".n", sizeof (onm));
-
-  seq = sequenceCreate (name);
-  sequenceSave (seq, slist);
-  sequenceFree (seq);
 
   pathbldMakePath (nnm, sizeof (nnm),
       name, BDJ4_SEQUENCE_EXT, PATHBLD_MP_DATA);
@@ -199,10 +190,36 @@ manageSequenceSave (manageseq_t *manageseq)
     filemanipBackup (nnm, 1);
     manageseq->seqbackupcreated = true;
   }
-  filemanipMove (onm, nnm);
+
+  manageSetSequenceName (manageseq, name);
+  seq = sequenceCreate (name);
+  sequenceSave (seq, slist);
+  sequenceFree (seq);
 
   manageCheckAndCreatePlaylist (name, nnm, PLTYPE_SEQUENCE);
   slistFree (slist);
+  free (name);
+}
+
+/* the current sequence may be renamed or deleted. */
+/* check for this and if the sequence has */
+/* disappeared, reset */
+void
+manageSequenceLoadCheck (manageseq_t *manageseq)
+{
+  const char  *name;
+
+  if (manageseq->seqoldname == NULL) {
+    return;
+  }
+
+  name = uiEntryGetValue (&manageseq->seqname);
+
+  if (! managePlaylistExists (name)) {
+    /* make sure no save happens */
+    manageseq->seqoldname = NULL;
+    manageSequenceNew (manageseq);
+  }
 }
 
 /* internal routines */
@@ -290,9 +307,9 @@ manageSequenceNew (void *udata)
 static void
 manageSetSequenceName (manageseq_t *manageseq, const char *name)
 {
-  uiEntrySetValue (&manageseq->seqname, name);
   if (manageseq->seqoldname != NULL) {
     free (manageseq->seqoldname);
   }
   manageseq->seqoldname = strdup (name);
+  uiEntrySetValue (&manageseq->seqname, name);
 }

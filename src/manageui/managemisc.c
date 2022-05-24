@@ -74,7 +74,7 @@ manageCheckAndCreatePlaylist (const char *name,
 
     pl = playlistAlloc (NULL);
     playlistCreate (pl, name, pltype, suppfname);
-    playlistSave (pl);
+    playlistSave (pl, NULL);
     playlistFree (pl);
   }
 }
@@ -98,6 +98,16 @@ manageCreatePlaylistCopy (UIWidget *statusMsg,
     manageCopyPlaylistFiles (oname, newname);
   }
   return rc;
+}
+
+bool
+managePlaylistExists (const char *name)
+{
+  char  tbuff [MAXPATHLEN];
+
+  pathbldMakePath (tbuff, sizeof (tbuff),
+      name, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
+  return fileopFileExists (tbuff);
 }
 
 /* internal routines */

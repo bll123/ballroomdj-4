@@ -40,8 +40,9 @@ foreach {key data} $Status {
       set nplayflag 1
     }
     if { $k eq "PLAYFLAG" && $nplayflag == 1 } {
-      # want all statuses to be playable by default; the user
-      # can change them.
+      # want all statuses to be playable by default
+      # where there are just 'new' and 'complete'.
+      # the user can change them.
       set v 1
     }
     puts $fh $k

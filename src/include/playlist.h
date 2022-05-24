@@ -79,6 +79,6 @@ slist_t   *playlistGetPlaylistList (int flag);
 bool      playlistFilterSong (dbidx_t dbidx, song_t *song, void *tplaylist);
 void      playlistAddCount (playlist_t *, song_t *song);
 void      playlistAddPlayed (playlist_t *, song_t *song);
-void      playlistSave (playlist_t *);
+void      playlistSave (playlist_t *, const char *name);
 
 #endif /* INC_PLAYLIST_H */

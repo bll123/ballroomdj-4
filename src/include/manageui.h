@@ -16,6 +16,7 @@ void managePlaylistFree (managepl_t *managepl);
 void manageBuildUIPlaylist (managepl_t *managepl, UIWidget *vboxp);
 uimenu_t *managePlaylistMenu (managepl_t *managepl, UIWidget *menubar);
 void managePlaylistSave (managepl_t *managepl);
+void managePlaylistLoadCheck (managepl_t *managepl);
 
 /* managepltree.c */
 managepltree_t *managePlaylistTreeAlloc (UIWidget *statusMsg);
@@ -32,6 +33,7 @@ void manageSequenceFree (manageseq_t *manageseq);
 void manageBuildUISequence (manageseq_t *manageseq, UIWidget *vboxp);
 uimenu_t *manageSequenceMenu (manageseq_t *manageseq, UIWidget *menubar);
 void manageSequenceSave (manageseq_t *manageseq);
+void manageSequenceLoadCheck (manageseq_t *manageseq);
 
 /* managemisc.c */
 void manageSetStatusMsg (UIWidget *statusMsg, const char *msg);
@@ -40,5 +42,6 @@ void manageCheckAndCreatePlaylist (const char *name,
     const char *suppfname, pltype_t pltype);
 bool manageCreatePlaylistCopy (UIWidget *statusMsg,
     const char *oname, const char *newname);
+bool managePlaylistExists (const char *name);
 
 #endif /* INC_MANAGEUI_H */
