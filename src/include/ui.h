@@ -18,6 +18,31 @@ void uiutilsUIWidgetInit (UIWidget *uiwidget);
 bool uiutilsCallbackHandler (UICallback *uicb);
 bool uiutilsCallbackIntHandler (UICallback *uicb, int value);
 
+/* uigtkdialog.c */
+
+enum {
+  RESPONSE_NONE,
+  RESPONSE_DELETE_WIN,
+  RESPONSE_CLOSE,
+  RESPONSE_APPLY,
+  RESPONSE_RESET,
+};
+
+typedef struct {
+  char        *label;
+  UIWidget    *window;
+  const char  *startpath;
+  const char  *mimefiltername;
+  const char  *mimetype;
+} uiselect_t;
+
+char  *uiSelectDirDialog (uiselect_t *selectdata);
+char  *uiSelectFileDialog (uiselect_t *selectdata);
+void uiCreateDialog (UIWidget *uiwidget, UIWidget *window,
+    UICallback *uicb, const char *title, ...);
+void  uiDialogPackInDialog (UIWidget *uidialog, UIWidget *boxp);
+void  uiDialogDestroy (UIWidget *uidialog);
+
 /* uigtkmenu.c */
 void uiCreateMenubar (UIWidget *uiwidget);
 void uiCreateSubMenu (UIWidget *uimenuitem, UIWidget *uimenu);
@@ -109,6 +134,7 @@ void  uiSpinboxSetValueW (GtkWidget *spinbox, double ivalue);
 
 
 /* uigtkdropdown.c */
+
 void uiDropDownInit (uidropdown_t *dropdown);
 void uiDropDownFree (uidropdown_t *dropdown);
 GtkWidget * uiDropDownCreate (GtkWidget *parentwin,
@@ -192,15 +218,6 @@ void  uiSetDisplayColumns (GtkListStore *store, GtkTreeIter *iter,
     slist_t *sellist, song_t *song, int col);
 int   uiTreeViewGetSelection (GtkWidget *tree, GtkTreeModel **model, GtkTreeIter *iter);
 void  uiTreeViewAllowMultiple (GtkWidget *tree);
-
-
-/* uigtkdialog.c */
-char  *uiSelectDirDialog (uiselect_t *selectdata);
-char  *uiSelectFileDialog (uiselect_t *selectdata);
-void uiCreateDialog (UIWidget *uiwidget, UIWidget *window,
-    UICallback *uicb, const char *title, ...);
-void  uiDialogPackInDialog (UIWidget *uidialog, UIWidget *boxp);
-void  uiDialogDestroy (UIWidget *uidialog);
 
 /* uigtkwindow.c */
 void uiCreateMainWindow (UIWidget *uiwidget, UICallback *uicb,

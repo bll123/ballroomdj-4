@@ -27,19 +27,19 @@ enum {
 
 typedef struct uiselectfile {
   UIWidget          *parentwinp;
-  GtkWidget         *selfiledialog;
+  UIWidget          uidialog;
   GtkWidget         *selfiletree;
+  UICallback        cb;
   selfilecb_t       selfilecb;
   nlist_t           *options;
   void              *cbudata;
 } uiselectfile_t;
 
-static GtkWidget * selectFileCreateDialog (uiselectfile_t *selectfile,
+static void selectFileCreateDialog (uiselectfile_t *selectfile,
     slist_t *filelist, const char *filetype, selfilecb_t cb);
 static void selectFileSelect (GtkTreeView* tv, GtkTreePath* path,
     GtkTreeViewColumn* column, gpointer udata);
-static void selectFileResponseHandler (GtkDialog *d, gint responseid,
-    gpointer udata);
+static bool selectFileResponseHandler (void *udata, gint responseid);
 
 void
 selectFileDialog (int type, UIWidget *window, nlist_t *options,
@@ -48,13 +48,13 @@ selectFileDialog (int type, UIWidget *window, nlist_t *options,
   uiselectfile_t *selectfile;
   slist_t     *filelist;
   int         x, y;
-  GtkWidget   *dialog;
   int         playlistSel;
 
   selectfile = malloc (sizeof (uiselectfile_t));
   selectfile->parentwinp = window;
-  selectfile->selfiledialog = NULL;
+  uiutilsUIWidgetInit (&selectfile->uidialog);
   selectfile->selfiletree = NULL;
+  uiutilsUICallbackInit (&selectfile->cb, NULL, NULL);
   selectfile->selfilecb = NULL;
   selectfile->options = options;
   selectfile->cbudata = udata;
@@ -79,12 +79,12 @@ selectFileDialog (int type, UIWidget *window, nlist_t *options,
 
   if (cb != NULL) {
     /* CONTEXT: file type for the file selection dialog (song list) */
-    dialog = selectFileCreateDialog (selectfile, filelist, _("Song List"), cb);
-    uiWidgetShowAllW (dialog);
+    selectFileCreateDialog (selectfile, filelist, _("Song List"), cb);
+    uiWidgetShowAll (&selectfile->uidialog);
 
     x = nlistGetNum (selectfile->options, MANAGE_SELFILE_POSITION_X);
     y = nlistGetNum (selectfile->options, MANAGE_SELFILE_POSITION_Y);
-    uiWindowMoveW (dialog, x, y);
+    uiWindowMove (&selectfile->uidialog, x, y);
   }
 }
 
@@ -96,16 +96,13 @@ selectFileFree (uiselectfile_t *selectfile)
   }
 }
 
-static GtkWidget *
+static void
 selectFileCreateDialog (uiselectfile_t *selectfile,
     slist_t *filelist, const char *filetype, selfilecb_t cb)
 {
-  GtkWidget     *dialog;
-  GtkWidget     *content;
   UIWidget      vbox;
   UIWidget      hbox;
   UIWidget      uiwidget;
-  GtkWidget     *scwin;
   GtkWidget     *widget;
   char          tbuff [200];
   GtkListStore  *store;
@@ -118,33 +115,28 @@ selectFileCreateDialog (uiselectfile_t *selectfile,
 
   selectfile->selfilecb = cb;
 
+  uiutilsUICallbackIntInit (&selectfile->cb,
+      selectFileResponseHandler, selectfile);
+
   /* CONTEXT: file select dialog, title of window: select <file-type> */
   snprintf (tbuff, sizeof (tbuff), _("Select %s"), filetype);
-  dialog = gtk_dialog_new_with_buttons (
-      tbuff,
-      GTK_WINDOW (selectfile->parentwinp->widget),
-      GTK_DIALOG_DESTROY_WITH_PARENT,
+  uiCreateDialog (&selectfile->uidialog,
+      selectfile->parentwinp, NULL, tbuff,
       /* CONTEXT: file select dialog: closes the dialog */
-      _("Close"),
-      GTK_RESPONSE_CLOSE,
+      _("Close"), RESPONSE_CLOSE,
       /* CONTEXT: file select dialog: selects the file */
-      _("Select"),
-      GTK_RESPONSE_APPLY,
+      _("Select"), RESPONSE_APPLY,
       NULL
       );
-  selectfile->selfiledialog = dialog;
-
-  content = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
-  uiWidgetSetAllMarginsW (content, uiBaseMarginSz * 2);
 
   uiCreateVertBox (&vbox);
   uiWidgetExpandVert (&vbox);
-  uiBoxPackInWindowWU (content, &vbox);
+  uiDialogPackInDialog (&selectfile->uidialog, &vbox);
 
-  scwin = uiCreateScrolledWindowW (200);
-  uiWidgetExpandHorizW (scwin);
-  uiWidgetExpandVertW (scwin);
-  uiBoxPackStartExpandUW (&vbox, scwin);
+  uiCreateScrolledWindow (&uiwidget, 200);
+  uiWidgetExpandHoriz (&uiwidget);
+  uiWidgetExpandVert (&uiwidget);
+  uiBoxPackStartExpand (&vbox, &uiwidget);
 
   widget = uiCreateTreeView ();
   gtk_tree_view_set_activate_on_single_click (GTK_TREE_VIEW (widget), FALSE);
@@ -186,7 +178,7 @@ selectFileCreateDialog (uiselectfile_t *selectfile,
   g_signal_connect (widget, "row-activated",
       G_CALLBACK (selectFileSelect), selectfile);
 
-  uiBoxPackInWindowWW (scwin, widget);
+  uiBoxPackInWindowUW (&uiwidget, widget);
 
   /* the dialog doesn't have any space above the buttons */
   uiCreateHorizBox (&hbox);
@@ -194,11 +186,6 @@ selectFileCreateDialog (uiselectfile_t *selectfile,
 
   uiCreateLabel (&uiwidget, " ");
   uiBoxPackStart (&hbox, &uiwidget);
-
-  g_signal_connect (dialog, "response",
-      G_CALLBACK (selectFileResponseHandler), selectfile);
-
-  return dialog;
 }
 
 static void
@@ -207,12 +194,11 @@ selectFileSelect (GtkTreeView* tv, GtkTreePath* path,
 {
   uiselectfile_t  *selectfile = udata;
 
-  selectFileResponseHandler (GTK_DIALOG (selectfile->selfiledialog),
-      GTK_RESPONSE_APPLY, selectfile);
+  selectFileResponseHandler (selectfile, RESPONSE_APPLY);
 }
 
-static void
-selectFileResponseHandler (GtkDialog *d, gint responseid, gpointer udata)
+static bool
+selectFileResponseHandler (void *udata, int responseid)
 {
   uiselectfile_t  *selectfile = udata;
   int           x, y;
@@ -221,28 +207,28 @@ selectFileResponseHandler (GtkDialog *d, gint responseid, gpointer udata)
   GtkTreeIter   iter;
   int           count;
 
-  uiWindowGetPositionW (GTK_WIDGET (d), &x, &y);
+  uiWindowGetPosition (&selectfile->uidialog, &x, &y);
   nlistSetNum (selectfile->options, MANAGE_SELFILE_POSITION_X, x);
   nlistSetNum (selectfile->options, MANAGE_SELFILE_POSITION_Y, y);
 
   switch (responseid) {
-    case GTK_RESPONSE_DELETE_EVENT: {
+    case RESPONSE_DELETE_WIN: {
       selectfile->selfilecb = NULL;
       break;
     }
-    case GTK_RESPONSE_CLOSE: {
-      uiCloseWindowW (GTK_WIDGET (d));
+    case RESPONSE_CLOSE: {
+      uiCloseWindow (&selectfile->uidialog);
       selectfile->selfilecb = NULL;
       break;
     }
-    case GTK_RESPONSE_APPLY: {
+    case RESPONSE_APPLY: {
       count = uiTreeViewGetSelection (selectfile->selfiletree, &model, &iter);
       if (count != 1) {
         break;
       }
 
       gtk_tree_model_get (model, &iter, SELFILE_COL_DISP, &str, -1);
-      uiCloseWindowW (GTK_WIDGET (d));
+      uiCloseWindow (&selectfile->uidialog);
       if (selectfile->selfilecb != NULL) {
         selectfile->selfilecb (selectfile->cbudata, str);
       }
@@ -253,5 +239,6 @@ selectFileResponseHandler (GtkDialog *d, gint responseid, gpointer udata)
   }
 
   selectFileFree (selectfile);
+  return UICB_CONT;
 }
 

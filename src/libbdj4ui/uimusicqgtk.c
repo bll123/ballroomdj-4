@@ -259,7 +259,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
   uiWidgetAlignHorizFillW (uiw->musicqTree);
   uiWidgetExpandHorizW (uiw->musicqTree);
   uiWidgetExpandVertW (uiw->musicqTree);
-  uiBoxPackInWindowWW (widget, uiw->musicqTree);
+  uiBoxPackInWindowUW (&uiwidget, uiw->musicqTree);
 
   renderer = gtk_cell_renderer_text_new ();
   gtk_cell_renderer_set_alignment (renderer, 1.0, 0.5);

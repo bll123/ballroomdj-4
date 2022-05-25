@@ -65,14 +65,6 @@ enum {
   UI_TAB_AUDIOID,
 };
 
-enum {
-  UIUTILS_DROPDOWN_COL_IDX,
-  UIUTILS_DROPDOWN_COL_STR,
-  UIUTILS_DROPDOWN_COL_DISP,
-  UIUTILS_DROPDOWN_COL_SB_PAD,
-  UIUTILS_DROPDOWN_COL_MAX,
-};
-
 typedef struct {
   int     tabcount;
   int     *tabids;
@@ -133,22 +125,6 @@ typedef struct {
   bool            processing : 1;
   bool            changed : 1;
 } uispinbox_t;
-
-enum {
-  RESPONSE_NONE,
-  RESPONSE_DELETE_WIN,
-  RESPONSE_CLOSE,
-  RESPONSE_APPLY,
-  RESPONSE_RESET,
-};
-
-typedef struct {
-  char        *label;
-  UIWidget    *window;
-  const char  *startpath;
-  const char  *mimefiltername;
-  const char  *mimetype;
-} uiselect_t;
 
 extern int uiBaseMarginSz;
 

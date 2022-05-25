@@ -25,6 +25,24 @@ uiCreateSwitch (UIWidget *uiwidget, int value)
   gtk_widget_set_margin_top (widget, uiBaseMarginSz);
   gtk_widget_set_margin_start (widget, uiBaseMarginSz);
   gtk_widget_set_valign (widget, GTK_ALIGN_CENTER);
+#if 0
+  /* the entire switch css would need replacing */
+  /* switch, slider, etc. */
+  /* if this route is taken, the slider can be made separate, */
+  /* and the green/red text can be put in the background-image */
+  uiSetCss (widget,
+    "switch { "
+    "  min-height: 26px; "
+    "  min-width: 40px; "
+    "  background-image: -gtk-scaled(url(\"img/switch-off.svg\")); "
+    "}"
+    "switch:checked { "
+    "  min-height: 26px; "
+    "  min-width: 40px; "
+    "  background-image: -gtk-scaled(url(\"img/switch-on.svg\")); "
+    "}"
+    );
+#endif
   uiwidget->widget = widget;
 }
 

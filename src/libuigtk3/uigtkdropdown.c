@@ -17,6 +17,14 @@
 #include "ui.h"
 #include "uiutils.h"
 
+enum {
+  UIUTILS_DROPDOWN_COL_IDX,
+  UIUTILS_DROPDOWN_COL_STR,
+  UIUTILS_DROPDOWN_COL_DISP,
+  UIUTILS_DROPDOWN_COL_SB_PAD,
+  UIUTILS_DROPDOWN_COL_MAX,
+};
+
 /* drop-down/combobox handling */
 static void     uiDropDownWindowShow (GtkButton *b, gpointer udata);
 static gboolean uiDropDownClose (GtkWidget *w,
