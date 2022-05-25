@@ -138,14 +138,14 @@ uiCreateDualList (UIWidget *mainvbox, int flags,
   uiWidgetAlignVertStart (&dvbox);
   uiBoxPackStart (&hbox, &dvbox);
 
-  /* CONTEXT: configuration: display settings: button: add the selected field */
-  uiCreateButton (&uiwidget, &duallist->selectcb, _("Select"),
-      "button_right", NULL, NULL);
+  uiCreateButton (&uiwidget, &duallist->selectcb,
+      /* CONTEXT: configuration: display settings: button: add the selected field */
+      _("Select"), "button_right");
   uiBoxPackStart (&dvbox, &uiwidget);
 
-  /* CONTEXT: configuration: display settings: button: remove the selected field */
-  uiCreateButton (&uiwidget, &duallist->removecb, _("Remove"),
-      "button_left", NULL, NULL);
+  uiCreateButton (&uiwidget, &duallist->removecb,
+      /* CONTEXT: configuration: display settings: button: remove the selected field */
+      _("Remove"), "button_left");
   uiBoxPackStart (&dvbox, &uiwidget);
 
   uiCreateVertBox (&vbox);
@@ -199,14 +199,14 @@ uiCreateDualList (UIWidget *mainvbox, int flags,
   uiWidgetAlignVertStart (&dvbox);
   uiBoxPackStart (&hbox, &dvbox);
 
-  /* CONTEXT: configuration: display settings: button: move the selected field up */
-  uiCreateButton (&uiwidget, &duallist->moveprevcb, _("Move Up"),
-      "button_up", NULL, NULL);
+  uiCreateButton (&uiwidget, &duallist->moveprevcb,
+      /* CONTEXT: configuration: display settings: button: move the selected field up */
+      _("Move Up"), "button_up");
   uiBoxPackStart (&dvbox, &uiwidget);
 
-  /* CONTEXT: configuration: display settings: button: move the selected field down */
-  uiCreateButton (&uiwidget, &duallist->movenextcb, _("Move Down"),
-      "button_down", NULL, NULL);
+  uiCreateButton (&uiwidget, &duallist->movenextcb,
+      /* CONTEXT: configuration: display settings: button: move the selected field down */
+      _("Move Down"), "button_down");
   uiBoxPackStart (&dvbox, &uiwidget);
 
   return duallist;

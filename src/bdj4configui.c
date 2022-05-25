@@ -250,9 +250,18 @@ enum {
   CONFUI_PLAYER_MAX,
 };
 
+enum {
+  CONFUI_TABLE_CB_UP,
+  CONFUI_TABLE_CB_DOWN,
+  CONFUI_TABLE_CB_REMOVE,
+  CONFUI_TABLE_CB_ADD,
+  CONFUI_TABLE_CB_MAX,
+};
+
 typedef struct {
   GtkWidget *tree;
   GtkTreeSelection  *sel;
+  UICallback  callback [CONFUI_TABLE_CB_MAX];
   int       radiorow;
   int       togglecol;
   int       flags;
@@ -442,11 +451,11 @@ static void     confuiSpinboxTextInitDataNum (configui_t *confui, char *tag, int
 static bool     confuiLinkCallback (void *udata);
 
 /* table editing */
-static void   confuiTableMoveUp (GtkButton *b, gpointer udata);
-static void   confuiTableMoveDown (GtkButton *b, gpointer udata);
+static bool   confuiTableMoveUp (void *udata);
+static bool   confuiTableMoveDown (void *udata);
 static void   confuiTableMove (configui_t *confui, int dir);
-static void   confuiTableRemove (GtkButton *b, gpointer udata);
-static void   confuiTableAdd (GtkButton *b, gpointer udata);
+static bool   confuiTableRemove (void *udata);
+static bool   confuiTableAdd (void *udata);
 static bool   confuiSwitchTable (void *udata, int pagenum);
 static void   confuiTableSetDefaultSelection (configui_t *confui, GtkWidget *tree, GtkTreeSelection *sel);
 static void   confuiCreateDanceTable (configui_t *confui);
@@ -546,6 +555,9 @@ main (int argc, char *argv[])
   confui.options = NULL;
 
   for (int i = 0; i < CONFUI_ID_TABLE_MAX; ++i) {
+    for (int j = 0; j < CONFUI_TABLE_CB_MAX; ++j) {
+      uiutilsUICallbackInit (&confui.tables [i].callback [j], NULL, NULL);
+    }
     confui.tables [i].tree = NULL;
     confui.tables [i].sel = NULL;
     confui.tables [i].radiorow = 0;
@@ -2245,7 +2257,7 @@ confuiMakeItemEntryChooser (configui_t *confui, UIWidget *boxp,
   uiutilsUICallbackInit (&confui->uiitem [widx].callback,
       dialogFunc, confui);
   uiCreateButton (&uiwidget, &confui->uiitem [widx].callback,
-      "", NULL, NULL, NULL);
+      "", NULL);
   uiButtonSetImageIcon (&uiwidget, "folder");
   uiWidgetSetMarginStart (&uiwidget, 0);
   uiBoxPackStart (&hbox, &uiwidget);
@@ -2615,6 +2627,7 @@ confuiMakeItemTable (configui_t *confui, UIWidget *boxp, confuiident_t id,
 {
   UIWidget    mhbox;
   UIWidget    bvbox;
+  UIWidget    uiwidget;
   GtkWidget   *widget;
   GtkWidget   *tree;
 
@@ -2643,26 +2656,42 @@ confuiMakeItemTable (configui_t *confui, UIWidget *boxp, confuiident_t id,
   uiBoxPackStart (&mhbox, &bvbox);
 
   if ((flags & CONFUI_TABLE_NO_UP_DOWN) != CONFUI_TABLE_NO_UP_DOWN) {
-    /* CONTEXT: configuration: table edit: button: move selection up */
-    widget = uiCreateButton (NULL, NULL, _("Move Up"), "button_up",
+    uiutilsUICallbackInit (
+        &confui->tables [id].callback [CONFUI_TABLE_CB_UP],
         confuiTableMoveUp, confui);
-    uiBoxPackStartUW (&bvbox, widget);
+    uiCreateButton (&uiwidget,
+        &confui->tables [id].callback [CONFUI_TABLE_CB_UP],
+        /* CONTEXT: configuration: table edit: button: move selection up */
+        _("Move Up"), "button_up");
+    uiBoxPackStart (&bvbox, &uiwidget);
 
-    /* CONTEXT: configuration: table edit: button: move selection down */
-    widget = uiCreateButton (NULL, NULL, _("Move Down"), "button_down",
+    uiutilsUICallbackInit (
+        &confui->tables [id].callback [CONFUI_TABLE_CB_DOWN],
         confuiTableMoveDown, confui);
-    uiBoxPackStartUW (&bvbox, widget);
+    uiCreateButton (&uiwidget,
+        &confui->tables [id].callback [CONFUI_TABLE_CB_DOWN],
+        /* CONTEXT: configuration: table edit: button: move selection down */
+        _("Move Down"), "button_down");
+    uiBoxPackStart (&bvbox, &uiwidget);
   }
 
-  /* CONTEXT: configuration: table edit: button: delete selection */
-  widget = uiCreateButton (NULL, NULL, _("Delete"), "button_remove",
+  uiutilsUICallbackInit (
+      &confui->tables [id].callback [CONFUI_TABLE_CB_REMOVE],
       confuiTableRemove, confui);
-  uiBoxPackStartUW (&bvbox, widget);
+  uiCreateButton (&uiwidget,
+      &confui->tables [id].callback [CONFUI_TABLE_CB_REMOVE],
+      /* CONTEXT: configuration: table edit: button: delete selection */
+      _("Delete"), "button_remove");
+  uiBoxPackStart (&bvbox, &uiwidget);
 
-  /* CONTEXT: configuration: table edit: button: add new selection */
-  widget = uiCreateButton (NULL, NULL, _("Add New"), "button_add",
+  uiutilsUICallbackInit (
+      &confui->tables [id].callback [CONFUI_TABLE_CB_ADD],
       confuiTableAdd, confui);
-  uiBoxPackStartUW (&bvbox, widget);
+  uiCreateButton (&uiwidget,
+      &confui->tables [id].callback [CONFUI_TABLE_CB_ADD],
+      /* CONTEXT: configuration: table edit: button: add new selection */
+      _("Add New"), "button_add");
+  uiBoxPackStart (&bvbox, &uiwidget);
 
   logProcEnd (LOG_PROC, "confuiMakeItemTable", "");
 }
@@ -3470,20 +3499,22 @@ confuiLinkCallback (void *udata)
 
 /* table editing */
 
-static void
-confuiTableMoveUp (GtkButton *b, gpointer udata)
+static bool
+confuiTableMoveUp (void *udata)
 {
   logProcBegin (LOG_PROC, "confuiTableMoveUp");
   confuiTableMove (udata, CONFUI_MOVE_PREV);
   logProcEnd (LOG_PROC, "confuiTableMoveUp", "");
+  return UICB_CONT;
 }
 
-static void
-confuiTableMoveDown (GtkButton *b, gpointer udata)
+static bool
+confuiTableMoveDown (void *udata)
 {
   logProcBegin (LOG_PROC, "confuiTableMoveDown");
   confuiTableMove (udata, CONFUI_MOVE_NEXT);
   logProcEnd (LOG_PROC, "confuiTableMoveDown", "");
+  return UICB_CONT;
 }
 
 static void
@@ -3569,8 +3600,8 @@ confuiTableMove (configui_t *confui, int dir)
   logProcEnd (LOG_PROC, "confuiTableMove", "");
 }
 
-static void
-confuiTableRemove (GtkButton *b, gpointer udata)
+static bool
+confuiTableRemove (void *udata)
 {
   configui_t        *confui = udata;
   GtkWidget         *tree;
@@ -3586,14 +3617,14 @@ confuiTableRemove (GtkButton *b, gpointer udata)
   tree = confui->tables [confui->tablecurr].tree;
 
   if (tree == NULL) {
-    return;
+    return UICB_STOP;
   }
 
   flags = confui->tables [confui->tablecurr].flags;
   count = uiTreeViewGetSelection (tree, &model, &iter);
   if (count != 1) {
     logProcEnd (LOG_PROC, "confuiTableRemove", "no-selection");
-    return;
+    return UICB_STOP;
   }
 
   path = gtk_tree_model_get_path (model, &iter);
@@ -3604,12 +3635,12 @@ confuiTableRemove (GtkButton *b, gpointer udata)
   if (idx == 0 &&
       (flags & CONFUI_TABLE_KEEP_FIRST) == CONFUI_TABLE_KEEP_FIRST) {
     logProcEnd (LOG_PROC, "confuiTableRemove", "keep-first");
-    return;
+    return UICB_CONT;
   }
   if (idx == confui->tables [confui->tablecurr].currcount - 1 &&
       (flags & CONFUI_TABLE_KEEP_LAST) == CONFUI_TABLE_KEEP_LAST) {
     logProcEnd (LOG_PROC, "confuiTableRemove", "keep-last");
-    return;
+    return UICB_CONT;
   }
 
   if (confui->tablecurr == CONFUI_ID_DANCE) {
@@ -3641,10 +3672,12 @@ confuiTableRemove (GtkButton *b, gpointer udata)
     path = gtk_tree_model_get_path (model, &iter);
     confuiDanceSelect (GTK_TREE_VIEW (tree), path, NULL, confui);
   }
+
+  return UICB_CONT;
 }
 
-static void
-confuiTableAdd (GtkButton *b, gpointer udata)
+static bool
+confuiTableAdd (void *udata)
 {
   configui_t        *confui = udata;
   GtkWidget         *tree = NULL;
@@ -3660,13 +3693,13 @@ confuiTableAdd (GtkButton *b, gpointer udata)
 
   if (confui->tablecurr >= CONFUI_ID_TABLE_MAX) {
     logProcEnd (LOG_PROC, "confuiTableAdd", "non-table");
-    return;
+    return UICB_STOP;
   }
 
   tree = confui->tables [confui->tablecurr].tree;
   if (tree == NULL) {
     logProcEnd (LOG_PROC, "confuiTableAdd", "no-tree");
-    return;
+    return UICB_STOP;
   }
 
   flags = confui->tables [confui->tablecurr].flags;
@@ -3756,6 +3789,7 @@ confuiTableAdd (GtkButton *b, gpointer udata)
   confui->tables [confui->tablecurr].changed = true;
   confui->tables [confui->tablecurr].currcount += 1;
   logProcEnd (LOG_PROC, "confuiTableAdd", "");
+  return UICB_CONT;
 }
 
 static bool

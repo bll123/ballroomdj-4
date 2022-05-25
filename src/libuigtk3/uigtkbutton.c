@@ -16,11 +16,11 @@
 #include "ui.h"
 #include "uiutils.h"
 
-static void uiButtonClickHandler (GtkButton *b, gpointer udata);
+static void uiButtonSignalHandler (GtkButton *b, gpointer udata);
 
-GtkWidget *
+void
 uiCreateButton (UIWidget *uiwidget, UICallback *uicb,
-    char *title, char *imagenm, void *cb, void *udata)
+    char *title, char *imagenm)
 {
   GtkWidget   *widget;
 
@@ -42,20 +42,32 @@ uiCreateButton (UIWidget *uiwidget, UICallback *uicb,
   } else {
     gtk_button_set_label (GTK_BUTTON (widget), title);
   }
-  if (uicb != NULL && cb != NULL) {
-    fprintf (stderr, "ERR: create button: cannot have both callback set\n");
-  }
   if (uicb != NULL) {
-    g_signal_connect (widget, "clicked", G_CALLBACK (uiButtonClickHandler), uicb);
-  }
-  if (cb != NULL) {
-    g_signal_connect (widget, "clicked", G_CALLBACK (cb), udata);
+    g_signal_connect (widget, "clicked",
+        G_CALLBACK (uiButtonSignalHandler), uicb);
   }
 
-  if (uiwidget != NULL) {
-    uiwidget->widget = widget;
+  uiwidget->widget = widget;
+}
+
+void
+uiButtonSetPressCallback (UIWidget *uiwidget, UICallback *uicb)
+{
+  if (uicb == NULL) {
+    return;
   }
-  return widget;
+  g_signal_connect (uiwidget->widget, "pressed",
+      G_CALLBACK (uiButtonSignalHandler), uicb);
+}
+
+void
+uiButtonSetReleaseCallback (UIWidget *uiwidget, UICallback *uicb)
+{
+  if (uicb == NULL) {
+    return;
+  }
+  g_signal_connect (uiwidget->widget, "released",
+      G_CALLBACK (uiButtonSignalHandler), uicb);
 }
 
 void
@@ -96,10 +108,11 @@ uiButtonAlignLeft (UIWidget *uiwidget)
 }
 
 inline static void
-uiButtonClickHandler (GtkButton *b, gpointer udata)
+uiButtonSignalHandler (GtkButton *b, gpointer udata)
 {
   UICallback *uicb = udata;
 
   uiutilsCallbackHandler (uicb);
 }
+
 

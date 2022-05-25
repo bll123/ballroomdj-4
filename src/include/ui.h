@@ -42,8 +42,9 @@ void  uiLabelSetMaxWidth (UIWidget *uiwidget, int width);
 void  uiLabelAlignEnd (UIWidget *uiwidget);
 
 /* uigtkbutton.c */
-GtkWidget * uiCreateButton (UIWidget *uiwidget, UICallback *uicb,
-    char *title, char *imagenm, void *cb, void *udata);
+void uiCreateButton (UIWidget *uiwidget, UICallback *uicb, char *title, char *imagenm);
+void uiButtonSetPressCallback (UIWidget *uiwidget, UICallback *uicb);
+void uiButtonSetReleaseCallback (UIWidget *uiwidget, UICallback *uicb);
 void uiButtonSetImage (UIWidget *uiwidget, const char *imagenm, const char *tooltip);
 void uiButtonSetImageIcon (UIWidget *uiwidget, const char *nm);
 void uiButtonAlignLeft (UIWidget *widget);

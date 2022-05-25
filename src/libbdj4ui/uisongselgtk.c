@@ -46,7 +46,7 @@ enum {
   SONGSEL_CALLBACK_MAX,
 };
 
-typedef struct {
+typedef struct uisongselgtk {
   UICallback          callbacks [SONGSEL_CALLBACK_MAX];
   UIWidget            *parentwin;
   UIWidget            vbox;
@@ -160,8 +160,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin)
     uiutilsUICallbackInit (&uiw->callbacks [SONGSEL_CALLBACK_SELECT],
         uisongselQueueProcessSelectCallback, uisongsel);
     uiCreateButton (&uiwidget,
-        &uiw->callbacks [SONGSEL_CALLBACK_SELECT],
-        tbuff, NULL, NULL, NULL);
+        &uiw->callbacks [SONGSEL_CALLBACK_SELECT], tbuff, NULL);
     uiBoxPackStart (&hbox, &uiwidget);
   }
 
@@ -175,8 +174,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin)
       uiutilsUICallbackInit (&uiw->callbacks [SONGSEL_CALLBACK_QUEUE],
           uisongselQueueProcessQueueCallback, uisongsel);
       uiCreateButton (&uiwidget,
-          &uiw->callbacks [SONGSEL_CALLBACK_QUEUE],
-          tbuff, NULL, NULL, NULL);
+          &uiw->callbacks [SONGSEL_CALLBACK_QUEUE], tbuff, NULL);
     }
     if (uisongsel->dispselType == DISP_SEL_SONGSEL ||
         uisongsel->dispselType == DISP_SEL_EZSONGSEL ||
@@ -186,8 +184,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin)
       uiutilsUICallbackInit (&uiw->callbacks [SONGSEL_CALLBACK_PLAY],
           uisongselQueueProcessPlayCallback, uisongsel);
       uiCreateButton (&uiwidget,
-          &uiw->callbacks [SONGSEL_CALLBACK_PLAY],
-          tbuff, NULL, NULL, NULL);
+          &uiw->callbacks [SONGSEL_CALLBACK_PLAY], tbuff, NULL);
     }
     uiBoxPackStart (&hbox, &uiwidget);
   }
@@ -204,7 +201,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin)
   uiCreateButton (&uiwidget,
       &uiw->callbacks [SONGSEL_CALLBACK_FILTER],
       /* CONTEXT: a button that starts the filters (narrowing down song selections) dialog */
-      _("Filters"), NULL, NULL, NULL);
+      _("Filters"), NULL);
   uiBoxPackEnd (&hbox, &uiwidget);
 
   uiCreateHorizBox (&hbox);

@@ -418,7 +418,7 @@ pluiBuildUI (playerui_t *plui)
       pluiProcessSetPlaybackQueue, plui);
   uiCreateButton (&uiwidget, &plui->setpbqcb,
       /* CONTEXT: select the current queue for playback */
-      _("Set Queue for Playback"), NULL, NULL, NULL);
+      _("Set Queue for Playback"), NULL);
   uiNotebookSetActionWidget (&plui->notebook, &uiwidget);
   uiWidgetShowAll (&uiwidget);
   uiutilsUIWidgetCopy (&plui->setPlaybackButton, &uiwidget);

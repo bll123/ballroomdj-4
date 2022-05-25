@@ -19,6 +19,8 @@
 #include "uirating.h"
 #include "uiutils.h"
 
+typedef struct uisongselgtk uisongselgtk_t;
+
 typedef struct {
   const char        *tag;
   conn_t            *conn;
@@ -53,7 +55,7 @@ typedef struct {
   /* song selection tab */
   uidropdown_t dancesel;
   /* widget data */
-  void              *uiWidgetData;
+  uisongselgtk_t    *uiWidgetData;
 } uisongsel_t;
 
 /* uisongsel.c */

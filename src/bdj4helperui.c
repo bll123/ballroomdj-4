@@ -192,12 +192,12 @@ helperBuildUI (helperui_t  *helper)
   uiutilsUICallbackInit (&helper->nextCallback, helperNextCallback, helper);
   uiCreateButton (&uiwidget, &helper->nextCallback,
       /* CONTEXT: helperui: proceed to the next step */
-      _("Next"), NULL, NULL, NULL);
+      _("Next"), NULL);
   uiBoxPackEnd (&hbox, &uiwidget);
 
   uiCreateButton (&uiwidget, &helper->closeCallback,
       /* CONTEXT: helperui: close the helper window */
-      _("Close"), NULL, NULL, NULL);
+      _("Close"), NULL);
   uiBoxPackEnd (&hbox, &uiwidget);
 
   uiWindowSetDefaultSize (&helper->window, 1100, 400);

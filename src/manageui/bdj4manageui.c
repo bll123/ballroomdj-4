@@ -672,7 +672,7 @@ manageBuildUISongListEditor (manageui_t *manage)
   uiCreateButton (&uiwidget,
       &manage->callbacks [MANAGE_CALLBACK_EZ_SELECT],
       /* CONTEXT: config: button: add the selected songs to the song list */
-      _("Select"), "button_left", NULL, NULL);
+      _("Select"), "button_left");
   uiBoxPackStart (&vbox, &uiwidget);
 
   uiwidgetp = uisongselBuildUI (manage->slezsongsel, &manage->window);
@@ -787,11 +787,11 @@ manageBuildUIUpdateDatabase (manageui_t *manage)
 
   uiutilsUICallbackInit (&manage->callbacks [MANAGE_CALLBACK_DB_START],
       manageDbStart, manage);
-  widget = uiCreateButton (&uiwidget,
+  uiCreateButton (&uiwidget,
       &manage->callbacks [MANAGE_CALLBACK_DB_START],
       /* CONTEXT: update database: button to start the database update process */
-      _("Start"), NULL, NULL, NULL);
-  uiBoxPackStartUW (&hbox, widget);
+      _("Start"), NULL);
+  uiBoxPackStart (&hbox, &uiwidget);
 
   uiCreateProgressBar (&manage->dbpbar, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
   uiBoxPackStart (&vbox, &manage->dbpbar);
@@ -1302,7 +1302,7 @@ manageSonglistNew (void *udata)
   manageSetSonglistName (manage, tbuff);
   manage->slbackupcreated = false;
   uimusicqSetSelection (manage->slmusicq, "0");
-  uimusicqClearQueueProcess (manage->slmusicq);
+  uimusicqClearQueue (manage->slmusicq);
   return UICB_CONT;
 }
 
@@ -1311,7 +1311,7 @@ manageSonglistTruncate (void *udata)
 {
   manageui_t  *manage = udata;
 
-  uimusicqClearQueueProcess (manage->slmusicq);
+  uimusicqClearQueue (manage->slmusicq);
   return UICB_CONT;
 }
 
@@ -1325,7 +1325,7 @@ manageSonglistLoadFile (void *udata, const char *fn)
 
   /* truncate from the first selection */
   uimusicqSetSelection (manage->slmusicq, "0");
-  uimusicqClearQueueProcess (manage->slmusicq);
+  uimusicqClearQueue (manage->slmusicq);
 
   snprintf (tbuff, sizeof (tbuff), "%d%c%s",
       manage->musicqManageIdx, MSG_ARGS_RS, fn);

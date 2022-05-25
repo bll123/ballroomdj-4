@@ -495,7 +495,7 @@ installerBuildUI (installer_t *installer)
       installerSelectDirDialog, installer);
   uiCreateButton (&uiwidget,
       &installer->callbacks [INST_CALLBACK_SELECT_DIR],
-      "", NULL, NULL, NULL);
+      "", NULL);
   uiButtonSetImageIcon (&uiwidget, "folder");
   uiWidgetSetMarginStart (&uiwidget, 0);
   uiBoxPackStart (&hbox, &uiwidget);
@@ -569,7 +569,7 @@ installerBuildUI (installer_t *installer)
   uiCreateButton (&uiwidget,
       &installer->callbacks [INST_CALLBACK_EXIT],
       /* CONTEXT: exits the installer */
-      _("Exit"), NULL, NULL, NULL);
+      _("Exit"), NULL);
   uiBoxPackEnd (&hbox, &uiwidget);
 
   uiutilsUICallbackInit (&installer->callbacks [INST_CALLBACK_INSTALL],
@@ -577,7 +577,7 @@ installerBuildUI (installer_t *installer)
   uiCreateButton (&uiwidget,
       &installer->callbacks [INST_CALLBACK_INSTALL],
       /* CONTEXT: installer: start the installation process */
-      _("Install"), NULL, NULL, NULL);
+      _("Install"), NULL);
   uiBoxPackEnd (&hbox, &uiwidget);
 
   installer->disptb = uiTextBoxCreate (400);

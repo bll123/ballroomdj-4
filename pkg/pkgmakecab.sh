@@ -39,6 +39,7 @@ cat > $MCDIR << _HERE_
 .set GenerateInf=OFF
 .Set Cabinet=ON
 .Set Compress=ON
+.Set CompressionType=LZX
 .Set CompressionMemory=21
 .Set UniqueFiles=ON
 

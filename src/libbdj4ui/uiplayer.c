@@ -305,7 +305,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiCreateButton (&uiwidget,
       &uiplayer->callbacks [UIPLAYER_CALLBACK_FADE],
       /* CONTEXT: button: fade out the song and stop playing it */
-      _("Fade"), NULL, NULL, NULL);
+      _("Fade"), NULL);
   uiBoxPackStart (&hbox, &uiwidget);
 
   /* CONTEXT: button: play or pause the song */
@@ -314,7 +314,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
       uiplayerPlayPauseProcess, uiplayer);
   uiCreateButton (&uiwidget,
       &uiplayer->callbacks [UIPLAYER_CALLBACK_PLAYPAUSE],
-      tbuff, "button_playpause", NULL, NULL);
+      tbuff, "button_playpause");
   uiBoxPackStart (&hbox, &uiwidget);
 
   pathbldMakePath (tbuff, sizeof (tbuff), "button_repeat", ".svg",
@@ -331,7 +331,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiCreateButton (&uiwidget,
       &uiplayer->callbacks [UIPLAYER_CALLBACK_BEGSONG],
       /* CONTEXT: button: tooltip: return to the beginning of the song */
-      _("Return to beginning of song"), "button_begin", NULL, NULL);
+      _("Return to beginning of song"), "button_begin");
   uiBoxPackStart (&hbox, &uiwidget);
 
   uiutilsUICallbackInit (&uiplayer->callbacks [UIPLAYER_CALLBACK_NEXTSONG],
@@ -339,7 +339,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiCreateButton (&uiwidget,
       &uiplayer->callbacks [UIPLAYER_CALLBACK_NEXTSONG],
       /* CONTEXT: button: tooltip: start playing the next song (immediate) */
-      _("Next Song"), "button_nextsong", NULL, NULL);
+      _("Next Song"), "button_nextsong");
   uiBoxPackStart (&hbox, &uiwidget);
 
   pathbldMakePath (tbuff, sizeof (tbuff), "led_on", ".svg",

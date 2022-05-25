@@ -487,7 +487,7 @@ starterBuildUI (startui_t  *starter)
   uiCreateButton (&uiwidget,
       &starter->callbacks [START_CALLBACK_PLAYER],
       /* CONTEXT: button: starts the player user interface */
-      _("Player"), NULL, NULL, NULL);
+      _("Player"), NULL);
   uiWidgetSetMarginTop (&uiwidget, uiBaseMarginSz * 2);
   uiWidgetAlignHorizStart (&uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
@@ -500,7 +500,7 @@ starterBuildUI (startui_t  *starter)
   uiCreateButton (&uiwidget,
       &starter->callbacks [START_CALLBACK_MANAGE],
       /* CONTEXT: button: starts the management user interface */
-      _("Manage"), NULL, NULL, NULL);
+      _("Manage"), NULL);
   uiWidgetSetMarginTop (&uiwidget, uiBaseMarginSz * 2);
   uiWidgetAlignHorizStart (&uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
@@ -513,7 +513,7 @@ starterBuildUI (startui_t  *starter)
   uiCreateButton (&uiwidget,
       &starter->callbacks [START_CALLBACK_CONFIG],
       /* CONTEXT: button: starts the configuration user interface */
-      _("Configure"), NULL, NULL, NULL);
+      _("Configure"), NULL);
   uiWidgetSetMarginTop (&uiwidget, uiBaseMarginSz * 2);
   uiWidgetAlignHorizStart (&uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
@@ -525,7 +525,7 @@ starterBuildUI (startui_t  *starter)
   uiCreateButton (&uiwidget,
       &starter->callbacks [START_CALLBACK_RAFFLE],
       /* CONTEXT: button: support : starts raffle games  */
-      _("Raffle Games"), NULL, NULL, NULL);
+      _("Raffle Games"), NULL);
   uiWidgetDisable (&uiwidget);
   uiWidgetSetMarginTop (&uiwidget, uiBaseMarginSz * 2);
   uiWidgetAlignHorizStart (&uiwidget);
@@ -538,7 +538,7 @@ starterBuildUI (startui_t  *starter)
   uiCreateButton (&uiwidget,
       &starter->callbacks [START_CALLBACK_SUPPORT],
       /* CONTEXT: button: support : support information */
-      _("Support"), NULL, NULL, NULL);
+      _("Support"), NULL);
   uiWidgetSetMarginTop (&uiwidget, uiBaseMarginSz * 2);
   uiWidgetAlignHorizStart (&uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
@@ -548,7 +548,7 @@ starterBuildUI (startui_t  *starter)
   uiCreateButton (&uiwidget,
       &starter->callbacks [START_CALLBACK_EXIT],
       /* CONTEXT: button: exits BDJ4 (exits everything) */
-      _("Exit"), NULL, NULL, NULL);
+      _("Exit"), NULL);
   uiWidgetSetMarginTop (&uiwidget, uiBaseMarginSz * 2);
   uiWidgetAlignHorizStart (&uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
@@ -1090,7 +1090,7 @@ starterProcessSupport (void *udata)
   uiCreateButton (&uiwidget,
       &starter->callbacks [START_CALLBACK_SEND_SUPPORT],
       /* CONTEXT: starterui: basic support dialog: button: support option */
-      _("Send Support Message"), NULL, NULL, NULL);
+      _("Send Support Message"), NULL);
   uiBoxPackStart (&hbox, &uiwidget);
 
   /* the dialog doesn't have any space above the buttons */
