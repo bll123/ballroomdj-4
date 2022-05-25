@@ -47,7 +47,6 @@ uisongselInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
   uisongsel->musicdb = musicdb;
   uisongsel->dispselType = dispselType;
   uiutilsUIWidgetInit (&uisongsel->filterDialog);
-  uiutilsUIWidgetInit (&uisongsel->statusPlayable);
   uisongsel->options = options;
   uisongsel->idxStart = 0;
   uisongsel->oldIdxStart = 0;
@@ -55,6 +54,7 @@ uisongselInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
   uisongsel->dfilterCount = (double) dbCount (musicdb);
   uisongsel->dfltpbflag = pbflag;
   uisongsel->filterApplied = mstime ();
+  uisongsel->playstatusswitch = NULL;
   uiDropDownInit (&uisongsel->dancesel);
   uiDropDownInit (&uisongsel->sortbysel);
   uiEntryInit (&uisongsel->searchentry, 30, 100);
@@ -105,6 +105,7 @@ uisongselFree (uisongsel_t *uisongsel)
     uisongselUIFree (uisongsel);
     uiDialogDestroy (&uisongsel->filterDialog);
     uiutilsUIWidgetInit (&uisongsel->filterDialog);
+    uiSwitchFree (uisongsel->playstatusswitch);
     free (uisongsel);
   }
 

@@ -47,7 +47,7 @@ uisongselFilterDialog (void *udata)
 
   uisongselInitFilterDisplay (uisongsel);
   if (songfilterCheckSelection (uisongsel->songfilter, FILTER_DISP_STATUSPLAYABLE)) {
-    uiSwitchSetValue (&uisongsel->statusPlayable, uisongsel->dfltpbflag);
+    uiSwitchSetValue (uisongsel->playstatusswitch, uisongsel->dfltpbflag);
   }
   uiWidgetShowAll (&uisongsel->filterDialog);
 
@@ -243,9 +243,8 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
     uiBoxPackStart (&hbox, &uiwidget);
     uiSizeGroupAdd (&sg, &uiwidget);
 
-    uiCreateSwitch (&uiwidget, uisongsel->dfltpbflag);
-    uiBoxPackStart (&hbox, &uiwidget);
-    uiutilsUIWidgetCopy (&uisongsel->statusPlayable, &uiwidget);
+    uisongsel->playstatusswitch = uiCreateSwitch (uisongsel->dfltpbflag);
+    uiBoxPackStart (&hbox, uiSwitchGetUIWidget (uisongsel->playstatusswitch));
   }
 
   /* the dialog doesn't have any space above the buttons */
@@ -292,7 +291,7 @@ uisongselFilterResponseHandler (void *udata, int responseid)
       uiDropDownSelectionSetNum (&uisongsel->filterdancesel, uisongsel->danceIdx);
       uisongselInitFilterDisplay (uisongsel);
       if (songfilterCheckSelection (uisongsel->songfilter, FILTER_DISP_STATUSPLAYABLE)) {
-        uiSwitchSetValue (&uisongsel->statusPlayable, uisongsel->dfltpbflag);
+        uiSwitchSetValue (uisongsel->playstatusswitch, uisongsel->dfltpbflag);
       }
       break;
     }
@@ -361,7 +360,7 @@ uisongselFilterUpdate (uisongsel_t *uisongsel)
   }
 
   if (songfilterCheckSelection (uisongsel->songfilter, FILTER_DISP_STATUSPLAYABLE)) {
-    nval = uiSwitchGetValue (&uisongsel->statusPlayable);
+    nval = uiSwitchGetValue (uisongsel->playstatusswitch);
   } else {
     nval = uisongsel->dfltpbflag;
   }

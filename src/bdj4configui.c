@@ -128,17 +128,22 @@ enum {
   CONFUI_SPINBOX_UI_THEME,
   CONFUI_SPINBOX_WRITE_AUDIO_FILE_TAGS,
   CONFUI_SPINBOX_MAX,
+  CONFUI_SWITCH_DB_LOAD_FROM_GENRE,
+  CONFUI_SWITCH_ENABLE_ITUNES,
+  CONFUI_SWITCH_AUTO_ORGANIZE,
+  CONFUI_SWITCH_MQ_SHOW_SONG_INFO,
+  CONFUI_SWITCH_MQ_HIDE_ON_START,
+  CONFUI_SWITCH_RC_ENABLE,
+  CONFUI_SWITCH_FILTER_STATUS_PLAYABLE,
+  CONFUI_SWITCH_MAX,
   CONFUI_WIDGET_AO_EXAMPLE_1,
   CONFUI_WIDGET_AO_EXAMPLE_2,
   CONFUI_WIDGET_AO_EXAMPLE_3,
   CONFUI_WIDGET_AO_EXAMPLE_4,
-  CONFUI_WIDGET_AUTO_ORGANIZE,
-  CONFUI_WIDGET_DB_LOAD_FROM_GENRE,
   CONFUI_WIDGET_FILTER_GENRE,
   CONFUI_WIDGET_FILTER_DANCELEVEL,
   CONFUI_WIDGET_FILTER_STATUS,
   CONFUI_WIDGET_FILTER_FAVORITE,
-  CONFUI_WIDGET_FILTER_STATUS_PLAYABLE,
   /* the debug enums must be in numeric order */
   CONFUI_WIDGET_DEBUG_1,
   CONFUI_WIDGET_DEBUG_2,
@@ -159,11 +164,9 @@ enum {
   CONFUI_WIDGET_DEBUG_65536,
   CONFUI_WIDGET_DEBUG_131072,
   CONFUI_WIDGET_DEFAULT_VOL,
-  CONFUI_WIDGET_ENABLE_ITUNES,
   CONFUI_WIDGET_FADE_IN_TIME,
   CONFUI_WIDGET_FADE_OUT_TIME,
   CONFUI_WIDGET_GAP,
-  CONFUI_WIDGET_HIDE_MARQUEE_ON_START,
   CONFUI_WIDGET_INSERT_LOC,
   CONFUI_WIDGET_MMQ_PORT,
   CONFUI_WIDGET_MMQ_QR_CODE,
@@ -171,9 +174,7 @@ enum {
   CONFUI_WIDGET_MQ_FONT,
   CONFUI_WIDGET_MQ_FONT_FS,
   CONFUI_WIDGET_MQ_QUEUE_LEN,
-  CONFUI_WIDGET_MQ_SHOW_SONG_INFO,
   CONFUI_WIDGET_PL_QUEUE_LEN,
-  CONFUI_WIDGET_RC_ENABLE,
   CONFUI_WIDGET_RC_PORT,
   CONFUI_WIDGET_RC_QR_CODE,
   CONFUI_WIDGET_UI_ACCENT_COLOR,
@@ -187,9 +188,10 @@ typedef struct {
   confuiouttype_t   outtype;
   int               bdjoptIdx;
   union {
-    uidropdown_t dropdown;
-    uientry_t    entry;
-    uispinbox_t  spinbox;
+    uidropdown_t  dropdown;
+    uientry_t     entry;
+    uispinbox_t   spinbox;
+    uiswitch_t    *uiswitch;
   } u;
   int               listidx;        // for combobox, spinbox
   nlist_t           *displist;      // indexed by spinbox/combobox index
@@ -590,6 +592,9 @@ main (int argc, char *argv[])
     if (i > CONFUI_ENTRY_MAX && i < CONFUI_SPINBOX_MAX) {
       uiSpinboxTextInit (&confui.uiitem [i].u.spinbox);
     }
+    if (i > CONFUI_SPINBOX_MAX && i < CONFUI_SWITCH_MAX) {
+      confui.uiitem [i].u.uiswitch = NULL;
+    }
   }
 
   uiEntryInit (&confui.uiitem [CONFUI_ENTRY_DANCE_TAGS].u.entry, 30, 100);
@@ -746,7 +751,7 @@ main (int argc, char *argv[])
   nlistSetNum (llist, CONFUI_WIDGET_FILTER_DANCELEVEL, FILTER_DISP_DANCELEVEL);
   nlistSetNum (llist, CONFUI_WIDGET_FILTER_STATUS, FILTER_DISP_STATUS);
   nlistSetNum (llist, CONFUI_WIDGET_FILTER_FAVORITE, FILTER_DISP_FAVORITE);
-  nlistSetNum (llist, CONFUI_WIDGET_FILTER_STATUS_PLAYABLE, FILTER_DISP_STATUSPLAYABLE);
+  nlistSetNum (llist, CONFUI_SWITCH_FILTER_STATUS_PLAYABLE, FILTER_DISP_STATUSPLAYABLE);
   confui.filterLookup = llist;
 
   listenPort = bdjvarsGetNum (BDJVL_CONFIGUI_PORT);
@@ -857,12 +862,6 @@ confuiClosingCallback (void *udata, programstate_t programState)
     uiEntryFree (&confui->uiitem [i].u.entry);
   }
 
-  for (int i = CONFUI_SPINBOX_MAX + 1; i < CONFUI_ITEM_MAX; ++i) {
-    if (confui->uiitem [i].uri != NULL) {
-      free (confui->uiitem [i].uri);
-    }
-  }
-
   for (int i = CONFUI_ENTRY_MAX + 1; i < CONFUI_SPINBOX_MAX; ++i) {
     uiSpinboxTextFree (&confui->uiitem [i].u.spinbox);
     /* the mq and ui-theme share the list */
@@ -874,6 +873,16 @@ confuiClosingCallback (void *udata, programstate_t programState)
     }
     if (confui->uiitem [i].sbkeylist != NULL) {
       nlistFree (confui->uiitem [i].sbkeylist);
+    }
+  }
+
+  for (int i = CONFUI_SPINBOX_MAX + 1; i < CONFUI_SWITCH_MAX; ++i) {
+    uiSwitchFree (confui->uiitem [i].u.uiswitch);
+  }
+
+  for (int i = CONFUI_SWITCH_MAX + 1; i < CONFUI_ITEM_MAX; ++i) {
+    if (confui->uiitem [i].uri != NULL) {
+      free (confui->uiitem [i].uri);
     }
   }
 
@@ -1033,12 +1042,12 @@ confuiBuildUIGeneral (configui_t *confui)
   confuiMakeItemSwitch (confui, &vbox, &sg,
       /* CONTEXT: checkbox: the database will load the dance from the audio file genre tag */
       _("Database Loads Dance From Genre"),
-      CONFUI_WIDGET_DB_LOAD_FROM_GENRE, OPT_G_LOADDANCEFROMGENRE,
+      CONFUI_SWITCH_DB_LOAD_FROM_GENRE, OPT_G_LOADDANCEFROMGENRE,
       bdjoptGetNum (OPT_G_LOADDANCEFROMGENRE), NULL);
   confuiMakeItemSwitch (confui, &vbox, &sg,
       /* CONTEXT: configuration: enable itunes support */
       _("Enable iTunes Support"),
-      CONFUI_WIDGET_ENABLE_ITUNES, OPT_G_ITUNESSUPPORT,
+      CONFUI_SWITCH_ENABLE_ITUNES, OPT_G_ITUNESSUPPORT,
       bdjoptGetNum (OPT_G_ITUNESSUPPORT), NULL);
 
   /* bdj4 */
@@ -1176,7 +1185,7 @@ confuiBuildUIMarquee (configui_t *confui)
 
   /* CONTEXT: configuration: marquee: show the song information (artist/title) on the marquee */
   confuiMakeItemSwitch (confui, &vbox, &sg, _("Show Song Information"),
-      CONFUI_WIDGET_MQ_SHOW_SONG_INFO, OPT_P_MQ_SHOW_INFO,
+      CONFUI_SWITCH_MQ_SHOW_SONG_INFO, OPT_P_MQ_SHOW_INFO,
       bdjoptGetNum (OPT_P_MQ_SHOW_INFO), NULL);
 
   /* CONTEXT: configuration: marquee: the accent color used for the marquee */
@@ -1186,7 +1195,7 @@ confuiBuildUIMarquee (configui_t *confui)
 
   /* CONTEXT: configuration: marquee: minimize the marquee when the player is started */
   confuiMakeItemSwitch (confui, &vbox, &sg, _("Hide Marquee on Start"),
-      CONFUI_WIDGET_HIDE_MARQUEE_ON_START, OPT_P_HIDE_MARQUEE_ON_START,
+      CONFUI_SWITCH_MQ_HIDE_ON_START, OPT_P_HIDE_MARQUEE_ON_START,
       bdjoptGetNum (OPT_P_HIDE_MARQUEE_ON_START), NULL);
   logProcEnd (LOG_PROC, "confuiBuildUIMarquee", "");
 }
@@ -1311,8 +1320,8 @@ confuiBuildUIFilterDisplay (configui_t *confui)
   val = nlistGetNum (confui->filterDisplaySel, FILTER_DISP_STATUSPLAYABLE);
   /* CONTEXT: configuration: filter display: checkbox: status is playable */
   confuiMakeItemCheckButton (confui, &vbox, &sg, _("Playable Status"),
-      CONFUI_WIDGET_FILTER_STATUS_PLAYABLE, -1, val);
-  confui->uiitem [CONFUI_WIDGET_FILTER_STATUS_PLAYABLE].outtype = CONFUI_OUT_CB;
+      CONFUI_SWITCH_FILTER_STATUS_PLAYABLE, -1, val);
+  confui->uiitem [CONFUI_SWITCH_FILTER_STATUS_PLAYABLE].outtype = CONFUI_OUT_CB;
   logProcEnd (LOG_PROC, "confuiBuildUIFilterDisplay", "");
 }
 
@@ -1347,7 +1356,7 @@ confuiBuildUIOrganization (configui_t *confui)
 
   /* CONTEXT: configuration: checkbox: is automatic organization enabled */
   confuiMakeItemSwitch (confui, &vbox, &sg, _("Auto Organise"),
-      CONFUI_WIDGET_AUTO_ORGANIZE, OPT_G_AUTOORGANIZE,
+      CONFUI_SWITCH_AUTO_ORGANIZE, OPT_G_AUTOORGANIZE,
       bdjoptGetNum (OPT_G_AUTOORGANIZE), NULL);
   logProcEnd (LOG_PROC, "confuiBuildUIOrganization", "");
 }
@@ -1602,7 +1611,7 @@ confuiBuildUIMobileRemoteControl (configui_t *confui)
 
   /* CONTEXT: configuration: remote control: checkbox: enable/disable */
   confuiMakeItemSwitch (confui, &vbox, &sg, _("Enable Remote Control"),
-      CONFUI_WIDGET_RC_ENABLE, OPT_P_REMOTECONTROL,
+      CONFUI_SWITCH_RC_ENABLE, OPT_P_REMOTECONTROL,
       bdjoptGetNum (OPT_P_REMOTECONTROL),
       confuiRemctrlChg);
 
@@ -1982,7 +1991,7 @@ confuiPopulateOptions (configui_t *confui)
         break;
       }
       case CONFUI_SWITCH: {
-        nval = uiSwitchGetValue (&confui->uiitem [i].uiwidget);
+        nval = uiSwitchGetValue (confui->uiitem [i].u.uiswitch);
         break;
       }
       case CONFUI_CHECK_BUTTON: {
@@ -2541,7 +2550,7 @@ confuiMakeItemSwitch (configui_t *confui, UIWidget *boxp, UIWidget *sg,
     char *txt, int widx, int bdjoptIdx, int value, void *cb)
 {
   UIWidget    hbox;
-  UIWidget    uiwidget;
+  UIWidget    *uiwidgetp;
 
   logProcBegin (LOG_PROC, "confuiMakeItemSwitch");
 
@@ -2550,16 +2559,17 @@ confuiMakeItemSwitch (configui_t *confui, UIWidget *boxp, UIWidget *sg,
   uiCreateHorizBox (&hbox);
   confuiMakeItemLabel (&hbox, sg, txt);
 
-  uiCreateSwitch (&uiwidget, value);
-  uiWidgetSetMarginStart (&uiwidget, uiBaseMarginSz * 4);
-  uiBoxPackStart (&hbox, &uiwidget);
+  confui->uiitem [widx].u.uiswitch = uiCreateSwitch (value);
+  uiwidgetp = uiSwitchGetUIWidget (confui->uiitem [widx].u.uiswitch);
+  uiWidgetSetMarginStart (uiwidgetp, uiBaseMarginSz * 4);
+  uiBoxPackStart (&hbox, uiwidgetp);
   uiBoxPackStart (boxp, &hbox);
-  uiutilsUIWidgetCopy (&confui->uiitem [widx].uiwidget, &uiwidget);
   confui->uiitem [widx].bdjoptIdx = bdjoptIdx;
 
   if (cb != NULL) {
     uiutilsUICallbackInit (&confui->uiitem [widx].callback, cb, confui);
-    uiSwitchSetCallback (&uiwidget, &confui->uiitem [widx].callback);
+    uiSwitchSetCallback (confui->uiitem [widx].u.uiswitch,
+        &confui->uiitem [widx].callback);
   }
 
   logProcEnd (LOG_PROC, "confuiMakeItemSwitch", "");

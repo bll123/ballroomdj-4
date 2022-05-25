@@ -126,6 +126,8 @@ typedef struct {
   bool            changed : 1;
 } uispinbox_t;
 
+typedef struct uiswitch uiswitch_t;
+
 extern int uiBaseMarginSz;
 
 /* uiutils.c */

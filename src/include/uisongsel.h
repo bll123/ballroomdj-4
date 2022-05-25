@@ -41,7 +41,6 @@ typedef struct {
   /* filter data */
   UIWidget          filterDialog;
   UICallback        filtercb;
-  UIWidget          statusPlayable;
   songfilterpb_t    dfltpbflag;
   uidropdown_t      sortbysel;
   uidropdown_t      filterdancesel;
@@ -52,6 +51,7 @@ typedef struct {
   uispinbox_t       filterstatussel;
   uispinbox_t       filterfavoritesel;
   time_t            filterApplied;
+  uiswitch_t        *playstatusswitch;
   /* song selection tab */
   uidropdown_t dancesel;
   /* widget data */

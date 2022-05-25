@@ -58,6 +58,7 @@ typedef struct managepl {
   UIWidget        uipltype;
   managepltree_t  *managepltree;
   playlist_t      *playlist;
+  uiswitch_t      *plannswitch;
   bool            changed : 1;
 } managepl_t;
 
@@ -101,6 +102,7 @@ managePlaylistAlloc (UIWidget *window, nlist_t *options, UIWidget *statusMsg)
   uiutilsUIWidgetInit (&managepl->uiallowedkeywordsitem);
   managepl->playlist = NULL;
   managepl->changed = false;
+  managepl->plannswitch = NULL;
 
   return managepl;
 }
@@ -120,6 +122,7 @@ managePlaylistFree (managepl_t *managepl)
     uiratingFree (managepl->uirating);
     uilevelFree (managepl->uilowlevel);
     uilevelFree (managepl->uihighlevel);
+    uiSwitchFree (managepl->plannswitch);
     if (managepl->playlist != NULL) {
       playlistFree (managepl->playlist);
     }
@@ -257,8 +260,8 @@ manageBuildUIPlaylist (managepl_t *managepl, UIWidget *vboxp)
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
 
-  uiCreateSwitch (&uiwidget, 0);
-  uiBoxPackStart (&hbox, &uiwidget);
+  managepl->plannswitch = uiCreateSwitch (0);
+  uiBoxPackStart (&hbox, uiSwitchGetUIWidget (managepl->plannswitch));
 
   /* automatic and sequenced playlists; keep the widget so these */
   /* can be hidden */

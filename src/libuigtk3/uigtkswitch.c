@@ -12,79 +12,142 @@
 #include "ui.h"
 #include "uiutils.h"
 
-static gboolean uiSwitchStateHandler (GtkSwitch *sw, gboolean value, gpointer udata);
+typedef struct uiswitch {
+  UIWidget    uiswitch;
+  UIWidget    switchoffimg;
+  UIWidget    switchonimg;
+} uiswitch_t;
 
-void
-uiCreateSwitch (UIWidget *uiwidget, int value)
+static void uiSwitchImageHandler (GtkButton *b, gpointer udata);
+static void uiSwitchToggleHandler (GtkButton *b, gpointer udata);
+static void uiSwitchSetImage (GtkWidget *w, void *udata);
+
+uiswitch_t *
+uiCreateSwitch (int value)
 {
+  uiswitch_t  *uiswitch;
   GtkWidget   *widget;
 
-  widget = gtk_switch_new ();
-  assert (widget != NULL);
-  gtk_switch_set_active (GTK_SWITCH (widget), value);
+  /* the gtk switch is different in every theme, some of which are not */
+  /* great.  use a toggle button instead and set our own image */
+
+  uiswitch = malloc (sizeof (uiswitch_t));
+  uiutilsUIWidgetInit (&uiswitch->uiswitch);
+  uiutilsUIWidgetInit (&uiswitch->switchoffimg);
+  uiutilsUIWidgetInit (&uiswitch->switchonimg);
+
+  uiImageFromFile (&uiswitch->switchoffimg, "img/switch-off.svg");
+  uiWidgetMakePersistent (&uiswitch->switchoffimg);
+  uiImageFromFile (&uiswitch->switchonimg, "img/switch-on.svg");
+  uiWidgetMakePersistent (&uiswitch->switchonimg);
+
+  widget = gtk_toggle_button_new ();
+  uiswitch->uiswitch.widget = widget;
+
   gtk_widget_set_margin_top (widget, uiBaseMarginSz);
   gtk_widget_set_margin_start (widget, uiBaseMarginSz);
-  gtk_widget_set_valign (widget, GTK_ALIGN_CENTER);
-#if 0
-  /* the entire switch css would need replacing */
-  /* switch, slider, etc. */
-  /* if this route is taken, the slider can be made separate, */
-  /* and the green/red text can be put in the background-image */
+  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), value);
+  uiSwitchSetImage (widget, uiswitch);
+  gtk_button_set_always_show_image (GTK_BUTTON (widget), TRUE);
   uiSetCss (widget,
-    "switch { "
-    "  min-height: 26px; "
-    "  min-width: 40px; "
-    "  background-image: -gtk-scaled(url(\"img/switch-off.svg\")); "
-    "}"
-    "switch:checked { "
-    "  min-height: 26px; "
-    "  min-width: 40px; "
-    "  background-image: -gtk-scaled(url(\"img/switch-on.svg\")); "
-    "}"
-    );
-#endif
-  uiwidget->widget = widget;
+      "button { "
+      "  border-bottom-left-radius: 15px; "
+      "  border-bottom-right-radius: 15px; "
+      "  border-top-left-radius: 15px; "
+      "  border-top-right-radius: 15px; "
+      "  background-color: shade(@theme_base_color,0.8); "
+      "} "
+      "button:checked { "
+      "  background-color: shade(@theme_base_color,0.8); "
+      "} "
+      "button:hover { "
+      "  background-color: shade(@theme_base_color,0.8); "
+      "} "
+      );
+  g_signal_connect (widget, "toggled",
+      G_CALLBACK (uiSwitchImageHandler), uiswitch);
+  return uiswitch;
 }
 
 void
-uiSwitchSetValue (UIWidget *uiwidget, int value)
+uiSwitchFree (uiswitch_t *uiswitch)
 {
-  if (uiwidget == NULL) {
+  if (uiswitch != NULL) {
+    uiWidgetClearPersistent (&uiswitch->switchoffimg);
+    uiWidgetClearPersistent (&uiswitch->switchonimg);
+    free (uiswitch);
+  }
+}
+
+void
+uiSwitchSetValue (uiswitch_t *uiswitch, int value)
+{
+  if (uiswitch == NULL) {
     return;
   }
-  if (uiwidget->widget == NULL) {
-    return;
-  }
-  gtk_switch_set_active (GTK_SWITCH (uiwidget->widget), value);
+
+  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (uiswitch->uiswitch.widget), value);
+  uiSwitchSetImage (uiswitch->uiswitch.widget, uiswitch);
 }
 
 int
-uiSwitchGetValue (UIWidget *uiwidget)
+uiSwitchGetValue (uiswitch_t *uiswitch)
 {
-  if (uiwidget == NULL) {
+  if (uiswitch == NULL) {
     return 0;
   }
-  if (uiwidget->widget == NULL) {
-    return 0;
+  return gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (uiswitch->uiswitch.widget));
+}
+
+UIWidget *
+uiSwitchGetUIWidget (uiswitch_t *uiswitch)
+{
+  if (uiswitch == NULL) {
+    return NULL;
   }
-  return gtk_switch_get_active (GTK_SWITCH (uiwidget->widget));
+  return &uiswitch->uiswitch;
 }
 
 void
-uiSwitchSetCallback (UIWidget *uiwidget, UICallback *uicb)
+uiSwitchSetCallback (uiswitch_t *uiswitch, UICallback *uicb)
 {
-  g_signal_connect (uiwidget->widget, "state-set",
-      G_CALLBACK (uiSwitchStateHandler), uicb);
+  g_signal_connect (uiswitch->uiswitch.widget, "toggled",
+      G_CALLBACK (uiSwitchToggleHandler), uicb);
 }
 
 /* internal routines */
 
-static gboolean
-uiSwitchStateHandler (GtkSwitch *sw, gboolean value, gpointer udata)
+static void
+uiSwitchToggleHandler (GtkButton *b, gpointer udata)
 {
   UICallback  *uicb = udata;
-  bool        rc;
+  int         value;
 
-  rc = uiutilsCallbackIntHandler (uicb, value);
-  return rc;
+  value = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (b));
+  uiutilsCallbackIntHandler (uicb, value);
+  return;
+}
+
+static void
+uiSwitchImageHandler (GtkButton *b, gpointer udata)
+{
+  uiSwitchSetImage (GTK_WIDGET (b), udata);
+}
+
+static void
+uiSwitchSetImage (GtkWidget *w, void *udata)
+{
+  uiswitch_t  *uiswitch = udata;
+  int         value;
+
+  if (w == NULL) {
+    return;
+  }
+
+  value = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (uiswitch->uiswitch.widget));
+  if (value) {
+    gtk_button_set_image (GTK_BUTTON (w), uiswitch->switchonimg.widget);
+  } else {
+    gtk_button_set_image (GTK_BUTTON (w), uiswitch->switchoffimg.widget);
+  }
 }

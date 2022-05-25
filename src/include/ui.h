@@ -266,10 +266,13 @@ void    uiScaleSetValue (UIWidget *uiscale, double value);
 void    uiScaleSetRange (UIWidget *uiscale, double start, double end);
 
 /* uigtkswitch.c */
-void uiCreateSwitch (UIWidget *uiwidget, int value);
-void uiSwitchSetValue (UIWidget *uiwidget, int value);
-int uiSwitchGetValue (UIWidget *uiwidget);
-void uiSwitchSetCallback (UIWidget *uiwidget, UICallback *uicb);
+
+uiswitch_t *uiCreateSwitch (int value);
+void uiSwitchFree (uiswitch_t *uiswitch);
+void uiSwitchSetValue (uiswitch_t *uiswitch, int value);
+int uiSwitchGetValue (uiswitch_t *uiswitch);
+UIWidget *uiSwitchGetUIWidget (uiswitch_t *uiswitch);
+void uiSwitchSetCallback (uiswitch_t *uiswitch, UICallback *uicb);
 
 /* uigtksizegrp.c */
 void uiCreateSizeGroupHoriz (UIWidget *);

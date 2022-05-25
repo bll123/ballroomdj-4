@@ -2,12 +2,12 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="40"
-   height="20.000002"
+   width="51.140591"
+   height="26.050232"
    id="svg4168"
    version="1.1"
    inkscape:version="1.1.1 (3bf5ae0d25, 2021-09-20)"
-   viewBox="0 0 40 20.000002"
+   viewBox="0 0 51.140591 26.050232"
    sodipodi:docname="switch-on.svg"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
@@ -27,7 +27,7 @@
          offset="0"
          id="stop903" />
       <stop
-         style="stop-color:#ffa600;stop-opacity:0.3"
+         style="stop-color:#ffa600;stop-opacity:0.5"
          offset="1"
          id="stop905" />
     </linearGradient>
@@ -50,9 +50,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:zoom="11.65"
-     inkscape:cx="20"
-     inkscape:cy="10.042918"
+     inkscape:zoom="11.693256"
+     inkscape:cx="25.570295"
+     inkscape:cy="12.998946"
      inkscape:current-layer="layer1"
      showgrid="true"
      inkscape:document-units="px"
@@ -61,13 +61,14 @@
      fit-margin-left="0"
      fit-margin-right="0"
      fit-margin-bottom="0"
-     inkscape:window-width="1549"
+     inkscape:window-width="1681"
      inkscape:window-height="801"
      inkscape:window-x="229"
      inkscape:window-y="160"
      inkscape:window-maximized="0"
-     showborder="false"
-     inkscape:pagecheckerboard="true" />
+     showborder="true"
+     inkscape:pagecheckerboard="true"
+     inkscape:showpageshadow="false" />
   <metadata
      id="metadata4173">
     <rdf:RDF>
@@ -98,33 +99,29 @@
      id="layer1"
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
-     transform="translate(45.333443,-41.523185)">
-    <rect
-       style="fill:#545454;fill-opacity:1;stroke:#ffffff;stroke-width:0;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       id="rect818"
-       width="40"
-       height="20"
-       x="-45.333443"
-       y="41.523186"
-       ry="10" />
-    <ellipse
-       style="opacity:1;fill:url(#radialGradient909);fill-opacity:1;stroke:#c8c8c8;stroke-width:0;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       id="path4754"
-       cx="-16.166021"
-       cy="51.567814"
-       rx="8.6949997"
-       ry="8.5369577" />
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.82926px;line-height:0%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#179b15;fill-opacity:1;stroke:none;stroke-width:0.319105px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       x="-42.830139"
-       y="58.947281"
-       id="text4803"
-       transform="scale(1.0092394,0.99084523)"><tspan
-         sodipodi:role="line"
-         id="tspan4805"
+     transform="translate(40.989731,-34.05454)">
+    <g
+       id="g921"
+       transform="matrix(1.5257326,0,0,1.5257326,21.549639,-31.599039)">
+      <ellipse
+         style="fill:url(#radialGradient909);fill-opacity:1;stroke:#c8c8c8;stroke-width:0;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         id="path4754"
+         cx="-16.166021"
+         cy="51.567814"
+         rx="8.6949997"
+         ry="8.5369577" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.82926px;line-height:0%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#179b15;fill-opacity:1;stroke:none;stroke-width:0.319105px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
          x="-42.830139"
          y="58.947281"
-         style="font-size:19.1463px;line-height:1.25;fill:#179b15;fill-opacity:1;stroke-width:0.319105px">✔</tspan></text>
+         id="text4803"
+         transform="scale(1.0092394,0.99084521)"><tspan
+           sodipodi:role="line"
+           id="tspan4805"
+           x="-42.830139"
+           y="58.947281"
+           style="font-size:19.1463px;line-height:1.25;fill:#179b15;fill-opacity:1;stroke-width:0.319105px">✔</tspan></text>
+    </g>
   </g>
 </svg>
