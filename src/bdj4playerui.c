@@ -122,7 +122,7 @@ static int      pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 static bool     pluiCloseWin (void *udata);
 static void     pluiSigHandler (int sig);
 /* queue selection handlers */
-static bool     pluiSwitchPage (void *udata, int pagenum);
+static bool     pluiSwitchPage (void *udata, long pagenum);
 static bool     pluiProcessSetPlaybackQueue (void *udata);
 static void     pluiSetPlaybackQueue (playerui_t *plui, musicqidx_t newqueue);
 /* option handlers */
@@ -134,7 +134,7 @@ static bool     pluiToggleSwitchQueue (void *udata);
 static void     pluiSetSwitchQueue (playerui_t *plui);
 static bool     pluiMarqueeFontSizeDialog (void *udata);
 static void     pluiCreateMarqueeFontSizeDialog (playerui_t *plui);
-static bool     pluiMarqueeFontSizeDialogResponse (void *udata, int responseid);
+static bool     pluiMarqueeFontSizeDialogResponse (void *udata, long responseid);
 static void     pluiMarqueeFontSizeChg (GtkSpinButton *fb, gpointer udata);
 static void     pluisetMarqueeIsMaximized (playerui_t *plui, char *args);
 static void     pluisetMarqueeFontSizes (playerui_t *plui, char *args);
@@ -411,7 +411,7 @@ pluiBuildUI (playerui_t *plui)
   uiCreateNotebook (&plui->notebook);
   uiBoxPackStartExpand (&plui->vbox, &plui->notebook);
 
-  uiutilsUICallbackIntInit (&plui->nbcb, pluiSwitchPage, plui);
+  uiutilsUICallbackLongInit (&plui->nbcb, pluiSwitchPage, plui);
   uiNotebookSetCallback (&plui->notebook, &plui->nbcb);
 
   uiutilsUICallbackInit (&plui->setpbqcb,
@@ -705,7 +705,7 @@ pluiSigHandler (int sig)
 }
 
 static bool
-pluiSwitchPage (void *udata, int pagenum)
+pluiSwitchPage (void *udata, long pagenum)
 {
   playerui_t  *plui = udata;
   int         tabid;
@@ -904,7 +904,7 @@ pluiCreateMarqueeFontSizeDialog (playerui_t *plui)
 
   logProcBegin (LOG_PROC, "pluiCreateMarqueeFontSizeDialog");
 
-  uiutilsUICallbackIntInit (&plui->fontszcb,
+  uiutilsUICallbackLongInit (&plui->fontszcb,
       pluiMarqueeFontSizeDialogResponse, plui);
   uiCreateDialog (&plui->marqueeFontSizeDialog, &plui->window,
       &plui->fontszcb,
@@ -945,7 +945,7 @@ pluiCreateMarqueeFontSizeDialog (playerui_t *plui)
 }
 
 static bool
-pluiMarqueeFontSizeDialogResponse (void *udata, int responseid)
+pluiMarqueeFontSizeDialogResponse (void *udata, long responseid)
 {
   playerui_t  *plui = udata;
 

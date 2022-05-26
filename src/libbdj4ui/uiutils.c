@@ -138,13 +138,13 @@ uiutilsUICallbackIntIntInit (UICallback *uicb, UIIntIntCallbackFunc cb, void *ud
 }
 
 void
-uiutilsUICallbackIntInit (UICallback *uicb, UIIntCallbackFunc cb, void *udata)
+uiutilsUICallbackLongInit (UICallback *uicb, UILongCallbackFunc cb, void *udata)
 {
   if (uicb == NULL) {
     return;
   }
 
-  uicb->intcb = cb;
+  uicb->longcb = cb;
   uicb->udata = udata;
 }
 

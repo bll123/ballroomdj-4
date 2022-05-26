@@ -39,7 +39,7 @@ static void selectFileCreateDialog (uiselectfile_t *selectfile,
     slist_t *filelist, const char *filetype, selfilecb_t cb);
 static void selectFileSelect (GtkTreeView* tv, GtkTreePath* path,
     GtkTreeViewColumn* column, gpointer udata);
-static bool selectFileResponseHandler (void *udata, gint responseid);
+static bool selectFileResponseHandler (void *udata, long responseid);
 
 void
 selectFileDialog (int type, UIWidget *window, nlist_t *options,
@@ -115,7 +115,7 @@ selectFileCreateDialog (uiselectfile_t *selectfile,
 
   selectfile->selfilecb = cb;
 
-  uiutilsUICallbackIntInit (&selectfile->cb,
+  uiutilsUICallbackLongInit (&selectfile->cb,
       selectFileResponseHandler, selectfile);
 
   /* CONTEXT: file select dialog, title of window: select <file-type> */
@@ -198,7 +198,7 @@ selectFileSelect (GtkTreeView* tv, GtkTreePath* path,
 }
 
 static bool
-selectFileResponseHandler (void *udata, int responseid)
+selectFileResponseHandler (void *udata, long responseid)
 {
   uiselectfile_t  *selectfile = udata;
   int           x, y;

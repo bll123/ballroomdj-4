@@ -61,6 +61,7 @@ typedef struct uisongselgtk {
   double            lastRowHeight;
   int               maxRows;
   nlist_t           *selectedList;
+  UICallback        *newselcb;
   bool              controlPressed : 1;
   bool              shiftPressed : 1;
   bool              inscroll : 1;
@@ -109,6 +110,8 @@ uisongselUIInit (uisongsel_t *uisongsel)
   uiw->shiftPressed = false;
   uiw->inscroll = false;
   uiw->selectedList = nlistAlloc ("selected-list", LIST_ORDERED, NULL);
+  uiw->newselcb = NULL;
+
   uisongsel->uiWidgetData = uiw;
 }
 
@@ -403,6 +406,21 @@ uisongselQueueProcessSelectCallback (void *udata)
   /* don't clear the selected list or the displayed selections */
   /* it's confusing */
   return UICB_CONT;
+}
+
+void
+uisongselSetSelectionCallback (uisongsel_t *uisongsel, UICallback *uicb)
+{
+  uisongselgtk_t  * uiw;
+
+  if (uisongsel == NULL) {
+    return;
+  }
+  if (uisongsel->uiWidgetData == NULL) {
+    return;
+  }
+  uiw = uisongsel->uiWidgetData;
+  uiw->newselcb = uicb;
 }
 
 /* internal routines */
@@ -818,5 +836,9 @@ uisongselProcessSelection (GtkTreeModel *model,
   gtk_tree_model_get (model, iter, SONGSEL_COL_IDX, &idx, -1);
   gtk_tree_model_get (model, iter, SONGSEL_COL_DBIDX, &dbidx, -1);
   nlistSetNum (uiw->selectedList, idx, dbidx);
+
+  if (uiw->newselcb != NULL) {
+    uiutilsCallbackLongHandler (uiw->newselcb, dbidx);
+  }
 }
 

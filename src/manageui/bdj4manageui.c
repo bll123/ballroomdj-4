@@ -70,7 +70,7 @@ enum {
 
 enum {
   MANAGE_CALLBACK_EZ_SELECT,
-  MANAGE_CALLBACK_DB_START,
+  MANAGE_CALLBACK_NEW_SEL,
   MANAGE_CALLBACK_MAX,
 };
 
@@ -197,15 +197,15 @@ static void     manageSetEasySonglist (manageui_t *manage);
 static void     manageSonglistSave (manageui_t *manage);
 static void     manageSetSonglistName (manageui_t *manage, const char *nm);
 /* general */
-static bool     manageSwitchPageMain (void *udata, int pagenum);
-static bool     manageSwitchPageSonglist (void *udata, int pagenum);
-static bool     manageSwitchPageMM (void *udata, int pagenum);
-static void     manageSwitchPage (manageui_t *manage, int pagenum, int which);
+static bool     manageSwitchPageMain (void *udata, long pagenum);
+static bool     manageSwitchPageSonglist (void *udata, long pagenum);
+static bool     manageSwitchPageMM (void *udata, long pagenum);
+static void     manageSwitchPage (manageui_t *manage, long pagenum, int which);
 static void manageInitializeSongFilter (manageui_t *manage, nlist_t *options);
 static void manageSetMenuCallback (manageui_t *manage, int midx, UICallbackFunc cb);
 static void manageSonglistLoadCheck (manageui_t *manage);
 /* song editor */
-static void manageNewSelection (manageui_t *manage, dbidx_t dbidx);
+static bool manageNewSelection (void *udata, long dbidx);
 
 static int gKillReceived = false;
 
@@ -313,10 +313,6 @@ main (int argc, char *argv[])
       SONG_FILTER_FOR_SELECTION, DISP_SEL_EZSONGSEL);
   uisongselInitializeSongFilter (manage.slezsongsel, manage.slsongfilter);
 
-//  uisongselSetSelectionCallback (manage.slezsongsel, manageNewSelection);
-//  uisongselSetSelectionCallback (manage.slsongsel, manageNewSelection);
-//  uisongselSetSelectionCallback (manage.mmsongsel, manageNewSelection);
-
   uimusicqSetPlayIdx (manage.slmusicq, manage.musicqPlayIdx);
   uimusicqSetPlayIdx (manage.slezmusicq, manage.musicqPlayIdx);
   uimusicqSetManageIdx (manage.slmusicq, manage.musicqManageIdx);
@@ -337,6 +333,15 @@ main (int argc, char *argv[])
 
   uimusicqSetPlayIdx (manage.mmmusicq, manage.musicqPlayIdx);
   uimusicqSetManageIdx (manage.mmmusicq, manage.musicqManageIdx);
+
+  uiutilsUICallbackLongInit (&manage.callbacks [MANAGE_CALLBACK_NEW_SEL],
+      manageNewSelection, &manage);
+  uisongselSetSelectionCallback (manage.slezsongsel,
+      &manage.callbacks [MANAGE_CALLBACK_NEW_SEL]);
+  uisongselSetSelectionCallback (manage.slsongsel,
+      &manage.callbacks [MANAGE_CALLBACK_NEW_SEL]);
+  uisongselSetSelectionCallback (manage.mmsongsel,
+      &manage.callbacks [MANAGE_CALLBACK_NEW_SEL]);
 
   /* register these after calling the sub-window initialization */
   /* then these will be run last, after the other closing callbacks */
@@ -552,7 +557,7 @@ manageBuildUI (manageui_t *manage)
   y = nlistGetNum (manage->options, PLUI_SIZE_Y);
   uiWindowSetDefaultSize (&manage->window, x, y);
 
-  uiutilsUICallbackIntInit (&manage->mainnbcb, manageSwitchPageMain, manage);
+  uiutilsUICallbackLongInit (&manage->mainnbcb, manageSwitchPageMain, manage);
   uiNotebookSetCallback (&manage->mainnotebook, &manage->mainnbcb);
 
   uiWidgetShowAll (&manage->window);
@@ -653,7 +658,7 @@ manageBuildUISongListEditor (manageui_t *manage)
 
   uimusicqPeerSonglistName (manage->slmusicq, manage->slezmusicq);
 
-  uiutilsUICallbackIntInit (&manage->slnbcb, manageSwitchPageSonglist, manage);
+  uiutilsUICallbackLongInit (&manage->slnbcb, manageSwitchPageSonglist, manage);
   uiNotebookSetCallback (&notebook, &manage->slnbcb);
 }
 
@@ -695,7 +700,7 @@ manageBuildUIMusicManager (manageui_t *manage)
   uiNotebookAppendPage (&notebook, uiwidgetp, &uiwidget);
   uiutilsNotebookIDAdd (manage->mmnbtabid, MANAGE_TAB_SONGEDIT);
 
-  uiutilsUICallbackIntInit (&manage->mmnbcb, manageSwitchPageMM, manage);
+  uiutilsUICallbackLongInit (&manage->mmnbcb, manageSwitchPageMM, manage);
   uiNotebookSetCallback (&notebook, &manage->mmnbcb);
 }
 
@@ -1212,7 +1217,7 @@ manageSonglistSave (manageui_t *manage)
 /* general */
 
 static bool
-manageSwitchPageMain (void *udata, int pagenum)
+manageSwitchPageMain (void *udata, long pagenum)
 {
   manageui_t  *manage = udata;
 
@@ -1221,7 +1226,7 @@ manageSwitchPageMain (void *udata, int pagenum)
 }
 
 static bool
-manageSwitchPageSonglist (void *udata, int pagenum)
+manageSwitchPageSonglist (void *udata, long pagenum)
 {
   manageui_t  *manage = udata;
 
@@ -1230,7 +1235,7 @@ manageSwitchPageSonglist (void *udata, int pagenum)
 }
 
 static bool
-manageSwitchPageMM (void *udata, int pagenum)
+manageSwitchPageMM (void *udata, long pagenum)
 {
   manageui_t  *manage = udata;
 
@@ -1239,7 +1244,7 @@ manageSwitchPageMM (void *udata, int pagenum)
 }
 
 static void
-manageSwitchPage (manageui_t *manage, int pagenum, int which)
+manageSwitchPage (manageui_t *manage, long pagenum, int which)
 {
   int         id;
   bool        mainnb = false;
@@ -1394,7 +1399,8 @@ manageSonglistLoadCheck (manageui_t *manage)
   }
 }
 
-static void
-manageNewSelection (manageui_t *manage, dbidx_t dbidx)
+static bool
+manageNewSelection (void *udata, long dbidx)
 {
+  return UICB_CONT;
 }

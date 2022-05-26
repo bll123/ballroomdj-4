@@ -121,10 +121,10 @@ static void
 uiSwitchToggleHandler (GtkButton *b, gpointer udata)
 {
   UICallback  *uicb = udata;
-  int         value;
+  long        value;
 
   value = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (b));
-  uiutilsCallbackIntHandler (uicb, value);
+  uiutilsCallbackLongHandler (uicb, value);
   return;
 }
 

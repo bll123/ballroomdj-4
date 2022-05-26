@@ -167,9 +167,9 @@ static void     starterCheckProfile (startui_t *starter);
 
 static bool     starterProcessSupport (void *udata);
 static void     starterWebResponseCallback (void *userdata, char *resp, size_t len);
-static bool     starterSupportResponseHandler (void *udata, int responseid);
+static bool     starterSupportResponseHandler (void *udata, long responseid);
 static bool     starterCreateSupportDialog (void *udata);
-static bool     starterSupportMsgHandler (void *udata, int responseid);
+static bool     starterSupportMsgHandler (void *udata, long responseid);
 static void     starterSendFilesInit (startui_t *starter, char *dir);
 static void     starterSendFiles (startui_t *starter);
 static void     starterSendFile (startui_t *starter, char *origfn, char *fn);
@@ -980,7 +980,7 @@ starterProcessSupport (void *udata)
     stringTrim (starter->latestversion);
   }
 
-  uiutilsUICallbackIntInit (&starter->callbacks [START_CALLBACK_SUPPORT_RESP],
+  uiutilsUICallbackLongInit (&starter->callbacks [START_CALLBACK_SUPPORT_RESP],
       starterSupportResponseHandler, starter);
   uiCreateDialog (&uidialog, &starter->window,
       &starter->callbacks [START_CALLBACK_SUPPORT_RESP],
@@ -1107,7 +1107,7 @@ starterProcessSupport (void *udata)
 
 
 static bool
-starterSupportResponseHandler (void *udata, int responseid)
+starterSupportResponseHandler (void *udata, long responseid)
 {
   startui_t *starter = udata;
 
@@ -1229,7 +1229,7 @@ starterCreateSupportDialog (void *udata)
   uiutilsUIWidgetInit (&vbox);
   uiutilsUIWidgetInit (&hbox);
 
-  uiutilsUICallbackIntInit (&starter->callbacks [START_CALLBACK_SUPPORT_MSG_RESP],
+  uiutilsUICallbackLongInit (&starter->callbacks [START_CALLBACK_SUPPORT_MSG_RESP],
       starterSupportMsgHandler, starter);
   uiCreateDialog (&uidialog, &starter->window,
       &starter->callbacks [START_CALLBACK_SUPPORT_MSG_RESP],
@@ -1312,7 +1312,7 @@ starterCreateSupportDialog (void *udata)
 
 
 static bool
-starterSupportMsgHandler (void *udata, int responseid)
+starterSupportMsgHandler (void *udata, long responseid)
 {
   startui_t   *starter = udata;
 

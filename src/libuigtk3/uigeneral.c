@@ -36,17 +36,17 @@ uiutilsCallbackHandler (UICallback *uicb)
 }
 
 bool
-uiutilsCallbackIntHandler (UICallback *uicb, int value)
+uiutilsCallbackLongHandler (UICallback *uicb, long value)
 {
   bool  rc = false;
 
   if (uicb == NULL) {
     return 0;
   }
-  if (uicb->intcb == NULL) {
+  if (uicb->longcb == NULL) {
     return 0;
   }
 
-  rc = uicb->intcb (uicb->udata, value);
+  rc = uicb->longcb (uicb->udata, value);
   return rc;
 }

@@ -84,6 +84,7 @@ void  uisongselCreateSortByList (uisongsel_t *uisongsel);
 void  uisongselGenreSelect (uisongsel_t *uisongsel, ssize_t idx);
 void  uisongselCreateGenreList (uisongsel_t *uisongsel);
 void  uisongselFilterDanceProcess (uisongsel_t *uisongsel, ssize_t idx);
+void  uisongselSetSelectionCallback (uisongsel_t *uisongsel, UICallback *uicb);
 
 /* uisongselfilter.c */
 bool uisongselFilterDialog (void *udata);

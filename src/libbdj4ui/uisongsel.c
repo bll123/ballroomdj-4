@@ -390,3 +390,4 @@ uisongselCreateGenreList (uisongsel_t *uisongsel)
       _("All Genres"));
   logProcEnd (LOG_PROC, "uisongselCreateGenreList", "");
 }
+

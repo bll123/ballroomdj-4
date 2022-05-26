@@ -90,7 +90,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
 
   uiCreateSizeGroupHoriz (&sg);
 
-  uiutilsUICallbackIntInit (&uisongsel->filtercb,
+  uiutilsUICallbackLongInit (&uisongsel->filtercb,
       uisongselFilterResponseHandler, uisongsel);
   uiCreateDialog (&uisongsel->filterDialog, uisongsel->windowp,
       &uisongsel->filtercb,

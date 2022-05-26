@@ -459,7 +459,7 @@ static bool   confuiTableMoveDown (void *udata);
 static void   confuiTableMove (configui_t *confui, int dir);
 static bool   confuiTableRemove (void *udata);
 static bool   confuiTableAdd (void *udata);
-static bool   confuiSwitchTable (void *udata, int pagenum);
+static bool   confuiSwitchTable (void *udata, long pagenum);
 static void   confuiTableSetDefaultSelection (configui_t *confui, GtkWidget *tree, GtkTreeSelection *sel);
 static void   confuiCreateDanceTable (configui_t *confui);
 static void   confuiDanceSet (GtkListStore *store, GtkTreeIter *iter, char *dancedisp, ilistidx_t key);
@@ -986,7 +986,7 @@ confuiBuildUI (configui_t *confui)
   confuiBuildUIMobileMarquee (confui);
   confuiBuildUIDebugOptions (confui);
 
-  uiutilsUICallbackIntInit (&confui->nbcb, confuiSwitchTable, confui);
+  uiutilsUICallbackLongInit (&confui->nbcb, confuiSwitchTable, confui);
   uiNotebookSetCallback (&confui->notebook, &confui->nbcb);
 
   x = nlistGetNum (confui->options, CONFUI_SIZE_X);
@@ -3820,7 +3820,7 @@ confuiTableAdd (void *udata)
 }
 
 static bool
-confuiSwitchTable (void *udata, int pagenum)
+confuiSwitchTable (void *udata, long pagenum)
 {
   configui_t        *confui = udata;
   GtkWidget         *tree;

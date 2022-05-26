@@ -16,7 +16,7 @@
 /* general routines that are called by the ui specific code */
 void uiutilsUIWidgetInit (UIWidget *uiwidget);
 bool uiutilsCallbackHandler (UICallback *uicb);
-bool uiutilsCallbackIntHandler (UICallback *uicb, int value);
+bool uiutilsCallbackLongHandler (UICallback *uicb, long value);
 
 /* uigtkdialog.c */
 

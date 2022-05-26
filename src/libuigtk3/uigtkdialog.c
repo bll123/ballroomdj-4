@@ -143,5 +143,5 @@ uiDialogResponseHandler (GtkDialog *d, gint responseid, gpointer udata)
   if (responseid == GTK_RESPONSE_DELETE_EVENT) {
     responseid = RESPONSE_DELETE_WIN;
   }
-  uiutilsCallbackIntHandler (uicb, responseid);
+  uiutilsCallbackLongHandler (uicb, responseid);
 }
