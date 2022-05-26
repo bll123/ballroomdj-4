@@ -6,6 +6,7 @@
 #include "conn.h"
 #include "dispsel.h"
 #include "musicdb.h"
+#include "song.h"
 #include "uiutils.h"
 
 typedef struct {
@@ -24,9 +25,10 @@ void  uisongeditMainLoop (uisongedit_t *uisongedit);
 void  uisongeditNewSelection (uisongedit_t *uisongedit, dbidx_t dbidx);
 
 /* uisongeditgtk.c */
-void      uisongeditUIInit (uisongedit_t *uisongedit);
-void      uisongeditUIFree (uisongedit_t *uisongedit);
+void  uisongeditUIInit (uisongedit_t *uisongedit);
+void  uisongeditUIFree (uisongedit_t *uisongedit);
 UIWidget  * uisongeditBuildUI (uisongedit_t *uisongedit, UIWidget *parentwin);
+void  uisongeditLoadData (uisongedit_t *uisongedit, song_t *song);
 
 #endif /* INC_UISONGEDIT_H */
 

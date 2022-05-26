@@ -61,4 +61,6 @@ uisongeditMainLoop (uisongedit_t *uisongedit)
 void
 uisongeditNewSelection (uisongedit_t *uisongedit, dbidx_t dbidx)
 {
+  uisongeditLoadData (uisongedit, dbidx);
 }
+

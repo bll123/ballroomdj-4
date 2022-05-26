@@ -92,13 +92,13 @@ void uisongselFilterDanceSignal (GtkTreeView *tv, GtkTreePath *path,
     GtkTreeViewColumn *column, gpointer udata);
 
 /* uisongselgtk.c */
-void      uisongselUIInit (uisongsel_t *uisongsel);
-void      uisongselUIFree (uisongsel_t *uisongsel);
+void  uisongselUIInit (uisongsel_t *uisongsel);
+void  uisongselUIFree (uisongsel_t *uisongsel);
 UIWidget  * uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin);
-void      uisongselClearData (uisongsel_t *uisongsel);
-void      uisongselPopulateData (uisongsel_t *uisongsel);
-void      uisongselSetFavoriteForeground (uisongsel_t *uisongsel, char *color);
-bool      uisongselQueueProcessSelectCallback (void *udata);
+void  uisongselClearData (uisongsel_t *uisongsel);
+void  uisongselPopulateData (uisongsel_t *uisongsel);
+void  uisongselSetFavoriteForeground (uisongsel_t *uisongsel, char *color);
+bool  uisongselQueueProcessSelectCallback (void *udata);
 
 #endif /* INC_UISONGSEL_H */
 

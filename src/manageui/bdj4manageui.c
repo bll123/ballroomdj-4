@@ -1402,5 +1402,25 @@ manageSonglistLoadCheck (manageui_t *manage)
 static bool
 manageNewSelection (void *udata, long dbidx)
 {
+  manageui_t    *manage = udata;
+  song_t        *song;
+  uisongedit_t  *uisongedit;
+
+  song = dbGetByIdx (manage->musicdb, dbidx);
+  switch (manage->mainlasttab) {
+    case MANAGE_TAB_MAIN_SL: {
+      uisongedit = manage->slsongedit;
+      break;
+    }
+    case MANAGE_TAB_MAIN_MM: {
+      uisongedit = manage->mmsongedit;
+      break;
+    }
+    default: {
+      return UICB_CONT;
+    }
+  }
+
+  uisongeditLoadData (uisongedit, song);
   return UICB_CONT;
 }

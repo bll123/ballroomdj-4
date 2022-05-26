@@ -16,6 +16,7 @@
 #include "nlist.h"
 #include "slist.h"
 #include "tagdef.h"
+#include "tmutil.h"
 #include "uisongedit.h"
 #include "ui.h"
 
@@ -200,6 +201,63 @@ uisongeditBuildUI (uisongedit_t *uisongedit, UIWidget *parentwin)
 
   logProcEnd (LOG_PROC, "uisongeditBuildUI", "");
   return &uiw->vbox;
+}
+
+void
+uisongeditLoadData (uisongedit_t *uisongedit, song_t *song)
+{
+  uisongeditgtk_t *uiw;
+  char            *data;
+  long            val;
+  char            tbuff [200];
+
+  uiw = uisongedit->uiWidgetData;
+
+  for (int count = 0; count < uiw->itemcount; ++count) {
+    int tagkey = uiw->items [count].tagkey;
+
+    switch (tagdefs [tagkey].editType) {
+      case ET_ENTRY: {
+        data = songGetStr (song, tagkey);
+        uiEntrySetValue (uiw->items [count].entry, "");
+        if (data != NULL) {
+          uiEntrySetValue (uiw->items [count].entry, data);
+        }
+        break;
+      }
+      case ET_SPINBOX: {
+        val = songGetNum (song, tagkey);
+        if (val < 0) { val = 0; }
+        uiSpinboxSetValue (&uiw->items [count].uiwidget, val);
+        break;
+      }
+      case ET_SPINBOX_TIME: {
+        val = songGetNum (song, tagkey);
+        if (val < 0) { val = 0; }
+        uiSpinboxTimeSetValue (uiw->items [count].spinbox, val);
+        break;
+      }
+      case ET_SCALE: {
+        val = songGetNum (song, tagkey);
+        break;
+      }
+      case ET_LABEL: {
+        switch (tagkey) {
+          case TAG_DURATION: {
+            val = songGetNum (song, tagkey);
+            tmutilToMS (val, tbuff, sizeof (tbuff));
+            uiLabelSetText (&uiw->items [count].uiwidget, tbuff);
+            break;
+          }
+        }
+
+        break;
+      }
+      default: {
+        break;
+      }
+    }
+  }
 }
 
 /* internal routines */
