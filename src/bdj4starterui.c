@@ -116,8 +116,8 @@ typedef struct {
   UIWidget        window;
   UIWidget        supportStatus;
   uitextbox_t     *supporttb;
-  uientry_t       supportsubject;
-  uientry_t       supportemail;
+  uientry_t       *supportsubject;
+  uientry_t       *supportemail;
   UIWidget        playeruibutton;
   UIWidget        manageuibutton;
   /* options */
@@ -639,8 +639,8 @@ starterMainLoop (void *tstarter)
       char        *msg;
       FILE        *fh;
 
-      email = uiEntryGetValue (&starter->supportemail);
-      subj = uiEntryGetValue (&starter->supportsubject);
+      email = uiEntryGetValue (starter->supportemail);
+      subj = uiEntryGetValue (starter->supportsubject);
       msg = uiTextBoxGetValue (starter->supporttb);
 
       strlcpy (tbuff, "support.txt", sizeof (tbuff));
@@ -761,8 +761,8 @@ starterMainLoop (void *tstarter)
     case START_STATE_SUPPORT_FINISH: {
       webclientClose (starter->webclient);
       starter->webclient = NULL;
-      uiEntryFree (&starter->supportsubject);
-      uiEntryFree (&starter->supportemail);
+      uiEntryFree (starter->supportsubject);
+      uiEntryFree (starter->supportemail);
       uiDialogDestroy (&starter->supportMsgDialog);
       starter->startState = START_STATE_NONE;
       break;
@@ -1221,7 +1221,6 @@ starterCreateSupportDialog (void *udata)
   UIWidget      uiwidget;
   UIWidget      vbox;
   UIWidget      hbox;
-  GtkWidget     *widget;
   UIWidget      uidialog;
   UIWidget      sg;
   uitextbox_t *tb;
@@ -1261,9 +1260,9 @@ starterCreateSupportDialog (void *udata)
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
 
-  uiEntryInit (&starter->supportemail, 50, 100);
-  widget = uiEntryCreate (&starter->supportemail);
-  uiBoxPackStartUW (&hbox, widget);
+  starter->supportemail = uiEntryInit (50, 100);
+  uiEntryCreate (starter->supportemail);
+  uiBoxPackStart (&hbox, uiEntryGetUIWidget (starter->supportemail));
 
   /* line 2 */
   uiCreateHorizBox (&hbox);
@@ -1274,9 +1273,9 @@ starterCreateSupportDialog (void *udata)
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
 
-  uiEntryInit (&starter->supportsubject, 50, 100);
-  widget = uiEntryCreate (&starter->supportsubject);
-  uiBoxPackStartUW (&hbox, widget);
+  starter->supportsubject = uiEntryInit (50, 100);
+  uiEntryCreate (starter->supportsubject);
+  uiBoxPackStart (&hbox, uiEntryGetUIWidget (starter->supportsubject));
 
   /* line 3 */
   /* CONTEXT: sending support message: message text */

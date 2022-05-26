@@ -35,7 +35,7 @@ typedef struct {
   /* music queue tab */
   UIWidget      mainbox;
   uidropdown_t  playlistsel;
-  uientry_t     slname;
+  uientry_t     *slname;
   /* widget data */
   uimusicqgtk_t *uiWidgets;
 } uimusicqui_t;

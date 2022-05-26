@@ -21,9 +21,12 @@
 
 static void uiEntryValidateStart (GtkEditable *e, gpointer udata);
 
-void
-uiEntryInit (uientry_t *entry, int entrySize, int maxSize)
+uientry_t *
+uiEntryInit (int entrySize, int maxSize)
 {
+  uientry_t *entry;
+
+  entry = malloc (sizeof (uientry_t));
   entry->entrySize = entrySize;
   entry->maxSize = maxSize;
   entry->buffer = NULL;
@@ -31,16 +34,19 @@ uiEntryInit (uientry_t *entry, int entrySize, int maxSize)
   entry->validateFunc = NULL;
   entry->udata = NULL;
   mstimeset (&entry->validateTimer, 3600000);
+  return entry;
 }
 
 
 void
 uiEntryFree (uientry_t *entry)
 {
-  ;
+  if (entry != NULL) {
+    free (entry);
+  }
 }
 
-GtkWidget *
+void
 uiEntryCreate (uientry_t *entry)
 {
   entry->buffer = gtk_entry_buffer_new (NULL, -1);
@@ -52,8 +58,6 @@ uiEntryCreate (uientry_t *entry)
   gtk_widget_set_margin_start (entry->uientry.widget, uiBaseMarginSz * 2);
   gtk_widget_set_halign (entry->uientry.widget, GTK_ALIGN_START);
   gtk_widget_set_hexpand (entry->uientry.widget, FALSE);
-
-  return entry->uientry.widget;
 }
 
 void

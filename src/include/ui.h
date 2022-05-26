@@ -75,9 +75,9 @@ void uiButtonSetImageIcon (UIWidget *uiwidget, const char *nm);
 void uiButtonAlignLeft (UIWidget *widget);
 
 /* uigtkentry.c */
-void uiEntryInit (uientry_t *entry, int entrySize, int maxSize);
+uientry_t *uiEntryInit (int entrySize, int maxSize);
 void uiEntryFree (uientry_t *entry);
-GtkWidget * uiEntryCreate (uientry_t *entry);
+void uiEntryCreate (uientry_t *entry);
 void uiEntrySetIcon (uientry_t *entry, const char *name);
 void uiEntryClearIcon (uientry_t *entry);
 UIWidget * uiEntryGetUIWidget (uientry_t *entry);

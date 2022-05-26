@@ -38,7 +38,7 @@ typedef struct manageseq {
   uimenu_t        seqmenu;
   UICallback      menucb [MSEQ_MENU_CB_MAX];
   uiduallist_t    *seqduallist;
-  uientry_t       seqname;
+  uientry_t       *seqname;
   UIWidget        *statusMsg;
   char            *seqoldname;
   bool            seqbackupcreated : 1;
@@ -61,7 +61,7 @@ manageSequenceAlloc (UIWidget *window, nlist_t *options, UIWidget *statusMsg)
   manageseq->seqoldname = NULL;
   manageseq->seqbackupcreated = false;
   uiMenuInit (&manageseq->seqmenu);
-  uiEntryInit (&manageseq->seqname, 20, 50);
+  manageseq->seqname = uiEntryInit (20, 50);
   manageseq->statusMsg = statusMsg;
   manageseq->windowp = window;
   manageseq->options = options;
@@ -79,7 +79,7 @@ manageSequenceFree (manageseq_t *manageseq)
     if (manageseq->seqoldname != NULL) {
       free (manageseq->seqoldname);
     }
-    uiEntryFree (&manageseq->seqname);
+    uiEntryFree (manageseq->seqname);
     free (manageseq);
   }
 }
@@ -87,7 +87,6 @@ manageSequenceFree (manageseq_t *manageseq)
 void
 manageBuildUISequence (manageseq_t *manageseq, UIWidget *vboxp)
 {
-  GtkWidget           *widget;
   UIWidget            hbox;
   UIWidget            uiwidget;
   dance_t             *dances;
@@ -106,11 +105,11 @@ manageBuildUISequence (manageseq_t *manageseq, UIWidget *vboxp)
   uiCreateColonLabel (&uiwidget, _("Sequence"));
   uiBoxPackStart (&hbox, &uiwidget);
 
-  widget = uiEntryCreate (&manageseq->seqname);
-  uiEntrySetColor (&manageseq->seqname, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
+  uiEntryCreate (manageseq->seqname);
+  uiEntrySetColor (manageseq->seqname, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
   /* CONTEXT: sequence: default name for a new sequence */
   manageSetSequenceName (manageseq, _("New Sequence"));
-  uiBoxPackStartUW (&hbox, widget);
+  uiBoxPackStart (&hbox, uiEntryGetUIWidget (manageseq->seqname));
 
   manageseq->seqduallist = uiCreateDualList (vboxp,
       DUALLIST_FLAGS_MULTIPLE | DUALLIST_FLAGS_PERSISTENT,
@@ -183,7 +182,7 @@ manageSequenceSave (manageseq_t *manageseq)
     changed = true;
   }
 
-  name = strdup (uiEntryGetValue (&manageseq->seqname));
+  name = strdup (uiEntryGetValue (manageseq->seqname));
 
   /* the sequence has been renamed */
   if (strcmp (manageseq->seqoldname, name) != 0) {
@@ -225,7 +224,7 @@ manageSequenceLoadCheck (manageseq_t *manageseq)
     return;
   }
 
-  name = uiEntryGetValue (&manageseq->seqname);
+  name = uiEntryGetValue (manageseq->seqname);
 
   if (! managePlaylistExists (name)) {
     /* make sure no save happens */
@@ -288,7 +287,7 @@ manageSequenceCopy (void *udata)
 
   manageSequenceSave (manageseq);
 
-  oname = uiEntryGetValue (&manageseq->seqname);
+  oname = uiEntryGetValue (manageseq->seqname);
   /* CONTEXT: the new name after 'create copy' (e.g. "Copy of DJ-2022-04") */
   snprintf (newname, sizeof (newname), _("Copy of %s"), oname);
   if (manageCreatePlaylistCopy (manageseq->statusMsg, oname, newname)) {
@@ -326,5 +325,5 @@ manageSetSequenceName (manageseq_t *manageseq, const char *name)
     free (manageseq->seqoldname);
   }
   manageseq->seqoldname = strdup (name);
-  uiEntrySetValue (&manageseq->seqname, name);
+  uiEntrySetValue (manageseq->seqname, name);
 }

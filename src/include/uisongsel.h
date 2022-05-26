@@ -45,7 +45,7 @@ typedef struct {
   uidropdown_t      sortbysel;
   uidropdown_t      filterdancesel;
   uidropdown_t      filtergenresel;
-  uientry_t         searchentry;
+  uientry_t         *searchentry;
   uirating_t        *uirating;
   uilevel_t         *uilevel;
   uispinbox_t       filterstatussel;

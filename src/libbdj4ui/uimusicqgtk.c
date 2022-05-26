@@ -226,12 +226,15 @@ uimusicqBuildUI (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
 
   if (uimusicq->dispselType == DISP_SEL_SONGLIST ||
       uimusicq->dispselType == DISP_SEL_EZSONGLIST) {
-    widget = uiEntryCreate (&uimusicq->ui [ci].slname);
-    snprintf (tbuff, sizeof (tbuff),
-        "entry { color: %s; }",
-        bdjoptGetStr (OPT_P_UI_ACCENT_COL));
-    uiSetCss (widget, tbuff);
-    uiBoxPackEndUW (&hbox, widget);
+    uientry_t   *entryp;
+    entryp = uimusicq->ui [ci].slname;
+    uiEntryCreate (entryp);
+    uiEntrySetColor (entryp, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
+    uiBoxPackEnd (&hbox, uiEntryGetUIWidget (entryp));
+
+    /* CONTEXT: label for song list name */
+    uiCreateColonLabel (&uiwidget, _("Song List"));
+    uiBoxPackEnd (&hbox, &uiwidget);
   }
 
   if (uimusicq->dispselType == DISP_SEL_MUSICQ) {

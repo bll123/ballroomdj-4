@@ -112,8 +112,8 @@ typedef struct {
   char            *tclshloc;
   slist_t         *convlist;
   slistidx_t      convidx;
-  uientry_t       targetEntry;
-  uientry_t       bdj3locEntry;
+  uientry_t       *targetEntry;
+  uientry_t       *bdj3locEntry;
   UIWidget        window;
   UIWidget        feedbackMsg;
   UIWidget        convFeedbackMsg;
@@ -270,8 +270,8 @@ main (int argc, char *argv[])
   strcpy (installer.oldversion, "");
   strcpy (installer.bdj3version, "");
 
-  uiEntryInit (&installer.targetEntry, 80, MAXPATHLEN);
-  uiEntryInit (&installer.bdj3locEntry, 80, MAXPATHLEN);
+  installer.targetEntry = uiEntryInit (80, MAXPATHLEN);
+  installer.bdj3locEntry = uiEntryInit (80, MAXPATHLEN);
 
   while ((c = getopt_long_only (argc, argv, "g:r:u:l", bdj_options, &option_index)) != -1) {
     switch (c) {
@@ -428,13 +428,13 @@ installerBuildUI (installer_t *installer)
       _("Enter the destination folder where BDJ4 will be installed."));
   uiBoxPackStart (&vbox, &uiwidget);
 
-  uiEntryCreate (&installer->targetEntry);
-  uiEntrySetValue (&installer->targetEntry, installer->target);
-  uiwidgetp = uiEntryGetUIWidget (&installer->targetEntry);
+  uiEntryCreate (installer->targetEntry);
+  uiEntrySetValue (installer->targetEntry, installer->target);
+  uiwidgetp = uiEntryGetUIWidget (installer->targetEntry);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
   uiBoxPackStart (&vbox, uiwidgetp);
-  uiEntrySetValidate (&installer->targetEntry,
+  uiEntrySetValidate (installer->targetEntry,
       installerValidateTarget, installer);
 
   uiCreateHorizBox (&hbox);
@@ -482,13 +482,13 @@ installerBuildUI (installer_t *installer)
   uiCreateColonLabel (&uiwidget, tbuff);
   uiBoxPackStart (&hbox, &uiwidget);
 
-  uiEntryCreate (&installer->bdj3locEntry);
-  uiEntrySetValue (&installer->bdj3locEntry, installer->bdj3loc);
-  uiwidgetp = uiEntryGetUIWidget (&installer->bdj3locEntry);
+  uiEntryCreate (installer->bdj3locEntry);
+  uiEntrySetValue (installer->bdj3locEntry, installer->bdj3loc);
+  uiwidgetp = uiEntryGetUIWidget (installer->bdj3locEntry);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
   uiBoxPackStart (&hbox, uiwidgetp);
-  uiEntrySetValidate (&installer->bdj3locEntry,
+  uiEntrySetValidate (installer->bdj3locEntry,
       installerValidateBDJ3Loc, installer);
 
   uiutilsUICallbackInit (&installer->callbacks [INST_CALLBACK_SELECT_DIR],
@@ -602,8 +602,8 @@ installerMainLoop (void *udata)
     uiUIProcessEvents ();
   }
 
-  uiEntryValidate (&installer->targetEntry, false);
-  uiEntryValidate (&installer->bdj3locEntry, false);
+  uiEntryValidate (installer->targetEntry, false);
+  uiEntryValidate (installer->bdj3locEntry, false);
 
   if (installer->guienabled && installer->scrolltoend) {
     uiTextBoxScrollToEnd (installer->disptb);
@@ -760,8 +760,8 @@ installerCheckDir (void *udata)
     return UICB_STOP;
   }
 
-  uiEntryValidate (&installer->targetEntry, true);
-  uiEntryValidate (&installer->bdj3locEntry, true);
+  uiEntryValidate (installer->targetEntry, true);
+  uiEntryValidate (installer->bdj3locEntry, true);
   return UICB_CONT;
 }
 
@@ -786,7 +786,7 @@ installerValidateTarget (uientry_t *entry, void *udata)
 
   uiLabelSetText (&installer->feedbackMsg, "");
 
-  dir = uiEntryGetValue (&installer->targetEntry);
+  dir = uiEntryGetValue (installer->targetEntry);
   tbool = uiToggleButtonIsActive (&installer->reinstWidget);
   if (tbool != installer->reinstall) {
     changed = true;
@@ -851,7 +851,7 @@ installerValidateBDJ3Loc (uientry_t *entry, void *udata)
 
   /* bdj3 location validation */
 
-  fn = uiEntryGetValue (&installer->bdj3locEntry);
+  fn = uiEntryGetValue (installer->bdj3locEntry);
   if (*fn == '\0' || strcmp (fn, "-") == 0 ||
       locationcheck (fn)) {
     locok = true;
@@ -881,7 +881,7 @@ installerSelectDirDialog (void *udata)
   snprintf (tbuff, sizeof (tbuff), _("Select %s Location"), BDJ3_NAME);
   selectdata.label = tbuff;
   selectdata.window = &installer->window;
-  selectdata.startpath = uiEntryGetValue (&installer->bdj3locEntry);
+  selectdata.startpath = uiEntryGetValue (installer->bdj3locEntry);
   fn = uiSelectDirDialog (&selectdata);
   if (fn != NULL) {
     if (installer->bdj3loc != NULL && installer->freebdj3loc) {
@@ -889,7 +889,7 @@ installerSelectDirDialog (void *udata)
     }
     installer->bdj3loc = fn;
     installer->freebdj3loc = true;
-    uiEntrySetValue (&installer->bdj3locEntry, fn);
+    uiEntrySetValue (installer->bdj3locEntry, fn);
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected loc: %s", installer->bdj3loc);
   }
   return UICB_CONT;
@@ -987,13 +987,13 @@ installerSetPaths (installer_t *installer)
   if (installer->target != NULL && installer->freetarget) {
     free (installer->target);
   }
-  installer->target = strdup (uiEntryGetValue (&installer->targetEntry));
+  installer->target = strdup (uiEntryGetValue (installer->targetEntry));
   installer->freetarget = true;
 
   if (installer->bdj3loc != NULL && installer->freebdj3loc) {
     free (installer->bdj3loc);
   }
-  installer->bdj3loc = strdup (uiEntryGetValue (&installer->bdj3locEntry));
+  installer->bdj3loc = strdup (uiEntryGetValue (installer->bdj3locEntry));
   installer->freebdj3loc = true;
 
   installerDisplayConvert (installer);

@@ -14,7 +14,6 @@ typedef enum {
 } tagdispflag_t;
 
 typedef enum {
-  ET_CHECKBUTTON,
   ET_COMBOBOX,
   ET_ENTRY,
   ET_LABEL,
@@ -44,7 +43,6 @@ typedef struct {
   bool                listingDisplay : 1;
   bool                ellipsize : 1;
   bool                alignRight : 1;
-  bool                songEditOnly : 1;
   bool                isBdjTag : 1;
   bool                isNormTag : 1;
   bool                albumEdit : 1;

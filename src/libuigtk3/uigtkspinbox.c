@@ -403,10 +403,10 @@ uiSpinboxTextDisplay (GtkSpinButton *sb, gpointer udata)
 static gboolean
 uiSpinboxTimeDisplay (GtkSpinButton *sb, gpointer udata)
 {
-  uispinbox_t  *spinbox = udata;
-  GtkAdjustment     *adjustment;
-  double            value;
-  char              tbuff [100];
+  uispinbox_t   *spinbox = udata;
+  GtkAdjustment *adjustment;
+  double        value;
+  char          tbuff [100];
 
   if (spinbox->processing) {
     return UICB_NO_DISP;

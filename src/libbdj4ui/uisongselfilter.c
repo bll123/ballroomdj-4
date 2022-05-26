@@ -81,6 +81,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
   UIWidget      vbox;
   UIWidget      hbox;
   UIWidget      uiwidget;
+  UIWidget      *uiwidgetp;
   UIWidget      sg;
   int           max;
   int           len;
@@ -133,9 +134,10 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
 
-  widget = uiEntryCreate (&uisongsel->searchentry);
-  uiWidgetAlignHorizStartW (widget);
-  uiBoxPackStartUW (&hbox, widget);
+  uiEntryCreate (uisongsel->searchentry);
+  uiwidgetp = uiEntryGetUIWidget (uisongsel->searchentry);
+  uiWidgetAlignHorizStart (uiwidgetp);
+  uiBoxPackStart (&hbox, uiwidgetp);
 
   /* genre */
   if (songfilterCheckSelection (uisongsel->songfilter, FILTER_DISP_GENRE)) {
@@ -312,7 +314,7 @@ uisongselFilterUpdate (uisongsel_t *uisongsel)
 
 
   /* search : always active */
-  searchstr = uiEntryGetValue (&uisongsel->searchentry);
+  searchstr = uiEntryGetValue (uisongsel->searchentry);
   if (searchstr != NULL && strlen (searchstr) > 0) {
     songfilterSetData (uisongsel->songfilter, SONG_FILTER_SEARCH, (void *) searchstr);
   } else {

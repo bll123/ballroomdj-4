@@ -52,7 +52,7 @@ uimusicqInit (conn_t *conn, musicdb_t *musicdb,
     uimusicq->ui [i].active = false;
     uimusicq->ui [i].repeatTimer = 0;
     uiDropDownInit (&uimusicq->ui [i].playlistsel);
-    uiEntryInit (&uimusicq->ui [i].slname, 20, 40);
+    uimusicq->ui [i].slname = uiEntryInit (20, 40);
   }
   uimusicq->musicqManageIdx = MUSICQ_A;
   uimusicq->musicqPlayIdx = MUSICQ_A;
@@ -79,7 +79,7 @@ uimusicqFree (uimusicq_t *uimusicq)
     uiWidgetClearPersistent (&uimusicq->pausePixbuf);
     for (int i = 0; i < MUSICQ_MAX; ++i) {
       uiDropDownFree (&uimusicq->ui [i].playlistsel);
-      uiEntryFree (&uimusicq->ui [i].slname);
+      uiEntryFree (uimusicq->ui [i].slname);
     }
     uimusicqUIFree (uimusicq);
     free (uimusicq);
@@ -467,7 +467,7 @@ uimusicqSetSonglistName (uimusicq_t *uimusicq, const char *nm)
   int   ci;
 
   ci = uimusicq->musicqManageIdx;
-  uiEntrySetValue (&uimusicq->ui [ci].slname, nm);
+  uiEntrySetValue (uimusicq->ui [ci].slname, nm);
 }
 
 const char *
@@ -477,15 +477,15 @@ uimusicqGetSonglistName (uimusicq_t *uimusicq)
   const char  *val;
 
   ci = uimusicq->musicqManageIdx;
-  val = uiEntryGetValue (&uimusicq->ui [ci].slname);
+  val = uiEntryGetValue (uimusicq->ui [ci].slname);
   return val;
 }
 
 void
 uimusicqPeerSonglistName (uimusicq_t *targetq, uimusicq_t *sourceq)
 {
-  uiEntryPeerBuffer (&targetq->ui [MUSICQ_A].slname,
-      &sourceq->ui [MUSICQ_A].slname);
+  uiEntryPeerBuffer (targetq->ui [MUSICQ_A].slname,
+      sourceq->ui [MUSICQ_A].slname);
 }
 
 long

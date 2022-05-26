@@ -57,7 +57,7 @@ uisongselInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
   uisongsel->playstatusswitch = NULL;
   uiDropDownInit (&uisongsel->dancesel);
   uiDropDownInit (&uisongsel->sortbysel);
-  uiEntryInit (&uisongsel->searchentry, 30, 100);
+  uisongsel->searchentry = uiEntryInit (30, 100);
   uiDropDownInit (&uisongsel->filtergenresel);
   uiDropDownInit (&uisongsel->filterdancesel);
   uisongsel->uirating = NULL;
@@ -94,7 +94,7 @@ uisongselFree (uisongsel_t *uisongsel)
   if (uisongsel != NULL) {
     uiDropDownFree (&uisongsel->dancesel);
     uiDropDownFree (&uisongsel->sortbysel);
-    uiEntryFree (&uisongsel->searchentry);
+    uiEntryFree (uisongsel->searchentry);
     uiDropDownFree (&uisongsel->filterdancesel);
     uiDropDownFree (&uisongsel->filtergenresel);
     uiratingFree (uisongsel->uirating);
@@ -265,7 +265,7 @@ uisongselInitFilterDisplay (uisongsel_t *uisongsel)
   uiDropDownSelectionSetNum (&uisongsel->filterdancesel, idx);
 
   uiDropDownSelectionSetNum (&uisongsel->filtergenresel, -1);
-  uiEntrySetValue (&uisongsel->searchentry, "");
+  uiEntrySetValue (uisongsel->searchentry, "");
   uiratingSetValue (uisongsel->uirating, -1);
   uilevelSetValue (uisongsel->uilevel, -1);
   uiSpinboxTextSetValue (&uisongsel->filterstatussel, -1);
