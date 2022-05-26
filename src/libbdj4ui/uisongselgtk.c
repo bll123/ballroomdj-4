@@ -384,10 +384,10 @@ uisongselSetFavoriteForeground (uisongsel_t *uisongsel, char *color)
   uiw = uisongsel->uiWidgetData;
 
   if (strcmp (color, "") != 0) {
-    uiSpinboxSetColor (&uisongsel->filterfavoritesel, color);
+    uiSpinboxSetColor (uisongsel->filterfavoritesel, color);
   } else {
     uiGetForegroundColor (uiw->songselTree, tmp, sizeof (tmp));
-    uiSpinboxSetColor (&uisongsel->filterfavoritesel, tmp);
+    uiSpinboxSetColor (uisongsel->filterfavoritesel, tmp);
   }
 }
 

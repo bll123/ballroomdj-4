@@ -33,7 +33,6 @@ typedef struct {
   UIWidget            *parentwin;
   UIWidget            vbox;
   UIWidget            filedisp;
-  UIWidget            sglabel;
   UIWidget            sgentry;
   UIWidget            sgsbint;
   UIWidget            sgsbtime;
@@ -44,8 +43,8 @@ typedef struct {
   uisongedititem_t    *items;
 } uisongeditgtk_t;
 
-static void uisongeditAddDisplay (uisongedit_t *songedit, UIWidget *col, int dispsel);
-static void uisongeditAddItem (uisongedit_t *uisongedit, UIWidget *hbox, int tagkey);
+static void uisongeditAddDisplay (uisongedit_t *songedit, UIWidget *col, UIWidget *sg, int dispsel);
+static void uisongeditAddItem (uisongedit_t *uisongedit, UIWidget *hbox, UIWidget *sg, int tagkey);
 static void uisongeditAddEntry (uisongedit_t *uisongedit, UIWidget *hbox, int tagkey);
 static void uisongeditAddSpinboxInt (uisongedit_t *uisongedit, UIWidget *hbox, int tagkey);
 static void uisongeditAddLabel (uisongedit_t *uisongedit, UIWidget *hbox, int tagkey);
@@ -63,7 +62,6 @@ uisongeditUIInit (uisongedit_t *uisongedit)
   uiw->itemcount = 0;
   uiw->items = NULL;
   uiutilsUIWidgetInit (&uiw->vbox);
-  uiCreateSizeGroupHoriz (&uiw->sglabel);
   uiCreateSizeGroupHoriz (&uiw->sgentry);
   uiCreateSizeGroupHoriz (&uiw->sgsbint);
   uiCreateSizeGroupHoriz (&uiw->sgsbtime);
@@ -84,7 +82,7 @@ uisongeditUIFree (uisongedit_t *uisongedit)
 
   uiw = uisongedit->uiWidgetData;
   if (uiw != NULL) {
-    for (int dispsel = DISP_SEL_SONGEDIT_A; dispsel < DISP_SEL_SONGEDIT_B; ++dispsel) {
+    for (int dispsel = DISP_SEL_SONGEDIT_A; dispsel <= DISP_SEL_SONGEDIT_C; ++dispsel) {
       sellist = dispselGetList (uisongedit->dispsel, dispsel);
 
       slistStartIterator (sellist, &dsiteridx);
@@ -134,8 +132,8 @@ uisongeditBuildUI (uisongedit_t *uisongedit, UIWidget *parentwin)
 {
   uisongeditgtk_t   *uiw;
   UIWidget          hbox;
-  UIWidget          lcol;
-  UIWidget          rcol;
+  UIWidget          col;
+  UIWidget          sg;
   UIWidget          uiwidget;
 
   logProcBegin (LOG_PROC, "uisongeditBuildUI");
@@ -188,20 +186,17 @@ uisongeditBuildUI (uisongedit_t *uisongedit, UIWidget *parentwin)
   uiCreateHorizBox (&hbox);
   uiWidgetExpandHoriz (&hbox);
   uiWidgetAlignHorizFill (&hbox);
-  uiBoxPackStart (&uiw->vbox, &hbox);
+  uiBoxPackStartExpand (&uiw->vbox, &hbox);
 
-  uiCreateVertBox (&lcol);
-  uiWidgetAlignHorizStart (&lcol);
-  uiBoxPackStart (&hbox, &lcol);
+  for (int i = DISP_SEL_SONGEDIT_A; i <= DISP_SEL_SONGEDIT_C; ++i) {
+    uiCreateVertBox (&col);
+    uiWidgetExpandHoriz (&col);
+    uiWidgetExpandVert (&col);
+    uiBoxPackStartExpand (&hbox, &col);
 
-  uisongeditAddDisplay (uisongedit, &lcol, DISP_SEL_SONGEDIT_A);
-
-  uiCreateVertBox (&rcol);
-  uiWidgetAlignHorizStart (&rcol);
-  uiWidgetExpandHoriz (&rcol);
-  uiBoxPackStart (&hbox, &rcol);
-
-  uisongeditAddDisplay (uisongedit, &rcol, DISP_SEL_SONGEDIT_B);
+    uiCreateSizeGroupHoriz (&sg);
+    uisongeditAddDisplay (uisongedit, &col, &sg, i);
+  }
 
   logProcEnd (LOG_PROC, "uisongeditBuildUI", "");
   return &uiw->vbox;
@@ -210,7 +205,7 @@ uisongeditBuildUI (uisongedit_t *uisongedit, UIWidget *parentwin)
 /* internal routines */
 
 static void
-uisongeditAddDisplay (uisongedit_t *uisongedit, UIWidget *col, int dispsel)
+uisongeditAddDisplay (uisongedit_t *uisongedit, UIWidget *col, UIWidget *sg, int dispsel)
 {
   slist_t         *sellist;
   UIWidget        hbox;
@@ -236,6 +231,7 @@ uisongeditAddDisplay (uisongedit_t *uisongedit, UIWidget *col, int dispsel)
     }
 
     uiCreateHorizBox (&hbox);
+    uiWidgetExpandHoriz (&hbox);
     uiBoxPackStart (col, &hbox);
 
     if (uiw->itemcount >= uiw->itemalloccount) {
@@ -244,7 +240,7 @@ uisongeditAddDisplay (uisongedit_t *uisongedit, UIWidget *col, int dispsel)
           sizeof (uisongedititem_t) * uiw->itemalloccount);
     }
 
-    uisongeditAddItem (uisongedit, &hbox, tagkey);
+    uisongeditAddItem (uisongedit, &hbox, sg, tagkey);
 
     uiw->items [uiw->itemcount].tagkey = tagkey;
 
@@ -253,7 +249,7 @@ uisongeditAddDisplay (uisongedit_t *uisongedit, UIWidget *col, int dispsel)
 }
 
 static void
-uisongeditAddItem (uisongedit_t *uisongedit, UIWidget *hbox, int tagkey)
+uisongeditAddItem (uisongedit_t *uisongedit, UIWidget *hbox, UIWidget *sg, int tagkey)
 {
   UIWidget        uiwidget;
   uisongeditgtk_t *uiw;
@@ -262,7 +258,7 @@ uisongeditAddItem (uisongedit_t *uisongedit, UIWidget *hbox, int tagkey)
 
   uiCreateColonLabel (&uiwidget, tagdefs [tagkey].displayname);
   uiBoxPackStart (hbox, &uiwidget);
-  uiSizeGroupAdd (&uiw->sglabel, &uiwidget);
+  uiSizeGroupAdd (sg, &uiwidget);
 
   switch (tagdefs [tagkey].editType) {
     case ET_ENTRY: {
@@ -309,8 +305,9 @@ uisongeditAddEntry (uisongedit_t *uisongedit, UIWidget *hbox, int tagkey)
   uiw->items [uiw->itemcount].entry = entryp;
   uiEntryCreate (entryp);
   uiwidgetp = uiEntryGetUIWidget (entryp);
+  uiWidgetAlignHorizFill (uiwidgetp);
   uiSizeGroupAdd (&uiw->sgentry, uiwidgetp);
-  uiBoxPackStart (hbox, uiwidgetp);
+  uiBoxPackStartExpand (hbox, uiwidgetp);
 }
 
 static void
@@ -336,7 +333,7 @@ uisongeditAddLabel (uisongedit_t *uisongedit, UIWidget *hbox, int tagkey)
   uiwidgetp = &uiw->items [uiw->itemcount].uiwidget;
   uiCreateLabel (uiwidgetp, "");
   uiLabelEllipsizeOn (uiwidgetp);
-  uiBoxPackStart (hbox, uiwidgetp);
+  uiBoxPackStartExpand (hbox, uiwidgetp);
 }
 
 static void

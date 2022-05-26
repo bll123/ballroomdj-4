@@ -529,6 +529,8 @@ main (int argc, char *argv[])
   orgopt_t        *orgopt = NULL;
   int             flags;
   char            tbuff [MAXPATHLEN];
+  char            tbuffb [MAXPATHLEN];
+  char            tbuffc [MAXPATHLEN];
 
 
   confui.progstate = progstateInit ("configui");
@@ -701,6 +703,10 @@ main (int argc, char *argv[])
       DANCE_TIMESIG_48, _("4/8"),
       -1);
 
+  /* CONTEXT: display settings for: song editor column N */
+  snprintf (tbuff, sizeof (tbuff), _("Song Editor - Column %d"), 1);
+  snprintf (tbuffb, sizeof (tbuffb), _("Song Editor - Column %d"), 2);
+  snprintf (tbuffc, sizeof (tbuffc), _("Song Editor - Column %d"), 3);
   confuiSpinboxTextInitDataNum (&confui, "cu-disp-settings",
       CONFUI_SPINBOX_DISP_SEL,
       /* CONTEXT: display settings for: music queue */
@@ -717,10 +723,9 @@ main (int argc, char *argv[])
       DISP_SEL_EZSONGSEL, _("Easy Song Selection"),
       /* CONTEXT: display settings for: music manager */
       DISP_SEL_MM, _("Music Manager"),
-      /* CONTEXT: display settings for: song editor column 1 */
-      DISP_SEL_SONGEDIT_A, _("Song Editor - Column 1"),
-      /* CONTEXT: display settings for: song editor column 2 */
-      DISP_SEL_SONGEDIT_B, _("Song Editor - Column 2"),
+      DISP_SEL_SONGEDIT_A, tbuff,
+      DISP_SEL_SONGEDIT_B, tbuffb,
+      DISP_SEL_SONGEDIT_C, tbuffc,
       -1);
   confui.uiitem [CONFUI_SPINBOX_DISP_SEL].listidx = DISP_SEL_MUSICQ;
 
@@ -4961,7 +4966,9 @@ confuiCreateTagListingDisp (configui_t *confui)
 
   selidx = uiSpinboxTextGetValue (confui->uiitem [CONFUI_SPINBOX_DISP_SEL].u.spinbox);
 
-  if (selidx == DISP_SEL_SONGEDIT_A || selidx == DISP_SEL_SONGEDIT_B) {
+  if (selidx == DISP_SEL_SONGEDIT_A ||
+      selidx == DISP_SEL_SONGEDIT_B ||
+      selidx == DISP_SEL_SONGEDIT_C) {
     uiduallistSet (confui->dispselduallist, confui->edittaglist,
         DUALLIST_TREE_SOURCE);
   } else {

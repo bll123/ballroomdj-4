@@ -28,6 +28,7 @@ static char *dispselmap [DISP_SEL_MAX] = {
   [DISP_SEL_REQUEST] = "ds-request",
   [DISP_SEL_SONGEDIT_A] = "ds-songedit-a",
   [DISP_SEL_SONGEDIT_B] = "ds-songedit-b",
+  [DISP_SEL_SONGEDIT_C] = "ds-songedit-c",
   [DISP_SEL_SONGLIST] = "ds-songlist",
   [DISP_SEL_SONGSEL] = "ds-songsel",
 };

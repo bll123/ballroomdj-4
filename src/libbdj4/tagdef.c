@@ -62,7 +62,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   { "ALBUM",                      /* tag */
     NULL,                         /* display name         */
     { "©alb", "TALB", "WM/AlbumTitle" },       /* audio tags */
-    25,                           /* edit width           */
+    20,                           /* edit width           */
     ET_ENTRY,                     /* edit type            */
     VALUE_STR,                    /* value type           */
     NULL,                         /* conv func            */
@@ -82,7 +82,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   { "ALBUMARTIST",                /* tag */
     NULL,                         /* display name         */
     { "aART", "TPE2", "WM/AlbumArtist" },       /* audio tags */
-    25,                           /* edit width           */
+    20,                           /* edit width           */
     ET_ENTRY,                     /* edit type            */
     VALUE_STR,                    /* value type           */
     NULL,                         /* conv func            */
@@ -102,7 +102,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   { "ARTIST",                     /* tag */
     NULL,                         /* display name         */
     { "©ART", "TPE1", "WM/Author" },       /* audio tags */
-    25,                           /* edit width           */
+    20,                           /* edit width           */
     ET_ENTRY,                     /* edit type            */
     VALUE_STR,                    /* value type           */
     NULL,                         /* conv func            */
@@ -162,7 +162,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   { "COMPOSER",                   /* tag */
     NULL,                         /* display name         */
     { "©wrt", "TCOM", "WM/Composer" },       /* audio tags */
-    25,                           /* edit width           */
+    20,                           /* edit width           */
     ET_ENTRY,                     /* edit type            */
     VALUE_STR,                    /* value type           */
     NULL,                         /* conv func            */
@@ -182,7 +182,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   { "CONDUCTOR",                  /* tag */
     NULL,                         /* display name         */
     { NULL, "TPE3", "WM/Conductor" },       /* audio tags */
-    25,                           /* edit width           */
+    20,                           /* edit width           */
     ET_ENTRY,                     /* edit type            */
     VALUE_STR,                    /* value type           */
     NULL,                         /* conv func            */
@@ -262,7 +262,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   { "DATE",                       /* tag */
     NULL,                         /* display name         */
     { "©day", "TYER", "WM/Year" },       /* audio tags */
-    25,                           /* edit width           */
+    20,                           /* edit width           */
     ET_ENTRY,                     /* edit type            */
     VALUE_STR,                    /* value type           */
     NULL,                         /* conv func            */
@@ -422,7 +422,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   { "KEYWORD",                /* tag */
     NULL,                         /* display name         */
     { NULL, "TXXX", NULL },       /* audio tags */
-    25,                           /* edit width           */
+    20,                           /* edit width           */
     ET_ENTRY,                     /* edit type            */
     VALUE_STR,                    /* value type           */
     NULL,                         /* conv func            */
@@ -442,7 +442,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   { "MQDISPLAY",                /* tag */
     NULL,                         /* display name         */
     { NULL, "TXXX", NULL },       /* audio tags */
-    25,                           /* edit width           */
+    20,                           /* edit width           */
     ET_ENTRY,                     /* edit type            */
     VALUE_STR,                    /* value type           */
     NULL,                         /* conv func            */
@@ -482,7 +482,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   { "NOTES",                /* tag */
     NULL,                         /* display name         */
     { NULL, "TXXX", NULL },       /* audio tags */
-    25,                           /* edit width           */
+    20,                           /* edit width           */
     ET_ENTRY,                     /* edit type            */
     VALUE_STR,                    /* value type           */
     NULL,                         /* conv func            */
@@ -602,7 +602,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   { "TAGS",                       /* tag */
     NULL,                         /* display name         */
     { "keyw", "TXXX", NULL },       /* audio tags */
-    25,                           /* edit width           */
+    20,                           /* edit width           */
     ET_ENTRY,                     /* edit type            */
     VALUE_LIST,                   /* value type           */
     convTextList,                 /* conv func            */
@@ -622,7 +622,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   { "TITLE",                      /* tag */
     NULL,                         /* display name         */
     { "©nam", "TIT2", "WM/Title" },       /* audio tags */
-    25,                           /* edit width           */
+    20,                           /* edit width           */
     ET_ENTRY,                     /* edit type            */
     VALUE_STR,                    /* value type           */
     NULL,                         /* conv func            */
