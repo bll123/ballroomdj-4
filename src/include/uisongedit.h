@@ -21,6 +21,7 @@ uisongedit_t * uisongeditInit (conn_t *conn,
     musicdb_t *musicdb, dispsel_t *dispsel, nlist_t *opts);
 void  uisongeditFree (uisongedit_t *uisongedit);
 void  uisongeditMainLoop (uisongedit_t *uisongedit);
+void  uisongeditNewSelection (uisongedit_t *uisongedit, dbidx_t dbidx);
 
 /* uisongeditgtk.c */
 void      uisongeditUIInit (uisongedit_t *uisongedit);

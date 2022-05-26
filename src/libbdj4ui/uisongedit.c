@@ -58,3 +58,7 @@ uisongeditMainLoop (uisongedit_t *uisongedit)
   return;
 }
 
+void
+uisongeditNewSelection (uisongedit_t *uisongedit, dbidx_t dbidx)
+{
+}

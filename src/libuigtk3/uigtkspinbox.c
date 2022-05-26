@@ -26,6 +26,7 @@ static gboolean uiSpinboxTimeDisplay (GtkSpinButton *sb, gpointer udata);
 static char * uiSpinboxTextGetDisp (slist_t *list, int idx);
 
 static gboolean uiuitilsSpinboxTextKeyCallback (GtkWidget *w, GdkEventKey *event, gpointer udata);
+static void uiSpinboxValueChangedHandler (GtkSpinButton *sb, gpointer udata);
 
 uispinbox_t *
 uiSpinboxTextInit (void)
@@ -201,6 +202,13 @@ void
 uiSpinboxTimeSetValue (uispinbox_t *spinbox, ssize_t value)
 {
   uiSpinboxSetValue (&spinbox->uispinbox, (double) value);
+}
+
+void
+uiSpinboxSetValueChangedCallback (uispinbox_t *spinbox, UICallback *uicb)
+{
+  g_signal_connect (spinbox->uispinbox.widget, "value-changed",
+      G_CALLBACK (uiSpinboxValueChangedHandler), uicb);
 }
 
 void
@@ -586,3 +594,12 @@ uiSpinboxSetValueW (GtkWidget *spinbox, double value)
   gtk_adjustment_set_value (adjustment, value);
 }
 
+/* internal routines */
+
+static void
+uiSpinboxValueChangedHandler (GtkSpinButton *sb, gpointer udata)
+{
+  UICallback  *uicb = udata;
+
+  uiutilsCallbackHandler (uicb);
+}

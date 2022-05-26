@@ -69,14 +69,6 @@ enum {
 };
 
 enum {
-  MANAGE_DB_CHECK_NEW,
-  MANAGE_DB_REORGANIZE,
-  MANAGE_DB_UPD_FROM_TAGS,
-  MANAGE_DB_WRITE_TAGS,
-  MANAGE_DB_REBUILD,
-};
-
-enum {
   MANAGE_CALLBACK_EZ_SELECT,
   MANAGE_CALLBACK_DB_START,
   MANAGE_CALLBACK_MAX,
@@ -104,7 +96,6 @@ typedef struct manage manageui_t;
 
 typedef struct manage {
   progstate_t     *progstate;
-  procutil_t      *processes [ROUTE_MAX];
   char            *locknm;
   conn_t          *conn;
   UICallback      callbacks [MANAGE_CALLBACK_MAX];
@@ -114,13 +105,6 @@ typedef struct manage {
   dispsel_t       *dispsel;
   int             stopwaitcount;
   UIWidget        statusMsg;
-  /* update database */
-  uispinbox_t       *dbspinbox;
-  uitextbox_t       *dbhelpdisp;
-  uitextbox_t       *dbstatus;
-  nlist_t           *dblist;
-  nlist_t           *dbhelp;
-  UIWidget          dbpbar;
   /* notebook tab handling */
   int               mainlasttab;
   int               sllasttab;
@@ -162,6 +146,8 @@ typedef struct manage {
   manageseq_t     *manageseq;
   /* playlist management */
   managepl_t      *managepl;
+  /* update database */
+  managedb_t      *managedb;
   /* options */
   datafile_t      *optiondf;
   nlist_t         *options;
@@ -190,22 +176,16 @@ static bool     manageStoppingCallback (void *udata, programstate_t programState
 static bool     manageStopWaitCallback (void *udata, programstate_t programState);
 static bool     manageClosingCallback (void *udata, programstate_t programState);
 static void     manageBuildUI (manageui_t *manage);
-static void     manageBuildUISongListEditor (manageui_t *manage);
-static void     manageBuildUIMusicManager (manageui_t *manage);
-static void     manageBuildUIUpdateDatabase (manageui_t *manage);
 static int      manageMainLoop  (void *tmanage);
 static int      manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
                     bdjmsgmsg_t msg, char *args, void *udata);
 static bool     manageCloseWin (void *udata);
 static void     manageSigHandler (int sig);
-/* update database */
-static void     manageDbChg (GtkSpinButton *sb, gpointer udata);
-static bool     manageDbStart (void *udata);
-static void     manageDbProgressMsg (manageui_t *manage, char *args);
-static void     manageDbStatusMsg (manageui_t *manage, char *args);
 /* song editor */
 static void     manageSongEditMenu (manageui_t *manage);
 /* song list */
+static void     manageBuildUISongListEditor (manageui_t *manage);
+static void     manageBuildUIMusicManager (manageui_t *manage);
 static void     manageSonglistMenu (manageui_t *manage);
 static bool     manageSonglistLoad (void *udata);
 static bool     manageSonglistCopy (void *udata);
@@ -224,6 +204,8 @@ static void     manageSwitchPage (manageui_t *manage, int pagenum, int which);
 static void manageInitializeSongFilter (manageui_t *manage, nlist_t *options);
 static void manageSetMenuCallback (manageui_t *manage, int midx, UICallbackFunc cb);
 static void manageSonglistLoadCheck (manageui_t *manage);
+/* song editor */
+static void manageNewSelection (manageui_t *manage, dbidx_t dbidx);
 
 static int gKillReceived = false;
 
@@ -235,8 +217,6 @@ main (int argc, char *argv[])
   manageui_t      manage;
   char            *uifont;
   char            tbuff [MAXPATHLEN];
-  nlist_t         *tlist;
-  nlist_t         *hlist;
 
 
   manage.progstate = progstateInit ("manageui");
@@ -260,8 +240,6 @@ main (int argc, char *argv[])
   manage.musicqPlayIdx = MUSICQ_B;
   manage.musicqManageIdx = MUSICQ_A;
   manage.stopwaitcount = 0;
-  manage.dblist = NULL;
-  manage.dbhelp = NULL;
   manage.currmenu = NULL;
   manage.mainlasttab = MANAGE_TAB_MAIN_SL;
   manage.sllasttab = MANAGE_TAB_SONGLIST;
@@ -275,11 +253,9 @@ main (int argc, char *argv[])
   manage.slbackupcreated = false;
   manage.slsongfilter = NULL;
   manage.mmsongfilter = NULL;
-  uiutilsUIWidgetInit (&manage.dbpbar);
   manage.manageseq = NULL;   /* allocated within buildui */
   manage.managepl = NULL;   /* allocated within buildui */
-
-  procutilInitProcesses (manage.processes);
+  manage.managedb = NULL;   /* allocated within buildui */
 
   osSetStandardSignals (manageSigHandler);
 
@@ -288,36 +264,6 @@ main (int argc, char *argv[])
   logProcBegin (LOG_PROC, "manageui");
 
   manage.dispsel = dispselAlloc ();
-  manage.dbspinbox = uiSpinboxTextInit ();
-  tlist = nlistAlloc ("db-action", LIST_ORDERED, free);
-  hlist = nlistAlloc ("db-action-help", LIST_ORDERED, free);
-  /* CONTEXT: database update: check for new audio files */
-  nlistSetStr (tlist, MANAGE_DB_CHECK_NEW, _("Check For New"));
-  nlistSetStr (hlist, MANAGE_DB_CHECK_NEW,
-      /* CONTEXT: database update: check for new: help text */
-      _("Checks for new audio files."));
-  /* CONTEXT: database update: reorganize : renames audio files based on organization settings */
-  nlistSetStr (tlist, MANAGE_DB_REORGANIZE, _("Reorganize"));
-  nlistSetStr (hlist, MANAGE_DB_REORGANIZE,
-      /* CONTEXT: database update: reorganize : help text */
-      _("Renames the audio files based on the organization settings."));
-  /* CONTEXT: database update: updates the database using the tags from the audio files */
-  nlistSetStr (tlist, MANAGE_DB_UPD_FROM_TAGS, _("Update from Audio File Tags"));
-  nlistSetStr (hlist, MANAGE_DB_UPD_FROM_TAGS,
-      /* CONTEXT: database update: update from audio file tags: help text */
-      _("Replaces the information in the BallroomDJ database with the audio file tag information."));
-  /* CONTEXT: database update: writes the tags in the database to the audio files */
-  nlistSetStr (tlist, MANAGE_DB_WRITE_TAGS, _("Write Tags to Audio Files"));
-  nlistSetStr (hlist, MANAGE_DB_WRITE_TAGS,
-      /* CONTEXT: database update: write tags to audio files: help text */
-      _("Updates the audio file tags with the information from the BallroomDJ database."));
-  /* CONTEXT: database update: rebuilds the database */
-  nlistSetStr (tlist, MANAGE_DB_REBUILD, _("Rebuild Database"));
-  nlistSetStr (hlist, MANAGE_DB_REBUILD,
-      /* CONTEXT: database update: rebuild: help text */
-      _("Replaces the BallroomDJ database in its entirety. All changes to the database will be lost."));
-  manage.dblist = tlist;
-  manage.dbhelp = hlist;
 
   listenPort = bdjvarsGetNum (BDJVL_MANAGEUI_PORT);
   manage.conn = connInit (ROUTE_MANAGEUI);
@@ -366,6 +312,10 @@ main (int argc, char *argv[])
       manage.musicdb, manage.dispsel, manage.options,
       SONG_FILTER_FOR_SELECTION, DISP_SEL_EZSONGSEL);
   uisongselInitializeSongFilter (manage.slezsongsel, manage.slsongfilter);
+
+//  uisongselSetSelectionCallback (manage.slezsongsel, manageNewSelection);
+//  uisongselSetSelectionCallback (manage.slsongsel, manageNewSelection);
+//  uisongselSetSelectionCallback (manage.mmsongsel, manageNewSelection);
 
   uimusicqSetPlayIdx (manage.slmusicq, manage.musicqPlayIdx);
   uimusicqSetPlayIdx (manage.slezmusicq, manage.musicqPlayIdx);
@@ -432,7 +382,6 @@ manageStoppingCallback (void *udata, programstate_t programState)
   nlistSetNum (manage->options, PLUI_POSITION_X, x);
   nlistSetNum (manage->options, PLUI_POSITION_Y, y);
 
-  procutilStopAllProcess (manage->processes, manage->conn, false);
   connDisconnect (manage->conn, ROUTE_STARTERUI);
   logProcEnd (LOG_PROC, "manageStoppingCallback", "");
   return STATE_FINISHED;
@@ -456,10 +405,8 @@ manageClosingCallback (void *udata, programstate_t programState)
 
   logProcBegin (LOG_PROC, "manageClosingCallback");
 
+  manageDbClose (manage->managedb);
   uiCloseWindow (&manage->window);
-
-  procutilStopAllProcess (manage->processes, manage->conn, true);
-  procutilFreeAll (manage->processes);
 
   pathbldMakePath (fn, sizeof (fn),
       "manageui", BDJ4_CONFIG_EXT, PATHBLD_MP_USEIDX);
@@ -469,6 +416,7 @@ manageClosingCallback (void *udata, programstate_t programState)
   dispselFree (manage->dispsel);
   manageSequenceFree (manage->manageseq);
   managePlaylistFree (manage->managepl);
+  manageDbFree (manage->managedb);
 
   if (manage->slsongfilter != NULL) {
     songfilterFree (manage->slsongfilter);
@@ -493,10 +441,6 @@ manageClosingCallback (void *udata, programstate_t programState)
   }
   datafileFree (manage->optiondf);
 
-  uiTextBoxFree (manage->dbhelpdisp);
-  uiTextBoxFree (manage->dbstatus);
-  uiSpinboxTextFree (manage->dbspinbox);
-
   uiplayerFree (manage->slplayer);
   uimusicqFree (manage->slmusicq);
   uisongselFree (manage->slsongsel);
@@ -511,12 +455,6 @@ manageClosingCallback (void *udata, programstate_t programState)
   uisongeditFree (manage->mmsongedit);
 
   uiCleanup ();
-  if (manage->dblist != NULL) {
-    nlistFree (manage->dblist);
-  }
-  if (manage->dbhelp != NULL) {
-    nlistFree (manage->dbhelp);
-  }
 
   logProcEnd (LOG_PROC, "manageClosingCallback", "");
   return STATE_FINISHED;
@@ -568,12 +506,22 @@ manageBuildUI (manageui_t *manage)
 
   manageBuildUISongListEditor (manage);
   manageBuildUIMusicManager (manage);
-  manageBuildUIUpdateDatabase (manage);
 
+  /* update database */
+  manage->managedb = manageDbAlloc (&manage->window,
+      manage->options, &manage->statusMsg, manage->conn);
+
+  uiCreateVertBox (&vbox);
+  manageBuildUIUpdateDatabase (manage->managedb, &vbox);
+  /* CONTEXT: notebook tab title: update database */
+  uiCreateLabel (&uiwidget, _("Update Database"));
+  uiNotebookAppendPage (&manage->mainnotebook, &vbox, &uiwidget);
+  uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_OTHER);
+
+  /* playlist management */
   manage->managepl = managePlaylistAlloc (&manage->window,
       manage->options, &manage->statusMsg);
 
-  /* playlist management */
   uiCreateVertBox (&vbox);
   manageBuildUIPlaylist (manage->managepl, &vbox);
   /* CONTEXT: notebook tab title: playlist management */
@@ -581,6 +529,7 @@ manageBuildUI (manageui_t *manage)
   uiNotebookAppendPage (&manage->mainnotebook, &vbox, &uiwidget);
   uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_MAIN_PL);
 
+  /* sequence editor */
   manage->manageseq = manageSequenceAlloc (&manage->window,
       manage->options, &manage->statusMsg);
 
@@ -750,62 +699,6 @@ manageBuildUIMusicManager (manageui_t *manage)
   uiNotebookSetCallback (&notebook, &manage->mmnbcb);
 }
 
-static void
-manageBuildUIUpdateDatabase (manageui_t *manage)
-{
-  UIWidget       uiwidget;
-  UIWidget       *uiwidgetp;
-  UIWidget       vbox;
-  UIWidget       hbox;
-  uitextbox_t    *tb;
-
-  /* update database */
-  uiCreateVertBox (&vbox);
-  uiWidgetSetAllMargins (&vbox, uiBaseMarginSz * 2);
-  /* CONTEXT: notebook tab title: update database */
-  uiCreateLabel (&uiwidget, _("Update Database"));
-  uiNotebookAppendPage (&manage->mainnotebook, &vbox, &uiwidget);
-  uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_OTHER);
-
-  /* help display */
-  tb = uiTextBoxCreate (80);
-  uiTextBoxSetReadonly (tb);
-  uiTextBoxSetHeight (tb, 70);
-  uiBoxPackStart (&vbox, uiTextBoxGetScrolledWindow (tb));
-  manage->dbhelpdisp = tb;
-
-  uiCreateHorizBox (&hbox);
-  uiBoxPackStart (&vbox, &hbox);
-
-  uiSpinboxTextCreate (manage->dbspinbox, manage);
-  /* currently hard-coded at 30 chars */
-  uiSpinboxTextSet (manage->dbspinbox, 0,
-      nlistGetCount (manage->dblist), 30,
-      manage->dblist, NULL, NULL);
-  uiSpinboxTextSetValue (manage->dbspinbox, MANAGE_DB_CHECK_NEW);
-  uiwidgetp = uiSpinboxGetUIWidget (manage->dbspinbox);
-  g_signal_connect (uiwidgetp->widget, "value-changed", G_CALLBACK (manageDbChg), manage);
-  uiBoxPackStart (&hbox, uiwidgetp);
-
-  uiutilsUICallbackInit (&manage->callbacks [MANAGE_CALLBACK_DB_START],
-      manageDbStart, manage);
-  uiCreateButton (&uiwidget,
-      &manage->callbacks [MANAGE_CALLBACK_DB_START],
-      /* CONTEXT: update database: button to start the database update process */
-      _("Start"), NULL);
-  uiBoxPackStart (&hbox, &uiwidget);
-
-  uiCreateProgressBar (&manage->dbpbar, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
-  uiBoxPackStart (&vbox, &manage->dbpbar);
-
-  tb = uiTextBoxCreate (200);
-  uiTextBoxSetReadonly (tb);
-  uiTextBoxDarken (tb);
-  uiTextBoxSetHeight (tb, 300);
-  uiBoxPackStartExpand (&vbox, uiTextBoxGetScrolledWindow (tb));
-  manage->dbstatus = tb;
-}
-
 static int
 manageMainLoop (void *tmanage)
 {
@@ -901,7 +794,7 @@ manageHandshakeCallback (void *udata, programstate_t programState)
     connSendMessage (manage->conn, ROUTE_MAIN, MSG_MUSICQ_SET_PLAYBACK, "1");
     connSendMessage (manage->conn, ROUTE_MAIN, MSG_QUEUE_SWITCH_EMPTY, "0");
     progstateLogTime (manage->progstate, "time-to-start-gui");
-    manageDbChg (NULL, manage);
+    manageDbChg (manage->managedb);
     manageSetEasySonglist (manage);
     /* CONTEXT: song list: default name for a new song list */
     manageSetSonglistName (manage, _("New Song List"));
@@ -946,18 +839,15 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_DB_PROGRESS: {
-          manageDbProgressMsg (manage, args);
+          manageDbProgressMsg (manage->managedb, args);
           break;
         }
         case MSG_DB_STATUS_MSG: {
-          manageDbStatusMsg (manage, args);
+          manageDbStatusMsg (manage->managedb, args);
           break;
         }
         case MSG_DB_FINISH: {
-          procutilCloseProcess (manage->processes [routefrom],
-              manage->conn, ROUTE_DBUPDATE);
-          procutilFreeRoute (manage->processes, routefrom);
-          connDisconnect (manage->conn, routefrom);
+          manageDbFinish (manage->managedb, routefrom);
 
           manage->musicdb = bdj4ReloadDatabase (manage->musicdb);
 
@@ -1031,100 +921,6 @@ static void
 manageSigHandler (int sig)
 {
   gKillReceived = true;
-}
-
-/* update database */
-
-static void
-manageDbChg (GtkSpinButton *sb, gpointer udata)
-{
-  manageui_t      *manage = udata;
-  double          value;
-  ssize_t         nval;
-  char            *sval;
-
-  nval = MANAGE_DB_CHECK_NEW;
-  if (sb != NULL) {
-    value = uiSpinboxTextGetValue (manage->dbspinbox);
-    nval = (ssize_t) value;
-  }
-
-  sval = nlistGetStr (manage->dbhelp, nval);
-  uiTextBoxSetValue (manage->dbhelpdisp, sval);
-}
-
-static bool
-manageDbStart (void *udata)
-{
-  manageui_t  *manage = udata;
-  int         nval;
-  char        *sval = NULL;
-  char        *targv [10];
-  int         targc = 0;
-  char        tbuff [MAXPATHLEN];
-
-  pathbldMakePath (tbuff, sizeof (tbuff),
-      "bdj4dbupdate", sysvarsGetStr (SV_OS_EXEC_EXT), PATHBLD_MP_EXECDIR);
-
-  nval = uiSpinboxTextGetValue (manage->dbspinbox);
-
-  sval = nlistGetStr (manage->dblist, nval);
-  uiTextBoxAppendStr (manage->dbstatus, "-- ");
-  uiTextBoxAppendStr (manage->dbstatus, sval);
-  uiTextBoxAppendStr (manage->dbstatus, "\n");
-
-  switch (nval) {
-    case MANAGE_DB_CHECK_NEW: {
-      targv [targc++] = "--checknew";
-      break;
-    }
-    case MANAGE_DB_REORGANIZE: {
-      targv [targc++] = "--reorganize";
-      break;
-    }
-    case MANAGE_DB_UPD_FROM_TAGS: {
-      targv [targc++] = "--updfromtags";
-      break;
-    }
-    case MANAGE_DB_WRITE_TAGS: {
-      targv [targc++] = "--writetags";
-      break;
-    }
-    case MANAGE_DB_REBUILD: {
-      targv [targc++] = "--rebuild";
-      break;
-    }
-  }
-
-  targv [targc++] = "--progress";
-  targv [targc++] = NULL;
-
-  uiProgressBarSet (&manage->dbpbar, 0.0);
-  manage->processes [ROUTE_DBUPDATE] = procutilStartProcess (
-      ROUTE_DBUPDATE, "bdj4dbupdate", OS_PROC_DETACH, targv);
-  return UICB_CONT;
-}
-
-static void
-manageDbProgressMsg (manageui_t *manage, char *args)
-{
-  double    progval;
-
-  if (strncmp ("END", args, 3) == 0) {
-    uiProgressBarSet (&manage->dbpbar, 100.0);
-  } else {
-    if (sscanf (args, "PROG %lf", &progval) == 1) {
-      uiProgressBarSet (&manage->dbpbar, progval);
-    }
-  }
-}
-
-static void
-manageDbStatusMsg (manageui_t *manage, char *args)
-{
-  uiTextBoxAppendStr (manage->dbstatus, args);
-  uiTextBoxAppendStr (manage->dbstatus, "\n");
-  uiTextBoxScrollToEnd (manage->dbstatus);
 }
 
 /* song editor */
@@ -1598,3 +1394,7 @@ manageSonglistLoadCheck (manageui_t *manage)
   }
 }
 
+static void
+manageNewSelection (manageui_t *manage, dbidx_t dbidx)
+{
+}

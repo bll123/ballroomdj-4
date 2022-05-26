@@ -122,6 +122,7 @@ void  uiSpinboxResetChanged (uispinbox_t *spinbox);
 void  uiSpinboxAlignRight (uispinbox_t *spinbox);
 void  uiSpinboxSetColor (uispinbox_t *spinbox, const char *color);
 UIWidget * uiSpinboxGetUIWidget (uispinbox_t *spinbox);
+void uiSpinboxSetValueChangedCallback (uispinbox_t *spinbox, UICallback *uicb);
 
 /* these routines will be removed at a later date */
 GtkWidget * uiSpinboxTextCreateW (uispinbox_t *spinbox, void *udata);
