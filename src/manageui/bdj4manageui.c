@@ -115,7 +115,7 @@ typedef struct manage {
   int             stopwaitcount;
   UIWidget        statusMsg;
   /* update database */
-  uispinbox_t       dbspinbox;
+  uispinbox_t       *dbspinbox;
   uitextbox_t       *dbhelpdisp;
   uitextbox_t       *dbstatus;
   nlist_t           *dblist;
@@ -288,7 +288,7 @@ main (int argc, char *argv[])
   logProcBegin (LOG_PROC, "manageui");
 
   manage.dispsel = dispselAlloc ();
-  uiSpinboxTextInit (&manage.dbspinbox);
+  manage.dbspinbox = uiSpinboxTextInit ();
   tlist = nlistAlloc ("db-action", LIST_ORDERED, free);
   hlist = nlistAlloc ("db-action-help", LIST_ORDERED, free);
   /* CONTEXT: database update: check for new audio files */
@@ -495,6 +495,7 @@ manageClosingCallback (void *udata, programstate_t programState)
 
   uiTextBoxFree (manage->dbhelpdisp);
   uiTextBoxFree (manage->dbstatus);
+  uiSpinboxTextFree (manage->dbspinbox);
 
   uiplayerFree (manage->slplayer);
   uimusicqFree (manage->slmusicq);
@@ -753,9 +754,9 @@ static void
 manageBuildUIUpdateDatabase (manageui_t *manage)
 {
   UIWidget       uiwidget;
+  UIWidget       *uiwidgetp;
   UIWidget       vbox;
   UIWidget       hbox;
-  GtkWidget      *widget;
   uitextbox_t    *tb;
 
   /* update database */
@@ -776,14 +777,15 @@ manageBuildUIUpdateDatabase (manageui_t *manage)
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&vbox, &hbox);
 
-  widget = uiSpinboxTextCreateW (&manage->dbspinbox, manage);
+  uiSpinboxTextCreate (manage->dbspinbox, manage);
   /* currently hard-coded at 30 chars */
-  uiSpinboxTextSet (&manage->dbspinbox, 0,
+  uiSpinboxTextSet (manage->dbspinbox, 0,
       nlistGetCount (manage->dblist), 30,
       manage->dblist, NULL, NULL);
-  uiSpinboxTextSetValue (&manage->dbspinbox, MANAGE_DB_CHECK_NEW);
-  g_signal_connect (widget, "value-changed", G_CALLBACK (manageDbChg), manage);
-  uiBoxPackStartUW (&hbox, widget);
+  uiSpinboxTextSetValue (manage->dbspinbox, MANAGE_DB_CHECK_NEW);
+  uiwidgetp = uiSpinboxGetUIWidget (manage->dbspinbox);
+  g_signal_connect (uiwidgetp->widget, "value-changed", G_CALLBACK (manageDbChg), manage);
+  uiBoxPackStart (&hbox, uiwidgetp);
 
   uiutilsUICallbackInit (&manage->callbacks [MANAGE_CALLBACK_DB_START],
       manageDbStart, manage);
@@ -1043,7 +1045,7 @@ manageDbChg (GtkSpinButton *sb, gpointer udata)
 
   nval = MANAGE_DB_CHECK_NEW;
   if (sb != NULL) {
-    value = uiSpinboxTextGetValue (&manage->dbspinbox);
+    value = uiSpinboxTextGetValue (manage->dbspinbox);
     nval = (ssize_t) value;
   }
 
@@ -1064,7 +1066,7 @@ manageDbStart (void *udata)
   pathbldMakePath (tbuff, sizeof (tbuff),
       "bdj4dbupdate", sysvarsGetStr (SV_OS_EXEC_EXT), PATHBLD_MP_EXECDIR);
 
-  nval = uiSpinboxTextGetValue (&manage->dbspinbox);
+  nval = uiSpinboxTextGetValue (manage->dbspinbox);
 
   sval = nlistGetStr (manage->dblist, nval);
   uiTextBoxAppendStr (manage->dbstatus, "-- ");

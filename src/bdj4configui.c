@@ -190,7 +190,7 @@ typedef struct {
   union {
     uidropdown_t  dropdown;
     uientry_t     *entry;
-    uispinbox_t   spinbox;
+    uispinbox_t   *spinbox;
     uiswitch_t    *uiswitch;
   } u;
   int               listidx;        // for combobox, spinbox
@@ -592,7 +592,7 @@ main (int argc, char *argv[])
       uiDropDownInit (&confui.uiitem [i].u.dropdown);
     }
     if (i > CONFUI_ENTRY_MAX && i < CONFUI_SPINBOX_MAX) {
-      uiSpinboxTextInit (&confui.uiitem [i].u.spinbox);
+      confui.uiitem [i].u.spinbox = uiSpinboxTextInit ();
     }
     if (i > CONFUI_SPINBOX_MAX && i < CONFUI_SWITCH_MAX) {
       confui.uiitem [i].u.uiswitch = NULL;
@@ -865,7 +865,7 @@ confuiClosingCallback (void *udata, programstate_t programState)
   }
 
   for (int i = CONFUI_ENTRY_MAX + 1; i < CONFUI_SPINBOX_MAX; ++i) {
-    uiSpinboxTextFree (&confui->uiitem [i].u.spinbox);
+    uiSpinboxTextFree (confui->uiitem [i].u.spinbox);
     /* the mq and ui-theme share the list */
     if (i == CONFUI_SPINBOX_UI_THEME) {
       continue;
@@ -1956,7 +1956,7 @@ confuiPopulateOptions (configui_t *confui)
         break;
       }
       case CONFUI_SPINBOX_TEXT: {
-        nval = uiSpinboxTextGetValue (&confui->uiitem [i].u.spinbox);
+        nval = uiSpinboxTextGetValue (confui->uiitem [i].u.spinbox);
         if (outtype == CONFUI_OUT_STR) {
           if (confui->uiitem [i].sbkeylist != NULL) {
             sval = nlistGetStr (confui->uiitem [i].sbkeylist, nval);
@@ -1967,17 +1967,17 @@ confuiPopulateOptions (configui_t *confui)
         break;
       }
       case CONFUI_SPINBOX_NUM: {
-        nval = (ssize_t) uiSpinboxGetValueW (confui->uiitem [i].widget);
+        nval = (ssize_t) uiSpinboxGetValue (&confui->uiitem [i].uiwidget);
         break;
       }
       case CONFUI_SPINBOX_DOUBLE: {
-        dval = uiSpinboxGetValueW (confui->uiitem [i].widget);
+        dval = uiSpinboxGetValue (&confui->uiitem [i].uiwidget);
         nval = (ssize_t) (dval * 1000.0);
         outtype = CONFUI_OUT_NUM;
         break;
       }
       case CONFUI_SPINBOX_TIME: {
-        nval = (ssize_t) uiSpinboxGetValueW (confui->uiitem [i].widget);
+        nval = (ssize_t) uiSpinboxTimeGetValue (confui->uiitem [i].u.spinbox);
         break;
       }
       case CONFUI_COLOR: {
@@ -2014,7 +2014,7 @@ confuiPopulateOptions (configui_t *confui)
     if (i == CONFUI_SPINBOX_AUDIO_OUTPUT) {
       uispinbox_t  *spinbox;
 
-      spinbox = &confui->uiitem [i].u.spinbox;
+      spinbox = confui->uiitem [i].u.spinbox;
       if (! uiSpinboxIsChanged (spinbox)) {
         continue;
       }
@@ -2133,7 +2133,7 @@ confuiPopulateOptions (configui_t *confui)
   } /* for each item */
 
   selidx = uiSpinboxTextGetValue (
-      &confui->uiitem [CONFUI_SPINBOX_DISP_SEL].u.spinbox);
+      confui->uiitem [CONFUI_SPINBOX_DISP_SEL].u.spinbox);
   confuiDispSaveTable (confui, selidx);
 
   bdjoptSetNum (OPT_G_DEBUGLVL, debug);
@@ -2406,7 +2406,7 @@ confuiMakeItemSpinboxText (configui_t *confui, UIWidget *boxp, UIWidget *sg,
     confuiouttype_t outtype, ssize_t value, void *cb)
 {
   UIWidget    hbox;
-  GtkWidget   *widget;
+  UIWidget    *uiwidgetp;
   nlist_t     *list;
   nlist_t     *keylist;
   size_t      maxWidth;
@@ -2417,8 +2417,7 @@ confuiMakeItemSpinboxText (configui_t *confui, UIWidget *boxp, UIWidget *sg,
   confui->uiitem [widx].outtype = outtype;
   uiCreateHorizBox (&hbox);
   confuiMakeItemLabel (&hbox, sg, txt);
-  widget = uiSpinboxTextCreateW (&confui->uiitem [widx].u.spinbox, confui);
-  confui->uiitem [widx].widget = widget;
+  uiSpinboxTextCreate (confui->uiitem [widx].u.spinbox, confui);
   list = confui->uiitem [widx].displist;
   keylist = confui->uiitem [widx].sbkeylist;
   if (outtype == CONFUI_OUT_STR) {
@@ -2440,19 +2439,21 @@ confuiMakeItemSpinboxText (configui_t *confui, UIWidget *boxp, UIWidget *sg,
     }
   }
 
-  uiSpinboxTextSet (&confui->uiitem [widx].u.spinbox, 0,
+  uiSpinboxTextSet (confui->uiitem [widx].u.spinbox, 0,
       nlistGetCount (list), maxWidth, list, keylist, NULL);
-  uiSpinboxTextSetValue (&confui->uiitem [widx].u.spinbox, value);
-  uiWidgetSetMarginStartW (widget, uiBaseMarginSz * 4);
+  uiSpinboxTextSetValue (confui->uiitem [widx].u.spinbox, value);
+  uiwidgetp = uiSpinboxGetUIWidget (confui->uiitem [widx].u.spinbox);
+  uiutilsUIWidgetCopy (&confui->uiitem [widx].uiwidget, uiwidgetp);
+  uiWidgetSetMarginStart (uiwidgetp, uiBaseMarginSz * 4);
   if (sgB != NULL) {
-    uiSizeGroupAddW (sgB, widget);
+    uiSizeGroupAdd (sgB, uiwidgetp);
   }
-  uiBoxPackStartUW (&hbox, widget);
+  uiBoxPackStart (&hbox, uiwidgetp);
   uiBoxPackStart (boxp, &hbox);
   confui->uiitem [widx].bdjoptIdx = bdjoptIdx;
 
   if (cb != NULL) {
-    g_signal_connect (widget, "value-changed", G_CALLBACK (cb), confui);
+    g_signal_connect (uiwidgetp->widget, "value-changed", G_CALLBACK (cb), confui);
   }
   logProcEnd (LOG_PROC, "confuiMakeItemSpinboxText", "");
 }
@@ -2463,7 +2464,7 @@ confuiMakeItemSpinboxTime (configui_t *confui, UIWidget *boxp,
     int bdjoptIdx, ssize_t value)
 {
   UIWidget    hbox;
-  GtkWidget   *widget;
+  UIWidget    *uiwidgetp;
 
   logProcBegin (LOG_PROC, "confuiMakeItemSpinboxTime");
 
@@ -2474,15 +2475,16 @@ confuiMakeItemSpinboxTime (configui_t *confui, UIWidget *boxp,
 
   uiutilsUICallbackStrInit (&confui->uiitem [widx].callback,
       confuiValMSCallback, confui);
-  widget = uiSpinboxTimeCreateW (&confui->uiitem [widx].u.spinbox, confui,
+  uiSpinboxTimeCreate (confui->uiitem [widx].u.spinbox, confui,
       &confui->uiitem [widx].callback);
-  confui->uiitem [widx].widget = widget;
-  uiSpinboxTimeSetValue (&confui->uiitem [widx].u.spinbox, value);
-  uiWidgetSetMarginStartW (widget, uiBaseMarginSz * 4);
+  uiSpinboxTimeSetValue (confui->uiitem [widx].u.spinbox, value);
+  uiwidgetp = uiSpinboxGetUIWidget (confui->uiitem [widx].u.spinbox);
+  uiutilsUIWidgetCopy (&confui->uiitem [widx].uiwidget, uiwidgetp);
+  uiWidgetSetMarginStart (uiwidgetp, uiBaseMarginSz * 4);
   if (sgB != NULL) {
-    uiSizeGroupAddW (sgB, widget);
+    uiSizeGroupAdd (sgB, uiwidgetp);
   }
-  uiBoxPackStartUW (&hbox, widget);
+  uiBoxPackStart (&hbox, uiwidgetp);
   uiBoxPackStart (boxp, &hbox);
   confui->uiitem [widx].bdjoptIdx = bdjoptIdx;
   logProcEnd (LOG_PROC, "confuiMakeItemSpinboxTime", "");
@@ -4692,23 +4694,23 @@ confuiDanceSelect (GtkTreeView *tv, GtkTreePath *path,
 
   num = danceGetNum (dances, key, DANCE_HIGH_BPM);
   widx = CONFUI_SPINBOX_DANCE_HIGH_BPM;
-  uiSpinboxTextSetValue (&confui->uiitem [widx].u.spinbox, num);
+  uiSpinboxTextSetValue (confui->uiitem [widx].u.spinbox, num);
 
   num = danceGetNum (dances, key, DANCE_LOW_BPM);
   widx = CONFUI_SPINBOX_DANCE_LOW_BPM;
-  uiSpinboxTextSetValue (&confui->uiitem [widx].u.spinbox, num);
+  uiSpinboxTextSetValue (confui->uiitem [widx].u.spinbox, num);
 
   num = danceGetNum (dances, key, DANCE_SPEED);
   widx = CONFUI_SPINBOX_DANCE_SPEED;
-  uiSpinboxTextSetValue (&confui->uiitem [widx].u.spinbox, num);
+  uiSpinboxTextSetValue (confui->uiitem [widx].u.spinbox, num);
 
   num = danceGetNum (dances, key, DANCE_TIMESIG);
   widx = CONFUI_SPINBOX_DANCE_TIME_SIG;
-  uiSpinboxTextSetValue (&confui->uiitem [widx].u.spinbox, num);
+  uiSpinboxTextSetValue (confui->uiitem [widx].u.spinbox, num);
 
   num = danceGetNum (dances, key, DANCE_TYPE);
   widx = CONFUI_SPINBOX_DANCE_TYPE;
-  uiSpinboxTextSetValue (&confui->uiitem [widx].u.spinbox, num);
+  uiSpinboxTextSetValue (confui->uiitem [widx].u.spinbox, num);
   logProcEnd (LOG_PROC, "confuiDanceSelect", "");
 }
 
@@ -4801,7 +4803,7 @@ confuiDanceSpinboxChg (GtkSpinButton *sb, gpointer udata)
   nval = (ssize_t) value;
   if (didx == DANCE_TYPE || didx == DANCE_SPEED || didx == DANCE_TIMESIG) {
     /* text spinbox */
-    nval = uiSpinboxTextGetValue (&confui->uiitem [widx].u.spinbox);
+    nval = uiSpinboxTextGetValue (confui->uiitem [widx].u.spinbox);
   }
 
   tree = confui->tables [CONFUI_ID_DANCE].tree;
@@ -4836,32 +4838,30 @@ confuiDanceValidateAnnouncement (uientry_t *entry, void *udata)
   mlen = strlen (musicdir);
 
   rc = UIENTRY_ERROR;
-  if (entry->buffer != NULL) {
-    fn = gtk_entry_buffer_get_text (entry->buffer);
-    if (fn == NULL) {
-      logProcEnd (LOG_PROC, "confuiDanceValidateAnnouncement", "bad-fn");
-      return UIENTRY_ERROR;
-    }
+  fn = uiEntryGetValue (entry);
+  if (fn == NULL) {
+    logProcEnd (LOG_PROC, "confuiDanceValidateAnnouncement", "bad-fn");
+    return UIENTRY_ERROR;
+  }
 
-    strlcpy (nfn, fn, sizeof (nfn));
-    pathNormPath (nfn, sizeof (nfn));
-    if (strncmp (musicdir, fn, mlen) == 0) {
-      strlcpy (nfn, fn + mlen + 1, sizeof (nfn));
-      gtk_entry_buffer_set_text (entry->buffer, nfn, -1);
-    }
+  strlcpy (nfn, fn, sizeof (nfn));
+  pathNormPath (nfn, sizeof (nfn));
+  if (strncmp (musicdir, fn, mlen) == 0) {
+    strlcpy (nfn, fn + mlen + 1, sizeof (nfn));
+    uiEntrySetValue (entry, nfn);
+  }
 
-    if (*nfn == '\0') {
+  if (*nfn == '\0') {
+    rc = UIENTRY_OK;
+  } else {
+    *tbuff = '\0';
+    if (*nfn != '/' && *(nfn + 1) != ':') {
+      strlcpy (tbuff, musicdir, sizeof (tbuff));
+      strlcat (tbuff, "/", sizeof (tbuff));
+    }
+    strlcat (tbuff, nfn, sizeof (tbuff));
+    if (fileopFileExists (tbuff)) {
       rc = UIENTRY_OK;
-    } else {
-      *tbuff = '\0';
-      if (*nfn != '/' && *(nfn + 1) != ':') {
-        strlcpy (tbuff, musicdir, sizeof (tbuff));
-        strlcat (tbuff, "/", sizeof (tbuff));
-      }
-      strlcat (tbuff, nfn, sizeof (tbuff));
-      if (fileopFileExists (tbuff)) {
-        rc = UIENTRY_OK;
-      }
     }
   }
 
@@ -4890,7 +4890,7 @@ confuiDispSettingChg (GtkSpinButton *sb, gpointer udata)
 
   oselidx = confui->uiitem [CONFUI_SPINBOX_DISP_SEL].listidx;
   nselidx = uiSpinboxTextGetValue (
-      &confui->uiitem [CONFUI_SPINBOX_DISP_SEL].u.spinbox);
+      confui->uiitem [CONFUI_SPINBOX_DISP_SEL].u.spinbox);
   confui->uiitem [CONFUI_SPINBOX_DISP_SEL].listidx = nselidx;
 
   confuiDispSaveTable (confui, oselidx);
@@ -4942,7 +4942,7 @@ confuiCreateTagSelectedDisp (configui_t *confui)
 
 
   selidx = uiSpinboxTextGetValue (
-      &confui->uiitem [CONFUI_SPINBOX_DISP_SEL].u.spinbox);
+      confui->uiitem [CONFUI_SPINBOX_DISP_SEL].u.spinbox);
 
   dispsel = confui->dispsel;
   sellist = dispselGetList (dispsel, selidx);
@@ -4959,7 +4959,7 @@ confuiCreateTagListingDisp (configui_t *confui)
 
   logProcBegin (LOG_PROC, "confuiCreateTagListingDisp");
 
-  selidx = uiSpinboxTextGetValue (&confui->uiitem [CONFUI_SPINBOX_DISP_SEL].u.spinbox);
+  selidx = uiSpinboxTextGetValue (confui->uiitem [CONFUI_SPINBOX_DISP_SEL].u.spinbox);
 
   if (selidx == DISP_SEL_SONGEDIT_A || selidx == DISP_SEL_SONGEDIT_B) {
     uiduallistSet (confui->dispselduallist, confui->edittaglist,

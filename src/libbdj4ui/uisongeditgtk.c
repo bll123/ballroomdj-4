@@ -23,7 +23,7 @@ typedef struct {
   int         tagkey;
   union {
     uientry_t   *entry;
-    uispinbox_t spinbox;
+    uispinbox_t *spinbox;
     UIWidget    uiwidget;
   };
   UIWidget    display;
@@ -108,7 +108,7 @@ uisongeditUIFree (uisongedit_t *uisongedit)
             break;
           }
           case ET_SPINBOX_TIME: {
-            uiSpinboxTimeFree (&uiw->items [count].spinbox);
+            uiSpinboxTimeFree (uiw->items [count].spinbox);
             break;
           }
           case ET_NA:
@@ -232,7 +232,6 @@ uisongeditAddDisplay (uisongedit_t *uisongedit, UIWidget *col, int dispsel)
     }
     if (tagdefs [tagkey].editType != ET_LABEL &&
         ! tagdefs [tagkey].isEditable) {
-fprintf (stderr, "not %s\n", tagdefs [tagkey].displayname);
       continue;
     }
 
@@ -245,8 +244,6 @@ fprintf (stderr, "not %s\n", tagdefs [tagkey].displayname);
           sizeof (uisongedititem_t) * uiw->itemalloccount);
     }
 
-fprintf (stderr, "add %d %d %s\n", dispsel, uiw->itemcount,
-tagdefs [tagkey].displayname);
     uisongeditAddItem (uisongedit, &hbox, tagkey);
 
     uiw->items [uiw->itemcount].tagkey = tagkey;
@@ -350,13 +347,13 @@ uisongeditAddSpinboxTime (uisongedit_t *uisongedit, UIWidget *hbox, int tagkey)
   UIWidget        *uiwidgetp;
 
   uiw = uisongedit->uiWidgetData;
-  sbp = &uiw->items [uiw->itemcount].spinbox;
-//  uiSpinboxTimeInit (sbp);
-//  uiSpinboxTimeCreate (sbp, uisongedit, NULL);
-//  uiSpinboxTimeSetValue (sbp, 0);
-//  uiwidgetp = uiSpinboxGetUIWidget (sbp);
-//  uiSizeGroupAdd (&uiw->sgsbtime, uiwidgetp);
-//  uiBoxPackStart (hbox, uiwidgetp);
+  sbp = uiSpinboxTimeInit ();
+  uiw->items [uiw->itemcount].spinbox = sbp;
+  uiSpinboxTimeCreate (sbp, uisongedit, NULL);
+  uiSpinboxTimeSetValue (sbp, 0);
+  uiwidgetp = uiSpinboxGetUIWidget (sbp);
+  uiSizeGroupAdd (&uiw->sgsbtime, uiwidgetp);
+  uiBoxPackStart (hbox, uiwidgetp);
 }
 
 static void

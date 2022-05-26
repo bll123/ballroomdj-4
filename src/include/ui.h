@@ -94,33 +94,33 @@ int uiEntryValidateFile (uientry_t *edata, void *udata);
 GtkWidget * uiEntryGetWidget (uientry_t *entry);
 
 /* uigtkspinbox.c */
-void uiSpinboxTextInit (uispinbox_t *spinbox);
-void uiSpinboxTextFree (uispinbox_t *spinbox);
-void uiSpinboxTextCreate (uispinbox_t *spinbox, void *udata);
-void uiSpinboxTextSet (uispinbox_t *spinbox, int min, int count,
+uispinbox_t *uiSpinboxTextInit (void);
+void  uiSpinboxTextFree (uispinbox_t *spinbox);
+void  uiSpinboxTextCreate (uispinbox_t *spinbox, void *udata);
+void  uiSpinboxTextSet (uispinbox_t *spinbox, int min, int count,
     int maxWidth, slist_t *list, nlist_t *keylist, uispinboxdisp_t textGetProc);
 int   uiSpinboxTextGetIdx (uispinbox_t *spinbox);
 int   uiSpinboxTextGetValue (uispinbox_t *spinbox);
 void  uiSpinboxTextSetValue (uispinbox_t *spinbox, int ivalue);
 
-void uiSpinboxIntCreate (UIWidget *uiwidget);
-void uiSpinboxDoubleCreate (UIWidget *uiwidget);
+void  uiSpinboxIntCreate (UIWidget *uiwidget);
+void  uiSpinboxDoubleCreate (UIWidget *uiwidget);
 
-void  uiSpinboxTimeInit (uispinbox_t *spinbox);
+uispinbox_t *uiSpinboxTimeInit (void);
 void  uiSpinboxTimeFree (uispinbox_t *spinbox);
-void uiSpinboxTimeCreate (uispinbox_t *spinbox, void *udata, UICallback *convcb);
+void  uiSpinboxTimeCreate (uispinbox_t *spinbox, void *udata, UICallback *convcb);
 ssize_t uiSpinboxTimeGetValue (uispinbox_t *spinbox);
 void  uiSpinboxTimeSetValue (uispinbox_t *spinbox, ssize_t value);
 
-void uiSpinboxSetRange (uispinbox_t *spinbox, long min, long max);
-void uiSpinboxWrap (uispinbox_t *spinbox);
-void uiSpinboxSet (UIWidget *uispinbox, double min, double max);
+void  uiSpinboxSetRange (uispinbox_t *spinbox, long min, long max);
+void  uiSpinboxWrap (uispinbox_t *spinbox);
+void  uiSpinboxSet (UIWidget *uispinbox, double min, double max);
 double uiSpinboxGetValue (UIWidget *uispinbox);
-void uiSpinboxSetValue (UIWidget *uispinbox, double ivalue);
-bool uiSpinboxIsChanged (uispinbox_t *spinbox);
-void uiSpinboxResetChanged (uispinbox_t *spinbox);
-void uiSpinboxAlignRight (uispinbox_t *spinbox);
-void uiSpinboxSetColor (uispinbox_t *spinbox, const char *color);
+void  uiSpinboxSetValue (UIWidget *uispinbox, double ivalue);
+bool  uiSpinboxIsChanged (uispinbox_t *spinbox);
+void  uiSpinboxResetChanged (uispinbox_t *spinbox);
+void  uiSpinboxAlignRight (uispinbox_t *spinbox);
+void  uiSpinboxSetColor (uispinbox_t *spinbox, const char *color);
 UIWidget * uiSpinboxGetUIWidget (uispinbox_t *spinbox);
 
 /* these routines will be removed at a later date */
@@ -128,9 +128,9 @@ GtkWidget * uiSpinboxTextCreateW (uispinbox_t *spinbox, void *udata);
 GtkWidget * uiSpinboxTimeCreateW (uispinbox_t *spinbox, void *udata, UICallback *convcb);
 GtkWidget * uiSpinboxIntCreateW (void);
 GtkWidget * uiSpinboxDoubleCreateW (void);
-void  uiSpinboxSetW (GtkWidget *spinbox, double min, double max);
+void    uiSpinboxSetW (GtkWidget *spinbox, double min, double max);
 double uiSpinboxGetValueW (GtkWidget *spinbox);
-void  uiSpinboxSetValueW (GtkWidget *spinbox, double ivalue);
+void    uiSpinboxSetValueW (GtkWidget *spinbox, double ivalue);
 
 
 /* uigtkdropdown.c */

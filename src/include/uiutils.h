@@ -102,17 +102,8 @@ enum {
   UIENTRY_OK,
 };
 
-typedef struct uientry {
-  GtkEntryBuffer  *buffer;
-  UIWidget        uientry;
-  int             entrySize;
-  int             maxSize;
-  uiutilsentryval_t validateFunc;
-  mstime_t        validateTimer;
-  void            *udata;
-} uientry_t;
-
 typedef struct {
+  int             sbtype;
   UIWidget        uispinbox;
   UICallback      *convcb;
   int             curridx;

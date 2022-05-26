@@ -20,7 +20,7 @@
 
 typedef struct uirating {
   rating_t      *ratings;
-  uispinbox_t   spinbox;
+  uispinbox_t   *spinbox;
   bool          allflag;
 } uirating_t;
 
@@ -38,9 +38,9 @@ uiratingSpinboxCreate (UIWidget *boxp, bool allflag)
   uirating = malloc (sizeof (uirating_t));
   uirating->ratings = bdjvarsdfGet (BDJVDF_RATINGS);
   uirating->allflag = allflag;
-  uiSpinboxTextInit (&uirating->spinbox);
+  uirating->spinbox = uiSpinboxTextInit ();
 
-  uiSpinboxTextCreate (&uirating->spinbox, uirating);
+  uiSpinboxTextCreate (uirating->spinbox, uirating);
 
   start = 0;
   maxw = ratingGetMaxWidth (uirating->ratings);
@@ -52,11 +52,11 @@ uiratingSpinboxCreate (UIWidget *boxp, bool allflag)
     }
     start = -1;
   }
-  uiSpinboxTextSet (&uirating->spinbox, start,
+  uiSpinboxTextSet (uirating->spinbox, start,
       ratingGetCount (uirating->ratings),
       maxw, NULL, NULL, uiratingRatingGet);
 
-  uiBoxPackStart (boxp, uiSpinboxGetUIWidget (&uirating->spinbox));
+  uiBoxPackStart (boxp, uiSpinboxGetUIWidget (uirating->spinbox));
 
   return uirating;
 }
@@ -66,7 +66,7 @@ void
 uiratingFree (uirating_t *uirating)
 {
   if (uirating != NULL) {
-    uiSpinboxTextFree (&uirating->spinbox);
+    uiSpinboxTextFree (uirating->spinbox);
     free (uirating);
   }
 }
@@ -80,7 +80,7 @@ uiratingGetValue (uirating_t *uirating)
     return 0;
   }
 
-  idx = uiSpinboxTextGetValue (&uirating->spinbox);
+  idx = uiSpinboxTextGetValue (uirating->spinbox);
   return idx;
 }
 
@@ -91,7 +91,7 @@ uiratingSetValue (uirating_t *uirating, int value)
     return;
   }
 
-  uiSpinboxTextSetValue (&uirating->spinbox, value);
+  uiSpinboxTextSetValue (uirating->spinbox, value);
 }
 
 /* internal routines */

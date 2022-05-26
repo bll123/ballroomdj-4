@@ -206,17 +206,17 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
     uiBoxPackStart (&hbox, &uiwidget);
     uiSizeGroupAdd (&sg, &uiwidget);
 
-    uiSpinboxTextCreate (&uisongsel->filterstatussel, uisongsel);
+    uiSpinboxTextCreate (uisongsel->filterstatussel, uisongsel);
     max = statusGetMaxWidth (uisongsel->status);
     /* CONTEXT: a filter: all statuses are displayed in the song selection */
     len = istrlen (_("Any Status"));
     if (len > max) {
       max = len;
     }
-    uiSpinboxTextSet (&uisongsel->filterstatussel, -1,
+    uiSpinboxTextSet (uisongsel->filterstatussel, -1,
         statusGetCount (uisongsel->status),
         max, NULL, NULL, uisongselStatusGet);
-    uiBoxPackStart (&hbox, uiSpinboxGetUIWidget (&uisongsel->filterstatussel));
+    uiBoxPackStart (&hbox, uiSpinboxGetUIWidget (uisongsel->filterstatussel));
   }
 
   /* favorite */
@@ -229,10 +229,10 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
     uiBoxPackStart (&hbox, &uiwidget);
     uiSizeGroupAdd (&sg, &uiwidget);
 
-    uiSpinboxTextCreate (&uisongsel->filterfavoritesel, uisongsel);
-    uiSpinboxTextSet (&uisongsel->filterfavoritesel, 0,
+    uiSpinboxTextCreate (uisongsel->filterfavoritesel, uisongsel);
+    uiSpinboxTextSet (uisongsel->filterfavoritesel, 0,
         SONG_FAVORITE_MAX, 1, NULL, NULL, uisongselFavoriteGet);
-    uiBoxPackStart (&hbox, uiSpinboxGetUIWidget (&uisongsel->filterfavoritesel));
+    uiBoxPackStart (&hbox, uiSpinboxGetUIWidget (uisongsel->filterfavoritesel));
   }
 
   /* status playable */
@@ -343,7 +343,7 @@ uisongselFilterUpdate (uisongsel_t *uisongsel)
 
   /* status */
   if (songfilterCheckSelection (uisongsel->songfilter, FILTER_DISP_STATUS)) {
-    idx = uiSpinboxTextGetValue (&uisongsel->filterstatussel);
+    idx = uiSpinboxTextGetValue (uisongsel->filterstatussel);
     if (idx >= 0) {
       songfilterSetNum (uisongsel->songfilter, SONG_FILTER_STATUS, idx);
     } else {
@@ -353,7 +353,7 @@ uisongselFilterUpdate (uisongsel_t *uisongsel)
 
   /* favorite */
   if (songfilterCheckSelection (uisongsel->songfilter, FILTER_DISP_FAVORITE)) {
-    idx = uiSpinboxTextGetValue (&uisongsel->filterfavoritesel);
+    idx = uiSpinboxTextGetValue (uisongsel->filterfavoritesel);
     if (idx != SONG_FAVORITE_NONE) {
       songfilterSetNum (uisongsel->songfilter, SONG_FILTER_FAVORITE, idx);
     } else {

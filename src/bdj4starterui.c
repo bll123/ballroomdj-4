@@ -108,7 +108,7 @@ typedef struct {
   nlist_t         *proflist;
   UICallback      callbacks [START_CALLBACK_MAX];
   startlinkcb_t   macoslinkcb [START_LINK_CB_MAX];
-  uispinbox_t     profilesel;
+  uispinbox_t     *profilesel;
   UIWidget        supportDialog;
   UIWidget        supportMsgDialog;
   UIWidget        supportSendFiles;
@@ -241,7 +241,7 @@ main (int argc, char *argv[])
   bdj4startup (argc, argv, NULL, "st", ROUTE_STARTERUI, flags);
   logProcBegin (LOG_PROC, "starterui");
 
-  uiSpinboxTextInit (&starter.profilesel);
+  starter.profilesel = uiSpinboxTextInit ();
 
   listenPort = bdjvarsGetNum (BDJVL_STARTERUI_PORT);
   starter.conn = connInit (ROUTE_STARTERUI);
@@ -365,7 +365,7 @@ starterClosingCallback (void *udata, programstate_t programState)
   if (starter->supporttb != NULL) {
     uiTextBoxFree (starter->supporttb);
   }
-  uiSpinboxTextFree (&starter->profilesel);
+  uiSpinboxTextFree (starter->profilesel);
 
   pathbldMakePath (fn, sizeof (fn),
       "starterui", BDJ4_CONFIG_EXT, PATHBLD_MP_USEIDX);
@@ -459,11 +459,11 @@ starterBuildUI (startui_t  *starter)
 
   /* get the profile list after bdjopt has been initialized */
   starter->proflist = starterGetProfiles (starter);
-  uiSpinboxTextCreate (&starter->profilesel, starter);
-  uiSpinboxTextSet (&starter->profilesel, starter->currprofile,
+  uiSpinboxTextCreate (starter->profilesel, starter);
+  uiSpinboxTextSet (starter->profilesel, starter->currprofile,
       nlistGetCount (starter->proflist), starter->maxProfileWidth,
       starter->proflist, NULL, starterSetProfile);
-  uiwidgetp = uiSpinboxGetUIWidget (&starter->profilesel);
+  uiwidgetp = uiSpinboxGetUIWidget (starter->profilesel);
   uiWidgetSetMarginStart (uiwidgetp, uiBaseMarginSz * 4);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiBoxPackStart (&hbox, uiwidgetp);
@@ -1187,9 +1187,9 @@ starterSetProfile (void *udata, int idx)
   char      *disp;
   int       profidx;
 
-  profidx = uiSpinboxTextGetValue (&starter->profilesel);
+  profidx = uiSpinboxTextGetValue (starter->profilesel);
   sysvarsSetNum (SVL_BDJIDX, profidx);
-  disp = nlistGetStr (starter->profilesel.list, profidx);
+  disp = nlistGetStr (starter->profilesel->list, profidx);
   return disp;
 }
 

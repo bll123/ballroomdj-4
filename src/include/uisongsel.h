@@ -48,8 +48,8 @@ typedef struct {
   uientry_t         *searchentry;
   uirating_t        *uirating;
   uilevel_t         *uilevel;
-  uispinbox_t       filterstatussel;
-  uispinbox_t       filterfavoritesel;
+  uispinbox_t       *filterstatussel;
+  uispinbox_t       *filterfavoritesel;
   time_t            filterApplied;
   uiswitch_t        *playstatusswitch;
   /* song selection tab */

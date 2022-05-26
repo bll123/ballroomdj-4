@@ -14,6 +14,11 @@
 #include "ui.h"
 #include "uiutils.h"
 
+enum {
+  SB_TEXT,
+  SB_TIME,
+};
+
 static gint uiSpinboxInput (GtkSpinButton *sb, gdouble *newval, gpointer udata);
 static gint uiSpinboxTimeInput (GtkSpinButton *sb, gdouble *newval, gpointer udata);
 static gboolean uiSpinboxTextDisplay (GtkSpinButton *sb, gpointer udata);
@@ -22,9 +27,12 @@ static char * uiSpinboxTextGetDisp (slist_t *list, int idx);
 
 static gboolean uiuitilsSpinboxTextKeyCallback (GtkWidget *w, GdkEventKey *event, gpointer udata);
 
-void
-uiSpinboxTextInit (uispinbox_t *spinbox)
+uispinbox_t *
+uiSpinboxTextInit (void)
 {
+  uispinbox_t   *spinbox;
+
+  spinbox = malloc (sizeof (uispinbox_t));
   uiutilsUIWidgetInit (&spinbox->uispinbox);
   spinbox->convcb = NULL;
   spinbox->curridx = 0;
@@ -36,6 +44,9 @@ uiSpinboxTextInit (uispinbox_t *spinbox)
   spinbox->list = NULL;
   spinbox->keylist = NULL;
   spinbox->idxlist = NULL;
+  spinbox->sbtype = SB_TEXT;
+
+  return spinbox;
 }
 
 
@@ -46,6 +57,7 @@ uiSpinboxTextFree (uispinbox_t *spinbox)
     if (spinbox->idxlist != NULL) {
       nlistFree (spinbox->idxlist);
     }
+    free (spinbox);
   }
 }
 
@@ -140,10 +152,14 @@ uiSpinboxTextSetValue (uispinbox_t *spinbox, int value)
   uiSpinboxSetValue (&spinbox->uispinbox, (double) idx);
 }
 
-void
-uiSpinboxTimeInit (uispinbox_t *spinbox)
+uispinbox_t *
+uiSpinboxTimeInit (void)
 {
-  uiSpinboxTextInit (spinbox);
+  uispinbox_t *uispinbox;
+
+  uispinbox = uiSpinboxTextInit ();
+  uispinbox->sbtype = SB_TIME;
+  return uispinbox;
 }
 
 void

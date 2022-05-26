@@ -19,8 +19,8 @@
 #include "uiutils.h"
 
 typedef struct uilevel {
-  level_t      *levels;
-  uispinbox_t   spinbox;
+  level_t       *levels;
+  uispinbox_t   *spinbox;
   bool          allflag;
 } uilevel_t;
 
@@ -38,9 +38,9 @@ uilevelSpinboxCreate (UIWidget *boxp, bool allflag)
   uilevel = malloc (sizeof (uilevel_t));
   uilevel->levels = bdjvarsdfGet (BDJVDF_LEVELS);
   uilevel->allflag = allflag;
-  uiSpinboxTextInit (&uilevel->spinbox);
+  uilevel->spinbox = uiSpinboxTextInit ();
 
-  uiSpinboxTextCreate (&uilevel->spinbox, uilevel);
+  uiSpinboxTextCreate (uilevel->spinbox, uilevel);
 
   start = 0;
   maxw = levelGetMaxWidth (uilevel->levels);
@@ -52,11 +52,11 @@ uilevelSpinboxCreate (UIWidget *boxp, bool allflag)
     }
     start = -1;
   }
-  uiSpinboxTextSet (&uilevel->spinbox, start,
+  uiSpinboxTextSet (uilevel->spinbox, start,
       levelGetCount (uilevel->levels),
       maxw, NULL, NULL, uilevelLevelGet);
 
-  uiBoxPackStart (boxp, uiSpinboxGetUIWidget (&uilevel->spinbox));
+  uiBoxPackStart (boxp, uiSpinboxGetUIWidget (uilevel->spinbox));
 
   return uilevel;
 }
@@ -66,7 +66,7 @@ void
 uilevelFree (uilevel_t *uilevel)
 {
   if (uilevel != NULL) {
-    uiSpinboxTextFree (&uilevel->spinbox);
+    uiSpinboxTextFree (uilevel->spinbox);
     free (uilevel);
   }
 }
@@ -80,7 +80,7 @@ uilevelGetValue (uilevel_t *uilevel)
     return 0;
   }
 
-  idx = uiSpinboxTextGetValue (&uilevel->spinbox);
+  idx = uiSpinboxTextGetValue (uilevel->spinbox);
   return idx;
 }
 
@@ -91,7 +91,7 @@ uilevelSetValue (uilevel_t *uilevel, int value)
     return;
   }
 
-  uiSpinboxTextSetValue (&uilevel->spinbox, value);
+  uiSpinboxTextSetValue (uilevel->spinbox, value);
 }
 
 /* internal routines */

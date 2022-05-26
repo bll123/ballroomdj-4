@@ -19,6 +19,16 @@
 #include "ui.h"
 #include "uiutils.h"
 
+typedef struct uientry {
+  GtkEntryBuffer  *buffer;
+  UIWidget        uientry;
+  int             entrySize;
+  int             maxSize;
+  uiutilsentryval_t validateFunc;
+  mstime_t        validateTimer;
+  void            *udata;
+} uientry_t;
+
 static void uiEntryValidateStart (GtkEditable *e, gpointer udata);
 
 uientry_t *
@@ -99,6 +109,9 @@ uiEntryGetValue (uientry_t *entry)
   if (entry == NULL) {
     return NULL;
   }
+  if (entry->buffer == NULL) {
+    return NULL;
+  }
 
   value = gtk_entry_buffer_get_text (entry->buffer);
   return value;
@@ -107,6 +120,13 @@ uiEntryGetValue (uientry_t *entry)
 void
 uiEntrySetValue (uientry_t *entry, const char *value)
 {
+  if (entry == NULL) {
+    return;
+  }
+  if (entry->buffer == NULL) {
+    return;
+  }
+
   gtk_entry_buffer_set_text (entry->buffer, value, -1);
 }
 
