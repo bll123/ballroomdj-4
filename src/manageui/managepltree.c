@@ -96,6 +96,7 @@ manageBuildUIPlaylistTree (managepltree_t *managepltree, UIWidget *vboxp,
   GtkWidget   *tree;
   GtkCellRenderer *renderer = NULL;
   GtkTreeViewColumn *column = NULL;
+  char        *bpmstr;
 
   uiCreateHorizBox (&hbox);
   uiBoxPackEnd (tophbox, &hbox);
@@ -186,8 +187,13 @@ manageBuildUIPlaylistTree (managepltree_t *managepltree, UIWidget *vboxp,
       NULL);
   managepltree->lowbpmcol = column;
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
+
+  val = bdjoptGetNum (OPT_G_BPM);
+  bpmstr = val == BPM_BPM ? _("BPM") : _("MPM");
+
   /* CONTEXT: playlist management: low bpm/mpm column header */
-  gtk_tree_view_column_set_title (column, _("Low BPM"));
+  snprintf (tbuff, sizeof (tbuff), _("Low %s"), bpmstr);
+  gtk_tree_view_column_set_title (column, tbuff);
   gtk_tree_view_append_column (GTK_TREE_VIEW (tree), column);
   g_signal_connect (renderer, "edited",
       G_CALLBACK (managePlaylistTreeEditInt), managepltree);
@@ -204,8 +210,10 @@ manageBuildUIPlaylistTree (managepltree_t *managepltree, UIWidget *vboxp,
       NULL);
   managepltree->highbpmcol = column;
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
+
   /* CONTEXT: playlist management: high bpm/mpm column */
-  gtk_tree_view_column_set_title (column, _("High BPM"));
+  snprintf (tbuff, sizeof (tbuff), _("High %s"), bpmstr);
+  gtk_tree_view_column_set_title (column, tbuff);
   gtk_tree_view_append_column (GTK_TREE_VIEW (tree), column);
   g_signal_connect (renderer, "edited",
       G_CALLBACK (managePlaylistTreeEditInt), managepltree);

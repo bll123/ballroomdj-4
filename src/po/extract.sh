@@ -26,27 +26,29 @@ function mkpo {
   elang=$5
 
   echo "-- $(date +%T) creating $out"
-  if [[ -f ${out} ]]; then
+  if [[ -f ${out} && ${out} != en_GB.po ]]; then
     # re-use data from existing file
-    mv ${out} ${out}.old
-
+    mv -f ${out} ${out}.old
     > ${out}
+
     sed -n '1,/^$/ p' ${out}.old >> ${out}
     # "POT-Creation-Date: 2022-05-26"
     cdt=$(egrep '^"POT-Creation-Date:' bdj4.pot)
     # "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE"
     # "PO-Revision-Date: 2022-05-27 14:09"
     sed -i \
-      -e "s,PO-Revision-Date:.*,PO-Revision-Date: ${dt}\\n\"," \
-      -e "s,"POT-Creation-Date:.*,${cdt}," \
+      -e "s,PO-Revision-Date:.*,PO-Revision-Date: ${dt}\\\\n\"," \
+      -e "s/: [0-9-]+ [0-9:-]+/: ${dt}/" \
       ${out}
+    sed -n '/^$/,$ p' bdj4.pot >> ${out}
   else
     # new file
+    > ${out}
     echo "# == $dlang" >> ${out}
     echo "# -- $elang" >> ${out}
     sed -e '1,6 d' \
         -e "s/YEAR-MO-DA.*ZONE/${dt}/" \
-        -e "s/: [0-9][0-9][0-9 :-]*/: ${dt}/" \
+        -e "s/: [0-9-]+ [0-9:-]+/: ${dt}/" \
         -e "s/PACKAGE/ballroomdj-4/" \
         -e "s/VERSION/${VERSION}/" \
         -e "s/FULL NAME.*ADDRESS./${xlator}/" \
@@ -135,6 +137,7 @@ mkpo en en_GB.po 'Automatically generated' 'English (GB)' english/gb
 rm -f en_GB.po.old
 
 mkpo nl nl_BE.po 'marimo' Nederlands dutch
+
 #mkpo fi fi_FI.po 'unassigned' Suomi finnish
 #mkpo de de_DE.po 'unassigned' Deutsch german
 #mkpo es es_ES.po 'unassigned' Español spanish

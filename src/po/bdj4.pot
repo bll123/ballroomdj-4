@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-05-27 07:16-0700\n"
+"POT-Creation-Date: 2022-05-27 09:08-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -686,12 +686,9 @@ msgid "Hide Unselected"
 msgstr ""
 
 #. CONTEXT: configuration: dances: high BPM (or MPM) setting
+#. CONTEXT: playlist management: high bpm/mpm column
 #, c-format
 msgid "High %s"
-msgstr ""
-
-#. CONTEXT: playlist management: high bpm/mpm column
-msgid "High BPM"
 msgstr ""
 
 #. CONTEXT: playlist management: High Dance Level
@@ -790,12 +787,9 @@ msgid "Located 'tclsh'."
 msgstr ""
 
 #. CONTEXT: configuration: dances: low BPM (or MPM) setting
+#. CONTEXT: playlist management: low bpm/mpm column header
 #, c-format
 msgid "Low %s"
-msgstr ""
-
-#. CONTEXT: playlist management: low bpm/mpm column header
-msgid "Low BPM"
 msgstr ""
 
 #. CONTEXT: playlist management: Low Dance Level

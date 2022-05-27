@@ -2,15 +2,15 @@
 # -- english/us
 msgid ""
 msgstr ""
-"Project-Id-Version: BDJ4 4.0.0\n"
+"Project-Id-Version: ballroomdj-4 4.0.0\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
-"POT-Creation-Date: 2022-05-27\n"
+"POT-Creation-Date: 2022-05-27 09:08-0700\n"
 "PO-Revision-Date: 2022-05-27\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/us\n"
 "Language: en\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #. CONTEXT: database update: status message
@@ -682,12 +682,9 @@ msgid "Hide Unselected"
 msgstr ""
 
 #. CONTEXT: configuration: dances: high BPM (or MPM) setting
+#. CONTEXT: playlist management: high bpm/mpm column
 #, c-format
 msgid "High %s"
-msgstr ""
-
-#. CONTEXT: playlist management: high bpm/mpm column
-msgid "High BPM"
 msgstr ""
 
 #. CONTEXT: playlist management: High Dance Level
@@ -786,12 +783,9 @@ msgid "Located 'tclsh'."
 msgstr ""
 
 #. CONTEXT: configuration: dances: low BPM (or MPM) setting
+#. CONTEXT: playlist management: low bpm/mpm column header
 #, c-format
 msgid "Low %s"
-msgstr ""
-
-#. CONTEXT: playlist management: low bpm/mpm column header
-msgid "Low BPM"
 msgstr ""
 
 #. CONTEXT: playlist management: Low Dance Level

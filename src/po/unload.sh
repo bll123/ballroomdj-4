@@ -26,6 +26,6 @@ for f in *.po; do
 done
 
 test -d $TMP && rm -rf $TMP
-rm -f "BalroomDJ 4 "*.zip
+rm -f "BallroomDJ 4 "*.zip
 
 exit 0

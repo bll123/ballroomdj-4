@@ -1,11 +1,11 @@
 # == Nederlands
-# -- dutch
+msgid ""
 msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
-"POT-Creation-Date: 2022-05-26\n"
-"PO-Revision-Date: 2022-05-27 14:09\n"
+"POT-Creation-Date: 2022-05-27 09:08-0700\n"
+"PO-Revision-Date: 2022-05-27 16:10\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -373,7 +373,7 @@ msgstr ""
 
 #. CONTEXT: playlist management: count column header
 msgid "Count"
-msgstr "Aantal"
+msgstr "Tellen"
 
 msgid "Create Copy"
 msgstr "Kopie maken"
@@ -688,13 +688,10 @@ msgid "Hide Unselected"
 msgstr "Niet-geselecteerde verbergen"
 
 #. CONTEXT: configuration: dances: high BPM (or MPM) setting
+#. CONTEXT: playlist management: high bpm/mpm column
 #, c-format
 msgid "High %s"
 msgstr "Hoge %s"
-
-#. CONTEXT: playlist management: high bpm/mpm column
-msgid "High BPM"
-msgstr ""
 
 #. CONTEXT: playlist management: High Dance Level
 msgid "High Dance Level"
@@ -792,13 +789,10 @@ msgid "Located 'tclsh'."
 msgstr ""
 
 #. CONTEXT: configuration: dances: low BPM (or MPM) setting
+#. CONTEXT: playlist management: low bpm/mpm column header
 #, c-format
 msgid "Low %s"
 msgstr "Lage %s"
-
-#. CONTEXT: playlist management: low bpm/mpm column header
-msgid "Low BPM"
-msgstr ""
 
 #. CONTEXT: playlist management: Low Dance Level
 msgid "Low Dance Level"
@@ -840,7 +834,8 @@ msgstr ""
 #. CONTEXT: playlist management: max play time column header (keep short)
 msgid "Maximum\n"
 "Play Time"
-msgstr "Maximale afspeeltijd"
+msgstr "Maximale\n"
+"afspeeltijd"
 
 #. CONTEXT: configuration: the maximum amount of time to play a song
 #. CONTEXT: playlist management: maximum play time
@@ -884,7 +879,7 @@ msgstr ""
 
 #. CONTEXT: configuration: the music folder where the user store their music
 msgid "Music Folder"
-msgstr "Muziek Map"
+msgstr "Muziekmap"
 
 #. CONTEXT: display settings for: music manager
 #. CONTEXT: name of music manager notebook tab
@@ -895,7 +890,7 @@ msgstr "Muziek Manager"
 #. CONTEXT: display settings for: music queue
 #. CONTEXT: name of a music queue
 msgid "Music Queue"
-msgstr "Muziekwachtrij"
+msgstr "Muziek wachtrij"
 
 #. CONTEXT: configuration: the name to use for the mobile marquee internet mode
 #. CONTEXT: mobile marquee: the name to use for internet routing
