@@ -13,6 +13,7 @@
 #include <gtk/gtk.h>
 
 #include "bdj4intl.h"
+#include "bdjopt.h"
 #include "bdjvarsdf.h"
 #include "dance.h"
 #include "manageui.h"
@@ -96,7 +97,9 @@ manageBuildUIPlaylistTree (managepltree_t *managepltree, UIWidget *vboxp,
   GtkWidget   *tree;
   GtkCellRenderer *renderer = NULL;
   GtkTreeViewColumn *column = NULL;
+  int         val;
   char        *bpmstr;
+  char        tbuff [100];
 
   uiCreateHorizBox (&hbox);
   uiBoxPackEnd (tophbox, &hbox);
