@@ -54,7 +54,7 @@ validate (const char *str, int valflags)
   if ((valflags & VAL_NO_SPACES) == VAL_NO_SPACES) {
     if (str != NULL && strstr (str, " ") != NULL) {
       /* CONTEXT: validation: spaces are not allowed  */
-      valstr = _("%s: Spaces are not allowed");
+      valstr = _("%s: Spaces are not allowed.");
     }
   }
   if ((valflags & VAL_NO_SLASHES) == VAL_NO_SLASHES) {
@@ -68,8 +68,8 @@ validate (const char *str, int valflags)
   if ((valflags & VAL_NUMERIC) == VAL_NUMERIC) {
     rx = regexInit (valregex [VAL_REGEX_NUMERIC].regex);
     if (str != NULL && ! regexMatch (rx, str)) {
-      /* CONTEXT: validation: spaces are not allowed  */
-      valstr = _("%s: Spaces are not allowed.");
+      /* CONTEXT: validation: must be numeric */
+      valstr = _("%s: must be numeric.");
     }
     regexFree (rx);
   }

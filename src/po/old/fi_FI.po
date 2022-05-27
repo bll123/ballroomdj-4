@@ -4,13 +4,13 @@ msgstr ""
 "X-Crowdin-Project: ballroomdj\n"
 "X-Crowdin-Project-ID: 109864\n"
 "X-Crowdin-Language: fi\n"
-"X-Crowdin-File: /3.32.15/en.po\n"
-"X-Crowdin-File-ID: 121\n"
+"X-Crowdin-File: /3.32.16/en.po\n"
+"X-Crowdin-File-ID: 125\n"
 "Project-Id-Version: ballroomdj\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Language-Team: Finnish\n"
 "Language: fi_FI\n"
-"PO-Revision-Date: 2021-12-11 18:12\n"
+"PO-Revision-Date: 2022-05-27 04:44\n"
 
 msgid "   #"
 msgstr "   #"
@@ -166,7 +166,7 @@ msgstr "Lisäasetukset"
 
 # mobile marquee: restart bdj after configuration
 msgid "After configuring, "
-msgstr ""
+msgstr "Määrittämisen jälkeen, "
 
 # Sort key: album
 # Organization: display text for 'album'
@@ -414,11 +414,14 @@ msgstr "Klassinen. Joukko artisteja polku:"
 msgid "Classical?"
 msgstr "Klassinen?"
 
+msgid "Clean export database and playlists."
+msgstr "Puhdista vientitietokanta ja soittolistat."
+
 msgid "Clear"
 msgstr "Tyhjennä"
 
 msgid "Clear & Play"
-msgstr ""
+msgstr "Tyhjennä & Toista"
 
 msgid "Clear & Remove"
 msgstr "Tyhjennä & Poista"
@@ -426,12 +429,12 @@ msgstr "Tyhjennä & Poista"
 # quickplay: stop the player and clear all songs from the queue
 # remote: clear the queues and playing song
 msgid "Clear Player"
-msgstr ""
+msgstr "Tyhjennä soitin"
 
 # quickplay: clear all songs from the queue
 # remote: clear the queue
 msgid "Clear Queue"
-msgstr ""
+msgstr "Tyhjennä jono"
 
 msgid "Clear Same Song Mark"
 msgstr "Tyhjennä sama kappale merkintä"
@@ -500,7 +503,7 @@ msgid "Connect to Server:"
 msgstr ""
 
 msgid "Connecting..."
-msgstr ""
+msgstr "Yhdistetään..."
 
 msgid "Connection Information:"
 msgstr ""
@@ -1449,7 +1452,7 @@ msgid "MISSING"
 msgstr ""
 
 msgid "Missing import database."
-msgstr ""
+msgstr "Tuontitietokanta puuttuu."
 
 msgid "Missing sequence."
 msgstr ""
@@ -1462,20 +1465,20 @@ msgid "Mix"
 msgstr ""
 
 msgid "Mobile Marquee"
-msgstr ""
+msgstr "Mobile Marquee"
 
 msgid "Mobile Marquee Name:"
-msgstr ""
+msgstr "Mobiili-Marqueen nimi:"
 
 msgid "Mobile Marquee Port:"
-msgstr ""
+msgstr "Mobiili-Marqueen portti:"
 
 # title displayed on mobile marquee
 msgid "Mobile Marquee Title:"
-msgstr ""
+msgstr "Mobiili-Marqueen otsikko:"
 
 msgid "Mobile Marquee:"
-msgstr ""
+msgstr "Mobile Marquee:"
 
 msgid "Mobile Remote Control"
 msgstr ""
@@ -1561,7 +1564,7 @@ msgstr ""
 
 # Balloon help: Player: Next Song
 msgid "Next Song"
-msgstr ""
+msgstr "Seuraava kappale"
 
 msgid "No Action"
 msgstr ""
@@ -1785,7 +1788,7 @@ msgstr ""
 # quickplay: play 5 songs
 # remote: play 5 songs
 msgid "Play 5"
-msgstr ""
+msgstr "Toista 5"
 
 msgid "Play Announcement"
 msgstr ""
@@ -1796,7 +1799,7 @@ msgstr ""
 # quickplay: play continuously
 # remote: play continuously
 msgid "Play Continuously"
-msgstr ""
+msgstr "Toista jatkuvasti"
 
 msgid "Play Music:"
 msgstr ""
@@ -1915,11 +1918,11 @@ msgstr ""
 
 # Database processing was aborted.
 msgid "Processing Aborted."
-msgstr ""
+msgstr "Käsittely keskeytettiin."
 
 # Database processing is complete.
 msgid "Processing Complete."
-msgstr ""
+msgstr "Käsittely valmis."
 
 msgid "Processing iTunes Data"
 msgstr ""
@@ -2248,7 +2251,7 @@ msgid "Save Complete"
 msgstr ""
 
 msgid "Save Dance"
-msgstr ""
+msgstr "Tallenna tanssi"
 
 msgid "Save Playlist"
 msgstr ""
@@ -2442,7 +2445,7 @@ msgstr ""
 
 # show dance on mobile remote control screen
 msgid "Show Dance:"
-msgstr ""
+msgstr "Show-tanssi:"
 
 msgid "Show New Year's Countdown"
 msgstr ""

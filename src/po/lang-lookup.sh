@@ -9,15 +9,18 @@ for pofile in *.po; do
     ;;
   esac
 
-  pfx=$(echo $pofile | sed 's/\(..\).*/\1/')
-  tmppo=$(echo old/$pfx*)
-  if [[ $tmppo == old/$pofile ]]; then
-    tmppo="xyz"
+  opofile=old/$pofile
+  if [[ ! -f $opofile ]]; then
+    pfx=$(echo $pofile | sed 's/\(..\).*/\1/')
+    tmppo=$(echo old/$pfx*)
+    if [[ -f $tmppo ]]; then
+      opofile=$tmppo
+    fi
   fi
 
   test -f $pofile.na && rm -f $pofile.na
 
-  for oldpo in $pofile.old old/$pofile $tmppo; do
+  for oldpo in $pofile.old $opofile; do
     if [[ ! -f $oldpo ]]; then
       continue
     fi

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-05-24 15:05-0700\n"
+"POT-Creation-Date: 2022-05-27 07:16-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -119,12 +119,12 @@ msgstr ""
 
 #. CONTEXT: validation: spaces are not allowed
 #, c-format
-msgid "%s: Spaces are not allowed"
+msgid "%s: Spaces are not allowed."
 msgstr ""
 
-#. CONTEXT: validation: spaces are not allowed
+#. CONTEXT: validation: must be numeric
 #, c-format
-msgid "%s: Spaces are not allowed."
+msgid "%s: must be numeric."
 msgstr ""
 
 #. CONTEXT: dance time signature
@@ -607,6 +607,10 @@ msgstr ""
 msgid "Favorite"
 msgstr ""
 
+#. CONTEXT: the audio file
+msgid "File"
+msgstr ""
+
 #. CONTEXT: notebook tab title: file manager
 msgid "File Manager"
 msgstr ""
@@ -621,6 +625,9 @@ msgstr ""
 
 #. CONTEXT: a button that starts the filters (narrowing down song selections) dialog
 msgid "Filters"
+msgstr ""
+
+msgid "First"
 msgstr ""
 
 #. CONTEXT: installer: command line interface: status message
@@ -1098,6 +1105,9 @@ msgstr ""
 msgid "Press 'Enter' to select the default."
 msgstr ""
 
+msgid "Previous"
+msgstr ""
+
 #. CONTEXT: installer: command line interface: prompt to continue
 #, c-format
 msgid "Proceed with installation?"
@@ -1259,6 +1269,9 @@ msgstr ""
 msgid "Samba"
 msgstr ""
 
+msgid "Save"
+msgstr ""
+
 #. CONTEXT: installer: status message
 msgid "Saving install location."
 msgstr ""
@@ -1341,12 +1354,9 @@ msgstr ""
 msgid "Song Editor"
 msgstr ""
 
-#. CONTEXT: display settings for: song editor column 1
-msgid "Song Editor - Column 1"
-msgstr ""
-
-#. CONTEXT: display settings for: song editor column 2
-msgid "Song Editor - Column 2"
+#. CONTEXT: display settings for: song editor column N
+#, c-format
+msgid "Song Editor - Column %d"
 msgstr ""
 
 #. CONTEXT: title: time to end the song
@@ -1354,6 +1364,7 @@ msgid "Song End"
 msgstr ""
 
 #. CONTEXT: display settings for: song list
+#. CONTEXT: label for song list name
 #. CONTEXT: file type for the file selection dialog (song list)
 #. CONTEXT: name of easy song list song selection tab
 #. CONTEXT: name of easy song list notebook tab

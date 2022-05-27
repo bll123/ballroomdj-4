@@ -27,26 +27,38 @@ function mkpo {
 
   echo "-- $(date +%T) creating $out"
   if [[ -f ${out} ]]; then
+    # re-use data from existing file
     mv ${out} ${out}.old
+
+    > ${out}
+    sed -n '1,/^$/ p' ${out}.old >> ${out}
+    # "POT-Creation-Date: 2022-05-26"
+    cdt=$(egrep '^"POT-Creation-Date:' bdj4.pot)
+    # "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE"
+    # "PO-Revision-Date: 2022-05-27 14:09"
+    sed -i \
+      -e "s,PO-Revision-Date:.*,PO-Revision-Date: ${dt}\\n\"," \
+      -e "s,"POT-Creation-Date:.*,${cdt}," \
+      ${out}
+  else
+    # new file
+    echo "# == $dlang" >> ${out}
+    echo "# -- $elang" >> ${out}
+    sed -e '1,6 d' \
+        -e "s/YEAR-MO-DA.*ZONE/${dt}/" \
+        -e "s/: [0-9][0-9][0-9 :-]*/: ${dt}/" \
+        -e "s/PACKAGE/ballroomdj-4/" \
+        -e "s/VERSION/${VERSION}/" \
+        -e "s/FULL NAME.*ADDRESS./${xlator}/" \
+        -e "s/Bugs-To: /Bugs-To: brad.lanam.comp@gmail.com/" \
+        -e "s/Language: /Language: ${lang}/" \
+        -e "s,Language-Team:.*>,Language-Team: $elang," \
+        -e "s/CHARSET/UTF-8/" \
+        bdj4.pot >> ${out}
   fi
-  > ${out}
-  echo "# == $dlang" >> ${out}
-  echo "# -- $elang" >> ${out}
-  sed -e '1,6 d' \
-      -e "s/YEAR-MO-DA.*ZONE/${dt}/" \
-      -e "s/: [0-9][0-9][0-9 :-]*/: ${dt}/" \
-      -e "s/PACKAGE/BDJ4/" \
-      -e "s/VERSION/${VERSION}/" \
-      -e "s/FULL NAME.*ADDRESS./${xlator}/" \
-      -e "s/Bugs-To: /Bugs-To: brad.lanam.comp@gmail.com/" \
-      -e "s/Language: /Language: ${lang}/" \
-      -e "s,Language-Team:.*>,Language-Team: $elang," \
-      -e "s/CHARSET/utf-8/" \
-      bdj4.pot >> ${out}
 }
 
 TMP=potemplates.c
-
 > $TMP
 
 ctxt="// CONTEXT: dance type"
@@ -123,9 +135,11 @@ mkpo en en_GB.po 'Automatically generated' 'English (GB)' english/gb
 rm -f en_GB.po.old
 
 mkpo nl nl_BE.po 'marimo' Nederlands dutch
-
-# mkpo de de_DE.po 'unassigned' Deutsch german
-# updateHelpText de_DE.po
+#mkpo fi fi_FI.po 'unassigned' Suomi finnish
+#mkpo de de_DE.po 'unassigned' Deutsch german
+#mkpo es es_ES.po 'unassigned' Español spanish
+#mkpo zh zh_TW.po 'unassigned' "繁體中文" "chinese (TW)"
+#mkpo zh zh_CN.po 'unassigned' "简体中文" "chinese (CN)"
 
 echo "-- $(date +%T) updating translations from old .po files"
 ./lang-lookup.sh
