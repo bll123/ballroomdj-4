@@ -1,30 +1,103 @@
 #!/usr/bin/gawk
 
-function dumpmsg() {
-  if (instr) {
-#print "# -- nidline = " nidline;
-#print "# -- nmid = " nmid;
-#print "# -- msgstr = " $0;
-#print "# -- olddata = /" olddata [nmid] "/";
-    if (olddata [nmid] == "") {
-#print "# -- is empty";
-      gsub (/%/, "%%", nidline);
-      printf nidline;
-      print "";
-      gsub (/%/, "%%", nstrline);
-      printf nstrline;
-      print "";
-    } else {
-#print "# -- not empty";
-      gsub (/%/, "%%", nidline);
-      printf nidline;
-      print "";
-      printf "msgstr ";
-      printf olddata [nmid];
+function processitem() {
+# print "## -- p: line: " $0;
+  if ($0 ~ /^$/) {
+# if (! start) { print "## -- p: start"; }
+# if (instr) { print "## -- p: msgstr: " tmstr; }
+    if (! start && doprint) {
       print "";
     }
-    instr = 0;
+    start = 1;
+    return;
   }
+  if (start == 1 && $0 ~ /^msgid/) {
+    inid = 1;
+    instr = 0;
+    tidline = $0;
+    tmid = $0;
+    sub (/^msgid */, "", tmid);
+    if (tmid == "\"\"") {
+      tmid = "";
+    }
+    next;
+  }
+  if (start == 1 && $0 ~ /^msgstr/) {
+# print "## -- p: msgid: " tmid;
+    inid = 0;
+    instr = 1;
+    tmp = $0;
+    sub (/^msgstr */, "", tmp);
+    tmstr = tmp;
+    next;
+  }
+  if (start == 1 && $0 ~ /^"/) {
+    if (inid) {
+      tidline = tidline ORS $0;
+      if (tmid == "") {
+        tmid = $0;
+      } else {
+        tmid = tmid ORS $0;
+      }
+    }
+    if (instr) {
+      tmp = $0;
+      tmstr = tmstr ORS tmp;
+    }
+    next;
+  }
+
+  if (doprint) {
+# print "## -- print = " $0;
+    print $0;
+    instr = 0;
+    inid = 0;
+  }
+}
+
+function dumpmsg() {
+# print "## -- nidline = " nidline;
+# print "## -- nmid = " nmid;
+# print "## -- msgstr = " nstrline;
+# print "## -- olddata = /" olddata [nmid] "/";
+  if (nstrline != "\"\"" && nmid !~ /helptext_/) {
+# print "## -- already present, not helptext"
+    print nidline;
+    printf "msgstr ";
+    print nstrline;
+  } else if (olddata [nmid] != "") {
+# print "## -- not empty";
+    print nidline;
+    printf "msgstr ";
+    print olddata [nmid];
+  } else {
+    sub (/[:.]"$/, "\"", nmid);
+    if (nstrline == "\"\"" && olddata [nmid] != "") {
+# print "## -- not empty w/o period";
+      print nidline;
+      printf "msgstr ";
+      print olddata [nmid];
+    } else {
+      nmid = gensub (/([Cc])olour/, "\\1olor", "g", nmid);
+      nmid = gensub (/([Oo])rganis/, "\\1rganiz", "g", nmid);
+      nmid = gensub (/([Cc])entimetre/, "\\1entimeter", "g", nmid);
+      if (nstrline == "\"\"" && olddata [nmid] != "") {
+# print "## -- not empty alt spelling";
+        print nidline;
+        printf "msgstr ";
+        print olddata [nmid];
+      } else {
+# print "## -- is empty";
+        print nidline;
+        printf "msgstr ";
+        print nstrline;
+      }
+    }
+  }
+
+  print "";
+  instr = 0;
+  inid = 0;
 }
 
 BEGIN {
@@ -38,92 +111,42 @@ BEGIN {
     inid = 0;
     instr = 0;
   }
-  if ($0 ~ /^# -- /) {
+  if ($0 ~ /^## -- /) {
     # skip debug comments
     next;
   }
   if (state == 1) {
-    if ($0 ~ /^$/) {
-      start = 1;
-      inid = 0;
-      instr = 0;
+    doprint = 0;
+    processitem();
+    omid = tmid;
+    # always remove colons
+    sub (/:"$/, "\"", omid);
+    sub (/:"$/, "\"", tmstr);
+    if (tmstr == "\"\"") {
+      tmstr = "";
     }
-    if (start == 0) {
-      next;
-    }
-    if ($0 ~ /^msgid/) {
-      omid = $0;
-      sub (/^msgid */, "", omid);
-      inid = 1;
-    }
-    if ($0 ~ /^msgstr/) {
-      inid = 0;
-      instr = 1;
-      tmp = $0;
-      sub (/^msgstr */, "", tmp);
-      gsub (/%/, "%%", tmp);
-      olddata [omid] = tmp;
-      if (omid !~ /helptext/) {
-        sub (/[:.]"$/, "\"", omid);
-        sub (/[:.]"$/, "\"", tmp);
-      }
-      olddata [omid] = tmp;
-    }
-    if ($0 ~ /^"/) {
-      if (inid) {
-        omid = omid $0;
-      }
-      if (instr) {
-        tmp = $0;
-        gsub (/%/, "%%", tmp);
-        olddata [omid] = olddata [omid] ORS tmp;
-      }
+    olddata [omid] = tmstr;
+    # if the string has a period, create a second entry w/o the period.
+    sub (/\."$/, "\"", tmid);
+    if (tmid != omid) {
+      sub (/\."$/, "\"", tmstr);
+      olddata [tmid] = tmstr;
     }
   }
   if (state == 2) {
-    if ($0 ~ /^$/) {
-      start = 1;
-      inid = 0;
+    doprint = 1;
+    processitem();
+    if (start && instr) {
+      nmid = tmid;
+      nidline = tidline;
+      nstrline = tmstr;
       dumpmsg();
     }
-    if (start == 0) {
-      gsub (/%/, "%%");
-      printf $0;
-      print "";
-      next;
-    }
-    if ($0 ~ /^msgid/) {
-      nidline = $0;
-      nmid = $0;
-      sub (/^msgid */, "", nmid);
-      inid = 1;
-      next;
-    }
-    if ($0 ~ /^msgstr/) {
-      inid = 0;
-      instr = 1;
-      nstrline = $0;
-      next;
-    }
-    if ($0 ~ /^"/) {
-      if (inid) {
-        nidline = nidline ORS $0;
-        nmid = nmid $0;
-      }
-      if (instr) {
-        nstrline = nstrline ORS $0;
-      }
-      next;
-    }
-
-    gsub (/%/, "%%");
-    printf $0;
-    print "";
   }
 }
 
 END {
-  dumpmsg();
+  if (doprint && start && instr) {
+    dumpmsg();
+  }
 }
-
-

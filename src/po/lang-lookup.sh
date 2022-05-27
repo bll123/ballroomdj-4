@@ -25,17 +25,15 @@ for pofile in *.po; do
       continue
     fi
 
+    echo "   $(date +%T) processing $oldpo"
     if [[ -f $pofile.na ]]; then
-      echo "   $(date +%T) processing $oldpo"
-      gawk -f lang-lookup.awk $oldpo $pofile.na > $pofile.tb
-      mv -f $pofile.tb $pofile.na
+      gawk -f lang-lookup.awk $oldpo $pofile.na > $pofile.tmp
     else
-      echo "   $(date +%T) processing $oldpo"
-      gawk -f lang-lookup.awk $oldpo $pofile > $pofile.ta
-      mv -f $pofile.ta $pofile.na
+      gawk -f lang-lookup.awk $oldpo $pofile > $pofile.tmp
     fi
-
-    mv -f $pofile.na $pofile
-    test -f $pofile.old && rm -f $pofile.old
+    mv -f $pofile.tmp $pofile.na
   done
+
+  mv -f $pofile.na $pofile
+  test -f $pofile.old && rm -f $pofile.old
 done

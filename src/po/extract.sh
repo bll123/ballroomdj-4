@@ -38,7 +38,7 @@ function mkpo {
     # "PO-Revision-Date: 2022-05-27 14:09"
     sed -i \
       -e "s,PO-Revision-Date:.*,PO-Revision-Date: ${dt}\\\\n\"," \
-      -e "s/: [0-9-]+ [0-9:-]+/: ${dt}/" \
+      -e "s/: [0-9][0-9-]* [0-9][0-9:-]*/: ${dt}/" \
       ${out}
     sed -n '/^$/,$ p' bdj4.pot >> ${out}
   else
@@ -48,7 +48,7 @@ function mkpo {
     echo "# -- $elang" >> ${out}
     sed -e '1,6 d' \
         -e "s/YEAR-MO-DA.*ZONE/${dt}/" \
-        -e "s/: [0-9-]+ [0-9:-]+/: ${dt}/" \
+        -e "s/: [0-9][0-9-]* [0-9][0-9:-]*/: ${dt}/" \
         -e "s/PACKAGE/ballroomdj-4/" \
         -e "s/VERSION/${VERSION}/" \
         -e "s/FULL NAME.*ADDRESS./${xlator}/" \
@@ -138,6 +138,7 @@ rm -f en_GB.po.old
 
 mkpo nl nl_BE.po 'marimo' Nederlands dutch
 
+#mkpo fr fr_FR.po 'unassigned' Français french
 #mkpo fi fi_FI.po 'unassigned' Suomi finnish
 #mkpo de de_DE.po 'unassigned' Deutsch german
 #mkpo es es_ES.po 'unassigned' Español spanish

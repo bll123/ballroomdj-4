@@ -10,6 +10,10 @@ mkdir $TMP
   unzip -q ../"BallroomDJ 4 "*.zip
 )
 
+if [[ $1 == -unpack ]];then
+  exit 0
+fi
+
 for f in *.po; do
   base=$(echo $f | sed 's,\.po$,,')
   if [[ ! -d $TMP/$base ]]; then

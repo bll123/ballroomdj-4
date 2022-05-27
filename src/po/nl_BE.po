@@ -1,11 +1,11 @@
 # == Nederlands
-msgid ""
+# -- dutch
 msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
 "POT-Creation-Date: 2022-05-27 09:08-0700\n"
-"PO-Revision-Date: 2022-05-27 16:10\n"
+"PO-Revision-Date: 2022-05-27 18:35\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -249,7 +249,7 @@ msgstr "Audio-Output"
 
 #. CONTEXT: configuration: checkbox: is automatic organization enabled
 msgid "Auto Organise"
-msgstr ""
+msgstr "Automatisch organiseren"
 
 #. CONTEXT: playlist management: default playlist type
 #. CONTEXT: playlist management: type of playlist
@@ -615,7 +615,7 @@ msgstr ""
 
 #. CONTEXT: notebook tab title: file manager
 msgid "File Manager"
-msgstr "Bestandsbeheer"
+msgstr "File Manager"
 
 #. CONTEXT: configuration: song filter display settings
 msgid "Filter Display"
@@ -1006,7 +1006,7 @@ msgstr ""
 
 #. CONTEXT: configuration: options associated with how audio files are organized
 msgid "Organisation"
-msgstr ""
+msgstr "Organisatie"
 
 #. CONTEXT: configuration: the audio file organization path
 msgid "Organisation Path"

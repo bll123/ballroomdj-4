@@ -4,13 +4,13 @@ msgstr ""
 "X-Crowdin-Project: ballroomdj\n"
 "X-Crowdin-Project-ID: 109864\n"
 "X-Crowdin-Language: fr\n"
-"X-Crowdin-File: /3.32.15/en.po\n"
-"X-Crowdin-File-ID: 121\n"
+"X-Crowdin-File: /3.32.16/en.po\n"
+"X-Crowdin-File-ID: 125\n"
 "Project-Id-Version: ballroomdj\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Language-Team: French\n"
 "Language: fr_FR\n"
-"PO-Revision-Date: 2021-12-11 18:12\n"
+"PO-Revision-Date: 2021-12-21 13:22\n"
 
 msgid "   #"
 msgstr "   #"
@@ -412,6 +412,9 @@ msgstr ""
 
 # Genre: Is this genre classical music?
 msgid "Classical?"
+msgstr ""
+
+msgid "Clean export database and playlists."
 msgstr ""
 
 msgid "Clear"

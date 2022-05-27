@@ -561,8 +561,8 @@ msgstr "Copyright 2012-%d Brad Lanam Walnut Creek CA USA"
 msgid "Count"
 msgstr "Tellen"
 
-msgid "Count:"
-msgstr "Aantal:"
+# msgid "Count:"
+# msgstr "Aantal:"
 
 # Marquee Color
 # User Interface Color
