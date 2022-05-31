@@ -112,11 +112,11 @@ enum {
   CONFUI_SPINBOX_VOL_INTFC,
   CONFUI_SPINBOX_AUDIO_OUTPUT,
   CONFUI_SPINBOX_BPM,
-  CONFUI_SPINBOX_DANCE_HIGH_BPM,
-  CONFUI_SPINBOX_DANCE_LOW_BPM,
-  CONFUI_SPINBOX_DANCE_SPEED,
-  CONFUI_SPINBOX_DANCE_TIME_SIG,
   CONFUI_SPINBOX_DANCE_TYPE,
+  CONFUI_SPINBOX_DANCE_SPEED,
+  CONFUI_SPINBOX_DANCE_LOW_BPM,
+  CONFUI_SPINBOX_DANCE_HIGH_BPM,
+  CONFUI_SPINBOX_DANCE_TIME_SIG,
   CONFUI_SPINBOX_DISP_SEL,
   CONFUI_SPINBOX_FADE_TYPE,
   CONFUI_SPINBOX_LOCALE,
@@ -415,7 +415,7 @@ static void confuiMakeItemFontButton (configui_t *confui, UIWidget *boxp, UIWidg
 static void confuiMakeItemColorButton (configui_t *confui, UIWidget *boxp, UIWidget *sg, char *txt, int widx, int bdjoptIdx, char *color);
 static void confuiMakeItemSpinboxText (configui_t *confui, UIWidget *boxp, UIWidget *sg, UIWidget *sgB, char *txt, int widx, int bdjoptIdx, confuiouttype_t outtype, ssize_t value, void *cb);
 static void confuiMakeItemSpinboxTime (configui_t *confui, UIWidget *boxp, UIWidget *sg, UIWidget *sgB, char *txt, int widx, int bdjoptIdx, ssize_t value);
-static void confuiMakeItemSpinboxInt (configui_t *confui, UIWidget *boxp, UIWidget *sg, UIWidget *sgB, const char *txt, int widx, int bdjoptIdx, int min, int max, int value, void *cb);
+static void confuiMakeItemSpinboxNum (configui_t *confui, UIWidget *boxp, UIWidget *sg, UIWidget *sgB, const char *txt, int widx, int bdjoptIdx, int min, int max, int value, void *cb);
 static void confuiMakeItemSpinboxDouble (configui_t *confui, UIWidget *boxp, UIWidget *sg, UIWidget *sgB, char *txt, int widx, int bdjoptIdx, double min, double max, double value);
 static void confuiMakeItemSwitch (configui_t *confui, UIWidget *boxp, UIWidget *sg, char *txt, int widx, int bdjoptIdx, int value, void *cb);
 static void confuiMakeItemLabelDisp (configui_t *confui, UIWidget *boxp, UIWidget *sg, char *txt, int widx, int bdjoptIdx);
@@ -438,12 +438,12 @@ static void     confuiOrgPathSelect (GtkTreeView *tv, GtkTreePath *path,
 static char     * confuiComboboxSelect (configui_t *confui, GtkTreePath *path, int widx);
 static void     confuiUpdateMobmqQrcode (configui_t *confui);
 static void     confuiMobmqTypeChg (GtkSpinButton *sb, gpointer udata);
-static void     confuiMobmqPortChg (GtkSpinButton *sb, gpointer udata);
+static bool     confuiMobmqPortChg (void *udata);
 static int      confuiMobmqNameChg (uientry_t *entry, void *udata);
 static int      confuiMobmqTitleChg (uientry_t *entry, void *udata);
 static void     confuiUpdateRemctrlQrcode (configui_t *confui);
 static bool     confuiRemctrlChg (void *udata, int value);
-static void     confuiRemctrlPortChg (GtkSpinButton *sb, gpointer udata);
+static bool     confuiRemctrlPortChg (void *udata);
 static char     * confuiMakeQRCodeFile (configui_t *confui, char *title, char *uri);
 static void     confuiUpdateOrgExamples (configui_t *confui, char *pathfmt);
 static void     confuiUpdateOrgExample (configui_t *config, org_t *org, char *data, UIWidget *uiwidgetp);
@@ -498,7 +498,12 @@ static void   confuiGenreSave (configui_t *confui);
 static void   confuiDanceSelect (GtkTreeView *tv, GtkTreePath *path,
     GtkTreeViewColumn *column, gpointer udata);
 static int    confuiDanceEntryChg (uientry_t *e, void *udata);
-static void   confuiDanceSpinboxChg (GtkSpinButton *sb, gpointer udata);
+static bool   confuiDanceSpinboxTypeChg (void *udata);
+static bool   confuiDanceSpinboxSpeedChg (void *udata);
+static bool   confuiDanceSpinboxLowBPMChg (void *udata);
+static bool   confuiDanceSpinboxHighBPMChg (void *udata);
+static bool   confuiDanceSpinboxTimeSigChg (void *udata);
+static void   confuiDanceSpinboxChg (void *udata, int widx);
 static int    confuiDanceValidateAnnouncement (uientry_t *entry, void *udata);
 
 /* display settings */
@@ -1115,7 +1120,7 @@ confuiBuildUIPlayer (configui_t *confui)
       CONFUI_OUT_STR, confui->uiitem [CONFUI_SPINBOX_AUDIO_OUTPUT].listidx, NULL);
 
   /* CONTEXT: configuration: the volume used when starting the player */
-  confuiMakeItemSpinboxInt (confui, &vbox, &sg, &sgB, _("Default Volume"),
+  confuiMakeItemSpinboxNum (confui, &vbox, &sg, &sgB, _("Default Volume"),
       CONFUI_WIDGET_DEFAULT_VOL, OPT_P_DEFAULTVOLUME,
       10, 100, bdjoptGetNum (OPT_P_DEFAULTVOLUME), NULL);
 
@@ -1140,12 +1145,12 @@ confuiBuildUIPlayer (configui_t *confui)
       bdjoptGetNum (OPT_P_MAXPLAYTIME));
 
   /* CONTEXT: configuration: the &sgB, of the music queue to display */
-  confuiMakeItemSpinboxInt (confui, &vbox, &sg, &sgB, _("Queue Length"),
+  confuiMakeItemSpinboxNum (confui, &vbox, &sg, &sgB, _("Queue Length"),
       CONFUI_WIDGET_PL_QUEUE_LEN, OPT_G_PLAYERQLEN,
       20, 400, bdjoptGetNum (OPT_G_PLAYERQLEN), NULL);
 
   /* CONTEXT: configuration: where to insert a requested song into the music queue */
-  confuiMakeItemSpinboxInt (confui, &vbox, &sg, &sgB, _("Request Insert Location"),
+  confuiMakeItemSpinboxNum (confui, &vbox, &sg, &sgB, _("Request Insert Location"),
       CONFUI_WIDGET_INSERT_LOC, OPT_P_INSERT_LOCATION,
       1, 10, bdjoptGetNum (OPT_P_INSERT_LOCATION), NULL);
 
@@ -1189,7 +1194,7 @@ confuiBuildUIMarquee (configui_t *confui)
       bdjoptGetStr (OPT_MP_MQFONT));
 
   /* CONTEXT: configuration: the length of the queue displayed on the marquee */
-  confuiMakeItemSpinboxInt (confui, &vbox, &sg, NULL, _("Queue Length"),
+  confuiMakeItemSpinboxNum (confui, &vbox, &sg, NULL, _("Queue Length"),
       CONFUI_WIDGET_MQ_QUEUE_LEN, OPT_P_MQQLEN,
       1, 20, bdjoptGetNum (OPT_P_MQQLEN), NULL);
 
@@ -1418,13 +1423,13 @@ confuiBuildUIEditDances (configui_t *confui)
   /* CONTEXT: configuration: dances: the type of the dance (club/latin/standard) */
   confuiMakeItemSpinboxText (confui, &dvbox, &sg, &sgB, _("Type"),
       CONFUI_SPINBOX_DANCE_TYPE, -1, CONFUI_OUT_NUM, 0,
-      confuiDanceSpinboxChg);
+      confuiDanceSpinboxTypeChg);
   confui->uiitem [CONFUI_SPINBOX_DANCE_TYPE].danceidx = DANCE_TYPE;
 
   /* CONTEXT: configuration: dances: the speed of the dance (fast/normal/slow) */
   confuiMakeItemSpinboxText (confui, &dvbox, &sg, &sgB, _("Speed"),
       CONFUI_SPINBOX_DANCE_SPEED, -1, CONFUI_OUT_NUM, 0,
-      confuiDanceSpinboxChg);
+      confuiDanceSpinboxSpeedChg);
   confui->uiitem [CONFUI_SPINBOX_DANCE_SPEED].danceidx = DANCE_SPEED;
 
   /* CONTEXT: configuration: dances: tags associated with the dance */
@@ -1449,22 +1454,22 @@ confuiBuildUIEditDances (configui_t *confui)
   bpmstr = val == BPM_BPM ? _("BPM") : _("MPM");
   /* CONTEXT: configuration: dances: low BPM (or MPM) setting */
   snprintf (tbuff, sizeof (tbuff), _("Low %s"), bpmstr);
-  confuiMakeItemSpinboxInt (confui, &dvbox, &sg, &sgC, tbuff,
+  confuiMakeItemSpinboxNum (confui, &dvbox, &sg, &sgC, tbuff,
       CONFUI_SPINBOX_DANCE_LOW_BPM, -1, 10, 500, 0,
-      confuiDanceSpinboxChg);
+      confuiDanceSpinboxLowBPMChg);
   confui->uiitem [CONFUI_SPINBOX_DANCE_LOW_BPM].danceidx = DANCE_LOW_BPM;
 
   /* CONTEXT: configuration: dances: high BPM (or MPM) setting */
   snprintf (tbuff, sizeof (tbuff), _("High %s"), bpmstr);
-  confuiMakeItemSpinboxInt (confui, &dvbox, &sg, &sgC, tbuff,
+  confuiMakeItemSpinboxNum (confui, &dvbox, &sg, &sgC, tbuff,
       CONFUI_SPINBOX_DANCE_HIGH_BPM, -1, 10, 500, 0,
-      confuiDanceSpinboxChg);
+      confuiDanceSpinboxHighBPMChg);
   confui->uiitem [CONFUI_SPINBOX_DANCE_HIGH_BPM].danceidx = DANCE_HIGH_BPM;
 
   /* CONTEXT: configuration: dances: time signature for the dance */
   confuiMakeItemSpinboxText (confui, &dvbox, &sg, &sgC, _("Time Signature"),
       CONFUI_SPINBOX_DANCE_TIME_SIG, -1, CONFUI_OUT_NUM, 0,
-      confuiDanceSpinboxChg);
+      confuiDanceSpinboxTimeSigChg);
   confui->uiitem [CONFUI_SPINBOX_DANCE_TIME_SIG].danceidx = DANCE_TIMESIG;
   logProcEnd (LOG_PROC, "confuiBuildUIEditDances", "");
 }
@@ -1641,7 +1646,7 @@ confuiBuildUIMobileRemoteControl (configui_t *confui)
       bdjoptGetStr (OPT_P_REMCONTROLPASS));
 
   /* CONTEXT: configuration: remote control: the port to use for remote control */
-  confuiMakeItemSpinboxInt (confui, &vbox, &sg, NULL, _("Port"),
+  confuiMakeItemSpinboxNum (confui, &vbox, &sg, NULL, _("Port"),
       CONFUI_WIDGET_RC_PORT, OPT_P_REMCONTROLPORT,
       8000, 30000, bdjoptGetNum (OPT_P_REMCONTROLPORT),
       confuiRemctrlPortChg);
@@ -1674,7 +1679,7 @@ confuiBuildUIMobileMarquee (configui_t *confui)
       confuiMobmqTypeChg);
 
   /* CONTEXT: configuration: the port to use for the mobile marquee */
-  confuiMakeItemSpinboxInt (confui, &vbox, &sg, NULL, _("Port"),
+  confuiMakeItemSpinboxNum (confui, &vbox, &sg, NULL, _("Port"),
       CONFUI_WIDGET_MMQ_PORT, OPT_P_MOBILEMQPORT,
       8000, 30000, bdjoptGetNum (OPT_P_MOBILEMQPORT),
       confuiMobmqPortChg);
@@ -2496,35 +2501,35 @@ confuiMakeItemSpinboxTime (configui_t *confui, UIWidget *boxp,
 }
 
 static void
-confuiMakeItemSpinboxInt (configui_t *confui, UIWidget *boxp, UIWidget *sg,
+confuiMakeItemSpinboxNum (configui_t *confui, UIWidget *boxp, UIWidget *sg,
     UIWidget *sgB, const char *txt, int widx, int bdjoptIdx,
     int min, int max, int value, void *cb)
 {
   UIWidget    hbox;
-  GtkWidget   *widget;
+  UIWidget    uiwidget;
 
-  logProcBegin (LOG_PROC, "confuiMakeItemSpinboxInt");
+  logProcBegin (LOG_PROC, "confuiMakeItemSpinboxNum");
 
   confui->uiitem [widx].basetype = CONFUI_SPINBOX_NUM;
   confui->uiitem [widx].outtype = CONFUI_OUT_NUM;
   uiCreateHorizBox (&hbox);
   confuiMakeItemLabel (&hbox, sg, txt);
-  widget = uiSpinboxIntCreateW ();
-  uiSpinboxSetW (widget, (double) min, (double) max);
-  uiSpinboxSetValueW (widget, (double) value);
-  uiWidgetSetMarginStartW (widget, uiBaseMarginSz * 4);
+  uiSpinboxIntCreate (&uiwidget);
+  uiSpinboxSet (&uiwidget, (double) min, (double) max);
+  uiSpinboxSetValue (&uiwidget, (double) value);
+  uiWidgetSetMarginStart (&uiwidget, uiBaseMarginSz * 4);
   if (sgB != NULL) {
-    uiSizeGroupAddW (sgB, widget);
+    uiSizeGroupAdd (sgB, &uiwidget);
   }
-  uiBoxPackStartUW (&hbox, widget);
+  uiBoxPackStart (&hbox, &uiwidget);
   uiBoxPackStart (boxp, &hbox);
-  confui->uiitem [widx].widget = widget;
   confui->uiitem [widx].bdjoptIdx = bdjoptIdx;
-
   if (cb != NULL) {
-    g_signal_connect (widget, "value-changed", G_CALLBACK (cb), confui);
+    uiutilsUICallbackInit (&confui->uiitem [widx].callback, cb, confui);
+    uiSpinboxSetValueChangedCallback (&uiwidget, &confui->uiitem [widx].callback);
   }
-  logProcEnd (LOG_PROC, "confuiMakeItemSpinboxInt", "");
+  uiutilsUIWidgetCopy (&confui->uiitem [widx].uiwidget, &uiwidget);
+  logProcEnd (LOG_PROC, "confuiMakeItemSpinboxNum", "");
 }
 
 static void
@@ -2533,7 +2538,7 @@ confuiMakeItemSpinboxDouble (configui_t *confui, UIWidget *boxp, UIWidget *sg,
     double min, double max, double value)
 {
   UIWidget    hbox;
-  GtkWidget   *widget;
+  UIWidget    uiwidget;
 
   logProcBegin (LOG_PROC, "confuiMakeItemSpinboxDouble");
 
@@ -2541,17 +2546,17 @@ confuiMakeItemSpinboxDouble (configui_t *confui, UIWidget *boxp, UIWidget *sg,
   confui->uiitem [widx].outtype = CONFUI_OUT_DOUBLE;
   uiCreateHorizBox (&hbox);
   confuiMakeItemLabel (&hbox, sg, txt);
-  widget = uiSpinboxDoubleCreateW ();
-  uiSpinboxSetW (widget, min, max);
-  uiSpinboxSetValueW (widget, value);
-  uiWidgetSetMarginStartW (widget, uiBaseMarginSz * 4);
+  uiSpinboxDoubleCreate (&uiwidget);
+  uiSpinboxSet (&uiwidget, min, max);
+  uiSpinboxSetValue (&uiwidget, value);
+  uiWidgetSetMarginStart (&uiwidget, uiBaseMarginSz * 4);
   if (sgB != NULL) {
-    uiSizeGroupAddW (sgB, widget);
+    uiSizeGroupAdd (sgB, &uiwidget);
   }
-  uiBoxPackStartUW (&hbox, widget);
+  uiBoxPackStart (&hbox, &uiwidget);
   uiBoxPackStart (boxp, &hbox);
-  confui->uiitem [widx].widget = widget;
   confui->uiitem [widx].bdjoptIdx = bdjoptIdx;
+  uiutilsUIWidgetCopy (&confui->uiitem [widx].uiwidget, &uiwidget);
   logProcEnd (LOG_PROC, "confuiMakeItemSpinboxDouble", "");
 }
 
@@ -3210,21 +3215,20 @@ confuiMobmqTypeChg (GtkSpinButton *sb, gpointer udata)
   logProcEnd (LOG_PROC, "confuiMobmqTypeChg", "");
 }
 
-static void
-confuiMobmqPortChg (GtkSpinButton *sb, gpointer udata)
+static bool
+confuiMobmqPortChg (void *udata)
 {
   configui_t    *confui = udata;
-  GtkAdjustment *adjustment;
   double        value;
   ssize_t       nval;
 
   logProcBegin (LOG_PROC, "confuiMobmqPortChg");
-  adjustment = gtk_spin_button_get_adjustment (sb);
-  value = gtk_adjustment_get_value (adjustment);
+  value = uiSpinboxGetValue (&confui->uiitem [CONFUI_WIDGET_MMQ_PORT].uiwidget);
   nval = (ssize_t) value;
   bdjoptSetNum (OPT_P_MOBILEMQPORT, nval);
   confuiUpdateMobmqQrcode (confui);
   logProcEnd (LOG_PROC, "confuiMobmqPortChg", "");
+  return UICB_CONT;
 }
 
 static int
@@ -3310,21 +3314,20 @@ confuiRemctrlChg (void *udata, int value)
   return UICB_CONT;
 }
 
-static void
-confuiRemctrlPortChg (GtkSpinButton *sb, gpointer udata)
+static bool
+confuiRemctrlPortChg (void *udata)
 {
   configui_t    *confui = udata;
-  GtkAdjustment *adjustment;
   double        value;
   ssize_t       nval;
 
   logProcBegin (LOG_PROC, "confuiRemctrlPortChg");
-  adjustment = gtk_spin_button_get_adjustment (sb);
-  value = gtk_adjustment_get_value (adjustment);
+  value = uiSpinboxGetValue (&confui->uiitem [CONFUI_WIDGET_RC_PORT].uiwidget);
   nval = (ssize_t) value;
   bdjoptSetNum (OPT_P_REMCONTROLPORT, nval);
   confuiUpdateRemctrlQrcode (confui);
   logProcEnd (LOG_PROC, "confuiRemctrlPortChg", "");
+  return UICB_CONT;
 }
 
 
@@ -4781,11 +4784,45 @@ confuiDanceEntryChg (uientry_t *entry, void *udata)
   return UICB_CONT;
 }
 
+static bool
+confuiDanceSpinboxTypeChg (void *udata)
+{
+  confuiDanceSpinboxChg (udata, CONFUI_SPINBOX_DANCE_TYPE);
+  return UICB_CONT;
+}
+
+static bool
+confuiDanceSpinboxSpeedChg (void *udata)
+{
+  confuiDanceSpinboxChg (udata, CONFUI_SPINBOX_DANCE_SPEED);
+  return UICB_CONT;
+}
+
+static bool
+confuiDanceSpinboxLowBPMChg (void *udata)
+{
+  confuiDanceSpinboxChg (udata, CONFUI_SPINBOX_DANCE_LOW_BPM);
+  return UICB_CONT;
+}
+
+static bool
+confuiDanceSpinboxHighBPMChg (void *udata)
+{
+  confuiDanceSpinboxChg (udata, CONFUI_SPINBOX_DANCE_HIGH_BPM);
+  return UICB_CONT;
+}
+
+static bool
+confuiDanceSpinboxTimeSigChg (void *udata)
+{
+  confuiDanceSpinboxChg (udata, CONFUI_SPINBOX_DANCE_TIME_SIG);
+  return UICB_CONT;
+}
+
 static void
-confuiDanceSpinboxChg (GtkSpinButton *sb, gpointer udata)
+confuiDanceSpinboxChg (void *udata, int widx)
 {
   configui_t      *confui = udata;
-  GtkAdjustment   *adjustment;
   GtkWidget       *tree;
   GtkTreeModel    *model;
   GtkTreeIter     iter;
@@ -4795,14 +4832,10 @@ confuiDanceSpinboxChg (GtkSpinButton *sb, gpointer udata)
   ssize_t         nval;
   ilistidx_t      key;
   dance_t         *dances;
-  int             widx;
   int             didx;
 
   logProcBegin (LOG_PROC, "confuiDanceSpinboxChg");
-  adjustment = gtk_spin_button_get_adjustment (sb);
-  value = gtk_adjustment_get_value (adjustment);
-
-  widx = confuiLocateWidgetIdx (confui, sb);
+  value = uiSpinboxGetValue (&confui->uiitem [widx].uiwidget);
   didx = confui->uiitem [widx].danceidx;
 
   nval = (ssize_t) value;

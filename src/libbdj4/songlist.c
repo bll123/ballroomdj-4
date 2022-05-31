@@ -6,17 +6,20 @@
 #include <string.h>
 #include <assert.h>
 
+#include "bdj4.h"
 #include "dance.h"
 #include "datafile.h"
 #include "fileop.h"
 #include "ilist.h"
 #include "log.h"
+#include "pathbld.h"
 #include "songlist.h"
 
 typedef struct songlist {
   datafile_t      *df;
   ilist_t         *songlist;
   char            *fname;
+  char            *path;
 } songlist_t;
 
   /* must be sorted in ascii order */
@@ -32,23 +35,19 @@ songlistAlloc (const char *fname)
 {
   songlist_t    *sl;
 
-  sl = malloc (sizeof (songlist_t));
-  assert (sl != NULL);
-  sl->df = NULL;
-  sl->songlist = NULL;
+  sl = songlistCreate (fname);
 
-  if (! fileopFileExists (fname)) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: songlist: missing %s", fname);
+  if (! fileopFileExists (sl->path)) {
+    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: songlist: missing %s", sl->path);
+    songlistFree (sl);
     return NULL;
   }
-  sl->df = datafileAllocParse ("songlist", DFTYPE_INDIRECT, fname,
+  sl->df = datafileAllocParse ("songlist", DFTYPE_INDIRECT, sl->path,
       songlistdfkeys, SONGLIST_KEY_MAX, DATAFILE_NO_LOOKUP);
   if (sl->df == NULL) {
     songlistFree (sl);
     return NULL;
   }
-  sl->fname = strdup (fname);
-  assert (sl->fname != NULL);
   sl->songlist = datafileGetList (sl->df);
   ilistDumpInfo (sl->songlist);
   return sl;
@@ -58,12 +57,16 @@ songlist_t *
 songlistCreate (const char *fname)
 {
   songlist_t    *sl;
+  char          tfn [MAXPATHLEN];
 
   sl = malloc (sizeof (songlist_t));
   assert (sl != NULL);
   sl->df = NULL;
   sl->songlist = NULL;
   sl->fname = strdup (fname);
+  pathbldMakePath (tfn, sizeof (tfn), fname,
+      BDJ4_SONGLIST_EXT, PATHBLD_MP_DATA);
+  sl->path = strdup (tfn);
   sl->songlist = ilistAlloc (fname, LIST_ORDERED);
   return sl;
 }
@@ -80,6 +83,9 @@ songlistFree (songlist_t *sl)
     }
     if (sl->fname != NULL) {
       free (sl->fname);
+    }
+    if (sl->path != NULL) {
+      free (sl->path);
     }
     free (sl);
   }
@@ -127,6 +133,6 @@ songlistSave (songlist_t *sl)
     return;
   }
 
-  datafileSaveIndirect ("songlist", sl->fname, songlistdfkeys,
+  datafileSaveIndirect ("songlist", sl->path, songlistdfkeys,
       SONGLIST_KEY_MAX, sl->songlist);
 }

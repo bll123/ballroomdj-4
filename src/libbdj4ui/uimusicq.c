@@ -15,7 +15,6 @@
 #include "log.h"
 #include "musicq.h"
 #include "nlist.h"
-#include "pathbld.h"
 #include "playlist.h"
 #include "tagdef.h"
 #include "uimusicq.h"

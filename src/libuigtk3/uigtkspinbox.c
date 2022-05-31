@@ -205,9 +205,21 @@ uiSpinboxTimeSetValue (uispinbox_t *spinbox, ssize_t value)
 }
 
 void
-uiSpinboxSetValueChangedCallback (uispinbox_t *spinbox, UICallback *uicb)
+uiSpinboxTextSetValueChangedCallback (uispinbox_t *spinbox, UICallback *uicb)
 {
-  g_signal_connect (spinbox->uispinbox.widget, "value-changed",
+  uiSpinboxSetValueChangedCallback (&spinbox->uispinbox, uicb);
+}
+
+void
+uiSpinboxTimeSetValueChangedCallback (uispinbox_t *spinbox, UICallback *uicb)
+{
+  uiSpinboxSetValueChangedCallback (&spinbox->uispinbox, uicb);
+}
+
+void
+uiSpinboxSetValueChangedCallback (UIWidget *uiwidget, UICallback *uicb)
+{
+  g_signal_connect (uiwidget->widget, "value-changed",
       G_CALLBACK (uiSpinboxValueChangedHandler), uicb);
 }
 

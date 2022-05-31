@@ -178,11 +178,6 @@ playlistLoad (playlist_t *pl, const char *fname)
   pl->name = strdup (fname);
   pl->plinfodf = datafileAllocParse ("playlist-pl", DFTYPE_KEY_VAL, tfn,
       playlistdfkeys, PLAYLIST_KEY_MAX, DATAFILE_NO_LOOKUP);
-  if (! fileopFileExists (tfn)) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Bad playlist-pl %s", tfn);
-    playlistFree (pl);
-    return -1;
-  }
   pl->plinfo = datafileGetList (pl->plinfodf);
   nlistDumpInfo (pl->plinfo);
 
@@ -226,16 +221,9 @@ playlistLoad (playlist_t *pl, const char *fname)
 
   if (type == PLTYPE_SONGLIST) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "songlist: load songlist %s", fname);
-    pathbldMakePath (tfn, sizeof (tfn), fname,
-        BDJ4_SONGLIST_EXT, PATHBLD_MP_DATA);
-    if (! fileopFileExists (tfn)) {
-      logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Missing songlist %s", tfn);
-      playlistFree (pl);
-      return -1;
-    }
-    pl->songlist = songlistAlloc (tfn);
+    pl->songlist = songlistAlloc (fname);
     if (pl->songlist == NULL) {
-      logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Bad songlist %s", tfn);
+      logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: missing songlist %s", tfn);
       playlistFree (pl);
       return -1;
     }
@@ -243,16 +231,9 @@ playlistLoad (playlist_t *pl, const char *fname)
 
   if (type == PLTYPE_SEQUENCE) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "sequence: load sequence %s", fname);
-    pathbldMakePath (tfn, sizeof (tfn), fname,
-        BDJ4_SEQUENCE_EXT, PATHBLD_MP_DATA);
-    if (! fileopFileExists (tfn)) {
-      logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Missing sequence %s", tfn);
-      playlistFree (pl);
-      return -1;
-    }
     pl->sequence = sequenceAlloc (fname);
     if (pl->sequence == NULL) {
-      logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Bad sequence %s", fname);
+      logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: missing sequence %s", fname);
       playlistFree (pl);
       return -1;
     }

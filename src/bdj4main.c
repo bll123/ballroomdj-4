@@ -1076,7 +1076,7 @@ mainSigHandler (int sig)
 static void
 mainMusicQueueFill (maindata_t *mainData)
 {
-  ssize_t     mqLen;
+  ssize_t     playerqLen;
   ssize_t     currlen;
   playlist_t  *playlist = NULL;
   pltype_t    pltype;
@@ -1087,7 +1087,7 @@ mainMusicQueueFill (maindata_t *mainData)
   playlist = queueGetCurrent (mainData->playlistQueue [mainData->musicqManageIdx]);
   pltype = (pltype_t) playlistGetConfigNum (playlist, PLAYLIST_TYPE);
 
-  mqLen = bdjoptGetNum (OPT_G_PLAYERQLEN);
+  playerqLen = bdjoptGetNum (OPT_G_PLAYERQLEN);
   currlen = musicqGetLen (mainData->musicQueue, mainData->musicqManageIdx);
 
   /* if this is not the queue selected for playback, then push  */
@@ -1101,10 +1101,10 @@ mainMusicQueueFill (maindata_t *mainData)
     ++currlen;
   }
 
-  logMsg (LOG_DBG, LOG_BASIC, "fill: %ld < %ld", currlen, mqLen);
+  logMsg (LOG_DBG, LOG_BASIC, "fill: %ld < %ld", currlen, playerqLen);
 
-  /* want current + mqLen songs */
-  while (playlist != NULL && currlen <= mqLen && stopatflag == false) {
+  /* want current + playerqLen songs */
+  while (playlist != NULL && currlen <= playerqLen && stopatflag == false) {
     ssize_t   stopTime;
     song_t    *song = NULL;
 

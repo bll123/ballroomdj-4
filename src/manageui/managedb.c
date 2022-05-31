@@ -143,7 +143,7 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, UIWidget *vboxp)
   uiSpinboxTextSetValue (managedb->dbspinbox, MANAGE_DB_CHECK_NEW);
   uiwidgetp = uiSpinboxGetUIWidget (managedb->dbspinbox);
   uiutilsUICallbackInit (&managedb->dbchgcb, manageDbChg, managedb);
-  uiSpinboxSetValueChangedCallback (managedb->dbspinbox, &managedb->dbchgcb);
+  uiSpinboxTextSetValueChangedCallback (managedb->dbspinbox, &managedb->dbchgcb);
 //  g_signal_connect (uiwidgetp->widget, "value-changed", G_CALLBACK (manageDbChg), managedb);
   uiBoxPackStart (&hbox, uiwidgetp);
 

@@ -535,7 +535,11 @@ uimusicqProcessMusicQueueDataNew (uimusicq_t *uimusicq, char * args)
   store = gtk_list_store_newv (musicqcolcount, musicqstoretypes);
   assert (store != NULL);
   free (musicqstoretypes);
+  gtk_tree_view_set_model (GTK_TREE_VIEW (uiw->musicqTree), GTK_TREE_MODEL (store));
 
+  uimusicqProcessMusicQueueDataUpdate (uimusicq, args);
+
+#if 0
   uimusicq->count = nlistGetCount (uimusicq->dispList);
   nlistStartIterator (uimusicq->dispList, &iteridx);
   while ((musicqupdate = nlistIterateValueData (uimusicq->dispList, &iteridx)) != NULL) {
@@ -559,11 +563,11 @@ uimusicqProcessMusicQueueDataNew (uimusicq_t *uimusicq, char * args)
 
     uimusicqSetMusicqDisplay (uimusicq, GTK_TREE_MODEL (store), &iter, song);
   }
-
-  gtk_tree_view_set_model (GTK_TREE_VIEW (uiw->musicqTree), GTK_TREE_MODEL (store));
+#endif
 
   g_object_unref (G_OBJECT (store));
-  uimusicqMusicQueueDataFree (uimusicq);
+
+//  uimusicqMusicQueueDataFree (uimusicq);
   logProcEnd (LOG_PROC, "uimusicqProcessMusicQueueDataNew", "");
 }
 
@@ -603,6 +607,7 @@ uimusicqProcessMusicQueueDataUpdate (uimusicq_t *uimusicq, char * args)
     return;
   }
 
+#if 0
   gtk_tree_model_foreach (model,
       uimusicqMusicQueueDataFindRemovals, uimusicq);
 
@@ -620,6 +625,7 @@ uimusicqProcessMusicQueueDataUpdate (uimusicq_t *uimusicq, char * args)
       gtk_tree_path_free (path);
     }
   }
+#endif
 
   nlistFree (uimusicq->workList);
   uimusicq->workList = NULL;
@@ -653,7 +659,6 @@ uimusicqProcessMusicQueueDataUpdate (uimusicq_t *uimusicq, char * args)
           MUSICQ_COL_DBIDX, (glong) musicqupdate->dbidx,
           MUSICQ_COL_PAUSEIND, pixbuf,
           -1);
-      uimusicqSetMusicqDisplay (uimusicq, model, &iter, song);
     } else {
       /* all data must be updated */
       gtk_list_store_set (GTK_LIST_STORE (model), &iter,
@@ -663,8 +668,8 @@ uimusicqProcessMusicQueueDataUpdate (uimusicq_t *uimusicq, char * args)
           MUSICQ_COL_DBIDX, (glong) musicqupdate->dbidx,
           MUSICQ_COL_PAUSEIND, pixbuf,
           -1);
-      uimusicqSetMusicqDisplay (uimusicq, model, &iter, song);
     }
+    uimusicqSetMusicqDisplay (uimusicq, model, &iter, song);
 
     if (valid) {
       valid = gtk_tree_model_iter_next (model, &iter);
