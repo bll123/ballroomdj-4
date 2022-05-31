@@ -64,6 +64,7 @@ typedef struct uimusicq {
   uimusicqiteratecb_t iteratecb;
   nlist_t         *savelist;
   bool            backupcreated;
+  int             cbci;
 } uimusicq_t;
 
 typedef struct {

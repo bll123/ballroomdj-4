@@ -57,6 +57,7 @@ uimusicqInit (conn_t *conn, musicdb_t *musicdb,
   uimusicq->musicqPlayIdx = MUSICQ_A;
   uimusicq->iteratecb = NULL;
   uimusicq->savelist = NULL;
+  uimusicq->cbci = MUSICQ_A;
   uiutilsUIWidgetInit (&uimusicq->pausePixbuf);
   uimusicqUIInit (uimusicq);
 

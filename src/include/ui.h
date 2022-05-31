@@ -222,9 +222,9 @@ enum {
 GtkWidget * uiCreateTreeView (void);
 GtkTreeViewColumn * uiAddDisplayColumns (GtkWidget *tree,
     slist_t *sellist, int col, int fontcol, int ellipsizeCol);
-GType * uiAddDisplayType (GType *types, int valtype, int col);
-void  uiSetDisplayColumn (GtkListStore *store, GtkTreeIter *iter, int col,
-    long num, char *str);
+GType * uiTreeViewAddDisplayType (GType *types, int valtype, int col);
+void  uiTreeViewSetDisplayColumn (GtkTreeModel *model, GtkTreeIter *iter,
+    int col, long num, const char *str);
 int   uiTreeViewGetSelection (GtkWidget *tree, GtkTreeModel **model, GtkTreeIter *iter);
 void  uiTreeViewAllowMultiple (GtkWidget *tree);
 

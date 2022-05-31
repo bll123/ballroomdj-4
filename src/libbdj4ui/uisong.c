@@ -9,8 +9,6 @@
 #include <ctype.h>
 #include <math.h>
 
-#include <gtk/gtk.h>
-
 #include "slist.h"
 #include "tagdef.h"
 #include "ui.h"
@@ -21,7 +19,7 @@ static valuetype_t uisongDetermineValueType (int tagidx);
 
 void
 uisongSetDisplayColumns (slist_t *sellist, song_t *song, int col,
-    GtkTreeModel *model, GtkTreeIter *iter)
+    uisongcb_t cb, void *udata)
 {
   slistidx_t    seliteridx;
   valuetype_t   vt;
@@ -39,16 +37,18 @@ uisongSetDisplayColumns (slist_t *sellist, song_t *song, int col,
       num = songGetNum (song, tagidx);
       if (num == LIST_VALUE_INVALID) { num = 0; }
     }
-    uiSetDisplayColumn (GTK_LIST_STORE (model), iter,
-        col++, num, str);
+    if (cb != NULL) {
+      cb (col, num, str, udata);
+    }
+    col += 1;
     if (str != NULL) {
       free (str);
     }
   } /* for each tagidx in the display selection list */
 }
 
-GType *
-uisongAddDisplayTypes (GType *typelist, slist_t *sellist, int *colcount)
+void
+uisongAddDisplayTypes (slist_t *sellist, uisongdtcb_t cb, void *udata)
 {
   slistidx_t    seliteridx;
   int           tagidx;
@@ -60,11 +60,10 @@ uisongAddDisplayTypes (GType *typelist, slist_t *sellist, int *colcount)
 
     vt = uisongDetermineValueType (tagidx);
     type = vt == VALUE_STR ? UITREE_TYPE_STRING : UITREE_TYPE_NUM;
-    typelist = uiAddDisplayType (typelist, type, *colcount);
-    ++(*colcount);
+    if (cb != NULL) {
+      cb (type, udata);
+    }
   }
-
-  return typelist;
 }
 
 /* internal routines */
@@ -81,5 +80,3 @@ uisongDetermineValueType (int tagidx)
 
   return vt;
 }
-
-

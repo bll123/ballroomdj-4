@@ -93,19 +93,19 @@ uiAddDisplayColumns (GtkWidget *tree, slist_t *sellist, int col,
 }
 
 void
-uiSetDisplayColumn (GtkListStore *store, GtkTreeIter *iter,
-    int col, long num, char *str)
+uiTreeViewSetDisplayColumn (GtkTreeModel *model, GtkTreeIter *iter,
+    int col, long num, const char *str)
 {
   if (str != NULL) {
-    gtk_list_store_set (store, iter, col++, str, -1);
+    gtk_list_store_set (GTK_LIST_STORE (model), iter, col++, str, -1);
   } else {
-    gtk_list_store_set (store, iter, col++, (glong) num, -1);
+    gtk_list_store_set (GTK_LIST_STORE (model), iter, col++, (glong) num, -1);
   }
 }
 
 
 GType *
-uiAddDisplayType (GType *types, int valtype, int col)
+uiTreeViewAddDisplayType (GType *types, int valtype, int col)
 {
   int     type;
 

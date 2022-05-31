@@ -63,6 +63,10 @@ typedef struct uisongselgtk {
   int               maxRows;
   nlist_t           *selectedList;
   UICallback        *newselcb;
+  GtkTreeModel      *model;
+  GtkTreeIter       *iter;
+  GType             *typelist;
+  int               col;        // for the display type callback
   bool              controlPressed : 1;
   bool              shiftPressed : 1;
   bool              inscroll : 1;
@@ -72,6 +76,7 @@ static bool uisongselQueueProcessQueueCallback (void *udata);
 static bool uisongselQueueProcessPlayCallback (void *udata);
 static void uisongselQueueProcessHandler (void *udata, musicqidx_t mqidx);
 static void uisongselInitializeStore (uisongsel_t *uisongsel);
+static void uisongselInitializeStoreCallback (int type, void *udata);
 static void uisongselCreateRows (uisongsel_t *uisongsel);
 
 static void uisongselCheckFavChgSignal (GtkTreeView* tv, GtkTreePath* path,
@@ -91,6 +96,7 @@ static gboolean uisongselKeyEvent (GtkWidget *w, GdkEventKey *event, gpointer ud
 static void uisongselSelChanged (GtkTreeSelection *sel, gpointer udata);
 static void uisongselProcessSelection (GtkTreeModel *model,
     GtkTreePath *path, GtkTreeIter *iter, gpointer udata);
+static void uisongselPopulateDataCallback (int col, long num, const char *str, void *udata);
 
 void
 uisongselUIInit (uisongsel_t *uisongsel)
@@ -368,7 +374,10 @@ uisongselPopulateData (uisongsel_t *uisongsel)
             -1);
 
         sellist = dispselGetList (uisongsel->dispsel, uisongsel->dispselType);
-        uisongSetDisplayColumns (sellist, song, SONGSEL_COL_MAX, model, &iter);
+        uiw->model = model;
+        uiw->iter = &iter;
+        uisongSetDisplayColumns (sellist, song, SONGSEL_COL_MAX,
+            uisongselPopulateDataCallback, uisongsel);
       } /* song is not null */
     }
 
@@ -505,39 +514,48 @@ uisongselInitializeStore (uisongsel_t *uisongsel)
 {
   uisongselgtk_t      * uiw;
   GtkListStore      *store = NULL;
-  GType             *songselstoretypes;
-  int               colcount = 0;
   slist_t           *sellist;
 
   logProcBegin (LOG_PROC, "uisongselInitializeStore");
 
   uiw = uisongsel->uiWidgetData;
-  songselstoretypes = malloc (sizeof (GType) * SONGSEL_COL_MAX);
-  colcount = 0;
+  uiw->typelist = malloc (sizeof (GType) * SONGSEL_COL_MAX);
+  uiw->col = 0;
   /* attributes ellipsize/align/font*/
-  songselstoretypes [colcount++] = G_TYPE_INT;
-  songselstoretypes [colcount++] = G_TYPE_STRING;
+  uiw->typelist [uiw->col++] = G_TYPE_INT;
+  uiw->typelist [uiw->col++] = G_TYPE_STRING;
   /* internal idx/sortidx/dbidx/fav color */
-  songselstoretypes [colcount++] = G_TYPE_LONG,
-  songselstoretypes [colcount++] = G_TYPE_LONG,
-  songselstoretypes [colcount++] = G_TYPE_LONG,
-  songselstoretypes [colcount++] = G_TYPE_STRING,
+  uiw->typelist [uiw->col++] = G_TYPE_LONG,
+  uiw->typelist [uiw->col++] = G_TYPE_LONG,
+  uiw->typelist [uiw->col++] = G_TYPE_LONG,
+  uiw->typelist [uiw->col++] = G_TYPE_STRING,
 
   sellist = dispselGetList (uisongsel->dispsel, uisongsel->dispselType);
+  uisongAddDisplayTypes (sellist, uisongselInitializeStoreCallback, uisongsel);
 
-  songselstoretypes = uisongAddDisplayTypes (songselstoretypes, sellist, &colcount);
-  store = gtk_list_store_newv (colcount, songselstoretypes);
-  assert (store != NULL);
-  free (songselstoretypes);
+  store = gtk_list_store_newv (uiw->col, uiw->typelist);
+  free (uiw->typelist);
 
   gtk_tree_view_set_model (GTK_TREE_VIEW (uiw->songselTree), GTK_TREE_MODEL (store));
   logProcEnd (LOG_PROC, "uisongselInitializeStore", "");
 }
 
 static void
+uisongselInitializeStoreCallback (int type, void *udata)
+{
+  uisongsel_t     *uisongsel = udata;
+  uisongselgtk_t  *uiw;
+
+  uiw = uisongsel->uiWidgetData;
+  uiw->typelist = uiTreeViewAddDisplayType (uiw->typelist, type, uiw->col);
+  ++uiw->col;
+}
+
+
+static void
 uisongselCreateRows (uisongsel_t *uisongsel)
 {
-  uisongselgtk_t      * uiw;
+  uisongselgtk_t    *uiw;
   GtkTreeModel      *model = NULL;
   GtkTreeIter       iter;
 
@@ -868,4 +886,15 @@ uisongselProcessSelection (GtkTreeModel *model,
     uiutilsCallbackLongHandler (uiw->newselcb, dbidx);
   }
 }
+
+static void
+uisongselPopulateDataCallback (int col, long num, const char *str, void *udata)
+{
+  uisongsel_t     *uisongsel = udata;
+  uisongselgtk_t  *uiw;
+
+  uiw = uisongsel->uiWidgetData;
+  uiTreeViewSetDisplayColumn (uiw->model, uiw->iter, col, num, str);
+}
+
 
