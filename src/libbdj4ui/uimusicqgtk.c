@@ -16,6 +16,7 @@
 #include "pathbld.h"
 #include "uimusicq.h"
 #include "ui.h"
+#include "uisong.h"
 #include "uiutils.h"
 
 enum {
@@ -39,7 +40,7 @@ static void   uimusicqProcessMusicQueueDataUpdate (uimusicq_t *uimusicq, char * 
 static int    uimusicqMusicQueueDataFindRemovals (GtkTreeModel *model,
     GtkTreePath *path, GtkTreeIter *iter, gpointer udata);
 static void   uimusicqSetMusicqDisplay (uimusicq_t *uimusicq,
-    GtkListStore *store, GtkTreeIter *iter, song_t *song);
+    GtkTreeModel *model, GtkTreeIter *iter, song_t *song);
 static int    uimusicqIterateCallback (GtkTreeModel *model,
     GtkTreePath *path, GtkTreeIter *iter, gpointer udata);
 
@@ -521,15 +522,15 @@ uimusicqProcessMusicQueueDataNew (uimusicq_t *uimusicq, char * args)
   musicqstoretypes [musicqcolcount++] = G_TYPE_INT;
   musicqstoretypes [musicqcolcount++] = G_TYPE_STRING;
   /* internal idx/unique idx/dbidx*/
-  musicqstoretypes [musicqcolcount++] = G_TYPE_ULONG;
-  musicqstoretypes [musicqcolcount++] = G_TYPE_ULONG;
-  musicqstoretypes [musicqcolcount++] = G_TYPE_ULONG;
+  musicqstoretypes [musicqcolcount++] = G_TYPE_LONG;
+  musicqstoretypes [musicqcolcount++] = G_TYPE_LONG;
+  musicqstoretypes [musicqcolcount++] = G_TYPE_LONG;
   /* display disp idx/pause ind*/
-  musicqstoretypes [musicqcolcount++] = G_TYPE_ULONG;
+  musicqstoretypes [musicqcolcount++] = G_TYPE_LONG;
   musicqstoretypes [musicqcolcount++] = GDK_TYPE_PIXBUF;
 
   sellist = dispselGetList (uimusicq->dispsel, uimusicq->dispselType);
-  musicqstoretypes = uiAddDisplayTypes (musicqstoretypes, sellist, &musicqcolcount);
+  musicqstoretypes = uisongAddDisplayTypes (musicqstoretypes, sellist, &musicqcolcount);
 
   store = gtk_list_store_newv (musicqcolcount, musicqstoretypes);
   assert (store != NULL);
@@ -549,14 +550,14 @@ uimusicqProcessMusicQueueDataNew (uimusicq_t *uimusicq, char * args)
     gtk_list_store_set (store, &iter,
         MUSICQ_COL_ELLIPSIZE, PANGO_ELLIPSIZE_END,
         MUSICQ_COL_FONT, listingFont,
-        MUSICQ_COL_IDX, (gulong) musicqupdate->idx,
-        MUSICQ_COL_UNIQUE_IDX, (gulong) musicqupdate->uniqueidx,
-        MUSICQ_COL_DBIDX, (gulong) musicqupdate->dbidx,
-        MUSICQ_COL_DISP_IDX, (gulong) musicqupdate->dispidx,
+        MUSICQ_COL_IDX, (glong) musicqupdate->idx,
+        MUSICQ_COL_UNIQUE_IDX, (glong) musicqupdate->uniqueidx,
+        MUSICQ_COL_DBIDX, (glong) musicqupdate->dbidx,
+        MUSICQ_COL_DISP_IDX, (glong) musicqupdate->dispidx,
         MUSICQ_COL_PAUSEIND, pixbuf,
         -1);
 
-    uimusicqSetMusicqDisplay (uimusicq, store, &iter, song);
+    uimusicqSetMusicqDisplay (uimusicq, GTK_TREE_MODEL (store), &iter, song);
   }
 
   gtk_tree_view_set_model (GTK_TREE_VIEW (uiw->musicqTree), GTK_TREE_MODEL (store));
@@ -646,23 +647,23 @@ uimusicqProcessMusicQueueDataUpdate (uimusicq_t *uimusicq, char * args)
       gtk_list_store_set (GTK_LIST_STORE (model), &iter,
           MUSICQ_COL_ELLIPSIZE, PANGO_ELLIPSIZE_END,
           MUSICQ_COL_FONT, listingFont,
-          MUSICQ_COL_IDX, (gulong) musicqupdate->idx,
-          MUSICQ_COL_DISP_IDX, (gulong) musicqupdate->dispidx,
-          MUSICQ_COL_UNIQUE_IDX, (gulong) musicqupdate->uniqueidx,
-          MUSICQ_COL_DBIDX, (gulong) musicqupdate->dbidx,
+          MUSICQ_COL_IDX, (glong) musicqupdate->idx,
+          MUSICQ_COL_DISP_IDX, (glong) musicqupdate->dispidx,
+          MUSICQ_COL_UNIQUE_IDX, (glong) musicqupdate->uniqueidx,
+          MUSICQ_COL_DBIDX, (glong) musicqupdate->dbidx,
           MUSICQ_COL_PAUSEIND, pixbuf,
           -1);
-      uimusicqSetMusicqDisplay (uimusicq, GTK_LIST_STORE (model), &iter, song);
+      uimusicqSetMusicqDisplay (uimusicq, model, &iter, song);
     } else {
       /* all data must be updated */
       gtk_list_store_set (GTK_LIST_STORE (model), &iter,
-          MUSICQ_COL_IDX, (gulong) musicqupdate->idx,
-          MUSICQ_COL_DISP_IDX, (gulong) musicqupdate->dispidx,
-          MUSICQ_COL_UNIQUE_IDX, (gulong) musicqupdate->uniqueidx,
-          MUSICQ_COL_DBIDX, (gulong) musicqupdate->dbidx,
+          MUSICQ_COL_IDX, (glong) musicqupdate->idx,
+          MUSICQ_COL_DISP_IDX, (glong) musicqupdate->dispidx,
+          MUSICQ_COL_UNIQUE_IDX, (glong) musicqupdate->uniqueidx,
+          MUSICQ_COL_DBIDX, (glong) musicqupdate->dbidx,
           MUSICQ_COL_PAUSEIND, pixbuf,
           -1);
-      uimusicqSetMusicqDisplay (uimusicq, GTK_LIST_STORE (model), &iter, song);
+      uimusicqSetMusicqDisplay (uimusicq, model, &iter, song);
     }
 
     if (valid) {
@@ -697,13 +698,13 @@ uimusicqMusicQueueDataFindRemovals (GtkTreeModel *model,
 }
 
 static void
-uimusicqSetMusicqDisplay (uimusicq_t *uimusicq, GtkListStore *store,
+uimusicqSetMusicqDisplay (uimusicq_t *uimusicq, GtkTreeModel *model,
     GtkTreeIter *iter, song_t *song)
 {
   slist_t     *sellist;
 
   sellist = dispselGetList (uimusicq->dispsel, uimusicq->dispselType);
-  uiSetDisplayColumns (store, iter, sellist, song, MUSICQ_COL_MAX);
+  uisongSetDisplayColumns (sellist, song, MUSICQ_COL_MAX, model, iter);
 }
 
 static int
@@ -711,7 +712,7 @@ uimusicqIterateCallback (GtkTreeModel *model,
     GtkTreePath *path, GtkTreeIter *iter, gpointer udata)
 {
   uimusicq_t  *uimusicq = udata;
-  gulong      dbidx;
+  long        dbidx;
 
   gtk_tree_model_get (model, iter, MUSICQ_COL_DBIDX, &dbidx, -1);
   uimusicq->iteratecb (uimusicq, dbidx);

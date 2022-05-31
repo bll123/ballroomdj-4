@@ -318,6 +318,46 @@ songConvFavorite (datafileconv_t *conv)
   }
 }
 
+char *
+songDisplayString (song_t *song, int tagidx)
+{
+  valuetype_t     vt;
+  dfConvFunc_t    convfunc;
+  datafileconv_t  conv;
+  char            *str;
+  songfavoriteinfo_t  * favorite;
+
+  if (tagidx == TAG_FAVORITE) {
+    favorite = songGetFavoriteData (song);
+    str = strdup (favorite->spanStr);
+    return str;
+  }
+
+  vt = tagdefs [tagidx].valueType;
+  convfunc = tagdefs [tagidx].convfunc;
+  if (convfunc != NULL) {
+    conv.allocated = false;
+    if (vt == VALUE_NUM) {
+      conv.num = songGetNum (song, tagidx);
+    } else if (vt == VALUE_LIST) {
+      conv.list = songGetList (song, tagidx);
+    }
+    conv.valuetype = vt;
+    convfunc (&conv);
+    if (conv.str == NULL) { conv.str = ""; }
+    str = strdup (conv.str);
+    if (conv.allocated) {
+      free (conv.str);
+    }
+  } else {
+    str = songGetStr (song, tagidx);
+    if (str == NULL) { str = ""; }
+    str = strdup (str);
+  }
+
+  return str;
+}
+
 /* internal routines */
 
 static void

@@ -26,7 +26,7 @@
 
 /* song filter handling */
 static void uisongselCreateFilterDialog (uisongsel_t *uisongsel);
-static bool uisongselFilterResponseHandler (void *udata, int responseid);
+static bool uisongselFilterResponseHandler (void *udata, long responseid);
 static void uisongselFilterUpdate (uisongsel_t *uisongsel);
 static void uisongselSortBySelectHandler (GtkTreeView *tv, GtkTreePath *path,
     GtkTreeViewColumn *column, gpointer udata);
@@ -260,7 +260,7 @@ uisongselCreateFilterDialog (uisongsel_t *uisongsel)
 }
 
 static bool
-uisongselFilterResponseHandler (void *udata, int responseid)
+uisongselFilterResponseHandler (void *udata, long responseid)
 {
   uisongsel_t   *uisongsel = udata;
   int           x, y;

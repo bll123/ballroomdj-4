@@ -15,9 +15,7 @@
 #include "ui.h"
 #include "uiutils.h"
 
-static valuetype_t uiDetermineValueType (int tagidx);
-static char  * uiMakeDisplayStr (song_t *song, int tagidx, int *allocflag);
-static GType * uiAppendType (GType *types, int *ncol, int type);
+static GType * uiAppendType (GType *types, int ncol, int type);
 
 GtkWidget *
 uiCreateTreeView (void)
@@ -95,68 +93,29 @@ uiAddDisplayColumns (GtkWidget *tree, slist_t *sellist, int col,
 }
 
 void
-uiSetDisplayColumns (GtkListStore *store, GtkTreeIter *iter,
-    slist_t *sellist, song_t *song, int col)
+uiSetDisplayColumn (GtkListStore *store, GtkTreeIter *iter,
+    int col, long num, char *str)
 {
-  slistidx_t    seliteridx;
-  int           tagidx;
-
-
-  slistStartIterator (sellist, &seliteridx);
-  while ((tagidx = slistIterateValueNum (sellist, &seliteridx)) >= 0) {
-    valuetype_t vt;
-    char        *str;
-    gulong      num;
-    ssize_t     val;
-    int         allocated = 0;
-
-    vt = uiDetermineValueType (tagidx);
-    if (vt == VALUE_STR) {
-      songfavoriteinfo_t  * favorite;
-
-      if (tagidx == TAG_FAVORITE) {
-        favorite = songGetFavoriteData (song);
-        str = favorite->spanStr;
-      } else {
-        str = uiMakeDisplayStr (song, tagidx, &allocated);
-      }
-      gtk_list_store_set (store, iter, col++, str, -1);
-      if (allocated) {
-        free (str);
-      }
-    } else {
-      num = songGetNum (song, tagidx);
-      val = (ssize_t) num;
-      if (val != LIST_VALUE_INVALID) {
-        gtk_list_store_set (store, iter, col++, (gulong) num, -1);
-      } else {
-        gtk_list_store_set (store, iter, col++, (gulong) 0, -1);
-      }
-    }
+  if (str != NULL) {
+    gtk_list_store_set (store, iter, col++, str, -1);
+  } else {
+    gtk_list_store_set (store, iter, col++, (glong) num, -1);
   }
 }
 
 
 GType *
-uiAddDisplayTypes (GType *types, slist_t *sellist, int *col)
+uiAddDisplayType (GType *types, int valtype, int col)
 {
-  slistidx_t    seliteridx;
-  int           tagidx;
+  int     type;
 
-  slistStartIterator (sellist, &seliteridx);
-  while ((tagidx = slistIterateValueNum (sellist, &seliteridx)) >= 0) {
-    valuetype_t vt;
-    int         type;
-
-    vt = uiDetermineValueType (tagidx);
-    if (vt == VALUE_NUM) {
-      type = G_TYPE_ULONG;
-    }
-    if (vt == VALUE_STR) {
-      type = G_TYPE_STRING;
-    }
-    types = uiAppendType (types, col, type);
+  if (valtype == UITREE_TYPE_NUM) {
+    type = G_TYPE_LONG;
   }
+  if (valtype == UITREE_TYPE_STRING) {
+    type = G_TYPE_STRING;
+  }
+  types = uiAppendType (types, col, type);
 
   return types;
 }
@@ -190,55 +149,11 @@ uiTreeViewAllowMultiple (GtkWidget *tree)
 
 /* internal routines */
 
-static valuetype_t
-uiDetermineValueType (int tagidx)
-{
-  valuetype_t   vt;
-
-  vt = tagdefs [tagidx].valueType;
-  if (tagdefs [tagidx].convfunc != NULL) {
-    vt = VALUE_STR;
-  }
-
-  return vt;
-}
-
-
-static char *
-uiMakeDisplayStr (song_t *song, int tagidx, int *allocated)
-{
-  valuetype_t     vt;
-  dfConvFunc_t    convfunc;
-  datafileconv_t  conv;
-  char            *str;
-
-  *allocated = false;
-  vt = tagdefs [tagidx].valueType;
-  convfunc = tagdefs [tagidx].convfunc;
-  if (convfunc != NULL) {
-    conv.allocated = false;
-    if (vt == VALUE_NUM) {
-      conv.num = songGetNum (song, tagidx);
-    } else if (vt == VALUE_LIST) {
-      conv.list = songGetList (song, tagidx);
-    }
-    conv.valuetype = vt;
-    convfunc (&conv);
-    str = conv.str;
-    *allocated = conv.allocated;
-  } else {
-    str = songGetStr (song, tagidx);
-  }
-
-  return str;
-}
-
 static GType *
-uiAppendType (GType *types, int *ncol, int type)
+uiAppendType (GType *types, int ncol, int type)
 {
-  ++(*ncol);
-  types = realloc (types, *ncol * sizeof (GType));
-  types [*ncol-1] = type;
+  types = realloc (types, (ncol + 1) * sizeof (GType));
+  types [ncol] = type;
 
   return types;
 }

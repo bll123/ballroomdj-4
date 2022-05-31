@@ -135,8 +135,7 @@ typedef struct manage {
   UIWidget        *slmusicqtabwidget;
   UIWidget        *slsongseltabwidget;
   char            *sloldname;
-  songfilter_t    *slsongfilter;
-  songfilter_t    *mmsongfilter;
+  songfilter_t    *songfilter;
   /* music manager ui */
   uiplayer_t      *mmplayer;
   uimusicq_t      *mmmusicq;
@@ -251,8 +250,7 @@ main (int argc, char *argv[])
   manage.mmnbtabid = uiutilsNotebookIDInit ();
   manage.sloldname = NULL;
   manage.slbackupcreated = false;
-  manage.slsongfilter = NULL;
-  manage.mmsongfilter = NULL;
+  manage.songfilter = NULL;
   manage.manageseq = NULL;   /* allocated within buildui */
   manage.managepl = NULL;   /* allocated within buildui */
   manage.managedb = NULL;   /* allocated within buildui */
@@ -269,7 +267,7 @@ main (int argc, char *argv[])
   manage.conn = connInit (ROUTE_MANAGEUI);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
-      "manageui", BDJ4_CONFIG_EXT, PATHBLD_MP_USEIDX);
+      MANAGEUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_USEIDX);
   manage.optiondf = datafileAllocParse ("manageui-opt", DFTYPE_KEY_VAL, tbuff,
       manageuidfkeys, MANAGEUI_DFKEY_COUNT, DATAFILE_NO_LOOKUP);
   manage.options = datafileGetList (manage.optiondf);
@@ -288,8 +286,7 @@ main (int argc, char *argv[])
     nlistSetNum (manage.options, MANAGE_EASY_SONGLIST, true);
   }
 
-  manage.slsongfilter = songfilterAlloc ();
-  manage.mmsongfilter = songfilterAlloc ();
+  manage.songfilter = songfilterAlloc ();
   manageInitializeSongFilter (&manage, manage.options);
 
   manage.slplayer = uiplayerInit (manage.progstate, manage.conn,
@@ -301,7 +298,7 @@ main (int argc, char *argv[])
   manage.slsongsel = uisongselInit ("m-ss", manage.conn,
       manage.musicdb, manage.dispsel, manage.options,
       SONG_FILTER_FOR_SELECTION, DISP_SEL_SONGSEL);
-  uisongselInitializeSongFilter (manage.slsongsel, manage.slsongfilter);
+  uisongselInitializeSongFilter (manage.slsongsel, manage.songfilter);
   manage.slsongedit = uisongeditInit (manage.conn,
       manage.musicdb, manage.dispsel, manage.options);
   manage.slezmusicq = uimusicqInit (manage.conn,
@@ -311,7 +308,7 @@ main (int argc, char *argv[])
   manage.slezsongsel = uisongselInit ("m-ez", manage.conn,
       manage.musicdb, manage.dispsel, manage.options,
       SONG_FILTER_FOR_SELECTION, DISP_SEL_EZSONGSEL);
-  uisongselInitializeSongFilter (manage.slezsongsel, manage.slsongfilter);
+  uisongselInitializeSongFilter (manage.slezsongsel, manage.songfilter);
 
   uimusicqSetPlayIdx (manage.slmusicq, manage.musicqPlayIdx);
   uimusicqSetPlayIdx (manage.slezmusicq, manage.musicqPlayIdx);
@@ -327,7 +324,7 @@ main (int argc, char *argv[])
   manage.mmsongsel = uisongselInit ("m-mm", manage.conn,
       manage.musicdb, manage.dispsel, manage.options,
       SONG_FILTER_FOR_SELECTION, DISP_SEL_MM);
-  uisongselInitializeSongFilter (manage.mmsongsel, manage.mmsongfilter);
+  uisongselInitializeSongFilter (manage.mmsongsel, manage.songfilter);
   manage.mmsongedit = uisongeditInit (manage.conn,
       manage.musicdb, manage.dispsel, manage.options);
 
@@ -414,7 +411,7 @@ manageClosingCallback (void *udata, programstate_t programState)
   uiCloseWindow (&manage->window);
 
   pathbldMakePath (fn, sizeof (fn),
-      "manageui", BDJ4_CONFIG_EXT, PATHBLD_MP_USEIDX);
+      MANAGEUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_USEIDX);
   datafileSaveKeyVal ("manageui", fn, manageuidfkeys, MANAGEUI_DFKEY_COUNT, manage->options);
 
   bdj4shutdown (ROUTE_MANAGEUI, manage->musicdb);
@@ -423,11 +420,8 @@ manageClosingCallback (void *udata, programstate_t programState)
   managePlaylistFree (manage->managepl);
   manageDbFree (manage->managedb);
 
-  if (manage->slsongfilter != NULL) {
-    songfilterFree (manage->slsongfilter);
-  }
-  if (manage->mmsongfilter != NULL) {
-    songfilterFree (manage->mmsongfilter);
+  if (manage->songfilter != NULL) {
+    songfilterFree (manage->songfilter);
   }
   if (manage->sloldname != NULL) {
     free (manage->sloldname);
@@ -1366,9 +1360,7 @@ manageSwitchPage (manageui_t *manage, long pagenum, int which)
 static void
 manageInitializeSongFilter (manageui_t *manage, nlist_t *options)
 {
-  songfilterSetSort (manage->slsongfilter,
-      nlistGetStr (options, SONGSEL_SORT_BY));
-  songfilterSetSort (manage->mmsongfilter,
+  songfilterSetSort (manage->songfilter,
       nlistGetStr (options, SONGSEL_SORT_BY));
 }
 

@@ -99,6 +99,7 @@ void  uisongselClearData (uisongsel_t *uisongsel);
 void  uisongselPopulateData (uisongsel_t *uisongsel);
 void  uisongselSetFavoriteForeground (uisongsel_t *uisongsel, char *color);
 bool  uisongselQueueProcessSelectCallback (void *udata);
+void  uisongselSetDefaultSelection (uisongsel_t *uisongsel);
 
 #endif /* INC_UISONGSEL_H */
 

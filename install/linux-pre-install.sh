@@ -68,8 +68,8 @@ if [[ -f /usr/bin/pacman ]]; then
   pkgconfirm=--noconfirm
   pkgchk=
 fi
-if [[ -f /usr/bin/apt-get ]]; then
-  pkgprog=/usr/bin/apt-get
+if [[ -f /usr/bin/apt ]]; then
+  pkgprog=/usr/bin/apt
   pkgrm=remove
   pkginst=install
   pkginstflags=
@@ -133,7 +133,7 @@ if [[ -f /usr/bin/pacman ]]; then
       libmad lame twolame libid3tag make inetutils
       pulseaudio curl"
 fi
-if [[ -f /usr/bin/apt-get ]]; then
+if [[ -f /usr/bin/apt ]]; then
   # debian based linux
   pkglist="ffmpeg
       python3-setuptools python3-pip python3-wheel
@@ -158,7 +158,7 @@ if [[ -f /usr/bin/zypper ]]; then
 fi
 
 pkglist="$pkglist vlc"
-if [[ -f /usr/bin/apt-get || -f /usr/bin/zypper ]]; then
+if [[ -f /usr/bin/apt || -f /usr/bin/zypper ]]; then
   pkglist="$pkglist libvlc5"
 fi
 

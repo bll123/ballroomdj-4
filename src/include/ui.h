@@ -211,12 +211,18 @@ void uiCreateProgressBar (UIWidget *uiwidget, char *color);
 void uiProgressBarSet (UIWidget *uipb, double val);
 
 /* uigtktreeview.c */
+
+enum {
+  UITREE_TYPE_NUM,
+  UITREE_TYPE_STRING,
+};
+
 GtkWidget * uiCreateTreeView (void);
 GtkTreeViewColumn * uiAddDisplayColumns (GtkWidget *tree,
     slist_t *sellist, int col, int fontcol, int ellipsizeCol);
-GType * uiAddDisplayTypes (GType *types, slist_t *sellist, int *col);
-void  uiSetDisplayColumns (GtkListStore *store, GtkTreeIter *iter,
-    slist_t *sellist, song_t *song, int col);
+GType * uiAddDisplayType (GType *types, int valtype, int col);
+void  uiSetDisplayColumn (GtkListStore *store, GtkTreeIter *iter, int col,
+    long num, char *str);
 int   uiTreeViewGetSelection (GtkWidget *tree, GtkTreeModel **model, GtkTreeIter *iter);
 void  uiTreeViewAllowMultiple (GtkWidget *tree);
 

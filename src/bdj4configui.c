@@ -3671,7 +3671,7 @@ confuiTableRemove (void *udata)
   }
 
   if (confui->tablecurr == CONFUI_ID_DANCE) {
-    gulong        idx;
+    long         idx;
     dance_t       *dances;
     GtkWidget     *tree;
     GtkTreeModel  *model;
@@ -3920,7 +3920,7 @@ confuiCreateDanceTable (configui_t *confui)
   dances = bdjvarsdfGet (BDJVDF_DANCES);
 
   store = gtk_list_store_new (CONFUI_DANCE_COL_MAX,
-      G_TYPE_STRING, G_TYPE_STRING, G_TYPE_ULONG);
+      G_TYPE_STRING, G_TYPE_STRING, G_TYPE_LONG);
   assert (store != NULL);
 
   dancelist = danceGetDanceList (dances);
@@ -3967,7 +3967,7 @@ confuiDanceSet (GtkListStore *store, GtkTreeIter *iter,
   gtk_list_store_set (store, iter,
       CONFUI_DANCE_COL_DANCE, dancedisp,
       CONFUI_DANCE_COL_SB_PAD, "    ",
-      CONFUI_DANCE_COL_DANCE_IDX, key,
+      CONFUI_DANCE_COL_DANCE_IDX, (glong) key,
       -1);
   logProcEnd (LOG_PROC, "confuiDanceSet", "");
 }
@@ -3990,8 +3990,8 @@ confuiCreateRatingTable (configui_t *confui)
   ratings = bdjvarsdfGet (BDJVDF_RATINGS);
 
   store = gtk_list_store_new (CONFUI_RATING_COL_MAX,
-      G_TYPE_ULONG, G_TYPE_ULONG, G_TYPE_STRING,
-      G_TYPE_ULONG, G_TYPE_OBJECT, G_TYPE_ULONG);
+      G_TYPE_LONG, G_TYPE_LONG, G_TYPE_STRING,
+      G_TYPE_LONG, G_TYPE_OBJECT, G_TYPE_LONG);
   assert (store != NULL);
 
   ratingStartIterator (ratings, &iteridx);
@@ -4084,7 +4084,7 @@ confuiCreateStatusTable (configui_t *confui)
   status = bdjvarsdfGet (BDJVDF_STATUS);
 
   store = gtk_list_store_new (CONFUI_STATUS_COL_MAX,
-      G_TYPE_ULONG, G_TYPE_STRING, G_TYPE_BOOLEAN);
+      G_TYPE_LONG, G_TYPE_STRING, G_TYPE_BOOLEAN);
   assert (store != NULL);
 
   statusStartIterator (status, &iteridx);
@@ -4169,8 +4169,8 @@ confuiCreateLevelTable (configui_t *confui)
   levels = bdjvarsdfGet (BDJVDF_LEVELS);
 
   store = gtk_list_store_new (CONFUI_LEVEL_COL_MAX,
-      G_TYPE_ULONG, G_TYPE_STRING, G_TYPE_ULONG, G_TYPE_BOOLEAN,
-      G_TYPE_OBJECT, G_TYPE_ULONG);
+      G_TYPE_LONG, G_TYPE_STRING, G_TYPE_LONG, G_TYPE_BOOLEAN,
+      G_TYPE_OBJECT, G_TYPE_LONG);
   assert (store != NULL);
 
   levelStartIterator (levels, &iteridx);
@@ -4278,7 +4278,7 @@ confuiCreateGenreTable (configui_t *confui)
   genres = bdjvarsdfGet (BDJVDF_GENRES);
 
   store = gtk_list_store_new (CONFUI_GENRE_COL_MAX,
-      G_TYPE_ULONG, G_TYPE_STRING, G_TYPE_BOOLEAN, G_TYPE_STRING);
+      G_TYPE_LONG, G_TYPE_STRING, G_TYPE_BOOLEAN, G_TYPE_STRING);
   assert (store != NULL);
 
   genreStartIterator (genres, &iteridx);
@@ -4449,7 +4449,7 @@ confuiTableEdit (configui_t *confui, GtkCellRendererText* r,
     gtk_list_store_set (GTK_LIST_STORE (model), &iter, col, ntext, -1);
   }
   if (type == CONFUI_TABLE_NUM) {
-    gulong val = atol (ntext);
+    long val = atol (ntext);
     gtk_list_store_set (GTK_LIST_STORE (model), &iter, col, val, -1);
   }
   confui->tables [confui->tablecurr].changed = true;
@@ -4493,7 +4493,7 @@ confuiRatingListCreate (GtkTreeModel *model, GtkTreePath *path,
 {
   configui_t  *confui = udata;
   char        *ratingdisp;
-  gulong      weight;
+  long        weight;
 
   logProcBegin (LOG_PROC, "confuiRatingListCreate");
   gtk_tree_model_get (model, iter,
@@ -4516,7 +4516,7 @@ confuiLevelListCreate (GtkTreeModel *model, GtkTreePath *path,
 {
   configui_t  *confui = udata;
   char        *leveldisp;
-  gulong      weight;
+  long        weight;
   gboolean    def;
 
   logProcBegin (LOG_PROC, "confuiLevelListCreate");
@@ -4728,7 +4728,7 @@ confuiDanceEntryChg (uientry_t *entry, void *udata)
   GtkTreeModel    *model;
   GtkTreeIter     iter;
   int             count;
-  gulong          idx;
+  long            idx;
   ssize_t         key;
   dance_t         *dances;
   int             didx;
@@ -4790,7 +4790,7 @@ confuiDanceSpinboxChg (GtkSpinButton *sb, gpointer udata)
   GtkTreeModel    *model;
   GtkTreeIter     iter;
   int             count;
-  gulong          idx;
+  long            idx;
   double          value;
   ssize_t         nval;
   ilistidx_t      key;

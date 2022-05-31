@@ -191,7 +191,7 @@ main (int argc, char *argv[])
   plui.conn = connInit (ROUTE_PLAYERUI);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
-      "playerui", BDJ4_CONFIG_EXT, PATHBLD_MP_USEIDX);
+      PLAYERUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_USEIDX);
   plui.optiondf = datafileAllocParse ("playerui-opt", DFTYPE_KEY_VAL, tbuff,
       playeruidfkeys, PLAYERUI_DFKEY_COUNT, DATAFILE_NO_LOOKUP);
   plui.options = datafileGetList (plui.optiondf);
@@ -287,7 +287,7 @@ pluiClosingCallback (void *udata, programstate_t programState)
   uiCloseWindow (&plui->window);
 
   pathbldMakePath (fn, sizeof (fn),
-      "playerui", BDJ4_CONFIG_EXT, PATHBLD_MP_USEIDX);
+      PLAYERUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_USEIDX);
   datafileSaveKeyVal ("playerui", fn, playeruidfkeys, PLAYERUI_DFKEY_COUNT, plui->options);
 
   uiWidgetClearPersistent (&plui->ledonPixbuf);

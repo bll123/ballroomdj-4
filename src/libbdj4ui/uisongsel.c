@@ -241,8 +241,11 @@ uisongselApplySongFilter (uisongsel_t *uisongsel)
       uisongsel->songfilter, uisongsel->musicdb);
   uisongsel->idxStart = 0;
   uisongsel->filterApplied = mstime ();
+  /* the call to cleardata() will remove any selections */
+  /* afterwards, make sure something is selected */
   uisongselClearData (uisongsel);
   uisongselPopulateData (uisongsel);
+  uisongselSetDefaultSelection (uisongsel);
 }
 
 void

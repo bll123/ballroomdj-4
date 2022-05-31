@@ -61,6 +61,9 @@ uisongeditMainLoop (uisongedit_t *uisongedit)
 void
 uisongeditNewSelection (uisongedit_t *uisongedit, dbidx_t dbidx)
 {
-  uisongeditLoadData (uisongedit, dbidx);
+  song_t      *song;
+
+  song = dbGetByIdx (uisongedit->musicdb, dbidx);
+  uisongeditLoadData (uisongedit, song);
 }
 

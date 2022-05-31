@@ -32,5 +32,8 @@ enum {
 #define BDJ4_SONGLIST_EXT ".songlist"
 #define BDJ4_SEQUENCE_EXT ".sequence"
 
+#define MANAGEUI_OPT_FN   "ui-manage"
+#define PLAYERUI_OPT_FN   "ui-player"
+#define STARTERUI_OPT_FN  "ui-starter"
 
 #endif /* INC_BDJ4_H */

@@ -23,6 +23,7 @@
 #include "songfilter.h"
 #include "uisongsel.h"
 #include "ui.h"
+#include "uisong.h"
 #include "uiutils.h"
 
 enum {
@@ -279,6 +280,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin)
   uisongselCreateRows (uisongsel);
   logMsg (LOG_DBG, LOG_SONGSEL, "populate: initial");
   uisongselPopulateData (uisongsel);
+  uisongselSetDefaultSelection (uisongsel);
 
   uiDropDownSelectionSetNum (&uisongsel->dancesel, -1);
 
@@ -366,10 +368,8 @@ uisongselPopulateData (uisongsel_t *uisongsel)
             -1);
 
         sellist = dispselGetList (uisongsel->dispsel, uisongsel->dispselType);
-        uiSetDisplayColumns (
-            GTK_LIST_STORE (model), &iter, sellist,
-            song, SONGSEL_COL_MAX);
-      }
+        uisongSetDisplayColumns (sellist, song, SONGSEL_COL_MAX, model, &iter);
+      } /* song is not null */
     }
 
     ++idx;
@@ -421,6 +421,32 @@ uisongselSetSelectionCallback (uisongsel_t *uisongsel, UICallback *uicb)
   }
   uiw = uisongsel->uiWidgetData;
   uiw->newselcb = uicb;
+}
+
+void
+uisongselSetDefaultSelection (uisongsel_t *uisongsel)
+{
+  uisongselgtk_t  *uiw;
+  GtkTreeModel    *model;
+  GtkTreeIter     iter;
+  int             count;
+
+  uiw = uisongsel->uiWidgetData;
+
+  count = uiTreeViewGetSelection (uiw->songselTree, &model, &iter);
+  if (count < 1) {
+    GtkTreePath   *path;
+
+    path = gtk_tree_path_new_from_string ("0");
+    if (path != NULL) {
+      gtk_tree_selection_select_path (uiw->sel, path);
+      gtk_tree_path_free (path);
+    }
+
+//    nlistSetNum (uiw->selectedList, );
+  }
+
+  return;
 }
 
 /* internal routines */
@@ -498,7 +524,8 @@ uisongselInitializeStore (uisongsel_t *uisongsel)
   songselstoretypes [colcount++] = G_TYPE_STRING,
 
   sellist = dispselGetList (uisongsel->dispsel, uisongsel->dispselType);
-  songselstoretypes = uiAddDisplayTypes (songselstoretypes, sellist, &colcount);
+
+  songselstoretypes = uisongAddDisplayTypes (songselstoretypes, sellist, &colcount);
   store = gtk_list_store_newv (colcount, songselstoretypes);
   assert (store != NULL);
   free (songselstoretypes);

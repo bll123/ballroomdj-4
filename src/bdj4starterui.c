@@ -247,7 +247,7 @@ main (int argc, char *argv[])
   starter.conn = connInit (ROUTE_STARTERUI);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
-      "starterui", BDJ4_CONFIG_EXT, PATHBLD_MP_USEIDX);
+      STARTERUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_USEIDX);
   starter.optiondf = datafileAllocParse ("starterui-opt", DFTYPE_KEY_VAL, tbuff,
       starteruidfkeys, STARTERUI_KEY_MAX, DATAFILE_NO_LOOKUP);
   starter.options = datafileGetList (starter.optiondf);
@@ -368,7 +368,7 @@ starterClosingCallback (void *udata, programstate_t programState)
   uiSpinboxTextFree (starter->profilesel);
 
   pathbldMakePath (fn, sizeof (fn),
-      "starterui", BDJ4_CONFIG_EXT, PATHBLD_MP_USEIDX);
+      STARTERUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_USEIDX);
   datafileSaveKeyVal ("starterui", fn, starteruidfkeys, STARTERUI_KEY_MAX, starter->options);
 
   for (int i = 0; i < START_LINK_CB_MAX; ++i) {
