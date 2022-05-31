@@ -701,31 +701,47 @@ checkForFile (char *path, int idx, ...)
 static bool
 svGetLinuxOSInfo (char *fn)
 {
-  static char *desctag = "PRETTY_NAME=";
+  static char *prettytag = "PRETTY_NAME=";
+  static char *desctag = "DISTRIB_DESCRIPTION=";
   static char *reltag = "DISTRIB_RELEASE=";
   static char *verstag = "VERSION_ID=";
   FILE        *fh;
   char        tbuff [MAXPATHLEN];
   char        buff [MAXPATHLEN];
   bool        rc = false;
+  bool        haveprettyname = false;
+  bool        havevers = false;
 
   fh = fopen (fn, "r");
   if (fh != NULL) {
     while (fgets (tbuff, sizeof (tbuff), fh) != NULL) {
-      if (strncmp (tbuff, desctag, strlen (desctag)) == 0) {
+      if (! haveprettyname &&
+          strncmp (tbuff, prettytag, strlen (prettytag)) == 0) {
+        strlcpy (buff, tbuff + strlen (prettytag) + 1, sizeof (buff));
+        stringTrim (buff);
+        stringTrimChar (buff, '"');
+        strlcpy (sysvars [SV_OSDISP], buff, SV_MAX_SZ);
+        haveprettyname = true;
+        rc = true;
+      }
+      if (! haveprettyname &&
+          strncmp (tbuff, desctag, strlen (desctag)) == 0) {
         strlcpy (buff, tbuff + strlen (desctag) + 1, sizeof (buff));
         stringTrim (buff);
         stringTrimChar (buff, '"');
         strlcpy (sysvars [SV_OSDISP], buff, SV_MAX_SZ);
+        haveprettyname = true;
         rc = true;
       }
-      if (strncmp (tbuff, reltag, strlen (reltag)) == 0) {
+      if (! havevers &&
+          strncmp (tbuff, reltag, strlen (reltag)) == 0) {
         strlcpy (buff, tbuff + strlen (reltag), sizeof (buff));
         stringTrim (buff);
         strlcpy (sysvars [SV_OSVERS], buff, SV_MAX_SZ);
         rc = true;
       }
-      if (strncmp (tbuff, verstag, strlen (verstag)) == 0) {
+      if (! havevers &&
+          strncmp (tbuff, verstag, strlen (verstag)) == 0) {
         strlcpy (buff, tbuff + strlen (verstag) + 1, sizeof (buff));
         stringTrim (buff);
         stringTrimChar (buff, '"');

@@ -20,6 +20,7 @@
 #include "log.h"
 #include "tmutil.h"
 #include "fileop.h"
+#include "filemanip.h"
 #include "fileutil.h"
 #include "osutils.h"
 #include "pathbld.h"
@@ -268,6 +269,10 @@ rlogOpen (logidx_t idx, const char *fn, const char *processtag, int truncflag)
     fileopMakeDir (tbuff);
   }
   pathInfoFree (pi);
+
+  if (truncflag == FILE_OPEN_TRUNCATE && idx != LOG_INSTALL) {
+    filemanipBackup (fn, 1);
+  }
 
   l->processTag = processtag;
   if (idx == LOG_INSTALL) {

@@ -170,7 +170,7 @@ static void     starterWebResponseCallback (void *userdata, char *resp, size_t l
 static bool     starterSupportResponseHandler (void *udata, long responseid);
 static bool     starterCreateSupportDialog (void *udata);
 static bool     starterSupportMsgHandler (void *udata, long responseid);
-static void     starterSendFilesInit (startui_t *starter, char *dir);
+static void     starterSendFilesInit (startui_t *starter, char *dir, bool basic);
 static void     starterSendFiles (startui_t *starter);
 static void     starterSendFile (startui_t *starter, char *origfn, char *fn);
 
@@ -700,7 +700,7 @@ starterMainLoop (void *tstarter)
 
       pathbldMakePath (tbuff, sizeof (tbuff),
           "", "", PATHBLD_MP_DATA);
-      starterSendFilesInit (starter, tbuff);
+      starterSendFilesInit (starter, tbuff, true);
       starter->startState = START_STATE_SUPPORT_SEND_FILE;
       starter->nextState = START_STATE_SUPPORT_SEND_FILES_B;
       break;
@@ -708,7 +708,7 @@ starterMainLoop (void *tstarter)
     case START_STATE_SUPPORT_SEND_FILES_B: {
       pathbldMakePath (tbuff, sizeof (tbuff),
           "", "", PATHBLD_MP_USEIDX);
-      starterSendFilesInit (starter, tbuff);
+      starterSendFilesInit (starter, tbuff, true);
       starter->startState = START_STATE_SUPPORT_SEND_FILE;
       starter->nextState = START_STATE_SUPPORT_SEND_FILES_C;
       break;
@@ -716,7 +716,7 @@ starterMainLoop (void *tstarter)
     case START_STATE_SUPPORT_SEND_FILES_C: {
       pathbldMakePath (tbuff, sizeof (tbuff),
           "", "", PATHBLD_MP_HOSTNAME);
-      starterSendFilesInit (starter, tbuff);
+      starterSendFilesInit (starter, tbuff, true);
       starter->startState = START_STATE_SUPPORT_SEND_FILE;
       starter->nextState = START_STATE_SUPPORT_SEND_FILES_D;
       break;
@@ -724,7 +724,8 @@ starterMainLoop (void *tstarter)
     case START_STATE_SUPPORT_SEND_FILES_D: {
       pathbldMakePath (tbuff, sizeof (tbuff),
           "", "", PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
-      starterSendFilesInit (starter, tbuff);
+      /* will end up with the backup bdjconfig.txt file also, but that's ok */
+      starterSendFilesInit (starter, tbuff, false);
       starter->startState = START_STATE_SUPPORT_SEND_FILE;
       starter->nextState = START_STATE_SUPPORT_SEND_DB_PRE;
       break;
@@ -1333,11 +1334,15 @@ starterSupportMsgHandler (void *udata, long responseid)
 }
 
 static void
-starterSendFilesInit (startui_t *starter, char *dir)
+starterSendFilesInit (startui_t *starter, char *dir, bool basic)
 {
   slist_t     *list;
+  char        *ext = BDJ4_CONFIG_EXT;
 
-  list = filemanipBasicDirList (dir, BDJ4_CONFIG_EXT);
+  if (! basic) {
+    ext = NULL;
+  }
+  list = filemanipBasicDirList (dir, ext);
   starter->supportFileList = list;
   slistStartIterator (list, &starter->supportFileIterIdx);
   if (starter->supportDir != NULL) {
