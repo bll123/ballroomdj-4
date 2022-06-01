@@ -102,7 +102,7 @@ uimusicqProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     bdjmsgmsg_t msg, char *args, void *udata)
 {
   uimusicq_t    *uimusicq = udata;
-  bool          disp = false;
+  bool          dbgdisp = false;
   char          *targs = NULL;
 
   if (args != NULL) {
@@ -116,12 +116,12 @@ uimusicqProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
       switch (msg) {
         case MSG_MUSIC_QUEUE_DATA: {
           uimusicqProcessMusicQueueData (uimusicq, targs);
-          // disp = true;
+          dbgdisp = true; //
           break;
         }
         case MSG_SONG_SELECT: {
           uimusicqProcessSongSelect (uimusicq, targs);
-          disp = true;
+          dbgdisp = true;
           break;
         }
         default: {
@@ -135,7 +135,7 @@ uimusicqProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     }
   }
 
-  if (disp) {
+  if (dbgdisp) {
     logMsg (LOG_DBG, LOG_MSGS, "uimusicq (%d): got: from:%d/%s route:%d/%s msg:%d/%s args:%s",
         uimusicq->dispselType, routefrom, msgRouteDebugText (routefrom),
         route, msgRouteDebugText (route), msg, msgDebugText (msg), args);

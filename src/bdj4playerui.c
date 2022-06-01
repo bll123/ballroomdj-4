@@ -612,13 +612,10 @@ static int
 pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     bdjmsgmsg_t msg, char *args, void *udata)
 {
-  playerui_t       *plui = udata;
+  playerui_t  *plui = udata;
+  bool        dbgdisp = false;
 
   logProcBegin (LOG_PROC, "pluiProcessMsg");
-
-  logMsg (LOG_DBG, LOG_MSGS, "got: from:%d/%s route:%d/%s msg:%d/%s args:%s",
-      routefrom, msgRouteDebugText (routefrom),
-      route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
 
   switch (route) {
     case ROUTE_NONE:
@@ -626,28 +623,34 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
       switch (msg) {
         case MSG_HANDSHAKE: {
           connProcessHandshake (plui->conn, routefrom);
+          dbgdisp = true;
           break;
         }
         case MSG_SOCKET_CLOSE: {
           connDisconnect (plui->conn, routefrom);
+          dbgdisp = true;
           break;
         }
         case MSG_EXIT_REQUEST: {
           logMsg (LOG_SESS, LOG_IMPORTANT, "got exit request");
           gKillReceived = 0;
           progstateShutdownProcess (plui->progstate);
+          dbgdisp = true;
           break;
         }
         case MSG_QUEUE_SWITCH: {
           pluiSetPlaybackQueue (plui, atoi (args));
+          dbgdisp = true;
           break;
         }
         case MSG_MARQUEE_IS_MAX: {
           pluisetMarqueeIsMaximized (plui, args);
+          dbgdisp = true;
           break;
         }
         case MSG_MARQUEE_FONT_SIZES: {
           pluisetMarqueeFontSizes (plui, args);
+          dbgdisp = true;
           break;
         }
         case MSG_DATABASE_UPDATE: {
@@ -655,6 +658,7 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           uiplayerSetDatabase (plui->uiplayer, plui->musicdb);
           uisongselSetDatabase (plui->uisongsel, plui->musicdb);
           uimusicqSetDatabase (plui->uimusicq, plui->musicdb);
+          dbgdisp = true;
           break;
         }
         default: {
@@ -666,6 +670,12 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     default: {
       break;
     }
+  }
+
+  if (dbgdisp) {
+    logMsg (LOG_DBG, LOG_MSGS, "got: from:%d/%s route:%d/%s msg:%d/%s args:%s",
+        routefrom, msgRouteDebugText (routefrom),
+        route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
   }
 
   /* due to the db update message, these must be applied afterwards */

@@ -33,13 +33,16 @@ enum {
   MUSICQ_COL_ARTIST,
 };
 
+enum {
+  MUSICQ_NEW_DISP,
+  MUSICQ_UPD_DISP,
+};
+
 static void   uimusicqQueueDance (GtkTreeView *tv, GtkTreePath *path, GtkTreeViewColumn *column, gpointer udata);
 static void   uimusicqQueuePlaylist (GtkTreeView *tv, GtkTreePath *path, GtkTreeViewColumn *column, gpointer udata);
-static void   uimusicqProcessMusicQueueDataNew (uimusicq_t *uimusicq, char * args);
+static void   uimusicqProcessMusicQueueDataUpdate (uimusicq_t *uimusicq, int ci, int newdispflag);
 static void   uimusicqProcessMusicQueueDataNewCallback (int type, void *udata);
-static void   uimusicqProcessMusicQueueDataUpdate (uimusicq_t *uimusicq, char * args);
-static int    uimusicqMusicQueueDataFindRemovals (GtkTreeModel *model,
-    GtkTreePath *path, GtkTreeIter *iter, gpointer udata);
+static void   uimusicqProcessMusicQueueDisplay (uimusicq_t *uimusicq, int ci);
 static void   uimusicqSetMusicqDisplay (uimusicq_t *uimusicq,
     GtkTreeModel *model, GtkTreeIter *iter, song_t *song, int ci);
 static void   uimusicqSetMusicqDisplayCallback (int col, long num, const char *str, void *udata);
@@ -431,12 +434,13 @@ void
 uimusicqProcessMusicQueueData (uimusicq_t *uimusicq, char * args)
 {
   int               ci;
-  GtkTreeModel      *model;
-  uimusicqgtk_t     *uiw;
+  GtkTreeModel      *model = NULL;
+  uimusicqgtk_t     *uiw = NULL;
+  int               newdispflag;
 
   logProcBegin (LOG_PROC, "uimusicqProcessMusicQueueData");
 
-  ci = uimusicq->musicqManageIdx;
+  ci = uimusicqMusicQueueDataParse (uimusicq, args);
   if (! uimusicq->ui [ci].active) {
     logProcEnd (LOG_PROC, "uimusicqProcessMusicQueueData", "not-active");
     return;
@@ -444,11 +448,12 @@ uimusicqProcessMusicQueueData (uimusicq_t *uimusicq, char * args)
   uiw = uimusicq->ui [ci].uiWidgets;
 
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiw->musicqTree));
+  newdispflag = MUSICQ_UPD_DISP;
   if (model == NULL) {
-    uimusicqProcessMusicQueueDataNew (uimusicq, args);
-  } else {
-    uimusicqProcessMusicQueueDataUpdate (uimusicq, args);
+    newdispflag = MUSICQ_NEW_DISP;
   }
+  uimusicqProcessMusicQueueDataUpdate (uimusicq, ci, newdispflag);
+  uimusicqMusicQueueDataFree (uimusicq);
   logProcEnd (LOG_PROC, "uimusicqProcessMusicQueueData", "");
 }
 
@@ -495,87 +500,44 @@ uimusicqQueuePlaylist (GtkTreeView *tv, GtkTreePath *path,
 }
 
 static void
-uimusicqProcessMusicQueueDataNew (uimusicq_t *uimusicq, char * args)
+uimusicqProcessMusicQueueDataUpdate (uimusicq_t *uimusicq, int ci, int newdispflag)
 {
-  int               ci;
-  song_t            *song = NULL;
-  GtkTreeIter       iter;
   GtkListStore      *store = NULL;
-  GdkPixbuf         *pixbuf = NULL;
-  nlistidx_t        iteridx;
-  musicqupdate_t    *musicqupdate = NULL;
-  char              *listingFont;
   slist_t           *sellist;
   uimusicqgtk_t     *uiw;
 
+  logProcBegin (LOG_PROC, "uimusicqProcessMusicQueueDataUpdate");
 
-  logProcBegin (LOG_PROC, "uimusicqProcessMusicQueueDataNew");
-  listingFont = bdjoptGetStr (OPT_MP_LISTING_FONT);
-
-  ci = uimusicqMusicQueueDataParse (uimusicq, args);
-  if (! uimusicq->ui [ci].active) {
-    logProcEnd (LOG_PROC, "uimusicqProcessMusicQueueData", "not-active");
-    uimusicqMusicQueueDataFree (uimusicq);
-    return;
-  }
   uiw = uimusicq->ui [ci].uiWidgets;
 
-  uiw->typelist = malloc (sizeof (GType) * MUSICQ_COL_MAX);
-  uiw->col = 0;
-  /* attributes: ellipsize/align/font */
-  uiw->typelist [uiw->col++] = G_TYPE_INT;
-  uiw->typelist [uiw->col++] = G_TYPE_STRING;
-  /* internal idx/unique idx/dbidx*/
-  uiw->typelist [uiw->col++] = G_TYPE_LONG;
-  uiw->typelist [uiw->col++] = G_TYPE_LONG;
-  uiw->typelist [uiw->col++] = G_TYPE_LONG;
-  /* display disp idx/pause ind*/
-  uiw->typelist [uiw->col++] = G_TYPE_LONG;
-  uiw->typelist [uiw->col++] = GDK_TYPE_PIXBUF;
+  if (newdispflag == MUSICQ_NEW_DISP) {
+    uiw->typelist = malloc (sizeof (GType) * MUSICQ_COL_MAX);
+    uiw->col = 0;
+    /* attributes: ellipsize/align/font */
+    uiw->typelist [uiw->col++] = G_TYPE_INT;
+    uiw->typelist [uiw->col++] = G_TYPE_STRING;
+    /* internal idx/unique idx/dbidx*/
+    uiw->typelist [uiw->col++] = G_TYPE_LONG;
+    uiw->typelist [uiw->col++] = G_TYPE_LONG;
+    uiw->typelist [uiw->col++] = G_TYPE_LONG;
+    /* display disp idx/pause ind*/
+    uiw->typelist [uiw->col++] = G_TYPE_LONG;
+    uiw->typelist [uiw->col++] = GDK_TYPE_PIXBUF;
 
-  sellist = dispselGetList (uimusicq->dispsel, uimusicq->dispselType);
-  uimusicq->cbci = ci;
-  uisongAddDisplayTypes (sellist,
-      uimusicqProcessMusicQueueDataNewCallback, uimusicq);
+    sellist = dispselGetList (uimusicq->dispsel, uimusicq->dispselType);
+    uimusicq->cbci = ci;
+    uisongAddDisplayTypes (sellist,
+        uimusicqProcessMusicQueueDataNewCallback, uimusicq);
 
-  store = gtk_list_store_newv (uiw->col, uiw->typelist);
-  free (uiw->typelist);
-  gtk_tree_view_set_model (GTK_TREE_VIEW (uiw->musicqTree), GTK_TREE_MODEL (store));
-
-  uimusicqProcessMusicQueueDataUpdate (uimusicq, args);
-
-#if 0
-  uimusicq->count = nlistGetCount (uimusicq->dispList);
-  nlistStartIterator (uimusicq->dispList, &iteridx);
-  while ((musicqupdate = nlistIterateValueData (uimusicq->dispList, &iteridx)) != NULL) {
-    song = dbGetByIdx (uimusicq->musicdb, musicqupdate->dbidx);
-
-    pixbuf = NULL;
-    if (musicqupdate->pflag) {
-      pixbuf = uimusicq->pausePixbuf.pixbuf;
-    }
-
-    gtk_list_store_append (store, &iter);
-    gtk_list_store_set (store, &iter,
-        MUSICQ_COL_ELLIPSIZE, PANGO_ELLIPSIZE_END,
-        MUSICQ_COL_FONT, listingFont,
-        MUSICQ_COL_IDX, (glong) musicqupdate->idx,
-        MUSICQ_COL_UNIQUE_IDX, (glong) musicqupdate->uniqueidx,
-        MUSICQ_COL_DBIDX, (glong) musicqupdate->dbidx,
-        MUSICQ_COL_DISP_IDX, (glong) musicqupdate->dispidx,
-        MUSICQ_COL_PAUSEIND, pixbuf,
-        -1);
-
-    uimusicqSetMusicqDisplay (uimusicq, GTK_TREE_MODEL (store), &iter, song, ci);
+    store = gtk_list_store_newv (uiw->col, uiw->typelist);
+    free (uiw->typelist);
+    gtk_tree_view_set_model (GTK_TREE_VIEW (uiw->musicqTree), GTK_TREE_MODEL (store));
+    g_object_unref (G_OBJECT (store));
   }
-#endif
 
-  g_object_unref (G_OBJECT (store));
-
-//  uimusicqMusicQueueDataFree (uimusicq);
-  logProcEnd (LOG_PROC, "uimusicqProcessMusicQueueDataNew", "");
+  uimusicqProcessMusicQueueDisplay (uimusicq, ci);
+  logProcEnd (LOG_PROC, "uimusicqProcessMusicQueueDataUpdate", "");
 }
-
 
 static void
 uimusicqProcessMusicQueueDataNewCallback (int type, void *udata)
@@ -588,65 +550,28 @@ uimusicqProcessMusicQueueDataNewCallback (int type, void *udata)
   ++uiw->col;
 }
 
-
-
 static void
-uimusicqProcessMusicQueueDataUpdate (uimusicq_t *uimusicq, char * args)
+uimusicqProcessMusicQueueDisplay (uimusicq_t *uimusicq, int ci)
 {
-  int               ci;
-  GtkTreeModel      *model;
-  GtkTreeIter       iter;
-  GtkTreeRowReference *rowref;
-  musicqupdate_t    *musicqupdate;
-  nlistidx_t        iteridx;
-  gboolean          valid;
-  char              *listingFont;
-  uimusicqgtk_t     *uiw;
+  GtkTreeModel  *model;
+  GtkTreeIter   iter;
+  bool          valid;
+  const char    *listingFont;
+  musicqupdate_t *musicqupdate;
+  nlistidx_t    iteridx;
+  uimusicqgtk_t *uiw;
 
+  logProcBegin (LOG_PROC, "uimusicqProcessMusicQueueDisplay");
 
-  logProcBegin (LOG_PROC, "uimusicqProcessMusicQueueDataUpdate");
-  ci = uimusicqMusicQueueDataParse (uimusicq, args);
-  if (! uimusicq->ui [ci].active) {
-    logProcEnd (LOG_PROC, "uimusicqProcessMusicQueueData", "not-active");
-    uimusicqMusicQueueDataFree (uimusicq);
-    return;
-  }
   uiw = uimusicq->ui [ci].uiWidgets;
-
   listingFont = bdjoptGetStr (OPT_MP_LISTING_FONT);
 
-  uimusicq->workList = nlistAlloc ("temp-musicq-work", LIST_UNORDERED, NULL);
-
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiw->musicqTree));
-
   if (model == NULL) {
-    logProcEnd (LOG_PROC, "uimusicqProcessMusicQueueDataUpdate", "null-model");
+    logProcEnd (LOG_PROC, "uimusicqProcessMusicQueueDisplay", "null-model");
     uimusicqMusicQueueDataFree (uimusicq);
     return;
   }
-
-#if 0
-  gtk_tree_model_foreach (model,
-      uimusicqMusicQueueDataFindRemovals, uimusicq);
-
-  /* process removals */
-  nlistStartIterator (uimusicq->workList, &iteridx);
-  while ((rowref = nlistIterateValueData (uimusicq->workList, &iteridx)) != NULL) {
-    GtkTreeIter iter;
-    GtkTreePath *path;
-
-    path = gtk_tree_row_reference_get_path (rowref);
-    if (path) {
-      if (gtk_tree_model_get_iter (model, &iter, path)) {
-        gtk_list_store_remove (GTK_LIST_STORE (model), &iter);
-      }
-      gtk_tree_path_free (path);
-    }
-  }
-#endif
-
-  nlistFree (uimusicq->workList);
-  uimusicq->workList = NULL;
 
   valid = gtk_tree_model_get_iter_first (model, &iter);
 
@@ -694,31 +619,14 @@ uimusicqProcessMusicQueueDataUpdate (uimusicq_t *uimusicq, char * args)
     }
   }
 
-  uimusicqMusicQueueDataFree (uimusicq);
-  logProcEnd (LOG_PROC, "uimusicqProcessMusicQueueDataUpdate", "");
-}
-
-static int
-uimusicqMusicQueueDataFindRemovals (GtkTreeModel *model,
-    GtkTreePath *path, GtkTreeIter *iter, gpointer udata)
-{
-  uimusicq_t      *uimusicq = udata;
-  unsigned long   uniqueidx;
-
-
-  logProcBegin (LOG_PROC, "uimusicqMusicQueueDataFindRemovals");
-
-  gtk_tree_model_get (model, iter, MUSICQ_COL_UNIQUE_IDX, &uniqueidx, -1);
-  if (nlistGetData (uimusicq->uniqueList, uniqueidx) == NULL) {
-    GtkTreeRowReference *rowref;
-
-    rowref = gtk_tree_row_reference_new (model, path);
-    nlistSetData (uimusicq->workList, uniqueidx, rowref);
+  /* remove any other rows past the end of the display */
+  while (valid) {
+    valid = gtk_list_store_remove (GTK_LIST_STORE (model), &iter);
   }
 
-  logProcEnd (LOG_PROC, "uimusicqMusicQueueDataFindRemovals", "");
-  return FALSE;
+  logProcEnd (LOG_PROC, "uimusicqProcessMusicQueueDisplay", "");
 }
+
 
 static void
 uimusicqSetMusicqDisplay (uimusicq_t *uimusicq, GtkTreeModel *model,

@@ -529,13 +529,10 @@ static int
 marqueeProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     bdjmsgmsg_t msg, char *args, void *udata)
 {
-  marquee_t       *marquee = udata;
+  marquee_t   *marquee = udata;
+  bool        dbgdisp = false;
 
   logProcBegin (LOG_PROC, "marqueeProcessMsg");
-
-  logMsg (LOG_DBG, LOG_MSGS, "got: from:%d/%s route:%d/%s msg:%d/%s args:%s",
-      routefrom, msgRouteDebugText (routefrom),
-      route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
 
   switch (route) {
     case ROUTE_NONE:
@@ -543,15 +540,18 @@ marqueeProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
       switch (msg) {
         case MSG_HANDSHAKE: {
           connProcessHandshake (marquee->conn, routefrom);
+          dbgdisp = true;
           break;
         }
         case MSG_EXIT_REQUEST: {
           logMsg (LOG_SESS, LOG_IMPORTANT, "got exit request");
           progstateShutdownProcess (marquee->progstate);
+          dbgdisp = true;
           break;
         }
         case MSG_MARQUEE_DATA: {
           marqueePopulate (marquee, args);
+          dbgdisp = true;
           break;
         }
         case MSG_MARQUEE_TIMER: {
@@ -560,10 +560,12 @@ marqueeProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_MARQUEE_SET_FONT_SZ: {
           marqueeSetFont (marquee, atoi (args));
+          dbgdisp = true;
           break;
         }
         case MSG_FINISHED: {
           marqueeDisplayCompletion (marquee);
+          dbgdisp = true;
           break;
         }
         default: {
@@ -575,6 +577,12 @@ marqueeProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     default: {
       break;
     }
+  }
+
+  if (dbgdisp) {
+    logMsg (LOG_DBG, LOG_MSGS, "got: from:%d/%s route:%d/%s msg:%d/%s args:%s",
+        routefrom, msgRouteDebugText (routefrom),
+        route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
   }
 
   logProcEnd (LOG_PROC, "marqueeProcessMsg", "");

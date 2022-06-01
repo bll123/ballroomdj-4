@@ -214,7 +214,6 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song)
   char            *data;
   long            val;
   double          dval;
-  char            tbuff [200];
 
   uiw = uisongedit->uiWidgetData;
 
