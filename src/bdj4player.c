@@ -1435,11 +1435,13 @@ playerSendStatus (playerdata_t *playerData)
   }
 
   snprintf (rbuff, sizeof (rbuff), "%s%c%d%c%d%c%d%c%zd%c%zd%c%zd",
-      playstate, MSG_ARGS_RS, playerData->repeat, MSG_ARGS_RS,
+      playstate, MSG_ARGS_RS,
+      playerData->repeat, MSG_ARGS_RS,
       playerData->pauseAtEnd, MSG_ARGS_RS,
       playerData->currentVolume, MSG_ARGS_RS,
       playerData->currentSpeed, MSG_ARGS_RS,
-      tm, MSG_ARGS_RS, dur);
+      tm, MSG_ARGS_RS,
+      dur);
 
   connSendMessage (playerData->conn, ROUTE_MAIN,
       MSG_PLAYER_STATUS_DATA, rbuff);

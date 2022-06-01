@@ -614,8 +614,13 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 {
   playerui_t  *plui = udata;
   bool        dbgdisp = false;
+  char        *targs = NULL;
 
   logProcBegin (LOG_PROC, "pluiProcessMsg");
+
+  if (args != NULL) {
+    targs = strdup (args);
+  }
 
   switch (route) {
     case ROUTE_NONE:
@@ -639,17 +644,17 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_QUEUE_SWITCH: {
-          pluiSetPlaybackQueue (plui, atoi (args));
+          pluiSetPlaybackQueue (plui, atoi (targs));
           dbgdisp = true;
           break;
         }
         case MSG_MARQUEE_IS_MAX: {
-          pluisetMarqueeIsMaximized (plui, args);
+          pluisetMarqueeIsMaximized (plui, targs);
           dbgdisp = true;
           break;
         }
         case MSG_MARQUEE_FONT_SIZES: {
-          pluisetMarqueeFontSizes (plui, args);
+          pluisetMarqueeFontSizes (plui, targs);
           dbgdisp = true;
           break;
         }
@@ -676,6 +681,9 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     logMsg (LOG_DBG, LOG_MSGS, "got: from:%d/%s route:%d/%s msg:%d/%s args:%s",
         routefrom, msgRouteDebugText (routefrom),
         route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
+  }
+  if (targs != NULL) {
+    free (targs);
   }
 
   /* due to the db update message, these must be applied afterwards */

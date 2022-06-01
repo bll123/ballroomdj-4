@@ -116,7 +116,7 @@ uimusicqProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
       switch (msg) {
         case MSG_MUSIC_QUEUE_DATA: {
           uimusicqProcessMusicQueueData (uimusicq, targs);
-          dbgdisp = true; //
+          // dbgdisp = true;
           break;
         }
         case MSG_SONG_SELECT: {

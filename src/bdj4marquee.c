@@ -531,8 +531,12 @@ marqueeProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 {
   marquee_t   *marquee = udata;
   bool        dbgdisp = false;
+  char        *targs = NULL;
 
   logProcBegin (LOG_PROC, "marqueeProcessMsg");
+  if (args != NULL) {
+    targs = strdup (args);
+  }
 
   switch (route) {
     case ROUTE_NONE:
@@ -550,16 +554,16 @@ marqueeProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_MARQUEE_DATA: {
-          marqueePopulate (marquee, args);
+          marqueePopulate (marquee, targs);
           dbgdisp = true;
           break;
         }
         case MSG_MARQUEE_TIMER: {
-          marqueeSetTimer (marquee, args);
+          marqueeSetTimer (marquee, targs);
           break;
         }
         case MSG_MARQUEE_SET_FONT_SZ: {
-          marqueeSetFont (marquee, atoi (args));
+          marqueeSetFont (marquee, atoi (targs));
           dbgdisp = true;
           break;
         }
@@ -583,6 +587,9 @@ marqueeProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     logMsg (LOG_DBG, LOG_MSGS, "got: from:%d/%s route:%d/%s msg:%d/%s args:%s",
         routefrom, msgRouteDebugText (routefrom),
         route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
+  }
+  if (targs != NULL) {
+    free (targs);
   }
 
   logProcEnd (LOG_PROC, "marqueeProcessMsg", "");

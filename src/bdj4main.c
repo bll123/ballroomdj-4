@@ -284,15 +284,14 @@ static int
 mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     bdjmsgmsg_t msg, char *args, void *udata)
 {
-  maindata_t      *mainData;
+  maindata_t  *mainData;
+  bool        dbgdisp = false;
+  char        *targs = NULL;
 
   mainData = (maindata_t *) udata;
 
-  /* this just reduces the amount of stuff in the log */
-  if (msg != MSG_MUSICQ_STATUS_DATA && msg != MSG_PLAYER_STATUS_DATA) {
-    logMsg (LOG_DBG, LOG_MSGS, "got: from:%d/%s route:%d/%s msg:%d/%s args:%s",
-        routefrom, msgRouteDebugText (routefrom),
-        route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
+  if (args != NULL) {
+    targs = strdup (targs);
   }
 
   switch (route) {
@@ -301,6 +300,7 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
       switch (msg) {
         case MSG_HANDSHAKE: {
           connProcessHandshake (mainData->conn, routefrom);
+          dbgdisp = true;
           break;
         }
         case MSG_SOCKET_CLOSE: {
@@ -308,51 +308,61 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
               mainData->conn, routefrom);
           procutilFreeRoute (mainData->processes, routefrom);
           connDisconnect (mainData->conn, routefrom);
+          dbgdisp = true;
           break;
         }
         case MSG_EXIT_REQUEST: {
           logMsg (LOG_SESS, LOG_IMPORTANT, "got exit request");
           gKillReceived = 0;
           progstateShutdownProcess (mainData->progstate);
+          dbgdisp = true;
           break;
         }
         case MSG_PLAYLIST_CLEARPLAY: {
-          mainQueueClear (mainData, args);
+          mainQueueClear (mainData, targs);
           /* clear out any playing song */
           connSendMessage (mainData->conn, ROUTE_PLAYER,
               MSG_PLAY_NEXTSONG, NULL);
-          mainQueuePlaylist (mainData, args);
+          mainQueuePlaylist (mainData, targs);
+          dbgdisp = true;
           break;
         }
         case MSG_QUEUE_CLEAR: {
           /* clears both the playlist queue and the music queue */
           logMsg (LOG_DBG, LOG_MSGS, "got: queue-clear");
-          mainQueueClear (mainData, args);
+          mainQueueClear (mainData, targs);
+          dbgdisp = true;
           break;
         }
         case MSG_QUEUE_PLAYLIST: {
-          logMsg (LOG_DBG, LOG_MSGS, "got: playlist-queue %s", args);
-          mainQueuePlaylist (mainData, args);
+          logMsg (LOG_DBG, LOG_MSGS, "got: playlist-queue %s", targs);
+          mainQueuePlaylist (mainData, targs);
+          dbgdisp = true;
           break;
         }
         case MSG_QUEUE_DANCE: {
-          mainQueueDance (mainData, args, 1);
+          mainQueueDance (mainData, targs, 1);
+          dbgdisp = true;
           break;
         }
         case MSG_QUEUE_DANCE_5: {
-          mainQueueDance (mainData, args, 5);
+          mainQueueDance (mainData, targs, 5);
+          dbgdisp = true;
           break;
         }
         case MSG_QUEUE_PLAY_ON_ADD: {
-          mainData->playWhenQueued = atoi (args);
+          mainData->playWhenQueued = atoi (targs);
+          dbgdisp = true;
           break;
         }
         case MSG_QUEUE_SWITCH_EMPTY: {
-          mainData->switchQueueWhenEmpty = atoi (args);
+          mainData->switchQueueWhenEmpty = atoi (targs);
+          dbgdisp = true;
           break;
         }
         case MSG_CMD_PLAY: {
           mainMusicQueuePlay (mainData);
+          dbgdisp = true;
           break;
         }
         case MSG_CMD_NEXTSONG: {
@@ -362,8 +372,8 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           if (currlen > 0) {
             connSendMessage (mainData->conn, ROUTE_PLAYER,
                 MSG_PLAY_NEXTSONG, NULL);
-          } else {
           }
+          dbgdisp = true;
           break;
         }
         case MSG_CMD_PLAYPAUSE: {
@@ -374,78 +384,96 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           } else {
             mainMusicQueuePlay (mainData);
           }
+          dbgdisp = true;
           break;
         }
         case MSG_PLAYBACK_BEGIN: {
           /* do any begin song processing */
           mainPlaybackBegin (mainData);
+          dbgdisp = true;
           break;
         }
         case MSG_PLAYBACK_STOP: {
           mainMusicQueueFinish (mainData);
+          dbgdisp = true;
           break;
         }
         case MSG_PLAYBACK_FINISH: {
           mainMusicQueueNext (mainData);
+          dbgdisp = true;
           break;
         }
         case MSG_MUSICQ_TOGGLE_PAUSE: {
-          mainTogglePause (mainData, args);
+          mainTogglePause (mainData, targs);
+          dbgdisp = true;
           break;
         }
         case MSG_MUSICQ_MOVE_DOWN: {
-          mainMusicqMove (mainData, args, MOVE_DOWN);
+          mainMusicqMove (mainData, targs, MOVE_DOWN);
+          dbgdisp = true;
           break;
         }
         case MSG_MUSICQ_MOVE_TOP: {
-          mainMusicqMoveTop (mainData, args);
+          mainMusicqMoveTop (mainData, targs);
+          dbgdisp = true;
           break;
         }
         case MSG_MUSICQ_MOVE_UP: {
-          mainMusicqMove (mainData, args, MOVE_UP);
+          mainMusicqMove (mainData, targs, MOVE_UP);
+          dbgdisp = true;
           break;
         }
         case MSG_MUSICQ_REMOVE: {
-          mainMusicqRemove (mainData, args);
+          mainMusicqRemove (mainData, targs);
+          dbgdisp = true;
           break;
         }
         case MSG_MUSICQ_TRUNCATE: {
-          mainMusicqClear (mainData, args);
+          mainMusicqClear (mainData, targs);
+          dbgdisp = true;
           break;
         }
         case MSG_MUSICQ_INSERT: {
-          mainMusicqInsert (mainData, routefrom, args);
+          mainMusicqInsert (mainData, routefrom, targs);
+          dbgdisp = true;
           break;
         }
         case MSG_MUSICQ_SET_PLAYBACK: {
-          mainMusicqSetPlayback (mainData, args);
+          mainMusicqSetPlayback (mainData, targs);
+          dbgdisp = true;
           break;
         }
         case MSG_PLAYER_STATE: {
-          mainData->playerState = (playerstate_t) atol (args);
+          mainData->playerState = (playerstate_t) atol (targs);
           logMsg (LOG_DBG, LOG_MSGS, "got: pl-state: %d/%s",
               mainData->playerState, plstateDebugText (mainData->playerState));
           mainData->marqueeChanged [mainData->musicqPlayIdx] = true;
+          dbgdisp = true;
           break;
         }
         case MSG_GET_DANCE_LIST: {
           mainSendDanceList (mainData, routefrom);
+          dbgdisp = true;
           break;
         }
         case MSG_GET_PLAYLIST_LIST: {
           mainSendPlaylistList (mainData, routefrom);
+          dbgdisp = true;
           break;
         }
         case MSG_PLAYER_STATUS_DATA: {
-          mainSendPlayerStatus (mainData, args);
+          mainSendPlayerStatus (mainData, targs);
+          // dbgdisp = true;
           break;
         }
         case MSG_START_MARQUEE: {
           mainStartMarquee (mainData);
+          dbgdisp = true;
           break;
         }
         case MSG_DATABASE_UPDATE: {
           mainData->musicdb = bdj4ReloadDatabase (mainData->musicdb);
+          dbgdisp = true;
           break;
         }
         default: {
@@ -457,6 +485,15 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     default: {
       break;
     }
+  }
+
+  if (dbgdisp) {
+    logMsg (LOG_DBG, LOG_MSGS, "got: from:%d/%s route:%d/%s msg:%d/%s args:%s",
+        routefrom, msgRouteDebugText (routefrom),
+        route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
+  }
+  if (targs != NULL) {
+    free (targs);
   }
 
   return 0;
