@@ -227,18 +227,6 @@ uiWidgetIsValid (UIWidget *uiwidget)
 /* these routines will be removed at a later date */
 
 inline void
-uiWidgetDisableW (GtkWidget *widget)
-{
-  gtk_widget_set_sensitive (widget, FALSE);
-}
-
-inline void
-uiWidgetEnableW (GtkWidget *widget)
-{
-  gtk_widget_set_sensitive (widget, TRUE);
-}
-
-inline void
 uiWidgetExpandHorizW (GtkWidget *widget)
 {
   gtk_widget_set_hexpand (widget, TRUE);
@@ -257,16 +245,6 @@ uiWidgetSetAllMarginsW (GtkWidget *widget, int margin)
   gtk_widget_set_margin_bottom (widget, margin);
   gtk_widget_set_margin_start (widget, margin);
   gtk_widget_set_margin_end (widget, margin);
-}
-
-inline void
-uiWidgetSetMarginTopW (GtkWidget *widget, int margin)
-{
-  if (widget == NULL) {
-    return;
-  }
-
-  gtk_widget_set_margin_top (widget, margin);
 }
 
 inline void
@@ -290,25 +268,6 @@ uiWidgetAlignHorizFillW (GtkWidget *widget)
   gtk_widget_set_halign (widget, GTK_ALIGN_FILL);
 }
 
-inline void
-uiWidgetAlignHorizStartW (GtkWidget *widget)
-{
-  if (widget == NULL) {
-    return;
-  }
-
-  gtk_widget_set_halign (widget, GTK_ALIGN_START);
-}
-
-inline void
-uiWidgetAlignHorizEndW (GtkWidget *widget)
-{
-  if (widget == NULL) {
-    return;
-  }
-
-  gtk_widget_set_halign (widget, GTK_ALIGN_END);
-}
 
 inline void
 uiWidgetAlignVertFillW (GtkWidget *widget)
@@ -319,55 +278,3 @@ uiWidgetAlignVertFillW (GtkWidget *widget)
 
   gtk_widget_set_valign (widget, GTK_ALIGN_FILL);
 }
-
-inline void
-uiWidgetAlignVertStartW (GtkWidget *widget)
-{
-  if (widget == NULL) {
-    return;
-  }
-
-  gtk_widget_set_valign (widget, GTK_ALIGN_START);
-}
-
-inline void
-uiWidgetDisableFocusW (GtkWidget *widget)
-{
-  if (widget == NULL) {
-    return;
-  }
-
-  gtk_widget_set_can_focus (widget, FALSE);
-}
-
-inline void
-uiWidgetHideW (GtkWidget *widget)
-{
-  if (widget == NULL) {
-    return;
-  }
-
-  gtk_widget_hide (widget);
-}
-
-inline void
-uiWidgetShowW (GtkWidget *widget)
-{
-  if (widget == NULL) {
-    return;
-  }
-
-  gtk_widget_show (widget);
-}
-
-inline void
-uiWidgetShowAllW (GtkWidget *widget)
-{
-  if (widget == NULL) {
-    return;
-  }
-
-  gtk_widget_show_all (widget);
-}
-
-

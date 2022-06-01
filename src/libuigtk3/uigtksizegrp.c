@@ -27,10 +27,3 @@ uiSizeGroupAdd (UIWidget *uisg, UIWidget *uiwidget)
   gtk_size_group_add_widget (uisg->sg, uiwidget->widget);
 }
 
-/* these routines will be removed at a later date */
-
-inline void
-uiSizeGroupAddW (UIWidget *uiw, GtkWidget *widget)
-{
-  gtk_size_group_add_widget (uiw->sg, widget);
-}

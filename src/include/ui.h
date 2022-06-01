@@ -90,8 +90,6 @@ void uiEntrySetValidate (uientry_t *entry,
 int uiEntryValidate (uientry_t *entry, bool forceflag);
 int uiEntryValidateDir (uientry_t *edata, void *udata);
 int uiEntryValidateFile (uientry_t *edata, void *udata);
-/* these routines will be removed at a later date */
-GtkWidget * uiEntryGetWidget (uientry_t *entry);
 
 /* uigtkspinbox.c */
 uispinbox_t *uiSpinboxTextInit (void);
@@ -239,20 +237,6 @@ void uiWindowSetWinStateCallback (UIWidget *uiwindow, UICallback *uicb);
 void uiWindowNoDim (UIWidget *uiwidget);
 void uiWindowSetMappedCallback (UIWidget *uiwidget, UICallback *uicb);
 /* these routines will be removed at a later date */
-GtkWidget * uiCreateMainWindowW (const char *title,
-    const char *imagenm, void *cb, void *udata);
-void uiCloseWindowW (GtkWidget *window);
-bool uiWindowIsMaximizedW (GtkWidget *window);
-void uiWindowIconifyW (GtkWidget *window);
-void uiWindowMaximizeW (GtkWidget *window);
-void uiWindowUnMaximizeW (GtkWidget *window);
-void uiWindowDisableDecorationsW (GtkWidget *window);
-void uiWindowEnableDecorationsW (GtkWidget *window);
-void uiWindowGetSizeW (GtkWidget *window, int *x, int *y);
-void uiWindowSetDefaultSizeW (GtkWidget *window, int x, int y);
-void uiWindowGetPositionW (GtkWidget *window, int *x, int *y);
-void uiWindowMoveW (GtkWidget *window, int x, int y);
-void uiWindowNoFocusOnStartupW (GtkWidget *window);
 GtkWidget * uiCreateScrolledWindowW (int minheight);
 
 /* uigtkscale.c */
@@ -277,8 +261,6 @@ void uiSwitchSetCallback (uiswitch_t *uiswitch, UICallback *uicb);
 /* uigtksizegrp.c */
 void uiCreateSizeGroupHoriz (UIWidget *);
 void uiSizeGroupAdd (UIWidget *uiw, UIWidget *uiwidget);
-/* these routines will be removed at a later date */
-void uiSizeGroupAddW (UIWidget *uiw, GtkWidget *widget);
 
 /* uigtkutils.c */
 void  uiUIInitialize (void);
@@ -313,25 +295,12 @@ void  uiWidgetClearPersistent (UIWidget *uiuiwidget);
 void  uiWidgetSetSizeRequest (UIWidget *uiuiwidget, int width, int height);
 bool  uiWidgetIsValid (UIWidget *uiwidget);
 /* these routines will be removed at a later date */
-void  uiWidgetDisableW (GtkWidget *widget);
-void  uiWidgetEnableW (GtkWidget *widget);
 void  uiWidgetExpandHorizW (GtkWidget *widget);
 void  uiWidgetExpandVertW (GtkWidget *widget);
 void  uiWidgetSetAllMarginsW (GtkWidget *widget, int margin);
-void  uiWidgetSetMarginTopW (GtkWidget *widget, int margin);
 void  uiWidgetSetMarginStartW (GtkWidget *widget, int margin);
 void  uiWidgetAlignHorizFillW (GtkWidget *widget);
-void  uiWidgetAlignHorizStartW (GtkWidget *widget);
-void  uiWidgetAlignHorizEndW (GtkWidget *widget);
 void  uiWidgetAlignVertFillW (GtkWidget *widget);
-void  uiWidgetAlignVertStartW (GtkWidget *widget);
-void  uiWidgetDisableFocusW (GtkWidget *widget);
-void  uiWidgetHideW (GtkWidget *widget);
-void  uiWidgetShowW (GtkWidget *widget);
-void  uiWidgetShowAllW (GtkWidget *widget);
-void  uiWidgetMakePersistentW (UIWidget *uiwidget);
-void  uiWidgetClearPersistentW (UIWidget *uiwidget);
-void  uiWidgetSetSizeRequestW (UIWidget *uiwidget, int width, int height);
 
 /* uigtkimage.c */
 void  uiImageFromFile (UIWidget *uiwidget, const char *fn);

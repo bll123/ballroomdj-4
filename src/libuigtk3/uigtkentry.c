@@ -240,18 +240,6 @@ uiEntryValidateFile (uientry_t *entry, void *udata)
   return rc;
 }
 
-/* these routines will be removed at a later date */
-
-GtkWidget *
-uiEntryGetWidget (uientry_t *entry)
-{
-  if (entry == NULL) {
-    return NULL;
-  }
-
-  return entry->uientry.widget;
-}
-
 /* internal routines */
 
 static void
