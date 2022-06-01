@@ -75,6 +75,11 @@ void uiButtonSetImageIcon (UIWidget *uiwidget, const char *nm);
 void uiButtonAlignLeft (UIWidget *widget);
 
 /* uigtkentry.c */
+enum {
+  UIENTRY_IMMEDIATE,
+  UIENTRY_DELAYED,
+};
+
 uientry_t *uiEntryInit (int entrySize, int maxSize);
 void uiEntryFree (uientry_t *entry);
 void uiEntryCreate (uientry_t *entry);
@@ -86,7 +91,7 @@ const char * uiEntryGetValue (uientry_t *entry);
 void uiEntrySetValue (uientry_t *entry, const char *value);
 void uiEntrySetColor (uientry_t *entry, const char *color);
 void uiEntrySetValidate (uientry_t *entry,
-    uiutilsentryval_t valfunc, void *udata);
+    uiutilsentryval_t valfunc, void *udata, int valdelay);
 int uiEntryValidate (uientry_t *entry, bool forceflag);
 int uiEntryValidateDir (uientry_t *edata, void *udata);
 int uiEntryValidateFile (uientry_t *edata, void *udata);

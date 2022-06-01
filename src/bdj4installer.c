@@ -435,7 +435,7 @@ installerBuildUI (installer_t *installer)
   uiWidgetExpandHoriz (uiwidgetp);
   uiBoxPackStart (&vbox, uiwidgetp);
   uiEntrySetValidate (installer->targetEntry,
-      installerValidateTarget, installer);
+      installerValidateTarget, installer, UIENTRY_DELAYED);
 
   uiCreateHorizBox (&hbox);
   uiWidgetExpandHoriz (&hbox);
@@ -489,7 +489,7 @@ installerBuildUI (installer_t *installer)
   uiWidgetExpandHoriz (uiwidgetp);
   uiBoxPackStart (&hbox, uiwidgetp);
   uiEntrySetValidate (installer->bdj3locEntry,
-      installerValidateBDJ3Loc, installer);
+      installerValidateBDJ3Loc, installer, UIENTRY_DELAYED);
 
   uiutilsUICallbackInit (&installer->callbacks [INST_CALLBACK_SELECT_DIR],
       installerSelectDirDialog, installer);

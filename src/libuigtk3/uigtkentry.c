@@ -30,6 +30,7 @@ typedef struct uientry {
 } uientry_t;
 
 static void uiEntryValidateStart (GtkEditable *e, gpointer udata);
+static void uiEntryValidateHandler (GtkEditable *e, gpointer udata);
 
 uientry_t *
 uiEntryInit (int entrySize, int maxSize)
@@ -146,14 +147,21 @@ uiEntrySetColor (uientry_t *entry, const char *color)
 }
 
 void
-uiEntrySetValidate (uientry_t *entry, uiutilsentryval_t valfunc, void *udata)
+uiEntrySetValidate (uientry_t *entry, uiutilsentryval_t valfunc, void *udata,
+    int valdelay)
 {
   entry->validateFunc = valfunc;
   entry->udata = udata;
-  g_signal_connect (entry->uientry.widget, "changed",
-      G_CALLBACK (uiEntryValidateStart), entry);
-  if (entry->validateFunc != NULL) {
-    mstimeset (&entry->validateTimer, 500);
+  if (valfunc != NULL) {
+    if (valdelay) {
+      g_signal_connect (entry->uientry.widget, "changed",
+          G_CALLBACK (uiEntryValidateStart), entry);
+      mstimeset (&entry->validateTimer, 500);
+    }
+    if (! valdelay) {
+      g_signal_connect (entry->uientry.widget, "changed",
+          G_CALLBACK (uiEntryValidateHandler), entry);
+    }
   }
 }
 
@@ -207,9 +215,9 @@ uiEntryValidateDir (uientry_t *entry, void *udata)
       pathNormPath (tbuff, sizeof (tbuff));
       if (fileopIsDirectory (tbuff)) {
         rc = UIENTRY_OK;
-      }
-    }
-  }
+      } /* exists */
+    } /* not null */
+  } /* have a buffer */
 
   return rc;
 }
@@ -232,10 +240,10 @@ uiEntryValidateFile (uientry_t *entry, void *udata)
         pathNormPath (tbuff, sizeof (tbuff));
         if (fileopFileExists (tbuff)) {
           rc = UIENTRY_OK;
-        }
-      }
-    }
-  }
+        } /* exists */
+      } /* not empty */
+    } /* not null */
+  } /* have a buffer */
 
   return rc;
 }
@@ -253,3 +261,15 @@ uiEntryValidateStart (GtkEditable *e, gpointer udata)
     mstimeset (&entry->validateTimer, 500);
   }
 }
+
+static void
+uiEntryValidateHandler (GtkEditable *e, gpointer udata)
+{
+  uientry_t  *entry = udata;
+
+  if (entry->validateFunc != NULL) {
+    entry->validateFunc (entry, entry->udata);
+  }
+  return;
+}
+

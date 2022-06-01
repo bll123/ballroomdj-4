@@ -352,6 +352,8 @@ typedef struct {
   /* options */
   datafile_t        *optiondf;
   nlist_t           *options;
+  /* flags */
+  bool              indancechange : 1;
 } configui_t;
 
 typedef void (*savefunc_t) (configui_t *);
@@ -449,7 +451,6 @@ static void     confuiUpdateOrgExamples (configui_t *confui, char *pathfmt);
 static void     confuiUpdateOrgExample (configui_t *config, org_t *org, char *data, UIWidget *uiwidgetp);
 static char     * confuiGetLocalIP (configui_t *confui);
 static void     confuiSetStatusMsg (configui_t *confui, const char *msg);
-static int      confuiLocateWidgetIdx (configui_t *confui, void *wpointer);
 static void     confuiSpinboxTextInitDataNum (configui_t *confui, char *tag, int widx, ...);
 static bool     confuiLinkCallback (void *udata);
 
@@ -497,14 +498,17 @@ static void   confuiGenreSave (configui_t *confui);
 /* dance table */
 static void   confuiDanceSelect (GtkTreeView *tv, GtkTreePath *path,
     GtkTreeViewColumn *column, gpointer udata);
-static int    confuiDanceEntryChg (uientry_t *e, void *udata);
+static int    confuiDanceEntryDanceChg (uientry_t *entry, void *udata);
+static int    confuiDanceEntryTagsChg (uientry_t *entry, void *udata);
+static int    confuiDanceEntryAnnouncementChg (uientry_t *entry, void *udata);
+static int    confuiDanceEntryChg (uientry_t *e, void *udata, int widx);
 static bool   confuiDanceSpinboxTypeChg (void *udata);
 static bool   confuiDanceSpinboxSpeedChg (void *udata);
 static bool   confuiDanceSpinboxLowBPMChg (void *udata);
 static bool   confuiDanceSpinboxHighBPMChg (void *udata);
 static bool   confuiDanceSpinboxTimeSigChg (void *udata);
 static void   confuiDanceSpinboxChg (void *udata, int widx);
-static int    confuiDanceValidateAnnouncement (uientry_t *entry, void *udata);
+static int    confuiDanceValidateAnnouncement (uientry_t *entry, configui_t *confui);
 
 /* display settings */
 static void   confuiDispSettingChg (GtkSpinButton *sb, gpointer udata);
@@ -554,6 +558,7 @@ main (int argc, char *argv[])
   confui.filterDisplayDf = NULL;
   confui.filterDisplaySel = NULL;
   confui.filterLookup = NULL;
+  confui.indancechange = false;
 
   uiutilsUIWidgetInit (&confui.window);
   uiutilsUICallbackInit (&confui.closecb, NULL, NULL);
@@ -1037,7 +1042,7 @@ confuiBuildUIGeneral (configui_t *confui)
       CONFUI_ENTRY_MUSIC_DIR, OPT_M_DIR_MUSIC,
       tbuff, confuiSelectMusicDir);
   uiEntrySetValidate (confui->uiitem [CONFUI_ENTRY_MUSIC_DIR].entry,
-      uiEntryValidateDir, confui);
+      uiEntryValidateDir, confui, UIENTRY_DELAYED);
 
   /* CONTEXT: configuration: the name of this profile */
   confuiMakeItemEntry (confui, &vbox, &sg, _("Profile Name"),
@@ -1076,14 +1081,14 @@ confuiBuildUIGeneral (configui_t *confui)
       CONFUI_ENTRY_STARTUP, OPT_M_STARTUPSCRIPT,
       bdjoptGetStr (OPT_M_STARTUPSCRIPT), confuiSelectStartup);
   uiEntrySetValidate (confui->uiitem [CONFUI_ENTRY_STARTUP].entry,
-      uiEntryValidateFile, confui);
+      uiEntryValidateFile, confui, UIENTRY_DELAYED);
 
   /* CONTEXT: configuration: the shutdown script to run before starting the player.  Used on Linux. */
   confuiMakeItemEntryChooser (confui, &vbox, &sg, _("Shutdown Script"),
       CONFUI_ENTRY_SHUTDOWN, OPT_M_SHUTDOWNSCRIPT,
       bdjoptGetStr (OPT_M_SHUTDOWNSCRIPT), confuiSelectShutdown);
   uiEntrySetValidate (confui->uiitem [CONFUI_ENTRY_SHUTDOWN].entry,
-      uiEntryValidateFile, confui);
+      uiEntryValidateFile, confui, UIENTRY_DELAYED);
   logProcEnd (LOG_PROC, "confuiBuildUIGeneral", "");
 }
 
@@ -1390,6 +1395,7 @@ confuiBuildUIEditDances (configui_t *confui)
   nlistidx_t    val;
 
   logProcBegin (LOG_PROC, "confuiBuildUIEditDances");
+  confui->indancechange = true;
   uiCreateVertBox (&vbox);
 
   /* edit dances */
@@ -1417,7 +1423,7 @@ confuiBuildUIEditDances (configui_t *confui)
   confuiMakeItemEntry (confui, &dvbox, &sg, _("Dance"),
       CONFUI_ENTRY_DANCE_DANCE, -1, "");
   uiEntrySetValidate (confui->uiitem [CONFUI_ENTRY_DANCE_DANCE].entry,
-      confuiDanceEntryChg, confui);
+      confuiDanceEntryDanceChg, confui, UIENTRY_IMMEDIATE);
   confui->uiitem [CONFUI_ENTRY_DANCE_DANCE].danceidx = DANCE_DANCE;
 
   /* CONTEXT: configuration: dances: the type of the dance (club/latin/standard) */
@@ -1436,18 +1442,15 @@ confuiBuildUIEditDances (configui_t *confui)
   confuiMakeItemEntry (confui, &dvbox, &sg, _("Tags"),
       CONFUI_ENTRY_DANCE_TAGS, -1, "");
   uiEntrySetValidate (confui->uiitem [CONFUI_ENTRY_DANCE_TAGS].entry,
-      confuiDanceEntryChg, confui);
+      confuiDanceEntryTagsChg, confui, UIENTRY_IMMEDIATE);
   confui->uiitem [CONFUI_ENTRY_DANCE_TAGS].danceidx = DANCE_TAGS;
 
   /* CONTEXT: configuration: dances: play the selected announcement before the dance is played */
   confuiMakeItemEntryChooser (confui, &dvbox, &sg, _("Announcement"),
       CONFUI_ENTRY_DANCE_ANNOUNCEMENT, -1, "",
       confuiSelectAnnouncement);
-  uiEntrySetValidate (
-      confui->uiitem [CONFUI_ENTRY_DANCE_ANNOUNCEMENT].entry,
-      confuiDanceValidateAnnouncement, confui);
   uiEntrySetValidate (confui->uiitem [CONFUI_ENTRY_DANCE_ANNOUNCEMENT].entry,
-      confuiDanceEntryChg, confui);
+      confuiDanceEntryAnnouncementChg, confui, UIENTRY_DELAYED);
   confui->uiitem [CONFUI_ENTRY_DANCE_ANNOUNCEMENT].danceidx = DANCE_ANNOUNCE;
 
   val = bdjoptGetNum (OPT_G_BPM);
@@ -1471,6 +1474,8 @@ confuiBuildUIEditDances (configui_t *confui)
       CONFUI_SPINBOX_DANCE_TIME_SIG, -1, CONFUI_OUT_NUM, 0,
       confuiDanceSpinboxTimeSigChg);
   confui->uiitem [CONFUI_SPINBOX_DANCE_TIME_SIG].danceidx = DANCE_TIMESIG;
+
+  confui->indancechange = false;
   logProcEnd (LOG_PROC, "confuiBuildUIEditDances", "");
 }
 
@@ -1689,14 +1694,14 @@ confuiBuildUIMobileMarquee (configui_t *confui)
       CONFUI_ENTRY_MM_NAME, OPT_P_MOBILEMQTAG,
       bdjoptGetStr (OPT_P_MOBILEMQTAG));
   uiEntrySetValidate (confui->uiitem [CONFUI_ENTRY_MM_NAME].entry,
-      confuiMobmqNameChg, confui);
+      confuiMobmqNameChg, confui, UIENTRY_IMMEDIATE);
 
   /* CONTEXT: configuration: the title to display on the mobile marquee */
   confuiMakeItemEntry (confui, &vbox, &sg, _("Title"),
       CONFUI_ENTRY_MM_TITLE, OPT_P_MOBILEMQTITLE,
       bdjoptGetStr (OPT_P_MOBILEMQTITLE));
   uiEntrySetValidate (confui->uiitem [CONFUI_ENTRY_MM_TITLE].entry,
-      confuiMobmqTitleChg, confui);
+      confuiMobmqTitleChg, confui, UIENTRY_IMMEDIATE);
 
   /* CONTEXT: configuration: mobile marquee: the link to display the QR code for the mobile marquee */
   confuiMakeItemLink (confui, &vbox, &sg, _("QR Code"),
@@ -3459,21 +3464,6 @@ confuiSetStatusMsg (configui_t *confui, const char *msg)
   uiLabelSetText (&confui->statusMsg, msg);
 }
 
-static int
-confuiLocateWidgetIdx (configui_t *confui, void *wpointer)
-{
-  int   widx = -1;
-
-  for (int i = 0; i < CONFUI_ITEM_MAX; ++i) {
-    if (wpointer == confui->uiitem [i].widget) {
-      widx = i;
-      break;
-    }
-  }
-
-  return widx;
-}
-
 static void
 confuiSpinboxTextInitDataNum (configui_t *confui, char *tag, int widx, ...)
 {
@@ -4670,7 +4660,10 @@ confuiDanceSelect (GtkTreeView *tv, GtkTreePath *path,
   dance_t       *dances;
 
   logProcBegin (LOG_PROC, "confuiDanceSelect");
+  confui->indancechange = true;
+
   if (path == NULL) {
+    confui->indancechange = false;
     return;
   }
 
@@ -4678,6 +4671,7 @@ confuiDanceSelect (GtkTreeView *tv, GtkTreePath *path,
 
   if (! gtk_tree_model_get_iter (model, &iter, path)) {
     logProcEnd (LOG_PROC, "confuiDanceSelect", "no model/iter");
+    confui->indancechange = false;
     return;
   }
   gtk_tree_model_get (model, &iter, CONFUI_DANCE_COL_DANCE_IDX, &idx, -1);
@@ -4699,6 +4693,7 @@ confuiDanceSelect (GtkTreeView *tv, GtkTreePath *path,
   uiEntrySetValue (confui->uiitem [widx].entry, sval);
   if (conv.allocated) {
     free (conv.str);
+    sval = NULL;
   }
 
   sval = danceGetStr (dances, key, DANCE_ANNOUNCE);
@@ -4724,11 +4719,31 @@ confuiDanceSelect (GtkTreeView *tv, GtkTreePath *path,
   num = danceGetNum (dances, key, DANCE_TYPE);
   widx = CONFUI_SPINBOX_DANCE_TYPE;
   uiSpinboxTextSetValue (confui->uiitem [widx].spinbox, num);
+
+  confui->indancechange = false;
   logProcEnd (LOG_PROC, "confuiDanceSelect", "");
 }
 
 static int
-confuiDanceEntryChg (uientry_t *entry, void *udata)
+confuiDanceEntryDanceChg (uientry_t *entry, void *udata)
+{
+  return confuiDanceEntryChg (entry, udata, CONFUI_ENTRY_DANCE_DANCE);
+}
+
+static int
+confuiDanceEntryTagsChg (uientry_t *entry, void *udata)
+{
+  return confuiDanceEntryChg (entry, udata, CONFUI_ENTRY_DANCE_TAGS);
+}
+
+static int
+confuiDanceEntryAnnouncementChg (uientry_t *entry, void *udata)
+{
+  return confuiDanceEntryChg (entry, udata, CONFUI_ENTRY_DANCE_ANNOUNCEMENT);
+}
+
+static int
+confuiDanceEntryChg (uientry_t *entry, void *udata, int widx)
 {
   configui_t      *confui = udata;
   const char      *str;
@@ -4736,20 +4751,22 @@ confuiDanceEntryChg (uientry_t *entry, void *udata)
   GtkTreeModel    *model;
   GtkTreeIter     iter;
   int             count;
-  long            idx;
-  ssize_t         key;
+  long            key;
   dance_t         *dances;
   int             didx;
   datafileconv_t  conv;
-  int             widx;
+  int             entryrc = UIENTRY_ERROR;
 
   logProcBegin (LOG_PROC, "confuiDanceEntryChg");
-  widx = confuiLocateWidgetIdx (confui, entry);
+  if (confui->indancechange) {
+    logProcEnd (LOG_PROC, "confuiDanceEntryChg", "in-dance-select");
+    return UIENTRY_OK;
+  }
 
   str = uiEntryGetValue (entry);
   if (str == NULL) {
     logProcEnd (LOG_PROC, "confuiDanceEntryChg", "null-string");
-    return UICB_CONT;
+    return UIENTRY_OK;
   }
 
   didx = confui->uiitem [widx].danceidx;
@@ -4759,20 +4776,26 @@ confuiDanceEntryChg (uientry_t *entry, void *udata)
   count = uiTreeViewGetSelection (tree, &model, &iter);
   if (count != 1) {
     logProcEnd (LOG_PROC, "confuiDanceEntryChg", "no-selection");
-    return UICB_CONT;
-  }
-
-  if (didx == DANCE_DANCE) {
-    gtk_list_store_set (GTK_LIST_STORE (model), &iter,
-        CONFUI_DANCE_COL_DANCE, str,
-        -1);
+    return UIENTRY_OK;
   }
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
-  gtk_tree_model_get (model, &iter, CONFUI_DANCE_COL_DANCE_IDX, &idx, -1);
-  key = (ssize_t) idx;
+  gtk_tree_model_get (model, &iter, CONFUI_DANCE_COL_DANCE_IDX, &key, -1);
 
-  if (didx == DANCE_TAGS) {
+  if (widx == CONFUI_ENTRY_DANCE_DANCE) {
+    gtk_list_store_set (GTK_LIST_STORE (model), &iter,
+        CONFUI_DANCE_COL_DANCE, str,
+        -1);
+    danceSetStr (dances, key, didx, str);
+    entryrc = UIENTRY_OK;
+  }
+  if (widx == CONFUI_ENTRY_DANCE_ANNOUNCEMENT) {
+    entryrc = confuiDanceValidateAnnouncement (entry, confui);
+    if (entryrc == UIENTRY_OK) {
+      danceSetStr (dances, key, didx, str);
+    }
+  }
+  if (widx == CONFUI_ENTRY_DANCE_TAGS) {
     slist_t *slist;
 
     conv.allocated = true;
@@ -4781,12 +4804,13 @@ confuiDanceEntryChg (uientry_t *entry, void *udata)
     convTextList (&conv);
     slist = conv.list;
     danceSetList (dances, key, didx, slist);
-  } else {
-    danceSetStr (dances, key, didx, str);
+    entryrc = UIENTRY_OK;
   }
-  confui->tables [confui->tablecurr].changed = true;
+  if (entryrc == UIENTRY_OK) {
+    confui->tables [confui->tablecurr].changed = true;
+  }
   logProcEnd (LOG_PROC, "confuiDanceEntryChg", "");
-  return UICB_CONT;
+  return entryrc;
 }
 
 static bool
@@ -4840,8 +4864,8 @@ confuiDanceSpinboxChg (void *udata, int widx)
   int             didx;
 
   logProcBegin (LOG_PROC, "confuiDanceSpinboxChg");
-  if (confui->uiitem [widx].basetype == CONFUI_NONE) {
-    logProcEnd (LOG_PROC, "confuiDanceSpinboxChg", "not-configured");
+  if (confui->indancechange) {
+    logProcEnd (LOG_PROC, "confuiDanceSpinboxChg", "in-dance-select");
     return;
   }
 
@@ -4872,9 +4896,8 @@ confuiDanceSpinboxChg (void *udata, int widx)
 }
 
 static int
-confuiDanceValidateAnnouncement (uientry_t *entry, void *udata)
+confuiDanceValidateAnnouncement (uientry_t *entry, configui_t *confui)
 {
-  configui_t        *confui = udata;
   int               rc;
   const char        *fn;
   char              tbuff [MAXPATHLEN];

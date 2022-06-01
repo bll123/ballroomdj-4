@@ -317,7 +317,7 @@ manageBuildUIPlaylist (managepl_t *managepl, UIWidget *vboxp)
 
   uiEntryCreate (managepl->allowedkeywords);
   uiEntrySetValidate (managepl->allowedkeywords,
-      managePlaylistAllowedKeywordsChg, managepl);
+      managePlaylistAllowedKeywordsChg, managepl, UIENTRY_IMMEDIATE);
   uiBoxPackStart (&hbox, uiEntryGetUIWidget (managepl->allowedkeywords));
 
   /* right side to hold the tree */
