@@ -1239,8 +1239,12 @@ playerFadeVolSet (playerdata_t *playerData)
   if (! playerData->mute) {
     volumeSet (playerData->volume, playerData->currentSink, newvol);
   }
-  logMsg (LOG_DBG, LOG_MAIN, "fade set volume: %d count:%ld time %zd",
-      newvol, playerData->fadeCount, mstimeend (&playerData->playEndCheck));
+  logMsg (LOG_DBG, LOG_MAIN, "fade set volume: %d count:%ld",
+      newvol, playerData->fadeCount);
+  if (playerData->inFadeOut) {
+    logMsg (LOG_DBG, LOG_MAIN, "   time %zd",
+        mstimeend (&playerData->playEndCheck));
+  }
   if (playerData->inFadeIn) {
     ++playerData->fadeCount;
   }
