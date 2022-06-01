@@ -1,6 +1,5 @@
 #include "config.h"
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -40,8 +39,11 @@ danceselAlloc (nlist_t *countList)
   nlistidx_t  iteridx;
 
 
+  if (countList == NULL) {
+    return NULL;
+  }
+
   logProcBegin (LOG_PROC, "danceselAlloc");
-  assert (countList != NULL);
   dancesel = malloc (sizeof (dancesel_t));
   assert (dancesel != NULL);
   dancesel->dances = bdjvarsdfGet (BDJVDF_DANCES);

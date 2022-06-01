@@ -508,7 +508,7 @@ uiplayerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
   }
 
   if (dbgdisp) {
-    logMsg (LOG_DBG, LOG_MSGS, "uiplayer: got: from:%d/%s route:%d/%s msg:%d/%s args:%s",
+    logMsg (LOG_DBG, LOG_MSGS, "uiplayer: rcvd: from:%d/%s route:%d/%s msg:%d/%s args:%s",
         routefrom, msgRouteDebugText (routefrom),
         route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
   }

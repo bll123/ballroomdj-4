@@ -154,7 +154,7 @@ uisongselProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
   }
 
   if (dbgdisp) {
-    logMsg (LOG_DBG, LOG_MSGS, "uisongsel (%d): got: from:%d/%s route:%d/%s msg:%d/%s args:%s",
+    logMsg (LOG_DBG, LOG_MSGS, "uisongsel (%d): rcvd: from:%d/%s route:%d/%s msg:%d/%s args:%s",
         uisongsel->dispselType, routefrom, msgRouteDebugText (routefrom),
         route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
   }

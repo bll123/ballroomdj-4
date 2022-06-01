@@ -136,7 +136,7 @@ uimusicqProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
   }
 
   if (dbgdisp) {
-    logMsg (LOG_DBG, LOG_MSGS, "uimusicq (%d): got: from:%d/%s route:%d/%s msg:%d/%s args:%s",
+    logMsg (LOG_DBG, LOG_MSGS, "uimusicq (%d): rcvd: from:%d/%s route:%d/%s msg:%d/%s args:%s",
         uimusicq->dispselType, routefrom, msgRouteDebugText (routefrom),
         route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
   }

@@ -476,7 +476,7 @@ uimusicqQueueDance (GtkTreeView *tv, GtkTreePath *path,
     GtkTreeViewColumn *column, gpointer udata)
 {
   uimusicq_t    *uimusicq = udata;
-  ssize_t       idx;
+  long          idx;
   int           ci;
   uimusicqgtk_t *uiw;
 

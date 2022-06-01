@@ -291,7 +291,7 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
   mainData = (maindata_t *) udata;
 
   if (args != NULL) {
-    targs = strdup (targs);
+    targs = strdup (args);
   }
 
   switch (route) {
@@ -488,7 +488,7 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
   }
 
   if (dbgdisp) {
-    logMsg (LOG_DBG, LOG_MSGS, "got: from:%d/%s route:%d/%s msg:%d/%s args:%s",
+    logMsg (LOG_DBG, LOG_MSGS, "rcvd: from:%d/%s route:%d/%s msg:%d/%s args:%s",
         routefrom, msgRouteDebugText (routefrom),
         route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
   }
@@ -1041,6 +1041,8 @@ mainQueueDance (maindata_t *mainData, char *args, ssize_t count)
     playlistCreate (playlist, plname, PLTYPE_AUTO, NULL);
   }
   playlistSetConfigNum (playlist, PLAYLIST_STOP_AFTER, count);
+  /* clear all dance selected/counts */
+  playlistResetAll (playlist);
   /* this will also set 'selected' */
   playlistSetDanceCount (playlist, danceIdx, 1);
   logMsg (LOG_DBG, LOG_BASIC, "Queue Playlist: %s", plname);
