@@ -126,16 +126,6 @@ void uiSpinboxTextSetValueChangedCallback (uispinbox_t *spinbox, UICallback *uic
 void uiSpinboxTimeSetValueChangedCallback (uispinbox_t *spinbox, UICallback *uicb);
 void uiSpinboxSetValueChangedCallback (UIWidget *uiwidget, UICallback *uicb);
 
-/* these routines will be removed at a later date */
-GtkWidget * uiSpinboxTextCreateW (uispinbox_t *spinbox, void *udata);
-GtkWidget * uiSpinboxTimeCreateW (uispinbox_t *spinbox, void *udata, UICallback *convcb);
-GtkWidget * uiSpinboxIntCreateW (void);
-GtkWidget * uiSpinboxDoubleCreateW (void);
-void    uiSpinboxSetW (GtkWidget *spinbox, double min, double max);
-double uiSpinboxGetValueW (GtkWidget *spinbox);
-void    uiSpinboxSetValueW (GtkWidget *spinbox, double ivalue);
-
-
 /* uigtkdropdown.c */
 
 void uiDropDownInit (uidropdown_t *dropdown);
@@ -267,10 +257,11 @@ GtkWidget * uiCreateScrolledWindowW (int minheight);
 
 /* uigtkscale.c */
 void    uiCreateScale (UIWidget *uiwidget, double lower, double upper,
-    double stepinc, double pageinc, double initvalue);
+    double stepinc, double pageinc, double initvalue, int digits);
 void    uiScaleSetCallback (UIWidget *uiscale, UICallback *uicb);
 double  uiScaleEnforceMax (UIWidget *uiscale, double value);
 double  uiScaleGetValue (UIWidget *uiscale);
+int     uiScaleGetDigits (UIWidget *uiscale);
 void    uiScaleSetValue (UIWidget *uiscale, double value);
 void    uiScaleSetRange (UIWidget *uiscale, double start, double end);
 

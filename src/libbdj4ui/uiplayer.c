@@ -218,7 +218,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiSizeGroupAdd (&sgB, &uiplayer->speedDisplayLab);
 
   /* size group C */
-  uiCreateScale (&uiplayer->speedScale, 70.0, 130.0, 0.1, 1.0, 100.0);
+  uiCreateScale (&uiplayer->speedScale, 70.0, 130.0, 0.1, 1.0, 100.0, 0);
   uiBoxPackEnd (&hbox, &uiplayer->speedScale);
   uiSizeGroupAdd (&sgC, &uiplayer->speedScale);
   uiutilsUICallbackDoubleInit (&uiplayer->speedcb,
@@ -272,7 +272,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiBoxPackEnd (&hbox, &uiplayer->seekDisplayLab);
 
   /* size group C */
-  uiCreateScale (&uiplayer->seekScale, 0.0, 180000.0, 100.0, 1000.0, 0.0);
+  uiCreateScale (&uiplayer->seekScale, 0.0, 180000.0, 100.0, 1000.0, 0.0, 0);
   uiBoxPackEnd (&hbox, &uiplayer->seekScale);
   uiSizeGroupAdd (&sgC, &uiplayer->seekScale);
   uiutilsUICallbackDoubleInit (&uiplayer->seekcb,
@@ -371,7 +371,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiSizeGroupAdd (&sgB, &uiplayer->volumeDisplayLab);
 
   /* size group C */
-  uiCreateScale (&uiplayer->volumeScale, 0.0, 100.0, 0.1, 1.0, 0.0);
+  uiCreateScale (&uiplayer->volumeScale, 0.0, 100.0, 0.1, 1.0, 0.0, 0);
   uiBoxPackEnd (&hbox, &uiplayer->volumeScale);
   uiSizeGroupAdd (&sgC, &uiplayer->volumeScale);
   uiutilsUICallbackDoubleInit (&uiplayer->volumecb,

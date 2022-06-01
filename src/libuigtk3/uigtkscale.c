@@ -18,7 +18,7 @@ static gboolean uiScaleChangeValueHandler (GtkRange *range, GtkScrollType *scrol
 
 void
 uiCreateScale (UIWidget *uiwidget, double lower, double upper,
-    double stepinc, double pageinc, double initvalue)
+    double stepinc, double pageinc, double initvalue, int digits)
 {
   GtkWidget     *scale;
   GtkAdjustment *adjustment;
@@ -27,7 +27,12 @@ uiCreateScale (UIWidget *uiwidget, double lower, double upper,
   scale = gtk_scale_new (GTK_ORIENTATION_HORIZONTAL, adjustment);
   assert (scale != NULL);
   gtk_widget_set_size_request (scale, 200, 5);
+  gtk_scale_set_value_pos (GTK_SCALE (scale), GTK_POS_RIGHT);
+  /* the problem with the gtk scale drawing routine is that */
+  /* the label is displayed in a disabled color, and there's no way */
+  /* to align it properly */
   gtk_scale_set_draw_value (GTK_SCALE (scale), FALSE);
+  gtk_scale_set_digits (GTK_SCALE (scale), digits);
   gtk_scale_set_has_origin (GTK_SCALE (scale), TRUE);
   gtk_range_set_value (GTK_RANGE (scale), initvalue);
   uiSetCss (scale, "scale, trough { min-height: 5px; }");
@@ -65,6 +70,15 @@ uiScaleGetValue (UIWidget *uiscale)
   double value;
 
   value = gtk_range_get_value (GTK_RANGE (uiscale->widget));
+  return value;
+}
+
+int
+uiScaleGetDigits (UIWidget *uiscale)
+{
+  int value;
+
+  value = gtk_scale_get_digits (GTK_SCALE (uiscale->widget));
   return value;
 }
 

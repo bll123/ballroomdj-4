@@ -22,21 +22,14 @@ uisongSetDisplayColumns (slist_t *sellist, song_t *song, int col,
     uisongcb_t cb, void *udata)
 {
   slistidx_t    seliteridx;
-  valuetype_t   vt;
   int           tagidx;
   char          *str = NULL;
   long          num;
+  double        dval;
 
   slistStartIterator (sellist, &seliteridx);
   while ((tagidx = slistIterateValueNum (sellist, &seliteridx)) >= 0) {
-    vt = uisongDetermineValueType (tagidx);
-    str = NULL;
-    if (vt == VALUE_STR) {
-      str = songDisplayString (song, tagidx);
-    } else {
-      num = songGetNum (song, tagidx);
-      if (num == LIST_VALUE_INVALID) { num = 0; }
-    }
+    str = uisongGetDisplay (song, tagidx, &num, &dval);
     if (cb != NULL) {
       cb (col, num, str, udata);
     }
@@ -46,6 +39,30 @@ uisongSetDisplayColumns (slist_t *sellist, song_t *song, int col,
     }
   } /* for each tagidx in the display selection list */
 }
+
+char *
+uisongGetDisplay (song_t *song, int tagidx, long *num, double *dval)
+{
+  valuetype_t   vt;
+  char          *str;
+
+  vt = uisongDetermineValueType (tagidx);
+  *num = 0;
+  *dval = 0.0;
+  str = NULL;
+  if (vt == VALUE_STR) {
+    str = songDisplayString (song, tagidx);
+  } else if (vt == VALUE_NUM) {
+    *num = songGetNum (song, tagidx);
+    if (*num == LIST_VALUE_INVALID) { *num = 0; }
+  } else if (vt == VALUE_DOUBLE) {
+    *dval = songGetDouble (song, tagidx);
+    if (*dval == LIST_DOUBLE_INVALID) { *dval = 0.0; }
+  }
+
+  return str;
+}
+
 
 void
 uisongAddDisplayTypes (slist_t *sellist, uisongdtcb_t cb, void *udata)

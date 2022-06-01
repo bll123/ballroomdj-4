@@ -17,6 +17,7 @@
 #include "slist.h"
 #include "tagdef.h"
 #include "tmutil.h"
+#include "uisong.h"
 #include "uisongedit.h"
 #include "ui.h"
 
@@ -28,6 +29,7 @@ typedef struct {
     UIWidget    uiwidget;
   };
   UIWidget    display;
+  UICallback  callback;
 } uisongedititem_t;
 
 typedef struct {
@@ -51,6 +53,7 @@ static void uisongeditAddSpinboxInt (uisongedit_t *uisongedit, UIWidget *hbox, i
 static void uisongeditAddLabel (uisongedit_t *uisongedit, UIWidget *hbox, int tagkey);
 static void uisongeditAddSpinboxTime (uisongedit_t *uisongedit, UIWidget *hbox, int tagkey);
 static void uisongeditAddScale (uisongedit_t *uisongedit, UIWidget *hbox, int tagkey);
+static bool uisongeditScaleDisplayCallback (void *udata, double value);
 
 void
 uisongeditUIInit (uisongedit_t *uisongedit)
@@ -191,6 +194,7 @@ uisongeditBuildUI (uisongedit_t *uisongedit, UIWidget *parentwin)
 
   for (int i = DISP_SEL_SONGEDIT_A; i <= DISP_SEL_SONGEDIT_C; ++i) {
     uiCreateVertBox (&col);
+    uiWidgetSetAllMargins (&col, uiBaseMarginSz * 4);
     uiWidgetExpandHoriz (&col);
     uiWidgetExpandVert (&col);
     uiBoxPackStartExpand (&hbox, &col);
@@ -209,6 +213,7 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song)
   uisongeditgtk_t *uiw;
   char            *data;
   long            val;
+  double          dval;
   char            tbuff [200];
 
   uiw = uisongedit->uiWidgetData;
@@ -218,39 +223,50 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song)
 
     switch (tagdefs [tagkey].editType) {
       case ET_ENTRY: {
-        data = songGetStr (song, tagkey);
+        data = uisongGetDisplay (song, tagkey, &val, &dval);
         uiEntrySetValue (uiw->items [count].entry, "");
         if (data != NULL) {
           uiEntrySetValue (uiw->items [count].entry, data);
+          free (data);
         }
         break;
       }
       case ET_SPINBOX: {
-        val = songGetNum (song, tagkey);
+        data = uisongGetDisplay (song, tagkey, &val, &dval);
+        if (data != NULL) {
+          fprintf (stderr, "et_spinbox: mismatch type\n");
+        }
         if (val < 0) { val = 0; }
         uiSpinboxSetValue (&uiw->items [count].uiwidget, val);
         break;
       }
       case ET_SPINBOX_TIME: {
-        val = songGetNum (song, tagkey);
+        data = uisongGetDisplay (song, tagkey, &val, &dval);
+        if (data != NULL) {
+          fprintf (stderr, "et_spinbox_time: mismatch type\n");
+        }
         if (val < 0) { val = 0; }
         uiSpinboxTimeSetValue (uiw->items [count].spinbox, val);
         break;
       }
       case ET_SCALE: {
-        val = songGetNum (song, tagkey);
+        data = uisongGetDisplay (song, tagkey, &val, &dval);
+        if (data != NULL) {
+          fprintf (stderr, "et_scale: mismatch type\n");
+        }
+        if (tagkey == TAG_SPEEDADJUSTMENT && dval == 0.0) {
+          dval = 100.0;
+        }
+        uiScaleSetValue (&uiw->items [count].uiwidget, dval);
+        uisongeditScaleDisplayCallback (&uiw->items [count], dval);
         break;
       }
       case ET_LABEL: {
-        switch (tagkey) {
-          case TAG_DURATION: {
-            val = songGetNum (song, tagkey);
-            tmutilToMS (val, tbuff, sizeof (tbuff));
-            uiLabelSetText (&uiw->items [count].uiwidget, tbuff);
-            break;
-          }
+        data = uisongGetDisplay (song, tagkey, &val, &dval);
+        if (data != NULL) {
+          uiLabelSetText (&uiw->items [count].uiwidget, data);
+          free (data);
         }
-
         break;
       }
       default: {
@@ -391,6 +407,7 @@ uisongeditAddLabel (uisongedit_t *uisongedit, UIWidget *hbox, int tagkey)
   uiwidgetp = &uiw->items [uiw->itemcount].uiwidget;
   uiCreateLabel (uiwidgetp, "");
   uiLabelEllipsizeOn (uiwidgetp);
+  uiSizeGroupAdd (&uiw->sgentry, uiwidgetp);
   uiBoxPackStartExpand (hbox, uiwidgetp);
 }
 
@@ -416,22 +433,43 @@ uisongeditAddScale (uisongedit_t *uisongedit, UIWidget *hbox, int tagkey)
 {
   uisongeditgtk_t *uiw;
   UIWidget        *uiwidgetp;
-  UIWidget        uiwidget;
+  double          lower, upper;
+  int             digits;
 
   uiw = uisongedit->uiWidgetData;
   uiwidgetp = &uiw->items [uiw->itemcount].uiwidget;
-  uiCreateScale (uiwidgetp, 0.0, 100.0, 1.0, 5.0, 0.0);
+  lower = 70.0;
+  upper = 130.0;
+  digits = 0;
+  if (tagkey == TAG_VOLUMEADJUSTPERC) {
+    lower = -50.0;
+    upper = 50.0;
+    digits = 1;
+  }
+  uiCreateScale (uiwidgetp, lower, upper, 1.0, 5.0, 0.0, digits);
+  uiutilsUICallbackDoubleInit (&uiw->items [uiw->itemcount].callback,
+      uisongeditScaleDisplayCallback, &uiw->items [uiw->itemcount]);
+  uiScaleSetCallback (uiwidgetp, &uiw->items [uiw->itemcount].callback);
   uiSizeGroupAdd (&uiw->sgscale, uiwidgetp);
   uiBoxPackStart (hbox, uiwidgetp);
 
   uiwidgetp = &uiw->items [uiw->itemcount].display;
-  uiCreateLabel (uiwidgetp, "100");
+  uiCreateLabel (uiwidgetp, "100%");
   uiLabelAlignEnd (uiwidgetp);
   uiSizeGroupAdd (&uiw->sgscaledisp, uiwidgetp);
   uiBoxPackStart (hbox, uiwidgetp);
-
-  uiCreateLabel (&uiwidget, "%");
-  uiWidgetSetMarginStart (&uiwidget, 0);
-  uiBoxPackStart (hbox, &uiwidget);
 }
 
+static bool
+uisongeditScaleDisplayCallback (void *udata, double value)
+{
+  uisongedititem_t  *item = udata;
+  char              tbuff [40];
+  int               digits;
+
+  digits = uiScaleGetDigits (&item->uiwidget);
+fprintf (stderr, "scale: %d %.1f\n", digits, value);
+  snprintf (tbuff, sizeof (tbuff), "%.*f%%", digits, value);
+  uiLabelSetText (&item->display, tbuff);
+  return UICB_CONT;
+}

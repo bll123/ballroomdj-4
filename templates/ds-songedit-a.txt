@@ -1,10 +1,11 @@
 # ds-songedit-a
+# song related
 ALBUMARTIST
 ARTIST
 TITLE
+# dance related
 DANCE
 DANCELEVEL
 DANCERATING
 NOTES
 TAGS
-DURATION
