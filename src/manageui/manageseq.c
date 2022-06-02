@@ -195,6 +195,7 @@ manageSequenceSave (manageseq_t *manageseq)
     return;
   }
 
+  /* need the full name for backups */
   pathbldMakePath (nnm, sizeof (nnm),
       name, BDJ4_SEQUENCE_EXT, PATHBLD_MP_DATA);
   if (! manageseq->seqbackupcreated) {
@@ -207,7 +208,7 @@ manageSequenceSave (manageseq_t *manageseq)
   sequenceSave (seq, slist);
   sequenceFree (seq);
 
-  manageCheckAndCreatePlaylist (name, nnm, PLTYPE_SEQUENCE);
+  manageCheckAndCreatePlaylist (name, PLTYPE_SEQUENCE);
   slistFree (slist);
   free (name);
 }

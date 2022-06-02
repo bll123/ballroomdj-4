@@ -539,7 +539,7 @@ managePlaylistNew (void *udata)
   managepl->plbackupcreated = false;
 
   pl = playlistAlloc (NULL);
-  playlistCreate (pl, tbuff, PLTYPE_AUTO, NULL);
+  playlistCreate (pl, tbuff, PLTYPE_AUTO);
   if (managepl->playlist != NULL) {
     playlistFree (managepl->playlist);
   }

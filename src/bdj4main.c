@@ -1038,7 +1038,7 @@ mainQueueDance (maindata_t *mainData, char *args, ssize_t count)
   playlist = playlistAlloc (mainData->musicdb);
   /* CONTEXT: the name of the special playlist for queueing a dance */
   if (playlistLoad (playlist, _("QueueDance")) < 0) {
-    playlistCreate (playlist, plname, PLTYPE_AUTO, NULL);
+    playlistCreate (playlist, plname, PLTYPE_AUTO);
   }
   playlistSetConfigNum (playlist, PLAYLIST_STOP_AFTER, count);
   /* clear all dance selected/counts */

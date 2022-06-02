@@ -255,8 +255,7 @@ playlistLoad (playlist_t *pl, const char *fname)
 }
 
 void
-playlistCreate (playlist_t *pl, const char *plfname, pltype_t type,
-    const char *suppfname)
+playlistCreate (playlist_t *pl, const char *plname, pltype_t type)
 {
   char          tbuff [40];
   ilistidx_t    didx;
@@ -267,8 +266,8 @@ playlistCreate (playlist_t *pl, const char *plfname, pltype_t type,
 
   levels = bdjvarsdfGet (BDJVDF_LEVELS);
 
-  pl->name = strdup (plfname);
-  snprintf (tbuff, sizeof (tbuff), "plinfo-c-%s", plfname);
+  pl->name = strdup (plname);
+  snprintf (tbuff, sizeof (tbuff), "plinfo-c-%s", plname);
   pl->plinfo = nlistAlloc (tbuff, LIST_UNORDERED, free);
   nlistSetSize (pl->plinfo, PLAYLIST_KEY_MAX);
   nlistSetStr (pl->plinfo, PLAYLIST_ALLOWED_KEYWORDS, NULL);
@@ -283,17 +282,14 @@ playlistCreate (playlist_t *pl, const char *plfname, pltype_t type,
   nlistSetNum (pl->plinfo, PLAYLIST_STOP_TIME, LIST_VALUE_INVALID);
   nlistSort (pl->plinfo);
 
-  if (suppfname == NULL) {
-    suppfname = plfname;
-  }
   if (type == PLTYPE_SONGLIST) {
-    pl->songlist = songlistAlloc (suppfname);
+    pl->songlist = songlistAlloc (plname);
   }
   if (type == PLTYPE_SEQUENCE) {
-    pl->sequence = sequenceAlloc (suppfname);
+    pl->sequence = sequenceAlloc (plname);
   }
 
-  snprintf (tbuff, sizeof (tbuff), "pldance-c-%s", plfname);
+  snprintf (tbuff, sizeof (tbuff), "pldance-c-%s", plname);
   pl->pldances = ilistAlloc (tbuff, LIST_ORDERED);
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);

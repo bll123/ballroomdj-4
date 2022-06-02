@@ -1195,6 +1195,7 @@ manageSonglistSave (manageui_t *manage)
     manageRenamePlaylistFiles (manage->sloldname, name);
   }
 
+  /* need the full name for backups */
   pathbldMakePath (nnm, sizeof (nnm),
       name, BDJ4_SONGLIST_EXT, PATHBLD_MP_DATA);
   if (! manage->slbackupcreated) {
@@ -1203,8 +1204,8 @@ manageSonglistSave (manageui_t *manage)
   }
 
   manageSetSonglistName (manage, name);
-  uimusicqSave (manage->slmusicq, nnm);
-  manageCheckAndCreatePlaylist (name, nnm, PLTYPE_SONGLIST);
+  uimusicqSave (manage->slmusicq, name);
+  manageCheckAndCreatePlaylist (name, PLTYPE_SONGLIST);
   free (name);
 }
 

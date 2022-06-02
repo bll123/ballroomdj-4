@@ -60,8 +60,7 @@ manageRenamePlaylistFiles (const char *oldname, const char *newname)
 }
 
 void
-manageCheckAndCreatePlaylist (const char *name,
-    const char *suppfname, pltype_t pltype)
+manageCheckAndCreatePlaylist (const char *name, pltype_t pltype)
 {
   char  onm [MAXPATHLEN];
 
@@ -73,7 +72,7 @@ manageCheckAndCreatePlaylist (const char *name,
     playlist_t    *pl;
 
     pl = playlistAlloc (NULL);
-    playlistCreate (pl, name, pltype, suppfname);
+    playlistCreate (pl, name, pltype);
     playlistSave (pl, NULL);
     playlistFree (pl);
   }

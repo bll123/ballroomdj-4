@@ -50,8 +50,7 @@ void  manageDbClose (managedb_t *managedb);
 /* managemisc.c */
 void manageSetStatusMsg (UIWidget *statusMsg, const char *msg);
 void manageRenamePlaylistFiles (const char *oldname, const char *newname);
-void manageCheckAndCreatePlaylist (const char *name,
-    const char *suppfname, pltype_t pltype);
+void manageCheckAndCreatePlaylist (const char *name, pltype_t pltype);
 bool manageCreatePlaylistCopy (UIWidget *statusMsg,
     const char *oname, const char *newname);
 bool managePlaylistExists (const char *name);

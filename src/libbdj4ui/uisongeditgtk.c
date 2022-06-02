@@ -467,7 +467,6 @@ uisongeditScaleDisplayCallback (void *udata, double value)
   int               digits;
 
   digits = uiScaleGetDigits (&item->uiwidget);
-fprintf (stderr, "scale: %d %.1f\n", digits, value);
   snprintf (tbuff, sizeof (tbuff), "%.*f%%", digits, value);
   uiLabelSetText (&item->display, tbuff);
   return UICB_CONT;
