@@ -17,6 +17,8 @@
 #include "uisongedit.h"
 #include "ui.h"
 
+#include "tagdef.h" // remove later
+
 uisongedit_t *
 uisongeditInit (conn_t *conn, musicdb_t *musicdb,
     dispsel_t *dispsel, nlist_t *options)

@@ -29,7 +29,7 @@ uiCreateScale (UIWidget *uiwidget, double lower, double upper,
   gtk_widget_set_size_request (scale, 200, 5);
   gtk_scale_set_value_pos (GTK_SCALE (scale), GTK_POS_RIGHT);
   /* the problem with the gtk scale drawing routine is that */
-  /* the label is displayed in a disabled color, and there's no way */
+  /* the label is displayed in a disabled color, and there's no easy way */
   /* to align it properly */
   gtk_scale_set_draw_value (GTK_SCALE (scale), FALSE);
   gtk_scale_set_digits (GTK_SCALE (scale), digits);

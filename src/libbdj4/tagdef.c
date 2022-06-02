@@ -724,7 +724,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     { NULL, "TXXX", NULL },       /* audio tags */
     0,                            /* edit width           */
     ET_SCALE,                     /* edit type            */
-    VALUE_NUM,                    /* value type           */
+    VALUE_DOUBLE,                 /* value type           */
     NULL,                         /* conv func            */
     DISP_NO,                      /* audio id disp        */
     0,                            /* listing display      */

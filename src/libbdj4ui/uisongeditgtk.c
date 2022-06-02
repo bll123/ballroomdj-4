@@ -250,11 +250,12 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song)
       }
       case ET_SCALE: {
         data = uisongGetDisplay (song, tagkey, &val, &dval);
+        if (tagkey == TAG_SPEEDADJUSTMENT) {
+          dval = (double) val;
+          if (dval == 0.0) { dval = 100.0; }
+        }
         if (data != NULL) {
           fprintf (stderr, "et_scale: mismatch type\n");
-        }
-        if (tagkey == TAG_SPEEDADJUSTMENT && dval == 0.0) {
-          dval = 100.0;
         }
         uiScaleSetValue (&uiw->items [count].uiwidget, dval);
         uisongeditScaleDisplayCallback (&uiw->items [count], dval);

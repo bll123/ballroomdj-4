@@ -192,7 +192,6 @@ songGetDouble (song_t *song, nlistidx_t idx)
 {
   double      value;
 
-
   if (song == NULL || song->songInfo == NULL) {
     return LIST_DOUBLE_INVALID;
   }
