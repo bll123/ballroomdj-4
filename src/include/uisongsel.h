@@ -96,6 +96,7 @@ void uisongselFilterDanceSignal (GtkTreeView *tv, GtkTreePath *path,
 void  uisongselUIInit (uisongsel_t *uisongsel);
 void  uisongselUIFree (uisongsel_t *uisongsel);
 UIWidget  * uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin);
+bool  uisongselQueueProcessPlayCallback (void *udata);
 void  uisongselClearData (uisongsel_t *uisongsel);
 void  uisongselPopulateData (uisongsel_t *uisongsel);
 void  uisongselSetFavoriteForeground (uisongsel_t *uisongsel, char *color);

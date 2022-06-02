@@ -37,6 +37,7 @@ enum {
   UISONGEDIT_CB_FIRST,
   UISONGEDIT_CB_NEXT,
   UISONGEDIT_CB_PREVIOUS,
+  UISONGEDIT_CB_PLAY,
   UISONGEDIT_CB_MAX,
 };
 
@@ -166,24 +167,30 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   uiutilsUICallbackInit (&uiw->callbacks [UISONGEDIT_CB_FIRST],
       uisongselFirstSelection, uisongsel);
   uiCreateButton (&uiwidget, &uiw->callbacks [UISONGEDIT_CB_FIRST],
+      /* CONTEXT: song editor : first song */
       _("First"), NULL);
   uiBoxPackStart (&hbox, &uiwidget);
 
   uiutilsUICallbackInit (&uiw->callbacks [UISONGEDIT_CB_NEXT],
       uisongselNextSelection, uisongsel);
   uiCreateButton (&uiwidget, &uiw->callbacks [UISONGEDIT_CB_NEXT],
+      /* CONTEXT: song editor : next song */
       _("Next"), NULL);
   uiBoxPackStart (&hbox, &uiwidget);
 
   uiutilsUICallbackInit (&uiw->callbacks [UISONGEDIT_CB_PREVIOUS],
       uisongselPreviousSelection, uisongsel);
   uiCreateButton (&uiwidget, &uiw->callbacks [UISONGEDIT_CB_PREVIOUS],
+      /* CONTEXT: song editor : previous song */
       _("Previous"), NULL);
   uiBoxPackStart (&hbox, &uiwidget);
 
-  uiCreateButton (&uiwidget, NULL, _("Play"), NULL);
+  uiutilsUICallbackInit (&uiw->callbacks [UISONGEDIT_CB_PLAY],
+      uisongselQueueProcessPlayCallback, uisongsel);
+  uiCreateButton (&uiwidget, &uiw->callbacks [UISONGEDIT_CB_PLAY],
+      /* CONTEXT: song editor : play song */
+      _("Play"), NULL);
   uiBoxPackStart (&hbox, &uiwidget);
-  uiWidgetDisable (&uiwidget);
 
   uiCreateButton (&uiwidget, NULL, _("Save"), NULL);
   uiBoxPackEnd (&hbox, &uiwidget);
