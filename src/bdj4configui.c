@@ -439,7 +439,7 @@ static void     confuiOrgPathSelect (GtkTreeView *tv, GtkTreePath *path,
     GtkTreeViewColumn *column, gpointer udata);
 static char     * confuiComboboxSelect (configui_t *confui, GtkTreePath *path, int widx);
 static void     confuiUpdateMobmqQrcode (configui_t *confui);
-static void     confuiMobmqTypeChg (GtkSpinButton *sb, gpointer udata);
+static bool     confuiMobmqTypeChg (void *udata);
 static bool     confuiMobmqPortChg (void *udata);
 static int      confuiMobmqNameChg (uientry_t *entry, void *udata);
 static int      confuiMobmqTitleChg (uientry_t *entry, void *udata);
@@ -511,7 +511,7 @@ static void   confuiDanceSpinboxChg (void *udata, int widx);
 static int    confuiDanceValidateAnnouncement (uientry_t *entry, configui_t *confui);
 
 /* display settings */
-static void   confuiDispSettingChg (GtkSpinButton *sb, gpointer udata);
+static bool   confuiDispSettingChg (void *udata);
 static void   confuiDispSaveTable (configui_t *confui, int selidx);
 static void   confuiCreateTagSelectedDisp (configui_t *confui);
 static void   confuiCreateTagListingDisp (configui_t *confui);
@@ -3205,21 +3205,20 @@ confuiUpdateMobmqQrcode (configui_t *confui)
   logProcEnd (LOG_PROC, "confuiUpdateMobmqQrcode", "");
 }
 
-static void
-confuiMobmqTypeChg (GtkSpinButton *sb, gpointer udata)
+static bool
+confuiMobmqTypeChg (void *udata)
 {
   configui_t    *confui = udata;
-  GtkAdjustment *adjustment;
   double        value;
-  ssize_t       nval;
+  long          nval;
 
   logProcBegin (LOG_PROC, "confuiMobmqTypeChg");
-  adjustment = gtk_spin_button_get_adjustment (sb);
-  value = gtk_adjustment_get_value (adjustment);
-  nval = (ssize_t) value;
+  value = uiSpinboxGetValue (&confui->uiitem [CONFUI_SPINBOX_MOBILE_MQ].uiwidget);
+  nval = (long) value;
   bdjoptSetNum (OPT_P_MOBILEMARQUEE, nval);
   confuiUpdateMobmqQrcode (confui);
   logProcEnd (LOG_PROC, "confuiMobmqTypeChg", "");
+  return UICB_CONT;
 }
 
 static bool
@@ -3227,11 +3226,11 @@ confuiMobmqPortChg (void *udata)
 {
   configui_t    *confui = udata;
   double        value;
-  ssize_t       nval;
+  long          nval;
 
   logProcBegin (LOG_PROC, "confuiMobmqPortChg");
   value = uiSpinboxGetValue (&confui->uiitem [CONFUI_WIDGET_MMQ_PORT].uiwidget);
-  nval = (ssize_t) value;
+  nval = (long) value;
   bdjoptSetNum (OPT_P_MOBILEMQPORT, nval);
   confuiUpdateMobmqQrcode (confui);
   logProcEnd (LOG_PROC, "confuiMobmqPortChg", "");
@@ -3272,7 +3271,7 @@ confuiUpdateRemctrlQrcode (configui_t *confui)
   char          uridisp [MAXPATHLEN];
   char          *qruri = "";
   char          tbuff [MAXPATHLEN];
-  ssize_t       onoff;
+  long          onoff;
   UIWidget      *uiwidgetp;
 
   logProcBegin (LOG_PROC, "confuiUpdateRemctrlQrcode");
@@ -3326,11 +3325,11 @@ confuiRemctrlPortChg (void *udata)
 {
   configui_t    *confui = udata;
   double        value;
-  ssize_t       nval;
+  long          nval;
 
   logProcBegin (LOG_PROC, "confuiRemctrlPortChg");
   value = uiSpinboxGetValue (&confui->uiitem [CONFUI_WIDGET_RC_PORT].uiwidget);
-  nval = (ssize_t) value;
+  nval = (long) value;
   bdjoptSetNum (OPT_P_REMCONTROLPORT, nval);
   confuiUpdateRemctrlQrcode (confui);
   logProcEnd (LOG_PROC, "confuiRemctrlPortChg", "");
@@ -3666,7 +3665,7 @@ confuiTableRemove (void *udata)
   }
 
   if (confui->tablecurr == CONFUI_ID_DANCE) {
-    long         idx;
+    long          idx;
     dance_t       *dances;
     GtkWidget     *tree;
     GtkTreeModel  *model;
@@ -3994,7 +3993,7 @@ confuiCreateRatingTable (configui_t *confui)
   editable = FALSE;
   while ((key = ratingIterate (ratings, &iteridx)) >= 0) {
     char    *ratingdisp;
-    ssize_t weight;
+    long weight;
 
     ratingdisp = ratingGetRating (ratings, key);
     weight = ratingGetWeight (ratings, key);
@@ -4044,7 +4043,7 @@ confuiCreateRatingTable (configui_t *confui)
 
 static void
 confuiRatingSet (GtkListStore *store, GtkTreeIter *iter,
-    int editable, char *ratingdisp, ssize_t weight)
+    int editable, char *ratingdisp, long weight)
 {
   GtkAdjustment     *adjustment;
 
@@ -4087,7 +4086,7 @@ confuiCreateStatusTable (configui_t *confui)
   editable = FALSE;
   while ((key = statusIterate (status, &iteridx)) >= 0) {
     char    *statusdisp;
-    ssize_t playflag;
+    long playflag;
 
     statusdisp = statusGetStatus (status, key);
     playflag = statusGetPlayFlag (status, key);
@@ -4172,8 +4171,8 @@ confuiCreateLevelTable (configui_t *confui)
 
   while ((key = levelIterate (levels, &iteridx)) >= 0) {
     char    *leveldisp;
-    ssize_t weight;
-    ssize_t def;
+    long weight;
+    long def;
 
     leveldisp = levelGetLevel (levels, key);
     weight = levelGetWeight (levels, key);
@@ -4238,7 +4237,7 @@ confuiCreateLevelTable (configui_t *confui)
 
 static void
 confuiLevelSet (GtkListStore *store, GtkTreeIter *iter,
-    int editable, char *leveldisp, ssize_t weight, int def)
+    int editable, char *leveldisp, long weight, int def)
 {
   GtkAdjustment     *adjustment;
 
@@ -4280,7 +4279,7 @@ confuiCreateGenreTable (configui_t *confui)
 
   while ((key = genreIterate (genres, &iteridx)) >= 0) {
     char    *genredisp;
-    ssize_t clflag;
+    long    clflag;
 
     genredisp = genreGetGenre (genres, key);
     clflag = genreGetClassicalFlag (genres, key);
@@ -4951,8 +4950,8 @@ confuiDanceValidateAnnouncement (uientry_t *entry, configui_t *confui)
 
 /* display settings */
 
-static void
-confuiDispSettingChg (GtkSpinButton *sb, gpointer udata)
+static bool
+confuiDispSettingChg (void *udata)
 {
   configui_t  *confui = udata;
   int         oselidx;
@@ -4971,6 +4970,7 @@ confuiDispSettingChg (GtkSpinButton *sb, gpointer udata)
   confuiCreateTagListingDisp (confui);
   confuiCreateTagSelectedDisp (confui);
   logProcEnd (LOG_PROC, "confuiDispSettingChg", "");
+  return UICB_CONT;
 }
 
 static void

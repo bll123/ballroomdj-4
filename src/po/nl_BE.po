@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
-"POT-Creation-Date: 2022-05-27 09:08-0700\n"
-"PO-Revision-Date: 2022-05-27 18:35\n"
+"POT-Creation-Date: 2022-06-02\n"
+"PO-Revision-Date: 2022-06-02\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -386,7 +386,6 @@ msgstr ""
 msgid "Creating shortcut."
 msgstr ""
 
-#. CONTEXT: configuration: dances: the name of the dance
 #. CONTEXT: title: dance
 #. CONTEXT: a filter: select the dance displayed in the song selection
 #. CONTEXT: playlist management: dance column header
@@ -832,7 +831,8 @@ msgid "Marquee Theme"
 msgstr ""
 
 #. CONTEXT: playlist management: max play time column header (keep short)
-msgid "Maximum\n"
+msgid ""
+"Maximum\n"
 "Play Time"
 msgstr "Maximale\n"
 "afspeeltijd"
@@ -848,7 +848,7 @@ msgstr "Bericht"
 
 #. CONTEXT: menu selection: song list: actions menu: rearrange the songs and create a new mix
 msgid "Mix"
-msgstr ""
+msgstr "Mix"
 
 #. CONTEXT: configuration: options associated with the mobile marquee
 #. CONTEXT: configuration: set mobile marquee mode (off/local/internet)
@@ -1212,11 +1212,15 @@ msgid "Repeat"
 msgstr "Herhalen"
 
 #. CONTEXT: database update: rebuild: help text
-msgid "Replaces the BallroomDJ database in its entirety. All changes to the database will be lost."
+msgid ""
+"Replaces the BallroomDJ database in its entirety. All changes to the "
+"database will be lost."
 msgstr ""
 
 #. CONTEXT: database update: update from audio file tags: help text
-msgid "Replaces the information in the BallroomDJ database with the audio file tag information."
+msgid ""
+"Replaces the information in the BallroomDJ database with the audio file tag "
+"information."
 msgstr ""
 
 #. CONTEXT: display settings for: requests
@@ -1371,7 +1375,7 @@ msgstr "Song selectie"
 
 #. CONTEXT: title: time to start the song
 msgid "Song Start"
-msgstr ""
+msgstr "Song Start"
 
 #. CONTEXT: a filter: select the method to sort the song selection display
 msgid "Sort by"
@@ -1388,7 +1392,7 @@ msgstr "Tempo aanpassing"
 
 #. CONTEXT: update database: button to start the database update process
 msgid "Start"
-msgstr ""
+msgstr "Start"
 
 msgid "Start New Sequence"
 msgstr ""
@@ -1462,12 +1466,16 @@ msgid "The conversion process will not be run."
 msgstr ""
 
 #. CONTEXT: installer: instructions
-msgid "The conversion process will only run for new installations and for re-installations."
+msgid ""
+"The conversion process will only run for new installations and for re-"
+"installations."
 msgstr ""
 
 #. CONTEXT: installer: command line interface: instructions
 #, c-format
-msgid "The conversion process will only run for new installations and for re-installs."
+msgid ""
+"The conversion process will only run for new installations and for re-"
+"installs."
 msgstr ""
 
 #. CONTEXT: configuration: the theme to use for the user interface
@@ -1504,7 +1512,7 @@ msgstr "Inkorten"
 
 #. CONTEXT: configuration: dances: the type of the dance (club/latin/standard)
 msgid "Type"
-msgstr ""
+msgstr "Type"
 
 #. CONTEXT: installer: status message
 #, c-format
@@ -1533,7 +1541,9 @@ msgid "Updated"
 msgstr ""
 
 #. CONTEXT: database update: write tags to audio files: help text
-msgid "Updates the audio file tags with the information from the BallroomDJ database."
+msgid ""
+"Updates the audio file tags with the information from the BallroomDJ "
+"database."
 msgstr ""
 
 #. CONTEXT: installer: status message

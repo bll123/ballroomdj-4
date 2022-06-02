@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-05-27 11:32-0700\n"
+"POT-Creation-Date: 2022-06-02 07:52-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -384,7 +384,6 @@ msgstr ""
 msgid "Creating shortcut."
 msgstr ""
 
-#. CONTEXT: configuration: dances: the name of the dance
 #. CONTEXT: title: dance
 #. CONTEXT: a filter: select the dance displayed in the song selection
 #. CONTEXT: playlist management: dance column header

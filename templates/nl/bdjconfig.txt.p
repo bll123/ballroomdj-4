@@ -34,7 +34,7 @@ MQSHOWINFO
 PROFILENAME
 ..BDJ4
 QUEUE_NAME_A
-..Muziekwachtrij
+..Muziek wachtrij
 QUEUE_NAME_B
 ..Wachtrij B
 REMCONTROLPASS
