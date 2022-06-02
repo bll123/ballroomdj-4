@@ -10,6 +10,7 @@
 #include "dispsel.h"
 #include "level.h"
 #include "musicdb.h"
+#include "musicq.h"
 #include "nlist.h"
 #include "rating.h"
 #include "songfilter.h"
@@ -84,7 +85,7 @@ void  uisongselCreateSortByList (uisongsel_t *uisongsel);
 void  uisongselGenreSelect (uisongsel_t *uisongsel, ssize_t idx);
 void  uisongselCreateGenreList (uisongsel_t *uisongsel);
 void  uisongselFilterDanceProcess (uisongsel_t *uisongsel, ssize_t idx);
-void  uisongselSetSelectionCallback (uisongsel_t *uisongsel, UICallback *uicb);
+void  uisongselSetSelectionCallback (uisongsel_t *uisongsel, UICallback *uicbpath, UICallback *uicbdbidx);
 
 /* uisongselfilter.c */
 bool uisongselFilterDialog (void *udata);
@@ -100,6 +101,10 @@ void  uisongselPopulateData (uisongsel_t *uisongsel);
 void  uisongselSetFavoriteForeground (uisongsel_t *uisongsel, char *color);
 bool  uisongselQueueProcessSelectCallback (void *udata);
 void  uisongselSetDefaultSelection (uisongsel_t *uisongsel);
+void  uisongselSetSelection (uisongsel_t *uisongsel, const char *pathstr);
+bool  uisongselNextSelection (void *udata);
+bool  uisongselPreviousSelection (void *udata);
+bool  uisongselFirstSelection (void *udata);
 
 #endif /* INC_UISONGSEL_H */
 

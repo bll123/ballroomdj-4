@@ -50,3 +50,20 @@ uiutilsCallbackLongHandler (UICallback *uicb, long value)
   rc = uicb->longcb (uicb->udata, value);
   return rc;
 }
+
+bool
+uiutilsCallbackStrHandler (UICallback *uicb, const char *str)
+{
+  bool  rc = false;
+
+  if (uicb == NULL) {
+    return 0;
+  }
+  if (uicb->longcb == NULL) {
+    return 0;
+  }
+
+  rc = uicb->strcb (uicb->udata, str);
+  return rc;
+}
+

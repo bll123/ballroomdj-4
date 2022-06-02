@@ -36,7 +36,15 @@ enum {
   SONGSEL_COL_MAX,
 };
 
-#define STORE_ROWS     60
+enum {
+  STORE_ROWS = 60,
+};
+
+enum {
+  UISONGSEL_FIRST,
+  UISONGSEL_NEXT,
+  UISONGSEL_PREVIOUS,
+};
 
 /* for callbacks */
 enum {
@@ -62,9 +70,10 @@ typedef struct uisongselgtk {
   double            lastRowHeight;
   int               maxRows;
   nlist_t           *selectedList;
-  UICallback        *newselcb;
+  UICallback        *newselcbpath;
+  UICallback        *newselcbdbidx;
   GtkTreeModel      *model;
-  GtkTreeIter       *iter;
+  GtkTreeIter       *iterp;
   GType             *typelist;
   int               col;        // for the display type callback
   bool              controlPressed : 1;
@@ -98,6 +107,8 @@ static void uisongselProcessSelection (GtkTreeModel *model,
     GtkTreePath *path, GtkTreeIter *iter, gpointer udata);
 static void uisongselPopulateDataCallback (int col, long num, const char *str, void *udata);
 
+static void uisongselMoveSelection (void *udata, int where);
+
 void
 uisongselUIInit (uisongsel_t *uisongsel)
 {
@@ -117,7 +128,8 @@ uisongselUIInit (uisongsel_t *uisongsel)
   uiw->shiftPressed = false;
   uiw->inscroll = false;
   uiw->selectedList = nlistAlloc ("selected-list", LIST_ORDERED, NULL);
-  uiw->newselcb = NULL;
+  uiw->newselcbpath = NULL;
+  uiw->newselcbdbidx = NULL;
 
   uisongsel->uiWidgetData = uiw;
 }
@@ -286,7 +298,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin)
   uisongselCreateRows (uisongsel);
   logMsg (LOG_DBG, LOG_SONGSEL, "populate: initial");
   uisongselPopulateData (uisongsel);
-  uisongselSetDefaultSelection (uisongsel);
+//  uisongselSetDefaultSelection (uisongsel);
 
   uiDropDownSelectionSetNum (&uisongsel->dancesel, -1);
 
@@ -375,7 +387,7 @@ uisongselPopulateData (uisongsel_t *uisongsel)
 
         sellist = dispselGetList (uisongsel->dispsel, uisongsel->dispselType);
         uiw->model = model;
-        uiw->iter = &iter;
+        uiw->iterp = &iter;
         uisongSetDisplayColumns (sellist, song, SONGSEL_COL_MAX,
             uisongselPopulateDataCallback, uisongsel);
       } /* song is not null */
@@ -418,7 +430,8 @@ uisongselQueueProcessSelectCallback (void *udata)
 }
 
 void
-uisongselSetSelectionCallback (uisongsel_t *uisongsel, UICallback *uicb)
+uisongselSetSelectionCallback (uisongsel_t *uisongsel,
+    UICallback *uicbpath, UICallback *uicbdbidx)
 {
   uisongselgtk_t  * uiw;
 
@@ -429,33 +442,76 @@ uisongselSetSelectionCallback (uisongsel_t *uisongsel, UICallback *uicb)
     return;
   }
   uiw = uisongsel->uiWidgetData;
-  uiw->newselcb = uicb;
+  uiw->newselcbpath = uicbpath;
+  uiw->newselcbdbidx = uicbdbidx;
 }
 
 void
 uisongselSetDefaultSelection (uisongsel_t *uisongsel)
 {
   uisongselgtk_t  *uiw;
-  GtkTreeModel    *model;
-  GtkTreeIter     iter;
   int             count;
 
   uiw = uisongsel->uiWidgetData;
 
-  count = uiTreeViewGetSelection (uiw->songselTree, &model, &iter);
+  if (uiw->sel == NULL) {
+    return;
+  }
+
+  count = gtk_tree_selection_count_selected_rows (uiw->sel);
   if (count < 1) {
-    GtkTreePath   *path;
+    GtkTreeModel  *model;
+    GtkTreeIter   iter;
 
-    path = gtk_tree_path_new_from_string ("0");
-    if (path != NULL) {
-      gtk_tree_selection_select_path (uiw->sel, path);
-      gtk_tree_path_free (path);
-    }
-
-//    nlistSetNum (uiw->selectedList, );
+    model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiw->songselTree));
+    gtk_tree_model_get_iter_first (model, &iter);
+    gtk_tree_selection_select_iter (uiw->sel, &iter);
   }
 
   return;
+}
+
+void
+uisongselSetSelection (uisongsel_t *uisongsel, const char *pathstr)
+{
+  uisongselgtk_t  *uiw;
+//  int             count;
+//  GtkTreeModel    *model;
+  GtkTreePath     *path;
+
+  uiw = uisongsel->uiWidgetData;
+
+  if (uiw->sel == NULL) {
+    return;
+  }
+
+  uisongselClearAllSelections (uisongsel);
+//  model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiw->songselTree));
+//  gtk_tree_model_get_iter_first (model, &iter);
+  path = gtk_tree_path_new_from_string (pathstr);
+  gtk_tree_selection_select_path (uiw->sel, path);
+  gtk_tree_path_free (path);
+}
+
+bool
+uisongselNextSelection (void *udata)
+{
+  uisongselMoveSelection (udata, UISONGSEL_NEXT);
+  return UICB_CONT;
+}
+
+bool
+uisongselPreviousSelection (void *udata)
+{
+  uisongselMoveSelection (udata, UISONGSEL_PREVIOUS);
+  return UICB_CONT;
+}
+
+bool
+uisongselFirstSelection (void *udata)
+{
+  uisongselMoveSelection (udata, UISONGSEL_FIRST);
+  return UICB_CONT;
 }
 
 /* internal routines */
@@ -875,6 +931,7 @@ uisongselProcessSelection (GtkTreeModel *model,
   uisongselgtk_t    *uiw;
   glong             idx;
   glong             dbidx;
+  char              *pathstr;
 
   uiw = uisongsel->uiWidgetData;
 
@@ -882,8 +939,11 @@ uisongselProcessSelection (GtkTreeModel *model,
   gtk_tree_model_get (model, iter, SONGSEL_COL_DBIDX, &dbidx, -1);
   nlistSetNum (uiw->selectedList, idx, dbidx);
 
-  if (uiw->newselcb != NULL) {
-    uiutilsCallbackLongHandler (uiw->newselcb, dbidx);
+  if (uiw->newselcbpath != NULL) {
+    pathstr = gtk_tree_path_to_string (path);
+    uiutilsCallbackStrHandler (uiw->newselcbpath, pathstr);
+    uiutilsCallbackLongHandler (uiw->newselcbdbidx, dbidx);
+    free (pathstr);
   }
 }
 
@@ -894,7 +954,43 @@ uisongselPopulateDataCallback (int col, long num, const char *str, void *udata)
   uisongselgtk_t  *uiw;
 
   uiw = uisongsel->uiWidgetData;
-  uiTreeViewSetDisplayColumn (uiw->model, uiw->iter, col, num, str);
+  uiTreeViewSetDisplayColumn (uiw->model, uiw->iterp, col, num, str);
 }
 
+
+static void
+uisongselMoveSelection (void *udata, int where)
+{
+  uisongsel_t     *uisongsel = udata;
+  uisongselgtk_t  *uiw;
+  GtkTreeModel    *model;
+  GtkTreeIter     iter;
+  int             count;
+  int             valid;
+
+  uiw = uisongsel->uiWidgetData;
+
+  if (uiw->sel == NULL) {
+    return;
+  }
+
+  count = gtk_tree_selection_count_selected_rows (uiw->sel);
+  if (count == 1) {
+    model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiw->songselTree));
+    gtk_tree_selection_get_selected (uiw->sel, &model, &iter);
+    valid = false;
+    if (where == UISONGSEL_FIRST) {
+      valid = gtk_tree_model_get_iter_first (model, &iter);
+    }
+    if (where == UISONGSEL_NEXT) {
+      valid = gtk_tree_model_iter_next (model, &iter);
+    }
+    if (where == UISONGSEL_PREVIOUS) {
+      valid = gtk_tree_model_iter_previous (model, &iter);
+    }
+    if (valid) {
+      gtk_tree_selection_select_iter (uiw->sel, &iter);
+    }
+  }
+}
 

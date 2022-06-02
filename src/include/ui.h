@@ -17,6 +17,7 @@
 void uiutilsUIWidgetInit (UIWidget *uiwidget);
 bool uiutilsCallbackHandler (UICallback *uicb);
 bool uiutilsCallbackLongHandler (UICallback *uicb, long value);
+bool uiutilsCallbackStrHandler (UICallback *uicb, const char *str);
 
 /* uigtkdialog.c */
 

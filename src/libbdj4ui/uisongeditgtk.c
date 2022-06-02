@@ -18,6 +18,7 @@
 #include "tagdef.h"
 #include "tmutil.h"
 #include "uisong.h"
+#include "uisongsel.h"
 #include "uisongedit.h"
 #include "ui.h"
 
@@ -32,6 +33,13 @@ typedef struct {
   UICallback  callback;
 } uisongedititem_t;
 
+enum {
+  UISONGEDIT_CB_FIRST,
+  UISONGEDIT_CB_NEXT,
+  UISONGEDIT_CB_PREVIOUS,
+  UISONGEDIT_CB_MAX,
+};
+
 typedef struct {
   UIWidget            *parentwin;
   UIWidget            vbox;
@@ -41,6 +49,7 @@ typedef struct {
   UIWidget            sgsbtime;
   UIWidget            sgscale;
   UIWidget            sgscaledisp;
+  UICallback          callbacks [UISONGEDIT_CB_MAX];
   int                 itemalloccount;
   int                 itemcount;
   uisongedititem_t    *items;
@@ -132,7 +141,8 @@ uisongeditUIFree (uisongedit_t *uisongedit)
 }
 
 UIWidget *
-uisongeditBuildUI (uisongedit_t *uisongedit, UIWidget *parentwin)
+uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
+    UIWidget *parentwin)
 {
   uisongeditgtk_t   *uiw;
   UIWidget          hbox;
@@ -153,17 +163,23 @@ uisongeditBuildUI (uisongedit_t *uisongedit, UIWidget *parentwin)
   uiWidgetAlignHorizFill (&hbox);
   uiBoxPackStart (&uiw->vbox, &hbox);
 
-  uiCreateButton (&uiwidget, NULL, _("First"), NULL);
+  uiutilsUICallbackInit (&uiw->callbacks [UISONGEDIT_CB_FIRST],
+      uisongselFirstSelection, uisongsel);
+  uiCreateButton (&uiwidget, &uiw->callbacks [UISONGEDIT_CB_FIRST],
+      _("First"), NULL);
   uiBoxPackStart (&hbox, &uiwidget);
-  uiWidgetDisable (&uiwidget);
 
-  uiCreateButton (&uiwidget, NULL, _("Next"), NULL);
+  uiutilsUICallbackInit (&uiw->callbacks [UISONGEDIT_CB_NEXT],
+      uisongselNextSelection, uisongsel);
+  uiCreateButton (&uiwidget, &uiw->callbacks [UISONGEDIT_CB_NEXT],
+      _("Next"), NULL);
   uiBoxPackStart (&hbox, &uiwidget);
-  uiWidgetDisable (&uiwidget);
 
-  uiCreateButton (&uiwidget, NULL, _("Previous"), NULL);
+  uiutilsUICallbackInit (&uiw->callbacks [UISONGEDIT_CB_PREVIOUS],
+      uisongselPreviousSelection, uisongsel);
+  uiCreateButton (&uiwidget, &uiw->callbacks [UISONGEDIT_CB_PREVIOUS],
+      _("Previous"), NULL);
   uiBoxPackStart (&hbox, &uiwidget);
-  uiWidgetDisable (&uiwidget);
 
   uiCreateButton (&uiwidget, NULL, _("Play"), NULL);
   uiBoxPackStart (&hbox, &uiwidget);
