@@ -14,21 +14,19 @@
 #include "bdj4intl.h"
 #include "bdj4ui.h"
 #include "bdjopt.h"
-#include "bdjvarsdf.h"
 #include "datafile.h"
-#include "genre.h"
 #include "log.h"
-#include "songfilter.h"
 #include "uimusicq.h"
 #include "uisongsel.h"
 #include "ui.h"
 
-static void uisongselSongfilterSetDance (uisongsel_t *uisongsel, ssize_t idx);
+static bool uisongselApplySongFilter (void *uisongsel);
+static bool uisongselDanceSelectCallback (void *udata, long danceIdx);
 
 uisongsel_t *
 uisongselInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
     dispsel_t *dispsel, nlist_t *options,
-    songfilterpb_t pbflag, dispselsel_t dispselType)
+    uisongfilter_t *uisf, dispselsel_t dispselType)
 {
   uisongsel_t   *uisongsel;
 
@@ -39,33 +37,30 @@ uisongselInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
 
   uisongsel->tag = tag;
   uisongsel->windowp = NULL;
-  uisongsel->ratings = bdjvarsdfGet (BDJVDF_RATINGS);
-  uisongsel->levels = bdjvarsdfGet (BDJVDF_LEVELS);
-  uisongsel->status = bdjvarsdfGet (BDJVDF_STATUS);
+  uisongsel->uisongfilter = uisf;
+  uisongsel->songfilter = uisfGetSongFilter (uisf);
+  uiutilsUICallbackInit (&uisongsel->sfapplycb,
+      uisongselApplySongFilter, uisongsel);
+  uisfSetApplyCallback (uisf, &uisongsel->sfapplycb);
+  uiutilsUICallbackLongInit (&uisongsel->sfdanceselcb,
+      uisongselDanceSelectCallback, uisongsel);
+  uisfSetDanceSelectCallback (uisf, &uisongsel->sfdanceselcb);
   uisongsel->conn = conn;
   uisongsel->dispsel = dispsel;
   uisongsel->musicdb = musicdb;
   uisongsel->dispselType = dispselType;
-  uiutilsUIWidgetInit (&uisongsel->filterDialog);
   uisongsel->options = options;
   uisongsel->idxStart = 0;
   uisongsel->oldIdxStart = 0;
   uisongsel->danceIdx = -1;
   uisongsel->dfilterCount = (double) dbCount (musicdb);
-  uisongsel->dfltpbflag = pbflag;
-  uisongsel->filterApplied = mstime ();
-  uisongsel->playstatusswitch = NULL;
   uiDropDownInit (&uisongsel->dancesel);
-  uiDropDownInit (&uisongsel->sortbysel);
-  uisongsel->searchentry = uiEntryInit (30, 100);
-  uiDropDownInit (&uisongsel->filtergenresel);
-  uiDropDownInit (&uisongsel->filterdancesel);
-  uisongsel->uirating = NULL;
-  uisongsel->uilevel = NULL;
-  uisongsel->filterstatussel = uiSpinboxTextInit ();
-  uisongsel->filterfavoritesel = uiSpinboxTextInit ();
-  uisongsel->songfilter = NULL;
-  uisongsel->sortopt = sortoptAlloc ();
+  uisongsel->peercount = 0;
+  uisongsel->ispeercall = false;
+  for (int i = 0; i < UISONGSEL_PEER_MAX; ++i) {
+    uisongsel->peers [i] = NULL;
+  }
+  uisongsel->newselcbdbidx = NULL;
 
   uisongselUIInit (uisongsel);
 
@@ -73,11 +68,14 @@ uisongselInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
   return uisongsel;
 }
 
-inline void
-uisongselInitializeSongFilter (uisongsel_t *uisongsel,
-    songfilter_t *songfilter)
+void
+uisongselSetPeer (uisongsel_t *uisongsel, uisongsel_t *peer)
 {
-  uisongsel->songfilter = songfilter;
+  if (uisongsel->peercount >= UISONGSEL_PEER_MAX) {
+    return;
+  }
+  uisongsel->peers [uisongsel->peercount] = peer;
+  ++uisongsel->peercount;
 }
 
 void
@@ -93,19 +91,7 @@ uisongselFree (uisongsel_t *uisongsel)
 
   if (uisongsel != NULL) {
     uiDropDownFree (&uisongsel->dancesel);
-    uiDropDownFree (&uisongsel->sortbysel);
-    uiEntryFree (uisongsel->searchentry);
-    uiDropDownFree (&uisongsel->filterdancesel);
-    uiDropDownFree (&uisongsel->filtergenresel);
-    uiratingFree (uisongsel->uirating);
-    uilevelFree (uisongsel->uilevel);
-    uiSpinboxTextFree (uisongsel->filterstatussel);
-    uiSpinboxTextFree (uisongsel->filterfavoritesel);
-    sortoptFree (uisongsel->sortopt);
     uisongselUIFree (uisongsel);
-    uiDialogDestroy (&uisongsel->filterDialog);
-    uiutilsUIWidgetInit (&uisongsel->filterDialog);
-    uiSwitchFree (uisongsel->playstatusswitch);
     free (uisongsel);
   }
 
@@ -115,9 +101,6 @@ uisongselFree (uisongsel_t *uisongsel)
 void
 uisongselMainLoop (uisongsel_t *uisongsel)
 {
-  if (songfilterIsChanged (uisongsel->songfilter, uisongsel->filterApplied)) {
-    uisongselApplySongFilter (uisongsel);
-  }
   return;
 }
 
@@ -154,53 +137,29 @@ uisongselProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
   }
 
   if (dbgdisp) {
-    logMsg (LOG_DBG, LOG_MSGS, "uisongsel (%d): rcvd: from:%d/%s route:%d/%s msg:%d/%s args:%s",
-        uisongsel->dispselType, routefrom, msgRouteDebugText (routefrom),
+    logMsg (LOG_DBG, LOG_MSGS, "uisongsel %s (%d): rcvd: from:%d/%s route:%d/%s msg:%d/%s args:%s",
+        uisongsel->tag, uisongsel->dispselType,
+        routefrom, msgRouteDebugText (routefrom),
         route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
   }
 
   return 0;
 }
 
+/* handles the dance drop-down */
+/* when a dance is selected, the song filter must be updated */
+/* call danceselectcallback to set all the peer drop-downs */
+/* will apply the filter */
 void
-uisongselFilterDanceProcess (uisongsel_t *uisongsel, ssize_t idx)
+uisongselDanceSelectionProcess (uisongsel_t *uisongsel, ssize_t danceIdx)
 {
   logProcBegin (LOG_PROC, "uisongselFilterDanceProcess");
 
-  uisongselSongfilterSetDance (uisongsel, idx);
+  uisfSetDanceIdx (uisongsel->uisongfilter, danceIdx);
+  uisongselDanceSelectCallback (uisongsel, danceIdx);
   uisongselApplySongFilter (uisongsel);
-  logProcEnd (LOG_PROC, "uisongselFilterDanceProcess", "");
-}
 
-/* internal routines */
-
-static void
-uisongselSongfilterSetDance (uisongsel_t *uisongsel, ssize_t idx)
-{
-  logProcBegin (LOG_PROC, "uisongselSongfilterSetDance");
-
-  uisongsel->danceIdx = idx;
-  if (idx >= 0) {
-    ilist_t   *danceList;
-
-    danceList = ilistAlloc ("songsel-filter-dance", LIST_ORDERED);
-    /* any value will do; only interested in the dance index at this point */
-    ilistSetNum (danceList, idx, 0, 0);
-    songfilterSetData (uisongsel->songfilter, SONG_FILTER_DANCE, danceList);
-    songfilterSetNum (uisongsel->songfilter, SONG_FILTER_DANCE_IDX, idx);
-  } else {
-    songfilterClear (uisongsel->songfilter, SONG_FILTER_DANCE);
-    songfilterClear (uisongsel->songfilter, SONG_FILTER_DANCE_IDX);
-  }
-  logProcEnd (LOG_PROC, "uisongselSongfilterSetDance", "");
-}
-
-void
-uisongselDanceSelect (uisongsel_t *uisongsel, ssize_t idx)
-{
-  logProcBegin (LOG_PROC, "uisongselDanceSelect");
-  uisongselSongfilterSetDance (uisongsel, idx);
-  logProcEnd (LOG_PROC, "uisongselDanceSelect", "");
+  logProcEnd (LOG_PROC, "uisongselDanceSelectionProcess", "");
 }
 
 void
@@ -228,169 +187,77 @@ uisongselChangeFavorite (uisongsel_t *uisongsel, dbidx_t dbidx)
   song = dbGetByIdx (uisongsel->musicdb, (ssize_t) dbidx);
   songChangeFavorite (song);
 // ### TODO song data must be saved to the database.
-  logMsg (LOG_DBG, LOG_SONGSEL, "favorite changed");
+  logMsg (LOG_DBG, LOG_SONGSEL, "%s favorite changed", uisongsel->tag);
   uisongselPopulateData (uisongsel);
 }
 
-/* song filter */
+void
+uisongselSetSelectionCallback (uisongsel_t *uisongsel, UICallback *uicbdbidx)
+{
+  if (uisongsel == NULL) {
+    return;
+  }
+  uisongsel->newselcbdbidx = uicbdbidx;
+}
 
 void
-uisongselApplySongFilter (uisongsel_t *uisongsel)
+uisongselSetPeerFlag (uisongsel_t *uisongsel, bool val)
 {
+  uisongsel->ispeercall = val;
+}
+
+/* internal routines */
+
+static bool
+uisongselApplySongFilter (void *udata)
+{
+  uisongsel_t *uisongsel = udata;
+
   uisongsel->dfilterCount = (double) songfilterProcess (
       uisongsel->songfilter, uisongsel->musicdb);
   uisongsel->idxStart = 0;
-  uisongsel->filterApplied = mstime ();
+//  uisongsel->filterApplied = mstime ();
   /* the call to cleardata() will remove any selections */
   /* afterwards, make sure something is selected */
+
   uisongselClearData (uisongsel);
   uisongselPopulateData (uisongsel);
   uisongselSetDefaultSelection (uisongsel);
+
+  /* want to apply the filter for all peers also */
+
+  if (uisongsel->ispeercall) {
+    return UICB_CONT;
+  }
+
+  for (int i = 0; i < uisongsel->peercount; ++i) {
+    uisongselSetPeerFlag (uisongsel->peers [i], true);
+    uisongselApplySongFilter (uisongsel->peers [i]);
+    uisongselSetPeerFlag (uisongsel->peers [i], false);
+  }
+
+  return UICB_CONT;
 }
 
-void
-uisongselInitFilterDisplay (uisongsel_t *uisongsel)
-{
-  nlistidx_t  idx;
-  char        *sortby;
-
-  logProcBegin (LOG_PROC, "uisongselInitFilterDisplay");
-
-  /* this is run when the filter dialog is first started, */
-  /* and after a reset */
-  /* all items need to be set, as after a reset, they need to be updated */
-  /* sort-by and dance are important, the others can be reset */
-
-  sortby = songfilterGetSort (uisongsel->songfilter);
-  uiDropDownSelectionSetStr (&uisongsel->sortbysel, sortby);
-
-  idx = uisongsel->danceIdx;
-  uiDropDownSelectionSetNum (&uisongsel->filterdancesel, idx);
-
-  uiDropDownSelectionSetNum (&uisongsel->filtergenresel, -1);
-  uiEntrySetValue (uisongsel->searchentry, "");
-  uiratingSetValue (uisongsel->uirating, -1);
-  uilevelSetValue (uisongsel->uilevel, -1);
-  uiSpinboxTextSetValue (uisongsel->filterstatussel, -1);
-  uiSpinboxTextSetValue (uisongsel->filterfavoritesel, 0);
-  logProcEnd (LOG_PROC, "uisongselInitFilterDisplay", "");
-}
-
-char *
-uisongselRatingGet (void *udata, int idx)
+/* callback for the song filter when the dance selection is changed */
+/* also used by danceselectionprocess to set the peers dance drop-down */
+/* does not apply the filter */
+static bool
+uisongselDanceSelectCallback (void *udata, long danceIdx)
 {
   uisongsel_t *uisongsel = udata;
 
-  logProcBegin (LOG_PROC, "uisongselRatingGet");
+  uiDropDownSelectionSetNum (&uisongsel->dancesel, danceIdx);
 
-  if (idx == -1) {
-    logProcEnd (LOG_PROC, "uisongselRatingGet", "all");
-    /* CONTEXT: a filter: all dance ratings are displayed in the song selection */
-    return _("All Ratings");
+  if (uisongsel->ispeercall) {
+    return UICB_CONT;
   }
-  logProcEnd (LOG_PROC, "uisongselRatingGet", "");
-  return ratingGetRating (uisongsel->ratings, idx);
-}
 
-char *
-uisongselLevelGet (void *udata, int idx)
-{
-  uisongsel_t *uisongsel = udata;
-
-  logProcBegin (LOG_PROC, "uisongselLevelGet");
-
-  if (idx == -1) {
-    logProcEnd (LOG_PROC, "uisongselLevelGet", "all");
-    /* CONTEXT: a filter: all dance levels are displayed in the song selection */
-    return _("All Levels");
+  for (int i = 0; i < uisongsel->peercount; ++i) {
+    uisongselSetPeerFlag (uisongsel->peers [i], true);
+    uisongselDanceSelectCallback (uisongsel->peers [i], danceIdx);
+    uisongselSetPeerFlag (uisongsel->peers [i], false);
   }
-  logProcEnd (LOG_PROC, "uisongselLevelGet", "");
-  return levelGetLevel (uisongsel->levels, idx);
-}
-
-char *
-uisongselStatusGet (void *udata, int idx)
-{
-  uisongsel_t *uisongsel = udata;
-
-  logProcBegin (LOG_PROC, "uisongselStatusGet");
-
-  if (idx == -1) {
-    logProcEnd (LOG_PROC, "uisongselStatusGet", "any");
-    /* CONTEXT: a filter: all statuses are displayed in the song selection */
-    return _("Any Status");
-  }
-  logProcEnd (LOG_PROC, "uisongselStatusGet", "");
-  return statusGetStatus (uisongsel->status, idx);
-}
-
-char *
-uisongselFavoriteGet (void *udata, int idx)
-{
-  uisongsel_t         *uisongsel = udata;
-  songfavoriteinfo_t  *favorite;
-
-  logProcBegin (LOG_PROC, "uisongselFavoriteGet");
-
-  favorite = songGetFavorite (idx);
-  uisongselSetFavoriteForeground (uisongsel, favorite->color);
-  logProcEnd (LOG_PROC, "uisongselFavoriteGet", "");
-  return favorite->dispStr;
-}
-
-
-void
-uisongselSortBySelect (uisongsel_t *uisongsel, ssize_t idx)
-{
-  logProcBegin (LOG_PROC, "uisongselSortBySelect");
-  if (idx >= 0) {
-    songfilterSetSort (uisongsel->songfilter,
-        uisongsel->sortbysel.strSelection);
-    nlistSetStr (uisongsel->options, SONGSEL_SORT_BY,
-        uisongsel->sortbysel.strSelection);
-  }
-  logProcEnd (LOG_PROC, "uisongselSortBySelect", "");
-}
-
-void
-uisongselCreateSortByList (uisongsel_t *uisongsel)
-{
-  slist_t           *sortoptlist;
-
-  logProcBegin (LOG_PROC, "uisongselCreateSortByList");
-
-  sortoptlist = sortoptGetList (uisongsel->sortopt);
-  uiDropDownSetList (&uisongsel->sortbysel, sortoptlist, NULL);
-  logProcEnd (LOG_PROC, "uisongselCreateSortByList", "");
-}
-
-void
-uisongselGenreSelect (uisongsel_t *uisongsel, ssize_t idx)
-{
-  logProcBegin (LOG_PROC, "uisongselGenreSelect");
-  if (songfilterCheckSelection (uisongsel->songfilter, FILTER_DISP_GENRE)) {
-    if (idx >= 0) {
-      songfilterSetNum (uisongsel->songfilter, SONG_FILTER_GENRE, idx);
-    } else {
-      songfilterClear (uisongsel->songfilter, SONG_FILTER_GENRE);
-    }
-  }
-  logProcEnd (LOG_PROC, "uisongselGenreSelect", "");
-}
-
-void
-uisongselCreateGenreList (uisongsel_t *uisongsel)
-{
-  slist_t   *genrelist;
-  genre_t   *genre;
-
-  logProcBegin (LOG_PROC, "uisongselCreateGenreList");
-
-  genre = bdjvarsdfGet (BDJVDF_GENRES);
-  genrelist = genreGetList (genre);
-  uiDropDownSetNumList (&uisongsel->filtergenresel, genrelist,
-      /* CONTEXT: a filter: all genres are displayed in the song selection */
-      _("All Genres"));
-  logProcEnd (LOG_PROC, "uisongselCreateGenreList", "");
+  return UICB_CONT;
 }
 

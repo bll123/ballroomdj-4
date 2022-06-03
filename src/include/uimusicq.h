@@ -6,6 +6,7 @@
 
 #include "conn.h"
 #include "dispsel.h"
+#include "musicdb.h"
 #include "musicq.h"
 #include "nlist.h"
 #include "uiutils.h"

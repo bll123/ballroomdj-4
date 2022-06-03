@@ -24,6 +24,7 @@
 #include "uisongsel.h"
 #include "ui.h"
 #include "uisong.h"
+#include "uisongfilter.h"
 #include "uiutils.h"
 
 enum {
@@ -71,8 +72,6 @@ typedef struct uisongselgtk {
   double            lastRowHeight;
   int               maxRows;
   nlist_t           *selectedList;
-  UICallback        *newselcbpath;
-  UICallback        *newselcbdbidx;
   GtkTreeModel      *model;
   GtkTreeIter       *iterp;
   GType             *typelist;
@@ -89,26 +88,24 @@ static void uisongselInitializeStore (uisongsel_t *uisongsel);
 static void uisongselInitializeStoreCallback (int type, void *udata);
 static void uisongselCreateRows (uisongsel_t *uisongsel);
 
-static void uisongselCheckFavChgSignal (GtkTreeView* tv, GtkTreePath* path,
-    GtkTreeViewColumn* column, gpointer udata);
+static void uisongselCheckFavChgSignal (GtkTreeView* tv, GtkTreePath* path, GtkTreeViewColumn* column, gpointer udata);
 
 /* scrolling/key event/selection change handling */
-static void uisongselProcessTreeSize (GtkWidget* w, GtkAllocation* allocation,
-    gpointer user_data);
-static gboolean uisongselScroll (GtkRange *range, GtkScrollType scrolltype,
-    gdouble value, gpointer udata);
-static gboolean uisongselScrollEvent (GtkWidget* tv, GdkEventScroll *event,
-    gpointer udata);
+static void uisongselProcessTreeSize (GtkWidget* w, GtkAllocation* allocation, gpointer user_data);
+static gboolean uisongselScroll (GtkRange *range, GtkScrollType scrolltype, gdouble value, gpointer udata);
+static gboolean uisongselScrollEvent (GtkWidget* tv, GdkEventScroll *event, gpointer udata);
 static void uisongselClearAllSelections (uisongsel_t *uisongsel);
-static void uisongselClearSelection (GtkTreeModel *model,
-    GtkTreePath *path, GtkTreeIter *iter, gpointer udata);
+static void uisongselClearSelection (GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter, gpointer udata);
 static gboolean uisongselKeyEvent (GtkWidget *w, GdkEventKey *event, gpointer udata);
 static void uisongselSelChanged (GtkTreeSelection *sel, gpointer udata);
-static void uisongselProcessSelection (GtkTreeModel *model,
-    GtkTreePath *path, GtkTreeIter *iter, gpointer udata);
+static void uisongselProcessSelection (GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter, gpointer udata);
 static void uisongselPopulateDataCallback (int col, long num, const char *str, void *udata);
 
 static void uisongselMoveSelection (void *udata, int where);
+
+static void uisongselDanceSelectHandler (GtkTreeView *tv, GtkTreePath *path,
+    GtkTreeViewColumn *column, gpointer udata);
+
 
 void
 uisongselUIInit (uisongsel_t *uisongsel)
@@ -129,8 +126,6 @@ uisongselUIInit (uisongsel_t *uisongsel)
   uiw->shiftPressed = false;
   uiw->inscroll = false;
   uiw->selectedList = nlistAlloc ("selected-list", LIST_ORDERED, NULL);
-  uiw->newselcbpath = NULL;
-  uiw->newselcbdbidx = NULL;
 
   uisongsel->uiWidgetData = uiw;
 }
@@ -223,14 +218,14 @@ uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin)
   }
 
   widget = uiComboboxCreate (parentwin->widget,
-      "", uisongselFilterDanceSignal,
+      "", uisongselDanceSelectHandler,
       &uisongsel->dancesel, uisongsel);
   /* CONTEXT: filter: all dances are selected */
   uiutilsCreateDanceList (&uisongsel->dancesel, _("All Dances"));
   uiBoxPackEndUW (&hbox, widget);
 
   uiutilsUICallbackInit (&uiw->callbacks [SONGSEL_CB_FILTER],
-      uisongselFilterDialog, uisongsel);
+      uisfDialog, uisongsel->uisongfilter);
   uiCreateButton (&uiwidget,
       &uiw->callbacks [SONGSEL_CB_FILTER],
       /* CONTEXT: a button that starts the filters (narrowing down song selections) dialog */
@@ -307,9 +302,8 @@ uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin)
   uisongselPopulateData (uisongsel);
 
   uisongselCreateRows (uisongsel);
-  logMsg (LOG_DBG, LOG_SONGSEL, "populate: initial");
+  logMsg (LOG_DBG, LOG_SONGSEL, "%s populate: initial", uisongsel->tag);
   uisongselPopulateData (uisongsel);
-//  uisongselSetDefaultSelection (uisongsel);
 
   uiDropDownSelectionSetNum (&uisongsel->dancesel, -1);
 
@@ -404,7 +398,7 @@ uisongselPopulateData (uisongsel_t *uisongsel)
         favorite = songGetFavoriteData (song);
         color = favorite->color;
         if (strcmp (color, "") == 0) {
-          uiGetForegroundColor (uiw->songselTree, tmp, sizeof (tmp));
+          uiGetForegroundColorW (uiw->songselTree, tmp, sizeof (tmp));
           color = tmp;
         }
 
@@ -431,22 +425,6 @@ uisongselPopulateData (uisongsel_t *uisongsel)
   logProcEnd (LOG_PROC, "uisongselPopulateData", "");
 }
 
-void
-uisongselSetFavoriteForeground (uisongsel_t *uisongsel, char *color)
-{
-  uisongselgtk_t      *uiw;
-  char                tmp [40];
-
-  uiw = uisongsel->uiWidgetData;
-
-  if (strcmp (color, "") != 0) {
-    uiSpinboxSetColor (uisongsel->filterfavoritesel, color);
-  } else {
-    uiGetForegroundColor (uiw->songselTree, tmp, sizeof (tmp));
-    uiSpinboxSetColor (uisongsel->filterfavoritesel, tmp);
-  }
-}
-
 bool
 uisongselQueueProcessSelectCallback (void *udata)
 {
@@ -459,23 +437,6 @@ uisongselQueueProcessSelectCallback (void *udata)
   /* don't clear the selected list or the displayed selections */
   /* it's confusing */
   return UICB_CONT;
-}
-
-void
-uisongselSetSelectionCallback (uisongsel_t *uisongsel,
-    UICallback *uicbpath, UICallback *uicbdbidx)
-{
-  uisongselgtk_t  * uiw;
-
-  if (uisongsel == NULL) {
-    return;
-  }
-  if (uisongsel->uiWidgetData == NULL) {
-    return;
-  }
-  uiw = uisongsel->uiWidgetData;
-  uiw->newselcbpath = uicbpath;
-  uiw->newselcbdbidx = uicbdbidx;
 }
 
 void
@@ -507,8 +468,6 @@ void
 uisongselSetSelection (uisongsel_t *uisongsel, const char *pathstr)
 {
   uisongselgtk_t  *uiw;
-//  int             count;
-//  GtkTreeModel    *model;
   GtkTreePath     *path;
 
   uiw = uisongsel->uiWidgetData;
@@ -516,13 +475,27 @@ uisongselSetSelection (uisongsel_t *uisongsel, const char *pathstr)
   if (uiw->sel == NULL) {
     return;
   }
+  if (pathstr == NULL) {
+    return;
+  }
 
   uisongselClearAllSelections (uisongsel);
-//  model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiw->songselTree));
-//  gtk_tree_model_get_iter_first (model, &iter);
   path = gtk_tree_path_new_from_string (pathstr);
   gtk_tree_selection_select_path (uiw->sel, path);
   gtk_tree_path_free (path);
+}
+
+void
+uisongselScrollSelection (void *udata, long idxStart)
+{
+  uisongsel_t *uisongsel = udata;
+  uisongselgtk_t  *uiw;
+
+  uisongsel->idxStart = idxStart;
+  uiw = uisongsel->uiWidgetData;
+
+  uisongselScroll (GTK_RANGE (uiw->songselScrollbar), GTK_SCROLL_JUMP,
+      (double) uisongsel->idxStart, uisongsel);
 }
 
 bool
@@ -584,6 +557,18 @@ uisongselQueueProcessHandler (void *udata, musicqidx_t mqidx)
     uisongselQueueProcess (uisongsel, dbidx, mqidx);
   }
   logProcEnd (LOG_PROC, "uisongselQueueProcessHandler", "");
+  return;
+}
+
+static void
+uisongselDanceSelectHandler (GtkTreeView *tv, GtkTreePath *path,
+    GtkTreeViewColumn *column, gpointer udata)
+{
+  uisongsel_t *uisongsel = udata;
+  long        danceIdx;
+
+  danceIdx = uiDropDownSelectionGet (&uisongsel->dancesel, path);
+  uisongselDanceSelectionProcess (uisongsel, danceIdx);
   return;
 }
 
@@ -729,7 +714,7 @@ uisongselProcessTreeSize (GtkWidget* w, GtkAllocation* allocation,
 
     uiw->maxRows = (int) (ps / uiw->lastRowHeight);
     ++uiw->maxRows;
-    logMsg (LOG_DBG, LOG_IMPORTANT, "max-rows:%d", uiw->maxRows);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "%s max-rows:%d", uisongsel->tag, uiw->maxRows);
 
     adjustment = gtk_range_get_adjustment (GTK_RANGE (uiw->songselScrollbar));
     /* the step increment does not work correctly with smooth scrolling */
@@ -740,7 +725,7 @@ uisongselProcessTreeSize (GtkWidget* w, GtkAllocation* allocation,
 
     uiw->lastTreeSize = allocation->height;
 
-    logMsg (LOG_DBG, LOG_SONGSEL, "populate: tree size change");
+    logMsg (LOG_DBG, LOG_SONGSEL, "%s populate: tree size change", uisongsel->tag);
     uisongselPopulateData (uisongsel);
 
     uisongselScroll (GTK_RANGE (uiw->songselScrollbar), GTK_SCROLL_JUMP,
@@ -782,7 +767,7 @@ uisongselScroll (GtkRange *range, GtkScrollType scrolltype,
   /* clear the current selections */
   uisongselClearAllSelections (uisongsel);
 
-  logMsg (LOG_DBG, LOG_SONGSEL, "populate: scroll");
+  logMsg (LOG_DBG, LOG_SONGSEL, "%s populate: scroll", uisongsel->tag);
   uisongselPopulateData (uisongsel);
   uisongsel->oldIdxStart = uisongsel->idxStart;
 
@@ -961,11 +946,20 @@ uisongselProcessSelection (GtkTreeModel *model,
   gtk_tree_model_get (model, iter, SONGSEL_COL_DBIDX, &dbidx, -1);
   nlistSetNum (uiw->selectedList, idx, dbidx);
 
-  if (uiw->newselcbpath != NULL) {
+  if (uisongsel->ispeercall) {
+    return;
+  }
+
+  for (int i = 0; i < uisongsel->peercount; ++i) {
+    uisongselSetPeerFlag (uisongsel->peers [i], true);
+    uisongselScrollSelection (uisongsel->peers [i], uisongsel->idxStart);
     pathstr = gtk_tree_path_to_string (path);
-    uiutilsCallbackStrHandler (uiw->newselcbpath, pathstr);
-    uiutilsCallbackLongHandler (uiw->newselcbdbidx, dbidx);
+    uisongselSetSelection (uisongsel->peers [i], pathstr);
     free (pathstr);
+    if (uisongsel->newselcbdbidx != NULL) {
+      uiutilsCallbackLongHandler (uisongsel->newselcbdbidx, dbidx);
+    }
+    uisongselSetPeerFlag (uisongsel->peers [i], false);
   }
 }
 

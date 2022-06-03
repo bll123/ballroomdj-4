@@ -275,7 +275,9 @@ void  uiCleanup (void);
 void  uiSetCss (GtkWidget *w, char *style);
 void  uiSetUIFont (char *uifont);
 void  uiInitUILog (void);
-void  uiGetForegroundColor (GtkWidget *widget, char *buff, size_t sz);
+void  uiGetForegroundColor (UIWidget *uiwidget, char *buff, size_t sz);
+/* will be removed at a later date */
+void  uiGetForegroundColorW (GtkWidget *widget, char *buff, size_t sz);
 
 /* uigtkwidget.c */
 /* widget interface */

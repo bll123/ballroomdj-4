@@ -18,79 +18,62 @@
 #include "status.h"
 #include "uilevel.h"
 #include "uirating.h"
+#include "uisongfilter.h"
 #include "uiutils.h"
 
+typedef struct uisongsel uisongsel_t;
 typedef struct uisongselgtk uisongselgtk_t;
 
-typedef struct {
+enum {
+  UISONGSEL_PEER_MAX = 2,
+};
+
+typedef struct uisongsel {
   const char        *tag;
   conn_t            *conn;
   ssize_t           idxStart;
   ssize_t           oldIdxStart;
   ilistidx_t        danceIdx;
-  songfilter_t      *songfilter;
-  rating_t          *ratings;
-  level_t           *levels;
-  status_t          *status;
   nlist_t           *options;
-  sortopt_t         *sortopt;
   dispsel_t         *dispsel;
   musicdb_t         *musicdb;
   dispselsel_t      dispselType;
   double            dfilterCount;
   UIWidget          *windowp;
+  /* peers */
+  int               peercount;
+  uisongsel_t       *peers [UISONGSEL_PEER_MAX];
+  bool              ispeercall;
   /* filter data */
-  UIWidget          filterDialog;
-  UICallback        filtercb;
-  songfilterpb_t    dfltpbflag;
-  uidropdown_t      sortbysel;
-  uidropdown_t      filterdancesel;
-  uidropdown_t      filtergenresel;
-  uientry_t         *searchentry;
-  uirating_t        *uirating;
-  uilevel_t         *uilevel;
-  uispinbox_t       *filterstatussel;
-  uispinbox_t       *filterfavoritesel;
-  time_t            filterApplied;
-  uiswitch_t        *playstatusswitch;
+  uisongfilter_t    *uisongfilter;
+  UICallback        sfapplycb;
+  UICallback        sfdanceselcb;
+  songfilter_t      *songfilter;
   /* song selection tab */
   uidropdown_t dancesel;
   /* widget data */
   uisongselgtk_t    *uiWidgetData;
+  /* song editor */
+  UICallback        *newselcbdbidx;
 } uisongsel_t;
 
 /* uisongsel.c */
 uisongsel_t * uisongselInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
     dispsel_t *dispsel, nlist_t *opts,
-    songfilterpb_t pbflag, dispselsel_t dispselType);
-void  uisongselInitializeSongFilter (uisongsel_t *uisongsel,
-    songfilter_t *songfilter);
+    uisongfilter_t *uisf, dispselsel_t dispselType);
+void  uisongselSetPeer (uisongsel_t *uisongsel, uisongsel_t *peer);
+void  uisongselInitializeSongFilter (uisongsel_t *uisongsel, songfilter_t *songfilter);
 void  uisongselSetDatabase (uisongsel_t *uisongsel, musicdb_t *musicdb);
 void  uisongselFree (uisongsel_t *uisongsel);
 void  uisongselMainLoop (uisongsel_t *uisongsel);
-int   uisongselProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
-    bdjmsgmsg_t msg, char *args, void *udata);
-void  uisongselDanceSelect (uisongsel_t *uisongsel, ssize_t idx);
+int   uisongselProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route, bdjmsgmsg_t msg, char *args, void *udata);
 void  uisongselQueueProcess (uisongsel_t *uisongsel, dbidx_t dbidx, musicqidx_t mqidx);
 void  uisongselChangeFavorite (uisongsel_t *uisongsel, dbidx_t dbidx);
+void  uisongselSetSelectionCallback (uisongsel_t *uisongsel, UICallback *uicbdbidx);
+void  uisongselSetPeerFlag (uisongsel_t *uisongsel, bool val);
 /* song filter */
-void  uisongselApplySongFilter (uisongsel_t *uisongsel);
-void  uisongselInitFilterDisplay (uisongsel_t *uisongsel);
-char  * uisongselRatingGet (void *udata, int idx);
-char  * uisongselLevelGet (void *udata, int idx);
-char  * uisongselStatusGet (void *udata, int idx);
-char  * uisongselFavoriteGet (void *udata, int idx);
-void  uisongselSortBySelect (uisongsel_t *uisongsel, ssize_t idx);
-void  uisongselCreateSortByList (uisongsel_t *uisongsel);
-void  uisongselGenreSelect (uisongsel_t *uisongsel, ssize_t idx);
-void  uisongselCreateGenreList (uisongsel_t *uisongsel);
-void  uisongselFilterDanceProcess (uisongsel_t *uisongsel, ssize_t idx);
-void  uisongselSetSelectionCallback (uisongsel_t *uisongsel, UICallback *uicbpath, UICallback *uicbdbidx);
+void  uisongselDanceSelectionProcess (uisongsel_t *uisongsel, ssize_t idx);
 
-/* uisongselfilter.c */
-bool uisongselFilterDialog (void *udata);
-void uisongselFilterDanceSignal (GtkTreeView *tv, GtkTreePath *path,
-    GtkTreeViewColumn *column, gpointer udata);
 
 /* uisongselgtk.c */
 void  uisongselUIInit (uisongsel_t *uisongsel);
@@ -103,6 +86,7 @@ void  uisongselSetFavoriteForeground (uisongsel_t *uisongsel, char *color);
 bool  uisongselQueueProcessSelectCallback (void *udata);
 void  uisongselSetDefaultSelection (uisongsel_t *uisongsel);
 void  uisongselSetSelection (uisongsel_t *uisongsel, const char *pathstr);
+void  uisongselScrollSelection (void *udata, long idxStart);
 bool  uisongselNextSelection (void *udata);
 bool  uisongselPreviousSelection (void *udata);
 bool  uisongselFirstSelection (void *udata);

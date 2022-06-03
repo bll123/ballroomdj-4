@@ -38,6 +38,7 @@
 #include "ui.h"
 #include "uimusicq.h"
 #include "uiplayer.h"
+#include "uisongfilter.h"
 #include "uisongsel.h"
 #include "uiutils.h"
 
@@ -64,7 +65,7 @@ typedef struct {
   mstime_t        marqueeFontSizeCheck;
   int             stopwaitcount;
   mstime_t        clockCheck;
-  songfilter_t    *songfilter;
+  uisongfilter_t  *uisongfilter;
   /* notebook */
   UIWidget        notebook;
   UICallback      nbcb;
@@ -115,6 +116,7 @@ static bool     pluiStoppingCallback (void *udata, programstate_t programState);
 static bool     pluiStopWaitCallback (void *udata, programstate_t programState);
 static bool     pluiClosingCallback (void *udata, programstate_t programState);
 static void     pluiBuildUI (playerui_t *plui);
+static void     pluiInitializeUI (playerui_t *plui);
 static int      pluiMainLoop  (void *tplui);
 static void     pluiClock (playerui_t *plui);
 static int      pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
@@ -138,7 +140,6 @@ static bool     pluiMarqueeFontSizeDialogResponse (void *udata, long responseid)
 static void     pluiMarqueeFontSizeChg (GtkSpinButton *fb, gpointer udata);
 static void     pluisetMarqueeIsMaximized (playerui_t *plui, char *args);
 static void     pluisetMarqueeFontSizes (playerui_t *plui, char *args);
-static void     pluiInitializeSongFilter (playerui_t *plui, nlist_t *options);
 
 
 static int gKillReceived = 0;
@@ -174,7 +175,7 @@ main (int argc, char *argv[])
   mstimeset (&plui.clockCheck, 0);
   plui.stopwaitcount = 0;
   plui.nbtabid = uiutilsNotebookIDInit ();
-  plui.songfilter = NULL;
+  plui.uisongfilter = NULL;
   plui.uibuilt = false;
   plui.fontszdialogcreated = false;
   plui.currpage = 0;
@@ -209,17 +210,6 @@ main (int argc, char *argv[])
     nlistSetNum (plui.options, PLUI_SIZE_Y, 600);
     nlistSetStr (plui.options, SONGSEL_SORT_BY, "TITLE");
   }
-
-  plui.songfilter = songfilterAlloc ();
-  pluiInitializeSongFilter (&plui, plui.options);
-
-  plui.uiplayer = uiplayerInit (plui.progstate, plui.conn, plui.musicdb);
-  plui.uimusicq = uimusicqInit (plui.conn, plui.musicdb,
-      plui.dispsel, UIMUSICQ_FLAGS_NONE, DISP_SEL_MUSICQ);
-  plui.uisongsel = uisongselInit ("plui-req", plui.conn, plui.musicdb,
-      plui.dispsel, plui.options,
-      SONG_FILTER_FOR_PLAYBACK, DISP_SEL_REQUEST);
-  uisongselInitializeSongFilter (plui.uisongsel, plui.songfilter);
 
   /* register these after calling the sub-window initialization */
   /* then these will be run last, after the other closing callbacks */
@@ -299,8 +289,8 @@ pluiClosingCallback (void *udata, programstate_t programState)
   if (plui->nbtabid != NULL) {
     uiutilsNotebookIDFree (plui->nbtabid);
   }
-  if (plui->songfilter != NULL) {
-    songfilterFree (plui->songfilter);
+  if (plui->uisongfilter != NULL) {
+    uisfFree (plui->uisongfilter);
   }
   if (plui->optiondf != NULL) {
     datafileFree (plui->optiondf);
@@ -350,6 +340,8 @@ pluiBuildUI (playerui_t *plui)
   uiutilsUICallbackInit (&plui->closecb, pluiCloseWin, plui);
   uiCreateMainWindow (&plui->window, &plui->closecb,
       bdjoptGetStr (OPT_P_PROFILENAME), imgbuff);
+
+  pluiInitializeUI (plui);
 
   uiCreateVertBox (&plui->vbox);
   uiBoxPackInWindow (&plui->window, &plui->vbox);
@@ -465,6 +457,20 @@ pluiBuildUI (playerui_t *plui)
   plui->uibuilt = true;
   logProcEnd (LOG_PROC, "pluiBuildUI", "");
 }
+
+static void
+pluiInitializeUI (playerui_t *plui)
+{
+  plui->uiplayer = uiplayerInit (plui->progstate, plui->conn, plui->musicdb);
+  plui->uimusicq = uimusicqInit (plui->conn, plui->musicdb,
+      plui->dispsel, UIMUSICQ_FLAGS_NONE, DISP_SEL_MUSICQ);
+  plui->uisongfilter = uisfInit (&plui->window, plui->options,
+      SONG_FILTER_FOR_PLAYBACK);
+  plui->uisongsel = uisongselInit ("plui-req", plui->conn, plui->musicdb,
+      plui->dispsel, plui->options,
+      plui->uisongfilter, DISP_SEL_REQUEST);
+}
+
 
 static int
 pluiMainLoop (void *tplui)
@@ -1018,9 +1024,3 @@ pluisetMarqueeFontSizes (playerui_t *plui, char *args)
   plui->marqueeFontSizeFS = atoi (p);
 }
 
-static void
-pluiInitializeSongFilter (playerui_t *plui, nlist_t *options)
-{
-  songfilterSetSort (plui->songfilter,
-      nlistGetStr (options, SONGSEL_SORT_BY));
-}

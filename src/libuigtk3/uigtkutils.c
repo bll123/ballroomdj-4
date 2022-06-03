@@ -134,7 +134,21 @@ uiInitUILog (void)
 }
 
 void
-uiGetForegroundColor (GtkWidget *widget, char *buff, size_t sz)
+uiGetForegroundColor (UIWidget *uiwidget, char *buff, size_t sz)
+{
+  GdkRGBA         gcolor;
+  GtkStyleContext *context;
+
+  context = gtk_widget_get_style_context (uiwidget->widget);
+  gtk_style_context_get_color (context, GTK_STATE_FLAG_NORMAL, &gcolor);
+  snprintf (buff, sz, "#%02x%02x%02x",
+      (int) round (gcolor.red * 255.0),
+      (int) round (gcolor.green * 255.0),
+      (int) round (gcolor.blue * 255.0));
+}
+
+void
+uiGetForegroundColorW (GtkWidget *widget, char *buff, size_t sz)
 {
   GdkRGBA         gcolor;
   GtkStyleContext *context;

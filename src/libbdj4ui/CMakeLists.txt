@@ -19,8 +19,8 @@ add_library (libbdj4ui SHARED
   uisong.c
   uisongedit.c
   uisongeditgtk.c
+  uisongfilter.c
   uisongsel.c
-  uisongselfilter.c
   uisongselgtk.c
   uiutils.c
 )
