@@ -585,10 +585,10 @@ uisfResponseHandler (void *udata, long responseid)
     case RESPONSE_RESET: {
       songfilterReset (uisf->songfilter);
       uisf->danceIdx = -1;
+      uiDropDownSelectionSetNum (&uisf->filterdancesel, uisf->danceIdx);
       if (uisf->danceselcb != NULL) {
         uiutilsCallbackLongHandler (uisf->danceselcb, uisf->danceIdx);
       }
-      uiDropDownSelectionSetNum (&uisf->filterdancesel, uisf->danceIdx);
       uisfInitDisplay (uisf);
       if (songfilterCheckSelection (uisf->songfilter, FILTER_DISP_STATUSPLAYABLE)) {
         uiSwitchSetValue (uisf->playstatusswitch, uisf->dfltpbflag);
@@ -702,13 +702,14 @@ static void
 uisfDanceSelectHandler (GtkTreeView *tv, GtkTreePath *path,
     GtkTreeViewColumn *column, gpointer udata)
 {
-  uisongfilter_t     *uisf = udata;
-  long            idx;
+  uisongfilter_t  *uisf = udata;
+  long            danceIdx;
 
-  idx = uiDropDownSelectionGet (&uisf->filterdancesel, path);
-  uisf->danceIdx = idx;
+  danceIdx = uiDropDownSelectionGet (&uisf->filterdancesel, path);
+  uisf->danceIdx = danceIdx;
+  uisfSetDanceIdx (uisf, danceIdx);
   if (uisf->danceselcb != NULL) {
-    uiutilsCallbackLongHandler (uisf->danceselcb, idx);
+    uiutilsCallbackLongHandler (uisf->danceselcb, danceIdx);
   }
 }
 
