@@ -22,6 +22,11 @@ foreach ($darr as $line) {
   if (preg_match ("/^===END/", $line)) {
     $fver = $data['-version'] . '-' . $data['-releaselevel'] .
         '-' . $data['-builddate'];
+    if (! isset ($adata[$fver]['-new'])) {
+      foreach (array ('-new', '-reinstall', '-update', '-convert') as $tkey) {
+        $adata[$fver][$tkey] = 0;
+      }
+    }
     $adata[$fver]['-country'] = geoip_country_code_by_name ($data['-ip']);
     $adata[$fver]['-osdisp'] = $data['-osdisp'];
     $adata[$fver]['-date'] = $data['-date'];
@@ -30,15 +35,15 @@ foreach ($darr as $line) {
     $adata[$fver]['-systemlocale'] = $data['-systemlocale'];
     $adata[$fver]['-oldversion'] = $data['-oldversion'];
     $adata[$fver]['-bdj3version'] = $data['-bdj3version'];
-    $adata[$fver]['-new'] = $data['-new'];
-    if (isset($data['-overwrite'])) {
-      $adata[$fver]['-reinstall'] = $data['-overwrite'];
+    $adata[$fver]['-new'] += $data['-new'];
+    if (isset ($data['-overwrite'])) {
+      $adata[$fver]['-reinstall'] += $data['-overwrite'];
     }
-    if (isset($data['-reinstall'])) {
-      $adata[$fver]['-reinstall'] = $data['-reinstall'];
+    if (isset ($data['-reinstall'])) {
+      $adata[$fver]['-reinstall'] += $data['-reinstall'];
     }
-    $adata[$fver]['-update'] = $data['-update'];
-    $adata[$fver]['-convert'] = $data['-convert'];
+    $adata[$fver]['-update'] += $data['-update'];
+    $adata[$fver]['-convert'] += $data['-convert'];
     $in = 0;
   }
   if ($in == 1) {
@@ -63,17 +68,19 @@ uksort ($adata, 'acomp');
 $gdata = array ();
 
 foreach ($adata as $vkey => $tdata) {
-  if (empty ($gdata[$vkey])) {
+  if (! isset ($gdata[$vkey])) {
     $gdata[$vkey]['-new'] = 0;
     $gdata[$vkey]['-reinstall'] = 0;
     $gdata[$vkey]['-update'] = 0;
     $gdata[$vkey]['-convert'] = 0;
     $gdata[$vkey]['-country'] = array ();
   }
-  if (empty ($gdata[$vkey]['-country'][$tdata[-country]])) {
+  if (! isset ($gdata[$vkey]['-country'][$tdata[-country]])) {
     $gdata[$vkey]['-country'][$tdata['-country']] = 0;
   }
-  $gdata[$vkey]['-country'][$tdata['-country']] += 1;
+  $gdata[$vkey]['-country'][$tdata['-country']] += $tdata['-new'];
+  $gdata[$vkey]['-country'][$tdata['-country']] += $tdata['-reinstall'];
+  $gdata[$vkey]['-country'][$tdata['-country']] += $tdata['-update'];
   $gdata[$vkey]['-new'] += $tdata['-new'];
   $gdata[$vkey]['-reinstall'] += $tdata['-reinstall'];
   $gdata[$vkey]['-update'] += $tdata['-update'];

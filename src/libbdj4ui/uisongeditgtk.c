@@ -171,18 +171,18 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
       _("First"), NULL);
   uiBoxPackStart (&hbox, &uiwidget);
 
-  uiutilsUICallbackInit (&uiw->callbacks [UISONGEDIT_CB_NEXT],
-      uisongselNextSelection, uisongsel);
-  uiCreateButton (&uiwidget, &uiw->callbacks [UISONGEDIT_CB_NEXT],
-      /* CONTEXT: song editor : next song */
-      _("Next"), NULL);
-  uiBoxPackStart (&hbox, &uiwidget);
-
   uiutilsUICallbackInit (&uiw->callbacks [UISONGEDIT_CB_PREVIOUS],
       uisongselPreviousSelection, uisongsel);
   uiCreateButton (&uiwidget, &uiw->callbacks [UISONGEDIT_CB_PREVIOUS],
       /* CONTEXT: song editor : previous song */
       _("Previous"), NULL);
+  uiBoxPackStart (&hbox, &uiwidget);
+
+  uiutilsUICallbackInit (&uiw->callbacks [UISONGEDIT_CB_NEXT],
+      uisongselNextSelection, uisongsel);
+  uiCreateButton (&uiwidget, &uiw->callbacks [UISONGEDIT_CB_NEXT],
+      /* CONTEXT: song editor : next song */
+      _("Next"), NULL);
   uiBoxPackStart (&hbox, &uiwidget);
 
   uiutilsUICallbackInit (&uiw->callbacks [UISONGEDIT_CB_PLAY],

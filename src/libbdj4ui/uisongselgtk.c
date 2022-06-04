@@ -183,37 +183,33 @@ uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin)
   }
 
   if (uisongsel->dispselType == DISP_SEL_SONGSEL ||
-      uisongsel->dispselType == DISP_SEL_EZSONGSEL ||
-      uisongsel->dispselType == DISP_SEL_REQUEST ||
-      uisongsel->dispselType == DISP_SEL_MM) {
-    if (uisongsel->dispselType == DISP_SEL_REQUEST) {
-      /* CONTEXT: queue a song to be played */
-      strlcpy (tbuff, _("Queue"), sizeof (tbuff));
-      uiutilsUICallbackInit (&uiw->callbacks [SONGSEL_CB_QUEUE],
-          uisongselQueueProcessQueueCallback, uisongsel);
-      uiCreateButton (&uiwidget,
-          &uiw->callbacks [SONGSEL_CB_QUEUE], tbuff, NULL);
-    }
-    if (uisongsel->dispselType == DISP_SEL_SONGSEL ||
-        uisongsel->dispselType == DISP_SEL_EZSONGSEL ||
-        uisongsel->dispselType == DISP_SEL_MM) {
-      /* CONTEXT: play the selected songs */
-      strlcpy (tbuff, _("Play"), sizeof (tbuff));
-      uiutilsUICallbackInit (&uiw->callbacks [SONGSEL_CB_PLAY],
-          uisongselQueueProcessPlayCallback, uisongsel);
-      uiCreateButton (&uiwidget,
-          &uiw->callbacks [SONGSEL_CB_PLAY], tbuff, NULL);
-    }
+      uisongsel->dispselType == DISP_SEL_EZSONGSEL) {
+    uiutilsUICallbackInit (&uiw->callbacks [SONGSEL_CB_EDIT],
+        uisongselEditCallback, uisongsel);
+    uiCreateButton (&uiwidget, &uiw->callbacks [SONGSEL_CB_EDIT],
+        /* CONTEXT: edit the selected song */
+        _("Edit"), "button_edit");
     uiBoxPackStart (&hbox, &uiwidget);
   }
 
+  if (uisongsel->dispselType == DISP_SEL_REQUEST) {
+    /* CONTEXT: queue a song to be played */
+    strlcpy (tbuff, _("Queue"), sizeof (tbuff));
+    uiutilsUICallbackInit (&uiw->callbacks [SONGSEL_CB_QUEUE],
+        uisongselQueueProcessQueueCallback, uisongsel);
+    uiCreateButton (&uiwidget,
+        &uiw->callbacks [SONGSEL_CB_QUEUE], tbuff, NULL);
+    uiBoxPackStart (&hbox, &uiwidget);
+  }
   if (uisongsel->dispselType == DISP_SEL_SONGSEL ||
-      uisongsel->dispselType == DISP_SEL_EZSONGSEL) {
-    /* CONTEXT: edit the selected song */
-    strlcpy (tbuff, _("Edit"), sizeof (tbuff));
-    uiutilsUICallbackInit (&uiw->callbacks [SONGSEL_CB_EDIT],
-        uisongselEditCallback, uisongsel);
-    uiCreateButton (&uiwidget, &uiw->callbacks [SONGSEL_CB_EDIT], tbuff, NULL);
+      uisongsel->dispselType == DISP_SEL_EZSONGSEL ||
+      uisongsel->dispselType == DISP_SEL_MM) {
+    /* CONTEXT: play the selected songs */
+    strlcpy (tbuff, _("Play"), sizeof (tbuff));
+    uiutilsUICallbackInit (&uiw->callbacks [SONGSEL_CB_PLAY],
+        uisongselQueueProcessPlayCallback, uisongsel);
+    uiCreateButton (&uiwidget,
+        &uiw->callbacks [SONGSEL_CB_PLAY], tbuff, NULL);
     uiBoxPackStart (&hbox, &uiwidget);
   }
 

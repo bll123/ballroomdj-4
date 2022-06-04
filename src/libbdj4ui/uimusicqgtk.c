@@ -48,6 +48,7 @@ static void   uimusicqSetMusicqDisplay (uimusicq_t *uimusicq,
 static void   uimusicqSetMusicqDisplayCallback (int col, long num, const char *str, void *udata);
 static int    uimusicqIterateCallback (GtkTreeModel *model,
     GtkTreePath *path, GtkTreeIter *iter, gpointer udata);
+static bool   uimusicqEditCallback (void *udata);
 
 enum {
   UIMUSICQ_CB_MOVE_TOP,
@@ -59,6 +60,7 @@ enum {
   UIMUSICQ_CB_AUDIO_REMOVE,
   UIMUSICQ_CB_REQ_EXTERNAL,
   UIMUSICQ_CB_CLEAR_QUEUE,
+  UIMUSICQ_CB_EDIT,
   UIMUSICQ_CB_MAX,
 };
 
@@ -207,6 +209,15 @@ uimusicqBuildUI (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
     uiBoxPackStart (&hbox, &uiwidget);
   }
 
+  if ((uimusicq->uimusicqflags & UIMUSICQ_FLAGS_NO_QUEUE) == UIMUSICQ_FLAGS_NO_QUEUE) {
+    uiutilsUICallbackInit (&uiw->callback [UIMUSICQ_CB_EDIT],
+        uimusicqEditCallback, uimusicq);
+    uiCreateButton (&uiwidget, &uiw->callback [UIMUSICQ_CB_EDIT],
+        /* CONTEXT: edit the selected song */
+        _("Edit"), "button_edit");
+    uiBoxPackStart (&hbox, &uiwidget);
+  }
+
   if ((uimusicq->uimusicqflags & UIMUSICQ_FLAGS_NO_QUEUE) != UIMUSICQ_FLAGS_NO_QUEUE) {
     uiutilsUICallbackInit (
         &uiw->callback [UIMUSICQ_CB_REQ_EXTERNAL],
@@ -217,7 +228,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
         _("Request External"), NULL);
     uiWidgetDisable (&uiwidget);
     uiBoxPackEnd (&hbox, &uiwidget);
-  // ### TODO create code to handle the request external button
+// ### TODO create code to handle the request external button
 
     widget = uiDropDownCreate (parentwin,
         /* CONTEXT: button: queue a playlist for playback */
@@ -669,3 +680,12 @@ uimusicqIterateCallback (GtkTreeModel *model,
   uimusicq->iteratecb (uimusicq, dbidx);
   return FALSE;
 }
+
+static bool
+uimusicqEditCallback (void *udata)
+{
+//  uimusicq_t  *uimusicq = udata;
+
+  return UICB_CONT;
+}
+
