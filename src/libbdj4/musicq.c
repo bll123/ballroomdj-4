@@ -161,7 +161,7 @@ musicqInsert (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx, song_t *song
   queueInsert (musicq->q [musicqidx], idx, musicqitem);
   musicqRenumber (musicq, musicqidx, olddispidx);
   logProcEnd (LOG_PROC, "musicqInsert", "");
-  return (idx - 1);
+  return idx;
 }
 
 song_t *

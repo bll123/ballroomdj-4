@@ -52,6 +52,22 @@ uiutilsCallbackLongHandler (UICallback *uicb, long value)
 }
 
 bool
+uiutilsCallbackLongIntHandler (UICallback *uicb, long lval, int ival)
+{
+  bool  rc = false;
+
+  if (uicb == NULL) {
+    return 0;
+  }
+  if (uicb->longintcb == NULL) {
+    return 0;
+  }
+
+  rc = uicb->longintcb (uicb->udata, lval, ival);
+  return rc;
+}
+
+bool
 uiutilsCallbackStrHandler (UICallback *uicb, const char *str)
 {
   bool  rc = false;

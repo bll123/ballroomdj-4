@@ -149,6 +149,17 @@ uiutilsUICallbackLongInit (UICallback *uicb, UILongCallbackFunc cb, void *udata)
 }
 
 void
+uiutilsUICallbackLongIntInit (UICallback *uicb, UILongIntCallbackFunc cb, void *udata)
+{
+  if (uicb == NULL) {
+    return;
+  }
+
+  uicb->longintcb = cb;
+  uicb->udata = udata;
+}
+
+void
 uiutilsUICallbackStrInit (UICallback *uicb, UIStrCallbackFunc cb, void *udata)
 {
   if (uicb == NULL) {

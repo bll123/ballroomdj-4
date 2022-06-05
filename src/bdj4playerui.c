@@ -47,7 +47,12 @@ enum {
   PLUI_MENU_CB_EXTRA_QUEUE,
   PLUI_MENU_CB_SWITCH_QUEUE,
   PLUI_MENU_CB_MQ_FONT_SZ,
-  PLUI_MENU_CB_MAX,
+  PLUI_CB_NOTEBOOK,
+  PLUI_CB_CLOSE,
+  PLUI_CB_PLAYBACK_QUEUE,
+  PLUI_CB_FONT_SIZE,
+  PLUI_CB_QUEUE_SL,
+  PLUI_CB_MAX,
 };
 
 typedef struct {
@@ -68,21 +73,17 @@ typedef struct {
   uisongfilter_t  *uisongfilter;
   /* notebook */
   UIWidget        notebook;
-  UICallback      nbcb;
   uiutilsnbtabid_t *nbtabid;
   int             currpage;
   UIWidget        window;
-  UICallback      closecb;
   UIWidget        vbox;
-  UICallback      menucb [PLUI_MENU_CB_MAX];
+  UICallback      callbacks [PLUI_CB_MAX];
   UIWidget        clock;
   UIWidget        musicqImage [MUSICQ_MAX];
   UIWidget        setPlaybackButton;
-  UICallback      setpbqcb;
   UIWidget        ledoffPixbuf;
   UIWidget        ledonPixbuf;
   UIWidget        marqueeFontSizeDialog;
-  UICallback      fontszcb;
   UIWidget        marqueeSpinBox;
   /* ui major elements */
   uiplayer_t      *uiplayer;
@@ -127,6 +128,7 @@ static void     pluiSigHandler (int sig);
 static bool     pluiSwitchPage (void *udata, long pagenum);
 static bool     pluiProcessSetPlaybackQueue (void *udata);
 static void     pluiSetPlaybackQueue (playerui_t *plui, musicqidx_t newqueue);
+static void     pluiSetManageQueue (playerui_t *plui, musicqidx_t newqueue);
 /* option handlers */
 static bool     pluiTogglePlayWhenQueued (void *udata);
 static void     pluiSetPlayWhenQueued (playerui_t *plui);
@@ -140,7 +142,7 @@ static bool     pluiMarqueeFontSizeDialogResponse (void *udata, long responseid)
 static void     pluiMarqueeFontSizeChg (GtkSpinButton *fb, gpointer udata);
 static void     pluisetMarqueeIsMaximized (playerui_t *plui, char *args);
 static void     pluisetMarqueeFontSizes (playerui_t *plui, char *args);
-
+static bool     pluiQueueProcess (void *udata, long dbidx, int mqidx);
 
 static int gKillReceived = 0;
 
@@ -225,6 +227,7 @@ main (int argc, char *argv[])
   uiSetUIFont (uifont);
 
   pluiBuildUI (&plui);
+
   sockhMainLoop (listenPort, pluiProcessMsg, pluiMainLoop, &plui);
   connFree (plui.conn);
   progstateFree (plui.progstate);
@@ -337,8 +340,9 @@ pluiBuildUI (playerui_t *plui)
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", ".svg", PATHBLD_MP_IMGDIR);
-  uiutilsUICallbackInit (&plui->closecb, pluiCloseWin, plui);
-  uiCreateMainWindow (&plui->window, &plui->closecb,
+  uiutilsUICallbackInit (&plui->callbacks [PLUI_CB_CLOSE],
+      pluiCloseWin, plui);
+  uiCreateMainWindow (&plui->window, &plui->callbacks [PLUI_CB_CLOSE],
       bdjoptGetStr (OPT_P_PROFILENAME), imgbuff);
 
   pluiInitializeUI (plui);
@@ -365,25 +369,25 @@ pluiBuildUI (playerui_t *plui)
   uiCreateSubMenu (&menuitem, &menu);
 
   /* CONTEXT: menu checkbox: start playback when a dance or playlist is queued */
-  uiutilsUICallbackInit (&plui->menucb [PLUI_MENU_CB_PLAY_QUEUE],
+  uiutilsUICallbackInit (&plui->callbacks [PLUI_MENU_CB_PLAY_QUEUE],
       pluiTogglePlayWhenQueued, plui);
   uiMenuCreateCheckbox (&menu, &menuitem, _("Play When Queued"),
       nlistGetNum (plui->options, PLUI_PLAY_WHEN_QUEUED),
-      &plui->menucb [PLUI_MENU_CB_PLAY_QUEUE]);
+      &plui->callbacks [PLUI_MENU_CB_PLAY_QUEUE]);
 
   /* CONTEXT: menu checkbox: show the extra queues (in addition to the main music queue) */
-  uiutilsUICallbackInit (&plui->menucb [PLUI_MENU_CB_EXTRA_QUEUE],
+  uiutilsUICallbackInit (&plui->callbacks [PLUI_MENU_CB_EXTRA_QUEUE],
       pluiToggleExtraQueues, plui);
   uiMenuCreateCheckbox (&menu, &menuitem, _("Show Extra Queues"),
       nlistGetNum (plui->options, PLUI_SHOW_EXTRA_QUEUES),
-      &plui->menucb [PLUI_MENU_CB_EXTRA_QUEUE]);
+      &plui->callbacks [PLUI_MENU_CB_EXTRA_QUEUE]);
 
   /* CONTEXT: menu checkbox: when a queue is emptied, switch playback to the next queue */
-  uiutilsUICallbackInit (&plui->menucb [PLUI_MENU_CB_SWITCH_QUEUE],
+  uiutilsUICallbackInit (&plui->callbacks [PLUI_MENU_CB_SWITCH_QUEUE],
       pluiToggleSwitchQueue, plui);
   uiMenuCreateCheckbox (&menu, &menuitem, _("Switch Queue When Empty"),
       nlistGetNum (plui->options, PLUI_SWITCH_QUEUE_WHEN_EMPTY),
-      &plui->menucb [PLUI_MENU_CB_SWITCH_QUEUE]);
+      &plui->callbacks [PLUI_MENU_CB_SWITCH_QUEUE]);
 
   /* CONTEXT: menu selection: marquee related options */
   uiMenuCreateItem (&menubar, &menuitem, _("Marquee"), NULL);
@@ -391,10 +395,10 @@ pluiBuildUI (playerui_t *plui)
   uiCreateSubMenu (&menuitem, &menu);
 
   /* CONTEXT: menu selection: marquee: change the marquee font size */
-  uiutilsUICallbackInit (&plui->menucb [PLUI_MENU_CB_MQ_FONT_SZ],
+  uiutilsUICallbackInit (&plui->callbacks [PLUI_MENU_CB_MQ_FONT_SZ],
       pluiMarqueeFontSizeDialog, plui);
   uiMenuCreateItem (&menu, &menuitem, _("Font Size"),
-      &plui->menucb [PLUI_MENU_CB_MQ_FONT_SZ]);
+      &plui->callbacks [PLUI_MENU_CB_MQ_FONT_SZ]);
 
   /* player */
   uiwidgetp = uiplayerBuildUI (plui->uiplayer);
@@ -403,12 +407,13 @@ pluiBuildUI (playerui_t *plui)
   uiCreateNotebook (&plui->notebook);
   uiBoxPackStartExpand (&plui->vbox, &plui->notebook);
 
-  uiutilsUICallbackLongInit (&plui->nbcb, pluiSwitchPage, plui);
-  uiNotebookSetCallback (&plui->notebook, &plui->nbcb);
+  uiutilsUICallbackLongInit (&plui->callbacks [PLUI_CB_NOTEBOOK],
+      pluiSwitchPage, plui);
+  uiNotebookSetCallback (&plui->notebook, &plui->callbacks [PLUI_CB_NOTEBOOK]);
 
-  uiutilsUICallbackInit (&plui->setpbqcb,
+  uiutilsUICallbackInit (&plui->callbacks [PLUI_CB_PLAYBACK_QUEUE],
       pluiProcessSetPlaybackQueue, plui);
-  uiCreateButton (&uiwidget, &plui->setpbqcb,
+  uiCreateButton (&uiwidget, &plui->callbacks [PLUI_CB_PLAYBACK_QUEUE],
       /* CONTEXT: select the current queue for playback */
       _("Set Queue for Playback"), NULL);
   uiNotebookSetActionWidget (&plui->notebook, &uiwidget);
@@ -462,13 +467,18 @@ static void
 pluiInitializeUI (playerui_t *plui)
 {
   plui->uiplayer = uiplayerInit (plui->progstate, plui->conn, plui->musicdb);
-  plui->uimusicq = uimusicqInit (plui->conn, plui->musicdb,
-      plui->dispsel, UIMUSICQ_FLAGS_NONE, DISP_SEL_MUSICQ);
+  plui->uimusicq = uimusicqInit ("plui", plui->conn, plui->musicdb,
+      plui->dispsel, DISP_SEL_MUSICQ);
   plui->uisongfilter = uisfInit (&plui->window, plui->options,
       SONG_FILTER_FOR_PLAYBACK);
   plui->uisongsel = uisongselInit ("plui-req", plui->conn, plui->musicdb,
       plui->dispsel, plui->options,
       plui->uisongfilter, DISP_SEL_REQUEST);
+  uiutilsUICallbackLongIntInit (&plui->callbacks [PLUI_CB_QUEUE_SL],
+      pluiQueueProcess, plui);
+  uisongselSetQueueCallback (plui->uisongsel,
+      &plui->callbacks [PLUI_CB_QUEUE_SL]);
+
 }
 
 
@@ -604,7 +614,8 @@ pluiHandshakeCallback (void *udata, programstate_t programState)
       connHaveHandshake (plui->conn, ROUTE_MARQUEE)) {
     pluiSetPlayWhenQueued (plui);
     pluiSetSwitchQueue (plui);
-    pluiSetPlaybackQueue (plui, MUSICQ_A);
+    pluiSetPlaybackQueue (plui, plui->musicqPlayIdx);
+    pluiSetManageQueue (plui, plui->musicqManageIdx);
     pluiSetExtraQueues (plui);
     progstateLogTime (plui->progstate, "time-to-start-gui");
     rc = STATE_FINISHED;
@@ -736,13 +747,17 @@ pluiSwitchPage (void *udata, long pagenum)
 
   logProcBegin (LOG_PROC, "pluiSwitchPage");
 
+  if (! plui->uibuilt) {
+    logProcEnd (LOG_PROC, "pluiSwitchPage", "no-ui");
+    return UICB_STOP;
+  }
+
   tabid = uiutilsNotebookIDGet (plui->nbtabid, pagenum);
 
   plui->currpage = pagenum;
   uiWidgetHide (&plui->setPlaybackButton);
   if (tabid == UI_TAB_MUSICQ) {
-    plui->musicqManageIdx = pagenum;
-    uimusicqSetManageIdx (plui->uimusicq, pagenum);
+    pluiSetManageQueue (plui, pagenum);
     if (nlistGetNum (plui->options, PLUI_SHOW_EXTRA_QUEUES)) {
       uiWidgetShow (&plui->setPlaybackButton);
     }
@@ -784,6 +799,17 @@ pluiSetPlaybackQueue (playerui_t *plui, musicqidx_t newQueue)
   snprintf (tbuff, sizeof (tbuff), "%d", plui->musicqPlayIdx);
   connSendMessage (plui->conn, ROUTE_MAIN, MSG_MUSICQ_SET_PLAYBACK, tbuff);
   logProcEnd (LOG_PROC, "pluiSetPlaybackQueue", "");
+}
+
+static void
+pluiSetManageQueue (playerui_t *plui, musicqidx_t mqidx)
+{
+  char  tbuff [40];
+
+  plui->musicqManageIdx = mqidx;
+  uimusicqSetManageIdx (plui->uimusicq, mqidx);
+  snprintf (tbuff, sizeof (tbuff), "%d", mqidx);
+  connSendMessage (plui->conn, ROUTE_MAIN, MSG_MUSICQ_SET_MANAGE, tbuff);
 }
 
 static bool
@@ -928,10 +954,10 @@ pluiCreateMarqueeFontSizeDialog (playerui_t *plui)
 
   logProcBegin (LOG_PROC, "pluiCreateMarqueeFontSizeDialog");
 
-  uiutilsUICallbackLongInit (&plui->fontszcb,
+  uiutilsUICallbackLongInit (&plui->callbacks [PLUI_CB_FONT_SIZE],
       pluiMarqueeFontSizeDialogResponse, plui);
   uiCreateDialog (&plui->marqueeFontSizeDialog, &plui->window,
-      &plui->fontszcb,
+      &plui->callbacks [PLUI_CB_FONT_SIZE],
       /* CONTEXT: marquee font size dialog: window title */
       _("Marquee Font Size"),
       /* CONTEXT: marquee font size dialog: action button */
@@ -1022,5 +1048,24 @@ pluisetMarqueeFontSizes (playerui_t *plui, char *args)
   plui->marqueeFontSize = atoi (p);
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   plui->marqueeFontSizeFS = atoi (p);
+}
+
+static bool
+pluiQueueProcess (void *udata, long dbidx, int mqidx)
+{
+  playerui_t  *plui = udata;
+  long        loc;
+  char        tbuff [100];
+
+  if (mqidx == MUSICQ_CURRENT) {
+    mqidx = plui->musicqManageIdx;
+  }
+
+  loc = uimusicqGetSelectLocation (plui->uimusicq, mqidx);
+
+  snprintf (tbuff, sizeof (tbuff), "%d%c%ld%c%ld", mqidx,
+      MSG_ARGS_RS, loc, MSG_ARGS_RS, dbidx);
+  connSendMessage (plui->conn, ROUTE_MAIN, MSG_MUSICQ_INSERT, tbuff);
+  return UICB_CONT;
 }
 

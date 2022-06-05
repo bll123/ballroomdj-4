@@ -111,6 +111,7 @@ static void     mainMusicqMoveTop (maindata_t *mainData, char *args);
 static void     mainMusicqClear (maindata_t *mainData, char *args);
 static void     mainMusicqRemove (maindata_t *mainData, char *args);
 static void     mainMusicqInsert (maindata_t *mainData, bdjmsgroute_t route, char *args);
+static void     mainMusicqSetManage (maindata_t *mainData, char *args);
 static void     mainMusicqSetPlayback (maindata_t *mainData, char *args);
 static void     mainMusicqSwitch (maindata_t *mainData, musicqidx_t newidx);
 static void     mainPlaybackBegin (maindata_t *mainData);
@@ -435,6 +436,11 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_MUSICQ_INSERT: {
           mainMusicqInsert (mainData, routefrom, targs);
+          dbgdisp = true;
+          break;
+        }
+        case MSG_MUSICQ_SET_MANAGE: {
+          mainMusicqSetManage (mainData, targs);
           dbgdisp = true;
           break;
         }
@@ -766,7 +772,9 @@ mainSendMusicQueueData (maindata_t *mainData, int musicqidx)
     }
   }
 
-  connSendMessage (mainData->conn, ROUTE_PLAYERUI, MSG_MUSIC_QUEUE_DATA, sbuff);
+  if (connHaveHandshake (mainData->conn, ROUTE_PLAYERUI)) {
+    connSendMessage (mainData->conn, ROUTE_PLAYERUI, MSG_MUSIC_QUEUE_DATA, sbuff);
+  }
 
   /* if the playerui is active, don't send the musicq data to the manageui. */
   /* the data would overwrite the song list. should not be running both. */
@@ -1529,25 +1537,37 @@ mainMusicqInsert (maindata_t *mainData, bdjmsgroute_t routefrom, char *args)
   int       mi;
   char      *tokstr = NULL;
   char      *p = NULL;
-  ssize_t   idx;
-  ssize_t   loc;
+  long      idx;
+  long      loc;
   dbidx_t   dbidx;
   song_t    *song = NULL;
   char      tbuff [40];
+  long      currlen;
+
 
   logProcBegin (LOG_PROC, "mainMusicqInsert");
 
   p = strtok_r (args, MSG_ARGS_RS_STR, &tokstr);
   mi = atoi (p);
   if (mi != MUSICQ_CURRENT) {
+    /* the managed queue is changed to the requested queue */
     mainData->musicqManageIdx = mi;
   }
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   idx = atol (p);
+  /* the display selection is offset by 1 */
+  /* and want to insert after the selection */
+  idx += 2;
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   dbidx = atol (p);
 
   song = dbGetByIdx (mainData->musicdb, dbidx);
+
+  currlen = musicqGetLen (mainData->musicQueue, mainData->musicqManageIdx);
+  if (currlen == 0 &&
+      mainData->musicqPlayIdx != mainData->musicqManageIdx) {
+    musicqPushHeadEmpty (mainData->musicQueue, mainData->musicqManageIdx);
+  }
 
   if (song != NULL) {
     loc = musicqInsert (mainData->musicQueue, mainData->musicqManageIdx, idx, song);
@@ -1560,7 +1580,10 @@ mainMusicqInsert (maindata_t *mainData, bdjmsgroute_t routefrom, char *args)
       mainMusicQueuePlay (mainData);
     }
     if (loc > 0) {
-      snprintf (tbuff, sizeof (tbuff), "%zd", loc);
+      /* the display is offset by 1, as the 0 index is the current song */
+      --loc;
+      snprintf (tbuff, sizeof (tbuff), "%d%c%ld",
+          mainData->musicqManageIdx, MSG_ARGS_RS, loc);
       connSendMessage (mainData->conn, routefrom, MSG_SONG_SELECT, tbuff);
     }
   }
@@ -1568,26 +1591,43 @@ mainMusicqInsert (maindata_t *mainData, bdjmsgroute_t routefrom, char *args)
 }
 
 static void
+mainMusicqSetManage (maindata_t *mainData, char *args)
+{
+  musicqidx_t   mqidx;
+
+  logProcBegin (LOG_PROC, "mainMusicqSetManage");
+
+  mqidx = atoi (args);
+  if (mqidx < 0 || mqidx >= MUSICQ_MAX) {
+    logProcEnd (LOG_PROC, "mainMusicqSetManage", "bad-idx");
+    return;
+  }
+
+  mainData->musicqManageIdx = mqidx;
+  logProcEnd (LOG_PROC, "mainMusicqSetManage", "");
+}
+
+static void
 mainMusicqSetPlayback (maindata_t *mainData, char *args)
 {
-  int         qidx;
+  musicqidx_t   mqidx;
 
   logProcBegin (LOG_PROC, "mainMusicqSetPlayback");
 
-  qidx = atoi (args);
-  if (qidx < 0 || qidx >= MUSICQ_MAX) {
+  mqidx = atoi (args);
+  if (mqidx < 0 || mqidx >= MUSICQ_MAX) {
     logProcEnd (LOG_PROC, "mainMusicqSetPlayback", "bad-idx");
     return;
   }
 
-  if ((musicqidx_t) qidx == mainData->musicqPlayIdx) {
+  if (mqidx == mainData->musicqPlayIdx) {
     mainData->musicqDeferredPlayIdx = MAIN_NOT_SET;
   } else if (mainData->playerState != PL_STATE_STOPPED) {
     /* if the player is playing something, the musicq index cannot */
     /* be changed as yet */
-    mainData->musicqDeferredPlayIdx = qidx;
+    mainData->musicqDeferredPlayIdx = mqidx;
   } else {
-    mainMusicqSwitch (mainData, qidx);
+    mainMusicqSwitch (mainData, mqidx);
   }
   logProcEnd (LOG_PROC, "mainMusicqSetPlayback", "");
 }
@@ -1649,7 +1689,7 @@ mainMusicQueuePlay (maindata_t *mainData)
   musicqflag_t      flags;
   char              *sfname;
   song_t            *song;
-  ssize_t           currlen;
+  int               currlen;
   musicqidx_t       origMusicqPlayIdx;
 
   logProcBegin (LOG_PROC, "mainMusicQueuePlay");

@@ -19,26 +19,23 @@ enum {
   UIMUSICQ_SEL_TOP,
 };
 
-enum {
-  UIMUSICQ_FLAGS_NONE             = 0x0000,
-  UIMUSICQ_FLAGS_NO_QUEUE         = 0x0001,
-  UIMUSICQ_FLAGS_NO_TOGGLE_PAUSE  = 0x0002,
-  UIMUSICQ_FLAGS_NO_REMOVE        = 0x0004,
-};
-
 #define UIMUSICQ_REPEAT_TIME 250
 
 typedef struct uimusicqgtk uimusicqgtk_t;
 
 typedef struct {
-  bool          active;
+  int           count;          // how many songs displayed in queue
   guint         repeatTimer;
+  long          selectLocation;
   /* music queue tab */
   UIWidget      mainbox;
   uidropdown_t  playlistsel;
   uientry_t     *slname;
   /* widget data */
   uimusicqgtk_t *uiWidgets;
+  /* flags */
+  bool          hasui : 1;
+  bool          haveselloc : 1;
 } uimusicqui_t;
 
 typedef struct uimusicq uimusicq_t;
@@ -46,14 +43,13 @@ typedef struct uimusicq uimusicq_t;
 typedef void (*uimusicqiteratecb_t)(uimusicq_t *uimusicq, dbidx_t dbidx);
 
 typedef struct uimusicq {
+  const char      *tag;
   int             musicqPlayIdx;    // needed for clear queue
   int             musicqManageIdx;
-  long            count;
   conn_t          *conn;
   dispsel_t       *dispsel;
   musicdb_t       *musicdb;
   dispselsel_t    dispselType;
-  int             uimusicqflags;
   GtkWidget       *parentwin;
   UIWidget        pausePixbuf;
   uimusicqui_t    ui [MUSICQ_MAX];
@@ -77,9 +73,8 @@ typedef struct {
 } musicqupdate_t;
 
 /* uimusicq.c */
-uimusicq_t  * uimusicqInit (conn_t *conn,
-    musicdb_t *musicdb, dispsel_t *dispsel,
-    int uimusicqflags, dispselsel_t dispselType);
+uimusicq_t  * uimusicqInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
+    dispsel_t *dispsel, dispselsel_t dispselType);
 void  uimusicqSetDatabase (uimusicq_t *uimusicq, musicdb_t *musicdb);
 void  uimusicqFree (uimusicq_t *uimusicq);
 void  uimusicqMainLoop (uimusicq_t *uimuiscq);
@@ -109,12 +104,13 @@ void uimusicqSave (uimusicq_t *uimusicq, const char *name);
 void      uimusicqUIInit (uimusicq_t *uimusicq);
 void      uimusicqUIFree (uimusicq_t *uimusicq);
 UIWidget  * uimusicqBuildUI (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci);
-void      uimusicqSetSelection (uimusicq_t *uimusicq, char *pathstr);
+void      uimusicqSetSelectionFirst (uimusicq_t *uimusicq, int mqidx);
 ssize_t   uimusicqGetSelection (uimusicq_t *uimusicq);
 void      uimusicqMusicQueueSetSelected (uimusicq_t *uimusicq, int ci, int which);
 void      uimusicqProcessMusicQueueData (uimusicq_t *uimusicq, char * args);
 void      uimusicqRemoveHandler (GtkButton *b, gpointer udata);
 void      uimusicqIterate (uimusicq_t *uimusicq, uimusicqiteratecb_t cb, musicqidx_t mqidx);
+long      uimusicqGetSelectLocation (uimusicq_t *uimusicq, int mqidx);
 
 #endif /* INC_UIMUSICQ_H */
 

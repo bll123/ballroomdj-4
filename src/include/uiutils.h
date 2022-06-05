@@ -15,6 +15,7 @@ typedef bool  (*UICallbackFunc)(void *udata);
 typedef bool  (*UIDoubleCallbackFunc)(void *udata, double value);
 typedef bool  (*UIIntIntCallbackFunc)(void *udata, int a, int b);
 typedef bool  (*UILongCallbackFunc)(void *udata, long value);
+typedef bool  (*UILongIntCallbackFunc)(void *udata, long lval, int ival);
 typedef long  (*UIStrCallbackFunc)(void *udata, const char *txt);
 
 typedef struct {
@@ -23,6 +24,7 @@ typedef struct {
     UIDoubleCallbackFunc  doublecb;
     UIIntIntCallbackFunc  intintcb;
     UILongCallbackFunc    longcb;
+    UILongIntCallbackFunc longintcb;
     UIStrCallbackFunc     strcb;
   };
   void            *udata;
@@ -135,6 +137,7 @@ void uiutilsUICallbackInit (UICallback *uicb, UICallbackFunc cb, void *udata);
 void uiutilsUICallbackDoubleInit (UICallback *uicb, UIDoubleCallbackFunc cb, void *udata);
 void uiutilsUICallbackIntIntInit (UICallback *uicb, UIIntIntCallbackFunc cb, void *udata);
 void uiutilsUICallbackLongInit (UICallback *uicb, UILongCallbackFunc cb, void *udata);
+void uiutilsUICallbackLongIntInit (UICallback *uicb, UILongIntCallbackFunc cb, void *udata);
 void uiutilsUICallbackStrInit (UICallback *uicb, UIStrCallbackFunc cb, void *udata);
 
 #endif /* INC_UIUTILS_H */

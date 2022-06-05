@@ -13,12 +13,15 @@ typedef enum {
 } playerstate_t;
 
 #if ! defined (MAXPATHLEN)
-# define MAXPATHLEN         512
+enum {
+  MAXPATHLEN = 512,
+};
 #endif
 
 enum {
   STOP_WAIT_COUNT_MAX = 60,
   EXIT_WAIT_COUNT = 60,
+  INSERT_AT_SELECTION = -2,
 };
 
 #define BDJ4_LONG_NAME  "BallroomDJ 4"

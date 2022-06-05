@@ -251,8 +251,6 @@ foreach path [list {} profiles $mpath $mppath] {
         puts $ofh "..11"
       }
       if { $path eq "profiles" } {
-        puts $ofh INSERT_LOC
-        puts $ofh "..6"
         puts $ofh MQ_ACCENT_COL
         puts $ofh "..#030e80"
         puts $ofh UI_ACCENT_COL

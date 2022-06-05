@@ -40,6 +40,7 @@ typedef struct uisongsel {
   dispselsel_t      dispselType;
   double            dfilterCount;
   UIWidget          *windowp;
+  UICallback        *queuecb;
   /* peers */
   int               peercount;
   uisongsel_t       *peers [UISONGSEL_PEER_MAX];
@@ -71,6 +72,7 @@ void  uisongselQueueProcess (uisongsel_t *uisongsel, dbidx_t dbidx, musicqidx_t 
 void  uisongselChangeFavorite (uisongsel_t *uisongsel, dbidx_t dbidx);
 void  uisongselSetSelectionCallback (uisongsel_t *uisongsel, UICallback *uicbdbidx);
 void  uisongselSetPeerFlag (uisongsel_t *uisongsel, bool val);
+void  uisongselSetQueueCallback (uisongsel_t *uisongsel, UICallback *uicbdbidx);
 /* song filter */
 void  uisongselDanceSelectionProcess (uisongsel_t *uisongsel, ssize_t idx);
 

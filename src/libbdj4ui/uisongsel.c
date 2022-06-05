@@ -165,18 +165,9 @@ uisongselDanceSelectionProcess (uisongsel_t *uisongsel, ssize_t danceIdx)
 void
 uisongselQueueProcess (uisongsel_t *uisongsel, dbidx_t dbidx, musicqidx_t mqidx)
 {
-  ssize_t insloc;
-  char    tbuff [MAXPATHLEN];
-
-  if (uisongsel->dispselType == DISP_SEL_SONGSEL ||
-      uisongsel->dispselType == DISP_SEL_EZSONGSEL) {
-    insloc = 99;
-  } else {
-    insloc = bdjoptGetNum (OPT_P_INSERT_LOCATION);
+  if (uisongsel->queuecb != NULL) {
+    uiutilsCallbackLongIntHandler (uisongsel->queuecb, dbidx, mqidx);
   }
-  snprintf (tbuff, sizeof (tbuff), "%d%c%zd%c%d", mqidx,
-      MSG_ARGS_RS, insloc, MSG_ARGS_RS, dbidx);
-  connSendMessage (uisongsel->conn, ROUTE_MAIN, MSG_MUSICQ_INSERT, tbuff);
 }
 
 void
@@ -204,6 +195,15 @@ void
 uisongselSetPeerFlag (uisongsel_t *uisongsel, bool val)
 {
   uisongsel->ispeercall = val;
+}
+
+void
+uisongselSetQueueCallback (uisongsel_t *uisongsel, UICallback *uicb)
+{
+  if (uisongsel == NULL) {
+    return;
+  }
+  uisongsel->queuecb = uicb;
 }
 
 /* internal routines */

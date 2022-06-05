@@ -31,7 +31,6 @@ typedef enum {
   MSG_SOCKET_CLOSE,
   MSG_DATABASE_UPDATE,      // send by manageui to starterui,
                             // then sent by starterui to playerui, main.
-
   /* to main */
   MSG_GET_STATUS,           // get main/player status
   MSG_MUSICQ_INSERT,        // args: music-q-idx, idx, song name
@@ -39,6 +38,7 @@ typedef enum {
   MSG_MUSICQ_MOVE_TOP,      // args: music-q-idx, idx
   MSG_MUSICQ_MOVE_UP,       // args: music-q-idx, idx
   MSG_MUSICQ_REMOVE,        // args: music-q-idx, idx
+  MSG_MUSICQ_SET_MANAGE,    // args: music queue for management
   MSG_MUSICQ_SET_PLAYBACK,  // args: music queue for playback
   MSG_MUSICQ_TOGGLE_PAUSE,  // args: music-q-idx
   MSG_MUSICQ_TRUNCATE,      // args: music-q-idx, idx

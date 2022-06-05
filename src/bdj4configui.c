@@ -167,7 +167,6 @@ enum {
   CONFUI_WIDGET_FADE_IN_TIME,
   CONFUI_WIDGET_FADE_OUT_TIME,
   CONFUI_WIDGET_GAP,
-  CONFUI_WIDGET_INSERT_LOC,
   CONFUI_WIDGET_MMQ_PORT,
   CONFUI_WIDGET_MMQ_QR_CODE,
   CONFUI_WIDGET_MQ_ACCENT_COLOR,
@@ -1153,11 +1152,6 @@ confuiBuildUIPlayer (configui_t *confui)
   confuiMakeItemSpinboxNum (confui, &vbox, &sg, &sgB, _("Queue Length"),
       CONFUI_WIDGET_PL_QUEUE_LEN, OPT_G_PLAYERQLEN,
       20, 400, bdjoptGetNum (OPT_G_PLAYERQLEN), NULL);
-
-  /* CONTEXT: configuration: where to insert a requested song into the music queue */
-  confuiMakeItemSpinboxNum (confui, &vbox, &sg, &sgB, _("Request Insert Location"),
-      CONFUI_WIDGET_INSERT_LOC, OPT_P_INSERT_LOCATION,
-      1, 10, bdjoptGetNum (OPT_P_INSERT_LOCATION), NULL);
 
   /* CONTEXT: configuration: The completion message displayed on the marquee when a playlist is finished */
   confuiMakeItemEntry (confui, &vbox, &sg, _("Completion Message"),

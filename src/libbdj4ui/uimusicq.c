@@ -26,9 +26,8 @@ static int    uimusicqMoveDownRepeat (void *udata);
 static void   uimusicqSaveListCallback (uimusicq_t *uimusicq, dbidx_t dbidx);
 
 uimusicq_t *
-uimusicqInit (conn_t *conn, musicdb_t *musicdb,
-    dispsel_t *dispsel,
-    int uimusicqflags, dispselsel_t dispselType)
+uimusicqInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
+    dispsel_t *dispsel, dispselsel_t dispselType)
 {
   uimusicq_t    *uimusicq;
 
@@ -38,20 +37,28 @@ uimusicqInit (conn_t *conn, musicdb_t *musicdb,
   uimusicq = malloc (sizeof (uimusicq_t));
   assert (uimusicq != NULL);
 
+  uimusicq->tag = tag;
   uimusicq->conn = conn;
   uimusicq->dispsel = dispsel;
-  uimusicq->count = 0;
   uimusicq->musicdb = musicdb;
   uimusicq->dispselType = dispselType;
-  uimusicq->uimusicqflags = uimusicqflags;
   uimusicq->uniqueList = NULL;
   uimusicq->dispList = NULL;
   uimusicq->workList = NULL;
   for (int i = 0; i < MUSICQ_MAX; ++i) {
-    uimusicq->ui [i].active = false;
+    int     sz;
+
+    uimusicq->ui [i].hasui = false;
     uimusicq->ui [i].repeatTimer = 0;
+    uimusicq->ui [i].count = 0;
+    uimusicq->ui [i].haveselloc = false;
     uiDropDownInit (&uimusicq->ui [i].playlistsel);
-    uimusicq->ui [i].slname = uiEntryInit (20, 40);
+    sz = 20;
+    if (uimusicq->dispselType == DISP_SEL_SONGLIST ||
+        uimusicq->dispselType == DISP_SEL_EZSONGLIST) {
+      sz = 15;
+    }
+    uimusicq->ui [i].slname = uiEntryInit (sz, 40);
   }
   uimusicq->musicqManageIdx = MUSICQ_A;
   uimusicq->musicqPlayIdx = MUSICQ_A;
@@ -491,11 +498,14 @@ uimusicqPeerSonglistName (uimusicq_t *targetq, uimusicq_t *sourceq)
 long
 uimusicqGetCount (uimusicq_t *uimusicq)
 {
+  int           ci;
+
   if (uimusicq == NULL) {
     return 0;
   }
 
-  return uimusicq->count;
+  ci = uimusicq->musicqManageIdx;
+  return uimusicq->ui [ci].count;
 }
 
 void
@@ -554,7 +564,15 @@ uimusicqMoveDownRepeat (gpointer udata)
 static void
 uimusicqProcessSongSelect (uimusicq_t *uimusicq, char * args)
 {
-  uimusicqSetSelection (uimusicq, args);
+  char    *p;
+  char    *tokstr;
+  int     mqidx;
+
+  p = strtok_r (args, MSG_ARGS_RS_STR, &tokstr);
+  mqidx = atoi (p);
+  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
+  uimusicq->ui [mqidx].haveselloc = true;
+  uimusicq->ui [mqidx].selectLocation = atol (p);
 }
 
 
