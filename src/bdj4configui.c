@@ -1097,6 +1097,12 @@ confuiBuildUIPlayer (configui_t *confui)
   UIWidget      vbox;
   UIWidget      sg;
   UIWidget      sgB;
+  char          *mqnames [MUSICQ_MAX];
+
+  /* CONTEXT: configuration: The name of the music queue */
+  mqnames [MUSICQ_A] = _("Queue A Name");
+  /* CONTEXT: configuration: The name of the music queue */
+  mqnames [MUSICQ_B] = _("Queue B Name");
 
   logProcBegin (LOG_PROC, "confuiBuildUIPlayer");
   uiCreateVertBox (&vbox);
@@ -1159,8 +1165,7 @@ confuiBuildUIPlayer (configui_t *confui)
       bdjoptGetStr (OPT_P_COMPLETE_MSG));
 
   for (musicqidx_t i = 0; i < MUSICQ_MAX; ++i) {
-    /* CONTEXT: configuration: The name of the music queue */
-    confuiMakeItemEntry (confui, &vbox, &sg, _("Queue A Name"),
+    confuiMakeItemEntry (confui, &vbox, &sg, mqnames [i],
         CONFUI_ENTRY_QUEUE_NM_A + i, OPT_P_QUEUE_NAME_A + i,
         bdjoptGetStr (OPT_P_QUEUE_NAME_A + i));
   }
