@@ -111,6 +111,7 @@ void      uimusicqProcessMusicQueueData (uimusicq_t *uimusicq, char * args);
 void      uimusicqRemoveHandler (GtkButton *b, gpointer udata);
 void      uimusicqIterate (uimusicq_t *uimusicq, uimusicqiteratecb_t cb, musicqidx_t mqidx);
 long      uimusicqGetSelectLocation (uimusicq_t *uimusicq, int mqidx);
+void      uimusicqSetEditCallback (uimusicq_t *uimusicq, UICallback *uicb);
 
 #endif /* INC_UIMUSICQ_H */
 

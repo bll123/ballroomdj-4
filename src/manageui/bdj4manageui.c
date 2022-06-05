@@ -125,6 +125,7 @@ typedef struct manage {
   UICallback      mainnbcb;
   UIWidget        slnotebook;
   UICallback      slnbcb;
+  UIWidget        mmnotebook;
   UICallback      mmnbcb;
   /* song list ui major elements */
   uiplayer_t      *slplayer;
@@ -210,6 +211,7 @@ static void     manageSetMenuCallback (manageui_t *manage, int midx, UICallbackF
 static void     manageSonglistLoadCheck (manageui_t *manage);
 /* song editor */
 static bool     manageNewSelectionDbidx (void *udata, long dbidx);
+static bool     manageSwitchToSongEditor (void *udata);
 
 static int gKillReceived = false;
 
@@ -536,6 +538,8 @@ manageBuildUI (manageui_t *manage)
 static void
 manageInitializeUI (manageui_t *manage)
 {
+  UICallback      uicb;
+
   manage->uisongfilter = uisfInit (&manage->window, manage->options,
       SONG_FILTER_FOR_SELECTION);
 
@@ -588,6 +592,13 @@ manageInitializeUI (manageui_t *manage)
 
   uimusicqSetPlayIdx (manage->mmmusicq, manage->musicqPlayIdx);
   uimusicqSetManageIdx (manage->mmmusicq, manage->musicqManageIdx);
+
+  uiutilsUICallbackInit (&uicb, manageSwitchToSongEditor, manage);
+  uisongselSetEditCallback (manage->slsongsel, &uicb);
+  uisongselSetEditCallback (manage->slezsongsel, &uicb);
+  uisongselSetEditCallback (manage->mmsongsel, &uicb);
+  uimusicqSetEditCallback (manage->slmusicq, &uicb);
+  uimusicqSetEditCallback (manage->slezmusicq, &uicb);
 }
 
 static void
@@ -694,6 +705,7 @@ manageBuildUIMusicManager (manageui_t *manage)
 
   uiCreateNotebook (&notebook);
   uiBoxPackStartExpand (&vbox, &notebook);
+  uiutilsUIWidgetCopy (&manage->mmnotebook, &notebook);
 
   /* music manager: song selection tab*/
   uiwidgetp = uisongselBuildUI (manage->mmsongsel, &manage->window);
@@ -1303,7 +1315,6 @@ manageSwitchPage (manageui_t *manage, long pagenum, int which)
 
   /* need to know which notebook is selected so that the correct id value */
   /* can be retrieved */
-  /* how to do this? */
   if (which == MANAGE_NB_MAIN) {
     nbtabid = manage->mainnbtabid;
     mainnb = true;
@@ -1451,5 +1462,23 @@ manageNewSelectionDbidx (void *udata, long dbidx)
 
   song = dbGetByIdx (manage->musicdb, dbidx);
   uisongeditLoadData (manage->mmsongedit, song);
+  return UICB_CONT;
+}
+
+static bool
+manageSwitchToSongEditor (void *udata)
+{
+  manageui_t  *manage = udata;
+  int         pagenum;
+
+  if (manage->mainlasttab != MANAGE_TAB_MAIN_MM) {
+    pagenum = uiutilsNotebookIDGetPage (manage->mainnbtabid, MANAGE_TAB_MAIN_MM);
+    uiNotebookSetPage (&manage->mainnotebook, pagenum);
+  }
+  if (manage->mmlasttab != MANAGE_TAB_SONGEDIT) {
+    pagenum = uiutilsNotebookIDGetPage (manage->mmnbtabid, MANAGE_TAB_SONGEDIT);
+    uiNotebookSetPage (&manage->mmnotebook, pagenum);
+  }
+
   return UICB_CONT;
 }

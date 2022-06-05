@@ -48,10 +48,10 @@ static void   uimusicqSetMusicqDisplay (uimusicq_t *uimusicq,
 static void   uimusicqSetMusicqDisplayCallback (int col, long num, const char *str, void *udata);
 static int    uimusicqIterateCallback (GtkTreeModel *model,
     GtkTreePath *path, GtkTreeIter *iter, gpointer udata);
-static bool   uimusicqEditCallback (void *udata);
 static bool   uimusicqPlayCallback (void *udata);
 static void   uimusicqSetDefaultSelection (uimusicq_t *uimusicq);
 static void   uimusicqSetSelection (uimusicq_t *uimusicq, int mqidx);
+static bool   uimusicqSongEditCallback (void *udata);
 
 enum {
   UIMUSICQ_CB_MOVE_TOP,
@@ -211,8 +211,6 @@ uimusicqBuildUI (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
 
   if (uimusicq->dispselType == DISP_SEL_SONGLIST ||
       uimusicq->dispselType == DISP_SEL_EZSONGLIST) {
-    uiutilsUICallbackInit (&uiw->callback [UIMUSICQ_CB_EDIT],
-        uimusicqEditCallback, uimusicq);
     uiCreateButton (&uiwidget, &uiw->callback [UIMUSICQ_CB_EDIT],
         /* CONTEXT: edit the selected song */
         _("Edit"), "button_edit");
@@ -495,6 +493,19 @@ uimusicqGetSelectLocation (uimusicq_t *uimusicq, int mqidx)
   return loc;
 }
 
+void
+uimusicqSetEditCallback (uimusicq_t *uimusicq, UICallback *uicb)
+{
+  uimusicqgtk_t *uiw;
+
+  if (uimusicq == NULL) {
+    return;
+  }
+
+  uiw = uimusicq->ui [uimusicq->musicqManageIdx].uiWidgets;
+  memcpy (&uiw->callback [UIMUSICQ_CB_EDIT], uicb, sizeof (UICallback));
+}
+
 /* internal routines */
 
 static void
@@ -704,15 +715,6 @@ uimusicqIterateCallback (GtkTreeModel *model,
 
 /* used by song list editor */
 static bool
-uimusicqEditCallback (void *udata)
-{
-//  uimusicq_t  *uimusicq = udata;
-
-  return UICB_CONT;
-}
-
-/* used by song list editor */
-static bool
 uimusicqPlayCallback (void *udata)
 {
   uimusicq_t    *uimusicq = udata;
@@ -811,4 +813,11 @@ uimusicqSetSelection (uimusicq_t *uimusicq, int mqidx)
   logProcEnd (LOG_PROC, "uimusicqSetSelection", "");
 }
 
+static bool
+uimusicqSongEditCallback (void *udata)
+{
+  uimusicq_t  *uimusicq = udata;
 
+
+  return UICB_CONT;
+}

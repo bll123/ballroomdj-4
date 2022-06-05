@@ -74,6 +74,24 @@ uiutilsNotebookIDGet (uiutilsnbtabid_t *nbtabid, int idx)
   return nbtabid->tabids [idx];
 }
 
+int
+uiutilsNotebookIDGetPage (uiutilsnbtabid_t *nbtabid, int id)
+{
+  if (nbtabid == NULL) {
+    return 0;
+  }
+
+  /* just brute forced.  the list is very small. */
+  /* used by manageui */
+  for (int i = 0; i < nbtabid->tabcount; ++i) {
+    if (id == nbtabid->tabids [i]) {
+      return i;
+    }
+  }
+
+  return 0;
+}
+
 void
 uiutilsNotebookIDStartIterator (uiutilsnbtabid_t *nbtabid, int *iteridx)
 {

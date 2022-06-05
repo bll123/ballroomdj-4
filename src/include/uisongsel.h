@@ -41,6 +41,7 @@ typedef struct uisongsel {
   double            dfilterCount;
   UIWidget          *windowp;
   UICallback        *queuecb;
+  dbidx_t           lastdbidx;
   /* peers */
   int               peercount;
   uisongsel_t       *peers [UISONGSEL_PEER_MAX];
@@ -92,6 +93,7 @@ void  uisongselScrollSelection (void *udata, long idxStart);
 bool  uisongselNextSelection (void *udata);
 bool  uisongselPreviousSelection (void *udata);
 bool  uisongselFirstSelection (void *udata);
+void  uisongselSetEditCallback (uisongsel_t *uisongsel, UICallback *uicb);
 
 #endif /* INC_UISONGSEL_H */
 

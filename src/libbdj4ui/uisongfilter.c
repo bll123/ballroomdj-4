@@ -597,7 +597,7 @@ uisfResponseHandler (void *udata, long responseid)
     }
   }
 
-  if (responseid != RESPONSE_DELETE_WIN) {
+  if (responseid != RESPONSE_DELETE_WIN && responseid != RESPONSE_CLOSE) {
     uisfUpdate (uisf);
   }
   return UICB_CONT;
