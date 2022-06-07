@@ -67,6 +67,7 @@ uimusicqInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
   uimusicq->cbci = MUSICQ_A;
   uiutilsUIWidgetInit (&uimusicq->pausePixbuf);
   uimusicqUIInit (uimusicq);
+  uimusicq->newselcbdbidx = NULL;
 
   logProcEnd (LOG_PROC, "uimusicqInit", "");
   return uimusicq;
@@ -164,6 +165,15 @@ void
 uimusicqSetManageIdx (uimusicq_t *uimusicq, int manageIdx)
 {
   uimusicq->musicqManageIdx = manageIdx;
+}
+
+void
+uimusicqSetSelectionCallback (uimusicq_t *uimusicq, UICallback *uicbdbidx)
+{
+  if (uimusicq == NULL) {
+    return;
+  }
+  uimusicq->newselcbdbidx = uicbdbidx;
 }
 
 bool

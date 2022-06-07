@@ -97,7 +97,7 @@ static gboolean uisongselScrollEvent (GtkWidget* tv, GdkEventScroll *event, gpoi
 static void uisongselClearAllSelections (uisongsel_t *uisongsel);
 static void uisongselClearSelection (GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter, gpointer udata);
 static gboolean uisongselKeyEvent (GtkWidget *w, GdkEventKey *event, gpointer udata);
-static void uisongselSelChanged (GtkTreeSelection *sel, gpointer udata);
+static void uisongselSelectionChgCallback (GtkTreeSelection *sel, gpointer udata);
 static void uisongselProcessSelection (GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter, gpointer udata);
 static void uisongselPopulateDataCallback (int col, long num, const char *str, void *udata);
 
@@ -272,7 +272,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin)
       G_CALLBACK (uisongselKeyEvent), uisongsel);
   uiw->sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (uiw->songselTree));
   g_signal_connect ((GtkWidget *) uiw->sel, "changed",
-      G_CALLBACK (uisongselSelChanged), uisongsel);
+      G_CALLBACK (uisongselSelectionChgCallback), uisongsel);
 
   adjustment = gtk_scrollable_get_vadjustment (GTK_SCROLLABLE (uiw->songselTree));
   tupper = uisongsel->dfilterCount;
@@ -910,7 +910,7 @@ uisongselKeyEvent (GtkWidget *w, GdkEventKey *event, gpointer udata)
 }
 
 static void
-uisongselSelChanged (GtkTreeSelection *sel, gpointer udata)
+uisongselSelectionChgCallback (GtkTreeSelection *sel, gpointer udata)
 {
   uisongsel_t       *uisongsel = udata;
   uisongselgtk_t    *uiw;

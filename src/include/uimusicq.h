@@ -50,8 +50,9 @@ typedef struct uimusicq {
   dispsel_t       *dispsel;
   musicdb_t       *musicdb;
   dispselsel_t    dispselType;
-  GtkWidget       *parentwin;
+  UIWidget        *parentwin;
   UIWidget        pausePixbuf;
+  UICallback      *newselcbdbidx;
   uimusicqui_t    ui [MUSICQ_MAX];
   /* temporary stuff used for music queue update processing */
   nlist_t         *uniqueList;
@@ -82,6 +83,7 @@ int   uimusicqProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     bdjmsgmsg_t msg, char *args, void *udata);
 void  uimusicqSetPlayIdx (uimusicq_t *uimusicq, int playIdx);
 void  uimusicqSetManageIdx (uimusicq_t *uimusicq, int manageIdx);
+void  uimusicqSetSelectionCallback (uimusicq_t *uimusicq, UICallback *uicbdbidx);
 bool  uimusicqMoveTop (void *udata);
 bool  uimusicqMoveUp (void *udata);
 bool  uimusicqMoveDown (void *udata);
@@ -103,7 +105,7 @@ void uimusicqSave (uimusicq_t *uimusicq, const char *name);
 /* uimusicqgtk.c */
 void      uimusicqUIInit (uimusicq_t *uimusicq);
 void      uimusicqUIFree (uimusicq_t *uimusicq);
-UIWidget  * uimusicqBuildUI (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci);
+UIWidget  * uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci);
 void      uimusicqSetSelectionFirst (uimusicq_t *uimusicq, int mqidx);
 ssize_t   uimusicqGetSelection (uimusicq_t *uimusicq);
 void      uimusicqMusicQueueSetSelected (uimusicq_t *uimusicq, int ci, int which);

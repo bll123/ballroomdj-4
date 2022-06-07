@@ -23,6 +23,7 @@
 #include "nlist.h"
 #include "rating.h"
 #include "songfilter.h"
+#include "songlist.h"
 #include "sortopt.h"
 #include "status.h"
 #include "ui.h"
@@ -68,10 +69,6 @@ static void uisfGenreSelectHandler (GtkTreeView *tv, GtkTreePath *path,
 static void uisfDanceSelectHandler (GtkTreeView *tv, GtkTreePath *path,
     GtkTreeViewColumn *column, gpointer udata);
 static void uisfInitDisplay (uisongfilter_t *uisf);
-#if 0
-static char *uisfRatingGet (void *udata, int idx);
-static char *uisfLevelGet (void *udata, int idx);
-#endif
 static char *uisfStatusGet (void *udata, int idx);
 static char *uisfFavoriteGet (void *udata, int idx);
 static void uisfSetFavoriteForeground (uisongfilter_t *uisf, char *color);
@@ -235,42 +232,6 @@ uisfInitDisplay (uisongfilter_t *uisf)
   uiSpinboxTextSetValue (uisf->filterfavoritesel, 0);
   logProcEnd (LOG_PROC, "uisfInitFilterDisplay", "");
 }
-
-#if 0
-
-char *
-uisfRatingGet (void *udata, int idx)
-{
-  uisongfilter_t *uisf = udata;
-
-  logProcBegin (LOG_PROC, "uisfRatingGet");
-
-  if (idx == -1) {
-    logProcEnd (LOG_PROC, "uisfRatingGet", "all");
-    /* CONTEXT: a filter: all dance ratings are displayed in the song selection */
-    return _("All Ratings");
-  }
-  logProcEnd (LOG_PROC, "uisfRatingGet", "");
-  return ratingGetRating (uisf->ratings, idx);
-}
-
-char *
-uisfLevelGet (void *udata, int idx)
-{
-  uisongfilter_t *uisf = udata;
-
-  logProcBegin (LOG_PROC, "uisfLevelGet");
-
-  if (idx == -1) {
-    logProcEnd (LOG_PROC, "uisfLevelGet", "all");
-    /* CONTEXT: a filter: all dance levels are displayed in the song selection */
-    return _("All Levels");
-  }
-  logProcEnd (LOG_PROC, "uisfLevelGet", "");
-  return levelGetLevel (uisf->levels, idx);
-}
-
-#endif
 
 char *
 uisfStatusGet (void *udata, int idx)

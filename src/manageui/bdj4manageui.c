@@ -211,7 +211,9 @@ static void     manageSetMenuCallback (manageui_t *manage, int midx, UICallbackF
 static void     manageSonglistLoadCheck (manageui_t *manage);
 /* song editor */
 static bool     manageNewSelectionDbidx (void *udata, long dbidx);
-static bool     manageSwitchToSongEditor (void *udata);
+static bool     manageSwitchToSongEditorSongList (void *udata);
+static bool     manageSwitchToSongEditorSongSel (void *udata);
+static void     manageSwitchToSongEditor (void *udata);
 
 static int gKillReceived = false;
 
@@ -307,6 +309,11 @@ main (int argc, char *argv[])
   uisongselSetSelectionCallback (manage.slsongsel,
       &manage.callbacks [MANAGE_CB_NEW_SEL_DBIDX]);
   uisongselSetSelectionCallback (manage.mmsongsel,
+      &manage.callbacks [MANAGE_CB_NEW_SEL_DBIDX]);
+
+  uimusicqSetSelectionCallback (manage.slmusicq,
+      &manage.callbacks [MANAGE_CB_NEW_SEL_DBIDX]);
+  uimusicqSetSelectionCallback (manage.slezmusicq,
       &manage.callbacks [MANAGE_CB_NEW_SEL_DBIDX]);
 
   uisongselSetDefaultSelection (manage.slezsongsel);
@@ -593,10 +600,11 @@ manageInitializeUI (manageui_t *manage)
   uimusicqSetPlayIdx (manage->mmmusicq, manage->musicqPlayIdx);
   uimusicqSetManageIdx (manage->mmmusicq, manage->musicqManageIdx);
 
-  uiutilsUICallbackInit (&uicb, manageSwitchToSongEditor, manage);
+  uiutilsUICallbackInit (&uicb, manageSwitchToSongEditorSongSel, manage);
   uisongselSetEditCallback (manage->slsongsel, &uicb);
   uisongselSetEditCallback (manage->slezsongsel, &uicb);
   uisongselSetEditCallback (manage->mmsongsel, &uicb);
+  uiutilsUICallbackInit (&uicb, manageSwitchToSongEditorSongList, manage);
   uimusicqSetEditCallback (manage->slmusicq, &uicb);
   uimusicqSetEditCallback (manage->slezmusicq, &uicb);
 }
@@ -642,7 +650,7 @@ manageBuildUISongListEditor (manageui_t *manage)
   uiCreateHorizBox (&hbox);
   uiBoxPackStartExpand (&mainhbox, &hbox);
 
-  uiwidgetp = uimusicqBuildUI (manage->slezmusicq, manage->window.widget, MUSICQ_A);
+  uiwidgetp = uimusicqBuildUI (manage->slezmusicq, &manage->window, MUSICQ_A);
   uiBoxPackStartExpand (&hbox, uiwidgetp);
 
   uiCreateVertBox (&vbox);
@@ -662,7 +670,7 @@ manageBuildUISongListEditor (manageui_t *manage)
   uiBoxPackStartExpand (&hbox, uiwidgetp);
 
   /* song list editor: music queue tab */
-  uiwidgetp = uimusicqBuildUI (manage->slmusicq, manage->window.widget, MUSICQ_A);
+  uiwidgetp = uimusicqBuildUI (manage->slmusicq, &manage->window, MUSICQ_A);
   /* CONTEXT: name of easy song list notebook tab */
   uiCreateLabel (&uiwidget, _("Song List"));
   uiNotebookAppendPage (&notebook, uiwidgetp, &uiwidget);
@@ -1466,6 +1474,32 @@ manageNewSelectionDbidx (void *udata, long dbidx)
 }
 
 static bool
+manageSwitchToSongEditorSongSel (void *udata)
+{
+  manageui_t  *manage = udata;
+
+  // ### set the song filter to not use the song list
+
+  manageSwitchToSongEditor (manage);
+  return UICB_CONT;
+}
+
+static bool
+manageSwitchToSongEditorSongList (void *udata)
+{
+  manageui_t  *manage = udata;
+
+  /* the song list must be saved, otherwise the song editor navigation */
+  /* can't load it */
+  manageSonglistSave (manage);
+
+  // ### set the song filter to use the song list
+
+  manageSwitchToSongEditor (manage);
+  return UICB_CONT;
+}
+
+static void
 manageSwitchToSongEditor (void *udata)
 {
   manageui_t  *manage = udata;
@@ -1480,5 +1514,5 @@ manageSwitchToSongEditor (void *udata)
     uiNotebookSetPage (&manage->mmnotebook, pagenum);
   }
 
-  return UICB_CONT;
+  return;
 }

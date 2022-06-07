@@ -423,7 +423,7 @@ pluiBuildUI (playerui_t *plui)
   for (musicqidx_t i = 0; i < MUSICQ_MAX; ++i) {
     /* music queue tab */
 
-    uiwidgetp = uimusicqBuildUI (plui->uimusicq, plui->window.widget, i);
+    uiwidgetp = uimusicqBuildUI (plui->uimusicq, &plui->window, i);
     uiCreateHorizBox (&hbox);
     str = bdjoptGetStr (OPT_P_QUEUE_NAME_A + i);
     uiCreateLabel (&uiwidget, str);

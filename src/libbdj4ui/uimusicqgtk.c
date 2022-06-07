@@ -49,6 +49,8 @@ static void   uimusicqSetMusicqDisplayCallback (int col, long num, const char *s
 static int    uimusicqIterateCallback (GtkTreeModel *model,
     GtkTreePath *path, GtkTreeIter *iter, gpointer udata);
 static bool   uimusicqPlayCallback (void *udata);
+static long   uimusicqGetSelectionDbidx (uimusicq_t *uimusicq);
+static void   uimusicqSelectionChgCallback (GtkTreeSelection *sel, gpointer udata);
 static void   uimusicqSetDefaultSelection (uimusicq_t *uimusicq);
 static void   uimusicqSetSelection (uimusicq_t *uimusicq, int mqidx);
 static bool   uimusicqSongEditCallback (void *udata);
@@ -63,6 +65,7 @@ enum {
   UIMUSICQ_CB_AUDIO_REMOVE,
   UIMUSICQ_CB_REQ_EXTERNAL,
   UIMUSICQ_CB_CLEAR_QUEUE,
+  UIMUSICQ_CB_EDIT_LOCAL,
   UIMUSICQ_CB_EDIT,
   UIMUSICQ_CB_PLAY,
   UIMUSICQ_CB_MAX,
@@ -112,7 +115,7 @@ uimusicqUIFree (uimusicq_t *uimusicq)
 }
 
 UIWidget *
-uimusicqBuildUI (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
+uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci)
 {
   int               tci;
   char              tbuff [MAXPATHLEN];
@@ -211,7 +214,9 @@ uimusicqBuildUI (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
 
   if (uimusicq->dispselType == DISP_SEL_SONGLIST ||
       uimusicq->dispselType == DISP_SEL_EZSONGLIST) {
-    uiCreateButton (&uiwidget, &uiw->callback [UIMUSICQ_CB_EDIT],
+    uiutilsUICallbackInit (&uiw->callback [UIMUSICQ_CB_EDIT_LOCAL],
+        uimusicqSongEditCallback, uimusicq);
+    uiCreateButton (&uiwidget, &uiw->callback [UIMUSICQ_CB_EDIT_LOCAL],
         /* CONTEXT: edit the selected song */
         _("Edit"), "button_edit");
     uiBoxPackStart (&hbox, &uiwidget);
@@ -236,14 +241,14 @@ uimusicqBuildUI (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
     uiBoxPackEnd (&hbox, &uiwidget);
 // ### TODO create code to handle the request external button
 
-    widget = uiDropDownCreate (parentwin,
+    widget = uiDropDownCreate (parentwin->widget,
         /* CONTEXT: button: queue a playlist for playback */
         _("Queue Playlist"), uimusicqQueuePlaylist,
         &uimusicq->ui [ci].playlistsel, uimusicq);
     uiBoxPackEndUW (&hbox, widget);
     uimusicqCreatePlaylistList (uimusicq);
 
-    widget = uiDropDownCreate (parentwin,
+    widget = uiDropDownCreate (parentwin->widget,
         /* CONTEXT: button: queue a dance for playback */
         _("Queue Dance"), uimusicqQueueDance,
         &uiw->dancesel, uimusicq);
@@ -283,13 +288,16 @@ uimusicqBuildUI (uimusicq_t *uimusicq, GtkWidget *parentwin, int ci)
 
   uiw->musicqTree = uiCreateTreeView ();
   assert (uiw->musicqTree != NULL);
+
   uiw->sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (uiw->musicqTree));
+  g_signal_connect ((GtkWidget *) uiw->sel, "changed",
+      G_CALLBACK (uimusicqSelectionChgCallback), uimusicq);
+
   gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (uiw->musicqTree), TRUE);
   uiWidgetAlignHorizFillW (uiw->musicqTree);
   uiWidgetExpandHorizW (uiw->musicqTree);
   uiWidgetExpandVertW (uiw->musicqTree);
   uiBoxPackInWindowUW (&uiwidget, uiw->musicqTree);
-
 
   renderer = gtk_cell_renderer_text_new ();
   gtk_cell_renderer_set_alignment (renderer, 1.0, 0.5);
@@ -721,9 +729,7 @@ uimusicqPlayCallback (void *udata)
   uimusicqgtk_t *uiw;
   musicqidx_t   ci;
   char          tmp [20];
-  GtkTreeModel  *model;
-  GtkTreeIter   iter;
-  long          dbidx;
+  dbidx_t       dbidx;
   char          tbuff [100];
   int           count;
 
@@ -735,12 +741,7 @@ uimusicqPlayCallback (void *udata)
     return UICB_CONT;
   }
 
-  /* get the selection from the song list (queue A) */
-  gtk_tree_selection_get_selected (uiw->sel, &model, &iter);
-  gtk_tree_model_get (model, &iter, MUSICQ_COL_DBIDX, &dbidx, -1);
-
-  ci = uimusicq->musicqPlayIdx;
-  uiw = uimusicq->ui [ci].uiWidgets;
+  dbidx = uimusicqGetSelectionDbidx (uimusicq);
 
   /* clear the queue; start index is 1 */
   snprintf (tmp, sizeof (tmp), "%d%c%d", ci, MSG_ARGS_RS, 1);
@@ -748,11 +749,52 @@ uimusicqPlayCallback (void *udata)
   /* clear any playing song via main */
   connSendMessage (uimusicq->conn, ROUTE_MAIN, MSG_CMD_NEXTSONG, NULL);
   /* queue to the end of the hidden music queue */
-  snprintf (tbuff, sizeof (tbuff), "%d%c%d%c%ld", ci,
+  snprintf (tbuff, sizeof (tbuff), "%d%c%d%c%d", ci,
       MSG_ARGS_RS, 99, MSG_ARGS_RS, dbidx);
   connSendMessage (uimusicq->conn, ROUTE_MAIN, MSG_MUSICQ_INSERT, tbuff);
 
   return UICB_CONT;
+}
+
+static long
+uimusicqGetSelectionDbidx (uimusicq_t *uimusicq)
+{
+  int             ci;
+  uimusicqgtk_t   *uiw;
+  GtkTreeModel    *model;
+  GtkTreeIter     iter;
+  long            dbidx;
+  int             count;
+
+  ci = uimusicq->musicqManageIdx;
+  uiw = uimusicq->ui [ci].uiWidgets;
+
+  count = gtk_tree_selection_count_selected_rows (uiw->sel);
+  if (count != 1) {
+    return -1;
+  }
+
+  /* get the selection from the song list (queue A) */
+  gtk_tree_selection_get_selected (uiw->sel, &model, &iter);
+  gtk_tree_model_get (model, &iter, MUSICQ_COL_DBIDX, &dbidx, -1);
+  return dbidx;
+}
+
+static void
+uimusicqSelectionChgCallback (GtkTreeSelection *sel, gpointer udata)
+{
+  uimusicq_t      *uimusicq = udata;
+  uimusicqgtk_t   *uiw;
+  dbidx_t         dbidx;
+  int             ci;
+
+  ci = uimusicq->musicqManageIdx;
+  uiw = uimusicq->ui [ci].uiWidgets;
+  dbidx = uimusicqGetSelectionDbidx (uimusicq);
+  if (dbidx >= 0 &&
+      uimusicq->newselcbdbidx != NULL) {
+    uiutilsCallbackLongHandler (uimusicq->newselcbdbidx, dbidx);
+  }
 }
 
 static void
@@ -813,11 +855,26 @@ uimusicqSetSelection (uimusicq_t *uimusicq, int mqidx)
   logProcEnd (LOG_PROC, "uimusicqSetSelection", "");
 }
 
+/* have to handle the case where the user switches tabs back to the */
+/* music queue (song list) tab */
 static bool
 uimusicqSongEditCallback (void *udata)
 {
-  uimusicq_t  *uimusicq = udata;
+  uimusicq_t      *uimusicq = udata;
+  uimusicqgtk_t   *uiw;
+  dbidx_t         dbidx;
+  int             ci;
 
+  ci = uimusicq->musicqManageIdx;
+  uiw = uimusicq->ui [ci].uiWidgets;
 
-  return UICB_CONT;
+  if (uimusicq->newselcbdbidx != NULL) {
+    dbidx = uimusicqGetSelectionDbidx (uimusicq);
+    if (dbidx < 0) {
+      return UICB_CONT;
+    }
+    uiutilsCallbackLongHandler (uimusicq->newselcbdbidx, dbidx);
+  }
+  return uiutilsCallbackHandler (&uiw->callback [UIMUSICQ_CB_EDIT]);
 }
+
