@@ -44,7 +44,7 @@ typedef struct playlist {
   nlist_t       *plinfo;
   ilist_t       *pldances;
   nlist_t       *countList;
-  int           songlistIdx;
+  ilistidx_t    songlistiter;
   int           count;
   nlistidx_t    seqiteridx;
 } playlist_t;
@@ -86,7 +86,7 @@ playlistAlloc (musicdb_t *musicdb)
   pl = malloc (sizeof (playlist_t));
   assert (pl != NULL);
   pl->name = NULL;
-  pl->songlistIdx = 0;
+  pl->songlistiter = 0;
   pl->plinfodf = NULL;
   pl->pldancesdf = NULL;
   pl->songlist = NULL;
@@ -226,6 +226,8 @@ playlistLoad (playlist_t *pl, const char *fname)
       playlistFree (pl);
       return -1;
     }
+
+    songlistStartIterator (pl->songlist, &pl->songlistiter);
   }
 
   if (type == PLTYPE_SEQUENCE) {
@@ -486,7 +488,10 @@ playlistGetNextSong (playlist_t *pl, nlist_t *danceCounts,
     }
   }
   if (type == PLTYPE_SONGLIST) {
-    sfname = songlistGetNext (pl->songlist, pl->songlistIdx, SONGLIST_FILE);
+    ilistidx_t    slkey;
+
+    slkey = songlistIterate (pl->songlist, &pl->songlistiter);
+    sfname = songlistGetStr (pl->songlist, slkey, SONGLIST_FILE);
     while (sfname != NULL) {
       song = dbGetByName (pl->musicdb, sfname);
       if (song != NULL && songAudioFileExists (song)) {
@@ -499,7 +504,7 @@ playlistGetNextSong (playlist_t *pl, nlist_t *danceCounts,
         if (tval < 0) {
           tstr = songGetStr (song, TAG_MQDISPLAY);
           if (tstr == NULL) {
-            tstr = songlistGetNext (pl->songlist, pl->songlistIdx, SONGLIST_DANCESTR);
+            tstr = songlistGetStr (pl->songlist, slkey, SONGLIST_DANCESTR);
             if (tstr != NULL) {
               songSetStr (song, TAG_MQDISPLAY, tstr);
             }
@@ -509,10 +514,9 @@ playlistGetNextSong (playlist_t *pl, nlist_t *danceCounts,
       }
       song = NULL;
       logMsg (LOG_DBG, LOG_IMPORTANT, "songlist: missing: %s", sfname);
-      ++pl->songlistIdx;
-      sfname = songlistGetNext (pl->songlist, pl->songlistIdx, SONGLIST_FILE);
+      slkey = songlistIterate (pl->songlist, &pl->songlistiter);
+      sfname = songlistGetStr (pl->songlist, slkey, SONGLIST_FILE);
     }
-    ++pl->songlistIdx;
     ++pl->count;
     logMsg (LOG_DBG, LOG_BASIC, "songlist: select: %s", sfname);
   }

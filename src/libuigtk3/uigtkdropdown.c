@@ -293,7 +293,7 @@ uiDropDownSelectionSetNum (uidropdown_t *dropdown, nlistidx_t idx)
 }
 
 void
-uiDropDownSelectionSetStr (uidropdown_t *dropdown, char *stridx)
+uiDropDownSelectionSetStr (uidropdown_t *dropdown, const char *stridx)
 {
   nlistidx_t    internalidx;
 

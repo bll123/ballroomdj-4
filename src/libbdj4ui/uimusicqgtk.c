@@ -788,6 +788,7 @@ uimusicqSelectionChgCallback (GtkTreeSelection *sel, gpointer udata)
   dbidx_t         dbidx;
   int             ci;
 
+fprintf (stderr, "uimusicq selection chg\n");
   ci = uimusicq->musicqManageIdx;
   uiw = uimusicq->ui [ci].uiWidgets;
   dbidx = uimusicqGetSelectionDbidx (uimusicq);

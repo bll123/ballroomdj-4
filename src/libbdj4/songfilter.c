@@ -21,6 +21,7 @@
 #include "slist.h"
 #include "song.h"
 #include "songfilter.h"
+#include "songlist.h"
 #include "status.h"
 #include "tagdef.h"
 #include "tmutil.h"
@@ -48,11 +49,7 @@ typedef struct songfilter {
   time_t      changeTime;
 } songfilter_t;
 
-typedef struct {
-  int     filterType;
-  int     valueType;
-} songfilteridx_t;
-
+/* these are the user configurable filter displays */
 datafilekey_t filterdisplaydfkeys [FILTER_DISP_MAX] = {
   { "DANCELEVEL",     FILTER_DISP_DANCELEVEL,      VALUE_NUM, convBoolean, -1 },
   { "FAVORITE",       FILTER_DISP_FAVORITE,        VALUE_NUM, convBoolean, -1 },
@@ -61,24 +58,25 @@ datafilekey_t filterdisplaydfkeys [FILTER_DISP_MAX] = {
   { "STATUSPLAYABLE", FILTER_DISP_STATUSPLAYABLE,  VALUE_NUM, convBoolean, -1 },
 };
 
-/* must be in the same order as defined in songfilter.h */
-static songfilteridx_t valueTypeLookup [SONG_FILTER_MAX] = {
-  { SONG_FILTER_BPM_HIGH,   SONG_FILTER_NUM },
-  { SONG_FILTER_BPM_LOW,    SONG_FILTER_NUM },
-  { SONG_FILTER_DANCE,      SONG_FILTER_ILIST },
-  { SONG_FILTER_DANCE_IDX,  SONG_FILTER_NUM_IGNORE },
-  { SONG_FILTER_FAVORITE,   SONG_FILTER_NUM },
-  { SONG_FILTER_GENRE,      SONG_FILTER_NUM },
-  { SONG_FILTER_KEYWORD,    SONG_FILTER_SLIST },
-  { SONG_FILTER_LEVEL_HIGH, SONG_FILTER_NUM },
-  { SONG_FILTER_LEVEL_LOW,  SONG_FILTER_NUM },
-  { SONG_FILTER_RATING,     SONG_FILTER_NUM },
-  { SONG_FILTER_SEARCH,     SONG_FILTER_STR },
-  { SONG_FILTER_STATUS,     SONG_FILTER_NUM },
-  { SONG_FILTER_STATUS_PLAYABLE, SONG_FILTER_NUM },
+static int valueTypeLookup [SONG_FILTER_MAX] = {
+  [SONG_FILTER_BPM_HIGH] =          SONG_FILTER_NUM,
+  [SONG_FILTER_BPM_LOW] =           SONG_FILTER_NUM,
+  [SONG_FILTER_DANCE] =             SONG_FILTER_ILIST,
+  [SONG_FILTER_DANCE_IDX] =         SONG_FILTER_NUM_IGNORE,
+  [SONG_FILTER_FAVORITE] =          SONG_FILTER_NUM,
+  [SONG_FILTER_GENRE] =             SONG_FILTER_NUM,
+  [SONG_FILTER_KEYWORD] =           SONG_FILTER_SLIST,
+  [SONG_FILTER_LEVEL_HIGH] =        SONG_FILTER_NUM,
+  [SONG_FILTER_LEVEL_LOW] =         SONG_FILTER_NUM,
+  [SONG_FILTER_PLAYLIST] =          SONG_FILTER_STR,
+  [SONG_FILTER_RATING] =            SONG_FILTER_NUM,
+  [SONG_FILTER_SEARCH] =            SONG_FILTER_STR,
+  [SONG_FILTER_STATUS] =            SONG_FILTER_NUM,
+  [SONG_FILTER_STATUS_PLAYABLE] =   SONG_FILTER_NUM,
 };
 
 #define SONG_FILTER_SORT_UNSORTED "UNSORTED"
+#define SONG_FILTER_SORT_INDEX "INDEX"
 
 static void songfilterFreeData (songfilter_t *sf, int i);
 static bool songfilterCheckStr (char *str, char *searchstr);
@@ -95,14 +93,14 @@ songfilterAlloc (void)
   sf = malloc (sizeof (songfilter_t));
   assert (sf != NULL);
 
-  sf->sortselection = SONG_FILTER_SORT_UNSORTED;
+  sf->sortselection = strdup (SONG_FILTER_SORT_UNSORTED);
   for (int i = 0; i < SONG_FILTER_MAX; ++i) {
     sf->datafilter [i] = NULL;
     sf->numfilter [i] = 0;
     sf->inuse [i] = false;
   }
-  sf->indexList = NULL;
   sf->sortList = NULL;
+  sf->indexList = NULL;
   sf->filterDisplayDf = NULL;
   sf->filterDisplaySel = NULL;
   sf->changeTime = mstime ();
@@ -120,7 +118,7 @@ songfilterFree (songfilter_t *sf)
     if (sf->filterDisplayDf != NULL) {
       datafileFree (sf->filterDisplayDf);
     }
-    if (strcmp (sf->sortselection, SONG_FILTER_SORT_UNSORTED) != 0) {
+    if (sf->sortselection != NULL) {
       free (sf->sortselection);
     }
     if (sf->sortList != NULL) {
@@ -197,7 +195,7 @@ songfilterSetData (songfilter_t *sf, int filterType, void *value)
     return;
   }
 
-  valueType = valueTypeLookup [filterType].valueType;
+  valueType = valueTypeLookup [filterType];
   sf->changeTime = mstime ();
 
   if (valueType == SONG_FILTER_SLIST) {
@@ -236,7 +234,7 @@ songfilterSetNum (songfilter_t *sf, int filterType, ssize_t value)
     return;
   }
 
-  valueType = valueTypeLookup [filterType].valueType;
+  valueType = valueTypeLookup [filterType];
 
   if (valueType == SONG_FILTER_NUM ||
      valueType == SONG_FILTER_NUM_IGNORE) {
@@ -259,7 +257,7 @@ songfilterDanceSet (songfilter_t *sf, ilistidx_t danceIdx,
     return;
   }
 
-  valueType = valueTypeLookup [filterType].valueType;
+  valueType = valueTypeLookup [filterType];
   danceList = sf->datafilter [SONG_FILTER_DANCE];
   if (danceList == NULL) {
     return;
@@ -283,7 +281,7 @@ songfilterProcess (songfilter_t *sf, musicdb_t *musicdb)
   nlistidx_t  idx;
   char        sortkey [MAXPATHLEN];
   song_t      *song;
-  slist_t     *sortselParsed;
+  slist_t     *sortselParsed = NULL;
 
   if (sf == NULL) {
     return 0;
@@ -301,37 +299,79 @@ songfilterProcess (songfilter_t *sf, musicdb_t *musicdb)
     sf->indexList = NULL;
   }
 
-  sortselParsed = songfilterParseSortKey (sf);
+  if (sf->inuse [SONG_FILTER_PLAYLIST]) {
+    if (sf->sortselection != NULL) {
+      free (sf->sortselection);
+    }
+    sf->sortselection = strdup (SONG_FILTER_SORT_INDEX);
+  }
+
 
   idx = 0;
-  if (strcmp (sf->sortselection, SONG_FILTER_SORT_UNSORTED) != 0) {
-    sf->sortList = slistAlloc ("songfilter-sort-idx", LIST_UNORDERED, NULL);
-  }
+  sf->sortList = slistAlloc ("songfilter-sort-idx", LIST_UNORDERED, NULL);
   sf->indexList = nlistAlloc ("songfilter-num-idx", LIST_UNORDERED, NULL);
-  dbStartIterator (musicdb, &dbiteridx);
-  while ((song = dbIterate (musicdb, &dbidx, &dbiteridx)) != NULL) {
-    if (! songfilterFilterSong (sf, song)) {
-      continue;
+
+  /* A playlist filter overrides any other filter setting */
+  /* simply traverse the song list and add those songs. */
+  /* Currently it is assumed that the playlist being */
+  /* filtered is a song list. */
+  /* Sequences and automatic playlists are not supported at this time */
+  /* (and would not be handled in this fashion). */
+  if (sf->inuse [SONG_FILTER_PLAYLIST]) {
+    songlist_t  *sl;
+    ilistidx_t  sliter;
+    ilistidx_t  slkey;
+
+
+    if (sf->sortselection != NULL) {
+      free (sf->sortselection);
+    }
+    sf->sortselection = strdup (SONG_FILTER_SORT_INDEX);
+    sl = songlistAlloc (sf->datafilter [SONG_FILTER_PLAYLIST]);
+    songlistStartIterator (sl, &sliter);
+    while ((slkey = songlistIterate (sl, &sliter)) >= 0) {
+      char  *sfname;
+
+      sfname = songlistGetStr (sl, slkey, SONGLIST_FILE);
+      song = dbGetByName (musicdb, sfname);
+if (song == NULL) {
+fprintf (stderr, " unable to locate slkey: %d fn: %s\n", slkey, sfname);
+}
+      if (song != NULL) {
+        dbidx = songGetNum (song, TAG_DBIDX);
+        snprintf (sortkey, sizeof (sortkey), "%08d", idx);
+        slistSetNum (sf->sortList, sortkey, idx);
+        nlistSetNum (sf->indexList, idx, dbidx);
+        ++idx;
+      }
     }
 
-    dbidx = songGetNum (song, TAG_DBIDX);
-    if (strcmp (sf->sortselection, SONG_FILTER_SORT_UNSORTED) != 0) {
+    logMsg (LOG_DBG, LOG_SONGSEL, "selected: %zd songs from playlist", nlistGetCount (sf->indexList));
+  }
+
+  if (! sf->inuse [SONG_FILTER_PLAYLIST]) {
+    sortselParsed = songfilterParseSortKey (sf);
+
+    dbStartIterator (musicdb, &dbiteridx);
+    while ((song = dbIterate (musicdb, &dbidx, &dbiteridx)) != NULL) {
+      if (! songfilterFilterSong (sf, song)) {
+        continue;
+      }
+
+      dbidx = songGetNum (song, TAG_DBIDX);
       songfilterMakeSortKey (sf, sortselParsed, song, sortkey, MAXPATHLEN);
       slistSetNum (sf->sortList, sortkey, idx);
+      nlistSetNum (sf->indexList, idx, dbidx);
+      ++idx;
     }
-    nlistSetNum (sf->indexList, idx, dbidx);
-    ++idx;
+    logMsg (LOG_DBG, LOG_SONGSEL, "selected: %zd songs from db", nlistGetCount (sf->indexList));
   }
-  if (strcmp (sf->sortselection, SONG_FILTER_SORT_UNSORTED) != 0) {
-    assert (nlistGetCount (sf->indexList) == slistGetCount (sf->sortList));
-  }
-  logMsg (LOG_DBG, LOG_SONGSEL, "selected: %zd songs from db", nlistGetCount (sf->indexList));
 
-  if (strcmp (sf->sortselection, SONG_FILTER_SORT_UNSORTED) != 0) {
-    slistSort (sf->sortList);
-  }
+  slistSort (sf->sortList);
   nlistSort (sf->indexList);
-  slistFree (sortselParsed);
+  if (sortselParsed != NULL) {
+    slistFree (sortselParsed);
+  }
 
   return nlistGetCount (sf->indexList);
 }
@@ -576,7 +616,7 @@ songfilterGetNum (songfilter_t *sf, int filterType)
     return -1;
   }
 
-  valueType = valueTypeLookup [filterType].valueType;
+  valueType = valueTypeLookup [filterType];
   if (valueType != SONG_FILTER_NUM_IGNORE && ! sf->inuse [filterType]) {
     return -1;
   }
@@ -613,13 +653,13 @@ static void
 songfilterFreeData (songfilter_t *sf, int i)
 {
   if (sf->datafilter [i] != NULL) {
-    if (valueTypeLookup [i].valueType == SONG_FILTER_STR) {
+    if (valueTypeLookup [i] == SONG_FILTER_STR) {
       free (sf->datafilter [i]);
     }
-    if (valueTypeLookup [i].valueType == SONG_FILTER_SLIST) {
+    if (valueTypeLookup [i] == SONG_FILTER_SLIST) {
       slistFree (sf->datafilter [i]);
     }
-    if (valueTypeLookup [i].valueType == SONG_FILTER_ILIST) {
+    if (valueTypeLookup [i] == SONG_FILTER_ILIST) {
       ilistFree (sf->datafilter [i]);
     }
   }
@@ -784,4 +824,3 @@ songfilterLoadFilterDisplay (songfilter_t *sf)
       DFTYPE_KEY_VAL, tbuff, filterdisplaydfkeys, FILTER_DISP_MAX, DATAFILE_NO_LOOKUP);
   sf->filterDisplaySel = datafileGetList (sf->filterDisplayDf);
 }
-

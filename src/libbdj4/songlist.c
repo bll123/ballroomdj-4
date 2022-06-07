@@ -18,11 +18,12 @@
 typedef struct songlist {
   datafile_t      *df;
   ilist_t         *songlist;
+  ilistidx_t      sliteridx;
   char            *fname;
   char            *path;
 } songlist_t;
 
-  /* must be sorted in ascii order */
+/* must be sorted in ascii order */
 static datafilekey_t songlistdfkeys [SONGLIST_KEY_MAX] = {
   { "DANCE",    SONGLIST_DANCE,     VALUE_NUM, danceConvDance, SONGLIST_DANCESTR },
   { "DANCESTR", SONGLIST_DANCESTR,  VALUE_STR, NULL, DATAFILE_NO_WRITE },
@@ -91,15 +92,37 @@ songlistFree (songlist_t *sl)
   }
 }
 
-char *
-songlistGetNext (songlist_t *sl, ilistidx_t ikey, ilistidx_t lidx)
+void
+songlistStartIterator (songlist_t *sl, ilistidx_t *iteridx)
 {
-  if (ikey >= nlistGetCount (sl->songlist)) {
-    logMsg (LOG_DBG, LOG_BASIC, "end of songlist %s reached", sl->fname);
+  if (sl == NULL) {
+    return;
+  }
+  ilistStartIterator (sl->songlist, iteridx);
+}
+
+ilistidx_t
+songlistIterate (songlist_t *sl, ilistidx_t *iteridx)
+{
+  ilistidx_t    key;
+
+  key = ilistIterateKey (sl->songlist, iteridx);
+  return key;
+}
+
+char *
+songlistGetStr (songlist_t *sl, ilistidx_t ikey, ilistidx_t lidx)
+{
+  char    *val = NULL;
+
+  if (sl == NULL) {
     return NULL;
   }
-
-  return ilistGetStr (sl->songlist, ikey, lidx);
+  if (sl->songlist == NULL) {
+    return NULL;
+  }
+  val = ilistGetStr (sl->songlist, ikey, lidx);
+  return val;
 }
 
 void

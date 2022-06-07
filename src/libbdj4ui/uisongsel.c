@@ -20,7 +20,6 @@
 #include "uisongsel.h"
 #include "ui.h"
 
-static bool uisongselApplySongFilter (void *uisongsel);
 static bool uisongselDanceSelectCallback (void *udata, long danceIdx);
 
 uisongsel_t *
@@ -206,9 +205,7 @@ uisongselSetQueueCallback (uisongsel_t *uisongsel, UICallback *uicb)
   uisongsel->queuecb = uicb;
 }
 
-/* internal routines */
-
-static bool
+bool
 uisongselApplySongFilter (void *udata)
 {
   uisongsel_t *uisongsel = udata;
@@ -216,19 +213,20 @@ uisongselApplySongFilter (void *udata)
   uisongsel->dfilterCount = (double) songfilterProcess (
       uisongsel->songfilter, uisongsel->musicdb);
   uisongsel->idxStart = 0;
-//  uisongsel->filterApplied = mstime ();
+
   /* the call to cleardata() will remove any selections */
   /* afterwards, make sure something is selected */
-
   uisongselClearData (uisongsel);
   uisongselPopulateData (uisongsel);
   uisongselSetDefaultSelection (uisongsel);
+fprintf (stderr, "applied song filter to %s\n", uisongsel->tag);
 
   /* want to apply the filter for all peers also */
 
   if (uisongsel->ispeercall) {
     return UICB_CONT;
   }
+fprintf (stderr, "   running peers\n");
 
   for (int i = 0; i < uisongsel->peercount; ++i) {
     uisongselSetPeerFlag (uisongsel->peers [i], true);
@@ -238,6 +236,9 @@ uisongselApplySongFilter (void *udata)
 
   return UICB_CONT;
 }
+
+/* internal routines */
+
 
 /* callback for the song filter when the dance selection is changed */
 /* also used by danceselectionprocess to set the peers dance drop-down */

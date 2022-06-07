@@ -1478,7 +1478,8 @@ manageSwitchToSongEditorSongSel (void *udata)
 {
   manageui_t  *manage = udata;
 
-  // ### set the song filter to not use the song list
+  uisfClearPlaylist (manage->uisongfilter);
+  uisongselApplySongFilter (manage->mmsongsel);
 
   manageSwitchToSongEditor (manage);
   return UICB_CONT;
@@ -1488,12 +1489,21 @@ static bool
 manageSwitchToSongEditorSongList (void *udata)
 {
   manageui_t  *manage = udata;
+  char        *slname;
 
   /* the song list must be saved, otherwise the song editor navigation */
   /* can't load it */
   manageSonglistSave (manage);
 
-  // ### set the song filter to use the song list
+  slname = strdup (uimusicqGetSonglistName (manage->slmusicq));
+  uisfSetPlaylist (manage->uisongfilter, slname);
+  free (slname);
+
+  /* in this case, setting a playlist filter in the music manager, */
+  /* the song filter should not be applied to the song selection peers */
+  uisongselSetPeerFlag (manage->mmsongsel, true);
+  uisongselApplySongFilter (manage->mmsongsel);
+  uisongselSetPeerFlag (manage->mmsongsel, false);
 
   manageSwitchToSongEditor (manage);
   return UICB_CONT;

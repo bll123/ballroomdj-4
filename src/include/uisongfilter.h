@@ -12,7 +12,11 @@ uisongfilter_t * uisfInit (UIWidget *windowp, nlist_t *options, songfilterpb_t p
 void uisfFree (uisongfilter_t *uisf);
 void uisfSetApplyCallback (uisongfilter_t *uisf, UICallback *applycb);
 void uisfSetDanceSelectCallback (uisongfilter_t *uisf, UICallback *danceselcb);
+void uisfShowPlaylistDisplay (uisongfilter_t *uisf);
+void uisfHidePlaylistDisplay (uisongfilter_t *uisf);
 bool uisfDialog (void *udata);
+void uisfSetPlaylist (uisongfilter_t *uisf, char *slname);
+void uisfClearPlaylist (uisongfilter_t *uisf);
 void uisfSetDanceIdx (uisongfilter_t *uisf, int danceIdx);
 songfilter_t *uisfGetSongFilter (uisongfilter_t *uisf);
 

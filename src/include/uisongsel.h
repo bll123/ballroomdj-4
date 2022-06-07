@@ -76,6 +76,7 @@ void  uisongselSetPeerFlag (uisongsel_t *uisongsel, bool val);
 void  uisongselSetQueueCallback (uisongsel_t *uisongsel, UICallback *uicbdbidx);
 /* song filter */
 void  uisongselDanceSelectionProcess (uisongsel_t *uisongsel, ssize_t idx);
+bool  uisongselApplySongFilter (void *uisongsel);
 
 
 /* uisongselgtk.c */

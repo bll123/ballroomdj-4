@@ -147,7 +147,7 @@ void uiDropDownSetList (uidropdown_t *dropdown, slist_t *list,
 void uiDropDownSetNumList (uidropdown_t *dropdown, slist_t *list,
     const char *selectLabel);
 void uiDropDownSelectionSetNum (uidropdown_t *dropdown, nlistidx_t idx);
-void uiDropDownSelectionSetStr (uidropdown_t *dropdown, char *stridx);
+void uiDropDownSelectionSetStr (uidropdown_t *dropdown, const char *stridx);
 
 /* uigtklink.c */
 void uiCreateLink (UIWidget *uiwidget, char *label, char *uri);

@@ -417,6 +417,9 @@ uisongselPopulateData (uisongsel_t *uisongsel)
         uisongSetDisplayColumns (sellist, song, SONGSEL_COL_MAX,
             uisongselPopulateDataCallback, uisongsel);
       } /* song is not null */
+else {
+fprintf (stderr, "song is null: %d\n", dbidx);
+}
     }
 
     ++idx;

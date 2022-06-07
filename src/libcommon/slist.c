@@ -178,13 +178,13 @@ slistGetKeyByIdx (slist_t *list, slistidx_t idx)
 }
 
 ssize_t
-slistGetNum (slist_t *list, char *sidx)
+slistGetNum (slist_t *list, const char *sidx)
 {
   ssize_t         value = LIST_VALUE_INVALID;
   listkey_t       key;
   slistidx_t      idx;
 
-  key.strkey = sidx;
+  key.strkey = (char *) sidx;
   idx = listGetIdx (list, &key);
   if (idx >= 0) {
     value = list->data [idx].value.num;
