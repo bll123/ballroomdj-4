@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4 4.0.0\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
-"POT-Creation-Date: 2022-06-02\n"
-"PO-Revision-Date: 2022-06-02\n"
+"POT-Creation-Date: 2022-06-08\n"
+"PO-Revision-Date: 2022-06-08\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/us\n"
 "Language: en\n"
@@ -484,6 +484,7 @@ msgstr ""
 msgid "Easy Song Selection"
 msgstr ""
 
+#. CONTEXT: edit the selected song
 #. CONTEXT: menu selection: song list: edit menu
 #. CONTEXT: menu selection: sequence: edit menu
 msgid "Edit"
@@ -622,6 +623,7 @@ msgstr ""
 msgid "Filters"
 msgstr ""
 
+#. CONTEXT: song editor : first song
 msgid "First"
 msgstr ""
 
@@ -948,6 +950,7 @@ msgid "New Status"
 msgstr ""
 
 #. CONTEXT: helperui: proceed to the next step
+#. CONTEXT: song editor : next song
 msgid "Next"
 msgstr ""
 
@@ -1025,7 +1028,9 @@ msgstr ""
 msgid "Pause at End"
 msgstr ""
 
+#. CONTEXT: play the selected song
 #. CONTEXT: button: play or pause the song
+#. CONTEXT: song editor : play song
 #. CONTEXT: play the selected songs
 msgid "Play"
 msgstr ""
@@ -1059,6 +1064,7 @@ msgstr ""
 msgid "Player Options"
 msgstr ""
 
+#. CONTEXT: a filter: select a playlist to work with (music manager)
 #. CONTEXT: playlist management: label for playlist name
 msgid "Playlist"
 msgstr ""
@@ -1094,6 +1100,7 @@ msgstr ""
 msgid "Press 'Enter' to select the default."
 msgstr ""
 
+#. CONTEXT: song editor : previous song
 msgid "Previous"
 msgstr ""
 
@@ -1130,6 +1137,10 @@ msgstr ""
 
 #. CONTEXT: name of a music queue
 msgid "Queue B"
+msgstr ""
+
+#. CONTEXT: configuration: The name of the music queue
+msgid "Queue B Name"
 msgstr ""
 
 #. CONTEXT: button: queue a dance for playback
@@ -1223,10 +1234,6 @@ msgstr ""
 
 #. CONTEXT: button: request playback of a song external to BDJ4 (not in the database)
 msgid "Request External"
-msgstr ""
-
-#. CONTEXT: configuration: where to insert a requested song into the music queue
-msgid "Request Insert Location"
 msgstr ""
 
 #. CONTEXT: filter dialog: resets the selections

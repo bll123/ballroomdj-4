@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
-"POT-Creation-Date: 2022-06-02\n"
-"PO-Revision-Date: 2022-06-02\n"
+"POT-Creation-Date: 2022-06-08\n"
+"PO-Revision-Date: 2022-06-08\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -22,22 +22,22 @@ msgstr ""
 #. CONTEXT: database update: status message
 #, c-format
 msgid "%d files found"
-msgstr ""
+msgstr "%d bestanden gevonden"
 
 #. CONTEXT: configuration user interface window title
 #, c-format
 msgid "%s Configuration"
-msgstr ""
+msgstr "%s configuratie"
 
 #. CONTEXT: installer: command line interface: BDJ3 location prompt
 #, c-format
 msgid "%s Folder"
-msgstr ""
+msgstr "%s Map"
 
 #. CONTEXT: starterui: basic support dialog: support option
 #, c-format
 msgid "%s Forums"
-msgstr ""
+msgstr "%s Forums"
 
 #. CONTEXT: the window title for the BDJ4 helper
 #, c-format
@@ -490,6 +490,7 @@ msgstr ""
 msgid "Easy Song Selection"
 msgstr ""
 
+#. CONTEXT: edit the selected song
 #. CONTEXT: menu selection: song list: edit menu
 #. CONTEXT: menu selection: sequence: edit menu
 msgid "Edit"
@@ -628,6 +629,7 @@ msgstr ""
 msgid "Filters"
 msgstr "Filter"
 
+#. CONTEXT: song editor : first song
 msgid "First"
 msgstr "Eerste"
 
@@ -955,6 +957,7 @@ msgid "New Status"
 msgstr ""
 
 #. CONTEXT: helperui: proceed to the next step
+#. CONTEXT: song editor : next song
 msgid "Next"
 msgstr "Volgende"
 
@@ -1032,7 +1035,9 @@ msgstr "Pauseren"
 msgid "Pause at End"
 msgstr "Pauzeer aan einde"
 
+#. CONTEXT: play the selected song
 #. CONTEXT: button: play or pause the song
+#. CONTEXT: song editor : play song
 #. CONTEXT: play the selected songs
 msgid "Play"
 msgstr "Afspelen"
@@ -1066,6 +1071,7 @@ msgstr "Speler"
 msgid "Player Options"
 msgstr "Speler Opties"
 
+#. CONTEXT: a filter: select a playlist to work with (music manager)
 #. CONTEXT: playlist management: label for playlist name
 msgid "Playlist"
 msgstr "Afspeellijst"
@@ -1101,6 +1107,7 @@ msgstr ""
 msgid "Press 'Enter' to select the default."
 msgstr ""
 
+#. CONTEXT: song editor : previous song
 msgid "Previous"
 msgstr "Vorige"
 
@@ -1138,6 +1145,10 @@ msgstr ""
 #. CONTEXT: name of a music queue
 msgid "Queue B"
 msgstr "Wachtrij B"
+
+#. CONTEXT: configuration: The name of the music queue
+msgid "Queue B Name"
+msgstr ""
 
 #. CONTEXT: button: queue a dance for playback
 msgid "Queue Dance"
@@ -1231,10 +1242,6 @@ msgstr "Verzoek"
 #. CONTEXT: button: request playback of a song external to BDJ4 (not in the database)
 msgid "Request External"
 msgstr "Externe Aanvraag"
-
-#. CONTEXT: configuration: where to insert a requested song into the music queue
-msgid "Request Insert Location"
-msgstr ""
 
 #. CONTEXT: filter dialog: resets the selections
 msgid "Reset"
