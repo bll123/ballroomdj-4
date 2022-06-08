@@ -507,6 +507,36 @@ uisongselFirstSelection (void *udata)
   return UICB_CONT;
 }
 
+/* only works for single selection */
+long
+uisongselGetSelectLocation (uisongsel_t *uisongsel)
+{
+  uisongselgtk_t  *uiw;
+  GtkTreeModel    *model = NULL;
+  GtkTreeIter     iter;
+  GtkTreePath     *path;
+  char            *pathstr;
+  int             count;
+  long            loc;
+
+  uiw = uisongsel->uiWidgetData;
+  count = gtk_tree_selection_count_selected_rows (uiw->sel);
+  if (count != 1) {
+    return 0;
+  }
+  gtk_tree_selection_get_selected (uiw->sel, &model, &iter);
+  path = gtk_tree_model_get_path (model, &iter);
+  loc = 0;
+  if (path != NULL) {
+    pathstr = gtk_tree_path_to_string (path);
+    loc = atol (pathstr);
+    gtk_tree_path_free (path);
+    free (pathstr);
+  }
+
+  return loc + uisongsel->idxStart;
+}
+
 /* internal routines */
 
 static bool

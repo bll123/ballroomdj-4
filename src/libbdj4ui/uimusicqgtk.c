@@ -51,7 +51,6 @@ static bool   uimusicqPlayCallback (void *udata);
 static long   uimusicqGetSelectionDbidx (uimusicq_t *uimusicq);
 static void   uimusicqSelectionChgCallback (GtkTreeSelection *sel, gpointer udata);
 static void   uimusicqSetDefaultSelection (uimusicq_t *uimusicq);
-static void   uimusicqSetSelectLocation (uimusicq_t *uimusicq, int mqidx, long loc);
 static void   uimusicqSetSelection (uimusicq_t *uimusicq, int mqidx);
 static bool   uimusicqSongEditCallback (void *udata);
 
@@ -466,6 +465,13 @@ uimusicqGetSelectLocation (uimusicq_t *uimusicq, int mqidx)
   return loc;
 }
 
+void
+uimusicqSetSelectLocation (uimusicq_t *uimusicq, int mqidx, long loc)
+{
+  uimusicq->ui [mqidx].selectLocation = loc;
+  uimusicqSetSelection (uimusicq, mqidx);
+}
+
 /* internal routines */
 
 static void
@@ -788,14 +794,6 @@ uimusicqSetDefaultSelection (uimusicq_t *uimusicq)
 
   return;
 }
-
-static void
-uimusicqSetSelectLocation (uimusicq_t *uimusicq, int mqidx, long loc)
-{
-  uimusicq->ui [mqidx].selectLocation = loc;
-  uimusicqSetSelection (uimusicq, mqidx);
-}
-
 
 static void
 uimusicqSetSelection (uimusicq_t *uimusicq, int mqidx)

@@ -94,6 +94,7 @@ void  uisongselSetSelection (uisongsel_t *uisongsel, long idx);
 bool  uisongselNextSelection (void *udata);
 bool  uisongselPreviousSelection (void *udata);
 bool  uisongselFirstSelection (void *udata);
+long  uisongselGetSelectLocation (uisongsel_t *uisongsel);
 
 #endif /* INC_UISONGSEL_H */
 

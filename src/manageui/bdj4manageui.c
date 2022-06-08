@@ -1575,9 +1575,15 @@ manageNewSelectionSongSel (void *udata, long dbidx)
 {
   manageui_t  *manage = udata;
   song_t      *song = NULL;
+  long        loc;
 
   if (manage->selbypass) {
     return UICB_CONT;
+  }
+
+  if (manage->lastdisp == MANAGE_DISP_SONG_LIST) {
+    loc = uisongselGetSelectLocation (manage->mmsongsel);
+    uimusicqSetSelectLocation (manage->slmusicq, manage->musicqManageIdx, loc);
   }
 
   manage->selusesonglist = false;
