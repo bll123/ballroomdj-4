@@ -31,8 +31,7 @@ enum {
 typedef struct uisongsel {
   const char        *tag;
   conn_t            *conn;
-  ssize_t           idxStart;
-  ssize_t           oldIdxStart;
+  dbidx_t           idxStart;
   ilistidx_t        danceIdx;
   nlist_t           *options;
   dispsel_t         *dispsel;
@@ -41,6 +40,7 @@ typedef struct uisongsel {
   double            dfilterCount;
   UIWidget          *windowp;
   UICallback        *queuecb;
+  UICallback        *editcb;
   dbidx_t           lastdbidx;
   /* peers */
   int               peercount;
@@ -56,7 +56,7 @@ typedef struct uisongsel {
   /* widget data */
   uisongselgtk_t    *uiWidgetData;
   /* song editor */
-  UICallback        *newselcbdbidx;
+  UICallback        *newselcb;
 } uisongsel_t;
 
 /* uisongsel.c */
@@ -75,8 +75,9 @@ void  uisongselSetSelectionCallback (uisongsel_t *uisongsel, UICallback *uicbdbi
 void  uisongselSetPeerFlag (uisongsel_t *uisongsel, bool val);
 void  uisongselSetQueueCallback (uisongsel_t *uisongsel, UICallback *uicbdbidx);
 /* song filter */
-void  uisongselDanceSelectionProcess (uisongsel_t *uisongsel, ssize_t idx);
+void  uisongselDanceSelectHandler (uisongsel_t *uisongsel, ssize_t idx);
 bool  uisongselApplySongFilter (void *uisongsel);
+void  uisongselSetEditCallback (uisongsel_t *uisongsel, UICallback *uicb);
 
 
 /* uisongselgtk.c */
@@ -89,12 +90,10 @@ void  uisongselPopulateData (uisongsel_t *uisongsel);
 void  uisongselSetFavoriteForeground (uisongsel_t *uisongsel, char *color);
 bool  uisongselQueueProcessSelectCallback (void *udata);
 void  uisongselSetDefaultSelection (uisongsel_t *uisongsel);
-void  uisongselSetSelection (uisongsel_t *uisongsel, const char *pathstr);
-void  uisongselScrollSelection (void *udata, long idxStart);
+void  uisongselSetSelection (uisongsel_t *uisongsel, long idx);
 bool  uisongselNextSelection (void *udata);
 bool  uisongselPreviousSelection (void *udata);
 bool  uisongselFirstSelection (void *udata);
-void  uisongselSetEditCallback (uisongsel_t *uisongsel, UICallback *uicb);
 
 #endif /* INC_UISONGSEL_H */
 

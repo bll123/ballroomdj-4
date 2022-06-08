@@ -19,7 +19,10 @@ enum {
   UIMUSICQ_SEL_TOP,
 };
 
-#define UIMUSICQ_REPEAT_TIME 250
+enum {
+  UIMUSICQ_PEER_MAX = 2,
+  UIMUSICQ_REPEAT_TIME = 250,
+};
 
 typedef struct uimusicqgtk uimusicqgtk_t;
 
@@ -52,8 +55,13 @@ typedef struct uimusicq {
   dispselsel_t    dispselType;
   UIWidget        *parentwin;
   UIWidget        pausePixbuf;
-  UICallback      *newselcbdbidx;
+  UICallback      *newselcb;
+  UICallback      *editcb;
   uimusicqui_t    ui [MUSICQ_MAX];
+  /* peers */
+  int           peercount;
+  uimusicq_t    *peers [UIMUSICQ_PEER_MAX];
+  bool          ispeercall;
   /* temporary stuff used for music queue update processing */
   nlist_t         *uniqueList;
   nlist_t         *dispList;
@@ -67,7 +75,6 @@ typedef struct uimusicq {
 
 typedef struct {
   slistidx_t      dbidx;
-  int             idx;
   int             dispidx;
   int             uniqueidx;
   int             pflag;
@@ -76,6 +83,8 @@ typedef struct {
 /* uimusicq.c */
 uimusicq_t  * uimusicqInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
     dispsel_t *dispsel, dispselsel_t dispselType);
+void  uimusicqSetPeer (uimusicq_t *uimusicq, uimusicq_t *peer);
+void  uimusicqSetPeerFlag (uimusicq_t *uimusicq, bool val);
 void  uimusicqSetDatabase (uimusicq_t *uimusicq, musicdb_t *musicdb);
 void  uimusicqFree (uimusicq_t *uimusicq);
 void  uimusicqMainLoop (uimusicq_t *uimuiscq);
@@ -98,9 +107,10 @@ int   uimusicqMusicQueueDataParse (uimusicq_t *uimusicq, char * args);
 void  uimusicqMusicQueueDataFree (uimusicq_t *uimusicq);
 void  uimusicqSetSonglistName (uimusicq_t *uimusicq, const char *nm);
 const char * uimusicqGetSonglistName (uimusicq_t *uimusicq);
-void uimusicqPeerSonglistName (uimusicq_t *targetqueue, uimusicq_t *sourcequeue);
-long uimusicqGetCount (uimusicq_t *uimusicq);
-void uimusicqSave (uimusicq_t *uimusicq, const char *name);
+void  uimusicqPeerSonglistName (uimusicq_t *targetqueue, uimusicq_t *sourcequeue);
+long  uimusicqGetCount (uimusicq_t *uimusicq);
+void  uimusicqSave (uimusicq_t *uimusicq, const char *name);
+void  uimusicqSetEditCallback (uimusicq_t *uimusicq, UICallback *uicb);
 
 /* uimusicqgtk.c */
 void      uimusicqUIInit (uimusicq_t *uimusicq);
@@ -113,7 +123,6 @@ void      uimusicqProcessMusicQueueData (uimusicq_t *uimusicq, char * args);
 void      uimusicqRemoveHandler (GtkButton *b, gpointer udata);
 void      uimusicqIterate (uimusicq_t *uimusicq, uimusicqiteratecb_t cb, musicqidx_t mqidx);
 long      uimusicqGetSelectLocation (uimusicq_t *uimusicq, int mqidx);
-void      uimusicqSetEditCallback (uimusicq_t *uimusicq, UICallback *uicb);
 
 #endif /* INC_UIMUSICQ_H */
 

@@ -38,19 +38,21 @@ uisongselInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
   uisongsel->windowp = NULL;
   uisongsel->uisongfilter = uisf;
   uisongsel->songfilter = uisfGetSongFilter (uisf);
+
   uiutilsUICallbackInit (&uisongsel->sfapplycb,
       uisongselApplySongFilter, uisongsel);
   uisfSetApplyCallback (uisf, &uisongsel->sfapplycb);
+
   uiutilsUICallbackLongInit (&uisongsel->sfdanceselcb,
       uisongselDanceSelectCallback, uisongsel);
   uisfSetDanceSelectCallback (uisf, &uisongsel->sfdanceselcb);
+
   uisongsel->conn = conn;
   uisongsel->dispsel = dispsel;
   uisongsel->musicdb = musicdb;
   uisongsel->dispselType = dispselType;
   uisongsel->options = options;
   uisongsel->idxStart = 0;
-  uisongsel->oldIdxStart = 0;
   uisongsel->danceIdx = -1;
   uisongsel->dfilterCount = (double) dbCount (musicdb);
   uiDropDownInit (&uisongsel->dancesel);
@@ -59,7 +61,7 @@ uisongselInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
   for (int i = 0; i < UISONGSEL_PEER_MAX; ++i) {
     uisongsel->peers [i] = NULL;
   }
-  uisongsel->newselcbdbidx = NULL;
+  uisongsel->newselcb = NULL;
 
   uisongselUIInit (uisongsel);
 
@@ -150,7 +152,7 @@ uisongselProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 /* call danceselectcallback to set all the peer drop-downs */
 /* will apply the filter */
 void
-uisongselDanceSelectionProcess (uisongsel_t *uisongsel, ssize_t danceIdx)
+uisongselDanceSelectHandler (uisongsel_t *uisongsel, ssize_t danceIdx)
 {
   logProcBegin (LOG_PROC, "uisongselFilterDanceProcess");
 
@@ -158,7 +160,7 @@ uisongselDanceSelectionProcess (uisongsel_t *uisongsel, ssize_t danceIdx)
   uisongselDanceSelectCallback (uisongsel, danceIdx);
   uisongselApplySongFilter (uisongsel);
 
-  logProcEnd (LOG_PROC, "uisongselDanceSelectionProcess", "");
+  logProcEnd (LOG_PROC, "uisongselDanceSelectHandler", "");
 }
 
 void
@@ -187,7 +189,7 @@ uisongselSetSelectionCallback (uisongsel_t *uisongsel, UICallback *uicbdbidx)
   if (uisongsel == NULL) {
     return;
   }
-  uisongsel->newselcbdbidx = uicbdbidx;
+  uisongsel->newselcb = uicbdbidx;
 }
 
 void
@@ -219,29 +221,36 @@ uisongselApplySongFilter (void *udata)
   uisongselClearData (uisongsel);
   uisongselPopulateData (uisongsel);
   uisongselSetDefaultSelection (uisongsel);
-fprintf (stderr, "applied song filter to %s\n", uisongsel->tag);
 
-  /* want to apply the filter for all peers also */
-
-  if (uisongsel->ispeercall) {
-    return UICB_CONT;
-  }
-fprintf (stderr, "   running peers\n");
+  /* the song filter has been processed, the peers need to be populated */
 
   for (int i = 0; i < uisongsel->peercount; ++i) {
-    uisongselSetPeerFlag (uisongsel->peers [i], true);
-    uisongselApplySongFilter (uisongsel->peers [i]);
-    uisongselSetPeerFlag (uisongsel->peers [i], false);
+    if (uisongsel->peers [i] == NULL) {
+      continue;
+    }
+    uisongselClearData (uisongsel->peers [i]);
+    uisongselPopulateData (uisongsel->peers [i]);
+    uisongselSetDefaultSelection (uisongsel->peers [i]);
   }
 
   return UICB_CONT;
+}
+
+void
+uisongselSetEditCallback (uisongsel_t *uisongsel, UICallback *uicb)
+{
+  if (uisongsel == NULL) {
+    return;
+  }
+
+  uisongsel->editcb = uicb;
 }
 
 /* internal routines */
 
 
 /* callback for the song filter when the dance selection is changed */
-/* also used by danceselectionprocess to set the peers dance drop-down */
+/* also used by DanceSelectHandler to set the peers dance drop-down */
 /* does not apply the filter */
 static bool
 uisongselDanceSelectCallback (void *udata, long danceIdx)
@@ -255,6 +264,9 @@ uisongselDanceSelectCallback (void *udata, long danceIdx)
   }
 
   for (int i = 0; i < uisongsel->peercount; ++i) {
+    if (uisongsel->peers [i] == NULL) {
+      continue;
+    }
     uisongselSetPeerFlag (uisongsel->peers [i], true);
     uisongselDanceSelectCallback (uisongsel->peers [i], danceIdx);
     uisongselSetPeerFlag (uisongsel->peers [i], false);

@@ -108,6 +108,7 @@ uisfInit (UIWidget *windowp, nlist_t *options, songfilterpb_t pbflag)
   uiDropDownInit (&uisf->sortbyfilter);
   uiDropDownInit (&uisf->genrefilter);
   uiDropDownInit (&uisf->dancefilter);
+  uiutilsUIWidgetInit (&uisf->playlistdisp);
   uisf->filterstatussel = uiSpinboxTextInit ();
   uisf->filterfavoritesel = uiSpinboxTextInit ();
   uisf->searchentry = uiEntryInit (30, 100);
@@ -160,12 +161,20 @@ uisfSetDanceSelectCallback (uisongfilter_t *uisf, UICallback *danceselcb)
 void
 uisfShowPlaylistDisplay (uisongfilter_t *uisf)
 {
+  if (uisf == NULL) {
+    return;
+  }
+
   uiWidgetShowAll (&uisf->playlistdisp);
 }
 
 void
 uisfHidePlaylistDisplay (uisongfilter_t *uisf)
 {
+  if (uisf == NULL) {
+    return;
+  }
+
   songfilterClear (uisf->songfilter, SONG_FILTER_PLAYLIST);
   uiWidgetHide (&uisf->playlistdisp);
 }

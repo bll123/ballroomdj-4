@@ -22,7 +22,6 @@
 enum {
   MUSICQ_COL_ELLIPSIZE,
   MUSICQ_COL_FONT,
-  MUSICQ_COL_IDX,
   MUSICQ_COL_UNIQUE_IDX,
   MUSICQ_COL_DBIDX,
   MUSICQ_COL_DISP_IDX,
@@ -52,6 +51,7 @@ static bool   uimusicqPlayCallback (void *udata);
 static long   uimusicqGetSelectionDbidx (uimusicq_t *uimusicq);
 static void   uimusicqSelectionChgCallback (GtkTreeSelection *sel, gpointer udata);
 static void   uimusicqSetDefaultSelection (uimusicq_t *uimusicq);
+static void   uimusicqSetSelectLocation (uimusicq_t *uimusicq, int mqidx, long loc);
 static void   uimusicqSetSelection (uimusicq_t *uimusicq, int mqidx);
 static bool   uimusicqSongEditCallback (void *udata);
 
@@ -66,7 +66,6 @@ enum {
   UIMUSICQ_CB_REQ_EXTERNAL,
   UIMUSICQ_CB_CLEAR_QUEUE,
   UIMUSICQ_CB_EDIT_LOCAL,
-  UIMUSICQ_CB_EDIT,
   UIMUSICQ_CB_PLAY,
   UIMUSICQ_CB_MAX,
 };
@@ -290,8 +289,6 @@ uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci)
   assert (uiw->musicqTree != NULL);
 
   uiw->sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (uiw->musicqTree));
-  g_signal_connect ((GtkWidget *) uiw->sel, "changed",
-      G_CALLBACK (uimusicqSelectionChgCallback), uimusicq);
 
   gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (uiw->musicqTree), TRUE);
   uiWidgetAlignHorizFillW (uiw->musicqTree);
@@ -325,6 +322,9 @@ uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci)
 
   uimusicq->musicqManageIdx = tci;
 
+  g_signal_connect ((GtkWidget *) uiw->sel, "changed",
+      G_CALLBACK (uimusicqSelectionChgCallback), uimusicq);
+
   logProcEnd (LOG_PROC, "uimusicqBuildUI", "");
   return &uimusicq->ui [ci].mainbox;
 }
@@ -332,42 +332,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci)
 void
 uimusicqSetSelectionFirst (uimusicq_t *uimusicq, int mqidx)
 {
-  uimusicq->ui [mqidx].selectLocation = 0;
-  uimusicqSetSelection (uimusicq, mqidx);
-}
-
-ssize_t
-uimusicqGetSelection (uimusicq_t *uimusicq)
-{
-  int               ci;
-  GtkTreeIter       iter;
-  GtkTreeModel      *model;
-  ssize_t           idx;
-  unsigned long     tidx;
-  int               count;
-  uimusicqgtk_t     *uiw;
-
-
-  logProcBegin (LOG_PROC, "uimusicqGetSelection");
-
-  ci = uimusicq->musicqManageIdx;
-  if (! uimusicq->ui [ci].hasui) {
-    logProcEnd (LOG_PROC, "uimusicqGetSelection", "no-ui");
-    return -1;
-  }
-  uiw = uimusicq->ui [ci].uiWidgets;
-
-  count = gtk_tree_selection_count_selected_rows (uiw->sel);
-  if (count != 1) {
-    logProcEnd (LOG_PROC, "uimusicqGetSelection", "count != 1");
-    return -1;
-  }
-  gtk_tree_selection_get_selected (uiw->sel, &model, &iter);
-  gtk_tree_model_get (model, &iter, MUSICQ_COL_IDX, &tidx, -1);
-  idx = tidx;
-
-  logProcEnd (LOG_PROC, "uimusicqGetSelection", "");
-  return idx;
+  uimusicqSetSelectLocation (uimusicq, mqidx, 0);
 }
 
 void
@@ -501,19 +466,6 @@ uimusicqGetSelectLocation (uimusicq_t *uimusicq, int mqidx)
   return loc;
 }
 
-void
-uimusicqSetEditCallback (uimusicq_t *uimusicq, UICallback *uicb)
-{
-  uimusicqgtk_t *uiw;
-
-  if (uimusicq == NULL) {
-    return;
-  }
-
-  uiw = uimusicq->ui [uimusicq->musicqManageIdx].uiWidgets;
-  memcpy (&uiw->callback [UIMUSICQ_CB_EDIT], uicb, sizeof (UICallback));
-}
-
 /* internal routines */
 
 static void
@@ -558,14 +510,13 @@ uimusicqProcessMusicQueueDataUpdate (uimusicq_t *uimusicq, int ci, int newdispfl
   if (newdispflag == MUSICQ_NEW_DISP) {
     uiw->typelist = malloc (sizeof (GType) * MUSICQ_COL_MAX);
     uiw->col = 0;
-    /* attributes: ellipsize/align/font */
+    /* attributes: ellipsize / align / font */
     uiw->typelist [uiw->col++] = G_TYPE_INT;
     uiw->typelist [uiw->col++] = G_TYPE_STRING;
-    /* internal idx/unique idx/dbidx*/
+    /* unique idx / dbidx */
     uiw->typelist [uiw->col++] = G_TYPE_LONG;
     uiw->typelist [uiw->col++] = G_TYPE_LONG;
-    uiw->typelist [uiw->col++] = G_TYPE_LONG;
-    /* display disp idx/pause ind*/
+    /* display disp idx / pause ind */
     uiw->typelist [uiw->col++] = G_TYPE_LONG;
     uiw->typelist [uiw->col++] = GDK_TYPE_PIXBUF;
 
@@ -641,7 +592,6 @@ uimusicqProcessMusicQueueDisplay (uimusicq_t *uimusicq, int ci)
       gtk_list_store_set (GTK_LIST_STORE (model), &iter,
           MUSICQ_COL_ELLIPSIZE, PANGO_ELLIPSIZE_END,
           MUSICQ_COL_FONT, listingFont,
-          MUSICQ_COL_IDX, (glong) musicqupdate->idx,
           MUSICQ_COL_DISP_IDX, (glong) musicqupdate->dispidx,
           MUSICQ_COL_UNIQUE_IDX, (glong) musicqupdate->uniqueidx,
           MUSICQ_COL_DBIDX, (glong) musicqupdate->dbidx,
@@ -650,7 +600,6 @@ uimusicqProcessMusicQueueDisplay (uimusicq_t *uimusicq, int ci)
     } else {
       /* all data must be updated */
       gtk_list_store_set (GTK_LIST_STORE (model), &iter,
-          MUSICQ_COL_IDX, (glong) musicqupdate->idx,
           MUSICQ_COL_DISP_IDX, (glong) musicqupdate->dispidx,
           MUSICQ_COL_UNIQUE_IDX, (glong) musicqupdate->uniqueidx,
           MUSICQ_COL_DBIDX, (glong) musicqupdate->dbidx,
@@ -787,14 +736,29 @@ uimusicqSelectionChgCallback (GtkTreeSelection *sel, gpointer udata)
   uimusicqgtk_t   *uiw;
   dbidx_t         dbidx;
   int             ci;
+  long            idx;
 
-fprintf (stderr, "uimusicq selection chg\n");
   ci = uimusicq->musicqManageIdx;
   uiw = uimusicq->ui [ci].uiWidgets;
   dbidx = uimusicqGetSelectionDbidx (uimusicq);
   if (dbidx >= 0 &&
-      uimusicq->newselcbdbidx != NULL) {
-    uiutilsCallbackLongHandler (uimusicq->newselcbdbidx, dbidx);
+      uimusicq->newselcb != NULL) {
+    uiutilsCallbackLongHandler (uimusicq->newselcb, dbidx);
+  }
+
+  if (uimusicq->ispeercall) {
+    return;
+  }
+
+  idx = uimusicqGetSelectLocation (uimusicq, ci);
+
+  for (int i = 0; i < uimusicq->peercount; ++i) {
+    if (uimusicq->peers [i] == NULL) {
+      continue;
+    }
+    uimusicqSetPeerFlag (uimusicq->peers [i], true);
+    uimusicqSetSelectLocation (uimusicq->peers [i], ci, idx);
+    uimusicqSetPeerFlag (uimusicq->peers [i], false);
   }
 }
 
@@ -824,6 +788,14 @@ uimusicqSetDefaultSelection (uimusicq_t *uimusicq)
 
   return;
 }
+
+static void
+uimusicqSetSelectLocation (uimusicq_t *uimusicq, int mqidx, long loc)
+{
+  uimusicq->ui [mqidx].selectLocation = loc;
+  uimusicqSetSelection (uimusicq, mqidx);
+}
+
 
 static void
 uimusicqSetSelection (uimusicq_t *uimusicq, int mqidx)
@@ -869,13 +841,13 @@ uimusicqSongEditCallback (void *udata)
   ci = uimusicq->musicqManageIdx;
   uiw = uimusicq->ui [ci].uiWidgets;
 
-  if (uimusicq->newselcbdbidx != NULL) {
+  if (uimusicq->newselcb != NULL) {
     dbidx = uimusicqGetSelectionDbidx (uimusicq);
     if (dbidx < 0) {
       return UICB_CONT;
     }
-    uiutilsCallbackLongHandler (uimusicq->newselcbdbidx, dbidx);
+    uiutilsCallbackLongHandler (uimusicq->newselcb, dbidx);
   }
-  return uiutilsCallbackHandler (&uiw->callback [UIMUSICQ_CB_EDIT]);
+  return uiutilsCallbackHandler (uimusicq->editcb);
 }
 

@@ -299,14 +299,6 @@ songfilterProcess (songfilter_t *sf, musicdb_t *musicdb)
     sf->indexList = NULL;
   }
 
-  if (sf->inuse [SONG_FILTER_PLAYLIST]) {
-    if (sf->sortselection != NULL) {
-      free (sf->sortselection);
-    }
-    sf->sortselection = strdup (SONG_FILTER_SORT_INDEX);
-  }
-
-
   idx = 0;
   sf->sortList = slistAlloc ("songfilter-sort-idx", LIST_UNORDERED, NULL);
   sf->indexList = nlistAlloc ("songfilter-num-idx", LIST_UNORDERED, NULL);
@@ -323,10 +315,6 @@ songfilterProcess (songfilter_t *sf, musicdb_t *musicdb)
     ilistidx_t  slkey;
 
 
-    if (sf->sortselection != NULL) {
-      free (sf->sortselection);
-    }
-    sf->sortselection = strdup (SONG_FILTER_SORT_INDEX);
     sl = songlistAlloc (sf->datafilter [SONG_FILTER_PLAYLIST]);
     songlistStartIterator (sl, &sliter);
     while ((slkey = songlistIterate (sl, &sliter)) >= 0) {
@@ -334,9 +322,7 @@ songfilterProcess (songfilter_t *sf, musicdb_t *musicdb)
 
       sfname = songlistGetStr (sl, slkey, SONGLIST_FILE);
       song = dbGetByName (musicdb, sfname);
-if (song == NULL) {
-fprintf (stderr, " unable to locate slkey: %d fn: %s\n", slkey, sfname);
-}
+
       if (song != NULL) {
         dbidx = songGetNum (song, TAG_DBIDX);
         snprintf (sortkey, sizeof (sortkey), "%08d", idx);
