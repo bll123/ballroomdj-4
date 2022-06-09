@@ -386,7 +386,6 @@ manageClosingCallback (void *udata, programstate_t programState)
   datafileSaveKeyVal ("manageui", fn, manageuidfkeys, MANAGEUI_DFKEY_COUNT, manage->options);
 
   bdj4shutdown (ROUTE_MANAGEUI, manage->musicdb);
-  dispselFree (manage->dispsel);
   manageSequenceFree (manage->manageseq);
   managePlaylistFree (manage->managepl);
   manageDbFree (manage->managedb);
@@ -409,7 +408,6 @@ manageClosingCallback (void *udata, programstate_t programState)
   if (manage->options != datafileGetList (manage->optiondf)) {
     nlistFree (manage->options);
   }
-  datafileFree (manage->optiondf);
 
   uiplayerFree (manage->slplayer);
   uimusicqFree (manage->slmusicq);
@@ -422,6 +420,11 @@ manageClosingCallback (void *udata, programstate_t programState)
   uimusicqFree (manage->mmmusicq);
   uisongselFree (manage->mmsongsel);
   uisongeditFree (manage->mmsongedit);
+
+  /* used by songedit et. al.; free last */
+  dispselFree (manage->dispsel);
+
+  datafileFree (manage->optiondf);
 
   uiCleanup ();
 

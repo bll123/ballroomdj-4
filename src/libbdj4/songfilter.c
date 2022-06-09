@@ -316,7 +316,7 @@ songfilterDanceSet (songfilter_t *sf, ilistidx_t danceIdx,
   sf->changeTime = mstime ();
 }
 
-ssize_t
+long
 songfilterProcess (songfilter_t *sf, musicdb_t *musicdb)
 {
   dbidx_t     dbidx;
@@ -675,6 +675,16 @@ songfilterGetByIdx (songfilter_t *sf, nlistidx_t lookupIdx)
   dbidx = nlistGetNum (sf->indexList, internalIdx);
   return dbidx;
 }
+
+long
+songfilterGetCount (songfilter_t *sf)
+{
+  if (sf == NULL) {
+    return 0;
+  }
+  return nlistGetCount (sf->indexList);
+}
+
 
 /* internal routines */
 

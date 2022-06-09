@@ -220,7 +220,6 @@ uisongselApplySongFilter (void *udata)
   /* afterwards, make sure something is selected */
   uisongselClearData (uisongsel);
   uisongselPopulateData (uisongsel);
-  uisongselSetDefaultSelection (uisongsel);
 
   /* the song filter has been processed, the peers need to be populated */
 
@@ -230,8 +229,18 @@ uisongselApplySongFilter (void *udata)
     }
     uisongselClearData (uisongsel->peers [i]);
     uisongselPopulateData (uisongsel->peers [i]);
-    uisongselSetDefaultSelection (uisongsel->peers [i]);
   }
+
+  /* set the selection after the populate is done */
+
+  uisongselSetDefaultSelection (uisongsel);
+
+//  for (int i = 0; i < uisongsel->peercount; ++i) {
+//    if (uisongsel->peers [i] == NULL) {
+//      continue;
+//    }
+//    uisongselSetDefaultSelection (uisongsel->peers [i]);
+//  }
 
   return UICB_CONT;
 }

@@ -366,7 +366,7 @@ uisongselPopulateData (uisongsel_t *uisongsel)
   GtkTreeModel        * model = NULL;
   GtkTreeIter         iter;
   GtkAdjustment       * adjustment;
-  ssize_t             idx;
+  long                idx;
   int                 count;
   song_t              * song;
   songfavoriteinfo_t  * favorite;
@@ -383,6 +383,11 @@ uisongselPopulateData (uisongsel_t *uisongsel)
   listingFont = bdjoptGetStr (OPT_MP_LISTING_FONT);
 
   adjustment = gtk_range_get_adjustment (GTK_RANGE (uiw->songselScrollbar));
+
+  /* re-fetch the count, as the songfilter process may not have been */
+  /* processed by this instance */
+  uisongsel->dfilterCount = (double) songfilterGetCount (uisongsel->songfilter);
+
   tupper = uisongsel->dfilterCount;
   gtk_adjustment_set_upper (adjustment, tupper);
 
@@ -394,8 +399,11 @@ uisongselPopulateData (uisongsel_t *uisongsel)
     snprintf (tbuff, sizeof (tbuff), "%d", count);
     if (gtk_tree_model_get_iter_from_string (model, &iter, tbuff)) {
       dbidx = songfilterGetByIdx (uisongsel->songfilter, idx);
-      song = dbGetByIdx (uisongsel->musicdb, dbidx);
-      if (song != NULL) {
+      song = NULL;
+      if (dbidx >= 0) {
+        song = dbGetByIdx (uisongsel->musicdb, dbidx);
+      }
+      if (song != NULL && (double) count < uisongsel->dfilterCount) {
         favorite = songGetFavoriteData (song);
         color = favorite->color;
         if (strcmp (color, "") == 0) {
@@ -418,7 +426,7 @@ uisongselPopulateData (uisongsel_t *uisongsel)
         uisongSetDisplayColumns (sellist, song, SONGSEL_COL_MAX,
             uisongselPopulateDataCallback, uisongsel);
       } /* song is not null */
-    }
+    } /* iter is valid */
 
     ++idx;
     ++count;
@@ -665,8 +673,6 @@ uisongselCreateRows (uisongsel_t *uisongsel)
   for (int i = 0; i < STORE_ROWS; ++i) {
     gtk_list_store_append (GTK_LIST_STORE (model), &iter);
   }
-
-  uisongsel->dfilterCount = 0.0;
   logProcEnd (LOG_PROC, "uisongselCreateRows", "");
 }
 
@@ -808,10 +814,13 @@ uisongselScroll (GtkRange *range, GtkScrollType scrolltype,
   uiw = uisongsel->uiWidgetData;
 
   start = floor (value);
-  if (start < 0) {
-    start = 0;
+  if (start < 0.0) {
+    start = 0.0;
   }
   tval = uisongsel->dfilterCount - (double) uiw->maxRows;
+  if (tval < 0) {
+    tval = 0;
+  }
   if (start >= tval) {
     start = tval;
   }
@@ -1074,7 +1083,8 @@ uisongselMoveSelection (void *udata, int where)
       nidx = uisongsel->idxStart + 1;
       scrolled = uisongselScrollSelection (uisongsel, nidx);
       if (! scrolled) {
-        if (loc < uiw->maxRows - 1) {
+        if (loc < uiw->maxRows - 1 &&
+            (double) loc < uisongsel->dfilterCount) {
           valid = gtk_tree_model_iter_next (model, &iter);
         }
       } else {
