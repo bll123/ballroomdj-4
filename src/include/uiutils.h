@@ -133,6 +133,7 @@ int  uiutilsNotebookIDGet (uiutilsnbtabid_t *nbtabid, int idx);
 int  uiutilsNotebookIDGetPage (uiutilsnbtabid_t *nbtabid, int id);
 void uiutilsNotebookIDStartIterator (uiutilsnbtabid_t *nbtabid, int *iteridx);
 int  uiutilsNotebookIDIterate (uiutilsnbtabid_t *nbtabid, int *iteridx);
+bool uiutilsUIWidgetSet (UIWidget *uiwidget);
 void uiutilsUIWidgetCopy (UIWidget *target, UIWidget *source);
 void uiutilsUICallbackInit (UICallback *uicb, UICallbackFunc cb, void *udata);
 void uiutilsUICallbackDoubleInit (UICallback *uicb, UIDoubleCallbackFunc cb, void *udata);

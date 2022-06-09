@@ -58,6 +58,7 @@ typedef struct uisongfilter {
   uiswitch_t        *playstatusswitch;
   songfilterpb_t    dfltpbflag;
   int               danceIdx;
+  bool              showplaylist : 1;
 } uisongfilter_t;
 
 /* song filter handling */
@@ -116,6 +117,7 @@ uisfInit (UIWidget *windowp, nlist_t *options, songfilterpb_t pbflag)
   uisf->uilevel = NULL;
   uisf->playstatusswitch = NULL;
   uisf->danceIdx = -1;
+  uisf->showplaylist = false;
 
   return uisf;
 }
@@ -165,6 +167,13 @@ uisfShowPlaylistDisplay (uisongfilter_t *uisf)
     return;
   }
 
+  uisf->showplaylist = true;
+  songfilterOn (uisf->songfilter, SONG_FILTER_PLAYLIST);
+
+  if (! uiutilsUIWidgetSet (&uisf->filterDialog)) {
+    return;
+  }
+
   uiWidgetShowAll (&uisf->playlistdisp);
 }
 
@@ -175,8 +184,24 @@ uisfHidePlaylistDisplay (uisongfilter_t *uisf)
     return;
   }
 
-  songfilterClear (uisf->songfilter, SONG_FILTER_PLAYLIST);
+  uisf->showplaylist = false;
+
+  if (! uiutilsUIWidgetSet (&uisf->filterDialog)) {
+    return;
+  }
+
+  songfilterOff (uisf->songfilter, SONG_FILTER_PLAYLIST);
   uiWidgetHide (&uisf->playlistdisp);
+}
+
+bool
+uisfPlaylistInUse (uisongfilter_t *uisf)
+{
+  if (uisf == NULL) {
+    return false;
+  }
+
+  return songfilterInUse (uisf->songfilter, SONG_FILTER_PLAYLIST);
 }
 
 bool
@@ -193,6 +218,11 @@ uisfDialog (void *udata)
     uiSwitchSetValue (uisf->playstatusswitch, uisf->dfltpbflag);
   }
   uiWidgetShowAll (&uisf->filterDialog);
+
+  uisfHidePlaylistDisplay (uisf);
+  if (uisf->showplaylist) {
+    uisfShowPlaylistDisplay (uisf);
+  }
 
   x = nlistGetNum (uisf->options, SONGSEL_FILTER_POSITION_X);
   y = nlistGetNum (uisf->options, SONGSEL_FILTER_POSITION_Y);
@@ -219,7 +249,7 @@ uisfClearPlaylist (uisongfilter_t *uisf)
     return;
   }
 
-  songfilterClear (uisf->songfilter, SONG_FILTER_PLAYLIST);
+  songfilterOff (uisf->songfilter, SONG_FILTER_PLAYLIST);
 }
 
 void
@@ -269,7 +299,7 @@ uisfInitDisplay (uisongfilter_t *uisf)
   /* all items need to be set, as after a reset, they need to be updated */
   /* sort-by and dance are important, the others can be reset */
 
-  uiDropDownSelectionSetStr (&uisf->playlistfilter, "");
+  uiDropDownSelectionSetNum (&uisf->playlistfilter, -1);
 
   sortby = songfilterGetSort (uisf->songfilter);
   uiDropDownSelectionSetStr (&uisf->sortbyfilter, sortby);
@@ -351,7 +381,8 @@ uisfCreatePlaylistList (uisongfilter_t *uisf)
 
   /* at this time, only song lists are supported */
   pllist = playlistGetPlaylistList (PL_LIST_SONGLIST);
-  uiDropDownSetList (&uisf->playlistfilter, pllist, NULL);
+  /* what text is best to use for 'no selection'? */
+  uiDropDownSetList (&uisf->playlistfilter, pllist, "");
   slistFree (pllist);
   logProcEnd (LOG_PROC, "uisfCreatePlaylistList", "");
 }
@@ -423,7 +454,11 @@ uisfCreateDialog (uisongfilter_t *uisf)
   int           max;
   int           len;
 
-  logProcBegin (LOG_PROC, "uisfCreateFilterDialog");
+  logProcBegin (LOG_PROC, "uisfCreateDialog");
+
+  if (uiutilsUIWidgetSet (&uisf->filterDialog)) {
+    return;
+  }
 
   uiCreateSizeGroupHoriz (&sg);
 
@@ -609,7 +644,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
   uiCreateLabel (&uiwidget, " ");
   uiBoxPackStart (&hbox, &uiwidget);
 
-  logProcEnd (LOG_PROC, "uisfCreateFilterDialog", "");
+  logProcEnd (LOG_PROC, "uisfCreateDialog", "");
 }
 
 static bool
@@ -666,6 +701,20 @@ uisfUpdate (uisongfilter_t *uisf)
   int           idx;
   int           nval;
 
+
+  /* playlist : if active, no other filters are used */
+  if (uisf->showplaylist) {
+    /* turn playlist back on */
+    songfilterOn (uisf->songfilter, SONG_FILTER_PLAYLIST);
+
+    if (songfilterInUse (uisf->songfilter, SONG_FILTER_PLAYLIST)) {
+      /* if the playlist filter is on, then apply and return */
+      if (uisf->applycb != NULL) {
+        uiutilsCallbackHandler (uisf->applycb);
+      }
+      return;
+    }
+  }
 
   /* search : always active */
   searchstr = uiEntryGetValue (uisf->searchentry);

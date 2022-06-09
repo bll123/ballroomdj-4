@@ -14,6 +14,7 @@ void uisfSetApplyCallback (uisongfilter_t *uisf, UICallback *applycb);
 void uisfSetDanceSelectCallback (uisongfilter_t *uisf, UICallback *danceselcb);
 void uisfShowPlaylistDisplay (uisongfilter_t *uisf);
 void uisfHidePlaylistDisplay (uisongfilter_t *uisf);
+bool uisfPlaylistInUse (uisongfilter_t *uisf);
 bool uisfDialog (void *udata);
 void uisfSetPlaylist (uisongfilter_t *uisf, char *slname);
 void uisfClearPlaylist (uisongfilter_t *uisf);

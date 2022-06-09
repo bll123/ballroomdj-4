@@ -50,6 +50,9 @@ bool          songfilterCheckSelection (songfilter_t *sf, int type);
 bool          songfilterIsChanged (songfilter_t *sf, time_t tm);
 void          songfilterSetSort (songfilter_t *sf, char *sortselection);
 void          songfilterClear (songfilter_t *sf, int filterType);
+bool          songfilterInUse (songfilter_t *sf, int filterType);
+void          songfilterOff (songfilter_t *sf, int filterType);
+void          songfilterOn (songfilter_t *sf, int filterType);
 void          songfilterSetData (songfilter_t *sf, int filterType, void *value);
 void          songfilterSetNum (songfilter_t *sf, int filterType, ssize_t value);
 void          songfilterDanceSet (songfilter_t *sf, ilistidx_t danceIdx,

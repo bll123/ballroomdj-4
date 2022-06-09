@@ -1484,7 +1484,8 @@ manageSetDisplayPerSelection (manageui_t *manage, int id)
   dbidx_t     dbidx;
 
   if (id == MANAGE_TAB_MAIN_SL) {
-    if (manage->lastdisp == MANAGE_DISP_SONG_LIST) {
+    if (uisfPlaylistInUse (manage->uisongfilter) ||
+        manage->lastdisp == MANAGE_DISP_SONG_LIST) {
       uisfClearPlaylist (manage->uisongfilter);
       manage->selbypass = 1;
       uisongselApplySongFilter (manage->mmsongsel);
@@ -1499,9 +1500,12 @@ manageSetDisplayPerSelection (manageui_t *manage, int id)
     song_t  *song;
     int     redisp = false;
 
+    uisfShowPlaylistDisplay (manage->uisongfilter);
+
     if (manage->selusesonglist &&
         manage->lastdisp == MANAGE_DISP_SONG_SEL) {
-      /* the song list must be saved, otherwise the song editor navigation */
+fprintf (stderr, "m: usesonglist/last song-sel: redisp\n");
+      /* the song list must be saved, otherwise the song filter */
       /* can't load it */
       manageSonglistSave (manage);
       slname = strdup (uimusicqGetSonglistName (manage->slmusicq));
@@ -1511,6 +1515,15 @@ manageSetDisplayPerSelection (manageui_t *manage, int id)
     }
     if (! manage->selusesonglist &&
         manage->lastdisp == MANAGE_DISP_SONG_LIST) {
+fprintf (stderr, "m: not usesonglist/last song-list: redisp\n");
+      redisp = true;
+    }
+
+    /* showplaylistdisplay will turn the playlist filter back on */
+    /* if it has a setting */
+    /* do this afterwards, as the prior playlist name is wanted */
+    if (uisfPlaylistInUse (manage->uisongfilter)) {
+fprintf (stderr, "m: pl in use: redisp\n");
       redisp = true;
     }
 
@@ -1539,7 +1552,6 @@ manageSetDisplayPerSelection (manageui_t *manage, int id)
     } else {
       manage->lastdisp = MANAGE_DISP_SONG_SEL;
     }
-    uisfShowPlaylistDisplay (manage->uisongfilter);
   }
 }
 

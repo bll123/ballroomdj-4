@@ -186,6 +186,49 @@ songfilterClear (songfilter_t *sf, int filterType)
   sf->changeTime = mstime ();
 }
 
+bool
+songfilterInUse (songfilter_t *sf, int filterType)
+{
+  if (sf == NULL) {
+    return false;
+  }
+  return sf->inuse [filterType];
+}
+
+/* currently used for playlists */
+/* turns the filter off without resetting the data */
+void
+songfilterOff (songfilter_t *sf, int filterType)
+{
+  if (sf == NULL) {
+    return;
+  }
+  sf->inuse [filterType] = false;
+}
+
+/* currently used for playlists */
+void
+songfilterOn (songfilter_t *sf, int filterType)
+{
+  int     valueType;
+
+  if (sf == NULL) {
+    return;
+  }
+  valueType = valueTypeLookup [filterType];
+  if (valueType == SONG_FILTER_NUM ||
+      valueType == SONG_FILTER_NUM_IGNORE) {
+    /* this may not be valid */
+    if (sf->numfilter [filterType] >= 0) {
+      sf->inuse [filterType] = true;
+    }
+  } else {
+    if (sf->datafilter [filterType] != NULL) {
+      sf->inuse [filterType] = true;
+    }
+  }
+}
+
 void
 songfilterSetData (songfilter_t *sf, int filterType, void *value)
 {

@@ -108,6 +108,16 @@ uiutilsNotebookIDIterate (uiutilsnbtabid_t *nbtabid, int *iteridx)
   return nbtabid->tabids [*iteridx];
 }
 
+inline bool
+uiutilsUIWidgetSet (UIWidget *uiwidget)
+{
+  bool rc = true;
+
+  if (uiwidget->widget == NULL) {
+    rc = false;
+  }
+  return rc;
+}
 
 
 inline void
