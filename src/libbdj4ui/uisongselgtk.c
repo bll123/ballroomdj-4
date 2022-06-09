@@ -87,6 +87,7 @@ static void uisongselQueueProcessHandler (void *udata, musicqidx_t mqidx);
 static void uisongselInitializeStore (uisongsel_t *uisongsel);
 static void uisongselInitializeStoreCallback (int type, void *udata);
 static void uisongselCreateRows (uisongsel_t *uisongsel);
+static void uisongselProcessSongFilter (uisongsel_t *uisongsel);
 
 static void uisongselCheckFavChgSignal (GtkTreeView* tv, GtkTreePath* path, GtkTreeViewColumn* column, gpointer udata);
 
@@ -301,6 +302,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin)
 
   uisongselCreateRows (uisongsel);
   logMsg (LOG_DBG, LOG_SONGSEL, "%s populate: initial", uisongsel->tag);
+  uisongselProcessSongFilter (uisongsel);
   uisongselPopulateData (uisongsel);
 
   uiDropDownSelectionSetNum (&uisongsel->dancesel, -1);
@@ -664,11 +666,19 @@ uisongselCreateRows (uisongsel_t *uisongsel)
     gtk_list_store_append (GTK_LIST_STORE (model), &iter);
   }
 
+  uisongsel->dfilterCount = 0.0;
+  logProcEnd (LOG_PROC, "uisongselCreateRows", "");
+}
+
+static void
+uisongselProcessSongFilter (uisongsel_t *uisongsel)
+{
   /* initial song filter process */
   uisongsel->dfilterCount = (double) songfilterProcess (
       uisongsel->songfilter, uisongsel->musicdb);
-  logProcEnd (LOG_PROC, "uisongselCreateRows", "");
 }
+
+
 
 static void
 uisongselCheckFavChgSignal (GtkTreeView* tv, GtkTreePath* path,

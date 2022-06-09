@@ -1504,7 +1504,6 @@ manageSetDisplayPerSelection (manageui_t *manage, int id)
 
     if (manage->selusesonglist &&
         manage->lastdisp == MANAGE_DISP_SONG_SEL) {
-fprintf (stderr, "m: usesonglist/last song-sel: redisp\n");
       /* the song list must be saved, otherwise the song filter */
       /* can't load it */
       manageSonglistSave (manage);
@@ -1515,7 +1514,6 @@ fprintf (stderr, "m: usesonglist/last song-sel: redisp\n");
     }
     if (! manage->selusesonglist &&
         manage->lastdisp == MANAGE_DISP_SONG_LIST) {
-fprintf (stderr, "m: not usesonglist/last song-list: redisp\n");
       redisp = true;
     }
 
@@ -1523,7 +1521,6 @@ fprintf (stderr, "m: not usesonglist/last song-list: redisp\n");
     /* if it has a setting */
     /* do this afterwards, as the prior playlist name is wanted */
     if (uisfPlaylistInUse (manage->uisongfilter)) {
-fprintf (stderr, "m: pl in use: redisp\n");
       redisp = true;
     }
 
