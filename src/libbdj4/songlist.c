@@ -35,8 +35,25 @@ songlist_t *
 songlistAlloc (const char *fname)
 {
   songlist_t    *sl;
+  char          tfn [MAXPATHLEN];
 
-  sl = songlistCreate (fname);
+  sl = malloc (sizeof (songlist_t));
+  sl->df = NULL;
+  sl->songlist = NULL;
+  sl->fname = strdup (fname);
+  pathbldMakePath (tfn, sizeof (tfn), fname,
+      BDJ4_SONGLIST_EXT, PATHBLD_MP_DATA);
+  sl->path = strdup (tfn);
+  sl->songlist = ilistAlloc (fname, LIST_ORDERED);
+  return sl;
+}
+
+songlist_t *
+songlistLoad (const char *fname)
+{
+  songlist_t    *sl;
+
+  sl = songlistAlloc (fname);
 
   if (! fileopFileExists (sl->path)) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: songlist: missing %s", sl->path);
@@ -49,26 +66,11 @@ songlistAlloc (const char *fname)
     songlistFree (sl);
     return NULL;
   }
+  if (sl->songlist != NULL) {
+    ilistFree (sl->songlist);
+  }
   sl->songlist = datafileGetList (sl->df);
   ilistDumpInfo (sl->songlist);
-  return sl;
-}
-
-songlist_t *
-songlistCreate (const char *fname)
-{
-  songlist_t    *sl;
-  char          tfn [MAXPATHLEN];
-
-  sl = malloc (sizeof (songlist_t));
-  assert (sl != NULL);
-  sl->df = NULL;
-  sl->songlist = NULL;
-  sl->fname = strdup (fname);
-  pathbldMakePath (tfn, sizeof (tfn), fname,
-      BDJ4_SONGLIST_EXT, PATHBLD_MP_DATA);
-  sl->path = strdup (tfn);
-  sl->songlist = ilistAlloc (fname, LIST_ORDERED);
   return sl;
 }
 
@@ -76,11 +78,12 @@ void
 songlistFree (songlist_t *sl)
 {
   if (sl != NULL) {
+    if (sl->df == NULL ||
+        sl->songlist != datafileGetList (sl->df)) {
+      ilistFree (sl->songlist);
+    }
     if (sl->df != NULL) {
       datafileFree (sl->df);
-    }
-    if (sl->df == NULL && sl->songlist != NULL) {
-      ilistFree (sl->songlist);
     }
     if (sl->fname != NULL) {
       free (sl->fname);

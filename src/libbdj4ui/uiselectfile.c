@@ -75,9 +75,9 @@ selectFileDialog (int type, UIWidget *window, nlist_t *options,
     }
   }
 
-  filelist = playlistGetPlaylistList (playlistSel);
-
   if (cb != NULL) {
+    filelist = playlistGetPlaylistList (playlistSel);
+
     /* CONTEXT: file type for the file selection dialog (song list) */
     selectFileCreateDialog (selectfile, filelist, _("Song List"), cb);
     uiWidgetShowAll (&selectfile->uidialog);
@@ -85,6 +85,8 @@ selectFileDialog (int type, UIWidget *window, nlist_t *options,
     x = nlistGetNum (selectfile->options, MANAGE_SELFILE_POSITION_X);
     y = nlistGetNum (selectfile->options, MANAGE_SELFILE_POSITION_Y);
     uiWindowMove (&selectfile->uidialog, x, y);
+
+    slistFree (filelist);
   }
 }
 

@@ -105,6 +105,7 @@ uimusicqFree (uimusicq_t *uimusicq)
 {
   logProcBegin (LOG_PROC, "uimusicqFree");
   if (uimusicq != NULL) {
+    uimusicqMusicQueueDataFree (uimusicq);
     uiWidgetClearPersistent (&uimusicq->pausePixbuf);
     for (int i = 0; i < MUSICQ_MAX; ++i) {
       uiDropDownFree (&uimusicq->ui [i].playlistsel);
@@ -455,6 +456,7 @@ uimusicqMusicQueueDataParse (uimusicq_t *uimusicq, char *args)
   logProcBegin (LOG_PROC, "uimusicqMusicQueueDataParse");
 
   /* first, build ourselves a list to work with */
+  uimusicqMusicQueueDataFree (uimusicq);
   uimusicq->uniqueList = nlistAlloc ("temp-musicq-unique", LIST_ORDERED, free);
   uimusicq->dispList = nlistAlloc ("temp-musicq-disp", LIST_ORDERED, NULL);
 
@@ -553,7 +555,7 @@ uimusicqSave (uimusicq_t *uimusicq, const char *fname)
   uimusicq->savelist = nlistAlloc (tbuff, LIST_UNORDERED, NULL);
   uimusicqIterate (uimusicq, uimusicqSaveListCallback, MUSICQ_A);
 
-  songlist = songlistCreate (fname);
+  songlist = songlistAlloc (fname);
 
   nlistStartIterator (uimusicq->savelist, &iteridx);
   key = 0;

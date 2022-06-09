@@ -84,7 +84,6 @@ playlistAlloc (musicdb_t *musicdb)
   playlist_t    *pl = NULL;
 
   pl = malloc (sizeof (playlist_t));
-  assert (pl != NULL);
   pl->name = NULL;
   pl->songlistiter = 0;
   pl->plinfodf = NULL;
@@ -220,7 +219,7 @@ playlistLoad (playlist_t *pl, const char *fname)
 
   if (type == PLTYPE_SONGLIST) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "songlist: load songlist %s", fname);
-    pl->songlist = songlistAlloc (fname);
+    pl->songlist = songlistLoad (fname);
     if (pl->songlist == NULL) {
       logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: missing songlist %s", tfn);
       playlistFree (pl);
@@ -285,7 +284,7 @@ playlistCreate (playlist_t *pl, const char *plname, pltype_t type)
   nlistSort (pl->plinfo);
 
   if (type == PLTYPE_SONGLIST) {
-    pl->songlist = songlistAlloc (plname);
+    pl->songlist = songlistLoad (plname);
   }
   if (type == PLTYPE_SEQUENCE) {
     pl->sequence = sequenceAlloc (plname);

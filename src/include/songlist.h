@@ -14,8 +14,8 @@ typedef enum {
 
 typedef struct songlist songlist_t;
 
-songlist_t * songlistAlloc (const char *);
-songlist_t * songlistCreate (const char *fname);
+songlist_t * songlistAlloc (const char *fname);
+songlist_t * songlistLoad (const char *fname);
 void songlistFree (songlist_t *);
 void songlistStartIterator (songlist_t *sl, ilistidx_t *iteridx);
 ilistidx_t songlistIterate (songlist_t *sl, ilistidx_t *iteridx);

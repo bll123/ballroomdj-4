@@ -88,48 +88,46 @@ uisongeditUIInit (uisongedit_t *uisongedit)
 void
 uisongeditUIFree (uisongedit_t *uisongedit)
 {
-  slist_t         *sellist;
-  slistidx_t      dsiteridx;
-  int             count;
   uisongeditgtk_t *uiw;
-  char            *keystr;
+
+  if (uisongedit == NULL) {
+    return;
+  }
 
   uiw = uisongedit->uiWidgetData;
   if (uiw != NULL) {
-    for (int dispsel = DISP_SEL_SONGEDIT_A; dispsel <= DISP_SEL_SONGEDIT_C; ++dispsel) {
-      sellist = dispselGetList (uisongedit->dispsel, dispsel);
+    for (int count = 0; count < uiw->itemcount; ++count) {
+      int   tagkey;
 
-      slistStartIterator (sellist, &dsiteridx);
-      count = 0;
-      while ((keystr = slistIterateKey (sellist, &dsiteridx)) != NULL) {
-        int   tagkey;
+      tagkey = uiw->items [count].tagkey;
 
-        tagkey = slistGetNum (sellist, keystr);
-        switch (tagdefs [tagkey].editType) {
-          case ET_ENTRY: {
+      switch (tagdefs [tagkey].editType) {
+        case ET_ENTRY: {
+          if (uiw->items [count].entry != NULL) {
             uiEntryFree (uiw->items [count].entry);
-            break;
           }
-          case ET_COMBOBOX: {
-            break;
-          }
-          case ET_SPINBOX_TEXT: {
-            break;
-          }
-          case ET_SPINBOX: {
-            break;
-          }
-          case ET_SPINBOX_TIME: {
-            uiSpinboxTimeFree (uiw->items [count].spinbox);
-            break;
-          }
-          case ET_NA:
-          case ET_SCALE:
-          case ET_LABEL: {
-            break;
-          }
+          break;
         }
-        ++count;
+        case ET_COMBOBOX: {
+          break;
+        }
+        case ET_SPINBOX_TEXT: {
+          break;
+        }
+        case ET_SPINBOX: {
+          break;
+        }
+        case ET_SPINBOX_TIME: {
+          if (uiw->items [count].spinbox != NULL) {
+            uiSpinboxTimeFree (uiw->items [count].spinbox);
+          }
+          break;
+        }
+        case ET_NA:
+        case ET_SCALE:
+        case ET_LABEL: {
+          break;
+        }
       }
     }
 

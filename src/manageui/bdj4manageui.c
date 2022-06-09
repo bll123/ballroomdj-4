@@ -421,9 +421,7 @@ manageClosingCallback (void *udata, programstate_t programState)
   uisongselFree (manage->mmsongsel);
   uisongeditFree (manage->mmsongedit);
 
-  /* used by songedit et. al.; free last */
   dispselFree (manage->dispsel);
-
   datafileFree (manage->optiondf);
 
   uiCleanup ();

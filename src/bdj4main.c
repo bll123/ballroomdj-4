@@ -238,6 +238,7 @@ mainClosingCallback (void *tmaindata, programstate_t programState)
   logProcBegin (LOG_PROC, "mainClosingCallback");
 
   if (mainData->playlistCache != NULL) {
+    /* the playlists get freed here */
     slistFree (mainData->playlistCache);
   }
   for (musicqidx_t i = 0; i < MUSICQ_MAX; ++i) {
@@ -1152,8 +1153,8 @@ mainMusicQueueFill (maindata_t *mainData)
 
   /* want current + playerqLen songs */
   while (playlist != NULL && currlen <= playerqLen && stopatflag == false) {
-    ssize_t   stopTime;
-    song_t    *song = NULL;
+    ssize_t     stopTime;
+    song_t      *song = NULL;
 
     song = playlistGetNextSong (playlist, mainData->danceCounts,
         currlen, mainCheckMusicQueue, mainMusicQueueHistory, mainData);

@@ -157,6 +157,7 @@ uisfFree (uisongfilter_t *uisf)
     uiSpinboxTextFree (uisf->favoritefilter);
     uiSwitchFree (uisf->playstatusswitch);
     sortoptFree (uisf->sortopt);
+    songfilterFree (uisf->songfilter);
     free (uisf);
   }
 }
@@ -826,6 +827,10 @@ uisfUpdate (uisongfilter_t *uisf)
 static void
 uisfDisableWidgets (uisongfilter_t *uisf)
 {
+  if (! uiutilsUIWidgetSet (&uisf->filterDialog)) {
+    return;
+  }
+
   for (int i = 0; i < UISF_LABEL_MAX; ++i) {
     uiWidgetDisable (&uisf->labels [i]);
   }
@@ -843,6 +848,10 @@ uisfDisableWidgets (uisongfilter_t *uisf)
 static void
 uisfEnableWidgets (uisongfilter_t *uisf)
 {
+  if (! uiutilsUIWidgetSet (&uisf->filterDialog)) {
+    return;
+  }
+
   for (int i = 0; i < UISF_LABEL_MAX; ++i) {
     uiWidgetEnable (&uisf->labels [i]);
   }

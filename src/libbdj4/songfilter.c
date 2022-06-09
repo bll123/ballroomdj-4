@@ -134,6 +134,9 @@ songfilterFree (songfilter_t *sf)
 void
 songfilterSetSort (songfilter_t *sf, char *sortselection)
 {
+  if (sf->sortselection != NULL) {
+    free (sf->sortselection);
+  }
   sf->sortselection = strdup (sortselection);
   sf->changeTime = mstime ();
 }
@@ -358,7 +361,7 @@ songfilterProcess (songfilter_t *sf, musicdb_t *musicdb)
     ilistidx_t  slkey;
 
 
-    sl = songlistAlloc (sf->datafilter [SONG_FILTER_PLAYLIST]);
+    sl = songlistLoad (sf->datafilter [SONG_FILTER_PLAYLIST]);
     songlistStartIterator (sl, &sliter);
     while ((slkey = songlistIterate (sl, &sliter)) >= 0) {
       char  *sfname;
