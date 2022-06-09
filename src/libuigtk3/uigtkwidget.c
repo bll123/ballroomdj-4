@@ -17,12 +17,18 @@
 inline void
 uiWidgetDisable (UIWidget *uiwidget)
 {
+  if (uiwidget == NULL || uiwidget->widget == NULL) {
+    return;
+  }
   gtk_widget_set_sensitive (uiwidget->widget, FALSE);
 }
 
 inline void
 uiWidgetEnable (UIWidget *uiwidget)
 {
+  if (uiwidget == NULL || uiwidget->widget == NULL) {
+    return;
+  }
   gtk_widget_set_sensitive (uiwidget->widget, TRUE);
 }
 

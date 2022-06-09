@@ -94,6 +94,24 @@ uiratingSetValue (uirating_t *uirating, int value)
   uiSpinboxTextSetValue (uirating->spinbox, value);
 }
 
+void
+uiratingDisable (uirating_t *uirating)
+{
+  if (uirating == NULL || uirating->spinbox == NULL) {
+    return;
+  }
+  uiSpinboxTextDisable (uirating->spinbox);
+}
+
+void
+uiratingEnable (uirating_t *uirating)
+{
+  if (uirating == NULL || uirating->spinbox == NULL) {
+    return;
+  }
+  uiSpinboxTextEnable (uirating->spinbox);
+}
+
 /* internal routines */
 
 static char *

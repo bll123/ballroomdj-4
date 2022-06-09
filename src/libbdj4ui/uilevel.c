@@ -94,6 +94,24 @@ uilevelSetValue (uilevel_t *uilevel, int value)
   uiSpinboxTextSetValue (uilevel->spinbox, value);
 }
 
+void
+uilevelDisable (uilevel_t *uilevel)
+{
+  if (uilevel == NULL || uilevel->spinbox == NULL) {
+    return;
+  }
+  uiSpinboxTextDisable (uilevel->spinbox);
+}
+
+void
+uilevelEnable (uilevel_t *uilevel)
+{
+  if (uilevel == NULL || uilevel->spinbox == NULL) {
+    return;
+  }
+  uiSpinboxTextEnable (uilevel->spinbox);
+}
+
 /* internal routines */
 
 static char *

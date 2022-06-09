@@ -153,6 +153,24 @@ uiSpinboxTextSetValue (uispinbox_t *spinbox, int value)
   uiSpinboxSetValue (&spinbox->uispinbox, (double) idx);
 }
 
+void
+uiSpinboxTextDisable (uispinbox_t *uispinbox)
+{
+  if (uispinbox == NULL) {
+    return;
+  }
+  uiWidgetDisable (&uispinbox->uispinbox);
+}
+
+void
+uiSpinboxTextEnable (uispinbox_t *uispinbox)
+{
+  if (uispinbox == NULL) {
+    return;
+  }
+  uiWidgetEnable (&uispinbox->uispinbox);
+}
+
 uispinbox_t *
 uiSpinboxTimeInit (void)
 {

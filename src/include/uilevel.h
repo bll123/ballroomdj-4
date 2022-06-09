@@ -9,5 +9,7 @@ uilevel_t * uilevelSpinboxCreate (UIWidget *boxp, bool allflag);
 void uilevelFree (uilevel_t *uilevel);
 int uilevelGetValue (uilevel_t *uilevel);
 void uilevelSetValue (uilevel_t *uilevel, int value);
+void uilevelDisable (uilevel_t *uilevel);
+void uilevelEnable (uilevel_t *uilevel);
 
 #endif /* INC_UILEVEL_H */

@@ -248,6 +248,24 @@ uiEntryValidateFile (uientry_t *entry, void *udata)
   return rc;
 }
 
+void
+uiEntryDisable (uientry_t *entry)
+{
+  if (entry == NULL) {
+    return;
+  }
+  uiWidgetDisable (&entry->uientry);
+}
+
+void
+uiEntryEnable (uientry_t *entry)
+{
+  if (entry == NULL) {
+    return;
+  }
+  uiWidgetEnable (&entry->uientry);
+}
+
 /* internal routines */
 
 static void

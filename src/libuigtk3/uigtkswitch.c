@@ -115,6 +115,19 @@ uiSwitchSetCallback (uiswitch_t *uiswitch, UICallback *uicb)
       G_CALLBACK (uiSwitchToggleHandler), uicb);
 }
 
+void
+uiSwitchDisable (uiswitch_t *uiswitch)
+{
+  uiWidgetDisable (&uiswitch->uiswitch);
+}
+
+void
+uiSwitchEnable (uiswitch_t *uiswitch)
+{
+  uiWidgetEnable (&uiswitch->uiswitch);
+}
+
+
 /* internal routines */
 
 static void

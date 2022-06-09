@@ -313,6 +313,24 @@ uiDropDownSelectionSetStr (uidropdown_t *dropdown, const char *stridx)
   uiDropDownSelectionSet (dropdown, internalidx);
 }
 
+void
+uiDropDownDisable (uidropdown_t *dropdown)
+{
+  if (dropdown == NULL || dropdown->button == NULL) {
+    return;
+  }
+  gtk_widget_set_sensitive (dropdown->button, FALSE);
+}
+
+void
+uiDropDownEnable (uidropdown_t *dropdown)
+{
+  if (dropdown == NULL || dropdown->button == NULL) {
+    return;
+  }
+  gtk_widget_set_sensitive (dropdown->button, TRUE);
+}
+
 /* internal routines */
 
 static void

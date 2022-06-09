@@ -97,6 +97,8 @@ void uiEntrySetValidate (uientry_t *entry,
 int uiEntryValidate (uientry_t *entry, bool forceflag);
 int uiEntryValidateDir (uientry_t *edata, void *udata);
 int uiEntryValidateFile (uientry_t *edata, void *udata);
+void uiEntryDisable (uientry_t *entry);
+void uiEntryEnable (uientry_t *entry);
 
 /* uigtkspinbox.c */
 uispinbox_t *uiSpinboxTextInit (void);
@@ -107,6 +109,8 @@ void  uiSpinboxTextSet (uispinbox_t *spinbox, int min, int count,
 int   uiSpinboxTextGetIdx (uispinbox_t *spinbox);
 int   uiSpinboxTextGetValue (uispinbox_t *spinbox);
 void  uiSpinboxTextSetValue (uispinbox_t *spinbox, int ivalue);
+void  uiSpinboxTextDisable (uispinbox_t *spinbox);
+void  uiSpinboxTextEnable (uispinbox_t *spinbox);
 
 void  uiSpinboxIntCreate (UIWidget *uiwidget);
 void  uiSpinboxDoubleCreate (UIWidget *uiwidget);
@@ -148,6 +152,8 @@ void uiDropDownSetNumList (uidropdown_t *dropdown, slist_t *list,
     const char *selectLabel);
 void uiDropDownSelectionSetNum (uidropdown_t *dropdown, nlistidx_t idx);
 void uiDropDownSelectionSetStr (uidropdown_t *dropdown, const char *stridx);
+void uiDropDownDisable (uidropdown_t *dropdown);
+void uiDropDownEnable (uidropdown_t *dropdown);
 
 /* uigtklink.c */
 void uiCreateLink (UIWidget *uiwidget, char *label, char *uri);
@@ -264,6 +270,8 @@ void uiSwitchSetValue (uiswitch_t *uiswitch, int value);
 int uiSwitchGetValue (uiswitch_t *uiswitch);
 UIWidget *uiSwitchGetUIWidget (uiswitch_t *uiswitch);
 void uiSwitchSetCallback (uiswitch_t *uiswitch, UICallback *uicb);
+void uiSwitchDisable (uiswitch_t *uiswitch);
+void uiSwitchEnable (uiswitch_t *uiswitch);
 
 /* uigtksizegrp.c */
 void uiCreateSizeGroupHoriz (UIWidget *);
