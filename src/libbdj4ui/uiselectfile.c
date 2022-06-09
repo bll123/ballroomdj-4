@@ -123,7 +123,7 @@ selectFileCreateDialog (uiselectfile_t *selectfile,
   /* CONTEXT: file select dialog, title of window: select <file-type> */
   snprintf (tbuff, sizeof (tbuff), _("Select %s"), filetype);
   uiCreateDialog (&selectfile->uidialog,
-      selectfile->parentwinp, NULL, tbuff,
+      selectfile->parentwinp, &selectfile->cb, tbuff,
       /* CONTEXT: file select dialog: closes the dialog */
       _("Close"), RESPONSE_CLOSE,
       /* CONTEXT: file select dialog: selects the file */
