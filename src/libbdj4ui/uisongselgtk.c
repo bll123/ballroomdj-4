@@ -220,9 +220,9 @@ uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin)
 
   widget = uiComboboxCreate (parentwin->widget,
       "", uisongselDanceSelectCallback,
-      &uisongsel->dancesel, uisongsel);
+      uisongsel->dancesel, uisongsel);
   /* CONTEXT: filter: all dances are selected */
-  uiutilsCreateDanceList (&uisongsel->dancesel, _("All Dances"));
+  uiutilsCreateDanceList (uisongsel->dancesel, _("All Dances"));
   uiBoxPackEndUW (&hbox, widget);
 
   uiutilsUICallbackInit (&uiw->callbacks [SONGSEL_CB_FILTER],
@@ -305,7 +305,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin)
   uisongselProcessSongFilter (uisongsel);
   uisongselPopulateData (uisongsel);
 
-  uiDropDownSelectionSetNum (&uisongsel->dancesel, -1);
+  uiDropDownSelectionSetNum (uisongsel->dancesel, -1);
 
   g_signal_connect ((GtkWidget *) uiw->sel, "changed",
       G_CALLBACK (uisongselSelectionChgCallback), uisongsel);
@@ -608,7 +608,7 @@ uisongselDanceSelectCallback (GtkTreeView *tv, GtkTreePath *path,
   uisongsel_t *uisongsel = udata;
   long        danceIdx;
 
-  danceIdx = uiDropDownSelectionGet (&uisongsel->dancesel, path);
+  danceIdx = uiDropDownSelectionGet (uisongsel->dancesel, path);
   uisongselDanceSelectHandler (uisongsel, danceIdx);
   return;
 }

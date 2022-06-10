@@ -32,7 +32,7 @@ typedef struct {
   long          selectLocation;
   /* music queue tab */
   UIWidget      mainbox;
-  uidropdown_t  playlistsel;
+  uidropdown_t  *playlistsel;
   uientry_t     *slname;
   /* widget data */
   uimusicqgtk_t *uiWidgets;

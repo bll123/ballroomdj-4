@@ -74,20 +74,7 @@ typedef struct {
 
 typedef char * (*uispinboxdisp_t)(void *, int);
 
-typedef struct {
-  char          *title;
-  GtkWidget     *parentwin;
-  GtkWidget     *button;
-  GtkWidget     *window;
-  GtkWidget     *tree;
-  GtkTreeSelection  *sel;
-  slist_t       *strIndexMap;
-  nlist_t       *keylist;
-  gulong        closeHandlerId;
-  char          *strSelection;
-  bool          open : 1;
-  bool          iscombobox : 1;
-} uidropdown_t;
+typedef struct uidropdown uidropdown_t;
 
 typedef struct {
   UIWidget      scw;

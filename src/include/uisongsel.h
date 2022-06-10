@@ -52,7 +52,7 @@ typedef struct uisongsel {
   UICallback        sfdanceselcb;
   songfilter_t      *songfilter;
   /* song selection tab */
-  uidropdown_t dancesel;
+  uidropdown_t      *dancesel;
   /* widget data */
   uisongselgtk_t    *uiWidgetData;
   /* song editor */

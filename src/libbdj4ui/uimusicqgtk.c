@@ -70,7 +70,7 @@ enum {
 };
 
 typedef struct uimusicqgtk {
-  uidropdown_t  dancesel;
+  uidropdown_t  *dancesel;
   GtkWidget     *musicqTree;
   GtkTreeSelection  *sel;
   char          *selPathStr;
@@ -89,7 +89,7 @@ uimusicqUIInit (uimusicq_t *uimusicq)
   for (int i = 0; i < MUSICQ_MAX; ++i) {
     uiw = malloc (sizeof (uimusicqgtk_t));
     uimusicq->ui [i].uiWidgets = uiw;
-    uiDropDownInit (&uiw->dancesel);
+    uiw->dancesel = uiDropDownInit ();
     uiw->selPathStr = NULL;
     uiw->musicqTree = NULL;
   }
@@ -105,7 +105,7 @@ uimusicqUIFree (uimusicq_t *uimusicq)
     if (uiw->selPathStr != NULL) {
       free (uiw->selPathStr);
     }
-    uiDropDownFree (&uiw->dancesel);
+    uiDropDownFree (uiw->dancesel);
     if (uiw != NULL) {
       free (uiw);
     }
@@ -242,15 +242,15 @@ uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci)
     widget = uiDropDownCreate (parentwin->widget,
         /* CONTEXT: button: queue a playlist for playback */
         _("Queue Playlist"), uimusicqQueuePlaylist,
-        &uimusicq->ui [ci].playlistsel, uimusicq);
+        uimusicq->ui [ci].playlistsel, uimusicq);
     uiBoxPackEndUW (&hbox, widget);
     uimusicqCreatePlaylistList (uimusicq);
 
     widget = uiDropDownCreate (parentwin->widget,
         /* CONTEXT: button: queue a dance for playback */
         _("Queue Dance"), uimusicqQueueDance,
-        &uiw->dancesel, uimusicq);
-    uiutilsCreateDanceList (&uiw->dancesel, NULL);
+        uiw->dancesel, uimusicq);
+    uiutilsCreateDanceList (uiw->dancesel, NULL);
     uiBoxPackEndUW (&hbox, widget);
   }
 
@@ -485,7 +485,7 @@ uimusicqQueueDance (GtkTreeView *tv, GtkTreePath *path,
 
   ci = uimusicq->musicqManageIdx;
   uiw = uimusicq->ui [ci].uiWidgets;
-  idx = uiDropDownSelectionGet (&uiw->dancesel, path);
+  idx = uiDropDownSelectionGet (uiw->dancesel, path);
   uimusicqQueueDanceProcess (uimusicq, idx);
 }
 
@@ -498,7 +498,7 @@ uimusicqQueuePlaylist (GtkTreeView *tv, GtkTreePath *path,
   int           ci;
 
   ci = uimusicq->musicqManageIdx;
-  idx = uiDropDownSelectionGet (&uimusicq->ui [ci].playlistsel, path);
+  idx = uiDropDownSelectionGet (uimusicq->ui [ci].playlistsel, path);
   uimusicqQueuePlaylistProcess (uimusicq, idx);
 }
 

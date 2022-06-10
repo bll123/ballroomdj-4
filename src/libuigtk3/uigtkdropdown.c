@@ -25,6 +25,21 @@ enum {
   UIUTILS_DROPDOWN_COL_MAX,
 };
 
+typedef struct uidropdown {
+  char          *title;
+  GtkWidget     *parentwin;
+  GtkWidget     *button;
+  GtkWidget     *window;
+  GtkWidget     *tree;
+  GtkTreeSelection  *sel;
+  slist_t       *strIndexMap;
+  nlist_t       *keylist;
+  gulong        closeHandlerId;
+  char          *strSelection;
+  bool          open : 1;
+  bool          iscombobox : 1;
+} uidropdown_t;
+
 /* drop-down/combobox handling */
 static void     uiDropDownWindowShow (GtkButton *b, gpointer udata);
 static gboolean uiDropDownClose (GtkWidget *w,
@@ -35,9 +50,13 @@ static void uiDropDownWindowCreate (uidropdown_t *dropdown,
 static void uiDropDownSelectionSet (uidropdown_t *dropdown,
     nlistidx_t internalidx);
 
-void
-uiDropDownInit (uidropdown_t *dropdown)
+uidropdown_t *
+uiDropDownInit (void)
 {
+  uidropdown_t  *dropdown;
+
+  dropdown = malloc (sizeof (uidropdown_t));
+
   dropdown->title = NULL;
   dropdown->parentwin = NULL;
   dropdown->button = NULL;
@@ -50,6 +69,8 @@ uiDropDownInit (uidropdown_t *dropdown)
   dropdown->keylist = NULL;
   dropdown->open = false;
   dropdown->iscombobox = false;
+
+  return dropdown;
 }
 
 
@@ -69,6 +90,7 @@ uiDropDownFree (uidropdown_t *dropdown)
     if (dropdown->keylist != NULL) {
       nlistFree (dropdown->keylist);
     }
+    free (dropdown);
   }
 }
 
@@ -329,6 +351,15 @@ uiDropDownEnable (uidropdown_t *dropdown)
     return;
   }
   gtk_widget_set_sensitive (dropdown->button, TRUE);
+}
+
+char *
+uiDropDownGetString (uidropdown_t *dropdown)
+{
+  if (dropdown == NULL) {
+    return NULL;
+  }
+  return dropdown->strSelection;
 }
 
 /* internal routines */

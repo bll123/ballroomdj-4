@@ -137,7 +137,7 @@ void uiSpinboxSetValueChangedCallback (UIWidget *uiwidget, UICallback *uicb);
 
 /* uigtkdropdown.c */
 
-void uiDropDownInit (uidropdown_t *dropdown);
+uidropdown_t *uiDropDownInit (void);
 void uiDropDownFree (uidropdown_t *dropdown);
 GtkWidget * uiDropDownCreate (GtkWidget *parentwin,
     char *title, void *processSelectionCallback,
@@ -154,6 +154,7 @@ void uiDropDownSelectionSetNum (uidropdown_t *dropdown, nlistidx_t idx);
 void uiDropDownSelectionSetStr (uidropdown_t *dropdown, const char *stridx);
 void uiDropDownDisable (uidropdown_t *dropdown);
 void uiDropDownEnable (uidropdown_t *dropdown);
+char *uiDropDownGetString (uidropdown_t *dropdown);
 
 /* uigtklink.c */
 void uiCreateLink (UIWidget *uiwidget, char *label, char *uri);

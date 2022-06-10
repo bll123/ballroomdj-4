@@ -52,7 +52,7 @@ uimusicqInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
     uimusicq->ui [i].repeatTimer = 0;
     uimusicq->ui [i].count = 0;
     uimusicq->ui [i].haveselloc = false;
-    uiDropDownInit (&uimusicq->ui [i].playlistsel);
+    uimusicq->ui [i].playlistsel = uiDropDownInit ();
     sz = 20;
     if (uimusicq->dispselType == DISP_SEL_SONGLIST ||
         uimusicq->dispselType == DISP_SEL_EZSONGLIST) {
@@ -108,7 +108,7 @@ uimusicqFree (uimusicq_t *uimusicq)
     uimusicqMusicQueueDataFree (uimusicq);
     uiWidgetClearPersistent (&uimusicq->pausePixbuf);
     for (int i = 0; i < MUSICQ_MAX; ++i) {
-      uiDropDownFree (&uimusicq->ui [i].playlistsel);
+      uiDropDownFree (uimusicq->ui [i].playlistsel);
       uiEntryFree (uimusicq->ui [i].slname);
     }
     uimusicqUIFree (uimusicq);
@@ -420,7 +420,7 @@ uimusicqQueuePlaylistProcess (uimusicq_t *uimusicq, ssize_t idx)
 
   if (idx >= 0) {
     snprintf (tbuff, sizeof (tbuff), "%d%c%s", ci, MSG_ARGS_RS,
-        uimusicq->ui [ci].playlistsel.strSelection);
+        uiDropDownGetString (uimusicq->ui [ci].playlistsel));
     connSendMessage (uimusicq->conn, ROUTE_MAIN, MSG_QUEUE_PLAYLIST, tbuff);
   }
   logProcEnd (LOG_PROC, "uimusicqQueuePlaylist", "");
@@ -438,7 +438,7 @@ uimusicqCreatePlaylistList (uimusicq_t *uimusicq)
   ci = uimusicq->musicqManageIdx;
 
   plList = playlistGetPlaylistList (PL_LIST_NORMAL);
-  uiDropDownSetList (&uimusicq->ui [ci].playlistsel, plList, NULL);
+  uiDropDownSetList (uimusicq->ui [ci].playlistsel, plList, NULL);
   slistFree (plList);
   logProcEnd (LOG_PROC, "uimusicqCreatePlaylistList", "");
 }

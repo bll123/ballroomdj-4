@@ -59,10 +59,10 @@ typedef struct uisongfilter {
   UIWidget          filterDialog;
   UICallback        filtercb;
   UIWidget          playlistdisp;
-  uidropdown_t      playlistfilter;
-  uidropdown_t      sortbyfilter;
-  uidropdown_t      dancefilter;
-  uidropdown_t      genrefilter;
+  uidropdown_t      *playlistfilter;
+  uidropdown_t      *sortbyfilter;
+  uidropdown_t      *dancefilter;
+  uidropdown_t      *genrefilter;
   uientry_t         *searchentry;
   uirating_t        *uirating;
   uilevel_t         *uilevel;
@@ -121,10 +121,10 @@ uisfInit (UIWidget *windowp, nlist_t *options, songfilterpb_t pbflag)
       nlistGetStr (options, SONGSEL_SORT_BY));
   uiutilsUIWidgetInit (&uisf->filterDialog);
   uisf->dfltpbflag = pbflag;
-  uiDropDownInit (&uisf->playlistfilter);
-  uiDropDownInit (&uisf->sortbyfilter);
-  uiDropDownInit (&uisf->genrefilter);
-  uiDropDownInit (&uisf->dancefilter);
+  uisf->playlistfilter = uiDropDownInit ();
+  uisf->sortbyfilter = uiDropDownInit ();
+  uisf->genrefilter = uiDropDownInit ();
+  uisf->dancefilter = uiDropDownInit ();
   uiutilsUIWidgetInit (&uisf->playlistdisp);
   uisf->statusfilter = uiSpinboxTextInit ();
   uisf->favoritefilter = uiSpinboxTextInit ();
@@ -146,11 +146,11 @@ uisfFree (uisongfilter_t *uisf)
 {
   if (uisf != NULL) {
     uiDialogDestroy (&uisf->filterDialog);
-    uiDropDownFree (&uisf->playlistfilter);
-    uiDropDownFree (&uisf->sortbyfilter);
+    uiDropDownFree (uisf->playlistfilter);
+    uiDropDownFree (uisf->sortbyfilter);
     uiEntryFree (uisf->searchentry);
-    uiDropDownFree (&uisf->dancefilter);
-    uiDropDownFree (&uisf->genrefilter);
+    uiDropDownFree (uisf->dancefilter);
+    uiDropDownFree (uisf->genrefilter);
     uiratingFree (uisf->uirating);
     uilevelFree (uisf->uilevel);
     uiSpinboxTextFree (uisf->statusfilter);
@@ -264,7 +264,7 @@ uisfSetPlaylist (uisongfilter_t *uisf, char *slname)
     return;
   }
 
-  uiDropDownSelectionSetStr (&uisf->playlistfilter, slname);
+  uiDropDownSelectionSetStr (uisf->playlistfilter, slname);
   songfilterSetData (uisf->songfilter, SONG_FILTER_PLAYLIST, slname);
 }
 
@@ -286,7 +286,7 @@ uisfSetDanceIdx (uisongfilter_t *uisf, int danceIdx)
   }
 
   uisf->danceIdx = danceIdx;
-  uiDropDownSelectionSetNum (&uisf->dancefilter, danceIdx);
+  uiDropDownSelectionSetNum (uisf->dancefilter, danceIdx);
 
   if (danceIdx >= 0) {
     ilist_t   *danceList;
@@ -325,12 +325,12 @@ uisfInitDisplay (uisongfilter_t *uisf)
   /* all items need to be set, as after a reset, they need to be updated */
   /* sort-by and dance are important, the others can be reset */
 
-  uiDropDownSelectionSetNum (&uisf->playlistfilter, -1);
+  uiDropDownSelectionSetNum (uisf->playlistfilter, -1);
 
   sortby = songfilterGetSort (uisf->songfilter);
-  uiDropDownSelectionSetStr (&uisf->sortbyfilter, sortby);
-  uiDropDownSelectionSetNum (&uisf->dancefilter, uisf->danceIdx);
-  uiDropDownSelectionSetNum (&uisf->genrefilter, -1);
+  uiDropDownSelectionSetStr (uisf->sortbyfilter, sortby);
+  uiDropDownSelectionSetNum (uisf->dancefilter, uisf->danceIdx);
+  uiDropDownSelectionSetNum (uisf->genrefilter, -1);
   uiEntrySetValue (uisf->searchentry, "");
   uiratingSetValue (uisf->uirating, -1);
   uilevelSetValue (uisf->uilevel, -1);
@@ -390,7 +390,7 @@ uisfPlaylistSelect (uisongfilter_t *uisf, ssize_t idx)
 
   logProcBegin (LOG_PROC, "uisfPlaylistSelect");
   if (idx >= 0) {
-    str = uisf->playlistfilter.strSelection;
+    str = uiDropDownGetString (uisf->playlistfilter);
     songfilterSetData (uisf->songfilter, SONG_FILTER_PLAYLIST, str);
     uisfDisableWidgets (uisf);
   } else {
@@ -410,7 +410,7 @@ uisfCreatePlaylistList (uisongfilter_t *uisf)
   /* at this time, only song lists are supported */
   pllist = playlistGetPlaylistList (PL_LIST_SONGLIST);
   /* what text is best to use for 'no selection'? */
-  uiDropDownSetList (&uisf->playlistfilter, pllist, "");
+  uiDropDownSetList (uisf->playlistfilter, pllist, "");
   slistFree (pllist);
   logProcEnd (LOG_PROC, "uisfCreatePlaylistList", "");
 }
@@ -421,9 +421,9 @@ uisfSortBySelect (uisongfilter_t *uisf, ssize_t idx)
   logProcBegin (LOG_PROC, "uisfSortBySelect");
   if (idx >= 0) {
     songfilterSetSort (uisf->songfilter,
-        uisf->sortbyfilter.strSelection);
+        uiDropDownGetString (uisf->sortbyfilter));
     nlistSetStr (uisf->options, SONGSEL_SORT_BY,
-        uisf->sortbyfilter.strSelection);
+        uiDropDownGetString (uisf->sortbyfilter));
   }
   logProcEnd (LOG_PROC, "uisfSortBySelect", "");
 }
@@ -436,7 +436,7 @@ uisfCreateSortByList (uisongfilter_t *uisf)
   logProcBegin (LOG_PROC, "uisfCreateSortByList");
 
   sortoptlist = sortoptGetList (uisf->sortopt);
-  uiDropDownSetList (&uisf->sortbyfilter, sortoptlist, NULL);
+  uiDropDownSetList (uisf->sortbyfilter, sortoptlist, NULL);
   logProcEnd (LOG_PROC, "uisfCreateSortByList", "");
 }
 
@@ -464,7 +464,7 @@ uisfCreateGenreList (uisongfilter_t *uisf)
 
   genre = bdjvarsdfGet (BDJVDF_GENRES);
   genrelist = genreGetList (genre);
-  uiDropDownSetNumList (&uisf->genrefilter, genrelist,
+  uiDropDownSetNumList (uisf->genrefilter, genrelist,
       /* CONTEXT: a filter: all genres are displayed in the song selection */
       _("All Genres"));
   logProcEnd (LOG_PROC, "uisfCreateGenreList", "");
@@ -523,7 +523,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
   uiSizeGroupAdd (&sg, &uiwidget);
 
   widget = uiComboboxCreate (uisf->filterDialog.widget,
-      "", uisfPlaylistSelectHandler, &uisf->playlistfilter, uisf);
+      "", uisfPlaylistSelectHandler, uisf->playlistfilter, uisf);
   uisfCreatePlaylistList (uisf);
   uiBoxPackStartUW (&hbox, widget);
 
@@ -538,7 +538,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
   uiutilsUIWidgetCopy (&uisf->labels [UISF_LABEL_SORTBY], &uiwidget);
 
   widget = uiComboboxCreate (uisf->filterDialog.widget,
-      "", uisfSortBySelectHandler, &uisf->sortbyfilter, uisf);
+      "", uisfSortBySelectHandler, uisf->sortbyfilter, uisf);
   uisfCreateSortByList (uisf);
   uiBoxPackStartUW (&hbox, widget);
 
@@ -570,7 +570,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
 
     widget = uiComboboxCreate (uisf->filterDialog.widget,
         "", uisfGenreSelectHandler,
-        &uisf->genrefilter, uisf);
+        uisf->genrefilter, uisf);
     uisfCreateGenreList (uisf);
     uiBoxPackStartUW (&hbox, widget);
   }
@@ -587,9 +587,9 @@ uisfCreateDialog (uisongfilter_t *uisf)
 
   widget = uiComboboxCreate (uisf->filterDialog.widget,
       "", uisfDanceSelectHandler,
-      &uisf->dancefilter, uisf);
+      uisf->dancefilter, uisf);
   /* CONTEXT: a filter: all dances are selected */
-  uiutilsCreateDanceList (&uisf->dancefilter, _("All Dances"));
+  uiutilsCreateDanceList (uisf->dancefilter, _("All Dances"));
   uiBoxPackStartUW (&hbox, widget);
 
   /* rating : always available */
@@ -713,7 +713,7 @@ uisfResponseHandler (void *udata, long responseid)
     case RESPONSE_RESET: {
       songfilterReset (uisf->songfilter);
       uisf->danceIdx = -1;
-      uiDropDownSelectionSetNum (&uisf->dancefilter, uisf->danceIdx);
+      uiDropDownSelectionSetNum (uisf->dancefilter, uisf->danceIdx);
       if (uisf->danceselcb != NULL) {
         uiutilsCallbackLongHandler (uisf->danceselcb, uisf->danceIdx);
       }
@@ -834,10 +834,10 @@ uisfDisableWidgets (uisongfilter_t *uisf)
   for (int i = 0; i < UISF_LABEL_MAX; ++i) {
     uiWidgetDisable (&uisf->labels [i]);
   }
-  uiDropDownDisable (&uisf->sortbyfilter);
+  uiDropDownDisable (uisf->sortbyfilter);
   uiEntryDisable (uisf->searchentry);
-  uiDropDownDisable (&uisf->dancefilter);
-  uiDropDownDisable (&uisf->genrefilter);
+  uiDropDownDisable (uisf->dancefilter);
+  uiDropDownDisable (uisf->genrefilter);
   uiratingDisable (uisf->uirating);
   uilevelDisable (uisf->uilevel);
   uiSpinboxTextDisable (uisf->statusfilter);
@@ -855,10 +855,10 @@ uisfEnableWidgets (uisongfilter_t *uisf)
   for (int i = 0; i < UISF_LABEL_MAX; ++i) {
     uiWidgetEnable (&uisf->labels [i]);
   }
-  uiDropDownEnable (&uisf->sortbyfilter);
+  uiDropDownEnable (uisf->sortbyfilter);
   uiEntryEnable (uisf->searchentry);
-  uiDropDownEnable (&uisf->dancefilter);
-  uiDropDownEnable (&uisf->genrefilter);
+  uiDropDownEnable (uisf->dancefilter);
+  uiDropDownEnable (uisf->genrefilter);
   uiratingEnable (uisf->uirating);
   uilevelEnable (uisf->uilevel);
   uiSpinboxTextEnable (uisf->statusfilter);
@@ -873,7 +873,7 @@ uisfPlaylistSelectHandler (GtkTreeView *tv, GtkTreePath *path,
   uisongfilter_t *uisf = udata;
   ssize_t     idx;
 
-  idx = uiDropDownSelectionGet (&uisf->playlistfilter, path);
+  idx = uiDropDownSelectionGet (uisf->playlistfilter, path);
   uisfPlaylistSelect (uisf, idx);
 }
 
@@ -884,7 +884,7 @@ uisfSortBySelectHandler (GtkTreeView *tv, GtkTreePath *path,
   uisongfilter_t *uisf = udata;
   ssize_t     idx;
 
-  idx = uiDropDownSelectionGet (&uisf->sortbyfilter, path);
+  idx = uiDropDownSelectionGet (uisf->sortbyfilter, path);
   uisfSortBySelect (uisf, idx);
 }
 
@@ -895,7 +895,7 @@ uisfGenreSelectHandler (GtkTreeView *tv, GtkTreePath *path,
   uisongfilter_t *uisf = udata;
   ssize_t     idx;
 
-  idx = uiDropDownSelectionGet (&uisf->genrefilter, path);
+  idx = uiDropDownSelectionGet (uisf->genrefilter, path);
   uisfGenreSelect (uisf, idx);
 }
 
@@ -906,7 +906,7 @@ uisfDanceSelectHandler (GtkTreeView *tv, GtkTreePath *path,
   uisongfilter_t  *uisf = udata;
   long            danceIdx;
 
-  danceIdx = uiDropDownSelectionGet (&uisf->dancefilter, path);
+  danceIdx = uiDropDownSelectionGet (uisf->dancefilter, path);
   uisf->danceIdx = danceIdx;
   uisfSetDanceIdx (uisf, danceIdx);
   if (uisf->danceselcb != NULL) {

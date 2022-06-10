@@ -55,7 +55,7 @@ uisongselInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
   uisongsel->idxStart = 0;
   uisongsel->danceIdx = -1;
   uisongsel->dfilterCount = (double) dbCount (musicdb);
-  uiDropDownInit (&uisongsel->dancesel);
+  uisongsel->dancesel = uiDropDownInit ();
   uisongsel->peercount = 0;
   uisongsel->ispeercall = false;
   for (int i = 0; i < UISONGSEL_PEER_MAX; ++i) {
@@ -91,7 +91,7 @@ uisongselFree (uisongsel_t *uisongsel)
   logProcBegin (LOG_PROC, "uisongselFree");
 
   if (uisongsel != NULL) {
-    uiDropDownFree (&uisongsel->dancesel);
+    uiDropDownFree (uisongsel->dancesel);
     uisongselUIFree (uisongsel);
     free (uisongsel);
   }
@@ -266,7 +266,7 @@ uisongselDanceSelectCallback (void *udata, long danceIdx)
 {
   uisongsel_t *uisongsel = udata;
 
-  uiDropDownSelectionSetNum (&uisongsel->dancesel, danceIdx);
+  uiDropDownSelectionSetNum (uisongsel->dancesel, danceIdx);
 
   if (uisongsel->ispeercall) {
     return UICB_CONT;

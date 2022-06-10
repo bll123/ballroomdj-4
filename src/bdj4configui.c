@@ -187,7 +187,7 @@ typedef struct {
   confuiouttype_t   outtype;
   int               bdjoptIdx;
   union {
-    uidropdown_t  dropdown;
+    uidropdown_t  *dropdown;
     uientry_t     *entry;
     uispinbox_t   *spinbox;
     uiswitch_t    *uiswitch;
@@ -600,7 +600,7 @@ main (int argc, char *argv[])
     confui.uiitem [i].uri = NULL;
 
     if (i > CONFUI_BEGIN && i < CONFUI_COMBOBOX_MAX) {
-      uiDropDownInit (&confui.uiitem [i].dropdown);
+      confui.uiitem [i].dropdown = uiDropDownInit ();
     }
     if (i > CONFUI_ENTRY_MAX && i < CONFUI_SPINBOX_MAX) {
       confui.uiitem [i].spinbox = uiSpinboxTextInit ();
@@ -871,7 +871,7 @@ confuiClosingCallback (void *udata, programstate_t programState)
   uiCloseWindow (&confui->window);
 
   for (int i = CONFUI_BEGIN + 1; i < CONFUI_COMBOBOX_MAX; ++i) {
-    uiDropDownFree (&confui->uiitem [i].dropdown);
+    uiDropDownFree (confui->uiitem [i].dropdown);
   }
 
   for (int i = CONFUI_COMBOBOX_MAX + 1; i < CONFUI_ENTRY_MAX; ++i) {
@@ -2325,11 +2325,11 @@ confuiMakeItemCombobox (configui_t *confui, UIWidget *boxp, UIWidget *sg,
   uiCreateHorizBox (&hbox);
   confuiMakeItemLabel (&hbox, sg, txt);
   widget = uiComboboxCreate (confui->window.widget, txt,
-      ddcb, &confui->uiitem [widx].dropdown, confui);
+      ddcb, confui->uiitem [widx].dropdown, confui);
   confui->uiitem [widx].widget = widget;
-  uiDropDownSetList (&confui->uiitem [widx].dropdown,
+  uiDropDownSetList (confui->uiitem [widx].dropdown,
       confui->uiitem [widx].displist, NULL);
-  uiDropDownSelectionSetStr (&confui->uiitem [widx].dropdown, value);
+  uiDropDownSelectionSetStr (confui->uiitem [widx].dropdown, value);
   uiWidgetSetMarginStartW (widget, uiBaseMarginSz * 4);
   uiBoxPackStartUW (&hbox, widget);
   uiBoxPackStart (boxp, &hbox);
@@ -3133,12 +3133,12 @@ confuiOrgPathSelect (GtkTreeView *tv, GtkTreePath *path,
 static char *
 confuiComboboxSelect (configui_t *confui, GtkTreePath *path, int widx)
 {
-  uidropdown_t *dd = NULL;
+  uidropdown_t      *dd = NULL;
   ssize_t           idx;
   char              *sval;
 
   logProcBegin (LOG_PROC, "confuiComboboxSelect");
-  dd = &confui->uiitem [widx].dropdown;
+  dd = confui->uiitem [widx].dropdown;
   idx = uiDropDownSelectionGet (dd, path);
   sval = slistGetDataByIdx (confui->uiitem [widx].displist, idx);
   confui->uiitem [widx].listidx = idx;
