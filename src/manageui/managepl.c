@@ -30,6 +30,7 @@ enum {
   MPL_CB_MENU_PL_NEW,
   MPL_CB_MAXPLAYTIME,
   MPL_CB_STOPAT,
+  MPL_CB_PL_LOAD,
   MPL_CB_MAX,
 };
 
@@ -64,7 +65,6 @@ typedef struct managepl {
 
 static bool managePlaylistLoad (void *udata);
 static bool managePlaylistCopy (void *udata);
-static void managePlaylistLoadFile (void *udata, const char *fn);
 static void managePlaylistUpdateData (managepl_t *managepl);
 static bool managePlaylistNew (void *udata);
 static void manageSetPlaylistName (managepl_t *managepl, const char *nm);
@@ -132,6 +132,15 @@ managePlaylistFree (managepl_t *managepl)
     }
     free (managepl);
   }
+}
+
+void
+managePlaylistSetLoadCallback (managepl_t *managepl, UICallback *uicb)
+{
+  if (managepl == NULL) {
+    return;
+  }
+  memcpy (&managepl->callbacks [MPL_CB_PL_LOAD], uicb, sizeof (UICallback));
 }
 
 void
@@ -416,23 +425,12 @@ managePlaylistLoadCheck (managepl_t *managepl)
   }
 }
 
-/* internal routines */
-
-static bool
-managePlaylistLoad (void *udata)
-{
-  managepl_t  *managepl = udata;
-
-  selectFileDialog (SELFILE_PLAYLIST, managepl->windowp, managepl->options,
-      managepl, managePlaylistLoadFile);
-  return UICB_CONT;
-}
-
-static void
+void
 managePlaylistLoadFile (void *udata, const char *fn)
 {
   managepl_t  *managepl = udata;
   playlist_t  *pl;
+  pltype_t    pltype;
 
   managePlaylistSave (managepl);
 
@@ -447,7 +445,25 @@ managePlaylistLoadFile (void *udata, const char *fn)
 
   uiSpinboxResetChanged (managepl->uimaxplaytime);
   uiSpinboxResetChanged (managepl->uistopat);
+
+  pltype = playlistGetConfigNum (pl, PLAYLIST_TYPE);
+  if (pltype == PLTYPE_SONGLIST) {
+    uiutilsCallbackStrHandler (&managepl->callbacks [MPL_CB_PL_LOAD], fn);
+  }
+
   managepl->changed = false;
+}
+
+/* internal routines */
+
+static bool
+managePlaylistLoad (void *udata)
+{
+  managepl_t  *managepl = udata;
+
+  selectFileDialog (SELFILE_PLAYLIST, managepl->windowp, managepl->options,
+      managepl, managePlaylistLoadFile);
+  return UICB_CONT;
 }
 
 static void

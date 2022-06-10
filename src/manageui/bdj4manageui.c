@@ -93,6 +93,8 @@ enum {
   MANAGE_CB_SL_NB,
   MANAGE_CB_MM_NB,
   MANAGE_CB_EDIT,
+  MANAGE_CB_SEQ_LOAD,
+  MANAGE_CB_PL_LOAD,
   MANAGE_CB_MAX,
 };
 
@@ -162,6 +164,7 @@ typedef struct manage {
   /* various flags */
   bool            slbackupcreated : 1;
   bool            selusesonglist : 1;
+  bool            inplaylistload : 1;
 } manageui_t;
 
 /* re-use the plui enums so that the songsel filter enums can also be used */
@@ -202,6 +205,8 @@ static bool     manageSonglistCopy (void *udata);
 static bool     manageSonglistNew (void *udata);
 static bool     manageSonglistTruncate (void *udata);
 static void     manageSonglistLoadFile (void *udata, const char *fn);
+static long     manageLoadPlaylist (void *udata, const char *fn);
+static long     manageLoadSonglist (void *udata, const char *fn);
 static bool     manageToggleEasySonglist (void *udata);
 static void     manageSetEasySonglist (manageui_t *manage);
 static void     manageSonglistSave (manageui_t *manage);
@@ -266,6 +271,7 @@ main (int argc, char *argv[])
   manage.sloldname = NULL;
   manage.slbackupcreated = false;
   manage.selusesonglist = false;
+  manage.inplaylistload = false;
   manage.lastdisp = MANAGE_DISP_SONG_SEL;
   manage.selbypass = 0;
   manage.seldbidx = -1;
@@ -312,9 +318,8 @@ main (int argc, char *argv[])
 
   manageBuildUI (&manage);
 
+  /* will be propagated */
   uisongselSetDefaultSelection (manage.slsongsel);
-//  uisongselSetDefaultSelection (manage.slezsongsel);
-//  uisongselSetDefaultSelection (manage.mmsongsel);
 
   /* register these after calling the sub-window initialization */
   /* then these will be run last, after the other closing callbacks */
@@ -556,6 +561,16 @@ manageBuildUI (manageui_t *manage)
       &manage->callbacks [MANAGE_CB_NEW_SEL_SONGLIST]);
   uimusicqSetSelectionCallback (manage->slezmusicq,
       &manage->callbacks [MANAGE_CB_NEW_SEL_SONGLIST]);
+
+  uiutilsUICallbackStrInit (&manage->callbacks [MANAGE_CB_SEQ_LOAD],
+      manageLoadPlaylist, manage);
+  manageSequenceSetLoadCallback (manage->manageseq,
+      &manage->callbacks [MANAGE_CB_SEQ_LOAD]);
+
+  uiutilsUICallbackStrInit (&manage->callbacks [MANAGE_CB_PL_LOAD],
+      manageLoadSonglist, manage);
+  managePlaylistSetLoadCallback (manage->managepl,
+      &manage->callbacks [MANAGE_CB_PL_LOAD]);
 
   logProcEnd (LOG_PROC, "manageBuildUI", "");
 }
@@ -1202,7 +1217,33 @@ manageSonglistLoadFile (void *udata, const char *fn)
   connSendMessage (manage->conn, ROUTE_MAIN, MSG_QUEUE_PLAYLIST, tbuff);
 
   manageSetSonglistName (manage, fn);
+  if (! manage->inplaylistload) {
+    manageLoadPlaylist (manage, fn);
+  }
   manage->slbackupcreated = false;
+}
+
+/* callback to load playlist upon songlist/sequence load */
+static long
+manageLoadPlaylist (void *udata, const char *fn)
+{
+  manageui_t    *manage = udata;
+
+  managePlaylistLoadFile (manage->managepl, fn);
+  return UICB_CONT;
+}
+
+/* callback to load upon playlist load */
+static long
+manageLoadSonglist (void *udata, const char *fn)
+{
+  manageui_t    *manage = udata;
+
+  manage->inplaylistload = true;
+  /* the load will save any current song list */
+  manageSonglistLoadFile (manage, fn);
+  manage->inplaylistload = false;
+  return UICB_CONT;
 }
 
 static bool

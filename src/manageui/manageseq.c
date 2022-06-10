@@ -29,14 +29,15 @@ enum {
   MSEQ_MENU_CB_SEQ_LOAD,
   MSEQ_MENU_CB_SEQ_COPY,
   MSEQ_MENU_CB_SEQ_NEW,
-  MSEQ_MENU_CB_MAX,
+  MSEQ_CB_SEQ_LOAD,
+  MSEQ_CB_MAX,
 };
 
 typedef struct manageseq {
   UIWidget        *windowp;
   nlist_t         *options;
   uimenu_t        seqmenu;
-  UICallback      menucb [MSEQ_MENU_CB_MAX];
+  UICallback      callback [MSEQ_CB_MAX];
   uiduallist_t    *seqduallist;
   uientry_t       *seqname;
   UIWidget        *statusMsg;
@@ -82,6 +83,15 @@ manageSequenceFree (manageseq_t *manageseq)
     uiEntryFree (manageseq->seqname);
     free (manageseq);
   }
+}
+
+void
+manageSequenceSetLoadCallback (manageseq_t *manageseq, UICallback *uicb)
+{
+  if (manageseq == NULL) {
+    return;
+  }
+  memcpy (&manageseq->callback [MSEQ_CB_SEQ_LOAD], uicb, sizeof (UICallback));
 }
 
 void
@@ -135,22 +145,22 @@ manageSequenceMenu (manageseq_t *manageseq, UIWidget *uimenubar)
     uiCreateSubMenu (&menuitem, &menu);
 
     /* CONTEXT: menu selection: sequence: edit menu: load */
-    uiutilsUICallbackInit (&manageseq->menucb [MSEQ_MENU_CB_SEQ_LOAD],
+    uiutilsUICallbackInit (&manageseq->callback [MSEQ_MENU_CB_SEQ_LOAD],
         manageSequenceLoad, manageseq);
     uiMenuCreateItem (&menu, &menuitem, _("Load"),
-        &manageseq->menucb [MSEQ_MENU_CB_SEQ_LOAD]);
+        &manageseq->callback [MSEQ_MENU_CB_SEQ_LOAD]);
 
     /* CONTEXT: menu selection: sequence: edit menu: create copy */
-    uiutilsUICallbackInit (&manageseq->menucb [MSEQ_MENU_CB_SEQ_COPY],
+    uiutilsUICallbackInit (&manageseq->callback [MSEQ_MENU_CB_SEQ_COPY],
         manageSequenceCopy, manageseq);
     uiMenuCreateItem (&menu, &menuitem, _("Create Copy"),
-        &manageseq->menucb [MSEQ_MENU_CB_SEQ_COPY]);
+        &manageseq->callback [MSEQ_MENU_CB_SEQ_COPY]);
 
     /* CONTEXT: menu selection: sequence: edit menu: start new sequence */
-    uiutilsUICallbackInit (&manageseq->menucb [MSEQ_MENU_CB_SEQ_NEW],
+    uiutilsUICallbackInit (&manageseq->callback [MSEQ_MENU_CB_SEQ_NEW],
         manageSequenceNew, manageseq);
     uiMenuCreateItem (&menu, &menuitem, _("Start New Sequence"),
-        &manageseq->menucb [MSEQ_MENU_CB_SEQ_NEW]);
+        &manageseq->callback [MSEQ_MENU_CB_SEQ_NEW]);
 
     manageseq->seqmenu.initialized = true;
   }
@@ -276,6 +286,9 @@ manageSequenceLoadFile (void *udata, const char *fn)
   slistFree (tlist);
 
   manageSetSequenceName (manageseq, fn);
+
+  uiutilsCallbackStrHandler (&manageseq->callback [MSEQ_CB_SEQ_LOAD], fn);
+
   manageseq->seqbackupcreated = false;
 }
 
