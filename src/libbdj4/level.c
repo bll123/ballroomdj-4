@@ -41,8 +41,6 @@ levelAlloc ()
   ilistidx_t  iteridx;
   char        fname [MAXPATHLEN];
 
-
-
   pathbldMakePath (fname, sizeof (fname), "levels",
       BDJ4_CONFIG_EXT, PATHBLD_MP_DATA);
   if (! fileopFileExists (fname)) {

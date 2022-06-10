@@ -92,7 +92,15 @@ uisongDetermineValueType (int tagidx)
 
   vt = tagdefs [tagidx].valueType;
   if (tagdefs [tagidx].convfunc != NULL) {
-    vt = VALUE_STR;
+    if (vt == VALUE_LIST) {
+      vt = VALUE_STR;
+    }
+    if (vt == VALUE_NUM) {
+      vt = VALUE_STR;
+    }
+    if (vt == VALUE_STR) {
+      vt = VALUE_NUM;
+    }
   }
 
   return vt;

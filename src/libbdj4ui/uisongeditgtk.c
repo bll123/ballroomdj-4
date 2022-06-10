@@ -11,12 +11,16 @@
 #include <math.h>
 
 #include "bdj4intl.h"
+#include "bdjvarsdf.h"
 #include "conn.h"
+#include "level.h"
 #include "log.h"
 #include "nlist.h"
 #include "slist.h"
 #include "tagdef.h"
 #include "tmutil.h"
+#include "uilevel.h"
+#include "uirating.h"
 #include "uisong.h"
 #include "uisongsel.h"
 #include "uisongedit.h"
@@ -28,6 +32,8 @@ typedef struct {
     uientry_t   *entry;
     uispinbox_t *spinbox;
     UIWidget    uiwidget;
+    uilevel_t   *uilevel;
+    uirating_t  *uirating;
   };
   UIWidget    display;
   UICallback  callback;
@@ -112,6 +118,12 @@ uisongeditUIFree (uisongedit_t *uisongedit)
           break;
         }
         case ET_SPINBOX_TEXT: {
+          if (tagkey == TAG_DANCELEVEL) {
+            uilevelFree (uiw->items [count].uilevel);
+          }
+          if (tagkey == TAG_DANCERATING) {
+            uiratingFree (uiw->items [count].uirating);
+          }
           break;
         }
         case ET_SPINBOX: {
@@ -235,8 +247,10 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song)
   char            *data;
   long            val;
   double          dval;
+  level_t         *levels;
 
   uiw = uisongedit->uiWidgetData;
+  levels = bdjvarsdfGet (BDJVDF_LEVELS);
 
   for (int count = 0; count < uiw->itemcount; ++count) {
     int tagkey = uiw->items [count].tagkey;
@@ -248,6 +262,19 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song)
         if (data != NULL) {
           uiEntrySetValue (uiw->items [count].entry, data);
           free (data);
+        }
+        break;
+      }
+      case ET_SPINBOX_TEXT: {
+        if (tagkey == TAG_DANCELEVEL) {
+          data = uisongGetDisplay (song, tagkey, &val, &dval);
+          if (val < 0) { val = levelGetDefaultKey (levels); }
+          uilevelSetValue (uiw->items [count].uilevel, val);
+        }
+        if (tagkey == TAG_DANCERATING) {
+          data = uisongGetDisplay (song, tagkey, &val, &dval);
+          if (val < 0) { val = 0; }
+          uiratingSetValue (uiw->items [count].uirating, val);
         }
         break;
       }
@@ -364,6 +391,14 @@ uisongeditAddItem (uisongedit_t *uisongedit, UIWidget *hbox, UIWidget *sg, int t
       break;
     }
     case ET_SPINBOX_TEXT: {
+      if (tagkey == TAG_DANCELEVEL) {
+        uiw->items [uiw->itemcount].uilevel =
+            uilevelSpinboxCreate (hbox, FALSE);
+      }
+      if (tagkey == TAG_DANCERATING) {
+        uiw->items [uiw->itemcount].uirating =
+            uiratingSpinboxCreate (hbox, FALSE);
+      }
       break;
     }
     case ET_SPINBOX: {
