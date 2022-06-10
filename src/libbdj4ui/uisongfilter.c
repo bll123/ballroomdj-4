@@ -99,7 +99,7 @@ static void uisfSortBySelect (uisongfilter_t *uisf, ssize_t idx);
 static void uisfCreateSortByList (uisongfilter_t *uisf);
 static void uisfGenreSelect (uisongfilter_t *uisf, ssize_t idx);
 static void uisfCreateGenreList (uisongfilter_t *uisf);
-
+static void uisfUpdateFilterDialogDisplay (uisongfilter_t *uisf);
 
 uisongfilter_t *
 uisfInit (UIWidget *windowp, nlist_t *options, songfilterpb_t pbflag)
@@ -188,18 +188,7 @@ uisfShowPlaylistDisplay (uisongfilter_t *uisf)
   }
 
   uisf->showplaylist = true;
-  songfilterOn (uisf->songfilter, SONG_FILTER_PLAYLIST);
-  if (songfilterInUse (uisf->songfilter, SONG_FILTER_PLAYLIST)) {
-    uisfDisableWidgets (uisf);
-  } else {
-    uisfEnableWidgets (uisf);
-  }
-
-  if (! uiutilsUIWidgetSet (&uisf->filterDialog)) {
-    return;
-  }
-
-  uiWidgetShowAll (&uisf->playlistdisp);
+  uisfUpdateFilterDialogDisplay (uisf);
 }
 
 void
@@ -210,14 +199,7 @@ uisfHidePlaylistDisplay (uisongfilter_t *uisf)
   }
 
   uisf->showplaylist = false;
-
-  if (! uiutilsUIWidgetSet (&uisf->filterDialog)) {
-    return;
-  }
-
-  songfilterOff (uisf->songfilter, SONG_FILTER_PLAYLIST);
-  uiWidgetHide (&uisf->playlistdisp);
-  uisfEnableWidgets (uisf);
+  uisfUpdateFilterDialogDisplay (uisf);
 }
 
 bool
@@ -245,10 +227,7 @@ uisfDialog (void *udata)
   }
   uiWidgetShowAll (&uisf->filterDialog);
 
-  uisfHidePlaylistDisplay (uisf);
-  if (uisf->showplaylist) {
-    uisfShowPlaylistDisplay (uisf);
-  }
+  uisfUpdateFilterDialogDisplay (uisf);
 
   x = nlistGetNum (uisf->options, SONGSEL_FILTER_POSITION_X);
   y = nlistGetNum (uisf->options, SONGSEL_FILTER_POSITION_Y);
@@ -911,6 +890,40 @@ uisfDanceSelectHandler (GtkTreeView *tv, GtkTreePath *path,
   uisfSetDanceIdx (uisf, danceIdx);
   if (uisf->danceselcb != NULL) {
     uiutilsCallbackLongHandler (uisf->danceselcb, danceIdx);
+  }
+}
+
+static void
+uisfUpdateFilterDialogDisplay (uisongfilter_t *uisf)
+{
+  if (uisf == NULL) {
+    return;
+  }
+
+  if (uisf->showplaylist) {
+    songfilterOn (uisf->songfilter, SONG_FILTER_PLAYLIST);
+    if (songfilterInUse (uisf->songfilter, SONG_FILTER_PLAYLIST)) {
+      uisfDisableWidgets (uisf);
+    } else {
+      uisfEnableWidgets (uisf);
+    }
+
+    if (! uiutilsUIWidgetSet (&uisf->filterDialog)) {
+      return;
+    }
+
+    uiWidgetShowAll (&uisf->playlistdisp);
+  }
+
+  if (! uisf->showplaylist) {
+    songfilterOff (uisf->songfilter, SONG_FILTER_PLAYLIST);
+    uisfEnableWidgets (uisf);
+
+    if (! uiutilsUIWidgetSet (&uisf->filterDialog)) {
+      return;
+    }
+
+    uiWidgetHide (&uisf->playlistdisp);
   }
 }
 
