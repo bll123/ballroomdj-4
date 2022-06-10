@@ -70,11 +70,13 @@ void  uiLabelAlignEnd (UIWidget *uiwidget);
 
 /* uigtkbutton.c */
 void uiCreateButton (UIWidget *uiwidget, UICallback *uicb, char *title, char *imagenm);
+void uiButtonSetImagePosRight (UIWidget *uiwidget);
 void uiButtonSetPressCallback (UIWidget *uiwidget, UICallback *uicb);
 void uiButtonSetReleaseCallback (UIWidget *uiwidget, UICallback *uicb);
 void uiButtonSetImage (UIWidget *uiwidget, const char *imagenm, const char *tooltip);
 void uiButtonSetImageIcon (UIWidget *uiwidget, const char *nm);
 void uiButtonAlignLeft (UIWidget *widget);
+void uiButtonSetText (UIWidget *uiwidget, const char *txt);
 
 /* uigtkentry.c */
 enum {
@@ -139,13 +141,12 @@ void uiSpinboxSetValueChangedCallback (UIWidget *uiwidget, UICallback *uicb);
 
 uidropdown_t *uiDropDownInit (void);
 void uiDropDownFree (uidropdown_t *dropdown);
-GtkWidget * uiDropDownCreate (GtkWidget *parentwin,
+UIWidget *uiDropDownCreate (UIWidget *parentwin,
     char *title, void *processSelectionCallback,
     uidropdown_t *dropdown, void *udata);
-GtkWidget * uiComboboxCreate (GtkWidget *parentwin,
+UIWidget *uiComboboxCreate (UIWidget *parentwin,
     char *title, void *processSelectionCallback,
     uidropdown_t *dropdown, void *udata);
-nlistidx_t uiDropDownSelectionGet (uidropdown_t *dropdown, GtkTreePath *path);
 void uiDropDownSetList (uidropdown_t *dropdown, slist_t *list,
     const char *selectLabel);
 void uiDropDownSetNumList (uidropdown_t *dropdown, slist_t *list,
@@ -155,6 +156,9 @@ void uiDropDownSelectionSetStr (uidropdown_t *dropdown, const char *stridx);
 void uiDropDownDisable (uidropdown_t *dropdown);
 void uiDropDownEnable (uidropdown_t *dropdown);
 char *uiDropDownGetString (uidropdown_t *dropdown);
+
+/* these routines will be removed at a later date */
+nlistidx_t uiDropDownSelectionGetW (uidropdown_t *dropdown, GtkTreePath *path);
 
 /* uigtklink.c */
 void uiCreateLink (UIWidget *uiwidget, char *label, char *uri);
@@ -246,10 +250,13 @@ void uiWindowGetPosition (UIWidget *uiwindow, int *x, int *y);
 void uiWindowMove (UIWidget *uiwindow, int x, int y);
 void uiWindowNoFocusOnStartup (UIWidget *uiwindow);
 void uiCreateScrolledWindow (UIWidget *uiwindow, int minheight);
+void uiWindowSetPolicyExternal (UIWidget *uisw);
+void uiCreateDialogWindow (UIWidget *uiwidget, UIWidget *parentwin, UIWidget *attachment, UICallback *uicb, const char *title);
 void uiWindowSetDoubleClickCallback (UIWidget *uiwindow, UICallback *uicb);
 void uiWindowSetWinStateCallback (UIWidget *uiwindow, UICallback *uicb);
 void uiWindowNoDim (UIWidget *uiwidget);
 void uiWindowSetMappedCallback (UIWidget *uiwidget, UICallback *uicb);
+void uiWindowPresent (UIWidget *uiwidget);
 /* these routines will be removed at a later date */
 GtkWidget * uiCreateScrolledWindowW (int minheight);
 
@@ -312,6 +319,7 @@ void  uiWidgetMakePersistent (UIWidget *uiuiwidget);
 void  uiWidgetClearPersistent (UIWidget *uiuiwidget);
 void  uiWidgetSetSizeRequest (UIWidget *uiuiwidget, int width, int height);
 bool  uiWidgetIsValid (UIWidget *uiwidget);
+void  uiWidgetGetPosition (UIWidget *widget, int *x, int *y);
 /* these routines will be removed at a later date */
 void  uiWidgetExpandHorizW (GtkWidget *widget);
 void  uiWidgetExpandVertW (GtkWidget *widget);

@@ -9,6 +9,7 @@ typedef void (*uisongdtcb_t)(int type, void *udata);
 
 void uisongSetDisplayColumns (slist_t *sellist, song_t *song, int col, uisongcb_t cb, void *udata);
 char *uisongGetDisplay (song_t *song, int tagidx, long *num, double *dval);
+char *uisongGetValue (song_t *song, int tagidx, long *num, double *dval);
 void uisongAddDisplayTypes (slist_t *sellist, uisongdtcb_t cb, void *udata);
 
 #endif /* INC_UISONG_H */

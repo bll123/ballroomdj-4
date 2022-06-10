@@ -66,7 +66,7 @@ typedef struct uisongselgtk {
   GtkWidget           *songselScrollbar;
   GtkEventController  *scrollController;
   GtkTreeViewColumn   *favColumn;
-  GtkWidget           *scrolledwin;
+  UIWidget            scrolledwin;
   /* other data */
   int               lastTreeSize;
   double            lastRowHeight;
@@ -155,9 +155,9 @@ uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin)
 {
   uisongselgtk_t    *uiw;
   UIWidget          uiwidget;
+  UIWidget          *uiwidgetp;
   UIWidget          hbox;
   UIWidget          vbox;
-  GtkWidget         *widget;
   GtkAdjustment     *adjustment;
   slist_t           *sellist;
   char              tbuff [200];
@@ -218,12 +218,12 @@ uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin)
     uiBoxPackStart (&hbox, &uiwidget);
   }
 
-  widget = uiComboboxCreate (parentwin->widget,
+  uiwidgetp = uiComboboxCreate (parentwin,
       "", uisongselDanceSelectCallback,
       uisongsel->dancesel, uisongsel);
   /* CONTEXT: filter: all dances are selected */
   uiutilsCreateDanceList (uisongsel->dancesel, _("All Dances"));
-  uiBoxPackEndUW (&hbox, widget);
+  uiBoxPackEnd (&hbox, uiwidgetp);
 
   uiutilsUICallbackInit (&uiw->callbacks [SONGSEL_CB_FILTER],
       uisfDialog, uisongsel->uisongfilter);
@@ -250,11 +250,10 @@ uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin)
   g_signal_connect (uiw->songselScrollbar, "change-value",
       G_CALLBACK (uisongselScroll), uisongsel);
 
-  widget = uiCreateScrolledWindowW (400);
-  gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (widget), GTK_POLICY_NEVER, GTK_POLICY_EXTERNAL);
-  uiWidgetExpandHorizW (widget);
-  uiBoxPackStartExpandUW (&vbox, widget);
-  uiw->scrolledwin = widget;
+  uiCreateScrolledWindow (&uiw->scrolledwin, 400);
+  uiWindowSetPolicyExternal (&uiw->scrolledwin);
+  uiWidgetExpandHoriz (&uiw->scrolledwin);
+  uiBoxPackStartExpand (&vbox, &uiw->scrolledwin);
 
   uiw->songselTree = uiCreateTreeView ();
   assert (uiw->songselTree != NULL);
@@ -281,7 +280,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin)
       GTK_EVENT_CONTROLLER_SCROLL_VERTICAL |
       GTK_EVENT_CONTROLLER_SCROLL_DISCRETE);
   gtk_widget_add_events (uiw->songselTree, GDK_SCROLL_MASK);
-  uiBoxPackInWindowWW (widget, uiw->songselTree);
+  uiBoxPackInWindowUW (&uiw->scrolledwin, uiw->songselTree);
   g_signal_connect (uiw->songselTree, "row-activated",
       G_CALLBACK (uisongselCheckFavChgSignal), uisongsel);
   g_signal_connect (uiw->songselTree, "scroll-event",
@@ -608,7 +607,7 @@ uisongselDanceSelectCallback (GtkTreeView *tv, GtkTreePath *path,
   uisongsel_t *uisongsel = udata;
   long        danceIdx;
 
-  danceIdx = uiDropDownSelectionGet (uisongsel->dancesel, path);
+  danceIdx = uiDropDownSelectionGetW (uisongsel->dancesel, path);
   uisongselDanceSelectHandler (uisongsel, danceIdx);
   return;
 }

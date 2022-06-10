@@ -22,6 +22,7 @@ add_library (libbdj4ui SHARED
   uisongfilter.c
   uisongsel.c
   uisongselgtk.c
+  uistatus.c
   uiutils.c
 )
 target_include_directories (libbdj4ui

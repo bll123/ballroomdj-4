@@ -14,6 +14,7 @@
 #include "ui.h"
 #include "uiutils.h"
 
+static gboolean uiWindowFocusOutCallback (GtkWidget *w, GdkEventFocus *event, gpointer udata);
 static gboolean uiWindowCloseCallback (GtkWidget *window, GdkEvent *event, gpointer udata);
 static gboolean uiWindowDoubleClickHandler (GtkWidget *window, GdkEventButton *event, gpointer udata);
 static gboolean uiWindowWinStateHandler (GtkWidget *window, GdkEventWindowState *event, gpointer udata);
@@ -151,6 +152,49 @@ uiCreateScrolledWindow (UIWidget *uiwidget, int minheight)
 }
 
 void
+uiWindowSetPolicyExternal (UIWidget *uisw)
+{
+  gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (uisw->widget),
+      GTK_POLICY_NEVER, GTK_POLICY_EXTERNAL);
+}
+
+void
+uiCreateDialogWindow (UIWidget *uiwidget, UIWidget *parentwin,
+    UIWidget *attachment, UICallback *uicb, const char *title)
+{
+  GtkWidget *window;
+
+  window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+  assert (window != NULL);
+  if (attachment != NULL) {
+    gtk_window_set_attached_to (GTK_WINDOW (window), attachment->widget);
+  }
+  if (parentwin != NULL) {
+    gtk_window_set_transient_for (GTK_WINDOW (window),
+        GTK_WINDOW (parentwin->widget));
+  }
+  gtk_window_set_decorated (GTK_WINDOW (window), FALSE);
+  gtk_window_set_deletable (GTK_WINDOW (window), FALSE);
+  gtk_window_set_type_hint (GTK_WINDOW (window), GDK_WINDOW_TYPE_HINT_POPUP_MENU);
+  gtk_window_set_skip_taskbar_hint (GTK_WINDOW (window), TRUE);
+  gtk_window_set_skip_pager_hint (GTK_WINDOW (window), TRUE);
+  gtk_container_set_border_width (GTK_CONTAINER (window), 6);
+  gtk_widget_hide (window);
+  gtk_widget_set_vexpand (window, FALSE);
+  gtk_widget_set_events (window, GDK_FOCUS_CHANGE_MASK);
+
+  if (title != NULL) {
+    gtk_window_set_title (GTK_WINDOW (window), title);
+  }
+  if (uicb != NULL) {
+    g_signal_connect (G_OBJECT (window),
+        "focus-out-event", G_CALLBACK (uiWindowFocusOutCallback), uicb);
+  }
+
+  uiwidget->widget = window;
+}
+
+void
 uiWindowSetDoubleClickCallback (UIWidget *uiwidget, UICallback *uicb)
 {
   g_signal_connect (uiwidget->widget, "button-press-event",
@@ -178,13 +222,29 @@ uiWindowSetMappedCallback (UIWidget *uiwidget, UICallback *uicb)
       G_CALLBACK (uiWindowMappedHandler), uicb);
 }
 
+void
+uiWindowPresent (UIWidget *uiwidget)
+{
+  gtk_window_present (GTK_WINDOW (uiwidget->widget));
+}
+
 /* internal routines */
+
+static gboolean
+uiWindowFocusOutCallback (GtkWidget *w, GdkEventFocus *event, gpointer udata)
+{
+  UICallback  *uicb = udata;
+  bool        rc = UICB_CONT;
+
+  rc = uiutilsCallbackHandler (uicb);
+  return rc;
+}
 
 static gboolean
 uiWindowCloseCallback (GtkWidget *window, GdkEvent *event, gpointer udata)
 {
   UICallback  *uicb = udata;
-  bool        rc = false;
+  bool        rc = UICB_CONT;
 
   rc = uiutilsCallbackHandler (uicb);
   return rc;

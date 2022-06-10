@@ -13,7 +13,6 @@
 
 #include "bdj4.h"
 #include "bdjstring.h"
-#include "pathbld.h"
 #include "ui.h"
 #include "uiutils.h"
 
@@ -27,9 +26,11 @@ enum {
 
 typedef struct uidropdown {
   char          *title;
-  GtkWidget     *parentwin;
-  GtkWidget     *button;
-  GtkWidget     *window;
+  UIWidget      *parentwin;
+  UIWidget      button;
+  UICallback    buttoncb;
+  UIWidget      window;
+  UICallback    closecb;
   GtkWidget     *tree;
   GtkTreeSelection  *sel;
   slist_t       *strIndexMap;
@@ -41,10 +42,9 @@ typedef struct uidropdown {
 } uidropdown_t;
 
 /* drop-down/combobox handling */
-static void     uiDropDownWindowShow (GtkButton *b, gpointer udata);
-static gboolean uiDropDownClose (GtkWidget *w,
-    GdkEventFocus *event, gpointer udata);
-static GtkWidget * uiDropDownButtonCreate (uidropdown_t *dropdown);
+static bool uiDropDownWindowShow (void *udata);
+static bool uiDropDownClose (void *udata);
+static void uiDropDownButtonCreate (uidropdown_t *dropdown);
 static void uiDropDownWindowCreate (uidropdown_t *dropdown,
     void *processSelectionCallback, void *udata);
 static void uiDropDownSelectionSet (uidropdown_t *dropdown,
@@ -59,8 +59,8 @@ uiDropDownInit (void)
 
   dropdown->title = NULL;
   dropdown->parentwin = NULL;
-  dropdown->button = NULL;
-  dropdown->window = NULL;
+  uiutilsUIWidgetInit (&dropdown->button);
+  uiutilsUIWidgetInit (&dropdown->window);
   dropdown->tree = NULL;
   dropdown->sel = NULL;
   dropdown->closeHandlerId = 0;
@@ -94,20 +94,20 @@ uiDropDownFree (uidropdown_t *dropdown)
   }
 }
 
-GtkWidget *
-uiDropDownCreate (GtkWidget *parentwin,
+UIWidget *
+uiDropDownCreate (UIWidget *parentwin,
     char *title, void *processSelectionCallback,
     uidropdown_t *dropdown, void *udata)
 {
   dropdown->parentwin = parentwin;
   dropdown->title = strdup (title);
-  dropdown->button = uiDropDownButtonCreate (dropdown);
+  uiDropDownButtonCreate (dropdown);
   uiDropDownWindowCreate (dropdown, processSelectionCallback, udata);
-  return dropdown->button;
+  return &dropdown->button;
 }
 
-GtkWidget *
-uiComboboxCreate (GtkWidget *parentwin,
+UIWidget *
+uiComboboxCreate (UIWidget *parentwin,
     char *title, void *processSelectionCallback,
     uidropdown_t *dropdown, void *udata)
 {
@@ -115,44 +115,6 @@ uiComboboxCreate (GtkWidget *parentwin,
   return uiDropDownCreate (parentwin,
       title, processSelectionCallback,
       dropdown, udata);
-}
-
-nlistidx_t
-uiDropDownSelectionGet (uidropdown_t *dropdown, GtkTreePath *path)
-{
-  GtkTreeIter   iter;
-  GtkTreeModel  *model = NULL;
-  long          idx = 0;
-  int32_t       idx32;
-  nlistidx_t    retval;
-
-  model = gtk_tree_view_get_model (GTK_TREE_VIEW (dropdown->tree));
-  if (gtk_tree_model_get_iter (model, &iter, path)) {
-    gtk_tree_model_get (model, &iter, UIUTILS_DROPDOWN_COL_IDX, &idx, -1);
-    /* despite the model using an unsigned long, setting it to -1 */
-    /* sets it to a 32-bit value */
-    /* want the special -1 index (all items for combobox) */
-    idx32 = (int32_t) idx;
-    retval = idx32;
-    if (dropdown->strSelection != NULL) {
-      free (dropdown->strSelection);
-    }
-    gtk_tree_model_get (model, &iter, UIUTILS_DROPDOWN_COL_STR,
-        &dropdown->strSelection, -1);
-    if (dropdown->iscombobox) {
-      char  *p;
-
-      gtk_tree_model_get (model, &iter, UIUTILS_DROPDOWN_COL_DISP, &p, -1);
-      gtk_button_set_label (GTK_BUTTON (dropdown->button), p);
-      free (p);
-    }
-    gtk_widget_hide (dropdown->window);
-    dropdown->open = false;
-  } else {
-    return -1;
-  }
-
-  return retval;
 }
 
 void
@@ -177,7 +139,7 @@ uiDropDownSetList (uidropdown_t *dropdown, slist_t *list,
   internalidx = 0;
 
   if (! dropdown->iscombobox) {
-    gtk_button_set_label (GTK_BUTTON (dropdown->button), dropdown->title);
+    uiButtonSetText (&dropdown->button, dropdown->title);
   }
 
   if (dropdown->iscombobox && selectLabel != NULL) {
@@ -246,7 +208,7 @@ uiDropDownSetNumList (uidropdown_t *dropdown, slist_t *list,
   internalidx = 0;
 
   if (! dropdown->iscombobox) {
-    gtk_button_set_label (GTK_BUTTON (dropdown->button), dropdown->title);
+    uiButtonSetText (&dropdown->button, dropdown->title);
   }
 
   if (dropdown->iscombobox && selectLabel != NULL) {
@@ -338,19 +300,19 @@ uiDropDownSelectionSetStr (uidropdown_t *dropdown, const char *stridx)
 void
 uiDropDownDisable (uidropdown_t *dropdown)
 {
-  if (dropdown == NULL || dropdown->button == NULL) {
+  if (dropdown == NULL) {
     return;
   }
-  gtk_widget_set_sensitive (dropdown->button, FALSE);
+  uiWidgetDisable (&dropdown->button);
 }
 
 void
 uiDropDownEnable (uidropdown_t *dropdown)
 {
-  if (dropdown == NULL || dropdown->button == NULL) {
+  if (dropdown == NULL) {
     return;
   }
-  gtk_widget_set_sensitive (dropdown->button, TRUE);
+  uiWidgetEnable (&dropdown->button);
 }
 
 char *
@@ -364,60 +326,53 @@ uiDropDownGetString (uidropdown_t *dropdown)
 
 /* internal routines */
 
-static void
-uiDropDownWindowShow (GtkButton *b, gpointer udata)
+static bool
+uiDropDownWindowShow (void *udata)
 {
-  uidropdown_t *dropdown = udata;
-  GtkAllocation     alloc;
-  gint              x, y;
+  uidropdown_t  *dropdown = udata;
+  int           x, y;
+  int           bx, by;
 
 
-  gtk_window_get_position (GTK_WINDOW (dropdown->parentwin), &x, &y);
-  gtk_widget_get_allocation (dropdown->button, &alloc);
-  gtk_widget_show_all (dropdown->window);
-  gtk_window_move (GTK_WINDOW (dropdown->window), alloc.x + x + 4, alloc.y + y + 4 + 30);
+  if (dropdown == NULL) {
+    return UICB_STOP;
+  }
+
+  bx = 0;
+  by = 0;
+  uiWindowGetPosition (dropdown->parentwin, &x, &y);
+  if (&dropdown->button != NULL) {
+    uiWidgetGetPosition (&dropdown->button, &bx, &by);
+  }
+  uiWidgetShowAll (&dropdown->window);
+  uiWindowMove (&dropdown->window, bx + x + 4, by + y + 4 + 30);
   dropdown->open = true;
+  return UICB_CONT;
 }
 
-static gboolean
-uiDropDownClose (GtkWidget *w, GdkEventFocus *event, gpointer udata)
+static bool
+uiDropDownClose (void *udata)
 {
   uidropdown_t *dropdown = udata;
-
 
   if (dropdown->open) {
-    gtk_widget_hide (dropdown->window);
+    uiWidgetHide (&dropdown->window);
     dropdown->open = false;
   }
-  gtk_window_present (GTK_WINDOW (dropdown->parentwin));
+  uiWindowPresent (dropdown->parentwin);
 
-  return FALSE;
+  return UICB_CONT;
 }
 
-static GtkWidget *
+static void
 uiDropDownButtonCreate (uidropdown_t *dropdown)
 {
-  GtkWidget   *widget;
-  GtkWidget   *image;
-  char        tbuff [MAXPATHLEN];
-
-
-  widget = gtk_button_new ();
-  assert (widget != NULL);
-  gtk_widget_set_margin_top (widget, uiBaseMarginSz);
-  gtk_widget_set_margin_start (widget, uiBaseMarginSz);
-
-  pathbldMakePath (tbuff, sizeof (tbuff), "button_down_small", ".svg",
-      PATHBLD_MP_IMGDIR);
-  image = gtk_image_new_from_file (tbuff);
-  gtk_button_set_image (GTK_BUTTON (widget), image);
-  gtk_button_set_image_position (GTK_BUTTON (widget), GTK_POS_RIGHT);
-  gtk_button_set_always_show_image (GTK_BUTTON (widget), TRUE);
-
-  g_signal_connect (widget, "clicked",
-      G_CALLBACK (uiDropDownWindowShow), dropdown);
-
-  return widget;
+  uiutilsUICallbackInit (&dropdown->buttoncb, uiDropDownWindowShow, dropdown);
+  uiCreateButton (&dropdown->button, &dropdown->buttoncb, NULL,
+      "button_down_small");
+  uiButtonSetImagePosRight (&dropdown->button);
+  uiWidgetSetMarginTop (&dropdown->button, uiBaseMarginSz);
+  uiWidgetSetMarginStart (&dropdown->button, uiBaseMarginSz);
 }
 
 
@@ -430,26 +385,14 @@ uiDropDownWindowCreate (uidropdown_t *dropdown,
   UIWidget          uiscwin;
 
 
-  dropdown->window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-  gtk_window_set_attached_to (GTK_WINDOW (dropdown->window), dropdown->button);
-  gtk_window_set_transient_for (GTK_WINDOW (dropdown->window),
-      GTK_WINDOW (dropdown->parentwin));
-  gtk_window_set_decorated (GTK_WINDOW (dropdown->window), FALSE);
-  gtk_window_set_deletable (GTK_WINDOW (dropdown->window), FALSE);
-  gtk_window_set_type_hint (GTK_WINDOW (dropdown->window), GDK_WINDOW_TYPE_HINT_POPUP_MENU);
-  gtk_window_set_skip_taskbar_hint (GTK_WINDOW (dropdown->window), TRUE);
-  gtk_window_set_skip_pager_hint (GTK_WINDOW (dropdown->window), TRUE);
-  gtk_container_set_border_width (GTK_CONTAINER (dropdown->window), 6);
-  gtk_widget_hide (dropdown->window);
-  gtk_widget_set_vexpand (dropdown->window, FALSE);
-  gtk_widget_set_events (dropdown->window, GDK_FOCUS_CHANGE_MASK);
-  g_signal_connect (G_OBJECT (dropdown->window),
-      "focus-out-event", G_CALLBACK (uiDropDownClose), dropdown);
+  uiutilsUICallbackInit (&dropdown->closecb, uiDropDownClose, dropdown);
+  uiCreateDialogWindow (&dropdown->window, dropdown->parentwin,
+      &dropdown->button, &dropdown->closecb, "");
 
   uiCreateVertBox (&uiwidget);
   uiWidgetExpandHoriz (&uiwidget);
   uiWidgetExpandVert (&uiwidget);
-  uiBoxPackInWindowWU (dropdown->window, &uiwidget);
+  uiBoxPackInWindow (&dropdown->window, &uiwidget);
 
   uiCreateVertBox (&vbox);
   uiBoxPackStartExpand (&uiwidget, &vbox);
@@ -503,9 +446,49 @@ uiDropDownSelectionSet (uidropdown_t *dropdown, nlistidx_t internalidx)
       gtk_tree_model_get_iter (model, &iter, path);
       gtk_tree_model_get (model, &iter, UIUTILS_DROPDOWN_COL_DISP, &p, -1);
       if (p != NULL) {
-        gtk_button_set_label (GTK_BUTTON (dropdown->button), p);
+        uiButtonSetText (&dropdown->button, p);
       }
     }
   }
+}
+
+/* these routines will be removed at a later date */
+
+nlistidx_t
+uiDropDownSelectionGetW (uidropdown_t *dropdown, GtkTreePath *path)
+{
+  GtkTreeIter   iter;
+  GtkTreeModel  *model = NULL;
+  long          idx = 0;
+  int32_t       idx32;
+  nlistidx_t    retval;
+
+  model = gtk_tree_view_get_model (GTK_TREE_VIEW (dropdown->tree));
+  if (gtk_tree_model_get_iter (model, &iter, path)) {
+    gtk_tree_model_get (model, &iter, UIUTILS_DROPDOWN_COL_IDX, &idx, -1);
+    /* despite the model using an unsigned long, setting it to -1 */
+    /* sets it to a 32-bit value */
+    /* want the special -1 index (all items for combobox) */
+    idx32 = (int32_t) idx;
+    retval = idx32;
+    if (dropdown->strSelection != NULL) {
+      free (dropdown->strSelection);
+    }
+    gtk_tree_model_get (model, &iter, UIUTILS_DROPDOWN_COL_STR,
+        &dropdown->strSelection, -1);
+    if (dropdown->iscombobox) {
+      char  *p;
+
+      gtk_tree_model_get (model, &iter, UIUTILS_DROPDOWN_COL_DISP, &p, -1);
+      uiButtonSetText (&dropdown->button, p);
+      free (p);
+    }
+    uiWidgetHide (&dropdown->window);
+    dropdown->open = false;
+  } else {
+    return -1;
+  }
+
+  return retval;
 }
 

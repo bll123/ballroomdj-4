@@ -117,9 +117,9 @@ uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci)
 {
   int               tci;
   char              tbuff [MAXPATHLEN];
-  GtkWidget         *widget = NULL;
   UIWidget          hbox;
   UIWidget          uiwidget;
+  UIWidget          *uiwidgetp;
   GtkCellRenderer   *renderer = NULL;
   GtkTreeViewColumn *column = NULL;
   slist_t           *sellist;
@@ -239,19 +239,19 @@ uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci)
     uiBoxPackEnd (&hbox, &uiwidget);
 // ### TODO create code to handle the request external button
 
-    widget = uiDropDownCreate (parentwin->widget,
+    uiwidgetp = uiDropDownCreate (parentwin,
         /* CONTEXT: button: queue a playlist for playback */
         _("Queue Playlist"), uimusicqQueuePlaylist,
         uimusicq->ui [ci].playlistsel, uimusicq);
-    uiBoxPackEndUW (&hbox, widget);
+    uiBoxPackEnd (&hbox, uiwidgetp);
     uimusicqCreatePlaylistList (uimusicq);
 
-    widget = uiDropDownCreate (parentwin->widget,
+    uiwidgetp = uiDropDownCreate (parentwin,
         /* CONTEXT: button: queue a dance for playback */
         _("Queue Dance"), uimusicqQueueDance,
         uiw->dancesel, uimusicq);
     uiutilsCreateDanceList (uiw->dancesel, NULL);
-    uiBoxPackEndUW (&hbox, widget);
+    uiBoxPackEnd (&hbox, uiwidgetp);
   }
 
   if (uimusicq->dispselType == DISP_SEL_SONGLIST ||
@@ -485,7 +485,7 @@ uimusicqQueueDance (GtkTreeView *tv, GtkTreePath *path,
 
   ci = uimusicq->musicqManageIdx;
   uiw = uimusicq->ui [ci].uiWidgets;
-  idx = uiDropDownSelectionGet (uiw->dancesel, path);
+  idx = uiDropDownSelectionGetW (uiw->dancesel, path);
   uimusicqQueueDanceProcess (uimusicq, idx);
 }
 
@@ -498,7 +498,7 @@ uimusicqQueuePlaylist (GtkTreeView *tv, GtkTreePath *path,
   int           ci;
 
   ci = uimusicq->musicqManageIdx;
-  idx = uiDropDownSelectionGet (uimusicq->ui [ci].playlistsel, path);
+  idx = uiDropDownSelectionGetW (uimusicq->ui [ci].playlistsel, path);
   uimusicqQueuePlaylistProcess (uimusicq, idx);
 }
 

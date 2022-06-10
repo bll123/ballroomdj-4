@@ -229,6 +229,16 @@ uiWidgetIsValid (UIWidget *uiwidget)
   return rc;
 }
 
+void
+uiWidgetGetPosition (UIWidget *uiwidget, int *x, int *y)
+{
+  GtkAllocation alloc;
+
+  gtk_widget_get_allocation (uiwidget->widget, &alloc);
+  *x = alloc.x;
+  *y = alloc.y;
+}
+
 
 /* these routines will be removed at a later date */
 

@@ -51,6 +51,12 @@ uiCreateButton (UIWidget *uiwidget, UICallback *uicb,
 }
 
 void
+uiButtonSetImagePosRight (UIWidget *uiwidget)
+{
+  gtk_button_set_image_position (GTK_BUTTON (uiwidget->widget), GTK_POS_RIGHT);
+}
+
+void
 uiButtonSetPressCallback (UIWidget *uiwidget, UICallback *uicb)
 {
   if (uicb == NULL) {
@@ -115,4 +121,8 @@ uiButtonSignalHandler (GtkButton *b, gpointer udata)
   uiutilsCallbackHandler (uicb);
 }
 
-
+void
+uiButtonSetText (UIWidget *uiwidget, const char *txt)
+{
+  gtk_button_set_label (GTK_BUTTON (uiwidget->widget), txt);
+}

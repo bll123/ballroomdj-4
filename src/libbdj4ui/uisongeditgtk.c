@@ -21,6 +21,7 @@
 #include "tmutil.h"
 #include "uilevel.h"
 #include "uirating.h"
+#include "uistatus.h"
 #include "uisong.h"
 #include "uisongsel.h"
 #include "uisongedit.h"
@@ -34,6 +35,7 @@ typedef struct {
     UIWidget    uiwidget;
     uilevel_t   *uilevel;
     uirating_t  *uirating;
+    uistatus_t  *uistatus;
   };
   UIWidget    display;
   UICallback  callback;
@@ -123,6 +125,9 @@ uisongeditUIFree (uisongedit_t *uisongedit)
           }
           if (tagkey == TAG_DANCERATING) {
             uiratingFree (uiw->items [count].uirating);
+          }
+          if (tagkey == TAG_STATUS) {
+            uistatusFree (uiw->items [count].uistatus);
           }
           break;
         }
@@ -257,7 +262,7 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song)
 
     switch (tagdefs [tagkey].editType) {
       case ET_ENTRY: {
-        data = uisongGetDisplay (song, tagkey, &val, &dval);
+        data = uisongGetValue (song, tagkey, &val, &dval);
         uiEntrySetValue (uiw->items [count].entry, "");
         if (data != NULL) {
           uiEntrySetValue (uiw->items [count].entry, data);
@@ -267,19 +272,24 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song)
       }
       case ET_SPINBOX_TEXT: {
         if (tagkey == TAG_DANCELEVEL) {
-          data = uisongGetDisplay (song, tagkey, &val, &dval);
+          data = uisongGetValue (song, tagkey, &val, &dval);
           if (val < 0) { val = levelGetDefaultKey (levels); }
           uilevelSetValue (uiw->items [count].uilevel, val);
         }
         if (tagkey == TAG_DANCERATING) {
-          data = uisongGetDisplay (song, tagkey, &val, &dval);
+          data = uisongGetValue (song, tagkey, &val, &dval);
           if (val < 0) { val = 0; }
           uiratingSetValue (uiw->items [count].uirating, val);
+        }
+        if (tagkey == TAG_STATUS) {
+          data = uisongGetValue (song, tagkey, &val, &dval);
+          if (val < 0) { val = 0; }
+          uistatusSetValue (uiw->items [count].uistatus, val);
         }
         break;
       }
       case ET_SPINBOX: {
-        data = uisongGetDisplay (song, tagkey, &val, &dval);
+        data = uisongGetValue (song, tagkey, &val, &dval);
         if (data != NULL) {
           fprintf (stderr, "et_spinbox: mismatch type\n");
         }
@@ -288,7 +298,7 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song)
         break;
       }
       case ET_SPINBOX_TIME: {
-        data = uisongGetDisplay (song, tagkey, &val, &dval);
+        data = uisongGetValue (song, tagkey, &val, &dval);
         if (data != NULL) {
           fprintf (stderr, "et_spinbox_time: mismatch type\n");
         }
@@ -297,7 +307,7 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song)
         break;
       }
       case ET_SCALE: {
-        data = uisongGetDisplay (song, tagkey, &val, &dval);
+        data = uisongGetValue (song, tagkey, &val, &dval);
         if (tagkey == TAG_SPEEDADJUSTMENT) {
           dval = (double) val;
           if (dval == 0.0) { dval = 100.0; }
@@ -398,6 +408,10 @@ uisongeditAddItem (uisongedit_t *uisongedit, UIWidget *hbox, UIWidget *sg, int t
       if (tagkey == TAG_DANCERATING) {
         uiw->items [uiw->itemcount].uirating =
             uiratingSpinboxCreate (hbox, FALSE);
+      }
+      if (tagkey == TAG_STATUS) {
+        uiw->items [uiw->itemcount].uistatus =
+            uistatusSpinboxCreate (hbox, FALSE);
       }
       break;
     }

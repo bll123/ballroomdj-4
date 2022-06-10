@@ -15,6 +15,7 @@
 #include "uisong.h"
 #include "uiutils.h"
 
+static valuetype_t uisongDetermineDisplayValueType (int tagidx);
 static valuetype_t uisongDetermineValueType (int tagidx);
 
 void
@@ -42,6 +43,29 @@ uisongSetDisplayColumns (slist_t *sellist, song_t *song, int col,
 
 char *
 uisongGetDisplay (song_t *song, int tagidx, long *num, double *dval)
+{
+  valuetype_t   vt;
+  char          *str;
+
+  vt = uisongDetermineDisplayValueType (tagidx);
+  *num = 0;
+  *dval = 0.0;
+  str = NULL;
+  if (vt == VALUE_STR) {
+    str = songDisplayString (song, tagidx);
+  } else if (vt == VALUE_NUM) {
+    *num = songGetNum (song, tagidx);
+    if (*num == LIST_VALUE_INVALID) { *num = 0; }
+  } else if (vt == VALUE_DOUBLE) {
+    *dval = songGetDouble (song, tagidx);
+    if (*dval == LIST_DOUBLE_INVALID) { *dval = 0.0; }
+  }
+
+  return str;
+}
+
+char *
+uisongGetValue (song_t *song, int tagidx, long *num, double *dval)
 {
   valuetype_t   vt;
   char          *str;
@@ -75,7 +99,7 @@ uisongAddDisplayTypes (slist_t *sellist, uisongdtcb_t cb, void *udata)
     valuetype_t vt;
     int         type;
 
-    vt = uisongDetermineValueType (tagidx);
+    vt = uisongDetermineDisplayValueType (tagidx);
     type = vt == VALUE_STR ? UITREE_TYPE_STRING : UITREE_TYPE_NUM;
     if (cb != NULL) {
       cb (type, udata);
@@ -84,6 +108,19 @@ uisongAddDisplayTypes (slist_t *sellist, uisongdtcb_t cb, void *udata)
 }
 
 /* internal routines */
+
+static valuetype_t
+uisongDetermineDisplayValueType (int tagidx)
+{
+  valuetype_t   vt;
+
+  vt = tagdefs [tagidx].valueType;
+  if (tagdefs [tagidx].convfunc != NULL) {
+    vt = VALUE_STR;
+  }
+
+  return vt;
+}
 
 static valuetype_t
 uisongDetermineValueType (int tagidx)
@@ -105,3 +142,4 @@ uisongDetermineValueType (int tagidx)
 
   return vt;
 }
+

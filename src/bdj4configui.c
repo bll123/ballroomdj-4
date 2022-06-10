@@ -2317,22 +2317,25 @@ confuiMakeItemCombobox (configui_t *confui, UIWidget *boxp, UIWidget *sg,
     char *txt, int widx, int bdjoptIdx, void *ddcb, char *value)
 {
   UIWidget    hbox;
-  GtkWidget   *widget;
+  UIWidget    uiwidget;
+  UIWidget    *uiwidgetp;
 
   logProcBegin (LOG_PROC, "confuiMakeItemCombobox");
   confui->uiitem [widx].basetype = CONFUI_COMBOBOX;
   confui->uiitem [widx].outtype = CONFUI_OUT_STR;
+
   uiCreateHorizBox (&hbox);
   confuiMakeItemLabel (&hbox, sg, txt);
-  widget = uiComboboxCreate (confui->window.widget, txt,
+  uiwidgetp = uiComboboxCreate (&confui->window, txt,
       ddcb, confui->uiitem [widx].dropdown, confui);
-  confui->uiitem [widx].widget = widget;
   uiDropDownSetList (confui->uiitem [widx].dropdown,
       confui->uiitem [widx].displist, NULL);
   uiDropDownSelectionSetStr (confui->uiitem [widx].dropdown, value);
-  uiWidgetSetMarginStartW (widget, uiBaseMarginSz * 4);
-  uiBoxPackStartUW (&hbox, widget);
+  uiWidgetSetMarginStart (uiwidgetp, uiBaseMarginSz * 4);
+  uiBoxPackStart (&hbox, uiwidgetp);
   uiBoxPackStart (boxp, &hbox);
+
+  uiutilsUIWidgetCopy (&confui->uiitem [widx].uiwidget, &uiwidget);
   confui->uiitem [widx].bdjoptIdx = bdjoptIdx;
   logProcEnd (LOG_PROC, "confuiMakeItemCombobox", "");
 }
@@ -3139,7 +3142,7 @@ confuiComboboxSelect (configui_t *confui, GtkTreePath *path, int widx)
 
   logProcBegin (LOG_PROC, "confuiComboboxSelect");
   dd = confui->uiitem [widx].dropdown;
-  idx = uiDropDownSelectionGet (dd, path);
+  idx = uiDropDownSelectionGetW (dd, path);
   sval = slistGetDataByIdx (confui->uiitem [widx].displist, idx);
   confui->uiitem [widx].listidx = idx;
   logProcEnd (LOG_PROC, "confuiComboboxSelect", "");
