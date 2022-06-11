@@ -11,5 +11,6 @@ int uiratingGetValue (uirating_t *uirating);
 void uiratingSetValue (uirating_t *uirating, int value);
 void uiratingDisable (uirating_t *uirating);
 void uiratingEnable (uirating_t *uirating);
+void uiratingSizeGroupAdd (uirating_t *uirating, UIWidget *sg);
 
 #endif /* INC_UIRATING_H */

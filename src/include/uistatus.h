@@ -11,5 +11,6 @@ int uistatusGetValue (uistatus_t *uistatus);
 void uistatusSetValue (uistatus_t *uistatus, int value);
 void uistatusDisable (uistatus_t *uistatus);
 void uistatusEnable (uistatus_t *uistatus);
+void uistatusSizeGroupAdd (uistatus_t *uistatus, UIWidget *sg);
 
 #endif /* INC_UISTATUS_H */

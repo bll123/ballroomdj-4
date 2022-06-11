@@ -19,6 +19,7 @@
 #include "slist.h"
 #include "tagdef.h"
 #include "tmutil.h"
+#include "uifavorite.h"
 #include "uilevel.h"
 #include "uirating.h"
 #include "uistatus.h"
@@ -30,12 +31,13 @@
 typedef struct {
   int         tagkey;
   union {
-    uientry_t   *entry;
-    uispinbox_t *spinbox;
-    UIWidget    uiwidget;
-    uilevel_t   *uilevel;
-    uirating_t  *uirating;
-    uistatus_t  *uistatus;
+    uientry_t     *entry;
+    uispinbox_t   *spinbox;
+    UIWidget      uiwidget;
+    uifavorite_t  *uifavorite;
+    uilevel_t     *uilevel;
+    uirating_t    *uirating;
+    uistatus_t    *uistatus;
   };
   UIWidget    display;
   UICallback  callback;
@@ -120,6 +122,9 @@ uisongeditUIFree (uisongedit_t *uisongedit)
           break;
         }
         case ET_SPINBOX_TEXT: {
+          if (tagkey == TAG_FAVORITE) {
+            uifavoriteFree (uiw->items [count].uifavorite);
+          }
           if (tagkey == TAG_DANCELEVEL) {
             uilevelFree (uiw->items [count].uilevel);
           }
@@ -271,6 +276,11 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song)
         break;
       }
       case ET_SPINBOX_TEXT: {
+        if (tagkey == TAG_FAVORITE) {
+          data = uisongGetValue (song, tagkey, &val, &dval);
+          if (val < 0) { val = 0; }
+          uifavoriteSetValue (uiw->items [count].uifavorite, val);
+        }
         if (tagkey == TAG_DANCELEVEL) {
           data = uisongGetValue (song, tagkey, &val, &dval);
           if (val < 0) { val = levelGetDefaultKey (levels); }
@@ -401,6 +411,10 @@ uisongeditAddItem (uisongedit_t *uisongedit, UIWidget *hbox, UIWidget *sg, int t
       break;
     }
     case ET_SPINBOX_TEXT: {
+      if (tagkey == TAG_FAVORITE) {
+        uiw->items [uiw->itemcount].uifavorite =
+            uifavoriteSpinboxCreate (hbox);
+      }
       if (tagkey == TAG_DANCELEVEL) {
         uiw->items [uiw->itemcount].uilevel =
             uilevelSpinboxCreate (hbox, FALSE);

@@ -37,6 +37,7 @@ typedef struct uidropdown {
   nlist_t       *keylist;
   gulong        closeHandlerId;
   char          *strSelection;
+  int           maxwidth;
   bool          open : 1;
   bool          iscombobox : 1;
 } uidropdown_t;
@@ -69,6 +70,7 @@ uiDropDownInit (void)
   dropdown->keylist = NULL;
   dropdown->open = false;
   dropdown->iscombobox = false;
+  dropdown->maxwidth = 10;
 
   return dropdown;
 }
@@ -129,6 +131,7 @@ uiDropDownSetList (uidropdown_t *dropdown, slist_t *list,
   GtkTreeViewColumn *column = NULL;
   ilistidx_t        iteridx;
   nlistidx_t        internalidx;
+  char              tbuff [200];
 
 
   store = gtk_list_store_new (UIUTILS_DROPDOWN_COL_MAX,
@@ -138,8 +141,12 @@ uiDropDownSetList (uidropdown_t *dropdown, slist_t *list,
   dropdown->strIndexMap = slistAlloc ("uiutils-str-index", LIST_ORDERED, NULL);
   internalidx = 0;
 
+  dropdown->maxwidth = slistGetMaxKeyWidth (list);
+
   if (! dropdown->iscombobox) {
-    uiButtonSetText (&dropdown->button, dropdown->title);
+    snprintf (tbuff, sizeof (tbuff), "%-*s",
+        dropdown->maxwidth, dropdown->title);
+    uiButtonSetText (&dropdown->button, tbuff);
   }
 
   if (dropdown->iscombobox && selectLabel != NULL) {
@@ -207,8 +214,12 @@ uiDropDownSetNumList (uidropdown_t *dropdown, slist_t *list,
   dropdown->keylist = nlistAlloc ("uiutils-keylist", LIST_ORDERED, NULL);
   internalidx = 0;
 
+  dropdown->maxwidth = slistGetMaxKeyWidth (list);
+
   if (! dropdown->iscombobox) {
-    uiButtonSetText (&dropdown->button, dropdown->title);
+    snprintf (tbuff, sizeof (tbuff), "%-*s",
+        dropdown->maxwidth, dropdown->title);
+    uiButtonSetText (&dropdown->button, tbuff);
   }
 
   if (dropdown->iscombobox && selectLabel != NULL) {
@@ -231,7 +242,7 @@ uiDropDownSetNumList (uidropdown_t *dropdown, slist_t *list,
 
     gtk_list_store_append (store, &iter);
     snprintf (tbuff, sizeof (tbuff), "%-*s",
-        slistGetMaxKeyWidth (list), dispval);
+        dropdown->maxwidth, dispval);
     gtk_list_store_set (store, &iter,
         UIUTILS_DROPDOWN_COL_IDX, (glong) idx,
         UIUTILS_DROPDOWN_COL_STR, "",
@@ -370,6 +381,7 @@ uiDropDownButtonCreate (uidropdown_t *dropdown)
   uiutilsUICallbackInit (&dropdown->buttoncb, uiDropDownWindowShow, dropdown);
   uiCreateButton (&dropdown->button, &dropdown->buttoncb, NULL,
       "button_down_small");
+  uiButtonAlignLeft (&dropdown->button);
   uiButtonSetImagePosRight (&dropdown->button);
   uiWidgetSetMarginTop (&dropdown->button, uiBaseMarginSz);
   uiWidgetSetMarginStart (&dropdown->button, uiBaseMarginSz);
@@ -423,7 +435,7 @@ uiDropDownSelectionSet (uidropdown_t *dropdown, nlistidx_t internalidx)
   GtkTreePath   *path;
   GtkTreeModel  *model;
   GtkTreeIter   iter;
-  char          tbuff [100];
+  char          tbuff [200];
   char          *p;
 
 
@@ -446,7 +458,9 @@ uiDropDownSelectionSet (uidropdown_t *dropdown, nlistidx_t internalidx)
       gtk_tree_model_get_iter (model, &iter, path);
       gtk_tree_model_get (model, &iter, UIUTILS_DROPDOWN_COL_DISP, &p, -1);
       if (p != NULL) {
-        uiButtonSetText (&dropdown->button, p);
+        snprintf (tbuff, sizeof (tbuff), "%-*s",
+            dropdown->maxwidth, p);
+        uiButtonSetText (&dropdown->button, tbuff);
       }
     }
   }
@@ -462,6 +476,7 @@ uiDropDownSelectionGetW (uidropdown_t *dropdown, GtkTreePath *path)
   long          idx = 0;
   int32_t       idx32;
   nlistidx_t    retval;
+  char          tbuff [200];
 
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (dropdown->tree));
   if (gtk_tree_model_get_iter (model, &iter, path)) {
@@ -480,7 +495,9 @@ uiDropDownSelectionGetW (uidropdown_t *dropdown, GtkTreePath *path)
       char  *p;
 
       gtk_tree_model_get (model, &iter, UIUTILS_DROPDOWN_COL_DISP, &p, -1);
-      uiButtonSetText (&dropdown->button, p);
+      snprintf (tbuff, sizeof (tbuff), "%-*s",
+          dropdown->maxwidth, p);
+      uiButtonSetText (&dropdown->button, tbuff);
       free (p);
     }
     uiWidgetHide (&dropdown->window);

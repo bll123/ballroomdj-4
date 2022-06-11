@@ -112,6 +112,12 @@ uiratingEnable (uirating_t *uirating)
   uiSpinboxTextEnable (uirating->spinbox);
 }
 
+void
+uiratingSizeGroupAdd (uirating_t *uirating, UIWidget *sg)
+{
+  uiSizeGroupAdd (sg, uiSpinboxGetUIWidget (uirating->spinbox));
+}
+
 /* internal routines */
 
 static char *

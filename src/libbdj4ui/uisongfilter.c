@@ -28,6 +28,7 @@
 #include "sortopt.h"
 #include "status.h"
 #include "ui.h"
+#include "uifavorite.h"
 #include "uilevel.h"
 #include "uirating.h"
 #include "uisongfilter.h"
@@ -68,7 +69,7 @@ typedef struct uisongfilter {
   uirating_t        *uirating;
   uilevel_t         *uilevel;
   uistatus_t        *uistatus;
-  uispinbox_t       *favoritefilter;
+  uifavorite_t      *uifavorite;
   uiswitch_t        *playstatusswitch;
   UIWidget          labels [UISF_LABEL_MAX];
   songfilterpb_t    dfltpbflag;
@@ -91,8 +92,6 @@ static void uisfGenreSelectHandler (GtkTreeView *tv, GtkTreePath *path,
 static void uisfDanceSelectHandler (GtkTreeView *tv, GtkTreePath *path,
     GtkTreeViewColumn *column, gpointer udata);
 static void uisfInitDisplay (uisongfilter_t *uisf);
-static char *uisfFavoriteGet (void *udata, int idx);
-static void uisfSetFavoriteForeground (uisongfilter_t *uisf, char *color);
 static void uisfPlaylistSelect (uisongfilter_t *uisf, ssize_t idx);
 static void uisfCreatePlaylistList (uisongfilter_t *uisf);
 static void uisfSortBySelect (uisongfilter_t *uisf, ssize_t idx);
@@ -126,11 +125,11 @@ uisfInit (UIWidget *windowp, nlist_t *options, songfilterpb_t pbflag)
   uisf->genrefilter = uiDropDownInit ();
   uisf->dancefilter = uiDropDownInit ();
   uiutilsUIWidgetInit (&uisf->playlistdisp);
-  uisf->favoritefilter = uiSpinboxTextInit ();
   uisf->searchentry = uiEntryInit (30, 100);
   uisf->uirating = NULL;
   uisf->uilevel = NULL;
   uisf->uistatus = NULL;
+  uisf->uifavorite = NULL;
   uisf->playstatusswitch = NULL;
   uisf->danceIdx = -1;
   uisf->showplaylist = false;
@@ -154,7 +153,7 @@ uisfFree (uisongfilter_t *uisf)
     uiratingFree (uisf->uirating);
     uilevelFree (uisf->uilevel);
     uistatusFree (uisf->uistatus);
-    uiSpinboxTextFree (uisf->favoritefilter);
+    uifavoriteFree (uisf->uifavorite);
     uiSwitchFree (uisf->playstatusswitch);
     sortoptFree (uisf->sortopt);
     songfilterFree (uisf->songfilter);
@@ -314,10 +313,11 @@ uisfInitDisplay (uisongfilter_t *uisf)
   uiratingSetValue (uisf->uirating, -1);
   uilevelSetValue (uisf->uilevel, -1);
   uistatusSetValue (uisf->uistatus, -1);
-  uiSpinboxTextSetValue (uisf->favoritefilter, 0);
+  uifavoriteSetValue (uisf->uifavorite, 0);
   logProcEnd (LOG_PROC, "uisfInitFilterDisplay", "");
 }
 
+#if 0
 static char *
 uisfFavoriteGet (void *udata, int idx)
 {
@@ -331,7 +331,9 @@ uisfFavoriteGet (void *udata, int idx)
   logProcEnd (LOG_PROC, "uisfFavoriteGet", "");
   return favorite->dispStr;
 }
+#endif
 
+#if 0
 static void
 uisfSetFavoriteForeground (uisongfilter_t *uisf, char *color)
 {
@@ -344,6 +346,7 @@ uisfSetFavoriteForeground (uisongfilter_t *uisf, char *color)
     uiSpinboxSetColor (uisf->favoritefilter, tmp);
   }
 }
+#endif
 
 static void
 uisfPlaylistSelect (uisongfilter_t *uisf, ssize_t idx)
@@ -439,7 +442,10 @@ uisfCreateDialog (uisongfilter_t *uisf)
   UIWidget      hbox;
   UIWidget      uiwidget;
   UIWidget      *uiwidgetp;
-  UIWidget      sg;
+  UIWidget      sg;  // labels
+  UIWidget      sgA; // playlist, title, search
+  UIWidget      sgB; // drop-downs, not including title
+  UIWidget      sgC; // spinboxes, not including favorite
 
   logProcBegin (LOG_PROC, "uisfCreateDialog");
 
@@ -448,6 +454,9 @@ uisfCreateDialog (uisongfilter_t *uisf)
   }
 
   uiCreateSizeGroupHoriz (&sg);
+  uiCreateSizeGroupHoriz (&sgA);
+  uiCreateSizeGroupHoriz (&sgB);
+  uiCreateSizeGroupHoriz (&sgC);
 
   uiutilsUICallbackLongInit (&uisf->filtercb,
       uisfResponseHandler, uisf);
@@ -481,10 +490,11 @@ uisfCreateDialog (uisongfilter_t *uisf)
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
 
-  uiwidgetp = uiComboboxCreate (&uisf->filterDialog,
-      "", uisfPlaylistSelectHandler, uisf->playlistfilter, uisf);
+  uiwidgetp = uiComboboxCreate (&uisf->filterDialog, "",
+      uisfPlaylistSelectHandler, uisf->playlistfilter, uisf);
   uisfCreatePlaylistList (uisf);
   uiBoxPackStart (&hbox, uiwidgetp);
+  /* looks bad if added to the size group */
 
   /* sort-by : always available */
   uiCreateHorizBox (&hbox);
@@ -496,10 +506,11 @@ uisfCreateDialog (uisongfilter_t *uisf)
   uiSizeGroupAdd (&sg, &uiwidget);
   uiutilsUIWidgetCopy (&uisf->labels [UISF_LABEL_SORTBY], &uiwidget);
 
-  uiwidgetp = uiComboboxCreate (&uisf->filterDialog,
-      "", uisfSortBySelectHandler, uisf->sortbyfilter, uisf);
+  uiwidgetp = uiComboboxCreate (&uisf->filterDialog, "",
+      uisfSortBySelectHandler, uisf->sortbyfilter, uisf);
   uisfCreateSortByList (uisf);
   uiBoxPackStart (&hbox, uiwidgetp);
+  /* looks bad if added to the size group */
 
   /* search : always available */
   uiCreateHorizBox (&hbox);
@@ -515,6 +526,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
   uiwidgetp = uiEntryGetUIWidget (uisf->searchentry);
   uiWidgetAlignHorizStart (uiwidgetp);
   uiBoxPackStart (&hbox, uiwidgetp);
+  uiSizeGroupAdd (&sgA, uiwidgetp);
 
   /* genre */
   if (songfilterCheckSelection (uisf->songfilter, FILTER_DISP_GENRE)) {
@@ -527,11 +539,11 @@ uisfCreateDialog (uisongfilter_t *uisf)
     uiSizeGroupAdd (&sg, &uiwidget);
     uiutilsUIWidgetCopy (&uisf->labels [UISF_LABEL_GENRE], &uiwidget);
 
-    uiwidgetp = uiComboboxCreate (&uisf->filterDialog,
-        "", uisfGenreSelectHandler,
-        uisf->genrefilter, uisf);
+    uiwidgetp = uiComboboxCreate (&uisf->filterDialog, "",
+        uisfGenreSelectHandler, uisf->genrefilter, uisf);
     uisfCreateGenreList (uisf);
     uiBoxPackStart (&hbox, uiwidgetp);
+    /* looks bad if added to the size group */
  }
 
   /* dance : always available */
@@ -550,6 +562,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
   /* CONTEXT: a filter: all dances are selected */
   uiutilsCreateDanceList (uisf->dancefilter, _("All Dances"));
   uiBoxPackStart (&hbox, uiwidgetp);
+  uiSizeGroupAdd (&sgB, uiwidgetp);
 
   /* rating : always available */
   uiCreateHorizBox (&hbox);
@@ -562,6 +575,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
   uiutilsUIWidgetCopy (&uisf->labels [UISF_LABEL_DANCE_RATING], &uiwidget);
 
   uisf->uirating = uiratingSpinboxCreate (&hbox, true);
+  uiratingSizeGroupAdd (uisf->uirating, &sgC);
 
   /* level */
   if (songfilterCheckSelection (uisf->songfilter, FILTER_DISP_DANCELEVEL)) {
@@ -575,6 +589,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
     uiutilsUIWidgetCopy (&uisf->labels [UISF_LABEL_DANCE_LEVEL], &uiwidget);
 
     uisf->uilevel = uilevelSpinboxCreate (&hbox, true);
+    uilevelSizeGroupAdd (uisf->uilevel, &sgC);
   }
 
   /* status */
@@ -589,6 +604,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
     uiutilsUIWidgetCopy (&uisf->labels [UISF_LABEL_STATUS], &uiwidget);
 
     uisf->uistatus = uistatusSpinboxCreate (&hbox, true);
+    uistatusSizeGroupAdd (uisf->uistatus, &sgC);
   }
 
   /* favorite */
@@ -602,10 +618,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
     uiSizeGroupAdd (&sg, &uiwidget);
     uiutilsUIWidgetCopy (&uisf->labels [UISF_LABEL_FAVORITE], &uiwidget);
 
-    uiSpinboxTextCreate (uisf->favoritefilter, uisf);
-    uiSpinboxTextSet (uisf->favoritefilter, 0,
-        SONG_FAVORITE_MAX, 1, NULL, NULL, uisfFavoriteGet);
-    uiBoxPackStart (&hbox, uiSpinboxGetUIWidget (uisf->favoritefilter));
+    uisf->uifavorite = uifavoriteSpinboxCreate (&hbox);
   }
 
   /* status playable */
@@ -746,7 +759,7 @@ uisfUpdate (uisongfilter_t *uisf)
 
   /* favorite */
   if (songfilterCheckSelection (uisf->songfilter, FILTER_DISP_FAVORITE)) {
-    idx = uiSpinboxTextGetValue (uisf->favoritefilter);
+    idx = uifavoriteGetValue (uisf->uifavorite);
     if (idx != SONG_FAVORITE_NONE) {
       songfilterSetNum (uisf->songfilter, SONG_FILTER_FAVORITE, idx);
     } else {
@@ -790,7 +803,7 @@ uisfDisableWidgets (uisongfilter_t *uisf)
   uiratingDisable (uisf->uirating);
   uilevelDisable (uisf->uilevel);
   uistatusDisable (uisf->uistatus);
-  uiSpinboxTextDisable (uisf->favoritefilter);
+  uifavoriteDisable (uisf->uifavorite);
   uiSwitchDisable (uisf->playstatusswitch);
 }
 
@@ -811,7 +824,7 @@ uisfEnableWidgets (uisongfilter_t *uisf)
   uiratingEnable (uisf->uirating);
   uilevelEnable (uisf->uilevel);
   uistatusEnable (uisf->uistatus);
-  uiSpinboxTextEnable (uisf->favoritefilter);
+  uifavoriteEnable (uisf->uifavorite);
   uiSwitchEnable (uisf->playstatusswitch);
 }
 

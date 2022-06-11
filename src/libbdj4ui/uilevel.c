@@ -112,6 +112,12 @@ uilevelEnable (uilevel_t *uilevel)
   uiSpinboxTextEnable (uilevel->spinbox);
 }
 
+void
+uilevelSizeGroupAdd (uilevel_t *uilevel, UIWidget *sg)
+{
+  uiSizeGroupAdd (sg, uiSpinboxGetUIWidget (uilevel->spinbox));
+}
+
 /* internal routines */
 
 static char *

@@ -109,8 +109,19 @@ uiButtonAlignLeft (UIWidget *uiwidget)
 {
   GtkWidget *widget;
 
-  widget = gtk_bin_get_child (GTK_BIN (uiwidget->widget));
-  gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
+  /* a regular button is: */
+  /*  button / label  */
+  /* a button w/image is: */
+  /*  button / alignment / box / label, image (or image, label) */
+  widget = gtk_bin_get_child (GTK_BIN (uiwidget->widget));  // label or alignment
+  if (GTK_IS_LABEL (widget)) {
+    gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
+  } else {
+    /* this does not seem to work... <sad face> */
+    /* there's no way to get the hbox in the alignment to fill the space either */
+    gtk_widget_set_halign (widget, GTK_ALIGN_START);
+    gtk_widget_set_hexpand (widget, TRUE);
+  }
 }
 
 inline static void

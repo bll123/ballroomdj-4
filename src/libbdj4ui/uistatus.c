@@ -112,6 +112,12 @@ uistatusEnable (uistatus_t *uistatus)
   uiSpinboxTextEnable (uistatus->spinbox);
 }
 
+void
+uistatusSizeGroupAdd (uistatus_t *uistatus, UIWidget *sg)
+{
+  uiSizeGroupAdd (sg, uiSpinboxGetUIWidget (uistatus->spinbox));
+}
+
 /* internal routines */
 
 static char *
