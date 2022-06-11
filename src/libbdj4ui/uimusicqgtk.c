@@ -16,6 +16,7 @@
 #include "pathbld.h"
 #include "uimusicq.h"
 #include "ui.h"
+#include "uidance.h"
 #include "uisong.h"
 #include "uiutils.h"
 
@@ -70,7 +71,7 @@ enum {
 };
 
 typedef struct uimusicqgtk {
-  uidropdown_t  *dancesel;
+  uidance_t     *uidance;
   GtkWidget     *musicqTree;
   GtkTreeSelection  *sel;
   char          *selPathStr;
@@ -89,7 +90,7 @@ uimusicqUIInit (uimusicq_t *uimusicq)
   for (int i = 0; i < MUSICQ_MAX; ++i) {
     uiw = malloc (sizeof (uimusicqgtk_t));
     uimusicq->ui [i].uiWidgets = uiw;
-    uiw->dancesel = uiDropDownInit ();
+    uiw->uidance = NULL;
     uiw->selPathStr = NULL;
     uiw->musicqTree = NULL;
   }
@@ -105,7 +106,7 @@ uimusicqUIFree (uimusicq_t *uimusicq)
     if (uiw->selPathStr != NULL) {
       free (uiw->selPathStr);
     }
-    uiDropDownFree (uiw->dancesel);
+    uidanceFree (uiw->uidance);
     if (uiw != NULL) {
       free (uiw);
     }
@@ -250,12 +251,10 @@ uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci)
 
     uiutilsUICallbackLongInit (&uimusicq->queuedancecb,
         uimusicqQueueDanceCallback, uimusicq);
-    uiwidgetp = uiDropDownCreate (parentwin,
+    uiw->uidance = uidanceDropDownCreate (&hbox, parentwin,
         /* CONTEXT: button: queue a dance for playback */
-        _("Queue Dance"), &uimusicq->queuedancecb,
-        uiw->dancesel, uimusicq);
-    uiutilsCreateDanceList (uiw->dancesel, NULL);
-    uiBoxPackEnd (&hbox, uiwidgetp);
+        false, _("Queue Dance"), UIDANCE_PACK_END);
+    uidanceSetCallback (uiw->uidance, &uimusicq->queuedancecb);
   }
 
   if (uimusicq->dispselType == DISP_SEL_SONGLIST ||

@@ -21,6 +21,7 @@
 #include "musicq.h"
 #include "nlist.h"
 #include "songfilter.h"
+#include "uidance.h"
 #include "uisongsel.h"
 #include "ui.h"
 #include "uisong.h"
@@ -154,7 +155,6 @@ uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin)
 {
   uisongselgtk_t    *uiw;
   UIWidget          uiwidget;
-  UIWidget          *uiwidgetp;
   UIWidget          hbox;
   UIWidget          vbox;
   GtkAdjustment     *adjustment;
@@ -219,12 +219,11 @@ uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin)
 
   uiutilsUICallbackLongInit (&uiw->callbacks [SONGSEL_CB_DANCE_SEL],
       uisongselDanceSelectCallback, uisongsel);
-  uiwidgetp = uiComboboxCreate (parentwin,
-      "", &uiw->callbacks [SONGSEL_CB_DANCE_SEL],
-      uisongsel->dancesel, uisongsel);
-  /* CONTEXT: filter: all dances are selected */
-  uiutilsCreateDanceList (uisongsel->dancesel, _("All Dances"));
-  uiBoxPackEnd (&hbox, uiwidgetp);
+  uisongsel->uidance = uidanceDropDownCreate (&hbox, parentwin,
+      /* CONTEXT: filter: all dances are selected */
+      true, _("All Dances"), UIDANCE_PACK_END);
+  uidanceSetCallback (uisongsel->uidance,
+      &uiw->callbacks [SONGSEL_CB_DANCE_SEL]);
 
   uiutilsUICallbackInit (&uiw->callbacks [SONGSEL_CB_FILTER],
       uisfDialog, uisongsel->uisongfilter);
@@ -305,7 +304,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin)
   uisongselProcessSongFilter (uisongsel);
   uisongselPopulateData (uisongsel);
 
-  uiDropDownSelectionSetNum (uisongsel->dancesel, -1);
+  uidanceSetValue (uisongsel->uidance, -1);
 
   g_signal_connect ((GtkWidget *) uiw->sel, "changed",
       G_CALLBACK (uisongselSelectionChgCallback), uisongsel);

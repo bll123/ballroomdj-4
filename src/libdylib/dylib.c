@@ -41,7 +41,7 @@ dylibLoad (char *path)
   whandle = LoadLibrary (npath);
   handle = whandle;
 #endif
-#if 0
+#if 0 // debugging
   if (handle == NULL) {
     fprintf (stderr, "dylib open %s failed: %d %s\n", path, errno, strerror (errno));
   } else {

@@ -86,7 +86,7 @@ pathInfo (const char *path)
   if (pos <= 1) {
     ++pi->dlen;
   }
-#if 0
+#if 0  // debugging
  fprintf (stderr, "%s : last:%ld pos:%ld\n", path, last, pos);
  fprintf (stderr, "  dlen:%ld\n", pi->dlen);
  fprintf (stderr, "  flen:%ld blen:%ld elen:%ld ts:%d\n", pi->flen, pi->blen, pi->elen, trailingslash);

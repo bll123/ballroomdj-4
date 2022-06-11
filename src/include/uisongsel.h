@@ -8,16 +8,11 @@
 
 #include "conn.h"
 #include "dispsel.h"
-#include "level.h"
 #include "musicdb.h"
 #include "musicq.h"
 #include "nlist.h"
-#include "rating.h"
 #include "songfilter.h"
-#include "sortopt.h"
-#include "status.h"
-#include "uilevel.h"
-#include "uirating.h"
+#include "uidance.h"
 #include "uisongfilter.h"
 #include "uiutils.h"
 
@@ -52,7 +47,7 @@ typedef struct uisongsel {
   UICallback        sfdanceselcb;
   songfilter_t      *songfilter;
   /* song selection tab */
-  uidropdown_t      *dancesel;
+  uidance_t         *uidance;
   /* widget data */
   uisongselgtk_t    *uiWidgetData;
   /* song editor */

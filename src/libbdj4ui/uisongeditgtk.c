@@ -19,6 +19,7 @@
 #include "slist.h"
 #include "tagdef.h"
 #include "tmutil.h"
+#include "uidance.h"
 #include "uifavorite.h"
 #include "uigenre.h"
 #include "uilevel.h"
@@ -35,6 +36,7 @@ typedef struct {
     uientry_t     *entry;
     uispinbox_t   *spinbox;
     UIWidget      uiwidget;
+    uidance_t     *uidance;
     uifavorite_t  *uifavorite;
     uigenre_t     *uigenre;
     uilevel_t     *uilevel;
@@ -121,6 +123,9 @@ uisongeditUIFree (uisongedit_t *uisongedit)
           break;
         }
         case ET_COMBOBOX: {
+          if (tagkey == TAG_DANCE) {
+            uidanceFree (uiw->items [count].uidance);
+          }
           if (tagkey == TAG_GENRE) {
             uigenreFree (uiw->items [count].uigenre);
           }
@@ -281,6 +286,11 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song)
         break;
       }
       case ET_COMBOBOX: {
+        if (tagkey == TAG_DANCE) {
+          data = uisongGetValue (song, tagkey, &val, &dval);
+          if (val < 0) { val = 0; }
+          uidanceSetValue (uiw->items [count].uidance, val);
+        }
         if (tagkey == TAG_GENRE) {
           data = uisongGetValue (song, tagkey, &val, &dval);
           if (val < 0) { val = 0; }
@@ -421,6 +431,11 @@ uisongeditAddItem (uisongedit_t *uisongedit, UIWidget *hbox, UIWidget *sg, int t
       break;
     }
     case ET_COMBOBOX: {
+      if (tagkey == TAG_DANCE) {
+        uiw->items [uiw->itemcount].uidance =
+            uidanceDropDownCreate (hbox, uiw->parentwin,
+            false, "", UIDANCE_PACK_START);
+      }
       if (tagkey == TAG_GENRE) {
         uiw->items [uiw->itemcount].uigenre =
             uigenreDropDownCreate (hbox, uiw->parentwin, false);

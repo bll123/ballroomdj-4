@@ -15,7 +15,7 @@
 #include "vlci.h"
 #include "tmutil.h"
 
-#if 0
+#if 0  // VLC logging options
       "-vv",
       "--file-logging",
       "--verbose=3",

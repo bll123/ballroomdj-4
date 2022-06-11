@@ -9,6 +9,7 @@ add_library (libbdj4ui SHARED
   osuilinuxutils.c
   osuimacutils.m
   osuiwinutils.c
+  uidance.c
   uiduallist.c
   uifavorite.c
   uigenre.c

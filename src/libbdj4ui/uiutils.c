@@ -16,21 +16,6 @@
 #include "ui.h"
 #include "uiutils.h"
 
-void
-uiutilsCreateDanceList (uidropdown_t *dropdown, char *selectLabel)
-{
-  dance_t           *dances;
-  slist_t           *danceList;
-
-  logProcBegin (LOG_PROC, "uiutilsCreateDanceList");
-
-  dances = bdjvarsdfGet (BDJVDF_DANCES);
-  danceList = danceGetDanceList (dances);
-
-  uiDropDownSetNumList (dropdown, danceList, selectLabel);
-  logProcEnd (LOG_PROC, "uiutilsCreateDanceList", "");
-}
-
 uiutilsnbtabid_t *
 uiutilsNotebookIDInit (void)
 {

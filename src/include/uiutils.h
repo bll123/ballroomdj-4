@@ -112,7 +112,6 @@ extern int uiBaseMarginSz;
 
 /* uiutils.c */
 /* generic ui helper routines */
-void  uiutilsCreateDanceList (uidropdown_t *dancesel, char *selectLabel);
 uiutilsnbtabid_t * uiutilsNotebookIDInit (void);
 void uiutilsNotebookIDFree (uiutilsnbtabid_t *nbtabid);
 void uiutilsNotebookIDAdd (uiutilsnbtabid_t *nbtabid, int id);
