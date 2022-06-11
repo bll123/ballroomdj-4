@@ -20,6 +20,7 @@
 #include "tagdef.h"
 #include "tmutil.h"
 #include "uifavorite.h"
+#include "uigenre.h"
 #include "uilevel.h"
 #include "uirating.h"
 #include "uistatus.h"
@@ -35,6 +36,7 @@ typedef struct {
     uispinbox_t   *spinbox;
     UIWidget      uiwidget;
     uifavorite_t  *uifavorite;
+    uigenre_t     *uigenre;
     uilevel_t     *uilevel;
     uirating_t    *uirating;
     uistatus_t    *uistatus;
@@ -119,6 +121,9 @@ uisongeditUIFree (uisongedit_t *uisongedit)
           break;
         }
         case ET_COMBOBOX: {
+          if (tagkey == TAG_GENRE) {
+            uigenreFree (uiw->items [count].uigenre);
+          }
           break;
         }
         case ET_SPINBOX_TEXT: {
@@ -275,6 +280,14 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song)
         }
         break;
       }
+      case ET_COMBOBOX: {
+        if (tagkey == TAG_GENRE) {
+          data = uisongGetValue (song, tagkey, &val, &dval);
+          if (val < 0) { val = 0; }
+          uigenreSetValue (uiw->items [count].uigenre, val);
+        }
+        break;
+      }
       case ET_SPINBOX_TEXT: {
         if (tagkey == TAG_FAVORITE) {
           data = uisongGetValue (song, tagkey, &val, &dval);
@@ -408,6 +421,10 @@ uisongeditAddItem (uisongedit_t *uisongedit, UIWidget *hbox, UIWidget *sg, int t
       break;
     }
     case ET_COMBOBOX: {
+      if (tagkey == TAG_GENRE) {
+        uiw->items [uiw->itemcount].uigenre =
+            uigenreDropDownCreate (hbox, uiw->parentwin, false);
+      }
       break;
     }
     case ET_SPINBOX_TEXT: {

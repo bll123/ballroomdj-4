@@ -13,5 +13,6 @@ void uigenreSetValue (uigenre_t *uigenre, int value);
 void uigenreDisable (uigenre_t *uigenre);
 void uigenreEnable (uigenre_t *uigenre);
 void uigenreSizeGroupAdd (uigenre_t *uigenre, UIWidget *sg);
+void uigenreSetCallback (uigenre_t *uigenre, UICallback *cb);
 
 #endif /* INC_UIGENRE_H */

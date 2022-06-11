@@ -24,6 +24,7 @@ typedef struct uigenre {
   UIWidget      *parentwin;
   UIWidget      *buttonp;
   UICallback    cb;
+  UICallback    *selectcb;
   long          selectedidx;
   bool          allflag : 1;
 } uigenre_t;
@@ -42,8 +43,11 @@ uigenreDropDownCreate (UIWidget *boxp, UIWidget *parentwin, bool allflag)
   uigenre->allflag = allflag;
   uigenre->dropdown = uiDropDownInit ();
   uigenre->selectedidx = 0;
+  uigenre->parentwin = parentwin;
+  uigenre->selectcb = NULL;
+
   uiutilsUICallbackLongInit (&uigenre->cb, uigenreSelectHandler, uigenre);
-  uigenre->buttonp = uiComboboxCreate (uigenre->parentwin, "",
+  uigenre->buttonp = uiComboboxCreate (parentwin, "",
       &uigenre->cb, uigenre->dropdown, uigenre);
   uigenreCreateGenreList (uigenre);
   uiBoxPackStart (boxp, uigenre->buttonp);
@@ -115,6 +119,16 @@ uigenreSizeGroupAdd (uigenre_t *uigenre, UIWidget *sg)
   uiSizeGroupAdd (sg, uigenre->buttonp);
 }
 
+void
+uigenreSetCallback (uigenre_t *uigenre, UICallback *cb)
+{
+  if (uigenre == NULL) {
+    return;
+  }
+  uigenre->selectcb = cb;
+}
+
+
 /* internal routines */
 
 static bool
@@ -123,6 +137,10 @@ uigenreSelectHandler (void *udata, long idx)
   uigenre_t   *uigenre = udata;
 
   uigenre->selectedidx = idx;
+
+  if (uigenre->selectcb != NULL) {
+    uiutilsCallbackLongHandler (uigenre->selectcb, idx);
+  }
   return UICB_CONT;
 }
 

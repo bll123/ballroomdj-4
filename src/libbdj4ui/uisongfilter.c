@@ -29,6 +29,7 @@
 #include "status.h"
 #include "ui.h"
 #include "uifavorite.h"
+#include "uigenre.h"
 #include "uilevel.h"
 #include "uirating.h"
 #include "uisongfilter.h"
@@ -74,7 +75,7 @@ typedef struct uisongfilter {
   uidropdown_t      *playlistfilter;
   uidropdown_t      *sortbyfilter;
   uidropdown_t      *dancefilter;
-  uidropdown_t      *genrefilter;
+  uigenre_t         *uigenre;
   uientry_t         *searchentry;
   uirating_t        *uirating;
   uilevel_t         *uilevel;
@@ -103,7 +104,6 @@ static void uisfCreatePlaylistList (uisongfilter_t *uisf);
 static void uisfSortBySelect (uisongfilter_t *uisf, ssize_t idx);
 static void uisfCreateSortByList (uisongfilter_t *uisf);
 static void uisfGenreSelect (uisongfilter_t *uisf, ssize_t idx);
-static void uisfCreateGenreList (uisongfilter_t *uisf);
 static void uisfUpdateFilterDialogDisplay (uisongfilter_t *uisf);
 
 uisongfilter_t *
@@ -128,10 +128,10 @@ uisfInit (UIWidget *windowp, nlist_t *options, songfilterpb_t pbflag)
   uisf->dfltpbflag = pbflag;
   uisf->playlistfilter = uiDropDownInit ();
   uisf->sortbyfilter = uiDropDownInit ();
-  uisf->genrefilter = uiDropDownInit ();
   uisf->dancefilter = uiDropDownInit ();
   uiutilsUIWidgetInit (&uisf->playlistdisp);
   uisf->searchentry = uiEntryInit (30, 100);
+  uisf->uigenre = NULL;
   uisf->uirating = NULL;
   uisf->uilevel = NULL;
   uisf->uistatus = NULL;
@@ -155,7 +155,7 @@ uisfFree (uisongfilter_t *uisf)
     uiDropDownFree (uisf->sortbyfilter);
     uiEntryFree (uisf->searchentry);
     uiDropDownFree (uisf->dancefilter);
-    uiDropDownFree (uisf->genrefilter);
+    uigenreFree (uisf->uigenre);
     uiratingFree (uisf->uirating);
     uilevelFree (uisf->uilevel);
     uistatusFree (uisf->uistatus);
@@ -314,7 +314,7 @@ uisfInitDisplay (uisongfilter_t *uisf)
   sortby = songfilterGetSort (uisf->songfilter);
   uiDropDownSelectionSetStr (uisf->sortbyfilter, sortby);
   uiDropDownSelectionSetNum (uisf->dancefilter, uisf->danceIdx);
-  uiDropDownSelectionSetNum (uisf->genrefilter, -1);
+  uigenreSetValue (uisf->uigenre, -1);
   uiEntrySetValue (uisf->searchentry, "");
   uiratingSetValue (uisf->uirating, -1);
   uilevelSetValue (uisf->uilevel, -1);
@@ -425,6 +425,7 @@ uisfGenreSelect (uisongfilter_t *uisf, ssize_t idx)
   logProcEnd (LOG_PROC, "uisfGenreSelect", "");
 }
 
+#if 0
 static void
 uisfCreateGenreList (uisongfilter_t *uisf)
 {
@@ -440,6 +441,7 @@ uisfCreateGenreList (uisongfilter_t *uisf)
       _("All Genres"));
   logProcEnd (LOG_PROC, "uisfCreateGenreList", "");
 }
+#endif
 
 static void
 uisfCreateDialog (uisongfilter_t *uisf)
@@ -551,10 +553,8 @@ uisfCreateDialog (uisongfilter_t *uisf)
 
     uiutilsUICallbackLongInit (&uisf->callbacks [UISF_CB_GENRE_SEL],
         uisfGenreSelectHandler, uisf);
-    uiwidgetp = uiComboboxCreate (&uisf->filterDialog, "",
-        &uisf->callbacks [UISF_CB_GENRE_SEL], uisf->genrefilter, uisf);
-    uisfCreateGenreList (uisf);
-    uiBoxPackStart (&hbox, uiwidgetp);
+    uisf->uigenre = uigenreDropDownCreate (&hbox, &uisf->filterDialog, true);
+    uigenreSetCallback (uisf->uigenre, &uisf->callbacks [UISF_CB_GENRE_SEL]);
     /* looks bad if added to the size group */
  }
 
@@ -812,7 +812,7 @@ uisfDisableWidgets (uisongfilter_t *uisf)
   uiDropDownDisable (uisf->sortbyfilter);
   uiEntryDisable (uisf->searchentry);
   uiDropDownDisable (uisf->dancefilter);
-  uiDropDownDisable (uisf->genrefilter);
+  uigenreDisable (uisf->uigenre);
   uiratingDisable (uisf->uirating);
   uilevelDisable (uisf->uilevel);
   uistatusDisable (uisf->uistatus);
@@ -833,7 +833,7 @@ uisfEnableWidgets (uisongfilter_t *uisf)
   uiDropDownEnable (uisf->sortbyfilter);
   uiEntryEnable (uisf->searchentry);
   uiDropDownEnable (uisf->dancefilter);
-  uiDropDownEnable (uisf->genrefilter);
+  uigenreEnable (uisf->uigenre);
   uiratingEnable (uisf->uirating);
   uilevelEnable (uisf->uilevel);
   uistatusEnable (uisf->uistatus);
