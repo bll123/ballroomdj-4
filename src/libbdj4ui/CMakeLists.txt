@@ -11,6 +11,7 @@ add_library (libbdj4ui SHARED
   osuiwinutils.c
   uiduallist.c
   uifavorite.c
+  uigenre.c
   uilevel.c
   uimusicq.c
   uimusicqgtk.c

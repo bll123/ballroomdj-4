@@ -410,7 +410,7 @@ static void confuiMakeNotebookTab (UIWidget *boxp, configui_t *confui, UIWidget 
 static void confuiMakeItemEntry (configui_t *confui, UIWidget *boxp, UIWidget *sg, char *txt, int widx, int bdjoptIdx, char *disp);
 static void confuiMakeItemEntryChooser (configui_t *confui, UIWidget *boxp, UIWidget *sg, char *txt, int widx, int bdjoptIdx, char *disp, void *dialogFunc);
 static void confuiMakeItemEntryBasic (configui_t *confui, UIWidget *boxp, UIWidget *sg, char *txt, int widx, int bdjoptIdx, char *disp);
-static void confuiMakeItemCombobox (configui_t *confui, UIWidget *boxp, UIWidget *sg, char *txt, int widx, int bdjoptIdx, void *ddcb, char *value);
+static void confuiMakeItemCombobox (configui_t *confui, UIWidget *boxp, UIWidget *sg, char *txt, int widx, int bdjoptIdx, UILongCallbackFunc ddcb, char *value);
 static void confuiMakeItemLink (configui_t *confui, UIWidget *boxp, UIWidget *sg, char *txt, int widx, char *disp);
 static void confuiMakeItemFontButton (configui_t *confui, UIWidget *boxp, UIWidget *sg, char *txt, int widx, int bdjoptIdx, char *fontname);
 static void confuiMakeItemColorButton (configui_t *confui, UIWidget *boxp, UIWidget *sg, char *txt, int widx, int bdjoptIdx, char *color);
@@ -434,9 +434,7 @@ static void     confuiLoadLocaleList (configui_t *confui);
 static void     confuiLoadDanceTypeList (configui_t *confui);
 static void     confuiLoadTagList (configui_t *confui);
 static void     confuiLoadThemeList (configui_t *confui);
-static void     confuiOrgPathSelect (GtkTreeView *tv, GtkTreePath *path,
-    GtkTreeViewColumn *column, gpointer udata);
-static char     * confuiComboboxSelect (configui_t *confui, GtkTreePath *path, int widx);
+static bool     confuiOrgPathSelect (void *udata, long idx);
 static void     confuiUpdateMobmqQrcode (configui_t *confui);
 static bool     confuiMobmqTypeChg (void *udata);
 static bool     confuiMobmqPortChg (void *udata);
@@ -2314,7 +2312,7 @@ confuiMakeItemEntryBasic (configui_t *confui, UIWidget *boxp, UIWidget *sg,
 
 static void
 confuiMakeItemCombobox (configui_t *confui, UIWidget *boxp, UIWidget *sg,
-    char *txt, int widx, int bdjoptIdx, void *ddcb, char *value)
+    char *txt, int widx, int bdjoptIdx, UILongCallbackFunc ddcb, char *value)
 {
   UIWidget    hbox;
   UIWidget    uiwidget;
@@ -2326,8 +2324,12 @@ confuiMakeItemCombobox (configui_t *confui, UIWidget *boxp, UIWidget *sg,
 
   uiCreateHorizBox (&hbox);
   confuiMakeItemLabel (&hbox, sg, txt);
+
+  uiutilsUICallbackLongInit (&confui->uiitem [widx].callback, ddcb, confui);
   uiwidgetp = uiComboboxCreate (&confui->window, txt,
-      ddcb, confui->uiitem [widx].dropdown, confui);
+      &confui->uiitem [widx].callback,
+      confui->uiitem [widx].dropdown, confui);
+
   uiDropDownSetList (confui->uiitem [widx].dropdown,
       confui->uiitem [widx].displist, NULL);
   uiDropDownSelectionSetStr (confui->uiitem [widx].dropdown, value);
@@ -3117,36 +3119,23 @@ confuiLoadThemeList (configui_t *confui)
 }
 
 
-static void
-confuiOrgPathSelect (GtkTreeView *tv, GtkTreePath *path,
-    GtkTreeViewColumn *column, gpointer udata)
+static bool
+confuiOrgPathSelect (void *udata, long idx)
 {
-  configui_t        *confui = udata;
-  char              *sval;
+  configui_t  *confui = udata;
+  char        *sval = NULL;
+  int         widx;
 
   logProcBegin (LOG_PROC, "confuiOrgPathSelect");
-  sval = confuiComboboxSelect (confui, path, CONFUI_COMBOBOX_AO_PATHFMT);
+  widx = CONFUI_COMBOBOX_AO_PATHFMT;
+  sval = slistGetDataByIdx (confui->uiitem [widx].displist, idx);
+  confui->uiitem [widx].listidx = idx;
   if (sval != NULL && *sval) {
     bdjoptSetStr (OPT_G_AO_PATHFMT, sval);
   }
   confuiUpdateOrgExamples (confui, sval);
   logProcEnd (LOG_PROC, "confuiOrgPathSelect", "");
-}
-
-static char *
-confuiComboboxSelect (configui_t *confui, GtkTreePath *path, int widx)
-{
-  uidropdown_t      *dd = NULL;
-  ssize_t           idx;
-  char              *sval;
-
-  logProcBegin (LOG_PROC, "confuiComboboxSelect");
-  dd = confui->uiitem [widx].dropdown;
-  idx = uiDropDownSelectionGetW (dd, path);
-  sval = slistGetDataByIdx (confui->uiitem [widx].displist, idx);
-  confui->uiitem [widx].listidx = idx;
-  logProcEnd (LOG_PROC, "confuiComboboxSelect", "");
-  return sval;
+  return UICB_CONT;
 }
 
 static void

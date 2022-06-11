@@ -48,6 +48,16 @@ enum {
   UISF_LABEL_MAX,
 };
 
+enum {
+  UISF_CB_FILTER,
+  UISF_CB_PLAYLIST_SEL,
+  UISF_CB_SORT_BY_SEL,
+  UISF_CB_GENRE_SEL,
+  UISF_CB_DANCE_SEL,
+  UISF_CB_MAX,
+};
+
+
 typedef struct uisongfilter {
   rating_t          *ratings;
   level_t           *levels;
@@ -55,11 +65,11 @@ typedef struct uisongfilter {
   sortopt_t         *sortopt;
   UIWidget          *parentwin;
   nlist_t           *options;
+  UICallback        callbacks [UISF_CB_MAX];
   UICallback        *applycb;
   UICallback        *danceselcb;
   songfilter_t      *songfilter;
   UIWidget          filterDialog;
-  UICallback        filtercb;
   UIWidget          playlistdisp;
   uidropdown_t      *playlistfilter;
   uidropdown_t      *sortbyfilter;
@@ -83,14 +93,10 @@ static void uisfEnableWidgets (uisongfilter_t *uisf);
 static void uisfCreateDialog (uisongfilter_t *uisf);
 static bool uisfResponseHandler (void *udata, long responseid);
 static void uisfUpdate (uisongfilter_t *uisf);
-static void uisfPlaylistSelectHandler (GtkTreeView *tv, GtkTreePath *path,
-    GtkTreeViewColumn *column, gpointer udata);
-static void uisfSortBySelectHandler (GtkTreeView *tv, GtkTreePath *path,
-    GtkTreeViewColumn *column, gpointer udata);
-static void uisfGenreSelectHandler (GtkTreeView *tv, GtkTreePath *path,
-    GtkTreeViewColumn *column, gpointer udata);
-static void uisfDanceSelectHandler (GtkTreeView *tv, GtkTreePath *path,
-    GtkTreeViewColumn *column, gpointer udata);
+static bool uisfPlaylistSelectHandler (void *udata, long idx);
+static bool uisfSortBySelectHandler (void *udata, long idx);
+static bool uisfGenreSelectHandler (void *udata, long idx);
+static bool uisfDanceSelectHandler (void *udata, long idx);
 static void uisfInitDisplay (uisongfilter_t *uisf);
 static void uisfPlaylistSelect (uisongfilter_t *uisf, ssize_t idx);
 static void uisfCreatePlaylistList (uisongfilter_t *uisf);
@@ -458,10 +464,10 @@ uisfCreateDialog (uisongfilter_t *uisf)
   uiCreateSizeGroupHoriz (&sgB);
   uiCreateSizeGroupHoriz (&sgC);
 
-  uiutilsUICallbackLongInit (&uisf->filtercb,
+  uiutilsUICallbackLongInit (&uisf->callbacks [UISF_CB_FILTER],
       uisfResponseHandler, uisf);
   uiCreateDialog (&uisf->filterDialog, uisf->parentwin,
-      &uisf->filtercb,
+      &uisf->callbacks [UISF_CB_FILTER],
       /* CONTEXT: title for the filter dialog */
       _("Filter Songs"),
       /* CONTEXT: filter dialog: closes the dialog */
@@ -490,8 +496,10 @@ uisfCreateDialog (uisongfilter_t *uisf)
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
 
+  uiutilsUICallbackLongInit (&uisf->callbacks [UISF_CB_PLAYLIST_SEL],
+      uisfPlaylistSelectHandler, uisf);
   uiwidgetp = uiComboboxCreate (&uisf->filterDialog, "",
-      uisfPlaylistSelectHandler, uisf->playlistfilter, uisf);
+      &uisf->callbacks [UISF_CB_PLAYLIST_SEL], uisf->playlistfilter, uisf);
   uisfCreatePlaylistList (uisf);
   uiBoxPackStart (&hbox, uiwidgetp);
   /* looks bad if added to the size group */
@@ -506,8 +514,10 @@ uisfCreateDialog (uisongfilter_t *uisf)
   uiSizeGroupAdd (&sg, &uiwidget);
   uiutilsUIWidgetCopy (&uisf->labels [UISF_LABEL_SORTBY], &uiwidget);
 
+  uiutilsUICallbackLongInit (&uisf->callbacks [UISF_CB_SORT_BY_SEL],
+      uisfSortBySelectHandler, uisf);
   uiwidgetp = uiComboboxCreate (&uisf->filterDialog, "",
-      uisfSortBySelectHandler, uisf->sortbyfilter, uisf);
+      &uisf->callbacks [UISF_CB_SORT_BY_SEL], uisf->sortbyfilter, uisf);
   uisfCreateSortByList (uisf);
   uiBoxPackStart (&hbox, uiwidgetp);
   /* looks bad if added to the size group */
@@ -539,8 +549,10 @@ uisfCreateDialog (uisongfilter_t *uisf)
     uiSizeGroupAdd (&sg, &uiwidget);
     uiutilsUIWidgetCopy (&uisf->labels [UISF_LABEL_GENRE], &uiwidget);
 
+    uiutilsUICallbackLongInit (&uisf->callbacks [UISF_CB_GENRE_SEL],
+        uisfGenreSelectHandler, uisf);
     uiwidgetp = uiComboboxCreate (&uisf->filterDialog, "",
-        uisfGenreSelectHandler, uisf->genrefilter, uisf);
+        &uisf->callbacks [UISF_CB_GENRE_SEL], uisf->genrefilter, uisf);
     uisfCreateGenreList (uisf);
     uiBoxPackStart (&hbox, uiwidgetp);
     /* looks bad if added to the size group */
@@ -556,9 +568,10 @@ uisfCreateDialog (uisongfilter_t *uisf)
   uiSizeGroupAdd (&sg, &uiwidget);
   uiutilsUIWidgetCopy (&uisf->labels [UISF_LABEL_DANCE], &uiwidget);
 
+  uiutilsUICallbackLongInit (&uisf->callbacks [UISF_CB_DANCE_SEL],
+      uisfDanceSelectHandler, uisf);
   uiwidgetp = uiComboboxCreate (&uisf->filterDialog,
-      "", uisfDanceSelectHandler,
-      uisf->dancefilter, uisf);
+      "", &uisf->callbacks [UISF_CB_DANCE_SEL], uisf->dancefilter, uisf);
   /* CONTEXT: a filter: all dances are selected */
   uiutilsCreateDanceList (uisf->dancefilter, _("All Dances"));
   uiBoxPackStart (&hbox, uiwidgetp);
@@ -828,52 +841,44 @@ uisfEnableWidgets (uisongfilter_t *uisf)
   uiSwitchEnable (uisf->playstatusswitch);
 }
 
-static void
-uisfPlaylistSelectHandler (GtkTreeView *tv, GtkTreePath *path,
-    GtkTreeViewColumn *column, gpointer udata)
+static bool
+uisfPlaylistSelectHandler (void *udata, long idx)
 {
   uisongfilter_t *uisf = udata;
-  ssize_t     idx;
 
-  idx = uiDropDownSelectionGetW (uisf->playlistfilter, path);
   uisfPlaylistSelect (uisf, idx);
+  return UICB_CONT;
 }
 
-static void
-uisfSortBySelectHandler (GtkTreeView *tv, GtkTreePath *path,
-    GtkTreeViewColumn *column, gpointer udata)
+static bool
+uisfSortBySelectHandler (void *udata, long idx)
 {
   uisongfilter_t *uisf = udata;
-  ssize_t     idx;
 
-  idx = uiDropDownSelectionGetW (uisf->sortbyfilter, path);
   uisfSortBySelect (uisf, idx);
+  return UICB_CONT;
 }
 
-static void
-uisfGenreSelectHandler (GtkTreeView *tv, GtkTreePath *path,
-    GtkTreeViewColumn *column, gpointer udata)
+static bool
+uisfGenreSelectHandler (void *udata, long idx)
 {
   uisongfilter_t *uisf = udata;
-  ssize_t     idx;
 
-  idx = uiDropDownSelectionGetW (uisf->genrefilter, path);
   uisfGenreSelect (uisf, idx);
+  return UICB_CONT;
 }
 
-static void
-uisfDanceSelectHandler (GtkTreeView *tv, GtkTreePath *path,
-    GtkTreeViewColumn *column, gpointer udata)
+static bool
+uisfDanceSelectHandler (void *udata, long idx)
 {
   uisongfilter_t  *uisf = udata;
-  long            danceIdx;
 
-  danceIdx = uiDropDownSelectionGetW (uisf->dancefilter, path);
-  uisf->danceIdx = danceIdx;
-  uisfSetDanceIdx (uisf, danceIdx);
+  uisf->danceIdx = idx;
+  uisfSetDanceIdx (uisf, idx);
   if (uisf->danceselcb != NULL) {
-    uiutilsCallbackLongHandler (uisf->danceselcb, danceIdx);
+    uiutilsCallbackLongHandler (uisf->danceselcb, idx);
   }
+  return UICB_CONT;
 }
 
 static void

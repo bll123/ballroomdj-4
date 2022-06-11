@@ -37,8 +37,8 @@ enum {
   MUSICQ_UPD_DISP,
 };
 
-static void   uimusicqQueueDance (GtkTreeView *tv, GtkTreePath *path, GtkTreeViewColumn *column, gpointer udata);
-static void   uimusicqQueuePlaylist (GtkTreeView *tv, GtkTreePath *path, GtkTreeViewColumn *column, gpointer udata);
+static bool   uimusicqQueueDanceCallback (void *udata, long idx);
+static bool   uimusicqQueuePlaylistCallback (void *udata, long idx);
 static void   uimusicqProcessMusicQueueDataUpdate (uimusicq_t *uimusicq, int ci, int newdispflag);
 static void   uimusicqProcessMusicQueueDataNewCallback (int type, void *udata);
 static void   uimusicqProcessMusicQueueDisplay (uimusicq_t *uimusicq, int ci);
@@ -239,16 +239,20 @@ uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci)
     uiBoxPackEnd (&hbox, &uiwidget);
 // ### TODO create code to handle the request external button
 
+    uiutilsUICallbackLongInit (&uimusicq->queueplcb,
+        uimusicqQueuePlaylistCallback, uimusicq);
     uiwidgetp = uiDropDownCreate (parentwin,
         /* CONTEXT: button: queue a playlist for playback */
-        _("Queue Playlist"), uimusicqQueuePlaylist,
+        _("Queue Playlist"), &uimusicq->queueplcb,
         uimusicq->ui [ci].playlistsel, uimusicq);
     uiBoxPackEnd (&hbox, uiwidgetp);
     uimusicqCreatePlaylistList (uimusicq);
 
+    uiutilsUICallbackLongInit (&uimusicq->queuedancecb,
+        uimusicqQueueDanceCallback, uimusicq);
     uiwidgetp = uiDropDownCreate (parentwin,
         /* CONTEXT: button: queue a dance for playback */
-        _("Queue Dance"), uimusicqQueueDance,
+        _("Queue Dance"), &uimusicq->queuedancecb,
         uiw->dancesel, uimusicq);
     uiutilsCreateDanceList (uiw->dancesel, NULL);
     uiBoxPackEnd (&hbox, uiwidgetp);
@@ -474,32 +478,22 @@ uimusicqSetSelectLocation (uimusicq_t *uimusicq, int mqidx, long loc)
 
 /* internal routines */
 
-static void
-uimusicqQueueDance (GtkTreeView *tv, GtkTreePath *path,
-    GtkTreeViewColumn *column, gpointer udata)
+static bool
+uimusicqQueueDanceCallback (void *udata, long idx)
 {
   uimusicq_t    *uimusicq = udata;
-  long          idx;
-  int           ci;
-  uimusicqgtk_t *uiw;
 
-  ci = uimusicq->musicqManageIdx;
-  uiw = uimusicq->ui [ci].uiWidgets;
-  idx = uiDropDownSelectionGetW (uiw->dancesel, path);
   uimusicqQueueDanceProcess (uimusicq, idx);
+  return UICB_CONT;
 }
 
-static void
-uimusicqQueuePlaylist (GtkTreeView *tv, GtkTreePath *path,
-    GtkTreeViewColumn *column, gpointer udata)
+static bool
+uimusicqQueuePlaylistCallback (void *udata, long idx)
 {
   uimusicq_t    *uimusicq = udata;
-  ssize_t       idx;
-  int           ci;
 
-  ci = uimusicq->musicqManageIdx;
-  idx = uiDropDownSelectionGetW (uimusicq->ui [ci].playlistsel, path);
   uimusicqQueuePlaylistProcess (uimusicq, idx);
+  return UICB_CONT;
 }
 
 static void

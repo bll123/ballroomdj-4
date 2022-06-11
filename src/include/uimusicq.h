@@ -57,6 +57,8 @@ typedef struct uimusicq {
   UIWidget        pausePixbuf;
   UICallback      *newselcb;
   UICallback      *editcb;
+  UICallback      queueplcb;
+  UICallback      queuedancecb;
   uimusicqui_t    ui [MUSICQ_MAX];
   /* peers */
   int           peercount;

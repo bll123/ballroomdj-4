@@ -26,6 +26,7 @@ enum {
 
 typedef struct uidropdown {
   char          *title;
+  UICallback    *selectcb;
   UIWidget      *parentwin;
   UIWidget      button;
   UICallback    buttoncb;
@@ -47,9 +48,12 @@ static bool uiDropDownWindowShow (void *udata);
 static bool uiDropDownClose (void *udata);
 static void uiDropDownButtonCreate (uidropdown_t *dropdown);
 static void uiDropDownWindowCreate (uidropdown_t *dropdown,
-    void *processSelectionCallback, void *udata);
+    UICallback *uicb, void *udata);
 static void uiDropDownSelectionSet (uidropdown_t *dropdown,
     nlistidx_t internalidx);
+static void uiDropDownSelectHandler (GtkTreeView *tv, GtkTreePath *path,
+    GtkTreeViewColumn *column, gpointer udata);
+static nlistidx_t uiDropDownSelectionGet (uidropdown_t *dropdown, GtkTreePath *path);
 
 uidropdown_t *
 uiDropDownInit (void)
@@ -98,25 +102,23 @@ uiDropDownFree (uidropdown_t *dropdown)
 
 UIWidget *
 uiDropDownCreate (UIWidget *parentwin,
-    char *title, void *processSelectionCallback,
+    char *title, UICallback *uicb,
     uidropdown_t *dropdown, void *udata)
 {
   dropdown->parentwin = parentwin;
   dropdown->title = strdup (title);
   uiDropDownButtonCreate (dropdown);
-  uiDropDownWindowCreate (dropdown, processSelectionCallback, udata);
+  uiDropDownWindowCreate (dropdown, uicb, udata);
   return &dropdown->button;
 }
 
 UIWidget *
 uiComboboxCreate (UIWidget *parentwin,
-    char *title, void *processSelectionCallback,
+    char *title, UICallback *uicb,
     uidropdown_t *dropdown, void *udata)
 {
   dropdown->iscombobox = true;
-  return uiDropDownCreate (parentwin,
-      title, processSelectionCallback,
-      dropdown, udata);
+  return uiDropDownCreate (parentwin, title, uicb, dropdown, udata);
 }
 
 void
@@ -274,7 +276,6 @@ uiDropDownSelectionSetNum (uidropdown_t *dropdown, nlistidx_t idx)
 {
   nlistidx_t    internalidx;
 
-
   if (dropdown == NULL) {
     return;
   }
@@ -390,7 +391,7 @@ uiDropDownButtonCreate (uidropdown_t *dropdown)
 
 static void
 uiDropDownWindowCreate (uidropdown_t *dropdown,
-    void *processSelectionCallback, void *udata)
+    UICallback *uicb, void *udata)
 {
   UIWidget          uiwidget;
   UIWidget          vbox;
@@ -425,8 +426,11 @@ uiDropDownWindowCreate (uidropdown_t *dropdown,
   gtk_widget_set_hexpand (dropdown->tree, TRUE);
   gtk_widget_set_vexpand (dropdown->tree, TRUE);
   uiBoxPackInWindowUW (&uiscwin, dropdown->tree);
-  g_signal_connect (dropdown->tree, "row-activated",
-      G_CALLBACK (processSelectionCallback), udata);
+  if (uicb != NULL) {
+    dropdown->selectcb = uicb;
+    g_signal_connect (dropdown->tree, "row-activated",
+        G_CALLBACK (uiDropDownSelectHandler), dropdown);
+  }
 }
 
 static void
@@ -466,10 +470,19 @@ uiDropDownSelectionSet (uidropdown_t *dropdown, nlistidx_t internalidx)
   }
 }
 
-/* these routines will be removed at a later date */
+static void
+uiDropDownSelectHandler (GtkTreeView *tv, GtkTreePath *path,
+    GtkTreeViewColumn *column, gpointer udata)
+{
+  uidropdown_t  *dropdown = udata;
+  long          idx;
 
-nlistidx_t
-uiDropDownSelectionGetW (uidropdown_t *dropdown, GtkTreePath *path)
+  idx = uiDropDownSelectionGet (dropdown, path);
+  uiutilsCallbackLongHandler (dropdown->selectcb, idx);
+}
+
+static nlistidx_t
+uiDropDownSelectionGet (uidropdown_t *dropdown, GtkTreePath *path)
 {
   GtkTreeIter   iter;
   GtkTreeModel  *model = NULL;

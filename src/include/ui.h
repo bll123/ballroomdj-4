@@ -142,10 +142,10 @@ void uiSpinboxSetValueChangedCallback (UIWidget *uiwidget, UICallback *uicb);
 uidropdown_t *uiDropDownInit (void);
 void uiDropDownFree (uidropdown_t *dropdown);
 UIWidget *uiDropDownCreate (UIWidget *parentwin,
-    char *title, void *processSelectionCallback,
+    char *title, UICallback *uicb,
     uidropdown_t *dropdown, void *udata);
 UIWidget *uiComboboxCreate (UIWidget *parentwin,
-    char *title, void *processSelectionCallback,
+    char *title, UICallback *uicb,
     uidropdown_t *dropdown, void *udata);
 void uiDropDownSetList (uidropdown_t *dropdown, slist_t *list,
     const char *selectLabel);
@@ -156,9 +156,6 @@ void uiDropDownSelectionSetStr (uidropdown_t *dropdown, const char *stridx);
 void uiDropDownDisable (uidropdown_t *dropdown);
 void uiDropDownEnable (uidropdown_t *dropdown);
 char *uiDropDownGetString (uidropdown_t *dropdown);
-
-/* these routines will be removed at a later date */
-nlistidx_t uiDropDownSelectionGetW (uidropdown_t *dropdown, GtkTreePath *path);
 
 /* uigtklink.c */
 void uiCreateLink (UIWidget *uiwidget, char *label, char *uri);

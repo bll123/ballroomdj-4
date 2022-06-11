@@ -54,6 +54,7 @@ enum {
   SONGSEL_CB_PLAY,
   SONGSEL_CB_FILTER,
   SONGSEL_CB_EDIT_LOCAL,
+  SONGSEL_CB_DANCE_SEL,
   SONGSEL_CB_MAX,
 };
 
@@ -91,7 +92,6 @@ static void uisongselProcessSongFilter (uisongsel_t *uisongsel);
 
 static void uisongselCheckFavChgSignal (GtkTreeView* tv, GtkTreePath* path, GtkTreeViewColumn* column, gpointer udata);
 
-static dbidx_t uisongselGetSelectedDbidx (uisongsel_t *uisongsel);
 static void uisongselProcessTreeSize (GtkWidget* w, GtkAllocation* allocation, gpointer user_data);
 static gboolean uisongselScroll (GtkRange *range, GtkScrollType scrolltype, gdouble value, gpointer udata);
 static gboolean uisongselScrollEvent (GtkWidget* tv, GdkEventScroll *event, gpointer udata);
@@ -104,8 +104,7 @@ static void uisongselPopulateDataCallback (int col, long num, const char *str, v
 
 static void uisongselMoveSelection (void *udata, int where);
 
-static void uisongselDanceSelectCallback (GtkTreeView *tv, GtkTreePath *path,
-    GtkTreeViewColumn *column, gpointer udata);
+static bool uisongselDanceSelectCallback (void *udata, long idx);
 static bool uisongselSongEditCallback (void *udata);
 
 
@@ -218,8 +217,10 @@ uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin)
     uiBoxPackStart (&hbox, &uiwidget);
   }
 
+  uiutilsUICallbackLongInit (&uiw->callbacks [SONGSEL_CB_DANCE_SEL],
+      uisongselDanceSelectCallback, uisongsel);
   uiwidgetp = uiComboboxCreate (parentwin,
-      "", uisongselDanceSelectCallback,
+      "", &uiw->callbacks [SONGSEL_CB_DANCE_SEL],
       uisongsel->dancesel, uisongsel);
   /* CONTEXT: filter: all dances are selected */
   uiutilsCreateDanceList (uisongsel->dancesel, _("All Dances"));
@@ -600,16 +601,13 @@ uisongselQueueProcessHandler (void *udata, musicqidx_t mqidx)
   return;
 }
 
-static void
-uisongselDanceSelectCallback (GtkTreeView *tv, GtkTreePath *path,
-    GtkTreeViewColumn *column, gpointer udata)
+static bool
+uisongselDanceSelectCallback (void *udata, long idx)
 {
   uisongsel_t *uisongsel = udata;
-  long        danceIdx;
 
-  danceIdx = uiDropDownSelectionGetW (uisongsel->dancesel, path);
-  uisongselDanceSelectHandler (uisongsel, danceIdx);
-  return;
+  uisongselDanceSelectHandler (uisongsel, idx);
+  return UICB_CONT;
 }
 
 static void
@@ -691,13 +689,6 @@ uisongselCheckFavChgSignal (GtkTreeView* tv, GtkTreePath* path,
 {
   uisongsel_t       * uisongsel = udata;
   uisongselgtk_t    * uiw;
-  dbidx_t           dbidx;
-
-  if (uisongsel->dispselType == DISP_SEL_SONGSEL ||
-      uisongsel->dispselType == DISP_SEL_EZSONGSEL) {
-    /* these have multiple selection turned on.  this will not work. */
-    return;
-  }
 
   logProcBegin (LOG_PROC, "uisongselCheckFavChgSignal");
 
@@ -707,30 +698,9 @@ uisongselCheckFavChgSignal (GtkTreeView* tv, GtkTreePath* path,
     return;
   }
 
-  dbidx = uisongselGetSelectedDbidx (uisongsel);
-  uisongselChangeFavorite (uisongsel, dbidx);
+  uisongselChangeFavorite (uisongsel, uisongsel->lastdbidx);
 
   logProcEnd (LOG_PROC, "uisongselCheckFavChgSignal", "");
-}
-
-/* only works for single selection */
-static dbidx_t
-uisongselGetSelectedDbidx (uisongsel_t *uisongsel)
-{
-  uisongselgtk_t    * uiw;
-  GtkTreeModel  * model = NULL;
-  GtkTreeIter   iter;
-  int           count;
-  long          dbidx;
-
-  uiw = uisongsel->uiWidgetData;
-  count = gtk_tree_selection_count_selected_rows (uiw->sel);
-  if (count != 1) {
-    return -1;
-  }
-  gtk_tree_selection_get_selected (uiw->sel, &model, &iter);
-  gtk_tree_model_get (model, &iter, SONGSEL_COL_DBIDX, &dbidx, -1);
-  return dbidx;
 }
 
 static void
