@@ -21,7 +21,6 @@ bool uiutilsCallbackLongIntHandler (UICallback *uicb, long lval, int ival);
 bool uiutilsCallbackStrHandler (UICallback *uicb, const char *str);
 
 /* uigtkdialog.c */
-
 enum {
   RESPONSE_NONE,
   RESPONSE_DELETE_WIN,
@@ -29,14 +28,6 @@ enum {
   RESPONSE_APPLY,
   RESPONSE_RESET,
 };
-
-typedef struct {
-  char        *label;
-  UIWidget    *window;
-  const char  *startpath;
-  const char  *mimefiltername;
-  const char  *mimetype;
-} uiselect_t;
 
 char  *uiSelectDirDialog (uiselect_t *selectdata);
 char  *uiSelectFileDialog (uiselect_t *selectdata);
@@ -65,8 +56,18 @@ void  uiLabelDarkenColor (UIWidget *uilabel, const char *color);
 void  uiLabelSetFont (UIWidget *uilabel, const char *font);
 void  uiLabelSetText (UIWidget *uilabel, const char *text);
 void  uiLabelEllipsizeOn (UIWidget *uiwidget);
+void  uiLabelSetSelectable (UIWidget *uiwidget);
 void  uiLabelSetMaxWidth (UIWidget *uiwidget, int width);
 void  uiLabelAlignEnd (UIWidget *uiwidget);
+
+/* uigtkchgind.c */
+typedef struct uichgind uichgind_t;
+
+uichgind_t *uiCreateChangeIndicator (UIWidget *boxp);
+void  uichgindFree (uichgind_t *uichgind);
+void  uichgindMarkNormal (uichgind_t *uichgind);
+void  uichgindMarkError (uichgind_t *uichgind);
+void  uichgindMarkChanged (uichgind_t *uichgind);
 
 /* uigtkbutton.c */
 void uiCreateButton (UIWidget *uiwidget, UICallback *uicb, char *title, char *imagenm);
@@ -82,6 +83,12 @@ void uiButtonSetText (UIWidget *uiwidget, const char *txt);
 enum {
   UIENTRY_IMMEDIATE,
   UIENTRY_DELAYED,
+};
+
+enum {
+  UIENTRY_RESET,
+  UIENTRY_ERROR,
+  UIENTRY_OK,
 };
 
 uientry_t *uiEntryInit (int entrySize, int maxSize);
@@ -103,6 +110,8 @@ void uiEntryDisable (uientry_t *entry);
 void uiEntryEnable (uientry_t *entry);
 
 /* uigtkspinbox.c */
+typedef struct uispinbox uispinbox_t;
+
 uispinbox_t *uiSpinboxTextInit (void);
 void  uiSpinboxTextFree (uispinbox_t *spinbox);
 void  uiSpinboxTextCreate (uispinbox_t *spinbox, void *udata);
@@ -117,7 +126,7 @@ void  uiSpinboxTextEnable (uispinbox_t *spinbox);
 void  uiSpinboxIntCreate (UIWidget *uiwidget);
 void  uiSpinboxDoubleCreate (UIWidget *uiwidget);
 
-uispinbox_t *uiSpinboxTimeInit (void);
+uispinbox_t *uiSpinboxTimeInit (int sbtype);
 void  uiSpinboxTimeFree (uispinbox_t *spinbox);
 void  uiSpinboxTimeCreate (uispinbox_t *spinbox, void *udata, UICallback *convcb);
 ssize_t uiSpinboxTimeGetValue (uispinbox_t *spinbox);
@@ -268,6 +277,7 @@ void    uiScaleSetValue (UIWidget *uiscale, double value);
 void    uiScaleSetRange (UIWidget *uiscale, double start, double end);
 
 /* uigtkswitch.c */
+typedef struct uiswitch uiswitch_t;
 
 uiswitch_t *uiCreateSwitch (int value);
 void uiSwitchFree (uiswitch_t *uiswitch);

@@ -30,6 +30,8 @@ typedef struct {
   void            *udata;
 } UICallback;
 
+/* these are defined based on the gtk values */
+/* would change for a different gui package */
 #define UICB_STOP true
 #define UICB_CONT false
 #define UICB_DISPLAYED true
@@ -38,15 +40,15 @@ typedef struct {
 #define UICB_CONVERTED true
 
 typedef struct {
-#if BDJ4_USE_GTK
   union {
+#if BDJ4_USE_GTK
     GtkWidget         *widget;
     GtkSizeGroup      *sg;
     GdkPixbuf         *pixbuf;
     GtkTreeSelection  *sel;
     GtkTextBuffer     *buffer;
-  };
 #endif
+  };
 } UIWidget;
 
 enum {
@@ -72,8 +74,32 @@ typedef struct {
   int     *tabids;
 } uiutilsnbtabid_t;
 
+/* dialogs */
+typedef struct uiselect uiselect_t;
+
+// ### todo move this into uigtkdialog.c
+typedef struct uiselect {
+  char        *label;
+  UIWidget    *window;
+  const char  *startpath;
+  const char  *mimefiltername;
+  const char  *mimetype;
+} uiselect_t;
+
+/* entry */
+typedef struct uientry uientry_t;
+typedef int (*uiutilsentryval_t)(uientry_t *entry, void *udata);
+
+/* spinbox */
+enum {
+  SB_TEXT,
+  SB_TIME_BASIC,
+  SB_TIME_PRECISE,
+};
+
 typedef char * (*uispinboxdisp_t)(void *, int);
 
+/* dropdown */
 typedef struct uidropdown uidropdown_t;
 
 typedef struct {
@@ -81,32 +107,6 @@ typedef struct {
   UIWidget      textbox;
   UIWidget      buffer;
 } uitextbox_t;
-
-typedef struct uientry uientry_t;
-typedef int (*uiutilsentryval_t)(uientry_t *entry, void *udata);
-
-enum {
-  UIENTRY_RESET,
-  UIENTRY_ERROR,
-  UIENTRY_OK,
-};
-
-typedef struct {
-  int             sbtype;
-  UIWidget        uispinbox;
-  UICallback      *convcb;
-  int             curridx;
-  uispinboxdisp_t textGetProc;
-  void            *udata;
-  int             maxWidth;
-  slist_t         *list;
-  nlist_t         *keylist;
-  nlist_t         *idxlist;
-  bool            processing : 1;
-  bool            changed : 1;
-} uispinbox_t;
-
-typedef struct uiswitch uiswitch_t;
 
 extern int uiBaseMarginSz;
 

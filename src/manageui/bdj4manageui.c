@@ -794,13 +794,20 @@ manageMainLoop (void *tmanage)
   connProcessUnconnected (manage->conn);
 
   uiplayerMainLoop (manage->slplayer);
+  uiplayerMainLoop (manage->mmplayer);
   uimusicqMainLoop (manage->slmusicq);
   uisongselMainLoop (manage->slsongsel);
   uimusicqMainLoop (manage->slezmusicq);
   uisongselMainLoop (manage->slezsongsel);
-  uiplayerMainLoop (manage->mmplayer);
   uimusicqMainLoop (manage->mmmusicq);
   uisongselMainLoop (manage->mmsongsel);
+
+  if (manage->mainlasttab == MANAGE_TAB_MAIN_MM) {
+    if (manage->mmlasttab == MANAGE_TAB_SONGEDIT) {
+      /* the song edit main loop does not need to run all the time */
+      uisongeditMainLoop (manage->mmsongedit);
+    }
+  }
 
   if (gKillReceived) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");

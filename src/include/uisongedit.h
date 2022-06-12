@@ -30,6 +30,7 @@ void  uisongeditUIInit (uisongedit_t *uisongedit);
 void  uisongeditUIFree (uisongedit_t *uisongedit);
 UIWidget  * uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit, UIWidget *parentwin);
 void  uisongeditLoadData (uisongedit_t *uisongedit, song_t *song);
+void  uisongeditUIMainLoop (uisongedit_t *uisongedit);
 
 #endif /* INC_UISONGEDIT_H */
 

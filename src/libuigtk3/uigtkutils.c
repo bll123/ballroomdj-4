@@ -147,20 +147,6 @@ uiGetForegroundColor (UIWidget *uiwidget, char *buff, size_t sz)
       (int) round (gcolor.blue * 255.0));
 }
 
-void
-uiGetForegroundColorW (GtkWidget *widget, char *buff, size_t sz)
-{
-  GdkRGBA         gcolor;
-  GtkStyleContext *context;
-
-  context = gtk_widget_get_style_context (widget);
-  gtk_style_context_get_color (context, GTK_STATE_FLAG_NORMAL, &gcolor);
-  snprintf (buff, sz, "#%02x%02x%02x",
-      (int) round (gcolor.red * 255.0),
-      (int) round (gcolor.green * 255.0),
-      (int) round (gcolor.blue * 255.0));
-}
-
 /* internal routines */
 
 static GLogWriterOutput
@@ -181,3 +167,20 @@ uiGtkLogger (GLogLevelFlags logLevel,
 
   return G_LOG_WRITER_HANDLED;
 }
+
+/* these routines will be removed at a later date */
+
+void
+uiGetForegroundColorW (GtkWidget *widget, char *buff, size_t sz)
+{
+  GdkRGBA         gcolor;
+  GtkStyleContext *context;
+
+  context = gtk_widget_get_style_context (widget);
+  gtk_style_context_get_color (context, GTK_STATE_FLAG_NORMAL, &gcolor);
+  snprintf (buff, sz, "#%02x%02x%02x",
+      (int) round (gcolor.red * 255.0),
+      (int) round (gcolor.green * 255.0),
+      (int) round (gcolor.blue * 255.0));
+}
+

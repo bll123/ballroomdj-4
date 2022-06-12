@@ -14,10 +14,20 @@
 #include "ui.h"
 #include "uiutils.h"
 
-enum {
-  SB_TEXT,
-  SB_TIME,
-};
+typedef struct uispinbox {
+  int             sbtype;
+  UIWidget        uispinbox;
+  UICallback      *convcb;
+  int             curridx;
+  uispinboxdisp_t textGetProc;
+  void            *udata;
+  int             maxWidth;
+  slist_t         *list;
+  nlist_t         *keylist;
+  nlist_t         *idxlist;
+  bool            processing : 1;
+  bool            changed : 1;
+} uispinbox_t;
 
 static gint uiSpinboxInput (GtkSpinButton *sb, gdouble *newval, gpointer udata);
 static gint uiSpinboxTimeInput (GtkSpinButton *sb, gdouble *newval, gpointer udata);
@@ -172,12 +182,12 @@ uiSpinboxTextEnable (uispinbox_t *uispinbox)
 }
 
 uispinbox_t *
-uiSpinboxTimeInit (void)
+uiSpinboxTimeInit (int sbtype)
 {
   uispinbox_t *uispinbox;
 
   uispinbox = uiSpinboxTextInit ();
-  uispinbox->sbtype = SB_TIME;
+  uispinbox->sbtype = sbtype;
   return uispinbox;
 }
 
@@ -190,10 +200,20 @@ uiSpinboxTimeFree (uispinbox_t *spinbox)
 void
 uiSpinboxTimeCreate (uispinbox_t *spinbox, void *udata, UICallback *convcb)
 {
+  double  inca, incb;
+
+
   spinbox->convcb = convcb;
   spinbox->uispinbox.widget = gtk_spin_button_new (NULL, 0.0, 0);
   gtk_entry_set_alignment (GTK_ENTRY (spinbox->uispinbox.widget), 1.0);
-  gtk_spin_button_set_increments (GTK_SPIN_BUTTON (spinbox->uispinbox.widget), 5000.0, 60000.0);
+  if (spinbox->sbtype == SB_TIME_BASIC) {
+    inca = 5000.0;
+    incb = 60000.0;
+  } else {
+    inca = 100.0;
+    incb = 30000.0;
+  }
+  gtk_spin_button_set_increments (GTK_SPIN_BUTTON (spinbox->uispinbox.widget), inca, incb);
   /* this range is for maximum play time */
   gtk_spin_button_set_range (GTK_SPIN_BUTTON (spinbox->uispinbox.widget), 0.0, 600000.0);
   gtk_spin_button_set_wrap (GTK_SPIN_BUTTON (spinbox->uispinbox.widget), FALSE);
@@ -471,7 +491,12 @@ uiSpinboxTimeDisplay (GtkSpinButton *sb, gpointer udata)
   adjustment = gtk_spin_button_get_adjustment (GTK_SPIN_BUTTON (spinbox->uispinbox.widget));
   value = gtk_adjustment_get_value (adjustment);
   gtk_spin_button_set_value (GTK_SPIN_BUTTON (spinbox->uispinbox.widget), value);
-  tmutilToMS ((ssize_t) value, tbuff, sizeof (tbuff));
+  if (spinbox->sbtype == SB_TIME_BASIC) {
+    tmutilToMS ((ssize_t) value, tbuff, sizeof (tbuff));
+  }
+  if (spinbox->sbtype == SB_TIME_PRECISE) {
+    tmutilToMSD ((ssize_t) value, tbuff, sizeof (tbuff));
+  }
   gtk_entry_set_text (GTK_ENTRY (spinbox->uispinbox.widget), tbuff);
   spinbox->processing = false;
   return UICB_DISPLAYED;

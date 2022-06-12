@@ -38,6 +38,7 @@ uiCreateColonLabel (UIWidget *uiwidget, const char *label)
   gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
   gtk_widget_set_margin_top (widget, uiBaseMarginSz);
   gtk_widget_set_margin_start (widget, uiBaseMarginSz);
+  gtk_widget_set_margin_end (widget, uiBaseMarginSz * 2);
   uiwidget->widget = widget;
 }
 
@@ -95,6 +96,16 @@ uiLabelEllipsizeOn (UIWidget *uiwidget)
   }
 
   gtk_label_set_ellipsize (GTK_LABEL (uiwidget->widget), PANGO_ELLIPSIZE_END);
+}
+
+void
+uiLabelSetSelectable (UIWidget *uiwidget)
+{
+  if (uiwidget->widget == NULL) {
+    return;
+  }
+
+  gtk_label_set_selectable (GTK_LABEL (uiwidget->widget), TRUE);
 }
 
 inline void

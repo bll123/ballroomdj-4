@@ -1190,7 +1190,7 @@ starterSetProfile (void *udata, int idx)
 
   profidx = uiSpinboxTextGetValue (starter->profilesel);
   sysvarsSetNum (SVL_BDJIDX, profidx);
-  disp = nlistGetStr (starter->profilesel->list, profidx);
+  disp = nlistGetStr (starter->proflist, profidx);
   return disp;
 }
 

@@ -57,6 +57,7 @@ uisongeditFree (uisongedit_t *uisongedit)
 void
 uisongeditMainLoop (uisongedit_t *uisongedit)
 {
+  uisongeditUIMainLoop (uisongedit);
   return;
 }
 

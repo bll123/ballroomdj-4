@@ -47,9 +47,11 @@ uisongGetDisplay (song_t *song, int tagidx, long *num, double *dval)
   valuetype_t   vt;
   char          *str;
 
-  vt = uisongDetermineDisplayValueType (tagidx);
   *num = 0;
   *dval = 0.0;
+  /* get the numeric values also in addition to the display string */
+  uisongGetValue (song, tagidx, num, dval);
+  vt = uisongDetermineDisplayValueType (tagidx);
   str = NULL;
   if (vt == VALUE_STR) {
     str = songDisplayString (song, tagidx);

@@ -89,8 +89,8 @@ managePlaylistAlloc (UIWidget *window, nlist_t *options, UIWidget *statusMsg)
   managepl->windowp = window;
   managepl->options = options;
   managepl->pltype = PLTYPE_AUTO;
-  managepl->uimaxplaytime = uiSpinboxTimeInit ();
-  managepl->uistopat = uiSpinboxTimeInit ();
+  managepl->uimaxplaytime = uiSpinboxTimeInit (SB_TIME_BASIC);
+  managepl->uistopat = uiSpinboxTimeInit (SB_TIME_BASIC);
   uiutilsUIWidgetInit (&managepl->uistopafter);
   uiutilsUIWidgetInit (&managepl->uigap);
   managepl->managepltree = NULL;

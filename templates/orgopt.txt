@@ -1,5 +1,8 @@
 # BDJ4 organization options
 #
+# There are many entries that are commented out that can be easily added
+# by removing the # <space> from in front of the line.
+#
 # recognized keywords:
 #   ALBUM ALBUMARTIST ARTIST COMPOSER CONDUCTOR DANCE DISC GENRE TITLE
 #   TRACKNUMBER TRACKNUMBER0
@@ -18,18 +21,34 @@
 #   If the composer is the same as the albumartist or the artist, then
 #     the composer group is omitted.
 #
-# version 1
-{%ALBUM%/}{%ALBUMARTIST%/}{%TRACKNUMBER% - }{%TITLE%}
-{%ALBUM%/}{%ARTIST%/}{%TRACKNUMBER% - }{%TITLE%}
+# version 2
+## album artist
 {%ALBUMARTIST% - }{%TITLE%}
-{%ALBUMARTIST%/}{%ALBUM%/}{%DISC%-}{%TRACKNUMBER%.}{%TITLE%}
-{%ALBUMARTIST%/}{%ALBUM%/}{%DISC%-}{%TRACKNUMBER0%.}{%TITLE%}
+# {%ALBUMARTIST%/}{%ALBUM%/}{%DISC%-}{%TRACKNUMBER%.}{%TITLE%}
+# {%ALBUMARTIST%/}{%ALBUM%/}{%DISC%-}{%TRACKNUMBER0%.}{%TITLE%}
 {%ALBUMARTIST%/}{%TITLE%}
+## album
+# {%ALBUM%/}{%ALBUMARTIST%/}{%TRACKNUMBER% - }{%TITLE%}
+# {%ALBUM%/}{%ARTIST%/}{%TRACKNUMBER% - }{%TITLE%}
+# {%ALBUM%/}{%ARTIST%/}{%TRACKNUMBER% - }{%TITLE%}
+## artist
 {%ARTIST% - }{%TITLE%}
+# {%ARTIST% - }{%TRACKNUMBER0% - }{%TITLE%}
 {%ARTIST%/}{%TITLE%}
-{%DANCE% - }{%TITLE%}
+# {%ARTIST%/}{%TRACKNUMBER0% - }{%TITLE%}
+# {%ARTIST%/}{%TRACKNUMBER0%.}{%TITLE%}
+# {%ARTIST%/}{%ALBUM%/}{%TITLE%}
+# {%ARTIST%/}{%ALBUM%/}{%TRACKNUMBER0% }{%TITLE%}
+# {%ARTIST%/}{%ALBUM%/}{%TRACKNUMBER0%.}{%TITLE%}
+## dance
+{%DANCE%/}{%ALBUMARTIST%/}{%TITLE%}
+{%DANCE%/}{%ALBUMARTIST% - }{%TITLE%}
 {%DANCE%/}{%ARTIST% - }{%TITLE%}
+{%DANCE%/}{%ARTIST%/}{%TITLE%}
+{%DANCE% - }{%TITLE%}
 {%DANCE%/}{%TITLE%}
-{%GENRE%/}{%ALBUMARTIST%/}{%ALBUM%/}{%DISC%-}{%TRACKNUMBER0%.}{%TITLE%}
-{%GENRE%/}{%COMPOSER%/}{%ALBUMARTIST%/}{%ALBUM%/}{%DISC%-}{%TRACKNUMBER0%.}{%TITLE%}
+## full
+# {%GENRE%/}{%ALBUMARTIST%/}{%ALBUM%/}{%DISC%-}{%TRACKNUMBER0%.}{%TITLE%}
+# {%GENRE%/}{%COMPOSER%/}{%ALBUMARTIST%/}{%ALBUM%/}{%DISC%-}{%TRACKNUMBER0%.}{%TITLE%}
+## title
 {%TITLE%}
