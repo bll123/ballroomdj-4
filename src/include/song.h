@@ -4,16 +4,7 @@
 #include "datafile.h"
 #include "nlist.h"
 #include "slist.h"
-
-typedef enum {
-  SONG_FAVORITE_NONE,
-  SONG_FAVORITE_RED,
-  SONG_FAVORITE_ORANGE,
-  SONG_FAVORITE_GREEN,
-  SONG_FAVORITE_BLUE,
-  SONG_FAVORITE_PURPLE,
-  SONG_FAVORITE_MAX,
-} songfavorite_t;
+#include "songfav.h"
 
 typedef struct songfavoriteinfo {
   songfavorite_t      idx;

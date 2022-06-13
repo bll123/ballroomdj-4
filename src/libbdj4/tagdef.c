@@ -13,7 +13,7 @@
 #include "level.h"
 #include "rating.h"
 #include "slist.h"
-#include "song.h"
+#include "songfav.h"
 #include "status.h"
 #include "tagdef.h"
 
