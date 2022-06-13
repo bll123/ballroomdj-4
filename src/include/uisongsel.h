@@ -64,14 +64,9 @@ void  uisongselSetDatabase (uisongsel_t *uisongsel, musicdb_t *musicdb);
 void  uisongselFree (uisongsel_t *uisongsel);
 void  uisongselMainLoop (uisongsel_t *uisongsel);
 int   uisongselProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route, bdjmsgmsg_t msg, char *args, void *udata);
-void  uisongselQueueProcess (uisongsel_t *uisongsel, dbidx_t dbidx, musicqidx_t mqidx);
-void  uisongselChangeFavorite (uisongsel_t *uisongsel, dbidx_t dbidx);
 void  uisongselSetSelectionCallback (uisongsel_t *uisongsel, UICallback *uicbdbidx);
-void  uisongselSetPeerFlag (uisongsel_t *uisongsel, bool val);
 void  uisongselSetQueueCallback (uisongsel_t *uisongsel, UICallback *uicbdbidx);
 /* song filter */
-void  uisongselDanceSelectHandler (uisongsel_t *uisongsel, ssize_t idx);
-bool  uisongselApplySongFilter (void *uisongsel);
 void  uisongselSetEditCallback (uisongsel_t *uisongsel, UICallback *uicb);
 
 
@@ -90,6 +85,14 @@ bool  uisongselNextSelection (void *udata);
 bool  uisongselPreviousSelection (void *udata);
 bool  uisongselFirstSelection (void *udata);
 long  uisongselGetSelectLocation (uisongsel_t *uisongsel);
+bool  uisongselApplySongFilter (void *uisongsel);
+void  uisongselDanceSelectHandler (uisongsel_t *uisongsel, ssize_t idx);
+bool  uisongselDanceSelectCallback (void *udata, long danceIdx);
+
+/* uisongselcommon.c */
+void  uisongselQueueProcess (uisongsel_t *uisongsel, dbidx_t dbidx, musicqidx_t mqidx);
+void  uisongselSetPeerFlag (uisongsel_t *uisongsel, bool val);
+void  uisongselChangeFavorite (uisongsel_t *uisongsel, dbidx_t dbidx);
 
 #endif /* INC_UISONGSEL_H */
 

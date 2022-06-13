@@ -54,6 +54,11 @@ static void   uimusicqSelectionChgCallback (GtkTreeSelection *sel, gpointer udat
 static void   uimusicqSetDefaultSelection (uimusicq_t *uimusicq);
 static void   uimusicqSetSelection (uimusicq_t *uimusicq, int mqidx);
 static bool   uimusicqSongEditCallback (void *udata);
+static bool   uimusicqMoveTopCallback (void *udata);
+static bool   uimusicqMoveUpCallback (void *udata);
+static bool   uimusicqMoveDownCallback (void *udata);
+static bool   uimusicqTogglePauseCallback (void *udata);
+static bool   uimusicqRemoveCallback (void *udata);
 
 enum {
   UIMUSICQ_CB_MOVE_TOP,
@@ -156,7 +161,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci)
 
   uiutilsUICallbackInit (
       &uiw->callback [UIMUSICQ_CB_MOVE_TOP],
-      uimusicqMoveTop, uimusicq);
+      uimusicqMoveTopCallback, uimusicq);
   uiCreateButton (&uiwidget,
       &uiw->callback [UIMUSICQ_CB_MOVE_TOP],
       /* CONTEXT: button: move the selected song to the top of the queue */
@@ -167,7 +172,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci)
   uiCreateButton (&uiwidget, NULL, _("Move Up"), "button_up");
   uiutilsUICallbackInit (
       &uiw->callback [UIMUSICQ_CB_MOVE_UP_PRESS],
-      uimusicqMoveUp, uimusicq);
+      uimusicqMoveUpCallback, uimusicq);
   uiButtonSetPressCallback (&uiwidget,
       &uiw->callback [UIMUSICQ_CB_MOVE_UP_PRESS]);
   uiutilsUICallbackInit (
@@ -181,7 +186,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci)
   uiCreateButton (&uiwidget, NULL, _("Move Down"), "button_down");
   uiutilsUICallbackInit (
       &uiw->callback [UIMUSICQ_CB_MOVE_DOWN_PRESS],
-      uimusicqMoveDown, uimusicq);
+      uimusicqMoveDownCallback, uimusicq);
   uiButtonSetPressCallback (&uiwidget,
       &uiw->callback [UIMUSICQ_CB_MOVE_DOWN_PRESS]);
   uiutilsUICallbackInit (
@@ -194,7 +199,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci)
   if (uimusicq->dispselType == DISP_SEL_MUSICQ) {
     uiutilsUICallbackInit (
         &uiw->callback [UIMUSICQ_CB_TOGGLE_PAUSE],
-        uimusicqTogglePause, uimusicq);
+        uimusicqTogglePauseCallback, uimusicq);
     uiCreateButton (&uiwidget,
         &uiw->callback [UIMUSICQ_CB_TOGGLE_PAUSE],
         /* CONTEXT: button: set playback to pause after the selected song is played (toggle) */
@@ -204,7 +209,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci)
 
   uiutilsUICallbackInit (
       &uiw->callback [UIMUSICQ_CB_AUDIO_REMOVE],
-      uimusicqRemove, uimusicq);
+      uimusicqRemoveCallback, uimusicq);
   uiCreateButton (&uiwidget,
       &uiw->callback [UIMUSICQ_CB_AUDIO_REMOVE],
       /* CONTEXT: button: remove the song from the queue */
@@ -273,7 +278,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci)
   if (uimusicq->dispselType == DISP_SEL_MUSICQ) {
     uiutilsUICallbackInit (
         &uiw->callback [UIMUSICQ_CB_CLEAR_QUEUE],
-        uimusicqClearQueue, uimusicq);
+        uimusicqClearQueueCallback, uimusicq);
     uiCreateButton (&uiwidget,
         &uiw->callback [UIMUSICQ_CB_CLEAR_QUEUE],
         /* CONTEXT: button: clear the queue */
@@ -330,6 +335,24 @@ uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci)
   logProcEnd (LOG_PROC, "uimusicqBuildUI", "");
   return &uimusicq->ui [ci].mainbox;
 }
+
+void
+uimusicqUIMainLoop (uimusicq_t *uimusicq)
+{
+  if (uimusicq->repeatButton != UIMUSICQ_REPEAT_NONE) {
+    if (mstimeCheck (&uimusicq->repeatTimer)) {
+      if (uimusicq->repeatButton == UIMUSICQ_REPEAT_UP) {
+        uimusicqMoveUpCallback (uimusicq);
+      }
+      if (uimusicq->repeatButton == UIMUSICQ_REPEAT_DOWN) {
+        uimusicqMoveDownCallback (uimusicq);
+      }
+    }
+  }
+
+  return;
+}
+
 
 void
 uimusicqSetSelectionFirst (uimusicq_t *uimusicq, int mqidx)
@@ -473,6 +496,34 @@ uimusicqSetSelectLocation (uimusicq_t *uimusicq, int mqidx, long loc)
 {
   uimusicq->ui [mqidx].selectLocation = loc;
   uimusicqSetSelection (uimusicq, mqidx);
+}
+
+bool
+uimusicqClearQueueCallback (void *udata)
+{
+  uimusicq_t    *uimusicq = udata;
+  int           ci;
+  long          idx;
+
+
+  logProcBegin (LOG_PROC, "uimusicqClearQueue");
+
+  ci = uimusicq->musicqManageIdx;
+
+  idx = uimusicqGetSelectLocation (uimusicq, ci);
+  if (idx < 0) {
+    /* if nothing is selected, clear everything */
+    idx = 0;
+    if (uimusicq->musicqManageIdx == uimusicq->musicqPlayIdx) {
+      idx = 1;
+    }
+  } else {
+    ++idx;
+  }
+
+  uimusicqClearQueue (uimusicq, ci, idx);
+  logProcEnd (LOG_PROC, "uimusicqClearQueue", "");
+  return UICB_CONT;
 }
 
 /* internal routines */
@@ -676,9 +727,7 @@ uimusicqPlayCallback (void *udata)
   uimusicq_t    *uimusicq = udata;
   uimusicqgtk_t *uiw;
   musicqidx_t   ci;
-  char          tmp [20];
   dbidx_t       dbidx;
-  char          tbuff [100];
   int           count;
 
   ci = uimusicq->musicqManageIdx;
@@ -691,16 +740,7 @@ uimusicqPlayCallback (void *udata)
 
   dbidx = uimusicqGetSelectionDbidx (uimusicq);
 
-  /* clear the queue; start index is 1 */
-  snprintf (tmp, sizeof (tmp), "%d%c%d", ci, MSG_ARGS_RS, 1);
-  connSendMessage (uimusicq->conn, ROUTE_MAIN, MSG_QUEUE_CLEAR, tmp);
-  /* clear any playing song via main */
-  connSendMessage (uimusicq->conn, ROUTE_MAIN, MSG_CMD_NEXTSONG, NULL);
-  /* queue to the end of the hidden music queue */
-  snprintf (tbuff, sizeof (tbuff), "%d%c%d%c%d", ci,
-      MSG_ARGS_RS, 99, MSG_ARGS_RS, dbidx);
-  connSendMessage (uimusicq->conn, ROUTE_MAIN, MSG_MUSICQ_INSERT, tbuff);
-
+  uimusicqPlay (uimusicq, ci, dbidx);
   return UICB_CONT;
 }
 
@@ -841,4 +881,125 @@ uimusicqSongEditCallback (void *udata)
   }
   return uiutilsCallbackHandler (uimusicq->editcb);
 }
+
+static bool
+uimusicqMoveTopCallback (void *udata)
+{
+  uimusicq_t  *uimusicq = udata;
+  int         ci;
+  long        idx;
+
+
+  logProcBegin (LOG_PROC, "uimusicqMoveTopProcess");
+
+  ci = uimusicq->musicqManageIdx;
+
+  idx = uimusicqGetSelectLocation (uimusicq, ci);
+  if (idx < 0) {
+    logProcEnd (LOG_PROC, "uimusicqMoveTopProcess", "bad-idx");
+    return UICB_STOP;
+  }
+  ++idx;
+
+  uimusicqMusicQueueSetSelected (uimusicq, ci, UIMUSICQ_SEL_TOP);
+  uimusicqMoveTop (uimusicq, ci, idx);
+  return UICB_CONT;
+}
+
+static bool
+uimusicqMoveUpCallback (void *udata)
+{
+  uimusicq_t  *uimusicq = udata;
+  int         ci;
+  long        idx;
+
+
+  logProcBegin (LOG_PROC, "uimusicqMoveUp");
+
+  ci = uimusicq->musicqManageIdx;
+
+  idx = uimusicqGetSelectLocation (uimusicq, ci);
+  if (idx < 0) {
+    logProcEnd (LOG_PROC, "uimusicqMoveUp", "bad-idx");
+    return UICB_STOP;
+  }
+  ++idx;
+
+  uimusicqMusicQueueSetSelected (uimusicq, ci, UIMUSICQ_SEL_PREV);
+  uimusicqMoveUp (uimusicq, ci, idx);
+  return UICB_CONT;
+}
+
+static bool
+uimusicqMoveDownCallback (void *udata)
+{
+  uimusicq_t  *uimusicq = udata;
+  int         ci;
+  long        idx;
+
+  logProcBegin (LOG_PROC, "uimusicqMoveDown");
+
+  ci = uimusicq->musicqManageIdx;
+
+  idx = uimusicqGetSelectLocation (uimusicq, ci);
+  if (idx < 0) {
+    logProcEnd (LOG_PROC, "uimusicqMoveDown", "bad-idx");
+    return UICB_STOP;
+  }
+  ++idx;
+
+  uimusicqMusicQueueSetSelected (uimusicq, ci, UIMUSICQ_SEL_NEXT);
+  uimusicqMoveDown (uimusicq, ci, idx);
+  logProcEnd (LOG_PROC, "uimusicqMoveDown", "");
+  return UICB_CONT;
+}
+
+static bool
+uimusicqTogglePauseCallback (void *udata)
+{
+  uimusicq_t    *uimusicq = udata;
+  int           ci;
+  long          idx;
+
+
+  logProcBegin (LOG_PROC, "uimusicqTogglePause");
+
+  ci = uimusicq->musicqManageIdx;
+
+  idx = uimusicqGetSelectLocation (uimusicq, ci);
+  if (idx < 0) {
+    logProcEnd (LOG_PROC, "uimusicqTogglePause", "bad-idx");
+    return UICB_STOP;
+  }
+  ++idx;
+
+  uimusicqTogglePause (uimusicq, ci, idx);
+  logProcEnd (LOG_PROC, "uimusicqTogglePause", "");
+  return UICB_CONT;
+}
+
+static bool
+uimusicqRemoveCallback (void *udata)
+{
+  uimusicq_t    *uimusicq = udata;
+  int           ci;
+  long          idx;
+
+
+  logProcBegin (LOG_PROC, "uimusicqRemove");
+
+  ci = uimusicq->musicqManageIdx;
+
+  idx = uimusicqGetSelectLocation (uimusicq, ci);
+  if (idx < 0) {
+    logProcEnd (LOG_PROC, "uimusicqRemove", "bad-idx");
+    return UICB_STOP;
+  }
+  ++idx;
+
+  uimusicqRemove (uimusicq, ci, idx);
+  logProcEnd (LOG_PROC, "uimusicqRemove", "");
+  return UICB_CONT;
+}
+
 

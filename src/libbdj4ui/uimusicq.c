@@ -15,14 +15,12 @@
 #include "log.h"
 #include "musicq.h"
 #include "nlist.h"
-#include "playlist.h"
+#include "songlist.h"
 #include "tagdef.h"
 #include "uimusicq.h"
 #include "ui.h"
 
 static void   uimusicqProcessSongSelect (uimusicq_t *uimusicq, char * args);
-static int    uimusicqMoveUpRepeat (void *udata);
-static int    uimusicqMoveDownRepeat (void *udata);
 static void   uimusicqSaveListCallback (uimusicq_t *uimusicq, dbidx_t dbidx);
 
 uimusicq_t *
@@ -39,6 +37,7 @@ uimusicqInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
 
   uimusicq->tag = tag;
   uimusicq->conn = conn;
+  uimusicq->repeatButton = UIMUSICQ_REPEAT_NONE;
   uimusicq->dispsel = dispsel;
   uimusicq->musicdb = musicdb;
   uimusicq->dispselType = dispselType;
@@ -49,7 +48,6 @@ uimusicqInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
     int     sz;
 
     uimusicq->ui [i].hasui = false;
-    uimusicq->ui [i].repeatTimer = 0;
     uimusicq->ui [i].count = 0;
     uimusicq->ui [i].haveselloc = false;
     uimusicq->ui [i].playlistsel = uiDropDownInit ();
@@ -89,12 +87,6 @@ uimusicqSetPeer (uimusicq_t *uimusicq, uimusicq_t *peer)
 }
 
 void
-uimusicqSetPeerFlag (uimusicq_t *uimusicq, bool val)
-{
-  uimusicq->ispeercall = val;
-}
-
-void
 uimusicqSetDatabase (uimusicq_t *uimusicq, musicdb_t *musicdb)
 {
   uimusicq->musicdb = musicdb;
@@ -120,6 +112,7 @@ uimusicqFree (uimusicq_t *uimusicq)
 void
 uimusicqMainLoop (uimusicq_t *uimusicq)
 {
+  uimusicqUIMainLoop (uimusicq);
   return;
 }
 
@@ -192,313 +185,6 @@ uimusicqSetSelectionCallback (uimusicq_t *uimusicq, UICallback *uicbdbidx)
     return;
   }
   uimusicq->newselcb = uicbdbidx;
-}
-
-bool
-uimusicqMoveTop (void *udata)
-{
-  uimusicq_t  *uimusicq = udata;
-  int         ci;
-  long        idx;
-  char        tbuff [20];
-
-
-  logProcBegin (LOG_PROC, "uimusicqMoveTopProcess");
-
-  ci = uimusicq->musicqManageIdx;
-
-  idx = uimusicqGetSelectLocation (uimusicq, ci);
-  if (idx < 0) {
-    logProcEnd (LOG_PROC, "uimusicqMoveTopProcess", "bad-idx");
-    return UICB_STOP;
-  }
-  ++idx;
-
-  uimusicqMusicQueueSetSelected (uimusicq, ci, UIMUSICQ_SEL_TOP);
-
-  snprintf (tbuff, sizeof (tbuff), "%d%c%zu", ci, MSG_ARGS_RS, idx);
-  connSendMessage (uimusicq->conn, ROUTE_MAIN,
-      MSG_MUSICQ_MOVE_TOP, tbuff);
-  logProcEnd (LOG_PROC, "uimusicqMoveTopProcess", "");
-  return UICB_CONT;
-}
-
-bool
-uimusicqMoveUp (void *udata)
-{
-  uimusicq_t  *uimusicq = udata;
-  int         ci;
-  long        idx;
-  char        tbuff [20];
-
-
-  logProcBegin (LOG_PROC, "uimusicqMoveUp");
-
-  ci = uimusicq->musicqManageIdx;
-
-  idx = uimusicqGetSelectLocation (uimusicq, ci);
-  if (idx < 0) {
-    logProcEnd (LOG_PROC, "uimusicqMoveUp", "bad-idx");
-    return UICB_STOP;
-  }
-  ++idx;
-
-  uimusicqMusicQueueSetSelected (uimusicq, ci, UIMUSICQ_SEL_PREV);
-  snprintf (tbuff, sizeof (tbuff), "%d%c%zu", ci, MSG_ARGS_RS, idx);
-  connSendMessage (uimusicq->conn, ROUTE_MAIN,
-      MSG_MUSICQ_MOVE_UP, tbuff);
-  if (uimusicq->ui [ci].repeatTimer == 0) {
-    uimusicq->ui [ci].repeatTimer = g_timeout_add (
-        UIMUSICQ_REPEAT_TIME, uimusicqMoveUpRepeat, uimusicq);
-  }
-  logProcEnd (LOG_PROC, "uimusicqMoveUp", "");
-  return UICB_CONT;
-}
-
-bool
-uimusicqMoveDown (void *udata)
-{
-  uimusicq_t  *uimusicq = udata;
-  int         ci;
-  long        idx;
-  char        tbuff [20];
-
-
-  logProcBegin (LOG_PROC, "uimusicqMoveDown");
-
-  ci = uimusicq->musicqManageIdx;
-
-  idx = uimusicqGetSelectLocation (uimusicq, ci);
-  if (idx < 0) {
-    logProcEnd (LOG_PROC, "uimusicqMoveDown", "bad-idx");
-    return UICB_STOP;
-  }
-  ++idx;
-
-  uimusicqMusicQueueSetSelected (uimusicq, ci, UIMUSICQ_SEL_NEXT);
-  snprintf (tbuff, sizeof (tbuff), "%d%c%zu", ci, MSG_ARGS_RS, idx);
-  connSendMessage (uimusicq->conn, ROUTE_MAIN,
-      MSG_MUSICQ_MOVE_DOWN, tbuff);
-
-  if (uimusicq->ui [ci].repeatTimer == 0) {
-    uimusicq->ui [ci].repeatTimer = g_timeout_add (
-        UIMUSICQ_REPEAT_TIME, uimusicqMoveDownRepeat, uimusicq);
-  }
-  logProcEnd (LOG_PROC, "uimusicqMoveDown", "");
-  return UICB_CONT;
-}
-
-bool
-uimusicqTogglePause (void *udata)
-{
-  uimusicq_t    *uimusicq = udata;
-  int           ci;
-  long          idx;
-  char          tbuff [20];
-
-
-  logProcBegin (LOG_PROC, "uimusicqTogglePause");
-
-  ci = uimusicq->musicqManageIdx;
-
-  idx = uimusicqGetSelectLocation (uimusicq, ci);
-  if (idx < 0) {
-    logProcEnd (LOG_PROC, "uimusicqTogglePause", "bad-idx");
-    return UICB_STOP;
-  }
-  ++idx;
-
-  snprintf (tbuff, sizeof (tbuff), "%d%c%zu", ci, MSG_ARGS_RS, idx);
-  connSendMessage (uimusicq->conn, ROUTE_MAIN,
-      MSG_MUSICQ_TOGGLE_PAUSE, tbuff);
-  logProcEnd (LOG_PROC, "uimusicqTogglePause", "");
-  return UICB_CONT;
-}
-
-bool
-uimusicqRemove (void *udata)
-{
-  uimusicq_t    *uimusicq = udata;
-  int           ci;
-  long          idx;
-  char          tbuff [20];
-
-
-  logProcBegin (LOG_PROC, "uimusicqRemove");
-
-  ci = uimusicq->musicqManageIdx;
-
-  idx = uimusicqGetSelectLocation (uimusicq, ci);
-  if (idx < 0) {
-    logProcEnd (LOG_PROC, "uimusicqRemove", "bad-idx");
-    return UICB_STOP;
-  }
-  ++idx;
-
-  snprintf (tbuff, sizeof (tbuff), "%d%c%zu", ci, MSG_ARGS_RS, idx);
-  connSendMessage (uimusicq->conn, ROUTE_MAIN,
-      MSG_MUSICQ_REMOVE, tbuff);
-  logProcEnd (LOG_PROC, "uimusicqRemove", "");
-  return UICB_CONT;
-}
-
-bool
-uimusicqStopRepeat (void *udata)
-{
-  uimusicq_t  *uimusicq = udata;
-  int         ci;
-
-  logProcBegin (LOG_PROC, "uimusicqStopRepeat");
-
-  ci = uimusicq->musicqManageIdx;
-  if (uimusicq->ui [ci].repeatTimer != 0) {
-    g_source_remove (uimusicq->ui [ci].repeatTimer);
-  }
-  uimusicq->ui [ci].repeatTimer = 0;
-  logProcEnd (LOG_PROC, "uimusicqStopRepeat", "");
-  return UICB_CONT;
-}
-
-bool
-uimusicqClearQueue (void *udata)
-{
-  uimusicq_t    *uimusicq = udata;
-  int           ci;
-  long          idx;
-  char          tbuff [20];
-
-
-  logProcBegin (LOG_PROC, "uimusicqClearQueue");
-
-  ci = uimusicq->musicqManageIdx;
-
-  idx = uimusicqGetSelectLocation (uimusicq, ci);
-  if (idx < 0) {
-    /* if nothing is selected, clear everything */
-    idx = 0;
-    if (uimusicq->musicqManageIdx == uimusicq->musicqPlayIdx) {
-      idx = 1;
-    }
-  } else {
-    ++idx;
-  }
-
-  snprintf (tbuff, sizeof (tbuff), "%d%c%ld", ci, MSG_ARGS_RS, idx);
-  connSendMessage (uimusicq->conn, ROUTE_MAIN, MSG_QUEUE_CLEAR, tbuff);
-  logProcEnd (LOG_PROC, "uimusicqClearQueue", "");
-  return UICB_CONT;
-}
-
-void
-uimusicqQueueDanceProcess (uimusicq_t *uimusicq, ssize_t idx)
-{
-  int           ci;
-  char          tbuff [20];
-
-
-  logProcBegin (LOG_PROC, "uimusicqQueueDance");
-
-  ci = uimusicq->musicqManageIdx;
-
-  if (idx >= 0) {
-    snprintf (tbuff, sizeof (tbuff), "%d%c%ld", ci, MSG_ARGS_RS, idx);
-    connSendMessage (uimusicq->conn, ROUTE_MAIN, MSG_QUEUE_DANCE, tbuff);
-  }
-  logProcEnd (LOG_PROC, "uimusicqQueueDance", "");
-}
-
-void
-uimusicqQueuePlaylistProcess (uimusicq_t *uimusicq, ssize_t idx)
-{
-  int           ci;
-  char          tbuff [100];
-
-
-  logProcBegin (LOG_PROC, "uimusicqQueuePlaylist");
-
-  ci = uimusicq->musicqManageIdx;
-
-  if (idx >= 0) {
-    snprintf (tbuff, sizeof (tbuff), "%d%c%s", ci, MSG_ARGS_RS,
-        uiDropDownGetString (uimusicq->ui [ci].playlistsel));
-    connSendMessage (uimusicq->conn, ROUTE_MAIN, MSG_QUEUE_PLAYLIST, tbuff);
-  }
-  logProcEnd (LOG_PROC, "uimusicqQueuePlaylist", "");
-}
-
-void
-uimusicqCreatePlaylistList (uimusicq_t *uimusicq)
-{
-  int               ci;
-  slist_t           *plList;
-
-
-  logProcBegin (LOG_PROC, "uimusicqCreatePlaylistList");
-
-  ci = uimusicq->musicqManageIdx;
-
-  plList = playlistGetPlaylistList (PL_LIST_NORMAL);
-  uiDropDownSetList (uimusicq->ui [ci].playlistsel, plList, NULL);
-  slistFree (plList);
-  logProcEnd (LOG_PROC, "uimusicqCreatePlaylistList", "");
-}
-
-int
-uimusicqMusicQueueDataParse (uimusicq_t *uimusicq, char *args)
-{
-  int               ci;
-  char              *p;
-  char              *tokstr;
-  int               idx;
-  musicqupdate_t    *musicqupdate;
-
-
-  logProcBegin (LOG_PROC, "uimusicqMusicQueueDataParse");
-
-  /* first, build ourselves a list to work with */
-  uimusicqMusicQueueDataFree (uimusicq);
-  uimusicq->uniqueList = nlistAlloc ("temp-musicq-unique", LIST_ORDERED, free);
-  uimusicq->dispList = nlistAlloc ("temp-musicq-disp", LIST_ORDERED, NULL);
-
-  p = strtok_r (args, MSG_ARGS_RS_STR, &tokstr);
-  ci = atoi (p);
-
-  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
-  idx = 1;
-  while (p != NULL) {
-    musicqupdate = malloc (sizeof (musicqupdate_t));
-    assert (musicqupdate != NULL);
-
-    musicqupdate->dispidx = atoi (p);
-    p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
-    musicqupdate->uniqueidx = atoi (p);
-    p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
-    musicqupdate->dbidx = atol (p);
-    p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
-    musicqupdate->pflag = atoi (p);
-
-    nlistSetData (uimusicq->uniqueList, musicqupdate->uniqueidx, musicqupdate);
-    nlistSetData (uimusicq->dispList, idx, musicqupdate);
-
-    p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
-    ++idx;
-  }
-
-  logProcEnd (LOG_PROC, "uimusicqMusicQueueDataParse", "");
-  return ci;
-}
-
-void
-uimusicqMusicQueueDataFree (uimusicq_t *uimusicq)
-{
-  if (uimusicq->dispList != NULL) {
-    nlistFree (uimusicq->dispList);
-    uimusicq->dispList = NULL;
-  }
-  if (uimusicq->uniqueList != NULL) {
-    nlistFree (uimusicq->uniqueList);
-    uimusicq->uniqueList = NULL;
-  }
 }
 
 void
@@ -585,24 +271,6 @@ uimusicqSetEditCallback (uimusicq_t *uimusicq, UICallback *uicb)
 }
 
 /* internal routines */
-
-static int
-uimusicqMoveUpRepeat (gpointer udata)
-{
-  uimusicq_t        *uimusicq = udata;
-
-  uimusicqMoveUp (uimusicq);
-  return TRUE;
-}
-
-static int
-uimusicqMoveDownRepeat (gpointer udata)
-{
-  uimusicq_t        *uimusicq = udata;
-
-  uimusicqMoveDown (uimusicq);
-  return TRUE;
-}
 
 static void
 uimusicqProcessSongSelect (uimusicq_t *uimusicq, char * args)

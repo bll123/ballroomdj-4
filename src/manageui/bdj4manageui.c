@@ -1185,7 +1185,7 @@ manageSonglistNew (void *udata)
   manageSetSonglistName (manage, tbuff);
   manage->slbackupcreated = false;
   uimusicqSetSelectionFirst (manage->slmusicq, manage->musicqManageIdx);
-  uimusicqClearQueue (manage->slmusicq);
+  uimusicqClearQueueCallback (manage->slmusicq);
   return UICB_CONT;
 }
 
@@ -1194,7 +1194,7 @@ manageSonglistTruncate (void *udata)
 {
   manageui_t  *manage = udata;
 
-  uimusicqClearQueue (manage->slmusicq);
+  uimusicqClearQueueCallback (manage->slmusicq);
   return UICB_CONT;
 }
 
@@ -1217,7 +1217,7 @@ manageSonglistLoadFile (void *udata, const char *fn)
 
   /* truncate from the first selection */
   uimusicqSetSelectionFirst (manage->slmusicq, manage->musicqManageIdx);
-  uimusicqClearQueue (manage->slmusicq);
+  uimusicqClearQueueCallback (manage->slmusicq);
 
   snprintf (tbuff, sizeof (tbuff), "%d%c%s",
       manage->musicqManageIdx, MSG_ARGS_RS, fn);
