@@ -14,6 +14,7 @@
 #include "bdj4.h"
 #include "bdj4intl.h"
 #include "bdjstring.h"
+#include "dirop.h"
 #include "filedata.h"
 #include "fileop.h"
 #include "filemanip.h"
@@ -36,7 +37,7 @@ templateImageCopy (const char *color)
 
   pathbldMakePath (tbuff, sizeof (tbuff), "", "", PATHBLD_MP_TEMPLATEDIR);
 
-  dirlist = filemanipBasicDirList (tbuff, ".svg");
+  dirlist = diropBasicDirList (tbuff, ".svg");
   slistStartIterator (dirlist, &iteridx);
   while ((fname = slistIterateKey (dirlist, &iteridx)) != NULL) {
     if (strcmp (fname, "fades.svg") == 0) {
@@ -91,7 +92,7 @@ templateDisplaySettingsCopy (void)
 
   pathbldMakePath (tbuff, sizeof (tbuff), "", "", PATHBLD_MP_TEMPLATEDIR);
 
-  dirlist = filemanipBasicDirList (tbuff, BDJ4_CONFIG_EXT);
+  dirlist = diropBasicDirList (tbuff, BDJ4_CONFIG_EXT);
   slistStartIterator (dirlist, &iteridx);
   while ((fname = slistIterateKey (dirlist, &iteridx)) != NULL) {
     if (strncmp (fname, "ds-", 3) != 0) {

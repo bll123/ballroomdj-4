@@ -25,6 +25,7 @@
 #include "conn.h"
 #include "dance.h"
 #include "datafile.h"
+#include "dirop.h"
 #include "dispsel.h"
 #include "dnctypes.h"
 #include "filedata.h"
@@ -2747,23 +2748,23 @@ confuiGetThemeList (void)
 
     snprintf (tbuff, sizeof (tbuff), "%s/plocal/share/themes",
         sysvarsGetStr (SV_BDJ4MAINDIR));
-    filelist = filemanipRecursiveDirList (tbuff, FILEMANIP_DIRS);
+    filelist = diropRecursiveDirList (tbuff, FILEMANIP_DIRS);
     confuiGetThemeNames (themelist, filelist);
     slistFree (filelist);
     count = nlistGetCount (themelist);
     nlistSetStr (themelist, count, "Adwaita");
   } else {
     /* for macos */
-    filelist = filemanipRecursiveDirList ("/opt/local/share/themes", FILEMANIP_DIRS);
+    filelist = diropRecursiveDirList ("/opt/local/share/themes", FILEMANIP_DIRS);
     confuiGetThemeNames (themelist, filelist);
     slistFree (filelist);
 
-    filelist = filemanipRecursiveDirList ("/usr/share/themes", FILEMANIP_DIRS);
+    filelist = diropRecursiveDirList ("/usr/share/themes", FILEMANIP_DIRS);
     confuiGetThemeNames (themelist, filelist);
     slistFree (filelist);
 
     snprintf (tbuff, sizeof (tbuff), "%s/.themes", sysvarsGetStr (SV_HOME));
-    filelist = filemanipRecursiveDirList (tbuff, FILEMANIP_DIRS);
+    filelist = diropRecursiveDirList (tbuff, FILEMANIP_DIRS);
     confuiGetThemeNames (themelist, filelist);
     slistFree (filelist);
   }

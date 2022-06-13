@@ -21,6 +21,7 @@
 #include "bdjopt.h"
 #include "bdjvars.h"
 #include "conn.h"
+#include "dirop.h"
 #include "fileop.h"
 #include "filemanip.h"
 #include "localeutil.h"
@@ -1342,7 +1343,7 @@ starterSendFilesInit (startui_t *starter, char *dir, bool basic)
   if (! basic) {
     ext = NULL;
   }
-  list = filemanipBasicDirList (dir, ext);
+  list = diropBasicDirList (dir, ext);
   starter->supportFileList = list;
   slistStartIterator (list, &starter->supportFileIterIdx);
   if (starter->supportDir != NULL) {

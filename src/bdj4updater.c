@@ -20,6 +20,7 @@
 #include "bdjopt.h"
 #include "bdjregex.h"
 #include "bdjstring.h"
+#include "dirop.h"
 #include "filedata.h"
 #include "filemanip.h"
 #include "fileop.h"
@@ -222,7 +223,7 @@ updaterCleanFiles (void)
       strlcat (tfn, dfn, sizeof (tfn));
 
       if (fileopIsDirectory (tfn)) {
-        filemanipDeleteDir (tfn);
+        diropDeleteDir (tfn);
       } else {
         if (fileopFileExists (tfn)) {
           fileopDelete (tfn);
@@ -265,7 +266,7 @@ updaterCleanRegex (const char *basedir, const char *pattern)
   if (dlen > 0) { ++dlen; }
   rx = regexInit (pattern + dlen);
 
-  filelist = filemanipBasicDirList (tdir, NULL);
+  filelist = diropBasicDirList (tdir, NULL);
   slistStartIterator (filelist, &iteridx);
   while ((fn = slistIterateKey (filelist, &iteridx)) != NULL) {
     if (regexMatch (rx, fn)) {

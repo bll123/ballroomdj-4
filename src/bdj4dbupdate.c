@@ -40,6 +40,7 @@
 #include "bdjvarsdf.h"
 #include "bdjvars.h"
 #include "conn.h"
+#include "dirop.h"
 #include "fileop.h"
 #include "filemanip.h"
 #include "level.h"
@@ -329,7 +330,7 @@ dbupdateProcessing (void *udata)
 
     dbupdate->musicdir = bdjoptGetStr (OPT_M_DIR_MUSIC);
     dbupdate->musicdirlen = strlen (dbupdate->musicdir);
-    dbupdate->fileList = filemanipRecursiveDirList (dbupdate->musicdir, FILEMANIP_FILES);
+    dbupdate->fileList = diropRecursiveDirList (dbupdate->musicdir, FILEMANIP_FILES);
 
     dbupdate->fileCount = slistGetCount (dbupdate->fileList);
     mstimeend (&dbupdate->starttm);

@@ -27,6 +27,7 @@
 #include "bdjopt.h"
 #include "bdjstring.h"
 #include "datafile.h"
+#include "dirop.h"
 #include "filedata.h"
 #include "fileop.h"
 #include "filemanip.h"
@@ -1310,7 +1311,7 @@ installerCopyTemplates (installer_t *installer)
   snprintf (dir, sizeof (dir), "%s/templates", installer->rundir);
 
   snprintf (tbuff, sizeof (tbuff), "%s/templates", installer->rundir);
-  dirlist = filemanipBasicDirList (tbuff, NULL);
+  dirlist = diropBasicDirList (tbuff, NULL);
   slistStartIterator (dirlist, &iteridx);
   while ((fname = slistIterateKey (dirlist, &iteridx)) != NULL) {
     if (strcmp (fname, "qrcode") == 0) {
@@ -1559,7 +1560,7 @@ installerConvertStart (installer_t *installer)
   /* CONTEXT: installer: status message */
   installerDisplayText (installer, "-- ", _("Starting conversion process."), false);
 
-  installer->convlist = filemanipBasicDirList ("conv", ".tcl");
+  installer->convlist = diropBasicDirList ("conv", ".tcl");
   /* the sort order doesn't matter, but there's a need to run */
   /* a check after everything has finished to make sure the user's */
   /* organization path is in orgopt.txt */

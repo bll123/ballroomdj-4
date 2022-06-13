@@ -9,6 +9,7 @@
 #include <time.h>
 #include <unistd.h>
 
+#include "dirop.h"
 #include "filemanip.h"
 #include "fileop.h"
 #include "check_bdj.h"
@@ -100,7 +101,7 @@ START_TEST(filemanip_del_dir)
   rc = fileopFileExists (nfn);
   ck_assert_int_eq (rc, 1);
 
-  filemanipDeleteDir (dfn);
+  diropDeleteDir (dfn);
   rc = fileopFileExists (nfn);
   ck_assert_int_eq (rc, 0);
   rc = fileopIsDirectory (ofn);
@@ -132,7 +133,7 @@ START_TEST(filemanip_basic_dirlist)
   fh = fopen (fcfn, "w");
   fclose (fh);
 
-  slist = filemanipBasicDirList (dafn, NULL);
+  slist = diropBasicDirList (dafn, NULL);
 
   ck_assert_int_eq (slistGetCount (slist), 1);
   slistStartIterator (slist, &iteridx);
@@ -141,7 +142,7 @@ START_TEST(filemanip_basic_dirlist)
   }
   slistFree (slist);
 
-  slist = filemanipBasicDirList (dcfn, NULL);
+  slist = diropBasicDirList (dcfn, NULL);
   ck_assert_int_eq (slistGetCount (slist), 1);
   slistStartIterator (slist, &iteridx);
   while ((fn = slistIterateKey (slist, &iteridx)) != NULL) {
@@ -149,7 +150,7 @@ START_TEST(filemanip_basic_dirlist)
   }
   slistFree (slist);
 
-  filemanipDeleteDir (dafn);
+  diropDeleteDir (dafn);
 }
 END_TEST
 
@@ -173,7 +174,7 @@ START_TEST(filemanip_recursive_dirlist)
 
   sysvarsInit ("check_filemanip");
 
-  filemanipDeleteDir (dafn);
+  diropDeleteDir (dafn);
 
   fileopMakeDir (dbfn);
   fileopMakeDir (dcfn);
@@ -189,7 +190,7 @@ START_TEST(filemanip_recursive_dirlist)
   fh = fopen (fcfn, "w");
   fclose (fh);
 
-  slist = filemanipRecursiveDirList (dafn, FILEMANIP_FILES);
+  slist = diropRecursiveDirList (dafn, FILEMANIP_FILES);
 
 
   ck_assert_int_eq (slistGetCount (slist), num);
@@ -211,7 +212,7 @@ START_TEST(filemanip_recursive_dirlist)
     ck_assert_str_eq (fn, "tmp/abc/jkl/jkl.txt");
   }
 
-  filemanipDeleteDir (dafn);
+  diropDeleteDir (dafn);
   slistFree (slist);
 }
 END_TEST

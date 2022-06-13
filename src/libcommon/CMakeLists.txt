@@ -9,6 +9,7 @@ add_library (libbdj4common SHARED
   bdjvars.c
   conn.c
   datafile.c
+  dirop.c
   filedata.c
   filemanip.c
   fileop.c
