@@ -47,12 +47,9 @@ typedef struct uidropdown {
 static bool uiDropDownWindowShow (void *udata);
 static bool uiDropDownClose (void *udata);
 static void uiDropDownButtonCreate (uidropdown_t *dropdown);
-static void uiDropDownWindowCreate (uidropdown_t *dropdown,
-    UICallback *uicb, void *udata);
-static void uiDropDownSelectionSet (uidropdown_t *dropdown,
-    nlistidx_t internalidx);
-static void uiDropDownSelectHandler (GtkTreeView *tv, GtkTreePath *path,
-    GtkTreeViewColumn *column, gpointer udata);
+static void uiDropDownWindowCreate (uidropdown_t *dropdown, UICallback *uicb, void *udata);
+static void uiDropDownSelectionSet (uidropdown_t *dropdown, nlistidx_t internalidx);
+static void uiDropDownSelectHandler (GtkTreeView *tv, GtkTreePath *path, GtkTreeViewColumn *column, gpointer udata);
 static nlistidx_t uiDropDownSelectionGet (uidropdown_t *dropdown, GtkTreePath *path);
 
 uidropdown_t *
@@ -487,18 +484,13 @@ uiDropDownSelectionGet (uidropdown_t *dropdown, GtkTreePath *path)
   GtkTreeIter   iter;
   GtkTreeModel  *model = NULL;
   long          idx = 0;
-  int32_t       idx32;
   nlistidx_t    retval;
   char          tbuff [200];
 
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (dropdown->tree));
   if (gtk_tree_model_get_iter (model, &iter, path)) {
     gtk_tree_model_get (model, &iter, UIUTILS_DROPDOWN_COL_IDX, &idx, -1);
-    /* despite the model using an unsigned long, setting it to -1 */
-    /* sets it to a 32-bit value */
-    /* want the special -1 index (all items for combobox) */
-    idx32 = (int32_t) idx;
-    retval = idx32;
+    retval = idx;
     if (dropdown->strSelection != NULL) {
       free (dropdown->strSelection);
     }
