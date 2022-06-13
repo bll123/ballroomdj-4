@@ -78,7 +78,6 @@ typedef struct {
   UICallback          callbacks [UISONGEDIT_CB_MAX];
   level_t             *levels;
   song_t              *song;
-  int                 itemalloccount;
   int                 itemcount;
   uisongedititem_t    *items;
   int                 changed;
@@ -100,7 +99,6 @@ uisongeditUIInit (uisongedit_t *uisongedit)
 
   uiw = malloc (sizeof (uisongeditgtk_t));
   uiw->parentwin = NULL;
-  uiw->itemalloccount = 0;
   uiw->itemcount = 0;
   uiw->items = NULL;
   uiw->changed = 0;
@@ -198,6 +196,7 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   UIWidget          col;
   UIWidget          sg;
   UIWidget          uiwidget;
+  int               count;
 
   logProcBegin (LOG_PROC, "uisongeditBuildUI");
 
@@ -265,6 +264,26 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   uiWidgetExpandHoriz (&hbox);
   uiWidgetAlignHorizFill (&hbox);
   uiBoxPackStartExpand (&uiw->vbox, &hbox);
+
+  count = 0;
+  for (int i = DISP_SEL_SONGEDIT_A; i <= DISP_SEL_SONGEDIT_C; ++i) {
+    slist_t           *sellist;
+
+    sellist = dispselGetList (uisongedit->dispsel, i);
+    count += slistGetCount (sellist);
+  }
+  /* the items must all be alloc'd beforehand so that the callback */
+  /* pointer is static */
+  uiw->items = malloc (sizeof (uisongedititem_t) * count);
+  for (int i = 0; i < count; ++i) {
+    uiw->items [i].tagkey = 0;
+    uiutilsUIWidgetInit (&uiw->items [i].uiwidget);
+    uiw->items [i].entry = NULL;
+    uiw->items [i].chgind = NULL;
+    uiutilsUICallbackInit (&uiw->items [i].callback, NULL, NULL);
+    uiw->items [i].lastchanged = false;
+    uiw->items [i].changed = false;
+  }
 
   for (int i = DISP_SEL_SONGEDIT_A; i <= DISP_SEL_SONGEDIT_C; ++i) {
     uiCreateVertBox (&col);
@@ -545,17 +564,8 @@ uisongeditAddDisplay (uisongedit_t *uisongedit, UIWidget *col, UIWidget *sg, int
     uiCreateHorizBox (&hbox);
     uiWidgetExpandHoriz (&hbox);
     uiBoxPackStart (col, &hbox);
-
-    if (uiw->itemcount >= uiw->itemalloccount) {
-      uiw->itemalloccount += 10;
-      uiw->items = realloc (uiw->items,
-          sizeof (uisongedititem_t) * uiw->itemalloccount);
-    }
-
     uisongeditAddItem (uisongedit, &hbox, sg, tagkey);
-
     uiw->items [uiw->itemcount].tagkey = tagkey;
-
     ++uiw->itemcount;
   }
 }
@@ -707,19 +717,26 @@ uisongeditAddScale (uisongedit_t *uisongedit, UIWidget *hbox, int tagkey)
   uisongeditgtk_t *uiw;
   UIWidget        *uiwidgetp;
   double          lower, upper;
+  double          inca, incb;
   int             digits;
 
   uiw = uisongedit->uiWidgetData;
   uiwidgetp = &uiw->items [uiw->itemcount].uiwidget;
-  lower = 70.0;
-  upper = 130.0;
-  digits = 0;
+  if (tagkey == TAG_SPEEDADJUSTMENT) {
+    lower = 70.0;
+    upper = 130.0;
+    digits = 0;
+    inca = 1.0;
+    incb = 5.0;
+  }
   if (tagkey == TAG_VOLUMEADJUSTPERC) {
     lower = -50.0;
     upper = 50.0;
     digits = 1;
+    inca = 0.1;
+    incb = 5.0;
   }
-  uiCreateScale (uiwidgetp, lower, upper, 1.0, 5.0, 0.0, digits);
+  uiCreateScale (uiwidgetp, lower, upper, inca, incb, 0.0, digits);
   uiutilsUICallbackDoubleInit (&uiw->items [uiw->itemcount].callback,
       uisongeditScaleDisplayCallback, &uiw->items [uiw->itemcount]);
   uiScaleSetCallback (uiwidgetp, &uiw->items [uiw->itemcount].callback);
@@ -741,7 +758,7 @@ uisongeditScaleDisplayCallback (void *udata, double value)
   int               digits;
 
   digits = uiScaleGetDigits (&item->uiwidget);
-  snprintf (tbuff, sizeof (tbuff), "%.*f%%", digits, value);
+  snprintf (tbuff, sizeof (tbuff), "%3.*f%%", digits, value);
   uiLabelSetText (&item->display, tbuff);
   return UICB_CONT;
 }
