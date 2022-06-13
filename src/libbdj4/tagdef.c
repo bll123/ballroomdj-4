@@ -17,11 +17,18 @@
 #include "status.h"
 #include "tagdef.h"
 
+/* as of 2022-6-13 the tag names may no longer match the vorbis tag names */
+/* the tag name is used in the internal database and for debugging */
+
 tagdef_t tagdefs [TAG_KEY_MAX] = {
   [TAG_ADJUSTFLAGS] =
   { "ADJUSTFLAGS",                /* tag */
     NULL,                         /* display name         */
-    { NULL, "TXXX", NULL },       /* audio tags */
+    { "ADJUSTFLAGS",
+      NULL,
+      "TXXX=ADJUSTFLAGS",
+      NULL
+    },       /* audio tags */
     0,                            /* edit width           */
     ET_NA,                        /* edit type            */
     VALUE_STR,                    /* value type           */
@@ -41,7 +48,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   [TAG_AFMODTIME] =
   { "AFMODTIME",                  /* tag */
     NULL,                         /* display name         */
-    { NULL, NULL, NULL },         /* audio tags */
+    { "AFMODTIME",
+      NULL,
+      NULL,
+      NULL
+    },         /* audio tags */
     0,                            /* edit width           */
     ET_NA,                        /* edit type            */
     VALUE_NUM,                    /* value type           */
@@ -61,7 +72,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   [TAG_ALBUM] =
   { "ALBUM",                      /* tag */
     NULL,                         /* display name         */
-    { "©alb", "TALB", "WM/AlbumTitle" },       /* audio tags */
+    { "ALBUM",
+      "©alb",
+      "TALB",
+      "WM/AlbumTitle"
+    },       /* audio tags */
     20,                           /* edit width           */
     ET_ENTRY,                     /* edit type            */
     VALUE_STR,                    /* value type           */
@@ -81,7 +96,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   [TAG_ALBUMARTIST] =
   { "ALBUMARTIST",                /* tag */
     NULL,                         /* display name         */
-    { "aART", "TPE2", "WM/AlbumArtist" },       /* audio tags */
+    { "ALBUMARTIST",
+      "aART",
+      "TPE2",
+      "WM/AlbumArtist"
+    },       /* audio tags */
     20,                           /* edit width           */
     ET_ENTRY,                     /* edit type            */
     VALUE_STR,                    /* value type           */
@@ -101,7 +120,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   [TAG_ARTIST] =
   { "ARTIST",                     /* tag */
     NULL,                         /* display name         */
-    { "©ART", "TPE1", "WM/Author" },       /* audio tags */
+    { "ARTIST",
+      "©ART",
+      "TPE1",
+      "WM/Author"
+    },       /* audio tags */
     20,                           /* edit width           */
     ET_ENTRY,                     /* edit type            */
     VALUE_STR,                    /* value type           */
@@ -121,7 +144,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   [TAG_AUTOORGFLAG] =
   { "AUTOORGFLAG",                /* tag */
     NULL,                         /* display name         */
-    { NULL, NULL, NULL },         /* audio tags */
+    { "AUTOORGFLAG",
+      NULL,
+      NULL,
+      NULL
+    },         /* audio tags */
     0,                            /* edit width           */
     ET_NA,                        /* edit type            */
     VALUE_NUM,                    /* value type           */
@@ -141,7 +168,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   [TAG_BPM] =
   { "BPM",                        /* tag */
     NULL,                         /* display name         */
-    { "tmpo", "TBPM", "WM/BeatsPerMinute" },       /* audio tags */
+    { "BPM",
+      "tmpo",
+      "TBPM",
+      "WM/BeatsPerMinute"
+    },       /* audio tags */
     0,                            /* edit width           */
     ET_SPINBOX,                   /* edit type            */
     VALUE_NUM,                    /* value type           */
@@ -161,7 +192,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   [TAG_COMPOSER] =
   { "COMPOSER",                   /* tag */
     NULL,                         /* display name         */
-    { "©wrt", "TCOM", "WM/Composer" },       /* audio tags */
+    { "COMPOSER",
+      "©wrt",
+      "TCOM",
+      "WM/Composer"
+    },       /* audio tags */
     20,                           /* edit width           */
     ET_ENTRY,                     /* edit type            */
     VALUE_STR,                    /* value type           */
@@ -181,7 +216,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   [TAG_CONDUCTOR] =
   { "CONDUCTOR",                  /* tag */
     NULL,                         /* display name         */
-    { NULL, "TPE3", "WM/Conductor" },       /* audio tags */
+    { "CONDUCTOR",
+      "----:com.apple.iTunes:CONDUCTOR",
+      "TPE3",
+      "WM/Conductor"
+    },       /* audio tags */
     20,                           /* edit width           */
     ET_ENTRY,                     /* edit type            */
     VALUE_STR,                    /* value type           */
@@ -201,7 +240,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   [TAG_DANCE] =
   { "DANCE",                /* tag */
     NULL,                         /* display name         */
-    { NULL, "TXXX", NULL },       /* audio tags */
+    { "DANCE",
+      NULL,
+      "TXXX=DANCE",
+      NULL
+    },       /* audio tags */
     0,                            /* edit width           */
     ET_COMBOBOX,                  /* edit type            */
     VALUE_NUM,                    /* value type           */
@@ -221,7 +264,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   [TAG_DANCELEVEL] =
   { "DANCELEVEL",                 /* tag */
     NULL,                         /* display name         */
-    { NULL, "TXXX", NULL },       /* audio tags */
+    { "DANCELEVEL",
+      NULL,
+      "TXXX=DANCELEVEL",
+      NULL
+    },       /* audio tags */
     0,                            /* edit width           */
     ET_SPINBOX_TEXT,              /* edit type            */
     VALUE_NUM,                    /* value type           */
@@ -241,7 +288,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   [TAG_DANCERATING] =
   { "DANCERATING",                /* tag */
     NULL,                         /* display name         */
-    { NULL, "TXXX", NULL },       /* audio tags */
+    { "DANCERATING",
+      NULL,
+      "TXXX=DANCERATING",
+      NULL
+    },       /* audio tags */
     0,                            /* edit width           */
     ET_SPINBOX_TEXT,              /* edit type            */
     VALUE_NUM,                    /* value type           */
@@ -261,7 +312,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   [TAG_DATE] =
   { "DATE",                       /* tag */
     NULL,                         /* display name         */
-    { "©day", "TYER", "WM/Year" },       /* audio tags */
+    { "DATE",
+      "©day",
+      "TYER",
+      "WM/Year"
+    },       /* audio tags */
     20,                           /* edit width           */
     ET_ENTRY,                     /* edit type            */
     VALUE_STR,                    /* value type           */
@@ -281,7 +336,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   [TAG_DBADDDATE] =
   { "DBADDDATE",                  /* tag */
     NULL,                         /* display name         */
-    { NULL, NULL, NULL },         /* audio tags */
+    { "DBADDDATE",
+      NULL,
+      NULL,
+      NULL
+    },         /* audio tags */
     0,                            /* edit width           */
     ET_LABEL,                     /* edit type            */
     VALUE_STR,                    /* value type           */
@@ -301,7 +360,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   [TAG_DISCNUMBER] =
   { "DISC",                       /* tag */
     NULL,                         /* display name         */
-    { "disk", "TPOS", "WM/PartOfSet" },       /* audio tags */
+    { "DISC",
+      "disk",
+      "TPOS",
+      "WM/PartOfSet"
+    },       /* audio tags */
     10,                           /* edit width           */
     ET_SPINBOX,                   /* edit type            */
     VALUE_NUM,                    /* value type           */
@@ -321,7 +384,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   [TAG_DISCTOTAL] =
   { "DISCTOTAL",                  /* tag */
     NULL,                         /* display name         */
-    { NULL, NULL, NULL },         /* audio tags */
+    { "DISCTOTAL",
+      NULL,
+      NULL,
+      NULL
+    },         /* audio tags */
     0,                            /* edit width           */
     ET_NA,                        /* edit type            */
     VALUE_NUM,                    /* value type           */
@@ -341,7 +408,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   [TAG_DURATION] =
   { "DURATION",                   /* tag */
     NULL,                         /* display name         */
-    { NULL, "TXXX", NULL },       /* audio tags */
+    { "DURATION",
+      NULL,
+      "TXXX=DURATION",
+      NULL
+    },       /* audio tags */
     0,                            /* edit width           */
     ET_LABEL,                     /* edit type            */
     VALUE_NUM,                    /* value type           */
@@ -361,7 +432,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   [TAG_FILE] =
   { "FILE",                       /* tag */
     NULL,                         /* display name         */
-    { NULL, NULL, NULL },         /* audio tags */
+    { NULL,
+      NULL,
+      NULL,
+      NULL
+    },         /* audio tags */
     0,                            /* edit width           */
     ET_NA,                        /* edit type            */
     VALUE_STR,                    /* value type           */
@@ -381,7 +456,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   [TAG_FAVORITE] =
   { "FAVORITE",                   /* tag */
     NULL,                         /* display name         */
-    { NULL, "TXXX", NULL },       /* audio tags */
+    { "FAVORITE",
+      NULL,
+      "TXXX=FAVORITE",
+      NULL
+    },       /* audio tags */
     0,                            /* edit width           */
     ET_SPINBOX_TEXT,              /* edit type            */
     VALUE_NUM,                    /* value type           */
@@ -401,7 +480,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   [TAG_GENRE] =
   { "GENRE",                      /* tag */
     NULL,                         /* display name         */
-    { "gnre", "TCON", "WM/Genre" },       /* audio tags */
+    { "GENRE",
+      "©gen",
+      "TCON",
+      "WM/Genre"
+    },       /* audio tags */
     0,                            /* edit width           */
     ET_COMBOBOX,                  /* edit type            */
     VALUE_NUM,                    /* value type           */
@@ -421,7 +504,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   [TAG_KEYWORD] =
   { "KEYWORD",                /* tag */
     NULL,                         /* display name         */
-    { NULL, "TXXX", NULL },       /* audio tags */
+    { "KEYWORD",
+      NULL,
+      "TXXX=KEYWORD",
+      NULL
+    },       /* audio tags */
     20,                           /* edit width           */
     ET_ENTRY,                     /* edit type            */
     VALUE_STR,                    /* value type           */
@@ -441,7 +528,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   [TAG_MQDISPLAY] =
   { "MQDISPLAY",                /* tag */
     NULL,                         /* display name         */
-    { NULL, "TXXX", NULL },       /* audio tags */
+    { "MQDISPLAY",
+      NULL,
+      "TXXX=MQDISPLAY",
+      NULL
+    },       /* audio tags */
     20,                           /* edit width           */
     ET_ENTRY,                     /* edit type            */
     VALUE_STR,                    /* value type           */
@@ -458,10 +549,62 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     1,                            /* text search          */
     0,                            /* is org tag           */
   },
-  [TAG_MUSICBRAINZ_TRACKID] =
-  { "MUSICBRAINZ_TRACKID",                /* tag */
+  [TAG_RECORDING_ID] =
+  { "RECORDING_ID",                /* tag */
     NULL,                         /* display name         */
-    { NULL, "UFID", "MusicBrainz/Track Id" },       /* audio tags */
+    { "MUSICBRAINZ_TRACKID",
+      "----:com.apple.iTunes:MusicBrainz Track Id",
+      "UFID=http://musicbrainz.org",
+      "MusicBrainz/Track Id"
+    },       /* audio tags */
+    0,                            /* edit width           */
+    ET_NA,                        /* edit type            */
+    VALUE_STR,                    /* value type           */
+    NULL,                         /* conv func            */
+    DISP_NO,                      /* audio id disp        */
+    0,                            /* listing display      */
+    0,                            /* ellipsize            */
+    0,                            /* align right          */
+    0,                            /* is bdj tag           */
+    1,                            /* is norm tag          */
+    0,                            /* album edit           */
+    0,                            /* all edit             */
+    0,                            /* editable             */
+    0,                            /* text search          */
+    0,                            /* is org tag           */
+  },
+  [TAG_WORK_ID] =
+  { "WORK_ID",
+    NULL,                         /* display name         */
+    { "MUSICBRAINZ_WORKID",
+      "----:com.apple.iTunes:MusicBrainz Work Id",
+      "TXXX=MusicBrainz Work Id",
+      "MusicBrainz/Work Id"
+    },       /* audio tags */
+    0,                            /* edit width           */
+    ET_NA,                        /* edit type            */
+    VALUE_STR,                    /* value type           */
+    NULL,                         /* conv func            */
+    DISP_NO,                      /* audio id disp        */
+    0,                            /* listing display      */
+    0,                            /* ellipsize            */
+    0,                            /* align right          */
+    0,                            /* is bdj tag           */
+    1,                            /* is norm tag          */
+    0,                            /* album edit           */
+    0,                            /* all edit             */
+    0,                            /* editable             */
+    0,                            /* text search          */
+    0,                            /* is org tag           */
+  },
+  [TAG_TRACK_ID] =
+  { "TRACK_ID",                    /* tag */
+    NULL,                         /* display name         */
+    { "MUSICBRAINZ_RELEASETRACKID",
+      "----:com.apple.iTunes:MusicBrainz Release Track Id",
+      "TXXX=MusicBrainz Release Track Id",
+      "MusicBrainz/Release Track Id"
+    },  /* audio tags */
     0,                            /* edit width           */
     ET_NA,                        /* edit type            */
     VALUE_STR,                    /* value type           */
@@ -481,7 +624,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   [TAG_NOTES] =
   { "NOTES",                /* tag */
     NULL,                         /* display name         */
-    { NULL, "TXXX", NULL },       /* audio tags */
+    { "NOTES",
+      NULL,
+      "TXXX=NOTES",
+      NULL
+    },       /* audio tags */
     20,                           /* edit width           */
     ET_ENTRY,                     /* edit type            */
     VALUE_STR,                    /* value type           */
@@ -501,7 +648,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   [TAG_SAMESONG] =
   { "SAMESONG",                 /* tag */
     NULL,                         /* display name         */
-    { NULL, "TXXX", NULL },       /* audio tags */
+    { "SAMESONG",
+      NULL,
+      "TXXX=SAMESONG",
+      NULL
+    },       /* audio tags */
     0,                            /* edit width           */
     ET_NA,                        /* edit type            */
     VALUE_NUM,                    /* value type           */
@@ -521,7 +672,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   [TAG_SONGEND] =
   { "SONGEND",                /* tag */
     NULL,                         /* display name         */
-    { NULL, "TXXX", NULL },       /* audio tags */
+    { "SONGEND",
+      NULL,
+      "TXXX=SONGEND",
+      NULL
+    },       /* audio tags */
     0,                            /* edit width           */
     ET_SPINBOX_TIME,              /* edit type            */
     VALUE_NUM,                    /* value type           */
@@ -541,7 +696,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   [TAG_SONGSTART] =
   { "SONGSTART",                  /* tag */
     NULL,                         /* display name         */
-    { NULL, "TXXX", NULL },       /* audio tags */
+    { "SONGSTART",
+      NULL,
+      "TXXX=SONGSTART",
+      NULL
+    },       /* audio tags */
     0,                            /* edit width           */
     ET_SPINBOX_TIME,              /* edit type            */
     VALUE_NUM,                    /* value type           */
@@ -561,7 +720,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   [TAG_SPEEDADJUSTMENT] =
   { "SPEEDADJUSTMENT",            /* tag */
     NULL,                         /* display name         */
-    { NULL, "TXXX", NULL },       /* audio tags */
+    { "SPEEDADJUSTMENT",
+      NULL,
+      "TXXX=SPEEDADJUSTMENT",
+      NULL
+    },       /* audio tags */
     0,                            /* edit width           */
     ET_SCALE,                     /* edit type            */
     VALUE_NUM,                    /* value type           */
@@ -581,7 +744,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   [TAG_STATUS] =
   { "STATUS",                     /* tag */
     NULL,                         /* display name         */
-    { NULL, "TXXX", NULL },       /* audio tags */
+    { "STATUS",
+      NULL,
+      "TXXX=STATUS",
+      NULL
+    },       /* audio tags */
     0,                            /* edit width           */
     ET_SPINBOX_TEXT,              /* edit type            */
     VALUE_NUM,                    /* value type           */
@@ -601,7 +768,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   [TAG_TAGS] =
   { "TAGS",                       /* tag */
     NULL,                         /* display name         */
-    { "keyw", "TXXX", NULL },       /* audio tags */
+    { "TAGS",
+      "keyw",
+      "TXXX=TAGS",
+      NULL
+    },       /* audio tags */
     20,                           /* edit width           */
     ET_ENTRY,                     /* edit type            */
     VALUE_LIST,                   /* value type           */
@@ -621,7 +792,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   [TAG_TITLE] =
   { "TITLE",                      /* tag */
     NULL,                         /* display name         */
-    { "©nam", "TIT2", "WM/Title" },       /* audio tags */
+    { "TITLE",
+      "©nam",
+      "TIT2",
+      "WM/Title"
+    },       /* audio tags */
     20,                           /* edit width           */
     ET_ENTRY,                     /* edit type            */
     VALUE_STR,                    /* value type           */
@@ -641,7 +816,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   [TAG_TRACKNUMBER] =
   { "TRACKNUMBER",                /* tag */
     NULL,                         /* display name         */
-    { "trkn", "TRCK", "WM/TrackNumber" },       /* audio tags */
+    { "TRACKNUMBER",
+      "trkn",
+      "TRCK",
+      "WM/TrackNumber"
+    },       /* audio tags */
     10,                           /* edit width           */
     ET_SPINBOX,                   /* edit type            */
     VALUE_NUM,                    /* value type           */
@@ -661,7 +840,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   [TAG_TRACKTOTAL] =
   { "TRACKTOTAL",                 /* tag */
     NULL,                         /* display name         */
-    { NULL, NULL, NULL },         /* audio tags */
+    { "TRACKTOTAL",
+      NULL,
+      NULL,
+      NULL
+    },         /* audio tags */
     0,                            /* edit width           */
     ET_NA,                        /* edit type            */
     VALUE_NUM,                    /* value type           */
@@ -681,7 +864,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   [TAG_UPDATEFLAG] =
   { "UPDATEFLAG",                 /* tag */
     NULL,                         /* display name         */
-    { NULL, NULL, NULL },         /* audio tags */
+    { NULL,
+      NULL,
+      NULL,
+      NULL
+    },         /* audio tags */
     0,                            /* edit width           */
     ET_NA,                        /* edit type            */
     VALUE_NUM,                    /* value type           */
@@ -701,7 +888,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   [TAG_UPDATETIME] =
   { "UPDATETIME",                 /* tag */
     NULL,                         /* display name         */
-    { NULL, NULL, NULL },         /* audio tags */
+    { NULL,
+      NULL,
+      NULL,
+      NULL
+    },         /* audio tags */
     0,                            /* edit width           */
     ET_NA,                        /* edit type            */
     VALUE_NUM,                    /* value type           */
@@ -721,7 +912,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   [TAG_VOLUMEADJUSTPERC] =
   { "VOLUMEADJUSTPERC",           /* tag */
     NULL,                         /* display name         */
-    { NULL, "TXXX", NULL },       /* audio tags */
+    { "VOLUMEADJUSTPERC",
+      NULL,
+      "TXXX=VOLUMEADJUSTPERC",
+      NULL
+    },       /* audio tags */
     0,                            /* edit width           */
     ET_SCALE,                     /* edit type            */
     VALUE_DOUBLE,                 /* value type           */
@@ -741,7 +936,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   [TAG_WRITETIME] =
   { "WRITETIME",                  /* tag */
     NULL,                         /* display name         */
-    { NULL, NULL, NULL },         /* audio tags */
+    { NULL,
+      NULL,
+      NULL,
+      NULL
+    },         /* audio tags */
     0,                            /* edit width           */
     ET_NA,                        /* edit type            */
     VALUE_NUM,                    /* value type           */
@@ -761,7 +960,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   [TAG_RRN] =
   { "RRN",                        /* tag */
     NULL,                         /* display name         */
-    { NULL, NULL, NULL },         /* audio tags */
+    { NULL,
+      NULL,
+      NULL,
+      NULL
+    },         /* audio tags */
     0,                            /* edit width           */
     ET_NA,                        /* edit type            */
     VALUE_NUM,                    /* value type           */
@@ -781,7 +984,11 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   [TAG_DBIDX] =
   { "DBIDX",                      /* tag */
     NULL,                         /* display name         */
-    { NULL, NULL, NULL },         /* audio tags */
+    { NULL,
+      NULL,
+      NULL,
+      NULL
+    },         /* audio tags */
     0,                            /* edit width           */
     ET_NA,                        /* edit type            */
     VALUE_NUM,                    /* value type           */

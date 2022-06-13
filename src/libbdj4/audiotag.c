@@ -60,7 +60,7 @@ audiotagParseData (char *ffn, char *data)
   tagdata = slistAlloc ("atag", LIST_ORDERED, free);
   pi = pathInfo (ffn);
 
-  tagtype = TAG_TYPE_MP3;
+  tagtype = TAG_TYPE_VORBIS;
   if (pathInfoExtCheck (pi, ".mp3") ||
       pathInfoExtCheck (pi, ".MP3")) {
     tagtype = TAG_TYPE_MP3;
@@ -111,6 +111,7 @@ audiotagParseTags (slist_t *tagdata, char *data, int tagtype)
  * TXXX=DANCE=Rumba
  * TXXX=DANCERATING=Good
  * TXXX=STATUS=Complete
+ * UFID=http://musicbrainz.org=...
  */
 
   tstr = strtok_r (data, "\r\n", &tokstr);
@@ -147,8 +148,18 @@ audiotagParseTags (slist_t *tagdata, char *data, int tagtype)
         ++count;
         continue;
       }
-      if (strcmp (p, "TXXX") == 0) {
-        p = strtok_r (NULL, "=", &tokstrB);
+      if (strcmp (p, "TXXX") == 0 || strcmp (p, "UFID") == 0) {
+        char *tp;
+        /* find the next = */
+        tp = strtok_r (NULL, "=", &tokstrB);
+        /* replace the = after the TXXX and use the full TXXX=tag to search */
+        *(p+strlen(p)) = '=';
+
+        /* handle TXXX=MUSICBRAINZ_TRACKID (should be UFID) */
+        if (strcmp (p, "TXXX=MUSICBRAINZ_TRACKID") == 0) {
+          rewrite = true;
+          p = "UFID=http://musicbrainz.org";
+        }
       }
 
       /* p is pointing to the tag name */
@@ -214,10 +225,8 @@ audiotagParseTags (slist_t *tagdata, char *data, int tagtype)
         }
 
         /* musicbrainz_trackid handling */
-        if (strcmp (tagname, "MUSICBRAINZ_TRACKID") == 0) {
+        if (strcmp (tagname, "RECORDING_ID") == 0) {
           /* note that MUSICBRAINZ_TRACKID may appear in a TXXX tag */
-          /* skip the uri */
-          p = strtok_r (NULL, "=", &tokstrB);
           if (p != NULL) {
             if (strncmp (p, "b\"", 2) == 0) {
               rewrite = true;

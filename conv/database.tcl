@@ -100,6 +100,7 @@ dict for {fn data} $musicdbList {
       }
     }
 
+    if { $tag eq "MUSICBRAINZ_TRACKID" } { set tag RECORDING_ID }
     if { $tag eq "DISCNUMBER" } { set tag DISC }
     if { $tag eq "rrn" } { set tag RRN }
     if { $tag eq "DURATION" } {

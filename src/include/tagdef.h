@@ -25,6 +25,7 @@ typedef enum {
 } tagedittype_t;
 
 enum {
+  TAG_TYPE_VORBIS,
   TAG_TYPE_M4A,
   TAG_TYPE_MP3,
   TAG_TYPE_WMA,
@@ -76,8 +77,9 @@ typedef enum {
   TAG_GENRE,
   TAG_KEYWORD,                //
   TAG_MQDISPLAY,              //
-  TAG_MUSICBRAINZ_TRACKID,
   TAG_NOTES,
+  TAG_RECORDING_ID,           // musicbrainz_trackid
+  TAG_RRN,                    //
   TAG_SAMESONG,
   TAG_SONGEND,                //
   TAG_SONGSTART,              //
@@ -85,13 +87,14 @@ typedef enum {
   TAG_STATUS,                 //
   TAG_TAGS,
   TAG_TITLE,
+  TAG_TRACK_ID,               // musicbrainz_trackid
   TAG_TRACKNUMBER,
   TAG_TRACKTOTAL,
   TAG_UPDATEFLAG,
   TAG_UPDATETIME,
   TAG_VOLUMEADJUSTPERC,       //
+  TAG_WORK_ID,                // musicbrainz_workid
   TAG_WRITETIME,
-  TAG_RRN,                    //
   TAG_KEY_MAX,
 } tagdefkey_t;
 

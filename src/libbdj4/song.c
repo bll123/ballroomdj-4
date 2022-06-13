@@ -31,7 +31,7 @@ typedef struct song {
   nlist_t      *songInfo;
 } song_t;
 
-  /* must be sorted in ascii order */
+/* must be sorted in ascii order */
 static datafilekey_t songdfkeys [] = {
   { "ADJUSTFLAGS",          TAG_ADJUSTFLAGS,          VALUE_STR, NULL, -1 },
   { "AFMODTIME",            TAG_AFMODTIME,            VALUE_NUM, NULL, -1 },
@@ -55,8 +55,8 @@ static datafilekey_t songdfkeys [] = {
   { "GENRE",                TAG_GENRE,                VALUE_NUM, genreConv, -1 },
   { "KEYWORD",              TAG_KEYWORD,              VALUE_STR, NULL, -1 },
   { "MQDISPLAY",            TAG_MQDISPLAY,            VALUE_STR, NULL, -1 },
-  { "MUSICBRAINZ_TRACKID",  TAG_MUSICBRAINZ_TRACKID,  VALUE_STR, NULL, -1 },
   { "NOTES",                TAG_NOTES,                VALUE_STR, NULL, -1 },
+  { "RECORDING_ID",         TAG_RECORDING_ID,         VALUE_STR, NULL, -1 },
   { "RRN",                  TAG_RRN,                  VALUE_NUM, NULL, -1 },
   { "SAMESONG",             TAG_SAMESONG,             VALUE_STR, NULL, -1 },
   { "SONGEND",              TAG_SONGEND,              VALUE_NUM, NULL, -1 },
@@ -67,9 +67,11 @@ static datafilekey_t songdfkeys [] = {
   { "TITLE",                TAG_TITLE,                VALUE_STR, NULL, -1 },
   { "TRACKNUMBER",          TAG_TRACKNUMBER,          VALUE_NUM, NULL, -1 },
   { "TRACKTOTAL",           TAG_TRACKTOTAL,           VALUE_NUM, NULL, -1 },
+  { "TRACK_ID",             TAG_TRACK_ID,             VALUE_STR, NULL, -1 },
   { "UPDATEFLAG",           TAG_UPDATEFLAG,           VALUE_NUM, NULL, -1 },
   { "UPDATETIME",           TAG_UPDATETIME,           VALUE_NUM, NULL, -1 },
   { "VOLUMEADJUSTPERC",     TAG_VOLUMEADJUSTPERC,     VALUE_DOUBLE, NULL, -1 },
+  { "WORK_ID",              TAG_WORK_ID,              VALUE_STR, NULL, -1 },
   { "WRITETIME",            TAG_WRITETIME,            VALUE_NUM, NULL, -1 },
 };
 #define SONG_DFKEY_COUNT (sizeof (songdfkeys) / sizeof (datafilekey_t))
