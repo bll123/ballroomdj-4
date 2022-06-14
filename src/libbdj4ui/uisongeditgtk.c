@@ -63,7 +63,12 @@ enum {
   UISONGEDIT_CB_NEXT,
   UISONGEDIT_CB_PREVIOUS,
   UISONGEDIT_CB_PLAY,
+  UISONGEDIT_CB_SAVE,
   UISONGEDIT_CB_MAX,
+};
+
+enum {
+  UISONGEDIT_MAIN_TIMER = 40,
 };
 
 typedef struct {
@@ -81,6 +86,7 @@ typedef struct {
   int                 itemcount;
   uisongedititem_t    *items;
   int                 changed;
+  mstime_t            mainlooptimer;
 } uisongeditgtk_t;
 
 static void uisongeditAddDisplay (uisongedit_t *songedit, UIWidget *col, UIWidget *sg, int dispsel);
@@ -91,6 +97,7 @@ static void uisongeditAddLabel (uisongedit_t *uisongedit, UIWidget *hbox, int ta
 static void uisongeditAddSpinboxTime (uisongedit_t *uisongedit, UIWidget *hbox, int tagkey);
 static void uisongeditAddScale (uisongedit_t *uisongedit, UIWidget *hbox, int tagkey);
 static bool uisongeditScaleDisplayCallback (void *udata, double value);
+static bool uisongeditSaveCallback (void *udata);
 
 void
 uisongeditUIInit (uisongedit_t *uisongedit)
@@ -103,6 +110,7 @@ uisongeditUIInit (uisongedit_t *uisongedit)
   uiw->items = NULL;
   uiw->changed = 0;
   uiw->levels = bdjvarsdfGet (BDJVDF_LEVELS);
+  mstimeset (&uiw->mainlooptimer, UISONGEDIT_MAIN_TIMER);
   uiutilsUIWidgetInit (&uiw->vbox);
   uiCreateSizeGroupHoriz (&uiw->sgentry);
   uiCreateSizeGroupHoriz (&uiw->sgsbint);
@@ -239,9 +247,12 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
       _("Play"), NULL);
   uiBoxPackStart (&hbox, &uiwidget);
 
-  uiCreateButton (&uiwidget, NULL, _("Save"), NULL);
+  uiutilsUICallbackInit (&uiw->callbacks [UISONGEDIT_CB_SAVE],
+      uisongeditSaveCallback, uisongedit);
+  uiCreateButton (&uiwidget, &uiw->callbacks [UISONGEDIT_CB_SAVE],
+      /* CONTEXT: song editor : save data */
+      _("Save"), NULL);
   uiBoxPackEnd (&hbox, &uiwidget);
-  uiWidgetDisable (&uiwidget);
 
   uiCreateHorizBox (&hbox);
   uiWidgetExpandHoriz (&hbox);
@@ -314,6 +325,10 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song)
 
   data = uisongGetDisplay (song, TAG_FILE, &val, &dval);
   uiLabelSetText (&uiw->filedisp, data);
+  if (data != NULL) {
+    free (data);
+    data = NULL;
+  }
 
   for (int count = 0; count < uiw->itemcount; ++count) {
     int tagkey = uiw->items [count].tagkey;
@@ -327,7 +342,6 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song)
         uiEntrySetValue (uiw->items [count].entry, "");
         if (data != NULL) {
           uiEntrySetValue (uiw->items [count].entry, data);
-          free (data);
         }
         break;
       }
@@ -392,13 +406,17 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song)
       case ET_LABEL: {
         if (data != NULL) {
           uiLabelSetText (&uiw->items [count].uiwidget, data);
-          free (data);
         }
         break;
       }
       default: {
         break;
       }
+    }
+
+    if (data != NULL) {
+      free (data);
+      data = NULL;
     }
   }
 }
@@ -415,7 +433,17 @@ uisongeditUIMainLoop (uisongedit_t *uisongedit)
 
   uiw = uisongedit->uiWidgetData;
 
+  if (! mstimeCheck (&uiw->mainlooptimer)) {
+    /* preserve some efficiency.  the changes don't need to be checked */
+    /* too often */
+    return;
+  }
+  mstimeset (&uiw->mainlooptimer, UISONGEDIT_MAIN_TIMER);
+
   /* look for changed items */
+  /* this is not very efficient, but it works well for the user, */
+  /* as it is able to determine if a value has reverted back to */
+  /* the original value */
   for (int count = 0; count < uiw->itemcount; ++count) {
     int tagkey = uiw->items [count].tagkey;
 
@@ -527,6 +555,10 @@ uisongeditUIMainLoop (uisongedit_t *uisongedit)
         uiw->changed -= 1;
       }
       uiw->items [count].lastchanged = uiw->items [count].changed;
+    }
+
+    if (songdata != NULL) {
+      free (songdata);
     }
   }
 
@@ -760,5 +792,108 @@ uisongeditScaleDisplayCallback (void *udata, double value)
   digits = uiScaleGetDigits (&item->uiwidget);
   snprintf (tbuff, sizeof (tbuff), "%3.*f%%", digits, value);
   uiLabelSetText (&item->display, tbuff);
+  return UICB_CONT;
+}
+
+
+static bool
+uisongeditSaveCallback (void *udata)
+{
+  uisongedit_t    *uisongedit = udata;
+  uisongeditgtk_t *uiw = NULL;
+  double          ndval;
+  long            nval;
+  const char      *ndata = NULL;
+  int             chkvalue;
+
+  uiw = uisongedit->uiWidgetData;
+
+  for (int count = 0; count < uiw->itemcount; ++count) {
+    int tagkey = uiw->items [count].tagkey;
+
+    if (! uiw->items [count].changed) {
+      continue;
+    }
+
+    chkvalue = SONGEDIT_CHK_NONE;
+
+    switch (tagdefs [tagkey].editType) {
+      case ET_ENTRY: {
+        ndata = uiEntryGetValue (uiw->items [count].entry);
+        chkvalue = SONGEDIT_CHK_STR;
+        break;
+      }
+      case ET_COMBOBOX: {
+        if (tagkey == TAG_DANCE) {
+          nval = uidanceGetValue (uiw->items [count].uidance);
+          chkvalue = SONGEDIT_CHK_NUM;
+        }
+        if (tagkey == TAG_GENRE) {
+          nval = uigenreGetValue (uiw->items [count].uigenre);
+          chkvalue = SONGEDIT_CHK_NUM;
+        }
+        break;
+      }
+      case ET_SPINBOX_TEXT: {
+        if (tagkey == TAG_FAVORITE) {
+          nval = uifavoriteGetValue (uiw->items [count].uifavorite);
+          chkvalue = SONGEDIT_CHK_NUM;
+        }
+        if (tagkey == TAG_DANCELEVEL) {
+          nval = uilevelGetValue (uiw->items [count].uilevel);
+          chkvalue = SONGEDIT_CHK_NUM;
+        }
+        if (tagkey == TAG_DANCERATING) {
+          nval = uiratingGetValue (uiw->items [count].uirating);
+          chkvalue = SONGEDIT_CHK_NUM;
+        }
+        if (tagkey == TAG_STATUS) {
+          nval = uistatusGetValue (uiw->items [count].uistatus);
+          chkvalue = SONGEDIT_CHK_NUM;
+        }
+        break;
+      }
+      case ET_SPINBOX: {
+        nval = uiSpinboxGetValue (&uiw->items [count].uiwidget);
+        chkvalue = SONGEDIT_CHK_NUM;
+        break;
+      }
+      case ET_SPINBOX_TIME: {
+        nval = uiSpinboxTimeGetValue (uiw->items [count].spinbox);
+        chkvalue = SONGEDIT_CHK_NUM;
+        break;
+      }
+      case ET_SCALE: {
+        ndval = uiScaleGetValue (&uiw->items [count].uiwidget);
+        chkvalue = SONGEDIT_CHK_DOUBLE;
+        break;
+      }
+      default: {
+        chkvalue = SONGEDIT_CHK_NONE;
+        break;
+      }
+    }
+
+    if (chkvalue == SONGEDIT_CHK_STR) {
+      songSetStr (uiw->song, tagkey, ndata);
+    }
+
+    if (chkvalue == SONGEDIT_CHK_NUM) {
+      songSetNum (uiw->song, tagkey, nval);
+    }
+
+    if (chkvalue == SONGEDIT_CHK_DOUBLE) {
+      songSetDouble (uiw->song, tagkey, ndval);
+    }
+
+    uichgindMarkNormal (uiw->items [count].chgind);
+    uiw->items [count].changed = false;
+    uiw->items [count].lastchanged = false;
+
+    if (uisongedit->savecb != NULL) {
+      uiutilsCallbackHandler (uisongedit->savecb);
+    }
+  }
+
   return UICB_CONT;
 }

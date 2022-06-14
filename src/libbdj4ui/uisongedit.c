@@ -17,8 +17,6 @@
 #include "uisongedit.h"
 #include "ui.h"
 
-#include "tagdef.h" // remove later
-
 uisongedit_t *
 uisongeditInit (conn_t *conn, musicdb_t *musicdb,
     dispsel_t *dispsel, nlist_t *options)
@@ -34,6 +32,7 @@ uisongeditInit (conn_t *conn, musicdb_t *musicdb,
   uisongedit->dispsel = dispsel;
   uisongedit->musicdb = musicdb;
   uisongedit->options = options;
+  uisongedit->savecb = NULL;
 
   uisongeditUIInit (uisongedit);
 
@@ -70,3 +69,12 @@ uisongeditNewSelection (uisongedit_t *uisongedit, dbidx_t dbidx)
   uisongeditLoadData (uisongedit, song);
 }
 
+void
+uisongeditSetSaveCallback (uisongedit_t *uisongedit, UICallback *uicb)
+{
+  if (uisongedit == NULL) {
+    return;
+  }
+
+  uisongedit->savecb = uicb;
+}

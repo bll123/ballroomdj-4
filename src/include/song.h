@@ -31,12 +31,14 @@ songfavoriteinfo_t  * songGetFavoriteData (song_t *);
 songfavoriteinfo_t  * songGetFavorite (int value);
 double    songGetDouble (song_t *, nlistidx_t);
 slist_t * songGetList (song_t *song, nlistidx_t idx);
-void      songSetNum (song_t *, nlistidx_t, ssize_t);
-void      songSetStr (song_t *song, nlistidx_t tagidx, char *str);
+void      songSetNum (song_t *, nlistidx_t, ssize_t val);
+void      songSetDouble (song_t *, nlistidx_t, double val);
+void      songSetStr (song_t *song, nlistidx_t tagidx, const char *str);
 void      songChangeFavorite (song_t *song);
 bool      songAudioFileExists (song_t *song);
 void      songConvFavorite (datafileconv_t *conv);
 char *    songDisplayString (song_t *song, int tagidx);
+slist_t * songTagList (song_t *song);
 
 
 #endif /* INC_SONG */

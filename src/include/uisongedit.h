@@ -16,6 +16,7 @@ typedef struct {
   musicdb_t         *musicdb;
   nlist_t           *options;
   void              *uiWidgetData;
+  UICallback        *savecb;
 } uisongedit_t;
 
 /* uisongedit.c */
@@ -24,6 +25,7 @@ uisongedit_t * uisongeditInit (conn_t *conn,
 void  uisongeditFree (uisongedit_t *uisongedit);
 void  uisongeditMainLoop (uisongedit_t *uisongedit);
 void  uisongeditNewSelection (uisongedit_t *uisongedit, dbidx_t dbidx);
+void  uisongeditSetSaveCallback (uisongedit_t *uisongedit, UICallback *uicb);
 
 /* uisongeditgtk.c */
 void  uisongeditUIInit (uisongedit_t *uisongedit);

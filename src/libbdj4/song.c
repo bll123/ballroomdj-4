@@ -240,7 +240,17 @@ songSetNum (song_t *song, nlistidx_t tagidx, ssize_t value)
 }
 
 void
-songSetStr (song_t *song, nlistidx_t tagidx, char *str)
+songSetDouble (song_t *song, nlistidx_t tagidx, double value)
+{
+  if (song == NULL || song->songInfo == NULL) {
+    return;
+  }
+
+  nlistSetDouble (song->songInfo, tagidx, value);
+}
+
+void
+songSetStr (song_t *song, nlistidx_t tagidx, const char *str)
 {
   if (song == NULL || song->songInfo == NULL) {
     return;
@@ -321,6 +331,11 @@ songDisplayString (song_t *song, int tagidx)
   }
 
   return str;
+}
+
+slist_t *
+songTagList (song_t *song)
+{
 }
 
 /* internal routines */

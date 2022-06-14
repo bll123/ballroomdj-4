@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <assert.h>
 #include <string.h>
+#include <time.h>
 
 #include "bdjstring.h"
 #include "bdjvarsdf.h"
@@ -208,6 +209,13 @@ dbGetByIdx (musicdb_t *musicdb, dbidx_t idx)
 }
 
 void
+dbWriteSong (musicdb_t *musicdb, song_t *song)
+{
+  dbWrite (musicdb, songGetStr (song, TAG_FILE),
+      songTagList (song), songGetNum (song, TAG_RRN));
+}
+
+void
 dbWrite (musicdb_t *musicdb, char *fn, slist_t *tagList, dbidx_t rrn)
 {
   slistidx_t    iteridx;
@@ -234,6 +242,10 @@ dbWrite (musicdb_t *musicdb, char *fn, slist_t *tagList, dbidx_t rrn)
     if (strcmp (tag, "FILE") == 0) {
       return;
     }
+    if (strcmp (tag, "WRITETIME") == 0) {
+      /* will be re-written */
+      return;
+    }
     data = slistGetStr (tagList, tag);
     strlcat (tbuff, tag, sizeof (tbuff));
     strlcat (tbuff, "\n", sizeof (tbuff));
@@ -241,12 +253,23 @@ dbWrite (musicdb_t *musicdb, char *fn, slist_t *tagList, dbidx_t rrn)
     strlcat (tbuff, data, sizeof (tbuff));
     strlcat (tbuff, "\n", sizeof (tbuff));
   }
+
+  /* writetime is always updated */
+  strlcat (tbuff, "WRITETIME", sizeof (tbuff));
+  strlcat (tbuff, "\n", sizeof (tbuff));
+  strlcat (tbuff, "..", sizeof (tbuff));
+  snprintf (tmp, sizeof (tmp), "%zd", time (NULL));
+  strlcat (tbuff, tmp, sizeof (tbuff));
+  strlcat (tbuff, "\n", sizeof (tbuff));
+
+  /* rrn must exist, and might be new */
   strlcat (tbuff, "RRN", sizeof (tbuff));
   strlcat (tbuff, "\n", sizeof (tbuff));
   strlcat (tbuff, "..", sizeof (tbuff));
   snprintf (tmp, sizeof (tmp), "%d", newrrn);
   strlcat (tbuff, tmp, sizeof (tbuff));
   strlcat (tbuff, "\n", sizeof (tbuff));
+
   raWrite (musicdb->radb, rrn, tbuff);
 }
 

@@ -95,6 +95,7 @@ enum {
   MANAGE_CB_EDIT,
   MANAGE_CB_SEQ_LOAD,
   MANAGE_CB_PL_LOAD,
+  MANAGE_CB_SAVE,
   MANAGE_CB_MAX,
 };
 
@@ -226,6 +227,7 @@ static void     manageSonglistLoadCheck (manageui_t *manage);
 static bool     manageNewSelectionSonglist (void *udata, long dbidx);
 static bool     manageNewSelectionSongSel (void *udata, long dbidx);
 static bool     manageSwitchToSongEditor (void *udata);
+static bool     manageSongEditSaveCallback (void *udata);
 
 static int gKillReceived = false;
 
@@ -639,6 +641,10 @@ manageInitializeUI (manageui_t *manage)
   uisongselSetEditCallback (manage->mmsongsel, &manage->callbacks [MANAGE_CB_EDIT]);
   uimusicqSetEditCallback (manage->slmusicq, &manage->callbacks [MANAGE_CB_EDIT]);
   uimusicqSetEditCallback (manage->slezmusicq, &manage->callbacks [MANAGE_CB_EDIT]);
+
+  uiutilsUICallbackInit (&manage->callbacks [MANAGE_CB_SAVE],
+      manageSongEditSaveCallback, manage);
+  uisongeditSetSaveCallback (manage->mmsongedit, &manage->callbacks [MANAGE_CB_SAVE]);
 }
 
 static void
@@ -1685,5 +1691,26 @@ manageSwitchToSongEditor (void *udata)
     uiNotebookSetPage (&manage->mmnotebook, pagenum);
   }
 
+  return UICB_CONT;
+}
+
+static bool
+manageSongEditSaveCallback (void *udata)
+{
+  manageui_t  *manage = udata;
+  song_t      *song = NULL;
+
+  song = dbGetByIdx (manage->musicdb, manage->seldbidx);
+  dbWriteSong (manage->musicdb, song);
+
+  /* the database has been updated, tell the other processes to reload it */
+  connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_DATABASE_UPDATE, NULL);
+
+  /* re-populate the song selection displays to display the updated info */
+  uisongselApplySongFilter (manage->slsongsel);
+  uisongselApplySongFilter (manage->slezsongsel);
+  uisongselApplySongFilter (manage->mmsongsel);
+
+  // c) if write-tags is not 'none', write the tags to the audio file
   return UICB_CONT;
 }

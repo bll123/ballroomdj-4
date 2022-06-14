@@ -111,7 +111,7 @@ dict for {fn data} $musicdbList {
   incr newrrn
 }
 
-# need to make sure file is formatted correctly.
+# need to make sure the last record is full-size
 # write out a null at the end-1
 seek $fh [expr {($newrrn - 1) * $rsize + $hsize - 1}]
 puts -nonewline $fh "\0"
