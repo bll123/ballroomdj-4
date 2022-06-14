@@ -118,6 +118,7 @@ typedef struct manage {
   dispsel_t       *dispsel;
   int             stopwaitcount;
   UIWidget        statusMsg;
+  int             dbchangecount;
   /* notebook tab handling */
   int               mainlasttab;
   int               sllasttab;
@@ -279,6 +280,7 @@ main (int argc, char *argv[])
   manage.seldbidx = -1;
   manage.songlistdbidx = -1;
   manage.uisongfilter = NULL;
+  manage.dbchangecount = 0;
   manage.manageseq = NULL;   /* allocated within buildui */
   manage.managepl = NULL;   /* allocated within buildui */
   manage.managedb = NULL;   /* allocated within buildui */
@@ -1700,6 +1702,11 @@ manageSongEditSaveCallback (void *udata)
   manageui_t  *manage = udata;
   song_t      *song = NULL;
 
+  if (manage->dbchangecount > MANAGE_DB_COUNT_SAVE) {
+    dbBackup ();
+    manage->dbchangecount = 0;
+  }
+
   song = dbGetByIdx (manage->musicdb, manage->seldbidx);
   dbWriteSong (manage->musicdb, song);
 
@@ -1711,6 +1718,10 @@ manageSongEditSaveCallback (void *udata)
   uisongselApplySongFilter (manage->slezsongsel);
   uisongselApplySongFilter (manage->mmsongsel);
 
-  // c) if write-tags is not 'none', write the tags to the audio file
+  /* if write-tags is not 'none', write the tags to the audio file */
+  // ### TODO
+
+  ++manage->dbchangecount;
+
   return UICB_CONT;
 }

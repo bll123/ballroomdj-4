@@ -480,6 +480,10 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_DATABASE_UPDATE: {
           mainData->musicdb = bdj4ReloadDatabase (mainData->musicdb);
+          for (int i = 0; i < MUSICQ_MAX; ++i) {
+            mainData->musicqChanged [i] = true;
+            mainData->marqueeChanged [i] = true;
+          }
           dbgdisp = true;
           break;
         }
@@ -752,6 +756,7 @@ mainSendMusicQueueData (maindata_t *mainData, int musicqidx)
   snprintf (sbuff, sizeof (sbuff), "%d%c", musicqidx, MSG_ARGS_RS);
 
   for (ssize_t i = 1; i <= musicqLen; ++i) {
+fprintf (stderr, "main: smqdata: musicqidx: %d i: %d\n", musicqidx, i);
     song = musicqGetByIdx (mainData->musicQueue, musicqidx, i);
     if (song != NULL) {
       dispidx = musicqGetDispIdx (mainData->musicQueue, musicqidx, i);
@@ -760,6 +765,8 @@ mainSendMusicQueueData (maindata_t *mainData, int musicqidx)
       uniqueidx = musicqGetUniqueIdx (mainData->musicQueue, musicqidx, i);
       snprintf (tbuff, sizeof (tbuff), "%d%c", uniqueidx, MSG_ARGS_RS);
       strlcat (sbuff, tbuff, sizeof (sbuff));
+fprintf (stderr, "main: song: %s\n", songGetStr (song, TAG_FILE));
+fprintf (stderr, "main: song: %d\n", songGetNum (song, TAG_RRN));
       dbidx = songGetNum (song, TAG_DBIDX);
       snprintf (tbuff, sizeof (tbuff), "%d%c", dbidx, MSG_ARGS_RS);
       strlcat (sbuff, tbuff, sizeof (sbuff));

@@ -10,11 +10,13 @@
 #include "bdjvarsdf.h"
 #include "dance.h"
 #include "fileop.h"
+#include "filemanip.h"
 #include "nlist.h"
 #include "slist.h"
 #include "lock.h"
 #include "log.h"
 #include "musicdb.h"
+#include "pathbld.h"
 #include "rafile.h"
 #include "song.h"
 #include "songutil.h"
@@ -70,6 +72,7 @@ dbClose (musicdb_t *musicdb)
     }
     if (musicdb->radb != NULL) {
       raClose (musicdb->radb);
+      musicdb->radb = NULL;
     }
     free (musicdb);
   }
@@ -174,8 +177,8 @@ dbStartBatch (musicdb_t *musicdb)
 {
   if (musicdb->radb == NULL) {
     musicdb->radb = raOpen (musicdb->fn, MUSICDB_VERSION);
-    raStartBatch (musicdb->radb);
   }
+  raStartBatch (musicdb->radb);
 }
 
 void
@@ -229,7 +232,7 @@ dbWrite (musicdb_t *musicdb, char *fn, slist_t *tagList, dbidx_t rrn)
     return 0;
   }
   if (musicdb->radb == NULL) {
-    return 0;
+    musicdb->radb = raOpen (musicdb->fn, MUSICDB_VERSION);
   }
 
   snprintf (tbuff, sizeof (tbuff), "FILE\n..%s\n", fn);
@@ -305,4 +308,15 @@ nlist_t *
 dbGetDanceCounts (musicdb_t *musicdb)
 {
   return musicdb->danceCounts;
+}
+
+void
+dbBackup (void)
+{
+  char  dbfname [MAXPATHLEN];
+
+  pathbldMakePath (dbfname, sizeof (dbfname),
+      MUSICDB_FNAME, MUSICDB_EXT, PATHBLD_MP_DATA);
+  filemanipBackup (dbfname, 4);
+
 }

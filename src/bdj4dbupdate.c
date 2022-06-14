@@ -280,7 +280,7 @@ static int
 dbupdateProcessing (void *udata)
 {
   dbupdate_t  *dbupdate = (dbupdate_t *) udata;
-  int           stop = false;
+  int         stop = false;
 
 
   if (! progstateIsRunning (dbupdate->progstate)) {
@@ -298,15 +298,11 @@ dbupdateProcessing (void *udata)
   connProcessUnconnected (dbupdate->conn);
 
   if (dbupdate->state == DB_UPD_INIT) {
-    char  dbfname [MAXPATHLEN];
-
     if (dbupdate->rebuild) {
       dbupdate->newdatabase = true;
     }
 
-    pathbldMakePath (dbfname, sizeof (dbfname),
-        MUSICDB_FNAME, MUSICDB_EXT, PATHBLD_MP_DATA);
-    filemanipBackup (dbfname, 4);
+    dbBackup ();
 
     if (dbupdate->newdatabase) {
       char  tbuff [MAXPATHLEN];

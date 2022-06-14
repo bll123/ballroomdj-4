@@ -6,6 +6,10 @@
 #include "playlist.h"
 #include "uiutils.h"
 
+enum {
+  MANAGE_DB_COUNT_SAVE = 10,
+};
+
 typedef struct manageseq manageseq_t;
 typedef struct managepl managepl_t;
 typedef struct managepltree managepltree_t;

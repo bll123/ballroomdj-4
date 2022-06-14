@@ -30,5 +30,6 @@ song_t    *dbGetByIdx (musicdb_t *db, dbidx_t idx);
 void      dbStartIterator (musicdb_t *db, slistidx_t *iteridx);
 song_t    *dbIterate (musicdb_t *db, dbidx_t *dbidx, slistidx_t *iteridx);
 nlist_t   *dbGetDanceCounts (musicdb_t *db);
+void      dbBackup (void);
 
 #endif /* INC_MUSICDB_H */
