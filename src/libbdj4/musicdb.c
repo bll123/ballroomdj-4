@@ -208,14 +208,14 @@ dbGetByIdx (musicdb_t *musicdb, dbidx_t idx)
   return song;
 }
 
-void
+size_t
 dbWriteSong (musicdb_t *musicdb, song_t *song)
 {
-  dbWrite (musicdb, songGetStr (song, TAG_FILE),
+  return dbWrite (musicdb, songGetStr (song, TAG_FILE),
       songTagList (song), songGetNum (song, TAG_RRN));
 }
 
-void
+size_t
 dbWrite (musicdb_t *musicdb, char *fn, slist_t *tagList, dbidx_t rrn)
 {
   slistidx_t    iteridx;
@@ -226,10 +226,10 @@ dbWrite (musicdb_t *musicdb, char *fn, slist_t *tagList, dbidx_t rrn)
   dbidx_t       newrrn = 0;
 
   if (musicdb == NULL) {
-    return;
+    return 0;
   }
   if (musicdb->radb == NULL) {
-    return;
+    return 0;
   }
 
   snprintf (tbuff, sizeof (tbuff), "FILE\n..%s\n", fn);
@@ -240,11 +240,11 @@ dbWrite (musicdb_t *musicdb, char *fn, slist_t *tagList, dbidx_t rrn)
   slistStartIterator (tagList, &iteridx);
   while ((tag = slistIterateKey (tagList, &iteridx)) != NULL) {
     if (strcmp (tag, "FILE") == 0) {
-      return;
+      continue;
     }
     if (strcmp (tag, "WRITETIME") == 0) {
       /* will be re-written */
-      return;
+      continue;
     }
     data = slistGetStr (tagList, tag);
     strlcat (tbuff, tag, sizeof (tbuff));
@@ -271,6 +271,7 @@ dbWrite (musicdb_t *musicdb, char *fn, slist_t *tagList, dbidx_t rrn)
   strlcat (tbuff, "\n", sizeof (tbuff));
 
   raWrite (musicdb->radb, rrn, tbuff);
+  return (strlen (tbuff));
 }
 
 void

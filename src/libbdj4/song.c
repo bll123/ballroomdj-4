@@ -336,6 +336,10 @@ songDisplayString (song_t *song, int tagidx)
 slist_t *
 songTagList (song_t *song)
 {
+  slist_t   *taglist;
+
+  taglist = datafileSaveKeyValList ("song-tag", songdfkeys, SONG_DFKEY_COUNT, song->songInfo);
+  return taglist;
 }
 
 /* internal routines */

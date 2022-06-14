@@ -95,6 +95,7 @@ typedef struct {
   dbidx_t           countNonAudio;
   dbidx_t           countNullData;
   dbidx_t           countNoTags;
+  size_t            maxWriteLen;
   mstime_t          starttm;
   int               stopwaitcount;
   bool              rebuild : 1;
@@ -147,6 +148,7 @@ main (int argc, char *argv[])
   dbupdate.countNullData = 0;
   dbupdate.countNoTags = 0;
   dbupdate.countUpdated = 0;
+  dbupdate.maxWriteLen = 0;
   dbupdate.stopwaitcount = 0;
   dbupdate.rebuild = false;
   dbupdate.checknew = false;
@@ -487,6 +489,7 @@ dbupdateProcessing (void *udata)
     logMsg (LOG_DBG, LOG_IMPORTANT, "     null: %u", dbupdate->countNullData);
     logMsg (LOG_DBG, LOG_IMPORTANT, "  no tags: %u", dbupdate->countNoTags);
     logMsg (LOG_DBG, LOG_IMPORTANT, "not-audio: %u", dbupdate->countNonAudio);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "max-write: %zu", dbupdate->maxWriteLen);
 
     connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_PROGRESS, "END");
     connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_FINISH, NULL);
@@ -654,6 +657,7 @@ dbupdateProcessTagData (dbupdate_t *dbupdate, char *args)
   dbidx_t   rrn;
   musicdb_t *currdb;
   song_t    *song = NULL;
+  size_t    len;
 
 
   ffn = strtok_r (args, MSG_ARGS_RS_STR, &tokstr);
@@ -730,11 +734,14 @@ dbupdateProcessTagData (dbupdate_t *dbupdate, char *args)
   if (dbupdate->newdatabase) {
     currdb = dbupdate->nmusicdb;
   }
-  dbWrite (currdb, relfname, tagdata, rrn);
+  len = dbWrite (currdb, relfname, tagdata, rrn);
   if (rrn == MUSICDB_ENTRY_NEW) {
     ++dbupdate->countNew;
   } else {
     ++dbupdate->countUpdated;
+  }
+  if (len > dbupdate->maxWriteLen) {
+    dbupdate->maxWriteLen = len;
   }
 
   slistFree (tagdata);

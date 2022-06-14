@@ -55,9 +55,14 @@ typedef struct {
   ssize_t         backupKey;
 } datafilekey_t;
 
-#define DATAFILE_NO_LOOKUP -1
-#define DATAFILE_NO_BACKUPKEY -1
-#define DATAFILE_NO_WRITE -2
+enum {
+  DATAFILE_NO_LOOKUP = -1,
+  DATAFILE_NO_BACKUPKEY = -1,
+  DATAFILE_NO_WRITE = -2,
+  /* the largest standard datafile is 3.6k in size */
+  /* a database entry is 2k */
+  DATAFILE_MAX_SIZE = 16384,
+};
 
 parseinfo_t * parseInit (void);
 void          parseFree (parseinfo_t *);
@@ -86,6 +91,8 @@ listidx_t     dfkeyBinarySearch (const datafilekey_t *dfkeys,
 list_t *      datafileGetList (datafile_t *);
 list_t *      datafileGetLookup (datafile_t *);
 void          datafileSetData (datafile_t *df, void *data);
+slist_t *     datafileSaveKeyValList (char *tag, datafilekey_t *dfkeys, ssize_t dfkeycount, nlist_t *list);
+void          datafileSaveKeyValBuffer (char *buff, size_t sz, char *tag, datafilekey_t *dfkeys, ssize_t dfkeycount, nlist_t *list);
 void          datafileSaveKeyVal (char *tag, char *fn, datafilekey_t *dfkeys, ssize_t count, nlist_t *list);
 void          datafileSaveIndirect (char *tag, char *fn, datafilekey_t *dfkeys, ssize_t count, nlist_t *list);
 void          datafileSaveList (char *tag, char *fn, slist_t *list);
