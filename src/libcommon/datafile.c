@@ -43,6 +43,7 @@ static void     datafileFreeInternal (datafile_t *df);
 static bool     datafileCheckDfkeys (char *name, datafilekey_t *dfkeys, ssize_t dfkeycount);
 static FILE *   datafileSavePrep (char *fn, char *tag);
 static void     datafileSaveItem (char *buff, size_t sz, char *name, dfConvFunc_t convFunc, datafileconv_t *conv);
+static void     datafileLoadConv (datafilekey_t *dfkey, nlist_t *list, datafileconv_t *conv);
 static void     datafileConvertValue (char *buff, size_t sz, dfConvFunc_t convFunc, datafileconv_t *conv);
 static void     datafileDumpItem (char *tag, char *name, dfConvFunc_t convFunc, datafileconv_t *conv);
 
@@ -570,32 +571,13 @@ datafileSaveKeyValList (char *tag,
     datafilekey_t *dfkeys, ssize_t dfkeycount, nlist_t *list)
 {
   datafileconv_t  conv;
-  valuetype_t     vt;
   slist_t         *slist;
   char            tbuff [1024];
 
   slist = slistAlloc (tag, LIST_ORDERED, free);
 
   for (ssize_t i = 0; i < dfkeycount; ++i) {
-    vt = dfkeys [i].valuetype;
-    conv.allocated = false;
-    conv.valuetype = vt;
-
-    /* load the data value into the conv structure so that retrieval is */
-    /* the same for both non-converted and converted values */
-    if (vt == VALUE_NUM) {
-      conv.num = nlistGetNum (list, dfkeys [i].itemkey);
-    }
-    if (vt == VALUE_STR) {
-      conv.str = nlistGetStr (list, dfkeys [i].itemkey);
-    }
-    if (vt == VALUE_LIST) {
-      conv.list = nlistGetList (list, dfkeys [i].itemkey);
-    }
-    if (vt == VALUE_DOUBLE) {
-      conv.dval = nlistGetDouble (list, dfkeys [i].itemkey);
-    }
-
+    datafileLoadConv (&dfkeys [i], list, &conv);
     datafileConvertValue (tbuff, sizeof (tbuff), dfkeys [i].convFunc, &conv);
     slistSetStr (slist, dfkeys [i].name, tbuff);
   }
@@ -608,30 +590,11 @@ datafileSaveKeyValBuffer (char *buff, size_t sz, char *tag,
     datafilekey_t *dfkeys, ssize_t dfkeycount, nlist_t *list)
 {
   datafileconv_t  conv;
-  valuetype_t     vt;
 
   *buff = '\0';
 
   for (ssize_t i = 0; i < dfkeycount; ++i) {
-    vt = dfkeys [i].valuetype;
-    conv.allocated = false;
-    conv.valuetype = vt;
-
-    /* load the data value into the conv structure so that retrieval is */
-    /* the same for both non-converted and converted values */
-    if (vt == VALUE_NUM) {
-      conv.num = nlistGetNum (list, dfkeys [i].itemkey);
-    }
-    if (vt == VALUE_STR) {
-      conv.str = nlistGetStr (list, dfkeys [i].itemkey);
-    }
-    if (vt == VALUE_LIST) {
-      conv.list = nlistGetList (list, dfkeys [i].itemkey);
-    }
-    if (vt == VALUE_DOUBLE) {
-      conv.dval = nlistGetDouble (list, dfkeys [i].itemkey);
-    }
-
+    datafileLoadConv (&dfkeys [i], list, &conv);
     datafileSaveItem (buff, sz, dfkeys [i].name, dfkeys [i].convFunc, &conv);
   }
 }
@@ -800,28 +763,9 @@ datafileDumpKeyVal (char *tag, datafilekey_t *dfkeys,
     ssize_t dfkeycount, nlist_t *list)
 {
   datafileconv_t  conv;
-  valuetype_t     vt;
 
   for (ssize_t i = 0; i < dfkeycount; ++i) {
-    vt = dfkeys [i].valuetype;
-    conv.allocated = false;
-    conv.valuetype = vt;
-
-    /* load the data value into the conv structure so that retrieval is */
-    /* the same for both non-converted and converted values */
-    if (vt == VALUE_NUM) {
-      conv.num = nlistGetNum (list, dfkeys [i].itemkey);
-    }
-    if (vt == VALUE_STR) {
-      conv.str = nlistGetStr (list, dfkeys [i].itemkey);
-    }
-    if (vt == VALUE_LIST) {
-      conv.list = nlistGetList (list, dfkeys [i].itemkey);
-    }
-    if (vt == VALUE_DOUBLE) {
-      conv.dval = nlistGetDouble (list, dfkeys [i].itemkey);
-    }
-
+    datafileLoadConv (&dfkeys [i], list, &conv);
     datafileDumpItem (tag, dfkeys [i].name, dfkeys [i].convFunc, &conv);
   }
 }
@@ -1000,6 +944,31 @@ datafileSaveItem (char *buff, size_t sz, char *name, dfConvFunc_t convFunc,
 }
 
 static void
+datafileLoadConv (datafilekey_t *dfkey, nlist_t *list, datafileconv_t *conv)
+{
+  valuetype_t     vt;
+
+  vt = dfkey->valuetype;
+  conv->allocated = false;
+  conv->valuetype = vt;
+
+  /* load the data value into the conv structure so that retrieval is */
+  /* the same for both non-converted and converted values */
+  if (vt == VALUE_NUM) {
+    conv->num = nlistGetNum (list, dfkey->itemkey);
+  }
+  if (vt == VALUE_STR) {
+    conv->str = nlistGetStr (list, dfkey->itemkey);
+  }
+  if (vt == VALUE_LIST) {
+    conv->list = nlistGetList (list, dfkey->itemkey);
+  }
+  if (vt == VALUE_DOUBLE) {
+    conv->dval = nlistGetDouble (list, dfkey->itemkey);
+  }
+}
+
+static void
 datafileConvertValue (char *buff, size_t sz, dfConvFunc_t convFunc,
     datafileconv_t *conv)
 {
@@ -1036,34 +1005,10 @@ static void
 datafileDumpItem (char *tag, char *name, dfConvFunc_t convFunc,
     datafileconv_t *conv)
 {
-  valuetype_t     vt;
+  char    tbuff [1024];
 
-  vt = conv->valuetype;
-  if (convFunc != NULL) {
-    convFunc (conv);
-    vt = conv->valuetype;
-  }
-
+  datafileConvertValue (tbuff, sizeof (tbuff), convFunc, conv);
   fprintf (stdout, "%2s: %-20s ", tag, name);
-  if (vt == VALUE_NUM) {
-    if (conv->num != LIST_VALUE_INVALID) {
-      fprintf (stdout, "%zd", conv->num);
-    }
-    fprintf (stdout, "\n");
-  }
-  if (vt == VALUE_DOUBLE) {
-    if (conv->dval != LIST_DOUBLE_INVALID) {
-      fprintf (stdout, "%.2f", conv->dval);
-    }
-    fprintf (stdout, "\n");
-  }
-  if (vt == VALUE_STR) {
-    if (conv->str != NULL) {
-      fprintf (stdout, "%s", conv->str);
-    }
-    fprintf (stdout, "\n");
-    if (conv->allocated) {
-      free (conv->str);
-    }
-  }
+  fprintf (stdout, "%s", tbuff);
+  fprintf (stdout, "\n");
 }
