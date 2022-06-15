@@ -166,7 +166,7 @@ typedef struct manage {
   /* various flags */
   bool            slbackupcreated : 1;
   bool            selusesonglist : 1;
-  bool            inplaylistload : 1;
+  bool            inload : 1;
 } manageui_t;
 
 /* re-use the plui enums so that the songsel filter enums can also be used */
@@ -274,7 +274,7 @@ main (int argc, char *argv[])
   manage.sloldname = NULL;
   manage.slbackupcreated = false;
   manage.selusesonglist = false;
-  manage.inplaylistload = false;
+  manage.inload = false;
   manage.lastdisp = MANAGE_DISP_SONG_SEL;
   manage.selbypass = 0;
   manage.seldbidx = -1;
@@ -1212,9 +1212,14 @@ manageSonglistLoadFile (void *udata, const char *fn)
   manageui_t  *manage = udata;
   char  tbuff [200];
 
+  if (manage->inload) {
+    return;
+  }
+  manage->inload = true;
+
   /* any selection made by the load process should not trigger */
   /* a change in the song editor */
-  /* the next update received from main will reset the bypass flag */
+  /* the next two updates received from main will decrement the bypass flag */
   manage->selusesonglist = false;
   /* two messages are received in response to the changes below */
   /* (clear queue and queue playlist) */
@@ -1232,10 +1237,9 @@ manageSonglistLoadFile (void *udata, const char *fn)
   connSendMessage (manage->conn, ROUTE_MAIN, MSG_QUEUE_PLAYLIST, tbuff);
 
   manageSetSonglistName (manage, fn);
-  if (! manage->inplaylistload) {
-    manageLoadPlaylist (manage, fn);
-  }
+  manageLoadPlaylist (manage, fn);
   manage->slbackupcreated = false;
+  manage->inload = false;
 }
 
 /* callback to load playlist upon songlist/sequence load */
@@ -1254,10 +1258,8 @@ manageLoadSonglist (void *udata, const char *fn)
 {
   manageui_t    *manage = udata;
 
-  manage->inplaylistload = true;
   /* the load will save any current song list */
   manageSonglistLoadFile (manage, fn);
-  manage->inplaylistload = false;
   return UICB_CONT;
 }
 
@@ -1543,12 +1545,21 @@ manageSetDisplayPerSelection (manageui_t *manage, int id)
   if (id == MANAGE_TAB_MAIN_SL) {
     if (uisfPlaylistInUse (manage->uisongfilter) ||
         manage->lastdisp == MANAGE_DISP_SONG_LIST) {
+      long        loc;
+
+      loc = uisongselGetSelectLocation (manage->mmsongsel);
       uisfClearPlaylist (manage->uisongfilter);
       manage->selbypass = 1;
       uisongselApplySongFilter (manage->mmsongsel);
       manage->selbypass = 0;
+      uisongselRestoreSelections (manage->mmsongsel);
+      if (manage->selusesonglist) {
+        uimusicqSetSelectLocation (manage->slmusicq, manage->musicqManageIdx, loc);
+      }
+      manage->selusesonglist = false;
       manage->lastdisp = MANAGE_DISP_SONG_SEL;
     }
+
     uisfHidePlaylistDisplay (manage->uisongfilter);
   }
 
@@ -1561,32 +1572,25 @@ manageSetDisplayPerSelection (manageui_t *manage, int id)
 
     if (manage->selusesonglist &&
         manage->lastdisp == MANAGE_DISP_SONG_SEL) {
+      uisongselSaveSelections (manage->mmsongsel);
       /* the song list must be saved, otherwise the song filter */
       /* can't load it */
       manageSonglistSave (manage);
       slname = strdup (uimusicqGetSonglistName (manage->slmusicq));
       uisfSetPlaylist (manage->uisongfilter, slname);
       free (slname);
-      redisp = true;
-    }
-    if (! manage->selusesonglist &&
-        manage->lastdisp == MANAGE_DISP_SONG_LIST) {
-      redisp = true;
-    }
-
-    /* showplaylistdisplay will turn the playlist filter back on */
-    /* if it has a setting */
-    /* do this afterwards, as the prior playlist name is wanted */
-    if (uisfPlaylistInUse (manage->uisongfilter)) {
+      manage->lastdisp = MANAGE_DISP_SONG_LIST;
       redisp = true;
     }
 
     if (redisp) {
       manage->selbypass = 1;
       uisongselApplySongFilter (manage->mmsongsel);
+
       if (manage->selusesonglist) {
         long idx;
 
+        /* these match because they are displaying the same list */
         idx = uimusicqGetSelectLocation (manage->slmusicq, manage->musicqManageIdx);
         uisongselSetSelection (manage->mmsongsel, idx);
       }
@@ -1598,14 +1602,9 @@ manageSetDisplayPerSelection (manageui_t *manage, int id)
     } else {
       dbidx = manage->seldbidx;
     }
+
     song = dbGetByIdx (manage->musicdb, dbidx);
     uisongeditLoadData (manage->mmsongedit, song);
-
-    if (manage->selusesonglist) {
-      manage->lastdisp = MANAGE_DISP_SONG_LIST;
-    } else {
-      manage->lastdisp = MANAGE_DISP_SONG_SEL;
-    }
   }
 }
 
@@ -1641,18 +1640,14 @@ manageNewSelectionSongSel (void *udata, long dbidx)
 {
   manageui_t  *manage = udata;
   song_t      *song = NULL;
-  long        loc;
 
   if (manage->selbypass) {
     return UICB_CONT;
   }
 
-  if (manage->lastdisp == MANAGE_DISP_SONG_LIST) {
-    loc = uisongselGetSelectLocation (manage->mmsongsel);
-    uimusicqSetSelectLocation (manage->slmusicq, manage->musicqManageIdx, loc);
+  if (manage->mainlasttab != MANAGE_TAB_MAIN_MM) {
+    manage->selusesonglist = false;
   }
-
-  manage->selusesonglist = false;
   manage->seldbidx = dbidx;
 
   song = dbGetByIdx (manage->musicdb, dbidx);
@@ -1700,6 +1695,7 @@ static bool
 manageSongEditSaveCallback (void *udata)
 {
   manageui_t  *manage = udata;
+  dbidx_t     dbidx;
   song_t      *song = NULL;
 
   if (manage->dbchangecount > MANAGE_DB_COUNT_SAVE) {
@@ -1707,16 +1703,23 @@ manageSongEditSaveCallback (void *udata)
     manage->dbchangecount = 0;
   }
 
-  song = dbGetByIdx (manage->musicdb, manage->seldbidx);
+  if (manage->selusesonglist) {
+    dbidx = manage->songlistdbidx;
+  } else {
+    dbidx = manage->seldbidx;
+  }
+  song = dbGetByIdx (manage->musicdb, dbidx);
   dbWriteSong (manage->musicdb, song);
 
   /* the database has been updated, tell the other processes to reload it */
   connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_DATABASE_UPDATE, NULL);
 
   /* re-populate the song selection displays to display the updated info */
-  uisongselApplySongFilter (manage->slsongsel);
-  uisongselApplySongFilter (manage->slezsongsel);
-  uisongselApplySongFilter (manage->mmsongsel);
+  manage->selbypass = 1;
+  uisongselPopulateData (manage->slsongsel);
+  uisongselPopulateData (manage->slezsongsel);
+  uisongselPopulateData (manage->mmsongsel);
+  manage->selbypass = 0;
 
   /* if write-tags is not 'none', write the tags to the audio file */
   // ### TODO

@@ -889,10 +889,10 @@ uisongeditSaveCallback (void *udata)
     uichgindMarkNormal (uiw->items [count].chgind);
     uiw->items [count].changed = false;
     uiw->items [count].lastchanged = false;
+  }
 
-    if (uisongedit->savecb != NULL) {
-      uiutilsCallbackHandler (uisongedit->savecb);
-    }
+  if (uisongedit->savecb != NULL) {
+    uiutilsCallbackHandler (uisongedit->savecb);
   }
 
   return UICB_CONT;

@@ -61,6 +61,7 @@ typedef struct managepl {
   playlist_t      *playlist;
   uiswitch_t      *plannswitch;
   bool            changed : 1;
+  bool            inload : 1;
 } managepl_t;
 
 static bool managePlaylistLoad (void *udata);
@@ -104,6 +105,7 @@ managePlaylistAlloc (UIWidget *window, nlist_t *options, UIWidget *statusMsg)
   uiutilsUIWidgetInit (&managepl->uiallowedkeywordsitem);
   managepl->playlist = NULL;
   managepl->changed = false;
+  managepl->inload = false;
   managepl->plannswitch = NULL;
 
   return managepl;
@@ -432,6 +434,12 @@ managePlaylistLoadFile (void *udata, const char *fn)
   playlist_t  *pl;
   pltype_t    pltype;
 
+  if (managepl->inload) {
+    return;
+  }
+
+  managepl->inload = true;
+
   managePlaylistSave (managepl);
 
   pl = playlistAlloc (NULL);
@@ -452,6 +460,7 @@ managePlaylistLoadFile (void *udata, const char *fn)
   }
 
   managepl->changed = false;
+  managepl->inload = false;
 }
 
 /* internal routines */

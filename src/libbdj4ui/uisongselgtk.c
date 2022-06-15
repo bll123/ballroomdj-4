@@ -73,6 +73,7 @@ typedef struct uisongselgtk {
   int               lastTreeSize;
   double            lastRowHeight;
   int               maxRows;
+  nlist_t           *selectedBackup;
   nlist_t           *selectedList;
   GtkTreeModel      *model;
   GtkTreeIter       *iterp;
@@ -83,6 +84,8 @@ typedef struct uisongselgtk {
   bool              inscroll : 1;
 } uisongselgtk_t;
 
+
+static void uisongselClearSelections (uisongsel_t *uisongsel);
 static bool uisongselScrollSelection (uisongsel_t *uisongsel, long idxStart);
 static bool uisongselQueueProcessQueueCallback (void *udata);
 static void uisongselQueueProcessHandler (void *udata, musicqidx_t mqidx);
@@ -127,6 +130,7 @@ uisongselUIInit (uisongsel_t *uisongsel)
   uiw->controlPressed = false;
   uiw->shiftPressed = false;
   uiw->inscroll = false;
+  uiw->selectedBackup = NULL;
   uiw->selectedList = nlistAlloc ("selected-list", LIST_ORDERED, NULL);
   for (int i = 0; i < SONGSEL_CB_MAX; ++i) {
     uiutilsUICallbackInit (&uiw->callbacks [i], NULL, NULL);
@@ -142,6 +146,9 @@ uisongselUIFree (uisongsel_t *uisongsel)
     uisongselgtk_t    *uiw;
 
     uiw = uisongsel->uiWidgetData;
+    if (uiw->selectedBackup != NULL) {
+      nlistFree (uiw->selectedBackup);
+    }
     if (uiw->selectedList != NULL) {
       nlistFree (uiw->selectedList);
     }
@@ -352,9 +359,6 @@ uisongselClearData (uisongsel_t *uisongsel)
   uisongselCreateRows (uisongsel);
   adjustment = gtk_range_get_adjustment (GTK_RANGE (uiw->songselScrollbar));
   gtk_adjustment_set_value (adjustment, 0.0);
-  uisongsel->idxStart = 0;
-  nlistFree (uiw->selectedList);
-  uiw->selectedList = nlistAlloc ("selected-list", LIST_ORDERED, NULL);
   logProcEnd (LOG_PROC, "uisongselClearData", "");
 }
 
@@ -550,6 +554,9 @@ bool
 uisongselApplySongFilter (void *udata)
 {
   uisongsel_t *uisongsel = udata;
+  uisongselgtk_t  *uiw;
+
+  uiw = uisongsel->uiWidgetData;
 
   uisongsel->dfilterCount = (double) songfilterProcess (
       uisongsel->songfilter, uisongsel->musicdb);
@@ -558,28 +565,25 @@ uisongselApplySongFilter (void *udata)
   /* the call to cleardata() will remove any selections */
   /* afterwards, make sure something is selected */
   uisongselClearData (uisongsel);
+  uisongselClearSelections (uisongsel);
   uisongselPopulateData (uisongsel);
 
   /* the song filter has been processed, the peers need to be populated */
 
+  /* if the song selection is displaying something else, do not */
+  /* update the peers */
   for (int i = 0; i < uisongsel->peercount; ++i) {
     if (uisongsel->peers [i] == NULL) {
       continue;
     }
     uisongselClearData (uisongsel->peers [i]);
+    uisongselClearSelections (uisongsel->peers [i]);
     uisongselPopulateData (uisongsel->peers [i]);
   }
 
   /* set the selection after the populate is done */
 
   uisongselSetDefaultSelection (uisongsel);
-
-//  for (int i = 0; i < uisongsel->peercount; ++i) {
-//    if (uisongsel->peers [i] == NULL) {
-//      continue;
-//    }
-//    uisongselSetDefaultSelection (uisongsel->peers [i]);
-//  }
 
   return UICB_CONT;
 }
@@ -605,7 +609,6 @@ uisongselDanceSelectCallback (void *udata, long danceIdx)
   uisongsel_t *uisongsel = udata;
 
   uidanceSetValue (uisongsel->uidance, danceIdx);
-//  uiDropDownSelectionSetNum (uisongsel->dancesel, danceIdx);
 
   if (uisongsel->ispeercall) {
     return UICB_CONT;
@@ -622,7 +625,69 @@ uisongselDanceSelectCallback (void *udata, long danceIdx)
   return UICB_CONT;
 }
 
+void
+uisongselSaveSelections (uisongsel_t *uisongsel)
+{
+  uisongselgtk_t  *uiw;
+
+  uiw = uisongsel->uiWidgetData;
+  uiw->selectedBackup = uiw->selectedList;
+  uiw->selectedList = nlistAlloc ("selected-list", LIST_ORDERED, NULL);
+
+  if (uisongsel->ispeercall) {
+    return;
+  }
+
+  for (int i = 0; i < uisongsel->peercount; ++i) {
+    if (uisongsel->peers [i] == NULL) {
+      continue;
+    }
+    uisongselSetPeerFlag (uisongsel->peers [i], true);
+    uisongselSaveSelections (uisongsel->peers [i]);
+    uisongselSetPeerFlag (uisongsel->peers [i], false);
+  }
+}
+
+void
+uisongselRestoreSelections (uisongsel_t *uisongsel)
+{
+  uisongselgtk_t  *uiw;
+
+  uiw = uisongsel->uiWidgetData;
+  if (uiw->selectedList != NULL) {
+    nlistFree (uiw->selectedList);
+  }
+  uiw->selectedList = uiw->selectedBackup;
+  uiw->selectedBackup = NULL;
+  uisongselScrollSelection (uisongsel, uisongsel->idxStart);
+
+  if (uisongsel->ispeercall) {
+    return;
+  }
+
+  for (int i = 0; i < uisongsel->peercount; ++i) {
+    if (uisongsel->peers [i] == NULL) {
+      continue;
+    }
+    uisongselSetPeerFlag (uisongsel->peers [i], true);
+    uisongselRestoreSelections (uisongsel->peers [i]);
+    uisongselSetPeerFlag (uisongsel->peers [i], false);
+  }
+}
+
 /* internal routines */
+
+static void
+uisongselClearSelections (uisongsel_t *uisongsel)
+{
+  uisongselgtk_t  *uiw;
+
+  uiw = uisongsel->uiWidgetData;
+
+  uisongsel->idxStart = 0;
+  nlistFree (uiw->selectedList);
+  uiw->selectedList = nlistAlloc ("selected-list", LIST_ORDERED, NULL);
+}
 
 static bool
 uisongselScrollSelection (uisongsel_t *uisongsel, long idxStart)
@@ -1019,9 +1084,8 @@ uisongselSelectionChgCallback (GtkTreeSelection *sel, gpointer udata)
   /* if neither the control key nor the shift key are pressed */
   /* then this is a new selection and not a modification */
   tlist = nlistAlloc ("selected-list", LIST_ORDERED, NULL);
-  if (! uiw->controlPressed && ! uiw->shiftPressed) {
-    nlistFree (uiw->selectedList);
-  } else {
+  nlistFree (uiw->selectedList);
+  if (uiw->controlPressed || uiw->shiftPressed) {
     nlistStartIterator (uiw->selectedList, &iteridx);
     while ((idx = nlistIterateKey (uiw->selectedList, &iteridx)) >= 0) {
       if (idx < uisongsel->idxStart ||
@@ -1029,7 +1093,6 @@ uisongselSelectionChgCallback (GtkTreeSelection *sel, gpointer udata)
         nlistSetNum (tlist, idx, nlistGetNum (uiw->selectedList, idx));
       }
     }
-    nlistFree (uiw->selectedList);
   }
   uiw->selectedList = tlist;
 

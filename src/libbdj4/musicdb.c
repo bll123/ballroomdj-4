@@ -243,9 +243,11 @@ dbWrite (musicdb_t *musicdb, char *fn, slist_t *tagList, dbidx_t rrn)
   slistStartIterator (tagList, &iteridx);
   while ((tag = slistIterateKey (tagList, &iteridx)) != NULL) {
     if (strcmp (tag, "FILE") == 0) {
+      /* already handled, must be first */
       continue;
     }
-    if (strcmp (tag, "WRITETIME") == 0) {
+    if (strcmp (tag, "WRITETIME") == 0 ||
+        strcmp (tag, "RRN") == 0) {
       /* will be re-written */
       continue;
     }

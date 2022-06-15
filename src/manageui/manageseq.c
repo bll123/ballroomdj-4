@@ -44,6 +44,7 @@ typedef struct manageseq {
   char            *seqoldname;
   bool            seqbackupcreated : 1;
   bool            changed : 1;
+  bool            inload : 1;
 } manageseq_t;
 
 static bool   manageSequenceLoad (void *udata);
@@ -66,6 +67,8 @@ manageSequenceAlloc (UIWidget *window, nlist_t *options, UIWidget *statusMsg)
   manageseq->statusMsg = statusMsg;
   manageseq->windowp = window;
   manageseq->options = options;
+  manageseq->changed = false;
+  manageseq->inload = false;
 
   return manageseq;
 }
@@ -267,12 +270,17 @@ manageSequenceLoadFile (void *udata, const char *fn)
   nlistidx_t  iteridx;
   nlistidx_t  didx;
 
+  if (manageseq->inload) {
+    return;
+  }
+
   manageSequenceSave (manageseq);
 
   seq = sequenceAlloc (fn);
   if (seq == NULL) {
     return;
   }
+  manageseq->inload = true;
 
   dancelist = sequenceGetDanceList (seq);
   tlist = slistAlloc ("temp-seq", LIST_UNORDERED, NULL);
@@ -290,6 +298,7 @@ manageSequenceLoadFile (void *udata, const char *fn)
   uiutilsCallbackStrHandler (&manageseq->callback [MSEQ_CB_SEQ_LOAD], fn);
 
   manageseq->seqbackupcreated = false;
+  manageseq->inload = false;
 }
 
 static bool

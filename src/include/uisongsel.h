@@ -85,9 +85,11 @@ bool  uisongselNextSelection (void *udata);
 bool  uisongselPreviousSelection (void *udata);
 bool  uisongselFirstSelection (void *udata);
 long  uisongselGetSelectLocation (uisongsel_t *uisongsel);
-bool  uisongselApplySongFilter (void *uisongsel);
+bool  uisongselApplySongFilter (void *udata);
 void  uisongselDanceSelectHandler (uisongsel_t *uisongsel, ssize_t idx);
 bool  uisongselDanceSelectCallback (void *udata, long danceIdx);
+void  uisongselSaveSelections (uisongsel_t *uisongsel);
+void  uisongselRestoreSelections (uisongsel_t *uisongsel);
 
 /* uisongselcommon.c */
 void  uisongselQueueProcess (uisongsel_t *uisongsel, dbidx_t dbidx, musicqidx_t mqidx);

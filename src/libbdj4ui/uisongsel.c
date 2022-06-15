@@ -54,7 +54,6 @@ uisongselInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
   uisongsel->danceIdx = -1;
   uisongsel->dfilterCount = (double) dbCount (musicdb);
   uisongsel->uidance = NULL;
-//  uisongsel->dancesel = uiDropDownInit ();
   uisongsel->peercount = 0;
   uisongsel->ispeercall = false;
   for (int i = 0; i < UISONGSEL_PEER_MAX; ++i) {
@@ -91,7 +90,6 @@ uisongselFree (uisongsel_t *uisongsel)
 
   if (uisongsel != NULL) {
     uidanceFree (uisongsel->uidance);
-//    uiDropDownFree (uisongsel->dancesel);
     uisongselUIFree (uisongsel);
     free (uisongsel);
   }

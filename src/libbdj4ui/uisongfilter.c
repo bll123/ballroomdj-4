@@ -260,7 +260,8 @@ uisfClearPlaylist (uisongfilter_t *uisf)
     return;
   }
 
-  songfilterOff (uisf->songfilter, SONG_FILTER_PLAYLIST);
+  uiDropDownSelectionSetNum (uisf->playlistfilter, -1);
+  songfilterClear (uisf->songfilter, SONG_FILTER_PLAYLIST);
 }
 
 void
@@ -673,7 +674,7 @@ uisfUpdate (uisongfilter_t *uisf)
     if (songfilterInUse (uisf->songfilter, SONG_FILTER_PLAYLIST)) {
       uisfDisableWidgets (uisf);
 
-      /* if the playlist filter is on, then apply and return */
+      /* no other filters are applicable when a playlist filter is active */
       if (uisf->applycb != NULL) {
         uiutilsCallbackHandler (uisf->applycb);
       }
