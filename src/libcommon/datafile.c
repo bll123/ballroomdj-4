@@ -983,17 +983,17 @@ datafileConvertValue (char *buff, size_t sz, dfConvFunc_t convFunc,
   *buff = '\0';
   if (vt == VALUE_NUM) {
     if (conv->num != LIST_VALUE_INVALID) {
-      snprintf (buff, sz, "%zd\n", conv->num);
+      snprintf (buff, sz, "%zd", conv->num);
     }
   }
   if (vt == VALUE_DOUBLE) {
     if (conv->dval != LIST_DOUBLE_INVALID) {
-      snprintf (buff, sz, "%.2f\n", conv->dval);
+      snprintf (buff, sz, "%.2f", conv->dval);
     }
   }
   if (vt == VALUE_STR) {
     if (conv->str != NULL) {
-      snprintf (buff, sz, "%s\n", conv->str);
+      snprintf (buff, sz, "%s", conv->str);
     }
     if (conv->allocated) {
       free (conv->str);
