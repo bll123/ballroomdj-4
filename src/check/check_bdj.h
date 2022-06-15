@@ -10,7 +10,6 @@ Suite *     fileop_suite (void);
 Suite *     ilist_suite (void);
 //Suite *     list_suite (void);
 Suite *     lock_suite (void);
-Suite *     musicq_suite (void);
 Suite *     nlist_suite (void);
 Suite *     pathutil_suite (void);
 Suite *     procutil_suite (void);

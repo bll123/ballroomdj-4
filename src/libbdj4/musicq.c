@@ -10,23 +10,43 @@
 
 #include "bdjvarsdf.h"
 #include "dance.h"
+#include "musicdb.h"
 #include "musicq.h"
 #include "log.h"
 #include "queue.h"
+#include "song.h"
 #include "tagdef.h"
+
+typedef struct {
+  int           dispidx;
+  int           uniqueidx;
+  dbidx_t       dbidx;
+  char          *playlistName;
+  musicqflag_t  flags;
+  char          *announce;
+} musicqitem_t;
+
+typedef struct musicq {
+  musicdb_t       *musicdb;
+  queue_t         *q [MUSICQ_MAX];
+  int             dispidx [MUSICQ_MAX];
+  int             uniqueidx [MUSICQ_MAX];
+  ssize_t         duration [MUSICQ_MAX];
+} musicq_t;
 
 static void musicqQueueItemFree (void *tqitem);
 static int  musicqRenumberStart (musicq_t *musicq, musicqidx_t musicqidx);
 static void musicqRenumber (musicq_t *musicq, musicqidx_t musicqidx, int olddispidx);
 
 musicq_t *
-musicqAlloc (void)
+musicqAlloc (musicdb_t *db)
 {
   musicq_t  *musicq;
 
   logProcBegin (LOG_PROC, "musicqAlloc");
   musicq = malloc (sizeof (musicq_t));
   assert (musicq != NULL);
+  musicq->musicdb = db;
   for (int i = 0; i < MUSICQ_MAX; ++i) {
     musicq->q [i] = queueAlloc (musicqQueueItemFree);
     musicq->uniqueidx [i] = 0;
@@ -54,16 +74,35 @@ musicqFree (musicq_t *musicq)
 }
 
 void
-musicqPush (musicq_t *musicq, musicqidx_t musicqidx, song_t *song, char *plname)
+musicqSetDatabase (musicq_t *musicq, musicdb_t *db)
+{
+  if (musicq == NULL) {
+    return;
+  }
+
+  musicq->musicdb = db;
+}
+
+void
+musicqPush (musicq_t *musicq, musicqidx_t musicqidx, dbidx_t dbidx, char *plname)
 {
   musicqitem_t      *musicqitem;
   ssize_t           dur;
+  song_t            *song = NULL;
 
   logProcBegin (LOG_PROC, "musicqPush");
-  if (musicq == NULL || musicq->q [musicqidx] == NULL || song == NULL) {
+  if (musicq == NULL || musicq->q [musicqidx] == NULL || dbidx < 0) {
     logProcEnd (LOG_PROC, "musicqPush", "bad-ptr");
     return;
   }
+
+  song = dbGetByIdx (musicq->musicdb, dbidx);
+  if (song == NULL) {
+    logProcEnd (LOG_PROC, "musicqPush", "song-not-found");
+    return;
+  }
+
+  dur = songGetNum (song, TAG_DURATION);
 
   musicqitem = malloc (sizeof (musicqitem_t));
   assert (musicqitem != NULL);
@@ -72,14 +111,13 @@ musicqPush (musicq_t *musicq, musicqidx_t musicqidx, song_t *song, char *plname)
   ++(musicq->dispidx [musicqidx]);
   musicqitem->uniqueidx = musicq->uniqueidx [musicqidx];
   ++(musicq->uniqueidx [musicqidx]);
-  musicqitem->song = song;
+  musicqitem->dbidx = dbidx;
   musicqitem->playlistName = NULL;
   if (plname != NULL) {
     musicqitem->playlistName = strdup (plname);
   }
   musicqitem->announce = NULL;
   musicqitem->flags = MUSICQ_FLAG_NONE;
-  dur = songGetNum (song, TAG_DURATION);
   musicq->duration [musicqidx] += dur;
   queuePush (musicq->q [musicqidx], musicqitem);
   logProcEnd (LOG_PROC, "musicqPush", "");
@@ -101,7 +139,7 @@ musicqPushHeadEmpty (musicq_t *musicq, musicqidx_t musicqidx)
   musicqitem->dispidx = 0;
   musicqitem->uniqueidx = musicq->uniqueidx [musicqidx];
   ++(musicq->uniqueidx [musicqidx]);
-  musicqitem->song = NULL;
+  musicqitem->dbidx = -1;
   musicqitem->playlistName = NULL;
   musicqitem->announce = NULL;
   musicqitem->flags = MUSICQ_FLAG_EMPTY;
@@ -124,14 +162,15 @@ musicqMove (musicq_t *musicq, musicqidx_t musicqidx,
 }
 
 int
-musicqInsert (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx, song_t *song)
+musicqInsert (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx, dbidx_t dbidx)
 {
   int           olddispidx;
   musicqitem_t  *musicqitem;
   ssize_t       dur;
+  song_t        *song;
 
   logProcBegin (LOG_PROC, "musicqInsert");
-  if (musicq == NULL || musicq->q [musicqidx] == NULL || song == NULL) {
+  if (musicq == NULL || musicq->q [musicqidx] == NULL || dbidx < 0) {
     logProcEnd (LOG_PROC, "musicqInsert", "bad-ptr");
     return -1;
   }
@@ -139,8 +178,16 @@ musicqInsert (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx, song_t *song
     logProcEnd (LOG_PROC, "musicqInsert", "bad-idx");
     return -1;
   }
+
+  song = dbGetByIdx (musicq->musicdb, dbidx);
+  if (song == NULL) {
+    logProcEnd (LOG_PROC, "musicqPush", "song-not-found");
+    return -1;
+  }
+  dur = songGetNum (song, TAG_DURATION);
+
   if (idx >= queueGetCount (musicq->q [musicqidx])) {
-    musicqPush (musicq, musicqidx, song, NULL);
+    musicqPush (musicq, musicqidx, dbidx, NULL);
     logProcEnd (LOG_PROC, "musicqInsert", "idx>q-count; push");
     return (queueGetCount (musicq->q [musicqidx]) - 1);
   }
@@ -149,13 +196,12 @@ musicqInsert (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx, song_t *song
 
   musicqitem = malloc (sizeof (musicqitem_t));
   assert (musicqitem != NULL);
-  musicqitem->song = song;
+  musicqitem->dbidx = dbidx;
   musicqitem->playlistName = NULL;
   musicqitem->announce = NULL;
   musicqitem->flags = MUSICQ_FLAG_REQUEST;
   musicqitem->uniqueidx = musicq->uniqueidx [musicqidx];
   ++musicq->uniqueidx [musicqidx];
-  dur = songGetNum (song, TAG_DURATION);
   musicq->duration [musicqidx] += dur;
 
   queueInsert (musicq->q [musicqidx], idx, musicqitem);
@@ -164,7 +210,7 @@ musicqInsert (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx, song_t *song
   return idx;
 }
 
-song_t *
+dbidx_t
 musicqGetCurrent (musicq_t *musicq, musicqidx_t musicqidx)
 {
   musicqitem_t      *musicqitem;
@@ -172,24 +218,24 @@ musicqGetCurrent (musicq_t *musicq, musicqidx_t musicqidx)
   logProcBegin (LOG_PROC, "musicqGetCurrent");
   if (musicq == NULL || musicq->q [musicqidx] == NULL) {
     logProcEnd (LOG_PROC, "musicqGetCurrent", "bad-ptr");
-    return NULL;
+    return -1;
   }
 
   musicqitem = queueGetCurrent (musicq->q [musicqidx]);
   if (musicqitem == NULL) {
     logProcEnd (LOG_PROC, "musicqGetCurrent", "no-item");
-    return NULL;
+    return -1;
   }
   if ((musicqitem->flags & MUSICQ_FLAG_EMPTY) == MUSICQ_FLAG_EMPTY) {
     logProcEnd (LOG_PROC, "musicqGetCurrent", "empty-item");
-    return NULL;
+    return -1;
   }
   logProcEnd (LOG_PROC, "musicqGetCurrent", "");
-  return musicqitem->song;
+  return musicqitem->dbidx;
 }
 
 /* gets by the real idx, not the display index */
-song_t *
+dbidx_t
 musicqGetByIdx (musicq_t *musicq, musicqidx_t musicqidx, ssize_t qkey)
 {
   musicqitem_t      *musicqitem;
@@ -197,16 +243,16 @@ musicqGetByIdx (musicq_t *musicq, musicqidx_t musicqidx, ssize_t qkey)
   logProcBegin (LOG_PROC, "musicqGetByIdx");
   if (musicq == NULL || musicq->q [musicqidx] == NULL) {
     logProcEnd (LOG_PROC, "musicqGetByIdx", "bad-ptr");
-    return NULL;
+    return -1;
   }
 
   musicqitem = queueGetByIdx (musicq->q [musicqidx], qkey);
   if (musicqitem != NULL) {
     logProcEnd (LOG_PROC, "musicqGetByIdx", "");
-    return musicqitem->song;
+    return musicqitem->dbidx;
   }
   logProcEnd (LOG_PROC, "musicqGetByIdx", "no-item");
-  return NULL;
+  return -1;
 }
 
 musicqflag_t
@@ -364,8 +410,6 @@ void
 musicqPop (musicq_t *musicq, musicqidx_t musicqidx)
 {
   musicqitem_t  *musicqitem;
-  ssize_t       dur;
-  song_t        *song;
 
   logProcBegin (LOG_PROC, "musicqPop");
   if (musicq == NULL || musicq->q [musicqidx] == NULL) {
@@ -378,9 +422,14 @@ musicqPop (musicq_t *musicq, musicqidx_t musicqidx)
     return;
   }
   if ((musicqitem->flags & MUSICQ_FLAG_EMPTY) != MUSICQ_FLAG_EMPTY) {
-    song = musicqitem->song;
-    dur = songGetNum (song, TAG_DURATION);
-    musicq->duration [musicqidx] -= dur;
+    song_t  *song;
+    ssize_t dur;
+
+    song = dbGetByIdx (musicq->musicdb, musicqitem->dbidx);
+    if (song != NULL) {
+      dur = songGetNum (song, TAG_DURATION);
+      musicq->duration [musicqidx] -= dur;
+    }
   }
   musicqQueueItemFree (musicqitem);
   logProcEnd (LOG_PROC, "musicqPop", "");
@@ -393,8 +442,6 @@ musicqClear (musicq_t *musicq, musicqidx_t musicqidx, ssize_t startIdx)
   int           olddispidx;
   ssize_t       iteridx;
   musicqitem_t  *musicqitem;
-  song_t        *song;
-  ssize_t       dur;
 
   logProcBegin (LOG_PROC, "musicqClear");
   if (musicq == NULL) {
@@ -417,9 +464,14 @@ musicqClear (musicq_t *musicq, musicqidx_t musicqidx, ssize_t startIdx)
   queueStartIterator (musicq->q [musicqidx], &iteridx);
   musicq->duration [musicqidx] = 0;
   while ((musicqitem = queueIterateData (musicq->q [musicqidx], &iteridx)) != NULL) {
-    song = musicqitem->song;
-    dur = songGetNum (song, TAG_DURATION);
-    musicq->duration [musicqidx] += dur;
+    song_t  *song;
+    ssize_t dur;
+
+    song = dbGetByIdx (musicq->musicdb, musicqitem->dbidx);
+    if (song != NULL) {
+      dur = songGetNum (song, TAG_DURATION);
+      musicq->duration [musicqidx] += dur;
+    }
   }
 
   musicq->dispidx [musicqidx] = olddispidx + queueGetCount (musicq->q [musicqidx]);
@@ -443,9 +495,11 @@ musicqRemove (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx)
 
 
   musicqitem = queueGetByIdx (musicq->q [musicqidx], idx);
-  song = musicqitem->song;
-  dur = songGetNum (song, TAG_DURATION);
-  musicq->duration [musicqidx] -= dur;
+  song = dbGetByIdx (musicq->musicdb, musicqitem->dbidx);
+  if (song != NULL) {
+    dur = songGetNum (song, TAG_DURATION);
+    musicq->duration [musicqidx] -= dur;
+  }
 
   olddispidx = musicqRenumberStart (musicq, musicqidx);
   queueRemoveByIdx (musicq->q [musicqidx], idx);
@@ -497,7 +551,7 @@ musicqGetData (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx, tagdefkey_t
   musicqitem = queueGetByIdx (musicq->q [musicqidx], idx);
   if (musicqitem != NULL &&
      (musicqitem->flags & MUSICQ_FLAG_EMPTY) != MUSICQ_FLAG_EMPTY) {
-    song = musicqitem->song;
+    song = dbGetByIdx (musicq->musicdb, musicqitem->dbidx);
     data = songGetStr (song, tagidx);
   }
   return data;
@@ -522,7 +576,7 @@ musicqGetDance (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx)
   musicqitem = queueGetByIdx (musicq->q [musicqidx], idx);
   if (musicqitem != NULL &&
      (musicqitem->flags & MUSICQ_FLAG_EMPTY) != MUSICQ_FLAG_EMPTY) {
-    song = musicqitem->song;
+    song = dbGetByIdx (musicq->musicdb, musicqitem->dbidx);
     danceIdx = songGetNum (song, TAG_DANCE);
     dances = bdjvarsdfGet (BDJVDF_DANCES);
     danceStr = danceGetStr (dances, danceIdx, DANCE_DANCE);

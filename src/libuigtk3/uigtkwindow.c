@@ -97,7 +97,9 @@ uiWindowGetSize (UIWidget *uiwindow, int *x, int *y)
 inline void
 uiWindowSetDefaultSize (UIWidget *uiwindow, int x, int y)
 {
-  gtk_window_set_default_size (GTK_WINDOW (uiwindow->widget), x, y);
+  if (x != -1 && y != -1) {
+    gtk_window_set_default_size (GTK_WINDOW (uiwindow->widget), x, y);
+  }
 }
 
 inline void

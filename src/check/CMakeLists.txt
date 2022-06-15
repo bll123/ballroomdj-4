@@ -10,7 +10,6 @@ add_executable (check_all
   check_fileop.c
   check_ilist.c
   check_lock.c
-  check_musicq.c
   check_orgutil.c
   check_nlist.c
   check_pathutil.c

@@ -69,9 +69,6 @@ main (int argc, char *argv [])
   s = filedata_suite();
   srunner_add_suite (sr, s);
 
-  s = musicq_suite();
-  srunner_add_suite (sr, s);
-
   s = orgutil_suite();
   srunner_add_suite (sr, s);
 
