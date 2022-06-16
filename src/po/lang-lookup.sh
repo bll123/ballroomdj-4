@@ -39,5 +39,5 @@ for pofile in *.po; do
   done
 
   mv -f $NPOFILE $pofile
-#  test -f $OLDPOFILE && rm -f $OLDPOFILE
+  test -f $OLDPOFILE && rm -f $OLDPOFILE
 done

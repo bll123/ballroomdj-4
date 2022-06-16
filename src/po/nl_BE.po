@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
 "POT-Creation-Date: 2022-06-08\n"
-"PO-Revision-Date: 2022-06-08\n"
+"PO-Revision-Date: 2022-06-16\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -203,7 +203,8 @@ msgstr "Toegestane zoekwoorden"
 msgid "Announcement"
 msgstr "Mededeling"
 
-#. CONTEXT: a filter: all statuses are displayed in the song selection
+#. CONTEXT: a filter: all dance status will be listed
+#. CONTEXT: a filter: all dance status are displayed in the song selection
 msgid "Any Status"
 msgstr ""
 
@@ -1272,6 +1273,7 @@ msgstr "Salsa"
 msgid "Samba"
 msgstr "Samba"
 
+#. CONTEXT: song editor : save data
 msgid "Save"
 msgstr "Bewaren"
 
@@ -1649,6 +1651,25 @@ msgstr ""
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_get_support"
 msgstr "To get support, select the 'Support' button. There are links to the wiki, forums and problem ticketing system. Or use the 'Send Support Message' button to send a message."
+
+#. CONTEXT: title of a getting started help section
+msgid "Check the Dance for Each Song"
+msgstr ""
+
+#. CONTEXT: text-key for getting started help section (translate the text, not the key)
+msgid "helptext_check_dance"
+msgstr ""
+"=> Select 'Music Manager' on the left side of the 'BDJ4 Management' window."
+" Scroll through the list of songs and check to make sure the dance is set"
+" for each song.  To set the dance for a song:"
+" => Select the song."
+" => Select the 'Song Editor' tab (below the player, above the list of songs)."
+" => Next to the 'Dance' label, use the dance drop-down selection and"
+" select the dance for the song."
+" => In the upper right of the 'Song Editor' tab, select the 'Save' button."
+" You can switch back to the 'Music Manager' tab and check for other"
+" songs that need to have the dance set."
+" => Leave the 'BDJ4 Management' window open."
 
 #. CONTEXT: title of a getting started help section
 msgid "Build the Database for the First Time"

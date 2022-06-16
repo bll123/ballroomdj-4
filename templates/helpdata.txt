@@ -1,5 +1,5 @@
 # helpdata
-# 2022-5-14
+# 2022-6-16
 KEY
 ..0
 TITLE
@@ -14,7 +14,7 @@ TITLE
 ..Set the Location of the Music Folder
 TEXT
 ..helptext_music_location
-#The first step is to configure the location of the music folder.
+#The first step is to configure the location of your music folder.
 # => Select the 'Configure' button.
 # In the 'BDJ4 Configuration' window, the 'General Options'
 # section is displayed.
@@ -31,9 +31,11 @@ TEXT
 # can determine the information about your songs when the database is built.
 # => Select 'Organisation' on the left side of the 'BDJ4 Configuration' window.
 # Many people have their music organised by putting each dance into a
-# separate folder.  This is the default organisation: 'Dance/Title'.
+# separate folder.
+# This is the default organisation: 'Dance/Title'.
 # => Select the organisation method you use for your songs in the
-# 'Organisation Path' drop-down. => Close the 'BDJ4 Organisation' window.
+# 'Organisation Path' drop-down.
+# => Close the 'BDJ4 Organisation' window.
 KEY
 ..3
 TITLE
@@ -42,39 +44,61 @@ TEXT
 ..helptext_build_db
 #In order to function, BallroomDJ 4 maintains a database of all of your
 # Songs. This database must be built for the first time.
-# => Select the 'Manage' button.  => In the 'BDJ4 Management' window, select
+# => Select the 'Manage' button.
+# => In the 'BDJ4 Management' window, select
 # the 'Update Database' section on the left side of the window.
 # The default selection 'Check for New' is used when you add or remove
-# songs from your music collection. => Change the selection to
-# 'Rebuild Database'. => Select the 'Start' button. => Wait for the
-# database rebuild to finish. => Leave the 'BDJ4 Management' window open.
+# songs from your music collection.
+# => Change the selection to 'Rebuild Database'.
+# => Select the 'Start' button.
+# => Wait for the database rebuild to finish.
+# => Leave the 'BDJ4 Management' window open.
 KEY
 ..4
+TITLE
+..Check the Dance for Each Song
+TEXT
+..helptext_check_dance
+#=> Select 'Music Manager' on the left side of the 'BDJ4 Management' window.
+# Scroll through the list of songs and check to make sure the dance is set
+# for each song.
+# To set the dance for a song.
+# => Select the song.
+# => Select the 'Song Editor' tab (below the player, above the list of songs).
+# => Next to the 'Dance' label, use the dance drop-down selection and
+# select the dance for the song.
+# => In the upper right of the 'Song Editor' tab, select the 'Save' button.
+# You can switch back to the 'Music Manager' tab and check for other
+# songs that need to have the dance set.
+# => Leave the 'BDJ4 Management' window open.
+KEY
+..5
 TITLE
 ..Create an Example Playlist
 TEXT
 ..helptext_create_playlist
 #=> Select 'Edit Song Lists' on the left side of the 'BDJ4 Management' window.
-# On the right side of the lower section of the window is a list of your
-# songs. => Select a song by clicking on it. => Now select the left arrow
+# On the right side of the lower section of the window is a list of your songs.
+# => Select a song by clicking on it.
+# => Now select the left arrow
 # button in the middle of the lower section. This will add the song you
-# selected to the song list that is being created. => Select a few
-# songs and add each of them to the song list. Above the song list is
-# an editable box with the name 'New Song List' in it. => Click in the
-# box and change the name of the song list. => Close the 'BDJ4 Management'
-# window. The song list is automatically saved.
+# selected to the song list that is being created.
+# => Select a few songs and add each of them to the song list.
+# Above the song list is an editable box with the name 'New Song List' in it.
+# => Click in the box and change the name of the song list.
+# => Close the 'BDJ4 Management' window. The song list is automatically saved.
 KEY
-..5
+..6
 TITLE
 ..Play a Playlist
 TEXT
 ..helptext_play_playlist
 #Now you will play the playlist that was just created.
-# => Select the 'Player' button. => In the player window, select the
-# 'Queue Playlist' drop-down. => Select the name of the playlist that
-# you entered previously.
+# => Select the 'Player' button.
+# => In the player window, select the 'Queue Playlist' drop-down.
+# => Select the name of the playlist that you entered previously.
 KEY
-..6
+..7
 TITLE
 ..How to get Support
 TEXT
