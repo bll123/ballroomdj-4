@@ -16,7 +16,6 @@
 #include "genre.h"
 #include "ui.h"
 #include "uigenre.h"
-#include "uiutils.h"
 
 typedef struct uigenre {
   genre_t       *genres;

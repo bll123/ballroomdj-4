@@ -19,7 +19,6 @@
 #include "procutil.h"
 #include "sysvars.h"
 #include "ui.h"
-#include "uiutils.h"
 
 enum {
   MANAGE_DB_CHECK_NEW,

@@ -15,7 +15,6 @@
 #include "log.h"  // needed for glogwriteroutput
 #include "sysvars.h"
 #include "ui.h"
-#include "uiutils.h"
 
 static char **cssdata = NULL;
 static int  csscount = 0;

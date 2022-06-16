@@ -6,7 +6,7 @@
 #include "bdj4.h"
 #include "conn.h"
 #include "progstate.h"
-#include "uiutils.h"
+#include "ui.h"
 
 enum {
   UIPLAYER_CALLBACK_FADE,

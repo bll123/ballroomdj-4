@@ -10,11 +10,112 @@
 #include "nlist.h"
 #include "slist.h"
 #include "song.h"
-#include "uiutils.h"
+
+typedef bool  (*UICallbackFunc)(void *udata);
+typedef bool  (*UIDoubleCallbackFunc)(void *udata, double value);
+typedef bool  (*UIIntIntCallbackFunc)(void *udata, int a, int b);
+typedef bool  (*UILongCallbackFunc)(void *udata, long value);
+typedef bool  (*UILongIntCallbackFunc)(void *udata, long lval, int ival);
+typedef long  (*UIStrCallbackFunc)(void *udata, const char *txt);
+
+typedef struct {
+  union {
+    UICallbackFunc        cb;
+    UIDoubleCallbackFunc  doublecb;
+    UIIntIntCallbackFunc  intintcb;
+    UILongCallbackFunc    longcb;
+    UILongIntCallbackFunc longintcb;
+    UIStrCallbackFunc     strcb;
+  };
+  void            *udata;
+} UICallback;
+
+/* these are defined based on the gtk values */
+/* would change for a different gui package */
+#define UICB_STOP true
+#define UICB_CONT false
+#define UICB_DISPLAYED true
+#define UICB_NO_DISP false
+#define UICB_NO_CONV false
+#define UICB_CONVERTED true
+
+typedef struct {
+  union {
+#if BDJ4_USE_GTK
+    GtkWidget         *widget;
+    GtkSizeGroup      *sg;
+    GdkPixbuf         *pixbuf;
+    GtkTreeSelection  *sel;
+    GtkTextBuffer     *buffer;
+#endif
+  };
+} UIWidget;
+
+enum {
+  UIUTILS_BASE_MARGIN_SZ = 2,
+  UIUTILS_MENU_MAX = 5,
+};
+
+typedef struct {
+  int             menucount;
+  UIWidget        menuitem [UIUTILS_MENU_MAX];
+  bool            initialized : 1;
+} uimenu_t;
+
+enum {
+  UI_TAB_MUSICQ,
+  UI_TAB_SONGSEL,
+  UI_TAB_SONGEDIT,
+  UI_TAB_AUDIOID,
+};
+
+/* dialogs */
+typedef struct uiselect uiselect_t;
+
+// ### todo move this into uigtkdialog.c
+typedef struct uiselect {
+  char        *label;
+  UIWidget    *window;
+  const char  *startpath;
+  const char  *mimefiltername;
+  const char  *mimetype;
+} uiselect_t;
+
+/* entry */
+typedef struct uientry uientry_t;
+typedef int (*uiutilsentryval_t)(uientry_t *entry, void *udata);
+
+/* spinbox */
+enum {
+  SB_TEXT,
+  SB_TIME_BASIC,
+  SB_TIME_PRECISE,
+};
+
+typedef char * (*uispinboxdisp_t)(void *, int);
+
+/* dropdown */
+typedef struct uidropdown uidropdown_t;
+
+typedef struct {
+  UIWidget      scw;
+  UIWidget      textbox;
+  UIWidget      buffer;
+} uitextbox_t;
+
+extern int uiBaseMarginSz;
 
 /* uigeneral.c */
 /* general routines that are called by the ui specific code */
 void uiutilsUIWidgetInit (UIWidget *uiwidget);
+bool uiutilsUIWidgetSet (UIWidget *uiwidget);
+void uiutilsUIWidgetCopy (UIWidget *target, UIWidget *source);
+void uiutilsUICallbackInit (UICallback *uicb, UICallbackFunc cb, void *udata);
+void uiutilsUICallbackDoubleInit (UICallback *uicb, UIDoubleCallbackFunc cb, void *udata);
+void uiutilsUICallbackIntIntInit (UICallback *uicb, UIIntIntCallbackFunc cb, void *udata);
+void uiutilsUICallbackLongInit (UICallback *uicb, UILongCallbackFunc cb, void *udata);
+void uiutilsUICallbackLongIntInit (UICallback *uicb, UILongIntCallbackFunc cb, void *udata);
+void uiutilsUICallbackStrInit (UICallback *uicb, UIStrCallbackFunc cb, void *udata);
 bool uiutilsCallbackHandler (UICallback *uicb);
 bool uiutilsCallbackLongHandler (UICallback *uicb, long value);
 bool uiutilsCallbackLongIntHandler (UICallback *uicb, long lval, int ival);

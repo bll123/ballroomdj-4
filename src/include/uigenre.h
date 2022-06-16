@@ -1,7 +1,7 @@
 #ifndef INC_UIGENRE_H
 #define INC_UIGENRE_H
 
-#include "uiutils.h"
+#include "ui.h"
 
 typedef struct uigenre uigenre_t;
 

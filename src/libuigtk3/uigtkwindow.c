@@ -12,7 +12,6 @@
 #include <gtk/gtk.h>
 
 #include "ui.h"
-#include "uiutils.h"
 
 static gboolean uiWindowFocusOutCallback (GtkWidget *w, GdkEventFocus *event, gpointer udata);
 static gboolean uiWindowCloseCallback (GtkWidget *window, GdkEvent *event, gpointer udata);

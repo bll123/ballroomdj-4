@@ -29,8 +29,8 @@
 #include "log.h"
 #include "manageui.h"
 #include "musicq.h"
-#include "osutils.h"
 #include "osuiutils.h"
+#include "osutils.h"
 #include "pathbld.h"
 #include "pathutil.h"
 #include "playlist.h"
@@ -44,12 +44,12 @@
 #include "tmutil.h"
 #include "ui.h"
 #include "uimusicq.h"
+#include "uinbutil.h"
 #include "uiplayer.h"
 #include "uiselectfile.h"
 #include "uisongedit.h"
 #include "uisongfilter.h"
 #include "uisongsel.h"
-#include "uiutils.h"
 
 enum {
   MANAGE_TAB_OTHER,

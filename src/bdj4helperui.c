@@ -20,13 +20,12 @@
 #include "datafile.h"
 #include "ilist.h"
 #include "log.h"
-#include "osutils.h"
 #include "osuiutils.h"
+#include "osutils.h"
 #include "pathbld.h"
 #include "progstate.h"
 #include "sockh.h"
 #include "ui.h"
-#include "uiutils.h"
 
 typedef struct {
   progstate_t     *progstate;

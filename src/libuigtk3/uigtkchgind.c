@@ -10,7 +10,6 @@
 #include <gtk/gtk.h>
 
 #include "ui.h"
-#include "uiutils.h"
 
 typedef struct uichgind {
   UIWidget    label;

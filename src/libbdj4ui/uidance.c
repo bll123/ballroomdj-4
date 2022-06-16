@@ -16,7 +16,6 @@
 #include "dance.h"
 #include "ui.h"
 #include "uidance.h"
-#include "uiutils.h"
 
 typedef struct uidance {
   dance_t       *dances;

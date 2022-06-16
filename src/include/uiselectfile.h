@@ -3,7 +3,7 @@
 
 #include "bdj4ui.h"
 #include "nlist.h"
-#include "uiutils.h"
+#include "ui.h"
 
 enum {
   SELFILE_PLAYLIST,

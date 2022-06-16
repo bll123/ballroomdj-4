@@ -10,7 +10,6 @@
 #include <math.h>
 
 #include "ui.h"
-#include "uiutils.h"
 
 typedef struct uiswitch {
   UIWidget    uiswitch;

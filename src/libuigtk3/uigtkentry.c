@@ -17,7 +17,6 @@
 #include "pathutil.h"
 #include "tmutil.h"
 #include "ui.h"
-#include "uiutils.h"
 
 typedef struct uientry {
   GtkEntryBuffer  *buffer;

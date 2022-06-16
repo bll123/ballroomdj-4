@@ -13,7 +13,6 @@
 
 #include "tagdef.h"
 #include "ui.h"
-#include "uiutils.h"
 
 static GType * uiAppendType (GType *types, int ncol, int type);
 

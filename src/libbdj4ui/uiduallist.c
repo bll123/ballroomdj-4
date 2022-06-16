@@ -17,7 +17,6 @@
 #include "slist.h"
 #include "ui.h"
 #include "uiduallist.h"
-#include "uiutils.h"
 
 enum {
   DUALLIST_COL_DISP,

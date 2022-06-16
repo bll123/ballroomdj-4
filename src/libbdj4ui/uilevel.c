@@ -16,7 +16,6 @@
 #include "level.h"
 #include "ui.h"
 #include "uilevel.h"
-#include "uiutils.h"
 
 typedef struct uilevel {
   level_t       *levels;

@@ -14,7 +14,6 @@
 
 #include "bdj4intl.h"
 #include "ui.h"
-#include "uiutils.h"
 
 static void uiDialogResponseHandler (GtkDialog *d, gint responseid, gpointer udata);
 

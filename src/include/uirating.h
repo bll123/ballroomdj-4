@@ -1,7 +1,7 @@
 #ifndef INC_UIRATING_H
 #define INC_UIRATING_H
 
-#include "uiutils.h"
+#include "ui.h"
 
 typedef struct uirating uirating_t;
 

@@ -17,11 +17,11 @@
 #include "manageui.h"
 #include "pathbld.h"
 #include "playlist.h"
+#include "tmutil.h"
 #include "ui.h"
 #include "uilevel.h"
 #include "uirating.h"
 #include "uiselectfile.h"
-#include "uiutils.h"
 #include "validate.h"
 
 enum {

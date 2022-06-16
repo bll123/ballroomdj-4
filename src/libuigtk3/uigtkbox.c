@@ -12,7 +12,6 @@
 #include <gtk/gtk.h>
 
 #include "ui.h"
-#include "uiutils.h"
 
 void
 uiCreateVertBox (UIWidget *uiwidget)

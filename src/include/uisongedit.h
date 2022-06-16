@@ -8,7 +8,7 @@
 #include "musicdb.h"
 #include "song.h"
 #include "uisongsel.h"
-#include "uiutils.h"
+#include "ui.h"
 
 typedef struct {
   conn_t            *conn;

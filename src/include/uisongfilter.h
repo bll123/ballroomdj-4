@@ -3,7 +3,7 @@
 
 #include "nlist.h"
 #include "songfilter.h"
-#include "uiutils.h"
+#include "ui.h"
 
 typedef struct uisongfilter uisongfilter_t;
 

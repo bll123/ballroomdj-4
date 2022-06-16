@@ -18,8 +18,8 @@
 #include "dance.h"
 #include "manageui.h"
 #include "playlist.h"
+#include "tmutil.h"
 #include "ui.h"
-#include "uiutils.h"
 #include "validate.h"
 
 enum {

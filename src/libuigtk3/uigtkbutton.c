@@ -14,7 +14,6 @@
 #include "bdj4.h"
 #include "pathbld.h"
 #include "ui.h"
-#include "uiutils.h"
 
 static void uiButtonSignalHandler (GtkButton *b, gpointer udata);
 

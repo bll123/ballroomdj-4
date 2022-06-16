@@ -13,8 +13,7 @@
 #include "dance.h"
 #include "datafile.h"
 #include "log.h"
-#include "ui.h"
-#include "uiutils.h"
+#include "uinbutil.h"
 
 uiutilsnbtabid_t *
 uiutilsNotebookIDInit (void)
@@ -93,92 +92,3 @@ uiutilsNotebookIDIterate (uiutilsnbtabid_t *nbtabid, int *iteridx)
   return nbtabid->tabids [*iteridx];
 }
 
-inline bool
-uiutilsUIWidgetSet (UIWidget *uiwidget)
-{
-  bool rc = true;
-
-  if (uiwidget->widget == NULL) {
-    rc = false;
-  }
-  return rc;
-}
-
-
-inline void
-uiutilsUIWidgetCopy (UIWidget *target, UIWidget *source)
-{
-  if (target == NULL) {
-    return;
-  }
-  if (source == NULL) {
-    return;
-  }
-  memcpy (target, source, sizeof (UIWidget));
-}
-
-void
-uiutilsUICallbackInit (UICallback *uicb, UICallbackFunc cb, void *udata)
-{
-  if (uicb == NULL) {
-    return;
-  }
-
-  uicb->cb = cb;
-  uicb->udata = udata;
-}
-
-void
-uiutilsUICallbackDoubleInit (UICallback *uicb, UIDoubleCallbackFunc cb, void *udata)
-{
-  if (uicb == NULL) {
-    return;
-  }
-
-  uicb->doublecb = cb;
-  uicb->udata = udata;
-}
-
-void
-uiutilsUICallbackIntIntInit (UICallback *uicb, UIIntIntCallbackFunc cb, void *udata)
-{
-  if (uicb == NULL) {
-    return;
-  }
-
-  uicb->intintcb = cb;
-  uicb->udata = udata;
-}
-
-void
-uiutilsUICallbackLongInit (UICallback *uicb, UILongCallbackFunc cb, void *udata)
-{
-  if (uicb == NULL) {
-    return;
-  }
-
-  uicb->longcb = cb;
-  uicb->udata = udata;
-}
-
-void
-uiutilsUICallbackLongIntInit (UICallback *uicb, UILongIntCallbackFunc cb, void *udata)
-{
-  if (uicb == NULL) {
-    return;
-  }
-
-  uicb->longintcb = cb;
-  uicb->udata = udata;
-}
-
-void
-uiutilsUICallbackStrInit (UICallback *uicb, UIStrCallbackFunc cb, void *udata)
-{
-  if (uicb == NULL) {
-    return;
-  }
-
-  uicb->strcb = cb;
-  uicb->udata = udata;
-}

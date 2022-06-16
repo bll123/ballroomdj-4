@@ -1,7 +1,7 @@
 #ifndef INC_UISTATUS_H
 #define INC_UISTATUS_H
 
-#include "uiutils.h"
+#include "ui.h"
 
 typedef struct uistatus uistatus_t;
 

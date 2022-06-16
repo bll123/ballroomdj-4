@@ -9,7 +9,6 @@
 #include <gtk/gtk.h>
 
 #include "ui.h"
-#include "uiutils.h"
 
 static void uiMenuActivateHandler (GtkMenuItem *mi, gpointer udata);
 static void uiMenuToggleHandler (GtkWidget *mi, gpointer udata);

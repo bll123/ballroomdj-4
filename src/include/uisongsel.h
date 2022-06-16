@@ -14,7 +14,7 @@
 #include "songfilter.h"
 #include "uidance.h"
 #include "uisongfilter.h"
-#include "uiutils.h"
+#include "ui.h"
 
 typedef struct uisongsel uisongsel_t;
 typedef struct uisongselgtk uisongselgtk_t;

@@ -16,7 +16,6 @@
 #include "rating.h"
 #include "ui.h"
 #include "uirating.h"
-#include "uiutils.h"
 
 typedef struct uirating {
   rating_t      *ratings;

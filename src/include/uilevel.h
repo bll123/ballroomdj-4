@@ -1,7 +1,7 @@
 #ifndef INC_UILEVEL_H
 #define INC_UILEVEL_H
 
-#include "uiutils.h"
+#include "ui.h"
 
 typedef struct uilevel uilevel_t;
 

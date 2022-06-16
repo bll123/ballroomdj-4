@@ -26,7 +26,6 @@
 #include "ui.h"
 #include "uisong.h"
 #include "uisongfilter.h"
-#include "uiutils.h"
 
 enum {
   SONGSEL_COL_ELLIPSIZE,

@@ -1,7 +1,7 @@
 #ifndef INC_UIFAVORITE_H
 #define INC_UIFAVORITE_H
 
-#include "uiutils.h"
+#include "ui.h"
 
 typedef struct uifavorite uifavorite_t;
 

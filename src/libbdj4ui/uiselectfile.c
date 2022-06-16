@@ -16,7 +16,6 @@
 #include "nlist.h"
 #include "playlist.h"
 #include "ui.h"
-#include "uiutils.h"
 #include "uiselectfile.h"
 
 enum {

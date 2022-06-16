@@ -37,10 +37,10 @@
 #include "tmutil.h"
 #include "ui.h"
 #include "uimusicq.h"
+#include "uinbutil.h"
 #include "uiplayer.h"
 #include "uisongfilter.h"
 #include "uisongsel.h"
-#include "uiutils.h"
 
 enum {
   PLUI_MENU_CB_PLAY_QUEUE,

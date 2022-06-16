@@ -13,7 +13,6 @@
 #include "tagdef.h"
 #include "ui.h"
 #include "uisong.h"
-#include "uiutils.h"
 
 static valuetype_t uisongDetermineDisplayValueType (int tagidx);
 static valuetype_t uisongDetermineValueType (int tagidx);

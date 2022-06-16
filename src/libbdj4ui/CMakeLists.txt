@@ -17,6 +17,7 @@ add_library (libbdj4ui SHARED
   uimusicq.c
   uimusicqcommon.c
   uimusicqgtk.c
+  uinbutil.c
   uiplayer.c
   uirating.c
   uiselectfile.c
@@ -28,7 +29,6 @@ add_library (libbdj4ui SHARED
   uisongselcommon.c
   uisongselgtk.c
   uistatus.c
-  uiutils.c
 )
 target_include_directories (libbdj4ui
   PUBLIC ${GTK_INCLUDE_DIRS}

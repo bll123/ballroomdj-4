@@ -1,8 +1,8 @@
 #ifndef INC_UIDUALLIST_H
 #define INC_UIDUALLIST_H
 
-#include "uiutils.h"
 #include "slist.h"
+#include "ui.h"
 
 enum {
   DUALLIST_TREE_SOURCE,

@@ -11,8 +11,8 @@
 
 #include <gtk/gtk.h>
 
+#include "tmutil.h"
 #include "ui.h"
-#include "uiutils.h"
 
 typedef struct uispinbox {
   int             sbtype;

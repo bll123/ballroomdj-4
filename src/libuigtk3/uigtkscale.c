@@ -12,7 +12,6 @@
 #include <gtk/gtk.h>
 
 #include "ui.h"
-#include "uiutils.h"
 
 static gboolean uiScaleChangeValueHandler (GtkRange *range, GtkScrollType *scroll, gdouble value, gpointer udata);
 

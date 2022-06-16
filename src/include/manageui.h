@@ -4,7 +4,7 @@
 #include "conn.h"
 #include "nlist.h"
 #include "playlist.h"
-#include "uiutils.h"
+#include "ui.h"
 
 enum {
   MANAGE_DB_COUNT_SAVE = 10,

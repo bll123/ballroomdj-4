@@ -35,7 +35,6 @@
 #include "uirating.h"
 #include "uisongfilter.h"
 #include "uistatus.h"
-#include "uiutils.h"
 
 enum {
   UISF_LABEL_SORTBY,

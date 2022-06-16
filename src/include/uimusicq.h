@@ -10,7 +10,7 @@
 #include "musicq.h"
 #include "nlist.h"
 #include "tmutil.h"
-#include "uiutils.h"
+#include "ui.h"
 
 enum {
   UIMUSICQ_SEL_NONE,

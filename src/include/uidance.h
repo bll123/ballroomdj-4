@@ -1,7 +1,7 @@
 #ifndef INC_UIDANCE_H
 #define INC_UIDANCE_H
 
-#include "uiutils.h"
+#include "ui.h"
 
 enum {
   UIDANCE_PACK_START,

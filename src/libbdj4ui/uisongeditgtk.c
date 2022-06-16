@@ -20,6 +20,7 @@
 #include "slist.h"
 #include "tagdef.h"
 #include "tmutil.h"
+#include "ui.h"
 #include "uidance.h"
 #include "uifavorite.h"
 #include "uigenre.h"
@@ -29,7 +30,6 @@
 #include "uisong.h"
 #include "uisongsel.h"
 #include "uisongedit.h"
-#include "ui.h"
 
 enum {
   SONGEDIT_CHK_NONE,

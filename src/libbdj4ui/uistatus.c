@@ -16,7 +16,6 @@
 #include "status.h"
 #include "ui.h"
 #include "uistatus.h"
-#include "uiutils.h"
 
 typedef struct uistatus {
   status_t      *status;

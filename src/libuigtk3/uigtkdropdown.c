@@ -14,7 +14,6 @@
 #include "bdj4.h"
 #include "bdjstring.h"
 #include "ui.h"
-#include "uiutils.h"
 
 enum {
   UIUTILS_DROPDOWN_COL_IDX,
@@ -350,7 +349,7 @@ uiDropDownWindowShow (void *udata)
   bx = 0;
   by = 0;
   uiWindowGetPosition (dropdown->parentwin, &x, &y);
-  if (&dropdown->button != NULL) {
+  if (uiutilsUIWidgetSet (&dropdown->button)) {
     uiWidgetGetPosition (&dropdown->button, &bx, &by);
   }
   uiWidgetShowAll (&dropdown->window);

@@ -16,7 +16,6 @@
 #include "song.h"
 #include "ui.h"
 #include "uifavorite.h"
-#include "uiutils.h"
 
 typedef struct uifavorite {
   uispinbox_t   *spinbox;
