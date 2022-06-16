@@ -60,6 +60,8 @@ uisongselInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
     uisongsel->peers [i] = NULL;
   }
   uisongsel->newselcb = NULL;
+  uisongsel->queuecb = NULL;
+  uisongsel->editcb = NULL;
 
   uisongselUIInit (uisongsel);
 

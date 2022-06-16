@@ -88,6 +88,7 @@ enum {
   MANAGE_CB_NEW_SEL_SONGLIST,
   MANAGE_CB_QUEUE_SL,
   MANAGE_CB_QUEUE_SL_EZ,
+  MANAGE_CB_QUEUE_MM,
   MANAGE_CB_CLOSE,
   MANAGE_CB_MAIN_NB,
   MANAGE_CB_SL_NB,
@@ -215,6 +216,7 @@ static void     manageSonglistSave (manageui_t *manage);
 static void     manageSetSonglistName (manageui_t *manage, const char *nm);
 static bool     manageQueueProcessSonglist (void *udata, long dbidx, int mqidx);
 static bool     manageQueueProcessEasySonglist (void *udata, long dbidx, int mqidx);
+static bool     manageQueueProcessMusicManager (void *udata, long dbidx, int mqidx);
 static void     manageQueueProcess (void *udata, long dbidx, int mqidx, int dispsel);
 /* general */
 static bool     manageSwitchPageMain (void *udata, long pagenum);
@@ -620,6 +622,10 @@ manageInitializeUI (manageui_t *manage)
       manage->uisongfilter, DISP_SEL_MM);
   uimusicqSetPlayIdx (manage->mmmusicq, manage->musicqPlayIdx);
   uimusicqSetManageIdx (manage->mmmusicq, manage->musicqManageIdx);
+  uiutilsUICallbackLongIntInit (&manage->callbacks [MANAGE_CB_QUEUE_MM],
+      manageQueueProcessMusicManager, manage);
+  uisongselSetQueueCallback (manage->mmsongsel,
+      &manage->callbacks [MANAGE_CB_QUEUE_MM]);
 
   manage->mmsongedit = uisongeditInit (manage->conn,
       manage->musicdb, manage->dispsel, manage->options);
@@ -1357,6 +1363,13 @@ static bool
 manageQueueProcessEasySonglist (void *udata, long dbidx, int mqidx)
 {
   manageQueueProcess (udata, dbidx, mqidx, DISP_SEL_EZSONGLIST);
+  return UICB_CONT;
+}
+
+static bool
+manageQueueProcessMusicManager (void *udata, long dbidx, int mqidx)
+{
+  manageQueueProcess (udata, dbidx, mqidx, DISP_SEL_MM);
   return UICB_CONT;
 }
 

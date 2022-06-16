@@ -92,6 +92,7 @@ void  uisongselSaveSelections (uisongsel_t *uisongsel);
 void  uisongselRestoreSelections (uisongsel_t *uisongsel);
 
 /* uisongselcommon.c */
+void  uisongselClearQueue (uisongsel_t *uisongsel, musicqidx_t mqidx);
 void  uisongselQueueProcess (uisongsel_t *uisongsel, dbidx_t dbidx, musicqidx_t mqidx);
 void  uisongselSetPeerFlag (uisongsel_t *uisongsel, bool val);
 void  uisongselChangeFavorite (uisongsel_t *uisongsel, dbidx_t dbidx);

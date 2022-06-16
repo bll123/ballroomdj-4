@@ -328,18 +328,13 @@ uisongselQueueProcessPlayCallback (void *udata)
   uisongsel_t     * uisongsel = udata;
   uisongselgtk_t  * uiw;
   musicqidx_t     mqidx;
-  char            tmp [20];
 
   uiw = uisongsel->uiWidgetData;
 
   mqidx = MUSICQ_B;
-  /* clear the queue; start index is 1 */
-  snprintf (tmp, sizeof (tmp), "%d%c%d", mqidx, MSG_ARGS_RS, 1);
-  connSendMessage (uisongsel->conn, ROUTE_MAIN, MSG_QUEUE_CLEAR, tmp);
-  /* clear any playing song via main */
-  connSendMessage (uisongsel->conn, ROUTE_MAIN, MSG_CMD_NEXTSONG, NULL);
+  uisongselClearQueue (uisongsel, mqidx);
   /* queue to the hidden music queue */
-  uisongselQueueProcessHandler (udata, mqidx);
+  uisongselQueueProcessHandler (uisongsel, mqidx);
   return UICB_CONT;
 }
 
