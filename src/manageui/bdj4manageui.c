@@ -1364,7 +1364,6 @@ static void
 manageQueueProcess (void *udata, long dbidx, int mqidx, int dispsel)
 {
   manageui_t  *manage = udata;
-  long        loc;
   char        tbuff [100];
   uimusicq_t  *uimusicq = NULL;
 
@@ -1375,10 +1374,9 @@ manageQueueProcess (void *udata, long dbidx, int mqidx, int dispsel)
     uimusicq = manage->slezmusicq;
   }
 
-  loc = uimusicqGetSelectLocation (uimusicq, mqidx);
-
-  snprintf (tbuff, sizeof (tbuff), "%d%c%ld%c%ld", mqidx,
-      MSG_ARGS_RS, loc, MSG_ARGS_RS, dbidx);
+  /* queue to the end of the hidden music queue */
+  snprintf (tbuff, sizeof (tbuff), "%d%c%d%c%ld", mqidx,
+      MSG_ARGS_RS, 99, MSG_ARGS_RS, dbidx);
   connSendMessage (manage->conn, ROUTE_MAIN, MSG_MUSICQ_INSERT, tbuff);
 }
 

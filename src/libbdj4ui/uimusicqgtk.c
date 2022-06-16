@@ -506,7 +506,7 @@ uimusicqClearQueueCallback (void *udata)
   long          idx;
 
 
-  logProcBegin (LOG_PROC, "uimusicqClearQueue");
+  logProcBegin (LOG_PROC, "uimusicqClearQueueCallback");
 
   ci = uimusicq->musicqManageIdx;
 
@@ -522,7 +522,7 @@ uimusicqClearQueueCallback (void *udata)
   }
 
   uimusicqClearQueue (uimusicq, ci, idx);
-  logProcEnd (LOG_PROC, "uimusicqClearQueue", "");
+  logProcEnd (LOG_PROC, "uimusicqClearQueueCallback", "");
   return UICB_CONT;
 }
 
@@ -740,7 +740,8 @@ uimusicqPlayCallback (void *udata)
 
   dbidx = uimusicqGetSelectionDbidx (uimusicq);
 
-  uimusicqPlay (uimusicq, ci, dbidx);
+  /* queue to the hidden music queue */
+  uimusicqPlay (uimusicq, MUSICQ_B, dbidx);
   return UICB_CONT;
 }
 
