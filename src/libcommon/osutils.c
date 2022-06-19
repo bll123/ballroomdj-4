@@ -253,7 +253,8 @@ osDirOpen (const char *dirname)
     len = strlen (dirname) + 3;
     dirh->dirname = malloc (len);
     strlcpy (dirh->dirname, dirname, len);
-    strlcat (dirh->dirname, "\\*", len);
+    stringTrimChar (dirh->dirname, '/');
+    strlcat (dirh->dirname, "/*", len);
   }
 #else
   dirh->dh = opendir (dirname);

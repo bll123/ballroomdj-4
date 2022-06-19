@@ -16,7 +16,7 @@
 #include "ui.h"
 
 void
-uimusicqQueueDanceProcess (uimusicq_t *uimusicq, ssize_t idx)
+uimusicqQueueDanceProcess (uimusicq_t *uimusicq, long idx)
 {
   int           ci;
   char          tbuff [20];
@@ -34,7 +34,7 @@ uimusicqQueueDanceProcess (uimusicq_t *uimusicq, ssize_t idx)
 }
 
 void
-uimusicqQueuePlaylistProcess (uimusicq_t *uimusicq, ssize_t idx)
+uimusicqQueuePlaylistProcess (uimusicq_t *uimusicq, long idx)
 {
   int           ci;
   char          tbuff [100];

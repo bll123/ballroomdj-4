@@ -15,6 +15,14 @@
 #include "bdj4intl.h"
 #include "ui.h"
 
+typedef struct uiselect {
+  UIWidget    *window;
+  const char  *label;
+  const char  *startpath;
+  const char  *mimefiltername;
+  const char  *mimetype;
+} uiselect_t;
+
 static void uiDialogResponseHandler (GtkDialog *d, gint responseid, gpointer udata);
 
 char *
@@ -132,6 +140,22 @@ uiDialogDestroy (UIWidget *uidialog)
   }
   uidialog->widget = NULL;
 }
+
+uiselect_t *
+uiDialogCreateSelect (UIWidget *window, const char *label,
+    const char *startpath, const char *mimefiltername, const char *mimetype)
+{
+  uiselect_t  *selectdata;
+
+  selectdata = malloc (sizeof (uiselect_t));
+  selectdata->window = window;
+  selectdata->label = label;
+  selectdata->startpath = startpath;
+  selectdata->mimefiltername = mimefiltername;
+  selectdata->mimetype = mimetype;
+  return selectdata;
+}
+
 
 /* internal routines */
 

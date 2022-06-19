@@ -68,6 +68,7 @@ function copyreleasefiles {
       ${stage}/bin/check_all \
       ${stage}/bin/chkprocess \
       ${stage}/bin/voltest \
+      ${state}/img/*-base.svg \
       ${stage}/img/mkicon.sh \
       ${stage}/img/README.txt \
       ${stage}/plocal/bin/checkmk \
@@ -261,11 +262,16 @@ case $systype in
     mv -f ${manfn} ${stagedir}/install
 
     echo "-- $(date +%T) creating install package"
+    test -f $tmpcab && rm -f $tmpcab
     setLibVol $stagedir libvolwin
     (
       cd tmp;
       ../pkg/pkgmakecab.sh
     )
+    if [[ ! -f $tmpcab ]]; then
+      echo "ERR: no cabinet."
+      exit 1
+    fi
     cat bin/bdj4se.exe \
         ${tmpsep} \
         ${tmpcab} \

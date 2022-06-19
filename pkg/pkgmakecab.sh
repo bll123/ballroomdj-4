@@ -22,6 +22,7 @@ awk -v CWD=$cwd '
 BEGIN { gsub (/\//, "\\", CWD); }
 
 {
+  gsub (/\//, "\\", $0);
   if (/^=== /) {
     sub (/^=== /, "");
     print ".Set DestinationDir=" $0;
@@ -60,6 +61,10 @@ unix2dos -q $MCDIR
 unix2dos -q $FLIST
 
 cmd.exe /c "makecab /V1 /F $MCDIR /f $FLIST > $MCLOG"
+if [[ ! -f $MCOUT ]]; then
+  echo "ERR: cabinet creation failed."
+  exit 1
+fi
 
 rm -f $FDIRS $FALL $FLIST $MCDIR $MCLOG
 

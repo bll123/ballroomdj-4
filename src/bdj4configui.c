@@ -439,8 +439,8 @@ static bool     confuiOrgPathSelect (void *udata, long idx);
 static void     confuiUpdateMobmqQrcode (configui_t *confui);
 static bool     confuiMobmqTypeChg (void *udata);
 static bool     confuiMobmqPortChg (void *udata);
-static int      confuiMobmqNameChg (uientry_t *entry, void *udata);
-static int      confuiMobmqTitleChg (uientry_t *entry, void *udata);
+static int      confuiMobmqNameChg (uientry_t *entry, void *udata, bool chgflag);
+static int      confuiMobmqTitleChg (uientry_t *entry, void *udata, bool chgflag);
 static void     confuiUpdateRemctrlQrcode (configui_t *confui);
 static bool     confuiRemctrlChg (void *udata, int value);
 static bool     confuiRemctrlPortChg (void *udata);
@@ -463,11 +463,11 @@ static void   confuiTableSetDefaultSelection (configui_t *confui, GtkWidget *tre
 static void   confuiCreateDanceTable (configui_t *confui);
 static void   confuiDanceSet (GtkListStore *store, GtkTreeIter *iter, char *dancedisp, ilistidx_t key);
 static void   confuiCreateRatingTable (configui_t *confui);
-static void   confuiRatingSet (GtkListStore *store, GtkTreeIter *iter, int editable, char *ratingdisp, ssize_t weight);
+static void   confuiRatingSet (GtkListStore *store, GtkTreeIter *iter, int editable, char *ratingdisp, long weight);
 static void   confuiCreateStatusTable (configui_t *confui);
 static void   confuiStatusSet (GtkListStore *store, GtkTreeIter *iter, int editable, char *statusdisp, int playflag);
 static void   confuiCreateLevelTable (configui_t *confui);
-static void   confuiLevelSet (GtkListStore *store, GtkTreeIter *iter, int editable, char *leveldisp, ssize_t weight, int def);
+static void   confuiLevelSet (GtkListStore *store, GtkTreeIter *iter, int editable, char *leveldisp, long weight, int def);
 static void   confuiCreateGenreTable (configui_t *confui);
 static void   confuiGenreSet (GtkListStore *store, GtkTreeIter *iter, int editable, char *genredisp, int clflag);
 static void   confuiTableToggle (GtkCellRendererToggle *renderer, gchar *path, gpointer udata);
@@ -496,9 +496,9 @@ static void   confuiGenreSave (configui_t *confui);
 /* dance table */
 static void   confuiDanceSelect (GtkTreeView *tv, GtkTreePath *path,
     GtkTreeViewColumn *column, gpointer udata);
-static int    confuiDanceEntryDanceChg (uientry_t *entry, void *udata);
-static int    confuiDanceEntryTagsChg (uientry_t *entry, void *udata);
-static int    confuiDanceEntryAnnouncementChg (uientry_t *entry, void *udata);
+static int    confuiDanceEntryDanceChg (uientry_t *entry, void *udata, bool chgflag);
+static int    confuiDanceEntryTagsChg (uientry_t *entry, void *udata, bool chgflag);
+static int    confuiDanceEntryAnnouncementChg (uientry_t *entry, void *udata, bool chgflag);
 static int    confuiDanceEntryChg (uientry_t *e, void *udata, int widx);
 static bool   confuiDanceSpinboxTypeChg (void *udata);
 static bool   confuiDanceSpinboxSpeedChg (void *udata);
@@ -2159,15 +2159,15 @@ confuiSelectMusicDir (void *udata)
 {
   configui_t  *confui = udata;
   char        *fn = NULL;
-  uiselect_t  selectdata;
+  uiselect_t  *selectdata;
 
   logProcBegin (LOG_PROC, "confuiSelectMusicDir");
-  /* CONTEXT: configuration: folder selection dialog: window title */
-  selectdata.label = _("Select Music Folder Location");
-  selectdata.window = &confui->window;
-  selectdata.startpath = bdjoptGetStr (OPT_M_DIR_MUSIC);
-  selectdata.mimetype = NULL;
-  fn = uiSelectDirDialog (&selectdata);
+  selectdata = uiDialogCreateSelect (&confui->window,
+      /* CONTEXT: configuration: folder selection dialog: window title */
+      _("Select Music Folder Location"),
+      bdjoptGetStr (OPT_M_DIR_MUSIC),
+      NULL, NULL);
+  fn = uiSelectDirDialog (selectdata);
   if (fn != NULL) {
     uiEntrySetValue (confui->uiitem [CONFUI_ENTRY_MUSIC_DIR].entry, fn);
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected loc: %s", fn);
@@ -2218,17 +2218,15 @@ static void
 confuiSelectFileDialog (configui_t *confui, int widx, char *startpath,
     char *mimefiltername, char *mimetype)
 {
-  char                  *fn = NULL;
-  uiselect_t       selectdata;
+  char        *fn = NULL;
+  uiselect_t  *selectdata;
 
   logProcBegin (LOG_PROC, "confuiSelectFileDialog");
-  /* CONTEXT: configuration: file selection dialog: window title */
-  selectdata.label = _("Select File");
-  selectdata.window = &confui->window;
-  selectdata.startpath = startpath;
-  selectdata.mimefiltername = mimefiltername;
-  selectdata.mimetype = mimetype;
-  fn = uiSelectFileDialog (&selectdata);
+  selectdata = uiDialogCreateSelect (&confui->window,
+      /* CONTEXT: configuration: file selection dialog: window title */
+      _("Select File"),
+      startpath, mimefiltername, mimetype);
+  fn = uiSelectFileDialog (selectdata);
   if (fn != NULL) {
     uiEntrySetValue (confui->uiitem [widx].entry, fn);
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected loc: %s", fn);
@@ -3230,29 +3228,33 @@ confuiMobmqPortChg (void *udata)
 }
 
 static int
-confuiMobmqNameChg (uientry_t *entry, void *udata)
+confuiMobmqNameChg (uientry_t *entry, void *udata, bool chgflag)
 {
   configui_t    *confui = udata;
   const char      *sval;
 
   logProcBegin (LOG_PROC, "confuiMobmqNameChg");
-  sval = uiEntryGetValue (entry);
-  bdjoptSetStr (OPT_P_MOBILEMQTAG, sval);
-  confuiUpdateMobmqQrcode (confui);
+  if (chgflag) {
+    sval = uiEntryGetValue (entry);
+    bdjoptSetStr (OPT_P_MOBILEMQTAG, sval);
+    confuiUpdateMobmqQrcode (confui);
+  }
   logProcEnd (LOG_PROC, "confuiMobmqNameChg", "");
   return UIENTRY_OK;
 }
 
 static int
-confuiMobmqTitleChg (uientry_t *entry, void *udata)
+confuiMobmqTitleChg (uientry_t *entry, void *udata, bool chgflag)
 {
   configui_t      *confui = udata;
   const char      *sval;
 
   logProcBegin (LOG_PROC, "confuiMobmqTitleChg");
-  sval = uiEntryGetValue (entry);
-  bdjoptSetStr (OPT_P_MOBILEMQTITLE, sval);
-  confuiUpdateMobmqQrcode (confui);
+  if (chgflag) {
+    sval = uiEntryGetValue (entry);
+    bdjoptSetStr (OPT_P_MOBILEMQTITLE, sval);
+    confuiUpdateMobmqQrcode (confui);
+  }
   logProcEnd (LOG_PROC, "confuiMobmqTitleChg", "");
   return UIENTRY_OK;
 }
@@ -4716,19 +4718,19 @@ confuiDanceSelect (GtkTreeView *tv, GtkTreePath *path,
 }
 
 static int
-confuiDanceEntryDanceChg (uientry_t *entry, void *udata)
+confuiDanceEntryDanceChg (uientry_t *entry, void *udata, bool chgflag)
 {
   return confuiDanceEntryChg (entry, udata, CONFUI_ENTRY_DANCE_DANCE);
 }
 
 static int
-confuiDanceEntryTagsChg (uientry_t *entry, void *udata)
+confuiDanceEntryTagsChg (uientry_t *entry, void *udata, bool chgflag)
 {
   return confuiDanceEntryChg (entry, udata, CONFUI_ENTRY_DANCE_TAGS);
 }
 
 static int
-confuiDanceEntryAnnouncementChg (uientry_t *entry, void *udata)
+confuiDanceEntryAnnouncementChg (uientry_t *entry, void *udata, bool chgflag)
 {
   return confuiDanceEntryChg (entry, udata, CONFUI_ENTRY_DANCE_ANNOUNCEMENT);
 }

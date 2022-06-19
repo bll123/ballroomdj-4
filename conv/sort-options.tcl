@@ -5,12 +5,12 @@ if { $argc != 2 } {
   exit 1
 }
 
-set bdj3dir [lindex $argv 1]
+set bdj3dir [lindex $argv 0]
 if { ! [file exists $bdj3dir] || ! [file isdirectory $bdj3dir] } {
   puts "Invalid directory $bdj3dir"
   exit 1
 }
-set datatopdir [lindex $argv 2]
+set datatopdir [lindex $argv 1]
 
 set infn [file join $bdj3dir sortopt.tcl]
 set nfn [file join $datatopdir data sortopt.txt]

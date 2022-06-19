@@ -56,53 +56,6 @@ enum {
   UIUTILS_MENU_MAX = 5,
 };
 
-typedef struct {
-  int             menucount;
-  UIWidget        menuitem [UIUTILS_MENU_MAX];
-  bool            initialized : 1;
-} uimenu_t;
-
-enum {
-  UI_TAB_MUSICQ,
-  UI_TAB_SONGSEL,
-  UI_TAB_SONGEDIT,
-  UI_TAB_AUDIOID,
-};
-
-/* dialogs */
-typedef struct uiselect uiselect_t;
-
-// ### todo move this into uigtkdialog.c
-typedef struct uiselect {
-  char        *label;
-  UIWidget    *window;
-  const char  *startpath;
-  const char  *mimefiltername;
-  const char  *mimetype;
-} uiselect_t;
-
-/* entry */
-typedef struct uientry uientry_t;
-typedef int (*uiutilsentryval_t)(uientry_t *entry, void *udata);
-
-/* spinbox */
-enum {
-  SB_TEXT,
-  SB_TIME_BASIC,
-  SB_TIME_PRECISE,
-};
-
-typedef char * (*uispinboxdisp_t)(void *, int);
-
-/* dropdown */
-typedef struct uidropdown uidropdown_t;
-
-typedef struct {
-  UIWidget      scw;
-  UIWidget      textbox;
-  UIWidget      buffer;
-} uitextbox_t;
-
 extern int uiBaseMarginSz;
 
 /* uigeneral.c */
@@ -122,6 +75,8 @@ bool uiutilsCallbackLongIntHandler (UICallback *uicb, long lval, int ival);
 bool uiutilsCallbackStrHandler (UICallback *uicb, const char *str);
 
 /* uigtkdialog.c */
+typedef struct uiselect uiselect_t;
+
 enum {
   RESPONSE_NONE,
   RESPONSE_DELETE_WIN,
@@ -136,8 +91,15 @@ void uiCreateDialog (UIWidget *uiwidget, UIWidget *window,
     UICallback *uicb, const char *title, ...);
 void  uiDialogPackInDialog (UIWidget *uidialog, UIWidget *boxp);
 void  uiDialogDestroy (UIWidget *uidialog);
+uiselect_t *uiDialogCreateSelect (UIWidget *window, const char *label, const char *startpath, const char *mimefiltername, const char *mimetype);
 
 /* uigtkmenu.c */
+typedef struct {
+  int             menucount;
+  UIWidget        menuitem [UIUTILS_MENU_MAX];
+  bool            initialized : 1;
+} uimenu_t;
+
 void uiCreateMenubar (UIWidget *uiwidget);
 void uiCreateSubMenu (UIWidget *uimenuitem, UIWidget *uimenu);
 void uiMenuCreateItem (UIWidget *uimenu, UIWidget *uimenuitem, const char *txt, UICallback *uicb);
@@ -181,6 +143,9 @@ void uiButtonAlignLeft (UIWidget *widget);
 void uiButtonSetText (UIWidget *uiwidget, const char *txt);
 
 /* uigtkentry.c */
+typedef struct uientry uientry_t;
+typedef int (*uiutilsentryval_t)(uientry_t *entry, void *udata, bool chgflag);
+
 enum {
   UIENTRY_IMMEDIATE,
   UIENTRY_DELAYED,
@@ -205,12 +170,19 @@ void uiEntrySetColor (uientry_t *entry, const char *color);
 void uiEntrySetValidate (uientry_t *entry,
     uiutilsentryval_t valfunc, void *udata, int valdelay);
 int uiEntryValidate (uientry_t *entry, bool forceflag);
-int uiEntryValidateDir (uientry_t *edata, void *udata);
-int uiEntryValidateFile (uientry_t *edata, void *udata);
+int uiEntryValidateDir (uientry_t *edata, void *udata, bool chgflag);
+int uiEntryValidateFile (uientry_t *edata, void *udata, bool chgflag);
 void uiEntryDisable (uientry_t *entry);
 void uiEntryEnable (uientry_t *entry);
 
 /* uigtkspinbox.c */
+enum {
+  SB_TEXT,
+  SB_TIME_BASIC,
+  SB_TIME_PRECISE,
+};
+
+typedef char * (*uispinboxdisp_t)(void *, int);
 typedef struct uispinbox uispinbox_t;
 
 uispinbox_t *uiSpinboxTextInit (void);
@@ -248,6 +220,7 @@ void uiSpinboxTimeSetValueChangedCallback (uispinbox_t *spinbox, UICallback *uic
 void uiSpinboxSetValueChangedCallback (UIWidget *uiwidget, UICallback *uicb);
 
 /* uigtkdropdown.c */
+typedef struct uidropdown uidropdown_t;
 
 uidropdown_t *uiDropDownInit (void);
 void uiDropDownFree (uidropdown_t *dropdown);
@@ -273,6 +246,8 @@ void uiLinkSet (UIWidget *uilink, char *label, char *uri);
 void uiLinkSetActivateCallback (UIWidget *uilink, UICallback *uicb);
 
 /* uigtktextbox.c */
+typedef struct uitextbox uitextbox_t;
+
 uitextbox_t  *uiTextBoxCreate (int height);
 void  uiTextBoxFree (uitextbox_t *tb);
 UIWidget * uiTextBoxGetScrolledWindow (uitextbox_t *tb);

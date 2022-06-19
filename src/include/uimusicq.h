@@ -125,8 +125,8 @@ void      uimusicqSetSelectLocation (uimusicq_t *uimusicq, int mqidx, long loc);
 bool      uimusicqClearQueueCallback (void *udata);
 
 /* uimusicqcommon.c */
-void  uimusicqQueueDanceProcess (uimusicq_t *uimusicq, ssize_t idx);
-void  uimusicqQueuePlaylistProcess (uimusicq_t *uimusicq, ssize_t idx);
+void  uimusicqQueueDanceProcess (uimusicq_t *uimusicq, long idx);
+void  uimusicqQueuePlaylistProcess (uimusicq_t *uimusicq, long idx);
 bool  uimusicqStopRepeat (void *udata);
 void  uimusicqMoveTop (uimusicq_t *uimusicq, int mqidx, long idx);
 void  uimusicqMoveUp (uimusicq_t *uimusicq, int mqidx, long idx);

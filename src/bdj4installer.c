@@ -45,6 +45,7 @@
 
 /* installation states */
 typedef enum {
+  INST_PRE_INIT,
   INST_BEGIN,
   INST_INIT,
   INST_SAVE,
@@ -152,10 +153,11 @@ typedef struct {
 static void installerBuildUI (installer_t *installer);
 static int  installerMainLoop (void *udata);
 static bool installerExitCallback (void *udata);
-static bool installerCheckDir (void *udata);
+static bool installerCheckDirTarget (void *udata);
+static bool installerCheckDirConv (void *udata);
 static bool installerSelectDirDialog (void *udata);
-static int  installerValidateTarget (uientry_t *entry, void *udata);
-static int  installerValidateBDJ3Loc (uientry_t *entry, void *udata);
+static int  installerValidateTarget (uientry_t *entry, void *udata, bool chgflag);
+static int  installerValidateBDJ3Loc (uientry_t *entry, void *udata, bool chgflag);
 static void installerSetConvert (installer_t *installer, int val);
 static void installerDisplayConvert (installer_t *installer);
 static bool installerInstallCallback (void *udata);
@@ -237,7 +239,7 @@ main (int argc, char *argv[])
   }
 
   uiutilsUIWidgetInit (&installer.window);
-  installer.instState = INST_BEGIN;
+  installer.instState = INST_PRE_INIT;
   installer.target = buff;
   installer.rundir [0] = '\0';
   installer.locale [0] = '\0';
@@ -446,7 +448,7 @@ installerBuildUI (installer_t *installer)
   uiCreateCheckButton (&installer->reinstWidget, _("Re-Install"),
       installer->reinstall);
   uiBoxPackStart (&hbox, &installer->reinstWidget);
-  uiutilsUICallbackInit (&installer->reinstcb, installerCheckDir, installer);
+  uiutilsUICallbackInit (&installer->reinstcb, installerCheckDirTarget, installer);
   uiToggleButtonSetCallback (&installer->reinstWidget, &installer->reinstcb);
 
   uiCreateLabel (&installer->feedbackMsg, "");
@@ -509,7 +511,7 @@ installerBuildUI (installer_t *installer)
   snprintf (tbuff, sizeof (tbuff), _("Convert %s"), BDJ3_NAME);
   uiCreateCheckButton (&installer->convWidget, tbuff, 0);
   uiBoxPackStart (&hbox, &installer->convWidget);
-  uiutilsUICallbackInit (&installer->convcb, installerCheckDir, installer);
+  uiutilsUICallbackInit (&installer->convcb, installerCheckDirConv, installer);
   uiToggleButtonSetCallback (&installer->convWidget, &installer->convcb);
 
   uiCreateLabel (&installer->convFeedbackMsg, "");
@@ -581,7 +583,7 @@ installerBuildUI (installer_t *installer)
       _("Install"), NULL);
   uiBoxPackEnd (&hbox, &uiwidget);
 
-  installer->disptb = uiTextBoxCreate (400);
+  installer->disptb = uiTextBoxCreate (300);
   uiTextBoxSetReadonly (installer->disptb);
   uiTextBoxHorizExpand (installer->disptb);
   uiTextBoxVertExpand (installer->disptb);
@@ -589,9 +591,6 @@ installerBuildUI (installer_t *installer)
 
   uiWidgetShowAll (&installer->window);
   installer->uiBuilt = true;
-
-  installerDisplayConvert (installer);
-  installerCheckPackages (installer);
 }
 
 static int
@@ -617,6 +616,15 @@ installerMainLoop (void *udata)
   }
 
   switch (installer->instState) {
+    case INST_PRE_INIT: {
+      installerDisplayConvert (installer);
+      installerCheckPackages (installer);
+
+      uiEntryValidate (installer->targetEntry, true);
+      uiEntryValidate (installer->bdj3locEntry, true);
+      installer->instState = INST_BEGIN;
+      break;
+    }
     case INST_BEGIN: {
       /* do nothing */
       break;
@@ -738,7 +746,7 @@ installerMainLoop (void *udata)
       /* CONTEXT: installer: status message */
       installerDisplayText (installer, "## ",  _("Installation complete."), true);
       if (installer->guienabled) {
-        installer->instState = INST_BEGIN;
+        installer->instState = INST_PRE_INIT;
       } else {
         installer->instState = INST_EXIT;
       }
@@ -753,7 +761,7 @@ installerMainLoop (void *udata)
 }
 
 static bool
-installerCheckDir (void *udata)
+installerCheckDirTarget (void *udata)
 {
   installer_t   *installer = udata;
 
@@ -762,12 +770,26 @@ installerCheckDir (void *udata)
   }
 
   uiEntryValidate (installer->targetEntry, true);
+  /* validating the target may change the conversion toggle button */
+  uiEntryValidate (installer->bdj3locEntry, true);
+  return UICB_CONT;
+}
+
+static bool
+installerCheckDirConv (void *udata)
+{
+  installer_t   *installer = udata;
+
+  if (installer->inSetConvert) {
+    return UICB_STOP;
+  }
+
   uiEntryValidate (installer->bdj3locEntry, true);
   return UICB_CONT;
 }
 
 static int
-installerValidateTarget (uientry_t *entry, void *udata)
+installerValidateTarget (uientry_t *entry, void *udata, bool chgflag)
 {
   installer_t   *installer = udata;
   const char    *dir;
@@ -785,44 +807,44 @@ installerValidateTarget (uientry_t *entry, void *udata)
     return UIENTRY_RESET;
   }
 
-  uiLabelSetText (&installer->feedbackMsg, "");
-
   dir = uiEntryGetValue (installer->targetEntry);
   tbool = uiToggleButtonIsActive (&installer->reinstWidget);
   if (tbool != installer->reinstall) {
     changed = true;
   }
   installer->reinstall = tbool;
-  uiLabelSetText (&installer->feedbackMsg, "");
 
-  exists = fileopIsDirectory (dir);
-  if (exists) {
-    exists = installerCheckTarget (installer, dir);
+  /* only need to check these states if the target has changed, */
+  /* if the toggle button has changed or if forced */
+  if (chgflag || changed) {
+    exists = fileopIsDirectory (dir);
+
     if (exists) {
-      if (installer->reinstall) {
-        /* CONTEXT: installer: message indicating the action that will be taken */
-        snprintf (tbuff, sizeof (tbuff), _("Re-install %s."), BDJ4_NAME);
-        uiLabelSetText (&installer->feedbackMsg, tbuff);
-        if (changed) {
+      exists = installerCheckTarget (installer, dir);
+      if (exists) {
+        if (installer->reinstall) {
+          /* CONTEXT: installer: message indicating the action that will be taken */
+          snprintf (tbuff, sizeof (tbuff), _("Re-install %s."), BDJ4_NAME);
+          uiLabelSetText (&installer->feedbackMsg, tbuff);
           installerSetConvert (installer, TRUE);
+        } else {
+          /* CONTEXT: installer: message indicating the action that will be taken */
+          snprintf (tbuff, sizeof (tbuff), _("Updating existing %s installation."), BDJ4_NAME);
+          uiLabelSetText (&installer->feedbackMsg, tbuff);
+          installerSetConvert (installer, FALSE);
         }
       } else {
-        /* CONTEXT: installer: message indicating the action that will be taken */
-        snprintf (tbuff, sizeof (tbuff), _("Updating existing %s installation."), BDJ4_NAME);
-        uiLabelSetText (&installer->feedbackMsg, tbuff);
+        /* CONTEXT: installer: the selected folder exists and is not a BDJ4 installation */
+        uiLabelSetText (&installer->feedbackMsg, _("Error: Folder already exists."));
         installerSetConvert (installer, FALSE);
+        rc = UIENTRY_ERROR;
       }
     } else {
-      /* CONTEXT: installer: the selected folder exists and is not a BDJ4 installation */
-      uiLabelSetText (&installer->feedbackMsg, _("Error: Folder already exists."));
-      installerSetConvert (installer, FALSE);
-      rc = UIENTRY_ERROR;
+      /* CONTEXT: installer: message indicating the action that will be taken */
+      snprintf (tbuff, sizeof (tbuff), _("New %s installation."), BDJ4_NAME);
+      uiLabelSetText (&installer->feedbackMsg, tbuff);
+      installerSetConvert (installer, TRUE);
     }
-  } else {
-    /* CONTEXT: installer: message indicating the action that will be taken */
-    snprintf (tbuff, sizeof (tbuff), _("New %s installation."), BDJ4_NAME);
-    uiLabelSetText (&installer->feedbackMsg, tbuff);
-    installerSetConvert (installer, TRUE);
   }
 
   if (rc == UIENTRY_OK) {
@@ -832,7 +854,7 @@ installerValidateTarget (uientry_t *entry, void *udata)
 }
 
 static int
-installerValidateBDJ3Loc (uientry_t *entry, void *udata)
+installerValidateBDJ3Loc (uientry_t *entry, void *udata, bool chgflag)
 {
   installer_t   *installer = udata;
   bool          locok = false;
@@ -847,8 +869,6 @@ installerValidateBDJ3Loc (uientry_t *entry, void *udata)
   if (! installer->uiBuilt) {
     return UIENTRY_RESET;
   }
-
-  installerDisplayConvert (installer);
 
   /* bdj3 location validation */
 
@@ -866,6 +886,7 @@ installerValidateBDJ3Loc (uientry_t *entry, void *udata)
     installerSetConvert (installer, FALSE);
   }
 
+  /* will call display-convert */
   installerSetPaths (installer);
   return rc;
 }
@@ -873,17 +894,16 @@ installerValidateBDJ3Loc (uientry_t *entry, void *udata)
 static bool
 installerSelectDirDialog (void *udata)
 {
-  installer_t     *installer = udata;
-  char            *fn = NULL;
-  uiselect_t selectdata;
-  char            tbuff [100];
+  installer_t *installer = udata;
+  char        *fn = NULL;
+  uiselect_t  *selectdata;
+  char        tbuff [100];
 
-  /* CONTEXT: installer: label for entry field for BDJ3 location */
   snprintf (tbuff, sizeof (tbuff), _("Select %s Location"), BDJ3_NAME);
-  selectdata.label = tbuff;
-  selectdata.window = &installer->window;
-  selectdata.startpath = uiEntryGetValue (installer->bdj3locEntry);
-  fn = uiSelectDirDialog (&selectdata);
+  selectdata = uiDialogCreateSelect (&installer->window,
+      /* CONTEXT: installer: label for entry field for BDJ3 location */
+      tbuff, uiEntryGetValue (installer->bdj3locEntry), NULL, NULL);
+  fn = uiSelectDirDialog (selectdata);
   if (fn != NULL) {
     if (installer->bdj3loc != NULL && installer->freebdj3loc) {
       free (installer->bdj3loc);
@@ -913,7 +933,6 @@ installerDisplayConvert (installer_t *installer)
   bool          nodir = false;
 
   nval = uiToggleButtonIsActive (&installer->convWidget);
-
 
   if (strcmp (installer->bdj3loc, "-") == 0 ||
       *installer->bdj3loc == '\0') {
@@ -989,12 +1008,14 @@ installerSetPaths (installer_t *installer)
     free (installer->target);
   }
   installer->target = strdup (uiEntryGetValue (installer->targetEntry));
+  pathNormPath (installer->target, strlen (installer->target));
   installer->freetarget = true;
 
   if (installer->bdj3loc != NULL && installer->freebdj3loc) {
     free (installer->bdj3loc);
   }
   installer->bdj3loc = strdup (uiEntryGetValue (installer->bdj3locEntry));
+  pathNormPath (installer->bdj3loc, strlen (installer->bdj3loc));
   installer->freebdj3loc = true;
 
   installerDisplayConvert (installer);
@@ -1206,16 +1227,21 @@ static void
 installerCopyFiles (installer_t *installer)
 {
   char      tbuff [MAXPATHLEN];
+  char      tmp [MAXPATHLEN];
 
   if (isWindows ()) {
-    snprintf (tbuff, sizeof (tbuff), "robocopy /e /j /dcopy:DAT /timfix /njh /njs /np /ndl /nfl . \"%s\"",
-        installer->rundir);
+    strlcpy (tmp, installer->rundir, sizeof (tmp));
+    pathWinPath (tmp, sizeof (tmp));
+    snprintf (tbuff, sizeof (tbuff),
+        "robocopy /e /j /dcopy:DAT /timfix /njh /njs /np /ndl /nfl . \"%s\"",
+        tmp);
     system (tbuff);
   } else {
     snprintf (tbuff, sizeof (tbuff), "tar -c -f - . | (cd '%s'; tar -x -f -)",
         installer->target);
-    system (tbuff);
   }
+  logMsg (LOG_INSTALL, LOG_IMPORTANT, "copy files: %s", tbuff);
+  system (tbuff);
   /* CONTEXT: installer: status message */
   installerDisplayText (installer, "   ", _("Copy finished."), false);
   installer->instState = INST_CHDIR;
@@ -1444,11 +1470,14 @@ installerCopyTemplates (installer_t *installer)
   snprintf (to, sizeof (to), "http/mrc");
   *tbuff = '\0';
   if (isWindows ()) {
+    pathWinPath (from, sizeof (from));
+    pathWinPath (to, sizeof (to));
     snprintf (tbuff, sizeof (tbuff), "robocopy /e /j /dcopy:DAT /timfix /njh /njs /np /ndl /nfl \"%s\" \"%s\"",
         from, to);
   } else {
     snprintf (tbuff, sizeof (tbuff), "cp -r '%s' '%s'", from, "http");
   }
+  logMsg (LOG_INSTALL, LOG_IMPORTANT, "copy files: %s", tbuff);
   system (tbuff);
 
   if (isMacOS ()) {
@@ -2230,10 +2259,11 @@ installerSetrundir (installer_t *installer, const char *dir)
 {
   installer->rundir [0] = '\0';
   if (*dir) {
-    strlcpy (installer->rundir, dir, MAXPATHLEN);
+    strlcpy (installer->rundir, dir, sizeof (installer->rundir));
     if (isMacOS ()) {
-      strlcat (installer->rundir, "/Contents/MacOS", MAXPATHLEN);
+      strlcat (installer->rundir, "/Contents/MacOS", sizeof (installer->rundir));
     }
+    pathNormPath (installer->rundir, sizeof (installer->rundir));
   }
 }
 

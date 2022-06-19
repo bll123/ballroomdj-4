@@ -23,7 +23,7 @@ foreach {fn} $flist {
   set nfn [file join $datatopdir data ${basename}.pl]
   #  puts "   - [file tail $fn] : ${basename}.pl"
   set ifh [open $fn r]
-  set dfn [file join data ${basename}.pldances]
+  set dfn [file join $datatopdir data ${basename}.pldances]
   set ofh [open $nfn w]
   set dfh [open $dfn w]
   puts $ofh "# BDJ4 playlist settings"

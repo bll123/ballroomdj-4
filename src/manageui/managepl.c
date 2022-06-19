@@ -73,7 +73,7 @@ static long managePlaylistValMSCallback (void *udata, const char *txt);
 static long managePlaylistValHMCallback (void *udata, const char *txt);
 static void managePlaylistUpdatePlaylist (managepl_t *managepl);
 static bool managePlaylistCheckChanged (managepl_t *managepl);
-static int  managePlaylistAllowedKeywordsChg (uientry_t *e, void *udata);
+static int  managePlaylistAllowedKeywordsChg (uientry_t *e, void *udata, bool chgflag);
 
 managepl_t *
 managePlaylistAlloc (UIWidget *window, nlist_t *options, UIWidget *statusMsg)
@@ -712,11 +712,13 @@ managePlaylistCheckChanged (managepl_t *managepl)
 }
 
 static int
-managePlaylistAllowedKeywordsChg (uientry_t *e, void *udata)
+managePlaylistAllowedKeywordsChg (uientry_t *e, void *udata, bool chgflag)
 {
   managepl_t *managepl = udata;
 
-  managepl->changed = true;
+  if (chgflag) {
+    managepl->changed = true;
+  }
   return UIENTRY_OK;
 }
 

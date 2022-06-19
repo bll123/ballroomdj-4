@@ -141,7 +141,7 @@ osProcessStart (char *targv[], int flags, void **handle, char *outfname)
       &pi )           // PROCESS_INFORMATION structure
   ) {
     int err = GetLastError ();
-    fprintf (stderr, "getlasterr: %d\n", err);
+    fprintf (stderr, "getlasterr: %d %S\n", err, wbuff);
     return -1;
   }
 
@@ -255,7 +255,7 @@ osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz)
       &pi )           // PROCESS_INFORMATION structure
   ) {
     int err = GetLastError ();
-    fprintf (stderr, "getlasterr: %d\n", err);
+    fprintf (stderr, "getlasterr: %d %S\n", err, wbuff);
     return -1;
   }
 
@@ -300,13 +300,11 @@ osFromFSFilename (const void *fname)
 {
   char        *tfname = NULL;
   size_t      len;
-  BOOL        used;
-  static char *defChar = "?";
 
   /* the documentation lies; len does not include room for the null byte */
-  len = WideCharToMultiByte (CP_UTF8, 0, fname, -1, NULL, 0, defChar, &used);
+  len = WideCharToMultiByte (CP_UTF8, 0, fname, -1, NULL, 0, NULL, NULL);
   tfname = malloc (len + 1);
-  WideCharToMultiByte (CP_UTF8, 0, fname, -1, tfname, len, defChar, &used);
+  WideCharToMultiByte (CP_UTF8, 0, fname, -1, tfname, len, NULL, NULL);
   tfname [len] = '\0';
   assert (tfname != NULL);
   return tfname;

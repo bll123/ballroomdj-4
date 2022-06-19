@@ -26,9 +26,10 @@ typedef struct uientry {
   uiutilsentryval_t validateFunc;
   mstime_t        validateTimer;
   void            *udata;
+  bool            valdelay : 1;
 } uientry_t;
 
-static void uiEntryValidateStart (GtkEditable *e, gpointer udata);
+static void uiEntryValidateStart (uientry_t *entry);
 static void uiEntryValidateHandler (GtkEditable *e, gpointer udata);
 
 uientry_t *
@@ -44,6 +45,7 @@ uiEntryInit (int entrySize, int maxSize)
   entry->validateFunc = NULL;
   entry->udata = NULL;
   mstimeset (&entry->validateTimer, 3600000);
+  entry->valdelay = false;
   return entry;
 }
 
@@ -153,14 +155,11 @@ uiEntrySetValidate (uientry_t *entry, uiutilsentryval_t valfunc, void *udata,
   entry->udata = udata;
   if (valfunc != NULL) {
     if (valdelay) {
-      g_signal_connect (entry->uientry.widget, "changed",
-          G_CALLBACK (uiEntryValidateStart), entry);
       mstimeset (&entry->validateTimer, 500);
+      entry->valdelay = true;
     }
-    if (! valdelay) {
-      g_signal_connect (entry->uientry.widget, "changed",
-          G_CALLBACK (uiEntryValidateHandler), entry);
-    }
+    g_signal_connect (entry->uientry.widget, "changed",
+        G_CALLBACK (uiEntryValidateHandler), entry);
   }
 }
 
@@ -168,6 +167,7 @@ int
 uiEntryValidate (uientry_t *entry, bool forceflag)
 {
   int   rc;
+  bool  chg;
 
   if (entry == NULL) {
     return UIENTRY_OK;
@@ -183,7 +183,11 @@ uiEntryValidate (uientry_t *entry, bool forceflag)
     return UIENTRY_OK;
   }
 
-  rc = entry->validateFunc (entry, entry->udata);
+  chg = false;
+  if (forceflag) {
+    chg = true;
+  }
+  rc = entry->validateFunc (entry, entry->udata, chg);
   if (rc == UIENTRY_RESET) {
     mstimeset (&entry->validateTimer, 500);
   }
@@ -200,14 +204,14 @@ uiEntryValidate (uientry_t *entry, bool forceflag)
 }
 
 int
-uiEntryValidateDir (uientry_t *entry, void *udata)
+uiEntryValidateDir (uientry_t *entry, void *udata, bool chgflag)
 {
   int               rc;
   const char        *dir;
   char              tbuff [MAXPATHLEN];
 
   rc = UIENTRY_ERROR;
-  if (entry->buffer != NULL) {
+  if (chgflag && entry->buffer != NULL) {
     dir = gtk_entry_buffer_get_text (entry->buffer);
     if (dir != NULL) {
       strlcpy (tbuff, dir, sizeof (tbuff));
@@ -216,20 +220,20 @@ uiEntryValidateDir (uientry_t *entry, void *udata)
         rc = UIENTRY_OK;
       } /* exists */
     } /* not null */
-  } /* have a buffer */
+  } /* changed and have a buffer */
 
   return rc;
 }
 
 int
-uiEntryValidateFile (uientry_t *entry, void *udata)
+uiEntryValidateFile (uientry_t *entry, void *udata, bool chgflag)
 {
   int              rc;
   const char        *fn;
   char              tbuff [MAXPATHLEN];
 
   rc = UIENTRY_ERROR;
-  if (entry->buffer != NULL) {
+  if (chgflag && entry->buffer != NULL) {
     fn = gtk_entry_buffer_get_text (entry->buffer);
     if (fn != NULL) {
       if (*fn == '\0') {
@@ -242,7 +246,7 @@ uiEntryValidateFile (uientry_t *entry, void *udata)
         } /* exists */
       } /* not empty */
     } /* not null */
-  } /* have a buffer */
+  } /* changed and have a buffer */
 
   return rc;
 }
@@ -268,10 +272,8 @@ uiEntryEnable (uientry_t *entry)
 /* internal routines */
 
 static void
-uiEntryValidateStart (GtkEditable *e, gpointer udata)
+uiEntryValidateStart (uientry_t *entry)
 {
-  uientry_t  *entry = udata;
-
   gtk_entry_set_icon_from_icon_name (GTK_ENTRY (entry->uientry.widget),
       GTK_ENTRY_ICON_SECONDARY, NULL);
   if (entry->validateFunc != NULL) {
@@ -285,7 +287,10 @@ uiEntryValidateHandler (GtkEditable *e, gpointer udata)
   uientry_t  *entry = udata;
 
   if (entry->validateFunc != NULL) {
-    entry->validateFunc (entry, entry->udata);
+    entry->validateFunc (entry, entry->udata, true);
+  }
+  if (entry->valdelay) {
+    uiEntryValidateStart (entry);
   }
   return;
 }

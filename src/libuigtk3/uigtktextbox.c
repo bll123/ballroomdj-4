@@ -13,6 +13,12 @@
 
 #include "ui.h"
 
+typedef struct uitextbox {
+  UIWidget      scw;
+  UIWidget      textbox;
+  UIWidget      buffer;
+} uitextbox_t;
+
 uitextbox_t *
 uiTextBoxCreate (int height)
 {

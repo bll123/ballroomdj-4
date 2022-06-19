@@ -3,6 +3,13 @@
 
 #include <stdbool.h>
 
+enum {
+  UI_TAB_MUSICQ,
+  UI_TAB_SONGSEL,
+  UI_TAB_SONGEDIT,
+  UI_TAB_AUDIOID,
+};
+
 typedef struct {
   int     tabcount;
   int     *tabids;

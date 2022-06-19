@@ -32,7 +32,7 @@ typedef uint32_t   loglevel_t;
 #define LOG_PROGSTATE   0x00040000  // 262144
 #define LOG_STDERR      0x00080000  // 524288
 #define LOG_REDIRECT    0x00100000  // 1048576
-#define LOG_ALL         0xFFFFFFFF
+#define LOG_ALL         (~LOG_STDERR)
 
 typedef enum {
   LOG_ERR,
