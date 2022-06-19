@@ -111,11 +111,9 @@ bool
 uimusicqStopRepeat (void *udata)
 {
   uimusicq_t  *uimusicq = udata;
-  int         ci;
 
   logProcBegin (LOG_PROC, "uimusicqStopRepeat");
 
-  ci = uimusicq->musicqManageIdx;
   uimusicq->repeatButton = UIMUSICQ_REPEAT_NONE;
   logProcEnd (LOG_PROC, "uimusicqStopRepeat", "");
   return UICB_CONT;

@@ -92,17 +92,6 @@ add_subdirectory (manageui)
 add_subdirectory (check)
 
 
-add_executable (bdj4locatebdj3 bdj4locatebdj3.c)
-if (WIN32)
-  target_compile_options (bdj4locatebdj3 PRIVATE -municode)
-endif()
-target_link_libraries (bdj4locatebdj3
-  liblocatebdj3
-  libbdj4fileop
-  libbdj4osutils
-  libbdj4string
-)
-
 add_executable (bdj4info bdj4info.c)
 if (WIN32)
   target_compile_options (bdj4info PRIVATE -municode)
@@ -382,7 +371,7 @@ addWinSockLibrary (bdj4helperui)
 install (TARGETS
   bdj4 bdj4g
   bdj4se bdj4installer bdj4updater
-  bdj4locatebdj3 bdj4info bdj4tags
+  bdj4info bdj4tags
   bdj4dbupdate bdj4dbtag
   bdj4main bdj4player bdj4mobmq bdj4rc bdj4marquee
   bdj4starterui bdj4playerui bdj4configui
@@ -395,7 +384,6 @@ if (APPLE)
   macUpdateRPath (bdj4g)
   macUpdateRPath (bdj4installer)
   macUpdateRPath (bdj4updater)
-  macUpdateRPath (bdj4locatebdj3)
   macUpdateRPath (bdj4info)
   macUpdateRPath (bdj4tags)
   macUpdateRPath (bdj4dbupdate)

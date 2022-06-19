@@ -293,7 +293,6 @@ sockConnect (uint16_t connPort, int *connerr, Sock_t clsock)
   int                 rc;
   int                 typ;
   int                 err = 0;
-  bool                existing = false;
   bool                already = false;
 
 
@@ -333,7 +332,6 @@ sockConnect (uint16_t connPort, int *connerr, Sock_t clsock)
     struct sockaddr paddr;
     socklen_t       paddrlen = sizeof (struct sockaddr);
 
-    existing = true;
     rc = getpeername (clsock, &paddr, &paddrlen);
     if (rc == 0) {
       already = true;

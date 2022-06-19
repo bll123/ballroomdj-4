@@ -43,23 +43,17 @@ uisongSetDisplayColumns (slist_t *sellist, song_t *song, int col,
 char *
 uisongGetDisplay (song_t *song, int tagidx, long *num, double *dval)
 {
-  valuetype_t   vt;
   char          *str;
 
   *num = 0;
   *dval = 0.0;
   /* get the numeric values also in addition to the display string */
-  uisongGetValue (song, tagidx, num, dval);
-  vt = uisongDetermineDisplayValueType (tagidx);
-  str = NULL;
-  if (vt == VALUE_STR) {
+  str = uisongGetValue (song, tagidx, num, dval);
+  if (tagdefs [tagidx].convfunc != NULL) {
+    if (str != NULL) {
+      free (str);
+    }
     str = songDisplayString (song, tagidx);
-  } else if (vt == VALUE_NUM) {
-    *num = songGetNum (song, tagidx);
-    if (*num == LIST_VALUE_INVALID) { *num = 0; }
-  } else if (vt == VALUE_DOUBLE) {
-    *dval = songGetDouble (song, tagidx);
-    if (*dval == LIST_DOUBLE_INVALID) { *dval = 0.0; }
   }
 
   return str;

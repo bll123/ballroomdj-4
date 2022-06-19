@@ -103,6 +103,9 @@ connConnect (conn_t *conn, bdjmsgroute_t route)
   }
 
   if (connports [route] != 0 && ! conn [route].connected) {
+    logMsg (LOG_DBG, LOG_SOCKET, "connect %d/%s to:%d/%s",
+        conn [route].routefrom, msgRouteDebugText (conn [route].routefrom),
+        route, msgRouteDebugText (route));
     conn [route].sock = sockConnect (connports [route], &connerr, conn [route].sock);
     if (connerr != SOCK_CONN_OK && connerr != SOCK_CONN_IN_PROGRESS) {
       sockClose (conn [route].sock);
@@ -114,9 +117,15 @@ connConnect (conn_t *conn, bdjmsgroute_t route)
       ! socketInvalid (conn [route].sock)) {
     if (sockhSendMessage (conn [route].sock, conn [route].routefrom, route,
         MSG_HANDSHAKE, NULL) < 0) {
+      logMsg (LOG_DBG, LOG_SOCKET, "connect-send-handshake-fail %d/%s to:%d/%s",
+          conn [route].routefrom, msgRouteDebugText (conn [route].routefrom),
+          route, msgRouteDebugText (route));
       sockClose (conn [route].sock);
       conn [route].sock = INVALID_SOCKET;
     } else {
+      logMsg (LOG_DBG, LOG_SOCKET, "connect ok %d/%s to:%d/%s",
+          conn [route].routefrom, msgRouteDebugText (conn [route].routefrom),
+          route, msgRouteDebugText (route));
       conn [route].handshakesent = true;
       if (conn [route].handshakerecv) {
         conn [route].handshake = true;
@@ -138,6 +147,9 @@ connDisconnect (conn_t *conn, bdjmsgroute_t route)
   }
 
   if (conn [route].connected) {
+    logMsg (LOG_DBG, LOG_SOCKET, "disconnect %d/%s from:%d/%s",
+        conn [route].routefrom, msgRouteDebugText (conn [route].routefrom),
+        route, msgRouteDebugText (route));
     sockhSendMessage (conn [route].sock, conn [route].routefrom, route,
         MSG_SOCKET_CLOSE, NULL);
     sockClose (conn [route].sock);
@@ -208,15 +220,15 @@ connSendMessage (conn_t *conn, bdjmsgroute_t route,
   if (route >= ROUTE_MAX) {
     return;
   }
-  if (socketInvalid (conn [route].sock)) {
-    /* generally, this means the connection hasn't been made yet. */
-    logMsg (LOG_DBG, LOG_SOCKET, "msg not sent: bad socket from:%d/%s route:%d/%s msg:%d/%s args:%s",
+  if (! conn [route].connected) {
+    logMsg (LOG_DBG, LOG_SOCKET, "msg not sent: not connected from:%d/%s route:%d/%s msg:%d/%s args:%s",
         conn [route].routefrom, msgRouteDebugText (conn [route].routefrom),
         route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
     return;
   }
-  if (! conn [route].connected) {
-    logMsg (LOG_DBG, LOG_SOCKET, "msg not sent: not connected from:%d/%s route:%d/%s msg:%d/%s args:%s",
+  if (socketInvalid (conn [route].sock)) {
+    /* generally, this means the connection hasn't been made yet. */
+    logMsg (LOG_DBG, LOG_SOCKET, "msg not sent: bad socket from:%d/%s route:%d/%s msg:%d/%s args:%s",
         conn [route].routefrom, msgRouteDebugText (conn [route].routefrom),
         route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
     return;

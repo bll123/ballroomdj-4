@@ -149,9 +149,8 @@ audiotagParseTags (slist_t *tagdata, char *data, int tagtype)
         continue;
       }
       if (strcmp (p, "TXXX") == 0 || strcmp (p, "UFID") == 0) {
-        char *tp;
         /* find the next = */
-        tp = strtok_r (NULL, "=", &tokstrB);
+        strtok_r (NULL, "=", &tokstrB);
         /* replace the = after the TXXX and use the full TXXX=tag to search */
         *(p+strlen(p)) = '=';
 

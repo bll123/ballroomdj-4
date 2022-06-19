@@ -17,7 +17,7 @@ debug-gtk:
 	BDJ4_BUILD=Debug-gtk $(MAKE) cmake
 
 debug-clang-gtk:
-	BDJ4_BUILD=Debug-gtk $(MAKE) cmake
+	BDJ4_BUILD=Debug-gtk $(MAKE) cmakeclang
 
 release-gtk:
 	BDJ4_BUILD=Release-gtk $(MAKE) cmake

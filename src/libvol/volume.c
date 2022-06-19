@@ -102,21 +102,19 @@ volumeGetSinkList (volume_t *volume, char *sinkname, volsinklist_t *sinklist)
 void
 volumeFreeSinkList (volsinklist_t *sinklist)
 {
-  if (sinklist != NULL) {
-    if (sinklist->sinklist != NULL) {
-      for (size_t i = 0; i < sinklist->count; ++i) {
-        if (sinklist->sinklist [i].name != NULL) {
-          free (sinklist->sinklist [i].name);
-        }
-        if (sinklist->sinklist [i].description != NULL) {
-          free (sinklist->sinklist [i].description);
-        }
+  if (sinklist->sinklist != NULL) {
+    for (size_t i = 0; i < sinklist->count; ++i) {
+      if (sinklist->sinklist [i].name != NULL) {
+        free (sinklist->sinklist [i].name);
       }
-      free (sinklist->sinklist);
-      sinklist->defname = "";
-      sinklist->count = 0;
-      sinklist->sinklist = NULL;
+      if (sinklist->sinklist [i].description != NULL) {
+        free (sinklist->sinklist [i].description);
+      }
     }
+    free (sinklist->sinklist);
+    sinklist->defname = "";
+    sinklist->count = 0;
+    sinklist->sinklist = NULL;
   }
 }
 

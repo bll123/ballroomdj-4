@@ -404,13 +404,11 @@ uiduallistDispSelect (void *udata)
   GtkWidget         *ttree;
   GtkTreeSelection  *tsel;
   GtkWidget         *stree;
-  GtkTreeSelection  *ssel;
   GtkTreeModel      *smodel;
   GtkTreeIter       siter;
   int               count;
 
   stree = duallist->trees [DUALLIST_TREE_SOURCE].tree;
-  ssel = duallist->trees [DUALLIST_TREE_SOURCE].sel;
 
   count = uiTreeViewGetSelection (stree, &smodel, &siter);
 

@@ -7,6 +7,8 @@ taskkill /f /im gdbus.exe 2> NUL
 
 if not "%d%" == "" (
   if exist "%d%" (
+    echo "Cleaning up"
+    sleep 2
     rmdir /s/q "%d%"
   )
 )

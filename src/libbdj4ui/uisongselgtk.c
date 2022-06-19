@@ -325,10 +325,7 @@ bool
 uisongselQueueProcessPlayCallback (void *udata)
 {
   uisongsel_t     * uisongsel = udata;
-  uisongselgtk_t  * uiw;
   musicqidx_t     mqidx;
-
-  uiw = uisongsel->uiWidgetData;
 
   mqidx = MUSICQ_B;
   uisongselClearQueue (uisongsel, mqidx);
@@ -548,9 +545,6 @@ bool
 uisongselApplySongFilter (void *udata)
 {
   uisongsel_t *uisongsel = udata;
-  uisongselgtk_t  *uiw;
-
-  uiw = uisongsel->uiWidgetData;
 
   uisongsel->dfilterCount = (double) songfilterProcess (
       uisongsel->songfilter, uisongsel->musicdb);
@@ -844,7 +838,6 @@ uisongselProcessTreeSize (GtkWidget* w, GtkAllocation* allocation,
 {
   uisongselgtk_t  *uiw;
   uisongsel_t     *uisongsel = udata;
-  slist_t         *sellist;
   GtkAdjustment   *adjustment;
   double          ps;
   double          tmax;
@@ -852,7 +845,6 @@ uisongselProcessTreeSize (GtkWidget* w, GtkAllocation* allocation,
   logProcBegin (LOG_PROC, "uisongselProcessTreeSize");
 
   uiw = uisongsel->uiWidgetData;
-  sellist = dispselGetList (uisongsel->dispsel, uisongsel->dispselType);
 
   if (allocation->height != uiw->lastTreeSize) {
     if (allocation->height < 200) {
@@ -1214,10 +1206,7 @@ static bool
 uisongselSongEditCallback (void *udata)
 {
   uisongsel_t     *uisongsel = udata;
-  uisongselgtk_t  *uiw;
   long            dbidx;
-
-  uiw = uisongsel->uiWidgetData;
 
   if (uisongsel->newselcb != NULL) {
     dbidx = uisongsel->lastdbidx;

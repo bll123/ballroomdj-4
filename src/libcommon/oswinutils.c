@@ -26,7 +26,6 @@ char *
 osRegistryGet (char *key, char *name)
 {
   char    *rval = NULL;
-  DWORD   dwRet;
   HKEY    hkey;
   LSTATUS rc;
   unsigned char buff [512];
@@ -42,18 +41,20 @@ osRegistryGet (char *key, char *name)
       &hkey
       );
 
-  dwRet = RegQueryValueEx (
-      hkey,
-      name,
-      NULL,
-      NULL,
-      buff,
-      &len
-      );
-
-  rval = strdup ((char *) buff);
-
-  RegCloseKey (hkey);
+  if (rc == ERROR_SUCCESS) {
+    rc = RegQueryValueEx (
+        hkey,
+        name,
+        NULL,
+        NULL,
+        buff,
+        &len
+        );
+    if (rc == ERROR_SUCCESS) {
+      rval = strdup ((char *) buff);
+    }
+    RegCloseKey (hkey);
+  }
 
   return rval;
 }

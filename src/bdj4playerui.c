@@ -213,6 +213,12 @@ main (int argc, char *argv[])
     nlistSetStr (plui.options, SONGSEL_SORT_BY, "TITLE");
   }
 
+  uiUIInitialize ();
+  uifont = bdjoptGetStr (OPT_MP_UIFONT);
+  uiSetUIFont (uifont);
+
+  pluiBuildUI (&plui);
+
   /* register these after calling the sub-window initialization */
   /* then these will be run last, after the other closing callbacks */
   progstateSetCallback (plui.progstate, STATE_STOPPING,
@@ -221,12 +227,6 @@ main (int argc, char *argv[])
       pluiStopWaitCallback, &plui);
   progstateSetCallback (plui.progstate, STATE_CLOSING,
       pluiClosingCallback, &plui);
-
-  uiUIInitialize ();
-  uifont = bdjoptGetStr (OPT_MP_UIFONT);
-  uiSetUIFont (uifont);
-
-  pluiBuildUI (&plui);
 
   sockhMainLoop (listenPort, pluiProcessMsg, pluiMainLoop, &plui);
   connFree (plui.conn);
@@ -278,13 +278,12 @@ pluiClosingCallback (void *udata, programstate_t programState)
   logProcBegin (LOG_PROC, "pluiClosingCallback");
 
   uiCloseWindow (&plui->window);
+  uiWidgetClearPersistent (&plui->ledonPixbuf);
+  uiWidgetClearPersistent (&plui->ledoffPixbuf);
 
   pathbldMakePath (fn, sizeof (fn),
       PLAYERUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_USEIDX);
   datafileSaveKeyVal ("playerui", fn, playeruidfkeys, PLAYERUI_DFKEY_COUNT, plui->options);
-
-  uiWidgetClearPersistent (&plui->ledonPixbuf);
-  uiWidgetClearPersistent (&plui->ledoffPixbuf);
 
   bdj4shutdown (ROUTE_PLAYERUI, plui->musicdb);
   dispselFree (plui->dispsel);
@@ -488,9 +487,7 @@ pluiMainLoop (void *tplui)
   playerui_t  *plui = tplui;
   int         stop = FALSE;
 
-  if (! stop) {
-    uiUIProcessEvents ();
-  }
+  uiUIProcessEvents ();
 
   if (! progstateIsRunning (plui->progstate)) {
     progstateProcess (plui->progstate);

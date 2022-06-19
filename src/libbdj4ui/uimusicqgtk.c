@@ -772,13 +772,11 @@ static void
 uimusicqSelectionChgCallback (GtkTreeSelection *sel, gpointer udata)
 {
   uimusicq_t      *uimusicq = udata;
-  uimusicqgtk_t   *uiw;
   dbidx_t         dbidx;
   int             ci;
   long            idx;
 
   ci = uimusicq->musicqManageIdx;
-  uiw = uimusicq->ui [ci].uiWidgets;
   dbidx = uimusicqGetSelectionDbidx (uimusicq);
   if (dbidx >= 0 &&
       uimusicq->newselcb != NULL) {
@@ -865,12 +863,8 @@ static bool
 uimusicqSongEditCallback (void *udata)
 {
   uimusicq_t      *uimusicq = udata;
-  uimusicqgtk_t   *uiw;
   dbidx_t         dbidx;
-  int             ci;
 
-  ci = uimusicq->musicqManageIdx;
-  uiw = uimusicq->ui [ci].uiWidgets;
 
   if (uimusicq->newselcb != NULL) {
     dbidx = uimusicqGetSelectionDbidx (uimusicq);

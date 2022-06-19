@@ -60,13 +60,11 @@ orgoptAlloc (void)
   slistStartIterator (dflist, &dfiteridx);
   while ((value = slistIterateKey (dflist, &dfiteridx)) != NULL) {
     org_t       *org;
-    slist_t     *parsedlist;
     slistidx_t  piteridx;
     int         orgkey;
     int         tagkey;
 
     org = orgAlloc (value);
-    parsedlist = orgGetList (org);
 
     dispstr [0] = '\0';
     orgStartIterator (org, &piteridx);
