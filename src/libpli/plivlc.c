@@ -24,6 +24,7 @@
 static char *vlcDefaultOptions [] = {
       "--quiet",
       "--audio-filter", "scaletempo",
+      "--src-converter-type=0",
       "--intf=dummy",
       "--ignore-config",
       "--no-media-library",
