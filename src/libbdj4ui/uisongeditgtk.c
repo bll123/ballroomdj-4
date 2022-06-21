@@ -77,6 +77,7 @@ typedef struct {
   UIWidget            filedisp;
   UIWidget            sgentry;
   UIWidget            sgsbint;
+  UIWidget            sgsbtext;
   UIWidget            sgsbtime;
   UIWidget            sgscale;
   UIWidget            sgscaledisp;
@@ -114,6 +115,7 @@ uisongeditUIInit (uisongedit_t *uisongedit)
   uiutilsUIWidgetInit (&uiw->vbox);
   uiCreateSizeGroupHoriz (&uiw->sgentry);
   uiCreateSizeGroupHoriz (&uiw->sgsbint);
+  uiCreateSizeGroupHoriz (&uiw->sgsbtext);
   uiCreateSizeGroupHoriz (&uiw->sgsbtime);
   uiCreateSizeGroupHoriz (&uiw->sgscale);
   uiCreateSizeGroupHoriz (&uiw->sgscaledisp);
@@ -643,14 +645,17 @@ uisongeditAddItem (uisongedit_t *uisongedit, UIWidget *hbox, UIWidget *sg, int t
       if (tagkey == TAG_DANCELEVEL) {
         uiw->items [uiw->itemcount].uilevel =
             uilevelSpinboxCreate (hbox, FALSE);
+        uilevelSizeGroupAdd (uiw->items [uiw->itemcount].uilevel, &uiw->sgsbtext);
       }
       if (tagkey == TAG_DANCERATING) {
         uiw->items [uiw->itemcount].uirating =
             uiratingSpinboxCreate (hbox, FALSE);
+        uiratingSizeGroupAdd (uiw->items [uiw->itemcount].uirating, &uiw->sgsbtext);
       }
       if (tagkey == TAG_STATUS) {
         uiw->items [uiw->itemcount].uistatus =
             uistatusSpinboxCreate (hbox, FALSE);
+        uistatusSizeGroupAdd (uiw->items [uiw->itemcount].uistatus, &uiw->sgsbtext);
       }
       break;
     }

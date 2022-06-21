@@ -35,6 +35,7 @@
 #include "localeutil.h"
 #include "locatebdj3.h"
 #include "log.h"
+#include "osuiutils.h"
 #include "osutils.h"
 #include "pathutil.h"
 #include "slist.h"
@@ -409,6 +410,9 @@ installerBuildUI (installer_t *installer)
   uiutilsUIWidgetInit (&hbox);
   uiutilsUIWidgetInit (&uiwidget);
 
+  strlcpy (imgbuff, "img/bdj4_icon_inst.png", sizeof (imgbuff));
+  osuiSetIcon (imgbuff);
+
   strlcpy (imgbuff, "img/bdj4_icon_inst.svg", sizeof (imgbuff));
   /* CONTEXT: installer: window title */
   snprintf (tbuff, sizeof (tbuff), _("%s Installer"), BDJ4_NAME);
@@ -436,7 +440,7 @@ installerBuildUI (installer_t *installer)
   uiwidgetp = uiEntryGetUIWidget (installer->targetEntry);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
-  uiBoxPackStart (&vbox, uiwidgetp);
+  uiBoxPackStartExpand (&vbox, uiwidgetp);
   uiEntrySetValidate (installer->targetEntry,
       installerValidateTarget, installer, UIENTRY_DELAYED);
 
@@ -490,7 +494,7 @@ installerBuildUI (installer_t *installer)
   uiwidgetp = uiEntryGetUIWidget (installer->bdj3locEntry);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
-  uiBoxPackStart (&hbox, uiwidgetp);
+  uiBoxPackStartExpand (&hbox, uiwidgetp);
   uiEntrySetValidate (installer->bdj3locEntry,
       installerValidateBDJ3Loc, installer, UIENTRY_DELAYED);
 

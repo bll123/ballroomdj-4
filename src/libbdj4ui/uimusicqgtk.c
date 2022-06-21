@@ -213,6 +213,8 @@ uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci)
       &uiw->callback [UIMUSICQ_CB_AUDIO_REMOVE],
       /* CONTEXT: button: remove the song from the queue */
       _("Remove"), "button_audioremove");
+  uiWidgetSetMarginStart (&uiwidget, uiBaseMarginSz * 3);
+  uiWidgetSetMarginEnd (&uiwidget, uiBaseMarginSz * 2);
   uiBoxPackStart (&hbox, &uiwidget);
 
   if (uimusicq->dispselType == DISP_SEL_SONGLIST ||

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cwd=$(pwd)
+cwd=$(cygpath -d $(pwd) | sed 's,\\,/,g')
 FDIRS=find-dirs.txt
 FALL=find-all.txt
 FLIST=makecab.ddf
@@ -27,7 +27,7 @@ BEGIN { gsub (/\//, "\\", CWD); }
     sub (/^=== /, "");
     print ".Set DestinationDir=" $0;
   } else {
-    print "\"C:\\msys64" CWD "\\" $0 "\" /inf=no";
+    print "\"" CWD "\\" $0 "\" /inf=no";
   }
 }' $FALL \
 > $FLIST

@@ -614,8 +614,8 @@ marqueeCloseCallback (void *udata)
       marqueeSaveWindowPosition (marquee);
     }
 
-    uiWindowIconify (&marquee->window);
     marquee->mqIconifyAction = true;
+    uiWindowIconify (&marquee->window);
     marquee->isIconified = true;
     logProcEnd (LOG_PROC, "marqueeCloseWin", "user-close-win");
     return UICB_STOP;

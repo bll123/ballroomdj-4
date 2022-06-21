@@ -80,7 +80,7 @@ uiWidgetSetMarginEnd (UIWidget *uiwidget, int margin)
     return;
   }
 
-  gtk_widget_set_margin_start (uiwidget->widget, margin);
+  gtk_widget_set_margin_end (uiwidget->widget, margin);
 }
 
 

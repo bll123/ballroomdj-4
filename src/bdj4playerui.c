@@ -126,6 +126,7 @@ static bool     pluiCloseWin (void *udata);
 static void     pluiSigHandler (int sig);
 /* queue selection handlers */
 static bool     pluiSwitchPage (void *udata, long pagenum);
+static void     pluiPlaybackButtonHideShow (playerui_t *plui, long pagenum);
 static bool     pluiProcessSetPlaybackQueue (void *udata);
 static void     pluiSetPlaybackQueue (playerui_t *plui, musicqidx_t newqueue);
 static void     pluiSetManageQueue (playerui_t *plui, musicqidx_t newqueue);
@@ -457,6 +458,7 @@ pluiBuildUI (playerui_t *plui)
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", ".png", PATHBLD_MP_IMGDIR);
   osuiSetIcon (imgbuff);
+  pluiPlaybackButtonHideShow (plui, 0);
 
   plui->uibuilt = true;
   logProcEnd (LOG_PROC, "pluiBuildUI", "");
@@ -740,7 +742,6 @@ static bool
 pluiSwitchPage (void *udata, long pagenum)
 {
   playerui_t  *plui = udata;
-  int         tabid;
 
   logProcBegin (LOG_PROC, "pluiSwitchPage");
 
@@ -748,6 +749,16 @@ pluiSwitchPage (void *udata, long pagenum)
     logProcEnd (LOG_PROC, "pluiSwitchPage", "no-ui");
     return UICB_STOP;
   }
+
+  pluiPlaybackButtonHideShow (plui, pagenum);
+  logProcEnd (LOG_PROC, "pluiSwitchPage", "");
+  return UICB_CONT;
+}
+
+static void
+pluiPlaybackButtonHideShow (playerui_t *plui, long pagenum)
+{
+  int         tabid;
 
   tabid = uiutilsNotebookIDGet (plui->nbtabid, pagenum);
 
@@ -759,8 +770,6 @@ pluiSwitchPage (void *udata, long pagenum)
       uiWidgetShow (&plui->setPlaybackButton);
     }
   }
-  logProcEnd (LOG_PROC, "pluiSwitchPage", "");
-  return UICB_CONT;
 }
 
 static bool
@@ -884,9 +893,8 @@ pluiSetExtraQueues (playerui_t *plui)
     /* the tab currently displayed is being hidden */
     plui->currpage = 0;
   }
-  /* make sure the set playback button is in the proper state */
-  /* this will trigger the switch-page event and call pluiSwitchPage() */
-  uiNotebookSetPage (&plui->notebook, plui->currpage);
+
+  pluiPlaybackButtonHideShow (plui, plui->currpage);
   logProcEnd (LOG_PROC, "pluiSetExtraQueues", "");
 }
 
