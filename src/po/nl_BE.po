@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
 "POT-Creation-Date: 2022-06-08\n"
-"PO-Revision-Date: 2022-06-21\n"
+"PO-Revision-Date: 2022-06-23\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -160,7 +160,7 @@ msgstr "Acties"
 msgid "Add New"
 msgstr "Voeg nieuwe toe"
 
-#. CONTEXT: dance level
+#. CONTEXT: configuration file: dance level
 msgid "Advanced"
 msgstr "Geavanceerd"
 
@@ -216,7 +216,7 @@ msgstr ""
 msgid "Apply Edit All"
 msgstr ""
 
-#. CONTEXT: dance
+#. CONTEXT: configuration file: dance
 msgid "Argentine Tango"
 msgstr "Argentijnse Tango"
 
@@ -266,11 +266,11 @@ msgstr "Enkel BDJ Tags"
 msgid "BPM"
 msgstr "BPM"
 
-#. CONTEXT: dance
+#. CONTEXT: configuration file: dance
 msgid "Bachata"
 msgstr "Bachata"
 
-#. CONTEXT: genre
+#. CONTEXT: configuration file: genre
 msgid "Ballroom Dance"
 msgstr "Ballroom dans"
 
@@ -282,7 +282,7 @@ msgstr "Ballroom muziekspeler"
 msgid "Cancel Edit All"
 msgstr ""
 
-#. CONTEXT: dance
+#. CONTEXT: configuration file: dance
 msgid "Cha Cha"
 msgstr "Cha Cha"
 
@@ -294,7 +294,7 @@ msgstr "Controleren op nieuwe"
 msgid "Checks for new audio files."
 msgstr ""
 
-#. CONTEXT: genre
+#. CONTEXT: configuration file: genre
 msgid "Classical"
 msgstr "Klassiek"
 
@@ -321,7 +321,7 @@ msgid "Close"
 msgstr "Sluiten"
 
 #. CONTEXT: database update: status message
-#. CONTEXT: status
+#. CONTEXT: configuration file: status
 msgid "Complete"
 msgstr "Voltooien"
 
@@ -476,7 +476,7 @@ msgstr "Tijdsduur"
 msgid "E-Mail Address"
 msgstr "E-mailadres"
 
-#. CONTEXT: dance level
+#. CONTEXT: configuration file: dance level
 msgid "Easy"
 msgstr "Gemakkelijk"
 
@@ -646,7 +646,7 @@ msgstr "Lettertype"
 msgid "Font Size"
 msgstr ""
 
-#. CONTEXT: dance
+#. CONTEXT: configuration file: dance
 msgid "Foxtrot"
 msgstr "Foxtrot"
 
@@ -669,11 +669,11 @@ msgstr ""
 msgid "Genre"
 msgstr "Genre"
 
-#. CONTEXT: rating
+#. CONTEXT: configuration file: rating
 msgid "Good"
 msgstr "Goed"
 
-#. CONTEXT: rating
+#. CONTEXT: configuration file: rating
 msgid "Great"
 msgstr "Uitstekend"
 
@@ -743,11 +743,11 @@ msgstr ""
 msgid "Internet"
 msgstr "Internet"
 
-#. CONTEXT: genre
+#. CONTEXT: configuration file: genre
 msgid "Jazz"
 msgstr "Jazz"
 
-#. CONTEXT: dance
+#. CONTEXT: configuration file: dance
 msgid "Jive"
 msgstr "Jive"
 
@@ -891,7 +891,7 @@ msgid "Music Manager"
 msgstr "Muziek Manager"
 
 #. CONTEXT: display settings for: music queue
-#. CONTEXT: name of a music queue
+#. CONTEXT: configuration file: name of a music queue
 msgid "Music Queue"
 msgstr "Muziek wachtrij"
 
@@ -900,7 +900,7 @@ msgstr "Muziek wachtrij"
 msgid "Name"
 msgstr ""
 
-#. CONTEXT: status
+#. CONTEXT: configuration file: status
 msgid "New"
 msgstr "Nieuw"
 
@@ -971,11 +971,11 @@ msgstr "Volgende nummer"
 msgid "No folder specified."
 msgstr ""
 
-#. CONTEXT: genre
+#. CONTEXT: configuration file: genre
 msgid "None"
 msgstr "Geen"
 
-#. CONTEXT: dance level
+#. CONTEXT: configuration file: dance level
 msgid "Normal"
 msgstr "Standaard"
 
@@ -1020,7 +1020,7 @@ msgstr ""
 msgid "Other Files"
 msgstr ""
 
-#. CONTEXT: dance
+#. CONTEXT: configuration file: dance
 msgid "Paso Doble"
 msgstr "Paso Doble"
 
@@ -1089,7 +1089,7 @@ msgstr ""
 msgid "Please wait..."
 msgstr "Even geduld..."
 
-#. CONTEXT: rating
+#. CONTEXT: configuration file: rating
 msgid "Poor"
 msgstr "Slecht"
 
@@ -1143,7 +1143,7 @@ msgstr ""
 msgid "Queue A Name"
 msgstr ""
 
-#. CONTEXT: name of a music queue
+#. CONTEXT: configuration file: name of a music queue
 msgid "Queue B"
 msgstr "Wachtrij B"
 
@@ -1170,7 +1170,7 @@ msgstr ""
 msgid "QueueDance"
 msgstr "wachtrijendans"
 
-#. CONTEXT: dance
+#. CONTEXT: configuration file: dance
 msgid "Quickstep"
 msgstr "Quickstep"
 
@@ -1252,11 +1252,11 @@ msgstr "Resetten"
 msgid "Return to beginning of song"
 msgstr ""
 
-#. CONTEXT: genre
+#. CONTEXT: configuration file: genre
 msgid "Rock"
 msgstr "Rock"
 
-#. CONTEXT: dance
+#. CONTEXT: configuration file: dance
 msgid "Rumba"
 msgstr "Rumba"
 
@@ -1265,11 +1265,11 @@ msgstr "Rumba"
 msgid "Running conversion script: %s."
 msgstr ""
 
-#. CONTEXT: dance
+#. CONTEXT: configuration file: dance
 msgid "Salsa"
 msgstr "Salsa"
 
-#. CONTEXT: dance
+#. CONTEXT: configuration file: dance
 msgid "Samba"
 msgstr "Samba"
 
@@ -1390,6 +1390,7 @@ msgid "Sort by"
 msgstr ""
 
 #. CONTEXT: configuration: dances: the speed of the dance (fast/normal/slow)
+#. CONTEXT: text from the HTML templates (buttons and labels)
 #. CONTEXT: the current speed for song playback
 msgid "Speed"
 msgstr "Tempo"
@@ -1461,11 +1462,11 @@ msgstr ""
 msgid "Tags"
 msgstr "Tags"
 
-#. CONTEXT: dance
+#. CONTEXT: configuration file: dance
 msgid "Tango"
 msgstr "Tango"
 
-#. CONTEXT: The completion message displayed on the marquee when the playlist is finished.
+#. CONTEXT: configuration file: The completion message displayed on the marquee when the playlist is finished.
 msgid "Thank You Dancers"
 msgstr ""
 
@@ -1532,7 +1533,7 @@ msgstr ""
 msgid "Unable to locate %s."
 msgstr "Kan %s niet vinden."
 
-#. CONTEXT: rating
+#. CONTEXT: configuration file: rating
 msgid "Unrated"
 msgstr "Onbeoordeeld"
 
@@ -1578,10 +1579,11 @@ msgstr ""
 msgid "User Interface"
 msgstr "Gebruikersinterface"
 
-#. CONTEXT: dance
+#. CONTEXT: configuration file: dance
 msgid "Viennese Waltz"
 msgstr "Weense wals"
 
+#. CONTEXT: text from the HTML templates (buttons and labels)
 #. CONTEXT: The current volume of the song
 msgid "Volume"
 msgstr "Volume"
@@ -1590,7 +1592,7 @@ msgstr "Volume"
 msgid "Volume Adjustment"
 msgstr "Volumeaanpassing"
 
-#. CONTEXT: dance
+#. CONTEXT: configuration file: dance
 msgid "Waltz"
 msgstr "Engelse wals"
 
@@ -1599,7 +1601,7 @@ msgstr "Engelse wals"
 msgid "Weight"
 msgstr "Belang"
 
-#. CONTEXT: dance
+#. CONTEXT: configuration file: dance
 msgid "West Coast Swing"
 msgstr "West Coast Swing"
 
@@ -1615,7 +1617,7 @@ msgstr "Schrijf Tag info naar audiobestanden"
 msgid "automatic"
 msgstr "Automatisch"
 
-#. CONTEXT: dance type
+#. CONTEXT: configuration file: dance type
 msgid "club"
 msgstr "club"
 
@@ -1623,7 +1625,7 @@ msgstr "club"
 msgid "fast"
 msgstr "snel"
 
-#. CONTEXT: dance type
+#. CONTEXT: configuration file: dance type
 msgid "latin"
 msgstr "latijn"
 
@@ -1635,7 +1637,7 @@ msgstr "normaal"
 msgid "slow"
 msgstr "langzaam"
 
-#. CONTEXT: dance type
+#. CONTEXT: configuration file: dance type
 msgid "standard"
 msgstr "standaard"
 

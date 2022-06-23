@@ -61,7 +61,7 @@ function mkhtmlsub {
         continue
         ;;
     esac
-    xl=$(sed -n "\~msgid .${nl}.~ {n;p;}" $pofile)
+    xl=$(sed -n "\~msgid \"${nl}\"$~ {n;p;}" $pofile)
     case $xl in
       ""|msgstr\ \"\")
         continue
@@ -69,6 +69,7 @@ function mkhtmlsub {
     esac
     xl=$(echo $xl | sed -e 's,^msgstr ",,' -e 's,"$,,')
     sedcmd+="-e '\~value=\"${nl}\"~ s~value=\"${nl}\"~value=\"${xl}\"~' "
+    sedcmd+="-e '\~>${nl}</p>~ s~${nl}~${xl}~' "
   done < $tempf
 
   eval sed ${sedcmd} "$tmpl" > "${TMPLDIR}/${locale}/$(basename ${tmpl})"
@@ -91,7 +92,7 @@ function mkimgsub {
         continue
         ;;
     esac
-    xl=$(sed -n "\~msgid .${nl}.~ {n;p;}" $pofile)
+    xl=$(sed -n "\~msgid \"${nl}\"$~ {n;p;}" $pofile)
     case $xl in
       ""|msgstr\ \"\")
         continue
@@ -223,6 +224,8 @@ while read -r line; do
     esac
     egrep 'value=' $fn |
         sed -e 's,.*value=",,' -e 's,".*,,' -e '/^100$/ d' > $TMP
+    egrep '<p[^>]*>[A-Za-z][A-Za-z]*</p>' $fn |
+        sed -e 's, *<p[^>]*>,,' -e 's,</p>,,' >> $TMP
     sort -u $TMP > $TMP.n
     mv -f $TMP.n $TMP
     mkhtmlsub $fn $TMP $locale $pofile
@@ -240,7 +243,7 @@ while read -r line; do
     for txt in automatic standardrounds queuedance; do
       ttxt=$txt
       if [[ $ttxt == queuedance ]]; then ttxt="QueueDance"; fi
-      xl=$(sed -n "\~msgid .${ttxt}.~ {n;p;}" $pofile)
+      xl=$(sed -n "\~msgid \"${ttxt}\"$~ {n;p;}" $pofile)
       case $xl in
         ""|msgstr\ \"\")
           continue

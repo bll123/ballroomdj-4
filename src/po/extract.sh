@@ -63,40 +63,43 @@ function mkpo {
 TMP=potemplates.c
 > $TMP
 
-ctxt="// CONTEXT: dance type"
+ctxt="// CONTEXT: configuration file: dance type"
 fn=../templates/dancetypes.txt
 sed -e '/^#/d' -e 's,^,..,' -e "s,^,${ctxt}\n," $fn >> $TMP
 
-ctxt="// CONTEXT: dance"
+ctxt="// CONTEXT: configuration file: dance"
 fn=../templates/dances.txt
 sed -n -e "/^DANCE/ {n;s,^,${ctxt}\n,;p}" $fn >> $TMP
 
-ctxt="// CONTEXT: rating"
+ctxt="// CONTEXT: configuration file: rating"
 fn=../templates/ratings.txt
 sed -n -e "/^RATING/ {n;s,^,${ctxt}\n,;p}" $fn >> $TMP
 
-ctxt="// CONTEXT: genre"
+ctxt="// CONTEXT: configuration file: genre"
 fn=../templates/genres.txt
 sed -n -e "/^GENRE/ {n;s,^,${ctxt}\n,;p}" $fn >> $TMP
 
-ctxt="// CONTEXT: dance level"
+ctxt="// CONTEXT: configuration file: dance level"
 fn=../templates/levels.txt
 sed -n -e "/^LEVEL/ {n;s,^,${ctxt}\n,;p}" $fn >> $TMP
 
-ctxt="// CONTEXT: status"
+ctxt="// CONTEXT: configuration file: status"
 fn=../templates/status.txt
 sed -n -e "/^STATUS/ {n;s,^,${ctxt}\n,;p}" $fn >> $TMP
 
 fn=../templates/bdjconfig.txt.p
-ctxt="// CONTEXT: name of a music queue"
+ctxt="// CONTEXT: configuration file: name of a music queue"
 sed -n -e "/^QUEUE_NAME_[AB]/ {n;s,^,${ctxt}\n,;p}" $fn >> $TMP
-echo "// CONTEXT: The completion message displayed on the marquee when the playlist is finished." >> $TMP
+echo "// CONTEXT: configuration file: The completion message displayed on the marquee when the playlist is finished." >> $TMP
 sed -n -e '/^COMPLETEMSG/ {n;p}' $fn >> $TMP
 
 ctxt="// CONTEXT: text from the HTML templates (buttons and labels)"
 egrep 'value=' ../templates/*.html |
-  sed -e 's,.*value=",,' -e 's,".*,,' -e '/^100$/ d' -e 's,^,..,' \
-      -e "s,^,${ctxt}\n," >> $TMP
+  sed -e 's,.*value=",,' -e 's,".*,,' -e '/^100$/ d' \
+      -e 's,^,..,' -e "s,^,${ctxt}\n," >> $TMP
+egrep '<p[^>]*>[A-Za-z][A-Za-z]*</p>' ../templates/*.html |
+  sed -e 's,.*: *<,<,' -e 's,<[^>]*>,,g' -e 's,^ *,,' -e 's, *$,,' \
+      -e 's,^,..,' -e "s,^,${ctxt}\n," >> $TMP
 
 # names of playlist files
 echo "// CONTEXT: The name of the 'automatic' playlist file" >> $TMP
