@@ -423,7 +423,6 @@ uisongselSelectCallback (void *udata)
   uisongsel_t       *uisongsel = udata;
   musicqidx_t       mqidx;
 
-fprintf (stderr, "ss: select callback\n");
   /* queue to the song list */
   mqidx = MUSICQ_A;
   uisongselQueueHandler (uisongsel, mqidx, UISONGSEL_QUEUE);
@@ -659,7 +658,6 @@ uisongselPlayCallback (void *udata)
   musicqidx_t mqidx;
   uisongsel_t *uisongsel = udata;
 
-fprintf (stderr, "ss: play callback\n");
   mqidx = MUSICQ_B;
   /* the manageui callback clears the queue and plays */
   uisongselQueueHandler (uisongsel, mqidx, UISONGSEL_PLAY);
@@ -710,7 +708,6 @@ uisongselQueueCallback (void *udata)
   musicqidx_t mqidx;
   uisongsel_t *uisongsel = udata;
 
-fprintf (stderr, "ss: queue callback\n");
   mqidx = MUSICQ_CURRENT;
   uisongselQueueHandler (uisongsel, mqidx, UISONGSEL_QUEUE);
   return UICB_CONT;

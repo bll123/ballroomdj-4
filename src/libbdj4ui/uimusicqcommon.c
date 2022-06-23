@@ -150,7 +150,6 @@ uimusicqPlay (uimusicq_t *uimusicq, int mqidx, dbidx_t dbidx)
 {
   char          tbuff [80];
 
-fprintf (stderr, "mq: clear queue / play %d\n", mqidx);
   /* clear the playlist queue and music queue, current playing song */
   /* and insert the new song */
   snprintf (tbuff, sizeof (tbuff), "%d%c%d%c%d",

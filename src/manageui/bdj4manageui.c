@@ -1429,14 +1429,12 @@ manageQueueProcess (void *udata, long dbidx, int mqidx, int dispsel, int action)
     if (loc < 0) {
       loc = 99;
     }
-fprintf (stderr, "m: queue music to %ld\n", loc);
     snprintf (tbuff, sizeof (tbuff), "%d%c%ld%c%ld", mqidx,
         MSG_ARGS_RS, loc, MSG_ARGS_RS, dbidx);
     connSendMessage (manage->conn, ROUTE_MAIN, MSG_MUSICQ_INSERT, tbuff);
   }
 
   if (action == MANAGE_PLAY) {
-fprintf (stderr, "m: play music\n");
     snprintf (tbuff, sizeof (tbuff), "%d%c%d%c%ld", mqidx,
         MSG_ARGS_RS, 99, MSG_ARGS_RS, dbidx);
     connSendMessage (manage->conn, ROUTE_MAIN, MSG_QUEUE_CLEAR_PLAY, tbuff);
