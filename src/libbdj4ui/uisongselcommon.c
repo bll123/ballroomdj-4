@@ -14,22 +14,18 @@
 #include "ui.h"
 
 void
-uisongselClearQueue (uisongsel_t *uisongsel, musicqidx_t mqidx)
-{
-  char  tmp [60];
-
-  /* clear the queue; start index is 1 */
-  snprintf (tmp, sizeof (tmp), "%d%c%d", mqidx, MSG_ARGS_RS, 1);
-  connSendMessage (uisongsel->conn, ROUTE_MAIN, MSG_QUEUE_CLEAR, tmp);
-  /* clear any playing song via main */
-  connSendMessage (uisongsel->conn, ROUTE_MAIN, MSG_CMD_NEXTSONG, NULL);
-}
-
-void
 uisongselQueueProcess (uisongsel_t *uisongsel, dbidx_t dbidx, musicqidx_t mqidx)
 {
   if (uisongsel->queuecb != NULL) {
     uiutilsCallbackLongIntHandler (uisongsel->queuecb, dbidx, mqidx);
+  }
+}
+
+void
+uisongselPlayProcess (uisongsel_t *uisongsel, dbidx_t dbidx, musicqidx_t mqidx)
+{
+  if (uisongsel->playcb != NULL) {
+    uiutilsCallbackLongIntHandler (uisongsel->playcb, dbidx, mqidx);
   }
 }
 

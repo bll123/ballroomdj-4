@@ -61,6 +61,7 @@ uisongselInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
   }
   uisongsel->newselcb = NULL;
   uisongsel->queuecb = NULL;
+  uisongsel->playcb = NULL;
   uisongsel->editcb = NULL;
 
   uisongselUIInit (uisongsel);
@@ -163,6 +164,15 @@ uisongselSetQueueCallback (uisongsel_t *uisongsel, UICallback *uicb)
     return;
   }
   uisongsel->queuecb = uicb;
+}
+
+void
+uisongselSetPlayCallback (uisongsel_t *uisongsel, UICallback *uicb)
+{
+  if (uisongsel == NULL) {
+    return;
+  }
+  uisongsel->playcb = uicb;
 }
 
 void

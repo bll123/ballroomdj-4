@@ -195,7 +195,8 @@ remctrlEventHandler (struct mg_connection *c, int ev,
   if (ev == MG_EV_HTTP_MSG) {
     struct mg_http_message *hm = (struct mg_http_message *) ev_data;
 
-    mg_http_creds(hm, user, sizeof(user), pass, sizeof(pass)); // "user" is now user name and "pass" is now password from request
+    /* "user" is now user name and "pass" is now password from request */
+    mg_http_creds (hm, user, sizeof(user), pass, sizeof(pass));
 
     mg_url_decode (hm->query.ptr, hm->query.len, querystr, sizeof (querystr), 1);
     qstrptr = strtok_r (querystr, " ", &tokptr);
@@ -208,27 +209,40 @@ remctrlEventHandler (struct mg_connection *c, int ev,
         snprintf (tbuff, sizeof (tbuff), "0%c%s", MSG_ARGS_RS, qstrptr);
       }
     }
+
     if (user [0] == '\0' || pass [0] == '\0') {
-      mg_http_reply (c, 401, "Content-type: text/plain; charset=utf-8\r\n"
-          "WWW-Authenticate: Basic realm=BDJ4 Remote\r\n", "Unauthorized");
+      mg_http_reply (c, 401,
+          "Content-type: text/plain; charset=utf-8\r\n"
+          "WWW-Authenticate: Basic realm=BDJ4 Remote\r\n",
+          "Unauthorized");
     } else if (strcmp (user, remctrlData->user) != 0 ||
         strcmp (pass, remctrlData->pass) != 0) {
-      mg_http_reply (c, 401, "Content-type: text/plain; charset=utf-8\r\n"
-          "WWW-Authenticate: Basic realm=BDJ4 Remote\r\n", "Unauthorized");
+      mg_http_reply (c, 401,
+          "Content-type: text/plain; charset=utf-8\r\n"
+          "WWW-Authenticate: Basic realm=BDJ4 Remote\r\n",
+          "Unauthorized");
     } else if (mg_http_match_uri (hm, "/getstatus")) {
       if (remctrlData->playerStatus == NULL) {
-        mg_http_reply (c, 204, "Content-type: text/plain; charset=utf-8\r\n"
-            "Cache-Control: max-age=0\r\n", "");
+        mg_http_reply (c, 204,
+            "Content-type: text/plain; charset=utf-8\r\n"
+            "Cache-Control: max-age=0\r\n",
+            "");
       } else {
-        mg_http_reply (c, 200, "Content-type: text/plain; charset=utf-8\r\n"
-            "Cache-Control: max-age=0\r\n", remctrlData->playerStatus);
+        mg_http_reply (c, 200,
+            "Content-type: text/plain; charset=utf-8\r\n"
+            "Cache-Control: max-age=0\r\n",
+            remctrlData->playerStatus);
       }
     } else if (mg_http_match_uri (hm, "/cmd")) {
       bool ok = true;
 
       if (strcmp (querystr, "clear") == 0) {
+        /* clears any playlists and truncates the music queue */
         connSendMessage (remctrlData->conn,
             ROUTE_MAIN, MSG_QUEUE_CLEAR, "0");
+        /* and clear the current playing song */
+        connSendMessage (remctrlData->conn,
+            ROUTE_MAIN, MSG_CMD_NEXTSONG, NULL);
       } else if (strcmp (querystr, "fade") == 0) {
         connSendMessage (remctrlData->conn,
             ROUTE_PLAYER, MSG_PLAY_FADE, NULL);
@@ -268,26 +282,38 @@ remctrlEventHandler (struct mg_connection *c, int ev,
       } else {
         ok = false;
       }
+
       if (ok) {
-        mg_http_reply (c, 200, "Content-type: text/plain; charset=utf-8\r\n",
-            "Cache-Control: max-age=0\r\n", NULL);
+        mg_http_reply (c, 200,
+            "Content-type: text/plain; charset=utf-8\r\n"
+            "Cache-Control: max-age=0\r\n",
+            NULL);
       } else {
-        mg_http_reply (c, 400, "Content-type: text/plain; charset=utf-8\r\n",
-            "Cache-Control: max-age=0\r\n", NULL);
+        mg_http_reply (c, 400,
+            "Content-type: text/plain; charset=utf-8\r\n"
+            "Cache-Control: max-age=0\r\n",
+            NULL);
       }
     } else if (mg_http_match_uri (hm, "/getdancelist")) {
-      mg_http_reply (c, 200, "Content-type: text/plain; charset=utf-8\r\n",
+      mg_http_reply (c, 200,
+          "Content-type: text/plain; charset=utf-8\r\n"
+          "Cache-Control: max-age=0\r\n",
           remctrlData->danceList);
     } else if (mg_http_match_uri (hm, "/getplaylistsel")) {
-      mg_http_reply (c, 200, "Content-type: text/plain; charset=utf-8\r\n",
+      mg_http_reply (c, 200,
+          "Content-type: text/plain; charset=utf-8\r\n"
+          "Cache-Control: max-age=0\r\n",
           remctrlData->playlistList);
     } else if (mg_http_match_uri (hm, "#.key") ||
         mg_http_match_uri (hm, "#.crt") ||
         mg_http_match_uri (hm, "#.pem") ||
         mg_http_match_uri (hm, "#.csr")) {
+      logMsg (LOG_DBG, LOG_IMPORTANT, "%.*s", hm->uri.len, hm->uri.ptr);
       mg_http_reply (c, 403, NULL, "%s", "Forbidden");
     } else {
-      mg_http_reply (c, 403, NULL, "%s", "Forbidden");
+      struct mg_http_serve_opts opts = { .root_dir = sysvarsGetStr (SV_BDJ4HTTPDIR) };
+      logMsg (LOG_DBG, LOG_IMPORTANT, "serve: %.*s", hm->uri.len, hm->uri.ptr);
+      mg_http_serve_dir (c, hm, &opts);
     }
   }
 }
@@ -299,11 +325,11 @@ remctrlProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
   remctrldata_t     *remctrlData = udata;
 
   /* this just reduces the amount of stuff in the log */
-  if (msg != MSG_PLAYER_STATUS_DATA) {
+//  if (msg != MSG_PLAYER_STATUS_DATA) {
     logMsg (LOG_DBG, LOG_MSGS, "got: from:%d/%s route:%d/%s msg:%d/%s args:%s",
         routefrom, msgRouteDebugText (routefrom),
         route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
-  }
+//  }
 
   switch (route) {
     case ROUTE_NONE:

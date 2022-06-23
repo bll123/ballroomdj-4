@@ -29,7 +29,7 @@ websrvInit (uint16_t listenPort, mg_event_handler_t eventHandler,
 
   mg_log_set_callback (websrvLog, NULL);
   if (logCheck (LOG_DBG, LOG_WEBSRV)) {
-    mg_log_set ("4");
+    mg_log_set ("3");
   }
 
   mg_mgr_init (&websrv->mgr);
@@ -59,5 +59,9 @@ static void
 websrvLog (const void *tmsg, size_t len, void *userdata)
 {
   const char  *msg = tmsg;
+
+  if (len == 1 && *msg == '\n') {
+    return;
+  }
   logMsg (LOG_DBG, LOG_WEBSRV, "%.*s", len, msg);
 }

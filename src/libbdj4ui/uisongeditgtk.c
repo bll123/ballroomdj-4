@@ -243,7 +243,7 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   uiBoxPackStart (&hbox, &uiwidget);
 
   uiutilsUICallbackInit (&uiw->callbacks [UISONGEDIT_CB_PLAY],
-      uisongselQueueProcessPlayCallback, uisongsel);
+      uisongselPlayCallback, uisongsel);
   uiCreateButton (&uiwidget, &uiw->callbacks [UISONGEDIT_CB_PLAY],
       /* CONTEXT: song editor : play song */
       _("Play"), NULL);

@@ -88,7 +88,9 @@ enum {
   MANAGE_CB_NEW_SEL_SONGLIST,
   MANAGE_CB_QUEUE_SL,
   MANAGE_CB_QUEUE_SL_EZ,
-  MANAGE_CB_QUEUE_MM,
+  MANAGE_CB_PLAY_SL,
+  MANAGE_CB_PLAY_SL_EZ,
+  MANAGE_CB_PLAY_MM,
   MANAGE_CB_CLOSE,
   MANAGE_CB_MAIN_NB,
   MANAGE_CB_SL_NB,
@@ -104,6 +106,12 @@ enum {
 enum {
   MANAGE_DISP_SONG_SEL,
   MANAGE_DISP_SONG_LIST,
+};
+
+/* actions for the queue process */
+enum {
+  MANAGE_PLAY,
+  MANAGE_QUEUE
 };
 
 typedef struct manage manageui_t;
@@ -214,10 +222,12 @@ static bool     manageToggleEasySonglist (void *udata);
 static void     manageSetEasySonglist (manageui_t *manage);
 static void     manageSonglistSave (manageui_t *manage);
 static void     manageSetSonglistName (manageui_t *manage, const char *nm);
+static bool     managePlayProcessSonglist (void *udata, long dbidx, int mqidx);
+static bool     managePlayProcessEasySonglist (void *udata, long dbidx, int mqidx);
+static bool     managePlayProcessMusicManager (void *udata, long dbidx, int mqidx);
 static bool     manageQueueProcessSonglist (void *udata, long dbidx, int mqidx);
 static bool     manageQueueProcessEasySonglist (void *udata, long dbidx, int mqidx);
-static bool     manageQueueProcessMusicManager (void *udata, long dbidx, int mqidx);
-static void     manageQueueProcess (void *udata, long dbidx, int mqidx, int dispsel);
+static void     manageQueueProcess (void *udata, long dbidx, int mqidx, int dispsel, int action);
 /* general */
 static bool     manageSwitchPageMain (void *udata, long pagenum);
 static bool     manageSwitchPageSonglist (void *udata, long pagenum);
@@ -596,6 +606,10 @@ manageInitializeUI (manageui_t *manage)
   manage->slsongsel = uisongselInit ("m-sl-songsel", manage->conn,
       manage->musicdb, manage->dispsel, manage->options,
       manage->uisongfilter, DISP_SEL_SONGSEL);
+  uiutilsUICallbackLongIntInit (&manage->callbacks [MANAGE_CB_PLAY_SL],
+      managePlayProcessSonglist, manage);
+  uisongselSetPlayCallback (manage->slsongsel,
+      &manage->callbacks [MANAGE_CB_PLAY_SL]);
   uiutilsUICallbackLongIntInit (&manage->callbacks [MANAGE_CB_QUEUE_SL],
       manageQueueProcessSonglist, manage);
   uisongselSetQueueCallback (manage->slsongsel,
@@ -608,6 +622,10 @@ manageInitializeUI (manageui_t *manage)
       manage->uisongfilter, DISP_SEL_EZSONGSEL);
   uimusicqSetPlayIdx (manage->slezmusicq, manage->musicqPlayIdx);
   uimusicqSetManageIdx (manage->slezmusicq, manage->musicqManageIdx);
+  uiutilsUICallbackLongIntInit (&manage->callbacks [MANAGE_CB_PLAY_SL_EZ],
+      managePlayProcessEasySonglist, manage);
+  uisongselSetPlayCallback (manage->slezsongsel,
+      &manage->callbacks [MANAGE_CB_PLAY_SL_EZ]);
   uiutilsUICallbackLongIntInit (&manage->callbacks [MANAGE_CB_QUEUE_SL_EZ],
       manageQueueProcessEasySonglist, manage);
   uisongselSetQueueCallback (manage->slezsongsel,
@@ -622,10 +640,10 @@ manageInitializeUI (manageui_t *manage)
       manage->uisongfilter, DISP_SEL_MM);
   uimusicqSetPlayIdx (manage->mmmusicq, manage->musicqPlayIdx);
   uimusicqSetManageIdx (manage->mmmusicq, manage->musicqManageIdx);
-  uiutilsUICallbackLongIntInit (&manage->callbacks [MANAGE_CB_QUEUE_MM],
-      manageQueueProcessMusicManager, manage);
-  uisongselSetQueueCallback (manage->mmsongsel,
-      &manage->callbacks [MANAGE_CB_QUEUE_MM]);
+  uiutilsUICallbackLongIntInit (&manage->callbacks [MANAGE_CB_PLAY_MM],
+      managePlayProcessMusicManager, manage);
+  uisongselSetPlayCallback (manage->mmsongsel,
+      &manage->callbacks [MANAGE_CB_PLAY_MM]);
 
   manage->mmsongedit = uisongeditInit (manage->conn,
       manage->musicdb, manage->dispsel, manage->options);
@@ -705,7 +723,7 @@ manageBuildUISongListEditor (manageui_t *manage)
   uiBoxPackStart (&hbox, &vbox);
 
   uiutilsUICallbackInit (&manage->callbacks [MANAGE_CB_EZ_SELECT],
-      uisongselQueueProcessSelectCallback, manage->slezsongsel);
+      uisongselSelectCallback, manage->slezsongsel);
   uiCreateButton (&uiwidget,
       &manage->callbacks [MANAGE_CB_EZ_SELECT],
       /* CONTEXT: config: button: add the selected songs to the song list */
@@ -1353,33 +1371,47 @@ manageSonglistSave (manageui_t *manage)
 }
 
 static bool
+managePlayProcessSonglist (void *udata, long dbidx, int mqidx)
+{
+  manageQueueProcess (udata, dbidx, mqidx, DISP_SEL_SONGLIST, MANAGE_PLAY);
+  return UICB_CONT;
+}
+
+static bool
+managePlayProcessEasySonglist (void *udata, long dbidx, int mqidx)
+{
+  manageQueueProcess (udata, dbidx, mqidx, DISP_SEL_EZSONGLIST, MANAGE_PLAY);
+  return UICB_CONT;
+}
+
+static bool
+managePlayProcessMusicManager (void *udata, long dbidx, int mqidx)
+{
+  manageQueueProcess (udata, dbidx, mqidx, DISP_SEL_MM, MANAGE_PLAY);
+  return UICB_CONT;
+}
+
+static bool
 manageQueueProcessSonglist (void *udata, long dbidx, int mqidx)
 {
-  manageQueueProcess (udata, dbidx, mqidx, DISP_SEL_SONGLIST);
+  manageQueueProcess (udata, dbidx, mqidx, DISP_SEL_SONGLIST, MANAGE_QUEUE);
   return UICB_CONT;
 }
 
 static bool
 manageQueueProcessEasySonglist (void *udata, long dbidx, int mqidx)
 {
-  manageQueueProcess (udata, dbidx, mqidx, DISP_SEL_EZSONGLIST);
-  return UICB_CONT;
-}
-
-static bool
-manageQueueProcessMusicManager (void *udata, long dbidx, int mqidx)
-{
-  manageQueueProcess (udata, dbidx, mqidx, DISP_SEL_MM);
+  manageQueueProcess (udata, dbidx, mqidx, DISP_SEL_EZSONGLIST, MANAGE_QUEUE);
   return UICB_CONT;
 }
 
 static void
-manageQueueProcess (void *udata, long dbidx, int mqidx, int dispsel)
+manageQueueProcess (void *udata, long dbidx, int mqidx, int dispsel, int action)
 {
   manageui_t  *manage = udata;
   char        tbuff [100];
-  uimusicq_t  *uimusicq = NULL;
   long        loc;
+  uimusicq_t  *uimusicq = NULL;
 
   if (dispsel == DISP_SEL_SONGLIST) {
     uimusicq = manage->slmusicq;
@@ -1387,16 +1419,28 @@ manageQueueProcess (void *udata, long dbidx, int mqidx, int dispsel)
   if (dispsel == DISP_SEL_EZSONGLIST) {
     uimusicq = manage->slezmusicq;
   }
-
-  loc = uimusicqGetSelectLocation (uimusicq, mqidx);
-  if (loc < 0) {
-    loc = 99;
+  if (dispsel == DISP_SEL_MM) {
+    uimusicq = manage->mmmusicq;
   }
 
-  /* queue to the end of the hidden music queue */
-  snprintf (tbuff, sizeof (tbuff), "%d%c%ld%c%ld", mqidx,
-      MSG_ARGS_RS, loc, MSG_ARGS_RS, dbidx);
-  connSendMessage (manage->conn, ROUTE_MAIN, MSG_MUSICQ_INSERT, tbuff);
+  if (action == MANAGE_QUEUE) {
+    /* on a queue action, queue after the current selection */
+    loc = uimusicqGetSelectLocation (uimusicq, mqidx);
+    if (loc < 0) {
+      loc = 99;
+    }
+fprintf (stderr, "m: queue music to %ld\n", loc);
+    snprintf (tbuff, sizeof (tbuff), "%d%c%ld%c%ld", mqidx,
+        MSG_ARGS_RS, loc, MSG_ARGS_RS, dbidx);
+    connSendMessage (manage->conn, ROUTE_MAIN, MSG_MUSICQ_INSERT, tbuff);
+  }
+
+  if (action == MANAGE_PLAY) {
+fprintf (stderr, "m: play music\n");
+    snprintf (tbuff, sizeof (tbuff), "%d%c%d%c%ld", mqidx,
+        MSG_ARGS_RS, 99, MSG_ARGS_RS, dbidx);
+    connSendMessage (manage->conn, ROUTE_MAIN, MSG_QUEUE_CLEAR_PLAY, tbuff);
+  }
 }
 
 /* general */

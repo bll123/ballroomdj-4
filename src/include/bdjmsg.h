@@ -41,13 +41,20 @@ typedef enum {
   MSG_MUSICQ_SET_MANAGE,    // args: music queue for management
   MSG_MUSICQ_SET_PLAYBACK,  // args: music queue for playback
   MSG_MUSICQ_TOGGLE_PAUSE,  // args: music-q-idx
-  MSG_MUSICQ_TRUNCATE,      // args: music-q-idx, idx
+  MSG_MUSICQ_TRUNCATE,      // args: music-q-idx, start-idx
+                            //    only truncates the music queue
   MSG_PLAYLIST_CLEARPLAY,   // args: playlist name
   MSG_CMD_PLAY,             // always to main, starts playback
   MSG_CMD_PLAYPAUSE,        // always to main
   MSG_CMD_NEXTSONG,         // allows main to determine whether a nextsong
                             //    message needs to be sent to the player
   MSG_QUEUE_CLEAR,          // args: music-q-idx
+                            //    clears both the playlist queue and
+                            //    all of the music queue.
+  MSG_QUEUE_CLEAR_PLAY,     // args: musicq--idx, start-idx, dbidx
+                            //    does a msg_queue_clear + insert
+                            //    start-idx is supplied to keep internal
+                            //    processing consistent.
   MSG_QUEUE_DANCE_5,        // args: music-q-idx, dance idx
   MSG_QUEUE_DANCE,          // args: music-q-idx, dance idx
   MSG_QUEUE_PLAYLIST,       // args: music-q-idx, playlist name

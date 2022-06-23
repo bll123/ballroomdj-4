@@ -2141,7 +2141,7 @@ confuiPopulateOptions (configui_t *confui)
 
     if (i == CONFUI_SPINBOX_RC_HTML_TEMPLATE) {
       sval = bdjoptGetStr (confui->uiitem [i].bdjoptIdx);
-      templateFileCopy (sval, "bdj.html");
+      templateHttpCopy (sval, "bdj4remote.html");
     }
   } /* for each item */
 

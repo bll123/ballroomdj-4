@@ -201,7 +201,9 @@ mobmqEventHandler (struct mg_connection *c, int ev, void *ev_data, void *userdat
         mg_http_match_uri (hm, "#.csr")) {
       mg_http_reply (c, 403, NULL, "%s", "Forbidden");
     } else {
-      mg_http_reply (c, 403, NULL, "%s", "Forbidden");
+      struct mg_http_serve_opts opts = { .root_dir = sysvarsGetStr (SV_BDJ4HTTPDIR) };
+      logMsg (LOG_DBG, LOG_IMPORTANT, "serve: %.*s", hm->uri.len, hm->uri.ptr);
+      mg_http_serve_dir (c, hm, &opts);
     }
   }
 }

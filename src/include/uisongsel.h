@@ -35,6 +35,7 @@ typedef struct uisongsel {
   double            dfilterCount;
   UIWidget          *windowp;
   UICallback        *queuecb;
+  UICallback        *playcb;
   UICallback        *editcb;
   dbidx_t           lastdbidx;
   /* peers */
@@ -64,8 +65,9 @@ void  uisongselSetDatabase (uisongsel_t *uisongsel, musicdb_t *musicdb);
 void  uisongselFree (uisongsel_t *uisongsel);
 void  uisongselMainLoop (uisongsel_t *uisongsel);
 int   uisongselProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route, bdjmsgmsg_t msg, char *args, void *udata);
-void  uisongselSetSelectionCallback (uisongsel_t *uisongsel, UICallback *uicbdbidx);
-void  uisongselSetQueueCallback (uisongsel_t *uisongsel, UICallback *uicbdbidx);
+void  uisongselSetSelectionCallback (uisongsel_t *uisongsel, UICallback *uicb);
+void  uisongselSetQueueCallback (uisongsel_t *uisongsel, UICallback *uicb);
+void  uisongselSetPlayCallback (uisongsel_t *uisongsel, UICallback *uicb);
 /* song filter */
 void  uisongselSetEditCallback (uisongsel_t *uisongsel, UICallback *uicb);
 
@@ -74,11 +76,11 @@ void  uisongselSetEditCallback (uisongsel_t *uisongsel, UICallback *uicb);
 void  uisongselUIInit (uisongsel_t *uisongsel);
 void  uisongselUIFree (uisongsel_t *uisongsel);
 UIWidget  * uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin);
-bool  uisongselQueueProcessPlayCallback (void *udata);
+bool  uisongselPlayCallback (void *udata);
 void  uisongselClearData (uisongsel_t *uisongsel);
 void  uisongselPopulateData (uisongsel_t *uisongsel);
 void  uisongselSetFavoriteForeground (uisongsel_t *uisongsel, char *color);
-bool  uisongselQueueProcessSelectCallback (void *udata);
+bool  uisongselSelectCallback (void *udata);
 void  uisongselSetDefaultSelection (uisongsel_t *uisongsel);
 void  uisongselSetSelection (uisongsel_t *uisongsel, long idx);
 bool  uisongselNextSelection (void *udata);
@@ -92,8 +94,8 @@ void  uisongselSaveSelections (uisongsel_t *uisongsel);
 void  uisongselRestoreSelections (uisongsel_t *uisongsel);
 
 /* uisongselcommon.c */
-void  uisongselClearQueue (uisongsel_t *uisongsel, musicqidx_t mqidx);
 void  uisongselQueueProcess (uisongsel_t *uisongsel, dbidx_t dbidx, musicqidx_t mqidx);
+void  uisongselPlayProcess (uisongsel_t *uisongsel, dbidx_t dbidx, musicqidx_t mqidx);
 void  uisongselSetPeerFlag (uisongsel_t *uisongsel, bool val);
 void  uisongselChangeFavorite (uisongsel_t *uisongsel, dbidx_t dbidx);
 

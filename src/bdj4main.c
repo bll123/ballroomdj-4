@@ -110,6 +110,7 @@ static void     mainMusicqMove (maindata_t *mainData, char *args, mainmove_t dir
 static void     mainMusicqMoveTop (maindata_t *mainData, char *args);
 static void     mainMusicqClear (maindata_t *mainData, char *args);
 static void     mainMusicqRemove (maindata_t *mainData, char *args);
+static void     mainNextSong (maindata_t *mainData);
 static void     mainMusicqInsert (maindata_t *mainData, bdjmsgroute_t route, char *args);
 static void     mainMusicqSetManage (maindata_t *mainData, char *args);
 static void     mainMusicqSetPlayback (maindata_t *mainData, char *args);
@@ -322,9 +323,7 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_PLAYLIST_CLEARPLAY: {
           mainQueueClear (mainData, targs);
-          /* clear out any playing song */
-          connSendMessage (mainData->conn, ROUTE_PLAYER,
-              MSG_PLAY_NEXTSONG, NULL);
+          mainNextSong (mainData);
           mainQueuePlaylist (mainData, targs);
           dbgdisp = true;
           break;
@@ -333,6 +332,20 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           /* clears both the playlist queue and the music queue */
           logMsg (LOG_DBG, LOG_MSGS, "got: queue-clear");
           mainQueueClear (mainData, targs);
+          dbgdisp = true;
+          break;
+        }
+        case MSG_QUEUE_CLEAR_PLAY: {
+          char  *ttargs;
+
+          /* clears both the playlist queue and the music queue */
+          /* does a next song and starts playing */
+          logMsg (LOG_DBG, LOG_MSGS, "got: queue-clear-play");
+          ttargs = strdup (targs);
+          mainQueueClear (mainData, ttargs);
+          free (ttargs);
+          mainNextSong (mainData);
+          mainMusicqInsert (mainData, routefrom, targs);
           dbgdisp = true;
           break;
         }
@@ -368,13 +381,7 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_CMD_NEXTSONG: {
-          int   currlen;
-
-          currlen = musicqGetLen (mainData->musicQueue, mainData->musicqPlayIdx);
-          if (currlen > 0) {
-            connSendMessage (mainData->conn, ROUTE_PLAYER,
-                MSG_PLAY_NEXTSONG, NULL);
-          }
+          mainNextSong (mainData);
           dbgdisp = true;
           break;
         }
@@ -1009,7 +1016,6 @@ static void
 mainQueueClear (maindata_t *mainData, char *args)
 {
   int   mi;
-  int   startpos = 0;
   char  *p;
   char  *tokstr = NULL;
 
@@ -1018,14 +1024,12 @@ mainQueueClear (maindata_t *mainData, char *args)
 
   p = strtok_r (args, MSG_ARGS_RS_STR, &tokstr);
   mi = atoi (p);
-  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
-  startpos = atoi (p);
 
   mainData->musicqManageIdx = mi;
 
   logMsg (LOG_DBG, LOG_BASIC, "clear music queue");
   queueClear (mainData->playlistQueue [mi], 0);
-  musicqClear (mainData->musicQueue, mi, startpos);
+  musicqClear (mainData->musicQueue, mi, 1);
   mainData->musicqChanged [mi] = true;
   mainData->marqueeChanged [mi] = true;
   logProcEnd (LOG_PROC, "mainQueueClear", "");
@@ -1540,6 +1544,18 @@ mainMusicqRemove (maindata_t *mainData, char *args)
   mainData->musicqChanged [mi] = true;
   mainData->marqueeChanged [mi] = true;
   logProcEnd (LOG_PROC, "mainMusicqRemove", "");
+}
+
+static void
+mainNextSong (maindata_t *mainData)
+{
+  int   currlen;
+
+  currlen = musicqGetLen (mainData->musicQueue, mainData->musicqPlayIdx);
+  if (currlen > 0) {
+    connSendMessage (mainData->conn, ROUTE_PLAYER,
+        MSG_PLAY_NEXTSONG, NULL);
+  }
 }
 
 static void

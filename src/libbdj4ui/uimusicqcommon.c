@@ -142,7 +142,7 @@ uimusicqClearQueue (uimusicq_t *uimusicq, int mqidx, long idx)
   char          tbuff [40];
 
   snprintf (tbuff, sizeof (tbuff), "%d%c%ld", mqidx, MSG_ARGS_RS, idx);
-  connSendMessage (uimusicq->conn, ROUTE_MAIN, MSG_QUEUE_CLEAR, tbuff);
+  connSendMessage (uimusicq->conn, ROUTE_MAIN, MSG_MUSICQ_TRUNCATE, tbuff);
 }
 
 void
@@ -150,15 +150,12 @@ uimusicqPlay (uimusicq_t *uimusicq, int mqidx, dbidx_t dbidx)
 {
   char          tbuff [80];
 
-  /* clear the queue; start index is 1 */
-  snprintf (tbuff, sizeof (tbuff), "%d%c%d", mqidx, MSG_ARGS_RS, 1);
-  connSendMessage (uimusicq->conn, ROUTE_MAIN, MSG_QUEUE_CLEAR, tbuff);
-  /* clear any playing song via main */
-  connSendMessage (uimusicq->conn, ROUTE_MAIN, MSG_CMD_NEXTSONG, NULL);
-  /* queue to the end of the hidden music queue */
-  snprintf (tbuff, sizeof (tbuff), "%d%c%d%c%d", mqidx,
-      MSG_ARGS_RS, 99, MSG_ARGS_RS, dbidx);
-  connSendMessage (uimusicq->conn, ROUTE_MAIN, MSG_MUSICQ_INSERT, tbuff);
+fprintf (stderr, "mq: clear queue / play %d\n", mqidx);
+  /* clear the playlist queue and music queue, current playing song */
+  /* and insert the new song */
+  snprintf (tbuff, sizeof (tbuff), "%d%c%d%c%d",
+      mqidx, MSG_ARGS_RS, 99, MSG_ARGS_RS, dbidx);
+  connSendMessage (uimusicq->conn, ROUTE_MAIN, MSG_QUEUE_CLEAR_PLAY, tbuff);
 }
 
 int
