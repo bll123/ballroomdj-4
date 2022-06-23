@@ -488,6 +488,12 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           dbgdisp = true;
           break;
         }
+        case MSG_MUSICQ_SET_LEN: {
+          /* a temporary setting used for the song list editor */
+          bdjoptSetNum (OPT_G_PLAYERQLEN, atol (targs));
+          dbgdisp = true;
+          break;
+        }
         case MSG_PLAYER_STATE: {
           mainData->playerState = (playerstate_t) atol (targs);
           logMsg (LOG_DBG, LOG_MSGS, "got: pl-state: %d/%s",

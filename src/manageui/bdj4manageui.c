@@ -901,6 +901,7 @@ manageHandshakeCallback (void *udata, programstate_t programState)
     connSendMessage (manage->conn, ROUTE_MAIN, MSG_QUEUE_PLAY_ON_ADD, "1");
     connSendMessage (manage->conn, ROUTE_MAIN, MSG_MUSICQ_SET_PLAYBACK, "1");
     connSendMessage (manage->conn, ROUTE_MAIN, MSG_QUEUE_SWITCH_EMPTY, "0");
+    connSendMessage (manage->conn, ROUTE_MAIN, MSG_MUSICQ_SET_LEN, "999");
     progstateLogTime (manage->progstate, "time-to-start-gui");
     manageDbChg (manage->managedb);
     manageSetEasySonglist (manage);
