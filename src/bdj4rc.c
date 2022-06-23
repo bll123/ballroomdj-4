@@ -188,10 +188,10 @@ remctrlEventHandler (struct mg_connection *c, int ev,
   remctrldata_t *remctrlData = userdata;
   char          user [40];
   char          pass [40];
-  char          querystr [40];
+  char          querystr [200];
   char          *tokptr;
   char          *qstrptr;
-  char          tbuff [200];
+  char          tbuff [300];
 
   if (ev == MG_EV_HTTP_MSG) {
     struct mg_http_message *hm = (struct mg_http_message *) ev_data;
@@ -200,14 +200,20 @@ remctrlEventHandler (struct mg_connection *c, int ev,
     mg_http_creds (hm, user, sizeof(user), pass, sizeof(pass));
 
     mg_url_decode (hm->query.ptr, hm->query.len, querystr, sizeof (querystr), 1);
-    qstrptr = strtok_r (querystr, " ", &tokptr);
-    qstrptr = strtok_r (NULL, " ", &tokptr);
 
+    *tbuff = '\0';
     if (*querystr) {
       logMsg (LOG_DBG, LOG_BASIC, "process: %s", querystr);
+
+      qstrptr = strtok_r (querystr, " ", &tokptr);
+
       if (qstrptr != NULL) {
-        logMsg (LOG_DBG, LOG_BASIC, "  args: %s", qstrptr);
-        snprintf (tbuff, sizeof (tbuff), "0%c%s", MSG_ARGS_RS, qstrptr);
+        /* point at the data following the querystr */
+        if (hm->query.len > strlen (querystr)) {
+          qstrptr += strlen (querystr) + 1;
+          logMsg (LOG_DBG, LOG_BASIC, "  args: %s", qstrptr);
+          snprintf (tbuff, sizeof (tbuff), "0%c%s", MSG_ARGS_RS, qstrptr);
+        }
       }
     }
 
