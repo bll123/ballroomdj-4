@@ -121,7 +121,10 @@ http://danielstern.ca/range.css/#/
       border: 1pt solid #010101;
       box-shadow: 2px 8px 10px 0 rgba(0,0,0,0.2);
     }
-    input.button:focus {
+    input[type='submit']:active {
+      background-color: #1d2224;
+    }
+    input[type='submit']:focus {
       outline-width: 0;
       color: #e09000;
     }
@@ -164,6 +167,9 @@ http://danielstern.ca/range.css/#/
     .wb {
       width: 100%;
       background-color: #2e3335;
+    }
+    .wb:hover {
+      background-color: #262a2c;
     }
     input[type=range] {
       width: 50%;
@@ -269,8 +275,7 @@ http://danielstern.ca/range.css/#/
               onchange="javascript:bdj.chgVolume();">
           <div class="rightbox vcenter">
             <p class="mleftauto vcenter tright mpadr" id="vold">100%</p>
-            <button class="muteb" id="muteb"
-                type="button"
+            <button class="muteb" id="muteb" type="button"
                 onclick="javascript:bdj.chgMute();"><img
                 id="mutei" align="middle" src="mrc/dark/mute.svg"
                 alt="mute"></button>
@@ -292,7 +297,7 @@ http://danielstern.ca/range.css/#/
         <div class="linebox">
           <input class="stretch grow wb" type="submit" id="fadeb"
               onclick="javascript:bdj.sendCmd('fade');"
-              name="fade" value="Fade" msgstr "Fade-In tijd" msgstr "Fade-Out tijd">
+              name="fade" value="Fade">
           <div class="rightbox vcenter"></div>
         </div>
         <div class="linebox">
@@ -322,7 +327,7 @@ http://danielstern.ca/range.css/#/
           <div class="rightbox vcenter"></div>
         </div>
         <div class="linebox">
-          <p class="vcenter">Speed</p>
+          <p class="vcenter">Tempo</p>
           <input class="stretch grow padlr"
               id="speedb" type="range"
               min="70" max="130" value="100"
@@ -340,10 +345,7 @@ http://danielstern.ca/range.css/#/
           <span class="pbold white fright"><span
             id="playedtime"></span>&nbsp;<span
             id="dursep"></span>&nbsp;<span
-            id="duration"></span></p>
-          <div class="flexjend rightbox vcenter">
-            <p class="mpad tright"></p>
-          </div>
+            id="duration"></span></span></p>
         </div>
         <div class="linebox">
           <p class="white vcenter stretch grow padlr" id="artist"></p>
@@ -354,15 +356,12 @@ http://danielstern.ca/range.css/#/
       </div>
       <div id="controlspage2" class="divnone">
         <div class="linebox">
-          <p class="txtcenter mleftauto pbold heading">Quick Play</p>
-        </div>
-        <div class="linebox">
           <select id="dancelist" name="dancelist"></select>
         </div>
         <div class="linebox">
           <input class="stretch grow wb" type="submit"
               onclick="javascript:bdj.sendDanceCmd('queue');"
-              name="queue" value="Wachtrij" msgstr "" msgstr "" msgstr "Wachtrij B" msgstr "" msgstr "" msgstr "Wachtrij lengte" msgstr "" msgstr "wachtrijendans">
+              name="queue" value="Wachtrij">
         </div>
         <div class="linebox">
           <input class="stretch grow wb" type="submit"
@@ -386,7 +385,7 @@ http://danielstern.ca/range.css/#/
             name="plclearplay" value="Clear & Play">
           <input class="stretch grow wb" type="submit"
             onclick="javascript:bdj.sendPLCmd('playlistqueue');"
-            name="plqueue" value="Wachtrij" msgstr "" msgstr "" msgstr "Wachtrij B" msgstr "" msgstr "" msgstr "Wachtrij lengte" msgstr "" msgstr "wachtrijendans">
+            name="plqueue" value="Wachtrij">
         </div>
     </div>
   </div>
