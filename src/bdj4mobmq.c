@@ -30,6 +30,7 @@
 #include "bdjopt.h"
 #include "bdjvars.h"
 #include "conn.h"
+#include "fileop.h"
 #include "lock.h"
 #include "log.h"
 #include "osutils.h"
@@ -198,12 +199,34 @@ mobmqEventHandler (struct mg_connection *c, int ev, void *ev_data, void *userdat
     } else if (mg_http_match_uri (hm, "#.key") ||
         mg_http_match_uri (hm, "#.crt") ||
         mg_http_match_uri (hm, "#.pem") ||
-        mg_http_match_uri (hm, "#.csr")) {
+        mg_http_match_uri (hm, "#.csr") ||
+        mg_http_match_uri (hm, "../")) {
       mg_http_reply (c, 403, NULL, "%s", "Forbidden");
     } else {
+      char          tbuff [200];
+      char          tbuffb [MAXPATHLEN];
+      struct mg_str turi;
+      struct mg_str tmpuri;
+      bool          reloc = false;
+
       struct mg_http_serve_opts opts = { .root_dir = sysvarsGetStr (SV_BDJ4HTTPDIR) };
-      logMsg (LOG_DBG, LOG_IMPORTANT, "serve: %.*s", hm->uri.len, hm->uri.ptr);
+      snprintf (tbuff, sizeof (tbuff), "%.*s", (int) hm->uri.len, hm->uri.ptr);
+      pathbldMakePath (tbuffb, sizeof (tbuffb),
+          tbuff, "", PATHBLD_MP_HTTPDIR);
+      if (! fileopFileExists (tbuffb)) {
+        turi = mg_str ("/mobilemq.html");
+        reloc = true;
+      }
+
+      if (reloc) {
+        tmpuri = hm->uri;
+        hm->uri = turi;
+      }
+      logMsg (LOG_DBG, LOG_IMPORTANT, "serve: %.*s", (int) hm->uri.len, hm->uri.ptr);
       mg_http_serve_dir (c, hm, &opts);
+      if (reloc) {
+        hm->uri = tmpuri;
+      }
     }
   }
 }

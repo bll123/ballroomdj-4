@@ -30,6 +30,7 @@
 #include "bdjstring.h"
 #include "bdjvars.h"
 #include "conn.h"
+#include "fileop.h"
 #include "lock.h"
 #include "log.h"
 #include "osutils.h"
@@ -307,13 +308,35 @@ remctrlEventHandler (struct mg_connection *c, int ev,
     } else if (mg_http_match_uri (hm, "#.key") ||
         mg_http_match_uri (hm, "#.crt") ||
         mg_http_match_uri (hm, "#.pem") ||
-        mg_http_match_uri (hm, "#.csr")) {
+        mg_http_match_uri (hm, "#.csr") ||
+        mg_http_match_uri (hm, "../")) {
       logMsg (LOG_DBG, LOG_IMPORTANT, "%.*s", hm->uri.len, hm->uri.ptr);
       mg_http_reply (c, 403, NULL, "%s", "Forbidden");
     } else {
+      char          tbuff [200];
+      char          tbuffb [MAXPATHLEN];
+      struct mg_str turi;
+      struct mg_str tmpuri;
+      bool          reloc = false;
+
       struct mg_http_serve_opts opts = { .root_dir = sysvarsGetStr (SV_BDJ4HTTPDIR) };
-      logMsg (LOG_DBG, LOG_IMPORTANT, "serve: %.*s", hm->uri.len, hm->uri.ptr);
+      snprintf (tbuff, sizeof (tbuff), "%.*s", (int) hm->uri.len, hm->uri.ptr);
+      pathbldMakePath (tbuffb, sizeof (tbuffb),
+          tbuff, "", PATHBLD_MP_HTTPDIR);
+      if (! fileopFileExists (tbuffb)) {
+        turi = mg_str ("/bdj4remote.html");
+        reloc = true;
+      }
+
+      if (reloc) {
+        tmpuri = hm->uri;
+        hm->uri = turi;
+      }
+      logMsg (LOG_DBG, LOG_IMPORTANT, "serve: %.*s", (int) hm->uri.len, hm->uri.ptr);
       mg_http_serve_dir (c, hm, &opts);
+      if (reloc) {
+        hm->uri = tmpuri;
+      }
     }
   }
 }
@@ -325,11 +348,11 @@ remctrlProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
   remctrldata_t     *remctrlData = udata;
 
   /* this just reduces the amount of stuff in the log */
-//  if (msg != MSG_PLAYER_STATUS_DATA) {
+  if (msg != MSG_PLAYER_STATUS_DATA) {
     logMsg (LOG_DBG, LOG_MSGS, "got: from:%d/%s route:%d/%s msg:%d/%s args:%s",
         routefrom, msgRouteDebugText (routefrom),
         route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
-//  }
+  }
 
   switch (route) {
     case ROUTE_NONE:
