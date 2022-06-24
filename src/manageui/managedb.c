@@ -12,6 +12,7 @@
 
 #include "bdj4intl.h"
 #include "bdjopt.h"
+#include "log.h"
 #include "manageui.h"
 #include "nlist.h"
 #include "osutils.h"
@@ -34,6 +35,8 @@ typedef struct managedb {
   UIWidget          *statusMsg;
   procutil_t        *processes [ROUTE_MAX];
   conn_t            *conn;
+  uientry_t         *dbtopdir;
+  UICallback        topdirselcb;
   uispinbox_t       *dbspinbox;
   UICallback        dbchgcb;
   UICallback        dbstartcb;
@@ -44,7 +47,8 @@ typedef struct managedb {
   UIWidget          dbpbar;
 } managedb_t;
 
-static bool     manageDbStart (void *udata);
+static bool manageDbStart (void *udata);
+static bool manageDbSelectDirCallback (void *udata);
 
 managedb_t *
 manageDbAlloc (UIWidget *window, nlist_t *options,
@@ -56,11 +60,13 @@ manageDbAlloc (UIWidget *window, nlist_t *options,
 
   managedb = malloc (sizeof (managedb_t));
 
+  managedb->windowp = window;
   procutilInitProcesses (managedb->processes);
   managedb->conn = conn;
   managedb->dblist = NULL;
   managedb->dbhelp = NULL;
   uiutilsUIWidgetInit (&managedb->dbpbar);
+  managedb->dbtopdir = uiEntryInit (50, 200);
   managedb->dbspinbox = uiSpinboxTextInit ();
 
   tlist = nlistAlloc ("db-action", LIST_ORDERED, free);
@@ -110,6 +116,7 @@ manageDbFree (managedb_t *managedb)
 
     uiTextBoxFree (managedb->dbhelpdisp);
     uiTextBoxFree (managedb->dbstatus);
+    uiEntryFree (managedb->dbtopdir);
     uiSpinboxTextFree (managedb->dbspinbox);
     free (managedb);
   }
@@ -119,10 +126,14 @@ manageDbFree (managedb_t *managedb)
 void
 manageBuildUIUpdateDatabase (managedb_t *managedb, UIWidget *vboxp)
 {
-  UIWidget       uiwidget;
-  UIWidget       *uiwidgetp;
-  UIWidget       hbox;
-  uitextbox_t    *tb;
+  UIWidget      uiwidget;
+  UIWidget      *uiwidgetp;
+  UIWidget      hbox;
+  UIWidget      sg;
+  uitextbox_t   *tb;
+
+
+  uiCreateSizeGroupHoriz (&sg);   // labels
 
   /* help display */
   tb = uiTextBoxCreate (80);
@@ -131,8 +142,14 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, UIWidget *vboxp)
   uiBoxPackStart (vboxp, uiTextBoxGetScrolledWindow (tb));
   managedb->dbhelpdisp = tb;
 
+  /* action selection */
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (vboxp, &hbox);
+
+  /* CONTEXT: manage db: select database update action */
+  uiCreateColonLabel (&uiwidget, _("Action"));
+  uiBoxPackStart (&hbox, &uiwidget);
+  uiSizeGroupAdd (&sg, &uiwidget);
 
   uiSpinboxTextCreate (managedb->dbspinbox, managedb);
   /* currently hard-coded at 30 chars */
@@ -143,9 +160,34 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, UIWidget *vboxp)
   uiwidgetp = uiSpinboxGetUIWidget (managedb->dbspinbox);
   uiutilsUICallbackInit (&managedb->dbchgcb, manageDbChg, managedb);
   uiSpinboxTextSetValueChangedCallback (managedb->dbspinbox, &managedb->dbchgcb);
-//  g_signal_connect (uiwidgetp->widget, "value-changed", G_CALLBACK (manageDbChg), managedb);
   uiBoxPackStart (&hbox, uiwidgetp);
 
+  /* db top dir  */
+  uiCreateHorizBox (&hbox);
+  uiBoxPackStart (vboxp, &hbox);
+
+  /* CONTEXT: manage db: music folder to process */
+  uiCreateColonLabel (&uiwidget, _("Music Folder"));
+  uiBoxPackStart (&hbox, &uiwidget);
+  uiSizeGroupAdd (&sg, &uiwidget);
+
+  uiEntryCreate (managedb->dbtopdir);
+  uiEntrySetValue (managedb->dbtopdir, bdjoptGetStr (OPT_M_DIR_MUSIC));
+  uiBoxPackStart (&hbox, uiEntryGetUIWidget (managedb->dbtopdir));
+
+  uiutilsUICallbackInit (&managedb->topdirselcb,
+      manageDbSelectDirCallback, managedb);
+  uiCreateButton (&uiwidget, &managedb->topdirselcb, "", NULL);
+  uiButtonSetImageIcon (&uiwidget, "folder");
+  uiBoxPackStart (&hbox, &uiwidget);
+
+  /* buttons */
+  uiCreateHorizBox (&hbox);
+  uiBoxPackStart (vboxp, &hbox);
+
+  uiCreateLabel (&uiwidget, "");
+  uiBoxPackStart (&hbox, &uiwidget);
+  uiSizeGroupAdd (&sg, &uiwidget);
 
   uiutilsUICallbackInit (&managedb->dbstartcb, manageDbStart, managedb);
   uiCreateButton (&uiwidget, &managedb->dbstartcb,
@@ -228,7 +270,7 @@ manageDbStart (void *udata)
   managedb_t  *managedb = udata;
   int         nval;
   char        *sval = NULL;
-  char        *targv [10];
+  const char  *targv [10];
   int         targc = 0;
   char        tbuff [MAXPATHLEN];
 
@@ -266,11 +308,33 @@ manageDbStart (void *udata)
   }
 
   targv [targc++] = "--progress";
+  targv [targc++] = "--dbtopdir";
+  targv [targc++] = uiEntryGetValue (managedb->dbtopdir);
   targv [targc++] = NULL;
+  logMsg (LOG_DBG, LOG_BASIC, "start dbupdate %s", uiEntryGetValue (managedb->dbtopdir));
 
   uiProgressBarSet (&managedb->dbpbar, 0.0);
   managedb->processes [ROUTE_DBUPDATE] = procutilStartProcess (
       ROUTE_DBUPDATE, "bdj4dbupdate", OS_PROC_DETACH, targv);
+  return UICB_CONT;
+}
+
+static bool
+manageDbSelectDirCallback (void *udata)
+{
+  managedb_t  *managedb = udata;
+  char        *fn = NULL;
+  uiselect_t  *selectdata;
+  char        tbuff [100];
+
+  /* CONTEXT: manage: dialog title for selecting database music folder */
+  snprintf (tbuff, sizeof (tbuff), _("Select Music Folder Location"));
+  selectdata = uiDialogCreateSelect (managedb->windowp,
+      tbuff, uiEntryGetValue (managedb->dbtopdir), NULL, NULL);
+  fn = uiSelectDirDialog (selectdata);
+  if (fn != NULL) {
+    uiEntrySetValue (managedb->dbtopdir, fn);
+  }
   return UICB_CONT;
 }
 

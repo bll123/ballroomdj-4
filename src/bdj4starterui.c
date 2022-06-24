@@ -285,8 +285,8 @@ starterInitDataCallback (void *udata, programstate_t programState)
   pathbldMakePath (tbuff, sizeof (tbuff),
       "newinstall", BDJ4_CONFIG_EXT, PATHBLD_MP_DATA);
   if (fileopFileExists (tbuff)) {
-    char  *targv [1];
-    int   targc = 0;
+    const char  *targv [2];
+    int         targc = 0;
 
     targv [targc++] = NULL;
     starter->processes [ROUTE_HELPERUI] = procutilStartProcess (
@@ -671,7 +671,7 @@ starterMainLoop (void *tstarter)
     case START_STATE_SUPPORT_SEND_INFO: {
       char        prog [MAXPATHLEN];
       char        arg [40];
-      char        *targv [4];
+      const char  *targv [4];
       int         targc = 0;
 
       pathbldMakePath (prog, sizeof (prog),
@@ -861,9 +861,9 @@ starterProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 static void
 starterStartMain (startui_t *starter, char *args)
 {
-  int   flags;
-  char  *targv [2];
-  int   targc = 0;
+  int         flags;
+  const char  *targv [2];
+  int         targc = 0;
 
   if (starter->mainstarted == 0) {
     flags = PROCUTIL_DETACH;

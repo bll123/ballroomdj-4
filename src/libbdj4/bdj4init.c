@@ -78,6 +78,7 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
     { "reorganize",   no_argument,      NULL,   'O' },
     { "updfromtags",  no_argument,      NULL,   'U' },
     { "writetags",    no_argument,      NULL,   'W' },
+    { "dbtopdir",     required_argument,NULL,   'D' },
     { NULL,           0,                NULL,   0 }
   };
 
@@ -85,6 +86,7 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
   sRandom ();
   sysvarsInit (argv[0]);
   localeInit ();
+  bdjvarsInit ();
 
   while ((c = getopt_long_only (argc, argv, "BCPOUWcld:p:mnNRsh", bdj_options, &option_index)) != -1) {
     switch (c) {
@@ -110,6 +112,13 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
       }
       case 'W': {
         flags |= BDJ4_DB_WRITE_TAGS;
+        break;
+      }
+      case 'D': {
+        if (optarg) {
+          logMsg (LOG_DBG, LOG_BASIC, "set dbtopdir %s", optarg);
+          bdjvarsSetStr (BDJV_DB_TOP_DIR, optarg);
+        }
         break;
       }
       case 'c': {
@@ -185,7 +194,6 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
     fprintf (stderr, "Unable to chdir: %s\n", sysvarsGetStr (SV_BDJ4DATATOPDIR));
     exit (1);
   }
-  bdjvarsInit ();
   bdjoptInit ();
   tagdefInit ();
 

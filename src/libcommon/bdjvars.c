@@ -26,6 +26,9 @@ bdjvarsInit (void)
   if (! initialized) {
     uint16_t        port = sysvarsGetNum (SVL_BASEPORT);
 
+    for (int i = 0; i < BDJV_MAX; ++i) {
+      bdjvars [i] = NULL;
+    }
     for (int i = BDJVL_MAIN_PORT; i < BDJVL_NUM_PORTS; ++i) {
       bdjvarsl [i] = port++;
     }
@@ -39,6 +42,12 @@ bdjvarsInit (void)
 void
 bdjvarsCleanup (void)
 {
+  for (int i = 0; i < BDJV_MAX; ++i) {
+    if (bdjvars [i] != NULL) {
+      free (bdjvars [i]);
+      bdjvars [i] = NULL;
+    }
+  }
   return;
 }
 
@@ -62,6 +71,16 @@ bdjvarsGetNum (bdjvarkeyl_t idx)
   return bdjvarsl [idx];
 }
 
+
+void
+bdjvarsSetStr (bdjvarkey_t idx, const char *str)
+{
+  if (idx >= BDJV_MAX) {
+    return;
+  }
+
+  bdjvars [idx] = strdup (str);
+}
 
 /* internal routines */
 

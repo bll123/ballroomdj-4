@@ -83,12 +83,12 @@ procutilExists (procutil_t *process)
 
 procutil_t *
 procutilStart (const char *fn, ssize_t profile, ssize_t loglvl,
-    int procutilflag, char *aargs [])
+    int procutilflag, const char *aargs [])
 {
   procutil_t  * process;
   char        sprof [40];
   char        sloglvl [40];
-  char        * targv [30];
+  const char  * targv [30];
   int         idx;
   int         flags;
 
@@ -112,8 +112,8 @@ procutilStart (const char *fn, ssize_t profile, ssize_t loglvl,
   targv [idx++] = "--bdj4";
 
   if (aargs != NULL) {
-    char    *p;
-    int     aidx;
+    const char  *p;
+    int         aidx;
 
     aidx = 0;
     while ((p = aargs [aidx++]) != NULL) {
@@ -221,7 +221,7 @@ procutilTerminate (pid_t pid, bool force)
 
 procutil_t *
 procutilStartProcess (bdjmsgroute_t route, char *fname, int detachflag,
-    char *aargs [])
+    const char *aargs [])
 {
   char      tbuff [MAXPATHLEN];
   procutil_t *process = NULL;

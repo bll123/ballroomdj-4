@@ -78,6 +78,7 @@ typedef struct {
   musicdb_t         *nmusicdb;
   char              *musicdir;
   size_t            musicdirlen;
+  char              *dbtopdir;
   mstime_t          outputTimer;
   org_t             *org;
   slist_t           *fileList;
@@ -321,6 +322,7 @@ dbupdateProcessing (void *udata)
 
   if (dbupdate->state == DB_UPD_PREP) {
     char  tbuff [100];
+    char  *tstr;
 
     mstimestart (&dbupdate->starttm);
 
@@ -328,12 +330,19 @@ dbupdateProcessing (void *udata)
 
     dbupdate->musicdir = bdjoptGetStr (OPT_M_DIR_MUSIC);
     dbupdate->musicdirlen = strlen (dbupdate->musicdir);
-    dbupdate->fileList = diropRecursiveDirList (dbupdate->musicdir, FILEMANIP_FILES);
+    dbupdate->dbtopdir = bdjoptGetStr (OPT_M_DIR_MUSIC);
+    tstr = bdjvarsGetStr (BDJV_DB_TOP_DIR);
+    if (tstr != NULL) {
+      dbupdate->dbtopdir = tstr;
+    }
+
+    logMsg (LOG_DBG, LOG_BASIC, "dbtopdir %s", dbupdate->dbtopdir);
+    dbupdate->fileList = diropRecursiveDirList (dbupdate->dbtopdir, FILEMANIP_FILES);
 
     dbupdate->fileCount = slistGetCount (dbupdate->fileList);
     mstimeend (&dbupdate->starttm);
     logMsg (LOG_DBG, LOG_IMPORTANT, "read directory %s: %ld ms",
-        dbupdate->musicdir, mstimeend (&dbupdate->starttm));
+        dbupdate->dbtopdir, mstimeend (&dbupdate->starttm));
     logMsg (LOG_DBG, LOG_IMPORTANT, "  %d files found", dbupdate->fileCount);
 
     /* message to manageui */
@@ -649,7 +658,6 @@ dbupdateProcessTagData (dbupdate_t *dbupdate, char *args)
   char      *tokstr;
   slistidx_t orgiteridx;
   int       tagkey;
-  char      *p;
   dbidx_t   rrn;
   musicdb_t *currdb;
   song_t    *song = NULL;
@@ -679,9 +687,7 @@ dbupdateProcessTagData (dbupdate_t *dbupdate, char *args)
     return;
   }
 
-  if (strncmp (ffn, dbupdate->musicdir, dbupdate->musicdirlen) == 0) {
-    relfname = ffn + dbupdate->musicdirlen + 1;
-  }
+  relfname = dbupdateGetRelativePath (dbupdate, ffn);
   if (logCheck (LOG_DBG, LOG_DBUPDATE)) {
     slistidx_t  iteridx;
     char        *tag, *data;
@@ -693,7 +699,6 @@ dbupdateProcessTagData (dbupdate_t *dbupdate, char *args)
     }
   }
 
-  /* unfortunately, this slows the database rebuild down ...*/
   /* use the regex to parse the filename and process */
   /* the data that is found there. */
   logMsg (LOG_DBG, LOG_DBUPDATE, "regex-parse:");
@@ -717,15 +722,13 @@ dbupdateProcessTagData (dbupdate_t *dbupdate, char *args)
 
   rrn = MUSICDB_ENTRY_NEW;
   if (! dbupdate->rebuild) {
-    p = dbupdateGetRelativePath (dbupdate, ffn);
-    song = dbGetByName (dbupdate->musicdb, p);
+    song = dbGetByName (dbupdate->musicdb, relfname);
     if (song != NULL) {
       rrn = songGetNum (song, TAG_RRN);
     }
   }
 
   /* the dbWrite() procedure will set the FILE tag */
-  relfname = slistGetStr (dbupdate->fileList, ffn);
   currdb = dbupdate->musicdb;
   if (dbupdate->newdatabase) {
     currdb = dbupdate->nmusicdb;

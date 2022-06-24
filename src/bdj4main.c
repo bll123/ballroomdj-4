@@ -285,7 +285,7 @@ mainClosingCallback (void *tmaindata, programstate_t programState)
   if (script != NULL &&
       *script &&
       fileopFileExists (script)) {
-    char  *targv [2];
+    const char  *targv [2];
 
     targv [0] = script;
     targv [1] = NULL;
@@ -647,7 +647,7 @@ mainListeningCallback (void *tmaindata, programstate_t programState)
     if (script != NULL &&
         *script &&
         fileopFileExists (script)) {
-      char  *targv [2];
+      const char  *targv [2];
 
       targv [0] = script;
       targv [1] = NULL;
@@ -774,10 +774,10 @@ mainHandshakeCallback (void *tmaindata, programstate_t programState)
 static void
 mainStartMarquee (maindata_t *mainData)
 {
-  char  *theme;
-  char  *targv [2];
-  int   idx = 0;
-  int           flags;
+  char        *theme;
+  const char  *targv [2];
+  int         idx = 0;
+  int         flags = 0;
 
   if (mainData->marqueestarted) {
     return;

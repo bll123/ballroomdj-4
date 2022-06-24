@@ -20,10 +20,10 @@
 static char * memsrch (char *buff, size_t bsz, char *srch, size_t ssz);
 
 int
-main (int argc, char *argv [])
+main (int argc, const char *argv [])
 {
   struct stat statbuf;
-  char        *fn = argv [0];
+  const char  *fn = argv [0];
   FILE        *ifh = NULL;
   FILE        *archivefh = NULL;
   char        *buff = NULL;

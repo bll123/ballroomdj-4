@@ -44,7 +44,7 @@ typedef struct {
 
 double        dRandom (void);
 void          sRandom (void);
-pid_t         osProcessStart (char *targv[], int flags,
+pid_t         osProcessStart (const char *targv[], int flags,
                 void **handle, char *outfname);
 pid_t         osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz);
 void          * osToFSFilename (const char *fname);

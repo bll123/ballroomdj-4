@@ -47,7 +47,7 @@ main (int argc, char * argv[])
   bool      isinstaller = false;
   bool      usemsys = false;
   int       flags;
-  char      *targv [BDJ4_LAUNCHER_MAX_ARGS];
+  const char *targv [BDJ4_LAUNCHER_MAX_ARGS];
   int       targc;
   bool      havetheme = false;
   FILE      *fh = NULL;
@@ -97,6 +97,7 @@ main (int argc, char * argv[])
     { "progress",       no_argument,        NULL,   0 },
     { "updfromtags",    no_argument,        NULL,   0 },
     { "writetags",      no_argument,        NULL,   0 },
+    { "dbtopdir",       required_argument,  NULL,   0 },
     { NULL,             0,                  NULL,   0 }
   };
 

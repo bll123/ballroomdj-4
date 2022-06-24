@@ -97,8 +97,8 @@ filedataReplace (char *data, size_t *dlen, const char *target, const char *repl)
 char *
 filedataGetProgOutput (char *prog, char *arg, char *tmpfn)
 {
-  char    *targv [3];
-  char    *data;
+  const char  *targv [3];
+  char        *data;
 
   targv [0] = prog;
   targv [1] = arg;

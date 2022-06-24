@@ -81,7 +81,7 @@ sRandom (void)
 
 /* handles redirection to a file */
 pid_t
-osProcessStart (char *targv[], int flags, void **handle, char *outfname)
+osProcessStart (const char *targv[], int flags, void **handle, char *outfname)
 {
   pid_t       pid;
   pid_t       tpid;

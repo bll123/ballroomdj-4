@@ -2,7 +2,7 @@
 #define INC_BDJVARS_H
 
 typedef enum {
-  BDJV_UNKNOWN,
+  BDJV_DB_TOP_DIR,    // temporary
   BDJV_MAX,
 } bdjvarkey_t;
 
@@ -30,6 +30,7 @@ void    bdjvarsInit (void);
 bool    bdjvarsIsInitialized (void);
 void    bdjvarsCleanup (void);
 char *  bdjvarsGetStr (bdjvarkey_t idx);
+void    bdjvarsSetStr (bdjvarkey_t idx, const char *str);
 ssize_t bdjvarsGetNum (bdjvarkeyl_t idx);
 
 #endif /* INC_BDJVARS_H */

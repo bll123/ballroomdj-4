@@ -903,9 +903,9 @@ installerSelectDirDialog (void *udata)
   uiselect_t  *selectdata;
   char        tbuff [100];
 
+  /* CONTEXT: installer: dialog title for selecting BDJ3 location */
   snprintf (tbuff, sizeof (tbuff), _("Select %s Location"), BDJ3_NAME);
   selectdata = uiDialogCreateSelect (&installer->window,
-      /* CONTEXT: installer: label for entry field for BDJ3 location */
       tbuff, uiEntryGetValue (installer->bdj3locEntry), NULL, NULL);
   fn = uiSelectDirDialog (selectdata);
   if (fn != NULL) {
@@ -1660,7 +1660,7 @@ installerConvert (installer_t *installer)
   char      *fn;
   char      buffa [MAXPATHLEN];
   char      buffb [MAXPATHLEN];
-  char      *targv [15];
+  const char *targv [15];
 
   fn = slistIterateKey (installer->convlist, &installer->convidx);
   if (fn == NULL) {
@@ -2037,8 +2037,8 @@ static void
 installerUpdateProcess (installer_t *installer)
 {
   char  tbuff [MAXPATHLEN];
-  char  *targv [10];
   int   targc = 0;
+  const char  *targv [10];
 
   snprintf (tbuff, sizeof (tbuff), "%s/bin/bdj4%s",
       installer->rundir, sysvarsGetStr (SV_OS_EXEC_EXT));
@@ -2144,7 +2144,7 @@ static void
 installerCleanup (installer_t *installer)
 {
   char  buff [MAXPATHLEN];
-  char  *targv [10];
+  const char  *targv [10];
 
   if (installer->freetarget && installer->target != NULL) {
     free (installer->target);
