@@ -97,6 +97,38 @@ fileopSize (const char *fname)
   return sz;
 }
 
+time_t
+fileopModTime (const char *fname)
+{
+  time_t  mtime = 0;
+
+#if _lib__wstat
+  {
+    struct _stat  statbuf;
+    wchar_t       *tfname = NULL;
+    int           rc;
+
+    tfname = osToFSFilename (fname);
+    rc = _wstat (tfname, &statbuf);
+    if (rc == 0) {
+      mtime = statbuf.st_mtime;
+    }
+    free (tfname);
+  }
+#else
+  {
+    int rc;
+    struct stat statbuf;
+
+    rc = stat (fname, &statbuf);
+    if (rc == 0) {
+      mtime = statbuf.st_mtime;
+    }
+  }
+#endif
+  return mtime;
+}
+
 bool
 fileopIsDirectory (const char *fname)
 {

@@ -4,8 +4,8 @@
 # by removing the # <space> from in front of the line.
 #
 # recognized keywords:
-#   ALBUM ALBUMARTIST ARTIST COMPOSER CONDUCTOR DANCE DISC GENRE TITLE
-#   TRACKNUMBER TRACKNUMBER0
+#   ALBUM ALBUMARTIST ARTIST COMPOSER CONDUCTOR DANCE DISC GENRE
+#   RATING STATUS TITLE TRACKNUMBER TRACKNUMBER0
 #
 # {} groups text : if the keyword is empty, the entire group is ignored.
 #

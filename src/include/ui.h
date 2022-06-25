@@ -72,7 +72,7 @@ void uiutilsUICallbackStrInit (UICallback *uicb, UIStrCallbackFunc cb, void *uda
 bool uiutilsCallbackHandler (UICallback *uicb);
 bool uiutilsCallbackLongHandler (UICallback *uicb, long value);
 bool uiutilsCallbackLongIntHandler (UICallback *uicb, long lval, int ival);
-bool uiutilsCallbackStrHandler (UICallback *uicb, const char *str);
+long uiutilsCallbackStrHandler (UICallback *uicb, const char *str);
 
 /* uigtkdialog.c */
 typedef struct uiselect uiselect_t;

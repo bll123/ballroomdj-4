@@ -155,10 +155,10 @@ uiutilsCallbackLongIntHandler (UICallback *uicb, long lval, int ival)
   return rc;
 }
 
-bool
+long
 uiutilsCallbackStrHandler (UICallback *uicb, const char *str)
 {
-  bool  rc = false;
+  long    value;
 
   if (uicb == NULL) {
     return 0;
@@ -167,7 +167,7 @@ uiutilsCallbackStrHandler (UICallback *uicb, const char *str)
     return 0;
   }
 
-  rc = uicb->strcb (uicb->udata, str);
-  return rc;
+  value = uicb->strcb (uicb->udata, str);
+  return value;
 }
 

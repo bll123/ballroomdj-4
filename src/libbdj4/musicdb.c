@@ -6,6 +6,7 @@
 #include <string.h>
 #include <time.h>
 
+#include "bdj4intl.h"
 #include "bdjstring.h"
 #include "bdjvarsdf.h"
 #include "dance.h"
@@ -21,6 +22,7 @@
 #include "song.h"
 #include "songutil.h"
 #include "tagdef.h"
+#include "tmutil.h"
 
 typedef struct musicdb {
   dbidx_t       count;
@@ -227,48 +229,75 @@ dbWrite (musicdb_t *musicdb, char *fn, slist_t *tagList, dbidx_t rrn)
   char          tbuff [RAFILE_REC_SIZE];
   char          tmp [40];
   dbidx_t       newrrn = 0;
+  time_t        currtime;
+  bool          havestatus = false;
 
   if (musicdb == NULL) {
     return 0;
   }
+
   if (musicdb->radb == NULL) {
     musicdb->radb = raOpen (musicdb->fn, MUSICDB_VERSION);
   }
 
-  snprintf (tbuff, sizeof (tbuff), "FILE\n..%s\n", fn);
+  currtime = time (NULL);
+
+  snprintf (tbuff, sizeof (tbuff), "%s\n..%s\n", tagdefs [TAG_FILE].tag, fn);
   newrrn = rrn;
   if (rrn == MUSICDB_ENTRY_NEW) {
     newrrn = raGetNextRRN (musicdb->radb);
   }
+
   slistStartIterator (tagList, &iteridx);
   while ((tag = slistIterateKey (tagList, &iteridx)) != NULL) {
-    if (strcmp (tag, "FILE") == 0) {
+    if (strcmp (tag, tagdefs [TAG_FILE].tag) == 0) {
       /* already handled, must be first */
       continue;
     }
-    if (strcmp (tag, "WRITETIME") == 0 ||
-        strcmp (tag, "RRN") == 0) {
+    if (strcmp (tag, tagdefs [TAG_LAST_UPDATED].tag) == 0 ||
+        strcmp (tag, tagdefs [TAG_RRN].tag) == 0) {
       /* will be re-written */
       continue;
     }
-    data = slistGetStr (tagList, tag);
+    if (strcmp (tag, tagdefs [TAG_STATUS].tag) == 0) {
+      havestatus = true;
+    }
     strlcat (tbuff, tag, sizeof (tbuff));
     strlcat (tbuff, "\n", sizeof (tbuff));
     strlcat (tbuff, "..", sizeof (tbuff));
+    data = slistGetStr (tagList, tag);
     strlcat (tbuff, data, sizeof (tbuff));
     strlcat (tbuff, "\n", sizeof (tbuff));
   }
 
-  /* writetime is always updated */
-  strlcat (tbuff, "WRITETIME", sizeof (tbuff));
+  if (rrn == MUSICDB_ENTRY_NEW) {
+    strlcat (tbuff, tagdefs [TAG_DBADDDATE].tag, sizeof (tbuff));
+    strlcat (tbuff, "\n", sizeof (tbuff));
+    strlcat (tbuff, "..", sizeof (tbuff));
+    tmutilDstamp (tmp, sizeof (tmp));
+    strlcat (tbuff, tmp, sizeof (tbuff));
+    strlcat (tbuff, "\n", sizeof (tbuff));
+  }
+
+  if (! havestatus) {
+    strlcat (tbuff, tagdefs [TAG_STATUS].tag, sizeof (tbuff));
+    strlcat (tbuff, "\n", sizeof (tbuff));
+    strlcat (tbuff, "..", sizeof (tbuff));
+    /* CONTEXT: default status */
+    strlcat (tbuff, _("New"), sizeof (tbuff));
+    strlcat (tbuff, "\n", sizeof (tbuff));
+  }
+
+  /* last-updated is always updated */
+  strlcat (tbuff, tagdefs [TAG_LAST_UPDATED].tag, sizeof (tbuff));
   strlcat (tbuff, "\n", sizeof (tbuff));
   strlcat (tbuff, "..", sizeof (tbuff));
-  snprintf (tmp, sizeof (tmp), "%zd", time (NULL));
+  snprintf (tmp, sizeof (tmp), "%zd", currtime);
   strlcat (tbuff, tmp, sizeof (tbuff));
   strlcat (tbuff, "\n", sizeof (tbuff));
 
   /* rrn must exist, and might be new */
-  strlcat (tbuff, "RRN", sizeof (tbuff));
+  strlcat (tbuff, tagdefs [TAG_RRN].tag, sizeof (tbuff));
   strlcat (tbuff, "\n", sizeof (tbuff));
   strlcat (tbuff, "..", sizeof (tbuff));
   snprintf (tmp, sizeof (tmp), "%d", newrrn);

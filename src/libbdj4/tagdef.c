@@ -141,30 +141,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     1,                            /* text search          */
     1,                            /* is org tag           */
   },
-  [TAG_AUTOORGFLAG] =
-  { "AUTOORGFLAG",                /* tag */
-    NULL,                         /* display name         */
-    { "AUTOORGFLAG",
-      NULL,
-      NULL,
-      NULL
-    },         /* audio tags */
-    0,                            /* edit width           */
-    ET_NA,                        /* edit type            */
-    VALUE_NUM,                    /* value type           */
-    NULL,                         /* conv func            */
-    DISP_NO,                      /* audio id disp        */
-    0,                            /* listing display      */
-    0,                            /* ellipsize            */
-    0,                            /* align right          */
-    0,                            /* is bdj tag           */
-    0,                            /* is norm tag          */
-    0,                            /* album edit           */
-    0,                            /* all edit             */
-    0,                            /* editable             */
-    0,                            /* text search          */
-    0,                            /* is org tag           */
-  },
   [TAG_BPM] =
   { "BPM",                        /* tag */
     NULL,                         /* display name         */
@@ -360,7 +336,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   [TAG_DISCNUMBER] =
   { "DISC",                       /* tag */
     NULL,                         /* display name         */
-    { "DISC",
+    { "DISCNUMBER",
       "disk",
       "TPOS",
       "WM/PartOfSet"
@@ -861,32 +837,8 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     0,                            /* text search          */
     0,                            /* is org tag           */
   },
-  [TAG_UPDATEFLAG] =
-  { "UPDATEFLAG",                 /* tag */
-    NULL,                         /* display name         */
-    { NULL,
-      NULL,
-      NULL,
-      NULL
-    },         /* audio tags */
-    0,                            /* edit width           */
-    ET_NA,                        /* edit type            */
-    VALUE_NUM,                    /* value type           */
-    NULL,                         /* conv func            */
-    DISP_NO,                      /* audio id disp        */
-    0,                            /* listing display      */
-    0,                            /* ellipsize            */
-    0,                            /* align right          */
-    0,                            /* is bdj tag           */
-    0,                            /* is norm tag          */
-    0,                            /* album edit           */
-    0,                            /* all edit             */
-    0,                            /* editable             */
-    0,                            /* text search          */
-    0,                            /* is org tag           */
-  },
-  [TAG_UPDATETIME] =
-  { "UPDATETIME",                 /* tag */
+  [TAG_LAST_UPDATED] =
+  { "LASTUPDATED",                /* tag */
     NULL,                         /* display name         */
     { NULL,
       NULL,
@@ -930,30 +882,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     0,                            /* album edit           */
     0,                            /* all edit             */
     1,                            /* editable             */
-    0,                            /* text search          */
-    0,                            /* is org tag           */
-  },
-  [TAG_WRITETIME] =
-  { "WRITETIME",                  /* tag */
-    NULL,                         /* display name         */
-    { NULL,
-      NULL,
-      NULL,
-      NULL
-    },         /* audio tags */
-    0,                            /* edit width           */
-    ET_NA,                        /* edit type            */
-    VALUE_NUM,                    /* value type           */
-    NULL,                         /* conv func            */
-    DISP_NO,                      /* audio id disp        */
-    0,                            /* listing display      */
-    0,                            /* ellipsize            */
-    0,                            /* align right          */
-    0,                            /* is bdj tag           */
-    0,                            /* is norm tag          */
-    0,                            /* album edit           */
-    0,                            /* all edit             */
-    0,                            /* editable             */
     0,                            /* text search          */
     0,                            /* is org tag           */
   },
@@ -1076,7 +1004,7 @@ tagdefInit (void)
   /* CONTEXT: title: track number */
   tagdefs [TAG_TRACKNUMBER].displayname = _("Track");
   /* CONTEXT: when the database entry was last updated */
-  tagdefs [TAG_UPDATETIME].displayname = _("Last Updated");
+  tagdefs [TAG_LAST_UPDATED].displayname = _("Last Updated");
   /* CONTEXT: title: volume adjustment for playback */
   tagdefs [TAG_VOLUMEADJUSTPERC].displayname = _("Volume Adjustment");
 

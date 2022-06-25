@@ -98,6 +98,8 @@ main (int argc, char * argv[])
     { "updfromtags",    no_argument,        NULL,   0 },
     { "writetags",      no_argument,        NULL,   0 },
     { "dbtopdir",       required_argument,  NULL,   0 },
+    /* bdjtags */
+    { "rawdata",        no_argument,        NULL,   0 },
     { NULL,             0,                  NULL,   0 }
   };
 

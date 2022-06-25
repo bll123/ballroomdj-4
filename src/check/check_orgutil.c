@@ -47,6 +47,15 @@ char *testpathc [] = {
   "/home/music/m/Anime/Evan_Call/VIOLET_EVERGARDEN_Automemories/01.Theme_of_Violet_Evergarden.mp3",
   NULL,
 };
+char *testpathd [] = {
+  "松居慶子_-_White_Owl.mp3",
+  "Starlight_(Waltz,_29mpm).mp3",
+  "Dreamcatcher.mp3",
+  "Starlight_(Waltz,_29mpm).mp3",
+  "Starlight_(Waltz,_29mpm).mp3",
+  "Theme_of_Violet_Evergarden.mp3",
+  NULL,
+};
 
 START_TEST(orgutil_parse)
 {
@@ -155,6 +164,29 @@ START_TEST(orgutil_regex)
     }
     if (i == 5) {
       ck_assert_int_eq (atoi(val), 1);
+    }
+    ++i;
+  }
+  orgFree (org);
+
+  path = "{%TITLE%}";
+
+  org = orgAlloc (path);
+  ck_assert_ptr_nonnull (org);
+  i = 0;
+  while (testpathd [i] != NULL) {
+    val = orgGetFromPath (org, testpathd [i], TAG_TITLE);
+    if (i == 0) {
+      ck_assert_str_eq (val, "松居慶子_-_White_Owl");
+    }
+    if (i == 1 || i == 3 || i == 4) {
+      ck_assert_str_eq (val, "Starlight_(Waltz,_29mpm)");
+    }
+    if (i == 2) {
+      ck_assert_str_eq (val, "Dreamcatcher");
+    }
+    if (i == 5) {
+      ck_assert_str_eq (val, "Theme_of_Violet_Evergarden");
     }
     ++i;
   }

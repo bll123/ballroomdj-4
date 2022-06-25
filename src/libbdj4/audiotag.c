@@ -172,7 +172,7 @@ audiotagParseTags (slist_t *tagdata, char *data, int tagtype)
           p = "";
         }
 
-        if (strcmp (tagname, "DURATION") == 0) {
+        if (strcmp (tagname, tagdefs [TAG_DURATION].tag) == 0) {
           if (haveduration) {
             if (strcmp (p, duration) != 0) {
               rewrite = true;
@@ -182,30 +182,34 @@ audiotagParseTags (slist_t *tagdata, char *data, int tagtype)
         }
 
         /* track number / track total handling */
-        if (strcmp (tagname, "TRACKNUMBER") == 0) {
+        if (strcmp (tagname, tagdefs [TAG_TRACKNUMBER].tag) == 0) {
           int   tnum, ttot;
           audiotagParseNumberPair (p, &tnum, &ttot);
 
-          snprintf (pbuff, sizeof (pbuff), "%d", ttot);
-          slistSetStr (tagdata, "TRACKTOTAL", pbuff);
+          if (ttot != 0) {
+            snprintf (pbuff, sizeof (pbuff), "%d", ttot);
+            slistSetStr (tagdata, tagdefs [TAG_TRACKTOTAL].tag, pbuff);
+          }
           snprintf (pbuff, sizeof (pbuff), "%d", tnum);
           p = pbuff;
         }
 
         /* disc number / disc total handling */
-        if (strcmp (tagname, "DISCNUMBER") == 0) {
+        if (strcmp (tagname, tagdefs [TAG_DISCNUMBER].tag) == 0) {
           int   dnum, dtot;
           audiotagParseNumberPair (p, &dnum, &dtot);
 
-          snprintf (pbuff, sizeof (pbuff), "%d", dtot);
-          slistSetStr (tagdata, "DISCTOTAL", pbuff);
+          if (dtot != 0) {
+            snprintf (pbuff, sizeof (pbuff), "%d", dtot);
+            slistSetStr (tagdata, tagdefs [TAG_DISCTOTAL].tag, pbuff);
+          }
           snprintf (pbuff, sizeof (pbuff), "%d", dnum);
           p = pbuff;
         }
 
         /* old songend/songstart handling */
-        if (strcmp (tagname, "SONGSTART") == 0 ||
-            strcmp (tagname, "SONGEND") == 0) {
+        if (strcmp (tagname, tagdefs [TAG_SONGSTART].tag) == 0 ||
+            strcmp (tagname, tagdefs [TAG_SONGEND].tag) == 0) {
           char      *tmp;
           double    tm = 0.0;
 
@@ -223,8 +227,22 @@ audiotagParseTags (slist_t *tagdata, char *data, int tagtype)
           free (tmp);
         }
 
+        /* old volumeadjustperc handling */
+        if (strcmp (tagname, tagdefs [TAG_VOLUMEADJUSTPERC].tag) == 0) {
+          double    tm = 0.0;
+
+          pC = strstr (p, ".");
+          if (pC == NULL) {
+            rewrite = true;
+            tm += atof (p);
+            tm /= 10;
+            snprintf (pbuff, sizeof (pbuff), "%.1f", tm);
+            p = pbuff;
+          }
+        }
+
         /* musicbrainz_trackid handling */
-        if (strcmp (tagname, "RECORDING_ID") == 0) {
+        if (strcmp (tagname, tagdefs [TAG_RECORDING_ID].tag) == 0) {
           /* note that MUSICBRAINZ_TRACKID may appear in a TXXX tag */
           if (p != NULL) {
             if (strncmp (p, "b\"", 2) == 0) {

@@ -15,7 +15,7 @@
  *    - writetags
  *      write db tags to the audio files
  *    - reorganize
- *      use the organization settings to reorg the files.
+ *      use the organization settings to reorganize the files.
  *
  */
 
@@ -106,6 +106,7 @@ typedef struct {
   bool              writetags : 1;
   bool              reorganize : 1;
   bool              newdatabase : 1;
+  bool              dancefromgenre : 1;
 } dbupdate_t;
 
 #define FNAMES_SENT_PER_ITER  30
@@ -158,8 +159,11 @@ main (int argc, char *argv[])
   dbupdate.writetags = false;
   dbupdate.reorganize = false;
   dbupdate.newdatabase = false;
+  dbupdate.dancefromgenre = false;
   mstimeset (&dbupdate.outputTimer, 0);
   dbupdate.org = NULL;
+
+  dbupdate.dancefromgenre = bdjoptGetNum (OPT_G_LOADDANCEFROMGENRE);
 
   dbupdate.progstate = progstateInit ("dbupdate");
   progstateSetCallback (dbupdate.progstate, STATE_LISTENING,
@@ -662,6 +666,10 @@ dbupdateProcessTagData (dbupdate_t *dbupdate, char *args)
   musicdb_t *currdb;
   song_t    *song = NULL;
   size_t    len;
+  time_t    mtime;
+  char      tmtime [40];
+  char      *val;
+
 
 
   ffn = strtok_r (args, MSG_ARGS_RS_STR, &tokstr);
@@ -685,6 +693,25 @@ dbupdateProcessTagData (dbupdate_t *dbupdate, char *args)
     ++dbupdate->countNoTags;
     ++dbupdate->filesProcessed;
     return;
+  }
+
+  if (dbupdate->dancefromgenre) {
+    val = slistGetStr (tagdata, tagdefs [TAG_DANCE].tag);
+    if (val == NULL || ! *val) {
+      val = slistGetStr (tagdata, tagdefs [TAG_GENRE].tag);
+      if (val != NULL && *val) {
+        slistSetStr (tagdata, tagdefs [TAG_DANCE].tag, val);
+      }
+    }
+  }
+
+  val = slistGetStr (tagdata, tagdefs [TAG_DANCELEVEL].tag);
+  if (val == NULL || ! *val) {
+    level_t *levels;
+
+    levels = bdjvarsdfGet (BDJVDF_LEVELS);
+    slistSetStr (tagdata, tagdefs [TAG_DANCELEVEL].tag,
+        levelGetDefaultName (levels));
   }
 
   relfname = dbupdateGetRelativePath (dbupdate, ffn);
@@ -727,6 +754,11 @@ dbupdateProcessTagData (dbupdate_t *dbupdate, char *args)
       rrn = songGetNum (song, TAG_RRN);
     }
   }
+
+  /* convert to a string for the dbwrite procedure */
+  mtime = fileopModTime (ffn);
+  snprintf (tmtime, sizeof (tmtime), "%zd", mtime);
+  slistSetStr (tagdata, tagdefs [TAG_AFMODTIME].tag, tmtime);
 
   /* the dbWrite() procedure will set the FILE tag */
   currdb = dbupdate->musicdb;

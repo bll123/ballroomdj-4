@@ -237,7 +237,10 @@ foreach path [list {} profiles $mpath $mppath] {
         if { [regexp {PATHFMT$} $key] } {
           # various is no longer supported, remove the group entirely.
           regsub -all "{\[^A-Z\]*PVARIOUS\[^A-Z\]*}" $value {} value
+          # keyword is no longer supported, remove the group entirely.
+          regsub -all "{\[^A-Z\]*PKEYWORD\[^A-Z\]*}" $value {} value
           regsub -all {PALBART} $value {%ALBUMARTIST%} value
+          regsub -all {PDANCERATING} $value {%RATING%} value
           regsub -all {PTRACKNUM} $value {PTRACKNUMBER} value
           regsub -all {P([A-Z][A-Z]*0?)} $value {%\1%} value
         }

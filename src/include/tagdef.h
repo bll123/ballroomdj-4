@@ -59,7 +59,6 @@ typedef enum {
   TAG_ALBUM,                  //
   TAG_ALBUMARTIST,            //
   TAG_ARTIST,                 //
-  TAG_AUTOORGFLAG,
   TAG_BPM,                    //
   TAG_COMPOSER,
   TAG_CONDUCTOR,
@@ -87,14 +86,12 @@ typedef enum {
   TAG_STATUS,                 //
   TAG_TAGS,
   TAG_TITLE,
-  TAG_TRACK_ID,               // musicbrainz_trackid
+  TAG_TRACK_ID,               // musicbrainz_releasetrackid
   TAG_TRACKNUMBER,
   TAG_TRACKTOTAL,
-  TAG_UPDATEFLAG,
-  TAG_UPDATETIME,
+  TAG_LAST_UPDATED,
   TAG_VOLUMEADJUSTPERC,       //
   TAG_WORK_ID,                // musicbrainz_workid
-  TAG_WRITETIME,
   TAG_KEY_MAX,
 } tagdefkey_t;
 

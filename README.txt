@@ -9,6 +9,9 @@ Alpha Release: 20220623
   Alpha releases may not reflect what the final product will look like,
   and may not reflect what features will be present in the final product.
 
+  Alpha releases are not backwards compatible with each other.
+  Do a re-install rather than an upgrade.
+
   Anything can and will change.
 
 Installation:

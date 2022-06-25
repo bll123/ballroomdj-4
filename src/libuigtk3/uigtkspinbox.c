@@ -215,7 +215,7 @@ uiSpinboxTimeCreate (uispinbox_t *spinbox, void *udata, UICallback *convcb)
   }
   gtk_spin_button_set_increments (GTK_SPIN_BUTTON (spinbox->uispinbox.widget), inca, incb);
   /* this range is for maximum play time */
-  gtk_spin_button_set_range (GTK_SPIN_BUTTON (spinbox->uispinbox.widget), 0.0, 600000.0);
+  gtk_spin_button_set_range (GTK_SPIN_BUTTON (spinbox->uispinbox.widget), 0.0, 1200000.0);
   gtk_spin_button_set_wrap (GTK_SPIN_BUTTON (spinbox->uispinbox.widget), FALSE);
   gtk_widget_set_margin_top (spinbox->uispinbox.widget, uiBaseMarginSz);
   gtk_widget_set_margin_start (spinbox->uispinbox.widget, uiBaseMarginSz);
@@ -427,6 +427,7 @@ uiSpinboxTimeInput (GtkSpinButton *sb, gdouble *newval, gpointer udata)
     newtext = gtk_entry_get_text (GTK_ENTRY (spinbox->uispinbox.widget));
     newvalue = uiutilsCallbackStrHandler (spinbox->convcb, newtext);
     if (newvalue < 0) {
+      spinbox->processing = false;
       return UICB_NO_CONV;
     }
   }

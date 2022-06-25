@@ -602,7 +602,11 @@ main (int argc, char *argv[])
       confui.uiitem [i].dropdown = uiDropDownInit ();
     }
     if (i > CONFUI_ENTRY_MAX && i < CONFUI_SPINBOX_MAX) {
-      confui.uiitem [i].spinbox = uiSpinboxTextInit ();
+      if (i == CONFUI_SPINBOX_MAX_PLAY_TIME) {
+        confui.uiitem [i].spinbox = uiSpinboxTimeInit (SB_TIME_BASIC);
+      } else {
+        confui.uiitem [i].spinbox = uiSpinboxTextInit ();
+      }
     }
     if (i > CONFUI_SPINBOX_MAX && i < CONFUI_SWITCH_MAX) {
       confui.uiitem [i].uiswitch = NULL;
@@ -5046,6 +5050,7 @@ confuiValMSCallback (void *udata, const char *txt)
   configui_t  *confui = udata;
   const char  *valstr;
   char        tbuff [200];
+  long        val;
 
   logProcBegin (LOG_PROC, "confuiValMSCallback");
 
@@ -5054,9 +5059,11 @@ confuiValMSCallback (void *udata, const char *txt)
   if (valstr != NULL) {
     snprintf (tbuff, sizeof (tbuff), valstr, txt);
     uiLabelSetText (&confui->statusMsg, tbuff);
+    return -1;
   }
 
+  val = tmutilStrToMS (txt);
   logProcEnd (LOG_PROC, "confuiValMSCallback", "");
-  return 0;
+  return val;
 }
 

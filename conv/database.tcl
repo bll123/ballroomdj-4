@@ -75,18 +75,33 @@ dict for {fn data} $musicdbList {
     if { $tag eq "DISPLAYIMG" } { continue }
     if { $tag eq "NOMAXPLAYTIME" } { continue }
     if { $tag eq "VARIOUSARTISTS" } { continue }
+    if { $tag eq "UPDATEFLAG" } { continue }
+    if { $tag eq "WRITETIME" } { continue }
+    # not going to do the sort-of-odd sometimes re-org stuff
+    if { $tag eq "AUTOORGFLAG" } { continue }
     # FILE is already handled
     if { $tag eq "FILE" } { continue }
 
+    set value [dict get $data $tag]
+
     if { $tag eq "rrn" } {
       # make sure rrn is correct
+      set tag RRN
       set value $newrrn
     }
-    set value [dict get $data $tag]
+
+    if { $tag eq "TRACKTOTAL" } {
+      if { $value == 0 } {
+        # no point in writing not-useful data
+        continue;
+      }
+    }
 
     if { $tag eq "VOLUMEADJUSTPERC" } {
       set value [expr {int ($value)}]
       set value [expr {double ($value) / 10.0}]
+      # make sure the volume-adjust-perc has a decimal point in it.
+      set value [format {%.1f} $value]
     }
 
     if { $tag eq "SONGSTART" || $tag eq "SONGEND" } {
@@ -102,7 +117,7 @@ dict for {fn data} $musicdbList {
 
     if { $tag eq "MUSICBRAINZ_TRACKID" } { set tag RECORDING_ID }
     if { $tag eq "DISCNUMBER" } { set tag DISC }
-    if { $tag eq "rrn" } { set tag RRN }
+    if { $tag eq "UPDATETIME" } { set tag LASTUPDATED }
     if { $tag eq "DURATION" } {
       set value [expr {int($value * 1000)}]
     }

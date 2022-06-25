@@ -23,7 +23,9 @@
 #include "genre.h"
 #include "log.h"
 #include "orgutil.h"
+#include "rating.h"
 #include "song.h"
+#include "status.h"
 #include "sysvars.h"
 #include "tagdef.h"
 
@@ -38,11 +40,15 @@ orglookup_t orglookup [ORG_MAX_KEY] = {
   [ORG_ALBUM]       = { "ALBUM",        TAG_ALBUM,        NULL, },
   [ORG_ALBUMARTIST] = { "ALBUMARTIST",  TAG_ALBUMARTIST,  NULL, },
   [ORG_ARTIST]      = { "ARTIST",       TAG_ARTIST,       NULL, },
+  [ORG_BPM]         = { "BPM",          TAG_BPM,          NULL, },
+  [ORG_BYPASS]      = { "BYPASS",       -1,               NULL, },
   [ORG_COMPOSER]    = { "COMPOSER",     TAG_COMPOSER,     NULL, },
   [ORG_CONDUCTOR]   = { "CONDUCTOR",    TAG_CONDUCTOR,    NULL, },
   [ORG_DANCE]       = { "DANCE",        TAG_DANCE,        danceConvDance },
   [ORG_DISC]        = { "DISC",         TAG_DISCNUMBER,   NULL, },
   [ORG_GENRE]       = { "GENRE",        TAG_GENRE,        genreConv },
+  [ORG_RATING]      = { "RATING",       TAG_DANCERATING,  ratingConv },
+  [ORG_STATUS]      = { "STATUS",       TAG_STATUS,       statusConv },
   [ORG_TITLE]       = { "TITLE",        TAG_TITLE,        NULL, },
   [ORG_TRACKNUM]    = { "TRACKNUMBER",  TAG_TRACKNUMBER,  NULL, },
   [ORG_TRACKNUM0]   = { "TRACKNUMBER0", TAG_TRACKNUMBER,  NULL, },
@@ -50,7 +56,7 @@ orglookup_t orglookup [ORG_MAX_KEY] = {
 
 typedef struct org {
   char          *orgpath;
-  char          regexstr [200];
+  char          regexstr [300];
   bdjregex_t    *rx;
   slist_t       *orgparsed;
   char          cachepath [MAXPATHLEN];
@@ -88,6 +94,7 @@ orgAlloc (char *orgpath)
   orginfo_t     *orginfo;
   bool          haveorgkey;
   bool          isnumeric;
+  bool          isoptional;
 
 
   if (orgpath == NULL) {
@@ -113,6 +120,7 @@ orgAlloc (char *orgpath)
   while (p != NULL) {
     haveorgkey = false;
     isnumeric = false;
+    isoptional = false;
     tfirst = "";
     tlast = "";
 
@@ -154,11 +162,19 @@ orgAlloc (char *orgpath)
           tfirst = p;
         }
       } else {
-        /* numerics */
-        if (orginfo->orgkey == ORG_TRACKNUM ||
+        if (grpcount == ORG_FIRST_GRP &&
+            (orginfo->orgkey == ORG_DANCE ||
+             orginfo->orgkey == ORG_GENRE)) {
+          orginfo->isoptional = true;
+          isoptional = true;
+        }
+        /* numerics, always optional */
+        if (orginfo->orgkey == ORG_BPM ||
+            orginfo->orgkey == ORG_TRACKNUM ||
             orginfo->orgkey == ORG_TRACKNUM0 ||
             orginfo->orgkey == ORG_DISC) {
           orginfo->isoptional = true;
+          isoptional = true;
           isnumeric = true;
         }
         haveorgkey = true;
@@ -169,7 +185,7 @@ orgAlloc (char *orgpath)
     }
 
     /* attach the regex for this group */
-    if (isnumeric) {
+    if (isoptional) {
       strlcat (org->regexstr, "(", sizeof (org->regexstr));
     }
     if (*tfirst) {
@@ -185,9 +201,9 @@ orgAlloc (char *orgpath)
 
       len = strlen (tlast);
       if (len > 0 && tlast [len-1] == '/') {
-        strlcat (org->regexstr, "([^/]*)", sizeof (org->regexstr));
+        strlcat (org->regexstr, "([^/]+)", sizeof (org->regexstr));
       } else {
-        strlcat (org->regexstr, "([^/]*)", sizeof (org->regexstr));
+        strlcat (org->regexstr, "([^/]+)", sizeof (org->regexstr));
       }
     }
     if (*tlast) {
@@ -196,8 +212,8 @@ orgAlloc (char *orgpath)
       strlcat (org->regexstr, tmp, sizeof (org->regexstr));
       free (tmp);
     }
-    if (isnumeric) {
-      /* numeric groups are optional */
+    if (isoptional) {
+      /* optional group */
       strlcat (org->regexstr, ")?", sizeof (org->regexstr));
     }
 
@@ -285,6 +301,7 @@ orgGetFromPath (org_t *org, const char *path, tagdefkey_t tagkey)
       if (idx >= org->rxlen) {
         return NULL;
       }
+
       val = org->rxdata [idx];
       if (tagkey == TAG_DISCNUMBER ||
           tagkey == TAG_TRACKNUMBER) {

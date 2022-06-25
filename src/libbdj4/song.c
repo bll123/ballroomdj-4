@@ -38,7 +38,6 @@ static datafilekey_t songdfkeys [] = {
   { "ALBUM",                TAG_ALBUM,                VALUE_STR, NULL, -1 },
   { "ALBUMARTIST",          TAG_ALBUMARTIST,          VALUE_STR, NULL, -1 },
   { "ARTIST",               TAG_ARTIST,               VALUE_STR, NULL, -1 },
-  { "AUTOORGFLAG",          TAG_AUTOORGFLAG,          VALUE_NUM, NULL, -1 },
   { "BPM",                  TAG_BPM,                  VALUE_NUM, NULL, -1 },
   { "COMPOSER",             TAG_COMPOSER,             VALUE_STR, NULL, -1 },
   { "CONDUCTOR",            TAG_CONDUCTOR,            VALUE_STR, NULL, -1 },
@@ -54,6 +53,7 @@ static datafilekey_t songdfkeys [] = {
   { "FILE",                 TAG_FILE,                 VALUE_STR, NULL, -1 },
   { "GENRE",                TAG_GENRE,                VALUE_NUM, genreConv, -1 },
   { "KEYWORD",              TAG_KEYWORD,              VALUE_STR, NULL, -1 },
+  { "LASTUPDATED",          TAG_LAST_UPDATED,         VALUE_NUM, NULL, -1 },
   { "MQDISPLAY",            TAG_MQDISPLAY,            VALUE_STR, NULL, -1 },
   { "NOTES",                TAG_NOTES,                VALUE_STR, NULL, -1 },
   { "RECORDING_ID",         TAG_RECORDING_ID,         VALUE_STR, NULL, -1 },
@@ -68,11 +68,8 @@ static datafilekey_t songdfkeys [] = {
   { "TRACKNUMBER",          TAG_TRACKNUMBER,          VALUE_NUM, NULL, -1 },
   { "TRACKTOTAL",           TAG_TRACKTOTAL,           VALUE_NUM, NULL, -1 },
   { "TRACK_ID",             TAG_TRACK_ID,             VALUE_STR, NULL, -1 },
-  { "UPDATEFLAG",           TAG_UPDATEFLAG,           VALUE_NUM, NULL, -1 },
-  { "UPDATETIME",           TAG_UPDATETIME,           VALUE_NUM, NULL, -1 },
   { "VOLUMEADJUSTPERC",     TAG_VOLUMEADJUSTPERC,     VALUE_DOUBLE, NULL, -1 },
   { "WORK_ID",              TAG_WORK_ID,              VALUE_STR, NULL, -1 },
-  { "WRITETIME",            TAG_WRITETIME,            VALUE_NUM, NULL, -1 },
 };
 #define SONG_DFKEY_COUNT (sizeof (songdfkeys) / sizeof (datafilekey_t))
 
