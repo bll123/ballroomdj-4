@@ -357,21 +357,21 @@ managePlaylistMenu (managepl_t *managepl, UIWidget *uimenubar)
 
     uiCreateSubMenu (&menuitem, &menu);
 
-    /* CONTEXT: menu selection: playlist: edit menu: load */
     uiutilsUICallbackInit (&managepl->callbacks [MPL_CB_MENU_PL_LOAD],
         managePlaylistLoad, managepl);
+    /* CONTEXT: menu selection: playlist: edit menu: load */
     uiMenuCreateItem (&menu, &menuitem, _("Load"),
         &managepl->callbacks [MPL_CB_MENU_PL_LOAD]);
 
-    /* CONTEXT: menu selection: playlist: edit menu: create copy */
     uiutilsUICallbackInit (&managepl->callbacks [MPL_CB_MENU_PL_COPY],
         managePlaylistCopy, managepl);
+    /* CONTEXT: menu selection: playlist: edit menu: create copy */
     uiMenuCreateItem (&menu, &menuitem, _("Create Copy"),
         &managepl->callbacks [MPL_CB_MENU_PL_COPY]);
 
-    /* CONTEXT: menu selection: playlist: edit menu: new automatic sequence */
     uiutilsUICallbackInit (&managepl->callbacks [MPL_CB_MENU_PL_NEW],
         managePlaylistNew, managepl);
+    /* CONTEXT: menu selection: playlist: edit menu: new automatic sequence */
     uiMenuCreateItem (&menu, &menuitem, _("New Automatic Playlist"),
         &managepl->callbacks [MPL_CB_MENU_PL_NEW]);
 

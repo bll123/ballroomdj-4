@@ -1091,9 +1091,9 @@ manageSonglistMenu (manageui_t *manage)
 
     uiCreateSubMenu (&menuitem, &menu);
 
-    /* CONTEXT: menu checkbox: easy song list editor */
     manageSetMenuCallback (manage, MANAGE_MENU_CB_EZ_SL_EDIT,
         manageToggleEasySonglist);
+    /* CONTEXT: menu checkbox: easy song list editor */
     uiMenuCreateCheckbox (&menu, &menuitem, _("Easy Song List Editor"),
         nlistGetNum (manage->options, MANAGE_EASY_SONGLIST),
         &manage->callbacks [MANAGE_MENU_CB_EZ_SL_EDIT]);
@@ -1104,18 +1104,18 @@ manageSonglistMenu (manageui_t *manage)
 
     uiCreateSubMenu (&menuitem, &menu);
 
-    /* CONTEXT: menu selection: song list: edit menu: load */
     manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_LOAD, manageSonglistLoad);
+    /* CONTEXT: menu selection: song list: edit menu: load */
     uiMenuCreateItem (&menu, &menuitem, _("Load"),
         &manage->callbacks [MANAGE_MENU_CB_SL_LOAD]);
 
-    /* CONTEXT: menu selection: song list: edit menu: create copy */
     manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_COPY, manageSonglistCopy);
+    /* CONTEXT: menu selection: song list: edit menu: create copy */
     uiMenuCreateItem (&menu, &menuitem, _("Create Copy"),
         &manage->callbacks [MANAGE_MENU_CB_SL_COPY]);
 
-    /* CONTEXT: menu selection: song list: edit menu: start new song list */
     manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_NEW, manageSonglistNew);
+    /* CONTEXT: menu selection: song list: edit menu: start new song list */
     uiMenuCreateItem (&menu, &menuitem, _("Start New Song List"),
         &manage->callbacks [MANAGE_MENU_CB_SL_NEW]);
 
@@ -1129,9 +1129,9 @@ manageSonglistMenu (manageui_t *manage)
     uiMenuCreateItem (&menu, &menuitem, _("Mix"), NULL);
     uiWidgetDisable (&menuitem);
 
-    /* CONTEXT: menu selection: song list: actions menu: truncate the song list */
     manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_TRUNCATE,
         manageSonglistTruncate);
+    /* CONTEXT: menu selection: song list: actions menu: truncate the song list */
     uiMenuCreateItem (&menu, &menuitem, _("Truncate"),
         &manage->callbacks [MANAGE_MENU_CB_SL_TRUNCATE]);
 

@@ -368,23 +368,23 @@ pluiBuildUI (playerui_t *plui)
 
   uiCreateSubMenu (&menuitem, &menu);
 
-  /* CONTEXT: menu checkbox: start playback when a dance or playlist is queued */
   uiutilsUICallbackInit (&plui->callbacks [PLUI_MENU_CB_PLAY_QUEUE],
       pluiTogglePlayWhenQueued, plui);
+  /* CONTEXT: menu checkbox: start playback when a dance or playlist is queued */
   uiMenuCreateCheckbox (&menu, &menuitem, _("Play When Queued"),
       nlistGetNum (plui->options, PLUI_PLAY_WHEN_QUEUED),
       &plui->callbacks [PLUI_MENU_CB_PLAY_QUEUE]);
 
-  /* CONTEXT: menu checkbox: show the extra queues (in addition to the main music queue) */
   uiutilsUICallbackInit (&plui->callbacks [PLUI_MENU_CB_EXTRA_QUEUE],
       pluiToggleExtraQueues, plui);
+  /* CONTEXT: menu checkbox: show the extra queues (in addition to the main music queue) */
   uiMenuCreateCheckbox (&menu, &menuitem, _("Show Extra Queues"),
       nlistGetNum (plui->options, PLUI_SHOW_EXTRA_QUEUES),
       &plui->callbacks [PLUI_MENU_CB_EXTRA_QUEUE]);
 
-  /* CONTEXT: menu checkbox: when a queue is emptied, switch playback to the next queue */
   uiutilsUICallbackInit (&plui->callbacks [PLUI_MENU_CB_SWITCH_QUEUE],
       pluiToggleSwitchQueue, plui);
+  /* CONTEXT: menu checkbox: when a queue is emptied, switch playback to the next queue */
   uiMenuCreateCheckbox (&menu, &menuitem, _("Switch Queue When Empty"),
       nlistGetNum (plui->options, PLUI_SWITCH_QUEUE_WHEN_EMPTY),
       &plui->callbacks [PLUI_MENU_CB_SWITCH_QUEUE]);
@@ -394,9 +394,9 @@ pluiBuildUI (playerui_t *plui)
 
   uiCreateSubMenu (&menuitem, &menu);
 
-  /* CONTEXT: menu selection: marquee: change the marquee font size */
   uiutilsUICallbackInit (&plui->callbacks [PLUI_MENU_CB_MQ_FONT_SZ],
       pluiMarqueeFontSizeDialog, plui);
+  /* CONTEXT: menu selection: marquee: change the marquee font size */
   uiMenuCreateItem (&menu, &menuitem, _("Font Size"),
       &plui->callbacks [PLUI_MENU_CB_MQ_FONT_SZ]);
 

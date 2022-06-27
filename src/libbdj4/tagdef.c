@@ -953,67 +953,67 @@ tagdefInit (void)
   }
   tagdefinfo.initialized = true;
 
-  /* CONTEXT: title: audio file modification time */
+  /* CONTEXT: label: audio file modification time */
   tagdefs [TAG_AFMODTIME].displayname = _("Audio File Date");
-  /* CONTEXT: title: album */
+  /* CONTEXT: label: album */
   tagdefs [TAG_ALBUM].displayname = _("Album");
-  /* CONTEXT: title: album artist */
+  /* CONTEXT: label: album artist */
   tagdefs [TAG_ALBUMARTIST].displayname = _("Album Artist");
-  /* CONTEXT: title: artist */
+  /* CONTEXT: label: artist */
   tagdefs [TAG_ARTIST].displayname = _("Artist");
-  /* CONTEXT: title: composer */
+  /* CONTEXT: label: composer */
   tagdefs [TAG_COMPOSER].displayname = _("Composer");
-  /* CONTEXT: title: conductor */
+  /* CONTEXT: label: conductor */
   tagdefs [TAG_CONDUCTOR].displayname = _("Conductor");
-  /* CONTEXT: title: dance */
+  /* CONTEXT: label: dance */
   tagdefs [TAG_DANCE].displayname = _("Dance");
-  /* CONTEXT: title: dance level */
+  /* CONTEXT: label: dance level */
   tagdefs [TAG_DANCELEVEL].displayname = _("Dance Level");
-  /* CONTEXT: title: dance rating */
+  /* CONTEXT: label: dance rating */
   tagdefs [TAG_DANCERATING].displayname = _("Dance Rating");
-  /* CONTEXT: title: date */
+  /* CONTEXT: label: date */
   tagdefs [TAG_DATE].displayname = _("Date");
-  /* CONTEXT: title: date added to the database */
+  /* CONTEXT: label: date added to the database */
   tagdefs [TAG_DBADDDATE].displayname = _("Date Added");
-  /* CONTEXT: title: disc number */
+  /* CONTEXT: label: disc number */
   tagdefs [TAG_DISCNUMBER].displayname = _("Disc");
-  /* CONTEXT: title: duration of the song */
+  /* CONTEXT: label: duration of the song */
   tagdefs [TAG_DURATION].displayname = _("Duration");
-  /* CONTEXT: title: favorite marker */
+  /* CONTEXT: label: favorite marker */
   tagdefs [TAG_FAVORITE].displayname = _("Favorite");
-  /* CONTEXT: title: genre */
+  /* CONTEXT: label: genre */
   tagdefs [TAG_GENRE].displayname = _("Genre");
-  /* CONTEXT: title: keyword (used to filter out songs) */
+  /* CONTEXT: label: keyword (used to filter out songs) */
   tagdefs [TAG_KEYWORD].displayname = _("Keyword");
-  /* CONTEXT: title: marquee display (alternate display for the marquee, replaces dance) */
+  /* CONTEXT: label: marquee display (alternate display for the marquee, replaces dance) */
   tagdefs [TAG_MQDISPLAY].displayname = _("Marquee Display");
-  /* CONTEXT: title: notes */
+  /* CONTEXT: label: notes */
   tagdefs [TAG_NOTES].displayname = _("Notes");
-  /* CONTEXT: title: time to end the song */
+  /* CONTEXT: label: time to end the song */
   tagdefs [TAG_SONGEND].displayname = _("Song End");
-  /* CONTEXT: title: time to start the song */
+  /* CONTEXT: label: time to start the song */
   tagdefs [TAG_SONGSTART].displayname = _("Song Start");
-  /* CONTEXT: title: speed adjustment for playback */
+  /* CONTEXT: label: speed adjustment for playback */
   tagdefs [TAG_SPEEDADJUSTMENT].displayname = _("Speed Adjustment");
-  /* CONTEXT: title: status */
+  /* CONTEXT: label: status */
   tagdefs [TAG_STATUS].displayname = _("Status");
-  /* CONTEXT: title: tags (for use by the user) */
+  /* CONTEXT: label: tags (for use by the user) */
   tagdefs [TAG_TAGS].displayname = _("Tags");
-  /* CONTEXT: title: title */
+  /* CONTEXT: label: title */
   tagdefs [TAG_TITLE].displayname = _("Title");
-  /* CONTEXT: title: track number */
+  /* CONTEXT: label: track number */
   tagdefs [TAG_TRACKNUMBER].displayname = _("Track");
   /* CONTEXT: when the database entry was last updated */
   tagdefs [TAG_LAST_UPDATED].displayname = _("Last Updated");
-  /* CONTEXT: title: volume adjustment for playback */
+  /* CONTEXT: label: volume adjustment for playback */
   tagdefs [TAG_VOLUMEADJUSTPERC].displayname = _("Volume Adjustment");
 
   if (bdjoptGetNum (OPT_G_BPM) == BPM_BPM) {
-    /* CONTEXT: title: beats per minute */
+    /* CONTEXT: label: beats per minute */
     tagdefs [TAG_BPM].displayname = _("BPM");
   }
   if (bdjoptGetNum (OPT_G_BPM) == BPM_MPM) {
-    /* CONTEXT: title: measures per minute */
+    /* CONTEXT: label: measures per minute */
     tagdefs [TAG_BPM].displayname = _("MPM");
   }
 

@@ -18,6 +18,7 @@
 #include "dance.h"
 #include "manageui.h"
 #include "playlist.h"
+#include "tagdef.h"
 #include "tmutil.h"
 #include "ui.h"
 #include "validate.h"
@@ -192,7 +193,7 @@ manageBuildUIPlaylistTree (managepltree_t *managepltree, UIWidget *vboxp,
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
 
   val = bdjoptGetNum (OPT_G_BPM);
-  bpmstr = val == BPM_BPM ? _("BPM") : _("MPM");
+  bpmstr = tagdefs [TAG_BPM].displayname;
 
   /* CONTEXT: playlist management: low bpm/mpm column header */
   snprintf (tbuff, sizeof (tbuff), _("Low %s"), bpmstr);

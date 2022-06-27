@@ -202,6 +202,7 @@ static void installerVLCGetVersion (installer_t *installer);
 static void installerPythonGetVersion (installer_t *installer);
 static void installerCheckPackages (installer_t *installer);
 static void installerWebResponseCallback (void *userdata, char *resp, size_t len);
+static void installerFailWorkingDir (installer_t *installer, const char *dir);
 
 int
 main (int argc, char *argv[])
@@ -1215,12 +1216,7 @@ installerCopyStart (installer_t *installer)
   /* the unpackdir is not necessarily the same as the current dir */
   /* on mac os, they are different */
   if (chdir (installer->unpackdir) < 0) {
-    fprintf (stderr, "Unable to set working dir: %s\n", installer->unpackdir);
-    /* CONTEXT: installer: failure message */
-    installerDisplayText (installer, "", _("Error: Unable to set working folder."), false);
-    /* CONTEXT: installer: status message */
-    installerDisplayText (installer, " * ", _("Installation aborted."), false);
-    installer->instState = INST_BEGIN;
+    installerFailWorkingDir (installer, installer->unpackdir);
     return;
   }
 
@@ -1264,10 +1260,7 @@ installerChangeDir (installer_t *installer)
   fileopMakeDir (installer->datatopdir);
 
   if (chdir (installer->datatopdir)) {
-    fprintf (stderr, "Unable to set working dir: %s\n", installer->datatopdir);
-    installerDisplayText (installer, "", _("Error: Unable to set working folder."), false);
-    installerDisplayText (installer, " * ", _("Installation aborted."), false);
-    installer->instState = INST_BEGIN;
+    installerFailWorkingDir (installer, installer->datatopdir);
     return;
   }
 
@@ -1316,10 +1309,7 @@ installerCopyTemplates (installer_t *installer)
   installerDisplayText (installer, "-- ", _("Copying template files."), false);
 
   if (chdir (installer->datatopdir)) {
-    fprintf (stderr, "Unable to set working dir: %s\n", installer->datatopdir);
-    installerDisplayText (installer, "", _("Error: Unable to set working folder."), false);
-    installerDisplayText (installer, " * ", _("Installation aborted."), false);
-    installer->instState = INST_BEGIN;
+    installerFailWorkingDir (installer, installer->datatopdir);
     return;
   }
 
@@ -1564,10 +1554,7 @@ installerConvertStart (installer_t *installer)
   }
 
   if (chdir (installer->rundir)) {
-    fprintf (stderr, "Unable to set working dir: %s\n", installer->rundir);
-    installerDisplayText (installer, "", _("Error: Unable to set working folder."), false);
-    installerDisplayText (installer, " * ", _("Installation aborted."), false);
-    installer->instState = INST_BEGIN;
+    installerFailWorkingDir (installer, installer->rundir);
     return;
   }
 
@@ -1700,10 +1687,7 @@ installerCreateShortcut (installer_t *installer)
   char buff [MAXPATHLEN];
 
   if (chdir (installer->rundir)) {
-    fprintf (stderr, "Unable to set working dir: %s\n", installer->rundir);
-    installerDisplayText (installer, "", _("Error: Unable to set working folder."), false);
-    installerDisplayText (installer, " * ", _("Installation aborted."), false);
-    installer->instState = INST_BEGIN;
+    installerFailWorkingDir (installer, installer->rundir);
     return;
   }
 
@@ -1748,10 +1732,7 @@ installerVLCCheck (installer_t *installer)
   }
 
   if (chdir (installer->datatopdir)) {
-    fprintf (stderr, "Unable to set working dir: %s\n", installer->datatopdir);
-    installerDisplayText (installer, "", _("Error: Unable to set working folder."), false);
-    installerDisplayText (installer, " * ", _("Installation aborted."), false);
-    installer->instState = INST_BEGIN;
+    installerFailWorkingDir (installer, installer->datatopdir);
     return;
   }
 
@@ -1846,10 +1827,7 @@ installerPythonCheck (installer_t *installer)
   }
 
   if (chdir (installer->datatopdir)) {
-    fprintf (stderr, "Unable to set working dir: %s\n", installer->datatopdir);
-    installerDisplayText (installer, "", _("Error: Unable to set working folder."), false);
-    installerDisplayText (installer, " * ", _("Installation aborted."), false);
-    installer->instState = INST_BEGIN;
+    installerFailWorkingDir (installer, installer->datatopdir);
     return;
   }
 
@@ -1926,6 +1904,7 @@ installerPythonInstall (installer_t *installer)
       snprintf (tbuff, sizeof (tbuff), ".\\%s", installer->dlfname);
     }
     system (tbuff);
+    /* CONTEXT: installer: status message */
     snprintf (tbuff, sizeof (tbuff), _("%s installed."), "Python");
     installerDisplayText (installer, "-- ", tbuff, false);
   }
@@ -1949,10 +1928,7 @@ installerMutagenCheck (installer_t *installer)
   }
 
   if (chdir (installer->datatopdir)) {
-    fprintf (stderr, "Unable to set working dir: %s\n", installer->datatopdir);
-    installerDisplayText (installer, "", _("Error: Unable to set working folder."), false);
-    installerDisplayText (installer, " * ", _("Installation aborted."), false);
-    installer->instState = INST_BEGIN;
+    installerFailWorkingDir (installer, installer->datatopdir);
     return;
   }
 
@@ -1981,6 +1957,7 @@ installerMutagenInstall (installer_t *installer)
   snprintf (tbuff, sizeof (tbuff),
       "%s --quiet install --user --upgrade mutagen", pipnm);
   system (tbuff);
+  /* CONTEXT: installer: status message */
   snprintf (tbuff, sizeof (tbuff), _("%s installed."), "Mutagen");
   installerDisplayText (installer, "-- ", tbuff, false);
   installerCheckPackages (installer);
@@ -1997,10 +1974,7 @@ installerUpdateCAFileInit (installer_t *installer)
   char    tbuff [200];
 
   if (chdir (installer->datatopdir)) {
-    fprintf (stderr, "Unable to set working dir: %s\n", installer->datatopdir);
-    installerDisplayText (installer, "", _("Error: Unable to set working folder."), false);
-    installerDisplayText (installer, " * ", _("Installation aborted."), false);
-    installer->instState = INST_BEGIN;
+    installerFailWorkingDir (installer, installer->datatopdir);
     return;
   }
 
@@ -2061,10 +2035,7 @@ installerRegisterInit (installer_t *installer)
   char    tbuff [200];
 
   if (chdir (installer->datatopdir)) {
-    fprintf (stderr, "Unable to set working dir: %s\n", installer->datatopdir);
-    installerDisplayText (installer, "", _("Error: Unable to set working folder."), false);
-    installerDisplayText (installer, " * ", _("Installation aborted."), false);
-    installer->instState = INST_BEGIN;
+    installerFailWorkingDir (installer, installer->datatopdir);
     return;
   }
 
@@ -2350,14 +2321,17 @@ installerCheckPackages (installer_t *installer)
 
   if (*tmp) {
     if (installer->uiBuilt) {
+      /* CONTEXT: installer: display of package status */
       snprintf (tbuff, sizeof (tbuff), _("%s is installed"), "Python");
       uiLabelSetText (&installer->pythonMsg, tbuff);
     }
     installer->pythoninstalled = true;
   } else {
     if (installer->uiBuilt) {
+      /* CONTEXT: installer: display of package status */
       snprintf (tbuff, sizeof (tbuff), _("%s is not installed"), "Python");
       uiLabelSetText (&installer->pythonMsg, tbuff);
+      /* CONTEXT: installer: display of package status */
       snprintf (tbuff, sizeof (tbuff), _("%s is not installed"), "Mutagen");
       uiLabelSetText (&installer->mutagenMsg, tbuff);
     }
@@ -2368,9 +2342,11 @@ installerCheckPackages (installer_t *installer)
     tmp = sysvarsGetStr (SV_PYTHON_MUTAGEN);
     if (installer->uiBuilt) {
       if (*tmp) {
+        /* CONTEXT: installer: display of package status */
         snprintf (tbuff, sizeof (tbuff), _("%s is installed"), "Mutagen");
         uiLabelSetText (&installer->mutagenMsg, tbuff);
       } else {
+        /* CONTEXT: installer: display of package status */
         snprintf (tbuff, sizeof (tbuff), _("%s is not installed"), "Mutagen");
         uiLabelSetText (&installer->mutagenMsg, tbuff);
       }
@@ -2386,4 +2362,15 @@ installerWebResponseCallback (void *userdata, char *resp, size_t len)
   installer->webresponse = resp;
   installer->webresplen = len;
   return;
+}
+
+static void
+installerFailWorkingDir (installer_t *installer, const char *dir)
+{
+  fprintf (stderr, "Unable to set working dir: %s\n", dir);
+  /* CONTEXT: installer: failure message */
+  installerDisplayText (installer, "", _("Error: Unable to set working folder."), false);
+  /* CONTEXT: installer: status message */
+  installerDisplayText (installer, " * ", _("Installation aborted."), false);
+  installer->instState = INST_BEGIN;
 }

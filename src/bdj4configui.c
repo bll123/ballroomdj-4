@@ -688,9 +688,9 @@ main (int argc, char *argv[])
   confuiSpinboxTextInitDataNum (&confui, "cu-bpm",
       CONFUI_SPINBOX_BPM,
       /* CONTEXT: BPM: beats per minute (not bars per minute) */
-      BPM_BPM, ("BPM"),
+      BPM_BPM, "BPM",
       /* CONTEXT: MPM: measures per minute (aka bars per minute) */
-      BPM_MPM, ("MPM"),
+      BPM_MPM, "MPM",
       -1);
 
   confuiSpinboxTextInitDataNum (&confui, "cu-dance-speed",
@@ -1394,7 +1394,6 @@ confuiBuildUIEditDances (configui_t *confui)
   UIWidget      sgC;
   char          *bpmstr;
   char          tbuff [MAXPATHLEN];
-  nlistidx_t    val;
 
   logProcBegin (LOG_PROC, "confuiBuildUIEditDances");
   confui->indancechange = true;
@@ -1417,11 +1416,11 @@ confuiBuildUIEditDances (configui_t *confui)
   g_signal_connect (confui->tables [CONFUI_ID_DANCE].tree, "row-activated",
       G_CALLBACK (confuiDanceSelect), confui);
 
-  /* CONTEXT: configuration: dances: the name of the dance */
   uiCreateVertBox (&dvbox);
   uiWidgetSetMarginStart (&dvbox, uiBaseMarginSz * 8);
   uiBoxPackStart (&hbox, &dvbox);
 
+  /* CONTEXT: configuration: dances: the name of the dance */
   confuiMakeItemEntry (confui, &dvbox, &sg, _("Dance"),
       CONFUI_ENTRY_DANCE_DANCE, -1, "");
   uiEntrySetValidate (confui->uiitem [CONFUI_ENTRY_DANCE_DANCE].entry,
@@ -1455,8 +1454,7 @@ confuiBuildUIEditDances (configui_t *confui)
       confuiDanceEntryAnnouncementChg, confui, UIENTRY_DELAYED);
   confui->uiitem [CONFUI_ENTRY_DANCE_ANNOUNCEMENT].danceidx = DANCE_ANNOUNCE;
 
-  val = bdjoptGetNum (OPT_G_BPM);
-  bpmstr = val == BPM_BPM ? _("BPM") : _("MPM");
+  bpmstr = tagdefs [TAG_BPM].displayname;
   /* CONTEXT: configuration: dances: low BPM (or MPM) setting */
   snprintf (tbuff, sizeof (tbuff), _("Low %s"), bpmstr);
   confuiMakeItemSpinboxNum (confui, &dvbox, &sg, &sgC, tbuff,
@@ -1566,6 +1564,7 @@ confuiBuildUIEditLevels (configui_t *confui)
       _("Edit Levels"), CONFUI_ID_LEVELS);
   uiCreateSizeGroupHoriz (&sg);
 
+  /* CONTEXT: configuration: dance levels: instructions */
   uiCreateLabel (&uiwidget, _("Order from easiest to most advanced."));
   uiBoxPackStart (&vbox, &uiwidget);
 

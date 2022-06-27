@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
 "POT-Creation-Date: 2022-06-08\n"
-"PO-Revision-Date: 2022-06-23\n"
+"PO-Revision-Date: 2022-06-27\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -150,6 +150,10 @@ msgstr "4/8"
 msgid "Accent Colour"
 msgstr ""
 
+#. CONTEXT: manage db: select database update action
+msgid "Action"
+msgstr "Actie"
+
 #. CONTEXT: action menu for the starter user interface
 #. CONTEXT: menu selection: actions for song editor
 #. CONTEXT: menu selection: actions for song list
@@ -164,11 +168,11 @@ msgstr "Voeg nieuwe toe"
 msgid "Advanced"
 msgstr "Geavanceerd"
 
-#. CONTEXT: title: album
+#. CONTEXT: label: album
 msgid "Album"
 msgstr "Album"
 
-#. CONTEXT: title: album artist
+#. CONTEXT: label: album artist
 msgid "Album Artist"
 msgstr "Album Artiest"
 
@@ -220,7 +224,7 @@ msgstr ""
 msgid "Argentine Tango"
 msgstr "Argentijnse Tango"
 
-#. CONTEXT: title: artist
+#. CONTEXT: label: artist
 msgid "Artist"
 msgstr "Artiest"
 
@@ -236,7 +240,7 @@ msgstr ""
 msgid "Audio"
 msgstr ""
 
-#. CONTEXT: title: audio file modification time
+#. CONTEXT: label: audio file modification time
 msgid "Audio File Date"
 msgstr "Audio bestandsdatum"
 
@@ -262,7 +266,7 @@ msgid "BDJ Tags Only"
 msgstr "Enkel BDJ Tags"
 
 #. CONTEXT: configuration: Whether to display BPM as BPM or MPM
-#. CONTEXT: title: beats per minute
+#. CONTEXT: label: beats per minute
 msgid "BPM"
 msgstr "BPM"
 
@@ -329,11 +333,11 @@ msgstr "Voltooien"
 msgid "Completion Message"
 msgstr "Voltooiingsbericht"
 
-#. CONTEXT: title: composer
+#. CONTEXT: label: composer
 msgid "Composer"
 msgstr "Componist"
 
-#. CONTEXT: title: conductor
+#. CONTEXT: label: conductor
 msgid "Conductor"
 msgstr "Uitvoerend artiest"
 
@@ -376,6 +380,9 @@ msgstr ""
 msgid "Count"
 msgstr "Tellen"
 
+#. CONTEXT: menu selection: song list: edit menu: create copy
+#. CONTEXT: menu selection: playlist: edit menu: create copy
+#. CONTEXT: menu selection: sequence: edit menu: create copy
 msgid "Create Copy"
 msgstr "Kopie maken"
 
@@ -387,7 +394,8 @@ msgstr ""
 msgid "Creating shortcut."
 msgstr ""
 
-#. CONTEXT: title: dance
+#. CONTEXT: configuration: dances: the name of the dance
+#. CONTEXT: label: dance
 #. CONTEXT: a filter: select the dance displayed in the song selection
 #. CONTEXT: playlist management: dance column header
 #. CONTEXT: sequence editor: titles for the selection list and the sequence list
@@ -395,12 +403,12 @@ msgid "Dance"
 msgstr "Dans"
 
 #. CONTEXT: configuration: filter display: checkbox: dance level
-#. CONTEXT: title: dance level
+#. CONTEXT: label: dance level
 #. CONTEXT: a filter: select the dance level displayed in the song selection
 msgid "Dance Level"
 msgstr ""
 
-#. CONTEXT: title: dance rating
+#. CONTEXT: label: dance rating
 #. CONTEXT: a filter: select the dance rating displayed in the song selection
 #. CONTEXT: playlist management: Dance Rating
 msgid "Dance Rating"
@@ -410,11 +418,11 @@ msgstr "Dans beoordeling"
 msgid "Database Loads Dance From Genre"
 msgstr "Database laadt dansen voor Genre"
 
-#. CONTEXT: title: date
+#. CONTEXT: label: date
 msgid "Date"
 msgstr "Datum"
 
-#. CONTEXT: title: date added to the database
+#. CONTEXT: label: date added to the database
 msgid "Date Added"
 msgstr "Datum toegevoegd"
 
@@ -435,7 +443,7 @@ msgstr "Standaard Volume"
 msgid "Delete"
 msgstr "Verwijderen"
 
-#. CONTEXT: title: disc number
+#. CONTEXT: label: disc number
 msgid "Disc"
 msgstr "Schijf"
 
@@ -468,7 +476,7 @@ msgstr ""
 msgid "Downloading %s."
 msgstr ""
 
-#. CONTEXT: title: duration of the song
+#. CONTEXT: label: duration of the song
 msgid "Duration"
 msgstr "Tijdsduur"
 
@@ -484,6 +492,7 @@ msgstr "Gemakkelijk"
 msgid "Easy Song List"
 msgstr ""
 
+#. CONTEXT: menu checkbox: easy song list editor
 msgid "Easy Song List Editor"
 msgstr ""
 
@@ -605,7 +614,7 @@ msgid "Fade Out Time"
 msgstr "Fade-Out tijd"
 
 #. CONTEXT: configuration: filter display: checkbox: favorite selection
-#. CONTEXT: title: favorite marker
+#. CONTEXT: label: favorite marker
 #. CONTEXT: a filter: select the 'favorite' displayed in the song selection
 msgid "Favorite"
 msgstr ""
@@ -642,6 +651,7 @@ msgstr ""
 msgid "Font"
 msgstr "Lettertype"
 
+#. CONTEXT: menu selection: marquee: change the marquee font size
 #. CONTEXT: marquee font size dialog: the font size selector
 msgid "Font Size"
 msgstr ""
@@ -664,7 +674,7 @@ msgstr ""
 
 #. CONTEXT: configuration: filter display: checkbox: genre
 #. CONTEXT: configuration: genre: title of the genre name column
-#. CONTEXT: title: genre
+#. CONTEXT: label: genre
 #. CONTEXT: a filter: select the genre displayed in the song selection
 msgid "Genre"
 msgstr "Genre"
@@ -751,7 +761,7 @@ msgstr "Jazz"
 msgid "Jive"
 msgstr "Jive"
 
-#. CONTEXT: title: keyword (used to filter out songs)
+#. CONTEXT: label: keyword (used to filter out songs)
 msgid "Keyword"
 msgstr "Trefwoord"
 
@@ -771,6 +781,9 @@ msgstr "Niveau"
 msgid "Listing Font"
 msgstr ""
 
+#. CONTEXT: menu selection: song list: edit menu: load
+#. CONTEXT: menu selection: playlist: edit menu: load
+#. CONTEXT: menu selection: sequence: edit menu: load
 msgid "Load"
 msgstr "Laad"
 
@@ -800,7 +813,7 @@ msgstr "Lage %s"
 msgid "Low Dance Level"
 msgstr ""
 
-#. CONTEXT: title: measures per minute
+#. CONTEXT: label: measures per minute
 msgid "MPM"
 msgstr "MPM"
 
@@ -813,7 +826,7 @@ msgstr ""
 msgid "Marquee"
 msgstr "Marquee"
 
-#. CONTEXT: title: marquee display (alternate display for the marquee, replaces dance)
+#. CONTEXT: label: marquee display (alternate display for the marquee, replaces dance)
 msgid "Marquee Display"
 msgstr "Marquee weergave"
 
@@ -881,6 +894,7 @@ msgid "Move to Top"
 msgstr ""
 
 #. CONTEXT: configuration: the music folder where the user store their music
+#. CONTEXT: manage db: music folder to process
 msgid "Music Folder"
 msgstr "Muziekmap"
 
@@ -901,6 +915,7 @@ msgid "Name"
 msgstr ""
 
 #. CONTEXT: configuration file: status
+#. CONTEXT: default status
 msgid "New"
 msgstr "Nieuw"
 
@@ -910,6 +925,7 @@ msgstr "Nieuw"
 msgid "New %s installation."
 msgstr ""
 
+#. CONTEXT: menu selection: playlist: edit menu: new automatic sequence
 msgid "New Automatic Playlist"
 msgstr ""
 
@@ -917,7 +933,7 @@ msgstr ""
 msgid "New Dance"
 msgstr ""
 
-#. CONTEXT: database update: status message: new files saved to the databse
+#. CONTEXT: database update: status message: new files saved to the database
 msgid "New Files"
 msgstr "Nieuwe bestanden"
 
@@ -988,7 +1004,7 @@ msgstr ""
 msgid "Not a valid %s folder."
 msgstr ""
 
-#. CONTEXT: title: notes
+#. CONTEXT: label: notes
 msgid "Notes"
 msgstr "Notities"
 
@@ -1001,6 +1017,7 @@ msgstr "Uit"
 msgid "Options"
 msgstr "Opties"
 
+#. CONTEXT: configuration: dance levels: instructions
 msgid "Order from easiest to most advanced."
 msgstr "Ordenen van gemakkelijk naar moeilijk."
 
@@ -1047,6 +1064,7 @@ msgstr "Afspelen"
 msgid "Play Announcements"
 msgstr ""
 
+#. CONTEXT: menu checkbox: start playback when a dance or playlist is queued
 msgid "Play When Queued"
 msgstr ""
 
@@ -1298,6 +1316,7 @@ msgstr "Selecteer"
 msgid "Select %s"
 msgstr ""
 
+#. CONTEXT: installer: dialog title for selecting BDJ3 location
 #, c-format
 msgid "Select %s Location"
 msgstr ""
@@ -1307,6 +1326,8 @@ msgid "Select File"
 msgstr "Selecteer bestand"
 
 #. CONTEXT: configuration: folder selection dialog: window title
+#. CONTEXT: manage: dialog title for selecting database music folder
+#, c-format
 msgid "Select Music Folder Location"
 msgstr ""
 
@@ -1339,6 +1360,7 @@ msgstr "Sequentie"
 msgid "Set Queue for Playback"
 msgstr ""
 
+#. CONTEXT: menu checkbox: show the extra queues (in addition to the main music queue)
 msgid "Show Extra Queues"
 msgstr ""
 
@@ -1363,7 +1385,7 @@ msgstr "Song Editor"
 msgid "Song Editor - Column %d"
 msgstr ""
 
-#. CONTEXT: title: time to end the song
+#. CONTEXT: label: time to end the song
 msgid "Song End"
 msgstr "Song Einde"
 
@@ -1381,7 +1403,7 @@ msgstr "Songlijst"
 msgid "Song Selection"
 msgstr "Song selectie"
 
-#. CONTEXT: title: time to start the song
+#. CONTEXT: label: time to start the song
 msgid "Song Start"
 msgstr "Song Start"
 
@@ -1395,7 +1417,7 @@ msgstr ""
 msgid "Speed"
 msgstr "Tempo"
 
-#. CONTEXT: title: speed adjustment for playback
+#. CONTEXT: label: speed adjustment for playback
 msgid "Speed Adjustment"
 msgstr "Tempo aanpassing"
 
@@ -1403,9 +1425,11 @@ msgstr "Tempo aanpassing"
 msgid "Start"
 msgstr "Start"
 
+#. CONTEXT: menu selection: sequence: edit menu: start new sequence
 msgid "Start New Sequence"
 msgstr ""
 
+#. CONTEXT: menu selection: song list: edit menu: start new song list
 msgid "Start New Song List"
 msgstr ""
 
@@ -1419,7 +1443,7 @@ msgstr "Opstartscript"
 
 #. CONTEXT: configuration: filter display: checkbox: status
 #. CONTEXT: configuration: status: title of the status name column
-#. CONTEXT: title: status
+#. CONTEXT: label: status
 #. CONTEXT: a filter: select the status displayed in the song selection
 msgid "Status"
 msgstr "Status"
@@ -1454,11 +1478,12 @@ msgstr ""
 msgid "Support options"
 msgstr ""
 
+#. CONTEXT: menu checkbox: when a queue is emptied, switch playback to the next queue
 msgid "Switch Queue When Empty"
 msgstr ""
 
 #. CONTEXT: configuration: dances: tags associated with the dance
-#. CONTEXT: title: tags (for use by the user)
+#. CONTEXT: label: tags (for use by the user)
 msgid "Tags"
 msgstr "Tags"
 
@@ -1496,7 +1521,7 @@ msgid "Time Signature"
 msgstr "Maat aanduiding"
 
 #. CONTEXT: configuration: the title to display on the mobile marquee
-#. CONTEXT: title: title
+#. CONTEXT: label: title
 msgid "Title"
 msgstr "Titel"
 
@@ -1512,10 +1537,11 @@ msgstr ""
 msgid "Total Files"
 msgstr "Totaal aantal bestanden"
 
-#. CONTEXT: title: track number
+#. CONTEXT: label: track number
 msgid "Track"
 msgstr "Track"
 
+#. CONTEXT: menu selection: song list: actions menu: truncate the song list
 msgid "Truncate"
 msgstr "Inkorten"
 
@@ -1588,7 +1614,7 @@ msgstr "Weense wals"
 msgid "Volume"
 msgstr "Volume"
 
-#. CONTEXT: title: volume adjustment for playback
+#. CONTEXT: label: volume adjustment for playback
 msgid "Volume Adjustment"
 msgstr "Volumeaanpassing"
 

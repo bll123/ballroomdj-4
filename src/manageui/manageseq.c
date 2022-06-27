@@ -146,21 +146,21 @@ manageSequenceMenu (manageseq_t *manageseq, UIWidget *uimenubar)
 
     uiCreateSubMenu (&menuitem, &menu);
 
-    /* CONTEXT: menu selection: sequence: edit menu: load */
     uiutilsUICallbackInit (&manageseq->callback [MSEQ_MENU_CB_SEQ_LOAD],
         manageSequenceLoad, manageseq);
+    /* CONTEXT: menu selection: sequence: edit menu: load */
     uiMenuCreateItem (&menu, &menuitem, _("Load"),
         &manageseq->callback [MSEQ_MENU_CB_SEQ_LOAD]);
 
-    /* CONTEXT: menu selection: sequence: edit menu: create copy */
     uiutilsUICallbackInit (&manageseq->callback [MSEQ_MENU_CB_SEQ_COPY],
         manageSequenceCopy, manageseq);
+    /* CONTEXT: menu selection: sequence: edit menu: create copy */
     uiMenuCreateItem (&menu, &menuitem, _("Create Copy"),
         &manageseq->callback [MSEQ_MENU_CB_SEQ_COPY]);
 
-    /* CONTEXT: menu selection: sequence: edit menu: start new sequence */
     uiutilsUICallbackInit (&manageseq->callback [MSEQ_MENU_CB_SEQ_NEW],
         manageSequenceNew, manageseq);
+    /* CONTEXT: menu selection: sequence: edit menu: start new sequence */
     uiMenuCreateItem (&menu, &menuitem, _("Start New Sequence"),
         &manageseq->callback [MSEQ_MENU_CB_SEQ_NEW]);
 

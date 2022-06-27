@@ -2,7 +2,7 @@ BDJ4 4.0.0
 
 BallroomDJ 4 is currently under development.
 
-Alpha Release: 20220623
+Alpha Release: 20220627
 
   Alpha releases are mostly untested works in progress.
 
