@@ -149,7 +149,7 @@ static bool     starterStoppingCallback (void *udata, programstate_t programStat
 static bool     starterStopWaitCallback (void *udata, programstate_t programState);
 static bool     starterClosingCallback (void *udata, programstate_t programState);
 static void     starterBuildUI (startui_t *starter);
-gboolean        starterMainLoop  (void *tstarter);
+static int      starterMainLoop  (void *tstarter);
 static int      starterProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
                     bdjmsgmsg_t msg, char *args, void *udata);
 static void     starterStartMain (startui_t *starter, char *args);

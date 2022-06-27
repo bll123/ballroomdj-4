@@ -88,6 +88,7 @@ add_subdirectory (libbdj4ui)
 add_subdirectory (libuigtk3)
 # executables
 add_subdirectory (manageui)
+add_subdirectory (bpmcounter)
 # testing
 add_subdirectory (check)
 

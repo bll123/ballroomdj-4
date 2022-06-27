@@ -53,6 +53,7 @@ main (int argc, char * argv[])
   FILE      *fh = NULL;
 
   static struct option bdj_options [] = {
+    { "bdj4bpmcounter", no_argument,        NULL,   19 },
     { "bdj4configui",   no_argument,        NULL,   3 },
     { "bdj4dbupdate",   no_argument,        NULL,   15 },
     { "bdj4helperui",   no_argument,        NULL,   18 },
@@ -215,6 +216,11 @@ main (int argc, char * argv[])
       }
       case 18: {
         prog = "bdj4helperui";
+        ++validargs;
+        break;
+      }
+      case 19: {
+        prog = "bdj4bpmcounter";
         ++validargs;
         break;
       }

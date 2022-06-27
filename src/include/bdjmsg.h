@@ -21,6 +21,7 @@ typedef enum {
   ROUTE_REMCTRL,
   ROUTE_STARTERUI,
   ROUTE_HELPERUI,
+  ROUTE_BPM_COUNTER,
   ROUTE_MAX,
 } bdjmsgroute_t;
 
@@ -129,6 +130,8 @@ typedef enum {
   /* to dbtag */
   MSG_DB_FILE_CHK,          // args: filename to check
   MSG_DB_ALL_FILES_SENT,    // all filenames sent to dbtag
+  /* to/from bpm-counter */
+  MSG_BPM_SET,              // args: bpm
 
   /* when a new message is added, update: */
   /* bdjmsg.c: debugging information for the msg */

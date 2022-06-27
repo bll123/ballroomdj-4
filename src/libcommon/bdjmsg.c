@@ -27,6 +27,7 @@ static char *routetxt [ROUTE_MAX] = {
   [ROUTE_REMCTRL] = "REMCTRL",
   [ROUTE_STARTERUI] = "STARTERUI",
   [ROUTE_HELPERUI] = "HELPERUI",
+  [ROUTE_BPM_COUNTER] = "BPM_COUNTER",
 };
 
 /* for debugging */
@@ -104,6 +105,7 @@ static char *msgtxt [MSG_MAX] = {
   [MSG_DB_TAG_FINISHED] = "DB_TAG_FINISHED",
   [MSG_DB_FILE_CHK] = "DB_FILE_CHK",
   [MSG_DB_ALL_FILES_SENT] = "DB_ALL_FILES_SENT",
+  [MSG_BPM_SET] = "BPM_SET",
 };
 
 size_t

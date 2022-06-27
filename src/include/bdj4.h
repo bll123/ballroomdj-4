@@ -38,5 +38,6 @@ enum {
 #define MANAGEUI_OPT_FN   "ui-manage"
 #define PLAYERUI_OPT_FN   "ui-player"
 #define STARTERUI_OPT_FN  "ui-starter"
+#define BPMCOUNTER_OPT_FN "ui-bpmcounter"
 
 #endif /* INC_BDJ4_H */
