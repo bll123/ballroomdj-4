@@ -38,6 +38,8 @@ foreach path [list {} profiles $mpath $mppath] {
   foreach sfx $suffixlist pfx $nprefixlist {
     set fn "[file join $bdj3dir $path $cnm]$sfx"
     if { [file exists $fn] } {
+      set olddirlist [list]
+      set musicdir {}
       set tdir $path
       if { [regexp {profiles} $path] } {
         set tdir [file dirname $path]
@@ -113,10 +115,7 @@ foreach path [list {} profiles $mpath $mppath] {
         if { $key eq "UITHEME" } { continue }
         # moved to M
         if { $key eq "PLAYER" } { continue }
-        if { $key eq "ORIGINALDIR" } { continue }
-        if { $key eq "DELETEDIR" } { continue }
         if { $key eq "IMAGEDIR" } { continue }
-        if { $key eq "ARCHIVEDIR" } { continue }
         if { $key eq "MTMPDIR" } { continue }
         if { $key eq "CLVAPATHFMT" } { continue }
         if { $key eq "VAPATHFMT" } { continue }
@@ -131,9 +130,20 @@ foreach path [list {} profiles $mpath $mppath] {
         if { $key eq "DONEMSG" } { set key "COMPLETEMSG" }
         if { $key eq "SHOWBPM" } { set key "BPM" }
         if { $key eq "PLAYERQLEN0" } { set key "PLAYERQLEN" }
-        if { $key eq "MUSICDIR" } { set key DIRMUSIC }
+        if { $key eq "MUSICDIR" } {
+          set key DIRMUSIC
+          set musicdir $value
+        }
 
         if { $key eq "version" } { set value 1 }
+
+        if { $key eq "ORIGINALDIR" ||
+            $key eq "DELETEDIR" ||
+            $key eq "ARCHIVEDIR" } {
+          # check and see if these folders are within the music-dir
+          lappend olddirlist $value
+          continue
+        }
 
         # force these off so that the BDJ3 files will not be affected.
         if { $key eq "WRITETAGS" } { set value NONE }
@@ -242,6 +252,12 @@ foreach path [list {} profiles $mpath $mppath] {
           regsub -all {PALBART} $value {%ALBUMARTIST%} value
           regsub -all {PDANCERATING} $value {%RATING%} value
           regsub -all {PTRACKNUM} $value {PTRACKNUMBER} value
+          if { [regexp {PDANCE.*PDANCE} $key] } {
+            # fix a duplication error that was seen
+            # note that bdj3 would have stripped off the first PDANCE
+            # and matched via the second PDANCE.
+            regsub "{PDANCE/}" $value {} value
+          }
           regsub -all {P([A-Z][A-Z]*0?)} $value {%\1%} value
         }
 
@@ -292,6 +308,32 @@ foreach path [list {} profiles $mpath $mppath] {
         puts $tfh "${value}"
         close $tfh
       }
+
+      if { $musicdir ne {} && [llength $olddirlist] > 0 } {
+        set skiplist [list]
+
+        foreach d $olddirlist {
+          if { [regexp "^${musicdir}" $d] } {
+            try {
+              set flist [glob -directory $d -type f *]
+            } on error {err res} {
+              set flist [list]
+            }
+            if { [llength $flist] > 0 } {
+              regsub "^${musicdir}/" $d {} tdir
+              lappend skiplist $tdir
+            }
+          }
+        }
+
+        if { [llength $skiplist] > 0 } {
+          puts $ofh "DIROLDSKIP"
+          set tmp [join $skiplist ;]
+puts "== skiplist: $tmp"
+          puts $ofh "..${tmp}"
+        }
+      }
+
       close $ifh
       close $ofh
     }

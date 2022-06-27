@@ -35,6 +35,8 @@ TEXT
 # This is the default organisation: 'Dance/Title'.
 # => Select the organisation method you use for your songs in the
 # 'Organisation Path' drop-down.
+# If the organisation path you need is not present, select the 'support'
+# button in the startup window and send a support message.
 # => Close the 'BDJ4 Organisation' window.
 KEY
 ..3

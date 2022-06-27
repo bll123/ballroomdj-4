@@ -59,9 +59,13 @@ if { $ok == 0 } {
 
 # finished with orgopt.txt
 
-
+# ds-* is a known good match
 set fnlist [glob -directory templates ds-*.txt]
-set proflist [glob -directory [file join $datatopdir data] profile*]
+try {
+  set proflist [glob -directory [file join $datatopdir data] profile*]
+} on error {err res} {
+  set proflist {}
+}
 foreach prof $proflist {
   foreach fn $fnlist {
     set nfn [file join $prof [file tail $fn]]

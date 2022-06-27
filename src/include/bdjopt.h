@@ -35,17 +35,20 @@ typedef enum {
  */
 
 typedef enum {
-  OPT_G_AO_PATHFMT,               //   d s
+  OPT_G_AO_PATHFMT,               // u d s
   OPT_G_AUTOORGANIZE,             //   d s
   OPT_G_BPM,                      // u d s
   OPT_G_DEBUGLVL,                 // u d s
   OPT_G_ITUNESSUPPORT,            //   d s
-  OPT_G_LOADDANCEFROMGENRE,       //   d s
+  OPT_G_LOADDANCEFROMGENRE,       // u d s
   OPT_G_PLAYERQLEN,               // u d s
-  OPT_G_REMCONTROLHTML,           //   d s
+  OPT_G_REMCONTROLHTML,           // u d s
   OPT_G_WRITETAGS,                //   d s
-  OPT_M_AUDIOSINK,                //   d s
+  OPT_M_AUDIOSINK,                // u d s
   OPT_M_DIR_MUSIC,                // u d s
+  /* DIR_OLD_SKIP will be used for a time until the conversion from bdj3 to */
+  /* bdj4 is complete.  It will be removed in a later version */
+  OPT_M_DIR_OLD_SKIP,             // u - -
   OPT_M_PLAYER_INTFC,             // u d s
   OPT_M_SHUTDOWNSCRIPT,           // u d s
   OPT_M_STARTUPSCRIPT,            // u d s
@@ -59,7 +62,7 @@ typedef enum {
   OPT_MP_UIFONT,                  // u d s
   OPT_MP_UI_THEME,                // u d s
   OPT_P_DEFAULTVOLUME,            // u d s
-  OPT_P_COMPLETE_MSG,             //   d s
+  OPT_P_COMPLETE_MSG,             // u d s
   OPT_P_FADEINTIME,               // u d s
   OPT_P_FADEOUTTIME,              // u d s
   OPT_P_GAP,                      // u d s

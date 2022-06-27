@@ -66,6 +66,7 @@ int            bdjoptprofiledfcount;
 static datafilekey_t bdjoptmachdfkeys[] = {
   { "AUDIOSINK",      OPT_M_AUDIOSINK,      VALUE_STR, NULL, -1 },
   { "DIRMUSIC",       OPT_M_DIR_MUSIC,      VALUE_STR, NULL, -1 },
+  { "DIROLDSKIP",     OPT_M_DIR_OLD_SKIP,   VALUE_STR, NULL, -1 },
   { "PLAYER",         OPT_M_PLAYER_INTFC,   VALUE_STR, NULL, -1 },
   { "SHUTDOWNSCRIPT", OPT_M_SHUTDOWNSCRIPT, VALUE_STR, NULL, -1 },
   { "STARTUPSCRIPT",  OPT_M_STARTUPSCRIPT,  VALUE_STR, NULL, -1 },
