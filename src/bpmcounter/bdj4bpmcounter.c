@@ -54,6 +54,7 @@ typedef struct {
   procutil_t      *processes [ROUTE_MAX];
   conn_t          *conn;
   UIWidget        window;
+  UIWidget        timesigsel [BPMCOUNT_DISP_MAX];
   UIWidget        dispvalue [BPMCOUNT_DISP_MAX];
   UICallback      callbacks [BPMCOUNT_CB_MAX];
   int             stopwaitcount;
@@ -93,6 +94,7 @@ static void     bpmcounterSigHandler (int sig);
 static bool     bpmcounterProcessSave (void *udata);
 static bool     bpmcounterProcessReset (void *udata);
 static bool     bpmcounterProcessClick (void *udata);
+static void     bpmcounterProcessTimesig (bpmcounter_t *bpmcounter, char *args);
 
 static int gKillReceived = 0;
 
@@ -330,13 +332,15 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
     } else if (i == BPMCOUNT_DISP_BPM) {
       uiCreateRadioButton (&uiwidget, NULL, disptxt [i], 1);
       uiutilsUIWidgetCopy (&grpuiwidget, &uiwidget);
+      uiutilsUIWidgetCopy (&bpmcounter->timesigsel [i], &uiwidget);
     } else {
       uiCreateRadioButton (&uiwidget, &grpuiwidget, disptxt [i], 0);
+      uiutilsUIWidgetCopy (&bpmcounter->timesigsel [i], &uiwidget);
     }
     uiSizeGroupAdd (&sg, &uiwidget);
     uiBoxPackStart (&hbox, &uiwidget);
 
-    uiCreateLabel (&bpmcounter->dispvalue [i], "     ");
+    uiCreateLabel (&bpmcounter->dispvalue [i], "");
     uiLabelAlignEnd (&bpmcounter->dispvalue [i]);
     uiSizeGroupAdd (&sgb, &bpmcounter->dispvalue [i]);
     uiBoxPackStart (&hbox, &bpmcounter->dispvalue [i]);
@@ -469,6 +473,10 @@ bpmcounterProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           gKillReceived = 0;
           break;
         }
+        case MSG_BPM_TIMESIG: {
+          bpmcounterProcessTimesig (bpmcounter, args);
+          break;
+        }
         default: {
           break;
         }
@@ -583,3 +591,25 @@ bpmcounterProcessClick (void *udata)
   return UICB_CONT;
 }
 
+static void
+bpmcounterProcessTimesig (bpmcounter_t *bpmcounter, char *args)
+{
+  char    *p;
+  char    *tokstr;
+  int     bpmsel;
+  int     timesig;
+  int     idx;
+
+  p = strtok_r (args, MSG_ARGS_RS_STR, &tokstr);
+  bpmsel = atoi (p);
+  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
+  timesig = atoi (p);
+
+  if (bpmsel == BPM_BPM) {
+    idx = 0;
+  } else {
+    idx = timesig + 1;
+  }
+  idx += BPMCOUNT_DISP_BPM;
+  uiToggleButtonSetState (&bpmcounter->timesigsel [idx], 1);
+}

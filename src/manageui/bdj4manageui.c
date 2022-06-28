@@ -20,6 +20,7 @@
 #include "bdjvars.h"
 #include "bdjvarsdf.h"
 #include "conn.h"
+#include "dance.h"
 #include "datafile.h"
 #include "dispsel.h"
 #include "fileop.h"
@@ -149,6 +150,8 @@ typedef struct manage {
   dbidx_t         songlistdbidx;
   dbidx_t         seldbidx;
   int             selbypass;
+  int             currpage;
+  int             currwhich;
   /* song list ui major elements */
   uiplayer_t      *slplayer;
   uimusicq_t      *slmusicq;
@@ -248,6 +251,7 @@ static bool     manageNewSelectionSongSel (void *udata, long dbidx);
 static bool     manageSwitchToSongEditor (void *udata);
 static bool     manageSongEditSaveCallback (void *udata);
 static bool     manageStartBPMCounter (void *udata);
+static void     manageSetBPMCounter (manageui_t *manage, song_t *song);
 
 static int gKillReceived = false;
 
@@ -960,7 +964,7 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_HANDSHAKE: {
           connProcessHandshake (manage->conn, routefrom);
           if (routefrom == ROUTE_BPM_COUNTER) {
-fprintf (stderr, "got handshake from bpm counter\n");
+            manageSwitchPage (manage, manage->currpage, manage->currwhich);
           }
           break;
         }
@@ -1512,6 +1516,9 @@ manageSwitchPage (manageui_t *manage, long pagenum, int which)
   bool        mmnb = false;
   uiutilsnbtabid_t  *nbtabid = NULL;
 
+  manage->currpage = pagenum;
+  manage->currwhich = which;
+
   /* need to know which notebook is selected so that the correct id value */
   /* can be retrieved */
   if (which == MANAGE_NB_MAIN) {
@@ -1697,6 +1704,7 @@ manageSetDisplayPerSelection (manageui_t *manage, int id)
 
     song = dbGetByIdx (manage->musicdb, dbidx);
     uisongeditLoadData (manage->mmsongedit, song);
+    manageSetBPMCounter (manage, song);
   }
 }
 
@@ -1744,6 +1752,7 @@ manageNewSelectionSongSel (void *udata, long dbidx)
 
   song = dbGetByIdx (manage->musicdb, dbidx);
   uisongeditLoadData (manage->mmsongedit, song);
+  manageSetBPMCounter (manage, song);
 
   return UICB_CONT;
 }
@@ -1828,7 +1837,6 @@ manageStartBPMCounter (void *udata)
   const char  *targv [2];
   int         targc = 0;
 
-fprintf (stderr, "start bpm counter\n");
   if (! manage->bpmcounterstarted) {
     int     flags;
 
@@ -1843,3 +1851,30 @@ fprintf (stderr, "start bpm counter\n");
   return UICB_CONT;
 }
 
+static void
+manageSetBPMCounter (manageui_t *manage, song_t *song)
+{
+  int         bpmsel;
+  int         timesig = 0;
+  char        tbuff [60];
+
+  if (! manage->bpmcounterstarted) {
+    return;
+  }
+
+  bpmsel = bdjoptGetNum (OPT_G_BPM);
+fprintf (stderr, "a: bpmsel:%d (bpm:%d,mpm:%d)\n", bpmsel, BPM_BPM, BPM_MPM);
+  if (bpmsel == BPM_MPM) {
+    dance_t     *dances;
+    ilistidx_t  danceIdx;
+
+    dances = bdjvarsdfGet (BDJVDF_DANCES);
+    danceIdx = songGetNum (song, TAG_DANCE);
+fprintf (stderr, "b: danceidx:%d\n", danceIdx);
+    timesig = danceGetNum (dances, danceIdx, DANCE_TIMESIG);
+fprintf (stderr, "c: timesig:%d\n", timesig);
+  }
+
+  snprintf (tbuff, sizeof (tbuff), "%d%c%d", bpmsel, MSG_ARGS_RS, timesig);
+  connSendMessage (manage->conn, ROUTE_BPM_COUNTER, MSG_BPM_TIMESIG, tbuff);
+}
