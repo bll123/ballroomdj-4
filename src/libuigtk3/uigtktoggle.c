@@ -27,6 +27,25 @@ uiCreateCheckButton (UIWidget *uiwidget, const char *txt, int value)
 }
 
 void
+uiCreateRadioButton (UIWidget *uiwidget, UIWidget *widgetgrp,
+    const char *txt, int value)
+{
+  GtkWidget   *widget;
+  GtkWidget   *gwidget = NULL;
+
+  if (widgetgrp != NULL) {
+    gwidget = widgetgrp->widget;
+  }
+  widget = gtk_radio_button_new_with_label_from_widget (
+      GTK_RADIO_BUTTON (gwidget), txt);
+  assert (widget != NULL);
+  gtk_widget_set_margin_top (widget, uiBaseMarginSz);
+  gtk_widget_set_margin_start (widget, uiBaseMarginSz);
+  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), value);
+  uiwidget->widget = widget;
+}
+
+void
 uiCreateToggleButton (UIWidget *uiwidget, const char *txt,
     const char *imgname, const char *tooltiptxt, UIWidget *image, int value)
 {

@@ -418,6 +418,7 @@ void  uiImagePersistentFree (UIWidget *uiwidget);
 
 /* uigtktoggle.c */
 void uiCreateCheckButton (UIWidget *uiwidget, const char *txt, int value);
+void uiCreateRadioButton (UIWidget *uiwidget, UIWidget *widgetgrp, const char *txt, int value);
 void uiCreateToggleButton (UIWidget *uiwidget, const char *txt, const char *imgname,
     const char *tooltiptxt, UIWidget *image, int value);
 void uiToggleButtonSetCallback (UIWidget *uiwidget, UICallback *uicb);

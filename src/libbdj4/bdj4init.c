@@ -46,6 +46,7 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
   bool        isbdj4 = false;
 
   static struct option bdj_options [] = {
+    { "bdj4bpmcounter",no_argument,     NULL,   0 },
     { "bdj4configui", no_argument,      NULL,   0 },
     { "bdj4dbupdate", no_argument,      NULL,   0 },
     { "bdj4helperui", no_argument,      NULL,   0 },

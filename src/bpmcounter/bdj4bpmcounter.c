@@ -29,8 +29,21 @@
 enum {
   BPMCOUNT_CB_EXIT,
   BPMCOUNT_CB_SAVE,
+  BPMCOUNT_CB_RESET,
   BPMCOUNT_CB_MAX,
 };
+
+enum {
+  BPMCOUNT_DISP_BEATS,
+  BPMCOUNT_DISP_SECONDS,
+  BPMCOUNT_DISP_BPM,
+  BPMCOUNT_DISP_MPM_24,
+  BPMCOUNT_DISP_MPM_34,
+  BPMCOUNT_DISP_MPM_44,
+  BPMCOUNT_DISP_MAX,
+};
+
+static char *disp [BPMCOUNT_DISP_MAX];
 
 typedef struct {
   progstate_t     *progstate;
@@ -38,6 +51,8 @@ typedef struct {
   procutil_t      *processes [ROUTE_MAX];
   conn_t          *conn;
   UIWidget        window;
+  uitextbox_t     *inst;
+  UIWidget        dispvalue [BPMCOUNT_DISP_MAX];
   UICallback      callbacks [BPMCOUNT_CB_MAX];
   int             stopwaitcount;
   /* options */
@@ -73,6 +88,7 @@ static int      bpmcounterProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t rou
 static bool     bpmcounterCloseCallback (void *udata);
 static void     bpmcounterSigHandler (int sig);
 static bool     bpmcounterProcessSave (void *udata);
+static bool     bpmcounterProcessReset (void *udata);
 
 static int gKillReceived = 0;
 
@@ -87,6 +103,18 @@ main (int argc, char *argv[])
   int             flags;
 
 
+  disp [BPMCOUNT_DISP_BEATS] = _("Beats");
+  disp [BPMCOUNT_DISP_SECONDS] = _("Seconds");
+  disp [BPMCOUNT_DISP_BPM] = _("BPM");
+  disp [BPMCOUNT_DISP_MPM_24] = _("MPM (2/4 time)");
+  disp [BPMCOUNT_DISP_MPM_34] = _("MPM (3/4 time)");
+  disp [BPMCOUNT_DISP_MPM_44] = _("MPM (4/4 or 4/8 time)");
+
+  for (int i = 0; i < BPMCOUNT_DISP_MAX; ++i) {
+    uiutilsUIWidgetInit (&bpmcounter.dispvalue [i]);
+  }
+
+  bpmcounter.inst = NULL;
   bpmcounter.stopwaitcount = 0;
   bpmcounter.progstate = progstateInit ("bpmcounter");
 
@@ -185,6 +213,7 @@ bpmcounterClosingCallback (void *udata, programstate_t programState)
       BPMCOUNTER_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_USEIDX);
   datafileSaveKeyVal ("bpmcounter", fn, bpmcounteruidfkeys, BPMCOUNTER_KEY_MAX, bpmcounter->options);
 
+  uiTextBoxFree (bpmcounter->inst);
   if (bpmcounter->optiondf != NULL) {
     datafileFree (bpmcounter->optiondf);
   } else if (bpmcounter->options != NULL) {
@@ -198,17 +227,21 @@ bpmcounterClosingCallback (void *udata, programstate_t programState)
 static void
 bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
 {
-  UIWidget            uiwidget;
-  UIWidget            vboxmain;
-  UIWidget            vbox;
-  UIWidget            hboxbpm;
-  UIWidget            hbox;
-  UIWidget            sg;
-  char                imgbuff [MAXPATHLEN];
-  int                 x, y;
+  UIWidget    grpuiwidget;
+  UIWidget    uiwidget;
+  UIWidget    vboxmain;
+  UIWidget    vbox;
+  UIWidget    hboxbpm;
+  UIWidget    hbox;
+  UIWidget    sg;
+  UIWidget    sgb;
+  uitextbox_t *tb;
+  char        imgbuff [MAXPATHLEN];
+  int         x, y;
 
   logProcBegin (LOG_PROC, "bpmcounterBuildUI");
   uiCreateSizeGroupHoriz (&sg);
+  uiCreateSizeGroupHoriz (&sgb);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", ".svg", PATHBLD_MP_IMGDIR);
@@ -227,10 +260,11 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   uiBoxPackStart (&vboxmain, &hbox);
 
   /* instructions */
-  uiCreateLabel (&uiwidget,
-      _("Click the mouse in the blue box in time with the beat.  "
-        "When the BPM value is stable, select the Save button."));
-  uiBoxPackStart (&hbox, &uiwidget);
+  tb = uiTextBoxCreate (80);
+  uiTextBoxSetReadonly (tb);
+  uiTextBoxSetHeight (tb, 70);
+  uiBoxPackStartExpand (&hbox, uiTextBoxGetScrolledWindow (tb));
+  bpmcounter->inst = tb;
 
   /* secondary box */
   uiCreateHorizBox (&hboxbpm);
@@ -240,25 +274,26 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   uiCreateVertBox (&vbox);
   uiBoxPackStartExpand (&hboxbpm, &vbox);
 
-  /* beats display */
-  uiCreateHorizBox (&hbox);
-  uiBoxPackStart (&vbox, &hbox);
+  for (int i = 0; i < BPMCOUNT_DISP_MAX; ++i) {
+    uiCreateHorizBox (&hbox);
+    uiBoxPackStart (&vbox, &hbox);
 
-  uiCreateColonLabel (&uiwidget, _("Beats"));
-  uiSizeGroupAdd (&sg, &uiwidget);
-  uiBoxPackStart (&hbox, &uiwidget);
+    if (i < BPMCOUNT_DISP_BPM) {
+      uiCreateColonLabel (&uiwidget, disp [i]);
+    } else if (i == BPMCOUNT_DISP_BPM) {
+      uiCreateRadioButton (&uiwidget, NULL, disp [i], 1);
+      uiutilsUIWidgetCopy (&grpuiwidget, &uiwidget);
+    } else {
+      uiCreateRadioButton (&uiwidget, &grpuiwidget, disp [i], 0);
+    }
+    uiSizeGroupAdd (&sg, &uiwidget);
+    uiBoxPackStart (&hbox, &uiwidget);
 
-  /* seconds display */
-  uiCreateHorizBox (&hbox);
-  uiBoxPackStart (&vbox, &hbox);
-
-  uiCreateColonLabel (&uiwidget, _("Seconds"));
-  uiSizeGroupAdd (&sg, &uiwidget);
-  uiBoxPackStart (&hbox, &uiwidget);
-
-  /* radio buttons / time signatures */
-  uiCreateHorizBox (&hbox);
-  uiBoxPackStart (&vbox, &hbox);
+    uiCreateLabel (&bpmcounter->dispvalue [i], "");
+    uiLabelAlignEnd (&bpmcounter->dispvalue [i]);
+    uiSizeGroupAdd (&sgb, &bpmcounter->dispvalue [i]);
+    uiBoxPackStart (&hbox, &bpmcounter->dispvalue [i]);
+  }
 
   /* right side */
   uiCreateVertBox (&vbox);
@@ -278,18 +313,21 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
       &bpmcounter->callbacks [BPMCOUNT_CB_SAVE],
       _("Save"), NULL);
   uiWidgetSetMarginTop (&uiwidget, uiBaseMarginSz * 2);
-  uiWidgetAlignHorizStart (&uiwidget);
   uiBoxPackEnd (&hbox, &uiwidget);
-  uiButtonAlignLeft (&uiwidget);
+
+  uiutilsUICallbackInit (&bpmcounter->callbacks [BPMCOUNT_CB_RESET],
+      bpmcounterProcessReset, bpmcounter);
+  uiCreateButton (&uiwidget,
+      &bpmcounter->callbacks [BPMCOUNT_CB_RESET],
+      _("Reset"), NULL);
+  uiWidgetSetMarginTop (&uiwidget, uiBaseMarginSz * 2);
+  uiBoxPackEnd (&hbox, &uiwidget);
 
   uiCreateButton (&uiwidget,
       &bpmcounter->callbacks [BPMCOUNT_CB_EXIT],
       _("Close"), NULL);
   uiWidgetSetMarginTop (&uiwidget, uiBaseMarginSz * 2);
-  uiWidgetAlignHorizStart (&uiwidget);
-  uiSizeGroupAdd (&sg, &uiwidget);
   uiBoxPackEnd (&hbox, &uiwidget);
-  uiButtonAlignLeft (&uiwidget);
 
   x = nlistGetNum (bpmcounter->options, BPMCOUNTER_POSITION_X);
   y = nlistGetNum (bpmcounter->options, BPMCOUNTER_POSITION_Y);
@@ -300,6 +338,11 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   osuiSetIcon (imgbuff);
 
   uiWidgetShowAll (&bpmcounter->window);
+
+  uiTextBoxSetValue (bpmcounter->inst,
+      _("Click the mouse in the blue box in time with the beat.  "
+        "When the BPM value is stable, select the Save button."));
+
   logProcEnd (LOG_PROC, "bpmcounterBuildUI", "");
 }
 
@@ -411,7 +454,15 @@ bpmcounterSigHandler (int sig)
 static bool
 bpmcounterProcessSave (void *udata)
 {
-  bpmcounter_t *bpmcounter = udata;
+//  bpmcounter_t *bpmcounter = udata;
+
+  return UICB_CONT;
+}
+
+static bool
+bpmcounterProcessReset (void *udata)
+{
+//  bpmcounter_t *bpmcounter = udata;
 
   return UICB_CONT;
 }
