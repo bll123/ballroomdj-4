@@ -204,7 +204,9 @@ plstateDebugText (playerstate_t plstate)
   return playerstatetxt [plstate];
 }
 
-#define LOG_BACKTRACE_SIZE 30
+enum {
+  LOG_BACKTRACE_SIZE = 30,
+};
 
 void
 logBacktraceHandler (int sig)

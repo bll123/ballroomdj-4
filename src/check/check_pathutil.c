@@ -39,7 +39,9 @@ static ftest_t tests [] = {
   { "/usr/share/themes/Adwaita-dark/gtk-3.0", 30, 7, 5, 2 },
   { "/", 1, 1, 1, 0 },
 };
-#define TCOUNT (sizeof(tests)/sizeof (ftest_t))
+enum {
+  TCOUNT = (sizeof(tests)/sizeof (ftest_t))
+};
 
 START_TEST(pathinfo_chk)
 {

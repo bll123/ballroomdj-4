@@ -86,7 +86,7 @@ enum {
   C_MAX,
 };
 
-#define IncCount(tag) ++dbupdate->counts [tag]
+#define IncCount(tag) (++dbupdate->counts [tag])
 
 typedef struct {
   progstate_t       *progstate;
@@ -122,7 +122,9 @@ typedef struct {
   bool              haveolddirlist : 1;
 } dbupdate_t;
 
-#define FNAMES_SENT_PER_ITER  30
+enum {
+  FNAMES_SENT_PER_ITER = 30,
+};
 
 static int      dbupdateProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
                     bdjmsgmsg_t msg, char *args, void *udata);

@@ -8,7 +8,9 @@
 #include "bdjmsg.h"
 #include "bdjstring.h"
 
-#define LSZ         4
+enum {
+  LSZ = 4,
+};
 #define MSG_RS      '~'
 
 /* for debugging */

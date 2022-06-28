@@ -71,7 +71,9 @@ static datafilekey_t songdfkeys [] = {
   { "VOLUMEADJUSTPERC",     TAG_VOLUMEADJUSTPERC,     VALUE_DOUBLE, NULL, -1 },
   { "WORK_ID",              TAG_WORK_ID,              VALUE_STR, NULL, -1 },
 };
-#define SONG_DFKEY_COUNT (sizeof (songdfkeys) / sizeof (datafilekey_t))
+enum {
+  SONG_DFKEY_COUNT = (sizeof (songdfkeys) / sizeof (datafilekey_t))
+};
 
 static songfavoriteinfo_t songfavoriteinfo [SONG_FAVORITE_MAX] = {
   { SONG_FAVORITE_NONE, "\xE2\x98\x86", "", NULL },

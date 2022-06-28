@@ -91,7 +91,9 @@ typedef struct {
 } marquee_t;
 
 #define INFO_LAB_HEIGHT_ADJUST    0.85
-#define MARQUEE_UNMAX_WAIT_COUNT  3
+enum {
+  MARQUEE_UNMAX_WAIT_COUNT = 3,
+};
 
 static bool     marqueeConnectingCallback (void *udata, programstate_t programState);
 static bool     marqueeHandshakeCallback (void *udata, programstate_t programState);

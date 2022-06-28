@@ -35,7 +35,9 @@ static char *vlcDefaultOptions [] = {
       "--play-and-stop",
       "--novideo",
 };
-#define VLC_DFLT_OPT_SZ (sizeof (vlcDefaultOptions) / sizeof (char *))
+enum {
+  VLC_DFLT_OPT_SZ = (sizeof (vlcDefaultOptions) / sizeof (char *))
+};
 
 static void     pliiWaitUntilPlaying (plidata_t *pliData);
 

@@ -28,8 +28,10 @@
 /* there are all sorts of latency issues making the sliders work nicely */
 /* it will take at least 100ms and at most 200ms for the message to get */
 /* back.  Then there are the latency issues on this end. */
-#define UIPLAYER_LOCK_TIME_WAIT   300
-#define UIPLAYER_LOCK_TIME_SEND   30
+enum {
+  UIPLAYER_LOCK_TIME_WAIT = 300,
+  UIPLAYER_LOCK_TIME_SEND = 30,
+};
 
 static bool  uiplayerInitCallback (void *udata, programstate_t programState);
 static bool  uiplayerClosingCallback (void *udata, programstate_t programState);

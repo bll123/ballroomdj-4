@@ -34,7 +34,9 @@ static datafilekey_t bdjoptglobaldfkeys[] = {
   { "REMCONTROLHTML",     OPT_G_REMCONTROLHTML,     VALUE_STR, NULL, -1 },
   { "WRITETAGS",          OPT_G_WRITETAGS,          VALUE_NUM, bdjoptConvWriteTags, -1 },
 };
-#define BDJOPT_GLOBAL_DFKEY_COUNT (sizeof (bdjoptglobaldfkeys) / sizeof (datafilekey_t))
+enum {
+  BDJOPT_GLOBAL_DFKEY_COUNT = (sizeof (bdjoptglobaldfkeys) / sizeof (datafilekey_t))
+};
 
 datafilekey_t bdjoptprofiledfkeys[] = {
   { "COMPLETEMSG",          OPT_P_COMPLETE_MSG,         VALUE_STR, NULL, -1 },
@@ -61,7 +63,9 @@ datafilekey_t bdjoptprofiledfkeys[] = {
   { "UI_ACCENT_COL",        OPT_P_UI_ACCENT_COL,        VALUE_STR, NULL, -1 },
 };
 int            bdjoptprofiledfcount;
-#define BDJOPT_PROFILE_DFKEY_COUNT (sizeof (bdjoptprofiledfkeys) / sizeof (datafilekey_t))
+enum {
+  BDJOPT_PROFILE_DFKEY_COUNT = (sizeof (bdjoptprofiledfkeys) / sizeof (datafilekey_t))
+};
 
 static datafilekey_t bdjoptmachdfkeys[] = {
   { "AUDIOSINK",      OPT_M_AUDIOSINK,      VALUE_STR, NULL, -1 },
@@ -72,7 +76,9 @@ static datafilekey_t bdjoptmachdfkeys[] = {
   { "STARTUPSCRIPT",  OPT_M_STARTUPSCRIPT,  VALUE_STR, NULL, -1 },
   { "VOLUME",         OPT_M_VOLUME_INTFC,   VALUE_STR, NULL, -1 },
 };
-#define BDJOPT_MACHINE_DFKEY_COUNT (sizeof (bdjoptmachdfkeys) / sizeof (datafilekey_t))
+enum {
+  BDJOPT_MACHINE_DFKEY_COUNT = (sizeof (bdjoptmachdfkeys) / sizeof (datafilekey_t))
+};
 
 /* be sure this is sorted in ascii order */
 static datafilekey_t bdjoptmachprofiledfkeys[] = {
@@ -85,7 +91,9 @@ static datafilekey_t bdjoptmachprofiledfkeys[] = {
   { "UIFONT",               OPT_MP_UIFONT,                VALUE_STR, NULL, -1 },
   { "UI_THEME",             OPT_MP_UI_THEME,              VALUE_STR, NULL, -1 },
 };
-#define BDJOPT_MACH_PROFILE_DFKEY_COUNT (sizeof (bdjoptmachprofiledfkeys) / sizeof (datafilekey_t))
+enum {
+  BDJOPT_MACH_PROFILE_DFKEY_COUNT = (sizeof (bdjoptmachprofiledfkeys) / sizeof (datafilekey_t))
+};
 
 void
 bdjoptInit (void)

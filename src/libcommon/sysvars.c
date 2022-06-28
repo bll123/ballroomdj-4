@@ -104,7 +104,9 @@ static sysvarsdesc_t sysvarsldesc [SVL_MAX] = {
   [SVL_NUM_PROC] = { "Number-of-Processors" },
 };
 
-#define SV_MAX_SZ   512
+enum {
+  SV_MAX_SZ = 512,
+};
 
 static char       sysvars [SV_MAX][SV_MAX_SZ];
 static ssize_t    lsysvars [SVL_MAX];
@@ -117,7 +119,9 @@ static char *cacertFiles [] = {
   "templates/curl-ca-bundle.crt",
   "plocal/etc/ssl/cert.pem",
 };
-#define CACERT_FILE_COUNT (sizeof (cacertFiles) / sizeof (char *))
+enum {
+  CACERT_FILE_COUNT = (sizeof (cacertFiles) / sizeof (char *))
+};
 
 static void enable_core_dump (void);
 static void checkForFile (char *path, int idx, ...);

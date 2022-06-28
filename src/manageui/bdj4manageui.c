@@ -191,7 +191,9 @@ static datafilekey_t manageuidfkeys [] = {
   { "PLUI_SIZE_Y",      PLUI_SIZE_Y,                VALUE_NUM, NULL, -1 },
   { "SORT_BY",          SONGSEL_SORT_BY,            VALUE_STR, NULL, -1 },
 };
-#define MANAGEUI_DFKEY_COUNT (sizeof (manageuidfkeys) / sizeof (datafilekey_t))
+enum {
+  MANAGEUI_DFKEY_COUNT = (sizeof (manageuidfkeys) / sizeof (datafilekey_t))
+};
 
 static bool     manageConnectingCallback (void *udata, programstate_t programState);
 static bool     manageHandshakeCallback (void *udata, programstate_t programState);

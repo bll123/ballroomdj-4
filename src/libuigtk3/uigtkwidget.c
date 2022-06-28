@@ -83,7 +83,6 @@ uiWidgetSetMarginEnd (UIWidget *uiwidget, int margin)
   gtk_widget_set_margin_end (uiwidget->widget, margin);
 }
 
-
 inline void
 uiWidgetAlignHorizFill (UIWidget *uiwidget)
 {
@@ -115,6 +114,16 @@ uiWidgetAlignHorizEnd (UIWidget *uiwidget)
 }
 
 inline void
+uiWidgetAlignHorizCenter (UIWidget *uiwidget)
+{
+  if (uiwidget->widget == NULL) {
+    return;
+  }
+
+  gtk_widget_set_halign (uiwidget->widget, GTK_ALIGN_CENTER);
+}
+
+inline void
 uiWidgetAlignVertFill (UIWidget *uiwidget)
 {
   if (uiwidget->widget == NULL) {
@@ -132,6 +141,16 @@ uiWidgetAlignVertStart (UIWidget *uiwidget)
   }
 
   gtk_widget_set_valign (uiwidget->widget, GTK_ALIGN_START);
+}
+
+inline void
+uiWidgetAlignVertCenter (UIWidget *uiwidget)
+{
+  if (uiwidget->widget == NULL) {
+    return;
+  }
+
+  gtk_widget_set_valign (uiwidget->widget, GTK_ALIGN_CENTER);
 }
 
 inline void

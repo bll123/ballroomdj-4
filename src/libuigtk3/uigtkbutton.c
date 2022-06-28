@@ -123,6 +123,28 @@ uiButtonAlignLeft (UIWidget *uiwidget)
   }
 }
 
+void
+uiButtonSetReliefNone (UIWidget *uiwidget)
+{
+  gtk_button_set_relief (GTK_BUTTON (uiwidget->widget), GTK_RELIEF_NONE);
+}
+
+void
+uiButtonSetFlat (UIWidget *uiwidget)
+{
+  GtkWidget *aw;
+
+  uiSetCss (uiwidget->widget,
+      "button { "
+      "outline-width: 0; "
+      "padding: 0; "
+      "border-color: @theme_bg_color; "
+      "background-color: @theme_bg_color; "
+      "}");
+  aw = gtk_bin_get_child (GTK_BIN (uiwidget->widget));
+  uiSetCss (aw, "widget { outline-width: 0; }");
+}
+
 inline static void
 uiButtonSignalHandler (GtkButton *b, gpointer udata)
 {
@@ -136,3 +158,4 @@ uiButtonSetText (UIWidget *uiwidget, const char *txt)
 {
   gtk_button_set_label (GTK_BUTTON (uiwidget->widget), txt);
 }
+

@@ -2,8 +2,10 @@
 
 #if _lib_libvlc_new
 
-#define SILENCE_LOG       0 /* vlc */
-#define STATE_TO_VALUE    0 /* vlc */
+enum {
+  SILENCE_LOG = 0,
+  STATE_TO_VALUE = 0,
+};
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -48,7 +50,9 @@ static const stateMap_t stateMap[] = {
   { libvlc_Ended,           "ended" },
   { libvlc_Error,           "error" }
 };
-#define stateMapMax (sizeof(stateMap)/sizeof(stateMap_t))
+enum {
+  stateMapMax = (sizeof(stateMap)/sizeof(stateMap_t))
+};
 
 static const char *   stateToStr (libvlc_state_t state);
 #if STATE_TO_VALUE

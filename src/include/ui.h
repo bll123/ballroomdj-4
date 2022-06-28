@@ -141,6 +141,8 @@ void uiButtonSetImage (UIWidget *uiwidget, const char *imagenm, const char *tool
 void uiButtonSetImageIcon (UIWidget *uiwidget, const char *nm);
 void uiButtonAlignLeft (UIWidget *widget);
 void uiButtonSetText (UIWidget *uiwidget, const char *txt);
+void uiButtonSetReliefNone (UIWidget *uiwidget);
+void uiButtonSetFlat (UIWidget *uiwidget);
 
 /* uigtkentry.c */
 typedef struct uientry uientry_t;
@@ -392,8 +394,10 @@ void  uiWidgetSetMarginEnd (UIWidget *uiwidget, int margin);
 void  uiWidgetAlignHorizFill (UIWidget *uiwidget);
 void  uiWidgetAlignHorizStart (UIWidget *uiwidget);
 void  uiWidgetAlignHorizEnd (UIWidget *uiwidget);
+void  uiWidgetAlignHorizCenter (UIWidget *uiwidget);
 void  uiWidgetAlignVertFill (UIWidget *uiwidget);
 void  uiWidgetAlignVertStart (UIWidget *uiwidget);
+void  uiWidgetAlignVertCenter (UIWidget *uiwidget);
 void  uiWidgetDisableFocus (UIWidget *uiwidget);
 void  uiWidgetHide (UIWidget *uiwidget);
 void  uiWidgetShow (UIWidget *uiwidget);

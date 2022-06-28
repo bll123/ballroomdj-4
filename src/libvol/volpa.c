@@ -28,9 +28,12 @@
 
 static void getSinkCallback (pa_context *context, const pa_sink_info *i, int eol, void *userdata);
 
-#define STATE_OK    0
-#define STATE_WAIT  1
-#define STATE_FAIL  -1
+enum {
+  STATE_OK = 0,
+  STATE_WAIT = 1,
+  STATE_FAIL = -1,
+};
+
 typedef struct {
   pa_threaded_mainloop  *pamainloop;
   pa_context            *pacontext;

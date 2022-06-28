@@ -31,7 +31,9 @@
 #include "pathutil.h"
 #include "sysvars.h"
 
-#define BDJ4_LAUNCHER_MAX_ARGS 30
+enum {
+  BDJ4_LAUNCHER_MAX_ARGS = 30,
+};
 
 int
 main (int argc, char * argv[])

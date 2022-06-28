@@ -76,7 +76,9 @@ typedef struct {
   bool            isoptional;
 } orginfo_t;
 
-#define ORG_FIRST_GRP 1
+enum {
+  ORG_FIRST_GRP = 1,
+};
 
 static void   orgutilClean (char *target, const char *from, size_t sz);
 

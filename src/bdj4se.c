@@ -12,7 +12,10 @@
 
 #include "osutils.h"
 
-#define BUFFSZ  (10 * 1024 * 1024)
+enum {
+  BUFFSZ = (10 * 1024 * 1024),
+};
+
 #define TAGSTRPFX  "!~~"
 #define TAGSTR     "BDJ4"
 #define TAGSTRSFX  "~~!"

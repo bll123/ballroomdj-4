@@ -55,7 +55,9 @@ typedef enum {
   START_STATE_SUPPORT_SEND_FILE,
 } startstate_t;
 
-#define MAX_WEB_RESP_SZ   2048
+enum {
+  MAX_WEB_RESP_SZ = 2048,
+};
 
 enum {
   START_CALLBACK_PLAYER,
@@ -141,8 +143,10 @@ static datafilekey_t starteruidfkeys [STARTERUI_KEY_MAX] = {
   { "STARTERUI_SIZE_Y",    STARTERUI_SIZE_Y,        VALUE_NUM, NULL, -1 },
 };
 
-#define SUPPORT_BUFF_SZ         (10*1024*1024)
-#define LOOP_DELAY              5
+enum {
+  SUPPORT_BUFF_SZ = (10*1024*1024),
+  LOOP_DELAY = 5,
+};
 
 static bool     starterInitDataCallback (void *udata, programstate_t programState);
 static bool     starterStoppingCallback (void *udata, programstate_t programState);
