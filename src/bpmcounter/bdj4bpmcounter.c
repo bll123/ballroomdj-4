@@ -79,6 +79,8 @@ static datafilekey_t bpmcounteruidfkeys [BPMCOUNTER_KEY_MAX] = {
   { "BPMCOUNTER_SIZE_Y",    BPMCOUNTER_SIZE_Y,        VALUE_NUM, NULL, -1 },
 };
 
+static bool     bpmcounterConnectingCallback (void *udata, programstate_t programState);
+static bool     bpmcounterHandshakeCallback (void *udata, programstate_t programState);
 static bool     bpmcounterStoppingCallback (void *udata, programstate_t programState);
 static bool     bpmcounterStopWaitCallback (void *udata, programstate_t programState);
 static bool     bpmcounterClosingCallback (void *udata, programstate_t programState);
@@ -117,6 +119,10 @@ main (int argc, char *argv[])
   bpmcounter.stopwaitcount = 0;
   bpmcounter.progstate = progstateInit ("bpmcounter");
 
+  progstateSetCallback (bpmcounter.progstate, STATE_CONNECTING,
+      bpmcounterConnectingCallback, &bpmcounter);
+  progstateSetCallback (bpmcounter.progstate, STATE_WAIT_HANDSHAKE,
+      bpmcounterHandshakeCallback, &bpmcounter);
   progstateSetCallback (bpmcounter.progstate, STATE_STOPPING,
       bpmcounterStoppingCallback, &bpmcounter);
   progstateSetCallback (bpmcounter.progstate, STATE_STOP_WAIT,
@@ -165,6 +171,44 @@ main (int argc, char *argv[])
 }
 
 /* internal routines */
+
+static bool
+bpmcounterConnectingCallback (void *udata, programstate_t programState)
+{
+  bpmcounter_t  *bpmcounter = udata;
+  bool          rc = STATE_NOT_FINISH;
+
+  connProcessUnconnected (bpmcounter->conn);
+
+  if (! connIsConnected (bpmcounter->conn, ROUTE_MANAGEUI)) {
+    connConnect (bpmcounter->conn, ROUTE_MANAGEUI);
+  }
+
+  if (connIsConnected (bpmcounter->conn, ROUTE_MANAGEUI)) {
+    rc = STATE_FINISHED;
+  }
+
+  return rc;
+}
+
+static bool
+bpmcounterHandshakeCallback (void *udata, programstate_t programState)
+{
+  bpmcounter_t  *bpmcounter = udata;
+  bool          rc = STATE_NOT_FINISH;
+
+  connProcessUnconnected (bpmcounter->conn);
+
+  if (! connIsConnected (bpmcounter->conn, ROUTE_MANAGEUI)) {
+    connConnect (bpmcounter->conn, ROUTE_MANAGEUI);
+  }
+
+  if (connHaveHandshake (bpmcounter->conn, ROUTE_MANAGEUI)) {
+    rc = STATE_FINISHED;
+  }
+
+  return rc;
+}
 
 static bool
 bpmcounterStoppingCallback (void *udata, programstate_t programState)
@@ -246,7 +290,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
       bpmcounterCloseCallback, bpmcounter);
   uiCreateMainWindow (&bpmcounter->window,
       &bpmcounter->callbacks [BPMCOUNT_CB_EXIT],
-      BDJ4_LONG_NAME, imgbuff);
+      _("BPM Counter"), imgbuff);
 
   uiCreateVertBox (&vboxmain);
   uiWidgetSetAllMargins (&vboxmain, uiBaseMarginSz * 2);

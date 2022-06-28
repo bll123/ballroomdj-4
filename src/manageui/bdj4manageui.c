@@ -41,6 +41,7 @@
 #include "sock.h"
 #include "sockh.h"
 #include "sysvars.h"
+#include "tagdef.h"
 #include "tmutil.h"
 #include "ui.h"
 #include "uimusicq.h"
@@ -83,6 +84,7 @@ enum {
   MANAGE_MENU_CB_START_EDITALL,
   MANAGE_MENU_CB_APPLY_EDITALL,
   MANAGE_MENU_CB_CANCEL_EDITALL,
+  MANAGE_MENU_CB_BPM,
   MANAGE_CB_EZ_SELECT,
   MANAGE_CB_NEW_SEL_SONGSEL,
   MANAGE_CB_NEW_SEL_SONGLIST,
@@ -120,6 +122,7 @@ typedef struct manage {
   progstate_t     *progstate;
   char            *locknm;
   conn_t          *conn;
+  procutil_t      *processes [ROUTE_MAX];
   UICallback      callbacks [MANAGE_CB_MAX];
   musicdb_t       *musicdb;
   musicqidx_t     musicqPlayIdx;
@@ -176,6 +179,7 @@ typedef struct manage {
   bool            slbackupcreated : 1;
   bool            selusesonglist : 1;
   bool            inload : 1;
+  bool            bpmcounterstarted : 1;
 } manageui_t;
 
 /* re-use the plui enums so that the songsel filter enums can also be used */
@@ -243,6 +247,7 @@ static bool     manageNewSelectionSonglist (void *udata, long dbidx);
 static bool     manageNewSelectionSongSel (void *udata, long dbidx);
 static bool     manageSwitchToSongEditor (void *udata);
 static bool     manageSongEditSaveCallback (void *udata);
+static bool     manageStartBPMCounter (void *udata);
 
 static int gKillReceived = false;
 
@@ -298,6 +303,9 @@ main (int argc, char *argv[])
   manage.manageseq = NULL;   /* allocated within buildui */
   manage.managepl = NULL;   /* allocated within buildui */
   manage.managedb = NULL;   /* allocated within buildui */
+  manage.bpmcounterstarted = false;
+
+  procutilInitProcesses (manage.processes);
 
   osSetStandardSignals (manageSigHandler);
 
@@ -367,6 +375,12 @@ manageStoppingCallback (void *udata, programstate_t programState)
   logProcBegin (LOG_PROC, "manageStoppingCallback");
   connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_STOP_MAIN, NULL);
 
+  if (manage->bpmcounterstarted > 0) {
+    procutilStopProcess (manage->processes [ROUTE_BPM_COUNTER],
+        manage->conn, ROUTE_BPM_COUNTER, false);
+    manage->bpmcounterstarted = false;
+  }
+
   manageSonglistSave (manage);
   manageSequenceSave (manage->manageseq);
   managePlaylistSave (manage->managepl);
@@ -379,6 +393,9 @@ manageStoppingCallback (void *udata, programstate_t programState)
   nlistSetNum (manage->options, PLUI_POSITION_Y, y);
 
   connDisconnect (manage->conn, ROUTE_STARTERUI);
+
+  procutilStopAllProcess (manage->processes, manage->conn, false);
+
   logProcEnd (LOG_PROC, "manageStoppingCallback", "");
   return STATE_FINISHED;
 }
@@ -403,6 +420,9 @@ manageClosingCallback (void *udata, programstate_t programState)
 
   manageDbClose (manage->managedb);
   uiCloseWindow (&manage->window);
+
+  procutilStopAllProcess (manage->processes, manage->conn, true);
+  procutilFreeAll (manage->processes);
 
   pathbldMakePath (fn, sizeof (fn),
       MANAGEUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_USEIDX);
@@ -939,6 +959,9 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
       switch (msg) {
         case MSG_HANDSHAKE: {
           connProcessHandshake (manage->conn, routefrom);
+          if (routefrom == ROUTE_BPM_COUNTER) {
+fprintf (stderr, "got handshake from bpm counter\n");
+          }
           break;
         }
         case MSG_SOCKET_CLOSE: {
@@ -1069,6 +1092,13 @@ manageSongEditMenu (manageui_t *manage)
     /* CONTEXT: menu selection: song editor: cancel edit all */
     uiMenuCreateItem (&menu, &menuitem, _("Cancel Edit All"), NULL);
     uiWidgetDisable (&menuitem);
+
+    uiMenuAddMainItem (&manage->menubar, &menuitem,
+        &manage->songeditmenu, tagdefs [TAG_BPM].displayname);
+    manageSetMenuCallback (manage, MANAGE_MENU_CB_BPM,
+        manageStartBPMCounter);
+    uiMenuSetMainCallback (&menuitem,
+        &manage->callbacks [MANAGE_MENU_CB_BPM]);
 
     manage->songeditmenu.initialized = true;
   }
@@ -1790,3 +1820,26 @@ manageSongEditSaveCallback (void *udata)
 
   return UICB_CONT;
 }
+
+static bool
+manageStartBPMCounter (void *udata)
+{
+  manageui_t  *manage = udata;
+  const char  *targv [2];
+  int         targc = 0;
+
+fprintf (stderr, "start bpm counter\n");
+  if (! manage->bpmcounterstarted) {
+    int     flags;
+
+    flags = PROCUTIL_DETACH;
+    targv [targc++] = NULL;
+
+    manage->processes [ROUTE_MAIN] = procutilStartProcess (
+        ROUTE_MAIN, "bdj4bpmcounter", flags, targv);
+    manage->bpmcounterstarted = true;
+  }
+
+  return UICB_CONT;
+}
+

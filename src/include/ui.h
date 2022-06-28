@@ -32,12 +32,14 @@ typedef struct {
 
 /* these are defined based on the gtk values */
 /* would change for a different gui package */
-#define UICB_STOP true
-#define UICB_CONT false
-#define UICB_DISPLAYED true
-#define UICB_NO_DISP false
-#define UICB_NO_CONV false
-#define UICB_CONVERTED true
+enum {
+  UICB_STOP = true,
+  UICB_CONT = false,
+  UICB_DISPLAYED = true,
+  UICB_NO_DISP = false,
+  UICB_NO_CONV = false,
+  UICB_CONVERTED = true,
+};
 
 typedef struct {
   union {
@@ -108,6 +110,7 @@ void uiMenuCreateCheckbox (UIWidget *uimenu, UIWidget *uimenuitem,
 void uiMenuInit (uimenu_t *menu);
 void uiMenuAddMainItem (UIWidget *uimenubar, UIWidget *uimenuitem,
     uimenu_t *menu, const char *txt);
+void uiMenuSetMainCallback (UIWidget *uimenuitem, UICallback *uicb);
 void uiMenuDisplay (uimenu_t *menu);
 void uiMenuClear (uimenu_t *menu);
 

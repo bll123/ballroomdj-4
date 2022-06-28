@@ -131,6 +131,7 @@ typedef enum {
   MSG_DB_FILE_CHK,          // args: filename to check
   MSG_DB_ALL_FILES_SENT,    // all filenames sent to dbtag
   /* to/from bpm-counter */
+  MSG_BPM_TIMESIG,          // args: bpm/mpm time-signature(mpm)
   MSG_BPM_SET,              // args: bpm
 
   /* when a new message is added, update: */
