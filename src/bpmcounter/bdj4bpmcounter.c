@@ -33,6 +33,7 @@ enum {
   BPMCOUNT_CB_SAVE,
   BPMCOUNT_CB_RESET,
   BPMCOUNT_CB_CLICK,
+  BPMCOUNT_CB_RADIO,
   BPMCOUNT_CB_MAX,
 };
 
@@ -97,6 +98,7 @@ static bool     bpmcounterProcessSave (void *udata);
 static bool     bpmcounterProcessReset (void *udata);
 static bool     bpmcounterProcessClick (void *udata);
 static void     bpmcounterProcessTimesig (bpmcounter_t *bpmcounter, char *args);
+static bool     bpmcounterRadioChanged (void *udata);
 
 static int gKillReceived = 0;
 
@@ -129,6 +131,11 @@ main (int argc, char *argv[])
   bpmcounter.timesigidx = BPMCOUNT_DISP_BPM;
   for (int i = 0; i < BPMCOUNT_DISP_MAX; ++i) {
     bpmcounter.values [i] = 0;
+    uiutilsUIWidgetInit (&bpmcounter.timesigsel [i]);
+    uiutilsUIWidgetInit (&bpmcounter.dispvalue [i]);
+  }
+  for (int i = 0; i < BPMCOUNT_CB_MAX; ++i) {
+    uiutilsUICallbackInit (&bpmcounter.callbacks [i], NULL, NULL);
   }
 
   bpmcounter.stopwaitcount = 0;
@@ -296,6 +303,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   int         x, y;
 
   logProcBegin (LOG_PROC, "bpmcounterBuildUI");
+  uiutilsUIWidgetInit (&grpuiwidget);
   uiCreateSizeGroupHoriz (&sg);
   uiCreateSizeGroupHoriz (&sgb);
 
@@ -339,6 +347,9 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   uiCreateLabel (&uiwidget, "");
   uiBoxPackStart (&vbox, &uiwidget);
 
+  uiutilsUICallbackInit (&bpmcounter->callbacks [BPMCOUNT_CB_RADIO],
+      bpmcounterRadioChanged, bpmcounter);
+
   for (int i = 0; i < BPMCOUNT_DISP_MAX; ++i) {
     uiCreateHorizBox (&hbox);
     uiBoxPackStart (&vbox, &hbox);
@@ -348,10 +359,13 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
     } else if (i == BPMCOUNT_DISP_BPM) {
       uiCreateRadioButton (&uiwidget, NULL, disptxt [i], 1);
       uiutilsUIWidgetCopy (&grpuiwidget, &uiwidget);
-      uiutilsUIWidgetCopy (&bpmcounter->timesigsel [i], &uiwidget);
     } else {
       uiCreateRadioButton (&uiwidget, &grpuiwidget, disptxt [i], 0);
-      uiutilsUIWidgetCopy (&bpmcounter->timesigsel [i], &uiwidget);
+    }
+    uiutilsUIWidgetCopy (&bpmcounter->timesigsel [i], &uiwidget);
+    if (i >= BPMCOUNT_DISP_BPM) {
+      uiToggleButtonSetCallback (&bpmcounter->timesigsel [i],
+          &bpmcounter->callbacks [BPMCOUNT_CB_RADIO]);
     }
     uiSizeGroupAdd (&sg, &uiwidget);
     uiBoxPackStart (&hbox, &uiwidget);
@@ -647,4 +661,19 @@ bpmcounterProcessTimesig (bpmcounter_t *bpmcounter, char *args)
   idx += BPMCOUNT_DISP_BPM;
   bpmcounter->timesigidx = idx;
   uiToggleButtonSetState (&bpmcounter->timesigsel [idx], 1);
+}
+
+static bool
+bpmcounterRadioChanged (void *udata)
+{
+  bpmcounter_t  *bpmcounter = udata;
+
+  /* gtk radio buttons are not very friendly */
+  for (int i = BPMCOUNT_DISP_BPM; i < BPMCOUNT_DISP_MAX; ++i) {
+    if (uiToggleButtonIsActive (&bpmcounter->timesigsel [i])) {
+      bpmcounter->timesigidx = i;
+      break;
+    }
+  }
+  return UICB_CONT;
 }
