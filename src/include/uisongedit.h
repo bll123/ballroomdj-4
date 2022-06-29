@@ -24,6 +24,8 @@ uisongedit_t * uisongeditInit (conn_t *conn,
     musicdb_t *musicdb, dispsel_t *dispsel, nlist_t *opts);
 void  uisongeditFree (uisongedit_t *uisongedit);
 void  uisongeditMainLoop (uisongedit_t *uisongedit);
+int   uisongeditProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
+    bdjmsgmsg_t msg, char *args, void *udata);
 void  uisongeditNewSelection (uisongedit_t *uisongedit, dbidx_t dbidx);
 void  uisongeditSetSaveCallback (uisongedit_t *uisongedit, UICallback *uicb);
 
@@ -33,6 +35,7 @@ void  uisongeditUIFree (uisongedit_t *uisongedit);
 UIWidget  * uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit, UIWidget *parentwin);
 void  uisongeditLoadData (uisongedit_t *uisongedit, song_t *song);
 void  uisongeditUIMainLoop (uisongedit_t *uisongedit);
+void  uisongeditSetBPMValue (uisongedit_t *uisongedit, const char *args);
 
 #endif /* INC_UISONGEDIT_H */
 

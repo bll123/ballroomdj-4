@@ -132,6 +132,8 @@ typedef struct manage {
   int             stopwaitcount;
   UIWidget        statusMsg;
   int             dbchangecount;
+  int             currbpmsel;
+  int             currtimesig;
   /* notebook tab handling */
   int               mainlasttab;
   int               sllasttab;
@@ -150,8 +152,6 @@ typedef struct manage {
   dbidx_t         songlistdbidx;
   dbidx_t         seldbidx;
   int             selbypass;
-  int             currpage;
-  int             currwhich;
   /* song list ui major elements */
   uiplayer_t      *slplayer;
   uimusicq_t      *slmusicq;
@@ -252,6 +252,7 @@ static bool     manageSwitchToSongEditor (void *udata);
 static bool     manageSongEditSaveCallback (void *udata);
 static bool     manageStartBPMCounter (void *udata);
 static void     manageSetBPMCounter (manageui_t *manage, song_t *song);
+static void     manageSendBPMCounter (manageui_t *manage);
 
 static int gKillReceived = false;
 
@@ -308,6 +309,8 @@ main (int argc, char *argv[])
   manage.managepl = NULL;   /* allocated within buildui */
   manage.managedb = NULL;   /* allocated within buildui */
   manage.bpmcounterstarted = false;
+  manage.currbpmsel = BPM_BPM;
+  manage.currtimesig = DANCE_TIMESIG_44;
 
   procutilInitProcesses (manage.processes);
 
@@ -851,6 +854,13 @@ manageMainLoop (void *tmanage)
 
   connProcessUnconnected (manage->conn);
 
+  if (connHaveHandshake (manage->conn, ROUTE_BPM_COUNTER)) {
+    if (! manage->bpmcounterstarted) {
+      manage->bpmcounterstarted = true;
+      manageSendBPMCounter (manage);
+    }
+  }
+
   uiplayerMainLoop (manage->slplayer);
   uiplayerMainLoop (manage->mmplayer);
   uimusicqMainLoop (manage->slmusicq);
@@ -963,13 +973,13 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
       switch (msg) {
         case MSG_HANDSHAKE: {
           connProcessHandshake (manage->conn, routefrom);
-          if (routefrom == ROUTE_BPM_COUNTER) {
-            manageSwitchPage (manage, manage->currpage, manage->currwhich);
-          }
           break;
         }
         case MSG_SOCKET_CLOSE: {
           connDisconnect (manage->conn, routefrom);
+          if (routefrom == ROUTE_BPM_COUNTER) {
+            manage->bpmcounterstarted = false;
+          }
           break;
         }
         case MSG_EXIT_REQUEST: {
@@ -1031,6 +1041,7 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
   uiplayerProcessMsg (routefrom, route, msg, args, manage->mmplayer);
   uisongselProcessMsg (routefrom, route, msg, args, manage->mmsongsel);
   uimusicqProcessMsg (routefrom, route, msg, args, manage->mmmusicq);
+  uisongeditProcessMsg (routefrom, route, msg, args, manage->mmsongedit);
 
   /* reset the bypass flag after a music queue update has been received */
   if (msg == MSG_MUSIC_QUEUE_DATA) {
@@ -1085,6 +1096,14 @@ manageSongEditMenu (manageui_t *manage)
 
     uiCreateSubMenu (&menuitem, &menu);
 
+    /* I would prefer to have BPM as a stand-alone menu item, but */
+    /* gtk does not appear to have a way to create a top-level */
+    /* menu item in the menu bar. */
+    uiutilsUICallbackInit (&manage->callbacks [MANAGE_MENU_CB_BPM],
+        manageStartBPMCounter, manage);
+    uiMenuCreateItem (&menu, &menuitem, tagdefs [TAG_BPM].displayname,
+        &manage->callbacks [MANAGE_MENU_CB_BPM]);
+
     /* CONTEXT: menu selection: song editor: edit all */
     uiMenuCreateItem (&menu, &menuitem, _("Edit All"), NULL);
     uiWidgetDisable (&menuitem);
@@ -1096,13 +1115,6 @@ manageSongEditMenu (manageui_t *manage)
     /* CONTEXT: menu selection: song editor: cancel edit all */
     uiMenuCreateItem (&menu, &menuitem, _("Cancel Edit All"), NULL);
     uiWidgetDisable (&menuitem);
-
-    uiMenuAddMainItem (&manage->menubar, &menuitem,
-        &manage->songeditmenu, tagdefs [TAG_BPM].displayname);
-    manageSetMenuCallback (manage, MANAGE_MENU_CB_BPM,
-        manageStartBPMCounter);
-    uiMenuSetMainCallback (&menuitem,
-        &manage->callbacks [MANAGE_MENU_CB_BPM]);
 
     manage->songeditmenu.initialized = true;
   }
@@ -1516,9 +1528,6 @@ manageSwitchPage (manageui_t *manage, long pagenum, int which)
   bool        mmnb = false;
   uiutilsnbtabid_t  *nbtabid = NULL;
 
-  manage->currpage = pagenum;
-  manage->currwhich = which;
-
   /* need to know which notebook is selected so that the correct id value */
   /* can be retrieved */
   if (which == MANAGE_NB_MAIN) {
@@ -1845,7 +1854,6 @@ manageStartBPMCounter (void *udata)
 
     manage->processes [ROUTE_MAIN] = procutilStartProcess (
         ROUTE_MAIN, "bdj4bpmcounter", flags, targv);
-    manage->bpmcounterstarted = true;
   }
 
   return UICB_CONT;
@@ -1856,11 +1864,6 @@ manageSetBPMCounter (manageui_t *manage, song_t *song)
 {
   int         bpmsel;
   int         timesig = 0;
-  char        tbuff [60];
-
-  if (! manage->bpmcounterstarted) {
-    return;
-  }
 
   bpmsel = bdjoptGetNum (OPT_G_BPM);
   if (bpmsel == BPM_MPM) {
@@ -1881,6 +1884,22 @@ manageSetBPMCounter (manageui_t *manage, song_t *song)
     }
   }
 
-  snprintf (tbuff, sizeof (tbuff), "%d%c%d", bpmsel, MSG_ARGS_RS, timesig);
+
+  manage->currbpmsel = bpmsel;
+  manage->currtimesig = timesig;
+  manageSendBPMCounter (manage);
+}
+
+static void
+manageSendBPMCounter (manageui_t *manage)
+{
+  char        tbuff [60];
+
+  if (! manage->bpmcounterstarted) {
+    return;
+  }
+
+  snprintf (tbuff, sizeof (tbuff), "%d%c%d",
+      manage->currbpmsel, MSG_ARGS_RS, manage->currtimesig);
   connSendMessage (manage->conn, ROUTE_BPM_COUNTER, MSG_BPM_TIMESIG, tbuff);
 }

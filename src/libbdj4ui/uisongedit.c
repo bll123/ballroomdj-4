@@ -60,6 +60,42 @@ uisongeditMainLoop (uisongedit_t *uisongedit)
   return;
 }
 
+int
+uisongeditProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
+    bdjmsgmsg_t msg, char *args, void *udata)
+{
+  uisongedit_t  *uisongedit = udata;
+  bool          dbgdisp = false;
+
+  switch (route) {
+    case ROUTE_NONE:
+    case ROUTE_MANAGEUI: {
+      switch (msg) {
+        case MSG_BPM_SET: {
+          uisongeditSetBPMValue (uisongedit, args);
+          dbgdisp = true;
+          break;
+        }
+        default: {
+          break;
+        }
+      }
+      break;
+    }
+    default: {
+      break;
+    }
+  }
+
+  if (dbgdisp) {
+    logMsg (LOG_DBG, LOG_MSGS, "uisongedit: rcvd: from:%d/%s route:%d/%s msg:%d/%s args:%s",
+        routefrom, msgRouteDebugText (routefrom),
+        route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
+  }
+
+  return 0;
+}
+
 void
 uisongeditNewSelection (uisongedit_t *uisongedit, dbidx_t dbidx)
 {
@@ -78,3 +114,4 @@ uisongeditSetSaveCallback (uisongedit_t *uisongedit, UICallback *uicb)
 
   uisongedit->savecb = uicb;
 }
+

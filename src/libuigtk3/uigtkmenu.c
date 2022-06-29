@@ -93,17 +93,6 @@ uiMenuAddMainItem (UIWidget *uimenubar, UIWidget *uimenuitem,
 }
 
 void
-uiMenuSetMainCallback (UIWidget *uimenuitem, UICallback *uicb)
-{
-  if (uicb != NULL) {
-    /* the activate handler has the same signature, it can be re-used */
-    g_signal_connect (uimenuitem->widget, "select",
-        G_CALLBACK (uiMenuActivateHandler), uicb);
-  }
-}
-
-
-void
 uiMenuDisplay (uimenu_t *menu)
 {
   for (int i = 0; i < menu->menucount; ++i) {
@@ -123,6 +112,7 @@ static void
 uiMenuActivateHandler (GtkMenuItem *mi, gpointer udata)
 {
   UICallback    *uicb = udata;
+
   uiutilsCallbackHandler (uicb);
 }
 

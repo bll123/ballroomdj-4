@@ -88,6 +88,7 @@ typedef struct {
   uisongedititem_t    *items;
   int                 changed;
   mstime_t            mainlooptimer;
+  int                 bpmidx;
 } uisongeditgtk_t;
 
 static void uisongeditAddDisplay (uisongedit_t *songedit, UIWidget *col, UIWidget *sg, int dispsel);
@@ -112,7 +113,10 @@ uisongeditUIInit (uisongedit_t *uisongedit)
   uiw->changed = 0;
   uiw->levels = bdjvarsdfGet (BDJVDF_LEVELS);
   mstimeset (&uiw->mainlooptimer, UISONGEDIT_MAIN_TIMER);
+  uiw->bpmidx = -1;
+
   uiutilsUIWidgetInit (&uiw->vbox);
+
   uiCreateSizeGroupHoriz (&uiw->sgentry);
   uiCreateSizeGroupHoriz (&uiw->sgsbint);
   uiCreateSizeGroupHoriz (&uiw->sgsbtext);
@@ -571,6 +575,22 @@ uisongeditUIMainLoop (uisongedit_t *uisongedit)
   return;
 }
 
+void
+uisongeditSetBPMValue (uisongedit_t *uisongedit, const char *args)
+{
+  uisongeditgtk_t *uiw;
+  int             val;
+
+  uiw = uisongedit->uiWidgetData;
+
+  if (uiw->bpmidx < 0) {
+    return;
+  }
+
+  val = atoi (args);
+  uiSpinboxSetValue (&uiw->items [uiw->bpmidx].uiwidget, val);
+}
+
 /* internal routines */
 
 static void
@@ -713,6 +733,7 @@ uisongeditAddSpinboxInt (uisongedit_t *uisongedit, UIWidget *hbox, int tagkey)
   uiSpinboxIntCreate (uiwidgetp);
   if (tagkey == TAG_BPM) {
     uiSpinboxSet (uiwidgetp, 0.0, 400.0);
+    uiw->bpmidx = uiw->itemcount;
   }
   if (tagkey == TAG_TRACKNUMBER || tagkey == TAG_DISCNUMBER) {
     uiSpinboxSet (uiwidgetp, 1.0, 300.0);

@@ -56,10 +56,12 @@ typedef struct {
   UIWidget        window;
   UIWidget        timesigsel [BPMCOUNT_DISP_MAX];
   UIWidget        dispvalue [BPMCOUNT_DISP_MAX];
+  int             values [BPMCOUNT_DISP_MAX];
   UICallback      callbacks [BPMCOUNT_CB_MAX];
   int             stopwaitcount;
   int             count;
   time_t          begtime;
+  int             timesigidx;
   /* options */
   datafile_t      *optiondf;
   nlist_t         *options;
@@ -118,6 +120,11 @@ main (int argc, char *argv[])
 
   bpmcounter.count = 0;
   bpmcounter.begtime = 0;
+  bpmcounter.timesigidx = BPMCOUNT_DISP_BPM;
+  for (int i = 0; i < BPMCOUNT_DISP_MAX; ++i) {
+    bpmcounter.values [i] = 0;
+  }
+
   bpmcounter.stopwaitcount = 0;
   bpmcounter.progstate = progstateInit ("bpmcounter");
 
@@ -518,8 +525,12 @@ bpmcounterSigHandler (int sig)
 static bool
 bpmcounterProcessSave (void *udata)
 {
-//  bpmcounter_t *bpmcounter = udata;
+  bpmcounter_t  *bpmcounter = udata;
+  char          tbuff [40];
 
+  snprintf (tbuff, sizeof (tbuff), "%d",
+      bpmcounter->values [bpmcounter->timesigidx]);
+  connSendMessage (bpmcounter->conn, ROUTE_MANAGEUI, MSG_BPM_SET, tbuff);
   return UICB_CONT;
 }
 
@@ -530,6 +541,7 @@ bpmcounterProcessReset (void *udata)
 
   for (int i = 0; i < BPMCOUNT_DISP_MAX; ++i) {
     uiLabelSetText (&bpmcounter->dispvalue [i], "");
+    bpmcounter->values [i] = 0;
   }
   bpmcounter->count = 0;
   bpmcounter->begtime = 0;
@@ -572,13 +584,23 @@ bpmcounterProcessClick (void *udata)
     dval *= 1000.0;
     dval = round (dval * 60.0);
 
+    bpmcounter->values [BPMCOUNT_DISP_BPM] = (int) dval;
     snprintf (tbuff, sizeof (tbuff), "%d", (int) dval);
     uiLabelSetText (&bpmcounter->dispvalue [BPMCOUNT_DISP_BPM], tbuff);
-    snprintf (tbuff, sizeof (tbuff), "%d", (int) (dval / 2.0));
+
+    bpmcounter->values [BPMCOUNT_DISP_MPM_24] = (int) (dval / 2.0);
+    snprintf (tbuff, sizeof (tbuff), "%d",
+        bpmcounter->values [BPMCOUNT_DISP_MPM_24]);
     uiLabelSetText (&bpmcounter->dispvalue [BPMCOUNT_DISP_MPM_24], tbuff);
-    snprintf (tbuff, sizeof (tbuff), "%d", (int) (dval / 3.0));
+
+    bpmcounter->values [BPMCOUNT_DISP_MPM_34] = (int) (dval / 3.0);
+    snprintf (tbuff, sizeof (tbuff), "%d",
+        bpmcounter->values [BPMCOUNT_DISP_MPM_34]);
     uiLabelSetText (&bpmcounter->dispvalue [BPMCOUNT_DISP_MPM_34], tbuff);
-    snprintf (tbuff, sizeof (tbuff), "%d", (int) (dval / 4.0));
+
+    bpmcounter->values [BPMCOUNT_DISP_MPM_44] = (int) (dval / 4.0);
+    snprintf (tbuff, sizeof (tbuff), "%d",
+        bpmcounter->values [BPMCOUNT_DISP_MPM_44]);
     uiLabelSetText (&bpmcounter->dispvalue [BPMCOUNT_DISP_MPM_44], tbuff);
   }
 
@@ -611,5 +633,6 @@ bpmcounterProcessTimesig (bpmcounter_t *bpmcounter, char *args)
     idx = timesig + 1;
   }
   idx += BPMCOUNT_DISP_BPM;
+  bpmcounter->timesigidx = idx;
   uiToggleButtonSetState (&bpmcounter->timesigsel [idx], 1);
 }
