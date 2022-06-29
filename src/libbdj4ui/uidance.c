@@ -26,14 +26,14 @@ typedef struct uidance {
   UICallback    *selectcb;
   char          *label;
   long          selectedidx;
-  bool          allflag : 1;
+  int           flags;
 } uidance_t;
 
 static bool uidanceSelectHandler (void *udata, long idx);
 static void uidanceCreateDanceList (uidance_t *uidance);
 
 uidance_t *
-uidanceDropDownCreate (UIWidget *boxp, UIWidget *parentwin, bool allflag,
+uidanceDropDownCreate (UIWidget *boxp, UIWidget *parentwin, int flags,
     char *label, int where)
 {
   uidance_t  *uidance;
@@ -41,7 +41,7 @@ uidanceDropDownCreate (UIWidget *boxp, UIWidget *parentwin, bool allflag,
 
   uidance = malloc (sizeof (uidance_t));
   uidance->dances = bdjvarsdfGet (BDJVDF_DANCES);
-  uidance->allflag = allflag;
+  uidance->flags = flags;
   uidance->dropdown = uiDropDownInit ();
   uidance->selectedidx = 0;
   uidance->parentwin = parentwin;
@@ -49,11 +49,12 @@ uidanceDropDownCreate (UIWidget *boxp, UIWidget *parentwin, bool allflag,
 
   uiutilsUICallbackLongInit (&uidance->cb, uidanceSelectHandler, uidance);
   uidance->label = label;  /* this is a temporary value */
-  if (allflag) {
-    uidance->buttonp = uiComboboxCreate (parentwin, label,
+  if (flags == UIDANCE_NONE) {
+    uidance->buttonp = uiDropDownCreate (parentwin, label,
         &uidance->cb, uidance->dropdown, uidance);
   } else {
-    uidance->buttonp = uiDropDownCreate (parentwin, label,
+    /* UIDANCE_ALL_DANCES or UIDANCE_EMPTY_DANCE */
+    uidance->buttonp = uiComboboxCreate (parentwin, label,
         &uidance->cb, uidance->dropdown, uidance);
   }
   uidanceCreateDanceList (uidance);
@@ -166,7 +167,8 @@ uidanceCreateDanceList (uidance_t *uidance)
 
   danceList = danceGetDanceList (uidance->dances);
   selectLabel = NULL;
-  if (uidance->allflag) {
+  /* if it is a combobox (UIDANCE_ALL_DANCES, UIDANCE_EMPTY_DANCE) */
+  if (uidance->flags != UIDANCE_NONE) {
     selectLabel = uidance->label;
   }
   uiDropDownSetNumList (uidance->dropdown, danceList, selectLabel);

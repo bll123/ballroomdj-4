@@ -259,7 +259,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci)
         uimusicqQueueDanceCallback, uimusicq);
     uiw->uidance = uidanceDropDownCreate (&hbox, parentwin,
         /* CONTEXT: button: queue a dance for playback */
-        false, _("Queue Dance"), UIDANCE_PACK_END);
+        UIDANCE_NONE, _("Queue Dance"), UIDANCE_PACK_END);
     uidanceSetCallback (uiw->uidance, &uimusicq->queuedancecb);
   }
 

@@ -524,7 +524,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
       uisfDanceSelectHandler, uisf);
   uisf->uidance = uidanceDropDownCreate (&hbox, &uisf->filterDialog,
       /* CONTEXT: a filter: all dances are selected */
-      true, _("All Dances"), UIDANCE_PACK_START);
+      UIDANCE_ALL_DANCES,  _("All Dances"), UIDANCE_PACK_START);
   uidanceSetCallback (uisf->uidance, &uisf->callbacks [UISF_CB_DANCE_SEL]);
   /* adding to the size group makes it look weird */
 

@@ -6,11 +6,14 @@
 enum {
   UIDANCE_PACK_START,
   UIDANCE_PACK_END,
+  UIDANCE_NONE,
+  UIDANCE_ALL_DANCES,
+  UIDANCE_EMPTY_DANCE,
 };
 
 typedef struct uidance uidance_t;
 
-uidance_t * uidanceDropDownCreate (UIWidget *boxp, UIWidget *parentwin, bool allflag, char *label, int where);
+uidance_t * uidanceDropDownCreate (UIWidget *boxp, UIWidget *parentwin, int flags, char *label, int where);
 UIWidget * uidanceGetButton (uidance_t *uidance);
 void uidanceFree (uidance_t *uidance);
 int uidanceGetValue (uidance_t *uidance);

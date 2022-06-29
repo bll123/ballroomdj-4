@@ -1863,16 +1863,22 @@ manageSetBPMCounter (manageui_t *manage, song_t *song)
   }
 
   bpmsel = bdjoptGetNum (OPT_G_BPM);
-fprintf (stderr, "a: bpmsel:%d (bpm:%d,mpm:%d)\n", bpmsel, BPM_BPM, BPM_MPM);
   if (bpmsel == BPM_MPM) {
     dance_t     *dances;
     ilistidx_t  danceIdx;
 
     dances = bdjvarsdfGet (BDJVDF_DANCES);
     danceIdx = songGetNum (song, TAG_DANCE);
-fprintf (stderr, "b: danceidx:%d\n", danceIdx);
-    timesig = danceGetNum (dances, danceIdx, DANCE_TIMESIG);
-fprintf (stderr, "c: timesig:%d\n", timesig);
+    if (danceIdx < 0) {
+      /* unknown / not-set dance */
+      timesig = DANCE_TIMESIG_44;
+    } else {
+      timesig = danceGetNum (dances, danceIdx, DANCE_TIMESIG);
+    }
+    /* 4/8 is handled the same as 4/4 in the bpm counter */
+    if (timesig == DANCE_TIMESIG_48) {
+      timesig = DANCE_TIMESIG_44;
+    }
   }
 
   snprintf (tbuff, sizeof (tbuff), "%d%c%d", bpmsel, MSG_ARGS_RS, timesig);

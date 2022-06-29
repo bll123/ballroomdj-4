@@ -349,7 +349,7 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song)
       }
       case ET_COMBOBOX: {
         if (tagkey == TAG_DANCE) {
-          if (val < 0) { val = 0; }
+          if (val < 0) { val = -1; } // empty value
           uidanceSetValue (uiw->items [count].uidance, val);
         }
         if (tagkey == TAG_GENRE) {
@@ -394,8 +394,8 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song)
         break;
       }
       case ET_SCALE: {
+        if (dval < 0.0) { dval = 0.0; }
         if (tagkey == TAG_SPEEDADJUSTMENT) {
-          dval = (double) val;
           if (dval == 0.0) { dval = 100.0; }
         }
         if (data != NULL) {
@@ -460,6 +460,7 @@ uisongeditUIMainLoop (uisongedit_t *uisongedit)
       }
       case ET_COMBOBOX: {
         if (tagkey == TAG_DANCE) {
+          if (val < 0) { val = -1; }
           nval = uidanceGetValue (uiw->items [count].uidance);
           chkvalue = SONGEDIT_CHK_NUM;
         }
@@ -489,16 +490,19 @@ uisongeditUIMainLoop (uisongedit_t *uisongedit)
         break;
       }
       case ET_SPINBOX: {
+        if (val < 0) { val = 0; }
         nval = uiSpinboxGetValue (&uiw->items [count].uiwidget);
         chkvalue = SONGEDIT_CHK_NUM;
         break;
       }
       case ET_SPINBOX_TIME: {
+        if (val < 0) { val = 0; }
         nval = uiSpinboxTimeGetValue (uiw->items [count].spinbox);
         chkvalue = SONGEDIT_CHK_NUM;
         break;
       }
       case ET_SCALE: {
+        if (dval < 0.0) { dval = 0.0; }
         ndval = uiScaleGetValue (&uiw->items [count].uiwidget);
         chkvalue = SONGEDIT_CHK_DOUBLE;
         break;
@@ -629,7 +633,7 @@ uisongeditAddItem (uisongedit_t *uisongedit, UIWidget *hbox, UIWidget *sg, int t
       if (tagkey == TAG_DANCE) {
         uiw->items [uiw->itemcount].uidance =
             uidanceDropDownCreate (hbox, uiw->parentwin,
-            false, "", UIDANCE_PACK_START);
+            UIDANCE_EMPTY_DANCE, "", UIDANCE_PACK_START);
       }
       if (tagkey == TAG_GENRE) {
         uiw->items [uiw->itemcount].uigenre =

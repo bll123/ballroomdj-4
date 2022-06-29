@@ -73,10 +73,8 @@ uisongGetValue (song_t *song, int tagidx, long *num, double *dval)
     str = songDisplayString (song, tagidx);
   } else if (vt == VALUE_NUM) {
     *num = songGetNum (song, tagidx);
-    if (*num == LIST_VALUE_INVALID) { *num = 0; }
   } else if (vt == VALUE_DOUBLE) {
     *dval = songGetDouble (song, tagidx);
-    if (*dval == LIST_DOUBLE_INVALID) { *dval = 0.0; }
   }
 
   return str;

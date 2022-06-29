@@ -229,7 +229,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin)
       uisongselUIDanceSelectCallback, uisongsel);
   uisongsel->uidance = uidanceDropDownCreate (&hbox, parentwin,
       /* CONTEXT: filter: all dances are selected */
-      true, _("All Dances"), UIDANCE_PACK_END);
+      UIDANCE_ALL_DANCES, _("All Dances"), UIDANCE_PACK_END);
   uidanceSetCallback (uisongsel->uidance,
       &uiw->callbacks [SONGSEL_CB_DANCE_SEL]);
 
