@@ -111,11 +111,17 @@ main (int argc, char *argv[])
   int             flags;
 
 
+  /* CONTEXT: bpm counter: number of beats */
   disptxt [BPMCOUNT_DISP_BEATS] = _("Beats");
+  /* CONTEXT: bpm counter: number of seconds */
   disptxt [BPMCOUNT_DISP_SECONDS] = _("Seconds");
+  /* CONTEXT: bpm counter: BPM */
   disptxt [BPMCOUNT_DISP_BPM] = _("BPM");
+  /* CONTEXT: bpm counter: MPM in 2/4 time */
   disptxt [BPMCOUNT_DISP_MPM_24] = _("MPM (2/4 time)");
+  /* CONTEXT: bpm counter: MPM in 3/4 time */
   disptxt [BPMCOUNT_DISP_MPM_34] = _("MPM (3/4 time)");
+  /* CONTEXT: bpm counter: MPM in 4/4 or 4/8 time */
   disptxt [BPMCOUNT_DISP_MPM_44] = _("MPM (4/4 or 4/8 time)");
 
   bpmcounter.count = 0;
@@ -299,6 +305,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
       bpmcounterCloseCallback, bpmcounter);
   uiCreateMainWindow (&bpmcounter->window,
       &bpmcounter->callbacks [BPMCOUNT_CB_EXIT],
+      /* CONTEXT: bpm counter: title of window*/
       _("BPM Counter"), imgbuff);
 
   uiCreateVertBox (&vboxmain);
@@ -309,12 +316,14 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&vboxmain, &hbox);
 
+  /* CONTEXT: bpm counter: instructions, line 1 */
   uiCreateLabel (&uiwidget, _("Click the mouse in the blue box in time with the beat."));
   uiBoxPackStart (&hbox, &uiwidget);
 
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&vboxmain, &hbox);
 
+  /* CONTEXT: bpm counter: instructions, line 2 */
   uiCreateLabel (&uiwidget, _("When the BPM value is stable, select the Save button."));
   uiBoxPackStart (&hbox, &uiwidget);
 
@@ -382,6 +391,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
       bpmcounterProcessSave, bpmcounter);
   uiCreateButton (&uiwidget,
       &bpmcounter->callbacks [BPMCOUNT_CB_SAVE],
+      /* CONTEXT: bpm counter: save button */
       _("Save"), NULL);
   uiWidgetSetMarginTop (&uiwidget, uiBaseMarginSz * 2);
   uiBoxPackEnd (&hbox, &uiwidget);
@@ -390,12 +400,14 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
       bpmcounterProcessReset, bpmcounter);
   uiCreateButton (&uiwidget,
       &bpmcounter->callbacks [BPMCOUNT_CB_RESET],
+      /* CONTEXT: bpm counter: reset button */
       _("Reset"), NULL);
   uiWidgetSetMarginTop (&uiwidget, uiBaseMarginSz * 2);
   uiBoxPackEnd (&hbox, &uiwidget);
 
   uiCreateButton (&uiwidget,
       &bpmcounter->callbacks [BPMCOUNT_CB_EXIT],
+      /* CONTEXT: bpm counter: close button */
       _("Close"), NULL);
   uiWidgetSetMarginTop (&uiwidget, uiBaseMarginSz * 2);
   uiBoxPackEnd (&hbox, &uiwidget);

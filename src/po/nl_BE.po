@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
 "POT-Creation-Date: 2022-06-08\n"
-"PO-Revision-Date: 2022-06-27\n"
+"PO-Revision-Date: 2022-06-29\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -266,9 +266,14 @@ msgid "BDJ Tags Only"
 msgstr "Enkel BDJ Tags"
 
 #. CONTEXT: configuration: Whether to display BPM as BPM or MPM
+#. CONTEXT: bpm counter: BPM
 #. CONTEXT: label: beats per minute
 msgid "BPM"
 msgstr "BPM"
+
+#. CONTEXT: bpm counter: title of window
+msgid "BPM Counter"
+msgstr ""
 
 #. CONTEXT: configuration file: dance
 msgid "Bachata"
@@ -281,6 +286,10 @@ msgstr "Ballroom dans"
 #. CONTEXT: tooltip for desktop icon
 msgid "Ballroom Music Player"
 msgstr "Ballroom muziekspeler"
+
+#. CONTEXT: bpm counter: number of beats
+msgid "Beats"
+msgstr "Slagen"
 
 #. CONTEXT: menu selection: song editor: cancel edit all
 msgid "Cancel Edit All"
@@ -315,10 +324,15 @@ msgstr ""
 msgid "Clear Queue"
 msgstr ""
 
+#. CONTEXT: bpm counter: instructions, line 1
+msgid "Click the mouse in the blue box in time with the beat."
+msgstr "Klik met de muisaanwijzer in het blauwe vak op de maat van de muziek."
+
 #. CONTEXT: helperui: close the helper window
 #. CONTEXT: marquee font size dialog: action button
 #. CONTEXT: support dialog: closes the dialog
 #. CONTEXT: support message dialog: closes the dialog
+#. CONTEXT: bpm counter: close button
 #. CONTEXT: file select dialog: closes the dialog
 #. CONTEXT: filter dialog: closes the dialog
 msgid "Close"
@@ -817,6 +831,18 @@ msgstr ""
 msgid "MPM"
 msgstr "MPM"
 
+#. CONTEXT: bpm counter: MPM in 2/4 time
+msgid "MPM (2/4 time)"
+msgstr "MPM (2/4 tijd)"
+
+#. CONTEXT: bpm counter: MPM in 3/4 time
+msgid "MPM (3/4 time)"
+msgstr "MPM (3/4 tijd)"
+
+#. CONTEXT: bpm counter: MPM in 4/4 or 4/8 time
+msgid "MPM (4/4 or 4/8 time)"
+msgstr "MPM (4/4 of 4/8 tijd)"
+
 #. CONTEXT: button: starts the management user interface
 msgid "Manage"
 msgstr ""
@@ -1262,6 +1288,7 @@ msgstr "Verzoek"
 msgid "Request External"
 msgstr "Externe Aanvraag"
 
+#. CONTEXT: bpm counter: reset button
 #. CONTEXT: filter dialog: resets the selections
 msgid "Reset"
 msgstr "Resetten"
@@ -1291,6 +1318,7 @@ msgstr "Salsa"
 msgid "Samba"
 msgstr "Samba"
 
+#. CONTEXT: bpm counter: save button
 #. CONTEXT: song editor : save data
 msgid "Save"
 msgstr "Bewaren"
@@ -1302,6 +1330,10 @@ msgstr ""
 #. CONTEXT: a filter: filter the song selection with a search for text
 msgid "Search"
 msgstr "Zoeken"
+
+#. CONTEXT: bpm counter: number of seconds
+msgid "Seconds"
+msgstr "Seconden"
 
 #. CONTEXT: configuration: display settings: button: add the selected field
 #. CONTEXT: file select dialog: selects the file
@@ -1630,6 +1662,10 @@ msgstr "Belang"
 #. CONTEXT: configuration file: dance
 msgid "West Coast Swing"
 msgstr "West Coast Swing"
+
+#. CONTEXT: bpm counter: instructions, line 2
+msgid "When the BPM value is stable, select the Save button."
+msgstr "Wanneer de BPM waarde stabiel is, klik dan op Opslaan."
 
 #. CONTEXT: configuration: which audio tags will be written to the audio file
 msgid "Write Audio File Tags"
