@@ -385,6 +385,8 @@ marqueeBuildUI (marquee_t *marquee)
   uiWidgetAlignHorizStart (&uiwidget);
   uiWidgetDisableFocus (&uiwidget);
   uiBoxPackStart (&hbox, &uiwidget);
+  uiWidgetSetMarginStart (&uiwidget, uiBaseMarginSz * 2);
+  uiWidgetSetMarginEnd (&uiwidget, uiBaseMarginSz * 2);
   uiutilsUIWidgetCopy (&marquee->infoSepLab, &uiwidget);
 
   uiCreateLabel (&uiwidget, "");
@@ -397,7 +399,8 @@ marqueeBuildUI (marquee_t *marquee)
   uiCreateHorizSeparator (&marquee->sep);
   uiSeparatorSetColor (&marquee->sep, bdjoptGetStr (OPT_P_MQ_ACCENT_COL));
   uiWidgetExpandHoriz (&marquee->sep);
-  uiWidgetSetMarginTop (&marquee->sep, uiBaseMarginSz);
+  uiWidgetSetMarginTop (&marquee->sep, uiBaseMarginSz * 2);
+  uiWidgetSetMarginBottom (&marquee->sep, uiBaseMarginSz * 4);
   uiBoxPackEnd (&vbox, &marquee->sep);
 
   marquee->marqueeLabs = malloc (sizeof (UIWidget) * marquee->mqLen);
@@ -407,8 +410,8 @@ marqueeBuildUI (marquee_t *marquee)
     uiCreateLabel (&marquee->marqueeLabs [i], "");
     uiWidgetAlignHorizStart (&marquee->marqueeLabs [i]);
     uiWidgetExpandHoriz (&marquee->marqueeLabs [i]);
-    uiWidgetSetMarginStart (&marquee->marqueeLabs [i], 10);
     uiWidgetDisableFocus (&marquee->marqueeLabs [i]);
+    uiWidgetSetMarginTop (&marquee->marqueeLabs [i], uiBaseMarginSz * 4);
     uiBoxPackStart (&mainvbox, &marquee->marqueeLabs [i]);
   }
 
@@ -836,7 +839,7 @@ marqueePopulate (marquee_t *marquee, char *args)
 
   if (uiWidgetIsValid (&marquee->infoSepLab)) {
     if (showsep == 2) {
-      uiLabelSetText (&marquee->infoSepLab, "/ ");
+      uiLabelSetText (&marquee->infoSepLab, "/");
     } else {
       uiLabelSetText (&marquee->infoSepLab, "");
     }
@@ -922,15 +925,22 @@ marqueeSetFont (marquee_t *marquee, int sz)
   marqueeSetFontSize (marquee, &marquee->danceLab, tbuff);
   marqueeSetFontSize (marquee, &marquee->countdownTimerLab, tbuff);
 
+  /* not bold */
+  snprintf (tbuff, sizeof (tbuff), "%s %d", fontname, sz);
+  for (int i = 0; i < marquee->mqLen; ++i) {
+    marqueeSetFontSize (marquee, &marquee->marqueeLabs [i], tbuff);
+    uiLabelSetColor (&marquee->marqueeLabs [i], bdjoptGetStr (OPT_P_MQ_TEXT_COL));
+  }
+
+  sz = (int) round ((double) sz * 0.7);
   snprintf (tbuff, sizeof (tbuff), "%s %d", fontname, sz);
   if (uiWidgetIsValid (&marquee->infoArtistLab)) {
     marqueeSetFontSize (marquee, &marquee->infoArtistLab, tbuff);
+    uiLabelSetColor (&marquee->infoArtistLab, bdjoptGetStr (OPT_P_MQ_INFO_COL));
     marqueeSetFontSize (marquee, &marquee->infoSepLab, tbuff);
+    uiLabelSetColor (&marquee->infoSepLab, bdjoptGetStr (OPT_P_MQ_INFO_COL));
     marqueeSetFontSize (marquee, &marquee->infoTitleLab, tbuff);
-  }
-
-  for (int i = 0; i < marquee->mqLen; ++i) {
-    marqueeSetFontSize (marquee, &marquee->marqueeLabs [i], tbuff);
+    uiLabelSetColor (&marquee->infoTitleLab, bdjoptGetStr (OPT_P_MQ_INFO_COL));
   }
 
   logProcEnd (LOG_PROC, "marqueeSetFont", "");

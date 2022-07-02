@@ -176,6 +176,8 @@ uimusicqMusicQueueDataParse (uimusicq_t *uimusicq, char *args)
 
   p = strtok_r (args, MSG_ARGS_RS_STR, &tokstr);
   ci = atoi (p);
+  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
+  /* queue duration */
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   idx = 1;

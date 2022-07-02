@@ -392,6 +392,7 @@ void  uiWidgetExpandHoriz (UIWidget *uiwidget);
 void  uiWidgetExpandVert (UIWidget *uiwidget);
 void  uiWidgetSetAllMargins (UIWidget *uiwidget, int margin);
 void  uiWidgetSetMarginTop (UIWidget *uiwidget, int margin);
+void  uiWidgetSetMarginBottom (UIWidget *uiwidget, int margin);
 void  uiWidgetSetMarginStart (UIWidget *uiwidget, int margin);
 void  uiWidgetSetMarginEnd (UIWidget *uiwidget, int margin);
 void  uiWidgetAlignHorizFill (UIWidget *uiwidget);

@@ -63,6 +63,16 @@ uiWidgetSetMarginTop (UIWidget *uiwidget, int margin)
 }
 
 inline void
+uiWidgetSetMarginBottom (UIWidget *uiwidget, int margin)
+{
+  if (uiwidget->widget == NULL) {
+    return;
+  }
+
+  gtk_widget_set_margin_bottom (uiwidget->widget, margin);
+}
+
+inline void
 uiWidgetSetMarginStart (UIWidget *uiwidget, int margin)
 {
   if (uiwidget->widget == NULL) {

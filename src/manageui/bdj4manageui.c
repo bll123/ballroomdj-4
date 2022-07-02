@@ -62,6 +62,7 @@ enum {
   MANAGE_TAB_MAIN_FILEMGR,
   MANAGE_TAB_SONGLIST,
   MANAGE_TAB_SONGEDIT,
+  MANAGE_TAB_STATISTICS,
 };
 
 enum {
@@ -155,6 +156,7 @@ typedef struct manage {
   /* song list ui major elements */
   uiplayer_t      *slplayer;
   uimusicq_t      *slmusicq;
+  managestats_t   *slstats;
   uisongsel_t     *slsongsel;
   uimusicq_t      *slezmusicq;
   uisongsel_t     *slezsongsel;
@@ -276,6 +278,7 @@ main (int argc, char *argv[])
   uiutilsUIWidgetInit (&manage.window);
   manage.slplayer = NULL;
   manage.slmusicq = NULL;
+  manage.slstats = NULL;
   manage.slsongsel = NULL;
   manage.slezmusicq = NULL;
   manage.slezsongsel = NULL;
@@ -461,6 +464,7 @@ manageClosingCallback (void *udata, programstate_t programState)
 
   uiplayerFree (manage->slplayer);
   uimusicqFree (manage->slmusicq);
+  manageStatsFree (manage->slstats);
   uisongselFree (manage->slsongsel);
 
   uimusicqFree (manage->slezmusicq);
@@ -632,6 +636,7 @@ manageInitializeUI (manageui_t *manage)
       manage->musicdb, manage->dispsel, DISP_SEL_SONGLIST);
   uimusicqSetPlayIdx (manage->slmusicq, manage->musicqPlayIdx);
   uimusicqSetManageIdx (manage->slmusicq, manage->musicqManageIdx);
+  manage->slstats = manageStatsInit (manage->conn, manage->musicdb);
   manage->slsongsel = uisongselInit ("m-sl-songsel", manage->conn,
       manage->musicdb, manage->dispsel, manage->options,
       manage->uisongfilter, DISP_SEL_SONGSEL);
@@ -764,7 +769,7 @@ manageBuildUISongListEditor (manageui_t *manage)
 
   /* song list editor: music queue tab */
   uiwidgetp = uimusicqBuildUI (manage->slmusicq, &manage->window, MUSICQ_A);
-  /* CONTEXT: name of easy song list notebook tab */
+  /* CONTEXT: name of song list notebook tab */
   uiCreateLabel (&uiwidget, _("Song List"));
   uiNotebookAppendPage (&notebook, uiwidgetp, &uiwidget);
   uiutilsNotebookIDAdd (manage->slnbtabid, MANAGE_TAB_SONGLIST);
@@ -779,6 +784,13 @@ manageBuildUISongListEditor (manageui_t *manage)
   manage->slsongseltabwidget = uiwidgetp;
 
   uimusicqPeerSonglistName (manage->slmusicq, manage->slezmusicq);
+
+  /* song list editor: statistics tab */
+  uiwidgetp = manageBuildUIStats (manage->slstats);
+  /* CONTEXT: name of statistics tab */
+  uiCreateLabel (&uiwidget, _("Statistics"));
+  uiNotebookAppendPage (&notebook, uiwidgetp, &uiwidget);
+  uiutilsNotebookIDAdd (manage->slnbtabid, MANAGE_TAB_STATISTICS);
 
   uiutilsUICallbackLongInit (&manage->callbacks [MANAGE_CB_SL_NB],
       manageSwitchPageSonglist, manage);
@@ -1035,6 +1047,7 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
   /* due to the db update message, these must be applied afterwards */
   uiplayerProcessMsg (routefrom, route, msg, args, manage->slplayer);
   uimusicqProcessMsg (routefrom, route, msg, args, manage->slmusicq);
+  manageStatsProcessMsg (routefrom, route, msg, args, manage->slstats);
   uisongselProcessMsg (routefrom, route, msg, args, manage->slsongsel);
   uisongselProcessMsg (routefrom, route, msg, args, manage->slezsongsel);
   uimusicqProcessMsg (routefrom, route, msg, args, manage->slezmusicq);

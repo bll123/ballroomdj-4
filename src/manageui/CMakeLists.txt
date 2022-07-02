@@ -9,6 +9,7 @@ add_executable (bdj4manageui
   managepl.c
   managepltree.c
   manageseq.c
+  managestats.c
 )
 if (WIN32)
   target_compile_options (bdj4manageui PRIVATE -municode)

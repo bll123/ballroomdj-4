@@ -73,6 +73,8 @@ typedef enum {
   OPT_P_MOBILEMQTAG,              // u d s
   OPT_P_MOBILEMQTITLE,            // u d s
   OPT_P_MQ_ACCENT_COL,            // u d s
+  OPT_P_MQ_INFO_COL,              // u d s
+  OPT_P_MQ_TEXT_COL,              // u d s
   OPT_P_MQQLEN,                   // u d s
   OPT_P_MQ_SHOW_INFO,             // u d s
   OPT_P_PROFILENAME,              // u d s

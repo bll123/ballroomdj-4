@@ -234,7 +234,7 @@ sockCheck (sockinfo_t *sockinfo)
 
   rc = select (sockinfo->max + 1, &(sockinfo->readfds), NULL, NULL, &tv);
   if (rc < 0) {
-    if (errno == EINTR) {
+    if (errno == EINTR || errno == EAGAIN) {
       return 0;
     }
     logError ("select");

@@ -273,7 +273,7 @@ rlogOpen (logidx_t idx, const char *fn, const char *processtag, int truncflag)
   pathInfoFree (pi);
 
   if (truncflag == FILE_OPEN_TRUNCATE && idx != LOG_INSTALL) {
-    filemanipBackup (fn, 1);
+    filemanipBackup (fn, 2);
   }
 
   l->processTag = processtag;

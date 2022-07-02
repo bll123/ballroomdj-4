@@ -817,13 +817,16 @@ mainSendMusicQueueData (maindata_t *mainData, int musicqidx)
   int         pflag;
   int         dispidx;
   int         uniqueidx;
+  ssize_t     qDuration;
 
   logProcBegin (LOG_PROC, "mainSendMusicQueueData");
 
   musicqLen = musicqGetLen (mainData->musicQueue, musicqidx);
+  qDuration = musicqGetDuration (mainData->musicQueue, musicqidx);
 
   sbuff [0] = '\0';
-  snprintf (sbuff, sizeof (sbuff), "%d%c", musicqidx, MSG_ARGS_RS);
+  snprintf (sbuff, sizeof (sbuff), "%d%c%zd%c",
+      musicqidx, MSG_ARGS_RS, qDuration, MSG_ARGS_RS);
 
   for (ssize_t i = 1; i <= musicqLen; ++i) {
     dbidx = musicqGetByIdx (mainData->musicQueue, musicqidx, i);
@@ -1056,6 +1059,8 @@ mainMobilePostCallback (void *userdata, char *resp, size_t len)
     ;
   } else if (strncmp (resp, "NG", 2) == 0) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: unable to post mobmq data: %.*s", (int) len, resp);
+    /* just turn it off since there is a failure response */
+    bdjoptSetNum (OPT_P_MOBILEMARQUEE, MOBILEMQ_OFF);
   } else {
     FILE    *fh;
 

@@ -88,8 +88,9 @@ typedef struct {
   mstime_t        gapFinishTime;
   ssize_t         fadeinTime;
   ssize_t         fadeoutTime;
-  long            fadeCount;
-  long            fadeSamples;
+  int             fadeCount;
+  int             fadeSamples;
+  time_t          fadeTimeStart;
   mstime_t        fadeTimeNext;
   bool            inFade : 1;
   bool            inFadeIn : 1;
@@ -142,6 +143,7 @@ static void     playerSetCheckTimes (playerdata_t *playerData, prepqueue_t *pq);
 static void     playerSetPlayerState (playerdata_t *playerData, playerstate_t pstate);
 static void     playerSendStatus (playerdata_t *playerData);
 static int      playerLimitVolume (int vol);
+static ssize_t  playerCalcPlayedTime (playerdata_t *playerData);
 
 static int  gKillReceived = 0;
 
@@ -524,7 +526,7 @@ playerProcessing (void *udata)
         logMsg (LOG_DBG, LOG_MAIN, "WARN: Replace duration with player data: %zd", pq->dur);
       }
 
-        /* save for later use */
+      /* save for later use */
       playerData->gap = pq->gap;
       playerData->playTimePlayed = 0;
       playerSetCheckTimes (playerData, pq);
@@ -534,6 +536,7 @@ playerProcessing (void *udata)
         playerData->inFadeIn = true;
         playerData->fadeCount = 1;
         playerData->fadeSamples = playerData->fadeinTime / FADEIN_TIMESLICE + 1;
+        playerData->fadeTimeStart = mstime ();
         playerFadeVolSet (playerData);
       }
 
@@ -568,8 +571,8 @@ playerProcessing (void *udata)
         ! playerData->inFade &&
         mstimeCheck (&playerData->fadeTimeCheck)) {
 
-        /* before going into the fade, check the system volume */
-        /* and see if the user changed it */
+      /* before going into the fade, check the system volume */
+      /* and see if the user changed it */
       logMsg (LOG_DBG, LOG_MAIN, "check sysvol: before fade");
       playerCheckSystemVolume (playerData);
       playerStartFadeOut (playerData);
@@ -1087,9 +1090,9 @@ playerFade (playerdata_t *playerData)
       logMsg (LOG_DBG, LOG_MAIN, "check sysvol: before fade request");
       playerCheckSystemVolume (playerData);
     }
+    playerStartFadeOut (playerData);
     mstimeset (&playerData->playTimeCheck, playerData->fadeoutTime - 500);
     mstimeset (&playerData->playEndCheck, playerData->fadeoutTime);
-    playerStartFadeOut (playerData);
   }
   logProcEnd (LOG_PROC, "playerFade", "");
 }
@@ -1297,6 +1300,7 @@ playerFadeVolSet (playerdata_t *playerData)
 {
   double  findex = calcFadeIndex (playerData);
   int     newvol;
+  int     ts;
 
   logProcBegin (LOG_PROC, "playerFadeVolSet");
 
@@ -1308,10 +1312,10 @@ playerFadeVolSet (playerdata_t *playerData)
   if (! playerData->mute) {
     volumeSet (playerData->volume, playerData->currentSink, newvol);
   }
-  logMsg (LOG_DBG, LOG_MAIN, "fade set volume: %d count:%ld",
+  logMsg (LOG_DBG, LOG_MAIN, "fade set volume: %d count:%d",
       newvol, playerData->fadeCount);
   if (playerData->inFadeOut) {
-    logMsg (LOG_DBG, LOG_MAIN, "   time %zd",
+    logMsg (LOG_DBG, LOG_MAIN, "   time %d",
         mstimeend (&playerData->playEndCheck));
   }
   if (playerData->inFadeIn) {
@@ -1319,20 +1323,25 @@ playerFadeVolSet (playerdata_t *playerData)
   }
   if (playerData->inFadeOut) {
     --playerData->fadeCount;
+    if (playerData->fadeCount <= 0) {
+      /* leave inFade set to prevent race conditions in the main loop */
+      /* the player stop condition will reset the inFade flag */
+      playerData->inFadeOut = false;
+      volumeSet (playerData->volume, playerData->currentSink, 0);
+      logMsg (LOG_DBG, LOG_MAIN, "fade-out done volume: %d time: %zd", 0, mstimeend (&playerData->playEndCheck));
+    }
   }
-  mstimeset (&playerData->fadeTimeNext,
-      (playerData->inFadeOut ? FADEOUT_TIMESLICE : FADEIN_TIMESLICE));
+
+  ts = playerData->inFadeOut ? FADEOUT_TIMESLICE : FADEIN_TIMESLICE;
+  /* incrementing fade-time start by the timeslice each interval will */
+  /* give us the next end-time */
+  playerData->fadeTimeStart += ts;
+  mstimesettm (&playerData->fadeTimeNext, playerData->fadeTimeStart);
+
   if (playerData->inFadeIn &&
       newvol >= playerData->realVolume) {
     playerData->inFade = false;
     playerData->inFadeIn = false;
-  }
-  if (playerData->inFadeOut && newvol <= 0) {
-      /* leave inFade set to prevent race conditions in the main loop */
-      /* the player stop condition will reset the inFade flag */
-    playerData->inFadeOut = false;
-    volumeSet (playerData->volume, playerData->currentSink, 0);
-    logMsg (LOG_DBG, LOG_MAIN, "fade-out done volume: %d time: %zd", 0, mstimeend (&playerData->playEndCheck));
   }
   logProcEnd (LOG_PROC, "playerFadeVolSet", "");
 }
@@ -1380,12 +1389,18 @@ calcFadeIndex (playerdata_t *playerData)
 static void
 playerStartFadeOut (playerdata_t *playerData)
 {
+  ssize_t       tm;
+  prepqueue_t   *pq = playerData->currentSong;
+
   logProcBegin (LOG_PROC, "playerStartFadeOut");
   playerData->inFade = true;
   playerData->inFadeOut = true;
-  playerData->fadeSamples = playerData->fadeoutTime / FADEOUT_TIMESLICE;
+  tm = pq->dur - playerCalcPlayedTime (playerData);
+  tm = tm < playerData->fadeoutTime ? tm : playerData->fadeoutTime;
+  playerData->fadeSamples = tm / FADEOUT_TIMESLICE;
   playerData->fadeCount = playerData->fadeSamples;
-  logMsg (LOG_DBG, LOG_MAIN, "fade: samples: %ld", playerData->fadeCount);
+  logMsg (LOG_DBG, LOG_MAIN, "fade: samples: %d", playerData->fadeCount);
+  playerData->fadeTimeStart = mstime ();
   playerFadeVolSet (playerData);
   playerSetPlayerState (playerData, PL_STATE_IN_FADEOUT);
   logMsg (LOG_DBG, LOG_BASIC, "pl-state: %d/%s",
@@ -1504,15 +1519,7 @@ playerSendStatus (playerdata_t *playerData)
     }
   }
 
-  tm = 0;
-  if (playerData->playerState == PL_STATE_PAUSED) {
-    tm = playerData->playTimePlayed;
-  } else if (playerData->playerState == PL_STATE_PLAYING ||
-      playerData->playerState == PL_STATE_IN_FADEOUT) {
-    tm = playerData->playTimePlayed + mstimeend (&playerData->playTimeStart);
-  } else {
-    tm = 0;
-  }
+  tm = playerCalcPlayedTime (playerData);
 
   snprintf (rbuff, sizeof (rbuff), "%s%c%d%c%d%c%d%c%zd%c%zd%c%zd",
       playstate, MSG_ARGS_RS,
@@ -1540,4 +1547,22 @@ playerLimitVolume (int vol)
     vol = 0;
   }
   return vol;
+}
+
+static ssize_t
+playerCalcPlayedTime (playerdata_t *playerData)
+{
+  ssize_t   tm;
+
+  tm = 0;
+  if (playerData->playerState == PL_STATE_PAUSED) {
+    tm = playerData->playTimePlayed;
+  } else if (playerData->playerState == PL_STATE_PLAYING ||
+      playerData->playerState == PL_STATE_IN_FADEOUT) {
+    tm = playerData->playTimePlayed + mstimeend (&playerData->playTimeStart);
+  } else {
+    tm = 0;
+  }
+
+  return tm;
 }

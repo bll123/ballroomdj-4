@@ -1,6 +1,5 @@
 #include "config.h"
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -38,7 +37,7 @@ sockhMainLoop (uint16_t listenPort, sockhProcessMsg_t msgFunc,
 
     msgsock = sockCheck (sockserver->si);
     /* if there is more data, don't sleep */
-    if (socketInvalid (msgsock)) {
+    if (msgsock == 0 || socketInvalid (msgsock)) {
       mssleep (SOCKH_MAINLOOP_TIMEOUT);
     }
   } /* wait for a message */

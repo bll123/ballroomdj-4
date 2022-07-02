@@ -79,11 +79,23 @@ mstimeend (mstime_t *t)
 }
 
 void
-mstimeset (mstime_t *mt, ssize_t addTime)
+mstimeset (mstime_t *mt, time_t addTime)
 {
   time_t            s;
 
   gettimeofday (&mt->tm, NULL);
+  s = addTime / 1000;
+  mt->tm.tv_sec += s;
+  mt->tm.tv_usec += (addTime - (s * 1000)) * 1000;
+}
+
+void
+mstimesettm (mstime_t *mt, time_t addTime)
+{
+  time_t            s;
+
+  mt->tm.tv_sec = 0;
+  mt->tm.tv_usec = 0;
   s = addTime / 1000;
   mt->tm.tv_sec += s;
   mt->tm.tv_usec += (addTime - (s * 1000)) * 1000;
@@ -201,9 +213,9 @@ tmutilShortTstamp (char *buff, size_t max)
 }
 
 char *
-tmutilToMS (ssize_t ms, char *buff, size_t max)
+tmutilToMS (time_t ms, char *buff, size_t max)
 {
-  ssize_t     m, s;
+  time_t     m, s;
 
   m = ms / 1000 / 60;
   s = (ms - (m * 1000 * 60)) / 1000;
@@ -212,9 +224,9 @@ tmutilToMS (ssize_t ms, char *buff, size_t max)
 }
 
 char *
-tmutilToMSD (ssize_t ms, char *buff, size_t max)
+tmutilToMSD (time_t ms, char *buff, size_t max)
 {
-  ssize_t     m, s, d;
+  time_t     m, s, d;
 
   m = ms / 1000 / 60;
   s = (ms - (m * 1000 * 60)) / 1000;
@@ -225,7 +237,7 @@ tmutilToMSD (ssize_t ms, char *buff, size_t max)
 
 
 char *
-tmutilToDateHM (ssize_t ms, char *buff, size_t max)
+tmutilToDateHM (time_t ms, char *buff, size_t max)
 {
   struct tm         *tp;
   time_t            s;
