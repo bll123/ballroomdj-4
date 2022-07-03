@@ -85,6 +85,7 @@ connFree (conn_t *conn)
       conn [i].handshake = false;
     }
     free (conn);
+    initialized = false;
   }
 }
 

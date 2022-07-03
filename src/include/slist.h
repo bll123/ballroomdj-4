@@ -22,8 +22,8 @@ void      slistSetDouble (slist_t *, char *sidx, double dval);
 void      slistSetList (slist_t *, char *sidx, slist_t *listval);
   /* get routines */
 slistidx_t  slistGetIdx (slist_t *, char *sidx);
-void      *slistGetData (slist_t *, char *sidx);
-char      *slistGetStr (slist_t *, char *sidx);
+void      *slistGetData (slist_t *, const char *sidx);
+char      *slistGetStr (slist_t *, const char *sidx);
 void      *slistGetDataByIdx (slist_t *, slistidx_t idx);
 ssize_t   slistGetNumByIdx (slist_t *list, slistidx_t idx);
 char *    slistGetKeyByIdx (slist_t *list, slistidx_t lidx);

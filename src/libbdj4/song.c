@@ -28,7 +28,8 @@
 #include "orgutil.h"
 
 typedef struct song {
-  nlist_t      *songInfo;
+  nlist_t     *songInfo;
+  long        durcache;
 } song_t;
 
 /* must be sorted in ascii order */
@@ -106,6 +107,7 @@ songAlloc (void)
   song = malloc (sizeof (song_t));
   assert (song != NULL);
   ++gsonginit->songcount;
+  song->durcache = -1;
   return song;
 }
 
@@ -341,6 +343,26 @@ songTagList (song_t *song)
   return taglist;
 }
 
+void
+songSetDurCache (song_t *song, long dur)
+{
+  if (song == NULL) {
+    return;
+  }
+
+  song->durcache = dur;
+}
+
+long
+songGetDurCache (song_t *song)
+{
+  if (song == NULL) {
+    return -1;
+  }
+
+  return song->durcache;
+}
+
 /* internal routines */
 
 static void
@@ -390,3 +412,4 @@ songCleanup (void)
   free (gsonginit);
   gsonginit = NULL;
 }
+

@@ -555,12 +555,8 @@ playerProcessing (void *udata)
   }
 
   if (playerData->playerState == PL_STATE_PLAYING &&
-      ! playerData->inFade &&
-      ! playerData->inGap &&
       mstimeCheck (&playerData->volumeTimeCheck)) {
-    logMsg (LOG_DBG, LOG_MAIN, "check sysvol: timed");
     playerCheckSystemVolume (playerData);
-    mstimeset (&playerData->volumeTimeCheck, 1000);
   }
 
   if (playerData->playerState == PL_STATE_PLAYING ||
@@ -732,6 +728,7 @@ playerCheckSystemVolume (playerdata_t *playerData)
   int         voldiff;
 
   logProcBegin (LOG_PROC, "playerCheckSystemVolume");
+  mstimeset (&playerData->volumeTimeCheck, 1000);
 
   if (playerData->inFade || playerData->inGap || playerData->mute) {
     logProcEnd (LOG_PROC, "playerCheckSystemVolume", "in-fade-gap-mute");
@@ -748,7 +745,6 @@ playerCheckSystemVolume (playerdata_t *playerData)
     playerData->currentVolume += voldiff;
     playerData->currentVolume = playerLimitVolume (playerData->currentVolume);
   }
-  mstimeset (&playerData->volumeTimeCheck, 1000);
   logProcEnd (LOG_PROC, "playerCheckSystemVolume", "");
 }
 
@@ -1086,10 +1082,7 @@ playerFade (playerdata_t *playerData)
 
   if (plistate == PLI_STATE_PLAYING) {
     logMsg (LOG_DBG, LOG_BASIC, "fade");
-    if (! playerData->inFade) {
-      logMsg (LOG_DBG, LOG_MAIN, "check sysvol: before fade request");
-      playerCheckSystemVolume (playerData);
-    }
+    playerCheckSystemVolume (playerData);
     playerStartFadeOut (playerData);
     mstimeset (&playerData->playTimeCheck, playerData->fadeoutTime - 500);
     mstimeset (&playerData->playEndCheck, playerData->fadeoutTime);

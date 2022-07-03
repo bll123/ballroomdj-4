@@ -179,16 +179,20 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
     exit (1);
   }
 
-  rc = lockAcquire (lockName (route), PATHBLD_MP_USEIDX);
-  count = 0;
-  while (rc < 0) {
-    ++count;
-    if (count > 10) {
-      fprintf (stderr, "Unable to acquire lock: %s\n", lockName (route));
-      bdj4shutdown (route, NULL);
-      exit (1);
-    }
+  bdjvarsAdjustPorts ();
+
+  if ((flags & BDJ4_INIT_NO_LOCK) != BDJ4_INIT_NO_LOCK) {
     rc = lockAcquire (lockName (route), PATHBLD_MP_USEIDX);
+    count = 0;
+    while (rc < 0) {
+      ++count;
+      if (count > 10) {
+        fprintf (stderr, "Unable to acquire lock: %s\n", lockName (route));
+        bdj4shutdown (route, NULL);
+        exit (1);
+      }
+      rc = lockAcquire (lockName (route), PATHBLD_MP_USEIDX);
+    }
   }
 
   if (chdir (sysvarsGetStr (SV_BDJ4DATATOPDIR)) < 0) {

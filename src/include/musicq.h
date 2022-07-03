@@ -28,12 +28,13 @@ typedef struct musicq musicq_t;
 musicq_t *  musicqAlloc (musicdb_t *db);
 void        musicqFree (musicq_t *musicq);
 void        musicqSetDatabase (musicq_t *musicq, musicdb_t *db);
-void        musicqPush (musicq_t *musicq, musicqidx_t idx, dbidx_t dbidx, char *plname);
+void        musicqPush (musicq_t *musicq, musicqidx_t idx, dbidx_t dbidx,
+                const char *plname, long dur);
 void        musicqPushHeadEmpty (musicq_t *musicq, musicqidx_t idx);
 void        musicqMove (musicq_t *musicq, musicqidx_t musicqidx,
                 ssize_t fromidx, ssize_t toidx);
 int         musicqInsert (musicq_t *musicq, musicqidx_t musicqidx,
-                ssize_t idx, dbidx_t dbidx);
+                ssize_t idx, dbidx_t dbidx, long dur);
 dbidx_t     musicqGetCurrent (musicq_t *musicq, musicqidx_t musicqidx);
 musicqflag_t musicqGetFlags (musicq_t *musicq, musicqidx_t musicqidx, ssize_t qkey);
 int         musicqGetDispIdx (musicq_t *musicq, musicqidx_t musicqidx, ssize_t qkey);

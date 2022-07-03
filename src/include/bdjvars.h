@@ -33,5 +33,6 @@ void    bdjvarsCleanup (void);
 char *  bdjvarsGetStr (bdjvarkey_t idx);
 void    bdjvarsSetStr (bdjvarkey_t idx, const char *str);
 ssize_t bdjvarsGetNum (bdjvarkeyl_t idx);
+void    bdjvarsAdjustPorts (void);
 
 #endif /* INC_BDJVARS_H */

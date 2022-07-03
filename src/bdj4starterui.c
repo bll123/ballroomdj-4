@@ -90,8 +90,8 @@ typedef struct {
   char            *locknm;
   procutil_t      *processes [ROUTE_MAX];
   conn_t          *conn;
-  ssize_t         currprofile;
-  ssize_t         newprofile;
+  int             currprofile;
+  int             newprofile;
   int             maxProfileWidth;
   startstate_t    startState;
   startstate_t    nextState;
@@ -192,14 +192,16 @@ static bool     starterForumLinkHandler (void *udata);
 static bool     starterTicketLinkHandler (void *udata);
 static void     starterLinkHandler (void *udata, int cbidx);
 
-static int gKillReceived = 0;
+static bool gKillReceived = false;
+static bool gNewProfile = false;
+static bool gStopProgram = false;
 
 int
 main (int argc, char *argv[])
 {
   int             status = 0;
-  uint16_t        listenPort;
   startui_t       starter;
+  uint16_t        listenPort;
   char            *uifont;
   char            tbuff [MAXPATHLEN];
   int             flags;
@@ -214,6 +216,7 @@ main (int argc, char *argv[])
       starterStopWaitCallback, &starter);
   progstateSetCallback (starter.progstate, STATE_CLOSING,
       starterClosingCallback, &starter);
+  starter.conn = NULL;
   starter.maxProfileWidth = 0;
   starter.startState = START_STATE_NONE;
   starter.nextState = START_STATE_NONE;
@@ -242,14 +245,12 @@ main (int argc, char *argv[])
 
   osSetStandardSignals (starterSigHandler);
 
-  flags = BDJ4_INIT_NO_DB_LOAD | BDJ4_INIT_NO_DATAFILE_LOAD;
+  flags = BDJ4_INIT_NO_DB_LOAD | BDJ4_INIT_NO_DATAFILE_LOAD |
+      BDJ4_INIT_NO_LOCK;
   bdj4startup (argc, argv, NULL, "st", ROUTE_STARTERUI, flags);
   logProcBegin (LOG_PROC, "starterui");
 
   starter.profilesel = uiSpinboxTextInit ();
-
-  listenPort = bdjvarsGetNum (BDJVL_STARTERUI_PORT);
-  starter.conn = connInit (ROUTE_STARTERUI);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
       STARTERUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_USEIDX);
@@ -270,8 +271,21 @@ main (int argc, char *argv[])
   uiSetUIFont (uifont);
 
   starterBuildUI (&starter);
-  sockhMainLoop (listenPort, starterProcessMsg, starterMainLoop, &starter);
-  connFree (starter.conn);
+  while (! gStopProgram) {
+    long loglevel;
+
+    gNewProfile = false;
+    listenPort = bdjvarsGetNum (BDJVL_STARTERUI_PORT);
+    starter.conn = connInit (ROUTE_STARTERUI);
+    sockhMainLoop (listenPort, starterProcessMsg, starterMainLoop, &starter);
+    if (gNewProfile) {
+      connDisconnectAll (starter.conn);
+      connFree (starter.conn);
+      logEnd ();
+      loglevel = bdjoptGetNum (OPT_G_DEBUGLVL);
+      logStart (lockName (ROUTE_STARTERUI), "st", loglevel);
+    }
+  }
   progstateFree (starter.progstate);
   logProcEnd (LOG_PROC, "starterui", "");
   logEnd ();
@@ -582,19 +596,22 @@ starterMainLoop (void *tstarter)
   char        ofn [MAXPATHLEN];
 
 
-  if (! stop) {
-    uiUIProcessEvents ();
+  uiUIProcessEvents ();
+
+  if (gNewProfile) {
+    return true;
   }
 
   if (! progstateIsRunning (starter->progstate)) {
     progstateProcess (starter->progstate);
     if (progstateCurrState (starter->progstate) == STATE_CLOSED) {
+      gStopProgram = true;
       stop = true;
     }
     if (gKillReceived) {
       logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
       progstateShutdownProcess (starter->progstate);
-      gKillReceived = 0;
+      gKillReceived = false;
     }
     return stop;
   }
@@ -785,7 +802,7 @@ starterMainLoop (void *tstarter)
   if (gKillReceived) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
     progstateShutdownProcess (starter->progstate);
-    gKillReceived = 0;
+    gKillReceived = false;
   }
   return stop;
 }
@@ -827,7 +844,7 @@ starterProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_EXIT_REQUEST: {
           logMsg (LOG_SESS, LOG_IMPORTANT, "got exit request");
           progstateShutdownProcess (starter->progstate);
-          gKillReceived = 0;
+          gKillReceived = false;
           break;
         }
         case MSG_START_MAIN: {
@@ -912,7 +929,7 @@ starterCloseCallback (void *udata)
 static void
 starterSigHandler (int sig)
 {
-  gKillReceived = 1;
+  gKillReceived = true;
 }
 
 static bool
@@ -942,9 +959,9 @@ starterStartManageui (void *udata)
 static bool
 starterStartRaffleGames (void *udata)
 {
-//  startui_t      *starter = udata;
+  startui_t      *starter = udata;
 
-//  starterCheckProfile (starter);
+  starterCheckProfile (starter);
 //  starter->processes [ROUTE_RAFFLE] = procutilStartProcess (
 //      ROUTE_RAFFLE, "bdj4raffle", NULL);
   return UICB_CONT;
@@ -1183,6 +1200,7 @@ starterGetProfiles (startui_t *starter)
   max = len > max ? len : max;
   starter->maxProfileWidth = (int) max;
   sysvarsSetNum (SVL_BDJIDX, starter->currprofile);
+  bdjvarsAdjustPorts ();
   return proflist;
 }
 
@@ -1194,8 +1212,15 @@ starterSetProfile (void *udata, int idx)
   int       profidx;
 
   profidx = uiSpinboxTextGetValue (starter->profilesel);
-  sysvarsSetNum (SVL_BDJIDX, profidx);
   disp = nlistGetStr (starter->proflist, profidx);
+
+  if (profidx != starter->currprofile) {
+    starter->currprofile = profidx;
+    sysvarsSetNum (SVL_BDJIDX, profidx);
+    bdjvarsAdjustPorts ();
+    gNewProfile = true;
+  }
+
   return disp;
 }
 
@@ -1210,13 +1235,15 @@ starterCheckProfile (startui_t *starter)
     profidx = sysvarsGetNum (SVL_BDJIDX);
 
     /* CONTEXT: starter: name of the new profile (New profile 9) */
-    snprintf (tbuff, sizeof (tbuff), "%s %d", _("New Profile"), profidx);
+    snprintf (tbuff, sizeof (tbuff), _("New Profile %d"), profidx);
     bdjoptSetStr (OPT_P_PROFILENAME, tbuff);
     bdjoptSave ();
     templateDisplaySettingsCopy ();
     /* do not re-run the new profile init */
     starter->newprofile = -1;
   }
+
+  uiWidgetDisable (uiSpinboxGetUIWidget (starter->profilesel));
 }
 
 
@@ -1522,6 +1549,7 @@ starterStopAllProcesses (void *udata)
   pid_t         pid;
   int           count;
 
+
   logProcBegin (LOG_PROC, "starterStopAllProcesses");
   fprintf (stderr, "stop-all-processes\n");
 
@@ -1575,7 +1603,7 @@ starterStopAllProcesses (void *udata)
   connSendMessage (starter->conn, ROUTE_MAIN, MSG_EXIT_REQUEST, NULL);
   logMsg (LOG_DBG, LOG_IMPORTANT, "sleeping");
   fprintf (stderr, "sleeping\n");
-  mssleep (1000);
+  mssleep (1500);
 
   count = starterCountProcesses (starter);
   if (count <= 1) {
@@ -1614,7 +1642,7 @@ starterStopAllProcesses (void *udata)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "sleeping");
   fprintf (stderr, "sleeping\n");
-  mssleep (1000);
+  mssleep (1500);
 
   /* see which lock files still exist and kill the processes */
   count = 0;
@@ -1643,7 +1671,7 @@ starterStopAllProcesses (void *udata)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "sleeping");
   fprintf (stderr, "sleeping\n");
-  mssleep (1000);
+  mssleep (1500);
 
   /* see which lock files still exist and kill the processes with */
   /* a signal that is not caught; remove the lock file */

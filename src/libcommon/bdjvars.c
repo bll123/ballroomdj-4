@@ -14,8 +14,6 @@
 #include "bdjstring.h"
 #include "bdjopt.h"
 
-static void   bdjvarsAdjustPorts (void);
-
 static char *   bdjvars [BDJV_MAX];
 static ssize_t  bdjvarsl [BDJVL_MAX];
 static bool     initialized = false;
@@ -82,13 +80,11 @@ bdjvarsSetStr (bdjvarkey_t idx, const char *str)
   bdjvars [idx] = strdup (str);
 }
 
-/* internal routines */
-
-static void
+void
 bdjvarsAdjustPorts (void)
 {
-  ssize_t     idx = sysvarsGetNum (SVL_BDJIDX);
-  uint16_t    port;
+  int       idx = sysvarsGetNum (SVL_BDJIDX);
+  uint16_t  port;
 
   port = sysvarsGetNum (SVL_BASEPORT) +
       bdjvarsGetNum (BDJVL_NUM_PORTS) * idx;
@@ -96,6 +92,8 @@ bdjvarsAdjustPorts (void)
     bdjvarsl [i] = port++;
   }
 }
+
+/* internal routines */
 
 inline bool
 bdjvarsIsInitialized (void)

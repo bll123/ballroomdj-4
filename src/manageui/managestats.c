@@ -17,6 +17,7 @@
 #include "musicq.h"
 #include "song.h"
 #include "tagdef.h"
+#include "tmutil.h"
 #include "ui.h"
 
 typedef struct managestats {
@@ -26,10 +27,11 @@ typedef struct managestats {
   UIWidget  songsdisp;
   UIWidget  tottimedisp;
   int       songcount;
-  time_t    tottime;
+  long      tottime;
 } managestats_t;
 
 static void manageStatsProcessData (managestats_t *managestats, char *data);
+static void manageStatsDisplayStats (managestats_t *managestats);
 
 
 managestats_t *
@@ -43,6 +45,7 @@ manageStatsInit (conn_t *conn, musicdb_t *musicdb)
   uiutilsUIWidgetInit (&managestats->vboxmain);
   uiutilsUIWidgetInit (&managestats->songsdisp);
   uiutilsUIWidgetInit (&managestats->tottimedisp);
+  managestats->songcount = 0;
   managestats->tottime = 0;
 
   return managestats;
@@ -131,7 +134,6 @@ manageStatsProcessData (managestats_t *managestats, char *data)
   dbidx_t           dbidx;
   ilistidx_t        danceIdx;
   song_t            *song;
-  long              qDuration;
 
   managestats->songcount = 0;
   managestats->tottime = 0;
@@ -141,8 +143,9 @@ manageStatsProcessData (managestats_t *managestats, char *data)
   if (ci != MUSICQ_A) {
     return;
   }
+
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
-  qDuration = atol (p);
+  managestats->tottime = atol (p);
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   while (p != NULL) {
@@ -161,5 +164,19 @@ manageStatsProcessData (managestats_t *managestats, char *data)
 
     p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   }
+
+  manageStatsDisplayStats (managestats);
+}
+
+static void
+manageStatsDisplayStats (managestats_t *managestats)
+{
+  char              tbuff [60];
+
+  tmutilToMS (managestats->tottime, tbuff, sizeof (tbuff));
+  uiLabelSetText (&managestats->tottimedisp, tbuff);
+
+  snprintf (tbuff, sizeof (tbuff), "%d", managestats->songcount);
+  uiLabelSetText (&managestats->songsdisp, tbuff);
 }
 

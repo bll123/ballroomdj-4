@@ -126,18 +126,18 @@ slistGetIdx (slist_t *list, char *sidx)
 {
   listkey_t   key;
 
-  key.strkey = sidx;
+  key.strkey = (char *) sidx;
   return listGetIdx (list, &key);
 }
 
 void *
-slistGetData (slist_t *list, char *sidx)
+slistGetData (slist_t *list, const char *sidx)
 {
   void            *value = NULL;
   listkey_t       key;
   slistidx_t      idx;
 
-  key.strkey = sidx;
+  key.strkey = (char *) sidx;
   idx = listGetIdx (list, &key);
   if (idx >= 0) {
     value = (char *) list->data [idx].value.data;
@@ -147,7 +147,7 @@ slistGetData (slist_t *list, char *sidx)
 }
 
 char *
-slistGetStr (slist_t *list, char *sidx)
+slistGetStr (slist_t *list, const char *sidx)
 {
   return slistGetData (list, sidx);
 }

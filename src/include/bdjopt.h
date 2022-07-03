@@ -87,6 +87,7 @@ typedef enum {
   OPT_P_REMCONTROLUSER,           // u d s
   OPT_P_REMOTECONTROL,            // u d s
   OPT_P_UI_ACCENT_COL,            // u d s
+  OPT_P_UI_PROFILE_COL,           // u d s
 } bdjoptkey_t;
 
 typedef enum {

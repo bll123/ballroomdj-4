@@ -178,6 +178,7 @@ enum {
   CONFUI_WIDGET_RC_PORT,
   CONFUI_WIDGET_RC_QR_CODE,
   CONFUI_WIDGET_UI_ACCENT_COLOR,
+  CONFUI_WIDGET_UI_PROFILE_COLOR,
   CONFUI_WIDGET_UI_FONT,
   CONFUI_WIDGET_UI_LISTING_FONT,
   CONFUI_ITEM_MAX,
@@ -1050,6 +1051,11 @@ confuiBuildUIGeneral (configui_t *confui)
   confuiMakeItemEntry (confui, &vbox, &sg, _("Profile Name"),
       CONFUI_ENTRY_PROFILE_NAME, OPT_P_PROFILENAME,
       bdjoptGetStr (OPT_P_PROFILENAME));
+
+  /* CONTEXT: configuration: the profile accent color (identifies profile) */
+  confuiMakeItemColorButton (confui, &vbox, &sg, _("Profile Colour"),
+      CONFUI_WIDGET_UI_PROFILE_COLOR, OPT_P_UI_PROFILE_COL,
+      bdjoptGetStr (OPT_P_UI_PROFILE_COL));
 
   /* CONTEXT: configuration: Whether to display BPM as BPM or MPM */
   confuiMakeItemSpinboxText (confui, &vbox, &sg, NULL, _("BPM"),
@@ -1951,6 +1957,7 @@ confuiPopulateOptions (configui_t *confui)
   GdkRGBA     gcolor;
   long        debug = 0;
   bool        accentcolorchanged = false;
+  bool        profilecolorchanged = false;
   bool        localechanged = false;
   bool        themechanged = false;
 
@@ -2051,6 +2058,11 @@ confuiPopulateOptions (configui_t *confui)
             accentcolorchanged = true;
           }
         }
+        if (i == CONFUI_WIDGET_UI_PROFILE_COLOR) {
+          if (strcmp (bdjoptGetStr (confui->uiitem [i].bdjoptIdx), sval) != 0) {
+            profilecolorchanged = true;
+          }
+        }
         if (i == CONFUI_SPINBOX_UI_THEME) {
           if (strcmp (bdjoptGetStr (confui->uiitem [i].bdjoptIdx), sval) != 0) {
             themechanged = true;
@@ -2139,6 +2151,12 @@ confuiPopulateOptions (configui_t *confui)
 
     if (i == CONFUI_WIDGET_UI_ACCENT_COLOR &&
         accentcolorchanged) {
+      templateImageCopy (sval);
+    }
+
+    if (i == CONFUI_WIDGET_UI_PROFILE_COLOR &&
+        profilecolorchanged) {
+// check this
       templateImageCopy (sval);
     }
 

@@ -39,6 +39,8 @@ bool      songAudioFileExists (song_t *song);
 void      songConvFavorite (datafileconv_t *conv);
 char *    songDisplayString (song_t *song, int tagidx);
 slist_t * songTagList (song_t *song);
+void      songSetDurCache (song_t *song, long dur);
+long      songGetDurCache (song_t *song);
 
 
 #endif /* INC_SONG */

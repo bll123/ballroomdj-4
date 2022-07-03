@@ -1,0 +1,13 @@
+BallroomDJ 4 Change Log
+
+4.0.0 alpha 2022-xxxx
+
+- Added statistics tab to the song list editor.
+- Fixed duration calculations for the music queue.
+- Cleaned up the marquee artist/title display.
+- Internal: rework fade-out timer.
+- Added configuration options for marquee text and info colors.
+  These are not accessible from the configuration screen.
+- Added configuration option for profile accent color.
+- starterui: profile handling.
+- fix alternate profiles

@@ -47,6 +47,7 @@ static const char * logTail (const char *fn);
 static bdjlog_t *syslogs [LOG_MAX];
 static char * logbasenm [LOG_MAX];
 static int  initialized = 0;
+static int  logsalloced = 0;
 
 void
 logClose (logidx_t idx)
@@ -173,6 +174,7 @@ logEnd (void)
       syslogs [idx] = NULL;
     }
   }
+  logsalloced = false;
 }
 
 bool
@@ -244,7 +246,8 @@ rlogStart (const char *processnm, const char *processtag,
   tmutilDstamp (tdt, sizeof (tdt));
 
   for (logidx_t idx = 0; idx < LOG_MAX; ++idx) {
-    pathbldMakePath (tnm, sizeof (tnm), logbasenm [idx], LOG_EXTENSION,          PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
+    pathbldMakePath (tnm, sizeof (tnm), logbasenm [idx], LOG_EXTENSION,
+        PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
     rlogOpen (idx, tnm, processtag, truncflag);
     syslogs [idx]->level |= level;
     if (idx != LOG_INSTALL && idx != LOG_GTK) {
@@ -301,6 +304,17 @@ logInit (void)
     logbasenm [LOG_INSTALL] = LOG_INSTALL_NAME;
     logbasenm [LOG_GTK] = LOG_GTK_NAME;
     for (logidx_t idx = LOG_ERR; idx < LOG_MAX; ++idx) {
+      syslogs [idx] = NULL;
+    }
+    initialized = 1;
+  }
+
+  if (! logsalloced) {
+    for (logidx_t idx = LOG_ERR; idx < LOG_MAX; ++idx) {
+      if (syslogs [idx] != NULL) {
+        continue;
+      }
+
       l = malloc (sizeof (bdjlog_t));
       l->opened = 0;
       l->indent = 0;
@@ -308,8 +322,7 @@ logInit (void)
       l->processTag = "unknown";
       syslogs [idx] = l;
     }
-//    osCatchSignal (logBacktraceHandler, SIGSEGV);
-    initialized = 1;
+    logsalloced = true;
   }
 }
 
