@@ -1,12 +1,13 @@
 syntax: regexp
 ~$
 ^bdj4-4
-^data/
 ^bin/
+^data/
 ^dev/
 # for the time being, ignore this (doxygen output)
 ^doxygen/
 ^http/
+^img/profile0[1-9]
 ^licenses/
 ^locale/locales.txt$
 ^locale/en

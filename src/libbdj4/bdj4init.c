@@ -199,6 +199,13 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
     fprintf (stderr, "Unable to chdir: %s\n", sysvarsGetStr (SV_BDJ4DATATOPDIR));
     exit (1);
   }
+
+  pathbldMakePath (tbuff, sizeof (tbuff),
+      "data", "", PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
+  if (! fileopIsDirectory (tbuff)) {
+    sysvarsSetNum (SVL_BDJIDX, 0);
+  }
+
   bdjoptInit ();
   tagdefInit ();
 

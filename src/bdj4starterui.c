@@ -109,6 +109,7 @@ typedef struct {
   int             mainstarted;
   int             stopwaitcount;
   nlist_t         *proflist;
+  nlist_t         *profidxlist;
   UICallback      callbacks [START_CALLBACK_MAX];
   startlinkcb_t   macoslinkcb [START_LINK_CB_MAX];
   uispinbox_t     *profilesel;
@@ -168,9 +169,9 @@ static bool     starterStartManageui (void *udata);
 static bool     starterStartConfig (void *udata);
 static bool     starterStartRaffleGames (void *udata);
 
-static nlist_t  * starterGetProfiles (startui_t *starter);
+static int      starterGetProfiles (startui_t *starter);
 static char     * starterSetProfile (void *udata, int idx);
-static void     starterCheckProfile (startui_t *starter);
+static int      starterCheckProfile (startui_t *starter);
 
 static bool     starterProcessSupport (void *udata);
 static void     starterWebResponseCallback (void *userdata, char *resp, size_t len);
@@ -194,6 +195,9 @@ static bool     starterForumLinkHandler (void *udata);
 static bool     starterTicketLinkHandler (void *udata);
 static void     starterLinkHandler (void *udata, int cbidx);
 
+static void     starterSetWindowPosition (startui_t *starter);
+static void     starterLoadOptions (startui_t *starter);
+
 static bool gKillReceived = false;
 static bool gNewProfile = false;
 static bool gStopProgram = false;
@@ -205,7 +209,6 @@ main (int argc, char *argv[])
   startui_t       starter;
   uint16_t        listenPort;
   char            *uifont;
-  char            tbuff [MAXPATHLEN];
   int             flags;
 
 
@@ -235,6 +238,7 @@ main (int argc, char *argv[])
   starter.mainstarted = 0;
   starter.stopwaitcount = 0;
   starter.proflist = NULL;
+  starter.profidxlist = NULL;
   for (int i = 0; i < START_LINK_CB_MAX; ++i) {
     starter.macoslinkcb [i].uri = NULL;
   }
@@ -242,6 +246,8 @@ main (int argc, char *argv[])
   uiutilsUIWidgetInit (&starter.supportStatus);
   uiutilsUIWidgetInit (&starter.supportSendFiles);
   uiutilsUIWidgetInit (&starter.supportSendDB);
+  starter.optiondf = NULL;
+  starter.options = NULL;
 
   procutilInitProcesses (starter.processes);
 
@@ -254,19 +260,7 @@ main (int argc, char *argv[])
 
   starter.profilesel = uiSpinboxTextInit ();
 
-  pathbldMakePath (tbuff, sizeof (tbuff),
-      STARTERUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
-  starter.optiondf = datafileAllocParse ("starterui-opt", DFTYPE_KEY_VAL, tbuff,
-      starteruidfkeys, STARTERUI_KEY_MAX, DATAFILE_NO_LOOKUP);
-  starter.options = datafileGetList (starter.optiondf);
-  if (starter.options == NULL) {
-    starter.options = nlistAlloc ("starterui-opt", LIST_ORDERED, free);
-
-    nlistSetNum (starter.options, STARTERUI_POSITION_X, -1);
-    nlistSetNum (starter.options, STARTERUI_POSITION_Y, -1);
-    nlistSetNum (starter.options, STARTERUI_SIZE_X, 1200);
-    nlistSetNum (starter.options, STARTERUI_SIZE_Y, 800);
-  }
+  starterLoadOptions (&starter);
 
   uiUIInitialize ();
   uifont = bdjoptGetStr (OPT_MP_UIFONT);
@@ -411,6 +405,9 @@ starterClosingCallback (void *udata, programstate_t programState)
   if (starter->proflist != NULL) {
     nlistFree (starter->proflist);
   }
+  if (starter->profidxlist != NULL) {
+    nlistFree (starter->profidxlist);
+  }
 
   logProcEnd (LOG_PROC, "starterClosingCallback", "");
   return STATE_FINISHED;
@@ -419,18 +416,18 @@ starterClosingCallback (void *udata, programstate_t programState)
 static void
 starterBuildUI (startui_t  *starter)
 {
-  UIWidget            uiwidget;
-  UIWidget            *uiwidgetp;
-  UIWidget            menubar;
-  UIWidget            menu;
-  UIWidget            menuitem;
-  UIWidget            vbox;
-  UIWidget            bvbox;
-  UIWidget            hbox;
-  UIWidget            sg;
-  char                imgbuff [MAXPATHLEN];
-  char                tbuff [MAXPATHLEN];
-  int                 x, y;
+  UIWidget  uiwidget;
+  UIWidget  *uiwidgetp;
+  UIWidget  menubar;
+  UIWidget  menu;
+  UIWidget  menuitem;
+  UIWidget  vbox;
+  UIWidget  bvbox;
+  UIWidget  hbox;
+  UIWidget  sg;
+  char      imgbuff [MAXPATHLEN];
+  char      tbuff [MAXPATHLEN];
+  int       dispidx;
 
   logProcBegin (LOG_PROC, "starterBuildUI");
   uiutilsUIWidgetInit (&vbox);
@@ -491,11 +488,12 @@ starterBuildUI (startui_t  *starter)
   uiBoxPackStart (&hbox, &uiwidget);
 
   /* get the profile list after bdjopt has been initialized */
-  starter->proflist = starterGetProfiles (starter);
+  dispidx = starterGetProfiles (starter);
   uiSpinboxTextCreate (starter->profilesel, starter);
-  uiSpinboxTextSet (starter->profilesel, starter->currprofile,
+  uiSpinboxTextSet (starter->profilesel, 0,
       nlistGetCount (starter->proflist), starter->maxProfileWidth,
       starter->proflist, NULL, starterSetProfile);
+  uiSpinboxTextSetValue (starter->profilesel, dispidx);
   uiwidgetp = uiSpinboxGetUIWidget (starter->profilesel);
   uiWidgetSetMarginStart (uiwidgetp, uiBaseMarginSz * 4);
   uiWidgetAlignHorizFill (uiwidgetp);
@@ -588,9 +586,7 @@ starterBuildUI (startui_t  *starter)
   uiBoxPackStart (&bvbox, &uiwidget);
   uiButtonAlignLeft (&uiwidget);
 
-  x = nlistGetNum (starter->options, STARTERUI_POSITION_X);
-  y = nlistGetNum (starter->options, STARTERUI_POSITION_Y);
-  uiWindowMove (&starter->window, x, y);
+  starterSetWindowPosition (starter);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", ".png", PATHBLD_MP_IMGDIR);
@@ -951,7 +947,9 @@ starterStartPlayerui (void *udata)
 {
   startui_t      *starter = udata;
 
-  starterCheckProfile (starter);
+  if (starterCheckProfile (starter) < 0) {
+    return UICB_STOP;
+  }
   starter->processes [ROUTE_PLAYERUI] = procutilStartProcess (
       ROUTE_PLAYERUI, "bdj4playerui", PROCUTIL_DETACH, NULL);
   uiWidgetDisable (&starter->manageuibutton);
@@ -963,7 +961,9 @@ starterStartManageui (void *udata)
 {
   startui_t      *starter = udata;
 
-  starterCheckProfile (starter);
+  if (starterCheckProfile (starter) < 0) {
+    return UICB_STOP;
+  }
   starter->processes [ROUTE_MANAGEUI] = procutilStartProcess (
       ROUTE_MANAGEUI, "bdj4manageui", PROCUTIL_DETACH, NULL);
   uiWidgetDisable (&starter->playeruibutton);
@@ -975,7 +975,9 @@ starterStartRaffleGames (void *udata)
 {
   startui_t      *starter = udata;
 
-  starterCheckProfile (starter);
+  if (starterCheckProfile (starter) < 0) {
+    return UICB_STOP;
+  }
 //  starter->processes [ROUTE_RAFFLE] = procutilStartProcess (
 //      ROUTE_RAFFLE, "bdj4raffle", NULL);
   return UICB_CONT;
@@ -986,7 +988,9 @@ starterStartConfig (void *udata)
 {
   startui_t      *starter = udata;
 
-  starterCheckProfile (starter);
+  if (starterCheckProfile (starter) < 0) {
+    return UICB_STOP;
+  }
   starter->processes [ROUTE_CONFIGUI] = procutilStartProcess (
       ROUTE_CONFIGUI, "bdj4configui", PROCUTIL_DETACH, NULL);
   return UICB_CONT;
@@ -1005,6 +1009,10 @@ starterProcessSupport (void *udata)
   char          uri [MAXPATHLEN];
   char          *builddate;
   char          *rlslvl;
+
+  if (starterCheckProfile (starter) < 0) {
+    return UICB_STOP;
+  }
 
   if (*starter->latestversion == '\0') {
     if (starter->webclient == NULL) {
@@ -1160,7 +1168,7 @@ starterSupportResponseHandler (void *udata, long responseid)
   return UICB_CONT;
 }
 
-static nlist_t *
+static int
 starterGetProfiles (startui_t *starter)
 {
   char        tbuff [MAXPATHLEN];
@@ -1168,15 +1176,22 @@ starterGetProfiles (startui_t *starter)
   int         count;
   size_t      max;
   size_t      len;
-  nlist_t     *dflist;
-  char        *pname;
+  nlist_t     *dflist = NULL;
+  char        *pname = NULL;
   int         availidx = -1;
-  nlist_t     *proflist;
+  nlist_t     *proflist = NULL;
+  nlist_t     *profidxlist = NULL;
+  bool        profileinuse = false;
+  int         dispidx = -1;
 
   starter->newprofile = -1;
   starter->currprofile = sysvarsGetNum (SVL_BDJIDX);
 
+  /* want the 'new profile' selection to always be last */
+  /* and its index may not be last */
+  /* use two lists, one with the display ordering, and an index list */
   proflist = nlistAlloc ("profile-list", LIST_ORDERED, free);
+  profidxlist = nlistAlloc ("profile-idx-list", LIST_ORDERED, NULL);
   max = 0;
 
   count = 0;
@@ -1185,37 +1200,76 @@ starterGetProfiles (startui_t *starter)
     pathbldMakePath (tbuff, sizeof (tbuff),
         BDJ_CONFIG_BASEFN, BDJ_CONFIG_EXT, PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
     if (fileopFileExists (tbuff)) {
-      if (i == starter->currprofile) {
-        pname = bdjoptGetStr (OPT_P_PROFILENAME);
-      } else {
-        df = datafileAllocParse ("bdjopt-prof", DFTYPE_KEY_VAL, tbuff,
-            bdjoptprofiledfkeys, bdjoptprofiledfcount, DATAFILE_NO_LOOKUP);
-        dflist = datafileGetList (df);
-        pname = nlistGetStr (dflist, OPT_P_PROFILENAME);
+      pid_t   pid;
+
+      pid = lockExists (lockName (ROUTE_STARTERUI), PATHBLD_MP_USEIDX);
+      if (pid > 0) {
+        /* do not add this selection to the profile list */
+        if (starter->currprofile == i) {
+          profileinuse = true;
+        }
+        continue;
       }
+
+      if (profileinuse) {
+        starter->currprofile = i;
+        profileinuse = false;
+      }
+
+      if (i == starter->currprofile) {
+        dispidx = count;
+      }
+
+      df = datafileAllocParse ("bdjopt-prof", DFTYPE_KEY_VAL, tbuff,
+          bdjoptprofiledfkeys, bdjoptprofiledfcount, DATAFILE_NO_LOOKUP);
+      dflist = datafileGetList (df);
+      pname = nlistGetStr (dflist, OPT_P_PROFILENAME);
+
       if (pname != NULL) {
         len = strlen (pname);
         max = len > max ? len : max;
-        nlistSetStr (proflist, i, pname);
+        nlistSetStr (proflist, count, pname);
+        nlistSetNum (profidxlist, count, i);
       }
       if (i != starter->currprofile) {
         datafileFree (df);
       }
       ++count;
     } else if (availidx == -1) {
+      if (i == starter->currprofile) {
+        profileinuse = true;
+      }
       availidx = i;
     }
   }
 
   /* CONTEXT: starter: selection to create a new profile */
-  nlistSetStr (proflist, availidx, _("New Profile"));
+  nlistSetStr (proflist, count, _("Create Profile"));
+  nlistSetNum (profidxlist, count, availidx);
   starter->newprofile = availidx;
   len = strlen (nlistGetStr (proflist, count));
   max = len > max ? len : max;
   starter->maxProfileWidth = (int) max;
+  if (profileinuse) {
+    dispidx = count;
+    starter->currprofile = availidx;
+  }
+
+  starter->proflist = proflist;
+  starter->profidxlist = profidxlist;
+
   sysvarsSetNum (SVL_BDJIDX, starter->currprofile);
+
+  if (starter->currprofile != starter->newprofile) {
+    bdjoptInit ();
+    uiLabelSetBackgroundColor (&starter->profileAccent,
+        bdjoptGetStr (OPT_P_UI_PROFILE_COL));
+    starterLoadOptions (starter);
+    starterSetWindowPosition (starter);
+  }
+
   bdjvarsAdjustPorts ();
-  return proflist;
+  return dispidx;
 }
 
 static char *
@@ -1223,17 +1277,20 @@ starterSetProfile (void *udata, int idx)
 {
   startui_t *starter = udata;
   char      *disp;
+  int       dispidx;
   int       profidx;
 
-  profidx = uiSpinboxTextGetValue (starter->profilesel);
-  disp = nlistGetStr (starter->proflist, profidx);
+  dispidx = uiSpinboxTextGetValue (starter->profilesel);
+  disp = nlistGetStr (starter->proflist, dispidx);
+  profidx = nlistGetNum (starter->profidxlist, dispidx);
 
-  if (profidx != starter->currprofile) {
+  if (profidx != starter->currprofile && profidx != starter->newprofile) {
     starter->currprofile = profidx;
     sysvarsSetNum (SVL_BDJIDX, profidx);
 
     bdjoptInit ();
 
+    uiLabelSetText (&starter->statusMsg, "");
     uiLabelSetBackgroundColor (&starter->profileAccent,
         bdjoptGetStr (OPT_P_UI_PROFILE_COL));
 
@@ -1244,9 +1301,13 @@ starterSetProfile (void *udata, int idx)
   return disp;
 }
 
-static void
+static int
 starterCheckProfile (startui_t *starter)
 {
+  int   rc;
+
+  uiLabelSetText (&starter->statusMsg, "");
+
   if (sysvarsGetNum (SVL_BDJIDX) == starter->newprofile) {
     char  tbuff [100];
     int   profidx;
@@ -1276,7 +1337,15 @@ starterCheckProfile (startui_t *starter)
     starter->newprofile = -1;
   }
 
-  uiWidgetDisable (uiSpinboxGetUIWidget (starter->profilesel));
+  rc = lockAcquire (lockName (ROUTE_STARTERUI), PATHBLD_MP_USEIDX);
+  if (rc < 0) {
+    /* CONTEXT: starter: profile is already in use */
+    uiLabelSetText (&starter->statusMsg, _("Profile in use"));
+  } else {
+    uiWidgetDisable (uiSpinboxGetUIWidget (starter->profilesel));
+  }
+
+  return rc;
 }
 
 
@@ -1795,3 +1864,40 @@ starterLinkHandler (void *udata, int cbidx)
   }
 }
 
+static void
+starterSetWindowPosition (startui_t *starter)
+{
+  int   x, y;
+
+  x = nlistGetNum (starter->options, STARTERUI_POSITION_X);
+  y = nlistGetNum (starter->options, STARTERUI_POSITION_Y);
+  uiWindowMove (&starter->window, x, y);
+}
+
+static void
+starterLoadOptions (startui_t *starter)
+{
+  char  tbuff [MAXPATHLEN];
+
+  if (starter->optiondf != NULL) {
+    datafileFree (starter->optiondf);
+  } else if (starter->options != NULL) {
+    nlistFree (starter->options);
+  }
+  starter->optiondf = NULL;
+  starter->options = NULL;
+
+  pathbldMakePath (tbuff, sizeof (tbuff),
+      STARTERUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
+  starter->optiondf = datafileAllocParse ("starterui-opt", DFTYPE_KEY_VAL, tbuff,
+      starteruidfkeys, STARTERUI_KEY_MAX, DATAFILE_NO_LOOKUP);
+  starter->options = datafileGetList (starter->optiondf);
+  if (starter->options == NULL) {
+    starter->options = nlistAlloc ("starterui-opt", LIST_ORDERED, free);
+
+    nlistSetNum (starter->options, STARTERUI_POSITION_X, -1);
+    nlistSetNum (starter->options, STARTERUI_POSITION_Y, -1);
+    nlistSetNum (starter->options, STARTERUI_SIZE_X, 1200);
+    nlistSetNum (starter->options, STARTERUI_SIZE_Y, 800);
+  }
+}

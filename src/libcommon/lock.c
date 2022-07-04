@@ -45,8 +45,9 @@ lockName (bdjmsgroute_t route)
   return locknames [route];
 }
 
-  /* returns PID if the process exists            */
-  /* returns 0 if no lock exists or no process exists for this lock */
+/* returns PID if the process exists */
+/* returns 0 if no lock exists or the lock belongs to this process, */
+/* or if no process exists for this lock */
 pid_t
 lockExists (char *fn, int flags)
 {
@@ -61,6 +62,9 @@ lockExists (char *fn, int flags)
   process.hasHandle = false;
   if (fpid == -1 || procutilExists (&process) != 0) {
     fileopDelete (tfn);
+    fpid = 0;
+  }
+  if (fpid == getpid ()) {
     fpid = 0;
   }
   return fpid;
@@ -94,6 +98,10 @@ lockAcquirePid (char *fn, pid_t pid, int flags)
   while (fd < 0 && count < 30) {
     /* check for detached lock file */
     pid_t fpid = getPidFromFile (tfn);
+    if (fpid == pid) {
+      /* our own lock, this is ok */
+      return 0;
+    }
     if (fpid > 0) {
       process.pid = fpid;
       process.hasHandle = false;

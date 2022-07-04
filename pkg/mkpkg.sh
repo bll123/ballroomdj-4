@@ -29,6 +29,7 @@ function copysrcfiles {
 
   echo "   removing exclusions"
   test -d ${stage}/src/build && rm -rf ${stage}/src/build
+  rm -rf ${stage}/img/profile0[1-9]
 }
 
 function copyreleasefiles {
@@ -76,6 +77,7 @@ function copyreleasefiles {
       ${stage}/plocal/bin/libcheck-*.dll \
       ${stage}/plocal/bin/ocspcheck.exe \
       ${stage}/plocal/bin/openssl.exe
+  rm -rf ${stage}/img/profile0[1-9]
 }
 
 function setLibVol {
