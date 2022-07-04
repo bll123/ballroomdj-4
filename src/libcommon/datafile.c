@@ -319,7 +319,7 @@ datafileParseMerge (list_t *datalist, char *data, char *name,
   ssize_t       lval = 0;
   double        dval = 0.0;
   char          *tkeystr;
-  char          *tvalstr;
+  char          *tvalstr = NULL;
   char          *tlookupkey = NULL;
   datafileconv_t conv;
 

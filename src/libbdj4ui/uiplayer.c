@@ -171,7 +171,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiWidgetMakePersistent (&uiplayer->pausePixbuf);
 
   pathbldMakePath (tbuff, sizeof (tbuff), "button_repeat", ".svg",
-      PATHBLD_MP_IMGDIR);
+      PATHBLD_MP_IMGDIR | PATHBLD_MP_USEIDX);
   uiImageFromFile (&uiplayer->repeatPixbuf, tbuff);
   uiImageGetPixbuf (&uiplayer->repeatPixbuf);
   uiWidgetMakePersistent (&uiplayer->repeatPixbuf);
@@ -318,7 +318,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiBoxPackStart (&hbox, &uiwidget);
 
   pathbldMakePath (tbuff, sizeof (tbuff), "button_repeat", ".svg",
-      PATHBLD_MP_IMGDIR);
+      PATHBLD_MP_IMGDIR | PATHBLD_MP_USEIDX);
   uiCreateToggleButton (&uiplayer->repeatButton, "",
       /* CONTEXT: button: tooltip: toggle the repeat song on and off */
       tbuff, _("Toggle Repeat"), NULL, 0);
