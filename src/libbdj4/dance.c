@@ -28,7 +28,7 @@ typedef struct dance {
 static void danceConvSpeed (datafileconv_t *conv);
 static void danceConvTimeSig (datafileconv_t *conv);
 
-  /* must be sorted in ascii order */
+/* must be sorted in ascii order */
 static datafilekey_t dancedfkeys [DANCE_KEY_MAX] = {
   { "ANNOUNCE",   DANCE_ANNOUNCE, VALUE_STR, NULL, -1 },
   { "DANCE",      DANCE_DANCE,    VALUE_STR, NULL, -1 },

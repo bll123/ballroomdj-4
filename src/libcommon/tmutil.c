@@ -215,11 +215,16 @@ tmutilShortTstamp (char *buff, size_t max)
 char *
 tmutilToMS (time_t ms, char *buff, size_t max)
 {
-  time_t     m, s;
+  time_t     h, m, s;
 
-  m = ms / 1000 / 60;
-  s = (ms - (m * 1000 * 60)) / 1000;
-  snprintf (buff, max, "%2zd:%02zd", m, s);
+  h = ms / 60 / 60 / 1000;
+  m = ((ms / 1000) - (h * 60 * 60)) / 60;
+  s = (ms / 1000) - (h * 60 * 60) - (m * 60);
+  if (h > 0) {
+    snprintf (buff, max, "%2zd:%02zd:%02zd", h, m, s);
+  } else {
+    snprintf (buff, max, "%2zd:%02zd", m, s);
+  }
   return buff;
 }
 

@@ -158,7 +158,7 @@ tclean:
 	@find .. -name '*.orig' -print0 | xargs -0 rm -f
 	@-$(RM) -f w ww ../w ../ww ../*/w ../*/ww po/w ../asan.* ./asan.*
 	@-$(RM) -f ../vlc-log.txt vlc-log.txt
-	@-$(RM) -f ../vgcore.* ../core gmon.out
+	@-$(RM) -f ../vgcore.* ../core gmon.out ../gmon.out
 	@-$(RM) -f launcher.rc bdj4_icon.ico
 	@-$(RM) -f selauncher.rc bdj4_icon_inst.ico
 	@-$(RM) -f si-in.txt si-sort.txt
