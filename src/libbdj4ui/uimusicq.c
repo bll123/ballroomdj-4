@@ -44,6 +44,8 @@ uimusicqInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
   uimusicq->uniqueList = NULL;
   uimusicq->dispList = NULL;
   uimusicq->workList = NULL;
+  uimusicq->statusMsg = NULL;
+
   for (int i = 0; i < MUSICQ_MAX; ++i) {
     int     sz;
 

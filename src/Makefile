@@ -16,6 +16,9 @@ CLANGXX = clang++
 debug-gtk:
 	BDJ4_BUILD=Debug-gtk $(MAKE) cmake
 
+profile-gtk:
+	BDJ4_BUILD=Profile-gtk $(MAKE) cmake
+
 debug-clang-gtk:
 	BDJ4_BUILD=Debug-gtk $(MAKE) cmakeclang
 

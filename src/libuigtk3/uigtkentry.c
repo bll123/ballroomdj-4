@@ -23,7 +23,7 @@ typedef struct uientry {
   UIWidget        uientry;
   int             entrySize;
   int             maxSize;
-  uiutilsentryval_t validateFunc;
+  uientryval_t    validateFunc;
   mstime_t        validateTimer;
   void            *udata;
   bool            valdelay : 1;
@@ -148,7 +148,7 @@ uiEntrySetColor (uientry_t *entry, const char *color)
 }
 
 void
-uiEntrySetValidate (uientry_t *entry, uiutilsentryval_t valfunc, void *udata,
+uiEntrySetValidate (uientry_t *entry, uientryval_t valfunc, void *udata,
     int valdelay)
 {
   entry->validateFunc = valfunc;

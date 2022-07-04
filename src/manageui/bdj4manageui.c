@@ -52,6 +52,7 @@
 #include "uisongedit.h"
 #include "uisongfilter.h"
 #include "uisongsel.h"
+#include "validate.h"
 
 enum {
   MANAGE_TAB_OTHER,
@@ -372,6 +373,32 @@ main (int argc, char *argv[])
   logProcEnd (LOG_PROC, "manageui", "");
   logEnd ();
   return status;
+}
+
+int
+manageValidateName (uientry_t *entry, void *udata, bool chgflag)
+{
+  UIWidget    *statusMsg = udata;
+  int         rc;
+  const char  *str;
+  char        tbuff [200];
+  const char  *valstr;
+
+  rc = UIENTRY_OK;
+  if (statusMsg != NULL) {
+    uiLabelSetText (statusMsg, "");
+  }
+  str = uiEntryGetValue (entry);
+  valstr = validate (str, VAL_NOT_EMPTY | VAL_NO_SLASHES);
+  if (valstr != NULL) {
+    if (statusMsg != NULL) {
+      snprintf (tbuff, sizeof (tbuff), valstr, str);
+      uiLabelSetText (statusMsg, tbuff);
+    }
+    rc = UIENTRY_ERROR;
+  }
+
+  return rc;
 }
 
 /* internal routines */
@@ -755,7 +782,8 @@ manageBuildUISongListEditor (manageui_t *manage)
   uiCreateHorizBox (&hbox);
   uiBoxPackStartExpand (&mainhbox, &hbox);
 
-  uiwidgetp = uimusicqBuildUI (manage->slezmusicq, &manage->window, MUSICQ_A);
+  uiwidgetp = uimusicqBuildUI (manage->slezmusicq, &manage->window, MUSICQ_A,
+      &manage->statusMsg, manageValidateName);
   uiBoxPackStartExpand (&hbox, uiwidgetp);
 
   uiCreateVertBox (&vbox);
@@ -775,7 +803,8 @@ manageBuildUISongListEditor (manageui_t *manage)
   uiBoxPackStartExpand (&hbox, uiwidgetp);
 
   /* song list editor: music queue tab */
-  uiwidgetp = uimusicqBuildUI (manage->slmusicq, &manage->window, MUSICQ_A);
+  uiwidgetp = uimusicqBuildUI (manage->slmusicq, &manage->window, MUSICQ_A,
+      &manage->statusMsg, manageValidateName);
   /* CONTEXT: name of song list notebook tab */
   uiCreateLabel (&uiwidget, _("Song List"));
   uiNotebookAppendPage (&notebook, uiwidgetp, &uiwidget);
@@ -1923,3 +1952,4 @@ manageSendBPMCounter (manageui_t *manage)
       manage->currbpmsel, MSG_ARGS_RS, manage->currtimesig);
   connSendMessage (manage->conn, ROUTE_BPM_COUNTER, MSG_BPM_TIMESIG, tbuff);
 }
+

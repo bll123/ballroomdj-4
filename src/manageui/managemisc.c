@@ -19,13 +19,6 @@
 #include "playlist.h"
 #include "ui.h"
 
-void
-manageSetStatusMsg (UIWidget *statusMsg, const char *msg)
-{
-  uiLabelSetText (statusMsg, msg);
-}
-
-
 static void manageCopyPlaylistFiles (const char *oldname, const char *newname);
 
 void
@@ -90,7 +83,7 @@ manageCreatePlaylistCopy (UIWidget *statusMsg,
   if (fileopFileExists (tbuff)) {
     /* CONTEXT: failure status message */
     snprintf (tbuff, sizeof (tbuff), _("Copy already exists."));
-    manageSetStatusMsg (statusMsg, tbuff);
+    uiLabelSetText (statusMsg, tbuff);
     rc = false;
   }
   if (rc) {

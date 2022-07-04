@@ -61,6 +61,7 @@ typedef struct uimusicq {
   dispselsel_t    dispselType;
   UIWidget        *parentwin;
   UIWidget        pausePixbuf;
+  UIWidget        *statusMsg;
   UICallback      *newselcb;
   UICallback      *editcb;
   UICallback      queueplcb;
@@ -112,7 +113,7 @@ void  uimusicqSetEditCallback (uimusicq_t *uimusicq, UICallback *uicb);
 /* uimusicqgtk.c */
 void      uimusicqUIInit (uimusicq_t *uimusicq);
 void      uimusicqUIFree (uimusicq_t *uimusicq);
-UIWidget  * uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci);
+UIWidget  * uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci, UIWidget *statusMsg, uientryval_t validateFunc);
 void      uimusicqUIMainLoop (uimusicq_t *uimuiscq);
 void      uimusicqSetSelectionFirst (uimusicq_t *uimusicq, int mqidx);
 ssize_t   uimusicqGetSelection (uimusicq_t *uimusicq);

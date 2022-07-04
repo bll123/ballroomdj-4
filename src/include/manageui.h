@@ -10,6 +10,9 @@ enum {
   MANAGE_DB_COUNT_SAVE = 10,
 };
 
+/* bdj4manageui.c */
+int manageValidateName (uientry_t *entry, void *udata, bool chgflag);
+
 /* managepl.c */
 typedef struct managepl managepl_t;
 

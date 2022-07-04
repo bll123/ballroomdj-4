@@ -1170,6 +1170,11 @@ installerMakeTarget (installer_t *installer)
   if (fileopFileExists (tbuff)) {
     char *nm, *ver, *build, *bdate, *rlvl;
 
+    nm = "";
+    ver = "";
+    build = "";
+    bdate = "";
+    rlvl = "";
     data = filedataReadAll (tbuff, NULL);
     tp = strtok_r (data, "\r\n", &tokptr);
     while (tp != NULL) {

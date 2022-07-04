@@ -150,7 +150,7 @@ void uiButtonSetFlat (UIWidget *uiwidget);
 
 /* uigtkentry.c */
 typedef struct uientry uientry_t;
-typedef int (*uiutilsentryval_t)(uientry_t *entry, void *udata, bool chgflag);
+typedef int (*uientryval_t)(uientry_t *entry, void *udata, bool chgflag);
 
 enum {
   UIENTRY_IMMEDIATE,
@@ -174,7 +174,7 @@ const char * uiEntryGetValue (uientry_t *entry);
 void uiEntrySetValue (uientry_t *entry, const char *value);
 void uiEntrySetColor (uientry_t *entry, const char *color);
 void uiEntrySetValidate (uientry_t *entry,
-    uiutilsentryval_t valfunc, void *udata, int valdelay);
+    uientryval_t valfunc, void *udata, int valdelay);
 int uiEntryValidate (uientry_t *entry, bool forceflag);
 int uiEntryValidateDir (uientry_t *edata, void *udata, bool chgflag);
 int uiEntryValidateFile (uientry_t *edata, void *udata, bool chgflag);

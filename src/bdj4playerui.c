@@ -86,6 +86,7 @@ typedef struct {
   UIWidget        marqueeFontSizeDialog;
   UIWidget        marqueeSpinBox;
   /* ui major elements */
+  UIWidget        statusMsg;
   uiplayer_t      *uiplayer;
   uimusicq_t      *uimusicq;
   uisongsel_t     *uisongsel;
@@ -364,6 +365,11 @@ pluiBuildUI (playerui_t *plui)
   uiLabelSetBackgroundColor (&uiwidget, bdjoptGetStr (OPT_P_UI_PROFILE_COL));
   uiBoxPackEnd (&hbox, &uiwidget);
 
+  uiCreateLabel (&uiwidget, "");
+  uiLabelSetColor (&uiwidget, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
+  uiBoxPackEnd (&hbox, &uiwidget);
+  uiutilsUIWidgetCopy (&plui->statusMsg, &uiwidget);
+
   uiCreateMenubar (&menubar);
   uiBoxPackStart (&hbox, &menubar);
 
@@ -431,7 +437,8 @@ pluiBuildUI (playerui_t *plui)
   for (musicqidx_t i = 0; i < MUSICQ_MAX; ++i) {
     /* music queue tab */
 
-    uiwidgetp = uimusicqBuildUI (plui->uimusicq, &plui->window, i);
+    uiwidgetp = uimusicqBuildUI (plui->uimusicq, &plui->window, i,
+        &plui->statusMsg, NULL);
     uiCreateHorizBox (&hbox);
     str = bdjoptGetStr (OPT_P_QUEUE_NAME_A + i);
     uiCreateLabel (&uiwidget, str);

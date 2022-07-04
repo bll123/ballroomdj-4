@@ -325,6 +325,7 @@ webclientDebugCallback (CURL *curl, curl_infotype type, char *data,
     return 0;
   }
 
+  tag = "";
   switch (type) {
     case CURLINFO_SSL_DATA_IN:
     case CURLINFO_SSL_DATA_OUT:

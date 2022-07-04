@@ -188,6 +188,7 @@ updaterCleanFiles (void)
 
   pathbldMakePath (fname, sizeof (fname),
       "cleanuplist", BDJ4_CONFIG_EXT, PATHBLD_MP_INSTDIR);
+  basedir = sysvarsGetStr (SV_BDJ4MAINDIR);
 
   fh = fileopOpen (fname, "r");
   if (fh != NULL) {

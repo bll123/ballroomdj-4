@@ -202,6 +202,7 @@ remctrlEventHandler (struct mg_connection *c, int ev,
     mg_url_decode (hm->query.ptr, hm->query.len, querystr, sizeof (querystr), 1);
 
     *tbuff = '\0';
+    qstrptr = NULL;
     if (*querystr) {
       logMsg (LOG_DBG, LOG_BASIC, "process: %s", querystr);
 

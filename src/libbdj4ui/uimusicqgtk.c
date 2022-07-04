@@ -118,7 +118,8 @@ uimusicqUIFree (uimusicq_t *uimusicq)
 }
 
 UIWidget *
-uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci)
+uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci,
+    UIWidget *statusMsg, uientryval_t validateFunc)
 {
   int               tci;
   char              tbuff [MAXPATHLEN];
@@ -137,6 +138,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci)
   tci = uimusicq->musicqManageIdx;
   uimusicq->musicqManageIdx = ci;
   uiw = uimusicq->ui [ci].uiWidgets;
+  uimusicq->statusMsg = statusMsg;
 
   uimusicq->ui [ci].hasui = true;
 
@@ -268,6 +270,9 @@ uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci)
     uientry_t   *entryp;
     entryp = uimusicq->ui [ci].slname;
     uiEntryCreate (entryp);
+    if (validateFunc != NULL) {
+      uiEntrySetValidate (entryp, validateFunc, statusMsg, false);
+    }
     uiEntrySetColor (entryp, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
     uiBoxPackEnd (&hbox, uiEntryGetUIWidget (entryp));
 
@@ -365,7 +370,7 @@ void
 uimusicqMusicQueueSetSelected (uimusicq_t *uimusicq, int mqidx, int which)
 {
   GtkTreeModel      *model;
-  gboolean          valid;
+  gboolean          valid = false;
   GtkTreeIter       iter;
   int               count;
   uimusicqgtk_t     *uiw;

@@ -1477,6 +1477,8 @@ playerSendStatus (playerdata_t *playerData)
     dur = pq->dur;
   }
 
+  playstate = "stop";
+
   if (! progstateIsRunning (playerData->progstate)) {
     playstate = "stop";
     dur = 0;

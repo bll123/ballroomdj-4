@@ -639,9 +639,9 @@ uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args)
   char          tbuff [100];
   double        dval;
   double        ddur;
-  ssize_t       timeleft;
-  ssize_t       position;
-  ssize_t       dur;
+  ssize_t       timeleft = 0;
+  ssize_t       position = 0;
+  ssize_t       dur = 0;
 
   logProcBegin (LOG_PROC, "uiplayerProcessPlayerStatusData");
 
@@ -688,10 +688,8 @@ uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args)
 
   /* playedtime */
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
-  if (! uiplayer->seekLock) {
-    position = atol (p);
-    dval = atof (p);    // used below
-  }
+  position = atol (p);
+  dval = atof (p);    // used below
 
   /* duration */
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);

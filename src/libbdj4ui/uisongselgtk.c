@@ -1152,7 +1152,7 @@ uisongselMoveSelection (void *udata, int where)
   char            *pathstr;
   int             count;
   int             valid;
-  int             loc;
+  int             loc = -1;
   dbidx_t         nidx;
   bool            scrolled = false;
 

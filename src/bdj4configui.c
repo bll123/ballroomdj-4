@@ -2998,8 +2998,8 @@ confuiLoadLocaleList (configui_t *confui)
   nlist_t       *llist;
   int           count;
   bool          found;
-  int           engbidx;
-  int           shortidx;
+  int           engbidx = 0;
+  int           shortidx = 0;
 
   logProcBegin (LOG_PROC, "confuiLoadLocaleList");
 
@@ -4871,7 +4871,7 @@ confuiDanceSpinboxChg (void *udata, int widx)
   int             count;
   long            idx;
   double          value;
-  long            nval;
+  long            nval = 0;
   ilistidx_t      key;
   dance_t         *dances;
   int             didx;

@@ -90,7 +90,7 @@ uiLabelSetBackgroundColor (UIWidget *uiwidget, const char *color)
 inline void
 uiLabelSetText (UIWidget *uiwidget, const char *text)
 {
-  if (uiwidget->widget == NULL) {
+  if (uiwidget == NULL || uiwidget->widget == NULL) {
     return;
   }
 

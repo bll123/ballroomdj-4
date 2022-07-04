@@ -118,6 +118,8 @@ manageBuildUISequence (manageseq_t *manageseq, UIWidget *vboxp)
   uiBoxPackStart (&hbox, &uiwidget);
 
   uiEntryCreate (manageseq->seqname);
+  uiEntrySetValidate (manageseq->seqname, manageValidateName,
+      manageseq->statusMsg, false);
   uiEntrySetColor (manageseq->seqname, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
   /* CONTEXT: sequence: default name for a new sequence */
   manageSetSequenceName (manageseq, _("New Sequence"));
