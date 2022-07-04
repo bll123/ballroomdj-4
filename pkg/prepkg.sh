@@ -68,7 +68,8 @@ fi
 
 ./src/utils/makehtmllist.sh
 
-cp -pf templates/*.svg img
+test -d img/profile00 || mkdir -p img/profile00
+cp -pf templates/*.svg img/profile00
 
 # on windows, copy all of the required .dll files to plocal/bin
 # this must be done after the build and before the manifest is created.

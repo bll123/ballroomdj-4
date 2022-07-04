@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4 4.0.0\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
-"POT-Creation-Date: 2022-06-29\n"
-"PO-Revision-Date: 2022-06-29\n"
+"POT-Creation-Date: 2022-07-04\n"
+"PO-Revision-Date: 2022-07-04\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/us\n"
 "Language: en\n"
@@ -392,6 +392,10 @@ msgstr ""
 #. CONTEXT: menu selection: playlist: edit menu: create copy
 #. CONTEXT: menu selection: sequence: edit menu: create copy
 msgid "Create Copy"
+msgstr ""
+
+#. CONTEXT: starter: selection to create a new profile
+msgid "Create Profile"
 msgstr ""
 
 #. CONTEXT: installer: status message
@@ -969,9 +973,9 @@ msgstr ""
 msgid "New Playlist"
 msgstr ""
 
-#. CONTEXT: starter: selection to create a new profile
 #. CONTEXT: starter: name of the new profile (New profile 9)
-msgid "New Profile"
+#, c-format
+msgid "New Profile %d"
 msgstr ""
 
 #. CONTEXT: configuration: rating name that is set when adding a new rating
@@ -1158,8 +1162,16 @@ msgstr ""
 msgid "Profile"
 msgstr ""
 
+#. CONTEXT: configuration: the profile accent color (identifies profile)
+msgid "Profile Colour"
+msgstr "Profile Color"
+
 #. CONTEXT: configuration: the name of this profile
 msgid "Profile Name"
+msgstr ""
+
+#. CONTEXT: starter: profile is already in use
+msgid "Profile in use"
 msgstr ""
 
 #. CONTEXT: configuration: remote control: the link to display the QR code for remote control
@@ -1418,7 +1430,7 @@ msgstr ""
 #. CONTEXT: label for song list name
 #. CONTEXT: file type for the file selection dialog (song list)
 #. CONTEXT: name of easy song list song selection tab
-#. CONTEXT: name of easy song list notebook tab
+#. CONTEXT: name of song list notebook tab
 #. CONTEXT: playlist management: type of playlist
 msgid "Song List"
 msgstr ""
@@ -1430,6 +1442,9 @@ msgstr ""
 
 #. CONTEXT: label: time to start the song
 msgid "Song Start"
+msgstr ""
+
+msgid "Songs"
 msgstr ""
 
 #. CONTEXT: a filter: select the method to sort the song selection display
@@ -1464,6 +1479,10 @@ msgstr ""
 
 #. CONTEXT: configuration: the startup script to run before starting the player.  Used on Linux.
 msgid "Startup Script"
+msgstr ""
+
+#. CONTEXT: name of statistics tab
+msgid "Statistics"
 msgstr ""
 
 #. CONTEXT: configuration: filter display: checkbox: status
@@ -1560,6 +1579,9 @@ msgstr ""
 
 #. CONTEXT: database update: status message: total number of files found
 msgid "Total Files"
+msgstr ""
+
+msgid "Total Time"
 msgstr ""
 
 #. CONTEXT: label: track number
