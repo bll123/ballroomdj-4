@@ -166,7 +166,7 @@ main (int argc, char *argv[])
   bpmcounter.conn = connInit (ROUTE_BPM_COUNTER);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
-      BPMCOUNTER_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_USEIDX);
+      BPMCOUNTER_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
   bpmcounter.optiondf = datafileAllocParse ("bpmcounter-opt", DFTYPE_KEY_VAL, tbuff,
       bpmcounteruidfkeys, BPMCOUNTER_KEY_MAX, DATAFILE_NO_LOOKUP);
   bpmcounter.options = datafileGetList (bpmcounter.optiondf);
@@ -275,7 +275,7 @@ bpmcounterClosingCallback (void *udata, programstate_t programState)
   bdj4shutdown (ROUTE_BPM_COUNTER, NULL);
 
   pathbldMakePath (fn, sizeof (fn),
-      BPMCOUNTER_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_USEIDX);
+      BPMCOUNTER_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
   datafileSaveKeyVal ("bpmcounter", fn, bpmcounteruidfkeys, BPMCOUNTER_KEY_MAX, bpmcounter->options);
 
   if (bpmcounter->optiondf != NULL) {

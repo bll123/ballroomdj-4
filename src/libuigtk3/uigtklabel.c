@@ -77,6 +77,16 @@ uiLabelSetFont (UIWidget *uiwidget, const char *font)
 }
 
 
+void
+uiLabelSetBackgroundColor (UIWidget *uiwidget, const char *color)
+{
+  char  tbuff [200];
+
+  snprintf (tbuff, sizeof (tbuff),
+      "label { background-color: %s; }", color);
+  uiSetCss (uiwidget->widget, tbuff);
+}
+
 inline void
 uiLabelSetText (UIWidget *uiwidget, const char *text)
 {

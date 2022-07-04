@@ -24,10 +24,7 @@ pathbldMakePath (char *buff, size_t buffsz,
   *dstamp = '\0';
 
   dirprefix = ".";   /* default to current directory if no path specified */
-  /* MP_USEIDX and MP_HOSTNAME imply the data directory */
-  if ((flags & PATHBLD_MP_DATA) == PATHBLD_MP_DATA ||
-      (flags & PATHBLD_MP_USEIDX) == PATHBLD_MP_USEIDX ||
-      (flags & PATHBLD_MP_HOSTNAME) == PATHBLD_MP_HOSTNAME) {
+  if ((flags & PATHBLD_MP_DATA) == PATHBLD_MP_DATA) {
     dirprefix = sysvarsGetStr (SV_BDJ4DATADIR);
   }
   if ((flags & PATHBLD_MP_TMPDIR) == PATHBLD_MP_TMPDIR) {

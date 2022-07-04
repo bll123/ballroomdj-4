@@ -9,6 +9,8 @@
 #include <ctype.h>
 #include <math.h>
 
+#include "bdj4.h"
+#include "pathbld.h"
 #include "ui.h"
 
 typedef struct uiswitch {
@@ -26,6 +28,7 @@ uiCreateSwitch (int value)
 {
   uiswitch_t  *uiswitch;
   GtkWidget   *widget;
+  char        tbuff [MAXPATHLEN];
 
   /* the gtk switch is different in every theme, some of which are not */
   /* great.  use a toggle button instead and set our own image */
@@ -35,9 +38,13 @@ uiCreateSwitch (int value)
   uiutilsUIWidgetInit (&uiswitch->switchoffimg);
   uiutilsUIWidgetInit (&uiswitch->switchonimg);
 
-  uiImageFromFile (&uiswitch->switchoffimg, "img/switch-off.svg");
+  pathbldMakePath (tbuff, sizeof (tbuff), "switch-off", ".svg",
+      PATHBLD_MP_IMGDIR | PATHBLD_MP_USEIDX);
+  uiImageFromFile (&uiswitch->switchoffimg, tbuff);
   uiWidgetMakePersistent (&uiswitch->switchoffimg);
-  uiImageFromFile (&uiswitch->switchonimg, "img/switch-on.svg");
+  pathbldMakePath (tbuff, sizeof (tbuff), "switch-on", ".svg",
+      PATHBLD_MP_IMGDIR | PATHBLD_MP_USEIDX);
+  uiImageFromFile (&uiswitch->switchonimg, tbuff);
   uiWidgetMakePersistent (&uiswitch->switchonimg);
 
   widget = gtk_toggle_button_new ();

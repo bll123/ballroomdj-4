@@ -1,6 +1,5 @@
-# BDJ4 bll-g7/profiles/bdjconfig
-# Thu Feb 10 11:39:56 GMT 2022
-# per-machine-per-profile / 2022-02-10 03:39:11
+# config-machine-profile
+# 2022-07-04
 LISTINGFONT
 ..
 MQFONT

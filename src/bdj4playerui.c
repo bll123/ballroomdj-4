@@ -197,7 +197,7 @@ main (int argc, char *argv[])
   plui.conn = connInit (ROUTE_PLAYERUI);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
-      PLAYERUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_USEIDX);
+      PLAYERUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
   plui.optiondf = datafileAllocParse ("playerui-opt", DFTYPE_KEY_VAL, tbuff,
       playeruidfkeys, PLAYERUI_DFKEY_COUNT, DATAFILE_NO_LOOKUP);
   plui.options = datafileGetList (plui.optiondf);
@@ -285,7 +285,7 @@ pluiClosingCallback (void *udata, programstate_t programState)
   uiWidgetClearPersistent (&plui->ledoffPixbuf);
 
   pathbldMakePath (fn, sizeof (fn),
-      PLAYERUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_USEIDX);
+      PLAYERUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
   datafileSaveKeyVal ("playerui", fn, playeruidfkeys, PLAYERUI_DFKEY_COUNT, plui->options);
 
   bdj4shutdown (ROUTE_PLAYERUI, plui->musicdb);
@@ -358,12 +358,18 @@ pluiBuildUI (playerui_t *plui)
   uiWidgetExpandHoriz (&hbox);
   uiBoxPackStart (&plui->vbox, &hbox);
 
+  uiCreateLabel (&uiwidget, "");
+  uiWidgetSetSizeRequest (&uiwidget, 30, -1);
+  uiWidgetSetMarginStart (&uiwidget, uiBaseMarginSz * 3);
+  uiLabelSetBackgroundColor (&uiwidget, bdjoptGetStr (OPT_P_UI_PROFILE_COL));
+  uiBoxPackEnd (&hbox, &uiwidget);
+
   uiCreateMenubar (&menubar);
   uiBoxPackStart (&hbox, &menubar);
 
   uiCreateLabel (&plui->clock, "");
   uiBoxPackEnd (&hbox, &plui->clock);
-  uiLabelDarkenColor (&plui->clock, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
+  uiWidgetDisable (&plui->clock);
 
   /* CONTEXT: menu selection: options for the player */
   uiMenuCreateItem (&menubar, &menuitem, _("Options"), NULL);

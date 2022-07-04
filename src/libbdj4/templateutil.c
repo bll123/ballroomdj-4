@@ -44,29 +44,15 @@ templateImageCopy (const char *color)
       continue;
     }
 
+    pathbldMakePath (to, sizeof (to), "", "", PATHBLD_MP_IMGDIR | PATHBLD_MP_USEIDX);
+    fileopMakeDir (to);
+
     pathbldMakePath (from, sizeof (from), fname, "", PATHBLD_MP_TEMPLATEDIR);
-    pathbldMakePath (to, sizeof (to), fname, "", PATHBLD_MP_IMGDIR);
+    pathbldMakePath (to, sizeof (to), fname, "", PATHBLD_MP_IMGDIR | PATHBLD_MP_USEIDX);
 
     templateCopy (from, to, color);
   }
   slistFree (dirlist);
-}
-
-void
-templateImageLocaleCopy (void)
-{
-  char        tbuff [MAXPATHLEN];
-  char        from [MAXPATHLEN];
-  char        to [MAXPATHLEN];
-  char        *fname;
-
-  pathbldMakePath (tbuff, sizeof (tbuff), "", "", PATHBLD_MP_TEMPLATEDIR);
-
-  /* at this time, only fades.svg has localization in it */
-  fname = "fades.svg";
-  pathbldMakePath (from, sizeof (from), fname, "", PATHBLD_MP_TEMPLATEDIR);
-  pathbldMakePath (to, sizeof (to), fname, "", PATHBLD_MP_IMGDIR);
-  templateCopy (from, to, NULL);
 }
 
 void
@@ -111,7 +97,7 @@ templateDisplaySettingsCopy (void)
     }
 
     pathbldMakePath (from, sizeof (from), fname, "", PATHBLD_MP_TEMPLATEDIR);
-    pathbldMakePath (to, sizeof (to), fname, "", PATHBLD_MP_USEIDX);
+    pathbldMakePath (to, sizeof (to), fname, "", PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
     templateCopy (from, to, NULL);
   }
   slistFree (dirlist);

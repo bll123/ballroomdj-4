@@ -118,6 +118,8 @@ typedef struct {
   UIWidget        supportSendDB;
   UIWidget        window;
   UIWidget        supportStatus;
+  UIWidget        statusMsg;
+  UIWidget        profileAccent;
   uitextbox_t     *supporttb;
   uientry_t       *supportsubject;
   uientry_t       *supportemail;
@@ -253,7 +255,7 @@ main (int argc, char *argv[])
   starter.profilesel = uiSpinboxTextInit ();
 
   pathbldMakePath (tbuff, sizeof (tbuff),
-      STARTERUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_USEIDX);
+      STARTERUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
   starter.optiondf = datafileAllocParse ("starterui-opt", DFTYPE_KEY_VAL, tbuff,
       starteruidfkeys, STARTERUI_KEY_MAX, DATAFILE_NO_LOOKUP);
   starter.options = datafileGetList (starter.optiondf);
@@ -387,7 +389,7 @@ starterClosingCallback (void *udata, programstate_t programState)
   uiSpinboxTextFree (starter->profilesel);
 
   pathbldMakePath (fn, sizeof (fn),
-      STARTERUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_USEIDX);
+      STARTERUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
   datafileSaveKeyVal ("starterui", fn, starteruidfkeys, STARTERUI_KEY_MAX, starter->options);
 
   for (int i = 0; i < START_LINK_CB_MAX; ++i) {
@@ -442,7 +444,7 @@ starterBuildUI (startui_t  *starter)
       starterCloseCallback, starter);
   uiCreateMainWindow (&starter->window,
       &starter->callbacks [START_CALLBACK_EXIT],
-      BDJ4_LONG_NAME, imgbuff);
+      bdjoptGetStr (OPT_P_PROFILENAME), imgbuff);
 
   uiCreateVertBox (&vbox);
   uiWidgetSetAllMargins (&vbox, uiBaseMarginSz * 2);
@@ -451,6 +453,18 @@ starterBuildUI (startui_t  *starter)
   uiCreateHorizBox (&hbox);
   uiWidgetSetMarginTop (&hbox, uiBaseMarginSz * 4);
   uiBoxPackStart (&vbox, &hbox);
+
+  uiCreateLabel (&uiwidget, "");
+  uiWidgetSetSizeRequest (&uiwidget, 30, -1);
+  uiWidgetSetMarginStart (&uiwidget, uiBaseMarginSz * 3);
+  uiLabelSetBackgroundColor (&uiwidget, bdjoptGetStr (OPT_P_UI_PROFILE_COL));
+  uiBoxPackEnd (&hbox, &uiwidget);
+  uiutilsUIWidgetCopy (&starter->profileAccent, &uiwidget);
+
+  uiCreateLabel (&uiwidget, "");
+  uiLabelSetColor (&uiwidget, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
+  uiBoxPackEnd (&hbox, &uiwidget);
+  uiutilsUIWidgetCopy (&starter->statusMsg, &uiwidget);
 
   uiCreateMenubar (&menubar);
   uiBoxPackStart (&hbox, &menubar);
@@ -729,7 +743,7 @@ starterMainLoop (void *tstarter)
     }
     case START_STATE_SUPPORT_SEND_FILES_B: {
       pathbldMakePath (tbuff, sizeof (tbuff),
-          "", "", PATHBLD_MP_USEIDX);
+          "", "", PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
       starterSendFilesInit (starter, tbuff, true);
       starter->startState = START_STATE_SUPPORT_SEND_FILE;
       starter->nextState = START_STATE_SUPPORT_SEND_FILES_C;
@@ -737,7 +751,7 @@ starterMainLoop (void *tstarter)
     }
     case START_STATE_SUPPORT_SEND_FILES_C: {
       pathbldMakePath (tbuff, sizeof (tbuff),
-          "", "", PATHBLD_MP_HOSTNAME);
+          "", "", PATHBLD_MP_DATA | PATHBLD_MP_HOSTNAME);
       starterSendFilesInit (starter, tbuff, true);
       starter->startState = START_STATE_SUPPORT_SEND_FILE;
       starter->nextState = START_STATE_SUPPORT_SEND_FILES_D;
@@ -745,7 +759,7 @@ starterMainLoop (void *tstarter)
     }
     case START_STATE_SUPPORT_SEND_FILES_D: {
       pathbldMakePath (tbuff, sizeof (tbuff),
-          "", "", PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
+          "", "", PATHBLD_MP_DATA | PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
       /* will end up with the backup bdjconfig.txt file also, but that's ok */
       starterSendFilesInit (starter, tbuff, false);
       starter->startState = START_STATE_SUPPORT_SEND_FILE;
@@ -1169,7 +1183,7 @@ starterGetProfiles (startui_t *starter)
   for (int i = 0; i < BDJOPT_MAX_PROFILES; ++i) {
     sysvarsSetNum (SVL_BDJIDX, i);
     pathbldMakePath (tbuff, sizeof (tbuff),
-        BDJ_CONFIG_BASEFN, BDJ_CONFIG_EXT, PATHBLD_MP_USEIDX);
+        BDJ_CONFIG_BASEFN, BDJ_CONFIG_EXT, PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
     if (fileopFileExists (tbuff)) {
       if (i == starter->currprofile) {
         pname = bdjoptGetStr (OPT_P_PROFILENAME);
@@ -1217,6 +1231,12 @@ starterSetProfile (void *udata, int idx)
   if (profidx != starter->currprofile) {
     starter->currprofile = profidx;
     sysvarsSetNum (SVL_BDJIDX, profidx);
+
+    bdjoptInit ();
+
+    uiLabelSetBackgroundColor (&starter->profileAccent,
+        bdjoptGetStr (OPT_P_UI_PROFILE_COL));
+
     bdjvarsAdjustPorts ();
     gNewProfile = true;
   }
@@ -1230,6 +1250,7 @@ starterCheckProfile (startui_t *starter)
   if (sysvarsGetNum (SVL_BDJIDX) == starter->newprofile) {
     char  tbuff [100];
     int   profidx;
+    int   r, g, b;
 
     bdjoptInit ();
     profidx = sysvarsGetNum (SVL_BDJIDX);
@@ -1237,7 +1258,19 @@ starterCheckProfile (startui_t *starter)
     /* CONTEXT: starter: name of the new profile (New profile 9) */
     snprintf (tbuff, sizeof (tbuff), _("New Profile %d"), profidx);
     bdjoptSetStr (OPT_P_PROFILENAME, tbuff);
+
+    /* select a completely random color */
+    r = (int) (dRandom () * 256.0);
+    g = (int) (dRandom () * 256.0);
+    b = (int) (dRandom () * 256.0);
+    snprintf (tbuff, sizeof (tbuff), "#%02x%02x%02x", r, g, b);
+    bdjoptSetStr (OPT_P_UI_PROFILE_COL, tbuff);
+    uiLabelSetBackgroundColor (&starter->profileAccent,
+        bdjoptGetStr (OPT_P_UI_PROFILE_COL));
+
     bdjoptSave ();
+
+    templateImageCopy (bdjoptGetStr (OPT_P_UI_ACCENT_COL));
     templateDisplaySettingsCopy ();
     /* do not re-run the new profile init */
     starter->newprofile = -1;

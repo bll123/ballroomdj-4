@@ -120,6 +120,7 @@ void  uiCreateColonLabel (UIWidget *uiwidget, const char *label);
 void  uiLabelSetColor (UIWidget *uilabel, const char *color);
 void  uiLabelDarkenColor (UIWidget *uilabel, const char *color);
 void  uiLabelSetFont (UIWidget *uilabel, const char *font);
+void  uiLabelSetBackgroundColor (UIWidget *uiwidget, const char *color);
 void  uiLabelSetText (UIWidget *uilabel, const char *text);
 void  uiLabelEllipsizeOn (UIWidget *uiwidget);
 void  uiLabelSetSelectable (UIWidget *uiwidget);

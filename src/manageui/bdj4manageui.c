@@ -329,7 +329,7 @@ main (int argc, char *argv[])
   manage.conn = connInit (ROUTE_MANAGEUI);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
-      MANAGEUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_USEIDX);
+      MANAGEUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
   manage.optiondf = datafileAllocParse ("manageui-opt", DFTYPE_KEY_VAL, tbuff,
       manageuidfkeys, MANAGEUI_DFKEY_COUNT, DATAFILE_NO_LOOKUP);
   manage.options = datafileGetList (manage.optiondf);
@@ -435,7 +435,7 @@ manageClosingCallback (void *udata, programstate_t programState)
   procutilFreeAll (manage->processes);
 
   pathbldMakePath (fn, sizeof (fn),
-      MANAGEUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_USEIDX);
+      MANAGEUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
   datafileSaveKeyVal ("manageui", fn, manageuidfkeys, MANAGEUI_DFKEY_COUNT, manage->options);
 
   bdj4shutdown (ROUTE_MANAGEUI, manage->musicdb);
@@ -503,7 +503,8 @@ manageBuildUI (manageui_t *manage)
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", ".svg", PATHBLD_MP_IMGDIR);
   /* CONTEXT: management user interface window title */
-  snprintf (tbuff, sizeof (tbuff), _("%s Management"), BDJ4_NAME);
+  snprintf (tbuff, sizeof (tbuff), _("%s Management"),
+      bdjoptGetStr (OPT_P_PROFILENAME));
 
   uiutilsUICallbackInit (&manage->callbacks [MANAGE_CB_CLOSE],
       manageCloseWin, manage);
@@ -519,6 +520,12 @@ manageBuildUI (manageui_t *manage)
   uiCreateHorizBox (&hbox);
   uiWidgetSetMarginTop (&hbox, uiBaseMarginSz * 4);
   uiBoxPackStart (&vbox, &hbox);
+
+  uiCreateLabel (&uiwidget, "");
+  uiWidgetSetSizeRequest (&uiwidget, 30, -1);
+  uiWidgetSetMarginStart (&uiwidget, uiBaseMarginSz * 3);
+  uiLabelSetBackgroundColor (&uiwidget, bdjoptGetStr (OPT_P_UI_PROFILE_COL));
+  uiBoxPackEnd (&hbox, &uiwidget);
 
   uiCreateLabel (&uiwidget, "");
   uiLabelSetColor (&uiwidget, bdjoptGetStr (OPT_P_UI_ACCENT_COL));

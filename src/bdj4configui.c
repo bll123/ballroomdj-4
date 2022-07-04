@@ -761,7 +761,7 @@ main (int argc, char *argv[])
       -1);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
-      "ds-songfilter", BDJ4_CONFIG_EXT, PATHBLD_MP_USEIDX);
+      "ds-songfilter", BDJ4_CONFIG_EXT, PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
   confui.filterDisplayDf = datafileAllocParse ("cu-filter",
       DFTYPE_KEY_VAL, tbuff, filterdisplaydfkeys, FILTER_DISP_MAX, DATAFILE_NO_LOOKUP);
   confui.filterDisplaySel = datafileGetList (confui.filterDisplayDf);
@@ -778,7 +778,7 @@ main (int argc, char *argv[])
   confui.conn = connInit (ROUTE_CONFIGUI);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
-      "configui", BDJ4_CONFIG_EXT, PATHBLD_MP_USEIDX);
+      "configui", BDJ4_CONFIG_EXT, PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
   confui.optiondf = datafileAllocParse ("configui-opt", DFTYPE_KEY_VAL, tbuff,
       configuidfkeys, CONFUI_KEY_MAX, DATAFILE_NO_LOOKUP);
   confui.options = datafileGetList (confui.optiondf);
@@ -840,12 +840,12 @@ confuiStoppingCallback (void *udata, programstate_t programState)
   nlistSetNum (confui->options, CONFUI_POSITION_Y, y);
 
   pathbldMakePath (fn, sizeof (fn),
-      "configui", BDJ4_CONFIG_EXT, PATHBLD_MP_USEIDX);
+      "configui", BDJ4_CONFIG_EXT, PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
   datafileSaveKeyVal ("configui", fn, configuidfkeys,
       CONFUI_KEY_MAX, confui->options);
 
   pathbldMakePath (fn, sizeof (fn),
-      "ds-songfilter", BDJ4_CONFIG_EXT, PATHBLD_MP_USEIDX);
+      "ds-songfilter", BDJ4_CONFIG_EXT, PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
   datafileSaveKeyVal ("ds-songfilter", fn, filterdisplaydfkeys,
       FILTER_DISP_MAX, confui->filterDisplaySel);
 
@@ -957,7 +957,8 @@ confuiBuildUI (configui_t *confui)
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon_config", ".svg", PATHBLD_MP_IMGDIR);
   /* CONTEXT: configuration user interface window title */
-  snprintf (tbuff, sizeof (tbuff), _("%s Configuration"), BDJ4_NAME);
+  snprintf (tbuff, sizeof (tbuff), _("%s Configuration"),
+      bdjoptGetStr (OPT_P_PROFILENAME));
   uiutilsUICallbackInit (&confui->closecb, confuiCloseWin, confui);
   uiCreateMainWindow (&confui->window, &confui->closecb, tbuff, imgbuff);
 
@@ -970,6 +971,12 @@ confuiBuildUI (configui_t *confui)
   uiCreateHorizBox (&hbox);
   uiWidgetExpandHoriz (&hbox);
   uiBoxPackStart (&confui->vbox, &hbox);
+
+  uiCreateLabel (&uiwidget, "");
+  uiWidgetSetSizeRequest (&uiwidget, 30, -1);
+  uiWidgetSetMarginStart (&uiwidget, uiBaseMarginSz * 3);
+  uiLabelSetBackgroundColor (&uiwidget, bdjoptGetStr (OPT_P_UI_PROFILE_COL));
+  uiBoxPackEnd (&hbox, &uiwidget);
 
   uiCreateLabel (&uiwidget, "");
   uiLabelSetColor (&uiwidget, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
@@ -2120,8 +2127,6 @@ confuiPopulateOptions (configui_t *confui)
         fprintf (fh, "%s\n", sval);
         fclose (fh);
       }
-
-      templateImageLocaleCopy ();
     }
 
     if (i == CONFUI_ENTRY_MUSIC_DIR) {
@@ -2151,12 +2156,6 @@ confuiPopulateOptions (configui_t *confui)
 
     if (i == CONFUI_WIDGET_UI_ACCENT_COLOR &&
         accentcolorchanged) {
-      templateImageCopy (sval);
-    }
-
-    if (i == CONFUI_WIDGET_UI_PROFILE_COLOR &&
-        profilecolorchanged) {
-// check this
       templateImageCopy (sval);
     }
 

@@ -280,7 +280,7 @@ procutilStopProcess (procutil_t *process, conn_t *conn,
     process->started = false;
   }
   if (force) {
-    procutilForceStop (process, PATHBLD_MP_USEIDX, route);
+    procutilForceStop (process, PATHBLD_MP_DATA | PATHBLD_MP_USEIDX, route);
   }
   logProcEnd (LOG_PROC, "procutilStopProcess", "");
 }

@@ -33,7 +33,7 @@ uiCreateButton (UIWidget *uiwidget, UICallback *uicb,
 
     gtk_button_set_label (GTK_BUTTON (widget), "");
     pathbldMakePath (tbuff, sizeof (tbuff), imagenm, ".svg",
-        PATHBLD_MP_IMGDIR);
+        PATHBLD_MP_IMGDIR | PATHBLD_MP_USEIDX);
     image = gtk_image_new_from_file (tbuff);
     gtk_button_set_image (GTK_BUTTON (widget), image);
     gtk_button_set_always_show_image (GTK_BUTTON (widget), TRUE); // macos

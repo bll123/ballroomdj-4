@@ -1,6 +1,5 @@
-# BDJ4 profiles/bdjconfig
-# Thu Feb 10 11:39:56 GMT 2022
-# profile / 2022-02-10 03:39:11
+# config-profile
+# 2022-07-04
 DEFAULTVOLUME
 ..30
 COMPLETEMSG
