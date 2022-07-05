@@ -148,7 +148,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiImageNew (&uiplayer->statusImg);
 
   pathbldMakePath (tbuff, sizeof (tbuff), "button_stop", ".svg",
-      PATHBLD_MP_IMGDIR);
+      PATHBLD_MP_IMGDIR | PATHBLD_MP_USEIDX);
   uiImageFromFile (&uiplayer->stopPixbuf, tbuff);
   uiImageGetPixbuf (&uiplayer->stopPixbuf);
   uiWidgetMakePersistent (&uiplayer->stopPixbuf);
@@ -159,13 +159,13 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiBoxPackStart (&tbox, &uiplayer->statusImg);
 
   pathbldMakePath (tbuff, sizeof (tbuff), "button_play", ".svg",
-      PATHBLD_MP_IMGDIR);
+      PATHBLD_MP_IMGDIR | PATHBLD_MP_USEIDX);
   uiImageFromFile (&uiplayer->playPixbuf, tbuff);
   uiImageGetPixbuf (&uiplayer->playPixbuf);
   uiWidgetMakePersistent (&uiplayer->playPixbuf);
 
   pathbldMakePath (tbuff, sizeof (tbuff), "button_pause", ".svg",
-      PATHBLD_MP_IMGDIR);
+      PATHBLD_MP_IMGDIR | PATHBLD_MP_USEIDX);
   uiImageFromFile (&uiplayer->pausePixbuf, tbuff);
   uiImageGetPixbuf (&uiplayer->pausePixbuf);
   uiWidgetMakePersistent (&uiplayer->pausePixbuf);

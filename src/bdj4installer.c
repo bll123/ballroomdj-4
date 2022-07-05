@@ -46,8 +46,11 @@
 
 /* installation states */
 typedef enum {
-  INST_PRE_INIT,
-  INST_BEGIN,
+  INST_INITIALIZE,
+  INST_VERIFY_INST_INIT,
+  INST_VERIFY_INSTALL,
+  INST_PREPARE,
+  INST_WAIT_USER,
   INST_INIT,
   INST_SAVE,
   INST_MAKE_TARGET,
@@ -58,7 +61,6 @@ typedef enum {
   INST_COPY_TEMPLATES,
   INST_CONVERT_START,
   INST_CONVERT,
-  INST_CONVERT_WAIT,
   INST_CONVERT_FINISH,
   INST_CREATE_SHORTCUT,
   INST_VLC_CHECK,
@@ -165,6 +167,8 @@ static bool installerInstallCallback (void *udata);
 static bool installerCheckTarget (installer_t *installer, const char *dir);
 static void installerSetPaths (installer_t *installer);
 
+static void installerVerifyInstInit (installer_t *installer);
+static void installerVerifyInstall (installer_t *installer);
 static void installerInstInit (installer_t *installer);
 static void installerSaveTargetDir (installer_t *installer);
 static void installerMakeTarget (installer_t *installer);
@@ -241,7 +245,7 @@ main (int argc, char *argv[])
   }
 
   uiutilsUIWidgetInit (&installer.window);
-  installer.instState = INST_PRE_INIT;
+  installer.instState = INST_INITIALIZE;
   installer.target = buff;
   installer.rundir [0] = '\0';
   installer.locale [0] = '\0';
@@ -621,16 +625,28 @@ installerMainLoop (void *udata)
   }
 
   switch (installer->instState) {
-    case INST_PRE_INIT: {
+    case INST_INITIALIZE: {
+      installer->instState = INST_VERIFY_INST_INIT;
+      break;
+    }
+    case INST_VERIFY_INST_INIT: {
+      installerVerifyInstInit (installer);
+      break;
+    }
+    case INST_VERIFY_INSTALL: {
+      installerVerifyInstall (installer);
+      break;
+    }
+    case INST_PREPARE: {
       installerDisplayConvert (installer);
       installerCheckPackages (installer);
 
       uiEntryValidate (installer->targetEntry, true);
       uiEntryValidate (installer->bdj3locEntry, true);
-      installer->instState = INST_BEGIN;
+      installer->instState = INST_WAIT_USER;
       break;
     }
-    case INST_BEGIN: {
+    case INST_WAIT_USER: {
       /* do nothing */
       break;
     }
@@ -677,10 +693,6 @@ installerMainLoop (void *udata)
     }
     case INST_CONVERT: {
       installerConvert (installer);
-      break;
-    }
-    case INST_CONVERT_WAIT: {
-      /* do nothing */
       break;
     }
     case INST_CONVERT_FINISH: {
@@ -751,7 +763,7 @@ installerMainLoop (void *udata)
       /* CONTEXT: installer: status message */
       installerDisplayText (installer, "## ",  _("Installation complete."), true);
       if (installer->guienabled) {
-        installer->instState = INST_PRE_INIT;
+        installer->instState = INST_PREPARE;
       } else {
         installer->instState = INST_EXIT;
       }
@@ -980,7 +992,7 @@ installerInstallCallback (void *udata)
 {
   installer_t *installer = udata;
 
-  if (installer->instState == INST_BEGIN) {
+  if (installer->instState == INST_WAIT_USER) {
     installer->instState = INST_INIT;
   }
   return UICB_CONT;
@@ -1028,6 +1040,50 @@ installerSetPaths (installer_t *installer)
 
 
 /* installation routines */
+
+static void
+installerVerifyInstInit (installer_t *installer)
+{
+  /* CONTEXT: installer: status message */
+  installerDisplayText (installer, "", _("Verifying installation."), false);
+  /* CONTEXT: installer: status message */
+  installerDisplayText (installer, "   ", _("Please wait..."), false);
+
+  /* the unpackdir is not necessarily the same as the current dir */
+  /* on mac os, they are different */
+  if (chdir (installer->unpackdir) < 0) {
+    installerFailWorkingDir (installer, installer->unpackdir);
+    return;
+  }
+
+  installer->instState = INST_VERIFY_INSTALL;
+}
+
+static void
+installerVerifyInstall (installer_t *installer)
+{
+  char        tmp [2048];
+  const char  *targv [2];
+
+  if (isWindows ()) {
+    targv [0] = ".\\install\\verifychksum.bat";
+    targv [1] = NULL;
+  } else {
+    targv [0] = "./install/verifychksum.sh";
+    targv [1] = NULL;
+  }
+  osProcessPipe (targv, OS_PROC_DETACH, tmp, sizeof (tmp));
+
+  if (strncmp (tmp, "OK", 2) == 0) {
+    /* CONTEXT: installer: status message */
+    installerDisplayText (installer, "", _("Verification complete."), false);
+    installer->instState = INST_PREPARE;
+  } else {
+    /* CONTEXT: installer: status message */
+    installerDisplayText (installer, " * ", _("Verification failed."), false);
+    installer->instState = INST_PREPARE;
+  }
+}
 
 static void
 installerInstInit (installer_t *installer)
@@ -1093,7 +1149,7 @@ installerInstInit (installer_t *installer)
           printf (" * %s", _("Installation aborted."));
           printf ("\n");
           fflush (stdout);
-          installer->instState = INST_BEGIN;
+          installer->instState = INST_WAIT_USER;
           return;
         }
       }
@@ -1115,7 +1171,7 @@ installerInstInit (installer_t *installer)
       installerDisplayText (installer, "", tbuff, false);
       /* CONTEXT: installer: command line interface: status message */
       installerDisplayText (installer, " * ", _("Installation aborted."), false);
-      installer->instState = INST_BEGIN;
+      installer->instState = INST_WAIT_USER;
       return;
     }
   }
@@ -2377,5 +2433,5 @@ installerFailWorkingDir (installer_t *installer, const char *dir)
   installerDisplayText (installer, "", _("Error: Unable to set working folder."), false);
   /* CONTEXT: installer: status message */
   installerDisplayText (installer, " * ", _("Installation aborted."), false);
-  installer->instState = INST_BEGIN;
+  installer->instState = INST_WAIT_USER;
 }

@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4 4.0.0\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
-"POT-Creation-Date: 2022-07-04\n"
-"PO-Revision-Date: 2022-07-04\n"
+"POT-Creation-Date: 2022-07-05\n"
+"PO-Revision-Date: 2022-07-05\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/gb\n"
 "Language: en\n"
@@ -51,6 +51,11 @@ msgstr ""
 #. CONTEXT: management user interface window title
 #, c-format
 msgid "%s Management"
+msgstr ""
+
+#. CONTEXT: player: main window title
+#, c-format
+msgid "%s Player"
 msgstr ""
 
 #. CONTEXT: starterui: basic support dialog: support option
@@ -1650,6 +1655,18 @@ msgstr ""
 
 #. CONTEXT: configuration: options associated with the user interface
 msgid "User Interface"
+msgstr ""
+
+#. CONTEXT: installer: status message
+msgid "Verification complete."
+msgstr ""
+
+#. CONTEXT: installer: status message
+msgid "Verification failed."
+msgstr ""
+
+#. CONTEXT: installer: status message
+msgid "Verifying installation."
 msgstr ""
 
 #. CONTEXT: configuration file: dance

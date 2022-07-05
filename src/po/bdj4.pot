@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-07-04 13:54-0700\n"
+"POT-Creation-Date: 2022-07-05 07:11-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -55,6 +55,11 @@ msgstr ""
 #. CONTEXT: management user interface window title
 #, c-format
 msgid "%s Management"
+msgstr ""
+
+#. CONTEXT: player: main window title
+#, c-format
+msgid "%s Player"
 msgstr ""
 
 #. CONTEXT: starterui: basic support dialog: support option
@@ -1654,6 +1659,18 @@ msgstr ""
 
 #. CONTEXT: configuration: options associated with the user interface
 msgid "User Interface"
+msgstr ""
+
+#. CONTEXT: installer: status message
+msgid "Verification complete."
+msgstr ""
+
+#. CONTEXT: installer: status message
+msgid "Verification failed."
+msgstr ""
+
+#. CONTEXT: installer: status message
+msgid "Verifying installation."
 msgstr ""
 
 #. CONTEXT: configuration file: dance

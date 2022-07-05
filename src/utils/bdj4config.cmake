@@ -88,7 +88,6 @@ endif()
 
 if (BDJ4_BUILD STREQUAL "Profile-gtk")
   message ("Profile Build")
-  add_compile_options (-g)
   add_compile_options (-O2)
   add_compile_options (-pg)
   add_link_options (-pg)

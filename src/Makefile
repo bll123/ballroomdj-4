@@ -13,6 +13,9 @@ CLANGXX = clang++
 .PHONY: build install debug release
 .PHONY: sanitizeaddress sanitizeleak sanitizeundef
 
+release-gtk:
+	BDJ4_BUILD=Release-gtk $(MAKE) cmake
+
 debug-gtk:
 	BDJ4_BUILD=Debug-gtk $(MAKE) cmake
 
@@ -21,9 +24,6 @@ profile-gtk:
 
 debug-clang-gtk:
 	BDJ4_BUILD=Debug-gtk $(MAKE) cmakeclang
-
-release-gtk:
-	BDJ4_BUILD=Release-gtk $(MAKE) cmake
 
 sanitizeaddress:
 	BDJ4_BUILD=SanitizeAddress $(MAKE) cmake

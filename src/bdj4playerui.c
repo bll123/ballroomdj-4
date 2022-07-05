@@ -345,8 +345,11 @@ pluiBuildUI (playerui_t *plui)
       "bdj4_icon", ".svg", PATHBLD_MP_IMGDIR);
   uiutilsUICallbackInit (&plui->callbacks [PLUI_CB_CLOSE],
       pluiCloseWin, plui);
+  /* CONTEXT: player: main window title */
+  snprintf (tbuff, sizeof (tbuff), _("%s Player"),
+      bdjoptGetStr (OPT_P_PROFILENAME));
   uiCreateMainWindow (&plui->window, &plui->callbacks [PLUI_CB_CLOSE],
-      bdjoptGetStr (OPT_P_PROFILENAME), imgbuff);
+      tbuff, imgbuff);
 
   pluiInitializeUI (plui);
 

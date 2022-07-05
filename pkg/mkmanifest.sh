@@ -1,11 +1,7 @@
 #!/bin/bash
 
 stagedir=$1
-
-systype=$(uname -s)
-
-manfn=install/manifest.txt
-mantmp=install/manifest.n
+manfn=$2
 
 (
   cd $stagedir

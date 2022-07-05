@@ -171,10 +171,16 @@ esac
 
 # staging / create packags
 
+stagedir=tmp/${spkgnm}-src
+manfn=manifest.txt
+manfnpath=${stagedir}/install/${manfn}
+chksumfn=checksum.txt
+chksumfntmp=tmp/${chksumfn}
+chksumfnpath=${stagedir}/install/${chksumfn}
+
 case $systype in
   Linux)
     echo "-- $(date +%T) create source package"
-    stagedir=tmp/${spkgnm}-src
     test -d ${stagedir} && rm -rf ${stagedir}
     mkdir -p ${stagedir}
     nm=${spkgnm}-${VERSION}-src${rlstag}.tar.gz
@@ -182,9 +188,12 @@ case $systype in
     copysrcfiles ${systype} ${stagedir}
 
     echo "-- $(date +%T) creating source manifest"
-    touch ${stagedir}/install/manifest.txt
-    ./pkg/mkmanifest.sh ${stagedir}
-    mv -f install/manifest.txt ${stagedir}/install/manifest.txt
+    touch ${manfnpath}
+    ./pkg/mkmanifest.sh ${stagedir} ${manfnpath}
+
+    echo "-- $(date +%T) creating checksums"
+    ./pkg/mkchecksum.sh ${manfnpath} ${chksumfntmp}
+    mv -f ${chksumfntmp} ${chksumfnpath}
 
     (cd tmp;tar -c -z -f - $(basename $stagedir)) > ${nm}
     echo "## source package ${nm} created"
@@ -195,9 +204,22 @@ esac
 echo "-- $(date +%T) create release package"
 
 stagedir=tmp/${instdir}
+
 test -d ${stagedir} && rm -rf ${stagedir}
 mkdir -p ${stagedir}
-manfn=install/manifest.txt
+
+macosbase=""
+case $systype in
+  Darwin)
+    macosbase=/Contents/MacOS
+    ;;
+esac
+
+manfn=manifest.txt
+manfnpath=${stagedir}${macosbase}/install/${manfn}
+chksumfn=checksum.txt
+chksumfntmp=tmp/${chksumfn}
+chksumfnpath=${stagedir}${macosbase}/install/${chksumfn}
 tmpnm=tmp/tfile.dat
 tmpcab=tmp/bdj4-install.cab
 tmpsep=tmp/sep.txt
@@ -220,9 +242,12 @@ case $systype in
     copyreleasefiles ${systype} ${stagedir}
 
     echo "-- $(date +%T) creating release manifest"
-    touch ${stagedir}/${manfn}
-    ./pkg/mkmanifest.sh ${stagedir}
-    mv -f ${manfn} ${stagedir}/install
+    touch ${manfnpath}
+    ./pkg/mkmanifest.sh ${stagedir} ${manfnpath}
+
+    echo "-- $(date +%T) creating checksums"
+    ./pkg/mkchecksum.sh ${manfnpath} ${chksumfntmp}
+    mv -f ${chksumfntmp} ${chksumfnpath}
 
     setLibVol $stagedir libvolpa
     echo "-- $(date +%T) creating install package"
@@ -231,7 +256,7 @@ case $systype in
     rm -f ${tmpnm} ${tmpsep}
     ;;
   Darwin)
-    mkdir -p ${stagedir}/Contents/MacOS
+    mkdir -p ${stagedir}${macosbase}
     mkdir -p ${stagedir}/Contents/Resources
     mkdir -p ${tmpmac}
     cp -f img/BDJ4.icns ${stagedir}/Contents/Resources
@@ -242,14 +267,17 @@ case $systype in
         pkg/macos/Info.plist \
         > ${stagedir}/Contents/Info.plist
     echo -n 'APPLBDJ4' > ${stagedir}/Contents/PkgInfo
-    copyreleasefiles ${systype} ${stagedir}/Contents/MacOS
+    copyreleasefiles ${systype} ${stagedir}${macosbase}
 
     echo "-- $(date +%T) creating release manifest"
-    touch ${stagedir}/Contents/MacOS/${manfn}
-    ./pkg/mkmanifest.sh ${stagedir}
-    mv -f ${manfn} ${stagedir}/Contents/MacOS/install
+    touch ${manfnpath}
+    ./pkg/mkmanifest.sh ${stagedir} ${manfnpath}
 
-    setLibVol $stagedir/Contents/MacOS libvolmac
+    echo "-- $(date +%T) creating checksums"
+    ./pkg/mkchecksum.sh ${manfnpath} ${chksumfntmp}
+    mv -f ${chksumfntmp} ${chksumfnpath}
+
+    setLibVol $stagedir/${macosbase} libvolmac
     echo "-- $(date +%T) creating install package"
     (cd tmp;tar -c -J -f - $(basename $stagedir)) > ${tmpnm}
     cat bin/bdj4se ${tmpsep} ${tmpnm} > ${nm}
@@ -259,9 +287,12 @@ case $systype in
     copyreleasefiles ${systype} ${stagedir}
 
     echo "-- $(date +%T) creating release manifest"
-    touch ${stagedir}/${manfn}
-    ./pkg/mkmanifest.sh ${stagedir}
-    mv -f ${manfn} ${stagedir}/install
+    touch ${manfnpath}
+    ./pkg/mkmanifest.sh ${stagedir} ${manfnpath}
+
+    echo "-- $(date +%T) creating checksums"
+    ./pkg/mkchecksum.sh ${manfnpath} ${chksumfntmp}
+    mv -f ${chksumfntmp} ${chksumfnpath}
 
     echo "-- $(date +%T) creating install package"
     test -f $tmpcab && rm -f $tmpcab

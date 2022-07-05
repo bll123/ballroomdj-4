@@ -83,7 +83,7 @@ uiButtonSetImage (UIWidget *uiwidget, const char *imagenm, const char *tooltip)
 
   gtk_button_set_label (GTK_BUTTON (uiwidget->widget), "");
   pathbldMakePath (tbuff, sizeof (tbuff), imagenm, ".svg",
-      PATHBLD_MP_IMGDIR);
+      PATHBLD_MP_IMGDIR | PATHBLD_MP_USEIDX);
   image = gtk_image_new_from_file (tbuff);
   gtk_button_set_image (GTK_BUTTON (uiwidget->widget), image);
   /* macos needs this */
