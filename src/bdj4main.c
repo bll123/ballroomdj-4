@@ -525,6 +525,15 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           dbgdisp = true;
           break;
         }
+        case MSG_DB_ENTRY_UPDATE: {
+          dbLoadEntry (mainData->musicdb, atol (targs));
+          for (int i = 0; i < MUSICQ_MAX; ++i) {
+            mainData->musicqChanged [i] = true;
+            mainData->marqueeChanged [i] = true;
+          }
+          dbgdisp = true;
+          break;
+        }
         case MSG_DATABASE_UPDATE: {
           mainData->musicdb = bdj4ReloadDatabase (mainData->musicdb);
           musicqSetDatabase (mainData->musicQueue, mainData->musicdb);
@@ -853,10 +862,7 @@ mainSendMusicQueueData (maindata_t *mainData, int musicqidx)
   if (connHaveHandshake (mainData->conn, ROUTE_PLAYERUI)) {
     connSendMessage (mainData->conn, ROUTE_PLAYERUI, MSG_MUSIC_QUEUE_DATA, sbuff);
   }
-
-  /* if the playerui is active, don't send the musicq data to the manageui. */
-  /* the data would overwrite the song list. should not be running both. */
-  if (! connHaveHandshake (mainData->conn, ROUTE_PLAYERUI)) {
+  if (connHaveHandshake (mainData->conn, ROUTE_MANAGEUI)) {
     connSendMessage (mainData->conn, ROUTE_MANAGEUI, MSG_MUSIC_QUEUE_DATA, sbuff);
   }
   logProcEnd (LOG_PROC, "mainSendMusicQueueData", "");

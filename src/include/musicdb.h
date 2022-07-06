@@ -21,6 +21,7 @@ musicdb_t *dbOpen (char *);
 void      dbClose (musicdb_t *db);
 dbidx_t   dbCount (musicdb_t *db);
 int       dbLoad (musicdb_t *);
+void      dbLoadEntry (musicdb_t *musicdb, dbidx_t dbidx);
 void      dbStartBatch (musicdb_t *db);
 void      dbEndBatch (musicdb_t *db);
 size_t    dbWriteSong (musicdb_t *musicdb, song_t *song);

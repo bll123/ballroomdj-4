@@ -33,6 +33,8 @@ typedef struct musicdb {
   char          *fn;
 } musicdb_t;
 
+static song_t *dbReadEntry (musicdb_t *musicdb, rafileidx_t rrn);
+
 musicdb_t *
 dbOpen (char *fn)
 {
@@ -94,17 +96,13 @@ dbCount (musicdb_t *musicdb)
 int
 dbLoad (musicdb_t *musicdb)
 {
-  char        data [RAFILE_REC_SIZE];
   char        *fstr;
-  char        *ffn;
   song_t      *song;
   rafileidx_t srrn;
-  rafileidx_t rc;
   nlistidx_t  dkey;
   nlistidx_t  iteridx;
   slistidx_t  dbidx;
   slistidx_t  siteridx;
-  bool        ok;
 
 
   fstr = "";
@@ -114,29 +112,9 @@ dbLoad (musicdb_t *musicdb)
   raStartBatch (musicdb->radb);
 
   for (rafileidx_t i = 1L; i <= raGetCount (musicdb->radb); ++i) {
-    rc = raRead (musicdb->radb, i, data);
-    if (rc != 1) {
-      logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Unable to access rrn %zd", i);
-    }
-    if (rc == 0 || ! *data) {
-      continue;
-    }
+    song = dbReadEntry (musicdb, i);
 
-    song = songAlloc ();
-    songParse (song, data, i);
-    fstr = songGetStr (song, TAG_FILE);
-    ffn = songFullFileName (fstr);
-    ok = false;
-    if (fileopFileExists (ffn)) {
-      ok = true;
-    }
-    free (ffn);
-
-    if (! ok) {
-      logMsg (LOG_DBG, LOG_IMPORTANT, "song %s not found", fstr);
-    }
-
-    if (ok) {
+    if (song != NULL) {
       srrn = songGetNum (song, TAG_RRN);
       dkey = songGetNum (song, TAG_DANCE);
       if (dkey >= 0) {
@@ -146,6 +124,7 @@ dbLoad (musicdb_t *musicdb)
         /* a double check to make sure the song has the correct rrn */
         songSetNum (song, TAG_RRN, i);
       }
+      fstr = songGetStr (song, TAG_FILE);
       slistSetData (musicdb->songs, fstr, song);
     }
     ++musicdb->count;
@@ -173,6 +152,26 @@ dbLoad (musicdb_t *musicdb)
   musicdb->radb = NULL;
   return 0;
 }
+
+void
+dbLoadEntry (musicdb_t *musicdb, dbidx_t dbidx)
+{
+  song_t      *song;
+  rafileidx_t rrn;
+  char        *fstr;
+
+  if (musicdb->radb == NULL) {
+    musicdb->radb = raOpen (musicdb->fn, MUSICDB_VERSION);
+  }
+  song = slistGetDataByIdx (musicdb->songs, dbidx);
+  rrn = songGetNum (song, TAG_RRN);
+  song = dbReadEntry (musicdb, rrn);
+  fstr = songGetStr (song, TAG_FILE);
+  if (song != NULL) {
+    slistSetData (musicdb->songs, fstr, song);
+  }
+}
+
 
 void
 dbStartBatch (musicdb_t *musicdb)
@@ -350,4 +349,38 @@ dbBackup (void)
       MUSICDB_FNAME, MUSICDB_EXT, PATHBLD_MP_DATA);
   filemanipBackup (dbfname, 4);
 
+}
+
+static song_t *
+dbReadEntry (musicdb_t *musicdb, rafileidx_t rrn)
+{
+  int     rc;
+  bool    ok;
+  song_t  *song;
+  char    *fstr;
+  char    *ffn;
+  char    data [RAFILE_REC_SIZE];
+
+  rc = raRead (musicdb->radb, rrn, data);
+  if (rc != 1) {
+    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Unable to access rrn %zd", rrn);
+  }
+  if (rc == 0 || ! *data) {
+    return NULL;
+  }
+
+  song = songAlloc ();
+  songParse (song, data, rrn);
+  fstr = songGetStr (song, TAG_FILE);
+  ffn = songFullFileName (fstr);
+
+  ok = false;
+  if (! fileopFileExists (ffn)) {
+    logMsg (LOG_DBG, LOG_IMPORTANT, "song %s not found", fstr);
+    songFree (song);
+    song = NULL;
+  }
+  free (ffn);
+
+  return song;
 }

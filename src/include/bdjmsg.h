@@ -32,6 +32,7 @@ typedef enum {
   MSG_SOCKET_CLOSE,
   MSG_DATABASE_UPDATE,      // send by manageui to starterui,
                             // then sent by starterui to playerui, main.
+  MSG_DB_ENTRY_UPDATE,      // args: dbidx
   /* to main */
   MSG_GET_STATUS,           // get main/player status
   MSG_MUSICQ_INSERT,        // args: music-q-idx, idx, song name

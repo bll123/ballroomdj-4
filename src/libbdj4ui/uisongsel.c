@@ -121,6 +121,7 @@ uisongselProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     case ROUTE_MANAGEUI:
     case ROUTE_PLAYERUI: {
       switch (msg) {
+        case MSG_DB_ENTRY_UPDATE:
         case MSG_DATABASE_UPDATE: {
           /* re-filter the display */
           uisongselApplySongFilter (uisongsel);

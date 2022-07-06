@@ -855,9 +855,14 @@ starterProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           starterStopMain (starter);
           break;
         }
+        case MSG_DB_ENTRY_UPDATE: {
+          connSendMessage (starter->conn, ROUTE_MAIN, msg, args);
+          connSendMessage (starter->conn, ROUTE_PLAYERUI, msg, args);
+          break;
+        }
         case MSG_DATABASE_UPDATE: {
-          connSendMessage (starter->conn, ROUTE_MAIN, msg, NULL);
-          connSendMessage (starter->conn, ROUTE_PLAYERUI, msg, NULL);
+          connSendMessage (starter->conn, ROUTE_MAIN, msg, args);
+          connSendMessage (starter->conn, ROUTE_PLAYERUI, msg, args);
           break;
         }
         default: {

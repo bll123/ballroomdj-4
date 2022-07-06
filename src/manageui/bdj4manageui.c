@@ -1859,6 +1859,7 @@ manageSongEditSaveCallback (void *udata)
   manageui_t  *manage = udata;
   dbidx_t     dbidx;
   song_t      *song = NULL;
+  char        tmp [40];
 
   if (manage->dbchangecount > MANAGE_DB_COUNT_SAVE) {
     dbBackup ();
@@ -1873,8 +1874,10 @@ manageSongEditSaveCallback (void *udata)
   song = dbGetByIdx (manage->musicdb, dbidx);
   dbWriteSong (manage->musicdb, song);
 
-  /* the database has been updated, tell the other processes to reload it */
-  connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_DATABASE_UPDATE, NULL);
+  /* the database has been updated, tell the other processes to reload  */
+  /* this particular entry */
+  snprintf (tmp, sizeof (tmp), "%d", dbidx);
+  connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_DB_ENTRY_UPDATE, tmp);
 
   /* re-populate the song selection displays to display the updated info */
   manage->selbypass = 1;

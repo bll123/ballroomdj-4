@@ -692,6 +692,11 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           dbgdisp = true;
           break;
         }
+        case MSG_DB_ENTRY_UPDATE: {
+          dbLoadEntry (plui->musicdb, atol (targs));
+          dbgdisp = true;
+          break;
+        }
         case MSG_DATABASE_UPDATE: {
           plui->musicdb = bdj4ReloadDatabase (plui->musicdb);
           uiplayerSetDatabase (plui->uiplayer, plui->musicdb);
