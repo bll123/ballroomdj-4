@@ -198,7 +198,7 @@ manageStatsProcessData (managestats_t *managestats, char *data)
 
   p = strtok_r (data, MSG_ARGS_RS_STR, &tokstr);
   ci = atoi (p);
-  if (ci != MUSICQ_A) {
+  if (ci != MUSICQ_SL) {
     return;
   }
 

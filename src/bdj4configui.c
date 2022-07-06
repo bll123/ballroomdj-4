@@ -102,7 +102,7 @@ enum {
   CONFUI_ENTRY_PROFILE_NAME,
   CONFUI_ENTRY_COMPLETE_MSG,
   /* the queue name identifiers must be in sequence */
-  /* the number of queue names must match MUSICQ_MAX */
+  /* the number of queue names must match MUSICQ_PB_MAX */
   CONFUI_ENTRY_QUEUE_NM_A,
   CONFUI_ENTRY_QUEUE_NM_B,
   CONFUI_ENTRY_RC_PASS,
@@ -1113,12 +1113,12 @@ confuiBuildUIPlayer (configui_t *confui)
   UIWidget      vbox;
   UIWidget      sg;
   UIWidget      sgB;
-  char          *mqnames [MUSICQ_MAX];
+  char          *mqnames [MUSICQ_PB_MAX];
 
   /* CONTEXT: configuration: The name of the music queue */
-  mqnames [MUSICQ_A] = _("Queue A Name");
+  mqnames [MUSICQ_PB_A] = _("Queue A Name");
   /* CONTEXT: configuration: The name of the music queue */
-  mqnames [MUSICQ_B] = _("Queue B Name");
+  mqnames [MUSICQ_PB_B] = _("Queue B Name");
 
   logProcBegin (LOG_PROC, "confuiBuildUIPlayer");
   uiCreateVertBox (&vbox);
@@ -1180,7 +1180,7 @@ confuiBuildUIPlayer (configui_t *confui)
       CONFUI_ENTRY_COMPLETE_MSG, OPT_P_COMPLETE_MSG,
       bdjoptGetStr (OPT_P_COMPLETE_MSG));
 
-  for (musicqidx_t i = 0; i < MUSICQ_MAX; ++i) {
+  for (musicqidx_t i = 0; i < MUSICQ_PB_MAX; ++i) {
     confuiMakeItemEntry (confui, &vbox, &sg, mqnames [i],
         CONFUI_ENTRY_QUEUE_NM_A + i, OPT_P_QUEUE_NAME_A + i,
         bdjoptGetStr (OPT_P_QUEUE_NAME_A + i));

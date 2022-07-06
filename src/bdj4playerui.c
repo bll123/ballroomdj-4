@@ -79,7 +79,7 @@ typedef struct {
   UIWidget        vbox;
   UICallback      callbacks [PLUI_CB_MAX];
   UIWidget        clock;
-  UIWidget        musicqImage [MUSICQ_MAX];
+  UIWidget        musicqImage [MUSICQ_PB_MAX];
   UIWidget        setPlaybackButton;
   UIWidget        ledoffPixbuf;
   UIWidget        ledonPixbuf;
@@ -172,8 +172,8 @@ main (int argc, char *argv[])
   plui.uiplayer = NULL;
   plui.uimusicq = NULL;
   plui.uisongsel = NULL;
-  plui.musicqPlayIdx = MUSICQ_A;
-  plui.musicqManageIdx = MUSICQ_A;
+  plui.musicqPlayIdx = MUSICQ_PB_A;
+  plui.musicqManageIdx = MUSICQ_PB_A;
   plui.marqueeIsMaximized = false;
   plui.marqueeFontSize = 36;
   plui.marqueeFontSizeFS = 60;
@@ -437,7 +437,7 @@ pluiBuildUI (playerui_t *plui)
   uiWidgetShowAll (&uiwidget);
   uiutilsUIWidgetCopy (&plui->setPlaybackButton, &uiwidget);
 
-  for (musicqidx_t i = 0; i < MUSICQ_MAX; ++i) {
+  for (musicqidx_t i = 0; i < MUSICQ_PB_MAX; ++i) {
     /* music queue tab */
 
     uiwidgetp = uimusicqBuildUI (plui->uimusicq, &plui->window, i,
@@ -809,7 +809,7 @@ pluiSetPlaybackQueue (playerui_t *plui, musicqidx_t newQueue)
   logProcBegin (LOG_PROC, "pluiSetPlaybackQueue");
 
   plui->musicqPlayIdx = newQueue;
-  for (musicqidx_t i = 0; i < MUSICQ_MAX; ++i) {
+  for (musicqidx_t i = 0; i < MUSICQ_PB_MAX; ++i) {
     if (plui->musicqPlayIdx == i) {
       uiImageSetFromPixbuf (&plui->musicqImage [i], &plui->ledonPixbuf);
     } else {
@@ -877,7 +877,7 @@ pluiToggleExtraQueues (void *udata)
   /* calls the switch page handler, the managed music queue will be set */
   pluiSetExtraQueues (plui);
   if (! val) {
-    pluiSetPlaybackQueue (plui, MUSICQ_A);
+    pluiSetPlaybackQueue (plui, MUSICQ_PB_A);
   }
   logProcEnd (LOG_PROC, "pluiToggleExtraQueues", "");
   return UICB_CONT;

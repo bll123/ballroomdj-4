@@ -423,8 +423,9 @@ uisongselSelectCallback (void *udata)
   uisongsel_t       *uisongsel = udata;
   musicqidx_t       mqidx;
 
+  /* only the song selection and ez song selection have a select button */
   /* queue to the song list */
-  mqidx = MUSICQ_A;
+  mqidx = MUSICQ_SL;
   uisongselQueueHandler (uisongsel, mqidx, UISONGSEL_QUEUE);
   /* don't clear the selected list or the displayed selections */
   /* it's confusing */
@@ -658,7 +659,9 @@ uisongselPlayCallback (void *udata)
   musicqidx_t mqidx;
   uisongsel_t *uisongsel = udata;
 
-  mqidx = MUSICQ_B;
+  /* only song selection, ez song sel and music manager have a play button */
+  /* use the hidden manage playback music queue */
+  mqidx = MUSICQ_MNG_PB;
   /* the manageui callback clears the queue and plays */
   uisongselQueueHandler (uisongsel, mqidx, UISONGSEL_PLAY);
   return UICB_CONT;

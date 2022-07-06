@@ -325,6 +325,7 @@ void  uiTreeViewAllowMultiple (GtkWidget *tree);
 /* uigtkwindow.c */
 void uiCreateMainWindow (UIWidget *uiwidget, UICallback *uicb,
     const char *title, const char *imagenm);
+void uiWindowSetTitle (UIWidget *uiwidget, const char *title);
 void uiCloseWindow (UIWidget *uiwindow);
 bool uiWindowIsMaximized (UIWidget *uiwindow);
 void uiWindowIconify (UIWidget *uiwindow);

@@ -747,7 +747,7 @@ uimusicqPlayCallback (void *udata)
   dbidx = uimusicqGetSelectionDbidx (uimusicq);
 
   /* queue to the hidden music queue */
-  uimusicqPlay (uimusicq, MUSICQ_B, dbidx);
+  uimusicqPlay (uimusicq, MUSICQ_MNG_PB, dbidx);
   return UICB_CONT;
 }
 

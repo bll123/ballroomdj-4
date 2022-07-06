@@ -287,8 +287,8 @@ main (int argc, char *argv[])
   manage.mmmusicq = NULL;
   manage.mmsongsel = NULL;
   manage.mmsongedit = NULL;
-  manage.musicqPlayIdx = MUSICQ_B;
-  manage.musicqManageIdx = MUSICQ_A;
+  manage.musicqPlayIdx = MUSICQ_MNG_PB;
+  manage.musicqManageIdx = MUSICQ_SL;
   manage.stopwaitcount = 0;
   manage.currmenu = NULL;
   manage.mainlasttab = MANAGE_TAB_MAIN_SL;
@@ -782,7 +782,7 @@ manageBuildUISongListEditor (manageui_t *manage)
   uiCreateHorizBox (&hbox);
   uiBoxPackStartExpand (&mainhbox, &hbox);
 
-  uiwidgetp = uimusicqBuildUI (manage->slezmusicq, &manage->window, MUSICQ_A,
+  uiwidgetp = uimusicqBuildUI (manage->slezmusicq, &manage->window, MUSICQ_SL,
       &manage->statusMsg, manageValidateName);
   uiBoxPackStartExpand (&hbox, uiwidgetp);
 
@@ -803,7 +803,7 @@ manageBuildUISongListEditor (manageui_t *manage)
   uiBoxPackStartExpand (&hbox, uiwidgetp);
 
   /* song list editor: music queue tab */
-  uiwidgetp = uimusicqBuildUI (manage->slmusicq, &manage->window, MUSICQ_A,
+  uiwidgetp = uimusicqBuildUI (manage->slmusicq, &manage->window, MUSICQ_SL,
       &manage->statusMsg, manageValidateName);
   /* CONTEXT: name of song list notebook tab */
   uiCreateLabel (&uiwidget, _("Song List"));
@@ -982,8 +982,11 @@ manageHandshakeCallback (void *udata, programstate_t programState)
   if (connHaveHandshake (manage->conn, ROUTE_STARTERUI) &&
       connHaveHandshake (manage->conn, ROUTE_MAIN) &&
       connHaveHandshake (manage->conn, ROUTE_PLAYER)) {
+    char  tmp [40];
+
     connSendMessage (manage->conn, ROUTE_MAIN, MSG_QUEUE_PLAY_ON_ADD, "1");
-    connSendMessage (manage->conn, ROUTE_MAIN, MSG_MUSICQ_SET_PLAYBACK, "1");
+    snprintf (tmp, sizeof (tmp), "%d", MUSICQ_MNG_PB);
+    connSendMessage (manage->conn, ROUTE_MAIN, MSG_MUSICQ_SET_PLAYBACK, tmp);
     connSendMessage (manage->conn, ROUTE_MAIN, MSG_QUEUE_SWITCH_EMPTY, "0");
     connSendMessage (manage->conn, ROUTE_MAIN, MSG_MUSICQ_SET_LEN, "999");
     progstateLogTime (manage->progstate, "time-to-start-gui");

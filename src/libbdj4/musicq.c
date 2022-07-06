@@ -63,11 +63,10 @@ musicqFree (musicq_t *musicq)
 {
   logProcBegin (LOG_PROC, "musicqFree");
   if (musicq != NULL) {
-    if (musicq->q [MUSICQ_A] != NULL) {
-      queueFree (musicq->q [MUSICQ_A]);
-    }
-    if (musicq->q [MUSICQ_B] != NULL) {
-      queueFree (musicq->q [MUSICQ_B]);
+    for (int i = 0; i < MUSICQ_MAX; ++i) {
+      if (musicq->q [i] != NULL) {
+        queueFree (musicq->q [i]);
+      }
     }
     free (musicq);
   }
@@ -569,8 +568,8 @@ musicqidx_t
 musicqNextQueue (musicqidx_t musicqidx)
 {
   ++musicqidx;
-  if (musicqidx >= MUSICQ_MAX) {
-    musicqidx = MUSICQ_A;
+  if (musicqidx >= MUSICQ_PB_MAX) {
+    musicqidx = MUSICQ_PB_A;
   }
 
   return musicqidx;

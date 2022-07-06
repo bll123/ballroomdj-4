@@ -124,8 +124,6 @@ typedef struct {
   uitextbox_t     *supporttb;
   uientry_t       *supportsubject;
   uientry_t       *supportemail;
-  UIWidget        playeruibutton;
-  UIWidget        manageuibutton;
   /* options */
   datafile_t      *optiondf;
   nlist_t         *options;
@@ -522,7 +520,6 @@ starterBuildUI (startui_t  *starter)
   uiWidgetSetMarginTop (&uiwidget, uiBaseMarginSz * 2);
   uiWidgetAlignHorizStart (&uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
-  uiutilsUIWidgetCopy (&starter->playeruibutton, &uiwidget);
   uiBoxPackStart (&bvbox, &uiwidget);
   uiButtonAlignLeft (&uiwidget);
 
@@ -535,7 +532,6 @@ starterBuildUI (startui_t  *starter)
   uiWidgetSetMarginTop (&uiwidget, uiBaseMarginSz * 2);
   uiWidgetAlignHorizStart (&uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
-  uiutilsUIWidgetCopy (&starter->manageuibutton, &uiwidget);
   uiBoxPackStart (&bvbox, &uiwidget);
   uiButtonAlignLeft (&uiwidget);
 
@@ -838,12 +834,6 @@ starterProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_SOCKET_CLOSE: {
-          if (routefrom == ROUTE_PLAYERUI) {
-            uiWidgetEnable (&starter->manageuibutton);
-          }
-          if (routefrom == ROUTE_MANAGEUI) {
-            uiWidgetEnable (&starter->playeruibutton);
-          }
           procutilCloseProcess (starter->processes [routefrom],
               starter->conn, routefrom);
           procutilFreeRoute (starter->processes, routefrom);
@@ -952,7 +942,6 @@ starterStartPlayerui (void *udata)
   }
   starter->processes [ROUTE_PLAYERUI] = procutilStartProcess (
       ROUTE_PLAYERUI, "bdj4playerui", PROCUTIL_DETACH, NULL);
-  uiWidgetDisable (&starter->manageuibutton);
   return UICB_CONT;
 }
 
@@ -966,7 +955,6 @@ starterStartManageui (void *udata)
   }
   starter->processes [ROUTE_MANAGEUI] = procutilStartProcess (
       ROUTE_MANAGEUI, "bdj4manageui", PROCUTIL_DETACH, NULL);
-  uiWidgetDisable (&starter->playeruibutton);
   return UICB_CONT;
 }
 
@@ -1262,6 +1250,7 @@ starterGetProfiles (startui_t *starter)
 
   if (starter->currprofile != starter->newprofile) {
     bdjoptInit ();
+    uiWindowSetTitle (&starter->window, bdjoptGetStr (OPT_P_PROFILENAME));
     uiLabelSetBackgroundColor (&starter->profileAccent,
         bdjoptGetStr (OPT_P_UI_PROFILE_COL));
     starterLoadOptions (starter);
@@ -1291,6 +1280,7 @@ starterSetProfile (void *udata, int idx)
     bdjoptInit ();
 
     uiLabelSetText (&starter->statusMsg, "");
+    uiWindowSetTitle (&starter->window, bdjoptGetStr (OPT_P_PROFILENAME));
     uiLabelSetBackgroundColor (&starter->profileAccent,
         bdjoptGetStr (OPT_P_UI_PROFILE_COL));
 
@@ -1319,6 +1309,7 @@ starterCheckProfile (startui_t *starter)
     /* CONTEXT: starter: name of the new profile (New profile 9) */
     snprintf (tbuff, sizeof (tbuff), _("New Profile %d"), profidx);
     bdjoptSetStr (OPT_P_PROFILENAME, tbuff);
+    uiWindowSetTitle (&starter->window, tbuff);
 
     /* select a completely random color */
     r = (int) (dRandom () * 256.0);

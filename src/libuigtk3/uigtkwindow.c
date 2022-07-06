@@ -43,6 +43,14 @@ uiCreateMainWindow (UIWidget *uiwidget, UICallback *uicb,
   uiwidget->widget = window;
 }
 
+void
+uiWindowSetTitle (UIWidget *uiwidget, const char *title)
+{
+  if (title != NULL && uiwidget != NULL && uiwidget->widget != NULL) {
+    gtk_window_set_title (GTK_WINDOW (uiwidget->widget), title);
+  }
+}
+
 inline void
 uiCloseWindow (UIWidget *uiwindow)
 {

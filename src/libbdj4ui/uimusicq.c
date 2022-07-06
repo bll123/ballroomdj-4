@@ -60,11 +60,11 @@ uimusicqInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
     }
     uimusicq->ui [i].slname = uiEntryInit (sz, 40);
   }
-  uimusicq->musicqManageIdx = MUSICQ_A;
-  uimusicq->musicqPlayIdx = MUSICQ_A;
+  uimusicq->musicqManageIdx = MUSICQ_PB_A;
+  uimusicq->musicqPlayIdx = MUSICQ_PB_A;
   uimusicq->iteratecb = NULL;
   uimusicq->savelist = NULL;
-  uimusicq->cbci = MUSICQ_A;
+  uimusicq->cbci = MUSICQ_PB_A;
   uiutilsUIWidgetInit (&uimusicq->pausePixbuf);
   uimusicqUIInit (uimusicq);
   uimusicq->newselcb = NULL;
@@ -212,8 +212,8 @@ uimusicqGetSonglistName (uimusicq_t *uimusicq)
 void
 uimusicqPeerSonglistName (uimusicq_t *targetq, uimusicq_t *sourceq)
 {
-  uiEntryPeerBuffer (targetq->ui [MUSICQ_A].slname,
-      sourceq->ui [MUSICQ_A].slname);
+  uiEntryPeerBuffer (targetq->ui [MUSICQ_SL].slname,
+      sourceq->ui [MUSICQ_SL].slname);
 }
 
 long
@@ -241,7 +241,7 @@ uimusicqSave (uimusicq_t *uimusicq, const char *fname)
 
   snprintf (tbuff, sizeof (tbuff), "save-%s", fname);
   uimusicq->savelist = nlistAlloc (tbuff, LIST_UNORDERED, NULL);
-  uimusicqIterate (uimusicq, uimusicqSaveListCallback, MUSICQ_A);
+  uimusicqIterate (uimusicq, uimusicqSaveListCallback, MUSICQ_SL);
 
   songlist = songlistAlloc (fname);
 

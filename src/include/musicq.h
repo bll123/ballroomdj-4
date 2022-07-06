@@ -6,11 +6,14 @@
 #include "tagdef.h"
 
 typedef enum {
-  MUSICQ_A,
-  MUSICQ_B,
+  MUSICQ_PB_A,
+  MUSICQ_PB_B,
   /* if the number of music queues is changed, bdjopt.h and bdj4configui.c */
   /* must be updated */
+  MUSICQ_SL,
+  MUSICQ_MNG_PB,
   MUSICQ_MAX,
+  MUSICQ_PB_MAX = MUSICQ_SL,
   MUSICQ_CURRENT,
 } musicqidx_t;
 

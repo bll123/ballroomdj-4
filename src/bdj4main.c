@@ -166,8 +166,8 @@ main (int argc, char *argv[])
   mainData.playlistCache = NULL;
   mainData.musicQueue = NULL;
   mainData.danceCounts = NULL;
-  mainData.musicqPlayIdx = MUSICQ_A;
-  mainData.musicqManageIdx = MUSICQ_A;
+  mainData.musicqPlayIdx = MUSICQ_PB_A;
+  mainData.musicqManageIdx = MUSICQ_PB_A;
   mainData.musicqDeferredPlayIdx = MAIN_NOT_SET;
   mainData.playerState = PL_STATE_STOPPED;
   mainData.webclient = NULL;
