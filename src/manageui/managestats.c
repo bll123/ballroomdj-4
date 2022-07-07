@@ -70,6 +70,9 @@ void
 manageStatsFree (managestats_t *managestats)
 {
   if (managestats != NULL) {
+    if (managestats->dancecounts != NULL) {
+      nlistFree (managestats->dancecounts);
+    }
     free (managestats);
   }
 }
@@ -194,8 +197,6 @@ manageStatsProcessData (managestats_t *managestats, char *data)
   managestats->songcount = 0;
   managestats->tottime = 0;
 
-  dcounts = nlistAlloc ("stats", LIST_ORDERED, NULL);
-
   p = strtok_r (data, MSG_ARGS_RS_STR, &tokstr);
   ci = atoi (p);
   if (ci != MUSICQ_SL) {
@@ -204,6 +205,8 @@ manageStatsProcessData (managestats_t *managestats, char *data)
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   managestats->tottime = atol (p);
+
+  dcounts = nlistAlloc ("stats", LIST_ORDERED, NULL);
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   while (p != NULL) {
@@ -229,6 +232,7 @@ manageStatsProcessData (managestats_t *managestats, char *data)
   }
   managestats->dancecounts = dcounts;
 
+  /* this only needs to be called when the tab is displayed */
   manageStatsDisplayStats (managestats);
 }
 

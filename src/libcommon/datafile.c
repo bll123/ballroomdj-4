@@ -445,6 +445,7 @@ datafileParseMerge (list_t *datalist, char *data, char *name,
       logMsg (LOG_DBG, LOG_DATAFILE, "set: list %s", tkeystr);
       slistSetData (datalist, tkeystr, NULL);
     }
+
     if (dftype == DFTYPE_INDIRECT ||
         (dftype == DFTYPE_KEY_VAL && dfkeys != NULL)) {
       listidx_t idx = dfkeyBinarySearch (dfkeys, dfkeycount, tkeystr);

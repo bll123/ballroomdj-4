@@ -919,7 +919,7 @@ installerSelectDirDialog (void *udata)
   /* CONTEXT: installer: dialog title for selecting BDJ3 location */
   snprintf (tbuff, sizeof (tbuff), _("Select %s Location"), BDJ3_NAME);
   selectdata = uiDialogCreateSelect (&installer->window,
-      tbuff, uiEntryGetValue (installer->bdj3locEntry), NULL, NULL);
+      tbuff, uiEntryGetValue (installer->bdj3locEntry), NULL, NULL, NULL);
   fn = uiSelectDirDialog (selectdata);
   if (fn != NULL) {
     if (installer->bdj3loc != NULL && installer->freebdj3loc) {
@@ -928,8 +928,10 @@ installerSelectDirDialog (void *udata)
     installer->bdj3loc = fn;
     installer->freebdj3loc = true;
     uiEntrySetValue (installer->bdj3locEntry, fn);
+    free (fn);
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected loc: %s", installer->bdj3loc);
   }
+  free (selectdata);
   return UICB_CONT;
 }
 

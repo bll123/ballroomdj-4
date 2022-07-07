@@ -52,7 +52,6 @@
 #include "uisongedit.h"
 #include "uisongfilter.h"
 #include "uisongsel.h"
-#include "validate.h"
 
 enum {
   MANAGE_TAB_OTHER,
@@ -80,7 +79,6 @@ enum {
   MANAGE_MENU_CB_SL_MIX,
   MANAGE_MENU_CB_SL_TRUNCATE,
   MANAGE_MENU_CB_SL_EXP_M3U,
-  MANAGE_MENU_CB_SL_EXP_M3U8,
   MANAGE_MENU_CB_SL_EXP_BDJ,
   MANAGE_MENU_CB_SL_IMP_M3U,
   MANAGE_MENU_CB_SL_IMP_BDJ,
@@ -256,6 +254,7 @@ static bool     manageSongEditSaveCallback (void *udata);
 static bool     manageStartBPMCounter (void *udata);
 static void     manageSetBPMCounter (manageui_t *manage, song_t *song);
 static void     manageSendBPMCounter (manageui_t *manage);
+static bool     manageSonglistExportM3U (void *udata);
 
 static int gKillReceived = false;
 
@@ -373,32 +372,6 @@ main (int argc, char *argv[])
   logProcEnd (LOG_PROC, "manageui", "");
   logEnd ();
   return status;
-}
-
-int
-manageValidateName (uientry_t *entry, void *udata, bool chgflag)
-{
-  UIWidget    *statusMsg = udata;
-  int         rc;
-  const char  *str;
-  char        tbuff [200];
-  const char  *valstr;
-
-  rc = UIENTRY_OK;
-  if (statusMsg != NULL) {
-    uiLabelSetText (statusMsg, "");
-  }
-  str = uiEntryGetValue (entry);
-  valstr = validate (str, VAL_NOT_EMPTY | VAL_NO_SLASHES);
-  if (valstr != NULL) {
-    if (statusMsg != NULL) {
-      snprintf (tbuff, sizeof (tbuff), valstr, str);
-      uiLabelSetText (statusMsg, tbuff);
-    }
-    rc = UIENTRY_ERROR;
-  }
-
-  return rc;
 }
 
 /* internal routines */
@@ -1241,13 +1214,11 @@ manageSonglistMenu (manageui_t *manage)
 
     uiCreateSubMenu (&menuitem, &menu);
 
+    manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_EXP_M3U,
+        manageSonglistExportM3U);
     /* CONTEXT: menu selection: song list: export: export as m3u */
-    uiMenuCreateItem (&menu, &menuitem, _("Export as M3U Playlist"), NULL);
-    uiWidgetDisable (&menuitem);
-
-    /* CONTEXT: menu selection: song list: export: export as m3u8 */
-    uiMenuCreateItem (&menu, &menuitem, _("Export as M3U8 Playlist"), NULL);
-    uiWidgetDisable (&menuitem);
+    uiMenuCreateItem (&menu, &menuitem, _("Export as M3U Playlist"),
+        &manage->callbacks [MANAGE_MENU_CB_SL_EXP_M3U]);
 
     /* CONTEXT: menu selection: song list: export: export for ballroomdj */
     snprintf (tbuff, sizeof (tbuff), _("Export for %s"), BDJ4_NAME);
@@ -1959,3 +1930,29 @@ manageSendBPMCounter (manageui_t *manage)
   connSendMessage (manage->conn, ROUTE_BPM_COUNTER, MSG_BPM_TIMESIG, tbuff);
 }
 
+static bool
+manageSonglistExportM3U (void *udata)
+{
+  manageui_t  *manage = udata;
+  char        tbuff [200];
+  char        tname [200];
+  uiselect_t  *selectdata;
+  char        *fn;
+  const char  *name;
+
+  name = uimusicqGetSonglistName (manage->slmusicq);
+  /* CONTEXT: song list export: title of save dialog */
+  snprintf (tbuff, sizeof (tbuff), _("Export as M3U Playlist"));
+  snprintf (tname, sizeof (tname), "%s.m3u", name);
+  selectdata = uiDialogCreateSelect (&manage->window,
+      tbuff, sysvarsGetStr (SV_BDJ4DATATOPDIR), tname,
+      /* CONTEXT: song list export: name of file save type */
+      _("M3U Files"), "audio/x-mpegurl");
+  fn = uiSaveFileDialog (selectdata);
+  if (fn != NULL) {
+    uimusicqExportM3U (manage->slmusicq, fn, name);
+    free (fn);
+  }
+  free (selectdata);
+  return UICB_CONT;
+}

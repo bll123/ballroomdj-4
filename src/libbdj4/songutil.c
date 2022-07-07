@@ -19,6 +19,10 @@ songFullFileName (char *sfname)
 {
   char      *tname;
 
+  if (sfname == NULL) {
+    return NULL;
+  }
+
   tname = malloc (MAXPATHLEN);
   assert (tname != NULL);
 

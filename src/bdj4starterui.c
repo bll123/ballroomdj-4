@@ -280,6 +280,7 @@ main (int argc, char *argv[])
       logStart (lockName (ROUTE_STARTERUI), "st", loglevel);
     }
   }
+  connFree (starter.conn);
   progstateFree (starter.progstate);
   logProcEnd (LOG_PROC, "starterui", "");
   logEnd ();
@@ -1224,9 +1225,7 @@ starterGetProfiles (startui_t *starter)
         nlistSetStr (proflist, count, pname);
         nlistSetNum (profidxlist, count, i);
       }
-      if (i != starter->currprofile) {
-        datafileFree (df);
-      }
+      datafileFree (df);
       ++count;
     } else if (availidx == -1) {
       if (i == starter->currprofile) {
@@ -1652,8 +1651,8 @@ starterStopAllProcesses (void *udata)
   fprintf (stderr, "stop-all-processes\n");
 
   count = starterCountProcesses (starter);
-  if (count <= 1) {
-    logProcEnd (LOG_PROC, "starterStopAllProcesses", "begin-only-one");
+  if (count == 0) {
+    logProcEnd (LOG_PROC, "starterStopAllProcesses", "begin-none");
     fprintf (stderr, "done\n");
     return UICB_CONT;
   }
@@ -1681,7 +1680,7 @@ starterStopAllProcesses (void *udata)
   mssleep (1000);
 
   count = starterCountProcesses (starter);
-  if (count <= 1) {
+  if (count == 0) {
     logProcEnd (LOG_PROC, "starterStopAllProcesses", "after-ui");
     fprintf (stderr, "done\n");
     return UICB_CONT;
@@ -1704,7 +1703,7 @@ starterStopAllProcesses (void *udata)
   mssleep (1500);
 
   count = starterCountProcesses (starter);
-  if (count <= 1) {
+  if (count == 0) {
     logProcEnd (LOG_PROC, "starterStopAllProcesses", "after-main");
     fprintf (stderr, "done\n");
     return UICB_CONT;
@@ -1813,6 +1812,10 @@ starterCountProcesses (startui_t *starter)
   logProcBegin (LOG_PROC, "starterCountProcesses");
   count = 0;
   for (route = ROUTE_NONE + 1; route < ROUTE_MAX; ++route) {
+    if (route == ROUTE_STARTERUI) {
+      continue;
+    }
+
     locknm = lockName (route);
     pid = lockExists (locknm, PATHBLD_MP_USEIDX);
     if (pid > 0) {

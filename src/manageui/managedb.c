@@ -330,11 +330,13 @@ manageDbSelectDirCallback (void *udata)
   /* CONTEXT: manage: dialog title for selecting database music folder */
   snprintf (tbuff, sizeof (tbuff), _("Select Music Folder Location"));
   selectdata = uiDialogCreateSelect (managedb->windowp,
-      tbuff, uiEntryGetValue (managedb->dbtopdir), NULL, NULL);
+      tbuff, uiEntryGetValue (managedb->dbtopdir), NULL, NULL, NULL);
   fn = uiSelectDirDialog (selectdata);
   if (fn != NULL) {
     uiEntrySetValue (managedb->dbtopdir, fn);
+    free (fn);
   }
+  free (selectdata);
   return UICB_CONT;
 }
 

@@ -96,13 +96,17 @@ dbCount (musicdb_t *musicdb)
 int
 dbLoad (musicdb_t *musicdb)
 {
+  char        data [RAFILE_REC_SIZE];
   char        *fstr;
+  char        *ffn;
   song_t      *song;
   rafileidx_t srrn;
+  rafileidx_t rc;
   nlistidx_t  dkey;
   nlistidx_t  iteridx;
   slistidx_t  dbidx;
   slistidx_t  siteridx;
+  bool        ok;
 
 
   fstr = "";
@@ -112,9 +116,31 @@ dbLoad (musicdb_t *musicdb)
   raStartBatch (musicdb->radb);
 
   for (rafileidx_t i = 1L; i <= raGetCount (musicdb->radb); ++i) {
-    song = dbReadEntry (musicdb, i);
+    /* should be able to replace the below code with dbReadEntry() */
+    /* but bdj4main crashes, and I don't know why */
+    rc = raRead (musicdb->radb, i, data);
+    if (rc != 1) {
+      logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Unable to access rrn %zd", i);
+    }
+    if (rc == 0 || ! *data) {
+      continue;
+    }
 
-    if (song != NULL) {
+    song = songAlloc ();
+    songParse (song, data, i);
+    fstr = songGetStr (song, TAG_FILE);
+    ffn = songFullFileName (fstr);
+    ok = false;
+    if (fileopFileExists (ffn)) {
+      ok = true;
+    }
+    free (ffn);
+
+    if (! ok) {
+      logMsg (LOG_DBG, LOG_IMPORTANT, "song %s not found", fstr);
+    }
+
+    if (ok) {
       srrn = songGetNum (song, TAG_RRN);
       dkey = songGetNum (song, TAG_DANCE);
       if (dkey >= 0) {
@@ -124,7 +150,6 @@ dbLoad (musicdb_t *musicdb)
         /* a double check to make sure the song has the correct rrn */
         songSetNum (song, TAG_RRN, i);
       }
-      fstr = songGetStr (song, TAG_FILE);
       slistSetData (musicdb->songs, fstr, song);
     }
     ++musicdb->count;
@@ -171,7 +196,6 @@ dbLoadEntry (musicdb_t *musicdb, dbidx_t dbidx)
     slistSetData (musicdb->songs, fstr, song);
   }
 }
-
 
 void
 dbStartBatch (musicdb_t *musicdb)
@@ -355,12 +379,10 @@ static song_t *
 dbReadEntry (musicdb_t *musicdb, rafileidx_t rrn)
 {
   int     rc;
-  bool    ok;
   song_t  *song;
-  char    *fstr;
-  char    *ffn;
   char    data [RAFILE_REC_SIZE];
 
+  *data = '\0';
   rc = raRead (musicdb->radb, rrn, data);
   if (rc != 1) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Unable to access rrn %zd", rrn);
@@ -371,16 +393,12 @@ dbReadEntry (musicdb_t *musicdb, rafileidx_t rrn)
 
   song = songAlloc ();
   songParse (song, data, rrn);
-  fstr = songGetStr (song, TAG_FILE);
-  ffn = songFullFileName (fstr);
-
-  ok = false;
-  if (! fileopFileExists (ffn)) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "song %s not found", fstr);
+  if (! songAudioFileExists (song)) {
+    logMsg (LOG_DBG, LOG_IMPORTANT, "song %s not found",
+        songGetStr (song, TAG_FILE));
     songFree (song);
     song = NULL;
   }
-  free (ffn);
 
   return song;
 }

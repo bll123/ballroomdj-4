@@ -15,7 +15,11 @@
 #include "log.h"
 #include "musicq.h"
 #include "nlist.h"
+#include "pathutil.h"
+#include "song.h"
 #include "songlist.h"
+#include "songutil.h"
+#include "sysvars.h"
 #include "tagdef.h"
 #include "uimusicq.h"
 #include "ui.h"
@@ -270,6 +274,59 @@ uimusicqSetEditCallback (uimusicq_t *uimusicq, UICallback *uicb)
   }
 
   uimusicq->editcb = uicb;
+}
+
+void
+uimusicqExportM3U (uimusicq_t *uimusicq, const char *fname, const char *slname)
+{
+  char        tbuff [MAXPATHLEN];
+  nlistidx_t  iteridx;
+  dbidx_t     dbidx;
+  song_t      *song;
+  FILE        *fh;
+  char        *str;
+  char        *ffn;
+
+  fh = fopen (fname, "w");
+  if (fh == NULL) {
+    return;
+  }
+
+  snprintf (tbuff, sizeof (tbuff), "m3u-%s", fname);
+  uimusicq->savelist = nlistAlloc (tbuff, LIST_UNORDERED, NULL);
+  uimusicqIterate (uimusicq, uimusicqSaveListCallback, MUSICQ_SL);
+
+  fprintf (fh, "#EXTM3U\n");
+  fprintf (fh, "#EXTENC:UTF-8\n");
+  fprintf (fh, "#PLAYLIST:%s\n", slname);
+
+  nlistStartIterator (uimusicq->savelist, &iteridx);
+  while ((dbidx = nlistIterateKey (uimusicq->savelist, &iteridx)) >= 0) {
+    song = dbGetByIdx (uimusicq->musicdb, dbidx);
+
+    *tbuff = '\0';
+    str = songGetStr (song, TAG_ARTIST);
+    if (str != NULL && *str) {
+      snprintf (tbuff, sizeof (tbuff), "%s - ", str);
+    }
+    strlcat (tbuff, songGetStr (song, TAG_TITLE), sizeof (tbuff));
+    fprintf (fh, "#EXTINF:%zd,%s\n",
+        songGetNum (song, TAG_DURATION) / 1000, tbuff);
+    str = songGetStr (song, TAG_ALBUMARTIST);
+    if (str != NULL && *str) {
+      fprintf (fh, "#EXTART:%s\n", str);
+    }
+    str = songGetStr (song, TAG_FILE);
+    ffn = songFullFileName (str);
+    if (isWindows ()) {
+      pathWinPath (ffn, strlen (ffn));
+    }
+    fprintf (fh, "%s\n", ffn);
+    free (ffn);
+  }
+
+  nlistFree (uimusicq->savelist);
+  uimusicq->savelist = NULL;
 }
 
 /* internal routines */

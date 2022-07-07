@@ -19,6 +19,7 @@ typedef struct uiselect {
   UIWidget    *window;
   const char  *label;
   const char  *startpath;
+  const char  *dfltname;
   const char  *mimefiltername;
   const char  *mimetype;
 } uiselect_t;
@@ -70,6 +71,48 @@ uiSelectFileDialog (uiselect_t *selectdata)
   if (selectdata->startpath != NULL) {
     gtk_file_chooser_set_current_folder (GTK_FILE_CHOOSER (widget),
         selectdata->startpath);
+  }
+  if (selectdata->mimetype != NULL) {
+    GtkFileFilter   *ff;
+
+    ff = gtk_file_filter_new ();
+    gtk_file_filter_add_mime_type (ff, selectdata->mimetype);
+    if (selectdata->mimefiltername != NULL) {
+      gtk_file_filter_set_name (ff, selectdata->mimefiltername);
+    }
+    gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (widget), ff);
+  }
+
+  res = gtk_native_dialog_run (GTK_NATIVE_DIALOG (widget));
+  if (res == GTK_RESPONSE_ACCEPT) {
+    fn = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (widget));
+  }
+
+  g_object_unref (widget);
+  return fn;
+}
+
+char *
+uiSaveFileDialog (uiselect_t *selectdata)
+{
+  GtkFileChooserNative *widget = NULL;
+  gint      res;
+  char      *fn = NULL;
+
+  widget = gtk_file_chooser_native_new (
+      selectdata->label,
+      GTK_WINDOW (selectdata->window->widget),
+      GTK_FILE_CHOOSER_ACTION_SAVE,
+      /* CONTEXT: actions associated with the save file dialog */
+      _("Save"), _("Close"));
+
+  if (selectdata->startpath != NULL) {
+    gtk_file_chooser_set_current_folder (GTK_FILE_CHOOSER (widget),
+        selectdata->startpath);
+  }
+  if (selectdata->dfltname != NULL) {
+    gtk_file_chooser_set_current_name (GTK_FILE_CHOOSER (widget),
+        selectdata->dfltname);
   }
   if (selectdata->mimetype != NULL) {
     GtkFileFilter   *ff;
@@ -143,7 +186,8 @@ uiDialogDestroy (UIWidget *uidialog)
 
 uiselect_t *
 uiDialogCreateSelect (UIWidget *window, const char *label,
-    const char *startpath, const char *mimefiltername, const char *mimetype)
+    const char *startpath, const char *dfltname,
+    const char *mimefiltername, const char *mimetype)
 {
   uiselect_t  *selectdata;
 
@@ -151,6 +195,7 @@ uiDialogCreateSelect (UIWidget *window, const char *label,
   selectdata->window = window;
   selectdata->label = label;
   selectdata->startpath = startpath;
+  selectdata->dfltname = dfltname;
   selectdata->mimefiltername = mimefiltername;
   selectdata->mimetype = mimetype;
   return selectdata;

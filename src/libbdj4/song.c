@@ -289,8 +289,11 @@ songAudioFileExists (song_t *song)
 
   sfname = songGetStr (song, TAG_FILE);
   ffn = songFullFileName (sfname);
-  exists = fileopFileExists (ffn);
-  free (ffn);
+  exists = false;
+  if (ffn != NULL) {
+    exists = fileopFileExists (ffn);
+    free (ffn);
+  }
   return exists;
 }
 

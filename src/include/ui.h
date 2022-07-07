@@ -89,11 +89,12 @@ enum {
 
 char  *uiSelectDirDialog (uiselect_t *selectdata);
 char  *uiSelectFileDialog (uiselect_t *selectdata);
+char  *uiSaveFileDialog (uiselect_t *selectdata);
 void uiCreateDialog (UIWidget *uiwidget, UIWidget *window,
     UICallback *uicb, const char *title, ...);
 void  uiDialogPackInDialog (UIWidget *uidialog, UIWidget *boxp);
 void  uiDialogDestroy (UIWidget *uidialog);
-uiselect_t *uiDialogCreateSelect (UIWidget *window, const char *label, const char *startpath, const char *mimefiltername, const char *mimetype);
+uiselect_t *uiDialogCreateSelect (UIWidget *window, const char *label, const char *startpath, const char *dfltname, const char *mimefiltername, const char *mimetype);
 
 /* uigtkmenu.c */
 typedef struct {

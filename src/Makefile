@@ -87,7 +87,7 @@ check:
 
 # recommended to change PLAYER and VOLUME in data/bdjconfig.txt to
 # be the null libraries.
-.PHONY: mcheck mcheckmain mchecksupp
+.PHONY: mcheck mchecksupp mcheckcheck
 mcheck:
 	(cd ..;valgrind --tool=memcheck \
 		--leak-check=full \
@@ -95,18 +95,9 @@ mcheck:
 		--trace-children=yes \
 		--track-origins=yes \
 		--show-leak-kinds=all \
+		--read-var-info=yes \
 		$(VALGRIND_OPTS) \
-		./bin/bdj4 --playerui --debug 15)
-
-mcheckmain:
-	(cd ..;valgrind --tool=memcheck \
-		--leak-check=full \
-		--read-inline-info=yes \
-		--trace-children=yes \
-		--track-origins=yes \
-		--show-leak-kinds=all \
-		$(VALGRIND_OPTS) \
-		./bin/bdj4 --main --debug 15)
+		./bin/bdj4 --debug 15)
 
 mchecksupp:
 	(cd ..;valgrind --tool=memcheck \
@@ -117,7 +108,7 @@ mchecksupp:
 		--show-leak-kinds=all \
 		--suppressions=src/utils/valgrind-suppression.txt \
 		$(VALGRIND_OPTS) \
-		./bin/bdj4 --playerui --debug 15)
+		./bin/bdj4 --debug 15)
 
 mcheckcheck:
 	(cd ..;valgrind --tool=memcheck \
@@ -126,6 +117,7 @@ mcheckcheck:
 		--trace-children=yes \
 		--track-origins=yes \
 		--show-leak-kinds=all \
+		--read-var-info=yes \
 		--suppressions=src/utils/valgrind-suppression.txt \
 		$(VALGRIND_OPTS) \
 		./bin/check_all)

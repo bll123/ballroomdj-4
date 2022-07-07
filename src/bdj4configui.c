@@ -2185,14 +2185,14 @@ confuiSelectMusicDir (void *udata)
   selectdata = uiDialogCreateSelect (&confui->window,
       /* CONTEXT: configuration: folder selection dialog: window title */
       _("Select Music Folder Location"),
-      bdjoptGetStr (OPT_M_DIR_MUSIC),
-      NULL, NULL);
+      bdjoptGetStr (OPT_M_DIR_MUSIC), NULL, NULL, NULL);
   fn = uiSelectDirDialog (selectdata);
   if (fn != NULL) {
     uiEntrySetValue (confui->uiitem [CONFUI_ENTRY_MUSIC_DIR].entry, fn);
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected loc: %s", fn);
     free (fn);
   }
+  free (selectdata);
   logProcEnd (LOG_PROC, "confuiSelectMusicDir", "");
   return UICB_CONT;
 }
@@ -2244,14 +2244,14 @@ confuiSelectFileDialog (configui_t *confui, int widx, char *startpath,
   logProcBegin (LOG_PROC, "confuiSelectFileDialog");
   selectdata = uiDialogCreateSelect (&confui->window,
       /* CONTEXT: configuration: file selection dialog: window title */
-      _("Select File"),
-      startpath, mimefiltername, mimetype);
+      _("Select File"), startpath, NULL, mimefiltername, mimetype);
   fn = uiSelectFileDialog (selectdata);
   if (fn != NULL) {
     uiEntrySetValue (confui->uiitem [widx].entry, fn);
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected loc: %s", fn);
     free (fn);
   }
+  free (selectdata);
   logProcEnd (LOG_PROC, "confuiSelectFileDialog", "");
 }
 

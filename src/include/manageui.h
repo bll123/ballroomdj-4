@@ -10,9 +10,6 @@ enum {
   MANAGE_DB_COUNT_SAVE = 10,
 };
 
-/* bdj4manageui.c */
-int manageValidateName (uientry_t *entry, void *udata, bool chgflag);
-
 /* managepl.c */
 typedef struct managepl managepl_t;
 
@@ -67,6 +64,7 @@ void manageCheckAndCreatePlaylist (const char *name, pltype_t pltype);
 bool manageCreatePlaylistCopy (UIWidget *statusMsg,
     const char *oname, const char *newname);
 bool managePlaylistExists (const char *name);
+int manageValidateName (uientry_t *entry, void *udata, bool chgflag);
 
 /* managestats.c */
 typedef struct managestats managestats_t;

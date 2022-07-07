@@ -18,6 +18,7 @@
 #include "pathbld.h"
 #include "playlist.h"
 #include "ui.h"
+#include "validate.h"
 
 static void manageCopyPlaylistFiles (const char *oldname, const char *newname);
 
@@ -100,6 +101,32 @@ managePlaylistExists (const char *name)
   pathbldMakePath (tbuff, sizeof (tbuff),
       name, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
   return fileopFileExists (tbuff);
+}
+
+int
+manageValidateName (uientry_t *entry, void *udata, bool chgflag)
+{
+  UIWidget    *statusMsg = udata;
+  int         rc;
+  const char  *str;
+  char        tbuff [200];
+  const char  *valstr;
+
+  rc = UIENTRY_OK;
+  if (statusMsg != NULL) {
+    uiLabelSetText (statusMsg, "");
+  }
+  str = uiEntryGetValue (entry);
+  valstr = validate (str, VAL_NOT_EMPTY | VAL_NO_SLASHES);
+  if (valstr != NULL) {
+    if (statusMsg != NULL) {
+      snprintf (tbuff, sizeof (tbuff), valstr, str);
+      uiLabelSetText (statusMsg, tbuff);
+    }
+    rc = UIENTRY_ERROR;
+  }
+
+  return rc;
 }
 
 /* internal routines */

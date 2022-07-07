@@ -109,6 +109,7 @@ void  uimusicqPeerSonglistName (uimusicq_t *targetqueue, uimusicq_t *sourcequeue
 long  uimusicqGetCount (uimusicq_t *uimusicq);
 void  uimusicqSave (uimusicq_t *uimusicq, const char *name);
 void  uimusicqSetEditCallback (uimusicq_t *uimusicq, UICallback *uicb);
+void  uimusicqExportM3U (uimusicq_t *uimusicq, const char *fname, const char *slname);
 
 /* uimusicqgtk.c */
 void      uimusicqUIInit (uimusicq_t *uimusicq);
