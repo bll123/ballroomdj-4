@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-07-06 20:28-0700\n"
+"POT-Creation-Date: 2022-07-07 07:50-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -741,7 +741,7 @@ msgstr ""
 msgid "Import"
 msgstr ""
 
-#. CONTEXT: menu selection: song list: import: import m3u
+#. CONTEXT: song list import: title of dialog
 msgid "Import M3U"
 msgstr ""
 
@@ -833,6 +833,7 @@ msgid "Low Dance Level"
 msgstr ""
 
 #. CONTEXT: song list export: name of file save type
+#. CONTEXT: song list import: name of file type
 msgid "M3U Files"
 msgstr ""
 
@@ -1079,19 +1080,20 @@ msgstr ""
 msgid "Password"
 msgstr ""
 
-msgid "Pause"
-msgstr ""
-
 #. CONTEXT: text from the HTML templates (buttons and labels)
 #. CONTEXT: button: pause at the end of the song (toggle)
 msgid "Pause at End"
 msgstr ""
 
 #. CONTEXT: play the selected song
-#. CONTEXT: button: play or pause the song
 #. CONTEXT: song editor : play song
 #. CONTEXT: play the selected songs
 msgid "Play"
+msgstr ""
+
+#. CONTEXT: text from the HTML templates (buttons and labels)
+#. CONTEXT: button: tooltip: play or pause the song
+msgid "Play / Pause"
 msgstr ""
 
 #. CONTEXT: playlist management: Play Announcements
@@ -1100,10 +1102,6 @@ msgstr ""
 
 #. CONTEXT: menu checkbox: start playback when a dance or playlist is queued
 msgid "Play When Queued"
-msgstr ""
-
-#. CONTEXT: text from the HTML templates (buttons and labels)
-msgid "Play/Pause"
 msgstr ""
 
 #. CONTEXT: configuration: status: title of the "playable" column
@@ -1456,6 +1454,7 @@ msgstr ""
 msgid "Song Start"
 msgstr ""
 
+#. CONTEXT: statistics: Label for number of songs in song list
 msgid "Songs"
 msgstr ""
 
@@ -1593,6 +1592,7 @@ msgstr ""
 msgid "Total Files"
 msgstr ""
 
+#. CONTEXT: statistics: Label for total song list duration
 msgid "Total Time"
 msgstr ""
 

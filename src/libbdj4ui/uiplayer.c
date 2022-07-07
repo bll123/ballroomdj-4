@@ -308,13 +308,12 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
       _("Fade"), NULL);
   uiBoxPackStart (&hbox, &uiwidget);
 
-  /* CONTEXT: button: play or pause the song */
-  snprintf (tbuff, sizeof (tbuff), "%s / %s", _("Play"), _("Pause"));
   uiutilsUICallbackInit (&uiplayer->callbacks [UIPLAYER_CALLBACK_PLAYPAUSE],
       uiplayerPlayPauseProcess, uiplayer);
   uiCreateButton (&uiwidget,
       &uiplayer->callbacks [UIPLAYER_CALLBACK_PLAYPAUSE],
-      tbuff, "button_playpause");
+      /* CONTEXT: button: tooltip: play or pause the song */
+      _("Play / Pause"), "button_playpause");
   uiBoxPackStart (&hbox, &uiwidget);
 
   pathbldMakePath (tbuff, sizeof (tbuff), "button_repeat", ".svg",

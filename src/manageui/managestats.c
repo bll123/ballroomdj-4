@@ -92,6 +92,7 @@ manageBuildUIStats (managestats_t *managestats)
   uiWidgetSetMarginTop (&hbox, uiBaseMarginSz * 2);
   uiBoxPackStart (&managestats->vboxmain, &hbox);
 
+  /* CONTEXT: statistics: Label for number of songs in song list */
   uiCreateColonLabel (&uiwidget, _("Songs"));
   uiBoxPackStart (&hbox, &uiwidget);
 
@@ -100,6 +101,7 @@ manageBuildUIStats (managestats_t *managestats)
   uiBoxPackStart (&hbox, &managestats->songcountdisp);
 
   /* total time (same horiz row) */
+  /* CONTEXT: statistics: Label for total song list duration */
   uiCreateColonLabel (&uiwidget, _("Total Time"));
   uiWidgetSetMarginStart (&uiwidget, uiBaseMarginSz * 10);
   uiBoxPackStart (&hbox, &uiwidget);
