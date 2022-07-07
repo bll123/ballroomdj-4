@@ -268,16 +268,25 @@ uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci,
   if (uimusicq->dispselType == DISP_SEL_SONGLIST ||
       uimusicq->dispselType == DISP_SEL_EZSONGLIST) {
     uientry_t   *entryp;
+
     entryp = uimusicq->ui [ci].slname;
     uiEntryCreate (entryp);
     if (validateFunc != NULL) {
       uiEntrySetValidate (entryp, validateFunc, statusMsg, false);
     }
     uiEntrySetColor (entryp, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
-    uiBoxPackEnd (&hbox, uiEntryGetUIWidget (entryp));
+    if (uimusicq->dispselType == DISP_SEL_EZSONGLIST) {
+      uiWidgetExpandHoriz (uiEntryGetUIWidget (entryp));
+      uiWidgetAlignHorizFill (uiEntryGetUIWidget (entryp));
+      uiBoxPackEndExpand (&hbox, uiEntryGetUIWidget (entryp));
+    }
+    if (uimusicq->dispselType == DISP_SEL_SONGLIST) {
+      uiBoxPackEnd (&hbox, uiEntryGetUIWidget (entryp));
+    }
 
     /* CONTEXT: label for song list name */
     uiCreateColonLabel (&uiwidget, _("Song List"));
+    uiWidgetSetMarginStart (&uiwidget, uiBaseMarginSz * 6);
     uiBoxPackEnd (&hbox, &uiwidget);
   }
 

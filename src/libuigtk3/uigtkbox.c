@@ -55,6 +55,12 @@ uiBoxPackEnd (UIWidget *uibox, UIWidget *uiwidget)
   gtk_box_pack_end (GTK_BOX (uibox->widget), uiwidget->widget, FALSE, FALSE, 0);
 }
 
+inline void
+uiBoxPackEndExpand (UIWidget *uibox, UIWidget *uiwidget)
+{
+  gtk_box_pack_end (GTK_BOX (uibox->widget), uiwidget->widget, TRUE, TRUE, 0);
+}
+
 /* these routines will be removed at a later date */
 
 inline void

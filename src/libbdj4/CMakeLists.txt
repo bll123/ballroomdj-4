@@ -14,6 +14,7 @@ add_library (libbdj4 SHARED
   dnctypes.c
   genre.c
   level.c
+  m3u.c
   musicdb.c
   musicq.c
   orgopt.c

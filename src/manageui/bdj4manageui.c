@@ -29,6 +29,7 @@
 #include "lock.h"
 #include "log.h"
 #include "manageui.h"
+#include "m3u.h"
 #include "musicq.h"
 #include "osuiutils.h"
 #include "osutils.h"
@@ -114,7 +115,8 @@ enum {
 /* actions for the queue process */
 enum {
   MANAGE_PLAY,
-  MANAGE_QUEUE
+  MANAGE_QUEUE,
+  MANAGE_QUEUE_LAST,
 };
 
 typedef struct manage manageui_t;
@@ -255,6 +257,7 @@ static bool     manageStartBPMCounter (void *udata);
 static void     manageSetBPMCounter (manageui_t *manage, song_t *song);
 static void     manageSendBPMCounter (manageui_t *manage);
 static bool     manageSonglistExportM3U (void *udata);
+static bool     manageSonglistImportM3U (void *udata);
 
 static int gKillReceived = false;
 
@@ -1232,8 +1235,10 @@ manageSonglistMenu (manageui_t *manage)
     uiCreateSubMenu (&menuitem, &menu);
 
     /* CONTEXT: menu selection: song list: import: import m3u */
-    uiMenuCreateItem (&menu, &menuitem, _("Import M3U"), NULL);
-    uiWidgetDisable (&menuitem);
+    manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_IMP_M3U,
+        manageSonglistImportM3U);
+    uiMenuCreateItem (&menu, &menuitem, _("Import M3U"),
+        &manage->callbacks [MANAGE_MENU_CB_SL_IMP_M3U]);
 
     /* CONTEXT: menu selection: song list: import: import from ballroomdj */
     snprintf (tbuff, sizeof (tbuff), _("Import from %s"), BDJ4_NAME);
@@ -1482,7 +1487,7 @@ manageQueueProcess (void *udata, long dbidx, int mqidx, int dispsel, int action)
 {
   manageui_t  *manage = udata;
   char        tbuff [100];
-  long        loc;
+  long        loc = 999;
   uimusicq_t  *uimusicq = NULL;
 
   if (dispsel == DISP_SEL_SONGLIST) {
@@ -1499,8 +1504,16 @@ manageQueueProcess (void *udata, long dbidx, int mqidx, int dispsel, int action)
     /* on a queue action, queue after the current selection */
     loc = uimusicqGetSelectLocation (uimusicq, mqidx);
     if (loc < 0) {
-      loc = 99;
+      loc = 999;
     }
+  }
+
+  if (action == MANAGE_QUEUE_LAST) {
+    action = MANAGE_QUEUE;
+    loc = 999;
+  }
+
+  if (action == MANAGE_QUEUE) {
     snprintf (tbuff, sizeof (tbuff), "%d%c%ld%c%ld", mqidx,
         MSG_ARGS_RS, loc, MSG_ARGS_RS, dbidx);
     connSendMessage (manage->conn, ROUTE_MAIN, MSG_MUSICQ_INSERT, tbuff);
@@ -1508,7 +1521,7 @@ manageQueueProcess (void *udata, long dbidx, int mqidx, int dispsel, int action)
 
   if (action == MANAGE_PLAY) {
     snprintf (tbuff, sizeof (tbuff), "%d%c%d%c%ld", mqidx,
-        MSG_ARGS_RS, 99, MSG_ARGS_RS, dbidx);
+        MSG_ARGS_RS, 999, MSG_ARGS_RS, dbidx);
     connSendMessage (manage->conn, ROUTE_MAIN, MSG_QUEUE_CLEAR_PLAY, tbuff);
   }
 }
@@ -1956,3 +1969,66 @@ manageSonglistExportM3U (void *udata)
   free (selectdata);
   return UICB_CONT;
 }
+
+static bool
+manageSonglistImportM3U (void *udata)
+{
+  manageui_t  *manage = udata;
+  char        nplname [200];
+  char        tbuff [MAXPATHLEN];
+  uiselect_t  *selectdata;
+  char        *fn;
+  pathinfo_t  *pi;
+
+  manageSonglistSave (manage);
+
+  /* CONTEXT: song list: default name for a new song list */
+  manageSetSonglistName (manage, _("New Song List"));
+  strlcpy (nplname, manage->sloldname, sizeof (nplname));
+
+  selectdata = uiDialogCreateSelect (&manage->window,
+      /* CONTEXT: song list import: title of dialog */
+      _("Import M3U"), sysvarsGetStr (SV_BDJ4DATATOPDIR), NULL,
+      /* CONTEXT: song list import: name of file type */
+      _("M3U Files"), "audio/x-mpegurl");
+
+  fn = uiSelectFileDialog (selectdata);
+
+  if (fn != NULL) {
+    nlist_t     *list;
+    int         mqidx;
+    dbidx_t     dbidx;
+    nlistidx_t  iteridx;
+    int         len;
+
+    pi = pathInfo (fn);
+    len = pi->blen + 1 > sizeof (nplname) ? sizeof (nplname) : pi->blen + 1;
+    strlcpy (nplname, pi->basename, len);
+
+    list = m3uImport (manage->musicdb, fn, nplname, sizeof (nplname));
+    pathbldMakePath (tbuff, sizeof (tbuff),
+        nplname, BDJ4_SONGLIST_EXT, PATHBLD_MP_DATA);
+    if (! fileopFileExists (tbuff)) {
+      manageSetSonglistName (manage, nplname);
+    }
+
+    if (nlistGetCount (list) > 0) {
+      mqidx = manage->musicqManageIdx;
+
+      /* clear the entire queue */
+      uimusicqClearQueue (manage->slmusicq, mqidx, 1);
+
+      nlistStartIterator (list, &iteridx);
+      while ((dbidx = nlistIterateKey (list, &iteridx)) >= 0) {
+        manageQueueProcess (manage, dbidx, mqidx,
+            DISP_SEL_SONGLIST, MANAGE_QUEUE_LAST);
+      }
+    }
+
+    nlistFree (list);
+    free (fn);
+  }
+  free (selectdata);
+  return UICB_CONT;
+}
+
