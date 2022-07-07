@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
 "POT-Creation-Date: 2022-06-08\n"
-"PO-Revision-Date: 2022-07-05\n"
+"PO-Revision-Date: 2022-07-06\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -611,12 +611,10 @@ msgid "Export"
 msgstr "Exporteren"
 
 #. CONTEXT: menu selection: song list: export: export as m3u
+#. CONTEXT: song list export: title of save dialog
+#, c-format
 msgid "Export as M3U Playlist"
 msgstr "Exporteren als M3U afspeellijst"
-
-#. CONTEXT: menu selection: song list: export: export as m3u8
-msgid "Export as M3U8 Playlist"
-msgstr "Exporteren als M3U8 afspeellijst"
 
 #. CONTEXT: menu selection: song list: export: export for ballroomdj
 #, c-format
@@ -834,6 +832,10 @@ msgstr "Lage %s"
 
 #. CONTEXT: playlist management: Low Dance Level
 msgid "Low Dance Level"
+msgstr ""
+
+#. CONTEXT: song list export: name of file save type
+msgid "M3U Files"
 msgstr ""
 
 #. CONTEXT: label: measures per minute
@@ -1337,6 +1339,7 @@ msgstr "Samba"
 
 #. CONTEXT: bpm counter: save button
 #. CONTEXT: song editor : save data
+#. CONTEXT: actions associated with the save file dialog
 msgid "Save"
 msgstr "Bewaren"
 
