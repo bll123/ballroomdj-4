@@ -72,7 +72,7 @@ osCreateLink (const char *target, const char *linkpath)
 }
 
 pid_t
-osProcessStart (char *targv[], int flags, void **handle, char *outfname)
+osProcessStart (const char *targv[], int flags, void **handle, char *outfname)
 {
   pid_t               pid;
   STARTUPINFOW        si;

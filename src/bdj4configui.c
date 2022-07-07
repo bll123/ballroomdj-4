@@ -440,8 +440,8 @@ static bool     confuiOrgPathSelect (void *udata, long idx);
 static void     confuiUpdateMobmqQrcode (configui_t *confui);
 static bool     confuiMobmqTypeChg (void *udata);
 static bool     confuiMobmqPortChg (void *udata);
-static int      confuiMobmqNameChg (uientry_t *entry, void *udata, bool chgflag);
-static int      confuiMobmqTitleChg (uientry_t *entry, void *udata, bool chgflag);
+static int      confuiMobmqNameChg (uientry_t *entry, void *udata);
+static int      confuiMobmqTitleChg (uientry_t *entry, void *udata);
 static void     confuiUpdateRemctrlQrcode (configui_t *confui);
 static bool     confuiRemctrlChg (void *udata, int value);
 static bool     confuiRemctrlPortChg (void *udata);
@@ -497,9 +497,9 @@ static void   confuiGenreSave (configui_t *confui);
 /* dance table */
 static void   confuiDanceSelect (GtkTreeView *tv, GtkTreePath *path,
     GtkTreeViewColumn *column, gpointer udata);
-static int    confuiDanceEntryDanceChg (uientry_t *entry, void *udata, bool chgflag);
-static int    confuiDanceEntryTagsChg (uientry_t *entry, void *udata, bool chgflag);
-static int    confuiDanceEntryAnnouncementChg (uientry_t *entry, void *udata, bool chgflag);
+static int    confuiDanceEntryDanceChg (uientry_t *entry, void *udata);
+static int    confuiDanceEntryTagsChg (uientry_t *entry, void *udata);
+static int    confuiDanceEntryAnnouncementChg (uientry_t *entry, void *udata);
 static int    confuiDanceEntryChg (uientry_t *e, void *udata, int widx);
 static bool   confuiDanceSpinboxTypeChg (void *udata);
 static bool   confuiDanceSpinboxSpeedChg (void *udata);
@@ -3248,33 +3248,29 @@ confuiMobmqPortChg (void *udata)
 }
 
 static int
-confuiMobmqNameChg (uientry_t *entry, void *udata, bool chgflag)
+confuiMobmqNameChg (uientry_t *entry, void *udata)
 {
   configui_t    *confui = udata;
   const char      *sval;
 
   logProcBegin (LOG_PROC, "confuiMobmqNameChg");
-  if (chgflag) {
-    sval = uiEntryGetValue (entry);
-    bdjoptSetStr (OPT_P_MOBILEMQTAG, sval);
-    confuiUpdateMobmqQrcode (confui);
-  }
+  sval = uiEntryGetValue (entry);
+  bdjoptSetStr (OPT_P_MOBILEMQTAG, sval);
+  confuiUpdateMobmqQrcode (confui);
   logProcEnd (LOG_PROC, "confuiMobmqNameChg", "");
   return UIENTRY_OK;
 }
 
 static int
-confuiMobmqTitleChg (uientry_t *entry, void *udata, bool chgflag)
+confuiMobmqTitleChg (uientry_t *entry, void *udata)
 {
   configui_t      *confui = udata;
   const char      *sval;
 
   logProcBegin (LOG_PROC, "confuiMobmqTitleChg");
-  if (chgflag) {
-    sval = uiEntryGetValue (entry);
-    bdjoptSetStr (OPT_P_MOBILEMQTITLE, sval);
-    confuiUpdateMobmqQrcode (confui);
-  }
+  sval = uiEntryGetValue (entry);
+  bdjoptSetStr (OPT_P_MOBILEMQTITLE, sval);
+  confuiUpdateMobmqQrcode (confui);
   logProcEnd (LOG_PROC, "confuiMobmqTitleChg", "");
   return UIENTRY_OK;
 }
@@ -4738,19 +4734,19 @@ confuiDanceSelect (GtkTreeView *tv, GtkTreePath *path,
 }
 
 static int
-confuiDanceEntryDanceChg (uientry_t *entry, void *udata, bool chgflag)
+confuiDanceEntryDanceChg (uientry_t *entry, void *udata)
 {
   return confuiDanceEntryChg (entry, udata, CONFUI_ENTRY_DANCE_DANCE);
 }
 
 static int
-confuiDanceEntryTagsChg (uientry_t *entry, void *udata, bool chgflag)
+confuiDanceEntryTagsChg (uientry_t *entry, void *udata)
 {
   return confuiDanceEntryChg (entry, udata, CONFUI_ENTRY_DANCE_TAGS);
 }
 
 static int
-confuiDanceEntryAnnouncementChg (uientry_t *entry, void *udata, bool chgflag)
+confuiDanceEntryAnnouncementChg (uientry_t *entry, void *udata)
 {
   return confuiDanceEntryChg (entry, udata, CONFUI_ENTRY_DANCE_ANNOUNCEMENT);
 }

@@ -3,7 +3,11 @@ BallroomDJ 4 Change Log
 4.0.0 alpha 2022-xxxx
 
 - Fixed duration calculations for the music queue.
-- song list editor: Added statistics tab.
+- song list editor
+  - statistics tab.
+  - export as M3U
+  - import M3U
+  - ez song list song list name will expand
 - marquee: Cleaned up the artist/title display.
 - Internal: rework fade-out timer.
 - marquee: Added configuration options for marquee text and
