@@ -104,7 +104,7 @@ managePlaylistExists (const char *name)
 }
 
 int
-manageValidateName (uientry_t *entry, void *udata, bool chgflag)
+manageValidateName (uientry_t *entry, void *udata)
 {
   UIWidget    *statusMsg = udata;
   int         rc;

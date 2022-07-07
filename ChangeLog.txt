@@ -5,17 +5,16 @@ BallroomDJ 4 Change Log
 - Fixed duration calculations for the music queue.
 - song list editor
   - statistics tab.
-  - export as M3U
-  - import M3U
-  - ez song list song list name will expand
+  - export as M3U.
+  - import M3U.
+  - ez song list song list name will expand.
 - marquee: Cleaned up the artist/title display.
 - Internal: rework fade-out timer.
-- marquee: Added configuration options for marquee text and
-  artist/title colors.
-  These are not accessible from the configuration screen.
+- Internal: add non-exposed configuration items for marquee
+  artist/title colors and fade type.
 - profiles
   - Added configuration option for profile accent color.
   - starterui: profile handling.
-  - fix alternate profiles
+  - fix alternate profiles.
   - add profile color display to main windows.
   - change window titles to reflect current profile.

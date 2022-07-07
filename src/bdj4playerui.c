@@ -369,7 +369,7 @@ pluiBuildUI (playerui_t *plui)
   uiBoxPackEnd (&hbox, &uiwidget);
 
   uiCreateLabel (&uiwidget, "");
-  uiLabelSetColor (&uiwidget, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
+  uiLabelSetColor (&uiwidget, bdjoptGetStr (OPT_P_UI_ERROR_COL));
   uiBoxPackEnd (&hbox, &uiwidget);
   uiutilsUIWidgetCopy (&plui->statusMsg, &uiwidget);
 

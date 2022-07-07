@@ -17,6 +17,7 @@
 #include "nlist.h"
 #include "sysvars.h"
 
+static void bdjoptConvFadeType (datafileconv_t *conv);
 static void bdjoptConvWriteTags (datafileconv_t *conv);
 static void bdjoptCreateNewConfigs (void);
 static void bdjoptConvMobileMq (datafileconv_t *conv);
@@ -43,6 +44,7 @@ datafilekey_t bdjoptprofiledfkeys[] = {
   { "DEFAULTVOLUME",        OPT_P_DEFAULTVOLUME,        VALUE_NUM, NULL, -1 },
   { "FADEINTIME",           OPT_P_FADEINTIME,           VALUE_NUM, NULL, -1 },
   { "FADEOUTTIME",          OPT_P_FADEOUTTIME,          VALUE_NUM, NULL, -1 },
+  { "FADETYPE",             OPT_P_FADETYPE,             VALUE_NUM, bdjoptConvFadeType, -1 },
   { "GAP",                  OPT_P_GAP,                  VALUE_NUM, NULL, -1 },
   { "HIDEMARQUEEONSTART",   OPT_P_HIDE_MARQUEE_ON_START,VALUE_NUM, convBoolean, -1 },
   { "MAXPLAYTIME",          OPT_P_MAXPLAYTIME,          VALUE_NUM, NULL, -1 },
@@ -63,6 +65,7 @@ datafilekey_t bdjoptprofiledfkeys[] = {
   { "REMCONTROLUSER",       OPT_P_REMCONTROLUSER,       VALUE_STR, NULL, -1 },
   { "REMOTECONTROL",        OPT_P_REMOTECONTROL,        VALUE_NUM, convBoolean, -1 },
   { "UI_ACCENT_COL",        OPT_P_UI_ACCENT_COL,        VALUE_STR, NULL, -1 },
+  { "UI_ERROR_COL",         OPT_P_UI_ERROR_COL,         VALUE_STR, NULL, -1 },
   { "UI_PROFILE_COL",       OPT_P_UI_PROFILE_COL,       VALUE_STR, NULL, -1 },
 };
 int            bdjoptprofiledfcount;
@@ -337,6 +340,44 @@ bdjoptDump (void)
 }
 
 /* internal routines */
+
+static void
+bdjoptConvFadeType (datafileconv_t *conv)
+{
+  bdjfadetype_t   fadetype = FADETYPE_TRIANGLE;
+  char            *sval;
+
+  conv->allocated = false;
+  if (conv->valuetype == VALUE_STR) {
+    conv->valuetype = VALUE_NUM;
+
+    fadetype = FADETYPE_TRIANGLE;
+    if (strcmp (conv->str, "quartersine") == 0) {
+      fadetype = FADETYPE_QUARTER_SINE;
+    }
+    if (strcmp (conv->str, "halfsine") == 0) {
+      fadetype = FADETYPE_HALF_SINE;;
+    }
+    if (strcmp (conv->str, "logarithmic") == 0) {
+      fadetype = FADETYPE_LOGARITHMIC;
+    }
+    if (strcmp (conv->str, "invertedparabola") == 0) {
+      fadetype = FADETYPE_INVERTED_PARABOLA;
+    }
+    conv->num = fadetype;
+  } else if (conv->valuetype == VALUE_NUM) {
+    conv->valuetype = VALUE_STR;
+    sval = "triangle";
+    switch (conv->num) {
+      case FADETYPE_TRIANGLE: { sval = "triangle"; break; }
+      case FADETYPE_QUARTER_SINE: { sval = "quartersine"; break; }
+      case FADETYPE_HALF_SINE: { sval = "halfsine"; break; }
+      case FADETYPE_LOGARITHMIC: { sval = "logarithmic"; break; }
+      case FADETYPE_INVERTED_PARABOLA: { sval = "invertedparabola"; break; }
+    }
+    conv->str = sval;
+  }
+}
 
 static void
 bdjoptConvWriteTags (datafileconv_t *conv)

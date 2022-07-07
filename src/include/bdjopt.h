@@ -65,6 +65,7 @@ typedef enum {
   OPT_P_COMPLETE_MSG,             // u d s
   OPT_P_FADEINTIME,               // u d s
   OPT_P_FADEOUTTIME,              // u d s
+  OPT_P_FADETYPE,                 // u d s
   OPT_P_GAP,                      // u d s
   OPT_P_HIDE_MARQUEE_ON_START,    // u d s
   OPT_P_MAXPLAYTIME,              // u d s
@@ -87,6 +88,7 @@ typedef enum {
   OPT_P_REMCONTROLUSER,           // u d s
   OPT_P_REMOTECONTROL,            // u d s
   OPT_P_UI_ACCENT_COL,            // u d s
+  OPT_P_UI_ERROR_COL,             // u d s
   OPT_P_UI_PROFILE_COL,           // u d s
 } bdjoptkey_t;
 

@@ -458,7 +458,7 @@ starterBuildUI (startui_t  *starter)
   uiutilsUIWidgetCopy (&starter->profileAccent, &uiwidget);
 
   uiCreateLabel (&uiwidget, "");
-  uiLabelSetColor (&uiwidget, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
+  uiLabelSetColor (&uiwidget, bdjoptGetStr (OPT_P_UI_ERROR_COL));
   uiBoxPackEnd (&hbox, &uiwidget);
   uiutilsUIWidgetCopy (&starter->statusMsg, &uiwidget);
 

@@ -531,7 +531,7 @@ manageBuildUI (manageui_t *manage)
   uiBoxPackEnd (&hbox, &uiwidget);
 
   uiCreateLabel (&uiwidget, "");
-  uiLabelSetColor (&uiwidget, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
+  uiLabelSetColor (&uiwidget, bdjoptGetStr (OPT_P_UI_ERROR_COL));
   uiBoxPackEnd (&hbox, &uiwidget);
   uiutilsUIWidgetCopy (&manage->statusMsg, &uiwidget);
 

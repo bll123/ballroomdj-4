@@ -159,8 +159,8 @@ static bool installerExitCallback (void *udata);
 static bool installerCheckDirTarget (void *udata);
 static bool installerCheckDirConv (void *udata);
 static bool installerSelectDirDialog (void *udata);
-static int  installerValidateTarget (uientry_t *entry, void *udata, bool chgflag);
-static int  installerValidateBDJ3Loc (uientry_t *entry, void *udata, bool chgflag);
+static int  installerValidateTarget (uientry_t *entry, void *udata);
+static int  installerValidateBDJ3Loc (uientry_t *entry, void *udata);
 static void installerSetConvert (installer_t *installer, int val);
 static void installerDisplayConvert (installer_t *installer);
 static bool installerInstallCallback (void *udata);
@@ -806,7 +806,7 @@ installerCheckDirConv (void *udata)
 }
 
 static int
-installerValidateTarget (uientry_t *entry, void *udata, bool chgflag)
+installerValidateTarget (uientry_t *entry, void *udata)
 {
   installer_t   *installer = udata;
   const char    *dir;
@@ -833,7 +833,7 @@ installerValidateTarget (uientry_t *entry, void *udata, bool chgflag)
 
   /* only need to check these states if the target has changed, */
   /* if the toggle button has changed or if forced */
-  if (chgflag || changed) {
+  if (changed) {
     exists = fileopIsDirectory (dir);
 
     if (exists) {
@@ -871,7 +871,7 @@ installerValidateTarget (uientry_t *entry, void *udata, bool chgflag)
 }
 
 static int
-installerValidateBDJ3Loc (uientry_t *entry, void *udata, bool chgflag)
+installerValidateBDJ3Loc (uientry_t *entry, void *udata)
 {
   installer_t   *installer = udata;
   bool          locok = false;
