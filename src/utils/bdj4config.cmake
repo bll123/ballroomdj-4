@@ -318,6 +318,7 @@ check_function_exists (strlcat _lib_strlcat)
 check_function_exists (strlcpy _lib_strlcpy)
 check_function_exists (strtok_r _lib_strtok_r)
 check_function_exists (symlink _lib_symlink)
+check_function_exists (sysconf _lib_sysconf)
 check_function_exists (uname _lib_uname)
 
 set (CMAKE_REQUIRED_LIBRARIES ${LIBVLC_LIBRARY})

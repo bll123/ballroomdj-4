@@ -73,7 +73,6 @@ static sysvarsdesc_t sysvarsdesc [SV_MAX] = {
   [SV_OS_EXEC_EXT] = { "OS_EXEC_EXT" },
   [SV_OSNAME] = { "OSNAME" },
   [SV_OSVERS] = { "OSVERS" },
-  [SV_PATH_GETCONF] = { "PATH_GETCONF" },
   [SV_PATH_GSETTINGS] = { "PATH_GSETTINGS" },
   [SV_PATH_PYTHON] = { "PATH_PYTHON" },
   [SV_PATH_PYTHON_PIP] = { "PATH_PYTHON_PIP" },
@@ -495,11 +494,9 @@ sysvarsInit (const char *argv0)
       lsysvars [SVL_NUM_PROC] = atoi (tptr);
     }
   } else {
-    tptr = osRunProgram (sysvars [SV_PATH_GETCONF], "_NPROCESSORS_ONLN", NULL);
-    if (tptr != NULL) {
-      lsysvars [SVL_NUM_PROC] = atoi (tptr);
-    }
-    free (tptr);
+#if _lib_sysconf
+    lsysvars [SVL_NUM_PROC] = sysconf (_SC_NPROCESSORS_ONLN);
+#endif
   }
   if (lsysvars [SVL_NUM_PROC] > 1) {
     lsysvars [SVL_NUM_PROC] -= 1;  // leave one process free
@@ -519,7 +516,6 @@ sysvarsCheckPaths (void)
   char    *tokstr;
   char    tbuff [MAXPATHLEN];
 
-  strlcpy (sysvars [SV_PATH_GETCONF], "", SV_MAX_SZ);
   strlcpy (sysvars [SV_PATH_GSETTINGS], "", SV_MAX_SZ);
   strlcpy (sysvars [SV_PATH_PYTHON], "", SV_MAX_SZ);
   strlcpy (sysvars [SV_PATH_PYTHON_PIP], "", SV_MAX_SZ);
@@ -550,10 +546,6 @@ sysvarsCheckPaths (void)
 
     if (*sysvars [SV_PATH_PYTHON] == '\0') {
       checkForFile (tbuff, SV_PATH_PYTHON, "python3", "python", NULL);
-    }
-
-    if (*sysvars [SV_PATH_GETCONF] == '\0') {
-      checkForFile (tbuff, SV_PATH_GETCONF, "getconf", NULL);
     }
 
     if (*sysvars [SV_PATH_GSETTINGS] == '\0') {

@@ -91,6 +91,7 @@
 #cmakedefine01 _lib_strlcat
 #cmakedefine01 _lib_strtok_r
 #cmakedefine01 _lib_symlink
+#cmakedefine01 _lib_sysconf
 #cmakedefine01 _lib_uname
 
 #cmakedefine01 _lib_libvlc_new
