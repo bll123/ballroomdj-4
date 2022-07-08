@@ -17,6 +17,7 @@
 #include "bdjvarsdf.h"
 #include "dance.h"
 #include "filemanip.h"
+#include "log.h"
 #include "manageui.h"
 #include "pathbld.h"
 #include "playlist.h"
@@ -255,6 +256,7 @@ manageSequenceLoad (void *udata)
 {
   manageseq_t  *manageseq = udata;
 
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: load sequence");
   selectFileDialog (SELFILE_SEQUENCE, manageseq->windowp, manageseq->options,
       manageseq, manageSequenceLoadFile);
   return UICB_CONT;
@@ -275,6 +277,7 @@ manageSequenceLoadFile (void *udata, const char *fn)
     return;
   }
 
+  logMsg (LOG_DBG, LOG_ACTIONS, "load sequence file");
   manageSequenceSave (manageseq);
 
   seq = sequenceAlloc (fn);
@@ -309,6 +312,7 @@ manageSequenceCopy (void *udata)
   const char  *oname;
   char        newname [200];
 
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: copy sequence");
   manageSequenceSave (manageseq);
 
   oname = uiEntryGetValue (manageseq->seqname);
@@ -329,6 +333,7 @@ manageSequenceNew (void *udata)
   char        tbuff [200];
   slist_t     *tlist;
 
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: new sequence");
   manageSequenceSave (manageseq);
 
   /* CONTEXT: sequence: default name for a new sequence */

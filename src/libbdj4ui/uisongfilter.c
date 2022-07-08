@@ -620,6 +620,7 @@ uisfResponseHandler (void *udata, long responseid)
 
   switch (responseid) {
     case RESPONSE_DELETE_WIN: {
+      logMsg (LOG_DBG, LOG_ACTIONS, "= action: sf: del window");
       uiWindowGetPosition (&uisf->filterDialog, &x, &y);
       nlistSetNum (uisf->options, SONGSEL_FILTER_POSITION_X, x);
       nlistSetNum (uisf->options, SONGSEL_FILTER_POSITION_Y, y);
@@ -627,6 +628,7 @@ uisfResponseHandler (void *udata, long responseid)
       break;
     }
     case RESPONSE_CLOSE: {
+      logMsg (LOG_DBG, LOG_ACTIONS, "= action: sf: close window");
       uiWindowGetPosition (&uisf->filterDialog, &x, &y);
       nlistSetNum (uisf->options, SONGSEL_FILTER_POSITION_X, x);
       nlistSetNum (uisf->options, SONGSEL_FILTER_POSITION_Y, y);
@@ -634,9 +636,11 @@ uisfResponseHandler (void *udata, long responseid)
       break;
     }
     case RESPONSE_APPLY: {
+      logMsg (LOG_DBG, LOG_ACTIONS, "= action: sf: apply");
       break;
     }
     case RESPONSE_RESET: {
+      logMsg (LOG_DBG, LOG_ACTIONS, "= action: sf: reset");
       songfilterReset (uisf->songfilter);
       uisf->danceIdx = -1;
       uidanceSetValue (uisf->uidance, uisf->danceIdx);

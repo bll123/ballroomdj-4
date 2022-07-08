@@ -113,6 +113,7 @@ uimusicqStopRepeat (void *udata)
   uimusicq_t  *uimusicq = udata;
 
   logProcBegin (LOG_PROC, "uimusicqStopRepeat");
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: stop repeat");
 
   uimusicq->repeatButton = UIMUSICQ_REPEAT_NONE;
   logProcEnd (LOG_PROC, "uimusicqStopRepeat", "");

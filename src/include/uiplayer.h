@@ -9,11 +9,11 @@
 #include "ui.h"
 
 enum {
-  UIPLAYER_CALLBACK_FADE,
-  UIPLAYER_CALLBACK_PLAYPAUSE,
-  UIPLAYER_CALLBACK_BEGSONG,
-  UIPLAYER_CALLBACK_NEXTSONG,
-  UIPLAYER_CALLBACK_MAX,
+  UIPLAYER_CB_FADE,
+  UIPLAYER_CB_PLAYPAUSE,
+  UIPLAYER_CB_BEGSONG,
+  UIPLAYER_CB_NEXTSONG,
+  UIPLAYER_CB_MAX,
 };
 
 typedef struct {
@@ -21,7 +21,7 @@ typedef struct {
   conn_t          *conn;
   playerstate_t   playerState;
   musicdb_t       *musicdb;
-  UICallback      callbacks [UIPLAYER_CALLBACK_MAX];
+  UICallback      callbacks [UIPLAYER_CB_MAX];
   /* song display */
   UIWidget        vbox;
   UIWidget        statusImg;

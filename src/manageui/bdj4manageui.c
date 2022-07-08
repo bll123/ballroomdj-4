@@ -1091,6 +1091,7 @@ manageCloseWin (void *udata)
 {
   manageui_t   *manage = udata;
 
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: close window");
   logProcBegin (LOG_PROC, "manageCloseWin");
   if (progstateCurrState (manage->progstate) <= STATE_RUNNING) {
     progstateShutdownProcess (manage->progstate);
@@ -1257,6 +1258,7 @@ manageSonglistLoad (void *udata)
 {
   manageui_t  *manage = udata;
 
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: load songlist");
   selectFileDialog (SELFILE_SONGLIST, &manage->window, manage->options,
       manage, manageSonglistLoadFile);
   return UICB_CONT;
@@ -1269,6 +1271,7 @@ manageSonglistCopy (void *udata)
   const char  *oname;
   char        newname [200];
 
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: copy songlist");
   manageSonglistSave (manage);
 
   oname = uimusicqGetSonglistName (manage->slmusicq);
@@ -1287,6 +1290,7 @@ manageSonglistNew (void *udata)
   manageui_t  *manage = udata;
   char        tbuff [200];
 
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: new songlist");
   manageSonglistSave (manage);
 
   /* CONTEXT: song list: default name for a new song list */
@@ -1303,6 +1307,7 @@ manageSonglistTruncate (void *udata)
 {
   manageui_t  *manage = udata;
 
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: truncate songlist");
   uimusicqClearQueueCallback (manage->slmusicq);
   return UICB_CONT;
 }
@@ -1349,6 +1354,7 @@ manageLoadPlaylist (void *udata, const char *fn)
 {
   manageui_t    *manage = udata;
 
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: seq: load playlist");
   managePlaylistLoadFile (manage->managepl, fn);
   return UICB_CONT;
 }
@@ -1359,6 +1365,7 @@ manageLoadSonglist (void *udata, const char *fn)
 {
   manageui_t    *manage = udata;
 
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: pl: load songlist");
   /* the load will save any current song list */
   manageSonglistLoadFile (manage, fn);
   return UICB_CONT;
@@ -1370,6 +1377,7 @@ manageToggleEasySonglist (void *udata)
   manageui_t  *manage = udata;
   int         val;
 
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: toggle ez songlist");
   val = nlistGetNum (manage->options, MANAGE_EASY_SONGLIST);
   val = ! val;
   nlistSetNum (manage->options, MANAGE_EASY_SONGLIST, val);
@@ -1450,6 +1458,7 @@ manageSonglistSave (manageui_t *manage)
 static bool
 managePlayProcessSonglist (void *udata, long dbidx, int mqidx)
 {
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: play from songlist");
   manageQueueProcess (udata, dbidx, mqidx, DISP_SEL_SONGLIST, MANAGE_PLAY);
   return UICB_CONT;
 }
@@ -1457,6 +1466,7 @@ managePlayProcessSonglist (void *udata, long dbidx, int mqidx)
 static bool
 managePlayProcessEasySonglist (void *udata, long dbidx, int mqidx)
 {
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: play from ez songlist");
   manageQueueProcess (udata, dbidx, mqidx, DISP_SEL_EZSONGLIST, MANAGE_PLAY);
   return UICB_CONT;
 }
@@ -1464,6 +1474,7 @@ managePlayProcessEasySonglist (void *udata, long dbidx, int mqidx)
 static bool
 managePlayProcessMusicManager (void *udata, long dbidx, int mqidx)
 {
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: play from mm");
   manageQueueProcess (udata, dbidx, mqidx, DISP_SEL_MM, MANAGE_PLAY);
   return UICB_CONT;
 }
@@ -1471,6 +1482,7 @@ managePlayProcessMusicManager (void *udata, long dbidx, int mqidx)
 static bool
 manageQueueProcessSonglist (void *udata, long dbidx, int mqidx)
 {
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: queue to songlist");
   manageQueueProcess (udata, dbidx, mqidx, DISP_SEL_SONGLIST, MANAGE_QUEUE);
   return UICB_CONT;
 }
@@ -1478,6 +1490,7 @@ manageQueueProcessSonglist (void *udata, long dbidx, int mqidx)
 static bool
 manageQueueProcessEasySonglist (void *udata, long dbidx, int mqidx)
 {
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: queue to ez songlist");
   manageQueueProcess (udata, dbidx, mqidx, DISP_SEL_EZSONGLIST, MANAGE_QUEUE);
   return UICB_CONT;
 }
@@ -1533,6 +1546,7 @@ manageSwitchPageMain (void *udata, long pagenum)
 {
   manageui_t  *manage = udata;
 
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: switch main nb page");
   manageSwitchPage (manage, pagenum, MANAGE_NB_MAIN);
   return UICB_CONT;
 }
@@ -1790,6 +1804,7 @@ manageNewSelectionSongSel (void *udata, long dbidx)
     return UICB_CONT;
   }
 
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: edit new selection");
   if (manage->mainlasttab != MANAGE_TAB_MAIN_MM) {
     manage->selusesonglist = false;
   }
@@ -1811,6 +1826,7 @@ manageNewSelectionSonglist (void *udata, long dbidx)
     return UICB_CONT;
   }
 
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: select within song list");
   manage->selusesonglist = true;
   manage->songlistdbidx = dbidx;
 
@@ -1823,6 +1839,7 @@ manageSwitchToSongEditor (void *udata)
   manageui_t  *manage = udata;
   int         pagenum;
 
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: switch to song editor");
   if (manage->mainlasttab != MANAGE_TAB_MAIN_MM) {
     /* switching to the music manager tab will also apply the appropriate */
     /* song filter and load the editor */
@@ -1845,6 +1862,7 @@ manageSongEditSaveCallback (void *udata)
   song_t      *song = NULL;
   char        tmp [40];
 
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: song edit save");
   if (manage->dbchangecount > MANAGE_DB_COUNT_SAVE) {
     dbBackup ();
     manage->dbchangecount = 0;
@@ -1953,6 +1971,7 @@ manageSonglistExportM3U (void *udata)
   char        *fn;
   const char  *name;
 
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: export m3u");
   name = uimusicqGetSonglistName (manage->slmusicq);
   /* CONTEXT: song list export: title of save dialog */
   snprintf (tbuff, sizeof (tbuff), _("Export as M3U Playlist"));
@@ -1980,6 +1999,7 @@ manageSonglistImportM3U (void *udata)
   char        *fn;
   pathinfo_t  *pi;
 
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: import m3u");
   manageSonglistSave (manage);
 
   /* CONTEXT: song list: default name for a new song list */

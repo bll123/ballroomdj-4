@@ -14,6 +14,7 @@
 #include "bdjopt.h"
 #include "bdjstring.h"
 #include "filemanip.h"
+#include "log.h"
 #include "manageui.h"
 #include "pathbld.h"
 #include "playlist.h"
@@ -440,6 +441,7 @@ managePlaylistLoadFile (void *udata, const char *fn)
     return;
   }
 
+  logMsg (LOG_DBG, LOG_ACTIONS, "load playlist file");
   managepl->inload = true;
 
   managePlaylistSave (managepl);
@@ -472,6 +474,7 @@ managePlaylistLoad (void *udata)
 {
   managepl_t  *managepl = udata;
 
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: load playlist");
   selectFileDialog (SELFILE_PLAYLIST, managepl->windowp, managepl->options,
       managepl, managePlaylistLoadFile);
   return UICB_CONT;
@@ -535,6 +538,7 @@ managePlaylistCopy (void *udata)
   const char  *oname;
   char        newname [200];
 
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: copy playlist");
   managePlaylistSave (managepl);
 
   oname = uiEntryGetValue (managepl->plname);
@@ -558,6 +562,7 @@ managePlaylistNew (void *udata)
   char        tbuff [200];
   playlist_t  *pl = NULL;
 
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: new playlist");
   managePlaylistSave (managepl);
 
   /* CONTEXT: playlist: default name for a new playlist */

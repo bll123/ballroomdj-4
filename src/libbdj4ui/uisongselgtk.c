@@ -423,6 +423,7 @@ uisongselSelectCallback (void *udata)
   uisongsel_t       *uisongsel = udata;
   musicqidx_t       mqidx;
 
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: songsel select");
   /* only the song selection and ez song selection have a select button */
   /* queue to the song list */
   mqidx = MUSICQ_SL;
@@ -659,6 +660,7 @@ uisongselPlayCallback (void *udata)
   musicqidx_t mqidx;
   uisongsel_t *uisongsel = udata;
 
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: play button");
   /* only song selection, ez song sel and music manager have a play button */
   /* use the hidden manage playback music queue */
   mqidx = MUSICQ_MNG_PB;
@@ -711,6 +713,7 @@ uisongselQueueCallback (void *udata)
   musicqidx_t mqidx;
   uisongsel_t *uisongsel = udata;
 
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: queue button");
   mqidx = MUSICQ_CURRENT;
   uisongselQueueHandler (uisongsel, mqidx, UISONGSEL_QUEUE);
   return UICB_CONT;
@@ -743,6 +746,7 @@ uisongselUIDanceSelectCallback (void *udata, long idx)
 {
   uisongsel_t *uisongsel = udata;
 
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: dance select");
   uisongselDanceSelectHandler (uisongsel, idx);
   return UICB_CONT;
 }
@@ -1217,6 +1221,7 @@ uisongselSongEditCallback (void *udata)
   uisongsel_t     *uisongsel = udata;
   long            dbidx;
 
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: edit button");
   if (uisongsel->newselcb != NULL) {
     dbidx = uisongsel->lastdbidx;
     if (dbidx < 0) {

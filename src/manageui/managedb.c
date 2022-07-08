@@ -220,6 +220,7 @@ manageDbChg (void *udata)
   nval = (ssize_t) value;
 
   sval = nlistGetStr (managedb->dbhelp, nval);
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: db chg selector %s", sval);
   uiTextBoxSetValue (managedb->dbhelpdisp, sval);
   return UICB_CONT;
 }
@@ -274,6 +275,7 @@ manageDbStart (void *udata)
   int         targc = 0;
   char        tbuff [MAXPATHLEN];
 
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: db start");
   pathbldMakePath (tbuff, sizeof (tbuff),
       "bdj4dbupdate", sysvarsGetStr (SV_OS_EXEC_EXT), PATHBLD_MP_EXECDIR);
 
@@ -327,6 +329,7 @@ manageDbSelectDirCallback (void *udata)
   uiselect_t  *selectdata;
   char        tbuff [100];
 
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: db select top dir");
   /* CONTEXT: manage: dialog title for selecting database music folder */
   snprintf (tbuff, sizeof (tbuff), _("Select Music Folder Location"));
   selectdata = uiDialogCreateSelect (managedb->windowp,

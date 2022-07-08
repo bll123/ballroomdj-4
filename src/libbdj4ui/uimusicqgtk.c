@@ -522,6 +522,7 @@ uimusicqClearQueueCallback (void *udata)
 
 
   logProcBegin (LOG_PROC, "uimusicqClearQueueCallback");
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: clear queue");
 
   ci = uimusicq->musicqManageIdx;
 
@@ -745,6 +746,7 @@ uimusicqPlayCallback (void *udata)
   dbidx_t       dbidx;
   int           count;
 
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: song edit: play");
   ci = uimusicq->musicqManageIdx;
   uiw = uimusicq->ui [ci].uiWidgets;
 
@@ -882,6 +884,7 @@ uimusicqSongEditCallback (void *udata)
   dbidx_t         dbidx;
 
 
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: edit");
   if (uimusicq->newselcb != NULL) {
     dbidx = uimusicqGetSelectionDbidx (uimusicq);
     if (dbidx < 0) {
@@ -901,6 +904,7 @@ uimusicqMoveTopCallback (void *udata)
 
 
   logProcBegin (LOG_PROC, "uimusicqMoveTopProcess");
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: move top");
 
   ci = uimusicq->musicqManageIdx;
 
@@ -925,6 +929,7 @@ uimusicqMoveUpCallback (void *udata)
 
 
   logProcBegin (LOG_PROC, "uimusicqMoveUp");
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: move up");
 
   ci = uimusicq->musicqManageIdx;
 
@@ -948,6 +953,7 @@ uimusicqMoveDownCallback (void *udata)
   long        idx;
 
   logProcBegin (LOG_PROC, "uimusicqMoveDown");
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: move down");
 
   ci = uimusicq->musicqManageIdx;
 
@@ -973,6 +979,7 @@ uimusicqTogglePauseCallback (void *udata)
 
 
   logProcBegin (LOG_PROC, "uimusicqTogglePause");
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: toggle pause");
 
   ci = uimusicq->musicqManageIdx;
 
@@ -997,6 +1004,7 @@ uimusicqRemoveCallback (void *udata)
 
 
   logProcBegin (LOG_PROC, "uimusicqRemove");
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: remove song from musicq");
 
   ci = uimusicq->musicqManageIdx;
 
