@@ -430,7 +430,7 @@ static void confuiMakeItemTable (configui_t *confui, UIWidget *box, confuiident_
 
 /* misc */
 static nlist_t  * confuiGetThemeList (void);
-static nlist_t  * confuiGetThemeNames (nlist_t *themelist, slist_t *filelist);
+static slist_t  * confuiGetThemeNames (slist_t *themelist, slist_t *filelist);
 static void     confuiLoadHTMLList (configui_t *confui);
 static void     confuiLoadVolIntfcList (configui_t *confui);
 static void     confuiLoadPlayerIntfcList (configui_t *confui);
@@ -2767,28 +2767,34 @@ confuiGetThemeList (void)
   slist_t     *filelist = NULL;
   nlist_t     *themelist = NULL;
   char        tbuff [MAXPATHLEN];
+  slist_t     *sthemelist = NULL;
+  slistidx_t  iteridx;
+  char        *nm;
+  int         count;
+
 
   logProcBegin (LOG_PROC, "confuiGetThemeList");
+  sthemelist = slistAlloc ("cu-themes-s", LIST_ORDERED, NULL);
   themelist = nlistAlloc ("cu-themes", LIST_ORDERED, free);
 
   if (isWindows ()) {
-    nlistidx_t    count;
-
     snprintf (tbuff, sizeof (tbuff), "%s/plocal/share/themes",
         sysvarsGetStr (SV_BDJ4MAINDIR));
     filelist = diropRecursiveDirList (tbuff, FILEMANIP_DIRS);
-    confuiGetThemeNames (themelist, filelist);
+    confuiGetThemeNames (sthemelist, filelist);
     slistFree (filelist);
-    count = nlistGetCount (themelist);
-    nlistSetStr (themelist, count, "Adwaita");
   } else {
     /* for macos */
     filelist = diropRecursiveDirList ("/opt/local/share/themes", FILEMANIP_DIRS);
-    confuiGetThemeNames (themelist, filelist);
+    confuiGetThemeNames (sthemelist, filelist);
+    slistFree (filelist);
+
+    filelist = diropRecursiveDirList ("/usr/local/share/themes", FILEMANIP_DIRS);
+    confuiGetThemeNames (sthemelist, filelist);
     slistFree (filelist);
 
     filelist = diropRecursiveDirList ("/usr/share/themes", FILEMANIP_DIRS);
-    confuiGetThemeNames (themelist, filelist);
+    confuiGetThemeNames (sthemelist, filelist);
     slistFree (filelist);
 
     snprintf (tbuff, sizeof (tbuff), "%s/.themes", sysvarsGetStr (SV_HOME));
@@ -2796,13 +2802,25 @@ confuiGetThemeList (void)
     confuiGetThemeNames (themelist, filelist);
     slistFree (filelist);
   }
+  /* make sure the built-in themes are present */
+  slistSetStr (sthemelist, "Adwaita", 0);
+  slistSetStr (sthemelist, "Adwaita-dark", 0);
+  slistSetStr (sthemelist, "HighContrast", 0);
+  slistSetStr (sthemelist, "HighContrastInverse", 0);
+  slistSort (sthemelist);
+
+  slistStartIterator (sthemelist, &iteridx);
+  count = 0;
+  while ((nm = slistIterateKey (sthemelist, &iteridx)) != NULL) {
+    nlistSetStr (themelist, count++, nm);
+  }
 
   logProcEnd (LOG_PROC, "confuiGetThemeList", "");
   return themelist;
 }
 
-static nlist_t *
-confuiGetThemeNames (nlist_t *themelist, slist_t *filelist)
+static slist_t *
+confuiGetThemeNames (slist_t *themelist, slist_t *filelist)
 {
   slistidx_t    iteridx;
   char          *fn;
@@ -2810,7 +2828,6 @@ confuiGetThemeNames (nlist_t *themelist, slist_t *filelist)
   static char   *srchdir = "gtk-3.0";
   char          tbuff [MAXPATHLEN];
   char          tmp [MAXPATHLEN];
-  int           count;
 
   logProcBegin (LOG_PROC, "confuiGetThemeNames");
   if (filelist == NULL) {
@@ -2818,7 +2835,6 @@ confuiGetThemeNames (nlist_t *themelist, slist_t *filelist)
     return NULL;
   }
 
-  count = nlistGetCount (themelist);
   slistStartIterator (filelist, &iteridx);
 
   /* the key value used here is meaningless */
@@ -2831,7 +2847,7 @@ confuiGetThemeNames (nlist_t *themelist, slist_t *filelist)
         pathInfoFree (pi);
         pi = pathInfo (tbuff);
         strlcpy (tmp, pi->filename, pi->flen + 1);
-        nlistSetStr (themelist, count++, tmp);
+        slistSetStr (themelist, tmp, 0);
       }
       pathInfoFree (pi);
     } /* is directory */

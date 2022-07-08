@@ -4,6 +4,7 @@ BallroomDJ 4 Change Log
 
 - main/player
   - fixed song start not being sent to the player.
+  - fixed volume not being applied.
 - Fixed duration calculations for the music queue.
 - song list editor
   - statistics tab.
@@ -25,3 +26,6 @@ BallroomDJ 4 Change Log
 - installer
   - add folder selection button for installation folder.
   - fix various issues with installation folder.
+- configuration : themes
+  - add built-in themes to theme list.
+
