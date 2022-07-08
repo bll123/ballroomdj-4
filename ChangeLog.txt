@@ -2,6 +2,9 @@ BallroomDJ 4 Change Log
 
 4.0.0 alpha 2022-xxxx
 
+- player
+  - fixed song start not being sent to the player.
+  - implemented song end.
 - Fixed duration calculations for the music queue.
 - song list editor
   - statistics tab.

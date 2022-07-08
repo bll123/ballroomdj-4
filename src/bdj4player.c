@@ -50,7 +50,7 @@ typedef struct {
   char          *tempname;
   ssize_t       dur;
   ssize_t       songstart;
-  ssize_t       speed;
+  int           speed;
   double        voladjperc;
   ssize_t       gap;
   ssize_t       announce;  // one of PREP_SONG or PREP_ANNOUNCE
@@ -779,27 +779,27 @@ playerSongPrep (playerdata_t *playerData, char *args)
 
   aptr = strtok_r (NULL, MSG_ARGS_RS_STR, &tokptr);
   npq->dur = atol (aptr);
-  logMsg (LOG_DBG, LOG_MAIN, "prep duration: %zd", npq->dur);
+  logMsg (LOG_DBG, LOG_MAIN, "     duration: %zd", npq->dur);
 
   aptr = strtok_r (NULL, MSG_ARGS_RS_STR, &tokptr);
   npq->songstart = atol (aptr);
-  logMsg (LOG_DBG, LOG_MAIN, "prep songstart: %zd", npq->songstart);
+  logMsg (LOG_DBG, LOG_MAIN, "     songstart: %zd", npq->songstart);
 
   aptr = strtok_r (NULL, MSG_ARGS_RS_STR, &tokptr);
-  npq->speed = atol (aptr);
-  logMsg (LOG_DBG, LOG_MAIN, "prep speed: %zd", npq->speed);
+  npq->speed = atoi (aptr);
+  logMsg (LOG_DBG, LOG_MAIN, "     speed: %zd", npq->speed);
 
   aptr = strtok_r (NULL, MSG_ARGS_RS_STR, &tokptr);
   npq->voladjperc = atof (aptr);
-  logMsg (LOG_DBG, LOG_MAIN, "prep voladjperc: %.1f", npq->voladjperc);
+  logMsg (LOG_DBG, LOG_MAIN, "     voladjperc: %.1f", npq->voladjperc);
 
   aptr = strtok_r (NULL, MSG_ARGS_RS_STR, &tokptr);
   npq->gap = atol (aptr);
-  logMsg (LOG_DBG, LOG_MAIN, "prep gap: %zd", npq->gap);
+  logMsg (LOG_DBG, LOG_MAIN, "     gap: %zd", npq->gap);
 
   aptr = strtok_r (NULL, MSG_ARGS_RS_STR, &tokptr);
   npq->announce = atol (aptr);
-  logMsg (LOG_DBG, LOG_MAIN, "prep announce: %zd", npq->announce);
+  logMsg (LOG_DBG, LOG_MAIN, "     announce: %zd", npq->announce);
 
   songMakeTempName (playerData, npq->songname, stname, sizeof (stname));
   npq->tempname = strdup (stname);

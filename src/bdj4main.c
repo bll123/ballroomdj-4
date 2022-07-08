@@ -1369,8 +1369,8 @@ mainPrepSong (maindata_t *mainData, song_t *song,
   }
   gap = 0;
 
-  songstart = 0;
-  speed = 100;
+  songstart = songGetNum (song, TAG_SONGSTART);
+  if (songstart < 0) { songstart = 0; }
   dur = songGetNum (song, TAG_DURATION);
 
   speed = songGetNum (song, TAG_SPEEDADJUSTMENT);
@@ -1414,9 +1414,14 @@ mainPrepSong (maindata_t *mainData, song_t *song,
     } /* announcements are on in the playlist */
   } /* if this is a normal song */
 
-  snprintf (tbuff, sizeof (tbuff), "%s%c%zd%c%zd%c%zd%c%.1f%c%zd%c%d", sfname,
-      MSG_ARGS_RS, dur, MSG_ARGS_RS, songstart, MSG_ARGS_RS, speed,
-      MSG_ARGS_RS, voladjperc, MSG_ARGS_RS, gap, MSG_ARGS_RS, flag);
+  snprintf (tbuff, sizeof (tbuff), "%s%c%zd%c%zd%c%zd%c%.1f%c%zd%c%d",
+      sfname, MSG_ARGS_RS,
+      dur, MSG_ARGS_RS,
+      songstart, MSG_ARGS_RS,
+      speed, MSG_ARGS_RS,
+      voladjperc, MSG_ARGS_RS,
+      gap, MSG_ARGS_RS,
+      flag);
 
   logMsg (LOG_DBG, LOG_MAIN, "prep song %s", sfname);
   connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_SONG_PREP, tbuff);
