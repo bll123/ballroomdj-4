@@ -832,7 +832,6 @@ installerValidateTarget (uientry_t *entry, void *udata)
   }
 
   dir = uiEntryGetValue (installer->targetEntry);
-fprintf (stderr, "validation: %s\n", dir);
   tbool = uiToggleButtonIsActive (&installer->reinstWidget);
   installer->reinstall = tbool;
 
