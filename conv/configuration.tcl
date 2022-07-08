@@ -1,5 +1,13 @@
 #!/usr/bin/tclsh
 
+proc mkrandcolor { } {
+  set r [expr int (rand()*256.0)];
+  set g [expr int (rand()*256.0)];
+  set b [expr int (rand()*256.0)];
+  set col [format "#%02x%02x%02x" $r $g $b]
+  return $col;
+}
+
 if { $argc != 2 } {
   puts "usage: $argv0 <bdj3dir> <datatopdir>"
   exit 1
@@ -72,7 +80,6 @@ foreach path [list {} profiles $mpath $mppath] {
         if { $key eq "DEBUGON" } { continue }
         if { $key eq "ENABLEIMGPLAYER" } { continue }
         if { $key eq "FONTSIZE" } { continue }
-        if { $key eq "FADETYPE" } { continue }
         if { $key eq "HOST" } { continue }
         if { $key eq "INSTPASSWORD" } { continue }
         if { $key eq "MQCLOCKFONTSIZE" } { continue }
@@ -189,9 +196,7 @@ foreach path [list {} profiles $mpath $mppath] {
           set value BPM
         }
         if { $key eq "PLAYERQLEN" } {
-          if { $value < 10 } {
-            set value 30
-          }
+          set value 90
         }
         if { $key eq "MQFONT" && $value ne {} } {
           set value [join $value { }]
@@ -270,12 +275,24 @@ foreach path [list {} profiles $mpath $mppath] {
         puts $ofh "..11"
       }
       if { $path eq "profiles" } {
-        puts $ofh MQ_ACCENT_COL
-        puts $ofh "..#030e80"
-        puts $ofh UI_ACCENT_COL
-        puts $ofh "..#ffa600"
         puts $ofh HIDEMARQUEEONSTART
         puts $ofh "..yes"
+        puts $ofh MQ_ACCENT_COL
+        puts $ofh "..#030e80"
+        puts $ofh MQ_INFO_COL
+        puts $ofh "..#444444"
+        puts $ofh MQ_TEXT_COL
+        puts $ofh "..#000000"
+        puts $ofh UI_ACCENT_COL
+        puts $ofh "..#ffa600"
+        puts $ofh UI_ERROR_COL
+        puts $ofh "..#ff2222"
+        set col "#ffa600"
+        if { $sfx ne ".txt" } {
+          set col [mkrandcolor]
+        }
+        puts $ofh UI_PROFILE_COL
+        puts $ofh "..${col}"
       }
       if { $path eq $mpath } {
         puts $ofh VOLUME
@@ -329,7 +346,7 @@ foreach path [list {} profiles $mpath $mppath] {
         if { [llength $skiplist] > 0 } {
           puts $ofh "DIROLDSKIP"
           set tmp [join $skiplist ;]
-puts "== skiplist: $tmp"
+# puts "== skiplist: $tmp"
           puts $ofh "..${tmp}"
         }
       }
@@ -339,5 +356,3 @@ puts "== skiplist: $tmp"
     }
   }
 }
-
-
