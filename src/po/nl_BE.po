@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
 "POT-Creation-Date: 2022-06-08\n"
-"PO-Revision-Date: 2022-07-07\n"
+"PO-Revision-Date: 2022-07-08\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -755,6 +755,10 @@ msgstr "Importeren van %s"
 #. CONTEXT: installer: start the installation process
 msgid "Install"
 msgstr "Installeren"
+
+#. CONTEXT: installer: dialog title for selecting install location
+msgid "Install Location"
+msgstr ""
 
 #. CONTEXT: installer: command line interface: status message
 #. CONTEXT: installer: status message

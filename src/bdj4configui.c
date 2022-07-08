@@ -164,6 +164,8 @@ enum {
   CONFUI_WIDGET_DEBUG_32768,
   CONFUI_WIDGET_DEBUG_65536,
   CONFUI_WIDGET_DEBUG_131072,
+  CONFUI_WIDGET_DEBUG_262144,
+  CONFUI_WIDGET_DEBUG_524288,
   CONFUI_WIDGET_DEFAULT_VOL,
   CONFUI_WIDGET_FADE_IN_TIME,
   CONFUI_WIDGET_FADE_OUT_TIME,
@@ -1825,6 +1827,14 @@ confuiBuildUIDebugOptions (configui_t *confui)
       CONFUI_WIDGET_DEBUG_131072, -1,
       (val & 131072));
   confui->uiitem [CONFUI_WIDGET_DEBUG_131072].outtype = CONFUI_OUT_DEBUG;
+  confuiMakeItemCheckButton (confui, &vbox, &sg, "Program State",
+      CONFUI_WIDGET_DEBUG_262144, -1,
+      (val & 262144));
+  confui->uiitem [CONFUI_WIDGET_DEBUG_262144].outtype = CONFUI_OUT_DEBUG;
+  confuiMakeItemCheckButton (confui, &vbox, &sg, "Actions",
+      CONFUI_WIDGET_DEBUG_524288, -1,
+      (val & 524288));
+  confui->uiitem [CONFUI_WIDGET_DEBUG_524288].outtype = CONFUI_OUT_DEBUG;
   logProcEnd (LOG_PROC, "confuiBuildUIDebugOptions", "");
 }
 

@@ -762,6 +762,13 @@ starterMainLoop (void *tstarter)
     case START_STATE_SUPPORT_SEND_DB_PRE: {
       bool        senddb;
 
+      pathbldMakePath (ofn, sizeof (ofn),
+          "core", "", PATHBLD_MP_DATATOPDIR);
+      if (fileopFileExists (ofn)) {
+        strlcpy (tbuff, "core", sizeof (tbuff));
+        starterSendFile (starter, tbuff, ofn);
+      }
+
       senddb = uiToggleButtonIsActive (&starter->supportSendDB);
       if (! senddb) {
         starter->startState = START_STATE_SUPPORT_FINISH;

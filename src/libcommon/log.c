@@ -111,7 +111,7 @@ rlogVarMsg (logidx_t idx, loglevel_t level,
 
   logInit ();
 
-  if ((level & LOG_REDIRECT) == LOG_REDIRECT) {
+  if ((level & LOG_REDIR_INST) == LOG_REDIR_INST) {
     idx = LOG_INSTALL;
   }
 

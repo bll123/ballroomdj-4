@@ -27,6 +27,9 @@ pathbldMakePath (char *buff, size_t buffsz,
   if ((flags & PATHBLD_MP_DATA) == PATHBLD_MP_DATA) {
     dirprefix = sysvarsGetStr (SV_BDJ4DATADIR);
   }
+  if ((flags & PATHBLD_MP_DATATOPDIR) == PATHBLD_MP_DATATOPDIR) {
+    dirprefix = sysvarsGetStr (SV_BDJ4DATATOPDIR);
+  }
   if ((flags & PATHBLD_MP_TMPDIR) == PATHBLD_MP_TMPDIR) {
     dirprefix = sysvarsGetStr (SV_BDJ4TMPDIR);
   }

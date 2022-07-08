@@ -30,8 +30,9 @@ typedef uint32_t   loglevel_t;
 #define LOG_WEBCLIENT   0x00010000  // 65536
 #define LOG_DBUPDATE    0x00020000  // 131072
 #define LOG_PROGSTATE   0x00040000  // 262144
-#define LOG_STDERR      0x00080000  // 524288
-#define LOG_REDIRECT    0x00100000  // 1048576
+#define LOG_ACTIONS     0x00080000  // 524288
+#define LOG_STDERR      0x00100000  // 1048576
+#define LOG_REDIR_INST  0x00200000  // 2097152
 #define LOG_ALL         (~LOG_STDERR)
 
 typedef enum {

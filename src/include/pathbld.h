@@ -17,6 +17,7 @@ typedef enum {
   PATHBLD_MP_USEIDX       = 0x0800,
   PATHBLD_MP_INSTDIR      = 0x1000,
   PATHBLD_MP_DSTAMP       = 0x2000,
+  PATHBLD_MP_DATATOPDIR   = 0x4000,
 } pathbld_mp_t;
 
 #define PATH_PROFILES   "profiles"

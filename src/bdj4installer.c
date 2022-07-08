@@ -52,7 +52,7 @@ typedef enum {
   INST_PREPARE,
   INST_WAIT_USER,
   INST_INIT,
-  INST_SAVE,
+  INST_SAVE_TARGET,
   INST_MAKE_TARGET,
   INST_COPY_START,
   INST_COPY_FILES,
@@ -82,7 +82,8 @@ typedef enum {
 } installstate_t;
 
 enum {
-  INST_CALLBACK_SELECT_DIR,
+  INST_CALLBACK_TARGET_DIR,
+  INST_CALLBACK_BDJ3LOC_DIR,
   INST_CALLBACK_EXIT,
   INST_CALLBACK_INSTALL,
   INST_CALLBACK_MAX,
@@ -98,7 +99,7 @@ typedef struct {
   UICallback      callbacks [INST_CALLBACK_MAX];
   char            *home;
   char            *target;
-  char            hostname [MAXPATHLEN];
+  char            *hostname;
   char            locale [40];
   char            rundir [MAXPATHLEN];
   char            datatopdir [MAXPATHLEN];
@@ -117,25 +118,23 @@ typedef struct {
   char            *tclshloc;
   slist_t         *convlist;
   slistidx_t      convidx;
-  uientry_t       *targetEntry;
-  uientry_t       *bdj3locEntry;
   UIWidget        window;
+  uientry_t       *targetEntry;
+  UIWidget        reinstWidget;
+  UICallback      reinstcb;
   UIWidget        feedbackMsg;
+  uientry_t       *bdj3locEntry;
+  UIWidget        convWidget;
+  UICallback      convcb;
   UIWidget        convFeedbackMsg;
   UIWidget        vlcMsg;
   UIWidget        pythonMsg;
   UIWidget        mutagenMsg;
-  UIWidget        reinstWidget;
-  UICallback      reinstcb;
-  UIWidget        convWidget;
-  UICallback      convcb;
   uitextbox_t     *disptb;
   /* flags */
   bool            newinstall : 1;
   bool            reinstall : 1;
   bool            convprocess : 1;
-  bool            freetarget : 1;
-  bool            freebdj3loc : 1;
   bool            guienabled : 1;
   bool            vlcinstalled : 1;
   bool            pythoninstalled : 1;
@@ -158,7 +157,8 @@ static int  installerMainLoop (void *udata);
 static bool installerExitCallback (void *udata);
 static bool installerCheckDirTarget (void *udata);
 static bool installerCheckDirConv (void *udata);
-static bool installerSelectDirDialog (void *udata);
+static bool installerTargetDirDialog (void *udata);
+static bool installerBDJ3LocDirDialog (void *udata);
 static int  installerValidateTarget (uientry_t *entry, void *udata);
 static int  installerValidateBDJ3Loc (uientry_t *entry, void *udata);
 static void installerSetConvert (installer_t *installer, int val);
@@ -207,6 +207,9 @@ static void installerPythonGetVersion (installer_t *installer);
 static void installerCheckPackages (installer_t *installer);
 static void installerWebResponseCallback (void *userdata, char *resp, size_t len);
 static void installerFailWorkingDir (installer_t *installer, const char *dir);
+static void installerSetTargetDir (installer_t *installer, const char *fn);
+static void installerSetBDJ3LocDir (installer_t *installer, const char *fn);
+static void installerCheckAndFixTarget (char *buff, size_t sz);
 
 int
 main (int argc, char *argv[])
@@ -214,7 +217,6 @@ main (int argc, char *argv[])
   installer_t   installer;
   char          tbuff [512];
   char          buff [MAXPATHLEN];
-  char          bdj3buff [MAXPATHLEN];
   FILE          *fh;
   int           c = 0;
   int           option_index = 0;
@@ -235,21 +237,16 @@ main (int argc, char *argv[])
   };
 
 
-  bdj3buff [0] = '\0';
-  installer.unpackdir [0] = '\0';
   buff [0] = '\0';
-  installer.home = getenv ("HOME");
-  if (installer.home == NULL) {
-    /* probably a windows machine */
-    installer.home = getenv ("USERPROFILE");
-  }
 
+  installer.unpackdir [0] = '\0';
+  installer.home = NULL;
   uiutilsUIWidgetInit (&installer.window);
   installer.instState = INST_INITIALIZE;
-  installer.target = buff;
+  installer.target = strdup ("");
   installer.rundir [0] = '\0';
   installer.locale [0] = '\0';
-  installer.bdj3loc = bdj3buff;
+  installer.bdj3loc = strdup ("");
   installer.convidx = 0;
   installer.convlist = NULL;
   installer.tclshloc = NULL;
@@ -257,8 +254,6 @@ main (int argc, char *argv[])
   installer.newinstall = true;
   installer.reinstall = false;
   installer.convprocess = false;
-  installer.freetarget = false;
-  installer.freebdj3loc = false;
   installer.guienabled = true;
   installer.vlcinstalled = false;
   installer.pythoninstalled = false;
@@ -293,9 +288,12 @@ main (int argc, char *argv[])
         break;
       }
       case 'l': {
-        logSetLevel (LOG_DBG, LOG_STDERR, "in");
-        logSetLevel (LOG_ERR, LOG_STDERR, "in");
-        logSetLevel (LOG_INSTALL, LOG_STDERR, "in");
+        logSetLevel (LOG_DBG,
+            LOG_IMPORTANT | LOG_BASIC | LOG_MAIN | LOG_STDERR, "in");
+        logSetLevel (LOG_ERR,
+            LOG_IMPORTANT | LOG_BASIC | LOG_MAIN | LOG_STDERR, "in");
+        logSetLevel (LOG_INSTALL,
+            LOG_IMPORTANT | LOG_BASIC | LOG_MAIN | LOG_STDERR, "in");
         break;
       }
       case 'u': {
@@ -313,55 +311,52 @@ main (int argc, char *argv[])
     exit (1);
   }
 
-  snprintf (tbuff, sizeof (tbuff), "%s/BDJ4", installer.home);
-  strlcpy (buff, tbuff, sizeof (buff));
-  if (isMacOS ()) {
-    snprintf (buff, sizeof (buff), "%s/Applications/BDJ4.app", installer.home);
-  }
-
   /* the data in sysvars will not be correct.  don't use it.  */
-  /* the installer only needs the hostname, os info and locale */
+  /* the installer only needs the home, hostname, os info and locale */
   sysvarsInit (argv[0]);
   localeInit ();
 
-  strlcpy (installer.hostname, sysvarsGetStr (SV_HOSTNAME),
-      sizeof (installer.hostname));
+  installer.hostname = sysvarsGetStr (SV_HOSTNAME);
+  installer.home = sysvarsGetStr (SV_HOME);
+
+  strlcpy (buff, installer.home, sizeof (buff));
+  if (isMacOS ()) {
+    snprintf (buff, sizeof (buff), "%s/Applications", installer.home);
+  }
+  installerCheckAndFixTarget (buff, sizeof (buff));
 
   installerGetTargetSaveFname (&installer, tbuff, sizeof (tbuff));
   fh = fileopOpen (tbuff, "r");
   if (fh != NULL) {
-    /* installer.target is pointing at buff */
     fgets (buff, sizeof (buff), fh);
     stringTrim (buff);
     fclose (fh);
   }
 
-  /* target is not set, choose a proper default */
-  if (! *installer.target) {
-    char  *home;
-
-    home = sysvarsGetStr (SV_HOME);
-    snprintf (buff, sizeof (buff), "%s/%s", home, BDJ4_NAME);
-  }
+  /* at this point the target dir will have either a good default */
+  /* or the saved target name */
+  installerSetTargetDir (&installer, buff);
 
   /* this only works if the installer.target is pointing at an existing */
   /* install of BDJ4 */
   installerGetBDJ3Fname (&installer, tbuff, sizeof (tbuff));
   fh = fileopOpen (tbuff, "r");
   if (fh != NULL) {
-    /* installer.bdj3loc is pointing at bdj3buff */
-    fgets (bdj3buff, sizeof (bdj3buff), fh);
-    stringTrim (bdj3buff);
+    fgets (buff, sizeof (buff), fh);
+    stringTrim (buff);
+    installerSetBDJ3LocDir (&installer, buff);
     fclose (fh);
   } else {
-    installer.bdj3loc = locatebdj3 ();
-    installer.freebdj3loc = true;
+    char *fn;
+
+    fn = locatebdj3 ();
+    installerSetBDJ3LocDir (&installer, fn);
+    free (fn);
   }
   logMsg (LOG_INSTALL, LOG_IMPORTANT, "initial bdj3loc: %s", installer.bdj3loc);
 
   if (isWindows ()) {
-    /* installer.target is pointing at buff */
-    pathWinPath (installer.target, sizeof (buff));
+    pathWinPath (installer.target, strlen (installer.target));
   }
 
   if (installer.guienabled) {
@@ -440,14 +435,27 @@ installerBuildUI (installer_t *installer)
       _("Enter the destination folder where BDJ4 will be installed."));
   uiBoxPackStart (&vbox, &uiwidget);
 
+  uiCreateHorizBox (&hbox);
+  uiWidgetExpandHoriz (&hbox);
+  uiBoxPackStart (&vbox, &hbox);
+
   uiEntryCreate (installer->targetEntry);
   uiEntrySetValue (installer->targetEntry, installer->target);
   uiwidgetp = uiEntryGetUIWidget (installer->targetEntry);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
-  uiBoxPackStartExpand (&vbox, uiwidgetp);
+  uiBoxPackStartExpand (&hbox, uiwidgetp);
   uiEntrySetValidate (installer->targetEntry,
       installerValidateTarget, installer, UIENTRY_DELAYED);
+
+  uiutilsUICallbackInit (&installer->callbacks [INST_CALLBACK_TARGET_DIR],
+      installerTargetDirDialog, installer);
+  uiCreateButton (&uiwidget,
+      &installer->callbacks [INST_CALLBACK_TARGET_DIR],
+      "", NULL);
+  uiButtonSetImageIcon (&uiwidget, "folder");
+  uiWidgetSetMarginStart (&uiwidget, 0);
+  uiBoxPackStart (&hbox, &uiwidget);
 
   uiCreateHorizBox (&hbox);
   uiWidgetExpandHoriz (&hbox);
@@ -503,10 +511,10 @@ installerBuildUI (installer_t *installer)
   uiEntrySetValidate (installer->bdj3locEntry,
       installerValidateBDJ3Loc, installer, UIENTRY_DELAYED);
 
-  uiutilsUICallbackInit (&installer->callbacks [INST_CALLBACK_SELECT_DIR],
-      installerSelectDirDialog, installer);
+  uiutilsUICallbackInit (&installer->callbacks [INST_CALLBACK_BDJ3LOC_DIR],
+      installerBDJ3LocDirDialog, installer);
   uiCreateButton (&uiwidget,
-      &installer->callbacks [INST_CALLBACK_SELECT_DIR],
+      &installer->callbacks [INST_CALLBACK_BDJ3LOC_DIR],
       "", NULL);
   uiButtonSetImageIcon (&uiwidget, "folder");
   uiWidgetSetMarginStart (&uiwidget, 0);
@@ -654,7 +662,7 @@ installerMainLoop (void *udata)
       installerInstInit (installer);
       break;
     }
-    case INST_SAVE: {
+    case INST_SAVE_TARGET: {
       installerSaveTargetDir (installer);
       break;
     }
@@ -678,7 +686,7 @@ installerMainLoop (void *udata)
       installerCreateDirs (installer);
 
       logStart ("bdj4installer", "in",
-          LOG_IMPORTANT | LOG_BASIC | LOG_MAIN);
+          LOG_IMPORTANT | LOG_BASIC | LOG_MAIN | LOG_REDIR_INST);
       logMsg (LOG_INSTALL, LOG_IMPORTANT, "=== installer started");
       logMsg (LOG_INSTALL, LOG_IMPORTANT, "target: %s", installer->target);
       break;
@@ -811,9 +819,8 @@ installerValidateTarget (uientry_t *entry, void *udata)
   installer_t   *installer = udata;
   const char    *dir;
   bool          exists = false;
-  bool          changed = false;
   bool          tbool;
-  char          tbuff [100];
+  char          tbuff [MAXPATHLEN];
   int           rc = UIENTRY_OK;
 
   if (! installer->guienabled) {
@@ -825,43 +832,38 @@ installerValidateTarget (uientry_t *entry, void *udata)
   }
 
   dir = uiEntryGetValue (installer->targetEntry);
+fprintf (stderr, "validation: %s\n", dir);
   tbool = uiToggleButtonIsActive (&installer->reinstWidget);
-  if (tbool != installer->reinstall) {
-    changed = true;
-  }
   installer->reinstall = tbool;
 
-  /* only need to check these states if the target has changed, */
-  /* if the toggle button has changed or if forced */
-  if (changed) {
-    exists = fileopIsDirectory (dir);
+  exists = fileopIsDirectory (dir);
+
+  if (exists) {
+    exists = installerCheckTarget (installer, dir);
 
     if (exists) {
-      exists = installerCheckTarget (installer, dir);
-      if (exists) {
-        if (installer->reinstall) {
-          /* CONTEXT: installer: message indicating the action that will be taken */
-          snprintf (tbuff, sizeof (tbuff), _("Re-install %s."), BDJ4_NAME);
-          uiLabelSetText (&installer->feedbackMsg, tbuff);
-          installerSetConvert (installer, TRUE);
-        } else {
-          /* CONTEXT: installer: message indicating the action that will be taken */
-          snprintf (tbuff, sizeof (tbuff), _("Updating existing %s installation."), BDJ4_NAME);
-          uiLabelSetText (&installer->feedbackMsg, tbuff);
-          installerSetConvert (installer, FALSE);
-        }
+      if (installer->reinstall) {
+        /* CONTEXT: installer: message indicating the action that will be taken */
+        snprintf (tbuff, sizeof (tbuff), _("Re-install %s."), BDJ4_NAME);
+        uiLabelSetText (&installer->feedbackMsg, tbuff);
+        installerSetConvert (installer, TRUE);
       } else {
-        /* CONTEXT: installer: the selected folder exists and is not a BDJ4 installation */
-        uiLabelSetText (&installer->feedbackMsg, _("Error: Folder already exists."));
+        /* CONTEXT: installer: message indicating the action that will be taken */
+        snprintf (tbuff, sizeof (tbuff), _("Updating existing %s installation."), BDJ4_NAME);
+        uiLabelSetText (&installer->feedbackMsg, tbuff);
         installerSetConvert (installer, FALSE);
-        rc = UIENTRY_ERROR;
       }
     } else {
-      /* CONTEXT: installer: message indicating the action that will be taken */
-      snprintf (tbuff, sizeof (tbuff), _("New %s installation."), BDJ4_NAME);
-      uiLabelSetText (&installer->feedbackMsg, tbuff);
-      installerSetConvert (installer, TRUE);
+      /* CONTEXT: installer: the selected folder exists and is not a BDJ4 installation */
+      uiLabelSetText (&installer->feedbackMsg, _("Error: Folder already exists."));
+      installerSetConvert (installer, FALSE);
+      rc = UIENTRY_ERROR;
     }
+  } else {
+    /* CONTEXT: installer: message indicating the action that will be taken */
+    snprintf (tbuff, sizeof (tbuff), _("New %s installation."), BDJ4_NAME);
+    uiLabelSetText (&installer->feedbackMsg, tbuff);
+    installerSetConvert (installer, TRUE);
   }
 
   if (rc == UIENTRY_OK) {
@@ -909,7 +911,33 @@ installerValidateBDJ3Loc (uientry_t *entry, void *udata)
 }
 
 static bool
-installerSelectDirDialog (void *udata)
+installerTargetDirDialog (void *udata)
+{
+  installer_t *installer = udata;
+  char        *fn = NULL;
+  uiselect_t  *selectdata;
+
+  selectdata = uiDialogCreateSelect (&installer->window,
+      /* CONTEXT: installer: dialog title for selecting install location */
+      _("Install Location"),
+      uiEntryGetValue (installer->targetEntry), NULL, NULL, NULL);
+  fn = uiSelectDirDialog (selectdata);
+  if (fn != NULL) {
+    char        tbuff [MAXPATHLEN];
+
+    strlcpy (tbuff, fn, sizeof (tbuff));
+    installerCheckAndFixTarget (tbuff, sizeof (tbuff));
+    /* validation gets called again upon set */
+    uiEntrySetValue (installer->targetEntry, tbuff);
+    free (fn);
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected target loc: %s", installer->target);
+  }
+  free (selectdata);
+  return UICB_CONT;
+}
+
+static bool
+installerBDJ3LocDirDialog (void *udata)
 {
   installer_t *installer = udata;
   char        *fn = NULL;
@@ -922,14 +950,9 @@ installerSelectDirDialog (void *udata)
       tbuff, uiEntryGetValue (installer->bdj3locEntry), NULL, NULL, NULL);
   fn = uiSelectDirDialog (selectdata);
   if (fn != NULL) {
-    if (installer->bdj3loc != NULL && installer->freebdj3loc) {
-      free (installer->bdj3loc);
-    }
-    installer->bdj3loc = fn;
-    installer->freebdj3loc = true;
     uiEntrySetValue (installer->bdj3locEntry, fn);
     free (fn);
-    logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected loc: %s", installer->bdj3loc);
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected bdj3 loc: %s", installer->bdj3loc);
   }
   free (selectdata);
   return UICB_CONT;
@@ -1011,6 +1034,17 @@ installerCheckTarget (installer_t *installer, const char *dir)
   snprintf (tbuff, sizeof (tbuff), "%s/bin/bdj4%s",
       installer->rundir, sysvarsGetStr (SV_OS_EXEC_EXT));
   exists = fileopFileExists (tbuff);
+
+  if (! exists) {
+    snprintf (tbuff, sizeof (tbuff), "%s/%s/bin/bdj4%s",
+        dir, BDJ4_NAME, sysvarsGetStr (SV_OS_EXEC_EXT));
+    exists = fileopFileExists (tbuff);
+    if (exists) {
+      snprintf (tbuff, sizeof (tbuff), "%s/%s", dir, BDJ4_NAME);
+      installerSetrundir (installer, tbuff);
+    }
+  }
+
   if (exists) {
     installer->newinstall = false;
   } else {
@@ -1023,23 +1057,10 @@ installerCheckTarget (installer_t *installer, const char *dir)
 static void
 installerSetPaths (installer_t *installer)
 {
-  if (installer->target != NULL && installer->freetarget) {
-    free (installer->target);
-  }
-  installer->target = strdup (uiEntryGetValue (installer->targetEntry));
-  pathNormPath (installer->target, strlen (installer->target));
-  installer->freetarget = true;
-
-  if (installer->bdj3loc != NULL && installer->freebdj3loc) {
-    free (installer->bdj3loc);
-  }
-  installer->bdj3loc = strdup (uiEntryGetValue (installer->bdj3locEntry));
-  pathNormPath (installer->bdj3loc, strlen (installer->bdj3loc));
-  installer->freebdj3loc = true;
-
+  installerSetTargetDir (installer, uiEntryGetValue (installer->targetEntry));
+  installerSetBDJ3LocDir (installer, uiEntryGetValue (installer->bdj3locEntry));
   installerDisplayConvert (installer);
 }
-
 
 /* installation routines */
 
@@ -1179,26 +1200,32 @@ installerInstInit (installer_t *installer)
   }
 
   installerSetrundir (installer, installer->target);
-  installer->instState = INST_SAVE;
+  installer->instState = INST_SAVE_TARGET;
 }
 
 static void
 installerSaveTargetDir (installer_t *installer)
 {
-  char  tbuff [MAXPATHLEN];
-  FILE  *fh;
+  char        tbuff [MAXPATHLEN];
+  char        nfn [MAXPATHLEN];
+  pathinfo_t  *pi;
+  int         rc;
+  FILE        *fh;
 
   /* CONTEXT: installer: status message */
   installerDisplayText (installer, "-- ", _("Saving install location."), false);
 
-  if (isWindows ()) {
-    snprintf (tbuff, sizeof (tbuff), "%s/AppData/Roaming/BDJ4", installer->home);
-  } else {
-    snprintf (tbuff, sizeof (tbuff), "%s/.config/BDJ4", installer->home);
-  }
-  fileopMakeDir (tbuff);
-
   installerGetTargetSaveFname (installer, tbuff, sizeof (tbuff));
+
+  strlcpy (nfn, installer->target, sizeof (nfn));
+  pi = pathInfo (nfn);
+  rc = strncmp (pi->filename, BDJ4_NAME, pi->flen) == 0 &&
+      pi->flen == strlen (BDJ4_NAME);
+  if (! rc) {
+    snprintf (nfn, sizeof (nfn), "%s/%s", installer->target, BDJ4_NAME);
+  }
+  pathInfoFree (pi);
+  uiEntrySetValue (installer->targetEntry, nfn);
 
   fh = fileopOpen (tbuff, "w");
   if (fh != NULL) {
@@ -1602,11 +1629,7 @@ installerConvertStart (installer_t *installer)
     fgets (tbuff, sizeof (tbuff), stdin);
     stringTrim (tbuff);
     if (*tbuff != '\0') {
-      if (installer->bdj3loc != NULL && installer->freebdj3loc) {
-        free (installer->bdj3loc);
-      }
-      installer->bdj3loc = strdup (tbuff);
-      installer->freebdj3loc = true;
+      installerSetBDJ3LocDir (installer, tbuff);
     }
   }
 
@@ -2180,10 +2203,10 @@ installerCleanup (installer_t *installer)
   char  buff [MAXPATHLEN];
   const char  *targv [10];
 
-  if (installer->freetarget && installer->target != NULL) {
+  if (installer->target != NULL) {
     free (installer->target);
   }
-  if (installer->freebdj3loc && installer->bdj3loc != NULL) {
+  if (installer->bdj3loc != NULL) {
     free (installer->bdj3loc);
   }
   if (installer->convlist != NULL) {
@@ -2236,13 +2259,15 @@ installerDisplayText (installer_t *installer, char *pfx, char *txt, bool bold)
 static void
 installerGetTargetSaveFname (installer_t *installer, char *buff, size_t sz)
 {
+  char  tbuff [MAXPATHLEN];
+
   if (isWindows ()) {
-    snprintf (buff, sz, "%s/AppData/Roaming/BDJ4/%s",
-        installer->home, INST_SAVE_FNAME);
+    snprintf (tbuff, sizeof (tbuff), "%s/AppData/Roaming/BDJ4", installer->home);
   } else {
-    snprintf (buff, sz, "%s/.config/BDJ4/%s",
-        installer->home, INST_SAVE_FNAME);
+    snprintf (tbuff, sizeof (tbuff), "%s/.config/BDJ4", installer->home);
   }
+  fileopMakeDir (tbuff);
+  snprintf (buff, sz, "%s/%s", tbuff, INST_SAVE_FNAME);
 }
 
 static void
@@ -2436,4 +2461,45 @@ installerFailWorkingDir (installer_t *installer, const char *dir)
   /* CONTEXT: installer: status message */
   installerDisplayText (installer, " * ", _("Installation aborted."), false);
   installer->instState = INST_WAIT_USER;
+}
+
+static void
+installerSetTargetDir (installer_t *installer, const char *fn)
+{
+  if (installer->target != NULL) {
+    free (installer->target);
+  }
+  installer->target = strdup (fn);
+  pathNormPath (installer->target, strlen (installer->target));
+}
+
+static void
+installerSetBDJ3LocDir (installer_t *installer, const char *fn)
+{
+  if (installer->bdj3loc != NULL) {
+    free (installer->bdj3loc);
+  }
+  installer->bdj3loc = strdup (fn);
+  pathNormPath (installer->bdj3loc, strlen (installer->bdj3loc));
+}
+
+static void
+installerCheckAndFixTarget (char *buff, size_t sz)
+{
+  pathinfo_t  *pi;
+  char        *nm;
+  int         rc;
+
+  pi = pathInfo (buff);
+  nm = BDJ4_NAME;
+  if (isMacOS ()) {
+    nm = "BDJ4.app";
+  }
+  rc = strncmp (pi->filename, nm, pi->flen) == 0 &&
+      pi->flen == strlen (nm);
+  if (! rc) {
+    strlcat (buff, "/", sz);
+    strlcat (buff, nm, sz);
+  }
+  pathInfoFree (pi);
 }
