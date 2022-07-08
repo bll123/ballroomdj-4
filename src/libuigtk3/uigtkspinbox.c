@@ -423,14 +423,13 @@ uiSpinboxTimeInput (GtkSpinButton *sb, gdouble *newval, gpointer udata)
   }
   spinbox->processing = true;
 
-  if (spinbox->convcb != NULL) {
-    newtext = gtk_entry_get_text (GTK_ENTRY (spinbox->uispinbox.widget));
-    newvalue = uiutilsCallbackStrHandler (spinbox->convcb, newtext);
-    if (newvalue < 0) {
-      spinbox->processing = false;
-      return UICB_NO_CONV;
-    }
+  newtext = gtk_entry_get_text (GTK_ENTRY (spinbox->uispinbox.widget));
+  newvalue = tmutilStrToMS (newtext);
+  if (newvalue < 0) {
+    spinbox->processing = false;
+    return UICB_NO_CONV;
   }
+
   adjustment = gtk_spin_button_get_adjustment (GTK_SPIN_BUTTON (spinbox->uispinbox.widget));
   value = gtk_adjustment_get_value (adjustment);
   *newval = value;

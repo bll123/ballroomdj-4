@@ -33,6 +33,7 @@ uisongeditInit (conn_t *conn, musicdb_t *musicdb,
   uisongedit->musicdb = musicdb;
   uisongedit->options = options;
   uisongedit->savecb = NULL;
+  uisongedit->statusMsg = NULL;
 
   uisongeditUIInit (uisongedit);
 

@@ -203,7 +203,7 @@ uisongeditUIFree (uisongedit_t *uisongedit)
 
 UIWidget *
 uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
-    UIWidget *parentwin)
+    UIWidget *parentwin, UIWidget *statusMsg)
 {
   uisongeditgtk_t   *uiw;
   UIWidget          hbox;
@@ -214,6 +214,7 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
 
   logProcBegin (LOG_PROC, "uisongeditBuildUI");
 
+  uisongedit->statusMsg = statusMsg;
   uiw = uisongedit->uiWidgetData;
   uiw->parentwin = parentwin;
 
@@ -390,9 +391,6 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song)
         break;
       }
       case ET_SPINBOX_TIME: {
-        if (data != NULL) {
-          fprintf (stderr, "et_spinbox_time: mismatch type\n");
-        }
         if (val < 0) { val = 0; }
         uiSpinboxTimeSetValue (uiw->items [count].spinbox, val);
         break;
@@ -835,6 +833,8 @@ uisongeditSaveCallback (void *udata)
   long            nval;
   const char      *ndata = NULL;
   int             chkvalue;
+  char            tbuff [200];
+  bool            valid;
 
   uiw = uisongedit->uiWidgetData;
 
@@ -921,7 +921,29 @@ uisongeditSaveCallback (void *udata)
     uiw->items [count].lastchanged = false;
   }
 
-  if (uisongedit->savecb != NULL) {
+  valid = true;
+  uiLabelSetText (uisongedit->statusMsg, "");
+
+  /* do some validations */
+  {
+    long      songstart;
+    long      songend;
+
+    songstart = songGetNum (uiw->song, TAG_SONGSTART);
+    songend = songGetNum (uiw->song, TAG_SONGEND);
+    if (songstart != 0 && songend != 0 && songstart >= songend) {
+      valid = false;
+      if (uisongedit->statusMsg != NULL) {
+        /* CONTEXT: song editor: status msg: (song end must be greater than song start) */
+        snprintf (tbuff, sizeof (tbuff), _("%s must be greater than %s"),
+            tagdefs [TAG_SONGEND].displayname,
+            tagdefs [TAG_SONGSTART].displayname);
+        uiLabelSetText (uisongedit->statusMsg, tbuff);
+      }
+    }
+  }
+
+  if (valid && uisongedit->savecb != NULL) {
     uiutilsCallbackHandler (uisongedit->savecb);
   }
 

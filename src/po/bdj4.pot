@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-07-08 06:51-0700\n"
+"POT-Creation-Date: 2022-07-08 13:38-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -95,6 +95,11 @@ msgstr ""
 #. CONTEXT: installer: display of package status
 #, c-format
 msgid "%s is not installed"
+msgstr ""
+
+#. CONTEXT: song editor: status msg: (song end must be greater than song start)
+#, c-format
+msgid "%s must be greater than %s"
 msgstr ""
 
 #. CONTEXT: validation: must be a numeric value

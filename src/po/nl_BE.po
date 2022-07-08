@@ -99,6 +99,11 @@ msgstr ""
 msgid "%s is not installed"
 msgstr "%s is niet geïnstalleerd"
 
+#. CONTEXT: song editor: status msg: (song end must be greater than song start)
+#, c-format
+msgid "%s must be greater than %s"
+msgstr ""
+
 #. CONTEXT: validation: must be a numeric value
 #, c-format
 msgid "%s must be numeric."

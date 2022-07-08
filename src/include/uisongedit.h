@@ -16,6 +16,7 @@ typedef struct {
   musicdb_t         *musicdb;
   nlist_t           *options;
   void              *uiWidgetData;
+  UIWidget          *statusMsg;
   UICallback        *savecb;
 } uisongedit_t;
 
@@ -32,7 +33,7 @@ void  uisongeditSetSaveCallback (uisongedit_t *uisongedit, UICallback *uicb);
 /* uisongeditgtk.c */
 void  uisongeditUIInit (uisongedit_t *uisongedit);
 void  uisongeditUIFree (uisongedit_t *uisongedit);
-UIWidget  * uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit, UIWidget *parentwin);
+UIWidget  * uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit, UIWidget *parentwin, UIWidget *statusMsg);
 void  uisongeditLoadData (uisongedit_t *uisongedit, song_t *song);
 void  uisongeditUIMainLoop (uisongedit_t *uisongedit);
 void  uisongeditSetBPMValue (uisongedit_t *uisongedit, const char *args);

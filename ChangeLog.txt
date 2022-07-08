@@ -2,15 +2,16 @@ BallroomDJ 4 Change Log
 
 4.0.0 alpha 2022-xxxx
 
-- player
+- main/player
   - fixed song start not being sent to the player.
-  - implemented song end.
 - Fixed duration calculations for the music queue.
 - song list editor
   - statistics tab.
   - export as M3U.
   - import M3U.
   - ez song list song list name will expand.
+- song editor
+  - fixed start start/song end input.
 - marquee: Cleaned up the artist/title display.
 - Internal: rework fade-out timer.
 - Internal: add non-exposed configuration items for marquee

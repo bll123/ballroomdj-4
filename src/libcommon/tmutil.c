@@ -261,23 +261,29 @@ tmutilToDateHM (time_t ms, char *buff, size_t max)
   return buff;
 }
 
+/* handles H:M:S.d, M:S.d, M:S.d */
 long
 tmutilStrToMS (const char *str)
 {
   char    *tstr;
   char    *tokstr;
   char    *p;
+  double  dval = 0.0;
   long    value;
+  double  mult = 1.0;
 
   tstr = strdup (str);
-  p = strtok_r (tstr, ":.", &tokstr);
-  value = atoi (p);
-  value *= 60;
-  p = strtok_r (NULL, ":.", &tokstr);
-  value += atoi (p);
+  p = strtok_r (tstr, ":", &tokstr);
+  while (p != NULL) {
+    dval *= mult;
+    dval += atof (p);
+    mult = 60.0;
+    p = strtok_r (NULL, ":", &tokstr);
+  }
+  dval *= 1000.0;
+  value = (long) dval;
 
   free (tstr);
-  value *= 1000;
   return value;
 }
 

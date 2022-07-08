@@ -842,7 +842,7 @@ manageBuildUIMusicManager (manageui_t *manage)
   uiutilsNotebookIDAdd (manage->mmnbtabid, MANAGE_TAB_OTHER);
 
   /* music manager: song editor tab */
-  uiwidgetp = uisongeditBuildUI (manage->mmsongsel, manage->mmsongedit, &manage->window);
+  uiwidgetp = uisongeditBuildUI (manage->mmsongsel, manage->mmsongedit, &manage->window, &manage->statusMsg);
   /* CONTEXT: name of song editor notebook tab */
   uiCreateLabel (&uiwidget, _("Song Editor"));
   uiNotebookAppendPage (&notebook, uiwidgetp, &uiwidget);
