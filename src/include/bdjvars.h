@@ -22,6 +22,7 @@ typedef enum {
   BDJVL_DBTAG_PORT,
   BDJVL_RAFFLE_PORT,
   BDJVL_BPM_COUNTER_PORT,
+  BDJVL_REGISTER_PORT,
   BDJVL_NUM_PORTS,
   /* insert non-port keys here */
   BDJVL_MAX,

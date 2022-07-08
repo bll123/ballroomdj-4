@@ -22,16 +22,10 @@ void
 bdjvarsInit (void)
 {
   if (! initialized) {
-    uint16_t        port = sysvarsGetNum (SVL_BASEPORT);
-
     for (int i = 0; i < BDJV_MAX; ++i) {
       bdjvars [i] = NULL;
     }
-    for (int i = BDJVL_MAIN_PORT; i < BDJVL_NUM_PORTS; ++i) {
-      bdjvarsl [i] = port++;
-    }
     bdjvarsl [BDJVL_NUM_PORTS] = BDJVL_NUM_PORTS;
-
     bdjvarsAdjustPorts ();
     initialized = true;
   }
@@ -86,11 +80,14 @@ bdjvarsAdjustPorts (void)
   int       idx = sysvarsGetNum (SVL_BDJIDX);
   uint16_t  port;
 
-  port = sysvarsGetNum (SVL_BASEPORT) +
+  /* bump by 1 to skip baseport, use by registration */
+  port = sysvarsGetNum (SVL_BASEPORT) + 1 +
       bdjvarsGetNum (BDJVL_NUM_PORTS) * idx;
   for (int i = BDJVL_MAIN_PORT; i < BDJVL_NUM_PORTS; ++i) {
     bdjvarsl [i] = port++;
   }
+  /* the registration port is static */
+  bdjvarsl [BDJVL_REGISTER_PORT] = sysvarsGetNum (SVL_BASEPORT);
 }
 
 /* internal routines */

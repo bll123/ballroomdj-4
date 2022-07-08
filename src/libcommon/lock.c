@@ -35,6 +35,7 @@ static char *locknames [ROUTE_MAX] = {
   [ROUTE_RAFFLE] = "raffle",
   [ROUTE_HELPERUI] = "helperui",
   [ROUTE_BPM_COUNTER] = "bpmcounter",
+  [ROUTE_REGISTER] = "register",
 };
 
 static pid_t   getPidFromFile (char *);

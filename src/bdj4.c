@@ -68,6 +68,7 @@ main (int argc, char * argv[])
     { "bdj4player",     no_argument,        NULL,   9 },
     { "bdj4playerui",   no_argument,        NULL,   10 },
     { "bdj4remctrl",    no_argument,        NULL,   11 },
+    { "bdj4register",   no_argument,        NULL,   20 },
     { "bdj4starterui",  no_argument,        NULL,   14 },
     { "bdj4tags",       no_argument,        NULL,   17 },
     { "bdj4updater",    no_argument,        NULL,   16 },
@@ -223,6 +224,11 @@ main (int argc, char * argv[])
       }
       case 19: {
         prog = "bdj4bpmcounter";
+        ++validargs;
+        break;
+      }
+      case 20: {
+        prog = "bdj4register";
         ++validargs;
         break;
       }

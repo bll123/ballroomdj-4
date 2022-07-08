@@ -30,6 +30,7 @@ static char *routetxt [ROUTE_MAX] = {
   [ROUTE_STARTERUI] = "STARTERUI",
   [ROUTE_HELPERUI] = "HELPERUI",
   [ROUTE_BPM_COUNTER] = "BPM_COUNTER",
+  [ROUTE_REGISTER] = "REGISTER",
 };
 
 /* for debugging */
@@ -110,6 +111,9 @@ static char *msgtxt [MSG_MAX] = {
   [MSG_DB_ALL_FILES_SENT] = "DB_ALL_FILES_SENT",
   [MSG_BPM_TIMESIG] = "BPM_TIMESIG",
   [MSG_BPM_SET] = "BPM_SET",
+  [MSG_REGISTER] = "REGISTER",
+  [MSG_REGISTER_EXIT] = "REGISTER_EXIT",
+  [MSG_REGISTER_PORT] = "REGISTER_PORT",
 };
 
 size_t

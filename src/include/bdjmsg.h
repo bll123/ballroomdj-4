@@ -22,6 +22,7 @@ typedef enum {
   ROUTE_STARTERUI,
   ROUTE_HELPERUI,
   ROUTE_BPM_COUNTER,
+  ROUTE_REGISTER,
   ROUTE_MAX,
 } bdjmsgroute_t;
 
@@ -134,6 +135,11 @@ typedef enum {
   /* to/from bpm counter */
   MSG_BPM_TIMESIG,          // args: bpm/mpm time-signature(mpm)
   MSG_BPM_SET,              // args: bpm
+
+  /* to/from register */
+  MSG_REGISTER,             // no args
+  MSG_REGISTER_EXIT,        // no args
+  MSG_REGISTER_PORT,        // args: base port
 
   /* when a new message is added, update: */
   /* bdjmsg.c: debugging information for the msg */
