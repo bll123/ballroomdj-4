@@ -33,6 +33,7 @@ add_library (libbdj4 SHARED
   tagdef.c
   templateutil.c
   validate.c
+  volreg.c
   webclient.c
 )
 target_include_directories (libbdj4

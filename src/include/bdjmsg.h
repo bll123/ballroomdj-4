@@ -139,7 +139,7 @@ typedef enum {
   /* to/from register */
   MSG_REGISTER,             // no args
   MSG_REGISTER_EXIT,        // no args
-  MSG_REGISTER_QUERY,       // no args
+  MSG_REGISTER_QUERY,       // args: port to reply to
   MSG_REGISTER_COUNT,       // args: count of # of registered bdj4
 
   /* when a new message is added, update: */

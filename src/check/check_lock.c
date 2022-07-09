@@ -49,12 +49,14 @@ START_TEST(lock_already)
 {
   int           rc;
   pid_t         pid;
+  pid_t         tpid;
 
   pid = getpid ();
+  tpid = pid + 1;
   unlink (FULL_LOCK_FN);
   rc = lockAcquirePid (LOCK_FN, pid, PATHBLD_MP_TMPDIR);
   ck_assert_int_gt (rc, 0);
-  rc = lockAcquirePid (LOCK_FN, pid, PATHBLD_MP_TMPDIR);
+  rc = lockAcquirePid (LOCK_FN, tpid, PATHBLD_MP_TMPDIR);
   ck_assert_int_lt (rc, 0);
   rc = lockReleasePid (LOCK_FN, pid, PATHBLD_MP_TMPDIR);
   ck_assert_int_eq (rc, 0);
@@ -97,6 +99,7 @@ START_TEST(lock_exists)
 {
   int           rc;
   pid_t         pid;
+  pid_t         tpid;
   pid_t         fpid;
   size_t        temp;
   FILE          *fh;
@@ -110,24 +113,25 @@ START_TEST(lock_exists)
   rc = fscanf (fh, "%zd", &temp);
   fpid = (pid_t) temp;
   fclose (fh);
-
-//fprintf (stderr, "lock file exists; yes process\n");
-  pid = lockExists (LOCK_FN, PATHBLD_MP_TMPDIR);
   ck_assert_int_eq (fpid, pid);
+
+  /* lock file exists, same process */
+  tpid = lockExists (LOCK_FN, PATHBLD_MP_TMPDIR);
+  ck_assert_int_eq (tpid, 0);
 
   rc = lockReleasePid (LOCK_FN, pid, PATHBLD_MP_TMPDIR);
   ck_assert_int_eq (rc, 0);
-//fprintf (stderr, "lock file does not exist; no process\n");
-  pid = lockExists (LOCK_FN, PATHBLD_MP_TMPDIR);
-  ck_assert_int_eq (pid, 0);
+  /* lock file does not exist */
+  tpid = lockExists (LOCK_FN, PATHBLD_MP_TMPDIR);
+  ck_assert_int_eq (tpid, 0);
 
   fh = fopen (FULL_LOCK_FN, "w");
   temp = 94534;
   fprintf (fh, "%zd", temp);
   fclose (fh);
-//fprintf (stderr, "lock file exists; no process\n");
-  pid = lockExists (LOCK_FN, PATHBLD_MP_TMPDIR);
-  ck_assert_int_eq (pid, 0);
+  /* lock file exists, no associated process */
+  tpid = lockExists (LOCK_FN, PATHBLD_MP_TMPDIR);
+  ck_assert_int_eq (tpid, 0);
   unlink (FULL_LOCK_FN);
 }
 END_TEST

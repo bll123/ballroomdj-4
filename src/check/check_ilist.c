@@ -65,12 +65,18 @@ START_TEST(ilist_get_data_str_sub)
   ck_assert_int_eq (list->allocCount, 7);
   ilistSetStr (list, 6, 0, "0L");
   ilistSetStr (list, 6, 1, "8L");
+  ck_assert_int_eq (list->count, 1);
+  ck_assert_int_eq (list->count, ilistGetCount (list));
+  ck_assert_int_eq (ilistGetCount (list), 1);
   ilistSetStr (list, 26, 0, "1L");
   ilistSetStr (list, 26, 1, "9L");
   ilistSetStr (list, 18, 0, "2L");
   ilistSetStr (list, 18, 1, "10L");
   ilistSetStr (list, 11, 0, "3L");
   ilistSetStr (list, 11, 1, "11L");
+  ck_assert_int_eq (list->count, 4);
+  ck_assert_int_eq (list->count, ilistGetCount (list));
+  ck_assert_int_eq (ilistGetCount (list), 4);
   ilistSetStr (list, 3, 0, "4L");
   ilistSetStr (list, 3, 1, "12L");
   ilistSetStr (list, 1, 0, "5L");

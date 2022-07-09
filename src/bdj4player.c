@@ -21,7 +21,6 @@
 
 #include "bdj4.h"
 #include "bdj4init.h"
-#include "bdj4reg.h"
 #include "bdjmsg.h"
 #include "bdjopt.h"
 #include "bdjstring.h"
@@ -43,6 +42,7 @@
 #include "sysvars.h"
 #include "tagdef.h"
 #include "tmutil.h"
+#include "volreg.h"
 #include "volume.h"
 
 typedef struct {
@@ -79,7 +79,6 @@ typedef struct {
   volsinklist_t   sinklist;
   playerstate_t   playerState;
   playerstate_t   lastPlayerState;      // used by sendstatus
-  int             regcount;
   mstime_t        playTimeStart;
   ssize_t         playTimePlayed;
   mstime_t        playTimeCheck;
@@ -182,7 +181,6 @@ main (int argc, char *argv[])
   playerData.pauseAtEnd = false;
   playerData.repeat = false;
   playerData.stopPlaying = false;
-  playerData.regcount = 0;
 
   progstateSetCallback (playerData.progstate, STATE_CONNECTING,
       playerConnectingCallback, &playerData);
@@ -213,6 +211,7 @@ main (int argc, char *argv[])
   playerInitSinklist (&playerData);
   /* sets the current sink */
   playerSetAudioSink (&playerData, bdjoptGetStr (OPT_M_AUDIOSINK));
+  playerSetDefaultVolume (&playerData);
 
   if (playerData.sinklist.sinklist != NULL) {
     for (size_t i = 0; i < playerData.sinklist.count; ++i) {
@@ -257,7 +256,8 @@ playerStoppingCallback (void *tpdata, programstate_t programState)
 static bool
 playerClosingCallback (void *tpdata, programstate_t programState)
 {
-  playerdata_t    *playerData = tpdata;
+  playerdata_t  *playerData = tpdata;
+  int           origvol;
 
   logProcBegin (LOG_PROC, "playerClosingCallback");
 
@@ -269,10 +269,10 @@ playerClosingCallback (void *tpdata, programstate_t programState)
     pliFree (playerData->pli);
   }
 
-  if (playerData->regcount <= 1) {
-fprintf (stderr, "%d reset-vol: %d\n", getpid (), playerData->originalSystemVolume);
-    volumeSet (playerData->volume, playerData->currentSink, playerData->originalSystemVolume);
-    logMsg (LOG_DBG, LOG_MAIN, "set to orig volume: %d", playerData->originalSystemVolume);
+  origvol = volregClear (playerData->currentSink);
+  if (origvol > 0) {
+    volumeSet (playerData->volume, playerData->currentSink, origvol);
+    logMsg (LOG_DBG, LOG_MAIN, "set to orig volume: (was:%d) %d", playerData->originalSystemVolume, origvol);
   }
   volumeFreeSinkList (&playerData->sinklist);
   volumeFree (playerData->volume);
@@ -406,11 +406,6 @@ playerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_MAIN_READY: {
           mstimeset (&playerData->statusCheck, 0);
-          break;
-        }
-        case MSG_REGISTER_COUNT: {
-          playerData->regcount = atoi (args);
-          playerSetDefaultVolume (playerData);
           break;
         }
         default: {
@@ -693,7 +688,6 @@ playerConnectingCallback (void *tpdata, programstate_t programState)
   bool          rc = STATE_NOT_FINISH;
 
   logProcBegin (LOG_PROC, "playerConnectingCallback");
-  regQuery (playerData->conn);
 
   connProcessUnconnected (playerData->conn);
 
@@ -968,7 +962,6 @@ playerPause (playerdata_t *playerData)
       playerData->inFade = false;
       playerData->inFadeIn = false;
       if (! playerData->mute) {
-fprintf (stderr, "%d after-pause %d\n", getpid (), playerData->realVolume);
         volumeSet (playerData->volume, playerData->currentSink, playerData->realVolume);
       }
     }
@@ -1188,7 +1181,6 @@ playerVolumeSet (playerdata_t *playerData, char *tvol)
   playerData->realVolume = playerLimitVolume (playerData->realVolume);
   playerData->currentVolume += voldiff;
   playerData->currentVolume = playerLimitVolume (playerData->currentVolume);
-fprintf (stderr, "%d pl-vol-set %d\n", getpid (), playerData->realVolume);
   volumeSet (playerData->volume, playerData->currentSink, playerData->realVolume);
   logProcEnd (LOG_PROC, "playerVolumeSet", "");
 }
@@ -1312,7 +1304,6 @@ playerFadeVolSet (playerdata_t *playerData)
     newvol = playerData->realVolume;
   }
   if (! playerData->mute) {
-fprintf (stderr, "%d fade-set %d\n", getpid (), newvol);
     volumeSet (playerData->volume, playerData->currentSink, newvol);
   }
   logMsg (LOG_DBG, LOG_MAIN, "fade set volume: %d count:%d",
@@ -1330,7 +1321,6 @@ fprintf (stderr, "%d fade-set %d\n", getpid (), newvol);
       /* leave inFade set to prevent race conditions in the main loop */
       /* the player stop condition will reset the inFade flag */
       playerData->inFadeOut = false;
-fprintf (stderr, "%d fade-end %d\n", getpid (), 0);
       volumeSet (playerData->volume, playerData->currentSink, 0);
       logMsg (LOG_DBG, LOG_MAIN, "fade-out done volume: %d time: %zd", 0, mstimeend (&playerData->playEndCheck));
     }
@@ -1572,22 +1562,21 @@ playerCalcPlayedTime (playerdata_t *playerData)
 static void
 playerSetDefaultVolume (playerdata_t *playerData)
 {
+  int   count;
+
   playerData->originalSystemVolume =
       volumeGet (playerData->volume, playerData->currentSink);
+  playerData->originalSystemVolume = playerLimitVolume (playerData->originalSystemVolume);
   logMsg (LOG_DBG, LOG_MAIN, "Original system volume: %d", playerData->originalSystemVolume);
-fprintf (stderr, "%d orig-vol %d\n", getpid (), playerData->originalSystemVolume);
 
-  if (playerData->regcount > 1) {
+  count = volregSave (playerData->currentSink, playerData->originalSystemVolume);
+  if (count > 1) {
     playerData->currentVolume = playerData->originalSystemVolume;
   } else {
     playerData->currentVolume = (int) bdjoptGetNum (OPT_P_DEFAULTVOLUME);
   }
   playerData->realVolume = playerData->currentVolume;
-fprintf (stderr, "%d curr %d\n", getpid (), playerData->currentVolume);
 
-  if (playerData->regcount <= 1) {
-fprintf (stderr, "%d default %d\n", getpid (), playerData->realVolume);
-    volumeSet (playerData->volume, playerData->currentSink, playerData->realVolume);
-    logMsg (LOG_DBG, LOG_MAIN, "set volume: %d", playerData->realVolume);
-  }
+  volumeSet (playerData->volume, playerData->currentSink, playerData->realVolume);
+  logMsg (LOG_DBG, LOG_MAIN, "set volume: %d", playerData->realVolume);
 }

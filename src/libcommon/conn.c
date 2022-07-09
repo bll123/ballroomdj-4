@@ -97,6 +97,12 @@ connPort (conn_t *conn, bdjmsgroute_t route)
   return connports [route];
 }
 
+inline uint16_t
+connSelfPort (conn_t *conn)
+{
+  return connports [conn [ROUTE_REGISTER].routefrom];
+}
+
 void
 connConnect (conn_t *conn, bdjmsgroute_t route)
 {

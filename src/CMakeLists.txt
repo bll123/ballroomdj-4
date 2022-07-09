@@ -102,14 +102,6 @@ target_link_libraries (bdj4info
 )
 addIntlLibrary (bdj4info)
 
-add_executable (bdj4register bdj4register.c)
-if (WIN32)
-  target_compile_options (bdj4register PRIVATE -mwindows -municode)
-endif()
-target_link_libraries (bdj4register
-  libbdj4common
-)
-
 add_executable (bdj4tags bdj4tags.c)
 if (WIN32)
   target_compile_options (bdj4tags PRIVATE -municode)
@@ -238,7 +230,7 @@ addWinSockLibrary (bdj4dbtag)
 add_executable (bdj4main bdj4main.c)
 if (WIN32)
   target_compile_options (bdj4main PRIVATE -municode)
-  target_compile_options (bdj4main PRIVATE -mwindows)
+  target_compile_options (bdj4dbtag PRIVATE -mwindows)
 endif()
 target_link_libraries (bdj4main
   libbdj4 libbdj4common
@@ -251,6 +243,7 @@ addWinSockLibrary (bdj4main)
 add_executable (bdj4player bdj4player.c)
 if (WIN32)
   target_compile_options (bdj4player PRIVATE -municode)
+  target_compile_options (bdj4dbtag PRIVATE -mwindows)
 endif()
 target_link_libraries (bdj4player
   libbdj4pli libbdj4vol libbdj4 libbdj4common
@@ -382,7 +375,7 @@ install (TARGETS
   bdj4se bdj4installer bdj4updater
   bdj4info bdj4tags
   bdj4dbupdate bdj4dbtag
-  bdj4register bdj4starterui
+  bdj4starterui
   bdj4main bdj4player bdj4mobmq bdj4rc bdj4marquee
   bdj4playerui bdj4configui bdj4helperui
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin

@@ -17,7 +17,6 @@
 #include "bdjstring.h"
 #include "bdj4init.h"
 #include "bdj4intl.h"
-#include "bdj4reg.h"
 #include "bdjmsg.h"
 #include "bdjopt.h"
 #include "bdjvars.h"
@@ -128,8 +127,6 @@ typedef struct {
   /* options */
   datafile_t      *optiondf;
   nlist_t         *options;
-  /* flags */
-  bool            registered : 1;
 } startui_t;
 
 enum {
@@ -249,7 +246,6 @@ main (int argc, char *argv[])
   uiutilsUIWidgetInit (&starter.supportSendDB);
   starter.optiondf = NULL;
   starter.options = NULL;
-  starter.registered = false;
 
   procutilInitProcesses (starter.processes);
 
@@ -259,8 +255,6 @@ main (int argc, char *argv[])
       BDJ4_INIT_NO_LOCK;
   bdj4startup (argc, argv, NULL, "st", ROUTE_STARTERUI, flags);
   logProcBegin (LOG_PROC, "starterui");
-
-  regStart ();
 
   starter.profilesel = uiSpinboxTextInit ();
 
@@ -278,10 +272,6 @@ main (int argc, char *argv[])
     gNewProfile = false;
     listenPort = bdjvarsGetNum (BDJVL_STARTERUI_PORT);
     starter.conn = connInit (ROUTE_STARTERUI);
-    if (! starter.registered) {
-      regRegister (starter.conn);
-      starter.registered = true;
-    }
 
     sockhMainLoop (listenPort, starterProcessMsg, starterMainLoop, &starter);
 
@@ -330,7 +320,6 @@ starterStoppingCallback (void *udata, programstate_t programState)
   int         x, y;
 
   logProcBegin (LOG_PROC, "starterStoppingCallback");
-  regRegisterExit (starter->conn);
 
   if (starter->mainstarted > 0) {
     procutilStopProcess (starter->processes [ROUTE_MAIN],
