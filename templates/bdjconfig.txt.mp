@@ -1,5 +1,7 @@
 # config-machine-profile
 # 2022-07-04
+AUDIOSINK
+..
 LISTINGFONT
 ..
 MQFONT

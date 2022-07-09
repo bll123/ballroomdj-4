@@ -44,7 +44,6 @@ typedef enum {
   OPT_G_PLAYERQLEN,               // u d s
   OPT_G_REMCONTROLHTML,           // u d s
   OPT_G_WRITETAGS,                //   d s
-  OPT_M_AUDIOSINK,                // u d s
   OPT_M_DIR_MUSIC,                // u d s
   /* DIR_OLD_SKIP will be used for a time until the conversion from bdj3 to */
   /* bdj4 is complete.  It will be removed in a later version */
@@ -53,6 +52,7 @@ typedef enum {
   OPT_M_SHUTDOWNSCRIPT,           // u d s
   OPT_M_STARTUPSCRIPT,            // u d s
   OPT_M_VOLUME_INTFC,             // u d s
+  OPT_MP_AUDIOSINK,               // u d s
   OPT_MP_LISTING_FONT,            // u d s
   OPT_MP_MQFONT,                  // u d s
   OPT_MP_MQ_THEME,                // u d s

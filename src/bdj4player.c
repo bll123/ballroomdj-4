@@ -210,7 +210,7 @@ main (int argc, char *argv[])
 
   playerInitSinklist (&playerData);
   /* sets the current sink */
-  playerSetAudioSink (&playerData, bdjoptGetStr (OPT_M_AUDIOSINK));
+  playerSetAudioSink (&playerData, bdjoptGetStr (OPT_MP_AUDIOSINK));
   playerSetDefaultVolume (&playerData);
 
   if (playerData.sinklist.sinklist != NULL) {

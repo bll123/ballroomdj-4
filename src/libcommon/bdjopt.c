@@ -74,7 +74,6 @@ enum {
 };
 
 static datafilekey_t bdjoptmachdfkeys[] = {
-  { "AUDIOSINK",      OPT_M_AUDIOSINK,      VALUE_STR, NULL, -1 },
   { "DIRMUSIC",       OPT_M_DIR_MUSIC,      VALUE_STR, NULL, -1 },
   { "DIROLDSKIP",     OPT_M_DIR_OLD_SKIP,   VALUE_STR, NULL, -1 },
   { "PLAYER",         OPT_M_PLAYER_INTFC,   VALUE_STR, NULL, -1 },
@@ -88,6 +87,7 @@ enum {
 
 /* be sure this is sorted in ascii order */
 static datafilekey_t bdjoptmachprofiledfkeys[] = {
+  { "AUDIOSINK",            OPT_MP_AUDIOSINK,             VALUE_STR, NULL, -1 },
   { "LISTINGFONT",          OPT_MP_LISTING_FONT,          VALUE_STR, NULL, -1 },
   { "MQFONT",               OPT_MP_MQFONT,                VALUE_STR, NULL, -1 },
   { "MQ_THEME",             OPT_MP_MQ_THEME,              VALUE_STR, NULL, -1 },

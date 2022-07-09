@@ -5,6 +5,7 @@ BallroomDJ 4 Change Log
 - main/player
   - fixed song start not being sent to the player.
   - fixed volume not being applied.
+  - move audio sink from machine to machine-profile
 - Fixed duration calculations for the music queue.
 - song list editor
   - statistics tab.
@@ -23,9 +24,9 @@ BallroomDJ 4 Change Log
   - fix alternate profiles.
   - add profile color display to main windows.
   - change window titles to reflect current profile.
+  - handle default volume/original system volume.
 - installer
   - add folder selection button for installation folder.
   - fix various issues with installation folder.
 - configuration : themes
   - add built-in themes to theme list.
-

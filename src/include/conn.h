@@ -36,13 +36,6 @@ void      connFree (conn_t *conn);
 uint16_t  connPort (conn_t *conn, bdjmsgroute_t route);
 
 /**
- * Get port number used for connections back to the process.
- * @param[in] conn The connection.
- * @return port number
- */
-uint16_t  connSelfPort (conn_t *conn);
-
-/**
  * Connect to a route.
  *
  * Sends a handshake message.

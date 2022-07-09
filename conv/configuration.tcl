@@ -119,6 +119,10 @@ foreach path [list {} profiles $mpath $mppath] {
         if { [regexp {^MQCOL} $key] } { continue }
         if { [regexp {^UI.*COLOR$} $key] } { continue }
         # renamed; moved to MP
+        if { $key eq "AUDIOSINK" } {
+          set audiosink $value
+          continue
+        }
         if { $key eq "UITHEME" } { continue }
         # moved to M
         if { $key eq "PLAYER" } { continue }
@@ -305,6 +309,10 @@ foreach path [list {} profiles $mpath $mppath] {
         puts $ofh "..$value"
       }
       if { $path eq $mppath } {
+        # audiosink is moved from machine to machine-profile
+        puts $ofh AUDIOSINK
+        puts $ofh "..${audiosink}"
+
         puts $ofh MQ_THEME
         set value Adwaita
         if { $::tcl_platform(os) eq "Linux" } { set value Adwaita }

@@ -56,8 +56,6 @@ connInit (bdjmsgroute_t routefrom)
     connports [ROUTE_RAFFLE] = bdjvarsGetNum (BDJVL_RAFFLE_PORT);
     connports [ROUTE_HELPERUI] = bdjvarsGetNum (BDJVL_HELPERUI_PORT);
     connports [ROUTE_BPM_COUNTER] = bdjvarsGetNum (BDJVL_BPM_COUNTER_PORT);
-    /* the register port is static */
-    connports [ROUTE_REGISTER] = bdjvarsGetNum (BDJVL_REGISTER_PORT);
     initialized = true;
   }
 
@@ -95,12 +93,6 @@ inline uint16_t
 connPort (conn_t *conn, bdjmsgroute_t route)
 {
   return connports [route];
-}
-
-inline uint16_t
-connSelfPort (conn_t *conn)
-{
-  return connports [conn [ROUTE_REGISTER].routefrom];
 }
 
 void

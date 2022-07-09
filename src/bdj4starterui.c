@@ -1288,10 +1288,10 @@ starterSetProfile (void *udata, int idx)
   disp = nlistGetStr (starter->proflist, dispidx);
   profidx = nlistGetNum (starter->profidxlist, dispidx);
 
-  if (profidx != starter->currprofile && profidx != starter->newprofile) {
-    starter->currprofile = profidx;
-    sysvarsSetNum (SVL_BDJIDX, profidx);
+  starter->currprofile = profidx;
+  sysvarsSetNum (SVL_BDJIDX, profidx);
 
+  if (profidx != starter->currprofile && profidx != starter->newprofile) {
     bdjoptInit ();
 
     uiLabelSetText (&starter->statusMsg, "");

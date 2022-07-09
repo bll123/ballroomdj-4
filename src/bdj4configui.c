@@ -667,7 +667,7 @@ main (int argc, char *argv[])
   nlistSetStr (llist, 0, "default");
   confui.uiitem [CONFUI_SPINBOX_AUDIO_OUTPUT].listidx = 0;
   for (size_t i = 0; i < sinklist.count; ++i) {
-    if (strcmp (sinklist.sinklist [i].name, bdjoptGetStr (OPT_M_AUDIOSINK)) == 0) {
+    if (strcmp (sinklist.sinklist [i].name, bdjoptGetStr (OPT_MP_AUDIOSINK)) == 0) {
       confui.uiitem [CONFUI_SPINBOX_AUDIO_OUTPUT].listidx = i + 1;
     }
     nlistSetStr (tlist, i + 1, sinklist.sinklist [i].description);
@@ -1144,7 +1144,7 @@ confuiBuildUIPlayer (configui_t *confui)
 
   /* CONTEXT: configuration: which audio sink (output) to use */
   confuiMakeItemSpinboxText (confui, &vbox, &sg, NULL, _("Audio Output"),
-      CONFUI_SPINBOX_AUDIO_OUTPUT, OPT_M_AUDIOSINK,
+      CONFUI_SPINBOX_AUDIO_OUTPUT, OPT_MP_AUDIOSINK,
       CONFUI_OUT_STR, confui->uiitem [CONFUI_SPINBOX_AUDIO_OUTPUT].listidx, NULL);
 
   /* CONTEXT: configuration: the volume used when starting the player */
