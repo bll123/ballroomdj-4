@@ -21,13 +21,12 @@
 typedef struct {
   conn_t  *conn;
   int     processcount;
-  int     port;
   bool    started : 1;
 } bdj4reg_t;
 
 static int  regProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route, bdjmsgmsg_t msg, char *args, void *udata);
 static int  regProcessing (void *udata);
-static void regSendPort (bdj4reg_t *reg, bdjmsgroute_t routefrom);
+static void regSendCount (bdj4reg_t *reg, bdjmsgroute_t routefrom);
 
 int
 main (int argc, char *argv [])
@@ -80,7 +79,6 @@ main (int argc, char *argv [])
   }
 
   listenPort = bdjvarsGetNum (BDJVL_REGISTER_PORT);
-  reg.port = listenPort + 1;
   reg.conn = connInit (ROUTE_REGISTER);
   reg.started = true;
 
@@ -105,13 +103,16 @@ regProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           reg->started = false;
           ++reg->processcount;
 fprintf (stderr, "reg-count: %d\n", reg->processcount);
-          regSendPort (reg, routefrom);
           break;
         }
         case MSG_REGISTER_EXIT: {
           reg->started = false;
           --reg->processcount;
 fprintf (stderr, "reg-count: %d\n", reg->processcount);
+          break;
+        }
+        case MSG_REGISTER_QUERY: {
+          regSendCount (reg, routefrom);
           break;
         }
         default: {
@@ -140,7 +141,7 @@ regProcessing (void *udata)
 }
 
 static void
-regSendPort (bdj4reg_t *reg, bdjmsgroute_t routefrom)
+regSendCount (bdj4reg_t *reg, bdjmsgroute_t routefrom)
 {
   char    tbuff [40];
 
@@ -149,9 +150,7 @@ regSendPort (bdj4reg_t *reg, bdjmsgroute_t routefrom)
     mssleep (10);
     connConnect (reg->conn, routefrom);
   }
-  snprintf (tbuff, sizeof (tbuff), "%d", reg->port);
-  connSendMessage (reg->conn, routefrom, MSG_REGISTER_PORT, tbuff);
+  snprintf (tbuff, sizeof (tbuff), "%d", reg->processcount);
+  connSendMessage (reg->conn, routefrom, MSG_REGISTER_COUNT, tbuff);
   connDisconnect (reg->conn, routefrom);
-  /* and bump the port value ready for the next connection */
-  reg->port += BDJVL_NUM_PORTS;
 }

@@ -17,6 +17,8 @@
 #include "sysvars.h"
 #include "tmutil.h"
 
+static void regSend (conn_t *conn, bdjmsgmsg_t msg);
+
 void
 regStart (void)
 {
@@ -35,23 +37,30 @@ regStart (void)
 void
 regRegister (conn_t *conn)
 {
-  connConnect (conn, ROUTE_REGISTER);
-  while (! connIsConnected (conn, ROUTE_REGISTER)) {
-    mssleep (10);
-    connConnect (conn, ROUTE_REGISTER);
-  }
-  connSendMessage (conn, ROUTE_REGISTER, MSG_REGISTER, NULL);
-  connDisconnect (conn, ROUTE_REGISTER);
+  regSend (conn, MSG_REGISTER);
+}
+
+void
+regQuery (conn_t *conn)
+{
+  regSend (conn, MSG_REGISTER_QUERY);
 }
 
 void
 regRegisterExit (conn_t *conn)
+{
+  regSend (conn, MSG_REGISTER_EXIT);
+}
+
+static void
+regSend (conn_t *conn, bdjmsgmsg_t msg)
 {
   connConnect (conn, ROUTE_REGISTER);
   while (! connIsConnected (conn, ROUTE_REGISTER)) {
     mssleep (10);
     connConnect (conn, ROUTE_REGISTER);
   }
-  connSendMessage (conn, ROUTE_REGISTER, MSG_REGISTER_EXIT, NULL);
+  connSendMessage (conn, ROUTE_REGISTER, msg, NULL);
   connDisconnect (conn, ROUTE_REGISTER);
 }
+
