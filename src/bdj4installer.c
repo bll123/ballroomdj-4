@@ -13,10 +13,7 @@
 #include <getopt.h>
 
 #if _hdr_winsock2
-# pragma clang diagnostic push
-# pragma clang diagnostic ignored "-Wmissing-declarations"
 # include <winsock2.h>
-# pragma clang diagnostic pop
 #endif
 #if _hdr_windows
 # include <windows.h>

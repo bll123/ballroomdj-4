@@ -61,6 +61,7 @@ main (int argc, char * argv[])
     { "bdj4helperui",   no_argument,        NULL,   18 },
     { "bdj4info",       no_argument,        NULL,   13 },
     { "bdj4installer",  no_argument,        NULL,   12 },
+    { "bdj4instalt",    no_argument,        NULL,   20 },
     { "bdj4main",       no_argument,        NULL,   5 },
     { "bdj4manageui",   no_argument,        NULL,   6 },
     { "bdj4marquee",    no_argument,        NULL,   7 },
@@ -68,7 +69,6 @@ main (int argc, char * argv[])
     { "bdj4player",     no_argument,        NULL,   9 },
     { "bdj4playerui",   no_argument,        NULL,   10 },
     { "bdj4remctrl",    no_argument,        NULL,   11 },
-    { "bdj4register",   no_argument,        NULL,   20 },
     { "bdj4starterui",  no_argument,        NULL,   14 },
     { "bdj4tags",       no_argument,        NULL,   17 },
     { "bdj4updater",    no_argument,        NULL,   16 },
@@ -228,7 +228,7 @@ main (int argc, char * argv[])
         break;
       }
       case 20: {
-        prog = "bdj4register";
+        prog = "bdj4instalt";
         ++validargs;
         break;
       }

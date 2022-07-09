@@ -111,7 +111,10 @@ typedef struct {
 
 #define BDJ_CONFIG_BASEFN   "bdjconfig"
 #define BDJ_CONFIG_EXT      ".txt"
-#define BDJOPT_MAX_PROFILES 20
+
+enum {
+  BDJOPT_MAX_PROFILES = 10,
+};
 
 extern datafilekey_t  bdjoptprofiledfkeys[];
 extern int            bdjoptprofiledfcount;

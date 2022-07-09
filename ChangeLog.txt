@@ -21,10 +21,11 @@ BallroomDJ 4 Change Log
 - profiles
   - Added configuration option for profile accent color.
   - starterui: profile handling.
-  - fix alternate profiles.
+  - various fixes.
   - add profile color display to main windows.
   - change window titles to reflect current profile.
   - handle default volume/original system volume.
+  - lowered max profiles to 10.
 - installer
   - add folder selection button for installation folder.
   - fix various issues with installation folder.
