@@ -61,7 +61,7 @@ main (int argc, char * argv[])
     { "bdj4helperui",   no_argument,        NULL,   18 },
     { "bdj4info",       no_argument,        NULL,   13 },
     { "bdj4installer",  no_argument,        NULL,   12 },
-    { "bdj4instalt",    no_argument,        NULL,   20 },
+    { "bdj4altinst",    no_argument,        NULL,   20 },
     { "bdj4main",       no_argument,        NULL,   5 },
     { "bdj4manageui",   no_argument,        NULL,   6 },
     { "bdj4marquee",    no_argument,        NULL,   7 },
@@ -228,7 +228,7 @@ main (int argc, char * argv[])
         break;
       }
       case 20: {
-        prog = "bdj4instalt";
+        prog = "bdj4altinst";
         ++validargs;
         break;
       }

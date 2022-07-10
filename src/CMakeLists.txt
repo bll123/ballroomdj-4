@@ -312,18 +312,18 @@ target_link_libraries (bdj4installer
 )
 addIntlLibrary (bdj4installer)
 
-add_executable (bdj4instalt bdj4instalt.c)
+add_executable (bdj4altinst bdj4altinst.c)
 if (WIN32)
-  target_compile_options (bdj4instalt PRIVATE -municode)
+  target_compile_options (bdj4altinst PRIVATE -municode)
 endif()
-target_link_libraries (bdj4instalt
+target_link_libraries (bdj4altinst
   liblocatebdj3
   libbdj4ui libuigtk3 libbdj4 libbdj4common
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}
   m
 )
-addIntlLibrary (bdj4instalt)
+addIntlLibrary (bdj4altinst)
 
 add_executable (bdj4starterui bdj4starterui.c)
 if (WIN32)
@@ -383,10 +383,9 @@ target_link_libraries (bdj4helperui
 addIntlLibrary (bdj4helperui)
 addWinSockLibrary (bdj4helperui)
 
-# bdj4instalt
 install (TARGETS
   bdj4 bdj4g
-  bdj4se bdj4installer bdj4updater
+  bdj4se bdj4installer bdj4altinst bdj4updater
   bdj4info bdj4tags
   bdj4dbupdate bdj4dbtag
   bdj4starterui

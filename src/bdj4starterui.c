@@ -68,6 +68,7 @@ enum {
   START_CALLBACK_EXIT,
   START_CALLBACK_SEND_SUPPORT,
   START_CALLBACK_MENU_STOP_ALL,
+  START_CALLBACK_MENU_INST_ALT,
   START_CALLBACK_SUPPORT_RESP,
   START_CALLBACK_SUPPORT_MSG_RESP,
   START_CALLBACK_MAX,
@@ -195,6 +196,7 @@ static void     starterLinkHandler (void *udata, int cbidx);
 
 static void     starterSetWindowPosition (startui_t *starter);
 static void     starterLoadOptions (startui_t *starter);
+static bool     starterInstallAlternate (void *udata);
 
 static bool gKillReceived = false;
 static bool gNewProfile = false;
@@ -480,6 +482,13 @@ starterBuildUI (startui_t  *starter)
       starterStopAllProcesses, starter);
   uiMenuCreateItem (&menu, &menuitem, tbuff,
       &starter->callbacks [START_CALLBACK_MENU_STOP_ALL]);
+
+  /* CONTEXT: menu item: install in alternate folder */
+  snprintf (tbuff, sizeof (tbuff), _("Install in Alternate Folder"));
+  uiutilsUICallbackInit (&starter->callbacks [START_CALLBACK_MENU_INST_ALT],
+      starterInstallAlternate, starter);
+  uiMenuCreateItem (&menu, &menuitem, tbuff,
+      &starter->callbacks [START_CALLBACK_MENU_INST_ALT]);
 
   /* main display */
   uiCreateHorizBox (&hbox);
@@ -1911,3 +1920,25 @@ starterLoadOptions (startui_t *starter)
     nlistSetNum (starter->options, STARTERUI_SIZE_Y, 800);
   }
 }
+
+static bool
+starterInstallAlternate (void *udata)
+{
+  char        prog [MAXPATHLEN];
+  const char  *targv [5];
+  int         targc = 0;
+
+
+  logProcBegin (LOG_PROC, "starterInstallAlternate");
+
+  pathbldMakePath (prog, sizeof (prog),
+      "bdj4", sysvarsGetStr (SV_OS_EXEC_EXT), PATHBLD_MP_EXECDIR);
+  targv [targc++] = prog;
+  targv [targc++] = "--bdj4altinst";
+  targv [targc++] = NULL;
+  osProcessStart (targv, OS_PROC_DETACH, NULL, NULL);
+
+  logProcEnd (LOG_PROC, "starterInstallAlternate", "");
+  return UICB_CONT;
+}
+

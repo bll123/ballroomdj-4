@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4 4.0.0\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
-"POT-Creation-Date: 2022-07-08\n"
-"PO-Revision-Date: 2022-07-08\n"
+"POT-Creation-Date: 2022-07-10\n"
+"PO-Revision-Date: 2022-07-10\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/us\n"
 "Language: en\n"
@@ -16,6 +16,11 @@ msgstr ""
 #. CONTEXT: database update: status message
 #, c-format
 msgid "%d files found"
+msgstr ""
+
+#. CONTEXT: installer: window title
+#, c-format
+msgid "%s Alternate Installer"
 msgstr ""
 
 #. CONTEXT: configuration user interface window title
@@ -759,6 +764,11 @@ msgstr ""
 msgid "Install Location"
 msgstr ""
 
+#. CONTEXT: menu item: install in alternate folder
+#, c-format
+msgid "Install in Alternate Folder"
+msgstr ""
+
 #. CONTEXT: installer: command line interface: status message
 #. CONTEXT: installer: status message
 msgid "Installation aborted."
@@ -1011,6 +1021,11 @@ msgstr ""
 
 #. CONTEXT: configuration: status name that is set when adding a new status
 msgid "New Status"
+msgstr ""
+
+#. CONTEXT: installer: message indicating the action that will be taken
+#, c-format
+msgid "New alternate installation."
 msgstr ""
 
 #. CONTEXT: helperui: proceed to the next step
@@ -1659,6 +1674,11 @@ msgstr ""
 #. CONTEXT: installer: command line interface: indicating action
 #, c-format
 msgid "Updating existing %s installation."
+msgstr ""
+
+#. CONTEXT: installer: message indicating the action that will be taken
+#, c-format
+msgid "Updating existing alternate installation."
 msgstr ""
 
 #. CONTEXT: configuration: remote control: the user ID for sign-on to remote control

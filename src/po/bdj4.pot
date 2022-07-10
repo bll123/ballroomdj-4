@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-07-08 13:38-0700\n"
+"POT-Creation-Date: 2022-07-10 05:51-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,6 +20,11 @@ msgstr ""
 #. CONTEXT: database update: status message
 #, c-format
 msgid "%d files found"
+msgstr ""
+
+#. CONTEXT: installer: window title
+#, c-format
+msgid "%s Alternate Installer"
 msgstr ""
 
 #. CONTEXT: configuration user interface window title
@@ -763,6 +768,11 @@ msgstr ""
 msgid "Install Location"
 msgstr ""
 
+#. CONTEXT: menu item: install in alternate folder
+#, c-format
+msgid "Install in Alternate Folder"
+msgstr ""
+
 #. CONTEXT: installer: command line interface: status message
 #. CONTEXT: installer: status message
 msgid "Installation aborted."
@@ -1015,6 +1025,11 @@ msgstr ""
 
 #. CONTEXT: configuration: status name that is set when adding a new status
 msgid "New Status"
+msgstr ""
+
+#. CONTEXT: installer: message indicating the action that will be taken
+#, c-format
+msgid "New alternate installation."
 msgstr ""
 
 #. CONTEXT: helperui: proceed to the next step
@@ -1663,6 +1678,11 @@ msgstr ""
 #. CONTEXT: installer: command line interface: indicating action
 #, c-format
 msgid "Updating existing %s installation."
+msgstr ""
+
+#. CONTEXT: installer: message indicating the action that will be taken
+#, c-format
+msgid "Updating existing alternate installation."
 msgstr ""
 
 #. CONTEXT: configuration: remote control: the user ID for sign-on to remote control
