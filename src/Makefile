@@ -76,9 +76,11 @@ cmake-windows:
 		-G "MSYS Makefiles" \
 		-S . -B $(BUILDDIR) -Werror=deprecated
 
+# windows installs extra unneeded crap
 build:
 	cmake --build $(BUILDDIR)
 	cmake --install $(BUILDDIR)
+	@-rm -f ../bin/liblib*.a 
 
 # testing
 .PHONY: check
