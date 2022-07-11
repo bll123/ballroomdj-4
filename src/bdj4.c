@@ -409,6 +409,11 @@ main (int argc, char * argv[])
     osSetEnv ("GTK_THEME", "Windows-10-Dark");
 #endif
   }
+  if (! havetheme && isMacOS ()) {
+#if BDJ4_USE_GTK
+    osSetEnv ("GTK_THEME", "macOS-Mojave-dark");
+#endif
+  }
 
   /* launch the program */
 

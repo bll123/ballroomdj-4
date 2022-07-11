@@ -2809,12 +2809,15 @@ confuiGetThemeList (void)
 
     snprintf (tbuff, sizeof (tbuff), "%s/.themes", sysvarsGetStr (SV_HOME));
     filelist = diropRecursiveDirList (tbuff, FILEMANIP_DIRS);
-    confuiGetThemeNames (themelist, filelist);
+    confuiGetThemeNames (sthemelist, filelist);
     slistFree (filelist);
   }
   /* make sure the built-in themes are present */
   slistSetStr (sthemelist, "Adwaita", 0);
-  slistSetStr (sthemelist, "Adwaita-dark", 0);
+  /* adwaita-dark does not appear to work on macos w/macports */
+  if (! isMacOS()) {
+    slistSetStr (sthemelist, "Adwaita-dark", 0);
+  }
   slistSetStr (sthemelist, "HighContrast", 0);
   slistSetStr (sthemelist, "HighContrastInverse", 0);
   slistSort (sthemelist);
@@ -3147,7 +3150,7 @@ confuiLoadThemeList (configui_t *confui)
 
   p = bdjoptGetStr (OPT_MP_UI_THEME);
   /* use the system default if the ui theme is empty */
-  if (! *p) {
+  if (p == NULL || ! *p) {
     usesys = true;
   }
 
