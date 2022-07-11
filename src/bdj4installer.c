@@ -2255,15 +2255,8 @@ installerDisplayText (installer_t *installer, char *pfx, char *txt, bool bold)
 static void
 installerGetTargetSaveFname (installer_t *installer, char *buff, size_t sz)
 {
-  char  tbuff [MAXPATHLEN];
-
-  if (isWindows ()) {
-    snprintf (tbuff, sizeof (tbuff), "%s/AppData/Roaming/BDJ4", installer->home);
-  } else {
-    snprintf (tbuff, sizeof (tbuff), "%s/.config/BDJ4", installer->home);
-  }
-  fileopMakeDir (tbuff);
-  snprintf (buff, sz, "%s/%s", tbuff, INST_SAVE_FNAME);
+  fileopMakeDir (sysvarsGetStr (SV_CONFIG_DIR));
+  snprintf (buff, sz, "%s/%s", sysvarsGetStr (SV_CONFIG_DIR), INST_SAVE_FNAME);
 }
 
 static void

@@ -17,6 +17,7 @@ typedef enum {
   SV_BDJ4TMPDIR,      // tmp
   SV_BDJ4_VERSION,
   SV_CA_FILE,
+  SV_CONFIG_DIR,      // .config/BDJ4 or AppData/Roaming/BDJ4
   SV_FONT_DEFAULT,
   SV_HOME,
   SV_HOST_FORUM,

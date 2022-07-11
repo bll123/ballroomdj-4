@@ -41,5 +41,7 @@ enum {
 #define STARTERUI_OPT_FN  "ui-starter"
 #define BPMCOUNTER_OPT_FN "ui-bpmcounter"
 #define VOLREG_FN         "volreg"
+#define VOLREG_BDJ4_EXT_FN     "volbdj4"
+#define VOLREG_BDJ3_EXT_FN     "volbdj3"
 
 #endif /* INC_BDJ4_H */

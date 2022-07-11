@@ -48,6 +48,9 @@ pathbldMakePath (char *buff, size_t buffsz,
   if ((flags & PATHBLD_MP_LOCALEDIR) == PATHBLD_MP_LOCALEDIR) {
     dirprefix = sysvarsGetStr (SV_BDJ4LOCALEDIR);
   }
+  if ((flags & PATHBLD_MP_CONFIGDIR) == PATHBLD_MP_CONFIGDIR) {
+    dirprefix = sysvarsGetStr (SV_CONFIG_DIR);
+  }
   if ((flags & PATHBLD_MP_IMGDIR) == PATHBLD_MP_IMGDIR) {
     if ((flags & PATHBLD_MP_RELATIVE) == PATHBLD_MP_RELATIVE) {
       dirprefix = "img";

@@ -258,6 +258,7 @@ playerClosingCallback (void *tpdata, programstate_t programState)
 {
   playerdata_t  *playerData = tpdata;
   int           origvol;
+  int           bdj3flag;
 
   logProcBegin (LOG_PROC, "playerClosingCallback");
 
@@ -270,9 +271,13 @@ playerClosingCallback (void *tpdata, programstate_t programState)
   }
 
   origvol = volregClear (playerData->currentSink);
+  bdj3flag = volregCheckBDJ3Flag ();
   if (origvol > 0) {
-    volumeSet (playerData->volume, playerData->currentSink, origvol);
-    logMsg (LOG_DBG, LOG_MAIN, "set to orig volume: (was:%d) %d", playerData->originalSystemVolume, origvol);
+    volregClearBDJ4Flag ();
+    if (! bdj3flag) {
+      volumeSet (playerData->volume, playerData->currentSink, origvol);
+      logMsg (LOG_DBG, LOG_MAIN, "set to orig volume: (was:%d) %d", playerData->originalSystemVolume, origvol);
+    }
   }
   volumeFreeSinkList (&playerData->sinklist);
   volumeFree (playerData->volume);
@@ -1563,6 +1568,10 @@ static void
 playerSetDefaultVolume (playerdata_t *playerData)
 {
   int   count;
+  bool  bdj3flag;
+
+  volregCreateBDJ4Flag ();
+  bdj3flag = volregCheckBDJ3Flag ();
 
   playerData->originalSystemVolume =
       volumeGet (playerData->volume, playerData->currentSink);
@@ -1570,7 +1579,7 @@ playerSetDefaultVolume (playerdata_t *playerData)
   logMsg (LOG_DBG, LOG_MAIN, "Original system volume: %d", playerData->originalSystemVolume);
 
   count = volregSave (playerData->currentSink, playerData->originalSystemVolume);
-  if (count > 1) {
+  if (count > 1 || bdj3flag) {
     playerData->currentVolume = playerData->originalSystemVolume;
   } else {
     playerData->currentVolume = (int) bdjoptGetNum (OPT_P_DEFAULTVOLUME);

@@ -56,6 +56,7 @@ static sysvarsdesc_t sysvarsdesc [SV_MAX] = {
   [SV_BDJ4TMPDIR] = { "BDJ4TMPDIR" },
   [SV_BDJ4_VERSION] = { "BDJ4_VERSION" },
   [SV_CA_FILE] = { "CA_FILE" },
+  [SV_CONFIG_DIR] = { "CONFIG_DIR" },
   [SV_FONT_DEFAULT] = { "FONT_DEFAULT" },
   [SV_HOME] = { "HOME" },
   [SV_HOST_FORUM] = { "HOST_FORUM" },
@@ -216,6 +217,13 @@ sysvarsInit (const char *argv0)
   tptr = filedataReplace (sysvars [SV_USER], &dlen, " ", "-");
   strlcpy (sysvars [SV_USER_MUNGE], tptr, SV_MAX_SZ);
   free (tptr);
+
+  if (isWindows ()) {
+    snprintf (tbuff, sizeof (tbuff), "%s/AppData/Roaming/%s", sysvars [SV_HOME], BDJ4_NAME);
+  } else {
+    snprintf (tbuff, sizeof (tbuff), "%s/.config/%s", sysvars [SV_HOME], BDJ4_NAME);
+  }
+  strlcpy (sysvars [SV_CONFIG_DIR], tbuff, SV_MAX_SZ);
 
   (void) ! getcwd (tcwd, sizeof (tcwd));
 

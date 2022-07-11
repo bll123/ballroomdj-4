@@ -9,9 +9,11 @@
 
 #include "bdj4.h"
 #include "datafile.h"
+#include "fileop.h"
 #include "lock.h"
 #include "ilist.h"
 #include "pathbld.h"
+#include "sysvars.h"
 #include "tmutil.h"
 #include "volreg.h"
 
@@ -53,6 +55,48 @@ volregClear (const char *sink)
 
   origvol = volregUpdate (sink, 0, -1);
   return origvol;
+}
+
+bool
+volregCheckBDJ3Flag (void)
+{
+  char  fn [MAXPATHLEN];
+  int   rc = false;
+
+  fileopMakeDir (sysvarsGetStr (SV_CONFIG_DIR));
+  pathbldMakePath (fn, sizeof (fn),
+      VOLREG_BDJ3_EXT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_CONFIGDIR);
+  if (fileopFileExists (fn)) {
+    rc = true;
+  }
+
+  return rc;
+}
+
+void
+volregCreateBDJ4Flag (void)
+{
+  char  fn [MAXPATHLEN];
+  FILE  *fh;
+
+  fileopMakeDir (sysvarsGetStr (SV_CONFIG_DIR));
+  pathbldMakePath (fn, sizeof (fn),
+      VOLREG_BDJ4_EXT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_CONFIGDIR);
+  fh = fopen (fn, "w");
+  if (fh != NULL) {
+    fclose (fh);
+  }
+}
+
+void
+volregClearBDJ4Flag (void)
+{
+  char  fn [MAXPATHLEN];
+
+  fileopMakeDir (sysvarsGetStr (SV_CONFIG_DIR));
+  pathbldMakePath (fn, sizeof (fn),
+      VOLREG_BDJ4_EXT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_CONFIGDIR);
+  fileopDelete (fn);
 }
 
 /* internal routines */
