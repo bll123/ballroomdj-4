@@ -1292,15 +1292,17 @@ starterSetProfile (void *udata, int idx)
   char      *disp;
   int       dispidx;
   int       profidx;
+  int       chg;
 
   dispidx = uiSpinboxTextGetValue (starter->profilesel);
   disp = nlistGetStr (starter->proflist, dispidx);
   profidx = nlistGetNum (starter->profidxlist, dispidx);
 
+  chg = profidx != starter->currprofile && profidx != starter->newprofile;
   starter->currprofile = profidx;
   sysvarsSetNum (SVL_BDJIDX, profidx);
 
-  if (profidx != starter->currprofile && profidx != starter->newprofile) {
+  if (chg) {
     bdjoptInit ();
 
     uiLabelSetText (&starter->statusMsg, "");
