@@ -363,7 +363,7 @@ pluiBuildUI (playerui_t *plui)
   uiBoxPackStart (&plui->vbox, &hbox);
 
   uiCreateLabel (&uiwidget, "");
-  uiWidgetSetSizeRequest (&uiwidget, 30, -1);
+  uiWidgetSetSizeRequest (&uiwidget, 25, 25);
   uiWidgetSetMarginStart (&uiwidget, uiBaseMarginSz * 3);
   uiLabelSetBackgroundColor (&uiwidget, bdjoptGetStr (OPT_P_UI_PROFILE_COL));
   uiBoxPackEnd (&hbox, &uiwidget);
@@ -479,6 +479,7 @@ pluiBuildUI (playerui_t *plui)
   pluiPlaybackButtonHideShow (plui, 0);
 
   plui->uibuilt = true;
+
   logProcEnd (LOG_PROC, "pluiBuildUI", "");
 }
 

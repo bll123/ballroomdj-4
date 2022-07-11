@@ -45,6 +45,7 @@
 #include "osutils.h"
 #include "pathbld.h"
 #include "pathutil.h"
+#include "pli.h"          // needed for volume sinklist
 #include "progstate.h"
 #include "rating.h"
 #include "slist.h"
@@ -60,7 +61,8 @@
 #include "uinbutil.h"
 #include "uiduallist.h"
 #include "validate.h"
-#include "volume.h"
+#include "volsink.h"
+#include "volume.h"     // needed for volume sink list
 #include "webclient.h"
 
 /* base type */
@@ -657,9 +659,16 @@ main (int argc, char *argv[])
   }
 
   volume = volumeInit ();
-  volumeSinklistInit (&sinklist);
   assert (volume != NULL);
+  volumeSinklistInit (&sinklist);
   volumeGetSinkList (volume, "", &sinklist);
+  if (! volumeHaveSinkList (volume)) {
+    pli_t     *pli;
+
+    pli = pliInit (bdjoptGetStr (OPT_M_VOLUME_INTFC), "default");
+    pliAudioDeviceList (pli, &sinklist);
+  }
+
   tlist = nlistAlloc ("cu-audio-out", LIST_ORDERED, free);
   llist = nlistAlloc ("cu-audio-out-l", LIST_ORDERED, free);
   /* CONTEXT: audio: The default audio sink (audio output) */
@@ -675,6 +684,7 @@ main (int argc, char *argv[])
   }
   confui.uiitem [CONFUI_SPINBOX_AUDIO_OUTPUT].displist = tlist;
   confui.uiitem [CONFUI_SPINBOX_AUDIO_OUTPUT].sbkeylist = llist;
+
   volumeFreeSinkList (&sinklist);
   volumeFree (volume);
 
@@ -975,7 +985,7 @@ confuiBuildUI (configui_t *confui)
   uiBoxPackStart (&confui->vbox, &hbox);
 
   uiCreateLabel (&uiwidget, "");
-  uiWidgetSetSizeRequest (&uiwidget, 30, -1);
+  uiWidgetSetSizeRequest (&uiwidget, 25, 25);
   uiWidgetSetMarginStart (&uiwidget, uiBaseMarginSz * 3);
   uiLabelSetBackgroundColor (&uiwidget, bdjoptGetStr (OPT_P_UI_PROFILE_COL));
   uiBoxPackEnd (&hbox, &uiwidget);

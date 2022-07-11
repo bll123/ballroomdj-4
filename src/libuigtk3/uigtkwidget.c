@@ -267,7 +267,6 @@ uiWidgetGetPosition (UIWidget *uiwidget, int *x, int *y)
   *y = alloc.y;
 }
 
-
 /* these routines will be removed at a later date */
 
 inline void

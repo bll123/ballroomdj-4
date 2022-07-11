@@ -457,7 +457,7 @@ starterBuildUI (startui_t  *starter)
   uiBoxPackStart (&vbox, &hbox);
 
   uiCreateLabel (&uiwidget, "");
-  uiWidgetSetSizeRequest (&uiwidget, 30, -1);
+  uiWidgetSetSizeRequest (&uiwidget, 25, 25);
   uiWidgetSetMarginStart (&uiwidget, uiBaseMarginSz * 3);
   uiLabelSetBackgroundColor (&uiwidget, bdjoptGetStr (OPT_P_UI_PROFILE_COL));
   uiBoxPackEnd (&hbox, &uiwidget);
@@ -603,6 +603,7 @@ starterBuildUI (startui_t  *starter)
   osuiSetIcon (imgbuff);
 
   uiWidgetShowAll (&starter->window);
+
   logProcEnd (LOG_PROC, "starterBuildUI", "");
 }
 

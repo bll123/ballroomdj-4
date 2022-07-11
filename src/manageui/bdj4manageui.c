@@ -525,7 +525,7 @@ manageBuildUI (manageui_t *manage)
   uiBoxPackStart (&vbox, &hbox);
 
   uiCreateLabel (&uiwidget, "");
-  uiWidgetSetSizeRequest (&uiwidget, 30, -1);
+  uiWidgetSetSizeRequest (&uiwidget, 25, 25);
   uiWidgetSetMarginStart (&uiwidget, uiBaseMarginSz * 3);
   uiLabelSetBackgroundColor (&uiwidget, bdjoptGetStr (OPT_P_UI_PROFILE_COL));
   uiBoxPackEnd (&hbox, &uiwidget);

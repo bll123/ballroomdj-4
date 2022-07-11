@@ -14,6 +14,7 @@
 #include "dylib.h"
 #include "pli.h"
 #include "sysvars.h"
+#include "volsink.h"
 
 pli_t *
 pliInit (const char *volpkg, const char *sinkname)
@@ -63,6 +64,10 @@ pliInit (const char *volpkg, const char *sinkname)
   assert (pli->pliiGetTime != NULL);
   pli->pliiState = dylibLookup (pli->dlHandle, "pliiState");
   assert (pli->pliiState != NULL);
+  pli->pliiSetAudioDevice = dylibLookup (pli->dlHandle, "pliiSetAudioDevice");
+  assert (pli->pliiAudioDeviceList != NULL);
+  pli->pliiAudioDeviceList = dylibLookup (pli->dlHandle, "pliiAudioDeviceList");
+  assert (pli->pliiAudioDeviceList != NULL);
 #pragma clang diagnostic pop
 
   pli->pliData = pli->pliiInit (volpkg, sinkname);
@@ -85,7 +90,7 @@ pliFree (pli_t *pli)
 }
 
 void
-pliMediaSetup (pli_t *pli, char *mediaPath)
+pliMediaSetup (pli_t *pli, const char *mediaPath)
 {
   if (pli != NULL && mediaPath != NULL) {
     pli->pliiMediaSetup (pli->pliData, mediaPath);
@@ -185,4 +190,16 @@ pliState (pli_t *pli)
     plistate = pli->pliiState (pli->pliData);
   }
   return plistate;
+}
+
+int
+pliSetAudioDevice (pli_t *pli, const char *dev)
+{
+  return pli->pliiSetAudioDevice (pli->pliData, dev);
+}
+
+int
+pliAudioDeviceList (pli_t *pli, volsinklist_t *sinklist)
+{
+  return pli->pliiAudioDeviceList (pli->pliData, sinklist);
 }

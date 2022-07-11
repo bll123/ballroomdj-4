@@ -17,7 +17,7 @@
 #include <vlc/vlc.h>
 #include <vlc/libvlc_version.h>
 
-#include "slist.h"
+#include "volsink.h"
 
 typedef struct {
   libvlc_instance_t     *inst;
@@ -41,15 +41,15 @@ int               vlcPlay (vlcData_t *vlcData);
 ssize_t           vlcSeek (vlcData_t *vlcData, ssize_t dpos);
 double            vlcRate (vlcData_t *vlcData, double drate);
 int               vlcHaveAudioDevList (void);
-int               vlcAudioDevSet (vlcData_t *vlcData, char *dev);
+int               vlcAudioDevSet (vlcData_t *vlcData, const char *dev);
 #if _lib_libvlc_audio_output_device_enum
-slist_t *         vlcAudioDevList (vlcData_t *vlcData);
+int               vlcAudioDevList (vlcData_t *vlcData, volsinklist_t *sinklist);
 #endif
 char *            vlcVersion (vlcData_t *vlcData);
 libvlc_state_t    vlcState (vlcData_t *vlcData);
 const char *      vlcStateStr (vlcData_t *vlcData);
 void              noInitialVolume (vlcData_t *vlcData);
-int               vlcMedia (vlcData_t *vlcdata, char *fn);
+int               vlcMedia (vlcData_t *vlcdata, const char *fn);
 vlcData_t *       vlcInit (int vlcargc, char *vlcargv [], char *vlcopt []);
 void              vlcClose (vlcData_t *vlcData);
 void              vlcRelease (vlcData_t *vlcData);

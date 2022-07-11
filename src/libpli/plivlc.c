@@ -14,6 +14,7 @@
 #include "pli.h"
 #include "vlci.h"
 #include "tmutil.h"
+#include "volsink.h"
 
 #if 0  // VLC logging options
       "-vv",
@@ -54,14 +55,14 @@ pliiInit (const char *volpkg, const char *sinkname)
     char  tbuffb [200];
 
     vlcOptions [0] = NULL;
-    if (strcmp (volpkg, "libvolwin") == 0) {
+    if (strcmp (volpkg, "libvolwin") == 0 && sinkname != NULL && *sinkname) {
       snprintf (tbuff, sizeof (tbuff), "--directx-audio-device=%s", sinkname);
       vlcOptions [0] = tbuff;
       snprintf (tbuffb, sizeof (tbuffb), "--mmdevice-audio-device=%s", sinkname);
       vlcOptions [1] = tbuffb;
       vlcOptions [2] = NULL;
     }
-    if (strcmp (volpkg, "libvolalsa") == 0) {
+    if (strcmp (volpkg, "libvolalsa") == 0 && sinkname != NULL && *sinkname) {
       snprintf (tbuff, sizeof (tbuff), "--alsa-audio-device=%s\n", sinkname);
       vlcOptions [0] = tbuff;
       vlcOptions [1] = NULL;
@@ -83,7 +84,7 @@ pliiFree (plidata_t *pliData)
 }
 
 void
-pliiMediaSetup (plidata_t *pliData, char *mediaPath)
+pliiMediaSetup (plidata_t *pliData, const char *mediaPath)
 {
   if (pliData != NULL && pliData->plData != NULL && mediaPath != NULL) {
     vlcMedia (pliData->plData, mediaPath);
@@ -222,6 +223,26 @@ pliiState (plidata_t *pliData)
   }
   return plistate;
 }
+
+int
+pliiSetAudioDevice (plidata_t *pliData, const char *dev)
+{
+  return vlcAudioDevSet (pliData->plData, dev);
+}
+
+int
+pliiAudioDeviceList (plidata_t *pliData, volsinklist_t *sinklist)
+{
+  int   rc = 0;
+
+  if (vlcHaveAudioDevList ()) {
+    rc = vlcAudioDevList (pliData->plData, sinklist);
+  }
+
+  return rc;
+}
+
+/* internal routines */
 
 static void
 pliiWaitUntilPlaying (plidata_t *pliData)

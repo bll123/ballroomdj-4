@@ -22,9 +22,10 @@
 #include <math.h>
 #include <pulse/pulseaudio.h>
 
-#include "volume.h"
 #include "bdjstring.h"
 #include "tmutil.h"
+#include "volsink.h"
+#include "volume.h"
 
 static void getSinkCallback (pa_context *context, const pa_sink_info *i, int eol, void *userdata);
 
@@ -246,6 +247,10 @@ volumeProcess (volaction_t action, char *sinkname,
   callback_t            cbdata;
   unsigned int          tvol;
   int                   count;
+
+  if (action == VOL_HAVE_SINK_LIST) {
+    return true;
+  }
 
   count = 0;
   while (count < 40) {

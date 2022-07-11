@@ -7,24 +7,14 @@ extern "C" {
 
 #include "dylib.h"
 
+typedef struct volsinklist volsinklist_t;
+
 typedef enum {
   VOL_GET,
   VOL_SET,
-  VOL_GETSINKLIST
+  VOL_HAVE_SINK_LIST,
+  VOL_GETSINKLIST,
 } volaction_t;
-
-typedef struct {
-  int       defaultFlag;
-  int       idxNumber;
-  char      *name;
-  char      *description;
-} volsinkitem_t;
-
-typedef struct {
-  char            *defname;
-  size_t          count;
-  volsinkitem_t   *sinklist;
-} volsinklist_t;
 
 typedef struct {
   dlhandle_t  *dlHandle;
@@ -34,6 +24,7 @@ typedef struct {
 
 volume_t  *volumeInit (void);
 void      volumeFree (volume_t *volume);
+bool      volumeHaveSinkList (volume_t *volume);
 void      volumeSinklistInit (volsinklist_t *sinklist);
 int       volumeGet (volume_t *volume, char *sinkname);
 int       volumeSet (volume_t *volume, char *sinkname, int vol);

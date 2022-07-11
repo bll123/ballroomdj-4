@@ -22,6 +22,7 @@
 #include <Functiondiscoverykeys_devpkey.h>
 
 #include "osutils.h"
+#include "volsink.h"
 #include "volume.h"
 
 #define EXIT_ON_ERROR(hr)  \
@@ -50,6 +51,10 @@ volumeProcess (volaction_t action, char *sinkname,
   float                 currentVal;
   wchar_t               *wdevnm;
   IMMDeviceEnumerator   *pEnumerator = NULL;
+
+  if (action == VOL_HAVE_SINK_LIST) {
+    return true;
+  }
 
   ZeroMemory (&VersionInfo, sizeof (OSVERSIONINFO));
   VersionInfo.dwOSVersionInfoSize = sizeof (OSVERSIONINFO);

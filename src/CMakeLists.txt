@@ -360,7 +360,7 @@ if (WIN32)
   target_compile_options (bdj4configui PRIVATE -mwindows)
 endif()
 target_link_libraries (bdj4configui
-  libbdj4ui libuigtk3 libbdj4vol libbdj4 libbdj4common
+  libbdj4ui libuigtk3 libbdj4vol libbdj4pli libbdj4 libbdj4common
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}
   m

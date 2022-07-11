@@ -33,6 +33,10 @@ volumeProcess (volaction_t action, char *sinkname,
   UInt32          volumeSize = sizeof (volume);
   int             ivol;
 
+  if (action == VOL_HAVE_SINK_LIST) {
+    return false;
+  }
+
   propertyAOPA.mSelector = kAudioHardwarePropertyDefaultOutputDevice;
   propertyAOPA.mScope = kAudioObjectPropertyScopeGlobal;
   propertyAOPA.mElement = kAudioObjectPropertyElementMaster;

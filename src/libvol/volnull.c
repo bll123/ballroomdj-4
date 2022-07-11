@@ -6,6 +6,7 @@
 #include <strings.h>
 #include <memory.h>
 
+#include "volsink.h"
 #include "volume.h"
 
 static int gvol = 30;
@@ -19,6 +20,10 @@ int
 volumeProcess (volaction_t action, char *sinkname,
     int *vol, volsinklist_t *sinklist)
 {
+  if (action == VOL_HAVE_SINK_LIST) {
+    return true;
+  }
+
   if (action == VOL_GETSINKLIST) {
     sinklist->defname = "no-volume";
     sinklist->sinklist = NULL;

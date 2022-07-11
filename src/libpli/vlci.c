@@ -31,9 +31,9 @@ enum {
 #include <vlc/vlc.h>
 #include <vlc/libvlc_version.h>
 
-#include "vlci.h"
-#include "slist.h"
 #include "bdjstring.h"
+#include "vlci.h"
+#include "volsink.h"
 
 typedef struct {
   libvlc_state_t        state;
@@ -231,7 +231,7 @@ vlcHaveAudioDevList (void)
 }
 
 int
-vlcAudioDevSet (vlcData_t *vlcData, char *dev)
+vlcAudioDevSet (vlcData_t *vlcData, const char *dev)
 {
   if (vlcData == NULL || vlcData->inst == NULL || vlcData->mp == NULL) {
     return -1;
@@ -241,7 +241,7 @@ vlcAudioDevSet (vlcData_t *vlcData, char *dev)
     free (vlcData->device);
   }
   vlcData->device = NULL;
-  if (strlen (dev) > 0) {
+  if (dev != NULL && strlen (dev) > 0) {
     vlcData->device = strdup (dev);
     assert (vlcData->device != NULL);
   }
@@ -251,30 +251,41 @@ vlcAudioDevSet (vlcData_t *vlcData, char *dev)
 
 #if _lib_libvlc_audio_output_device_enum
 
-slist_t *
-vlcAudioDevList (vlcData_t *vlcData)
+int
+vlcAudioDevList (vlcData_t *vlcData, volsinklist_t *sinklist)
 {
   libvlc_audio_output_device_t  *adevlist;
   libvlc_audio_output_device_t  *adevlistptr;
-  slist_t                       *devlist;
+  int                           count = 0;
+
+  sinklist->defname = NULL;
+  sinklist->sinklist = NULL;
+  sinklist->count = 0;
 
   if (vlcData == NULL || vlcData->inst == NULL || vlcData->mp == NULL ||
       strcmp (vlcData->version, "2.2.0") < 0) {
-    return NULL;
+    return 0;
   }
-
-  devlist = slistAlloc ("vlci-devs", LIST_UNORDERED, free);
 
   adevlist = libvlc_audio_output_device_enum (vlcData->mp);
   adevlistptr = adevlist;
   while (adevlistptr != (libvlc_audio_output_device_t *) NULL) {
-    slistSetStr (devlist, adevlistptr->psz_device,
-        strdup (adevlistptr->psz_description));
+    ++sinklist->count;
+    sinklist->sinklist = realloc (sinklist->sinklist,
+        sinklist->count * sizeof (volsinkitem_t));
+    sinklist->sinklist [count].defaultFlag = 0;
+    sinklist->sinklist [count].idxNumber = count;
+    sinklist->sinklist [count].name = strdup (adevlistptr->psz_device);
+    sinklist->sinklist [count].description = strdup (adevlistptr->psz_description);
+    if (count == 0) {
+      sinklist->defname = strdup (adevlistptr->psz_device);
+    }
+    ++count;
     adevlistptr = adevlistptr->p_next;
   }
 
   libvlc_audio_output_device_list_release (adevlist);
-  return devlist;
+  return 0;
 }
 
 #endif /* have libvlc_audio_output_device_enum */
@@ -321,7 +332,7 @@ noInitialVolume (vlcData_t *vlcData)
 /* media commands */
 
 int
-vlcMedia (vlcData_t *vlcData, char *fn)
+vlcMedia (vlcData_t *vlcData, const char *fn)
 {
   libvlc_event_manager_t  *em;
   struct stat             statbuf;

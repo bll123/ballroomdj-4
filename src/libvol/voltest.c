@@ -10,6 +10,7 @@
 #include <unistd.h>
 
 #include "bdjopt.h"
+#include "volsink.h"
 #include "volume.h"
 #include "sysvars.h"
 
@@ -19,6 +20,11 @@ main (int argc, char *argv [])
   volume_t      *volume;
   volsinklist_t sinklist;
   int           vol;
+
+  if (argc < 2) {
+    fprintf (stdout, "usage: voltest {getsinklist|get <sink>|set <sink> <vol>}\n");
+    exit (1);
+  }
 
   sysvarsInit (argv [0]);
   bdjoptInit ();

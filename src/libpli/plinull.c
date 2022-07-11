@@ -10,6 +10,7 @@
 
 #include "pli.h"
 #include "tmutil.h"
+#include "volsink.h"
 
 plidata_t *
 pliiInit (const char *volpkg, const char *sinkname)
@@ -36,7 +37,7 @@ pliiFree (plidata_t *pliData)
 }
 
 void
-pliiMediaSetup (plidata_t *pliData, char *mediaPath)
+pliiMediaSetup (plidata_t *pliData, const char *mediaPath)
 {
   if (pliData != NULL && mediaPath != NULL) {
     pliData->state = PLI_STATE_STOPPED;
@@ -149,4 +150,16 @@ pliiState (plidata_t *pliData)
     plistate = pliData->state;
   }
   return plistate;
+}
+
+int
+pliiSetAudioDevice (plidata_t *pliData, const char *dev)
+{
+  return 0;
+}
+
+int
+pliiAudioDeviceList (plidata_t *pliData, volsinklist_t *sinklist)
+{
+  return 0;
 }

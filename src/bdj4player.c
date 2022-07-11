@@ -43,6 +43,7 @@
 #include "tagdef.h"
 #include "tmutil.h"
 #include "volreg.h"
+#include "volsink.h"
 #include "volume.h"
 
 typedef struct {
@@ -209,19 +210,20 @@ main (int argc, char *argv[])
   assert (playerData.volume != NULL);
 
   playerInitSinklist (&playerData);
-  /* sets the current sink */
-  playerSetAudioSink (&playerData, bdjoptGetStr (OPT_MP_AUDIOSINK));
-  playerSetDefaultVolume (&playerData);
 
   if (playerData.sinklist.sinklist != NULL) {
+    logMsg (LOG_DBG, LOG_BASIC, "vol-sinklist");
     for (size_t i = 0; i < playerData.sinklist.count; ++i) {
-      logMsg (LOG_DBG, LOG_BASIC, "%d %3d %s %s",
+      logMsg (LOG_DBG, LOG_BASIC, "  %d %3d %s %s",
                playerData.sinklist.sinklist [i].defaultFlag,
                playerData.sinklist.sinklist [i].idxNumber,
                playerData.sinklist.sinklist [i].name,
                playerData.sinklist.sinklist [i].description);
     }
   }
+
+  /* sets the current sink */
+  playerSetAudioSink (&playerData, bdjoptGetStr (OPT_MP_AUDIOSINK));
 
   /* this works for pulse audio */
   if (isLinux () &&
@@ -231,6 +233,28 @@ main (int argc, char *argv[])
 
   playerData.pli = pliInit (bdjoptGetStr (OPT_M_VOLUME_INTFC),
       playerData.currentSink);
+  /* some audio device interfaces may not have the audio device enumeration. */
+  /* (e.g. I don't know how to do this on macos) */
+  /* in this case, retrieve the list of devices from the player if possible. */
+  if (! volumeHaveSinkList (playerData.volume)) {
+    /* try getting the sink list from the player */
+    pliAudioDeviceList (playerData.pli, &playerData.sinklist);
+    if (playerData.sinklist.sinklist != NULL) {
+      logMsg (LOG_DBG, LOG_BASIC, "vlc-sinklist");
+      for (size_t i = 0; i < playerData.sinklist.count; ++i) {
+        logMsg (LOG_DBG, LOG_BASIC, "  %d %3d %s %s",
+                 playerData.sinklist.sinklist [i].defaultFlag,
+                 playerData.sinklist.sinklist [i].idxNumber,
+                 playerData.sinklist.sinklist [i].name,
+                 playerData.sinklist.sinklist [i].description);
+      }
+    }
+    playerSetAudioSink (&playerData, bdjoptGetStr (OPT_MP_AUDIOSINK));
+    /* use the player to set the audio output device */
+    pliSetAudioDevice (playerData.pli, playerData.currentSink);
+  }
+
+  playerSetDefaultVolume (&playerData);
 
   listenPort = bdjvarsGetNum (BDJVL_PLAYER_PORT);
   sockhMainLoop (listenPort, playerProcessMsg, playerProcessing, &playerData);
@@ -1289,11 +1313,13 @@ playerInitSinklist (playerdata_t *playerData)
   playerData->defaultSink = "";
   playerData->currentSink = "";
 
-  count = 0;
-  while (volumeGetSinkList (playerData->volume, "", &playerData->sinklist) != 0 &&
-      count < 20) {
-    mssleep (100);
-    ++count;
+  if (volumeHaveSinkList (playerData->volume)) {
+    count = 0;
+    while (volumeGetSinkList (playerData->volume, "", &playerData->sinklist) != 0 &&
+        count < 20) {
+      mssleep (100);
+      ++count;
+    }
   }
   if (*playerData->sinklist.defname) {
     playerData->defaultSink = playerData->sinklist.defname;

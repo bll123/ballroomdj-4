@@ -53,7 +53,7 @@
      inkscape:zoom="11.693256"
      inkscape:cx="25.570295"
      inkscape:cy="12.998946"
-     inkscape:current-layer="layer1"
+     inkscape:current-layer="g921"
      showgrid="true"
      inkscape:document-units="px"
      inkscape:grid-bbox="true"
@@ -63,8 +63,8 @@
      fit-margin-bottom="0"
      inkscape:window-width="1681"
      inkscape:window-height="801"
-     inkscape:window-x="229"
-     inkscape:window-y="160"
+     inkscape:window-x="243"
+     inkscape:window-y="81"
      inkscape:window-maximized="0"
      showborder="true"
      inkscape:pagecheckerboard="true"
@@ -110,18 +110,16 @@
          cy="51.567814"
          rx="8.6949997"
          ry="8.5369577" />
-      <text
-         xml:space="preserve"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.82926px;line-height:0%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#179b15;fill-opacity:1;stroke:none;stroke-width:0.319105px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-         x="-42.830139"
-         y="58.947281"
+      <g
+         aria-label="✔"
+         transform="scale(1.0092394,0.99084521)"
          id="text4803"
-         transform="scale(1.0092394,0.99084521)"><tspan
-           sodipodi:role="line"
-           id="tspan4805"
-           x="-42.830139"
-           y="58.947281"
-           style="font-size:19.1463px;line-height:1.25;fill:#179b15;fill-opacity:1;stroke-width:0.319105px">✔</tspan></text>
+         style="font-size:3.82926px;line-height:0%;-inkscape-font-specification:'sans-serif, Normal';letter-spacing:0px;word-spacing:0px;fill:#179b15;stroke-width:0.319105px">
+        <path
+           d="m -38.595142,51.52435 q 0.364602,0 0.551578,0.598322 0.373951,1.121854 0.53288,1.121854 0.121534,0 0.252417,-0.186976 2.627007,-3.861046 4.861365,-5.497082 0.944227,-0.69181 1.84171,-0.69181 1.187295,0 1.430363,0.07479 0.102836,0.02805 0.102836,0.233719 0,0.168278 -0.215022,0.420695 -6.011264,6.899399 -7.161164,8.974828 -0.392649,0.710507 -1.813663,0.710507 -0.467439,0 -0.981622,-0.243068 -0.215022,-0.112185 -0.747902,-1.430363 -0.673113,-1.664083 -0.673113,-2.916819 0,-0.45809 0.654415,-0.757251 0.897483,-0.411347 1.346224,-0.411347 z"
+           style="font-size:19.1463px;line-height:1.25"
+           id="path830" />
+      </g>
     </g>
   </g>
 </svg>

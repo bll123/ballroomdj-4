@@ -13,6 +13,7 @@
 #include "pathbld.h"
 #include "dylib.h"
 #include "sysvars.h"
+#include "volsink.h"
 #include "volume.h"
 
 volume_t *
@@ -57,6 +58,12 @@ volumeFree (volume_t *volume)
     }
     free (volume);
   }
+}
+
+bool
+volumeHaveSinkList (volume_t *volume)
+{
+  return volume->volumeProcess (VOL_HAVE_SINK_LIST, NULL, NULL, NULL);
 }
 
 void
