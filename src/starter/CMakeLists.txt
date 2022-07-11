@@ -83,11 +83,14 @@ addIntlLibrary (bdj4helperui)
 addWinSockLibrary (bdj4helperui)
 
 install (TARGETS
+  bdj4 bdj4g
   bdj4starterui bdj4helperui
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
 
 if (APPLE)
+  macUpdateRPath (bdj4)
+  macUpdateRPath (bdj4g)
   macUpdateRPath (bdj4starterui)
   macUpdateRPath (bdj4helperui)
 endif()
