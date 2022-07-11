@@ -54,7 +54,7 @@ typedef struct {
   int           speed;
   double        voladjperc;
   ssize_t       gap;
-  ssize_t       announce;  // one of PREP_SONG or PREP_ANNOUNCE
+  int           announce;  // one of PREP_SONG or PREP_ANNOUNCE
 } prepqueue_t;
 
 typedef struct {
@@ -668,8 +668,8 @@ playerProcessing (void *udata)
     } /* time to check...*/
   } /* is playing */
 
-    /* only process the prep requests when the player isn't doing much  */
-    /* windows must do a physical copy, and this may take a bit of time */
+  /* only process the prep requests when the player isn't doing much  */
+  /* windows must do a physical copy, and this may take a bit of time */
   if ((playerData->playerState == PL_STATE_PLAYING ||
        playerData->playerState == PL_STATE_STOPPED ||
        playerData->playerState == PL_STATE_PAUSED) &&
@@ -816,6 +816,9 @@ void
 playerProcessPrepRequest (playerdata_t *playerData)
 {
   prepqueue_t     *npq;
+  FILE            *fh;
+  ssize_t         sz;
+  char            *buff;
 
   logProcBegin (LOG_PROC, "playerProcessPrepRequest");
 
@@ -825,9 +828,6 @@ playerProcessPrepRequest (playerdata_t *playerData)
     return;
   }
 
-  /* FIX: TODO: if we are in client/server mode, then need to request the song
-   * from the server and save it
-   */
   logMsg (LOG_DBG, LOG_BASIC, "prep: %s : %s", npq->songname, npq->tempname);
 
   /* VLC still cannot handle internationalized names.
@@ -843,6 +843,15 @@ playerProcessPrepRequest (playerdata_t *playerData)
     logProcEnd (LOG_PROC, "playerProcessPrepRequest", "copy-fail");
     return;
   }
+
+  /* read the entire file in order to get it into the operating system's */
+  /* filesystem cache */
+  sz = fileopSize (npq->songfullpath);
+  buff = malloc (sz);
+  fh = fopen (npq->songfullpath, "rb");
+  fread (buff, sz, 1, fh);
+  fclose (fh);
+  free (buff);
 
   queuePush (playerData->prepQueue, npq);
   logProcEnd (LOG_PROC, "playerProcessPrepRequest", "");
