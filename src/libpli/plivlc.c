@@ -51,12 +51,14 @@ pliiInit (const char *volpkg, const char *sinkname)
   assert (pliData != NULL);
   if (pliData != NULL) {
     char  tbuff [200];
+    char  tbuffb [200];
 
     vlcOptions [0] = NULL;
     if (strcmp (volpkg, "libvolwin") == 0) {
-      vlcOptions [0] = "--aout=direct";
-      snprintf (tbuff, sizeof (tbuff), "--directx-audio-device=%s\n", sinkname);
-      vlcOptions [1] = tbuff;
+      snprintf (tbuff, sizeof (tbuff), "--directx-audio-device=%s", sinkname);
+      vlcOptions [0] = tbuff;
+      snprintf (tbuffb, sizeof (tbuffb), "--mmdevice-audio-device=%s", sinkname);
+      vlcOptions [1] = tbuffb;
       vlcOptions [2] = NULL;
     }
     if (strcmp (volpkg, "libvolalsa") == 0) {
